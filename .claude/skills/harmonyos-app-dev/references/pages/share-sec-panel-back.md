@@ -1,0 +1,30 @@
+# 分享详情页关闭分享面板
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/share-sec-panel-back_
+
+从分享详情页返回分享面板时，可通过设置resultCode值为特定的ShareAbilityResultCode，以告知分享面板做出不同的处理，具体处理方式如下：
+
+ERROR：返回分享面板，并提示用户发生错误。
+
+BACK：正常返回分享面板。
+
+CLOSE：关闭分享面板。
+
+开发步骤
+
+导入相关模块。
+
+import { ShareExtensionAbility, UIExtensionContentSession, Want } from '@kit.AbilityKit';
+import { systemShare } from '@kit.ShareKit';
+
+目标应用可以通过terminateSelfWithResult接口，设置resultCode值为systemShare.ShareAbilityResultCode.CLOSE，以关闭分享面板。
+
+export default class TestShareAbility extends ShareExtensionAbility {
+  async onSessionCreate(want: Want, session: UIExtensionContentSession) {
+    session.terminateSelfWithResult({
+      resultCode: systemShare.ShareAbilityResultCode.CLOSE
+    });
+  }
+}
+分享详情页处理分享内容
+判断应用是否被系统分享拉起

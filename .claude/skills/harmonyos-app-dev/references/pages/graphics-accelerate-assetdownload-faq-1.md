@@ -1,0 +1,5 @@
+# 上传至华为CDN的资源包文件支持哪些格式类型
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-assetdownload-faq-1_
+
+集成游戏资源加速ExtensionAbility方法，未配置游戏资源加速ExtensionAbility组件类型信息，导致功能未生效

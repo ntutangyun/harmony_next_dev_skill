@@ -1,0 +1,4 @@
+# 图片编码
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-encoding-arts_
+

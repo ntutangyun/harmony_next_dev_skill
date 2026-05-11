@@ -1,0 +1,54 @@
+# 微距能力设置(ArkTS)
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-macro_
+
+从API version 19开始，支持设置微距能力。微距能力是指通过光学设计与算法优化，实现近距离对焦并清晰捕捉微小物体细节的相机功能。
+
+开发步骤
+
+详细的API说明请参考Camera。
+
+导入camera接口，接口中提供了相机相关的属性和方法，导入方法如下。
+
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+通过isMacroSupported接口，查询当前设备是否支持微距能力。
+
+let isSupported: boolean = photoSession.isMacroSupported();
+
+通过enableMacro接口，开启或关闭微距能力。
+
+function EnableMacro(photoSession: camera.PhotoSession): void {
+   let isSupported: boolean = photoSession.isMacroSupported();
+   if (isSupported) {
+      photoSession.enableMacro(true);
+   }
+}
+状态监听
+
+从API version 20开始，支持监听微距能力是否发生改变。
+
+注册macroStatusChanged事件监听微距能力变化，事件监听可参考on('macroStatusChanged')。
+
+function callback(err: BusinessError, macroStatus: boolean): void {
+   if (err !== undefined && err.code !== 0) {
+      console.error(`Callback Error, errorCode: ${err.code}`);
+      return;
+   }
+   console.info(`Macro state: ${macroStatus}`);
+}
+
+
+// 注册回调函数。
+function registerMacroStatusChanged(photoSession: camera.PhotoSession): void {
+   photoSession.on('macroStatusChanged', callback);
+}
+
+
+// 解注册。
+function unregisterMacroStatusChanged(photoSession: camera.PhotoSession): void {
+   photoSession.off('macroStatusChanged');
+}
+相机控制器(ArkTS)
+多摄同开(ArkTS)

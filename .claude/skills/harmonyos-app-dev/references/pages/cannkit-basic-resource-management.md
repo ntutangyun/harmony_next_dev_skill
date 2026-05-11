@@ -1,0 +1,7 @@
+# 资源管理
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-basic-resource-management_
+
+CubeResGroupHandle、GroupBarrier、KfcWorkspace	不支持。该API用于在分离模式下对AI Core计算资源分组管理，KirinX90/Kirin9030 AI处理器为单核耦合架构，不需要。
+数据搬运
+系统变量

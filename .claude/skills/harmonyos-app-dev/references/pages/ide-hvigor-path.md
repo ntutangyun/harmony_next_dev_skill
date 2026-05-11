@@ -1,0 +1,32 @@
+# 自定义.hvigor目录路径
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-path_
+
+launchctl setenv HVIGOR_USER_HOME /Users/xx #本处路径请替换为.hvigor目录的绝对路径
+
+该设置方式在重启电脑后将失效。
+
+重启不失效的设置方式：
+说明
+
+在macOS上设置系统变量的方式因系统版本不同而存在多种差异，以下仅为在macOS上为DevEco Studio设置系统变量的一种示例，具体设置方式以系统版本为准。
+
+在/etc/launchd.conf（若该文件不存在，可自行创建）中添加如下内容。
+
+setenv HVIGOR_USER_HOME /Users/xx #本处路径请替换为.hvigor目录的绝对路径
+
+设置完成后，重启电脑后才可生效。
+
+Linux环境变量设置方法：
+
+打开终端工具，执行以下命令。
+
+vim ~/.bashrc
+添加HVIGOR_USER_HOME环境变量。
+export HVIGOR_USER_HOME=/home/xx  #本处路径请替换为.hvigor目录的绝对路径
+
+保存并关闭文件，使用source命令重新加载.bashrc配置文件。
+
+source ~/.bashrc
+HAP唯一性校验逻辑
+定制构建

@@ -1,0 +1,232 @@
+# 发送语音播报消息
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-send-extend-noti_
+
+****.eyJh*****iJodHR--***.QRod*****4Gp---****
+push-type: 2
+
+
+// Request Body
+{
+  "payload": {
+    "extraData": "{\"title\":\"replace title\",\"text\":\"replace text\"}",
+    "notification": {
+      "category": "PLAY_VOICE",
+      "title": "通知标题",
+      "body": "通知内容",
+      "clickAction": {
+        "actionType": 0
+      },
+      "notifyId": 12345
+    }
+  },
+  "target": {
+    "token": ["MAMzLg**********lPW"]
+  },
+  "pushOptions": {
+    "testMessage": true,
+    "ttl": 86400
+  }
+}
+
+[projectId]：项目ID，登录AppGallery Connect网站，选择“开发与服务”，在项目列表中选择对应的项目，左侧导航栏选择“项目设置”，在该页面获取。
+
+Authorization：JWT格式字符串，可参见Authorization获取。
+
+push-type：2，表示语音播报场景。
+
+category：消息自分类类别，当前支持设置为PLAY_VOICE。
+
+actionType：0表示点击消息打开应用首页。
+
+token：Push Token，可参见获取Push Token获取。
+
+extraData：语音播报场景可携带的额外数据，字符串类型。详情参见ExtensionPayload 语音播报消息。extraData数据获取请参考示例代码。
+
+testMessage：（选填）测试消息标识，true表示测试消息。每个项目每天限制发送1000条测试消息，单次推送可发送Token数不超过10个。详情请参见testMessage。
+
+ttl：（选填）消息缓存时间，详见ttl。
+
+notifyId：（选填）自定义消息标识字段。不携带或者设置-1时，Push Kit自动为每条消息生成一个唯一标识；不同的通知消息可以拥有相同的notifyId，实现新消息覆盖旧消息功能。仅支持数字，范围 [0, 2147483647]，若要用于消息撤回则必填。详情请参见notifyId。
+
+image：（选填）通知右侧大图标URL，URL使用的协议必须是HTTPS协议。
+
+说明
+
+Push Kit禁止推送包含敏感信息的图片。
+
+应用服务端调用REST API推送消息后，若应用进程在后台，Push Kit会将通知消息内容传递给通知扩展进程，并返回特定的消息内容（例如title、body等）后，通知栏将弹出通知提醒。实现步骤如下：
+
+在项目工程的src/main/module.json5文件的extensionAbilities模块中配置RemoteNotificationExtAbility的type和actions信息（定义该type和actions的ExtensionAbility有且只能有一个，配置如下，若同时添加uris参数，则uris内容需为空）：
+
+"extensionAbilities": [
+  {
+    "name": "RemoteNotificationExtAbility",
+    "type": "remoteNotification",
+    "srcEntry": "./ets/entryability/RemoteNotificationExtAbility.ets",
+    "description": "RemoteNotificationExtAbility test",
+    "exported": false,
+    "skills": [
+      // 新增一个独立的skill对象，配置actions参数
+      {
+        "actions": ["action.hms.push.extension.remotenotification"]
+      }
+    ]
+  }
+]
+type：固定值为remoteNotification，表示通知扩展的ExtensionAbility类型。
+actions：固定值为action.hms.push.extension.remotenotification，用于接收语音播报消息。
+
+在您的工程内创建一个ExtensionAbility类型的组件并且继承RemoteNotificationExtensionAbility，完成onReceiveMessage()方法的覆写，在此方法中进行数据接收及业务处理。代码示例如下：
+
+// 文件路径: src/main/ets/entryability/RemoteNotificationExtAbility.ets
+import { pushCommon, RemoteNotificationExtensionAbility } from '@kit.PushKit';
+import { image } from '@kit.ImageKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { resourceManager } from '@kit.LocalizationKit';
+import { common } from '@kit.AbilityKit';
+
+
+export default class RemoteNotificationExtAbility extends RemoteNotificationExtensionAbility {
+  async onReceiveMessage(remoteNotificationInfo: pushCommon.RemoteNotificationInfo): Promise<pushCommon.RemoteNotificationContent> {
+    hilog.info(0x0000, 'testTag', 'RemoteNotificationExtAbility onReceiveMessage, remoteNotificationInfo');
+
+
+    // Read the pixel map object
+    const resourceMgr: resourceManager.ResourceManager = (this.context as common.UIExtensionContext).resourceManager;
+    let fileData: Uint8Array = new Uint8Array(0);
+    try {
+      fileData = await resourceMgr.getMediaContent($r('app.media.startIcon').id);
+    } catch (e) {
+      hilog.error(0x0000, 'testTag', 'Failed to get media content: %{public}d %{public}s', e.code, e.message);
+    }
+    const buffer = fileData.buffer;
+    const imageSource: image.ImageSource = image.createImageSource(buffer as ArrayBuffer);
+    const pixelMap: image.PixelMap = await imageSource.createPixelMap();
+    if (pixelMap) {
+      pixelMap.getImageInfo((err, imageInfo) => {
+        if (imageInfo) {
+          hilog.info(0x0000, 'testTag', `imageInfo ${imageInfo.size.width} * ${imageInfo.size.height}`);
+        }
+      });
+    }
+
+
+    // 应用自行实现语音播报的逻辑
+    this.textToSpeech();
+
+
+    // Return the display message content.
+    return {
+      title: 'Default replace title.',
+      text: 'Default replace text.',
+      badgeNumber: 1,
+      setBadgeNumber: 2,
+      overlayIcon: pixelMap,
+      wantAgent: {
+        abilityName: 'DemoAbility',
+        parameters: {
+          key: 'Default value'
+        }
+      }
+    }
+  }
+
+
+  textToSpeech(): void {
+    // Perform the text-to-speech task.
+  }
+
+
+  onDestroy(): void {
+    hilog.info(0x0000, 'testTag', 'RemoteNotificationExtAbility onDestroy.');
+  }
+}
+
+函数的返回值用于替换最终展示在终端的通知，title和text代表您要展示的通知标题与通知内容。
+
+badgeNumber字段为展示通知时增加的角标数量，setBadgeNumber字段为展示通知时显示的角标数量，两者同时返回时，setBadgeNumber优先于badgeNumber。详情请参见RemoteNotificationContent。
+
+overlayIcon字段为展示通知时的叠加图标。详情请参见RemoteNotificationContent。
+
+wantAgent.abilityName字段为需要替换的点击拉起的落地页abilityName（例如DemoAbility），DemoAbility需要您自行适配开发。详情请参见RemoteWantAgent。
+
+wantAgent.parameters字段表示传递给应用的数据。详情请参见RemoteWantAgent。
+
+说明
+
+语音播报的功能可在代码示例中的textToSpeech()方法中实现。
+
+您可参考以下3种Kit能力实现语音播报：
+
+文本转语音 Core Speech Kit（基础语音服务）。
+
+媒体服务 Media Kit（媒体服务）。
+
+音频播放 Audio Kit（音频服务）。
+
+应用服务端调用REST API推送消息后，若应用进程在前台，通知栏将不会弹出通知提醒。实现步骤如下：
+
+在项目模块的src/main/module.json5文件的abilities模块中（以PushMessageAbility为例）配置skills标签的actions属性内容为action.ohos.push.listener（有且只能有一个ability定义该action，若同时添加uris参数，则uris内容需为空）：
+
+{
+  "name": "PushMessageAbility",
+  "srcEntry": "./ets/abilities/PushMessageAbility.ets",
+  "launchType": "singleton",
+  "startWindowIcon": "$media:startIcon",
+  "startWindowBackground": "$color:start_window_background",
+  "exported": false,
+  "skills": [
+    // 保持现有skill对象不变
+    {
+      "actions": [
+        "com.app.action"
+      ]
+    },
+    // 新增一个独立的skill对象，配置actions参数
+    {
+      "actions": [
+        "action.ohos.push.listener"
+      ]
+    }
+  ]
+}
+
+在客户端项目中现有的UIAbility类的onCreate()中（以PushMessageAbility为例），通过receiveMessage()方法传入PushType为"IM"获取语音播报消息，用于应用在前台时接收语音播报消息，示例代码如下：
+
+// 文件路径: src/main/ets/abilities/PushMessageAbility.ets
+import { UIAbility } from '@kit.AbilityKit';
+import { pushService } from '@kit.PushKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+
+/**
+ * 此处以PushMessageAbility为例，用于应用在前台时接收语音播报消息
+ */
+export default class PushMessageAbility extends UIAbility {
+  onCreate(): void {
+    try {
+      // receiveMessage中的参数固定为IM
+      pushService.receiveMessage('IM', this, (payload) => {
+        try {
+          // 获取服务端传递的数据
+          const data: string = payload.data;
+          // TODO：业务自行处理
+          hilog.info(0x0000, 'testTag', 'Succeeded in getting notification,data=%{public}s',
+            JSON.stringify(JSON.parse(data)?.notification));
+        } catch (e) {
+          let errRes: BusinessError = e as BusinessError;
+          hilog.error(0x0000, 'testTag', 'Failed to process data: %{public}d %{public}s',
+            errRes.code, errRes.message);
+        }
+      });
+    } catch (err) {
+      let e: BusinessError = err as BusinessError;
+      hilog.error(0x0000, 'testTag', 'Failed to get message: %{public}d %{public}s', e.code,
+        e.message);
+    }
+  }
+}
+推送语音播报消息
+撤回语音播报消息

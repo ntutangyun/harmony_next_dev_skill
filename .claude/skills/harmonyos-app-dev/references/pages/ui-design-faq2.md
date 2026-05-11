@@ -1,0 +1,51 @@
+# 401 参数检查失败的可能原因和解决办法
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-faq2_
+
+Parameter error. The value of layeredDrawableDescriptor is incorrect.
+
+Parameter error. The value of size is incorrect.
+
+Parameter error. The value of hasBorder is incorrect.
+
+Parameter error. The value of pixelMap is incorrect.
+
+Parameter error. The value of mask is incorrect.
+
+Parameter error. The value of icons is incorrect.
+
+Parameter error. The value of parallelNumber is incorrect.
+
+Parameter error. The number of parameters is incorrect.
+
+Parameter error. The type of ttf resource is error, the type must be resource.
+
+Parameter error. The type of json resource is error, the type must be resource.
+
+Parameter error. The ttf resource is null.
+
+Parameter error. The json resource is null.
+
+Parameter error. Load ttf resource failed.
+
+Parameter error. Load json resource failed.
+
+Parameter error. The ttf resource size is zero.
+
+Parameter error. The json resource size is zero.
+
+Parameter error. The json resource schema is incorrect.
+
+可能原因
+
+必选参数没有传入，或者参数类型错误。
+
+解决措施
+
+请检查必选参数是否传入，或者传的参数类型是否错误。
+
+请检查传入的资源是否为空。
+
+请检查注册自定义的Symbol资源时传入的JSON资源格式是否正确。
+
+怎么获取layeredDrawableDescriptor对象信息？

@@ -1,0 +1,18 @@
+# 弱网感知判决 (C/C++)
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-weaksignaljudge-c_
+
+根据网络场景识别信息，如NetworkBoost_Scene(NB_SCENE_WEAK_SIGNAL/NB_SCENE_CONGESTION)，系统直接判决为弱网。
+
+监听系统预测判决：
+
+根据网络场景识别中的弱信号预测信息，如NetworkBoost_WeakSignalPrediction，系统预测即将进入弱网区域。
+
+应用自定义判决：
+
+根据网络质量评估信息，如NetworkBoost_NetworkQos(linkUpBandwidth/linkDownBandwidth/rttMs/linkUpBufferDelayMs/linkUpBufferCongestionPercent)，应用自定义门限来判决为弱网。
+
+应用可根据自身业务特点，选择其中一种或多种使用。
+
+应用传输体验反馈 (C/C++)
+连接迁移(多网切换) (C/C++)

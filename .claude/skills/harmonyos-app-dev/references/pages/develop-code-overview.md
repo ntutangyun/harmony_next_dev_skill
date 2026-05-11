@@ -1,0 +1,8 @@
+# 代码开发概述
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/develop-code-overview_
+
+HarmonyOS NDK提供多个开放能力库，如图形图像、内存管理、设备管理等，供开发者实现代码逻辑；同时提供业界标准库，如libc标准库、标准C++库、Node-API等。
+
+代码开发
+C/C++标准库

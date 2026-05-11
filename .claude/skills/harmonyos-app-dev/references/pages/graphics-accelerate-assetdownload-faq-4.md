@@ -1,0 +1,10 @@
+# 游戏资源加速ExtensionAbility方法中使用static静态变量为什么不生效
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-assetdownload-faq-4_
+
+资源加速ExtensionAbility的进程可能会切换，避免在ExtensionAbility方法使用应用自身的上下文变量，例如类成员变量、全局static静态变量。
+
+若想在资源加速ExtensionAbility方法中共享变量，应使用数据持久化技术，在不同方法中共享变量。
+
+集成了游戏资源加速ExtensionAbility方法，未配置网络权限，导致功能未生效
+如何解析华为CDN场景下manifestUrl对应的xml文件

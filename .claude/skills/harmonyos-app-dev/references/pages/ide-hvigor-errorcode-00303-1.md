@@ -1,0 +1,222 @@
+# 配置错误码
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-errorcode-00303-1_
+
+00303027 hvigor-config.json5和oh-package.json5的modelVersion不一致
+00303028 Hvigor的modelVersion不支持
+00303029 oh-package.json5的modelVersion不支持
+00303030 OpenHarmony工程需要在product中配置compileSdkVersion
+00303031 compileSdkVersion不支持
+00303032 compatibleSdkVersion不支持
+00303033 compatibleSdkVersion未配置
+00303034 compileSdkVersion未配置
+00303035 FA模型项目仅支持API 8及以上版本
+00303036 Stage模型项目仅支持API 9及以上版本
+00303037 API版本与设备版本不兼容
+00303038 Schema校验失败
+00303039 name配置重复
+00303040 找不到默认product
+00303041 不允许同时配置标准系统设备和轻量系统设备
+00303042 设备类型不能包含多个轻量系统设备
+00303043 FA模型工程不支持配置轻量系统设备
+00303044 form_config.json文件中只能配置一个默认卡片
+00303045 updateDuration和scheduleUpdateTime字段不能同时为空
+00303046 parameterFile对应的key不可用
+00303047 parameterFile中的key不符合校验规则
+00303048 parameterFile中的版本必须符合semver规范
+00303050 main字段的值必须是.ets、.ts、.js文件
+00303051 workers字段的值必须是.ets、.ts、.js文件
+00303052 API9及以上的LiteWearable工程仅支持JS
+00303053 build-profile.json5/hvigorconfig.ts和module.json5中的模块名称需要保持一致
+00303054 types字段仅支持在ArkTS工程中配置
+00303055 types字段的文件不需要.d.ets或.d.ts后缀
+00303056 types字段的文件后缀无效
+00303057 FA模型工程不支持配置dynamicDependencies
+00303058 defaultDimension的值无效
+00303059 权限名称重复
+00303060 为多设备配置的SystemCapability的交集为空
+00303061 自定义SystemCapability不合法
+00303062 target的deviceType无效
+00303065 target和product的runtimeOS不一致
+00303071 target对应的product不存在
+00303072 ohosTest target被关联到某个product
+00303073 存在未知target
+00303074 签名材料和工程配置的bundleName不一致
+00303075 version字段必须为字符串
+00303076 name字段必须为字符串
+00303077 当前模块配置的deviceType与entryModules的deviceType不存在交集
+00303078 config.json中不允许js和abilities存在name字段相同的配置
+00303082 找不到对应的SDK
+00303083 SDK版本号配置错误
+00303087 不允许动态导入工程外模块
+00303088 动态导入文件后缀不正确
+00303089 不允许跨模块动态导入
+00303090 动态导入配置无效
+00303091 srcEntry格式错误
+00303092 卡片配置文件缺少src字段
+00303093 卡片src的值不在模块下
+00303094 找不到mainElement字段
+00303096 mock-config.json5文件中的路径无效
+00303098 app.json5中configuration字段无效
+00303099 路径不存在
+00303100 general字段错误
+00303101 general字段配置的设备类型不一致
+00303104 routerMap配置中的pageSourceFile字段格式无效
+00303105 srcLanguage字段没有定义
+00303106 signingConfigs中没有找到签名材料
+00303107 签名材料无效
+00303108 签名配置的type字段和runtimeOS不匹配
+00303110 找不到pages字段
+00303111 buildProfileFields的值仅支持number、string、boolean类型
+00303112 当useNormalizedOHMUrl不为true时，不支持字节码har
+00303113 externalNativeOptions下的path字段的值不能为空
+00303114 HarmonyOS工程不支持armeabi-v7a
+00303115 armeabi-v7a不能是OpenHarmony工程的唯一配置
+00303116 签名材料中的storePassword或keyPassword字段的值长度小于32
+00303117 签名材料中的storePassword或keyPassword字段的值长度为偶数
+00303118 签名材料数据错误
+00303119 签名材料无效
+00303120 签名失败：签名材料为空或不是文件夹
+00303121 签名材料错误
+00303127 apPath后缀无效
+00303128 minAPIVersion字段未配置
+00303130 找不到指定的product
+00303136 插件的ID重复
+00303137 用户目录下不存在.npmrc文件
+00303138 模块名称不能为空字符串
+00303139 hook必须是beforeNodeEvaluate或afterNodeEvaluate
+00303140 找不到节点
+00303143 找不到任务
+00303144 任务路径不是有效的值
+00303145 任务名重复
+00303146 oh-package.json5中version字段格式不符合要求
+00303147 bundleType为shared时，模块类型也必须是shared
+00303148 找不到hvigorfile.ts
+00303149 通过文件路径找不到文件
+00303153 json5文件路径不存在
+00303155 路径不是文件路径
+00303157 config.json文件中ability名称重复
+00303158 config.json文件中卡片名称重复
+00303159 FA模型不支持修改XXX文件
+00303160 插件配置只能使用相对路径
+00303161 插件路径不存在
+00303164 插件文件必须以.ts结尾
+00303166 copyFrom存在循环依赖
+00303168 SDK组件缺失
+00303169 har模块中找不到对应的target
+00303170 hsp模块中找不到对应的target
+00303172 transformLib的值不是文件
+00303173 在Windows上transformLib的值需要是.dll文件
+00303179 metadata.resource必须是字符串
+00303181 metadata.resource存在无法解析的符号
+00303183 版本号不是string类型
+00303184 依赖值不是string类型
+00303185 不能动态新增或删除products
+00303186 不能重命名products或runtimeOS
+00303188 moduleType值无效
+00303189 runtimeOS值无效
+00303190 Page Ability缺少对应的JS组件
+00303191 FA模型Ability名称不存在
+00303192 FA模型项目中feature模块必须配置entryModules
+00303193 FA模型中找不到模块的deviceType配置
+00303194 Stage模型中找不到模块的deviceTypes配置
+00303195 无法获取模块信息
+00303196 无法获取模块类型
+00303197 缺少或无效的parameterFile配置
+00303198 build-profile.json5文件不符合schema规范
+00303199 build-profile.json5中找不到product信息
+00303200 模块名称无效
+00303201 模块target不存在
+00303202 entry模块缺失
+00303203 命令行中的构建模式没有在buildModeSet中定义
+00303204 buildModeBinder中的构建模式没有在buildModeSet中定义
+00303205 buildModeBinder中的target未定义
+00303206 buildModeBinder中的构建选项未定义
+00303207 找不到ArkUI-X SDK目录
+00303208 找不到SDK目录
+00303209 FA的entry模块缺少Target
+00303210 Arkdata JSON文件名称相同
+00303211 模块缺少ohosTest target
+00303214 目标设备类型不一致
+00303215 依赖名称与包名不一致
+00303216 parameterFile文件格式无法识别
+00303217 环境路径无效
+00303218 配置user_grant权限必须有reason和usedScene属性
+00303219 routerMap对象名称重复
+00303220 获取模块类型失败
+00303221 权限未定义
+00303222 reason属性是必需的
+00303223 FormExtensionAbility中的metadata字段不能为空或为空数组
+00303224 FormExtensionAbility中的metadata必须包含ohos.extension.form
+00303225 “Module-Abilities”对象的名称重复
+00303226 卡片名称无效
+00303227 缺失“string”属性
+00303228 version字段不允许使用tag标签
+00303229 找不到模块名
+00303230 找不到模块的srcPath
+00303231 srcPath属性值不是相对路径
+00303232 设置任务依赖时找不到模块
+00303234 找不到路径
+00303236 hvigor-config.json5文件中存在语法错误
+00303237 hvigor-config.json5中ohos.align.target的值必须是字符串类型
+00303238 ability名称无效
+00303242 签名材料校验失败
+00303243 ability名称无效
+00303244 ability名称无效
+00303245 ability名称无效
+00303249 任务之间存在循环依赖关系
+00303250 FA模型工程不支持preloadSystemSo
+00303251 preloadSystemSo与ohos.arkCompile.singleFileEmit不能同时开启
+00303252 找不到模块
+00303253 formExtensionModule配置的模块类型错误
+00303254 独立卡片包关联的模块错误
+00303255 共包卡片和独立卡片包不能同时存在
+00303256 独立卡片包的library模块只允许依赖HAR模块
+00303257 deliveryWithInstall未配置为true
+00303258 独立卡片包不支持在低于API 20的工程中使用
+00303259 formWidgetModule配置的模块类型错误
+00303260 合并后的共享配置文件的uri重复
+00303261 当前模块的共享配置文件的uri重复
+00303262 FA模型工程不支持expandImportPath
+00303263 expandImportPath.exclude配置不合法
+00303265 sourceRoots文件路径无效
+00303267 找不到product XXX
+00303268 hspA和hspB共同依赖的har包需要配置在hap的依赖中
+00303269 FA模型工程不支持deduplicateHar配置
+00303270 compatibleSdkVersion大于或等于21时才能启用deduplicateHar
+00303271 idDefinedFilePath必须是实际存在的json5文件
+00303272 当deduplicateHar为true时必须配置idDefinedFilePath字段
+00303273 deduplicateHar字段仅支持一个product中包含一个HAP的场景
+00303274 当deduplicateHar为true时, libIsolation不能配置为true
+00303275 当deduplicateHar为true时, useNormalizedOHMUrl必须配置为true
+00303276 构建定制化har时，当前模块必须为字节码har
+00303277 构建定制化har时，ohos.compile.lib.entryfile不能设置为true
+00303278 模块下的hvigorfile.ts中获取不到插件
+00303280 开启binxo时，确保-DOHOS_ENABLE_HWASAN和-DOHOS_ENABLE_BINXO参数设置为ON
+00303282 useNormalizedOHMUrl为true时才能配置oh-exports
+00303283 仅支持模块内有效的相对路径
+00303284 仅支持目录或者以ets/ts/js为后缀的文件
+00303285 hvigor命令行参数buildVersion无效
+00303286 executableBinaryPaths-path的值不是文件
+00303288 executableBinaryPaths-path的值不在libs目录下
+展开章节
+00303002 找不到某个任务对应的模块
+
+错误信息
+
+Cannot find hvigor node in XXX with task YYY.
+
+错误描述
+
+找不到任务YYY对应的模块XXX。
+
+可能原因
+
+模块名称配置错误。
+
+处理步骤
+
+确保hvigorfile.ts中的模块名称配置正确。
+
+脚本错误码
+资源缺失错误码

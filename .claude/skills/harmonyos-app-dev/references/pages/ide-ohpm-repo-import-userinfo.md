@@ -1,0 +1,33 @@
+# ohpm
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-repo-import-userinfo_
+
+必须在import_userinfo命令后面配置<zip_file>参数，指定执行export_userinfo 命令导出的zip文件。
+
+选项
+clean-db
+默认值：false
+类型：Boolean
+
+可以在import_userinfo命令后面配置--clean-db参数，指定在导入数据前先清空DB数据。
+
+示例
+
+执行以下命令：
+
+ohpm-repo import_userinfo <zip_file> --clean-db
+
+结果示例：
+
+PS D:\> ohpm-repo import_userinfo D:\export_userInfo_1754738056722.zip --clean-db
+[2025-08-09T19:19:31.623] [INFO] default - verifying the validity of the meta crypto component.
+[2025-08-09T19:19:31.633] [INFO] default - the meta crypto component is verified successfully.
+[2025-08-09T19:19:31.639] [INFO] default - initialize "file database" successfully.
+[2025-08-09T19:19:31.660] [INFO] default - all database data has been cleaned.
+[2025-08-09T19:19:31.660] [INFO] default - importing data in the 'user.json' file.
+...
+[2025-08-09T19:19:31.673] [INFO] default - importing data in the 'system_security.json' file.
+[2025-08-09T19:19:31.674] [INFO] default - data import finished.
+
+ohpm-repo export_userinfo
+ohpm-repo export_pkgPermission

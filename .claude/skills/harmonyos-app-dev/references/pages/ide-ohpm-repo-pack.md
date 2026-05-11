@@ -1,0 +1,23 @@
+# ohpm
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-repo-pack_
+
+如果数据存储db模块使用的是filedb，则命令打包conf、db和meta目录内容，且在命令执行过程中，会先将ohpm-repo服务设置为只读模式，等打包完成以后，再将ohpm-repo服务重置为读写模式。
+打包产物可通过ohpm-repo restore命令自动解压至<deploy_root>目录。
+参数
+<deploy_root>
+类型： String
+必填参数
+
+必须在pack命令后面配置<deploy_root>参数，指定待打包的ohpm-repo私仓部署目录。
+
+示例
+
+执行以下命令：
+
+ohpm-repo pack D:\ohpm-repo
+
+结果示例：
+
+ohpm-repo encrypt_password
+ohpm-repo deploy

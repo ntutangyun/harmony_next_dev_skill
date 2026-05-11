@@ -1,0 +1,27 @@
+# Agent Framework Kit简介
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hmaf-introduction_
+
+应用在小艺开放平台上线智能体后，向用户提供应用+智能体组合的服务，让用户可以在适当的场景下通过Agent Framework Kit的UI控件能力主动拉起智能体。
+
+Agent Framework Kit主要包含Function组件。
+
+Kit场景介绍
+
+Agent Framework Kit 通过标准化组件，满足应用在不同场景、不同界面下的智能体入口诉求。
+
+约束与限制
+支持的设备
+
+当前支持Phone和Tablet设备。
+
+支持的国家/地区
+
+仅适用于中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+
+模拟器支持情况
+
+本Kit暂不支持模拟器。
+
+Agent Framework Kit（智能体框架服务）
+通过Function组件拉起智能体

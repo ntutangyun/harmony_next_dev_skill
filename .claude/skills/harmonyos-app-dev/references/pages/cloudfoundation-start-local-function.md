@@ -1,0 +1,18 @@
+# 启动本地云函数
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-start-local-function_
+
+开发云函数：使用DevEco Studio在端云一体化云侧工程下创建函数、开发函数、调试函数（通过本地调用方式调试函数）。
+
+调试函数过程中，如果下方通知栏的“cloudfunctions”窗口显示“Cloud Functions loaded successfully”，则表示本地云函数启动成功，将生成本地函数的Function URI。请记录下该Function URI的域名和端口信息，例如下图中的http://localhost:18090，后续调用本地云函数时需要使用这些信息。
+
+注意
+
+由于本地云函数和部署至云端的函数获取请求体的方式不同，开发本地云函数时必须按照如下示例获取请求体，否则将无法成功获取请求体：
+
+let body = event.body ? JSON.parse(event.body) : event;
+
+完整示例代码请参见函数示例。
+
+（可选）通过端云一体化开发工程调试本地云函数
+调用本地云函数

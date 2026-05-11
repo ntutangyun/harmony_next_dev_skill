@@ -1,0 +1,9 @@
+# GetInstanceStart
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-getinstancestart_
+
+AnchorInstanceInfo anchor_0(0, 10); // IR定义的第1个输入是动态输入，且有10个实际输入
+AnchorInstanceInfo anchor_1(10, 1); // IR定义的第2个输入是必选输入，且有1个实际输入，排在实际输入的第10个
+auto input_num_1 = anchor_1.GetInstanceStart(); // input_num_1 = 10
+GetInstanceNum
+SetInstanceStart

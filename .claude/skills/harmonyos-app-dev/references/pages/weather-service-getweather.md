@@ -1,0 +1,67 @@
+# 获取天气数据
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/weather-service-getweather_
+
+本kit支持Phone、Tablet、PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable设备，从6.1.0(23)版本开始，新增支持TV设备。
+
+（可选）获取当前位置经纬度
+
+当开发者需要查询当前位置的天气数据时，需要先申请权限，并且获取当前位置的经纬度信息。获取当前位置的经纬度信息方法如下：
+
+导入模块。
+
+import { geoLocationManager } from '@kit.LocationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+调用getCurrentLocation，获取经纬度。
+
+geoLocationManager.getCurrentLocation().then((result) => {
+  console.info('current location latitude: ' + result.latitude);
+  console.info('current location longitude: ' + result.longitude);
+}).catch((err: BusinessError ) => {
+  console.error(`getCurrentLocation failed. Code: ${err.code}, message: ${err.message}`);
+});
+查询天气数据
+
+Weather Service Kit依赖开发者提供的经纬度数据，返回格点天气数据。
+
+导入模块。
+
+import { weatherService } from '@kit.WeatherServiceKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+创建请求对象。
+
+location：使用当前位置的数据，或者填入查询目的地的经纬度。
+limitedDatasets：为可选字段，传入一个数组，表示请求有限的数据集，取值范围参考weatherService.Dataset。
+let request: weatherService.WeatherRequest = {
+  location: {
+    latitude: 22.62,
+    longitude: 114.07
+  },
+  limitedDatasets: [weatherService.Dataset.CURRENT, weatherService.Dataset.ALERTS]
+};
+说明
+
+如果limitedDatasets参数不传值，或者传入的数组为空，则默认返回Weather Service Kit支持的所有数据。根据实际需要的天气数据设置limitedDatasets，可以大幅降低接口请求时延。
+
+请求数据。
+
+try {
+  let weather = await weatherService.getWeather(request);
+  if (weather.current) {
+    console.info('getWeather current temperature: ' + weather.current.temperature);
+  }
+  if (weather.alerts?.length) {
+    console.info('getWeather alert: ' + weather.alerts[0].title);
+  }
+} catch (err) {
+  err = err as BusinessError;
+  console.error(`getWeather failed. Code: ${err.code}, message: ${err.message}`);
+}
+说明
+
+getWeather接口的使用依赖当前Ability的Context，如果开发者在无法通过getHostContext()接口获取到Context的环境中请求天气数据，例如使用worker或者taskpool的子线程场景，请使用weatherService.getWeatherWithContext(context, request)方法并提供Ability的Context信息。
+
+开发准备
+Weather Service Kit 常见问题

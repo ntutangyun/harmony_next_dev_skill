@@ -1,0 +1,34 @@
+# 迁移模式设置 (C/C++)
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-reporthandovermode-c_
+
+应用可通过迁移模式设置接口变更连接迁移模式，包括委托模式（由系统发起连接迁移）和自主模式（由应用发起连接迁移）。应用未调用SetHandoverMode则默认为委托模式，应用可以通过该接口禁止系统发起连接迁移。在某些场景下，比如该应用切换到后台时，依旧有可能由系统触发切换。
+
+接口说明
+
+具体API说明详见接口文档。
+
+接口名	描述
+int32_t HMS_NetworkBoost_SetHandoverMode(NetworkBoost_HandoverMode mode)	应用设置迁移模式，默认为委托模式。
+开发步骤
+
+导入Network Boost Kit模块。
+
+#include "NetworkBoostKit/network_boost_handover.h"
+#include <cstdio>
+
+CMakeLists.txt中添加以下lib，具体请见C API开发准备。
+
+libnetwork_boost.so
+
+调用SetHandoverMode接口，设置为自主模式，禁止系统发起连接迁移。
+
+int32_t SetHandoverMode()
+{
+    NetworkBoost_HandoverMode mode = NB_MODE_DISCRETION;
+    int32_t ret = HMS_NetworkBoost_SetHandoverMode(mode);
+    printf("设置连接迁移模式结果: %d\n", ret);
+    return ret;
+}
+连接迁移通知 (C/C++)
+连接迁移(多网并发)（C/C++）

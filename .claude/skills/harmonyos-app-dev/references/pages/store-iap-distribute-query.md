@@ -1,0 +1,77 @@
+# 展示数字商品
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap-distribute-query_
+
+数字商品服务为接入消耗型/非消耗型、非续期订阅商品、自动续期订阅商品购买能力的应用提供向用户展示可供购买的商品信息列表的能力。
+
+前提条件
+
+当前登录的华为账号所在服务地支持数字商品服务。
+
+开发步骤
+
+判断当前登录的华为账号所在的服务地是否支持数字商品服务应用内支付。
+
+在使用应用内支付之前，应用需要向IAP Kit发送queryEnvironmentStatus请求，以此判断用户当前登录的华为账号所在服务地是否在IAP Kit支持结算的国家/地区中。
+
+说明
+
+当前IAP Kit支持结算的国家/地区仅包括中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+
+import { iap } from '@kit.IAPKit';
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { UIContext } from '@kit.ArkUI'
+
+
+class QueryEnvironmentStatus {
+  queryEnvironmentStatus() {
+    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+    iap.queryEnvironmentStatus(context).then(() => {
+      // 请求成功
+      console.info('Succeeded in querying environment status.');
+    }).catch((err: BusinessError) => {
+      // 请求失败
+      console.error(`Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+}
+
+查询商品信息。
+
+通过queryProducts来获取在AppGallery Connect上配置的商品信息。发起请求时，需在请求参数QueryProductsParameter中携带相关的商品ID，并根据实际配置指定其productType，订阅型商品指定其productType为iap.ProductType.AUTORENEWABLE。
+
+当接口请求成功时，IAP Kit将返回商品信息Product的列表。 应用可以使用Product包含的商品价格、名称和描述等信息，向用户展示可供购买的商品列表。
+
+说明
+
+queryProducts每次只能查询一种类型的商品，单次查询请勿超过200条。
+
+import { iap } from '@kit.IAPKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import { UIContext } from '@kit.ArkUI'
+class Queryproducts {
+  queryProducts() {
+    const queryProductParam: iap.QueryProductsParameter = {
+      // iap.ProductType.CONSUMABLE：消耗型商品;
+      // iap.ProductType.NONCONSUMABLE：非消耗型商品;
+      // productType: iap.ProductType.AUTORENEWABLE;订阅型商品
+      productType: iap.ProductType.CONSUMABLE,
+      // 查询的商品必须是开发者在AppGallery Connect网站配置的商品
+      productIds: ['ohos_consume_001']
+    };
+    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+    iap.queryProducts(context, queryProductParam).then((result) => {
+      // 请求成功
+      console.info('Succeeded in querying products.');
+      // 展示商品信息
+      // ...
+    }).catch((err: BusinessError) => {
+      // 请求失败
+      console.error(`Failed to query products. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+}
+应用内分发数字商品
+购买数字商品

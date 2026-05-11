@@ -1,0 +1,8 @@
+# L2 Cache
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-basic-l2cache_
+
+KirinX90/Kirin9030处理器不支持L2 Cache，GlobalTensor::SetL2CacheHint接口不生效。算子代码无需进行修改。只影响性能，不影响功能。
+
+基础API迁移指导
+数据类型

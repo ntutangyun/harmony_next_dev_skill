@@ -1,0 +1,8 @@
+# 未成年人模式开启后USB断连如何解决
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-faq-13_
+
+如开发者重新开启USB调试开关后，发现DevEco Studio工具上hilog日志未恢复到断连之前，请执行“hdc shell hilog -G 16M”来扩大hilog日志缓存区，若hilog日志仍无法完全展示，可取出hilog日志本地查看。更多命令请参见hilog。
+
+ID Token的使用场景与使用方法
+订阅到系统未成年人模式开启了，这个时候应用要怎么处理

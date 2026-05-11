@@ -1,0 +1,12 @@
+# 常见问题
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-model-size-reduction-faqs_
+
+如果模型定义了多个输入，开发者需要为每个输入节点各准备一份IMAGE或BINARY模式的校准集。如果不同节点所需的输入数据存在对应关系，推荐使用BINARY模式，以免由于读取图片的顺序不同导致非预期行为。在填写量化配置文件时，需要定义与输入节点个数相同的预处理参数，预处理参数的顺序则需要与开发者运行工具时指定的input_shape顺序一致。
+
+Unsupported image format! Unsupported image: xxx问题怎么处理？
+
+图片校准集中放入了不支持的图片格式的文件，删除该文件即可。请注意该文件夹下的隐藏文件。
+
+模型轻量化示例
+模型收益

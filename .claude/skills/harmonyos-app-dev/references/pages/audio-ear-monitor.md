@@ -1,0 +1,209 @@
+# 实现音频耳返
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-ear-monitor_
+
+通过OHAudio提供OH_AudioStreamBuilder接口，遵循构造器设计模式，构建录制音频流。指定对应的OH_AudioStream_Type, 设置为AUDIOSTREAM_TYPE_CAPTURER。
+
+OH_AudioStreamBuilder* builder;
+OH_AudioStreamBuilder_Create(&builder, AUDIOSTREAM_TYPE_CAPTURER);
+AudioCapture.cpp
+创建音频播放
+
+通过OHAudio提供OH_AudioStreamBuilder接口，遵循构造器设计模式，构建播放音频流。指定对应的OH_AudioStream_Type, AUDIOSTREAM_TYPE_RENDERER。
+
+OH_AudioStreamBuilder* builder;
+OH_AudioStreamBuilder_Create(&builder, AUDIOSTREAM_TYPE_RENDERER);
+AudioCapture.cpp
+设置低时延模式
+
+为了实现更好的耳返功能，需要使得音频从录制到播放保持较低的时延，当设备支持低时延通路时，开发者需要使用低时延模式来进行录制和播放。
+
+在创建音频录制构造器时调用OH_AudioStreamBuilder_SetLatencyMode()设置低时延模式，播放和录制均按如下方式设置为低时延模式。
+
+OH_AudioStream_LatencyMode latencyMode = AUDIOSTREAM_LATENCY_MODE_FAST;
+OH_AudioStreamBuilder_SetLatencyMode(builder, latencyMode);
+AudioCapture.cpp
+
+为实现实时耳返功能，需创建一个公共缓存区用于存储录制的数据，并及时从该缓存区获取数据写入播放构造器。
+
+定义公共缓存和录制、播放函数
+int32_t MyOnReadData_Legacy(
+    OH_AudioCapturer* capturer,
+    void* userData,
+    void* buffer,
+    int32_t length)
+{
+    // 从buffer中取出length长度的录音数据。
+    return 0;
+}
+// ...
+int32_t MyOnWriteData(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    void* buffer,
+    int32_t length)
+{
+    // 从公共缓存buffer中读取数据，并按length长度写入buffer。
+    return 0;
+}
+AudioCapture.cpp
+注意
+
+应用的公共缓存大小不应设置过大，以避免增加耳返时延，影响用户体验。开发者应根据时延要求和抗抖动要求，选择合适的缓存大小，确保用户体验。
+
+设置音频流参数
+
+以录制流参数设置为例：
+
+// 设置音频采样率。
+const int SAMPLING_RATE_48K = 48000;
+OH_AudioStreamBuilder_SetSamplingRate(builder, SAMPLING_RATE_48K);
+// 设置音频声道。
+const int channelCount = 2;
+OH_AudioStreamBuilder_SetChannelCount(builder, channelCount);
+// 设置音频采样格式。
+OH_AudioStreamBuilder_SetSampleFormat(builder, AUDIOSTREAM_SAMPLE_S16LE);
+// 设置音频流的编码类型。
+OH_AudioStreamBuilder_SetEncodingType(builder, AUDIOSTREAM_ENCODING_TYPE_RAW);
+// 设置输入音频流的工作场景。
+OH_AudioStreamBuilder_SetCapturerInfo(builder, AUDIOSTREAM_SOURCE_TYPE_MIC);
+AudioCapture.cpp
+
+对于播放流，除了音频流的工作场景外，其余设置为和录制流相同的参数。
+
+工作场景参数设置如下：
+
+OH_AudioStreamBuilder_SetRendererInfo(builder, AUDIOSTREAM_USAGE_MUSIC);
+AudioCapture.cpp
+设置录制回调函数
+int32_t MyOnReadData_Legacy(
+    OH_AudioCapturer* capturer,
+    void* userData,
+    void* buffer,
+    int32_t length)
+{
+    // 从buffer中取出length长度的录音数据。
+    return 0;
+}
+int32_t MyOnInterruptEvent_Legacy(
+    OH_AudioCapturer* capturer,
+    void* userData,
+    OH_AudioInterrupt_ForceType type,
+    OH_AudioInterrupt_Hint hint)
+{
+    // 根据type和hint表示的音频中断信息，更新录制器状态和界面。
+    return 0;
+}
+
+
+int32_t MyOnStreamEvent_Legacy(
+    OH_AudioCapturer* capturer,
+    void* userData,
+    OH_AudioStream_Event event)
+{
+    // 根据event表示的音频流事件信息，更新录制器状态和界面。
+    return 0;
+}
+
+
+int32_t MyOnError_Legacy(
+    OH_AudioCapturer* capturer,
+    void* userData,
+    OH_AudioStream_Result error)
+{
+    // 根据error表示的音频异常信息，做出相应的处理。
+    return 0;
+}
+// ...
+    OH_AudioCapturer_Callbacks callbacks;
+    // 配置回调函数。
+    callbacks.OH_AudioCapturer_OnReadData = MyOnReadData_Legacy;
+    callbacks.OH_AudioCapturer_OnStreamEvent = MyOnStreamEvent_Legacy;
+    callbacks.OH_AudioCapturer_OnInterruptEvent = MyOnInterruptEvent_Legacy;
+    callbacks.OH_AudioCapturer_OnError = MyOnError_Legacy;
+
+
+    OH_AudioStreamBuilder_SetCapturerCallback(builder, callbacks, nullptr);
+AudioCapture.cpp
+设置播放回调函数
+int32_t MyOnWriteData(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    void* buffer,
+    int32_t length)
+{
+    // 从公共缓存BUFFER中读取数据，并按length长度写入buffer。
+    return 0;
+}
+int32_t MyOnStreamEvent_Renderer(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    OH_AudioStream_Event event)
+{
+    // 根据event表示的音频流事件信息，更新播放器状态和界面。
+    return 0;
+}
+
+
+int32_t MyOnInterruptEvent_Renderer(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    OH_AudioInterrupt_ForceType type,
+    OH_AudioInterrupt_Hint hint)
+{
+    // 根据type和hint表示的音频中断信息，更新播放器状态和界面。
+    return 0;
+}
+
+
+int32_t MyOnError_Renderer(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    OH_AudioStream_Result error)
+{
+    // 根据error表示的音频异常信息，做出相应的处理。
+    return 0;
+}
+// ...
+    OH_AudioRenderer_Callbacks callbacks;
+    
+    // 配置回调函数。
+    callbacks.OH_AudioRenderer_OnWriteData = MyOnWriteData;
+    callbacks.OH_AudioRenderer_OnStreamEvent = MyOnStreamEvent_Renderer;
+    callbacks.OH_AudioRenderer_OnInterruptEvent = MyOnInterruptEvent_Renderer;
+    callbacks.OH_AudioRenderer_OnError = MyOnError_Renderer;
+
+
+    // 设置输出音频流的回调。
+    OH_AudioStreamBuilder_SetRendererCallback(builder, callbacks, nullptr);
+AudioCapture.cpp
+构造录制音频流
+OH_AudioCapturer* audioCapturer;
+OH_AudioStreamBuilder_GenerateCapturer(builder, &audioCapturer);
+AudioCapture.cpp
+构造播放音频流
+OH_AudioRenderer* audioRenderer;
+OH_AudioStreamBuilder_GenerateRenderer(builder, &audioRenderer);
+AudioCapture.cpp
+使用音频流
+
+以录制为例，开发者可以使用以下接口控制音频流的开始、暂停、停止和释放。
+
+注意
+
+在实现耳返功能时，开发者需同时控制录制流和播放流，确保两者同步。
+
+接口	说明
+OH_AudioStream_Result OH_AudioRenderer_Start(OH_AudioRenderer* renderer)	开始播放。
+OH_AudioStream_Result OH_AudioRenderer_Pause(OH_AudioRenderer* renderer)	暂停播放。
+OH_AudioStream_Result OH_AudioRenderer_Stop(OH_AudioRenderer* renderer)	停止播放。
+OH_AudioStream_Result OH_AudioRenderer_Flush(OH_AudioRenderer* renderer)	释放缓存数据。
+OH_AudioStream_Result OH_AudioRenderer_Release(OH_AudioRenderer* renderer)	释放播放实例。
+释放构造器
+
+构造器不再使用时，采用如下方式释放资源。
+
+OH_AudioStreamBuilder_Destroy(builder);
+AudioCapture.cpp
+录音并发策略说明
+实现音频低时延耳返

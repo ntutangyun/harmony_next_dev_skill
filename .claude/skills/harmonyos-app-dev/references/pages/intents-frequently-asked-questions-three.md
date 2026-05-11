@@ -1,0 +1,8 @@
+# 使用意图框架调试助手Agent进行联调时，小艺拉起应用后，出现闪退情况，应该如何处理？
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-frequently-asked-questions-three_
+
+出现此现象时，优先排查接入意图框架的代码是否被混淆。接入意图框架的代码文件不可被混淆。关于混淆的详细内容请参考应用代码混淆。若排查后问题依然存在，请检查应用的业务代码是否有其他异常引发应用闪退。
+
+inputParams报错Value should be one of: "intentName", "domain", "intentVersion", "srcEntry", "uiAbility", "serviceExtension", "uiExtension", "form"如何解决？
+功能一步达场景是否有云侧动态声明词条的方案？

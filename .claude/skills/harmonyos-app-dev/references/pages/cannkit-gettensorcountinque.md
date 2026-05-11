@@ -1,0 +1,15 @@
+# GetTensorCountInQue
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-gettensorcountinque_
+
+// 通过GetTensorCountInQue查询Queue中已入队的Tensor数量，当前通过AllocTensor接口分配了内存，并加入Queue中，num为1。
+AscendC::TPipe pipe;
+AscendC::TQueBind<AscendC::TPosition::VECOUT, AscendC::TPosition::GM, 4> que;
+int num = 4;
+int len = 1024;
+pipe.InitBuffer(que, num, len);
+AscendC::LocalTensor<half> tensor1 = que.AllocTensor<half>();
+que.EnQue(tensor1);// 将tensor加入VECOUT的Queue中
+int32_t numb = que.GetTensorCountInQue();
+HasTensorInQue
+HasIdleBuffer

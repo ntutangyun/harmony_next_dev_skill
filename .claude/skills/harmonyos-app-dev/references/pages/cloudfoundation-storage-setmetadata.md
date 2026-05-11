@@ -1,0 +1,47 @@
+# 设置云侧文件的元数据
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-storage-setmetadata_
+
+支持Phone、Tablet设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持PC/2in1设备。
+
+前提条件
+
+已初始化存储实例。
+
+已上传指定文件至云侧。
+
+操作步骤
+
+调用StorageBucket.setMetadata可以设置云侧文档的元数据信息。
+
+import { cloudStorage } from '@kit.CloudFoundationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+
+let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+
+
+@Component
+export struct testPage {
+  build() {
+  }
+
+
+  // 设置元数据
+  setMetaData() {
+    // 设置云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的元数据信息
+    storageBucket.setMetadata('screenshot/screenshot_20250115_155321.jpg', {
+      customMetadata: {
+        key1: "value1",
+        key2: "value2"
+      }
+    }).then((metadata: cloudStorage.Metadata) => {
+      hilog.info(0x0000, 'testTag', `Succeeded in setting metadata: ${JSON.stringify(metadata)}`);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'testTag', `Failed to set metadata, code: ${err.code}, message: ${err.message}`);
+    })
+  }
+}
+获取云侧文件的元数据
+预加载

@@ -1,0 +1,28 @@
+# 应用文件分享
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/share-app-file_
+
+基于文件选择器(startAbility)的分享方式，应用可分享单个文件，通过ohos.app.ability.wantConstant的wantConstant.Flags接口以只读或读写权限授权给其他应用。被分享应用可通过fileIo.open打开URI，并进行读写操作。
+
+应用可分享目录
+沙箱路径	说明
+/data/storage/el1/base	应用el1级别加密数据目录
+/data/storage/el2/base	应用el2级别加密数据目录
+/data/storage/el2/distributedfiles	应用el2加密级别有账号分布式数据融合目录
+文件URI规范
+
+文件URI的格式：
+
+格式为：file://<bundleName>/<path>
+
+file：文件URI的标志。
+
+bundleName：该文件资源的属主。
+
+path：文件资源在应用沙箱中的路径。
+
+注意
+因URI处理涉及编解码，系统无法保证应用自行拼接的URI地址的可用性。
+推荐使用系统提供的接口获取URI，如getUriFromPath接口。
+应用及文件系统空间统计
+应用共享目录配置

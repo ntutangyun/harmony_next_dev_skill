@@ -1,0 +1,81 @@
+# 打开和保存PDF文档
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-open-document_
+
+loadDocument(path: string, password?: string, onProgress?: (progress: number) => number): ParseResult	加载指定文档路径。
+saveDocument(path: string, onProgress?: (progress: number) => number): boolean	保存文档。
+示例代码
+
+调用loadDocument方法，加载PDF文档。
+
+在【Save As】和【Save】两个按钮中调用saveDocument方法，分别实现了另存为PDF文档和保存覆盖源PDF文档的两种方式。
+
+import { pdfService } from '@kit.PDFKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+
+@Entry
+@Component
+struct PdfPage {
+  private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
+  private context = this.getUIContext().getHostContext() as Context;
+  private filePath = '';
+  @State saveEnable: boolean = false;
+
+
+  aboutToAppear(): void {
+    this.filePath = this.context.filesDir + '/input.pdf';
+    try {
+      let res = fileIo.accessSync(this.filePath);
+      if(!res) {
+        // 确保在工程目录src/main/resources/resfile里有input.pdf文档
+        let content: Uint8Array = this.context.resourceManager.getRawFileContentSync('rawfile/input.pdf');
+        let fdSand =
+          fileIo.openSync(this.filePath, fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
+        fileIo.writeSync(fdSand.fd, content.buffer);
+        fileIo.closeSync(fdSand.fd);
+      }
+      this.pdfDocument.loadDocument(this.filePath);
+    } catch (e) {
+      let error: BusinessError = e as BusinessError;
+      hilog.error(0x0000, 'PdfPage', `Failed to loadDocument. Code: ${error.code}, message: ${error.message} `);
+    }
+  }
+
+
+  build() {
+    Column() {
+      // 另存为一份PDF文档
+      Button('Save As').onClick(() => {
+        // 可以对PDF文档添加页眉页脚，水印，背景等一些内容，然后另存文档
+        let outPdfPath = this.context.filesDir + '/testSaveAsPdf.pdf';
+        let result = this.pdfDocument.saveDocument(outPdfPath);
+        this.saveEnable = true;
+        hilog.info(0x0000, 'PdfPage', 'saveAsPdf %{public}s!', result ? 'success' : 'fail');
+      })
+      // 保存覆盖源PDF文档
+      Button('Save').enabled(this.saveEnable).onClick(() => {
+        // 这里可以对PDF文档添加内容、页眉页脚、水印、背景等一些内容，然后保存文档
+        let tempDir = this.context.tempDir;
+        let tempFilePath = tempDir + `/temp${Math.random()}.pdf`;
+        try {
+          fileIo.copyFileSync(this.filePath, tempFilePath);
+        } catch (e) {
+          let error: BusinessError = e as BusinessError;
+          hilog.error(0x0000, 'PdfPage', `Failed to copyFileSync. Code: ${error.code}, message: ${error.message} `);
+        }
+        let pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
+        // 加载临时文档
+        let loadResult = pdfDocument.loadDocument(tempFilePath, '');
+        if (loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+          let result = pdfDocument.saveDocument(this.filePath);
+          hilog.info(0x0000, 'PdfPage', 'savePdf %{public}s!', result ? 'success' : 'fail');
+        }
+      })
+    }
+  }
+}
+pdfService能力
+添加、删除PDF页

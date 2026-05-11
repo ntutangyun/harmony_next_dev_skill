@@ -1,0 +1,20 @@
+# 潜水闭气测试
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-breath-holding-test_
+
+exerciseSequenceHelper.breathHoldingTest.EXERCISE_TYPE	潜水闭气测试	部分专业手表、手环
+关联的统计数据说明
+
+字段定义：exerciseSequenceHelper.breathHoldingTest.SummaryFields
+
+字段列表	描述	类型	可选/必选
+breathHoldingTestFeature	潜水闭气测试特征数据	BreathHoldingTestFeature	M
+exerciseHeartRate	运动心率统计	ExerciseHeartRateSummary	O
+关联的明细数据说明
+
+字段定义：exerciseSequenceHelper.breathHoldingTest.DetailFields
+
+字段列表	描述	类型	可选/必选
+exerciseHeartRate	运动心率详情	ExerciseHeartRate[]	O
+滑雪
+潜水闭气训练

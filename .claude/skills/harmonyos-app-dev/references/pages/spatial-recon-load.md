@@ -1,0 +1,28 @@
+# 加载3DGS模型
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/spatial-recon-load_
+
+static loadGSNode(scene: Scene, params: GSImportSettings, parent?: Node): Promise<GSNode>	加载3DGS模型。
+开发步骤
+
+从entry目录进入/src/main/ets/entryability/EntryAbility.ets文件，导入空间建模模块。
+
+import { spatialRender } from '@kit.SpatialReconKit';
+import { Scene, RenderContext } from '@kit.ArkGraphics3D'
+
+加载当前场景的上下文。
+
+let renderContext: RenderContext | null = Scene.getDefaultRenderContext();
+
+调用加载3DGS模型接口。
+
+if (renderContext != null) {
+  renderContext.loadPlugin(spatialRender.GSPlugin.PLUGIN_ID);
+  let scene = Scene.load().then(async (scene: Scene) => {
+    let uri = "OhosRawFile://assets/gltf/model.glb"; // 3DGS模型的uri，根据实际情况修改
+    let offset = 0;
+    let gsNodeext: spatialRender.GSNode = await spatialRender.GSPlugin.loadGSNode(scene, {uri, offset}, scene.root);
+  });
+}
+Spatial Recon Kit术语
+添加滤镜效果

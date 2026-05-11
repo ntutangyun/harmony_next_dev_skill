@@ -1,0 +1,182 @@
+# 运动健康采样数据
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-samplepoint-manage_
+
+运动健康采样数据(SamplePoint)，表示在某时刻（或一段时间）采集到的特定数据类型的样本，由时间、样本值及采样的数据源组成，支持保存、读取和删除等操作。
+
+接口说明
+接口名	描述
+saveData(sampleData: SamplePoint[] | SamplePoint): Promise<void>	保存运动健康采样数据，入参为单个SamplePoint或SamplePoint数组。
+readData<T extends SamplePoint>(request: SamplePointReadRequest): Promise<T[]>	查询运动健康采样数据，通过SamplePointReadRequest设置查询条件，可按数据类型，字段、时间范围等条件查询。
+deleteData(samplePoint: SamplePoint | SamplePoint[]): Promise<void>	删除运动健康采样数据，按入参删除指定的采样数据，可传入单个SamplePoint或SamplePoint数组。
+deleteData(request: SamplePointDeleteRequest | SamplePointDeleteRequest[]): Promise<void>	删除运动健康采样数据，按SamplePointDeleteRequest条件删除，可设置数据类型、时间范围、数据源等删除条件。
+aggregateData<T extends AggregateResult>(request: AggregateRequest | AggregateRequest[]): Promise<T[]>	聚合查询运动健康采样数据，通过AggregateRequest设置查询的数据类型、聚合策略。
+说明
+
+aggregateData接口读取今日日常活动数据，数据上报存在延时，读取实时日常活动数据建议使用读取实时三环数据接口。
+
+开发前检查
+
+完成申请运动健康服务与配置Client ID。
+
+接口首次调用前，需先使用init方法进行初始化。
+
+需先通过用户授权接口引导用户授权，用户授权对应数据类型权限后，才有权限调用接口操作相关数据类型数据。
+
+错误码请参考ArkTS API错误码，常见问题请参考Health Service Kit常见问题。
+
+开发步骤
+保存用户的运动健康数据
+
+导入运动健康服务功能模块及相关公共模块。
+
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+获取dataSourceId，参考管理数据源，插入一个新的数据源或读取已有数据源。
+
+创建运动健康采样数据。
+
+let samplePoint: healthStore.samplePointHelper.bodyTemperature.Model = {
+  dataType: healthStore.samplePointHelper.bodyTemperature.DATA_TYPE,
+  startTime: 1698633801000,
+  endTime: 1698633801000,
+  localDate: '10/30/2023',
+  timeZone: '+0800',
+  modifiedTime: 1698633801000,
+  // insertDataSource插入数据源接口返回的dataSourceId，或读取已有数据源的dataSourceId
+  dataSourceId: 'xxx',
+  fields: {
+    bodyTemperature: 39
+  }
+}
+
+调用saveData方法执行保存数据请求，并处理返回结果。
+
+try {
+  await healthStore.saveData(samplePoint);
+  hilog.info(0x0000, 'testTag', 'Succeeded in saving data.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to save data. Code: ${err.code}, message: ${err.message}`);
+}
+读取用户的运动健康数据
+
+导入运动健康服务功能模块及相关公共模块。
+
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+创建查询请求。
+
+let samplePointReadRequest: healthStore.SamplePointReadRequest = {
+  samplePointDataType: healthStore.samplePointHelper.bodyTemperature.DATA_TYPE,
+  startTime: 1698633801000,
+  endTime: 1698633801000,
+  fields: {
+    bodyTemperature: 39
+  }
+}
+
+调用readData方法执行查询请求，并处理返回结果。
+
+try {
+  let samplePoints = await healthStore.readData(samplePointReadRequest);
+  samplePoints.forEach((samplePoint) => {
+    hilog.info(0x0000, 'testTag', `Succeeded in reading data, the bodyTemperature is ${samplePoint.fields.bodyTemperature}.`);
+  });
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
+}
+删除指定的运动健康采样数据
+
+导入运动健康服务功能模块及相关公共模块。
+
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+查询待删除的运动健康采样数据。
+
+let samplePointReadRequest: healthStore.SamplePointReadRequest = {
+  samplePointDataType: healthStore.samplePointHelper.bodyTemperature.DATA_TYPE,
+  startTime: 1698633801000,
+  endTime: 1698633801000
+}
+let samplePoints: healthStore.SamplePoint[] = await healthStore.readData(samplePointReadRequest);
+
+调用deleteData方法执行删除请求，并处理返回结果。
+
+try {
+  for (let index = 0; index < samplePoints.length; index++) {
+    const samplePoint = samplePoints[index];
+    await healthStore.deleteData(samplePoint);
+  }
+  hilog.info(0x0000, 'testTag', 'Succeeded in deleting data.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to delete data. Code: ${err.code}, message: ${err.message}`);
+}
+根据请求删除用户运动健康数据
+
+导入运动健康服务功能模块及相关公共模块。
+
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+创建删除请求。
+
+let samplePointDeleteRequest: healthStore.SamplePointDeleteRequest = {
+  dataType: healthStore.samplePointHelper.bodyTemperature.DATA_TYPE,
+  startTime: 1698633801000,
+  endTime: 1698633801000
+}
+
+调用deleteData方法执行删除请求，并处理返回结果。
+
+try {
+  await healthStore.deleteData(samplePointDeleteRequest);
+  hilog.info(0x0000, 'testTag', 'Succeeded in deleting data.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to delete data. Code: ${err.code}, message: ${err.message}`);
+}
+聚合查询
+
+导入运动健康服务功能模块及相关公共模块。
+
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+创建聚合查询请求。
+
+let aggregateRequest: healthStore.AggregateRequest<healthStore.samplePointHelper.dailyActivities.AggregateFields> = {
+  dataType: healthStore.samplePointHelper.dailyActivities.DATA_TYPE,
+  metrics: {
+    step: ['sum'],
+    calorie: ['sum'],
+    distance: ['sum'],
+    climbHighAltitude:['sum'],
+    isIntensity: ['sum'],
+    isStand: ['sum']
+ },
+  groupBy: {
+    unitType: healthStore.GroupUnitType.DAY
+  },
+  startLocalDate: '10/30/2023',
+  endLocalDate: '10/30/2023'
+}
+
+调用aggregateData方法执行查询请求，并处理返回结果。
+
+try {
+  const aggregateResults = await healthStore.aggregateData<healthStore.samplePointHelper.dailyActivities.AggregateResult>(aggregateRequest);
+  hilog.info(0x0000, 'testTag', 'Succeeded in reading data.');
+  aggregateResults.forEach((aggregateResult) => {
+    hilog.info(0x0000, 'testTag', `the start time is ${aggregateResult.startTime}.`);
+    hilog.info(0x0000, 'testTag', `the end time is ${aggregateResult.endTime}.`);
+    Object.keys(aggregateResult.fields).forEach((fieldName) => {
+      hilog.info(0x0000, 'testTag', `the sum of ${fieldName} is ${aggregateResult.fields[fieldName].sum}.`);
+    });
+  });
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
+}
+管理运动健康数据
+锻炼记录

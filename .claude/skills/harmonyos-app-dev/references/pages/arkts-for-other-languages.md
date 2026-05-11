@@ -1,0 +1,4 @@
+# 面向其他语言的ArkTS迁移指导
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-for-other-languages_
+

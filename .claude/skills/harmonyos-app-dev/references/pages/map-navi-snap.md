@@ -1,0 +1,35 @@
+# 轨迹绑路
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-navi-snap_
+
+snapToRoads(params: SnapToRoadsParams): Promise<SnapToRoadsResult>	轨迹绑路。
+snapToRoads(context: common.Context, params: SnapToRoadsParams): Promise<SnapToRoadsResult>	轨迹绑路。支持传入Context上下文。
+SnapToRoadsResult	轨迹绑路的结果。
+开发步骤
+
+导入相关模块。
+
+import { navi } from '@kit.MapKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+轨迹绑路
+
+根据给定的坐标点捕捉道路，将用户的轨迹纠正到道路上，从而返回用户实际驾车经过的道路坐标。
+
+async testSnapToRoads() {
+  let params: navi.SnapToRoadsParams = {
+    // 道路贴合点集合，不能超过100个，且相邻两个点距离需小于等于500米
+    points: [{
+      latitude: 31.984410259206815,
+      longitude: 118.76625379397866
+    }]
+  };
+  try {
+    const result = await navi.snapToRoads(params);
+    console.info(`Succeeded in snapping to roads. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in snapping to roads. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+批量算路
+静态图

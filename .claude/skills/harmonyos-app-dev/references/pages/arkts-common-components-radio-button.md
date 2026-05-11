@@ -1,0 +1,108 @@
+# 单选框 (Radio)
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-common-components-radio-button_
+
+Radio是单选框组件，通常用于提供相应的用户交互选择项，同一组的Radio中只有一个可以被选中。具体用法请参考Radio。
+
+创建单选框
+
+Radio通过调用RadioOptions来创建，以RadioOptions中的value和group为例：
+
+Radio(options: {value: string, group: string})
+
+其中，value是单选框的名称，group是单选框的所属群组名称。checked属性可以设置单选框的状态，状态分别为false和true，设置为true时表示单选框被选中。
+
+Radio支持设置选中状态和非选中状态的样式。
+
+Radio({ value: 'Radio1', group: 'radioGroup' })
+  .checked(false)
+Radio({ value: 'Radio2', group: 'radioGroup' })
+  .checked(true)
+RadioButton.ets
+
+添加事件
+
+除支持通用事件外，Radio还用于选中后触发某些操作，可以绑定onChange事件来响应选中操作后的自定义行为。
+
+Radio({ value: 'Radio1', group: 'radioGroup' })
+  .onChange((isChecked: boolean) => {
+    if(isChecked) {
+      //需要执行的操作
+      // ···
+    }
+  })
+Radio({ value: 'Radio2', group: 'radioGroup' })
+  .onChange((isChecked: boolean) => {
+    if(isChecked) {
+      //需要执行的操作
+      // ···
+    }
+  })
+RadioButton.ets
+场景示例
+
+通过点击Radio切换声音模式。
+
+// xxx.ets
+import { promptAction } from '@kit.ArkUI';
+
+
+@Entry
+@Component
+export struct RadioExample {
+  @State rst: promptAction.ShowToastOptions = { 'message': 'Ringing mode.' };
+  @State vst: promptAction.ShowToastOptions = { 'message': 'Vibration mode.' };
+  @State sst: promptAction.ShowToastOptions = { 'message': 'Silent mode.' };
+
+
+  build() {
+    // ···
+      Row() {
+        Column() {
+          Radio({ value: 'Ringing', group: 'radioGroup' }).checked(true)
+            .height(50)
+            .width(50)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                // 切换为响铃模式
+                this.getUIContext().getPromptAction().openToast(this.rst);
+              }
+            })
+          Text('Ringing')
+        }
+
+
+        Column() {
+          Radio({ value: 'Vibration', group: 'radioGroup' })
+            .height(50)
+            .width(50)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                // 切换为振动模式
+                this.getUIContext().getPromptAction().openToast(this.vst);
+              }
+            })
+          Text('Vibration')
+        }
+
+
+        Column() {
+          Radio({ value: 'Silent', group: 'radioGroup' })
+            .height(50)
+            .width(50)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                // 切换为静音模式
+                this.getUIContext().getPromptAction().openToast(this.sst);
+              }
+            })
+          Text('Silent')
+        }
+      }.height('100%').width('100%').justifyContent(FlexAlign.Center)
+    // ···
+  }
+}
+RadioSample.ets
+
+弧形按钮 (ArcButton)(圆形屏幕推荐使用)
+切换按钮 (Toggle)

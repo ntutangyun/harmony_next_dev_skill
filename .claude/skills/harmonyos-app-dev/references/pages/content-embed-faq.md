@@ -1,0 +1,16 @@
+# Content Embed Kit常见问题
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/content-embed-faq_
+
+客户端开发者在调用OH_ContentEmbed_CreateDocumentByFile创建OE文档时，可根据是否需要同步源文件变更来设置isLinking参数。
+
+当isLinking为true时，表示以链接方式创建OE文档。当服务端编辑OE文档时，源文件也会被修改。如果源文件被移动、删除或者重命名时，OE文档启动编辑会失败，如果用户在文件管理器中恢复原始源文件需要应用进行授权。同时链接方式不支持链接到客户端应用的沙箱目录。
+当isLinking为false时，表示以嵌入方式创建OE文档。当客户端请求服务端编辑OE文档时，会先拷贝一份临时文件到客户端应用沙箱目录。服务端对OE文档修改时，不会修改源文件。当客户端正常退出时会清空创建的临时文件。
+客户端基于文件创建OE文档时如何显示文档快照或应用图标
+
+客户端基于OH_ContentEmbed_CreateDocumentByFile创建文档时，客户端需要通过OH_ContentEmbed_Proxy_GetCapability查询OE Extension是否支持获取快照。
+
+如果服务端不支持快照时，客户端可以通过getFileIconSync根据文件类型获取文件图标。
+如果服务端支持获取快照时，客户端可以通过OH_ContentEmbed_Proxy_GetSnapshot获取快照信息。
+客户端应用开发
+Content Embed Kit术语

@@ -1,0 +1,9 @@
+# 归因结果回传
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-attribution-receive_
+
+--BEGIN PUBLIC KEY-----
+MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA0IgrEtIR1kVF/ImKIo3/5AxEFZzL156jLn2CilqGQmFByiMlpa2G0dotCK1mj9bdhDJbUPd3Plx1zVX9WoW/L/mg25+ng0iPlcItqhUuTIVi+0N50BHlVKPFWG/vYxCkR1ABU44zHyg2XAmqs2L6nUA9Hjbmwn5WX9JUWFF3RF4ja6GJRDkq0HFQ6ouM8Vpm3ZnnRTCuEzOpUcG+FMYAa9M9coRMMM3w0M/IgbYL4n86tQ6ybicaeadSwJIzXExLL0bSf1tYZ7CWvdK0V2ftLWC7Wmho64/g/AjqXc5d2nq88Cn+Vm48jLW1gibI1sPLjFhcfgRg0EOHD/FeUHLxhGeLc4KZ7hrcaW+IuVaTpHxbxJ9WiIokf6blQSEyPHx4w95IdGYNe/BGFhYaf3AhCe6b62e//0JdaYPKNDUKOpTf60vAhqQeibx4iaRZh8dEAU1m9lD0aR6+0trNCzdsC0iPCRLCXcFJXN2/ZJRug39xuJoSEkCxUsJdcoYknbRxAgMBAAE=
+-----END PUBLIC KEY-----
+登记归因来源及转化
+接入调试功能

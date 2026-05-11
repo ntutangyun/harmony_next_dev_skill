@@ -1,0 +1,33 @@
+# 初始化全局应用上下文
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-storage-initialize-context_
+
+支持Phone、Tablet设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持PC/2in1设备。
+
+操作步骤
+
+在使用云存储服务进行上传下载时，需要使用应用上下文context。可参考如下代码初始化全局应用上下文。
+
+在“entry/src/main/ets/common”目录下添加GlobalContext.ets文件，开发初始化和获取应用上下文的接口。
+
+import { common } from '@kit.AbilityKit';
+
+
+export class GlobalContext {
+  private static context: common.UIAbilityContext;
+
+
+  public static initContext(context: common.UIAbilityContext): void {
+    GlobalContext.context = context;
+  }
+
+
+  public static getContext(): common.UIAbilityContext {
+    return GlobalContext.context;
+  }
+}
+
+在“entry/src/main/ets/entryability/EntryAbility.ets”文件中导入GlobalContext，在onCreate方法中使用GlobalContext.initContext(this.context)初始化全局应用上下文。
+
+设置云存储配置项
+初始化存储实例

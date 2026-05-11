@@ -1,0 +1,100 @@
+# 对焦(C/C++)
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-focus-native_
+
+target_link_libraries(entry PUBLIC libohcamera.so libhilog_ndk.z.so)
+
+调用OH_CaptureSession_SetFocusMode设置对焦模式。
+
+说明
+
+需要先调用OH_CaptureSession_IsFocusModeSupported检查设备是否支持指定的焦距模式。
+
+需要在Session调用OH_CaptureSession_CommitConfig完成配流之后调用。
+
+Camera_ErrorCode SetFocusMode(Camera_CaptureSession *captureSession, uint32_t mode)
+{
+    bool isFocusModeSupported = false;
+    Camera_FocusMode focusMode = static_cast<Camera_FocusMode>(mode);
+    Camera_ErrorCode ret = OH_CaptureSession_IsFocusModeSupported(captureSession, focusMode, &isFocusModeSupported);
+    if (&isFocusModeSupported == nullptr || ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "IsFocusModeSupported failed.");
+        return CAMERA_INVALID_ARGUMENT;
+    }
+
+
+    if (!isFocusModeSupported) {
+        OH_LOG_INFO(LOG_APP, "current focusMode(%{public}d) is not supported.", focusMode);
+        return CAMERA_OK;
+    }
+
+
+    OH_LOG_INFO(LOG_APP, "OH_CaptureSession_SetFocusMode focusMode(%{public}d).", focusMode);
+    ret = OH_CaptureSession_SetFocusMode(captureSession, focusMode);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "SetFocusMode failed.");
+        return CAMERA_INVALID_ARGUMENT;
+    }
+    return ret;
+}
+
+如果通过OH_CaptureSession_SetFocusMode设置对焦模式为自动对焦模式，支持调用OH_CaptureSession_SetFocusPoint设置对焦点，根据对焦点执行一次自动对焦。
+
+说明
+
+需要在Session调用OH_CaptureSession_CommitConfig完成配流之后调用。
+
+Camera_ErrorCode SetFocusPoint(Camera_CaptureSession *captureSession, float x, float y)
+{
+    Camera_Point focusPoint;
+    focusPoint.x = x;
+    focusPoint.y = y;
+    Camera_ErrorCode ret = OH_CaptureSession_SetFocusPoint(captureSession, focusPoint);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "SetFocusPoint failed.");
+        return CAMERA_INVALID_ARGUMENT;
+    }
+    return ret;
+}
+状态监听
+
+在相机应用开发过程中，可以随时监听相机聚焦的状态变化。
+
+通过注册OnFocusStateChange的回调函数获取监听结果，仅当自动对焦模式时，且相机对焦状态发生改变时触发该事件。
+
+void CaptureSessionOnFocusStateChange(Camera_CaptureSession* captureSession, Camera_FocusState focusState)
+    {
+        OH_LOG_INFO(LOG_APP, "CaptureSession_Callbacks CaptureSessionOnFocusStateChange");
+        OH_LOG_INFO(LOG_APP, "CaptureSession focusState = %{public}d", focusState);
+        // 为保证对焦功能的用户体验，在自动对焦成功后，可将对焦模式设置为连续自动对焦
+        if (focusState == Camera_FocusState::FOCUS_STATE_FOCUSED) {
+            Camera_ErrorCode ret = SetFocusMode(captureSession, Camera_FocusMode::FOCUS_MODE_CONTINUOUS_AUTO);
+        }
+    }
+
+
+    void CaptureSessionOnError(Camera_CaptureSession* captureSession, Camera_ErrorCode errorCode)
+    {
+        OH_LOG_INFO(LOG_APP, "CaptureSession_Callbacks CaptureSessionOnError");
+        OH_LOG_INFO(LOG_APP, "CaptureSession errorCode = %{public}d", errorCode);
+    }
+
+
+    CaptureSession_Callbacks* GetCaptureSessionRegister(void)
+    {
+        static CaptureSession_Callbacks captureSessionCallbacks = {
+            .onFocusStateChange = CaptureSessionOnFocusStateChange,
+            .onError = CaptureSessionOnError
+        };
+        return &captureSessionCallbacks;
+    }
+Camera_ErrorCode RegisterCallback(Camera_CaptureSession* captureSession)
+{
+    Camera_ErrorCode ret = OH_CaptureSession_RegisterCallback(captureSession, GetCaptureSessionRegister());
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_CaptureSession_RegisterCallback failed.");
+    }
+    return ret;
+}
+YUV拍照(C/C++)
+相机旋转

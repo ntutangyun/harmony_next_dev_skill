@@ -1,0 +1,8 @@
+# 在沙盒环境进行测试，但是实际需要真实支付是为什么？
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-faq-16_
+
+有可能是debug包切换为release包之后，手机进程缓存没有失效导致。切换debug包和release包后，要保证进程缓存失效，比如锁屏5分钟或者重启。
+
+应用在子窗口中调用createPurchase拉起IAP Kit收银台时，子窗口会被隐藏，此现象正常吗？
+HarmonyOS元服务和HarmonyOS应用是否可以共用同一个API密钥？

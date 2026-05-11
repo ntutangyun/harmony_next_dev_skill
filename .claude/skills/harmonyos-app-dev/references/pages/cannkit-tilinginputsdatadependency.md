@@ -1,0 +1,20 @@
+# TilingInputsDataDependency
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-tilinginputsdatadependency_
+
+OpImplRegisterV2 &TilingInputsDataDependency(std::initializer_list<int32_t> inputs);
+OpImplRegisterV2 &TilingInputsDataDependency(std::initializer_list<int32_t> inputs, std::initializer_list<TilingPlacement> placements);
+参数说明
+参数	输入/输出	说明
+inputs	输入	指定算子tiling计算需要依赖的输入index列表。举例来说，inputs={0，3}，说明该算子的tiling计算需要依赖第0、3个输入的tensor值。
+placements	输入	指定算子tiling计算可以执行的位置，0代表支持在host侧执行， 1代表支持在AI CPU上执行。如果不包含本参数，代表只支持在host执行。
+返回值
+
+返回算子的OpImplRegisterV2对象，该对象新增注册了算子tiling值依赖输入的第index个tensor值以及可执行的位置。
+
+约束说明
+
+无
+
+OpExecuteFunc
+HostInputs

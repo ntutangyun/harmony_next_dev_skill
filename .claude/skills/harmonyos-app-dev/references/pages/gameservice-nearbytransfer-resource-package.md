@@ -1,0 +1,421 @@
+# 传输资源包
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-nearbytransfer-resource-package_
+
+发送端调用discoveryNearbyGame发现附近设备，发现操作完成后将收到discovery事件回调，获得可绑定的设备列表供玩家选择，调用bindNearbyGame接口绑定玩家选定的接收端设备。
+
+说明
+
+发现操作2分钟内有效，超时需重新调用接口。
+
+接收端收到UIAbility的onCollaborate回调后调用acceptCollaboration接受协同。
+
+接收端收到建链成功connectNotify事件回调。
+
+接收端调用sendPackageInfo发送自身文件信息，如版本信息、包信息。
+
+发送端收到receivePackageInfo事件回调。
+
+发送端比较版本并调用replyPackageInfoResult上报对比结果。
+
+如发送端对比结果为需要发送，则调用transferPackageData向接收端发送需要传输的资源包。
+
+接收端可在transferNotify回调中获取当前已传输的包体大小、包体总大小、传输速率、传输剩余时间等信息，传输完成可获取已接收资源包的存储目录，对传输完成的资源文件做处理。
+
+处理传输完成的资源文件后，可调用destroy销毁服务。
+
+说明
+
+destroy接口会清除已接收数据，请确保对已接收数据做好处理或转移后再调用该接口。
+
+每次调用create接口会自动清理自身历史数据。
+
+接口说明
+
+具体API说明详见接口文档。
+
+接口名	描述
+create(createParameters: CreateParameters): Promise<CreateResult>	创建游戏近场快传服务。
+on(type: 'connectNotify', callback: Callback<ConnectNotification>): void	订阅连接通知事件。
+off(type: 'connectNotify', callback?: Callback<ConnectNotification>): void	取消订阅连接通知事件。
+on(type: 'discovery', callback: Callback<DiscoveryResult>): void	订阅发现结果事件。
+off(type: 'discovery', callback?: Callback<DiscoveryResult>): void	取消订阅发现结果事件。
+on(type: 'receivePackageInfo', callback: Callback<PackageInfo>): void	订阅收到包信息事件。
+off(type: 'receivePackageInfo', callback?: Callback<PackageInfo>): void	取消订阅收到包信息事件。
+on(type: 'transferNotify', callback: Callback<TransferNotification>): void	订阅传输通知事件。
+off(type: 'transferNotify', callback?: Callback<TransferNotification>): void	取消订阅传输通知事件。
+on(type: 'error', callback: Callback<ReturnResult>): void	订阅错误事件。
+off(type: 'error', callback?: Callback<ReturnResult>): void	取消订阅错误事件。
+publishNearbyGame(): Promise<void>	发布近场快传服务。
+autoBindNearbyGame(): Promise<void>	自动绑定近场快传服务。
+discoveryNearbyGame(): Promise<void>	发现近场快传服务。
+bindNearbyGame(bindParameters: BindParameters): Promise<void>	绑定指定近场快传服务。
+acceptCollaboration(acceptParameters: Record<string, object>): Promise<void>	接受协同。
+sendPackageInfo(packageInfo: PackageInfo): Promise<void>	接收端发送自身文件信息。
+replyPackageInfoResult(packageInfoResult: PackageInfoResult): Promise<void>	上报包信息对比结果。
+transferPackageData(packageData: PackageData): Promise<void>	传输包数据。
+destroy(): Promise<void>	销毁游戏近场快传服务。
+接入步骤
+导入模块
+
+导入Game Service Kit及公共模块。
+
+import { abilityAccessCtrl, AbilityConstant, UIAbility, common } from "@kit.AbilityKit";
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { gameNearbyTransfer } from '@kit.GameServiceKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+申请权限
+
+申请ohos.permission.DISTRIBUTED_DATASYNC权限用于设备发现，详情可参考向用户申请授权。
+
+let atManager = abilityAccessCtrl.createAtManager();
+let uiAbilityContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
+try {
+  atManager.requestPermissionsFromUser(uiAbilityContext, ['ohos.permission.DISTRIBUTED_DATASYNC']).then((data) => {
+    if (data.authResults[0] === 0) {
+      // 用户授权，可以继续访问目标操作。
+      hilog.info(0x0000, 'nearby', `ohos.permission.DISTRIBUTED_DATASYNC is granted by user.`);
+    } else {
+      // 用户拒绝授权，提示用户必须授权才能访问当前功能，并引导用户到系统设置中打开相应的权限。
+      return;
+    }
+  }).catch((err: BusinessError) => {
+    hilog.error(0x0000, 'nearby', '%{public}s', `Failed to request permissions from user, code: ${err.code}, message: ${err.message}`);
+  })
+} catch (error) {
+  let err = error as BusinessError;
+  hilog.error(0x0000, 'nearby', `request permissions from user exception. Code: ${err.code}, message: ${err.message}`);
+}
+创建游戏近场快传服务并注册相关回调
+
+导入相关模块后，需先调用create接口创建游戏近场快传服务，然后注册各回调事件。
+
+说明
+
+create接口是调用其他接口的前提，如果未创建游戏近场快传服务或创建失败，将无法调用其他接口。
+
+public create() {
+  let uiAbilityContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
+  let initParam: gameNearbyTransfer.CreateParameters = {
+    abilityName: uiAbilityContext.abilityInfo.name,
+    context: uiAbilityContext,
+    moduleName: uiAbilityContext.abilityInfo.moduleName,
+    needShowSystemUI: false,
+  };
+
+
+  try {
+    gameNearbyTransfer.create(initParam).then((createResult) => {
+      hilog.info(0x0000, 'nearby', `create success localDeviceName ${createResult.localDeviceName}`);
+      this.registerCallback();
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'nearby', `create failed. Code: ${err.code}, message: ${err.message}`);
+    });
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'nearby', `create exception. Code: ${err.code}, message: ${err.message}`);
+  }
+}
+
+
+// 注册监听
+public registerCallback() {
+  try {
+    gameNearbyTransfer.on('connectNotify', connectNotifyCallBack);
+    gameNearbyTransfer.on('receivePackageInfo', receivePackageInfoCallBack);
+    gameNearbyTransfer.on('transferNotify', transferNotifyCallBack);
+    gameNearbyTransfer.on('error', errorCallBack);
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'nearby', `registerCallback error. Code: ${err.code}, message: ${err.message}`);
+  }
+}
+
+
+function connectNotifyCallBack(callback: gameNearbyTransfer.ConnectNotification) {
+  // 连接状态回调，接收端收到建链成功回调后，在此处调用sendPackageInfo接口发送自身文件信息，如版本信息、包信息
+  hilog.info(0x0000, 'nearby', `connectNotify. State: ${callback.connectState}`);
+}
+
+
+function receivePackageInfoCallBack(callback: gameNearbyTransfer.PackageInfo) {
+  // 接收包信息回调，发送端收到接收端发送的版本信息后进行对比，根据对比结果决定是否需要传输资源包数据。
+  hilog.info(0x0000, 'nearby', `get package info. version: ${callback.version}`);
+}
+
+
+function transferNotifyCallBack(callback: gameNearbyTransfer.TransferNotification) {
+  // 传输回调，处理传输进度信息
+  hilog.info(0x0000, 'nearby', `get transfer state: ${callback.transferState}`);
+}
+
+
+function errorCallBack(callback: gameNearbyTransfer.ReturnResult) {
+  // 异常信息回调，处理相关异常信息
+  hilog.error(0x0000, 'nearby', `Error info. Code: ${callback.code}, message: ${callback.message}`);
+}
+接收端接受协同
+
+接收端实现onCollaborate回调，回调中调用acceptCollaboration接口接受协同。
+
+export default class EntryAbility extends UIAbility {
+  // 协同回调
+  onCollaborate(wantParam: Record<string, Object>): AbilityConstant.CollaborateResult {
+    try {
+      // 接受协同
+      gameNearbyTransfer.acceptCollaboration(wantParam).catch((err: BusinessError) => {
+        hilog.error(0x0000, 'nearby', `acceptCollaboration failed. Code: ${err.code}, message: ${err.message}`);
+      });
+    } catch (error) {
+      let err = error as BusinessError;
+      hilog.error(0x0000, 'nearby', `acceptCollaboration exception. Code: ${err.code}, message: ${err.message}`);
+    }
+    return AbilityConstant.CollaborateResult.ACCEPT;
+  }
+}
+接收端发布自身游戏近场快传服务
+
+接收端调用publishNearbyGame接口发布自身游戏近场快传服务。
+
+try {
+  gameNearbyTransfer.publishNearbyGame().then(() => {
+    hilog.info(0x0000, 'nearby', `publishNearbyGame success`);
+  }).catch((err: BusinessError) => {
+    hilog.error(0x0000, 'nearby', `publishNearbyGame failed. Code: ${err.code}, message: ${err.message}`);
+  });
+} catch (error) {
+  let err = error as BusinessError;
+  hilog.error(0x0000, 'nearby', `publishNearbyGame exception. Code: ${err.code}, message: ${err.message}`);
+}
+发送端绑定接收端游戏近场快传服务
+
+发送端绑定接收端游戏近场快传服务支持如下两种方式：
+
+方式一：自动绑定
+
+发送端调用autoBindNearbyGame接口自动绑定接收端近场快传服务。
+
+try {
+  // 自动绑定近场快传服务
+  gameNearbyTransfer.autoBindNearbyGame().then(() => {
+    hilog.info(0x0000, 'nearby', `autoBindNearbyGame success`);
+  }).catch((err: BusinessError) => {
+    hilog.error(0x0000, 'nearby', `autoBindNearbyGame failed. Code: ${err.code}, message: ${err.message}`);
+  });
+} catch (error) {
+  let err = error as BusinessError;
+  hilog.error(0x0000, 'nearby', `autoBindNearbyGame exception. Code: ${err.code}, message: ${err.message}`);
+}
+
+方式二：选择绑定
+
+发送端调用on('discovery')接口注册“发现设备”结果事件监听。
+try {
+  // 订阅发现结果
+  gameNearbyTransfer.on('discovery', discoveryCallBack);
+} catch (error) {
+  // 订阅失败
+  let err = error as BusinessError;
+  hilog.error(0x0000, 'nearby', `Failed to subscribe discovery. Code: ${err.code}, message: ${err.message}`);
+}
+
+
+function discoveryCallBack(callback: gameNearbyTransfer.DiscoveryResult) {
+  // 获取到发现的设备 展示设备列表
+  callback.nearbyGameDevices.forEach((device: gameNearbyTransfer.NearbyGameDevice, index: number) => {
+    hilog.info(0x0000, 'nearby', `device info. name: ${device.deviceName}, index: ${index}`);
+  });
+}
+发送端调用discoveryNearbyGame发现附近设备。
+try {
+  gameNearbyTransfer.discoveryNearbyGame().then(() => {
+    hilog.info(0x0000, 'nearby', `discoveryNearbyGame success.`);
+  }).catch((err: BusinessError) => {
+    hilog.error(0x0000, 'nearby', `discoveryNearbyGame failed. Code: ${err.code}, message: ${err.message}`);
+  });
+} catch (error) {
+  let err = error as BusinessError;
+  hilog.error(0x0000, 'nearby', `discoveryNearbyGame exception. Code: ${err.code}, message: ${err.message}`);
+}
+“发现设备”操作完成后将收到discovery事件回调，获得发现的设备列表供玩家选择，调用bindNearbyGame接口绑定玩家选定的接收端设备。
+public bindNearbyGame(deviceInfo: gameNearbyTransfer.NearbyGameDevice) {
+  let bindInfo: gameNearbyTransfer.BindParameters = {
+    deviceId: deviceInfo.deviceId,
+    networkId: deviceInfo.networkId
+  };
+  try {
+    gameNearbyTransfer.bindNearbyGame(bindInfo).then(() => {
+      hilog.info(0x0000, 'nearby', `bindNearbyGame success`);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'nearby', `bindNearbyGame failed. Code: ${err.code}, message: ${err.message}`);
+    });
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'nearby', `bindNearbyGame exception. Code: ${err.code}, message: ${err.message}`);
+  }
+}
+接收端发送自身文件信息
+
+收到建链成功回调后，接收端调用sendPackageInfo接口发送自身文件，如版本信息、包信息。
+
+function connectNotifyCallBack(callback: gameNearbyTransfer.ConnectNotification) {
+  if (callback.connectState == gameNearbyTransfer.ConnectState.CONNECTED) {
+    // 连接成功回调，判断当前是否为接收端。若当前设备为接收端，请设置为true，否则请设置为false。
+    let isReceive = true;
+    if (!isReceive) {
+      return;
+    }
+    // 接收端收到连接回调后需要处理,发送资源包信息给发送端
+    let packageInfo: gameNearbyTransfer.PackageInfo = {
+      name: 'com.huawei.xxxx',
+      files: [],
+      version: '1.1.0',
+      extraData: 'extraData'
+    };
+    let fileInfo: gameNearbyTransfer.FileInfo = {
+      path: '/xxx/xxxx/files/data.zip', // 建议使用沙箱路径
+      hash: 'fileHash' // 可选
+    };
+    packageInfo.files?.push(fileInfo);
+    try {
+      gameNearbyTransfer.sendPackageInfo(packageInfo).then(() => {
+        hilog.info(0x0000, 'nearby', `sendPackageInfo success`);
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, 'nearby', `sendPackageInfo failed. Code: ${err.code}, message: ${err.message}`);
+      });
+    } catch (error) {
+      let err = error as BusinessError;
+      hilog.error(0x0000, 'nearby', `sendPackageInfo exception. Code: ${err.code}, message: ${err.message}`);
+    }
+  }
+}
+发送端对比后传输资源包
+
+发送端收到接收端发送的版本信息后进行对比，调用replyPackageInfoResult上报对比结果，根据对比结果决定是否需要调用transferPackageData接口发送资源包数据。
+
+function receivePackageInfoCallBack(callback: gameNearbyTransfer.PackageInfo) {
+  const version = callback.version;
+  hilog.error(0x0000, 'nearby', `remote version: ${version}`);
+  // 比较版本,决定是否需要发送资源包,也可以比较文件hash
+  let packageInfoResult: gameNearbyTransfer.PackageInfoResult = {
+    packageInfoResultCode: gameNearbyTransfer.PackageInfoResultCode.PACKAGE_AVAILABLE_COMPARED
+  };
+  try {
+    // 上报对比结果
+    gameNearbyTransfer.replyPackageInfoResult(packageInfoResult).then(() => {
+      let packageData: gameNearbyTransfer.PackageData = {
+        name: 'com.huawei.gamenearbydemo',
+        version: '1.0.0',
+        files: [{
+          srcPath: '/data/xxxx/a.zip',
+          destPath: 'xxxx/a.zip'
+        }] // srcPath是需要发送文件的路径，详情请参见沙箱路径。destPath为接收文件的路径，完整路径是fileStoragePath+destPath。
+      };
+      try {
+        // 发送资源包
+        gameNearbyTransfer.transferPackageData(packageData).then(() => {
+          // 发送成功
+        }).catch((err: BusinessError) => {
+          hilog.error(0x0000, 'nearby', `transferPackageData error Code: ${err.code}, message: ${err.message}`);
+        });
+      } catch (err) {
+        let error = err as BusinessError;
+        hilog.error(0x0000, 'nearby', `transferPackageData exception Code: ${error.code}, message: ${error.message}`);
+      }
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'nearby', `replyPackageInfoResult error Code: ${err.code}, message: ${err.message}`);
+    });
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'nearby', `replyPackageInfoResult exception Code: ${err.code}, message: ${err.message}`);
+  }
+}
+处理资源包传输进度信息
+
+发送端和接收端在传输回调中处理传输进度信息。
+
+function transferNotifyCallBack(callback: gameNearbyTransfer.TransferNotification) {
+  if (callback.transferState == gameNearbyTransfer.TransferState.SEND_PROCESS) {
+    // 处理发送进度,如显示进度条和速率
+  }
+  if (callback.transferState == gameNearbyTransfer.TransferState.SEND_FINISH) {
+    // 发送完成
+  }
+  if (callback.transferState == gameNearbyTransfer.TransferState.RECEIVE_PROCESS) {
+    // 处理接收进度,如显示进度条和速率
+  }
+  if (callback.transferState == gameNearbyTransfer.TransferState.RECEIVE_FINISH) {
+    // 接收完成,获取到资源包存储的沙箱路径
+    let fileStoragePath = callback.fileStoragePath;
+    hilog.info(0x0000, 'nearby', `get transfer path: ${fileStoragePath}`);
+    // 对fileStoragePath下的文件做处理
+  }
+}
+处理已接收资源包后销毁服务
+
+对已接收数据做好处理或转移后，调用destroy接口销毁服务。若服务销毁后再次使用近场快传服务，需重新创建游戏近场快传服务并注册相关回调。
+
+public destroy() {
+  // 取消回调注册
+  this.unregisterCallback();
+  // 销毁服务
+  try {
+    gameNearbyTransfer.destroy().then(() => {
+      hilog.info(0x0000, 'nearby', `destroy success`);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'nearby', `destroy failed. Code: ${err.code}, message: ${err.message}`);
+    });
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'nearby', `destroy exception. Code: ${err.code}, message: ${err.message}`);
+  }
+}
+
+
+public unregisterCallback() {
+  try {
+    gameNearbyTransfer.off('connectNotify', connectNotifyCallBack);
+    gameNearbyTransfer.off('receivePackageInfo', receivePackageInfoCallBack);
+    gameNearbyTransfer.off('transferNotify', transferNotifyCallBack);
+    gameNearbyTransfer.off('error', errorCallBack);
+    // 发送端选择手动绑定接收端且已订阅discovery事件
+    gameNearbyTransfer.off('discovery', discoveryCallBack);
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'nearby', `unregisterCallback error. Code: ${err.code}, message: ${err.message}`);
+  }
+}
+
+
+function connectNotifyCallBack(callback: gameNearbyTransfer.ConnectNotification) {
+  // 连接状态回调，接收端收到建链成功回调后，在此处调用sendPackageInfo接口发送自身文件信息，如版本信息、包信息
+  hilog.info(0x0000, 'nearby', `connectNotify. State: ${callback.connectState}`);
+}
+
+
+function receivePackageInfoCallBack(callback: gameNearbyTransfer.PackageInfo) {
+  // 接收包信息回调，发送端收到接收端发送的版本信息后进行对比，根据对比结果决定是否需要传输资源包数据。
+  hilog.info(0x0000, 'nearby', `get package info. version: ${callback.version}`);
+}
+
+
+function transferNotifyCallBack(callback: gameNearbyTransfer.TransferNotification) {
+  // 传输回调，处理传输进度信息
+  hilog.info(0x0000, 'nearby', `get transfer state: ${callback.transferState}`);
+}
+
+
+function errorCallBack(callback: gameNearbyTransfer.ReturnResult) {
+  // 异常信息回调，处理相关异常信息
+  hilog.error(0x0000, 'nearby', `Error info. Code: ${callback.code}, message: ${callback.message}`);
+}
+
+
+function discoveryCallBack(callback: gameNearbyTransfer.DiscoveryResult) {
+  // 获取到发现的设备 展示设备列表
+  callback.nearbyGameDevices.forEach((device: gameNearbyTransfer.NearbyGameDevice, index: number) => {
+    hilog.info(0x0000, 'nearby', `device info. name: ${device.deviceName}, index: ${index}`);
+  });
+}
+开发指导
+传输安装包

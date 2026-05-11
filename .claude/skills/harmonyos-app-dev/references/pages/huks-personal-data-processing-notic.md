@@ -1,0 +1,11 @@
+# 个人数据处理说明
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-personal-data-processing-notic_
+
+身份信息	开发者在调用签名接口时，在ArkTs接口中添加HuksSecureSignType参数并指定其值为HUKS_SECURE_SIGN_WITH_AUTHINFO，或在NDK接口中添加HuksSecureSignType参数并指定其值为OH_HUKS_SECURE_SIGN_WITH_AUTHINFO，Huks会将待签名的数据添加身份信息后进行签名，并将身份信息返回给开发者。身份信息的使用目的由开发者决定，开发者需在隐私声明中补充对此身份信息的使用目的、留存策略和销毁方式。	由开发者根据实际处理在隐私声明中补充。
+指导开发者如何帮助最终用户实现对数据的控制
+
+开发者通过HUKS获取的用户数据，需要开发者自行提供对应的数据主体权利。
+
+CryptoExtensionAbility适配开发指导
+User Authentication Kit（用户认证服务）

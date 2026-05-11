@@ -1,0 +1,18 @@
+# 录屏常见问题
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avscreencapture-faqs_
+
+解决方法：在录屏过程中因为状态改变导致的录屏停止，需要在OH_AVScreenCapture_SetStateCallback()（状态回调）中，对录屏资源进行异步释放。
+
+录屏会话限制策略：
+
+客户端应用数量上限4个，比如会议屏幕共享、会议投屏、后台听歌识曲、系统录屏同时存在。
+
+单应用单模式（存为文件或存为码流）可创建实例上限2个，典型场景：在线上会议共享屏幕时，需要同步录制会议内容。
+
+通话中无法启动录屏报错AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT
+
+从API version 20开始，如需在通话中开启录屏，可使用OH_AVScreenCapture_StrategyForKeepCaptureDuringCall()设置“蜂窝通话时保持录屏”状态。
+
+AVScreenCapture录屏自定义场景
+使用AVScreenCapture录屏写文件(C/C++)

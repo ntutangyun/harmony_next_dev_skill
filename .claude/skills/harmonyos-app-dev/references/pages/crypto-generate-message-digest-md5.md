@@ -1,0 +1,116 @@
+# 消息摘要计算MD5(ArkTS)
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-generate-message-digest-md5_
+
+在调用update接口传入数据时，可以一次性传入所有数据，也可以把数据人工分段，然后分段update。对于同一段数据而言，计算结果没有差异。对于数据量较大的数据，开发者可以根据实际需求选择是否分段传入。
+
+下面分别提供两种方式的示例代码。
+
+摘要算法（一次性传入）
+
+调用cryptoFramework.createMd，指定摘要算法MD5，生成摘要实例（Md）。
+
+调用Md.update，传入自定义消息，进行摘要更新计算。单次update长度没有限制。
+
+调用Md.digest，获取摘要计算结果。
+
+调用Md.getMdLength，获取摘要计算长度，单位为字节。
+
+以使用await方式单次传入数据，获取摘要计算结果为例：
+
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+
+async function doMd() {
+  let mdAlgName = 'MD5'; // 摘要算法名。
+  let message = 'mdTestMessage'; // 待摘要的数据。
+  let md = cryptoFramework.createMd(mdAlgName);
+  // 数据量较少时，可以只做一次update，将数据全部传入，接口未对入参长度做限制。
+  await md.update({ data: new Uint8Array(buffer.from(message, 'utf-8').buffer) });
+  let mdResult = await md.digest();
+  console.info('Md result: ' + mdResult.data);
+  let mdLen = md.getMdLength();
+  console.info('md len: ' + mdLen);
+}
+SingleTimeAsync.ets
+
+以使用同步方式单次传入数据，获取摘要计算结果为例：
+
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+
+function doMdBySync() {
+  let mdAlgName = 'MD5'; // 摘要算法名。
+  let message = 'mdTestMessage'; // 待摘要的数据。
+  let md = cryptoFramework.createMd(mdAlgName);
+  // 数据量较少时，可以只做一次update，将数据全部传入，接口未对入参长度做限制。
+  md.updateSync({ data: new Uint8Array(buffer.from(message, 'utf-8').buffer) });
+  let mdResult = md.digestSync();
+  console.info('[Sync]:Md result: ' + mdResult.data);
+  let mdLen = md.getMdLength();
+  console.info('md len: ' + mdLen);
+}
+SingleTimeSync.ets
+分段摘要算法
+
+调用cryptoFramework.createMd，指定摘要算法MD5，生成摘要实例（Md）。
+
+传入自定义消息，将一次传入数据量设置为20字节，多次调用Md.update，进行摘要更新计算。
+
+调用Md.digest，获取摘要计算结果。
+
+调用Md.getMdLength，获取摘要计算长度，单位为字节。
+
+以使用await方式分段传入数据，获取摘要计算结果为例：
+
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+
+async function doLoopMd() {
+  let mdAlgName = 'MD5'; // 摘要算法名。
+  let md = cryptoFramework.createMd(mdAlgName);
+  // 假设信息总共43字节，根据utf-8解码后，也是43字节。
+  let messageText = 'aaaaa.....bbbbb.....ccccc.....ddddd.....eee';
+  let messageData = new Uint8Array(buffer.from(messageText, 'utf-8').buffer);
+  let updateLength = 20; // 假设以20字节为单位进行分段update，实际并无要求。
+  for (let i = 0; i < messageData.length; i += updateLength) {
+    let updateMessage = messageData.subarray(i, i + updateLength);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    await md.update(updateMessageBlob);
+  }
+  let mdOutput = await md.digest();
+  console.info('md result: ' + mdOutput.data);
+  let mdLen = md.getMdLength();
+  console.info('md len: ' + mdLen);
+}
+SegmentationAsync.ets
+
+以使用同步方式分段传入数据，获取摘要计算结果为例：
+
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+
+function doLoopMdBySync() {
+  let mdAlgName = 'MD5'; // 摘要算法名。
+  let md = cryptoFramework.createMd(mdAlgName);
+  // 假设信息总共43字节，根据utf-8解码后，也是43字节。
+  let messageText = 'aaaaa.....bbbbb.....ccccc.....ddddd.....eee';
+  let messageData = new Uint8Array(buffer.from(messageText, 'utf-8').buffer);
+  let updateLength = 20; // 假设以20字节为单位进行分段update，实际并无要求。
+  for (let i = 0; i < messageData.length; i += updateLength) {
+    let updateMessage = messageData.subarray(i, i + updateLength);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    md.updateSync(updateMessageBlob);
+  }
+  let mdOutput = md.digestSync();
+  console.info('[Sync]:md result: ' + mdOutput.data);
+  let mdLen = md.getMdLength();
+  console.info('md len: ' + mdLen);
+}
+SegmentationSync.ets
+消息摘要计算SHA256(C/C++)
+消息摘要计算MD5(C/C++)
