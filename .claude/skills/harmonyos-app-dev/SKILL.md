@@ -1,11 +1,11 @@
 ---
 name: harmonyos-app-dev
-description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) — Huawei's standalone mobile/tablet/wearable OS — using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits (Ability, ArkData, Notification, Network, Push, Map, IAP, etc.). Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility/ExtensionAbility, DevEco Studio, hvigor, ohpm, @kit.* imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app. Do NOT trigger for OpenHarmony (the open-source kernel project) — this skill is for the closed Huawei consumer OS only. Also trigger when the user pastes ArkTS code with @Entry/@Component/@State decorators, struct declarations with build(), or Kit-style imports like `import { ... } from '@kit.AbilityKit'`.
+description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits. Also covers Xiaoyi (小艺) agent development on the Xiaoyi Open Platform — creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration, AgentKit, and agent publishing. Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, 小艺, Xiaoyi, 智能体, intelligent agent, agent development, A2A protocol, AgentKit, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility, DevEco Studio, hvigor, ohpm, kit imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app or agent. Do NOT trigger for OpenHarmony. Also trigger when the user pastes ArkTS code with Entry/Component/State decorators or struct declarations with build().
 ---
 
 # HarmonyOS NEXT app development
 
-This skill captures the official Huawei HarmonyOS application-development documentation (https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/...). It covers the **Stage model** (the current, primary application model) and **ArkTS / ArkUI** (declarative TS-based UI). The FA model is legacy — only mention it if the user explicitly asks.
+This skill captures the official Huawei HarmonyOS application-development documentation (https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/...) and the Xiaoyi (小艺) Open Platform agent-development documentation (https://developer.huawei.com/consumer/cn/doc/service/...). It covers the **Stage model** (the current, primary application model), **ArkTS / ArkUI** (declarative TS-based UI), and **intelligent agent (智能体) development** on the Xiaoyi Open Platform. The FA model is legacy — only mention it if the user explicitly asks.
 
 > Source authority: this skill draws **only** from `developer.huawei.com/consumer/cn/doc/harmonyos-guides/*`. Do not blend in information from OpenHarmony docs, GitHub mirrors, or third-party blogs — OpenHarmony is a different OS and its SDK/snippets are often incompatible.
 
@@ -26,6 +26,7 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Background work, notifications, common events, permissions, IPC/RPC | `references/05-services-and-system.md` |
 | Files, preferences, KV store, relational DB, network (HTTP / WebSocket / connection manager) | `references/06-data-and-network.md` |
 | Cards (ArkTS widgets), i18n/l10n, localization | `references/07-cards-and-i18n.md` |
+| Xiaoyi (小艺) agent development: creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration (prompts, plugins, workflows, knowledge base, variables, memory), AgentKit in-app launcher, agent publishing/review, digital product payment, OpenClaw integration, Xiaoyi Compass | `references/11-xiaoyi-agent-dev.md` |
 | DevEco Studio, hvigor build, signing, run on device/emulator, debug, publish, ohpm | `references/08-tooling-and-build.md` |
 | Testing (unit + UI), performance, security, UX guidelines | `references/09-testing-and-quality.md` |
 | Kit overviews (Push, IAP, Payment, Map, Audio, Media, Image, Vision, Speech, Intents, ArkGraphics, NDK) | `references/10-kits-catalog.md` |
@@ -37,7 +38,7 @@ To find a slug:
 - `grep -lir "<keyword>" references/pages/` to search by content
 - Scan `references/manifest.json` for matching titles (each entry has `t` title, `p` slug, `l` depth level)
 
-The 11 curated reference files (00–10) above are entry points / hand-written distillations; `pages/` is the full archive for deep dives and edge cases.
+The 12 curated reference files (00–11) above are entry points / hand-written distillations; `pages/` is the full archive for deep dives and edge cases.
 
 ## Core conventions worth knowing up front
 
@@ -108,3 +109,18 @@ The HarmonyOS docs evolve fast and the user's project may target a specific API 
 - Best practices (not bundled): `https://developer.huawei.com/consumer/cn/doc/best-practices/...`
 
 When you cite a doc URL, prefer linking to the canonical `harmonyos-guides` page — those URLs are stable.
+
+### Xiaoyi (小艺) Agent Development docs
+
+The skill also bundles reference material for Xiaoyi agent development from `developer.huawei.com/consumer/cn/doc/service/*`. For Xiaoyi agent tasks, start with `references/11-xiaoyi-agent-dev.md`. Key offline pages are in `references/pages/service-*.md`:
+
+- `service-agent-dev-intro.md` — agent modes and capability matrix
+- `service-agent-configuration.md` — full configuration & orchestration reference
+- `service-agent-protocol.md` — A2A JSON-RPC 2.0 protocol details, message schemas, auth flow
+
+For deeper dives, additional pages can be fetched live from:
+- `https://developer.huawei.com/consumer/cn/doc/service/developing-intelligent-agents-0000002435989592`
+- `https://developer.huawei.com/consumer/cn/doc/service/agent2agent-0000002498656261`
+- `https://developer.huawei.com/consumer/cn/doc/service/development-workflow-0000002435989628`
+- `https://developer.huawei.com/consumer/cn/doc/service/develop-plug-ins-0000002435989648`
+- `https://developer.huawei.com/consumer/cn/doc/service/development-card-0000002435989672`
