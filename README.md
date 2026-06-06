@@ -17,19 +17,21 @@ A [Claude Code](https://claude.com/claude-code) **skill** that lets Claude devel
 
 ## Installation
 
-The skill lives at `.claude/skills/harmonyos-app-dev/` in this repo. To activate it for a project:
+This repo **is** the skill — `SKILL.md` + `references/` live at the repo root, so the repo can be dropped straight into a `.claude/skills/<name>/` slot (e.g. as a git submodule). To activate it for a project:
 
 ```bash
-# In your HarmonyOS project directory
-mkdir -p .claude/skills
-cp -r /path/to/this/repo/.claude/skills/harmonyos-app-dev .claude/skills/
+# In your project, as a git submodule (recommended — stays updatable):
+git submodule add https://github.com/ntutangyun/harmony_next_dev_skill.git .claude/skills/harmonyos-app-dev
+
+# …or a plain copy:
+git clone https://github.com/ntutangyun/harmony_next_dev_skill.git .claude/skills/harmonyos-app-dev
 ```
 
 Or to make it user-wide (available in every project):
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -r .claude/skills/harmonyos-app-dev ~/.claude/skills/
+cp -r /path/to/this/repo ~/.claude/skills/harmonyos-app-dev
 ```
 
 Then in Claude Code, the skill auto-loads when the user mentions HarmonyOS topics, or can be invoked explicitly as `/harmonyos-app-dev`.

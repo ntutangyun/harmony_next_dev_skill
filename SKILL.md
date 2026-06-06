@@ -1,6 +1,6 @@
 ---
 name: harmonyos-app-dev
-description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits. Also covers Xiaoyi (小艺) agent development on the Xiaoyi Open Platform — creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration, AgentKit, and agent publishing. Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, 小艺, Xiaoyi, 智能体, intelligent agent, agent development, A2A protocol, AgentKit, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility, DevEco Studio, hvigor, ohpm, kit imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app or agent. Do NOT trigger for OpenHarmony. Also trigger when the user pastes ArkTS code with Entry/Component/State decorators or struct declarations with build().
+description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits. Also covers Xiaoyi (小艺) agent development on the Xiaoyi Open Platform — creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration, AgentKit, and agent publishing. Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, 小艺, Xiaoyi, 智能体, intelligent agent, agent development, A2A protocol, AgentKit, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility, DevEco Studio, hvigor, ohpm, kit imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app or agent. Do NOT trigger for OpenHarmony. Also trigger when the user pastes ArkTS code with Entry/Component/State decorators or struct declarations with build(). Also use when driving real Huawei devices (e.g. Mate 80, MatePad Pro) running HarmonyOS NEXT as Wi-Fi **stations (STA)** for hardware-in-the-loop (HIL) experiments against an access point under test — building/sideloading an on-device test app and reading Wi-Fi link state; in that mode the first step is always to confirm a device is connected via `hdc`.
 ---
 
 # HarmonyOS NEXT app development
@@ -96,6 +96,16 @@ To create a new app: open DevEco Studio → `Create Project` → `Application` �
 To run on device: `File > Project Structure > Signing Configs` → enable `Automatically generate signature` (requires Huawei developer login), then click the green Run button. For more on signing/run, see `references/08-tooling-and-build.md`.
 
 CLI builds use `hvigorw assembleHap` (or `assembleApp` for the full app). Package manager commands use `ohpm install <pkg>` and the registry is configured in `oh-package.json5`.
+
+## HIL / on-device validation mode (Wi-Fi STA-side experiments)
+
+This skill is also the **STA side** of a hardware-in-the-loop (HIL) Wi-Fi experiment: real Huawei devices on HarmonyOS NEXT (e.g. **Mate 80**, **MatePad Pro**) act as Wi-Fi **stations** against an access point under test (the AP side runs on OpenWrt Wi-Fi 7 boards — see the companion `openwrt_hil_skill`). When used this way:
+
+1. **Check the hardware is present first — before writing or "running" anything on-device.** Run `hdc list targets`. If a device is listed (Mate 80 / MatePad Pro connected and authorized over USB or wireless `hdc`), continue. If it returns `[Empty]` / no device, **stop**: do not fabricate results. Write the test *plan* instead (the ArkTS test app + what it will measure) and tell the user to connect/authorize a device, then resume. `hdc` (HarmonyOS Device Connector) ships with DevEco Studio / the command-line tools — see `references/08-tooling-and-build.md`.
+2. **Build + sideload the STA test app** with the normal Stage-model flow (`hvigorw assembleHap`, then `hdc install <hap>`; launch via `hdc shell aa start ...`). Use the Wi-Fi APIs from `@kit.ConnectivityKit` (`wifiManager` — scan results, `getLinkedInfo()` for RSSI / link speed / band / BSSID / frequency) and `@kit.NetworkKit` (HTTP / sockets) to read link state and to generate or receive traffic. See `references/06-data-and-network.md`.
+3. **Reads are free; state changes are confirmed.** Reading Wi-Fi info / running traffic is free. Anything that changes the device's Wi-Fi state (connect / disconnect / forget network, toggling the radio) is **proposed to the user first** — mirror the AP-side HIL gating (reads-free / writes-confirmed). Save raw measurements so the run is reproducible.
+
+This mode keeps the skill general: for ordinary app development the steps above don't apply — they only kick in when the task is an on-device Wi-Fi HIL experiment.
 
 ## When code from this skill conflicts with what the user has
 
