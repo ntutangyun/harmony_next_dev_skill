@@ -134,3 +134,15 @@ For deeper dives, additional pages can be fetched live from:
 - `https://developer.huawei.com/consumer/cn/doc/service/development-workflow-0000002435989628`
 - `https://developer.huawei.com/consumer/cn/doc/service/develop-plug-ins-0000002435989648`
 - `https://developer.huawei.com/consumer/cn/doc/service/development-card-0000002435989672`
+
+## Refreshing the bundled docs (when the user says the docs have updated)
+
+The docs site is a SPA, but its content is served by a public JSON API on `svc-drcn.developer.huawei.com` (`documentPortal/getCatalogTree` for the nav tree with slugs/titles, `documentPortal/getDocumentById` for per-page HTML) — **no browser or crawler is needed**. The committed scripts in `scripts/` drive it (require `beautifulsoup4` + `lxml`):
+
+1. `python scripts/update_docs.py --diff` — fetch the current catalog and print added/removed pages vs `references/manifest.json`. Do this first; the diff tells you what changed upstream.
+2. `python scripts/update_docs.py` — fetch all ~5,350 `harmonyos-guides` pages (~10 min, 8 workers, resumable — already-fetched pages are cached in `_update_work/new_pages/`), convert them to the offline markdown format (`scripts/convert.py`), swap them into `references/pages/`, and rebuild `references/manifest.json`. The three hand-distilled `service-agent-*.md` pages are preserved automatically.
+3. `python scripts/fetch_xiaoyi.py` — fetch the Xiaoyi (小艺开放平台) doc subtree (~200 pages, from the `service` catalog) into `_update_work/xiaoyi_pages/` as working copies. These are **sources, not bundled pages**: use them to refresh `references/11-xiaoyi-agent-dev.md` and the three `references/pages/service-agent-*.md` distillations, checking every stated fact against the fetched content.
+4. **Refresh the curated layer by hand.** The catalog diff from step 1 plus the per-page `displayUpdateTime` metadata tell you which areas moved. Update the curated `references/00-*.md` … `11-*.md` (and the page counts / version facts in `SKILL.md` + `README.md`) against the new pages — ground every claim in `references/pages/`, never invent APIs.
+5. Delete `_update_work/` (gitignored) and commit.
+
+API call shape, if you need a one-off page outside the scripts: POST JSON `{"objectId": "<slug>", "version": "", "catalogName": "harmonyos-guides" | "service", "language": "cn"}` to `https://svc-drcn.developer.huawei.com/community/servlet/consumer/cn/documentPortal/getDocumentById`; the response is UTF-8 with a BOM (decode `utf-8-sig`) and carries the page HTML plus `displayUpdateTime`.
