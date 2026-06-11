@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-transformation-native_
 
+说明
+
 当前开发指导使用的接口为Image模块下的C API，可完成图片编解码，图片接收器，处理图像数据等功能。这部分API在API version 11之前发布，在后续的版本不再增加新功能，不再推荐使用。
 
 开发者可使用Image_NativeModule模块下的C API，不仅提供上述图片框架基础功能，还可以完成多图编解码等新特性，相关开发指导请参考图片开发指导(C/C++)节点下的内容。这部分API从API version 12开始支持，并将持续演进，推荐开发者使用。
@@ -31,7 +33,6 @@ static napi_value Init(napi_env env, napi_value exports)
         { "testUnAccessPixels", nullptr, TestUnAccessPixels, nullptr, nullptr, nullptr, napi_default, nullptr },
     };
 
-
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
 }
@@ -54,14 +55,12 @@ static napi_value TestGetImageInfo(napi_env env, napi_callback_info info)
      napi_value result = nullptr;
      napi_get_undefined(env, &result);
 
-
      napi_value thisVar = nullptr;
      napi_value argValue[1] = {0};
      size_t argCount = 1;
 
-
      napi_get_cb_info(env, info, &argCount, argValue, &thisVar, nullptr);
-     
+
      OHOS::Media::OhosPixelMapInfo pixelMapInfo;
      OHOS::Media::OH_GetImageInfo(env, argValue[0], &pixelMapInfo);
      return result;
@@ -74,14 +73,11 @@ static napi_value TestAccessPixels(napi_env env, napi_callback_info info)
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
 
-
     napi_value thisVar = nullptr;
     napi_value argValue[1] = {0};
     size_t argCount = 1;
 
-
     napi_get_cb_info(env, info, &argCount, argValue, &thisVar, nullptr);
-
 
     void* addrPtr = nullptr;
     OHOS::Media::OH_AccessPixels(env, argValue[0], &addrPtr);
@@ -95,14 +91,11 @@ static napi_value TestUnAccessPixels(napi_env env, napi_callback_info info)
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
 
-
     napi_value thisVar = nullptr;
     napi_value argValue[1] = {0};
     size_t argCount = 1;
 
-
     napi_get_cb_info(env, info, &argCount, argValue, &thisVar, nullptr);
-
 
     OHOS::Media::OH_UnAccessPixels(env, argValue[0]);
     return result;
@@ -124,13 +117,11 @@ export const testUnAccessPixels: (a: image.PixelMap) => image.PixelMap;
 import testNapi from 'libentry.so';
 import { image } from '@kit.ImageKit';
 
-
 @Entry
 @Component
 struct Index {
 @State message: string = 'IMAGE';
 @State _PixelMap : image.PixelMap | undefined = undefined;
-
 
 build() {
     Row() {
@@ -147,10 +138,8 @@ build() {
                 testNapi.testGetImageInfo(this._PixelMap);
                 console.info("Test GetImageInfo success");
 
-
                 testNapi.testAccessPixels(this._PixelMap);
                 console.info("Test AccessPixels success");
-
 
                 testNapi.testUnAccessPixels(this._PixelMap);
                 console.info("Test UnAccessPixels success");
@@ -162,5 +151,147 @@ build() {
     .height('100%')
 }
 }
-图片编码
-位图操作
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libpixelmap_ndk.z.so)
+```
+
+### Code block 2
+
+```
+EXTERN_C_START
+static napi_value Init(napi_env env, napi_value exports)
+{
+    napi_property_descriptor desc[] = {
+        { "testGetImageInfo", nullptr, TestGetImageInfo, nullptr, nullptr, nullptr, napi_default, nullptr },
+        { "testAccessPixels", nullptr, TestAccessPixels, nullptr, nullptr, nullptr, napi_default, nullptr },
+        { "testUnAccessPixels", nullptr, TestUnAccessPixels, nullptr, nullptr, nullptr, napi_default, nullptr },
+    };
+
+    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    return exports;
+}
+EXTERN_C_END
+```
+
+### Code block 3
+
+```
+#include<multimedia/image_framework/image_pixel_map_napi.h>
+```
+
+### Code block 4
+
+```
+static napi_value TestGetImageInfo(napi_env env, napi_callback_info info)
+ {
+     napi_value result = nullptr;
+     napi_get_undefined(env, &result);
+
+     napi_value thisVar = nullptr;
+     napi_value argValue[1] = {0};
+     size_t argCount = 1;
+
+     napi_get_cb_info(env, info, &argCount, argValue, &thisVar, nullptr);
+
+     OHOS::Media::OhosPixelMapInfo pixelMapInfo;
+     OHOS::Media::OH_GetImageInfo(env, argValue[0], &pixelMapInfo);
+     return result;
+ }
+```
+
+### Code block 5
+
+```
+static napi_value TestAccessPixels(napi_env env, napi_callback_info info)
+{
+    napi_value result = nullptr;
+    napi_get_undefined(env, &result);
+
+    napi_value thisVar = nullptr;
+    napi_value argValue[1] = {0};
+    size_t argCount = 1;
+
+    napi_get_cb_info(env, info, &argCount, argValue, &thisVar, nullptr);
+
+    void* addrPtr = nullptr;
+    OHOS::Media::OH_AccessPixels(env, argValue[0], &addrPtr);
+    return result;
+}
+```
+
+### Code block 6
+
+```
+static napi_value TestUnAccessPixels(napi_env env, napi_callback_info info)
+{
+    napi_value result = nullptr;
+    napi_get_undefined(env, &result);
+
+    napi_value thisVar = nullptr;
+    napi_value argValue[1] = {0};
+    size_t argCount = 1;
+
+    napi_get_cb_info(env, info, &argCount, argValue, &thisVar, nullptr);
+
+    OHOS::Media::OH_UnAccessPixels(env, argValue[0]);
+    return result;
+}
+```
+
+### Code block 7
+
+```
+import { image } from '@kit.ImageKit';
+export const add:(a: number, b: number) => image.PixelMap;
+export const transform: (a: image.PixelMap) => image.PixelMap;
+export const testGetImageInfo: (a: image.PixelMap) => image.PixelMap;
+export const testAccessPixels: (a: image.PixelMap) => image.PixelMap;
+export const testUnAccessPixels: (a: image.PixelMap) => image.PixelMap;
+```
+
+### Code block 8
+
+```
+import testNapi from 'libentry.so';
+import { image } from '@kit.ImageKit';
+
+@Entry
+@Component
+struct Index {
+@State message: string = 'IMAGE';
+@State _PixelMap : image.PixelMap | undefined = undefined;
+
+build() {
+    Row() {
+    Column() {
+        Button(this.message)
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+        .onClick(() => {
+            const color : ArrayBuffer = new ArrayBuffer(96);
+            let opts: image.InitializationOptions = { alphaType: 0, editable: true, pixelFormat: 4, scaleMode: 1, size: { height: 4, width: 6 } };
+            image.createPixelMap(color, opts)
+            .then( (pixelmap : image.PixelMap) => {
+                this._PixelMap = pixelmap;
+                testNapi.testGetImageInfo(this._PixelMap);
+                console.info("Test GetImageInfo success");
+
+                testNapi.testAccessPixels(this._PixelMap);
+                console.info("Test AccessPixels success");
+
+                testNapi.testUnAccessPixels(this._PixelMap);
+                console.info("Test UnAccessPixels success");
+            })
+        })
+    }
+    .width('100%')
+    }
+    .height('100%')
+}
+}
+```

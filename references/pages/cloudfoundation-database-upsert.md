@@ -45,5 +45,23 @@ async upsert() {
     hilog.error(0x0000, 'testTag', `Failed to upsert a book, code: ${err.code}, message: ${err.message}`);
   }
 }
-查询数据
-删除数据
+
+## Code blocks
+
+### Code block 1
+
+```
+// 更新“西游记”的借阅者信息
+async upsert() {
+  try {
+    let book = await this.queryBook('西游记'); // 查询出“西游记”的书籍信息
+    book.borrowerId = 1;
+    book.borrowerName = '小明';
+    book.borrowerTime = new Date();
+    let record = await databaseZone.upsert(book);
+    hilog.info(0x0000, 'testTag', `Succeeded in upserting a book, result: ${JSON.stringify(record)}`);
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to upsert a book, code: ${err.code}, message: ${err.message}`);
+  }
+}
+```

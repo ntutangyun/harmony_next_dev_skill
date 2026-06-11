@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-digital-cny-pay_
 
+说明
+
+用户手机端rom版本过低可能导致应用闪退，建议开发者对开放接口抛出的异常错误进行捕获并进行处理。
+
+华为钱包最低版本要求为 1.0.8.305。
+
+场景介绍
+
+从5.0.1(13)版本开始，新增支持数字人民币支付场景。
+
 例如用户需要通过数字钱包充值话费，此时用户可打开商户APP应用，选好充值金额发起支付，商户通过接入数字人民币支付服务，拉起数字人民币收银台完成订单支付。
 
 支持商户模型：运营机构或受理服务机构入网的商户
@@ -13,14 +23,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-d
 数字人民币支付接入流程如下：
 
 步骤	说明
-开发准备	
-
-请先完成开发准备后再进行下面的开发接入。
-
-- 数字人民币接入准备
-
-
+开发准备	请先完成开发准备后再进行下面的开发接入。 - 数字人民币接入准备
 接入数字人民币支付	根据数字人民币支付场景开发步骤完成接入。
+
 业务流程
 
 开发者接入数字人民币支付服务，可以快速实现应用的数字人民币支付能力。
@@ -55,16 +60,18 @@ Payment Kit客户端展示支付结果页。
 
 接口名	描述
 requestEcnyPayment(context:common.Context, orderInfo: EcnyOrderInfo): Promise<EcnyPayResult>;	拉起数字人民币收银台。
+
 开发步骤
-获取开发指引
+
+[h2]获取开发指引
 
 拨打数字人民币客服热线（956196）获取运营机构或受理服务机构提供的开发指引。
 
-预下单（服务器开发）
+[h2]预下单（服务器开发）
 
 开发者需要按照运营机构或受理服务机构提供的开发指引进行开发。
 
-拉起数字人民币收银台（端侧开发）
+[h2]拉起数字人民币收银台（端侧开发）
 
 商户客户端使用orderInfo作为参数调用requestEcnyPayment接口拉起数字人民币收银台。
 
@@ -77,13 +84,13 @@ requestEcnyPayment(context:common.Context, orderInfo: EcnyOrderInfo): Promise<Ec
 import { BusinessError } from '@kit.BasicServicesKit';
 import { ecnyPaymentService } from '@kit.PaymentKit';
 import { common } from '@kit.AbilityKit';
- 
+
 @Entry
 @Component
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestEcnyPaymentPromise() {
-    // use your own orderInfo
+    // 请开发者使用自己的订单信息（orderInfo）
     const orderInfo: ecnyPaymentService.EcnyOrderInfo = {
       merchantAppId: "***",
       merchantNo: "***",
@@ -97,15 +104,15 @@ struct Index {
     };
     ecnyPaymentService.requestEcnyPayment(this.context, orderInfo)
       .then((result: ecnyPaymentService.EcnyPayResult) => {
-        // pay success
+        // 支付成功
         console.info(`succeeded in paying, result.orderNo: ${result.orderNo}, result.extraInfo: ${result.extraInfo}`);
       })
       .catch((error: BusinessError) => {
-        // failed to pay
+        // 支付失败
         console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
- 
+
   build() {
     Column() {
       Button('requestEcnyPaymentPromise')
@@ -120,15 +127,66 @@ struct Index {
     .height('100%')
   }
 }
+
 说明
 
 如果初次使用数字人民币收银台，系统会自动通过拉起数字人民币元服务，完成授权登录。
 
 支付成功，不建议以客户端返回作为用户的支付结果，需以服务器接收到的结果通知或者查询API返回为准。
 
-支付结果回调通知（服务器开发）
+[h2]支付结果回调通知（服务器开发）
 
 开发者需要按照运营机构或受理服务机构提供的开发指引进行开发。
 
-签约代扣场景
-通用收银台接入
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ecnyPaymentService } from '@kit.PaymentKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  requestEcnyPaymentPromise() {
+    // 请开发者使用自己的订单信息（orderInfo）
+    const orderInfo: ecnyPaymentService.EcnyOrderInfo = {
+      merchantAppId: "***",
+      merchantNo: "***",
+      acqAgtInstnId: "***",
+      creditorInstitutionId: "***",
+      encryptedKey: "***",
+      encryptedInfo: "***",
+      encryptionSN: "***",
+      extraInfo: "***",
+      lastWalletId: "***"
+    };
+    ecnyPaymentService.requestEcnyPayment(this.context, orderInfo)
+      .then((result: ecnyPaymentService.EcnyPayResult) => {
+        // 支付成功
+        console.info(`succeeded in paying, result.orderNo: ${result.orderNo}, result.extraInfo: ${result.extraInfo}`);
+      })
+      .catch((error: BusinessError) => {
+        // 支付失败
+        console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+      });
+  }
+
+  build() {
+    Column() {
+      Button('requestEcnyPaymentPromise')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          this.requestEcnyPaymentPromise();
+        })
+      }
+    .width('100%')
+    .height('100%')
+  }
+}
+```

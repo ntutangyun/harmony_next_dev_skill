@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pastebutton_
 
+粘贴控件是一种特殊的系统安全控件，它允许应用在用户的授权下静默读取剪贴板数据。
+
+集成粘贴控件后，单击该控件时，应用读取剪贴板数据不会弹窗提示。适用于任何需要读取剪贴板的应用场景，避免弹窗干扰用户。
+
 例如，用户在应用外（如短信）复制了验证码，要在应用内粘贴验证码。用户原来在进入应用后，还需要长按输入框、在弹出的选项中点击粘贴，才能完成输入。而使用粘贴控件，用户只需进入应用后直接点击粘贴按钮，即可一步到位。
 
 粘贴控件效果如图所示。
@@ -32,12 +36,10 @@ import { pasteboard } from '@kit.BasicServicesKit';
 
 import { pasteboard, BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = '';
-
 
   build() {
     Row() {
@@ -65,6 +67,49 @@ struct Index {
     .height('100%')
   }
 }
-Paste.ets
-安全控件概述
-使用保存控件
+
+## Code blocks
+
+### Code block 1
+
+```
+import { pasteboard } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+import { pasteboard, BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = '';
+
+  build() {
+    Row() {
+      Column({ space: 10 }) {
+        TextInput({ placeholder: $r('app.string.input_verify_code'), text: this.message })
+          .onChange((val: string) => {
+            this.message = val;
+          })
+        PasteButton()
+          .padding({top: 12, bottom: 12, left: 24, right: 24})
+          .onClick((event: ClickEvent, result: PasteButtonOnClickResult) => {
+            if (PasteButtonOnClickResult.SUCCESS === result) {
+              pasteboard.getSystemPasteboard().getData((err: BusinessError, pasteData: pasteboard.PasteData) => {
+                if (err) {
+                  console.error(`Failed to get paste data. Code is ${err.code}, message is ${err.message}`);
+                  return;
+                }
+                this.message = pasteData.getPrimaryText();
+              });
+            }
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

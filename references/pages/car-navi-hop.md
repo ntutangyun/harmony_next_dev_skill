@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/car-navi-hop_
 
+场景介绍
+
+导航流转至车机包含如下几个常见使用场景：
+
 碰一碰导航流转：用户在手机地图的指定页面中（地图选点页面、规划路线页面、驾车导航页面），与车机中控屏指定区域碰一碰后，将手机上的导航数据流转至车机。
 
 上车导航自动流转：用户使用手机地图应用发起驾车导航后上车，手机上的导航数据会自动流转至车机。
@@ -18,12 +22,14 @@ on('smartMobilityEvent')	注册智慧出行业务的事件监听。
 updateNavigationStatus	设置导航状态，包含地图状态、导航类型、导航目的地、导航途经点、路线和主题等。
 unregisterSystemNavigationListener	取消注册监听系统导航信息和指令。
 off('smartMobilityEvent')	取消注册智慧出行业务的事件监听。
-SmartMobilityEvent事件名说明
+
+[h2]SmartMobilityEvent事件名说明
 
 SmartMobilityEvent事件名（eventName）取值如下：
 
 事件名	描述
 hopSucceeded	流转成功事件。
+
 开发流程
 
 开发步骤
@@ -33,7 +39,9 @@ hopSucceeded	流转成功事件。
 请参考配置能力进行配置。导航流转至车机场景下，metadata的name取值为carHopCapability。对应的value值根据不同的使用场景取值如下：
 
 碰一碰导航流转场景下，value取值为carHopNavi。
+
 上车导航自动流转场景下，value取值为getOnCarNavi。
+
 车内导航自动流转场景下，value取值为insideCarNavi。
 
 导入相关模块。
@@ -63,7 +71,6 @@ class Listener implements navigationInfoMgr.SystemNavigationListener {
     });
   }
 
-
   // 实现onReceiveNavigationCmd方法
   onReceiveNavigationCmd(command: navigationInfoMgr.CommandType,
     args: Record<string, Object>): Promise<navigationInfoMgr.ResultData> {
@@ -78,7 +85,6 @@ class Listener implements navigationInfoMgr.SystemNavigationListener {
     });
   }
 }
-
 
 try {
   // 获取NavigationController实例
@@ -102,7 +108,6 @@ const callBack = (event: smartMobilityCommon.SmartMobilityEvent) => {
     // ...
   }
 };
-
 
 try {
   // 业务类型
@@ -157,7 +162,6 @@ let navigationStatus: navigationInfoMgr.NavigationStatus = {
   ],
   theme: navigationInfoMgr.ThemeType.LIGHT
 };
-
 
 try {
   // 获取 NavigationController
@@ -217,5 +221,179 @@ try {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister smart mobility event listener error, error code: ${e?.code}`);
 }
-实现车机导航流转
-地址流转至车机
+
+## Code blocks
+
+### Code block 1
+
+```
+import { navigationInfoMgr, smartMobilityCommon } from '@kit.CarKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+// 实现SystemNavigationListener接口
+class Listener implements navigationInfoMgr.SystemNavigationListener {
+  // 实现onQueryNavigationInfo方法
+  onQueryNavigationInfo(query: navigationInfoMgr.QueryType,
+    args: Record<string, Object>): Promise<navigationInfoMgr.ResultData> {
+    // 返回导航信息给系统
+    return new Promise(resolve => {
+      let ret: navigationInfoMgr.ResultData = {
+        code: 1001,
+        message: 'message test1',
+        data: args
+      };
+      resolve(ret);
+    });
+  }
+
+  // 实现onReceiveNavigationCmd方法
+  onReceiveNavigationCmd(command: navigationInfoMgr.CommandType,
+    args: Record<string, Object>): Promise<navigationInfoMgr.ResultData> {
+    // 接收并处理系统导航指令
+    return new Promise(resolve => {
+      let ret: navigationInfoMgr.ResultData = {
+        code: 1002,
+        message: 'message test2',
+        data: args
+      };
+      resolve(ret);
+    });
+  }
+}
+
+try {
+  // 获取NavigationController实例
+  let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
+  // 注册监听系统导航信息和指令
+  navInfoController.registerSystemNavigationListener(new Listener());
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `register system navigation listener error, error code: ${e?.code}`);
+}
+```
+
+### Code block 3
+
+```
+// 智慧出行业务的事件回调函数
+const callBack = (event: smartMobilityCommon.SmartMobilityEvent) => {
+  hilog.info(0x0000, 'testTag', 'Received smart mobility event: ', JSON.stringify(event));
+  if (event.eventName === 'hopSucceeded' && event.type === smartMobilityCommon.SmartMobilityType.CAR_HOP) {
+    // 地图应用处理流转成功事件（如退出导航等）
+    // ...
+  }
+};
+
+try {
+  // 业务类型
+  let types: smartMobilityCommon.SmartMobilityType[] = [smartMobilityCommon.SmartMobilityType.CAR_HOP];
+  // 获取SmartMobilityAwareness实例
+  let awareness: smartMobilityCommon.SmartMobilityAwareness = smartMobilityCommon.getSmartMobilityAwareness();
+  // 注册智慧出行业务的事件监听
+  awareness.on('smartMobilityEvent', types, callBack);
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `register smart mobility event listener error, error code: ${e?.code}`);
+}
+```
+
+### Code block 4
+
+```
+// 设置目的地
+let location: navigationInfoMgr.Location = {
+  name: 'location',
+  coordType: navigationInfoMgr.LocationCoordType.GCJ02,
+  longitude: 0.000000000000001,
+  latitude: 1.000000000000001,
+  altitude: 2.000000000000001
+};
+// 设置途经点（可选）
+let passPoint0: navigationInfoMgr.Location = {
+  name: 'passPoint0',
+  coordType: navigationInfoMgr.LocationCoordType.GCJ02,
+  longitude: 29.53851890563965,
+  latitude: 16.50643920898438,
+  altitude: 3.00015949516846
+};
+let passPoint1: navigationInfoMgr.Location = {
+  name: 'passPoint1',
+  coordType: navigationInfoMgr.LocationCoordType.WGS84,
+  longitude: 4.4445874651238,
+  latitude: 5.55565329843751,
+  altitude: 6.66641578943265
+};
+// 设置导航状态属性
+let navigationStatus: navigationInfoMgr.NavigationStatus = {
+  status: navigationInfoMgr.MapStatus.NAVIGATION,
+  naviType: navigationInfoMgr.NaviType.DRIVING,
+  destLocation: location,
+  passPoint: [passPoint0, passPoint1],
+  routeIndex: 101,
+  customData: 'customData',
+  routePreference: [
+    navigationInfoMgr.RoutePreference.TIME_FIRST,
+    navigationInfoMgr.RoutePreference.MAIN_ROAD_FIRST
+  ],
+  theme: navigationInfoMgr.ThemeType.LIGHT
+};
+
+try {
+  // 获取 NavigationController
+  let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
+  navInfoController.updateNavigationStatus(navigationStatus);
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `update navigation status error, error code: ${e?.code}`);
+}
+```
+
+### Code block 5
+
+```
+try {
+  // 获取NavigationController实例
+  let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
+  // 取消注册监听系统导航信息和指令
+  navInfoController.unregisterSystemNavigationListener();
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `unregister system navigation listener error, error code: ${e?.code}`);
+}
+```
+
+### Code block 6
+
+```
+try {
+  // 业务类型
+  let types: smartMobilityCommon.SmartMobilityType[] = [smartMobilityCommon.SmartMobilityType.CAR_HOP];
+  // 获取SmartMobilityAwareness实例
+  let awareness: smartMobilityCommon.SmartMobilityAwareness = smartMobilityCommon.getSmartMobilityAwareness();
+  // 解注册智慧出行业务的事件监听
+  awareness.off('smartMobilityEvent', types);
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `unregister smart mobility event listener error, error code: ${e?.code}`);
+}
+```
+
+### Code block 7
+
+```
+try {
+  // 业务类型
+  let types: smartMobilityCommon.SmartMobilityType[] = [smartMobilityCommon.SmartMobilityType.CAR_HOP];
+  // 获取SmartMobilityAwareness实例
+  let awareness: smartMobilityCommon.SmartMobilityAwareness = smartMobilityCommon.getSmartMobilityAwareness();
+  // 解注册智慧出行业务的事件监听，callback为步骤4中定义的callback
+  awareness.off('smartMobilityEvent', types, callBack);
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `unregister smart mobility event listener error, error code: ${e?.code}`);
+}
+```

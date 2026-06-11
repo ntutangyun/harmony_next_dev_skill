@@ -2,12 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-shooting_
 
+概述
+
 拍照是相机的重要功能之一，拍照模块基于相机复杂的逻辑，为了保证用户拍出的照片质量，在中间步骤可以设置分辨率、闪光灯、焦距、照片质量及旋转角度等信息。
 
 目前相机开发有两种相机拍照方案，分别是相机分段式拍照和相机单段式拍照（本文将以单段式拍照为基础进行说明）。
 
 分段式拍照是指相机拍照既可以输出低质量图用作缩略图，提升用户感知拍照速度，也可以使用高质量图保证最后的成图质量达到系统相机的水平。满足了图像处理算法的需求的同时，又不会阻塞前台的拍照速度，构筑相机性能竞争力，提升用户体验。
+
 单段式拍照是指在拍照过程中通过多帧融合以及多个底层算法处理之后返回一张高质量图片，所以Shot2See（用户点击拍照控件到在缩略图显示区域显示缩略图的过程）完成时延较长。此外，单段式拍照支持通过高性能拍照功能调整画质优先策略，以加快出图速度或提升图片质量。
+
 开发步骤
 
 详细的API说明请参考@ohos.multimedia.camera (相机管理)。
@@ -69,7 +73,6 @@ function setPhotoOutputCb(photoOutput: camera.PhotoOutput) {
          return;
        }
        // 如需要在图库中看到所保存的图片、视频资源，请使用用户无感的安全控件创建媒体资源。
-
 
       // buffer处理结束后需要释放该资源，如果未正确释放资源会导致后续拍照获取不到buffer。
       imageObj.release();
@@ -176,6 +179,7 @@ function capture(captureLocation: camera.Location, photoOutput: camera.PhotoOutp
     console.error(`capture call failed. error: ${error}`);
   }
 }
+
 高性能拍照
 
 从API version 21开始支持高性能拍照功能，即在进行单段式拍照时设置明确的画质优先策略。
@@ -186,19 +190,23 @@ function capture(captureLocation: camera.Location, photoOutput: camera.PhotoOutp
 
 仅单段式拍照支持设置画质优先策略。若在分段式拍照中设置画质优先策略，该设置将无效。
 
-画质优先策略
+[h2]画质优先策略
 
 在使用单段式拍照时，支持设置速度优先和画质优先两种画质优先策略类型，并且分别对应着不同的PhotoQualityPrioritization枚举类型。
 
 SPEED对应着速度优先，表示降低画质来提升拍照的速度。如果开发者在进行单段式拍照时没有设置明确的画质优先策略，单段式拍照就默认为速度优先状态。
+
 HIGH_QUALITY对应着画质优先，表示通过较长的耗时来得到画质更高的图片。
-如何正确设置画质优先策略
+
+[h2]如何正确设置画质优先策略
 
 为了正确的在单段式拍照中设置画质优先策略，高性能拍照功能提供了如下两个接口：
 
 isPhotoQualityPrioritizationSupported：查询当前设备是否支持指定的画质优先策略。返回true表示支持，返回false表示不支持。在进行设置画质优先策略之前，必须先查询将要设置的画质优先策略在当前设备上是否可用。
+
 setPhotoQualityPrioritization：画质优先策略设置接口，通过该接口设置对应的画质优先策略，实现高性能拍照。
-开发步骤
+
+[h2]开发步骤
 
 高性能拍照相关接口需要在会话管理(ArkTS)流程的使能步骤中进行调用。
 
@@ -206,16 +214,16 @@ setPhotoQualityPrioritization：画质优先策略设置接口，通过该接口
 
 在会话管理(ArkTS)流程的使能步骤中的commitConfig结束之后进行调用。
 
-async function startSession(videoSession: camera.VideoSession, cameraInput: camera.CameraInput, previewOutput: camera.PreviewOutput, photoOutput: camera.PhotoOutput): Promise<void> {
+async function startSession(photoSession: camera.PhotoSession, cameraInput: camera.CameraInput, previewOutput: camera.PreviewOutput, photoOutput: camera.PhotoOutput): Promise<void> {
   try {
-    videoSession.addInput(cameraInput);
+    photoSession.addInput(cameraInput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to addInput. error: ${err.code}`);
   }
   let canAddPreviewOutput : boolean = false;
   try {
-    canAddPreviewOutput = videoSession.canAddOutput(previewOutput);
+    canAddPreviewOutput = photoSession.canAddOutput(previewOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add previewOutput. error: ${err.code}`);
@@ -225,14 +233,14 @@ async function startSession(videoSession: camera.VideoSession, cameraInput: came
     return;
   }
   try {
-    videoSession.addOutput(previewOutput);
+    photoSession.addOutput(previewOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add previewOutput. error: ${err.code}`);
   }
   let canAddPhotoOutput : boolean = false
   try {
-    canAddPhotoOutput = videoSession.canAddOutput(photoOutput);
+    canAddPhotoOutput = photoSession.canAddOutput(photoOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add photoOutput error: ${err.code}`);
@@ -242,32 +250,31 @@ async function startSession(videoSession: camera.VideoSession, cameraInput: came
     return;
   }
   try {
-    videoSession.addOutput(photoOutput);
+    photoSession.addOutput(photoOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add photoOutput. error: ${err.code}`);
   }
   try {
-    await videoSession.commitConfig();
+    await photoSession.commitConfig();
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to commitConfig. error: ${err.code}`);
     return;
   }
- 
+
   try {
-    await videoSession.start();
+    await photoSession.start();
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to start. error: ${err.code}`);
   }
-  modeSwitchToHigh(videoSession, photoOutput);
+  modeSwitchToHigh(photoSession, photoOutput);
 }
 
-
-async function modeSwitchToHigh(videoSession: camera.VideoSession, photoOutput: camera.PhotoOutput): Promise<void> {
+async function modeSwitchToHigh(photoSession: camera.PhotoSession, photoOutput: camera.PhotoOutput): Promise<void> {
   try {
-    if (videoSession) {
+    if (photoSession) {
       let quality: camera.PhotoQualityPrioritization = camera.PhotoQualityPrioritization.HIGH_QUALITY;
       let isSupported = false;
       isSupported = photoOutput.isPhotoQualityPrioritizationSupported(quality);
@@ -286,16 +293,16 @@ async function modeSwitchToHigh(videoSession: camera.VideoSession, photoOutput: 
 
 在会话管理(ArkTS)流程的使能步骤中的commitConfig之前调用。
 
-async function startSession(videoSession: camera.VideoSession, cameraInput: camera.CameraInput, previewOutput: camera.PreviewOutput, photoOutput: camera.PhotoOutput): Promise<void> {
+async function startSession(photoSession: camera.PhotoSession, cameraInput: camera.CameraInput, previewOutput: camera.PreviewOutput, photoOutput: camera.PhotoOutput): Promise<void> {
   try {
-    videoSession.addInput(cameraInput);
+    photoSession.addInput(cameraInput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to addInput. error: ${err.code}`);
   }
   let canAddPreviewOutput : boolean = false;
   try {
-    canAddPreviewOutput = videoSession.canAddOutput(previewOutput);
+    canAddPreviewOutput = photoSession.canAddOutput(previewOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add previewOutput. error: ${err.code}`);
@@ -305,14 +312,14 @@ async function startSession(videoSession: camera.VideoSession, cameraInput: came
     return;
   }
   try {
-    videoSession.addOutput(previewOutput);
+    photoSession.addOutput(previewOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add previewOutput. error: ${err.code}`);
   }
   let canAddPhotoOutput : boolean = false
   try {
-    canAddPhotoOutput = videoSession.canAddOutput(photoOutput);
+    canAddPhotoOutput = photoSession.canAddOutput(photoOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add photoOutput error: ${err.code}`);
@@ -322,32 +329,31 @@ async function startSession(videoSession: camera.VideoSession, cameraInput: came
     return;
   }
   try {
-    videoSession.addOutput(photoOutput);
+    photoSession.addOutput(photoOutput);
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to add photoOutput. error: ${err.code}`);
   }
-  modeSwitchToHigh(videoSession, photoOutput);
+  modeSwitchToHigh(photoSession, photoOutput);
   try {
-    await videoSession.commitConfig();
+    await photoSession.commitConfig();
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to commitConfig. error: ${err.code}`);
     return;
   }
- 
+
   try {
-    await videoSession.start();
+    await photoSession.start();
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to start. error: ${err.code}`);
   }
 }
 
-
-async function modeSwitchToHigh(videoSession: camera.VideoSession, photoOutput: camera.PhotoOutput): Promise<void> {
+async function modeSwitchToHigh(photoSession: camera.PhotoSession, photoOutput: camera.PhotoOutput): Promise<void> {
   try {
-    if (videoSession) {
+    if (photoSession) {
       let quality: camera.PhotoQualityPrioritization = camera.PhotoQualityPrioritization.HIGH_QUALITY;
       let isSupported = false;
       isSupported = photoOutput.isPhotoQualityPrioritizationSupported(quality);
@@ -363,6 +369,7 @@ async function modeSwitchToHigh(videoSession: camera.VideoSession, photoOutput: 
     console.error(`catch error`);
   }
 }
+
 状态监听
 
 在相机应用开发过程中，可以随时监听拍照输出流状态，包括拍照流开始、拍照帧的开始与结束、拍照输出流的错误。
@@ -408,5 +415,373 @@ function onPhotoOutputError(photoOutput: camera.PhotoOutput): void {
     console.error(`Photo output error code: ${error.code}`);
   });
 }
-双路预览(ArkTS)
-拍照实践(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { image } from '@kit.ImageKit';
+import { camera } from '@kit.CameraKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+function getPhotoOutput(cameraManager: camera.CameraManager, cameraOutputCapability: camera.CameraOutputCapability): camera.PhotoOutput | undefined {
+  let photoProfilesArray: Array<camera.Profile> = cameraOutputCapability.photoProfiles;
+  if (!photoProfilesArray || photoProfilesArray.length === 0) {
+    console.error("photoProfilesArray is null or []");
+  }
+  let photoOutput: camera.PhotoOutput | undefined = undefined;
+  try {
+    photoOutput = cameraManager.createPhotoOutput(photoProfilesArray[0]);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to createPhotoOutput. error: ${err}`);
+  }
+  return photoOutput;
+}
+```
+
+### Code block 3
+
+```
+function setPhotoOutputCb(photoOutput: camera.PhotoOutput) {
+// 设置回调之后，调用photoOutput的capture方法，就会将拍照的buffer回传到回调中。
+  photoOutput.on('photoAvailable', (errCode: BusinessError, photo: camera.Photo): void => {
+     console.info('getPhoto start');
+     if (errCode || photo === undefined) {
+       console.error('getPhoto failed, err: ${errCode}');
+       return;
+     }
+     let imageObj: image.Image = photo.main;
+     imageObj.getComponent(image.ComponentType.JPEG, (errCode: BusinessError, component: image.Component): void => {
+       console.info('getComponent start');
+       if (errCode || component === undefined) {
+         console.error('getComponent failed');
+         return;
+       }
+       let buffer: ArrayBuffer;
+       if (component.byteBuffer) {
+         buffer = component.byteBuffer;
+       } else {
+         console.error('byteBuffer is null');
+         return;
+       }
+       // 如需要在图库中看到所保存的图片、视频资源，请使用用户无感的安全控件创建媒体资源。
+
+      // buffer处理结束后需要释放该资源，如果未正确释放资源会导致后续拍照获取不到buffer。
+      imageObj.release();
+    });
+  });
+}
+```
+
+### Code block 4
+
+```
+function configuringSession(photoSession: camera.PhotoSession): void {
+  // 判断设备是否支持闪光灯。
+  let flashStatus: boolean = false;
+  try {
+    flashStatus = photoSession.hasFlash();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to hasFlash. error: ${err}`);
+  }
+  console.info(`Returned with the flash light support status: ${flashStatus}`);
+  if (flashStatus) {
+    // 判断是否支持自动闪光灯模式。
+    let flashModeStatus: boolean = false;
+    try {
+      flashModeStatus = photoSession?.isFlashModeSupported(camera.FlashMode.FLASH_MODE_AUTO);
+    } catch (error) {
+      let err = error as BusinessError;
+      console.error(`Failed to check whether the flash mode is supported. error: ${err}`);
+    }
+    if (flashModeStatus) {
+      // 设置自动闪光灯模式。
+      try {
+        photoSession?.setFlashMode(camera.FlashMode.FLASH_MODE_AUTO);
+      } catch (error) {
+        let err = error as BusinessError;
+        console.error(`Failed to set the flash mode. error: ${err}`);
+      }
+    }
+  }
+  // 判断是否支持连续自动变焦模式。
+  let focusModeStatus: boolean = false;
+  try {
+    focusModeStatus = photoSession?.isFocusModeSupported(camera.FocusMode.FOCUS_MODE_CONTINUOUS_AUTO);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to check whether the focus mode is supported. error: ${err}`);
+  }
+  if (focusModeStatus) {
+    // 设置连续自动变焦模式。
+    try {
+      photoSession?.setFocusMode(camera.FocusMode.FOCUS_MODE_CONTINUOUS_AUTO);
+    } catch (error) {
+      let err = error as BusinessError;
+      console.error(`Failed to set the focus mode. error: ${err}`);
+    }
+  }
+  // 获取相机支持的可变焦距比范围。
+  let zoomRatioRange: Array<number> = [];
+  try {
+    zoomRatioRange = photoSession?.getZoomRatioRange();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to get the zoom ratio range. error: ${err}`);
+  }
+  if (zoomRatioRange.length <= 0 ) {
+    return;
+  }
+  // 设置可变焦距比。
+  try {
+    photoSession?.setZoomRatio(zoomRatioRange[0]);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to set the zoom ratio value. error: ${err}`);
+  }
+}
+```
+
+### Code block 5
+
+```
+function capture(captureLocation: camera.Location, photoOutput: camera.PhotoOutput): void {
+  let settings: camera.PhotoCaptureSetting = {
+    quality: camera.QualityLevel.QUALITY_LEVEL_HIGH,  // 设置图片质量高。
+    rotation: camera.ImageRotation.ROTATION_0,  // 设置图片旋转角度的camera.ImageRotation.ROTATION_0是通过说明中获取拍照角度的getPhotoRotation方法获取的值进行设置。
+    location: captureLocation,  // 设置图片地理位置。
+    mirror: false  // 设置镜像使能开关(默认关)。
+  };
+  try {
+    photoOutput.capture(settings, (err: BusinessError) => {
+      if (err) {
+        console.error(`Failed to capture the photo. error: ${err}`);
+        return;
+      }
+      console.info('Callback invoked to indicate the photo capture request success.');
+    });
+  } catch (error) {
+    console.error(`capture call failed. error: ${error}`);
+  }
+}
+```
+
+### Code block 6
+
+```
+async function startSession(photoSession: camera.PhotoSession, cameraInput: camera.CameraInput, previewOutput: camera.PreviewOutput, photoOutput: camera.PhotoOutput): Promise<void> {
+  try {
+    photoSession.addInput(cameraInput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to addInput. error: ${err.code}`);
+  }
+  let canAddPreviewOutput : boolean = false;
+  try {
+    canAddPreviewOutput = photoSession.canAddOutput(previewOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add previewOutput. error: ${err.code}`);
+  }
+  if (!canAddPreviewOutput) {
+    console.error(`Failed to add preview output.`);
+    return;
+  }
+  try {
+    photoSession.addOutput(previewOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add previewOutput. error: ${err.code}`);
+  }
+  let canAddPhotoOutput : boolean = false
+  try {
+    canAddPhotoOutput = photoSession.canAddOutput(photoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add photoOutput error: ${err.code}`);
+  }
+  if (!canAddPhotoOutput) {
+    console.error(`Failed to add photo output.`);
+    return;
+  }
+  try {
+    photoSession.addOutput(photoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add photoOutput. error: ${err.code}`);
+  }
+  try {
+    await photoSession.commitConfig();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to commitConfig. error: ${err.code}`);
+    return;
+  }
+
+  try {
+    await photoSession.start();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to start. error: ${err.code}`);
+  }
+  modeSwitchToHigh(photoSession, photoOutput);
+}
+
+async function modeSwitchToHigh(photoSession: camera.PhotoSession, photoOutput: camera.PhotoOutput): Promise<void> {
+  try {
+    if (photoSession) {
+      let quality: camera.PhotoQualityPrioritization = camera.PhotoQualityPrioritization.HIGH_QUALITY;
+      let isSupported = false;
+      isSupported = photoOutput.isPhotoQualityPrioritizationSupported(quality);
+      if (isSupported) {
+        photoOutput.setPhotoQualityPrioritization(quality);
+      } else {
+        console.error(`session is not supported`);
+      }
+    } else {
+      console.error(`session is null`);
+    }
+  } catch {
+    console.error(`catch error`);
+  }
+}
+```
+
+### Code block 7
+
+```
+async function startSession(photoSession: camera.PhotoSession, cameraInput: camera.CameraInput, previewOutput: camera.PreviewOutput, photoOutput: camera.PhotoOutput): Promise<void> {
+  try {
+    photoSession.addInput(cameraInput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to addInput. error: ${err.code}`);
+  }
+  let canAddPreviewOutput : boolean = false;
+  try {
+    canAddPreviewOutput = photoSession.canAddOutput(previewOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add previewOutput. error: ${err.code}`);
+  }
+  if (!canAddPreviewOutput) {
+    console.error(`Failed to add preview output.`);
+    return;
+  }
+  try {
+    photoSession.addOutput(previewOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add previewOutput. error: ${err.code}`);
+  }
+  let canAddPhotoOutput : boolean = false
+  try {
+    canAddPhotoOutput = photoSession.canAddOutput(photoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add photoOutput error: ${err.code}`);
+  }
+  if (!canAddPhotoOutput) {
+    console.error(`Failed to add photo output.`);
+    return;
+  }
+  try {
+    photoSession.addOutput(photoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add photoOutput. error: ${err.code}`);
+  }
+  modeSwitchToHigh(photoSession, photoOutput);
+  try {
+    await photoSession.commitConfig();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to commitConfig. error: ${err.code}`);
+    return;
+  }
+
+  try {
+    await photoSession.start();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to start. error: ${err.code}`);
+  }
+}
+
+async function modeSwitchToHigh(photoSession: camera.PhotoSession, photoOutput: camera.PhotoOutput): Promise<void> {
+  try {
+    if (photoSession) {
+      let quality: camera.PhotoQualityPrioritization = camera.PhotoQualityPrioritization.HIGH_QUALITY;
+      let isSupported = false;
+      isSupported = photoOutput.isPhotoQualityPrioritizationSupported(quality);
+      if (isSupported) {
+        photoOutput.setPhotoQualityPrioritization(quality);
+      } else {
+        console.error(`session is not supported`);
+      }
+    } else {
+      console.error(`session is null`);
+    }
+  } catch {
+    console.error(`catch error`);
+  }
+}
+```
+
+### Code block 8
+
+```
+function onPhotoOutputCaptureStart(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('captureStartWithInfo', (err: BusinessError, captureStartInfo: camera.CaptureStartInfo) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info(`photo capture started, captureId : ${captureStartInfo.captureId}`);
+  });
+}
+```
+
+### Code block 9
+
+```
+function onPhotoOutputCaptureEnd(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('captureEnd', (err: BusinessError, captureEndInfo: camera.CaptureEndInfo) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info(`photo capture end, captureId : ${captureEndInfo.captureId}`);
+    console.info(`frameCount : ${captureEndInfo.frameCount}`);
+  });
+}
+```
+
+### Code block 10
+
+```
+function onPhotoOutputCaptureReady(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('captureReady', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info(`photo capture ready`);
+  });
+}
+```
+
+### Code block 11
+
+```
+function onPhotoOutputError(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('error', (error: BusinessError) => {
+    console.error(`Photo output error code: ${error.code}`);
+  });
+}
+```

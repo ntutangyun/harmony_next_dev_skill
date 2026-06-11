@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/parallel-decoding-nativewindow_
 
+场景介绍
+
 为了解码Surface模式的正常创建，在XComponent尚未创建或OpenGL后处理（NativeImage）尚未初始化的情况下，可以创建一个空的surface，以确保视频解码器能够正常创建和运行。
 
 开发步骤
@@ -14,6 +16,7 @@ target_link_libraries(sample PUBLIC libnative_image.so)
 target_link_libraries(sample PUBLIC libnative_window.so)
 target_link_libraries(sample PUBLIC libnative_buffer.so)
 target_link_libraries(sample PUBLIC libnative_media_vdec.so)
+
 说明
 
 上述'sample'字样仅为示例，此处由开发者根据实际工程目录自定义。
@@ -52,7 +55,9 @@ if (ret != AV_ERR_OK) {
 注册OH_NativeImage的监听者OH_OnFrameAvailableListener，包括：
 
 context 用户自定义的上下文信息；
+
 onFrameAvailable 有buffer可获取触发时的回调函数。
+
 // onFrameAvailable实现。
 static void onFrameAvailable()
 {
@@ -64,12 +69,10 @@ static void onFrameAvailable()
   OH_NativeImage_ReleaseNativeWindowBuffer(image, buffer, fenceFd);
 }
 
-
 static void context()
 {
   // 开发者自定义的上下文信息。
 }
-
 
 // 设置回调监听者。
 OH_OnFrameAvailableListener listener = {&onFrameAvailable, &context};
@@ -78,6 +81,7 @@ ret = OH_NativeImage_SetOnFrameAvailableListener(image, listener);
 if (ret != AV_ERR_OK) {
     // 异常处理。
 }
+
 说明
 
 在此示例中，回调函数的实现仅仅是将buffer取出来并释放，开发者可以根据业务需求自行拓展。
@@ -93,6 +97,7 @@ if (ret != AV_ERR_OK) {
 示例中的变量说明如下：
 
 videoDec：视频解码器实例的指针。创建方式可参考视频解码Surface模式“步骤-2：创建解码器实例对象”。
+
 ret = OH_VideoDecoder_SetSurface(videoDec, nativeImageWindow);
 if (ret != AV_ERR_OK) {
     // 异常处理。
@@ -109,7 +114,9 @@ if (ret != AV_ERR_OK) {
 本例中的nativeWindow，有两种方式获取：
 
 如果解码后直接显示，则从XComponent组件获取，获取方式请参考 XComponent；
+
 如果解码后接OpenGL后处理，则从NativeImage获取，获取方式请参考 NativeImage。
+
 ret = OH_VideoDecoder_SetSurface(videoDec, nativeWindow);
 if (ret != AV_ERR_OK) {
     // 异常处理。
@@ -121,5 +128,104 @@ if (ret != AV_ERR_OK) {
 
 // 销毁OH_NativeImage实例。
 OH_NativeImage_Destroy(&image);
-视频解码同步模式
-视频可变帧率
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC libnative_image.so)
+target_link_libraries(sample PUBLIC libnative_window.so)
+target_link_libraries(sample PUBLIC libnative_buffer.so)
+target_link_libraries(sample PUBLIC libnative_media_vdec.so)
+```
+
+### Code block 2
+
+```
+#include <iostream>
+#include <string>
+#include <native_image/native_image.h>
+#include <native_window/external_window.h>
+#include <native_buffer/native_buffer.h>
+#include <multimedia/player_framework/native_avcodec_videodecoder.h>
+```
+
+### Code block 3
+
+```
+// 创建NativeImage实例，作为surface的消费者。
+OH_NativeImage* image = OH_ConsumerSurface_Create();
+```
+
+### Code block 4
+
+```
+// 获取生产者NativeWindow。
+OHNativeWindow* nativeImageWindow = OH_NativeImage_AcquireNativeWindow(image);
+```
+
+### Code block 5
+
+```
+int code = SET_BUFFER_GEOMETRY;
+int32_t width = 800;
+int32_t height = 600;
+int32_t ret = OH_NativeWindow_NativeWindowHandleOpt(nativeImageWindow, code, width, height);
+if (ret != AV_ERR_OK) {
+    // 异常处理。
+}
+```
+
+### Code block 6
+
+```
+// onFrameAvailable实现。
+static void onFrameAvailable()
+{
+  OHNativeWindowBuffer *buffer = nullptr;
+  int fenceFd;
+  // 通过消费端的OH_NativeImage获取一个OHNativeWindowBuffer。
+  OH_NativeImage_AcquireNativeWindowBuffer(image, &buffer, &fenceFd);
+  // 通过OH_NativeImage实例将OHNativeWindowBuffer归还到buffer队列中。
+  OH_NativeImage_ReleaseNativeWindowBuffer(image, buffer, fenceFd);
+}
+
+static void context()
+{
+  // 开发者自定义的上下文信息。
+}
+
+// 设置回调监听者。
+OH_OnFrameAvailableListener listener = {&onFrameAvailable, &context};
+// 设置帧可用回调。
+ret = OH_NativeImage_SetOnFrameAvailableListener(image, listener);
+if (ret != AV_ERR_OK) {
+    // 异常处理。
+}
+```
+
+### Code block 7
+
+```
+ret = OH_VideoDecoder_SetSurface(videoDec, nativeImageWindow);
+if (ret != AV_ERR_OK) {
+    // 异常处理。
+}
+```
+
+### Code block 8
+
+```
+ret = OH_VideoDecoder_SetSurface(videoDec, nativeWindow);
+if (ret != AV_ERR_OK) {
+    // 异常处理。
+}
+```
+
+### Code block 9
+
+```
+// 销毁OH_NativeImage实例。
+OH_NativeImage_Destroy(&image);
+```

@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-subscribe-superprivacymode_
 
+场景介绍
+
+从6.0.2(22)开始，新增订阅超级隐私模式状态改变事件。
+
 超级隐私模式为用户提供一键关闭敏感器件的能力，管控范围包括位置、相机和麦克风，且随着版本演进，超级隐私模式管控的敏感器件范围会相应调整。应用可通过Device Security Kit提供的接口监听当前超级隐私模式开关状态。
 
 约束与限制
@@ -27,6 +31,7 @@ Device Security Kit调用回调函数通知开发者应用，
 接口名	描述
 on(type: 'superPrivacyModeChange', callback: Callback<SuperPrivacyMode>): void	订阅超级隐私模式状态改变事件
 off(type: 'superPrivacyModeChange', callback?: Callback<SuperPrivacyMode>): void	取消订阅超级隐私模式状态改变事件
+
 开发步骤
 
 导入超级隐私模块及相关公共模块。
@@ -38,7 +43,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = "SuperPrivacyModeTest";
-
 
 const superPrivacyChangedCallback = (superPrivacyMode: superPrivacyMode.SuperPrivacyMode): void => {
   hilog.info(DOMAIN, TAG, `super privcy mode changed, mode = ${superPrivacyMode}`);
@@ -59,5 +63,41 @@ try {
 } catch (err) {
   hilog.error(DOMAIN, TAG, `unregister super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
 }
-查询当前状态场景
-个人数据处理说明
+
+## Code blocks
+
+### Code block 1
+
+```
+import { superPrivacyMode } from '@kit.DeviceSecurityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+const DOMAIN = 0x0000;
+const TAG = "SuperPrivacyModeTest";
+
+const superPrivacyChangedCallback = (superPrivacyMode: superPrivacyMode.SuperPrivacyMode): void => {
+  hilog.info(DOMAIN, TAG, `super privcy mode changed, mode = ${superPrivacyMode}`);
+}
+hilog.info(DOMAIN, TAG, 'start register super privacy mode changed listener');
+try {
+  superPrivacyMode.on('superPrivacyModeChange', superPrivacyChangedCallback);
+  hilog.info(DOMAIN, TAG, 'register super privacy mode change listener success');
+} catch (err) {
+  hilog.error(DOMAIN, TAG, `register super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
+}
+```
+
+### Code block 3
+
+```
+hilog.info(DOMAIN, TAG, 'start unregister super privacy mode changed listener');
+try {
+  superPrivacyMode.off('superPrivacyModeChange', superPrivacyChangedCallback);
+} catch (err) {
+  hilog.error(DOMAIN, TAG, `unregister super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
+}
+```

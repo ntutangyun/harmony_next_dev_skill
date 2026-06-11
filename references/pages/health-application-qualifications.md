@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-application-qualifications_
 
+个人开发者接入资质审核要求
+
 个人开发者应用需上架至华为应用市场。个人开发者应用未上架华为应用市场，暂不开放Health Service Kit数据。
 
 申请访问开放等级为基础的用户数据，个人开发者不得有个人信用不良记录。开放等级为高阶的用户数据暂不向个人开发者开放。数据开放等级请参见数据开放总览。
@@ -31,6 +33,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ap
 请在提交材料前先阅读申请被驳回的常见问题，以避免在您的申请材料中出现同类问题。
 
 若您的应用需要申请应用转移，运动健康服务需要对转入方开发者资质进行审核，确保新的应用主体符合资质要求。请将上述申请资料清单以及您的应用ID、应用名称、应用转入开发者ID、更新后的应用隐私政策发送到hihealth@huawei.com邮箱，相关资质评审通过后，方可进行应用转移。
-
-接入流程
-开发接入

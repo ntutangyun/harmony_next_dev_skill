@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgallery-productview-addshortcut_
 
+场景介绍
+
 应用内快捷方式为用户提供了一种快速访问应用功能和内容的便捷方式。通过静态资源和自定义资源方式创建桌面快捷方式，并向用户展示确认弹窗。用户确认后，快捷方式将添加至桌面。静态快捷方式适用于常用功能，如创建新播放列表，而自定义快捷方式适用于特定的、临时内容，如添加最新的新闻文章。
 
 说明
@@ -44,8 +46,10 @@ AppGallery Kit返回加桌结果给应用。
 checkPinShortcutPermitted(context: common.UIAbilityContext, shortcutId: string, want: Want, labelResName: string, iconResName: string): Promise<CheckShortcutResult>	以静态资源方式校验桌面快捷方式。
 checkPinShortcutPermitted(context: common.UIAbilityContext, shortcutId: string, want: Want, label: string, foregroundIcon: string, backgroundIcon: string): Promise<CheckShortcutResult>	以自定义资源方式校验桌面快捷方式。
 requestNewPinShortcut(context: common.UIAbilityContext, tid: string): Promise<void>	创建桌面快捷方式。
+
 开发步骤
-以静态资源方式创建桌面快捷方式
+
+[h2]以静态资源方式创建桌面快捷方式
 
 导入productViewManager模块及相关公共模块。
 
@@ -68,6 +72,7 @@ const want: Want = {            // 对应shortcuts标签中配置的want
     testKey: "testValue"
   }
 };
+
 说明
 
 需提前创建应用静态快捷方式，且shortcutId、labelResName、iconResName、want参数需要与shortcuts标签中的配置保持一致。
@@ -107,6 +112,7 @@ try {
 } catch (err) {
   hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
 }
+
 说明
 
 快捷方式加桌成功后，原校验结果tid会失效，再次加桌需重新校验生成新的tid。
@@ -115,7 +121,7 @@ try {
 
 为了减少权限检查时间和提高加桌操作流畅性，不建议在用户点击加桌后再连续调用这两个接口执行加桌。
 
-以自定义资源方式创建桌面快捷方式
+[h2]以自定义资源方式创建桌面快捷方式
 
 导入productViewManager模块及相关公共模块。
 
@@ -141,6 +147,7 @@ const want: Want = {
  // 显示在桌面图标的应用沙箱地址，图标最大不超过100KB，格式为png和webp
  const foregroundIcon = uiContext.filesDir + "/icon.png";
  const backgroundIcon = "";
+
 说明
 
 当前不支持背景层图标，参数backgroundIcon传空字符串。
@@ -181,6 +188,7 @@ try {
 } catch (err) {
   hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
 }
+
 说明
 
 快捷方式加桌成功后，原校验结果tid会失效，再次加桌需重新校验生成新的tid。
@@ -189,5 +197,140 @@ try {
 
 不建议在用户点击加桌后再连续调用这两个接口执行加桌。
 
-应用内快捷方式
-查询应用内快捷方式
+## Code blocks
+
+### Code block 1
+
+```
+import { productViewManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+const uiContext =this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
+const shortcutId = "id_test1"; // 对应shortcuts标签中配置的shortcutId, 例如: "shortcutId": "id_test1"
+const labelResName = "shortcut"; // 对应shortcuts标签中配置的label资源索引名称, 例如: "label": "$string:shortcut"
+const iconResName = "aa_icon"; // 对应shortcuts标签中配置的icon资源索引名称, 例如: "icon": "$media:aa_icon"
+const want: Want = {            // 对应shortcuts标签中配置的want
+  bundleName: "com.example.appgallery.kit.demo",
+  moduleName: "entry",
+  abilityName: "EntryAbility",
+  parameters: {
+    testKey: "testValue"
+  }
+};
+```
+
+### Code block 3
+
+```
+try {
+  let checkShortcutResult: productViewManager.CheckShortcutResult;
+  productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, labelResName, iconResName)
+    .then((result: productViewManager.CheckShortcutResult) => {
+      hilog.info(0x0001, 'TAG', `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`);
+      checkShortcutResult = result;
+    }).catch((error: BusinessError) => {
+    hilog.error(0x0001, 'TAG',
+      `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
+  })
+} catch (err) {
+  hilog.error(0x0001, 'TAG', `checkPinShortcutPermitted failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 4
+
+```
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
+const tid = checkShortcutResult.tid;
+```
+
+### Code block 5
+
+```
+try {
+  productViewManager.requestNewPinShortcut(uiContext, tid)
+    .then(() => {
+      hilog.info(0x0001, 'TAG', `requestNewPinShortcut success.`);
+    }).catch((error: BusinessError) => {
+    hilog.error(0x0001, 'TAG', `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
+  })
+} catch (err) {
+  hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 6
+
+```
+import { productViewManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 7
+
+```
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 当前Page页面的上下文信息
+const shortcutId = `${Date.now()}`; // 快捷方式ID
+  // 点击快捷方式后被拉起的目标应用的bundleName、moduleName、abilityName
+const want: Want = {
+  bundleName: "com.example.appgallery.kit.demo",
+  moduleName: "entry",
+  abilityName: "EntryAbility",
+  parameters: {
+    testKey: "testValue"
+  }
+ }
+ const label = "shortcut"; // 显示在桌面名称的文本内容
+ // 显示在桌面图标的应用沙箱地址，图标最大不超过100KB，格式为png和webp
+ const foregroundIcon = uiContext.filesDir + "/icon.png";
+ const backgroundIcon = "";
+```
+
+### Code block 8
+
+```
+try {
+  let checkShortcutResult: productViewManager.CheckShortcutResult;
+  productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, label, foregroundIcon, backgroundIcon)
+    .then((result: productViewManager.CheckShortcutResult) => {
+      hilog.info(0x0001, 'TAG', `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`)
+      checkShortcutResult = result;
+    }).catch((error: BusinessError) => {
+    hilog.error(0x0001, 'TAG',
+      `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
+  })
+} catch (err) {
+  hilog.error(0x0001, 'TAG', `checkPinShortcutPermitted failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 9
+
+```
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
+// checkPinShortcutPermitted接口返回的属性tid值。
+const tid = checkShortcutResult.tid;
+```
+
+### Code block 10
+
+```
+try {
+  productViewManager.requestNewPinShortcut(uiContext, tid)
+    .then(() => {
+      hilog.info(0x0001, 'TAG', `requestNewPinShortcut success.`);
+    }).catch((error: BusinessError) => {
+    hilog.error(0x0001, 'TAG', `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
+  })
+} catch (err) {
+  hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
+}
+```

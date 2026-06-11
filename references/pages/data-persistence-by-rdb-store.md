@@ -2,14 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-persistence-by-rdb-store_
 
+场景介绍
+
 关系型数据库基于SQLite组件，适用于存储包含复杂关系数据的场景，比如一个班级的学生信息，需要包括姓名、学号、各科成绩等，又或者公司的雇员信息，需要包括姓名、工号、职位等，由于数据之间有较强的对应关系，复杂程度比键值型数据更高，此时需要使用关系型数据库来持久化保存数据。
 
 大数据量场景下查询数据可能会导致耗时长甚至应用卡死，如有相关操作可参考文档批量数据写数据库场景，且有建议如下：
 
 单次查询数据量不超过5000条。
+
 在TaskPool中查询。
+
 拼接SQL语句尽量简洁。
+
 合理地分批次查询。
+
 基本概念
 
 谓词：数据库中用来代表数据实体的性质、特征或者数据实体之间关系的词项，主要用来定义数据库的操作条件。
@@ -51,6 +57,7 @@ delete(predicates: RdbPredicates, callback: AsyncCallback<number>):void	根据pr
 query(predicates: RdbPredicates, columns: Array<string>, callback: AsyncCallback<ResultSet>):void	根据指定条件查询数据库中的数据。
 deleteRdbStore(context: Context, name: string, callback: AsyncCallback<void>): void	删除数据库。
 isTokenizerSupported(tokenizer: Tokenizer): boolean	判断当前平台是否支持传入的分词器（将文本分解为更小单元的工具，这些单元可以是单词、子词、字符或者其他语言片段）。
+
 开发步骤
 
 因Stage模型、FA模型的差异，个别示例代码提供了在两种模型下的对应示例；示例代码未区分模型或没有对应注释说明时默认在两种模型下均适用。
@@ -67,7 +74,6 @@ import { relationalStore } from '@kit.ArkData'; // 导入模块
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0000;
-
 
 let store: relationalStore.RdbStore | undefined = undefined;
 let tokenType = relationalStore.Tokenizer.ICU_TOKENIZER;
@@ -159,7 +165,6 @@ const STORE_CONFIG: relationalStore.StoreConfig = {
     await transaction.commit();
     // 请确保获取到RdbStore实例，完成数据表创建后，再进行数据库的增、删、改、查等操作
   }
-RdbDataPersistence.ets
 
 FA模型示例：
 
@@ -167,21 +172,17 @@ import { relationalStore } from '@kit.ArkData'; // 导入模块
 import { featureAbility } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let context = featureAbility.getContext();
-
 
 const STORE_CONFIG: relationalStore.StoreConfig = {
   name: 'RdbTest.db', // 数据库文件名
   securityLevel: relationalStore.SecurityLevel.S3 // 数据库安全级别
 };
 
-
 // 假设当前数据库版本为3，表结构：EMPLOYEE (NAME, AGE, SALARY, CODES, IDENTITY)
 // 建表Sql语句，IDENTITY为bigint类型，sql中指定类型为UNLIMITED INT
 const SQL_CREATE_TABLE =
   'CREATE TABLE IF NOT EXISTS EMPLOYEE (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL, AGE INTEGER, SALARY REAL, CODES BLOB, IDENTITY UNLIMITED INT)';
-
 
 relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
   if (err) {
@@ -189,7 +190,6 @@ relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
     return;
   }
   console.info('Succeeded in getting RdbStore.');
-
 
   let storeVersion = store.version;
   // 当数据库创建时，数据库默认版本为0
@@ -204,7 +204,6 @@ relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
     }
   }
 
-
   // 如果数据库版本不为0且和当前数据库版本不匹配，需要进行升降级操作
   // 当前数据库存在并且版本为1，数据库需要从1版本升级到2版本
   if (storeVersion === 1) {
@@ -218,7 +217,6 @@ relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
       console.error(`Failed to execute sql. Code:${err.code}, message:${err.message}`);
     }
   }
-
 
   // 当前数据库存在并且版本为2，数据库需要从2版本升级到3版本
   if (storeVersion === 2) {
@@ -235,6 +233,7 @@ relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
   store.version = storeVersion;
   // 请确保获取到RdbStore实例，完成数据表创建后，再进行数据库的增、删、改、查等操作
 });
+
 说明
 
 应用创建的数据库与其上下文（Context）有关，即使使用同样的数据库名称，但不同的应用上下文，会产生多个数据库，例如每个UIAbility都有各自的上下文。
@@ -267,7 +266,7 @@ if (store !== undefined) {
     hilog.error(DOMAIN, 'rdbDataPersistence', `Failed to insert data. Code:${err.code}, message:${err.message}`);
   }
 }
-RdbDataPersistence.ets
+
 说明
 
 关系型数据库没有显式的flush操作实现持久化，数据插入即保存在持久化文件。
@@ -290,7 +289,6 @@ const valueBucket2: relationalStore.ValuesBucket = {
   IDENTITY: value10,
 };
 
-
 // 修改数据
 let predicates1 = new relationalStore.RdbPredicates('EMPLOYEE'); // 创建表'EMPLOYEE'的predicates
 predicates1.equalTo('NAME', 'Lisa'); // 匹配表'EMPLOYEE'中'NAME'为'Lisa'的字段
@@ -304,7 +302,6 @@ if (store !== undefined) {
   })
 }
 
-
 // 删除数据
 predicates1 = new relationalStore.RdbPredicates('EMPLOYEE');
 predicates1.equalTo('NAME', 'Lisa');
@@ -317,7 +314,6 @@ if (store !== undefined) {
     hilog.info(DOMAIN, 'rdbDataPersistence', `Delete rows: ${rows}`);
   })
 }
-RdbDataPersistence.ets
 
 根据谓词指定的查询条件查找数据。
 
@@ -346,7 +342,7 @@ if (store !== undefined) {
     resultSet.close();
   })
 }
-RdbDataPersistence.ets
+
 说明
 
 当应用完成查询数据操作，不再使用结果集（ResultSet）时，请及时调用close方法关闭结果集，释放系统为其分配的内存。
@@ -380,7 +376,6 @@ if (store !== undefined) {
     hilog.error(DOMAIN, 'rdbDataPersistence', `Query failed. code: ${err.code}, message: ${err.message}.`);
   }
 }
-RdbDataPersistence.ets
 
 使用事务对象执行数据的插入、删除和更新操作。
 
@@ -388,7 +383,7 @@ RdbDataPersistence.ets
 
 支持配置的事务类型有DEFERRED、IMMEDIATE和EXCLUSIVE，默认为DEFERRED。
 
-具体信息请参见关系型数据库。
+具体信息请参见createTransaction。
 
 // 使用事务对象执行数据的插入、删除和更新操作
 if (store !== undefined) {
@@ -410,7 +405,6 @@ if (store !== undefined) {
       );
       hilog.info(DOMAIN, 'rdbDataPersistence', `Insert is successful, rowId = ${rowId}`);
 
-
       const predicates = new relationalStore.RdbPredicates('EMPLOYEE');
       predicates.equalTo('NAME', 'Lisa');
       // 使用事务对象更新数据
@@ -427,11 +421,9 @@ if (store !== undefined) {
       );
       hilog.info(DOMAIN, 'rdbDataPersistence', `Updated row count: ${rows}`);
 
-
       // 使用事务对象删除数据
       await transaction.execute('DELETE FROM EMPLOYEE WHERE age = ? OR age = ?', [21, 20]);
       hilog.info(DOMAIN, 'rdbDataPersistence', `execute delete success`);
-
 
       // 提交事务
       await transaction.commit();
@@ -447,7 +439,6 @@ if (store !== undefined) {
     hilog.error(DOMAIN, 'rdbDataPersistence', `createTransaction failed, code is ${err.code}, message is ${err.message}`);
   }
 }
-RdbDataPersistence.ets
 
 在同路径下备份数据库。关系型数据库支持手动备份和自动备份（仅系统应用可用）两种方式，具体可见关系型数据库备份。
 
@@ -464,7 +455,6 @@ if (store !== undefined) {
     hilog.info(DOMAIN, 'rdbDataPersistence', `Succeeded in backing up RdbStore.`);
   })
 }
-RdbDataPersistence.ets
 
 从备份数据库中恢复数据。关系型数据库支持两种方式：恢复手动备份数据和恢复自动备份数据（仅系统应用可用），具体可见关系型数据库数据恢复。
 
@@ -480,7 +470,6 @@ if (store !== undefined) {
     hilog.info(DOMAIN, 'rdbDataPersistence', `Succeeded in restoring RdbStore.`);
   })
 }
-RdbDataPersistence.ets
 
 删除数据库。
 
@@ -496,9 +485,6 @@ relationalStore.deleteRdbStore(context, 'RdbTest.db', (err: BusinessError) => {
   }
   hilog.info(DOMAIN, 'rdbDataPersistence', 'Succeeded in deleting RdbStore.');
 });
-RdbDataPersistence.ets
-通过键值型数据库实现数据持久化 (ArkTS)
-通过关系型数据库实现数据持久化 (C/C++)
 
 ## Code blocks
 
@@ -509,7 +495,6 @@ import { relationalStore } from '@kit.ArkData'; // 导入模块
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0000;
-
 
 let store: relationalStore.RdbStore | undefined = undefined;
 let tokenType = relationalStore.Tokenizer.ICU_TOKENIZER;
@@ -610,21 +595,17 @@ import { relationalStore } from '@kit.ArkData'; // 导入模块
 import { featureAbility } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let context = featureAbility.getContext();
-
 
 const STORE_CONFIG: relationalStore.StoreConfig = {
   name: 'RdbTest.db', // 数据库文件名
   securityLevel: relationalStore.SecurityLevel.S3 // 数据库安全级别
 };
 
-
 // 假设当前数据库版本为3，表结构：EMPLOYEE (NAME, AGE, SALARY, CODES, IDENTITY)
 // 建表Sql语句，IDENTITY为bigint类型，sql中指定类型为UNLIMITED INT
 const SQL_CREATE_TABLE =
   'CREATE TABLE IF NOT EXISTS EMPLOYEE (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL, AGE INTEGER, SALARY REAL, CODES BLOB, IDENTITY UNLIMITED INT)';
-
 
 relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
   if (err) {
@@ -632,7 +613,6 @@ relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
     return;
   }
   console.info('Succeeded in getting RdbStore.');
-
 
   let storeVersion = store.version;
   // 当数据库创建时，数据库默认版本为0
@@ -647,7 +627,6 @@ relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
     }
   }
 
-
   // 如果数据库版本不为0且和当前数据库版本不匹配，需要进行升降级操作
   // 当前数据库存在并且版本为1，数据库需要从1版本升级到2版本
   if (storeVersion === 1) {
@@ -661,7 +640,6 @@ relationalStore.getRdbStore(context, STORE_CONFIG, async (err, store) => {
       console.error(`Failed to execute sql. Code:${err.code}, message:${err.message}`);
     }
   }
-
 
   // 当前数据库存在并且版本为2，数据库需要从2版本升级到3版本
   if (storeVersion === 2) {
@@ -724,7 +702,6 @@ const valueBucket2: relationalStore.ValuesBucket = {
   IDENTITY: value10,
 };
 
-
 // 修改数据
 let predicates1 = new relationalStore.RdbPredicates('EMPLOYEE'); // 创建表'EMPLOYEE'的predicates
 predicates1.equalTo('NAME', 'Lisa'); // 匹配表'EMPLOYEE'中'NAME'为'Lisa'的字段
@@ -737,7 +714,6 @@ if (store !== undefined) {
     hilog.info(DOMAIN, 'rdbDataPersistence', `Succeeded in updating data. row count: ${rows}`);
   })
 }
-
 
 // 删除数据
 predicates1 = new relationalStore.RdbPredicates('EMPLOYEE');
@@ -834,7 +810,6 @@ if (store !== undefined) {
       );
       hilog.info(DOMAIN, 'rdbDataPersistence', `Insert is successful, rowId = ${rowId}`);
 
-
       const predicates = new relationalStore.RdbPredicates('EMPLOYEE');
       predicates.equalTo('NAME', 'Lisa');
       // 使用事务对象更新数据
@@ -851,11 +826,9 @@ if (store !== undefined) {
       );
       hilog.info(DOMAIN, 'rdbDataPersistence', `Updated row count: ${rows}`);
 
-
       // 使用事务对象删除数据
       await transaction.execute('DELETE FROM EMPLOYEE WHERE age = ? OR age = ?', [21, 20]);
       hilog.info(DOMAIN, 'rdbDataPersistence', `execute delete success`);
-
 
       // 提交事务
       await transaction.commit();

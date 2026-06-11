@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-mgmt-overview_
 
+功能介绍
+
 ArkData （方舟数据管理）为开发者提供数据存储、数据管理和数据同步能力，比如联系人应用数据可以保存到数据库中，提供数据库的安全、可靠以及共享访问等管理机制，也支持与手表同步联系人信息。
 
 标准化数据定义：提供HarmonyOS跨应用、跨设备的统一数据类型标准，包含标准化数据类型和标准化数据结构。
@@ -45,6 +47,3 @@ KV-Store只支持在模拟器使用本地数据库增删改查能力，其余能
 RelationalStore只支持在模拟器使用本地数据库增删改查能力，其余能力不支持。
 
 DataObject端端能力依赖接续框架，当前接续框架在模拟器上只支持手机。
-
-ArkData（方舟数据管理）
-标准化数据定义

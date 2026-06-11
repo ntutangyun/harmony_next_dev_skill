@@ -15,16 +15,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 解析三级证书获取应用公钥、AppID、密钥管理部件ID。
 
 应用公钥直接从密钥证明证书的subjectPublicKeyInfo字段获取。
+
 AppID从扩展字段“1.3.6.1.4.1.2011.2.376.2.1.3.1”获取。
+
 密钥管理部件ID从扩展字段“1.3.6.1.4.1.2011.2.376.2.2.2.6”获取。
 
 检查三级证书的扩展字段是否符合预期：
 
 密钥管理部件ID应为“0E01669E9CFF3848A9538568F1A483E3”。
+
 AppID的值应为调用创建证明密钥接口的应用AppID。
+
 说明
 
 “应用AppID”指的是HarmonyOS应用的ID，包含bundleName和签名证书公钥的哈希值。 获取应用AppID方法请参考“bundleManager 模块”。
-
-签名验证
-验证签名

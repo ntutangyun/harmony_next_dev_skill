@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/websocket-connection_
 
+场景介绍
+
 WebSocket是一种网络通信协议，它允许客户端和服务器之间建立一个持久的连接，并在该连接上进行全双工通信，连接之后客户端和服务器端可以同时主动发送数据，这是WebSocket和传统的HTTP协议最大的区别，HTTP以单向通信为主，客户端发起请求，服务器端响应数据，一次传输之后，连接会断开。一般情况下，HTTP适用于一次性数据获取（如网页内容加载），WebSocket适用于实时性要求高的场景下（如在线聊天、实时游戏），以避免频繁建立连接提升用户体验。
 
 该模块给第三方应用提供webSocket客户端和服务端能力，实现客户端与服务端的双向连接。
@@ -25,13 +27,11 @@ client端开发步骤
 import { webSocket } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-Index.ets
 
 创建WebSocket连接，返回一个WebSocket对象。
 
 let defaultIpAddress = 'wss://echo.websocket.org'; // WebSocket地址
 let ws: webSocket.WebSocket = webSocket.createWebSocket();
-Index.ets
 
 订阅WebSocket的打开、消息接收、关闭、Error事件（可选），当收到on('open')事件时，可以通过send()方法与服务器进行通信，当收到服务器的bye消息时（此消息字段仅为示意，具体字段需要与服务器协商），主动断开连接。
 
@@ -40,7 +40,6 @@ ws.on('open', (err: BusinessError, value: Object) => {
   // 当收到on('open')事件时，可以通过send()方法与服务器进行通信。
   // ...
 });
-
 
 ws.on('message', (err: BusinessError, value: string | ArrayBuffer) => {
   // ...
@@ -59,18 +58,15 @@ ws.on('message', (err: BusinessError, value: string | ArrayBuffer) => {
   }
 })
 
-
 ws.on('close', (err: BusinessError, value: webSocket.CloseResult) => {
  hilog.info(0x0000, 'testTag', 'on close, code is ' + value.code + ', reason is ' + value.reason);
   // ...
 });
 
-
 ws.on('error', (err: BusinessError) => {
   // ...
   hilog.error(0x0000, 'testTag', 'WebSocket error: ' + JSON.stringify(err));
 });
-Index.ets
 
 根据URL地址，发起WebSocket连接。
 
@@ -82,7 +78,6 @@ ws.connect(defaultIpAddress, (err: BusinessError, value: boolean) => {
     hilog.error(0x0000, 'testTag', `WebSocket connection failed: ` + JSON.stringify(err));
   }
 });
-Index.ets
 
 收到on('open')的回调事件后，可通过send()方法向服务器发送数据。
 
@@ -95,7 +90,7 @@ ws.send('Hello, server!', (err: BusinessError, value: boolean) => {
     hilog.error(0x0000, 'testTag', `Message sending failed: ` + JSON.stringify(err));
   }
 });
-Index.ets
+
 server端开发步骤
 
 导入webSocket以及错误码模块。
@@ -103,13 +98,11 @@ server端开发步骤
 import { webSocket } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-Index.ets
 
 创建WebSocketServer对象。
 
 let localServer: webSocket.WebSocketServer;
 localServer = webSocket.createWebSocketServer();
-Index.ets
 
 订阅WebSocketServer的客户端连接事件、消息接收事件、关闭事件、Error事件（可选），在收到客户端连接事件后，服务端可以通过send()方法与客户端进行通信，当收到客户端的"bye"消息时（此消息字段仅为示意，具体字段需要与客户端协商），主动断开连接。
 
@@ -126,7 +119,6 @@ localServer.on('connect', async (connection: webSocket.WebSocketConnection) => {
     hilog.error(0x0000, 'testTag', `message send failed, Code: ${error.code}, message: ${error.message}`);
   });
 });
-
 
 localServer.on('messageReceive', (message: webSocket.WebSocketMessage) => {
   try {
@@ -146,16 +138,13 @@ localServer.on('messageReceive', (message: webSocket.WebSocketMessage) => {
   }
 });
 
-
 localServer.on('close', (clientConnection: webSocket.WebSocketConnection, closeReason: webSocket.CloseResult) => {
   hilog.info(0x0000, 'testTag', `client close, client: ${clientConnection}, closeReason: Code: ${closeReason.code}, reason: ${closeReason.reason}`);
 });
 
-
 localServer.on('error', (error: BusinessError) => {
   hilog.error(0x0000, 'testTag', `error. Code: ${error.code}, message: ${error.message}`);
 });
-Index.ets
 
 配置config参数启动server端服务。
 
@@ -174,12 +163,10 @@ localServer.start(config).then((success: boolean) => {
 }).catch((error: BusinessError) => {
   hilog.error(0x0000, 'testTag', `Failed to start. Code: ${error.code}, message: ${error.message}`);
 });
-Index.ets
 
 服务端监听所有客户端连接状态（可选）。
 
 let connections: webSocket.WebSocketConnection[] = [];
-
 
 // ...
   try {
@@ -194,7 +181,6 @@ let connections: webSocket.WebSocketConnection[] = [];
     hilog.error(0x0000, 'testTag', `Failed to listAllConnections. Code: ${error.code}, message: ${error.message}`);
     // ...
   }
-Index.ets
 
 需要关闭WebSocketServer端服务器时，可以通过stop()停止服务。
 
@@ -207,9 +193,6 @@ localServer.stop().then((success: boolean) => {
     // ...
   }
 });
-Index.ets
-使用HTTP访问网络
-使用WebSocket访问网络(C/C++)
 
 ## Code blocks
 
@@ -237,7 +220,6 @@ ws.on('open', (err: BusinessError, value: Object) => {
   // ...
 });
 
-
 ws.on('message', (err: BusinessError, value: string | ArrayBuffer) => {
   // ...
   hilog.info(0x0000, 'testTag', 'on message, message:' + value);
@@ -255,12 +237,10 @@ ws.on('message', (err: BusinessError, value: string | ArrayBuffer) => {
   }
 })
 
-
 ws.on('close', (err: BusinessError, value: webSocket.CloseResult) => {
  hilog.info(0x0000, 'testTag', 'on close, code is ' + value.code + ', reason is ' + value.reason);
   // ...
 });
-
 
 ws.on('error', (err: BusinessError) => {
   // ...
@@ -327,7 +307,6 @@ localServer.on('connect', async (connection: webSocket.WebSocketConnection) => {
   });
 });
 
-
 localServer.on('messageReceive', (message: webSocket.WebSocketMessage) => {
   try {
     hilog.info(0x0000, 'testTag', `on message received, client: ${message.clientConnection}, data: ${message.data}`);
@@ -346,11 +325,9 @@ localServer.on('messageReceive', (message: webSocket.WebSocketMessage) => {
   }
 });
 
-
 localServer.on('close', (clientConnection: webSocket.WebSocketConnection, closeReason: webSocket.CloseResult) => {
   hilog.info(0x0000, 'testTag', `client close, client: ${clientConnection}, closeReason: Code: ${closeReason.code}, reason: ${closeReason.reason}`);
 });
-
 
 localServer.on('error', (error: BusinessError) => {
   hilog.error(0x0000, 'testTag', `error. Code: ${error.code}, message: ${error.message}`);
@@ -381,7 +358,6 @@ localServer.start(config).then((success: boolean) => {
 
 ```
 let connections: webSocket.WebSocketConnection[] = [];
-
 
 // ...
   try {

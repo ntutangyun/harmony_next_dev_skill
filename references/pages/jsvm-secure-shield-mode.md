@@ -1,4 +1,4 @@
-# JSVM
+# JSVM-API 坚盾守护模式
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-secure-shield-mode_
 
@@ -9,14 +9,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-secu
 要启用坚盾守护模式，请按以下路径操作：
 
 进入手机系统设置
+
 选择"隐私和安全"选项
+
 点击"坚盾守护模式"并开启
+
 坚盾守护模式下的功能限制
 
 为降低JSVM受攻击风险，坚盾守护模式将实施以下关键安全限制：
 
 全面禁用即时编译(JIT)功能，包括已获取 ACL 权限的应用程序
+
 暂停 WebAssembly 支持（当前版本中 WebAssembly 依赖 JIT 功能实现）
+
 应用兼容性评估指南
 
 在坚盾守护模式下运行应用程序时，建议进行以下兼容性检查：
@@ -24,11 +29,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-secu
 JavaScript 性能评估：
 
 测试应用在限制环境中的运行效率
+
 优化可能存在的性能瓶颈
 
 WebAssembly 兼容性检查：
 
 静态代码分析：检查项目中的 WebAssembly 相关API调用，与第三方库的 Wasm 依赖情况。
+
 运行时验证：在坚盾守护模式下执行全功能测试。
-JSVM-API 申请JIT权限指导
-JSVM-API 内存泄漏问题定位指导

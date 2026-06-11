@@ -2,8 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkgraphics3d-scene_
 
+一个3D场景通常由光源、相机、模型三个关键部分组成。
+
 光源：为整个3D场景提供光照，使得3D场景中的模型变得可见。与真实物理场景一致，没有光源场景将变得一片漆黑，得到的渲染结果也就是全黑色。
+
 相机：为3D场景提供一个观察者。3D渲染本质上是从一个角度观察3D场景并投影到2D图片上。没有相机就没有3D场景的观察者，也就不会得到渲染结果。
+
 模型：3D场景中的模型用于描述对象的形状、结构和外观，一般具有网格、材质、纹理、动画等属性。一些常见的3D模型格式有OBJ、FBX、glTF等。
 
 模型加载后，可以通过ArkUI的Component3D渲染组件呈现给用户，Component3D负责将ArkGraphics 3D场景渲染到界面中。在自定义场景模式下，开发者可以使用ArkTS API创建并管理相机和光源节点，从而设置合适的观察角度和光照效果；在自动场景模式下，框架会根据模型自动创建基础相机和光照。ArkTS API可通过napi调用AGP中由C++实现的相应能力。
@@ -19,7 +23,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkgraphi
 在页面脚本中导入ArkGraphics 3D提供的核心类型，用于创建和管理3D场景与相机。
 
 import { Camera, Scene, SceneResourceFactory } from '@kit.ArkGraphics3D';
-init.ets
 
 加载场景资源。
 
@@ -40,7 +43,6 @@ if (this.scene == null) {
     console.error('Scene load failed: ' + error);
   });
 }
-init.ets
 
 创建相机并设置场景渲染参数。
 
@@ -52,9 +54,7 @@ this.cam = await rf.createCamera({ 'name': 'Camera' });
 this.cam.enabled = true;
 this.cam.position.z = 5;
 
-
 this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
-init.ets
 
 渲染3D模型。
 
@@ -66,7 +66,7 @@ if (this.sceneOpt) {
 } else {
   Text('Loading···');
 }
-init.ets
+
 相机的创建及管理
 
 相机作为3D场景中的重要部分，决定了整个3D场景向2D图片的投影过程，相机的近远平面、FoV角等关键参数也会对整个3D渲染产生重要的影响。开发者可以通过设置相机参数，控制这个渲染过程，得到开发者想要的渲染效果。
@@ -78,7 +78,6 @@ ArkGraphics 3D提供了灵活的相机接口，开发者可根据需要动态创
 在页面脚本中导入ArkGraphics 3D提供的核心类型，用于加载场景、创建相机及资源管理。
 
 import { Camera, Scene, SceneNodeParameters, SceneResourceFactory } from '@kit.ArkGraphics3D';
-camera.ets
 
 加载场景资源。
 
@@ -94,7 +93,6 @@ scene.then(async (result: Scene) => {
   console.error('Scene load failed: ' + error);
   reject(error);
 });
-camera.ets
 
 创建相机并配置相机参数。
 
@@ -105,14 +103,11 @@ camera.then(async (cameraEntity: Camera) => {
   // Enable the camera node.
   cameraEntity.enabled = true;
 
-
   // Set the camera position.
   cameraEntity.position.z = 5;
 
-
   // Set the FoV.
   cameraEntity.fov = 60 * Math.PI / 180;
-
 
   // Set other camera parameters.
   // ...
@@ -121,7 +116,6 @@ camera.then(async (cameraEntity: Camera) => {
   console.error('Camera create failed: ' + error + '.');
   // ...
 });
-camera.ets
 
 初始化与渲染绑定。
 
@@ -135,7 +129,6 @@ if (globalScene && this.camera) {
   this.positionZ = this.camera.position.z;
   this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
 }
-camera.ets
 
 相机交互。
 
@@ -159,7 +152,7 @@ Slider({
     }
   })
   .width('100%')
-camera.ets
+
 光源的创建及管理
 
 3D场景的光源是对于物理世界中光源的一种数据建模，模拟物理世界的光源对于3D场景中的物体产生影响。
@@ -173,7 +166,6 @@ ArkGraphics 3D提供创建光源及修改光源参数的功能，支持开发者
 在页面脚本中导入ArkGraphics 3D提供的核心类型，用于加载场景、创建相机与灯光。
 
 import { Camera, Light, LightType, Scene, SceneNodeParameters, SceneResourceFactory } from '@kit.ArkGraphics3D';
-light.ets
 
 加载场景资源。
 
@@ -189,7 +181,6 @@ scene.then(async (result: Scene) => {
   console.error('Scene load failed: ' + error);
   // ...
 });
-light.ets
 
 创建灯光并配置灯光参数。
 
@@ -200,7 +191,6 @@ light.then(async (lightEntity: Light) => {
   // Set the color of the directional light.
   lightEntity.color = { r: 0.8, g: 0.1, b: 0.2, a: 1.0 };
 
-
   // Set other light parameters.
   // ...
   // ...
@@ -208,7 +198,6 @@ light.then(async (lightEntity: Light) => {
   console.error('Light create failed: ' + err + '.');
   // ...
 });
-light.ets
 
 初始化与渲染绑定。
 
@@ -227,7 +216,6 @@ if (globalScene && this.light) {
   this.green = this.light.color.g;
   this.blue = this.light.color.b;
 }
-light.ets
 
 灯光交互。
 
@@ -256,8 +244,220 @@ Slider({
     }
   })
   .width('100%')
-light.ets
+
 示例代码
+
 基于3D引擎接口实现3D图形渲染功能（ArkTS）
-ArkGraphics 3D简介
-ArkGraphics 3D资源创建以及使用
+
+## Code blocks
+
+### Code block 1
+
+```
+import { Camera, Scene, SceneResourceFactory } from '@kit.ArkGraphics3D';
+```
+
+### Code block 2
+
+```
+if (this.scene == null) {
+  // Load the model and place the gltf file in the related path. Use the actual path during loading.
+  // Switched from .gltf to .glb; same content, different format
+  Scene.load($rawfile('gltf/DamagedHelmet/glTF/DamagedHelmet.glb'))
+    .then(async (result: Scene) => {
+      this.scene = result;
+      let rf: SceneResourceFactory = this.scene.getResourceFactory();
+      // ...
+    })
+    .catch((error: string) => {
+    console.error('Scene load failed: ' + error);
+  });
+}
+```
+
+### Code block 3
+
+```
+// Create a Camera.
+this.cam = await rf.createCamera({ 'name': 'Camera' });
+// Set proper camera parameters.
+this.cam.enabled = true;
+this.cam.position.z = 5;
+
+this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
+```
+
+### Code block 4
+
+```
+if (this.sceneOpt) {
+  // Use Component3D to display the 3D scenario.
+  Component3D(this.sceneOpt);
+} else {
+  Text('Loading···');
+}
+```
+
+### Code block 5
+
+```
+import { Camera, Scene, SceneNodeParameters, SceneResourceFactory } from '@kit.ArkGraphics3D';
+```
+
+### Code block 6
+
+```
+let scene: Promise<Scene> = Scene.load($rawfile('gltf/CubeWithFloor/glTF/AnimatedCube.glb'));
+scene.then(async (result: Scene) => {
+  // ...
+  let sceneFactory: SceneResourceFactory = result.getResourceFactory();
+  let sceneCameraParameter: SceneNodeParameters = { name: 'camera' };
+  // ...
+}).catch((error: string) => {
+  console.error('Scene load failed: ' + error);
+  reject(error);
+});
+```
+
+### Code block 7
+
+```
+let camera: Promise<Camera> = sceneFactory.createCamera(sceneCameraParameter);
+camera.then(async (cameraEntity: Camera) => {
+  // Enable the camera node.
+  cameraEntity.enabled = true;
+
+  // Set the camera position.
+  cameraEntity.position.z = 5;
+
+  // Set the FoV.
+  cameraEntity.fov = 60 * Math.PI / 180;
+
+  // Set other camera parameters.
+  // ...
+  // ...
+}).catch((error: string) => {
+  console.error('Camera create failed: ' + error + '.');
+  // ...
+});
+```
+
+### Code block 8
+
+```
+this.camera = await createCameraPromise();
+if (globalScene && this.camera) {
+  this.scene = globalScene;
+  this.positionX = this.camera.position.x;
+  this.positionY = this.camera.position.y;
+  this.positionZ = this.camera.position.z;
+  this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
+}
+```
+
+### Code block 9
+
+```
+Slider({
+  value: this.positionZ,
+  min: 5,
+  max: 10,
+  step: 0.1,
+  style: SliderStyle.OutSet
+})
+  .showTips(false)
+  .onChange((value: number, mode: SliderChangeMode) => {
+    this.positionZ = value;
+    if (mode === SliderChangeMode.End) {
+      if (!this.scene || !this.camera) {
+        return;
+      }
+      this.camera.position.z = value;
+    }
+  })
+  .width('100%')
+```
+
+### Code block 10
+
+```
+import { Camera, Light, LightType, Scene, SceneNodeParameters, SceneResourceFactory } from '@kit.ArkGraphics3D';
+```
+
+### Code block 11
+
+```
+let scene: Promise<Scene> = Scene.load($rawfile('gltf/CubeWithFloor/glTF/AnimatedCube.glb'));
+scene.then(async (result: Scene) => {
+  // ...
+  let sceneFactory: SceneResourceFactory = result.getResourceFactory();
+  let lightParameter: SceneNodeParameters = { name: 'light' };
+  // ...
+}).catch((error: string) => {
+  console.error('Scene load failed: ' + error);
+  // ...
+});
+```
+
+### Code block 12
+
+```
+let light: Promise<Light> = sceneFactory.createLight(lightParameter, LightType.DIRECTIONAL);
+light.then(async (lightEntity: Light) => {
+  // Set the color of the directional light.
+  lightEntity.color = { r: 0.8, g: 0.1, b: 0.2, a: 1.0 };
+
+  // Set other light parameters.
+  // ...
+  // ...
+}).catch((err: string) => {
+  console.error('Light create failed: ' + err + '.');
+  // ...
+});
+```
+
+### Code block 13
+
+```
+this.light = await createLightPromise();
+if (globalScene && this.light) {
+  this.scene = globalScene;
+  this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
+  this.rf = this.scene.getResourceFactory();
+  this.cam = await this.rf.createCamera({ 'name': 'Camera1' });
+  this.cam.enabled = true;
+  this.cam.position.z = 5;
+  // Initialize color value
+  this.red = this.light.color.r;
+  this.green = this.light.color.g;
+  this.blue = this.light.color.b;
+}
+```
+
+### Code block 14
+
+```
+Slider({
+  value: this.red,
+  min: 0,
+  max: 1,
+  step: 0.01,
+  style: SliderStyle.OutSet
+})
+  .showTips(false)
+  .onChange((value: number, mode: SliderChangeMode) => {
+    this.red = value;
+    if (mode === SliderChangeMode.End) {
+      if (!this.scene || !this.light) {
+        return;
+      }
+      this.light.color = {
+        r: this.red,
+        g: this.green,
+        b: this.blue,
+        a: 1.0
+      }
+    }
+  })
+  .width('100%')
+```

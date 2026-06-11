@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-netmultipath-recommendcallback_
 
+场景介绍
+
 系统感知到应用可能需要使用多网络加速的场景时，如弱网、网络切换等特定场景，会给出建议。应用通过监听多网络加速的建议，决策发起多网络加速的请求。
 
 接口说明
@@ -11,6 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 接口名	描述
 on(type: 'multiPathRecommendation', callback: Callback<MultiPathRecommendationInfo>): void	订阅多网建议信息变化。
 off(type: 'multiPathRecommendation', callback?: Callback<MultiPathRecommendationInfo>): void	取消订阅多网建议信息变化。
+
 开发步骤
 
 导入Network Boost Kit模块。
@@ -36,5 +39,35 @@ try {
 } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
 }
-多网状态监听
-多网配额查询
+
+## Code blocks
+
+### Code block 1
+
+```
+import { netHandover } from '@kit.NetworkBoostKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+try {
+  netHandover.on('multiPathRecommendation', (data: netHandover.MultiPathRecommendationInfo) => {
+    // 回调信息处理
+    console.info("on multiPathRecommendation: " + JSON.stringify(data));
+  });
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 3
+
+```
+try {
+  netHandover.off('multiPathRecommendation');
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```

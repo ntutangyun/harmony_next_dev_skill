@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/knock-share-pc-phones-overview_
 
+场景介绍
+
 Share Kit支持Phone和PC/2in1之间的碰一碰分享。利用PC/2in1设备的屏幕感知能力，识别Phone轻碰屏幕的动作及位置，实现PC/2in1窗口级的交互。
 
 从6.1.0(23)版本开始，支持Phone与Tablet设备之间的碰一碰分享。
@@ -53,6 +55,3 @@ PC/2in1设备作为数据发送端
 PC/2in1作为发送端接入参考：发送分享数据
 
 PC/2in1作为接收端接入参考：分享内容直达应用界面
-
-手机与PC/2in1碰一碰分享
-分享内容直达应用界面

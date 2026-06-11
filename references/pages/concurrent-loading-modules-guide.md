@@ -12,12 +12,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/concurren
 
 import { collections } from '@kit.ArkTS';
 
-
 @Sendable
 export class Calculator {
   public history?: collections.Array<collections.Array<string>>;
   public totalCount: number = 0;
-
 
   // 初始化
   static init(): Calculator {
@@ -27,14 +25,12 @@ export class Calculator {
     return calc;
   }
 
-
   // 加法运算
   add(a: number, b: number) {
     let result = a + b;
     this.newCalc(`${a} + ${b}`, `${result}`);
     return result;
   }
-
 
   // 减法运算
   sub(a: number, b: number) {
@@ -43,14 +39,12 @@ export class Calculator {
     return result;
   }
 
-
   // 乘法运算
   mul(a: number, b: number) {
     let result = a * b;
     this.newCalc(`${a} * ${b}`, `${result}`);
     return result;
   }
-
 
   // 除法运算
   div(a: number, b: number) {
@@ -59,12 +53,10 @@ export class Calculator {
     return result;
   }
 
-
   // 获取历史记录
   getHistory(): collections.Array<collections.Array<string>> {
     return this.history!;
   }
-
 
   // 打印历史记录
   showHistory() {
@@ -73,27 +65,23 @@ export class Calculator {
     }
   }
 
-
   // 添加新计算记录
   private newCalc(opt: string, ret: string) {
     let newRecord = new collections.Array<string>(opt, ret);
     this.totalCount = this.history!.unshift(newRecord);
   }
 }
-Calculator.ets
 
 定时器业务模块的定义如下：
 
 @Sendable
 export class TimerSdk {
 
-
   // 初始化
   static init(): TimerSdk {
     let timer = new TimerSdk();
     return timer;
   }
-
 
   // 倒计时
   async countdown(time: number) {
@@ -104,7 +92,6 @@ export class TimerSdk {
     });
   }
 }
-TimerSdk.ets
 
 在UI主线程触发各业务模块分发到子线程，加载完成后在UI主线程使用，示例如下：
 
@@ -112,20 +99,17 @@ import { Calculator } from '../sdk/Calculator';
 import { TimerSdk } from '../sdk/TimerSdk';
 import { taskpool } from '@kit.ArkTS';
 
-
 // 初始化Calculator
 @Concurrent
 function initCalculator(): Calculator {
   return Calculator.init();
 }
 
-
 // 初始化TimerSdk
 @Concurrent
 function initTimerSdk(): TimerSdk {
   return TimerSdk.init();
 }
-
 
 @Entry
 @Component
@@ -136,7 +120,6 @@ struct Index {
   calc?: Calculator;
   timer?: TimerSdk;
 
-
   aboutToAppear(): void {
     taskpool.execute(initCalculator).then((ret) => {
       this.calc = ret as Calculator;
@@ -145,7 +128,6 @@ struct Index {
       this.timer = ret as TimerSdk;
     })
   }
-
 
   build() {
     Row() {
@@ -195,6 +177,181 @@ struct Index {
     .height('100%')
   }
 }
-ConcurrentLoadingModulesGuide.ets
-批量数据写数据库场景
-全局配置项功能场景
+
+## Code blocks
+
+### Code block 1
+
+```
+import { collections } from '@kit.ArkTS';
+
+@Sendable
+export class Calculator {
+  public history?: collections.Array<collections.Array<string>>;
+  public totalCount: number = 0;
+
+  // 初始化
+  static init(): Calculator {
+    let calc = new Calculator();
+    calc.totalCount = 0;
+    calc.history = collections.Array.create(calc.totalCount, collections.Array.create(2, ''));
+    return calc;
+  }
+
+  // 加法运算
+  add(a: number, b: number) {
+    let result = a + b;
+    this.newCalc(`${a} + ${b}`, `${result}`);
+    return result;
+  }
+
+  // 减法运算
+  sub(a: number, b: number) {
+    let result = a - b;
+    this.newCalc(`${a} - ${b}`, `${result}`);
+    return result;
+  }
+
+  // 乘法运算
+  mul(a: number, b: number) {
+    let result = a * b;
+    this.newCalc(`${a} * ${b}`, `${result}`);
+    return result;
+  }
+
+  // 除法运算
+  div(a: number, b: number) {
+    let result = a / b;
+    this.newCalc(`${a} / ${b}`, `${result}`);
+    return result;
+  }
+
+  // 获取历史记录
+  getHistory(): collections.Array<collections.Array<string>> {
+    return this.history!;
+  }
+
+  // 打印历史记录
+  showHistory() {
+    for (let i = 0; i < this.totalCount; i++) {
+      console.info(`${i}: ${this.history![i][0]} = ${this.history![i][1]}`);
+    }
+  }
+
+  // 添加新计算记录
+  private newCalc(opt: string, ret: string) {
+    let newRecord = new collections.Array<string>(opt, ret);
+    this.totalCount = this.history!.unshift(newRecord);
+  }
+}
+```
+
+### Code block 2
+
+```
+@Sendable
+export class TimerSdk {
+
+  // 初始化
+  static init(): TimerSdk {
+    let timer = new TimerSdk();
+    return timer;
+  }
+
+  // 倒计时
+  async countdown(time: number) {
+    return new Promise((resolve: (value: boolean) => void) => {
+      setTimeout(() => {
+        resolve(true);
+      }, time);
+    });
+  }
+}
+```
+
+### Code block 3
+
+```
+import { Calculator } from '../sdk/Calculator';
+import { TimerSdk } from '../sdk/TimerSdk';
+import { taskpool } from '@kit.ArkTS';
+
+// 初始化Calculator
+@Concurrent
+function initCalculator(): Calculator {
+  return Calculator.init();
+}
+
+// 初始化TimerSdk
+@Concurrent
+function initTimerSdk(): TimerSdk {
+  return TimerSdk.init();
+}
+
+@Entry
+@Component
+struct Index {
+  @State calculateAdd: string = 'calculate add';
+  @State showHistory: string = 'show history';
+  @State countdown: string = 'countdown';
+  calc?: Calculator;
+  timer?: TimerSdk;
+
+  aboutToAppear(): void {
+    taskpool.execute(initCalculator).then((ret) => {
+      this.calc = ret as Calculator;
+    })
+    taskpool.execute(initTimerSdk).then((ret) => {
+      this.timer = ret as TimerSdk;
+    })
+  }
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.calculateAdd)
+          .id('add')
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(async () => {
+            let result = this.calc?.add(1, 2)
+            console.info(`Result is ${result}`)
+            this.calculateAdd = 'success';
+          })
+        Text(this.showHistory)
+          .id('show')
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(async () => {
+            this.calc?.showHistory();
+            this.showHistory = 'success';
+          })
+        Text(this.countdown)
+          .id('get')
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(async () => {
+            console.info(`Timer start`);
+            await this.timer?.countdown(1000);
+            console.info(`Timer end`);
+            this.countdown = 'success';
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

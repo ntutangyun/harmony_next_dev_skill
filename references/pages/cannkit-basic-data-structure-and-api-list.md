@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-basic-data-structure-and-api-list_
 
+本文档提供了进行算子开发和图开发时依赖的基础数据结构和接口说明，按照命名空间进行分类：
+
+ge（Graph Engine）
+
 ge是Graph Engine的缩写，代表一个通用的命名空间，专注于构图和图编译处理。此命名空间提供了一套丰富的API，用于构建和管理复杂的图结构。它的核心优势在于其通用性和灵活性，能够满足各种图处理需求，无论是在设计阶段还是在编译过程中。
 
 gert（GE Runtime）
@@ -35,30 +39,15 @@ gert命名空间
 类和结构体	TilingData	用于存储Tiling数据。
 类和结构体	TypedContinuousVector	本类继承自ContinuousVector类，与ContinuousVector类不同的是MutableData和GetData返回的是指定类型的地址，而不是void *。因此称为Typed。
 枚举	TensorPlacement	表达Tensor存储位置的枚举值。
+
 ge命名空间
 
 表2 ge命名空间
 
 分类	数据结构/接口名称	功能描述
 类和结构体	Allocator	支持使用开发者注册的外置allocator功能，所在头文件位于CANN软件安装后文件存储路径下的“include/ge/ge_allocator.h”路径。
-类和结构体	AscendString	
-
-用于存储字符串。
-
-- 头文件位于CANN软件安装后文件存储路径下的include/graph/ascend_string.h
-
-- 库文件：libgraph.so
-
-
-类和结构体	AttrValue	
-
-用于存储属性值。
-
-- 头文件位于CANN软件安装后文件存储路径下的include/graph/attr_value.h
-
-- 库文件：libgraph_base.so
-
-
+类和结构体	AscendString	用于存储字符串。 - 头文件位于CANN软件安装后文件存储路径下的include/graph/ascend_string.h - 库文件：libgraph.so
+类和结构体	AttrValue	用于存储属性值。 - 头文件位于CANN软件安装后文件存储路径下的include/graph/attr_value.h - 库文件：libgraph_base.so
 类和结构体	AutoMappingSubgraphIOIndexFuncRegister	内部关联接口，插件适配API调用时间接调用，开发者不直接感知。
 类和结构体	FrameworkRegistry	内部关联接口，插件适配API调用时间接调用，开发者不直接感知。
 类和结构体	InferenceContext	获取推理上下文对象，并设置相应对象的形状和数据类型，主要用于资源类算子。
@@ -69,48 +58,16 @@ ge命名空间
 类和结构体	MemBlock	配合Allocator类使用，支持使用开发者注册的外置allocator功能，所在头文件位于CANN软件安装后文件存储路径下的“include/ge/ge_allocator.h”路径。
 类和结构体	OperatorCreatorRegister	算子注册接口，注册一个算子原型，此接口被其他头文件引用，一般不用由算子开发者直接调用。
 类和结构体	OperatorFactory	内部关联接口，此接口被其他头文件引用，一般不用由算子开发者直接调用。
-类和结构体	Operator	
-
-算子类。
-
-- 头文件位于CANN软件安装后文件存储路径下的include/graph/operator.h
-
-- 库文件：libgraph.so
-
-
+类和结构体	Operator	算子类。 - 头文件位于CANN软件安装后文件存储路径下的include/graph/operator.h - 库文件：libgraph.so
 类和结构体	OpReceiver	用于算子编写适配插件进行AI框架适配时，进行映射关系注册。
 类和结构体	OpRegistrationData	用于算子编写适配插件进行AI框架适配时，进行映射关系注册。
 类和结构体	Promote	Promote类用于表示输出数据类型为输入或属性指定的数据类型间的提升类型。
 类和结构体	ShapeAndType	可设置、获取相应对象的形状和数据类型。
-类和结构体	Shape	
-
-用于存储Tensor的shape信息。
-
-- 头文件位于CANN软件安装后文件存储路径下的include/graph/tensor.h
-
-- 库文件：libgraph_base.so
-
-
+类和结构体	Shape	用于存储Tensor的shape信息。 - 头文件位于CANN软件安装后文件存储路径下的include/graph/tensor.h - 库文件：libgraph_base.so
 类和结构体	TensorDescInfo	存储Tensor描述信息。
-类和结构体	TensorDesc	
-
-用于存取、管理Tensor描述信息。
-
-- 头文件位于CANN软件安装后文件存储路径下的include/graph/tensor.h
-
-- 库文件：libgraph_base.so
-
-
+类和结构体	TensorDesc	用于存取、管理Tensor描述信息。 - 头文件位于CANN软件安装后文件存储路径下的include/graph/tensor.h - 库文件：libgraph_base.so
 类和结构体	TensorType	TensorType类用以定义输入或者输出支持的数据类型。
-类和结构体	Tensor	
-
-Tensor结构。
-
-- 头文件位于CANN软件安装后文件存储路径下的include/graph/tensor.h
-
-- 库文件：libgraph_base.so
-
-
+类和结构体	Tensor	Tensor结构。 - 头文件位于CANN软件安装后文件存储路径下的include/graph/tensor.h - 库文件：libgraph_base.so
 类和结构体	TypeUtils	类型转换工具类。
 类和结构体	VerifyFuncRegister	算子verifyFunc函数注册接口，此接口被其他头文件引用，一般不用由算子开发者直接调用。
 函数	ConvertToAscendString	模板函数，接受一个模板参数T，并将其转换为AscendString类型。这个函数的主要功能是将不同类型的字符串转换为AscendString类型。
@@ -143,5 +100,3 @@ Tensor结构。
 宏	原型定义接口（REG_OP）	原型定义接口。
 宏	原型定义衍生接口说明	原型定义衍生接口。
 宏	VERIFY_FUNC_REG	注册算子的Verify函数。
-基础数据结构和接口
-gert命名空间

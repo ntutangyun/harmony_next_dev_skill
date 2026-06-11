@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-develop-apply-immersive-effects_
 
+概述
+
 典型应用全屏窗口UI元素包括顶部状态栏、应用界面和底部导航区域（根据用户设置可表现为导航条或三键导航），其中状态栏和导航区域，通常在沉浸式布局下称为避让区；避让区之外的区域称为安全区。开发应用沉浸式效果主要指通过调整状态栏、应用界面和底部导航区域的显示效果来减少状态栏、导航条或三键导航等系统界面的突兀感，从而使用户获得最佳的UI体验。
 
 图1 界面元素示意图（此处以导航区域表现为导航条为例给出示意）
@@ -15,12 +17,14 @@ UI元素避让处理：底部导航区域可以响应点击事件，除此之外
 针对上面的设计要求，可以通过如下两种方式实现应用沉浸式效果：
 
 窗口全屏布局方案：调整布局系统为全屏布局，界面元素延伸到状态栏和导航区域实现沉浸式效果。当不隐藏避让区时，可通过接口查询状态栏和导航区域进行可交互元素避让处理，并设置状态栏或导航区域的颜色或显隐等属性与界面元素匹配。当隐藏避让区时，通过对应接口设置全屏布局即可。
+
 组件安全区方案：布局系统保持安全区内布局，然后通过接口延伸绘制内容（如背景色，背景图）到状态栏和导航区域实现沉浸式效果。该方案下，界面元素仅做绘制延伸，无法单独布局到状态栏和导航区域，针对需要单独布局UI元素到状态栏和导航区域的场景建议使用窗口全屏布局方案处理。
+
 窗口全屏布局方案
 
 窗口全屏布局方案主要涉及以下应用扩展布局，全屏显示，不隐藏避让区和应用扩展布局，隐藏避让区两个应用场景。
 
-应用扩展布局，全屏显示，不隐藏避让区
+[h2]应用扩展布局，全屏显示，不隐藏避让区
 
 可以通过调用窗口强制全屏布局接口setWindowLayoutFullScreen()实现界面元素延伸到状态栏和导航区域；然后通过接口getWindowAvoidArea()和on('avoidAreaChange')获取并动态监听避让区域的变更信息，页面布局根据避让区域信息进行动态调整；设置状态栏或导航区域的颜色或显隐等属性与界面元素进行匹配。
 
@@ -31,17 +35,14 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 export default class EntryAbility extends UIAbility {
   // ...
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {
         return;
       }
-
 
       let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
       // 1. 设置窗口全屏
@@ -64,7 +65,6 @@ let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 此处以导航条
 let avoidArea = windowClass.getWindowAvoidArea(type);
 let bottomRectHeight = avoidArea.bottomRect.height; // 获取到导航区域的高度
 AppStorage.setOrCreate('bottomRectHeight', bottomRectHeight);
-
 
 type = window.AvoidAreaType.TYPE_SYSTEM; // 以状态栏避让为例
 avoidArea = windowClass.getWindowAvoidArea(type);
@@ -102,33 +102,27 @@ struct Index {
   @StorageProp('topRectHeight')
   topRectHeight: number = 0;
 
-
   build() {
     Column() {
       Row() {
         Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
       }.backgroundColor('#2786d9')
 
-
       Row() {
         Text('Display Content 2').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Display Content 3').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 4').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 5').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
@@ -155,7 +149,7 @@ struct Index {
 
 图3 布局未避让状态栏和导航区域，UI元素重叠（此处以导航区域表现为导航条为例给出示意）
 
-应用扩展布局，隐藏避让区
+[h2]应用扩展布局，隐藏避让区
 
 此场景下状态栏和导航区域需要隐藏，适用于游戏、电影等应用场景。用户可以通过从底部上滑唤出导航条或三键导航。
 
@@ -166,17 +160,14 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 export default class EntryAbility extends UIAbility {
   // ...
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {
         return;
       }
-
 
       let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
       // 1. 设置窗口全屏
@@ -220,26 +211,21 @@ struct Index {
           Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
         }.backgroundColor('#2786d9')
 
-
         Row() {
           Text('Display Content 2').fontSize(30)
         }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
         Row() {
           Text('Display Content 3').fontSize(30)
         }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
         Row() {
           Text('Display Content 4').fontSize(30)
         }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
         Row() {
           Text('Display Content 5').fontSize(30)
         }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
         Row() {
           Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
@@ -253,6 +239,7 @@ struct Index {
     }
   }
 }
+
 组件安全区方案
 
 应用未使用setWindowLayoutFullScreen()接口设置窗口全屏布局时，默认采取组件安全区布局方案。
@@ -268,17 +255,14 @@ struct Index {
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 
-
 export default class EntryAbility extends UIAbility {
   // ...
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         return;
       }
-
 
       // 设置全窗颜色和应用元素颜色一致
       windowStage.getMainWindowSync().setWindowBackgroundColor('#d5d5d5');
@@ -298,26 +282,21 @@ struct Example {
         Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
       }.backgroundColor('#2786d9')
 
-
       Row() {
         Text('Display Content 2').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Display Content 3').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 4').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 5').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
@@ -344,26 +323,21 @@ struct Example {
       // 设置顶部绘制延伸到状态栏
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
-
       Row() {
         Text('Display Content 2').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Display Content 3').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 4').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 5').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
@@ -378,7 +352,7 @@ struct Example {
   }
 }
 
-扩展安全区域属性原理
+[h2]扩展安全区域属性原理
 
 布局阶段按照安全区范围大小进行UI元素布局。
 
@@ -398,7 +372,7 @@ safeAreaPadding位于原有的padding内侧。容器自外向内各层分别为b
 
 系统组件如Navigation、List、Scroll、Tabs等可以利用外层或容器自身safeAreaPadding实现扩大裁剪范围等能力。
 
-背景图和视频场景
+[h2]背景图和视频场景
 
 设置背景图、视频组件大小为安全区域大小并配置expandSafeArea属性。
 
@@ -419,7 +393,7 @@ struct SafeAreaExample1 {
   }
 }
 
-滚动类场景
+[h2]滚动类场景
 
 滚动容器设置expandSafeArea属性生效，但当父组件是滚动容器时，子组件设置expandSafeArea属性不生效。对于滚动容器的子组件，有两种方法实现沉浸式效果：
 
@@ -431,7 +405,6 @@ struct SafeAreaExample1 {
 struct ScrollExample {
   scroller: Scroller = new Scroller()
   private arr: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
@@ -462,7 +435,6 @@ struct ScrollExample {
   scroller: Scroller = new Scroller()
   private arr: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
       Scroll(this.scroller) {
@@ -482,7 +454,7 @@ struct ScrollExample {
 
 图6 滚动类容器设置clipContent属性实现沉浸式效果
 
-底部页签场景
+[h2]底部页签场景
 
 要求页签背景色能够延伸到导航区域（此处以导航区域表现为导航条为例给出示意），但页签内部可操作元素需要在导航区域之上。
 
@@ -504,26 +476,21 @@ struct Example {
       // 设置顶部绘制延伸到状态栏
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
-
       Row() {
         Text('Display Content 2').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Display Content 3').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 4').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
 
-
       Row() {
         Text('Display Content 5').fontSize(30)
       }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
-
 
       Row() {
         Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
@@ -537,7 +504,8 @@ struct Example {
     .justifyContent(FlexAlign.SpaceBetween)
   }
 }
-图文场景
+
+[h2]图文场景
 
 当状态栏元素和底部导航区域元素不同时，无法单纯通过窗口背景色或者背景图组件延伸实现，此时需要对顶部元素和底部元素分别配置expandSafeArea属性，顶部元素配置expandSafeArea([SafeAreaType.SYSTEM],[SafeAreaEdge.TOP])，底部元素配置expandSafeArea([SafeAreaType.SYSTEM],[SafeAreaEdge.BOTTOM])。
 
@@ -569,5 +537,473 @@ struct Index {
     .clip(false)
   }
 }
-选项卡 (Tabs)
-列表与网格
+
+## Code blocks
+
+### Code block 1
+
+```
+// EntryAbility.ets
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export default class EntryAbility extends UIAbility {
+  // ...
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err.code) {
+        return;
+      }
+
+      let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
+      // 1. 设置窗口全屏
+      let isLayoutFullScreen = true;
+      windowClass.setWindowLayoutFullScreen(isLayoutFullScreen).then(() => {
+        console.info('Succeeded in setting the window layout to full-screen mode.');
+      }).catch((err: BusinessError) => {
+        console.error(`Failed to set the window layout to full-screen mode. Code is ${err.code}, message is ${err.message}`);
+      });
+      // 进行后续步骤2-3中的操作
+    });
+  }
+}
+```
+
+### Code block 2
+
+```
+// EntryAbility.ets
+// 2. 获取布局避让遮挡的区域
+let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 此处以导航条避让为例
+let avoidArea = windowClass.getWindowAvoidArea(type);
+let bottomRectHeight = avoidArea.bottomRect.height; // 获取到导航区域的高度
+AppStorage.setOrCreate('bottomRectHeight', bottomRectHeight);
+
+type = window.AvoidAreaType.TYPE_SYSTEM; // 以状态栏避让为例
+avoidArea = windowClass.getWindowAvoidArea(type);
+let topRectHeight = avoidArea.topRect.height; // 获取状态栏区域高度
+AppStorage.setOrCreate('topRectHeight', topRectHeight);
+```
+
+### Code block 3
+
+```
+// EntryAbility.ets
+// 3. 注册监听函数，动态获取避让区域数据
+windowClass.on('avoidAreaChange', (data) => {
+  if (data.type === window.AvoidAreaType.TYPE_SYSTEM) {
+    let topRectHeight = data.area.topRect.height;
+    AppStorage.setOrCreate('topRectHeight', topRectHeight);
+  } else if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+    let bottomRectHeight = data.area.bottomRect.height;
+    AppStorage.setOrCreate('bottomRectHeight', bottomRectHeight);
+  }
+});
+```
+
+### Code block 4
+
+```
+// Index.ets
+@Entry
+@Component
+struct Index {
+  @StorageProp('bottomRectHeight')
+  bottomRectHeight: number = 0;
+  @StorageProp('topRectHeight')
+  topRectHeight: number = 0;
+
+  build() {
+    Column() {
+      Row() {
+        Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#2786d9')
+
+      Row() {
+        Text('Display Content 2').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 3').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 4').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 5').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#96dffa')
+    }
+    .width('100%')
+    .height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor('#d5d5d5')
+    .justifyContent(FlexAlign.SpaceBetween)
+    // top数值与状态栏区域高度保持一致；bottom数值与导航区域高度保持一致
+    .padding({
+      top: this.getUIContext().px2vp(this.topRectHeight),
+      bottom: this.getUIContext().px2vp(this.bottomRectHeight)
+    })
+  }
+}
+```
+
+### Code block 5
+
+```
+// EntryAbility.ets
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export default class EntryAbility extends UIAbility {
+  // ...
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err.code) {
+        return;
+      }
+
+      let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
+      // 1. 设置窗口全屏
+      let isLayoutFullScreen = true;
+      windowClass.setWindowLayoutFullScreen(isLayoutFullScreen).then(() => {
+        console.info('Succeeded in setting the window layout to full-screen mode.');
+      }).catch((err: BusinessError) => {
+        console.error(`Failed to set the window layout to full-screen mode. Code is ${err.code}, message is ${err.message}`);
+      });
+      // 进行后续步骤2中的状态栏和导航区域的隐藏操作
+    });
+  }
+}
+```
+
+### Code block 6
+
+```
+// EntryAbility.ets
+// 2. 设置状态栏隐藏
+windowClass.setSpecificSystemBarEnabled('status', false).then(() => {
+  console.info('Succeeded in setting the status bar to be invisible.');
+}).catch((err: BusinessError) => {
+  console.error(`Failed to set the status bar to be invisible. Code is ${err.code}, message is ${err.message}`);
+});
+// 2. 设置导航区域隐藏
+windowClass.setSpecificSystemBarEnabled('navigationIndicator', false).then(() => {
+  console.info('Succeeded in setting the navigation indicator to be invisible.');
+}).catch((err: BusinessError) => {
+  console.error(`Failed to set the navigation indicator to be invisible. Code is ${err.code}, message is ${err.message}`);
+});
+```
+
+### Code block 7
+
+```
+// Index.ets
+@Entry()
+@Component
+struct Index {
+  build() {
+    Row() {
+      Column() {
+        Row() {
+          Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+        }.backgroundColor('#2786d9')
+
+        Row() {
+          Text('Display Content 2').fontSize(30)
+        }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+        Row() {
+          Text('Display Content 3').fontSize(30)
+        }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+        Row() {
+          Text('Display Content 4').fontSize(30)
+        }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+        Row() {
+          Text('Display Content 5').fontSize(30)
+        }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+        Row() {
+          Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+        }.backgroundColor('#96dffa')
+      }
+      .width('100%')
+      .height('100%')
+      .alignItems(HorizontalAlign.Center)
+      .justifyContent(FlexAlign.SpaceBetween)
+      .backgroundColor('#d5d5d5')
+    }
+  }
+}
+```
+
+### Code block 8
+
+```
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+
+export default class EntryAbility extends UIAbility {
+  // ...
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err) => {
+      if (err.code) {
+        return;
+      }
+
+      // 设置全窗颜色和应用元素颜色一致
+      windowStage.getMainWindowSync().setWindowBackgroundColor('#d5d5d5');
+    });
+  }
+}
+```
+
+### Code block 9
+
+```
+// xxx.ets
+@Entry
+@Component
+struct Example {
+  build() {
+    Column() {
+      Row() {
+        Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#2786d9')
+
+      Row() {
+        Text('Display Content 2').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 3').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 4').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 5').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#96dffa')
+    }
+    .width('100%').height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor('#d5d5d5')
+    .justifyContent(FlexAlign.SpaceBetween)
+  }
+}
+```
+
+### Code block 10
+
+```
+// xxx.ets
+@Entry
+@Component
+struct Example {
+  build() {
+    Column() {
+      Row() {
+        Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#2786d9')
+      // 设置顶部绘制延伸到状态栏
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
+
+      Row() {
+        Text('Display Content 2').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 3').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 4').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 5').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#96dffa')
+      // 设置底部绘制延伸到导航区域
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+    }
+    .width('100%').height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor('#d5d5d5')
+    .justifyContent(FlexAlign.SpaceBetween)
+  }
+}
+```
+
+### Code block 11
+
+```
+// xxx.ets
+@Entry
+@Component
+struct SafeAreaExample1 {
+  build() {
+    Stack() {
+      Image($r('app.media.bg'))
+        .height('100%').width('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM]) // 图片组件的绘制区域扩展至状态栏和导航区域。
+    }.height('100%').width('100%')
+  }
+}
+```
+
+### Code block 12
+
+```
+// xxx.ets
+@Entry
+@Component
+struct ScrollExample {
+  scroller: Scroller = new Scroller()
+  private arr: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+  build() {
+    Stack({ alignContent: Alignment.TopStart }) {
+      Scroll(this.scroller) {
+        Column() {
+          ForEach(this.arr, (item: number) => {
+            Stack() {
+              Text('Display Content ' + item.toString()).fontSize(30)
+            }
+            .width('80%').padding(20).borderRadius(15).backgroundColor(Color.White).margin({ top:30, bottom:30 })
+          }, (item: string) => item)
+        }.width('100%').backgroundColor('rgb(213,213,213)')
+      }.backgroundColor('rgb(213,213,213)')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    }.width('100%').height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+}
+```
+
+### Code block 13
+
+```
+// xxx.ets
+@Entry
+@Component
+struct ScrollExample {
+  scroller: Scroller = new Scroller()
+  private arr: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+  build() {
+    Stack({ alignContent: Alignment.TopStart }) {
+      Scroll(this.scroller) {
+        Column() {
+          ForEach(this.arr, (item: number) => {
+            Stack() {
+              Text('Display Content ' + item.toString()).fontSize(30)
+            }
+            .width('80%').padding(20).borderRadius(15).backgroundColor(Color.White).margin({ top:30, bottom:30 })
+          }, (item: string) => item)
+        }.width('100%').backgroundColor('rgb(213,213,213)')
+      }.backgroundColor('rgb(213,213,213)')
+      .clipContent(ContentClipMode.SAFE_AREA)
+    }.width('100%').height('100%')
+  }
+}
+```
+
+### Code block 14
+
+```
+// xxx.ets
+@Entry
+@Component
+struct Example {
+  build() {
+    Column() {
+      Row() {
+        Text('Top Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#2786d9')
+      // 设置顶部绘制延伸到状态栏
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
+
+      Row() {
+        Text('Display Content 2').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 3').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 4').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Display Content 5').fontSize(30)
+      }.backgroundColor(Color.White).padding(20).borderRadius(15).width('80%')
+
+      Row() {
+        Text('Bottom Content').fontSize(40).textAlign(TextAlign.Center).width('100%')
+      }.backgroundColor('#96dffa')
+      // 设置底部绘制延伸到导航区域
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+    }
+    .width('100%').height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor('#d5d5d5')
+    .justifyContent(FlexAlign.SpaceBetween)
+  }
+}
+```
+
+### Code block 15
+
+```
+@Entry
+@Component
+struct Index {
+  build() {
+    Swiper() {
+      Column() {
+        Image($r('app.media.start'))
+          .height('50%').width('100%')
+          // 设置图片延伸到状态栏
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
+        Column() {
+          Text('HarmonyOS 第一课')
+            .fontSize(32)
+            .margin(30)
+          Text('通过循序渐进的学习路径，无经验和有经验的开发者都可以掌握ArkTS语言声明式开发范式，体验更简洁、更友好的HarmonyOS应用开发旅程。')
+            .fontSize(20).margin(20)
+        }.height('50%').width('100%')
+        .backgroundColor(Color.White)
+        // 设置文本内容区背景延伸到导航栏
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+      }
+    }
+    .width('100%')
+    .height('100%')
+    // 关闭Swiper组件默认的裁剪效果以便子节点可以绘制在Swiper外。
+    .clip(false)
+  }
+}
+```

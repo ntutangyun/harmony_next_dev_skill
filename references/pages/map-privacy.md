@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-privacy_
 
+TomTom Data
+
 © 2006-2025 TomTom. All rights reserved. This material is proprietary and the subject of copyright protection, database right protection and other Intellectual Property Rights owned by TomTom or its suppliers. The use of this material is subject to the terms of a license agreement. Any unauthorized copying or disclosure of this material will lead to criminal and civil liabilities.
 
 OSM Data
@@ -75,6 +77,3 @@ Switzerland
 United States
 
 © United States Postal Service 2025
-
-附录
-支持的语言

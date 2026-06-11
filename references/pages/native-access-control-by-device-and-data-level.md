@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-access-control-by-device-and-data-level_
 
+场景介绍
+
 分布式数据库的访问控制机制确保了数据存储和同步时的安全能力。在创建数据库时，应当基于数据分类分级规范合理地设置数据库的安全标签，确保数据库内容和数据标签的一致性。
 
 当前仅支持使用关系型数据库（C/C++）进行分级访问控制。
@@ -12,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-ac
 
 数据安全标签和设备安全等级越高，加密措施和访问控制措施越严格，数据安全性越高。
 
-数据安全标签
+[h2]数据安全标签
 
 按照数据分类分级规范要求，可将数据分为S1、S2、S3、S4四个安全等级，安全等级具体可见OH_Rdb_SecurityLevel枚举。
 
@@ -21,7 +23,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-ac
 高	S3	数据的泄露、篡改、破坏、销毁可能会给个人或组织导致严峻的不利影响。	个人实时精确定位信息、运动轨迹等。
 中	S2	数据的泄露、篡改、破坏、销毁可能会给个人或组织导致严重的不利影响。	个人的详细通信地址、姓名昵称等。
 低	S1	数据的泄露、篡改、破坏、销毁可能会给个人或组织导致有限的不利影响。	性别、国籍、用户申请记录等。
-设备安全等级
+
+[h2]设备安全等级
 
 根据设备安全能力，比如是否有TEE、是否有安全存储芯片等，将设备安全等级分为SL1、SL2、SL3、SL4、SL5五个等级。例如，手表通常为低安全的SL1设备，手机、平板通常为高安全的SL4设备。
 
@@ -53,7 +56,6 @@ libnative_rdb_ndk.z.so
 #include <cstring>
 #include "database/rdb/relational_store.h"
 #include "hilog/log.h"
-napi_init.cpp
 
 调用OH_Rdb_SetSecurityLevel接口设置数据库的安全等级。
 
@@ -66,13 +68,47 @@ OH_Rdb_SetModuleName(config, "entry");
 OH_Rdb_SetSecurityLevel(config, OH_Rdb_SecurityLevel::S3);
 OH_Rdb_SetEncrypted(config, false);
 OH_Rdb_SetArea(config, RDB_SECURITY_AREA_EL2);
-    
+
 int errCode = 0;
 OH_Rdb_Store *store_ = OH_Rdb_CreateOrOpen(config, &errCode);
 OH_Rdb_CloseStore(store_);
 store_ = nullptr;
 OH_Rdb_DestroyConfig(config);
 config = nullptr;
-napi_init.cpp
-基于设备分类和数据分级的访问控制 (ArkTS)
-E类加密数据库的使用 (ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+libnative_rdb_ndk.z.so
+```
+
+### Code block 2
+
+```
+#include <cstring>
+#include "database/rdb/relational_store.h"
+#include "hilog/log.h"
+```
+
+### Code block 3
+
+```
+OH_Rdb_ConfigV2 *config = OH_Rdb_CreateConfig();
+OH_Rdb_SetDatabaseDir(config, "/data/storage/el2/database");
+OH_Rdb_SetStoreName(config, "RdbTest.db");
+OH_Rdb_SetBundleName(config, "com.example.nativedemo");
+OH_Rdb_SetModuleName(config, "entry");
+// 数据库文件安全等级
+OH_Rdb_SetSecurityLevel(config, OH_Rdb_SecurityLevel::S3);
+OH_Rdb_SetEncrypted(config, false);
+OH_Rdb_SetArea(config, RDB_SECURITY_AREA_EL2);
+
+int errCode = 0;
+OH_Rdb_Store *store_ = OH_Rdb_CreateOrOpen(config, &errCode);
+OH_Rdb_CloseStore(store_);
+store_ = nullptr;
+OH_Rdb_DestroyConfig(config);
+config = nullptr;
+```

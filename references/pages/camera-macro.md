@@ -25,6 +25,7 @@ function EnableMacro(photoSession: camera.PhotoSession): void {
       photoSession.enableMacro(true);
    }
 }
+
 状态监听
 
 从API version 20开始，支持监听微距能力是否发生改变。
@@ -39,16 +40,60 @@ function callback(err: BusinessError, macroStatus: boolean): void {
    console.info(`Macro state: ${macroStatus}`);
 }
 
+// 注册回调函数。
+function registerMacroStatusChanged(photoSession: camera.PhotoSession): void {
+   photoSession.on('macroStatusChanged', callback);
+}
+
+// 解注册。
+function unregisterMacroStatusChanged(photoSession: camera.PhotoSession): void {
+   photoSession.off('macroStatusChanged');
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+let isSupported: boolean = photoSession.isMacroSupported();
+```
+
+### Code block 3
+
+```
+function EnableMacro(photoSession: camera.PhotoSession): void {
+   let isSupported: boolean = photoSession.isMacroSupported();
+   if (isSupported) {
+      photoSession.enableMacro(true);
+   }
+}
+```
+
+### Code block 4
+
+```
+function callback(err: BusinessError, macroStatus: boolean): void {
+   if (err !== undefined && err.code !== 0) {
+      console.error(`Callback Error, errorCode: ${err.code}`);
+      return;
+   }
+   console.info(`Macro state: ${macroStatus}`);
+}
 
 // 注册回调函数。
 function registerMacroStatusChanged(photoSession: camera.PhotoSession): void {
    photoSession.on('macroStatusChanged', callback);
 }
 
-
 // 解注册。
 function unregisterMacroStatusChanged(photoSession: camera.PhotoSession): void {
    photoSession.off('macroStatusChanged');
 }
-相机控制器(ArkTS)
-多摄同开(ArkTS)
+```

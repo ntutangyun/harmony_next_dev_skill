@@ -18,6 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 
 接口名	描述
 publish(request: NotificationRequest): Promise<void>	发布通知。
+
 开发步骤
 
 导入模块。
@@ -28,11 +29,9 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { contextConstant, common } from '@kit.AbilityKit';
 import { fileIo as fs, fileUri } from '@kit.CoreFileKit';
 
-
 const TAG: string = '[SpecifiedCustomizedRingtone]';
 const DOMAIN_NUMBER: number = 0xFF00;
 const SOUND_FILE_NAME: string = 'ringtone_demo.mp3'; // 实际项目中请替换为自己的音频文件
-SpecifiedCustomizedRingtone.ets
 
 准备音频资源。
 
@@ -43,7 +42,6 @@ SpecifiedCustomizedRingtone.ets
 (2) 创建发布通知的sound信息。
 
 let soundFile: string = SOUND_FILE_NAME; // 需要替换为resources/rawfile目录下对应的音频文件
-SpecifiedCustomizedRingtone.ets
 
 场景二：使用沙箱内音频资源作为通知铃声。
 
@@ -60,7 +58,6 @@ const applicationContext: common.ApplicationContext = context.getApplicationCont
 applicationContext.area = contextConstant.AreaMode.EL1; // 必须在EL1沙箱下
 const sandboxDir: string = applicationContext.filesDir;
 let sandboxFilePath: string = sandboxDir + '/' + SOUND_FILE_NAME;
-SpecifiedCustomizedRingtone.ets
 
 (2) 将网络下载或者用户生成的音频资源放在沙箱文件目录EL1区域的files目录下或者其子目录下，下面示例展示了如何将resources/rawfile目录下的音频资源拷贝到指定沙箱目录。
 
@@ -78,14 +75,12 @@ try {
   hilog.error(DOMAIN_NUMBER, TAG, `copy file to sandbox error: ${JSON.stringify(error)}`);
   return;
 }
-SpecifiedCustomizedRingtone.ets
 
 (3) 创建发布通知的sound信息。
 
 // 获取沙箱文件uri
 let sandboxFileUri: string = fileUri.getUriFromPath(sandboxFilePath)
 let soundFile: string = 'uri::' + sandboxFileUri; // 必须以uri::开头，且路径中不能包含'../'和'/..'
-SpecifiedCustomizedRingtone.ets
 
 发布携带自定义铃声的通知。
 
@@ -103,15 +98,103 @@ let notificationRequest: notificationManager.NotificationRequest = {
   sound: soundFile
 }
 
+notificationManager.publish(notificationRequest).then(() => {
+  hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in publishing notification.');
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN_NUMBER, TAG, `Failed to publish notification. Code is ${err.code}, message is ${err.message}`);
+});
+
+约束限制
+
+应用使用非预置的音频资源作为通知铃声，发布通知时，NotificationRequest携带sound字段指定的uri资源路径中不能包含"../"或者"/.."，并且必须以"uri::"开始。
+
+应用使用非预置的音频资源作为通知铃声，音频资源必须放在应用沙箱EL1区域files目录下。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { notificationManager } from '@kit.NotificationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { contextConstant, common } from '@kit.AbilityKit';
+import { fileIo as fs, fileUri } from '@kit.CoreFileKit';
+
+const TAG: string = '[SpecifiedCustomizedRingtone]';
+const DOMAIN_NUMBER: number = 0xFF00;
+const SOUND_FILE_NAME: string = 'ringtone_demo.mp3'; // 实际项目中请替换为自己的音频文件
+```
+
+### Code block 2
+
+```
+let soundFile: string = SOUND_FILE_NAME; // 需要替换为resources/rawfile目录下对应的音频文件
+```
+
+### Code block 3
+
+```
+// 生成沙箱内音频资源路径
+const uiContext: UIContext = this.getUIContext();
+let context: Context | undefined = uiContext.getHostContext() as common.UIAbilityContext;
+if (!context) {
+  hilog.error(DOMAIN_NUMBER, TAG, 'Context is not initialized.');
+  return;
+}
+const applicationContext: common.ApplicationContext = context.getApplicationContext();
+applicationContext.area = contextConstant.AreaMode.EL1; // 必须在EL1沙箱下
+const sandboxDir: string = applicationContext.filesDir;
+let sandboxFilePath: string = sandboxDir + '/' + SOUND_FILE_NAME;
+```
+
+### Code block 4
+
+```
+// 拷贝resources/rawfile/目录下的音频文件到应用沙箱EL1的files目录下
+try {
+  let rawFileData: Uint8Array = context.resourceManager.getRawFileContentSync(SOUND_FILE_NAME);
+  if (!fs.accessSync(sandboxDir)) {
+    fs.mkdirSync(sandboxDir, true);
+  }
+  const file = fs.openSync(sandboxFilePath, fs.OpenMode.CREATE | fs.OpenMode.WRITE_ONLY);
+  fs.writeSync(file.fd, rawFileData.buffer);
+  fs.closeSync(file);
+  hilog.info(DOMAIN_NUMBER, TAG, 'copy file to sandbox success.');
+} catch (error) {
+  hilog.error(DOMAIN_NUMBER, TAG, `copy file to sandbox error: ${JSON.stringify(error)}`);
+  return;
+}
+```
+
+### Code block 5
+
+```
+// 获取沙箱文件uri
+let sandboxFileUri: string = fileUri.getUriFromPath(sandboxFilePath)
+let soundFile: string = 'uri::' + sandboxFileUri; // 必须以uri::开头，且路径中不能包含'../'和'/..'
+```
+
+### Code block 6
+
+```
+let notificationRequest: notificationManager.NotificationRequest = {
+  id: 0,
+  notificationSlotType: notificationManager.SlotType.SOCIAL_COMMUNICATION,
+  content: {
+    notificationContentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
+    normal: {
+      title: 'title',
+      text: 'text',
+      additionalText: 'test_additionalText'
+    }
+  },
+  sound: soundFile
+}
 
 notificationManager.publish(notificationRequest).then(() => {
   hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in publishing notification.');
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN_NUMBER, TAG, `Failed to publish notification. Code is ${err.code}, message is ${err.message}`);
 });
-SpecifiedCustomizedRingtone.ets
-约束限制
-应用使用非预置的音频资源作为通知铃声，发布通知时，NotificationRequest携带sound字段指定的uri资源路径中不能包含"../"或者"/.."，并且必须以"uri::"开始。
-应用使用非预置的音频资源作为通知铃声，音频资源必须放在应用沙箱EL1区域files目录下。
-发布进度条类型通知
-为通知添加行为意图
+```

@@ -31,6 +31,3 @@ TBufPool必须通过TPipe::InitBufPool或TBufPool::InitBufPool接口进行划分
 Alloc/Free、EnQue/DeQue在切分TBufPool资源池时必须成对匹配使用，自动确保同步。
 
 切换资源池的时候，若手写同步，AscendC不保证地址读写复用同步。因此不推荐手写同步。
-
-TBufPool
-构造函数

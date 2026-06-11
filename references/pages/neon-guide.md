@@ -91,4 +91,71 @@ endif ()
 
 上述步骤完成后，开发者即可在工程中使用Neon intrinsics指令。
 
-CPU特性
+## Code blocks
+
+### Code block 1
+
+```
+{native-root}/llvm/lib/clang/current/lib/arm-linux-ohos/
+    |-- a7_hard_neon-vfpv4
+    |       |-- clang_rt.crtbegin.o
+    |       |-- clang_rt.crtend.o
+    |       |-- ...
+    |
+    |-- a7_soft
+    |       |-- clang_rt.crtbegin.o
+    |       |-- clang_rt.crtend.o
+    |       |-- ...
+    |
+    |-- a7_softfp_neon-vfpv4
+            |-- clang_rt.crtbegin.o
+            |-- clang_rt.crtend.o
+            |-- ...
+```
+
+### Code block 2
+
+```
+#include "cpu_features_macros.h"
+void call_neon_intrinsics(short *output, const short* input, const short* kernel, int width, int kernelSize)
+{
+   int nn, offset = -kernelSize/2;
+   for (nn = 0; nn < width; nn++)
+   {
+        int mm, sum = 0;
+        int32x4_t sum_vec = vdupq_n_s32(0); // Neon指令函数
+        for(mm = 0; mm < kernelSize/4; mm++)
+        {
+            int16x4_t  kernel_vec = vld1_s16(kernel + mm*4);
+            int16x4_t  input_vec = vld1_s16(input + (nn+offset+mm*4));
+            sum_vec = vmlal_s16(sum_vec, kernel_vec, input_vec);
+        }
+        // ...
+   }
+   // ...
+}
+```
+
+### Code block 3
+
+```
+void Compute(void) {
+#if defined (CPU_FEATURES_ARCH_ARM)
+  static const ArmFeatures features = GetArmInfo().features;
+  // 根据features的字段进行支持cpu features的特性判断
+  if (features.neon) {
+    // Run optimized code.
+  } else {
+    // call normal function written in c
+  }
+#endif
+}
+```
+
+### Code block 4
+
+```
+if (${OHOS_ARCH} STREQUAL "armeabi-v7a")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon -mfloat-abi=softfp")
+endif ()
+```

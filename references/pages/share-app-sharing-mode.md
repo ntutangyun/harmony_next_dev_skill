@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/share-app-sharing-mode_
 
+场景介绍
+
 该功能仅对企业应用开放。6.0.1(21)版本开始，支持宿主应用配置目标应用名单列表（最多支持50个应用）。配置成功后，仅名单内的目标可出现在系统分享面板的分享推荐区和分享方式区。
 
 申请权限
@@ -38,7 +40,6 @@ import { common } from '@kit.AbilityKit';
 import { systemShare } from '@kit.ShareKit';
 import { uniformTypeDescriptor as utd } from '@kit.ArkData';
 
-
 @Component
 export struct ShareAppTrustInfo {
   build() {
@@ -46,7 +47,6 @@ export struct ShareAppTrustInfo {
       this.share();
     })
   }
-
 
   private share() {
     // 构造ShareData，需配置一条有效数据信息
@@ -66,5 +66,56 @@ export struct ShareAppTrustInfo {
     })
   }
 }
-通过分享面板发起分享
-自定义配置操作区
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    // ...
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.SET_SYSTEMSHARE_APPLAUNCHTRUSTLIST",
+        "reason": '$string:permission_reason_set_system_share_app_launch_trust_list'
+      },
+    ]
+  }
+}
+```
+
+### Code block 2
+
+```
+import { common } from '@kit.AbilityKit';
+import { systemShare } from '@kit.ShareKit';
+import { uniformTypeDescriptor as utd } from '@kit.ArkData';
+
+@Component
+export struct ShareAppTrustInfo {
+  build() {
+    Button('share').onClick(() => {
+      this.share();
+    })
+  }
+
+  private share() {
+    // 构造ShareData，需配置一条有效数据信息
+    let data: systemShare.SharedData = new systemShare.SharedData({
+      utd: utd.UniformDataType.PLAIN_TEXT,
+      content: 'Hello HarmonyOS'
+    });
+    let uiContext: UIContext = this.getUIContext();
+    // 构建ShareController
+    let controller: systemShare.ShareController = new systemShare.ShareController(data);
+    let context: common.UIAbilityContext = uiContext.getHostContext() as common.UIAbilityContext;
+    // 进行分享面板显示
+    controller.show(context, {
+      previewMode: systemShare.SharePreviewMode.DEFAULT,
+      selectionMode: systemShare.SelectionMode.SINGLE,
+      appLaunchTrustInfo: ['5765880207853060000', '1171817433862770000'], // 此值仅为示例. 目标应用 appidentifier
+    })
+  }
+}
+```

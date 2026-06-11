@@ -2,11 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/vision-interactiveliveness_
 
+场景介绍
+
+人脸活体检测支持动作活体检测模式。
+
 动作活体检测支持实时捕捉人脸，需要用户配合做指定动作就可以判断是真实活体，还是非活体攻击（比如：打印图片、人脸翻拍视频以及人脸面具等）。
 
 说明
 
-活体检测是一项纯端侧算法、试用期免费的系统基础服务，推荐开发者使用在考勤打卡、辅助登录和实名认证等低危业务场景中。
+活体检测是一项纯端侧算法、试用期免费的系统基础服务，推荐开发者使用在考勤打卡、辅助登录和实名认证等低危业务场景中。活体检测减少动作数量或者指定特定动作会降低其安全性，增加被攻破的风险。
 
 端侧算法在HarmonyOS NEXT/5.0.x已完成权威机构（CFCA）检测认证。鉴于支付和金融应用的高风险性，建议开发者基于现有的安全性，针对不同的功能场景进行风险评估和风控策略评估，并采取必要的安全措施。
 
@@ -31,6 +35,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/vision-in
 接口名	描述
 startLivenessDetection(config: InteractiveLivenessConfig): Promise<boolean>	跳转到人脸活体检测页面的入口
 getInteractiveLivenessResult(): Promise<InteractiveLivenessResult>	获取人脸活体检测的结果。使用Promise异步回调
+
 开发步骤
 
 将实现人脸活体检测相关的类添加至工程。
@@ -68,7 +73,6 @@ Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems
         .fontSize(16)
     }
     .margin({ right: 15 })
-
 
     Row() {
       Radio({ value: 'back', group: 'routeMode' }).checked(false)
@@ -190,13 +194,15 @@ private getDetectionResultInfo() {
     hilog.error(0x0001, 'LivenessCollectionIndex', 'this api is not supported on this device');
   }
 }
+
 开发实例
-Index.ets
+
+[h2]Index.ets
+
 import { common, abilityAccessCtrl, Permissions } from '@kit.AbilityKit';
 import { interactiveLiveness } from '@kit.VisionKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 @Entry
 @Component
@@ -214,7 +220,6 @@ struct LivenessCollectionIndex{
     'message': ''
   };
 
-
   build() {
     Stack({
       alignContent: Alignment.Top
@@ -231,13 +236,12 @@ struct LivenessCollectionIndex{
                   .height(24)
                   .width(24)
                   .onChange(() => {
-                    this.routeMode = 'replace'
+                    this.routeMode = 'replace';
                   })
                 Text('replace')
                   .fontSize(16)
               }
               .margin({ right: 15 })
-
 
               Row() {
                 Radio({ value: 'back', group: 'routeMode' }).checked(false)
@@ -254,7 +258,6 @@ struct LivenessCollectionIndex{
           }
         }
         .margin({ bottom: 30 })
-
 
           Row() {
             Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
@@ -285,6 +288,404 @@ struct LivenessCollectionIndex{
       .margin({ left: 24, top: 80 })
       .zIndex(1)
 
+      Stack({
+        alignContent: Alignment.Bottom
+      }) {
+        if (this.resultInfo?.mPixelMap) {
+          Image(this.resultInfo?.mPixelMap)
+            .width(260)
+            .height(260)
+            .align(Alignment.Center)
+            .margin({ bottom: 260 })
+          Circle()
+            .width(300)
+            .height(300)
+            .fillOpacity(0)
+            .strokeWidth(60)
+            .stroke(Color.White)
+            .margin({ bottom: 250, left: 0 })
+        }
+
+        Text(this.resultInfo.mPixelMap ?
+          '检测成功' :
+          this.failResult.code != 1008302000 ?
+            '检测失败' :
+            '')
+          .width('100%')
+          .height(26)
+          .fontSize(20)
+          .fontColor('#000000')
+          .fontFamily('HarmonyHeiTi')
+          .margin({ top: 50 })
+          .textAlign(TextAlign.Center)
+          .fontWeight('Medium')
+          .margin({ bottom: 240 })
+
+        if (this.failResult.code != 1008302000) {
+          Text(this.failResult.message as string)
+            .width('100%')
+            .height(26)
+            .fontSize(16)
+            .fontColor(Color.Gray)
+            .textAlign(TextAlign.Center)
+            .fontFamily('HarmonyHeiTi')
+            .fontWeight('Medium')
+            .margin({ bottom: 200 })
+        }
+
+        Button('开始检测', { type: ButtonType.Normal, stateEffect: true })
+          .width(192)
+          .height(40)
+          .fontSize(16)
+          .backgroundColor(0x317aff)
+          .borderRadius(20)
+          .margin({
+            bottom: 56
+          })
+          .onClick(() => {
+            this.startDetection();
+          })
+      }
+      .height('100%')
+    }
+  }
+
+  onPageShow() {
+    this.resultRelease();
+    this.getDetectionResultInfo();
+  }
+
+  // 跳转到人脸活体检测控件
+  private routerLibrary() {
+    let routerOptions: interactiveLiveness.InteractiveLivenessConfig = {
+      isSilentMode: this.isSilentMode as interactiveLiveness.DetectionMode,
+      routeMode: this.routeMode as interactiveLiveness.RouteRedirectionMode,
+      actionsNum: this.actionsNum
+    };
+
+    if (canIUse('SystemCapability.AI.Component.LivenessDetect')) {
+      interactiveLiveness.startLivenessDetection(routerOptions).then((isSuccess) => {
+        if (isSuccess) {
+            hilog.info(0x0001, 'LivenessCollectionIndex', `Succeeded in jumping.`);
+          } else {
+            hilog.info(0x0001, 'LivenessCollectionIndex', `Redirection failed.`);
+          }
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0001, 'LivenessCollectionIndex', `Failed to jump. Code: ${err.code}, message: ${err.message}`);
+      });
+    } else {
+      hilog.error(0x0001, 'LivenessCollectionIndex', 'this api is not supported on this device');
+    }
+  }
+
+  // 校验CAMERA权限
+  private startDetection() {
+    abilityAccessCtrl.createAtManager().requestPermissionsFromUser(this.context, this.array).then((res) => {
+      for (let i = 0; i < res.permissions.length; i++) {
+        if (res.permissions[i] === 'ohos.permission.CAMERA' && res.authResults[i] === 0) {
+        this.routerLibrary();
+      }
+     }
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0001, 'LivenessCollectionIndex', `Failed to request permissions from user. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+
+  // 获取验证结果
+  private getDetectionResultInfo() {
+    // getInteractiveLivenessResult接口调用完会释放资源
+    if (canIUse('SystemCapability.AI.Component.LivenessDetect')) {
+      interactiveLiveness.getInteractiveLivenessResult().then(data => {
+        this.resultInfo = data;
+      }).catch((err: BusinessError) => {
+        this.failResult = {
+          'code': err.code,
+          'message': err.message
+        };
+      });
+    } else {
+      hilog.error(0x0001, 'LivenessCollectionIndex', 'this api is not supported on this device');
+    }
+  }
+
+  // result release
+  private resultRelease() {
+    this.resultInfo = {
+      livenessType: 0
+    };
+    this.failResult = {
+      'code': 1008302000,
+      'message': ''
+    };
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { common, abilityAccessCtrl, Permissions } from '@kit.AbilityKit';
+import { interactiveLiveness } from '@kit.VisionKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+"requestPermissions":[
+  {
+    "name": "ohos.permission.CAMERA",
+    "reason": "$string:camera_desc",
+    "usedScene": {"abilities": []}
+  }
+]
+```
+
+### Code block 3
+
+```
+Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
+  Text('验证完的跳转模式：')
+    .fontSize(18)
+    .width('25%')
+  Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
+    Row() {
+      Radio({ value: 'replace', group: 'routeMode' }).checked(true)
+        .height(24)
+        .width(24)
+        .onChange((isChecked: boolean) => {
+          this.routeMode = 'replace';
+        })
+      Text('replace')
+        .fontSize(16)
+    }
+    .margin({ right: 15 })
+
+    Row() {
+      Radio({ value: 'back', group: 'routeMode' }).checked(false)
+        .height(24)
+        .width(24)
+        .onChange((isChecked: boolean) => {
+          this.routeMode = 'back';
+        })
+      Text('back')
+        .fontSize(16)
+    }
+  }
+  .width('75%')
+}
+```
+
+### Code block 4
+
+```
+Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
+  Text('动作数量：')
+    .fontSize(18)
+    .width('25%')
+  TextInput({
+    placeholder: this.actionsNum != 0 ? this.actionsNum.toString() : '动作数量为3或4个'
+  })
+    .type(InputType.Number)
+    .placeholderFont({
+      size: 18,
+      weight: FontWeight.Normal,
+      family: 'HarmonyHeiTi',
+      style: FontStyle.Normal
+    })
+    .fontSize(18)
+    .fontWeight(FontWeight.Bold)
+    .fontFamily('HarmonyHeiTi')
+    .fontStyle(FontStyle.Normal)
+    .width('65%')
+    .onChange((value: string) => {
+      this.actionsNum = Number(value) as interactiveLiveness.ActionsNumber;
+    })
+}
+```
+
+### Code block 5
+
+```
+Button('开始检测', { type: ButtonType.Normal, stateEffect: true })
+  .width(192)
+  .height(40)
+  .fontSize(16)
+  .backgroundColor(0x317aff)
+  .borderRadius(20)
+  .margin({
+    bottom: 56
+  })
+  .onClick(() => {
+    this.startDetection();
+  })
+```
+
+### Code block 6
+
+```
+private context: common.UIAbilityContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
+private array: Array<Permissions> = ['ohos.permission.CAMERA'];
+// 校验CAMERA权限
+private startDetection() {
+  abilityAccessCtrl.createAtManager().requestPermissionsFromUser(this.context, this.array).then((res) => {
+    for (let i = 0; i < res.permissions.length; i++) {
+      if (res.permissions[i] === 'ohos.permission.CAMERA' && res.authResults[i] === 0) {
+        this.routerLibrary();
+      }
+    }
+  }).catch((err: BusinessError) => {
+    hilog.error(0x0001, 'LivenessCollectionIndex', `Failed to request permissions from user. Code is ${err.code}, message is ${err.message}`);
+  });
+}
+```
+
+### Code block 7
+
+```
+let routerOptions: interactiveLiveness.InteractiveLivenessConfig = {
+  isSilentMode: this.isSilentMode as interactiveLiveness.DetectionMode,
+  routeMode: this.routeMode as interactiveLiveness.RouteRedirectionMode,
+  actionsNum: this.actionsNum
+};
+```
+
+### Code block 8
+
+```
+// 跳转到人脸活体检测控件
+private routerLibrary() {
+  if (canIUse('SystemCapability.AI.Component.LivenessDetect')) {
+    interactiveLiveness.startLivenessDetection(routerOptions).then((isSuccess) => {
+      if (isSuccess) {
+         hilog.info(0x0001, 'LivenessCollectionIndex', `Succeeded in jumping.`);
+       } else {
+         hilog.info(0x0001, 'LivenessCollectionIndex', `Redirection failed.`);
+       }
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0001, 'LivenessCollectionIndex', `Failed to jump. Code: ${err.code}, message: ${err.message}`);
+    });
+  } else {
+    hilog.error(0x0001, 'LivenessCollectionIndex', 'this api is not supported on this device');
+  }
+}
+```
+
+### Code block 9
+
+```
+// 获取验证结果
+private getDetectionResultInfo() {
+  // getInteractiveLivenessResult接口调用完会释放资源
+  if (canIUse('SystemCapability.AI.Component.LivenessDetect')) {
+    let resultInfo = interactiveLiveness.getInteractiveLivenessResult();
+    resultInfo.then(data => {
+      this.resultInfo = data;
+    }).catch((err: BusinessError) => {
+      this.failResult = {
+        'code': err.code,
+        'message': err.message
+      };
+    });
+  } else {
+    hilog.error(0x0001, 'LivenessCollectionIndex', 'this api is not supported on this device');
+  }
+}
+```
+
+### Code block 10
+
+```
+import { common, abilityAccessCtrl, Permissions } from '@kit.AbilityKit';
+import { interactiveLiveness } from '@kit.VisionKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct LivenessCollectionIndex{
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  private array: Array<Permissions> = ['ohos.permission.CAMERA'];
+  @State actionsNum: number = 0;
+  @State isSilentMode: string = 'INTERACTIVE_MODE';
+  @State routeMode: string = 'replace';
+  @State resultInfo: interactiveLiveness.InteractiveLivenessResult = {
+    livenessType: 0
+  };
+  @State failResult: Record<string, number | string> = {
+    'code': 1008302000,
+    'message': ''
+  };
+
+  build() {
+    Stack({
+      alignContent: Alignment.Top
+    }) {
+      Column() {
+        Row() {
+          Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
+            Text('验证完的跳转模式：')
+              .fontSize(18)
+              .width('25%')
+            Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
+              Row() {
+                Radio({ value: 'replace', group: 'routeMode' }).checked(true)
+                  .height(24)
+                  .width(24)
+                  .onChange(() => {
+                    this.routeMode = 'replace';
+                  })
+                Text('replace')
+                  .fontSize(16)
+              }
+              .margin({ right: 15 })
+
+              Row() {
+                Radio({ value: 'back', group: 'routeMode' }).checked(false)
+                  .height(24)
+                  .width(24)
+                  .onChange(() => {
+                    this.routeMode = 'back';
+                  })
+                Text('back')
+                  .fontSize(16)
+              }
+            }
+            .width('75%')
+          }
+        }
+        .margin({ bottom: 30 })
+
+          Row() {
+            Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center }) {
+              Text('动作数量：')
+                .fontSize(18)
+                .width('25%')
+              TextInput({
+                placeholder: this.actionsNum != 0 ? this.actionsNum.toString() : '动作数量为3或4个'
+              })
+                .type(InputType.Number)
+                .placeholderFont({
+                  size: 18,
+                  weight: FontWeight.Normal,
+                  family: 'HarmonyHeiTi',
+                  style: FontStyle.Normal
+                })
+                .fontSize(18)
+                .fontWeight(FontWeight.Bold)
+                .fontFamily('HarmonyHeiTi')
+                .fontStyle(FontStyle.Normal)
+                .width('65%')
+                .onChange((value: string) => {
+                  this.actionsNum = Number(value) as interactiveLiveness.ActionsNumber;
+                })
+            }
+          }
+      }
+      .margin({ left: 24, top: 80 })
+      .zIndex(1)
 
       Stack({
         alignContent: Alignment.Bottom
@@ -304,7 +705,6 @@ struct LivenessCollectionIndex{
             .margin({ bottom: 250, left: 0 })
         }
 
-
         Text(this.resultInfo.mPixelMap ?
           '检测成功' :
           this.failResult.code != 1008302000 ?
@@ -320,7 +720,6 @@ struct LivenessCollectionIndex{
           .fontWeight('Medium')
           .margin({ bottom: 240 })
 
-
         if (this.failResult.code != 1008302000) {
           Text(this.failResult.message as string)
             .width('100%')
@@ -332,7 +731,6 @@ struct LivenessCollectionIndex{
             .fontWeight('Medium')
             .margin({ bottom: 200 })
         }
-
 
         Button('开始检测', { type: ButtonType.Normal, stateEffect: true })
           .width(192)
@@ -351,12 +749,10 @@ struct LivenessCollectionIndex{
     }
   }
 
-
   onPageShow() {
     this.resultRelease();
     this.getDetectionResultInfo();
   }
-
 
   // 跳转到人脸活体检测控件
   private routerLibrary() {
@@ -365,7 +761,6 @@ struct LivenessCollectionIndex{
       routeMode: this.routeMode as interactiveLiveness.RouteRedirectionMode,
       actionsNum: this.actionsNum
     };
-
 
     if (canIUse('SystemCapability.AI.Component.LivenessDetect')) {
       interactiveLiveness.startLivenessDetection(routerOptions).then((isSuccess) => {
@@ -382,7 +777,6 @@ struct LivenessCollectionIndex{
     }
   }
 
-
   // 校验CAMERA权限
   private startDetection() {
     abilityAccessCtrl.createAtManager().requestPermissionsFromUser(this.context, this.array).then((res) => {
@@ -395,7 +789,6 @@ struct LivenessCollectionIndex{
       hilog.error(0x0001, 'LivenessCollectionIndex', `Failed to request permissions from user. Code is ${err.code}, message is ${err.message}`);
     });
   }
-
 
   // 获取验证结果
   private getDetectionResultInfo() {
@@ -414,7 +807,6 @@ struct LivenessCollectionIndex{
     }
   }
 
-
   // result release
   private resultRelease() {
     this.resultInfo = {
@@ -426,5 +818,4 @@ struct LivenessCollectionIndex{
     };
   }
 }
-Vision Kit简介
-卡证识别
+```

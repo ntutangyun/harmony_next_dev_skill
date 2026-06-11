@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-faq-15_
 
+是正常的。出于安全考虑，系统控件在拉起IAP Kit收银台时，会将子窗口等悬浮形态的组件隐藏。

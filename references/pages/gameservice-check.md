@@ -2,6 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-check_
 
+为减少提交审核后被驳回的概率，请参考如下自检CheckList进行自检。
+
+自检通过后，再前往AppGallery Connect提交游戏上架审核，具体操作请参见发布HarmonyOS游戏。
+
+一级分类	二级分类	检查项	影响
 合规检查	隐私、游戏资质等	游戏内容、游戏安全性、用户隐私等符合华为应用市场审核规定，具体参考应用审核指南。	如不符合华为应用市场审核要求，游戏将会被驳回。
 合规检查	用户实名认证信息	游戏提交上架前在AppGallery Connect完成版署实名认证申请并通过审核。	上架申请可能会被驳回。
 配置检查	应用类型	登录AppGallery Connect，检查应用类型是否为游戏。	如果不是游戏类型，会导致游戏防沉迷异常，提交审核会被驳回。
@@ -11,13 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 配置检查	module.json5文件	在工程的entry模块module.json5文件中，查看metadata中client_id和app_id是否配置准确。	如果配置错误，Game Service Kit的接口将调用失败。
 代码检查	初始化	游戏启动后，要求先调用init接口，调用结束后再调用其他接口。	游戏如未调用init接口，将导致审核被驳回。
 代码检查	登录	华为账号登录图标要求遵守开发者使用Account Kit的登录能力的管理细则。	如不符合规范，可能会影响游戏上架。
-代码检查	登录	
-
-- 使用华为账号登录HarmonyOS 4及以下游戏与HarmonyOS 5.0及以上游戏时，账号资产要保持互通。
-
-- 使用游戏官方账号登录官包与HarmonyOS 5.0及以上游戏时，账号资产要保持互通。
-
-	账号资产不互通会影响上架。
+代码检查	登录	- 使用华为账号登录HarmonyOS 4及以下游戏与HarmonyOS 5.0及以上游戏时，账号资产要保持互通。 - 使用游戏官方账号登录官包与HarmonyOS 5.0及以上游戏时，账号资产要保持互通。	账号资产不互通会影响上架。
 代码检查	登录	游戏登录必须调用unionLogin接口拉起联合登录面板进行登录。	游戏如未调用unionLogin接口将导致审核被驳回。
 代码检查	登录	用户设备未登录华为账号时，unionLogin接口会拉起设备登录华为账号的弹窗。在窗口上点击返回后，该窗口无需反复自动弹出，且玩家可以手动再次拉起该窗口。	若设备登录华为账号的弹窗无法手动拉起，或反复自动弹出，将导致上架审核被驳回。
 代码检查	登录	已接入官方账号登录的游戏，用户登录游戏默认沿用上次选择的登录账号，建议在游戏内为玩家提供游戏内切换账号功能，支持玩家重新选择游戏的登录账号。游戏重新拉起联合登录面板时，要求调用unionLogin接口将loginParam中的showLoginDialog参数设置为true。若调用unionLogin接口，整个游戏登录流程无需再调用getLocalPlayer接口。	建议游戏支持玩家重新选择游戏的登录账号，否则游戏的登录体验不佳。
@@ -26,5 +25,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 代码检查	支付	purchase接口传入的商品ID和商品类型与AppGallery Connect创建的商品ID和商品类型一致。	如果支付时传入的商品ID或商品类型与AppGallery Connect不一致，将无法拉起支付页面。
 代码检查	支付	支付接口调用返回时、应用启动时均进行了补单处理和错误码1001860001、1001860051。请参考权益发放。	如未在适当时机进行补单处理，会导致异常场景下（如关闭进程、崩溃）商品未正常发放。
 代码检查	游戏退出	发布中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）的游戏要求具备玩家退出功能。	如不具备退出功能，审核将会被驳回。
-单机游戏登录
-小游戏

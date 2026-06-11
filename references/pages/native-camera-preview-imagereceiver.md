@@ -26,12 +26,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-ca
 #include "ohcamera/video_output.h"
 #include "ohcamera/camera_manager.h"
 
-
 #include <multimedia/media_library/media_asset_manager_capi.h>
 #include <multimedia/media_library/media_asset_change_request_capi.h>
 #include <multimedia/media_library/media_access_helper_capi.h>
 #include <multimedia/image_framework/image/image_packer_native.h>
-camera_manager.h
 
 在CMake脚本中链接相关动态库。
 
@@ -79,7 +77,6 @@ void InitImageReceiver(uint64_t &receiverSurfaceID)
         return;
     }
 
-
     errCode = OH_ImageReceiverNative_On(receiver, CallbackReadNextImage);
     if (errCode != IMAGE_SUCCESS) {
         OH_LOG_ERROR(LOG_APP, "%{public}s image receiver on failed, errCode: %{public}d.", __func__, errCode);
@@ -95,7 +92,6 @@ void InitImageReceiver(uint64_t &receiverSurfaceID)
         OH_LOG_INFO(LOG_APP, "receiver surfaceID:%{public}lu", receiverSurfaceID);
     }
 }
-napi_init.cpp
 
 通过上一步获取到的SurfaceId创建预览流（在创建预览流之前需要将SurfaceId类型转成char *），参考预览(C/C++)步骤4。
 
@@ -115,17 +111,14 @@ void copyBuffer(OH_NativeBuffer *srcBuffer, size_t srcSize, OHNativeWindowBuffer
         __func__, bufferHandle->fd, bufferHandle->width, bufferHandle->height, bufferHandle->stride, bufferHandle->size,
         bufferHandle->format, bufferHandle->usage);
 
-
     void *mappedAddr =
         mmap(bufferHandle->virAddr, bufferHandle->size, PROT_READ | PROT_WRITE, MAP_SHARED, bufferHandle->fd, 0);
     std::memcpy(static_cast<unsigned char *>(mappedAddr), static_cast<unsigned char *>(srcVir), srcSize);
     munmap(mappedAddr, bufferHandle->size);
 
-
     OH_NativeBuffer_Unmap(srcBuffer);
     OH_LOG_INFO(LOG_APP, "ImageReceiverNativeCTest %{public}s SUCCESS", __func__);
 }
-
 
 void ShowImage(OH_ImageNative *image)
 {
@@ -141,7 +134,6 @@ void ShowImage(OH_ImageNative *image)
         return;
     }
 
-
     // 关键：调整nativeWindow大小及format，需要与image的大小、format保持一致。
     res = OH_NativeWindow_NativeWindowHandleOpt(nativeWindow, SET_BUFFER_GEOMETRY, g_imageWidth, g_imageHeight);
     res = OH_NativeWindow_NativeWindowHandleOpt(nativeWindow, SET_FORMAT, NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP); // NV21
@@ -151,7 +143,6 @@ void ShowImage(OH_ImageNative *image)
     } else {
         res = OH_NativeWindow_NativeWindowHandleOpt(nativeWindow, SET_TRANSFORM, NATIVEBUFFER_ROTATE_270);
     }
-
 
     OH_NativeBuffer *imageBuffer = nullptr;
     Image_ErrorCode errCode = OH_ImageNative_GetByteBuffer(image, g_jpegComponent, &imageBuffer);
@@ -166,7 +157,6 @@ void ShowImage(OH_ImageNative *image)
     size_t bufSize = 0;
     OH_ImageNative_GetBufferSize(image, g_jpegComponent, &bufSize);
 
-
     OHNativeWindowBuffer *nativeWindowBuffer = nullptr;
     int fenceFd = -1;
     res = OH_NativeWindow_NativeWindowRequestBuffer(nativeWindow, &nativeWindowBuffer, &fenceFd);
@@ -175,10 +165,8 @@ void ShowImage(OH_ImageNative *image)
         return;
     }
 
-
     // 将image数据拷贝到nativeWindowBuffer上。
     copyBuffer(imageBuffer, bufSize, nativeWindowBuffer);
-
 
     Region region1{};
     res = OH_NativeWindow_NativeWindowFlushBuffer(nativeWindow, nativeWindowBuffer, fenceFd, region1);
@@ -188,7 +176,6 @@ void ShowImage(OH_ImageNative *image)
     }
     OH_LOG_INFO(LOG_APP, "ImageReceiverNativeCTest %{public}s SUCCESS", __func__);
 }
-
 
 static void CallbackReadNextImage(OH_ImageReceiverNative *receiver)
 {
@@ -203,9 +190,7 @@ static void CallbackReadNextImage(OH_ImageReceiverNative *receiver)
         return;
     }
 
-
     ShowImage(image);
-
 
     // 释放OH_ImageNative实例。
     errCode = OH_ImageNative_Release(image);
@@ -215,6 +200,200 @@ static void CallbackReadNextImage(OH_ImageReceiverNative *receiver)
     }
     OH_LOG_INFO(LOG_APP, "CallbackReadNextImage %{public}s SUCCESS", __func__);
 }
-napi_init.cpp
-预览(C/C++)
-拍照(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+#include <cstdint>
+#include <cstdlib>
+#include "hilog/log.h"
+#include <memory>
+#include <new>
+#include <multimedia/image_framework/image/image_native.h>
+#include <multimedia/image_framework/image/image_receiver_native.h>
+#include "ohcamera/camera.h"
+#include "ohcamera/camera_input.h"
+#include "ohcamera/camera_device.h"
+#include "ohcamera/capture_session.h"
+#include "ohcamera/photo_output.h"
+#include "ohcamera/preview_output.h"
+#include "ohcamera/video_output.h"
+#include "ohcamera/camera_manager.h"
+
+#include <multimedia/media_library/media_asset_manager_capi.h>
+#include <multimedia/media_library/media_asset_change_request_capi.h>
+#include <multimedia/media_library/media_access_helper_capi.h>
+#include <multimedia/image_framework/image/image_packer_native.h>
+```
+
+### Code block 2
+
+```
+target_link_libraries(entry PUBLIC
+    libace_napi.z.so
+    libhilog_ndk.z.so
+    libohimage.so
+    libimage_receiver.so
+    libnative_image.so
+    libohcamera.so
+    libnative_buffer.so
+)
+```
+
+### Code block 3
+
+```
+void InitImageReceiver(uint64_t &receiverSurfaceID)
+{
+    OH_ImageReceiverOptions *options = nullptr;
+    // 注意捕获错误码处理异常及对象判空，当前示例仅展示调用流程。
+    // 设置图片参数。
+    Image_ErrorCode errCode = OH_ImageReceiverOptions_Create(&options);
+    if (errCode != IMAGE_SUCCESS || options == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImageReceiverOptions_Create call failed");
+        return;
+    }
+    Image_Size imgSize;
+    imgSize.width = PREVIEW_WIDTH; // 创建预览流的宽。
+    imgSize.height = PREVIEW_HEIGHT; // 创建预览流的高。
+    int32_t capacity = 8; // BufferQueue里最大Image数量，推荐填写8。
+    errCode = OH_ImageReceiverOptions_SetSize(options, imgSize);
+    if (errCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImageReceiverOptions_SetSize call failed");
+    }
+    errCode = OH_ImageReceiverOptions_SetCapacity(options, capacity);
+    if (errCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImageReceiverOptions_SetCapacity call failed");
+    }
+    // 创建OH_ImageReceiverNative对象。
+    OH_ImageReceiverNative *receiver = nullptr;
+    errCode = OH_ImageReceiverNative_Create(options, &receiver);
+    if (errCode != IMAGE_SUCCESS || receiver == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImageReceiverNative_Create call failed");
+        return;
+    }
+
+    errCode = OH_ImageReceiverNative_On(receiver, CallbackReadNextImage);
+    if (errCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "%{public}s image receiver on failed, errCode: %{public}d.", __func__, errCode);
+        OH_ImageReceiverOptions_Release(options);
+        OH_ImageReceiverNative_Release(receiver);
+        return;
+    }
+    // 获取OH_ImageReceiverNative对象的SurfaceId。
+    errCode = OH_ImageReceiverNative_GetReceivingSurfaceId(receiver, &receiverSurfaceID);
+    if (errCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImageReceiverNative_GetReceivingSurfaceId call failed");
+    } else {
+        OH_LOG_INFO(LOG_APP, "receiver surfaceID:%{public}lu", receiverSurfaceID);
+    }
+}
+```
+
+### Code block 4
+
+```
+void copyBuffer(OH_NativeBuffer *srcBuffer, size_t srcSize, OHNativeWindowBuffer *dstBuffer)
+{
+    OH_LOG_INFO(LOG_APP, "ImageReceiverNativeCTest %{public}s IN", __func__);
+    void *srcVir = nullptr;
+    OH_NativeBuffer_Map(srcBuffer, &srcVir);
+    BufferHandle *bufferHandle = OH_NativeWindow_GetBufferHandleFromNative(dstBuffer);
+    OH_LOG_INFO(LOG_APP,
+        "ImageReceiverNativeCTest %{public}s bufferHandle info fd= %{public}d , width= %{public}d, "
+        "height=%{public}d, stride= %{public}d, size= %{public}d, format= %{public}d, usage= %{public}lu",
+        __func__, bufferHandle->fd, bufferHandle->width, bufferHandle->height, bufferHandle->stride, bufferHandle->size,
+        bufferHandle->format, bufferHandle->usage);
+
+    void *mappedAddr =
+        mmap(bufferHandle->virAddr, bufferHandle->size, PROT_READ | PROT_WRITE, MAP_SHARED, bufferHandle->fd, 0);
+    std::memcpy(static_cast<unsigned char *>(mappedAddr), static_cast<unsigned char *>(srcVir), srcSize);
+    munmap(mappedAddr, bufferHandle->size);
+
+    OH_NativeBuffer_Unmap(srcBuffer);
+    OH_LOG_INFO(LOG_APP, "ImageReceiverNativeCTest %{public}s SUCCESS", __func__);
+}
+
+void ShowImage(OH_ImageNative *image)
+{
+    OH_LOG_INFO(LOG_APP, "ImageReceiverNativeCTest %{public}s IN", __func__);
+    uint64_t xComponentSurfaceId = std::stoull(g_xComponentSurfaceIdSlave);
+    OH_LOG_ERROR(LOG_APP, "ImageReceiverNativeCTest %{public}s XComponentId is : %{public}lu.", __func__,
+        xComponentSurfaceId);
+    OHNativeWindow *nativeWindow = nullptr;
+    int32_t res = OH_NativeWindow_CreateNativeWindowFromSurfaceId(xComponentSurfaceId, &nativeWindow);
+    if (res != 0) {
+        OH_LOG_ERROR(LOG_APP,
+            "ShowImage CreateNativeWindowFromSurfaceId failed, errCode: %{public}d.", res);
+        return;
+    }
+
+    // 关键：调整nativeWindow大小及format，需要与image的大小、format保持一致。
+    res = OH_NativeWindow_NativeWindowHandleOpt(nativeWindow, SET_BUFFER_GEOMETRY, g_imageWidth, g_imageHeight);
+    res = OH_NativeWindow_NativeWindowHandleOpt(nativeWindow, SET_FORMAT, NATIVEBUFFER_PIXEL_FMT_YCRCB_420_SP); // NV21
+    // 设置旋转角度，后置默认旋转90，则需要将nativeWindow旋转270度，前置默认270，则需要将nativeWindow旋转90度。
+    if (g_isFront) {
+        res = OH_NativeWindow_NativeWindowHandleOpt(nativeWindow, SET_TRANSFORM, NATIVEBUFFER_FLIP_V_ROT90);
+    } else {
+        res = OH_NativeWindow_NativeWindowHandleOpt(nativeWindow, SET_TRANSFORM, NATIVEBUFFER_ROTATE_270);
+    }
+
+    OH_NativeBuffer *imageBuffer = nullptr;
+    Image_ErrorCode errCode = OH_ImageNative_GetByteBuffer(image, g_jpegComponent, &imageBuffer);
+    if (errCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "ShowImage GetByteBuffer failed, errCode: %{public}d.", errCode);
+        return;
+    }
+    Image_Size imgSize = {};
+    OH_ImageNative_GetImageSize(image, &imgSize);
+    OH_LOG_INFO(LOG_APP, "ImageReceiverNativeCTest %{public}s imgSize is : %{public}u, %{public}u.", __func__,
+        imgSize.width, imgSize.height);
+    size_t bufSize = 0;
+    OH_ImageNative_GetBufferSize(image, g_jpegComponent, &bufSize);
+
+    OHNativeWindowBuffer *nativeWindowBuffer = nullptr;
+    int fenceFd = -1;
+    res = OH_NativeWindow_NativeWindowRequestBuffer(nativeWindow, &nativeWindowBuffer, &fenceFd);
+    if (res != 0) {
+        OH_LOG_ERROR(LOG_APP, "ShowImage RequestBuffer failed, errCode: %{public}d.", res);
+        return;
+    }
+
+    // 将image数据拷贝到nativeWindowBuffer上。
+    copyBuffer(imageBuffer, bufSize, nativeWindowBuffer);
+
+    Region region1{};
+    res = OH_NativeWindow_NativeWindowFlushBuffer(nativeWindow, nativeWindowBuffer, fenceFd, region1);
+    if (res != 0) {
+        OH_LOG_ERROR(LOG_APP, "ShowImage FlushBuffer failed, errCode: %{public}d.", res);
+        return;
+    }
+    OH_LOG_INFO(LOG_APP, "ImageReceiverNativeCTest %{public}s SUCCESS", __func__);
+}
+
+static void CallbackReadNextImage(OH_ImageReceiverNative *receiver)
+{
+    OH_LOG_INFO(LOG_APP, "CallbackReadNextImage %{public}s IN", __func__);
+    // 读取OH_ImageReceiverNative下一张图片对象。
+    OH_ImageNative *image = nullptr;
+    Image_ErrorCode errCode = OH_ImageReceiverNative_ReadNextImage(receiver, &image);
+    if (errCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP,
+            "CallbackReadNextImage %{public}s get image receiver next image failed, errCode: %{public}d.", __func__,
+            errCode);
+        return;
+    }
+
+    ShowImage(image);
+
+    // 释放OH_ImageNative实例。
+    errCode = OH_ImageNative_Release(image);
+    if (errCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "CallbackReadNextImage %{public}s release image native failed, errCode: %{public}d.",
+            __func__, errCode);
+    }
+    OH_LOG_INFO(LOG_APP, "CallbackReadNextImage %{public}s SUCCESS", __func__);
+}
+```

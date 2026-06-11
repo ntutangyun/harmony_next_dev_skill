@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-gdb_
 
+功能介绍
+
 可使用gdb单步调试算子计算精度。由于cpu调测已转为多进程调试，每个核都会拉起独立的子进程，故gdb需要转换成子进程调试的方式。
 
 使用方法（命令行）
@@ -69,5 +71,73 @@ break add_custom.cpp:56
 continue
 display xLocal
 quit
-assert功能
-算子部署
+
+## Code blocks
+
+### Code block 1
+
+```
+set follow-fork-mode child
+```
+
+### Code block 2
+
+```
+(gdb) set detach-on-fork off
+```
+
+### Code block 3
+
+```
+(gdb) show detach-on-fork
+```
+
+### Code block 4
+
+```
+(gdb) catch fork
+```
+
+### Code block 5
+
+```
+(gdb) info inferiors
+Num Description
+* 1 process 19613
+```
+
+### Code block 6
+
+```
+(gdb) info inferiors
+Num Description
+* 1 process 19613
+2 process 19626
+```
+
+### Code block 7
+
+```
+(gdb) inferior 2
+[Switching to inferior 2 [process 19626] ($HOME/demo)]
+(gdb) info inferiors
+Num Description
+1 process 19613
+* 2 process 19626
+```
+
+### Code block 8
+
+```
+gdb --args add_custom_cpu
+set follow-fork-mode child
+break add_custom.cpp:45
+run
+list
+backtrace
+print i
+break add_custom.cpp:56
+continue
+display xLocal
+quit
+```

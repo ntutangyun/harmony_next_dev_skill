@@ -17,25 +17,9 @@ language[-script-region].json
 表1 限定词取值要求
 
 限定词类型	含义与取值说明
-语言	
-
-表示设备使用的语言类型，由2~3个小写字母组成。例如：zh表示中文，en表示英语，mai表示迈蒂利语。
-
-详细取值范围，请查阅ISO 639（ISO制定的语言编码标准）。
-
-
-文字	
-
-表示设备使用的文字类型，由1个大写字母（首字母）和3个小写字母组成。例如：Hans表示简体中文，Hant表示繁体中文。
-
-详细取值范围，请查阅ISO 15924（ISO制定的文字编码标准）。
-
-
-国家或地区	
-
-表示用户所在的国家或地区，由2~3个大写字母或者3个数字组成。例如：CN表示中国，GB表示英国。
-
-详细取值范围，请查阅ISO 3166-1（ISO制定的国家和地区编码标准）。
+语言	表示设备使用的语言类型，由2~3个小写字母组成。例如：zh表示中文，en表示英语，mai表示迈蒂利语。 详细取值范围，请查阅ISO 639（ISO制定的语言编码标准）。
+文字	表示设备使用的文字类型，由1个大写字母（首字母）和3个小写字母组成。例如：Hans表示简体中文，Hant表示繁体中文。 详细取值范围，请查阅ISO 15924（ISO制定的文字编码标准）。
+国家或地区	表示用户所在的国家或地区，由2~3个大写字母或者3个数字组成。例如：CN表示中国，GB表示英国。 详细取值范围，请查阅ISO 3166-1（ISO制定的国家和地区编码标准）。
 
 当开发框架无法在应用中找到系统语言的资源文件时，默认使用en-US.json中的资源内容。
 
@@ -50,7 +34,6 @@ en-US.json
         "array": "Array type parameter substitution-{0}",
         "symbol": "@#$%^&*()_+-={}[]\\|:;\"'<>,./?"
     },
-
 
     "files": {
         "image": "image/en_picture.PNG"
@@ -86,6 +69,7 @@ ar-AE.json
         }
     }
 }
+
 引用资源
 
 在应用开发的页面中使用多语言的语法，包含简单格式化和单复数格式化两种，都可以在hml或js中使用。
@@ -103,13 +87,7 @@ $t	Function	请见表 $t参数说明	是	根据系统语言完成简单的替换
 
 参数	类型	必填	描述
 path	string	是	资源路径。
-params	Array | Object	否	
-
-运行时用来替换占位符的实际内容，占位符分为两种：
-
-- 具名占位符，例如{name}。实际内容必须用Object类型指定，例如：$t('strings.object', {name:'Hello world'})。
-
-- 数字占位符，例如{0}。实际内容必须用Array类型指定，例如：$t('strings.array', ['Hello world'])。
+params	Array | Object	否	运行时用来替换占位符的实际内容，占位符分为两种： - 具名占位符，例如{name}。实际内容必须用Object类型指定，例如：$t('strings.object', {name:'Hello world'})。 - 数字占位符，例如{0}。实际内容必须用Array类型指定，例如：$t('strings.array', ['Hello world'])。
 
 简单格式化示例代码
 
@@ -128,12 +106,12 @@ params	Array | Object	否
   <!-- 先在js中获取资源内容，并将占位符{0}替换为“Hello world”，再在text中显示“Array type parameter substitution-Hello world” -->
   <text>{{ replaceArray }}</text>
 
-
   <!-- 获取图片路径 -->
   <image src="{{ $t('files.image') }}" class="image"></image>
   <!-- 先在js中获取图片路径，再在image中显示图片 -->
   <image src="{{ replaceSrc }}" class="image"></image>
 </div>
+
 // xxx.js
 // 下面为在js文件中的使用方法。
 export default {
@@ -156,13 +134,7 @@ export default {
 表4 单复数格式化
 
 属性	类型	参数	必填	描述
-$tc	Function	请见表 $tc参数说明	是	
-
-根据系统语言完成单复数替换：this.$tc('strings.people')。
-
-说明：
-
-定义资源的内容通过json格式的key为“zero”、“one”、“two”、“few”、“many”和“other”区分。
+$tc	Function	请见表 $tc参数说明	是	根据系统语言完成单复数替换：this.$tc('strings.people')。 说明： 定义资源的内容通过json格式的key为“zero”、“one”、“two”、“few”、“many”和“other”区分。
 
 表5 $tc参数说明
 
@@ -187,9 +159,128 @@ count	number	是	要表达的值。
   <!-- 传递数值为100时： "100 people" 阿拉伯语中此处匹配key为other的词条-->
   <text>{{ $tc('strings.people', 100) }}</text>
 </div>
+
 获取语言
 
 获取语言功能请参考@ohos.app.ability.Configuration (环境变量)。
 
-资源限定与访问
-构建用户界面
+## Code blocks
+
+### Code block 1
+
+```
+language[-script-region].json
+```
+
+### Code block 2
+
+```
+{
+    "strings": {
+        "hello": "Hello world!",
+        "object": "Object parameter substitution-{name}",
+        "array": "Array type parameter substitution-{0}",
+        "symbol": "@#$%^&*()_+-={}[]\\|:;\"'<>,./?"
+    },
+
+    "files": {
+        "image": "image/en_picture.PNG"
+    }
+}
+```
+
+### Code block 3
+
+```
+{
+    "strings": {
+        "people": {
+            "one": "one person",
+            "other": "{count} people"
+        }
+    }
+}
+```
+
+### Code block 4
+
+```
+{
+    "strings": {
+        "people": {
+            "zero": "لا أحد",
+            "one": "وحده",
+            "two": "اثنان",
+            "few": "ستة اشخاص",
+            "many": "خمسون شخص",
+            "other": "مائة شخص"
+        }
+    }
+}
+```
+
+### Code block 5
+
+```
+<!-- xxx.hml -->
+<div>
+  <!-- 不使用占位符，text中显示“Hello world!” -->
+  <text>{{ $t('strings.hello') }}</text>
+  <!-- 具名占位符格式，运行时将占位符{name}替换为“Hello world” -->
+  <text>{{ $t('strings.object', { name: 'Hello world' }) }}</text>
+  <!-- 数字占位符格式，运行时将占位符{0}替换为“Hello world” -->
+  <text>{{ $t('strings.array', ['Hello world']) }}</text>
+  <!-- 先在js中获取资源内容，再在text中显示“Hello world” -->
+  <text>{{ hello }}</text>
+  <!-- 先在js中获取资源内容，并将占位符{name}替换为“Hello world”，再在text中显示“Object parameter substitution-Hello world” -->
+  <text>{{ replaceObject }}</text>
+  <!-- 先在js中获取资源内容，并将占位符{0}替换为“Hello world”，再在text中显示“Array type parameter substitution-Hello world” -->
+  <text>{{ replaceArray }}</text>
+
+  <!-- 获取图片路径 -->
+  <image src="{{ $t('files.image') }}" class="image"></image>
+  <!-- 先在js中获取图片路径，再在image中显示图片 -->
+  <image src="{{ replaceSrc }}" class="image"></image>
+</div>
+```
+
+### Code block 6
+
+```
+// xxx.js
+// 下面为在js文件中的使用方法。
+export default {
+  data: {
+    hello: '',
+    replaceObject: '',
+    replaceArray: '',
+    replaceSrc: '',
+  },
+  onInit() {
+    this.hello = this.$t('strings.hello');
+    this.replaceObject = this.$t('strings.object', { name: 'Hello world' });
+    this.replaceArray = this.$t('strings.array', ['Hello world']);
+    this.replaceSrc = this.$t('files.image');
+  },
+}
+```
+
+### Code block 7
+
+```
+<!--xxx.hml-->
+<div>
+  <!-- 传递数值为0时： "0 people" 阿拉伯语中此处匹配key为zero的词条-->
+  <text>{{ $tc('strings.people', 0) }}</text>
+  <!-- 传递数值为1时： "one person" 阿拉伯语中此处匹配key为one的词条-->
+  <text>{{ $tc('strings.people', 1) }}</text>
+  <!-- 传递数值为2时： "2 people" 阿拉伯语中此处匹配key为two的词条-->
+  <text>{{ $tc('strings.people', 2) }}</text>
+  <!-- 传递数值为6时： "6 people" 阿拉伯语中此处匹配key为few的词条-->
+  <text>{{ $tc('strings.people', 6) }}</text>
+  <!-- 传递数值为50时： "50 people" 阿拉伯语中此处匹配key为many的词条-->
+  <text>{{ $tc('strings.people', 50) }}</text>
+  <!-- 传递数值为100时： "100 people" 阿拉伯语中此处匹配key为other的词条-->
+  <text>{{ $tc('strings.people', 100) }}</text>
+</div>
+```

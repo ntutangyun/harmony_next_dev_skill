@@ -9,7 +9,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-rig
 接下来，文档将介绍常用的音频流类型及其适用场景，同时说明不同流类型对音频业务的影响。最后，指导开发者在采用不同方法实现音频播放和音频录制时，应当如何设置音频流类型。
 
 常用的音频流类型及其适用场景
-播放音频流类型
+
+[h2]播放音频流类型
 
 下表中列举常用的播放音频流类型，由StreamUsage定义。
 
@@ -24,30 +25,26 @@ STREAM_USAGE_VOICE_COMMUNICATION	适用于VoIP语音通话。
 STREAM_USAGE_ALARM	适用于播放闹铃。
 STREAM_USAGE_RINGTONE	适用于VoIP来电响铃等。
 STREAM_USAGE_NOTIFICATION	适用于播放通知音、提示音。
-录制音频流类型
+
+[h2]录制音频流类型
 
 下表中列举常用的录制音频流类型，由SourceType定义。
 
 音频流使用类型（SourceType）	适用场景
 SOURCE_TYPE_MIC	适用于普通录音。
 SOURCE_TYPE_VOICE_RECOGNITION9+	适用于语音识别。
-SOURCE_TYPE_PLAYBACK_CAPTURE	
-
-（API12已废弃）适用于录制其他应用送到系统中播放的原始音频数据。
-
-AudioKit不再提供内录接口，请通过录屏接口AVScreenCapture进行内录。
-
-
+SOURCE_TYPE_PLAYBACK_CAPTURE	（API12已废弃）适用于录制其他应用送到系统中播放的原始音频数据。 AudioKit不再提供内录接口，请通过录屏接口AVScreenCapture进行内录。
 SOURCE_TYPE_VOICE_COMMUNICATION	适用于VoIP语音通话，能够增强人声录制，同时抑制环境音等其他非人声。
 SOURCE_TYPE_VOICE_MESSAGE	适用于录制语音短消息。
 SOURCE_TYPE_CAMCORDER13+	适用于相机录像。
 SOURCE_TYPE_UNPROCESSED14+	适用于获取麦克风采集到的纯净音频数据（系统不做任何算法处理）。
 SOURCE_TYPE_LIVE20+	适用于直播，在支持的设备上会提供系统回声消除能力。
+
 流类型对音频业务的影响
 
 不同的流类型会影响用户在控制音量时的体验，以及系统在调整音频焦点和选择输入/输出设备时的表现。此外，系统还会根据录制流类型对采集到的音频数据配置对应的优化处理策略，因此录制流类型的选择会影响到录制的音频效果。例如：如果在VoIP通话场景下使用了SOURCE_TYPE_MIC而不是SOURCE_TYPE_VOICE_COMMUNICATION类型，可能会使降噪、环境音消除等优化策略不生效，造成VoIP通话体验不佳。建议开发者根据业务场景选择合适的音频流类型。
 
-音量控制
+[h2]音量控制
 
 播放流类型（StreamUsage）决定了音频流所属的音量类型（AudioVolumeType），各类音量类型（如媒体、铃声、闹钟、通话等）拥有独立的音量值，在用户界面上可独立调节，相互之间不会影响。
 
@@ -58,13 +55,14 @@ MUSIC、MOVIE、AUDIOBOOK、GAME	媒体音量（MEDIA）
 RINGTONE、NOTIFICATION	铃声音量（RINGTONE）
 VOICE_COMMUNICATION	通话音量（VOICE_CALL）
 ALARM	闹钟音量（ALARM）
-音频焦点调整
+
+[h2]音频焦点调整
 
 音频流类型在音频焦点管理中扮演着关键角色，不同类型的音频流具有不同的默认优先级和处理方式。
 
 当应用启动音频播放或录制时，系统会根据音频流类型自动申请焦点，这可能会中断其他音频或降低其音量。音频焦点的具体介绍可参考音频焦点介绍。
 
-此处仅说明常见的音频流类型影响音频焦点的表现，其他类型可参考系统默认焦点策略表。
+此处仅说明常见的音频流类型影响音频焦点的表现。
 
 启动导航（Navigation）时，正在播放的音乐（Music）音量会自动调低，待导航（Navigation）结束后，音乐（Music）音量将自动恢复。
 
@@ -76,7 +74,7 @@ ALARM	闹钟音量（ALARM）
 
 开始录制语音短消息（VoiceMessage）时，会自动暂停正在播放的音乐（Music）；当语音短消息（VoiceMessage）录制结束后，播放音乐（Music）的应用将收到恢复播放的通知。
 
-输入/输出设备选择
+[h2]输入/输出设备选择
 
 对于不同类型的音频流，系统会为其选定相应的输入/输出设备。
 
@@ -141,6 +139,3 @@ createAudioCapturer的参数options类型为AudioCapturerOptions，包含AudioCa
 可以在调用AVRecorder.prepare接口时，传入对应的AudioSourceType。
 
 AVRecorder.prepare的参数config类型为AVRecorderConfig，使用AVRecorderConfig.audioSourceType可指定音源类型。
-
-Audio Kit简介
-音频焦点和音频会话管理

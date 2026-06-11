@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pseudo-i18n-testing-mirror_
 
+使用场景
+
 界面镜像测试主要检查文字阅读顺序是否出现问题。一些语言的阅读顺序不是从左到右。例如，在阿拉伯语中，界面的阅读顺序是从右到左（RTL）。
 
 测试流程
@@ -19,6 +21,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pseudo-i1
 检查界面布局、文字方向和控制逻辑是否符合从右至左的阅读习惯。具体要点见界面镜像章节。
 
 检查相关功能是否异常无法使用。
-
-翻译伪本地化测试
-语言测试

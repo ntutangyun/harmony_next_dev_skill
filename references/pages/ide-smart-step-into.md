@@ -13,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-smart
 说明
 
 已经执行完毕的函数不会高亮显示。
-
-设置执行点
-使用调试器

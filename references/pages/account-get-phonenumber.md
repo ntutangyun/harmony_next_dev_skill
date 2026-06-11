@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-get-phonenumber_
 
+场景介绍
+
 当应用对获取的手机号时效性要求不高时，可使用Account Kit提供的手机号授权与快速验证能力，向用户发起手机号授权申请，经用户同意授权后，获取到手机号并为用户提供相应服务。以下对Account Kit提供的手机号授权与快速验证能力进行介绍，快速验证手机号功能还可使用场景化控件快速验证手机号Button进行实现。
 
 说明
@@ -30,6 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-g
 createAuthorizationWithHuaweiIDRequest(): AuthorizationWithHuaweiIDRequest	获取授权接口，通过AuthorizationWithHuaweiIDRequest传入返回手机号的scope：phone及返回Authorization Code的permission：serviceauthcode，即可获取到Authorization Code。
 constructor(context?: common.Context)	创建授权请求Controller。
 executeRequest(request: AuthenticationRequest): Promise<AuthenticationResponse>	通过Promise方式执行授权操作。
+
 注意
 
 上述接口需在页面或自定义组件生命周期内调用。
@@ -45,7 +48,8 @@ executeRequest(request: AuthenticationRequest): Promise<AuthenticationResponse>	
 2、设备需要登录华为账号，若未登录则拉起登录页面。
 
 开发步骤
-客户端开发
+
+[h2]客户端开发
 
 导入authentication模块及相关公共模块。
 
@@ -90,6 +94,7 @@ try {
 } catch (error) {
   dealAllError(error);
 }
+
 // 错误处理
 function dealAllError(error: BusinessError): void {
   hilog.error(0x0000, 'testTag', `Failed to obtain userInfo. Code: ${error.code}, message: ${error.message}`);
@@ -109,7 +114,6 @@ function dealAllError(error: BusinessError): void {
   }
 }
 
-
 export enum ErrorCode {
   // 账号未登录
   ERROR_CODE_LOGIN_OUT = 1001502001,
@@ -122,7 +126,8 @@ export enum ErrorCode {
   // 重复请求
   ERROR_CODE_REQUEST_REFUSE = 1001500002
 }
-服务端开发
+
+[h2]服务端开发
 
 应用服务端使用Client ID、Client Secret、Authorization Code调用获取用户级凭证接口向华为账号服务器请求获取Access Token、Refresh Token。
 
@@ -142,5 +147,90 @@ Refresh Token过期处理
 
 由于Refresh Token的有效期为180天，当Refresh Token失效后（可通过REST API错误码判断），应用服务端需要通知客户端，重新调用授权接口，请求用户重新授权。
 
-概述
-获取收货地址
+## Code blocks
+
+### Code block 1
+
+```
+import { authentication } from '@kit.AccountKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { util } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 创建授权请求，并设置参数
+const authRequest = new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
+// 获取手机号需要传如下scope，传参数之前需要先申请对应scope权限，否则会返回1001502014错误码
+authRequest.scopes = ['phone'];
+// 获取authorizationCode需传如下permission
+authRequest.permissions = ['serviceauthcode'];
+// 用户是否需要登录授权，该值为true且用户未登录或未授权时，会拉起用户登录或授权页面
+authRequest.forceAuthorization = true;
+// 建议使用generateRandomUUID生成state，可用于一致性比对，防止跨站攻击
+authRequest.state = util.generateRandomUUID();
+```
+
+### Code block 3
+
+```
+// 执行请求
+try {
+  // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
+  const controller = new authentication.AuthenticationController(this.getUIContext().getHostContext());
+  controller.executeRequest(authRequest).then((data) => {
+    const authorizationWithHuaweiIDResponse = data as authentication.AuthorizationWithHuaweiIDResponse;
+    const state = authorizationWithHuaweiIDResponse.state;
+    if (state && authRequest.state !== state) {
+      hilog.error(0x0000, 'testTag', `Failed to authorize. The state is different, response state: ${state}`);
+      return;
+    }
+    hilog.info(0x0000, 'testTag', 'Succeeded in authentication.');
+    const authorizationWithHuaweiIDCredential = authorizationWithHuaweiIDResponse?.data;
+    const authorizationCode = authorizationWithHuaweiIDCredential?.authorizationCode;
+    // 开发者处理authorizationCode
+  }).catch((err: BusinessError) => {
+    dealAllError(err);
+  });
+} catch (error) {
+  dealAllError(error);
+}
+```
+
+### Code block 4
+
+```
+// 错误处理
+function dealAllError(error: BusinessError): void {
+  hilog.error(0x0000, 'testTag', `Failed to obtain userInfo. Code: ${error.code}, message: ${error.message}`);
+  // 在应用快速验证手机号场景下，涉及UI交互时，建议按照如下错误码指导提示用户
+  if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
+    // 用户未登录华为账号，请登录华为账号并重试
+  } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
+    // 网络异常，请检查当前网络状态并重试
+  } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
+    // 用户取消授权
+  } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {
+    // 系统服务异常，请稍后重试
+  } else if (error.code === ErrorCode.ERROR_CODE_REQUEST_REFUSE) {
+    // 重复请求，应用无需处理
+  } else {
+    // 获取用户信息失败，请尝试使用其他方式登录
+  }
+}
+
+export enum ErrorCode {
+  // 账号未登录
+  ERROR_CODE_LOGIN_OUT = 1001502001,
+  // 网络错误
+  ERROR_CODE_NETWORK_ERROR = 1001502005,
+  // 用户取消授权
+  ERROR_CODE_USER_CANCEL = 1001502012,
+  // 系统服务异常
+  ERROR_CODE_SYSTEM_SERVICE = 12300001,
+  // 重复请求
+  ERROR_CODE_REQUEST_REFUSE = 1001500002
+}
+```

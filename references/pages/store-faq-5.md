@@ -2,3 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-faq-5_
 
+问题现象
+
+媒体调用登记归因来源接口返回1009300003错误码，身份检查错误。
+
+解决措施
+
+需要将应用通过应用市场上架。
+
+在应用归因云侧注册应用生态伙伴信息。
+
+开发者下配置应用id列表。

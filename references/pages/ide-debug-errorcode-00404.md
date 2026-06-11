@@ -2,6 +2,82 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-errorcode-00404_
 
+00404035 安装hap包超时
+
+错误信息
+
+Install hap timeout.
+
+错误描述
+
+安装hap包超时。
+
+可能原因
+
+设备连接异常或者hdc服务异常。
+
+处理步骤
+
+重新拔插下设备，或者执行hdc kill -r命令再重新运行。
+
+00404036 删除临时目录超时
+
+错误信息
+
+Remove Directory Timeout: XXX.
+
+错误描述
+
+删除临时目录超时。
+
+可能原因
+
+设备连接异常或者hdc服务异常。
+
+处理步骤
+
+重新拔插下设备，或者执行hdc kill -r命令再重新运行。
+
+00404037 创建临时目录超时
+
+错误信息
+
+Create Directory Timeout.
+
+错误描述
+
+创建临时目录超时。
+
+可能原因
+
+设备连接异常或者hdc服务异常。
+
+处理步骤
+
+重新拔插下设备，或者执行hdc kill -r命令再重新运行。
+
+00404038 构建打包信息为空
+
+错误信息
+
+Build package info list is empty.
+
+错误描述
+
+构建打包信息为空。
+
+可能原因
+
+构建没有正确打包生成应用信息。
+
+处理步骤
+
+点击菜单栏Build > Clean Project清理缓存后重试。
+
+00404039 创建临时目录失败
+
+错误信息
+
 Failed to create temporary directory during hap push operation.
 
 错误描述
@@ -119,11 +195,11 @@ This app is not installed or not signed with a debug signature.
 可能原因
 
 通过命令设置应用进入等待调试模式失败，应用没安装或者不是debug签名；
+
 设备连接异常，执行命令失败。
 
 处理步骤
 
 检查应用是否已安装，应用签名是否使用debug签名；
+
 检查设备连接是否正常，可以尝试拔插设备重新连接，再重新启动等待调试。
-调试失败错误码
-日志与故障分析

@@ -2,9 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-secure-photo_
 
+安全相机主要为银行等有活体检测等安全诉求的应用提供，安全相机的使用需要加密算法框架及可信应用服务。
+
+应用具体使用步骤如下：
+
+通过Camera Kit打开安全摄像头，成功打开安全摄像头后，Camera Kit会返回给应用一个安全摄像头序列号。
+
 通过Device Security Kit来创建证明密钥（安全摄像头序列号会作为入参）、初始化证明会话。Device Security Kit初始化证明会话完成后会返回给应用匿名证书链。
+
 通过Camera Kit配置安全相机输入输出流，重点是配置安全数据流，注册安全数据流每帧安全图像回调监听。
+
 解析安全数据流每帧安全图像，在服务器侧完成安全图像的签名验证。
+
 说明
 
 当前文档主要说明通过Camera Kit完成的步骤，证明会话相关步骤需通过Device Security Kit完成，具体可参考可信应用服务-安全摄像头。
@@ -36,9 +45,7 @@ function isSecureCamera(cameraManager: camera.CameraManager, cameraDevice: camer
   }
 }
 
-
 let secureCamera: camera.CameraDevice;
-
 
 function getSecureCamera(cameraManager: camera.CameraManager): void {
   let cameraArray: Array<camera.CameraDevice> = cameraManager.getSupportedCameras();
@@ -148,5 +155,119 @@ function onBuffer(receiver: image.ImageReceiver): void {
 
 释放安全相机，使用Session的release方法。
 
-相机旋转角度的术语
-动态调整预览帧率(ArkTS)
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { image } from '@kit.ImageKit';
+```
+
+### Code block 2
+
+```
+function isSecureCamera(cameraManager: camera.CameraManager, cameraDevice: camera.CameraDevice): boolean {
+  let sceneModes: Array<camera.SceneMode> = cameraManager.getSupportedSceneModes(cameraDevice);
+  const secureMode = sceneModes.find(mode => mode === camera.SceneMode.SECURE_PHOTO);
+  if (secureMode) {
+    console.info('current device support secure camera!');
+    return true;
+  } else {
+    console.info('current device not support secure camera!');
+    return false;
+  }
+}
+
+let secureCamera: camera.CameraDevice;
+
+function getSecureCamera(cameraManager: camera.CameraManager): void {
+  let cameraArray: Array<camera.CameraDevice> = cameraManager.getSupportedCameras();
+  for (let index = 0; index < cameraArray.length; index++) {
+    if (isSecureCamera(cameraManager, cameraArray[index])) {
+      secureCamera = cameraArray[index];
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+function getSupportedOutputCapability(cameraManager: camera.CameraManager, secureCamera: camera.CameraDevice): void {
+  let outputCap: camera.CameraOutputCapability =
+    cameraManager.getSupportedOutputCapability(secureCamera, camera.SceneMode.SECURE_PHOTO);
+  let previewProfilesArray: Array<camera.Profile> = outputCap.previewProfiles;
+}
+```
+
+### Code block 4
+
+```
+async function createInputAndOutputs(cameraManager: camera.CameraManager,
+                                     secureCamera: camera.CameraDevice,
+                                     previewProfile: camera.Profile,
+                                     previewSurfaceId: string): Promise<void> {
+  // 创建输入流
+  let cameraInput: camera.CameraInput = cameraManager.createCameraInput(secureCamera);
+  // 创建普通预览输出流
+  let previewOutput: camera.PreviewOutput = cameraManager.createPreviewOutput(previewProfile, previewSurfaceId);
+  // 创建安全数据输出流
+  const receiver: image.ImageReceiver =
+    image.createImageReceiver({ width: previewProfile.size.width, height: previewProfile.size.height },
+                              image.ImageFormat.JPEG, 8);
+  const secureSurfaceId: string = await receiver.getReceivingSurfaceId();
+  let secureOutput: camera.PreviewOutput = cameraManager.createPreviewOutput(previewProfile, secureSurfaceId);
+}
+```
+
+### Code block 5
+
+```
+async function openCamera(cameraInput: camera.CameraInput) {
+  const seqId: bigint = await cameraInput.open(true);
+}
+```
+
+### Code block 6
+
+```
+async function openSession(cameraManager: camera.CameraManager,
+                           cameraInput: camera.CameraInput,
+                           previewOutput: camera.PreviewOutput,
+                           secureOutput: camera.PreviewOutput): Promise<void> {
+  try {
+    let secureSession: camera.SecureSession = cameraManager.createSession(camera.SceneMode.SECURE_PHOTO);
+    if (secureSession === undefined) {
+      console.error('create secureSession failed!');
+    }
+    secureSession.beginConfig();
+    secureSession.addInput(cameraInput);
+    secureSession.addOutput(previewOutput);
+    secureSession.addOutput(secureOutput);
+    secureSession.addSecureOutput(secureOutput); // 把secureOutput标记成安全输出
+    await secureSession.commitConfig();
+    await secureSession.start();
+  } catch (err) {
+    console.error('openSession failed!');
+  }
+}
+```
+
+### Code block 7
+
+```
+function onBuffer(receiver: image.ImageReceiver): void {
+  receiver.on('imageArrival', () => {
+    // 从ImageReceiver读取下一张图片
+    receiver.readNextImage().then((img: image.Image) => {
+      // 从图像中获取组件缓存
+      img.getComponent(image.ComponentType.JPEG).then((component: image.Component) => {
+        // 安全数据流内容，应用通过解析该buffer内容完成签名认证
+        const buffer = component.byteBuffer;
+        console.info('Succeeded in getting component byteBuffer.');
+      })
+    })
+  })
+}
+```

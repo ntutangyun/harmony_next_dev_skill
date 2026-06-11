@@ -1,4 +1,4 @@
-# Transferable对象（NativeBinding对象）
+# Transferable对象 (NativeBinding对象)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/transferabled-object_
 
@@ -24,14 +24,12 @@ import { taskpool } from '@kit.ArkTS';
 import { loadPixelMap } from './pixelMapTest';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   uiContext = this.getUIContext();
   @State message: string = 'Hello World';
   @State pixelMap: PixelMap | undefined = undefined;
-
 
   private loadImageFromThread(): void {
     const resourceMgr = this.uiContext?.getHostContext()?.resourceManager;
@@ -54,6 +52,79 @@ struct Index {
     });
   }
 
+  build() {
+    RelativeContainer() {
+      Text(this.message)
+        .id('HelloWorld')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+        .onClick(() => {
+          this.loadImageFromThread();
+          this.message = 'success';
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+
+import { image } from '@kit.ImageKit';
+import { resourceManager } from '@kit.LocalizationKit';
+
+@Concurrent
+export async function loadPixelMap(rawFileDescriptor: resourceManager.RawFileDescriptor): Promise<PixelMap> {
+  // 创建imageSource。
+  const imageSource = image.createImageSource(rawFileDescriptor);
+  // 创建pixelMap。
+  const pixelMap = imageSource.createPixelMapSync();
+  // 释放imageSource。
+  imageSource.release();
+  // 使pixelMap在跨线程传输完成后，脱离原线程的引用。
+  pixelMap.setTransferDetached(true);
+  // 返回pixelMap给主线程。
+  return pixelMap;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { taskpool } from '@kit.ArkTS';
+import { loadPixelMap } from './pixelMapTest';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  uiContext = this.getUIContext();
+  @State message: string = 'Hello World';
+  @State pixelMap: PixelMap | undefined = undefined;
+
+  private loadImageFromThread(): void {
+    const resourceMgr = this.uiContext?.getHostContext()?.resourceManager;
+    // 此处‘startIcon.png’为media下复制到rawfile文件夹中，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+    resourceMgr?.getRawFd('startIcon.png').then(rawFileDescriptor => {
+      taskpool.execute(loadPixelMap, rawFileDescriptor).then(pixelMap => {
+        if (pixelMap) {
+          this.pixelMap = pixelMap as PixelMap;
+          console.info('Succeeded in creating pixelMap.');
+          // 主线程释放pixelMap。由于子线程返回pixelMap时已调用setTransferDetached，所以此处能够立即释放pixelMap。
+          this.pixelMap.release();
+        } else {
+          console.error('Failed to create pixelMap.');
+        }
+      }).catch((e: BusinessError) => {
+        console.error('taskpool execute loadPixelMap failed. Code: ' + e.code + ', message: ' + e.message);
+      });
+    }).catch(() => {
+      console.error(`Failed to get RawFd`);
+    });
+  }
 
   build() {
     RelativeContainer() {
@@ -74,10 +145,13 @@ struct Index {
     .width('100%')
   }
 }
-TransferabledObject.ets
+```
+
+### Code block 2
+
+```
 import { image } from '@kit.ImageKit';
 import { resourceManager } from '@kit.LocalizationKit';
-
 
 @Concurrent
 export async function loadPixelMap(rawFileDescriptor: resourceManager.RawFileDescriptor): Promise<PixelMap> {
@@ -92,6 +166,4 @@ export async function loadPixelMap(rawFileDescriptor: resourceManager.RawFileDes
   // 返回pixelMap给主线程。
   return pixelMap;
 }
-pixelMapTest.ets
-SharedArrayBuffer对象
-Sendable对象
+```

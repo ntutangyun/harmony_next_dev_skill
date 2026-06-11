@@ -2,12 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-attestation-overview_
 
+HUKS为密钥提供合法性证明能力，主要应用于非对称密钥的公钥的证明。
+
 基于PKI证书链技术，HUKS可以为存储在HUKS中的非对称密钥对的公钥签发证书，证明其公钥的合法性。业务可以通过系统提供的根CA证书，逐级验证HUKS签发的密钥证明证书，来确保证书中的公钥以及对应的私钥，确实来自合法的硬件设备，且存储管理在HUKS中。
 
 说明
+
 当调用方为系统服务且APL等级为normal时，暂不支持密钥证明，此种情况下，processName与APL字段将置空。
+
 密钥证明功能在模拟器场景不支持。
+
 轻量级智能穿戴不支持密钥证明功能。
+
 支持生成密钥和导入密钥进行密钥证明，业务方在服务器侧需要通过业务证书中的密钥来源字段校验密钥来源是否符合预期。
 
 从API 23开始支持群组密钥特性。
@@ -46,18 +52,8 @@ type（OID）取值	value的数据类型	securityLevel	Claim说明
 ApplicationIDType类型取值说明：
 
 type（OID）取值	value取值说明
-1.3.6.1.4.1.2011.2.376.2.1.3.1	
-
-样例：{appId:"xxx", bundleName:"xxx", appIdentifier:"xxx", appMode:"xxx"}
-
-其中appIdentifier、appMode从API 20开始支持。
-
-
-1.3.6.1.4.1.2011.2.376.2.1.3.2	
-
-样例：{processName:"xxx", APL:"system_basic | system_core"}
-
-APL为系统服务等级。
+1.3.6.1.4.1.2011.2.376.2.1.3.1	样例：{appId:"xxx", bundleName:"xxx", appIdentifier:"xxx", appMode:"xxx"} 其中appIdentifier、appMode从API 20开始支持。
+1.3.6.1.4.1.2011.2.376.2.1.3.2	样例：{processName:"xxx", APL:"system_basic | system_core"} APL为系统服务等级。
 
 密钥证明过程如下：
 
@@ -81,5 +77,30 @@ ECC	-	11+
 X25519	-	16+
 ED25519	-	16+
 SM2	-	11+
-密钥证明
-匿名密钥证明(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+KeyAttestation ::= SEQUENCE {
+  version            AttestationVersion DEFAULT v1,
+  claim1             AttestationClaim,
+  claim2             AttestationClaim,
+  claim3             AttestationClaim,
+  ... ...
+}
+AttestationVersion ::= INTEGER { v1(0) }
+AttestationClaim ::= SEQUENCE {
+  securityLevel      SecurityLevel,
+  type               AttestationType,
+  value              AttestationValue
+}
+SecurityLevel ::= INTEGER
+AttestationType ::= OBJECT IDENTIFIER
+AttestationValue ::= ANY -- DEFINED BY AttestationType
+ApplicationIDType ::= SEQUENCE {
+  type               OBJECT IDENTIFIER,
+  value              OCT_STR
+}
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sendable-module_
 
+共享模块是进程内只会加载一次的模块，使用"use shared"这一指令来标记一个模块是否为共享模块。
+
 非共享模块在同一线程内只加载一次，而在不同线程中会多次加载，每个线程都会生成新的模块对象。因此，目前只能使用共享模块实现进程单例。
 
 约束限制
@@ -22,10 +24,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sen
 
 // test.ets
 console.info("This runs immediately when imported");
+
 // sharedModule.ets
 // 不允许使用side-effects-import，编译报错
 import "./test";
-"use shared"
+'use shared'
 
 共享模块导出的变量必须是可共享对象。
 
@@ -36,6 +39,7 @@ import "./test";
 // test.ets
 export let num = 1;
 export let str = 'aaa';
+
 // share.ets
 // 共享模块
 'use shared'
@@ -49,37 +53,34 @@ export {num, str} from './test'; // 产生运行时报错
 // test.ets
 import { num } from './A'; // 支持静态加载
 
-
 import { worker } from '@kit.ArkTS';
 let wk = new worker.ThreadWorker("./A"); // 不支持其他方式加载共享模块, 将产生运行时报错
+
 // A.ets
 'use shared'
 export let num: number = 10;
+
 使用示例
 
 共享模块导出Sendable对象。
 
-// 共享模块sharedModule.ets
+// 共享模块
 import { ArkTSUtils } from '@kit.ArkTS';
 
-
 // 声明当前模块为共享模块，只能导出可Sendable数据
-"use shared"
-
+'use shared'
 
 // 共享模块，SingletonA全局唯一
 @Sendable
 class SingletonA {
   private count_: number = 0;
-  lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock()
-
+  public lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
 
   public async getCount(): Promise<number> {
     return this.lock_.lockAsync(() => {
       return this.count_;
     })
   }
-
 
   public async increaseCount() {
     await this.lock_.lockAsync(() => {
@@ -88,53 +89,79 @@ class SingletonA {
   }
 }
 
-
 export let singletonA = new SingletonA();
-sharedModule.ets
 
 在多个线程中操作共享模块导出的对象。
 
-import { taskpool } from '@kit.ArkTS';
+import { ArkTSUtils, taskpool } from '@kit.ArkTS';
 import { singletonA } from './sharedModule';
 
+export { num, str } from './test'; // 正确示例，导出对象合集
+
+@Sendable
+export class A {
+  private count_: number = 0;
+  public lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
+
+  public async getCount(): Promise<number> {
+    return this.lock_.lockAsync(() => {
+      return this.count_;
+    })
+  }
+
+  public async increaseCount() {
+    await this.lock_.lockAsync(() => {
+      this.count_++;
+    })
+  }
+}
 
 @Concurrent
 async function increaseCount() {
   await singletonA.increaseCount();
-  console.info("SharedModule: count is:" + await singletonA.getCount());
+  console.info('SharedModule: count is:' + await singletonA.getCount());
 }
-
 
 @Concurrent
 async function printCount() {
-  console.info("SharedModule: count is:" + await singletonA.getCount());
+  console.info('SharedModule: count is:' + await singletonA.getCount());
 }
-
 
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
+  @State mainThreadPrint: string = 'MainThread print count';
+  @State taskpoolPrint: string = 'Taskpool print count';
+  @State mainThreadIncrease: string = 'MainThread increase count';
+  @State taskpoolIncrease: string = 'Taskpool increase count';
 
   build() {
     Row() {
       Column() {
-        Button("MainThread print count")
+        Button(this.mainThreadPrint)
+          .id('MainThread print count')
           .onClick(async () => {
             await printCount();
+            this.mainThreadPrint = 'success';
           })
-        Button("Taskpool print count")
+        Button(this.taskpoolPrint)
+          .id('Taskpool print count')
           .onClick(async () => {
             await taskpool.execute(printCount);
+            this.taskpoolPrint = 'success';
           })
-        Button("MainThread increase count")
+        Button(this.mainThreadIncrease)
+          .id('MainThread increase count')
           .onClick(async () => {
             await increaseCount();
+            this.mainThreadIncrease = 'success';
           })
-        Button("Taskpool increase count")
+        Button(this.taskpoolIncrease)
+          .id('Taskpool increase count')
           .onClick(async () => {
             await taskpool.execute(increaseCount);
+            this.taskpoolIncrease = 'success';
           })
       }
       .width('100%')
@@ -142,6 +169,169 @@ struct Index {
     .height('100%')
   }
 }
-ArktsSendableModule.ets
-共享容器
-Sendable对象冻结
+
+## Code blocks
+
+### Code block 1
+
+```
+// test.ets
+console.info("This runs immediately when imported");
+```
+
+### Code block 2
+
+```
+// sharedModule.ets
+// 不允许使用side-effects-import，编译报错
+import "./test";
+'use shared'
+```
+
+### Code block 3
+
+```
+// test.ets
+export let num = 1;
+export let str = 'aaa';
+```
+
+### Code block 4
+
+```
+// share.ets
+// 共享模块
+'use shared'
+export * from './test'; // 编译报错
+export {num, str} from './test'; // 产生运行时报错
+```
+
+### Code block 5
+
+```
+// test.ets
+import { num } from './A'; // 支持静态加载
+
+import { worker } from '@kit.ArkTS';
+let wk = new worker.ThreadWorker("./A"); // 不支持其他方式加载共享模块, 将产生运行时报错
+```
+
+### Code block 6
+
+```
+// A.ets
+'use shared'
+export let num: number = 10;
+```
+
+### Code block 7
+
+```
+// 共享模块
+import { ArkTSUtils } from '@kit.ArkTS';
+
+// 声明当前模块为共享模块，只能导出可Sendable数据
+'use shared'
+
+// 共享模块，SingletonA全局唯一
+@Sendable
+class SingletonA {
+  private count_: number = 0;
+  public lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
+
+  public async getCount(): Promise<number> {
+    return this.lock_.lockAsync(() => {
+      return this.count_;
+    })
+  }
+
+  public async increaseCount() {
+    await this.lock_.lockAsync(() => {
+      this.count_++;
+    })
+  }
+}
+
+export let singletonA = new SingletonA();
+```
+
+### Code block 8
+
+```
+import { ArkTSUtils, taskpool } from '@kit.ArkTS';
+import { singletonA } from './sharedModule';
+
+export { num, str } from './test'; // 正确示例，导出对象合集
+
+@Sendable
+export class A {
+  private count_: number = 0;
+  public lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
+
+  public async getCount(): Promise<number> {
+    return this.lock_.lockAsync(() => {
+      return this.count_;
+    })
+  }
+
+  public async increaseCount() {
+    await this.lock_.lockAsync(() => {
+      this.count_++;
+    })
+  }
+}
+
+@Concurrent
+async function increaseCount() {
+  await singletonA.increaseCount();
+  console.info('SharedModule: count is:' + await singletonA.getCount());
+}
+
+@Concurrent
+async function printCount() {
+  console.info('SharedModule: count is:' + await singletonA.getCount());
+}
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+  @State mainThreadPrint: string = 'MainThread print count';
+  @State taskpoolPrint: string = 'Taskpool print count';
+  @State mainThreadIncrease: string = 'MainThread increase count';
+  @State taskpoolIncrease: string = 'Taskpool increase count';
+
+  build() {
+    Row() {
+      Column() {
+        Button(this.mainThreadPrint)
+          .id('MainThread print count')
+          .onClick(async () => {
+            await printCount();
+            this.mainThreadPrint = 'success';
+          })
+        Button(this.taskpoolPrint)
+          .id('Taskpool print count')
+          .onClick(async () => {
+            await taskpool.execute(printCount);
+            this.taskpoolPrint = 'success';
+          })
+        Button(this.mainThreadIncrease)
+          .id('MainThread increase count')
+          .onClick(async () => {
+            await increaseCount();
+            this.mainThreadIncrease = 'success';
+          })
+        Button(this.taskpoolIncrease)
+          .id('Taskpool increase count')
+          .onClick(async () => {
+            await taskpool.execute(increaseCount);
+            this.taskpoolIncrease = 'success';
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

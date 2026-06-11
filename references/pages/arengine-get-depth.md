@@ -2,7 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-get-depth_
 
-获取深度估计信息能力支持部分Phone、部分Tablet设备。请参考硬件要求判断设备是否支持运动跟踪及平面识别特性（ARENGINE_FEATURE_TYPE_DEPTH）。
+本章节给出了关键开发步骤，完整代码可以参考示例代码。
+
+约束与限制
+
+从5.1.0(18)开始，获取深度估计信息能力支持部分Phone、部分Tablet设备。请参考硬件要求判断设备是否支持深度估计特性（ARENGINE_FEATURE_TYPE_DEPTH）。
 
 接口说明
 
@@ -12,24 +16,27 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 ARSession.getFrame	获取AR Engine处理后的一帧数据。
 ARFrame.acquireDepthImage16Bits	获取当前帧对应的深度图像对象。
 ARFrame.acquireDepthConfidenceImage	获取当前帧的深度置信度图像。
+
 开发步骤
 
 对于使用ArkTS的任何AR应用，首先需要创建一个AR会话ARViewContext，用于管理AR Engine的系统状态。AR会话ARViewContext的创建可以参考管理AR会话章节。
 
-导入模块
+[h2]导入模块
 
 获取深度估计信息能力所需的模块导入方法如下：
 
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
 import { Node, Scene } from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
-定义变量
+
+[h2]定义变量
 
 定义变量centerDistance深度估计距离和centerConfidence深度置信度。
 
 let centerDistance: number;
 let centerConfidence: number;
-显示深度估计信息
+
+[h2]显示深度估计信息
 
 首先初始化AR会话和AR场景，可以参考初始化AR会话和AR场景章节。
 
@@ -40,7 +47,6 @@ export function ARDepthBuilder(): void {
   ARDepth();
 }
 
-
 @Component
 struct ARDepth {
   private delayInterval: number = 33;
@@ -48,7 +54,6 @@ struct ARDepth {
   @State arContext?: arViewController.ARViewContext = undefined;
   @State depthConfidence: number = 0;
   @State depthDistance: string = '0';
-
 
   build(): void {
     NavDestination() {
@@ -62,7 +67,6 @@ struct ARDepth {
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             })
 
-
           // 在屏幕上显示中心点、深度估计值及置信度
           Text('●')
             .fontSize(8)
@@ -71,7 +75,6 @@ struct ARDepth {
               center: { anchor: '__container__', align: VerticalAlign.Center },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             })
-
 
           Column() {
             Text(`${this.depthDistance} | ${this.depthConfidence}`)
@@ -111,6 +114,195 @@ struct ARDepth {
     .hideToolBar(true)
   }
 
+  private initARView(): void {
+    Scene.load().then((scene: Scene) => {
+      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
+      viewContext.scene = scene;
+      viewContext.callback = new ARViewCallbackImpl();
+      viewContext.config = {
+        type: arEngine.ARType.WORLD,
+        planeFindingMode: arEngine.ARPlaneFindingMode.HORIZONTAL_AND_VERTICAL,
+        powerMode: arEngine.ARPowerMode.NORMAL,
+        semanticMode: arEngine.ARSemanticMode.NONE,
+        poseMode: arEngine.ARPoseMode.GRAVITY,
+        depthMode: arEngine.ARDepthMode.AUTOMATIC,
+        meshMode: arEngine.ARMeshMode.DISABLED,
+        focusMode: arEngine.ARFocusMode.AUTO
+      };
+      viewContext.init().then(() => {
+        this.arContext = viewContext;
+        console.info('Succeeded in initializing ARView.');
+      }).catch((err: BusinessError) => {
+        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}`);
+      });
+    });
+  }
+
+  private renderDepthMsg(): void {
+    this.intervalId = setInterval(() => {
+      if (centerDistance === undefined || centerConfidence === undefined) {
+        return;
+      }
+      this.depthDistance = centerDistance.toFixed(4);
+      this.depthConfidence = centerConfidence;
+    }, this.delayInterval);
+  }
+
+  private stopARView(): void {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      clearInterval(this.intervalId);
+      this.arContext.destroy();
+      centerDistance = 0;
+      centerConfidence = 0;
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      console.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
+    }
+  }
+
+  private resumeARView(): void {
+    // ...
+  }
+  private pauseARView(): void {
+    // ...
+  }
+}
+
+[h2]获取深度估计信息
+
+调用ARViewCallback，使用其中的onFrameUpdate方法获取到AR会话对象后进行深度估计，获取深度信息、置信度信息。
+
+class ARViewCallbackImpl extends arViewController.ARViewCallback {
+  onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
+    // ...
+  }
+
+  onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
+    // ...
+  }
+
+  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+    if (!ctx.session) {
+      return;
+    }
+
+    let session: arEngine.ARSession | undefined = ctx.session;
+
+    try {
+      let frame: arEngine.ARFrame = session.getFrame();
+      let depthImage: arEngine.ARImage = frame.acquireDepthImage16Bits();
+      let confidenceImage: arEngine.ARImage = frame.acquireDepthConfidenceImage();
+      let depthPlane: number[] = arrayBufferInt32ToNumber(depthImage.planes[0].buffer);
+      let confidencePlane: number[] = arrayBufferInt32ToNumber(confidenceImage.planes[0].buffer);
+      const index: number = depthImage.height * depthImage.width / 2 + depthImage.width / 2;
+
+      centerDistance = depthPlane[index] / 1000;
+      centerConfidence = confidencePlane[index];
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      console.error(`Failed to acquire depth information. Code is ${err.code}, message is ${err.message}`);
+    }
+  }
+}
+
+[h2]获取深度估计信息的自定义方法
+
+自定义数据转换方法arrayBufferInt32ToNumber可参考数据类型转换说明。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { arEngine, ARView, arViewController } from '@kit.AREngine';
+import { Node, Scene } from '@kit.ArkGraphics3D';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+let centerDistance: number;
+let centerConfidence: number;
+```
+
+### Code block 3
+
+```
+@Builder
+export function ARDepthBuilder(): void {
+  ARDepth();
+}
+
+@Component
+struct ARDepth {
+  private delayInterval: number = 33;
+  private intervalId: number = -1;
+  @State arContext?: arViewController.ARViewContext = undefined;
+  @State depthConfidence: number = 0;
+  @State depthDistance: string = '0';
+
+  build(): void {
+    NavDestination() {
+      RelativeContainer() {
+        if (this.arContext) {
+          ARView({ context: this.arContext })
+            .height('100%')
+            .width('100%')
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+
+          // 在屏幕上显示中心点、深度估计值及置信度
+          Text('●')
+            .fontSize(8)
+            .fontColor(Color.Red)
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+
+          Column() {
+            Text(`${this.depthDistance} | ${this.depthConfidence}`)
+              .fontColor(Color.Yellow)
+              .fontSize(24)
+              .textShadow({
+                radius: 10,
+                color: Color.Black,
+                offsetX: 0,
+                offsetY: 0
+              })
+          }
+          .alignItems(HorizontalAlign.Center)
+          .margin({ bottom: 10 })
+          .alignRules({
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+        }
+      }
+    }
+    .onAppear(() => {
+      this.initARView();
+      this.renderDepthMsg();
+    })
+    .onWillAppear(() => {
+      this.stopARView();
+    })
+    .onShown(() => {
+      this.resumeARView();
+    })
+    .onHidden(() => {
+      this.pauseARView();
+    })
+    .hideTitleBar(true)
+    .hideBackButton(true)
+    .hideToolBar(true)
+  }
 
   private initARView(): void {
     Scene.load().then((scene: Scene) => {
@@ -136,7 +328,6 @@ struct ARDepth {
     });
   }
 
-
   private renderDepthMsg(): void {
     this.intervalId = setInterval(() => {
       if (centerDistance === undefined || centerConfidence === undefined) {
@@ -146,7 +337,6 @@ struct ARDepth {
       this.depthConfidence = centerConfidence;
     }, this.delayInterval);
   }
-
 
   private stopARView(): void {
     if (!this.arContext) {
@@ -163,7 +353,6 @@ struct ARDepth {
     }
   }
 
-
   private resumeARView(): void {
     // ...
   }
@@ -171,29 +360,26 @@ struct ARDepth {
     // ...
   }
 }
-获取深度估计信息
+```
 
-调用ARViewCallback，使用其中的onFrameUpdate方法获取到AR会话对象后进行深度估计，获取深度信息、置信度信息。
+### Code block 4
 
+```
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
     // ...
   }
 
-
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
     // ...
   }
-
 
   onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
     if (!ctx.session) {
       return;
     }
 
-
     let session: arEngine.ARSession | undefined = ctx.session;
-
 
     try {
       let frame: arEngine.ARFrame = session.getFrame();
@@ -203,7 +389,6 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
       let confidencePlane: number[] = arrayBufferInt32ToNumber(confidenceImage.planes[0].buffer);
       const index: number = depthImage.height * depthImage.width / 2 + depthImage.width / 2;
 
-
       centerDistance = depthPlane[index] / 1000;
       centerConfidence = confidencePlane[index];
     } catch (error) {
@@ -212,9 +397,4 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
     }
   }
 }
-获取深度估计信息的自定义方法
-
-自定义数据转换方法arrayBufferInt32ToNumber可参考数据类型转换说明。
-
-深度估计介绍
-获取深度图（C/C++）
+```

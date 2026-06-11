@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/xengine-kit-faq-4_
 
+输出不需要，仅输入需要通过OH_NativeBuffer创建。

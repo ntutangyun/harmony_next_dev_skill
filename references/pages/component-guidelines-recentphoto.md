@@ -30,10 +30,8 @@ recentPhotoOptions: RecentPhotoOptions = new RecentPhotoOptions();
 // 设置数据类型，IMAGE_VIDEO_TYPE：图片和视频（默认值）、IMAGE_TYPE：图片、VIDEO_TYPE：视频、MOVING_PHOTO_IMAGE_TYPE：动态图片。
 this.recentPhotoOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_VIDEO_TYPE;
 
-
 // 设置最近图片的时间范围，单位（秒），有效范围为（0，86400]，设置为小于等于0、大于86400或者未配置时默认按最长时间段1天显示最近图片。
 this.recentPhotoOptions.period = 0;
-
 
 // 设置资源的来源，ALL：所有、CAMERA：相机、SCREENSHOT：截图。
 this.recentPhotoOptions.photoSource = PhotoSource.ALL;
@@ -43,13 +41,12 @@ this.recentPhotoOptions.photoSource = PhotoSource.ALL;
 RecentPhotoComponent({
   // 设置最近图片组件选择选项实例。
   recentPhotoOptions: this.recentPhotoOptions,
-    
+
    /**
    * 选择最近图片触发的回调事件，点击会申请授权该最近图片的读权限，入参recentPhotoInfo为最近图片信息。
    * BaseItemInfo（uri, mimeType, width, height, size, duration）
    */
   onRecentPhotoClick: (recentPhotoInfo: BaseItemInfo): boolean => this.onRecentPhotoClick(recentPhotoInfo),
-
 
   // 检查是否存在最近的资源。
   onRecentPhotoCheckResult: (recentPhotoExists: boolean) => this.onReceiveCheckResult(recentPhotoExists),
@@ -69,6 +66,79 @@ private onRecentPhotoClick(recentPhotoInfo: BaseItemInfo): boolean {
   return true;
 }
 
+private onReceiveCheckResult(recentPhotoExists: boolean): void {
+  if (!recentPhotoExists) {
+    console.info('not exist recent photo');
+  }
+  // 存在最近图片的话，可以实现业务需求，如去控制RecentPhotoComponent是否显示。
+}
+
+完整示例
+
+完整示例请查阅示例。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BaseItemInfo } from '@ohos.file.PhotoPickerComponent';
+import {
+  PhotoSource,
+  RecentPhotoComponent,
+  RecentPhotoOptions,
+  photoAccessHelper
+} from '@kit.MediaLibraryKit';
+```
+
+### Code block 2
+
+```
+// 最近图片组件初始化。
+recentPhotoOptions: RecentPhotoOptions = new RecentPhotoOptions();
+```
+
+### Code block 3
+
+```
+// 设置数据类型，IMAGE_VIDEO_TYPE：图片和视频（默认值）、IMAGE_TYPE：图片、VIDEO_TYPE：视频、MOVING_PHOTO_IMAGE_TYPE：动态图片。
+this.recentPhotoOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_VIDEO_TYPE;
+
+// 设置最近图片的时间范围，单位（秒），有效范围为（0，86400]，设置为小于等于0、大于86400或者未配置时默认按最长时间段1天显示最近图片。
+this.recentPhotoOptions.period = 0;
+
+// 设置资源的来源，ALL：所有、CAMERA：相机、SCREENSHOT：截图。
+this.recentPhotoOptions.photoSource = PhotoSource.ALL;
+```
+
+### Code block 4
+
+```
+RecentPhotoComponent({
+  // 设置最近图片组件选择选项实例。
+  recentPhotoOptions: this.recentPhotoOptions,
+
+   /**
+   * 选择最近图片触发的回调事件，点击会申请授权该最近图片的读权限，入参recentPhotoInfo为最近图片信息。
+   * BaseItemInfo（uri, mimeType, width, height, size, duration）
+   */
+  onRecentPhotoClick: (recentPhotoInfo: BaseItemInfo): boolean => this.onRecentPhotoClick(recentPhotoInfo),
+
+  // 检查是否存在最近的资源。
+  onRecentPhotoCheckResult: (recentPhotoExists: boolean) => this.onReceiveCheckResult(recentPhotoExists),
+})
+```
+
+### Code block 5
+
+```
+// 返回值为true表示最近图片处理完成。
+private onRecentPhotoClick(recentPhotoInfo: BaseItemInfo): boolean {
+  if (!recentPhotoInfo) {
+    return false;
+  }
+  return true;
+}
 
 private onReceiveCheckResult(recentPhotoExists: boolean): void {
   if (!recentPhotoExists) {
@@ -76,9 +146,4 @@ private onReceiveCheckResult(recentPhotoExists: boolean): void {
   }
   // 存在最近图片的话，可以实现业务需求，如去控制RecentPhotoComponent是否显示。
 }
-完整示例
-
-完整示例请查阅示例。
-
-使用AlbumPicker组件访问相册列表
-使用PickerController将编辑后的图片替换原图
+```

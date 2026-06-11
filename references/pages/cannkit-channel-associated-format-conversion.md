@@ -2,6 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-channel-associated-format-conversion_
 
+功能说明
+
+随路格式转换数据搬运，适用于在搬运时进行格式转换。
+
+函数原型
+
+源操作数为GlobalTensor，目的操作数为LocalTensor（只支持ND2NZ格式转换）
+
+template <typename T>
 __aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const GlobalTensor<T>& srcGlobal, const Nd2NzParams& intriParams);
 
 该原型接口支持的数据通路和数据类型如下所示：
@@ -11,6 +20,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const GlobalTens
 支持型号	数据通路	源操作数和目的操作数的数据类型 (两者保持一致)
 Kirin9020系列处理器	GM->A1/B1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
 KirinX90系列处理器	GM->A1/B1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+
 说明
 
 使用该接口时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
@@ -20,7 +30,7 @@ KirinX90系列处理器	GM->A1/B1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32
 支持ND2NZ格式转换：
 
 // 支持ND2NZ格式转换
-template <typename T>    
+template <typename T>
 __aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcGlobal, const Nd2NzParams& intriParams);
 
 该原型接口支持的数据通路和数据类型如下所示：
@@ -30,6 +40,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const LocalTenso
 支持型号	数据通路	源操作数和目的操作数的数据类型 (两者保持一致)
 Kirin9020系列处理器	VECIN / VECCALC / VECOUT -> TSCM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
 KirinX90系列处理器	VECIN / VECCALC / VECOUT -> TSCM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+
 说明
 
 当前Kirin9020通用核只考虑32Byte对齐的情形，后续根据需要增强接口。
@@ -81,5 +92,19 @@ Kirin9020系列处理器
 
 KirinX90系列处理器
 
-普通数据搬运
-DataCopyPad
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T>
+__aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const GlobalTensor<T>& srcGlobal, const Nd2NzParams& intriParams);
+```
+
+### Code block 2
+
+```
+// 支持ND2NZ格式转换
+template <typename T>
+__aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcGlobal, const Nd2NzParams& intriParams);
+```

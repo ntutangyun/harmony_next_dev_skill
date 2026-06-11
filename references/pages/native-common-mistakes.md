@@ -12,12 +12,9 @@ OHNativeWindow与NativeWindowBuffer在系统多个模块与应用之间传递，
 
 int32_t OH_NativeWindow_NativeObjectReference(void *obj)
 
-
 int32_t OH_NativeWindow_CreateNativeWindowFromSurfaceId(uint64_t surfaceId, OHNativeWindow **window)
 
-
 OHNativeWindow* OH_NativeImage_AcquireNativeWindow(OH_NativeImage* image)
-
 
 int32_t OH_NativeWindow_ReadFromParcel(OHIPCParcel *parcel, OHNativeWindow **window)
 
@@ -25,9 +22,7 @@ int32_t OH_NativeWindow_ReadFromParcel(OHIPCParcel *parcel, OHNativeWindow **win
 
 int32_t OH_NativeWindow_NativeObjectUnreference(void *obj)
 
-
 void OH_NativeWindow_DestroyNativeWindow(OHNativeWindow* window)
-
 
 void OH_NativeImage_Destroy(OH_NativeImage** image)
 
@@ -35,12 +30,9 @@ void OH_NativeImage_Destroy(OH_NativeImage** image)
 
 int32_t OH_NativeWindow_NativeObjectReference(void *obj)
 
-
 int32_t OH_NativeWindow_GetLastFlushedBufferV2(OHNativeWindow *window, OHNativeWindowBuffer **buffer,int *fenceFd, float matrix[16])
 
-
 OHNativeWindowBuffer* OH_NativeWindow_CreateNativeWindowBufferFromNativeBuffer(OH_NativeBuffer* nativeBuffer)
-
 
 int32_t OH_NativeImage_AcquireNativeWindowBuffer(OH_NativeImage* image,OHNativeWindowBuffer** nativeWindowBuffer, int* fenceFd)
 
@@ -48,25 +40,23 @@ int32_t OH_NativeImage_AcquireNativeWindowBuffer(OH_NativeImage* image,OHNativeW
 
 int32_t OH_NativeWindow_NativeObjectUnreference(void *obj)
 
-
 void OH_NativeWindow_DestroyNativeWindowBuffer(OHNativeWindowBuffer* buffer)
 
-
 int32_t OH_NativeImage_ReleaseNativeWindowBuffer(OH_NativeImage* image,OHNativeWindowBuffer* nativeWindowBuffer, int fenceFd) // 仅接口返回成功时减少引用计数
+
 NativeWindow生命周期问题
-典型崩溃日志及原因
+
+[h2]典型崩溃日志及原因
 
 典型崩溃日志如下：
 
 **典型崩溃日志1**
 00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_DestroyNativeWindow())
 
-
 **典型崩溃日志2**
 00 /system/lib64/chipset-sdk-sp/libsurface.z.so(……)
 01 /system/lib64/chipset-sdk-sp/libsurface.z.so(……)
 02 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeWindowHandleOpt)
-
 
 **典型崩溃日志3**
 00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeObjectUnreference())
@@ -77,13 +67,12 @@ NativeWindow生命周期问题
 
 2.从XComponent组件获取的NativeWindow，抛向子线程使用，XComponent组件销毁时将NativeWindow引用计数减一，若减为0析构后，子线程仍在使用会导致崩溃。
 
-典型错误代码及解决方案
+[h2]典型错误代码及解决方案
 
 典型错误代码1
 
 OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
 OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
-
 
 // 错误：OH_NativeImage_Destroy中会减少OHNativeWindow引用计数，无需再调用OH_NativeWindow_DestroyNativeWindow
 OH_NativeImage_Destroy(image_);
@@ -97,7 +86,6 @@ OH_NativeImage_Destroy中会减少OHNativeWindow引用计数，无需再调用OH
 
 OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
 OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
-
 
 // 释放NativeImage时将image_和nativewindow_置空，防止后续使用野指针
 OH_NativeImage_Destroy(image_);
@@ -113,11 +101,9 @@ void OnSurfaceCreatedCB(OH_NativeXComponent* component, void* window)
     int32_t ret = OH_NativeXComponent_GetXComponentSize(component, window, &width, &height);
     OHNativeWindow* nativewindow_ = static_cast<OHNativeWindow*>(window);
 
-
     // 未对NativeWindow增加引用计数直接抛向子线程使用
     NativeRender::GetInstance()->SetNativeWindow(nativewindow_, width, height);
 }
-
 
 void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
 {
@@ -125,7 +111,6 @@ void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
         LOGE("OnSurfaceDestroyedCB: component or window is null");
         return;
     }
-
 
     // 错误：通知子线程停止，但未做等待操作，OnSurfaceDestroyedCB结束后NativeWindow可能被释放，子线程正在使用可能崩溃
     NativeRender::GetInstance()->Release();
@@ -147,12 +132,10 @@ void OnSurfaceCreatedCB(OH_NativeXComponent* component, void* window)
     int32_t ret = OH_NativeXComponent_GetXComponentSize(component, window, &width, &height);
     OHNativeWindow* nativewindow_ = static_cast<OHNativeWindow*>(window);
 
-
     // 抛任务前将nativeWindow引用计数加一
     OH_NativeWindow_NativeObjectReference(nativewindow_);
     NativeRender::GetInstance()->SetNativeWindow(nativewindow_, width, height);
 }
-
 
 void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
 {
@@ -160,7 +143,6 @@ void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
         LOGE("OnSurfaceDestroyedCB: component or window is null");
         return;
     }
-
 
     // 通知子线程停止，因为前面有对引用计数加一，OnSurfaceDestroyedCB结束时不会释放
     // 当子线程使用完毕后执行OH_NativeWindow_NativeObjectUnreference(nativewindow_)对引用计数减一
@@ -176,10 +158,8 @@ void OnSurfaceCreatedCB(OH_NativeXComponent* component, void* window)
     int32_t ret = OH_NativeXComponent_GetXComponentSize(component, window, &width, &height);
     OHNativeWindow* nativewindow_ = static_cast<OHNativeWindow*>(window);
 
-
     NativeRender::GetInstance()->SetNativeWindow(nativewindow_, width, height);
 }
-
 
 void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
 {
@@ -188,23 +168,22 @@ void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
         return;
     }
 
-
     NativeRender::GetInstance()->Release();
     // 通知子线程停止后等待子线程任务结束再结束OnSurfaceDestroyedCB
     renderThread.join();
 }
+
 NativeWindowBuffer生命周期问题
-典型崩溃日志及原因
+
+[h2]典型崩溃日志及原因
 
 典型崩溃日志如下：
 
 **典型崩溃日志1**
 00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_GetBufferHandleFromNative())
 
-
 **典型崩溃日志2**
 00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeObjectUnreference())
-
 
 **典型崩溃日志3**
 00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeObjectReference())
@@ -213,12 +192,13 @@ NativeWindowBuffer生命周期问题
 
 从XComponent组件获取的NativeWindow，抛向子线程使用，XComponent组件销毁时将NativeWindow计数减一，NativeWindow销毁时对内部的NativeWindowBuffer引用计数减一，此时子线程刚RequestBuffer拿到buffer正在使用导致崩溃。
 
-典型错误代码及解决方案
+[h2]典型错误代码及解决方案
 
 同上述NativeWindow生命周期问题的典型错误代码及解决方案。
 
 NativeWindowBuffer卡死问题
-典型卡死日志及原因
+
+[h2]典型卡死日志及原因
 
 典型卡死日志如下：
 
@@ -235,12 +215,10 @@ if (ret != NATIVE_ERROR_OK) {
     return;
 }
 
-
 // 错误：异常分支未归还buffer，NativeWindow内buffer数量固定，可能导致后续无buffer可用卡死
 if (error) {
     return;
 }
-
 
 OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
 
@@ -255,21 +233,21 @@ if (ret != NATIVE_ERROR_OK) {
     return;
 }
 
-
 if (error) {
     // 异常分支归还buffer
     OH_NativeWindow_NativeWindowAbortBuffer(nativewindow_, buffer);
     return;
 }
 
-
 OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
+
 内存泄露问题
-典型内存泄露原因
+
+[h2]典型内存泄露原因
 
 额外执行了增加引用计数接口，未配套执行减少引用计数接口导致泄露。
 
-典型错误代码及解决方案
+[h2]典型错误代码及解决方案
 
 典型错误代码1
 
@@ -282,13 +260,11 @@ if (ret != NATIVE_ERROR_OK) {
     return;
 }
 
-
 // 错误：对buffer增加了引用计数，绘制流程走到异常分支，异常分支未相应减少引用计数，导致泄露
 if (error) {
     OH_NativeWindow_NativeWindowAbortBuffer(nativewindow_, buffer);
     return;
 }
-
 
 OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
 OH_NativeWindow_NativeObjectReference(buffer);
@@ -308,14 +284,12 @@ if (ret != NATIVE_ERROR_OK) {
     return;
 }
 
-
 if (error) {
     // 异常分支配套减少引用计数
     OH_NativeWindow_NativeWindowAbortBuffer(nativewindow_, buffer);
     OH_NativeWindow_NativeObjectUnreference(buffer);
     return;
 }
-
 
 OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
 OH_NativeWindow_NativeObjectReference(buffer);
@@ -330,7 +304,6 @@ ret = OH_NativeWindow_NativeObjectReference(buffer);
 if (ret != NATIVE_ERROR_OK) {
     return;
 }
-
 
 // 错误：未对Release失败场景处理，AcquireNativeWindowBuffer成功会对buffer引用计数加一，ReleaseNativeWindowBuffer失败不会减一
 OH_NativeImage_ReleaseNativeWindowBuffer(nativeimage, buffer, fence);
@@ -351,6 +324,305 @@ if (ret != NATIVE_ERROR_OK) {
     return;
 }
 
+// 对OH_NativeImage_ReleaseNativeWindowBuffer失败做异常处理
+ret = OH_NativeImage_ReleaseNativeWindowBuffer(nativeimage, buffer, fence);
+if (ret != NATIVE_ERROR_OK) {
+    OH_NativeWindow_NativeObjectUnreference(buffer);
+}
+OH_NativeWindow_NativeObjectUnreference(buffer);
+
+## Code blocks
+
+### Code block 1
+
+```
+int32_t OH_NativeWindow_NativeObjectReference(void *obj)
+
+int32_t OH_NativeWindow_CreateNativeWindowFromSurfaceId(uint64_t surfaceId, OHNativeWindow **window)
+
+OHNativeWindow* OH_NativeImage_AcquireNativeWindow(OH_NativeImage* image)
+
+int32_t OH_NativeWindow_ReadFromParcel(OHIPCParcel *parcel, OHNativeWindow **window)
+```
+
+### Code block 2
+
+```
+int32_t OH_NativeWindow_NativeObjectUnreference(void *obj)
+
+void OH_NativeWindow_DestroyNativeWindow(OHNativeWindow* window)
+
+void OH_NativeImage_Destroy(OH_NativeImage** image)
+```
+
+### Code block 3
+
+```
+int32_t OH_NativeWindow_NativeObjectReference(void *obj)
+
+int32_t OH_NativeWindow_GetLastFlushedBufferV2(OHNativeWindow *window, OHNativeWindowBuffer **buffer,int *fenceFd, float matrix[16])
+
+OHNativeWindowBuffer* OH_NativeWindow_CreateNativeWindowBufferFromNativeBuffer(OH_NativeBuffer* nativeBuffer)
+
+int32_t OH_NativeImage_AcquireNativeWindowBuffer(OH_NativeImage* image,OHNativeWindowBuffer** nativeWindowBuffer, int* fenceFd)
+```
+
+### Code block 4
+
+```
+int32_t OH_NativeWindow_NativeObjectUnreference(void *obj)
+
+void OH_NativeWindow_DestroyNativeWindowBuffer(OHNativeWindowBuffer* buffer)
+
+int32_t OH_NativeImage_ReleaseNativeWindowBuffer(OH_NativeImage* image,OHNativeWindowBuffer* nativeWindowBuffer, int fenceFd) // 仅接口返回成功时减少引用计数
+```
+
+### Code block 5
+
+```
+**典型崩溃日志1**
+00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_DestroyNativeWindow())
+
+**典型崩溃日志2**
+00 /system/lib64/chipset-sdk-sp/libsurface.z.so(……)
+01 /system/lib64/chipset-sdk-sp/libsurface.z.so(……)
+02 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeWindowHandleOpt)
+
+**典型崩溃日志3**
+00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeObjectUnreference())
+```
+
+### Code block 6
+
+```
+OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
+OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
+
+// 错误：OH_NativeImage_Destroy中会减少OHNativeWindow引用计数，无需再调用OH_NativeWindow_DestroyNativeWindow
+OH_NativeImage_Destroy(image_);
+OH_NativeWindow_DestroyNativeWindow(nativewindow_);
+```
+
+### Code block 7
+
+```
+OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
+OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
+
+// 释放NativeImage时将image_和nativewindow_置空，防止后续使用野指针
+OH_NativeImage_Destroy(image_);
+image_ = nullptr;
+nativewindow_ = nullptr;
+```
+
+### Code block 8
+
+```
+void OnSurfaceCreatedCB(OH_NativeXComponent* component, void* window)
+{
+    uint64_t width = 0;
+    uint64_t height = 0;
+    int32_t ret = OH_NativeXComponent_GetXComponentSize(component, window, &width, &height);
+    OHNativeWindow* nativewindow_ = static_cast<OHNativeWindow*>(window);
+
+    // 未对NativeWindow增加引用计数直接抛向子线程使用
+    NativeRender::GetInstance()->SetNativeWindow(nativewindow_, width, height);
+}
+
+void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
+{
+    if ((component == nullptr) || (window == nullptr)) {
+        LOGE("OnSurfaceDestroyedCB: component or window is null");
+        return;
+    }
+
+    // 错误：通知子线程停止，但未做等待操作，OnSurfaceDestroyedCB结束后NativeWindow可能被释放，子线程正在使用可能崩溃
+    NativeRender::GetInstance()->Release();
+    OHNativeWindow* nativewindow_ = static_cast<OHNativeWindow*>(window);
+    // 错误：未对nativewindow_引用计数加一的情况下调用DestroyNativeWindow会使nativewindow_提前释放，导致崩溃
+    OH_NativeWindow_DestroyNativeWindow(nativewindow_);
+}
+```
+
+### Code block 9
+
+```
+void OnSurfaceCreatedCB(OH_NativeXComponent* component, void* window)
+{
+    uint64_t width = 0;
+    uint64_t height = 0;
+    int32_t ret = OH_NativeXComponent_GetXComponentSize(component, window, &width, &height);
+    OHNativeWindow* nativewindow_ = static_cast<OHNativeWindow*>(window);
+
+    // 抛任务前将nativeWindow引用计数加一
+    OH_NativeWindow_NativeObjectReference(nativewindow_);
+    NativeRender::GetInstance()->SetNativeWindow(nativewindow_, width, height);
+}
+
+void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
+{
+    if ((component == nullptr) || (window == nullptr)) {
+        LOGE("OnSurfaceDestroyedCB: component or window is null");
+        return;
+    }
+
+    // 通知子线程停止，因为前面有对引用计数加一，OnSurfaceDestroyedCB结束时不会释放
+    // 当子线程使用完毕后执行OH_NativeWindow_NativeObjectUnreference(nativewindow_)对引用计数减一
+    NativeRender::GetInstance()->Release();
+}
+```
+
+### Code block 10
+
+```
+void OnSurfaceCreatedCB(OH_NativeXComponent* component, void* window)
+{
+    uint64_t width = 0;
+    uint64_t height = 0;
+    int32_t ret = OH_NativeXComponent_GetXComponentSize(component, window, &width, &height);
+    OHNativeWindow* nativewindow_ = static_cast<OHNativeWindow*>(window);
+
+    NativeRender::GetInstance()->SetNativeWindow(nativewindow_, width, height);
+}
+
+void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window)
+{
+    if ((component == nullptr) || (window == nullptr)) {
+        LOGE("OnSurfaceDestroyedCB: component or window is null");
+        return;
+    }
+
+    NativeRender::GetInstance()->Release();
+    // 通知子线程停止后等待子线程任务结束再结束OnSurfaceDestroyedCB
+    renderThread.join();
+}
+```
+
+### Code block 11
+
+```
+**典型崩溃日志1**
+00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_GetBufferHandleFromNative())
+
+**典型崩溃日志2**
+00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeObjectUnreference())
+
+**典型崩溃日志3**
+00 /system/lib64/chipset-sdk-sp/libsurface.z.so(OH_NativeWindow_NativeObjectReference())
+```
+
+### Code block 12
+
+```
+/system/lib64/chipset-sdk-sp/libsurface.z.so(RequestBufferLocked())
+```
+
+### Code block 13
+
+```
+auto ret = OH_NativeWindow_NativeWindowRequestBuffer(nativewindow_, &buffer, &fence);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+
+// 错误：异常分支未归还buffer，NativeWindow内buffer数量固定，可能导致后续无buffer可用卡死
+if (error) {
+    return;
+}
+
+OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
+```
+
+### Code block 14
+
+```
+auto ret = OH_NativeWindow_NativeWindowRequestBuffer(nativewindow_, &buffer, &fence);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+
+if (error) {
+    // 异常分支归还buffer
+    OH_NativeWindow_NativeWindowAbortBuffer(nativewindow_, buffer);
+    return;
+}
+
+OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
+```
+
+### Code block 15
+
+```
+auto ret = OH_NativeWindow_NativeWindowRequestBuffer(nativewindow_, &buffer, &fence);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+ret = OH_NativeWindow_NativeObjectReference(buffer);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+
+// 错误：对buffer增加了引用计数，绘制流程走到异常分支，异常分支未相应减少引用计数，导致泄露
+if (error) {
+    OH_NativeWindow_NativeWindowAbortBuffer(nativewindow_, buffer);
+    return;
+}
+
+OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
+OH_NativeWindow_NativeObjectReference(buffer);
+```
+
+### Code block 16
+
+```
+auto ret = OH_NativeWindow_NativeWindowRequestBuffer(nativewindow_, &buffer, &fence);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+ret = OH_NativeWindow_NativeObjectReference(buffer);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+
+if (error) {
+    // 异常分支配套减少引用计数
+    OH_NativeWindow_NativeWindowAbortBuffer(nativewindow_, buffer);
+    OH_NativeWindow_NativeObjectUnreference(buffer);
+    return;
+}
+
+OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
+OH_NativeWindow_NativeObjectReference(buffer);
+```
+
+### Code block 17
+
+```
+auto ret = OH_NativeImage_AcquireNativeWindowBuffer(nativeimage, &buffer, &fence);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+ret = OH_NativeWindow_NativeObjectReference(buffer);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+
+// 错误：未对Release失败场景处理，AcquireNativeWindowBuffer成功会对buffer引用计数加一，ReleaseNativeWindowBuffer失败不会减一
+OH_NativeImage_ReleaseNativeWindowBuffer(nativeimage, buffer, fence);
+OH_NativeWindow_NativeObjectUnreference(buffer);
+```
+
+### Code block 18
+
+```
+auto ret = OH_NativeImage_AcquireNativeWindowBuffer(nativeimage, &buffer, &fence);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
+ret = OH_NativeWindow_NativeObjectReference(buffer);
+if (ret != NATIVE_ERROR_OK) {
+    return;
+}
 
 // 对OH_NativeImage_ReleaseNativeWindowBuffer失败做异常处理
 ret = OH_NativeImage_ReleaseNativeWindowBuffer(nativeimage, buffer, fence);
@@ -358,5 +630,4 @@ if (ret != NATIVE_ERROR_OK) {
     OH_NativeWindow_NativeObjectUnreference(buffer);
 }
 OH_NativeWindow_NativeObjectUnreference(buffer);
-GPU/CPU内存访问同步操作开发指南 (C/C++)
-图形开发术语
+```

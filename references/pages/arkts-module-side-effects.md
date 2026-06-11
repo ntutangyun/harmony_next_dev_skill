@@ -2,10 +2,13 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-module-side-effects_
 
+概述
+
 当使用ArkTS模块化时，模块的加载和执行可能会引发副作用。副作用是指在模块导入时除了导出功能或对象之外，额外的行为或状态变化，这些行为可能影响程序的其他部分，并导致产生非预期的顶层代码执行、全局状态变化、原型链修改、导入内容未定义等问题。
 
 ArkTS模块化导致副作用的场景及优化方式
-模块执行顶层代码
+
+[h2]模块执行顶层代码
 
 副作用产生场景
 
@@ -14,11 +17,10 @@ ArkTS模块化导致副作用的场景及优化方式
 // ModulePartOne.ets
 console.info('Module loaded!'); // 这段代码在导入时会立即执行，可能会导致副作用。
 export const data = 1;
-ModulePartOne.ets
+
 // PageOne.ets
 import { data } from './ModulePartOne'; // 导入时，ModulePartOne.ets中的console.info会执行，产生输出。
 console.info('data is ', data);
-PageOne.ets
 
 输出内容：
 
@@ -35,11 +37,10 @@ data is  1
 
 // ModulePartTwo.ets
 export const data = 1;
-ModulePartTwo.ets
+
 // PageTwo.ets
 import { data } from './ModulePartTwo';
 console.info('data is ', data);
-PageTwo.ets
 
 输出内容：
 
@@ -52,16 +53,16 @@ export function initialize() {
   console.info('Module loaded!');
 }
 export const data = 1;
-ModulePartThree.ets
+
 // PageThree.ets
 import { data } from './ModulePartThree';
 console.info('data is ', data);
-PageThree.ets
 
 输出内容：
 
 data is  1
-修改全局对象
+
+[h2]修改全局对象
 
 副作用产生场景
 
@@ -70,30 +71,28 @@ data is  1
 // ModulePartFour.ets
 export let data1 = 'data from module';
 globalThis.someGlobalVar = 100; // 改变了全局状态
-ModulePartFour.ets
+
 // SideEffectModuleFour.ets
 export let data2 = 'data from side effect module';
 globalThis.someGlobalVar = 200; // 也改变了全局状态
-SideEffectModuleFour.ets
+
 // ModuleUseGlobalVarFour.ets
 import { data1 } from './ModulePartFour'; // 此时可能预期全局变量someGlobalVar的值为100
 export function useGlobalVar() {
   console.info('data1 is ', data1);
   console.info('globalThis.someGlobalVar is ', globalThis.someGlobalVar); // 此时由于PageFour.ets中加载了SideEffectModuleFour模块，someGlobalVar的值已经被改为200
 }
-ModuleUseGlobalVarFour.ets
+
 // PageFour.ets（执行入口）
 import { data1 } from './ModulePartFour'; // 将全局变量someGlobalVar的值改为100
 import { data2 } from './SideEffectModuleFour'; // 又将全局变量someGlobalVar的值改为200
 import { useGlobalVar } from './ModuleUseGlobalVarFour';
-
 
 useGlobalVar();
 function maybeNotCalledAtAll() {
   console.info('data1 is ', data1);
   console.info('data2 is ', data2);
 }
-PageFour.ets
 
 输出内容：
 
@@ -113,13 +112,13 @@ export let data1 = 'data from module';
 export function changeGlobalVar() {
   globalThis.someGlobalVar = 100;
 }
-ModulePartFive.ets
+
 // SideEffectModuleFive.ets
 export let data2 = 'data from side effect module';
 export function changeGlobalVar() {
   globalThis.someGlobalVar = 200;
 }
-SideEffectModuleFive.ets
+
 // ModuleUseGlobalVarFive.ets
 import { data1, changeGlobalVar } from './ModulePartFive';
 export function useGlobalVar() {
@@ -127,25 +126,24 @@ export function useGlobalVar() {
   changeGlobalVar(); // 在需要的时候执行代码，而不是模块加载时执行。
   console.info('globalThis.someGlobalVar is ', globalThis.someGlobalVar);
 }
-ModuleUseGlobalVarFive.ets
+
 // PageFive.ets（执行入口）
 import { data1 } from './ModulePartFive';
 import { data2 } from './SideEffectModuleFive';
 import { useGlobalVar } from './ModuleUseGlobalVarFive';
-
 
 useGlobalVar();
 function maybeNotCalledAtAll() {
   console.info('data1 is ', data1);
   console.info('data2 is ', data2);
 }
-PageFive.ets
 
 输出内容：
 
 data1 is  data from module
 globalThis.someGlobalVar is  100
-修改应用级ArkUI组件的状态变量信息
+
+[h2]修改应用级ArkUI组件的状态变量信息
 
 副作用产生场景
 
@@ -154,10 +152,9 @@ globalThis.someGlobalVar is  100
 // ModulePartSix.ets
 export let data = 'data from module';
 AppStorage.setOrCreate('SomeAppStorageVar', 200); // 修改应用全局的UI状态
-ModulePartSix.ets
+
 // PageSix.ets
 import { data } from './ModulePartSix'; // 将AppStorage中的SomeAppStorageVar改为200
-
 
 @Entry
 @Component
@@ -178,7 +175,6 @@ struct Index {
 function maybeNotCalledAtAll() {
   console.info('data is ', data);
 }
-PageSix.ets
 
 显示内容：
 
@@ -199,10 +195,9 @@ export let data = 'data from module';
 export function initialize() {
   AppStorage.setOrCreate('SomeAppStorageVar', 200);
 }
-ModulePartSeven.ets
+
 // PageSeven.ets
 import { data } from './ModulePartSeven';
-
 
 @Entry
 @Component
@@ -222,12 +217,12 @@ struct Index {
 function maybeNotCalledAtAll() {
   console.info('data is ', data);
 }
-PageSeven.ets
 
 显示内容：
 
 test100
-修改内置全局变量或原型链（ArkTS内禁止修改对象原型与内置方法）
+
+[h2]修改内置全局变量或原型链（ArkTS内禁止修改对象原型与内置方法）
 
 副作用产生场景
 
@@ -238,7 +233,7 @@ export let data = 'data from modifyPrototype';
 Array.prototype.includes = function (value) {
   return this.indexOf(value) !== -1;
 };
-ModifyPrototype.ts
+
 // PageEight.ets
 import { data } from './ModifyPrototype'; // 此时修改了Array的原型链
 let arr = [1, 2, 3, 4];
@@ -246,7 +241,6 @@ console.info('arr.includes(1) = ' + arr.includes(1)); // 此时调用的是Modif
 function maybeNotCalledAtAll() {
   console.info('data is ', data);
 }
-PageEight.ets
 
 产生的副作用
 
@@ -256,7 +250,7 @@ PageEight.ets
 
 导入可能会修改内置的全局对象或原型链的第三方库时，确认该第三方库的行为是符合预期的。
 
-循环依赖
+[h2]循环依赖
 
 副作用产生场景
 
@@ -266,12 +260,11 @@ ArkTS模块化支持循环依赖，即模块A依赖模块B，同时模块B又依
 import { b } from './ExportB';
 console.info('Module A: ', b);
 export const a = 'A';
-ExportA.ets
+
 // ExportB.ets
 import { a } from './ExportA';
 console.info('Module B: ', a);
 export const b = 'B';
-ExportB.ets
 
 输出内容：
 
@@ -287,7 +280,7 @@ Stacktrace:
 
 尽量避免模块间的循环依赖，确保模块的加载顺序是明确和可控的，以避免产生意外的副作用。@security/no-cycle循环依赖检查工具 可以辅助检查循环依赖。
 
-延迟加载（lazy import）改变模块执行顺序，可能导致预期的全局变量未定义
+[h2]延迟加载（lazy import）改变模块执行顺序，可能导致预期的全局变量未定义
 
 副作用产生场景
 
@@ -296,12 +289,11 @@ Stacktrace:
 // ModulePartNine.ets
 export let data = 'data from module';
 globalThis.someGlobalVar = 100;
-ModulePartNine.ets
+
 // ModuleUseGlobalVarNine.ets
 import lazy { data } from './ModulePartNine';
 console.info('globalThis.someGlobalVar', globalThis.someGlobalVar); // 此时由于lazy特性，ModulePartNine模块还未执行，someGlobalVar的值为undefined
 console.info('data is ', data); // 使用到ModulePartNine模块的变量，此时ModulePartNine模块执行，someGlobalVar的值变为100
-ModuleUseGlobalVarNine.ets
 
 输出内容：
 
@@ -321,20 +313,21 @@ export let data = 'data from module';
 export function initialize() {
   globalThis.someGlobalVar = 100; // 延迟到函数调用时执行
 }
-ModulePartTen.ets
+
 // ModuleUseGlobalVarTen.ets
 import lazy { data, initialize } from './ModulePartTen';
 initialize(); // 执行初始化函数，初始化someGlobalVar
 console.info('globalThis.someGlobalVar is ', globalThis.someGlobalVar); // 此时someGlobalVar一定为预期的值
 console.info('data is ', data);
-ModuleUseGlobalVarTen.ets
 
 输出内容：
 
 globalThis.someGlobalVar is  100
 data is  data from module
+
 通过import路径展开优化性能
-原理
+
+[h2]原理
 
 在import语句中，跳过中间的依赖路径，直接依赖变量对应的模块，即为import路径展开。
 
@@ -344,23 +337,21 @@ data is  data from module
 import * as har from "har"
 console.info("har.One is ", har.One); // 这里的One变量是har/src/main/ets/NumberString.ets导出的
 
-
 // har/Index.ets
 export * from "./src/main/ets/OtherModule1"
 export * from "./src/main/ets/OtherModule2"
 export * from "./src/main/ets/Utils"
 console.info("har Index.ets execute.");
 
-
 // har/src/main/ets/Utils.ets
 export * from "./OtherModule3"
 export * from "./OtherModule4"
 export * from "./NumberString"
 console.info("har Utils.ets execute.");
-// har/src/main/ets/NumberString.ets
+
+// staticLibrary/src/main/ets/NumberString.ets
 export const One: string = '1';
 console.info('har NumberString.ets execute.');
-NumberString.ets
 
 如果main.ets只需要依赖har中的NumberString模块，import xxx from "har"的写法会导致har整条链路上的模块被解析、执行，导致模块解析及执行耗时增加。上述例子中的har/Index、OtherModule1、OtherModule2、Utils、OtherModule3、OtherModule4、NumberString模块均会被解析、执行。
 
@@ -373,12 +364,12 @@ NumberString.ets
 // PageEleven.ets
 import { One } from 'staticlibrary/src/main/ets/components/NumberString';
 console.info('One is ', One);
-PageEleven.ets
-// har/src/main/ets/NumberString.ets
+
+// staticLibrary/src/main/ets/NumberString.ets
 export const One: string = '1';
 console.info('har NumberString.ets execute.');
-NumberString.ets
-副作用
+
+[h2]副作用
 
 副作用产生场景
 
@@ -387,19 +378,16 @@ NumberString.ets
 // PageTwelve.ets
 import { serviceManager } from 'staticlibrary';
 
-
 serviceManager.print();
-PageTwelve.ets
-import { serviceManager } from './src/main/ets/ServiceManagerPartOne';
 
+import { serviceManager } from './src/main/ets/ServiceManagerPartOne';
 
 serviceManager.init();
 export { serviceManager }
-Index.ets
-// har/src/main/ets/ServiceManagerPartOne.ets
+
+// staticLibrary/src/main/ets/ServiceManagerPartOne.ets
 class ServiceManager {
   public inited: boolean = false;
-
 
   public init() {
     this.inited = true;
@@ -413,7 +401,6 @@ class ServiceManager {
   }
 }
 export let serviceManager: ServiceManager = new ServiceManager();
-ServiceManagerPartOne.ets
 
 运行的输出为：
 
@@ -424,13 +411,11 @@ ServiceManager is inited.
 // PageThirteen.ets
 import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartTwo';
 
-
 serviceManager.print();
-PageThirteen.ets
-// har/src/main/ets/ServiceManagerPartTwo.ets
+
+// staticLibrary/src/main/ets/ServiceManagerPartTwo.ets
 class ServiceManager {
   public inited: boolean = false;
-
 
   public init() {
     this.inited = true;
@@ -444,7 +429,6 @@ class ServiceManager {
   }
 }
 export let serviceManager: ServiceManager = new ServiceManager();
-ServiceManagerPartTwo.ets
 
 运行的输出为：
 
@@ -463,13 +447,11 @@ ServiceManager is not inited.
 // PageFourteen.ets
 import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartThree';
 
-
 serviceManager.print();
-PageFourteen.ets
-// har/src/main/ets/ServiceManagerPartThree.ets
+
+// staticLibrary/src/main/ets/ServiceManagerPartThree.ets
 class ServiceManager {
   public inited: boolean = false;
-
 
   public init() {
     this.inited = true;
@@ -485,6 +467,515 @@ class ServiceManager {
 export let serviceManager: ServiceManager = new ServiceManager();
 // 在导出的模块执行对应的逻辑。
 serviceManager.init();
-ServiceManagerPartThree.ets
-基于Node-API加载模块
-ArkTS运行时常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+// ModulePartOne.ets
+console.info('Module loaded!'); // 这段代码在导入时会立即执行，可能会导致副作用。
+export const data = 1;
+```
+
+### Code block 2
+
+```
+// PageOne.ets
+import { data } from './ModulePartOne'; // 导入时，ModulePartOne.ets中的console.info会执行，产生输出。
+console.info('data is ', data);
+```
+
+### Code block 3
+
+```
+Module loaded!
+data is  1
+```
+
+### Code block 4
+
+```
+// ModulePartTwo.ets
+export const data = 1;
+```
+
+### Code block 5
+
+```
+// PageTwo.ets
+import { data } from './ModulePartTwo';
+console.info('data is ', data);
+```
+
+### Code block 6
+
+```
+data is  1
+```
+
+### Code block 7
+
+```
+// ModulePartThree.ets
+export function initialize() {
+  console.info('Module loaded!');
+}
+export const data = 1;
+```
+
+### Code block 8
+
+```
+// PageThree.ets
+import { data } from './ModulePartThree';
+console.info('data is ', data);
+```
+
+### Code block 9
+
+```
+data is  1
+```
+
+### Code block 10
+
+```
+// ModulePartFour.ets
+export let data1 = 'data from module';
+globalThis.someGlobalVar = 100; // 改变了全局状态
+```
+
+### Code block 11
+
+```
+// SideEffectModuleFour.ets
+export let data2 = 'data from side effect module';
+globalThis.someGlobalVar = 200; // 也改变了全局状态
+```
+
+### Code block 12
+
+```
+// ModuleUseGlobalVarFour.ets
+import { data1 } from './ModulePartFour'; // 此时可能预期全局变量someGlobalVar的值为100
+export function useGlobalVar() {
+  console.info('data1 is ', data1);
+  console.info('globalThis.someGlobalVar is ', globalThis.someGlobalVar); // 此时由于PageFour.ets中加载了SideEffectModuleFour模块，someGlobalVar的值已经被改为200
+}
+```
+
+### Code block 13
+
+```
+// PageFour.ets（执行入口）
+import { data1 } from './ModulePartFour'; // 将全局变量someGlobalVar的值改为100
+import { data2 } from './SideEffectModuleFour'; // 又将全局变量someGlobalVar的值改为200
+import { useGlobalVar } from './ModuleUseGlobalVarFour';
+
+useGlobalVar();
+function maybeNotCalledAtAll() {
+  console.info('data1 is ', data1);
+  console.info('data2 is ', data2);
+}
+```
+
+### Code block 14
+
+```
+data1 is  data from module
+globalThis.someGlobalVar is  200
+```
+
+### Code block 15
+
+```
+// ModulePartFive.ets
+export let data1 = 'data from module';
+export function changeGlobalVar() {
+  globalThis.someGlobalVar = 100;
+}
+```
+
+### Code block 16
+
+```
+// SideEffectModuleFive.ets
+export let data2 = 'data from side effect module';
+export function changeGlobalVar() {
+  globalThis.someGlobalVar = 200;
+}
+```
+
+### Code block 17
+
+```
+// ModuleUseGlobalVarFive.ets
+import { data1, changeGlobalVar } from './ModulePartFive';
+export function useGlobalVar() {
+  console.info('data1 is ', data1);
+  changeGlobalVar(); // 在需要的时候执行代码，而不是模块加载时执行。
+  console.info('globalThis.someGlobalVar is ', globalThis.someGlobalVar);
+}
+```
+
+### Code block 18
+
+```
+// PageFive.ets（执行入口）
+import { data1 } from './ModulePartFive';
+import { data2 } from './SideEffectModuleFive';
+import { useGlobalVar } from './ModuleUseGlobalVarFive';
+
+useGlobalVar();
+function maybeNotCalledAtAll() {
+  console.info('data1 is ', data1);
+  console.info('data2 is ', data2);
+}
+```
+
+### Code block 19
+
+```
+data1 is  data from module
+globalThis.someGlobalVar is  100
+```
+
+### Code block 20
+
+```
+// ModulePartSix.ets
+export let data = 'data from module';
+AppStorage.setOrCreate('SomeAppStorageVar', 200); // 修改应用全局的UI状态
+```
+
+### Code block 21
+
+```
+// PageSix.ets
+import { data } from './ModulePartSix'; // 将AppStorage中的SomeAppStorageVar改为200
+
+@Entry
+@Component
+struct Index {
+  // 开发者可能预期该值为100，但是由于ModulePartSix模块导入，该值已经被修改为200，但开发者可能并不知道值已经被修改
+  @StorageLink('SomeAppStorageVar') message: number = 100;
+  build() {
+    Row() {
+      Column() {
+        Text('test' + this.message)
+          .fontSize(50)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+function maybeNotCalledAtAll() {
+  console.info('data is ', data);
+}
+```
+
+### Code block 22
+
+```
+test200
+```
+
+### Code block 23
+
+```
+// ModulePartSeven.ets
+export let data = 'data from module';
+export function initialize() {
+  AppStorage.setOrCreate('SomeAppStorageVar', 200);
+}
+```
+
+### Code block 24
+
+```
+// PageSeven.ets
+import { data } from './ModulePartSeven';
+
+@Entry
+@Component
+struct Index {
+  @StorageLink('SomeAppStorageVar') message: number = 100;
+  build() {
+    Row() {
+      Column() {
+        Text('test' + this.message)
+          .fontSize(50)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+function maybeNotCalledAtAll() {
+  console.info('data is ', data);
+}
+```
+
+### Code block 25
+
+```
+test100
+```
+
+### Code block 26
+
+```
+// ModifyPrototype.ts
+export let data = 'data from modifyPrototype';
+Array.prototype.includes = function (value) {
+  return this.indexOf(value) !== -1;
+};
+```
+
+### Code block 27
+
+```
+// PageEight.ets
+import { data } from './ModifyPrototype'; // 此时修改了Array的原型链
+let arr = [1, 2, 3, 4];
+console.info('arr.includes(1) = ' + arr.includes(1)); // 此时调用的是ModifyPrototype.ts中的Array.prototype.includes方法
+function maybeNotCalledAtAll() {
+  console.info('data is ', data);
+}
+```
+
+### Code block 28
+
+```
+// ExportA.ets
+import { b } from './ExportB';
+console.info('Module A: ', b);
+export const a = 'A';
+```
+
+### Code block 29
+
+```
+// ExportB.ets
+import { a } from './ExportA';
+console.info('Module B: ', a);
+export const b = 'B';
+```
+
+### Code block 30
+
+```
+Error message: a is not initialized
+Stacktrace:
+    at func_main_0 (b.ets:2:27)
+```
+
+### Code block 31
+
+```
+// ModulePartNine.ets
+export let data = 'data from module';
+globalThis.someGlobalVar = 100;
+```
+
+### Code block 32
+
+```
+// ModuleUseGlobalVarNine.ets
+import lazy { data } from './ModulePartNine';
+console.info('globalThis.someGlobalVar', globalThis.someGlobalVar); // 此时由于lazy特性，ModulePartNine模块还未执行，someGlobalVar的值为undefined
+console.info('data is ', data); // 使用到ModulePartNine模块的变量，此时ModulePartNine模块执行，someGlobalVar的值变为100
+```
+
+### Code block 33
+
+```
+globalThis.someGlobalVar undefined
+data is  data from module
+```
+
+### Code block 34
+
+```
+// ModulePartTen.ets
+export let data = 'data from module';
+export function initialize() {
+  globalThis.someGlobalVar = 100; // 延迟到函数调用时执行
+}
+```
+
+### Code block 35
+
+```
+// ModuleUseGlobalVarTen.ets
+import lazy { data, initialize } from './ModulePartTen';
+initialize(); // 执行初始化函数，初始化someGlobalVar
+console.info('globalThis.someGlobalVar is ', globalThis.someGlobalVar); // 此时someGlobalVar一定为预期的值
+console.info('data is ', data);
+```
+
+### Code block 36
+
+```
+globalThis.someGlobalVar is  100
+data is  data from module
+```
+
+### Code block 37
+
+```
+// main.ets
+import * as har from "har"
+console.info("har.One is ", har.One); // 这里的One变量是har/src/main/ets/NumberString.ets导出的
+
+// har/Index.ets
+export * from "./src/main/ets/OtherModule1"
+export * from "./src/main/ets/OtherModule2"
+export * from "./src/main/ets/Utils"
+console.info("har Index.ets execute.");
+
+// har/src/main/ets/Utils.ets
+export * from "./OtherModule3"
+export * from "./OtherModule4"
+export * from "./NumberString"
+console.info("har Utils.ets execute.");
+```
+
+### Code block 38
+
+```
+// staticLibrary/src/main/ets/NumberString.ets
+export const One: string = '1';
+console.info('har NumberString.ets execute.');
+```
+
+### Code block 39
+
+```
+// PageEleven.ets
+import { One } from 'staticlibrary/src/main/ets/components/NumberString';
+console.info('One is ', One);
+```
+
+### Code block 40
+
+```
+// staticLibrary/src/main/ets/NumberString.ets
+export const One: string = '1';
+console.info('har NumberString.ets execute.');
+```
+
+### Code block 41
+
+```
+// PageTwelve.ets
+import { serviceManager } from 'staticlibrary';
+
+serviceManager.print();
+```
+
+### Code block 42
+
+```
+import { serviceManager } from './src/main/ets/ServiceManagerPartOne';
+
+serviceManager.init();
+export { serviceManager }
+```
+
+### Code block 43
+
+```
+// staticLibrary/src/main/ets/ServiceManagerPartOne.ets
+class ServiceManager {
+  public inited: boolean = false;
+
+  public init() {
+    this.inited = true;
+  }
+  public print() {
+    if (this.inited) {
+      console.info('ServiceManager is inited.');
+    } else {
+      console.error('ServiceManager is not inited.');
+    }
+  }
+}
+export let serviceManager: ServiceManager = new ServiceManager();
+```
+
+### Code block 44
+
+```
+ServiceManager is inited.
+```
+
+### Code block 45
+
+```
+// PageThirteen.ets
+import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartTwo';
+
+serviceManager.print();
+```
+
+### Code block 46
+
+```
+// staticLibrary/src/main/ets/ServiceManagerPartTwo.ets
+class ServiceManager {
+  public inited: boolean = false;
+
+  public init() {
+    this.inited = true;
+  }
+  public print() {
+    if (this.inited) {
+      console.info('ServiceManager is inited.');
+    } else {
+      console.error('ServiceManager is not inited.');
+    }
+  }
+}
+export let serviceManager: ServiceManager = new ServiceManager();
+```
+
+### Code block 47
+
+```
+ServiceManager is not inited.
+```
+
+### Code block 48
+
+```
+// PageFourteen.ets
+import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartThree';
+
+serviceManager.print();
+```
+
+### Code block 49
+
+```
+// staticLibrary/src/main/ets/ServiceManagerPartThree.ets
+class ServiceManager {
+  public inited: boolean = false;
+
+  public init() {
+    this.inited = true;
+  }
+  public print() {
+    if (this.inited) {
+      console.info('ServiceManager is inited.');
+    } else {
+      console.error('ServiceManager is not inited.');
+    }
+  }
+}
+export let serviceManager: ServiceManager = new ServiceManager();
+// 在导出的模块执行对应的逻辑。
+serviceManager.init();
+```

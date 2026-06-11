@@ -2,20 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-faq_
 
-部署云数据库时，提示“clouddb deploy failed. Reason is the number of CloudDBZone exceeds the limit.”
-部署云数据库时，提示“clouddb deploy failed. Reason is existing fields cannot be modified.”
-体验端云一体化模板APP功能时，云存储上传图片失败，Hilog中打印“on response {"version":"HTTP/1.1","statusCode":403,"reason":"Forbidden","headers":{}}”
-体验端云一体化模板APP功能时，云数据库界面不展示数据，Hilog中打印“schemaJson_ is empty”
-云数据库无法新建数据条目，Hilog中打印“2001015:permission denied”
-云函数调用失败，error message包含“404:160404:Trigger not exist”
-云函数调用失败，error message包含“hmos auth app doesn't have permission”
-云函数部署失败，提示“The function type cannot be changed”
-部署云工程失败，提示“Remote host terminated the handshake”
-在云函数中调用云函数失败，提示“mismatched authType”
-端云一体化开发工程同步失败，失败步骤为npm install failed
-使用云存储上传文件失败，提示“404:Product does not exist”
-使用云存储上传文件失败，app日志提示“"state":65”，upload进程日志提示“403 Forbidden”
-展开章节
 使用DevEco Studio打开端云一体化项目文件夹，左侧的项目列表不显示云侧工程
 
 问题现象
@@ -65,7 +51,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmo
 出现此错误，原因是访问权限不足，可采用以下任一方法解决：
 
 将云存储的安全策略配置为始终可读写
+
 参考AuthProvider获取用户凭据
+
 体验端云一体化模板APP功能时，云数据库界面不展示数据，Hilog中打印“schemaJson_ is empty”
 
 问题现象
@@ -162,16 +150,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmo
 
 使用云存储上传文件失败，出现如下错误提示：
 
-app日志提示“"state":65”
-
-upload进程的日志提示“403 Forbidden”（通过设置“No filters”模式、过滤“C01C50”关键字查找）
-
 解决措施
 
 出现此问题，可按照如下步骤排查和解决：
 
 请确认应用的签名方式正确。当前支持关联注册应用进行自动签名和手动签名两种方式。
+
 将云存储的安全策略配置为始终可读写
+
 参考AuthProvider获取用户凭据
-发布上架
-附录：云开发工程模板

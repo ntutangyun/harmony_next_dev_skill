@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-recording_
 
+在开发相机应用时，需要先申请相关权限。
+
+相机应用可通过调用和控制相机设备，完成预览、拍照和录像等基础操作。
+
 录像也是相机应用的最重要功能之一，录像是循环帧的捕获。对于录像的自定义配置，开发者可以参考拍照中的步骤4，设置分辨率、闪光灯、焦距、照片质量及旋转角度等信息。
 
 开发步骤
@@ -73,7 +77,7 @@ async function getVideoOutput(cameraManager: camera.CameraManager, videoSurfaceI
   let avMetadata: media.AVMetadata = {
    videoOrientation: '90' // rotation的值90，是通过getVideoRotation接口获取到的值，具体请参考说明中获取录像旋转角度的方法。
   }
-  
+
   let aVRecorderConfig: media.AVRecorderConfig = {
     videoSourceType: media.VideoSourceType.VIDEO_SOURCE_TYPE_SURFACE_YUV,
     profile: aVRecorderProfile,
@@ -94,7 +98,6 @@ async function getVideoOutput(cameraManager: camera.CameraManager, videoSurfaceI
     await avRecorder?.release();
     return;
   }
-
 
   // 创建VideoOutput对象。
   let videoOutput: camera.VideoOutput | undefined = undefined;
@@ -126,6 +129,8 @@ async function getVideoOutput(cameraManager: camera.CameraManager, videoSurfaceI
 当录像流已设置过范围帧率时，预览流帧率必须设置与其相同的范围帧率。
 
 当录像流已设置过固定帧率时，预览流帧率要设置成录像帧率的约数，且必须也为固定帧率。
+
+部分设备前置镜头录像分辨率若选择3280*2160，录像模式下可能会出现视频倒置的情况，建议在commitConfig后设置视频防抖setVideoStabilizationMode，避免该问题发生。
 
 先通过videoOutput的start方法启动录像输出流，再通过avRecorder的start方法开始录像。
 
@@ -159,6 +164,7 @@ async function stopVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVRe
   });
   await videoOutput.stop();
 }
+
 状态监听
 
 在相机应用开发过程中，可以随时监听录像输出流状态，包括录像开始、录像结束、录像流输出的错误。
@@ -192,7 +198,178 @@ function onVideoOutputError(videoOutput: camera.VideoOutput): void {
     console.error(`Video output error code: ${error.code}`);
   });
 }
+
 示例代码
+
 基于CameraKit通过AVRecorder录像
-拍照实践(ArkTS)
-录像实践(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { camera } from '@kit.CameraKit';
+import { media } from '@kit.MediaKit';
+```
+
+### Code block 2
+
+```
+async function getVideoSurfaceId(aVRecorderConfig: media.AVRecorderConfig): Promise<string | undefined> {  // aVRecorderConfig可参考步骤3.创建录像输出流。
+  let avRecorder: media.AVRecorder | undefined = undefined;
+  let videoSurfaceId: string | undefined = undefined;
+  try {
+    avRecorder = await media.createAVRecorder();
+    if (avRecorder === undefined) {
+      return videoSurfaceId;
+    }
+    await avRecorder.prepare(aVRecorderConfig);
+    videoSurfaceId = await avRecorder.getInputSurface();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`createAVRecorder call failed. error code: ${err.code}`);
+  }
+  return videoSurfaceId;
+}
+```
+
+### Code block 3
+
+```
+async function getVideoOutput(cameraManager: camera.CameraManager, videoSurfaceId: string, cameraOutputCapability: camera.CameraOutputCapability): Promise<camera.VideoOutput | undefined> {
+  if (!cameraManager || !videoSurfaceId || !cameraOutputCapability || !cameraOutputCapability.videoProfiles) {
+    return;
+  }
+  let videoProfilesArray: Array<camera.VideoProfile> = cameraOutputCapability.videoProfiles;
+  if (!videoProfilesArray || videoProfilesArray.length === 0) {
+    console.error("videoProfilesArray is null or []");
+    return undefined;
+  }
+  // AVRecorderProfile。
+  let aVRecorderProfile: media.AVRecorderProfile = {
+    fileFormat : media.ContainerFormatType.CFT_MPEG_4, // 视频文件封装格式，只支持MP4。
+    videoBitrate : 100000, // 视频比特率。
+    videoCodec : media.CodecMimeType.VIDEO_AVC, // 视频文件编码格式，支持avc格式。
+    videoFrameWidth : 640,  // 视频分辨率的宽。
+    videoFrameHeight : 480, // 视频分辨率的高。
+    videoFrameRate : 30 // 视频帧率。
+  };
+  // 创建视频录制的参数，预览流与录像输出流的分辨率的宽(videoFrameWidth)高(videoFrameHeight)比要保持一致。
+  let avMetadata: media.AVMetadata = {
+   videoOrientation: '90' // rotation的值90，是通过getVideoRotation接口获取到的值，具体请参考说明中获取录像旋转角度的方法。
+  }
+
+  let aVRecorderConfig: media.AVRecorderConfig = {
+    videoSourceType: media.VideoSourceType.VIDEO_SOURCE_TYPE_SURFACE_YUV,
+    profile: aVRecorderProfile,
+    url: 'fd://35', // 此处为样例示范，需要根据开发需求填写实际的路径。
+    metadata: avMetadata
+  };
+  // 创建avRecorder，设置视频录制的参数。
+  let avRecorder: media.AVRecorder | undefined = undefined;
+  try {
+    avRecorder = await media.createAVRecorder();
+    if (avRecorder === undefined) {
+      return undefined;
+    }
+    await avRecorder.prepare(aVRecorderConfig);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`createAVRecorder call failed. error code: ${err.code}`);
+    await avRecorder?.release();
+    return;
+  }
+
+  // 创建VideoOutput对象。
+  let videoOutput: camera.VideoOutput | undefined = undefined;
+  // createVideoOutput传入的videoProfile对象的宽高需要和aVRecorderProfile保持一致。
+  let videoProfile: undefined | camera.VideoProfile = videoProfilesArray.find((profile: camera.VideoProfile) => {
+    return profile.size.width === aVRecorderProfile.videoFrameWidth && profile.size.height === aVRecorderProfile.videoFrameHeight;
+  });
+  if (!videoProfile) {
+    console.error('videoProfile is not found');
+    await avRecorder.release();
+    return undefined;
+  }
+  try {
+    videoOutput = cameraManager.createVideoOutput(videoProfile, videoSurfaceId);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error('Failed to create the videoOutput instance. errorCode = ' + err.code);
+    await avRecorder.release();
+  }
+  return videoOutput;
+}
+```
+
+### Code block 4
+
+```
+async function startVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVRecorder): Promise<void> {
+ try {
+   await videoOutput.start();
+ } catch (error) {
+   let err = error as BusinessError;
+   console.error(`start videoOutput failed, error: ${err.code}`);
+ }
+ avRecorder.start(async (err: BusinessError) => {
+ if (err) {
+   console.error(`Failed to start the video output ${err.message}`);
+   return;
+ }
+ console.info('Callback invoked to indicate the video output start success.');
+ });
+}
+```
+
+### Code block 5
+
+```
+async function stopVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVRecorder): Promise<void> {
+  avRecorder.stop((err: BusinessError) => {
+  if (err) {
+    console.error(`Failed to stop the video output ${err.message}`);
+    return;
+  }
+  console.info('Callback invoked to indicate the video output stop success.');
+  });
+  await videoOutput.stop();
+}
+```
+
+### Code block 6
+
+```
+function onVideoOutputFrameStart(videoOutput: camera.VideoOutput): void {
+  videoOutput.on('frameStart', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info('Video frame started');
+  });
+}
+```
+
+### Code block 7
+
+```
+function onVideoOutputFrameEnd(videoOutput: camera.VideoOutput): void {
+  videoOutput.on('frameEnd', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info('Video frame ended');
+  });
+}
+```
+
+### Code block 8
+
+```
+function onVideoOutputError(videoOutput: camera.VideoOutput): void {
+  videoOutput.on('error', (error: BusinessError) => {
+    console.error(`Video output error code: ${error.code}`);
+  });
+}
+```

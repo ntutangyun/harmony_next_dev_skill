@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-taas-securelocation_
 
+场景介绍
+
 在安全地理位置场景中，通过创建证明密钥、打开证明会话的方式，对从GPS硬件或网络位置获取到的地理位置信息进行签名，确保地理位置信息的真实性和完整性。
 
 约束与限制
@@ -12,7 +14,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 import { trustedAppService } from '@kit.DeviceSecurityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 // 初始化安全地理位置证明会话后，获取安全地理位置信息，以精度优先为例
 const timeout = 5000; // 获取安全地理位置的超时时间，单位为毫秒
@@ -29,6 +30,7 @@ try {
       console.error(`Failed to get current secure location, message:${error.message}, code:${error.code}`);
   }
 }
+
 业务流程
 
 应用获取安全地理位置的优先级策略有两种，分别是精度优先和速度优先。如果选择精度优先策略，可信应用服务会优先返回GPS的结果，GPS获取超时后返回网络地理位置；而如果选择速度优先策略，可信应用服务会返回从二者中最先获取到的结果。
@@ -43,6 +45,7 @@ initializeAttestContext(userData: string, options: AttestOptions): Promise<Attes
 finalizeAttestContext(options: AttestOptions): Promise<void>	结束证明会话。
 destroyAttestKey(): Promise<void>	销毁证明密钥。
 getCurrentSecureLocation(timeout: number, priority: LocatingPriority): Promise<SecureLocation>	获取安全地理位置信息。
+
 开发步骤
 
 申请位置权限，权限名称为“ohos.permission.APPROXIMATELY_LOCATION”和“ohos.permission.LOCATION”，具体请参考向用户申请授权。
@@ -129,5 +132,115 @@ try {
 
 如果需要销毁证明密钥，请在结束证明会话后，调用destroyAttestKey接口。
 
-安全摄像头场景
-安全图像压缩、裁剪场景
+## Code blocks
+
+### Code block 1
+
+```
+import { trustedAppService } from '@kit.DeviceSecurityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 初始化安全地理位置证明会话后，获取安全地理位置信息，以精度优先为例
+const timeout = 5000; // 获取安全地理位置的超时时间，单位为毫秒
+const priority = trustedAppService.LocatingPriority.PRIORITY_ACCURACY; // 采用精度优先策略
+let secureLocation: trustedAppService.SecureLocation;
+// 获取当前安全地理位置信息
+try {
+  secureLocation = await trustedAppService.getCurrentSecureLocation(timeout, priority);
+} catch (err) {
+  const error = err as BusinessError;
+  if (error.code == trustedAppService.AttestExceptionErrCode.ATTEST_ERROR_LOCATION_SERVICE_UNAVAILABLE) {
+      console.error(`current device not support secure location`);
+  } else {
+      console.error(`Failed to get current secure location, message:${error.message}, code:${error.code}`);
+  }
+}
+```
+
+### Code block 2
+
+```
+import { trustedAppService } from '@kit.DeviceSecurityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 3
+
+```
+// 创建证明密钥的参数
+const createProperties: Array<trustedAppService.AttestParam> = [
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_ALGORITHM,
+    value: trustedAppService.AttestKeyAlg.ATTEST_ALG_ECC
+  },
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_KEY_SIZE,
+    value: trustedAppService.AttestKeySize.ATTEST_ECC_KEY_SIZE_256
+  }
+];
+const createOptions: trustedAppService.AttestOptions = {
+  properties: createProperties
+};
+// 初始化证明会话的参数
+const userData = "trusted_app_service_demo" // 示例值，实际值请自行生成，长度在16到127 Bytes之间
+const initProperties: Array<trustedAppService.AttestParam> = [
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+    value: trustedAppService.AttestType.ATTEST_TYPE_LOCATION
+  },
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
+    value: BigInt(0) // 此参数在安全地理位置场景下不生效
+  }
+];
+const initOptions: trustedAppService.AttestOptions = {
+  properties: initProperties
+};
+// 创建证明密钥并打开证明会话
+let certChainList: Array<string>;
+try {
+  await trustedAppService.createAttestKey(createOptions);
+  const result = await trustedAppService.initializeAttestContext(userData, initOptions);
+  certChainList = result.certChains;
+} catch (err) {
+  const error = err as BusinessError;
+  console.error(`Failed to initialize attest context, message:${error.message}, code:${error.code}`);
+}
+```
+
+### Code block 4
+
+```
+const timeout = 5000; // 获取安全地理位置的超时时间，单位为毫秒
+const priority = trustedAppService.LocatingPriority.PRIORITY_ACCURACY; // 采用精度优先策略
+let secureLocation: trustedAppService.SecureLocation;
+// 获取当前安全地理位置信息
+try {
+  secureLocation = await trustedAppService.getCurrentSecureLocation(timeout, priority);
+} catch (err) {
+  const error = err as BusinessError;
+  console.error(`Failed to get current secure location, message:${error.message}, code:${error.code}`);
+}
+```
+
+### Code block 5
+
+```
+// 结束证明会话的参数
+const finalProperties: Array<trustedAppService.AttestParam> = [
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+    value: trustedAppService.AttestType.ATTEST_TYPE_LOCATION
+  }
+];
+const finalOptions: trustedAppService.AttestOptions = {
+  properties: finalProperties,
+};
+// 结束证明会话
+try {
+  await trustedAppService.finalizeAttestContext(finalOptions);
+} catch (err) {
+  const error = err as BusinessError;
+  console.error(`Failed to finalize attest context, message:${error.message}, code:${error.code}`);
+}
+```

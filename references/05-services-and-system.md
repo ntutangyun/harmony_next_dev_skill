@@ -85,6 +85,8 @@ Other content types: `NOTIFICATION_CONTENT_LONG_TEXT`, `_PICTURE`, `_MULTILINE`,
 
 Slots (categories) control sound/priority — declare via `notificationManager.addSlot({ type, ... })`. Enable in module config via `ohos.permission.NOTIFICATION_CONTROLLER` for cross-app.
 
+To **subscribe to / observe** notifications from a long-running extension (e.g. a companion-device or relay app), use the **notification subscriber extension** (`通知订阅扩展能力`) — see `pages/notification-subscriber-extension.md` and `pages/notification-subscriber-extension-ability-development-steps.md`.
+
 ## Common events (broadcast)
 
 Local pub/sub within the device. Use sparingly — prefer direct calls or `eventHub` where possible.

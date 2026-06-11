@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/onlineauthentication-preparation_
 
+FIDO开发准备
+
 开发者的业务需要接入符合FIDO UAF标准的协议，并部署符合FIDO UAF标准协议的FIDO服务端。FIDO网址：https://fidoalliance.org/ （见网站链接免责声明）。
 
 IFAA开发准备
@@ -19,7 +21,4 @@ SOTER开发准备
 应用能力	需要权限
 通行密钥	ohos.permission.ACCESS_FIDO2_ONLINEAUTH
 
-FIDO2协议基于应用的网址域名开通应用的通行密钥，开发者的应用需要关联网址域名，才可使用通行密钥服务。接入需完成四步：在AGC开通App Linking服务 > 在开发者网站上关联应用 > 在AGC创建关联的网址域名 > 在module.json5中配置关联的网址域名。
-
-Online Authentication Kit简介
-FIDO免密身份认证
+FIDO2协议基于应用的网址域名开通应用的通行密钥，开发者的应用需要关联网址域名，才可使用通行密钥服务。接入需完成四步：开通App Linking服务 > 建立域名与应用关联关系 > 在AGC为应用创建关联的网址域名 > 在module.json5中配置关联的网址域名。

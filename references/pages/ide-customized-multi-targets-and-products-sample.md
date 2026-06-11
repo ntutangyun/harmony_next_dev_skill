@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-sample_
 
+某对外发布应用共有两个版本：
+
 1. Community社区版本，免费，向个人开发者用户提供该应用绝大部分基础功能，但是不提供部分定制化限定功能及技术支持。
 
 2. Ultimate终极版本，收费，向个人、政企等开发者用户提供该应用全部基础功能，同时提供定制化限定功能及技术支持。
@@ -149,7 +151,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
 由上配置：
 
 target：default被应用至product：default、Ultimate、Community中；
+
 target：vip被应用至product：default、Ultimate中；
+
 target：free被应用至product：default、Community中。
 
 4. 在实际构建中，可通过可视化窗口灵活选择product-target的关联关系以构建出需要的APP/HAP包。
@@ -158,5 +162,148 @@ target：free被应用至product：default、Community中。
 
 查看构建产物
 
-能力说明
-构建HAR
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "name": "Ultimate",
+  // ultimate版本签名
+  "signingConfig": "Ultimate",
+  // ultimate版本包名
+  "bundleName": "com.example.ultimate.app",
+  // ultimate版本应用图标
+  "icon": "$media:app_icon",
+  // ultimate版本应用标签
+  "label": "$string:app_name",
+  "versionCode": 10000,
+  "versionName": "1.0.0",
+  // ultimate版本指定资源目录
+  "resource": {
+    "directories": [
+      "./AppScope/ultimateRes"
+    ]
+  },
+  // ultimate版本指定输出产物名
+  "output": {
+    "artifactName": "ultimate_version"
+  },
+  "bundleType": "app",
+  "compatibleSdkVersion": "6.1.1(24)",
+  "runtimeOS": "HarmonyOS"
+},
+{
+  "name": "Community",
+  "signingConfig": "Community",
+  // community版本签名
+  "bundleName": "com.example.community.app",
+  // community版本包名
+  "icon": "$media:app_icon",
+  // community版本应用图标
+  "label": "$string:app_name",
+  // community版本应用标签
+  "versionCode": 10000,
+  "versionName": "1.0.0",
+  // community版本指定资源目录
+  "resource": {
+    "directories": [
+      "./AppScope/communityRes"
+    ]
+  },
+  // community版本指定输出产物名
+  "output": {
+    "artifactName": "community_version"
+  },
+  "bundleType": "app",
+  "compatibleSdkVersion": "6.1.1(24)",
+  "runtimeOS": "HarmonyOS",
+}
+```
+
+### Code block 2
+
+```
+{
+  "name": "vip",
+  // 定制vip包输出产物名
+  "output": {
+    "artifactName": "vipVersion"
+  },
+  // 定制vip包源码指定页面
+  "source": {
+    "pages": [
+      "pages/vipIndex"
+    ]
+  },
+  // 指定vip包资源目录
+  "resource": {
+    "directories": [
+      "./src/main/ultimateRes"
+    ]
+  },
+  "config": {
+    // 指定vip包适用设备类型
+    "deviceType": [
+      "phone",
+      "tablet",
+      "2in1"
+    ]
+  }
+},
+{
+  "name": "free",
+  // 定制free包输出产物名
+  "output": {
+    "artifactName": "freeVersion"
+  },
+  // 定制free包源码指定页面
+  "source": {
+    "pages": [
+      "pages/freeIndex"
+    ]
+  },
+  // 指定free包资源目录
+  "resource": {
+    "directories": [
+      "./src/main/communityRes"
+    ]
+  },
+  "config": {
+    // 指定free包适用设备类型
+    "deviceType": [
+      "phone",
+      "tablet"
+    ]
+  }
+}
+```
+
+### Code block 3
+
+```
+"targets": [
+  {
+    "name": "default",
+    "applyToProducts": [
+      "default",
+      "Community",
+      "Ultimate"
+    ]
+  },
+  {
+    "name": "free",
+    "applyToProducts": [
+      "default",
+      "Community"
+    ]
+  },
+  {
+    "name": "vip",
+    "applyToProducts": [
+      "default",
+      "Ultimate"
+    ]
+  }
+]
+```

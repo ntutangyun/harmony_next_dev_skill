@@ -20,7 +20,7 @@ Text('60')
       max: 120,
     },
   })
-PropertyAnimationDisplaySync.ets
+
 请求显式动画的绘制帧率
 
 定义按钮组件的显式动画，请求绘制帧率为30，范例如下：
@@ -29,7 +29,6 @@ Button('Start')
   // ...
   .onClick(() => {
     // ...
-
 
     this.uiContext?.animateTo({
       duration: 1200,
@@ -44,9 +43,49 @@ Button('Start')
       // ...
     })
 
+    // ...
+  })
+
+## Code blocks
+
+### Code block 1
+
+```
+Text('60')
+  // ...
+  .animation({
+    duration: 1200,
+    iterations: 10,
+    // ...
+    expectedFrameRateRange: {
+      expected: 60,
+      min: 0,
+      max: 120,
+    },
+  })
+```
+
+### Code block 2
+
+```
+Button('Start')
+  // ...
+  .onClick(() => {
+    // ...
+
+    this.uiContext?.animateTo({
+      duration: 1200,
+      iterations: 10,
+      // ...
+      expectedFrameRateRange: {
+        expected: 30,
+        min: 0,
+        max: 120,
+      },
+    }, () => {
+      // ...
+    })
 
     // ...
   })
-PropertyAnimationDisplaySync.ets
-可变帧率简介
-请求UI绘制帧率
+```

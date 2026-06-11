@@ -35,7 +35,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sty
 struct FancyUse {
   @State heightValue: number = 50;
 
-
   @Styles
   fancy() {
     .height(this.heightValue)
@@ -44,7 +43,6 @@ struct FancyUse {
       this.heightValue = 100;
     })
   }
-
 
   build() {
     Column() {
@@ -55,22 +53,25 @@ struct FancyUse {
     .width('100%')
   }
 }
-StylesDecorator2.ets
 
 限制条件
+
 @Styles方法不支持传入参数，编译期会报错。
+
   // 错误写法： @Styles不支持参数，编译期报错
   @Styles
   function globalFancy (value: number) {
     .width(value)
   }
+
 // 正确写法
   @Styles
   function globalFancy () {
     .width(100)
   }
-StylesDecorator2.ets
+
 不支持在@Styles方法内使用逻辑组件，逻辑组件内的属性不生效。
+
   // 错误写法
   @Styles
   function backgroundColorStyle() {
@@ -78,14 +79,17 @@ StylesDecorator2.ets
       .backgroundColor(Color.Red)
     }
   }
+
 // 正确写法
   @Styles
   function backgroundColorStyle() {
     .backgroundColor(Color.Red)
   }
-StylesDecorator2.ets
+
 使用场景
-组件内@Styles和全局@Styles的用法
+
+[h2]组件内@Styles和全局@Styles的用法
+
 // 定义在全局的@Styles封装的样式
 @Styles
 function globalFancy1() {
@@ -94,12 +98,10 @@ function globalFancy1() {
   .backgroundColor(Color.Pink)
 }
 
-
 @Entry
 @Component
 struct GlobalFancy {
   @State heightValue: number = 100;
-
 
   // 定义在组件内的@Styles封装的样式
   @Styles
@@ -111,7 +113,6 @@ struct GlobalFancy {
       this.heightValue = 200;
     })
   }
-
 
   build() {
     Column({ space: 10 }) {
@@ -127,7 +128,118 @@ struct GlobalFancy {
     .width('100%')
   }
 }
-StylesDecorator1.ets
 
-mutableBuilder：实现全局@Builder动态更新
-@Extend装饰器：定义扩展组件样式
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct FancyUse {
+  @State heightValue: number = 50;
+
+  @Styles
+  fancy() {
+    .height(this.heightValue)
+    .backgroundColor(Color.Blue)
+    .onClick(() => {
+      this.heightValue = 100;
+    })
+  }
+
+  build() {
+    Column() {
+      Button('change height')
+        .fancy()
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 2
+
+```
+  // 错误写法： @Styles不支持参数，编译期报错
+  @Styles
+  function globalFancy (value: number) {
+    .width(value)
+  }
+```
+
+### Code block 3
+
+```
+// 正确写法
+  @Styles
+  function globalFancy () {
+    .width(100)
+  }
+```
+
+### Code block 4
+
+```
+  // 错误写法
+  @Styles
+  function backgroundColorStyle() {
+    if (true) {
+      .backgroundColor(Color.Red)
+    }
+  }
+```
+
+### Code block 5
+
+```
+// 正确写法
+  @Styles
+  function backgroundColorStyle() {
+    .backgroundColor(Color.Red)
+  }
+```
+
+### Code block 6
+
+```
+// 定义在全局的@Styles封装的样式
+@Styles
+function globalFancy1() {
+  .width(150)
+  .height(100)
+  .backgroundColor(Color.Pink)
+}
+
+@Entry
+@Component
+struct GlobalFancy {
+  @State heightValue: number = 100;
+
+  // 定义在组件内的@Styles封装的样式
+  @Styles
+  fancy() {
+    .width(200)
+    .height(this.heightValue)
+    .backgroundColor(Color.Gray)
+    .onClick(() => {
+      this.heightValue = 200;
+    })
+  }
+
+  build() {
+    Column({ space: 10 }) {
+      // 使用全局的@Styles封装的样式
+      Text('FancyA')
+        .globalFancy1()
+        .fontSize(30)
+      // 使用组件内的@Styles封装的样式
+      Text('FancyB')
+        .fancy()
+        .fontSize(30)
+    }
+    .width('100%')
+  }
+}
+```

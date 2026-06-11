@@ -24,6 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 接口名	描述
 uint32_t HMS_Rcp_CloseSession(Rcp_Session **session);	关闭会话。
+
 使用示例
 
 CPP侧导入模块。
@@ -50,6 +51,59 @@ void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode) {
     }
 }
 
+int main() {
+    const char *kHttpServerAddress = "http://www.example.com";
+    Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+    request->method = RCP_METHOD_GET;
+    uint32_t errCode = 0;
+    // 创建session
+    Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+    // 配置请求回调
+    Rcp_ResponseCallbackObject responseCallback = {ResponseCallback, NULL};
+    // 发起fetch请求
+    errCode = HMS_Rcp_Fetch(session, request, &responseCallback);
+    // 等待fetch结果，仅是等待异步调用完成，开发者可根据自己实际场景处理回调。
+    usleep(1000 * 1000 * 3);
+    printf("Fetch completed, errCode: %u\n", errCode);
+    // 在退出前取消可能还在执行的requests
+    errCode = HMS_Rcp_CancelSession(session);
+    // 关闭session
+    errCode = HMS_Rcp_CloseSession(&session);
+    // 清理request
+    HMS_Rcp_DestroyRequest(request);
+    return 0;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <stdio.h>
+#include <unistd.h>
+```
+
+### Code block 2
+
+```
+librcp_c.so
+```
+
+### Code block 3
+
+```
+void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode) {
+    (void *)usrCtx;
+    if (response != NULL) {
+        printf("Response status: %d\n", response->statusCode);
+    } else {
+        printf("Fetch failed: errCode: %u\n", errCode);
+    }
+    if (response != NULL) {
+        response->destroyResponse(response);
+    }
+}
 
 int main() {
     const char *kHttpServerAddress = "http://www.example.com";
@@ -73,5 +127,4 @@ int main() {
     HMS_Rcp_DestroyRequest(request);
     return 0;
 }
-取消网络请求（C++）
-实现HTTP请求定制
+```

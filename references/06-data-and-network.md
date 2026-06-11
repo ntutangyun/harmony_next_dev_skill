@@ -196,6 +196,10 @@ handle.register();
 
 For DNS resolution: `connection.getAddressesByName(host)`. For binding to a specific network (cellular vs Wi-Fi): `connection.setAppNet(net)`.
 
+### Network acceleration (多网并发 / Network Boost Kit)
+
+For network quality awareness, prediction, and multi-network concurrency (网络加速), use `@kit.NetworkBoostKit` (`netQuality`). Apps can report QoE (`netQuality` / appReportQoE) and react to handover callbacks for smoother switches between networks. See `pages/networkboost-introduction.md`, `pages/networkboost-appreportqoe.md`, `pages/networkboost-nethandoverguide.md`.
+
 ## What this doesn't cover
 
 - Cloud-side storage / CloudDB sync — see Cloud Foundation Kit overview in `references/10-kits-catalog.md`.

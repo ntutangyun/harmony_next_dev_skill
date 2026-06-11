@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-faq-7_
 
+请检查申请钥匙卡片的请求参数的serialNumber和organizationPassId字段是否都是唯一的。

@@ -1,4 +1,4 @@
-# 使用扩展的Node
+# 使用扩展的Node-API接口在当前线程中创建、切换和销毁上下文环境
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/use-napi-about-context_
 
@@ -204,7 +204,9 @@ napi_create_strong_reference	否
 napi_delete_strong_reference	否
 napi_get_strong_reference_value	否
 napi_throw_business_error	是
+
 不支持多运行时上下文环境调用的NAPI接口
+
 接口	多运行时上下文环境调用返回值
 napi_define_sendable_class	napi_invalid_arg
 napi_is_sendable	napi_invalid_arg
@@ -223,14 +225,14 @@ napi_get_uv_event_loop	napi_invalid_arg
 napi_create_strong_sendable_reference	napi_invalid_arg
 napi_delete_strong_sendable_reference	napi_invalid_arg
 napi_get_strong_sendable_reference_value	napi_invalid_arg
-示例代码
+
+[h2]示例代码
 
 模块注册
 
 // napi_init.cpp
 #include "napi/native_api.h"
 #include "hilog/log.h"
-
 
 static napi_value NAPI_Global_callFunctionInContext(napi_env env, napi_callback_info info)
 {
@@ -271,19 +273,16 @@ static napi_value NAPI_Global_callFunctionInContext(napi_env env, napi_callback_
         OH_LOG_INFO(LOG_APP, "load plugin2 failed");
     }
 
-
     napi_value getLocation2 = nullptr;
     status = napi_get_named_property(newEnv2, plugin2, "GetLocation", &getLocation2);
     if (status != napi_ok) {
         OH_LOG_INFO(LOG_APP, "obtain GetLocation from plugin2 failed");
     }
 
-
     // 在新上下文环境中执行ArkTS侧的方法getLocation, 入参为模块plugin2中的方法GetLocation
     napi_value result = nullptr;
     napi_value args2[1] = {};
     args2[0] = getLocation2;
-
 
     status = napi_call_function(newEnv2, nullptr, args[0], 1, args2, &result);
     if (status != napi_ok) {
@@ -324,7 +323,6 @@ static napi_value NAPI_Global_callFunctionInContext(napi_env env, napi_callback_
     return result;
 }
 
-
 // 模块注册
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {
@@ -337,7 +335,6 @@ static napi_value Init(napi_env env, napi_value exports) {
 }
 EXTERN_C_END
 
-
 static napi_module demoModule = {
     .nm_version = 1,
     .nm_flags = 0,
@@ -347,7 +344,6 @@ static napi_module demoModule = {
     .nm_priv = ((void*)0),
     .reserved = { 0 },
 };
-
 
 extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
 {
@@ -368,22 +364,17 @@ CMakeLists.txt文件需要按照如下配置
 cmake_minimum_required(VERSION 3.5.0)
 project(MyApplication8)
 
-
 set(NATIVERENDER_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-
 
 if(DEFINED PACKAGE_FIND_FILE)
     include(${PACKAGE_FIND_FILE})
 endif()
 
-
 add_definitions( "-DLOG_DOMAIN=0xd0d0" )
 add_definitions( "-DLOG_TAG=\"testTag\"")
 
-
 include_directories(${NATIVERENDER_ROOT_PATH}
                     ${NATIVERENDER_ROOT_PATH}/include)
-
 
 add_library(entry SHARED napi_init.cpp)
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
@@ -402,29 +393,235 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
         }
     }
 }
-ArkTS代码示例
+
 // index.ets
 import testNapi from "libentry.so"
-
 
 // 该接口用于执行模块plugin1或plugin2中的GetLocation方法
 function getLocation(func: () => number) {
     return func();
 }
 testNapi.callFunctionInContext(getLocation)
+
 // ets/pages/plugin1.ets
 globalThis.a = 2000;
-
 
 export function GetLocation() : number {
     return globalThis.a;
 }
+
 // ets/pages/plugin2.ets
 globalThis.a = 3000;
-
 
 export function GetLocation() : number {
 return globalThis.a;
 }
-使用Node-API接口从异步线程向ArkTS线程投递指定优先级和入队方式的任务
-使用扩展的Node-API接口创建对ArkTS对象的强引用
+
+## Code blocks
+
+### Code block 1
+
+```
+// napi_init.cpp
+#include "napi/native_api.h"
+#include "hilog/log.h"
+
+static napi_value NAPI_Global_callFunctionInContext(napi_env env, napi_callback_info info)
+{
+    napi_status status = napi_ok;
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+    if (napi_get_cb_info(env, info, &argc, args, nullptr, nullptr) != napi_ok) {
+        return nullptr;
+    }
+    // 在原始上下文中加载模块plugin1.ets
+    napi_value plugin1 = nullptr;
+    status = napi_load_module_with_info(env, "entry/src/main/ets/pages/plugin1", "com.example.myapplication/entry", &plugin1);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "load plugin1 failed");
+    }
+    // 获取模块plugin1中的方法GetLocation
+    napi_value getLocation1 = nullptr;
+    status = napi_get_named_property(env, plugin1, "GetLocation", &getLocation1);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "obtain GetLocation from plugin1 failed");
+    }
+    // 创建新的上下文环境newEnv2
+    napi_env newEnv2 = nullptr;
+    status = napi_create_ark_context(env, &newEnv2);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    // 主动切换到新的上下文环境newEnv2
+    status = napi_switch_ark_context(newEnv2);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "switch to newEnv2 failed");
+    }
+    napi_value plugin2 = nullptr;
+    // 在新的上下文环境中加载模块plugin2.ets
+    status = napi_load_module_with_info(newEnv2, "entry/src/main/ets/pages/plugin2", "com.example.myapplication/entry",
+                                        &plugin2);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "load plugin2 failed");
+    }
+
+    napi_value getLocation2 = nullptr;
+    status = napi_get_named_property(newEnv2, plugin2, "GetLocation", &getLocation2);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "obtain GetLocation from plugin2 failed");
+    }
+
+    // 在新上下文环境中执行ArkTS侧的方法getLocation, 入参为模块plugin2中的方法GetLocation
+    napi_value result = nullptr;
+    napi_value args2[1] = {};
+    args2[0] = getLocation2;
+
+    status = napi_call_function(newEnv2, nullptr, args[0], 1, args2, &result);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "call function of env failed");
+    }
+    int32_t ret = 0;
+    status = napi_get_value_int32(newEnv2, result, &ret);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "napi_get_value_int32 of env failed");
+    } else {
+        // plugin2的上下文中globalThis.a为3000
+        OH_LOG_INFO(LOG_APP, "ret is %{public}d", ret); // 3000
+    }
+    // 主动切回原始上下文环境env
+    status = napi_switch_ark_context(env);
+    if (status != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "switch to env failed");
+    }
+    args2[0] = getLocation1;
+    status = napi_call_function(env, nullptr, args[0], 1, args2, &result);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    // 获取GetLocation接口调用之后的返回值
+    ret = 0;
+    status = napi_get_value_int32(env, result, &ret);
+    if (status != napi_ok) {
+        return nullptr;
+    } else {
+        // plugin1的上下文中globalThis.a为2000
+        OH_LOG_INFO(LOG_APP, "ret is %{public}d", ret); // 2000
+    }
+    // 销毁创建的上下文环境
+    status = napi_destroy_ark_context(newEnv2);
+    if (status != napi_ok) {
+        return nullptr;
+    }
+    return result;
+}
+
+// 模块注册
+EXTERN_C_START
+static napi_value Init(napi_env env, napi_value exports) {
+    napi_property_descriptor desc[] = {
+        {"callFunctionInContext", nullptr, NAPI_Global_callFunctionInContext,
+            nullptr, nullptr, nullptr, napi_default, nullptr}
+    };
+    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    return exports;
+}
+EXTERN_C_END
+
+static napi_module demoModule = {
+    .nm_version = 1,
+    .nm_flags = 0,
+    .nm_filename = nullptr,
+    .nm_register_func = Init,
+    .nm_modname = "entry",
+    .nm_priv = ((void*)0),
+    .reserved = { 0 },
+};
+
+extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
+{
+    napi_module_register(&demoModule);
+}
+```
+
+### Code block 2
+
+```
+// index.d.ts
+export const callFunctionInContext: (func: (func:()=>number)=>{}) => number;
+```
+
+### Code block 3
+
+```
+// CMakeLists.txt
+# the minimum version of CMake.
+cmake_minimum_required(VERSION 3.5.0)
+project(MyApplication8)
+
+set(NATIVERENDER_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
+if(DEFINED PACKAGE_FIND_FILE)
+    include(${PACKAGE_FIND_FILE})
+endif()
+
+add_definitions( "-DLOG_DOMAIN=0xd0d0" )
+add_definitions( "-DLOG_TAG=\"testTag\"")
+
+include_directories(${NATIVERENDER_ROOT_PATH}
+                    ${NATIVERENDER_ROOT_PATH}/include)
+
+add_library(entry SHARED napi_init.cpp)
+target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
+```
+
+### Code block 4
+
+```
+{
+    "buildOption" : {
+        "arkOptions" : {
+            "runtimeOnly" : {
+                "sources": [
+                    "./src/main/ets/pages/plugin1.ets",
+                    "./src/main/ets/pages/plugin2.ets"
+                ]
+            }
+        }
+    }
+}
+```
+
+### Code block 5
+
+```
+// index.ets
+import testNapi from "libentry.so"
+
+// 该接口用于执行模块plugin1或plugin2中的GetLocation方法
+function getLocation(func: () => number) {
+    return func();
+}
+testNapi.callFunctionInContext(getLocation)
+```
+
+### Code block 6
+
+```
+// ets/pages/plugin1.ets
+globalThis.a = 2000;
+
+export function GetLocation() : number {
+    return globalThis.a;
+}
+```
+
+### Code block 7
+
+```
+// ets/pages/plugin2.ets
+globalThis.a = 3000;
+
+export function GetLocation() : number {
+return globalThis.a;
+}
+```

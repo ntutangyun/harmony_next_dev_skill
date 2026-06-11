@@ -19,20 +19,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wat
 @Watch用于监听状态变量的变化，当状态变量变化时，@Watch的回调方法将被调用。@Watch在ArkUI框架内部判断数值有无更新使用的是严格相等（===），遵循严格相等规范。当严格相等判断的结果是false（即不相等）的情况下，就会触发@Watch的回调。
 
 装饰器说明
+
 @Watch补充变量装饰器	说明
 装饰器参数	必填。常量字符串，字符串需要有引号。是(string) => void自定义成员函数的方法的引用。
 可装饰的自定义组件变量	可监听所有装饰器装饰的状态变量。不允许监听常规变量。
 装饰器的顺序	装饰器顺序不影响实际功能，开发者可以根据自己的需要决定装饰器顺序的先后。建议@State、@Prop、@Link等装饰器在@Watch装饰器之前，以保持整体风格的一致。
 @Watch触发时机	使用@Watch来监听状态变量变化时，回调触发时间是变量真正变化、被赋值的时间。详细示例请参考使用场景中的@Watch的触发时机。
+
 语法说明
+
 类型	说明
-(changedPropertyName? : string) => void	
-
-该函数是自定义组件的成员函数，changedPropertyName是被watch的属性名。
-
-在多个状态变量绑定同一个@Watch的回调方法的时候，可以通过changedPropertyName进行不同的逻辑处理
-
-将属性名作为字符串输入参数，不返回任何内容。
+(changedPropertyName? : string) => void	该函数是自定义组件的成员函数，changedPropertyName是被watch的属性名。 在多个状态变量绑定同一个@Watch的回调方法的时候，可以通过changedPropertyName进行不同的逻辑处理 将属性名作为字符串输入参数，不返回任何内容。
 
 观察变化和行为表现
 
@@ -58,40 +55,43 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wat
 @State @Watch() num: number = 10;
 @State @Watch(change) num: number = 10;
 
-
 // 正确写法
 @State @Watch('change') num: number = 10;
 change() {
   console.info(`xxx`);
 }
+
 @Watch内的参数必须是声明的方法名，否则编译期会报错。
+
 // 错误写法，没有对应名称的函数，编译报错
 @State @Watch('change') num: number = 10;
 onChange() {
   console.info(`xxx`);
 }
 
-
 // 正确写法
 @State @Watch('change') num: number = 10;
 change() {
   console.info(`xxx`);
 }
+
 常规变量不能被@Watch装饰，否则编译期会报错。
+
 // 错误写法
 @Watch('change') num: number = 10;
 change() {
   console.info(`xxx`);
 }
 
-
 // 正确写法
 @State @Watch('change') num: number = 10;
 change() {
   console.info(`xxx`);
 }
+
 使用场景
-@Watch和自定义组件更新
+
+[h2]@Watch和自定义组件更新
 
 以下示例展示组件更新和@Watch的处理步骤。count在CountModifier中由@State装饰，在TotalView中由@Prop装饰。
 
@@ -100,24 +100,20 @@ struct TotalView {
   @Prop @Watch('onCountUpdated') count: number = 0;
   @State total: number = 0;
 
-
   // @Watch 回调
   onCountUpdated(propName: string): void {
     this.total += this.count;
   }
-
 
   build() {
     Text(`Total: ${this.total}`)
   }
 }
 
-
 @Entry
 @Component
 struct CountModifier {
   @State count: number = 0;
-
 
   build() {
     Column() {
@@ -129,7 +125,6 @@ struct CountModifier {
     }
   }
 }
-CountModifier.ets
 
 处理步骤：
 
@@ -139,7 +134,7 @@ CountModifier自定义组件的Button.onClick点击事件自增count。
 
 子组件TotalView中的Text重新渲染。
 
-@Watch与@Link组合使用
+[h2]@Watch与@Link组合使用
 
 以下示例说明了如何在子组件中观察@Link变量。
 
@@ -148,19 +143,16 @@ class PurchaseItem {
   public id: number;
   public price: number;
 
-
   constructor(price: number) {
     this.id = PurchaseItem.nextId++;
     this.price = price;
   }
 }
 
-
 @Component
 struct BasketViewer {
   @Link @Watch('onBasketUpdated') shopBasket: PurchaseItem[];
   @State totalPurchase: number = 0;
-
 
   updateTotal(): number {
     let total = this.shopBasket.reduce((sum, i) => sum + i.price, 0);
@@ -171,12 +163,10 @@ struct BasketViewer {
     return total;
   }
 
-
   // @Watch 回调
   onBasketUpdated(propName: string): void {
     this.totalPurchase = this.updateTotal();
   }
-
 
   build() {
     Column() {
@@ -191,12 +181,10 @@ struct BasketViewer {
   }
 }
 
-
 @Entry
 @Component
 struct BasketModifier {
   @State shopBasket: PurchaseItem[] = [];
-
 
   build() {
     Column() {
@@ -208,7 +196,6 @@ struct BasketModifier {
     }
   }
 }
-BasketModifier.ets
 
 处理步骤如下：
 
@@ -222,27 +209,23 @@ BasketModifier组件的Button.onClick向BasketModifier shopBasket中添加条目
 
 效果图如下：
 
-@Watch的触发时机
+[h2]@Watch的触发时机
 
 为了展示@Watch回调触发时间是根据状态变量真正变化的时间，本示例在子组件中同时使用@Link和@ObjectLink装饰器，分别观察不同的状态对象。通过在父组件中更改状态变量并观察@Watch回调的先后顺序，来表明@Watch触发的时机与赋值、同步的关系。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common } from '@kit.AbilityKit';
 
-
 @Observed
 class Task {
   public isFinished: boolean = false;
-
 
   constructor(isFinished: boolean) {
     this.isFinished = isFinished;
   }
 }
 
-
 const DOMAIN = 0x0000;
-
 
 @Entry
 @Component
@@ -255,20 +238,17 @@ struct ParentComponent {
   // 请将$r('app.string.watch_text6')替换为实际资源文件，在本示例中该资源文件的value值为"父组件任务B状态:"
   @State type2: string = this.context!.resourceManager.getStringSync($r('app.string.watch_text6').id);
 
-
   onTaskAChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text12')替换为实际资源文件，在本示例中该资源文件的value值为"观测到父组件任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text12').id), changedPropertyName);
   }
 
-
   onTaskBChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text12')替换为实际资源文件，在本示例中该资源文件的value值为"观测到父组件任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text12').id), changedPropertyName);
   }
-
 
   build() {
     Column() {
@@ -294,7 +274,6 @@ struct ParentComponent {
   }
 }
 
-
 @Component
 struct ChildComponent {
   @ObjectLink @Watch('onObjectLinkTaskChanged') taskB: Task;
@@ -305,20 +284,17 @@ struct ChildComponent {
   // 请将$r('app.string.watch_text11')替换为实际资源文件，在本示例中该资源文件的value值为"子组件任务B状态:"
   @State type2: string = this.context!.resourceManager.getStringSync($r('app.string.watch_text11').id);
 
-
   onObjectLinkTaskChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text13')替换为实际资源文件，在本示例中该资源文件的value值为"观测到子组件@ObjectLink关联的任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text13').id), changedPropertyName);
   }
 
-
   onLinkTaskChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text14')替换为实际资源文件，在本示例中该资源文件的value值为"观测到子组件@Link关联的任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text14').id), changedPropertyName);
   }
-
 
   build() {
     Column() {
@@ -335,7 +311,6 @@ struct ChildComponent {
     }
   }
 }
-ParentComponent.ets
 
 处理步骤如下：
 
@@ -352,7 +327,7 @@ ParentComponent.ets
 
 这是符合预期的行为，展示了@Watch回调的触发时机是根据状态变量真正变化的时间。因为@Link直接同步，而@ObjectLink需要等父组件更新子组件变量。类似地，@Prop也可能表现出与@ObjectLink类似的行为，其回调触发时间也会略晚。
 
-使用changedPropertyName进行不同的逻辑处理
+[h2]使用changedPropertyName进行不同的逻辑处理
 
 以下示例说明了如何在@Watch函数中使用changedPropertyName进行不同的逻辑处理。
 
@@ -363,14 +338,12 @@ struct UsePropertyName {
   @State @Watch('countUpdated') cabbage: number = 0;
   @State fruit: number = 0;
 
-
   // @Watch 回调
   countUpdated(propName: string): void {
     if (propName === 'apple') {
       this.fruit = this.apple;
     }
   }
-
 
   build() {
     Column() {
@@ -388,7 +361,6 @@ struct UsePropertyName {
     }
   }
 }
-UsePropertyName.ets
 
 处理步骤如下：
 
@@ -404,9 +376,6 @@ UsePropertyName.ets
 
 绑定了cabbage状态变量的Text重新渲染。
 
-@Observed装饰器和@ObjectLink装饰器：嵌套类对象属性变化
-管理数据对象的状态
-
 ## Code blocks
 
 ### Code block 1
@@ -415,7 +384,6 @@ UsePropertyName.ets
 // 错误写法，编译报错
 @State @Watch() num: number = 10;
 @State @Watch(change) num: number = 10;
-
 
 // 正确写法
 @State @Watch('change') num: number = 10;
@@ -433,7 +401,6 @@ onChange() {
   console.info(`xxx`);
 }
 
-
 // 正确写法
 @State @Watch('change') num: number = 10;
 change() {
@@ -450,7 +417,6 @@ change() {
   console.info(`xxx`);
 }
 
-
 // 正确写法
 @State @Watch('change') num: number = 10;
 change() {
@@ -466,24 +432,20 @@ struct TotalView {
   @Prop @Watch('onCountUpdated') count: number = 0;
   @State total: number = 0;
 
-
   // @Watch 回调
   onCountUpdated(propName: string): void {
     this.total += this.count;
   }
-
 
   build() {
     Text(`Total: ${this.total}`)
   }
 }
 
-
 @Entry
 @Component
 struct CountModifier {
   @State count: number = 0;
-
 
   build() {
     Column() {
@@ -505,19 +467,16 @@ class PurchaseItem {
   public id: number;
   public price: number;
 
-
   constructor(price: number) {
     this.id = PurchaseItem.nextId++;
     this.price = price;
   }
 }
 
-
 @Component
 struct BasketViewer {
   @Link @Watch('onBasketUpdated') shopBasket: PurchaseItem[];
   @State totalPurchase: number = 0;
-
 
   updateTotal(): number {
     let total = this.shopBasket.reduce((sum, i) => sum + i.price, 0);
@@ -528,12 +487,10 @@ struct BasketViewer {
     return total;
   }
 
-
   // @Watch 回调
   onBasketUpdated(propName: string): void {
     this.totalPurchase = this.updateTotal();
   }
-
 
   build() {
     Column() {
@@ -548,12 +505,10 @@ struct BasketViewer {
   }
 }
 
-
 @Entry
 @Component
 struct BasketModifier {
   @State shopBasket: PurchaseItem[] = [];
-
 
   build() {
     Column() {
@@ -573,20 +528,16 @@ struct BasketModifier {
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common } from '@kit.AbilityKit';
 
-
 @Observed
 class Task {
   public isFinished: boolean = false;
-
 
   constructor(isFinished: boolean) {
     this.isFinished = isFinished;
   }
 }
 
-
 const DOMAIN = 0x0000;
-
 
 @Entry
 @Component
@@ -599,20 +550,17 @@ struct ParentComponent {
   // 请将$r('app.string.watch_text6')替换为实际资源文件，在本示例中该资源文件的value值为"父组件任务B状态:"
   @State type2: string = this.context!.resourceManager.getStringSync($r('app.string.watch_text6').id);
 
-
   onTaskAChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text12')替换为实际资源文件，在本示例中该资源文件的value值为"观测到父组件任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text12').id), changedPropertyName);
   }
 
-
   onTaskBChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text12')替换为实际资源文件，在本示例中该资源文件的value值为"观测到父组件任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text12').id), changedPropertyName);
   }
-
 
   build() {
     Column() {
@@ -638,7 +586,6 @@ struct ParentComponent {
   }
 }
 
-
 @Component
 struct ChildComponent {
   @ObjectLink @Watch('onObjectLinkTaskChanged') taskB: Task;
@@ -649,20 +596,17 @@ struct ChildComponent {
   // 请将$r('app.string.watch_text11')替换为实际资源文件，在本示例中该资源文件的value值为"子组件任务B状态:"
   @State type2: string = this.context!.resourceManager.getStringSync($r('app.string.watch_text11').id);
 
-
   onObjectLinkTaskChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text13')替换为实际资源文件，在本示例中该资源文件的value值为"观测到子组件@ObjectLink关联的任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text13').id), changedPropertyName);
   }
 
-
   onLinkTaskChanged(changedPropertyName: string): void {
     // 请将$r('app.string.watch_text14')替换为实际资源文件，在本示例中该资源文件的value值为"观测到子组件@Link关联的任务属性变化:"
     hilog.info(DOMAIN, this.getUIContext()
       .getHostContext()!.resourceManager.getStringSync($r('app.string.watch_text14').id), changedPropertyName);
   }
-
 
   build() {
     Column() {
@@ -700,14 +644,12 @@ struct UsePropertyName {
   @State @Watch('countUpdated') cabbage: number = 0;
   @State fruit: number = 0;
 
-
   // @Watch 回调
   countUpdated(propName: string): void {
     if (propName === 'apple') {
       this.fruit = this.apple;
     }
   }
-
 
   build() {
     Column() {

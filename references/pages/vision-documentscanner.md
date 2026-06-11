@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/vision-documentscanner_
 
+场景介绍
+
 文档扫描控件提供拍摄文档并转换为高清扫描件的服务。仅需拍摄文档，即可自动裁剪和优化，并支持图片、PDF格式保存和分享；同时支持拍摄或从图库选择图片识别表格，生成表格文档。
 
 可广泛用于教育办公场景，扫描文档、票据、课堂PPT和书籍等输出图片/PDF供用户完成发送、存档等操作。
@@ -23,6 +25,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/vision-do
 接口名	描述
 DocumentScanner	文档扫描控件
 DocumentScannerResultCallback	文档扫描结果
+
 开发步骤
 
 将文档扫描控件相关的类添加至工程。
@@ -34,12 +37,10 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const TAG = 'DocumentScanner';
 
-
 @Entry
 @Component
 struct Index {
   private docScanConfig = new DocumentScannerConfig();
-
 
   aboutToAppear() {
     this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
@@ -51,7 +52,6 @@ struct Index {
     this.docScanConfig.isShareable = true;
     this.docScanConfig.originalUris = [];
   }
-
 
   build() {
     Column() {
@@ -69,18 +69,19 @@ struct Index {
     .width('100%')
   }
 }
+
 开发实例
-Index.ets
+
+[h2]Index.ets
+
 // 开发实例分两页实现，一页为文档扫描入口页，一页为文档扫描实现页
 // 文档扫描入口页，需引入文档扫描实现页，以下文实例为例，实现页文件名为DocDemoPage
 import { DocDemoPage } from './DocDemoPage';
-
 
 @Entry
 @Component
 struct MainPage {
   @Provide('pathStack') pathStack: NavPathStack = new NavPathStack();
-
 
   @Builder
   PageMap(name: string) {
@@ -88,7 +89,6 @@ struct MainPage {
       DocDemoPage()
     }
   }
-
 
   // 文档扫描入口按钮，可替换为业务入口
   build() {
@@ -103,7 +103,9 @@ struct MainPage {
     .mode(NavigationMode.Stack)
   }
 }
-DocDemoPage.ets
+
+[h2]DocDemoPage.ets
+
 // 文档扫描实现页，文件名为DocDemoPage，需被引入至入口页
 import {
   DocType,
@@ -115,9 +117,7 @@ import {
 } from '@kit.VisionKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = 'DocDemoPage';
-
 
 // 文档扫描页，用于加载UIExtensionAbility
 @Component
@@ -125,7 +125,6 @@ export struct DocDemoPage {
   @State docImageUris: string[] = [];
   @Consume('pathStack') pathStack: NavPathStack;
   private docScanConfig = new DocumentScannerConfig();
-
 
   aboutToAppear() {
     this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
@@ -137,7 +136,6 @@ export struct DocDemoPage {
     this.docScanConfig.isShareable = true;
     this.docScanConfig.originalUris = [];
   }
-
 
   build() {
     NavDestination() {
@@ -160,7 +158,7 @@ export struct DocDemoPage {
         })
         .width('80%')
         .height('80%')
-        
+
         // 文档扫描
         DocumentScanner({
           scannerConfig: this.docScanConfig,
@@ -185,5 +183,167 @@ export struct DocDemoPage {
     .hideTitleBar(true)
   }
 }
-卡证识别
-AI识图
+
+## Code blocks
+
+### Code block 1
+
+```
+import { DocType, DocumentScanner, DocumentScannerConfig, SaveOption, FilterId, ShootingMode } from '@kit.VisionKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+const TAG = 'DocumentScanner';
+
+@Entry
+@Component
+struct Index {
+  private docScanConfig = new DocumentScannerConfig();
+
+  aboutToAppear() {
+    this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    this.docScanConfig.isGallerySupported = true;
+    this.docScanConfig.editTabs = [];
+    this.docScanConfig.maxShotCount = 3;
+    this.docScanConfig.defaultFilterId = FilterId.ORIGINAL;
+    this.docScanConfig.defaultShootingMode = ShootingMode.MANUAL;
+    this.docScanConfig.isShareable = true;
+    this.docScanConfig.originalUris = [];
+  }
+
+  build() {
+    Column() {
+      DocumentScanner({
+        scannerConfig: this.docScanConfig,
+        onResult: (code: number, saveType: SaveOption, uris: string[]) => {
+          hilog.info(0x0001, TAG, `result code: ${code}, save: ${saveType}`);
+          uris.forEach(uriString => {
+            hilog.info(0x0001, TAG, `uri: ${uriString}`);
+          })
+        }
+      }).size({ width: '100%', height: '100%' })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 3
+
+```
+// 开发实例分两页实现，一页为文档扫描入口页，一页为文档扫描实现页
+// 文档扫描入口页，需引入文档扫描实现页，以下文实例为例，实现页文件名为DocDemoPage
+import { DocDemoPage } from './DocDemoPage';
+
+@Entry
+@Component
+struct MainPage {
+  @Provide('pathStack') pathStack: NavPathStack = new NavPathStack();
+
+  @Builder
+  PageMap(name: string) {
+    if (name === 'documentScanner') {
+      DocDemoPage()
+    }
+  }
+
+  // 文档扫描入口按钮，可替换为业务入口
+  build() {
+    Navigation(this.pathStack) {
+      Button('DocumentScanner', { stateEffect: true, type: ButtonType.Capsule })
+        .width('50%')
+        .height(40)
+        .onClick(() => {
+          this.pathStack.pushPath({ name: 'documentScanner' });
+        })
+    }.title('文档扫描控件demo').navDestination(this.PageMap)
+    .mode(NavigationMode.Stack)
+  }
+}
+```
+
+### Code block 4
+
+```
+// 文档扫描实现页，文件名为DocDemoPage，需被引入至入口页
+import {
+  DocType,
+  DocumentScanner,
+  DocumentScannerConfig,
+  SaveOption,
+  FilterId,
+  ShootingMode
+} from '@kit.VisionKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = 'DocDemoPage';
+
+// 文档扫描页，用于加载UIExtensionAbility
+@Component
+export struct DocDemoPage {
+  @State docImageUris: string[] = [];
+  @Consume('pathStack') pathStack: NavPathStack;
+  private docScanConfig = new DocumentScannerConfig();
+
+  aboutToAppear() {
+    this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    this.docScanConfig.isGallerySupported = true;
+    this.docScanConfig.editTabs = [];
+    this.docScanConfig.maxShotCount = 3;
+    this.docScanConfig.defaultFilterId = FilterId.ORIGINAL;
+    this.docScanConfig.defaultShootingMode = ShootingMode.MANUAL;
+    this.docScanConfig.isShareable = true;
+    this.docScanConfig.originalUris = [];
+  }
+
+  build() {
+    NavDestination() {
+      Stack({ alignContent: Alignment.Top }) {
+      // 展示文档扫描结果
+        List() {
+          ForEach(this.docImageUris, (uri: string) => {
+            ListItem() {
+              Image(uri)
+                .objectFit(ImageFit.Contain)
+                .width(100)
+                .height(100)
+            }
+          })
+        }
+        .listDirection(Axis.Vertical)
+        .alignListItem(ListItemAlign.Center)
+        .margin({
+          top: 50
+        })
+        .width('80%')
+        .height('80%')
+
+        // 文档扫描
+        DocumentScanner({
+          scannerConfig: this.docScanConfig,
+          onResult: (code: number, saveType: SaveOption, uris: string[]) => {
+            hilog.info(0x0001, TAG, `result code: ${code}, save: ${saveType}`);
+            if (code === -1) {
+              this.pathStack.pop();
+            }
+            uris.forEach(uriString => {
+              hilog.info(0x0001, TAG, `uri: ${uriString}`);
+            })
+            this.docImageUris = uris;
+          }
+        })
+          .size({ width: '100%', height: '100%' })
+      }
+      .width('100%')
+      .height('100%')
+    }
+    .width('100%')
+    .height('100%')
+    .hideTitleBar(true)
+  }
+}
+```

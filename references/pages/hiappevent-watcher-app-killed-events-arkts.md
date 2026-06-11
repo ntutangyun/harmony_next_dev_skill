@@ -2,11 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-app-killed-events-arkts_
 
+应用终止事件规格说明
+
+请参考应用终止事件介绍。
+
+接口说明
+
 API接口的具体使用说明（参数使用限制、具体取值范围等）请参考@ohos.hiviewdfx.hiAppEvent (应用事件打点)。
 
 接口名	描述
 addWatcher(watcher: Watcher): AppEventPackageHolder	添加应用事件观察者，以添加对应用事件的订阅。
 removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对应用事件的订阅。
+
 开发步骤
 
 为确保开发阶段顺利接收事件回调，建议采用以下方案：创建新的Native C++工程，在ArkTs代码中实现订阅，搭配C++代码的故障注入代码构造故障以触发应用终止事件。
@@ -54,7 +61,6 @@ hiAppEvent.addWatcher({
 
 #include <thread>
 
-
 static void NativeLeak()
 {
     constexpr int leak_size_per_time = 500000;
@@ -67,7 +73,6 @@ static void NativeLeak()
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
-
 
 static napi_value Leak(napi_env env, napi_callback_info info) {
  std::thread t1(NativeLeak);
@@ -95,15 +100,12 @@ export const leak: () => void;
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import testNapi from 'libentry.so';
 
-
 const DOMAIN = 0x0000;
-
 
 @Entry
 @Component
 struct Index {
   @State message: string = 'Start To Leak';
-
 
   build() {
     Row() {
@@ -138,5 +140,138 @@ HiAppEvent eventInfo.params.reason="RssThresholdKiller"
 HiAppEvent eventInfo.params.foreground=true
 HiAppEvent eventInfo.params.app_running_unique_id=207544
 HiAppEvent eventInfo.params.bundle_version=1000000
-应用终止事件介绍
-订阅应用终止事件（C/C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hiAppEvent } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+hiAppEvent.addWatcher({
+  // 开发者可以自定义观察者名称，系统会使用名称来标识不同的观察者
+  name: "watcher",
+  // 开发者可以订阅感兴趣的系统事件，此处是订阅了应用终止事件
+  appEventFilters: [
+    {
+      domain: hiAppEvent.domain.OS,
+      names: [hiAppEvent.event.APP_KILLED]
+    }
+  ],
+  // 开发者可以自行实现订阅实时回调函数，以便对订阅获取到的事件数据进行自定义处理
+  onReceive: (domain: string, appEventGroups: Array<hiAppEvent.AppEventGroup>) => {
+    hilog.info(0x0000, 'testTag', `HiAppEvent onReceive: domain=${domain}`);
+    for (const eventGroup of appEventGroups) {
+      // 开发者可以根据事件集合中的事件名称区分不同的系统事件
+      hilog.info(0x0000, 'testTag', `HiAppEvent eventName=${eventGroup.name}`);
+      for (const eventInfo of eventGroup.appEventInfos) {
+        // 开发者可以对事件集合中的事件数据进行自定义处理，此处是将事件数据打印在日志中
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.domain=${eventInfo.domain}`);
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.name=${eventInfo.name}`);
+        // 开发者可以获取到应用终止事件发生的时间戳
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.time=${eventInfo.params['time']}`);
+        // 开发者可以获取到应用的前后台状态
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.foreground=${eventInfo.params['foreground']}`);
+        // 开发者可以获取到应用终止事件发生的原因
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.reason=${eventInfo.params['reason']}`);
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.app_running_unique_id=${eventInfo.params['app_running_unique_id']}`);
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.bundle_version=${eventInfo.params['bundle_version']}`);
+      }
+    }
+  }
+});
+```
+
+### Code block 3
+
+```
+#include <thread>
+
+static void NativeLeak()
+{
+    constexpr int leak_size_per_time = 500000;
+    while (true) {
+        char *p = (char *)malloc(leak_size_per_time + 1);
+        if (!p) {
+            break;
+        }
+        memset(p, 'a', leak_size_per_time);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+static napi_value Leak(napi_env env, napi_callback_info info) {
+ std::thread t1(NativeLeak);
+ t1.detach();
+    return {};
+}
+```
+
+### Code block 4
+
+```
+static napi_value Init(napi_env env, napi_value exports)
+{
+    napi_property_descriptor desc[] = {
+        { "leak", nullptr, Leak, nullptr, nullptr, nullptr, napi_default, nullptr }, // 新增这行
+    };
+    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    return exports;
+}
+```
+
+### Code block 5
+
+```
+export const leak: () => void;
+```
+
+### Code block 6
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import testNapi from 'libentry.so';
+
+const DOMAIN = 0x0000;
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Start To Leak';
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize($r('app.float.page_text_font_size'))
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            if (this.message != 'Leaking') {
+              this.message = 'Leaking';
+              hilog.info(DOMAIN, 'testTag', 'Start leaking');
+              testNapi.leak();
+            }
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 7
+
+```
+HiAppEvent eventInfo.domain=OS
+HiAppEvent eventInfo.name=APP_KILLED
+HiAppEvent eventInfo.params.time=1717597063727
+HiAppEvent eventInfo.params.reason="RssThresholdKiller"
+HiAppEvent eventInfo.params.foreground=true
+HiAppEvent eventInfo.params.app_running_unique_id=207544
+HiAppEvent eventInfo.params.bundle_version=1000000
+```

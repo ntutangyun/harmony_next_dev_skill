@@ -92,9 +92,9 @@ Text('hello world!')
 
 注册系统环境变化的监听后，在系统环境变化时可触发回调。
 
-应用冷启动查询系统字体大小档位。
 let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 let fontSizeScale: number = context.config?.fontSizeScale ?? 1;
+
 适配适老化的系统组件及触发方式
 
 适老化提供了一种通过鼠标或手指长按的方法来放大所选区域或组件，即如果系统字体大小大于1倍，当用户使用鼠标或手指长按装配了适老化方法的组件，需要从所选区域的组件中提取数据，并放入另一个弹窗组件中展示。该方法的目的在于使组件和组件内部数据（子组件）放大，同时将整体组件在屏幕中央显示，让用户能够更好的观察该组件。
@@ -142,7 +142,6 @@ struct SideBarContainerExample {
   @State arr: number[] = [1, 2, 3]
   @State current: number = 1
   @State title: string = 'Index01';
-
 
   build() {
     SideBarContainer(SideBarContainerType.Embed) {
@@ -214,7 +213,6 @@ struct TextPickerExample {
   private triggered: string = '';
   private maxLines: number = 3;
 
-
   linesNum(max: number): void {
     let items: string[] = this.triggered.split('').filter(item => item != '');
     if (items.length > max) {
@@ -223,7 +221,6 @@ struct TextPickerExample {
       this.showTriggered = this.triggered;
     }
   }
-
 
   build() {
     Column() {
@@ -268,7 +265,196 @@ struct TextPickerExample {
     }
   }
 }
+
 系统字体为一倍（适老化能力开启前）	系统字体为1.75倍（适老化能力开启后）
 	
-无障碍开发指导
-主题设置
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    "bundleName": "com.example.myapplication",
+    "vendor": "example",
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "icon": "$media:app_icon",
+    "label": "$string:app_name",
+    "configuration": "$profile:configuration"
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "configuration": {
+    "fontSizeScale": "followSystem",
+    "fontSizeMaxScale": "1.3"
+  }
+}
+```
+
+### Code block 3
+
+```
+{
+  "configuration": {
+    "fontSizeScale": "followSystem",
+    "fontSizeMaxScale": "1.75"
+  }
+}
+```
+
+### Code block 4
+
+```
+Text('hello world!')
+  .fontSize($r('sys.float.Body_M'))
+  .maxFontScale(2)
+  .fontColor($r('sys.color.font_secondary'))
+```
+
+### Code block 5
+
+```
+let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+let fontSizeScale: number = context.config?.fontSizeScale ?? 1;
+```
+
+### Code block 6
+
+```
+@Entry
+@Component
+struct SideBarContainerExample {
+  @State currentFontSizeScale: number = 1
+  normalIcon: Resource = $r("app.media.icon")
+  selectedIcon: Resource = $r("app.media.icon")
+  @State arr: number[] = [1, 2, 3]
+  @State current: number = 1
+  @State title: string = 'Index01';
+
+  build() {
+    SideBarContainer(SideBarContainerType.Embed) {
+      Column() {
+        ForEach(this.arr, (item: number) => {
+          Column({ space: 5 }) {
+            Image(this.current === item ? this.selectedIcon : this.normalIcon).width(64).height(64)
+            Text("0" + item)
+              .fontSize(25)
+              .fontColor(this.current === item ? '#0A59F7' : '#999')
+              .fontFamily('source-sans-pro,cursive,sans-serif')
+          }
+          .onClick(() => {
+            this.current = item;
+            this.title = "Index0" + item;
+          })
+        }, (item: string) => item)
+      }.width('100%')
+      .justifyContent(FlexAlign.SpaceEvenly)
+      .backgroundColor($r('sys.color.mask_fifth'))
+    }
+    .controlButton({
+      icons: {
+        hidden: $r('sys.media.ohos_ic_public_drawer_open_filled'),
+        shown: $r('sys.media.ohos_ic_public_drawer_close')
+      }
+    })
+    .sideBarWidth(150)
+    .minSideBarWidth(50)
+    .maxSideBarWidth(300)
+    .minContentWidth(0)
+    .onChange((value: boolean) => {
+      console.info('status:' + value)
+    })
+    .divider({ strokeWidth: '1vp', color: Color.Gray, startMargin: '4vp', endMargin: '4vp' })
+  }
+}
+```
+
+### Code block 7
+
+```
+@Entry
+@Component
+struct TextPickerExample {
+  private select: number | number[] = 0;
+  private cascade: TextCascadePickerRangeContent[] = [
+    {
+      text: '辽宁省',
+      children: [{ text: '沈阳市', children: [{ text: '沈河区' }, { text: '和平区' }, { text: '浑南区' }] },
+        { text: '大连市', children: [{ text: '中山区' }, { text: '金州区' }, { text: '长海县' }] }]
+    },
+    {
+      text: '吉林省',
+      children: [{ text: '长春市', children: [{ text: '南关区' }, { text: '宽城区' }, { text: '朝阳区' }] },
+        { text: '四平市', children: [{ text: '铁西区' }, { text: '铁东区' }, { text: '梨树县' }] }]
+    },
+    {
+      text: '黑龙江省',
+      children: [{ text: '哈尔滨市', children: [{ text: '道里区' }, { text: '道外区' }, { text: '南岗区' }] },
+        { text: '牡丹江市', children: [{ text: '东安区' }, { text: '西安区' }, { text: '爱民区' }] }]
+    }
+  ]
+  @State v: string = '';
+  @State showTriggered: string = '';
+  private triggered: string = '';
+  private maxLines: number = 3;
+
+  linesNum(max: number): void {
+    let items: string[] = this.triggered.split('').filter(item => item != '');
+    if (items.length > max) {
+      this.showTriggered = items.slice(-this.maxLines).join('');
+    } else {
+      this.showTriggered = this.triggered;
+    }
+  }
+
+  build() {
+    Column() {
+      Button("TextPickerDialog.show:" + this.v)
+        .onClick(() => {
+          TextPickerDialog.show({
+            range: this.cascade,
+            selected: this.select,
+            onAccept: (value: TextPickerResult) => {
+              this.select = value.index
+              console.log(this.select + '')
+              this.v = value.value as string
+              console.info("TextPickerDialog:onAccept()" + JSON.stringify(value))
+              if (this.triggered != '') {
+                this.triggered += `onAccept(${JSON.stringify(value)})`;
+              } else {
+                this.triggered = `onAccept(${JSON.stringify(value)})`;
+              }
+              this.linesNum(this.maxLines);
+            },
+            onCancel: () => {
+              console.info("TextPickerDialog:onCancel()")
+              if (this.triggered != '') {
+                this.triggered += `onCancel()`;
+              } else {
+                this.triggered = `onCancel()`;
+              }
+              this.linesNum(this.maxLines);
+            },
+            onChange: (value: TextPickerResult) => {
+              console.info("TextPickerDialog:onChange()" + JSON.stringify(value))
+              if (this.triggered != '') {
+                this.triggered += `onChange(${JSON.stringify(value)})`;
+              } else {
+                this.triggered = `onChange(${JSON.stringify(value)})`;
+              }
+              this.linesNum(this.maxLines);
+            },
+          })
+        })
+        .margin({ top: 60 })
+    }
+  }
+}
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-setexpanddimsrule_
 
+函数功能
+
 设置补维规则。补维是指在原有shape的基础上，添加一到多个维度。例如原shape[2,2]有两根轴，那么在两根轴中间补两维后的shape为[2,1,1,2]，补维后shape的第0、3根轴被称为原始轴，第1、2根轴被称为补维轴。
 
 通过1和0描述补维规则，1代表当前轴为补维轴，0代表当前轴为原始轴，从左到右依次代表当前shape每根轴的来源，例如：
@@ -20,16 +22,13 @@ GE框架对外提供指定运行时格式（整网的输入输出节点的运行
 框架推导运行时shape，此时，如果原始shape维度小于原始格式表达的维度，需要通过该接口同步设置补维规则，框架侧基于该补维规则设置运行时的shape。
 
 函数原型
+
 void SetExpandDimsRule(const AscendString &expand_dims_rule);
+
 参数说明
+
 参数名	输入/输出	描述
-expand_dims_rule	输入	
-
-需设置的补维规则。AscendString类型。
-
-使用样例：原始shape为[2, 3]，原始格式为NCHW，原始shape的维度（2）小于NCHW的维度（4），需要设置补维规则。
-
-比如，补维规则设置为“0110”，补维后shape为[2, 1, 1, 3]。
+expand_dims_rule	输入	需设置的补维规则。AscendString类型。 使用样例：原始shape为[2, 3]，原始格式为NCHW，原始shape的维度（2）小于NCHW的维度（4），需要设置补维规则。 比如，补维规则设置为“0110”，补维后shape为[2, 1, 1, 3]。
 
 返回值
 
@@ -43,5 +42,10 @@ expand_dims_rule	输入
 
 无
 
-SetDataType
-SetFormat
+## Code blocks
+
+### Code block 1
+
+```
+void SetExpandDimsRule(const AscendString &expand_dims_rule);
+```

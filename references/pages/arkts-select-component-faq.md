@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-select-component-faq_
 
+本文档介绍按钮与选择组件的常见问题并提供参考。
+
+Slider组件滑块与滑轨是如何对齐的
+
 Slider的滑块与滑轨显示样式SliderStyle有三种，其中SliderStyle.OutSet与SliderStyle.InSet存在滑块。Slider的滑动条进度为最小值时，滑块对齐方式如下：
 
 SliderStyle.OutSet模式下，滑块的中心与滑轨的端点对齐，示例图如下：
@@ -36,6 +40,7 @@ struct Index {
     .width('100%')
   }
 }
+
 使用AttributeModifier设置Button的LabelStyle时，默认字体粗细与直接设置不一致
 
 问题现象
@@ -47,6 +52,7 @@ struct Index {
 设置LabelStyle有两种方式，其中：
 
 直接设置LabelStyle。此时font属性中的weight默认值为FontWeight.Medium，对应数值500。
+
 通过AttributeModifier接口设置。此时font属性中的weight默认值为400，与LabelStyle对象说明中的默认值存在差异。
 
 解决措施
@@ -60,7 +66,6 @@ class MyButtonModifier1 implements AttributeModifier<ButtonAttribute> {
   }
 }
 
-
 class MyButtonModifier2 implements AttributeModifier<ButtonAttribute> {
   applyNormalAttribute(instance: ButtonAttribute): void {
     instance.labelStyle({
@@ -71,13 +76,11 @@ class MyButtonModifier2 implements AttributeModifier<ButtonAttribute> {
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   @State modifier1: MyButtonModifier1 = new MyButtonModifier1();
   @State modifier2: MyButtonModifier2 = new MyButtonModifier2();
-
 
   build() {
     Column() {
@@ -93,7 +96,6 @@ struct Index {
         .width(100)
         .attributeModifier(this.modifier1)
 
-
       Text('modifier2')
       Button('DemoButtonTest')
         .width(100)
@@ -101,7 +103,6 @@ struct Index {
     }.height('100%')
   }
 }
-ButtonModifierFAQ.ets
 
 Button组件设置type时，ButtonType枚举值与数字值不一致
 
@@ -144,7 +145,6 @@ struct ButtonTypeDemo {
       Button('ROUNDED_RECTANGLE')
         .type(ButtonType.ROUNDED_RECTANGLE)
 
-
       // 使用数字设置（需使用type实际数值）
       Text('使用数字设置：')
       Button('type(1)')
@@ -155,7 +155,6 @@ struct ButtonTypeDemo {
         .type(0) // 等同于 ButtonType.Normal
       Button('type(8)')
         .type(8) // 等同于 ButtonType.ROUNDED_RECTANGLE
-
 
       // 错误示例：使用SDK枚举值作为type数字
       Text('错误示例（使用SDK枚举值）：')
@@ -168,7 +167,129 @@ struct ButtonTypeDemo {
     .justifyContent(FlexAlign.Center)
   }
 }
-ButtonTypeFAQ.ets
 
-自定义节点常见问题
-弹窗组件常见问题
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct Index {
+  build() {
+    Column() {
+      Slider({
+        style: SliderStyle.OutSet
+      })
+        .blockSize({
+          width: 20,
+          height: 20
+        })
+        .trackThickness(50)
+      Slider({
+        style: SliderStyle.InSet
+      })
+        .blockSize({
+          width: 20,
+          height: 20
+        })
+        .trackThickness(50)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 2
+
+```
+// pages/ButtonModifierFAQ.ets
+class MyButtonModifier1 implements AttributeModifier<ButtonAttribute> {
+  applyNormalAttribute(instance: ButtonAttribute): void {
+    instance.labelStyle({});
+  }
+}
+
+class MyButtonModifier2 implements AttributeModifier<ButtonAttribute> {
+  applyNormalAttribute(instance: ButtonAttribute): void {
+    instance.labelStyle({
+      font: {
+        weight: FontWeight.Medium
+      }
+    });
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  @State modifier1: MyButtonModifier1 = new MyButtonModifier1();
+  @State modifier2: MyButtonModifier2 = new MyButtonModifier2();
+
+  build() {
+    Column() {
+      Text('normal')
+      // Button直接设置labelStyle，font属性中的weight默认值为500
+      Button('DemoButtonTest')
+        .width(100)
+        .labelStyle({})
+      Divider()
+      // 通过AttributeModifier接口设置labelStyle，font属性中的weight默认值为400
+      Text('modifier1')
+      Button('DemoButtonTest')
+        .width(100)
+        .attributeModifier(this.modifier1)
+
+      Text('modifier2')
+      Button('DemoButtonTest')
+        .width(100)
+        .attributeModifier(this.modifier2)
+    }.height('100%')
+  }
+}
+```
+
+### Code block 3
+
+```
+// pages/ButtonTypeFAQ.ets
+@Entry
+@Component
+struct ButtonTypeDemo {
+  build() {
+    Column({ space: 20 }) {
+      // 使用枚举设置（推荐）
+      Text('使用枚举设置：')
+      Button('Capsule')
+        .type(ButtonType.Capsule)
+      Button('Circle')
+        .type(ButtonType.Circle)
+      Button('Normal')
+        .type(ButtonType.Normal)
+      Button('ROUNDED_RECTANGLE')
+        .type(ButtonType.ROUNDED_RECTANGLE)
+
+      // 使用数字设置（需使用type实际数值）
+      Text('使用数字设置：')
+      Button('type(1)')
+        .type(1) // 等同于 ButtonType.Capsule
+      Button('type(2)')
+        .type(2) // 等同于 ButtonType.Circle
+      Button('type(0)')
+        .type(0) // 等同于 ButtonType.Normal
+      Button('type(8)')
+        .type(8) // 等同于 ButtonType.ROUNDED_RECTANGLE
+
+      // 错误示例：使用SDK枚举值作为type数字
+      Text('错误示例（使用SDK枚举值）：')
+      Button('type(3)')
+        .type(3) // 不对应任何类型，使用默认样式
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor(Color.White)
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```

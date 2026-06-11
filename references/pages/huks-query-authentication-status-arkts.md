@@ -11,9 +11,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-quer
 调用查询认证状态接口getUkeyPinAuthState验证PIN码。
 
 开发案例
+
 import { huksExternalCrypto } from '@kit.UniversalKeystoreKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 async function getUkeyPinAuthState(): Promise<huksExternalCrypto.HuksExternalPinAuthState> {
   let ret: huksExternalCrypto.HuksExternalPinAuthState = huksExternalCrypto.HuksExternalPinAuthState.HUKS_EXT_CRYPTO_PIN_NO_AUTH;
@@ -29,6 +29,50 @@ async function getUkeyPinAuthState(): Promise<huksExternalCrypto.HuksExternalPin
     });
     const extProperties: Array<huksExternalCrypto.HuksExternalCryptoParam> = [];
 
+    /* 2.调用getUkeyPinAuthState */
+    await huksExternalCrypto.getUkeyPinAuthState(testResourceId, extProperties)
+      .then((data) => {
+        console.info(`promise: getUkeyPinAuthState success , data : ${data}`);
+      }).catch((error: BusinessError) => {
+        console.error(`promise: getUkeyPinAuthState failed, errCode : ${error.code}, errMsg : ${error.message}`);
+      });
+  } catch (error) {
+    console.error(`promise: getUkeyPinAuthState input arg invalid`);
+  }
+  return ret;
+}
+
+async function testGetUkeyPinAuthState() {
+  let ret: huksExternalCrypto.HuksExternalPinAuthState = await getUkeyPinAuthState();
+  if (ret != huksExternalCrypto.HuksExternalPinAuthState.HUKS_EXT_CRYPTO_PIN_AUTH_SUCCEEDED) {
+    console.error(`getUkeyPinAuthState failed`);
+    return;
+  }
+
+  console.info(`getUkeyPinAuthState success`);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { huksExternalCrypto } from '@kit.UniversalKeystoreKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+async function getUkeyPinAuthState(): Promise<huksExternalCrypto.HuksExternalPinAuthState> {
+  let ret: huksExternalCrypto.HuksExternalPinAuthState = huksExternalCrypto.HuksExternalPinAuthState.HUKS_EXT_CRYPTO_PIN_NO_AUTH;
+  try {
+    /* 1.构造查询PIN码状态参数 */
+    const testResourceId = JSON.stringify({
+      providerName: "testProviderName",
+      bundleName: "com.example.cryptoapplication",
+      abilityName: "CryptoExtension",
+      index: {
+        key: "testKey"
+      } as ESObject
+    });
+    const extProperties: Array<huksExternalCrypto.HuksExternalCryptoParam> = [];
 
     /* 2.调用getUkeyPinAuthState */
     await huksExternalCrypto.getUkeyPinAuthState(testResourceId, extProperties)
@@ -43,7 +87,6 @@ async function getUkeyPinAuthState(): Promise<huksExternalCrypto.HuksExternalPin
   return ret;
 }
 
-
 async function testGetUkeyPinAuthState() {
   let ret: huksExternalCrypto.HuksExternalPinAuthState = await getUkeyPinAuthState();
   if (ret != huksExternalCrypto.HuksExternalPinAuthState.HUKS_EXT_CRYPTO_PIN_AUTH_SUCCEEDED) {
@@ -51,8 +94,6 @@ async function testGetUkeyPinAuthState() {
     return;
   }
 
-
   console.info(`getUkeyPinAuthState success`);
 }
-Ukey PIN码认证介绍及规格
-查询认证状态(C/C++)
+```

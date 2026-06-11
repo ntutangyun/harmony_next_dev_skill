@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-faq-5_
 
+预加载的日志进程为“clouddevelopproxy”，日志过滤选择“No filters”。
+
+下文列举几种场景下的日志提示信息：
+
+场景一：系统服务在应用安装期间预加载数据成功
+
 预加载数据成功时日志会提示：http onSuccess code: 200，并且提示预加载的数据大小：get rsp data, len 47（单位为字节）。
 
 场景二：应用调用getPrefetchResult接口获取预加载数据成功
@@ -19,7 +25,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 出现此问题，可按照如下步骤排查和解决：
 
 检查系统服务在应用安装期间预加载数据的日志。如果打印日志与上文场景一提示的日志信息不一致，则继续执行后续步骤。
+
 确认是否存在多次调用安装预加载接口问题。安装预加载接口不支持多次调用。
+
 排除以上原因后，检查日志中是否出现“appid **** is not in white list, to skip”或者“XXX Read timed out”。如果出现，请参考运行应用时提示“appid **** is not in white list, to skip”或者运行应用时报“XXX Read timed out”异常解决。
-预加载
-运行应用时提示“appid **** is not in white list, to skip”

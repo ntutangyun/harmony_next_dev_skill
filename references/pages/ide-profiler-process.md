@@ -7,9 +7,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-profi
 DevEco Profiler也遵循以上流程，在使用DevEco Profiler进行性能优化时，您可以参考以下过程：
 
 通过实时监控（Realtime Monitor）检测各项资源使用情况，识别并定界潜在的性能瓶颈及热点区域，例如CPU占用超过预期、内存异常增大等；
-通过深度录制，详细分析应用运行时数据，例如函数调用、内存对象等信息，来分析并定位性能问题出现的根因；
-根据性能分析的结果优化代码；
-再次使用“Realtime Monitor”查看各项资源的使用情况是否符合预期，来验证代码修改的可行性。
 
-使用Profiler进行性能调优
-性能问题定界：实时监控
+通过深度录制，详细分析应用运行时数据，例如函数调用、内存对象等信息，来分析并定位性能问题出现的根因；
+
+根据性能分析的结果优化代码；
+
+再次使用“Realtime Monitor”查看各项资源的使用情况是否符合预期，来验证代码修改的可行性。

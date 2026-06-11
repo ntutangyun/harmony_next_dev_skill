@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-data-layout-format_
 
+Format为数据的物理排布格式，定义了解读数据的维度，比如1D，2D，3D，4D，5D等。
+
+NCHW和NHWC
+
 在深度学习领域，多维数据通过多维数组存储，比如卷积神经网络的特征图(Feature Map)通常用四维数组保存，即4D，4D格式解释如下。
 
 N：Batch数量，例如图像的数目。
@@ -33,13 +37,15 @@ Tensor.reshape([N, H, W, C1, C0]).transpose([0, 3, 1, 2, 4])
 NCHW -> NC1HWC0的转换公式如下。
 
 Tensor.reshape([N, C1, C0, H, W]).transpose([0, 1, 3, 4, 2])
+
 FRACTAL_NZ
 
 FRACTAL_NZ是分形格式，如Feature Map的数据存储，在cube单元计算时，输出矩阵的数据格式为NW1H1H0W0。整个矩阵被分为（H1*W1）个分形，按照column major排布，形状如N字形；每个分形内部有（H0*W0）个元素，按照row major排布，形状如z字形。考虑到数据排布格式，将NW1H1H0W0数据格式称为Nz（大N小z）格式。其中，H0,W0表示一个分形的大小，示意图如下所示：
 
 ND –> FRACTAL_NZ的变换过程为：
 
-(..., N，H, W )->pad->(..., N, H1*H0, W1*W0)->reshape->(..., N, H1, H0, W1, W0)->transpose->(..., N, W1, H1, H0, W0)
+(..., N, H, W )->pad->(..., N, H1*H0, W1*W0)->reshape->(..., N, H1, H0, W1, W0)->transpose->(..., N, W1, H1, H0, W0)
+
 FRACTAL_Z
 
 FRACTAL_Z是用于定义卷积权重的数据格式，由FT Matrix（FT：Filter，卷积核）变换得到。FRACTAL_Z是送往Cube的最终数据格式，采用“C1HW,N1,N0,C0”的4维数据排布。
@@ -57,5 +63,35 @@ Tensor.padding([ [0,0], [0,0], [0,(C0–C%C0)%C0], [0,(N0–N%N0)%N0] ]).reshape
 NCHW变换FRACTAL_Z的过程为：
 
 Tensor.padding([ [0,(N0–N%N0)%N0], [0,(C0–C%C0)%C0], [0,0], [0,0] ]).reshape( [N1, N0, C1, C0, H, W]).transpose( [2, 4, 5, 0, 1, 3] ).reshape( [C1*H*W, N1, N0, C0])
-Tensor基本概念
-如何使用double buffer优化性能
+
+## Code blocks
+
+### Code block 1
+
+```
+Tensor.reshape([N, H, W, C1, C0]).transpose([0, 3, 1, 2, 4])
+```
+
+### Code block 2
+
+```
+Tensor.reshape([N, C1, C0, H, W]).transpose([0, 1, 3, 4, 2])
+```
+
+### Code block 3
+
+```
+(..., N, H, W )->pad->(..., N, H1*H0, W1*W0)->reshape->(..., N, H1, H0, W1, W0)->transpose->(..., N, W1, H1, H0, W0)
+```
+
+### Code block 4
+
+```
+Tensor.padding([ [0,0], [0,0], [0,(C0–C%C0)%C0], [0,(N0–N%N0)%N0] ]).reshape( [H, W, C1, C0, N1, N0]).transpose( [2, 0, 1, 4, 5, 3] ).reshape( [C1*H*W, N1, N0, C0])
+```
+
+### Code block 5
+
+```
+Tensor.padding([ [0,(N0–N%N0)%N0], [0,(C0–C%C0)%C0], [0,0], [0,0] ]).reshape( [N1, N0, C1, C0, H, W]).transpose( [2, 4, 5, 0, 1, 3] ).reshape( [C1*H*W, N1, N0, C0])
+```

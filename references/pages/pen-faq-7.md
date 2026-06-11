@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-faq-7_
 
+当前的预测程度是由华为算法调试优化后的结果，暂不提供设置程度类的接口。

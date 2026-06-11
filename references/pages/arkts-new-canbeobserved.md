@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new-canbeobserved_
 
+为了判断对象是否为可被观察对象和获取对象关联的组件信息，开发者可以使用canBeObserved。
+
+在使用该接口前，建议开发者对状态管理框架有基本的了解。提前阅读：状态管理概述。
+
+说明
+
 从API version 23开始，开发者可以使用UIUtils中的canBeObserved接口判断数据对象是否为可观察对象。
 
 概述
@@ -11,24 +17,23 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new
 使用canBeObserved接口需要导入UIUtils工具。
 
 import { UIUtils } from '@kit.ArkUI';
+
 限制条件
 
 canBeObserved仅支持非空的对象类型传参。如果传入undefined或null，isObserved返回false。如果传入非Object类型，则会编译报错。
 
 import { UIUtils } from '@kit.ArkUI';
 
-
 let res1 = UIUtils.canBeObserved(2); // 非法类型入参，错误用法，编译报错
 let res2 = UIUtils.canBeObserved(undefined); // 非法类型入参，错误用法，isObserved返回false
 let res3 = UIUtils.canBeObserved(null); // 非法类型入参，错误用法，isObserved返回false
-
 
 class User {
   name?: string;
 }
 
-
 let result: ObservedResult = UIUtils.canBeObserved(new User()); // 正确用法
+
 对象可被观察场景
 
 可被观察对象调用canBeObserved接口，返回的ObservedResult结果对象中reason的值包含以下情况：
@@ -42,12 +47,14 @@ The V1 Observed object data is wrapped by enableV2Compatibility and used in @Com
 
 需要注意，上述情况reason的值结尾如果有but not used in UI或but not used in @ComponentV2则表示：对象虽然是可被观察的，但是没有被UI组件所使用，因此改变对象值的时候也无法刷新UI。
 
-V1组件对象可被观察场景
+[h2]V1组件对象可被观察场景
 
 在V1组件中，可被观察对象场景如下：
 
 组件内被状态管理V1装饰器装饰的对象（包括Array、Set、Map、Date类型数据对象）。
+
 被@Observed装饰器装饰的对象。
+
 使用makeV1Observed方法包装的对象。
 
 其中状态管理V1装饰器指的是：@State、@Prop、@Link、@ObjectLink、@StorageLink、@StorageProp、@LocalStorageLink、@LocalStorageProp、@Provide、@Consume。
@@ -73,20 +80,16 @@ V1组件对象可被观察场景
 import { UIUtils } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = 'CanBeObserved';
-
 
 class StateUser {
   public name?: string;
   public age?: number;
 
-
   constructor(name?: string, age?: number) {
     this.name = name ?? '';
     this.age = age ?? 0;
   }
-
 
   // 在对象中提供判断该对象是否为可被观察对象的方法
   test(): void {
@@ -94,13 +97,11 @@ class StateUser {
   }
 }
 
-
 @Entry
 @Component
 struct V1State {
   // V1组件中使用@State装饰对象时，会将该对象变成可被观察对象
   @State stateUser: StateUser = new StateUser('James', 33);
-
 
   build() {
     Column({ space: 20 }) {
@@ -113,7 +114,6 @@ struct V1State {
           // 开发者可以在任意页面中使用接口来判断当前对象是否为可被观察对象，并且可被获取对象关联的组件信息
           this.stateUser.test();
         })
-
 
     }
     .height('100%')
@@ -162,9 +162,7 @@ struct V1State {
 import { UIUtils } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = 'CanBeObserved';
-
 
 @Observed
 class TrackUser {
@@ -173,12 +171,10 @@ class TrackUser {
   @Track
   public age?: number;
 
-
   constructor(name?: string, age?: number) {
     this.name = name ?? '';
     this.age = age ?? 0;
   }
-
 
   // 在对象中提供判断该对象是否为可被观察对象的方法
   test(): void {
@@ -186,12 +182,10 @@ class TrackUser {
   }
 }
 
-
 @Entry
 @Component
 struct V1Track {
   @State trackUser: TrackUser = new TrackUser('Robert', 25);
-
 
   build() {
     Column({ space: 20 }) {
@@ -209,11 +203,9 @@ struct V1Track {
   }
 }
 
-
 @Component
 struct TrackChild {
   @ObjectLink trackUser: TrackUser;
-
 
   build() {
     Column() {
@@ -261,12 +253,15 @@ struct TrackChild {
         }]
     }]
 }
-V2组件对象可被观察场景
+
+[h2]V2组件对象可被观察场景
 
 V2组件中，对象可被观察场景如下：
 
 被@ObservedV2装饰器装饰的对象。
+
 被状态管理V2装饰器装饰的Array、Set、Map、Date类型数据对象。
+
 使用makeObserved方法包装的对象。
 
 其中状态管理V2装饰器指的是：@Local、@Param、@Provider、@Consumer。
@@ -280,6 +275,7 @@ class TestClass {
   @Trace b?: string;
   @Trace c?: string;
 }
+
 // 返回结果分析
 {
     // 对象是可被观察的
@@ -331,9 +327,7 @@ class TestClass {
 import { UIUtils } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = 'CanBeObserved';
-
 
 @ObservedV2
 class LocalUser {
@@ -342,12 +336,10 @@ class LocalUser {
   @Trace
   public age?: number;
 
-
   constructor(name?: string, age?: number) {
     this.name = name ?? '';
     this.age = age ?? 0;
   }
-
 
   // 在对象中提供判断该对象是否为可被观察对象的方法
   test(): void {
@@ -355,12 +347,10 @@ class LocalUser {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct V2Local {
   @Local localUser: LocalUser = new LocalUser('Michael', 29);
-
 
   build() {
     Column({ space: 20 }) {
@@ -413,7 +403,8 @@ struct V2Local {
         }]
     }]
 }
-V1组件和V2组件混用对象可被观察场景
+
+[h2]V1组件和V2组件混用对象可被观察场景
 
 V1组件和V2组件混用的场景中，要使对象能在V1组件和V2组件保持同步刷新，则需要在V1组件中使用enableV2Compatibility方法将V1组件的可被观察对象包装后传入V2组件。
 
@@ -422,27 +413,22 @@ V1组件和V2组件混用的场景中，要使对象能在V1组件和V2组件保
 import { UIUtils } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = 'CanBeObserved';
-
 
 class CompatibilityUser {
   public name?: string;
   public age?: number;
-
 
   constructor(name?: string, age?: number) {
     this.name = name ?? '';
     this.age = age ?? 0;
   }
 
-
   // 在对象中提供判断该对象是否为可被观察对象的方法
   test(): void {
     hilog.info(0x00, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this))}`);
   }
 }
-
 
 @Entry
 @Component
@@ -451,15 +437,12 @@ struct V1AndV2Compatibility {
   @State temp: CompatibilityUser = new CompatibilityUser('Thomas', 43);
   @State compatibilityUser: CompatibilityUser = UIUtils.enableV2Compatibility(this.temp);
 
-
   build() {
     Column({ space: 20 }) {
       Text('V1 name: ' + this.compatibilityUser.name)
       Text('V1 age: ' + this.compatibilityUser.age)
 
-
       V2Child({ compatibilityUser: this.compatibilityUser })
-
 
       Button('test')
         .onClick(() => {
@@ -474,11 +457,9 @@ struct V1AndV2Compatibility {
   }
 }
 
-
 @ComponentV2
 export struct V2Child {
   @Param compatibilityUser: CompatibilityUser = new CompatibilityUser();
-
 
   build() {
     Column() {
@@ -541,11 +522,12 @@ export struct V2Child {
         }]
     }]
 }
+
 状态管理常见不刷新问题分析
 
 在状态管理常见问题的案例中介绍了常见的状态管理对象不刷新UI或者页面性能不达标的问题，以下介绍如何使用canBeObserved接口来帮助开发者分析和定位问题原因。
 
-a.b(this.object)案例分析
+[h2]a.b(this.object)案例分析
 
 在a.b(this.object)案例的反例中，由于b的入参传入的是this.object的原始对象，原始对象是不可被观察的，所以导致UI无法刷新。开发者可以在修改属性前调用canBeObserved接口判断入参对象是否可被观察。
 
@@ -556,6 +538,7 @@ static increaseVolume(balloon: Balloon) {
   hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
   balloon.volume += 2;
 }
+
 reduceVolume(balloon: Balloon) {
   // 修改属性前，通过canBeObserved来判断入参balloon对象是否可被观察
   hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
@@ -580,6 +563,7 @@ static increaseVolume(balloon: Balloon) {
   hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
   balloon.volume += 2;
 }
+
 reduceVolume(balloon: Balloon) {
   // 修改属性前，通过canBeObserved来判断入参balloon对象是否可被观察
   hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
@@ -602,7 +586,8 @@ reduceVolume(balloon: Balloon) {
         }]
     }]
 }
-状态变量关联的组件数过多导致性能下降案例分析
+
+[h2]状态变量关联的组件数过多导致性能下降案例分析
 
 在状态变量关联的组件数过多导致性能下降案例中提供了HiDumper工具来查看状态变量关联的组件，若组件关联过多，则页面性能下降。开发者也可以使用canBeObserved接口在业务代码中获取状态管理对象关联的组件，根据接口返回结果优化业务代码。
 
@@ -691,7 +676,7 @@ Button('move')
 
 对比可知：正例中对象关联的组件数量少于反例中对象关联的组件数量，从而实现性能提升。
 
-ForEach和对象数组结合使用导致UI不刷新案例分析
+[h2]ForEach和对象数组结合使用导致UI不刷新案例分析
 
 在ForEach和对象数组结合使用导致UI不刷新案例中，使用canBeObserved接口获取判断对象是否是可被观察的。
 
@@ -750,7 +735,8 @@ Text('Font Size List')
         }]
     }]
 }
-数据重置导致UI不刷新使用场景
+
+[h2]数据重置导致UI不刷新使用场景
 
 在数据重置导致UI不刷新使用场景案例中，使用canBeObserved接口定位UI不刷新原因。
 
@@ -819,5 +805,786 @@ Button('X')
     // 以下结果省略
   ]
 }
-makeObserved接口：将非观察数据变为可观察数据
-addMonitor/clearMonitor接口：动态添加/取消监听
+
+## Code blocks
+
+### Code block 1
+
+```
+import { UIUtils } from '@kit.ArkUI';
+```
+
+### Code block 2
+
+```
+import { UIUtils } from '@kit.ArkUI';
+
+let res1 = UIUtils.canBeObserved(2); // 非法类型入参，错误用法，编译报错
+let res2 = UIUtils.canBeObserved(undefined); // 非法类型入参，错误用法，isObserved返回false
+let res3 = UIUtils.canBeObserved(null); // 非法类型入参，错误用法，isObserved返回false
+
+class User {
+  name?: string;
+}
+
+let result: ObservedResult = UIUtils.canBeObserved(new User()); // 正确用法
+```
+
+### Code block 3
+
+```
+{
+    // 被@Observed装饰的对象和使用makeV1Observed方法包装的对象，是可被观察的对象
+    "isObserved": true,
+    // 如果在组件内没有状态管理V1装饰器装饰，reason会返回：没有被UI组件使用，也就不会刷新UI
+    // V1组件刷新依赖的是状态管理V1装饰器
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed, but not used in UI",
+    // 收集不到状态管理装饰器
+    "decoratorInfo": []
+}
+```
+
+### Code block 4
+
+```
+import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = 'CanBeObserved';
+
+class StateUser {
+  public name?: string;
+  public age?: number;
+
+  constructor(name?: string, age?: number) {
+    this.name = name ?? '';
+    this.age = age ?? 0;
+  }
+
+  // 在对象中提供判断该对象是否为可被观察对象的方法
+  test(): void {
+    hilog.info(0x00, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this))}`);
+  }
+}
+
+@Entry
+@Component
+struct V1State {
+  // V1组件中使用@State装饰对象时，会将该对象变成可被观察对象
+  @State stateUser: StateUser = new StateUser('James', 33);
+
+  build() {
+    Column({ space: 20 }) {
+      // 组件使用了可被观察对象的属性
+      Text('user name: ' + this.stateUser.name)
+      // 组件使用了可被观察对象的属性
+      Text('user age: ' + this.stateUser.age)
+      Button('test')
+        .onClick(() => {
+          // 开发者可以在任意页面中使用接口来判断当前对象是否为可被观察对象，并且可被获取对象关联的组件信息
+          this.stateUser.test();
+        })
+
+    }
+    .height('100%')
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+  }
+}
+```
+
+### Code block 5
+
+```
+{
+    // 对象是可被观察的
+    "isObserved": true,
+    // V1组件中被状态管理装饰器装饰的对象是可被观察的
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed",
+    // 收集对象的装饰器信息
+    "decoratorInfo": [{
+        // 装饰器的名称
+        "decoratorName": "@State",
+        // 装饰器装饰的属性名称
+        "stateVariableName": "stateUser",
+        // 装饰器所在的组件名称
+        "owningComponentOrClassName": "V1State",
+        // 装饰器所在的组件id
+        "owningComponentId": 4,
+        // 对象关联的组件信息
+        "dependentInfo": [{
+            // 组件名称
+            "elementName": "Text",
+            // 组件id
+            "elementId": 6
+        }, {
+            "elementName": "Text",
+            "elementId": 7
+        }]
+    }]
+}
+```
+
+### Code block 6
+
+```
+import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = 'CanBeObserved';
+
+@Observed
+class TrackUser {
+  @Track
+  public name?: string;
+  @Track
+  public age?: number;
+
+  constructor(name?: string, age?: number) {
+    this.name = name ?? '';
+    this.age = age ?? 0;
+  }
+
+  // 在对象中提供判断该对象是否为可被观察对象的方法
+  test(): void {
+    hilog.info(0x00, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this))}`);
+  }
+}
+
+@Entry
+@Component
+struct V1Track {
+  @State trackUser: TrackUser = new TrackUser('Robert', 25);
+
+  build() {
+    Column({ space: 20 }) {
+      TrackChild({ trackUser: this.trackUser })
+      Button('test')
+        .onClick(() => {
+          // 开发者可以在任意页面中使用接口来判断当前对象是否为可被观察对象，并且可被获取对象关联的组件信息
+          this.trackUser.test();
+        })
+    }
+    .height('100%')
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+  }
+}
+
+@Component
+struct TrackChild {
+  @ObjectLink trackUser: TrackUser;
+
+  build() {
+    Column() {
+      // 组件中使用可被观察对象的属性
+      Text('user name: ' + this.trackUser.name)
+      // 组件中使用可被观察对象的属性
+      Text('user age: ' + this.trackUser.age)
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+{
+    // 对象可被观察
+    "isObserved": true,
+    // 使用@Observed装饰器装饰的对象是可被观察对象
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed",
+    // 对象属性使用了@Track装饰器，装饰器信息收集规格与V2组件的收集规格一致
+    "decoratorInfo": [{
+        // 对象属性使用了@Track装饰时，装饰器名称固定为@Track
+        "decoratorName": "@Track",
+        // 对象属性使用了@Track装饰时，stateVariableName表示被@Track装饰是的属性名称
+        "stateVariableName": "name",
+        // 对象属性使用了@Track装饰时，owningComponentOrClassName表示类的名称
+        "owningComponentOrClassName": "TrackUser",
+        // owningComponentOrClassName为类名称时，owningComponentId固定返回-1
+        "owningComponentId": -1,
+        // 对象的name属性关联的组件信息
+        "dependentInfo": [{
+            "elementName": "Text",
+            "elementId": 10
+        }]
+    }, {
+        "decoratorName": "@Track",
+        "stateVariableName": "age",
+        "owningComponentOrClassName": "TrackUser",
+        "owningComponentId": -1,
+        // 对象的age属性关联的组件信息
+        "dependentInfo": [{
+            "elementName": "Text",
+            "elementId": 11
+        }]
+    }]
+}
+```
+
+### Code block 8
+
+```
+// 定义Class
+@ObservedV2
+class TestClass {
+  @Trace a?: string;
+  @Trace b?: string;
+  @Trace c?: string;
+}
+```
+
+### Code block 9
+
+```
+// 返回结果分析
+{
+    // 对象是可被观察的
+    "isObserved": true,
+    "reason": "The object data is decorated with V2 @ObservedV2 and @Trace",
+    // 装饰器信息是按照@Trace装饰的属性进行分类收集
+    "decoratorInfo": [{
+        "decoratorName": "@Trace",
+        // 对象中@Trace属性的名称
+        "stateVariableName": "a",
+        // 对象的类名称
+        "owningComponentOrClassName": "TestClass",
+        // owningComponentId固定返回-1
+        "owningComponentId": -1,
+        // 同一个@Trace属性关联的组件信息集合在一起
+        "dependentInfo": [{
+            "elementId": 5,
+            "elementName": "Text"
+        }]
+    },{
+        "decoratorName": "@Trace",
+        "stateVariableName": "b",
+        "owningComponentOrClassName": "TestClass",
+        "owningComponentId": -1,
+        // 同一个@Trace属性关联的组件信息集合在一起
+        "dependentInfo": [{
+            "elementId": 6,
+            "elementName": "Text"
+        }]
+    },{
+        "decoratorName": "@Trace",
+        "stateVariableName": "c",
+        "owningComponentOrClassName": "TestClass",
+        "owningComponentId": -1,
+        // 同一个@Trace属性关联的组件信息集合在一起
+        "dependentInfo": [{
+            "elementId": 7,
+            "elementName": "Text"
+        }]
+    }]
+}
+```
+
+### Code block 10
+
+```
+import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = 'CanBeObserved';
+
+@ObservedV2
+class LocalUser {
+  @Trace
+  public name?: string;
+  @Trace
+  public age?: number;
+
+  constructor(name?: string, age?: number) {
+    this.name = name ?? '';
+    this.age = age ?? 0;
+  }
+
+  // 在对象中提供判断该对象是否为可被观察对象的方法
+  test(): void {
+    hilog.info(0x00, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this))}`);
+  }
+}
+
+@Entry
+@ComponentV2
+struct V2Local {
+  @Local localUser: LocalUser = new LocalUser('Michael', 29);
+
+  build() {
+    Column({ space: 20 }) {
+      Text('index ' + this.localUser.name)
+      Text('index ' + this.localUser.age)
+      Button('test')
+        .onClick(() => {
+          // 开发者可以在任意页面中使用接口来判断当前对象是否为可被观察对象
+          this.localUser.test();
+        })
+    }
+    .height('100%')
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+  }
+}
+```
+
+### Code block 11
+
+```
+{
+    // 对象是可被观察的
+    "isObserved": true,
+    // @ObservedV2装饰的对象是可被观察的
+    "reason": "The object data is decorated with V2 @ObservedV2 and @Trace",
+    // 对象上装饰器信息，按@Trace装饰的属性分类收集
+    "decoratorInfo": [{
+        // 装饰器名称固定为@Trace
+        "decoratorName": "@Trace",
+        // @Trace装饰的属性名称
+        "stateVariableName": "name",
+        // 对象类名称
+        "owningComponentOrClassName": "LocalUser",
+        // owningComponentId固定返回-1
+        "owningComponentId": -1,
+        // 对象的name属性关联的组件信息
+        "dependentInfo": [{
+            "elementId": 6,
+            "elementName": "Text"
+        }]
+    }, {
+        "decoratorName": "@Trace",
+        "stateVariableName": "age",
+        "owningComponentOrClassName": "LocalUser",
+        "owningComponentId": -1,
+        // 对象的age属性关联的组件信息
+        "dependentInfo": [{
+            "elementId": 7,
+            "elementName": "Text"
+        }]
+    }]
+}
+```
+
+### Code block 12
+
+```
+import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = 'CanBeObserved';
+
+class CompatibilityUser {
+  public name?: string;
+  public age?: number;
+
+  constructor(name?: string, age?: number) {
+    this.name = name ?? '';
+    this.age = age ?? 0;
+  }
+
+  // 在对象中提供判断该对象是否为可被观察对象的方法
+  test(): void {
+    hilog.info(0x00, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this))}`);
+  }
+}
+
+@Entry
+@Component
+struct V1AndV2Compatibility {
+  // 被enableV2Compatibility转换的V1对象必须是可被观察的V1对象
+  @State temp: CompatibilityUser = new CompatibilityUser('Thomas', 43);
+  @State compatibilityUser: CompatibilityUser = UIUtils.enableV2Compatibility(this.temp);
+
+  build() {
+    Column({ space: 20 }) {
+      Text('V1 name: ' + this.compatibilityUser.name)
+      Text('V1 age: ' + this.compatibilityUser.age)
+
+      V2Child({ compatibilityUser: this.compatibilityUser })
+
+      Button('test')
+        .onClick(() => {
+          // 开发者可以在任意页面中使用接口来判断当前对象是否为可被观察对象
+          this.compatibilityUser.test();
+        })
+    }
+    .height('100%')
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+  }
+}
+
+@ComponentV2
+export struct V2Child {
+  @Param compatibilityUser: CompatibilityUser = new CompatibilityUser();
+
+  build() {
+    Column() {
+      Text('V2Child name ' + this.compatibilityUser.name)
+      Text('V2Child age ' + this.compatibilityUser.age)
+    }
+  }
+}
+```
+
+### Code block 13
+
+```
+{
+    // 对象是可被观察的
+    "isObserved": true,
+    // 通过enableV2Compatibility方法转换的对象也是可被观察的
+    "reason": "The V1 Observed object data is wrapped by enableV2Compatibility and used in @ComponentV2",
+    // 装饰器信息，V1组件和V2组件分别收集
+    "decoratorInfo": [{
+        "decoratorName": "@State",
+        "stateVariableName": "temp",
+        "owningComponentOrClassName": "V1AndV2Compatibility",
+        "owningComponentId": 4,
+        "dependentInfo": []
+    }, {
+        "decoratorName": "@State",
+        "stateVariableName": "compatibilityUser",
+        "owningComponentOrClassName": "V1AndV2Compatibility",
+        "owningComponentId": 4,
+        "dependentInfo": [{
+            "elementName": "Text",
+            "elementId": 6
+        }, {
+            "elementName": "Text",
+            "elementId": 7
+        }, {
+            "elementName": "V2Child",
+            "elementId": 8
+        }]
+    }, {
+        // V2组件的decoratorName名称固定EnableV2Compatible
+        "decoratorName": "EnableV2Compatible",
+        // V2组件按对象属性分类收集
+        "stateVariableName": "name",
+        "owningComponentOrClassName": "CompatibilityUser",
+        "owningComponentId": -1,
+        // 对象name属性在V2组件中关联的组件信息
+        "dependentInfo": [{
+            "elementId": 12,
+            "elementName": "Text"
+        }]
+    }, {
+        "decoratorName": "EnableV2Compatible",
+        "stateVariableName": "age",
+        "owningComponentOrClassName": "CompatibilityUser",
+        "owningComponentId": -1,
+        // 对象age属性在V2组件中关联的组件信息
+        "dependentInfo": [{
+            "elementId": 13,
+            "elementName": "Text"
+        }]
+    }]
+}
+```
+
+### Code block 14
+
+```
+static increaseVolume(balloon: Balloon) {
+  // 修改属性前，通过canBeObserved来判断入参balloon对象是否可被观察
+  hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
+  balloon.volume += 2;
+}
+```
+
+### Code block 15
+
+```
+reduceVolume(balloon: Balloon) {
+  // 修改属性前，通过canBeObserved来判断入参balloon对象是否可被观察
+  hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
+  balloon.volume -= 1;
+}
+```
+
+### Code block 16
+
+```
+{
+    // 不可被观察
+    "isObserved": false,
+    // 原因：不是可被观察对象
+    "reason": "The object data is not an observable object",
+    // 装饰器信息为空
+    "decoratorInfo": []
+}
+```
+
+### Code block 17
+
+```
+static increaseVolume(balloon: Balloon) {
+  // 修改属性前，通过canBeObserved来判断入参balloon对象是否可被观察
+  hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
+  balloon.volume += 2;
+}
+```
+
+### Code block 18
+
+```
+reduceVolume(balloon: Balloon) {
+  // 修改属性前，通过canBeObserved来判断入参balloon对象是否可被观察
+  hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(balloon))}`);
+  balloon.volume -= 1;
+}
+```
+
+### Code block 19
+
+```
+{
+    "isObserved": true,
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed",
+    "decoratorInfo": [{
+        "decoratorName": "@State",
+        "stateVariableName": "balloon",
+        "owningComponentOrClassName": "Index",
+        "owningComponentId": 4,
+        "dependentInfo": [{
+            "elementName": "Text",
+            "elementId": 6
+        }]
+    }]
+}
+```
+
+### Code block 20
+
+```
+Button('move')
+  .translate({
+    x: this.translateObj.translateX
+  })
+  .onClick(() => {
+    this.getUIContext().animateTo({
+      duration: 50
+    }, () => {
+      // 在修改状态变量之前，调用canBeObserved接口获取状态变量关联的组件
+      hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(this.translateObj))}`);
+      this.translateObj.translateX = (this.translateObj.translateX + 50) % 150;
+    });
+  })
+```
+
+### Code block 21
+
+```
+// 反例的获取结果，对象关联5个组件
+{
+    "isObserved": true,
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed",
+    "decoratorInfo": [{
+        "decoratorName": "@State",
+        "stateVariableName": "translateObj",
+        "owningComponentOrClassName": "Page",
+        "owningComponentId": 4,
+        "dependentInfo": [{
+            "elementName": "Title",
+            "elementId": 6
+        }, {
+            "elementName": "Stack",
+            "elementId": 7
+        }, {
+            "elementName": "Button",
+            "elementId": 8
+        }]
+    }, {
+        "decoratorName": "@ObjectLink",
+        "stateVariableName": "translateObj",
+        "owningComponentOrClassName": "Title",
+        "owningComponentId": 6,
+        "dependentInfo": [{
+            "elementName": "Image",
+            "elementId": 11
+        }, {
+            "elementName": "Text",
+            "elementId": 12
+        }]
+    }]
+}
+```
+
+### Code block 22
+
+```
+Button('move')
+  .onClick(() => {
+    this.getUIContext().animateTo({
+      duration: 50
+    }, () => {
+      // 在修改状态变量之前，调用canBeObserved接口获取状态变量关联的组件
+      hilog.info(0x00, 'test_log', `res: ${JSON.stringify(UIUtils.canBeObserved(this.translateObj))}`);
+      this.translateObj.translateX = (this.translateObj.translateX + 50) % 150;
+    });
+  })
+```
+
+### Code block 23
+
+```
+// 正例的获取结果，对象关联1个组件
+{
+    "isObserved": true,
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed",
+    "decoratorInfo": [{
+        "decoratorName": "@State",
+        "stateVariableName": "translateObj",
+        "owningComponentOrClassName": "Page1",
+        "owningComponentId": 4,
+        "dependentInfo": [{
+            "elementName": "Column",
+            "elementId": 5
+        }]
+    }]
+}
+```
+
+### Code block 24
+
+```
+Text('Font Size List')
+  .fontSize(50)
+  .onClick(() => {
+    for (let i = 0; i < this.styleList.length; i++) {
+      // 此处想要修改的是this.styleList[i]对象的fontSize属性
+      // 修改之前调用canBeObserved接口获取this.styleList[i]对象关联的组件信息
+      hilog.info(DOMAIN_NUMBER, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this.styleList[i]))}`);
+      this.styleList[i].fontSize++;
+    }
+    hilog.info(DOMAIN_NUMBER, TAG, 'change font size');
+  })
+```
+
+### Code block 25
+
+```
+{
+    // 对象是可被观察的
+    "isObserved": true,
+    // @Observed装饰的对象是可被观察的
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed, but not used in UI",
+    // 收集的装饰器信息为空
+    "decoratorInfo": []
+}
+```
+
+### Code block 26
+
+```
+Text('Font Size List')
+  .fontSize(50)
+  .onClick(() => {
+    for (let i = 0; i < this.styleList.length; i++) {
+      // 此处想要修改的是this.styleList[i]对象的fontSize属性
+      // 修改之前调用canBeObserved接口获取this.styleList[i]对象关联的组件信息
+      hilog.info(DOMAIN_NUMBER, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this.styleList[i]))}`);
+      this.styleList[i].fontSize++;
+    }
+    hilog.info(DOMAIN_NUMBER, TAG, 'change font size');
+  })
+```
+
+### Code block 27
+
+```
+{
+    "isObserved": true,
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed",
+    "decoratorInfo": [{
+        "decoratorName": "@ObjectLink",
+        "stateVariableName": "textStyle",
+        "owningComponentOrClassName": "TextComponent",
+        "owningComponentId": 147,
+        "dependentInfo": [{
+            "elementName": "Text",
+            "elementId": 148
+        }]
+    }]
+}
+```
+
+### Code block 28
+
+```
+Button('X')
+  .backgroundColor(Color.Red)
+  .onClick(() => {
+    let index = this.childList.findIndex((item) => {
+      return item.count === this.child.count;
+    });
+    if (index !== -1) {
+      // 在删除数组元素之前，调用canBeObserved接口判断this.childList是否是一个可被观察对象
+      hilog.info(DOMAIN_NUMBER, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this.childList))}`);
+      this.childList.splice(index, 1);
+    }
+  })
+  .margin({
+    left: 200,
+    right: 30
+  })
+```
+
+### Code block 29
+
+```
+{
+    "isObserved": false,
+    "reason": "The object data is not an observable object",
+    "decoratorInfo": []
+}
+```
+
+### Code block 30
+
+```
+Button('X')
+  .backgroundColor(Color.Red)
+  .onClick(() => {
+    let index = this.childList.findIndex((item) => {
+      return item.count === this.child.count;
+    });
+    if (index !== -1) {
+      // 在删除数组元素之前，调用canBeObserved接口判断this.childList是否是一个可被观察对象
+      hilog.info(DOMAIN_NUMBER, TAG, `res: ${JSON.stringify(UIUtils.canBeObserved(this.childList))}`);
+      this.childList.splice(index, 1);
+    }
+  })
+  .margin({
+    left: 200,
+    right: 30
+  })
+```
+
+### Code block 31
+
+```
+{
+    "isObserved": true,
+    "reason": "The object data is decorated with @Observed or wrapped by makeV1Observed",
+    "decoratorInfo": [{
+        "decoratorName": "@ObjectLink",
+        "stateVariableName": "childList",
+        "owningComponentOrClassName": "CompList",
+        "owningComponentId": 8,
+        "dependentInfo": [{
+            "elementName": "ForEach",
+            "elementId": 16
+        }]
+    },
+    ...
+    // 以下结果省略
+  ]
+}
+```

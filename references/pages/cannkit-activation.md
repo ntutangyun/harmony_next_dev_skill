@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-activation_
 
+SoftmaxFlashV2
+
+Sigmoid

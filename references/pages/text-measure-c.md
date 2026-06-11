@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-measure-c_
 
+场景介绍
+
 文本测量指的是在图形绘制中，对文本的尺寸和布局进行评估，计算文本在给定字体和样式下占用的空间（例如宽度、高度和其他相关信息）的过程。文本测量用于文本排版、布局、渲染以及调整文本显示的位置和大小等场景，便于更精准地控制与调整界面的布局和呈现，以达到设计预期。
 
 当前主要支持以下方面的文本测量能力：
@@ -24,6 +26,7 @@ double OH_Drawing_TypographyGetLongestLineWithIndent(OH_Drawing_Typography*)	获
 size_t OH_Drawing_TypographyGetLineCount (OH_Drawing_Typography* )	获取文本行数。
 OH_Drawing_LineMetrics* OH_Drawing_TypographyGetLineMetrics (OH_Drawing_Typography* )	获取段落行的度量信息。包含行的高度、宽度、起始坐标等信息。
 double OH_Drawing_TextStyleGetLetterSpacing (OH_Drawing_TextStyle *)	获取文本的字符间距。
+
 开发步骤
 
 在工程的src/main/cpp/CMakeLists.txt文件中添加以下lib。
@@ -35,11 +38,11 @@ libnative_drawing.so
 #include <native_drawing/drawing_font_collection.h>
 #include <native_drawing/drawing_text_typography.h>
 #include <native_drawing/drawing_text_declaration.h>
-sample_bitmap.cpp
 
 创建段落生成器ParagraphBuilder，并设置段落样式。
 
-// 创建文本样式，并设置字体大小为50
+// 创建文本样式，设置文本颜色为黑色并设置字体大小为50
+OH_Drawing_TextStyle *myTextStyle = OH_Drawing_CreateTextStyle();
 OH_Drawing_SetTextStyleColor(myTextStyle, OH_Drawing_ColorSetArgb(0xFF, 0x00, 0x00, 0x00));
 OH_Drawing_SetTextStyleFontSize(myTextStyle, 50.0);
 // 创建一个段落样式对象，以设置排版风格
@@ -55,13 +58,11 @@ const char *text = "排版测量的文字度量信息";
 OH_Drawing_TypographyHandlerAddText(handler, text);
 // 通过段落生成器生成段落
 OH_Drawing_Typography *typography = OH_Drawing_CreateTypography(handler);
-sample_bitmap.cpp
 
 调用排版接口并设置段落排版宽度，对段落进行塑型排版。
 
 // 对段落进行塑形排版，设置排版宽度为maxWidth
 OH_Drawing_TypographyLayout(typography, maxWidth);
-sample_bitmap.cpp
 
 调用段落测量信息获取接口，获取指定数据。
 
@@ -69,11 +70,9 @@ sample_bitmap.cpp
 double longestLine = OH_Drawing_TypographyGetLongestLine(typography);
 DRAWING_LOGI("第%{public}d行 longestLine: %{public}f", longestLine);
 
-
 // case2:获取排版后段落行数
 size_t lineCnt = OH_Drawing_TypographyGetLineCount(typography);
 DRAWING_LOGI("lineCnt: %{public}zu", lineCnt);
-
 
 // case3:获取段落每行的度量信息
 OH_Drawing_LineMetrics *lineMetrics = OH_Drawing_TypographyGetLineMetrics(typography);
@@ -86,11 +85,9 @@ double curLineWidth = lineMetrics[i].width;
     DRAWING_LOGI("第%{public}d行 lineMetrics width: %{public}f", i + 1, curLineWidth);
 }
 
-
 // case4:获取段落最长行宽度与带缩进最长行行宽
 double longestLineWithIndent = OH_Drawing_TypographyGetLongestLineWithIndent(typography);
 DRAWING_LOGI("longestLineWithIndent: %{public}f", longestLineWithIndent);
-
 
 OH_Drawing_Font_Metrics fontMetrics;
 // 获取文本字体属性
@@ -100,6 +97,84 @@ DRAWING_LOGI("result: %{public}zu, fontMetrics ascent: %{public}f" , result, fon
 OH_Drawing_LineMetrics lineMetric;
 OH_Drawing_TypographyGetLineMetricsAt(typography, 0, &lineMetric);
 DRAWING_LOGI("第1行 lineMetrics ascender: %{public}f", -lineMetric.ascender);
-sample_bitmap.cpp
-文本测量（ArkTS）
-文本绘制与显示
+
+## Code blocks
+
+### Code block 1
+
+```
+libnative_drawing.so
+```
+
+### Code block 2
+
+```
+#include <native_drawing/drawing_font_collection.h>
+#include <native_drawing/drawing_text_typography.h>
+#include <native_drawing/drawing_text_declaration.h>
+```
+
+### Code block 3
+
+```
+// 创建文本样式，设置文本颜色为黑色并设置字体大小为50
+OH_Drawing_TextStyle *myTextStyle = OH_Drawing_CreateTextStyle();
+OH_Drawing_SetTextStyleColor(myTextStyle, OH_Drawing_ColorSetArgb(0xFF, 0x00, 0x00, 0x00));
+OH_Drawing_SetTextStyleFontSize(myTextStyle, 50.0);
+// 创建一个段落样式对象，以设置排版风格
+OH_Drawing_TypographyStyle *typographyStyle = OH_Drawing_CreateTypographyStyle();
+// 设置段落样式的对齐方式为左对齐
+OH_Drawing_SetTypographyTextAlign(typographyStyle, TEXT_ALIGN_LEFT);
+// 创建一个段落生成器
+OH_Drawing_TypographyCreate *handler = OH_Drawing_CreateTypographyHandler(typographyStyle, fontCollection);
+// 在段落生成器中设置文本样式
+OH_Drawing_TypographyHandlerPushTextStyle(handler, myTextStyle);
+// 在段落生成器中添加文本内容
+const char *text = "排版测量的文字度量信息";
+OH_Drawing_TypographyHandlerAddText(handler, text);
+// 通过段落生成器生成段落
+OH_Drawing_Typography *typography = OH_Drawing_CreateTypography(handler);
+```
+
+### Code block 4
+
+```
+// 对段落进行塑形排版，设置排版宽度为maxWidth
+OH_Drawing_TypographyLayout(typography, maxWidth);
+```
+
+### Code block 5
+
+```
+// case1: 获取排版后最长行行宽
+double longestLine = OH_Drawing_TypographyGetLongestLine(typography);
+DRAWING_LOGI("第%{public}d行 longestLine: %{public}f", longestLine);
+
+// case2:获取排版后段落行数
+size_t lineCnt = OH_Drawing_TypographyGetLineCount(typography);
+DRAWING_LOGI("lineCnt: %{public}zu", lineCnt);
+
+// case3:获取段落每行的度量信息
+OH_Drawing_LineMetrics *lineMetrics = OH_Drawing_TypographyGetLineMetrics(typography);
+int lineMetricsSize = OH_Drawing_LineMetricsGetSize(lineMetrics);
+for (int i = 0; i < lineMetricsSize; ++i) {
+// lineMetrics为经过排版测量的文字度量信息
+double curLineAscender = -lineMetrics[i].ascender;
+double curLineWidth = lineMetrics[i].width;
+    DRAWING_LOGI("第%{public}d行 lineMetrics ascender: %{public}f", i + 1, curLineAscender);
+    DRAWING_LOGI("第%{public}d行 lineMetrics width: %{public}f", i + 1, curLineWidth);
+}
+
+// case4:获取段落最长行宽度与带缩进最长行行宽
+double longestLineWithIndent = OH_Drawing_TypographyGetLongestLineWithIndent(typography);
+DRAWING_LOGI("longestLineWithIndent: %{public}f", longestLineWithIndent);
+
+OH_Drawing_Font_Metrics fontMetrics;
+// 获取文本字体属性
+bool result = OH_Drawing_TextStyleGetFontMetrics(typography, myTextStyle, &fontMetrics);
+DRAWING_LOGI("result: %{public}zu, fontMetrics ascent: %{public}f" , result, fontMetrics.ascent);
+// 获取排版对象的指定行位置信息，该接口需要在OH_Drawing_TypographyLayout接口调用之后调用
+OH_Drawing_LineMetrics lineMetric;
+OH_Drawing_TypographyGetLineMetricsAt(typography, 0, &lineMetric);
+DRAWING_LOGI("第1行 lineMetrics ascender: %{public}f", -lineMetric.ascender);
+```

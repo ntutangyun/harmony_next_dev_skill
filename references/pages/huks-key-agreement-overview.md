@@ -7,7 +7,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 两台设备间进行密钥协商，双方各准备一个非对称密钥，并互换非对称密钥的公钥，以对端公钥与己端私钥协商出一个密钥，该密钥在两台设备相同。
 
 说明
+
 轻量级智能穿戴不支持密钥协商功能。
+
 使用现有密钥别名作为协商结果密钥别名会把现有密钥覆盖。
 
 从API 23开始支持群组密钥特性。
@@ -17,32 +19,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 以下为密钥协商支持的规格说明。
 
 算法	备注	协商的密钥长度	协商密钥可用算法	API级别
-ECDH	协商密钥类型为ECC类型密钥。	256	
-
-AES/256
-
-HMAC/256
-
-	8+
-DH	协商密钥类型为DH类型密钥。	2048	
-
-AES/128/192/256
-
-HMAC/8-1024
-
-SM4/128
-
-DES/64
-
-3DES/128/192
-
-	8+
-X25519	协商密钥类型为X25519类型密钥。	256	
-
-AES/256
-
-HMAC/256
-
-	8+
-密钥协商
-密钥协商(ArkTS)
+ECDH	协商密钥类型为ECC类型密钥。	256	AES/256 HMAC/256	8+
+DH	协商密钥类型为DH类型密钥。	2048	AES/128/192/256 HMAC/8-1024 SM4/128 DES/64 3DES/128/192	8+
+X25519	协商密钥类型为X25519类型密钥。	256	AES/256 HMAC/256	8+

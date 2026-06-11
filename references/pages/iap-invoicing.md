@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-invoicing_
 
+用户申请开发票
+
 从6.1.0（23）开始，支持开发票功能。若用户购买应用内数字商品后需要申请开发票，可选择需要申请开票的订单后根据页面指引，提交开发票信息。
 
 用户可按照以下步骤：
@@ -23,7 +25,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-invoi
 import { iap } from '@kit.IAPKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
-
 
 @Entry
 @Component
@@ -48,5 +49,37 @@ struct IapTest {
   build() {
   }
 }
-退款
-IAP Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+import { iap } from '@kit.IAPKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct IapTest {
+  /**
+   * 拉起开发票界面
+   */
+  showManagedInvoices() {
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    // 调用iap.showManagedInvoices拉起开发票页面，传入context和purchaseOrderId
+    let purchaseOrderId = '';
+    iap.showManagedInvoices(context, purchaseOrderId).then(() => {
+      // 请求成功
+      console.info('Succeeded in showing invoice page.');
+      // ...
+    }).catch((err: BusinessError) => {
+      // 请求失败
+      console.error(`Failed to show invoice page. Code is ${err.code}, message is ${err.message}`);
+      // ...
+    });
+  }
+  build() {
+  }
+}
+```

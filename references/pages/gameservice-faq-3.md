@@ -1,8 +1,5 @@
-# 游戏如何实现不展示官方账号登录？
+# 游戏如何实现不展示官方账号登录
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-faq-3_
 
 在游戏调用unionLogin接口时，将thirdAccountInfos参数传空数组，即可实现玩家登录游戏时不展示“游戏官方账号登录”选项，默认使用华为账号登录。
-
-游戏官方账号图标大小是多少？
-玩家选错登录账号后如何处理？

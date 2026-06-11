@@ -22,11 +22,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = '[Sample_PreventBubbling]';
 const DOMAIN = 0xF811;
 const BUNDLE = 'MyApp_PreventBubbling';
-
 
 @Entry
 @ComponentV2
@@ -59,7 +57,7 @@ struct PreventBubbling {
     .width('100%')
   }
 }
-PreventBubbling.ets
+
 说明
 
 对事件的冒泡进行控制不会影响手势对触摸事件的接收与处理，因此需要分别考虑这两者。
@@ -69,7 +67,9 @@ PreventBubbling.ets
 基础事件的上报频率与具体的输入设备类型有关，但一般频率都是非常高的，如触屏一般每5~7ms即上报一个点，而对于一些高精度鼠标，上报频率最高可达到每1ms上报一次。由于对输入事件的响应是为了UI界面的变化来产生对用户操作的响应，因此将如此之高的基础事件上报给应用，多数情况下是冗余的。为此系统会对两帧之间所收到的基础事件进行重采样，只在帧内上报一次给应用。重采样是针对每个触点单独进行的，不同触点会单独进行重采样。
 
 按下时产生的事件会立即上报给应用；
+
 帧内的move报点并不会立即下发，而是会在送显帧到来时重采样合并后上报；
+
 抬起时产生的事件会立即上报给应用，并在上报之前先将还未处理的move事件上报；
 
 重采样会合并同一个触点在同一帧内多次上报的move事件，并通过算法尽可能计算出一个合适的坐标上报给应用，因此经过重采样后的坐标信息，与底层设备真实上报的点会存在细微的差异，这些差异是有益的，经过重采样后的点通常具备更好的平滑性。
@@ -80,11 +80,9 @@ PreventBubbling.ets
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = '[Sample_Sampling]';
 const DOMAIN = 0xF811;
 const BUNDLE = 'MyApp_Sampling';
-
 
 @Entry
 @ComponentV2
@@ -110,25 +108,22 @@ struct Sampling {
     .width('100%')
   }
 }
-Sampling.ets
+
 多指信息
 
 在支持多指触控的触屏设备上，上报的事件中同时包含了窗口所有按压手指的信息，可以通过touches获取，如下：
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = '[Sample_MultipleFingerInformation]';
 const DOMAIN = 0xF811;
 const BUNDLE = 'MyApp_MultipleFingerInformation';
-
 
 @Entry
 @ComponentV2
 struct MultipleFingerInformation {
   private currentFingerCount: number = 0;
   private allFingerIds: number[] = [];
-
 
   build() {
     RelativeContainer() {
@@ -166,7 +161,6 @@ struct MultipleFingerInformation {
     .width('100%')
   }
 }
-MultipleFingerInformation.ets
 
 不同触点通过id区分，id按照接触屏幕的顺序依次递增，与物理上的触点（手指）并无严格顺序对应关系。并且这些触点在touches数组中并非按照编号大小顺序排列，请不要依赖顺序进行访问，另外，直到所有触点全部离开屏幕之前，期间抬起的触点对应的编号，会在有触点按下时自动复用。
 
@@ -190,12 +184,166 @@ MultipleFingerInformation.ets
   current all fingers: 1        // 抬起手指①
   ... ...
   all fingers already up        // 抬起手指③
+
 触控笔
 
 触控笔操作触摸屏与通过手指操作类似，都会产生触摸事件，可以通过sourceTool进行区分。而对于一些主动式电容笔，上报的触摸事件中，还会包含笔接触屏幕时的夹角信息，可参考BaseEvent。
 
 tiltX：触控笔在设备平面上的投影与设备平面X轴的夹角。
+
 tiltY：触控笔在设备平面上的投影与设备平面Y轴的夹角。
+
 rollAngle：触控笔与设备平面的夹角。
-输入设备与事件
-支持鼠标输入事件
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = '[Sample_PreventBubbling]';
+const DOMAIN = 0xF811;
+const BUNDLE = 'MyApp_PreventBubbling';
+
+@Entry
+@ComponentV2
+struct PreventBubbling {
+  build() {
+    RelativeContainer() {
+      Column() { // 父组件
+        // 请将$r('app.string.preventEvent')替换为实际资源文件，在本示例中该资源文件的value值为"如果点中了我，就阻止父组件收到触摸事件"
+        Text($r('app.string.preventEvent'))
+          .fontColor(Color.White)
+          .height('40%')
+          .width('80%')
+          .backgroundColor(Color.Brown)
+          .alignSelf(ItemAlign.Center)
+          .padding(10)
+          .margin(20)
+          .onTouch((event: TouchEvent) => {
+            event.stopPropagation(); // 子组件优先接收到触摸事件后，阻止父组件接收事件
+          })
+      }
+      .justifyContent(FlexAlign.End)
+      .backgroundColor(Color.Green)
+      .height('100%')
+      .width('100%')
+      .onTouch((event: TouchEvent) => {
+        hilog.info(DOMAIN, TAG, BUNDLE + 'touch event received on parent');
+      })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 2
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = '[Sample_Sampling]';
+const DOMAIN = 0xF811;
+const BUNDLE = 'MyApp_Sampling';
+
+@Entry
+@ComponentV2
+struct Sampling {
+  build() {
+    RelativeContainer() {
+      Column()
+        .backgroundColor(Color.Green)
+        .height('100%')
+        .width('100%')
+        .onTouch((event: TouchEvent) => {
+          // 从event中获取历史点
+          let allHistoricalPoints = event.getHistoricalPoints();
+          if (allHistoricalPoints.length !== 0) {
+            for (const point of allHistoricalPoints) {
+              hilog.info(DOMAIN, TAG, BUNDLE + 'historical point: [' + point.touchObject.windowX +
+                ', ' + point.touchObject.windowY + ']');
+            }
+          }
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 3
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = '[Sample_MultipleFingerInformation]';
+const DOMAIN = 0xF811;
+const BUNDLE = 'MyApp_MultipleFingerInformation';
+
+@Entry
+@ComponentV2
+struct MultipleFingerInformation {
+  private currentFingerCount: number = 0;
+  private allFingerIds: number[] = [];
+
+  build() {
+    RelativeContainer() {
+      Column()
+        .backgroundColor(Color.Green)
+        .height('100%')
+        .width('100%')
+        .onTouch((event: TouchEvent) => {
+          if (event.source !== SourceType.TouchScreen) {
+            return;
+          }
+          // clear数组
+          this.allFingerIds.splice(0, this.allFingerIds.length);
+          // 从event中获取所有触点信息
+          let allFingers = event.touches;
+          if (allFingers.length > 0 && this.currentFingerCount === 0) {
+            // 第1根手指按下
+            hilog.info(DOMAIN, TAG, BUNDLE + 'fingers start to press down');
+            this.currentFingerCount = allFingers.length;
+          }
+          if (allFingers.length !== 0) {
+            for (const finger of allFingers) {
+              this.allFingerIds.push(finger.id);
+            }
+            hilog.info(DOMAIN, TAG, BUNDLE + 'current all fingers : ' + this.allFingerIds.toString());
+          }
+          if (event.type === TouchType.Up && event.touches.length === 1) {
+            // 所有手指都已抬起
+            hilog.info(DOMAIN, TAG, BUNDLE + 'all fingers already up');
+            this.currentFingerCount = 0;
+          }
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 4
+
+```
+  fingers start to press down   // 按下手指①
+  current all fingers: 0
+  ... ...
+  current all fingers: 0,1      // 按下手指②
+  ... ...
+  current all fingers: 0,1,2    // 按下手指③
+  ... ...
+  current all fingers: 0,2      // 抬起手指②
+  ... ...
+  current all fingers: 0        // 抬起手指③
+  ... ...
+  current all fingers: 0,1      // 按下手指③
+  ... ...
+  current all fingers: 1        // 抬起手指①
+  ... ...
+  all fingers already up        // 抬起手指③
+```

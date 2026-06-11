@@ -17,6 +17,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-g
 应用提供的服务依赖用户手机号，需要获取用户手机号，参见获取手机号。
 
 应用提供的服务依赖用户实名年龄段，需要获取用户实名年龄段信息，参见获取实名年龄段标识。
-
-获取华为账号用户信息
-获取头像昵称

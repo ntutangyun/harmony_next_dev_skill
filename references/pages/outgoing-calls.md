@@ -2,12 +2,38 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/outgoing-calls_
 
+场景介绍
+
+应用主动发起音/视频通话，称为去电场景。
+
+去电场景，由于应用在前台，不需要横幅通知，只在屏幕左上角，展示通话胶囊。去电场景的效果图展示如下：
+
+语音去电(正在呼叫)	语音去电（通话中）	视频去电（正在呼叫）	视频去电（通话中）
+			
+
+去电场景，用户也可以拉起通知中心面板，在实况窗横幅上做静音与解除静音、挂断通话等操作。
+
+去电实况窗通知（正在呼叫）	去电实况窗通知（通话中）
+	
+
+约束与限制
+
+去电场景支持Phone、Tablet设备，并从6.0(20)版本开始支持Wearable设备。
+
+业务流程
+
+接口说明
+
+去电场景的接口，由voipCall提供。更多接口信息详见接口文档。
+
+接口名	描述
 on(type: 'voipCallUiEvent', callback: Callback<VoipCallUiEventInfo>): void	订阅voipCallUiEvent事件。
 off(type: 'voipCallUiEvent', callback?: Callback<VoipCallUiEventInfo>): void	取消订阅voipCallUiEvent事件。
 reportOutgoingCall(voipCallAttribute: VoipCallAttribute): Promise<ErrorReason>	上报去电。
 reportCallAudioEventChange(callId: string, callAudioEvent: CallAudioEvent): Promise<void>	上报音频事件。
 reportCallStateChange(callId: string, callState: VoipCallState): Promise<void>	上报通话状态改变。
 reportCallStateChange(callId: string, callState: VoipCallState, callType: VoipCallType): Promise<void>	上报通话状态改变，并指定通话类型。
+
 开发步骤
 
 去电场景的开发步骤与来电场景相似。
@@ -44,7 +70,6 @@ let voipCallAttribute: voipCall.VoipCallAttribute = {
   showBannerForIncomingCall: true
 };
 
-
 // 向Call Service Kit上报去电
 voipCall.reportOutgoingCall(voipCallAttribute).then(errorReason => {
   if (errorReason == voipCall.ErrorReason.ERROR_NONE) {
@@ -53,6 +78,7 @@ voipCall.reportOutgoingCall(voipCallAttribute).then(errorReason => {
     hilog.error(0x0000, 'CallDemo', 'Failed to report the outgoing call: %{public}d', errorReason);
   }
 });
+
 注意
 
 上报去电时，通话状态必须是VOIP_CALL_STATE_DIALING，否则Call Service Kit会认为参数不合法而返回1007200001错误码。
@@ -63,7 +89,6 @@ voipCall.reportOutgoingCall(voipCallAttribute).then(errorReason => {
 
 // ...应用服务器收到对端接听的消息
 let answeredCallId = '123456'; //与reportOutgoingCall携带callId一致，应用内通话唯一ID。
-
 
 // 向Call Service Kit上报通话状态
 voipCall.reportCallStateChange(answeredCallId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
@@ -84,5 +109,65 @@ voipCall.reportCallStateChange(answeredCallId, voipCall.VoipCallState.VOIP_CALL_
 voipCall.off('voipCallUiEvent', callback => {
   hilog.info(0x0000, 'CallDemo', `Succeeded in unRegistering voipCallUiEvent, callId: ${callback.callId}`);
 });
-来电场景
-企业联系人信息来去电页面显示
+
+## Code blocks
+
+### Code block 1
+
+```
+import { voipCall } from '@kit.CallServiceKit';
+import { image } from '@kit.ImageKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+// 注册voipCallUiEvent事件
+voipCall.on('voipCallUiEvent', callback => {
+  hilog.info(0x0000, 'CallDemo', 'Succeeded in registering voipCallUiEvent');
+});
+```
+
+### Code block 3
+
+```
+// 构建上报去电的参数
+let voipCallAttribute: voipCall.VoipCallAttribute = {
+  callId: '1234567890',
+  voipCallType: voipCall.VoipCallType.VOIP_CALL_VOICE,
+  userName: 'Jack',
+  userProfile: image.createPixelMapSync(new ArrayBuffer(100), { size: { width: 90, height: 90 } }),
+  abilityName: 'VoipCallAbility',
+  voipCallState: voipCall.VoipCallState.VOIP_CALL_STATE_DIALING,  // 去电的状态必须是DIALING
+  showBannerForIncomingCall: true
+};
+
+// 向Call Service Kit上报去电
+voipCall.reportOutgoingCall(voipCallAttribute).then(errorReason => {
+  if (errorReason == voipCall.ErrorReason.ERROR_NONE) {
+    hilog.info(0x0000, 'CallDemo', 'Succeeded in reporting the outgoing call');
+  } else {
+    hilog.error(0x0000, 'CallDemo', 'Failed to report the outgoing call: %{public}d', errorReason);
+  }
+});
+```
+
+### Code block 4
+
+```
+// ...应用服务器收到对端接听的消息
+let answeredCallId = '123456'; //与reportOutgoingCall携带callId一致，应用内通话唯一ID。
+
+// 向Call Service Kit上报通话状态
+voipCall.reportCallStateChange(answeredCallId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
+```
+
+### Code block 5
+
+```
+// 解除voipCallUiEvent事件
+voipCall.off('voipCallUiEvent', callback => {
+  hilog.info(0x0000, 'CallDemo', `Succeeded in unRegistering voipCallUiEvent, callId: ${callback.callId}`);
+});
+```

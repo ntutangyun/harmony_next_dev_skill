@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/l10n-testing_
 
+伪本地化测试
+
+语言测试

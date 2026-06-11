@@ -12,5 +12,6 @@ Game Controller Kit支持的能力包括:
 
 监听游戏手柄的轴和按键事件
 
-Game Controller Kit（游戏控制器服务）
-监听设备上下线（C/C++）
+模拟器支持情况
+
+本Kit暂不支持模拟器。

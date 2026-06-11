@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/four_
 
+当前暂不支持云侧动态更新方案。

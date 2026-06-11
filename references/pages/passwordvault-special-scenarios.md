@@ -13,63 +13,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/passwordv
 页面上有两个输入框时，根据输入框类型的不同，密码保险箱的表现如下表。
 
 输入框类型	密码保险箱的表现
-InputType.USER_NAME / InputType.Email / InputType.PhoneNumber输入框 + InputType.Password输入框	
-
-- 点击其中一个输入框，触发账号密码填充提示。
-
-- 页面跳转时，自动弹出账号密码保存提示框。
-
-
-非密码类型输入框 + InputType.Password输入框	
-
-- 点击其中一个输入框，触发账号密码填充提示。
-
-- 页面跳转时，自动弹出账号密码保存提示框。
-
-
-InputType.USER_NAME / InputType.Email / InputType.PhoneNumber输入框 + InputType.NEW_PASSWORD输入框	
-
-- 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。
-
-- 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。
-
-
-非密码类型输入框 + InputType.NEW_PASSWORD输入框	
-
-- 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。
-
-- 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。
+InputType.USER_NAME / InputType.Email / InputType.PhoneNumber输入框 + InputType.Password输入框	- 点击其中一个输入框，触发账号密码填充提示。 - 页面跳转时，自动弹出账号密码保存提示框。
+非密码类型输入框 + InputType.Password输入框	- 点击其中一个输入框，触发账号密码填充提示。 - 页面跳转时，自动弹出账号密码保存提示框。
+InputType.USER_NAME / InputType.Email / InputType.PhoneNumber输入框 + InputType.NEW_PASSWORD输入框	- 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。 - 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。
+非密码类型输入框 + InputType.NEW_PASSWORD输入框	- 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。 - 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。
 
 当页面上有多个输入框时，根据输入框类型的不同，密码保险箱的表现如下表。
 
 输入框类型	密码保险箱的表现
-含InputType.USER_NAME / InputType.Email / InputType.PhoneNumber其中一种或多种 + 含InputType.Password输入框	
-
-- 点击其中一个输入框，触发账号密码填充提示。
-
-- 页面跳转时，自动弹出账号密码保存提示框。
-
-- 保存账号密码时，优先保存USER_NAME输入框的内容作为账户名。
-
-
-含InputType.USER_NAME / InputType.Email / InputType.PhoneNumber其中一种或多种 + 含InputType.NEW_PASSWORD输入框	
-
-- 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。
-
-- 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。
-
-- 保存账号密码时，优先保存USER_NAME输入框的内容作为账户名。
-
-
-含InputType.USER_NAME / InputType.Email / InputType.PhoneNumber其中一种或多种 + 含InputType.Password输入框 + 含InputType.NEW_PASSWORD输入框	
-
-- 点击其中一个输入框，触发账号密码填充提示。
-
-- 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。
-
-- 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。
-
-- 保存账号密码时，优先保存USER_NAME输入框的内容作为账户名。
-
-自定义布局下的适配建议
-网页接入密码保险箱
+含InputType.USER_NAME / InputType.Email / InputType.PhoneNumber其中一种或多种 + 含InputType.Password输入框	- 点击其中一个输入框，触发账号密码填充提示。 - 页面跳转时，自动弹出账号密码保存提示框。 - 保存账号密码时，优先保存USER_NAME输入框的内容作为账户名。
+含InputType.USER_NAME / InputType.Email / InputType.PhoneNumber其中一种或多种 + 含InputType.NEW_PASSWORD输入框	- 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。 - 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。 - 保存账号密码时，优先保存USER_NAME输入框的内容作为账户名。
+含InputType.USER_NAME / InputType.Email / InputType.PhoneNumber其中一种或多种 + 含InputType.Password输入框 + 含InputType.NEW_PASSWORD输入框	- 点击其中一个输入框，触发账号密码填充提示。 - 点击新密码输入框（InputType.NEW_PASSWORD），触发强密码填充。 - 页面跳转时，如果直接使用生成的强密码，将静默保存到密码保险箱；如果使用自定义密码，即未使用或修改了生成的强密码，将弹出账号密码保存提示框。 - 保存账号密码时，优先保存USER_NAME输入框的内容作为账户名。

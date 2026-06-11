@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-urpccall_
 
+场景介绍
+
 发送一个URPC请求，可以设置优先级等参数，返回来自远程服务器的URPC响应。当发起请求后，可以选择取消指定或正在进行的URPC请求。当完成请求后，需要关闭请求来释放与此URPC关联的资源。
 
 约束与限制
@@ -18,8 +20,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 UrpcCall = (funcName: string, request: object, returnValue: object, config?: CallingOption) => UrpcPromise	发送一个URPC请求，并返回来自服务器的URPC响应。使用Promise异步回调。
 UrpcCancel = (callingId?: number | number[]) => void	取消指定或所有正在进行的URPC请求，返回值为空。
 UrpcDestroy = () => void	销毁UrpcStub实例
+
 使用示例
-创建urpcStub
+
+[h2]创建urpcStub
 
 导入模块
 
@@ -33,44 +37,35 @@ import { BusinessError } from '@kit.BasicServicesKit';
 export class MediaTaskRequestMessage {
   RequestMessage: urpc.FlowbufElement<string>;
 
-
   constructor() {
     this.RequestMessage = {type: 'STRING', value: '', name: ''};
   }
-
 
   setRequestMessage(RequestMessage: string) {
     this.RequestMessage.value = RequestMessage;
   }
 
-
   getRequestMessage(): string {
     return this.RequestMessage.value;
   }
 
-
 }
-
 
 // 定义用于接收调用方法返回值的类示例
 export class MediaTaskResponseMessage {
   ResponseMessage: urpc.FlowbufElement<string>;
 
-
   constructor() {
     this.ResponseMessage = {type: 'STRING', value: '', name: ''};
   }
-
 
   setResponseMessage(ResponseMessage: string) {
     this.ResponseMessage.value = ResponseMessage;
   }
 
-
   getResponseMessage(): string {
     return this.ResponseMessage.value;
   }
-
 
 }
 
@@ -81,9 +76,9 @@ let response = new MediaTaskResponseMessage();
 
 配置连接信息，创建发起URPC调用的UrpcStub。
 
-// 提前部署好的远程服务器的ip地址和端口号
+// 提前部署好的远程服务器的ip地址和端口号，下面IP地址仅作为示意
 let node: urpc.IpAndPort = {
-  ip: '127.0.0.1',
+  ip: '192.168.1.1',
   port: 8000
 }
 let connect: urpc.UrpcConnectConfiguration = {
@@ -97,7 +92,9 @@ let config: urpc.UrpcInitConfiguration = {
 }
 const funcList:string[] = ['uploadFile'];
 let urpcStub = urpc.urpcStubCreate(config, funcList);
-使用call收发网络请求
+
+[h2]使用call收发网络请求
+
 urpcStub.then(async (stub: urpc.UrpcStub) =>{
   let upload_config: urpc.CallingOption = {
     priority: 0
@@ -111,7 +108,8 @@ urpcStub.then(async (stub: urpc.UrpcStub) =>{
 }).catch((error: BusinessError) => {
   hilog.error(0x000, 'urpc', 'urpc call failed, error code is %d', error.code);
 })
-（可选）使用cancel取消网络请求
+
+[h2]（可选）使用cancel取消网络请求
 
 当调用call发起一次urpc收发请求后，根据业务需要，不用接收响应时，可调用cancel取消指定callingId的请求；若不指定callingId，则取消UrpcStub发起的全部请求。
 
@@ -124,7 +122,8 @@ urpcStub.then(async (stub: urpc.UrpcStub) =>{
 }).catch((error: BusinessError) => {
   hilog.error(0x000, 'urpc', 'urpc cancel failed, error code is %d', error.code);
 })
-使用destroy关闭URPC
+
+[h2]使用destroy关闭URPC
 
 当完成所有urpc收发网络请求后，需调用destroy释放并销毁UrpcStub相关的资源。
 
@@ -133,5 +132,123 @@ urpcStub.then(async (stub: urpc.UrpcStub) =>{
 }).catch((error: BusinessError) => {
   hilog.error(0x000, 'urpc', 'urpc destroy failed, error code is %d', error.code);
 })
-URPC场景
-Service Collaboration Kit（协同服务）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { urpc } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 定义调用方法的入参类示例
+export class MediaTaskRequestMessage {
+  RequestMessage: urpc.FlowbufElement<string>;
+
+  constructor() {
+    this.RequestMessage = {type: 'STRING', value: '', name: ''};
+  }
+
+  setRequestMessage(RequestMessage: string) {
+    this.RequestMessage.value = RequestMessage;
+  }
+
+  getRequestMessage(): string {
+    return this.RequestMessage.value;
+  }
+
+}
+
+// 定义用于接收调用方法返回值的类示例
+export class MediaTaskResponseMessage {
+  ResponseMessage: urpc.FlowbufElement<string>;
+
+  constructor() {
+    this.ResponseMessage = {type: 'STRING', value: '', name: ''};
+  }
+
+  setResponseMessage(ResponseMessage: string) {
+    this.ResponseMessage.value = ResponseMessage;
+  }
+
+  getResponseMessage(): string {
+    return this.ResponseMessage.value;
+  }
+
+}
+```
+
+### Code block 3
+
+```
+let request = new MediaTaskRequestMessage();
+let response = new MediaTaskResponseMessage();
+```
+
+### Code block 4
+
+```
+// 提前部署好的远程服务器的ip地址和端口号，下面IP地址仅作为示意
+let node: urpc.IpAndPort = {
+  ip: '192.168.1.1',
+  port: 8000
+}
+let connect: urpc.UrpcConnectConfiguration = {
+  node: node,
+  protocol: 'eat',
+}
+let config: urpc.UrpcInitConfiguration = {
+  timeout: 3000,
+  mode: 'client',
+  connect: connect
+}
+const funcList:string[] = ['uploadFile'];
+let urpcStub = urpc.urpcStubCreate(config, funcList);
+```
+
+### Code block 5
+
+```
+urpcStub.then(async (stub: urpc.UrpcStub) =>{
+  let upload_config: urpc.CallingOption = {
+    priority: 0
+  };
+  let urpcPromise = stub.call('uploadFile', request, response, upload_config);
+  urpcPromise.promise.then((resp: object) => {
+    hilog.info(0x000, 'urpc', 'resp: %{public}s', resp);
+  }).catch((err: BusinessError) => {
+    hilog.error(0x000, 'urpc', 'the error code is %d', err.code);
+  })
+}).catch((error: BusinessError) => {
+  hilog.error(0x000, 'urpc', 'urpc call failed, error code is %d', error.code);
+})
+```
+
+### Code block 6
+
+```
+urpcStub.then(async (stub: urpc.UrpcStub) =>{
+  let upload_config: urpc.CallingOption = {
+    priority: 0
+  };
+  let urpcPromise = stub.call('uploadFile', request, response, upload_config);
+  stub.cancel(urpcPromise.callingId);
+}).catch((error: BusinessError) => {
+  hilog.error(0x000, 'urpc', 'urpc cancel failed, error code is %d', error.code);
+})
+```
+
+### Code block 7
+
+```
+urpcStub.then(async (stub: urpc.UrpcStub) =>{
+  stub.destroy();
+}).catch((error: BusinessError) => {
+  hilog.error(0x000, 'urpc', 'urpc destroy failed, error code is %d', error.code);
+})
+```

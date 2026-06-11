@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-tpipe-initbuffer_
 
+功能说明
+
 TPipe是用来管理全局内存的框架，开发者可以调用TPipe中的InitBuffer接口为TQue/TBuf进行内存分配。
 
 函数原型
@@ -15,6 +17,7 @@ __aicore__ inline bool InitBuffer(T& que, uint8_t num, uint32_t len)
 
 template <TPosition bufPos>
 __aicore__ inline bool InitBuffer(TBuf<bufPos>& buf, uint32_t len)
+
 参数说明
 
 表1 bool InitBuffer(T& que, uint8_t num, uint32_t len) 原型定义参数说明
@@ -29,6 +32,7 @@ len	输入	每个内存块的大小，单位为Bytes。当传入的len不满足3
 参数名称	输入/输出	含义
 buf	输入	需要分配内存的TBuf对象。
 len	输入	为TBuf分配的内存大小，单位为Bytes。当传入的len不满足32字节对齐时，API内部会自动向上补齐至32字节对齐。
+
 支持的型号
 
 Kirin9020系列处理器
@@ -47,16 +51,16 @@ AscendC::TQue<AscendC::TPosition::VECIN, 1> que0;
 AscendC::TQue<AscendC::TPosition::VECIN, 1> que1;
 // 不建议：
 // 比如，算子有6个输入，需要申请6块buffer
-// 通过2个队列为其申请内存，分别为que0、que1分配3块,申请VECIN position上的buffer总数为6
+// 通过2个队列为其申请内存，分别为que0、que1分配3块，申请VECIN position上的buffer总数为6
 // 针对同一个TPosition上QUE Buffer的数量有限制，超出该限制，在后续使用AllocTensor/FreeTensor可能会出现分配资源失败。
 pipe.InitBuffer(que0, 3, len);
 pipe.InitBuffer(que1, 3, len);
 // 此时建议通过以下方法解决：
-// 如果确实有多块buffer使用, 可以将多个buffer合并到一块buffer, 通过偏移使用
+// 如果确实有多块buffer使用，可以将多个buffer合并到一块buffer，通过偏移使用
 pipe.InitBuffer(que0, 1, len * 3);
 pipe.InitBuffer(que1, 1, len * 3);
 /*
- * 分配出3块内存大小的LocalTensor, local1的地址为que0中buffer的起始地址，
+ * 分配出3块内存大小的LocalTensor，local1的地址为que0中buffer的起始地址，
  * local2的地址为local1的地址偏移len后的地址，local3的地址为local1的地址偏移
  * len * 2的地址
  */
@@ -65,21 +69,86 @@ int32_t offset2 = len * 2;
 AscendC::LocalTensor<T> local1 = que0.AllocTensor<T>();
 AscendC::LocalTensor<T> local2 = local1[offset1];
 AscendC::LocalTensor<T> local3 = local1[offset2];
+
 返回值
 
 返回Buffer初始化的结果。
 
 调用示例
+
 // 为TQue分配内存，分配内存块数为2，每块大小为128Bytes
 AscendC::TPipe pipe; // Pipe内存管理对象
 AscendC::TQue<AscendC::TPosition::VECOUT, 2> que; // 输出数据Queue队列管理对象，QuePosition为VECOUT
 uint8_t num = 2;
 uint32_t len = 128;
 pipe.InitBuffer(que, num, len);
+
 // 为TBuf分配内存，分配长度为128Bytes
 AscendC::TPipe pipe;
 AscendC::TBuf<AscendC::TPosition::A1> buf; // 输出数据管理对象，QuePosition为A1
 uint32_t len = 128;
 pipe.InitBuffer(buf, len);
-构造函数
-Init
+
+## Code blocks
+
+### Code block 1
+
+```
+template <class T>
+__aicore__ inline bool InitBuffer(T& que, uint8_t num, uint32_t len)
+```
+
+### Code block 2
+
+```
+template <TPosition bufPos>
+__aicore__ inline bool InitBuffer(TBuf<bufPos>& buf, uint32_t len)
+```
+
+### Code block 3
+
+```
+AscendC::TQue<AscendC::TPosition::VECIN, 1> que0;
+AscendC::TQue<AscendC::TPosition::VECIN, 1> que1;
+// 不建议：
+// 比如，算子有6个输入，需要申请6块buffer
+// 通过2个队列为其申请内存，分别为que0、que1分配3块，申请VECIN position上的buffer总数为6
+// 针对同一个TPosition上QUE Buffer的数量有限制，超出该限制，在后续使用AllocTensor/FreeTensor可能会出现分配资源失败。
+pipe.InitBuffer(que0, 3, len);
+pipe.InitBuffer(que1, 3, len);
+// 此时建议通过以下方法解决：
+// 如果确实有多块buffer使用，可以将多个buffer合并到一块buffer，通过偏移使用
+pipe.InitBuffer(que0, 1, len * 3);
+pipe.InitBuffer(que1, 1, len * 3);
+/*
+ * 分配出3块内存大小的LocalTensor，local1的地址为que0中buffer的起始地址，
+ * local2的地址为local1的地址偏移len后的地址，local3的地址为local1的地址偏移
+ * len * 2的地址
+ */
+int32_t offset1 = len;
+int32_t offset2 = len * 2;
+AscendC::LocalTensor<T> local1 = que0.AllocTensor<T>();
+AscendC::LocalTensor<T> local2 = local1[offset1];
+AscendC::LocalTensor<T> local3 = local1[offset2];
+```
+
+### Code block 4
+
+```
+// 为TQue分配内存，分配内存块数为2，每块大小为128Bytes
+AscendC::TPipe pipe; // Pipe内存管理对象
+AscendC::TQue<AscendC::TPosition::VECOUT, 2> que; // 输出数据Queue队列管理对象，QuePosition为VECOUT
+uint8_t num = 2;
+uint32_t len = 128;
+pipe.InitBuffer(que, num, len);
+```
+
+### Code block 5
+
+```
+// 为TBuf分配内存，分配长度为128Bytes
+AscendC::TPipe pipe;
+AscendC::TBuf<AscendC::TPosition::A1> buf; // 输出数据管理对象，QuePosition为A1
+uint32_t len = 128;
+pipe.InitBuffer(buf, len);
+```

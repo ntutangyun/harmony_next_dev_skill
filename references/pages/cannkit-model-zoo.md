@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-model-zoo_
 
+概述
+
 Model Zoo提供了可直接调用的硬件最优模型库，集成图片分类、目标检测、语义分割、超分等典型场景的网络模型，包含CANN性能调优使用指导、性能友好模型结构和推荐指数。帮助开发者快速了解算子的参数取值如何在硬件上获得更好的性能和能效收益，以及如何优化模型结构可以实现高性能与低功耗。
 
 Model Zoo模型下载
@@ -13,26 +15,27 @@ Model Zoo模型下载
 Model Zoo中模型的名称、性能、模型下载信息如下表所示。
 
 场景	网络模型（单batch）	浮点性能[1]（耗时ms）	量化性能[1]（耗时ms）	模型下载	SHA256校验码	参考[2]
-图片分类	Alexnet	9.92	4.49	CAFFE&OM	7b01980acf0d16dadc6c9c326cdf757d2166928ae49cfd4091df154a5c512640	论文&实现
-图片分类	Resnet18	2.63	1.24	CAFFE&OM	4aa7caaa112f5280cb5c0ab5eed6edf84a16fe9a0b92b9ee333a808c9f07e886	论文&实现
-图片分类	VGG16	16.56	8.55	TF&OM	f9193765889077e5997ddc8c1e75a563c8a1205e613da9634d3d83277962dd42	论文&实现
-图片分类	VGG19	18.34	8.73	TF&OM	d19f363602740ff5859380c40ca6f0bed0cb3744f469873cdf862c71c7007a94	论文&实现
-图片分类	Resnet50	5.15	3.54	TF&OM	6dedf4b5c3bfdaf70410236f1f73d942a5231f217e18c51918ba39b3b740b2df	论文&实现
+图片分类	Alexnet	9.92	4.49	CAFFE&OM	36307375e641bd7d4a334f2c4cf0eafdea498e9f152ea3c1c51a704677ec3835	论文&实现
+图片分类	Resnet18	2.63	1.24	CAFFE&OM	46a553aa7f871bd7f20432e05b45e8dd29c353baba1d378ff46b97bf713aa691	论文&实现
+图片分类	VGG16	16.56	8.55	TF&OM	2d13fb620ffac15a45966a62128d659257b0872824a8de319fc1e86049643fa4	论文&实现
+图片分类	VGG19	18.34	8.73	TF&OM	4306f34da7d12e4347037b9cf303ff9b6b73a5981bd11a0e9e389393e2f9c0b2	论文&实现
+图片分类	Resnet50	5.15	3.54	TF&OM	a099a6fbfb961f895ee20a33ba15331687c9c56c4ca9dc4e7edd186d288f0e1f	论文&实现
 图片分类	Inception_v3	6.56	3.76	TF&OM	d06c88a79acd19b10d5f7eddaae6aba3c02372cfdb036296b845aa3a9ccf46be	论文&实现
 图片分类	Inception_v4	11.90	7.29	TF&OM	e042f489e6915eb6de5daa4b3200462e76f1bedca7147e2a19e8311a4b05afde	论文&实现
 图片分类	Inception_Resnet_v2	15.91	5.59	TF&OM	229164e49753126357f4a587694ca925afa60d1bfec184dba00085d69b5fc47b	论文&实现
-图片分类	Mobilenet_v1	2.16	0.52	TF&OM	864ef1d651e7f2cb9de69ce34d81e40783bdac47069b6db22aefb6f4ae17f24b	论文&实现
-图片分类	Mobilenet_v2	2.49	1.18	TF&OM	362c0169917122e45f4c5aed69ad3b9c8509b51a0531e6912360eff6c8b81cbc	论文&实现
-图片分类	Mobilenet_v2_1.4	3.16	1.67	TF&OM	8f1a05a83e813fac16e958ad5436569fe83f75f88137819d52ce2e268ad04126	论文&实现
-图片分类	Mobilenet_v3_Large	3.29	2.33	TF&OM	086640ff192629b6dba33d905ddb0925d612e395703948c6c7221f2e4126b85d	论文&实现
-图片分类	Googlenet	34.69	1.64	ONNX&OM	97ef0325be2c3b8824a903abaeea943260d2f349da63d193168c96eff735ad0e	论文&实现
-图片分类	Squeezenet_v1	2.13	1.24	ONNX&OM	e20be44bdaa30b9fa4a22ef876c1e7bd88db49b5d063992ef1595b34d3544997	论文&实现
-目标检测	SSD_mobilenetv2_voc	5.02	2.84	CAFFE&OM	1d273130a07a6f888f6df1088b478049da9a961a3dbeaca7bfa92e616f0f01e9	论文1&实现1、论文2&实现2
-目标检测	Yolo_v5	4.74	4.33	ONNX&OM	83a205d70fcd9b31c13530da0b8752a6976b125b02ac07091fd088f58cd5a80f	论文&实现
-语义分割	FCN	131.23	62.76	CAFFE&OM	0cd87a51c1ea978a68e9cd4790106e99d910f78d5e68ec06e2bdd637aae5a73c	论文&实现
-语义分割	DeepLab_v3	17.40	13.87	TF&OM	381f830f6b0154bf086dbc5b15575465a34c1b3d233a6d27bc417077832697c7	论文&实现
-超分	VDSR	17.71	10.67	CAFFE&OM	bf5a699ea55b2d2e42ac40884f2697d807b5b3f37e655ecb342e873c6ba6b844	论文&实现
-超分	FSRCNN	17.24	17.02	TF&OM	03775c806d8d166fd29753ea8eaa3db377246fa469487b7e161a9e405a6ffa1c	论文&实现
+图片分类	Mobilenet_v1	2.16	0.52	TF&OM	28c5f9eb98a4d73a7f84dd6e1bef0509fa69cc604da0957d802e6f88bc146379	论文&实现
+图片分类	Mobilenet_v2	2.49	1.18	TF&OM	b1bca0efb898c1d3d1afda50803f172724c7b02e1b7abb07581656cf7401d622	论文&实现
+图片分类	Mobilenet_v2_1.4	3.16	1.67	TF&OM	d78e276b5cec8c311ac4ac582a11efcaa7704fba798b0639809bdd7f6944256b	论文&实现
+图片分类	Mobilenet_v3_Large	3.29	2.33	TF&OM	b6a6ef84e2002e751a953de619a0442dd36d473612cee55362761ef14583d591	论文&实现
+图片分类	Googlenet	34.69	1.64	ONNX&OM	b080ac170fd7a70d511c54864f4e4d4740c1cbd015cbdd7849732ff3da9109a2	论文&实现
+图片分类	Squeezenet_v1	2.13	1.24	ONNX&OM	0af69192a0139a82e7ab534a5331e03bfd6375e7bf4ed3432dfc292303004fb3	论文&实现
+目标检测	SSD_mobilenetv2_voc	5.02	2.84	CAFFE&OM	18623a50030858340b23a204b8c65a3fe713f6591c205e6880ff6fa7b3ef1e05	论文1&实现1、论文2&实现2
+目标检测	Yolo_v5	4.74	4.33	ONNX&OM	498efe2105fa2ee3f67d3eba270869d51ff667e149bbe4c86927be0bb635a4e3	论文&实现
+语义分割	FCN	131.23	62.76	CAFFE&OM	ee77a2e8cd4ba37de6c0587c4c814d4fe5ec1326ae5f6e248ea5e3fdccc0d8e2	论文&实现
+语义分割	DeepLab_v3	17.40	13.87	TF&OM	979eab9c9416f034ba2592dfa47f8b0aaa4a7aa9ea9c9e0cc1ad87e68ebb0885	论文&实现
+超分	VDSR	17.71	10.67	CAFFE&OM	a1063d88e341d6abcf293eb1ba7aee10b5856abd8cd6b8c51594b4375933dc7a	论文&实现
+超分	FSRCNN	17.24	17.02	TF&OM	55c7206c1851ef9b187790a7f8dbba4b58dc4808a1df9798cc0053059b81644c	论文&实现
+
 说明
 
 [1] 此性能数据测试基于kirin 9000芯片的华为手机。
@@ -45,65 +48,28 @@ CANN算子性能指导
 
 从易用性角度上来说，提供的算子功能不存在限制，但是从性能的使用角度上来说，是基于算子实现方式给出对应的性能使用指导。
 
-NN算子
+[h2]NN算子
+
 IR算子	性能使用指导	推荐使用指数
 Activation	当前性能硬件最优。	☆☆☆☆☆
 HardSwish	当前性能硬件最优。	☆☆☆☆☆
 PRelu	当前性能硬件最优。	☆☆☆☆☆
-BNInference	
-
-当前性能硬件最优。
-
-Conv(depthwise)+Bn组合使用时，会进行图融合优化抵消。
-
-	☆☆☆☆☆
+BNInference	当前性能硬件最优。 Conv(depthwise)+Bn组合使用时，会进行图融合优化抵消。	☆☆☆☆☆
 Convolution	当Cin和Cout都是16的倍数时性能最优。	☆☆☆☆☆
 QuantizedConvolution	当Cin和Cout都是32的倍数时性能最优。	☆☆☆☆☆
-ConvTranspose	
-
-- 当Cin和Cout都是16的倍数时性能最优。
-
-- 当前针对kernel 1*1，2*2，3*3，8*8优化性能最优。
-
-	☆☆☆☆☆
-BiasAdd	
-
-当前性能硬件最优。
-
-Conv(depthwise)+BiasAdd组合使用时，会进行图融合优化抵消。
-
-	☆☆☆☆☆
+ConvTranspose	- 当Cin和Cout都是16的倍数时性能最优。 - 当前针对kernel 1*1，2*2，3*3，8*8优化性能最优。	☆☆☆☆☆
+BiasAdd	当前性能硬件最优。 Conv(depthwise)+BiasAdd组合使用时，会进行图融合优化抵消。	☆☆☆☆☆
 Eltwise	当前性能硬件最优。	☆☆☆☆☆
-LRN	
-
-当前性能硬件较优。
-
-- 计算过程中计算均值方差，计算量较大，性能差于batchNorm。
-
-- 主要用于图像增强，对精度计算较敏感，NPU使用FP16计算存在精度风险。
-
-	☆☆☆
+LRN	当前性能硬件较优。 - 计算过程中计算均值方差，计算量较大，性能差于batchNorm。 - 主要用于图像增强，对精度计算较敏感，NPU使用FP16计算存在精度风险。	☆☆☆
 ConvolutionDepthwise	当前性能硬件最优。	☆☆☆☆☆
 QuantizedConvolutionDepthwise	当前性能硬件最优。	☆☆☆☆☆
 FullyConnection	性能受DDR带宽限制，非算力受限算子，算法设计时合理配置权重大小。	☆☆☆☆☆
 QuantizedFullyConnection	性能受DDR带宽限制，非算力受限算子，算法设计时合理配置权重大小。	☆☆☆☆☆
 PoolingD	当前性能硬件最优。	☆☆☆☆☆
-Scale	
-
-当前性能硬件最优。
-
-Conv(depthwise)+Scale组合使用时，会进行图融合优化抵消。
-
-	☆☆☆☆☆
+Scale	当前性能硬件最优。 Conv(depthwise)+Scale组合使用时，会进行图融合优化抵消。	☆☆☆☆☆
 ShuffleChannel	kirin 9000芯片的手机性能较优，其余芯片的手机无性能优化，仅支持功能。	☆
 ShuffleChannelV2	为了适配支持ANN场景算子，性能较差，仅支持功能。	☆
-Softmax	
-
-当前性能硬件最优。
-
-4维输入，axis=1，基于C通道做softmax时性能最优。
-
-	☆☆☆☆☆
+Softmax	当前性能硬件最优。 4维输入，axis=1，基于C通道做softmax时性能最优。	☆☆☆☆☆
 TopK	为了适配支持ANN场景算子，性能较差，仅支持功能。	☆
 LogSoftmax	当前性能硬件最优。	☆☆☆☆☆
 Rank	shape推导类算子，模型构建时即可抵消。	☆☆☆☆☆
@@ -114,27 +80,13 @@ AxisAlignedBboxTransform	当前性能硬件最优。	☆☆☆☆☆
 Normalize	当前性能硬件最优。	☆☆☆☆☆
 SVDF	当前性能硬件最优。	☆☆☆☆☆
 ReduceMean	当前性能硬件最优。	☆☆☆☆☆
-LayerNorm	
-
-当前性能硬件最优。
-
-- 计算过程中计算均值方差，计算量较大，性能差于batchNorm。
-
-- 主要用于图像增强，对精度计算较敏感，NPU使用FP16计算存在精度风险。
-
-	☆☆☆
-InstanceNorm	
-
-当前性能硬件较优。
-
-- 计算过程中计算均值方差，计算量较大，性能差于batchNorm。
-
-- 主要用于图像增强，对精度计算较敏感，NPU使用FP16计算存在精度风险。
-
-	☆☆☆
+LayerNorm	当前性能硬件最优。 - 计算过程中计算均值方差，计算量较大，性能差于batchNorm。 - 主要用于图像增强，对精度计算较敏感，NPU使用FP16计算存在精度风险。	☆☆☆
+InstanceNorm	当前性能硬件较优。 - 计算过程中计算均值方差，计算量较大，性能差于batchNorm。 - 主要用于图像增强，对精度计算较敏感，NPU使用FP16计算存在精度风险。	☆☆☆
 PriorBox	当前性能硬件最优。	☆☆☆☆☆
 LSTM	当前性能硬件较优，功能支持较窄。	☆☆☆☆
-Math算子
+
+[h2]Math算子
+
 IR算子	性能使用指导	推荐使用指数
 Add	当前性能硬件最优。	☆☆☆☆☆
 Mul	当前性能硬件最优。	☆☆☆☆☆
@@ -187,30 +139,14 @@ ClipByValue	当前性能硬件最优。	☆☆☆☆☆
 L2Normalize	当前性能硬件最优。	☆☆☆☆☆
 ReduceMax	kirin 9000芯片的手机性能较优，其余芯片的手机无性能优化，仅支持功能。	☆
 ReduceMin	kirin 9000芯片的手机性能较优，其余芯片的手机无性能优化，仅支持功能。	☆
-Array算子
+
+[h2]Array算子
+
 IR算子	性能使用指导	推荐使用指数
-ConcatD	
-
-当前性能硬件最优。
-
-当Cin是16的倍数且Cout是16的倍数时，做图融合抵消，性能最优。
-
-	☆☆☆☆☆
+ConcatD	当前性能硬件最优。 当Cin是16的倍数且Cout是16的倍数时，做图融合抵消，性能最优。	☆☆☆☆☆
 FakeQuantWithMinMaxVars	当前性能硬件最优。	☆☆☆☆☆
-Reshape	
-
-当前性能硬件最优。
-
-有些场景算子会被融合抵消掉。
-
-	☆☆☆☆☆
-SplitD	
-
-当前性能硬件最优。
-
-当Cin是16的倍数且Cout是16的倍数时，做图融合抵消，性能最优。
-
-	☆☆☆☆☆
+Reshape	当前性能硬件最优。 有些场景算子会被融合抵消掉。	☆☆☆☆☆
+SplitD	当前性能硬件最优。 当Cin是16的倍数且Cout是16的倍数时，做图融合抵消，性能最优。	☆☆☆☆☆
 SplitV	由于是乱序的数据重排，性能较差。	☆
 Unpack	由于是乱序的数据重排，性能较差。	☆
 Flatten	由于是乱序的数据重排，性能较差。	☆
@@ -220,13 +156,7 @@ GatherV2D	由于是乱序的数据重排，性能较差。	☆
 GatherNd	由于是乱序的数据重排，性能较差。	☆
 Pack	由于是乱序的数据重排，性能较差。	☆
 SpaceToDepth	由于是乱序的数据重排，性能较差。	☆
-DepthToSpace	
-
-由于是乱序的数据重排，大部分场景性能较差。
-
-针对4宫格场景（Cin=4，block=1）有特殊优化，性能较优。
-
-	☆☆
+DepthToSpace	由于是乱序的数据重排，大部分场景性能较差。 针对4宫格场景（Cin=4，block=1）有特殊优化，性能较优。	☆☆
 StridedSlice	由于是乱序的数据重排，性能较差。	☆
 SpaceToBatchND	由于是乱序的数据重排，性能较差。	☆
 BatchToSpaceND	由于是乱序的数据重排，性能较差。	☆
@@ -234,71 +164,33 @@ Tile	由于是乱序的数据重排，性能较差。	☆
 Size	shape推导类算子，模型构建时即可抵消。	☆☆☆☆☆
 Fill	由于是乱序的数据重排，性能较差。	☆
 Select	仅支持功能。	☆☆
-PadV2	
-
-针对HW方向补0的场景性能较优。
-
-其他场景由于乱序的数据重排，性能较差。
-
-	☆☆☆
+PadV2	针对HW方向补0的场景性能较优。 其他场景由于乱序的数据重排，性能较差。	☆☆☆
 Squeeze	shape推导类算子，模型构建时即可抵消。	☆☆☆☆☆
-Pad	
-
-针对HW方向补0的场景性能较优。
-
-其他场景由于乱序的数据重排，性能较差。
-
-	☆☆☆
+Pad	针对HW方向补0的场景性能较优。 其他场景由于乱序的数据重排，性能较差。	☆☆☆
 MirrorPad	其他场景由于乱序的数据重排，性能较差。	☆
 OneHot	其他场景由于乱序的数据重排，性能较差。	☆
 Shape	shape推导类算子，模型构建时即可抵消。	☆☆☆☆☆
 Dequantize	当前性能硬件最优。	☆☆☆☆☆
 Quantize	当前性能硬件最优。	☆☆☆☆☆
-Detection算子
+
+[h2]Detection算子
+
 IR算子	性能使用指导	推荐使用指数
 Permute	由于乱序的数据重排，虽然做了相关优化，但是硬件不适合过多此类操作。	☆☆☆
 SSDDetectionOutput	当前性能最优。	☆☆☆☆☆
-Image算子
+
+[h2]Image算子
+
 IR算子	性能使用指导	推荐使用指数
-
-
-ImageData
-
-DynamicImageData
-
-ImageCrop
-
-ImageChannelSwap
-
-ImageColorSpaceConvertion
-
-ImageResize
-
-ImageDataTypeConversion
-
-ImagePadding
-
-	AIPP相关图形处理算子，性能硬件最优。	☆☆☆☆☆
+ImageData DynamicImageData ImageCrop ImageChannelSwap ImageColorSpaceConvertion ImageResize ImageDataTypeConversion ImagePadding	AIPP相关图形处理算子，性能硬件最优。	☆☆☆☆☆
 CropAndResize	仅功能支持，性能较差。	☆
-
-
-ResizeBilinear
-
-ResizeBilinearV2
-
-Interp
-
-	大部分场景性能硬件最优，个别场景待优化。	☆☆☆☆☆
-
-
-ResizeNearestNeighbor
-
-Upsample
-
-	大部分场景性能硬件最优，个别场景待优化。	☆☆☆☆☆
+ResizeBilinear ResizeBilinearV2 Interp	大部分场景性能硬件最优，个别场景待优化。	☆☆☆☆☆
+ResizeNearestNeighbor Upsample	大部分场景性能硬件最优，个别场景待优化。	☆☆☆☆☆
 Crop	仅功能支持，性能较差。	☆
 NonMaxSuppressionV3D	仅功能支持，性能较差。	☆
+
 性能友好计算结构
+
 应用场景	网络类型	推荐指数	推荐说明
 分类网络	AlexNet	☆☆☆☆	全连接层权重较大，推理过程带宽受限，可从Model Zoo中下载。
 分类网络	VGG16	☆☆☆☆	全连接层权重较大，推理过程带宽受限，可从Model Zoo中下载。
@@ -314,19 +206,7 @@ NonMaxSuppressionV3D	仅功能支持，性能较差。	☆
 分类网络	MobileNet_v3	☆☆☆☆☆	模型权重大小适中，硬件算力利用率接近95%，可从Model Zoo中下载。
 分类网络	SqueezeNet	☆☆☆☆☆	模型权重大小适中，硬件算力利用率接近95%，可从Model Zoo中下载。
 分类网络	DenseNet	☆☆☆☆☆	模型权重大小适中，硬件算力利用率接近95%。
-分类网络	
-
-ShuffleNet_v1
-
-ShuffleNet_v2
-
-	☆	
-
-存在大量shuffleChannel操作，本身是内存搬移操作，非计算受限。
-
-此网络为带宽受限网络，shuffleChannel仅支持功能，性能不保证较优。
-
-
+分类网络	ShuffleNet_v1 ShuffleNet_v2	☆	存在大量shuffleChannel操作，本身是内存搬移操作，非计算受限。 此网络为带宽受限网络，shuffleChannel仅支持功能，性能不保证较优。
 分类网络	Resnext	☆☆☆☆	硬件算力利用率接近85%。
 分类网络	EfficientNet	☆☆☆☆☆	模型权重大小适中，硬件算力利用率接近95%。
 分类网络	SENet	☆☆☆☆	硬件算力利用率接近75%。
@@ -349,5 +229,3 @@ ShuffleNet_v2
 语音语义	LSTM	☆☆	功能支持较为单一。
 语音语义	Transformer	☆☆☆☆	硬件算力利用率接近70%。
 语音语义	Bert	☆☆☆☆	硬件算力利用率接近70%。
-模型优化
-模型轻量化

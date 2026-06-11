@@ -8,5 +8,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-a
 
 昇腾	麒麟
 Ascend910B、Ascend910C	KirinX90、Kirin9030
-兼容性说明
-Ascend910B/Ascend910C到KirinX90/Kirin9030迁移指导

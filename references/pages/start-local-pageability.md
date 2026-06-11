@@ -16,9 +16,9 @@ import featureAbility from '@ohos.ability.featureAbility';
 import Want from '@ohos.app.ability.Want';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PagePageAbilityFirst';
 const domain: number = 0xFF00;
+
 (async (): Promise<void> => {
   try {
     hilog.info(domain, TAG, 'Begin to start ability');
@@ -34,5 +34,36 @@ const domain: number = 0xFF00;
     hilog.error(domain, TAG, 'Start ability failed with ' + error);
   }
 })()
-创建PageAbility
-停止PageAbility
+
+## Code blocks
+
+### Code block 1
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import Want from '@ohos.app.ability.Want';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PagePageAbilityFirst';
+const domain: number = 0xFF00;
+```
+
+### Code block 2
+
+```
+(async (): Promise<void> => {
+  try {
+    hilog.info(domain, TAG, 'Begin to start ability');
+    let want: Want = {
+      bundleName: 'com.samples.famodelabilitydevelop',
+      moduleName: 'entry',
+      abilityName: 'com.samples.famodelabilitydevelop.PageAbilitySingleton'
+    };
+    await featureAbility.startAbility({ want: want });
+    hilog.info(domain, TAG, `Start ability succeed`);
+  }
+  catch (error) {
+    hilog.error(domain, TAG, 'Start ability failed with ' + error);
+  }
+})()
+```

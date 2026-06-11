@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-key-agreement-overview_
 
+在非安全通道环境中，需要不共享任何秘密的情况下，协商出一个安全的共享密钥，可以使用密钥协商算法。
+
+接下来将说明系统目前支持的算法及其对应的规格。
+
+ECDH
+
 ECDH（Elliptic Curve Diffie–Hellman key exchange），算法库框架提供了多种椭圆曲线的ECDH能力。
 
 当创建密钥协商时，需要使用表中“字符串参数”一列，指定密钥协商算法规格。
@@ -38,6 +44,7 @@ X25519
 
 非对称密钥算法	字符串参数	API版本
 X25519	X25519	11+
+
 DH
 
 DH（Diffie–Hellman key exchange），算法库框架提供了DH密钥协商的能力。
@@ -59,6 +66,3 @@ DH	DH_ffdhe8192	11+
 DH	DH	11+
 
 如表中最后一行所示，为了兼容由密钥参数生成的密钥，DH密钥协商参数输入密钥类型时支持不指定知名安全素数群，密钥协商运算结果由实际输入的密钥决定，且该场景支持非标准群组的密钥协商。
-
-密钥协商
-密钥协商开发指导

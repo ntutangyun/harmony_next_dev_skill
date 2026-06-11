@@ -2,11 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-audio-jank-event-c_
 
+接口说明
+
 本文介绍如何使用HiAppEvent提供的C/C++接口订阅音频卡顿事件。详细使用说明请参考HiAppEvent C API文档。
 
 接口名	描述
 int OH_HiAppEvent_AddWatcher(HiAppEvent_Watcher *watcher)	添加应用事件观察者，以添加对应用事件的订阅。
 int OH_HiAppEvent_RemoveWatcher(HiAppEvent_Watcher *watcher)	移除应用事件观察者，以移除对应用事件的订阅。
+
 开发步骤
 
 获取示例工程的依赖项jsoncpp。
@@ -48,7 +51,6 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libhiappev
 #include "hilog/log.h"
 #include "hiappevent/hiappevent.h"
 
-
 #undef LOG_TAG
 #define LOG_TAG "testTag"
 
@@ -60,7 +62,6 @@ onReceive类型观察者
 
 //定义变量，用来缓存创建的观察者的指针。
 static HiAppEvent_Watcher *systemEventWatcher;
-
 
 static void OnReceive(const char *domain, const struct HiAppEvent_AppEventGroup *appEventGroups, uint32_t groupLen) {
     for (int i = 0; i < groupLen; ++i) {
@@ -80,7 +81,7 @@ static void OnReceive(const char *domain, const struct HiAppEvent_AppEventGroup 
                     auto faultType = params["fault_type"].asString();
                     auto happenTime = params["happen_time"].asInt64();
                     auto maxFrameTime = params["max_frame_time"].asInt64();
-                    
+
                     OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.time=%{public}ld", time);
                     OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_version=%{public}s", bundleVersion.c_str());
                     OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_name=%{public}s", bundleName.c_str());
@@ -92,7 +93,6 @@ static void OnReceive(const char *domain, const struct HiAppEvent_AppEventGroup 
         }
     }
 }
-
 
 static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
     // 开发者自定义观察者名称，系统根据观察者名称识别不同的观察者。
@@ -143,20 +143,18 @@ static void OnTake(const char *const *events, uint32_t eventLen) {
     }
 }
 
-
 // 开发者可以自行实现订阅回调函数，以便对获取到的事件打点数据进行自定义处理。
 static void OnTrigger(int row, int size) {
     // 接收回调后，获取指定数量的已接收事件。
     OH_HiAppEvent_TakeWatcherData(systemEventWatcher, row, OnTake);
 }
 
-
 static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
     // 开发者自定义观察者名称，系统根据不同的名称来识别不同的观察者。
     systemEventWatcher = OH_HiAppEvent_CreateWatcher("onTriggerWatcher");
     // 设置订阅的事件为EVENT_AUDIO_JANK_FRAME。
     const char *names[] = {EVENT_AUDIO_JANK_FRAME};
-    
+
     // 开发者订阅感兴趣的事件，此处订阅了系统事件。
     OH_HiAppEvent_SetAppEventFilter(systemEventWatcher, DOMAIN_OS, 0, names, 1);
     // 开发者设置已实现的回调函数，需OH_HiAppEvent_SetTriggerCondition设置的条件满足方可触发。
@@ -240,5 +238,242 @@ HiAppEvent eventInfo.params.bundle_name=com.samples.audio
 HiAppEvent eventInfo.params.fault_type=application
 HiAppEvent eventInfo.params.happen_time=176273918
 HiAppEvent eventInfo.params.max_frame_time=220
-订阅音频卡顿事件（ArkTS）
-HiAppEvent常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+entry:
+  src:
+    main:
+      cpp:
+        - json:
+            - json.h
+            - json-forwards.h
+        - types:
+            libentry:
+              - index.d.ts
+        - CMakeLists.txt
+        - napi_init.cpp
+        - jsoncpp.cpp
+      ets:
+        - entryability:
+            - EntryAbility.ets
+        - pages:
+            - Index.ets
+```
+
+### Code block 2
+
+```
+# 新增jsoncpp.cpp(解析订阅事件中的json字符串)源文件
+add_library(entry SHARED napi_init.cpp jsoncpp.cpp)
+# 新增动态库依赖libhiappevent_ndk.z.so和libhilog_ndk.z.so(日志输出)
+target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libhiappevent_ndk.z.so)
+```
+
+### Code block 3
+
+```
+#include "napi/native_api.h"
+#include "json/json.h"
+#include "hilog/log.h"
+#include "hiappevent/hiappevent.h"
+
+#undef LOG_TAG
+#define LOG_TAG "testTag"
+```
+
+### Code block 4
+
+```
+//定义变量，用来缓存创建的观察者的指针。
+static HiAppEvent_Watcher *systemEventWatcher;
+
+static void OnReceive(const char *domain, const struct HiAppEvent_AppEventGroup *appEventGroups, uint32_t groupLen) {
+    for (int i = 0; i < groupLen; ++i) {
+        for (int j = 0; j < appEventGroups[i].infoLen; ++j) {
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.domain=%{public}s", appEventGroups[i].appEventInfos[j].domain);
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.name=%{public}s", appEventGroups[i].appEventInfos[j].name);
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.eventType=%{public}d", appEventGroups[i].appEventInfos[j].type);
+            if (strcmp(appEventGroups[i].appEventInfos[j].domain, DOMAIN_OS) == 0 &&
+                strcmp(appEventGroups[i].appEventInfos[j].name, EVENT_AUDIO_JANK_FRAME) == 0) {
+                Json::Value params;
+                Json::Reader reader(Json::Features::strictMode());
+                Json::FastWriter writer;
+                if (reader.parse(appEventGroups[i].appEventInfos[j].params, params)) {
+                    auto time = params["time"].asInt64();
+                    auto bundleVersion = params["bundle_version"].asString();
+                    auto bundleName = params["bundle_name"].asString();
+                    auto faultType = params["fault_type"].asString();
+                    auto happenTime = params["happen_time"].asInt64();
+                    auto maxFrameTime = params["max_frame_time"].asInt64();
+
+                    OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.time=%{public}ld", time);
+                    OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_version=%{public}s", bundleVersion.c_str());
+                    OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_name=%{public}s", bundleName.c_str());
+                    OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.fault_type=%{public}s", faultType.c_str());
+                    OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.happen_time=%{public}ld", happenTime);
+                    OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.max_frame_time=%{public}ld", maxFrameTime);
+                }
+            }
+        }
+    }
+}
+
+static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
+    // 开发者自定义观察者名称，系统根据观察者名称识别不同的观察者。
+    systemEventWatcher = OH_HiAppEvent_CreateWatcher("onReceiverWatcher");
+    // 订阅的事件为AUDIO_JANK_FRAME。
+    const char *names[] = {EVENT_AUDIO_JANK_FRAME};
+    // 此处开发者订阅了系统事件AUDIO_JANK_FRAME。
+    OH_HiAppEvent_SetAppEventFilter(systemEventWatcher, DOMAIN_OS, 0, names, 1);
+    // 开发者通过调用OH_HiAppEvent_SetWatcherOnReceive函数设置已实现的回调函数，观察者接收到事件后会触发OnReceive回调。
+    OH_HiAppEvent_SetWatcherOnReceive(systemEventWatcher, OnReceive);
+    // 启动观察者以监听事件。
+    OH_HiAppEvent_AddWatcher(systemEventWatcher);
+    return {};
+}
+```
+
+### Code block 5
+
+```
+// 开发者可以自行实现获取已监听到事件的回调函数，其中events指针指向内容仅在该函数内有效。
+static void OnTake(const char *const *events, uint32_t eventLen) {
+    Json::Reader reader(Json::Features::strictMode());
+    Json::FastWriter writer;
+    for (int i = 0; i < eventLen; ++i) {
+        Json::Value eventInfo;
+        if (reader.parse(events[i], eventInfo)) {
+            auto domain =  eventInfo["domain_"].asString();
+            auto name = eventInfo["name_"].asString();
+            auto type = eventInfo["type_"].asInt();
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.domain=%{public}s", domain.c_str());
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.name=%{public}s", name.c_str());
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.eventType=%{public}d", type);
+            if (domain ==  DOMAIN_OS && name == EVENT_AUDIO_JANK_FRAME) {
+                auto time = eventInfo["time"].asInt64();
+                auto bundleVersion = eventInfo["bundle_version"].asString();
+                auto bundleName = eventInfo["bundle_name"].asString();
+                auto faultType = eventInfo["fault_type"].asString();
+                auto happenTime = eventInfo["happen_time"].asInt64();
+                auto maxFrameTime = eventInfo["max_frame_time"].asInt64();
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.time=%{public}ld", time);
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_version=%{public}s", bundleVersion.c_str());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_name=%{public}s", bundleName.c_str());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.fault_type=%{public}s", faultType.c_str());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.happen_time=%{public}ld", happenTime);
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.max_frame_time=%{public}ld", maxFrameTime);
+            }
+        }
+    }
+}
+
+// 开发者可以自行实现订阅回调函数，以便对获取到的事件打点数据进行自定义处理。
+static void OnTrigger(int row, int size) {
+    // 接收回调后，获取指定数量的已接收事件。
+    OH_HiAppEvent_TakeWatcherData(systemEventWatcher, row, OnTake);
+}
+
+static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
+    // 开发者自定义观察者名称，系统根据不同的名称来识别不同的观察者。
+    systemEventWatcher = OH_HiAppEvent_CreateWatcher("onTriggerWatcher");
+    // 设置订阅的事件为EVENT_AUDIO_JANK_FRAME。
+    const char *names[] = {EVENT_AUDIO_JANK_FRAME};
+
+    // 开发者订阅感兴趣的事件，此处订阅了系统事件。
+    OH_HiAppEvent_SetAppEventFilter(systemEventWatcher, DOMAIN_OS, 0, names, 1);
+    // 开发者设置已实现的回调函数，需OH_HiAppEvent_SetTriggerCondition设置的条件满足方可触发。
+    OH_HiAppEvent_SetWatcherOnTrigger(systemEventWatcher, OnTrigger);
+    // 开发者可以设置订阅触发回调的条件，此处是设置新增事件打点数量为1个时，触发onTrigger回调。
+    OH_HiAppEvent_SetTriggerCondition(systemEventWatcher, 1, 0, 0);
+    // 使观察者开始监听订阅的事件。
+    OH_HiAppEvent_AddWatcher(systemEventWatcher);
+    return {};
+}
+```
+
+### Code block 6
+
+```
+static napi_value Init(napi_env env, napi_value exports)
+{
+    napi_property_descriptor desc[] = {
+        { "registerWatcher", nullptr, RegisterWatcher, nullptr, nullptr, nullptr, napi_default, nullptr }
+    };
+napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+return exports;
+}
+```
+
+### Code block 7
+
+```
+export const registerWatcher: () => void;
+```
+
+### Code block 8
+
+```
+// 导入依赖模块
+import testNapi from 'libentry.so';
+// 在onCreate()函数中新增接口调用
+// 启动时，注册系统事件观察者
+testNapi.registerWatcher();
+```
+
+### Code block 9
+
+```
+let g_invalidCount = 0;
+function normalCallback(buffer: ArrayBuffer) {
+  if (g_invalidCount > 0) {
+    g_invalidCount--;
+    return audio.AudioDataCallbackResult.INVALID;
+  }
+  //在此添加写数据逻辑
+  return audio.AudioDataCallbackResult.VALID;
+}
+```
+
+### Code block 10
+
+```
+Row() {
+  Button("卡顿").onClick(async () => {
+    g_invalidCount = 30;
+  })
+}
+```
+
+### Code block 11
+
+```
+audio.createAudioRenderer(audioRendererOptions, (err, renderer) => { // 创建    AudioRenderer实例
+  if (!err) {
+    console.info(`${TAG}: creating AudioRenderer success`);
+    this.renderModel = renderer;
+    if (this.renderModel !== undefined) {
+      this.renderModel.on('writeData', normalCallback);
+    }
+  } else {
+    console.info(`${TAG}: creating AudioRenderer failed, error: ${err.message}`);
+  }
+});
+```
+
+### Code block 12
+
+```
+HiAppEvent eventInfo.domain=OS
+HiAppEvent eventInfo.name=AUDIO_JANK_FRAME
+HiAppEvent eventInfo.eventType=1
+HiAppEvent eventInfo.params.time=1762739184665
+HiAppEvent eventInfo.params.bundle_version=1.0.0
+HiAppEvent eventInfo.params.bundle_name=com.samples.audio
+HiAppEvent eventInfo.params.fault_type=application
+HiAppEvent eventInfo.params.happen_time=176273918
+HiAppEvent eventInfo.params.max_frame_time=220
+```

@@ -2,11 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-app-launch-arkts_
 
+接口说明
+
 API接口的具体使用说明（参数使用限制、具体取值范围等）请参考@ohos.hiviewdfx.hiAppEvent (应用事件打点)ArkTS API文档。
 
 接口名	描述
 addWatcher(watcher: Watcher): AppEventPackageHolder	添加应用事件观察者，以添加对应用事件的订阅。
 removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对应用事件的订阅。
+
 开发步骤
 
 以实现对用户运行应用工程生成的启动耗时事件订阅为例，说明开发步骤。
@@ -14,7 +17,6 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
 编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，添加系统事件的订阅，示例代码如下：
 
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
-
 
 hiAppEvent.addWatcher({
   // 开发者可以自定义观察者名称，系统会使用名称来标识不同的观察者
@@ -39,6 +41,7 @@ hiAppEvent.addWatcher({
     }
   }
 });
+
 注意
 
 在订阅APP_LAUNCH事件后，应用启动完成生成APP_LAUNCH事件触发回调的过程中，若应用出现退出或崩溃，onReceive回调接口可能不会被触发，从而导致事件回调处理失败。当应用重新启动时，回调函数会将之前未完成回调的事件内容传递给应用，导致onReceive回调可能在一次应用启动过程中被多次调用。
@@ -54,5 +57,43 @@ hiAppEvent.addWatcher({
 HiAppEvent onReceive: domain=OS
 HiAppEvent eventName=APP_LAUNCH
 HiAppEvent eventInfo={"domain":"OS","name":"APP_LAUNCH","eventType":4,"params":{"animation_finish_time":662,"bundle_name":"com.example.myapplication","bundle_version":"1.0.0","extend_time":0,"icon_input_time":1709367533224,"process_name":"com.example.myapplication","start_type":0,"time":1709367533901}}
-启动耗时事件介绍
-滑动丢帧事件
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
+
+hiAppEvent.addWatcher({
+  // 开发者可以自定义观察者名称，系统会使用名称来标识不同的观察者
+  name: "watcher",
+  // 开发者可以订阅感兴趣的系统事件，此处是订阅了启动耗时事件
+  appEventFilters: [
+    {
+      domain: hiAppEvent.domain.OS,
+      names: [hiAppEvent.event.APP_LAUNCH]
+    }
+  ],
+  // 开发者可以自行实现订阅回调函数，以便对订阅获取到的事件数据进行自定义处理
+  onReceive: (domain: string, appEventGroups: Array<hiAppEvent.AppEventGroup>) => {
+    hilog.info(0x0000, 'testTag', `HiAppEvent onReceive: domain=${domain}`);
+    for (const eventGroup of appEventGroups) {
+      // 开发者可以根据事件集合中的事件名称区分不同的系统事件
+      hilog.info(0x0000, 'testTag', `HiAppEvent eventName=${eventGroup.name}`);
+      for (const eventInfo of eventGroup.appEventInfos) {
+        // 开发者可以对事件集合中的事件数据进行自定义处理，此处是将事件数据打印在日志中
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo=${JSON.stringify(eventInfo)}`);
+      }
+    }
+  }
+});
+```
+
+### Code block 2
+
+```
+HiAppEvent onReceive: domain=OS
+HiAppEvent eventName=APP_LAUNCH
+HiAppEvent eventInfo={"domain":"OS","name":"APP_LAUNCH","eventType":4,"params":{"animation_finish_time":662,"bundle_name":"com.example.myapplication","bundle_version":"1.0.0","extend_time":0,"icon_input_time":1709367533224,"process_name":"com.example.myapplication","start_type":0,"time":1709367533901}}
+```

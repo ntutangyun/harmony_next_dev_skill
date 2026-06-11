@@ -2,7 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-wearable-samplepoint-manage_
 
+场景介绍
+
+读取最新一条运动健康采样数据。
+
+约束与限制
+
+从5.1.1(19) Release版本开始支持。
+
+接口说明
+
+接口名	描述
 readData<T extends SamplePoint>(request: SamplePointReadRequest): Promise<T[]>	查询最新一条运动健康采样数据。
+
 说明
 
 当前SamplePointReadRequest里的时间参数暂不生效，仅支持返回手表侧最新一条数据，读取实时日常活动数据使用读取实时三环数据接口。
@@ -45,5 +57,38 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
 }
-管理运动健康数据
-读取锻炼记录
+
+## Code blocks
+
+### Code block 1
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+let samplePointReadRequest: healthStore.SamplePointReadRequest = {
+  samplePointDataType: healthStore.samplePointHelper.bodyTemperature.DATA_TYPE,
+  startTime: 1698633801000,
+  endTime: 1698633801000,
+  fields: {
+    bodyTemperature: 39
+  }
+}
+```
+
+### Code block 3
+
+```
+try {
+  let samplePoints = await healthStore.readData(samplePointReadRequest);
+  samplePoints.forEach((samplePoint) => {
+    hilog.info(0x0000, 'testTag', `Succeeded in reading data, the bodyTemperature is ${samplePoint.fields.bodyTemperature}.`);
+  });
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
+}
+```

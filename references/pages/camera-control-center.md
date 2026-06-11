@@ -2,6 +2,21 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-control-center_
 
+从API version 20开始，相机框架通过相机控制器，为应用在直播场景提供美颜、虚化等能力。
+
+相机控制器为直播和视频通话场景设计，目前仅支持在前置镜头的录像模式下使用，最高可支持1080P分辨率和30fps帧率。
+
+开发步骤
+
+详细的API说明请参考Camera。
+
+导入camera接口，接口中提供了相机相关的属性和方法，导入方法如下。
+
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+通过isControlCenterSupported接口，查询当前设备及当前场景是否支持相机控制器。
+
 function isControlCenterSupported(videoSession: camera.VideoSession): boolean {
   let isSupported: boolean = videoSession.isControlCenterSupported();
   return isSupported;
@@ -39,6 +54,62 @@ function enableControlCenter(videoSession: camera.VideoSession, enable: boolean)
 import { camera } from '@kit.CameraKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
+function callback(err: BusinessError, status: camera.ControlCenterStatusInfo): void {
+  if (err !== undefined && err.code !== 0) {
+    console.error(`Callback Error, errorCode: ${err.code}`);
+    return;
+  }
+  console.info(`controlCenterEffectStatusChange: ${status}`);
+}
+
+function registerControlCenterEffectStatusChangeCallback(videoSession: camera.VideoSession): void {
+  videoSession.on('controlCenterEffectStatusChange', callback);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+function isControlCenterSupported(videoSession: camera.VideoSession): boolean {
+  let isSupported: boolean = videoSession.isControlCenterSupported();
+  return isSupported;
+}
+```
+
+### Code block 3
+
+```
+function getSupportedEffectTypes(videoSession: camera.VideoSession): Array<camera.ControlCenterEffectType> {
+  let effectTypes: Array<camera.ControlCenterEffectType> = [];
+  effectTypes = videoSession.getSupportedEffectTypes();
+  return effectTypes;
+}
+```
+
+### Code block 4
+
+```
+function enableControlCenter(videoSession: camera.VideoSession, enable: boolean): void {
+  let isSupported: boolean = videoSession.isControlCenterSupported();
+  if (isSupported) {
+    videoSession.enableControlCenter(enable);
+  }
+}
+```
+
+### Code block 5
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 function callback(err: BusinessError, status: camera.ControlCenterStatusInfo): void {
   if (err !== undefined && err.code !== 0) {
@@ -48,9 +119,7 @@ function callback(err: BusinessError, status: camera.ControlCenterStatusInfo): v
   console.info(`controlCenterEffectStatusChange: ${status}`);
 }
 
-
 function registerControlCenterEffectStatusChangeCallback(videoSession: camera.VideoSession): void {
   videoSession.on('controlCenterEffectStatusChange', callback);
 }
-压力管控(ArkTS)
-微距能力设置(ArkTS)
+```

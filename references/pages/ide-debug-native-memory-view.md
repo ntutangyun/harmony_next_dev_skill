@@ -21,6 +21,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug
 内存修改
 
 您可以在内存格上双击，键入您想要修改的内存来修改对应地址处的内存值；您也可以在右侧的数据转换结果框中输入数据，从而修改该数据对应类型的长度的内存值。
-
-汇编调试
-使用LLDB调试命令

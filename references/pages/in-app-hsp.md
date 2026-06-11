@@ -21,10 +21,15 @@ HSP在运行时按需加载，有助于提升应用性能。
 同一个组织内部的多个应用之间，可以使用集成态HSP实现代码和资源的共享。
 
 约束限制
+
 可以和依赖该HSP的HAP一起安装/运行。在安装或更新时，多模块之间存在校验，详情参考一致性校验。使用打包工具进行打包时，会进行合法性校验，详情请参考打包工具。
+
 从API version 14开始HSP支持在配置文件中声明UIAbility组件，但不支持具有入口能力的UIAbility（即skill标签配置了entity.system.home和ohos.want.action.home）。配置UIAbility的方法参考模块中添加UIAbility，HSP中UIAbility的启动方式与应用内启动UIAbility方法相同。API version 13及之前版本，不支持在配置文件中声明UIAbility组件。
+
 从API version 18开始HSP支持在配置文件中声明ExtensionAbility组件，但不支持具有入口能力的ExtensionAbility（即skill标签配置了entity.system.home和ohos.want.action.home）。HSP中配置ExtensionAbility的方法参考模块中添加ExtensionAbility。 API version 17及之前版本，不支持在配置文件中声明ExtensionAbility组件。
+
 HSP可以依赖其他HAR或HSP，也可以被HAP或者HSP依赖集成，但不支持循环依赖，也不支持依赖传递。
+
 说明
 
 循环依赖：例如有三个HSP，HSP-A、HSP-B和HSP-C，循环依赖指HSP-A依赖HSP-B，HSP-B依赖HSP-C，HSP-C又依赖HSP-A。
@@ -51,11 +56,12 @@ MyApplication
 │   ├── index.ets                     //入口文件index.ets
 │   └── build-profile.json5           //模块级
 └── build-profile.json5               //工程级
+
 开发
 
 介绍如何导出HSP的ArkUI组件、接口、资源，供应用内的其他HAP/HSP引用。
 
-导出ArkUI组件
+[h2]导出ArkUI组件
 
 ArkUI组件可以通过export导出，例如：
 
@@ -74,14 +80,13 @@ export struct MyTitleBar {
     .width('100%')
   }
 }
-MyTitleBar.ets
 
 在入口文件 index.ets 中声明对外暴露的接口。
 
 // library/index.ets
 export { MyTitleBar } from './src/main/ets/components/MyTitleBar';
-Index.ets
-导出类和方法
+
+[h2]导出类和方法
 
 通过export导出类和方法，例如：
 
@@ -92,42 +97,37 @@ export class Log {
   }
 }
 
-
 export function add(a: number, b: number): number {
   return a + b;
 }
 
-
 export function minus(a: number, b: number): number {
   return a - b;
 }
-test.ets
 
 在入口文件 index.ets 中声明对外暴露的接口。
 
 // library/index.ets
 export { Log, add, minus } from './src/main/ets/utils/test';
-Index.ets
-导出native方法
+
+[h2]导出native方法
 
 在HSP中也可以包含C++编写的so。对于so中的native方法，HSP通过间接的方式导出，以导出liblibrary.so的乘法接口multi为例：
 
 // library/src/main/ets/utils/nativeTest.ets
 import native from 'liblibrary.so';
 
-
 export function nativeMulti(a: number, b: number): number {
   let result: number = native.multi(a, b);
   return result;
 }
-nativeTest.ets
 
 在入口文件 index.ets 中声明对外暴露的接口。
 
 // library/index.ets
 export { nativeMulti } from './src/main/ets/utils/nativeTest';
-Index.ets
-通过$r访问HSP中的资源
+
+[h2]通过$r访问HSP中的资源
 
 在组件中，经常需要使用字符串、图片等资源。HSP中的组件需要使用资源时，一般将其所用资源放在HSP包内，而非放在HSP的使用方处，以符合高内聚低耦合的原则。
 
@@ -146,12 +146,13 @@ Image($r('app.media.example'))
 Image("../../resources/base/media/example.png")
   .id('example1')
   .borderRadius('48px')
-Index.ets
-导出HSP中的资源
+
+[h2]导出HSP中的资源
 
 跨包访问HSP内资源时，推荐实现一个资源管理类，以封装对外导出的资源。采用这种方式，具有如下优点：
 
 HSP开发者可以控制自己需要导出的资源，不需要对外暴露的资源可以不用导出。
+
 使用方无须感知HSP内部的资源名称。当HSP内部的资源名称发生变化时，也不需要使用方跟着修改。
 
 其具体实现如下：
@@ -167,18 +168,17 @@ export class ResManager{
     return $r('app.string.shared_desc');
   }
 }
-ResManager.ets
 
 在入口文件 index.ets 中声明对外暴露的接口。
 
 // library/index.ets
 export { ResManager } from './src/main/ets/ResManager';
-Index.ets
+
 使用
 
 介绍如何引用HSP中的接口，以及如何通过页面路由实现HSP的pages页面跳转与返回。
 
-引用HSP中的接口
+[h2]引用HSP中的接口
 
 要使用HSP中的接口，首先需要在使用方的 oh-package.json5 文件中配置对它的依赖。具体配置方法请参考引用动态共享包。
 
@@ -193,7 +193,6 @@ export { MyTitleBar } from './src/main/ets/components/MyTitleBar';
 export { ResManager } from './src/main/ets/ResManager';
 // ...
 export { nativeMulti } from './src/main/ets/utils/nativeTest';
-Index.ets
 
 在使用方的代码中，可以这样使用：
 
@@ -202,15 +201,12 @@ import { Log, add, MyTitleBar, ResManager, nativeMulti } from 'library';
 import { BusinessError } from "@kit.BasicServicesKit";
 import { application} from '@kit.AbilityKit';
 
-
 const TAG = 'Index';
-
 
 @Entry
 @Component
 struct Index {
   @State message: string = '';
-
 
   build() {
     Column() {
@@ -219,7 +215,6 @@ struct Index {
           MyTitleBar()
         }
         .margin({ left: '35px', top: '32px' })
-
 
         ListItem() {
           Text(this.message)
@@ -232,7 +227,6 @@ struct Index {
         .width('685px')
         .margin({ top: 30, bottom: 10 })
 
-
         ListItem() {
           // ResManager返回的Resource对象，可以传给组件直接使用，也可以从中取出资源来使用
           Image(ResManager.getPic())
@@ -242,7 +236,6 @@ struct Index {
         .width('685px')
         .margin({ top: 10, bottom: 10 })
         .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-
 
         ListItem() {
           Text($r('app.string.add'))
@@ -263,7 +256,6 @@ struct Index {
           Log.info('add button click!');
           this.message = 'result: ' + add(1, 2);
         })
-
 
         ListItem() {
           Text(ResManager.getDesc())
@@ -296,7 +288,6 @@ struct Index {
           });
         })
 
-
         ListItem() {
           Text($r('app.string.native_multi'))
             .fontSize(18)
@@ -324,8 +315,8 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
-页面跳转和返回
+
+[h2]页面跳转和返回
 
 开发者想在entry模块中，添加一个按钮跳转至library模块中的menu页面（路径为：library/src/main/ets/pages/library_menu.ets），那么可以在使用方的代码（entry模块下的Index.ets，路径为：entry/src/main/ets/pages/Index.ets）里这样使用：
 
@@ -334,7 +325,6 @@ Index.ets
 struct Index {
   @State message: string = '';
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     Navigation(this.pathStack) {
@@ -373,7 +363,6 @@ struct Index {
     .mode(NavigationMode.Stack)
   }
 }
-Index.ets
 
 在library下新增page文件（library/src/main/ets/pages/library_menu.ets），其中'back_to_index'的按钮返回上一页。
 
@@ -382,12 +371,10 @@ export function PageOneBuilder() {
   Library_Menu()
 }
 
-
 @Component
 export struct Library_Menu {
   @State message: string = 'Hello World';
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -412,7 +399,6 @@ export struct Library_Menu {
     })
   }
 }
-library_menu.ets
 
 需要在library模块下新增route_map.json文件（library/src/main/resources/base/profile/route_map.json）。
 
@@ -445,12 +431,8 @@ library_menu.ets
     "routerMap": "$profile:route_map" // 新增配置，指向route_map.json文件
   }
 }
-module.json5
 
 页面跳转和页面返回都使用了Navigation的特性，详情参考Navigation跳转。
-
-HAR
-应用程序包安装卸载与更新
 
 ## Code blocks
 
@@ -512,11 +494,9 @@ export class Log {
   }
 }
 
-
 export function add(a: number, b: number): number {
   return a + b;
 }
-
 
 export function minus(a: number, b: number): number {
   return a - b;
@@ -535,7 +515,6 @@ export { Log, add, minus } from './src/main/ets/utils/test';
 ```
 // library/src/main/ets/utils/nativeTest.ets
 import native from 'liblibrary.so';
-
 
 export function nativeMulti(a: number, b: number): number {
   let result: number = native.multi(a, b);
@@ -607,15 +586,12 @@ import { Log, add, MyTitleBar, ResManager, nativeMulti } from 'library';
 import { BusinessError } from "@kit.BasicServicesKit";
 import { application} from '@kit.AbilityKit';
 
-
 const TAG = 'Index';
-
 
 @Entry
 @Component
 struct Index {
   @State message: string = '';
-
 
   build() {
     Column() {
@@ -624,7 +600,6 @@ struct Index {
           MyTitleBar()
         }
         .margin({ left: '35px', top: '32px' })
-
 
         ListItem() {
           Text(this.message)
@@ -637,7 +612,6 @@ struct Index {
         .width('685px')
         .margin({ top: 30, bottom: 10 })
 
-
         ListItem() {
           // ResManager返回的Resource对象，可以传给组件直接使用，也可以从中取出资源来使用
           Image(ResManager.getPic())
@@ -647,7 +621,6 @@ struct Index {
         .width('685px')
         .margin({ top: 10, bottom: 10 })
         .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-
 
         ListItem() {
           Text($r('app.string.add'))
@@ -668,7 +641,6 @@ struct Index {
           Log.info('add button click!');
           this.message = 'result: ' + add(1, 2);
         })
-
 
         ListItem() {
           Text(ResManager.getDesc())
@@ -700,7 +672,6 @@ struct Index {
             console.error('createModuleContext promise error is ' + err);
           });
         })
-
 
         ListItem() {
           Text($r('app.string.native_multi'))
@@ -739,7 +710,6 @@ struct Index {
 struct Index {
   @State message: string = '';
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     Navigation(this.pathStack) {
@@ -788,12 +758,10 @@ export function PageOneBuilder() {
   Library_Menu()
 }
 
-
 @Component
 export struct Library_Menu {
   @State message: string = 'Hello World';
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {

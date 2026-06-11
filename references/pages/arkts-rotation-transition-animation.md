@@ -25,7 +25,6 @@ struct rotation {
     .size({ width: '100%', height: '100%' })
   }
 }
-Index.ets
 
 需要在项目的module.json5文件中的abilities列表里添加"orientation"，指定为"auto_rotation"。
 
@@ -39,19 +38,15 @@ Index.ets
 
 import { display } from '@kit.ArkUI';
 
-
 @Entry
 @Component
 struct rotation {
 
-
   // 获取通过监听窗口的windowsSizeChange事件得到的屏幕显示方向
   @StorageLink('orientation') myOrientation: display.Orientation = display.Orientation.PORTRAIT;
 
-
   build() {
     Stack() {
-
 
       // 当屏幕显示方向变化时，切换组件的视图效果
       if (this.myOrientation == display.Orientation.PORTRAIT || this.myOrientation == display.Orientation.PORTRAIT_INVERTED) {
@@ -59,7 +54,6 @@ struct rotation {
         Image($r('app.media.sky'))
           .size({ width: 100, height: 100 })
           .id('image1')
-
 
         // 开发者也可以通过自行设置transition的TransitionEffect.OPACITY转场效果来实现旋转屏动画的透明度变化
         // .transition(TransitionEffect.OPACITY)
@@ -70,7 +64,6 @@ struct rotation {
           .size({ width: 200, height: 200 })
           .id('image2')
 
-
         // 开发者也可以通过自行设置transition的TransitionEffect.OPACITY来实现旋转屏动画的透明度变化
         // .transition(TransitionEffect.OPACITY)
       }
@@ -79,13 +72,11 @@ struct rotation {
     .size({ width: '100%', height: '100%' })
   }
 }
-Index.ets
 
 监听窗口旋转的同步事件windowSizeChange来实现视图的切换。例如可在EntryAbility.ets文件的onWindowStageCreate方法中添加处理逻辑以获取屏幕的显示方向。
 
 import { display, window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 const DOMAIN = 0x0000;
 const TAG: string = 'EntryAbility';
@@ -117,6 +108,127 @@ const TAG: string = 'EntryAbility';
     }
     // ...
 
+    windowStage.loadContent('pages/Index', (err) => {
+      if (err.code) {
+        hilog.error(DOMAIN, TAG, 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
+        return;
+      }
+      hilog.info(DOMAIN, TAG, 'Succeeded in loading the content.');
+    });
+  }
+
+  // ...
+
+需要在项目的module.json5文件中的abilities列表里添加"orientation"，指定为"auto_rotation"。
+
+"orientation": "auto_rotation",
+
+透明度变化的旋转屏动画，会对窗口做大小和位置的过渡，并同时对应用视图做切换过渡，且为消失隐藏的应用视图做渐隐效果，对新出现的视图做渐显的效果。
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct rotation {
+  build() {
+    Stack() {
+      // 请将$r('app.media.tree')替换为实际资源文件
+      Image($r('app.media.tree'))
+        .position({ x: 0, y: 0 })
+        .size({ width: 100, height: 100 })
+        .id('image1')
+    }
+    .backgroundColor(Color.White)
+    .size({ width: '100%', height: '100%' })
+  }
+}
+```
+
+### Code block 2
+
+```
+"orientation": "auto_rotation",
+```
+
+### Code block 3
+
+```
+import { display } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct rotation {
+
+  // 获取通过监听窗口的windowsSizeChange事件得到的屏幕显示方向
+  @StorageLink('orientation') myOrientation: display.Orientation = display.Orientation.PORTRAIT;
+
+  build() {
+    Stack() {
+
+      // 当屏幕显示方向变化时，切换组件的视图效果
+      if (this.myOrientation == display.Orientation.PORTRAIT || this.myOrientation == display.Orientation.PORTRAIT_INVERTED) {
+        // 请将$r('app.media.sky')替换为实际资源文件
+        Image($r('app.media.sky'))
+          .size({ width: 100, height: 100 })
+          .id('image1')
+
+        // 开发者也可以通过自行设置transition的TransitionEffect.OPACITY转场效果来实现旋转屏动画的透明度变化
+        // .transition(TransitionEffect.OPACITY)
+      } else {
+        // 请将$r('app.media.tree')替换为实际资源文件
+        Image($r('app.media.tree'))
+          .position({ x: 0, y: 0 })
+          .size({ width: 200, height: 200 })
+          .id('image2')
+
+        // 开发者也可以通过自行设置transition的TransitionEffect.OPACITY来实现旋转屏动画的透明度变化
+        // .transition(TransitionEffect.OPACITY)
+      }
+    }
+    .backgroundColor(Color.White)
+    .size({ width: '100%', height: '100%' })
+  }
+}
+```
+
+### Code block 4
+
+```
+import { display, window } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+const TAG: string = 'EntryAbility';
+// ...
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    // ...
+    hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onWindowStageCreate');
+    let mainWindow: window.Window;
+    try {
+      mainWindow = windowStage.getMainWindowSync();
+      let displayClass: display.Display = display.getDefaultDisplaySync();
+      AppStorage.setOrCreate('orientation', displayClass.orientation);
+      // 监听窗口的windowsSizeChange事件，旋转屏时会触发该事件
+      mainWindow.on('windowSizeChange', (data) => {
+        hilog.info(DOMAIN, TAG, 'Succeeded in enabling the listener for window size changes. Data: ' + data);
+        let displayClass: display.Display | null = null;
+        try {
+          displayClass = display.getDefaultDisplaySync();
+          hilog.info(DOMAIN, TAG, 'display orientation is ' + displayClass.orientation);
+          // 获取屏幕的显示方向
+          AppStorage.set('orientation', displayClass.orientation);
+        } catch {
+          return;
+        }
+      })
+    } catch {
+      hilog.error(DOMAIN, TAG, '%{public}s', 'error');
+      return;
+    }
+    // ...
 
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
@@ -127,15 +239,11 @@ const TAG: string = 'EntryAbility';
     });
   }
 
-
   // ...
-EntryAbility.ets
+```
 
-需要在项目的module.json5文件中的abilities列表里添加"orientation"，指定为"auto_rotation"。
+### Code block 5
 
+```
 "orientation": "auto_rotation",
-
-透明度变化的旋转屏动画，会对窗口做大小和位置的过渡，并同时对应用视图做切换过渡，且为消失隐藏的应用视图做渐隐效果，对新出现的视图做渐显的效果。
-
-共享元素转场 (一镜到底)
-页面转场动画 (不推荐)
+```

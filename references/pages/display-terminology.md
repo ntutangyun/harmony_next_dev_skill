@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/display-terminology_
 
+屏幕管理开发主要围绕逻辑屏和物理屏两个核心概念进行。
+
+逻辑屏不能独立于物理屏存在，每一块逻辑屏都会映射到物理屏上。
+
 物理屏属性会影响逻辑屏属性，如：折叠手机折展时，逻辑屏会在手机的内屏和外屏之间切换，逻辑屏的宽高属性也会更新为对应屏的分辨率。
 
 逻辑屏
@@ -10,23 +14,23 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/display-t
 
 逻辑屏有主屏、镜像屏、扩展屏、异源屏四种。
 
-主屏
+[h2]主屏
 
 承载系统核心UI（任务栏）和默认交互焦点的逻辑屏。
 
-镜像屏
+[h2]镜像屏
 
 拷贝另一块逻辑屏上的内容来显示的逻辑屏。
 
 常用场景：有线投屏、无线投屏、录屏。
 
-扩展屏
+[h2]扩展屏
 
 作为主屏的延伸，增加屏幕的使用空间。
 
 可以设置与主屏的相对位置，鼠标、窗口可以在主屏与扩展屏之间移动。
 
-异源屏
+[h2]异源屏
 
 显示内容与主屏完全独立的逻辑屏。
 
@@ -40,7 +44,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/display-t
 
 物理屏可分为实体屏和虚拟屏两种。
 
-实体屏
+[h2]实体屏
 
 由物理硬件（液晶面板、OLED面板等）构成的物理屏，其图像输出与一个真实的、通过线缆连接的物理屏相关联。
 
@@ -50,11 +54,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/display-t
 
 外接屏：通过线缆（HDMI、DP等）方式连接的物理屏。
 
-虚拟屏
+[h2]虚拟屏
 
 由软件模拟的物理屏，没有对应的实体显示硬件，其生成的图像帧被输出到其他目的地，例如通过网络传输（远程桌面共享）或录制到视频文件（录屏软件）。
 
 作为物理屏的一种，虚拟屏也可以被逻辑屏关联，常用场景：关联镜像屏进行录屏或投屏、关联异源屏独立运行应用。
-
-使用Display实现屏幕属性查询及状态监听 (ArkTS)
-屏幕开发常见问题

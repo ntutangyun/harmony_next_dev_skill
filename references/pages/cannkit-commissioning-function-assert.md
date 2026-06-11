@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-commissioning-function-assert_
 
+功能介绍
+
 使用工具进行算子调测时，支持断言功能。当核函数代码中条件判断为false时，则立即中断运行流程并打印相关信息，方便快速定位错误。
 
 说明
@@ -26,6 +28,7 @@ ascendebug kernel --backend simulator --dump-mode normal ... {其他simulator调
 若调用时传入的判断条件为false，会中断程序并在屏幕上显示断言内容（带文件名、行号），结果示例如下。
 
 [ASSERT] /home/.../add_custom.cpp:94: Assertion `x < 0' Invalid input_num: 31
+
 接口说明
 
 assert接口说明如下。
@@ -36,10 +39,12 @@ assert接口说明如下。
 
 参数(IN)：
 
-assertFlag： 判断是否要中断程序打印断言语句的条件。
 false：程序中断退出，在屏幕上显示assert传入的打印内容。
+
 true： 程序不会在assert中断，无打印。
+
 fmt： 开发者输入常量字符串，作为打印的前缀修饰。
+
 args： 开发者需要打印的变量名。
 
 参数(OUT)： NA
@@ -49,12 +54,40 @@ args： 开发者需要打印的变量名。
 使用约束：
 
 不支持转义字符打印。
+
 当前支持的上板打印类型同printf/PRINTF功能。
 
 调用示例：
 
 assert(input_num > 0, "Invalid input_num: %d ", input_num);
+
 若input_num==0，程序中断，打印内容为“[ASSERT] /path_to/add_custom_test.cpp:25 Invalid input_num: 0”。
+
 若input_num>0，程序不会在assert处中断。
-DumpAccChkPoint功能
-gdb调试
+
+## Code blocks
+
+### Code block 1
+
+```
+int32_t x = 31;
+assert(x < 0, "Invalid input_num: %d\n", x);
+```
+
+### Code block 2
+
+```
+ascendebug kernel --backend simulator --dump-mode normal ... {其他simulator调测参数}
+```
+
+### Code block 3
+
+```
+[ASSERT] /home/.../add_custom.cpp:94: Assertion `x < 0' Invalid input_num: 31
+```
+
+### Code block 4
+
+```
+assert(input_num > 0, "Invalid input_num: %d ", input_num);
+```

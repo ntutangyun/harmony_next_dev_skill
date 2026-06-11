@@ -31,22 +31,18 @@ import { url } from '@kit.ArkTS';
 export class NetworkQualityProvider {
   isNetworkFast: boolean = true
 
-
   public constructor(isNetworkFast: boolean) {
     this.isNetworkFast = isNetworkFast
   }
 }
 
-
 // 定义RequestUrlChangeInterceptor拦截器
 export class RequestUrlChangeInterceptor implements rcp.Interceptor {
   private readonly networkQualityProvider: NetworkQualityProvider;
 
-
   constructor(networkQualityProvider: NetworkQualityProvider) {
     this.networkQualityProvider = networkQualityProvider;
   }
-
 
   // 自定义请求处理逻辑
   async intercept(context: rcp.RequestContext, next: rcp.RequestHandler): Promise<rcp.Response> {
@@ -67,7 +63,6 @@ export class RequestUrlChangeInterceptor implements rcp.Interceptor {
     return next.handle(context);
   }
 }
-
 
 // 定义ResponseHeaderRemoveInterceptor拦截器
 export class ResponseHeaderRemoveInterceptor implements rcp.Interceptor {
@@ -108,5 +103,95 @@ function httpRequest(networkStateSimulator: NetworkQualityProvider) {
   };
   const session = rcp.createSession(sessionConfig);
 }
-ProcessingConfiguration：定制处理行为
-文件上传下载
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { url } from '@kit.ArkTS';
+```
+
+### Code block 2
+
+```
+// 模拟网络质量不佳的情况
+export class NetworkQualityProvider {
+  isNetworkFast: boolean = true
+
+  public constructor(isNetworkFast: boolean) {
+    this.isNetworkFast = isNetworkFast
+  }
+}
+
+// 定义RequestUrlChangeInterceptor拦截器
+export class RequestUrlChangeInterceptor implements rcp.Interceptor {
+  private readonly networkQualityProvider: NetworkQualityProvider;
+
+  constructor(networkQualityProvider: NetworkQualityProvider) {
+    this.networkQualityProvider = networkQualityProvider;
+  }
+
+  // 自定义请求处理逻辑
+  async intercept(context: rcp.RequestContext, next: rcp.RequestHandler): Promise<rcp.Response> {
+    if (context.request.method === 'GET' && !this.networkQualityProvider.isNetworkFast) {
+      console.info('[RequestUrlChangeInterceptor]: Slow network is detected');
+      const parts = context.request.url.pathname.split('.');
+      if (parts.length === 2) {
+        const changed = url.URL.parseURL(context.request.url.href);
+        changed.pathname = parts[0] + '_small.' + parts[1];
+        console.info(`[RequestUrlChangeInterceptor]: Replace URL from '${context.request.url.href}' to '${changed}'`);
+        AppStorage.setOrCreate('ReplacedInfo',
+          `[RequestUrlChangeInterceptor]: Replace URL from '${context.request.url.href}' to '${changed}'`);
+        context.request.url = changed;
+      }
+    } else {
+      console.info('[RequestUrlChangeInterceptor]: Network is fast');
+    }
+    return next.handle(context);
+  }
+}
+
+// 定义ResponseHeaderRemoveInterceptor拦截器
+export class ResponseHeaderRemoveInterceptor implements rcp.Interceptor {
+  // 自定义响应处理逻辑
+  async intercept(context: rcp.RequestContext, next: rcp.RequestHandler): Promise<rcp.Response> {
+    const response = await next.handle(context);
+    const toReturn: rcp.Response = {
+      request: response.request,
+      statusCode: response.statusCode,
+      httpVersion: response.httpVersion,
+      headers: {
+        'content-range': response.headers['content-range']
+      },
+      effectiveUrl: response.effectiveUrl,
+      timeInfo: response.timeInfo,
+      toJSON: () => null
+    };
+    console.info('[ResponseHeaderRemoveInterceptor]: Response was modified');
+    return toReturn;
+  }
+}
+```
+
+### Code block 3
+
+```
+function httpRequest(networkStateSimulator: NetworkQualityProvider) {
+  const sessionConfig: rcp.SessionConfiguration = {
+    interceptors: [
+      new RequestUrlChangeInterceptor(networkStateSimulator),
+      new ResponseHeaderRemoveInterceptor()
+    ],
+    requestConfiguration: {
+      security: {
+        tlsOptions: {
+          tlsVersion: 'TlsV1.3'
+        }
+      }
+    }
+  };
+  const session = rcp.createSession(sessionConfig);
+}
+```

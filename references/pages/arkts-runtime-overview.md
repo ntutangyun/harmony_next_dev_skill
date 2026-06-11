@@ -23,6 +23,3 @@ Runtime Subsystem：包含以下ArkTS/TS/JS运行相关的模块。
 标准库：ECMAScript规范定义的标准库、高效的container容器库与对象模型。
 
 其他：包括异步工作队列和C++交互的Node-API接口等功能。
-
-ArkTS运行时
-GC垃圾回收

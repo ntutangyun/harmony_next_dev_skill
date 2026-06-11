@@ -13,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-acces
 接入限制
 
 数字商品（虚拟商品）要求通过IAP Kit接入购买能力，不能独立对接支付宝、微信支付等三方支付，否则可能影响应用上架。
-
-IAP Kit简介
-接入Skill（可选）

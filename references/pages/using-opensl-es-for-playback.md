@@ -33,25 +33,33 @@ SL_IID_OH_BUFFERQUEUE	提供音频播放流数据回调注册接口。
 HarmonyOS上支持的Engine接口：
 
 SLresult (*CreateAudioPlayer) (SLEngineItf self, SLObjectItf * pPlayer, SLDataSource *pAudioSrc, SLDataSink *pAudioSnk, SLuint32 numInterfaces, const SLInterfaceID * pInterfaceIds, const SLboolean * pInterfaceRequired)
+
 SLresult (*CreateAudioRecorder) (SLEngineItf self, SLObjectItf * pRecorder, SLDataSource *pAudioSrc, SLDataSink *pAudioSnk, SLuint32 numInterfaces, const SLInterfaceID * pInterfaceIds, const SLboolean * pInterfaceRequired)
+
 SLresult (*CreateOutputMix) (SLEngineItf self, SLObjectItf * pMix, SLuint32 numInterfaces, const SLInterfaceID * pInterfaceIds, const SLboolean * pInterfaceRequired)
 
 HarmonyOS上支持的Object接口：
 
 SLresult (*Realize) (SLObjectItf self, SLboolean async)
+
 SLresult (*GetState) (SLObjectItf self, SLuint32 * pState)
+
 SLresult (*GetInterface) (SLObjectItf self, const SLInterfaceID iid, void * pInterface)
+
 void (*Destroy) (SLObjectItf self)
 
 HarmonyOS上支持的Playback接口：
 
 SLresult (*SetPlayState) (SLPlayItf self, SLuint32 state)
+
 SLresult (*GetPlayState) (SLPlayItf self, SLuint32 *pState)
 
 HarmonyOS上支持的Volume控制接口：
 
 SLresult (*SetVolumeLevel) (SLVolumeItf self, SLmillibel level)
+
 SLresult (*GetVolumeLevel) (SLVolumeItf self, SLmillibel *pLevel)
+
 SLresult (*GetMaxVolumeLevel) (SLVolumeItf self, SLmillibel *pMaxLevel)
 
 HarmonyOS上支持的BufferQueue接口：
@@ -59,60 +67,16 @@ HarmonyOS上支持的BufferQueue接口：
 以下接口需引入<OpenSLES_OpenHarmony.h>使用。
 
 接口	说明
-SLresult (*Enqueue) (SLOHBufferQueueItf self, const void *buffer, SLuint32 size)	
-
-根据情况将buffer加到相应队列中。
-
-如果是播放操作，则将带有音频数据的buffer插入到filledBufferQ_队列中；如果是录音操作，则将录音使用后的空闲buffer插入到freeBufferQ_队列中。
-
-self：表示调用该函数的BufferQueue接口对象。
-
-buffer：播放时表示带有音频数据的buffer，录音时表示已存储完录音数据后的空闲buffer。
-
-size：表示buffer的大小。
-
-
-SLresult (*Clear) (SLOHBufferQueueItf self)	
-
-释放BufferQueue接口对象。
-
-self：表示调用该函数的BufferQueue接口对象将被释放。
-
-
-SLresult (*GetState) (SLOHBufferQueueItf self, SLOHBufferQueueState *state)	
-
-获取BufferQueue接口对象状态。
-
-self：表示调用该函数的BufferQueue接口对象。
-
-state：BufferQueue的当前状态。
-
-
-SLresult (*RegisterCallback) (SLOHBufferQueueItf self, SlOHBufferQueueCallback callback, void* pContext)	
-
-注册回调函数。
-
-self：表示调用该函数的BufferQueue接口对象。
-
-callback：播放/录音时注册的回调函数。
-
-pContext：播放时传入待播放音频文件，录音时传入将要录制的音频文件。
-
-
-SLresult (*GetBuffer) (SLOHBufferQueueItf self, SLuint8** buffer, SLuint32* size)	
-
-根据情况获取相应的buffer。
-
-如果是播放操作，则从freeBufferQ_队列中获取空闲buffer；如果是录音操作，则从filledBufferQ_队列中获取携带录音数据的buffer。
-
-self：表示调用该函数的BufferQueue接口对象。
-
-buffer：播放时表示空闲的buffer，录音时表示携带录音数据的buffer。
-
-size：表示buffer的大小。
+SLresult (*Enqueue) (SLOHBufferQueueItf self, const void *buffer, SLuint32 size)	根据情况将buffer加到相应队列中。 如果是播放操作，则将带有音频数据的buffer插入到filledBufferQ_队列中；如果是录音操作，则将录音使用后的空闲buffer插入到freeBufferQ_队列中。 self：表示调用该函数的BufferQueue接口对象。 buffer：播放时表示带有音频数据的buffer，录音时表示已存储完录音数据后的空闲buffer。 size：表示buffer的大小。
+SLresult (*Clear) (SLOHBufferQueueItf self)	释放BufferQueue接口对象。 self：表示调用该函数的BufferQueue接口对象将被释放。
+SLresult (*GetState) (SLOHBufferQueueItf self, SLOHBufferQueueState *state)	获取BufferQueue接口对象状态。 self：表示调用该函数的BufferQueue接口对象。 state：BufferQueue的当前状态。
+SLresult (*RegisterCallback) (SLOHBufferQueueItf self, SlOHBufferQueueCallback callback, void* pContext)	注册回调函数。 self：表示调用该函数的BufferQueue接口对象。 callback：播放/录音时注册的回调函数。 pContext：播放时传入待播放音频文件，录音时传入将要录制的音频文件。
+SLresult (*GetBuffer) (SLOHBufferQueueItf self, SLuint8** buffer, SLuint32* size)	根据情况获取相应的buffer。 如果是播放操作，则从freeBufferQ_队列中获取空闲buffer；如果是录音操作，则从filledBufferQ_队列中获取携带录音数据的buffer。 self：表示调用该函数的BufferQueue接口对象。 buffer：播放时表示空闲的buffer，录音时表示携带录音数据的buffer。 size：表示buffer的大小。
 
 完整示例
-在 CMake 脚本中链接动态库
+
+[h2]在 CMake 脚本中链接动态库
+
 target_link_libraries(sample PUBLIC libOpenSLES.so)
 
 参考以下示例代码，播放一个音频文件。
@@ -143,7 +107,6 @@ SLDataLocator_BufferQueue slBufferQueue = {
     SL_DATALOCATOR_BUFFERQUEUE,
     1
 };
-
 
 // 具体参数需要根据音频文件格式进行适配。
 SLDataFormat_PCM pcmFormat = {
@@ -195,7 +158,7 @@ static void BufferQueueCallback (SLOHBufferQueueItf bufferQueueItf, void *pConte
 void *pContext; // 可传入自定义的上下文信息，会在Callback内收到。
 (*bufferQueueItf)->RegisterCallback(bufferQueueItf, BufferQueueCallback, pContext);
 
-获取接口SL_PLAYSTATE_PLAYING的playItf实例，开始播放。
+获取接口SL_IID_PLAY的playItf实例，开始播放。
 
 SLPlayItf playItf = nullptr;
 (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_PLAY, &playItf);
@@ -206,5 +169,116 @@ SLPlayItf playItf = nullptr;
 (*playItf)->SetPlayState(playItf, SL_PLAYSTATE_STOPPED);
 (*pcmPlayerObject)->Destroy(pcmPlayerObject);
 (*engineObject)->Destroy(engineObject);
-从OpenSL ES切换到OHAudio(C/C++)
-使用OpenSL ES开发音频录制功能(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC libOpenSLES.so)
+```
+
+### Code block 2
+
+```
+#include "SLES/OpenSLES.h"
+#include "SLES/OpenSLES_OpenHarmony.h"
+#include "SLES/OpenSLES_Platform.h"
+```
+
+### Code block 3
+
+```
+SLObjectItf engineObject = nullptr;
+slCreateEngine(&engineObject, 0, nullptr, 0, nullptr, nullptr);
+(*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
+```
+
+### Code block 4
+
+```
+SLEngineItf engineEngine = nullptr;
+(*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine);
+```
+
+### Code block 5
+
+```
+SLObjectItf outputMixObject = nullptr;
+(*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 0, nullptr, nullptr);
+(*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE);
+SLDataLocator_BufferQueue slBufferQueue = {
+    SL_DATALOCATOR_BUFFERQUEUE,
+    1
+};
+
+// 具体参数需要根据音频文件格式进行适配。
+SLDataFormat_PCM pcmFormat = {
+    SL_DATAFORMAT_PCM,
+    2,                           // 通道数。
+    SL_SAMPLINGRATE_48,          // 采样率。
+    SL_PCMSAMPLEFORMAT_FIXED_16, // 音频采样格式。
+    16,
+    SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
+    SL_BYTEORDER_LITTLEENDIAN
+};
+SLDataSource slSource = {
+    &slBufferQueue,
+    &pcmFormat
+};
+SLDataLocator_OutputMix slOutputMix = {
+    SL_DATALOCATOR_OUTPUTMIX,
+    outputMixObject
+};
+SLDataSink slSink = {
+    &slOutputMix,
+    nullptr
+};
+SLObjectItf pcmPlayerObject = nullptr;
+(*engineEngine)->CreateAudioPlayer(engineEngine,
+                                   &pcmPlayerObject,
+                                   &slSource,
+                                   &slSink,
+                                   0,
+                                   nullptr,
+                                   nullptr);
+(*pcmPlayerObject)->Realize(pcmPlayerObject, SL_BOOLEAN_FALSE);
+```
+
+### Code block 6
+
+```
+SLOHBufferQueueItf bufferQueueItf;
+(*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_OH_BUFFERQUEUE, &bufferQueueItf);
+```
+
+### Code block 7
+
+```
+static void BufferQueueCallback (SLOHBufferQueueItf bufferQueueItf, void *pContext, SLuint32 size)
+{
+    SLuint8 *buffer = nullptr;
+    SLuint32 pSize;
+    (*bufferQueueItf)->GetBuffer(bufferQueueItf, &buffer, &pSize);
+    // 将待播放音频数据写入buffer。
+    (*bufferQueueItf)->Enqueue(bufferQueueItf, buffer, size);
+}
+void *pContext; // 可传入自定义的上下文信息，会在Callback内收到。
+(*bufferQueueItf)->RegisterCallback(bufferQueueItf, BufferQueueCallback, pContext);
+```
+
+### Code block 8
+
+```
+SLPlayItf playItf = nullptr;
+(*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_PLAY, &playItf);
+(*playItf)->SetPlayState(playItf, SL_PLAYSTATE_PLAYING);
+```
+
+### Code block 9
+
+```
+(*playItf)->SetPlayState(playItf, SL_PLAYSTATE_STOPPED);
+(*pcmPlayerObject)->Destroy(pcmPlayerObject);
+(*engineObject)->Destroy(engineObject);
+```

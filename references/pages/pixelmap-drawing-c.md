@@ -19,7 +19,6 @@ target_link_libraries(entry PUBLIC libpixelmap.so)
 导入依赖的相关头文件。
 
 #include <multimedia/image_framework/image/pixelmap_native.h>
-sample_graphics.cpp
 
 创建OH_PixelmapNative像素图对象。
 
@@ -56,14 +55,12 @@ OH_PixelmapInitializationOptions_SetAlphaType(createOps, PIXELMAP_ALPHA_TYPE_UNK
 // 创建OH_PixelmapNative对象
 OH_PixelmapNative *pixelMapNative = nullptr;
 OH_PixelmapNative_CreatePixelmap(pixels, bufferSize, createOps, &pixelMapNative);
-sample_graphics.cpp
 
 创建PixelMap。
 
 通过OH_Drawing_PixelMapGetFromOhPixelMapNative()函数从OH_PixelmapNative中获取PixelMap。
 
 OH_Drawing_PixelMap *pixelMap = OH_Drawing_PixelMapGetFromOhPixelMapNative(pixelMapNative);
-sample_graphics.cpp
 
 绘制PixelMap。
 
@@ -80,17 +77,93 @@ OH_Drawing_SamplingOptions* samplingOptions = OH_Drawing_SamplingOptionsCreate(
     OH_Drawing_FilterMode::FILTER_MODE_LINEAR, OH_Drawing_MipmapMode::MIPMAP_MODE_LINEAR);
 // 绘制PixelMap
 OH_Drawing_CanvasDrawPixelMapRect(canvas, pixelMap, src, dst, samplingOptions);
-sample_graphics.cpp
 
 绘制完成后释放相关对象。
 
 OH_PixelmapNative_Release(pixelMapNative);
 delete[] pixels;
-sample_graphics.cpp
 
 绘制效果如下：
 
 示例代码
+
 图形绘制（C/C++）
-几何形状绘制（C/C++）
-字块绘制（C/C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libnative_drawing.so)
+target_link_libraries(entry PUBLIC libhilog_ndk.z.so)
+target_link_libraries(entry PUBLIC libpixelmap.so)
+```
+
+### Code block 2
+
+```
+#include <multimedia/image_framework/image/pixelmap_native.h>
+```
+
+### Code block 3
+
+```
+// 图片宽高分别为 600 * 400
+uint32_t width = 600;
+uint32_t height = 400;
+// 字节长度，RGBA_8888每个像素占4字节
+size_t bufferSize = width * height * 4;
+uint8_t *pixels = new uint8_t[bufferSize];
+for (uint32_t i = 0; i < width * height; ++i) {
+    // 遍历并编辑每个像素，从而形成红绿蓝相间的条纹
+    uint32_t n = i / 20 % 3;
+    pixels[i * RGBA_SIZE] = RGBA_MIN; // 红色通道
+    pixels[i * RGBA_SIZE + 1] = RGBA_MIN; // +1表示绿色通道
+    pixels[i * RGBA_SIZE + 2] = RGBA_MIN; // +2表示蓝色通道
+    pixels[i * RGBA_SIZE + 3] = 0xFF; // +3表示不透明度通道
+    if (n == 0) {
+        pixels[i * RGBA_SIZE] = 0xFF; // 红色通道赋值，颜色显红色
+    } else if (n == 1) {
+        pixels[i * RGBA_SIZE + 1] = 0xFF; // +1表示绿色通道赋值，其余通道为0，颜色显绿色
+    } else {
+        pixels[i * RGBA_SIZE + 2] = 0xFF; // +2表示蓝色通道赋值，其余通道为0，颜色显蓝色
+    }
+}
+// 设置位图格式（长、宽、颜色类型、透明度类型）
+OH_Pixelmap_InitializationOptions *createOps = nullptr;
+OH_PixelmapInitializationOptions_Create(&createOps);
+OH_PixelmapInitializationOptions_SetWidth(createOps, width);
+OH_PixelmapInitializationOptions_SetHeight(createOps, height);
+OH_PixelmapInitializationOptions_SetPixelFormat(createOps, PIXEL_FORMAT_RGBA_8888);
+OH_PixelmapInitializationOptions_SetAlphaType(createOps, PIXELMAP_ALPHA_TYPE_UNKNOWN);
+// 创建OH_PixelmapNative对象
+OH_PixelmapNative *pixelMapNative = nullptr;
+OH_PixelmapNative_CreatePixelmap(pixels, bufferSize, createOps, &pixelMapNative);
+```
+
+### Code block 4
+
+```
+OH_Drawing_PixelMap *pixelMap = OH_Drawing_PixelMapGetFromOhPixelMapNative(pixelMapNative);
+```
+
+### Code block 5
+
+```
+// PixelMap中像素的截取区域
+OH_Drawing_Rect *src = OH_Drawing_RectCreate(0, 0, 600, 400);
+// 画布中显示的区域
+OH_Drawing_Rect *dst = OH_Drawing_RectCreate(value200_, value200_, value800_, value600_);
+// 采样选项对象
+OH_Drawing_SamplingOptions* samplingOptions = OH_Drawing_SamplingOptionsCreate(
+    OH_Drawing_FilterMode::FILTER_MODE_LINEAR, OH_Drawing_MipmapMode::MIPMAP_MODE_LINEAR);
+// 绘制PixelMap
+OH_Drawing_CanvasDrawPixelMapRect(canvas, pixelMap, src, dst, samplingOptions);
+```
+
+### Code block 6
+
+```
+OH_PixelmapNative_Release(pixelMapNative);
+delete[] pixels;
+```

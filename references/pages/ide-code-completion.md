@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-code-completion_
 
+代码自动补全
+
 提供代码的自动补全能力，编辑器工具会分析上下文，并根据输入的内容，提示可补全的类、方法、字段和关键字的名称等，支持模糊匹配。
 
 自动补全功能默认按最短路径进行排序，如仅需按照最近使用过的类、方法、字段和关键字等名称提供补全内容排序，可以在File > Settings（macOS为DevEco Studio > Preferences/Settings） > Editor > General > Code Completion 中勾选“Sort suggestions by recently used”。
@@ -31,6 +33,3 @@ DevEco Studio提供Override Methods，辅助开发者根据父类模板快速生
 编辑器支持将HSP和HAR模块中变量、方法、接口、类等需要对外暴露的信息，通过Generate...>Declarations功能，批量在Index.ets文件中进行声明，便于其他模块调用。
 
 在HSP或HAR模块内的文件编辑界面，单击右键选择Generate...>Declarations，或者使用快捷键Alt+Insert（macOS为Command+N），在菜单中选择Declarations，按住快捷键Ctrl并选择需要声明的变量名、方法名、接口名、类名等，即可在模块的Index.ets文件中批量生成相应的声明信息。
-
-代码阅读
-代码检查

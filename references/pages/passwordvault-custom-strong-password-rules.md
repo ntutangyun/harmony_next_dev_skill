@@ -11,8 +11,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/passwordv
 当开发者没有指定规则，或是指定的密码规则不符合规范时，将按照以下默认规则生成强密码。
 
 以字母开头。
+
 包含大小写字母和数字。
+
 长度为16位。
+
 开发者可自定义的强密码规则
 
 开发者可以设置新密码输入框的passwordRules属性来指定强密码规则。
@@ -84,7 +87,7 @@ len:[minlen:13,maxlen:18]
 
 若不指定len属性，强密码长度默认为16位。
 
-自定义规则样例说明
+[h2]自定义规则样例说明
 
 正确的规则样例如下：
 
@@ -107,7 +110,9 @@ began:[upper]	begin属性拼写错误。
 len:[15]	len属性语法错误，未使用三种长度关键词。
 len:[fixedlen:15,maxlen:18]	len属性语法错误，fixedlen与maxlen不可混用。
 len:[maxlen:15,minlen:18]	len属性参数值错误，maxlen的取值不能小于minlen。
-示例
+
+[h2]示例
+
 TextInput({ placeholder: '新密码' })
   .enableAutoFill(true)
   .type(InputType.NEW_PASSWORD)
@@ -118,5 +123,56 @@ TextInput({ placeholder: '新密码' })
   .showPasswordIcon(true)
   .placeholderFont({ size: 16, weight: FontWeight.Regular })
   .margin({ bottom: 36 })
-强密码填充
-自定义布局下的适配建议
+
+## Code blocks
+
+### Code block 1
+
+```
+begin:[upper]
+```
+
+### Code block 2
+
+```
+special:[yes]
+```
+
+### Code block 3
+
+```
+len:[fixedlen:16]
+```
+
+### Code block 4
+
+```
+len:[minlen:15]
+```
+
+### Code block 5
+
+```
+len:[maxlen:28]
+```
+
+### Code block 6
+
+```
+len:[minlen:13,maxlen:18]
+```
+
+### Code block 7
+
+```
+TextInput({ placeholder: '新密码' })
+  .enableAutoFill(true)
+  .type(InputType.NEW_PASSWORD)
+  .passwordRules('begin:[lower],special:[yes],len:[maxlen:32,minlen:12]')
+  .placeholderColor(0x182431)
+  .width('100%')
+  .opacity(0.6)
+  .showPasswordIcon(true)
+  .placeholderFont({ size: 16, weight: FontWeight.Regular })
+  .margin({ bottom: 36 })
+```

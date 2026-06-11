@@ -3,6 +3,3 @@
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wearengine_faq-1_
 
 若APP ID已在华为开发者联盟官网完成注册，则无需重复申请。但需确保应用包名、APP ID及证书指纹信息与注册开发者账号时提交的数据完全一致。
-
-Wear Engine常见问题
-使用AppInfo时，如何获取应用身份标识

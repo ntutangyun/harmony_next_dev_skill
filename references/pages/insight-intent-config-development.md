@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/insight-intent-config-development_
 
+简介
+
+从API version 11及以上版本，支持通过配置文件开发意图。主要包含两个环节：
+
 通过insight_intent.json配置文件定义意图，声明意图执行器的代码路径、绑定的Ability组件等意图信息。
 
 通过InsightIntentExecutor实现意图执行逻辑。
@@ -9,21 +13,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/insight-i
 不同Ability组件类型需要配置的字段与需要实现的意图执行器，如下所示：
 
 组件类型	意图配置	意图执行器
-UIAbility	需要在insight_intent.json文件中配置"uiAbility"字段。	
-
-当"executeMode"字段为"foreground"时，实现onExecuteInUIAbilityForegroundMode，通过startAbility启动意图绑定的UIAbility组件。
-
-当"executeMode"字段为"background"时，实现onExecuteInUIAbilityBackgroundMode，通过Call调用启动意图绑定的UIAbility组件。
-
-
+UIAbility	需要在insight_intent.json文件中配置"uiAbility"字段。	当"executeMode"字段为"foreground"时，实现onExecuteInUIAbilityForegroundMode，通过startAbility启动意图绑定的UIAbility组件。 当"executeMode"字段为"background"时，实现onExecuteInUIAbilityBackgroundMode，通过Call调用启动意图绑定的UIAbility组件。
 UIExtensionAbility	需要在insight_intent.json文件中配置"uiExtension"字段。	实现onExecuteInUIExtensionAbility。
 卡片(FormExtensionAbility)	需要在insight_intent.json文件中配置"form"字段。	无需单独执行器。
+
 接口说明
 
 意图执行器实现需要继承InsightIntentExecutor，实现onExecuteInUIAbilityForegroundMode等方法。开发者响应意图执行通过onExecuteInUIAbilityForegroundMode等接口实现，在不同的意图执行模式下，接口的触发时机也不同。针对不同意图执行模式的意图回调执行时机见各个回调的API说明。
 
 开发步骤
-意图绑定UIAbility组件
+
+[h2]意图绑定UIAbility组件
 
 通过DevEco Studio工具可视化创建意图，操作及开发步骤如下。
 
@@ -60,7 +60,6 @@ import { InsightIntentExecutor, insightIntent } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 // ···
 
-
 export default class PlayMusicExecutor extends InsightIntentExecutor {
   // 由于意图配置中'executeMode'配置了'foreground'前台模式执行，故需要实现该接口
   async onExecuteInUIAbilityForegroundMode(intentName: string, params: Record<string, Object>,
@@ -73,7 +72,6 @@ export default class PlayMusicExecutor extends InsightIntentExecutor {
     return Promise.resolve(result);
   }
 
-
   // 由于意图配置中'executeMode'配置了'background'后台模式执行，故需要实现该接口
   async onExecuteInUIAbilityBackgroundMode(intentName: string,
     params: Record<string, Object>): Promise<insightIntent.ExecuteResult> {
@@ -84,7 +82,7 @@ export default class PlayMusicExecutor extends InsightIntentExecutor {
     return Promise.resolve(result);
   }
 }
-PlayMusicExecutor.ets
+
 说明
 
 配置文件范式仅提供基础执行能力，参数格式需开发者与系统入口协商。
@@ -92,10 +90,14 @@ PlayMusicExecutor.ets
 开发者也可以选择按规范手动创建意图配置文件和意图执行器。需要关注如下注意点：
 
 必须声明绑定的Ability组件和支持的意图执行模式。
+
 配置文件必须命名为"insight_intent.json"。
+
 配置文件存放路径为"resources/base/profile"。
+
 配置文件关键字段遵循相应的约束。
-意图绑定UIExtensionAbility组件
+
+[h2]意图绑定UIExtensionAbility组件
 
 参考意图绑定UIAbility组件完成工程创建。
 
@@ -119,7 +121,6 @@ PlayMusicExecutor.ets
 
 import { InsightIntentExecutor, insightIntent, UIExtensionContentSession } from '@kit.AbilityKit';
 
-
 export default class ExtensionExecutor extends InsightIntentExecutor {
   // 由于意图配置了uiExtension，故需要实现该接口
   async onExecuteInUIExtensionAbility(name: string, param: Record<string, Object>,
@@ -130,11 +131,10 @@ export default class ExtensionExecutor extends InsightIntentExecutor {
     return Promise.resolve(result);
   }
 }
-ExtensionExecutor.ets
 
 系统入口通过UIExtensionComponent组件执行该意图。
 
-意图绑定卡片
+[h2]意图绑定卡片
 
 参考意图绑定UIAbility组件完成工程创建。
 
@@ -166,29 +166,9 @@ intentName	表示意图名称，是意图的唯一标识。取值为首字母大
 domain	表示意图垂域名称，用于将意图按具体领域分类（例如：视频、音乐、游戏）。	字符串	否
 intentVersion	表示意图版本号。当意图能力演进时，可通过版本号进行区分和管理。支持用点分隔开的三段数据序列，例如"1.0.1"。	字符串	否
 srcEntry	表示意图执行文件相对路径。取值为长度不超过127字节的字符串。	字符串	否
-uiAbility	
-
-表示意图绑定的UIAbility组件信息。包含"ability"字段和"executeMode"字段。
-
-- ability：必选字段，表示UIAbility组件名称，取值与module.json5配置文件abilities标签的"name"字段保持一致。
-
-- executeMode：必选字段，表示执行模式，取值范围是"foreground"和"background"。
-
-- 取值为"foreground"，表示支持在UIAbility组件前台启动时执行意图逻辑。
-
-- 取值为"background"，表示支持在UIAbility组件后台启动时执行意图逻辑。
-
-	对象	是
+uiAbility	表示意图绑定的UIAbility组件信息。包含"ability"字段和"executeMode"字段。 - ability：必选字段，表示UIAbility组件名称，取值与module.json5配置文件abilities标签的"name"字段保持一致。 - executeMode：必选字段，表示执行模式，取值范围是"foreground"和"background"。 - 取值为"foreground"，表示支持在UIAbility组件前台启动时执行意图逻辑。 - 取值为"background"，表示支持在UIAbility组件后台启动时执行意图逻辑。	对象	是
 uiExtension	表示意图绑定的UIExtensionAbility组件信息。仅包含"ability"必选字段，表示UIExtensionAbility组件名称，取值与module.json5配置文件extensionAbilities标签的"name"字段保持一致。	对象	是
-form	
-
-表示意图绑定的卡片信息。包含"ability"字段和"formName"字段。
-
-- ability：必选字段，表示FormExtensionAbility组件名称，取值与module.json5配置文件extensionAbilities标签 的"name"字段保持一致。
-
-- formName：必选字段，表示卡片名称，取值与卡片配置的"name"字段保持一致。
-
-	对象	是
+form	表示意图绑定的卡片信息。包含"ability"字段和"formName"字段。 - ability：必选字段，表示FormExtensionAbility组件名称，取值与module.json5配置文件extensionAbilities标签 的"name"字段保持一致。 - formName：必选字段，表示卡片名称，取值与卡片配置的"name"字段保持一致。	对象	是
 displayName	表示意图显示名称。	字符串	是
 displayDescription	表示意图显示描述。	字符串	是
 icon	表示意图图标。支持网络资源和本地资源。	字符串	是
@@ -196,5 +176,113 @@ keywords	表示意图的搜索关键字。	字符串数组	是
 inputParams	表示意图参数的数据格式声明，用于意图调用时定义入参的数据格式。	对象	是
 outputParams	表示意图调用返回结果的数据格式声明，用于定义意图调用返回结果的数据格式。	对象	是
 entities	表示意图实体定义，用于数据传递。	对象	是
-意图开发概述
-使用装饰器开发意图
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "insightIntents": [
+    {
+      "domain": "MusicDomain",
+      "intentName": "PlayMusic",
+      "intentVersion": "1.0.1",
+      "srcEntry": "./ets/insightintents/PlayMusicExecutor.ets",
+      "uiAbility": {
+        "ability": "MusicPlayerAbility",
+        "executeMode": [
+          "foreground",
+          "background"
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+// 本示例对应意图配置中的'srcEntry'字段对应的文件
+import { InsightIntentExecutor, insightIntent } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+// ···
+
+export default class PlayMusicExecutor extends InsightIntentExecutor {
+  // 由于意图配置中'executeMode'配置了'foreground'前台模式执行，故需要实现该接口
+  async onExecuteInUIAbilityForegroundMode(intentName: string, params: Record<string, Object>,
+    windowStage: window.WindowStage): Promise<insightIntent.ExecuteResult> {
+    // 实现播放逻辑
+    // ···
+    const result: insightIntent.ExecuteResult = {
+      code: 0
+    };
+    return Promise.resolve(result);
+  }
+
+  // 由于意图配置中'executeMode'配置了'background'后台模式执行，故需要实现该接口
+  async onExecuteInUIAbilityBackgroundMode(intentName: string,
+    params: Record<string, Object>): Promise<insightIntent.ExecuteResult> {
+    // 后台控制逻辑
+    const result: insightIntent.ExecuteResult = {
+      code: 0
+    };
+    return Promise.resolve(result);
+  }
+}
+```
+
+### Code block 3
+
+```
+{
+  "insightIntents": [
+    {
+      "domain": "MusicDomain",
+      "intentName": "PlayMusic",
+      "intentVersion": "1.0.1",
+      "srcEntry": "./ets/insightintents/ExtensionExecutor.ets",
+      "uiExtension": {
+        "ability": "MusicExtensionAbility"
+      }
+    }
+  ]
+}
+```
+
+### Code block 4
+
+```
+import { InsightIntentExecutor, insightIntent, UIExtensionContentSession } from '@kit.AbilityKit';
+
+export default class ExtensionExecutor extends InsightIntentExecutor {
+  // 由于意图配置了uiExtension，故需要实现该接口
+  async onExecuteInUIExtensionAbility(name: string, param: Record<string, Object>,
+    pageLoader: UIExtensionContentSession): Promise<insightIntent.ExecuteResult> {
+    const result: insightIntent.ExecuteResult = {
+      code: 0
+    };
+    return Promise.resolve(result);
+  }
+}
+```
+
+### Code block 5
+
+```
+{
+  "insightIntents": [
+    {
+      "domain": "MusicDomain",
+      "intentName": "PlayMusic",
+      "intentVersion": "1.0.1",
+      "srcEntry": "./ets/insightintents/WidgetExecutor.ets",
+      "form": {
+        "ability": "PlayerWidgetAbility",
+        "formName": "mini_player"
+      }
+    }
+  ]
+}
+```

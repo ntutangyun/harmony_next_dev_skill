@@ -2,23 +2,34 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mindspore-lite-kit-introduction_
 
+使用场景
+
 MindSpore Lite是HarmonyOS内置的轻量化AI引擎，面向全场景构建支持多处理器架构的开放AI架构，使能全场景智能应用，为开发者提供端到端的解决方案，为算法工程师和数据科学家提供开发友好、运行高效、部署灵活的体验，帮助人工智能软硬件应用生态繁荣发展。
 
 目前已经在图像分类、目标识别、人脸识别、文字识别等应用中广泛使用。常用场景如：
 
 图像分类：最基础的计算机视觉应用，属于有监督学习类别，如给定一张图像（猫、狗、飞机、汽车等等），判断图像所属的类别。
+
 目标检测：您可以使用预置目标检测模型，检测标识摄像头输入帧中的对象并添加标签，并用边框标识出来。
+
 图像分割：图像分割可用于检测目标在图片中的位置或者图片中某一像素是属于何种对象的。
+
 约束与限制
-本Kit适用于Phone、Tablet、PC/2in1、TV设备，支持使用模拟器运行调试。
+
+本Kit适用于Phone、Tablet、PC/2in1、TV设备。
+
 亮点/优势
 
 MindSpore Lite提供面向不同硬件设备的AI模型推理能力，使用MindSpore Lite的优势如下：
 
 更优性能：高效的内核算法和汇编级优化，支持CPU、NNRt专用芯片高性能推理，最大化发挥硬件算力，最小化推理时延和功耗。
+
 轻量化：提供超轻量的解决方案，支持模型量化压缩，模型更小跑得更快，使能AI模型极限环境下的部署执行。
+
 全场景支持：支持多种操作系统以及嵌入式系统，适配多种软硬件智能设备上的AI应用。
+
 高效部署：支持MindSpore/TensorFlow Lite/Caffe/Onnx模型，提供模型压缩、数据处理等能力，统一训练和推理IR，方便用户快速部署。
+
 开发流程
 
 图 1 使用MindSpore Lite进行模型推理的开发流程
@@ -34,15 +45,29 @@ MindSpore Lite使用.ms格式模型进行推理。对于第三方框架模型，
 调用MindSpore Lite运行时接口，实现模型推理/训练，大致步骤如下：
 
 创建推理/训练上下文，包括指定推理/训练硬件、设置线程数等。
+
 加载.ms模型文件。
+
 设置模型输入数据。
+
 执行推理/训练，读取输出。
+
 开发方式
 
 MindSpore Lite已作为系统部件在HarmonyOS标准系统内置，基于MindSpore Lite开发AI应用的开发方式有：
 
 方式一：使用MindSpore Lite ArkTS API开发AI应用。开发者直接在UI代码中调用 MindSpore Lite ArkTS API 加载模型并进行AI模型推理，此方式可快速验证效果。
+
 方式二：使用MindSpore Lite Native API开发AI应用。开发者将算法模型和调用 MindSpore Lite Native API 的代码封装成动态库，并通过N-API封装成ArkTS接口，供UI调用。
+
+模拟器支持情况
+
+本Kit支持模拟器，但与与真机存在部分能力差异，具体差异如下。
+
+通用差异，详情请参见“模拟器与真机的差异”。
+
+不支持NPU后端。
+
 与其他Kit的关系
 
 HarmonyOS AI开放层次由上层到底层分别为：
@@ -58,6 +83,3 @@ Neural Network Runtime Kit可支持系统内置的MindSpore Lite推理框架（M
 MindSpore Lite Kit与NNRt接口对接时无需构图，两者共享同一份模型图格式（MindIR），因此使用MindSpore Lite Kit在NNRt上加载模型比其他AI推理框架更高效。此外，MindSpore Lite还支持通用硬件CPU/GPU与NNRt AI加速硬件之间的模型异构推理功能。
 
 CANN Kit作为麒麟平台的后端接入Neural Network Runtime Kit，支撑Neural Network Runtime Kit于麒麟平台的AI计算能力。CANN Kit构建在底层的硬件驱动和优化的计算库之上，与云侧昇腾芯片统一支持AscendC自定义算子编程语言和相关工具链，是HarmonyOS智能生态的重要基石，为众多领域的智能应用提供核心支撑。
-
-MindSpore Lite Kit（昇思推理框架服务）
-使用MindSpore Lite进行模型转换

@@ -11,11 +11,16 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-image
 支持获取当前屏幕上选中位置的色值和色域空间。
 
 限制与约束
+
 全局取色能力支持设备：Tablet、PC/2in1，并且从5.1.1(19)版本开始，新增支持设备：Phone。
+
 设备不支持连接手写笔的话，无法使用全局取色能力。
+
 接口说明
+
 类名	接口名	说明
-imageFeaturePicker	pickForResult	启动取色器。此API用于启动取色器，在取色器移动时不显示色值。
+imageFeaturePicker	pickForResult	启动取色器。此API用于启动取色器，在取色器移动时不显示色值。该接口要求设备支持手写笔功能，若设备不支持手写笔，则无法启动取色器。
+
 开发步骤
 
 导入相关模块。
@@ -30,6 +35,54 @@ import { BusinessError } from '@kit.BasicServicesKit';
 struct Index {
   @State message: string = 'Hello World';
 
+  build() {
+    Stack({ alignContent: Alignment.Center }) {
+      Column() {
+        Row() {
+          Button() {
+            Text('Call GlobalColorPicker from ets side')
+              .fontSize(18)
+              .fontWeight(FontWeight.Normal)
+          }
+          .width('50%')
+          .height('60vp')
+          .align(Alignment.Center)
+          .onClick((event) => {
+             // 此处的 displayX 和 displayY 为触摸事件触发时屏幕上的坐标位置
+            imageFeaturePicker.pickForResult(event.displayX, event.displayY)
+              .then((colorInfo: imageFeaturePicker.PickedColorInfo) => {
+                if (colorInfo) {
+                  console.info('colorInfo=' + JSON.stringify(colorInfo));
+                }
+              }).catch((err: BusinessError) => {
+              console.error(`pickForResult failed. Code is ${err.code}, message is ${err.message}`);
+            })
+          })
+        }
+      }
+      .align(Alignment.Center)
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { imageFeaturePicker } from '@kit.Penkit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
@@ -44,13 +97,14 @@ struct Index {
           .height('60vp')
           .align(Alignment.Center)
           .onClick((event) => {
+             // 此处的 displayX 和 displayY 为触摸事件触发时屏幕上的坐标位置
             imageFeaturePicker.pickForResult(event.displayX, event.displayY)
               .then((colorInfo: imageFeaturePicker.PickedColorInfo) => {
                 if (colorInfo) {
                   console.info('colorInfo=' + JSON.stringify(colorInfo));
                 }
               }).catch((err: BusinessError) => {
-              console.error(`pickForResult failed. Code is ${err.code}, message is ${err.message}`)
+              console.error(`pickForResult failed. Code is ${err.code}, message is ${err.message}`);
             })
           })
         }
@@ -61,5 +115,4 @@ struct Index {
     .height('100%')
   }
 }
-接入一笔成形
-接入手写交互
+```

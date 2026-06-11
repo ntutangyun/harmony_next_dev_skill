@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-start-app-form_
 
+场景介绍
+
 从6.0.2(22)版本开始，新增支持拉起许可应用跳转页功能。为实现用户在被管控期间快速跳转到许可应用的诉求，开发者可调用startAppForm接口拉起应用跳转页，页面中将展示通过接口参数传入的许可应用token对应的应用列表。用户点击其中的应用图标后能跳转到该应用。
 
 用户体验设计
@@ -22,6 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 接口名	描述
 startAppForm(context: common.Context, appSelection: guardService.AppInfo, appSubTitle: string, displayTrustApp: boolean): Promise<void>	拉起许可应用跳转页。
+
 开发前提
 
 拉起许可应用跳转页需要申请用户授权，请先参考请求用户授权章节完成用户授权。
@@ -46,5 +49,28 @@ private async jumpTo3rdApp(selectedAppTokens: string[], subtitle: string): Promi
          `startAppForm fail, errCode is ${err.code}, errMessage is ${err.message}`);
    }
 }
-拉起应用选择页
-守护策略管理
+
+## Code blocks
+
+### Code block 1
+
+```
+import { appPicker } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+private async jumpTo3rdApp(selectedAppTokens: string[], subtitle: string): Promise<void> {
+   try {
+      await appPicker.startAppForm(
+         this.getUIContext().getHostContext(), { appTokens: selectedAppTokens }, subtitle, true);
+   } catch(error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(this.domainId, this.logTag,
+         `startAppForm fail, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```

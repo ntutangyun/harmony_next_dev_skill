@@ -2,10 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-navigation-animation_
 
+Navigation存在默认转场动画，此外也提供了自定义转场和共享元素转场能力。
+
+系统默认转场
+
 系统提供了多种默认转场类型，可以通过NavDestination.systemTransition接口实现，具体示例请参考设置指定的NavDestination系统转场。
 
 说明
+
 NavDestination的默认转场动画使用弹簧曲线，其时长与物理曲线参数有关，而且不同设备上的默认动画不同，因此默认转场动画时长不可控，不建议与业务耦合，若需要监听动画结束，建议使用自定义转场。
+
 Dialog类型的NavDestination默认无转场动画；从API version 13开始，Dialog类型的NavDestination默认存在系统转场动画。
 
 默认转场动画支持关闭，有两种方式：
@@ -16,11 +22,9 @@ Navigation可以通过NavPathStack提供的disableAnimation接口，关闭或打
 
 pageStack: NavPathStack = new NavPathStack();
 
-
 aboutToAppear(): void {
   this.pageStack.disableAnimation(true);
 }
-PageAnimated.ets
 
 单次关闭。
 
@@ -33,13 +37,17 @@ Navigation提供了两种自定义转场接口：Navigation自定义转场、Nav
 Navigation自定义转场动画由customNavContentTransition事件提供，适用于控制Navigation内所有页面的场景，统一转场动画效果。步骤如下，具体示例代码请参考设置可交互转场动画。
 
 实现一个自定义转场动画工具类CustomNavigationUtils，通过一个Map管理各页面的自定义动画对象CustomTransition。页面在创建时注册其自定义转场动画对象，在销毁时取消注册。
+
 实现一个转场协议对象NavigationAnimatedTransition。其中，transition属性为自定义转场动画的具体实现，开发者需在此实现自己的转场动画逻辑，系统在转场开始时会调用此方法。timeout属性表示转场结束的超时时间，默认为1000ms。onTransitionEnd为转场结束时的回调。
+
 调用customNavContentTransition方法并返回实现的转场协议对象，若返回undefined，则使用系统默认转场。
 
 NavDestination支持自定义转场动画，适用于控制单个页面的转场效果。通过设置customTransition属性即可实现单个页面的自定义转场效果。步骤如下，示例代码请参考设置NavDestination自定义转场。
 
 实现NavDestination的转场代理，针对不同的堆栈操作类型返回自定义的转场协议对象NavDestinationTransition。其中，event是必填参数，需在此处实现自定义转场动画的逻辑，onTransitionEnd、duration、curve与delay为可选参数，分别对应动画结束后的回调、动画持续时间、动画曲线类型与开始前的延时。如果在转场代理中返回多个转场协议对象，这些动画效果将逐层叠加。
+
 通过调用NavDestination组件的customTransition属性，并传入上述实现的转场代理，完成自定义转场的设置。
+
 说明
 
 同时使用customNavContentTransition和customTransition时，customNavContentTransition优先级更高。
@@ -61,7 +69,7 @@ NavDestination() {
       .height(100)
   }
 }.title('FromPage')
-GeometryTransition.ets
+
 // 目的页配置共享元素id
 NavDestination() {
   Column() {
@@ -73,14 +81,12 @@ NavDestination() {
   }
 }
 .title('ToPage')
-GeometryTransition.ets
 
 将页面路由的操作，放到animateTo动画闭包中，配置对应的动画参数以及关闭系统默认的转场。
 
 NavDestination() {
   Column() {
     // $r('app.string.ToPage')需要开发者替换为实际的资源文件，资源文件中的value值为“跳转到目的页”
-
 
     Button($r('app.string.ToPage'))
       .width('80%')
@@ -94,6 +100,68 @@ NavDestination() {
     // ...
   }
 }.title('FromPage')
-GeometryTransition.ets
-Navigation页面路由
-Navigation跨包路由
+
+## Code blocks
+
+### Code block 1
+
+```
+pageStack: NavPathStack = new NavPathStack();
+
+aboutToAppear(): void {
+  this.pageStack.disableAnimation(true);
+}
+```
+
+### Code block 2
+
+```
+// 起始页配置共享元素id
+NavDestination() {
+  Column() {
+    // ...
+    // 请将$r('app.media.startIcon')替换为实际资源文件
+    Image($r('app.media.startIcon'))
+      .geometryTransition('sharedId')
+      .width(100)
+      .height(100)
+  }
+}.title('FromPage')
+```
+
+### Code block 3
+
+```
+// 目的页配置共享元素id
+NavDestination() {
+  Column() {
+    // 请将$r('app.media.startIcon')替换为实际资源文件
+    Image($r('app.media.startIcon'))
+      .geometryTransition('sharedId')
+      .width(200)
+      .height(200)
+  }
+}
+.title('ToPage')
+```
+
+### Code block 4
+
+```
+NavDestination() {
+  Column() {
+    // $r('app.string.ToPage')需要开发者替换为实际的资源文件，资源文件中的value值为“跳转到目的页”
+
+    Button($r('app.string.ToPage'))
+      .width('80%')
+      .height(40)
+      .margin(20)
+      .onClick(() => {
+        this.getUIContext()?.animateTo({ duration: 1000 }, () => {
+          this.navPathStack.pushPath({ name: 'ToPage' }, false)
+        });
+      })
+    // ...
+  }
+}.title('FromPage')
+```

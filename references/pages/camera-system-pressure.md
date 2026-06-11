@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-system-pressure_
 
+从API version 20开始，相机框架提供对系统压力等级的监听。
+
 在长时间使用相机的场景（如直播业务）中，相机应用可以通过监听系统压力等级变化，动态调整画质（如帧率、分辨率等），平衡功耗、发热和系统负载，保证功能长时间可用。
 
 状态监听
@@ -14,6 +16,24 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-sy
 
 import { BusinessError } from '@kit.BasicServicesKit';
 
+function callback(err: BusinessError, systemPressureLevel: camera.SystemPressureLevel): void {
+  if (err !== undefined && err.code !== 0) {
+    console.error(`Callback Error, errorCode: ${err.code}`);
+    return;
+  }
+  console.info(`systemPressureLevel: ${systemPressureLevel}`);
+}
+
+function registerSystemPressureLevelChangeCallback(photoSession: camera.PhotoSession): void {
+    photoSession.on('systemPressureLevelChange', callback);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
 
 function callback(err: BusinessError, systemPressureLevel: camera.SystemPressureLevel): void {
   if (err !== undefined && err.code !== 0) {
@@ -23,9 +43,7 @@ function callback(err: BusinessError, systemPressureLevel: camera.SystemPressure
   console.info(`systemPressureLevel: ${systemPressureLevel}`);
 }
 
-
 function registerSystemPressureLevelChangeCallback(photoSession: camera.PhotoSession): void {
     photoSession.on('systemPressureLevelChange', callback);
 }
-白平衡设置(ArkTS)
-相机控制器(ArkTS)
+```

@@ -2,11 +2,31 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-getcorememsize_
 
+函数功能
+
+获取硬件平台存储空间的内存大小，例如L1、L0_A、L0_B、L2等，支持的存储空间类型定义如下。
+
+enum class CoreMemType {
+L0_A = 0,
+L0_B = 1,
+L0_C = 2,
+L1 = 3,
+L2 = 4,
+UB = 5,
+HBM = 6,
+RESERVED
+};
+
+函数原型
+
 void GetCoreMemSize(const CoreMemType &memType, uint64_t &size) const;
+
 参数说明
+
 参数	输入/输出	说明
 memType	输入	硬件存储空间类型。
 size	输出	对应类型的存储空间大小，单位：字节。
+
 返回值
 
 无
@@ -16,6 +36,7 @@ size	输出	对应类型的存储空间大小，单位：字节。
 无
 
 调用示例
+
 ge::graphStatus TilingXXX(gert::TilingContext* context) {
     auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
     uint64_t ub_size, l1_size;
@@ -24,5 +45,39 @@ ge::graphStatus TilingXXX(gert::TilingContext* context) {
     // ...
     return ret;
 }
-CalcTschBlockDim
-GetCoreMemBw
+
+## Code blocks
+
+### Code block 1
+
+```
+enum class CoreMemType {
+L0_A = 0,
+L0_B = 1,
+L0_C = 2,
+L1 = 3,
+L2 = 4,
+UB = 5,
+HBM = 6,
+RESERVED
+};
+```
+
+### Code block 2
+
+```
+void GetCoreMemSize(const CoreMemType &memType, uint64_t &size) const;
+```
+
+### Code block 3
+
+```
+ge::graphStatus TilingXXX(gert::TilingContext* context) {
+    auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
+    uint64_t ub_size, l1_size;
+    ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, ub_size);
+    ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::L1, l1_size);
+    // ...
+    return ret;
+}
+```

@@ -6,7 +6,7 @@ XEngine Kit提供空域GPU超分能力，其基于单帧输入图像，使用空
 
 约束与限制
 
-支持的设备类型：Phone，从5.0.2(14)版本开始，新增支持Tablet、PC/2in1设备，从5.1.0(18)版本开始新增支持TV设备。
+支持的设备类型：Phone，从5.0.2(14)版本开始，新增支持Tablet、PC/2in1设备，从5.1.1(19)版本开始新增支持TV设备。
 
 可通过以下方式查询相关扩展特性是否支持：
 
@@ -28,32 +28,46 @@ VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_EnumerateDeviceExtensionProperties (VkPhy
 VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CreateSpatialUpscale (VkDevice device, const XEG_SpatialUpscaleCreateInfo *pXegSpatialUpscaleCreateInfo, XEG_SpatialUpscale *pXegSpatialUpscale)	创建XEG_SpatialUpscale对象。
 VKAPI_ATTR void VKAPI_CALL HMS_XEG_CmdRenderSpatialUpscale (VkCommandBuffer commandBuffer, XEG_SpatialUpscale xegSpatialUpscale, XEG_SpatialUpscaleDescription *pXegSpatialUpscaleDescription)	执行空域GPU超分渲染命令。
 VKAPI_ATTR void VKAPI_CALL HMS_XEG_DestroySpatialUpscale (XEG_SpatialUpscale xegSpatialUpscale)	销毁XEG_SpatialUpscale对象。
+
 业务流程
 
 下面是基于GLES图形API平台集成空域GPU超分的主要业务流程
 
 用户在进入游戏初始化场景时调用HMS_XEG_GetString接口查询XEngine支持的特性，当查询接口返回支持的特性列表中包含空域GPU超分时代表可以使用此特性。
+
 调用HMS_XEG_SpatialUpscaleParameter接口配置超分参数。
+
 当游戏运行时，游戏渲染待超分的当前帧纹理。
+
 当待超分纹理渲染完成时，调用HMS_XEG_RenderSpatialUpscale接口对待超分的纹理超分。
+
 当超分渲染完成时，游戏渲染剩下的纹理，如UI等。
+
 当前帧已全部渲染完成，进行送显。
+
 当游戏退出时，超分资源会自行释放。
 
 下面是基于Vulkan图形API平台集成空域GPU超分的主要业务流程
 
 用户在进入游戏初始化场景时调用HMS_XEG_EnumerateDeviceExtensionProperties接口查询XEngine支持的特性，当查询接口返回支持的特性列表中包含空域GPU超分时代表可以使用此特性。
+
 此时调用HMS_XEG_CreateSpatialUpscale接口创建超分实例。
+
 当游戏运行时，游戏渲染待超分的当前帧纹理。
+
 当待超分纹理渲染完成时，调用HMS_XEG_CmdRenderSpatialUpscale接口对待超分的纹理超分。
+
 当超分渲染完成时，游戏渲染剩下的纹理，如UI等。
+
 当前帧已全部渲染完成，进行送显。
+
 当游戏退出时，调用HMS_XEG_DestroySpatialUpscale接口销毁超分实例。
+
 开发步骤
 
 本章以OpenGL ES和Vulkan图像API集成为例，说明XEngine集成操作过程。
 
-配置项目
+[h2]配置项目
 
 编译HAP时，Native层so编译需要依赖NDK中的libxengine.so。
 
@@ -97,7 +111,6 @@ find_library(
     GLESv3
 )
 
-
 target_link_libraries(nativerender PUBLIC
 ${EGL-lib} ${GLES-lib} ${xengine-lib})
 
@@ -116,10 +129,10 @@ find_library(
     vulkan
 )
 
-
 target_link_libraries(nativerender PUBLIC
 ${Vulkan-lib} ${xengine-lib})
-集成XEngine空域GPU超分（OpenGL ES）
+
+[h2]集成XEngine空域GPU超分（OpenGL ES）
 
 使用EGL和OpenGL ES图形API搭建图像渲染管线并集成空域GPU超分在Native层实现，渲染结果通过XComponent组件显示到屏幕。
 
@@ -164,7 +177,7 @@ HMS_XEG_RenderSpatialUpscale(upscaleColorBuffer);
 
 upscaleFBO是已创建完成的framebuffer，并绑定纹理，超分接口调用后绘制到纹理上。
 
-集成XEngine空域GPU超分（Vulkan）
+[h2]集成XEngine空域GPU超分（Vulkan）
 
 使用Vulkan图形API搭建图像渲染管线并集成空域GPU超分在Native层实现，渲染结果通过XComponent组件显示到屏幕。
 
@@ -249,5 +262,199 @@ HMS_XEG_CmdRenderSpatialUpscale(cmdBuff, xegSpatialUpscale, &xegDescription);
 调用HMS_XEG_DestroySpatialUpscale接口销毁实例。
 
 HMS_XEG_DestroySpatialUpscale(xegSpatialUpscale);
-开发准备
-时域AI超分
+
+## Code blocks
+
+### Code block 1
+
+```
+#include <cstring>
+#include <cstdlib>
+#include <xengine/xeg_gles_extension.h>
+#include <xengine/xeg_gles_spatial_upscale.h>
+```
+
+### Code block 2
+
+```
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <xengine/xeg_vulkan_extension.h>
+#include <xengine/xeg_vulkan_spatial_upscale.h>
+```
+
+### Code block 3
+
+```
+find_library(
+    # 设置路径变量的名称。
+    xengine-lib
+    # 指定希望CMake定位的NDK库的名称。
+    xengine
+)
+find_library(
+    # 设置路径变量的名称。
+    EGL-lib
+    # 指定希望CMake定位的NDK库的名称。
+    EGL
+)
+find_library(
+    # 设置路径变量的名称。
+    GLES-lib
+    # 指定希望CMake定位的NDK库的名称。
+    GLESv3
+)
+
+target_link_libraries(nativerender PUBLIC
+${EGL-lib} ${GLES-lib} ${xengine-lib})
+```
+
+### Code block 4
+
+```
+find_library(
+    # 设置路径变量的名称。
+    xengine-lib
+    # 指定希望CMake定位的NDK库的名称。
+    xengine
+)
+find_library(
+    # 设置路径变量的名称。
+    Vulkan-lib
+    # 指定希望CMake定位的NDK库的名称。
+    vulkan
+)
+
+target_link_libraries(nativerender PUBLIC
+${Vulkan-lib} ${xengine-lib})
+```
+
+### Code block 5
+
+```
+// 查询XEngine支持的GLES扩展信息
+const char* extensions = (const char*)HMS_XEG_GetString(XEG_EXTENSIONS);
+// 检查是否支持空域GPU超分
+if (!strstr(extensions, XEG_SPATIAL_UPSCALE_EXTENSION_NAME)) {
+    exit(1); // return error
+}
+```
+
+### Code block 6
+
+```
+// m_sharpness为用户自定义超分锐化参数，此处以参数为0.3f为例
+float m_sharpness = 0.3f;
+// m_renderWidth与m_renderHeight分别为用户自定义的渲染宽度与渲染高度，此处以800*600分辨率为例
+uint32_t m_renderWidth = 800;
+uint32_t m_renderHeight = 600;
+HMS_XEG_SpatialUpscaleParameter(XEG_SPATIAL_UPSCALE_SHARPNESS, &m_sharpness);
+// upscaleScissor为超分输入图像的采样区域
+int upscaleScissor[4] = {0, 0, static_cast<int>(m_renderWidth), static_cast<int>(m_renderHeight)};
+HMS_XEG_SpatialUpscaleParameter(XEG_SPATIAL_UPSCALE_SCISSOR, upscaleScissor);
+```
+
+### Code block 7
+
+```
+// upscaleFBO为用户自定义创建的framebuffer
+unsigned int upscaleFBO;
+glBindFramebuffer(GL_FRAMEBUFFER, upscaleFBO);
+// m_upscaleWidth和m_upscaleHeight分别为用户自定义超分宽度和超分高度，此处以超分至1200*900分辨率为例
+uint32_t m_upscaleWidth = 1200;
+uint32_t m_upscaleHeight = 900;
+glViewport(0, 0, m_upscaleWidth, m_upscaleHeight);
+glScissor(0, 0, m_upscaleWidth, m_upscaleHeight);
+// upscaleColorBuffer为纹理附件，用户可自定义
+unsigned int upscaleColorBuffer;
+HMS_XEG_RenderSpatialUpscale(upscaleColorBuffer);
+```
+
+### Code block 8
+
+```
+// physicalDevice为Vulkan物理设备，用户需进行初始化
+VkPhysicalDevice physicalDevice;
+// 查询XEngine支持的Vulkan扩展列表
+std::vector<std::string> supportedExtensions;
+uint32_t pPropertyCount;
+HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &pPropertyCount, nullptr);
+if (pPropertyCount > 0) {
+    std::vector<XEG_ExtensionProperties> pProperties(pPropertyCount);
+    if (HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &pPropertyCount, &pProperties.front()) == VK_SUCCESS) {
+        for (auto ext : pProperties) {
+             supportedExtensions.push_back(ext.extensionName);
+         }
+    }
+}
+// 查询是否支持空域GPU超分
+if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_SPATIAL_UPSCALE_EXTENSION_NAME) == supportedExtensions.end()) {
+    exit(1); // return error
+}
+```
+
+### Code block 9
+
+```
+XEG_SpatialUpscale xegSpatialUpscale;
+```
+
+### Code block 10
+
+```
+// 渲染宽高和超分后宽高均为用户自定义参数，此处以将800*600分辨率超分至1200*900分辨率为例
+uint32_t m_renderWidth = 800;
+uint32_t m_renderHeight = 600;
+uint32_t m_upscaleWidth = 1200;
+uint32_t m_upscaleHeight = 900;
+// Vulkan逻辑设备，用户需进行初始化
+VkDevice device;
+// VkRect2D为Vulkan指定的二维区域结构
+// srcRect2D为超分输入纹理区域，用户可自定义
+VkRect2D srcRect2D;
+// srcRect2D.offset.x和srcRect2D.offset.y为原点偏移量
+srcRect2D.offset.x = 0;
+srcRect2D.offset.y = 0;
+// srcRect2D.extent.width与srcRect2D.extent.height为输入纹理宽高
+srcRect2D.extent.width = m_renderWidth;
+srcRect2D.extent.height = m_renderHeight;
+// dstRect2D为超分输出纹理区域，用户可自定义
+VkRect2D dstRect2D;
+// dstRect2D.offset.x和dstRect2D.offset.y为原点偏移量
+dstRect2D.offset.x = 0;
+dstRect2D.offset.y = 0;
+// dstRect2D.extent.width与dstRect2D.extent.height为超分纹理宽高
+dstRect2D.extent.width = m_upscaleWidth;
+dstRect2D.extent.height = m_upscaleHeight;
+XEG_SpatialUpscaleCreateInfo createInfo;
+createInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+// sharpness为用户自定义超分锐化参数，此处以参数为0.3f为例
+createInfo.sharpness = 0.3f;
+createInfo.outputSize = dstRect2D.extent;
+createInfo.inputRegion = srcRect2D;
+createInfo.outputRegion = dstRect2D;
+createInfo.inputSize = srcRect2D.extent;
+HMS_XEG_CreateSpatialUpscale(device, &createInfo, &xegSpatialUpscale);
+```
+
+### Code block 11
+
+```
+// inputImageView为用户创建的超分输入图像的VkImageView
+VkImageView inputImageView = VK_NULL_HANDLE;
+// outputImageView为用户创建的超分输出图像的VkImageView
+VkImageView outputImageView = VK_NULL_HANDLE;
+// cmdBuff为命令缓冲区，用户需进行初始化
+VkCommandBuffer cmdBuff = VK_NULL_HANDLE ;
+XEG_SpatialUpscaleDescription xegDescription;
+xegDescription.inputImage = inputImageView;
+xegDescription.outputImage = outputImageView;
+HMS_XEG_CmdRenderSpatialUpscale(cmdBuff, xegSpatialUpscale, &xegDescription);
+```
+
+### Code block 12
+
+```
+HMS_XEG_DestroySpatialUpscale(xegSpatialUpscale);
+```

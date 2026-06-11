@@ -2,11 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-scroll-jank-event_
 
+简介
+
 用户在使用应用时，如果出现滑动列表丢帧的情况，并且持续时间超过一定限制，就会被定义为滑动卡顿，并生成HiAppEvent日志，供应用开发者分析。
 
 如何使用HiAppEvent提供订阅滑动丢帧事件的接口可参见以下文档：
 
 订阅滑动丢帧事件（ArkTS）
+
 说明
 
 滑动丢帧事件支持在元服务场景下使用HiAppEvent进行订阅。不支持在应用分身场景或输入法应用场景下使用HiAppEvent进行订阅。
@@ -37,5 +40,3 @@ max_render_frametime	number	图形最大单帧耗时，单位为ms。
 max_render_seq_frames	number	图形线程最长连续丢帧。
 external_log	string[]	应用主线程调用栈文件路径，应用存续生命周期内，采集频次限制为每日一次（应用重启会重置采集计次限制）。应用启动初始10s不会触发检测采集。为避免目录空间超限（限制参考log_over_limit），导致新生成的日志文件写入失败，日志文件处理完后请及时删除。
 log_over_limit	boolean	生成的故障日志文件与已存在的日志文件总大小是否超过10MB上限。true表示超过上限，日志写入失败；false表示未超过上限。
-滑动丢帧事件
-订阅滑动丢帧事件（ArkTS）

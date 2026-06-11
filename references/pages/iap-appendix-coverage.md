@@ -2,6 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-appendix-coverage_
 
+IAP已支持全球多个国家或地区，为当地的消费者和商户提供安全、便捷、高效的支付服务。
+
+目前IAP在全球共支持183个国家或地区，其中：
+
+支付方式	数量
+银行卡支付（Credit card/Debit card）	全球支持183个国家或地区。
+
+说明
+
 由于某些币种在支付平台不支持携带小数，开发者在设置订单参数amount字段时，应设置为整数金额值，如5.00，不支持5.02。
 
 涉及币种：
@@ -192,5 +201,3 @@ BEF、XOF、XAF、XPF、KMF、GRD、GNF、HUF、IDR、JPY、LUF、MGA、MGF、PY
 181	拉美地区	圭亚那	GY	USD	银行卡	Visa/Mastercard/JCB/Discover Card/Diners
 182	拉美地区	海地	HT	USD	银行卡	Visa/Mastercard/JCB
 183	北美地区	加拿大	CA	CAD	银行卡	Visa/Mastercard/JCB/Maestro/American Express/Discover Card/Diners
-附录
-Live View Kit（实况窗服务）

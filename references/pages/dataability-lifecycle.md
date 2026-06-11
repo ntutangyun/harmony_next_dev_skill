@@ -20,5 +20,3 @@ getFileTypes?(uri: string, mimeTypeFilter: string, callback: AsyncCallback<Array
 getType?(uri: string, callback: AsyncCallback<string>): void	获取URI指定数据相匹配的MIME类型。
 executeBatch?(ops: Array<DataAbilityOperation>, callback: AsyncCallback<Array<DataAbilityResult>>): void	批量操作数据库中的数据。
 call?(method: string, arg: string, extras: PacMap, callback: AsyncCallback<PacMap>): void	自定义方法。
-DataAbility组件配置
-创建DataAbility

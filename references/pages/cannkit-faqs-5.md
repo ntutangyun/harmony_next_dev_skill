@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-faqs-5_
 
+开发者可参考Model Zoo中的CANN算子性能指导，根据需要选择性能较优的算子。

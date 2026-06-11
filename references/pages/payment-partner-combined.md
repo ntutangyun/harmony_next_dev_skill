@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-partner-combined_
 
+场景介绍
+
+从4.1.0(11)版本开始，新增支持平台类商户合单支付场景。
+
 用户在商户开发的APP应用/元服务上购买了一个旅行套餐，包含机票、保险、酒店等这几个不同的产品对应不同的收单商户，但用户是一次支付。平台类商户通过接入合单支付将多个不同商户的订单合到同一订单下发起支付。
 
 支持商户模型：平台类商户
@@ -45,8 +49,10 @@ Payment Kit服务端异步处理支付完成后，会调用商户预下单时通
 接口名	描述
 requestPayment(context:common.UIAbilityContext, orderStr: string): Promise<void>;	拉起Payment Kit支付收银台。
 requestPayment(context:common.UIAbilityContext, orderStr: string, callback: AsyncCallback<void>): void;	拉起Payment Kit支付收银台。
+
 开发步骤
-预下单（服务器开发）
+
+[h2]预下单（服务器开发）
 
 开发者按照商户模型调用平台类商户合单支付预下单接口获取预支付ID（prepayId）。
 
@@ -54,11 +60,11 @@ requestPayment(context:common.UIAbilityContext, orderStr: string, callback: Asyn
 
 构建合单订单信息参数orderStr并返回给客户端。业务接口请求示例代码可参考业务接口请求。
 
-拉起华为支付收银台（端侧开发）
+[h2]拉起华为支付收银台（端侧开发）
 
 使用服务端返回的orderStr调用requestPayment接口拉起Payment Kit支付收银台。合单支付拉起支付收银台与商户基础支付场景处理逻辑一致，可参见这里。
 
-支付结果回调通知（服务器开发）
+[h2]支付结果回调通知（服务器开发）
 
 支付成功后华为支付服务器会调用开发者提供回调接口，将支付信息返回给开发者的服务器，回调详细信息按商户模式请参见平台类商户合单支付结果回调通知。
 
@@ -74,9 +80,6 @@ requestPayment(context:common.UIAbilityContext, orderStr: string, callback: Asyn
 
 当开发者完成上述能力之后，可以调用以下API接口完成订单其他相关操作。
 
-平台类商户
+[h2]平台类商户
 
 查询合单支付订单、申请退款、查询退款订单、查询对账单、查询结算账单。
-
-商户基础支付场景
-免密支付接入

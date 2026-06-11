@@ -17,5 +17,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-bui
 画布组件	canvas
 栅格组件	grid-container、grid-row、grid-col
 svg组件	svg、rect、circle、ellipse、path、line、polyline、polygon、text、tspan、textPath、animate、animateMotion、animateTransform
-构建用户界面
-构建布局

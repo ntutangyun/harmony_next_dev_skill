@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-link_
 
+子组件中被@Link装饰的变量与其父组件中对应的数据源建立双向数据绑定。
+
 在阅读@Link文档前，建议先熟悉@State的基本用法。最佳实践请参考状态管理最佳实践。常见问题请参考状态管理常见问题。
 
 说明
@@ -15,53 +17,40 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-lin
 @Link装饰的变量与其父组件中的数据源共享相同的值。
 
 装饰器使用规则说明
+
 @Link变量装饰器	说明
 装饰器参数	无。
-同步类型	
-
-双向同步。
-
-父组件状态变量与子组件@Link建立双向同步，当其中一方改变时，另一方也会同步更新。
-
-
-允许装饰的变量类型	
-
-Object、class、string、number、boolean、enum类型，以及这些类型的数组。
-
-API version 10开始支持Date类型。
-
-API version 11及以上支持Map、Set类型、undefined和null类型、ArkUI框架定义的联合类型Length、ResourceStr、ResourceColor类型以及这些类型的联合类型，示例见Link支持联合类型实例。
-
-支持类型的场景请参考观察变化。
-
-
+同步类型	双向同步。 父组件状态变量与子组件@Link建立双向同步，当其中一方改变时，另一方也会同步更新。
+允许装饰的变量类型	Object、class、string、number、boolean、enum类型，以及这些类型的数组。 API version 10开始支持Date类型。 API version 11及以上支持Map、Set类型、undefined和null类型、ArkUI框架定义的联合类型Length、ResourceStr、ResourceColor类型以及这些类型的联合类型，示例见Link支持联合类型实例。 支持类型的场景请参考观察变化。
 不允许装饰的变量类型	不支持装饰Function类型。
 被装饰变量的初始值	禁止本地初始化。
+
 变量的传递/访问规则说明
+
 传递/访问	说明
-从父组件初始化和更新	
-
-必选。
-
-允许父组件中@State、@Link、@Prop、@Provide、@Consume、@ObjectLink、@StorageLink、@StorageProp、@LocalStorageLink和@LocalStorageProp装饰变量初始化子组件@Link，并建立双向绑定。
-
-- 从API version 9开始，@Link子组件从父组件初始化@State的语法为Comp({ aLink: this.aState })，同样支持Comp({aLink: $aState})。
-
-
+从父组件初始化和更新	必选。 允许父组件中@State、@Link、@Prop、@Provide、@Consume、@ObjectLink、@StorageLink、@StorageProp、@LocalStorageLink和@LocalStorageProp装饰变量初始化子组件@Link，并建立双向绑定。 - 从API version 9开始，@Link子组件从父组件初始化@State的语法为Comp({ aLink: this.aState })，同样支持Comp({aLink: $aState})。
 用于初始化子组件	允许，可用于初始化常规变量、@State、@Link、@Prop、@Provide。
 是否支持组件外访问	私有，只能在所属组件内访问。
 
 图1 初始化规则示意图
 
 观察变化和行为表现
-观察变化
+
+[h2]观察变化
+
 当装饰的数据类型为boolean、string、number类型时，可以同步观察到数值的变化，示例请参考简单类型和类对象类型的@Link。
+
 当装饰的数据类型为class或者Object时，可以观察到赋值和属性赋值的变化，即Object.keys(observedObject)返回的所有属性，示例请参考简单类型和类对象类型的@Link。@Link仅能观察对象本身及其一层属性的变化，无法观察嵌套场景（如嵌套对象、对象数组）内层数据的变化，该场景请参考@Observed装饰器与@ObjectLink装饰器的使用场景。
+
 当装饰的对象是Array时，可以观察到数组添加、删除、更新数组单元的变化，示例请参考数组类型的@Link。
+
 当装饰的对象是Date时，可以观察到Date的整体赋值，以及通过调用setFullYear, setMonth, setDate, setHours, setMinutes, setSeconds, setMilliseconds, setTime, setUTCFullYear, setUTCMonth, setUTCDate, setUTCHours, setUTCMinutes, setUTCSeconds, setUTCMilliseconds方法更新其属性，示例请参考装饰Date类型变量。
+
 当装饰的变量是Map时，可以观察到Map整体的赋值，以及可通过调用Map的set、clear、delete接口更新Map的值，示例请参考装饰Map类型变量。
+
 当装饰的变量是Set时，可以观察Set整体的赋值，以及通过调用Set的add、clear、delete接口更新其值，示例请参考装饰Set类型变量。
-框架行为
+
+[h2]框架行为
 
 @Link装饰的变量和所属的自定义组件共享生命周期。
 
@@ -70,17 +59,21 @@ API version 11及以上支持Map、Set类型、undefined和null类型、ArkUI框
 初始渲染：执行父组件的 build() 函数，创建子组件的新实例。初始化过程如下：
 
 指定父组件中的@State变量用于初始化子组件的@Link变量。子组件的@Link变量值与其父组件的数据源变量保持双向数据同步。
+
 父组件的@State状态变量包装类通过构造函数传给子组件，子组件的@Link包装类拿到父组件的@State的状态变量后，将当前@Link包装类实例注册给父组件的@State变量。
 
 @Link的数据源的更新：即父组件中状态变量更新，引起相关子组件的@Link的更新。处理步骤：
 
 通过初始渲染的步骤可知，子组件@Link包装类把当前this指针注册给父组件。父组件@State变量变更后，会遍历更新所有依赖它的系统组件和状态变量（例如：@Link包装类）。
+
 通知@Link包装类更新后，子组件中所有依赖@Link状态变量的系统组件都会被通知更新。以此实现父组件对子组件的状态数据同步。
 
 @Link的更新：当子组件中@Link更新后，处理步骤如下（以父组件为@State为例）：
 
 @Link更新后，调用父组件的@State包装类的set方法，将数值同步回父组件。
+
 子组件@Link和父组件@State分别遍历依赖的系统组件，更新对应的UI。从而实现子组件@Link与父组件@State的同步。
+
 限制条件
 
 @Link装饰器不建议在@Entry装饰的自定义组件中使用，否则编译时会抛出警告；若该自定义组件作为页面根节点使用，则会抛出运行时错误。
@@ -89,7 +82,6 @@ API version 11及以上支持Map、Set类型、undefined和null类型、ArkUI框
 
 // 错误写法，编译报错
 @Link count: number = 10;
-
 
 // 正确写法
 @Link count: number;
@@ -106,11 +98,9 @@ class Info {
   value: string = 'Hello';
 }
 
-
 class Cousin {
   name: string = 'Hello';
 }
-
 
 @Component
 struct Child {
@@ -118,7 +108,6 @@ struct Child {
   @Link test: Cousin;
   // 错误写法2：数据源非状态变量
   @Link testStr: string;
-
 
   build() {
     Column() {
@@ -128,12 +117,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample {
   @State info: Info = new Info();
-
 
   build() {
     Column() {
@@ -153,24 +140,20 @@ class LinkInfo {
   public value: string = 'Hello';
 }
 
-
 @Component
 struct LinkChild {
   // 在子组件中，使用@Link装饰LinkInfo类型的test变量
   @Link test: LinkInfo;
-
 
   build() {
     Text(this.test.value)
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample {
   @State info: LinkInfo = new LinkInfo();
-
 
   build() {
     Column() {
@@ -179,7 +162,6 @@ struct LinkExample {
     }
   }
 }
-LinkUsage.ets
 
 @Link装饰的变量仅能被状态变量初始化，不能使用常规变量初始化，否则编译期会给出告警，并在运行时崩溃。
 
@@ -189,25 +171,21 @@ class Info {
   info: string = 'Hello';
 }
 
-
 @Component
 struct Child {
   @Link msg: string;
   @Link info: string;
-
 
   build() {
     Text(this.msg + this.info)
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample {
   @State message: string = 'Hello';
   @State info: Info = new Info();
-
 
   build() {
     Column() {
@@ -223,25 +201,21 @@ class LinkInfo2 {
   public info: string = 'Hello';
 }
 
-
 @Component
 struct LinkChild2 {
   @Link msg: string;
   @Link info: LinkInfo2;
-
 
   build() {
     Text(this.msg + this.info.info)
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample2 {
   @State message: string = 'Hello';
   @State info: LinkInfo2 = new LinkInfo2();
-
 
   build() {
     Column() {
@@ -250,14 +224,14 @@ struct LinkExample2 {
     }
   }
 }
-LinkUsage2.ets
 
-@Link不支持装饰Function类型的变量，API version 23之前，框架会抛出运行时错误。
+@Link不支持装饰Function类型的变量，API version 23之前，应用在运行时会出现错误。
 
-从API version 23开始，添加对@Link装饰Function类型变量的校验，编译期会报错。
+从API version 23开始，在应用编译时添加了相关校验，@Link装饰Function类型变量会提示ERROR，应在代码中删除Function类型变量的@Link装饰器。
 
 使用场景
-简单类型和类对象类型的@Link
+
+[h2]简单类型和类对象类型的@Link
 
 以下示例中，点击父组件ShufflingContainer中的“Parent View: Set yellowButton”和“Parent View: Set GreenButton”，可以从父组件将变化同步给子组件。
 
@@ -268,17 +242,14 @@ LinkUsage2.ets
 class GreenButtonState {
   public width: number = 0;
 
-
   constructor(width: number) {
     this.width = width;
   }
 }
 
-
 @Component
 struct GreenButton {
   @Link greenButtonState: GreenButtonState;
-
 
   build() {
     Button('Green Button')
@@ -298,11 +269,9 @@ struct GreenButton {
   }
 }
 
-
 @Component
 struct YellowButton {
   @Link yellowButtonState: number;
-
 
   build() {
     Button('Yellow Button')
@@ -317,13 +286,11 @@ struct YellowButton {
   }
 }
 
-
 @Entry
 @Component
 struct ShufflingContainer {
   @State greenButtonState: GreenButtonState = new GreenButtonState(180);
   @State yellowButtonProp: number = 180;
-
 
   build() {
     Column() {
@@ -354,13 +321,12 @@ struct ShufflingContainer {
     }
   }
 }
-UsingLinkwithPrimitiveandClassTypes.ets
 
-数组类型的@Link
+[h2]数组类型的@Link
+
 @Component
 struct ArrayTypesChild {
   @Link items: number[];
-
 
   build() {
     Column() {
@@ -385,12 +351,10 @@ struct ArrayTypesChild {
   }
 }
 
-
 @Entry
 @Component
 struct ArrayTypes {
   @State arr: number[] = [1, 2, 3];
-
 
   build() {
     Column() {
@@ -410,11 +374,11 @@ struct ArrayTypes {
     }
   }
 }
-UsingLinkwithArrayTypes.ets
 
 状态管理框架可以观察到数组元素的添加、删除和替换。在该示例中，@State和@Link的类型均为number[]，不支持将@Link定义成number类型（@Link item : number），并用@State数组中的每个数据项在父组件中创建子组件。如需使用这种场景，可以参考@Prop和@Observed。
 
-装饰Map类型变量
+[h2]装饰Map类型变量
+
 说明
 
 从API version 11开始，@Link支持Map类型。
@@ -424,7 +388,6 @@ UsingLinkwithArrayTypes.ets
 @Component
 struct MapSampleChild {
   @Link value: Map<number, string>;
-
 
   build() {
     Column() {
@@ -454,13 +417,10 @@ struct MapSampleChild {
 }
 
 
-
-
 @Entry
 @Component
 struct MapSample {
   @State message: Map<number, string> = new Map([[0, 'a'], [1, 'b'], [3, 'c']]);
-
 
   build() {
     Row() {
@@ -472,8 +432,9 @@ struct MapSample {
     .height('100%')
   }
 }
-DecoratingVariablesMapType.ets
-装饰Set类型变量
+
+[h2]装饰Set类型变量
+
 说明
 
 从API version 11开始，@Link支持Set类型。
@@ -483,7 +444,6 @@ DecoratingVariablesMapType.ets
 @Component
 struct SetSampleChild {
   @Link message: Set<number>;
-
 
   build() {
     Column() {
@@ -510,13 +470,10 @@ struct SetSampleChild {
 }
 
 
-
-
 @Entry
 @Component
 struct SetSample {
   @State message: Set<number> = new Set([0, 1, 2, 3, 4]);
-
 
   build() {
     Row() {
@@ -528,15 +485,14 @@ struct SetSample {
     .height('100%')
   }
 }
-DecoratingVariablesSetType.ets
-装饰Date类型变量
+
+[h2]装饰Date类型变量
 
 在下面的示例中，selectedDate类型为Date，点击Button改变selectedDate的值，视图会随之刷新。
 
 @Component
 struct DateComponent {
   @Link selectedDate: Date;
-
 
   build() {
     Column() {
@@ -559,12 +515,10 @@ struct DateComponent {
   }
 }
 
-
 @Entry
 @Component
 struct ParentComponent {
   @State parentSelectedDate: Date = new Date('2021-08-08');
-
 
   build() {
     Column() {
@@ -584,13 +538,12 @@ struct ParentComponent {
         selected: this.parentSelectedDate
       })
 
-
       DateComponent({ selectedDate:this.parentSelectedDate })
     }
   }
 }
-DecoratingVariablesDateType.ets
-使用双向同步机制更改本地其他变量
+
+[h2]使用双向同步机制更改本地其他变量
 
 通过@Watch可以在双向同步时更改本地变量。
 
@@ -600,7 +553,6 @@ DecoratingVariablesDateType.ets
 @Component
 struct ChangeVariables {
   @State sourceNumber: number = 0;
-
 
   build() {
     Column() {
@@ -617,17 +569,14 @@ struct ChangeVariables {
   }
 }
 
-
 @Component
 struct ChangeVariablesChild {
   @State memberMessage: string = 'Hello World';
   @Link @Watch('onSourceChange') sourceNumber: number;
 
-
   onSourceChange() {
     this.memberMessage = this.sourceNumber.toString();
   }
-
 
   build() {
     Column() {
@@ -640,8 +589,8 @@ struct ChangeVariablesChild {
     }
   }
 }
-UseWatchToChangeLocalVariables.ets
-Link支持联合类型实例
+
+[h2]Link支持联合类型实例
 
 @Link支持联合类型、undefined和null。在以下示例中，name类型为string | undefined。点击父组件UnionTypes中的按钮可以改变name的属性或类型，UnionChild组件也会相应刷新。
 
@@ -650,47 +599,38 @@ struct UnionChild {
   // @Link支持联合类型
   @Link name: string | undefined;
 
-
   build() {
     Column() {
-
 
       Button('Child change name to Bob')
         .onClick(() => {
           this.name = 'Bob';
         })
 
-
       Button('Child change name to undefined')
         .onClick(() => {
           this.name = undefined;
         })
 
-
     }.width('100%')
   }
 }
-
 
 @Entry
 @Component
 struct UnionTypes {
   @State name: string | undefined = 'mary';
 
-
   build() {
     Column() {
       Text(`The name is  ${this.name}`).fontSize(30)
 
-
       UnionChild({ name: this.name })
-
 
       Button('Parents change name to Peter')
         .onClick(() => {
           this.name = 'Peter';
         })
-
 
       Button('Parents change name to undefined')
         .onClick(() => {
@@ -699,9 +639,6 @@ struct UnionTypes {
     }
   }
 }
-UsingUnionTypes.ets
-@Prop装饰器：父子单向同步
-@Provide装饰器和@Consume装饰器：与后代组件双向同步
 
 ## Code blocks
 
@@ -710,7 +647,6 @@ UsingUnionTypes.ets
 ```
 // 错误写法，编译报错
 @Link count: number = 10;
-
 
 // 正确写法
 @Link count: number;
@@ -723,11 +659,9 @@ class Info {
   value: string = 'Hello';
 }
 
-
 class Cousin {
   name: string = 'Hello';
 }
-
 
 @Component
 struct Child {
@@ -735,7 +669,6 @@ struct Child {
   @Link test: Cousin;
   // 错误写法2：数据源非状态变量
   @Link testStr: string;
-
 
   build() {
     Column() {
@@ -745,12 +678,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample {
   @State info: Info = new Info();
-
 
   build() {
     Column() {
@@ -772,24 +703,20 @@ class LinkInfo {
   public value: string = 'Hello';
 }
 
-
 @Component
 struct LinkChild {
   // 在子组件中，使用@Link装饰LinkInfo类型的test变量
   @Link test: LinkInfo;
-
 
   build() {
     Text(this.test.value)
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample {
   @State info: LinkInfo = new LinkInfo();
-
 
   build() {
     Column() {
@@ -807,25 +734,21 @@ class Info {
   info: string = 'Hello';
 }
 
-
 @Component
 struct Child {
   @Link msg: string;
   @Link info: string;
-
 
   build() {
     Text(this.msg + this.info)
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample {
   @State message: string = 'Hello';
   @State info: Info = new Info();
-
 
   build() {
     Column() {
@@ -843,25 +766,21 @@ class LinkInfo2 {
   public info: string = 'Hello';
 }
 
-
 @Component
 struct LinkChild2 {
   @Link msg: string;
   @Link info: LinkInfo2;
-
 
   build() {
     Text(this.msg + this.info.info)
   }
 }
 
-
 @Entry
 @Component
 struct LinkExample2 {
   @State message: string = 'Hello';
   @State info: LinkInfo2 = new LinkInfo2();
-
 
   build() {
     Column() {
@@ -878,17 +797,14 @@ struct LinkExample2 {
 class GreenButtonState {
   public width: number = 0;
 
-
   constructor(width: number) {
     this.width = width;
   }
 }
 
-
 @Component
 struct GreenButton {
   @Link greenButtonState: GreenButtonState;
-
 
   build() {
     Button('Green Button')
@@ -908,11 +824,9 @@ struct GreenButton {
   }
 }
 
-
 @Component
 struct YellowButton {
   @Link yellowButtonState: number;
-
 
   build() {
     Button('Yellow Button')
@@ -927,13 +841,11 @@ struct YellowButton {
   }
 }
 
-
 @Entry
 @Component
 struct ShufflingContainer {
   @State greenButtonState: GreenButtonState = new GreenButtonState(180);
   @State yellowButtonProp: number = 180;
-
 
   build() {
     Column() {
@@ -973,7 +885,6 @@ struct ShufflingContainer {
 struct ArrayTypesChild {
   @Link items: number[];
 
-
   build() {
     Column() {
       Button(`Button1: push`)
@@ -997,12 +908,10 @@ struct ArrayTypesChild {
   }
 }
 
-
 @Entry
 @Component
 struct ArrayTypes {
   @State arr: number[] = [1, 2, 3];
-
 
   build() {
     Column() {
@@ -1030,7 +939,6 @@ struct ArrayTypes {
 @Component
 struct MapSampleChild {
   @Link value: Map<number, string>;
-
 
   build() {
     Column() {
@@ -1060,13 +968,10 @@ struct MapSampleChild {
 }
 
 
-
-
 @Entry
 @Component
 struct MapSample {
   @State message: Map<number, string> = new Map([[0, 'a'], [1, 'b'], [3, 'c']]);
-
 
   build() {
     Row() {
@@ -1086,7 +991,6 @@ struct MapSample {
 @Component
 struct SetSampleChild {
   @Link message: Set<number>;
-
 
   build() {
     Column() {
@@ -1113,13 +1017,10 @@ struct SetSampleChild {
 }
 
 
-
-
 @Entry
 @Component
 struct SetSample {
   @State message: Set<number> = new Set([0, 1, 2, 3, 4]);
-
 
   build() {
     Row() {
@@ -1139,7 +1040,6 @@ struct SetSample {
 @Component
 struct DateComponent {
   @Link selectedDate: Date;
-
 
   build() {
     Column() {
@@ -1162,12 +1062,10 @@ struct DateComponent {
   }
 }
 
-
 @Entry
 @Component
 struct ParentComponent {
   @State parentSelectedDate: Date = new Date('2021-08-08');
-
 
   build() {
     Column() {
@@ -1187,7 +1085,6 @@ struct ParentComponent {
         selected: this.parentSelectedDate
       })
 
-
       DateComponent({ selectedDate:this.parentSelectedDate })
     }
   }
@@ -1201,7 +1098,6 @@ struct ParentComponent {
 @Component
 struct ChangeVariables {
   @State sourceNumber: number = 0;
-
 
   build() {
     Column() {
@@ -1218,17 +1114,14 @@ struct ChangeVariables {
   }
 }
 
-
 @Component
 struct ChangeVariablesChild {
   @State memberMessage: string = 'Hello World';
   @Link @Watch('onSourceChange') sourceNumber: number;
 
-
   onSourceChange() {
     this.memberMessage = this.sourceNumber.toString();
   }
-
 
   build() {
     Column() {
@@ -1251,47 +1144,38 @@ struct UnionChild {
   // @Link支持联合类型
   @Link name: string | undefined;
 
-
   build() {
     Column() {
-
 
       Button('Child change name to Bob')
         .onClick(() => {
           this.name = 'Bob';
         })
 
-
       Button('Child change name to undefined')
         .onClick(() => {
           this.name = undefined;
         })
 
-
     }.width('100%')
   }
 }
-
 
 @Entry
 @Component
 struct UnionTypes {
   @State name: string | undefined = 'mary';
 
-
   build() {
     Column() {
       Text(`The name is  ${this.name}`).fontSize(30)
 
-
       UnionChild({ name: this.name })
-
 
       Button('Parents change name to Peter')
         .onClick(() => {
           this.name = 'Peter';
         })
-
 
       Button('Parents change name to undefined')
         .onClick(() => {

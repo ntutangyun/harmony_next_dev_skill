@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/network-navigator_
 
+网络领航员功能简介
+
+说明
+
+网络领航员功能从API version 20开始支持，目前只支持手机和平板。
+
 App上线之前需要优化和验证App在各种网络场景的体验，例如，App针对乘坐地铁时刷短视频进行优化后，卡顿情况是否有所改善，但需要在真实场景下验证。
 
 网络领航员提供了网络模拟的能力，帮助开发者快速验证App在各种典型场景中的使用体验，提升App体验的测试验证效率，降低测试验证成本。例如，不需要真的乘坐高铁去验证高铁场景优化效果。
@@ -104,7 +110,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 网络波动场景
 
 特征：因信号强度快速变化（如移动穿行或高速运动），网络表现为带宽骤降（50Mbps→1Mbps）、时延剧烈抖动（RTT波动超300%）、短时丢包（0%~5%）。
+
 典型场景：乘坐地铁、高速公路自驾。
+
 最佳实践：
 
 订阅Network Boost Kit的netQuality事件，实时感知网络质量，并进行针对性处理。
@@ -183,6 +191,7 @@ try {
  } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
 }
+
 信息收集说明
 
 当您使用网络领航员能力时，App的使用记录会被收集，并可能会通过您的华为账号对应的联系方式与您进行取得联系进行使用回访，以便我们进一步优化提升该能力。
@@ -288,5 +297,105 @@ try {
 汽车在市区行驶	120-180s	蜂窝	300-500Mbps	random	50-100Mbps	random	0-25ms	random	0.00%-0.00%	random
 汽车在高架行驶	180-240s	蜂窝	0-10Mbps	random	0-10Mbps	random	0-35ms	random	0.00%-0.00%	random
 汽车在市区行驶	240-300s	蜂窝	300-500Mbps	random	50-100Mbps	random	0-25ms	random	0.00%-0.00%	random
-网络调试调优
-基础功能
+
+## Code blocks
+
+### Code block 1
+
+```
+// 引入包名
+import { http } from '@kit.NetworkKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+// 每一个httpRequest对应一个HTTP请求任务，不可复用
+ let httpRequest = http.createHttp();
+ httpRequest.request(
+  // 填写HTTP请求的URL地址，可以带参数也可以不带参数。URL地址需要开发者自定义。请求的参数可以在extraData中指定
+  "EXAMPLE_URL", (err: BusinessError, data: http.HttpResponse) => {
+  if (!err) {
+    // data.result为HTTP响应内容，可根据业务需要进行解析
+    console.info('Result:' + JSON.stringify(data.result));
+    // 当该请求使用完毕时，调用destroy方法主动销毁
+    httpRequest.destroy();
+  } else {
+    console.error('error:' + JSON.stringify(err));
+    // 当该请求使用完毕时，调用destroy方法主动销毁
+    httpRequest.destroy();
+  }
+}
+);
+```
+
+### Code block 2
+
+```
+// 引入包名
+import { netQuality } from '@kit.NetworkBoostKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+try {
+  netQuality.on('netQosChange', (list: Array<netQuality.NetworkQos>) => {
+    if (list.length > 0) {
+      list.forEach((qos) => {
+        // 回调信息处理
+        console.info(`该数据链路类型的上行带宽: ${JSON.stringify(qos.linkUpBandwidth)}.` );
+        console.info(`该数据链路类型的下行带宽: ${JSON.stringify(qos.linkDownBandwidth)}.` );
+        // 应用可根据上下行带宽等信息实时感知网络质量，调整请求策略
+      });
+    }
+  });
+ } catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 3
+
+```
+// 引入包名
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { HashMap } from "@kit.ArkTS";
+export class PrefetchingRcp {
+  private session = rcp.createSession();
+  private responsePrefetched: HashMap<string, rcp.Response> = new HashMap<string, rcp.Response>();
+  public async prefetch(url: string) {
+    const request = new rcp.Request(url);
+    try {
+      // 发送预取请求
+      let response: rcp.Response = await this.session.fetch(request);
+      // 缓存预取结果
+      this.responsePrefetched.set(url, response);
+      return Promise.resolve();
+     } catch (reason) {
+       console.error(`Rcp prefetch failed: ${reason.code}`);
+       return Promise.reject();
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+// 引入包名
+import { netQuality } from '@kit.NetworkBoostKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+try {
+  netQuality.on('netSceneChange', (list: Array<netQuality.NetworkScene>) => {
+    if (list.length > 0) {
+      list.forEach((sceneInfo) => {
+        // 网络场景识别回调信息处理
+        if (sceneInfo.scene == 'congestion') {
+          // 检测到当前为网络拥塞场景，应用处理
+        }
+        if (sceneInfo.scene == 'normal') {
+          // 检测到网络不再拥塞，应用处理
+        }
+        if (sceneInfo.weakSignalPrediction) {
+          // 弱信号场景预测，感知到网络质量即将变差，应用提前应对
+        }
+      });
+    }
+  });
+ } catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```

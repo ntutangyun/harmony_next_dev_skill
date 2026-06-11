@@ -2,108 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-augmentation-hyperparam_
 
+功能介绍
+
 超参是RAG工作流的配置参数，用于控制工作流的行为与组件结构。超参可由开发者根据任务需求、数据特性及经验进行配置，合理的超参设置对RAG的性能和效果有重要影响。开发者可以通过在指定应用资源目录放置hyper_param.json配置文件，实现自定义超参导入。
 
 可供配置的超参列表：
 
 超参名称	超参类型	超参描述
-retrieveTimeoutSeconds	size_t	
-
-检索器超时时间。
-
-取值范围：3~20。
-
-默认值：20。
-
-单位：s。
-
-
-llmChunkTimeoutSeconds	size_t	
-
-流式输出超时时间。
-
-取值范围：2~30。
-
-默认值：30。
-
-单位：s。
-
-
-llmOutputTimeoutSeconds	size_t	
-
-大模型超时时间。
-
-取值范围：10~200。
-
-默认值：120。
-
-单位：s。
-
-
-defaultHisLen	size_t	
-
-指代消除历史记录轮数。
-
-取值范围：1~8。
-
-默认值：1。
-
-单位：轮。
-
-
-summaryDefaultHisLen	size_t	
-
-问题回答历史记录轮数。
-
-取值范围：1~8。
-
-默认值：1。
-
-单位：轮。
-
-
-maxQueryLength	size_t	
-
-用户问题最大长度。
-
-推荐范围：100~1000。
-
-默认值：1000。
-
-单位：字节。
-
-
-maxRetrievalLength	size_t	
-
-拼接后的检索片段最大长度。
-
-推荐范围：3000~20000。
-
-默认值：16000。
-
-单位：字节。
-
-
-llmOutputLengthLimit	size_t	
-
-大模型单次问答输出长度。
-
-推荐范围：2000~10000。
-
-默认值：8192。
-
-单位：字节。
-
-
-historyLengthLimit	size_t	
-
-拼接历史记录长度。
-
-推荐范围：3000~10000。
-
-默认值：8000。
-
-单位：字节。
+retrieveTimeoutSeconds	size_t	检索器超时时间。 取值范围：3~20。 默认值：20。 单位：s。
+llmChunkTimeoutSeconds	size_t	流式输出超时时间。 取值范围：2~30。 默认值：30。 单位：s。
+llmOutputTimeoutSeconds	size_t	大模型超时时间。 取值范围：10~200。 默认值：120。 单位：s。
+defaultHisLen	size_t	指代消除历史记录轮数。 取值范围：1~8。 默认值：1。 单位：轮。
+summaryDefaultHisLen	size_t	问题回答历史记录轮数。 取值范围：1~8。 默认值：1。 单位：轮。
+maxQueryLength	size_t	用户问题最大长度。 推荐范围：100~1000。 默认值：1000。 单位：字节。
+maxRetrievalLength	size_t	拼接后的检索片段最大长度。 推荐范围：3000~20000。 默认值：16000。 单位：字节。
+llmOutputLengthLimit	size_t	大模型单次问答输出长度。 推荐范围：2000~10000。 默认值：8192。 单位：字节。
+historyLengthLimit	size_t	拼接历史记录长度。 推荐范围：3000~10000。 默认值：8000。 单位：字节。
 
 约束限制
 
@@ -130,5 +44,21 @@ historyLengthLimit	size_t
     "llmOutputLengthLimit": 8192,
     "historyLengthLimit": 8000
 }
-配置提示词模板
-配置分析过程模板
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+    "retrieveTimeoutSeconds": 5,
+    "llmChunkTimeoutSeconds": 30,
+    "llmOutputTimeoutSeconds": 120,
+    "defaultHisLen": 1,
+    "summaryDefaultHisLen": 1,
+    "maxQueryLength": 1000,
+    "maxRetrievalLength": 16000,
+    "llmOutputLengthLimit": 8192,
+    "historyLengthLimit": 8000
+}
+```

@@ -33,8 +33,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-upd
 接口名	描述
 checkAppUpdate(context: common.UIAbilityContext): Promise<CheckUpdateResult>	检查更新接口，用于检测当前是否有新版本。
 showUpdateDialog(context:common.UIAbilityContext): Promise<ShowUpdateResultCode>	显示升级对话框接口，用于提示用户进行升级。
+
 开发步骤
-检测应用新版本
+
+[h2]检测应用新版本
 
 导入updateManager模块及相关公共模块。
 
@@ -59,6 +61,7 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', `checkAppUpdate onError.code is ${error.code}, message is ${error.message}`);
 }
+
 说明
 
 本地安装版本须低于应用市场在架版本才能检查到更新。
@@ -67,7 +70,7 @@ try {
 
 暂不支持邀请测试和公开测试。
 
-显示升级对话框
+[h2]显示升级对话框
 
 导入updateManager 模块及相关公共模块。
 
@@ -93,5 +96,66 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', `showUpdateDialog onError.code is ${error.code}, message is ${error.message}`);
 }
-生态查询服务
-应用归因服务
+
+## Code blocks
+
+### Code block 1
+
+```
+import { updateManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+```
+
+### Code block 3
+
+```
+try {
+  updateManager.checkAppUpdate(context)
+    .then((checkResult: updateManager.CheckUpdateResult) => {
+      hilog.info(0, 'TAG', "Succeeded in checking Result updateAvailable:" + checkResult.updateAvailable);
+    }).catch((error: BusinessError) => {
+    hilog.error(0, 'TAG', `checkAppUpdate onError.code is ${error.code}, message is ${error.message}`);
+  });
+} catch (error) {
+  hilog.error(0, 'TAG', `checkAppUpdate onError.code is ${error.code}, message is ${error.message}`);
+}
+```
+
+### Code block 4
+
+```
+import { updateManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 5
+
+```
+let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+```
+
+### Code block 6
+
+```
+try {
+  updateManager.showUpdateDialog(context)
+    .then((resultCode: updateManager.ShowUpdateResultCode) => {
+      hilog.info(0, 'TAG', "Succeeded in showing UpdateDialog resultCode:" + resultCode);
+    })
+    .catch((error: BusinessError) => {
+      hilog.error(0, 'TAG', `showUpdateDialog onError.code is ${error.code}, message is ${error.message}`);
+    });
+} catch (error) {
+  hilog.error(0, 'TAG', `showUpdateDialog onError.code is ${error.code}, message is ${error.message}`);
+}
+```

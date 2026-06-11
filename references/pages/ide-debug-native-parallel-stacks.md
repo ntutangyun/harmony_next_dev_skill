@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-native-parallel-stacks_
 
+在native调试窗口中，点击Layout Settings，勾选Parallel Stacks，打开并行栈视图。
+
 在程序停下时，并行栈视图可以同时展示多个线程的调用栈信息，合并重复调用栈，帮助您更好地理解程序的并发执行情况，以及发现潜在的多线程问题。
 
 调用栈跳转
@@ -11,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug
 线程信息查看
 
 在多个线程合并的位置处悬停鼠标，可以显示这些线程的具体信息。
-
-反向调试
-so信息可视化

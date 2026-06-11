@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-27_
 
+您可拨打数字人民币客服热线咨询接入流程和相关信息。
+
+客服热线：956196。

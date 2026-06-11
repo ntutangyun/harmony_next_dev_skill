@@ -2,7 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-fusion-intelligentfilling-appendix_
 
+华为账号昵称
+
+名称	说明
+NICKNAME	昵称，如“Vivian”。
+
+用户姓名
+
+名称	说明
+PERSON_FULL_NAME	姓名，如“张三”。
+PERSON_LAST_NAME	姓氏，如“张”。
+PERSON_FIRST_NAME	名字，如“三”。
+
+说明
+
 PERSON_FULL_NAME和（PERSON_LAST_NAME，PERSON_FIRST_NAME）不能同时在同一个表单中使用（在护照信息场景中可以同时使用）。
+
 请在收集使用用户敏感个人信息的表单界面告知目的以及必要性。
 
 联系方式
@@ -15,8 +30,11 @@ EMAIL_ADDRESS	邮箱地址，如“a****t@huawei.com”。
 
 名称	说明
 ID_CARD_NUMBER	身份证号，如“3201***********123”。
+
 说明
+
 ID_CARD_NUMBER目前只支持身份证号的推荐、填充，不支持其他类型的证件，可参考动态修改ContentType值动态配置输入框的ContentType。
+
 请在收集使用用户敏感个人信息的表单界面告知目的以及必要性。
 
 护照信息
@@ -26,6 +44,7 @@ COUNTRY_ADDRESS	国籍，如“中国”。
 PASSPORT_NUMBER	护照号，如“G*******1”。
 VALIDITY	有效期至，如“2025-1-1”。
 ISSUE_AT	签发地，如“广东”。
+
 说明
 
 请在收集使用用户敏感个人信息的表单界面告知目的以及必要性。
@@ -48,5 +67,3 @@ ADDRESS_CITY_AND_STATE	所在地区，如“中国广东省深圳市龙岗区”
 名称	说明
 ORGANIZATION	名称，如“深圳市xx公司”。
 TAX_ID	税号，如“2020***********000”。
-推荐数据源及推荐逻辑说明
-三方框架+H5接入智能填充

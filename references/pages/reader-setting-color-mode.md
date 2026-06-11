@@ -10,6 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/reader-se
 
 接口名	描述
 setPageConfig(pageConfig: ReaderSetting): void	设置或者修改页面排版属性。
+
 开发准备
 
 在适配深、浅色主题之前，请先确保已经“构建阅读器”。
@@ -20,9 +21,7 @@ setPageConfig(pageConfig: ReaderSetting): void	设置或者修改页面排版属
 
 import { Configuration, UIAbility } from '@kit.AbilityKit';
 
-
 export default class EntryAbility extends UIAbility {
-
 
   onConfigurationUpdate(newConfig: Configuration): void {
     AppStorage.setOrCreate('colorMode', newConfig.colorMode);
@@ -33,10 +32,8 @@ export default class EntryAbility extends UIAbility {
 
 import { ConfigurationConstant } from '@kit.AbilityKit';
 
-
 @StorageLink('colorMode') @Watch('colorModeChange') colorMode: ConfigurationConstant.ColorMode =
   ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
-
 
 /**
  * 系统深色模式变化，可以重新设置主题
@@ -53,5 +50,43 @@ colorModeChange() {
   }
   this.readerComponentController.setPageConfig(this.readerSetting);
 }
-修改翻页方式、字体大小及行间距
-监听文本缩放因子变化
+
+## Code blocks
+
+### Code block 1
+
+```
+import { Configuration, UIAbility } from '@kit.AbilityKit';
+
+export default class EntryAbility extends UIAbility {
+
+  onConfigurationUpdate(newConfig: Configuration): void {
+    AppStorage.setOrCreate('colorMode', newConfig.colorMode);
+  }
+}
+```
+
+### Code block 2
+
+```
+import { ConfigurationConstant } from '@kit.AbilityKit';
+
+@StorageLink('colorMode') @Watch('colorModeChange') colorMode: ConfigurationConstant.ColorMode =
+  ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
+
+/**
+ * 系统深色模式变化，可以重新设置主题
+ */
+colorModeChange() {
+  if (this.colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
+    this.readerSetting.nightMode = true;
+    this.readerSetting.fontColor = '#ffffff';
+    this.readerSetting.themeColor = '#202224';
+  } else {
+    this.readerSetting.nightMode = false;
+    this.readerSetting.fontColor = '#000000';
+    this.readerSetting.themeColor = '#FFFFFF';
+  }
+  this.readerComponentController.setPageConfig(this.readerSetting);
+}
+```

@@ -2,6 +2,28 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-native-breakpoint_
 
+点击View Breakpoints 图标可以打开断点管理界面，您可以在断点管理界面查看或更改您的断点。
+
+勾选 Enable ，使能该断点。
+
+勾选 Suspend execution ，使程序运行到断点时中断。
+
+条件断点
+
+在某个断点的配置中，勾选 Condition ，并设置表达式作为条件，使程序运行到断点且满足设置的条件时才会中断进程。
+
+日志断点
+
+在某个断点的配置中，勾选以下类型的log，可以使进程运行到断点时在 console 窗口打印相应 log。
+
+勾选“Breakpoint hit”message，程序运行到断点时，打印“Breakpoint reached”。
+
+勾选 Stack trace，程序运行到断点时，打印当前线程的堆栈。
+
+勾选 Evaluate and log，并添加表达式，程序运行到断点时，打印表达式的值。
+
+说明
+
 未勾选 Enable 的断点不会打印日志，未勾选 Suspend execution 的断点会打印日志，不满足所设置的 Condition 的断点不会打印日志。
 
 临时断点
@@ -33,8 +55,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug
 在断点管理界面进行查看和修改。
 
 说明
+
 数据断点支持的类型受硬件限制，支持设置数据断点的变量类型 size 不能超过硬件支持的范围；
+
 受硬件限制，最多同时设置 2 个数据断点；
+
 对局部变量设置的数据断点，需要在离开作用域时手动删除，否则会由于变量地址被重用导致进程中断。
-启动调试
-检查变量

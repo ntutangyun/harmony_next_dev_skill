@@ -9,6 +9,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-cur
 传统曲线：基于数学公式，创造形状符合开发者预期的动画曲线，以三阶贝塞尔曲线为代表。
 
 弹簧曲线：阻尼弹簧曲线，简称弹簧曲线。
-
-动画曲线
-传统曲线

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appkilled-guidelines_
 
+简介
+
 应用闪退指应用在使用过程中突然异常终止。当应用行为异常，比如消耗过多CPU、内存等系统资源时，系统为了保持整机健康状态，会按照规则挑选应用进行管控，通常通过服务进程向应用发送SIGKILL信号（信号值是9）来实施终止的。操作系统对SIGKILL的默认行为是不生成栈日志等维测信息的，导致应用闪退时faultlogger中无日志。
 
 基本概念
@@ -132,5 +134,3 @@ GpuKiller	整机低内存，单进程GPU占用达到阈值。	尝试降低应用
 DmaKiller	整机低内存，单进程Dma占用达到阈值。	尝试降低应用自身的Dma内存占用。尝试通过HiAppEvent订阅RESOURCE_OVERLIMIT获取更多的Dma占用达到阈值日志。	是	是
 ThreadKiller	单进程线程超限。	尝试减少应用创建的线程数量，优化线程管理。	是	是
 UninstallStorage	卸载存储卡。	无需处理。	否	否
-任务超时检测
-功耗检测

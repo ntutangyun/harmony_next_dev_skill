@@ -2,11 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-expand-output-a-new-shape_
 
+函数功能
+
+对shape做补维，并将补维后的结果写入指定的输出shape对象。
+
+函数原型
+
 ge::graphStatus Expand(const Shape &shape, Shape &out_shape) const
+
 参数说明
+
 参数	输入/输出	说明
 shape	输入	输入shape，补维前shape。
 out_shape	输出	输出shape，补维后shape。
+
 返回值
 
 补维成功返回ge::GRAPH_SUCCESS。
@@ -20,6 +29,7 @@ out_shape	输出	输出shape，补维后shape。
 无
 
 调用示例
+
 Shape origin_shape({3, 256, 256}); // 设置原始shape 3x256x256
 Shape out_shape;
 ExpandDimsType type1("1000");
@@ -28,5 +38,24 @@ ExpandDimsType type3("1001");
 auto ret = type1.Expand(origin_shape, out_shape); // ret = ge::GRAPH_SUCCESS, out_shape = 1,3,256,256
 ret = type2.Expand(origin_shape, out_shape); // ret = ge::GRAPH_FAILED
 ret = type3.Expand(origin_shape, out_shape); // ret = ge::GRAPH_SUCCESS, out_shape = 1,3,256,1,256
-IsExpandIndex
-Expand(更改原shape)
+
+## Code blocks
+
+### Code block 1
+
+```
+ge::graphStatus Expand(const Shape &shape, Shape &out_shape) const
+```
+
+### Code block 2
+
+```
+Shape origin_shape({3, 256, 256}); // 设置原始shape 3x256x256
+Shape out_shape;
+ExpandDimsType type1("1000");
+ExpandDimsType type2("10000");
+ExpandDimsType type3("1001");
+auto ret = type1.Expand(origin_shape, out_shape); // ret = ge::GRAPH_SUCCESS, out_shape = 1,3,256,256
+ret = type2.Expand(origin_shape, out_shape); // ret = ge::GRAPH_FAILED
+ret = type3.Expand(origin_shape, out_shape); // ret = ge::GRAPH_SUCCESS, out_shape = 1,3,256,1,256
+```

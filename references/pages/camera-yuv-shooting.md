@@ -65,9 +65,13 @@ Context获取方式请参考：获取UIAbility的上下文信息。
 单段式拍照（onCapturePhotoAvailable）开发流程：
 
 在会话commitConfig前注册单段式拍照回调。
+
 在单段式拍照回调函数中获取图片信息，解析出pixelMap数据，做自定义业务处理。
+
 将处理完的pixelMap通过回调回传，做图片显示或通过安全控件写文件保存图片。
+
 使用完后解注册单段式拍照回调函数。
+
 // 单段式拍照回调函数。
 function setPhotoOutputSingleCb(context: Context, photoOutput: camera.PhotoOutput)
 {
@@ -146,10 +150,15 @@ function setPhotoOutputSingleCb(context: Context, photoOutput: camera.PhotoOutpu
 分段式拍照（PhotoAvailable）开发流程：
 
 在会话commitConfig前注册分段式拍照回调。
+
 在分段式拍照回调函数中获取图片信息，解析出pixelMap数据，做自定义业务处理。
+
 将处理完的pixelMap回传，做图片显示或通过安全控件写文件保存图片。
+
 调用capture拍照后，需要及时调用saveCameraPhoto保存图片或discardCameraPhoto取消保存图片，否则会影响后续图片的拍摄。
+
 使用完后解注册分段式拍照回调函数。
+
 // 分段式拍照回调函数。
 function setPhotoOutputDefferCb(photoOutput: camera.PhotoOutput, context: Context, callback: (pixelMap: image.PixelMap, uri: string) => void)
 {
@@ -248,6 +257,7 @@ function capture(captureLocation: camera.Location, photoOutput: camera.PhotoOutp
     console.error("capture call failed. error: ${error}");
   }
 }
+
 状态监听
 
 在相机应用开发过程中，可以随时监听拍照输出流状态，包括拍照流开始、拍照帧的开始与结束、拍摄下一张图片是否就绪、拍照输出流的错误等。
@@ -293,5 +303,273 @@ function onPhotoOutputError(photoOutput: camera.PhotoOutput): void {
     console.error("Photo output error code: ${error.code}");
   });
 }
-多摄同开(ArkTS)
-对焦(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { camera } from '@kit.CameraKit';
+import { dataSharePredicates } from '@kit.ArkData';
+import { fileIo } from '@kit.CoreFileKit';
+import { image } from '@kit.ImageKit';
+import { photoAccessHelper} from '@kit.MediaLibraryKit';
+```
+
+### Code block 2
+
+```
+function getFullOutputCapability(cameraManager: camera.CameraManager, cameraDevice: camera.CameraDevice, sceneMode: camera.SceneMode): camera.CameraOutputCapability | undefined {
+  let cameraOutputCapability = cameraManager.getSupportedFullOutputCapability(cameraDevice, sceneMode);
+  if (!cameraOutputCapability) {
+    console.error("cameraManager.getSupportedFullOutputCapability error");
+    return undefined;
+  }
+  return cameraOutputCapability;
+}
+```
+
+### Code block 3
+
+```
+function getPhotoOutput(cameraManager: camera.CameraManager, photoProfile: camera.Profile): camera.PhotoOutput | undefined {
+  // 创建拍照输出流。
+  let photoOutput: camera.PhotoOutput | undefined = undefined;
+  try {
+    photoOutput = cameraManager.createPhotoOutput(photoProfile);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error("Failed to createPhotoOutput. error: ${err}");
+  }
+  return photoOutput;
+}
+```
+
+### Code block 4
+
+```
+// 单段式拍照回调函数。
+function setPhotoOutputSingleCb(context: Context, photoOutput: camera.PhotoOutput)
+{
+  // 设置回调之后，调用photoOutput的capture方法，就会将拍照的pixelMap回传到回调中。
+  photoOutput.onCapturePhotoAvailable(async (capturePhoto: camera.CapturePhoto): Promise<void> => {
+    console.info("getPhoto start");
+    if (capturePhoto === undefined) {
+      console.error("getPhoto failed, capturePhoto is null or undefined");
+      return;
+    }
+    let pictureObj: image.Picture = capturePhoto.main as image.Picture;
+    if (pictureObj === undefined) {
+      console.error("getPhoto failed, pictureObj is null or undefined");
+      return;
+    }
+    // 获取拍照的主图的pixelMap。
+    let mainPixelMap: image.PixelMap = pictureObj.getMainPixelmap();
+    if (mainPixelMap === undefined) {
+      console.error("getPhoto failed, mainPixelMap is null or undefined");
+      return;
+    }
+    // 对pixelMap中的数据做编码处理。
+    const imagePackerApi = image.createImagePacker();
+    let packOpts: image.PackingOption = {format: 'image/jpeg', quality: 95};
+    const path: string = context.cacheDir + '/pixel_map.jpg';
+    let srcFileUri: string = '';
+    let file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+    try {
+      await imagePackerApi.packToFile(mainPixelMap, file.fd, packOpts);
+      srcFileUri = file.path;
+    } catch (error) {
+      console.error("Failed to pack the pixelMap to file. And the errorcode: ${error.code} ,error.message: ${error.message}");
+    }
+    // 对图片做保存操作。
+    let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+    try {
+      // 指定待保存到媒体库的位于应用沙箱的图片uri。
+      let srcFileUris: string[] = [
+        srcFileUri
+      ];
+      // 指定待保存照片的创建选项，包括文件后缀和照片类型，标题和照片子类型可选。
+      let photoCreationConfigs: photoAccessHelper.PhotoCreationConfig[] = [
+        {
+          title: 'test', // 可选。
+          fileNameExtension: 'jpg',
+          photoType: photoAccessHelper.PhotoType.IMAGE,
+          subtype: photoAccessHelper.PhotoSubtype.DEFAULT, // 可选。
+        }
+      ];
+      // 基于弹窗授权的方式获取媒体库的目标uri。
+      let desFileUris: string[] = await phAccessHelper.showAssetsCreationDialog(srcFileUris, photoCreationConfigs);
+      // 将来源于应用沙箱的照片内容写入媒体库的目标uri。
+      let desFile: fileIo.File = await fileIo.open(desFileUris[0], fileIo.OpenMode.WRITE_ONLY);
+      let srcFile: fileIo.File = await fileIo.open(srcFileUri, fileIo.OpenMode.READ_ONLY);
+      await fileIo.copyFile(srcFile.fd, desFile.fd);
+      fileIo.closeSync(srcFile);
+      fileIo.closeSync(desFile);
+      console.info("create asset by dialog successfully");
+    } catch (err) {
+      console.error("failed to create asset by dialog successfully errCode is: ${err.code}, ${err.message}");
+    }
+    // 从PixelMap中获取元数据。
+    let metadataType: image.MetadataType = image.MetadataType.EXIF_METADATA;
+    let pictureMetadata: Promise<image.Metadata>  = pictureObj.getMetadata(metadataType);
+    if (pictureMetadata != undefined) {
+      console.info("Get picture metadata with EXIF_METADATA successfully");
+    } else {
+      console.error("Get picture metadata with EXIF_METADATA failed");
+    }
+    // 释放资源。
+    mainPixelMap.release();
+    pictureObj.release();
+  });
+}
+```
+
+### Code block 5
+
+```
+// 分段式拍照回调函数。
+function setPhotoOutputDefferCb(photoOutput: camera.PhotoOutput, context: Context, callback: (pixelMap: image.PixelMap, uri: string) => void)
+{
+   photoOutput.on('photoAssetAvailable', async (_err: BusinessError, photoAsset: photoAccessHelper.PhotoAsset): Promise<void> => {
+     try {
+       console.info("On photoAssetAvailable callback uri: ${photoAsset.uri}");
+       let accessHelper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+       // 保存图片。
+       try {
+         // 创建媒体资产变更请求。
+         let assetChangeRequest: photoAccessHelper.MediaAssetChangeRequest = new photoAccessHelper.MediaAssetChangeRequest(photoAsset);
+         let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+         console.info("Start to save camera photo");
+         // 保存相机拍摄的照片。
+         await assetChangeRequest.saveCameraPhoto(photoAccessHelper.ImageFileType.JPEG);
+         // 提交媒体变更请求。
+         await phAccessHelper.applyChanges(assetChangeRequest);
+         console.info("Save camera photo end");
+         await phAccessHelper.release();
+       } catch (error) {
+         console.error("On photoAssetAvailable save camera photo error:  ${error.code}, ${error.message}");
+       }
+       // 获取图片pixelmap信息。
+       try {
+         class MediaDataHandler implements photoAccessHelper.QuickImageDataHandler<image.Picture> {
+           onDataPrepared(data: image.Picture, imageSource: image.ImageSource, map: Map<string, string>) {
+             if (data != undefined) {
+               console.info("On photoAssetAvailable callback data is not undefined");
+               let pixelMap: image.PixelMap = data.getMainPixelmap();
+               pixelMap.getImageInfo().then((info) => {
+                 console.info("On photoAssetAvailable pixelMap.width: " + info.size.width + ", pixelMap.height: " +
+                   info.size.height + ", pixelMap.pixelFormat: " + info.pixelFormat);
+               })
+               callback(pixelMap, photoAsset.uri);
+             } else if (data === undefined && imageSource != undefined) {
+               console.info("On photoAssetAvailable callback data is undefined, and imageSource is not undefined");
+               imageSource.createPixelMap().then((pixelMap: image.PixelMap) => {
+                 callback(pixelMap, photoAsset.uri);
+               }).catch((error: BusinessError) => {
+                 console.error("On photoAssetAvailable callback createPixelMap failed, error: ${error.message}");
+               })
+             } else {
+               console.error("On photoAssetAvailable callback data and imageSource are both undefined");
+               return;
+             }
+           }
+         }
+         // 创建数据共享谓词。
+         let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
+         // 配置媒体资产检索条件。
+         let fetchOptions: photoAccessHelper.FetchOptions = {
+           fetchColumns: [],
+           predicates: predicates,
+         };
+         // 配置请求策略为平衡模式。
+         let requestOptions: photoAccessHelper.RequestOptions = {
+           deliveryMode: photoAccessHelper.DeliveryMode.BALANCE_MODE
+         };
+         const handler = new MediaDataHandler();
+         await photoAccessHelper.MediaAssetManager.quickRequestImage(context, photoAsset, requestOptions, handler);
+         console.info("On photoAssetAvailable callback end");
+       } catch (error) {
+         console.error("On photoAssetAvailable quickRequest error:  ${error.code}, ${error.message}");
+       }
+     } catch (error) {
+       console.error("On photoAssetAvailable callback error:  ${error.code}, ${error.message}");
+     }
+   });
+   console.info("Set photoAssetAvailable callback end");
+}
+```
+
+### Code block 6
+
+```
+function capture(captureLocation: camera.Location, photoOutput: camera.PhotoOutput): void {
+  let settings: camera.PhotoCaptureSetting = {
+    quality: camera.QualityLevel.QUALITY_LEVEL_HIGH,  // 设置图片质量为高质量。
+    rotation: camera.ImageRotation.ROTATION_0,  // 设置图片旋转角度0度。
+    location: captureLocation,  // 设置图片地理位置。
+    mirror: false  // 设置镜像使能开关（默认关）。
+  };
+  try {
+    photoOutput.capture(settings, (err: BusinessError) => {
+      if (err) {
+        console.error("Failed to capture the photo. error: ${err}");
+        return;
+      }
+      console.info("Callback invoked to indicate the photo capture request success.");
+    });
+  } catch (error) {
+    console.error("capture call failed. error: ${error}");
+  }
+}
+```
+
+### Code block 7
+
+```
+function onPhotoOutputCaptureStart(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('captureStartWithInfo', (err: BusinessError, captureStartInfo: camera.CaptureStartInfo) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info("photo capture started, captureId : ${captureStartInfo.captureId}");
+  });
+}
+```
+
+### Code block 8
+
+```
+function onPhotoOutputCaptureEnd(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('captureEnd', (err: BusinessError, captureEndInfo: camera.CaptureEndInfo) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info("photo capture end, captureId : ${captureEndInfo.captureId}");
+    console.info("frameCount : ${captureEndInfo.frameCount}");
+  });
+}
+```
+
+### Code block 9
+
+```
+function onPhotoOutputCaptureReady(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('captureReady', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info("photo capture ready");
+  });
+}
+```
+
+### Code block 10
+
+```
+function onPhotoOutputError(photoOutput: camera.PhotoOutput): void {
+  photoOutput.on('error', (error: BusinessError) => {
+    console.error("Photo output error code: ${error.code}");
+  });
+}
+```

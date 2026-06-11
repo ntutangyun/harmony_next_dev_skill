@@ -67,6 +67,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-att
 状态为驳回，表示未完成注册。编辑该条注册信息，需要重新提交运营人员审核；删除该条注册信息，无需审核。
 
 注册成功后，平台生成合作伙伴唯一标识（归因角色ID，用于归因过程中，标识相应的归因角色），在注册列表页展示已注册的信息。
-
-注册企业账号
-管理转化事件

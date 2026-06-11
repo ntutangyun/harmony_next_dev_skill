@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-launchacceleration-service_
 
+秒级启动

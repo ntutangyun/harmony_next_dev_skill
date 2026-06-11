@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-securitymode_
 
+场景介绍
+
 Device Security Kit提供了系统安全模式的查询能力。通过调用Device Security Kit的接口，可以判断设备当前的安全模式（包含普通模式、坚盾守护模式），应用可根据设备当前的安全模式提供差异化的服务。
 
 普通模式：操作系统默认模式，适用于绝大部分用户使用。
@@ -30,9 +32,32 @@ int32_t IsSecureShieldModeOn(void)
     DSM_DeviceSecurityMode mode = HMS_DSM_GetDeviceSecurityMode();
     return mode & DSM_SECURE_SHIELD_MODE;
 }
+
 说明
 
 若应用使用到ArkWeb组件，需进一步参考说明，进行Web特性的兼容性评估。
 
-模拟点击增强检测
-反诈选择器
+## Code blocks
+
+### Code block 1
+
+```
+find_library(dsm-lib libdevice_security_mode.z.so)
+target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
+```
+
+### Code block 2
+
+```
+#include <DeviceSecurityKit/device_security_mode.h>
+```
+
+### Code block 3
+
+```
+int32_t IsSecureShieldModeOn(void)
+{
+    DSM_DeviceSecurityMode mode = HMS_DSM_GetDeviceSecurityMode();
+    return mode & DSM_SECURE_SHIELD_MODE;
+}
+```

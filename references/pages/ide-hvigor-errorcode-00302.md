@@ -2,6 +2,28 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-errorcode-00302_
 
+00302001 FA模型不支持单元测试
+
+错误信息
+
+FA mode does not support unit test.
+
+错误描述
+
+FA模型不支持单元测试。
+
+可能原因
+
+在FA模型工程上，使用命令行的方式执行了单元测试。
+
+处理步骤
+
+不要对FA模型工程执行单元测试。
+
+00302002 初始化模块时找不到插件
+
+错误信息
+
 The XXX plugin was not found when initializing the YYY module
 
 错误描述
@@ -83,13 +105,17 @@ Invalid exports, no system plugins were found in hvigorfile: XXX.
 可能原因
 
 hvigorfile.ts中system字段缺失。
+
 hvigorfile.ts中使用的appTasks/hapTasks/hspTasks/harTasks不存在。
+
 hvigorfile.ts文件没有使用export default进行导出。
 
 处理步骤
 
 确保hvigorfile.ts中system字段存在。
+
 工程级hvigorfile.ts对应的插件为appTasks，模块级hvigorfile.ts对应的插件为hapTasks/hspTasks/harTasks。
+
 确保hvigorfile.ts中使用export default进行导出。
 
 示例如下：
@@ -98,6 +124,7 @@ export default {
     system: appTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
     plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
 }
+
 00302017 命令行中有未知的模块名
 
 错误信息
@@ -345,13 +372,17 @@ Invalid exports, no system plugins were found in hvigorfile. At file: XXX.
 可能原因
 
 hvigorfile.ts中system字段缺失。
+
 hvigorfile.ts中使用的legacyAppTasks/legacyHapTasks/legacyHarTasks不存在。
+
 hvigorfile.ts文件没有使用export default进行导出。
 
 处理步骤
 
 确保hvigorfile.ts中system字段存在。
+
 工程级hvigorfile.ts对应的插件为legacyAppTasks，模块级hvigorfile.ts对应的插件为legacyHapTasks/legacyHarTasks。
+
 确保hvigorfile.ts中使用export default进行导出。
 
 示例如下：
@@ -360,6 +391,7 @@ export default {
     system: legacyAppTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
     plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
 }
+
 00302032 Stage模型工程hvigorfile缺少系统插件
 
 错误信息
@@ -373,13 +405,17 @@ Invalid exports, no system plugins were found in hvigorfile.
 可能原因
 
 hvigorfile.ts中system字段缺失。
+
 hvigorfile.ts中使用的appTasks/hapTasks/hspTasks/harTasks不存在。
+
 hvigorfile.ts文件没有使用export default进行导出。
 
 处理步骤
 
 确保hvigorfile.ts中system字段存在。
+
 工程级hvigorfile.ts对应的插件为appTasks，模块级hvigorfile.ts对应的插件为hapTasks/hspTasks/harTasks。
+
 确保hvigorfile.ts中使用export default进行导出。
 
 示例如下：
@@ -388,6 +424,7 @@ export default {
     system: appTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
     plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
 }
+
 00302033 hvigorfile.ts中的setProperty方法校验失败
 
 错误信息
@@ -423,7 +460,9 @@ Failed to execute hook 'XXX': YYY.
 处理步骤
 
 根据报错信息YYY检查生命周期XXX中的代码。
+
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
+
 00302035 自定义插件YYY的函数XXX执行失败
 
 错误信息
@@ -441,7 +480,9 @@ Failed to execute function 'XXX' of the custom plugin whose pluginId is 'YYY': Z
 处理步骤
 
 根据报错信息ZZZ检查自定义插件YYY的函数XXX中的代码。
+
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
+
 00302036 生命周期XXX执行失败
 
 错误信息
@@ -459,7 +500,9 @@ Failed to execute node hook 'XXX': YYY.
 处理步骤
 
 根据报错信息YYY检查生命周期XXX中的代码。
+
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
+
 00302037 hvigorfile.ts文件YYY执行失败
 
 错误信息
@@ -477,6 +520,60 @@ hvigorfile.ts文件YYY的代码执行报错。
 处理步骤
 
 根据报错信息XXX检查hvigorfile.ts文件YYY的代码。
+
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
-依赖错误码
-配置错误码
+
+00302039 hvigorfile.ts中找不到模块
+
+错误信息
+
+Failed to load or execute hvigorfile.ts: XXX. At file: YYY。
+
+错误描述
+
+hvigorfile.ts脚本执行失败，依赖导入失败。
+
+可能原因
+
+构建依赖的插件没有在hvigor-config.json5的dependencies中配置。
+
+在hvigor-config.json5的dependencies中配置了依赖的插件，并且sync后提示对应依赖安装成功，使用时仍然报错，该场景可能是pnpm工具问题导致显示安装成功实际安装失败。
+
+处理步骤
+
+在hvigor-config.json5的dependencies中配置依赖的插件，并且执行sync安装依赖。
+
+修改“用户目录/.hvigor/wrapper/tools/package.json”中的pnpm版本为"10.16.1"（注意不要带^符号）。
+
+在Terminal中进入“用户目录/.hvigor/wrapper/tools”目录，执行命令"npm install"。
+
+删除“用户目录/.hvigor/project_caches”缓存目录。
+
+## Code blocks
+
+### Code block 1
+
+```
+export default {
+    system: appTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
+    plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+```
+
+### Code block 2
+
+```
+export default {
+    system: legacyAppTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
+    plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+```
+
+### Code block 3
+
+```
+export default {
+    system: appTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
+    plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+```

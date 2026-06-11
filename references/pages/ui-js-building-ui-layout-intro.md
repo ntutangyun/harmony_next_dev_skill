@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-building-ui-layout-intro_
 
+设备的基准宽度为720px（px为逻辑像素，非物理像素），实际显示效果会根据实际屏幕宽度进行缩放。
+
+其换算关系如下：
+
 组件的width设为100px时，在宽度为720物理像素的屏幕上，实际显示为100物理像素；在宽度为1440物理像素的屏幕上，实际显示为200物理像素。
 
 一个页面的基本元素包含标题区域、文本区域、图片区域等，每个基本元素内还可以包含多个子元素，开发者根据需求还可以添加按钮、开关、进度条等组件。在构建页面布局时，需要对每个基本元素思考以下几个问题：
@@ -21,6 +25,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-bui
 图1 页面布局分解
 
 图2 留言区布局分解
-
-构建布局
-添加标题行和文本区域

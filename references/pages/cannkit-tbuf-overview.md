@@ -13,6 +13,3 @@ TBuf占用的存储空间通过TPipe进行管理，开发者可以通过InitBuff
 调用一次内存初始化接口，TPipe只会为TBuf分配一块内存，为Queue队列可以通过参数设置申请多块内存。如果要使用多个临时变量，需要定义多个TBuf数据结构，对每个TBuf数据结构分别调用InitBuffer接口进行内存初始化。
 
 TBuf获取的Tensor无需释放。
-
-TBuf
-构造函数

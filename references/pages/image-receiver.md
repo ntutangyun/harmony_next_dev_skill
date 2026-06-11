@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-rec
 
 说明
 
-Receiver作为消费者，需要有对应的生产者提供数据才能实现完整功能。常见的生产者是相机的拍照流或预览流。ImageReceiver只作为图片的接收方、消费者，在ImageReceiver设置的size、format等属性实际上并不会生效，图片createImageReceiver时传入的参数不产生实际影响。图片属性需要在发送方、生产者进行设置，如相机创建预览流时配置profile。
+Receiver作为消费者，需要有对应的生产者提供数据才能实现完整功能。常见的生产者是相机的拍照流或预览流。ImageReceiver只作为图片的接收方、消费者，在ImageReceiver设置的size、format等属性实际上并不会生效，图片createImageReceiver时传入的参数不产生实际影响。图片属性需要在发送方、生产者进行设置，如在使用createpreviewoutput创建相机预览流时配置profile。
 
 ImageReceiver可以接收相机预览流中的图片，实现双路预览。
 
@@ -22,19 +22,18 @@ import { image } from '@kit.ImageKit'
 import { camera } from '@kit.CameraKit';
 import { BusinessError } from '@kit.BasicServicesKit'
 import { hilog } from '@kit.PerformanceAnalysisKit';
-ReceiverUtility.ets
 
 创建ImageReceiver对象，通过ImageReceiver对象可获取预览流SurfaceId。
 
 async function initImageReceiver(): Promise<void> {
   // 创建ImageReceiver对象。createImageReceiver的参数不会对接收到的数据产生实际影响。
   let size: image.Size = { width: imageWidth, height: imageHeight };
+  // capacity为期望缓存数量，实际值由设备能力决定，此处8仅为示例值。
   let imageReceiver = image.createImageReceiver(size, image.ImageFormat.JPEG, 8);
   // 获取预览流SurfaceId。
   let imageReceiverSurfaceId = await imageReceiver.getReceivingSurfaceId();
   console.info(`initImageReceiver imageReceiverSurfaceId:${imageReceiverSurfaceId}`);
 }
-ReceiverUtility.ets
 
 注册监听处理预览流每帧图像数据：通过ImageReceiver中imageArrival事件监听获取底层返回的图像数据。详细的API说明请参考ImageReceiver。
 
@@ -48,12 +47,13 @@ function onImageArrival(receiver: image.ImageReceiver) {
         return;
       }
       // 解析图像内容。
-      nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError,
-        imgComponent: image.Component) => {
-        if (err || imgComponent === undefined) {
-          console.error('getComponent failed');
-        }
-        if (imgComponent.byteBuffer) {
+      (async () => {
+        try {
+          let imgComponent = await nextImage.getComponent(image.ComponentType.JPEG);
+          if (!imgComponent.byteBuffer) {
+            console.error('byteBuffer is null');
+            return;
+          }
           // 详情见下方解析图片buffer数据参考，本示例以方式一为例。
           let width = nextImage.size.width; // 获取图片的宽。
           let height = nextImage.size.height; // 获取图片的高。
@@ -63,7 +63,7 @@ function onImageArrival(receiver: image.ImageReceiver) {
           if (stride == width) {
             let pixelMap = await image.createPixelMap(imgComponent.byteBuffer, {
               size: { height: height, width: width },
-              srcPixelFormat: 8,
+              srcPixelFormat: image.PixelMapFormat.NV21,
             })
           } else {
             // stride与width不一致。
@@ -76,20 +76,20 @@ function onImageArrival(receiver: image.ImageReceiver) {
             }
             let pixelMap = await image.createPixelMap(dstArr.buffer, {
               size: { height: height, width: width },
-              srcPixelFormat: 8,
+              srcPixelFormat: image.PixelMapFormat.NV21,
             })
           }
-        } else {
-          console.error('byteBuffer is null');
+        } catch (error) {
+          console.error('getComponent failed');
+        } finally {
+          // 确保当前buffer没有在使用的情况下，可进行资源释放。
+          // 如果对buffer进行异步操作，需要在异步操作结束后再释放该资源（nextImage.release()）。
+          await nextImage.release();
         }
-        // 确保当前buffer没有在使用的情况下，可进行资源释放。
-        // 如果对buffer进行异步操作，需要在异步操作结束后再释放该资源（nextImage.release()）。
-        nextImage.release();
-      })
+      })();
     })
   })
 }
-ReceiverUtility.ets
 
 通过image.Component解析图片的buffer数据。
 
@@ -108,21 +108,130 @@ for (let j = 0; j < height * 1.5; j++) {
 }
 let pixelMap = await image.createPixelMap(dstArr.buffer, {
   size: { height: height, width: width },
-  srcPixelFormat: 8,
+  srcPixelFormat: image.PixelMapFormat.NV21,
 })
-ReceiverUtility.ets
 
 方式二：根据stride * height创建pixelMap，然后调用pixelMap的cropSync方法裁剪掉多余的像素。
 
 // 创建pixelMap，width传入行距（stride）的值。
 let pixelMap = await image.createPixelMap(imgComponent.byteBuffer, {
-  size:{height: height, width: stride}, srcPixelFormat: 8});
+  size:{height: height, width: stride}, srcPixelFormat: image.PixelMapFormat.NV21});
 // 裁剪多余的像素。
 try {
   pixelMap.cropSync({size:{width:width, height:height}, x:0, y:0});
 } catch (err) {
   hilog.error(0x00000, TAG, `adjust bufferSize failed: ${err}!`);
 }
-ReceiverUtility.ets
-图片接收
-图片开发指导(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { image } from '@kit.ImageKit'
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit'
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+async function initImageReceiver(): Promise<void> {
+  // 创建ImageReceiver对象。createImageReceiver的参数不会对接收到的数据产生实际影响。
+  let size: image.Size = { width: imageWidth, height: imageHeight };
+  // capacity为期望缓存数量，实际值由设备能力决定，此处8仅为示例值。
+  let imageReceiver = image.createImageReceiver(size, image.ImageFormat.JPEG, 8);
+  // 获取预览流SurfaceId。
+  let imageReceiverSurfaceId = await imageReceiver.getReceivingSurfaceId();
+  console.info(`initImageReceiver imageReceiverSurfaceId:${imageReceiverSurfaceId}`);
+}
+```
+
+### Code block 3
+
+```
+function onImageArrival(receiver: image.ImageReceiver) {
+  // 注册imageArrival监听。
+  receiver.on('imageArrival', () => {
+    // 获取图像。
+    receiver.readNextImage((err: BusinessError, nextImage: image.Image) => {
+      if (err || nextImage === undefined) {
+        console.error('readNextImage failed');
+        return;
+      }
+      // 解析图像内容。
+      (async () => {
+        try {
+          let imgComponent = await nextImage.getComponent(image.ComponentType.JPEG);
+          if (!imgComponent.byteBuffer) {
+            console.error('byteBuffer is null');
+            return;
+          }
+          // 详情见下方解析图片buffer数据参考，本示例以方式一为例。
+          let width = nextImage.size.width; // 获取图片的宽。
+          let height = nextImage.size.height; // 获取图片的高。
+          let stride = imgComponent.rowStride; // 获取图片的stride。
+          console.debug(`getComponent with width:${width} height:${height} stride:${stride}`);
+          // stride与width一致。
+          if (stride == width) {
+            let pixelMap = await image.createPixelMap(imgComponent.byteBuffer, {
+              size: { height: height, width: width },
+              srcPixelFormat: image.PixelMapFormat.NV21,
+            })
+          } else {
+            // stride与width不一致。
+            const dstBufferSize = width * height * 1.5;
+            const dstArr = new Uint8Array(dstBufferSize);
+            for (let j = 0; j < height * 1.5; j++) {
+              // 不同设备内存不同，若内存太小，则无法全部写完。
+              const srcBuf = new Uint8Array(imgComponent.byteBuffer, j * stride, width);
+              dstArr.set(srcBuf, j * width);
+            }
+            let pixelMap = await image.createPixelMap(dstArr.buffer, {
+              size: { height: height, width: width },
+              srcPixelFormat: image.PixelMapFormat.NV21,
+            })
+          }
+        } catch (error) {
+          console.error('getComponent failed');
+        } finally {
+          // 确保当前buffer没有在使用的情况下，可进行资源释放。
+          // 如果对buffer进行异步操作，需要在异步操作结束后再释放该资源（nextImage.release()）。
+          await nextImage.release();
+        }
+      })();
+    })
+  })
+}
+```
+
+### Code block 4
+
+```
+// stride与width不一致。
+const dstBufferSize = width * height * 1.5
+const dstArr = new Uint8Array(dstBufferSize)
+for (let j = 0; j < height * 1.5; j++) {
+  const srcBuf = new Uint8Array(imgComponent.byteBuffer, j * stride, width)
+  dstArr.set(srcBuf, j * width)
+}
+let pixelMap = await image.createPixelMap(dstArr.buffer, {
+  size: { height: height, width: width },
+  srcPixelFormat: image.PixelMapFormat.NV21,
+})
+```
+
+### Code block 5
+
+```
+// 创建pixelMap，width传入行距（stride）的值。
+let pixelMap = await image.createPixelMap(imgComponent.byteBuffer, {
+  size:{height: height, width: stride}, srcPixelFormat: image.PixelMapFormat.NV21});
+// 裁剪多余的像素。
+try {
+  pixelMap.cropSync({size:{width:width, height:height}, x:0, y:0});
+} catch (err) {
+  hilog.error(0x00000, TAG, `adjust bufferSize failed: ${err}!`);
+}
+```

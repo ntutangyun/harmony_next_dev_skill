@@ -23,7 +23,7 @@ tensor类：定义的json数据的object中name shape dtype format在inputs和ou
             "param_type": "required",
             "data_file": "x.bin"
         }
-         
+
     ],
     "outputs": [
         {
@@ -36,7 +36,7 @@ tensor类：定义的json数据的object中name shape dtype format在inputs和ou
             "data_file": "ref_x.bin"
         }
     ]
-     
+
 }
 
 tensorlist类：list中的每个对象必须是同源且数量位置一致。
@@ -89,5 +89,93 @@ tensorlist类：list中的每个对象必须是同源且数量位置一致。
       ]
     ]
 }
-精度比对结果输出样例
-ascendebug调测工具参数说明
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+    "op_type": "AbsCustom",
+    "data_script": "./add_golden.py",
+    "checkpoint_dump_path": "./debug_workspace/AddCustom/data/dump",
+    "gen_data": true,
+    "inputs": [
+        {
+            "name": "x",
+            "dtype": "float16",
+            "format": "ND",
+            "ignore": false,
+            "shape": [32],
+            "param_type": "required",
+            "data_file": "x.bin"
+        }
+
+    ],
+    "outputs": [
+        {
+            "name": "x",
+            "dtype": "float16",
+            "format": "ND",
+            "ignore": false,
+            "shape": [32],
+            "param_type": "required",
+            "data_file": "ref_x.bin"
+        }
+    ]
+
+}
+```
+
+### Code block 2
+
+```
+{
+    "op_type": "ForeachACosInplace",
+    "data_script":"ForeachACosInplace.py",
+    "gen_data": true,
+    "inputs": [
+            [{
+                "name": "inputs",
+                "dtype": "float32",
+                "format": "ND",
+                "param_type": "required",
+                "shape": [
+                    10
+                ],
+                "data_file": "x0.bin"
+            },{
+                "name": "inputs1",
+                "dtype": "float32",
+                "format": "ND",
+                "param_type": "required",
+                "shape": [
+                    8,8
+                ],
+                "data_file": "x1.bin"
+            }]
+    ],
+    "outputs": [
+        [{
+            "name": "inputs",
+            "dtype": "float32",
+            "format": "ND",
+            "param_type": "required",
+            "shape": [
+                10
+            ],
+            "data_file": "ref_x0.bin"
+        },{
+            "name": "inputs1",
+            "dtype": "float32",
+            "format": "ND",
+            "param_type": "required",
+            "shape": [
+                8,8
+            ],
+            "data_file": "ref_x1.bin"
+        }
+      ]
+    ]
+}
+```

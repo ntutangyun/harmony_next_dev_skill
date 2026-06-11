@@ -17,6 +17,3 @@ JS/ArkTS代码未处理异常时会生成JsCrash日志，详见JS Crash（进程
 应用卡死后生成AppFreeze日志并被强制终止退出，详见AppFreeze（应用冻屏）检测。
 
 应用进程被系统终止造成其非预期退出，详见App Killed（应用终止）检测。
-
-故障检测
-崩溃检测

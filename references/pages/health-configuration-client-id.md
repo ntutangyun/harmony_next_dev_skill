@@ -21,5 +21,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-co
     }
   ]
 }
-申请运动健康服务
-Phone/Tablet应用开发
+
+## Code blocks
+
+### Code block 1
+
+```
+"module": {
+  "name": "xxxx",
+  "type": "entry",
+  "description": "xxxx",
+  "mainElement": "xxxx",
+  "deviceTypes": [],
+  "pages": "xxxx",
+  "abilities": [],
+  "metadata": [ // 配置如下信息
+    {
+      "name": "client_id",
+      "value": "xxxxxx"
+    }
+  ]
+}
+```

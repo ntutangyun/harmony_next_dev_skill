@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-errorcode-universal_
 
+00617101 获取包信息失败
+
+错误信息
+
+Fetch Pkg Info Failed.
+
+错误描述
+
+获取包信息失败。
+
+可能原因
+
 执行ohpm list、ohpm info、ohpm install命令时，包名或版本号不匹配，从中心仓和私仓获取不到相关信息。
 
 处理步骤
@@ -79,6 +91,3 @@ Path Case Sensitivity Error.
 处理步骤
 
 修改工程中配置的文件路径，使其与文件的实际路径一致；或者设置.ohpmrc文件中的case_sensitive_check为false，不检测文件路径大小写。更多请参考case_sensitive_check。
-
-ohpm dependency-check错误码
-搭建流水线

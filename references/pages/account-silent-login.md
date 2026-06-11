@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-silent-login_
 
+场景介绍
+
 在应用卸载重装、用户换机等场景，如登录的华为账号与应用重装、换机前一致，应用可通过Account Kit提供的静默登录方式即不需要用户点击登录/注册按钮，即可获取用户的身份标识UnionID/OpenID，完成用户的静默登录。
 
 约束与限制
@@ -15,13 +17,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-s
 调用登录API阶段（序号1-3）：
 
 用户使用华为账号登录过应用，应用卸载重装、用户换机后再进入应用时，应用传forceLogin = false等参数调用登录API。
+
 如华为账号已登录，且API调用成功，应用能获取到Authorization Code等登录结果。注意：如华为账号未登录，应用会获取到1001502001 用户未登录华为账号错误码，再根据需要自行处理。
 
 用户关联应用账号阶段（序号4-13）：
 
 应用服务端通过Authorization Code获取到Access Token，再使用Access Token调用解析凭证接口获取用户相关信息。通过Authorization Code凭证获取用户信息可以有效避免黑客通过数据遍历、身份伪造、重放攻击等手段导致的安全风险。
+
 应用服务端将业务登录凭证SessionId、UnionID/OpenID传给应用，应用获取到UnionID/OpenID可用于判断华为账号是否登录等功能。
+
 应用对用户身份标识UnionID/OpenID、业务登录凭证SessionId信息进行安全认证后完成静默登录。
+
 接口说明
 
 静默登录关键接口如下表所示，具体API说明详见API参考。
@@ -30,6 +36,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-s
 createLoginWithHuaweiIDRequest(): LoginWithHuaweiIDRequest	创建账号登录请求。LoginWithHuaweiIDRequest中的forceLogin参数用来控制当用户未登录华为账号时，是否强制拉起华为账号登录界面，静默登录场景设置为false。
 constructor(context?: common.Context)	创建登录请求Controller。
 executeRequest(request: AuthenticationRequest): Promise<AuthenticationResponse>	通过Promise方式执行登录操作。
+
 开发前提
 
 在进行代码开发前，请确保已按照“开发准备”章节中的指导完成配置签名和指纹、配置Client ID。此场景无需申请账号权限。
@@ -74,6 +81,7 @@ try {
 } catch (error) {
   dealAllError(error);
 }
+
 // 错误处理
 function dealAllError(error: BusinessError): void {
   hilog.error(0x0000, 'testTag', `Failed to login. Code: ${error.code}, message: ${error.message}`);
@@ -95,7 +103,6 @@ function dealAllError(error: BusinessError): void {
   }
 }
 
-
 export enum ErrorCode {
   // 账号未登录
   ERROR_CODE_LOGIN_OUT = 1001502001,
@@ -110,6 +117,7 @@ export enum ErrorCode {
   // 重复请求
   ERROR_CODE_REQUEST_REFUSE = 1001500002
 }
+
 服务端开发
 
 应用服务端使用Client ID、Client Secret、Authorization Code调用获取用户级凭证接口向华为账号服务器请求获取Access Token、Refresh Token。
@@ -132,5 +140,89 @@ Refresh Token过期处理
 
 应用在自己的用户体系通过查询获取的UnionID判断该用户是否已关联。如已关联，则完成用户登录；如未关联，则创建新用户，绑定UnionID，完成用户登录。
 
-使用自定义按钮登录
-订阅华为账号的登录/登出事件
+## Code blocks
+
+### Code block 1
+
+```
+import { authentication } from '@kit.AccountKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { util } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 创建登录请求，并设置参数
+const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
+// false表示静默登录
+loginRequest.forceLogin = false;
+// 建议使用generateRandomUUID生成state，可用于一致性比对，防止跨站攻击
+loginRequest.state = util.generateRandomUUID();
+```
+
+### Code block 3
+
+```
+// 执行登录请求
+try {
+  const controller = new authentication.AuthenticationController();
+  controller.executeRequest(loginRequest).then((response: authentication.LoginWithHuaweiIDResponse) => {
+    const loginWithHuaweiIDResponse = response as authentication.LoginWithHuaweiIDResponse;
+    const state = loginWithHuaweiIDResponse.state;
+    if (state && loginRequest.state !== state) {
+      hilog.error(0x0000, 'testTag', `Failed to login. The state is different, response state: ${state}`);
+      return;
+    }
+    hilog.info(0x0000, 'testTag', 'Succeeded in logging in.');
+    const loginWithHuaweiIDCredential = loginWithHuaweiIDResponse?.data;
+    const code = loginWithHuaweiIDCredential?.authorizationCode;
+    // 开发者处理code
+  }).catch((error: BusinessError) => {
+    dealAllError(error);
+  });
+} catch (error) {
+  dealAllError(error);
+}
+```
+
+### Code block 4
+
+```
+// 错误处理
+function dealAllError(error: BusinessError): void {
+  hilog.error(0x0000, 'testTag', `Failed to login. Code: ${error.code}, message: ${error.message}`);
+  // 在应用登录涉及UI交互场景下，建议按照如下错误码指导提示用户
+  if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
+    // 用户未登录华为账号，请登录华为账号并重试或者尝试使用其他方式登录
+  } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
+    // 网络异常，请检查当前网络状态并重试或者尝试使用其他方式登录
+  } else if (error.code === ErrorCode.ERROR_CODE_INTERNAL_ERROR) {
+    // 登录失败，请尝试使用其他方式登录
+  } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
+    // 用户取消授权
+  } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {
+    // 系统服务异常，请稍后重试或者尝试使用其他方式登录
+  } else if (error.code === ErrorCode.ERROR_CODE_REQUEST_REFUSE) {
+    // 重复请求，应用无需处理
+  } else {
+    // 应用登录失败，请尝试使用其他方式登录
+  }
+}
+
+export enum ErrorCode {
+  // 账号未登录
+  ERROR_CODE_LOGIN_OUT = 1001502001,
+  // 网络错误
+  ERROR_CODE_NETWORK_ERROR = 1001502005,
+  // 内部错误
+  ERROR_CODE_INTERNAL_ERROR = 1001502009,
+  // 用户取消授权
+  ERROR_CODE_USER_CANCEL = 1001502012,
+  // 系统服务异常
+  ERROR_CODE_SYSTEM_SERVICE = 12300001,
+  // 重复请求
+  ERROR_CODE_REQUEST_REFUSE = 1001500002
+}
+```

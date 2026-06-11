@@ -23,7 +23,6 @@ import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UIContext } from '@kit.ArkUI'
 
-
 class QueryEnvironmentStatus {
   queryEnvironmentStatus() {
     const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
@@ -73,5 +72,58 @@ class Queryproducts {
     });
   }
 }
-应用内分发数字商品
-购买数字商品
+
+## Code blocks
+
+### Code block 1
+
+```
+import { iap } from '@kit.IAPKit';
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { UIContext } from '@kit.ArkUI'
+
+class QueryEnvironmentStatus {
+  queryEnvironmentStatus() {
+    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+    iap.queryEnvironmentStatus(context).then(() => {
+      // 请求成功
+      console.info('Succeeded in querying environment status.');
+    }).catch((err: BusinessError) => {
+      // 请求失败
+      console.error(`Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+}
+```
+
+### Code block 2
+
+```
+import { iap } from '@kit.IAPKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import { UIContext } from '@kit.ArkUI'
+class Queryproducts {
+  queryProducts() {
+    const queryProductParam: iap.QueryProductsParameter = {
+      // iap.ProductType.CONSUMABLE：消耗型商品;
+      // iap.ProductType.NONCONSUMABLE：非消耗型商品;
+      // productType: iap.ProductType.AUTORENEWABLE;订阅型商品
+      productType: iap.ProductType.CONSUMABLE,
+      // 查询的商品必须是开发者在AppGallery Connect网站配置的商品
+      productIds: ['ohos_consume_001']
+    };
+    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+    iap.queryProducts(context, queryProductParam).then((result) => {
+      // 请求成功
+      console.info('Succeeded in querying products.');
+      // 展示商品信息
+      // ...
+    }).catch((err: BusinessError) => {
+      // 请求失败
+      console.error(`Failed to query products. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+}
+```

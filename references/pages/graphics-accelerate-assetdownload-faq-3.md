@@ -2,5 +2,42 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-assetdownload-faq-3_
 
-集成游戏资源加速ExtensionAbility方法，未配置游戏资源加速ExtensionAbility组件类型信息，导致功能未生效
-游戏资源加速ExtensionAbility方法中使用static静态变量为什么不生效
+未配置网络权限将出现如下异常日志：
+
+ohos.permission.INTERNET check failed
+
+请开发者在“src/main/module.json5”的requestPermissions层级中添加网络权限。
+
+{
+  "module": {
+    // ...
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      }
+    ]
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+ohos.permission.INTERNET check failed
+```
+
+### Code block 2
+
+```
+{
+  "module": {
+    // ...
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      }
+    ]
+  }
+}
+```

@@ -16,7 +16,6 @@ ArcButton({
   // ···
   })
 })
-ButtonAlignTop.ets
 
 其中，label设置按钮文字，position设置按钮类型，styleMode设置按钮样式。
 
@@ -36,9 +35,7 @@ ArcButton({
   // ···
   })
 
-
 })
-ButtonAlignBottom.ets
 
 上弧形按钮。
 
@@ -52,7 +49,6 @@ ArcButton({
   // ···
   })
 })
-ButtonAlignTop.ets
 
 自定义样式
 
@@ -67,7 +63,6 @@ ArcButton({
     backgroundColor: ColorMetrics.resourceColor('#707070')
   })
 })
-ButtonBcgColor.ets
 
 设置文本颜色。
 
@@ -81,7 +76,6 @@ ArcButton({
     fontColor: ColorMetrics.resourceColor('#707070')
   })
 })
-ButtonFontColor.ets
 
 设置阴影颜色。
 
@@ -94,10 +88,9 @@ ArcButton({
     shadowColor: ColorMetrics.resourceColor('#ffec1022')
   })
 })
-ButtonShadow.ets
 
 添加事件
-绑定onClick事件来响应点击操作后的自定义行为。
+
 ArcButton({
   options: new ArcButtonOptions({
     label: 'OK',
@@ -107,8 +100,7 @@ ArcButton({
     },
   })
 })
-ButtonAlignTop.ets
-绑定onTouch事件来响应触摸操作后的自定义行为。
+
 ArcButton({
   options: new ArcButtonOptions({
     label: 'OK',
@@ -118,9 +110,8 @@ ArcButton({
     }
   })
 
-
 })
-ButtonAlignBottom.ets
+
 场景示例
 
 在亮度设置界面，进度条显示当前亮度为30%。点击重置后，亮度值将被重置为默认的50%。
@@ -134,20 +125,17 @@ ButtonAlignBottom.ets
   ],
   // ···
 }
-module.json5
-import { LengthMetrics, LengthUnit, ArcButton, ArcButtonOptions, ArcButtonStyleMode } from '@kit.ArkUI';
 
+import { LengthMetrics, LengthUnit, ArcButton, ArcButtonOptions, ArcButtonStyleMode } from '@kit.ArkUI';
 
 const BRIGHT_NESS_VALUE = 30;
 const BRIGHT_NESS_VALUE_DEFAULT = 50;
-
 
 @Entry
 @ComponentV2
 struct BrightnessPage {
   @Local brightnessValue: number = BRIGHT_NESS_VALUE;
   private defaultBrightnessValue: number = BRIGHT_NESS_VALUE_DEFAULT;
-
 
   build() {
     RelativeContainer() {
@@ -161,7 +149,6 @@ struct BrightnessPage {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
 
-
       Text(`${this.brightnessValue} %`)
         .fontColor(Color.White)
         .id('id_brightness_min_text')
@@ -170,7 +157,6 @@ struct BrightnessPage {
           start: { anchor: '__container__', align: HorizontalAlign.Start },
           center: { anchor: '__container__', align: VerticalAlign.Center }
         })
-
 
       Slider({
         value: this.brightnessValue,
@@ -191,7 +177,6 @@ struct BrightnessPage {
           center: { anchor: 'id_brightness_min_text', align: VerticalAlign.Center },
           start: { anchor: 'id_brightness_min_text', align: HorizontalAlign.End }
         })
-
 
       ArcButton({
         options: new ArcButtonOptions({
@@ -214,7 +199,201 @@ struct BrightnessPage {
     .backgroundColor(Color.Black)
   }
 }
-ButtonBrightness.ets
 
-按钮 (Button)
-单选框 (Radio)
+## Code blocks
+
+### Code block 1
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+    position: ArcButtonPosition.TOP_EDGE,
+    styleMode: ArcButtonStyleMode.EMPHASIZED_LIGHT,
+  // ···
+  })
+})
+```
+
+### Code block 2
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+    position: ArcButtonPosition.BOTTOM_EDGE,
+    styleMode: ArcButtonStyleMode.EMPHASIZED_LIGHT,
+  // ···
+  })
+
+})
+```
+
+### Code block 3
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+    position: ArcButtonPosition.TOP_EDGE,
+    styleMode: ArcButtonStyleMode.EMPHASIZED_LIGHT,
+  // ···
+  })
+})
+```
+
+### Code block 4
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+    styleMode: ArcButtonStyleMode.CUSTOM,
+    backgroundColor: ColorMetrics.resourceColor('#707070')
+  })
+})
+```
+
+### Code block 5
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+    styleMode: ArcButtonStyleMode.CUSTOM,
+    backgroundColor: ColorMetrics.resourceColor('#E84026'),
+    fontColor: ColorMetrics.resourceColor('#707070')
+  })
+})
+```
+
+### Code block 6
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+    shadowEnabled: true,
+    shadowColor: ColorMetrics.resourceColor('#ffec1022')
+  })
+})
+```
+
+### Code block 7
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+  // ···
+    onClick: () => {
+      hilog.info(DOMAIN, TAG, 'ArcButton onClick');
+    },
+  })
+})
+```
+
+### Code block 8
+
+```
+ArcButton({
+  options: new ArcButtonOptions({
+    label: 'OK',
+  // ···
+    onTouch: (event: TouchEvent) => {
+      hilog.info(DOMAIN, TAG, 'ArcButton onTouch');
+    }
+  })
+
+})
+```
+
+### Code block 9
+
+```
+"module": {
+  // ···
+  "deviceTypes": [
+    "wearable"
+  ],
+  // ···
+}
+```
+
+### Code block 10
+
+```
+import { LengthMetrics, LengthUnit, ArcButton, ArcButtonOptions, ArcButtonStyleMode } from '@kit.ArkUI';
+
+const BRIGHT_NESS_VALUE = 30;
+const BRIGHT_NESS_VALUE_DEFAULT = 50;
+
+@Entry
+@ComponentV2
+struct BrightnessPage {
+  @Local brightnessValue: number = BRIGHT_NESS_VALUE;
+  private defaultBrightnessValue: number = BRIGHT_NESS_VALUE_DEFAULT;
+
+  build() {
+    RelativeContainer() {
+      // 请将$r('app.string.Brightness')替换为实际资源文件，在本示例中该资源文件的value值为"设置亮度"
+      Text($r('app.string.Brightness'))
+        .fontColor(Color.White)
+        .id('id_brightness_set_text')
+        .fontSize(24)
+        .margin({ top: 16 })
+        .alignRules({
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+
+      Text(`${this.brightnessValue} %`)
+        .fontColor(Color.White)
+        .id('id_brightness_min_text')
+        .margin({ left: 16 })
+        .alignRules({
+          start: { anchor: '__container__', align: HorizontalAlign.Start },
+          center: { anchor: '__container__', align: VerticalAlign.Center }
+        })
+
+      Slider({
+        value: this.brightnessValue,
+        min: 0,
+        max: 100,
+        style: SliderStyle.InSet
+      })
+        .blockColor('#191970')
+        .trackColor('#ADD8E6')
+        .selectedColor('#4169E1')
+        .width(150)
+        .id('id_brightness_slider')
+        .margin({ left: 16, right: 16 })
+        .onChange((value: number, mode: SliderChangeMode) => {
+          this.brightnessValue = value;
+        })
+        .alignRules({
+          center: { anchor: 'id_brightness_min_text', align: VerticalAlign.Center },
+          start: { anchor: 'id_brightness_min_text', align: HorizontalAlign.End }
+        })
+
+      ArcButton({
+        options: new ArcButtonOptions({
+          // 请将$r('app.string.Reset')替换为实际资源文件，在本示例中该资源文件的value值为"重置"
+          label: $r('app.string.Reset'),
+          styleMode: ArcButtonStyleMode.EMPHASIZED_LIGHT,
+          fontSize: new LengthMetrics(19, LengthUnit.FP),
+          onClick: () => {
+            this.brightnessValue = this.defaultBrightnessValue;
+          }
+        })
+      })
+        .alignRules({
+          middle: { anchor: '__container__', align: HorizontalAlign.Center },
+          bottom: { anchor: '__container__', align: VerticalAlign.Bottom }
+        })
+    }
+    .height('100%')
+    .width('100%')
+    .backgroundColor(Color.Black)
+  }
+}
+```

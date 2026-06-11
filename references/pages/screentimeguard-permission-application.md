@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-permission-application_
 
+在 申请调试Profile和发布Profile文件之前，需要申请相应的ACL权限。
+
 登录AppGallery Connect，点击“开发与服务”，在项目列表中找到对应的项目，并点击选择您需要申请ACL权限的应用。在“项目设置”页面，选择“ACL权限”页签，开始为应用申请ACL权限。
 
 在核对注意事项后，在“未获取权限”区域中勾选“我已知晓”。在权限搜索框中输入"ohos.permission.MANAGE_SCREEN_TIME_GUARD"，查找并勾选权限，提交申请。
@@ -19,5 +21,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 "requestPermissions": [{
    "name": "ohos.permission.MANAGE_SCREEN_TIME_GUARD"
 }]
-配置签名
-用户授权管理
+
+## Code blocks
+
+### Code block 1
+
+```
+"requestPermissions": [{
+   "name": "ohos.permission.MANAGE_SCREEN_TIME_GUARD"
+}]
+```

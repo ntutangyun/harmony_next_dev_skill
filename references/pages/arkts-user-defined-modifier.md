@@ -14,7 +14,4 @@ AttributeUpdater是一个特殊的AttributeModifier，除了继承AttributeModif
 
 ContentModifier
 
-ContentModifier提供自定义绘制组件内容区的能力。当开发者期望自定义组件的内容区时，比如CheckBox的内部显示一个五角星等场景时，可以使用此功能。
-
-Modifier机制
-内容修改器 (ContentModifier)
+ContentModifier提供自定义绘制组件内容区的能力。当开发者期望自定义组件的内容区时，比如Checkbox的内部显示一个五角星等场景时，可以使用此功能。

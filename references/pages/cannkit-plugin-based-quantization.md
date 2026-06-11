@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-plugin-based-quantization_
 
+依赖环境准备
+
 插件式量化运行环境依赖开发者本身的训练工程环境，目前轻量化工具支持TensorFlow和PyTorch两种框架的插件式量化。
 
 说明
@@ -24,7 +26,7 @@ TensorFlow模型优化训练如下步骤：
 
 提取模型及量化参数（转换模型）。
 
-准备TensorFlow环境
+[h2]准备TensorFlow环境
 
 准备Linux环境，使用轻量化工具插件式量化功能，开发者需要准备如下依赖。
 
@@ -40,7 +42,8 @@ pip3 install opencv-python
 轻量化工具当前支持tensorflow-gpu 2.8.0版本，使用如下的命令安装：
 
 pip3 install tensorflow-gpu==2.8.0
-获取量化配置模板
+
+[h2]获取量化配置模板
 
 将解压出的DDK中的dopt_tf_py3添加到python环境变量中：
 
@@ -51,6 +54,7 @@ sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
 
 from dopt.dopt_tf.opt_main import generate_config_file
 generate_config_file(sess, dst_path="./config_gen.json")
+
 参数名称	是否必填	参数描述
 sess	是	sess中加载原始的TensorFlow浮点模型。
 dst_path	是	dst_path为生成配置json文件路径。
@@ -74,10 +78,10 @@ dst_path	是	dst_path为生成配置json文件路径。
             "quant_strategy": "float"
         },
 
-
     }
 }
-优化策略配置
+
+[h2]优化策略配置
 
 基于上述生成的配置文件，确定要量化的层，并将对应的quant_strategy由float调整为对应的量化策略，例如Quant_INT8-8。
 
@@ -98,22 +102,21 @@ dst_path	是	dst_path为生成配置json文件路径。
             "quant_strategy": "Quant_INT8-8"
         },
 
-
     }
 }
+
 说明
 
 layer_strategy中包含的为当前版本所支持的所有可量化层，开发者不应额外添加层。
 
 开发者需要根据op_type选择支持的量化策略，若配置op_type为不支持的量化策略，那么在后续量化环节会报错。
 
-训练模型
+[h2]训练模型
 
 开发者需要进行插件式量化时，将解压出的DDK中的dopt_tf_py3文件路径添加到python环境变量中：
 
 import sys
 sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
-
 
 from dopt.dopt_tf.opt_main import optimize_model
 
@@ -136,7 +139,6 @@ with tf.Session(config=config) as sess:
         quant_flag
     )
 
-
     ## 调用完optimize_model之后，加载模型权重
     saver = tf.Saver()
     saver.restore(ckpt)
@@ -156,7 +158,7 @@ quant_flag	是	模型是否走量化通路。
 
 正常训练模型，检查损失函数loss，效果达标后，可停止训练，需保存对应的ckpt数据。
 
-## ckpt save
+## 保存对应的ckpt数据
 saver = tf.train.Saver()
 saver.save(sess, train_ckpt_path)
 
@@ -164,22 +166,16 @@ saver.save(sess, train_ckpt_path)
 
 from dopt.dopt_tf.opt_main import set_calibrate_state
 
-
 calibration_mode = True
 set_calibrate_state(sess, calibration_mode )
+
 参数名称	是否必填	参数描述
 sess	是	量化后的TensorFlow Session。
-calibration_mode	是	
-
-bool变量，开发者是否开启无训练（校准）模式。
-
-- True：开启无训练（校准）模式
-
-- False：关闭无训练（校准）模式
+calibration_mode	是	bool变量，开发者是否开启无训练（校准）模式。 - True：开启无训练（校准）模式 - False：关闭无训练（校准）模式
 
 完成无训练模式的设置之后，使用量化后的"sess"对校准集进行前向推理就可进行无训练量化。
 
-转换模型
+[h2]转换模型
 
 完成模型量化以及重训练或者校准集前向推理后即可对量化参数进行收集，将session中的量化参数提取至量化文件中并生成对应的PB文件。
 
@@ -187,7 +183,6 @@ bool变量，开发者是否开启无训练（校准）模式。
 
 import sys
 sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
-
 
 from dopt.dopt_tf.opt_main import generate_final_model
 
@@ -211,6 +206,7 @@ config_file	是	开发者手动配置完成量化层的json文件路径与optimi
 output_name_list	是	pb模型的最后一层输出节点名，数据类型为list。
 ckpt_file	是	量化重训练或校准保存的ckpt数据。
 output_dir	否	提取的pb和量化参数保存路径，需确保该路径存在，如果不填写模型在当前路径下保存。
+
 PyTorch插件式量化
 
 PyTorch模型优化训练如下步骤：
@@ -227,7 +223,7 @@ PyTorch模型优化训练如下步骤：
 
 调用API生成量化ONNX模型及量化参数文件（生成量化模型）。
 
-准备PyTorch环境
+[h2]准备PyTorch环境
 
 使用轻量化工具插件式量化功能，开发者需要准备如下依赖。
 
@@ -243,30 +239,32 @@ pip3 install onnx==1.14.0
 轻量化工具当前仅支持PyTorch 1.11版本。使用如下的命令安装：
 
 pip3 install torch==1.11.0
+
 说明
 
 路径：支持大小写字母、数字、下划线。
 
 文件名：支持大小写字母、数字、下划线和点(.)。
 
-生成量化配置json文件
+[h2]生成量化配置json文件
 
 将解压出的DDK中的dopt_pytorch_py3文件路径添加到python环境变量中：
 
 import sys
 sys.path.append(".../dopt_pytorch_py3") ## 其中路径为绝对路径
 
-
 from dopt.dopt_torch.opt_main import generate_config_file
 
 对需要进行量化的PyTorch模型，调用API生成量化配置json文件。
 
 generate_config_file(model, input_shape, dst_path="./config_gen.json") # model：torch.nn.Module， input_shape : "input1:input1.shape;input2:input2.shape"
+
 参数名称	是否必填	参数描述
 model	是	torch.nn.Module，未经过torch.nn.parallel.DistributedDataParallel等分布式API封装的模型。
 input_shape	是	最终部署模型的shape，而非训练阶段的训练数据shape。
 dst_path	是	生成配置json文件路径。
-优化策略配置
+
+[h2]优化策略配置
 
 生成的配置文件如下：
 
@@ -288,7 +286,6 @@ dst_path	是	生成配置json文件路径。
             "op_type": "<class 'torch.nn.modules.conv.Conv2d'>",
             "quant_strategy": "float"
         },
-
 
     }
 }
@@ -317,10 +314,8 @@ dst_path	是	生成配置json文件路径。
         },
         "conv2/Conv2D": {
             "op_type": "<class 'torch.nn.modules.conv.Conv2d'>",
-            "//": "可以逐层配置量化，不量化的层保持浮点",
             "quant_strategy": "float"
         },
-
 
     }
 }
@@ -333,7 +328,7 @@ json文件中，除了input_shape和layer_strategy两个key之外，其余内容
 
 参数格式升级，为适应新平台，在 input_shape 同级key下添加"params_version": "v2"。
 
-训练模型
+[h2]训练模型
 
 将解压出的DDK中的dopt_pytorch_py3文件路径添加到python环境变量中：
 
@@ -344,6 +339,7 @@ from dopt.dopt_torch.opt_main import optimize_model
 开发者需在PyTorch模型定义阶段调用API进行模型的量化操作。
 
 quant_model = optimize_model(model, config_path) ## config_path为上一步中修改后的json文件绝对路径
+
 参数名称	是否必填	参数描述
 model	是	torch.nn.Module，未经过torch.nn.parallel.DistributedDataParallel等分布式API封装的模型。
 config_path	是	最终部署模型的shape，而非训练阶段的训练数据shape。
@@ -353,6 +349,7 @@ config_path	是	最终部署模型的shape，而非训练阶段的训练数据sh
 from dopt.dopt_torch.opt_main import get_quant_loss
 quant_loss = get_quant_loss(quant_model)
 total_loss = loss + quant_weight * quant_loss ## quant_weight为量化损失的超参数
+
 参数名称	是否必填	参数描述
 quant_model	是	经过optimize_model API处理后量化模型。
 
@@ -365,15 +362,10 @@ torch.save(quant_model.state_dict(),"quant.pth")
 from dopt.dopt_torch.opt_main import set_calibrate_state
 calibrate_mode = True
 set_calibrate_state(quant_model, calibrate_mode)
+
 参数名称	是否必填	参数描述
 quant_model	是	量化后的PyTorch模型。
-calibration_mode	是	
-
-bool变量，开发者是否开启无训练（校准）模式。
-
-- True：开启无训练（校准）模式
-
-- False：关闭无训练（校准）模式
+calibration_mode	是	bool变量，开发者是否开启无训练（校准）模式。 - True：开启无训练（校准）模式 - False：关闭无训练（校准）模式
 
 完成无训练模式的设置之后，使用量化后的quant_model对校准集进行前向推理就可进行无训练量化。
 
@@ -383,13 +375,12 @@ bool变量，开发者是否开启无训练（校准）模式。
 
 量化损失非必须添加，quant_loss需要根据实际量化损失的大小和原始损失的大小进行超参数的调节，一般量化损失函数与原始损失函数比例为1:20，如对优化方向产生较大影响，建议减少量化损失的占比。
 
-生成量化模型
+[h2]生成量化模型
 
 将解压出的DDK中的dopt_pytorch_py3文件路径添加到python环境变量中：
 
 import sys
 sys.path.append(".../dopt_pytorch_py3") ## 其中路径为绝对路径
-
 
 from dopt.dopt_torch.opt_main import generate_final_model
 
@@ -401,16 +392,303 @@ generate_final_model(
     pth_file = "quant.pth",    ## 量化后 pth 文件
     output_dir = "./"   ## 量化para与PyTorch的生成文件夹
 )
+
 参数名称	是否必填	参数描述
 model	是	浮点模型。
 config_file	是	量化配置json文件路径，与optimize_model api的处理的config_path保持一致。
 pth_file	是	量化训练的权重文件。
 output_dir	是	PyTorch和量化参数保存路径。请确保该路径存在，如果不填写，模型将默认保存到当前路径下。
+
 说明
 
 调用generate_final_model函数的入参model须为重新构建的浮点模型。
 
 生成的PyTorch模型中不带有量化参数，但是会做部分图融合以及伪量化处理。
 
-无训练量化
-Transformer结构量化
+## Code blocks
+
+### Code block 1
+
+```
+pip3 install ruamel_yaml
+pip3 install pathlib
+pip3 install protobuf==3.20.0
+pip3 install opencv-python
+```
+
+### Code block 2
+
+```
+pip3 install tensorflow-gpu==2.8.0
+```
+
+### Code block 3
+
+```
+import sys
+sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
+```
+
+### Code block 4
+
+```
+from dopt.dopt_tf.opt_main import generate_config_file
+generate_config_file(sess, dst_path="./config_gen.json")
+```
+
+### Code block 5
+
+```
+{
+    "quant_strategy_for op 'Conv2D'": [
+        "Quant_INT8-8"
+    ],
+    "quant_strategy_for op 'MatMul'": [
+        "Quant_INT8-8"
+    ],
+    "layer_strategy": {
+        "model/resnet_model/conv2d/Conv2D": {
+            "op_type": "Conv2D",
+            "quant_strategy": "float"
+        },
+        "model/resnet_model/conv2d_1/Conv2D": {
+            "op_type": "Conv2D",
+            "quant_strategy": "float"
+        },
+
+    }
+}
+```
+
+### Code block 6
+
+```
+{
+    "quant_strategy_for op 'Conv2D'": [
+        "Quant_INT8-8"
+    ],
+    "quant_strategy_for op 'MatMul'": [
+        "Quant_INT8-8"
+    ],
+    "layer_strategy": {
+        "model/resnet_model/conv2d/Conv2D": {
+            "op_type": "Conv2D",
+            "quant_strategy": "Quant_INT8-8"
+        },
+        "model/resnet_model/conv2d_1/Conv2D": {
+            "op_type": "Conv2D",
+            "quant_strategy": "Quant_INT8-8"
+        },
+
+    }
+}
+```
+
+### Code block 7
+
+```
+import sys
+sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
+
+from dopt.dopt_tf.opt_main import optimize_model
+```
+
+### Code block 8
+
+```
+with tf.Session(config=config) as sess:
+    ## 待量化的tf模型graph，仅构建拓扑图，不可加载权重
+    build_tf_model()
+    quant_flag = tf.placeholder(tf.int32)
+    is_train_flag = tf.placeholder(tf.bool, name='is_train')
+    ## 模型量化，自动在 tf.get_default_graph()上进行改图操作
+    optimize_model(
+        sess,
+        config_file,
+        is_train_flag,
+        quant_flag
+    )
+
+    ## 调用完optimize_model之后，加载模型权重
+    saver = tf.Saver()
+    saver.restore(ckpt)
+    tf.global_variables_initializer().run()
+```
+
+### Code block 9
+
+```
+## 保存对应的ckpt数据
+saver = tf.train.Saver()
+saver.save(sess, train_ckpt_path)
+```
+
+### Code block 10
+
+```
+from dopt.dopt_tf.opt_main import set_calibrate_state
+
+calibration_mode = True
+set_calibrate_state(sess, calibration_mode )
+```
+
+### Code block 11
+
+```
+import sys
+sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
+
+from dopt.dopt_tf.opt_main import generate_final_model
+```
+
+### Code block 12
+
+```
+with tf.Session(config=config) as sess:
+    build_tf_model()
+        generate_final_model(
+        sess,
+        config_file         = FLAGS.config_file,
+        output_name_list    = output_name_list,
+        ckpt_file           = train_ckpt_path,
+        output_dir          = output_dir
+    )
+```
+
+### Code block 13
+
+```
+pip3 install ruamel_yaml
+pip3 install pathlib
+pip3 install protobuf>=3.20.0
+pip3 install onnx==1.14.0
+```
+
+### Code block 14
+
+```
+pip3 install torch==1.11.0
+```
+
+### Code block 15
+
+```
+import sys
+sys.path.append(".../dopt_pytorch_py3") ## 其中路径为绝对路径
+
+from dopt.dopt_torch.opt_main import generate_config_file
+```
+
+### Code block 16
+
+```
+generate_config_file(model, input_shape, dst_path="./config_gen.json") # model：torch.nn.Module， input_shape : "input1:input1.shape;input2:input2.shape"
+```
+
+### Code block 17
+
+```
+{
+    "quant_strategy_for op '<class 'torch.nn.modules.conv.Conv2d'>'": [
+        "Quant_INT8-8"
+    ],
+    "quant_strategy_for op '<class 'torch.nn.modules.linear.Linear'>'": [
+        "Quant_INT8-8"
+    ],
+    "input_shape": "x:1,3,224,224",
+    "params_version": "v1",
+    "layer_strategy": {
+        "conv1/Conv2D": {
+            "op_type": "<class 'torch.nn.modules.conv.Conv2d'>",
+            "quant_strategy": "float"
+        },
+        "conv2/Conv2D": {
+            "op_type": "<class 'torch.nn.modules.conv.Conv2d'>",
+            "quant_strategy": "float"
+        },
+
+    }
+}
+```
+
+### Code block 18
+
+```
+{
+    "quant_strategy_for op '<class 'torch.nn.modules.conv.Conv2d'>'": [
+        "Quant_INT8-8"
+    ],
+    "quant_strategy_for op '<class 'torch.nn.modules.linear.Linear'>'": [
+        "Quant_INT8-8"
+    ],
+    "input_shape": "x:1,3,224,224",
+    "params_version": "v1",
+    "layer_strategy": {
+        "conv1/Conv2D": {
+            "op_type": "<class 'torch.nn.modules.conv.Conv2d'>",
+            "quant_strategy": "Quant_INT8-8"
+        },
+        "conv2/Conv2D": {
+            "op_type": "<class 'torch.nn.modules.conv.Conv2d'>",
+            "quant_strategy": "float"
+        },
+
+    }
+}
+```
+
+### Code block 19
+
+```
+import sys
+sys.path.append(".../dopt_pytorch_py3") ## 其中路径为绝对路径
+from dopt.dopt_torch.opt_main import optimize_model
+```
+
+### Code block 20
+
+```
+quant_model = optimize_model(model, config_path) ## config_path为上一步中修改后的json文件绝对路径
+```
+
+### Code block 21
+
+```
+from dopt.dopt_torch.opt_main import get_quant_loss
+quant_loss = get_quant_loss(quant_model)
+total_loss = loss + quant_weight * quant_loss ## quant_weight为量化损失的超参数
+```
+
+### Code block 22
+
+```
+torch.save(quant_model.state_dict(),"quant.pth")
+```
+
+### Code block 23
+
+```
+from dopt.dopt_torch.opt_main import set_calibrate_state
+calibrate_mode = True
+set_calibrate_state(quant_model, calibrate_mode)
+```
+
+### Code block 24
+
+```
+import sys
+sys.path.append(".../dopt_pytorch_py3") ## 其中路径为绝对路径
+
+from dopt.dopt_torch.opt_main import generate_final_model
+```
+
+### Code block 25
+
+```
+generate_final_model(
+    model,              ## 浮点模型
+    config_file,         ## 量化配置json文件
+    pth_file = "quant.pth",    ## 量化后 pth 文件
+    output_dir = "./"   ## 量化para与PyTorch的生成文件夹
+)
+```

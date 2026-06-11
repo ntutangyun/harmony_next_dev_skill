@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-assetdownload-faq_
 
+上传至华为CDN的资源包文件支持哪些格式类型
+
 集成游戏资源加速ExtensionAbility方法，未配置游戏资源加速ExtensionAbility组件类型信息，导致功能未生效
 
 集成了游戏资源加速ExtensionAbility方法，未配置网络权限，导致功能未生效
@@ -19,6 +21,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 是否可以申请长时任务，在游戏前台下载资源包过程中切后台时免冻结并继续下载资源包
 
 若开发者在游戏中使用Unity Addressables资源管理框架，如何集成游戏资源包后台下载功能
-
-集成ABR后，从游戏引擎获取到的Native纹理内容为空，该如何解决?
-上传至华为CDN的资源包文件支持哪些格式类型

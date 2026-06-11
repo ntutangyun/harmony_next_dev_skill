@@ -10,9 +10,9 @@ import featureAbility from '@ohos.ability.featureAbility';
 import Want from '@ohos.app.ability.Want';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PagePageAbilityFirst';
 const domain: number = 0xFF00;
+
 (async (): Promise<void> => {
   let wantInfo: Want = {
     bundleName: 'com.samples.famodelabilitydevelop',
@@ -31,10 +31,8 @@ export class GlobalContext {
   private constructor() {
   }
 
-
   private static instance: GlobalContext;
   private _objects = new Map<string, Object>();
-
 
   public static getContext(): GlobalContext {
     if (!GlobalContext.instance) {
@@ -43,20 +41,18 @@ export class GlobalContext {
     return GlobalContext.instance;
   }
 
-
   getObject(value: string): Object | undefined {
     return this._objects.get(value);
   }
-
 
   setObject(key: string, objectClass: Object): void {
     this._objects.set(key, objectClass);
   }
 }
+
 import Want from '@ohos.app.ability.Want';
 import featureAbility from '@ohos.ability.featureAbility';
 import { GlobalContext } from '../utils/GlobalContext';
-
 
 class PageAbilitySingleton {
   onNewWant(want: Want) {
@@ -66,7 +62,6 @@ class PageAbilitySingleton {
   }
 }
 
-
 export default new PageAbilitySingleton();
 
 在目标端页面的自定义组件中获取包含页面信息的want参数并根据uri做路由处理：
@@ -74,7 +69,6 @@ export default new PageAbilitySingleton();
 import Want from '@ohos.app.ability.Want';
 import router from '@ohos.router';
 import { GlobalContext } from '../../utils/GlobalContext';
-
 
 @Entry
 @Component
@@ -91,7 +85,6 @@ struct First {
     }
   }
 
-
   build() {
     Column() {
       Row() {
@@ -105,12 +98,10 @@ struct First {
       .height(56)
       .justifyContent(FlexAlign.Start)
 
-
       Image('pic_empty')
         .width(120)
         .height(120)
         .margin({ top: 224 })
-
 
       Text('no_content')
         .fontSize(14)
@@ -136,10 +127,8 @@ import promptAction from '@ohos.promptAction';
 import worker from '@ohos.worker';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PagePageAbilityFirst';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -197,6 +186,218 @@ struct PagePageAbilityFirst {
 import featureAbility from '@ohos.ability.featureAbility';
 import router from '@ohos.router';
 
+class PageAbilityStandard {
+  onCreate() {
+    featureAbility.getWant().then((want) => {
+      if (want.parameters) {
+        if (want.parameters.page) {
+          router.pushUrl({ url: want.parameters.page as string });
+        }
+      }
+    })
+  }
+}
+
+export default new PageAbilityStandard();
+
+## Code blocks
+
+### Code block 1
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import Want from '@ohos.app.ability.Want';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PagePageAbilityFirst';
+const domain: number = 0xFF00;
+```
+
+### Code block 2
+
+```
+(async (): Promise<void> => {
+  let wantInfo: Want = {
+    bundleName: 'com.samples.famodelabilitydevelop',
+    abilityName: 'com.samples.famodelabilitydevelop.PageAbilitySingleton',
+    parameters: { page: 'pages/second' }
+  };
+  featureAbility.startAbility({ want: wantInfo }).then((data) => {
+    hilog.debug(domain, TAG, `restartAbility success : ${data}`);
+  });
+})()
+```
+
+### Code block 3
+
+```
+// GlobalContext.ts 构造单例对象
+export class GlobalContext {
+  private constructor() {
+  }
+
+  private static instance: GlobalContext;
+  private _objects = new Map<string, Object>();
+
+  public static getContext(): GlobalContext {
+    if (!GlobalContext.instance) {
+      GlobalContext.instance = new GlobalContext();
+    }
+    return GlobalContext.instance;
+  }
+
+  getObject(value: string): Object | undefined {
+    return this._objects.get(value);
+  }
+
+  setObject(key: string, objectClass: Object): void {
+    this._objects.set(key, objectClass);
+  }
+}
+```
+
+### Code block 4
+
+```
+import Want from '@ohos.app.ability.Want';
+import featureAbility from '@ohos.ability.featureAbility';
+import { GlobalContext } from '../utils/GlobalContext';
+
+class PageAbilitySingleton {
+  onNewWant(want: Want) {
+    featureAbility.getWant().then((want) => {
+      GlobalContext.getContext().setObject('newWant', want);
+    })
+  }
+}
+
+export default new PageAbilitySingleton();
+```
+
+### Code block 5
+
+```
+import Want from '@ohos.app.ability.Want';
+import router from '@ohos.router';
+import { GlobalContext } from '../../utils/GlobalContext';
+
+@Entry
+@Component
+struct First {
+  onPageShow() {
+    let newWant = GlobalContext.getContext().getObject('newWant') as Want;
+    if (newWant) {
+      if (newWant.parameters) {
+        if (newWant.parameters.page) {
+          router.pushUrl({ url: newWant.parameters.page as string});
+          GlobalContext.getContext().setObject("newWant", undefined)
+        }
+      }
+    }
+  }
+
+  build() {
+    Column() {
+      Row() {
+        Text('singleton_first_title')
+          .fontSize(24)
+          .fontWeight(FontWeight.Bold)
+          .textAlign(TextAlign.Start)
+          .margin({ top: 12, bottom: 11, right: 24, left: 24 })
+      }
+      .width('100%')
+      .height(56)
+      .justifyContent(FlexAlign.Start)
+
+      Image('pic_empty')
+        .width(120)
+        .height(120)
+        .margin({ top: 224 })
+
+      Text('no_content')
+        .fontSize(14)
+        .margin({ top: 8, bottom: 317, right: 152, left: 152 })
+        .fontColor('text_color')
+        .opacity(0.4)
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('backGrounding')
+  }
+}
+```
+
+### Code block 6
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import Want from '@ohos.app.ability.Want';
+import { BusinessError } from '@ohos.base';
+import fs from '@ohos.file.fs';
+import promptAction from '@ohos.promptAction';
+import worker from '@ohos.worker';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PagePageAbilityFirst';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PagePageAbilityFirst {
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItem() {
+          Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+          // ...
+          }
+          .onClick(() => {
+            let want: Want = {
+              bundleName: 'com.samples.famodelabilitydevelop',
+              abilityName: 'com.samples.famodelabilitydevelop.PageAbilityStandard',
+              parameters: { page: 'pages/first' }
+            };
+            featureAbility.startAbility({ want: want }).then((data) => {
+              hilog.info(domain, TAG, `startAbility finish:${data}`);
+            }).catch((err: BusinessError) => {
+              hilog.info(domain, TAG, `startAbility failed errcode:${err.code}`);
+            })
+          })
+        }
+        // ...
+        ListItem() {
+          Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+          // ...
+          }
+          .onClick(() => {
+            let want: Want = {
+              bundleName: 'com.samples.famodelabilitydevelop',
+              abilityName: 'com.samples.famodelabilitydevelop.PageAbilityStandard',
+              parameters: { page: 'pages/second' }
+            };
+            featureAbility.startAbility({ want: want }).then((data) => {
+              hilog.info(domain, TAG, `startAbility finish:${data}`);
+            }).catch((err: BusinessError) => {
+              hilog.info(domain, TAG, `startAbility failed errcode:${err.code}`);
+            })
+          })
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 7
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import router from '@ohos.router';
 
 class PageAbilityStandard {
   onCreate() {
@@ -210,7 +411,5 @@ class PageAbilityStandard {
   }
 }
 
-
 export default new PageAbilityStandard();
-停止PageAbility
-窗口属性
+```

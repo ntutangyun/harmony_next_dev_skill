@@ -39,5 +39,3 @@ L1 Buffer	32Byte对齐。
 L0A Buffer/L0B Buffer	512Byte对齐。
 L0C Buffer	64Byte对齐。
 BT Buffer	64Byte对齐。
-AscendC API列表
-数据类型定义

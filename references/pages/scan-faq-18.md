@@ -2,7 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-18_
 
-点击图库按钮的时候，需要先暂停并释放相机流（customScan.stop、customScan.release），再进行本地图片识码。
+问题现象
 
-自定义界面扫码如何增加重试机制
-如何将码图背景颜色设置成透明色
+自定义界面扫码，点击图库，选中图片进行本地图片识码时，应用概率性的自动退出。
+
+解决措施
+
+自定义界面扫码接口和识别本地图片接口不支持并发执行。
+
+点击图库按钮的时候，需要先暂停并释放相机流（customScan.stop、customScan.release），再进行本地图片识码。

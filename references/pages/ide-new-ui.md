@@ -31,6 +31,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-new-u
 说明
 
 更多新用户界面变化详情，请参见new UI。
-
-下载与安装DevEco Studio
-工程创建

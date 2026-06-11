@@ -78,11 +78,11 @@ Visual Studio 2022 Community已安装使用C++ 进行桌面开发的选项。
 
 // entry/hvigorfile.ts
 import { hapTasks } from '@ohos/hvigor-ohos-plugin';
- 
+
 import { getNode } from '@ohos/hvigor';
 import * as MyEditorProject  from '../ArkGraphics/package-assets';
 MyEditorProject.packageAssetsToModule(getNode(__filename));
- 
+
 export default {
     system: hapTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
     plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
@@ -94,7 +94,7 @@ export default {
 
 // Index.ets
 import * as scene3d from '@ohos.graphics.scene'
- 
+
 @Entry
 @Component
 struct Index {
@@ -102,22 +102,22 @@ struct Index {
   cam: scene3d.Camera | null = null;
   @State sceneOpts: SceneOptions | null = null;
   @State statusText: string = "";
- 
+
   onPageShow(): void {
     this.Init();
   }
- 
+
   Init(): void {
     if (this.scene == null) {
       this.statusText = 'Loading scene. Please wait.'
       const resource = $rawfile('ArkGraphics/assets/default.scene');
- 
+
       scene3d.Scene.load(resource).then(async (scene: Scene) => {
         this.scene = scene;
- 
+
         this.cam = this.scene.root?.getNodeByPath("Perspective Camera") as scene3d.Camera;
         this.cam.enabled = true;
- 
+
         this.sceneOpts = { scene: this.scene, modelType: ModelType.SURFACE };
         this.statusText = 'Done.'
       }).catch(() => {
@@ -125,7 +125,7 @@ struct Index {
       })
     }
   }
- 
+
   build() {
     Row() {
       Column() {
@@ -148,5 +148,74 @@ struct Index {
 
 编辑器生成的3D资源文件，目前只支持在HarmonyOS 6.0.0及以上版本的设备上加载呈现。
 
-ArkGraphics 3D场景动画控制以及管理
-Graphics Accelerate Kit（图形加速服务）
+## Code blocks
+
+### Code block 1
+
+```
+// entry/hvigorfile.ts
+import { hapTasks } from '@ohos/hvigor-ohos-plugin';
+
+import { getNode } from '@ohos/hvigor';
+import * as MyEditorProject  from '../ArkGraphics/package-assets';
+MyEditorProject.packageAssetsToModule(getNode(__filename));
+
+export default {
+    system: hapTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
+    plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+```
+
+### Code block 2
+
+```
+// Index.ets
+import * as scene3d from '@ohos.graphics.scene'
+
+@Entry
+@Component
+struct Index {
+  scene: scene3d.Scene | null = null;
+  cam: scene3d.Camera | null = null;
+  @State sceneOpts: SceneOptions | null = null;
+  @State statusText: string = "";
+
+  onPageShow(): void {
+    this.Init();
+  }
+
+  Init(): void {
+    if (this.scene == null) {
+      this.statusText = 'Loading scene. Please wait.'
+      const resource = $rawfile('ArkGraphics/assets/default.scene');
+
+      scene3d.Scene.load(resource).then(async (scene: Scene) => {
+        this.scene = scene;
+
+        this.cam = this.scene.root?.getNodeByPath("Perspective Camera") as scene3d.Camera;
+        this.cam.enabled = true;
+
+        this.sceneOpts = { scene: this.scene, modelType: ModelType.SURFACE };
+        this.statusText = 'Done.'
+      }).catch(() => {
+        this.statusText = 'Failed to load scene.'
+      })
+    }
+  }
+
+  build() {
+    Row() {
+      Column() {
+        Text('Ark Graphics Scene Example 3')
+        if (this.sceneOpts) {
+          Component3D(this.sceneOpts).width('70%').height('70%')
+        }
+        if (this.statusText) {
+          Text(this.statusText)
+        }
+      }.width('100%')
+    }
+    .height('100%')
+  }
+}
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-context-stage_
 
+概述
+
 Context是应用中对象的上下文，其提供了应用的一些基础信息，例如resourceManager（资源管理）、applicationInfo（当前应用信息）、area（文件分区）等。
 
 不同类型Context的对比
@@ -17,99 +19,33 @@ UIAbility组件和各种ExtensionAbility派生类组件都有各自不同的Cont
 表1 不同类型Context的说明
 
 Context类型	说明	获取方式	使用场景
-ApplicationContext	应用的全局上下文，提供应用级别的信息和能力。	
-
-- 从API version 14开始，可以直接使用getApplicationContext获取。
-
-- API version 14以前版本，只能使用其他Context实例的getApplicationContext方法获取。
-
-	
-
-- 获取当前应用的基本信息。
-
-- 获取应用级别的文件路径。
-
-- 获取和修改加密分区。
-
-- 监听应用前后台变化。
-
-
-AbilityStageContext	模块级别的上下文，提供模块级别的信息和能力。	
-
-- 如果需要获取当前AbilityStage的Context，可以直接通过AbilityStage实例获取context属性。
-
-- 如果需要获取同一应用中其他Module的Context，可以通过createModuleContext方法。
-
-	
-
-- 获取当前模块的基本信息。
-
-- 获取模块级别的文件路径。
-
-
-UIAbilityContext	UIAbility组件对应的上下文，提供UIAbility对外的信息和能力。	
-
-- 通过UIAbility实例直接获取context属性。
-
-- 在UIAbility的窗口中加载的UI组件实例，需要使用@ohos.arkui.UIContext提供的getHostContext方法。
-
-	
-
-- 获取当前UIAbility的基本信息。
-
-- 启动其他应用或元服务、连接/断连系统应用创建的ServiceExtensionAbility等。
-
-- 销毁自身的UIAbility。
-
-
-ExtensionContext	ExtensionAbility组件对应的上下文，每种类型的ExtensionContext提供不同的信息和能力。	通过ExtensionAbility实例直接获取Context属性。	
-
-不同类型的ExtensionAbility对应的Context提供的能力不同。以输入法上下文InputMethodExtensionContext为例，主要提供如下能力：
-
-- 获取InputMethodExtensionAbility的基本信息。
-
-- 销毁当前输入法。
-
-
-UIContext	ArkUI的UI实例上下文，提供UI操作相关的能力。与上述其他类型的Context无直接关系。	
-
-- 在UI组件内获取UIContext，直接使用组件内置的getUIContext方法。
-
-- 在存在Window实例的情况下，使用@ohos.window提供的getUIContext方法。
-
-	
-
-主要用于UI实例中UI相关操作，例如：
-
-- 获取当前UI实例的字体。
-
-- 显示不同类型的弹框。
-
-- 设置软键盘弹出时UI避让模式。
+ApplicationContext	应用的全局上下文，提供应用级别的信息和能力。	- 从API version 14开始，可以直接使用getApplicationContext获取。 - API version 14以前版本，只能使用其他Context实例的getApplicationContext方法获取。	- 获取当前应用的基本信息。 - 获取应用级别的文件路径。 - 获取和修改加密分区。 - 监听应用前后台变化。
+AbilityStageContext	模块级别的上下文，提供模块级别的信息和能力。	- 如果需要获取当前AbilityStage的Context，可以直接通过AbilityStage实例获取context属性。 - 如果需要获取同一应用中其他Module的Context，可以通过createModuleContext方法。	- 获取当前模块的基本信息。 - 获取模块级别的文件路径。
+UIAbilityContext	UIAbility组件对应的上下文，提供UIAbility对外的信息和能力。	- 通过UIAbility实例直接获取context属性。 - 在UIAbility的窗口中加载的UI组件实例，需要使用@ohos.arkui.UIContext提供的getHostContext方法。	- 获取当前UIAbility的基本信息。 - 启动其他应用或元服务、连接/断连系统应用创建的ServiceExtensionAbility等。 - 销毁自身的UIAbility。
+ExtensionContext	ExtensionAbility组件对应的上下文，每种类型的ExtensionContext提供不同的信息和能力。	通过ExtensionAbility实例直接获取Context属性。	不同类型的ExtensionAbility对应的Context提供的能力不同。以输入法上下文InputMethodExtensionContext为例，主要提供如下能力： - 获取InputMethodExtensionAbility的基本信息。 - 销毁当前输入法。
+UIContext	ArkUI的UI实例上下文，提供UI操作相关的能力。与上述其他类型的Context无直接关系。	- 在UI组件内获取UIContext，直接使用组件内置的getUIContext方法。 - 在存在Window实例的情况下，使用@ohos.window提供的getUIContext方法。	主要用于UI实例中UI相关操作，例如： - 获取当前UI实例的字体。 - 显示不同类型的弹框。 - 设置软键盘弹出时UI避让模式。
 
 Context的获取方式
 
 开发者如果需要通过Context获取应用资源、应用路径等信息，或者使用Context提供的方法来实现应用跳转、设置环境变量、清理数据、获取权限等操作，需要先获取对应的Context。本节分别介绍不同类型Context的获取方式与使用场景。
 
-获取ApplicationContext（应用的全局上下文）
+[h2]获取ApplicationContext（应用的全局上下文）
 
 ApplicationContext在基类Context的基础上提供了监听应用内应用组件的生命周期的变化、监听系统内存变化、监听应用内系统环境变化、设置应用语言、设置应用颜色模式、清除应用自身数据的同时撤销应用向用户申请的权限等能力，在UIAbility、ExtensionAbility、AbilityStage中均可以获取。
 
 import { UIAbility, AbilityConstant, Want } from '@kit.AbilityKit';
-
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     let applicationContext = this.context.getApplicationContext();
   }
 }
-EntryAbility.ets
-获取AbilityStageContext（模块级别的上下文）
+
+[h2]获取AbilityStageContext（模块级别的上下文）
 
 AbilityStageContext和基类Context相比，额外提供HapModuleInfo、Configuration等信息。
 
 import { AbilityStage } from '@kit.AbilityKit';
-
 
 export default class MyAbilityStage extends AbilityStage {
   onCreate(): void {
@@ -117,8 +53,8 @@ export default class MyAbilityStage extends AbilityStage {
     // ...
   }
 }
-MyAbilityStage.ets
-获取本应用中其他Module的Context（模块级别的上下文）
+
+[h2]获取本应用中其他Module的Context（模块级别的上下文）
 
 调用createModuleContext方法，获取本应用中其他Module的Context。获取到其他Module的Context之后，即可获取到相应Module的资源信息。
 
@@ -126,19 +62,15 @@ import { common, application } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = '[CreateModuleContext]';
 const DOMAIN = 0xF811;
 
-
 let storageEventCall = new LocalStorage();
-
 
 @Entry(storageEventCall)
 @Component
 struct CreateModuleContext {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -172,8 +104,8 @@ struct CreateModuleContext {
     // ...
   }
 }
-CreateModuleContext.ets
-获取UIAbilityContext（UIAbility组件的上下文）
+
+[h2]获取UIAbilityContext（UIAbility组件的上下文）
 
 UIAbilityContext和基类Context相比，额外提供abilityInfo、currentHapModuleInfo等属性。通过UIAbilityContext可以获取UIAbility的相关配置信息，如包代码路径、Bundle名称、Ability名称和应用程序需要的环境状态等属性信息，也可以获取操作UIAbility实例的方法（如startAbility()、connectServiceExtensionAbility()、terminateSelf()等）。
 
@@ -181,26 +113,22 @@ UIAbilityContext和基类Context相比，额外提供abilityInfo、currentHapMod
 
 import { UIAbility, AbilityConstant, Want } from '@kit.AbilityKit';
 
-
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 获取UIAbility实例的上下文
     let context = this.context;
   }
 }
-UIAbilityContextAbility.ets
 
 在页面中获取UIAbility实例的上下文信息。
 
 import { common, Want } from '@kit.AbilityKit'; // 导入依赖资源context模块
-
 
 @Entry
 @Component
 struct EventHub {
   // 定义context变量
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   startAbilityTest(): void {
     let want: Want = {
@@ -209,18 +137,15 @@ struct EventHub {
     this.context.startAbility(want);
   }
 
-
   // 页面展示
   build() {
     // ···
   }
 }
-EventHub.ets
 
 也可以在导入依赖资源context模块后，在具体使用UIAbilityContext前进行变量定义。
 
 import { common, Want } from '@kit.AbilityKit';
-
 
 @Entry
 @Component
@@ -233,20 +158,17 @@ struct UIAbilityComponentsBasicUsage {
     context.startAbility(want);
   }
 
-
   // 页面展示
   build() {
     // ···
   }
 }
-UIAbilityComponentsBasicUsage.ets
 
 当业务完成后，开发者如果想要终止当前UIAbility实例，可以通过调用terminateSelf()方法实现。
 
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 const TAG = '[UIAbilityComponentsUsage]';
 const DOMAIN = 0xF811;
@@ -280,14 +202,13 @@ struct UIAbilityComponentsUsage {
     }
   }
 }
-UIAbilityComponentsUsage.ets
-获取ExtensionAbilityContext (ExtensionAbility组件的上下文)
+
+[h2]获取ExtensionAbilityContext (ExtensionAbility组件的上下文)
 
 获取特定场景ExtensionContext。以FormExtensionContext为例，表示卡片服务的上下文环境，继承自ExtensionContext，提供卡片服务相关的接口能力。
 
 import { FormExtensionAbility, formBindingData } from '@kit.FormKit';
 import { Want } from '@kit.AbilityKit';
-
 
 export default class MyFormExtensionAbility extends FormExtensionAbility {
   onAddForm(want: Want) {
@@ -300,17 +221,22 @@ export default class MyFormExtensionAbility extends FormExtensionAbility {
     return obj1;
   }
 }
-MyFormExtensionAbility.ets
+
 Context的典型使用场景
 
 本章节通过以下具体场景来介绍Context的用法：
 
 获取基本信息
+
 获取应用文件路径
+
 获取和修改加密分区
+
 监听应用前后台变化
+
 监听UIAbility生命周期变化
-获取基本信息
+
+[h2]获取基本信息
 
 继承自Context的不同类型Context，默认会继承父类的方法和属性，还会拥有自己独立的方法与属性。
 
@@ -320,7 +246,6 @@ Context的典型使用场景
 
 import { UIAbility, AbilityConstant, Want } from '@kit.AbilityKit';
 
-
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 获取ResourceManager（资源管理）
@@ -329,8 +254,8 @@ export default class EntryAbility extends UIAbility {
     let applicationInfo = this.context.getApplicationContext().applicationInfo;
   }
 }
-EntryAbility.ets
-获取应用文件路径
+
+[h2]获取应用文件路径
 
 基类Context提供了获取应用文件路径的能力，ApplicationContext、AbilityStageContext、UIAbilityContext和ExtensionContext均继承该能力。不同类型的Context获取的路径可能存在差异。
 
@@ -339,8 +264,11 @@ EntryAbility.ets
 通过AbilityStageContext、UIAbilityContext、ExtensionContext，可以获取Module级的文件路径。该路径用于存放Module相关信息，路径下的文件会跟随HAP/HSP的卸载而删除。HAP/HSP的卸载不会影响应用级路径下的文件，除非该应用的HAP/HSP已全部卸载。
 
 UIAbilityContext：可以获取UIAbility所在Module的文件路径。
+
 ExtensionContext：可以获取ExtensionAbility所在Module的文件路径。
+
 AbilityStageContext：由于AbilityStageContext创建时机早于UIAbilityContext和ExtensionContext，通常用于在AbilityStage中获取文件路径。
+
 说明
 
 应用文件路径属于应用沙箱路径，具体请参见应用沙箱目录。
@@ -355,15 +283,7 @@ preferencesDir	preferences目录。	<路径前缀>/<加密等级>/base/preferenc
 tempDir	临时目录。	<路径前缀>/<加密等级>/base/temp	<路径前缀>/<加密等级>/base/haps/<module-name>/temp
 databaseDir	数据库目录。	<路径前缀>/<加密等级>/database	<路径前缀>/<加密等级>/database/<module-name>
 distributedFilesDir	分布式文件目录。	<路径前缀>/el2/distributedFiles	<路径前缀>/el2/distributedFiles/
-resourceDir11+	
-
-资源目录。
-
-说明：
-
-需要开发者手动在\<module-name>\resources路径下创建resfile目录。
-
-	不涉及	<路径前缀>/el1/bundle/<module-name>/resources/resfile
+resourceDir11+	资源目录。 说明： 需要开发者手动在\<module-name>\resources路径下创建resfile目录。	不涉及	<路径前缀>/el1/bundle/<module-name>/resources/resfile
 cloudFileDir12+	云文件目录。	<路径前缀>/el2/cloud	<路径前缀>/el2/cloud/
 logFileDir22+	日志文件目录。	<路径前缀>/el2/log	<路径前缀>/el2/log/
 
@@ -373,13 +293,11 @@ logFileDir22+	日志文件目录。	<路径前缀>/el2/log	<路径前缀>/el2/lo
 
 import { common } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct ApplicationContextCache {
   @State message: string = 'Hello World';
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Row() {
@@ -402,7 +320,6 @@ struct ApplicationContextCache {
     // ···
   }
 }
-ApplicationContextCache.ets
 
 获取应用文件目录
 
@@ -411,17 +328,14 @@ import { buffer } from '@kit.ArkTS';
 import { fileIo, ReadOptions } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = '[ApplicationContextFile]';
 const DOMAIN_NUMBER: number = 0xFF00;
-
 
 @Entry
 @Component
 struct ApplicationContextFile {
   @State message: string = 'Hello World';
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Row() {
@@ -464,23 +378,26 @@ struct ApplicationContextFile {
     // ···
   }
 }
-ApplicationContextFile.ets
-获取和修改加密分区
+
+[h2]获取和修改加密分区
 
 应用文件加密是一种保护数据安全的方法，可以使得文件在未经授权访问的情况下得到保护。在不同的场景下，应用需要不同程度的文件保护。
 
 在实际应用中，开发者需要根据不同场景的需求选择合适的加密分区，从而保护应用数据的安全。通过合理使用不同级别的加密分区，可以有效提升应用数据的安全性。关于不同分区的权限说明，详见ContextConstant的AreaMode。
 
 EL1：对于私有文件，如闹铃、壁纸等，应用可以将这些文件放到设备级加密分区（EL1）中，以保证在用户输入密码前就可以被访问。
+
 EL2：对于更敏感的文件，如个人隐私信息等，应用可以将这些文件放到更高级别的加密分区（EL2）中，以保证更高的安全性。
+
 EL3：对于应用中的记录步数、文件下载、音乐播放，需要在锁屏时读写和创建新文件，放在（EL3）的加密分区比较合适。
+
 EL4：对于用户安全信息相关的文件，锁屏时不需要读写文件、也不能创建文件，放在（EL4）的加密分区更合适。
+
 EL5：对于用户隐私敏感数据文件，锁屏后默认不可读写，如果锁屏后需要读写文件，则锁屏前可以调用acquireAccess接口申请继续读写文件，或者锁屏后也需要创建新文件且可读写，放在（EL5）的应用级加密分区更合适。
 
 要实现获取和设置当前加密分区，可以通过读写Context的area属性来实现。
 
 import { UIAbility, contextConstant, AbilityConstant, Want } from '@kit.AbilityKit';
-
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
@@ -488,37 +405,31 @@ export default class EntryAbility extends UIAbility {
     this.context.area = contextConstant.AreaMode.EL1; // 切换area
     // 存储普通信息
 
-
     // 存储敏感信息前，切换到EL2用户级加密
     this.context.area = contextConstant.AreaMode.EL2; // 切换area
     // 存储敏感信息
-
 
     // 存储敏感信息前，切换到EL3用户级加密
     this.context.area = contextConstant.AreaMode.EL3; // 切换area
     // 存储敏感信息
 
-
     // 存储敏感信息前，切换到EL4用户级加密
     this.context.area = contextConstant.AreaMode.EL4; // 切换area
     // 存储敏感信息
-
 
     // 存储敏感信息前，切换到EL5应用级加密
     this.context.area = contextConstant.AreaMode.EL5; // 切换area
     // 存储敏感信息
   }
 }
-EntryAbility.ets
+
 // AreaContext.ets
 import { contextConstant, common } from '@kit.AbilityKit';
-
 
 @Entry
 @Component
 struct AreaContext {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -563,8 +474,8 @@ struct AreaContext {
     // ···
   }
 }
-AreaContext.ets
-监听应用前后台变化
+
+[h2]监听应用前后台变化
 
 开发者可以使用ApplicationContext的相关能力，监听应用的前后台变化。当应用前后台切换时，可以收到相应回调函数的通知，从而执行一些依赖前后台的方法，或者进行应用前后台切换频率等数据统计。
 
@@ -573,10 +484,9 @@ AreaContext.ets
 import { UIAbility, ApplicationStateChangeCallback } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-  
+
 const TAG = '[LifecycleAbility]';
 const DOMAIN = 0xF811;
-
 
 export default class LifecycleAbility extends UIAbility {
   onCreate() {
@@ -589,7 +499,6 @@ export default class LifecycleAbility extends UIAbility {
       }
     }
 
-
     // 1.获取applicationContext
     let applicationContext = this.context.getApplicationContext();
     try {
@@ -601,8 +510,8 @@ export default class LifecycleAbility extends UIAbility {
     hilog.info(DOMAIN, TAG, 'Register applicationStateChangeCallback');
   }
 }
-LifecycleAbility.ets
-监听UIAbility生命周期变化
+
+[h2]监听UIAbility生命周期变化
 
 开发者可以通过ApplicationContext监听UIAbility生命周期变化。当UIAbility生命周期变化时，如UIAbility创建、切换至前/后台、销毁等情况，UIAbility会收到相应回调函数的通知，从而执行依赖UIAbility生命周期的方法，也可以统计指定页面停留时间和访问频率等信息。
 
@@ -613,15 +522,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import  { BusinessError } from '@kit.BasicServicesKit';
 
-
 const TAG: string = '[EntryLifecycleAbility]';
 const DOMAIN_NUMBER: number = 0xFF00;
-
 
 export default class EntryLifecycleAbility extends UIAbility {
   // 定义生命周期ID
   private lifecycleId: number = -1;
-
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 定义生命周期回调对象
@@ -678,7 +584,6 @@ export default class EntryLifecycleAbility extends UIAbility {
       hilog.error(DOMAIN_NUMBER, TAG, `Failed to register applicationContext. Code is ${code}, message is ${message}`);
     }
 
-
     hilog.info(DOMAIN_NUMBER, TAG, `register callback number: ${this.lifecycleId}`);
   }
   onDestroy(): void {
@@ -694,9 +599,6 @@ export default class EntryLifecycleAbility extends UIAbility {
     }
   }
 }
-EntryLifecycleAbility.ets
-AbilityStage组件管理器
-信息传递载体Want
 
 ## Code blocks
 
@@ -704,7 +606,6 @@ AbilityStage组件管理器
 
 ```
 import { UIAbility, AbilityConstant, Want } from '@kit.AbilityKit';
-
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -717,7 +618,6 @@ export default class EntryAbility extends UIAbility {
 
 ```
 import { AbilityStage } from '@kit.AbilityKit';
-
 
 export default class MyAbilityStage extends AbilityStage {
   onCreate(): void {
@@ -734,19 +634,15 @@ import { common, application } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = '[CreateModuleContext]';
 const DOMAIN = 0xF811;
 
-
 let storageEventCall = new LocalStorage();
-
 
 @Entry(storageEventCall)
 @Component
 struct CreateModuleContext {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -787,7 +683,6 @@ struct CreateModuleContext {
 ```
 import { UIAbility, AbilityConstant, Want } from '@kit.AbilityKit';
 
-
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 获取UIAbility实例的上下文
@@ -801,13 +696,11 @@ export default class EntryAbility extends UIAbility {
 ```
 import { common, Want } from '@kit.AbilityKit'; // 导入依赖资源context模块
 
-
 @Entry
 @Component
 struct EventHub {
   // 定义context变量
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   startAbilityTest(): void {
     let want: Want = {
@@ -815,7 +708,6 @@ struct EventHub {
     };
     this.context.startAbility(want);
   }
-
 
   // 页面展示
   build() {
@@ -829,7 +721,6 @@ struct EventHub {
 ```
 import { common, Want } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct UIAbilityComponentsBasicUsage {
@@ -840,7 +731,6 @@ struct UIAbilityComponentsBasicUsage {
     };
     context.startAbility(want);
   }
-
 
   // 页面展示
   build() {
@@ -855,7 +745,6 @@ struct UIAbilityComponentsBasicUsage {
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 const TAG = '[UIAbilityComponentsUsage]';
 const DOMAIN = 0xF811;
@@ -897,7 +786,6 @@ struct UIAbilityComponentsUsage {
 import { FormExtensionAbility, formBindingData } from '@kit.FormKit';
 import { Want } from '@kit.AbilityKit';
 
-
 export default class MyFormExtensionAbility extends FormExtensionAbility {
   onAddForm(want: Want) {
     let formExtensionContext = this.context;
@@ -916,7 +804,6 @@ export default class MyFormExtensionAbility extends FormExtensionAbility {
 ```
 import { UIAbility, AbilityConstant, Want } from '@kit.AbilityKit';
 
-
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 获取ResourceManager（资源管理）
@@ -932,13 +819,11 @@ export default class EntryAbility extends UIAbility {
 ```
 import { common } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct ApplicationContextCache {
   @State message: string = 'Hello World';
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Row() {
@@ -971,17 +856,14 @@ import { buffer } from '@kit.ArkTS';
 import { fileIo, ReadOptions } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = '[ApplicationContextFile]';
 const DOMAIN_NUMBER: number = 0xFF00;
-
 
 @Entry
 @Component
 struct ApplicationContextFile {
   @State message: string = 'Hello World';
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Row() {
@@ -1031,28 +913,23 @@ struct ApplicationContextFile {
 ```
 import { UIAbility, contextConstant, AbilityConstant, Want } from '@kit.AbilityKit';
 
-
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
     // 存储普通信息前，切换到EL1设备级加密
     this.context.area = contextConstant.AreaMode.EL1; // 切换area
     // 存储普通信息
 
-
     // 存储敏感信息前，切换到EL2用户级加密
     this.context.area = contextConstant.AreaMode.EL2; // 切换area
     // 存储敏感信息
-
 
     // 存储敏感信息前，切换到EL3用户级加密
     this.context.area = contextConstant.AreaMode.EL3; // 切换area
     // 存储敏感信息
 
-
     // 存储敏感信息前，切换到EL4用户级加密
     this.context.area = contextConstant.AreaMode.EL4; // 切换area
     // 存储敏感信息
-
 
     // 存储敏感信息前，切换到EL5应用级加密
     this.context.area = contextConstant.AreaMode.EL5; // 切换area
@@ -1067,12 +944,10 @@ export default class EntryAbility extends UIAbility {
 // AreaContext.ets
 import { contextConstant, common } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct AreaContext {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -1125,10 +1000,9 @@ struct AreaContext {
 import { UIAbility, ApplicationStateChangeCallback } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-  
+
 const TAG = '[LifecycleAbility]';
 const DOMAIN = 0xF811;
-
 
 export default class LifecycleAbility extends UIAbility {
   onCreate() {
@@ -1140,7 +1014,6 @@ export default class LifecycleAbility extends UIAbility {
         hilog.info(DOMAIN, TAG, 'applicationStateChangeCallback onApplicationBackground');
       }
     }
-
 
     // 1.获取applicationContext
     let applicationContext = this.context.getApplicationContext();
@@ -1163,15 +1036,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import  { BusinessError } from '@kit.BasicServicesKit';
 
-
 const TAG: string = '[EntryLifecycleAbility]';
 const DOMAIN_NUMBER: number = 0xFF00;
-
 
 export default class EntryLifecycleAbility extends UIAbility {
   // 定义生命周期ID
   private lifecycleId: number = -1;
-
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 定义生命周期回调对象
@@ -1227,7 +1097,6 @@ export default class EntryLifecycleAbility extends UIAbility {
       let message = (err as BusinessError).message;
       hilog.error(DOMAIN_NUMBER, TAG, `Failed to register applicationContext. Code is ${code}, message is ${message}`);
     }
-
 
     hilog.info(DOMAIN_NUMBER, TAG, `register callback number: ${this.lifecycleId}`);
   }

@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-faq-12_
 
+场景1：新旧证书均为商用CA签发证书或自签证书但CA未改变。
+
+您只需更换回执服务器上的证书，不需要登录AppGallery Connect网站做其他修改。
+
+场景2：新证书为商用CA签发证书，旧证书为自签证书。
+
 您需要更换回执服务器上的证书，并登录AppGallery Connect网站同步修改回执配置。此操作过程中回执服务不会中断。
 
 修改回执配置操作：
@@ -26,7 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-faq-
 
 设置备用证书操作：
 
-参考场景2的步骤1到步骤3进入“回执配置”页面。
+参考场景2，进入“回执配置”页面。
 
 在“回执配置”页面，点击“设置备用证书”，填入新证书信息。
 
@@ -43,6 +49,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-faq-
 若证书未安装到回执服务器，您可以从证书中获取CA信息。
 
 回执服务会保留证书的CA信息，通过校验证书的CA信息来确保回执消息正确发送到您配置的回执地址。
-
-如何收费
-个人数据处理说明

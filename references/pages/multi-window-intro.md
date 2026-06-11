@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 针对手机，一个屏幕内最多支持显示一个悬浮窗；在折叠屏手机展开态、平板类设备上，一个屏幕内最多支持显示两个悬浮窗。在超出悬浮窗显示最大个数限制时，打开新的悬浮窗会替换最近久未操作的悬浮窗。
 
-悬浮窗的类型
+[h2]悬浮窗的类型
 
 悬浮窗的常见类型主要分为如下两种：
 
@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 横向悬浮窗：主要用于横向游戏和视频全屏播放的场景。
 
-悬浮窗的触发及恢复方式
+[h2]悬浮窗的触发及恢复方式
 
 悬浮窗的触发方式有以下几种：
 
@@ -36,7 +36,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 侧边条恢复：对于已开启悬浮窗模式的应用，其最小化后会暂存在屏幕上的侧边条中，点击或者长按侧边条可展开任务选择界面，选择点击侧边条中悬浮窗应用卡片时可恢复悬浮窗模式。
 
-适配注意事项
+[h2]适配注意事项
 
 针对在Tablet设备上运行的PC应用，不支持悬浮窗。
 
@@ -48,7 +48,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 分屏一般用于两个应用长时间并行使用的场景。例如：边看购物攻略边浏览商品；边看视频边玩游戏；看学习类视频的同时做笔记等。
 
-分屏的触发方式
+[h2]分屏的触发方式
 
 分屏通过手势触发：应用全屏时，从屏幕底部向上滑至左上方热区，进入待分屏状态，点击桌面另一个支持分屏的应用图标或卡片，可形成分屏。
 
@@ -58,8 +58,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 悬浮窗切分屏：按住悬浮窗顶部横条，拖到相应热区，悬浮窗和前台全屏应用形成分屏。
 
-适配注意事项
+[h2]适配注意事项
+
 在智慧多窗的显示模式下，窗口尺寸由系统决定，不受WindowLimits约束。
+
 全景多窗
 
 从HarmonyOS 5.0.1开始，折叠机、部分Tablet设备支持全景多窗。
@@ -68,7 +70,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 全景多窗在折叠机设备上最多可支持三个窗口同时运行（部分Tablet设备最多可支持四个窗口）。
 
-全景多窗的样式
+[h2]全景多窗的样式
 
 目前全景多窗在双折叠设备上支持小窗口与大窗口两个档位显示，在三折叠与Tablet设备上支持小窗口、中窗口、大窗口三个档位显示，且窗口的档位与位置支持调节。
 
@@ -78,7 +80,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 窗口状态分为平铺和侧身两种状态：
 
-全景多窗的进入方式
+[h2]全景多窗的进入方式
 
 全景多窗通过手势触发：
 
@@ -96,8 +98,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 
 全景多窗通过分屏拖拽触发：应用分屏时，调节分屏比例到相应热区，进入全景多窗。
 
-适配注意事项
+[h2]适配注意事项
+
 全景多窗侧身窗口为不可见窗口，可以通过监听on('windowVisibilityChange')感知应用是否处于侧身。
+
 在智慧多窗的显示模式下，窗口尺寸由系统决定，不受WindowLimits约束。
-智慧多窗应用开发指南
-应用适配智慧多窗

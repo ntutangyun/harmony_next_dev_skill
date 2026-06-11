@@ -5,6 +5,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/js-framew
 HML是一套类HTML的标记语言，通过组件，事件构建出页面的内容。页面具备数据绑定、事件绑定、列表渲染、条件渲染和逻辑控制等高级能力。
 
 页面结构
+
 <!-- xxx.hml -->
 <div class="item-container">
   <text class="item-title">Image Show</text>
@@ -12,15 +13,19 @@ HML是一套类HTML的标记语言，通过组件，事件构建出页面的内�
     <image src="/common/xxx.png" class="image"></image>
   </div>
 </div>
+
 数据绑定
+
 <!-- xxx.hml -->
 <div class="container" onclick="changeText">
   <text> {{content[1]}} </text>
 </div>
+
 /*xxx.css*/
 .container{
     margin: 200px;
 }
+
 // xxx.js
 export default {
   data: {
@@ -30,6 +35,7 @@ export default {
     this.content.splice(1, 1, this.content[0]);
   }
 }
+
 说明
 
 针对数组内的数据修改，请使用splice方法生效数据绑定变更。
@@ -60,6 +66,7 @@ hml文件中的js表达式不支持ES6语法。
         <input type="button" class="btn" value="square" @click="multiply(count)" />
     </div>
 </div>
+
 // xxx.js
 export default {
   data: {
@@ -75,6 +82,7 @@ export default {
     this.count = multiplier * this.count;
   }
 };
+
 /* xxx.css */
 .container {
     display: flex;
@@ -137,6 +145,7 @@ export default {
     <div grab:click.bubble="clickfunc" style="background-color: mediumslateblue; width: 10%; height: 100%"></div>
     <div grab:click="clickfunc" style="background-color: purple; width: 10%; height: 100%"></div>
 </div>
+
 // xxx.js
 export default {
     clickfunc: function(e) {
@@ -146,6 +155,7 @@ export default {
         console.info(e);
     },
 }
+
 说明
 
 采用旧写法(onclick)的事件绑定在最小API版本6以下时采用不冒泡处理，在最小API版本为6及6以上时采用冒泡处理。
@@ -164,18 +174,21 @@ Touch触摸类事件支持捕获，捕获阶段位于冒泡阶段之前，捕获
 
 <!-- xxx.hml -->
 <div>
-    <!-- 使用事件捕获模式绑定事件回调函数。5+ -->    
+    <!-- 使用事件捕获模式绑定事件回调函数。5+ -->
     <div on:touchstart.capture="touchstartfunc"></div>
     <!-- 绑定事件回调函数，但阻止事件向下传递。5+ -->
     <div grab:touchstart.capture="touchstartfunc"></div>
 </div>
+
 // xxx.js
 export default {
     touchstartfunc: function(e) {
         console.info(e);
     },
 }
+
 列表渲染
+
 <!-- xxx.hml -->
 <div class="array-container" style="flex-direction: column;margin: 200px;">
   <!-- div列表渲染 -->
@@ -184,14 +197,15 @@ export default {
     <text>{{$idx}}.{{$item.name}}</text>
   </div>
   <!-- 自定义元素变量名称 -->
-  <div for="{{value in array}}" tid="id" onclick="changeText">    
+  <div for="{{value in array}}" tid="id" onclick="changeText">
     <text>{{$idx}}.{{value.name}}</text>
   </div>
   <!-- 自定义元素变量、索引名称 -->
-  <div for="{{(index, value) in array}}" tid="id" onclick="changeText">    
+  <div for="{{(index, value) in array}}" tid="id" onclick="changeText">
     <text>{{index}}.{{value.name}}</text>
   </div>
 </div>
+
 // xxx.js
 export default {
   data: {
@@ -237,6 +251,7 @@ tid不支持表达式。
   <text elif="{{display}}"> Hello-world2 </text>
   <text else> Hello-World </text>
 </div>
+
 /* xxx.css */
 .container{
   flex-direction: column;
@@ -247,6 +262,7 @@ tid不支持表达式。
   font-size: 26px;
   margin: 10px 0;
 }
+
 // xxx.js
 export default {
   data: {
@@ -268,6 +284,7 @@ export default {
   <button class="btn" type="capsule" value="toggle" onclick="toggle"></button>
   <text show="{{visible}}" > Hello World </text>
 </div>
+
 /* xxx.css */
 .container{
   flex-direction: column;
@@ -278,6 +295,7 @@ export default {
   font-size: 26px;
   margin: 10px 0;
 }
+
 // xxx.js
 export default {
   data: {
@@ -287,6 +305,7 @@ export default {
     this.visible = !this.visible;
   },
 }
+
 说明
 
 禁止在同一个元素上同时设置for和if属性。
@@ -308,6 +327,7 @@ export default {
     </block>
   </block>
 </list>
+
 // xxx.js
 export default {
   data: {
@@ -323,14 +343,367 @@ export default {
 HML可以通过element引用模板文件，详细介绍可参考自定义组件的基本用法章节。
 
 <!-- template.hml -->
-<div class="item"> 
+<div class="item">
   <text>Name: {{name}}</text>
   <text>Age: {{age}}</text>
 </div>
+
 <!-- index.hml -->
 <element name='comp' src='../../common/template.hml'></element>
 <div>
   <comp name="Tony" age="18"></comp>
 </div>
-语法
-CSS语法参考
+
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml -->
+<div class="item-container">
+  <text class="item-title">Image Show</text>
+  <div class="item-content">
+    <image src="/common/xxx.png" class="image"></image>
+  </div>
+</div>
+```
+
+### Code block 2
+
+```
+<!-- xxx.hml -->
+<div class="container" onclick="changeText">
+  <text> {{content[1]}} </text>
+</div>
+```
+
+### Code block 3
+
+```
+/*xxx.css*/
+.container{
+    margin: 200px;
+}
+```
+
+### Code block 4
+
+```
+// xxx.js
+export default {
+  data: {
+    content: ['Hello World!', 'Welcome to my world!']
+  },
+  changeText: function() {
+    this.content.splice(1, 1, this.content[0]);
+  }
+}
+```
+
+### Code block 5
+
+```
+<!-- xxx.hml -->
+<div class="container">
+    <text class="title">{{count}}</text>
+    <div class="box">
+        <input type="button" class="btn" value="increase" onclick="increase" />
+        <input type="button" class="btn" value="decrease" @click="decrease" />
+        <!-- 传递额外参数 -->
+        <input type="button" class="btn" value="double" @click="multiply(2)" />
+        <input type="button" class="btn" value="decuple" @click="multiply(10)" />
+        <input type="button" class="btn" value="square" @click="multiply(count)" />
+    </div>
+</div>
+```
+
+### Code block 6
+
+```
+// xxx.js
+export default {
+  data: {
+    count: 0
+  },
+  increase() {
+    this.count++;
+  },
+  decrease() {
+    this.count--;
+  },
+  multiply(multiplier) {
+    this.count = multiplier * this.count;
+  }
+};
+```
+
+### Code block 7
+
+```
+/* xxx.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    left: 0px;
+    top: 0px;
+    width: 454px;
+    height: 454px;
+}
+.title {
+    font-size: 30px;
+    text-align: center;
+    width: 200px;
+    height: 100px;
+}
+.box {
+    width: 454px;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.btn {
+    width: 200px;
+    border-radius: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+```
+
+### Code block 8
+
+```
+<!-- xxx.hml -->
+<div>
+   <!-- 使用事件冒泡模式绑定事件回调函数。5+ -->;
+    <div on:touchstart.bubble="touchstartfunc" style="background-color: red; width: 10%; height: 100%"></div>
+    <div on:touchstart="touchstartfunc" style="background-color: orange; width: 10%; height: 100%"></div>
+    <!-- 绑定事件回调函数，但阻止事件向上传递。5+ -->
+    <div grab:touchstart.bubble="touchstartfunc" style="background-color: yellow; width: 10%; height: 100%"></div>
+    <div grab:touchstart="touchstartfunc" style="background-color: greenyellow; width: 10%; height: 100%"></div>
+    <!-- 使用事件冒泡模式绑定事件回调函数。6+ -->
+    <div on:click.bubble="clickfunc" style="background-color: lightskyblue; width: 10%; height: 100%"></div>
+    <div on:click="clickfunc" style="background-color: cornflowerblue; width: 10%; height: 100%"></div>
+    <!-- 绑定事件回调函数，但阻止事件向上传递。6+ -->
+    <div grab:click.bubble="clickfunc" style="background-color: mediumslateblue; width: 10%; height: 100%"></div>
+    <div grab:click="clickfunc" style="background-color: purple; width: 10%; height: 100%"></div>
+</div>
+```
+
+### Code block 9
+
+```
+// xxx.js
+export default {
+    clickfunc: function(e) {
+        console.info(e);
+    },
+    touchstartfunc: function(e) {
+        console.info(e);
+    },
+}
+```
+
+### Code block 10
+
+```
+<!-- xxx.hml -->
+<div>
+    <!-- 使用事件捕获模式绑定事件回调函数。5+ -->
+    <div on:touchstart.capture="touchstartfunc"></div>
+    <!-- 绑定事件回调函数，但阻止事件向下传递。5+ -->
+    <div grab:touchstart.capture="touchstartfunc"></div>
+</div>
+```
+
+### Code block 11
+
+```
+// xxx.js
+export default {
+    touchstartfunc: function(e) {
+        console.info(e);
+    },
+}
+```
+
+### Code block 12
+
+```
+<!-- xxx.hml -->
+<div class="array-container" style="flex-direction: column;margin: 200px;">
+  <!-- div列表渲染 -->
+  <!-- 默认$item代表数组中的元素, $idx代表数组中的元素索引 -->
+  <div for="{{array}}" tid="id" onclick="changeText">
+    <text>{{$idx}}.{{$item.name}}</text>
+  </div>
+  <!-- 自定义元素变量名称 -->
+  <div for="{{value in array}}" tid="id" onclick="changeText">
+    <text>{{$idx}}.{{value.name}}</text>
+  </div>
+  <!-- 自定义元素变量、索引名称 -->
+  <div for="{{(index, value) in array}}" tid="id" onclick="changeText">
+    <text>{{index}}.{{value.name}}</text>
+  </div>
+</div>
+```
+
+### Code block 13
+
+```
+// xxx.js
+export default {
+  data: {
+    array: [
+      {id: 1, name: 'jack', age: 18},
+      {id: 2, name: 'tony', age: 18},
+    ],
+  },
+  changeText: function() {
+    if (this.array[1].name === "tony"){
+      this.array.splice(1, 1, {id:2, name: 'Isabella', age: 18});
+    } else {
+      this.array.splice(2, 1, {id:3, name: 'Bary', age: 18});
+    }
+  },
+}
+```
+
+### Code block 14
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <button class="btn" type="capsule" value="toggleShow" onclick="toggleShow"></button>
+  <button class="btn" type="capsule" value="toggleDisplay" onclick="toggleDisplay"></button>
+  <text if="{{visible}}"> Hello-world1 </text>
+  <text elif="{{display}}"> Hello-world2 </text>
+  <text else> Hello-World </text>
+</div>
+```
+
+### Code block 15
+
+```
+/* xxx.css */
+.container{
+  flex-direction: column;
+  align-items: center;
+}
+.btn{
+  width: 280px;
+  font-size: 26px;
+  margin: 10px 0;
+}
+```
+
+### Code block 16
+
+```
+// xxx.js
+export default {
+  data: {
+    visible: false,
+    display: true,
+  },
+  toggleShow: function() {
+    this.visible = !this.visible;
+  },
+  toggleDisplay: function() {
+    this.display = !this.display;
+  }
+}
+```
+
+### Code block 17
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <button class="btn" type="capsule" value="toggle" onclick="toggle"></button>
+  <text show="{{visible}}" > Hello World </text>
+</div>
+```
+
+### Code block 18
+
+```
+/* xxx.css */
+.container{
+  flex-direction: column;
+  align-items: center;
+}
+.btn{
+  width: 280px;
+  font-size: 26px;
+  margin: 10px 0;
+}
+```
+
+### Code block 19
+
+```
+// xxx.js
+export default {
+  data: {
+    visible: false,
+  },
+  toggle: function() {
+    this.visible = !this.visible;
+  },
+}
+```
+
+### Code block 20
+
+```
+<!-- xxx.hml -->
+<list>
+  <block for="glasses">
+    <list-item type="glasses">
+      <text>{{$item.name}}</text>
+    </list-item>
+    <block for="$item.kinds">
+      <list-item type="kind">
+        <text>{{$item.color}}</text>
+      </list-item>
+    </block>
+  </block>
+</list>
+```
+
+### Code block 21
+
+```
+// xxx.js
+export default {
+  data: {
+    glasses: [
+      {name:'sunglasses', kinds:[{name:'XXX',color:'XXX'},{name:'XXX',color:'XXX'}]},
+      {name:'nearsightedness mirror', kinds:[{name:'XXX',color:'XXX'}]},
+    ],
+  },
+}
+```
+
+### Code block 22
+
+```
+<!-- template.hml -->
+<div class="item">
+  <text>Name: {{name}}</text>
+  <text>Age: {{age}}</text>
+</div>
+```
+
+### Code block 23
+
+```
+<!-- index.hml -->
+<element name='comp' src='../../common/template.hml'></element>
+<div>
+  <comp name="Tony" age="18"></comp>
+</div>
+```

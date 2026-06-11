@@ -2,11 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-widget-adapt-faq_
 
-导入particleAbility、audio、camera、media、backgroundTaskManager模块导致应用崩溃问题。
-问题现象
-原因
-解决措施
-展开章节
 ArkTS卡片开发是否支持V2装饰器？如何从V1到V2迁移？
 
 ArkTS卡片开发支持V2装饰器语法(如@ObservedV2、@ComponentV2)，建议开发者使用V2装饰器替代V1语法进行状态管理，以获得更优的组件渲染性能和状态同步能力。
@@ -22,19 +17,17 @@ ArkTS卡片如何适配深浅色模式？
 当前系统存在深浅色两种显示模式，为了给用户更好的使用体验，保障卡片与页面视觉体验一致性，ArkTS卡片支持适配深浅色模式，具体请参考应用深浅色适配。
 
 导入particleAbility、audio、camera、media、backgroundTaskManager模块导致应用崩溃问题。
-问题现象
+
+[h2]问题现象
 
 导入particleAbility、audio、camera、media、backgroundTaskManager后应用崩溃，FaultLog指向相关调用行。
 
 报错对应的代码行如下：
 
-原因
+[h2]原因
 
 ArkTS卡片的FormExtensionAbility不支持加载上述模块，参考@ohos.app.form.FormExtensionAbility。强行加载得到的对象是undefined，使用时就会产生JS crash。
 
-解决措施
+[h2]解决措施
 
 检查 FormExtensionAbility 的导入链，将涉及上述模块的文件与 ArkTS 卡片使用的文件拆分，避免被 FormExtensionAbility 加载。
-
-场景动效类型互动卡片开发指导
-JS卡片开发

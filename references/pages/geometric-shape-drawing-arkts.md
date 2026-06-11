@@ -2,12 +2,39 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/geometric-shape-drawing-arkts_
 
+场景介绍
+
+当前支持绘制的几何形状，主要包括以下几种：
+
+点
+
+圆弧
+
+圆
+
+路径
+
+区域
+
+矩形
+
+圆角矩形
+
+大部分的几何形状均可以选择使用画笔或使用画刷来实现绘制，其中点的绘制只能使用画笔。
+
+接口说明
+
+几何形状绘制的常用接口如下表所示，详细的使用和参数说明请见drawing.Canvas。
+
+接口	描述
+drawPoint(x: number, y: number): void	用于画一个点。
 drawArc(arc: common2D.Rect, startAngle: number, sweepAngle: number): void	用于画一个弧。
 drawCircle(x: number, y: number, radius: number): void	用于画一个圆形。
 drawPath(path: Path): void	用于画一个自定义路径。
 drawRegion(region: Region): void	用于画一块区域。
 drawRect(left: number, top: number, right: number, bottom: number): void	用于画一个矩形。
 drawRoundRect(roundRect: RoundRect): void	用于画一个圆角矩形。
+
 绘制点
 
 点只能基于画笔在画布上进行绘制，通过使用drawPoint()接口绘制点。绘制点需要接受两个参数，分别为需要绘制的点的x坐标和y坐标。
@@ -30,7 +57,6 @@ canvas.drawPoint(VALUE_800, VALUE_800);
 canvas.drawPoint(VALUE_1000, VALUE_1000);
 // 去除描边效果
 canvas.detachPen();
-ShapeDrawing.ets
 
 效果如下：
 
@@ -66,7 +92,6 @@ const rect: common2D.Rect = {
 canvas.drawArc(rect, 0, 180);
 // 去除描边效果
 canvas.detachPen();
-ShapeDrawing.ets
 
 效果如下：
 
@@ -95,7 +120,6 @@ canvas.attachPen(pen);
 canvas.drawCircle(VALUE_630, VALUE_630, VALUE_500);
 // 去除描边效果
 canvas.detachPen();
-ShapeDrawing.ets
 
 效果如下：
 
@@ -127,7 +151,6 @@ let bY = aY + Math.sqrt((cX - dX) * (cX - dX) + (len / 2.0) * (len / 2.0));
 let eX = aX - (len / 2.0);
 let eY = bY;
 
-
 // 创建一个path对象，然后使用接口连接成一个五角星形状
 let path = new drawing.Path();
 // 指定path的起始位置
@@ -139,7 +162,6 @@ path.lineTo(dX, dY);
 path.lineTo(eX, eY);
 // 闭合形状，path绘制完毕
 path.close();
-
 
 // 创建画笔对象
 let pen = new drawing.Pen();
@@ -163,7 +185,6 @@ canvas.drawPath(path);
 canvas.detachBrush();
 // 去除描边效果
 canvas.detachPen();
-ShapeDrawing.ets
 
 效果如下：
 
@@ -193,7 +214,6 @@ region1.op(region2, drawing.RegionOp.XOR);
 canvas.drawRegion(region1);
 // 去除填充效果
 canvas.detachBrush();
-ShapeDrawing.ets
 
 效果如下：
 
@@ -213,7 +233,6 @@ canvas.attachBrush(brush);
 canvas.drawRect(VALUE_200, VALUE_200, VALUE_1000, VALUE_700);
 // 去除填充效果
 canvas.detachBrush();
-ShapeDrawing.ets
 
 效果如下：
 
@@ -251,11 +270,199 @@ let rrect = new drawing.RoundRect(rect, 30, 30);
 canvas.drawRoundRect(rrect);
 // 去除填充效果
 canvas.detachBrush();
-ShapeDrawing.ets
 
 效果如下：
 
 示例代码
+
 图形绘制（ArkTS）
-图元绘制概述
-图片绘制（ArkTS）
+
+## Code blocks
+
+### Code block 1
+
+```
+// 设置画笔
+let pen = new drawing.Pen();
+// 设置颜色
+pen.setColor(0xFF, 0xFF, 0x00, 0x00);
+// 设置线宽
+pen.setStrokeWidth(40);
+// 设置画笔描边效果
+canvas.attachPen(pen);
+// 绘制5个点
+canvas.drawPoint(VALUE_200, VALUE_200);
+canvas.drawPoint(VALUE_400, VALUE_400);
+canvas.drawPoint(VALUE_600, VALUE_600);
+canvas.drawPoint(VALUE_800, VALUE_800);
+canvas.drawPoint(VALUE_1000, VALUE_1000);
+// 去除描边效果
+canvas.detachPen();
+```
+
+### Code block 2
+
+```
+// 创建画笔
+let pen = new drawing.Pen();
+// 设置颜色
+pen.setColor({
+  alpha: 0xFF,
+  red: 0xFF,
+  green: 0x00,
+  blue: 0x00
+});
+// 设置线宽
+pen.setStrokeWidth(20);
+// 设置画笔描边效果
+canvas.attachPen(pen);
+// 创建矩形对象
+const rect: common2D.Rect = {
+  left: VALUE_100,
+  top: VALUE_200,
+  right: VALUE_1000,
+  bottom: VALUE_600
+};
+// 绘制矩形
+canvas.drawArc(rect, 0, 180);
+// 去除描边效果
+canvas.detachPen();
+```
+
+### Code block 3
+
+```
+// 创建画笔
+let pen = new drawing.Pen();
+// 设置颜色
+pen.setColor({
+  alpha: 0xFF,
+  red: 0xFF,
+  green: 0x00,
+  blue: 0x00
+});
+// 设置线宽
+pen.setStrokeWidth(20);
+// 设置画笔描边效果
+canvas.attachPen(pen);
+// 绘制圆
+canvas.drawCircle(VALUE_630, VALUE_630, VALUE_500);
+// 去除描边效果
+canvas.detachPen();
+```
+
+### Code block 4
+
+```
+let height_ = VALUE_1800;
+let width_ = VALUE_1800;
+let len = height_ / 4;
+let aX = width_ / 3;
+let aY = height_ / 6;
+let dX = aX - len * Math.sin(18.0);
+let dY = aY + len * Math.cos(18.0);
+let cX = aX + len * Math.sin(18.0);
+let cY = dY;
+let bX = aX + (len / 2.0);
+let bY = aY + Math.sqrt((cX - dX) * (cX - dX) + (len / 2.0) * (len / 2.0));
+let eX = aX - (len / 2.0);
+let eY = bY;
+
+// 创建一个path对象，然后使用接口连接成一个五角星形状
+let path = new drawing.Path();
+// 指定path的起始位置
+path.moveTo(aX, aY);
+// 用直线连接到目标点
+path.lineTo(bX, bY);
+path.lineTo(cX, cY);
+path.lineTo(dX, dY);
+path.lineTo(eX, eY);
+// 闭合形状，path绘制完毕
+path.close();
+
+// 创建画笔对象
+let pen = new drawing.Pen();
+// 设置抗锯齿
+pen.setAntiAlias(true);
+// 设置描边颜色
+pen.setColor(0xFF, 0xFF, 0x00, 0x00);
+// 设置线宽
+pen.setStrokeWidth(10.0);
+// 设置画笔描边效果
+canvas.attachPen(pen);
+// 创建画刷
+let brush = new drawing.Brush();
+// 设置填充颜色
+brush.setColor(0xFF, 0x00, 0xFF, 0x00);
+// 设置画刷填充效果
+canvas.attachBrush(brush);
+// 绘制路径
+canvas.drawPath(path);
+// 去除填充效果
+canvas.detachBrush();
+// 去除描边效果
+canvas.detachPen();
+```
+
+### Code block 5
+
+```
+// 创建画刷
+let brush = new drawing.Brush();
+// 设置颜色
+brush.setColor(0xFF, 0xFF, 0x00, 0x00);
+// 设置画刷填充效果
+canvas.attachBrush(brush);
+// 创建左上角的region1
+let region1 = new drawing.Region();
+region1.setRect(VALUE_100, VALUE_100, VALUE_600, VALUE_600);
+// 创建右下角的region2
+let region2 = new drawing.Region();
+region2.setRect(VALUE_300, VALUE_300, VALUE_900, VALUE_900);
+// 将两个区域以XOR的方式组合
+region1.op(region2, drawing.RegionOp.XOR);
+// 绘制区域
+canvas.drawRegion(region1);
+// 去除填充效果
+canvas.detachBrush();
+```
+
+### Code block 6
+
+```
+// 创建画刷
+let brush = new drawing.Brush();
+// 设置颜色
+brush.setColor(0xFF, 0xFF, 0x00, 0x00);
+// 设置画刷填充效果
+canvas.attachBrush(brush);
+// 绘制矩形
+canvas.drawRect(VALUE_200, VALUE_200, VALUE_1000, VALUE_700);
+// 去除填充效果
+canvas.detachBrush();
+```
+
+### Code block 7
+
+```
+// 创建画刷
+let brush = new drawing.Brush();
+// 设置颜色
+brush.setColor(0xFF, 0xFF, 0x00, 0x00);
+// 设置画刷填充效果
+canvas.attachBrush(brush);
+// 创建矩形对象
+let rect: common2D.Rect = {
+  left: VALUE_200,
+  top: VALUE_200,
+  right: VALUE_1000,
+  bottom: VALUE_700
+};
+console.info('rect:', rect.right);
+// 创建圆角矩形对象
+let rrect = new drawing.RoundRect(rect, 30, 30);
+// 绘制圆角矩形
+canvas.drawRoundRect(rrect);
+// 去除填充效果
+canvas.detachBrush();
+```

@@ -16,20 +16,17 @@ Sendable共享对象在不同线程控制异步任务等待和唤醒的示例如
 
 import { ArkTSUtils, taskpool } from '@kit.ArkTS';
 
-
 @Concurrent
 function notifyAll(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
   console.info(`TaskPool Thread notifyAll`);
   conditionVariable.notifyAll();
 }
 
-
 @Concurrent
 function notifyOne(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
   console.info(`TaskPool Thread notifyOne`);
   conditionVariable.notifyOne();
 }
-
 
 @Concurrent
 async function wait(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
@@ -38,7 +35,6 @@ async function wait(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
   });
 }
 
-
 @Concurrent
 async function waitFor(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
   conditionVariable.waitFor(3000).then(() => {
@@ -46,12 +42,10 @@ async function waitFor(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
   });
 }
 
-
 @Entry
 @Component
 struct Index {
   @State message: string | ResourceStr = $r('app.string.AsyncButton');
-
 
   build() {
     Row() {
@@ -71,6 +65,80 @@ struct Index {
             // 将实例conditionVariable传递给notifyOne线程，唤醒waitFor线程，日志输出"TaskPool Thread WaitFor: success"。
             await taskpool.execute(notifyOne, conditionVariable);
 
+            // 创建有name的conditionVariable对象。
+            const conditionVariableRequest: ArkTSUtils.locks.ConditionVariable =
+              ArkTSUtils.locks.ConditionVariable.request('Request1');
+            // 将实例conditionVariableRequest传递给wait线程。
+            await taskpool.execute(wait, conditionVariableRequest);
+            // 将实例conditionVariableRequest传递给notifyAll线程，唤醒wait线程，日志输出"TaskPool Thread Wait: success"。
+            await taskpool.execute(notifyAll, conditionVariableRequest);
+            // 将实例conditionVariableRequest传递给waitFor线程。
+            await taskpool.execute(waitFor, conditionVariableRequest);
+            // 将实例conditionVariableRequest传递给notifyOne线程，唤醒waitFor线程，日志输出"TaskPool Thread WaitFor: success"。
+            await taskpool.execute(notifyOne, conditionVariableRequest);
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { ArkTSUtils, taskpool } from '@kit.ArkTS';
+
+@Concurrent
+function notifyAll(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
+  console.info(`TaskPool Thread notifyAll`);
+  conditionVariable.notifyAll();
+}
+
+@Concurrent
+function notifyOne(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
+  console.info(`TaskPool Thread notifyOne`);
+  conditionVariable.notifyOne();
+}
+
+@Concurrent
+async function wait(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
+  conditionVariable.wait().then(() => {
+    console.info(`TaskPool Thread Wait: success`);
+  });
+}
+
+@Concurrent
+async function waitFor(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
+  conditionVariable.waitFor(3000).then(() => {
+    console.info(`TaskPool Thread WaitFor: success`);
+  });
+}
+
+@Entry
+@Component
+struct Index {
+  @State message: string | ResourceStr = $r('app.string.AsyncButton');
+
+  build() {
+    Row() {
+      Column() {
+        Button(this.message)
+          .fontSize(25)
+          .fontWeight(FontWeight.Bold)
+          .onClick(async () => {
+            // 创建conditionVariable对象。
+            const conditionVariable: ArkTSUtils.locks.ConditionVariable = new ArkTSUtils.locks.ConditionVariable();
+            // 将实例conditionVariable传递给wait线程。
+            await taskpool.execute(wait, conditionVariable);
+            // 将实例conditionVariable传递给notifyAll线程，唤醒wait线程，日志输出"TaskPool Thread Wait: success"。
+            await taskpool.execute(notifyAll, conditionVariable);
+            // 将实例conditionVariable传递给waitFor线程。
+            await taskpool.execute(waitFor, conditionVariable);
+            // 将实例conditionVariable传递给notifyOne线程，唤醒waitFor线程，日志输出"TaskPool Thread WaitFor: success"。
+            await taskpool.execute(notifyOne, conditionVariable);
 
             // 创建有name的conditionVariable对象。
             const conditionVariableRequest: ArkTSUtils.locks.ConditionVariable =
@@ -90,6 +158,4 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
-异步锁
-ASON解析与生成
+```

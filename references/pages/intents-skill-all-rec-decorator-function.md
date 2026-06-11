@@ -2,16 +2,30 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-skill-all-rec-decorator-function_
 
-开发者使用@InsightIntentFunction和@InsightIntentFunctionMethod装饰器进行基于函数的意图声明，可快速将已有的函数功能接入意图框架，以购买电影票的意图为例，详细说明如下：
+概述
+
+在目标执行函数上添加@InsightIntentFunctionMethod装饰器，以及在目标执行函数所属Class上添加@InsightIntentFunction进行意图声明，实现目标函数的执行。
+
+约束说明
+
+仅限无其他依赖，可以直接拉起调用的全局函数。
+
+支持将函数参数作为意图参数进行声明，参数类型支持基本类型。
+
+装饰器所在函数不应该参与混淆，否则无法调用。
+
+仅支持在export的类上添加该装饰器。
+
+开发示例
+
+以购买电影票的意图为例，详细说明如下：
 
 装饰器添加位置：在目标执行函数上添加@InsightIntentFunctionMethod装饰器，以及在目标执行函数所属Class上添加@InsightIntentFunction进行意图声明，且仅支持在静态方法上使用。
 
 import { insightIntent, InsightIntentFunction, InsightIntentFunctionMethod } from '@kit.AbilityKit';
 
-
 @InsightIntentFunction()
 export class PurchaseMovie {
-
 
   @InsightIntentFunctionMethod({
     intentName: 'PurchaseMovieTickets',
@@ -70,7 +84,7 @@ parameters	Record<string, object>	否	意图参数定义，描述参数类型以
 
 框选想要接入意图框架功能的代码。
 
-在选中的代码块上右键CodeGenie > Insight Intent > 选择适合的装饰器。
+在选中的代码块上右键CodeGenie > Insight Intent，选择适合的装饰器。
 
 在DevEco CodeGenie对话框中对意图定义，功能，参数等进行描述。
 
@@ -82,15 +96,50 @@ parameters	Record<string, object>	否	意图参数定义，描述参数类型以
 
 插入后：
 
-装饰器的使用约束和说明：
+## Code blocks
 
-仅限无其他依赖，可以直接拉起调用的全局函数。
+### Code block 1
 
-支持将函数参数作为意图参数进行声明，参数类型支持基本类型。
+```
+import { insightIntent, InsightIntentFunction, InsightIntentFunctionMethod } from '@kit.AbilityKit';
 
-装饰器所在函数不应该参与混淆，否则无法调用。
+@InsightIntentFunction()
+export class PurchaseMovie {
 
-仅支持在export的类上添加装饰器。
-
-基于Page的装饰器方案
-自定义意图相关信息定义规范
+  @InsightIntentFunctionMethod({
+    intentName: 'PurchaseMovieTickets',
+    domain: 'PurchaseTickets',
+    intentVersion: '1.0.1',
+    displayName: '购买电影票',
+    llmDescription: '用于在线购买电影票，允许用户选择指定影院、电影和场次时间进行购票。在用户明确表达购票需求，且已提供所有必要信息（cinema, film, time）时使用。如果信息不全或者用户只是查询电影信息、放映时间或票价，不应调用此工具。',
+    parameters: {
+      'type': 'object',
+      'properties': {
+        'cinema': {
+          'type': 'string',
+          'description': '目标影院名称，仅支持平台合作的影院'
+        },
+        'film': {
+          'type': 'string',
+          'description': '目标电影名称，需为当前上映或即将上映且在影院排片列表中的电影'
+        },
+        'time': {
+          'type': 'string',
+          'description': '放映时间，必须为未来的场次，且需为影院当天有效排片时间；时间格式应为\'YYYY-MM-DD HH:MM\'（例如\'2025-07-01 19:30\'）'
+        }
+      },
+      'required': ['cinema', 'film', 'time']
+    }
+  })
+  static executePurchaseMovieIntent(cinema: string, film: string, time: string): insightIntent.ExecuteResult {
+    const data: insightIntent.ExecuteResult = {
+      code: 0, // 意图执行成功时code必须为0
+      result: {
+        orderNumber: 'XXXXXX',
+        resultDesc: `电影票${film}购买成功`
+      }
+    }
+    return data;
+  }
+}
+```

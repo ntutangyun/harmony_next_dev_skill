@@ -16,19 +16,80 @@ ASON.parse默认生成的对象为Sendable对象，布局不可变，不支持�
 
 import { ArkTSUtils, collections } from '@kit.ArkTS';
 
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
 
-ArkTSUtils.ASON.parse("{}")
-ArkTSUtils.ASON.stringify(new collections.Array(1, 2, 3))
+  build() {
+    RelativeContainer() {
+      Text(this.message)
+        .id('HelloWorld')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+        .onClick(() => {
+          console.info(ArkTSUtils.ASON.parse('{}'));
+          console.info(ArkTSUtils.ASON.stringify(new collections.Array(1, 2, 3)));
 
-
-let options2: ArkTSUtils.ASON.ParseOptions = {
-    bigIntMode: ArkTSUtils.ASON.BigIntMode.PARSE_AS_BIGINT,
-    parseReturnType: ArkTSUtils.ASON.ParseReturnType.MAP,
+          let options2: ArkTSUtils.ASON.ParseOptions = {
+            bigIntMode: ArkTSUtils.ASON.BigIntMode.PARSE_AS_BIGINT,
+            parseReturnType: ArkTSUtils.ASON.ParseReturnType.MAP,
+          }
+          let jsonText = '{"largeNumber":112233445566778899}';
+          let map = ArkTSUtils.ASON.parse(jsonText, undefined, options2);
+          // 执行结果为：{"largeNumber":112233445566778899}
+          console.info(ArkTSUtils.ASON.stringify(map));
+          this.message = 'success';
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
 }
-let jsonText = '{"largeNumber":112233445566778899}';
-let map = ArkTSUtils.ASON.parse(jsonText, undefined, options2);
-// 执行结果为：{"largeNumber":112233445566778899}
-console.info(ArkTSUtils.ASON.stringify(map));
-AsonParsingGeneration.ets
-异步等待
-共享容器
+
+## Code blocks
+
+### Code block 1
+
+```
+import { ArkTSUtils, collections } from '@kit.ArkTS';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  build() {
+    RelativeContainer() {
+      Text(this.message)
+        .id('HelloWorld')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+        .onClick(() => {
+          console.info(ArkTSUtils.ASON.parse('{}'));
+          console.info(ArkTSUtils.ASON.stringify(new collections.Array(1, 2, 3)));
+
+          let options2: ArkTSUtils.ASON.ParseOptions = {
+            bigIntMode: ArkTSUtils.ASON.BigIntMode.PARSE_AS_BIGINT,
+            parseReturnType: ArkTSUtils.ASON.ParseReturnType.MAP,
+          }
+          let jsonText = '{"largeNumber":112233445566778899}';
+          let map = ArkTSUtils.ASON.parse(jsonText, undefined, options2);
+          // 执行结果为：{"largeNumber":112233445566778899}
+          console.info(ArkTSUtils.ASON.stringify(map));
+          this.message = 'success';
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```

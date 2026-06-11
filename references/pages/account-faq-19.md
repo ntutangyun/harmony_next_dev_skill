@@ -17,6 +17,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-f
 注意
 
 GroupUnionID是一个大小写敏感的字符串，最大长度为64字符，在存储、查询、比较GroupUnionID时，请务必保留其原始大小写。
-
-三方开发框架接入华为账号一键登录
-401 参数检查失败的可能原因和解决办法

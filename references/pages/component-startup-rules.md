@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/component-startup-rules_
 
+启动组件是指一切启动或连接应用组件的行为：
+
 启动UIAbility、DataShareExtensionAbility，如使用startAbility()、startAbilityByCall()、openLink()等相关接口。
 
 连接ServiceExtensionAbility、DataShareExtensionAbility，如使用connectServiceExtensionAbility()、createDataShareHelper()等相关接口。
@@ -25,9 +27,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/component
 位于后台的UIAbility应用，启动组件需校验BACKGROUND权限ohos.permission.START_ABILITIES_FROM_BACKGROUND（该权限仅系统应用可申请）。
 
 说明
+
 前后台应用的判断依据：若应用进程获焦或所属的UIAbility组件位于前台则判定为前台应用，否则为后台应用。
-对于2in1和Tablet设备：
+
 从API version 18开始，如果应用已创建在前台显示的悬浮窗，当该应用退至后台时，无需校验BACKGROUND权限也可以拉起其他Ability。
+
 从API version 21开始，如果应用自身已经添加到状态栏，则当应用退至后台时，无需校验BACKGROUND权限也可以拉起自身的UIAbility。
 
 跨设备使用startAbilityByCall接口，需校验分布式权限ohos.permission.DISTRIBUTED_DATASYNC。
@@ -61,6 +65,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/component
 说明
 
 下图中的BACKGROUND权限是指ohos.permission.START_ABILITIES_FROM_BACKGROUND，DATASYNC权限是指ohos.permission.DISTRIBUTED_DATASYNC。
-
-常见action与entities（不推荐使用）
-应用启动框架AppStartup

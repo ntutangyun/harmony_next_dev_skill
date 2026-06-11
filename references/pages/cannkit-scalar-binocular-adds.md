@@ -2,7 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-scalar-binocular-adds_
 
+功能说明
+
+矢量内每个元素与标量求和，计算公式如下，其中PAR表示矢量计算单元一个迭代能够处理的元素个数：
+
+函数原型
+
+tensor前n个数据计算：
+
+template <typename T, bool isSetMask = true>
 __aicore__ inline void Adds(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const T& scalarValue, const int32_t& calCount)
+
 参数说明
 
 表1 模板参数说明
@@ -10,55 +20,16 @@ __aicore__ inline void Adds(const LocalTensor<T>& dstLocal, const LocalTensor<T>
 参数名	描述
 T	操作数数据类型。
 U	scalarValue数据类型。
-isSetMask	
-
-是否在接口内部设置mask模式和mask值。
-
-- true，表示在接口内部设置。
-
-- false，表示在接口外部设置。
+isSetMask	是否在接口内部设置mask模式和mask值。 - true，表示在接口内部设置。 - false，表示在接口外部设置。
 
 表2 参数说明
 
 参数名称	类型	说明
-dstLocal	输出	
-
-目的操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-Kirin9020训练系列产品，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
-
-KirinX90系列处理器,支持的数据类型为：Tensor（int16_t/int32_t/half/float）
-
-
-srcLocal	输入	
-
-源操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-数据类型需要与目的操作数保持一致。
-
-Kirin9020训练系列产品，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
-
-KirinX90系列处理器，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
-
-
-scalarValue	输入	
-
-源操作数，数据类型需要与目的操作数中的元素类型保持一致
-
-Kirin9020训练系列产品，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
-
-KirinX90系列处理器，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
-
-
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020训练系列产品，支持的数据类型为：Tensor（int16_t/int32_t/half/float） KirinX90系列处理器，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型需要与目的操作数保持一致。 Kirin9020训练系列产品，支持的数据类型为：Tensor（int16_t/int32_t/half/float） KirinX90系列处理器，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
+scalarValue	输入	源操作数，数据类型需要与目的操作数中的元素类型保持一致 Kirin9020训练系列产品，支持的数据类型为：Tensor（int16_t/int32_t/half/float） KirinX90系列处理器，支持的数据类型为：Tensor（int16_t/int32_t/half/float）
 calCount	输入	输入数据元素个数。
+
 返回值
 
 无
@@ -87,5 +58,27 @@ AscendC::Adds(dstLocal, srcLocal, scalar, 512);
 输入数据(src0Local): [1 2 3 ... 512]
 输入数据(scalar): 2
 输出数据(dstLocal): [3 4 5 ... 514]
-标量双目指令
-Muls
+
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T, bool isSetMask = true>
+__aicore__ inline void Adds(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const T& scalarValue, const int32_t& calCount)
+```
+
+### Code block 2
+
+```
+int16_t scalar = 2;
+AscendC::Adds(dstLocal, srcLocal, scalar, 512);
+```
+
+### Code block 3
+
+```
+输入数据(src0Local): [1 2 3 ... 512]
+输入数据(scalar): 2
+输出数据(dstLocal): [3 4 5 ... 514]
+```

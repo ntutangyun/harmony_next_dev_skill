@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-model-optimization_
 
+Model Zoo
+
+模型轻量化

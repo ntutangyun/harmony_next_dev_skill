@@ -205,5 +205,217 @@ mediaKeySession.destroy();
 
 // MediaKeySystem实例使用完需要进行资源释放。
 mediaKeySystem.destroy();
-DRM Kit 简介
-数字版权保护(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { drm } from '@kit.DrmKit';
+```
+
+### Code block 2
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 3
+
+```
+let description: drm.MediaKeySystemDescription[] = drm.getMediaKeySystems();
+```
+
+### Code block 4
+
+```
+let isSupported: boolean = drm.isMediaKeySystemSupported("com.wiseplay.drm", "video/mp4", drm.ContentProtectionLevel.CONTENT_PROTECTION_LEVEL_SW_CRYPTO);
+```
+
+### Code block 5
+
+```
+let mediaKeySystem: drm.MediaKeySystem = drm.createMediaKeySystem("com.wiseplay.drm");
+```
+
+### Code block 6
+
+```
+mediaKeySystem.on('keySystemRequired', (eventInfo: drm.EventInfo) => {
+  console.info('keySystemRequired' + 'extra:' + eventInfo.extraInfo + ' data:' + eventInfo.info);
+    // 设备DRM证书请求与处理。
+});
+```
+
+### Code block 7
+
+```
+let certificateStatus: drm.CertificateStatus = mediaKeySystem.getCertificateStatus();
+```
+
+### Code block 8
+
+```
+if(certificateStatus != drm.CertificateStatus.CERT_STATUS_PROVISIONED) {
+    mediaKeySystem.generateKeySystemRequest().then(async (drmRequest: drm.ProvisionRequest) => {
+        console.info("generateKeySystemRequest success", drmRequest.data, drmRequest.defaultURL);
+    }).catch((err:BusinessError) =>{
+        console.error("generateKeySystemRequest err end", err.code);
+    });
+} else {
+    console.info("The certificate already exists.");
+}
+// 将设备DRM证书请求返回的drmRequest.data通过网络请求发送给DRM证书服务获取设备DRM证书响应，并处理。
+let provisionResponseByte = new Uint8Array([0x00, 0x00, 0x00, 0x00]); // 设备DRM证书响应。
+mediaKeySystem.processKeySystemResponse(provisionResponseByte).then(() => {
+    console.info("processKeySystemResponse success");
+}).catch((err:BusinessError) =>{
+    console.error("processKeySystemResponse err end", err.code);
+});
+```
+
+### Code block 9
+
+```
+let mediaKeySession: drm.MediaKeySession = mediaKeySystem.createMediaKeySession();
+```
+
+### Code block 10
+
+```
+mediaKeySession.on('keyRequired', (eventInfo: drm.EventInfo) => {
+  console.info('keyRequired' + 'info:' + eventInfo.info + ' extraInfo:' + eventInfo.extraInfo);
+    // 媒体密钥请求与处理。
+});
+```
+
+### Code block 11
+
+```
+mediaKeySession.on('keyExpired', (eventInfo: drm.EventInfo) => {
+  console.info('keyExpired' + 'info:' + eventInfo.info + ' extraInfo:' + eventInfo.extraInfo);
+});
+```
+
+### Code block 12
+
+```
+mediaKeySession.on('expirationUpdate', (eventInfo: drm.EventInfo) => {
+  console.info('expirationUpdate' + 'info:' + eventInfo.info + ' extraInfo:' + eventInfo.extraInfo);
+});
+```
+
+### Code block 13
+
+```
+mediaKeySession.on('keysChange', (keyInfo : drm.KeysInfo[], newKeyAvailable:boolean) => {
+    for(let i = 0; i < keyInfo.length; i++){
+        console.info('keysChange' + 'info:' + keyInfo[i].keyId + ' extraInfo:' + keyInfo[i].value);
+    }
+});
+```
+
+### Code block 14
+
+```
+try {
+  let status: boolean = mediaKeySession.requireSecureDecoderModule("video/avc");
+} catch (err) {
+  let error = err as BusinessError;
+  console.error(`requireSecureDecoderModule ERROR: ${error}`);
+}
+```
+
+### Code block 15
+
+```
+// 根据DRM解决方案要求，基于DRM信息中的pssh生成initData。
+let initData = new Uint8Array([0x00, 0x00, 0x00, 0x00]);
+// 根据DRM解决方案要求设置可选数据的值。
+let optionalData:drm.OptionsData[] = [{
+    name: "optionalDataName",
+    value: "optionalDataValue"
+}];
+// 在线媒体密钥请求和响应。
+mediaKeySession.generateMediaKeyRequest("video/mp4", initData, drm.MediaKeyType.MEDIA_KEY_TYPE_ONLINE, optionalData).then(async (licenseRequest: drm.MediaKeyRequest) => {
+   console.info("generateMediaKeyRequest success", licenseRequest.mediaKeyRequestType, licenseRequest.data, licenseRequest.defaultURL);
+   // 将媒体密钥请求返回的licenseRequest.data通过网络请求发送给DRM服务获取媒体密钥响应，并处理。
+   let licenseResponse = new Uint8Array([0x00, 0x00, 0x00, 0x00]); // 媒体密钥响应。
+   mediaKeySession.processMediaKeyResponse(licenseResponse).then((mediaKeyId: Uint8Array) => {
+     console.info("processMediaKeyResponse success");
+   }).catch((err:BusinessError) =>{
+     console.error("processMediaKeyResponse err end", err.code);
+  });
+}).catch((err:BusinessError) =>{
+  console.error("generateMediaKeyRequest err end", err.code);
+});
+// 离线媒体密钥请求和响应。
+let offlineMediaKeyId: Uint8Array;
+mediaKeySession.generateMediaKeyRequest("video/mp4", initData, drm.MediaKeyType.MEDIA_KEY_TYPE_OFFLINE, optionalData).then((licenseRequest: drm.MediaKeyRequest) => {
+   console.info("generateMediaKeyRequest success", licenseRequest.mediaKeyRequestType, licenseRequest.data, licenseRequest.defaultURL);
+   // 将媒体密钥请求返回的licenseRequest.data通过网络请求发送给DRM服务获取媒体密钥响应，并处理。
+   let licenseResponse = new Uint8Array([0x00, 0x00, 0x00, 0x00]); // 媒体密钥响应。
+   mediaKeySession.processMediaKeyResponse(licenseResponse).then((mediaKeyId: Uint8Array) => {
+     offlineMediaKeyId = new Uint8Array(mediaKeyId);
+     console.info("processMediaKeyResponse success");
+   }).catch((err:BusinessError) =>{
+     console.error("processMediaKeyResponse err end", err.code);
+  });
+}).catch((err:BusinessError) =>{
+  console.error("generateMediaKeyRequest err end", err.code);
+});
+```
+
+### Code block 16
+
+```
+mediaKeySession.restoreOfflineMediaKeys(offlineMediaKeyId).then(() => {
+  console.info("restoreOfflineMediaKeys success.");
+}).catch((err: BusinessError) => {
+  console.error(`restoreOfflineMediaKeys: ERROR: ${err}`);
+});
+```
+
+### Code block 17
+
+```
+let mediaKeyStatus: drm.MediaKeyStatus[]
+try {
+  mediaKeyStatus = mediaKeySession.checkMediaKeyStatus()
+} catch (err) {
+  let error = err as BusinessError;
+  console.error(`checkMediaKeyStatus: ERROR: ${error}`);
+}
+```
+
+### Code block 18
+
+```
+let offlineMediaKeyIds: Uint8Array[] = mediaKeySystem.getOfflineMediaKeyIds();
+try {
+  let offlineMediaKeyStatus: drm.OfflineMediaKeyStatus = mediaKeySystem.getOfflineMediaKeyStatus(offlineMediaKeyIds[0]);
+} catch (err) {
+  let error = err as BusinessError;
+  console.error(`getOfflineMediaKeyStatus ERROR: ${error}`);
+}
+try {
+  mediaKeySystem.clearOfflineMediaKeys(offlineMediaKeyIds[0]);
+} catch (err) {
+  let error = err as BusinessError;
+  console.error(`clearOfflineMediaKeys ERROR: ${error}`);
+}
+```
+
+### Code block 19
+
+```
+// MediaKeySession实例使用完需要进行资源释放。
+mediaKeySession.destroy();
+```
+
+### Code block 20
+
+```
+// MediaKeySystem实例使用完需要进行资源释放。
+mediaKeySystem.destroy();
+```

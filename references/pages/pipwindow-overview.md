@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pipwindow-overview_
 
+场景介绍
+
 应用在视频播放、视频会议、视频通话等场景下，可以使用画中画能力将视频内容以小窗（画中画）模式呈现。切换为小窗（画中画）模式后，用户可以进行其他界面操作，提升使用体验。
 
 画中画的常见使用场景有以下几种：
@@ -23,7 +25,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pipwindow
 使用NDK接口实现画中画功能开发：适用于依赖NDK接口开发的应用，需要应用自行管理页面。
 
 约束与限制
+
 基于安全考虑，应用处于后台时不允许通过startPiP启动画中画。针对应用返回后台时需要启动画中画的场景，建议使用setAutoStartEnabled(true)实现自动启动。
+
 接口说明
 
 以下是画中画功能的常用ArkTS接口，更多接口及使用参考@ohos.PiPWindow (画中画窗口)。
@@ -65,6 +69,7 @@ int32_t OH_PictureInPicture_RegisterControlEventListener(uint32_t controllerId, 
 int32_t OH_PictureInPicture_UnregisterControlEventListener(uint32_t controllerId, WebPipControlEventCallback callback)	关闭画中画控制面板控件动作事件的监听。
 int32_t OH_PictureInPicture_RegisterResizeListener(uint32_t controllerId, WebPipResizeCallback callback)	开启画中画窗口尺寸变化事件的监听。
 int32_t OH_PictureInPicture_UnregisterResizeListener(uint32_t controllerId, WebPipResizeCallback callback)	关闭画中画窗口尺寸变化事件的监听。
+
 交互方式
 
 画中画窗口提供以下交互方式：
@@ -101,8 +106,6 @@ int32_t OH_PictureInPicture_UnregisterResizeListener(uint32_t controllerId, WebP
 
 若不配置，视频通话模版默认不存在任何按钮，点击画中画窗口即可启动还原（见下图左，未配置任何控件的操作示意图）。下图右为配置控件的操作示意图。
 
- 
-
 视频会议场景可通过配置VideoMeetingControlGroup来显示可选的控制层控件。示意图如下所示。若不配置，视频会议模版默认不存在任何按钮，点击画中画窗口即可启动还原（与视频通话模版操作示意图一致）。
 
 图4 视频会议场景配置控制层可选控件
@@ -130,6 +133,3 @@ int32_t OH_PictureInPicture_UnregisterResizeListener(uint32_t controllerId, WebP
 图7 更新控件功能状态
 
 图8 设置控件使能状态
-
-在应用程序中使用画中画功能
-使用XComponent实现画中画功能开发（ArkTS）

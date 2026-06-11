@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/asset-native-add_
 
+接口介绍
+
+开发者可以查阅API文档，获取关键资产新增接口的详细说明：OH_Asset_Add。
+
+在新增关键资产时，关键资产属性的内容参数如下表所示：
+
+注意
+
 下表中“ASSET_TAG_ALIAS”和名称包含“ASSET_TAG_DATA_LABEL”的关键资产属性，用于存储业务自定义信息，其内容不会被加密，请勿存放敏感个人数据。
 
 属性名称（Asset_Tag）	属性内容（Asset_Value）	是否必选	说明
@@ -11,69 +19,15 @@ ASSET_TAG_ACCESSIBILITY	类型为uint32_t，取值范围详见Asset_Accessibilit
 ASSET_TAG_REQUIRE_PASSWORD_SET	类型为bool。	可选	是否仅在设置了锁屏密码的情况下，可访问关键资产。为true时，表示仅在用户设置了锁屏密码的情况下，关键资产才允许被访问；为false时，表示无论用户是否设置锁屏密码，关键资产均允许被访问。默认值为false。
 ASSET_TAG_AUTH_TYPE	类型为uint32_t，取值范围详见Asset_AuthType。	可选	访问关键资产所需的用户认证类型，默认值为ASSET_AUTH_TYPE_NONE，即访问关键资产前无需用户认证。
 ASSET_TAG_SYNC_TYPE	类型为uint32_t，取值范围详见Asset_SyncType。	可选	关键资产支持的同步类型，默认值为ASSET_SYNC_TYPE_NEVER，即不允许同步该关键资产。
-ASSET_TAG_IS_PERSISTENT	类型为bool。	可选	
-
-在应用卸载时是否需要保留关键资产。为true时表示应用卸载后，应用存储的关键资产将被保留；为false时表示应用卸载后，应用存储的关键资产将被删除。默认值为false。
-
-注意： 设置此属性时，需申请权限ohos.permission.STORE_PERSISTENT_DATA。
-
-
-ASSET_TAG_DATA_LABEL_CRITICAL_1	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且有完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
-ASSET_TAG_DATA_LABEL_CRITICAL_2	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且有完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
-ASSET_TAG_DATA_LABEL_CRITICAL_3	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且有完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
-ASSET_TAG_DATA_LABEL_CRITICAL_4	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且有完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
-ASSET_TAG_DATA_LABEL_NORMAL_1	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且无完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
-ASSET_TAG_DATA_LABEL_NORMAL_2	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且无完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
-ASSET_TAG_DATA_LABEL_NORMAL_3	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且无完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
-ASSET_TAG_DATA_LABEL_NORMAL_4	类型为uint8[]，长度为1-2048字节。	可选	
-
-关键资产附属信息，内容由业务自定义且无完整性保护。
-
-说明： API12前长度为1-512字节。
-
-
+ASSET_TAG_IS_PERSISTENT	类型为bool。	可选	在应用卸载时是否需要保留关键资产。为true时表示应用卸载后，应用存储的关键资产将被保留；为false时表示应用卸载后，应用存储的关键资产将被删除。默认值为false。 注意： 设置此属性时，需申请权限ohos.permission.STORE_PERSISTENT_DATA。
+ASSET_TAG_DATA_LABEL_CRITICAL_1	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且有完整性保护。 说明： API12前长度为1-512字节。
+ASSET_TAG_DATA_LABEL_CRITICAL_2	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且有完整性保护。 说明： API12前长度为1-512字节。
+ASSET_TAG_DATA_LABEL_CRITICAL_3	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且有完整性保护。 说明： API12前长度为1-512字节。
+ASSET_TAG_DATA_LABEL_CRITICAL_4	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且有完整性保护。 说明： API12前长度为1-512字节。
+ASSET_TAG_DATA_LABEL_NORMAL_1	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且无完整性保护。 说明： API12前长度为1-512字节。
+ASSET_TAG_DATA_LABEL_NORMAL_2	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且无完整性保护。 说明： API12前长度为1-512字节。
+ASSET_TAG_DATA_LABEL_NORMAL_3	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且无完整性保护。 说明： API12前长度为1-512字节。
+ASSET_TAG_DATA_LABEL_NORMAL_4	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属信息，内容由业务自定义且无完整性保护。 说明： API12前长度为1-512字节。
 ASSET_TAG_DATA_LABEL_NORMAL_LOCAL_112+	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属的本地信息，内容由业务自定义且无完整性保护，该项信息不会进行同步。
 ASSET_TAG_DATA_LABEL_NORMAL_LOCAL_212+	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属的本地信息，内容由业务自定义且无完整性保护，该项信息不会进行同步。
 ASSET_TAG_DATA_LABEL_NORMAL_LOCAL_312+	类型为uint8[]，长度为1-2048字节。	可选	关键资产附属的本地信息，内容由业务自定义且无完整性保护，该项信息不会进行同步。
@@ -82,6 +36,7 @@ ASSET_TAG_CONFLICT_RESOLUTION	类型为uint32_t，取值范围详见Asset_Confli
 ASSET_TAG_REQUIRE_ATTR_ENCRYPTED14+	类型为bool。	可选	是否加密业务自定义附属信息。为true时表示业务自定义附属信息加密存储，为false时表示业务自定义附属信息不加密存储。默认值为false。
 ASSET_TAG_GROUP_ID18+	类型为uint8[]，长度为7-127字节。	可选	待新增的关键资产所属群组，默认新增不属于任何群组的关键资产。
 ASSET_TAG_WRAP_TYPE18+	类型为uint32_t，取值范围详见Asset_WrapType。	可选	关键资产支持的加密导入导出类型，默认值为ASSET_WRAP_TYPE_NEVER，即不允许加密导入导出关键资产。
+
 约束和限制
 
 基于别名的访问
@@ -109,7 +64,6 @@ target_link_libraries(entry PUBLIC libasset_ndk.z.so)
 #include "napi/native_api.h"
 #include <string.h>
 #include "asset/asset_api.h"
-napi_init.cpp
 
 参考如下示例代码，进行业务功能开发。
 
@@ -118,7 +72,6 @@ static napi_value AddAsset(napi_env env, napi_callback_info info)
     const char *secretStr = "demo_pwd";
     const char *aliasStr = "demo_alias";
     const char *labelStr = "demo_label";
-
 
     Asset_Blob secret = {(uint32_t)(strlen(secretStr)), (uint8_t *)secretStr};
     Asset_Blob alias = {(uint32_t)(strlen(aliasStr)), (uint8_t *)aliasStr};
@@ -130,12 +83,50 @@ static napi_value AddAsset(napi_env env, napi_callback_info info)
         {.tag = ASSET_TAG_DATA_LABEL_NORMAL_1, .value.blob = label},
     };
 
+    int32_t addResult = OH_Asset_Add(attr, sizeof(attr) / sizeof(attr[0]));
+    napi_value ret;
+    napi_create_int32(env, addResult, &ret);
+    return ret;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libasset_ndk.z.so)
+```
+
+### Code block 2
+
+```
+#include "napi/native_api.h"
+#include <string.h>
+#include "asset/asset_api.h"
+```
+
+### Code block 3
+
+```
+static napi_value AddAsset(napi_env env, napi_callback_info info)
+{
+    const char *secretStr = "demo_pwd";
+    const char *aliasStr = "demo_alias";
+    const char *labelStr = "demo_label";
+
+    Asset_Blob secret = {(uint32_t)(strlen(secretStr)), (uint8_t *)secretStr};
+    Asset_Blob alias = {(uint32_t)(strlen(aliasStr)), (uint8_t *)aliasStr};
+    Asset_Blob label = {(uint32_t)(strlen(labelStr)), (uint8_t *)labelStr};
+    Asset_Attr attr[] = {
+        {.tag = ASSET_TAG_ACCESSIBILITY, .value.u32 = ASSET_ACCESSIBILITY_DEVICE_FIRST_UNLOCKED},
+        {.tag = ASSET_TAG_SECRET, .value.blob = secret},
+        {.tag = ASSET_TAG_ALIAS, .value.blob = alias},
+        {.tag = ASSET_TAG_DATA_LABEL_NORMAL_1, .value.blob = label},
+    };
 
     int32_t addResult = OH_Asset_Add(attr, sizeof(attr) / sizeof(attr[0]));
     napi_value ret;
     napi_create_int32(env, addResult, &ret);
     return ret;
 }
-napi_init.cpp
-Asset Store Kit开发指导(C/C++)
-删除关键资产(C/C++)
+```

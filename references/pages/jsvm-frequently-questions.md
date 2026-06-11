@@ -1,6 +1,14 @@
-# JSVM
+# JSVM-API常见问题
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-frequently-questions_
+
+定位方法
+
+程序崩溃类问题：通过C++崩溃时调用栈查询FAQ的方式定位代码问题
+
+程序执行结果不符合预期类问题：需要通过JSVM-API调用返回值定位问题位置，再通过函数名查询FAQ
+
+程序崩溃类
 
 Q：在OH_JSVM_RunScript或OH_JSVM_CallFunction时crash，调用栈顶层为SetReturnValue
 
@@ -82,6 +90,7 @@ Q: 在调用JSVM-API时出现如下两种报错：
 #05 pc 00000000062bc1c/system/lib64/libv8_shared.so(v8::internal::Heap::MarkCompact()+396)
 #06 pc 00000000062b530/system/lib64/libv8_shared.so(v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector,v8::internal::GarbageCollectionReason,char const*)+844)
 #07 pc 00000000063ba1c/system/lib64/libv8_shared.so(v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace,v8::internal::GarbageCollectionReason,v8::GCCCallbackFlags)::$_3::operator()() const+1208)
+
 #00 pc 0000000003b902c/system/lib64/libv8_shared.so(Builtins_JumpIfToBooleanFalseHandler+44)
 #01 pc 00000000022765c/system/lib64/libv8_shared.so(Builtins_InterpreterEntryTrampoline+284)
 #02 pc 00000000022765c/system/lib64/libv8_shared.so(Builtins_InterpreterEntryTrampoline+284)
@@ -115,5 +124,90 @@ Q：JS执行时无法找到OH_JSVM_DefineClass定义的类
 
 A：检查是否将定义的类绑定到上下文中，见上下文绑定对象
 
-JSVM-API使用规范
-JSVM-API使用指导
+## Code blocks
+
+### Code block 1
+
+```
+#00 pc 0000000000c68ef0 /system/lib64/ndk/libjsvm.so(v8impl::(anonymous namespace)::FunctionCallbackWrapper::SetReturnValue(JSVM_Value__*)+16)
+#01 pc 0000000000c5ad30 /system/lib64/ndk/libjsvm.so(v8impl::(anonymous namespace)::FunctionCallbackWrapper::Invoke(v8::FunctionCallbackInfo<v8::Value> const&)+332)
+#02 pc 00000000014a9e58 /system/lib64/ndk/libjsvm.so
+#03 pc 00000000014a95d4 /system/lib64/ndk/libjsvm.so(v8::internal::Builtin_HandleApiCall(int, unsigned long*, v8::internal::Isolate*)+176)
+#04 pc 0000000000f7dab4 /system/lib64/ndk/libjsvm.so(Builtins_CEntry_Return1_ArgvOnStack_BuiltinExit+84)
+#05 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#06 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#07 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#08 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#09 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#10 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#11 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#12 pc 0000000000eece40 /system/lib64/ndk/libjsvm.so(Builtins_InterpreterEntryTrampoline+288)
+#13 pc 0000000000fe09f4 /system/lib64/ndk/libjsvm.so(Builtins_PromiseFulfillReactionJob+52)
+#14 pc 0000000000f155c0 /system/lib64/ndk/libjsvm.so(Builtins_RunMicrotasks+672)
+#15 pc 0000000000eeab54 /system/lib64/ndk/libjsvm.so(Builtins_JSRunMicrotasksEntry+148)
+#16 pc 00000000015bed78 /system/lib64/ndk/libjsvm.so(v8::internal::(anonymous namespace)::Invoke(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&)+2520)
+#17 pc 00000000015bf50c /system/lib64/ndk/libjsvm.so(v8::internal::(anonymous namespace)::InvokeWithTryCatch(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&)+104)
+#18 pc 00000000015bf730 /system/lib64/ndk/libjsvm.so(v8::internal::Execution::TryRunMicrotasks(v8::internal::Isolate*, v8::internal::MicrotaskQueue*)+80)
+#19 pc 00000000015ecf4c /system/lib64/ndk/libjsvm.so(v8::internal::MicrotaskQueue::RunMicrotasks(v8::internal::Isolate*)+312)
+#20 pc 00000000015ecd9c /system/lib64/ndk/libjsvm.so(v8::internal::MicrotaskQueue::PerformCheckpointInternal(v8::Isolate*)+52)
+#21 pc 00000000015deaa0 /system/lib64/ndk/libjsvm.so(v8::internal::Isolate::FireCallCompletedCallbackInternal(v8::internal::MicrotaskQueue*)+280)
+#22 pc 00000000014334e8 /system/lib64/ndk/libjsvm.so(v8::CallDepthScope<true>::~CallDepthScope()+248)
+#23 pc 00000000014330a4 /system/lib64/ndk/libjsvm.so(v8::Script::Run(v8::Local<v8::Context>, v8::Local<v8::Data>)+884)
+#24 pc 0000000000c5c2ac /system/lib64/ndk/libjsvm.so(OH_JSVM_RunScript+272)
+```
+
+### Code block 2
+
+```
+func {
+   // ...
+    JSVM_CallbackStruct param[] = {
+        {.data = nullptr, .callback = ConsoleInfo},
+        {.data = nullptr, .callback = Add},
+    };
+    JSVM_PropertyDescriptor descriptor[] = {
+        {"consoleinfo", NULL, &param[0], NULL, NULL, NULL, JSVM_DEFAULT},
+        {"add", NULL, &param[1], NULL, NULL, NULL, JSVM_DEFAULT},
+    };
+    // create env, register native method, and open env scope
+    JSVM_Env env;
+    OH_JSVM_CreateEnv(vm, sizeof(descriptor) / sizeof(descriptor[0]), descriptor, &env);
+   // ...
+    OH_JSVM_DestroyEnv(env);
+   // ...
+}
+```
+
+### Code block 3
+
+```
+#00 pc 0000000001d209e4/system/lib64/ndk/libjsvm.so(v8::base::0S::Abort()+28)
+#01 pc 0000000001408480/system/lib64/ndk/libjsvm.so(v8::Utils::ReportApiFailure(char const*,char const*)+124)
+#02 pc 00000000015c99b8/system/lib64/ndk/libjsvm.so(v8::internal::HandleScope::Extend(v8::internal::Isolate*)+200)
+```
+
+### Code block 4
+
+```
+#00 pc 00000000068f670/system/lib64/libv8_shared.so(v8::internal::PagedSpaceBase::RelinkFreeListCategories(v8::internal::PageMetadata*)+72)
+#01 pc 00000000068f670/system/lib64/libv8_shared.so(v8::internal::PagedSpaceBase::RelinkFreeListCategories(v8::internal::PageMetadata*)+80)
+#02 pc 0000000006608bc/system/lib64/libv8_shared.so(v8::internal::MarkCompactCollector::StartSweepSpace(v8::internal::PageSpace*)+132)
+#03 pc 000000000649de8/system/lib64/libv8_shared.so(v8::internal::MarkCompactCollector::Sweep()+576)
+#04 pc 000000000647344/system/lib64/libv8_shared.so(v8::internal::MarkCompactCollector::CollectGarbage()+212)
+#05 pc 00000000062bc1c/system/lib64/libv8_shared.so(v8::internal::Heap::MarkCompact()+396)
+#06 pc 00000000062b530/system/lib64/libv8_shared.so(v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector,v8::internal::GarbageCollectionReason,char const*)+844)
+#07 pc 00000000063ba1c/system/lib64/libv8_shared.so(v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace,v8::internal::GarbageCollectionReason,v8::GCCCallbackFlags)::$_3::operator()() const+1208)
+```
+
+### Code block 5
+
+```
+#00 pc 0000000003b902c/system/lib64/libv8_shared.so(Builtins_JumpIfToBooleanFalseHandler+44)
+#01 pc 00000000022765c/system/lib64/libv8_shared.so(Builtins_InterpreterEntryTrampoline+284)
+#02 pc 00000000022765c/system/lib64/libv8_shared.so(Builtins_InterpreterEntryTrampoline+284)
+#03 pc 000000000224ff0/system/lib64/libv8_shared.so(Builtins_JSEntryTrampoline+176)
+#04 pc 000000000224c38/system/lib64/libv8_shared.so(Builtins_JSEntry+184)
+#05 pc 00000000059775c/system/lib64/libv8_shared.so(v8::internal::(anonymous namespace)::Invoke(v8::iternal::Isolate*,v8::internal::(anonymous namespace)::InvokeParams const&)+792)
+#06 pc 00000000059740c/system/lib64/libv8_shared.so(v8::internal::Execution::Call(v8::internal::isolate*,v8::internal::Handle<v8::internal::Object>,v8::internal::Handle<v8::internal::Object>,int,v8::internal::Handle<v8::internal::Object>*)+120)
+#07 pc 0000000008269a8/system/lib64/libv8_shared.so
+```

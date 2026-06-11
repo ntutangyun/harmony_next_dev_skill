@@ -13,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap
 注意
 
 在AppGallery Connect完成商品配置后，AppGallery Connect不会跟随汇率实时刷新商品价格，开发者需要定期手动刷新价格，在商品的价格编辑页面点击刷新并保存，即可根据当时的汇率刷新商品价格。
-
-数字商品介绍
-通过Server API配置数字商品

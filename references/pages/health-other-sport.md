@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-other-sport_
 
+说明
+
 本章节锻炼记录类型，共用相同的统计数据模型与明细数据模型，后续部分锻炼记录类型可能扩充，扩充后的锻炼记录类型将拥有独立的命名空间，关联更多的统计/明细数据。
 
 其他运动类型相关锻炼记录类型如下：
@@ -94,6 +96,7 @@ exerciseSequenceHelper.sports.TRIATHLON	铁人三项	手环、手表
 exerciseSequenceHelper.sports.TUG_OF_WAR	拔河	手环、手表
 exerciseSequenceHelper.sports.VOLLEYBALL	排球	手环、手表
 exerciseSequenceHelper.sports.YOGA	瑜伽	手环、手表
+
 关联的统计数据说明
 
 字段定义：exerciseSequenceHelper.sports.SummaryFields
@@ -101,11 +104,10 @@ exerciseSequenceHelper.sports.YOGA	瑜伽	手环、手表
 字段列表	描述	类型	可选/必选
 calorie	热量统计	CalorieSummary	M
 exerciseHeartRate	运动心率统计	ExerciseHeartRateSummary	O
+
 关联的明细数据说明
 
 字段定义：exerciseSequenceHelper.sports.DetailFields
 
 字段列表	描述	类型	可选/必选
 exerciseHeartRate	运动心率详情	ExerciseHeartRate[]	O
-划船机
-健康记录数据

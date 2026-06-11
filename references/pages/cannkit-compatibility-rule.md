@@ -20,18 +20,35 @@ API层级	兼容策略
 为了保证兼容性，建议开发者在开发过程中尽量避免使用如下接口或编程方式，否则开发者需自行保证兼容性。
 
 非Ascend C公开接口、结构体，例如impl目录下的接口、结构体等；
-对芯片规格进行硬编码。例如：
+
 uint32_t MAX_UB_SIZE = 256 * 1024;
 // 建议获取方式：ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, MAX_UB_SIZE);
 // ...
-编译器BuiltIn API。例如：
+
 copy_gm_to_ubuf(input_1_local_ub, input_1, 0, 1, 8, 0, 0);
+
 TilingKey编程。
 
 建议开发者使用如下接口或编程方式。
 
 兼容的API。
+
 若涉及特定领域扩展特性，在Device侧用NPU_ARCH编译宏进行隔离，在Host侧用SocVersion进行隔离。
+
 使用Tiling模板编程。
-AscendC昇腾到麒麟兼容性迁移指南
-昇腾和麒麟同代AI处理器的映射关系
+
+## Code blocks
+
+### Code block 1
+
+```
+uint32_t MAX_UB_SIZE = 256 * 1024;
+// 建议获取方式：ascendcPlatform.GetCoreMemSize(platform_ascendc::CoreMemType::UB, MAX_UB_SIZE);
+// ...
+```
+
+### Code block 2
+
+```
+copy_gm_to_ubuf(input_1_local_ub, input_1, 0, 1, 8, 0, 0);
+```

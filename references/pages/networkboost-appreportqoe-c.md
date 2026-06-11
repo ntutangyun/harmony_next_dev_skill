@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-appreportqoe-c_
 
+场景介绍
+
 当应用传输体验发生变化时，应用将传输体验和传输的业务类型信息通过实时反馈接口传输给系统网络业务模块，系统网络业务模块进行精细化调度，实现网络加速。
 
 例如：视频类App播放过程中卡顿，将卡顿信息上报后，Network Boost Kit将信息反馈给系统网络加速模块，该模块会记录播放卡顿信息，并根据当前网络情况，启用网络加速能力。
@@ -12,6 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 
 接口名	描述
 int32_t HMS_NetworkBoost_ReportQoe(NetworkBoost_ServiceType serviceType, NetworkBoost_QoeType qoeType)	应用反馈传输体验信息。
+
 开发步骤
 
 导入Network Boost Kit模块。
@@ -33,5 +36,31 @@ int32_t ReportQoe()
     printf("传输体验反馈结果: %d\n", ret);
     return ret;
 }
-网络场景识别 (C/C++)
-弱网感知判决 (C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "NetworkBoostKit/network_boost_quality.h"
+#include <cstdio>
+```
+
+### Code block 2
+
+```
+libnetwork_boost.so
+```
+
+### Code block 3
+
+```
+int32_t ReportQoe()
+{
+    NetworkBoost_ServiceType serviceType = NB_SERVICE_SHORT_VIDEO;
+    NetworkBoost_QoeType qoeType = NB_QOE_BAD_SERVER_ERROR;
+    int32_t ret = HMS_NetworkBoost_ReportQoe(serviceType, qoeType);
+    printf("传输体验反馈结果: %d\n", ret);
+    return ret;
+}
+```

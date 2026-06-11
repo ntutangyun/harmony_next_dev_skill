@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-dialog-overview_
 
+弹窗一般指打开应用时自动弹出或者用户行为操作时弹出的UI界面，用于短时间内展示用户需关注的信息或待处理的操作。
+
 从ArkUI组件树层级上来看，Overlay浮层、弹窗、模态、带Order的Overlay浮层都挂载在Root节点下。弹窗、模态、带Order的Overlay浮层根据设置的层级（数字大小）进行逐层显示，并且全部显示在Overlay浮层上面。如图所示：
 
 对于一个多页面应用，基本树结构如下所示。多个Page页面之间使用Router的接口进行跳转。NavBar和Navdestination组成的页面可以通过Navigation接口进行跳转。
@@ -33,7 +35,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-dia
 根据用户交互操作场景，弹窗可分为模态弹窗和非模态弹窗两种类型，其区别在于用户是否必须对其做出响应。
 
 模态弹窗： 为强交互形式，会中断用户当前的操作流程，要求用户必须做出响应才能继续其他操作，通常用于需要向用户传达重要信息的场景。
+
 非模态弹窗： 为弱交互形式，不会影响用户当前操作行为，用户可以不对其进行回应，通常都有时间限制，出现一段时间后会自动消失。一般用于告诉用户信息内容外还需要用户进行功能操作的场景。
+
 说明
 
 当前模态弹窗通过设置指定属性变成非模态，例如AlertDialog，可以设置AlertDialogParam中的isModal属性值为false变成非模态，其他弹窗详见API说明。
@@ -55,11 +59,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-dia
 绑定模态页面（bindContentCover/bindSheet）	当需要新的界面覆盖在旧的界面上，且旧的界面不消失的一种转场方式时，例如缩略图片点击后查看大图等，应优先考虑使用此弹窗。
 即时反馈（Toast）	当需要在一个小的窗口中提供用户当前操作的简单反馈时，例如提示文件保存成功等，应优先考虑使用此弹窗。
 设置浮层（OverlayManager）	当需要完全自定义内容、行为、样式时，可以使用浮层将UI展示在页面之上，例如音乐/语音播放悬浮球/胶囊等，应优先考虑使用此弹窗。
+
 规格约束
 
 多个弹窗组件先后弹出时，后弹出的组件的层级高于先弹出的层级，退出时按照层级从高到低的顺序逐次退出。
 
 在移动设备中，子窗模式的弹窗当前无法超出主窗口。而在2in1设备上，使用模态类弹窗时，会出现需要超出主窗口显示的场景，开发者可以通过设置showInSubWindow为true实现超出主窗口的显示效果。如下图所示：
-
-使用弹窗
-弹出框 (Dialog)

@@ -2,3 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-nearbytransfer-dev_
 
+概述
+
+开发准备
+
+开发指导

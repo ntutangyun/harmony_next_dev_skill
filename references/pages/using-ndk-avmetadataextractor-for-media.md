@@ -56,7 +56,6 @@ int64_t offset = 0; // 媒体源在文件描述符中的偏移量。
 int32_t fileDescribe = -1; // 媒体文件描述符。
 int32_t fileSize = 0; // 媒体文件大小。
 
-
 // GetInputParams为辅助函数，用于获取FetchAlbumCover、FetchMetadata的输入参数，实现见完整示例。
 if (!GetInputParams(env, info, offset, fileDescribe, fileSize)) {
     return nullptr;
@@ -92,7 +91,6 @@ OH_AVFormat_GetIntValue(avMetadata, OH_AVMETADATA_EXTRACTOR_VIDEO_HEIGHT, &heigh
 #include <multimedia/image_framework/image/pixelmap_native.h>
 #include <multimedia/player_framework/avmetadata_extractor.h>
 
-
 #include <hilog/log.h>
 // 获取专辑封面。
 OH_PixelmapNative* pixelMap = nullptr;
@@ -102,11 +100,11 @@ avErrCode = OH_AVMetadataExtractor_FetchAlbumCover(mainExtractor, &pixelMap);
 
 // 释放OH_AVMetadataExtractor资源。
 OH_AVMetadataExtractor_Release(mainExtractor);
+
 运行示例工程
 
 参考以下示例，获取一个音频的元数据和专辑封面。
 
-新建工程，下载完整示例工程，并将示例工程的资源复制到对应目录。
 AVMetadataExtractorNDK
 entry/src/main/ets/
 └── pages
@@ -128,6 +126,142 @@ entry/src/main/
     │
     └── rawfile
         └── test.mp3 (音频资源)
+
 编译新建工程并运行。
-媒体信息查询
-使用AVImageGenerator获取视频帧(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libavmetadata_extractor.so libace_napi.z.so )
+```
+
+### Code block 2
+
+```
+#include <multimedia/player_framework/native_avformat.h>
+```
+
+### Code block 3
+
+```
+target_link_libraries(entry PUBLIC libnative_media_core.so)
+```
+
+### Code block 4
+
+```
+#include <multimedia/image_framework/image/pixelmap_native.h>
+```
+
+### Code block 5
+
+```
+target_link_libraries(entry PUBLIC libpixelmap.so libpixelmap_ndk.z.so)
+```
+
+### Code block 6
+
+```
+#include <hilog/log.h>
+```
+
+### Code block 7
+
+```
+target_link_libraries(entry PUBLIC libhilog_ndk.z.so)
+```
+
+### Code block 8
+
+```
+#include <multimedia/player_framework/avmetadata_extractor.h>
+// 创建OH_AVMetadataExtractor实例。
+OH_AVMetadataExtractor* mainExtractor = OH_AVMetadataExtractor_Create();
+```
+
+### Code block 9
+
+```
+#include "napi/native_api.h"
+#include <multimedia/player_framework/avmetadata_extractor.h>
+int64_t offset = 0; // 媒体源在文件描述符中的偏移量。
+int32_t fileDescribe = -1; // 媒体文件描述符。
+int32_t fileSize = 0; // 媒体文件大小。
+
+// GetInputParams为辅助函数，用于获取FetchAlbumCover、FetchMetadata的输入参数，实现见完整示例。
+if (!GetInputParams(env, info, offset, fileDescribe, fileSize)) {
+    return nullptr;
+}
+ // 设置媒体资源的文件描述符。
+OH_AVErrCode avErrCode = OH_AVMetadataExtractor_SetFDSource(mainExtractor, fileDescribe, offset, fileSize);
+// 异常处理。
+if (avErrCode != AV_ERR_OK) {
+    OH_AVMetadataExtractor_Release(mainExtractor);
+    napi_throw_error(env, "EFAILED", "SetFDSource for metadata extractor failed");
+    return nullptr;
+}
+```
+
+### Code block 10
+
+```
+// 获取元数据。
+avErrCode = OH_AVMetadataExtractor_FetchMetadata(mainExtractor, avMetadata);
+```
+
+### Code block 11
+
+```
+// 从OH_AVFormat对象中解析出int32_t类型的视频资源宽高信息。
+int32_t width = 0;
+int32_t height = 0;
+OH_AVFormat_GetIntValue(avMetadata, OH_AVMETADATA_EXTRACTOR_VIDEO_WIDTH, &width);
+OH_AVFormat_GetIntValue(avMetadata, OH_AVMETADATA_EXTRACTOR_VIDEO_HEIGHT, &height);
+```
+
+### Code block 12
+
+```
+#include <multimedia/image_framework/image/pixelmap_native.h>
+#include <multimedia/player_framework/avmetadata_extractor.h>
+
+#include <hilog/log.h>
+// 获取专辑封面。
+OH_PixelmapNative* pixelMap = nullptr;
+avErrCode = OH_AVMetadataExtractor_FetchAlbumCover(mainExtractor, &pixelMap);
+```
+
+### Code block 13
+
+```
+// 释放OH_AVMetadataExtractor资源。
+OH_AVMetadataExtractor_Release(mainExtractor);
+```
+
+### Code block 14
+
+```
+AVMetadataExtractorNDK
+entry/src/main/ets/
+└── pages
+    └── Index.ets (获取元数据界面)
+entry/src/main/
+├── cpp
+│   ├── types
+│   │   └── libentry
+│   │       └── Index.d.ts (NDK函数对应的js映射)
+│   ├── CMakeLists.txt (CMake脚本)
+│   └── napi_init.cpp (NDK函数)
+└── resources
+    ├── base
+    │   ├── element
+    │   │   ├── color.json
+    │   │   ├── float.json
+    │   │   └── string.json
+    │   └── media
+    │
+    └── rawfile
+        └── test.mp3 (音频资源)
+```

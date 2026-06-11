@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-nethandovercallback_
 
+场景介绍
+
 在弱网环境下，系统发起多网迁移（WiFi<->蜂窝，主卡<->副卡等）的过程中，给应用提供连接迁移开始和完成通知，应用根据连接迁移通知的建议进行重建，快速恢复业务，给用户带来平滑、高速、低时延的上网体验。
 
 接口说明
@@ -11,6 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 接口名	描述
 on(type: 'handoverChange', callback: Callback<HandoverInfo>): void	订阅连接迁移。
 off(type: 'handoverChange', callback?: Callback<HandoverInfo>): void	取消订阅连接迁移。
+
 开发步骤
 
 导入Network Boost Kit模块。
@@ -41,5 +44,40 @@ try {
 } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
 }
-连接迁移（多网切换）
-迁移模式设置
+
+## Code blocks
+
+### Code block 1
+
+```
+import { netHandover } from '@kit.NetworkBoostKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+try {
+  netHandover.on('handoverChange', (info: netHandover.HandoverInfo) => {
+    if (info.handoverStart) {
+      // 连接迁移开始回调，应用按照HandoverStart的建议调整数传策略
+      console.info('handover start');
+    } else if (info.handoverComplete) {
+      // 连接迁移完成回调，应用按照HandoverComplete的建议进行调速和重建恢复
+      console.info('handover complete');
+    }
+  });
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 3
+
+```
+try {
+  netHandover.off('handoverChange');
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```

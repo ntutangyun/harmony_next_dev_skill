@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/recoverykey-delete_
 
+场景介绍
+
 为应用提供删除企业恢复密钥的能力，用于在企业恢复密钥发生泄漏、禁用企业恢复密钥时删除相关数据，使之前导出的企业恢复密钥失效。
 
 接口说明
@@ -10,6 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/recoveryk
 
 接口名	描述
 deleteEnterpriseRecoveryKey(userId: number, signature: Uint8Array): Promise<number>	使用Promise方式删除企业恢复密钥相关数据。
+
 开发步骤
 
 导入模块。
@@ -34,5 +37,32 @@ async function testDeleteEnterpriseRecoveryKey() {
     console.error(`Failed to testDeleteEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
   }
 }
-更新企业公钥证书
-Enterprise Data Guard Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { BusinessError, osAccount } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+async function testDeleteEnterpriseRecoveryKey() {
+  try {
+    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
+    let userId: number = await accountManager.getOsAccountLocalId();
+    // 在实际应用中，signature 应替换为由企业的公钥、私钥和挑战值生成的签名。
+    let signature: Uint8Array = new Uint8Array([0]);
+    recoveryKey.deleteEnterpriseRecoveryKey(userId, signature).then((ret: number) => {
+      console.info(`Succeeded in deleting enterprise recovery key.`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to delete enterprise recovery key. Code: ${err.code}, message: ${err.message}`);
+    });
+  } catch (e) {
+    console.error(`Failed to testDeleteEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
+  }
+}
+```

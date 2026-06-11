@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-builderparam_
 
-当开发者创建自定义组件并需要为其添加特定功能（例如页面跳转功能）时，如果直接在组件内嵌入事件方法，会导致所有该自定义组件的实例都增加此功能。为了解决此问题，ArkUI引入了@BuilderParam装饰器。@BuilderParam用于装饰指向@Builder方法的变量，开发者可以在初始化自定义组件时，使用不同的方式（如参数修改、尾随闭包、借用箭头函数等）对@BuilderParam装饰的自定义构建函数进行传参赋值。在自定义组件内部，通过调用@BuilderParam为组件增加特定功能。
+当开发者创建自定义组件并需要为其添加特定功能（例如Navigation功能）时，如果直接在组件内嵌入事件方法，会导致所有该自定义组件的实例都增加此功能。为了解决此问题，ArkUI引入了@BuilderParam装饰器。@BuilderParam用于装饰指向@Builder方法的变量，开发者可以在初始化自定义组件时，使用不同的方式（如参数修改、尾随闭包、借用箭头函数等）对@BuilderParam装饰的自定义构建函数进行传参赋值。在自定义组件内部，通过调用@BuilderParam为组件增加特定功能。
 
 在阅读本文档前，建议提前阅读：@Builder。
 
@@ -15,7 +15,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-bui
 从API version 11开始，该装饰器支持在元服务中使用。
 
 装饰器使用说明
-初始化@BuilderParam装饰的方法
+
+[h2]初始化@BuilderParam装饰的方法
 
 @BuilderParam装饰的方法只能被自定义构建函数（@Builder装饰的方法）初始化。
 
@@ -25,24 +26,20 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-bui
 function overBuilder() {
 }
 
-
 @Component
 struct Child {
   @Builder
   doNothingBuilder() {
   }
 
-
   // 使用自定义组件的自定义构建函数初始化@BuilderParam装饰的方法
   @BuilderParam customBuilderParam: () => void = this.doNothingBuilder;
   // 使用全局自定义构建函数初始化@BuilderParam装饰的方法
   @BuilderParam customOverBuilderParam: () => void = overBuilder;
 
-
   build() {
   }
 }
-BuilderParamInitMethod.ets
 
 使用父组件自定义构建函数初始化子组件@BuilderParam装饰的方法。
 
@@ -52,9 +49,7 @@ struct Child {
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -62,7 +57,6 @@ struct Child {
     }
   }
 }
-
 
 @Entry
 @Component
@@ -72,7 +66,6 @@ struct Parent {
     Text('Parent builder')
   }
 
-
   build() {
     Column() {
       // 使用父组件自定义构建函数初始化子组件@BuilderParam装饰的方法
@@ -80,9 +73,8 @@ struct Parent {
     }
   }
 }
-BuilderParamInitMethodDemo01.ets
 
-图1 示例效果图
+示例效果图
 
 需要注意this的指向。
 
@@ -92,20 +84,16 @@ BuilderParamInitMethodDemo01.ets
 struct Child {
   label: string = 'Child';
 
-
   @Builder
   customBuilder() {
   }
-
 
   @Builder
   customChangeThisBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @BuilderParam customChangeThisBuilderParam: () => void = this.customChangeThisBuilder;
-
 
   build() {
     Column() {
@@ -115,18 +103,15 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   label: string = 'Parent';
 
-
   @Builder
   componentBuilder() {
     Text(`${this.label}`)
   }
-
 
   build() {
     Column() {
@@ -144,9 +129,8 @@ struct Parent {
     }
   }
 }
-BuilderParamInitMethodDemo02.ets
 
-图2 示例效果图
+示例效果图
 
 限制条件
 
@@ -157,14 +141,14 @@ BuilderParamInitMethodDemo02.ets
 在自定义组件尾随闭包的场景下，子组件有且仅有一个@BuilderParam用来接收此尾随闭包，且此@BuilderParam装饰的方法不能有参数。具体参考尾随闭包初始化组件。
 
 使用场景
-参数初始化组件
+
+[h2]参数初始化组件
 
 @BuilderParam装饰的方法为有参数或无参数的形式，必须与指向的@Builder方法类型匹配。
 
 class Tmp {
   public label: string = '';
 }
-
 
 @Builder
 function overBuilder($$: Tmp) {
@@ -174,22 +158,18 @@ function overBuilder($$: Tmp) {
     .backgroundColor(Color.Green)
 }
 
-
 @Component
 struct Child {
   label: string = 'Child';
-
 
   @Builder
   customBuilder() {
   }
 
-
   // 无参数类型，指向的customBuilder也是无参数类型
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   // 有参数类型，指向的overBuilder也是有参数类型的方法
   @BuilderParam customOverBuilderParam: ($$: Tmp) => void = overBuilder;
-
 
   build() {
     Column() {
@@ -199,18 +179,15 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   label: string = 'Parent';
 
-
   @Builder
   componentBuilder() {
     Text(`${this.label}`)
   }
-
 
   build() {
     Column() {
@@ -219,11 +196,10 @@ struct Parent {
     }
   }
 }
-BuilderParamSceneInitComponent.ets
 
-图3 示例效果图
+示例效果图
 
-尾随闭包初始化组件
+[h2]尾随闭包初始化组件
 
 在自定义组件中，使用@BuilderParam装饰的属性可通过尾随闭包进行初始化。初始化时，组件后需紧跟一个大括号“{}”形成尾随闭包场景。
 
@@ -241,15 +217,12 @@ BuilderParamSceneInitComponent.ets
 struct CustomContainer {
   @Prop header: string = '';
 
-
   @Builder
   closerBuilder() {
   }
 
-
   // 使用父组件的尾随闭包{}(@Builder装饰的方法)初始化子组件@BuilderParam装饰的方法
   @BuilderParam closer: () => void = this.closerBuilder;
-
 
   build() {
     Column() {
@@ -259,7 +232,6 @@ struct CustomContainer {
     }
   }
 }
-
 
 @Builder
 function specificParam(label1: string, label2: string) {
@@ -271,12 +243,10 @@ function specificParam(label1: string, label2: string) {
   }
 }
 
-
 @Entry
 @Component
 struct CustomContainerUser {
   @State text: string = 'header';
-
 
   build() {
     Column() {
@@ -293,9 +263,8 @@ struct CustomContainerUser {
     }
   }
 }
-BuilderParamSceneTrailingClosure01.ets
 
-图4 示例效果图
+示例效果图
 
 可以使用全局或局部@Builder通过尾随闭包的形式对@ComponentV2装饰的自定义组件中的@BuilderParam装饰的方法进行初始化。
 
@@ -305,14 +274,11 @@ BuilderParamSceneTrailingClosure01.ets
 struct ChildPage {
   @Require @Param message: string = '';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -324,9 +290,7 @@ struct ChildPage {
   }
 }
 
-
 const builderValue: string = 'Hello World';
-
 
 @Builder
 function overBuilder() {
@@ -337,12 +301,10 @@ function overBuilder() {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentPage {
   @Local label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -353,7 +315,6 @@ struct ParentPage {
     }
   }
 
-
   build() {
     Column() {
       ChildPage({ message: this.label }) {
@@ -361,7 +322,6 @@ struct ParentPage {
           this.componentBuilder();
         }
       }
-
 
       Line()
         .width('100%')
@@ -375,8 +335,10 @@ struct ParentPage {
     }
   }
 }
-BuilderParamSceneTrailingClosure02.ets
-使用@BuilderParam隔离多组件对@Builder跳转逻辑的调用
+
+示例效果图
+
+[h2]使用@BuilderParam隔离多组件对@Builder跳转逻辑的调用
 
 当@Builder封装的系统组件包含跳转逻辑时，所有调用该@Builder的自定义组件将具备该跳转功能。如果需要禁用特定组件的跳转功能，可使用@BuilderParam来隔离跳转逻辑。
 
@@ -387,15 +349,12 @@ BuilderParamSceneTrailingClosure02.ets
 import { HelloWorldPageBuilder } from './helloworld';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 class NavigationParams {
   public pathStack: NavPathStack = new NavPathStack();
   public boo: boolean = true;
 }
-
 
 @Builder
 function navigationAction(params: NavigationParams) {
@@ -423,12 +382,10 @@ function navigationAction(params: NavigationParams) {
   .width('100%')
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   @State info: NavigationParams = new NavigationParams();
-
 
   build() {
     Column() {
@@ -442,11 +399,9 @@ struct ParentPage {
   }
 }
 
-
 @Component
 struct ChildPageOne {
   @State info: NavigationParams = new NavigationParams();
-
 
   build() {
     Column() {
@@ -456,12 +411,10 @@ struct ChildPageOne {
   }
 }
 
-
 @Component
 struct ChildPage_BuilderParam {
   @State info: NavigationParams = new NavigationParams();
   @BuilderParam eventBuilder: (param: NavigationParams) => void = navigationAction;
-
 
   build() {
     Column() {
@@ -471,18 +424,16 @@ struct ChildPage_BuilderParam {
     }
   }
 }
-BuilderParamSceneJumpLogic.ets
+
 @Builder
 export function HelloWorldPageBuilder() {
   HelloWorldPage()
 }
 
-
 @Component
 struct HelloWorldPage {
   @State message: string = 'Hello World';
   @State pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     // 用于跳转的子页面
@@ -497,7 +448,6 @@ struct HelloWorldPage {
     .width('100%')
   }
 }
-helloworld.ets
 
 router_map.json
 
@@ -524,9 +474,9 @@ module.json5
   }
 }
 
-图5 示例效果图
+示例效果图
 
-使用全局和局部@Builder初始化@BuilderParam
+[h2]使用全局和局部@Builder初始化@BuilderParam
 
 在自定义组件中，使用@BuilderParam装饰的变量接收父组件通过@Builder传递的内容进行初始化，由于父组件的@Builder可以使用箭头函数改变当前的this指向，因此使用@BuilderParam装饰的变量会展示不同的内容。
 
@@ -534,15 +484,12 @@ module.json5
 struct ChildPage {
   label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -552,9 +499,7 @@ struct ChildPage {
   }
 }
 
-
 const builderValue: string = 'Hello World';
-
 
 @Builder
 function overBuilder() {
@@ -565,12 +510,10 @@ function overBuilder() {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -580,7 +523,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -613,11 +555,10 @@ struct ParentPage {
     }
   }
 }
-BuilderParamSceneGlobalLocalInit.ets
 
-图6 示例效果图
+示例效果图
 
-在@ComponentV2装饰的自定义组件中使用@BuilderParam
+[h2]在@ComponentV2装饰的自定义组件中使用@BuilderParam
 
 使用全局或局部@Builder初始化@ComponentV2装饰的自定义组件中的@BuilderParam属性。
 
@@ -625,15 +566,12 @@ BuilderParamSceneGlobalLocalInit.ets
 struct ChildPage {
   @Param label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -643,9 +581,7 @@ struct ChildPage {
   }
 }
 
-
 const builderValue: string = 'Hello World';
-
 
 @Builder
 function overBuilder() {
@@ -656,12 +592,10 @@ function overBuilder() {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentPage {
   @Local label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -671,7 +605,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -704,12 +637,12 @@ struct ParentPage {
     }
   }
 }
-BuilderParamSceneInComponentV2.ets
 
-图7 示例效果图
+示例效果图
 
 常见问题
-改变内容UI不刷新
+
+[h2]改变内容UI不刷新
 
 调用自定义组件ChildPage时，通过this.componentBuilder传递@Builder参数。this指向自定义组件内部，因此父组件中改变label的值时，ChildPage无法感知这一变化。
 
@@ -719,14 +652,11 @@ BuilderParamSceneInComponentV2.ets
 struct ChildPage {
   @State label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -735,12 +665,10 @@ struct ChildPage {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   @State label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -750,7 +678,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -766,7 +693,6 @@ struct ParentPage {
     }
   }
 }
-BuilderParamProblemNotRefreshOpposite.ets
 
 使用箭头函数将@Builder传递到自定义组件ChildPage中，this指向会停留在父组件ParentPage里。在父组件中改变label的值时，ChildPage会感知到并重新渲染UI。
 
@@ -776,14 +702,11 @@ BuilderParamProblemNotRefreshOpposite.ets
 struct ChildPage {
   @State label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -792,12 +715,10 @@ struct ChildPage {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   @State label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -807,7 +728,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -824,8 +744,8 @@ struct ParentPage {
     }
   }
 }
-BuilderParamProblemNotRefreshPositive.ets
-@Require装饰器和@BuilderParam装饰器联合使用
+
+[h2]@Require装饰器和@BuilderParam装饰器联合使用
 
 由于@Require装饰器所装饰的变量需进行初始化，未初始化会导致编译报错。
 
@@ -835,7 +755,6 @@ BuilderParamProblemNotRefreshPositive.ets
 function globalBuilder() {
   Text('Hello World')
 }
-
 
 @Entry
 @Component
@@ -848,11 +767,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @Require @BuilderParam ChildBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {
@@ -870,7 +787,6 @@ function globalBuilder() {
   Text('Hello World')
 }
 
-
 @Entry
 @Component
 struct CustomBuilderDemo {
@@ -882,11 +798,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @Require @BuilderParam childBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {
@@ -894,8 +808,8 @@ struct ChildPage {
     }
   }
 }
-BuilderParamProblemCombinedPositive.ets
-@BuilderParam装饰器初始化的值必须为@Builder
+
+[h2]@BuilderParam装饰器初始化的值必须为@Builder
 
 使用@State装饰器装饰的变量，在初始化子组件的@BuilderParam和ChildBuilder变量时，编译时会输出报错信息。
 
@@ -906,12 +820,10 @@ function globalBuilder() {
   Text('Hello World')
 }
 
-
 @Entry
 @Component
 struct CustomBuilderDemo {
   @State message: string = '';
-
 
   build() {
     Column() {
@@ -921,11 +833,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @BuilderParam ChildBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {
@@ -943,7 +853,6 @@ function globalBuilder() {
   Text('Hello World')
 }
 
-
 @Entry
 @Component
 struct CustomBuilderDemo {
@@ -955,11 +864,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @BuilderParam childBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {
@@ -967,9 +874,6 @@ struct ChildPage {
     }
   }
 }
-BuilderParamProblemMustBuilderPositive.ets
-@LocalBuilder装饰器： 维持组件关系
-wrapBuilder：封装全局@Builder
 
 ## Code blocks
 
@@ -980,19 +884,16 @@ wrapBuilder：封装全局@Builder
 function overBuilder() {
 }
 
-
 @Component
 struct Child {
   @Builder
   doNothingBuilder() {
   }
 
-
   // 使用自定义组件的自定义构建函数初始化@BuilderParam装饰的方法
   @BuilderParam customBuilderParam: () => void = this.doNothingBuilder;
   // 使用全局自定义构建函数初始化@BuilderParam装饰的方法
   @BuilderParam customOverBuilderParam: () => void = overBuilder;
-
 
   build() {
   }
@@ -1008,9 +909,7 @@ struct Child {
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -1019,7 +918,6 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
@@ -1027,7 +925,6 @@ struct Parent {
   componentBuilder() {
     Text('Parent builder')
   }
-
 
   build() {
     Column() {
@@ -1045,20 +942,16 @@ struct Parent {
 struct Child {
   label: string = 'Child';
 
-
   @Builder
   customBuilder() {
   }
-
 
   @Builder
   customChangeThisBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @BuilderParam customChangeThisBuilderParam: () => void = this.customChangeThisBuilder;
-
 
   build() {
     Column() {
@@ -1068,18 +961,15 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   label: string = 'Parent';
 
-
   @Builder
   componentBuilder() {
     Text(`${this.label}`)
   }
-
 
   build() {
     Column() {
@@ -1106,7 +996,6 @@ class Tmp {
   public label: string = '';
 }
 
-
 @Builder
 function overBuilder($$: Tmp) {
   Text($$.label)
@@ -1115,22 +1004,18 @@ function overBuilder($$: Tmp) {
     .backgroundColor(Color.Green)
 }
 
-
 @Component
 struct Child {
   label: string = 'Child';
-
 
   @Builder
   customBuilder() {
   }
 
-
   // 无参数类型，指向的customBuilder也是无参数类型
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   // 有参数类型，指向的overBuilder也是有参数类型的方法
   @BuilderParam customOverBuilderParam: ($$: Tmp) => void = overBuilder;
-
 
   build() {
     Column() {
@@ -1140,18 +1025,15 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   label: string = 'Parent';
 
-
   @Builder
   componentBuilder() {
     Text(`${this.label}`)
   }
-
 
   build() {
     Column() {
@@ -1169,15 +1051,12 @@ struct Parent {
 struct CustomContainer {
   @Prop header: string = '';
 
-
   @Builder
   closerBuilder() {
   }
 
-
   // 使用父组件的尾随闭包{}(@Builder装饰的方法)初始化子组件@BuilderParam装饰的方法
   @BuilderParam closer: () => void = this.closerBuilder;
-
 
   build() {
     Column() {
@@ -1187,7 +1066,6 @@ struct CustomContainer {
     }
   }
 }
-
 
 @Builder
 function specificParam(label1: string, label2: string) {
@@ -1199,12 +1077,10 @@ function specificParam(label1: string, label2: string) {
   }
 }
 
-
 @Entry
 @Component
 struct CustomContainerUser {
   @State text: string = 'header';
-
 
   build() {
     Column() {
@@ -1230,14 +1106,11 @@ struct CustomContainerUser {
 struct ChildPage {
   @Require @Param message: string = '';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -1249,9 +1122,7 @@ struct ChildPage {
   }
 }
 
-
 const builderValue: string = 'Hello World';
-
 
 @Builder
 function overBuilder() {
@@ -1262,12 +1133,10 @@ function overBuilder() {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentPage {
   @Local label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -1278,7 +1147,6 @@ struct ParentPage {
     }
   }
 
-
   build() {
     Column() {
       ChildPage({ message: this.label }) {
@@ -1286,7 +1154,6 @@ struct ParentPage {
           this.componentBuilder();
         }
       }
-
 
       Line()
         .width('100%')
@@ -1308,15 +1175,12 @@ struct ParentPage {
 import { HelloWorldPageBuilder } from './helloworld';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 class NavigationParams {
   public pathStack: NavPathStack = new NavPathStack();
   public boo: boolean = true;
 }
-
 
 @Builder
 function navigationAction(params: NavigationParams) {
@@ -1344,12 +1208,10 @@ function navigationAction(params: NavigationParams) {
   .width('100%')
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   @State info: NavigationParams = new NavigationParams();
-
 
   build() {
     Column() {
@@ -1363,11 +1225,9 @@ struct ParentPage {
   }
 }
 
-
 @Component
 struct ChildPageOne {
   @State info: NavigationParams = new NavigationParams();
-
 
   build() {
     Column() {
@@ -1377,12 +1237,10 @@ struct ChildPageOne {
   }
 }
 
-
 @Component
 struct ChildPage_BuilderParam {
   @State info: NavigationParams = new NavigationParams();
   @BuilderParam eventBuilder: (param: NavigationParams) => void = navigationAction;
-
 
   build() {
     Column() {
@@ -1402,12 +1260,10 @@ export function HelloWorldPageBuilder() {
   HelloWorldPage()
 }
 
-
 @Component
 struct HelloWorldPage {
   @State message: string = 'Hello World';
   @State pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     // 用于跳转的子页面
@@ -1456,15 +1312,12 @@ struct HelloWorldPage {
 struct ChildPage {
   label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -1474,9 +1327,7 @@ struct ChildPage {
   }
 }
 
-
 const builderValue: string = 'Hello World';
-
 
 @Builder
 function overBuilder() {
@@ -1487,12 +1338,10 @@ function overBuilder() {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -1502,7 +1351,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -1544,15 +1392,12 @@ struct ParentPage {
 struct ChildPage {
   @Param label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -1562,9 +1407,7 @@ struct ChildPage {
   }
 }
 
-
 const builderValue: string = 'Hello World';
-
 
 @Builder
 function overBuilder() {
@@ -1575,12 +1418,10 @@ function overBuilder() {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentPage {
   @Local label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -1590,7 +1431,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -1632,14 +1472,11 @@ struct ParentPage {
 struct ChildPage {
   @State label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -1648,12 +1485,10 @@ struct ChildPage {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   @State label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -1663,7 +1498,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -1688,14 +1522,11 @@ struct ParentPage {
 struct ChildPage {
   @State label: string = 'Child Page';
 
-
   @Builder
   customBuilder() {
   }
 
-
   @BuilderParam customChangeThisBuilderParam: () => void = this.customBuilder;
-
 
   build() {
     Column() {
@@ -1704,12 +1535,10 @@ struct ChildPage {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage {
   @State label: string = 'Parent Page';
-
 
   @Builder
   componentBuilder() {
@@ -1719,7 +1548,6 @@ struct ParentPage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -1746,7 +1574,6 @@ function globalBuilder() {
   Text('Hello World')
 }
 
-
 @Entry
 @Component
 struct CustomBuilderDemo {
@@ -1758,11 +1585,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @Require @BuilderParam ChildBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {
@@ -1780,7 +1605,6 @@ function globalBuilder() {
   Text('Hello World')
 }
 
-
 @Entry
 @Component
 struct CustomBuilderDemo {
@@ -1792,11 +1616,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @Require @BuilderParam childBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {
@@ -1814,12 +1636,10 @@ function globalBuilder() {
   Text('Hello World')
 }
 
-
 @Entry
 @Component
 struct CustomBuilderDemo {
   @State message: string = '';
-
 
   build() {
     Column() {
@@ -1829,11 +1649,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @BuilderParam ChildBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {
@@ -1851,7 +1669,6 @@ function globalBuilder() {
   Text('Hello World')
 }
 
-
 @Entry
 @Component
 struct CustomBuilderDemo {
@@ -1863,11 +1680,9 @@ struct CustomBuilderDemo {
   }
 }
 
-
 @Component
 struct ChildPage {
   @BuilderParam childBuilder: () => void = globalBuilder;
-
 
   build() {
     Column() {

@@ -2,7 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fileguard-set-kia-watermark_
 
+场景介绍
+
+为应用提供设置KIA文件水印图片能力。
+
+接口说明
+
+详细接口说明可参考接口文档。
+
+接口名	描述
 setKiaWatermarkImage(image: Uint8Array, info: string): Promise<void>	使用Promise方式设置KIA文件水印图片。
+
 开发步骤
 
 导入模块。
@@ -22,6 +32,39 @@ async function testSetKiaWaterMarkImage() {
     let buffer: ArrayBuffer = new ArrayBuffer(stat.size);
     fileIo.readSync(fd, buffer);
 
+    let image: Uint8Array = new Uint8Array(buffer);
+    let info: string = new Date().toLocaleString();
+    guard.setKiaWatermarkImage(image, info).then(() => {
+      console.info(`Succeeded in setting the watermark image for Kia file.`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to set the watermark image for Kia file. Code: ${err.code}, message: ${err.message}.`);
+    })
+  } catch (e) {
+    console.error(`[scanFileGuard] testSetKiaWaterMarkImage Exception, Code: ${e.code}, message: ${e.message}`);
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+async function testSetKiaWaterMarkImage() {
+  try {
+    let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
+    let imagePath: string = '/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/1.png';
+    let fd: number = await guard.openFile(imagePath);
+    let stat: fileIo.Stat = fileIo.statSync(fd);
+    let buffer: ArrayBuffer = new ArrayBuffer(stat.size);
+    fileIo.readSync(fd, buffer);
 
     let image: Uint8Array = new Uint8Array(buffer);
     let info: string = new Date().toLocaleString();
@@ -34,5 +77,4 @@ async function testSetKiaWaterMarkImage() {
     console.error(`[scanFileGuard] testSetKiaWaterMarkImage Exception, Code: ${e.code}, message: ${e.message}`);
   }
 }
-订阅或取消订阅KIA文件拷贝、重命名和压缩事件
-添加、删除和获取放通应用列表
+```

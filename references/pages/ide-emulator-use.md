@@ -15,6 +15,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emula
 安装应用程序包和上传文件
 
 更多的扩展能力
-
-启动和关闭模拟器
-操控屏幕

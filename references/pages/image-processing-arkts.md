@@ -11,94 +11,18 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-pro
 当前仅支持处理同时满足以下条件的图片：
 
 图片为SDR（Standard dynamic range）图片。
+
 图片的像素格式为RGBA、BGRA、NV12、NV21，输出格式与输入格式一致。
+
 处理的PixelMap对象需为DMA内存。
 
 本模块提供4个质量档位的算法，处理效果逐渐变优，但性能也会逐渐下降。
 
-质量档位	
-
-输入分辨率要求
-
-（单位：像素）
-
-	
-
-输出分辨率要求
-
-（单位：像素）
-
-	说明
-NONE	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	仅适用于缩放场景，支持改变宽高比例，无清晰度增强效果。
-LOW	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-仅适用于缩放场景，支持改变宽高比例。
-
-缩放时会对图像进行低质量的清晰度增强，处理效率较高。
-
-此质量档位为默认设置。
-
-
-MEDIUM	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-仅适用于缩放场景，支持改变宽高比例。
-
-缩放时会对图像进行中等质量的清晰度增强，处理效率适中。
-
-
-HIGH	
-
-宽：[512,2000]
-
-高：[512,2000]
-
-	
-
-宽：[512,2000]
-
-高：[512,2000]
-
-	
-
-适用于缩放及清晰度增强场景，支持改变宽高比例。
-
-缩放时会对图像进行高质量的清晰度增强，处理效率相对较低。
+质量档位	输入分辨率要求 （单位：像素）	输出分辨率要求 （单位：像素）	说明
+NONE	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例，无清晰度增强效果。
+LOW	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图像进行低质量的清晰度增强，处理效率较高。 此质量档位为默认设置。
+MEDIUM	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图像进行中等质量的清晰度增强，处理效率适中。
+HIGH	宽：[512,2000] 高：[512,2000]	宽：[512,2000] 高：[512,2000]	适用于缩放及清晰度增强场景，支持改变宽高比例。 缩放时会对图像进行高质量的清晰度增强，处理效率相对较低。
 
 开发步骤
 
@@ -146,6 +70,7 @@ level：质量算法档位，默认为LOW。
 // 同步方法
 let enhancedPixelmap: image.PixelMap = imageProcessor.enhanceDetailSync(
 sourceImage, width, height, level);
+
 // 异步方法
 let enhancedPixelmap: Promise<image.PixelMap> = imageProcessor.enhanceDetail(sourceImage, width, height, level);
 
@@ -154,6 +79,7 @@ let enhancedPixelmap: Promise<image.PixelMap> = imageProcessor.enhanceDetail(sou
 // 同步方法
 let enhancedPixelmap: image.PixelMap = imageProcessor.enhanceDetailSync(
 sourceImage, scale, level);
+
 // 异步方法
 let enhancedPixelmap: Promise<image.PixelMap> = imageProcessor.enhanceDetail(
 sourceImage, scale, level);
@@ -161,7 +87,77 @@ sourceImage, scale, level);
 释放处理资源。
 
 videoProcessingEngine.deinitializeEnvironment();
+
 示例代码
+
 图片超分示例代码
-使用PixelMap完成位图操作
-编辑图片Exif信息
+
+## Code blocks
+
+### Code block 1
+
+```
+import { image, videoProcessingEngine } from '@kit.ImageKit';
+```
+
+### Code block 2
+
+```
+let promise: Promise<void> = videoProcessingEngine.initializeEnvironment();
+```
+
+### Code block 3
+
+```
+let scale: number = 0.5;
+let width: number = 512; // 示例代码，配置宽为512。
+let height: number = 512;// 示例代码，配置高为512。
+const color: ArrayBuffer = new ArrayBuffer(width * height * 4); // width * height * 4为需要创建的像素buffer大小。
+let opts: image.InitializationOptions = { editable: true, pixelFormat: image.PixelMapFormat.RGBA_8888, size: { height, width } }
+let sourceImage : image.PixelMap = image.createPixelMapSync(color, opts);
+let level : videoProcessingEngine.QualityLevel = videoProcessingEngine.QualityLevel.LOW;
+```
+
+### Code block 4
+
+```
+// 创建图片细节增强模块实例
+let imageProcessor = videoProcessingEngine.create() as videoProcessingEngine.ImageProcessor;
+```
+
+### Code block 5
+
+```
+// 同步方法
+let enhancedPixelmap: image.PixelMap = imageProcessor.enhanceDetailSync(
+sourceImage, width, height, level);
+```
+
+### Code block 6
+
+```
+// 异步方法
+let enhancedPixelmap: Promise<image.PixelMap> = imageProcessor.enhanceDetail(sourceImage, width, height, level);
+```
+
+### Code block 7
+
+```
+// 同步方法
+let enhancedPixelmap: image.PixelMap = imageProcessor.enhanceDetailSync(
+sourceImage, scale, level);
+```
+
+### Code block 8
+
+```
+// 异步方法
+let enhancedPixelmap: Promise<image.PixelMap> = imageProcessor.enhanceDetail(
+sourceImage, scale, level);
+```
+
+### Code block 9
+
+```
+videoProcessingEngine.deinitializeEnvironment();
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/common-event-subscription_
 
+场景介绍
+
 动态订阅是指当应用在运行状态时对某个公共事件进行订阅，在运行期间如果有订阅的事件发布，订阅了这个事件的应用将会收到该事件及其传递的参数。
 
 例如，某应用希望在其运行期间收到电量过低的事件，并根据该事件降低其运行功耗，那么该应用便可动态订阅电量过低事件，收到该事件后关闭一些非必要的任务来降低功耗。
@@ -24,6 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/common-ev
 createSubscriber(subscribeInfo: CommonEventSubscribeInfo, callback: AsyncCallback<CommonEventSubscriber>): void	创建订阅者对象（callback）。
 createSubscriber(subscribeInfo: CommonEventSubscribeInfo): Promise<CommonEventSubscriber>	创建订阅者对象（promise）。
 subscribe(subscriber: CommonEventSubscriber, callback: AsyncCallback<CommonEventData>): void	订阅公共事件。
+
 开发步骤
 
 导入模块。
@@ -31,10 +34,8 @@ subscribe(subscriber: CommonEventSubscriber, callback: AsyncCallback<CommonEvent
 import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = 'ProcessModel';
 const DOMAIN_NUMBER: number = 0xFF00;
-CreatSubscribeInfo.ets
 
 创建订阅者信息，详细的订阅者信息数据类型及包含的参数请见CommonEventSubscribeInfo文档介绍。
 
@@ -46,7 +47,6 @@ let subscriberCustom: commonEventManager.CommonEventSubscriber | null = null;
 let subscribeInfoCustom: commonEventManager.CommonEventSubscribeInfo = {
   events: ['event']  // 订阅自定义公共事件
 };
-CreatSubscribeInfo.ets
 
 系统公共事件：CES内部定义的公共事件，当前仅支持系统应用和系统服务发布，例如HAP安装、更新、卸载等公共事件。目前支持的系统公共事件请参见系统定义的公共事件。
 
@@ -56,7 +56,6 @@ let subscriberSystem: commonEventManager.CommonEventSubscriber | null = null;
 let subscribeInfoSystem: commonEventManager.CommonEventSubscribeInfo = {
   events: [commonEventManager.Support.COMMON_EVENT_SCREEN_OFF]  // 订阅灭屏公共事件
 };
-CreatSubscribeInfo.ets
 
 创建订阅者，保存返回的订阅者对象subscriber，用于执行后续的订阅、退订、接收事件回调等操作。
 
@@ -71,7 +70,6 @@ commonEventManager.createSubscriber(subscribeInfoCustom,
     hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in creating subscriber.');
     subscriberCustom = data;
   })
-CreatSubscribeInfo.ets
 
 创建订阅回调函数，订阅回调函数会在接收到事件时触发。订阅回调函数返回的data内包含了公共事件的名称、发布者携带的数据等信息，公共事件数据的详细参数和数据类型请见CommonEventData文档介绍。
 
@@ -89,8 +87,76 @@ if (subscriberCustom !== null) {
 } else {
   hilog.error(DOMAIN_NUMBER, TAG, `Need create subscriber`);
 }
-CreatSubscribeInfo.ets
+
 示例代码
+
 公共事件的订阅和发布
-公共事件简介
-取消动态订阅公共事件
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = 'ProcessModel';
+const DOMAIN_NUMBER: number = 0xFF00;
+```
+
+### Code block 2
+
+```
+// 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
+let subscriberCustom: commonEventManager.CommonEventSubscriber | null = null;
+// 订阅者信息，其中的'event'字段需要替换为实际的事件名称。
+let subscribeInfoCustom: commonEventManager.CommonEventSubscribeInfo = {
+  events: ['event']  // 订阅自定义公共事件
+};
+```
+
+### Code block 3
+
+```
+// 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
+let subscriberSystem: commonEventManager.CommonEventSubscriber | null = null;
+// 订阅者信息，按需替换对应的公共事件。
+let subscribeInfoSystem: commonEventManager.CommonEventSubscribeInfo = {
+  events: [commonEventManager.Support.COMMON_EVENT_SCREEN_OFF]  // 订阅灭屏公共事件
+};
+```
+
+### Code block 4
+
+```
+// 创建订阅者回调
+commonEventManager.createSubscriber(subscribeInfoCustom,
+  (err: BusinessError, data: commonEventManager.CommonEventSubscriber) => {
+    if (err) {
+      hilog.error(DOMAIN_NUMBER, TAG,
+        `Failed to create subscriber. Code is ${err.code}, message is ${err.message}`);
+      return;
+    }
+    hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in creating subscriber.');
+    subscriberCustom = data;
+  })
+```
+
+### Code block 5
+
+```
+// 订阅公共事件回调
+if (subscriberCustom !== null) {
+  commonEventManager.subscribe(subscriberCustom,
+    (err: BusinessError, data: commonEventManager.CommonEventData) => {
+      if (err) {
+        hilog.error(DOMAIN_NUMBER, TAG,
+          `Failed to subscribe common event. Code is ${err.code}, message is ${err.message}`);
+        return;
+      }
+      hilog.info(DOMAIN_NUMBER, TAG, `Succeeded in subscribing, data is ${JSON.stringify(data)}`);
+    })
+} else {
+  hilog.error(DOMAIN_NUMBER, TAG, `Need create subscriber`);
+}
+```

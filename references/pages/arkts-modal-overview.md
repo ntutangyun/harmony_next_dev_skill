@@ -9,11 +9,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-mod
 全模态：​开发者可以利用此模态页面实现全屏的模态弹窗效果。默认需要侧滑才能关闭。
 
 使用场景
+
 接口	使用场景
 bindContentCover	用于自定义全屏的模态展示界面，结合转场动画和共享元素动画可实现复杂转场动画效果，如缩略图片点击后查看大图。
 bindSheet	用于半模态展示界面，如分享框。
 openBindSheet/ updateBindSheet/ closeBindSheet	用于不依赖UI组件的场景，如全局拉起、更新、关闭。
+
 规格约束
+
 建议使用UIContext中的弹窗方法。其他规格约束可参考openBindSheet、updateBindSheet、closeBindSheet说明。
-绑定模态页面
-绑定半模态页面（bindSheet）

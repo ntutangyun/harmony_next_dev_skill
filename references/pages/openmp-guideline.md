@@ -5,11 +5,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/openmp-gu
 HarmonyOS NDK中提供了OpenMP的动态库和静态库文件，支持开发者在Native应用中使用OpenMP。本文用于指导开发者在DevEco Studio中调用库文件使用OpenMP的并行化能力，更详细的使用示例和API标准请查看官方文档clang-OpenMPSupport。
 
 开发步骤
-创建Native C++工程
+
+[h2]创建Native C++工程
 
 创建NDK工程
 
-添加依赖
+[h2]添加依赖
 
 OpenMP库的引入可以通过静态链接和动态链接两种方式实现。
 
@@ -51,7 +52,7 @@ target_link_libraries(entry PUBLIC libomp.so libace_napi.z.so libhilog_ndk.z.so)
 
 （3）打开Sdk安装目录，在“{Sdk安装目录}{版本号}\HarmonyOS\native\llvm\lib\aarch64-linux-ohos”目录下找到libomp.so动态库文件，并将其拷贝到工程目录entry/libs/arm64-v8a文件夹。
 
-修改源文件
+[h2]修改源文件
 
 （1）修改entry/src/main/cpp/napi_init.cpp，引入omp.h头文件，并添加OmpTest函数。
 
@@ -59,16 +60,13 @@ target_link_libraries(entry PUBLIC libomp.so libace_napi.z.so libhilog_ndk.z.so)
 #include "omp.h"
 #include "hilog/log.h"
 
-
 #undef LOG_DOMAIN
 #undef LOG_TAG
 #define LOG_DOMAIN 0x3200 // 全局domain宏，标识业务领域
 #define LOG_TAG "MY_TAG"  // 全局tag宏，标识模块日志tag
 
-
 static napi_value OmpTest(napi_env env, napi_callback_info info)
 {
-
 
     OH_LOG_INFO(LOG_APP, "=================Hello OpenMP test.====================");
     #pragma omp parallel
@@ -77,7 +75,6 @@ static napi_value OmpTest(napi_env env, napi_callback_info info)
     }
     return nullptr;
 }
-
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
@@ -90,7 +87,6 @@ static napi_value Init(napi_env env, napi_value exports)
 }
 EXTERN_C_END
 
-
 static napi_module demoModule = {
     .nm_version = 1,
     .nm_flags = 0,
@@ -100,7 +96,6 @@ static napi_module demoModule = {
     .nm_priv = ((void*)0),
     .reserved = { 0 },
 };
-
 
 extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
 {
@@ -115,12 +110,10 @@ export const ompTest: () => null;
 
 import testNapi from 'libentry.so';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello OpenMP';
-
 
   build() {
     Row() {
@@ -137,7 +130,8 @@ struct Index {
     .height('100%')
   }
 }
-运行并校验结果
+
+[h2]运行并校验结果
 
 运行前请检查设备连接并配置好Signature信息。直接点击右上角运行按钮，应用启动后设备进入“Hello OpenMP”界面，点击“Hello OpenMP”标签，打开DevEco Studio下方“Log”查看页面，即可看到并行打印的“Hello OpenMP！”消息。
 
@@ -145,5 +139,123 @@ struct Index {
 
 OpenMP程序运行时，HiLog中会输出“dlopen_impl load library header failed for libarcher.so”的报错信息（如下图）。该报错信息中提到的libarcher.so，在OpenMP程序开启Tsan检测时才需要使用。目前HarmonyOS未支持OpenMP程序的Tsan检测能力，因此该错误信息可忽略，不影响程序正常运行。
 
-OpenMP简介
-资源管理
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libomp.a libace_napi.z.so libhilog_ndk.z.so)
+```
+
+### Code block 2
+
+```
+"buildOption": {
+    "externalNativeOptions": {
+      "path": "./src/main/cpp/CMakeLists.txt",
+      "arguments": "",
+      "cppFlags": "-static-openmp -fopenmp",
+    }
+  }
+```
+
+### Code block 3
+
+```
+target_link_libraries(entry PUBLIC libomp.so libace_napi.z.so libhilog_ndk.z.so)
+```
+
+### Code block 4
+
+```
+"buildOption": {
+    "externalNativeOptions": {
+      "path": "./src/main/cpp/CMakeLists.txt",
+      "arguments": "",
+      "cppFlags": "-fopenmp",
+    }
+  }
+```
+
+### Code block 5
+
+```
+#include "napi/native_api.h"
+#include "omp.h"
+#include "hilog/log.h"
+
+#undef LOG_DOMAIN
+#undef LOG_TAG
+#define LOG_DOMAIN 0x3200 // 全局domain宏，标识业务领域
+#define LOG_TAG "MY_TAG"  // 全局tag宏，标识模块日志tag
+
+static napi_value OmpTest(napi_env env, napi_callback_info info)
+{
+
+    OH_LOG_INFO(LOG_APP, "=================Hello OpenMP test.====================");
+    #pragma omp parallel
+    {
+        OH_LOG_INFO(LOG_APP, "Hello OpenMP!");
+    }
+    return nullptr;
+}
+
+EXTERN_C_START
+static napi_value Init(napi_env env, napi_value exports)
+{
+    napi_property_descriptor desc[] = {
+        { "ompTest", nullptr, OmpTest, nullptr, nullptr, nullptr, napi_default, nullptr }
+    };
+    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    return exports;
+}
+EXTERN_C_END
+
+static napi_module demoModule = {
+    .nm_version = 1,
+    .nm_flags = 0,
+    .nm_filename = nullptr,
+    .nm_register_func = Init,
+    .nm_modname = "entry",
+    .nm_priv = ((void*)0),
+    .reserved = { 0 },
+};
+
+extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
+{
+    napi_module_register(&demoModule);
+}
+```
+
+### Code block 6
+
+```
+export const ompTest: () => null;
+```
+
+### Code block 7
+
+```
+import testNapi from 'libentry.so';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello OpenMP';
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            testNapi.ompTest();
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

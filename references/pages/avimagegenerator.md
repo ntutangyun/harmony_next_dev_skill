@@ -21,7 +21,7 @@ let avImageGenerator: media.AVImageGenerator = await media.createAVImageGenerato
 
 开发者需根据实际情况，确认资源有效性并设置fdSrc：
 
-可以使用ResourceManager.getRawFd打开HAP资源文件描述符，使用方法可参考ResourceManager API参考。
+可以使用ResourceManager.getRawFd打开HAP资源文件描述符，使用方法可参考ResourceManager API中的getRawFd。
 
 也可以使用应用沙箱路径访问对应资源（必须确认资源文件可用），参考获取应用文件路径。应用沙箱的介绍及如何向应用沙箱推送文件，请参考文件管理。
 
@@ -37,10 +37,8 @@ avImageGenerator.fdSrc = await context.resourceManager.getRawFd('H264_AAC.mp4');
 
 import { image } from '@kit.ImageKit';
 
-
 // pixelMap对象声明，用于图片显示。
 @State pixelMap: image.PixelMap | undefined = undefined;
-
 
 // 初始化入参。
 let timeUs = 0; // 需要获取的缩略图在视频中的时间点。
@@ -51,19 +49,20 @@ let param: media.PixelMapParams = {
   height : 300 // 输出的缩略图高度。
 };
 
-
 // 获取缩略图（promise模式）。
 this.pixelMap = await avImageGenerator.fetchFrameByTime(timeUs, queryOption, param);
 
 释放资源：调用release()销毁实例，释放资源。
 
 // 释放资源（promise模式）。
-avImageGenerator.release();
+await avImageGenerator.release().catch((err: BusinessError) => {
+   console.error(`release failed, error code: ${err.code}, error message: ${err.message}`);
+});
+
 运行示例工程
 
 参考以下示例，获取一个视频指定时间的缩略图。
 
-新建工程，下载完整示例工程，并将示例工程的资源复制到对应目录。
 AVImageGeneratorArkTS
 entry/src/main/ets/
 └── pages
@@ -78,6 +77,73 @@ entry/src/main/resources/
 │
 └── rawfile
     └── H264_AAC.mp4 (视频资源)
+
 编译新建工程并运行。
-使用AVMetadataExtractor提取音视频元数据信息(ArkTS)
-视频转码
+
+## Code blocks
+
+### Code block 1
+
+```
+import { media } from '@kit.MediaKit';
+let avImageGenerator: media.AVImageGenerator = await media.createAVImageGenerator();
+```
+
+### Code block 2
+
+```
+import { common } from '@kit.AbilityKit';
+// 获取当前组件所在Ability的Context，并通过Context获取应用文件路径。
+let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// 设置fdSrc，H264_AAC.mp4为rawfile目录下的预置资源，需要开发者根据实际情况进行替换。
+avImageGenerator.fdSrc = await context.resourceManager.getRawFd('H264_AAC.mp4');
+```
+
+### Code block 3
+
+```
+import { image } from '@kit.ImageKit';
+
+// pixelMap对象声明，用于图片显示。
+@State pixelMap: image.PixelMap | undefined = undefined;
+
+// 初始化入参。
+let timeUs = 0; // 需要获取的缩略图在视频中的时间点。
+let queryOption = media.AVImageQueryOptions.AV_IMAGE_QUERY_NEXT_SYNC; // AV_IMAGE_QUERY_NEXT_SYNC表示选取传入时间点或之后的关键帧。
+// 输出缩略图的格式参数。
+let param: media.PixelMapParams = {
+  width : 300, // 输出的缩略图宽度。
+  height : 300 // 输出的缩略图高度。
+};
+
+// 获取缩略图（promise模式）。
+this.pixelMap = await avImageGenerator.fetchFrameByTime(timeUs, queryOption, param);
+```
+
+### Code block 4
+
+```
+// 释放资源（promise模式）。
+await avImageGenerator.release().catch((err: BusinessError) => {
+   console.error(`release failed, error code: ${err.code}, error message: ${err.message}`);
+});
+```
+
+### Code block 5
+
+```
+AVImageGeneratorArkTS
+entry/src/main/ets/
+└── pages
+    └── Index.ets (获取缩略图界面)
+entry/src/main/resources/
+├── base
+│   ├── element
+│   │   ├── color.json
+│   │   ├── float.json
+│   │   └── string.json
+│   └── media
+│
+└── rawfile
+    └── H264_AAC.mp4 (视频资源)
+```

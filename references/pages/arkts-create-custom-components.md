@@ -24,7 +24,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-cre
 struct HelloComponent {
   @State message: string = 'Hello, World!';
 
-
   build() {
     // HelloComponent自定义组件组合系统组件Row和Text
     Row() {
@@ -36,7 +35,7 @@ struct HelloComponent {
     }
   }
 }
-ParentComponent.ets
+
 注意
 
 如果在其他文件中引用自定义组件，需要使用export关键字导出组件，并在使用的页面import该自定义组件。
@@ -56,7 +55,6 @@ struct ParentComponent {
     }
   }
 }
-ParentComponent.ets
 
 要完全理解上面的示例，需要了解自定义组件的以下概念定义，本文将在后面的小节中介绍：
 
@@ -71,7 +69,8 @@ build()函数实现规则
 自定义组件通用样式
 
 自定义组件的基本结构
-struct
+
+[h2]struct
 
 自定义组件基于struct实现，struct + 自定义组件名 + {...}的组合构成自定义组件，不能有继承关系。对于struct的实例化，可以省略new。
 
@@ -79,7 +78,7 @@ struct
 
 自定义组件名、类名、函数名不得与系统组件名重复。
 
-@Entry
+[h2]@Entry
 
 @Entry装饰的自定义组件将作为UI页面的入口。在单个UI页面中，仅允许存在一个由@Entry装饰的自定义组件作为页面的入口。
 
@@ -96,7 +95,6 @@ struct
 struct MyComponent {
   // ...
 }
-Entry.ets
 
 EntryOptions10+
 
@@ -106,6 +104,7 @@ EntryOptions10+
 routeName	string	否	是	表示作为命名路由页面的名字。
 storage	LocalStorage	否	是	页面级的UI状态存储。当未传入时，框架会创建一个新的LocalStorage实例作为默认值。
 useSharedStorage12+	boolean	否	是	是否使用loadContent传入的LocalStorage实例对象。默认值false。true：使用共享的LocalStorage实例对象。false：不使用共享的LocalStorage实例对象。
+
 说明
 
 当useSharedStorage设置为true且storage已赋值时，useSharedStorage的值优先级更高。
@@ -115,8 +114,8 @@ useSharedStorage12+	boolean	否	是	是否使用loadContent传入的LocalStorage
 struct MyComponent {
   // ...
 }
-RouteName.ets
-@Component
+
+[h2]@Component
 
 @Component装饰的struct为V1自定义组件，可以使用状态管理V1版本装饰器的能力。
 
@@ -132,8 +131,8 @@ RouteName.ets
 struct MyComponent {
   // ...
 }
-Component.ets
-@ComponentV2
+
+[h2]@ComponentV2
 
 @ComponentV2装饰的struct为V2自定义组件，可以使用状态管理V2版本装饰器的能力。
 
@@ -180,11 +179,10 @@ struct ComponentV2Test { // struct声明的数据结构
     .width('100%')
   }
 }
-PageComponentV2.ets
 
 除非特别说明，@ComponentV2装饰的自定义组件将与@Component装饰的自定义组件保持相同的行为。
 
-build()函数
+[h2]build()函数
 
 build()函数用于定义自定义组件的声明式UI描述，自定义组件必须定义build()函数。
 
@@ -194,8 +192,8 @@ struct MyComponent {
     // ...
   }
 }
-BuildFunction.ets
-@Reusable
+
+[h2]@Reusable
 
 @Reusable装饰V1自定义组件，使得该自定义组件具有被复用的能力。详细请参考：@Reusable装饰器：组件复用。
 
@@ -208,8 +206,8 @@ BuildFunction.ets
 struct MyComponent {
   // ...
 }
-Reusable.ets
-@ReusableV2
+
+[h2]@ReusableV2
 
 @ReusableV2装饰V2自定义组件，使得该自定义组件具有被复用的能力。详细请参考：@ReusableV2装饰器：V2组件复用。
 
@@ -222,6 +220,7 @@ Reusable.ets
 struct MyComponent {
   // ...
 }
+
 成员函数/变量
 
 自定义组件除了必须要实现build()函数外，还可以实现其他成员函数，成员函数具有以下约束：
@@ -243,7 +242,6 @@ struct MyComponent {
   countDownFrom: number = 0;
   color: Color = Color.Blue;
 
-
   build() {
     Column() {
       Text(`${this.countDownFrom}`)
@@ -252,12 +250,10 @@ struct MyComponent {
   }
 }
 
-
 @Entry
 @Component
 struct ParentComponent {
   private someColor: Color = Color.Pink;
-
 
   build() {
     Column() {
@@ -266,7 +262,6 @@ struct ParentComponent {
     }
   }
 }
-ParameterSpecification.ets
 
 以下示例代码将父组件中的函数传递给子组件，并在子组件中调用。
 
@@ -278,7 +273,6 @@ struct Parent {
     this.cnt++;
   };
 
-
   build() {
     Column() {
       Text(`${this.cnt}`)
@@ -288,11 +282,9 @@ struct Parent {
   }
 }
 
-
 @Component
 struct Son {
   submitArrow?: () => void;
-
 
   build() {
     Row() {
@@ -307,7 +299,7 @@ struct Son {
     .height(56)
   }
 }
-ParentFunction.ets
+
 build()函数实现规则
 
 所有在build()函数中声明的语句统称为UI描述，UI描述需要遵循以下规则：
@@ -327,7 +319,6 @@ struct MyComponent {
   }
 }
 
-
 @Component
 struct ChildComponent {
   build() {
@@ -336,7 +327,6 @@ struct ChildComponent {
     Image($r('app.media.startIcon'))
   }
 }
-MyComponentBuild.ets
 
 不允许声明本地变量，反例如下。
 
@@ -361,7 +351,7 @@ build() {
   }
 }
 
-不允许调用没有用@Builder装饰的方法，允许系统组件的参数是TS方法的返回值。
+不允许调用非@Builder装饰的方法。但允许将此类方法的返回值作为系统组件的参数使用。示例如下。
 
 @Component
 struct ParentComponent {
@@ -374,18 +364,17 @@ struct ParentComponent {
     }
   }
 }
+
 @Component
 struct ParentComponent {
   calcTextValue(): string {
     return 'Hello World';
   }
 
-
   @Builder
   doSomeRender() {
     Text(`Hello World`)
   }
-
 
   build() {
     Column() {
@@ -396,7 +385,6 @@ struct ParentComponent {
     }
   }
 }
-BuilderMethod.ets
 
 不允许使用switch语法，当需要使用条件判断时，请使用if。示例如下。
 
@@ -416,6 +404,7 @@ build() {
     }
   }
 }
+
 build() {
   Column() {
     // 正例：使用if
@@ -428,7 +417,6 @@ build() {
     }
   }
 }
-If.ets
 
 不允许使用表达式，请使用if组件，示例如下。
 
@@ -438,6 +426,7 @@ build() {
     (this.aVar > 10) ? Text('...') : Image('...')
   }
 }
+
 build() {
   Column() {
     // 正例：使用if判断
@@ -448,7 +437,6 @@ build() {
     }
   }
 }
-ModuleComponent.ets
 
 不允许直接改变状态变量，反例如下。
 
@@ -480,6 +468,7 @@ struct MyComponent {
 所以，不能在自定义组件的build()或@Builder方法里直接改变状态变量，这可能会造成循环渲染的风险。Text('${this.count++}')在全量更新或最小化更新会产生不同的影响：
 
 全量更新（API8及以前版本）： ArkUI可能会陷入一个无限的重渲染的循环里，因为Text组件的每一次渲染都会改变应用的状态，就会再引起下一轮渲染的开启。 当 this.columnColor 更改时，都会执行整个build构建函数，因此，Text(${this.count++})绑定的文本也会更改，每次重新渲染Text(${this.count++})，又会使this.count状态变量更新，导致新一轮的build执行，从而陷入无限循环。
+
 最小化更新（API9及以上版本）：当this.columnColor更新时，仅Column组件更新，Text组件不会更新。只有当this.textColor更改时，会去更新整个Text组件，其所有属性函数都会执行，所以会看到Text(${this.count++})自增。因为目前UI以组件为单位进行更新，如果组件上某一个属性发生改变，会更新整个的组件。所以整体的更新链路是：this.textColor = Color.Pink ->Text组件整个更新->this.count++ ->Text组件整个更新。值得注意的是，这种写法在初次渲染时会导致Text组件渲染两次，影响性能。
 
 build函数中更改应用状态的行为可能比上面的示例更加隐蔽，例如：
@@ -496,6 +485,7 @@ ForEach(this.arr.sort().filter(...),
   item => {
   // ...
 })
+
 // 正确的执行方式为：filter返回一个新数组，后面的sort方法才不会改变原数组this.arr
 ForEach(this.arr.filter((item, index) => index >= 2).sort(),
   (item: number) => {
@@ -515,7 +505,6 @@ struct ChildComponent {
   }
 }
 
-
 @Entry
 @Component
 struct MyComponent {
@@ -529,7 +518,7 @@ struct MyComponent {
     }
   }
 }
-MyComponentStyle.ets
+
 说明
 
 ArkUI给自定义组件设置样式时，相当于给ChildComponent套了一个不可见的容器组件，这些样式是设置在容器组件上，而非直接设置给ChildComponent的Button组件。渲染结果显示，背景颜色红色并没有直接设置到Button上，而是设置在Button所在的不可见容器组件上。
@@ -546,19 +535,18 @@ API version 24开始，可在应用工程的module.json5配置文件中配置met
     "value": "true"
   }
 ]
-module.json5
 
 需要注意：
 
 不建议在原Ability的onBackground阶段异步修改迁移组件中的状态变量，此时状态变量可以被赋值，但无法触发关联组件的刷新。
+
 仅支持组件树上的自定义组件迁移。对于未挂载在组件树上的自定义组件将不支持迁移。例如使用OH_ArkUI_GetNodeHandleFromNapiValue获取ArkUI_NodeHandle场景中，如果OH_ArkUI_GetNodeHandleFromNapiValue接收的参数为ComponentContent，获取到的ArkUI_NodeHandle为ComponentContent下子树的第一个FrameNode节点，中间跳过的自定义组件将不会在组件树上，不支持迁移。
+
 import { UIAbility } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 
-
 const DOMAIN = 0x0000;
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -571,21 +559,22 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
-
   onBackground(): void {
     // 不建议在onBackground阶段异步修改迁移组件中的状态变量
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
   }
 }
-EntryAbility.ets
 
 在下面的示例中：
 
 点击Button('add node to tree')，创建BuilderNode节点挂载到NodeContainer下。
+
 点击Button('remove node from tree')，将BuilderNode节点从NodeContainer上移除。
+
 点击Button('start new ability')，拉起ExtraAbility。
-点击ExtraIndex内的Button('add node to tree')，将BuilderNode节点重新挂载到ExtraIndex内的NodeContainer下。
+
 自定义组件ComponentUnderBuilderNode在被挂载到新的Ability下时，会通知切换Ability的自定义组件更新其所属的Ability实例ID。
+
 点击自定义组件ComponentUnderBuilderNode内Button('change message')，改变状态变量message的值，触发@Watch('messageUpdate') 回调和UI刷新。
 
 下面的示例包含了创建新的Ability流程，具体示例可参考starAbility。
@@ -595,22 +584,18 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common, Want } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 const DOMAIN = 0x0000;
-
 
 @Entry
 @Component
 struct Index {
   private nodeController: MyNodeController = new MyNodeController();
 
-
   startNewAbility() {
     const want: Want = {
       bundleName: 'com.example.enablecustomcomponentcrossability',
       abilityName: 'ExtraAbility'
     };
-
 
     try {
       const context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
@@ -626,7 +611,6 @@ struct Index {
         `startAbility failed, code is ${(err as BusinessError).code}, message is ${(err as BusinessError).message}`);
     }
   }
-
 
   build() {
     Column({ space: 10 }) {
@@ -649,28 +633,23 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
+
 import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
 
-
 let globalBuilderNode: BuilderNode<[]> | undefined = undefined;
-
 
 export class MyNodeController extends NodeController {
   private rootNode: FrameNode | null = null;
   private uiContext: UIContext | null = null;
-
 
   makeNode(uiContext: UIContext): FrameNode | null {
     this.rootNode = new FrameNode(uiContext);
     this.uiContext = uiContext;
     return this.rootNode;
   }
-
 
   addBuilderNode(): void {
     if (!globalBuilderNode && this.uiContext) {
@@ -682,13 +661,11 @@ export class MyNodeController extends NodeController {
     }
   }
 
-
   removeBuilderNode(): void {
     if (this.rootNode && globalBuilderNode) {
       this.rootNode.removeChild(globalBuilderNode.getFrameNode());
     }
   }
-
 
   disposeNode(): void {
     if (this.rootNode && globalBuilderNode) {
@@ -698,7 +675,6 @@ export class MyNodeController extends NodeController {
   }
 }
 
-
 @Builder
 function buildComponent() {
   Column() {
@@ -706,16 +682,13 @@ function buildComponent() {
   }
 }
 
-
 @Component
 struct ComponentUnderBuilderNode {
   @State @Watch('messageUpdate') message: string = 'hello';
 
-
   messageUpdate() {
     hilog.info(DOMAIN, 'testTag', `ComponentUnderBuilderNode message change ${this.message}`);
   }
-
 
   build() {
     Column() {
@@ -727,17 +700,14 @@ struct ComponentUnderBuilderNode {
     }
   }
 }
-MyNodeController.ets
+
 import { UIAbility } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 
-
 const DOMAIN = 0x0000;
 
-
 export default class ExtraAbility extends UIAbility {
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     windowStage.loadContent('pages/ExtraIndex', (err) => {
@@ -750,15 +720,13 @@ export default class ExtraAbility extends UIAbility {
     });
   }
 }
-ExtraAbility.ets
-import { MyNodeController } from './MyNodeController';
 
+import { MyNodeController } from './MyNodeController';
 
 @Entry
 @Component
 struct ExtraIndex {
   private nodeController: MyNodeController = new MyNodeController();
-
 
   build() {
     Column({ space: 10 }) {
@@ -781,9 +749,10 @@ struct ExtraIndex {
     .height('100%')
   }
 }
-ExtraIndex.ets
+
 限制条件
-V1自定义组件不支持静态代码块
+
+[h2]V1自定义组件不支持静态代码块
 
 静态代码块用于初始化静态属性。
 
@@ -798,7 +767,6 @@ struct MyComponent {
   }
   // ...
 }
-StaticCodeV1.ets
 
 在@ComponentV2装饰的自定义组件中支持使用。
 
@@ -811,10 +779,688 @@ struct MyComponent {
   }
   // ...
 }
-StaticCodeV2.ets
-@Component与@ComponentV2混用
+
+[h2]@Component与@ComponentV2混用
 
 在将@Component装饰的自定义组件与@ComponentV2装饰的自定义组件混合使用时，可参考状态管理V1和V2混用场景。
 
-自定义组件
-自定义组件生命周期
+## Code blocks
+
+### Code block 1
+
+```
+@Component
+struct HelloComponent {
+  @State message: string = 'Hello, World!';
+
+  build() {
+    // HelloComponent自定义组件组合系统组件Row和Text
+    Row() {
+      Text(this.message)
+        .onClick(() => {
+          // 状态变量message的改变驱动UI刷新，UI从'Hello, World!'刷新为'Hello, ArkUI!'
+          this.message = 'Hello, ArkUI!';
+        })
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct ParentComponent {
+  build() {
+    Column() {
+      // 多次创建HelloComponent，实现自定义组件的重用
+      Text('ArkUI message')
+      HelloComponent({ message: 'Hello World!' })
+      Divider()
+      HelloComponent({ message: 'Hello ArkTS!' })
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct MyComponent {
+  // ...
+}
+```
+
+### Code block 4
+
+```
+@Entry({ routeName: 'myPage' })
+@Component
+struct MyComponent {
+  // ...
+}
+```
+
+### Code block 5
+
+```
+@Component
+struct MyComponent {
+  // ...
+}
+```
+
+### Code block 6
+
+```
+@Entry
+@ComponentV2 // 装饰器
+struct ComponentV2Test { // struct声明的数据结构
+  @Local message: string = 'Hello World';
+  build() { // build定义的UI
+    RelativeContainer() {
+      Text(this.message)
+        .id('HelloWorld')
+        // $r('app.float.page_text_font_size')需要替换为开发者所需的资源文件;
+        .fontSize($r('app.float.page_text_font_size'))
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+        .onClick(() => {
+          this.message = 'Welcome';
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 7
+
+```
+@Component
+struct MyComponent {
+  build() {
+    // ...
+  }
+}
+```
+
+### Code block 8
+
+```
+@Reusable
+@Component
+struct MyComponent {
+  // ...
+}
+```
+
+### Code block 9
+
+```
+@ReusableV2
+@ComponentV2
+struct MyComponent {
+  // ...
+}
+```
+
+### Code block 10
+
+```
+@Component
+struct MyComponent {
+  countDownFrom: number = 0;
+  color: Color = Color.Blue;
+
+  build() {
+    Column() {
+      Text(`${this.countDownFrom}`)
+        .backgroundColor(this.color)
+    }
+  }
+}
+
+@Entry
+@Component
+struct ParentComponent {
+  private someColor: Color = Color.Pink;
+
+  build() {
+    Column() {
+      // 创建MyComponent实例，并将创建MyComponent成员变量countDownFrom初始化为10，将成员变量color初始化为this.someColor
+      MyComponent({ countDownFrom: 10, color: this.someColor })
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+@Entry
+@Component
+struct Parent {
+  @State cnt: number = 0;
+  submit: () => void = () => {
+    this.cnt++;
+  };
+
+  build() {
+    Column() {
+      Text(`${this.cnt}`)
+      // 父组件中的函数传递给子组件
+      Son({ submitArrow: this.submit })
+    }
+  }
+}
+
+@Component
+struct Son {
+  submitArrow?: () => void;
+
+  build() {
+    Row() {
+      Button('add')
+        .width(80)
+        .onClick(() => {
+          if (this.submitArrow) {
+            this.submitArrow()
+          }
+        })
+    }
+    .height(56)
+  }
+}
+```
+
+### Code block 12
+
+```
+@Entry
+@Component
+struct MyComponent {
+  build() {
+    // 根节点唯一且必要，必须为容器组件
+    Row() {
+      ChildComponent()
+    }
+  }
+}
+
+@Component
+struct ChildComponent {
+  build() {
+    // 根节点唯一且必要，可为非容器组件
+    // 请将$r('app.media.startIcon')替换为实际资源文件
+    Image($r('app.media.startIcon'))
+  }
+}
+```
+
+### Code block 13
+
+```
+build() {
+  // 反例：不允许声明本地变量
+  let num: number = 1;
+}
+```
+
+### Code block 14
+
+```
+build() {
+  // 反例：不允许console.info
+  console.info('print debug log');
+}
+```
+
+### Code block 15
+
+```
+build() {
+  // 反例：不允许本地作用域
+  {
+    // ...
+  }
+}
+```
+
+### Code block 16
+
+```
+@Component
+struct ParentComponent {
+  doSomeCalculations() {
+  }
+  build() {
+    Column() {
+      // 反例：不能调用没有用@Builder装饰的方法
+      this.doSomeCalculations();
+    }
+  }
+}
+```
+
+### Code block 17
+
+```
+@Component
+struct ParentComponent {
+  calcTextValue(): string {
+    return 'Hello World';
+  }
+
+  @Builder
+  doSomeRender() {
+    Text(`Hello World`)
+  }
+
+  build() {
+    Column() {
+      // 正例：可以调用
+      this.doSomeRender()
+      // 正例：参数可以为调用TS方法的返回值
+      Text(this.calcTextValue())
+    }
+  }
+}
+```
+
+### Code block 18
+
+```
+build() {
+  Column() {
+    // 反例：不允许使用switch语法
+    switch (expression) {
+      case 1:
+        Text('...')
+        break;
+      case 2:
+        Image('...')
+        break;
+      default:
+        Text('...')
+        break;
+    }
+  }
+}
+```
+
+### Code block 19
+
+```
+build() {
+  Column() {
+    // 正例：使用if
+    if (this.expression == 1) {
+      Text('...')
+    } else if (this.expression == 2) {
+      Image('...')
+    } else {
+      Text('...')
+    }
+  }
+}
+```
+
+### Code block 20
+
+```
+build() {
+  Column() {
+    // 反例：不允许使用表达式
+    (this.aVar > 10) ? Text('...') : Image('...')
+  }
+}
+```
+
+### Code block 21
+
+```
+build() {
+  Column() {
+    // 正例：使用if判断
+    if (this.aVar > 10) {
+      Text('...')
+    } else {
+      Image('...')
+    }
+  }
+}
+```
+
+### Code block 22
+
+```
+@Component
+struct MyComponent {
+  @State textColor: Color = Color.Yellow;
+  @State columnColor: Color = Color.Green;
+  @State count: number = 1;
+  build() {
+    Column() {
+      // 应避免直接在Text组件内改变count的值
+      Text(`${this.count++}`)
+        .width(50)
+        .height(50)
+        .fontColor(this.textColor)
+        .onClick(() => {
+          this.columnColor = Color.Red;
+        })
+      Button("change textColor").onClick(() =>{
+        this.textColor = Color.Pink;
+      })
+    }
+    .backgroundColor(this.columnColor)
+  }
+}
+```
+
+### Code block 23
+
+```
+// 反例
+@State arr : Array<...> = [ ... ];
+ForEach(this.arr.sort().filter(...),
+  item => {
+  // ...
+})
+```
+
+### Code block 24
+
+```
+// 正确的执行方式为：filter返回一个新数组，后面的sort方法才不会改变原数组this.arr
+ForEach(this.arr.filter((item, index) => index >= 2).sort(),
+  (item: number) => {
+    // ...
+  });
+```
+
+### Code block 25
+
+```
+@Component
+struct ChildComponent {
+  build() {
+    Button(`Hello World`)
+  }
+}
+
+@Entry
+@Component
+struct MyComponent {
+  build() {
+    Row() {
+      // 属性设置给ChildComponent而不是ChildComponent中的Button
+      ChildComponent()
+        .width(200)
+        .height(300)
+        .backgroundColor(Color.Red)
+    }
+  }
+}
+```
+
+### Code block 26
+
+```
+"metadata": [
+  {
+    "name": "enableCustomComponentCrossAbility",
+    "value": "true"
+  }
+]
+```
+
+### Code block 27
+
+```
+import { UIAbility } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
+
+const DOMAIN = 0x0000;
+
+export default class EntryAbility extends UIAbility {
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err) => {
+      if (err.code) {
+        hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
+        return;
+      }
+      hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+    });
+  }
+
+  onBackground(): void {
+    // 不建议在onBackground阶段异步修改迁移组件中的状态变量
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
+  }
+}
+```
+
+### Code block 28
+
+```
+import { MyNodeController } from './MyNodeController';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+const DOMAIN = 0x0000;
+
+@Entry
+@Component
+struct Index {
+  private nodeController: MyNodeController = new MyNodeController();
+
+  startNewAbility() {
+    const want: Want = {
+      bundleName: 'com.example.enablecustomcomponentcrossability',
+      abilityName: 'ExtraAbility'
+    };
+
+    try {
+      const context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
+      context.startAbility(want, (err: BusinessError) => {
+        if (err.code) {
+          hilog.error(DOMAIN, 'testTag', `startAbility failed, code is ${err.code}, message is ${err.message}`);
+          return;
+        }
+        hilog.info(DOMAIN, 'testTag', 'startAbility succeed');
+      });
+    } catch (err) {
+      hilog.error(DOMAIN, 'testTag',
+        `startAbility failed, code is ${(err as BusinessError).code}, message is ${(err as BusinessError).message}`);
+    }
+  }
+
+  build() {
+    Column({ space: 10 }) {
+      Text('Index')
+      // 创建globalBuilderNode，并将globalBuilderNode下的节点挂在NodeContainer的占位节点下
+      Button('add node to tree').width(200).onClick(() => {
+        this.nodeController.addBuilderNode();
+      })
+      // 从NodeContainer的占位节点下移除globalBuilderNode下的节点
+      Button('remove node from tree').width(200).onClick(() => {
+        this.nodeController.removeBuilderNode();
+      })
+      // 拉起新的Ability
+      Button('start new ability').width(200).onClick(() => {
+        this.startNewAbility();
+      })
+      NodeContainer(this.nodeController).backgroundColor('#FFEEF0')
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 29
+
+```
+import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+let globalBuilderNode: BuilderNode<[]> | undefined = undefined;
+
+export class MyNodeController extends NodeController {
+  private rootNode: FrameNode | null = null;
+  private uiContext: UIContext | null = null;
+
+  makeNode(uiContext: UIContext): FrameNode | null {
+    this.rootNode = new FrameNode(uiContext);
+    this.uiContext = uiContext;
+    return this.rootNode;
+  }
+
+  addBuilderNode(): void {
+    if (!globalBuilderNode && this.uiContext) {
+      globalBuilderNode = new BuilderNode(this.uiContext);
+      globalBuilderNode.build(wrapBuilder<[]>(buildComponent), undefined);
+    }
+    if (this.rootNode && globalBuilderNode) {
+      this.rootNode.appendChild(globalBuilderNode.getFrameNode());
+    }
+  }
+
+  removeBuilderNode(): void {
+    if (this.rootNode && globalBuilderNode) {
+      this.rootNode.removeChild(globalBuilderNode.getFrameNode());
+    }
+  }
+
+  disposeNode(): void {
+    if (this.rootNode && globalBuilderNode) {
+      globalBuilderNode.dispose();
+      globalBuilderNode = undefined;
+    }
+  }
+}
+
+@Builder
+function buildComponent() {
+  Column() {
+    ComponentUnderBuilderNode()
+  }
+}
+
+@Component
+struct ComponentUnderBuilderNode {
+  @State @Watch('messageUpdate') message: string = 'hello';
+
+  messageUpdate() {
+    hilog.info(DOMAIN, 'testTag', `ComponentUnderBuilderNode message change ${this.message}`);
+  }
+
+  build() {
+    Column() {
+      Text(`message: ${this.message}`)
+      // 改变message的值，触发@Watch('messageUpdate')回调和Text组件的刷新
+      Button('change message').onClick(() => {
+        this.message += ' world';
+      })
+    }
+  }
+}
+```
+
+### Code block 30
+
+```
+import { UIAbility } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
+
+const DOMAIN = 0x0000;
+
+export default class ExtraAbility extends UIAbility {
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/ExtraIndex', (err) => {
+      if (err.code) {
+        // ExtraIndex加载失败，输出报错信息
+        hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
+        return;
+      }
+      hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+    });
+  }
+}
+```
+
+### Code block 31
+
+```
+import { MyNodeController } from './MyNodeController';
+
+@Entry
+@Component
+struct ExtraIndex {
+  private nodeController: MyNodeController = new MyNodeController();
+
+  build() {
+    Column({ space: 10 }) {
+      Text('ExtraIndex')
+      // 将globalBuilderNode下的节点挂在NodeContainer的占位节点下
+      Button('add node to tree').width(200).onClick(() => {
+        this.nodeController.addBuilderNode();
+      })
+      // 从NodeContainer的占位节点下移除globalBuilderNode下的节点
+      Button('remove node from tree').width(200).onClick(() => {
+        this.nodeController.removeBuilderNode();
+      })
+      // 销毁globalBuilderNode下的节点
+      Button('dispose node').width(200).onClick(() => {
+        this.nodeController.disposeNode();
+      })
+      NodeContainer(this.nodeController).backgroundColor('#FFEEF0')
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 32
+
+```
+@Component
+struct MyComponent {
+  static a: string = '';
+  // 静态代码块不生效，a的值仍为空字符串''
+  static {
+    this.a = 'hello world';
+  }
+  // ...
+}
+```
+
+### Code block 33
+
+```
+@ComponentV2
+struct MyComponent {
+  static a: string = '';
+  // 静态代码块生效，a的值变为'hello world'
+  static {
+    this.a = 'hello world';
+  }
+  // ...
+}
+```

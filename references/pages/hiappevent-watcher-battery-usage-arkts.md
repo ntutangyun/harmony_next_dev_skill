@@ -2,11 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-battery-usage-arkts_
 
+接口说明
+
 API接口的具体使用说明（参数使用限制、具体取值范围等）请参考@ohos.hiviewdfx.hiAppEvent (应用事件打点)ArkTS API文档。
 
 接口名	描述
 addWatcher(watcher: Watcher): AppEventPackageHolder	添加应用事件观察者，以添加对应用事件的订阅。
 removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对应用事件的订阅。
+
 开发步骤
 
 以实现对应用内多线程执行耗时操作生成的24h功耗器件分解统计事件订阅为例，说明开发步骤。
@@ -14,7 +17,6 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
 编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，在onCreate函数中添加系统事件的订阅，示例代码如下：
 
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
-
 
 hiAppEvent.addWatcher({
    // 开发者可以自定义观察者名称，系统会使用名称来标识不同的观察者
@@ -50,7 +52,6 @@ hiAppEvent.addWatcher({
 
 import { worker } from '@kit.ArkTS';
 
-
 let workerPort = worker.workerPort;
 workerPort.onmessage = (message) => {
   eatCpu();
@@ -66,7 +67,6 @@ function eatCpu(): void {
 
 import { worker } from '@kit.ArkTS';
 
-
 export default class CpuTester {
   workerInstance: worker.ThreadWorker = new worker.ThreadWorker('entry/ets/workers/worker.ets');
   start(threadNum: number) {
@@ -81,21 +81,16 @@ export default class CpuTester {
 
 import CpuTester from '../tester/CpuTester';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
 
-
   @State enable: boolean = true;
-
 
   @State threadNum: number = 5;
 
-
   cpuTester: CpuTester = new CpuTester();
-
 
 build() {
   Row() {
@@ -128,5 +123,115 @@ build() {
 HiAppEvent onReceive: domain=OS
 HiAppEvent eventName=BATTERY_USAGE
 HiAppEvent eventInfo={"domain":"OS","name":"BATTERY_USAGE","eventType":2,"params":{"audio_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"audio_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"background_usage":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"begin_time":1709654400000,"bundle_name":"com.example.myapplication","bundle_version":"1.0.0","cpu_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"cpu_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,125647],"ddr_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ddr_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,207],"gps_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"gps_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"sensor_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"sensor_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"display_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"display_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8606],"end_time":1709740800000,"foreground_usage":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,67766],"gpu_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"gpu_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,48],"modem_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"modem_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"others_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"others_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1170],"rom_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"rom_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"time":1709740801326,"wifi_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"wifi_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}
-24h功耗器件分解统计事件介绍
-音频卡顿事件
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
+
+hiAppEvent.addWatcher({
+   // 开发者可以自定义观察者名称，系统会使用名称来标识不同的观察者
+   name: "watcher",
+   // 开发者可以订阅感兴趣的系统事件，此处是订阅了应用24h功耗器件分解统计事件
+   appEventFilters: [
+     {
+       domain: hiAppEvent.domain.OS,
+       names: [hiAppEvent.event.BATTERY_USAGE]
+     }
+   ],
+   // 开发者可以自行实现订阅实时回调函数，以便对订阅获取到的事件数据进行自定义处理
+   onReceive: (domain: string, appEventGroups: Array<hiAppEvent.AppEventGroup>) => {
+     hilog.info(0x0000, 'testTag', `HiAppEvent onReceive: domain=${domain}`);
+     for (const eventGroup of appEventGroups) {
+       // 开发者可以根据事件集合中的事件名称区分不同的系统事件
+       hilog.info(0x0000, 'testTag', `HiAppEvent eventName=${eventGroup.name}`);
+       for (const eventInfo of eventGroup.appEventInfos) {
+         // 开发者可以对事件集合中的事件数据进行自定义处理，此处是将事件数据打印在日志中
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo=${JSON.stringify(eventInfo)}`);
+       }
+     }
+   }
+ });
+```
+
+### Code block 2
+
+```
+import { worker } from '@kit.ArkTS';
+
+let workerPort = worker.workerPort;
+workerPort.onmessage = (message) => {
+  eatCpu();
+}
+function eatCpu(): void {
+  let val:number = 0;
+  while (true) {
+    val++;
+  }
+}
+```
+
+### Code block 3
+
+```
+import { worker } from '@kit.ArkTS';
+
+export default class CpuTester {
+  workerInstance: worker.ThreadWorker = new worker.ThreadWorker('entry/ets/workers/worker.ets');
+  start(threadNum: number) {
+    for (let index = 0; index < threadNum; index++) {
+      this.workerInstance = new worker.ThreadWorker('entry/ets/workers/worker.ets');
+      this.workerInstance.postMessage('msg');
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+import CpuTester from '../tester/CpuTester';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  @State enable: boolean = true;
+
+  @State threadNum: number = 5;
+
+  cpuTester: CpuTester = new CpuTester();
+
+build() {
+  Row() {
+    Column() {
+      Text(this.message)
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+      Button('CPU加压')
+        .fontSize(18)
+        .margin(12)
+        .fontWeight(FontWeight.Bold)
+        .enabled(this.enable)
+        .onClick(() => {
+          this.cpuTester.start(this.threadNum);
+          this.enable = false;
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 5
+
+```
+HiAppEvent onReceive: domain=OS
+HiAppEvent eventName=BATTERY_USAGE
+HiAppEvent eventInfo={"domain":"OS","name":"BATTERY_USAGE","eventType":2,"params":{"audio_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"audio_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"background_usage":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"begin_time":1709654400000,"bundle_name":"com.example.myapplication","bundle_version":"1.0.0","cpu_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"cpu_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,125647],"ddr_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ddr_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,207],"gps_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"gps_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"sensor_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"sensor_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"display_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"display_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8606],"end_time":1709740800000,"foreground_usage":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,67766],"gpu_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"gpu_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,48],"modem_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"modem_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"others_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"others_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1170],"rom_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"rom_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"time":1709740801326,"wifi_background_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"wifi_foreground_energy":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}
+```

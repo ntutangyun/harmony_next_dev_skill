@@ -2,7 +2,44 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-getoriginformat_
 
+函数功能
+
+获取原始format。
+
+函数原型
+
+ge::Format GetOriginFormat() const
+
+参数说明
+
+无
+
+返回值
+
+原始format。
+
+约束说明
+
+无
+
+调用示例
+
+ExpandDimsType dim_type("1100");
 StorageFormat format(ge::Format::FORMAT_NCHW, ge::Format::FORMAT_C1HWNC0, dim_type);
-auto origin_format = format.GetOriginFormat();  // Format::FORMAT_NCHW
-构造函数
-SetOriginFormat
+auto origin_format = format.GetOriginFormat(); // Format::FORMAT_NCHW
+
+## Code blocks
+
+### Code block 1
+
+```
+ge::Format GetOriginFormat() const
+```
+
+### Code block 2
+
+```
+ExpandDimsType dim_type("1100");
+StorageFormat format(ge::Format::FORMAT_NCHW, ge::Format::FORMAT_C1HWNC0, dim_type);
+auto origin_format = format.GetOriginFormat(); // Format::FORMAT_NCHW
+```

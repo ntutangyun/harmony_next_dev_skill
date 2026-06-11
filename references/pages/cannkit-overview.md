@@ -22,16 +22,9 @@ B1->B2	TQueBind<TPosition::B1, TPosition::B2, 1>	TQue<TPosition::B2, 1>
 C1->C2	TQueBind<TPosition::C1, TPosition::C2, 1>	TQue<TPosition::C2, 1>
 CO1->CO2	TQueBind<TPosition::CO1, TPosition::CO2, 1>	TQue<TPosition::CO1, 1>
 CO2->GM	TQueBind<TPosition::CO2, TPosition::GM, 1>	TQue<TPosition::CO2, 1>
-VECOUT->A1/B1/C1	
-
-TQueBind<TPosition::VECOUT, TPosition::A1, 1>;
-
-TQueBind<TPosition::VECOUT, TPosition::B1, 1>;
-
-TQueBind<TPosition::VECOUT, TPosition::C1, 1>
-
-	-
+VECOUT->A1/B1/C1	TQueBind<TPosition::VECOUT, TPosition::A1, 1>; TQueBind<TPosition::VECOUT, TPosition::B1, 1>; TQueBind<TPosition::VECOUT, TPosition::C1, 1>	-
 CO2->VECIN	TQueBind<TPosition::CO2, TPosition::VECIN, 1>	-
+
 说明
 
 上述表格中的Cube相关数据通路建议使用Cube高阶API（如Matmul）实现，直接使用TQueBind控制会相对复杂。
@@ -41,6 +34,3 @@ CO2->VECIN	TQueBind<TPosition::CO2, TPosition::VECIN, 1>	-
 如下的编程范式示例，图中的两个队列分别绑定的是GM VECIN和VECOUT GM。
 
 如果不需要进行Vector计算，比如仅需要做格式随路转换等场景，可对上述流程进行优化，对VECIN和VECOUT进行绑定，绑定的效果可以实现输入输出使用相同buffer，实现double buffer。
-
-TQueBind
-构造函数

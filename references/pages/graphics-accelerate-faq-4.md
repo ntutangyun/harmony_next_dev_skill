@@ -1,6 +1,8 @@
-# ABR进行Buffer分辨率调整引起其他Pass渲染效果异常，该如何解决？
+# ABR进行Buffer分辨率调整引起其他Pass渲染效果异常，该如何解决
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-faq-4_
+
+现象描述
 
 以团结引擎URP管线为例，ABR对DrawOpaqueObjects绑定的Buffer进行分辨率调整时会引起SSAO shadow效果异常。
 
@@ -46,6 +48,41 @@ if (errorCode != ABR_SUCCESS) {
     GOLOGE("HMS_ABR_GetNextScale execution failed, error code: %d.", errorCode);
 }
 
+// 根据Buffer分辨率因子对渲染数据进行同步调整
+void SetViewUniformParameters()
+{
+    ViewUniformParameters.BufferSize.X = (int)(ViewUniformParameters.BufferSize.X * scale);
+    ViewUniformParameters.BufferSize.Y = (int)(ViewUniformParameters.BufferSize.Y * scale);
+    ViewUniformParameters.BufferInvSize.X /= scale;
+    ViewUniformParameters.BufferInvSize.Y /= scale;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+void SetPerCameraShaderVariables(CommandBuffer cmd, ref CameraData cameraData, bool isTargetFlipped)
+{
+    Camera camera = cameraData.camera;
+    float scaledCameraWidth = (float)cameraData.cameraTargetDescriptor.width;
+    float scaledCameraHeight = (float)cameraData.cameraTargetDescriptor.height;
+    // scale为通过HMS_ABR_GetScale接口获取的ABR Buffer分辨率因子
+    scaledCameraWidth *= scale;
+    scaledCameraHeight *= scale;
+    cmd.SetGlobalVector(ShaderPropertyId.scaledScreenParams, new Vector4(scaledCameraWidth, scaledCameraHeight, 1.0f + 1.0f / scaledCameraWidth, 1.0f + 1.0f / scaledCameraHeight));
+}
+```
+
+### Code block 2
+
+```
+// 在Buffer渲染后调用
+float scale = 1.0f;
+errorCode = HMS_ABR_GetNextScale(context_, &scale);
+if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_GetNextScale execution failed, error code: %d.", errorCode);
+}
 
 // 根据Buffer分辨率因子对渲染数据进行同步调整
 void SetViewUniformParameters()
@@ -55,5 +92,4 @@ void SetViewUniformParameters()
     ViewUniformParameters.BufferInvSize.X /= scale;
     ViewUniformParameters.BufferInvSize.Y /= scale;
 }
-哪些特征的Buffer适合使能ABR？
-集成ABR后，从游戏引擎获取到的Native纹理内容为空，该如何解决?
+```

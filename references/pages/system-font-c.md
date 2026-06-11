@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-font-c_
 
+场景介绍
+
 系统字体是指操作系统预设的字体，用于在没有指定自定义字体时显示文本，确保文本的可读性和一致性。默认的系统字体为“HarmonyOS Sans”。
 
 使用系统字体的情况通常是在应用未注册自定义字体，或在没有显式指定文本样式时，系统会使用默认的系统字体。另外，系统字体有多种，开发者可以先获取系统字体的配置信息，并根据信息中的字体家族名来进行系统字体的切换和使用。
@@ -19,10 +21,12 @@ OH_Drawing_FontCollection* OH_Drawing_CreateSharedFontCollection(void)	创建可
 OH_Drawing_TextStyle* OH_Drawing_CreateTextStyle(void)	创建指向OH_Drawing_TextStyle对象的指针，用于设置文本样式。
 OH_Drawing_SetTextStyleFontFamilies (OH_Drawing_TextStyle *, int, const char *fontFamilies[])	设置指定文本样式的字体家族类型。
 void OH_Drawing_DisableFontCollectionSystemFont(OH_Drawing_FontCollection* fontCollection)	禁用系统字体。
+
 结构体名	描述
 OH_Drawing_FontConfigInfo	系统字体配置信息结构体。
 OH_Drawing_FontGenericInfo	系统所支持的通用字体集信息结构体。
 OH_Drawing_FontFallbackGroup	备用字体集信息结构体。
+
 获取系统字体信息
 
 在工程的src/main/cpp/CMakeLists.txt文件中添加以下lib。
@@ -43,7 +47,6 @@ OH_Drawing_FontConfigInfo* fontConfigInfo = OH_Drawing_GetSystemFontConfigInfo(&
 if(fontConfigInfoErrorCode != SUCCESS_FONT_CONFIG_INFO) {
     OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, "PrintSysFontMetrics", "获取系统信息失败，错误代码为： %{public}d", fontConfigInfoErrorCode);
 }
-sample_bitmap.cpp
 
 系统字体的配置信息OH_Drawing_FontConfigInfo包含以下几类信息：
 
@@ -81,13 +84,13 @@ if (fontConfigInfo != nullptr) {
                      "获取第%{public}zu个通用字体集中的字体家族名为: %{public}s", i, genericInfo.familyName);
     }
 }
-sample_bitmap.cpp
 
 以下打印的示例为应用设备系统对应的部分系统字体配置信息情况，不同设备系统配置信息可能不同，此处仅示意。
 
 如若后续不再需要系统字体的系统配置信息时，则释放其占用的内存。
 
 OH_Drawing_DestroySystemFontConfigInfo(fontConfigInfo);
+
 使用或切换系统字体
 
 系统字体可以有多种，可以先获取系统字体配置信息，再根据其中的字体家族名来进行系统字体的切换和使用。
@@ -112,12 +115,10 @@ libnative_drawing.so
 使用OH_Drawing_CreateFontCollection和OH_Drawing_CreateSharedFontCollection均可创建字体管理器OH_Drawing_FontCollection对象，但前者创建的字体集指针对象只能被一个段落生成器OH_Drawing_TypographyCreate对象使用，无法被多个段落生成器OH_Drawing_TypographyCreate对象共享使用。如需在多个段落生成器OH_Drawing_TypographyCreate对象间共享使用，请使用后者创建可共享的字体集对象。
 
 OH_Drawing_FontCollection *fontCollection = OH_Drawing_CreateSharedFontCollection();
-sample_bitmap.cpp
 
 创建一个文本样式对象，即OH_Drawing_TextStyle对象，用于设置文本样式。
 
 OH_Drawing_TextStyle *textStyle = OH_Drawing_CreateTextStyle();
-sample_bitmap.cpp
 
 获取系统字体信息，获取系统字体的字体家族名，并在文本样式中设置为该系统字体。
 
@@ -125,11 +126,9 @@ sample_bitmap.cpp
 const char *myFontFamilies[] = {"HarmonyOS Sans Condensed"};
 OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
 
-
 // 情况二：不手动设置，此时使用的是系统默认字体"HarmonyOS Sans"
 // const char* myFontFamilies[] = {"HarmonyOS Sans Condensed"};
 // OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
-sample_bitmap.cpp
 
 生成最终段落文本，以便实现最终的文本绘制和显示。
 
@@ -154,7 +153,7 @@ double maxWidth = width_;
 OH_Drawing_TypographyLayout(typography, maxWidth);
 // 将文本绘制到画布(0,height_/2.0)上
 OH_Drawing_TypographyPaint(typography, cCanvas_, 0, height_ / 2.0);
-sample_bitmap.cpp
+
 禁用系统字体
 
 当自定义字体不存在时，不禁用系统字体，系统则会自动回退到默认字体。通过禁用系统字体，开发者可以在任何场景避免字体回退为系统默认字体，确保文本渲染符合设计预期，从而统一应用的视觉风格。
@@ -181,12 +180,10 @@ libnative_drawing.so
 创建字体管理器，建议优先使用OH_Drawing_CreateSharedFontCollection创建可共享的字体集对象。
 
 OH_Drawing_FontCollection *fontCollection = OH_Drawing_CreateSharedFontCollection();
-sample_bitmap.cpp
 
 禁用系统字体。
 
 OH_Drawing_DisableFontCollectionSystemFont(fontCollection);
-sample_bitmap.cpp
 
 创建文本样式对象，使用注册成功的自定义字体。
 
@@ -207,16 +204,13 @@ DRAWING_LOGI("errorCode = %{public}d", errorCode);
 const char *myFontFamilies[] = {"HarmonyOS_Sans"}; // 确保已成功注册自定义字体，填入自定义字体的字体家族名
 OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
 
-
 // 情况二：如果此时使用了系统字体，文本将无法显示
 // const char *myFontFamilies[] = {"HarmonyOS_Sans"};
 // OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
 
-
 // 情况三：如果此时不设置使用字体，文本会默认使用系统默认字体，而此时系统字体已被禁用，因此文本将无法显示
 // const char *myFontFamilies[] = {"HarmonyOS_Sans"};
 // OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
-sample_bitmap.cpp
 
 生成最终的段落文本，以便实现最终的文本绘制和显示。
 
@@ -236,12 +230,211 @@ const char *text = "Hello World.\n以上文字使用了自定义字体";
 OH_Drawing_TypographyHandlerAddText(handler, text);
 // 通过段落生成器生成段落
 OH_Drawing_Typography *typography = OH_Drawing_CreateTypography(handler);
-    
+
 // 设置页面最大宽度
 double maxWidth = width_;
 OH_Drawing_TypographyLayout(typography, maxWidth);
 // 将文本绘制到画布(width_/5.0,height_/2.0)上
 OH_Drawing_TypographyPaint(typography, cCanvas_, width_ / 5.0, height_ / 2.0);
-sample_bitmap.cpp
-自定义字体的注册和使用（C/C++）
-文本测量
+
+## Code blocks
+
+### Code block 1
+
+```
+libnative_drawing.so
+```
+
+### Code block 2
+
+```
+#include <native_drawing/drawing_font_collection.h>
+#include <native_drawing/drawing_text_typography.h>
+#include <native_drawing/drawing_register_font.h>
+#include <hilog/log.h>
+```
+
+### Code block 3
+
+```
+OH_Drawing_FontConfigInfoErrorCode fontConfigInfoErrorCode;  // 用于接收错误代码
+OH_Drawing_FontConfigInfo* fontConfigInfo = OH_Drawing_GetSystemFontConfigInfo(&fontConfigInfoErrorCode);
+if(fontConfigInfoErrorCode != SUCCESS_FONT_CONFIG_INFO) {
+    OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, "PrintSysFontMetrics", "获取系统信息失败，错误代码为： %{public}d", fontConfigInfoErrorCode);
+}
+```
+
+### Code block 4
+
+```
+// 获取系统字体配置信息示例
+if (fontConfigInfo != nullptr) {
+    // 获取字体文件路径数量，打印日志
+    size_t fontDirCount = fontConfigInfo->fontDirSize;
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "PrintSysFontMetrics", "字体文件路径数量为: %{public}zu\n", fontDirCount);
+    // 遍历字体文件路径列表，打印日志
+    for (size_t i = 0; i < fontDirCount; ++i) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "PrintSysFontMetrics", "字体文件路径为: %{public}s\n",
+                     fontConfigInfo->fontDirSet[i]);
+    }
+    // 获取通用字体集数量，打印日志
+    size_t genericCount = fontConfigInfo->fontGenericInfoSize;
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "PrintSysFontMetrics", "通用字体集数量为: %{public}zu\n", genericCount);
+    // 遍历获取每个通用字体集中的字体家族名（例如 HarmonyOS Sans），打印日志
+    for (size_t i = 0; i < genericCount; ++i) {
+        OH_Drawing_FontGenericInfo &genericInfo = fontConfigInfo->fontGenericInfoSet[i];
+        OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "PrintSysFontMetrics",
+                     "获取第%{public}zu个通用字体集中的字体家族名为: %{public}s", i, genericInfo.familyName);
+    }
+}
+```
+
+### Code block 5
+
+```
+OH_Drawing_DestroySystemFontConfigInfo(fontConfigInfo);
+```
+
+### Code block 6
+
+```
+libnative_drawing.so
+```
+
+### Code block 7
+
+```
+#include <native_drawing/drawing_font_collection.h>
+#include <native_drawing/drawing_text_typography.h>
+#include <native_drawing/drawing_register_font.h>
+#include <hilog/log.h>
+```
+
+### Code block 8
+
+```
+OH_Drawing_FontCollection *fontCollection = OH_Drawing_CreateSharedFontCollection();
+```
+
+### Code block 9
+
+```
+OH_Drawing_TextStyle *textStyle = OH_Drawing_CreateTextStyle();
+```
+
+### Code block 10
+
+```
+// 情况一：设置系统字体为"HarmonyOS Sans Condensed"
+const char *myFontFamilies[] = {"HarmonyOS Sans Condensed"};
+OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
+
+// 情况二：不手动设置，此时使用的是系统默认字体"HarmonyOS Sans"
+// const char* myFontFamilies[] = {"HarmonyOS Sans Condensed"};
+// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
+```
+
+### Code block 11
+
+```
+// 设置其他文本样式
+OH_Drawing_SetTextStyleColor(textStyle, OH_Drawing_ColorSetArgb(0xFF, 0x00, 0x00, 0x00));
+// 设置字体大小为70.0
+OH_Drawing_SetTextStyleFontSize(textStyle, 70.0);
+// 创建一个段落样式对象，以设置排版风格
+OH_Drawing_TypographyStyle *typographyStyle = OH_Drawing_CreateTypographyStyle();
+OH_Drawing_SetTypographyTextAlign(typographyStyle, TEXT_ALIGN_LEFT); // 设置段落样式为左对齐
+// 创建一个段落生成器
+OH_Drawing_TypographyCreate *handler = OH_Drawing_CreateTypographyHandler(typographyStyle, fontCollection);
+// 在段落生成器中设置文本样式
+OH_Drawing_TypographyHandlerPushTextStyle(handler, textStyle);
+// 在段落生成器中设置文本内容
+const char *text = "Hello World. 你好世界。\n以上文字使用了系统字体";
+OH_Drawing_TypographyHandlerAddText(handler, text);
+// 通过段落生成器生成段落
+OH_Drawing_Typography *typography = OH_Drawing_CreateTypography(handler);
+// 设置页面最大宽度
+double maxWidth = width_;
+OH_Drawing_TypographyLayout(typography, maxWidth);
+// 将文本绘制到画布(0,height_/2.0)上
+OH_Drawing_TypographyPaint(typography, cCanvas_, 0, height_ / 2.0);
+```
+
+### Code block 12
+
+```
+libnative_drawing.so
+```
+
+### Code block 13
+
+```
+#include <native_drawing/drawing_font_collection.h>
+#include <native_drawing/drawing_text_typography.h>
+#include <native_drawing/drawing_register_font.h>
+#include <hilog/log.h>
+```
+
+### Code block 14
+
+```
+OH_Drawing_FontCollection *fontCollection = OH_Drawing_CreateSharedFontCollection();
+```
+
+### Code block 15
+
+```
+OH_Drawing_DisableFontCollectionSystemFont(fontCollection);
+```
+
+### Code block 16
+
+```
+OH_Drawing_TextStyle *textStyle = OH_Drawing_CreateTextStyle();
+// 禁用系统字体后的几种情况如下：
+// 情况一：如果此时设置使用了自定义字体，文本会正常显示
+// 该路径是待注册的自定义字体文件在应用设备下的路径，确保该自定义字体文件已正确放置在该路径下
+// 后续使用自定义字体时，需使用到该字体家族名
+const char* fontFamily = "HarmonyOS_Sans";
+const char* fontPath = "/system/fonts/HarmonyOS_Sans.ttf";
+// 返回0为成功，1为文件不存在，2为打开文件失败，3为读取文件失败，4为寻找文件失败，5为获取大小失败，9文件损坏
+int errorCode = OH_Drawing_RegisterFont(fontCollection, fontFamily, fontPath);
+DRAWING_LOGI("errorCode = %{public}d", errorCode);
+const char *myFontFamilies[] = {"HarmonyOS_Sans"}; // 确保已成功注册自定义字体，填入自定义字体的字体家族名
+OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
+
+// 情况二：如果此时使用了系统字体，文本将无法显示
+// const char *myFontFamilies[] = {"HarmonyOS_Sans"};
+// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
+
+// 情况三：如果此时不设置使用字体，文本会默认使用系统默认字体，而此时系统字体已被禁用，因此文本将无法显示
+// const char *myFontFamilies[] = {"HarmonyOS_Sans"};
+// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
+```
+
+### Code block 17
+
+```
+// 设置其他文本样式
+OH_Drawing_SetTextStyleColor(textStyle, OH_Drawing_ColorSetArgb(0xFF, 0x00, 0x00, 0x00));
+// 设置字体大小为30.0
+OH_Drawing_SetTextStyleFontSize(textStyle, 30.0);
+// 创建一个段落样式对象，以设置排版风格
+OH_Drawing_TypographyStyle *typographyStyle = OH_Drawing_CreateTypographyStyle();
+OH_Drawing_SetTypographyTextAlign(typographyStyle, TEXT_ALIGN_LEFT); // 设置段落样式为左对齐
+// 创建一个段落生成器
+OH_Drawing_TypographyCreate *handler = OH_Drawing_CreateTypographyHandler(typographyStyle, fontCollection);
+// 在段落生成器中设置文本样式
+OH_Drawing_TypographyHandlerPushTextStyle(handler, textStyle);
+// 在段落生成器中设置文本内容
+const char *text = "Hello World.\n以上文字使用了自定义字体";
+OH_Drawing_TypographyHandlerAddText(handler, text);
+// 通过段落生成器生成段落
+OH_Drawing_Typography *typography = OH_Drawing_CreateTypography(handler);
+
+// 设置页面最大宽度
+double maxWidth = width_;
+OH_Drawing_TypographyLayout(typography, maxWidth);
+// 将文本绘制到画布(width_/5.0,height_/2.0)上
+OH_Drawing_TypographyPaint(typography, cCanvas_, width_ / 5.0, height_ / 2.0);
+```

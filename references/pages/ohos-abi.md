@@ -38,7 +38,7 @@ arm64相关elf文件格式定义请参考《arm64架构elf文件格式》。
 
 下面介绍下当前“OHOS” ABI中支持的架构以及差异点。
 
-armeabi-v7a
+[h2]armeabi-v7a
 
 此ABI是以《ARM架构应用二进制接口》为基础制定，适用于32位armv7a架构的cpu，支持的核心包括Cortex-A5，Cortex-A7，Cortex-A8，Cortex-A9，Cortex-A12，Cortex-A15，以及Cortex-A17，支持arm32，thumb-2，VFPv3-D16指令。
 
@@ -48,7 +48,7 @@ armeabi-v7a
 
 当前通过DevEco Studio构建NDK工程时，不支持armeabi-v7a编译环境。如需要在HarmonyOS中使用该编译环境，需要通过CMake方式构建。
 
-arm64-v8a
+[h2]arm64-v8a
 
 此ABI是以《ARM架构应用二进制接口》为基础制定，支持AArch64指令集，默认支持neon特性。
 
@@ -56,14 +56,15 @@ arm64-v8a
 
 此ABI使用128位long double(IEEE binary128)。
 
-x86_64
+[h2]x86_64
 
 此ABI是以Intel64和IA-32 ABI为基础，支持MMX、SSE、SSE2、SSE3、SSSE3、SSE4.1等指令，与x86相关的规范参考《System V Application Binary Interface》、《AMD64 Architecture Processor Supplement》。
 
 此ABI使用128位long double(IEEE binary128)，x86架构上很多平台采用float80格式，HarmonyOS仍然采用128bit形式。
 
 在编译架构中指定ABI
-DevEco Studio中设置
+
+[h2]DevEco Studio中设置
 
 在HarmonyOS的C++工程中，找到C++代码所在项目build-profile.json5文件buildOption/externalNativeOptions字段，添加abiFilters字段：
 
@@ -82,9 +83,25 @@ DevEco Studio中设置
 
 注意：如果DevEco Studio中不设置abiFilters字段，则默认配置的指定架构为：arm64-v8a。
 
-cmake中设置
+[h2]cmake中设置
 
 通过SDK CAPI开发native代码的时候，在build/cmake/ohos.toolchain.cmake中定义了HarmonyOS系统一些交叉编译常用的环境变量设置。其中OHOS_ARCH变量定义了当前目标编译的ABI，可以设置下面三个ABI中的一种，arm64-v8a，armeabi-v7a，x86_64。
 
-硬件兼容性简介
-CPU特性
+## Code blocks
+
+### Code block 1
+
+```
+{
+    "apiType": "stageMode",
+    "buildOption": {
+        "externalNativeOptions": {
+            "path": "./src/main/cpp/CMakeLists.txt",
+            "arguments": "",
+            "abiFilters": [
+                "arm64-v8a"
+            ]
+        }
+    }
+}
+```

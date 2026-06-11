@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-errorcode-00309_
 
+00309001 禁止使用相对路径导入模块以外的文件
+
+错误信息
+
 Cannot import files outside of the current module using relative paths. Import statement: XXX. At file: YYY.
 
 错误描述
@@ -47,11 +51,11 @@ Cannot resolve import statement XXX.
 可能原因
 
 在开启大小写敏感时（即工程级build-profile.json5的caseSensitiveCheck设置为true），import的文件夹中只包含Index.ets或Index.ts（大写I），当前import文件夹仅支持index.ets或index.ts（小写i）。
+
 在开启大小写敏感时，import的文件和实际的文件名大小写不一致。
 
 处理步骤
 
 将import文件夹改为import具体的文件，如果要import文件夹，确保文件夹中存在index.ets或index.ts（小写i）。
+
 确保import的文件和实际的文件名大小写一致。
-操作异常错误码
-签名工具错误码

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-generate-random-number-hardware_
 
+从API version 21开始，可以选择使用硬件熵源生成安全随机数。
+
 随机数主要用于临时会话密钥生成和非对称加密算法密钥生成等场景。在加解密场景中，安全随机数生成器需要具备随机性、不可预测性和不可重现性。
 
 使用更安全的熵源，对随机数而言，就意味着 “结果难以被猜测或复现”，是 “真随机性” 的量化体现。
@@ -34,6 +36,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ge
 
 算法	长度（Byte）
 CTR_DRBG	[1, INT_MAX]
+
 开发步骤
 
 调用cryptoFramework.createRandom，生成随机数实例。
@@ -50,7 +53,6 @@ CTR_DRBG	[1, INT_MAX]
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 
-
 async function doRand() {
     let rand = cryptoFramework.createRandom();
     rand.enableHardwareEntropy();
@@ -60,13 +62,11 @@ async function doRand() {
     let randOutput = await rand.generateRandom(len);
     console.info('rand output: ' + randOutput.data);
   }
-Await.ets
 
 同步返回结果：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 function doRandBySync() {
   let rand = cryptoFramework.createRandom();
@@ -84,6 +84,45 @@ function doRandBySync() {
     console.error(`do rand failed: errCode: ${e.code}, message: ${e.message}`);
   }
 }
-Sync.ets
-安全随机数生成(C/C++)
-使用硬件熵源生成安全随机数(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+
+async function doRand() {
+    let rand = cryptoFramework.createRandom();
+    rand.enableHardwareEntropy();
+    let seed = new Uint8Array([1, 2, 3]);
+    rand.setSeed({ data: seed });
+    let len = 12;
+    let randOutput = await rand.generateRandom(len);
+    console.info('rand output: ' + randOutput.data);
+  }
+```
+
+### Code block 2
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+function doRandBySync() {
+  let rand = cryptoFramework.createRandom();
+  rand.enableHardwareEntropy();
+  let len = 24; // Generate a 24-byte random number.
+  try {
+    let randData = rand.generateRandomSync(len);
+    if (randData.data.length !== 0) {
+      console.info('[Sync]: rand result: ' + randData.data);
+    } else {
+      console.error('[Sync]: get rand result: fail!');
+    }
+  } catch (error) {
+    let e: BusinessError = error as BusinessError;
+    console.error(`do rand failed: errCode: ${e.code}, message: ${e.message}`);
+  }
+}
+```

@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-system-variable-access_
 
+GetBlockNum
+
+GetBlockIdx

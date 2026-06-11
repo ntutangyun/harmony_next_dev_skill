@@ -2,26 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/declare-permissions_
 
-格式为$string: ***。string资源引用需要在string.json文件配置标签"name": "reason"，配置样例可参考资源文件示例。
+应用在申请权限时，需在项目的配置文件中逐个声明所需权限，否则无法获取授权，并可能导致应用上架申请被驳回。
 
-reason填写内容可参考权限使用理由的文案内容规范。
+在配置文件中声明权限
 
+应用必须在module.json5配置文件的requestPermissions标签中声明权限。
 
-usedScene	
-
-权限使用的场景，该字段用于应用上架校验。包括abilities和when两个子项。
-
-- abilities：使用权限的UIAbility或者ExtensionAbility组件的名称。
-
-- when：调用时机。
-
-	对象	
-
-申请user_grant/manual_settings权限时，usedScene必填，其他情况下选填。
-
-- abilities：可以配置为多个UIAbility或者ExtensionAbility名称的字符串数组。
-
-- when：配置此字段，只能填入固定值inuse（使用时）或always（始终），不能为空。
+属性	含义	数据类型	取值范围
+name	需要使用的权限名称。	字符串	必填，需为系统已定义的权限，取值范围请参考应用权限列表。
+reason	申请权限的原因。	字符串	可选填写，该字段用于应用上架校验，申请user_grant/manual_settings权限时必填并需多语种适配。 格式为$string: ***。string资源引用需要在string.json文件配置标签"name": "reason"，配置样例可参考资源文件示例。 reason填写内容可参考权限使用理由的文案内容规范。
+usedScene	权限使用的场景，该字段用于应用上架校验。包括abilities和when两个子项。 - abilities：使用权限的UIAbility或者ExtensionAbility组件的名称。 - when：调用时机。	对象	申请user_grant/manual_settings权限时，usedScene必填，其他情况下选填。 - abilities：可以配置为多个UIAbility或者ExtensionAbility名称的字符串数组。 - when：配置此字段，只能填入固定值inuse（使用时）或always（始终），不能为空。
 
 说明
 
@@ -69,14 +59,14 @@ usedScene
     ]
   }
 }
-module.json5
+
 权限使用理由的文案内容规范
 
 当申请user_grant/manual_settings权限时，字段reason（申请权限的原因）必填。开发者需在应用配置文件中配置每个需要的权限。
 
 但在实际向用户弹窗申请授权时，user_grant权限将会以权限组的形式向用户申请。当前支持的权限组请查看应用权限组列表。
 
-reason字段的内容写作规范及建议
+[h2]reason字段的内容写作规范及建议
 
 权限使用理由应准确告知用户获取权限后用于什么场景/功能。
 
@@ -116,7 +106,7 @@ reason字段的内容写作规范及建议
 
 反例2：HAP1和HAP2中，相机权限的使用理由字段保持完全一致，但是描述不全面，如HAP1和HAP2中，相机权限的使用理由都填写为“用于视频通话功能。”。
 
-权限使用理由展示方式
+[h2]权限使用理由展示方式
 
 权限使用理由有两个展示途径：授权弹窗界面和“设置（Settings）”界面。“设置”的具体路径：设置-隐私-权限管理-某应用某权限详情。
 
@@ -132,5 +122,41 @@ reason字段的内容写作规范及建议
 
 如果应用内多包申请的权限名称相同，但权限使用理由不一致，系统返回的权限申请详细信息ReqPermissionDetail中只会显示一个权限申请理由。优先级从高到低为：entry类型HAP、feature类型HAP、应用内HSP。
 
-选择申请权限的方式
-向用户申请授权
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    // ···
+    // 1.ohos.permission.APPROXIMATELY_LOCATION与ohos.permission.LOCATION为user_grant权限，reason和usedScene为必填字段。
+    // 2.ohos.permission.USE_BLUETOOTH为system_grant权限，reason和usedScene为选填字段。
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.APPROXIMATELY_LOCATION",
+        "reason": "$string:approximately_location_permission_reason",
+        "usedScene": {
+          "abilities": [
+            "FormAbility"
+          ],
+          "when": "inuse"
+        }
+      },
+      {
+        "name": "ohos.permission.LOCATION",
+        "reason": "$string:location_permission_reason",
+        "usedScene": {
+          "abilities": [
+            "FormAbility"
+          ],
+          "when": "inuse"
+        }
+      },
+      {
+        "name": "ohos.permission.USE_BLUETOOTH"
+      }
+    ]
+  }
+}
+```

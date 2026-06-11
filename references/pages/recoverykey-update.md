@@ -2,7 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/recoverykey-update_
 
+场景介绍
+
+为应用提供更新企业公钥证书的能力，用于在证书泄漏、证书失效等场景及时更新企业公钥证书。
+
+接口说明
+
+详细接口说明可参考接口文档。
+
+接口名	描述
 updateEnterpriseCertificate(signature: Uint8Array, cert: Uint8Array): Promise<number>	使用Promise方式更新证书。
+
 开发步骤
 
 导入模块。
@@ -23,5 +33,28 @@ function testUpdateEnterpriseCertificate() {
     console.error(`Failed to update certificate. Code: ${error.code}, message: ${error.message}`);
   });
 }
-挑战值签名
-删除企业恢复密钥
+
+## Code blocks
+
+### Code block 1
+
+```
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+function testUpdateEnterpriseCertificate() {
+  // 在实际应用中，signature 应替换为由企业的公钥、私钥和挑战值生成的签名。
+  let signature: Uint8Array = new Uint8Array([0]);
+  // 在实际应用中，cert 应需替换为企业证书数据。
+  let cert: Uint8Array = new Uint8Array([0]);
+  recoveryKey.updateEnterpriseCertificate(signature, cert).then((ret: number) => {
+    console.info(`Succeeded in updating certificate.`);
+  }).catch((error: BusinessError) => {
+    console.error(`Failed to update certificate. Code: ${error.code}, message: ${error.message}`);
+  });
+}
+```

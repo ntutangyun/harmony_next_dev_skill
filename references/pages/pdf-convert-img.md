@@ -2,7 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-convert-img_
 
+场景介绍
+
+将整个PDF文档的页面转换为图片，每页为一张图片，并且所有图片存放在指定的同一个文件夹下。
+
+当前支持的图片格式请参考ImageFormat。
+
+接口说明
+
+接口名	描述
 convertToImage(path: string, format: ImageFormat, onProgress?: (progress: number) => number): boolean	转换PDF文档为图片。
+
 示例代码
 
 调用loadDocument方法，加载PDF文档。
@@ -13,7 +23,6 @@ import { fileIo as fs } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { pdfService } from '@kit.PDFKit';
 
-
 @Entry
 @Component
 struct PdfPage {
@@ -21,13 +30,11 @@ struct PdfPage {
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
 
-
   aboutToAppear(): void {
     // 确保在工程目录src/main/resources/resfile里有input.pdf文档
     let filePath = this.context.resourceDir + '/input.pdf';
     this.loadResult = this.pdfDocument.loadDocument(filePath);
   }
-
 
   build() {
     Column() {
@@ -44,5 +51,42 @@ struct PdfPage {
     }
   }
 }
-转换指定页面或指定区域为图片
-判断PDF文档是否加密及删除加密
+
+## Code blocks
+
+### Code block 1
+
+```
+import { fileIo as fs } from '@kit.CoreFileKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { pdfService } from '@kit.PDFKit';
+
+@Entry
+@Component
+struct PdfPage {
+  private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
+  private context = this.getUIContext().getHostContext() as Context;
+  private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
+
+  aboutToAppear(): void {
+    // 确保在工程目录src/main/resources/resfile里有input.pdf文档
+    let filePath = this.context.resourceDir + '/input.pdf';
+    this.loadResult = this.pdfDocument.loadDocument(filePath);
+  }
+
+  build() {
+    Column() {
+      // 获取为图片并保存到应用沙箱
+      Button('convertToImage').onClick(async () => {
+        if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+          let outputPath = this.getUIContext().getHostContext()?.filesDir + '/output/';
+          fs.mkdir(outputPath);
+          // 将所有的页面转化为png图片，并存储在output文件夹里，确保output文件夹目录存在
+          let res = this.pdfDocument.convertToImage(outputPath, pdfService.ImageFormat.PNG);
+          hilog.info(0x0000, 'PdfPage', 'convertToImage %{public}s!', res ? 'success' : 'fail');
+        }
+      })
+    }
+  }
+}
+```

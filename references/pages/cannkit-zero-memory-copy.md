@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-zero-memory-copy_
 
+概述
+
 对于GPU的纹理数据或模型的输入数据等已经存在于ION内存中的场景，就可以使用“内存零拷贝方式”，即将存放数据的ION内存封装为输入输出张量，直接进行推理，不需要进行输入张量和输出张量的数据拷贝，以便节省内存以及推理时间。
 
 使用说明
@@ -11,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-z
 说明
 
 若size为模型输出大小，对于输出张量，建议开发者申请ION内存的大小为。
-
-维测调优
-深度融合

@@ -6,12 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/displaysy
 
 开发步骤
 
-此处以不同帧率改变文件组件字体大小为例，来模拟不同UI绘制帧率的效果。
+此处以不同帧率改变文本组件字体大小为例，来模拟不同UI绘制帧率的效果。
 
 导入模块。
 
 import { displaySync } from '@kit.ArkGraphics2D';
-CustomDrawDisplaySync.ets
 
 定义和构建DisplaySync对象。
 
@@ -20,21 +19,17 @@ CustomDrawDisplaySync.ets
 struct Index {
   // ...
 
-
   private backDisplaySyncSlow: displaySync.DisplaySync | undefined = undefined;
   private backDisplaySyncFast: displaySync.DisplaySync | undefined = undefined;
   // ...
 }
-CustomDrawDisplaySync.ets
 
 定义两个文本组件。
 
 @State drawFirstSize: number = 25;
 @State drawSecondSize: number = 25;
 
-
 // ...
-
 
 @Builder
 doSomeRenderFirst() {
@@ -42,13 +37,11 @@ doSomeRenderFirst() {
     .fontSize(this.drawFirstSize)
 }
 
-
 @Builder
 doSomeRenderSecond() {
   Text('60')
     .fontSize(this.drawSecondSize)
 }
-CustomDrawDisplaySync.ets
 
 通过DisplaySync实例设置帧率和注册订阅函数。
 
@@ -62,7 +55,6 @@ CreateDisplaySyncSlow() {
     min: 0,
     max: 120
   };
-
 
   let draw30 = (intervalInfo: displaySync.IntervalInfo) => {
     if (this.isBigger_30) {
@@ -78,12 +70,10 @@ CreateDisplaySyncSlow() {
     }
   };
 
-
   this.backDisplaySyncSlow = displaySync.create();
   this.backDisplaySyncSlow.setExpectedFrameRateRange(range);
   this.backDisplaySyncSlow.on("frame", draw30);
 }
-CustomDrawDisplaySync.ets
 
 开始每帧回调。
 
@@ -110,7 +100,7 @@ Button('Start')
   .width('20%')
   .height(40)
   .shadow(ShadowStyle.OUTER_DEFAULT_LG)
-CustomDrawDisplaySync.ets
+
 说明
 
 创建的DisplaySync实例在start使能后需要aboutToDisappear函数中进行stop操作并置空，避免内存泄漏问题。
@@ -125,7 +115,6 @@ aboutToDisappear() {
     this.backDisplaySyncFast = undefined;
   }
 }
-CustomDrawDisplaySync.ets
 
 结束每帧回调。
 
@@ -146,6 +135,141 @@ Button('Stop')
   .width('20%')
   .height(40)
   .shadow(ShadowStyle.OUTER_DEFAULT_LG)
-CustomDrawDisplaySync.ets
-请求动画绘制帧率
-请求自绘制内容绘制帧率
+
+## Code blocks
+
+### Code block 1
+
+```
+import { displaySync } from '@kit.ArkGraphics2D';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  // ...
+
+  private backDisplaySyncSlow: displaySync.DisplaySync | undefined = undefined;
+  private backDisplaySyncFast: displaySync.DisplaySync | undefined = undefined;
+  // ...
+}
+```
+
+### Code block 3
+
+```
+@State drawFirstSize: number = 25;
+@State drawSecondSize: number = 25;
+
+// ...
+
+@Builder
+doSomeRenderFirst() {
+  Text('30')
+    .fontSize(this.drawFirstSize)
+}
+
+@Builder
+doSomeRenderSecond() {
+  Text('60')
+    .fontSize(this.drawSecondSize)
+}
+```
+
+### Code block 4
+
+```
+CreateDisplaySyncSlow() {
+  let range: ExpectedFrameRateRange = {
+    expected: 30,
+    min: 0,
+    max: 120
+  };
+
+  let draw30 = (intervalInfo: displaySync.IntervalInfo) => {
+    if (this.isBigger_30) {
+      this.drawFirstSize += 1;
+      if (this.drawFirstSize > 150) {
+        this.isBigger_30 = false;
+      }
+    } else {
+      this.drawFirstSize -= 1;
+      if (this.drawFirstSize < 25) {
+        this.isBigger_30 = true;
+      }
+    }
+  };
+
+  this.backDisplaySyncSlow = displaySync.create();
+  this.backDisplaySyncSlow.setExpectedFrameRateRange(range);
+  this.backDisplaySyncSlow.on("frame", draw30);
+}
+```
+
+### Code block 5
+
+```
+Button('Start')
+  .id('CustomDrawStart')
+  .fontSize(14)
+  .fontWeight(500)
+  .margin({ bottom: 10, left: 5 })
+  .fontColor(Color.White)
+  .onClick((): void => {
+    if (this.backDisplaySyncSlow == undefined) {
+      this.CreateDisplaySyncSlow();
+    }
+    if (this.backDisplaySyncFast == undefined) {
+      this.CreateDisplaySyncFast();
+    }
+    if (this.backDisplaySyncSlow) {
+      this.backDisplaySyncSlow.start();
+    }
+    if (this.backDisplaySyncFast) {
+      this.backDisplaySyncFast.start();
+    }
+  })
+  .width('20%')
+  .height(40)
+  .shadow(ShadowStyle.OUTER_DEFAULT_LG)
+```
+
+### Code block 6
+
+```
+aboutToDisappear() {
+  if (this.backDisplaySyncSlow) {
+    this.backDisplaySyncSlow.stop();
+    this.backDisplaySyncSlow = undefined;
+  }
+  if (this.backDisplaySyncFast) {
+    this.backDisplaySyncFast.stop();
+    this.backDisplaySyncFast = undefined;
+  }
+}
+```
+
+### Code block 7
+
+```
+Button('Stop')
+  .id('CustomDrawStop')
+  .fontSize(14)
+  .fontWeight(500)
+  .margin({ bottom: 10, left: 5 })
+  .fontColor(Color.White)
+  .onClick((): void => {
+    if (this.backDisplaySyncSlow) {
+      this.backDisplaySyncSlow.stop();
+    }
+    if (this.backDisplaySyncFast) {
+      this.backDisplaySyncFast.stop();
+    }
+  })
+  .width('20%')
+  .height(40)
+  .shadow(ShadowStyle.OUTER_DEFAULT_LG)
+```

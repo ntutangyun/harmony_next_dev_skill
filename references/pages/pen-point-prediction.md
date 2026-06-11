@@ -2,7 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-point-prediction_
 
+接入报点预测功能，可以优化应用中手写效果的绘制跟手性，提升应用中手写笔书写场景的跟手体验。
+
+场景介绍
+
+在应用的自定义界面中，获取到界面的触摸事件，通过调用报点预测的接口，可以得到预测的下一个报点的位置信息。
+
+接口说明
+
+类名	接口名	描述
 PointPredictor	getPredictionPoint(event: TouchEvent): TouchPoint	获取预测点
+
 开发步骤
 
 导入相关模块。
@@ -14,40 +24,35 @@ import { PointPredictor } from '@kit.Penkit';
 @Entry
 @Component
 struct PointPredictorDemo {
-  @State actualXCoordinate: number = 0
-  @State actualYCoordinate: number = 0
-  @State predictorXCoordinate: Dimension = 0
-  @State predictorYCoordinate: Dimension = 0
+  @State actualXCoordinate: number = 0;
+  @State actualYCoordinate: number = 0;
+  @State predictorXCoordinate: Dimension = 0;
+  @State predictorYCoordinate: Dimension = 0;
   pointPredictor: PointPredictor = new PointPredictor();
 
-
   aboutToAppear() {
-    console.info('getPredictionPoint aboutToAppear')
+    console.info('getPredictionPoint aboutToAppear');
   }
-
 
   aboutToDisappear() {
-    console.info('getPredictionPoint aboutToDisappear')
+    console.info('getPredictionPoint aboutToDisappear');
   }
-
 
   build() {
     Stack({ alignContent: Alignment.TopEnd }) {
-      this.Canvas() // 画布
+      this.canvas(); // 画布
     }.height('100%').width('100%')
   }
 
-
   // 画布
   @Builder
-  Canvas() {
+  canvas() {
     Column() {
-      Text("实际点坐标： X: " + this.actualXCoordinate + " Y: " + this.actualYCoordinate).textAlign(TextAlign.Start)
-      Text("预测点坐标： X: " + this.predictorXCoordinate + " Y: " + this.predictorYCoordinate)
+      Text('实际点坐标： X: ' + this.actualXCoordinate + ' Y: ' + this.actualYCoordinate).textAlign(TextAlign.Start)
+      Text('预测点坐标： X: ' + this.predictorXCoordinate + ' Y: ' + this.predictorYCoordinate)
         .textAlign(TextAlign.Start)
     }.position({ x: 0, y: 0 })
     .alignItems(HorizontalAlign.Start)
-
 
     Stack()
       .width('100%')
@@ -57,13 +62,13 @@ struct PointPredictorDemo {
           case TouchType.Down: // 按下时，新建一条画图路径
             break;
           case TouchType.Move: // 使用预测算法进行预测,获得预测点
-            let point = this.pointPredictor?.getPredictionPoint(event)
-            this.actualXCoordinate = event.touches[0]?.x
-            this.actualYCoordinate = event.touches[0]?.y
-            this.predictorXCoordinate = point?.x
-            this.predictorYCoordinate = point?.y
-            console.info("pointPredictor 实际点坐标 x:" + event.touches[0]?.x + " y:" + event.touches[0]?.y)
-            console.info("pointPredictor 预测点坐标 x:" + point?.x + "  y:" + point?.y)
+            let point = this.pointPredictor?.getPredictionPoint(event);
+            this.actualXCoordinate = event.touches[0]?.x;
+            this.actualYCoordinate = event.touches[0]?.y;
+            this.predictorXCoordinate = point?.x;
+            this.predictorYCoordinate = point?.y;
+            console.info('pointPredictor 实际点坐标 x:' + event.touches[0]?.x + ' y:' + event.touches[0]?.y);
+            console.info('pointPredictor 预测点坐标 x:' + point?.x + '  y:' + point?.y);
             break;
           case TouchType.Up:
             break;
@@ -71,5 +76,71 @@ struct PointPredictorDemo {
       })
   }
 }
-接入手写套件
-接入一笔成形
+
+## Code blocks
+
+### Code block 1
+
+```
+import { PointPredictor } from '@kit.Penkit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct PointPredictorDemo {
+  @State actualXCoordinate: number = 0;
+  @State actualYCoordinate: number = 0;
+  @State predictorXCoordinate: Dimension = 0;
+  @State predictorYCoordinate: Dimension = 0;
+  pointPredictor: PointPredictor = new PointPredictor();
+
+  aboutToAppear() {
+    console.info('getPredictionPoint aboutToAppear');
+  }
+
+  aboutToDisappear() {
+    console.info('getPredictionPoint aboutToDisappear');
+  }
+
+  build() {
+    Stack({ alignContent: Alignment.TopEnd }) {
+      this.canvas(); // 画布
+    }.height('100%').width('100%')
+  }
+
+  // 画布
+  @Builder
+  canvas() {
+    Column() {
+      Text('实际点坐标： X: ' + this.actualXCoordinate + ' Y: ' + this.actualYCoordinate).textAlign(TextAlign.Start)
+      Text('预测点坐标： X: ' + this.predictorXCoordinate + ' Y: ' + this.predictorYCoordinate)
+        .textAlign(TextAlign.Start)
+    }.position({ x: 0, y: 0 })
+    .alignItems(HorizontalAlign.Start)
+
+    Stack()
+      .width('100%')
+      .height('100%')
+      .onTouch((event: TouchEvent) => {
+        switch (event.type) {
+          case TouchType.Down: // 按下时，新建一条画图路径
+            break;
+          case TouchType.Move: // 使用预测算法进行预测,获得预测点
+            let point = this.pointPredictor?.getPredictionPoint(event);
+            this.actualXCoordinate = event.touches[0]?.x;
+            this.actualYCoordinate = event.touches[0]?.y;
+            this.predictorXCoordinate = point?.x;
+            this.predictorYCoordinate = point?.y;
+            console.info('pointPredictor 实际点坐标 x:' + event.touches[0]?.x + ' y:' + event.touches[0]?.y);
+            console.info('pointPredictor 预测点坐标 x:' + point?.x + '  y:' + point?.y);
+            break;
+          case TouchType.Up:
+            break;
+        }
+      })
+  }
+}
+```

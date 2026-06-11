@@ -2,7 +2,9 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agent-extension-ability_
 
-从API version 24开始，支持开发者使用AgentExtensionAbility类型的组件提供智能体服务。系统应用可以连接其他应用实现的AgentExtensionAbility组件，并使用相应的智能体服务。
+概述
+
+在跨应用协作场景下，开发者经常需要从系统应用调用其他应用提供的智能体服务，但缺少标准化的通信机制，导致集成成本高、安全认证复杂。从API version 24开始，支持开发者使用AgentExtensionAbility类型的组件提供智能体服务。系统应用可以连接其他应用实现的AgentExtensionAbility组件，并使用相应的智能体服务。通过使用该组件，可降低跨应用对接成本，保障通信安全，同时支持双向数据通道实时交互。
 
 说明
 
@@ -25,7 +27,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agent-ext
 import { common, AgentExtensionAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 export default class AgentExtAbility extends AgentExtensionAbility {
   private comProxy: common.AgentHostProxy | null = null;
   // 创建AgentExtensionAbility
@@ -33,13 +34,11 @@ export default class AgentExtAbility extends AgentExtensionAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
-
   // 连接
   onConnect(want: Want, proxy: common.AgentHostProxy) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onConnect');
     this.comProxy = proxy;
   }
-
 
   // 断开连接
   onDisconnect(want: Want, proxy: common.AgentHostProxy) {
@@ -109,7 +108,6 @@ export default class AgentExtAbility extends AgentExtensionAbility {
 import { common, AgentExtensionAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 export default class AgentExtAbility extends AgentExtensionAbility {
   // ...
   // 接收数据
@@ -126,13 +124,13 @@ export default class AgentExtAbility extends AgentExtensionAbility {
   }
   // ...
 }
+
 使用AgentExtensionAbility组件接收和发送安全认证请求
 
 应用可以在服务端AgentExtensionAbility组件的onAuth()方法中接收客户端的安全认证请求以及AgentHostProxy对象，并且可以通过AgentHostProxy的authorize()方法向客户端发送安全认证请求。
 
 import { common, AgentExtensionAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 export default class AgentExtAbility extends AgentExtensionAbility {
   // ...
@@ -151,5 +149,143 @@ export default class AgentExtAbility extends AgentExtensionAbility {
   }
   // ...
 }
-使用AppServiceExtensionAbility组件实现后台服务
-AbilityStage组件管理器
+
+## Code blocks
+
+### Code block 1
+
+```
+├── ets
+│ ├── agentextability
+│ │   ├── AgentExtAbility.ets
+```
+
+### Code block 2
+
+```
+import { common, AgentExtensionAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+export default class AgentExtAbility extends AgentExtensionAbility {
+  private comProxy: common.AgentHostProxy | null = null;
+  // 创建AgentExtensionAbility
+  onCreate(want: Want) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+  }
+
+  // 连接
+  onConnect(want: Want, proxy: common.AgentHostProxy) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onConnect');
+    this.comProxy = proxy;
+  }
+
+  // 断开连接
+  onDisconnect(want: Want, proxy: common.AgentHostProxy) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDisconnect');
+    this.comProxy = null;
+  }
+  // 接收数据
+  onData(proxy: common.AgentHostProxy, data: string) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onData');
+    try {
+      let replyData = 'reply message';
+      proxy.sendData(replyData);
+    } catch (err) {
+      let code = (err as BusinessError).code;
+      let msg = (err as BusinessError).message;
+      console.error(`sendData failed, err code: ${code}, err msg: ${msg}.`);
+    }
+  }
+  // 认证
+  onAuth(proxy: common.AgentHostProxy, handshakeData: string) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onAuth');
+    try {
+      // 处理认证逻辑
+      let authResult = 'auth success';
+      proxy.authorize(authResult);
+    } catch (err) {
+      let code = (err as BusinessError).code;
+      let msg = (err as BusinessError).message;
+      console.error(`sendData failed, err code: ${code}, err msg: ${msg}.`);
+    }
+  }
+  // 销毁
+  onDestroy() {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+  }
+}
+```
+
+### Code block 3
+
+```
+{
+  "module": {
+    "extensionAbilities": [
+      {
+        "name": "AgentExtAbility",
+        "icon": "$media:icon",
+        "description": "agent",
+        "type": "agent",
+        "exported": true,
+        "srcEntry": "./ets/agentextability/AgentExtAbility.ets",
+        "metadata": [
+          {
+            "name": "ohos.extension.agent",
+            "resource": "$profile:agent_config",
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Code block 4
+
+```
+import { common, AgentExtensionAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+export default class AgentExtAbility extends AgentExtensionAbility {
+  // ...
+  // 接收数据
+  onData(proxy: common.AgentHostProxy, data: string) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onData');
+    try {
+      let replyData = 'reply message';
+      proxy.sendData(replyData);
+    } catch (err) {
+      let code = (err as BusinessError).code;
+      let msg = (err as BusinessError).message;
+      console.error(`sendData failed, err code: ${code}, err msg: ${msg}.`);
+    }
+  }
+  // ...
+}
+```
+
+### Code block 5
+
+```
+import { common, AgentExtensionAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+export default class AgentExtAbility extends AgentExtensionAbility {
+  // ...
+  // 认证
+  onAuth(proxy: common.AgentHostProxy, handshakeData: string) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onAuth');
+    try {
+      // 处理认证逻辑
+      let authResult = 'auth success';
+      proxy.authorize(authResult);
+    } catch (err) {
+      let code = (err as BusinessError).code;
+      let msg = (err as BusinessError).message;
+      console.error(`sendData failed, err code: ${code}, err msg: ${msg}.`);
+    }
+  }
+  // ...
+}
+```

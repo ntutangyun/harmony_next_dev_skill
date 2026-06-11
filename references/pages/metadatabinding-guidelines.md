@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/metadatabinding-guidelines_
 
+概述
+
 MetadataBinding（记忆链接）指由第三方应用提供鸿蒙App Linking链接，系统将当前用户浏览的内容与鸿蒙App Linking链接进行关联并保存的功能。
 
 详细的接口介绍请参考@ohos.multimodalAwareness.metadataBinding (记忆链接)。
@@ -13,14 +15,20 @@ MetadataBinding（记忆链接）指由第三方应用提供鸿蒙App Linking链
 演示示例
 
 接口说明
+
 本模块首批接口从API version 18开始支持。后续版本的新增接口，采用上角标单独标记接口的起始版本。
+
 本模块支持记忆链接的功能。
+
 接口名	描述
 submitMetadata(metadata: string): void;	第三方应用将待编码的鸿蒙App Linking链接传递给多模态融合感知服务，该服务决定适当时机将内容传递给调用编码接口的系统应用。
 on(type: 'operationSubmitMetadata', bundleName: string, callback: Callback<number>): void;	订阅系统事件以获取编码内容，应用注册回调，事件发生时回传编码内容。
 off(type: 'operationSubmitMetadata', bundleName: string, callback?: Callback<number>): void;	取消订阅系统获取编码内容的事件。取消注册回调接口。
+
 约束与限制
-鸿蒙App Linking链接的最大字节数为128。
+
+鸿蒙App Linking链接超过128字节时会编码失败，截图保存原始图像
+
 开发步骤
 
 导入模块。
@@ -28,13 +36,11 @@ off(type: 'operationSubmitMetadata', bundleName: string, callback?: Callback<num
 import { metadataBinding } from '@kit.MultimodalAwarenessKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { Callback } from '@kit.BasicServicesKit';
-Index.ets
 
 定义记忆服务回调及包名, 函数接收回传编码的内容。
 
 let callback : Callback<number> = (event: number) => {};
 let bundleName: string = '';
-Index.ets
 
 订阅记忆服务。
 
@@ -45,7 +51,6 @@ try {
    let error = err as BusinessError;
    console.error("Register event error and err code is " + error.code);
 }
-Index.ets
 
 提供鸿蒙App Linking链接。
 
@@ -57,7 +62,6 @@ try {
    let error = err as BusinessError;
    console.error("Submit metadata error and err code is " + error.code);
 }
-Index.ets
 
 取消订阅记忆服务。
 
@@ -68,6 +72,57 @@ try {
   let error = err as BusinessError;
   console.error("Unregister event error and err code is " + error.code);
 }
-Index.ets
-用户状态感知开发指导
-Pen Kit（手写笔服务）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { metadataBinding } from '@kit.MultimodalAwarenessKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Callback } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+let callback : Callback<number> = (event: number) => {};
+let bundleName: string = '';
+```
+
+### Code block 3
+
+```
+try {
+   metadataBinding.on('operationSubmitMetadata', bundleName, callback);
+   console.info("on succeeded");
+} catch (err) {
+   let error = err as BusinessError;
+   console.error("Register event error and err code is " + error.code);
+}
+```
+
+### Code block 4
+
+```
+// 应用先开通applink服务，然后获取applink，最后提供给记忆链接服务接口，submitMetadata接口applink长度限制为非空且小于128字符.
+let applink: string = "https://example.com/product/12345";
+try {
+   metadataBinding.submitMetadata(applink);
+} catch (err) {
+   let error = err as BusinessError;
+   console.error("Submit metadata error and err code is " + error.code);
+}
+```
+
+### Code block 5
+
+```
+try {
+  metadataBinding.off('operationSubmitMetadata', bundleName, callback);
+  console.info("off succeeded");
+} catch (err) {
+  let error = err as BusinessError;
+  console.error("Unregister event error and err code is " + error.code);
+}
+```

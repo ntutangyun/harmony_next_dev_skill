@@ -18,7 +18,6 @@ Radio({ value: 'Radio1', group: 'radioGroup' })
   .checked(false)
 Radio({ value: 'Radio2', group: 'radioGroup' })
   .checked(true)
-RadioButton.ets
 
 添加事件
 
@@ -38,7 +37,7 @@ Radio({ value: 'Radio2', group: 'radioGroup' })
       // ···
     }
   })
-RadioButton.ets
+
 场景示例
 
 通过点击Radio切换声音模式。
@@ -46,14 +45,12 @@ RadioButton.ets
 // xxx.ets
 import { promptAction } from '@kit.ArkUI';
 
-
 @Entry
 @Component
 export struct RadioExample {
   @State rst: promptAction.ShowToastOptions = { 'message': 'Ringing mode.' };
   @State vst: promptAction.ShowToastOptions = { 'message': 'Vibration mode.' };
   @State sst: promptAction.ShowToastOptions = { 'message': 'Silent mode.' };
-
 
   build() {
     // ···
@@ -71,7 +68,6 @@ export struct RadioExample {
           Text('Ringing')
         }
 
-
         Column() {
           Radio({ value: 'Vibration', group: 'radioGroup' })
             .height(50)
@@ -84,7 +80,6 @@ export struct RadioExample {
             })
           Text('Vibration')
         }
-
 
         Column() {
           Radio({ value: 'Silent', group: 'radioGroup' })
@@ -102,7 +97,99 @@ export struct RadioExample {
     // ···
   }
 }
-RadioSample.ets
 
-弧形按钮 (ArcButton)(圆形屏幕推荐使用)
-切换按钮 (Toggle)
+## Code blocks
+
+### Code block 1
+
+```
+Radio(options: {value: string, group: string})
+```
+
+### Code block 2
+
+```
+Radio({ value: 'Radio1', group: 'radioGroup' })
+  .checked(false)
+Radio({ value: 'Radio2', group: 'radioGroup' })
+  .checked(true)
+```
+
+### Code block 3
+
+```
+Radio({ value: 'Radio1', group: 'radioGroup' })
+  .onChange((isChecked: boolean) => {
+    if(isChecked) {
+      //需要执行的操作
+      // ···
+    }
+  })
+Radio({ value: 'Radio2', group: 'radioGroup' })
+  .onChange((isChecked: boolean) => {
+    if(isChecked) {
+      //需要执行的操作
+      // ···
+    }
+  })
+```
+
+### Code block 4
+
+```
+// xxx.ets
+import { promptAction } from '@kit.ArkUI';
+
+@Entry
+@Component
+export struct RadioExample {
+  @State rst: promptAction.ShowToastOptions = { 'message': 'Ringing mode.' };
+  @State vst: promptAction.ShowToastOptions = { 'message': 'Vibration mode.' };
+  @State sst: promptAction.ShowToastOptions = { 'message': 'Silent mode.' };
+
+  build() {
+    // ···
+      Row() {
+        Column() {
+          Radio({ value: 'Ringing', group: 'radioGroup' }).checked(true)
+            .height(50)
+            .width(50)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                // 切换为响铃模式
+                this.getUIContext().getPromptAction().openToast(this.rst);
+              }
+            })
+          Text('Ringing')
+        }
+
+        Column() {
+          Radio({ value: 'Vibration', group: 'radioGroup' })
+            .height(50)
+            .width(50)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                // 切换为振动模式
+                this.getUIContext().getPromptAction().openToast(this.vst);
+              }
+            })
+          Text('Vibration')
+        }
+
+        Column() {
+          Radio({ value: 'Silent', group: 'radioGroup' })
+            .height(50)
+            .width(50)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                // 切换为静音模式
+                this.getUIContext().getPromptAction().openToast(this.sst);
+              }
+            })
+          Text('Silent')
+        }
+      }.height('100%').width('100%').justifyContent(FlexAlign.Center)
+    // ···
+  }
+}
+```

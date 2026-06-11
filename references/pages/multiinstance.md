@@ -9,8 +9,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multiinst
 应用多实例间的关系：
 
 多实例的应用图标相同。
+
 各实例共享应用文件目录下的文件数据。
+
 可通过账号进行切换，单个实例可以切换不同的账号登录。
+
 约束限制
 
 应用多实例仅支持2in1设备。
@@ -30,11 +33,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multiinst
     }
   }
 }
-app.json5
 
 创建应用多实例。
 
 将已配置好的工程编译打包安装到设备上。
+
 首次右击桌面应用图标启动一个应用进程，然后再次右击该应用图标，选择“打开”。此时桌面上会显示同一个应用的两个进程页面。
-创建应用分身
-配置应用图标和名称
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    // ...
+    "multiAppMode": {
+      "multiAppModeType": "multiInstance",
+      "maxCount": 5
+    }
+  }
+}
+```

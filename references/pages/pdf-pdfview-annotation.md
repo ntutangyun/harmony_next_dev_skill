@@ -2,7 +2,13 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-pdfview-annotation_
 
+进入批注模式，目前支持高亮、下划线和删除线类型批注。
+
+接口说明
+
+接口名	描述
 enableAnnotation(annotationType: SupportedAnnotationType, color?: number): void	在常用操作之间切换并添加批注。
+
 示例代码
 
 先加载PDF文档。
@@ -13,16 +19,14 @@ enableAnnotation(annotationType: SupportedAnnotationType, color?: number): void	
 
 import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit';
 
-
 @Entry
 @Component
 struct PdfPage {
   private pdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
 
-
   aboutToAppear(): void {
-    // 确保沙箱目录有input.pdf文档
+    // 确保在工程目录src/main/resources/resfile里有input.pdf文档
     let filePath = this.context.resourceDir + '/input.pdf';
     (async () => {
       let loadResult: pdfService.ParseResult = await this.pdfController.loadDocument(filePath);
@@ -32,7 +36,6 @@ struct PdfPage {
       }
     })()
   }
-
 
   build() {
     Column() {
@@ -47,5 +50,43 @@ struct PdfPage {
     }
   }
 }
-高亮显示PDF文档
-PDF缩略图转换为图片
+
+## Code blocks
+
+### Code block 1
+
+```
+import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit';
+
+@Entry
+@Component
+struct PdfPage {
+  private pdfController = new pdfViewManager.PdfController();
+  private context = this.getUIContext().getHostContext() as Context;
+
+  aboutToAppear(): void {
+    // 确保在工程目录src/main/resources/resfile里有input.pdf文档
+    let filePath = this.context.resourceDir + '/input.pdf';
+    (async () => {
+      let loadResult: pdfService.ParseResult = await this.pdfController.loadDocument(filePath);
+      if (pdfService.ParseResult.PARSE_SUCCESS === loadResult) {
+        // 添加删除线批注
+        this.pdfController.enableAnnotation(pdfViewManager.SupportedAnnotationType.STRIKETHROUGH, 0xAAEEEEEE);
+      }
+    })()
+  }
+
+  build() {
+    Column() {
+      // 加载PdfView组件进行预览
+      PdfView({
+        controller: this.pdfController,
+        pageFit: pdfService.PageFit.FIT_WIDTH,
+        showScroll: true
+      })
+        .id('pdfview_app_view')
+        .layoutWeight(1);
+    }
+  }
+}
+```

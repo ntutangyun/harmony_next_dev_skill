@@ -1,4 +1,4 @@
-# 开启超帧外插模式后运动物体边缘出现严重拖影现象，可能的原因是什么？
+# 开启超帧外插模式后运动物体边缘出现严重拖影现象，可能的原因是什么
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-faq-2_
 
@@ -47,6 +47,7 @@ Shader "Standard_with_stencil"
         }
     }
 }
+
 说明
 
 不同管线的Shader中需要配置模板值的Pass不同，如下：
@@ -59,5 +60,36 @@ Shader "Standard_with_stencil"
 
 在每个有ForwardBase或ForwardAdd的Pass中，即出现Tags {"LightMode" = "ForwardBase" }或Tags {"LightMode" = "ForwardAdd" }的Pass，配置模板值。
 
-Kit支持的设备类型有哪些？
-哪些特征的Buffer适合使能ABR？
+## Code blocks
+
+### Code block 1
+
+```
+Shader "Standard_with_stencil"
+{
+    Properties
+    {
+        /* ... */
+        _LightingStencilRef("Lighting Stencil Reference", Float) = 128 // 将动态物体材质模板值改为1xxx xxxx，消除头身分离现象
+        [Enum(UnityEngine.Rendering.CompareFunction)] _LightingStencilComp("Lighting Stencil Comparison", Float) = 8
+        _StencilReadMask("Stencil Read Mask", Float) = 255
+        _StencilWriteMask("Stencil Write Mask", Float) = 255
+    }
+    SubShader
+    {
+        /* ... */
+        Pass
+        {
+            /* ... */
+            Stencil
+            {
+                Ref[_LightingStencilRef]
+                Comp[_LightingStencilComp]
+                ReadMask[_StencilReadMask]
+                WriteMask[_StencilWriteMask]
+                Pass Replace
+            }
+        }
+    }
+}
+```

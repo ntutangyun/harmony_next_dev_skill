@@ -1,6 +1,12 @@
-# 文档中心
+# 保护密码类数据
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/asset-scenario1_
+
+说明
+
+密码类数据可以是密码、登录令牌、信用卡号等用户敏感数据。
+
+场景描述
 
 用户在应用/浏览器中登录账号时，可以选择“记住密码”（如图）。针对此种场景，应用/浏览器可以将用户密码存储在ASSET中，由ASSET保证用户密码的安全性。
 
@@ -21,5 +27,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/asset-sce
 如果关键资产存在，业务可选择：
 
 删除关键资产，开发步骤参考删除关键资产(ArkTS) / 删除关键资产(C/C++)。
+
 更新关键资产，开发步骤参考更新关键资产(ArkTS) / 更新关键资产(C/C++)。
+
 查询关键资产明文，开发步骤参考查询关键资产(ArkTS) / 查询关键资产(C/C++)，代码示例参考查询单条关键资产明文(ArkTS) / 查询单条关键资产明文(C/C++)。

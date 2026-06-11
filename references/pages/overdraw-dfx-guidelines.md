@@ -31,9 +31,13 @@ param get debug.graphic.overdraw
 开启了过度绘制调试功能后，打开应用界面，存在过度绘制情况的像素会被代表着不同级别的颜色方框高亮出来，其颜色越深代表过度绘制情况越严重，对应关系如下：
 
 原色：无过度绘制情况。
+
 蓝紫色：存在一次过度绘制。
+
 绿色：存在两次过度绘制。
+
 浅红色：存在三次过度绘制。
+
 深红色：存在四次或更多次过度绘制。
 
 以下是一个存在冗余的背景颜色嵌套问题的示例应用程序，及其对应的开启过度绘制调试功能的界面显示情况。
@@ -42,7 +46,6 @@ param get debug.graphic.overdraw
 @Component
 struct Index {
   @State message: string = 'Hello World'
-
 
   build() {
     Row() {
@@ -91,5 +94,62 @@ struct Index {
 
 采用扁平化布局，减少组件嵌套深度，比如将大小相近、功能类似的布局组件合并为一个组件等。
 
-NativeDisplaySoloist开发指导 (C/C++)
-图形绘制与显示
+## Code blocks
+
+### Code block 1
+
+```
+param set debug.graphic.overdraw true
+```
+
+### Code block 2
+
+```
+param set debug.graphic.overdraw false
+```
+
+### Code block 3
+
+```
+param get debug.graphic.overdraw
+```
+
+### Code block 4
+
+```
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World'
+
+  build() {
+    Row() {
+      Column() {
+        Column() {
+          Column() {
+            Column() {
+              Column() {
+                Text("Hello World")
+              }
+              .width('80%')
+              .height('80%')
+              .backgroundColor(Color.White)
+            }
+            .width('80%')
+            .height('80%')
+            .backgroundColor(Color.White)
+          }
+          .width('80%')
+          .height('80%')
+          .backgroundColor(Color.White)
+        }
+        .width('80%')
+        .height('80%')
+        .backgroundColor(Color.White)
+      }
+      .width('80%')
+    }
+    .height('80%')
+  }
+}
+```

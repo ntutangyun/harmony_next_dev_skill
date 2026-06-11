@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-app-startup_
 
+本章节介绍拉起系统应用的方式，以及支持跳转系统应用的能力清单。
+
+拉起系统应用的方式
+
 拉起系统应用除了使用前面章节介绍的方式（比如使用openLink拉起指定应用、使用startAbilityByType指定类型的应用），还可以采用如下方式。
 
 使用系统Picker组件
@@ -21,7 +25,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-ap
 设置、电话、日历等应用提供了一些接口，通过这些接口可以直接跳转系统应用。
 
 支持跳转系统应用的能力清单
-设置
+
+[h2]设置
 
 当前支持直接拉起设置应用中如下功能界面，未列出的暂不支持。
 
@@ -30,56 +35,67 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-ap
 二次向用户申请授权介绍了如何拉起权限设置弹窗。该文档中的示例代码同样适用于应用权限组列表中的所有权限，只需将对应的权限名进行替换即可。以下为开发者经常用到的一些场景。
 
 拉起位置权限设置弹窗
+
 拉起相机权限设置弹窗
+
 拉起图片与视频权限设置弹窗
+
 拉起音乐和音频权限设置弹窗
+
 拉起通讯录权限设置弹窗
+
 拉起日历权限设置弹窗
 
 通知管理： 当应用通过requestEnableNotification()接口拉起通知授权弹框时，如果用户拒绝授权，将无法使用该接口再次拉起弹框，需要调用openNotificationSettings()接口，支持拉起通知管理弹窗。
 
 网络管理： 当应用需要通过WLAN连接网络时，可以通过openNetworkManagerSettings()接口拉起WLAN设置弹窗。
 
-应用市场
+[h2]应用市场
 
 AppGallery Kit支持通过loadProduct()接口、App Linking等多种方式拉起应用详情页。详见应用详情页展示。
 
-钱包
+[h2]钱包
 
 Payment Kit提供了requestPayment接口，可以实现单次支付、支付并签约。
 
-电话
+[h2]电话
 
 Telephony Kit提供makeCall()接口，支持跳转到拨号界面，并显示待拨出的号码。
 
-日历
+[h2]日历
 
 Calendar Kit提供addEvent接口，用于创建日程。
 
-联系人
+[h2]联系人
 
 Contacts Kit提供联系人Picker（Contacts Picker），用于拉起联系人应用，读取联系人数据。详见选择联系人。
 
-地图
+[h2]地图
 
 Map Kit提供了地图Picker，支持地点详情展示、地点选取、区划选择。
 
-相机
+[h2]相机
+
 拍照录像：Camera Kit提供了相机Picker，用于拍照、录像。
+
 扫码 ：Scan Kit提供了扫码Picker，支持调用相机，实现默认界面扫码。
+
 卡证识别：Vision Kit提供了卡证识别Picker，支持调用相机，识别各类证件并提取卡证信息。
+
 文档扫描 ：Vision Kit提供了文档扫描Picker，支持调用相机，拍摄文档并转化为高清扫描件。
-文件管理
+
+[h2]文件管理
 
 Core File Kit提供了文件Picker和音频Picker。
 
 文件Picker（DocumentViewPicker）：用于访问、保存公共目录中文档类文件。详见选择文档类文件、保存文档类文件。
+
 音频Picker（AudioViewPicker）：用于访问、保存公共目录的音频文件。详见选择音频类文件、保存音频类文件。
-图库（媒体库）
+
+[h2]图库（媒体库）
 
 Media Library Kit提供了照片Picker（PhotoViewPicker），用于访问、保存公共目录的图片或视频文件。详见选择媒体库资源 、创建媒体资源。
 
 示例代码
+
 拉起系统相机
-拉起文件处理类应用（startAbility）
-进程模型

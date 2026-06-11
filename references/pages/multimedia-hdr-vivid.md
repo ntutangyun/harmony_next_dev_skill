@@ -15,6 +15,7 @@ HDR Vivid视频
 转换	视频解码支持HDRVivid2SDR	AVCodec Kit
 转换	HDR Vivid视频动态元数据生成	Media Kit
 转换	HDR视频色彩空间转换	Media Kit
+
 HDR Vivid图片
 
 应用只需调用媒体领域提供的API，即可接入HarmonyOS的HDR Vivid图片采集、转码和解码显示功能，基于HDR Vivid标准，制作出高质量的图片。
@@ -27,5 +28,3 @@ HDR Vivid图片
 转换	HDR图片色彩空间转换	Image Kit
 转换	单层HDR图片转换双层	Image Kit
 转换	双层HDR图片转换单层	Image Kit
-媒体开发概览
-Audio Kit（音频服务）

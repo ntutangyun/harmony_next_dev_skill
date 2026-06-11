@@ -97,5 +97,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-faq
 90	luxtrustglobalroot2ca [jdk]	CN=LuxTrust Global Root 2, O=LuxTrust S.A., C=LU	CN=LuxTrust Global Root 2, O=LuxTrust S.A., C=LU	a7ea6df4b449eda6a24859ee6b815d3167fbbb1	3	Thu Mar 05 21:21:57 CST 2015	Mon Mar 05 21:21:57 CST 2035	1E:0E:56:19:0A:D1:8B:25:98:B2:04:44:FF:66:8A:04:17:99:5F:3F
 91	teliasonerarootcav1 [jdk]	CN=TeliaSonera Root CA v1, O=TeliaSonera	CN=TeliaSonera Root CA v1, O=TeliaSonera	95be16a0f72e46f17b398272fa8bcd96	3	Thu Oct 18 20:00:50 CST 2007	Mon Oct 18 20:00:50 CST 2032	43:13:BB:96:F1:D5:86:9B:C1:4E:6A:92:F6:CF:F6:34:69:87:82:37
 92	TWCA Root Certification Authority	CN=TWCA Root Certification Authority, OU=Root CA, O=TAIWAN-CA, C=TW	CN=TWCA Root Certification Authority, OU=Root CA, O=TAIWAN-CA, C=TW	01	3	Thu Aug 28 15:24:33 CST 2008	Tue Dec 31 23:59:59 CST 2030	CF:9E:87:6D:D3:EB:FC:42:26:97:A3:B5:A3:7A:A0:76:A9:06:23:48
-是否能在删除商品后添加具有相同productId的商品？
-数字商品服务器支持加密套件

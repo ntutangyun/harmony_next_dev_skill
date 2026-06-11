@@ -1,26 +1,347 @@
-# 延迟加载（lazy import）
+# 延迟加载 (lazy import)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-lazy-import_
 
--Summary----> Total file number: 13, total time: 2ms, including used file:12, cost time: 1ms, and unused file: 1, cost time: 1ms
+随着应用程序功能的扩展，冷启动时间显著增加，主要是因为启动初期加载了大量未实际执行的模块。这不仅延长了应用的初始化时间，还浪费了资源。需要精简加载流程，剔除非必需的文件执行，优化冷启动性能，确保用户体验流畅。
+
+说明
+
+延迟加载特性在API 12版本开始支持。
+
+开发者如需在API 12上使用lazy import语法，需在工程中配置"compatibleSdkVersionStage": "beta3"，否则将无法通过编译。请参考DevEco Studio build-profile.json5配置。
+
+针对API version大于12的工程，开发者可直接使用lazy import语法，无需再进行其他配置。
+
+功能特性
+
+延迟加载特性使文件在冷启动阶段不被加载，而是在程序运行时按需加载，从而缩短冷启动时间。
+
+使用方式
+
+开发者可以参考Launch模板基本操作、可延迟加载文件检测、常用Trace使用指导，利用工具或日志记录等手段，识别冷启动期间未被实际调用的文件，分析方法可参考延迟加载lazy-import使用指导。通过对这些数据的分析，开发者可以精准定位启动阶段不必预先加载的文件列表，并在这些文件的调用点增加lazy标识。但需要注意，后续执行的加载是同步加载，可能阻塞任务执行（如单击任务，触发了延迟加载，那么运行时会去执行冷启动未加载的文件，从而增加耗时），因此是否使用lazy需要开发者自行评估。
+
+说明
+
+不建议盲目增加lazy，这会增加编译和运行时的识别开销。
+
+场景行为解析
+
+使用lazy-import延迟加载。
+
+// main.ets
+import lazy { a } from "./mod1";    // "mod1" 未执行
+import { c } from "./mod2";         // "mod2" 执行
+
+// ...
+
+console.info("main executed");
+while (false) {
+    let xx = a;
+    let yy = c;
+}
+
+// mod1.ets
+export let a = "mod1 executed"
+console.info(a);
+
+// mod2.ets
+export let c = "mod2 executed"
+console.info(c);
+
+执行结果为：
+
+mod2 executed
+main executed
+
+同时对同一模块引用lazy-import与import。
+
+import lazy { a } from './mod1'; // 'mod1' 未执行
+import { c } from './mod2'; // 'mod2' 执行
+import { b } from './mod1'; // 'mod1' 执行
+
+console.info('main executed');
+while (false) {
+  let xx = a;
+  let yy = c;
+  let zz = b;
+}
+
+export let a = 'mod1 a executed';
+console.info(a);
+export let b = 'mod1 b executed';
+console.info(b);
+
+export let c = 'mod2 c executed';
+console.info(c);
+
+执行结果为：
+
+mod2 c executed
+mod1 a executed
+mod1 b executed
+main executed
+
+如果在main.ets内删除lazy关键字，执行顺序如下：
+
+mod1 a executed
+mod1 b executed
+mod2 c executed
+main executed
+
+lazy-import与动态加载的区别
+
+lazy-import与动态加载都可以延后特定文件的执行时间，帮助设备分摊性能消耗，缓解特定时段的性能压力。
+
+区别项	动态加载	lazy-import
+语法示例	let A = await import("./A");	import lazy { A } from "./A";
+性能开销	1.创建异步任务开销。 2.执行到动态加载时，触发依赖模块的模块解析+源码执行。	1.lazy-import的模块解析在冷启动依旧会触发遍历。 2.导入的变量A被使用到时，触发模块的源码执行。
+使用位置	代码块/运行逻辑中使用	需要写在源码开头
+是否可以运行时拼接	是	否
+加载时序	异步	同步
+
+lazy-import 相较于动态加载的优势：
+
+在使用动态加载时，开发者需要将静态加载的代码（即同步导入）改写为动态加载语法（即异步导入），这可能涉及较大的代码修改量。
+
+如果希望在冷启动阶段通过动态加载实现优化，开发者需要明确感知到被动态加载的文件在冷启动时不会被执行，否则会增加冷启动开销（放入异步队列等）。
+
+相较于动态加载，使用 lazy-import 延迟加载，开发者只需在 import 语句中添加 lazy 关键字即可实现延迟加载，使用更加便捷。
+
+语法规格及起始支持版本
+
+lazy-import支持如下指令实现：
+
+语法	ModuleRequest	ImportName	LocalName	开始支持的API版本
+import lazy { x } from "mod";	"mod"	"x"	"x"	API 12
+import lazy { x as v } from "mod";	"mod"	"x"	"v"	API 12
+import lazy x from "mod";	"mod"	"default"	"x"	API 12
+import lazy { KitClass } from "@kit.SomeKit";	"@kit.SomeKit"	"KitClass"	"KitClass"	API 12
+
+延迟加载共享模块或依赖路径内包含共享模块。
+
+延迟加载对于共享模块依旧生效，使用限制参考共享模块开发指导。
+
+[h2]错误示例
+
+以下写法将引起编译报错。
+
+export lazy var v;                    // 编译器提示报错：应用编译报错
+export lazy default function f(){};   // 编译器提示报错：应用编译报错
+export lazy default function(){};     // 编译器提示报错：应用编译报错
+export lazy default 42;               // 编译器提示报错：应用编译报错
+export lazy { x };                    // 编译器提示报错：应用编译报错
+export lazy { x as v };               // 编译器提示报错：应用编译报错
+export lazy { x } from "mod";         // 编译器提示报错：应用编译报错
+export lazy { x as v } from "mod";    // 编译器提示报错：应用编译报错
+export lazy * from "mod";             // 编译器提示报错：应用编译报错
+
+import lazy * as ns from "mod";            // 编译器提示报错：应用编译报错
+import lazy KitClass from "@kit.SomeKit"   // 编译器提示报错：应用编译报错
+import lazy * as MyKit from "@kit.SomeKit" // 编译器提示报错：应用编译报错
+
+与type关键词同时使用会导致编译报错。
+
+import lazy type { obj } from "./mod";    // 不支持，编译器、应用编译报错
+import type lazy { obj } from "./mod";    // 不支持，编译器、应用编译报错
+
+[h2]不推荐用法
+
+在同一个ets文件中，期望延迟加载的依赖模块标记不完全。
+
+标记不完全将导致延迟加载失效，并且增加识别延迟加载的开销。
+
+// mod1.ets
+export let a = "Variable A from mod1";
+export let b = "Variable B from mod1";
+console.info("mod1 executed");
+
+// mod2.ets
+export let c = "Variable C from mod2";
+console.info("mod2 executed");
+
+// main.ets
+import lazy { a } from "./mod1";    // 从"mod1"内获取a对象，标记为延迟加载
+import { c } from "./mod2";
+import { b } from "./mod1";         // 再次获取"mod1"内属性，未标记lazy，"mod1"默认执行
+
+// ...
+
+在同一ets文件中，未使用延迟加载变量并再次导出，不支持延迟加载变量被re-export导出，可以通过打开工程级build-profile.json5文件中的reExportCheckMode开关进行扫描排查。
+
+"buildOption": {
+  "arkOptions": {
+    "reExportCheckMode": "compatible"
+  },
+  // ...
+}
+
+说明
+
+针对以下场景，编译时是否进行拦截报错：使用lazy import导入的变量，在同文件中被再次导出。
+
+noCheck（缺省默认值）：不检查，不报错。
+
+compatible：兼容模式，报Warning。
+
+strict：严格模式，报Error。
+
+该字段从DevEco Studio 5.0.13.200版本开始支持。
+
+这种方式导出的变量c未在B.ets中使用，因此C.ets不会触发执行。在A.ets中使用变量c时，由于该变量未被初始化，将会抛出JavaScript异常。
+
+// A.ets
+import { c } from './B';
+console.info(c);
+
+// B.ets
+import lazy { c } from './C'; // 从'C'内获取c对象，标记为延迟加载
+export { c };
+
+// C.ets
+let c = 'c';
+export { c };
+
+执行结果：
+
+ReferenceError: c is not initialized
+    at func_main_0 (A.ets:2:13)
+
+// A_ns.ets
+import * as ns from './B';
+console.info(ns.c);
+
+// B.ets
+import lazy { c } from './C'; // 从'C'内获取c对象，标记为延迟加载
+export { c };
+
+// C.ets
+let c = 'c';
+export { c };
+
+执行结果：
+
+ReferenceError: module environment is undefined
+    at func_main_0 (A_ns.js:2:13)
+
+[h2]注意事项
+
+不依赖该模块执行的副作用（如初始化全局变量，挂载globalThis等）。可参考：模块加载副作用及优化。
+
+使用导出对象时，触发延迟加载的耗时可能导致对应特性的功能劣化。由于lazy-import的后续加载是同步加载，可能在某些场景阻塞任务执行（比如在点击业务时触发了懒加载，那么运行时会执行冷启动未加载的文件，增加执行耗时，存在掉帧风险），是否使用延迟加载仍需要开发者自行评估。
+
+使用lazy特性可能导致模块未执行，从而引发bug。
+
+已经被动态加载的文件同时使用lazy-import时，这些文件会执行lazy标识，在动态加载的then逻辑中同步加载。
+
+可延迟加载文件检测
+
+本工具用于本地检测应用冷启动时的文件加载情况，可打印应用启动后固定时间段内使用和未使用的文件名，帮助开发者筛选可延迟加载的文件。
+
+说明
+
+可延迟加载文件检测从API 20版本开始支持。
+
+[h2]检测步骤
+
+打开工具：获取hdc工具，连接设备，在终端直接输入下方命令执行。
+
+hdc shell param set persist.ark.properties 0x200105c
+
+可选项：设置抓取应用启动阶段的时间，单位为ms，范围为[100-30000]，默认为2s。设置范围外的数字无法保证工具的计时准确性。
+
+hdc shell param set persist.ark.importDuration 1000
+
+清除应用后台进程后，重新启动应用进程，等待抓取时间结束，会在应用沙箱下（data/app/el2/100/base/${bundlename}/files/）生成主/子线程对应文件。
+
+注意
+
+该工具仅支持本地安装的应用。
+
+生成文件的操作需要在当前进程存活时执行。
+
+如果抓取过程中进程退出，那么不会生成对应的文件。
+
+关闭工具
+
+该工具常开会损耗性能，使用后应及时关闭。
+
+hdc shell param set persist.ark.properties 0x000105c
+
+[h2]生成文件介绍
+
+工具会根据设置的抓取时间，分别记录主线程和子线程在该时间内的文件加载情况。各线程独立计时。
+
+例如，设置时间为1秒，工具将记录主线程和子线程各自启动后1秒内的文件执行情况。
+
+文件生成路径：data/app/el2/100/base/${bundleName}/files
+
+主线程文件名：${bundleName}_redundant_file.txt
+
+子线程文件名：${bundleName}_${tId}_redundant_file.txt
+
+说明
+
+主线程文件名不含线程号信息，因此写入文件时会发生覆盖。
+
+子线程文件名包含线程号tId，且每个tId唯一，确保每个子线程对应一个单独的文件。若需查找对应线程文件，可依据日志中的线程号或使用trace工具查看线程号进行匹配。
+
+示例
+
+当前测试应用bundleName为com.example.myapplication，应用内创建了一个子线程，线程号为18089（随机）。
+
+文件生成路径：data/app/el2/100/base/com.example.myapplication/files
+
+主线程文件名：data/app/el2/100/base/com.example.myapplication/files/com.example.myapplication_redundant_file.txt
+
+子线程文件名：data/app/el2/100/base/com.example.myapplication/files/com.example.myapplication_18089_redundant_file.txt
+
+[h2]检测原理
+
+如下例所示，A文件和B文件同时被Index文件依赖，那么A、B会随着Index文件的加载被直接加载执行。
+
+A文件执行过程完成了变量定义赋值并进行导出，对应A文件的耗时。B文件定义了一个函数并导出，对应B文件的耗时。
+
+在Index文件执行时，B文件的导出函数func被顶层执行，因此B文件的导出是无法优化的，在工具侧就会显示used。但是A文件的导出变量a在Index文件的myFunc函数被调用时才使用，如果冷启动阶段没有其他文件调用myFunc函数，那么A文件在工具侧就会显示unused，即可以延迟加载。
+
+import { a } from './A';
+import { func } from './B';
+func(); // 使用B文件变量
+export function myFunc() {
+  return a; // a变量未被使用
+}
+
+// A.ets
+export let a = 10;
+
+// B.ets
+export function func() {
+  return 20;
+}
+
+[h2]加载情况总结
+
+总结加载时间内所有文件及其耗时，包括已使用的文件及其耗时和未使用的文件及其耗时。
+
+例：
+
+<----Summary----> Total file number: 13, total time: 2ms, including used file:12, cost time: 1ms, and unused file: 1, cost time: 1ms
 
 上述信息表示应用当前线程在冷启动抓取时间段内加载了13个文件，共耗时2ms。其中，12个文件导出内容被其他文件加载使用，执行这12个文件共耗时1ms；1个文件执行完成，但是其导出内容没有被其他文件在冷启阶段用到，耗时1ms。
 
-被使用文件
+[h2]被使用文件
 
 在冷启动阶段，导出内容被其他文件使用的文件称为used file。
 
 场景1：通过静态加载所加载的文件，其父文件（parentModule）代表该文件的引入方。
 
 used file 1: &entry/src/main/ets/pages/1&, cost time: 0.248ms
-    parentModule 1: &entry/src/main/ets/pages/outer& a
+    parentModule 1: &entry/src/main/ets/pages/outer1& a
 
 对应写法示例：
 
-// entry/src/main/ets/pages/outer.ets
-import { a } from './1' // outer文件从1文件中加载了a变量
-console.info("example ", a); // a变量在outer文件执行时就被使用
-
+// entry/src/main/ets/pages/outer1.ets
+import { a } from './1' // outer1文件从1文件中加载了a变量
+console.info('example ', a); // a变量在outer1文件执行时就被使用
 
 // entry/src/main/ets/pages/1.ets
 export let a = "a";
@@ -29,20 +350,17 @@ export let a = "a";
 
 // 说明：显示顺序不代表父文件的加载顺序。
 used file 1: &entry/src/main/ets/pages/1&, cost time: 0.248ms
-   parentModule 1: &entry/src/main/ets/pages/outer& a
+   parentModule 1: &entry/src/main/ets/pages/outer1& a
    parentModule 2: &entry/src/main/ets/pages/innerinner& a
 
 对应写法示例：
 
-// entry/src/main/ets/pages/outer.ets
-import { a } from './1' // outer文件从1文件中加载了a变量
-console.info("example ", a); // a变量在outer文件执行时就被使用
+// entry/src/main/ets/pages/outer1.ets
+import { a } from './1' // outer1文件从1文件中加载了a变量
+console.info('example ', a); // a变量在outer1文件执行时就被使用
 
-
-// entry/src/main/ets/pages/innerinner.ets
 import { a } from './1' // innerinner文件从1文件中加载了a变量
-console.info("example ", a); // a变量在innerinner文件执行时就被使用
-
+console.info('example ', a); // a变量在innerinner文件执行时就被使用
 
 // entry/src/main/ets/pages/1.ets
 export let a = "a";
@@ -50,19 +368,16 @@ export let a = "a";
 场景3：通过静态加载所加载的文件，存在多个导出，但是只显示了一部分。
 
 used file 1: &entry/src/main/ets/pages/1&, cost time: 0.248ms
-   parentModule 1: &entry/src/main/ets/pages/outer& a
+   parentModule 1: &entry/src/main/ets/pages/outer2& a
 
 对应写法示例：
 
-// entry/src/main/ets/pages/outer.ets
 import { a , b } from './1' // 加载1文件的多个变量
-console.info("example ", a); // a被使用
+console.info('example', a); // a被使用
 export function myFunc() {
- return b; // b未被使用
+  return b; // b未被使用
 }
 
-
-// entry/src/main/ets/pages/1.ets
 export let a = 10;
 export let b = 100;
 
@@ -72,11 +387,9 @@ unused file 1: &entry/src/main/ets/pages/1&, cost time: 0.07ms
 
 对应写法示例：
 
-// entry/src/main/ets/pages/outer.ets
-import("./1").then((ns:ESObject) => {
-    console.info('import file 1 success');
+import('./1').then((ns:ESObject) => {
+  console.info('import file 1 success');
 });
-
 
 // entry/src/main/ets/pages/1.ets
 export let a = "a";
@@ -85,7 +398,8 @@ export let a = "a";
 
 used file 1: &entry/src/main/ets/pages/Index&, cost time: 0.545ms
 parentModule 1: EntryPoint
-未被使用文件
+
+[h2]未被使用文件
 
 在冷启动阶段，导出内容没有被其他文件使用的文件称为未使用的文件，代表可以延迟加载。
 
@@ -98,24 +412,22 @@ unused file 1: &entry/src/main/ets/pages/under1&, cost time: 0.001ms
 
 对应写法示例：
 
-// entry/src/main/ets/pages/1.ets
 import { a } from './under1' // 加载under1文件的变量
 export function myFunc() {
-    return a; // a未被使用
+  return a; // a未被使用
 }
-
 
 // entry/src/main/ets/pages/under1.ets
 export let a = "a";
 
 可使用延迟加载：
 
-// entry/src/main/ets/pages/1.ets
 import lazy { a } from './under1' // 不在此处触发under1文件的加载
 export function myFunc() {
-    return a; // 此时触发under1文件的加载
+  return a; // 此时触发under1文件的加载
 }
-使用示例
+
+[h2]使用示例
 
 使用场景
 
@@ -124,10 +436,8 @@ export function myFunc() {
 // A.ets
 export let A = "A";
 
-
 // Index.ets
 import { A } from "./A";
-
 
 @Entry
 @Component
@@ -167,10 +477,8 @@ hdc file recv data/app/el2/100/base/${bundleName}/files/${bundleName}_redundant_
 // A.ets
 export let A = "A";
 
-
 // Index.ets
 import lazy { A } from "./A"; // 此处添加lazy关键字，标记该文件可延迟加载
-
 
 @Entry
 @Component
@@ -197,5 +505,456 @@ struct Index {
 
 根据上述优化前后案例Trace图对比分析，使用延迟加载后应用冷启动时不再加载A文件，在资源加载阶段减少因加载冗余文件产生的耗时约15%，提高了应用冷启动性能。（由于案例仅演示场景，优化数据仅做参考，在实际业务中随着引用文件的复杂度提高，引用文件数量增多，优化效果也会随之提升。）
 
-动态加载
-同步方式动态加载Native模块
+## Code blocks
+
+### Code block 1
+
+```
+// main.ets
+import lazy { a } from "./mod1";    // "mod1" 未执行
+import { c } from "./mod2";         // "mod2" 执行
+
+// ...
+
+console.info("main executed");
+while (false) {
+    let xx = a;
+    let yy = c;
+}
+
+// mod1.ets
+export let a = "mod1 executed"
+console.info(a);
+
+// mod2.ets
+export let c = "mod2 executed"
+console.info(c);
+```
+
+### Code block 2
+
+```
+mod2 executed
+main executed
+```
+
+### Code block 3
+
+```
+import lazy { a } from './mod1'; // 'mod1' 未执行
+import { c } from './mod2'; // 'mod2' 执行
+import { b } from './mod1'; // 'mod1' 执行
+```
+
+### Code block 4
+
+```
+console.info('main executed');
+while (false) {
+  let xx = a;
+  let yy = c;
+  let zz = b;
+}
+```
+
+### Code block 5
+
+```
+export let a = 'mod1 a executed';
+console.info(a);
+export let b = 'mod1 b executed';
+console.info(b);
+```
+
+### Code block 6
+
+```
+export let c = 'mod2 c executed';
+console.info(c);
+```
+
+### Code block 7
+
+```
+mod2 c executed
+mod1 a executed
+mod1 b executed
+main executed
+```
+
+### Code block 8
+
+```
+mod1 a executed
+mod1 b executed
+mod2 c executed
+main executed
+```
+
+### Code block 9
+
+```
+export lazy var v;                    // 编译器提示报错：应用编译报错
+export lazy default function f(){};   // 编译器提示报错：应用编译报错
+export lazy default function(){};     // 编译器提示报错：应用编译报错
+export lazy default 42;               // 编译器提示报错：应用编译报错
+export lazy { x };                    // 编译器提示报错：应用编译报错
+export lazy { x as v };               // 编译器提示报错：应用编译报错
+export lazy { x } from "mod";         // 编译器提示报错：应用编译报错
+export lazy { x as v } from "mod";    // 编译器提示报错：应用编译报错
+export lazy * from "mod";             // 编译器提示报错：应用编译报错
+
+import lazy * as ns from "mod";            // 编译器提示报错：应用编译报错
+import lazy KitClass from "@kit.SomeKit"   // 编译器提示报错：应用编译报错
+import lazy * as MyKit from "@kit.SomeKit" // 编译器提示报错：应用编译报错
+```
+
+### Code block 10
+
+```
+import lazy type { obj } from "./mod";    // 不支持，编译器、应用编译报错
+import type lazy { obj } from "./mod";    // 不支持，编译器、应用编译报错
+```
+
+### Code block 11
+
+```
+// mod1.ets
+export let a = "Variable A from mod1";
+export let b = "Variable B from mod1";
+console.info("mod1 executed");
+
+// mod2.ets
+export let c = "Variable C from mod2";
+console.info("mod2 executed");
+
+// main.ets
+import lazy { a } from "./mod1";    // 从"mod1"内获取a对象，标记为延迟加载
+import { c } from "./mod2";
+import { b } from "./mod1";         // 再次获取"mod1"内属性，未标记lazy，"mod1"默认执行
+
+// ...
+```
+
+### Code block 12
+
+```
+"buildOption": {
+  "arkOptions": {
+    "reExportCheckMode": "compatible"
+  },
+  // ...
+}
+```
+
+### Code block 13
+
+```
+// A.ets
+import { c } from './B';
+console.info(c);
+```
+
+### Code block 14
+
+```
+// B.ets
+import lazy { c } from './C'; // 从'C'内获取c对象，标记为延迟加载
+export { c };
+```
+
+### Code block 15
+
+```
+// C.ets
+let c = 'c';
+export { c };
+```
+
+### Code block 16
+
+```
+ReferenceError: c is not initialized
+    at func_main_0 (A.ets:2:13)
+```
+
+### Code block 17
+
+```
+// A_ns.ets
+import * as ns from './B';
+console.info(ns.c);
+```
+
+### Code block 18
+
+```
+// B.ets
+import lazy { c } from './C'; // 从'C'内获取c对象，标记为延迟加载
+export { c };
+```
+
+### Code block 19
+
+```
+// C.ets
+let c = 'c';
+export { c };
+```
+
+### Code block 20
+
+```
+ReferenceError: module environment is undefined
+    at func_main_0 (A_ns.js:2:13)
+```
+
+### Code block 21
+
+```
+hdc shell param set persist.ark.properties 0x200105c
+```
+
+### Code block 22
+
+```
+hdc shell param set persist.ark.importDuration 1000
+```
+
+### Code block 23
+
+```
+hdc shell param set persist.ark.properties 0x000105c
+```
+
+### Code block 24
+
+```
+import { a } from './A';
+import { func } from './B';
+func(); // 使用B文件变量
+export function myFunc() {
+  return a; // a变量未被使用
+}
+```
+
+### Code block 25
+
+```
+// A.ets
+export let a = 10;
+```
+
+### Code block 26
+
+```
+// B.ets
+export function func() {
+  return 20;
+}
+```
+
+### Code block 27
+
+```
+<----Summary----> Total file number: 13, total time: 2ms, including used file:12, cost time: 1ms, and unused file: 1, cost time: 1ms
+```
+
+### Code block 28
+
+```
+used file 1: &entry/src/main/ets/pages/1&, cost time: 0.248ms
+    parentModule 1: &entry/src/main/ets/pages/outer1& a
+```
+
+### Code block 29
+
+```
+// entry/src/main/ets/pages/outer1.ets
+import { a } from './1' // outer1文件从1文件中加载了a变量
+console.info('example ', a); // a变量在outer1文件执行时就被使用
+```
+
+### Code block 30
+
+```
+// entry/src/main/ets/pages/1.ets
+export let a = "a";
+```
+
+### Code block 31
+
+```
+// 说明：显示顺序不代表父文件的加载顺序。
+used file 1: &entry/src/main/ets/pages/1&, cost time: 0.248ms
+   parentModule 1: &entry/src/main/ets/pages/outer1& a
+   parentModule 2: &entry/src/main/ets/pages/innerinner& a
+```
+
+### Code block 32
+
+```
+// entry/src/main/ets/pages/outer1.ets
+import { a } from './1' // outer1文件从1文件中加载了a变量
+console.info('example ', a); // a变量在outer1文件执行时就被使用
+```
+
+### Code block 33
+
+```
+import { a } from './1' // innerinner文件从1文件中加载了a变量
+console.info('example ', a); // a变量在innerinner文件执行时就被使用
+```
+
+### Code block 34
+
+```
+// entry/src/main/ets/pages/1.ets
+export let a = "a";
+```
+
+### Code block 35
+
+```
+used file 1: &entry/src/main/ets/pages/1&, cost time: 0.248ms
+   parentModule 1: &entry/src/main/ets/pages/outer2& a
+```
+
+### Code block 36
+
+```
+import { a , b } from './1' // 加载1文件的多个变量
+console.info('example', a); // a被使用
+export function myFunc() {
+  return b; // b未被使用
+}
+```
+
+### Code block 37
+
+```
+export let a = 10;
+export let b = 100;
+```
+
+### Code block 38
+
+```
+unused file 1: &entry/src/main/ets/pages/1&, cost time: 0.07ms
+```
+
+### Code block 39
+
+```
+import('./1').then((ns:ESObject) => {
+  console.info('import file 1 success');
+});
+```
+
+### Code block 40
+
+```
+// entry/src/main/ets/pages/1.ets
+export let a = "a";
+```
+
+### Code block 41
+
+```
+used file 1: &entry/src/main/ets/pages/Index&, cost time: 0.545ms
+parentModule 1: EntryPoint
+```
+
+### Code block 42
+
+```
+unused file 1: &entry/src/main/ets/pages/under1&, cost time: 0.001ms
+    parentModule 1: &entry/src/main/ets/pages/1&
+```
+
+### Code block 43
+
+```
+import { a } from './under1' // 加载under1文件的变量
+export function myFunc() {
+  return a; // a未被使用
+}
+```
+
+### Code block 44
+
+```
+// entry/src/main/ets/pages/under1.ets
+export let a = "a";
+```
+
+### Code block 45
+
+```
+import lazy { a } from './under1' // 不在此处触发under1文件的加载
+export function myFunc() {
+  return a; // 此时触发under1文件的加载
+}
+```
+
+### Code block 46
+
+```
+// A.ets
+export let A = "A";
+
+// Index.ets
+import { A } from "./A";
+
+@Entry
+@Component
+struct Index {
+  build() {
+    RelativeContainer() {
+      Button('点击执行A文件')
+        .onClick(() => {
+          // 点击后触发A文件的执行
+          console.info("执行A文件", A);
+        })
+    }
+    // ...
+  }
+}
+```
+
+### Code block 47
+
+```
+hdc shell param set persist.ark.properties 0x200105c
+```
+
+### Code block 48
+
+```
+hdc file recv data/app/el2/100/base/${bundleName}/files/${bundleName}_redundant_file.txt D:\
+```
+
+### Code block 49
+
+```
+// A.ets
+export let A = "A";
+
+// Index.ets
+import lazy { A } from "./A"; // 此处添加lazy关键字，标记该文件可延迟加载
+
+@Entry
+@Component
+struct Index {
+  build() {
+    RelativeContainer() {
+      Button('点击执行A文件')
+        .onClick(() => {
+          // 点击后触发A文件的执行
+          console.info("执行A文件", A);
+        })
+    }
+    // ...
+  }
+}
+```

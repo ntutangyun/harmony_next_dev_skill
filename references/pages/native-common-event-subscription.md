@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-common-event-subscription_
 
+场景介绍
+
 通过OH_CommonEvent_CreateSubscriber创建的订阅者可以对某个公共事件进行订阅，如果有订阅的事件发布那么订阅了这个事件的订阅者将会收到该事件及其传递的参数，也可以通过订阅者对象进一步处理有序公共事件。
 
 接口说明
@@ -17,6 +19,7 @@ CommonEvent_ErrCode OH_CommonEvent_Subscribe(const CommonEvent_Subscriber* subsc
 bool OH_CommonEvent_AbortCommonEvent(CommonEvent_Subscriber* subscriber)	中止当前的有序公共事件。
 bool OH_CommonEvent_ClearAbortCommonEvent(CommonEvent_Subscriber* subscriber)	取消当前有序公共事件的中止状态。
 bool OH_CommonEvent_FinishCommonEvent(CommonEvent_Subscriber* subscriber)	结束对当前有序公共事件的处理。
+
 开发步骤
 
 引用头文件。
@@ -25,7 +28,6 @@ bool OH_CommonEvent_FinishCommonEvent(CommonEvent_Subscriber* subscriber)	结束
 #include <cstring>
 #include "hilog/log.h"
 #include "BasicServicesKit/oh_commonevent.h"
-common_event_subscribe.h
 
 在CMake脚本中添加动态链接库。
 
@@ -46,11 +48,9 @@ CommonEvent_SubscribeInfo *CreateSubscribeInfo(const char *events[], int32_t eve
     // 创建订阅者信息
     CommonEvent_SubscribeInfo *info = OH_CommonEvent_CreateSubscribeInfo(events, eventsNum);
 
-
     // 设置发布者权限
     ret = OH_CommonEvent_SetPublisherPermission(info, permission);
     OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "OH_CommonEvent_SetPublisherPermission ret <%{public}d>.", ret);
-
 
     // 设置发布者包名称
     ret = OH_CommonEvent_SetPublisherBundleName(info, bundleName);
@@ -58,14 +58,12 @@ CommonEvent_SubscribeInfo *CreateSubscribeInfo(const char *events[], int32_t eve
     return info;
 }
 
-
 // 销毁订阅者信息
 void DestroySubscribeInfo(CommonEvent_SubscribeInfo *info)
 {
     OH_CommonEvent_DestroySubscribeInfo(info);
     info = nullptr;
 }
-common_event_subscribe.cpp
 
 创建订阅者。
 
@@ -77,14 +75,11 @@ void OnReceive(const CommonEvent_RcvData *data)
     // 获取回调公共事件名称
     const char *event = OH_CommonEvent_GetEventFromRcvData(data);
 
-
     // 获取回调公共事件结果代码
     int code = OH_CommonEvent_GetCodeFromRcvData(data);
 
-
     // 获取回调公共事件自定义结果数据
     const char *retData = OH_CommonEvent_GetDataStrFromRcvData(data);
-
 
     // 获取回调公共事件包名称
     const char *bundle = OH_CommonEvent_GetBundleNameFromRcvData(data);
@@ -92,7 +87,6 @@ void OnReceive(const CommonEvent_RcvData *data)
                  "event: %{public}s, code: %{public}d, data: %{public}s, bundle: %{public}s", event, code, retData,
                  bundle);
 }
-common_event_subscribe.cpp
 
 通过CommonEvent_Parameters传入key来获取附加信息内容。
 
@@ -102,13 +96,11 @@ void GetParameters(const CommonEvent_RcvData *data)
     bool exists = false;
     const CommonEvent_Parameters *parameters = OH_CommonEvent_GetParametersFromRcvData(data);
 
-
     // 检查公共事件附加信息中是否包含某个键值对信息
     exists = OH_CommonEvent_HasKeyInParameters(parameters, "intKey");
     // 获取公共事件附加信息中int数据信息
     int intValue = OH_CommonEvent_GetIntFromParameters(parameters, "intKey", 10);
     OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "exists = %{public}d, intValue = %{public}d", exists, intValue);
-
 
     // 补充说明：除int类型外，还支持获取以下多种类型的公共事件附加信息，调用对应鸿蒙API即可：
     // - 基础数据类型：bool（OH_CommonEvent_GetBoolFromParameters）、long（OH_CommonEvent_GetLongFromParameters）、
@@ -119,7 +111,6 @@ void GetParameters(const CommonEvent_RcvData *data)
     // bool数组（OH_CommonEvent_GetBoolArrayFromParameters）
     // 所有类型均支持通过OH_CommonEvent_HasKeyInParameters先校验键是否存在，避免获取失败
 }
-common_event_subscribe.cpp
 
 通过OH_CommonEvent_CreateSubscriber创建订阅者，传入订阅者信息CommonEvent_SubscribeInfo和步骤4公共事件回调函数OnReceive。
 
@@ -129,14 +120,12 @@ CommonEvent_Subscriber *CreateSubscriber(CommonEvent_SubscribeInfo *info)
     return OH_CommonEvent_CreateSubscriber(info, OnReceive);
 }
 
-
 // 销毁订阅者
 void DestroySubscriber(CommonEvent_Subscriber *Subscriber)
 {
     OH_CommonEvent_DestroySubscriber(Subscriber);
     Subscriber = nullptr;
 }
-common_event_subscribe.cpp
 
 订阅事件。
 
@@ -148,7 +137,6 @@ void Subscribe(CommonEvent_Subscriber *subscriber)
     int32_t ret = OH_CommonEvent_Subscribe(subscriber);
     OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "OH_CommonEvent_Subscribe ret <%{public}d>.", ret);
 }
-common_event_subscribe.cpp
 
 （可选）当订阅的事件为有序公共事件时，可以选择进一步处理有序公共事件。
 
@@ -180,7 +168,6 @@ void AbortCommonEvent(CommonEvent_Subscriber *subscriber)
         OH_LOG_Print(LOG_APP, LOG_ERROR, 1, "CES_TEST", "Abort common event failed.");
     }
 }
-common_event_subscribe.cpp
 
 取消当前有序公共事件的中止状态。
 
@@ -209,7 +196,6 @@ void ClearAbortCommonEvent(CommonEvent_Subscriber *subscriber)
         OH_LOG_Print(LOG_APP, LOG_ERROR, 1, "CES_TEST", "Clear abort common event failed.");
     }
 }
-common_event_subscribe.cpp
 
 修改有序公共事件的内容。
 
@@ -230,6 +216,208 @@ void SetToSubscriber(CommonEvent_Subscriber *subscriber, const int32_t code, con
     }
 }
 
+void GetFromSubscriber(CommonEvent_Subscriber *subscriber)
+{
+    // 获取有序公共事件的数据和代码
+    const char *data = OH_CommonEvent_GetDataFromSubscriber(subscriber);
+    int32_t code = OH_CommonEvent_GetCodeFromSubscriber(subscriber);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "Subscriber data <%{public}s>, code <%{public}d>.", data, code);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+#include <cstdint>
+#include <cstring>
+#include "hilog/log.h"
+#include "BasicServicesKit/oh_commonevent.h"
+```
+
+### Code block 2
+
+```
+target_link_libraries(entry PUBLIC
+    libace_napi.z.so
+    libhilog_ndk.z.so
+    libohcommonevent.so
+)
+```
+
+### Code block 3
+
+```
+CommonEvent_SubscribeInfo *CreateSubscribeInfo(const char *events[], int32_t eventsNum, const char *permission,
+                                               const char *bundleName)
+{
+    int32_t ret = -1;
+    // 创建订阅者信息
+    CommonEvent_SubscribeInfo *info = OH_CommonEvent_CreateSubscribeInfo(events, eventsNum);
+
+    // 设置发布者权限
+    ret = OH_CommonEvent_SetPublisherPermission(info, permission);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "OH_CommonEvent_SetPublisherPermission ret <%{public}d>.", ret);
+
+    // 设置发布者包名称
+    ret = OH_CommonEvent_SetPublisherBundleName(info, bundleName);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "OH_CommonEvent_SetPublisherBundleName ret <%{public}d>.", ret);
+    return info;
+}
+
+// 销毁订阅者信息
+void DestroySubscribeInfo(CommonEvent_SubscribeInfo *info)
+{
+    OH_CommonEvent_DestroySubscribeInfo(info);
+    info = nullptr;
+}
+```
+
+### Code block 4
+
+```
+// 公共事件回调函数
+void OnReceive(const CommonEvent_RcvData *data)
+{
+    // 获取回调公共事件名称
+    const char *event = OH_CommonEvent_GetEventFromRcvData(data);
+
+    // 获取回调公共事件结果代码
+    int code = OH_CommonEvent_GetCodeFromRcvData(data);
+
+    // 获取回调公共事件自定义结果数据
+    const char *retData = OH_CommonEvent_GetDataStrFromRcvData(data);
+
+    // 获取回调公共事件包名称
+    const char *bundle = OH_CommonEvent_GetBundleNameFromRcvData(data);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST",
+                 "event: %{public}s, code: %{public}d, data: %{public}s, bundle: %{public}s", event, code, retData,
+                 bundle);
+}
+```
+
+### Code block 5
+
+```
+void GetParameters(const CommonEvent_RcvData *data)
+{
+    // 获取回调公共事件附件信息
+    bool exists = false;
+    const CommonEvent_Parameters *parameters = OH_CommonEvent_GetParametersFromRcvData(data);
+
+    // 检查公共事件附加信息中是否包含某个键值对信息
+    exists = OH_CommonEvent_HasKeyInParameters(parameters, "intKey");
+    // 获取公共事件附加信息中int数据信息
+    int intValue = OH_CommonEvent_GetIntFromParameters(parameters, "intKey", 10);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "exists = %{public}d, intValue = %{public}d", exists, intValue);
+
+    // 补充说明：除int类型外，还支持获取以下多种类型的公共事件附加信息，调用对应鸿蒙API即可：
+    // - 基础数据类型：bool（OH_CommonEvent_GetBoolFromParameters）、long（OH_CommonEvent_GetLongFromParameters）、
+    // double（OH_CommonEvent_GetDoubleFromParameters）、char（OH_CommonEvent_GetCharFromParameters）
+    // -
+    // 数组数据类型：int数组（OH_CommonEvent_GetIntArrayFromParameters）、long数组（OH_CommonEvent_GetLongArrayFromParameters）、
+    // double数组（OH_CommonEvent_GetDoubleArrayFromParameters）、char数组（OH_CommonEvent_GetCharArrayFromParameters）、
+    // bool数组（OH_CommonEvent_GetBoolArrayFromParameters）
+    // 所有类型均支持通过OH_CommonEvent_HasKeyInParameters先校验键是否存在，避免获取失败
+}
+```
+
+### Code block 6
+
+```
+// 创建订阅者
+CommonEvent_Subscriber *CreateSubscriber(CommonEvent_SubscribeInfo *info)
+{
+    return OH_CommonEvent_CreateSubscriber(info, OnReceive);
+}
+
+// 销毁订阅者
+void DestroySubscriber(CommonEvent_Subscriber *Subscriber)
+{
+    OH_CommonEvent_DestroySubscriber(Subscriber);
+    Subscriber = nullptr;
+}
+```
+
+### Code block 7
+
+```
+void Subscribe(CommonEvent_Subscriber *subscriber)
+{
+    // 通过传入订阅者来订阅事件
+    int32_t ret = OH_CommonEvent_Subscribe(subscriber);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "OH_CommonEvent_Subscribe ret <%{public}d>.", ret);
+}
+```
+
+### Code block 8
+
+```
+void AbortCommonEvent(CommonEvent_Subscriber *subscriber)
+{
+    // 判断是否为有序公共事件
+    if (!OH_CommonEvent_IsOrderedCommonEvent(subscriber)) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "Not ordered common event.");
+        return;
+    }
+    // 中止有序事件
+    if (OH_CommonEvent_AbortCommonEvent(subscriber)) {
+        if (OH_CommonEvent_FinishCommonEvent(subscriber)) {
+            // 获取当前有序公共事件是否处于中止状态
+            OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "Abort common event success, Get abort <%{public}d>.",
+                         OH_CommonEvent_GetAbortCommonEvent(subscriber));
+        }
+    } else {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, 1, "CES_TEST", "Abort common event failed.");
+    }
+}
+```
+
+### Code block 9
+
+```
+void ClearAbortCommonEvent(CommonEvent_Subscriber *subscriber)
+{
+    // 判断是否为有序公共事件
+    if (!OH_CommonEvent_IsOrderedCommonEvent(subscriber)) {
+        OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "Not ordered common event.");
+        return;
+    }
+    // 中止有序事件
+    if (!OH_CommonEvent_AbortCommonEvent(subscriber)) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, 1, "CES_TEST", "Abort common event failed.");
+        return;
+    }
+    // 取消中止有序事件
+    if (OH_CommonEvent_ClearAbortCommonEvent(subscriber)) {
+        if (OH_CommonEvent_FinishCommonEvent(subscriber)) {
+            // 获取当前有序公共事件是否处于中止状态
+            OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "Clear abort common event success, Get abort <%{public}d>.",
+                         OH_CommonEvent_GetAbortCommonEvent(subscriber));
+        }
+    } else {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, 1, "CES_TEST", "Clear abort common event failed.");
+    }
+}
+```
+
+### Code block 10
+
+```
+void SetToSubscriber(CommonEvent_Subscriber *subscriber, const int32_t code, const char *data)
+{
+    // 设置有序公共事件的代码
+    if (!OH_CommonEvent_SetCodeToSubscriber(subscriber, code)) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, 1, "CES_TEST", "OH_CommonEvent_SetCodeToSubscriber failed.");
+        return;
+    }
+    // 设置有序公共事件的数据
+    size_t dataLength = strlen(data);
+    if (!OH_CommonEvent_SetDataToSubscriber(subscriber, data, dataLength)) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, 1, "CES_TEST", "OH_CommonEvent_SetDataToSubscriber failed.");
+        return;
+    }
+}
 
 void GetFromSubscriber(CommonEvent_Subscriber *subscriber)
 {
@@ -238,6 +426,4 @@ void GetFromSubscriber(CommonEvent_Subscriber *subscriber)
     int32_t code = OH_CommonEvent_GetCodeFromSubscriber(subscriber);
     OH_LOG_Print(LOG_APP, LOG_INFO, 1, "CES_TEST", "Subscriber data <%{public}s>, code <%{public}d>.", data, code);
 }
-common_event_subscribe.cpp
-发布公共事件
-取消订阅公共事件（C/C++）
+```

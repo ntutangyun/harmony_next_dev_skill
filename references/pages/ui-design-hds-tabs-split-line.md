@@ -2,14 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-hds-tabs-split-line_
 
+场景介绍
+
+从6.0.0(20)版本开始，新增支持设置页签栏的分割线。
+
 HdsTabs容器组件扩展支持页签栏分割线常隐、常显和渐进显隐。当应用开发者需要分割线一直显示、一直隐藏或者内容区超过页签栏8vp后分割线完全消失时，可以通过设置HdsTabs组件的分割线的模式，同时也支持自定义分割线样式。
 
 常显	常隐	跟手
-
-
-	
-
-	
+		
 
 约束条件
 
@@ -34,12 +34,10 @@ import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.
   listScroller0: ListScroller = new ListScroller();
   listScroller1: ListScroller = new ListScroller();
 
-
  aboutToAppear(): void {
     this.controller.bindScroller(0, this.listScroller0);
     this.controller.bindScroller(1, this.listScroller1);
   }
-
 
   aboutToDisappear(): void {
     this.controller.unbindScroller(this.listScroller0);
@@ -73,5 +71,62 @@ HdsTabs({ controller: this.controller }) {
         }
         .tabBar({ icon: $r('app.media.startIcon'), text: '页签2' })
 }
-底部页签
-设置页签栏的模糊样式
+
+## Code blocks
+
+### Code block 1
+
+```
+// 从6.0.2(22)版本开始，无需手动导入HdsTabsAttribute。具体请参考HdsTabs的导入模块说明。
+import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.UIDesignKit';
+```
+
+### Code block 2
+
+```
+  private controller: HdsTabsController = new HdsTabsController();
+  listScroller0: ListScroller = new ListScroller();
+  listScroller1: ListScroller = new ListScroller();
+
+ aboutToAppear(): void {
+    this.controller.bindScroller(0, this.listScroller0);
+    this.controller.bindScroller(1, this.listScroller1);
+  }
+
+  aboutToDisappear(): void {
+    this.controller.unbindScroller(this.listScroller0);
+    this.controller.unbindScroller(this.listScroller1);
+  }
+```
+
+### Code block 3
+
+```
+ .barOverlap(true)
+ .barPosition(BarPosition.End)
+ .vertical(false)
+ .divider({
+   mode: DividerMode.FOLLOW_SCROLL,
+   style: {
+     color: Color.Black,
+     strokeWidth: 1,
+     startMargin: 0,
+     endMargin: 0
+   }
+ })
+```
+
+### Code block 4
+
+```
+HdsTabs({ controller: this.controller }) {
+        TabContent() {
+          List({ scroller: this.listScroller0 }) {} // listScroller是开发者设置的滑动控制器，list子组件可以自定义添加。
+        }
+        .tabBar({ icon: $r('app.media.startIcon'), text: '页签1' })
+        TabContent() {
+          List({ scroller: this.listScroller1 }) {}
+        }
+        .tabBar({ icon: $r('app.media.startIcon'), text: '页签2' })
+}
+```

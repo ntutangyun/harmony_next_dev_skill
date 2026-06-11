@@ -1,6 +1,19 @@
-# @typescript
+# @typescript-eslint/lines-between-class-members
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_lines-between-class-members_
+
+禁止或者要求类成员之间有空行分隔。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/lines-between-class-members": "error"
+  }
+}
+
+选项
 
 该规则有两个选项配置，第一个选项可以是字符串或者对象，第二个选项是对象。详情请参考eslint/lines-between-class-members选项。
 
@@ -15,19 +28,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_lines
     "exceptAfterOverload": true
   },
 ]
+
 正例
+
 // 默认要求类成员之间有空行分隔
 export class Foo {
   public baz() {
     console.info('baz');
   }
 
-
   public qux() {
     console.info('qux');
   }
 }
+
 反例
+
 // 默认要求类成员之间有空行分隔
 export class Foo {
   public baz() {
@@ -37,10 +53,69 @@ export class Foo {
     console.info('qux');
   }
 }
+
 规则集
+
 plugin:@typescript-eslint/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@typescript-eslint/keyword-spacing
-@typescript-eslint/member-delimiter-style
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/lines-between-class-members": "error"
+  }
+}
+```
+
+### Code block 2
+
+```
+"@typescript-eslint/lines-between-class-members": [
+  "error",
+  "always",
+  {
+    "exceptAfterOverload": true
+  },
+]
+```
+
+### Code block 3
+
+```
+// 默认要求类成员之间有空行分隔
+export class Foo {
+  public baz() {
+    console.info('baz');
+  }
+
+  public qux() {
+    console.info('qux');
+  }
+}
+```
+
+### Code block 4
+
+```
+// 默认要求类成员之间有空行分隔
+export class Foo {
+  public baz() {
+    console.info('baz');
+  }
+  public qux() {
+    console.info('qux');
+  }
+}
+```
+
+### Code block 5
+
+```
+plugin:@typescript-eslint/all
+```

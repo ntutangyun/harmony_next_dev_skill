@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-popup-component-faq_
 
+本文档介绍弹窗组件的常见问题并提供参考。
+
+bindPopup设置placement属性不生效
+
+问题现象
+
+通过Popup控制设置placement属性后，气泡未显示在预期的位置。
+
+可能原因
+
 Popup气泡的默认显示区域是绑定组件以外的窗口区域，框架内部会根据可用空间自动调整气泡位置，而非严格按照开发者设置的placement位置显示。
 
 Popup气泡优先在开发者设置的placement位置显示，当空间不足时会按以下策略自动避让。
@@ -17,5 +27,3 @@ Popup气泡的默认显示区域是绑定组件以外的窗口区域，如下示
 参考链接
 
 Popup控制
-按钮与选择组件常见问题
-使用文本常见问题

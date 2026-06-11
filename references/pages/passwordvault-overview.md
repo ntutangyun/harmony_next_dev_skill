@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/passwordvault-overview_
 
+功能简介
+
+密码保险箱作为HarmonyOS系统安全功能，为用户提供了便捷的免密登录体验。
+
 用户在应用或浏览器进行注册/登录操作时，可一键完成自动生成强密码、自动保存、自动填充，无需记住或手动输入繁琐的密码，由系统实现统一的安全管理密码能力。
 
 用户查看密码或使用密码进行自动填充，都需要经过身份认证，通过输入锁屏密码或验证指纹/人脸，确保只有用户本人才能访问密码。
@@ -31,6 +35,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/passwordv
 模拟器支持情况
 
 本模块暂不支持模拟器。
-
-密码自动填充服务
-应用接入密码保险箱

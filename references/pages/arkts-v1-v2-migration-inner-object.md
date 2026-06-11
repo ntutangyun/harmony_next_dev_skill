@@ -2,8 +2,31 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-v1-v2-migration-inner-object_
 
-@State listChildrenSize: ChildrenMainSize = new ChildrenMainSize(100);
+本文档主要介绍组件内置对象从V1向V2的迁移，涉及如下装饰器。
 
+V1装饰器名称/场景	V2装饰器名称
+滚动组件场景	makeObserved
+Modifier	makeObserved、@ObservedV2、@Trace
+
+滚动组件
+
+[h2]List
+
+开发者可以通过ChildrenMainSize来设置List的子组件在主轴方向的大小信息。
+
+V1：
+
+在状态管理V1中，可以通过@State装饰观察其api调用。
+
+具体示例如下：
+
+@Entry
+@Component
+struct ListExample {
+  private arr: Array<number> = new Array(10).fill(0);
+  private scroller: ListScroller = new ListScroller();
+  @State listSpace: number = 10;
+  @State listChildrenSize: ChildrenMainSize = new ChildrenMainSize(100);
 
   build() {
     Column() {
@@ -11,16 +34,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-v1-
         this.listChildrenSize.childDefaultSize += 10;
       })
 
-
       Button('splice 5').onClick(() => {
         this.listChildrenSize.splice(0, 5, [100, 100, 100, 100, 100]);
       })
 
-
       Button('update 5').onClick(() => {
         this.listChildrenSize.update(0, 200);
       })
-
 
       List({ space: this.listSpace, scroller: this.scroller }) {
         ForEach(this.arr, (item: number) => {
@@ -33,7 +53,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-v1-
     }
   }
 }
-InternalOtherMigrationsListV1.ets
 
 V2：
 
@@ -42,7 +61,6 @@ V2：
 具体示例如下：
 
 import { UIUtils } from '@kit.ArkUI';
-
 
 @Entry
 @ComponentV2
@@ -53,23 +71,19 @@ struct ListExample {
   // 使用makeObserved的能力来观测ChildrenMainSize
   listChildrenSize: ChildrenMainSize = UIUtils.makeObserved(new ChildrenMainSize(100));
 
-
   build() {
     Column() {
       Button('change Default').onClick(() => {
         this.listChildrenSize.childDefaultSize += 10;
       })
 
-
       Button('splice 5').onClick(() => {
         this.listChildrenSize.splice(0, 5, [100, 100, 100, 100, 100]);
       })
 
-
       Button('update 5').onClick(() => {
         this.listChildrenSize.update(0, 200);
       })
-
 
       List({ space: this.listSpace, scroller: this.scroller }) {
         ForEach(this.arr, (item: number) => {
@@ -82,8 +96,8 @@ struct ListExample {
     }
   }
 }
-InternalOtherMigrationsListV2.ets
-WaterFlow
+
+[h2]WaterFlow
 
 开发者可以通过WaterFlowSections来设置WaterFlow瀑布流分组信息。
 
@@ -119,17 +133,14 @@ struct WaterFlowSample {
     crossCount: 3,
   };
 
-
   aboutToAppear(): void {
     let sectionOptions: SectionOptions[] = [this.oneColumnSection, this.twoColumnSection, this.lastSection];
     this.sections.splice(0, 0, sectionOptions);
   }
 
-
   build() {
     Column() {
       Text(`${this.arr.length}`)
-
 
       // @State装饰sections，可以观察到调用WaterFlowSections接口带来的变化
       Button('push option').onClick(() => {
@@ -141,7 +152,6 @@ struct WaterFlowSample {
         this.arr.push(100);
       })
 
-
       Button('splice option').onClick(() => {
         let section: SectionOptions = {
           itemsCount: 8,
@@ -151,7 +161,6 @@ struct WaterFlowSample {
         this.arr = new Array(8).fill(10);
       })
 
-
       Button('update option').onClick(() => {
         let section: SectionOptions = {
           itemsCount: 8,
@@ -160,7 +169,6 @@ struct WaterFlowSample {
         this.sections.update(1, section);
         this.arr = new Array(16).fill(1);
       })
-
 
       WaterFlow({ scroller: this.scroller, sections: this.sections }) {
         ForEach(this.arr, (item: number) => {
@@ -176,7 +184,6 @@ struct WaterFlowSample {
     }
   }
 }
-InternalOtherMigrationsWaterFlowV1.ets
 
 V2：
 
@@ -185,7 +192,6 @@ V2：
 具体示例如下：
 
 import { UIUtils } from '@kit.ArkUI';
-
 
 @Entry
 @ComponentV2
@@ -210,17 +216,14 @@ struct WaterFlowSample {
     crossCount: 3,
   };
 
-
   aboutToAppear(): void {
     let sectionOptions: SectionOptions[] = [this.oneColumnSection, this.twoColumnSection, this.lastSection];
     this.sections.splice(0, 0, sectionOptions);
   }
 
-
   build() {
     Column() {
       Text(`${this.arr.length}`)
-
 
       Button('push option').onClick(() => {
         let section: SectionOptions = {
@@ -231,7 +234,6 @@ struct WaterFlowSample {
         this.arr.push(100);
       })
 
-
       Button('splice option').onClick(() => {
         let section: SectionOptions = {
           itemsCount: 8,
@@ -241,7 +243,6 @@ struct WaterFlowSample {
         this.arr = new Array(8).fill(10);
       })
 
-
       Button('update option').onClick(() => {
         let section: SectionOptions = {
           itemsCount: 8,
@@ -250,7 +251,6 @@ struct WaterFlowSample {
         this.sections.update(1, section);
         this.arr = new Array(16).fill(1);
       })
-
 
       WaterFlow({ scroller: this.scroller, sections: this.sections }) {
         ForEach(this.arr, (item: number) => {
@@ -266,9 +266,10 @@ struct WaterFlowSample {
     }
   }
 }
-InternalOtherMigrationsWaterFlowV2.ets
+
 Modifier
-attributeModifier
+
+[h2]attributeModifier
 
 开发者可以通过attributeModifier动态设置组件的属性方法。
 
@@ -281,7 +282,6 @@ V1：
 class MyButtonModifier implements AttributeModifier<ButtonAttribute> {
   public isDark: boolean = false;
 
-
   applyNormalAttribute(instance: ButtonAttribute): void {
     if (this.isDark) {
       instance.backgroundColor(Color.Black);
@@ -291,12 +291,10 @@ class MyButtonModifier implements AttributeModifier<ButtonAttribute> {
   }
 }
 
-
 @Entry
 @Component
 struct AttributeDemo {
   @State modifier: MyButtonModifier = new MyButtonModifier();
-
 
   build() {
     Row() {
@@ -313,7 +311,6 @@ struct AttributeDemo {
     .height('100%')
   }
 }
-InternalattributeModifierV1.ets
 
 V2：
 
@@ -323,10 +320,8 @@ V2：
 
 import { UIUtils } from '@kit.ArkUI';
 
-
 class MyButtonModifier implements AttributeModifier<ButtonAttribute> {
   public isDark: boolean = false;
-
 
   applyNormalAttribute(instance: ButtonAttribute): void {
     if (this.isDark) {
@@ -337,13 +332,11 @@ class MyButtonModifier implements AttributeModifier<ButtonAttribute> {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct AttributeDemo {
   // 使用makeObserved的能力观测attributeModifier的属性this.modifier
   modifier: MyButtonModifier = UIUtils.makeObserved(new MyButtonModifier());
-
 
   build() {
     Row() {
@@ -359,10 +352,10 @@ struct AttributeDemo {
     .height('100%')
   }
 }
-InternalattributeModifierV2.ets
-CommonModifier
 
-动态设置组件的属性类。以CommonModifier为例。
+[h2]CommonModifier
+
+动态设置组件的属性类。以自定义Modifier为例。
 
 V1：
 
@@ -373,21 +366,17 @@ V1：
 import { CommonModifier } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 class MyModifier extends CommonModifier {
   applyNormalAttribute(instance: CommonAttribute): void {
     super.applyNormalAttribute?.(instance);
   }
 
-
   public setGroup1(): void {
     this.borderStyle(BorderStyle.Dotted);
     this.borderWidth(8);
   }
-
 
   public setGroup2(): void {
     this.borderStyle(BorderStyle.Dashed);
@@ -395,11 +384,9 @@ class MyModifier extends CommonModifier {
   }
 }
 
-
 @Component
 struct MyImage1 {
   @Link modifier: CommonModifier;
-
 
   build() {
     // 此处'app.media.app_icon'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
@@ -408,13 +395,11 @@ struct MyImage1 {
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   @State myModifier: CommonModifier = new MyModifier().width(100).height(100).margin(10);
   index: number = 0;
-
 
   build() {
     Column() {
@@ -432,38 +417,32 @@ struct Index {
           }
         })
 
-
       MyImage1({ modifier: this.myModifier })
     }
     .width('100%')
   }
 }
-InternalCommonModifierV1.ets
 
 V2：
 
-在状态管理V2中，@Local只能观察本身的变化，无法观察第一层的变化，又因为CommonModifier在框架内是通过其属性触发刷新，此时可以使用makeObserved替代。
+在状态管理V2中，@Local只能观察本身的变化，无法观察第一层的变化，又因为自定义Modifier在框架内是通过其属性触发刷新，此时可以使用makeObserved替代。
 
 具体示例如下：
 
 import { UIUtils, CommonModifier } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 class MyModifier extends CommonModifier {
   applyNormalAttribute(instance: CommonAttribute): void {
     super.applyNormalAttribute?.(instance);
   }
 
-
   public setGroup1(): void {
     this.borderStyle(BorderStyle.Dotted);
     this.borderWidth(8);
   }
-
 
   public setGroup2(): void {
     this.borderStyle(BorderStyle.Dashed);
@@ -471,11 +450,9 @@ class MyModifier extends CommonModifier {
   }
 }
 
-
 @ComponentV2
 struct MyImage1 {
   @Param @Require modifier: CommonModifier;
-
 
   build() {
     // 此处'app.media.app_icon'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
@@ -483,7 +460,6 @@ struct MyImage1 {
       .attributeModifier(this.modifier as MyModifier)
   }
 }
-
 
 @Entry
 @ComponentV2
@@ -492,7 +468,6 @@ struct Index {
   @Local myModifier: CommonModifier = UIUtils.makeObserved(new MyModifier().width(100).height(100).margin(10));
   index: number = 0;
 
-
   build() {
     Column() {
       Button($r('app.string.EntryAbility_label'))
@@ -509,14 +484,13 @@ struct Index {
           }
         })
 
-
       MyImage1({ modifier: this.myModifier })
     }
     .width('100%')
   }
 }
-InternalCommonModifierV2.ets
-组件Modifier
+
+[h2]组件Modifier
 
 动态设置组件的属性类。以Text组件为例。
 
@@ -529,21 +503,17 @@ V1：
 import { TextModifier } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 class MyModifier extends TextModifier {
   applyNormalAttribute(instance: TextModifier): void {
     super.applyNormalAttribute?.(instance);
   }
 
-
   public setGroup1(): void {
     this.fontSize(50);
     this.fontColor(Color.Pink);
   }
-
 
   public setGroup2(): void {
     this.fontSize(50);
@@ -551,18 +521,15 @@ class MyModifier extends TextModifier {
   }
 }
 
-
 @Component
 struct MyImage1 {
   @Link modifier: TextModifier;
   index: number = 0;
 
-
   build() {
     Column() {
       Text('Test')
         .attributeModifier(this.modifier as MyModifier)
-
 
       Button($r('app.string.EntryAbility_label'))
         .margin(10)
@@ -582,18 +549,15 @@ struct MyImage1 {
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   @State myModifier: TextModifier = new MyModifier().width(100).height(100).margin(10);
   index: number = 0;
 
-
   build() {
     Column() {
       MyImage1({ modifier: this.myModifier })
-
 
       Button('replace whole')
         .margin(10)
@@ -604,7 +568,6 @@ struct Index {
     .width('100%')
   }
 }
-InternalModuleModifierV1.ets
 
 V2：
 
@@ -615,21 +578,17 @@ V2：
 import { UIUtils, TextModifier } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 class MyModifier extends TextModifier {
   applyNormalAttribute(instance: TextModifier): void {
     super.applyNormalAttribute?.(instance);
   }
 
-
   public setGroup1(): void {
     this.fontSize(50);
     this.fontColor(Color.Pink);
   }
-
 
   public setGroup2(): void {
     this.fontSize(50);
@@ -637,18 +596,15 @@ class MyModifier extends TextModifier {
   }
 }
 
-
 @ComponentV2
 struct MyImage1 {
   @Param @Require modifier: TextModifier;
   index: number = 0;
 
-
   build() {
     Column() {
       Text('Test')
         .attributeModifier(this.modifier as MyModifier)
-
 
       Button($r('app.string.EntryAbility_label'))
         .margin(10)
@@ -667,7 +623,6 @@ struct MyImage1 {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Index {
@@ -675,11 +630,9 @@ struct Index {
   @Local myModifier: TextModifier = UIUtils.makeObserved(new MyModifier().width(100).height(100).margin(10));
   index: number = 0;
 
-
   build() {
     Column() {
       MyImage1({ modifier: this.myModifier })
-
 
       Button('replace whole')
         .margin(10)
@@ -690,8 +643,8 @@ struct Index {
     .width('100%')
   }
 }
-InternalModuleModifierV2.ets
-AttributeUpdater
+
+[h2]AttributeUpdater
 
 AttributeUpdater可以将属性直接设置给组件，无需标记为状态变量即可直接触发UI更新。
 
@@ -702,17 +655,14 @@ V1：
 // xxx.ets
 import { AttributeUpdater } from '@kit.ArkUI';
 
-
 class MyButtonModifier extends AttributeUpdater<ButtonAttribute> {
   public flag: boolean = false;
-
 
   initializeModifier(instance: ButtonAttribute): void {
     instance.backgroundColor('#ff2787d9')
       .width('50%')
       .height(30)
   }
-
 
   applyNormalAttribute(instance: ButtonAttribute): void {
     if (this.flag) {
@@ -723,12 +673,10 @@ class MyButtonModifier extends AttributeUpdater<ButtonAttribute> {
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   @State modifier: MyButtonModifier = new MyButtonModifier();
-
 
   build() {
     Row() {
@@ -745,7 +693,6 @@ struct Index {
     .height('100%')
   }
 }
-InternalAttributeUpdaterV1.ets
 
 V2：
 
@@ -754,11 +701,9 @@ V2：
 // xxx.ets
 import { AttributeUpdater } from '@kit.ArkUI';
 
-
 @ObservedV2
 class MyButtonModifier extends AttributeUpdater<ButtonAttribute> {
   @Trace public flag: boolean = false;
-
 
   initializeModifier(instance: ButtonAttribute): void {
     // initializeModifier会在组件初始化阶段回调，需要在这个地方触发下flag的读，使其建立Button组件的关联。
@@ -768,7 +713,6 @@ class MyButtonModifier extends AttributeUpdater<ButtonAttribute> {
       .height(30)
   }
 
-
   applyNormalAttribute(instance: ButtonAttribute): void {
     if (this.flag) {
       instance.borderWidth(2);
@@ -778,13 +722,11 @@ class MyButtonModifier extends AttributeUpdater<ButtonAttribute> {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Index {
   // 状态管理V2装饰器仅观察本层，即当前可以观察到modifier整体赋值的变化。
   @Local modifier: MyButtonModifier = new MyButtonModifier();
-
 
   build() {
     Row() {
@@ -801,6 +743,689 @@ struct Index {
     .height('100%')
   }
 }
-InternalAttributeUpdaterV2.ets
-循环渲染迁移
-AnimateTo使用迁移
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct ListExample {
+  private arr: Array<number> = new Array(10).fill(0);
+  private scroller: ListScroller = new ListScroller();
+  @State listSpace: number = 10;
+  @State listChildrenSize: ChildrenMainSize = new ChildrenMainSize(100);
+
+  build() {
+    Column() {
+      Button('change Default').onClick(() => {
+        this.listChildrenSize.childDefaultSize += 10;
+      })
+
+      Button('splice 5').onClick(() => {
+        this.listChildrenSize.splice(0, 5, [100, 100, 100, 100, 100]);
+      })
+
+      Button('update 5').onClick(() => {
+        this.listChildrenSize.update(0, 200);
+      })
+
+      List({ space: this.listSpace, scroller: this.scroller }) {
+        ForEach(this.arr, (item: number) => {
+          ListItem() {
+            Text(`item-` + item)
+          }.backgroundColor(Color.Pink)
+        })
+      }
+      .childrenMainSize(this.listChildrenSize) // 10
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+import { UIUtils } from '@kit.ArkUI';
+
+@Entry
+@ComponentV2
+struct ListExample {
+  private arr: Array<number> = new Array(10).fill(0);
+  private scroller: ListScroller = new ListScroller();
+  listSpace: number = 10;
+  // 使用makeObserved的能力来观测ChildrenMainSize
+  listChildrenSize: ChildrenMainSize = UIUtils.makeObserved(new ChildrenMainSize(100));
+
+  build() {
+    Column() {
+      Button('change Default').onClick(() => {
+        this.listChildrenSize.childDefaultSize += 10;
+      })
+
+      Button('splice 5').onClick(() => {
+        this.listChildrenSize.splice(0, 5, [100, 100, 100, 100, 100]);
+      })
+
+      Button('update 5').onClick(() => {
+        this.listChildrenSize.update(0, 200);
+      })
+
+      List({ space: this.listSpace, scroller: this.scroller }) {
+        ForEach(this.arr, (item: number) => {
+          ListItem() {
+            Text(`item-` + item)
+          }.backgroundColor(Color.Pink)
+        })
+      }
+      .childrenMainSize(this.listChildrenSize) // 10
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct WaterFlowSample {
+  @State colors: Color[] = [Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Pink];
+  @State sections: WaterFlowSections = new WaterFlowSections();
+  scroller: Scroller = new Scroller();
+  @State private arr: Array<number> = new Array(9).fill(0);
+  oneColumnSection: SectionOptions = {
+    itemsCount: 4,
+    crossCount: 1,
+    columnsGap: '5vp',
+    rowsGap: 10,
+  };
+  twoColumnSection: SectionOptions = {
+    itemsCount: 2,
+    crossCount: 2,
+  };
+  lastSection: SectionOptions = {
+    itemsCount: 3,
+    crossCount: 3,
+  };
+
+  aboutToAppear(): void {
+    let sectionOptions: SectionOptions[] = [this.oneColumnSection, this.twoColumnSection, this.lastSection];
+    this.sections.splice(0, 0, sectionOptions);
+  }
+
+  build() {
+    Column() {
+      Text(`${this.arr.length}`)
+
+      // @State装饰sections，可以观察到调用WaterFlowSections接口带来的变化
+      Button('push option').onClick(() => {
+        let section: SectionOptions = {
+          itemsCount: 1,
+          crossCount: 1,
+        };
+        this.sections.push(section);
+        this.arr.push(100);
+      })
+
+      Button('splice option').onClick(() => {
+        let section: SectionOptions = {
+          itemsCount: 8,
+          crossCount: 2,
+        };
+        this.sections.splice(0, this.arr.length, [section]);
+        this.arr = new Array(8).fill(10);
+      })
+
+      Button('update option').onClick(() => {
+        let section: SectionOptions = {
+          itemsCount: 8,
+          crossCount: 2,
+        };
+        this.sections.update(1, section);
+        this.arr = new Array(16).fill(1);
+      })
+
+      WaterFlow({ scroller: this.scroller, sections: this.sections }) {
+        ForEach(this.arr, (item: number) => {
+          FlowItem() {
+            Text(`${item}`)
+              .border({ width: 1 })
+              .backgroundColor(this.colors[item % 6])
+              .height(30)
+              .width(50)
+          }
+        })
+      }
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+import { UIUtils } from '@kit.ArkUI';
+
+@Entry
+@ComponentV2
+struct WaterFlowSample {
+  colors: Color[] = [Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Pink];
+  // 使用makeObserved的能力来观测WaterFlowSections
+  sections: WaterFlowSections = UIUtils.makeObserved(new WaterFlowSections());
+  scroller: Scroller = new Scroller();
+  @Local private arr: Array<number> = new Array(9).fill(0);
+  oneColumnSection: SectionOptions = {
+    itemsCount: 4,
+    crossCount: 1,
+    columnsGap: '5vp',
+    rowsGap: 10,
+  };
+  twoColumnSection: SectionOptions = {
+    itemsCount: 2,
+    crossCount: 2,
+  };
+  lastSection: SectionOptions = {
+    itemsCount: 3,
+    crossCount: 3,
+  };
+
+  aboutToAppear(): void {
+    let sectionOptions: SectionOptions[] = [this.oneColumnSection, this.twoColumnSection, this.lastSection];
+    this.sections.splice(0, 0, sectionOptions);
+  }
+
+  build() {
+    Column() {
+      Text(`${this.arr.length}`)
+
+      Button('push option').onClick(() => {
+        let section: SectionOptions = {
+          itemsCount: 1,
+          crossCount: 1,
+        };
+        this.sections.push(section);
+        this.arr.push(100);
+      })
+
+      Button('splice option').onClick(() => {
+        let section: SectionOptions = {
+          itemsCount: 8,
+          crossCount: 2,
+        };
+        this.sections.splice(0, this.arr.length, [section]);
+        this.arr = new Array(8).fill(10);
+      })
+
+      Button('update option').onClick(() => {
+        let section: SectionOptions = {
+          itemsCount: 8,
+          crossCount: 2,
+        };
+        this.sections.update(1, section);
+        this.arr = new Array(16).fill(1);
+      })
+
+      WaterFlow({ scroller: this.scroller, sections: this.sections }) {
+        ForEach(this.arr, (item: number) => {
+          FlowItem() {
+            Text(`${item}`)
+              .border({ width: 1 })
+              .backgroundColor(this.colors[item % 6])
+              .height(30)
+              .width(50)
+          }
+        })
+      }
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+class MyButtonModifier implements AttributeModifier<ButtonAttribute> {
+  public isDark: boolean = false;
+
+  applyNormalAttribute(instance: ButtonAttribute): void {
+    if (this.isDark) {
+      instance.backgroundColor(Color.Black);
+    } else {
+      instance.backgroundColor(Color.Red);
+    }
+  }
+}
+
+@Entry
+@Component
+struct AttributeDemo {
+  @State modifier: MyButtonModifier = new MyButtonModifier();
+
+  build() {
+    Row() {
+      Column() {
+        Button('Button')
+          .attributeModifier(this.modifier)
+          .onClick(() => {
+            // 在状态管理V1中，可以通过@State装饰观察modifier的变化
+            this.modifier.isDark = !this.modifier.isDark;
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 6
+
+```
+import { UIUtils } from '@kit.ArkUI';
+
+class MyButtonModifier implements AttributeModifier<ButtonAttribute> {
+  public isDark: boolean = false;
+
+  applyNormalAttribute(instance: ButtonAttribute): void {
+    if (this.isDark) {
+      instance.backgroundColor(Color.Black);
+    } else {
+      instance.backgroundColor(Color.Red);
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct AttributeDemo {
+  // 使用makeObserved的能力观测attributeModifier的属性this.modifier
+  modifier: MyButtonModifier = UIUtils.makeObserved(new MyButtonModifier());
+
+  build() {
+    Row() {
+      Column() {
+        Button('Button')
+          .attributeModifier(this.modifier)
+          .onClick(() => {
+            this.modifier.isDark = !this.modifier.isDark;
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 7
+
+```
+import { CommonModifier } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+class MyModifier extends CommonModifier {
+  applyNormalAttribute(instance: CommonAttribute): void {
+    super.applyNormalAttribute?.(instance);
+  }
+
+  public setGroup1(): void {
+    this.borderStyle(BorderStyle.Dotted);
+    this.borderWidth(8);
+  }
+
+  public setGroup2(): void {
+    this.borderStyle(BorderStyle.Dashed);
+    this.borderWidth(8);
+  }
+}
+
+@Component
+struct MyImage1 {
+  @Link modifier: CommonModifier;
+
+  build() {
+    // 此处'app.media.app_icon'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+    Image($r('app.media.app_icon'))
+      .attributeModifier(this.modifier as MyModifier)
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  @State myModifier: CommonModifier = new MyModifier().width(100).height(100).margin(10);
+  index: number = 0;
+
+  build() {
+    Column() {
+      Button($r('app.string.EntryAbility_label'))
+        .margin(10)
+        .onClick(() => {
+          hilog.info(DOMAIN, 'testTag', 'Modifier', 'onClick');
+          this.index++;
+          if (this.index % 2 === 1) {
+            (this.myModifier as MyModifier).setGroup1();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup1');
+          } else {
+            (this.myModifier as MyModifier).setGroup2();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup2');
+          }
+        })
+
+      MyImage1({ modifier: this.myModifier })
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 8
+
+```
+import { UIUtils, CommonModifier } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+class MyModifier extends CommonModifier {
+  applyNormalAttribute(instance: CommonAttribute): void {
+    super.applyNormalAttribute?.(instance);
+  }
+
+  public setGroup1(): void {
+    this.borderStyle(BorderStyle.Dotted);
+    this.borderWidth(8);
+  }
+
+  public setGroup2(): void {
+    this.borderStyle(BorderStyle.Dashed);
+    this.borderWidth(8);
+  }
+}
+
+@ComponentV2
+struct MyImage1 {
+  @Param @Require modifier: CommonModifier;
+
+  build() {
+    // 此处'app.media.app_icon'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+    Image($r('app.media.app_icon'))
+      .attributeModifier(this.modifier as MyModifier)
+  }
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  // 使用makeObserved的能力来观测CommonModifier
+  @Local myModifier: CommonModifier = UIUtils.makeObserved(new MyModifier().width(100).height(100).margin(10));
+  index: number = 0;
+
+  build() {
+    Column() {
+      Button($r('app.string.EntryAbility_label'))
+        .margin(10)
+        .onClick(() => {
+          hilog.info(DOMAIN, 'testTag', 'Modifier', 'onClick');
+          this.index++;
+          if (this.index % 2 === 1) {
+            (this.myModifier as MyModifier).setGroup1();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup1');
+          } else {
+            (this.myModifier as MyModifier).setGroup2();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup2');
+          }
+        })
+
+      MyImage1({ modifier: this.myModifier })
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 9
+
+```
+import { TextModifier } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+class MyModifier extends TextModifier {
+  applyNormalAttribute(instance: TextModifier): void {
+    super.applyNormalAttribute?.(instance);
+  }
+
+  public setGroup1(): void {
+    this.fontSize(50);
+    this.fontColor(Color.Pink);
+  }
+
+  public setGroup2(): void {
+    this.fontSize(50);
+    this.fontColor(Color.Gray);
+  }
+}
+
+@Component
+struct MyImage1 {
+  @Link modifier: TextModifier;
+  index: number = 0;
+
+  build() {
+    Column() {
+      Text('Test')
+        .attributeModifier(this.modifier as MyModifier)
+
+      Button($r('app.string.EntryAbility_label'))
+        .margin(10)
+        .onClick(() => {
+          // 通过点击改变index数值，动态设置Text的属性类
+          hilog.info(DOMAIN, 'testTag', 'Modifier', 'onClick');
+          this.index++;
+          if (this.index % 2 === 1) {
+            (this.modifier as MyModifier).setGroup1();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup1');
+          } else {
+            (this.modifier as MyModifier).setGroup2();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup2');
+          }
+        })
+    }
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  @State myModifier: TextModifier = new MyModifier().width(100).height(100).margin(10);
+  index: number = 0;
+
+  build() {
+    Column() {
+      MyImage1({ modifier: this.myModifier })
+
+      Button('replace whole')
+        .margin(10)
+        .onClick(() => {
+          this.myModifier = new MyModifier().backgroundColor(Color.Orange);
+        })
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 10
+
+```
+import { UIUtils, TextModifier } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+class MyModifier extends TextModifier {
+  applyNormalAttribute(instance: TextModifier): void {
+    super.applyNormalAttribute?.(instance);
+  }
+
+  public setGroup1(): void {
+    this.fontSize(50);
+    this.fontColor(Color.Pink);
+  }
+
+  public setGroup2(): void {
+    this.fontSize(50);
+    this.fontColor(Color.Gray);
+  }
+}
+
+@ComponentV2
+struct MyImage1 {
+  @Param @Require modifier: TextModifier;
+  index: number = 0;
+
+  build() {
+    Column() {
+      Text('Test')
+        .attributeModifier(this.modifier as MyModifier)
+
+      Button($r('app.string.EntryAbility_label'))
+        .margin(10)
+        .onClick(() => {
+          hilog.info(DOMAIN, 'testTag', 'Modifier', 'onClick');
+          this.index++;
+          if (this.index % 2 === 1) {
+            (this.modifier as MyModifier).setGroup1();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup1');
+          } else {
+            (this.modifier as MyModifier).setGroup2();
+            hilog.info(DOMAIN, 'testTag', 'Modifier', 'setGroup2');
+          }
+        })
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  // 使用makeObserved的能力观测TextModifier
+  @Local myModifier: TextModifier = UIUtils.makeObserved(new MyModifier().width(100).height(100).margin(10));
+  index: number = 0;
+
+  build() {
+    Column() {
+      MyImage1({ modifier: this.myModifier })
+
+      Button('replace whole')
+        .margin(10)
+        .onClick(() => {
+          this.myModifier = UIUtils.makeObserved(new MyModifier().backgroundColor(Color.Orange));
+        })
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 11
+
+```
+// xxx.ets
+import { AttributeUpdater } from '@kit.ArkUI';
+
+class MyButtonModifier extends AttributeUpdater<ButtonAttribute> {
+  public flag: boolean = false;
+
+  initializeModifier(instance: ButtonAttribute): void {
+    instance.backgroundColor('#ff2787d9')
+      .width('50%')
+      .height(30)
+  }
+
+  applyNormalAttribute(instance: ButtonAttribute): void {
+    if (this.flag) {
+      instance.borderWidth(2);
+    } else {
+      instance.borderWidth(10);
+    }
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  @State modifier: MyButtonModifier = new MyButtonModifier();
+
+  build() {
+    Row() {
+      Column() {
+        Button('Button')
+          .attributeModifier(this.modifier)
+        Button('Update')
+          .onClick(() => {
+            this.modifier.flag = !this.modifier.flag;
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 12
+
+```
+// xxx.ets
+import { AttributeUpdater } from '@kit.ArkUI';
+
+@ObservedV2
+class MyButtonModifier extends AttributeUpdater<ButtonAttribute> {
+  @Trace public flag: boolean = false;
+
+  initializeModifier(instance: ButtonAttribute): void {
+    // initializeModifier会在组件初始化阶段回调，需要在这个地方触发下flag的读，使其建立Button组件的关联。
+    this.flag;
+    instance.backgroundColor('#ff2787d9')
+      .width('50%')
+      .height(30)
+  }
+
+  applyNormalAttribute(instance: ButtonAttribute): void {
+    if (this.flag) {
+      instance.borderWidth(2);
+    } else {
+      instance.borderWidth(10);
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  // 状态管理V2装饰器仅观察本层，即当前可以观察到modifier整体赋值的变化。
+  @Local modifier: MyButtonModifier = new MyButtonModifier();
+
+  build() {
+    Row() {
+      Column() {
+        Button('Button')
+          .attributeModifier(this.modifier)
+        Button('Update')
+          .onClick(() => {
+            this.modifier.flag = !this.modifier.flag;
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bisheng-compiler_
 
+毕昇编译器简介
+
 毕昇编译器是基于LLVM开源软件开发的一款用于C/C++等语言的native编译器，能将C/C++代码工程编译链接成可以在设备上运行的二进制。在无需改动用户代码的条件下，相比业界主流的开源LLVM或GCC编译器，毕昇编译器能提供更强大的优化能力，使编译链接出来的二进制的运行时长更短、指令数更少，帮助提升应用在设备上的运行流畅度。
 
 能力范围
@@ -13,6 +15,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bisheng-c
 汇编能力：将汇编文件汇编成可重定向文件，可重定向文件是ELF格式的二进制文件，但不能直接放在设备上运行。
 
 链接能力：将一个或多个可重定向文件一起链接成一个可执行的二进制文件。
+
+备注： 毕昇编译器基于开源LLVM开发， LLVM的常见问题，请参考开源官方文档https://llvm.org/docs/index.html。
 
 亮点特征示例
 
@@ -71,6 +75,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bisheng-c
 做完上述步骤，重启流水线即可用毕昇编译器构建。
 
 主要编译优化特性
+
 IClang
 
 IClang是一种增量编译优化手段。该特性在增量编译的基础上，进一步实现函数级别的编译复用，利用上一次的编译结果，显著提升编译速度。
@@ -198,5 +203,11 @@ fp优化是一组控制浮点运算语义和行为的编译器选项，它用于
 
 在编译阶段加入 -ffp-contract=on 选项。以CMake构建系统为例，在 CMakeLists.txt 中配置：add_compile_options( -ffp-contract=on)
 
-在NDK工程中使用预构建库
-代码开发
+## Code blocks
+
+### Code block 1
+
+```
+llvm-objdump -h xx.so  # 检查是否有llvm_prf字段
+llvm-objdump -d xx.so  # 看反汇编是否有ldr add store代码序列
+```

@@ -27,6 +27,7 @@ onWillAppear	Callback<void>	弹出框显示动效前的事件回调。
 onDidAppear	Callback<void>	弹出框弹出后的事件回调。
 onWillDisappear	Callback<void>	弹出框退出动效前的事件回调。
 onDidDisappear	Callback<void>	弹出框消失后的事件回调。
+
 操作菜单 (showActionMenu)
 
 操作菜单通过UIContext中的getPromptAction方法获取到PromptAction对象，再通过该对象调用showActionMenu接口实现，支持在回调或开发者自定义类中使用。
@@ -37,14 +38,12 @@ onDidDisappear	Callback<void>	弹出框消失后的事件回调。
 
 import { PromptAction } from '@kit.ArkUI';
 
-
 @Entry
 @Component
 export struct ShowActionMenuExample {
   build() {
     // ...
       Column({ space: 12 }) {
-
 
         Column() {
           Button('ShowActionMenu')
@@ -82,7 +81,6 @@ export struct ShowActionMenuExample {
       // ...
   }
 }
-ShowActionMenu.ets
 
 对话框 (showDialog)
 
@@ -95,7 +93,6 @@ ShowActionMenu.ets
 // xxx.ets
 import { PromptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 @Entry
 @Component
@@ -144,13 +141,12 @@ export struct ShowDialogExample {
       // ...
   }
 }
-ShowDialog.ets
 
 选择器弹窗 (PickerDialog)
 
 选择器弹窗通常用于在用户进行某些操作（如点击按钮）时显示特定的信息或选项。
 
-日历选择器弹窗 (CalendarPickerDialog)
+[h2]日历选择器弹窗 (CalendarPickerDialog)
 
 日历选择器弹窗提供日历视图，包含年、月和星期信息，通过CalendarPickerDialog接口实现。开发者可调用show函数，定义并弹出日历选择器弹窗。
 
@@ -160,17 +156,14 @@ ShowDialog.ets
 
 // xxx.ets
 
-
 @Entry
 @Component
 export struct CalendarDialog {
   private selectedDate: Date = new Date('2024-04-23');
 
-
   build() {
     NavDestination() {
       Column({ space: 12 }) {
-
 
         Column() {
           Button('Show CalendarPicker Dialog')
@@ -199,7 +192,6 @@ export struct CalendarDialog {
             })
         }.width('100%')
 
-
       }
       .width('100%')
       .height('100%')
@@ -210,9 +202,8 @@ export struct CalendarDialog {
     .title($r('app.string.CustomDialog_calender'))
   }
 }
-CalendarPickerDialog.ets
 
-日期滑动选择器弹窗 (DatePickerDialog)
+[h2]日期滑动选择器弹窗 (DatePickerDialog)
 
 开发者可以利用指定的日期范围，创建日期滑动选择器弹窗，将日期信息清晰地展示在弹出的窗口上。
 
@@ -225,11 +216,9 @@ CalendarPickerDialog.ets
 export struct DatePickerDialogExample {
   @State selectTime: Date = new Date('2023-12-25T08:30:00');
 
-
   build() {
     NavDestination() {
       Column({ space: 12 }) {
-
 
         Column() {
           Button('showDatePickerDialog')
@@ -249,7 +238,6 @@ export struct DatePickerDialogExample {
             })
         }.width('100%').margin({ top: 5 })
 
-
       }
       .width('100%')
       .height('100%')
@@ -258,7 +246,6 @@ export struct DatePickerDialogExample {
     // ...
   }
 }
-DatePickerDialog.ets
 
 该示例通过配置disappearTextStyle、textStyle、selectedTextStyle、acceptButtonStyle、cancelButtonStyle实现了自定义文本以及按钮样式。
 
@@ -266,7 +253,6 @@ DatePickerDialog.ets
 @Component
 export struct DatePickerCustomDialogExample {
   @State selectTime: Date = new Date('2023-12-25T08:30:00');
-
 
   build() {
     NavDestination() {
@@ -299,9 +285,8 @@ export struct DatePickerCustomDialogExample {
     // ...
     }
 }
-DatePickerCustomDialog.ets
 
-时间滑动选择器弹窗 (TimePickerDialog)
+[h2]时间滑动选择器弹窗 (TimePickerDialog)
 
 开发者可根据24小时的时间区间，创建时间滑动选择器弹窗，将时间信息清晰地展示在弹出的窗口上。
 
@@ -311,17 +296,14 @@ DatePickerCustomDialog.ets
 
 // xxx.ets
 
-
 @Entry
 @Component
 export struct TimePickerDialogExample {
   @State selectTime: Date = new Date('2023-12-25T08:30:00');
 
-
   build() {
     NavDestination() {
       Column({ space: 12 }) {
-
 
         Column() {
           Button('showTimePickerDialog')
@@ -352,9 +334,8 @@ export struct TimePickerDialogExample {
     // ...
   }
 }
-TimePickerDialog.ets
 
-文本滑动选择器弹窗 (TextPickerDialog)
+[h2]文本滑动选择器弹窗 (TextPickerDialog)
 
 开发者可根据指定的选择范围，创建文本滑动选择器弹窗，将文本信息清晰地展示在弹出的窗口上。
 
@@ -384,7 +365,6 @@ export struct TextPickerCNDialogExample {
   ];
   private select: number = 0;
 
-
   build() {
     // ···
       Column() {
@@ -404,7 +384,6 @@ export struct TextPickerCNDialogExample {
     // ···
   }
 }
-TextPickerCNDialog.ets
 
 列表选择弹窗 (ActionSheet)
 
@@ -420,11 +399,9 @@ TextPickerCNDialog.ets
 @Component
 export struct showActionSheetExample {
 
-
   build() {
     NavDestination() {
       Column({ space: 12 }) {
-
 
         Column() {
           Button('showActionSheet')
@@ -477,7 +454,6 @@ export struct showActionSheetExample {
             })
         }.width('100%').margin({ top: 5 })
 
-
       }
       .width('100%')
       .height('100%')
@@ -488,13 +464,13 @@ export struct showActionSheetExample {
     .title($r('app.string.CustomDialog_ActionSheet'))
   }
 }
-ActionSheet.ets
 
 警告弹窗 (AlertDialog)
 
 向用户提问或得到用户的许可时，使用警告弹窗。
 
 警告弹窗用来提示重要信息，但会中断当前任务，尽量提供必要的信息和有用的操作。
+
 避免仅使用警告弹窗提供信息，用户不喜欢被信息丰富但不可操作的警告打断。
 
 警告弹窗通过UIContext中的showAlertDialog接口实现。
@@ -505,14 +481,12 @@ ActionSheet.ets
 
 import { PromptAction } from '@kit.ArkUI';
 
-
 @Entry
 @Component
 export struct showAlertDialogExample {
   build() {
     NavDestination() {
       Column({ space: 12 }) {
-
 
         Column() {
           Button('showAlertDialog')
@@ -553,6 +527,474 @@ export struct showAlertDialogExample {
             })
         }.width('100%').margin({ top: 5 })
 
+      }
+      .width('100%')
+      .height('100%')
+      .padding({ left: 12, right: 12 })
+    }
+    .backgroundColor('#f1f2f3')
+    // 请将$r('app.string.CustomDialog_AlertDialog')替换为实际资源文件，在本示例中该资源文件的value值为"警告弹窗"
+    .title($r('app.string.CustomDialog_AlertDialog'))
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { PromptAction } from '@kit.ArkUI';
+
+@Entry
+@Component
+export struct ShowActionMenuExample {
+  build() {
+    // ...
+      Column({ space: 12 }) {
+
+        Column() {
+          Button('ShowActionMenu')
+            .margin(30)
+            .onClick(() => {
+              let uiContext = this.getUIContext();
+              let promptAction: PromptAction = uiContext.getPromptAction();
+              try {
+                promptAction.showActionMenu({
+                  title: 'showActionMenu Title Info',
+                  buttons: [
+                    {
+                      text: 'item1',
+                      color: '#666666'
+                    },
+                    {
+                      text: 'item2',
+                      color: '#000000'
+                    },
+                  ]
+                })
+                  .then(data => {
+                    console.info('showActionMenu success, click button: ' + data.index);
+                  })
+                  .catch((err: Error) => {
+                    console.error('showActionMenu error: ' + err);
+                  })
+              } catch (error) {
+              }
+            })
+        }.width('100%')
+      }
+      .width('100%')
+      .height('100%')
+      // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+// xxx.ets
+import { PromptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+export struct ShowDialogExample {
+  build() {
+    // ...
+      Column({ space: 12 }) {
+        Column() {
+          Button('ShowDialog')
+            .margin(30)
+            .onClick(() => {
+              let uiContext = this.getUIContext();
+              let promptAction: PromptAction = uiContext.getPromptAction();
+              try {
+                promptAction.showDialog({
+                  title: 'showDialog Title Info',
+                  message: 'Message Info',
+                  buttons: [
+                    {
+                      text: 'button1',
+                      color: '#000000'
+                    },
+                    {
+                      text: 'button2',
+                      color: '#000000'
+                    }
+                  ]
+                }, (err, data) => {
+                  if (err) {
+                    console.error('showDialog err: ' + err);
+                    return;
+                  }
+                  console.info('showDialog success callback, click button: ' + data.index);
+                });
+              } catch (error) {
+                let message = (error as BusinessError).message;
+                let code = (error as BusinessError).code;
+                console.error(`showdialog args error code is ${code}, message is ${message}`);
+              }
+            })
+        }.width('100%')
+      }
+      .width('100%')
+      .height('100%')
+      .padding({ left: 12, right: 12 })
+      // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+// xxx.ets
+
+@Entry
+@Component
+export struct CalendarDialog {
+  private selectedDate: Date = new Date('2024-04-23');
+
+  build() {
+    NavDestination() {
+      Column({ space: 12 }) {
+
+        Column() {
+          Button('Show CalendarPicker Dialog')
+            .margin(20)
+            .onClick(() => {
+              console.info('CalendarDialog.show');
+              CalendarPickerDialog.show({
+                selected: this.selectedDate,
+                acceptButtonStyle: {
+                  fontColor: '#2787d9',
+                  fontSize: '16fp',
+                  backgroundColor: '#f7f7f7',
+                  borderRadius: 10
+                },
+                cancelButtonStyle: {
+                  fontColor: Color.Red,
+                  fontSize: '16fp',
+                  backgroundColor: '#f7f7f7',
+                  borderRadius: 10
+                },
+                onAccept: (date: Date) => {
+                  // 当弹出框再次弹出时显示选中的是上一次确定的日期
+                  this.selectedDate = date;
+                }
+              })
+            })
+        }.width('100%')
+
+      }
+      .width('100%')
+      .height('100%')
+      .padding({ left: 12, right: 12 })
+    }
+    // ...
+    // 请将$r('app.string.CustomDialog_calender')替换为实际资源文件，在本示例中该资源文件的value值为"日历选择器弹窗"
+    .title($r('app.string.CustomDialog_calender'))
+  }
+}
+```
+
+### Code block 4
+
+```
+@Entry
+@Component
+export struct DatePickerDialogExample {
+  @State selectTime: Date = new Date('2023-12-25T08:30:00');
+
+  build() {
+    NavDestination() {
+      Column({ space: 12 }) {
+
+        Column() {
+          Button('showDatePickerDialog')
+            .margin(30)
+            .onClick(() => {
+              this.getUIContext().showDatePickerDialog({
+                start: new Date('2000-1-1'),
+                end: new Date('2100-12-31'),
+                selected: this.selectTime,
+                lunarSwitch: true,
+                showTime: true,
+                onDateAccept: (value: Date) => {
+                  this.selectTime = value;
+                  console.info('DatePickerDialog:onAccept()' + JSON.stringify(value));
+                },
+              })
+            })
+        }.width('100%').margin({ top: 5 })
+
+      }
+      .width('100%')
+      .height('100%')
+      .padding({ left: 12, right: 12 })
+    }
+    // ...
+  }
+}
+```
+
+### Code block 5
+
+```
+@Entry
+@Component
+export struct DatePickerCustomDialogExample {
+  @State selectTime: Date = new Date('2023-12-25T08:30:00');
+
+  build() {
+    NavDestination() {
+      Column() {
+        Button('showDatePickerDialog')
+          .margin(30)
+          .onClick(() => {
+            this.getUIContext().showDatePickerDialog({
+              start: new Date('2000-1-1'),
+              end: new Date('2100-12-31'),
+              selected: this.selectTime,
+              textStyle: { color: '#2787d9', font: { size: '14fp', weight: FontWeight.Normal } },
+              selectedTextStyle: { color: '#004aaf', font: { size: '18fp', weight: FontWeight.Regular } },
+              acceptButtonStyle: {
+                fontColor: '#2787d9',
+                fontSize: '16fp',
+                backgroundColor: '#f7f7f7',
+                borderRadius: 10
+              },
+              cancelButtonStyle: {
+                fontColor: Color.Red,
+                fontSize: '16fp',
+                backgroundColor: '#f7f7f7',
+                borderRadius: 10
+              }
+            })
+          })
+      }.width('100%').margin({ top: 5 })
+    }
+    // ...
+    }
+}
+```
+
+### Code block 6
+
+```
+// xxx.ets
+
+@Entry
+@Component
+export struct TimePickerDialogExample {
+  @State selectTime: Date = new Date('2023-12-25T08:30:00');
+
+  build() {
+    NavDestination() {
+      Column({ space: 12 }) {
+
+        Column() {
+          Button('showTimePickerDialog')
+            .margin(30)
+            .onClick(() => {
+              this.getUIContext().showTimePickerDialog({
+                selected: this.selectTime,
+                textStyle: { color: '#2787d9', font: { size: '14fp', weight: FontWeight.Normal } },
+                selectedTextStyle: { color: '#004aaf', font: { size: '18fp', weight: FontWeight.Regular } },
+                acceptButtonStyle: {
+                  fontColor: '#2787d9',
+                  fontSize: '16fp',
+                  backgroundColor: '#f7f7f7',
+                  borderRadius: 10
+                },
+                cancelButtonStyle: {
+                  fontColor: Color.Red,
+                  fontSize: '16fp',
+                  backgroundColor: '#f7f7f7',
+                  borderRadius: 10
+                }
+              })
+            })
+        }.width('100%').margin({ top: 5 })
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 7
+
+```
+@Entry
+@Component
+export struct TextPickerCNDialogExample {
+  private fruits: TextCascadePickerRangeContent[] = [
+    {
+      text: '辽宁省',
+      children: [{ text: '沈阳市', children: [{ text: '沈河区' }, { text: '和平区' }, { text: '浑南区' }] },
+        { text: '大连市', children: [{ text: '中山区' }, { text: '金州区' }, { text: '长海县' }] }]
+    },
+    {
+      text: '吉林省',
+      children: [{ text: '长春市', children: [{ text: '南关区' }, { text: '宽城区' }, { text: '朝阳区' }] },
+        { text: '四平市', children: [{ text: '铁西区' }, { text: '铁东区' }, { text: '梨树县' }] }]
+    },
+    {
+      text: '黑龙江省',
+      children: [{ text: '哈尔滨市', children: [{ text: '道里区' }, { text: '道外区' }, { text: '南岗区' }] },
+        { text: '牡丹江市', children: [{ text: '东安区' }, { text: '西安区' }, { text: '爱民区' }] }]
+    }
+  ];
+  private select: number = 0;
+
+  build() {
+    // ···
+      Column() {
+        Button('showTextPickerDialog')
+        // ···
+          .margin(30)
+          .onClick(() => {
+            this.getUIContext().showTextPickerDialog({
+              range: this.fruits,
+              selected: this.select,
+              onAccept: (value: TextPickerResult) => {
+                this.select = value.index as number
+              }
+            });
+          })
+      }.width('100%').margin({ top: 5 })
+    // ···
+  }
+}
+```
+
+### Code block 8
+
+```
+@Entry
+@Component
+export struct showActionSheetExample {
+
+  build() {
+    NavDestination() {
+      Column({ space: 12 }) {
+
+        Column() {
+          Button('showActionSheet')
+            .margin(30)
+            .onClick(() => {
+              this.getUIContext().showActionSheet({
+                title: 'ActionSheet title',
+                message: 'message',
+                autoCancel: false,
+                width: 300,
+                height: 300,
+                cornerRadius: 20,
+                borderWidth: 1,
+                borderStyle: BorderStyle.Solid,
+                borderColor: Color.Blue,
+                backgroundColor: Color.White,
+                transition: TransitionEffect.asymmetric(TransitionEffect.OPACITY
+                  .animation({ duration: 3000, curve: Curve.Sharp })
+                  .combine(TransitionEffect.scale({ x: 1.5, y: 1.5 })
+                  .animation({ duration: 3000, curve: Curve.Sharp })),
+                  TransitionEffect.OPACITY.animation({ duration: 100, curve: Curve.Smooth })
+                    .combine(TransitionEffect.scale({ x: 0.5, y: 0.5 })
+                    .animation({ duration: 100, curve: Curve.Smooth }))),
+                confirm: {
+                  value: 'Confirm button',
+                  action: () => {
+                    console.info('Get Alert Dialog handled');
+                  }
+                },
+                alignment: DialogAlignment.Center,
+                sheets: [
+                  {
+                    title: 'apples',
+                    action: () => {
+                    }
+                  },
+                  {
+                    title: 'bananas',
+                    action: () => {
+                    }
+                  },
+                  {
+                    title: 'pears',
+                    action: () => {
+                      console.info('pears');
+                    }
+                  }
+                ]
+              })
+            })
+        }.width('100%').margin({ top: 5 })
+
+      }
+      .width('100%')
+      .height('100%')
+      .padding({ left: 12, right: 12 })
+    }
+    .backgroundColor('#f1f2f3')
+    // 请将$r('app.string.CustomDialog_ActionSheet')替换为实际资源文件，在本示例中该资源文件的value值为"列表选择弹窗"
+    .title($r('app.string.CustomDialog_ActionSheet'))
+  }
+}
+```
+
+### Code block 9
+
+```
+import { PromptAction } from '@kit.ArkUI';
+
+@Entry
+@Component
+export struct showAlertDialogExample {
+  build() {
+    NavDestination() {
+      Column({ space: 12 }) {
+
+        Column() {
+          Button('showAlertDialog')
+            .margin(30)
+            .onClick(() => {
+              this.getUIContext().showAlertDialog(
+                {
+                  title: 'title',
+                  message: 'text',
+                  autoCancel: true,
+                  alignment: DialogAlignment.Center,
+                  offset: { dx: 0, dy: -20 },
+                  gridCount: 3,
+                  transition: TransitionEffect.asymmetric(TransitionEffect.OPACITY
+                    .animation({ duration: 3000, curve: Curve.Sharp })
+                    .combine(TransitionEffect.scale({ x: 1.5, y: 1.5 })
+                    .animation({ duration: 3000, curve: Curve.Sharp })),
+                    TransitionEffect.OPACITY.animation({ duration: 100, curve: Curve.Smooth })
+                      .combine(TransitionEffect.scale({ x: 0.5, y: 0.5 })
+                      .animation({ duration: 100, curve: Curve.Smooth }))),
+                  buttons: [{
+                    value: 'cancel',
+                    action: () => {
+                      console.info('Callback when the first button is clicked');
+                    }
+                  },
+                    {
+                      enabled: true,
+                      defaultFocus: true,
+                      style: DialogButtonStyle.HIGHLIGHT,
+                      value: 'ok',
+                      action: () => {
+                        console.info('Callback when the second button is clicked');
+                      }
+                    }],
+                }
+              )
+            })
+        }.width('100%').margin({ top: 5 })
 
       }
       .width('100%')
@@ -564,7 +1006,4 @@ export struct showAlertDialogExample {
     .title($r('app.string.CustomDialog_AlertDialog'))
   }
 }
-AlertDialog.ets
-
-基础自定义弹出框 (CustomDialog)
-页面级弹出框
+```

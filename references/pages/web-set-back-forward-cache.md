@@ -16,7 +16,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
 
-
 export default class EntryAbility extends UIAbility {
     onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
         let features = new webview.BackForwardCacheSupportedFeatures();
@@ -27,6 +26,7 @@ export default class EntryAbility extends UIAbility {
         AppStorage.setOrCreate("abilityWant", want);
     }
 }
+
 设置缓存的页面数量和页面留存的时间
 
 启用BFCache后默认仅能存储一个页面，Web组件默认进入BFCache的页面可保持存活状态600秒。开发者可通过调用setBackForwardCacheOptions()设置每个Web实例的前进后退缓存策略。包括调整缓存中页面的最大数量，使BFCache能够容纳更多页面，从而在用户连续进行前进后退操作时，提供更快的加载速度。同时，开发者还能修改每个页面在缓存中的停留时间，延长页面在BFCache中的驻留期限，进而优化用户的浏览体验。
@@ -35,12 +35,10 @@ export default class EntryAbility extends UIAbility {
 
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct Index {
   controller: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -64,6 +62,60 @@ struct Index {
     .width('100%')
   }
 }
-Index.ets
-加速Web页面的访问
-Web组件在不同的窗口间迁移
+
+## Code blocks
+
+### Code block 1
+
+```
+// EntryAbility.ets
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
+import { webview } from '@kit.ArkWeb';
+
+export default class EntryAbility extends UIAbility {
+    onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+        let features = new webview.BackForwardCacheSupportedFeatures();
+        features.nativeEmbed = true;
+        features.mediaTakeOver = true;
+        webview.WebviewController.enableBackForwardCache(features);
+        webview.WebviewController.initializeWebEngine();
+        AppStorage.setOrCreate("abilityWant", want);
+    }
+}
+```
+
+### Code block 2
+
+```
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct Index {
+  controller: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Row() {
+        Button('Add options').onClick((event: ClickEvent) => {
+          let options = new webview.BackForwardCacheOptions();
+          options.size = 10;
+          options.timeToLive = 300;
+          this.controller.setBackForwardCacheOptions(options);
+        })
+        Button('Backward').onClick((event: ClickEvent) => {
+          this.controller.backward();
+        })
+        Button('Forward').onClick((event: ClickEvent) => {
+          this.controller.forward();
+        })
+      }
+      Web({ src: 'https://www.example.com', controller: this.controller })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```

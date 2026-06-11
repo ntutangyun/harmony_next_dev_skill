@@ -10,6 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/obtain-au
 
 接口名称	功能描述
 getAuthLockState(authType: UserAuthType): Promise<AuthLockState>	根据指定的认证类型，查询认证冻结状态，用于判断是否可以发起认证。
+
 开发步骤
 
 申请权限：ohos.permission.ACCESS_BIOMETRIC。
@@ -34,8 +35,30 @@ async obtainingAuthLockState() : Promise<string> {
     return errorMessage;
   }
 }
-Index.ets
+
 示例代码
+
 查询指定认证类型的认证冻结状态
-使用嵌入式用户身份认证控件
-User Authentication Kit术语
+
+## Code blocks
+
+### Code block 1
+
+```
+async obtainingAuthLockState() : Promise<string> {
+  try {
+    Logger.info(`get auth lock state start`);
+    const authLockState : userAuth.AuthLockState = await userAuth.getAuthLockState(userAuth.UserAuthType.PIN);
+    if (authLockState.lockoutDuration === userAuth.PERMANENT_LOCKOUT_DURATION) {
+      Logger.info('the authentication of given authType is permanent locked.');
+    }
+    const authLockStateContent : string = JSON.stringify(authLockState);
+    Logger.info('get auth lock state successfully.');
+    return authLockStateContent;
+  } catch (error) {
+    const errorMessage : string = `get auth lock state failed, err code is : ${error?.code}, err message is : ${error?.message}`;
+    Logger.error(errorMessage);
+    return errorMessage;
+  }
+}
+```

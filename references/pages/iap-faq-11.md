@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-faq-11_
 
+不支持。同一个productId只能使用一次。

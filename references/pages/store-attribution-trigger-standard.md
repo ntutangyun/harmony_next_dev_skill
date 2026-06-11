@@ -13,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-att
 说明
 
 生效状态的监测平台角色只展示标准转化事件列表。
-
-管理转化事件
-自定义转化事件

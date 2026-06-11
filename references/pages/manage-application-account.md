@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/manage-application-account_
 
+应用开发者可以使用@ohos.account.appAccount管理本应用的账号数据。
+
 能力限制：应用卸载场景下，被卸载应用的账号数据会被删除；本地账号删除场景下，被删除本地账号下的所有应用的账号数据会被删除。
 
 模拟器支持情况
@@ -17,6 +19,7 @@ import { appAccount, BusinessError } from '@kit.BasicServicesKit';
 获取应用账号的实例对象。
 
 const appAccountManager = appAccount.createAppAccountManager();
+
 创建应用账号
 
 用户在应用中登录后，开发者可以在系统中创建一个关联的应用账号，后续可以基于此账号进行数据管理。
@@ -41,6 +44,7 @@ const appAccountManager = appAccount.createAppAccountManager();
        console.error(`createAccount failed, error: code is ${err.code}, message is ${err.message}`);
     // ···
     });
+
 查询应用账号列表
 
 具体开发实例如下：
@@ -54,7 +58,7 @@ const appAccountManager = appAccount.createAppAccountManager();
       console.error(`getAllAccounts failed, code is ${err.code}, message is ${err.message}`);
     // ···
     });
-Index.ets
+
 存取账号的凭据
 
 具体开发实例如下：
@@ -83,6 +87,7 @@ Index.ets
       console.error(`setCredential failed: code is ${err.code}, message is ${err.message}`);
     // ···
     });
+
 存取账号的自定义数据
 
 具体开发实例如下：
@@ -111,6 +116,7 @@ Index.ets
       console.error(`getCustomData failed, code is ${err.code}, message is ${err.message}`);
     // ···
     });
+
 存取账号的授权令牌
 
 具体开发实例如下：
@@ -140,6 +146,7 @@ Index.ets
       console.error(`getAuthToken failed, code is ${err.code}, message is ${err.message}`);
     // ···
     });
+
 删除应用账号
 
 用户退出登录后，应用需及时将相应的应用账号从系统中删除。
@@ -156,8 +163,163 @@ Index.ets
       console.error(`removeAccount failed, code is ${err.code}, message is ${err.message}`);
     // ···
     });
-Index.ets
+
 示例代码
+
 应用账号管理
-应用账号
-USB服务
+
+## Code blocks
+
+### Code block 1
+
+```
+import { appAccount, BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+const appAccountManager = appAccount.createAppAccountManager();
+```
+
+### Code block 3
+
+```
+    let name: string = 'ZhangSan';
+    let options: appAccount.CreateAccountOptions = {
+      customData: {
+        age: '10'
+      }
+    };
+```
+
+### Code block 4
+
+```
+    appAccountManager.createAccount(name, options).then(()=>{
+      console.info('createAccount successfully');
+    // ···
+    }).catch((err: BusinessError)=>{
+       console.error(`createAccount failed, error: code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 5
+
+```
+    appAccountManager.getAllAccounts().then((data: appAccount.AppAccountInfo[]) => {
+      console.info('getAllAccounts successfully, data: ' + JSON.stringify(data));
+    // ···
+    }).catch((err: BusinessError) => {
+      console.error(`getAllAccounts failed, code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 6
+
+```
+    let name: string = 'ZhangSan';
+    let credentialType: string = 'PIN_SIX';
+    let credential: string = 'xxxxxx';
+```
+
+### Code block 7
+
+```
+    appAccountManager.getCredential(name, credentialType).then((data: string) => {
+      console.info('getCredential successfully, data: ' + data);
+    // ···
+    }).catch((err: BusinessError) => {
+      console.error(`getCredential failed, code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 8
+
+```
+    await appAccountManager.setCredential(name, credentialType, credential).then(() => {
+      console.info('setCredential successfully');
+    }).catch((err: BusinessError) => {
+      console.error(`setCredential failed: code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 9
+
+```
+    let name: string = 'ZhangSan';
+    let key: string = 'age';
+    let value: string = '12';
+```
+
+### Code block 10
+
+```
+    await appAccountManager.setCustomData(name, key, value).then(() => {
+      console.info('setCustomData successfully');
+    }).catch((err: BusinessError) => {
+      console.error(`setCustomData failed: code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 11
+
+```
+    appAccountManager.getCustomData(name, key).then((data: string) => {
+      console.info('getCustomData successfully, data: ' + data);
+    // ···
+    }).catch((err: BusinessError) => {
+      console.error(`getCustomData failed, code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 12
+
+```
+    let name: string = 'ZhangSan';
+    let owner: string = 'com.samples.managerapplicationaccount';
+    let authType: string = 'getSocialData';
+    let token: string = 'xxxxxx';
+```
+
+### Code block 13
+
+```
+    await appAccountManager.setAuthToken(name, authType, token).then(() => {
+      console.info('setAuthToken successfully');
+    }).catch((err: BusinessError) => {
+      console.error(`setAuthToken failed: code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 14
+
+```
+    await appAccountManager.getAuthToken(name, owner, authType).then((data: string) => {
+      console.info('getAuthToken successfully, data: ' + data);
+    // ···
+    }).catch((err: BusinessError) => {
+      console.error(`getAuthToken failed, code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```
+
+### Code block 15
+
+```
+    let name: string = 'ZhangSan';
+    appAccountManager.removeAccount(name).then(() => {
+      console.info('removeAccount successfully');
+    // ···
+    }).catch((err: BusinessError) => {
+      console.error(`removeAccount failed, code is ${err.code}, message is ${err.message}`);
+    // ···
+    });
+```

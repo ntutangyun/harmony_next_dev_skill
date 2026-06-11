@@ -73,6 +73,7 @@ ONNX模型转换
 转换示例：
 
 ./omg --model=./1batch.onnx --input_shape="inputName:-1,3,128,128" --dynamic_dims="1;2;5" --framework=5 --output=./FlexibleShapeModelName
+
 说明
 
 不同shape输入对应的不同输出shape，可在模型转换日志中，通过 "Graph:" 关键字查找对应的shape信息，方便在模型推理时指定对应的输出描述。
@@ -99,5 +100,70 @@ AIPP模型转换（以Caffe模型为例）
 
 aipp_conf_static.cfg是AIPP的配置文件，位置存放在"tools/tools_omg/sample"文件夹中，具体说明参见AIPP配置文件说明。
 
-模型转换前准备
-OMG参数
+## Code blocks
+
+### Code block 1
+
+```
+./omg --model xxx.prototxt --weight yyy.caffemodel --framework 0 --output ./modelname
+```
+
+### Code block 2
+
+```
+./omg --model deploy.prototxt --weight squeezenet_v1.1.caffemodel --framework 0 --output ./squeezenet
+```
+
+### Code block 3
+
+```
+./omg --model xxx.pb --framework 3 --output ./modelname --input_shape "xxx:n,h,w,c" --out_nodes "node_name1:0"
+```
+
+### Code block 4
+
+```
+./omg --model mobilenet_v2_1.0_224_frozen.pb --framework 3 --output ./mobilenet_v2 --input_shape "input:1,224,224,3" --out_nodes "MobilenetV2/Predictions/Reshape_1:0"
+```
+
+### Code block 5
+
+```
+./omg --model xxx.onnx --framework 5 --output ./modelname
+```
+
+### Code block 6
+
+```
+./omg --model resnet18.onnx --framework 5 --output ./resnet18
+```
+
+### Code block 7
+
+```
+./omg --model xxx.prototxt --weight xxx.caffemodel --framework 0 --output ./modelname  --compress_conf=param
+```
+
+### Code block 8
+
+```
+./omg --model deploy.prototxt --weight squeezenet_v1.1.caffemodel --framework 0 --output ./squeezenet --compress_conf=param
+```
+
+### Code block 9
+
+```
+./omg --model=./1batch.onnx --input_shape="inputName:-1,3,128,128" --dynamic_dims="1;2;5" --framework=5 --output=./FlexibleShapeModelName
+```
+
+### Code block 10
+
+```
+./omg --model xxx.prototxt --weight xxx.caffemodel --framework 0 --insert_op_conf aipp_conf_static.cfg --output ./modelname
+```
+
+### Code block 11
+
+```
+./omg --model deploy.prototxt --weight squeezenet_v1.1.caffemodel --framework 0 --insert_op_conf aipp_conf_static.cfg --output ./squeezenet
+```

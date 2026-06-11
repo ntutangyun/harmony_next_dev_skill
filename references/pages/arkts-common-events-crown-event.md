@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-common-events-crown-event_
 
+表冠事件从API version 18开始支持，是指通过旋转表冠触发的事件，通过硬件采样频率上报旋转角度的变化。
+
 表冠事件分发依赖于应用内组件焦点，只有拥有焦点的组件才能接收到该事件。因此，接收此事件的组件应正确管理其焦点状态，并通过onFocus和onBlur接口监听自身焦点状态变化。当正在接收表冠事件的组件失焦时，接下来的表冠事件都不会再发送给这个组件。
 
 目前，系统中一些组件已默认支持与表冠的交互，例如，旋转手表表冠后，滚动条会根据表冠的旋转方向滚动。
@@ -32,7 +34,6 @@ Text(this.message)
   .focusable(true)
   .focusOnTouch(true)
   .defaultFocus(true)
-Index.ets
 
 注册事件回调
 
@@ -41,7 +42,6 @@ Index.ets
 .onDigitalCrown((event: CrownEvent) => {
 // ···
 })
-Index.ets
 
 事件字段的含义
 
@@ -52,7 +52,6 @@ this.message = "CrownEvent\n\n" + JSON.stringify(event);
 hilog.debug(0x0000, 'Tag',
   "action:%{public}d, angularVelocity:%{public}f, degree:%{public}f, timestamp:%{public}f",
   event.action, event.angularVelocity, event.degree, event.timestamp);
-Index.ets
 
 完整示例：
 
@@ -61,7 +60,6 @@ Index.ets
 @Component
 struct Index {
   @State message: string = 'onDigitalCrown';
-
 
   build() {
     Column() {
@@ -92,5 +90,74 @@ struct Index {
   }
 }
 
-支持游戏手柄输入事件
-添加手势响应
+## Code blocks
+
+### Code block 1
+
+```
+Text(this.message)
+  .fontSize(20)
+  .fontColor(Color.White)
+  .backgroundColor("#262626")
+  .textAlign(TextAlign.Center)
+  .focusable(true)
+  .focusOnTouch(true)
+  .defaultFocus(true)
+```
+
+### Code block 2
+
+```
+.onDigitalCrown((event: CrownEvent) => {
+// ···
+})
+```
+
+### Code block 3
+
+```
+event.stopPropagation();
+this.message = "CrownEvent\n\n" + JSON.stringify(event);
+hilog.debug(0x0000, 'Tag',
+  "action:%{public}d, angularVelocity:%{public}f, degree:%{public}f, timestamp:%{public}f",
+  event.action, event.angularVelocity, event.degree, event.timestamp);
+```
+
+### Code block 4
+
+```
+// xxx.ets
+@Entry
+@Component
+struct Index {
+  @State message: string = 'onDigitalCrown';
+
+  build() {
+    Column() {
+      Row() {
+        Stack() {
+          Text(this.message)
+            .fontSize(20)
+            .fontColor(Color.White)
+            .backgroundColor("#262626")
+            .textAlign(TextAlign.Center)
+            .focusable(true)
+            .focusOnTouch(true)
+            .defaultFocus(true)
+            .borderWidth(2)
+            .width(223)
+            .height(223)
+            .borderRadius(110)
+            .onDigitalCrown((event: CrownEvent) => {
+              event.stopPropagation();
+              this.message = "CrownEvent\n\n" + JSON.stringify(event);
+              hilog.debug(0x0000, 'Tag',
+                "action:%{public}d, angularVelocity:%{public}f, degree:%{public}f, timestamp:%{public}f",
+                event.action, event.angularVelocity, event.degree, event.timestamp);
+            })
+        }.width("100%").height("100%")
+      }.width("100%").height("100%")
+    }
+  }
+}
+```

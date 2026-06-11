@@ -2,6 +2,79 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/generate-video-dynamic-metadata_
 
+调用者可以调用本模块提供的C API接口，实现HDRVivid标准动态元数据生成。
+
+该能力常用于视频编辑中，如下图所示：
+
+规格说明
+
+当前支持的数据输入格式类型组合如下：
+
+格式类型组合一：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_PQ_LIMIT
+MetadataType	OH_VIDEO_HDR_VIVID
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, NATIVEBUFFER_PIXEL_FMT_YCRCB_P010, NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+格式类型组合二：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_HLG_LIMIT
+MetadataType	OH_VIDEO_HDR_VIVID
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, NATIVEBUFFER_PIXEL_FMT_YCRCB_P010, NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+格式类型组合三：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_HLG_LIMIT
+MetadataType	OH_VIDEO_HDR_HLG
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, NATIVEBUFFER_PIXEL_FMT_YCRCB_P010, NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+格式类型组合四：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_PQ_LIMIT
+MetadataType	OH_VIDEO_HDR_HDR10
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_YCBCR_P010, NATIVEBUFFER_PIXEL_FMT_YCRCB_P010, NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+格式类型组合五（从API version 23 开始支持）：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_PQ_FULL
+MetadataType	OH_VIDEO_HDR_VIVID
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+格式类型组合六（从API version 23 开始支持）：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_HLG_FULL
+MetadataType	OH_VIDEO_HDR_VIVID
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+格式类型组合七（从API version 23 开始支持）：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_HLG_FULL
+MetadataType	OH_VIDEO_HDR_HLG
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+格式类型组合八（从API version 23 开始支持）：
+
+参数	数据输入格式
+ColorSpace	OH_COLORSPACE_BT2020_PQ_FULL
+MetadataType	OH_VIDEO_HDR_HDR10
+pixelFormat	NATIVEBUFFER_PIXEL_FMT_RGBA_1010102
+
+支持的分辨率规格：
+
+最小分辨率（单位：像素）	最大分辨率（单位：像素）
+32*32	8192*8192
+
+约束与限制
+
+为保障转换效率，建议并行转换不超过5个。
+
 视频动态元数据生成，只支持生成OH_VIDEO_HDR_VIVID类型的动态元数据，转换后会将metadataType修改为OH_VIDEO_HDR_VIVID。
 
 不允许在视频处理回调函数中，直接调用视频处理相关接口或其他耗时操作，请在应用自己的线程中调用。
@@ -10,9 +83,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/generate-
 
 具体实现可参考示例工程。
 
-在 CMake 脚本中链接动态库
+[h2]在 CMake 脚本中链接动态库
+
 target_link_libraries(sample PUBLIC libvideo_processing.so)
-开发步骤
+
+[h2]开发步骤
 
 添加头文件。
 
@@ -37,7 +112,6 @@ videoInfo.metadataType = OH_VIDEO_HDR_HDR10;
 videoInfo.colorSpace = OH_COLORSPACE_BT2020_PQ_LIMIT;
 videoInfo.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_P010;
 
-
 //输入格式是否支持转换为vivid元数据类型
 bool isSupport = OH_VideoProcessing_IsMetadataGenerationSupported(&videoInfo);
 
@@ -46,8 +120,11 @@ bool isSupport = OH_VideoProcessing_IsMetadataGenerationSupported(&videoInfo);
 应用可以通过视频处理引擎模块类型来创建动态元数据生成模块。示例中的变量说明如下：
 
 videoProcessor：动态元数据生成模块实例。
+
 VIDEO_PROCESSING_TYPE_METADATA_GENERATION：动态元数据生成类型。
+
 预期返回值：VIDEO_PROCESSING_SUCCESS
+
 // 通过指定视频处理引擎类型创建动态元数据生成模块实例
 OH_VideoProcessing* videoProcessor = nullptr;
 VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor, VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
@@ -58,7 +135,6 @@ VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor, VIDEO
 void OnError(OH_VideoProcessing* videoProcessor, VideoProcessing_ErrorCode error, void* userData);
 void OnState(OH_VideoProcessing* videoProcessor, VideoProcessing_State state, void* userData);
 void OnNewOutputBuffer(OH_VideoProcessing* videoProcessor, uint32_t index, void* userData);
-
 
 // 创建回调实例
 VideoProcessing_Callback* callback = nullptr;
@@ -126,5 +202,133 @@ videoProcessor = nullptr;
 释放处理资源。
 
 OH_VideoProcessing_DeinitializeEnvironment();
-视频缩放
-视频色彩空间转换
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC libvideo_processing.so)
+```
+
+### Code block 2
+
+```
+#include <multimedia/video_processing_engine/video_processing.h>
+#include <multimedia/video_processing_engine/video_processing_types.h>
+#include <native_window/external_window.h>
+#include <native_buffer/native_buffer.h>
+#include <ace/xcomponent/native_interface_xcomponent.h>
+#include <multimedia/player_framework/native_avformat.h>
+```
+
+### Code block 3
+
+```
+OH_VideoProcessing_InitializeEnvironment();
+```
+
+### Code block 4
+
+```
+//输入格式
+VideoProcessing_ColorSpaceInfo videoInfo;
+videoInfo.metadataType = OH_VIDEO_HDR_HDR10;
+videoInfo.colorSpace = OH_COLORSPACE_BT2020_PQ_LIMIT;
+videoInfo.pixelFormat = NATIVEBUFFER_PIXEL_FMT_YCBCR_P010;
+
+//输入格式是否支持转换为vivid元数据类型
+bool isSupport = OH_VideoProcessing_IsMetadataGenerationSupported(&videoInfo);
+```
+
+### Code block 5
+
+```
+// 通过指定视频处理引擎类型创建动态元数据生成模块实例
+OH_VideoProcessing* videoProcessor = nullptr;
+VideoProcessing_ErrorCode ret = OH_VideoProcessing_Create(&videoProcessor, VIDEO_PROCESSING_TYPE_METADATA_GENERATION);
+```
+
+### Code block 6
+
+```
+// 回调函数声明（其中userData会传递注册回调时传入的调用者数据，如：this指针）
+void OnError(OH_VideoProcessing* videoProcessor, VideoProcessing_ErrorCode error, void* userData);
+void OnState(OH_VideoProcessing* videoProcessor, VideoProcessing_State state, void* userData);
+void OnNewOutputBuffer(OH_VideoProcessing* videoProcessor, uint32_t index, void* userData);
+
+// 创建回调实例
+VideoProcessing_Callback* callback = nullptr;
+ret = OH_VideoProcessingCallback_Create(&callback);
+// 绑定回调函数
+OH_VideoProcessingCallback_BindOnError(callback, OnError);
+OH_VideoProcessingCallback_BindOnState(callback, OnState);
+OH_VideoProcessingCallback_BindOnNewOutputBuffer(callback, OnNewOutputBuffer);
+// 注册回调函数
+ret = OH_VideoProcessing_RegisterCallback(videoProcessor, callback, this);
+```
+
+### Code block 7
+
+```
+// 创建format实例
+OH_AVFormat* parameter = OH_AVFormat_Create();
+// 指定为亮度风格模式
+OH_AVFormat_SetIntValue(parameter, VIDEO_METADATA_GENERATOR_STYLE_CONTROL, VIDEO_METADATA_GENERATOR_BRIGHT_MODE);
+// 配置参数
+OH_VideoProcessing_SetParameter(videoProcessor, parameter);
+// 销毁format实例
+OH_AVFormat_Destroy(parameter);
+```
+
+### Code block 8
+
+```
+//获取输入surface
+OHNativeWindow *inWindow = nullptr;
+ret = OH_VideoProcessing_GetSurface(videoProcessor, &inWindow);
+```
+
+### Code block 9
+
+```
+// 设置元数据类型、数据格式、颜色空间
+uint8_t metadataType = OH_VIDEO_HDR_HLG;
+OH_NativeWindow_SetMetadataValue(windowOut, OH_HDR_METADATA_TYPE, sizeof(uint8_t),
+(uint8_t *)&metadataType);
+OH_NativeBuffer_Format format = NATIVEBUFFER_PIXEL_FMT_YCBCR_P010;
+OH_NativeWindow_NativeWindowHandleOpt(windowOut, SET_FORMAT, format);
+OH_NativeBuffer_ColorSpace colorSpace = OH_COLORSPACE_BT2020_HLG_LIMIT;
+OH_NativeWindow_SetColorSpace(windowOut, colorSpace);
+// 设置输出surface
+VideoProcessing_ErrorCode ret = OH_VideoProcessing_SetSurface(videoProcessor, windowOut);
+```
+
+### Code block 10
+
+```
+// 开始动态元数据生成转换处理
+ret = OH_VideoProcessing_Start(videoProcessor);
+```
+
+### Code block 11
+
+```
+//停止动态元数据生成处理
+ret = OH_VideoProcessing_Stop(videoProcessor);
+```
+
+### Code block 12
+
+```
+OH_VideoProcessingCallback_Destroy(callback);
+callback = nullptr;
+OH_VideoProcessing_Destroy(videoProcessor);
+videoProcessor = nullptr;
+```
+
+### Code block 13
+
+```
+OH_VideoProcessing_DeinitializeEnvironment();
+```

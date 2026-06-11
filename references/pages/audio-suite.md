@@ -10,12 +10,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-sui
 
 引擎
 
-OHAudioSuite中的引擎是一个统一管理音频管线、控制离线编辑(C/C++)和实时渲染(C/C++)的对象，开发者可以根据自身的需求搭建音频处理链。调用方式如上图所示，由应用发起，先调用OHAudioSuite的接口依次创建引擎、管线、节点，再把创建的节点在管线内连接起来，用于传输PCM（Pulse Code Modulation）音频数据，使对应的效果节点实现音效处理能力。当管线停止时，开发者可以有限制地（具体规则请参考管线的组成和编排）连接、断开和移除节点，通过调节节点编排实现复杂的音效处理。
+OHAudioSuite中的引擎是一个统一管理音频管线、控制离线编辑(C/C++)和实时预览(C/C++)的对象，开发者可以根据自身的需求搭建音频处理链。调用方式如上图所示，由应用发起，先调用OHAudioSuite的接口依次创建引擎、管线、节点，再把创建的节点在管线内连接起来，用于传输PCM（Pulse Code Modulation）音频数据，使对应的效果节点实现音效处理能力。当管线停止时，开发者可以有限制地（具体规则请参考管线的使用规则）连接、断开和移除节点，通过调节节点编排实现复杂的音效处理。
 
-引擎最多支持创建10条管线，其中实时渲染管线最多创建1条。
+引擎最多支持创建10条管线，其中实时预览管线最多创建1条。
 
 节点
-节点的介绍
+
+[h2]节点的介绍
 
 节点是音频渲染的最小单元，根据节点功能提供对应的音效处理能力，节点本身无法单独调用，必须依附管线和引擎才能使用。
 
@@ -28,7 +29,7 @@ OUTPUT_NODE	输出节点，支持设置输出的PCM音频格式。
 
 节点完整类型详见OH_AudioNode_Type。
 
-节点的作用
+[h2]节点的作用
 
 输入节点负责处理PCM音频数据输入，从应用侧获取数据。
 
@@ -36,13 +37,13 @@ OUTPUT_NODE	输出节点，支持设置输出的PCM音频格式。
 
 离线编辑(C/C++)场景支持均衡器、音源分离、声场效果、降噪、声音美化、环境效果、混音等音效节点。
 
-实时渲染(C/C++)场景支持均衡器音效节点。
+实时预览(C/C++)场景支持均衡器音效节点。
 
 均衡器、音源分离、声场效果、降噪等音效节点支持对应的音效处理功能和多音频混音操作，最终输出的PCM音频数据支持格式设置（如OH_Audio_SampleFormat(位深度)、OH_Audio_SampleRate(采样率)和OH_AudioChannelLayout(声道数)等）。
 
 管线
 
-管线是一个统一管理音频节点连接、配置的对象，支持两种工作模式，分别是离线编辑(C/C++)和实时渲染(C/C++)。
+管线是一个统一管理音频节点连接、配置的对象，支持两种工作模式，分别是离线编辑(C/C++)和实时预览(C/C++)。
 
 管线的数据处理采用反向驱动机制。由OH_AudioSuiteEngine_RenderFrame()或者OH_AudioSuiteEngine_MultiRenderFrame()发起，输出节点逐级向连接的上游节点请求数据，最终由输入节点的OH_InputNode_RequestDataCallback()回调函数向开发者请求需要处理的音频数据。
 
@@ -51,20 +52,10 @@ OUTPUT_NODE	输出节点，支持设置输出的PCM音频格式。
 状态的功能如下表所示。
 
 状态名	功能
-stopped	
+stopped	初始状态，或者工作状态经过OH_AudioSuiteEngine_StopPipeline()命令进入该状态。 切换到stopped状态下，各节点将释放缓存。
+running	工作状态，或者初始状态执行OH_AudioSuiteEngine_StartPipeline()命令进入该状态。 该函数会对管线进行完整性检查，包含是否有有效连接、节点是否连接错误等。
 
-初始状态，或者工作状态经过OH_AudioSuiteEngine_StopPipeline()命令进入该状态。
-
-切换到stopped状态下，各节点将释放缓存。
-
-
-running	
-
-工作状态，或者初始状态执行OH_AudioSuiteEngine_StartPipeline()命令进入该状态。
-
-该函数会对管线进行完整性检查，包含是否有有效连接、节点是否连接错误等。
-
-管线的作用
+[h2]管线的作用
 
 管线是OHAudioSuite中支持应用渲染PCM音频数据的音效链路。管线支持节点之间的灵活组网，给开发者提供更丰富、更灵活的音频编创体验。
 
@@ -72,20 +63,29 @@ running
 
 创建一个输入节点、一个效果节点（如均衡器节点EFFECT_NODE_TYPE_EQUALIZER）和一个输出节点，按节点连接顺序（输入节点 -> 效果节点 -> 输出节点）连接组成管线，实现均衡器功能（具体代码用例参考基础离线编辑）。同时，管线也支持多输入场景（具体代码用例参考混音与级联），每条管线输入的PCM数据经过各自的效果节点，在进行混音处理后进行输出。
 
-管线的组成和编排
+[h2]管线的使用规则
 
-管线由节点编排组成。每一个管线中，输入节点INPUT_NODE_TYPE_DEFAULT不超过5个，输出节点OUTPUT_NODE_TYPE_DEFAULT不超过1个，效果类节点不超过5个，其中混音节点EFFECT_NODE_TYPE_AUDIO_MIXER不超过3个，音源分离节点EFFECT_MULTII_OUTPUT_NODE_TYPE_AUDIO_SEPARATION不超过1个。
+管线由节点编排组成，管线创建节点规则如下所示。
 
-管线创建节点规则如下所示。
+在API version 24之前，输入节点INPUT_NODE_TYPE_DEFAULT的数量不超过5个；在API version 24及以后，输入节点INPUT_NODE_TYPE_DEFAULT的数量不超过15个。
 
-管线创建的节点数量超过该类型的限制后，再创建该类型节点会失败。
+输出节点OUTPUT_NODE_TYPE_DEFAULT的数量不超过1个。
+
+混音节点EFFECT_NODE_TYPE_AUDIO_MIXER的数量不超过3个。
+
+音源分离节点EFFECT_MULTII_OUTPUT_NODE_TYPE_AUDIO_SEPARATION的数量不超过1个。
+
+在API version 24之前，其余效果类节点的数量每类不超过5个；在API version 24及以后，其余效果类节点的数量每类不超过15个。
+
 每条管线至少要有1个输入节点，有且只有1个输出节点。
+
 创建节点前需要调用OH_AudioSuiteEngine_IsNodeTypeSupported()检查节点类型是否受支持，避免创建节点失败。
+
 输入节点和输出节点支持设置节点格式，其余节点不支持设置格式。输入的格式是音频源的音频格式，输出的格式是开发者期望输出的音频格式。
 
 管线中节点的编排规则如下所示。
 
-管线连接顺序为：输入节点 -> 效果节点 -> 输出节点。
+管线中节点连接顺序为：输入节点 -> 效果节点 -> 输出节点。
 
 音源分离效果节点EFFECT_MULTII_OUTPUT_NODE_TYPE_AUDIO_SEPARATION后面只能连接输出节点，其余效果类节点则没有这个限制。
 
@@ -93,5 +93,6 @@ running
 
 节点的连接是单向的，不支持后序节点反向连接到前序节点。输入节点是每条管线的首节点，输出节点是每条管线的尾节点。
 
-音频编创
-离线编辑(C/C++)
+完整示例代码
+
+音频编创示例代码

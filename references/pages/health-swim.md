@@ -2,9 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-swim_
 
+开放水域游泳
+
+[h2]开放水域游泳相关锻炼记录类型如下：
+
+锻炼记录子类型常量	描述	数据来源
 exerciseSequenceHelper.openWaterSwim.EXERCISE_TYPE	开放水域游泳	手环、手表
-开放水域游泳关联的统计数据说明
+
+[h2]开放水域游泳关联的统计数据说明
+
 字段定义：exerciseSequenceHelper.openWaterSwim.SummaryFields
+
 字段列表	描述	类型	可选/必选
 openWaterSwimFeature	开放水域游泳特征数据	OpenWaterSwimFeature	M
 distance	距离统计	DistanceSummary	M
@@ -12,7 +20,8 @@ calorie	热量统计	CalorieSummary	M
 exerciseHeartRate	运动心率统计	ExerciseHeartRateSummary	O
 swimStrokeRate	划水频率统计	SwimStrokeRateSummary	O
 swolf	SWOLF统计	SwolfSummary	O
-开放水域游泳关联的明细数据说明
+
+[h2]开放水域游泳关联的明细数据说明
 
 字段定义：exerciseSequenceHelper.openWaterSwim.DetailFields
 
@@ -22,11 +31,15 @@ location	位置详情	Location[]	O
 speed	速度详情	Speed[]	O
 swimStrokeRate	划水频率详情	SwimStrokeRate[]	O
 swolf	SWOLF详情	Swolf[]	O
+
 泳池游泳
-泳池游泳相关锻炼记录类型如下：
+
+[h2]泳池游泳相关锻炼记录类型如下：
+
 锻炼记录子类型常量	描述	数据来源
 exerciseSequenceHelper.poolSwim.EXERCISE_TYPE	泳池游泳	手环、手表
-泳池游泳关联的统计数据说明
+
+[h2]泳池游泳关联的统计数据说明
 
 字段定义：exerciseSequenceHelper.poolSwim.SummaryFields
 
@@ -38,7 +51,8 @@ exerciseHeartRate	运动心率统计	ExerciseHeartRateSummary	O
 speed	速度统计	SpeedSummary	O
 swimStrokeRate	划水频率统计	SwimStrokeRateSummary	O
 swolf	SWOLF统计	SwolfSummary	O
-泳池游泳关联的明细数据说明
+
+[h2]泳池游泳关联的明细数据说明
 
 字段定义：exerciseSequenceHelper.poolSwim.DetailFields
 
@@ -47,5 +61,3 @@ exerciseHeartRate	运动心率详情	ExerciseHeartRate[]	O
 speed	速度详情	Speed[]	O
 swimStrokeRate	划水频率详情	SwimStrokeRate[]	O
 swolf	SWOLF详情	Swolf[]	O
-登山
-划船机

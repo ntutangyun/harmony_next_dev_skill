@@ -2,13 +2,134 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hapsigntool-errorcode_
 
+11010001 未知错误
+
+错误信息
+
+Unknown error.
+
+错误描述
+
+签名过程中出现系统内部错误。
+
+可能原因
+
+签名过程发生了错误，请查看日志中的签名验证失败详情。
+
+处理步骤
+
+结合控制台输出的错误日志信息及应用包进一步分析。
+
+11012002 输入文件不存在
+
+错误信息
+
+File not exist.
+
+错误描述
+
+输入文件不存在。
+
+可能原因
+
+inFile参数指定的输入文件不存在。
+
+appCertFile参数指定的证书文件不存在。
+
+profileFile参数指定的profile文件不存在。
+
+处理步骤
+
+检查inFile参数指定的输入文件是否存在。
+
+检查appCertFile参数指定的证书文件是否存在。
+
+检查profileFile参数指定的profile文件是否存在。
+
+11012003 写文件错误
+
+错误信息
+
+Write file failed.
+
+错误描述
+
+写文件错误。
+
+可能原因
+
+当前用户没有outFile参数指定的输出文件的写权限。
+
+处理步骤
+
+检查当前用户是否有outFile参数指定的输出文件的写权限。
+
+11012004 读文件错误
+
+错误信息
+
+Read file failed.
+
+错误描述
+
+读文件错误。
+
+可能原因
+
+profileFile参数指定的文件不存在，或当前用户没有该文件的读权限。
+
+处理步骤
+
+检查profileFile参数指定的文件是否存在，当前用户是否有该文件的读权限。
+
+11012005 不支持的文件格式
+
+错误信息
+
+Not support file.
+
+错误描述
+
+不支持的文件格式。
+
+可能原因
+
+签名过程输入了不支持的文件后缀。
+
+处理步骤
+
+输入正确的文件格式。具体格式如下：
+
+已签名的profile文件后缀为p7b。
+
+未签名的profile文件后缀为json。
+
+证书或证书链文件后缀为cer。
+
+密钥库文件后缀为：jks、p12。
+
+11012006 文件IO错误
+
+错误信息
+
+File IO failed.
+
+错误描述
+
+签名过程中发生文件读取或写入错误。
+
+可能原因
+
 inFile、keystoreFile、profileFile或appCertFile参数指定的文件不存在或当前用户没有读权限。
+
 当前用户没有outFile参数指定的输出文件的写权限。
 
 处理步骤
 
 检查inFile、keystoreFile、profileFile或appCertFile参数指定的文件是否存在，且当前用户是否有读权限。
+
 检查当前用户是否有outFile参数指定的输出文件的写权限。
+
 11013002 证书链文件错误
 
 错误信息
@@ -22,12 +143,15 @@ Certificate format is incorrect, please check your appCertFile parameter.
 可能原因
 
 appCertFile参数指定的证书链文件内容不是X.509标准证书或文件内容被修改。
+
 appCertFile参数指定的证书链文件内的证书已过期。
 
 处理步骤
 
 检查appCertFile指定的文件内容是否标准X.509证书。
+
 更新证书链文件。
+
 11014001 密钥不存在
 
 错误信息
@@ -59,14 +183,19 @@ Keystore初始化失败。
 可能原因
 
 密钥库文件不存在。
+
 密钥库文件口令不正确。
+
 当前运行环境的JDK版本低于生成密钥库文件使用的JDK版本。
 
 处理步骤
 
 检查密钥库文件是否存在。
+
 检查密钥库文件口令是否正确。
+
 检查当前运行环境的JDK版本。
+
 11014007 密钥口令错误
 
 错误信息
@@ -152,12 +281,15 @@ Verify signature failed.
 可能原因
 
 签名过程中的keyAlias密钥与appCertFile证书不匹配。
+
 appCertFile指定的证书已过期。
 
 处理步骤
 
 检查签名过程keyAlias指定的密钥与appCertFile指定的证书是否匹配。
+
 更新证书链文件。
+
 11017001 软件包格式错误
 
 错误信息
@@ -179,7 +311,9 @@ Read zip file failed.
 处理步骤
 
 减少软件包的大小，减少软件包的文件和目录数目。
+
 重新打包签名，确保打包格式为zip。
+
 11017002 软件包复制异常
 
 错误信息
@@ -417,5 +551,3 @@ Code sign internal error.
 处理步骤
 
 结合故障日志及应用包进一步分析。
-
-ArkTS编译错误码

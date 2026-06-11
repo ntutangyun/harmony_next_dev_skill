@@ -29,6 +29,3 @@ developerPayload使用建议：
 基于隐私保护的最小化原则，建议开发者使用单向哈希或加密来混淆应用帐号信息生成标识符，并将此标识符作为developerPayload，此标识符应与应用帐号信息固定关联，此标识符在应用账号的整个生命周期内均有效。
 
 由于订阅存在developerPayload刷新机制，同时订阅的生命周期可能很长，因此强烈建议开发者不要使用业务订单号作为developerPayload来确定订阅的归属，此方式可能在业务订单失效或丢失时导致无法确定订阅归属。
-
-subGroupId（订阅组ID）、subGroupGenerationId（订阅组的代ID）和subscriptionId（订阅ID）说明
-应用迁移后，JWT密钥验签错误自查方法

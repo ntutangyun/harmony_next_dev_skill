@@ -2,17 +2,21 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-faqs_
 
+如何对找不到字形的字符进行显示优化
+
+目前对于找不到字形的字符默认显示为空白，可能让用户感到困惑。
+
+系统提供开关，开启后，未找到字形的字符会显示为豆腐块。
+
 在ArkTS环境中，可以使用setTextUndefinedGlyphDisplay接口开启开关，找不到字形的字符会强制显示为豆腐块。
 
 import { text } from "@kit.ArkGraphics2D";
-
 
 text.setTextUndefinedGlyphDisplay(text.TextUndefinedGlyphDisplay.USE_TOFU);
 
 在C/C++环境中，可以使用OH_Drawing_SetTextUndefinedGlyphDisplay接口开启开关，找不到字形的字符会强制显示为豆腐块。
 
 #include "drawing/drawing_text_global.h"
-
 
 OH_Drawing_SetTextUndefinedGlyphDisplay(TEXT_NO_GLYPH_USE_TOFU);
 
@@ -25,5 +29,21 @@ OH_Drawing_SetTextUndefinedGlyphDisplay(TEXT_NO_GLYPH_USE_TOFU);
 是否开启显示优化	示意效果
 未开启	
 开启	
-自定义文本绘制与显示（C/C++）
-离线图像处理
+
+## Code blocks
+
+### Code block 1
+
+```
+import { text } from "@kit.ArkGraphics2D";
+
+text.setTextUndefinedGlyphDisplay(text.TextUndefinedGlyphDisplay.USE_TOFU);
+```
+
+### Code block 2
+
+```
+#include "drawing/drawing_text_global.h"
+
+OH_Drawing_SetTextUndefinedGlyphDisplay(TEXT_NO_GLYPH_USE_TOFU);
+```

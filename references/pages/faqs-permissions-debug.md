@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/faqs-permissions-debug_
 
+ohos.permission.kernel.NET_RAW权限使用说明
+
+约束与限制：
+
+仅支持在PC/2in1设备上申请使用。
+
 在PC/2in1设备上，二进制程序可以申请ohos.permission.kernel.NET_RAW权限进行网络抓包，使用时需要sudo提权使权限生效。
 
 使用说明：
@@ -19,9 +25,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/faqs-perm
 在hishell终端中使用sudo提权执行携带ohos.permission.kernel.NET_RAW权限的tcpdump，认证成功后可以进行下述操作：
 
 支持通过PF_PACKET协议族创建PACKET类型套接字，在数据链路层直接捕获原始网络帧。
+
 支持通过NETLINK_ROUTE和NETLINK_GENERIC类型的netlink套接字与内核通信，可以查询和管理网络接口。
+
 # 示例
 sudo ./tcpdump
+
 ohos.permission.kernel.DEBUGGER权限使用说明
 
 约束与限制：
@@ -33,7 +42,9 @@ ohos.permission.kernel.DEBUGGER权限使用说明
 在PC/2in1设备上，二进制程序或应用申请ohos.permission.kernel.DEBUGGER权限后，可作为调试方，调试与其具有相同UID的以下内容：
 
 自签名的二进制程序。
+
 调试证书签名的应用/二进制程序。
+
 由发布证书签名且具备 ohos.permission.kernel.ALLOW_DEBUG 权限的应用/二进制程序。
 
 使用说明：
@@ -56,8 +67,10 @@ UID            PID  PPID C STIME TTY          TIME CMD
 20020109     50262 32365 0 17:29:41 ?     00:00:00 lldb
 20020109     52219 50262 0 17:31:15 ?     00:00:00 lldb-server
 20020109     57631 13564 0 17:31:15 ?     00:00:00 debug_bin
+
 # 附加到目标进程
 (lldb) process attach --name debug_bin
+
 ohos.permission.kernel.ALLOW_DEBUG使用说明
 
 约束与限制：
@@ -82,5 +95,61 @@ ohos.permission.kernel.ALLOW_DEBUG使用说明
 
 在DecEco Studio调试器的进程列表中可以查看到携带ohos.permission.kernel.ALLOW_DEBUG权限的发布应用进程，选择目标进程后即可进行附加并调试，具体可参考应用调试。
 
-应用权限组列表
-使用安全控件
+## Code blocks
+
+### Code block 1
+
+```
+{
+    "requestPermissions": [
+        {
+            "name": "ohos.permission.kernel.NET_RAW"
+        }
+    ]
+}
+```
+
+### Code block 2
+
+```
+# 示例
+sudo ./tcpdump
+```
+
+### Code block 3
+
+```
+{
+    "requestPermissions": [
+        {
+            "name": "ohos.permission.kernel.DEBUGGER"
+        }
+    ]
+}
+```
+
+### Code block 4
+
+```
+# 示例：
+# 确认UID一致
+UID            PID  PPID C STIME TTY          TIME CMD
+20020109     50262 32365 0 17:29:41 ?     00:00:00 lldb
+20020109     52219 50262 0 17:31:15 ?     00:00:00 lldb-server
+20020109     57631 13564 0 17:31:15 ?     00:00:00 debug_bin
+
+# 附加到目标进程
+(lldb) process attach --name debug_bin
+```
+
+### Code block 5
+
+```
+{
+    "requestPermissions": [
+        {
+            "name": "ohos.permission.kernel.ALLOW_DEBUG"
+        }
+    ]
+}
+```

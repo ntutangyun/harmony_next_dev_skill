@@ -28,7 +28,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-pri
 
 业务流程
 
-查询隐私链接信息
+[h2]查询隐私链接信息
 
 用户需要查询隐私链接信息。
 
@@ -38,7 +38,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-pri
 
 应用/元服务将查询结果返回给用户。
 
-查询隐私签署状态
+[h2]查询隐私签署状态
 
 用户需要查询隐私签署状态信息。
 
@@ -48,13 +48,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-pri
 
 应用/元服务将结果返回给用户。
 
-撤销同意记录
+[h2]撤销同意记录
 
 用户需要撤销隐私签署同意记录。
 
 应用/元服务调用disableService接口撤销隐私签署同意记录。
 
-请求用户同意
+[h2]请求用户同意
 
 用户需要展示标准化隐私弹框。
 
@@ -83,8 +83,10 @@ getAppPrivacyMgmtInfo(): AppPrivacyMgmtInfo	查询隐私链接信息接口，用
 getAppPrivacyResult(): AppPrivacyResult[]	查询隐私签署状态接口，用于查询隐私签署状态信息。
 disableService():void	撤销同意记录接口，用于撤销隐私签署同意记录。
 requestAppPrivacyConsent(context:common.UIAbilityContext):Promise<ConsentResult>	请求用户同意接口，用于开发者需要主动拉起标准化隐私弹框。
+
 开发步骤
-查询隐私链接信息
+
+[h2]查询隐私链接信息
 
 导入privacyManager模块及相关公共模块。
 
@@ -104,7 +106,8 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', "GetAppPrivacyManageInfoPublic exception code: " + error.code + ", exception message: " + error.message);
 }
-查询隐私签署状态
+
+[h2]查询隐私签署状态
 
 导入privacyManager模块及相关公共模块。
 
@@ -122,7 +125,8 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', "GetAppPrivacyResultPublic exception code: " + error.code + ", exception message: " + error.message);
 }
-撤销同意记录
+
+[h2]撤销同意记录
 
 导入privacyManager模块及相关公共模块。
 
@@ -137,7 +141,8 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', "DisableService exception code: " + error.code + ", exception message: " + error.message);
 }
-请求用户同意
+
+[h2]请求用户同意
 
 导入privacyManager模块及相关公共模块。
 
@@ -161,42 +166,23 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', "requestAppPrivacyConsent exception code: " + error.code + ", exception message: " + error.message);
 }
+
 隐私弹框签署结果公共事件
 
 在接入标准化隐私声明托管服务之后，用户未签署隐私声明前，打开应用/元服务会弹出标准化隐私弹框，弹框样式如下：
 
 用户点击同意隐私弹框，应用市场会发送隐私弹框签署结果公共事件。应用可通过监听该事件，感知用户隐私签署结果。
 
-事件说明
+[h2]事件说明
+
 事件名称	值	描述
-COMMON_EVENT_PRIVACY_STATE_CHANGED	usual.event.PRIVACY_STATE_CHANGED	
-
-隐私弹框签署结果公共事件，事件携带数据如下：
-
-{
-
-'resultType': privacyResultType,
-
-'appIndex': appIndex
-
-}
-
-其中：
-
-- privacyResultType：
-
-1：同意完整模式
-
-0：未同意
-
-- appIndex：分身索引
+COMMON_EVENT_PRIVACY_STATE_CHANGED	usual.event.PRIVACY_STATE_CHANGED	隐私弹框签署结果公共事件，事件携带数据如下： { 'resultType': privacyResultType, 'appIndex': appIndex } 其中： - privacyResultType： 1：同意完整模式 0：未同意 - appIndex：分身索引
 
 公共事件接收示例（无应用分身场景）：
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { commonEventManager } from '@kit.BasicServicesKit';
 const TAG = 'PrivacySubscribe';
-
 
 class PrivacySubscribeSample {
   private readonly eventId = 'usual.event.PRIVACY_STATE_CHANGED';
@@ -207,14 +193,12 @@ class PrivacySubscribeSample {
     events: [this.eventId]
   };
 
-
   public subscribe(): void {
     hilog.info(0, TAG, "subscribe");
     // 创建订阅者
     commonEventManager.createSubscriber(this.subscribeInfo).then((commonEventSubscriber) => {
       hilog.info(0, TAG, "createSubscriber");
       this.subscriber = commonEventSubscriber;
-
 
       // 订阅公共事件
       try {
@@ -223,7 +207,6 @@ class PrivacySubscribeSample {
             hilog.error(0, TAG, `subscribe failed, code is ${err?.code}, message is ${err?.message}`);
             return;
           }
-
 
           let result = JSON.parse(data?.data ?? '{}')?.resultType as number;
           if (result === 1) {
@@ -243,9 +226,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { commonEventManager } from '@kit.BasicServicesKit';
 import { UIAbility } from '@kit.AbilityKit';
 
-
 const TAG = 'PrivacyEventSubscriber';
-
 
 export default class MyAbility extends UIAbility {
   onBackground() {
@@ -260,7 +241,6 @@ export default class MyAbility extends UIAbility {
   }
 }
 
-
 class PrivacyEventSubscriber {
   private appCloneIndex: number = 0;
   private readonly eventId = 'usual.event.PRIVACY_STATE_CHANGED';
@@ -271,11 +251,9 @@ class PrivacyEventSubscriber {
     events: [this.eventId]
   };
 
-
   constructor(appCloneIndex: number) {
     this.appCloneIndex = appCloneIndex;
   }
-
 
   public subscribe(): void {
     hilog.info(0, TAG, "subscribe");
@@ -284,7 +262,6 @@ class PrivacyEventSubscriber {
       hilog.info(0, TAG, "createSubscriber");
       this.subscriber = commonEventSubscriber;
 
-
       // 订阅公共事件
       try {
         commonEventManager.subscribe(this.subscriber, (err, data) => {
@@ -292,7 +269,6 @@ class PrivacyEventSubscriber {
             hilog.error(0, TAG, `subscribe failed, code is ${err?.code}, message is ${err?.message}`);
             return;
           }
-
 
           let result = JSON.parse(data?.data ?? '{}')?.resultType as number;
           let appIndex = JSON.parse(data?.data ?? '{}')?.appIndex as number ?? 0;
@@ -309,6 +285,7 @@ class PrivacyEventSubscriber {
     });
   }
 }
+
 未上架应用接入隐私管理服务
 
 针对未上架应用市场的应用/元服务，可以通过手动预置隐私链接信息模拟接入隐私托管和隐私管理服务。
@@ -323,17 +300,7 @@ class PrivacyEventSubscriber {
 appgallery_privacy_hosted	是否启用隐私弹框，1表示启用，其他值均表示不启用。	是
 appgallery_privacy_link_privacy_statement	隐私协议url（https），在隐私弹框中作为隐私协议的内容。	是
 appgallery_privacy_link_user_agreement	用户协议url（https），在隐私弹框中作为用户协议的内容。	否
-appgallery_privacy_link_user_agreements	
-
-多个用户协议url（https），在隐私弹框中作为多个用户协议的内容。
-
-该值直接引用一个json文件，json文件存放在module的type为entry模块的resources/rawfile文件夹下。
-
-有多个用户协议链接时，优先取appgallery_privacy_link_user_agreements字段，appgallery_privacy_link_user_agreement配置的单个用户协议链接无效。
-
-起始版本：5.0.2(14)
-
-	否
+appgallery_privacy_link_user_agreements	多个用户协议url（https），在隐私弹框中作为多个用户协议的内容。 该值直接引用一个json文件，json文件存放在module的type为entry模块的resources/rawfile文件夹下。 有多个用户协议链接时，优先取appgallery_privacy_link_user_agreements字段，appgallery_privacy_link_user_agreement配置的单个用户协议链接无效。 起始版本：5.0.2(14)	否
 
 在华为应用市场可以正常使用、并且网络连通的情况下，使用hdc命令从本地文件安装应用，即可使用预置的隐私链接信息测试隐私弹框、调试隐私管理服务接口。
 
@@ -381,5 +348,255 @@ link_user_agreements.json示例配置：
         }
     ]
 }
-接入调试功能
-图标管理服务
+
+## Code blocks
+
+### Code block 1
+
+```
+import { privacyManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+try {
+  let appPrivacyManageInfo: privacyManager.AppPrivacyMgmtInfo = privacyManager.getAppPrivacyMgmtInfo();
+  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo type: " + appPrivacyManageInfo["type"]);
+  let privacyLinkInfoArray : privacyManager.AppPrivacyLink[] = appPrivacyManageInfo.privacyInfo;
+  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo size = " + privacyLinkInfoArray.length);
+  for (let i = 0; i < privacyLinkInfoArray.length; i++) {
+    hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo type = " + privacyLinkInfoArray[i]["type"] + ", version = " + privacyLinkInfoArray[i]["versionCode"] + ", url = " + privacyLinkInfoArray[i]["url"]);
+  }
+} catch (error) {
+  hilog.error(0, 'TAG', "GetAppPrivacyManageInfoPublic exception code: " + error.code + ", exception message: " + error.message);
+}
+```
+
+### Code block 3
+
+```
+import { privacyManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 4
+
+```
+try {
+  let appPrivacyResults: privacyManager.AppPrivacyResult[] = privacyManager.getAppPrivacyResult();
+  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyResult size = " + appPrivacyResults.length);
+  for (let i = 0; i < appPrivacyResults.length; i++) {
+    hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyResult type = " + appPrivacyResults[i]["type"] + ", version = " + appPrivacyResults[i]["versionCode"] + ", result = "+appPrivacyResults[i]["result"]);
+  }
+} catch (error) {
+  hilog.error(0, 'TAG', "GetAppPrivacyResultPublic exception code: " + error.code + ", exception message: " + error.message);
+}
+```
+
+### Code block 5
+
+```
+import { privacyManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 6
+
+```
+try {
+  privacyManager.disableService();
+  hilog.info(0, 'TAG', "Succeeded in disabling Service success.");
+} catch (error) {
+  hilog.error(0, 'TAG', "DisableService exception code: " + error.code + ", exception message: " + error.message);
+}
+```
+
+### Code block 7
+
+```
+import { privacyManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 8
+
+```
+try {
+  const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  privacyManager.requestAppPrivacyConsent(uiContext).then((consentResult : privacyManager.ConsentResult) => {
+    let appPrivacyResults: privacyManager.AppPrivacyResult[] = consentResult["results"];
+    for (let i = 0; i < appPrivacyResults.length; i++) {
+      hilog.info(0, 'TAG', "GetAppPrivacyResult type = " + appPrivacyResults[i]["type"] + ", version = " + appPrivacyResults[i]["versionCode"] + ", result = " + appPrivacyResults[i]["result"] + ", signingTimestamp = " + appPrivacyResults[i]["signingTimestamp"]);
+    }
+  }).catch((error: BusinessError<Object>) => {
+    hilog.error(0, 'TAG', `requestAppPrivacyConsent failed, Code: ${error.code}, message: ${error.message}`);
+  });
+} catch (error) {
+  hilog.error(0, 'TAG', "requestAppPrivacyConsent exception code: " + error.code + ", exception message: " + error.message);
+}
+```
+
+### Code block 9
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { commonEventManager } from '@kit.BasicServicesKit';
+const TAG = 'PrivacySubscribe';
+
+class PrivacySubscribeSample {
+  private readonly eventId = 'usual.event.PRIVACY_STATE_CHANGED';
+  // 订阅者信息, 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
+  private subscriber: commonEventManager.CommonEventSubscriber | undefined = undefined;
+  // 事件列表
+  private subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
+    events: [this.eventId]
+  };
+
+  public subscribe(): void {
+    hilog.info(0, TAG, "subscribe");
+    // 创建订阅者
+    commonEventManager.createSubscriber(this.subscribeInfo).then((commonEventSubscriber) => {
+      hilog.info(0, TAG, "createSubscriber");
+      this.subscriber = commonEventSubscriber;
+
+      // 订阅公共事件
+      try {
+        commonEventManager.subscribe(this.subscriber, (err, data) => {
+          if (err) {
+            hilog.error(0, TAG, `subscribe failed, code is ${err?.code}, message is ${err?.message}`);
+            return;
+          }
+
+          let result = JSON.parse(data?.data ?? '{}')?.resultType as number;
+          if (result === 1) {
+            // 隐私同意处理
+          }
+        });
+      } catch (error) {
+        hilog.error(0, TAG, "init createSubscriber failed, exception code: " + error.code + ", exception message: " + error.message);
+      }
+    });
+  }
+}
+```
+
+### Code block 10
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { commonEventManager } from '@kit.BasicServicesKit';
+import { UIAbility } from '@kit.AbilityKit';
+
+const TAG = 'PrivacyEventSubscriber';
+
+export default class MyAbility extends UIAbility {
+  onBackground() {
+    let appCloneIndex = 0;
+    let applicationContext = this.context.getApplicationContext();
+    try {
+      appCloneIndex = applicationContext.getCurrentAppCloneIndex();
+    } catch (error) {
+      hilog.error(0, TAG, `getCurrentAppCloneIndex fail, exception code:` + error.code + `, exception message: ` + error.message);
+    }
+    new PrivacyEventSubscriber(appCloneIndex).subscribe();
+  }
+}
+
+class PrivacyEventSubscriber {
+  private appCloneIndex: number = 0;
+  private readonly eventId = 'usual.event.PRIVACY_STATE_CHANGED';
+  // 订阅者信息, 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
+  private subscriber: commonEventManager.CommonEventSubscriber | undefined = undefined;
+  // 事件列表
+  private subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
+    events: [this.eventId]
+  };
+
+  constructor(appCloneIndex: number) {
+    this.appCloneIndex = appCloneIndex;
+  }
+
+  public subscribe(): void {
+    hilog.info(0, TAG, "subscribe");
+    // 创建订阅者
+    commonEventManager.createSubscriber(this.subscribeInfo).then((commonEventSubscriber) => {
+      hilog.info(0, TAG, "createSubscriber");
+      this.subscriber = commonEventSubscriber;
+
+      // 订阅公共事件
+      try {
+        commonEventManager.subscribe(this.subscriber, (err, data) => {
+          if (err) {
+            hilog.error(0, TAG, `subscribe failed, code is ${err?.code}, message is ${err?.message}`);
+            return;
+          }
+
+          let result = JSON.parse(data?.data ?? '{}')?.resultType as number;
+          let appIndex = JSON.parse(data?.data ?? '{}')?.appIndex as number ?? 0;
+          // 公共事件传递的分身索引等于当前应用的分身索引
+          if (appIndex === this.appCloneIndex) {
+            if (result === 1) {
+              // 隐私同意处理
+            }
+          }
+        });
+      } catch (error) {
+        hilog.error(0, TAG, "init createSubscriber failed, exception code: " + error.code + ", exception message: " + error.message);
+      }
+    });
+  }
+}
+```
+
+### Code block 11
+
+```
+// module.json5
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "metadata": [
+      {
+        "name": "appgallery_privacy_hosted",
+        "value": "1"
+      },
+      {
+        "name": "appgallery_privacy_link_privacy_statement",
+        "value": "https://www.example.com/" // 必须是https网址
+      },
+      {
+        "name": "appgallery_privacy_link_user_agreement",
+        "value": "https://www.example.com/" // 必须是https网址
+      },
+      {
+        "name": "appgallery_privacy_link_user_agreements",
+        "value": "link_user_agreements.json" // 配置json文件名称，示例配置见下文
+      }
+    ],
+    // 其他内容
+  }
+}
+```
+
+### Code block 12
+
+```
+{
+    "user_agreement_Infos": [
+        {
+            "name": "用户协议1",       // 需要展示的用户协议名字1
+            "url": "https://xxxx"     // 用户协议链接地址
+        },
+        {
+            "name": "用户协议2",       // 需要展示的用户协议名字2
+            "url": "https://xxxx"     // 用户协议链接地址
+        }
+    ]
+}
+```

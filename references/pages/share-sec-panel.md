@@ -91,5 +91,97 @@ export default class TestShareAbility extends ShareExtensionAbility {
     ]
   }
 ]
-应用内处理分享内容
-分享详情页关闭分享面板
+
+## Code blocks
+
+### Code block 1
+
+```
+import { Want, ShareExtensionAbility, UIExtensionContentSession } from '@kit.AbilityKit';
+import { systemShare } from '@kit.ShareKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+export default class TestShareAbility extends ShareExtensionAbility {
+  onSessionCreate(want: Want, session: UIExtensionContentSession) {
+    systemShare.getSharedData(want)
+      .then((data: systemShare.SharedData) => {
+        data.getRecords().forEach((record: systemShare.SharedRecord) => {
+          // 处理分享数据
+        });
+        session.loadContent('pages/Index');
+      })
+      .catch((error: BusinessError) => {
+        console.error(`Failed to getSharedData. Code: ${error.code}, message: ${error.message}`);
+        session.terminateSelf();
+      });
+  }
+}
+```
+
+### Code block 3
+
+```
+export default class TestShareAbility extends ShareExtensionAbility {
+  onSessionCreate(want: Want, session: UIExtensionContentSession) {
+    systemShare.getContactInfo(want)
+      .then(async (contact: systemShare.ContactInfo) => {
+        // 处理联系人信息，可通过联系人类型（如：个人，群组等），联系人ID，进行指定用户分享。
+        // 获取分享数据
+        let data = await systemShare.getSharedData(want);
+      })
+      .catch((error: BusinessError) => {
+        console.error(`Failed to getContactInfo. Code: ${error.code}, message: ${error.message}`);
+        // 联系人不存在或数据获取异常
+        session.terminateSelf();
+      });
+  }
+}
+```
+
+### Code block 4
+
+```
+"extensionAbilities": [
+  {
+    "name": "TestShareAbility",
+    "srcEntry": "./ets/abilities/TestShareAbility.ts",
+    "type": "share", // 支持分享数据处理
+    "description": "xxx",
+    "exported": true,
+    "label": "$string:xx_label",
+    "icon": "$media:icon",
+    "skills": [
+      {
+        "actions": [
+          "ohos.want.action.sendData"
+        ],
+        // scheme为预留字段，在此处不生效，配置file仅为示例
+        // 目标应用在配置支持接收的数据类型时，需穷举支持的UTD，比如：支持全部图片类型，可声明：general.image
+        // maxFileSupported 对于归属指定类型的文件，标识一次支持接收的最大数量。默认为0，代表不支持此类文件的分享。
+        // 文件类型归属关系参考：@ohos.data.uniformTypeDescriptor (标准化数据定义与描述)
+        "uris": [
+          {
+            "scheme": "file",
+            "utd": "general.text",
+            "maxFileSupported": 1
+          },
+          {
+            "scheme": "file",
+            "utd": "general.png",
+            "maxFileSupported": 1
+          },
+          {
+            "scheme": "file",
+            "utd": "general.jpeg",
+            "maxFileSupported": 1
+          }
+        ]
+      }
+    ]
+  }
+]
+```

@@ -6,14 +6,14 @@ Source pages:
 
 ## Prerequisites
 
-- **DevEco Studio** (6.1.0 Release or later recommended). Install from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-software-install.
+- **DevEco Studio** (6.1.1 Release or later recommended; the official quick-start uses 6.1.1). Install from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-software-install.
 - Huawei developer account (free) to enable automatic signing.
 - A real HarmonyOS NEXT device, the bundled emulator, or simulator.
 
 ## Create an empty Stage-model app
 
 1. `Create Project` → `Application` (or `Atomic Service` for an元服务) → template `Empty Ability` → `Next`.
-2. Set `Compatible SDK` (the minimum API version). API 12 is a safe baseline; the latest at time of writing is API 23 (HarmonyOS 6.1.0). Other fields default.
+2. Set `Compatible SDK` (the minimum API version). API 12 is a safe baseline; the current default in DevEco 6.1.1 is **6.1.1(24)** — i.e. API 24 is the latest level. Other fields default.
 3. `Finish`. The wizard generates project skeleton and resources.
 
 ## Generated layout (Stage model)

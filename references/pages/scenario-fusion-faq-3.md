@@ -2,7 +2,24 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-fusion-faq-3_
 
-TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
+现象描述
+
+解决措施
+
+在代码文件中设置.selectionMenuHidden(true)，使剪贴板粘贴框隐藏。
+
+      Row() {
+        Text('收货人：').textAlign(TextAlign.End).width('25%')
+        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
       }
-打开应用功能跳转第三方应用失败
-个人数据处理说明
+
+## Code blocks
+
+### Code block 1
+
+```
+      Row() {
+        Text('收货人：').textAlign(TextAlign.End).width('25%')
+        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
+      }
+```

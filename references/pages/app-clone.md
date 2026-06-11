@@ -9,7 +9,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-clone
 主应用与分身应用之间的关系如下：
 
 主应用和分身应用共享同一个应用。例如，当主应用更新/升级时，主应用与分身应用都会同步更新，包括应用的图标（icon）和名称（label）、应用的新特性等。
+
 主应用和分身应用，其对应的使能和相关配置都是独立的，数据也是彼此隔离。
+
 主应用被卸载时，所有分身应用也会同步卸载。卸载分身应用时，不会影响主应用。
 
 以下图片展示了应用分身的效果：
@@ -33,7 +35,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-clone
     }
   }
 }
-app.json5
 
 创建分身应用。
 
@@ -45,5 +46,18 @@ app.json5
 
 图中的三个应用的进程、运行、数据、通知等，都是彼此独立的。
 
-创建应用静态快捷方式
-创建应用多实例
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    // ...
+    "multiAppMode": {
+      "multiAppModeType": "appClone",
+      "maxCount": 2
+    }
+  }
+}
+```

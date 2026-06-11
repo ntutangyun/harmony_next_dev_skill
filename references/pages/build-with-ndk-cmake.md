@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/build-wit
 
 先下载并安装完成DevEco Studio，NDK开发相关工具位于$DevEco Studio安装目录/sdk/default/openharmony/native路径下。
 
-配置环境变量
+[h2]配置环境变量
 
 如果只是在DevEco Studio中使用，跳过以下步骤：
 
@@ -61,7 +61,7 @@ windows 系统环境下，cmake 安装路径为自己所配置的环境变量路
 
 应用开发者可以通过NDK开发包快速开发出Native动态库、静态库与可执行文件。NDK开发包提供CMake编译构建工具脚本，下面通过编写一个C/C++ demo工程来演示适配过程。
 
-demo工程内容
+[h2]demo工程内容
 
 下面是一个CMake的demo工程内容，此工程包含两个目录，include目录包含此库的头文件，src目录包含全部源码；src目录包含两个文件，sum.cpp的算法文件，以及hello.cpp的调用算法的主入口文件，目标是编译成一个可执行程序，以及一个算法动态库。
 
@@ -81,10 +81,8 @@ demo
 # 指定CMake的最小版本
 CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
-
 # 工程名称，这里我们就叫HELLO
 PROJECT(HELLO)
-
 
 #添加一个子目录并构建该子目录。
 ADD_SUBDIRECTORY(src)
@@ -93,25 +91,20 @@ ADD_SUBDIRECTORY(src)
 
 SET(LIBHELLO_SRC hello.cpp)
 
-
 # 设置编译参数
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
- 
+
 # 设置链接参数，具体参数可以忽略，纯粹为了举例
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--emit-relocs --verbose")
-
 
 # 添加一个libsum动态库目标，编译成功会生成一个libsum.so
 ADD_LIBRARY(sum SHARED sum.cpp)
 
-
 # 生成可执行程序，添加一个Hello的可执行程序目标，编译成功会生成一个Hello可执行程序
 ADD_EXECUTABLE(Hello ${LIBHELLO_SRC})
 
-
 # 指定Hello目标include目录路径
 TARGET_INCLUDE_DIRECTORIES(Hello PUBLIC ../include)
-
 
 # 指定Hello目标需要链接的库名字
 TARGET_LINK_LIBRARIES(Hello PUBLIC sum)
@@ -122,7 +115,6 @@ hello.cpp源码
 
 #include <iostream>
 #include "sum.h"
-
 
 int main(int argc,const char **argv)
 {
@@ -139,12 +131,13 @@ int sum(int a, int b);
 sum.cpp源码
 
 #include <iostream>
-    
+
 int sum(int a, int b)
 {
     return a + b;
 }
-编译构建demo工程
+
+[h2]编译构建demo工程
 
 linux 和 mac 系统环境下
 
@@ -179,6 +172,7 @@ windows系统环境下
 Step 1. 同样在工程目录的模块目录下创建 build 文件夹，进入build目录并执行以下指令：
 
  F:\windows\native\build-tools\cmake\bin\cmake.exe -G "Ninja" -D OHOS_STL=c++_shared -D OHOS_ARCH=arm64-v8a -D OHOS_PLATFORM=OHOS -D CMAKE_TOOLCHAIN_FILE=F:\windows\native\build\cmake\ohos.toolchain.cmake ..
+
 注意
 
 如需debug调试，增加参数 -D CMAKE_BUILD_TYPE=Debug；cmake路径和编译工具链ohos.toolchain.cmake路径都是下载好的ndk路径。
@@ -193,5 +187,139 @@ ninja -f build.ninja 或者用 cmake --build . 执行结果如下：
 
 编译生成的可执行文件位于创建的build目录下的src目录中。
 
-使用DevEco Studio模板构建NDK工程
-在NDK工程中使用预构建库
+## Code blocks
+
+### Code block 1
+
+```
+# 打开.bashrc文件
+vim ~/.bashrc
+# 在文件最后添加cmake路径，该路径是自己的放置文件的路径，之后保存退出
+export PATH=${实际SDK路径}/native/build-tools/cmake/bin:$PATH
+# 在命令行执行source ~/.bashrc使环境变量生效
+source ~/.bashrc
+```
+
+### Code block 2
+
+```
+#在当前用户目录下，打开 .bash_profile 文件，文件如果不存在，创建即可
+vim ~/.bash_profile
+#在文件最后添加 cmake 路径，该路径是自己的放置文件的路径，之后保存退出
+export PATH=${实际SDK路径}/native/build-tools/cmake/bin:$PATH
+#在命令行执行 source ~/.bash_profile 使环境变量生效
+source ~/.bash_profile
+```
+
+### Code block 3
+
+```
+#在命令行输入which命令查询当前CMake所在路径
+which cmake
+#结果路径与.bashrc中设置一致
+~/ohos-sdk/ohos-sdk/linux/native/build-tools/cmake/bin/cmake
+```
+
+### Code block 4
+
+```
+demo
+  ├── CMakeLists.txt
+  ├── include
+       └── sum.h
+  └── src
+       ├── CMakeLists.txt
+       ├── sum.cpp
+       └── hello.cpp
+```
+
+### Code block 5
+
+```
+# 指定CMake的最小版本
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
+
+# 工程名称，这里我们就叫HELLO
+PROJECT(HELLO)
+
+#添加一个子目录并构建该子目录。
+ADD_SUBDIRECTORY(src)
+```
+
+### Code block 6
+
+```
+SET(LIBHELLO_SRC hello.cpp)
+
+# 设置编译参数
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+
+# 设置链接参数，具体参数可以忽略，纯粹为了举例
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--emit-relocs --verbose")
+
+# 添加一个libsum动态库目标，编译成功会生成一个libsum.so
+ADD_LIBRARY(sum SHARED sum.cpp)
+
+# 生成可执行程序，添加一个Hello的可执行程序目标，编译成功会生成一个Hello可执行程序
+ADD_EXECUTABLE(Hello ${LIBHELLO_SRC})
+
+# 指定Hello目标include目录路径
+TARGET_INCLUDE_DIRECTORIES(Hello PUBLIC ../include)
+
+# 指定Hello目标需要链接的库名字
+TARGET_LINK_LIBRARIES(Hello PUBLIC sum)
+```
+
+### Code block 7
+
+```
+#include <iostream>
+#include "sum.h"
+
+int main(int argc,const char **argv)
+{
+    std::cout<< "hello world!" <<std::endl;
+    int total = sum(1, 100);
+    std::cout<< "Sum 1 + 100=" << total << std::endl;
+    return 0;
+}
+```
+
+### Code block 8
+
+```
+int sum(int a, int b);
+```
+
+### Code block 9
+
+```
+#include <iostream>
+
+int sum(int a, int b)
+{
+    return a + b;
+}
+```
+
+### Code block 10
+
+```
+ >mkdir build && cd build
+ >cmake -D OHOS_STL=c++_shared -D OHOS_ARCH=arm64-v8a -D OHOS_PLATFORM=OHOS -D CMAKE_TOOLCHAIN_FILE={ohos-sdk}/linux/native/build/cmake/ohos.toolchain.cmake ..
+ >cmake --build .
+```
+
+### Code block 11
+
+```
+ >mkdir build && cd build
+ >cmake -D OHOS_STL=c++_static -D OHOS_ARCH=arm64-v8a -D OHOS_PLATFORM=OHOS -D CMAKE_TOOLCHAIN_FILE={ohos-sdk}/linux/native/build/cmake/ohos.toolchain.cmake ..
+ >cmake --build .
+```
+
+### Code block 12
+
+```
+ F:\windows\native\build-tools\cmake\bin\cmake.exe -G "Ninja" -D OHOS_STL=c++_shared -D OHOS_ARCH=arm64-v8a -D OHOS_PLATFORM=OHOS -D CMAKE_TOOLCHAIN_FILE=F:\windows\native\build\cmake\ohos.toolchain.cmake ..
+```

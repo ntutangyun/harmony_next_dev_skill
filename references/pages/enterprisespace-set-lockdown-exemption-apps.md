@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-set-lockdown-exemption-apps_
 
+场景介绍
+
+从6.0.2(22)开始，支持设置深度冻结豁免名单的能力。
+
 Enterprise Space Kit为企业应用提供设置深度冻结豁免名单的能力。设置豁免的应用在后台空间可正常运行，不会被冻结。
 
 接口说明
@@ -10,6 +14,7 @@ Enterprise Space Kit为企业应用提供设置深度冻结豁免名单的能力
 
 接口名	描述
 setLockdownExemptionApps(appIds: string[], workspaceId?: number): Promise<void>	设置深度冻结豁免名单。使用Promise异步回调。
+
 开发步骤
 
 导入Enterprise Space Kit模块和相关依赖模块。
@@ -29,5 +34,27 @@ try {
 } catch (err) {
   console.error(`Failed to set lockdown exemption apps. Code: ${err.code}, message: ${err.message}`);
 }
-查询工作空间策略
-查询深度冻结豁免名单
+
+## Code blocks
+
+### Code block 1
+
+```
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+```
+
+### Code block 2
+
+```
+const workspaceId: number = 100;
+const appIds = [
+    'com.example.enterprisespacekit_samplecode_clientdemo_arkts1',
+    'com.example.enterprisespacekit_samplecode_clientdemo_arkts2'
+  ];
+try {
+  await spaceManager.setLockdownExemptionApps(appIds, workspaceId);
+  console.info(`Succeeded in setting lockdown exemption apps.`);
+} catch (err) {
+  console.error(`Failed to set lockdown exemption apps. Code: ${err.code}, message: ${err.message}`);
+}
+```

@@ -2,12 +2,29 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-sym-key-generation-conversion-spec_
 
+当前章节将说明系统目前支持的算法及其对应的规格。
+
+开发者可以通过字符串参数承载密钥规格，来生成对应的密钥。对于每种算法支持的字符串参数，将会在具体的每个算法规格中介绍。
+
+AES
+
+AES（Advanced Encryption Standard），最常见的对称加密算法。
+
+基本特点：
+
+分组密码算法，分组长度为128位。
+
+密钥长度为128位、192位或256位。
+
+与3DES相比，安全性更高，处理速度更快。
+
 当前支持以字符串参数生成AES密钥，具体的“字符串参数”由“对称密钥算法”和“密钥长度”拼接而成，用于在创建对称密钥生成器时，指定密钥规格。
 
 对称密钥算法	密钥长度（bit）	字符串参数	API版本
 AES	128	AES128	9+
 AES	192	AES192	9+
 AES	256	AES256	9+
+
 DES
 
 DES（Data Encryption Standard）算法。
@@ -20,6 +37,7 @@ DES是一种分组加密算法，它将明文分成64位的块，然后对每个
 
 对称密钥算法	密钥长度（bit）	字符串参数	API版本
 DES	64	DES64	20+
+
 3DES
 
 3DES（Triple Data Encryption Algorithm），也称为3DESede或TripleDES。
@@ -34,6 +52,7 @@ DES	64	DES64	20+
 
 对称密钥算法	密钥长度（bit）	字符串参数	API版本
 3DES	192	3DES192	9+
+
 SM4
 
 SM4，即SM4分组密码算法。
@@ -50,6 +69,7 @@ SM4，即SM4分组密码算法。
 
 对称密钥算法	密钥长度（bit）	字符串参数	API版本
 SM4	128	SM4_128	10+
+
 HMAC
 
 HMAC（Hash-based message authentication code），是一种基于哈希的消息认证码算法，运算时需要输入对称密钥。
@@ -78,9 +98,10 @@ HMAC	SHA384	384	HMAC|SHA384	11+
 HMAC	SHA512	512	HMAC|SHA512	11+
 HMAC	SM3	256	HMAC|SM3	11+
 HMAC	-	[1, 32768]	HMAC	11+
+
 ChaCha20
 
-从API22开始，算法库支持该算法。
+从API version 22开始，算法库支持该算法。
 
 ChaCha20是一种现代化的流密码（stream cipher）对称加密算法。
 
@@ -92,5 +113,3 @@ ChaCha20是一种现代化的流密码（stream cipher）对称加密算法。
 
 对称密钥算法	密钥长度（bit）	字符串参数	API版本
 ChaCha20	256	ChaCha20	22+
-密钥生成和转换规格
-非对称密钥生成和转换规格

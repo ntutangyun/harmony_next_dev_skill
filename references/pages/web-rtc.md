@@ -17,6 +17,7 @@ Web组件可以通过W3C标准协议接口访问摄像头和麦克风，通过on
     "name": "reason_for_microphone",
     "value": "reason_for_microphone"
   }
+
   // src/main/module.json5
   "requestPermissions":[
     {
@@ -51,13 +52,11 @@ import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { abilityAccessCtrl } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct WebComponent {
   controller: webview.WebviewController = new webview.WebviewController();
   uiContext: UIContext = this.getUIContext();
-
 
   aboutToAppear() {
     // 配置Web开启调试模式
@@ -73,7 +72,6 @@ struct WebComponent {
       console.error(`Failed to request permissions from user. Code is ${error.code}, message is ${error.message}`);
     })
   }
-
 
   build() {
     Column() {
@@ -104,7 +102,6 @@ struct WebComponent {
     }
   }
 }
-Index.ets
 
 前端界面index.html代码。
 
@@ -141,5 +138,144 @@ Index.ets
 </script>
 </body>
 </html>
-使用网页多媒体
-托管网页中的媒体播放
+
+## Code blocks
+
+### Code block 1
+
+```
+  // src/main/resources/base/element/string.json
+  {
+    "name": "reason_for_camera",
+    "value": "reason_for_camera"
+  },
+  {
+    "name": "reason_for_microphone",
+    "value": "reason_for_microphone"
+  }
+```
+
+### Code block 2
+
+```
+  // src/main/module.json5
+  "requestPermissions":[
+    {
+      "name" : "ohos.permission.CAMERA",
+      "reason": "$string:reason_for_camera",
+      "usedScene": {
+        "abilities": [
+          "EntryAbility"
+        ],
+        "when":"inuse"
+      }
+    },
+    {
+      "name" : "ohos.permission.MICROPHONE",
+      "reason": "$string:reason_for_microphone",
+      "usedScene": {
+        "abilities": [
+          "EntryAbility"
+        ],
+        "when":"inuse"
+      }
+    }
+  ]
+```
+
+### Code block 3
+
+```
+import { webview } from '@kit.ArkWeb';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { abilityAccessCtrl } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct WebComponent {
+  controller: webview.WebviewController = new webview.WebviewController();
+  uiContext: UIContext = this.getUIContext();
+
+  aboutToAppear() {
+    // 配置Web开启调试模式
+    webview.WebviewController.setWebDebuggingAccess(true);
+    // 获取权限请求通知，点击onConfirm按钮后，拉起摄像头和麦克风。
+    let atManager = abilityAccessCtrl.createAtManager();
+    atManager.requestPermissionsFromUser(this.uiContext.getHostContext(), ['ohos.permission.CAMERA', 'ohos.permission.MICROPHONE'])
+      .then((data) => {
+        console.info('data:' + JSON.stringify(data));
+        console.info('data permissions:' + data.permissions);
+        console.info('data authResults:' + data.authResults);
+      }).catch((error: BusinessError) => {
+      console.error(`Failed to request permissions from user. Code is ${error.code}, message is ${error.message}`);
+    })
+  }
+
+  build() {
+    Column() {
+      Web({ src: $rawfile('index.html'), controller: this.controller })
+        .onPermissionRequest((event) => {
+          if (event) {
+            this.uiContext.showAlertDialog({
+              title: 'title',
+              message: 'text',
+              primaryButton: {
+                value: 'deny',
+                action: () => {
+                  event.request.deny();
+                }
+              },
+              secondaryButton: {
+                value: 'onConfirm',
+                action: () => {
+                  event.request.grant(event.request.getAccessibleResource());
+                }
+              },
+              cancel: () => {
+                event.request.deny();
+              }
+            })
+          }
+        })
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+<video id="video" width="500px" height="500px" autoplay></video>
+<canvas id="canvas" width="500px" height="500px"></canvas>
+<br>
+<input type="button" title="HTML5摄像头" value="开启摄像头" onclick="getMedia()"/>
+<script>
+  function getMedia()
+  {
+    let constraints = {
+      video: {width: 500, height: 500},
+      audio: true
+    };
+    // 获取video摄像头区域
+    let video = document.getElementById("video");
+    // 返回的Promise对象
+    let promise = navigator.mediaDevices.getUserMedia(constraints);
+    // then()异步，调用MediaStream对象作为参数
+    promise.then(function(MediaStream) {
+      video.srcObject = MediaStream;
+      video.play();
+    }).catch(function(err) {
+        console.info(err.name + ": " + err.message);
+    });
+  }
+</script>
+</body>
+</html>
+```

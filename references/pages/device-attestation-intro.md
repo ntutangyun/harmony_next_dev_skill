@@ -54,8 +54,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/device-at
 
 由于此能力需要证明请求来自真实的设备，因此在模拟器上不会提供真实的实现。具体来说，应用在模拟器上调用密钥证明接口时，会返回一个模拟的固定证书链，该证书链无法通过华为服务器提供的根CA证书的校验。
 
-服务配额
+[h2]服务配额
+
 接口	配额	配额说明
 密钥证明接口	35次/秒/应用	默认情况下，每个应用调用密钥证明接口（anonAttestKeyItem / OH_Huks_AnonAttestKeyItem）的瞬时流量每秒不超过35次请求。如果应用需要修改服务配额，请通过在线提单申请修改配额。
-应用真实性证明
-创建密钥确立可信凭证

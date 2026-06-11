@@ -2,14 +2,25 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-add-watermark_
 
+对指定页面添加水印，包括文本水印或图片水印。
+
+文本水印可以设置字体、大小、旋转，位置等属性。
+
+图片水印可以设置缩放、旋转、透明度和位置等属性。
+
+接口说明
+
+接口名	描述
 addWatermark(info: WatermarkInfo, startIndex: number, endIndex: number, oddPages: boolean, evenPages: boolean): void	插入水印到PDF文档。如果插入的是图片，支持的图片格式参考ImageFormat，文本字符无限制。
 removeWatermark(): boolean	删除PDF文档水印。
+
 注意
 
 addWatermark方法属于耗时业务，需要遍历每一页去添加水印，添加页面较多时建议放到线程里去处理。
 
 示例代码
-添加、删除文本水印
+
+[h2]添加、删除文本水印
 
 添加文本水印
 
@@ -33,13 +44,11 @@ import { pdfService } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Font } from '@kit.ArkUI';
 
-
 @Entry
 @Component
 struct PdfPage {
   private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
   private context = this.getUIContext().getHostContext() as Context;
-
 
   build() {
     Column() {
@@ -88,7 +97,8 @@ struct PdfPage {
     }
   }
 }
-添加、删除图片水印
+
+[h2]添加、删除图片水印
 
 添加图片水印
 
@@ -111,13 +121,11 @@ struct PdfPage {
 import { pdfService } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 struct PdfPage {
   private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
   private context = this.getUIContext().getHostContext() as Context;
-
 
   build() {
     Column() {
@@ -133,7 +141,6 @@ struct PdfPage {
           wminfo.isOnTop = true;
           wminfo.rotation = 45;
           wminfo.scale = 0.5;
-          wminfo.opacity = 0.5;
           wminfo.verticalAlignment = pdfService.WatermarkAlignment.WATERMARK_ALIGNMENT_TOP;
           wminfo.horizontalAlignment = pdfService.WatermarkAlignment.WATERMARK_ALIGNMENT_LEFT;
           wminfo.horizontalSpace = 1.0;
@@ -161,5 +168,122 @@ struct PdfPage {
     }
   }
 }
-添加、删除页眉页脚
-添加、删除背景
+
+## Code blocks
+
+### Code block 1
+
+```
+import { pdfService } from '@kit.PDFKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { Font } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct PdfPage {
+  private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
+  private context = this.getUIContext().getHostContext() as Context;
+
+  build() {
+    Column() {
+      Button('addTextWatermark').onClick(async () => {
+        // 确保在工程目录src/main/resources/resfile里有input.pdf文档
+        let filePath = this.context.resourceDir + '/input.pdf';
+        let res = this.pdfDocument.loadDocument(filePath);
+        if (res === pdfService.ParseResult.PARSE_SUCCESS) {
+          let wminfo: pdfService.TextWatermarkInfo = new pdfService.TextWatermarkInfo();
+          wminfo.watermarkType = pdfService.WatermarkType.WATERMARK_TEXT;
+          wminfo.content = 'This is Watermark';
+          wminfo.textSize = 30;
+          wminfo.textColor = 200;
+          wminfo.fontInfo = new pdfService.FontInfo();
+          // 确保字体路径存在
+          let font: Font = new Font()
+          wminfo.fontInfo.fontPath = font.getFontByName('HarmonyOS Sans').path;
+          wminfo.opacity = 0.5;
+          wminfo.isOnTop = true;
+          wminfo.rotation = 45;
+          wminfo.scale = 1.5;
+          wminfo.verticalAlignment = pdfService.WatermarkAlignment.WATERMARK_ALIGNMENT_TOP;
+          wminfo.horizontalAlignment = pdfService.WatermarkAlignment.WATERMARK_ALIGNMENT_LEFT;
+          wminfo.horizontalSpace = 1.0;
+          wminfo.verticalSpace = 1.0;
+          this.pdfDocument.addWatermark(wminfo, 0, 5, true, true);
+          let outPdfPath = this.context.filesDir + '/testTextWatermark.pdf';
+          let result = this.pdfDocument.saveDocument(outPdfPath);
+          hilog.info(0x0000, 'PdfPage', 'addTextWatermark %{public}s!', result ? 'success' : 'fail');
+        }
+        this.pdfDocument.releaseDocument();
+      })
+      Button('removeTextWatermark').onClick(async () => {
+        let filePath = this.context.filesDir + '/testTextWatermark.pdf';
+        let res = this.pdfDocument.loadDocument(filePath);
+        if (res === pdfService.ParseResult.PARSE_SUCCESS && this.pdfDocument.hasWatermark()) {
+          let removeResult = this.pdfDocument.removeWatermark();
+          if (removeResult) {
+            let outPdfPath = this.context.filesDir + '/removeWatermark.pdf';
+            let result = this.pdfDocument.saveDocument(outPdfPath);
+            hilog.info(0x0000, 'PdfPage', 'removeWatermark %{public}s!', result ? 'success' : 'fail');
+          }
+        }
+        this.pdfDocument.releaseDocument();
+      })
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+import { pdfService } from '@kit.PDFKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct PdfPage {
+  private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
+  private context = this.getUIContext().getHostContext() as Context;
+
+  build() {
+    Column() {
+      Button('addImageWatermark').onClick(async () => {
+        let filePath = this.context.filesDir + '/input.pdf';
+        let res = this.pdfDocument.loadDocument(filePath);
+        if (res === pdfService.ParseResult.PARSE_SUCCESS) {
+          let wminfo: pdfService.ImageWatermarkInfo = new pdfService.ImageWatermarkInfo();
+          wminfo.watermarkType = pdfService.WatermarkType.WATERMARK_IMAGE;
+          // 确保沙箱目录有img.jpg文档
+          wminfo.imagePath = this.context.filesDir + '/img.jpg';
+          wminfo.opacity = 0.5;
+          wminfo.isOnTop = true;
+          wminfo.rotation = 45;
+          wminfo.scale = 0.5;
+          wminfo.verticalAlignment = pdfService.WatermarkAlignment.WATERMARK_ALIGNMENT_TOP;
+          wminfo.horizontalAlignment = pdfService.WatermarkAlignment.WATERMARK_ALIGNMENT_LEFT;
+          wminfo.horizontalSpace = 1.0;
+          wminfo.verticalSpace = 1.0;
+          this.pdfDocument.addWatermark(wminfo, 0, 5, true, true);
+          let outPdfPath = this.context.filesDir + '/testImageWatermark.pdf';
+          let result = this.pdfDocument.saveDocument(outPdfPath);
+          hilog.info(0x0000, 'PdfPage', 'addImageWatermark %{public}s!', result ? 'success' : 'fail');
+        }
+        this.pdfDocument.releaseDocument();
+      })
+      Button('removeImageWatermark').onClick(async () => {
+        let filePath = this.context.filesDir + '/testImageWatermark.pdf';
+        let res = this.pdfDocument.loadDocument(filePath);
+        if (res === pdfService.ParseResult.PARSE_SUCCESS && this.pdfDocument.hasWatermark()) {
+          let removeResult = this.pdfDocument.removeWatermark();
+          if (removeResult) {
+            let outPdfPath = this.context.filesDir + '/removeImageWatermark.pdf';
+            let result = this.pdfDocument.saveDocument(outPdfPath);
+            hilog.info(0x0000, 'PdfPage', 'removeImageWatermark %{public}s!', result ? 'success' : 'fail');
+          }
+        }
+        this.pdfDocument.releaseDocument();
+      })
+    }
+  }
+}
+```

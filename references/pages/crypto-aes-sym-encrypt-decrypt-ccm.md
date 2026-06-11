@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-aes-sym-encrypt-decrypt-ccm_
 
+查看对称密钥加解密算法规格：AES。
+
+加密
+
 调用cryptoFramework.createSymKeyGenerator、SymKeyGenerator.generateSymKey，生成密钥算法为AES、密钥长度为128位的对称密钥（SymKey）。
 
 如何生成AES对称密钥，开发者可参考下文示例，并结合对称密钥生成和转换规格：AES和随机生成对称密钥进行理解，参考文档与当前示例可能存在入参差异，请注意区分。
@@ -21,6 +25,7 @@ CCM模式不支持分段加解密。
 调用Cipher.doFinal获取加密后的数据。
 
 由于已通过update传入数据，此处传入null。
+
 doFinal输出结果可能为null，访问具体数据前，需先判断结果是否为null，以避免异常。
 
 读取CcmParamsSpec.authTag作为解密的认证信息。
@@ -40,7 +45,6 @@ doFinal输出结果可能为null，访问具体数据前，需先判断结果是
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
 
-
 function genCcmParamsSpec() {
   let rand: cryptoFramework.Random = cryptoFramework.createRandom();
   let ivBlob: cryptoFramework.DataBlob = rand.generateRandomSync(7);
@@ -60,9 +64,7 @@ function genCcmParamsSpec() {
   return ccmParamsSpec;
 }
 
-
 let ccmParams = genCcmParamsSpec();
-
 
 // 加密消息
 async function encryptMessagePromise(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
@@ -74,7 +76,6 @@ async function encryptMessagePromise(symKey: cryptoFramework.SymKey, plainText: 
   return encryptUpdate;
 }
 
-
 // 解密消息
 async function decryptMessagePromise(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
   let decoder = cryptoFramework.createCipher('AES128|CCM');
@@ -83,7 +84,6 @@ async function decryptMessagePromise(symKey: cryptoFramework.SymKey, cipherText:
   return decryptUpdate;
 }
 
-
 async function genSymKeyByData(symKeyData: Uint8Array) {
   let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
   let aesGenerator = cryptoFramework.createSymKeyGenerator('AES128');
@@ -91,7 +91,6 @@ async function genSymKeyByData(symKeyData: Uint8Array) {
   console.info('convertKey result: success.');
   return symKey;
 }
-
 
 async function main() {
   let keyData = new Uint8Array([83, 217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159]);
@@ -107,13 +106,11 @@ async function main() {
     console.error('decrypt failed.');
   }
 }
-aes_ccm_encryption_decryption_asynchronous.ets
 
 同步方法示例：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
-
 
 function genCcmParamsSpec() {
   let rand: cryptoFramework.Random = cryptoFramework.createRandom();
@@ -134,9 +131,7 @@ function genCcmParamsSpec() {
   return ccmParamsSpec;
 }
 
-
 let ccmParams = genCcmParamsSpec();
-
 
 // 加密消息
 function encryptMessage(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
@@ -148,7 +143,6 @@ function encryptMessage(symKey: cryptoFramework.SymKey, plainText: cryptoFramewo
   return encryptUpdate;
 }
 
-
 // 解密消息
 function decryptMessage(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
   let decoder = cryptoFramework.createCipher('AES128|CCM');
@@ -157,7 +151,6 @@ function decryptMessage(symKey: cryptoFramework.SymKey, cipherText: cryptoFramew
   return decryptUpdate;
 }
 
-
 function genSymKeyByData(symKeyData: Uint8Array) {
   let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
   let aesGenerator = cryptoFramework.createSymKeyGenerator('AES128');
@@ -165,7 +158,6 @@ function genSymKeyByData(symKeyData: Uint8Array) {
   console.info('convertKeySync result: success.');
   return symKey;
 }
-
 
 function main() {
   let keyData = new Uint8Array([83, 217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159]);
@@ -181,6 +173,143 @@ function main() {
     console.error('decrypt failed.');
   }
 }
-aes_ccm_encryption_decryption_synchronous.ets
-使用AES对称密钥（GCM模式）加解密(C/C++)
-使用AES对称密钥（CCM模式）加解密(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+function genCcmParamsSpec() {
+  let rand: cryptoFramework.Random = cryptoFramework.createRandom();
+  let ivBlob: cryptoFramework.DataBlob = rand.generateRandomSync(7);
+  let aadBlob: cryptoFramework.DataBlob = rand.generateRandomSync(8);
+  let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // 12 bytes
+  let dataTag = new Uint8Array(arr);
+  let tagBlob: cryptoFramework.DataBlob = {
+    data: dataTag
+  };
+  // CCM的authTag在加密时从doFinal结果中获取，在解密时填入init函数的params参数中
+  let ccmParamsSpec: cryptoFramework.CcmParamsSpec = {
+    iv: ivBlob,
+    aad: aadBlob,
+    authTag: tagBlob,
+    algName: 'CcmParamsSpec'
+  };
+  return ccmParamsSpec;
+}
+
+let ccmParams = genCcmParamsSpec();
+
+// 加密消息
+async function encryptMessagePromise(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
+  let cipher = cryptoFramework.createCipher('AES128|CCM');
+  await cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, symKey, ccmParams);
+  let encryptUpdate = await cipher.update(plainText);
+  // ccm模式加密doFinal时传入空，获得tag数据，并更新至ccmParams对象中。
+  ccmParams.authTag = await cipher.doFinal(null);
+  return encryptUpdate;
+}
+
+// 解密消息
+async function decryptMessagePromise(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
+  let decoder = cryptoFramework.createCipher('AES128|CCM');
+  await decoder.init(cryptoFramework.CryptoMode.DECRYPT_MODE, symKey, ccmParams);
+  let decryptUpdate = await decoder.doFinal(cipherText);
+  return decryptUpdate;
+}
+
+async function genSymKeyByData(symKeyData: Uint8Array) {
+  let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
+  let aesGenerator = cryptoFramework.createSymKeyGenerator('AES128');
+  let symKey = await aesGenerator.convertKey(symKeyBlob);
+  console.info('convertKey result: success.');
+  return symKey;
+}
+
+async function main() {
+  let keyData = new Uint8Array([83, 217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159]);
+  let symKey = await genSymKeyByData(keyData);
+  let message = 'This is a test';
+  let plainText: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from(message, 'utf-8').buffer) };
+  let encryptText = await encryptMessagePromise(symKey, plainText);
+  let decryptText = await decryptMessagePromise(symKey, encryptText);
+  if (plainText.data.toString() === decryptText.data.toString()) {
+    console.info('decrypt ok.');
+    console.info('decrypt plainText: ' + buffer.from(decryptText.data).toString('utf-8'));
+  } else {
+    console.error('decrypt failed.');
+  }
+}
+```
+
+### Code block 2
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+function genCcmParamsSpec() {
+  let rand: cryptoFramework.Random = cryptoFramework.createRandom();
+  let ivBlob: cryptoFramework.DataBlob = rand.generateRandomSync(7);
+  let aadBlob: cryptoFramework.DataBlob = rand.generateRandomSync(8);
+  let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // 12 bytes
+  let dataTag = new Uint8Array(arr);
+  let tagBlob: cryptoFramework.DataBlob = {
+    data: dataTag
+  };
+  // CCM的authTag在加密时从doFinal结果中获取，在解密时填入init函数的params参数中
+  let ccmParamsSpec: cryptoFramework.CcmParamsSpec = {
+    iv: ivBlob,
+    aad: aadBlob,
+    authTag: tagBlob,
+    algName: 'CcmParamsSpec'
+  };
+  return ccmParamsSpec;
+}
+
+let ccmParams = genCcmParamsSpec();
+
+// 加密消息
+function encryptMessage(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
+  let cipher = cryptoFramework.createCipher('AES128|CCM');
+  cipher.initSync(cryptoFramework.CryptoMode.ENCRYPT_MODE, symKey, ccmParams);
+  let encryptUpdate = cipher.updateSync(plainText);
+  // ccm模式加密doFinal时传入空，获得tag数据，并更新至ccmParams对象中。
+  ccmParams.authTag = cipher.doFinalSync(null);
+  return encryptUpdate;
+}
+
+// 解密消息
+function decryptMessage(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
+  let decoder = cryptoFramework.createCipher('AES128|CCM');
+  decoder.initSync(cryptoFramework.CryptoMode.DECRYPT_MODE, symKey, ccmParams);
+  let decryptUpdate = decoder.doFinalSync(cipherText);
+  return decryptUpdate;
+}
+
+function genSymKeyByData(symKeyData: Uint8Array) {
+  let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
+  let aesGenerator = cryptoFramework.createSymKeyGenerator('AES128');
+  let symKey = aesGenerator.convertKeySync(symKeyBlob);
+  console.info('convertKeySync result: success.');
+  return symKey;
+}
+
+function main() {
+  let keyData = new Uint8Array([83, 217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159]);
+  let symKey = genSymKeyByData(keyData);
+  let message = 'This is a test';
+  let plainText: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from(message, 'utf-8').buffer) };
+  let encryptText = encryptMessage(symKey, plainText);
+  let decryptText = decryptMessage(symKey, encryptText);
+  if (plainText.data.toString() === decryptText.data.toString()) {
+    console.info('decrypt ok.');
+    console.info('decrypt plainText: ' + buffer.from(decryptText.data).toString('utf-8'));
+  } else {
+    console.error('decrypt failed.');
+  }
+}
+```

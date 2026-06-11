@@ -13,7 +13,6 @@ ArkGraphics 3D提供播放并控制场景动画的能力，支持开发者灵活
 在页面脚本中导入ArkGraphics 3D提供的核心类型，用于创建和控制3D场景、相机以及动画资源。
 
 import { Animation, Camera, Scene, SceneResourceFactory } from '@kit.ArkGraphics3D';
-animation.ets
 
 加载场景资源。
 
@@ -27,7 +26,6 @@ Scene.load($rawfile('gltf/BrainStem/glTF/BrainStem.glb'))
   }).catch((err: string) => {
     console.error(err);
 });
-animation.ets
 
 获取动画并注册回调。
 
@@ -36,7 +34,9 @@ animation.ets
 ArkGraphics 3D提供以下动画回调接口：
 
 onStarted()：动画开始播放时触发，start与restart操作均会触发该回调。
+
 onFinished()：动画播放完成或执行finish操作时触发。
+
 this.anim = this.scene.animations[0];
 if (this.anim) {
   this.anim.enabled = true;
@@ -46,7 +46,6 @@ if (this.anim) {
     this.animationCallbackInvoked = 'animation on start';
   });
 
-
   this.anim.onFinished(() => {
     // ...
     this.animationCallbackInvoked = 'animation on finish';
@@ -55,7 +54,6 @@ if (this.anim) {
 } else {
   console.error('No animation found in scene.');
 }
-animation.ets
 
 创建相机与设置场景渲染参数。
 
@@ -67,7 +65,6 @@ this.cam = await rf.createCamera({ 'name': 'Camera' });
 this.cam.enabled = true;
 this.cam.position.z = 5;
 this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
-animation.ets
 
 构建界面与动画控制。
 
@@ -76,11 +73,17 @@ animation.ets
 ArkGraphics 3D提供的动画状态控制操作主要包含如下几种：
 
 开始（start）：基于当前进度开始播放一个动画。
+
 停止（stop）：停止播放一个动画，并将动画的进度设置到未开始状态。
+
 结束（finish）：直接跳转到动画的最后，并将动画的进度设置到已结束状态。
+
 暂停（pause）：将动画暂停，动画的播放进度保持在当前状态。
+
 重启（restart）：从动画的起点开始播放动画。
+
 跳转（seek）：按比例跳转动画进度（例如seek(0.3)跳至总时长的30%）。
+
 Button('start')
   // ...
   .onClick(async () => {
@@ -90,7 +93,6 @@ Button('start')
     this.anim = this.scene.animations[0];
     this.anim.start();
   });
-
 
 Button('pause')
   // ...
@@ -102,7 +104,6 @@ Button('pause')
     this.anim.pause();
   });
 
-
 Button('stop')
   // ...
   .onClick(async () => {
@@ -112,7 +113,6 @@ Button('stop')
     this.anim = this.scene.animations[0];
     this.anim.stop();
   });
-
 
 Button('finish')
   // ...
@@ -124,7 +124,6 @@ Button('finish')
     this.anim.finish();
   });
 
-
 Button('restart')
   // ...
   .onClick(async () => {
@@ -134,7 +133,6 @@ Button('restart')
     this.anim = this.scene.animations[0];
     this.anim.restart();
   });
-
 
 Button('seek to 30% progress')
   // ...
@@ -146,8 +144,126 @@ Button('seek to 30% progress')
     // seek to 30%
     this.anim.seek(0.3);
   });
-animation.ets
+
 示例代码
+
 基于3D引擎接口实现3D图形渲染功能（ArkTS）
-.shader资源文件格式要求
-ArkGraphics Editor插件及编辑器的下载与安装
+
+## Code blocks
+
+### Code block 1
+
+```
+import { Animation, Camera, Scene, SceneResourceFactory } from '@kit.ArkGraphics3D';
+```
+
+### Code block 2
+
+```
+Scene.load($rawfile('gltf/BrainStem/glTF/BrainStem.glb'))
+  .then(async (result: Scene) => {
+    this.scene = result;
+    let rf: SceneResourceFactory = this.scene.getResourceFactory();
+    // ...
+  }).catch((err: string) => {
+    console.error(err);
+});
+```
+
+### Code block 3
+
+```
+this.anim = this.scene.animations[0];
+if (this.anim) {
+  this.anim.enabled = true;
+  // Register callback function
+  this.anim.onStarted(() => {
+    // ...
+    this.animationCallbackInvoked = 'animation on start';
+  });
+
+  this.anim.onFinished(() => {
+    // ...
+    this.animationCallbackInvoked = 'animation on finish';
+  });
+  // ...
+} else {
+  console.error('No animation found in scene.');
+}
+```
+
+### Code block 4
+
+```
+// create a new camera.
+this.cam = await rf.createCamera({ 'name': 'Camera' });
+// set the camera.
+this.cam.enabled = true;
+this.cam.position.z = 5;
+this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
+```
+
+### Code block 5
+
+```
+Button('start')
+  // ...
+  .onClick(async () => {
+    if (!this.scene || !this.scene.animations[0]) {
+      return;
+    }
+    this.anim = this.scene.animations[0];
+    this.anim.start();
+  });
+
+Button('pause')
+  // ...
+  .onClick(async () => {
+    if (!this.scene || !this.scene.animations[0]) {
+      return;
+    }
+    this.anim = this.scene.animations[0];
+    this.anim.pause();
+  });
+
+Button('stop')
+  // ...
+  .onClick(async () => {
+    if (!this.scene || !this.scene.animations[0]) {
+      return;
+    }
+    this.anim = this.scene.animations[0];
+    this.anim.stop();
+  });
+
+Button('finish')
+  // ...
+  .onClick(async () => {
+    if (!this.scene || !this.scene.animations[0]) {
+      return;
+    }
+    this.anim = this.scene.animations[0];
+    this.anim.finish();
+  });
+
+Button('restart')
+  // ...
+  .onClick(async () => {
+    if (!this.scene || !this.scene.animations[0]) {
+      return;
+    }
+    this.anim = this.scene.animations[0];
+    this.anim.restart();
+  });
+
+Button('seek to 30% progress')
+  // ...
+  .onClick(async () => {
+    if (!this.scene || !this.scene.animations[0]) {
+      return;
+    }
+    this.anim = this.scene.animations[0];
+    // seek to 30%
+    this.anim.seek(0.3);
+  });
+```

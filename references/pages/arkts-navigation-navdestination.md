@@ -22,14 +22,12 @@ NavDestination设置mode为NavDestinationMode.DIALOG弹窗类型，此时整个N
 struct PageDisplayType {
   @Provide('NavPathStack') pageStack: NavPathStack = new NavPathStack();
 
-
   @Builder
   PagesMap(name: string) {
     if (name == 'DialogPage') {
       DialogPage();
     }
   }
-
 
   build() {
     Navigation(this.pageStack) {
@@ -46,11 +44,9 @@ struct PageDisplayType {
   }
 }
 
-
 @Component
 export struct DialogPage {
   @Consume('NavPathStack') pageStack: NavPathStack;
-
 
   build() {
     NavDestination() {
@@ -75,7 +71,6 @@ export struct DialogPage {
     .mode(NavDestinationMode.DIALOG)
   }
 }
-PageDisplayType.ets
 
 页面生命周期
 
@@ -84,22 +79,35 @@ PageDisplayType.ets
 生命周期时序如下图所示：
 
 aboutToAppear：在创建自定义组件后，执行其build()函数之前执行（NavDestination创建之前），允许在该方法中改变状态变量，更改将在后续执行build()函数中生效。
+
 onWillAppear：NavDestination创建后，挂载到组件树之前执行，在该方法中更改状态变量会在当前帧显示生效。
+
 onAppear：通用生命周期事件，NavDestination组件挂载到组件树时执行。
+
 onWillShow：NavDestination组件布局显示之前执行，此时页面不可见（应用切换到前台不会执行）。
+
 onShown：NavDestination组件布局显示之后执行，此时页面已完成布局。
+
 onActive：NavDestination处于激活态（处于栈顶可操作，且上层无特殊组件遮挡）执行。
+
 onWillHide：NavDestination组件执行隐藏之前执行（应用切换到后台不会执行）。
+
 onInactive：NavDestination组件处于非激活态（处于非栈顶不可操作，或处于栈顶时上层有特殊组件遮挡）执行。
+
 onHidden：NavDestination组件执行隐藏后执行（非栈顶页面push进栈，栈顶页面pop出栈或应用切换到后台）。
+
 onWillDisappear：NavDestination组件即将销毁之前执行，如果有转场动画，会在动画前执行（栈顶页面pop出栈）。
+
 onDisAppear：通用生命周期事件，NavDestination组件从组件树上卸载销毁时执行。
+
 aboutToDisappear：自定义组件析构销毁之前执行，不允许在该方法中改变状态变量。
 
 此外还有两个特殊生命周期：
 
 onResult：从其他NavDestination页面通过pop或者侧滑返回时，将执行当前NavDestination页面的onResult回调。
+
 onNewParam：当之前存在于栈中的NavDestination页面通过launchMode.MOVE_TO_TOP_SINGLETON或launchMode.POP_TO_SINGLETON移动到栈顶时，执行该回调。
+
 页面监听和查询
 
 在NavDestination子页面内部的自定义组件可以通过全局方法监听或查询到页面的一些状态信息，从而实现组件与页面解耦。
@@ -110,18 +118,15 @@ onNewParam：当之前存在于栈中的NavDestination页面通过launchMode.MOV
 
 import { uiObserver } from '@kit.ArkUI';
 
-
 // NavDestination内的自定义组件
 @Component
 struct MyComponent {
   navDesInfo: uiObserver.NavDestinationInfo | undefined;
   context = this.getUIContext().getHostContext();
 
-
   aboutToAppear() {
     this.navDesInfo = this.queryNavDestinationInfo();
   }
-
 
   build() {
     // ...
@@ -132,7 +137,6 @@ struct MyComponent {
       // ...
   }
 }
-Index.ets
 
 页面状态监听：
 
@@ -140,5 +144,90 @@ Index.ets
 
 也可以通过observer.on('navDestinationSwitch')注册页面切换的状态回调。该回调能在页面发生路由切换时拿到对应的页面信息NavDestinationSwitchInfo，并提供了UIAbilityContext和UIContext不同范围的监听。
 
-Navigation基础架构介绍
-Navigation页面路由
+## Code blocks
+
+### Code block 1
+
+```
+// Dialog NavDestination
+@Entry
+@Component
+struct PageDisplayType {
+  @Provide('NavPathStack') pageStack: NavPathStack = new NavPathStack();
+
+  @Builder
+  PagesMap(name: string) {
+    if (name == 'DialogPage') {
+      DialogPage();
+    }
+  }
+
+  build() {
+    Navigation(this.pageStack) {
+      Button('Push DialogPage')
+        .margin(20)
+        .width('80%')
+        .onClick(() => {
+          this.pageStack.pushPathByName('DialogPage', '');
+        })
+    }
+    .mode(NavigationMode.Stack)
+    .title('Main')
+    .navDestination(this.PagesMap)
+  }
+}
+
+@Component
+export struct DialogPage {
+  @Consume('NavPathStack') pageStack: NavPathStack;
+
+  build() {
+    NavDestination() {
+      Stack({ alignContent: Alignment.Center }) {
+        Column() {
+          Text('Dialog NavDestination')
+            .fontSize(20)
+            .margin({ bottom: 100 })
+          Button('Close').onClick(() => {
+            this.pageStack.pop();
+          }).width('30%')
+        }
+        .justifyContent(FlexAlign.Center)
+        .backgroundColor(Color.White)
+        .borderRadius(10)
+        .height('30%')
+        .width('80%')
+      }.height('100%').width('100%')
+    }
+    .backgroundColor('rgba(0,0,0,0.5)')
+    .hideTitleBar(true)
+    .mode(NavDestinationMode.DIALOG)
+  }
+}
+```
+
+### Code block 2
+
+```
+import { uiObserver } from '@kit.ArkUI';
+
+// NavDestination内的自定义组件
+@Component
+struct MyComponent {
+  navDesInfo: uiObserver.NavDestinationInfo | undefined;
+  context = this.getUIContext().getHostContext();
+
+  aboutToAppear() {
+    this.navDesInfo = this.queryNavDestinationInfo();
+  }
+
+  build() {
+    // ...
+      Column() {
+        // $r('app.string.onPageName')资源文件中的value值为“所属页面Name:”
+        Text(this.context!.resourceManager.getStringSync($r('app.string.onPageName').id) + `${this.navDesInfo?.name}`)
+      }.width('100%').height('100%')
+      // ...
+  }
+}
+```

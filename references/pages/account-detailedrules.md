@@ -19,6 +19,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-d
 附则
 
 本细则是一份动态更新的文档，我们会根据相关法律法规的变化以及行业发展，不定期对细则内容进行修改或更新，请您持续关注本细则，以便获得最新信息。
-
-Account Kit简介
-开发准备

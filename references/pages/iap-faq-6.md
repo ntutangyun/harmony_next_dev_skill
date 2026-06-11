@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-faq-6_
 
+做了调整，具体调整规则请参见换算规则。

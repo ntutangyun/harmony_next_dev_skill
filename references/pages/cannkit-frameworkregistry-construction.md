@@ -2,9 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-frameworkregistry-construction_
 
+函数功能
+
+FrameworkRegistry构造函数和析构函数。
+
+函数原型
+
+FrameworkRegistry(const FrameworkRegistry &) = delete;
 FrameworkRegistry& operator = (const FrameworkRegistry &) = delete;
 ~FrameworkRegistry();
 static FrameworkRegistry& Instance();
+
 参数说明
 
 NA
@@ -21,5 +29,13 @@ Instance()返回FrameworkRegistry的单例对象。
 
 无
 
-FrameworkRegistry
-GetAutoMappingSubgraphIOIndexFunc
+## Code blocks
+
+### Code block 1
+
+```
+FrameworkRegistry(const FrameworkRegistry &) = delete;
+FrameworkRegistry& operator = (const FrameworkRegistry &) = delete;
+~FrameworkRegistry();
+static FrameworkRegistry& Instance();
+```

@@ -2,8 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-generation-arkts_
 
+以DH算法为例，生成随机密钥。具体的场景介绍及支持的算法规格，请参考密钥生成支持的算法。
+
+注意
+
+密钥别名中禁止包含个人数据等敏感信息。
+
+开发步骤
+
+指定密钥别名，密钥别名命名规范参考密钥生成介绍及算法规格。
+
+初始化密钥属性集。
+
 通过HuksParam封装密钥属性，搭配Array组成密钥属性集，并赋值给HuksOptions中的properties字段。
+
 密钥属性集中必须包含HuksKeyAlg、HuksKeySize、HuksKeyPurpose属性，即必传TAG：HUKS_TAG_ALGORITHM、HUKS_TAG_PURPOSE、HUKS_TAG_KEY_SIZE。
+
 注意
 
 一个密钥只能有一类PURPOSE，并且生成密钥时指定的用途要与使用时的方式一致，否则会导致异常。
@@ -15,7 +29,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 如果业务再次使用相同别名调用HUKS生成密钥，HUKS将生成新密钥并直接覆盖历史的密钥文件。
 
 import { huks } from '@kit.UniversalKeystoreKit';
-
 
 /* 1.确定密钥别名 */
 let keyAlias = 'dh_key';
@@ -35,12 +48,10 @@ let properties1: huks.HuksParam[] = [
   }
 ];
 
-
 let huksOptions: huks.HuksOptions = {
   properties: properties1,
   inData: new Uint8Array([])
 }
-
 
 /* 3.生成密钥 */
 function generateKeyItem(keyAlias: string, huksOptions: huks.HuksOptions) {
@@ -59,6 +70,74 @@ function generateKeyItem(keyAlias: string, huksOptions: huks.HuksOptions) {
   });
 }
 
+async function publicGenKeyFunc(keyAlias: string, huksOptions: huks.HuksOptions): Promise<string> {
+  console.info(`enter promise generateKeyItem`);
+  try {
+    await generateKeyItem(keyAlias, huksOptions)
+      .then((data) => {
+        console.info(`promise: generateKeyItem success, data = ${JSON.stringify(data)}`);
+      })
+      .catch((error: Error) => {
+        console.error(`promise: generateKeyItem failed, ${JSON.stringify(error)}`);
+      });
+    return 'Success';
+  } catch (error) {
+    console.error(`promise: generateKeyItem input arg invalid, ` + JSON.stringify(error));
+    return 'Failed';
+  }
+}
+
+async function testGenKey(): Promise<string> {
+  let ret = await publicGenKeyFunc(keyAlias, huksOptions);
+  return ret;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { huks } from '@kit.UniversalKeystoreKit';
+
+/* 1.确定密钥别名 */
+let keyAlias = 'dh_key';
+/* 2.初始化密钥属性集 */
+let properties1: huks.HuksParam[] = [
+  {
+    tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
+    value: huks.HuksKeyAlg.HUKS_ALG_DH
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_PURPOSE,
+    value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_AGREE
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
+    value: huks.HuksKeySize.HUKS_DH_KEY_SIZE_2048
+  }
+];
+
+let huksOptions: huks.HuksOptions = {
+  properties: properties1,
+  inData: new Uint8Array([])
+}
+
+/* 3.生成密钥 */
+function generateKeyItem(keyAlias: string, huksOptions: huks.HuksOptions) {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      huks.generateKeyItem(keyAlias, huksOptions, (error, data) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      });
+    } catch (error) {
+      throw (error as Error);
+    }
+  });
+}
 
 async function publicGenKeyFunc(keyAlias: string, huksOptions: huks.HuksOptions): Promise<string> {
   console.info(`enter promise generateKeyItem`);
@@ -77,11 +156,8 @@ async function publicGenKeyFunc(keyAlias: string, huksOptions: huks.HuksOptions)
   }
 }
 
-
 async function testGenKey(): Promise<string> {
   let ret = await publicGenKeyFunc(keyAlias, huksOptions);
   return ret;
 }
-Index.ets
-密钥生成介绍及算法规格
-生成密钥(C/C++)
+```

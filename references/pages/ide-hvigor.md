@@ -13,6 +13,3 @@ Hvigor可独立于DevEco Studio运行，这意味着，你可以在DevEco Studio
 构建任务说明
 
 构建产物说明
-
-版本说明
-构建系统生命周期

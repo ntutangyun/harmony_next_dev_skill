@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap-config-app_
 
+接入数字商品服务前，需要先完成应用的bundleName配置和应用身份信息配置。
+
+bundleName配置
+
 工程“AppScope/app.json5”下的bundleName需要与开发者在AppGallery Connect中创建应用时的包名保持一致。
 
 配置内容示例如下：
@@ -13,6 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap
     // ...
   }
 }
+
 配置应用身份信息
 
 登录AppGallery Connect平台，在“开发与服务”中选择目标项目，通过“项目设置 > 常规 > 应用”获取目标应用的Client ID。
@@ -40,5 +45,37 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap
   // ...
   ]
 }
-开通相关服务和配置参数
-配置数字商品
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    // bundleName需要与开发者在AppGallery Connect中创建应用时的包名保持一致
+    "bundleName": "com.huawei.***.***.demo",
+    // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+"module":{
+  "type": "***",
+  "name": "***",
+  "description": "***",
+  "mainElement": "***",
+  "deviceTypes": [***],
+  // ...
+  "metadata": [
+  {
+    "name": "client_id",
+    "value": "***"
+  },
+  // ...
+  ]
+}
+```

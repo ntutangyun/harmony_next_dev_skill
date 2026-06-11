@@ -10,6 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/reader-se
 
 接口名	描述
 setPageConfig(pageConfig: ReaderSetting): void	设置或者修改页面排版属性。
+
 开发准备
 
 在修改翻页方式、字体大小及行间距之前，请先确保已经“构建阅读器”。
@@ -31,5 +32,29 @@ this.readerSetting.lineHeight = 2;
 调用ReaderComponentController组件控制器的setPageConfig接口，重新渲染界面。
 
 this.readerComponentController.setPageConfig(this.readerSetting);
-自定义页面背景
-适配深、浅色模式
+
+## Code blocks
+
+### Code block 1
+
+```
+this.readerSetting.flipMode = '1'; // 0代表仿真翻页，1代表横滑翻页
+```
+
+### Code block 2
+
+```
+this.readerSetting.fontSize = 20;
+```
+
+### Code block 3
+
+```
+this.readerSetting.lineHeight = 2;
+```
+
+### Code block 4
+
+```
+this.readerComponentController.setPageConfig(this.readerSetting);
+```

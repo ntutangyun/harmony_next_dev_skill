@@ -7,11 +7,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-cus
 构建自定义组件
 
 <!-- comp.hml -->
- <div class="item"> 
+ <div class="item">
    <text class="title-style">{{title}}</text>
    <text class="text-style" onclick="childClicked" focusable="true">点击这里查看隐藏文本</text>
    <text class="text-style" if="{{showObj}}">hello world</text>
  </div>
+
 /* comp.css */
  .item {
    width: 700px;
@@ -33,6 +34,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-cus
    font-size: 50px;
    color: #483d8b;
  }
+
 // comp.js
  export default {
    props: {
@@ -55,11 +57,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-cus
 引入自定义组件
 
 <!-- xxx.hml -->
- <element name='comp' src='../../common/component/comp.hml'></element> 
- <div class="container"> 
+ <element name='comp' src='../../common/component/comp.hml'></element>
+ <div class="container">
    <text>父组件：{{text}}</text>
    <comp title="自定义组件" show-object="{{isShow}}" @event-type1="textClicked"></comp>
  </div>
+
 /* xxx.css */
  .container {
    background-color: #f8f8ff;
@@ -67,6 +70,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-cus
    flex-direction: column;
    align-content: center;
  }
+
 // xxx.js
  export default {
    data: {
@@ -82,5 +86,102 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-cus
 
 图1 自定义组件的效果
 
-动画帧
-WebGL
+## Code blocks
+
+### Code block 1
+
+```
+<!-- comp.hml -->
+ <div class="item">
+   <text class="title-style">{{title}}</text>
+   <text class="text-style" onclick="childClicked" focusable="true">点击这里查看隐藏文本</text>
+   <text class="text-style" if="{{showObj}}">hello world</text>
+ </div>
+```
+
+### Code block 2
+
+```
+/* comp.css */
+ .item {
+   width: 700px;
+   flex-direction: column;
+   height: 300px;
+   align-items: center;
+   margin-top: 100px;
+ }
+ .text-style {
+   width: 100%;
+   text-align: center;
+   font-weight: 500;
+   font-family: Courier;
+   font-size: 36px;
+ }
+ .title-style {
+   font-weight: 500;
+   font-family: Courier;
+   font-size: 50px;
+   color: #483d8b;
+ }
+```
+
+### Code block 3
+
+```
+// comp.js
+ export default {
+   props: {
+     title: {
+       default: 'title',
+     },
+     showObject: {},
+   },
+   data() {
+     return {
+       showObj: this.showObject,
+     };
+   },
+   childClicked () {
+     this.$emit('eventType1', {text: '收到子组件参数'});
+     this.showObj = !this.showObj;
+   },
+ }
+```
+
+### Code block 4
+
+```
+<!-- xxx.hml -->
+ <element name='comp' src='../../common/component/comp.hml'></element>
+ <div class="container">
+   <text>父组件：{{text}}</text>
+   <comp title="自定义组件" show-object="{{isShow}}" @event-type1="textClicked"></comp>
+ </div>
+```
+
+### Code block 5
+
+```
+/* xxx.css */
+ .container {
+   background-color: #f8f8ff;
+   flex: 1;
+   flex-direction: column;
+   align-content: center;
+ }
+```
+
+### Code block 6
+
+```
+// xxx.js
+ export default {
+   data: {
+     text: '开始',
+     isShow: false,
+   },
+   textClicked (e) {
+     this.text = e.detail.text;
+   },
+ }
+```

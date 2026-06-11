@@ -15,21 +15,22 @@ Web组件内的H5页面加载完成后，自动识别并高亮标注页面内的
 特殊实体的高亮过滤规则如下：
 
 不处理输入框内、可编辑区域内的文本实体。
+
 不处理<a></a>标签内的文本实体。
+
 不处理跨域iframe内、两层及以上嵌套iframe内的文本实体。
+
 跨节点的实体不会被高亮，如<p>星<span>期六</span></p>。
 
 页面中文本实体高亮后，将转变为超链接形式。触摸点击或鼠标左键点击实体，会根据实体类型弹出操作菜单。
 
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
   webController: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -39,7 +40,6 @@ struct Index {
             this.webController.refresh();
           })
       }
-
 
       Web({
         src: $rawfile('index.html'),
@@ -54,7 +54,6 @@ struct Index {
     .width('100%')
   }
 }
-WebDataDetectorHighlighting.ets
 
 加载的html文件。
 
@@ -96,7 +95,6 @@ controller: this.webController
   enablePreviewMenu: true,  // 配置分词长按预览功能
   types: []
 })
-WebDataDetectorLongPress.ets
 
 在copyOptions不为CopyOptions.None时，长按被高亮的实体文本，会弹出预览菜单，如下图。
 
@@ -109,10 +107,81 @@ WebDataDetectorLongPress.ets
 在非编辑区域中，选中的文本满足以下条件时，文本选择菜单将显示相应的AI菜单项：
 
 选中文本经过UTF-8编码转换后，其字节长度不超过255字节。
+
 选中文本中仅包含一个匹配识别类型的实体（可通过dataDetectorConfig配置支持的识别类型）。
+
 不处于“全选”操作状态下的文本。
 
 AI菜单项的出现与是否选中高亮的实体文本无关，只要满足上述条件，AI菜单项就会显示。
 
-使用Web组件与系统剪贴板交互处理网页内容
-同层渲染
+## Code blocks
+
+### Code block 1
+
+```
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+  webController: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Row() {
+        Button('Refresh')
+          .onClick(() => {
+            this.webController.refresh();
+          })
+      }
+
+      Web({
+        src: $rawfile('index.html'),
+        controller: this.webController
+      })
+        .enableDataDetector(true)
+        .dataDetectorConfig({
+          types: []  // 实体识别类型，为空则识别所有类型
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 2
+
+```
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <p>电话：400-123-4567</p>
+    <p>邮箱：test@example.com</p>
+    <p>网址：https://www.example.com/</p>
+    <p>日期：2025.06.01</p>
+    <p>地址：北京市海淀区中关村</p>
+    <p>不会高亮的星<span>期六</span>与会高亮的星期六</p>
+</body>
+</html>
+```
+
+### Code block 3
+
+```
+Web({
+src: $rawfile('index.html'),
+controller: this.webController
+})
+.enableDataDetector(true)
+.dataDetectorConfig({
+  enablePreviewMenu: true,  // 配置分词长按预览功能
+  types: []
+})
+```

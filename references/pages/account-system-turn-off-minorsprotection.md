@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-system-turn-off-minorsprotection_
 
+场景介绍
+
+系统的未成年人模式已开启。用户打开应用，在应用内关闭系统未成年人模式。
+
 应用可调用系统的未成年人模式关闭接口leadToTurnOffMinorsMode，验证家长密码后关闭系统的未成年人模式。
 
 说明
@@ -24,6 +28,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-s
 getMinorsProtectionInfoSync(): MinorsProtectionInfo	同步接口，获取系统未成年人模式的开启状态，以及年龄段信息。
 getMinorsProtectionInfo(): Promise<MinorsProtectionInfo>	异步接口，获取系统未成年人模式的开启状态，以及年龄段信息。
 leadToTurnOffMinorsMode(context: common.Context): Promise<void>	调用该方法进行关闭系统未成年人模式流程。
+
 注意
 
 leadToTurnOffMinorsMode接口需在页面或自定义组件生命周期内调用。
@@ -45,6 +50,7 @@ leadToTurnOffMinorsMode接口需在页面或自定义组件生命周期内调用
 事件名称	值	描述
 COMMON_EVENT_MINORSMODE_ON	usual.event.MINORSMODE_ON	表示系统未成年人模式开启事件。
 COMMON_EVENT_MINORSMODE_OFF	usual.event.MINORSMODE_OFF	表示系统未成年人模式关闭事件。
+
 说明
 
 未成年人模式开启事件触发时机：
@@ -91,8 +97,54 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
   hilog.info(0x0000, 'testTag',
     'The current device does not support the invoking of the leadToTurnOffMinorsMode interface.');
 }
+
 function dealTurnOffAllError(error: BusinessError<Object>): void {
   hilog.error(0x0000, 'testTag', `Failed to leadToTurnOffMinorsMode. Code: ${error.code}, message: ${error.message}`);
 }
-关闭应用的未成年人模式（推荐）
-应用内调整未成年人模式设置
+
+## Code blocks
+
+### Code block 1
+
+```
+import { minorsProtection } from '@kit.AccountKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
+  try {
+    // 查询是否支持系统未成年人模式
+    if (minorsProtection.supportMinorsMode()) {
+      // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
+      minorsProtection.leadToTurnOffMinorsMode(this.getUIContext().getHostContext())
+        .then(() => {
+          // 接口调用完成，如需显示弹窗，请在此处处理
+        })
+        .catch((error: BusinessError<Object>) => {
+          dealTurnOffAllError(error);
+        });
+    } else {
+      hilog.info(0x0000, 'testTag',
+        'The current device environment does not support the youth mode, please check the current device environment.');
+    }
+  } catch (error) {
+    hilog.error(0x0000, 'testTag',
+      `Failed to invoke supportMinorsMode. errCode: ${error.code}, errMessage: ${error.message}`);
+  }
+} else {
+  hilog.info(0x0000, 'testTag',
+    'The current device does not support the invoking of the leadToTurnOffMinorsMode interface.');
+}
+```
+
+### Code block 3
+
+```
+function dealTurnOffAllError(error: BusinessError<Object>): void {
+  hilog.error(0x0000, 'testTag', `Failed to leadToTurnOffMinorsMode. Code: ${error.code}, message: ${error.message}`);
+}
+```

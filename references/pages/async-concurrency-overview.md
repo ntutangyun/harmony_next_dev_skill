@@ -32,14 +32,12 @@ const promise: Promise<number> = new Promise((resolve: Function, reject: Functio
     }
   }, 1000);
 })
-Index.ets
 
 在上述代码中，setTimeout函数模拟了一个异步操作，1秒后生成一个随机数。如果随机数大于0.5，调用resolve回调函数并传递该随机数；否则调用reject回调函数并传递一个错误对象。
 
 Promise对象创建后，可以使用then方法和catch方法指定fulfilled状态和rejected状态的回调函数。then方法可接受两个参数，一个处理fulfilled状态的函数，另一个处理rejected状态的函数。只传一个参数则表示当Promise对象状态变为fulfilled时，then方法会自动调用这个回调函数，并将Promise对象的结果作为参数传递给它。使用catch方法注册一个回调函数，用于处理“失败”的结果，即捕获Promise的状态改变为rejected状态或操作失败抛出的异常。Promise还可以使用finally注册回调函数，无论Promise最终状态如何（fulfilled或rejected），都会执行该回调函数。例如：
 
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 // ...
   /*
@@ -57,14 +55,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
   }
   );
 
-
   // 使用then方法定义成功的回调，catch方法定义失败的回调
   promise.then((result: number) => {
     console.info(`Succeeded in getting number, number is ${result}`); // 成功时执行
   }).catch((error: BusinessError) => {
     console.error(error.message); // 失败时执行
   });
-Index.ets
 
 在上述代码中，then方法的回调函数接收Promise对象的成功结果，并输出至控制台。如果Promise对象进入rejected状态，catch方法的回调函数接收错误对象，并输出至控制台。
 
@@ -90,12 +86,10 @@ async function myAsyncFunction(): Promise<string> {
   return result;
 }
 
-
 @Entry
 @Component
 struct PromiseAsyncAwait {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -114,7 +108,6 @@ struct PromiseAsyncAwait {
     .height('100%')
   }
 }
-Index.ets
 
 在上述示例代码中，使用await等待Promise解析，并存储在result变量中。
 
@@ -129,6 +122,100 @@ async function myAsyncFunction(): Promise<void> {
      console.error(`Get exception: ${e}`);
   }
 }
-Index.ets
-并发概述
-多线程并发
+
+## Code blocks
+
+### Code block 1
+
+```
+const promise: Promise<number> = new Promise((resolve: Function, reject: Function) => {
+  setTimeout(() => {
+    const randomNumber: number = Math.random();
+    if (randomNumber > 0.5) {
+      resolve(randomNumber);
+    } else {
+      reject(new Error('Random number is too small'));
+    }
+  }, 1000);
+})
+```
+
+### Code block 2
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// ...
+  /*
+   * Promise对象创建后，可以使用then方法和catch方法指定fulfilled状态和rejected状态的回调函数。
+   * then方法可接受两个参数，一个处理fulfilled状态的函数，另一个处理rejected状态的函数。
+   *
+   * 只传一个参数则表示当Promise对象状态变为fulfilled时，then方法会自动调用这个回调函数，并将Promise对象的结果作为参数传递给它。
+   * 使用catch方法注册一个回调函数，用于处理“失败”的结果，即捕获Promise的状态改变为rejected状态或操作失败抛出的异常。
+   */
+  // 使用then方法定义成功和失败的回调
+  promise.then((result: number) => {
+    console.info(`Succeeded in getting number, number is ${result}`); // 成功时执行
+  }, (error: BusinessError) => {
+    console.error(error.message); // 失败时执行
+  }
+  );
+
+  // 使用then方法定义成功的回调，catch方法定义失败的回调
+  promise.then((result: number) => {
+    console.info(`Succeeded in getting number, number is ${result}`); // 成功时执行
+  }).catch((error: BusinessError) => {
+    console.error(error.message); // 失败时执行
+  });
+```
+
+### Code block 3
+
+```
+async function myAsyncFunction(): Promise<string> {
+  const result: string = await new Promise((resolve: Function) => {
+    setTimeout(() => {
+      resolve('Hello, world!');
+    }, 3000);
+  });
+  console.info(result); // 输出： Hello, world!
+  return result;
+}
+
+@Entry
+@Component
+struct PromiseAsyncAwait {
+  @State message: string = 'Hello World';
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(async () => {
+            let res = await myAsyncFunction();
+            console.info('Result is: ' + res);
+            this.message = 'success';
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 4
+
+```
+async function myAsyncFunction(): Promise<void> {
+  try {
+     const result: string = await new Promise((resolve: Function) => {
+        resolve('Hello, world!');
+     });
+  } catch (e) {
+     console.error(`Get exception: ${e}`);
+  }
+}
+```

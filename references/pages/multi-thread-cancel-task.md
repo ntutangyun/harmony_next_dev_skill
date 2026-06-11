@@ -12,17 +12,14 @@ export class SendableTest {
   // 存储任务ID
   private taskId: number = 0;
 
-
   constructor(id: number) {
     this.taskId = id;
   }
-
 
   public getTaskId(): number {
     return this.taskId;
   }
 }
-Sendable.ets
 
 在UI主线程向TaskPool提交一个延时任务，并在子线程取消该任务。
 
@@ -32,7 +29,6 @@ import { SendableTest } from '../utils/Sendable';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { PromptAction } from '@kit.ArkUI';
 
-
 @Concurrent
 function cancel(send: SendableTest) {
   // 在多线程中通过任务ID取消任务
@@ -40,12 +36,10 @@ function cancel(send: SendableTest) {
   console.info('cancel task finished');
 }
 
-
 @Concurrent
 function delayed() {
   console.info('delayed task finished');
 }
-
 
 @Entry
 @Component
@@ -53,7 +47,6 @@ struct TaskpoolCancel {
   @State message: string = 'CancelTaskpool';
   @State returnMessage: string = 'return...';
   @State promptAction: PromptAction = this.getUIContext().getPromptAction();
-
 
   build() {
     Row() {
@@ -79,6 +72,78 @@ struct TaskpoolCancel {
     .height('100%')
   }
 }
-TaskpoolCancel.ets
-获取最近访问列表场景
-自定义Native Transferable对象的多线程操作场景
+
+## Code blocks
+
+### Code block 1
+
+```
+// sendable.ets
+@Sendable
+export class SendableTest {
+  // 存储任务ID
+  private taskId: number = 0;
+
+  constructor(id: number) {
+    this.taskId = id;
+  }
+
+  public getTaskId(): number {
+    return this.taskId;
+  }
+}
+```
+
+### Code block 2
+
+```
+// TaskpoolCancel.ets
+import { taskpool } from '@kit.ArkTS';
+import { SendableTest } from '../utils/Sendable';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { PromptAction } from '@kit.ArkUI';
+
+@Concurrent
+function cancel(send: SendableTest) {
+  // 在多线程中通过任务ID取消任务
+  taskpool.cancel(send.getTaskId());
+  console.info('cancel task finished');
+}
+
+@Concurrent
+function delayed() {
+  console.info('delayed task finished');
+}
+
+@Entry
+@Component
+struct TaskpoolCancel {
+  @State message: string = 'CancelTaskpool';
+  @State returnMessage: string = 'return...';
+  @State promptAction: PromptAction = this.getUIContext().getPromptAction();
+
+  build() {
+    Row() {
+      Column() {
+        Button(this.message)
+          .fontSize(25)
+          .fontWeight(FontWeight.Bold)
+          .onClick(async () => {
+            let task = new taskpool.Task(delayed);
+            taskpool.executeDelayed(2000, task).catch((e: BusinessError) => {
+              console.error(`taskpool execute error, message is: ${e.message}`);
+              // taskpool execute error, message is: taskpool:: task has been canceled.
+            });
+            let send = new SendableTest(task.taskId);
+            taskpool.execute(cancel, send);
+            this.returnMessage = 'Taskpool canceled!';
+            this.promptAction.showToast({ message: this.returnMessage });
+          })
+        // ...
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

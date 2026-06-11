@@ -29,6 +29,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 双指捏合
 
 在触控板上通过双指捏合，可以产生捏合缩放值上报。该值表示一个相对缩放比例，可用于实现UI缩放效果。系统上报的数值为一个scale比例，其以双指开始捏合的那一刻（此时为1.0）为基准参考。当双指往外扩张时，scale逐渐从1.0增大；当双指往内合并时，scale逐渐减小。
-
-支持鼠标输入事件
-支持键盘输入事件

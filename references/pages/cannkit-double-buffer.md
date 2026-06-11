@@ -28,5 +28,10 @@ pipe.InitBuffer(inQueueX, 2, 256);
 
 因此，double buffer的性能收益需综合考虑Vector算力、数据量大小、搬运与计算时间占比等多种因素。
 
-数据排布格式
-如何申请workspace作为临时内存
+## Code blocks
+
+### Code block 1
+
+```
+pipe.InitBuffer(inQueueX, 2, 256);
+```

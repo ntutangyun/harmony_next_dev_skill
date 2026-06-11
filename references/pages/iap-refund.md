@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-refund_
 
+当用户申请退款时，对于非游戏类应用，开发者可以在AppGallery Connect上审核退款订单，实现用户的退款。
+
+说明
+
+退款只能由用户发起，具体参见用户申请退款。
+
+对于游戏类应用，用户申请退款后，由华为游戏运营人员审核退款，开发者可跳过此章节。
+
+开发者审核退款订单
+
 开发者使用退款管理功能，需要拥有至少一个具备退款权限的角色：账号持有者、管理员、App管理员、财务。具体可查看添加成员账号。
 
 添加完账号后，开发者可按照以下步骤审核用户的退款订单：
@@ -28,7 +38,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-refun
 3	退款成功	开发者同意退款，且华为操作退款成功。
 4	退款失败	开发者同意退款，且华为操作退款失败。
 5	超期未处理	开发者未按规定时间处理退款订单时，退款订单由华为运营进行审核。
+
 用户申请退款
+
 说明
 
 生态应用订单退款最低系统版本要求为6.16.10（检查版本可参考以下路径“系统设置-华为账号-付款与账单-更多设置-关于”）。
@@ -46,6 +58,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-refun
 用户提交退款后，可点击“查看退款记录”，在“退款记录”查看所有退款订单的退款状态。
 
 应用内接入退款入口
+
 说明
 
 仅支持非游戏类应用接入。
@@ -62,11 +75,9 @@ import { iap } from '@kit.IAPKit';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
-
 
   /**
    * 拉起退款界面
@@ -85,8 +96,39 @@ struct Index {
     });
   }
 
+  build() {}
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { iap } from '@kit.IAPKit';
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+
+  /**
+   * 拉起退款界面
+   */
+  createRefundRequest(context: common.UIAbilityContext) {
+    // 调用iap.createRefundRequest拉起退款，传入context和purchaseOrderId
+    let purchaseOrderId = '';
+    iap.createRefundRequest(context, purchaseOrderId).then(() => {
+      // 退款成功
+      console.info('Succeeded in creating refund request.');
+      // ...
+    }).catch((err: BusinessError) => {
+      // 退款失败
+      console.error(`Failed to create refund request. Code is ${err.code}, message is ${err.message}`);
+      // ...
+    });
+  }
 
   build() {}
 }
-售后
-开票
+```

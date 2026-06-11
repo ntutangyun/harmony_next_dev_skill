@@ -10,12 +10,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previ
 
 下面以自定义一款Phone设备为例，介绍设备Profile Manager的使用方法。
 
-在预览器界面，打开Profile Manager界面。
-
-在Profile Manager界面，单击+ New Profile按钮，添加设备。
-
-在Create Profile界面，填写新增设备的信息，如Profile ID（设备型号）、Device type（设备类型）、Resolution（分辨率）和Language and region（语言和区域）等。其中Device type只能选择module.json5中deviceTypes字段已定义的设备。
-
 设备信息填写完成后，单击OK完成创建。
-查看ArkUI预览效果
-查看多端设备预览效果

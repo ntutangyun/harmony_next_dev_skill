@@ -2,14 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-get-tiling-data_
 
+函数功能
+
 用于获取算子kernel入口函数传入的tiling信息，并填入注册的Tiling结构体中，此函数会以宏展开的方式进行编译。对应的算子host实现中需要定义TilingData结构体，实现并注册计算TilingData的Tiling函数，具体请参考Host侧tiling实现。如果开发者通过TilingData结构注册注册了多个TilingData结构体，使用该接口返回默认注册的结构体。
 
 函数原型
+
 GET_TILING_DATA(tiling_data, tiling_arg)
+
 参数说明
+
 参数	输入/输出	说明
 tiling_data	输出	返回默认Tiling结构体变量。
 tiling_arg	输入	此参数为算子入口函数处传入的tiling参数。
+
 支持的型号
 
 Kirin9020系列处理器
@@ -23,6 +29,7 @@ KirinX90系列处理器
 暂不支持kernel直调工程。
 
 调用示例
+
 extern "C" __global__ __aicore__ void add_custom(__gm__ uint8_t *x, __gm__ uint8_t *y, __gm__ uint8_t *z, __gm__ uint8_t *tiling)
 {
     GET_TILING_DATA(tilingData, tiling);
@@ -30,5 +37,23 @@ extern "C" __global__ __aicore__ void add_custom(__gm__ uint8_t *x, __gm__ uint8
     op.Init(x, y, z, tilingData.blkDim, tilingData.totalSize, tilingData.splitTile);
     op.Process();
 }
-Kernel Tiling
-GET_TILING_DATA_WITH_STRUCT
+
+## Code blocks
+
+### Code block 1
+
+```
+GET_TILING_DATA(tiling_data, tiling_arg)
+```
+
+### Code block 2
+
+```
+extern "C" __global__ __aicore__ void add_custom(__gm__ uint8_t *x, __gm__ uint8_t *y, __gm__ uint8_t *z, __gm__ uint8_t *tiling)
+{
+    GET_TILING_DATA(tilingData, tiling);
+    KernelAdd op;
+    op.Init(x, y, z, tilingData.blkDim, tilingData.totalSize, tilingData.splitTile);
+    op.Process();
+}
+```

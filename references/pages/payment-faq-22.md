@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-22_
 
+请检查首次发起退款是否已正常完成退款。订单已经全额退款后，使用相同的商户订单号重复发起退款不会再返回退款金额。

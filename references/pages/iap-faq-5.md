@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-faq-5_
 
+不会，除非开发者自己修改。

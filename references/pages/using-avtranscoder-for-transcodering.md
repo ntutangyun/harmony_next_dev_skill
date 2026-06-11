@@ -18,7 +18,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-avt
 
 import { media } from '@kit.MediaKit';
 
-
 private avTranscoder: media.AVTranscoder | undefined = undefined;
 // 创建转码实例。
 this.avTranscoder = await media.createAVTranscoder();
@@ -29,12 +28,12 @@ this.avTranscoder = await media.createAVTranscoder();
 complete	必要事件，监听AVTranscoder的转码完成。
 error	必要事件，监听AVTranscoder的错误信息。
 progressUpdate	监听AVTranscoder的进度。
+
 import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { media } from '@kit.MediaKit';
 private currentProgress: number = 0;
 private avTranscoder: media.AVTranscoder | undefined = undefined;
-
 
 async test() {
   // 创建转码实例。
@@ -57,7 +56,6 @@ async test() {
   }
 }
 
-
 // 获取当前进度。
 getCurrentProgress(): number {
   console.info(`getCurrentProgress = ${this.currentProgress}`);
@@ -76,8 +74,6 @@ async releaseTranscoderingProcess() {
   }
 }
 
-
-
 设置源视频文件fd：设置属性fdSrc。
 
 说明
@@ -93,7 +89,6 @@ async releaseTranscoderingProcess() {
 // 导入来自于ets/transcoder/AVTranscoderManager.ets文件。
 import {AVTranscoderDemo} from '../transcoder/AVTranscoderManager'
 
-
 @Entry
 @Component
 struct Index {
@@ -101,7 +96,6 @@ struct Index {
   private context:Context | undefined = this.getUIContext()?.getHostContext();
   // 获取转码功能管理类。
   @State avTranscoder: AVTranscoderDemo | undefined = this.context ? new AVTranscoderDemo(this.context) : undefined;
-
 
   build() {
     RelativeContainer() {
@@ -126,6 +120,7 @@ struct Index {
     .width('100%')
   }
 }
+
 import { media } from '@kit.MediaKit';
 private avTranscoder: media.AVTranscoder | undefined = undefined;
 private context: Context | undefined;
@@ -134,7 +129,6 @@ constructor(context: Context | undefined) {
     this.context = context; // this.getUIContext().getHostContext();。
   }
 }
-
 
 async test() {
   // 创建转码实例。
@@ -162,7 +156,6 @@ constructor(context: Context | undefined) {
     this.context = context; // this.getUIContext().getHostContext();。
   }
 }
-
 
 async test() {
   // 创建转码实例。
@@ -195,7 +188,6 @@ private avConfig: media.AVTranscoderConfig = {
   videoCodec: media.CodecMimeType.VIDEO_AVC, // 视频编码格式。
 };
 
-
 async test() {
   // 创建转码实例。
   this.avTranscoder = await media.createAVTranscoder();
@@ -225,7 +217,6 @@ async startTranscoderingProcess() {
     }
    // 开始转码前需要创建转码实例、设置回调、设置fd并完成prepare。
    // 具体创建步骤参考开发步骤1-5。
-
 
    // 开始转码。
    await this.avTranscoder.start();
@@ -276,11 +267,11 @@ async avTranscoderDemo() {
   await this.pauseTranscoderingProcess(); // 暂停转码。
   await this.resumeTranscoderingProcess(); // 恢复转码。
 }
+
 运行示例工程
 
 参考以下示例，完成“开始转码-暂停转码-恢复转码-转码完成”的完整流程。
 
-新建工程，下载完整示例工程，并将示例工程的资源复制到对应目录。
 AVTranscoderArkTS
 entry/src/main/ets/
 └── pages
@@ -288,7 +279,6 @@ entry/src/main/ets/
 │
 └── transcoder
     └── AVTranscoderManager.ets (转码功能)
-
 
 entry/src/main/resources/
 ├── base
@@ -300,6 +290,285 @@ entry/src/main/resources/
 │
 └── rawfile
     └── H264_AAC.mp4 (视频资源)
+
 编译新建工程并运行。
-视频转码
-创建异步线程执行AVTranscoder视频转码(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { media } from '@kit.MediaKit';
+
+private avTranscoder: media.AVTranscoder | undefined = undefined;
+// 创建转码实例。
+this.avTranscoder = await media.createAVTranscoder();
+```
+
+### Code block 2
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { media } from '@kit.MediaKit';
+private currentProgress: number = 0;
+private avTranscoder: media.AVTranscoder | undefined = undefined;
+
+async test() {
+  // 创建转码实例。
+  this.avTranscoder = await media.createAVTranscoder();
+  if (this.avTranscoder != undefined) {
+    // 转码完成回调函数。
+    this.avTranscoder.on('complete', async () => {
+      console.info(`AVTranscoder is completed`);
+      await this.releaseTranscoderingProcess();
+    });
+    // 错误上报回调函数。
+    this.avTranscoder.on('error', (err: BusinessError) => {
+      console.error(`AVTranscoder failed, code is ${err.code}, message is ${err.message}`);
+    });
+    // 进度上报回调函数。
+    this.avTranscoder.on('progressUpdate', (progress: number) => {
+      console.info(`AVTranscoder progressUpdate = ${progress}`);
+      this.currentProgress = progress;
+    })
+  }
+}
+
+// 获取当前进度。
+getCurrentProgress(): number {
+  console.info(`getCurrentProgress = ${this.currentProgress}`);
+  return this.currentProgress;
+}
+// 释放转码流程。
+async releaseTranscoderingProcess() {
+  if (canIUse('SystemCapability.Multimedia.Media.AVTranscoder')) {
+    if (this.avTranscoder != undefined) {
+      // 1.释放转码实例。
+      await this.avTranscoder.release();
+      this.avTranscoder = undefined;
+      // 2.关闭转码目标文件fd。
+      fileIo.closeSync(this.avTranscoder!.fdDst);
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+// 导入来自于ets/transcoder/AVTranscoderManager.ets文件。
+import {AVTranscoderDemo} from '../transcoder/AVTranscoderManager'
+
+@Entry
+@Component
+struct Index {
+  // 获取当前组件所在Ability的Context，以通过Context获取应用文件路径。
+  private context:Context | undefined = this.getUIContext()?.getHostContext();
+  // 获取转码功能管理类。
+  @State avTranscoder: AVTranscoderDemo | undefined = this.context ? new AVTranscoderDemo(this.context) : undefined;
+
+  build() {
+    RelativeContainer() {
+      Column() {
+        Button($r('app.string.StartTranscoder')) // 来自于resources/base/element/string.json文件中的name:StartTranscoder的值。
+          .onClick(async () => {
+            console.info(`Button put`);
+            await this.avTranscoder?.avTranscoderDemo();
+          })
+          .id('AVTranscoderButton')
+          // 获取转码进度。
+          Progress({ value: 0, total: 100, type: ProgressType.Linear }).value(this.avTranscoder?.getCurrentProgress())
+            .height(50)
+            .width('80%')
+      }
+      .alignRules({
+        center: { anchor: '__container__', align: VerticalAlign.Center },
+        middle: { anchor: '__container__', align: HorizontalAlign.Center }
+      })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 4
+
+```
+import { media } from '@kit.MediaKit';
+private avTranscoder: media.AVTranscoder | undefined = undefined;
+private context: Context | undefined;
+constructor(context: Context | undefined) {
+  if (context != undefined) {
+    this.context = context; // this.getUIContext().getHostContext();。
+  }
+}
+
+async test() {
+  // 创建转码实例。
+  this.avTranscoder = await media.createAVTranscoder();
+  // 获取输入文件fd，H264_AAC.mp4为rawfile目录下的预置资源，需要开发者根据实际情况进行替换。
+  if (this.context != undefined) {
+    let fileDescriptor = await this.context.resourceManager.getRawFd('H264_AAC.mp4');
+    // 设置转码的源文件属性fdSrc。
+    this.avTranscoder.fdSrc = fileDescriptor;
+  }
+}
+```
+
+### Code block 5
+
+```
+import { fileIo } from '@kit.CoreFileKit';
+import { media } from '@kit.MediaKit';
+private avTranscoder: media.AVTranscoder | undefined = undefined;
+private context: Context | undefined;
+constructor(context: Context | undefined) {
+  if (context != undefined) {
+    this.context = context; // this.getUIContext().getHostContext();。
+  }
+}
+
+async test() {
+  // 创建转码实例。
+  this.avTranscoder = await media.createAVTranscoder();
+  if (this.context != undefined) {
+    // 设置输出目标文件的沙箱路径。
+    let outputFilePath = this.context.filesDir + "/output.mp4";
+    // 文件不存在时创建并打开文件，文件存在时打开文件。
+    let file = fileIo.openSync(outputFilePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+    // 设置转码的目标文件属性fdDst。
+    this.avTranscoder.fdDst = file.fd; // 参考应用文件访问与管理中的开发示例获取创建的视频文件fd填入此处。
+  }
+}
+```
+
+### Code block 6
+
+```
+import { media } from '@kit.MediaKit';
+private avTranscoder: media.AVTranscoder | undefined = undefined;
+private avConfig: media.AVTranscoderConfig = {
+  audioBitrate: 100000, // 音频比特率。
+  audioCodec: media.CodecMimeType.AUDIO_AAC, // 音频编码格式。
+  fileFormat: media.ContainerFormatType.CFT_MPEG_4, // 封装格式。
+  videoBitrate: 2000000, // 视频比特率。
+  videoCodec: media.CodecMimeType.VIDEO_AVC, // 视频编码格式。
+};
+
+async test() {
+  // 创建转码实例。
+  this.avTranscoder = await media.createAVTranscoder();
+  // 配置转码参数完成准备工作。
+  await this.avTranscoder.prepare(this.avConfig);
+}
+```
+
+### Code block 7
+
+```
+let avConfig: media.AVTranscoderConfig = {
+  audioBitrate: 100000, // 音频比特率。
+  audioCodec: media.CodecMimeType.AUDIO_AAC, // 音频编码格式。
+  fileFormat: media.ContainerFormatType.CFT_MPEG_4, // 封装格式。
+  videoBitrate: 2000000, // 视频比特率。
+  videoCodec: media.CodecMimeType.VIDEO_AVC, // 视频编码格式。
+  videoFrameWidth: 640, // 目标视频分辨率的宽为640。
+  videoFrameHeight: 480, // 目标视频分辨率的高为480。
+};
+```
+
+### Code block 8
+
+```
+async startTranscoderingProcess() {
+  if (canIUse('SystemCapability.Multimedia.Media.AVTranscoder')) {
+    if (this.avTranscoder != undefined) {
+      await this.avTranscoder.release();
+      this.avTranscoder = undefined;
+    }
+   // 开始转码前需要创建转码实例、设置回调、设置fd并完成prepare。
+   // 具体创建步骤参考开发步骤1-5。
+
+   // 开始转码。
+   await this.avTranscoder.start();
+ }
+}
+```
+
+### Code block 9
+
+```
+// 暂停转码对应的流程。
+async pauseTranscoderingProcess() {
+  if (canIUse('SystemCapability.Multimedia.Media.AVTranscoder')) {
+    if (this.avTranscoder != undefined) { // 仅在调用start返回后调用pause为合理调用。
+      await this.avTranscoder.pause();
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+// 恢复转码。
+async resumeTranscoderingProcess() {
+  if (canIUse('SystemCapability.Multimedia.Media.AVTranscoder')) {
+    if (this.avTranscoder != undefined) { // 仅在调用pause返回后调用resume为合理调用。
+      await this.avTranscoder.resume();
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+// 销毁实例。
+async releaseTranscoderingProcess() {
+  if (canIUse('SystemCapability.Multimedia.Media.AVTranscoder')) {
+    if (this.avTranscoder != undefined) {
+      // 1.销毁实例。
+      await this.avTranscoder.release();
+      this.avTranscoder = undefined;
+      // 2.关闭转码目标文件fd。
+      fileIo.closeSync(this.avTranscoder!.fdDst);
+    }
+  }
+}
+```
+
+### Code block 12
+
+```
+async avTranscoderDemo() {
+  await this.startTranscoderingProcess(); // 开始转码。
+  await this.pauseTranscoderingProcess(); // 暂停转码。
+  await this.resumeTranscoderingProcess(); // 恢复转码。
+}
+```
+
+### Code block 13
+
+```
+AVTranscoderArkTS
+entry/src/main/ets/
+└── pages
+│    └── Index.ets (转码界面)
+│
+└── transcoder
+    └── AVTranscoderManager.ets (转码功能)
+
+entry/src/main/resources/
+├── base
+│   ├── element
+│   │   ├── color.json
+│   │   ├── float.json
+│   │   └── string.json
+│   └── media
+│
+└── rawfile
+    └── H264_AAC.mp4 (视频资源)
+```

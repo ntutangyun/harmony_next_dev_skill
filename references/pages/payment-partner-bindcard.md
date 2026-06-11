@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-partner-bindcard_
 
+场景介绍
+
+从5.0.5(17)版本开始，新增支持引导用户绑卡场景。
+
 支持拉起绑卡页面，结合商户营销活动，有效引导用户完成绑卡操作。例如商户针对银行卡开展某营销活动，需要引导用户拉起绑卡页面完成银行卡绑定。
 
 支持商户模型：直连商户、平台类商户、服务商
@@ -14,6 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-p
 
 应用信息	是否必选	说明
 AppID	是	应用的AppID（在AppGallery Connect网站点击“开发与服务”，在项目列表中找到项目，在“项目设置 > 常规”页面的“应用”区域获取“APP ID”的值）。
+
 业务流程
 
 开发者接入引导用户绑卡，具体接入流程如下：
@@ -52,8 +57,10 @@ Payment Kit客户端展示绑卡结果页面。
 
 接口名	描述
 requestBindCard(context: common.UIAbilityContext | common.UIExtensionContext): Promise<BindCardResult>	拉起用户绑卡页面。
+
 开发步骤
-拉起绑卡页面（端侧开发）
+
+[h2]拉起绑卡页面（端侧开发）
 
 商户客户端调用requestBindCard接口拉起用户绑卡页面。
 
@@ -65,7 +72,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { paymentService } from '@kit.PaymentKit';
 import { common } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct Index {
@@ -73,15 +79,14 @@ struct Index {
   requestBindCardPromise() {
     paymentService.requestBindCard(this.context)
       .then((bindCardResult: paymentService.BindCardResult) => {
-        // succeeded in bind card
+        // 绑卡成功
           console.info(`succeeded in binding card. result: ${bindCardResult}`);
       })
       .catch((error: BusinessError) => {
-        // failed to bind card
+        // 绑卡失败
         console.error(`failed to binding card, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
-
 
   build() {
     Column() {
@@ -97,5 +102,44 @@ struct Index {
     .height('100%')
   }
 }
-三方支付问题处理
-用户身份验证服务
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { paymentService } from '@kit.PaymentKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  requestBindCardPromise() {
+    paymentService.requestBindCard(this.context)
+      .then((bindCardResult: paymentService.BindCardResult) => {
+        // 绑卡成功
+          console.info(`succeeded in binding card. result: ${bindCardResult}`);
+      })
+      .catch((error: BusinessError) => {
+        // 绑卡失败
+        console.error(`failed to binding card, error.code: ${error.code}, error.message: ${error.message}`);
+      });
+  }
+
+  build() {
+    Column() {
+      Button('requestBindCardPromise')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          this.requestBindCardPromise();
+        })
+      }
+    .width('100%')
+    .height('100%')
+  }
+}
+```

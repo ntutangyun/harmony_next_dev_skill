@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scene_introduction_
 
+手机与穿戴设备分布式协同
+
 重要通知实现腕上提醒，实现即时通知推送，如：在手机侧App中设置日程提醒、用药提醒、任务提醒等数据，可以同步到穿戴设备侧App中，不用打开手机，也可以随时在穿戴设备上查看重要信息。
 
 为手机应用带来全新的“腕上交互”，如：用手机侧App看视频、听音频时，可以通过穿戴设备侧App操控手机侧App，比如暂停，下一首，停止等。
@@ -19,6 +21,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scene_int
 说明
 
 传感器受限发布，仅限专业研究机构使用。
-
-业务简介
-手机侧应用开发

@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/power-detection_
 
+简介
+
+功耗检测主要提供CPU高负载检测，可以通过订阅相关事件实现检测。
+
+如需了解如何使用HiAppEvent提供订阅CPU高负载事件，请参考以下文档。目前仅提供ArkTS接口。
+
+订阅CPU高负载事件（ArkTS）
+
+实现原理
+
 系统会周期性及在特定条件（如前后台切换）下，采集三方应用在CPU上的运行时间，并每5分钟统计一次前5分钟的平均负载。若负载超过设定门限，将触发HiAppEvent预警事件。
 
 应用触发CPU高负载事件，其中负载是根据CPU核数归一化后的运行时间。例如：在5分钟内，应用进程在10核CPU上运行了5分钟，其平均负载为：5（CPU上运行时间） / 5（统计周期分钟）/ 10（核数） = 10%。
@@ -30,11 +40,18 @@ CPU高负载事件存在以下场景：
 
 HiAppEvent eventInfo={"domain":"OS","name":"CPU_USAGE_HIGH","eventType":1,"params":{"begin_time":1765959898079,"bundle_name":"com.xpower.test","bundle_version":"1.0.0","end_time":1765959958079,"external_log":["/data/storage/el2/log/hiappevent/CPU_USAGE_HIGH_1765959959260_0.log"],"fault_type":3,"foreground":true,"log_over_limit":false,"threads":[{"name":"WorkerThread","tid":29164,"usage":72}],"time":1765959959257,"usage":72}}
 
-external_log下记录故障日志的路径，在路径下可获取到故障日志。
+上述eventInfo中的各字段详细说明见：事件字段说明。
 
-调用栈故障日志格式详见：一般故障场景日志规格中的“调用栈帧内容说明”。
+其中external_log记录故障日志的路径，在路径下可获取到故障日志。
 
-采样栈故障日志格式详见：日志规格中的“采样栈规格”。
+调用栈故障日志是触发故障时当前故障线程的调用链堆栈信息。调用栈故障日志格式及说明详见：一般故障场景日志规格中的“调用栈帧内容说明”。
 
-App Killed（应用终止）检测
-性能检测
+采样栈故障日志是主动采集的perf日志。采样栈故障日志格式及说明详见：日志规格中的“采样栈规格”。
+
+## Code blocks
+
+### Code block 1
+
+```
+HiAppEvent eventInfo={"domain":"OS","name":"CPU_USAGE_HIGH","eventType":1,"params":{"begin_time":1765959898079,"bundle_name":"com.xpower.test","bundle_version":"1.0.0","end_time":1765959958079,"external_log":["/data/storage/el2/log/hiappevent/CPU_USAGE_HIGH_1765959959260_0.log"],"fault_type":3,"foreground":true,"log_over_limit":false,"threads":[{"name":"WorkerThread","tid":29164,"usage":72}],"time":1765959959257,"usage":72}}
+```

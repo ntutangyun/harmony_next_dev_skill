@@ -34,11 +34,9 @@ private immersiveCallback = (sharableTarget: harmonyShare.SharableTarget) => {
   sharableTarget.share(shareData);
 }
 
-
 private immersiveListening() {
   harmonyShare.on('gesturesShare', this.immersiveCallback);
 }
-
 
 private immersiveDisablingListening() {
   harmonyShare.off('gesturesShare', this.immersiveCallback);
@@ -52,13 +50,13 @@ onPageHide(): void {
   let context: Context = uiContext.getHostContext() as Context;
   context.eventHub.emit('onBackGround');
 }
+
 aboutToAppear(): void {
   this.immersiveListening();
   let uiContext: UIContext = this.getUIContext();
   let context: Context = uiContext.getHostContext() as Context;
   context.eventHub.on('onBackGround', this.onBackGround);
 }
-
 
 aboutToDisappear(): void {
   this.immersiveDisablingListening();
@@ -67,9 +65,75 @@ aboutToDisappear(): void {
   context.eventHub.off('onBackGround', this.onBackGround);
 }
 
+private onBackGround = () => {
+  this.immersiveDisablingListening();
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { uniformTypeDescriptor as utd } from '@kit.ArkData';
+import { systemShare, harmonyShare } from '@kit.ShareKit';
+import { fileUri } from '@kit.CoreFileKit';
+```
+
+### Code block 2
+
+```
+private immersiveCallback = (sharableTarget: harmonyShare.SharableTarget) => {
+  let uiContext: UIContext = this.getUIContext();
+  let contextFaker: Context = uiContext.getHostContext() as Context;
+  let filePath = contextFaker.filesDir + '/exampleKnock1.jpg'; // 仅为示例 请替换正确的文件路径
+  let shareData: systemShare.SharedData = new systemShare.SharedData({
+    utd: utd.UniformDataType.HYPERLINK,
+    content: 'https://sharekitdemo.drcn.agconnect.link/ZB3p',
+    thumbnailUri: fileUri.getUriFromPath(filePath),
+    title: '隔空传送分享卡片标题',
+    description: '隔空传送分享卡片描述'
+  });
+  sharableTarget.share(shareData);
+}
+
+private immersiveListening() {
+  harmonyShare.on('gesturesShare', this.immersiveCallback);
+}
+
+private immersiveDisablingListening() {
+  harmonyShare.off('gesturesShare', this.immersiveCallback);
+}
+```
+
+### Code block 3
+
+```
+// Entry Component 代码片段
+onPageHide(): void {
+  let uiContext: UIContext = this.getUIContext();
+  let context: Context = uiContext.getHostContext() as Context;
+  context.eventHub.emit('onBackGround');
+}
+```
+
+### Code block 4
+
+```
+aboutToAppear(): void {
+  this.immersiveListening();
+  let uiContext: UIContext = this.getUIContext();
+  let context: Context = uiContext.getHostContext() as Context;
+  context.eventHub.on('onBackGround', this.onBackGround);
+}
+
+aboutToDisappear(): void {
+  this.immersiveDisablingListening();
+  let uiContext: UIContext = this.getUIContext();
+  let context: Context = uiContext.getHostContext() as Context;
+  context.eventHub.off('onBackGround', this.onBackGround);
+}
 
 private onBackGround = () => {
   this.immersiveDisablingListening();
 }
-可信任设备间传输
-Share Kit常见问题
+```

@@ -14,7 +14,6 @@ TaskPool支持使用异步队列来控制任务的并发度，能有效避免资
 import { taskpool } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { PromptAction } from '@kit.ArkUI';
-TaskpoolAsyncLevel.ets
 
 定义耗时任务。
 
@@ -29,7 +28,6 @@ function collectFrame() {
   }
   console.info('collectFrame finished');
 }
-TaskpoolAsyncLevel.ets
 
 创建异步队列并执行采集任务。
 
@@ -40,7 +38,7 @@ struct TaskpoolAsyncLevel {
   @State message: string = '触发采集任务';
   @State returnMessage: string = 'return...';
   @State promptAction: PromptAction = this.getUIContext().getPromptAction();
-  
+
   build() {
     Row() {
       Column() {
@@ -70,6 +68,72 @@ struct TaskpoolAsyncLevel {
     .height('100%')
   }
 }
-TaskpoolAsyncLevel.ets
-C++线程间数据共享场景
-ArkUI瀑布流渲染场景
+
+## Code blocks
+
+### Code block 1
+
+```
+// TaskpoolAsyncLevel.ets
+import { taskpool } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { PromptAction } from '@kit.ArkUI';
+```
+
+### Code block 2
+
+```
+// TaskpoolAsyncLevel.ets
+@Concurrent
+function collectFrame() {
+  // 采集数据，并且进行处理
+  // 模拟处理过程，这里是个耗时任务，持续时间为30秒
+  let t = new Date().getTime()
+  while (new Date().getTime() - t < 30000) {
+    continue;
+  }
+  console.info('collectFrame finished');
+}
+```
+
+### Code block 3
+
+```
+// TaskpoolAsyncLevel.ets
+@Entry
+@Component
+struct TaskpoolAsyncLevel {
+  @State message: string = '触发采集任务';
+  @State returnMessage: string = 'return...';
+  @State promptAction: PromptAction = this.getUIContext().getPromptAction();
+
+  build() {
+    Row() {
+      Column() {
+        Button(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(async () => {
+            // 创建并发度为5的异步队列，等待队列个数为5，当加入的任务数量超过5时，等待列表中处于队头的任务会被丢弃
+            let asyncRunner:taskpool.AsyncRunner = new taskpool.AsyncRunner('async', 5, 5);
+            // 触发采集任务
+            for (let i = 0; i < 20; i++) {
+              let task:taskpool.Task = new taskpool.Task(`async${i}`,collectFrame);
+              asyncRunner.execute(task).then(() => {
+                console.info('the current task name is ' + task.name);
+              }).catch((e:BusinessError) => {
+                console.error('async: error is ' + e);
+              });
+            }
+            console.info('asyncRunner task finished');
+            this.returnMessage = 'asyncRunner task finished';
+            this.promptAction.showToast({ message: this.returnMessage });
+          })
+        // ...
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

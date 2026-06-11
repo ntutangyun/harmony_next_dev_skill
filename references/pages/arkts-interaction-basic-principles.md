@@ -62,7 +62,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 
 触摸测试即touch test，也称为命中测试（hit test），是在用户交互开始前，系统确定哪些组件上的事件或手势能够参与此次交互响应的过程。
 
-实现原理
+[h2]实现原理
 
 对于指向性基础事件的派发，系统不会直接从页面根节点递归遍历所有组件节点，而是在首次事件发生时确定能够响应此次交互的组件范围，即识别用户点击的组件。对于未被点击的组件，在此次交互中将不会有任何响应。这一过程称为命中测试（hit test/touch test）。系统依据组件响应热区是否包含事件坐标来判定是否被点击。
 
@@ -74,34 +74,16 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 
 如图所示，当起始事件被分发至组件时，组件会收集自身绑定的手势与事件，随后将收集结果传递给父组件，直至达到根节点。若组件透明、已从组件树中移除，或事件坐标不在组件响应热区范围内，将不会触发收集过程，父组件接收的反馈为空。除此之外，所有组件均会执行手势与事件的收集，并将结果反馈给父组件。
 
-干预命中
+[h2]干预命中
 
 应用可以通过以下几种方式对命中结果进行干预，从而影响最终的响应范围，即控制哪些组件能够被收集到。
 
 干预方式	功能描述	对应接口	说明
-触摸热区设置	设置组件能够响应用户交互的热区范围。	responseRegion	
-
-1.热区会被用来识别用户手指落下的位置是否在热区范围内，只有在范围内的才会被收集；
-
-2. 热区也会影响一些手势的判定，比如点击，只有当在热区范围抬手时才会被触发。
-
-
-触摸热区设置	设置组件能够响应鼠标交互的热区范围。	mouseResponseRegion	
-
-设置一个或多个鼠标触摸热区。功能与responseRegion类似，但仅对鼠标事件生效。
-
-
-触摸热区设置	设置组件的触摸热区列表。	responseRegionList	
-
-设置组件的触摸热区列表，可指定每个热区适用的输入工具类型（如鼠标、触摸等）。调用该接口时，responseRegion与mouseResponseRegion接口不再生效。从API version 22开始支持。
-
-
+触摸热区设置	设置组件能够响应用户交互的热区范围。	responseRegion	1.热区会被用来识别用户手指落下的位置是否在热区范围内，只有在范围内的才会被收集； 2. 热区也会影响一些手势的判定，比如点击，只有当在热区范围抬手时才会被触发。
+触摸热区设置	设置组件能够响应鼠标交互的热区范围。	mouseResponseRegion	设置一个或多个鼠标触摸热区。功能与responseRegion类似，但仅对鼠标事件生效。
+触摸热区设置	设置组件的触摸热区列表。	responseRegionList	设置组件的触摸热区列表，可指定每个热区适用的输入工具类型（如鼠标、触摸等）。调用该接口时，responseRegion与mouseResponseRegion接口不再生效。从API version 22开始支持。
 触摸测试控制	干预自身及其他组件收集结果。	hitTestBehavior	与onTouchIntercept效果相同，但是hitTestBehavior是静态配置。
-自定义事件拦截	干预自身及其他组件收集结果。	onTouchIntercept	
-
-当用户触发按下事件时，系统开始收集当前位置下所有需要参与事件处理的组件时触发，应用可通过该回调返回一个HitTestMode值，进而影响系统收集子节点或兄弟节点的行为。可以通过该回调达到动态控制交互响应的效果，如某些组件，根据业务状态的变化，可能有时候需要参与交互，有时候不需要参与交互。
-
-与hitTestBehavior效果相同，但是onTouchIntercept是动态回调。
+自定义事件拦截	干预自身及其他组件收集结果。	onTouchIntercept	当用户触发按下事件时，系统开始收集当前位置下所有需要参与事件处理的组件时触发，应用可通过该回调返回一个HitTestMode值，进而影响系统收集子节点或兄弟节点的行为。可以通过该回调达到动态控制交互响应的效果，如某些组件，根据业务状态的变化，可能有时候需要参与交互，有时候不需要参与交互。 与hitTestBehavior效果相同，但是onTouchIntercept是动态回调。
 
 触摸热区设置
 
@@ -133,7 +115,6 @@ struct FocusOnclickExample {
   @State text: string = '';
   @State number: number = 0;
 
-
   build() {
     Column() {
       Text(this.text)
@@ -162,7 +143,6 @@ struct FocusOnclickExample {
     }.width('100%').justifyContent(FlexAlign.Center)
   }
 }
-FocusOnclickExample.ets
 
 上面的代码可以将按钮切分成了3部分，中间40%的区域不响应点击，而两侧的剩下部分可响应。
 
@@ -214,5 +194,43 @@ Cancel事件
 
 Cancel的含义与Up相同，均表示事件处理结束。若在处理Up/Release的场景中，亦应同时处理Cancel。
 
-交互响应概述
-输入设备与事件
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct FocusOnclickExample {
+  @State text: string = '';
+  @State number: number = 0;
+
+  build() {
+    Column() {
+      Text(this.text)
+        .margin({ bottom: 20 })
+      // 请将$r('app.string.button')替换为实际资源文件，在本示例中该资源文件的value值为"按钮"
+      Button($r('app.string.button'))
+        .responseRegion([
+          {
+            x: 0,
+            y: 0,
+            width: '30%',
+            height: '100%'
+          }, // 第一个热区为按钮的左侧1/3区域
+          {
+            x: '70%',
+            y: 0,
+            width: '30%',
+            height: '100%'
+          },// 第二个热区为按钮的右侧1/3区域
+        ])
+        .onClick(() => {
+          this.number++;
+          this.text = 'button' + this.number + 'clicked';
+        })
+        .width(200)
+    }.width('100%').justifyContent(FlexAlign.Center)
+  }
+}
+```

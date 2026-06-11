@@ -39,6 +39,7 @@ AAID会在包括但不限于下述场景中发生变化：
 接口名	描述
 getAAID(): Promise<string>	获取AAID，使用Promise异步返回结果。
 deleteAAID(): Promise<void>	删除AAID，使用Promise异步返回结果。
+
 获取AAID
 
 导入AAID模块及相关公共模块。
@@ -64,5 +65,33 @@ export default class EntryAbility extends UIAbility {
     }
   }
 }
-（可选）推送报告
-Push Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+import { AAID } from '@kit.PushKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+// 文件路径: src/main/ets/entryability/EntryAbility.ets
+export default class EntryAbility extends UIAbility {
+  // 入参want与launchParam并未使用，为初始化项目时自带参数
+  async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
+    // 获取AAID
+    try {
+      const aaid: string = await AAID.getAAID();
+      hilog.info(0x0000, 'testTag', 'Succeeded in getting AAID.');
+    } catch (err) {
+      let e: BusinessError = err as BusinessError;
+      hilog.error(0x0000, 'testTag', 'Failed to get AAID: %{public}d %{public}s', e.code, e.message);
+    }
+  }
+}
+```

@@ -2,11 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-cpo_
 
+约束与限制
+
 通过配置Configuration优化传输性能能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备。
 
 导入模块
+
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+
 请求预处理阶段
 
 基于Session抽象的高并发网络框架
@@ -32,7 +36,6 @@ const session1 = rcp.createSession({
   }
 });
 
-
 const request1 = new rcp.Request('https://example.com');
 const request2 = new rcp.Request('https://example.com');
 session1.fetch(request1).then((response) => {
@@ -48,6 +51,7 @@ session1.fetch(request2).then((response) => {
   session1.close();
 });
 session1.cancel(request1); // 取消request1请求
+
 DNS阶段
 
 应用可定制DNS请求规则，如定制DNS服务器、重写DNS解析函数，从而获取最佳的DNS性能体验。
@@ -70,6 +74,7 @@ session.fetch(request).then((response) => {
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
 });
+
 // 定制DNS服务器
 const session = rcp.createSession();
 const request = new rcp.Request('https://example.com');
@@ -88,6 +93,7 @@ session.fetch(request).then((response) => {
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
 });
+
 连接阶段
 
 根据资源特征动态调整连接池大小
@@ -105,6 +111,7 @@ for (let i = 0; i < 1024; ++i) {
     console.error(`err: error code is ${err.code}, error data is ${err.data}`);
   });
 }
+
 HTTP请求阶段
 
 支持响应体分段返回，以节省内存
@@ -126,6 +133,7 @@ try {
 } finally {
   session.close();
 }
+
 // 分段上传数据
 const session = rcp.createSession();
 try {
@@ -138,6 +146,7 @@ try {
 } finally {
   session.close();
 }
+
 HTTP响应阶段
 
 获取响应各阶段耗时动态判断网络质量，动态调整请求（请求不同质量的资源、降低资源缓存数量）。更详细的示例请移步HTTP请求过程中各时间点详解。
@@ -158,5 +167,163 @@ try {
 } finally {
   session.close();
 }
-基于TracingConfiguration实现性能维测
-使用HTTP缓存功能提升资源获取性能
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+const session1 = rcp.createSession({
+  requestConfiguration: {
+    transfer: {
+      timeout: {
+        connectMs: 5000,
+        transferMs: 5000
+      }
+    }
+  }
+});
+
+const request1 = new rcp.Request('https://example.com');
+const request2 = new rcp.Request('https://example.com');
+session1.fetch(request1).then((response) => {
+  console.info(`Request1 succeeded, message is ${JSON.stringify(response)}`);
+}).catch((err: BusinessError) => {
+  console.error(`err1: error code is ${err.code}, error data is ${err.data}`);
+});
+session1.fetch(request2).then((response) => {
+  console.info(`Request2 succeeded, message is ${JSON.stringify(response)}`);
+  session1.close();
+}).catch((err: BusinessError) => {
+  console.error(`err2: error code is ${err.code}, error data is ${err.data}`);
+  session1.close();
+});
+session1.cancel(request1); // 取消request1请求
+```
+
+### Code block 3
+
+```
+// 定制DNS解析函数
+const session = rcp.createSession();
+const request = new rcp.Request('https://example.com');
+request.configuration = {
+  dns: {
+    dnsRules: (host: string, port: number): rcp.IpAddress[] => {
+      if (host === 'example.com') {
+        return ['7.128.8.45', '7.128.8.46'];
+      }
+      return [];
+    }
+  }
+};
+session.fetch(request).then((response) => {
+  console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+}).catch((err: BusinessError) => {
+  console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+});
+```
+
+### Code block 4
+
+```
+// 定制DNS服务器
+const session = rcp.createSession();
+const request = new rcp.Request('https://example.com');
+request.configuration = {
+  dns: {
+    dnsRules: [
+      {
+        ip: '7.128.8.45',
+        port: 53,
+      },
+    ]
+  }
+};
+session.fetch(request).then((response) => {
+  console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+}).catch((err: BusinessError) => {
+  console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+});
+```
+
+### Code block 5
+
+```
+const session = rcp.createSession({
+  connectionConfiguration: {
+    maxConnectionsPerHost: 16,
+    maxTotalConnections: 1024,
+  }
+});
+for (let i = 0; i < 1024; ++i) {
+  session.get('https://example' + i.toString() + '.com/image.png').then((response) => {
+    console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  }).catch((err: BusinessError) => {
+    console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  });
+}
+```
+
+### Code block 6
+
+```
+// 使用响应体直接写入文件
+const session = rcp.createSession();
+try {
+  const response = await session.get('https://example.com/video.mp4', {
+    kind: 'file',
+    file: './video.mp4',
+  });
+  console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+} catch (err) {
+  console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+} finally {
+  session.close();
+}
+```
+
+### Code block 7
+
+```
+// 分段上传数据
+const session = rcp.createSession();
+try {
+  const response = await session.post('https://example.com/video.mp4', (maxSize: number) => {
+    return new ArrayBuffer(maxSize);
+  });
+  console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+} catch (err) {
+  console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+} finally {
+  session.close();
+}
+```
+
+### Code block 8
+
+```
+// 获取各个阶段的耗时信息
+const session = rcp.createSession();
+try {
+  const response = await session.get('https://example.com');
+  console.info(response.timeInfo?.nameLookupTimeMs.toString());
+  console.info(response.timeInfo?.connectTimeMs.toString());
+  console.info(response.timeInfo?.tlsHandshakeTimeMs.toString());
+  console.info(response.timeInfo?.preTransferTimeMs.toString());
+  console.info(response.timeInfo?.startTransferTimeMs.toString());
+  console.info(response.timeInfo?.totalTimeMs.toString());
+  console.info(response.timeInfo?.redirectTimeMs.toString());
+} catch (err) {
+  console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+} finally {
+  session.close();
+}
+```

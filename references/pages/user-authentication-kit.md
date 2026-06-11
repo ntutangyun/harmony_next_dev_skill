@@ -2,3 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/user-authentication-kit_
 
+User Authentication Kit简介
+
+用户身份认证开发指导
+
+User Authentication Kit术语

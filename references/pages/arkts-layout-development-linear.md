@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-layout-development-linear_
 
+概述
+
 线性布局（LinearLayout）是开发中最常用的布局，通过线性容器Row和Column构建。线性布局是其他布局的基础，其子元素在线性方向上（水平方向和垂直方向）依次排列。线性布局的排列方向由所选容器组件决定，Row容器内子元素按照水平方向排列，Column容器内子元素按照垂直方向排列。根据不同的排列方向，开发者可选择使用Row或Column容器创建线性布局。
 
 说明
@@ -28,7 +30,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-lay
 
 在布局容器内，可以通过Row组件的space属性或Column组件的space属性设置排列方向上子元素的间距，使各子元素在排列方向上有等间距效果。
 
-Column容器内排列方向上的间距
+[h2]Column容器内排列方向上的间距
 
 图3 Column容器内排列方向的间距图
 
@@ -38,9 +40,8 @@ Column({ space: 20 }) {
   Row().width('90%').height(50).backgroundColor(0xD2B48C)
   Row().width('90%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%')
-ColumnLayoutExample.ets
 
-Row容器内排列方向上的间距
+[h2]Row容器内排列方向上的间距
 
 图4 Row容器内排列方向的间距图
 
@@ -50,13 +51,12 @@ Row({ space: 35 }) {
   Row().width('10%').height(150).backgroundColor(0xD2B48C)
   Row().width('10%').height(150).backgroundColor(0xF5DEB3)
 }.width('90%')
-RowLayoutExample.ets
 
 布局子元素在主轴上的排列方式
 
 在布局容器内，可以通过justifyContent属性设置子元素在容器主轴上的排列方式。可以从主轴起始位置开始排布，也可以从主轴结束位置开始排布，或者均匀分割主轴的空间。
 
-Column容器内子元素在垂直方向上的排列
+[h2]Column容器内子元素在垂直方向上的排列
 
 图5 Column容器内子元素在垂直方向上的排列图
 
@@ -66,15 +66,12 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Start)
-ColumnLayoutJustifyContentStart.ets
 
 justifyContent(FlexAlign.Center)：元素在垂直方向中心对齐，第一个元素与行首的距离与最后一个元素与行尾距离相同。
 
@@ -82,15 +79,12 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Center)
-ColumnLayoutJustifyContentCenter.ets
 
 justifyContent(FlexAlign.End)：元素在垂直方向尾部对齐，最后一个元素与行尾对齐，其他元素与后一个对齐。
 
@@ -98,15 +92,12 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.End)
-ColumnLayoutJustifyContentEnd.ets
 
 justifyContent(FlexAlign.SpaceBetween)：垂直方向均匀分配元素，相邻元素之间距离相同。第一个元素与行首对齐，最后一个元素与行尾对齐。
 
@@ -114,15 +105,12 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceBetween)
-ColumnLayoutJustifyContentSpaceBetween.ets
 
 justifyContent(FlexAlign.SpaceAround)：垂直方向均匀分配元素，相邻元素之间距离相同。第一个元素到行首的距离和最后一个元素到行尾的距离是相邻元素之间距离的一半。
 
@@ -130,15 +118,12 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceAround)
-ColumnLayoutJustifyContentSpaceAround.ets
 
 justifyContent(FlexAlign.SpaceEvenly)：垂直方向均匀分配元素，相邻元素之间的距离、第一个元素与行首的间距、最后一个元素到行尾的间距都完全一样。
 
@@ -146,17 +131,14 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceEvenly)
-ColumnLayoutJustifyContentSpaceEvenly.ets
 
-Row容器内子元素在水平方向上的排列
+[h2]Row容器内子元素在水平方向上的排列
 
 图6 Row容器内子元素在水平方向上的排列图
 
@@ -166,15 +148,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Start)
-RowLayoutJustifyContentStart.ets
 
 justifyContent(FlexAlign.Center)：元素在水平方向中心对齐，第一个元素与行首的距离与最后一个元素与行尾距离相同。
 
@@ -182,15 +161,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Center)
-RowLayoutJustifyContentCenter.ets
 
 justifyContent(FlexAlign.End)：元素在水平方向尾部对齐，最后一个元素与行尾对齐，其他元素与后一个对齐。
 
@@ -198,15 +174,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.End)
-RowLayoutJustifyContentEnd.ets
 
 justifyContent(FlexAlign.SpaceBetween)：水平方向均匀分配元素，相邻元素之间距离相同。第一个元素与行首对齐，最后一个元素与行尾对齐。
 
@@ -214,15 +187,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceBetween)
-RowLayoutJustifyContentSpaceBetween.ets
 
 justifyContent(FlexAlign.SpaceAround)：水平方向均匀分配元素，相邻元素之间距离相同。第一个元素到行首的距离和最后一个元素到行尾的距离是相邻元素之间距离的一半。
 
@@ -230,15 +200,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceAround)
-RowLayoutJustifyContentSpaceAround.ets
 
 justifyContent(FlexAlign.SpaceEvenly)：水平方向均匀分配元素，相邻元素之间的距离、第一个元素与行首的间距、最后一个元素到行尾的间距都完全一样。
 
@@ -246,15 +213,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceEvenly)
-RowLayoutJustifyContentSpaceEvenly.ets
 
 布局子元素在交叉轴上的对齐方式
 
@@ -262,7 +226,7 @@ RowLayoutJustifyContentSpaceEvenly.ets
 
 alignSelf属性用于控制单个子元素在容器交叉轴上的对齐方式，其优先级高于alignItems属性，如果设置了alignSelf属性，则在单个子元素上会覆盖alignItems属性。
 
-Column容器内子元素在水平方向上的排列
+[h2]Column容器内子元素在水平方向上的排列
 
 图7 Column容器内子元素在水平方向上的排列图
 
@@ -272,15 +236,12 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').alignItems(HorizontalAlign.Start).backgroundColor('rgb(242,242,242)')
-RowLayoutHorizontalAlignStart.ets
 
 HorizontalAlign.Center（默认值）：子元素在水平方向居中对齐。
 
@@ -288,15 +249,12 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').alignItems(HorizontalAlign.Center).backgroundColor('rgb(242,242,242)')
-RowLayoutHorizontalAlignCenter.ets
 
 HorizontalAlign.End：子元素在水平方向右对齐。
 
@@ -304,17 +262,14 @@ Column({}) {
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('80%').height(50).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('80%').height(50).backgroundColor(0xF5DEB3)
 }.width('100%').alignItems(HorizontalAlign.End).backgroundColor('rgb(242,242,242)')
-RowLayoutHorizontalAlignEnd.ets
 
-Row容器内子元素在垂直方向上的排列
+[h2]Row容器内子元素在垂直方向上的排列
 
 图8 Row容器内子元素在垂直方向上的排列图
 
@@ -324,15 +279,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).alignItems(VerticalAlign.Top).backgroundColor('rgb(242,242,242)')
-RowLayoutVerticalAlignTop.ets
 
 VerticalAlign.Center（默认值）：子元素在垂直方向居中对齐。
 
@@ -340,15 +292,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).alignItems(VerticalAlign.Center).backgroundColor('rgb(242,242,242)')
-RowLayoutVerticalAlignCenter.ets
 
 VerticalAlign.Bottom：子元素在垂直方向底部对齐。
 
@@ -356,15 +305,12 @@ Row({}) {
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 
-
   Column() {
   }.width('20%').height(30).backgroundColor(0xD2B48C)
-
 
   Column() {
   }.width('20%').height(30).backgroundColor(0xF5DEB3)
 }.width('100%').height(200).alignItems(VerticalAlign.Bottom).backgroundColor('rgb(242,242,242)')
-RowLayoutVerticalAlignBottom.ets
 
 自适应拉伸
 
@@ -383,7 +329,6 @@ struct BlankExample {
     }.backgroundColor(0xEFEFEF).padding(20).width('100%')
   }
 }
-BlankExample.ets
 
 图9 竖屏（自适应屏幕窄边）
 
@@ -407,21 +352,17 @@ struct LayoutWeightExample {
             .textAlign(TextAlign.Center)
         }.layoutWeight(1).backgroundColor(0xF5DEB3).height('100%')
 
-
         Column() {
           Text('layoutWeight(2)')
             .textAlign(TextAlign.Center)
         }.layoutWeight(2).backgroundColor(0xD2B48C).height('100%')
-
 
         Column() {
           Text('layoutWeight(3)')
             .textAlign(TextAlign.Center)
         }.layoutWeight(3).backgroundColor(0xF5DEB3).height('100%')
 
-
       }.backgroundColor(0xffd306).height('30%')
-
 
       Text('2:5:3').width('100%')
       Row() {
@@ -430,12 +371,10 @@ struct LayoutWeightExample {
             .textAlign(TextAlign.Center)
         }.layoutWeight(2).backgroundColor(0xF5DEB3).height('100%')
 
-
         Column() {
           Text('layoutWeight(5)')
             .textAlign(TextAlign.Center)
         }.layoutWeight(5).backgroundColor(0xD2B48C).height('100%')
-
 
         Column() {
           Text('layoutWeight(3)')
@@ -445,7 +384,6 @@ struct LayoutWeightExample {
     }
   }
 }
-LayoutWeightExample.ets
 
 图11 横屏
 
@@ -464,12 +402,10 @@ struct WidthExample {
             .textAlign(TextAlign.Center)
         }.width('20%').backgroundColor(0xF5DEB3).height('100%')
 
-
         Column() {
           Text('center width 50%')
             .textAlign(TextAlign.Center)
         }.width('50%').backgroundColor(0xD2B48C).height('100%')
-
 
         Column() {
           Text('right width 30%')
@@ -479,7 +415,6 @@ struct WidthExample {
     }
   }
 }
-WidthExample.ets
 
 图13 横屏
 
@@ -500,7 +435,6 @@ WidthExample.ets
 struct ScrollVerticalExample {
   scroller: Scroller = new Scroller();
   private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
 
   build() {
     Scroll(this.scroller) {
@@ -527,7 +461,6 @@ struct ScrollVerticalExample {
     .edgeEffect(EdgeEffect.Spring) // 滚动到边沿后回弹
   }
 }
-ScrollVerticalExample.ets
 
 水平方向布局中使用Scroll组件：
 
@@ -536,7 +469,6 @@ ScrollVerticalExample.ets
 struct ScrollHorizontalExample {
   scroller: Scroller = new Scroller();
   private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
 
   build() {
     Scroll(this.scroller) {
@@ -563,7 +495,465 @@ struct ScrollHorizontalExample {
     .edgeEffect(EdgeEffect.Spring) // 滚动到边沿后回弹
   }
 }
-ScrollHorizontalExample.ets
 
-构建布局
-层叠布局 (Stack)
+## Code blocks
+
+### Code block 1
+
+```
+Column({ space: 20 }) {
+  Text('space: 20').fontSize(15).fontColor(Color.Gray).width('90%')
+  Row().width('90%').height(50).backgroundColor(0xF5DEB3)
+  Row().width('90%').height(50).backgroundColor(0xD2B48C)
+  Row().width('90%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%')
+```
+
+### Code block 2
+
+```
+Row({ space: 35 }) {
+  Text('space: 35').fontSize(15).fontColor(Color.Gray)
+  Row().width('10%').height(150).backgroundColor(0xF5DEB3)
+  Row().width('10%').height(150).backgroundColor(0xD2B48C)
+  Row().width('10%').height(150).backgroundColor(0xF5DEB3)
+}.width('90%')
+```
+
+### Code block 3
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Start)
+```
+
+### Code block 4
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Center)
+```
+
+### Code block 5
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.End)
+```
+
+### Code block 6
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceBetween)
+```
+
+### Code block 7
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceAround)
+```
+
+### Code block 8
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').height(300).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceEvenly)
+```
+
+### Code block 9
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Start)
+```
+
+### Code block 10
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.Center)
+```
+
+### Code block 11
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.End)
+```
+
+### Code block 12
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceBetween)
+```
+
+### Code block 13
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceAround)
+```
+
+### Code block 14
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).backgroundColor('rgb(242,242,242)').justifyContent(FlexAlign.SpaceEvenly)
+```
+
+### Code block 15
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').alignItems(HorizontalAlign.Start).backgroundColor('rgb(242,242,242)')
+```
+
+### Code block 16
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').alignItems(HorizontalAlign.Center).backgroundColor('rgb(242,242,242)')
+```
+
+### Code block 17
+
+```
+Column({}) {
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('80%').height(50).backgroundColor(0xF5DEB3)
+}.width('100%').alignItems(HorizontalAlign.End).backgroundColor('rgb(242,242,242)')
+```
+
+### Code block 18
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).alignItems(VerticalAlign.Top).backgroundColor('rgb(242,242,242)')
+```
+
+### Code block 19
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).alignItems(VerticalAlign.Center).backgroundColor('rgb(242,242,242)')
+```
+
+### Code block 20
+
+```
+Row({}) {
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xD2B48C)
+
+  Column() {
+  }.width('20%').height(30).backgroundColor(0xF5DEB3)
+}.width('100%').height(200).alignItems(VerticalAlign.Bottom).backgroundColor('rgb(242,242,242)')
+```
+
+### Code block 21
+
+```
+@Entry
+@Component
+struct BlankExample {
+  build() {
+    Column() {
+      Row() {
+        Text('Bluetooth').fontSize(18)
+        Blank()
+        Toggle({ type: ToggleType.Switch, isOn: true })
+      }.backgroundColor(0xFFFFFF).borderRadius(15).padding({ left: 12 }).width('100%')
+    }.backgroundColor(0xEFEFEF).padding(20).width('100%')
+  }
+}
+```
+
+### Code block 22
+
+```
+@Entry
+@Component
+struct LayoutWeightExample {
+  build() {
+    Column() {
+      Text('1:2:3').width('100%')
+      Row() {
+        Column() {
+          Text('layoutWeight(1)')
+            .textAlign(TextAlign.Center)
+        }.layoutWeight(1).backgroundColor(0xF5DEB3).height('100%')
+
+        Column() {
+          Text('layoutWeight(2)')
+            .textAlign(TextAlign.Center)
+        }.layoutWeight(2).backgroundColor(0xD2B48C).height('100%')
+
+        Column() {
+          Text('layoutWeight(3)')
+            .textAlign(TextAlign.Center)
+        }.layoutWeight(3).backgroundColor(0xF5DEB3).height('100%')
+
+      }.backgroundColor(0xffd306).height('30%')
+
+      Text('2:5:3').width('100%')
+      Row() {
+        Column() {
+          Text('layoutWeight(2)')
+            .textAlign(TextAlign.Center)
+        }.layoutWeight(2).backgroundColor(0xF5DEB3).height('100%')
+
+        Column() {
+          Text('layoutWeight(5)')
+            .textAlign(TextAlign.Center)
+        }.layoutWeight(5).backgroundColor(0xD2B48C).height('100%')
+
+        Column() {
+          Text('layoutWeight(3)')
+            .textAlign(TextAlign.Center)
+        }.layoutWeight(3).backgroundColor(0xF5DEB3).height('100%')
+      }.backgroundColor(0xffd306).height('30%')
+    }
+  }
+}
+```
+
+### Code block 23
+
+```
+@Entry
+@Component
+struct WidthExample {
+  build() {
+    Column() {
+      Row() {
+        Column() {
+          Text('left width 20%')
+            .textAlign(TextAlign.Center)
+        }.width('20%').backgroundColor(0xF5DEB3).height('100%')
+
+        Column() {
+          Text('center width 50%')
+            .textAlign(TextAlign.Center)
+        }.width('50%').backgroundColor(0xD2B48C).height('100%')
+
+        Column() {
+          Text('right width 30%')
+            .textAlign(TextAlign.Center)
+        }.width('30%').backgroundColor(0xF5DEB3).height('100%')
+      }.backgroundColor(0xffd306).height('30%')
+    }
+  }
+}
+```
+
+### Code block 24
+
+```
+@Entry
+@Component
+struct ScrollVerticalExample {
+  scroller: Scroller = new Scroller();
+  private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  build() {
+    Scroll(this.scroller) {
+      Column() {
+        ForEach(this.arr, (item?:number|undefined) => {
+          if(item != undefined){
+            Text(item.toString())
+              .width('90%')
+              .height(150)
+              .backgroundColor(0xFFFFFF)
+              .borderRadius(15)
+              .fontSize(16)
+              .textAlign(TextAlign.Center)
+              .margin({ top: 10 })
+          }
+        }, (item:number) => item.toString())
+      }.width('100%')
+    }
+    .backgroundColor(0xDCDCDC)
+    .scrollable(ScrollDirection.Vertical) // 滚动方向为垂直方向
+    .scrollBar(BarState.On) // 滚动条常驻显示
+    .scrollBarColor(Color.Gray) // 滚动条颜色
+    .scrollBarWidth(10) // 滚动条宽度
+    .edgeEffect(EdgeEffect.Spring) // 滚动到边沿后回弹
+  }
+}
+```
+
+### Code block 25
+
+```
+@Entry
+@Component
+struct ScrollHorizontalExample {
+  scroller: Scroller = new Scroller();
+  private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  build() {
+    Scroll(this.scroller) {
+      Row() {
+        ForEach(this.arr, (item?:number|undefined) => {
+          if(item != undefined){
+            Text(item.toString())
+              .height('90%')
+              .width(150)
+              .backgroundColor(0xFFFFFF)
+              .borderRadius(15)
+              .fontSize(16)
+              .textAlign(TextAlign.Center)
+              .margin({ left: 10 })
+          }
+        })
+      }.height('100%')
+    }
+    .backgroundColor(0xDCDCDC)
+    .scrollable(ScrollDirection.Horizontal) // 滚动方向为水平方向
+    .scrollBar(BarState.On) // 滚动条常驻显示
+    .scrollBarColor(Color.Gray) // 滚动条颜色
+    .scrollBarWidth(10) // 滚动条宽度
+    .edgeEffect(EdgeEffect.Spring) // 滚动到边沿后回弹
+  }
+}
+```

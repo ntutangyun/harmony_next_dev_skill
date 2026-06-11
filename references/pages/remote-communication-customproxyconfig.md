@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-customproxyconfig_
 
+场景介绍
+
 在远场通信框架中，ProxyConfiguration配置会话代理设置，提供system、no-proxy和WebProxy三种选项。
 
 system使用系统代理，适合快速部署；
@@ -18,7 +20,7 @@ WebProxy允许开发者自定义代理设置，解决特定网络问题，优化
 
 下面将对框架提供的三种选项（'system'，'no-proxy'，'WebProxy'）以示例代码的方式进行说明。
 
-'no-proxy'
+[h2]'no-proxy'
 
 导入需要的模块。
 
@@ -54,7 +56,8 @@ session.fetch(request).then((response: rcp.Response) => {
   // 关闭会话
   session.close();
 })
-'system'
+
+[h2]'system'
 
 导入需要的模块。
 
@@ -90,7 +93,8 @@ session.fetch(request).then((response: rcp.Response) => {
   // 关闭会话
   session.close();
 })
-WebProxy（自定义代理设置）
+
+[h2]WebProxy（自定义代理设置）
 
 导入需要的模块。
 
@@ -133,5 +137,141 @@ session.fetch(request).then((response: rcp.Response) => {
   // 关闭会话
   session.close();
 })
-TransferConfiguration：定制数据传输
-SecurityConfiguration：定制安全传输行为
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+const session = rcp.createSession();
+// 定义请求的URL（请根据实际需求调整）
+const requestURL = 'https://example.com';
+```
+
+### Code block 3
+
+```
+// 配置请求的proxy方式为'no-proxy'
+const configuration: rcp.Configuration = {
+  proxy: 'no-proxy'
+}
+// 定义request并将请求configuration添加到request中
+const request = new rcp.Request(requestURL, 'GET');
+request.configuration = configuration;
+```
+
+### Code block 4
+
+```
+session.fetch(request).then((response: rcp.Response) => {
+  // 处理请求成功响应
+  console.info(`Response success, ${response}`);
+  // 关闭会话
+  session.close();
+}).catch((err: BusinessError) => {
+  // 处理请求失败响应
+  console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // 关闭会话
+  session.close();
+})
+```
+
+### Code block 5
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 6
+
+```
+const session = rcp.createSession();
+// 定义请求的URL（请根据实际需求调整）
+const requestURL = 'https://example.com';
+```
+
+### Code block 7
+
+```
+// 配置请求的proxy方式为'system'
+const configuration: rcp.Configuration = {
+  proxy: 'system'
+}
+// 定义request并将请求configuration添加到request中
+const request = new rcp.Request(requestURL, 'GET');
+request.configuration = configuration;
+```
+
+### Code block 8
+
+```
+session.fetch(request).then((response: rcp.Response) => {
+  // 处理请求成功响应
+  console.info(`Response success, ${response}`);
+  // 关闭会话
+  session.close();
+}).catch((err: BusinessError) => {
+  // 处理请求失败响应
+  console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // 关闭会话
+  session.close();
+})
+```
+
+### Code block 9
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 10
+
+```
+const session = rcp.createSession();
+// 定义请求的URL（请根据实际需求调整）
+const requestURL = 'https://example.com';
+```
+
+### Code block 11
+
+```
+// 自定义proxy
+const configuration: rcp.Configuration = {
+  proxy: {
+    url: 'https://www.example.com',
+    createTunnel: 'always',
+    exclusions: [
+      'https://www.example1.com',
+      'https://www.example2.com'
+    ]
+  }
+}
+// 定义request并将请求configuration添加到request中
+const request = new rcp.Request(requestURL, 'GET');
+request.configuration = configuration;
+```
+
+### Code block 12
+
+```
+session.fetch(request).then((response: rcp.Response) => {
+  // 处理请求成功响应
+  console.info(`Response success, ${response}`);
+  // 关闭会话
+  session.close();
+}).catch((err: BusinessError) => {
+  // 处理请求失败响应
+  console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // 关闭会话
+  session.close();
+})
+```

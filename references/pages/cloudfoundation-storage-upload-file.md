@@ -35,15 +35,12 @@ import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { GlobalContext } from '../common/GlobalContext';
 
-
 let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
-
 
 @Component
 export struct testPage {
   build() {
   }
-
 
   // 上传指定文件至云侧
   upload() {
@@ -63,7 +60,6 @@ export struct testPage {
     })
   }
 
-
   /**
    * @throws photoViewPicker select throws
    */
@@ -75,7 +71,6 @@ export struct testPage {
     let photoViewPicker = new photoAccessHelper.PhotoViewPicker();
     return photoViewPicker.select(photoSelectOptions);
   }
-
 
   copyFile(srcPath: string, dstPath: string) {
     try {
@@ -89,7 +84,6 @@ export struct testPage {
       return;
     }
   }
-
 
   uploadFile(localPath: string, cloudPath: string) {
     storageBucket.uploadFile(GlobalContext.getContext(), {
@@ -117,6 +111,112 @@ export struct testPage {
         hilog.info(0x0000, 'testTag', `on response ${JSON.stringify(response)}`);
       });
 
+      // start task
+      task.start((err: BusinessError) => {
+        if (err) {
+          hilog.error(0x0000, 'testTag',
+            `Failed to start a file upload task, code: ${err.code}, message: ${err.message}`);
+        } else {
+          hilog.info(0x0000, 'testTag', `Succeeded in starting a file upload task.`);
+        }
+      });
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'testTag', `Failed to upload file, code: ${err.code}, message: ${err.message}`);
+    })
+  }
+}
+
+说明
+
+上传完成，可以登录AppGallery Connect，选择项目，进入“云存储”界面查看文件列表。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cloudStorage } from '@kit.CloudFoundationKit';
+import { BusinessError, request } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { GlobalContext } from '../common/GlobalContext';
+
+let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+
+@Component
+export struct testPage {
+  build() {
+  }
+
+  // 上传指定文件至云侧
+  upload() {
+    this.selectPhoto().then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+      let fileUri = photoSelectResult.photoUris[0];
+      hilog.info(0x0000, 'testTag', `pick file ${fileUri}`);
+      let fileName = fileUri.split('/').pop() as string;
+      hilog.info(0x0000, 'testTag', `file name ${fileName}`);
+      let cacheFile = GlobalContext.getContext().cacheDir + '/' + fileName;
+      hilog.info(0x0000, 'testTag', `cacheFile ${cacheFile}`);
+      // 将选中文件copy至cache目录下
+      this.copyFile(fileUri, cacheFile);
+      // 上传至云存储默认实例
+      this.uploadFile(cacheFile, `screenshot/${fileName}`);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'testTag', `Failed to upload file, code: ${err.code}, message: ${err.message}`);
+    })
+  }
+
+  /**
+   * @throws photoViewPicker select throws
+   */
+  selectPhoto(): Promise<photoAccessHelper.PhotoSelectResult> {
+    // 使用photoAccessHelper选择指定的文件
+    let photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+    photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE; // 过滤选择媒体文件类型为IMAGE
+    photoSelectOptions.maxSelectNumber = 1; // 选择媒体文件的最大数目
+    let photoViewPicker = new photoAccessHelper.PhotoViewPicker();
+    return photoViewPicker.select(photoSelectOptions);
+  }
+
+  copyFile(srcPath: string, dstPath: string) {
+    try {
+      let srcFile = fileIo.openSync(srcPath);
+      let dstFile = fileIo.openSync(dstPath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+      fileIo.copyFileSync(srcFile.fd, dstFile.fd);
+      fileIo.closeSync(srcFile);
+      fileIo.closeSync(dstFile);
+    } catch (e) {
+      hilog.error(0x0000, 'testTag', `copy file failed ${e.message}`);
+      return;
+    }
+  }
+
+  uploadFile(localPath: string, cloudPath: string) {
+    storageBucket.uploadFile(GlobalContext.getContext(), {
+      localPath: localPath, // 本地文件路径（context.cacheDir目录下的文件路径）
+      cloudPath: cloudPath   // 云侧路径，支持传入“文件目录/文件名”（如“screenshot/demo.jpg”），或仅传入文件名。
+    }).then((task: request.agent.Task) => {
+      task.on('progress', (progress) => {
+        hilog.info(0x0000, 'testTag', `on progress ${JSON.stringify(progress)}`);
+      });
+      task.on('completed', (progress) => {
+        hilog.info(0x0000, 'testTag', `on completed ${JSON.stringify(progress)}`);
+        // 删除cache目录临时文件
+        fileIo.unlink(localPath).catch((err: BusinessError) => {
+          hilog.error(0x0000, 'testTag', `Failed to unlink, code: ${err.code}, message: ${err.message}.`);
+        });
+      });
+      task.on('failed', (progress) => {
+        hilog.info(0x0000, 'testTag', `on failed ${JSON.stringify(progress)}`);
+        // 删除cache目录临时文件
+        fileIo.unlink(localPath).catch((err: BusinessError) => {
+          hilog.error(0x0000, 'testTag', `Failed to unlink, code: ${err.code}, message: ${err.message}.`);
+        });
+      });
+      task.on('response', (response) => {
+        hilog.info(0x0000, 'testTag', `on response ${JSON.stringify(response)}`);
+      });
 
       // start task
       task.start((err: BusinessError) => {
@@ -132,9 +232,4 @@ export struct testPage {
     })
   }
 }
-说明
-
-上传完成，可以登录AppGallery Connect，选择项目，进入“云存储”界面查看文件列表。
-
-初始化存储实例
-下载云侧文件至本地
+```

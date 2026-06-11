@@ -2,6 +2,24 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-config-setting_
 
+在开通推送服务前，请先参考“应用开发准备”创建项目和应用工程。
+
+说明
+
+从HarmonyOS NEXT Developer Beta2起，开发者无需配置公钥指纹和Client ID。
+
+操作步骤
+
+登录AppGallery Connect网站，选择“开发与服务”。
+
+在项目列表中找到您的项目，在项目下的应用列表中选择需要配置推送服务参数的应用。
+
+在左侧导航栏选择“增长 > 推送服务”，点击“立即开通”，在弹出的提示框中点击“确定”。
+
+说明
+
+推送服务权益为项目级，若您已有开通过推送服务的项目，当您在项目中添加新的应用时，无需再次开通推送服务。
+
 若项目当前未配置数据处理位置，请在提示中点击“确定”，会弹出设置数据处理位置的弹窗。完成数据处理位置的设置，点击“确定”。
 
 说明
@@ -49,6 +67,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-conf
 按需设置数据处理位置。
 
 设置完成后，点击“保存”。
-
-学习Push Kit接入规范
-申请推送场景化消息权益

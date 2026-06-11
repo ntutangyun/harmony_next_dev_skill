@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-launch-development_
 
+业务流程
+
+用户启动游戏。
+
+游戏在onCreate生命周期中调用setSupportedProcessCache接口，设置游戏支持缓存后快速启动。
+
+说明
+
 部分机型不支持设置进程资源的缓存，因此在调用setSupportedProcessCache接口时需加try catch捕获异常。
 
 用户上划退出游戏。
@@ -40,7 +48,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 接口名	描述
 isLaunchMirrorEnabled(): boolean	查询游戏的内存镜像功能是否开启。
+
 开发步骤
+
 说明
 
 本节主要介绍秒级启动的核心流程，完整的开发步骤和注意事项请参见Codelab开发指导。
@@ -89,5 +99,48 @@ onDestroy(): void {
     }
   }
 }
-开发准备
-Graphics Accelerate Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+import { launchAcceleration } from '@kit.GraphicsAccelerateKit';
+```
+
+### Code block 2
+
+```
+onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+  if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
+    try {
+      this.context.getApplicationContext().setSupportedProcessCache(true);
+    } catch (error) {
+      let code = (error as BusinessError).code;
+      let message = (error as BusinessError).message;
+      console.error(`setSupportedProcessCache fail, code: ${code}, msg: ${message}`);
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+onWindowStageWillDestroy(): void {
+  if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
+    let enable = launchAcceleration.isLaunchMirrorEnabled()
+    if (enable) {
+      // 切换场景的代码逻辑
+    }
+  }
+}
+onDestroy(): void {
+  if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
+    let enable = launchAcceleration.isLaunchMirrorEnabled()
+    if (!enable) {
+      // 若未使能，才进行游戏引擎的销毁
+    }
+  }
+}
+```

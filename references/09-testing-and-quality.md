@@ -106,7 +106,7 @@ Permissions:
 
 Data handling:
 - Pick the right `securityLevel` for KV / RDB stores: `S1` (default), `S2`, `S3`, `S4`. Higher = stronger encryption, lower performance.
-- Use **Asset Kit** (`@kit.AssetStoreKit`) for short-token storage; `Universal Keystore Kit` for cryptographic operations.
+- Use **Asset Kit** (`@kit.AssetStoreKit`) for short-token storage; `Universal Keystore Kit` for cryptographic operations. For ECC key interop, Crypto Architecture Kit now supports converting between compressed and uncompressed ECC public keys / points (`pages/crypto-convert-compressed-or-uncompressed-ecc-pubkey.md`, NDK variant `*-ndk`).
 - For backup: declare allowed dirs in `BackupExtensionAbility` (`backupExtensionInfo` whitelist/blacklist).
 
 Authentication:

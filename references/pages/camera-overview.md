@@ -32,5 +32,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-ov
 
 图2 相机开发模型
 
-Camera Kit（相机服务）
-申请相机开发的权限
+模拟器支持情况
+
+本Kit支持模拟器，但与真机存在部分能力差异，具体差异如下。
+
+通用差异：请参见模拟器与真机的差异。
+
+模拟器仅支持1280*720分辨率下的相机预览与拍照能力。

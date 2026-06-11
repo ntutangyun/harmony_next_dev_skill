@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/weather-service-faq-3_
 
+如果查询区域当时无短时降水、无天气预警发布或预警已经解除、无潮汐站点时，没有数据返回属于正常现象。

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/location-permission-guidelines_
 
+场景概述
+
 应用在使用Location Kit系统能力前，需要检查是否已经获取用户授权访问设备位置信息。如未获得授权，可以向用户申请需要的位置权限。
 
 系统提供的定位权限有：
@@ -23,6 +25,7 @@ Location Kit接口对权限的要求参见API参考：@ohos.geoLocationManager (
 申请位置权限的方式	是否允许申请	申请成功后获取的位置的精确度
 申请ohos.permission.APPROXIMATELY_LOCATION	是	获取到模糊位置，精确度为5公里。
 同时申请ohos.permission.APPROXIMATELY_LOCATION和ohos.permission.LOCATION	是	获取到精准位置，精准度在米级别。
+
 当APP运行在后台时，申请位置权限的方式如下：
 
 如果应用在后台运行时也需要访问设备位置，除了按照步骤2申请权限外，还需要申请LOCATION类型的长时任务。
@@ -30,6 +33,5 @@ Location Kit接口对权限的要求参见API参考：@ohos.geoLocationManager (
 长时任务申请可参考：长时任务介绍。
 
 示例代码
+
 位置信息
-开发准备
-申请开放能力权限指导

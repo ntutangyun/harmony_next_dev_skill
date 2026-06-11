@@ -2,8 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/filemanagerservice-getfileicon_
 
+场景介绍
+
+根据文件类型获取对应的文件图标。
+
+接口说明
+
+接口名	描述
 function getFileIconSync(fileType: string): string | Resource	根据文件类型获取文件图标。
 function getFileIcon(fileType: string): Promise<string | Resource>	根据文件类型获取文件图标。使用Promise异步回调。
+
 示例代码
 
 1.导入文件管理服务模块及相关模块
@@ -21,7 +29,6 @@ import { uniformTypeDescriptor } from '@kit.ArkData';
 struct Index {
   @State fileIcon: string | Resource = '';
 
-
   private getFileIconByFileExtension(filenameExtension: string): void {
     try {
       let typeId: string = uniformTypeDescriptor.getUniformDataTypeByFilenameExtension(filenameExtension);
@@ -31,7 +38,6 @@ struct Index {
       console.error('getFileIconByFileExtension failed with err: ' + JSON.stringify(err));
     }
   }
-
 
   build() {
     RelativeContainer() {
@@ -50,5 +56,50 @@ struct Index {
     .width('100%')
   }
 }
-删除文件到回收站
-解析文件快捷方式
+
+## Code blocks
+
+### Code block 1
+
+```
+import { fileManagerService } from '@kit.FileManagerServiceKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  @State fileIcon: string | Resource = '';
+
+  private getFileIconByFileExtension(filenameExtension: string): void {
+    try {
+      let typeId: string = uniformTypeDescriptor.getUniformDataTypeByFilenameExtension(filenameExtension);
+      this.fileIcon = fileManagerService.getFileIconSync(typeId);
+    } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      console.error('getFileIconByFileExtension failed with err: ' + JSON.stringify(err));
+    }
+  }
+
+  build() {
+    RelativeContainer() {
+      Column() {
+        Image(this.fileIcon)
+          .height(88)
+          .border({ width: 1, radius: 6 })
+        Button('Update FileIcon')
+          .onClick(() => {
+            // 以txt格式为例
+            this.getFileIconByFileExtension('.txt');
+          })
+      }
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```

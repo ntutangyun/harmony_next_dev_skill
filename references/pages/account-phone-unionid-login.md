@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-phone-unionid-login_
 
+概述
+
 华为账号一键登录是基于OAuth 2.0协议标准和OpenID Connect协议标准构建的OAuth 2.0授权登录系统，应用可以通过华为账号一键登录能力快捷地获取华为账号用户的身份标识和手机号，快速建立应用内的用户体系。
 
 优势：
@@ -36,8 +38,6 @@ Account Kit调用系统能力获取华为账号登录设备上的SIM卡手机号
 
 华为账号一键登录服务当前仅限中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）用户可用。
 
-应用服务端获取华为账号绑定号码时，该服务器必须部署在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
-
 华为账号一键登录支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
 
 仅支持企业开发者使用一键登录，个人开发者请使用华为账号登录或静默登录实现登录。
@@ -57,7 +57,8 @@ Account Kit调用系统能力获取华为账号登录设备上的SIM卡手机号
 将UnionID/OpenID和手机号同时与应用账号建立关联，可以为用户带来更多便利的功能。如：实现静默登录、获取华为账号用户信息、获取华为账号风险等级等。实现免用户操作登录，获得安全快捷的应用登录体验。
 
 业务流程
-用户首次登录应用
+
+[h2]用户首次登录应用
 
 若应用未接入过华为账号登录，不存在使用华为账号登录过的应用账号，请参照以下流程接入华为账号一键登录。
 
@@ -67,7 +68,6 @@ Account Kit调用系统能力获取华为账号登录设备上的SIM卡手机号
 
 预取号阶段（序号1-4）：
 
-用户打开应用后，应用scope传quickLoginAnonymousPhone调用AuthorizationWithHuaweiIDRequest授权请求获取匿名手机号。如果获取到匿名手机号为空，应用需要展示其他登录方式。
 说明
 
 获取匿名手机号需要进行超时处理，应用可根据实际场景设置超时时间，推荐设置5秒保证用户体验。
@@ -81,9 +81,12 @@ Account Kit调用系统能力获取华为账号登录设备上的SIM卡手机号
 点击一键登录关联用户账号阶段（序号6-16）：
 
 用户同意协议后，点击华为账号一键登录按钮，应用可以通过HuaweiIDCredential获取到Authorization Code等数据。
+
 将获取的Authorization Code数据传给应用服务端，应用服务端通过Authorization Code调用/oauth2/v6/quickLogin/getPhoneNumber接口获取用户完整手机号和UnionID、OpenID。
+
 应用通过关联用户手机号和UnionID、OpenID完成用户登录。
-用户非首次登录应用（可选）
+
+[h2]用户非首次登录应用（可选）
 
 应用接入过华为账号登录，存在使用华为账号登录过的用户账号，即根据UnionID/OpenID判断用户已关联过应用系统数据库，则需要参照以下流程开发。
 
@@ -105,17 +108,12 @@ Account Kit调用系统能力获取华为账号登录设备上的SIM卡手机号
 createAuthorizationWithHuaweiIDRequest(): AuthorizationWithHuaweiIDRequest	获取授权接口，通过AuthorizationWithHuaweiIDRequest传入一键登录的scope：quickLoginAnonymousPhone，即可在授权结果中获取到用户的匿名手机号和Authorization Code。
 constructor(context?: common.Context)	创建授权请求Controller。
 executeRequest(request: AuthenticationRequest): Promise<AuthenticationResponse>	通过Promise方式执行授权操作。
-LoginWithHuaweiIDButton	
-
-华为账号Button登录组件。
-
-该组件仅纯文本样式支持华为账号一键登录功能。开发者可以通过调整按钮的大小、圆角等参数以适配HarmonyOS应用登录界面。如果仍然不能满足开发者的诉求，可以使用Style的BUTTON_CUSTOM值定义按钮的文字颜色和背景色。
-
-
+LoginWithHuaweiIDButton	华为账号Button登录组件。 该组件仅纯文本样式支持华为账号一键登录功能。开发者可以通过调整按钮的大小、圆角等参数以适配HarmonyOS应用登录界面。如果仍然不能满足开发者的诉求，可以使用Style的BUTTON_CUSTOM值定义按钮的文字颜色和背景色。
 onClickLoginWithHuaweiIDButton(callback: AsyncCallback<HuaweiIDCredential>): LoginWithHuaweiIDButtonController	注册华为账号一键登录按钮的结果回调。
 setAgreementStatus(agreementStatus: AgreementStatus): LoginWithHuaweiIDButtonController	设置协议状态方法。用户未同意协议前设置协议状态为NOT_ACCEPTED，用户同意协议后设置协议状态为ACCEPTED，才可以完成华为账号登录。
 onClickEvent(callback: AsyncCallback<ClickEvent>): LoginWithHuaweiIDButtonController	注册华为账号一键登录按钮的点击事件回调。
 continueLogin(callback: AsyncCallback<void>): LoginWithHuaweiIDButtonController	用户点击协议弹框的同意并登录按钮结果回调。
+
 注意
 
 上述接口需在页面或自定义组件生命周期内调用。
@@ -134,11 +132,12 @@ continueLogin(callback: AsyncCallback<void>): LoginWithHuaweiIDButtonController	
 -enable-property-obfuscation
 -keep-property-name
 quickLoginAnonymousPhone
+
 客户端开发
 
 开发者可参考下述内容自行开发，也可使用Account Kit为常见的三方开发框架（Flutter、H5、React-Native、uni-app）提供的SampleCode示例工程，用于接入华为账号一键登录能力，具体可参考三方开发框架接入华为账号一键登录进行开发。
 
-用户首次登录应用
+[h2]用户首次登录应用
 
 导入模块。
 
@@ -170,13 +169,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 1001502014	应用未申请scopes或permissions权限	请参考1001502014 应用未申请scopes或permissions权限的可能原因和解决方法解决该报错
 1001500001	应用指纹证书校验失败	请参考1001500001 应用指纹证书校验失败的可能原因和解决办法解决该报错
 1001500002	重复请求	重复请求，应用无需处理
-1001500003	不支持该scopes或permissions	
-
-1、华为账号用户注册地可能为中国境外、香港特别行政区、澳门特别行政区或中国台湾，应用展示其他登录方式
-
-2、仅在5.1.1(19)支持TV设备，其他版本应用可以通过华为账号登录进行登录
-
-
+1001500003	不支持该scopes或permissions	1、华为账号用户注册地可能为中国境外、香港特别行政区、澳门特别行政区或中国台湾，应用展示其他登录方式 2、仅在5.1.1(19)支持TV设备，其他版本应用可以通过华为账号登录进行登录
 12300001	系统服务异常	应用展示其他登录方式
 
 2）获取到的匿名手机号为空，说明华为账号没有绑定手机号、权限未申请或未生效，上述异常场景应用需要展示其他登录方式。
@@ -212,7 +205,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
     }
   }
 
-
   // 错误处理
   dealAllError(error: BusinessError): void {
     hilog.error(0x0000, 'testTag',
@@ -232,7 +224,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
       // 应用登录失败，应用需要展示其他登录方式
     }
   }
-
 
   export enum ErrorCode {
     // 账号未登录
@@ -256,12 +247,10 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { connection } from '@kit.NetworkKit';
 
-
 @Component
 struct QuickLoginComponent {
   // 第二步获取的匿名手机号传到此处
   @State quickLoginAnonymousPhone: string = '';
-
 
   build() {
     if (this.quickLoginAnonymousPhone) {
@@ -273,7 +262,6 @@ struct QuickLoginComponent {
     }
   }
 }
-
 
 @Component
 struct QuickLoginButtonComponent {
@@ -364,7 +352,6 @@ struct QuickLoginButtonComponent {
     alignment: DialogAlignment.Center
   });
 
-
   // Toast提示
   showToast(resource: string) {
     try {
@@ -378,7 +365,6 @@ struct QuickLoginButtonComponent {
       hilog.error(this.domainId, this.logTag, `showToast args  errCode is ${code}, errMessage is ${message}`);
     }
   }
-
 
   // 跳转华为账号用户认证协议页，该页面需在工程main_pages.json文件配置
   jumpToPrivacyWebView() {
@@ -408,7 +394,6 @@ struct QuickLoginButtonComponent {
       }
     });
   }
-
 
   handleLoginWithHuaweiIDButton(error: BusinessError | undefined,
     response: loginComponentManager.HuaweiIDCredential) {
@@ -483,7 +468,6 @@ struct QuickLoginButtonComponent {
     }
   }
 
-
   build() {
     Scroll() {
       Column() {
@@ -502,7 +486,6 @@ struct QuickLoginButtonComponent {
                 hilog.error(this.domainId, this.logTag, 'appIcon loading fail.');
               })
 
-
             Text($r('app.string.app_name'))
               .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
               .fontWeight(FontWeight.Medium)
@@ -515,7 +498,6 @@ struct QuickLoginButtonComponent {
               .margin({
                 top: 12
               })
-
 
             Text('应用描述')
               .fontSize($r('sys.float.ohos_id_text_size_body2'))
@@ -530,7 +512,6 @@ struct QuickLoginButtonComponent {
             top: 100
           })
 
-
           Column() {
             Text(this.quickLoginAnonymousPhone)
               .fontSize(36)
@@ -541,7 +522,6 @@ struct QuickLoginButtonComponent {
               .textAlign(TextAlign.Center)
               .maxLines(1)
               .constraintSize({ maxWidth: '100%', minHeight: 48 })
-
 
             Text('华为账号绑定号码')
               .fontSize($r('sys.float.ohos_id_text_size_body2'))
@@ -558,7 +538,6 @@ struct QuickLoginButtonComponent {
           }.margin({
             top: 64
           })
-
 
           Column() {
             LoginWithHuaweiIDButton({
@@ -585,7 +564,6 @@ struct QuickLoginButtonComponent {
           .margin({
             top: 56
           })
-
 
           Column() {
             Button({
@@ -617,7 +595,6 @@ struct QuickLoginButtonComponent {
           }.margin({ top: 16 })
         }.width('100%')
 
-
         Row() {
           Row() {
             Checkbox({ name: 'privacyCheckbox', group: 'privacyCheckboxGroup' })
@@ -638,7 +615,6 @@ struct QuickLoginButtonComponent {
                 hilog.info(this.domainId, this.logTag, `agreementChecked: ${value}`);
               })
           }
-
 
           Row() {
             Text() {
@@ -690,7 +666,6 @@ struct QuickLoginButtonComponent {
   }
 }
 
-
 @CustomDialog
 export struct AgreementDialog {
   logTag: string = 'AgreementDialog';
@@ -707,7 +682,6 @@ export struct AgreementDialog {
   };
   privacyText: loginComponentManager.PrivacyText[] = [];
   private static USER_AUTHENTICATION_TAG = '华为账号用户认证协议';
-
 
   build() {
     Column() {
@@ -729,7 +703,6 @@ export struct AgreementDialog {
         left: $r('sys.float.ohos_id_max_padding_start'),
         right: $r('sys.float.ohos_id_max_padding_start')
       })
-
 
       Row() {
         Text() {
@@ -767,7 +740,6 @@ export struct AgreementDialog {
         .padding({ left: 24, right: 24 })
       }.width('100%')
 
-
       Flex({
         direction: FlexDirection.Row
       }) {
@@ -787,7 +759,6 @@ export struct AgreementDialog {
             hilog.info(this.domainId, this.logTag, 'AgreementDialog cancel.');
             this.cancel();
           })
-
 
         Button('同意并登录',
           { type: ButtonType.Capsule, stateEffect: true })
@@ -820,7 +791,6 @@ export struct AgreementDialog {
   }
 }
 
-
 export enum ErrorCode {
   // 账号未登录
   ERROR_CODE_LOGIN_OUT = 1001502001,
@@ -848,7 +818,6 @@ import { webview } from '@kit.ArkWeb';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 // 华为账号用户认证协议展示页
 @Entry
 @Component
@@ -858,7 +827,6 @@ struct WebPage {
   logTag: string = 'WebPage';
   domainId: number = 0x0000;
   controller: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -892,11 +860,9 @@ struct WebPage {
         left: 16
       })
 
-
       Progress({ value: this.progress, type: ProgressType.Linear })
         .width('100%')
         .visibility(this.progress <= 99 ? Visibility.Visible : Visibility.None)
-
 
       Web({ src: this.webUrl ?? '', controller: this.controller })
         .backgroundColor(Color.Transparent)
@@ -924,14 +890,12 @@ struct WebPage {
     .height('100%')
   }
 
-
   aboutToAppear(): void {
     hilog.info(0x0000, 'testTag', 'aboutToAppear');
     const params = this.getUIContext().getRouter().getParams() as Record<string, string>;
     this.webUrl = params.url ?? '';
     hilog.info(0x0000, 'testTag', `webUrl: ${this.webUrl}`);
   }
-
 
   aboutToDisappear(): void {
     hilog.info(0x0000, 'testTag', 'aboutToDisappear');
@@ -945,7 +909,8 @@ struct WebPage {
     }
   }
 }
-用户非首次登录应用（可选）
+
+[h2]用户非首次登录应用（可选）
 
 用户非首次登录应用流程请参考首次登录应用开发流程中的导入模块及获取匿名手机号，获取AuthorizationWithHuaweiIDResponse响应结果中的Authorization Code。可能存在的异常场景及处理方法，可参考表1 获取匿名手机号错误码处理。
 
@@ -955,7 +920,7 @@ struct WebPage {
 
 2）如未关联，则参考首次登录应用开发流程中的展示一键登录页面并获取Authorization Code继续开发。
 
-借助DevEco Studio辅助开发（可选）
+[h2]借助DevEco Studio辅助开发（可选）
 
 打开需要提供一键登录功能的页面，在页面的build()中创建一个容器（如Column）。
 
@@ -994,7 +959,8 @@ struct WebPage {
 应用通过获取到的完整手机号或UnionID查询该用户是否已关联应用系统数据库。如已关联，则绑定获取的UnionID与手机号到已有用户上（如已绑定，则可忽略），完成用户登录；如未关联，则创建新用户并绑定手机号与UnionID到该用户上。
 
 客户端与服务端交互开发
-应用客户端到应用服务端的开发
+
+[h2]应用客户端到应用服务端的开发
 
 业务流程：
 
@@ -1014,7 +980,6 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { util } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 // 客户端请求接口示例代码
 export function rcpRequest(authCode: string) {
@@ -1073,12 +1038,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequiredArgsConstructor
 public class QuickLoginController {
   private final LoginService loginService;
-
 
   @PostMapping("/login")
   public Response login(@RequestBody LoginReq requestBody) {
@@ -1091,12 +1054,9 @@ python示例代码：
 
 from flask import Flask, request, jsonify
 
-
 from service.loginService import login_with_huawei
 
-
 app = Flask(__name__)
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -1110,7 +1070,6 @@ def login():
         })
     authorization_code = request_data['authorizationCode']
 
-
     # 调用服务层
     user_info = login_with_huawei(authorization_code)
     if not user_info:
@@ -1120,7 +1079,6 @@ def login():
             'data': None
         })
 
-
     # 成功响应
     return jsonify({
         'code': 200,
@@ -1129,15 +1087,12 @@ def login():
     })
 
 
-
-
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
 
 go示例代码：
 
 package main
-
 
 import (
     loginService "./service"
@@ -1151,18 +1106,15 @@ import (
     _ "strconv"
 )
 
-
 type LoginRequest struct {
     AuthorizationCode string `json:"authorizationCode"`
 }
-
 
 type Response struct {
     UserInfo UserInfo `json:"data"`
     Code     int      `json:"code"`
     Message  string   `json:"message"`
 }
-
 
 type UserInfo struct {
     OpenID            string `json:"openId"`
@@ -1173,12 +1125,10 @@ type UserInfo struct {
     PhoneCountryCode  string `json:"phoneCountryCode"`
 }
 
-
 type PhoneNumberErrRsp struct {
     ResultCode int    `json:"resultCode"`
     ResultDesc string `json:"resultDesc"`
 }
-
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
     // 设置通用JSON响应头
@@ -1208,7 +1158,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
     sendSuccessResponse(w, userInfo)
 }
 
-
 func parseLoginRequest(r *http.Request, dest *LoginRequest) error {
     body, err := ioutil.ReadAll(r.Body)
     if err != nil {
@@ -1223,7 +1172,6 @@ func parseLoginRequest(r *http.Request, dest *LoginRequest) error {
     }
     return nil
 }
-
 
 func processUserInfoResponse(resp *http.Response) (*UserInfo, error) {
     if resp.StatusCode != http.StatusOK {
@@ -1244,7 +1192,6 @@ func processUserInfoResponse(resp *http.Response) (*UserInfo, error) {
        return nil, fmt.Errorf("failed to unmarshal response body: %v", err)
     }
 
-
     /*
      根据业务设计流程，在数据库中查询用户信息，比如：
      1、使用UnionID查询用户，匹配到了则返回用户信息；
@@ -1252,10 +1199,8 @@ func processUserInfoResponse(resp *http.Response) (*UserInfo, error) {
      3、UnionID和手机号均没有匹配到，则进入注册流程
     */
 
-
     return &userInfo, nil
 }
-
 
 func sendErrorResponse(w http.ResponseWriter, statusCode int, message string) {
     w.WriteHeader(statusCode)
@@ -1267,7 +1212,6 @@ func sendErrorResponse(w http.ResponseWriter, statusCode int, message string) {
        log.Printf("Failed to encode error response: %v", err)
     }
 }
-
 
 func sendSuccessResponse(w http.ResponseWriter, userInfo *UserInfo) {
     response := Response{
@@ -1281,7 +1225,6 @@ func sendSuccessResponse(w http.ResponseWriter, userInfo *UserInfo) {
     }
 }
 
-
 func main() {
     http.HandleFunc("/login", loginHandler)
     log.Println("Server starting on :8080...")
@@ -1294,9 +1237,7 @@ php示例代码：
 
 <?php
 
-
 require __DIR__ . '/../service/LoginService.php';
-
 
 // 初始化路由
 $router = new Router();
@@ -1314,7 +1255,6 @@ $router->addRoute('POST', '/login', function($request) {
             return;
         }
 
-
         // 返回响应
         echo json_encode([
             'data' => $userInfo,
@@ -1326,17 +1266,14 @@ $router->addRoute('POST', '/login', function($request) {
     }
 });
 
-
 // 处理请求
 $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 class Router {
     private $routes = [];
 
-
     public function addRoute($method, $path, $handler) {
         $this->routes[strtoupper($method)][$path] = $handler;
     }
-
 
     public function dispatch($method, $uri) {
         header('Content-Type: application/json');
@@ -1347,7 +1284,6 @@ class Router {
             $handler($_REQUEST);
             return;
         }
-
 
         // 未找到路由
         echo json_encode([
@@ -1375,16 +1311,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginService {
     private final HttpUtil httpService;
 
-
     private final AGCProperties agcProperties;
-
 
     public PhoneNumberResp loginWithHuawei(String authorizationCode) {
         PhoneNumberReq phoneNumberReq = new PhoneNumberReq();
@@ -1394,12 +1327,10 @@ public class LoginService {
         PhoneNumberResp phoneNumberResp = httpService.callHttpPost(Constants.QUICK_LOGIN_PHONE_NUMBER_URL, phoneNumberReq, PhoneNumberResp.class).getBody();
         log.info("/oauth2/v6/quickLogin/getPhoneNumber response body is: {}", JSONObject.toJSONString(phoneNumberResp));
 
-
         // 数据库相关：
         // 使用UnionID查询用户，匹配到了则返回用户信息；
         // 未匹配到则使用手机号查询用户，查到了则关联华为账号UnionID，返回用户信息；
         // UnionID和手机号均没有匹配到，则进入注册流程
-
 
         return phoneNumberResp;
     }
@@ -1411,12 +1342,10 @@ import requests
 import json
 import os
 
-
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 target_file = os.path.join(parent_dir, "config", "agc.json")
 with open(target_file) as f:
     agc_config = json.load(f)
-
 
 def login_with_huawei(authorization_code):
     # 配置信息
@@ -1424,14 +1353,12 @@ def login_with_huawei(authorization_code):
     client_secret = agc_config["clientSecret"] # 读取配置项中Client Secret
     phone_number_url = "https://account-api.cloud.huawei.com/oauth2/v6/quickLogin/getPhoneNumber"
 
-
     # 构建请求体
     token_request_body = {
         "clientId": client_id,
         "clientSecret": client_secret,
         "code": authorization_code
     }
-
 
     # 发送请求获取一键登录用户手机号等信息
     user_info_response = {}
@@ -1447,19 +1374,16 @@ def login_with_huawei(authorization_code):
     if "resultCode" in user_info:
         assert user_info["resultCode"] == 0
 
-
     # 根据业务设计流程，在数据库中查询用户信息，比如：
     # 1、使用UnionID查询用户，匹配到了则返回用户信息；
     # 2、未匹配到则使用手机号查询用户，查到了则将华为账号UnionID关联到该用户，返回用户信息；
     # 3、UnionID和手机号均没有匹配到，则进入注册流程
-
 
     return user_info
 
 go示例代码：
 
 package service
-
 
 import (
     "bytes"
@@ -1473,20 +1397,17 @@ import (
     "time"
 )
 
-
 type Response struct {
     Data    interface{} `json:"data"`
     Code    int         `json:"code"`
     Message string      `json:"message"`
 }
 
-
 type PhoneNumberReq struct {
     ClientId     string `json:"clientId"`
     ClientSecret string `json:"clientSecret"`
     Code         string `json:"code"`
 }
-
 
 var httpClient = &http.Client{
     Transport: &http.Transport{
@@ -1499,19 +1420,16 @@ var httpClient = &http.Client{
     Timeout: 30 * time.Second,
 }
 
-
 var (
     config     *Config
     configOnce sync.Once
     configErr  error
 )
 
-
 type Config struct {
     ClientID     string `json:"clientId"`
     ClientSecret string `json:"clientSecret"`
 }
-
 
 func LoadConfig() (*Config, error) {
     configOnce.Do(func() {
@@ -1529,7 +1447,6 @@ func LoadConfig() (*Config, error) {
     })
     return config, configErr
 }
-
 
 func LoginWithHuawei(authorizationCode string) (*http.Response, error) {
     config, err := LoadConfig()
@@ -1556,7 +1473,6 @@ php示例代码：
 
 <?php
 
-
 class LoginService {
     public static function loginWithHuawei($authorizationCode) {
         $agcConfig = require __DIR__ . '/../config/agc.php';
@@ -1565,7 +1481,6 @@ class LoginService {
             'clientSecret' => $agcConfig['clientSecret'],
             'code' => $authorizationCode
         ];
-
 
         $ch = curl_init();
         curl_setopt_array($ch,
@@ -1582,14 +1497,12 @@ class LoginService {
                 CURLOPT_POSTFIELDS => json_encode($requestBody)
             ]);
 
-
         $response = curl_exec($ch);
         if ($response === false) {
             error_log('cURL Error: ' . curl_error($ch));
             curl_close($ch);
             return null;
         }
-
 
         $userInfo = json_decode($response, true);
         curl_close($ch);
@@ -1598,7 +1511,6 @@ class LoginService {
             curl_close($ch);
         }
 
-
         /**
          * 根据业务设计流程，在数据库中查询用户信息，比如：
          * 1、使用UnionID查询用户，匹配到了则返回用户信息；
@@ -1606,11 +1518,11 @@ class LoginService {
          * 3、UnionID和手机号均没有匹配到，则进入注册流程
          */
 
-
         return $userInfo;
     }
 }
-客户端与服务端联调
+
+[h2]客户端与服务端联调
 
 前提：根据应用登录方案设计及实现，完成客户端和服务端开发，开发指导参见客户端开发、服务端开发和应用客户端到应用服务端的开发。
 
@@ -1621,41 +1533,1333 @@ class LoginService {
 在应用客户端首页或个人信息页等位置，对当前登录用户信息进行展示，举例如下图：
 
 开发后验证
-集成华为账号一键登录能力应用用户体验质量建议
+
+[h2]集成华为账号一键登录能力应用用户体验质量建议
 
 应用完成开发后，可参照以下标准检查集成华为账号一键登录后的用户体验是否符合预期：
 
 标准编号	标准项名称	类型	标准详细描述
-1	满足华为账号提供登录设计规范	规则	需满足华为账号开放登录中 【华为账号一键登录】按钮 规范，保障HarmonyOS应用拥有简单易用、高效一致、快速安全的登录体验；
-2	用户交互体验原则	建议	
+1	满足华为账号提供登录设计规范	规则	需满足华为账号开放登录中 【华为账号一键登录】按钮 规范，保障HarmonyOS应用拥有简单易用、高效一致、快速安全的登录体验。
+2	业务安全验证原则	建议	应用在用户同意后获取到手机号，需结合自身业务风控体系进行必要的安全验证，以保障用户数据安全。
+3	用户交互体验原则	建议	（1）登录页面的用户协议与隐私协议、华为账号用户认证协议可展示、可点击； （2）当用户点击协议后，回退页面，须回到点击前的页面； （3）只有用户勾选并同意所有协议后，才可继续进行登录操作，若用户未勾选协议时直接点击华为账号登录按钮，须有明确的同意协议提醒； （4）点击登录按钮须直接完成登录流程，可出现头像、昵称授权页，但取消场景须不影响登录流程；若出现处理异常，须及时终止页面，不应出现应用无法操作的现象。
+4	登录页面内容用户体验原则	建议	（1）若未提供其他登录方式，不应显示“其他登录方式”的入口； （2）若使用华为账号一键登录，页面匿名手机号须展示从华为账号侧获取的匿名手机号，不应展示其他来源的手机号； （3）用户协议中，必须包含《华为账号用户认证协议》，且协议必须可点击、可加载，加载后支持回退页面，且回到点击前的页面。
+5	异常处理用户体验原则	建议	登录页面需进行异常处理保证： （1）若登录异常（如网络异常、海外账号不支持等情况），勿将错误码等原始信息直接透传给用户； （2）若登录时触发了华为侧的短信验证码校验，则在校验成功之后，应用不应再展示额外的验证码验证页面。
+6	应用生命周期变化的华为账号用户体验原则	建议	应用更新后，其登录状态须与更新前一致。
 
-（1）登录页面的用户协议与隐私协议、华为账号用户认证协议可展示、可点击；
+## Code blocks
 
-（2）当用户点击协议后，回退页面，须回到点击前的页面；
+### Code block 1
 
-（3）只有用户勾选并同意所有协议后，才可继续进行登录操作，若用户未勾选协议时直接点击华为账号登录按钮，须有明确的同意协议提醒；
+```
+# 开发者开启属性混淆需要配置quickLoginAnonymousPhone属性白名单防止其被混淆
+-enable-property-obfuscation
+-keep-property-name
+quickLoginAnonymousPhone
+```
 
-（4）点击登录按钮须直接完成登录流程，可出现头像、昵称授权页，但取消场景须不影响登录流程；若出现处理异常，须及时终止页面，不应出现应用卡死无法操作；
+### Code block 2
+
+```
+import { authentication } from '@kit.AccountKit';
+import { util } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 3
+
+```
+  getQuickLoginAnonymousPhone() {
+    // 创建授权请求，并设置参数
+    const authRequest = new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
+    // 获取匿名手机号需传quickLoginAnonymousPhone这个scope，传参之前需要先申请“华为账号一键登录”权限，否则会返回1001502014错误码
+    authRequest.scopes = ['quickLoginAnonymousPhone'];
+    // 建议使用generateRandomUUID生成state，可用于一致性比对，防止跨站攻击
+    authRequest.state = util.generateRandomUUID();
+    // 一键登录场景该参数必须设置为false
+    authRequest.forceAuthorization = false;
+    const controller = new authentication.AuthenticationController();
+    try {
+      controller.executeRequest(authRequest).then((response: authentication.AuthorizationWithHuaweiIDResponse) => {
+        // 获取到匿名手机号
+        const anonymousPhone = response.data?.extraInfo?.quickLoginAnonymousPhone as string;
+        if (anonymousPhone) {
+          hilog.info(0x0000, 'testTag', 'Succeeded in authentication.');
+          const quickLoginAnonymousPhone: string = anonymousPhone;
+          return;
+        }
+        hilog.info(0x0000, 'testTag', 'Succeeded in authentication. AnonymousPhone is empty.');
+        // 未获取到匿名手机号，应用需要跳转到其他方式登录页面
+      }).catch((error: BusinessError) => {
+        this.dealAllError(error);
+      })
+    } catch (error) {
+      this.dealAllError(error);
+    }
+  }
+
+  // 错误处理
+  dealAllError(error: BusinessError): void {
+    hilog.error(0x0000, 'testTag',
+      `Failed to get quickLoginAnonymousPhone, errorCode is ${error.code}, errorMessage is ${error.message}`);
+    // 在应用登录涉及UI交互场景下，建议按照如下错误码指导提示用户
+    if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
+      // 华为账号未登录，应用需要展示其他登录方式
+    } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
+      // 网络异常，请检查当前网络状态并重试或展示其他登录方式
+    } else if (error.code === ErrorCode.ERROR_CODE_INTERNAL_ERROR) {
+      // 登录失败，应用需要展示其他登录方式
+    } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {
+      // 系统服务异常，应用需要展示其他登录方式
+    } else if (error.code === ErrorCode.ERROR_CODE_REQUEST_REFUSE) {
+      // 重复请求，应用无需处理
+    } else {
+      // 应用登录失败，应用需要展示其他登录方式
+    }
+  }
+
+  export enum ErrorCode {
+    // 账号未登录
+    ERROR_CODE_LOGIN_OUT = 1001502001,
+    // 网络错误
+    ERROR_CODE_NETWORK_ERROR = 1001502005,
+    // 内部错误
+    ERROR_CODE_INTERNAL_ERROR = 1001502009,
+    // 系统服务异常
+    ERROR_CODE_SYSTEM_SERVICE = 12300001,
+    // 重复请求
+    ERROR_CODE_REQUEST_REFUSE = 1001500002
+  }
+```
+
+### Code block 4
+
+```
+import { loginComponentManager, LoginWithHuaweiIDButton } from '@kit.AccountKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { connection } from '@kit.NetworkKit';
+
+@Component
+struct QuickLoginComponent {
+  // 第二步获取的匿名手机号传到此处
+  @State quickLoginAnonymousPhone: string = '';
+
+  build() {
+    if (this.quickLoginAnonymousPhone) {
+      QuickLoginButtonComponent({
+        quickLoginAnonymousPhone: this.quickLoginAnonymousPhone
+      })
+    } else {
+      // 授权获取匿名手机号为空时，请应用自行实现其他方式登录页面
+    }
+  }
+}
+
+@Component
+struct QuickLoginButtonComponent {
+  logTag: string = 'QuickLoginButtonComponent';
+  domainId: number = 0x0000;
+  @State quickLoginAnonymousPhone: string = '';
+  // 是否勾选协议
+  @State isSelected: boolean = false;
+  // 华为账号用户认证协议链接，此处仅为示例，实际开发过程中，出于可维护性、安全性等方面考虑，域名不建议硬编码在本地
+  private static USER_AUTHENTICATION_PROTOCOL: string =
+    'https://privacy.consumer.huawei.com/legal/id/authentication-terms.htm?code=CN&language=zh-CN';
+  private static USER_SERVICE_TAG = '用户服务协议';
+  private static PRIVACY_TAG = '隐私协议';
+  private static USER_AUTHENTICATION_TAG = '华为账号用户认证协议';
+  // 定义LoginWithHuaweiIDButton展示的隐私文本，展示应用的用户服务协议、隐私协议和华为账号用户认证协议
+  privacyText: loginComponentManager.PrivacyText[] = [{
+    text: '已阅读并同意',
+    type: loginComponentManager.TextType.PLAIN_TEXT
+  }, {
+    text: '《用户服务协议》',
+    tag: QuickLoginButtonComponent.USER_SERVICE_TAG,
+    type: loginComponentManager.TextType.RICH_TEXT
+  }, {
+    text: '《隐私协议》',
+    tag: QuickLoginButtonComponent.PRIVACY_TAG,
+    type: loginComponentManager.TextType.RICH_TEXT
+  }, {
+    text: '和',
+    type: loginComponentManager.TextType.PLAIN_TEXT
+  }, {
+    text: '《华为账号用户认证协议》',
+    tag: QuickLoginButtonComponent.USER_AUTHENTICATION_TAG,
+    type: loginComponentManager.TextType.RICH_TEXT
+  }, {
+    text: '。',
+    type: loginComponentManager.TextType.PLAIN_TEXT
+  }];
+  // 构造LoginWithHuaweiIDButton组件的控制器
+  controller: loginComponentManager.LoginWithHuaweiIDButtonController =
+    new loginComponentManager.LoginWithHuaweiIDButtonController()
+      /**
+       * 当应用使用自定义的登录页时，如果用户未同意协议，需要设置协议状态为NOT_ACCEPTED，当用户同意协议后再设置
+       * 协议状态为ACCEPTED，才可以使用华为账号一键登录功能
+       */
+      .setAgreementStatus(loginComponentManager.AgreementStatus.NOT_ACCEPTED)
+      .onClickLoginWithHuaweiIDButton((error: BusinessError | undefined,
+        response: loginComponentManager.HuaweiIDCredential) => {
+        this.handleLoginWithHuaweiIDButton(error, response);
+      })
+      .onClickEvent((error: BusinessError, clickEvent: loginComponentManager.ClickEvent) => {
+        if (error) {
+          hilog.error(this.domainId, this.logTag,
+            `onClickEvent error. errCode is ${error.code}, errMessage is ${error.message}`);
+          return;
+        }
+        hilog.info(this.domainId, this.logTag, `onClickEvent clickEvent: ${clickEvent}`);
+        // 设置按钮为不可点击态，待业务逻辑处理完成后，再设置为可点击态
+        this.controller.setEnabled(false);
+      });
+  agreementDialog: CustomDialogController = new CustomDialogController({
+    builder: AgreementDialog({
+      privacyText: this.privacyText,
+      cancel: () => {
+        this.agreementDialog.close();
+        this.controller.setAgreementStatus(loginComponentManager.AgreementStatus.NOT_ACCEPTED);
+      },
+      confirm: () => {
+        this.agreementDialog.close();
+        this.isSelected = true;
+        this.controller.setAgreementStatus(loginComponentManager.AgreementStatus.ACCEPTED);
+        // 调用此方法，同意协议与登录一并完成，无需再次点击登录按钮
+        this.controller.continueLogin((error: BusinessError) => {
+          if (error) {
+            hilog.error(this.domainId, this.logTag,
+              `Failed to login with agreementDialog. errCode is ${error.code}, errMessage is ${error.message}`);
+          } else {
+            hilog.info(this.domainId, this.logTag,
+              'Succeeded in clicking agreementDialog continueLogin.');
+          }
+        });
+      },
+      clickHyperlinkText: () => {
+        this.agreementDialog.close();
+        this.jumpToPrivacyWebView();
+      }
+    }),
+    autoCancel: false,
+    alignment: DialogAlignment.Center
+  });
+
+  // Toast提示
+  showToast(resource: string) {
+    try {
+      this.getUIContext().getPromptAction().showToast({
+        message: resource,
+        duration: 2000
+      });
+    } catch (error) {
+      const message = (error as BusinessError).message;
+      const code = (error as BusinessError).code;
+      hilog.error(this.domainId, this.logTag, `showToast args  errCode is ${code}, errMessage is ${message}`);
+    }
+  }
+
+  // 跳转华为账号用户认证协议页，该页面需在工程main_pages.json文件配置
+  jumpToPrivacyWebView() {
+    try {
+      // 需在module.json5中配置“ohos.permission.GET_NETWORK_INFO”权限
+      const checkNetConn = connection.hasDefaultNetSync();
+      if (!checkNetConn) {
+        this.showToast('服务或网络异常，请稍后重试');
+        return;
+      }
+    } catch (error) {
+      const message = error.message as string;
+      const code = error.code as string;
+      hilog.error(0x0000, 'testTag', `Failed to hasDefaultNetSync, errCode is ${code}, errMessage is ${message}`);
+    }
+    this.getUIContext().getRouter().pushUrl({
+      // 需在module.json5配置“ohos.permission.INTERNET”网络权限
+      url: 'pages/WebPage',
+      params: {
+        isFromDialog: true,
+        url: QuickLoginButtonComponent.USER_AUTHENTICATION_PROTOCOL
+      }
+    }, (err) => {
+      if (err) {
+        hilog.error(this.domainId, this.logTag,
+          `Failed to jumpToPrivacyWebView, errCode is ${err.code}, errMessage is ${err.message}`);
+      }
+    });
+  }
+
+  handleLoginWithHuaweiIDButton(error: BusinessError | undefined,
+    response: loginComponentManager.HuaweiIDCredential) {
+    if (error) {
+      hilog.error(this.domainId, this.logTag,
+        `Failed to login with LoginWithHuaweiIDButton. errCode is ${error.code}, errMessage is ${error.message}`);
+      if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
+        this.getUIContext().showAlertDialog(
+          {
+            message: '网络未连接，请检查网络设置。',
+            offset: { dx: 0, dy: -12 },
+            alignment: DialogAlignment.Bottom,
+            autoCancel: false,
+            confirm: {
+              value: '知道了',
+              action: () => {
+                // 用户点击“知道了”按钮，可于此处补充业务逻辑
+              }
+            }
+          }
+        );
+      } else if (error.code === ErrorCode.ERROR_CODE_AGREEMENT_STATUS_NOT_ACCEPTED) {
+        // 未同意协议，弹出协议弹框，推荐使用该回调方式
+        this.agreementDialog.open();
+      } else if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
+        // 华为账号未登录提示
+        this.showToast('华为账号未登录，请重试');
+      } else if (error.code === ErrorCode.ERROR_CODE_NOT_SUPPORTED) {
+        // 不支持该scopes或permissions提示
+        this.showToast('该scopes或permissions不支持');
+      } else if (error.code === ErrorCode.ERROR_CODE_PARAMETER_ERROR) {
+        // 参数错误提示
+        this.showToast('参数错误');
+      } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
+        // 用户取消，无需特别处理
+      } else {
+        // 其他提示系统或服务异常
+        this.showToast('服务或网络异常，请稍后重试');
+      }
+      this.controller.setEnabled(true);
+      return;
+    }
+    try {
+      if (this.isSelected) {
+        if (response) {
+          hilog.info(this.domainId, this.logTag, 'Succeeded in clicking LoginWithHuaweiIDButton.');
+          // 开发者根据实际业务情况使用以下信息
+          const authCode = response.authorizationCode;
+        }
+      } else {
+        this.agreementDialog.open();
+      }
+    } catch (err) {
+      hilog.error(this.domainId, this.logTag,
+        `Failed to login with LoginWithHuaweiIDButton, errCode: ${err.code}, errMessage: ${err.message}`);
+      this.getUIContext().showAlertDialog(
+        {
+          message: '服务或网络异常，请稍后重试',
+          offset: { dx: 0, dy: -12 },
+          alignment: DialogAlignment.Bottom,
+          autoCancel: false,
+          confirm: {
+            value: '知道了',
+            action: () => {
+              // 用户点击“知道了”按钮，可于此处补充业务逻辑
+            }
+          }
+        }
+      );
+    } finally {
+      this.controller.setEnabled(true);
+    }
+  }
+
+  build() {
+    Scroll() {
+      Column() {
+        Column() {
+          Column() {
+            // 此处为示例资源，开发者可使用应用图标进行替换，以保证正常编译运行
+            Image($r('app.media.app_icon'))
+              .width(48)
+              .height(48)
+              .draggable(false)
+              .copyOption(CopyOptions.None)
+              .onComplete(() => {
+                hilog.info(this.domainId, this.logTag, 'appIcon loading success.');
+              })
+              .onError(() => {
+                hilog.error(this.domainId, this.logTag, 'appIcon loading fail.');
+              })
+
+            Text($r('app.string.app_name'))
+              .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+              .fontWeight(FontWeight.Medium)
+              .fontWeight(FontWeight.Bold)
+              .maxFontSize($r('sys.float.ohos_id_text_size_headline8'))
+              .minFontSize($r('sys.float.ohos_id_text_size_body1'))
+              .maxLines(1)
+              .fontColor($r('sys.color.ohos_id_color_text_primary'))
+              .constraintSize({ maxWidth: '100%' })
+              .margin({
+                top: 12
+              })
+
+            Text('应用描述')
+              .fontSize($r('sys.float.ohos_id_text_size_body2'))
+              .fontColor($r('sys.color.ohos_id_color_text_secondary'))
+              .fontFamily($r('sys.string.ohos_id_text_font_family_regular'))
+              .fontWeight(FontWeight.Regular)
+              .constraintSize({ maxWidth: '100%' })
+              .margin({
+                top: 8
+              })
+          }.margin({
+            top: 100
+          })
+
+          Column() {
+            Text(this.quickLoginAnonymousPhone)
+              .fontSize(36)
+              .fontColor($r('sys.color.ohos_id_color_text_primary'))
+              .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+              .fontWeight(FontWeight.Bold)
+              .lineHeight(48)
+              .textAlign(TextAlign.Center)
+              .maxLines(1)
+              .constraintSize({ maxWidth: '100%', minHeight: 48 })
+
+            Text('华为账号绑定号码')
+              .fontSize($r('sys.float.ohos_id_text_size_body2'))
+              .fontColor($r('sys.color.ohos_id_color_text_secondary'))
+              .fontFamily($r('sys.string.ohos_id_text_font_family_regular'))
+              .fontWeight(FontWeight.Regular)
+              .lineHeight(19)
+              .textAlign(TextAlign.Center)
+              .maxLines(1)
+              .constraintSize({ maxWidth: '100%' })
+              .margin({
+                top: 8
+              })
+          }.margin({
+            top: 64
+          })
+
+          Column() {
+            LoginWithHuaweiIDButton({
+              params: {
+                // LoginWithHuaweiIDButton支持的样式
+                style: loginComponentManager.Style.BUTTON_RED,
+                // 账号登录按钮在登录过程中展示加载态
+                extraStyle: {
+                  buttonStyle: new loginComponentManager.ButtonStyle().loadingStyle({
+                    show: true
+                  })
+                },
+                // LoginWithHuaweiIDButton的边框圆角半径
+                borderRadius: 24,
+                // LoginWithHuaweiIDButton支持的登录类型
+                loginType: loginComponentManager.LoginType.QUICK_LOGIN,
+                // LoginWithHuaweiIDButton支持按钮的样式跟随系统深浅色模式切换
+                supportDarkMode: true
+              },
+              controller: this.controller
+            })
+          }
+          .height(40)
+          .margin({
+            top: 56
+          })
+
+          Column() {
+            Button({
+              type: ButtonType.Capsule,
+              stateEffect: true
+            }) {
+              Text('其他方式登录')
+                .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
+                .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+                .fontWeight(FontWeight.Medium)
+                .fontSize($r('sys.float.ohos_id_text_size_button1'))
+                .focusable(true)
+                .focusOnTouch(true)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .maxLines(1)
+                .padding({ left: 8, right: 8 })
+            }
+            .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
+            .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+            .fontWeight(FontWeight.Medium)
+            .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+            .focusable(true)
+            .focusOnTouch(true)
+            .constraintSize({ minHeight: 40 })
+            .width('100%')
+            .onClick(() => {
+              hilog.info(this.domainId, this.logTag, 'click optionalLoginButton.');
+            })
+          }.margin({ top: 16 })
+        }.width('100%')
+
+        Row() {
+          Row() {
+            Checkbox({ name: 'privacyCheckbox', group: 'privacyCheckboxGroup' })
+              .width(24)
+              .height(24)
+              .focusable(true)
+              .focusOnTouch(true)
+              .margin({ top: 0 })
+              .select(this.isSelected)
+              .onChange((value: boolean) => {
+                if (value) {
+                  this.isSelected = true;
+                  this.controller.setAgreementStatus(loginComponentManager.AgreementStatus.ACCEPTED);
+                } else {
+                  this.isSelected = false;
+                  this.controller.setAgreementStatus(loginComponentManager.AgreementStatus.NOT_ACCEPTED);
+                }
+                hilog.info(this.domainId, this.logTag, `agreementChecked: ${value}`);
+              })
+          }
+
+          Row() {
+            Text() {
+              ForEach(this.privacyText, (item: loginComponentManager.PrivacyText) => {
+                if (item?.type === loginComponentManager.TextType.PLAIN_TEXT && item?.text) {
+                  Span(item?.text)
+                    .fontColor($r('sys.color.ohos_id_color_text_secondary'))
+                    .fontFamily($r('sys.string.ohos_id_text_font_family_regular'))
+                    .fontWeight(FontWeight.Regular)
+                    .fontSize($r('sys.float.ohos_id_text_size_body3'))
+                } else if (item?.type === loginComponentManager.TextType.RICH_TEXT && item?.text) {
+                  Span(item?.text)
+                    .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
+                    .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+                    .fontWeight(FontWeight.Medium)
+                    .fontSize($r('sys.float.ohos_id_text_size_body3'))
+                    .onClick(() => {
+                      // 应用需要根据item.tag实现协议页面的跳转逻辑
+                      hilog.info(this.domainId, this.logTag, `click privacy text tag: ${item.tag}`);
+                      // 华为账号用户认证协议
+                      if (item.tag === QuickLoginButtonComponent.USER_AUTHENTICATION_TAG) {
+                        this.jumpToPrivacyWebView();
+                      }
+                    })
+                }
+              }, (item: loginComponentManager.PrivacyText) => item.text.toString())
+            }
+            .width('100%')
+          }
+          .margin({ left: 12 })
+          .layoutWeight(1)
+          .constraintSize({ minHeight: 24 })
+        }
+        .alignItems(VerticalAlign.Top)
+        .margin({
+          top: 16,
+          bottom: 16
+        })
+      }
+      .justifyContent(FlexAlign.SpaceBetween)
+      .constraintSize({ minHeight: '100%' })
+      .margin({
+        left: 16,
+        right: 16
+      })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+
+@CustomDialog
+export struct AgreementDialog {
+  logTag: string = 'AgreementDialog';
+  domainId: number = 0x0000;
+  dialogController?: CustomDialogController;
+  cancel: () => void = () => {
+    // 用户点击“取消”按钮，可于此处补充业务逻辑
+  };
+  confirm: () => void = () => {
+    // 用户点击“同意并登录”按钮，可于此处补充业务逻辑
+  };
+  clickHyperlinkText: () => void = () => {
+    // 用户点击超链接文本，可于此处补充业务逻辑
+  };
+  privacyText: loginComponentManager.PrivacyText[] = [];
+  private static USER_AUTHENTICATION_TAG = '华为账号用户认证协议';
+
+  build() {
+    Column() {
+      Row() {
+        Text('用户协议与隐私条款')
+          .id('loginPanel_agreement_dialog_privacy_title')
+          .maxFontSize($r('sys.float.ohos_id_text_size_headline8'))
+          .minFontSize($r('sys.float.ohos_id_text_size_body1'))
+          .fontColor($r('sys.color.ohos_id_color_text_primary'))
+          .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+          .fontWeight(FontWeight.Bold)
+          .textAlign(TextAlign.Center)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .maxLines(2)
+      }
+      .alignItems(VerticalAlign.Center)
+      .constraintSize({ minHeight: 56, maxWidth: 400 })
+      .margin({
+        left: $r('sys.float.ohos_id_max_padding_start'),
+        right: $r('sys.float.ohos_id_max_padding_start')
+      })
+
+      Row() {
+        Text() {
+          ForEach(this.privacyText, (item: loginComponentManager.PrivacyText) => {
+            if (item?.type === loginComponentManager.TextType.PLAIN_TEXT && item?.text) {
+              Span(item?.text)
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontFamily($r('sys.string.ohos_id_text_font_family_regular'))
+                .fontWeight(FontWeight.Regular)
+            } else if (item?.type === loginComponentManager.TextType.RICH_TEXT && item?.text) {
+              Span(item?.text)
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor('#CE0E2D')
+                .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+                .fontWeight(FontWeight.Medium)
+                .onClick(() => {
+                  // 应用需要根据item.tag实现协议页面的跳转逻辑
+                  hilog.info(this.domainId, this.logTag, `click privacy text tag: ${item.tag}`);
+                  // 华为账号用户认证协议
+                  if (item.tag === AgreementDialog.USER_AUTHENTICATION_TAG) {
+                    hilog.info(this.domainId, this.logTag, 'AgreementDialog click.');
+                    this.clickHyperlinkText();
+                  }
+                })
+            }
+          }, (item: loginComponentManager.PrivacyText) => item.text.toString())
+        }
+        .width('100%')
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .maxLines(10)
+        .textAlign(TextAlign.Start)
+        .focusable(true)
+        .focusOnTouch(true)
+        .padding({ left: 24, right: 24 })
+      }.width('100%')
+
+      Flex({
+        direction: FlexDirection.Row
+      }) {
+        Button('取消',
+          { type: ButtonType.Capsule, stateEffect: true })
+          .id('loginPanel_agreement_cancel_btn')
+          .fontColor($r('sys.color.ohos_id_color_text_primary'))
+          .fontSize($r('sys.float.ohos_id_text_size_button1'))
+          .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+          .backgroundColor(Color.Transparent)
+          .fontWeight(FontWeight.Medium)
+          .focusable(true)
+          .focusOnTouch(true)
+          .constraintSize({ minHeight: 40, maxWidth: 400 })
+          .width('50%')
+          .onClick(() => {
+            hilog.info(this.domainId, this.logTag, 'AgreementDialog cancel.');
+            this.cancel();
+          })
+
+        Button('同意并登录',
+          { type: ButtonType.Capsule, stateEffect: true })
+          .id('loginPanel_agreement_dialog_huawei_id_login_btn')
+          .fontColor(Color.White)
+          .backgroundColor('#CE0E2D')
+          .fontSize($r('sys.float.ohos_id_text_size_button1'))
+          .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
+          .fontWeight(FontWeight.Medium)
+          .focusable(true)
+          .focusOnTouch(true)
+          .constraintSize({ minHeight: 40, maxWidth: 400 })
+          .width('50%')
+          .onClick(() => {
+            hilog.info(this.domainId, this.logTag, 'AgreementDialog confirm.');
+            this.confirm();
+          })
+      }
+      .margin({
+        top: 8,
+        left: $r('sys.float.ohos_id_elements_margin_horizontal_l'),
+        right: $r('sys.float.ohos_id_elements_margin_horizontal_l'),
+        bottom: 16
+      })
+    }.backgroundColor($r('sys.color.ohos_id_color_dialog_default_bg'))
+    .padding({
+      left: 16,
+      right: 16
+    })
+  }
+}
+
+export enum ErrorCode {
+  // 账号未登录
+  ERROR_CODE_LOGIN_OUT = 1001502001,
+  // 该账号不支持一键登录，如海外账号
+  ERROR_CODE_NOT_SUPPORTED = 1001500003,
+  // 网络错误
+  ERROR_CODE_NETWORK_ERROR = 1001502005,
+  // 内部错误
+  ERROR_CODE_INTERNAL_ERROR = 1001502009,
+  // 用户取消授权
+  ERROR_CODE_USER_CANCEL = 1001502012,
+  // 系统服务异常
+  ERROR_CODE_SYSTEM_SERVICE = 12300001,
+  // 用户未同意用户协议
+  ERROR_CODE_AGREEMENT_STATUS_NOT_ACCEPTED = 1005300001,
+  // 参数错误
+  ERROR_CODE_PARAMETER_ERROR = 401,
+  // 重复请求
+  ERROR_CODE_REQUEST_REFUSE = 1001500002
+}
+```
+
+### Code block 5
+
+```
+import { webview } from '@kit.ArkWeb';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 华为账号用户认证协议展示页
+@Entry
+@Component
+struct WebPage {
+  @State webUrl?: string = '';
+  @State progress: number = 0;
+  logTag: string = 'WebPage';
+  domainId: number = 0x0000;
+  controller: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Column() {
+        Button({ type: ButtonType.Normal }) {
+          Image($r('sys.media.ohos_ic_compnent_titlebar_back'))
+            .backgroundColor(Color.Transparent)
+            .borderRadius(20)
+            .width(24)
+            .height(24)
+            .draggable(false)
+            .autoResize(false)
+            .focusable(true)
+            .fillColor($r('sys.color.ohos_id_color_titlebar_icon'))
+            .matchTextDirection(true)
+        }
+        .alignSelf(ItemAlign.Start)
+        .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+        .borderRadius(20)
+        .width(40)
+        .height(40)
+        .onClick(() => {
+          this.getUIContext().getRouter().back();
+        })
+      }
+      .height(56)
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .margin({
+        top: 36,
+        left: 16
+      })
+
+      Progress({ value: this.progress, type: ProgressType.Linear })
+        .width('100%')
+        .visibility(this.progress <= 99 ? Visibility.Visible : Visibility.None)
+
+      Web({ src: this.webUrl ?? '', controller: this.controller })
+        .backgroundColor(Color.Transparent)
+        .margin({ bottom: 60 })
+        .onProgressChange((event) => {
+          hilog.info(this.domainId, this.logTag,
+            'onProgressChange: ', (event ? event.newProgress : -1));
+          this.progress = event ? event.newProgress : 0;
+        })
+        .darkMode(WebDarkMode.Auto)
+        .forceDarkAccess(true)
+        .onLoadIntercept((event) => {
+          hilog.info(this.domainId, this.logTag, 'onLoadIntercept');
+          return false;
+        })
+        .onErrorReceive((event) => {
+          if (event) {
+            hilog.error(this.domainId, this.logTag, `onErrorReceive,errorInfo: ${event?.error?.getErrorInfo()}`);
+          }
+        })
+    }
+    .alignItems(HorizontalAlign.Start)
+    .padding({ left: 12, right: 12, bottom: 60 })
+    .width('100%')
+    .height('100%')
+  }
+
+  aboutToAppear(): void {
+    hilog.info(0x0000, 'testTag', 'aboutToAppear');
+    const params = this.getUIContext().getRouter().getParams() as Record<string, string>;
+    this.webUrl = params.url ?? '';
+    hilog.info(0x0000, 'testTag', `webUrl: ${this.webUrl}`);
+  }
+
+  aboutToDisappear(): void {
+    hilog.info(0x0000, 'testTag', 'aboutToDisappear');
+    if (this.webUrl) {
+        try {
+            this.controller.stop();
+          } catch (error) {
+            hilog.error(0x0000, 'testTag',
+              `ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
+      }
+    }
+  }
+}
+```
+
+### Code block 6
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { util } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 客户端请求接口示例代码
+export function rcpRequest(authCode: string) {
+  // 定义请求头
+  const headers: rcp.RequestHeaders = {
+    'accept': 'application/json'
+  };
+  // 定义要传递的参数
+  const postMessage: Record<string, string> = {
+    'authorizationCode': authCode
+  };
+  const securityConfig: rcp.SecurityConfiguration = {
+    tlsOptions: {
+      tlsVersion: 'TlsV1.3'
+    }
+  };
+  // 假设"http://localhost:8080"为应用服务端地址
+  const baseUrl = 'http://localhost:8080/login';
+  // 定义请求对象
+  const req = new rcp.Request(baseUrl, 'POST', headers, postMessage);
+  try {
+    // 创建通信会话对象
+    const session = rcp.createSession({ requestConfiguration: { security: securityConfig } });
+    // 发起请求
+    session.fetch(req).then((response) => {
+      hilog.info(0x0000, 'getRcpResult', 'Succeeded in getting result from server.');
+      if (response.body) {
+        const decoder = util.TextDecoder.create('utf-8');
+        const result = JSON.parse(decoder.decodeToString(new Uint8Array(response.body))) as Record<string, Object>;
+        // 此为代码示例，具体实现请以业务服务端实际返回数据结构为准
+        const phoneNumber: string = JSON.stringify(result['phone'] ?? '');
+        if (phoneNumber) {
+          // 应用处理相关逻辑
+        }
+      } else {
+        hilog.error(0x0000, 'getRcpResult', 'Failed to get response body.');
+      }
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'getRcpResult', `err: err code is ${err.code}, err message is ${JSON.stringify(err)}`);
+    });
+  } catch (err) {
+    hilog.error(0x0000, 'getRcpResult', `err: err code is ${err.code}, err message is ${JSON.stringify(err)}`);
+  }
+}
+```
+
+### Code block 7
+
+```
+import com.huawei.account.common.Response;
+import com.huawei.account.entity.PhoneNumberResp;
+import com.huawei.account.entity.LoginReq;
+import com.huawei.account.service.impl.LoginService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@RestController
+@RequiredArgsConstructor
+public class QuickLoginController {
+  private final LoginService loginService;
+
+  @PostMapping("/login")
+  public Response login(@RequestBody LoginReq requestBody) {
+      PhoneNumberResp accountInfo = loginService.loginWithHuawei(requestBody.getAuthorizationCode());
+      return new Response(200, "login success!", accountInfo);
+  }
+}
+```
+
+### Code block 8
+
+```
+from flask import Flask, request, jsonify
+
+from service.loginService import login_with_huawei
+
+app = Flask(__name__)
+
+@app.route('/login', methods=['POST'])
+def login():
+    # 验证请求参数
+    request_data = request.get_json()
+    if not request_data or 'authorizationCode' not in request_data:
+        return jsonify({
+            'code': 400,
+            'message': 'invalid authorizationCode',
+            'data': None
+        })
+    authorization_code = request_data['authorizationCode']
+
+    # 调用服务层
+    user_info = login_with_huawei(authorization_code)
+    if not user_info:
+        return jsonify({
+            'code': 401,
+            'message': 'Failed to authenticate with Huawei',
+            'data': None
+        })
+
+    # 成功响应
+    return jsonify({
+        'code': 200,
+        'message': 'Login successful',
+        'data': user_info
+    })
 
 
-3	登录页面内容用户体验原则	建议	
+if __name__ == '__main__':
+    app.run(debug=True, port=8080)
+```
 
-（1）若未提供其他登录方式，不应显示“其他登录方式”的入口；
+### Code block 9
 
-（2）若使用华为账号一键登录，页面匿名手机号须展示从华为账号侧获取的匿名手机号，不应展示其他来源的手机号；
+```
+package main
 
-（3）用户协议中，必须包含《华为账号用户认证协议》，且协议必须可点击、可加载，加载后支持回退页面，且回到点击前的页面；
+import (
+    loginService "./service"
+    "encoding/json"
+    "errors"
+    "fmt"
+    _ "fmt"
+    "io/ioutil"
+    "log"
+    "net/http"
+    _ "strconv"
+)
 
+type LoginRequest struct {
+    AuthorizationCode string `json:"authorizationCode"`
+}
 
-4	异常处理用户体验原则	建议	
+type Response struct {
+    UserInfo UserInfo `json:"data"`
+    Code     int      `json:"code"`
+    Message  string   `json:"message"`
+}
 
-登录页面需进行异常处理保证：
+type UserInfo struct {
+    OpenID            string `json:"openId"`
+    UnionID           string `json:"unionId"`
+    LoginMobileNumber string `json:"phoneNumber"`
+    LoginMobileValid  int    `json:"phoneNumberValid"`
+    PurePhoneNumber   string `json:"purePhoneNumber"`
+    PhoneCountryCode  string `json:"phoneCountryCode"`
+}
 
-（1）若登录异常（如网络异常、海外账号不支持等情况），勿将错误码等原始信息直接透传给用户；
+type PhoneNumberErrRsp struct {
+    ResultCode int    `json:"resultCode"`
+    ResultDesc string `json:"resultDesc"`
+}
 
-（2）若登录时触发了华为侧的短信验证码校验，则在校验成功之后，应用不应再展示额外的验证码验证页面；
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+    // 设置通用JSON响应头
+    w.Header().Set("Content-Type", "application/json")
+    // 1. 请求体解析
+    var loginRequest LoginRequest
+    if err := parseLoginRequest(r, &loginRequest); err != nil {
+       sendErrorResponse(w, http.StatusBadRequest, "Invalid request format")
+       return
+    }
+    // 2. 服务调用
+    resp, err := loginService.LoginWithHuawei(loginRequest.AuthorizationCode)
+    if err != nil {
+       log.Printf("Login service error: %v", err)
+       sendErrorResponse(w, http.StatusInternalServerError, "Authentication failed")
+       return
+    }
+    defer resp.Body.Close()
+    // 3. 响应处理
+    userInfo, err := processUserInfoResponse(resp)
+    if err != nil {
+       log.Printf("User info processing error: %v", err)
+       sendErrorResponse(w, http.StatusInternalServerError, "Failed to process user data")
+       return
+    }
+    // 4. 成功响应
+    sendSuccessResponse(w, userInfo)
+}
 
+func parseLoginRequest(r *http.Request, dest *LoginRequest) error {
+    body, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+       return fmt.Errorf("failed to read request body: %v", err)
+    }
+    defer r.Body.Close()
+    if err := json.Unmarshal(body, dest); err != nil {
+       return fmt.Errorf("invalid JSON format: %v", err)
+    }
+    if dest.AuthorizationCode == "" {
+       return errors.New("missing authorization code")
+    }
+    return nil
+}
 
-5	应用生命周期变化的华为账号用户体验原则	建议	应用更新后，其登录状态须与更新前一致；
-概述
-华为账号登录（获取UnionID/OpenID）
+func processUserInfoResponse(resp *http.Response) (*UserInfo, error) {
+    if resp.StatusCode != http.StatusOK {
+       return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+    }
+    respBody, err := ioutil.ReadAll(resp.Body)
+    var phoneNumberErrRsp PhoneNumberErrRsp
+    err = json.Unmarshal(respBody, &phoneNumberErrRsp)
+    if err != nil {
+       return nil, fmt.Errorf("failed to unmarshal response body: %v", err)
+    }
+    if phoneNumberErrRsp.ResultCode != 0 {
+       return nil, fmt.Errorf("api error %d: %s", phoneNumberErrRsp.ResultCode, phoneNumberErrRsp.ResultDesc)
+    }
+    var userInfo UserInfo
+    err = json.Unmarshal(respBody, &userInfo)
+    if err != nil {
+       return nil, fmt.Errorf("failed to unmarshal response body: %v", err)
+    }
+
+    /*
+     根据业务设计流程，在数据库中查询用户信息，比如：
+     1、使用UnionID查询用户，匹配到了则返回用户信息；
+     2、未匹配到则使用手机号查询用户，查到了则将华为账号UnionID关联到该用户，返回用户信息；
+     3、UnionID和手机号均没有匹配到，则进入注册流程
+    */
+
+    return &userInfo, nil
+}
+
+func sendErrorResponse(w http.ResponseWriter, statusCode int, message string) {
+    w.WriteHeader(statusCode)
+    response := Response{
+       Code:    statusCode,
+       Message: message,
+    }
+    if err := json.NewEncoder(w).Encode(response); err != nil {
+       log.Printf("Failed to encode error response: %v", err)
+    }
+}
+
+func sendSuccessResponse(w http.ResponseWriter, userInfo *UserInfo) {
+    response := Response{
+       Code:     http.StatusOK,
+       Message:  "Login successful",
+       UserInfo: *userInfo,
+    }
+    if err := json.NewEncoder(w).Encode(response); err != nil {
+       log.Printf("Failed to encode success response: %v", err)
+       w.WriteHeader(http.StatusInternalServerError)
+    }
+}
+
+func main() {
+    http.HandleFunc("/login", loginHandler)
+    log.Println("Server starting on :8080...")
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+       log.Fatalf("Server failed: %v", err)
+    }
+}
+```
+
+### Code block 10
+
+```
+<?php
+
+require __DIR__ . '/../service/LoginService.php';
+
+// 初始化路由
+$router = new Router();
+$router->addRoute('POST', '/login', function($request) {
+    // 获取POST数据
+    $requestBody = json_decode(file_get_contents('php://input'), true);
+    if (isset($requestBody['authorizationCode'])) {
+        // 调用服务层进行登录验证
+        $userInfo = LoginService::loginWithHuawei($requestBody['authorizationCode']);
+        if (!isset($userInfo)) {
+            echo json_encode([
+                'code' => 500,
+                'message' => 'login failed!'
+            ]);
+            return;
+        }
+
+        // 返回响应
+        echo json_encode([
+            'data' => $userInfo,
+            'code' => 200,
+            'message' => 'login success!'
+        ]);
+    } else {
+        echo json_encode(['code' => 400, 'message' => 'Missing authorization code']);
+    }
+});
+
+// 处理请求
+$router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+class Router {
+    private $routes = [];
+
+    public function addRoute($method, $path, $handler) {
+        $this->routes[strtoupper($method)][$path] = $handler;
+    }
+
+    public function dispatch($method, $uri) {
+        header('Content-Type: application/json');
+        $method = strtoupper($method);
+        // 精确匹配路由
+        if (isset($this->routes[$method][$uri])) {
+            $handler = $this->routes[$method][$uri];
+            $handler($_REQUEST);
+            return;
+        }
+
+        // 未找到路由
+        echo json_encode([
+            'message' => 'Not Found',
+            'code' => 404
+        ]);
+    }
+}
+```
+
+### Code block 11
+
+```
+import com.alibaba.fastjson2.JSONObject;
+import com.huawei.account.config.AGCProperties;
+import com.huawei.account.config.Constants;
+import com.huawei.account.entity.PhoneNumberReq;
+import com.huawei.account.entity.PhoneNumberResp;
+import com.huawei.account.util.HttpUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class LoginService {
+    private final HttpUtil httpService;
+
+    private final AGCProperties agcProperties;
+
+    public PhoneNumberResp loginWithHuawei(String authorizationCode) {
+        PhoneNumberReq phoneNumberReq = new PhoneNumberReq();
+        phoneNumberReq.setClientId(agcProperties.getClientId()); // 读取配置项中Client ID
+        phoneNumberReq.setClientSecret(agcProperties.getClientSecret()); // 读取配置项中Client Secret
+        phoneNumberReq.setCode(authorizationCode);
+        PhoneNumberResp phoneNumberResp = httpService.callHttpPost(Constants.QUICK_LOGIN_PHONE_NUMBER_URL, phoneNumberReq, PhoneNumberResp.class).getBody();
+        log.info("/oauth2/v6/quickLogin/getPhoneNumber response body is: {}", JSONObject.toJSONString(phoneNumberResp));
+
+        // 数据库相关：
+        // 使用UnionID查询用户，匹配到了则返回用户信息；
+        // 未匹配到则使用手机号查询用户，查到了则关联华为账号UnionID，返回用户信息；
+        // UnionID和手机号均没有匹配到，则进入注册流程
+
+        return phoneNumberResp;
+    }
+}
+```
+
+### Code block 12
+
+```
+import requests
+import json
+import os
+
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+target_file = os.path.join(parent_dir, "config", "agc.json")
+with open(target_file) as f:
+    agc_config = json.load(f)
+
+def login_with_huawei(authorization_code):
+    # 配置信息
+    client_id = agc_config["clientId"] # 读取配置项中Client ID
+    client_secret = agc_config["clientSecret"] # 读取配置项中Client Secret
+    phone_number_url = "https://account-api.cloud.huawei.com/oauth2/v6/quickLogin/getPhoneNumber"
+
+    # 构建请求体
+    token_request_body = {
+        "clientId": client_id,
+        "clientSecret": client_secret,
+        "code": authorization_code
+    }
+
+    # 发送请求获取一键登录用户手机号等信息
+    user_info_response = {}
+    try:
+        user_info_response = requests.post(phone_number_url, headers={'Content-Type': 'application/json'}, json=token_request_body)
+        user_info_response.raise_for_status()  # 如果请求失败，抛出HTTPError异常
+        user_info = json.loads(user_info_response.content.decode('utf-8'))
+    except requests.RequestException as e:
+        user_info = json.loads(user_info_response.content.decode('utf-8'))
+        print(f"Error retrieving /oauth2/v6/quickLogin/getPhoneNumber: {e}")
+        print(f"Error retrieving /oauth2/v6/quickLogin/getPhoneNumber: {user_info}")
+        return None
+    if "resultCode" in user_info:
+        assert user_info["resultCode"] == 0
+
+    # 根据业务设计流程，在数据库中查询用户信息，比如：
+    # 1、使用UnionID查询用户，匹配到了则返回用户信息；
+    # 2、未匹配到则使用手机号查询用户，查到了则将华为账号UnionID关联到该用户，返回用户信息；
+    # 3、UnionID和手机号均没有匹配到，则进入注册流程
+
+    return user_info
+```
+
+### Code block 13
+
+```
+package service
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io/ioutil"
+    "net"
+    "net/http"
+    "path/filepath"
+    "sync"
+    "time"
+)
+
+type Response struct {
+    Data    interface{} `json:"data"`
+    Code    int         `json:"code"`
+    Message string      `json:"message"`
+}
+
+type PhoneNumberReq struct {
+    ClientId     string `json:"clientId"`
+    ClientSecret string `json:"clientSecret"`
+    Code         string `json:"code"`
+}
+
+var httpClient = &http.Client{
+    Transport: &http.Transport{
+       DialContext: (&net.Dialer{
+          Timeout: 5 * time.Second,
+       }).DialContext,
+       TLSHandshakeTimeout:   5 * time.Second,
+       ResponseHeaderTimeout: 10 * time.Second,
+    },
+    Timeout: 30 * time.Second,
+}
+
+var (
+    config     *Config
+    configOnce sync.Once
+    configErr  error
+)
+
+type Config struct {
+    ClientID     string `json:"clientId"`
+    ClientSecret string `json:"clientSecret"`
+}
+
+func LoadConfig() (*Config, error) {
+    configOnce.Do(func() {
+       data, err := ioutil.ReadFile(filepath.Join("src", "config", "agc.json"))
+       if err != nil {
+          configErr = err
+          return
+       }
+       var cfg Config
+       if err := json.Unmarshal(data, &cfg); err != nil {
+          configErr = err
+          return
+       }
+       config = &cfg
+    })
+    return config, configErr
+}
+
+func LoginWithHuawei(authorizationCode string) (*http.Response, error) {
+    config, err := LoadConfig()
+    if err != nil {
+       return nil, err
+    }
+    // 1. 构造请求体
+    reqBody := PhoneNumberReq{
+       ClientId:     config.ClientID,
+       ClientSecret: config.ClientSecret,
+       Code:         authorizationCode,
+    }
+    // 2. 序列化为JSON
+    jsonData, err := json.Marshal(reqBody)
+    resp, err := httpClient.Post("https://account-api.cloud.huawei.com/oauth2/v6/quickLogin/getPhoneNumber", "application/json", bytes.NewBuffer(jsonData))
+    if err != nil {
+       fmt.Errorf("failed to make POST request: %v, %v", config.ClientID, config.ClientSecret)
+       return nil, fmt.Errorf("failed to make POST request: %v", err)
+    }
+    return resp, nil
+}
+```
+
+### Code block 14
+
+```
+<?php
+
+class LoginService {
+    public static function loginWithHuawei($authorizationCode) {
+        $agcConfig = require __DIR__ . '/../config/agc.php';
+        $requestBody = [
+            'clientId' => $agcConfig['clientId'],
+            'clientSecret' => $agcConfig['clientSecret'],
+            'code' => $authorizationCode
+        ];
+
+        $ch = curl_init();
+        curl_setopt_array($ch,
+            [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json',
+                    'Accept: application/json'
+                ],
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_URL => 'https://account-api.cloud.huawei.com/oauth2/v6/quickLogin/getPhoneNumber',
+                CURLOPT_POSTFIELDS => json_encode($requestBody)
+            ]);
+
+        $response = curl_exec($ch);
+        if ($response === false) {
+            error_log('cURL Error: ' . curl_error($ch));
+            curl_close($ch);
+            return null;
+        }
+
+        $userInfo = json_decode($response, true);
+        curl_close($ch);
+        if (!isset($data['resultCode']) && $userInfo['resultCode'] != 0) {
+            error_log('cURL Error: ' . curl_error($ch));
+            curl_close($ch);
+        }
+
+        /**
+         * 根据业务设计流程，在数据库中查询用户信息，比如：
+         * 1、使用UnionID查询用户，匹配到了则返回用户信息；
+         * 2、未匹配到则使用手机号查询用户，查到了则将华为账号UnionID关联到该用户，返回用户信息；
+         * 3、UnionID和手机号均没有匹配到，则进入注册流程
+         */
+
+        return $userInfo;
+    }
+}
+```

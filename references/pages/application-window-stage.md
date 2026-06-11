@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-window-stage_
 
+基本概念
+
 窗口沉浸式能力：指对状态栏、导航栏等系统窗口进行控制，减少状态栏导航栏等系统界面的突兀感，从而使用户获得最佳体验的能力。沉浸式能力只在应用主窗口作为全屏窗口时生效。通常情况下，应用的辅助窗口（子窗、全局悬浮窗等）和处于自由窗口下的应用主窗口无法使用沉浸式能力。
 
 全局悬浮窗：全局悬浮窗是一种特殊的应用辅助窗口，具备在应用主窗口和对应Ability退至后台后仍然可以在前台显示的能力。全局悬浮窗可以用于应用退至后台后，使用小窗继续显示UI，例如音乐应用用于显示桌面歌词等。应用在创建全局悬浮窗前，需要申请对应的权限。
@@ -24,80 +26,31 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/applicati
 
 接口说明
 
-上述场景涉及的常用接口如下表所示。更多API说明请参见API参考。
+上述场景涉及的常用接口如下表所示。更多API说明请参见@ohos.window (窗口)。
 
 实例名	接口名	描述
-WindowStage	getMainWindow(callback: AsyncCallback<Window>): void	
-
-获取WindowStage实例下的主窗口。
-
-此接口仅可在Stage模型下使用。
-
-
-WindowStage	loadContent(path: string, callback: AsyncCallback<void>): void	
-
-为当前WindowStage的主窗口加载具体页面。
-
-其中path为要加载到窗口中的页面内容的路径，该路径需添加到工程的main_pages.json文件中。
-
-此接口仅可在Stage模型下使用。
-
-
-WindowStage	createSubWindow(name: string, callback: AsyncCallback<Window>): void	
-
-创建子窗口。
-
-此接口仅可在Stage模型下使用。
-
-
-WindowStage	on(eventType: 'windowStageEvent', callback: Callback<WindowStageEventType>): void	
-
-开启WindowStage生命周期变化的监听。
-
-此接口仅可在Stage模型下使用。
-
-
-window静态方法	createWindow(config: Configuration, callback: AsyncCallback<Window>): void	
-
-创建子窗口或者系统窗口。
-
--config：创建窗口时的参数。
-
-
-Window	setUIContent(path: string, callback: AsyncCallback<void>): void	
-
-根据当前工程中某个页面的路径为窗口加载具体的页面内容。
-
-其中path为要加载到窗口中的页面内容的路径，在Stage模型下该路径需添加到工程的main_pages.json文件中。
-
-
+WindowStage	getMainWindow(callback: AsyncCallback<Window>): void	获取WindowStage实例下的主窗口。 此接口仅可在Stage模型下使用。
+WindowStage	loadContent(path: string, callback: AsyncCallback<void>): void	为当前WindowStage的主窗口加载具体页面。 其中path为要加载到窗口中的页面内容的路径，该路径需添加到工程的main_pages.json文件中。 此接口仅可在Stage模型下使用。
+WindowStage	createSubWindow(name: string, callback: AsyncCallback<Window>): void	创建子窗口。 此接口仅可在Stage模型下使用。
+WindowStage	on(eventType: 'windowStageEvent', callback: Callback<WindowStageEventType>): void	开启WindowStage生命周期变化的监听。 此接口仅可在Stage模型下使用。
+window静态方法	createWindow(config: Configuration, callback: AsyncCallback<Window>): void	创建子窗口或者系统窗口。 -config：创建窗口时的参数。
+Window	setUIContent(path: string, callback: AsyncCallback<void>): void	根据当前工程中某个页面的路径为窗口加载具体的页面内容。 其中path为要加载到窗口中的页面内容的路径，在Stage模型下该路径需添加到工程的main_pages.json文件中。
 Window	setWindowBrightness(brightness: number, callback: AsyncCallback<void>): void	设置屏幕亮度值。
 Window	setWindowTouchable(isTouchable: boolean, callback: AsyncCallback<void>): void	设置窗口是否为可触状态。true表示可触；false表示不可触。
 Window	moveWindowTo(x: number, y: number, callback: AsyncCallback<void>): void	移动当前窗口位置。
 Window	resize(width: number, height: number, callback: AsyncCallback<void>): void	改变当前窗口大小。
 Window	setWindowLayoutFullScreen(isLayoutFullScreen: boolean): Promise<void>	设置主窗口或子窗口的布局是否为沉浸式布局。true表示沉浸式布局；false表示非沉浸式布局。
-Window	setWindowSystemBarEnable(names: Array<'status'|'navigation'>): Promise<void>	
-
-设置主窗口状态栏、底部导航（根据用户设置，可表现为导航条或三键导航栏）的可见模式，状态栏和底部导航通过status控制、navigation参数无效果。
-
-例如，该参数设置为['status', 'navigation']，则全部显示；设置为[]，则不显示。
-
-
-Window	setWindowSystemBarProperties(systemBarProperties: SystemBarProperties): Promise<void>	
-
-设置窗口内导航栏、状态栏属性。
-
-systemBarProperties：导航栏、状态栏的属性集合。
-
-
+Window	setWindowSystemBarEnable(names: Array<'status'|'navigation'>): Promise<void>	设置主窗口状态栏、底部导航（根据用户设置，可表现为导航条或三键导航栏）的可见模式，状态栏和底部导航通过status控制、navigation参数无效果。 例如，该参数设置为['status', 'navigation']，则全部显示；设置为[]，则不显示。
+Window	setWindowSystemBarProperties(systemBarProperties: SystemBarProperties): Promise<void>	设置窗口内导航栏、状态栏属性。 systemBarProperties：导航栏、状态栏的属性集合。
 Window	showWindow(callback: AsyncCallback<void>): void	显示当前窗口。
 Window	on(type: 'touchOutside', callback: Callback<void>): void	开启本窗口区域外的点击事件的监听。
 Window	destroyWindow(callback: AsyncCallback<void>): void	销毁当前窗口。
+
 设置应用主窗口
 
 在Stage模型下，应用主窗口由UIAbility创建并维护生命周期。在UIAbility的onWindowStageCreate回调中，通过WindowStage获取应用主窗口，即可对其进行属性设置等操作。还可以在应用配置文件中设置应用主窗口的属性，如最大窗口宽度maxWindowWidth等，详见module.json5配置文件中的abilities标签。
 
-开发步骤
+[h2]开发步骤
 
 获取应用主窗口。
 
@@ -116,10 +69,8 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatMainWindow]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -155,19 +106,22 @@ export default class EntryAbility extends UIAbility {
     });
   }
 };
-EntryAbility.ets
+
 设置应用子窗口
 
 开发者可以按需创建应用子窗口，如弹窗等，并对其进行属性设置等操作。
 
 说明
 
-以下几种场景不建议使用子窗口，建议优先考虑使用控件overlay能力实现。
+以下几种场景不建议使用子窗口，建议优先考虑使用控件浮层能力实现。
 
-移动设备（手机、在非自由模式下的平板设备）场景下子窗不能超出处于悬浮窗模式、分屏模式的应用主窗口范围，与控件一致。
+移动设备（手机、在非自由模式下的平板设备）场景下子窗不能超出处于智慧多窗悬浮窗模式、分屏模式的应用主窗口范围，与控件一致。
+
 分屏窗口与自由窗口模式下，主窗口位置大小发生改变时控件实时跟随变化能力优于子窗。
+
 部分设备平台下根据实际的系统配置限制，子窗只有系统默认的动效和圆角阴影，应用无法设置，自由度低。
-开发步骤
+
+[h2]开发步骤
 
 创建应用子窗口。
 
@@ -184,6 +138,7 @@ EntryAbility.ets
 如果没有设置子窗口的大小，调用showWindow后:
 
 自由窗口状态下，默认子窗口大小为当前物理屏幕的大小。其中，MateBook Fold折叠电脑半折叠态下，默认子窗口大小为竖向展开态的物理屏幕大小。
+
 非自由窗口状态下，默认子窗口大小为主窗口大小。
 
 加载显示子窗口的具体内容。
@@ -201,14 +156,11 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatSubWindow]';
 
-
 let windowStage_: window.WindowStage | null = null;
 let sub_windowClass: window.Window | null = null;
-
 
 export default class EntryAbility extends UIAbility {
   showSubWindow() {
@@ -271,7 +223,6 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
-
   destroySubWindow() {
     if (!sub_windowClass) {
       hilog.error(DOMAIN, TAG, `sub_windowClass is null`);
@@ -288,20 +239,17 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
-
   onWindowStageCreate(windowStage: window.WindowStage) {
     windowStage_ = windowStage;
     // 开发者可以在适当的时机，如主窗口上按钮点击事件等，创建子窗口。并不一定需要在onWindowStageCreate调用，这里仅作展示
     this.showSubWindow();
   }
 
-
   onWindowStageDestroy() {
     // 开发者可以在适当的时机，如子窗口上点击关闭按钮等，销毁子窗口。并不一定需要在onWindowStageDestroy调用，这里仅作展示
     this.destroySubWindow();
   }
 };
-EntryAbility.ets
 
 另外，也可以在某个page页面通过点击按钮创建子窗口，整体示例代码如下：
 
@@ -310,10 +258,8 @@ import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatSubWindow2]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -325,21 +271,18 @@ export default class EntryAbility extends UIAbility {
       hilog.info(DOMAIN, TAG, `Succeeded in loading the content.`);
     });
 
-
     // 给Index页面传递windowStage
     AppStorage.setOrCreate('windowStage', windowStage);
   }
 }
-EntryAbility.ets
+
 // Index.ets
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG : string = '[Sample_CreatSubWindow2]';
-
 
 let windowStage_: window.WindowStage | undefined = undefined;
 let sub_windowClass: window.Window | undefined = undefined;
@@ -453,7 +396,7 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
+
 // subWindow.ets
 @Entry
 @Component
@@ -472,7 +415,7 @@ struct SubWindow {
     .backgroundColor('#0D9FFB')
   }
 }
-SubWindow.ets
+
 体验窗口沉浸式能力
 
 在看视频、玩游戏等场景下，用户往往希望隐藏状态栏、导航栏等不必要的系统窗口，从而获得更佳的沉浸式体验。此时可以借助窗口沉浸式能力（窗口沉浸式能力都是针对应用主窗口而言的），达到预期效果。从API version 10开始，沉浸式窗口默认配置为全屏大小并由组件模块控制布局，状态栏、导航栏背景颜色为透明，文字颜色为黑色；应用窗口调用setWindowLayoutFullScreen接口，设置为true表示由组件模块控制忽略状态栏、导航栏的沉浸式全屏布局，设置为false表示由组件模块控制避让状态栏、导航栏的非沉浸式全屏布局。
@@ -481,7 +424,7 @@ SubWindow.ets
 
 当前沉浸式界面开发仅支持窗口级别的配置，暂不支持Page级别的配置。若有Page级别切换的需要，可以在页面生命周期开始，例如onPageShow中设置沉浸模式，然后在页面退出，例如onPageHide中恢复默认设置来实现。
 
-开发步骤
+[h2]开发步骤
 
 获取应用主窗口。
 
@@ -502,10 +445,8 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_SetWindowSystemBarEnable]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -519,7 +460,6 @@ export default class EntryAbility extends UIAbility {
       }
       windowClass = data;
       hilog.info(DOMAIN, TAG, `Succeeded in obtaining the main window. Data: ${JSON.stringify(data)}`);
-
 
       // 2.实现沉浸式效果。方式一：设置导航栏、状态栏不显示。
       let names: 'status'[] | 'navigation'[] = [];
@@ -565,12 +505,12 @@ export default class EntryAbility extends UIAbility {
     });
   }
 };
-EntryAbility.ets
+
 设置全局悬浮窗（受限开放）
 
 全局悬浮窗可以在已有的任务基础上，创建一个始终在前台显示的窗口。即使创建全局悬浮窗的任务退至后台，全局悬浮窗仍然可以在前台显示。通常全局悬浮窗位于所有应用窗口之上，开发者可以创建全局悬浮窗，并对全局悬浮窗进行属性设置等操作。
 
-开发步骤
+[h2]开发步骤
 
 前提条件： 创建WindowType.TYPE_FLOAT即全局悬浮窗类型的窗口，需要申请ohos.permission.SYSTEM_FLOAT_WINDOW权限，该权限为受控开放权限，仅符合指定场景的在2in1设备上的应用可申请该权限。申请方式请参考：申请使用受限权限。
 
@@ -601,10 +541,8 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatFloatWindow]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -660,12 +598,12 @@ export default class EntryAbility extends UIAbility {
     });
   }
 };
-EntryAbility.ets
+
 监听窗口不可交互与可交互事件
 
 应用在前台显示过程中可能会进入某些不可交互的场景，比较典型的是进入多任务界面。此时，对于一些应用可能需要选择暂停某个与用户正在交互的业务，如视频类应用暂停正在播放的视频或者相机暂停预览流等。而当该应用从多任务又切回前台时，又变成了可交互的状态，此时需要恢复被暂停中断的业务，如恢复视频播放或相机预览流等。
 
-开发步骤
+[h2]开发步骤
 
 在创建WindowStage对象后可通过监听'windowStageEvent'事件类型，监听到窗口进入前台、后台、前台可交互、前台不可交互等事件，应用可根据这些上报的事件状态进行相应的业务处理。
 
@@ -673,10 +611,8 @@ import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_ListenWindowStage]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -684,7 +620,6 @@ export default class EntryAbility extends UIAbility {
     try {
       windowStage.on('windowStageEvent', (data) => {
         hilog.info(DOMAIN, TAG, `Succeeded in enabling the listener for window stage event changes. Data: ${JSON.stringify(data)}`);
-
 
         // 根据事件状态类型选择进行相应的处理
         if (data === window.WindowStageEventType.SHOWN) {
@@ -705,7 +640,6 @@ export default class EntryAbility extends UIAbility {
           // ...
         }
 
-
         // ...
       });
     } catch (exception) {
@@ -713,9 +647,6 @@ export default class EntryAbility extends UIAbility {
     }
   }
 }
-EntryAbility.ets
-窗口开发概述
-管理应用窗口（FA模型）
 
 ## Code blocks
 
@@ -727,10 +658,8 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatMainWindow]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -776,14 +705,11 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatSubWindow]';
 
-
 let windowStage_: window.WindowStage | null = null;
 let sub_windowClass: window.Window | null = null;
-
 
 export default class EntryAbility extends UIAbility {
   showSubWindow() {
@@ -846,7 +772,6 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
-
   destroySubWindow() {
     if (!sub_windowClass) {
       hilog.error(DOMAIN, TAG, `sub_windowClass is null`);
@@ -863,13 +788,11 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
-
   onWindowStageCreate(windowStage: window.WindowStage) {
     windowStage_ = windowStage;
     // 开发者可以在适当的时机，如主窗口上按钮点击事件等，创建子窗口。并不一定需要在onWindowStageCreate调用，这里仅作展示
     this.showSubWindow();
   }
-
 
   onWindowStageDestroy() {
     // 开发者可以在适当的时机，如子窗口上点击关闭按钮等，销毁子窗口。并不一定需要在onWindowStageDestroy调用，这里仅作展示
@@ -886,10 +809,8 @@ import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatSubWindow2]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -900,7 +821,6 @@ export default class EntryAbility extends UIAbility {
       }
       hilog.info(DOMAIN, TAG, `Succeeded in loading the content.`);
     });
-
 
     // 给Index页面传递windowStage
     AppStorage.setOrCreate('windowStage', windowStage);
@@ -916,10 +836,8 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG : string = '[Sample_CreatSubWindow2]';
-
 
 let windowStage_: window.WindowStage | undefined = undefined;
 let sub_windowClass: window.Window | undefined = undefined;
@@ -1066,10 +984,8 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_SetWindowSystemBarEnable]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -1083,7 +999,6 @@ export default class EntryAbility extends UIAbility {
       }
       windowClass = data;
       hilog.info(DOMAIN, TAG, `Succeeded in obtaining the main window. Data: ${JSON.stringify(data)}`);
-
 
       // 2.实现沉浸式效果。方式一：设置导航栏、状态栏不显示。
       let names: 'status'[] | 'navigation'[] = [];
@@ -1139,10 +1054,8 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_CreatFloatWindow]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -1207,10 +1120,8 @@ import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0X0000;
 const TAG: string = '[Sample_ListenWindowStage]';
-
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -1218,7 +1129,6 @@ export default class EntryAbility extends UIAbility {
     try {
       windowStage.on('windowStageEvent', (data) => {
         hilog.info(DOMAIN, TAG, `Succeeded in enabling the listener for window stage event changes. Data: ${JSON.stringify(data)}`);
-
 
         // 根据事件状态类型选择进行相应的处理
         if (data === window.WindowStageEventType.SHOWN) {
@@ -1238,7 +1148,6 @@ export default class EntryAbility extends UIAbility {
           // 进入多任务后又继续返回前台时，恢复可交互状态
           // ...
         }
-
 
         // ...
       });

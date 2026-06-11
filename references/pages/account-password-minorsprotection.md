@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-password-minorsprotection_
 
+场景介绍
+
 系统的未成年人模式已开启，应用已随系统切换至未成年人模式。用户打开应用，希望在应用内调整内容偏好、使用时长等设置，需要验证家长身份。
 
 应用可调用家长身份验证接口verifyMinorsProtectionCredential，拉起验证未成年人模式密码页面。
@@ -22,6 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-p
 getMinorsProtectionInfoSync(): MinorsProtectionInfo	同步接口，获取系统未成年人模式的开启状态，以及年龄段信息。
 getMinorsProtectionInfo(): Promise<MinorsProtectionInfo>	异步接口，获取系统未成年人模式的开启状态，以及年龄段信息。
 verifyMinorsProtectionCredential(context: common.Context): Promise<boolean>	调用该方法拉起验证未成年人模式密码页面。
+
 注意
 
 verifyMinorsProtectionCredential接口需在页面或自定义组件生命周期内调用。接口调用前提是未成年人模式已开启，如果在未开启未成年人模式下调用此接口会返回错误码1009900002。
@@ -41,6 +44,7 @@ verifyMinorsProtectionCredential接口需在页面或自定义组件生命周期
 事件名称	值	描述
 COMMON_EVENT_MINORSMODE_ON	usual.event.MINORSMODE_ON	表示系统未成年人模式开启事件。
 COMMON_EVENT_MINORSMODE_OFF	usual.event.MINORSMODE_OFF	表示系统未成年人模式关闭事件。
+
 说明
 
 未成年人模式开启事件触发时机：
@@ -88,8 +92,55 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
   hilog.info(0x0000, 'testTag',
     'The current device does not support the invoking of the verifyMinorsProtectionCredential interface.');
 }
+
 function dealVerifyAllError(error: BusinessError<Object>): void {
   hilog.error(0x0000, 'testTag', `Failed to verify. Code: ${error.code}, message: ${error.message}`);
 }
-关闭系统的未成年人模式
-订阅和处理用户信息变更
+
+## Code blocks
+
+### Code block 1
+
+```
+import { minorsProtection } from '@kit.AccountKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
+  try {
+    // 查询是否支持系统未成年人模式
+    if (minorsProtection.supportMinorsMode()) {
+      // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
+      minorsProtection.verifyMinorsProtectionCredential(this.getUIContext().getHostContext())
+        .then((result: boolean) => {
+          hilog.info(0x0000, 'testTag', `Succeeded in getting verify result is: ${result.valueOf()}`);
+          // 使用结果判断验密是否通过，执行后续流程
+        })
+        .catch((error: BusinessError<Object>) => {
+          dealVerifyAllError(error);
+        });
+    } else {
+      hilog.info(0x0000, 'testTag',
+        'The current device environment does not support the youth mode, please check the current device environment.');
+    }
+  } catch (error) {
+    hilog.error(0x0000, 'testTag',
+      `Failed to invoke supportMinorsMode. errCode: ${error.code}, errMessage: ${error.message}`);
+  }
+} else {
+  hilog.info(0x0000, 'testTag',
+    'The current device does not support the invoking of the verifyMinorsProtectionCredential interface.');
+}
+```
+
+### Code block 3
+
+```
+function dealVerifyAllError(error: BusinessError<Object>): void {
+  hilog.error(0x0000, 'testTag', `Failed to verify. Code: ${error.code}, message: ${error.message}`);
+}
+```

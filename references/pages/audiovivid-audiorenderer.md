@@ -5,10 +5,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audiovivi
 在获取到解码后的Audio Vivid的PCM数据和元数据之后，可以调用OHAudio的相关播放接口，进行Audio Vivid格式音源的渲染播放。详细的API说明请参考OHAudio API参考。
 
 在CMake脚本中链接到动态库
+
 target_link_libraries(sample PUBLIC libohaudio.so)
+
 添加头文件
+
 #include <ohaudio/native_audiorenderer.h>
 #include <ohaudio/native_audiostreambuilder.h>
+
 开发步骤
 
 开发者可以通过以下几个步骤来实现一个简单的播放功能。
@@ -101,10 +105,8 @@ callbacks.OH_AudioRenderer_OnInterruptEvent = MyOnInterruptEvent;
 // 对音频异常事件进行监听，如果不需要，可以使用 nullptr 赋值
 callbacks.OH_AudioRenderer_OnError = MyOnError;
 
-
 //设置输出音频流的回调
 OH_AudioStreamBuilder_SetRendererCallback(builder, callbacks, nullptr);
-
 
 // 配置回调函数
 OH_AudioRenderer_WriteDataWithMetadataCallback metadataCallback = MyOnWriteDataWithMetadata;
@@ -134,5 +136,123 @@ OH_AudioRenderer_Release	释放播放实例
 当构造器不再使用时，需要释放相关资源。
 
 OH_AudioStreamBuilder_Destroy(builder);
-Audio Vivid解码
-HDR Vivid能力
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC libohaudio.so)
+```
+
+### Code block 2
+
+```
+#include <ohaudio/native_audiorenderer.h>
+#include <ohaudio/native_audiostreambuilder.h>
+```
+
+### Code block 3
+
+```
+OH_AudioStreamBuilder* builder;
+OH_AudioStreamBuilder_Create(&builder, AUDIOSTREAM_TYPE_RENDERER);
+```
+
+### Code block 4
+
+```
+// 设置音频采样率为48000Hz
+OH_AudioStreamBuilder_SetSamplingRate(builder, 48000);
+// 设置音频声道为10 （假定输入Audio Vivid音源是5.1.2声床 + 2对象格式）
+OH_AudioStreamBuilder_SetChannelCount(builder, 10);
+// 设置音频声道布局为5.1.2 （声道布局只考虑声床，若想使用默认声道布局，可以传入 CH_LAYOUT_UNKNOWN 参数）
+OH_AudioStreamBuilder_SetChannelLayout(builder, CH_LAYOUT_5POINT1POINT2);
+// 设置音频采样格式
+OH_AudioStreamBuilder_SetSampleFormat(builder, AUDIOSTREAM_SAMPLE_S16LE);
+// 设置音频流的编码类型为Audio Vivid编码类型
+OH_AudioStreamBuilder_SetEncodingType(builder, AUDIOSTREAM_ENCODING_TYPE_AUDIOVIVID);
+// 设置输出音频流的工作场景，根据实际工作场景选择音乐、电影、有声读物等类型
+OH_AudioStreamBuilder_SetRendererInfo(builder, AUDIOSTREAM_USAGE_MUSIC);
+```
+
+### Code block 5
+
+```
+// 自定义音频流事件函数
+int32_t MyOnStreamEvent(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    OH_AudioStream_Event event)
+{
+    // 根据event表示的音频流事件信息，更新播放器状态和界面
+    return 0;
+}
+// 自定义音频中断事件函数
+int32_t MyOnInterruptEvent(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    OH_AudioInterrupt_ForceType type,
+    OH_AudioInterrupt_Hint hint)
+{
+    // 根据type和hint表示的音频中断信息，更新播放器状态和界面
+    return 0;
+}
+// 自定义异常回调函数
+int32_t MyOnError(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    OH_AudioStream_Result error)
+{
+    // 根据error表示的音频异常信息，做出相应的处理
+    return 0;
+}
+// 自定义同时写入PCM数据和元数据函数
+int32_t MyOnWriteDataWithMetadata(
+    OH_AudioRenderer* renderer,
+    void* userData,
+    void* audioData,
+    int32_t audioDataSize,
+    void* metadata,
+    int32_t metadataSize)
+{
+    // 将待播放的PCM数据和元数据，分别按audioDataSize和metadataSize写入buffer
+    return 0;
+}
+```
+
+### Code block 6
+
+```
+// 配置回调函数
+OH_AudioRenderer_Callbacks callbacks;
+// Audio Vivid播放时，该回调可以置空，使用元数据回调方式进行数据写入
+callbacks.OH_AudioRenderer_OnWriteData = nullptr;
+// 对音频流事件进行监听，如果不需要，可以使用 nullptr 赋值
+callbacks.OH_AudioRenderer_OnStreamEvent = MyOnStreamEvent;
+// 对音频中断事件进行监听，如果不需要，可以使用 nullptr 赋值
+callbacks.OH_AudioRenderer_OnInterruptEvent = MyOnInterruptEvent;
+// 对音频异常事件进行监听，如果不需要，可以使用 nullptr 赋值
+callbacks.OH_AudioRenderer_OnError = MyOnError;
+
+//设置输出音频流的回调
+OH_AudioStreamBuilder_SetRendererCallback(builder, callbacks, nullptr);
+
+// 配置回调函数
+OH_AudioRenderer_WriteDataWithMetadataCallback metadataCallback = MyOnWriteDataWithMetadata;
+// 设置同时写入PCM数据和元数据的回调
+OH_AudioStreamBuilder_SetWriteDataWithMetadataCallback(builder, metadataCallback, nullptr);
+```
+
+### Code block 7
+
+```
+OH_AudioRenderer* audioRenderer;
+OH_AudioStreamBuilder_GenerateRenderer(builder, &audioRenderer);
+```
+
+### Code block 8
+
+```
+OH_AudioStreamBuilder_Destroy(builder);
+```

@@ -2,7 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/obtain-supported-authentication-capabilities_
 
+不同的设备对于认证能力（人脸、指纹、口令）的支持性各有差异，开发者在发起认证前应当先查询当前设备支持的用户认证能力。
+
+接口说明
+
+具体参数、返回值、错误码等描述，请参考对应的userAuth.getAvailableStatus。
+
+接口名称	功能描述
 getAvailableStatus(authType : UserAuthType, authTrustLevel : AuthTrustLevel): void	根据指定的认证类型、认证等级，检测当前设备是否支持相应的认证能力。
+
 开发步骤
 
 申请权限：ohos.permission.ACCESS_BIOMETRIC。
@@ -25,8 +33,26 @@ obtainingSupported() {
     return false;
   }
 }
-Index.ets
+
 示例代码
+
 查询支持的认证能力
-开发准备
-发起认证
+
+## Code blocks
+
+### Code block 1
+
+```
+obtainingSupported() {
+  try {
+    // 查询认证能力是否支持
+    userAuth.getAvailableStatus(userAuth.UserAuthType.FACE, userAuth.AuthTrustLevel.ATL3);
+    Logger.info('current auth trust level is supported.');
+    return true;
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    Logger.error(`current auth trust level is not supported, code is ${err?.code}, message is ${err?.message}`);
+    return false;
+  }
+}
+```

@@ -2,9 +2,21 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hidumper-privacymanagerservice_
 
-----------------------------[ability]-------------------------------
+PrivacyManagerService是访问控制基于hidumper增强开发的命令行能力，可显示访问控制基础信息，获取敏感权限使用记录。
 
+环境准备
 
+根据hidumper工具指导，完成环境准备。
+
+获取帮助信息
+
+如果需要查看帮助信息，可以通过下列命令实现。
+
+hidumper -s PrivacyManagerService -a '-h'
+
+使用样例：
+
+-------------------------------[ability]-------------------------------
 
 
 ----------------------------------PrivacyManagerService----------------------------------
@@ -12,6 +24,7 @@ Privacy Dump:
 Usage:
        -h: command help
        -t <TOKEN_ID>: according to specific token id dump permission used records
+
 获取敏感权限使用记录信息
 
 支持通过应用进程的tokenid，查看敏感权限使用记录的信息，可以通过下列命令实现。
@@ -24,10 +37,7 @@ hidumper -s PrivacyManagerService -a '-t <tokenId>'
 
 hidumper -s PrivacyManagerService -a '-t 536992218'
 
-
 -------------------------------[ability]-------------------------------
-
-
 
 
 ----------------------------------PrivacyManagerService----------------------------------
@@ -44,5 +54,54 @@ Privacy Dump:
     }
   ]
 }
-hidumper
-hitrace
+
+## Code blocks
+
+### Code block 1
+
+```
+hidumper -s PrivacyManagerService -a '-h'
+```
+
+### Code block 2
+
+```
+-------------------------------[ability]-------------------------------
+
+
+----------------------------------PrivacyManagerService----------------------------------
+Privacy Dump:
+Usage:
+       -h: command help
+       -t <TOKEN_ID>: according to specific token id dump permission used records
+```
+
+### Code block 3
+
+```
+hidumper -s PrivacyManagerService -a '-t <tokenId>'
+```
+
+### Code block 4
+
+```
+hidumper -s PrivacyManagerService -a '-t 536992218'
+
+-------------------------------[ability]-------------------------------
+
+
+----------------------------------PrivacyManagerService----------------------------------
+Privacy Dump:
+{
+  "permissionRecord": [
+    {
+      "bundleName": "com.ohos.camera",
+      "isRemote": false,
+      "permissionName": "ohos.permission.READ_IMAGEVIDEO",
+      "lastAccessTime": 1508577149393,
+      "lastAccessDuration": 0,
+      "accessCount": 2
+    }
+  ]
+}
+```

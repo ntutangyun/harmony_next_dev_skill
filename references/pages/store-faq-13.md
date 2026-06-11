@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-faq-13_
 
+做了调整，具体调整规则请参见换算规则描述。

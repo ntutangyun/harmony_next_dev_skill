@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fast-dsp-iir-filter_
 
+二阶IIR滤波器用于音频和信号处理中的滤波操作，例如实现低通、高通或带通滤波。
+
 二阶IIR滤波器采用直接II型转置结构，支持多通道（如立体声）和多节级联（如高阶滤波器）配置。滤波器支持动态激活/旁路控制，允许运行时灵活调整滤波特性。
 
 接口说明
@@ -21,11 +23,16 @@ FAST_ErrorCode HMS_FAST_Biquadm_SetActiveFilters (FAST_Biquadm* filter, const ui
 FAST_ErrorCode HMS_FAST_Biquadm_SetActiveFiltersD (FAST_BiquadmD* filter, const uint8_t* activeMask)	设置二阶滤波器节的激活掩码（双精度）。
 FAST_ErrorCode HMS_FAST_Biquadm (FAST_Biquadm* filter, const float** input, const size_t strideInput, float** output, const size_t strideOutput, size_t length)	通过二阶滤波器组处理多通道音频（单精度）。
 FAST_ErrorCode HMS_FAST_BiquadmD (FAST_BiquadmD* filter, const double** input, const size_t strideInput, double** output, const size_t strideOutput, size_t length)	通过二阶滤波器组处理多通道音频（双精度）。
+
 开发步骤
 
 在CMake脚本中链接相关动态库。
 
-target_link_libraries(entry PUBLIC libfast_dsp.so)
+find_library(
+    lib_fast_dsp
+    NAMES fast_dsp
+)
+target_link_libraries(entry PRIVATE ${lib_fast_dsp})
 
 引入头文件。
 
@@ -42,11 +49,12 @@ target_link_libraries(entry PUBLIC libfast_dsp.so)
 调用HMS_FAST_Biquadm_Destroy销毁滤波器实例。
 
 代码示例
-单通道滤波器示例
+
+[h2]单通道滤波器示例
+
 #include <cstdio>
 #include <cstdlib>
 #include "FASTKit/fast_dsp_common.h"
-
 
 FAST_ErrorCode single_channel_filter_demo() {
     // 滤波器参数：1通道，1节，最大100帧
@@ -54,10 +62,8 @@ FAST_ErrorCode single_channel_filter_demo() {
     size_t num_sections = 1;
     size_t max_frames = 100;
 
-
     FAST_Biquadm* filter = nullptr;
     FAST_ErrorCode ret;
-
 
     // 创建滤波器
     ret = HMS_FAST_Biquadm_Create(num_channels, num_sections, max_frames, &filter);
@@ -65,7 +71,6 @@ FAST_ErrorCode single_channel_filter_demo() {
         printf("Failed to create filter: %d\n", ret);
         return ret;
     }
-
 
     // 设置滤波器系数 (b0, b1, b2, a1, a2)
     // 低通滤波器示例系数
@@ -77,7 +82,6 @@ FAST_ErrorCode single_channel_filter_demo() {
         0.649003273f   // a2
     };
 
-
     ret = HMS_FAST_Biquadm_SetCoeffSingle(filter, coefficients, 1);
     if (ret != FAST_ERROR_CODE_SUCCESS) {
         printf("Failed to set coefficients: %d\n", ret);
@@ -85,17 +89,14 @@ FAST_ErrorCode single_channel_filter_demo() {
         return ret;
     }
 
-
     // 准备输入输出数据
     const size_t num_samples = 10;
     float input[num_samples] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
                                 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
     float output[num_samples];
 
-
     const float* input_channels[] = {input};
     float* output_channels[] = {output};
-
 
     // 执行滤波
     ret = HMS_FAST_Biquadm(filter, input_channels, 1, output_channels, 1, num_samples);
@@ -105,25 +106,23 @@ FAST_ErrorCode single_channel_filter_demo() {
         return ret;
     }
 
-
     printf("Filtered output:\n");
     for (size_t i = 0; i < num_samples; ++i) {
         printf("  output[%zu] = %f\n", i, output[i]);
     }
 
-
     // 销毁滤波器
     HMS_FAST_Biquadm_Destroy(filter);
 
-
     return FAST_ERROR_CODE_SUCCESS;
 }
-多通道滤波器示例
+
+[h2]多通道滤波器示例
+
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
 #include "FASTKit/fast_dsp_common.h"
-
 
 FAST_ErrorCode multi_channel_filter_demo() {
     // 滤波器参数：2通道（立体声），2节级联，最大1000帧
@@ -131,10 +130,8 @@ FAST_ErrorCode multi_channel_filter_demo() {
     size_t num_sections = 2;
     size_t max_frames = 1000;
 
-
     FAST_Biquadm* filter = nullptr;
     FAST_ErrorCode ret;
-
 
     // 创建滤波器
     ret = HMS_FAST_Biquadm_Create(num_channels, num_sections, max_frames, &filter);
@@ -142,7 +139,6 @@ FAST_ErrorCode multi_channel_filter_demo() {
         printf("Failed to create filter: %d\n", ret);
         return ret;
     }
-
 
     // 设置2节滤波器系数
     float coefficients[] = {
@@ -152,14 +148,12 @@ FAST_ErrorCode multi_channel_filter_demo() {
         0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f
     };
 
-
     ret = HMS_FAST_Biquadm_SetCoeffSingle(filter, coefficients, 1);
     if (ret != FAST_ERROR_CODE_SUCCESS) {
         printf("Failed to set coefficients: %d\n", ret);
         HMS_FAST_Biquadm_Destroy(filter);
         return ret;
     }
-
 
     // 准备输入输出数据
     const size_t num_samples = 100;
@@ -168,17 +162,14 @@ FAST_ErrorCode multi_channel_filter_demo() {
     float output_left[num_samples];
     float output_right[num_samples];
 
-
     // 初始化输入数据（正弦波）
     for (size_t i = 0; i < num_samples; ++i) {
         input_left[i] = sinf(i * 0.1f);
         input_right[i] = sinf(i * 0.1f + 0.5f);
     }
 
-
     const float* input_channels[] = {input_left, input_right};
     float* output_channels[] = {output_left, output_right};
-
 
     // 执行滤波
     ret = HMS_FAST_Biquadm(filter, input_channels, 1, output_channels, 1, num_samples);
@@ -188,21 +179,19 @@ FAST_ErrorCode multi_channel_filter_demo() {
         return ret;
     }
 
-
     printf("Multi-channel filter processed %zu samples\n", num_samples);
-
 
     // 销毁滤波器
     HMS_FAST_Biquadm_Destroy(filter);
 
-
     return FAST_ERROR_CODE_SUCCESS;
 }
-动态激活滤波器节示例
+
+[h2]动态激活滤波器节示例
+
 #include <cstdio>
 #include <cstdlib>
 #include "FASTKit/fast_dsp_common.h"
-
 
 FAST_ErrorCode dynamic_filter_activation_demo() {
     // 滤波器参数：1通道，3节，最大100帧
@@ -210,10 +199,8 @@ FAST_ErrorCode dynamic_filter_activation_demo() {
     size_t num_sections = 3;
     size_t max_frames = 100;
 
-
     FAST_Biquadm* filter = nullptr;
     FAST_ErrorCode ret;
-
 
     // 创建滤波器
     ret = HMS_FAST_Biquadm_Create(num_channels, num_sections, max_frames, &filter);
@@ -222,7 +209,6 @@ FAST_ErrorCode dynamic_filter_activation_demo() {
         return ret;
     }
 
-
     // 设置3节滤波器系数
     float coefficients[] = {
         0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f,  // 节 0
@@ -230,14 +216,12 @@ FAST_ErrorCode dynamic_filter_activation_demo() {
         0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f   // 节 2
     };
 
-
     ret = HMS_FAST_Biquadm_SetCoeffSingle(filter, coefficients, 1);
     if (ret != FAST_ERROR_CODE_SUCCESS) {
         printf("Failed to set coefficients: %d\n", ret);
         HMS_FAST_Biquadm_Destroy(filter);
         return ret;
     }
-
 
     // 设置激活掩码：仅激活第0节和第2节，旁路第1节
     uint8_t active_mask[] = {1, 0, 1};
@@ -248,17 +232,14 @@ FAST_ErrorCode dynamic_filter_activation_demo() {
         return ret;
     }
 
-
     // 准备输入输出数据
     const size_t num_samples = 10;
     float input[num_samples] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
                                 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
     float output[num_samples];
 
-
     const float* input_channels[] = {input};
     float* output_channels[] = {output};
-
 
     // 执行滤波（仅通过第0节和第2节）
     ret = HMS_FAST_Biquadm(filter, input_channels, 1, output_channels, 1, num_samples);
@@ -268,18 +249,247 @@ FAST_ErrorCode dynamic_filter_activation_demo() {
         return ret;
     }
 
+    printf("Filtered output with dynamic activation:\n");
+    for (size_t i = 0; i < num_samples; ++i) {
+        printf("  output[%zu] = %f\n", i, output[i]);
+    }
+
+    // 销毁滤波器
+    HMS_FAST_Biquadm_Destroy(filter);
+
+    return FAST_ERROR_CODE_SUCCESS;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+find_library(
+    lib_fast_dsp
+    NAMES fast_dsp
+)
+target_link_libraries(entry PRIVATE ${lib_fast_dsp})
+```
+
+### Code block 2
+
+```
+#include "FASTKit/fast_dsp_common.h"
+```
+
+### Code block 3
+
+```
+#include <cstdio>
+#include <cstdlib>
+#include "FASTKit/fast_dsp_common.h"
+
+FAST_ErrorCode single_channel_filter_demo() {
+    // 滤波器参数：1通道，1节，最大100帧
+    size_t num_channels = 1;
+    size_t num_sections = 1;
+    size_t max_frames = 100;
+
+    FAST_Biquadm* filter = nullptr;
+    FAST_ErrorCode ret;
+
+    // 创建滤波器
+    ret = HMS_FAST_Biquadm_Create(num_channels, num_sections, max_frames, &filter);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to create filter: %d\n", ret);
+        return ret;
+    }
+
+    // 设置滤波器系数 (b0, b1, b2, a1, a2)
+    // 低通滤波器示例系数
+    float coefficients[] = {
+        0.049922035f,  // b0
+        0.099844069f,  // b1
+        0.049922035f,  // b2
+        -1.558153539f, // a1
+        0.649003273f   // a2
+    };
+
+    ret = HMS_FAST_Biquadm_SetCoeffSingle(filter, coefficients, 1);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to set coefficients: %d\n", ret);
+        HMS_FAST_Biquadm_Destroy(filter);
+        return ret;
+    }
+
+    // 准备输入输出数据
+    const size_t num_samples = 10;
+    float input[num_samples] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                                1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+    float output[num_samples];
+
+    const float* input_channels[] = {input};
+    float* output_channels[] = {output};
+
+    // 执行滤波
+    ret = HMS_FAST_Biquadm(filter, input_channels, 1, output_channels, 1, num_samples);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to process: %d\n", ret);
+        HMS_FAST_Biquadm_Destroy(filter);
+        return ret;
+    }
+
+    printf("Filtered output:\n");
+    for (size_t i = 0; i < num_samples; ++i) {
+        printf("  output[%zu] = %f\n", i, output[i]);
+    }
+
+    // 销毁滤波器
+    HMS_FAST_Biquadm_Destroy(filter);
+
+    return FAST_ERROR_CODE_SUCCESS;
+}
+```
+
+### Code block 4
+
+```
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include "FASTKit/fast_dsp_common.h"
+
+FAST_ErrorCode multi_channel_filter_demo() {
+    // 滤波器参数：2通道（立体声），2节级联，最大1000帧
+    size_t num_channels = 2;
+    size_t num_sections = 2;
+    size_t max_frames = 1000;
+
+    FAST_Biquadm* filter = nullptr;
+    FAST_ErrorCode ret;
+
+    // 创建滤波器
+    ret = HMS_FAST_Biquadm_Create(num_channels, num_sections, max_frames, &filter);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to create filter: %d\n", ret);
+        return ret;
+    }
+
+    // 设置2节滤波器系数
+    float coefficients[] = {
+        // 第1节系数
+        0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f,
+        // 第2节系数
+        0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f
+    };
+
+    ret = HMS_FAST_Biquadm_SetCoeffSingle(filter, coefficients, 1);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to set coefficients: %d\n", ret);
+        HMS_FAST_Biquadm_Destroy(filter);
+        return ret;
+    }
+
+    // 准备输入输出数据
+    const size_t num_samples = 100;
+    float input_left[num_samples];
+    float input_right[num_samples];
+    float output_left[num_samples];
+    float output_right[num_samples];
+
+    // 初始化输入数据（正弦波）
+    for (size_t i = 0; i < num_samples; ++i) {
+        input_left[i] = sinf(i * 0.1f);
+        input_right[i] = sinf(i * 0.1f + 0.5f);
+    }
+
+    const float* input_channels[] = {input_left, input_right};
+    float* output_channels[] = {output_left, output_right};
+
+    // 执行滤波
+    ret = HMS_FAST_Biquadm(filter, input_channels, 1, output_channels, 1, num_samples);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to process: %d\n", ret);
+        HMS_FAST_Biquadm_Destroy(filter);
+        return ret;
+    }
+
+    printf("Multi-channel filter processed %zu samples\n", num_samples);
+
+    // 销毁滤波器
+    HMS_FAST_Biquadm_Destroy(filter);
+
+    return FAST_ERROR_CODE_SUCCESS;
+}
+```
+
+### Code block 5
+
+```
+#include <cstdio>
+#include <cstdlib>
+#include "FASTKit/fast_dsp_common.h"
+
+FAST_ErrorCode dynamic_filter_activation_demo() {
+    // 滤波器参数：1通道，3节，最大100帧
+    size_t num_channels = 1;
+    size_t num_sections = 3;
+    size_t max_frames = 100;
+
+    FAST_Biquadm* filter = nullptr;
+    FAST_ErrorCode ret;
+
+    // 创建滤波器
+    ret = HMS_FAST_Biquadm_Create(num_channels, num_sections, max_frames, &filter);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to create filter: %d\n", ret);
+        return ret;
+    }
+
+    // 设置3节滤波器系数
+    float coefficients[] = {
+        0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f,  // 节 0
+        0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f,  // 节 1
+        0.049922035f, 0.099844069f, 0.049922035f, -1.558153539f, 0.649003273f   // 节 2
+    };
+
+    ret = HMS_FAST_Biquadm_SetCoeffSingle(filter, coefficients, 1);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to set coefficients: %d\n", ret);
+        HMS_FAST_Biquadm_Destroy(filter);
+        return ret;
+    }
+
+    // 设置激活掩码：仅激活第0节和第2节，旁路第1节
+    uint8_t active_mask[] = {1, 0, 1};
+    ret = HMS_FAST_Biquadm_SetActiveFilters(filter, active_mask);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to set active filters: %d\n", ret);
+        HMS_FAST_Biquadm_Destroy(filter);
+        return ret;
+    }
+
+    // 准备输入输出数据
+    const size_t num_samples = 10;
+    float input[num_samples] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                                1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+    float output[num_samples];
+
+    const float* input_channels[] = {input};
+    float* output_channels[] = {output};
+
+    // 执行滤波（仅通过第0节和第2节）
+    ret = HMS_FAST_Biquadm(filter, input_channels, 1, output_channels, 1, num_samples);
+    if (ret != FAST_ERROR_CODE_SUCCESS) {
+        printf("Failed to process: %d\n", ret);
+        HMS_FAST_Biquadm_Destroy(filter);
+        return ret;
+    }
 
     printf("Filtered output with dynamic activation:\n");
     for (size_t i = 0; i < num_samples; ++i) {
         printf("  output[%zu] = %f\n", i, output[i]);
     }
 
-
     // 销毁滤波器
     HMS_FAST_Biquadm_Destroy(filter);
 
-
     return FAST_ERROR_CODE_SUCCESS;
 }
-使用DSP进行向量计算
-Function Flow Runtime Kit（任务并发调度服务）
+```

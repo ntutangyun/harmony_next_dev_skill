@@ -1,6 +1,8 @@
-# 集成ABR后，从游戏引擎获取到的Native纹理内容为空，该如何解决?
+# 集成ABR后，从游戏引擎获取到的Native纹理内容为空，该如何解决
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-faq-5_
+
+现象描述
 
 以团结引擎为例，游戏应用集成ABR，在游戏引擎中通过GetNativeTexturePtr获取Buffer关联的纹理，获取到的纹理内容为空。
 
@@ -19,5 +21,17 @@ errorCode = HMS_ABR_GetScaledTexture_GLES(context_, originTexture, &scaledTextur
 if (errorCode != ABR_SUCCESS) {
     GOLOGE("HMS_ABR_GetScaledTexture_GLES execution failed, error code: %d.", errorCode);
 }
-ABR进行Buffer分辨率调整引起其他Pass渲染效果异常，该如何解决？
-游戏资源加速服务
+
+## Code blocks
+
+### Code block 1
+
+```
+// 在Buffer渲染后调用
+GLuint originTexture;
+GLuint scaledTexture;
+errorCode = HMS_ABR_GetScaledTexture_GLES(context_, originTexture, &scaledTexture);
+if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_GetScaledTexture_GLES execution failed, error code: %d.", errorCode);
+}
+```

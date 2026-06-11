@@ -2,3 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-merc-regist-apply_
 
+华为支付当前仅支持商户接入，在开发前需要先完成华为支付商户入网。
+
+商户入网后会分配对应的商户号，商户号作为开放API接口请求的必要入参，在开发前需要先获取商户号。
+
+如已完成商户入网并获取好商户号请跳过该步骤。

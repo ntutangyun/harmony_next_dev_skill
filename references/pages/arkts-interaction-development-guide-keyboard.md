@@ -13,7 +13,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 按键事件由外设键盘等设备触发，经驱动和多模处理转换后发送给当前获焦的窗口，窗口获取到事件后，会尝试分发三次事件。三次分发的优先顺序如下，一旦事件被消费，则跳过后续分发流程。
 
 首先分发给ArkUI框架用于触发获焦组件绑定的onKeyPreIme回调和页面快捷键。
+
 再向输入法分发，输入法会消费按键用作输入。
+
 再次将事件发给ArkUI框架，用于响应onKeyEventDispatch事件、获焦组件绑定的onKeyEvent回调以及走焦。
 
 因此，当某输入框组件获焦，且打开了输入法，此时大部分按键事件均会被输入法消费。例如字母键会被输入法用来往输入框中输入对应字母字符、方向键会被输入法用来切换选中备选词。如果在此基础上给输入框组件绑定了快捷键，那么快捷键会优先响应事件，事件也不再会被输入法消费。
@@ -23,6 +25,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 Web组件的KeyEvent流程与上述过程有所不同。在onKeyPreIme返回false时，Web组件不会匹配快捷键。而在第三次按键派发过程中，Web组件会将未消费的KeyEvent重新派发回ArkUI，在重新派发过程中再执行匹配快捷键等操作。
 
 onKeyEvent & onKeyPreIme
+
 onKeyEvent(event: (event: KeyEvent) => void): T
 onKeyEvent(event: Callback<KeyEvent, boolean>): T
 onKeyPreIme(event: Callback<KeyEvent, boolean>): T
@@ -39,7 +42,6 @@ struct KeyEventExample {
   @State buttonType: string = '';
   @State columnText: string = '';
   @State columnType: string = '';
-
 
   build() {
     Column() {
@@ -61,10 +63,8 @@ struct KeyEventExample {
           }
         })
 
-
       Divider()
       Text(this.buttonText).fontColor(Color.Green)
-
 
       Divider()
       Text(this.columnText).fontColor(Color.Red)
@@ -85,7 +85,6 @@ struct KeyEventExample {
     })
   }
 }
-OnKey.ets
 
 上述示例中给组件Button和其父容器Column绑定onKeyEvent。应用打开页面加载后，组件树上第一个可获焦的非容器组件自动获焦，设置Button为当前页面的默认焦点，由于Button是Column的子节点，Button获焦也同时意味着Column获焦。获焦机制见支持焦点处理。
 
@@ -104,7 +103,6 @@ struct KeyEventPreventBubble {
   @State buttonType: string = '';
   @State columnText: string = '';
   @State columnType: string = '';
-
 
   build() {
     Column() {
@@ -130,10 +128,8 @@ struct KeyEventPreventBubble {
           }
         })
 
-
       Divider()
       Text(this.buttonText).fontColor(Color.Green)
-
 
       Divider()
       Text(this.columnText).fontColor(Color.Red)
@@ -154,12 +150,10 @@ struct KeyEventPreventBubble {
     })
   }
 }
-OnKeyPreventBubble.ets
 
 使用OnKeyPreIme屏蔽在输入框中使用方向左键。
 
 import { KeyCode } from '@kit.InputKit';
-
 
 @Entry
 @Component
@@ -168,7 +162,6 @@ struct PreImeEventExample {
   @State buttonType: string = '';
   @State columnText: string = '';
   @State columnType: string = '';
-
 
   build() {
     Column() {
@@ -187,17 +180,14 @@ struct PreImeEventExample {
     }
   }
 }
-OnKeyPreIme.ets
 
 使用onKeyEventDispatch分发按键事件到子组件，子组件使用onKeyEvent。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = '[Sample_Eventproject]';
 const DOMAIN = 0xF811;
 const BUNDLE = 'Eventproject_';
-
 
 @Entry
 @Component
@@ -228,7 +218,6 @@ struct Index {
         return context.dispatchKeyEvent('button1', event);
       })
 
-
     }
     .height('100%')
     .width('100%')
@@ -242,17 +231,14 @@ struct Index {
     })
   }
 }
-OnKeyDistributeEvent.ets
 
 使用OnKeyPreIme实现回车提交（建议使用物理键盘）。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG = '[Sample_Eventproject]';
 const DOMAIN = 0xF811;
 const BUNDLE = 'Eventproject_';
-
 
 @Entry
 @Component
@@ -260,7 +246,6 @@ struct TextAreaDemo {
   @State content: string = '';
   @State text: string = '';
   controller: TextAreaController = new TextAreaController();
-
 
   build() {
     Column() {
@@ -288,9 +273,259 @@ struct TextAreaDemo {
     }
   }
 }
-OnKeyPreImeCommit.ets
 
 在输入框中输入内容后回车。
 
-支持触控板输入事件
-支持游戏手柄输入事件
+## Code blocks
+
+### Code block 1
+
+```
+onKeyEvent(event: (event: KeyEvent) => void): T
+onKeyEvent(event: Callback<KeyEvent, boolean>): T
+onKeyPreIme(event: Callback<KeyEvent, boolean>): T
+onKeyEventDispatch(event: Callback<KeyEvent, boolean>): T
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct KeyEventExample {
+  @State buttonText: string = '';
+  @State buttonType: string = '';
+  @State columnText: string = '';
+  @State columnType: string = '';
+
+  build() {
+    Column() {
+      Button('onKeyEvent')
+        .defaultFocus(true)
+        .width(140).height(70)
+        .onKeyEvent((event?: KeyEvent) => { // 给Button设置onKeyEvent事件
+          if (event) {
+            if (event.type === KeyType.Down) {
+              this.buttonType = 'Down';
+            }
+            if (event.type === KeyType.Up) {
+              this.buttonType = 'Up';
+            }
+            this.buttonText = 'Button: \n' +
+              'KeyType:' + this.buttonType + '\n' +
+              'KeyCode:' + event.keyCode + '\n' +
+              'KeyText:' + event.keyText;
+          }
+        })
+
+      Divider()
+      Text(this.buttonText).fontColor(Color.Green)
+
+      Divider()
+      Text(this.columnText).fontColor(Color.Red)
+    }.width('100%').height('100%').justifyContent(FlexAlign.Center)
+    .onKeyEvent((event?: KeyEvent) => { // 给父组件Column设置onKeyEvent事件
+      if (event) {
+        if (event.type === KeyType.Down) {
+          this.columnType = 'Down';
+        }
+        if (event.type === KeyType.Up) {
+          this.columnType = 'Up';
+        }
+        this.columnText = 'Column: \n' +
+          'KeyType:' + this.columnType + '\n' +
+          'KeyCode:' + event.keyCode + '\n' +
+          'KeyText:' + event.keyText;
+      }
+    })
+  }
+}
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct KeyEventPreventBubble {
+  @State buttonText: string = '';
+  @State buttonType: string = '';
+  @State columnText: string = '';
+  @State columnType: string = '';
+
+  build() {
+    Column() {
+      Button('onKeyEvent')
+        .defaultFocus(true)
+        .width(140).height(70)
+        .onKeyEvent((event?: KeyEvent) => {
+          // 通过stopPropagation阻止事件冒泡
+          if (event) {
+            if (event.stopPropagation) {
+              event.stopPropagation();
+            }
+            if (event.type === KeyType.Down) {
+              this.buttonType = 'Down';
+            }
+            if (event.type === KeyType.Up) {
+              this.buttonType = 'Up';
+            }
+            this.buttonText = 'Button: \n' +
+              'KeyType:' + this.buttonType + '\n' +
+              'KeyCode:' + event.keyCode + '\n' +
+              'KeyText:' + event.keyText;
+          }
+        })
+
+      Divider()
+      Text(this.buttonText).fontColor(Color.Green)
+
+      Divider()
+      Text(this.columnText).fontColor(Color.Red)
+    }.width('100%').height('100%').justifyContent(FlexAlign.Center)
+    .onKeyEvent((event?: KeyEvent) => { // 给父组件Column设置onKeyEvent事件
+      if (event) {
+        if (event.type === KeyType.Down) {
+          this.columnType = 'Down';
+        }
+        if (event.type === KeyType.Up) {
+          this.columnType = 'Up';
+        }
+        this.columnText = 'Column: \n' +
+          'KeyType:' + this.columnType + '\n' +
+          'KeyCode:' + event.keyCode + '\n' +
+          'KeyText:' + event.keyText;
+      }
+    })
+  }
+}
+```
+
+### Code block 4
+
+```
+import { KeyCode } from '@kit.InputKit';
+
+@Entry
+@Component
+struct PreImeEventExample {
+  @State buttonText: string = '';
+  @State buttonType: string = '';
+  @State columnText: string = '';
+  @State columnType: string = '';
+
+  build() {
+    Column() {
+      Search({
+        placeholder: 'Search...'
+      })
+        .width('80%')
+        .height('40vp')
+        .border({ radius: '20vp' })
+        .onKeyPreIme((event: KeyEvent) => {
+          if (event.keyCode == KeyCode.KEYCODE_DPAD_LEFT) {
+            return true;
+          }
+          return false;
+        })
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = '[Sample_Eventproject]';
+const DOMAIN = 0xF811;
+const BUNDLE = 'Eventproject_';
+
+@Entry
+@Component
+struct Index {
+  build() {
+    Row() {
+      Row() {
+        Button('button1')
+          .id('button1')
+          .margin({ left: 70, right: 30 })
+          .onKeyEvent((event) => {
+            hilog.info(DOMAIN, TAG, BUNDLE + 'button1');
+            return true;
+          })
+        Button('button2')
+          .id('button2')
+          .onKeyEvent((event) => {
+            hilog.info(DOMAIN, TAG, BUNDLE + 'button2');
+            return true;
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .id('Row1')
+      .onKeyEventDispatch((event) => {
+        let context = this.getUIContext();
+        context.getFocusController().requestFocus('button1');
+        return context.dispatchKeyEvent('button1', event);
+      })
+
+    }
+    .height('100%')
+    .width('100%')
+    .onKeyEventDispatch((event) => {
+      if (event.type == KeyType.Down) {
+        let context = this.getUIContext();
+        context.getFocusController().requestFocus('Row1');
+        return context.dispatchKeyEvent('Row1', event);
+      }
+      return true;
+    })
+  }
+}
+```
+
+### Code block 6
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG = '[Sample_Eventproject]';
+const DOMAIN = 0xF811;
+const BUNDLE = 'Eventproject_';
+
+@Entry
+@Component
+struct TextAreaDemo {
+  @State content: string = '';
+  @State text: string = '';
+  controller: TextAreaController = new TextAreaController();
+
+  build() {
+    Column() {
+      Text('Submissions: ' + this.content)
+      TextArea({ controller: this.controller, text: this.text })
+        .onKeyPreIme((event: KeyEvent) => {
+          hilog.info(DOMAIN, TAG, `${BUNDLE + JSON.stringify(event)}`);
+          if (event.keyCode === 2054 && event.type === KeyType.Down) { // 回车键物理码
+            const hasCtrl = event?.getModifierKeyState?.(['Ctrl']);
+            if (hasCtrl) {
+              hilog.info(DOMAIN, TAG, BUNDLE + 'Line break');
+            } else {
+              hilog.info(DOMAIN, TAG, BUNDLE + 'Submissions：' + this.text);
+              this.content = this.text;
+              this.text = '';
+              event.stopPropagation();
+            }
+            return true;
+          }
+          return false;
+        })
+        .onChange((value: string) => {
+          this.text = value;
+        })
+    }
+  }
+}
+```

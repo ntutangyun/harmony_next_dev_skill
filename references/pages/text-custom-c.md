@@ -7,7 +7,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-cust
 字体引擎作为图形系统中的核心组件，负责将字符代码转换为可视化的字形，并精确计算每个字形的布局和位置，为自定义文本绘制提供底层支持。通过文本测量接口，开发者可以获取文本的精确尺寸，这是实现精准布局（如居中显示）的基础。
 
 文本塑形
-场景介绍
+
+[h2]场景介绍
 
 文本塑形是字体引擎提供的一项关键能力，它允许开发者不经过系统默认的文本排版流程，直接获取文本的底层字形信息（如宽度、方向等测量信息）。这使得开发者能够基于这些原始数据，实现完全自定义的排版逻辑、绘制操作以及断行策略。
 
@@ -19,7 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-cust
 
 精细化排版管理：如实现艺术排版、动态文字布局等系统标准文本组件难以达到的效果。
 
-接口说明
+[h2]接口说明
 
 文本塑形中常用接口如下表所示，详细接口说明参考drawing_text_typography.h和drawing_text_blob.h。
 
@@ -33,7 +34,8 @@ OH_Drawing_Array* OH_Drawing_GetRunGlyphAdvances(OH_Drawing_Run* run, uint32_t s
 OH_Drawing_TextBlobBuilder* OH_Drawing_TextBlobBuilderCreate(void)	用于创建一个文本构造器对象。
 OH_Drawing_TextBlob* OH_Drawing_TextBlobBuilderMake(OH_Drawing_TextBlobBuilder* textBlobBuilder)	用于从文本构造器中创建文本对象。
 void OH_Drawing_CanvasDrawTextBlob(OH_Drawing_Canvas* canvas, const OH_Drawing_TextBlob* textBlob, float x, float y)	用于画一段文字。
-开发步骤
+
+[h2]开发步骤
 
 从API version 18开始，支持获取文字塑形结果能力。从API version 20开始，支持获取文字排版方向和文字字形宽度。关键代码如下：
 
@@ -60,12 +62,10 @@ OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
 OH_Drawing_TextStyle *txtStyle = OH_Drawing_CreateTextStyle();
 OH_Drawing_SetTextStyleFontSize(txtStyle, DIV_TEN(width_));
 
-
 // 创建 FontCollection，FontCollection 用于管理字体匹配逻辑
 OH_Drawing_FontCollection *fc = OH_Drawing_CreateSharedFontCollection();
 // 使用 FontCollection 和 之前创建的 TypographyStyle 创建 TypographyCreate。TypographyCreate 用于创建 Typography
 OH_Drawing_TypographyCreate *handler = OH_Drawing_CreateTypographyHandler(typoStyle, fc);
-draw_text_impl.cpp
 
 设置文本样式，添加文本内容。
 
@@ -73,7 +73,6 @@ draw_text_impl.cpp
 OH_Drawing_TypographyHandlerPushTextStyle(handler, txtStyle);
 const char *text = "Hello World";
 OH_Drawing_TypographyHandlerAddText(handler, text);
-draw_text_impl.cpp
 
 创建行对象。获取行中所有文字的塑形结果。
 
@@ -84,10 +83,8 @@ OH_Drawing_LineTypography *lineTypography = OH_Drawing_CreateLineTypography(hand
 // 创建一个 TextLine，取(0, 11)的字符
 OH_Drawing_TextLine *textLine = OH_Drawing_LineTypographyCreateLine(lineTypography, 0, 11);
 
-
 // 获取塑形结果
 OH_Drawing_Array *runs = OH_Drawing_TextLineGetGlyphRuns(textLine);
-draw_text_impl.cpp
 
 该步骤是文本塑形流程中的自定义绘制环节。通过调用OH_Drawing_GetRunGlyphs()方法获取文本中每个字符对应的字形序号，再结合OH_Drawing_GetRunFont()方法获取的字体对象，即可唯一确定每个字形的具体图形信息。
 
@@ -103,12 +100,10 @@ for (int i = 0; i < runsLength; i++) {
     OH_Drawing_Font *font = OH_Drawing_GetRunFont(run);
     OH_Drawing_Array *advances = OH_Drawing_GetRunGlyphAdvances(run, 0, 0);
 
-
     OH_Drawing_TextBlobBuilder *builder = OH_Drawing_TextBlobBuilderCreate();
     // 创建一个20*20的矩形
     OH_Drawing_Rect *rect = OH_Drawing_RectCreate(0, 0, 20, 20);
     const OH_Drawing_RunBuffer *buffer = OH_Drawing_TextBlobBuilderAllocRunPos(builder, font, glyphsLength, rect);
-
 
     // 创建字形buffer，通过drawing接口进行字形独立绘制
     int x = 0;
@@ -119,7 +114,6 @@ for (int i = 0; i < runsLength; i++) {
         buffer->pos[index * TWO_INT] = x;
         buffer->pos[index * TWO_INT + 1] = y;
 
-
         OH_Drawing_Point *advance = OH_Drawing_GetRunGlyphAdvanceByIndex(advances, index);
         float pos = 0;
         OH_Drawing_PointGetX(advance, &pos);
@@ -128,12 +122,10 @@ for (int i = 0; i < runsLength; i++) {
         y += pos + 30; // 每个字形间垂直间隔30px
     }
 
-
     // 自定义绘制一串具有相同属性的一系列连续字形
     OH_Drawing_TextBlob *textBlob = OH_Drawing_TextBlobBuilderMake(builder);
     // 将文本绘制到画布(20,100)上
     OH_Drawing_CanvasDrawTextBlob(cCanvas_, textBlob, 20, 100);
-
 
     // 释放内存
     OH_Drawing_TextBlobDestroy(textBlob);
@@ -141,7 +133,6 @@ for (int i = 0; i < runsLength; i++) {
     OH_Drawing_DestroyRunGlyphAdvances(advances);
     OH_Drawing_DestroyRunGlyphs(glyphs);
 }
-draw_text_impl.cpp
 
 释放内存
 
@@ -153,9 +144,123 @@ OH_Drawing_DestroyTypographyHandler(handler);
 OH_Drawing_DestroyLineTypography(lineTypography);
 OH_Drawing_DestroyTextLine(textLine);
 OH_Drawing_DestroyRuns(runs);
-draw_text_impl.cpp
 
 效果展示：
 
-复杂文本绘制与显示（C/C++）
-文本开发常见问题
+## Code blocks
+
+### Code block 1
+
+```
+libnative_drawing.so
+```
+
+### Code block 2
+
+```
+#include <native_drawing/drawing_font_collection.h>
+#include <native_drawing/drawing_text_typography.h>
+#include <native_drawing/drawing_text_blob.h>
+#include <native_drawing/drawing_text_line.h>
+#include <native_drawing/drawing_text_run.h>
+#include <native_drawing/drawing_text_lineTypography.h>
+#include <native_drawing/drawing_rect.h>
+#include <native_drawing/drawing_point.h>
+```
+
+### Code block 3
+
+```
+// 创建一个 TypographyStyle，创建 TypographyCreate 时需要使用
+OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
+// 设置文字颜色、大小、字重，不设置 TextStyle 会使用 TypographyStyle 中的默认 TextStyle
+OH_Drawing_TextStyle *txtStyle = OH_Drawing_CreateTextStyle();
+OH_Drawing_SetTextStyleFontSize(txtStyle, DIV_TEN(width_));
+
+// 创建 FontCollection，FontCollection 用于管理字体匹配逻辑
+OH_Drawing_FontCollection *fc = OH_Drawing_CreateSharedFontCollection();
+// 使用 FontCollection 和 之前创建的 TypographyStyle 创建 TypographyCreate。TypographyCreate 用于创建 Typography
+OH_Drawing_TypographyCreate *handler = OH_Drawing_CreateTypographyHandler(typoStyle, fc);
+```
+
+### Code block 4
+
+```
+// 设置文本内容，并将文本添加到 handler 中
+OH_Drawing_TypographyHandlerPushTextStyle(handler, txtStyle);
+const char *text = "Hello World";
+OH_Drawing_TypographyHandlerAddText(handler, text);
+```
+
+### Code block 5
+
+```
+// 通过 handler 创建一个 Typography
+OH_Drawing_LineTypography *lineTypography = OH_Drawing_CreateLineTypography(handler);
+// 创建一个 TextLine，取(0, 11)的字符
+OH_Drawing_TextLine *textLine = OH_Drawing_LineTypographyCreateLine(lineTypography, 0, 11);
+
+// 获取塑形结果
+OH_Drawing_Array *runs = OH_Drawing_TextLineGetGlyphRuns(textLine);
+```
+
+### Code block 6
+
+```
+size_t runsLength = OH_Drawing_GetDrawingArraySize(runs);
+for (int i = 0; i < runsLength; i++) {
+    OH_Drawing_Run *run = OH_Drawing_GetRunByIndex(runs, i);
+    // 获取所有字形数据
+    OH_Drawing_Array *glyphs = OH_Drawing_GetRunGlyphs(run, 0, 0);
+    size_t glyphsLength = OH_Drawing_GetDrawingArraySize(glyphs);
+    // 获取相同绘制单元字体
+    OH_Drawing_Font *font = OH_Drawing_GetRunFont(run);
+    OH_Drawing_Array *advances = OH_Drawing_GetRunGlyphAdvances(run, 0, 0);
+
+    OH_Drawing_TextBlobBuilder *builder = OH_Drawing_TextBlobBuilderCreate();
+    // 创建一个20*20的矩形
+    OH_Drawing_Rect *rect = OH_Drawing_RectCreate(0, 0, 20, 20);
+    const OH_Drawing_RunBuffer *buffer = OH_Drawing_TextBlobBuilderAllocRunPos(builder, font, glyphsLength, rect);
+
+    // 创建字形buffer，通过drawing接口进行字形独立绘制
+    int x = 0;
+    int y = 0;
+    for (int index = 0; index < glyphsLength; index++) {
+        buffer->glyphs[index] = OH_Drawing_GetRunGlyphsByIndex(glyphs, index);
+        // 设置字形位置
+        buffer->pos[index * TWO_INT] = x;
+        buffer->pos[index * TWO_INT + 1] = y;
+
+        OH_Drawing_Point *advance = OH_Drawing_GetRunGlyphAdvanceByIndex(advances, index);
+        float pos = 0;
+        OH_Drawing_PointGetX(advance, &pos);
+        x += pos + 10; // 每个字形间水平间隔10px
+        OH_Drawing_PointGetY(advance, &pos);
+        y += pos + 30; // 每个字形间垂直间隔30px
+    }
+
+    // 自定义绘制一串具有相同属性的一系列连续字形
+    OH_Drawing_TextBlob *textBlob = OH_Drawing_TextBlobBuilderMake(builder);
+    // 将文本绘制到画布(20,100)上
+    OH_Drawing_CanvasDrawTextBlob(cCanvas_, textBlob, 20, 100);
+
+    // 释放内存
+    OH_Drawing_TextBlobDestroy(textBlob);
+    OH_Drawing_FontDestroy(font);
+    OH_Drawing_DestroyRunGlyphAdvances(advances);
+    OH_Drawing_DestroyRunGlyphs(glyphs);
+}
+```
+
+### Code block 7
+
+```
+// 释放内存
+OH_Drawing_DestroyTypographyStyle(typoStyle);
+OH_Drawing_DestroyTextStyle(txtStyle);
+OH_Drawing_DestroyFontCollection(fc);
+OH_Drawing_DestroyTypographyHandler(handler);
+OH_Drawing_DestroyLineTypography(lineTypography);
+OH_Drawing_DestroyTextLine(textLine);
+OH_Drawing_DestroyRuns(runs);
+```

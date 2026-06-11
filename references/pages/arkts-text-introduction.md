@@ -33,6 +33,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-tex
 管理软键盘
 
 当需要控制文本输入组件的软键盘行为，包括弹出、收起键盘时，可以使用软键盘管理功能。参考管理软键盘章节。
-
-使用文本
-文本显示 (Text/Span)

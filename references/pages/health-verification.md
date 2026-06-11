@@ -13,7 +13,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 审核结果会出现以下两种类型，将以短信和邮件的形式通知您。
 
 “验证通过”，应用可正式接入运动健康服务；
+
 “验证驳回”，我们会以邮件的形式告知驳回原因（也可在开发者联盟中运动健康服务卡片上查看您应用的状态信息），请在我们的指引下调整并再次提交“申请验证”。重新提交的审核周期约为15个工作日，如有其他疑问，请通过智能客服反馈。
+
 说明
 
 申请验证审核通过后，您申请的权限将于24小时后生效。
@@ -30,7 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 申请验证一旦提交审核，应用状态将变为“待验证”。如在评审过程需要修改材料，平台将通过hihealth@huawei.com邮箱告知修改意见，您可点击“更新验证材料”上传最新佐证资料后，回复邮件，平台将根据最新材料评审。
 
-未提供隐私政策声明视频或隐私政策内容不准确
+[h2]未提供隐私政策声明视频或隐私政策内容不准确
 
 要求:
 
@@ -50,7 +52,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 2.需要在隐私政策声明中解释清楚，应用实际名称与隐私政策里的应用名称、申请验证的应用名称之间的关系（包括公司名称，英文名称关注大小写），或提供有正式文件、正式邮件、公司盖章等正式说明材料。
 
-华为运动健康标志及文字的使用描述错误
+[h2]华为运动健康标志及文字的使用描述错误
 
 要求:
 
@@ -68,7 +70,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 2.开发者应用面向用户界面，统一使用华为运动健康品牌logo。
 
-授权页面权限展示不一致，图标不一致
+[h2]授权页面权限展示不一致，图标不一致
 
 要求:
 
@@ -90,7 +92,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 您可以在平台-开发服务-账号-找到当前申请验证的应用，在应用信息中修改应用图标。
 
-未集成取消授权功能
+[h2]未集成取消授权功能
 
 要求：
 
@@ -100,7 +102,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 请参见管理用户授权章节集成取消授权功能。
 
-用户需要全部授权后才能使用服务、缺少授权不足提示
+[h2]用户需要全部授权后才能使用服务、缺少授权不足提示
 
 要求：
 
@@ -124,7 +126,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 2.应用授权不足时给出相应提示或引导重新授权。
 
-未提供举证材料、举证材料提供不完整或不正确
+[h2]未提供举证材料、举证材料提供不完整或不正确
 
 要求：
 
@@ -156,7 +158,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 5.请根据应用上线CheckList中的参考模板提供应用的简易用户操作手册。
 
-举证场景混淆
+[h2]举证场景混淆
 
 要求：
 
@@ -173,6 +175,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 方式一：在手机设置 > 华为账号 > 账号安全 > 使用华为账号的应用选取您想要取消授权的应用，进行取消授权。
 
 方式二：在华为运动健康App > 我的 > 隐私管理 > 运动健康数据管理 > 数据分享与授权选取您想要取消授权的应用，进行取消授权。
-
-生理周期
-个人数据处理说明

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-project-upgrade_
 
+工具描述
+
 使用5.0.2.0版本DDK tools包生成的算子工程，若想用新版本的DDK tools包进行调试，需要升级算子工程，否则编译时会有如下报错。
 
 /usr/bin/ld: cannot find -lPLATFORM-NOTFOUND: No such file or directory
@@ -12,9 +14,8 @@ CMake Error at cmake_install.cmake:78 (file):
   No such file or directory.
 
 
-
-
 make: *** [Makefile:100: install] Error 1
+
 命令汇总
 
 执行如下命令，将算子工程升级为当前工具适配的版本。其中${install_path}为ddk工具的安装目录
@@ -32,5 +33,33 @@ ${install_path}/ddk/tools/tools_ascendc/upgrade_project.sh <path>
 
 chmod +x  /usr/local/ddk/tools/tools_ascendc/upgrade_project.sh
 /usr/local/ddk/tools/tools_ascendc/upgrade_project.sh /home/AddCustom
-如何申请workspace作为临时内存
-算子工程创建工具参数说明
+
+## Code blocks
+
+### Code block 1
+
+```
+/usr/bin/ld: cannot find -lPLATFORM-NOTFOUND: No such file or directory
+// ...
+CMake Error at cmake_install.cmake:78 (file):
+  file INSTALL cannot find
+  "***/build_out/libcustom_op.so":
+  No such file or directory.
+
+
+make: *** [Makefile:100: install] Error 1
+```
+
+### Code block 2
+
+```
+chmod +x ${install_path}/ddk/tools/tools_ascendc/upgrade_project.sh
+${install_path}/ddk/tools/tools_ascendc/upgrade_project.sh <path>
+```
+
+### Code block 3
+
+```
+chmod +x  /usr/local/ddk/tools/tools_ascendc/upgrade_project.sh
+/usr/local/ddk/tools/tools_ascendc/upgrade_project.sh /home/AddCustom
+```

@@ -23,7 +23,9 @@ private onResume(): void {
 闪屏动画播放完毕后：
 
 将splashScreenFinishFlag设置为true。
+
 主动调用引擎的resume()方法。
+
 // Splash.ets
 private splashScreenFinish() {
     globalThis.splashScreenFinishFlag = true;
@@ -36,5 +38,28 @@ private splashScreenFinish() {
 
 闪屏播放结束后，开发者再调用取消静音接口恢复引擎音频。
 
-游戏因未实现防沉迷提醒提审被拒，应该如何解决
-游戏接入秒级启动后无法热更应该如何处理
+## Code blocks
+
+### Code block 1
+
+```
+// TuanjiePlayerAbility.ets
+onCreate(): void {
+    globalThis.splashScreenFinishFlag = false;
+}
+private onResume(): void {
+    if (globalThis.splashScreenFinishFlag) {
+        unity.nativeOnResume();
+    }
+}
+```
+
+### Code block 2
+
+```
+// Splash.ets
+private splashScreenFinish() {
+    globalThis.splashScreenFinishFlag = true;
+    unity.nativeOnResume();
+}
+```

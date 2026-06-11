@@ -13,8 +13,11 @@ HAP转HAR的操作步骤
 修改HAP模块下的module.json5文件，具体操作如下：
 
 将type标签值改为har，删除mainElement、deliveryWithInstall、installationFree和pages标签。
+
 由于API version 17及之前版本HAR不支持创建任何ExtensionAbility，从API version 18开始HAR仅支持创建两种ExtensionAbility，因此在API version 18及之后版本但未配置为支持的两种ExtensionAbility、或在API version 17及之前版本，需要删除extensionAbilities标签，并将关联的ExtensionAbility组件删除或迁移到其他HAP模块中。
+
 由于HAR模块在API version 13及以下不支持UIAbility，因此在API version 13及以前的版本，需要删除abilities标签，并将关联的UIAbility组件删除或迁移到其他HAP模块中。
+
 {
   "module": {
     "name": "har",
@@ -25,7 +28,6 @@ HAP转HAR的操作步骤
     ]
   }
 }
-module.json5
 
 在HAP模块的src\main\resource\base\profile文件夹下，删除main_pages.json文件。
 
@@ -33,12 +35,10 @@ module.json5
 
 import { harTasks } from '@ohos/hvigor-ohos-plugin';
 
-
 export default {
   system: harTasks,  // 修改成HAR编译任务
   plugins:[]
 }
-hvigorfile.ts
 
 在HAP模块的根目录下创建名为Index.ets的文件，并在模块的oh-package.json5文件中的main标签配置该文件。Index.ets文件用于导出ArkUI组件或接口，详细导出方法参见HAR-开发。
 
@@ -47,9 +47,43 @@ hvigorfile.ts
   "main": "Index.ets",
   // ...
 }
-oh-package.json5
 
 修改项目级的配置文件build-profile.json5，在 modules 标签下找到HAP的配置信息，并删除HAP配置下的 targets。
 
-HSP转HAR指导
-集成态HSP
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    "name": "har",
+    "type": "har",
+    "deviceTypes": [
+      "tablet",
+      "2in1"
+    ]
+  }
+}
+```
+
+### Code block 2
+
+```
+import { harTasks } from '@ohos/hvigor-ohos-plugin';
+
+export default {
+  system: harTasks,  // 修改成HAR编译任务
+  plugins:[]
+}
+```
+
+### Code block 3
+
+```
+{
+  // ...
+  "main": "Index.ets",
+  // ...
+}
+```

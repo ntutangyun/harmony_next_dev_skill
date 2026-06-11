@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-fusion-button-getphonenumber_
 
+场景介绍
+
 快速验证手机号Button功能用于帮助开发者向用户发起手机号申请，应用在满足《常见类型移动互联网应用程序必要个人信息范围规定》（对第三方网站的内容，华为公司不承担任何责任）中使用手机号的必要业务场景，经用户同意后，应用可获取手机号，为用户提供相应服务（详见快速验证场景介绍）。
 
 运行示例代码单击“快速验证手机号”按钮，拉起验证页面（完整场景可参考快速验证）。
@@ -65,6 +67,7 @@ struct Index {
     .height('100%')
   }
 }
+
 说明
 
 openType参数填写"functionalButtonComponentManager.OpenType.GET_PHONE_NUMBER"指定Button为快速验证手机号类型。
@@ -77,5 +80,54 @@ controller参数必须对应填写"new functionalButtonComponentManager.Function
 
 其他参数请参考：FunctionalButton（Button组件）。
 
-场景化Button
-选择头像Button
+## Code blocks
+
+### Code block 1
+
+```
+import { FunctionalButton, functionalButtonComponentManager } from '@kit.ScenarioFusionKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  build() {
+    Row() {
+      Column() {
+        // 构建FunctionalButton组件实例。
+        FunctionalButton({
+          params: {
+            // OpenType.GET_PHONE_NUMBER表示该按钮用于快速验证手机号码。
+            openType: functionalButtonComponentManager.OpenType.GET_PHONE_NUMBER,
+            label: '快速验证手机号',
+            // 调整按钮样式。
+            styleOption: {
+              styleConfig: new functionalButtonComponentManager.ButtonConfig()
+                .fontSize(20)
+            },
+          },
+          // 当OpenType为GET_PHONE_NUMBER时，回调必须为onGetPhoneNumber。
+          controller: new functionalButtonComponentManager.FunctionalButtonController()
+            .onGetPhoneNumber((err, data) => {
+              if (err) {
+                // 错误日志处理。
+                hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
+                return;
+              }
+              // 成功日志处理。
+              hilog.info(0x0000, "testTag", "succeeded in authenticating");
+              // 授权码处理。
+              let authorizationCode = data.code;
+            })
+        })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-chacha20-encrypt-decrypt_
 
+从API version 22开始，算法库支持该算法。
+
+对应的算法规格请查看对称密钥加解密算法规格：ChaCha20。
+
+开发步骤
+
+创建对象
+
 调用cryptoFramework.createSymKeyGenerator、SymKeyGenerator.generateSymKey，生成密钥算法为ChaCha20的对称密钥（SymKey）。
 
 如何生成ChaCha20对称密钥，开发者可参考下文示例，并结合对称密钥生成和转换规格：ChaCha20和随机生成对称密钥理解。参考文档与示例可能存在入参差异，请注意区分。
@@ -37,13 +45,11 @@ doFinal输出结果可能为null，在访问具体数据前，需要先判断结
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
 
-
 function generateRandom(len: number) {
   let rand = cryptoFramework.createRandom();
   let generateRandSync = rand.generateRandomSync(len);
   return generateRandSync;
 }
-
 
 function genIvParamsSpec() {
   let ivBlob = generateRandom(16);
@@ -55,7 +61,6 @@ function genIvParamsSpec() {
 }
 let ivSpec = genIvParamsSpec();
 
-
 // 加密消息。
 async function encryptMessagePromise(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
   let cipher = cryptoFramework.createCipher('ChaCha20');
@@ -63,7 +68,6 @@ async function encryptMessagePromise(symKey: cryptoFramework.SymKey, plainText: 
   let encryptData = await cipher.doFinal(plainText);
   return encryptData;
 }
-
 
 // 解密消息。
 async function decryptMessagePromise(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
@@ -73,7 +77,6 @@ async function decryptMessagePromise(symKey: cryptoFramework.SymKey, cipherText:
   return decryptData;
 }
 
-
 async function genSymKeyByData(symKeyData: Uint8Array) {
   let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
   let chacha20Generator = cryptoFramework.createSymKeyGenerator('ChaCha20');
@@ -81,7 +84,6 @@ async function genSymKeyByData(symKeyData: Uint8Array) {
   console.info('convertKey result: success.');
   return symKey;
 }
-
 
 async function main() {
   try {
@@ -102,20 +104,17 @@ async function main() {
     console.error(`decrypt failed: errCode: ${error.code}, message: ${error.message}`);
   }
 }
-ChaCha20EncryptionDecryptionAsync.ets
 
 同步方法示例：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
 
-
 function generateRandom(len: number) {
   let rand = cryptoFramework.createRandom();
   let generateRandSync = rand.generateRandomSync(len);
   return generateRandSync;
 }
-
 
 function genIvParamsSpec() {
   let ivBlob = generateRandom(16);
@@ -126,9 +125,7 @@ function genIvParamsSpec() {
   return ivParamsSpec;
 }
 
-
 let ivSpec = genIvParamsSpec();
-
 
 // 加密消息。
 function encryptMessage(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
@@ -138,15 +135,13 @@ function encryptMessage(symKey: cryptoFramework.SymKey, plainText: cryptoFramewo
   return encryptData;
 }
 
-
 // 解密消息。
 function decryptMessage(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
   let decoder = cryptoFramework.createCipher('ChaCha20');
   decoder.initSync(cryptoFramework.CryptoMode.DECRYPT_MODE, symKey, ivSpec);
-  let decryptData = decoder.updateSync(cipherText);
+  let decryptData = decoder.doFinalSync(cipherText);
   return decryptData;
 }
-
 
 function genSymKeyByData(symKeyData: Uint8Array) {
   let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
@@ -155,7 +150,6 @@ function genSymKeyByData(symKeyData: Uint8Array) {
   console.info('convertKeySync result: success.');
   return symKey;
 }
-
 
 function main() {
   try {
@@ -176,6 +170,140 @@ function main() {
     console.error(`decrypt failed: errCode: ${error.code}, message: ${error.message}`);
   }
 }
-ChaCha20EncryptionDecryptionSync.ets
-使用SM4对称密钥（GCM模式）分段加解密(C/C++)
-使用ChaCha20对称密钥加解密(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+function generateRandom(len: number) {
+  let rand = cryptoFramework.createRandom();
+  let generateRandSync = rand.generateRandomSync(len);
+  return generateRandSync;
+}
+
+function genIvParamsSpec() {
+  let ivBlob = generateRandom(16);
+  let ivParamsSpec: cryptoFramework.IvParamsSpec = {
+    algName: 'IvParamsSpec',
+    iv: ivBlob
+  };
+  return ivParamsSpec;
+}
+let ivSpec = genIvParamsSpec();
+
+// 加密消息。
+async function encryptMessagePromise(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
+  let cipher = cryptoFramework.createCipher('ChaCha20');
+  await cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, symKey, ivSpec);
+  let encryptData = await cipher.doFinal(plainText);
+  return encryptData;
+}
+
+// 解密消息。
+async function decryptMessagePromise(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
+  let decoder = cryptoFramework.createCipher('ChaCha20');
+  await decoder.init(cryptoFramework.CryptoMode.DECRYPT_MODE, symKey, ivSpec);
+  let decryptData = await decoder.doFinal(cipherText);
+  return decryptData;
+}
+
+async function genSymKeyByData(symKeyData: Uint8Array) {
+  let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
+  let chacha20Generator = cryptoFramework.createSymKeyGenerator('ChaCha20');
+  let symKey = await chacha20Generator.convertKey(symKeyBlob);
+  console.info('convertKey result: success.');
+  return symKey;
+}
+
+async function main() {
+  try {
+    let keyData = new Uint8Array([83, 217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159, 83,
+      217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159]);
+    let symKey = await genSymKeyByData(keyData);
+    let message = 'This is a test';
+    let plainText: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from(message, 'utf-8').buffer) };
+    let encryptText = await encryptMessagePromise(symKey, plainText);
+    let decryptText = await decryptMessagePromise(symKey, encryptText);
+    if (plainText.data.toString() === decryptText.data.toString()) {
+      console.info('decrypt ok.');
+      console.info('decrypt plainText: ' + buffer.from(decryptText.data).toString('utf-8'));
+    } else {
+      console.error('decrypt failed.');
+    }
+  } catch (error) {
+    console.error(`decrypt failed: errCode: ${error.code}, message: ${error.message}`);
+  }
+}
+```
+
+### Code block 2
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+function generateRandom(len: number) {
+  let rand = cryptoFramework.createRandom();
+  let generateRandSync = rand.generateRandomSync(len);
+  return generateRandSync;
+}
+
+function genIvParamsSpec() {
+  let ivBlob = generateRandom(16);
+  let ivParamsSpec: cryptoFramework.IvParamsSpec = {
+    algName: 'IvParamsSpec',
+    iv: ivBlob
+  };
+  return ivParamsSpec;
+}
+
+let ivSpec = genIvParamsSpec();
+
+// 加密消息。
+function encryptMessage(symKey: cryptoFramework.SymKey, plainText: cryptoFramework.DataBlob) {
+  let cipher = cryptoFramework.createCipher('ChaCha20');
+  cipher.initSync(cryptoFramework.CryptoMode.ENCRYPT_MODE, symKey, ivSpec);
+  let encryptData = cipher.doFinalSync(plainText);
+  return encryptData;
+}
+
+// 解密消息。
+function decryptMessage(symKey: cryptoFramework.SymKey, cipherText: cryptoFramework.DataBlob) {
+  let decoder = cryptoFramework.createCipher('ChaCha20');
+  decoder.initSync(cryptoFramework.CryptoMode.DECRYPT_MODE, symKey, ivSpec);
+  let decryptData = decoder.doFinalSync(cipherText);
+  return decryptData;
+}
+
+function genSymKeyByData(symKeyData: Uint8Array) {
+  let symKeyBlob: cryptoFramework.DataBlob = { data: symKeyData };
+  let chacha20Generator = cryptoFramework.createSymKeyGenerator('ChaCha20');
+  let symKey = chacha20Generator.convertKeySync(symKeyBlob);
+  console.info('convertKeySync result: success.');
+  return symKey;
+}
+
+function main() {
+  try {
+    let keyData = new Uint8Array([83, 217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159, 83,
+      217, 231, 76, 28, 113, 23, 219, 250, 71, 209, 210, 205, 97, 32, 159]);
+    let symKey = genSymKeyByData(keyData);
+    let message = 'This is a test';
+    let plainText: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from(message, 'utf-8').buffer) };
+    let encryptText = encryptMessage(symKey, plainText);
+    let decryptText = decryptMessage(symKey, encryptText);
+    if (plainText.data.toString() === decryptText.data.toString()) {
+      console.info('decrypt ok.');
+      console.info('decrypt plainText: ' + buffer.from(decryptText.data).toString('utf-8'));
+    } else {
+      console.error('decrypt failed.');
+    }
+  } catch (error) {
+    console.error(`decrypt failed: errCode: ${error.code}, message: ${error.message}`);
+  }
+}
+```

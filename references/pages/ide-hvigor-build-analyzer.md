@@ -11,8 +11,11 @@ Build Analyzer会在每次构建应用时默认生成一份报告，并在Build 
 可以在构建完成后通过以下方式打开Build Analyzer窗口：
 
 点击菜单栏Build > Build Analyzer进行查看。
+
 在Build窗口中的Build Output页签，点击左侧边栏，打开Build Analyzer页签。
+
 构建成功且使用构建分析能力时，在Build窗口Build Output页签下的日志下方点击链接，跳转至Build Analyzer页签。
+
 查看构建历史记录
 
 Build Analyzer左侧的Build History窗口中按时间顺序显示构建历史记录，包括本工程的构建历史数据和导入的日志数据。点击构建历史记录可以显示对应概览和可视化图谱界面。
@@ -64,10 +67,15 @@ Build Analyzer不会全部显示构建操作中的所有任务，而是重点显
 导出内容有：
 
 分析统计本次构建的html文件。
+
 记录构建日志的build.log文件。
+
 记录构建daemon日志的daemon.log文件。
+
 记录构建任务耗时的report.json文件。
+
 记录构建过程内存消耗的report-monitor.json文件。
+
 导入日志
 
 如需查看历史或其他工程的构建日志，您可以点击导入按钮导入report.json文件，导入的文件保存在工程./hvigor/report/upload目录下，导入后可在Build Analyzer左侧的Build History窗口中查看。upload目录下最多保存10条记录，超过10条记录后，最久的历史数据将会被自动清理。
@@ -76,16 +84,18 @@ Build Analyzer不会全部显示构建操作中的所有任务，而是重点显
 
 进入File > Settings（macOS为DevEco Studio > Preferences/Settings） > Build, Execution, Deployment > Build Tools > Hvigor下，查看Use build analysis mode选项：
 
-勾选此项：
 模式选择为Normal，即为普通模式（默认选项），记录简单打点数据进行分析。
+
 模式选择为Advanced，即为高级模式，记录详细打点数据进行分析（此模式下，建议搭配使用node 18版本）。
+
 模式选择为Ultrafine，即超精细化模式，与Advanced模式相比，在ArkTS编译阶段记录更详细的打点数据，但开启后可能导致编译构建时间更长。从DevEco Studio 6.0.0 Beta1版本开始支持。
+
 取消勾选，即为不记录该次构建数据，不进行分析。
 
 生成构建可视化html文件
-通过命令行方式生成构建可视化html文件。如生成HAP模块的构建可视化html文件，命令如下：
+
 hvigorw assembleHap --analyze=normal --config properties.hvigor.analyzeHtml=true
-通过hvigor-config.json5配置文件中properties.hvigor.analyzeHtml字段生成构建可视化html文件：
+
 {
   "modelVersion": "6.1.1",
   "dependencies": {
@@ -102,10 +112,42 @@ hvigorw assembleHap --analyze=normal --config properties.hvigor.analyzeHtml=true
     "hvigor.analyzeHtml": true  // 生成构建可视化html文件
   }
 }
-再执行构建，例如执行以下命令：
+
 hvigorw assembleHap --analyze=normal
 
 执行以上命令后，在工程的.hvigor/report目录下生成对应的html文件，该文件可直接在浏览器中打开。
 
-提升构建效率
-守护进程
+## Code blocks
+
+### Code block 1
+
+```
+hvigorw assembleHap --analyze=normal --config properties.hvigor.analyzeHtml=true
+```
+
+### Code block 2
+
+```
+{
+  "modelVersion": "6.1.1",
+  "dependencies": {
+  },
+  "execution": {
+  },
+  "logging": {
+  },
+  "debugging": {
+  },
+  "nodeOptions": {
+  },
+  "properties": {
+    "hvigor.analyzeHtml": true  // 生成构建可视化html文件
+  }
+}
+```
+
+### Code block 3
+
+```
+hvigorw assembleHap --analyze=normal
+```

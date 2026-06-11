@@ -2,6 +2,30 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/natural-language-getentity_
 
+适用场景
+
+实体抽取是自然语言处理服务的一项关键能力。通过综合分析上下文信息，从文本中准确识别出多种类型的实体：
+
+日期时间（DATETIME）：提取文本中的具体日期，如“2024年6月18日”等。
+
+电子邮件（EMAIL）：识别文本中的电子邮件地址，如“***@example.com”。
+
+快递单号（EXPRESS_NO）：抽取文本中的快递单号信息。
+
+航班号（FLIGHT_NO）：定位文本中的航班号，如“CA1234”等。
+
+地址（LOCATION）：从文本中提取详细的地址描述。
+
+人名（NAME）：找出文本中出现的人名信息。
+
+手机号（PHONE_NO）：识别文本中的手机号码。
+
+网址（URL）：抽取文本中的网址链接。
+
+验证码（VERIFICATION_CODE）：定位文本中的验证码数字。
+
+身份证号（ID_NO）：识别文本中的身份证号码信息。
+
 通过准确抽取以上多种类型的实体信息，该项能力可以广泛应用于新闻阅读、信息检索、客户服务、社交聊天、金融运营等多种场景。例如，在新闻阅读场景中，可以对新闻正文进行实体抽取，并对人名、地名、时间、网址等关键实体信息进行高亮标识，帮助读者快速获取文章要点；在客服场景，通过抽取用户留言中的手机号、快递单号、验证码等信息，客服人员能够更高效地定位问题并给出解决方案。实体抽取为各行业的智能化应用提供了坚实的基础支持。
 
 约束与限制
@@ -9,13 +33,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/natural-l
 该能力当前不支持模拟器。
 
 AI能力	约束
-实体抽取	
-
-- 支持的语言：简体中文、英文、繁体中文。
-
-- 支持的实体：时间、地点、邮箱、快递单号、航班号、人名、电话号码、网址链接、验证码、证件号。
-
-- 文本长度：不超过1000字符。
+实体抽取	- 支持的语言：简体中文、英文、繁体中文。 - 支持的实体：时间、地点、邮箱、快递单号、航班号、人名、电话号码、网址链接、验证码、证件号。 - 文本长度：不超过1000字符。
 
 开发步骤
 
@@ -27,7 +45,6 @@ import { textProcessing, EntityType } from '@kit.NaturalLanguageKit';
 
 private inputText: string = '张三的电话号码是12345';
 @State outputText: string = '';
-
 
 TextInput({ placeholder: '请输入文本', text: this.inputText })
   .height(40)
@@ -62,7 +79,6 @@ private formatEntityResult(entities: textProcessing.Entity[]): string {
     return 'No entities found.';
   }
 
-
   let output = 'Entities:\n';
   for (let i = 0; i < entities.length; i++) {
     let entity = entities[i];
@@ -74,16 +90,16 @@ private formatEntityResult(entities: textProcessing.Entity[]): string {
   }
   return output;
 }
-开发实例
-import { textProcessing, EntityType } from '@kit.NaturalLanguageKit';
 
+开发实例
+
+import { textProcessing, EntityType } from '@kit.NaturalLanguageKit';
 
 @Entry
 @Component
 struct Index {
   private inputText: string = '张三的电话号码是12345';
   @State outputText: string = '';
-
 
   build() {
     Column() {
@@ -96,7 +112,6 @@ struct Index {
           this.inputText = value;
         })
 
-
       Scroll() {
         Text(this.outputText)
           .fontSize(16)
@@ -104,7 +119,6 @@ struct Index {
           .margin(10)
       }
       .height('40%')
-
 
       // 调用实体抽取接口
       Row() {
@@ -129,13 +143,11 @@ struct Index {
     .justifyContent(FlexAlign.Center)
   }
 
-
   // 实体结果转义
   private formatEntityResult(entities: textProcessing.Entity[]): string {
     if (!entities || !entities.length) {
       return 'No entities found.';
     }
-
 
     let output = 'Entities:\n';
     for (let i = 0; i < entities.length; i++) {
@@ -149,5 +161,140 @@ struct Index {
     return output;
   }
 }
-分词
-Neural Network Runtime Kit（Neural Network运行时服务）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { textProcessing, EntityType } from '@kit.NaturalLanguageKit';
+```
+
+### Code block 2
+
+```
+private inputText: string = '张三的电话号码是12345';
+@State outputText: string = '';
+
+TextInput({ placeholder: '请输入文本', text: this.inputText })
+  .height(40)
+  .fontSize(16)
+  .width('90%')
+  .margin(10)
+  .onChange((value: string) => {
+    this.inputText = value;
+  })
+```
+
+### Code block 3
+
+```
+Button('获取实体结果')
+  .type(ButtonType.Capsule)
+  .fontColor(Color.White)
+  .width('45%')
+  .margin(10)
+  .onClick(async () => {
+    try {
+      let result = await textProcessing.getEntity(this.inputText, {entityTypes: [EntityType.NAME, EntityType.PHONE_NO]});
+      this.outputText = this.formatEntityResult(result);
+    } catch (err) {
+      console.error(`getEntity errorCode: ${err.code}, errorMessage: ${err.message}`);
+      this.outputText = 'Error occurred while getting entities.';
+    }
+  })
+```
+
+### Code block 4
+
+```
+private formatEntityResult(entities: textProcessing.Entity[]): string {
+  if (!entities || !entities.length) {
+    return 'No entities found.';
+  }
+
+  let output = 'Entities:\n';
+  for (let i = 0; i < entities.length; i++) {
+    let entity = entities[i];
+    output += `Entity[${i}]:\n`;
+    output += `  oriText: ${entity.text}\n`;
+    output += `  charOffset: ${entity.charOffset}\n`;
+    output += `  entityType: ${entity.type}\n`;
+    output += `  jsonObject: ${entity.jsonObject}\n\n`;
+  }
+  return output;
+}
+```
+
+### Code block 5
+
+```
+import { textProcessing, EntityType } from '@kit.NaturalLanguageKit';
+
+@Entry
+@Component
+struct Index {
+  private inputText: string = '张三的电话号码是12345';
+  @State outputText: string = '';
+
+  build() {
+    Column() {
+      TextInput({ placeholder: '请输入文本', text: this.inputText })
+        .height(40)
+        .fontSize(16)
+        .width('90%')
+        .margin(10)
+        .onChange((value: string) => {
+          this.inputText = value;
+        })
+
+      Scroll() {
+        Text(this.outputText)
+          .fontSize(16)
+          .width('90%')
+          .margin(10)
+      }
+      .height('40%')
+
+      // 调用实体抽取接口
+      Row() {
+        Button('获取实体结果')
+          .type(ButtonType.Capsule)
+          .fontColor(Color.White)
+          .width('45%')
+          .margin(10)
+          .onClick(async () => {
+            try {
+              let result = await textProcessing.getEntity(this.inputText, {entityTypes: [EntityType.NAME, EntityType.PHONE_NO]});
+              this.outputText = this.formatEntityResult(result);
+            } catch (err) {
+              console.error(`getEntity errorCode: ${err.code}, errorMessage: ${err.message}`);
+              this.outputText = 'Error occurred while getting entities.';
+            }
+          })
+      }
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  // 实体结果转义
+  private formatEntityResult(entities: textProcessing.Entity[]): string {
+    if (!entities || !entities.length) {
+      return 'No entities found.';
+    }
+
+    let output = 'Entities:\n';
+    for (let i = 0; i < entities.length; i++) {
+      let entity = entities[i];
+      output += `Entity[${i}]:\n`;
+      output += `  oriText: ${entity.text}\n`;
+      output += `  charOffset: ${entity.charOffset}\n`;
+      output += `  entityType: ${entity.type}\n`;
+      output += `  jsonObject: ${entity.jsonObject}\n\n`;
+    }
+    return output;
+  }
+}
+```

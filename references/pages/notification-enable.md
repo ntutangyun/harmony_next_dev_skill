@@ -14,6 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 isNotificationEnabled():Promise<boolean>	查询通知是否授权。
 requestEnableNotification(context: UIAbilityContext): Promise<void>	请求发送通知的许可，第一次调用会弹窗让用户选择。
 openNotificationSettings(context: UIAbilityContext): Promise<void>	拉起通知管理弹窗。
+
 开发步骤
 
 导入NotificationManager模块。
@@ -23,10 +24,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common } from '@kit.AbilityKit';
 
-
 const TAG: string = '[PublishOperation]';
 const DOMAIN_NUMBER: number = 0xFF00;
-RequestEnableNotification.ets
 
 拉起通知弹窗，向用户请求通知授权。
 
@@ -52,7 +51,6 @@ notificationManager.isNotificationEnabled().then((data: boolean) => {
   hilog.error(DOMAIN_NUMBER, TAG,
     `isNotificationEnabled fail, code is ${err.code}, message is ${err.message}`);
 });
-RequestEnableNotification.ets
 
 （可选）拉起通知管理半模态弹窗，向用户再次申请通知授权。
 
@@ -71,5 +69,62 @@ notificationManager.isNotificationEnabled().then((data: boolean) => {
   hilog.error(DOMAIN_NUMBER, TAG,
     `isNotificationEnabled fail, code is ${err.code}, message is ${err.message}`);
 });
-Notification Kit简介
-管理通知角标
+
+## Code blocks
+
+### Code block 1
+
+```
+import { notificationManager } from '@kit.NotificationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common } from '@kit.AbilityKit';
+
+const TAG: string = '[PublishOperation]';
+const DOMAIN_NUMBER: number = 0xFF00;
+```
+
+### Code block 2
+
+```
+let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+notificationManager.isNotificationEnabled().then((data: boolean) => {
+  hilog.info(DOMAIN_NUMBER, TAG, `isNotificationEnabled success, data: ${data}` );
+  if (!data) {
+    notificationManager.requestEnableNotification(context).then(() => {
+      hilog.info(DOMAIN_NUMBER, TAG, `[ANS] requestEnableNotification success`);
+    }).catch((err: BusinessError) => {
+      if (1600004 == err.code) {
+        hilog.error(DOMAIN_NUMBER, TAG,
+          `[ANS] requestEnableNotification refused, code is ${err.code}, message is ${err.message}`);
+      } else {
+        hilog.error(DOMAIN_NUMBER, TAG,
+          `[ANS] requestEnableNotification failed, code is ${err.code}, message is ${err.message}`);
+      }
+    });
+  }
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN_NUMBER, TAG,
+    `isNotificationEnabled fail, code is ${err.code}, message is ${err.message}`);
+});
+```
+
+### Code block 3
+
+```
+let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+notificationManager.isNotificationEnabled().then((data: boolean) => {
+  hilog.info(DOMAIN_NUMBER, TAG, `isNotificationEnabled success, data:  ${data}`);
+  if (!data) {
+    notificationManager.openNotificationSettings(context).then(() => {
+      hilog.info(DOMAIN_NUMBER, TAG, `[ANS] openNotificationSettings success`);
+    }).catch((err: BusinessError) => {
+      hilog.error(DOMAIN_NUMBER, TAG,
+        `[ANS] openNotificationSettings failed, code is ${err.code}, message is ${err.message}`);
+    });
+  }
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN_NUMBER, TAG,
+    `isNotificationEnabled fail, code is ${err.code}, message is ${err.message}`);
+});
+```

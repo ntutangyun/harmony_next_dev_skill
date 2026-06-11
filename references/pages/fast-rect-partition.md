@@ -24,21 +24,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fast-rect
 FAST_EXPORT FAST_ErrorCode HMS_FAST_RectPartition_CreateConfig (FAST_RectPartitionConfig **config)	创建矩形划分求解器的不透明配置。
 FAST_EXPORT void HMS_FAST_RectPartition_DestroyConfig (FAST_RectPartitionConfig *config)	销毁矩形划分求解器的不透明配置。
 FAST_EXPORT FAST_ErrorCode HMS_FAST_RectPartition_SetAlgo (FAST_RectPartitionConfig *config, const char *name)	设置矩形划分求解器使用的算法。目前仅支持扫描线算法“SweepLineAlgo”，输出数量尽可能少（不保证最优性）的不相交矩形集合，复杂度为。
-FAST_EXPORT FAST_ErrorCode HMS_FAST_RectPartition_Solve (FAST_RectPartitionConfig *config, size_t size, const FAST_Rect *origin, FAST_Rect *result, size_t *resultSize)	
-
-在指定不透明配置下解决矩形划分问题。函数接收若干个彼此不相交的矩形作为输入，计算出覆盖相同区域的矩形划分方案，并使输出的矩形数量尽可能少。
-
-说明：
-
-1. 输入须保证矩形两两不相交（即任意两个矩形满足： 或 或或 ），否则函数返回FAST_ERROR_CODE_ILLEGAL_INPUT。
-
-2. 函数能保证输出矩形的数量小于等于输入矩形的数量。
+FAST_EXPORT FAST_ErrorCode HMS_FAST_RectPartition_Solve (FAST_RectPartitionConfig *config, size_t size, const FAST_Rect *origin, FAST_Rect *result, size_t *resultSize)	在指定不透明配置下解决矩形划分问题。函数接收若干个彼此不相交的矩形作为输入，计算出覆盖相同区域的矩形划分方案，并使输出的矩形数量尽可能少。 说明： 1. 输入须保证矩形两两不相交（即任意两个矩形满足： 或 或或 ），否则函数返回FAST_ERROR_CODE_ILLEGAL_INPUT。 2. 函数能保证输出矩形的数量小于等于输入矩形的数量。
 
 开发步骤
 
 在CMake脚本中链接相关动态库。
 
-target_link_libraries(entry PUBLIC libfast_ads.so)
+find_library(
+    lib_fast_solver
+    NAMES fast_solver
+)
+target_link_libraries(entry PRIVATE ${lib_fast_solver})
 
 调用HMS_FAST_RectPartition_CreateConfig生成矩形划分求解器配置实例（FAST_RectPartitionConfig）。
 
@@ -52,13 +48,11 @@ target_link_libraries(entry PUBLIC libfast_ads.so)
 #include <cstdlib>
 #include "FASTKit/fast_solver_rect_partition.h"
 
-
 // 定义一个函数来打印矩形
 void print_rect(const FAST_Rect* rect) {
     printf("Rect: left=%d, top=%d, right=%d, bottom=%d\n",
            rect->left, rect->top, rect->right, rect->bottom);
 }
-
 
 FAST_ErrorCode rect_partition_demo() {
     // 定义输入矩形
@@ -69,15 +63,12 @@ FAST_ErrorCode rect_partition_demo() {
     };
     size_t size = sizeof(origin) / sizeof(FAST_Rect);
 
-
     // 定义输出矩形
     FAST_Rect* result = (FAST_Rect*)malloc(size * sizeof(FAST_Rect));
     size_t result_size = 0;
 
-
     FAST_RectPartitionConfig* config = nullptr;
     FAST_ErrorCode ret;
-
 
     do {
         // 创建配置
@@ -87,7 +78,6 @@ FAST_ErrorCode rect_partition_demo() {
             break;
         }
 
-
         // 设置算法
         ret = HMS_FAST_RectPartition_SetAlgo(config, "SweepLineAlgo");
         if (ret != FAST_ERROR_CODE_SUCCESS) {
@@ -95,14 +85,12 @@ FAST_ErrorCode rect_partition_demo() {
             break;
         }
 
-
         // 计算矩形划分方案
         ret = HMS_FAST_RectPartition_Solve(config, size, origin, result, &result_size);
         if (ret != FAST_ERROR_CODE_SUCCESS) {
             printf("Failed to solve: %d\n", ret);
             break;
         }
-
 
         // 打印结果
         printf("Resulting rectangles(result_size=%ld):\n", result_size);
@@ -115,21 +103,101 @@ FAST_ErrorCode rect_partition_demo() {
             Rect: left=2, top=1, right=3, bottom=3
          */
 
-
     } while (0);
-
-
 
 
     // 销毁配置
     HMS_FAST_RectPartition_DestroyConfig(config);
 
+    // 释放数组
+    free(result);
+
+    return ret;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+find_library(
+    lib_fast_solver
+    NAMES fast_solver
+)
+target_link_libraries(entry PRIVATE ${lib_fast_solver})
+```
+
+### Code block 2
+
+```
+#include <cstdio>
+#include <cstdlib>
+#include "FASTKit/fast_solver_rect_partition.h"
+
+// 定义一个函数来打印矩形
+void print_rect(const FAST_Rect* rect) {
+    printf("Rect: left=%d, top=%d, right=%d, bottom=%d\n",
+           rect->left, rect->top, rect->right, rect->bottom);
+}
+
+FAST_ErrorCode rect_partition_demo() {
+    // 定义输入矩形
+    FAST_Rect origin[] = {
+        {1, 4, 1, 6},
+        {2, 1, 2, 6},
+        {3, 1, 3, 3}
+    };
+    size_t size = sizeof(origin) / sizeof(FAST_Rect);
+
+    // 定义输出矩形
+    FAST_Rect* result = (FAST_Rect*)malloc(size * sizeof(FAST_Rect));
+    size_t result_size = 0;
+
+    FAST_RectPartitionConfig* config = nullptr;
+    FAST_ErrorCode ret;
+
+    do {
+        // 创建配置
+        ret = HMS_FAST_RectPartition_CreateConfig(&config);
+        if (ret != FAST_ERROR_CODE_SUCCESS) {
+            printf("Failed to create config: %d\n", ret);
+            break;
+        }
+
+        // 设置算法
+        ret = HMS_FAST_RectPartition_SetAlgo(config, "SweepLineAlgo");
+        if (ret != FAST_ERROR_CODE_SUCCESS) {
+            printf("Failed to set algorithm: %d\n", ret);
+            break;
+        }
+
+        // 计算矩形划分方案
+        ret = HMS_FAST_RectPartition_Solve(config, size, origin, result, &result_size);
+        if (ret != FAST_ERROR_CODE_SUCCESS) {
+            printf("Failed to solve: %d\n", ret);
+            break;
+        }
+
+        // 打印结果
+        printf("Resulting rectangles(result_size=%ld):\n", result_size);
+        for (size_t i = 0; i < result_size; ++i) {
+            print_rect(&result[i]);
+        }
+        /*
+            Resulting rectangles(result_size=2):
+            Rect: left=1, top=4, right=2, bottom=6
+            Rect: left=2, top=1, right=3, bottom=3
+         */
+
+    } while (0);
+
+
+    // 销毁配置
+    HMS_FAST_RectPartition_DestroyConfig(config);
 
     // 释放数组
     free(result);
 
-
     return ret;
 }
-使用SegmentMap查询维护区间信息
-使用ConcurrentHashmap在多线程下完成键值信息的查找维护
+```

@@ -8,10 +8,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/progress-
 
 接口说明
 
-isSupportTemplate()是查询模板是否支持接口，目前仅支持进度条模板。
+isSupportTemplate()是查询是否支持对应的通知模板，目前仅支持进度条模板。
 
 接口名	描述
-isSupportTemplate(templateName: string): Promise<boolean>	查询模板是否存在。
+isSupportTemplate(templateName: string): Promise<boolean>	查询是否支持对应的通知模板。
+
 开发步骤
 
 导入模块。
@@ -20,10 +21,8 @@ import { notificationManager } from '@kit.NotificationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = '[PublishOperation]';
 const DOMAIN_NUMBER: number = 0xFF00;
-PublishNotification.ets
 
 查询系统是否支持进度条模板，查询结果为支持downloadTemplate模板类通知。
 
@@ -35,7 +34,7 @@ notificationManager.isSupportTemplate('downloadTemplate').then((data: boolean) =
   hilog.error(DOMAIN_NUMBER, TAG,
     `Failed to support download template notification. Code is ${err.code}, message is ${err.message}`);
 });
-PublishNotification.ets
+
 说明
 
 查询系统支持进度条模板后，再进行后续的步骤操作。
@@ -59,6 +58,61 @@ let notificationRequest: notificationManager.NotificationRequest = {
   }
 };
 
+// 发布通知
+notificationManager.publish(notificationRequest, (err: BusinessError) => {
+  if (err) {
+    hilog.error(DOMAIN_NUMBER, TAG,
+      `Failed to publish notification. Code is ${err.code}, message is ${err.message}`);
+    return;
+  }
+  hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in publishing notification.');
+});
+
+## Code blocks
+
+### Code block 1
+
+```
+import { notificationManager } from '@kit.NotificationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = '[PublishOperation]';
+const DOMAIN_NUMBER: number = 0xFF00;
+```
+
+### Code block 2
+
+```
+notificationManager.isSupportTemplate('downloadTemplate').then((data: boolean) => {
+  let isSupportTemplate: boolean = data; // isSupportTemplate的值为true表示支持downloadTemplate模板类通知，false表示不支持
+  hilog.info(DOMAIN_NUMBER, TAG,
+    `Succeeded in supporting download template notification. data is ${isSupportTemplate}`);
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN_NUMBER, TAG,
+    `Failed to support download template notification. Code is ${err.code}, message is ${err.message}`);
+});
+```
+
+### Code block 3
+
+```
+let notificationRequest: notificationManager.NotificationRequest = {
+  id: 5,
+  content: {
+    notificationContentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
+    normal: {
+      title: 'test_title',
+      text: 'test_text',
+      additionalText: 'test_additionalText'
+    }
+  },
+  // 构造进度条模板，name字段当前需要固定配置为downloadTemplate
+  template: {
+    name: 'downloadTemplate',
+    data: { title: 'File Title', fileName: 'music.mp4', progressValue: 45 }
+  }
+};
 
 // 发布通知
 notificationManager.publish(notificationRequest, (err: BusinessError) => {
@@ -69,6 +123,4 @@ notificationManager.publish(notificationRequest, (err: BusinessError) => {
   }
   hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in publishing notification.');
 });
-PublishNotification.ets
-发布文本类型通知
-为通知添加自定义铃声
+```

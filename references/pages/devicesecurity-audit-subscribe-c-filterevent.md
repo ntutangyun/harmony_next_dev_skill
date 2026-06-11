@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-audit-subscribe-c-filterevent_
 
+场景介绍
+
 从6.0.0(20)开始，新增提供统一的安全审计数据多客户端订阅/取消订阅与添加/删除过滤条件接口，应用可以获取设备上的安全审计数据（如下表），并按需进行过滤，以支撑审计相关业务。
 
 审计事件ID	说明
@@ -32,137 +34,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 0x018000103	app恢复拦截事件
 0x018000104	app启动拦截事件
 0x030000000	USB访问拦截事件
-0x0F000001	
-
-SMB(Samba)外发事件
-
-起始版本： 6.1.0(23)
-
-
-0x1C000014	
-
-KIA文件秒开事件
-
-起始版本： 6.1.0(23)
-
-
-0x27000100	
-
-HDC(HarmonyOS Device Connector)调测文件事件
-
-起始版本： 6.1.0(23)
-
-
-0x27000101	
-
-HDC(HarmonyOS Device Connector)调测拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x2F000000	
-
-多用户空间数据互传事件
-
-起始版本： 6.1.0(23)
-
-
-0x2F000001	
-
-多用户空间互换审核策略事件
-
-起始版本： 6.1.0(23)
-
-
-0x30000100	
-
-串口访问审计事件
-
-起始版本： 6.1.0(23)
-
-
-0x03000002	
-
-网络拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x03000100	
-
-WI-FI拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x2E000001	
-
-打印拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x12001081	
-
-应用代码未签名
-
-起始版本： 6.1.1(24)
-
-
-0x12001082	
-
-应用代码验签异常
-
-起始版本： 6.1.1(24)
-
-
-0x1C001102	
-
-系统目录异常挂载
-
-起始版本： 6.1.1(24)
-
-
-0x1C001200	
-
-驱动代码验签异常
-
-起始版本： 6.1.1(24)
-
-
-0x1C001201	
-
-驱动非法映射内核内存
-
-起始版本： 6.1.1(24)
-
-
-0x1C001300	
-
-内核内存异常使用
-
-起始版本： 6.1.1(24)
-
-
-0x1C001401	
-
-进程异常调试
-
-起始版本： 6.1.1(24)
-
-
-0x1C001402	
-
-进程异常崩溃
-
-起始版本： 6.1.1(24)
-
-
-0x1C001403	
-
-进程提权
-
-起始版本： 6.1.1(24)
+0x0F000001	SMB(Samba)外发事件 起始版本： 6.1.0(23)
+0x1C000014	KIA文件秒开事件 起始版本： 6.1.0(23)
+0x27000100	HDC(HarmonyOS Device Connector)调测文件事件 起始版本： 6.1.0(23)
+0x27000101	HDC(HarmonyOS Device Connector)调测拦截事件 起始版本： 6.1.0(23)
+0x2F000000	多用户空间数据互传事件 起始版本： 6.1.0(23)
+0x2F000001	多用户空间互换审核策略事件 起始版本： 6.1.0(23)
+0x30000100	串口访问审计事件 起始版本： 6.1.0(23)
+0x03000002	网络拦截事件 起始版本： 6.1.0(23)
+0x03000100	WI-FI拦截事件 起始版本： 6.1.0(23)
+0x2E000001	打印拦截事件 起始版本： 6.1.0(23)
+0x12001081	应用代码未签名 起始版本： 6.1.1(24)
+0x12001082	应用代码验签异常 起始版本： 6.1.1(24)
+0x1C001102	系统目录异常挂载 起始版本： 6.1.1(24)
+0x1C001200	驱动代码验签异常 起始版本： 6.1.1(24)
+0x1C001201	驱动非法映射内核内存 起始版本： 6.1.1(24)
+0x1C001300	内核内存异常使用 起始版本： 6.1.1(24)
+0x1C001401	进程异常调试 起始版本： 6.1.1(24)
+0x1C001402	进程异常崩溃 起始版本： 6.1.1(24)
+0x1C001403	进程提权 起始版本： 6.1.1(24)
 
 约束与限制
 
@@ -207,7 +97,9 @@ int32_t HMS_SecurityAudit_Subscribe(const SecurityAudit_Client* client, const Se
 int32_t HMS_SecurityAudit_Unsubscribe(const SecurityAudit_Client* client, const SecurityAudit_Notify_Event *events, uint64_t count)	解订阅审计通知类事件。
 int32_t HMS_SecurityAudit_AddFilter(const SecurityAudit_Client* client, SecurityAudit_Notify_Event event, const SecurityAudit_Filter *filter)	添加审计通知类事件过滤条件。
 int32_t HMS_SecurityAudit_RemoveFilter(const SecurityAudit_Client* client, SecurityAudit_Notify_Event event, const SecurityAudit_Filter *filter)	移除审计通知类事件过滤条件。
+
 开发步骤
+
 说明
 
 在开发准备过程中，需要申请权限：ohos.permission.QUERY_AUDIT_EVENT。
@@ -295,5 +187,105 @@ if (ret != 0) {
     printf("deleteclient fail");
     return;
 }
-多客户端订阅场景（C/C++）
-订阅阻断类事件
+
+## Code blocks
+
+### Code block 1
+
+```
+find_library(dsm-lib libsecurityaudit_ndk.z.so)
+target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
+```
+
+### Code block 2
+
+```
+#include <DeviceSecurityKit/security_audit.h>
+#include <cstdio>
+```
+
+### Code block 3
+
+```
+void Notify(const SecurityAudit_Event *events, uint64_t count)
+{
+    if (events == nullptr) {
+        printf("events nullptr");
+        return;
+    }
+    for (uint64_t i = 0; i < count; i++) {
+        printf("event content = %s", events[i].content);
+        printf("event id = %ld", events[i].eventId);
+    }
+}
+```
+
+### Code block 4
+
+```
+SecurityAudit_Client *client = NULL;
+SecurityAudit_Handler handler = Notify;
+HMS_SecurityAudit_NewClient(&client, handler);
+if (client == nullptr) {
+    printf("client is null");
+    return 0;
+}
+```
+
+### Code block 5
+
+```
+SecurityAudit_Notify_Event event[1] = {};
+event[0] = SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ;
+int ret = HMS_SecurityAudit_Subscribe(client, event, 1);
+if (ret != 0) {
+    printf("subscribe fail");
+    return;
+}
+```
+
+### Code block 6
+
+```
+SecurityAudit_Filter filter = {};
+filter.type = PROCESS_NAME_PREFIX;
+const char* filterStr[1] = {};
+filterStr[0] = "1";
+filter.value = filterStr;
+filter.valueCount = 1;
+ret = HMS_SecurityAudit_AddFilter(client, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
+if (ret != 0) {
+    printf("addfilter fail");
+    return;
+}
+```
+
+### Code block 7
+
+```
+ret = HMS_SecurityAudit_Unsubscribe(client, event, 1);
+if (ret != 0) {
+    printf("unsubscribe fail");
+    return;
+}
+```
+
+### Code block 8
+
+```
+ret = HMS_SecurityAudit_RemoveFilter(client, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
+if (ret != 0) {
+    printf("removefilter fail");
+    return;
+}
+```
+
+### Code block 9
+
+```
+ret = HMS_SecurityAudit_DeleteClient(client);
+if (ret != 0) {
+    printf("deleteclient fail");
+    return;
+}
+```

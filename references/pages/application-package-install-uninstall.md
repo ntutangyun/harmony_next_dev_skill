@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-package-install-uninstall_
 
+本章节介绍应用程序包的安装卸载流程和两种更新方式。
+
+应用程序包的安装卸载
+
 开发者可以通过调试命令安装和卸载应用，安装应用命令参考bm工具中的install，卸载应用命令参考bm工具中的uninstall，详情参见编译发布与上架部署流程图。
 
 图1 应用程序包安装和卸载流程（开发者）
@@ -15,6 +19,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/applicati
 对于开发者，应用程序包的更新，首先需要更新app.json5配置文件中的versionCode版本号字段，通过DevEco Studio打包后在应用市场发布，发布流程与首次发布一致。对于终端设备用户，新版本发布后，可以通过以下两种方式更新应用程序包。
 
 应用市场内更新：应用市场通知用户该应用有新版本，用户根据通知到应用市场（客户端）进行升级。
+
 应用内检测升级：开发者根据检测应用新版本实现版本更新提醒功能，应用启动完成或用户在应用中主动检查新版本时，会弹出升级对话框，用户根据对话框提示升级。
-应用程序包安装卸载与更新
-应用安装与更新一致性校验

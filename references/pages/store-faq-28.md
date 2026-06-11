@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-faq-28_
 
+不支持，上架是整个.app包，包括基础包和功能包。

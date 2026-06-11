@@ -2,14 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-parseoptographfn_
 
+函数功能
+
+注册实现算子一对多子图映射的函数，即将算子映射为多个算子。
+
+函数原型
+
 OpRegistrationData &ParseOpToGraphFn(const ParseOpToGraphFunc &parse_op_to_graph_fn)
+
 参数说明
+
 参数	输入/输出	说明
-parse_op_to_graph_fn	输入	
-
-实现算子一对多映射，进行子图构造的函数。
-
-请参见回调函数ParseOpToGraphFunc。
+parse_op_to_graph_fn	输入	实现算子一对多映射，进行子图构造的函数。 请参见回调函数ParseOpToGraphFunc。
 
 约束说明
 
@@ -79,5 +83,56 @@ REGISTER_CUSTOM_OP("PartitionedCall")
 
 图1 一对多转换示意图
 
-ParseSubgraphPostFn
-ImplyType
+## Code blocks
+
+### Code block 1
+
+```
+OpRegistrationData &ParseOpToGraphFn(const ParseOpToGraphFunc &parse_op_to_graph_fn)
+```
+
+### Code block 2
+
+```
+Status  ParseOpToGraphFunc(const ge::Operator &op, ge::Graph &graph)
+```
+
+### Code block 3
+
+```
+Status ParseParams(const ge::Operator &op_src, ge::Operator& op_dest)
+{
+    // ...
+    op_dest.SetAttr("original_type", "ai.onnx::11::Add");
+}
+```
+
+### Code block 4
+
+```
+static Status ParseOpToGraph(const Operator &op, Graph &graph) {
+  auto data_0 = op::Data().set_attr_index(0);
+  auto data_1 = op::Data().set_attr_index(1);
+  auto addn = op::AddN("addn_sum").create_dynamic_input_x(2)
+      .set_dynamic_input_x(0, data_0)
+      .set_dynamic_input_x(1, data_1)
+      .set_attr_N(2);
+  auto abs = op::Abs("abs_sum").set_input_x(addn);
+  std::vector<Operator> inputs{data_0, data_1};
+  std::vector<std::pair<Operator, std::vector<size_t>>> output_indexs;
+  output_indexs.emplace_back(abs, std::vector<std::size_t>{0});
+  graph.SetInputs(inputs).SetOutputs(output_indexs);
+  return domi::SUCCESS;
+}
+```
+
+### Code block 5
+
+```
+REGISTER_CUSTOM_OP("PartitionedCall")
+.FrameworkType(xx)
+.OriginOpType(xx)
+.ParseParamsByOperatorFn(ParseParams)
+.ParseOpToGraphFn(ParseOpToGraph)
+.ImplyType(ImplyType::TVM);
+```

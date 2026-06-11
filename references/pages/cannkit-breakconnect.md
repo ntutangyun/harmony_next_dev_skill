@@ -2,3 +2,34 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-breakconnect_
 
+函数功能
+
+删除当前算子与前一个算子之间的所有连接关系，删除当前算子与下一个算子之间的所有连接关系。
+
+函数原型
+
+void BreakConnect() const;
+
+参数说明
+
+无
+
+返回值
+
+无
+
+异常处理
+
+无
+
+约束说明
+
+无
+
+## Code blocks
+
+### Code block 1
+
+```
+void BreakConnect() const;
+```

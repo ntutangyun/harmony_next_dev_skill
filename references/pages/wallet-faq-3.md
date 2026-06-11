@@ -3,6 +3,3 @@
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-faq-3_
 
 如果用户没有登录华为账号，Wallet Kit会先拉起华为账号注册登录页面，用户注册或登录华为账号后才能保存卡券到华为钱包。
-
-开发者应用使用Wallet Kit，是否需要集成华为Account Kit？
-现有提供的几种接入方式中，比较常用的是哪种？

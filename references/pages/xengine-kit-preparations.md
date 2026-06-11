@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/xengine-kit-preparations_
 
+安装DevEco Studio，详情请参考下载与安装DevEco Studio。
+
+软件要求
+
 推荐使用Ubuntu 16.04及以上版本、MacOS 10.14及以上版本、Windows 10及以上版本，安装DevEco Studio应用开发环境。
 
 DevEco Studio版本：DevEco Studio NEXT Developer Beta1及以上。
@@ -11,6 +15,3 @@ HarmonyOS SDK版本：HarmonyOS NEXT Developer Beta1 SDK及以上。
 硬件要求
 
 支持的设备类型：Phone、Tablet、PC/2in1、TV。
-
-XEngine Kit简介
-空域GPU超分

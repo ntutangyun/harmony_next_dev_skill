@@ -2,6 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-transparent-backplate-form-development_
 
+从API version 22开始，Form Kit提供卡片背板元素透明显示的能力，满足更丰富的UI设计以及美观诉求。
+
+说明
+
+示例效果请以真机运行为准，当前不支持DevEco Studio预览器。
+
+约束和限制
+
+非透明区域要求大于等于10%，不能有大面积全透明，让用户误以为此区域没有卡片的UI设计和实现。
+
+为保障卡片内容和文字清晰可见，建议根据加卡时系统告知的推荐颜色值来显示文字。
+
+开发准备
+
+[h2]透明卡片开放能力申请
+
 因为背板透明卡片仅使用于符合UI规范以及声明使用的场景，不允许对用户隐藏卡片显示或者功能按钮的恶意设计，所以需要开发者申请上架开放能力。
 
 登录AppGallery Connect，选择“开发与服务”。
@@ -29,7 +45,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 在form_config.json配置文件中，背板透明卡片必须配置transparencyEnabled字段为true。具体参考配置文件字段说明。
 
 // entry/src/main/resources/base/profile/form_config.json
-
 
 {
   "forms": [
@@ -64,7 +79,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 // entry/src/main/ets/widget/pages/WidgetCard.ets
 const TAG: string = 'WidgetCard';
 
-
 @Entry
 @Component
 export struct WidgetCard {
@@ -75,10 +89,8 @@ export struct WidgetCard {
   readonly fullWidthPercent: string = '100%';
   readonly fullHeightPercent: string = '100%';
 
-
   // 获取反色信息
   @LocalStorageProp('textColor') @Watch('getTextColor') textColor: string = '#00ff00';
-
 
   build() {
     Row() {
@@ -103,7 +115,6 @@ export struct WidgetCard {
     })
   }
 
-
   private getTextColor(): void {
     console.info(TAG, `this.textColor = ${this.textColor}`);
   }
@@ -115,9 +126,7 @@ export struct WidgetCard {
 import { formBindingData, FormExtensionAbility, formInfo, formProvider } from '@kit.FormKit';
 import { Want } from '@kit.AbilityKit';
 
-
 const TAG: string = 'ServiceEntryFormAbility';
-
 
 export default class EntryFormAbility extends FormExtensionAbility {
   onAddForm(want: Want) {
@@ -135,13 +144,10 @@ export default class EntryFormAbility extends FormExtensionAbility {
       }
     }
 
-
     return formBindingData.createFormBindingData(formData);
   }
 
-
   onCastToNormalForm(formId: string) {}
-
 
   onUpdateForm(formId: string, wantParams?: Record<string, Object>) {
     console.info(TAG, 'onUpdateForm', JSON.stringify(wantParams));
@@ -158,11 +164,9 @@ export default class EntryFormAbility extends FormExtensionAbility {
       }
     }
 
-
     let formMsg: Record<string, string> = {
       'textColor': textColor
     };
-
 
     let formData: formBindingData.FormBindingData = formBindingData.createFormBindingData(formMsg);
     formProvider.updateForm(formId, formData).then((succ) => {
@@ -171,21 +175,16 @@ export default class EntryFormAbility extends FormExtensionAbility {
       console.info(TAG,`err = ${JSON.stringify(fail)}`);
     })
 
-
   }
-
 
   onFormEvent(formId: string, message: string) {}
 
-
   onRemoveForm(formId: string) {}
-
 
   onAcquireFormState(want: Want) {
     return formInfo.FormState.READY;
   }
 }
-
 
 interface  TextColor {
   mTextColor: string;
@@ -196,5 +195,157 @@ interface  TextColor {
 
 用户可在卡片中心-卡片管理页面，点击“添加至桌面”，此时在桌面即可看到新添加的背板透明卡片。结果示例如下。
 
-ArkTS背板透明卡片
-ArkTS待机屏保卡片开发指导
+## Code blocks
+
+### Code block 1
+
+```
+// entry/src/main/resources/base/profile/form_config.json
+
+{
+  "forms": [
+    {
+        "name": "widget",
+        "displayName": "$string:widget_display_name",
+        "description": "$string:widget_desc",
+        "src": "./ets/widget/pages/WidgetCard.ets",
+        "uiSyntax": "arkts",
+        "window": {
+            "designWidth": 720,
+            "autoDesignWidth": true
+        },
+        "isDynamic": true,
+        "isDefault": true,
+        "updateEnabled": false,
+        "scheduledUpdateTime": "10:30",
+        "updateDuration": 1,
+        "defaultDimension": "2*2",
+        "transparencyEnabled": true,
+        "supportDimensions": [
+            "2*2"
+        ]
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+// entry/src/main/ets/widget/pages/WidgetCard.ets
+const TAG: string = 'WidgetCard';
+
+@Entry
+@Component
+export struct WidgetCard {
+  readonly title: string = '已配置form_config为true三方透明卡片';
+  readonly actionType: string = 'router';
+  readonly abilityName: string = 'EntryAbility';
+  readonly message: string = 'add detail';
+  readonly fullWidthPercent: string = '100%';
+  readonly fullHeightPercent: string = '100%';
+
+  // 获取反色信息
+  @LocalStorageProp('textColor') @Watch('getTextColor') textColor: string = '#00ff00';
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.title)
+          .fontSize('20vp')
+          .fontWeight(FontWeight.Medium)
+          .fontColor(this.textColor)
+      }
+      .width(this.fullWidthPercent)
+    }
+    .height(this.fullHeightPercent)
+    .backgroundColor(Color.Transparent)
+    .onClick(() => {
+      postCardAction(this, {
+        action: this.actionType,
+        abilityName: this.abilityName,
+        params: {
+          message: this.message
+        }
+      });
+    })
+  }
+
+  private getTextColor(): void {
+    console.info(TAG, `this.textColor = ${this.textColor}`);
+  }
+}
+```
+
+### Code block 3
+
+```
+// entry/src/main/ets/entryformability/EntryFormAbility.ets
+import { formBindingData, FormExtensionAbility, formInfo, formProvider } from '@kit.FormKit';
+import { Want } from '@kit.AbilityKit';
+
+const TAG: string = 'ServiceEntryFormAbility';
+
+export default class EntryFormAbility extends FormExtensionAbility {
+  onAddForm(want: Want) {
+    console.info(TAG, 'onAddForm', JSON.stringify(want));
+    let textColor: string = '#707070';
+    let formData: Record<string, string> = {};
+    if (want && want.parameters) {
+      // 获取反色信息
+      let testColorJsonStr = want.parameters[formInfo.FormParam.HOST_BG_INVERSE_COLOR_KEY] as TextColor;
+      if (!testColorJsonStr) {
+        console.error(TAG, `no host_bg_inverse_color in want parameters`);
+      } else {
+        textColor = testColorJsonStr.mTextColor;
+        formData['textColor'] = textColor;
+      }
+    }
+
+    return formBindingData.createFormBindingData(formData);
+  }
+
+  onCastToNormalForm(formId: string) {}
+
+  onUpdateForm(formId: string, wantParams?: Record<string, Object>) {
+    console.info(TAG, 'onUpdateForm', JSON.stringify(wantParams));
+    let textColor: string = '#707070';
+    if (wantParams) {
+      let testColorJsonStr = wantParams[formInfo.FormParam.HOST_BG_INVERSE_COLOR_KEY] as TextColor;
+      console.info(TAG, `onUpdate typeof testColorJsonStr = ${JSON.stringify(testColorJsonStr)}`);
+      // 获取反色信息
+      if (!testColorJsonStr) {
+        console.error(TAG, `no host_bg_inverse_color in wantParams parameters`);
+        return;
+      } else {
+        textColor = testColorJsonStr.mTextColor;
+      }
+    }
+
+    let formMsg: Record<string, string> = {
+      'textColor': textColor
+    };
+
+    let formData: formBindingData.FormBindingData = formBindingData.createFormBindingData(formMsg);
+    formProvider.updateForm(formId, formData).then((succ) => {
+      console.info(TAG,`succ = ${JSON.stringify(succ)}`);
+    }).catch((fail :Error) => {
+      console.info(TAG,`err = ${JSON.stringify(fail)}`);
+    })
+
+  }
+
+  onFormEvent(formId: string, message: string) {}
+
+  onRemoveForm(formId: string) {}
+
+  onAcquireFormState(want: Want) {
+    return formInfo.FormState.READY;
+  }
+}
+
+interface  TextColor {
+  mTextColor: string;
+  mWallpaperType: number;
+}
+```

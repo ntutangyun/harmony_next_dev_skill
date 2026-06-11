@@ -2,6 +2,162 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-errorcode-00305_
 
+00305001 ArkTS语法检查报错
+
+错误信息
+
+ArkTS lint errors.
+
+错误描述
+
+ArkTS语法检查报错。
+
+可能原因
+
+ArkTS语法错误。
+
+处理步骤
+
+根据报错信息处理ArkTS语法错误。
+
+00305003 hvigorfile.ts或hvigorconfig.ts有类型错误
+
+错误信息
+
+There are these type errors in the code.
+
+错误描述
+
+解析hvigorfile.ts或hvigorconfig.ts有类型错误。
+
+可能原因
+
+hvigorfile.ts或hvigorconfig.ts有类型错误。
+
+处理步骤
+
+根据报错信息处理hvigorfile.ts或hvigorconfig.ts文件的类型错误。
+
+00305004 json/json5文件存在语法错误
+
+错误信息
+
+以实际语法错误为准。
+
+错误描述
+
+解析json/json5文件时出现语法错误。
+
+可能原因
+
+json/json5文件存在语法错误。
+
+处理步骤
+
+根据报错信息处理文件中的语法错误。
+
+00305006 JSON/JSON5格式错误
+
+错误信息
+
+XXX is not the correct JSON/JSON5 format.
+
+错误描述
+
+XXX不是正确的JSON/JSON5格式。
+
+可能原因
+
+对应文件不是JSON/JSON5格式。
+
+处理步骤
+
+确保对应文件是JSON/JSON5格式。
+
+00305008 JSON/JSON5文件语法错误
+
+错误信息
+
+XXX at file: YYY:ZZZ".
+
+错误描述
+
+XXX在文件位置YYY:ZZZ存在语法错误。
+
+可能原因
+
+对应文件中存在JSON/JSON5语法错误。
+
+处理步骤
+
+根据报错的文件路径信息修复相关的JSON/JSON5语法错误。
+
+00305009 CMake文件API解析失败
+
+错误信息
+
+CMake file API parse failed. At file: XXX.
+
+错误描述
+
+CMake文件API解析失败。
+
+可能原因
+
+在XXX路径下，找不到以“index-”开头的文件。
+
+处理步骤
+
+点击菜单栏Build > Clean Project后，重新构建。
+
+00305010 属性或方法未定义
+
+错误信息
+
+以实际错误信息为准。
+
+错误描述
+
+属性或方法未定义。
+
+可能原因
+
+在hvigorconfig.ts或hvigorfile.ts中使用了未定义的属性或方法。
+
+处理步骤
+
+确保hvigorconfig.ts或hvigorfile.ts中使用的属性或方法都已定义。
+
+00305011 未定义符号错误
+
+错误信息
+
+A 'undefined symbol' error has occurred.
+
+错误描述
+
+出现了未定义符号错误。
+
+可能原因
+
+源文件没有正确编译或链接，或者因为缺少必要的库文件。
+
+处理步骤
+
+参考CPP编译报错"A 'undefined symbol' error has occurred"。
+
+00305012 CMake任务执行失败
+
+错误信息
+
+CMake task execution failed.
+
+错误描述
+
+CMake任务执行失败。
+
+可能原因
+
 用户手动删除编译后模块的.cxx目录，并且在build-profile.json5中arguments字段下配置“--version”、“
 
 --help”、“--usage”等查询类参数。
@@ -63,6 +219,3 @@ A 'unknown type name' error has occurred.
 处理步骤
 
 根据错误提示信息修改。
-
-资源缺失错误码
-规格错误码

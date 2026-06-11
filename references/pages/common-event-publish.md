@@ -2,9 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/common-event-publish_
 
+场景介绍
+
 当需要发布某个公共事件时，可以通过publish()方法发布事件。发布的公共事件可以携带数据，供订阅者解析并进行下一步处理。
 
-注意
+须知
 
 已发出的粘性公共事件后来订阅者也可以接收到，其他公共事件都需要先订阅再接收，订阅参考公共事件订阅章节。
 
@@ -15,6 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/common-ev
 接口名	接口描述
 publish(event: string, callback: AsyncCallback<void>)	发布公共事件。
 publish(event: string, options: CommonEventPublishData, callback: AsyncCallback<void>)	指定发布信息并发布公共事件。
+
 发布不携带信息的公共事件
 
 不携带信息的公共事件，只能发布无序公共事件。
@@ -24,10 +27,8 @@ publish(event: string, options: CommonEventPublishData, callback: AsyncCallback<
 import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = 'ProcessModel';
 const DOMAIN_NUMBER: number = 0xFF00;
-CreatSubscribeInfo.ets
 
 传入需要发布的事件名称和回调函数，发布事件。
 
@@ -41,7 +42,7 @@ commonEventManager.publish('event', (err: BusinessError) => {
     hilog.info(DOMAIN_NUMBER, TAG, `Publish success`);
   }
 });
-CreatSubscribeInfo.ets
+
 发布携带信息的公共事件
 
 携带信息的公共事件，可以发布为无序公共事件、有序公共事件和粘性事件，可以通过参数CommonEventPublishData的isOrdered、isSticky的字段进行设置。
@@ -51,10 +52,8 @@ CreatSubscribeInfo.ets
 import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = 'ProcessModel';
 const DOMAIN_NUMBER: number = 0xFF00;
-CreatSubscribeInfo.ets
 
 构建需要发布的公共事件信息。
 
@@ -63,7 +62,6 @@ let options: commonEventManager.CommonEventPublishData = {
   code: 1, // 公共事件的初始代码
   data: 'initial data', // 公共事件的初始数据
 };
-CreatSubscribeInfo.ets
 
 传入需要发布的事件名称、需要发布的指定信息和回调函数，发布事件。
 
@@ -77,6 +75,65 @@ commonEventManager.publish('event', options, (err: BusinessError) => {
     hilog.info(DOMAIN_NUMBER, TAG, `Succeeded in publishing common event.`);
   }
 });
-CreatSubscribeInfo.ets
-取消动态订阅公共事件
-订阅公共事件（C/C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = 'ProcessModel';
+const DOMAIN_NUMBER: number = 0xFF00;
+```
+
+### Code block 2
+
+```
+// 发布公共事件，其中的event字段需要替换为实际的事件名称。
+commonEventManager.publish('event', (err: BusinessError) => {
+  if (err) {
+    hilog.error(DOMAIN_NUMBER, TAG,
+      `Publish failed, code is ${JSON.stringify(err.code)}, message is ${JSON.stringify(err.message)}`);
+  } else {
+    // ...
+    hilog.info(DOMAIN_NUMBER, TAG, `Publish success`);
+  }
+});
+```
+
+### Code block 3
+
+```
+import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = 'ProcessModel';
+const DOMAIN_NUMBER: number = 0xFF00;
+```
+
+### Code block 4
+
+```
+// 公共事件相关信息
+let options: commonEventManager.CommonEventPublishData = {
+  code: 1, // 公共事件的初始代码
+  data: 'initial data', // 公共事件的初始数据
+};
+```
+
+### Code block 5
+
+```
+// 发布公共事件，其中的event字段需要替换为实际的事件名称。
+commonEventManager.publish('event', options, (err: BusinessError) => {
+  if (err) {
+    hilog.error(DOMAIN_NUMBER, TAG,
+      `Failed to publish common event. Code is ${err.code}, message is ${err.message}`);
+  } else {
+    // ...
+    hilog.info(DOMAIN_NUMBER, TAG, `Succeeded in publishing common event.`);
+  }
+});
+```

@@ -16,11 +16,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emula
 
 无网络电脑：
 
-将DevEco Studio和模拟器镜像文件拷贝到无网络电脑中，需要注意有网络和无网络电脑的镜像子文件夹路径（如system-image\HarmonyOS-xxx\phone_all_x86）要保持一致。
-
 拷贝镜像时，在无网络电脑新建存放镜像的目录，如D:\No-network\Sdk，在此目录下新建镜像子文件夹路径system-image\HarmonyOS-xxx\phone_all_x86，将有网络电脑phone_all_x86下的所有文件拷贝到该路径下。
-
-在无网络电脑上创建模拟器，注意创建时将镜像路径更改为上个步骤的路径，如D:\No-network\Sdk，具体可参考创建模拟器，创建成功后即可使用模拟器。
-
-通过命令行使用模拟器
-模拟器错误码

@@ -2,6 +2,57 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-components-rating_
 
+rating是评分组件，用于展示用户对某项内容的评价等级。具体用法请参考rating。
+
+创建rating组件
+
+在pages/index目录下的hml文件中创建一个rating组件。
+
+<!-- xxx.hml -->
+<div class="container">
+  <rating></rating>
+</div>
+
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F1F3F5;
+}
+.rating {
+  width: 80%;
+  height: 150px;
+}
+
+设置评分星级
+
+rating组件通过设置numstars和rating属性设置评分条的星级总数和当前评星数。
+
+<!-- xxx.hml -->
+<div class="container">
+  <rating numstars="6" rating="5">
+  </rating>
+</div>
+
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F1F3F5;
+}
+.rating {
+  width: 80%;
+  height: 150px;
+}
+
+设置评分样式
+
 rating组件通过star-background、star-foreground和star-secondary属性设置单个星级未选择、选中和选中的次级背景图片。
 
 <!-- xxx.hml -->
@@ -12,6 +63,7 @@ rating组件通过star-background、star-foreground和star-secondary属性设置
     </rating>
   </div>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -21,6 +73,7 @@ rating组件通过star-background、star-foreground和star-secondary属性设置
   justify-content: center;
   background-color: #F1F3F5;
 }
+
 // index.js
 export default {
   data: {
@@ -48,6 +101,7 @@ star-background、star-secondary、star-foreground属性只支持本地路径图
 <div class="container">
   <rating numstars="5" rating="0" onchange="showrating"></rating>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -61,6 +115,7 @@ star-background、star-secondary、star-foreground属性只支持本地路径图
   width: 80%;
   height: 150px;
 }
+
 // xxx.js
 import promptAction from '@ohos.promptAction';
 export default {
@@ -98,6 +153,7 @@ export default {
         </div>
     </div>
 </div>
+
 /* xxx.css */
 .myrating:active {
     width: 500px;
@@ -106,6 +162,7 @@ export default {
 .switch{
     font-size: 40px;
 }
+
 // xxx.js
 import promptAction from '@ohos.promptAction';
 export default {
@@ -150,5 +207,233 @@ export default {
     }
 }
 
-image-animator开发指导
-slider开发指导
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <rating></rating>
+</div>
+```
+
+### Code block 2
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F1F3F5;
+}
+.rating {
+  width: 80%;
+  height: 150px;
+}
+```
+
+### Code block 3
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <rating numstars="6" rating="5">
+  </rating>
+</div>
+```
+
+### Code block 4
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F1F3F5;
+}
+.rating {
+  width: 80%;
+  height: 150px;
+}
+```
+
+### Code block 5
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <div style="width: 500px;height: 500px;align-items: center;justify-content: center;flex-direction: column;">
+    <rating numstars="5" rating="1" class="myrating" style="width: {{ratewidth}}; height:{{rateheight}};
+    star-background: {{backstar}}; star-secondary: {{secstar}};star-foreground: {{forestar}};rtl-flip: true;">
+    </rating>
+  </div>
+</div>
+```
+
+### Code block 6
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+```
+
+### Code block 7
+
+```
+// index.js
+export default {
+  data: {
+    backstar: 'common/love.png',
+    secstar: 'common/love.png',
+    forestar: 'common/love1.png',
+    ratewidth: '400px',
+    rateheight: '150px'
+  },
+  onInit(){
+  }
+}
+```
+
+### Code block 8
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <rating numstars="5" rating="0" onchange="showrating"></rating>
+</div>
+```
+
+### Code block 9
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F1F3F5;
+}
+.rating {
+  width: 80%;
+  height: 150px;
+}
+```
+
+### Code block 10
+
+```
+// xxx.js
+import promptAction from '@ohos.promptAction';
+export default {
+  showrating(e) {
+    promptAction.showToast({
+      message: '当前评分' + e.rating
+    })
+  }
+}
+```
+
+### Code block 11
+
+```
+<!-- xxx.hml -->
+<div style="width: 100%;height:100%;flex-direction: column;align-items: center;background-color: #F1F3F5;">
+    <div style="width: 500px;height: 500px;align-items: center;justify-content: center;flex-direction: column;">
+        <rating numstars="{{stars}}" rating="{{rate}}" stepsize="{{step}}" onchange="showrating" class="myrating"
+                style="width: {{ratewidth}};height:{{rateheight}};star-background: {{backstar}};star-secondary: {{secstar}};
+                        star-foreground: {{forestar}};rtl-flip: true;"></rating>
+    </div>
+    <div style="flex-direction: column;width: 80%;align-items: center;">
+        <div style="width: 100%;height: 100px;align-items: center;justify-content: space-around;">
+            <text>替换自定义图片</text>
+            <switch checked="false" showtext="true" onchange="setstar"></switch>
+        </div>
+        <div style="width: 100%;height:120px;margin-top: 50px;margin-bottom: 50px;flex-direction: column;align-items: center;
+                justify-content: space-around;">
+            <text>numstars   {{stars}}</text>
+            <slider id="sli1" min="0" max="10" value="5" step="1" onchange="setnumstars"></slider>
+        </div>
+        <div style="width: 100%;height:120px;flex-direction: column;align-items: center;justify-content: space-around;">
+            <text>rating   {{rate}}</text>
+            <slider id="sli2" min="0" max="10" value="{{rate}}" step="0.5" onchange="setrating"></slider>
+        </div>
+    </div>
+</div>
+```
+
+### Code block 12
+
+```
+/* xxx.css */
+.myrating:active {
+    width: 500px;
+    height: 100px;
+}
+.switch{
+    font-size: 40px;
+}
+```
+
+### Code block 13
+
+```
+// xxx.js
+import promptAction from '@ohos.promptAction';
+export default {
+    data: {
+        backstar: '',
+        secstar: '',
+        forestar: '',
+        stars: 5,
+        ratewidth: '300px',
+        rateheight: '60px',
+        step: 0.5,
+        rate: 0
+    },
+    onInit(){
+    },
+    setstar(e) {
+        if (e.checked == true) {
+            this.backstar = '/common/love.png'
+            this.secstar = 'common/love.png'
+            this.forestar = 'common/love1.png'
+        } else {
+            this.backstar = ''
+            this.secstar = ''
+            this.forestar = ''
+        }
+    },
+    setnumstars(e) {
+        this.stars = e.progress
+        this.ratewidth = 60 * parseInt(this.stars) + 'px'
+    },
+    setstep(e) {
+        this.step = e.progress
+    },
+    setrating(e){
+        this.rate = e.progress
+    },
+    showrating(e) {
+        this.rate = e.rating
+        promptAction.showToast({
+            message: '当前评分' + e.rating
+        })
+    }
+}
+```

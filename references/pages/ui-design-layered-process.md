@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-layered-process_
 
+场景介绍
+
+从5.0.0(12)版本开始， Hds支持分层图标处理能力。
+
 适用于图标为分层资源，且图标展示风格要与华为HarmonyOS Design System设计风格一致的应用场景。以下是一些典型的应用场景：
 
 展示带图标的应用列表：可调用UI Design Kit批量处理分层图标的接口获取处理后的应用图标。
@@ -45,7 +49,6 @@ struct Index{
   layeredDrawableDescriptor: LayeredDrawableDescriptor | undefined = undefined;
   @State layeredIconsResult: Array<hdsDrawable.ProcessedIcon> = [];
 
-
   build() {
     Column() {
       Column() {
@@ -54,19 +57,16 @@ struct Index{
           .fontSize(16)
           .margin(5)
 
-
         Image(this.getHdsLayeredIcon())
           .width(48)
           .height(48)
       }
       .margin(20)
 
-
       Text('getHdsLayeredIcons')
         .fontWeight(FontWeight.Bold)
         .fontSize(16)
         .margin(5)
-
 
       List() {
         ForEach(this.layeredIconsResult,
@@ -77,7 +77,6 @@ struct Index{
                   .fontWeight(FontWeight.Medium)
                   .fontSize(16)
                   .margin(5)
-
 
                 Image(item.pixelMap)
                   .width(48)
@@ -95,7 +94,6 @@ struct Index{
     .width('100%')
   }
 
-
   aboutToAppear(): void {
     // 获取资源管理器
     this.resManager = (this.getUIContext().getHostContext() as common.UIAbilityContext)?.resourceManager;
@@ -107,7 +105,6 @@ struct Index{
       .id)) as LayeredDrawableDescriptor;
     this.getHdsLayeredIcons();
   }
-
 
   private getHdsLayeredIcon(): image.PixelMap | null {
     try {
@@ -121,20 +118,18 @@ struct Index{
     }
   }
 
-
   private getHdsLayeredIcons(): void {
     if (!this.layeredDrawableDescriptor) {
       console.error(`getHdsLayeredIcons layeredDrawableDescriptor is undefined.`);
       return;
     }
-    
+
     // 构造批量接口传参
     let options: hdsDrawable.Options = {
       size: 48,
       hasBorder: true,
       parallelNumber: 4
     };
-
 
     let layeredIcons: Array<hdsDrawable.LayeredIcon> = [];
     for (let i = 0; i < 10; i++) {
@@ -143,7 +138,6 @@ struct Index{
         layeredDrawableDescriptor: this.layeredDrawableDescriptor
       });
     }
-
 
     try {
       // 调用HDS批量分层接口处理图标
@@ -162,5 +156,148 @@ struct Index{
     }
   }
 }
-图标处理
-单层图标处理
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "layered-image":
+  {
+    "background" : "$media:background",
+    "foreground" : "$media:foreground"
+  }
+}
+```
+
+### Code block 2
+
+```
+import { LayeredDrawableDescriptor } from '@kit.ArkUI';
+import { hdsDrawable } from '@kit.UIDesignKit';
+import { image } from '@kit.ImageKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { resourceManager } from '@kit.LocalizationKit';
+import { common } from '@kit.AbilityKit';
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct Index{
+  bundleName: string = 'com.example.uidesignkit';
+  resManager: resourceManager.ResourceManager | undefined = undefined;
+  layeredDrawableDescriptor: LayeredDrawableDescriptor | undefined = undefined;
+  @State layeredIconsResult: Array<hdsDrawable.ProcessedIcon> = [];
+
+  build() {
+    Column() {
+      Column() {
+        Text('getHdsLayeredIcon')
+          .fontWeight(FontWeight.Bold)
+          .fontSize(16)
+          .margin(5)
+
+        Image(this.getHdsLayeredIcon())
+          .width(48)
+          .height(48)
+      }
+      .margin(20)
+
+      Text('getHdsLayeredIcons')
+        .fontWeight(FontWeight.Bold)
+        .fontSize(16)
+        .margin(5)
+
+      List() {
+        ForEach(this.layeredIconsResult,
+          (item: hdsDrawable.ProcessedIcon, index?: number) => {
+            ListItem() {
+              Column() {
+                Text(item.bundleName)
+                  .fontWeight(FontWeight.Medium)
+                  .fontSize(16)
+                  .margin(5)
+
+                Image(item.pixelMap)
+                  .width(48)
+                  .height(48)
+              }
+              .margin(15)
+            }
+            .width('100%')
+          }, (item: string) => item.toString())
+      }
+      .scrollBar(BarState.On)
+      .height('60%')
+    }
+    .height('100%')
+    .width('100%')
+  }
+
+  aboutToAppear(): void {
+    // 获取资源管理器
+    this.resManager = (this.getUIContext().getHostContext() as common.UIAbilityContext)?.resourceManager;
+    if (!this.resManager) {
+      return;
+    }
+    // 通过资源管理获取原始分层图标信息
+    this.layeredDrawableDescriptor = (this.resManager.getDrawableDescriptor($r('app.media.drawable')
+      .id)) as LayeredDrawableDescriptor;
+    this.getHdsLayeredIcons();
+  }
+
+  private getHdsLayeredIcon(): image.PixelMap | null {
+    try {
+      // 调用HDS分层图标接口处理图标
+      return hdsDrawable.getHdsLayeredIcon(this.bundleName, this.layeredDrawableDescriptor, 48, true);
+    } catch (err) {
+      let message = (err as BusinessError).message;
+      let code = (err as BusinessError).code;
+      console.error(`getHdsLayeredIcon failed, code: ${code}, message: ${message}`);
+      return null;
+    }
+  }
+
+  private getHdsLayeredIcons(): void {
+    if (!this.layeredDrawableDescriptor) {
+      console.error(`getHdsLayeredIcons layeredDrawableDescriptor is undefined.`);
+      return;
+    }
+
+    // 构造批量接口传参
+    let options: hdsDrawable.Options = {
+      size: 48,
+      hasBorder: true,
+      parallelNumber: 4
+    };
+
+    let layeredIcons: Array<hdsDrawable.LayeredIcon> = [];
+    for (let i = 0; i < 10; i++) {
+      layeredIcons.push({
+        bundleName: `${this.bundleName}-${i}`,
+        layeredDrawableDescriptor: this.layeredDrawableDescriptor
+      });
+    }
+
+    try {
+      // 调用HDS批量分层接口处理图标
+      hdsDrawable.getHdsLayeredIcons(layeredIcons, options)
+        .then((data: Array<hdsDrawable.ProcessedIcon>) => {
+          console.info(`getHdsLayeredIcons data size: ${data.length}`);
+          this.layeredIconsResult = data;
+        })
+        .catch((err: BusinessError) => {
+          console.error(`getHdsLayeredIcons return error, code: ${err.code}, msg: ${err.message}`);
+        });
+    } catch (err) {
+      let message = (err as BusinessError).message;
+      let code = (err as BusinessError).code;
+      console.error(`getHdsLayeredIcons failed, code: ${code}, message: ${message}`);
+    }
+  }
+}
+```

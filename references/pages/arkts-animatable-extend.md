@@ -15,14 +15,20 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ani
 从API version 11开始，该装饰器支持在元服务中使用。
 
 装饰器使用说明
-语法
+
+[h2]语法
+
 @AnimatableExtend(UIComponentName) function functionName(value: typeName) {
   .propertyName(value)
 }
+
 @AnimatableExtend仅支持定义在全局，不支持在组件内部定义。
+
 @AnimatableExtend定义的函数参数类型必须为number类型或者实现 AnimatableArithmetic<T>接口的自定义类型。
+
 @AnimatableExtend定义的函数体内只能调用@AnimatableExtend括号内组件的属性方法。
-AnimatableArithmetic<T>接口说明
+
+[h2]AnimatableArithmetic<T>接口说明
 
 该接口定义非number数据类型的动画运算规则。对非number类型的数据（如数组、结构体、颜色等）做动画，需要实现AnimatableArithmetic<T>接口中加法、减法、乘法和判断相等函数，使得该数据能参与动画的插值运算和识别该数据是否发生改变。即定义它们为实现了AnimatableArithmetic<T>接口的类型。
 
@@ -31,6 +37,7 @@ plus	AnimatableArithmetic<T>	AnimatableArithmetic<T>	定义该数据类型的加
 subtract	AnimatableArithmetic<T>	AnimatableArithmetic<T>	定义该数据类型的减法运算规则
 multiply	number	AnimatableArithmetic<T>	定义该数据类型的乘法运算规则
 equals	AnimatableArithmetic<T>	boolean	定义该数据类型的相等判断规则
+
 使用场景
 
 以下示例通过改变Text组件宽度实现逐帧布局的效果。
@@ -40,12 +47,10 @@ function animatableWidth(width: number) {
   .width(width)
 }
 
-
 @Entry
 @Component
 struct AnimatablePropertyText {
   @State textWidth: number = 80;
-
 
   build() {
     Column() {
@@ -60,7 +65,6 @@ struct AnimatablePropertyText {
     .padding(10)
   }
 }
-AnimatablePropertyText.ets
 
 以下示例实现折线的动画效果。
 
@@ -68,33 +72,27 @@ class Point {
   x: number;
   y: number;
 
-
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
   }
 
-
   plus(rhs: Point): Point {
     return new Point(this.x + rhs.x, this.y + rhs.y);
   }
-
 
   subtract(rhs: Point): Point {
     return new Point(this.x - rhs.x, this.y - rhs.y);
   }
 
-
   multiply(scale: number): Point {
     return new Point(this.x * scale, this.y * scale);
   }
-
 
   equals(rhs: Point): boolean {
     return this.x === rhs.x && this.y === rhs.y;
   }
 }
-
 
 // PointVector实现了AnimatableArithmetic<T>接口
 class PointVector extends Array<Point> implements AnimatableArithmetic<PointVector> {
@@ -102,7 +100,6 @@ class PointVector extends Array<Point> implements AnimatableArithmetic<PointVect
     super();
     value.forEach(p => this.push(p));
   }
-
 
   plus(rhs: PointVector): PointVector {
     let result = new PointVector([]);
@@ -113,7 +110,6 @@ class PointVector extends Array<Point> implements AnimatableArithmetic<PointVect
     return result;
   }
 
-
   subtract(rhs: PointVector): PointVector {
     let result = new PointVector([]);
     const len = Math.min(this.length, rhs.length);
@@ -123,7 +119,6 @@ class PointVector extends Array<Point> implements AnimatableArithmetic<PointVect
     return result;
   }
 
-
   multiply(scale: number): PointVector {
     let result = new PointVector([]);
     for (let i = 0; i < this.length; i++) {
@@ -131,7 +126,6 @@ class PointVector extends Array<Point> implements AnimatableArithmetic<PointVect
     }
     return result;
   }
-
 
   equals(rhs: PointVector): boolean {
     if (this.length != rhs.length) {
@@ -145,7 +139,6 @@ class PointVector extends Array<Point> implements AnimatableArithmetic<PointVect
     return true;
   }
 
-
   get(): Array<Object[]> {
     let result: Array<Object[]> = [];
     this.forEach(p => result.push([p.x, p.y]));
@@ -153,12 +146,10 @@ class PointVector extends Array<Point> implements AnimatableArithmetic<PointVect
   }
 }
 
-
 @AnimatableExtend(Polyline)
 function animatablePoints(points: PointVector) {
   .points(points.get())
 }
-
 
 @Entry
 @Component
@@ -170,7 +161,6 @@ struct  AnimatablePropertyExample {
     new Point(200, Math.random() * 200),
     new Point(250, Math.random() * 200),
   ])
-
 
   build() {
     Column() {
@@ -196,7 +186,164 @@ struct  AnimatablePropertyExample {
     .padding(10)
   }
 }
-AnimatablePropertyExample.ets
 
-stateStyles：多态样式
-@Require装饰器：校验构造传参
+## Code blocks
+
+### Code block 1
+
+```
+@AnimatableExtend(UIComponentName) function functionName(value: typeName) {
+  .propertyName(value)
+}
+```
+
+### Code block 2
+
+```
+@AnimatableExtend(Text)
+function animatableWidth(width: number) {
+  .width(width)
+}
+
+@Entry
+@Component
+struct AnimatablePropertyText {
+  @State textWidth: number = 80;
+
+  build() {
+    Column() {
+      Text('AnimatableProperty')
+        .animatableWidth(this.textWidth)
+        .animation({ duration: 2000, curve: Curve.Ease })
+      Button('Play')
+        .onClick(() => {
+          this.textWidth = this.textWidth == 80 ? 160 : 80;
+        })
+    }.width('100%')
+    .padding(10)
+  }
+}
+```
+
+### Code block 3
+
+```
+class Point {
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  plus(rhs: Point): Point {
+    return new Point(this.x + rhs.x, this.y + rhs.y);
+  }
+
+  subtract(rhs: Point): Point {
+    return new Point(this.x - rhs.x, this.y - rhs.y);
+  }
+
+  multiply(scale: number): Point {
+    return new Point(this.x * scale, this.y * scale);
+  }
+
+  equals(rhs: Point): boolean {
+    return this.x === rhs.x && this.y === rhs.y;
+  }
+}
+
+// PointVector实现了AnimatableArithmetic<T>接口
+class PointVector extends Array<Point> implements AnimatableArithmetic<PointVector> {
+  constructor(value: Array<Point>) {
+    super();
+    value.forEach(p => this.push(p));
+  }
+
+  plus(rhs: PointVector): PointVector {
+    let result = new PointVector([]);
+    const len = Math.min(this.length, rhs.length);
+    for (let i = 0; i < len; i++) {
+      result.push((this as Array<Point>)[i].plus((rhs as Array<Point>)[i]));
+    }
+    return result;
+  }
+
+  subtract(rhs: PointVector): PointVector {
+    let result = new PointVector([]);
+    const len = Math.min(this.length, rhs.length);
+    for (let i = 0; i < len; i++) {
+      result.push((this as Array<Point>)[i].subtract((rhs as Array<Point>)[i]));
+    }
+    return result;
+  }
+
+  multiply(scale: number): PointVector {
+    let result = new PointVector([]);
+    for (let i = 0; i < this.length; i++) {
+      result.push((this as Array<Point>)[i].multiply(scale));
+    }
+    return result;
+  }
+
+  equals(rhs: PointVector): boolean {
+    if (this.length != rhs.length) {
+      return false;
+    }
+    for (let i = 0; i < this.length; i++) {
+      if (!(this as Array<Point>)[i].equals((rhs as Array<Point>)[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  get(): Array<Object[]> {
+    let result: Array<Object[]> = [];
+    this.forEach(p => result.push([p.x, p.y]));
+    return result;
+  }
+}
+
+@AnimatableExtend(Polyline)
+function animatablePoints(points: PointVector) {
+  .points(points.get())
+}
+
+@Entry
+@Component
+struct  AnimatablePropertyExample {
+  @State points: PointVector = new PointVector([
+    new Point(50, Math.random() * 200),
+    new Point(100, Math.random() * 200),
+    new Point(150, Math.random() * 200),
+    new Point(200, Math.random() * 200),
+    new Point(250, Math.random() * 200),
+  ])
+
+  build() {
+    Column() {
+      Polyline()
+        .animatablePoints(this.points)
+        .animation({ duration: 1000, curve: Curve.Ease })// 设置动画参数
+        .size({ height: 220, width: 300 })
+        .fill(Color.Green)
+        .stroke(Color.Red)
+        .backgroundColor('#eeaacc')
+      Button('Play')
+        .onClick(() => {
+          // points是实现了可动画协议的数据类型，points在动画过程中可按照定义的运算规则、动画参数从之前的PointVector变为新的PointVector数据，产生每一帧的PointVector数据，进而产生动画
+          this.points = new PointVector([
+            new Point(50, Math.random() * 200),
+            new Point(100, Math.random() * 200),
+            new Point(150, Math.random() * 200),
+            new Point(200, Math.random() * 200),
+            new Point(250, Math.random() * 200),
+          ]);
+        })
+    }.width('100%')
+    .padding(10)
+  }
+}
+```

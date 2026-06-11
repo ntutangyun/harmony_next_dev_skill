@@ -2,16 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-invokecloudobj_
 
-在弹出的“Generate Invoke Interface”窗口，可以看到生成的端侧调用接口类将默认存储在“Application/cloud_objects”模块目录下，点击“OK”确认。您也可以点击“...”按钮自定义存储目录。
+云对象开发完成后，您可以为其生成端侧调用接口类，供后续端侧工程调用云对象使用。
 
-DevEco Studio自动打开指定的端侧调用接口类存储目录，该目录包含“ImportObject.ts”文件和“my-cloud-object”文件夹。
+前提条件
+
+请确保云对象已正确开发并部署。
+
+操作步骤
+
 “ImportObject.ts”文件：定义了importObject方法，可以通过该方法来实例化一个云对象的代理。
+
 “my-cloud-object”文件夹：包含了该云对象在端侧可能用到的所有模型。示例中只有一个“MyCloudObject.ts”文件，如果有其它的模型也将生成在该文件夹下。
+
 “MyCloudObject.ts”文件：定义了MyCloudObject class，并且定义了add和subtract两个方法。
 
-在代码文件中引入云对象。
 import { MyCloudObject, importObject } from 'cloud_objects';
-调用云对象中的方法。
+
 let myCloudObject = importObject(MyCloudObject); // 使用importObject实例化MyCloudObject的代理
 myCloudObject.add(1, 2).then(addResult => {
   console.log(`1 + 2 = ${addResult.result}`);
@@ -22,5 +28,22 @@ myCloudObject.subtract(6, 3).then(subtractResult => {
 
 由于“Generate Invoke Interface”时已经生成所需要的模型以及importObject方法，因此在编码时可以很方便地使用联想、自动引入等DevEco Studio提供的高阶能力，如下图所示。
 
-在端侧调用云函数
-在端侧访问云数据库
+## Code blocks
+
+### Code block 1
+
+```
+import { MyCloudObject, importObject } from 'cloud_objects';
+```
+
+### Code block 2
+
+```
+let myCloudObject = importObject(MyCloudObject); // 使用importObject实例化MyCloudObject的代理
+myCloudObject.add(1, 2).then(addResult => {
+  console.log(`1 + 2 = ${addResult.result}`);
+}); // 忽略异常处理
+myCloudObject.subtract(6, 3).then(subtractResult => {
+  console.log(`6 - 3 = ${subtractResult.result}`);
+});
+```

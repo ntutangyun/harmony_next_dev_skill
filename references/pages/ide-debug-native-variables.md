@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-native-variables_
 
+调试时，在“Variables”页面查看变量，支持查看全局/静态变量、寄存器变量和局部变量。
+
+查看全局/静态变量
+
 点击“Edit Configurations...”打开调试配置，在 native 调试配置界面中勾选“Show static/global variables in the Variables Pane”，调试过程中变量列表会展示全局/静态变量。
 
 Simplify STL
@@ -25,15 +29,17 @@ Simplify STL
 当使用“Step Out”从一个函数内步出后，变量列表中的“ReturnValues”会展示所步出函数的返回值。
 
 说明
+
 无法查看长度超过64位的数据结构。
+
 无法查看引用类型返回值。
+
 Step Out返回的位置存在断点时，无法查看函数返回值。
+
 其他说明
 
 对于特定类型的变量，还支持查看bitmap预览、查看较长的字符串等功能。
 
 ...View Bitmap：支持在调试时查看bitmap预览。
-...View：支持展开查看较长的字符串。
 
-使用断点
-汇编调试
+...View：支持展开查看较长的字符串。

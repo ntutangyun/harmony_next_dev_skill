@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-choose-address-dev_
 
+场景介绍
+
 当应用需要获取用户收货地址时，可使用Account Kit提供的获取收货地址的能力，引导用户添加或选择已有的收货地址，并最终获取用户的收货地址。以下对Account Kit提供的获取收货地址能力进行介绍，获取收货地址功能还可使用场景化控件选择收货地址Button进行实现。
 
 约束与限制
@@ -24,6 +26,7 @@ Wearable、TV设备暂不支持使用获取收货地址功能。
 
 接口名	描述
 chooseAddress(context: common.Context): Promise<AddressInfo>	拉起收货地址管理页面并返回用户所选择的收货地址。
+
 注意
 
 上述接口需在页面或自定义组件生命周期内调用。
@@ -70,9 +73,52 @@ try {
 } catch (error) {
   dealAllError(error);
 }
+
 // 错误处理
 function dealAllError(error: BusinessError): void {
   hilog.error(0x0000, 'testTag', `Failed to chooseAddress. Code: ${error.code}, message: ${error.message}`);
 }
-快速验证
-获取发票抬头
+
+## Code blocks
+
+### Code block 1
+
+```
+import { shippingAddress } from '@kit.AccountKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 执行请求
+try {
+  // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
+  shippingAddress.chooseAddress(this.getUIContext().getHostContext()).then((data: shippingAddress.AddressInfo) => {
+    hilog.info(0x0000, 'testTag', 'Succeeded in choosing address.');
+    const userName: string = data.userName;
+    const mobileNumber: string = data.mobileNumber;
+    const countryCode: string = data.countryCode;
+    const provinceName: string = data.provinceName;
+    const cityName: string = data.cityName;
+    const districtName: string = data.districtName;
+    const streetName: string = data.streetName;
+    const detailedAddress: string = data.detailedAddress;
+    // 开发者处理获取的收货地址信息
+  }).catch((error: BusinessError) => {
+    dealAllError(error);
+  });
+} catch (error) {
+  dealAllError(error);
+}
+```
+
+### Code block 3
+
+```
+// 错误处理
+function dealAllError(error: BusinessError): void {
+  hilog.error(0x0000, 'testTag', `Failed to chooseAddress. Code: ${error.code}, message: ${error.message}`);
+}
+```

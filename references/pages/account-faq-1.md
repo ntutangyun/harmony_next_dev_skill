@@ -2,6 +2,26 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-faq-1_
 
+问题现象
+
+调用接口报错1001500001 应用指纹证书校验失败。
+
+可能原因
+
+client_id配置错误（例如：错配成项目的Client ID）。
+
+应用的指纹证书未配置或配置错误。
+
+更换证书后未重新配置证书指纹。
+
+指纹证书添加完成后，公钥指纹仍未生效。
+
+安装调试证书签名包后再安装相同版本的发布证书签名包，或安装发布证书签名包后再安装相同版本的调试证书签名包。
+
+使用自动签名方式签名，未使用手动签名。
+
+解决措施
+
 检查module type为entry的模块下的module.json5配置文件中的Client ID是否正确，请参考配置Client ID。
 
 检查AppGallery Connect上是否正确配置应用的指纹证书，详情请见添加公钥指纹。
@@ -17,6 +37,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-f
 图2 修改后
 
 请使用手动签名方式进行签名，详情请参考配置签名和指纹章节。
-
-Account Kit常见问题
-1001502014 应用未申请scopes或permissions权限的可能原因和解决方法

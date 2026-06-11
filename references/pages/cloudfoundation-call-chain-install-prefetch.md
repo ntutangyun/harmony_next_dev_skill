@@ -11,10 +11,21 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 import { GlobalContext } from '../common/GlobalContext';
 import { PrefetchWrapper } from '../prefetchUtil/PrefetchWrapper';
 
+onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+  GlobalContext.initContext(this.context); // 初始化全局上下文
+  PrefetchWrapper.getInstance().doLinkPrefetch();
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { GlobalContext } from '../common/GlobalContext';
+import { PrefetchWrapper } from '../prefetchUtil/PrefetchWrapper';
 
 onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
   GlobalContext.initContext(this.context); // 初始化全局上下文
   PrefetchWrapper.getInstance().doLinkPrefetch();
 }
-调用周期性预加载
-调用全部预加载
+```

@@ -18,12 +18,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/build-wit
 
 add_library(library SHARED hello.cpp)
 
-
 add_library(avcodec_ffmpeg SHARED IMPORTED)
 set_target_properties(avcodec_ffmpeg
     PROPERTIES
     IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/FFmpeg/libs/${OHOS_ARCH}/libavcodec_ffmpeg.so)
-
 
 target_link_libraries(library PUBLIC libace_napi.z.so avcodec_ffmpeg)
 
@@ -36,7 +34,7 @@ include_directories(
 
 当在HAR中使用预构建库时，当前编译的库和链接所需预构建库会打包到HAR中的libs目录下，如下图所示：
 
-预构建库的SONAME问题
+[h2]预构建库的SONAME问题
 
 请确保引入的预构建动态库（so）正确设置了SONAME。
 
@@ -54,6 +52,7 @@ include_directories(
 若预构建so使用其他构建工具，可以通过配置ldflags来设置。
 
 ${...}/clang++ ${...} -Wl,-soname,libavcodec_ffmpeg.so
+
 使用远程依赖HAR中集成的预构建库
 
 当使用远程依赖HAR中集成的预构建库时，CMakeLists.txt文件中引用脚本如下所示：
@@ -65,6 +64,7 @@ set_target_properties(library
     IMPORTED_LOCATION ${DEPENDENCY_PATH}/library/libs/${OHOS_ARCH}/liblibrary.so)
 add_library(entry SHARED hello.cpp)
 target_link_libraries(entry PUBLIC libace_napi.z.so library)
+
 使用本地HAR中集成的预构建库
 
 当使用本地HAR中集成的预构建库时，CMakeLists.txt文件中引用脚本如下所示：
@@ -76,5 +76,64 @@ set_target_properties(library
     IMPORTED_LOCATION ${LIBRARY_DIR}/liblibrary.so)
 add_library(entry SHARED hello.cpp)
 target_link_libraries(entry PUBLIC libace_napi.z.so library)
-使用命令行CMake构建NDK工程
-毕昇编译器
+
+## Code blocks
+
+### Code block 1
+
+```
+add_library(library SHARED hello.cpp)
+
+add_library(avcodec_ffmpeg SHARED IMPORTED)
+set_target_properties(avcodec_ffmpeg
+    PROPERTIES
+    IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third_party/FFmpeg/libs/${OHOS_ARCH}/libavcodec_ffmpeg.so)
+
+target_link_libraries(library PUBLIC libace_napi.z.so avcodec_ffmpeg)
+```
+
+### Code block 2
+
+```
+include_directories(
+    # ...
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/FFmpeg/include
+)
+```
+
+### Code block 3
+
+```
+> ${YOUR_PATH}/command-line-tools/sdk/default/openharmony/native/llvm/bin/llvm-readelf -d libavcodec_ffmpeg.so | grep SONAME
+0x000000000000000e (SONAME)             Library soname: [libavcodec_ffmpeg.so]
+```
+
+### Code block 4
+
+```
+${...}/clang++ ${...} -Wl,-soname,libavcodec_ffmpeg.so
+```
+
+### Code block 5
+
+```
+set(DEPENDENCY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules)
+add_library(library SHARED IMPORTED)
+set_target_properties(library
+    PROPERTIES
+    IMPORTED_LOCATION ${DEPENDENCY_PATH}/library/libs/${OHOS_ARCH}/liblibrary.so)
+add_library(entry SHARED hello.cpp)
+target_link_libraries(entry PUBLIC libace_napi.z.so library)
+```
+
+### Code block 6
+
+```
+set(LIBRARY_DIR "${NATIVERENDER_ROOT_PATH}/../../../../library/build/default/intermediates/libs/default/${OHOS_ARCH}/")
+add_library(library SHARED IMPORTED)
+set_target_properties(library
+    PROPERTIES
+    IMPORTED_LOCATION ${LIBRARY_DIR}/liblibrary.so)
+add_library(entry SHARED hello.cpp)
+target_link_libraries(entry PUBLIC libace_napi.z.so library)
+```

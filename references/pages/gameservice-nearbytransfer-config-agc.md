@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-nearbytransfer-config-agc_
 
+创建游戏
+
 若在华为应用市场发布游戏，或使用AGC控制台提供的服务，需要前往AGC控制台创建游戏类应用，具体操作请参见创建项目和创建HarmonyOS应用。其中：
 
 “应用类型”：选择“HarmonyOS应用”。
@@ -79,5 +81,49 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
      }
    ]
 }
-概述
-开发指导
+
+## Code blocks
+
+### Code block 1
+
+```
+"module": {
+  "name": "entry",
+  "type": "entry",
+  "description": "xxxx",
+  "mainElement": "xxxx",
+  "deviceTypes": [
+    "phone"
+  ],
+  "deliveryWithInstall": true,
+  "pages": "$profile:main_pages",
+  "abilities": [],
+  "metadata": [ // 配置如下信息
+    {
+      "name": "app_id",
+      "value": "xxxxxx" // 配置为前面步骤中获取的APP ID
+    }
+  ],
+   "requestPermissions": [ // 配置权限
+     {
+       "name": "ohos.permission.INTERNET" // 允许使用Internet网络权限
+     },
+     {
+       "name": "ohos.permission.GET_NETWORK_INFO"  // 允许应用获取数据网络信息权限
+     },
+     {
+       "name": "ohos.permission.SET_NETWORK_INFO" // 允许应用配置数据网络权限
+     },
+     {
+       "name": "ohos.permission.DISTRIBUTED_DATASYNC", // 允许不同设备间的数据交换权限
+       "reason": "$string:distributed_permission",
+       "usedScene": {
+         "abilities": [
+           "EntryAbility"
+         ],
+         "when": "inuse"
+       }
+     }
+   ]
+}
+```

@@ -7,8 +7,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/start-dat
 import featureAbility from '@ohos.ability.featureAbility';
 import ability from '@ohos.ability.ability';
 
+let uri: string = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+let DAHelper: ability.DataAbilityHelper = featureAbility.acquireDataAbilityHelper(uri);
+
+## Code blocks
+
+### Code block 1
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import ability from '@ohos.ability.ability';
 
 let uri: string = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
 let DAHelper: ability.DataAbilityHelper = featureAbility.acquireDataAbilityHelper(uri);
-创建DataAbility
-访问DataAbility
+```

@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-setoutputattr_
 
+函数功能
+
+设置算子输出Tensor属性的属性值。
+
+算子可以包括多个属性，初次设置值后，算子属性值的类型固定，算子属性值的类型包括：
+
+整型：接受int64_t、uint32_t、int32_t类型的整型值。
+
+以int64_t为例：
+
 SetOutputAttr(const char_t *dst_name, const char_t *name, int64_t attr_value);
 SetOutputAttr(const int32_t index, const char_t *name, int64_t attr_value);
 
@@ -25,6 +35,7 @@ GetOutputAttr(const char_t *dst_name, const char_t *name, int64_t &attr_value) c
 布尔列表：std::vector<bool>
 
 函数原型
+
 Operator &SetOutputAttr(const int32_t index, const char_t *name, const char_t *attr_value);
 Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const char_t *attr_value);
 Operator &SetOutputAttr(const int32_t index, const char_t *name, const AscendString &attr_value);
@@ -51,11 +62,13 @@ Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vect
 Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<bool> &attr_value);
 Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vector<float32_t> &attr_value);
 Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<float32_t> &attr_value);
+
 参数说明
+
 参数名	输入/输出	描述
 name	输入	属性名称。
-index	输入	输出索引。
-dst_name	输入	输出边名称。
+index	输出	输出索引。
+dst_name	输出	输出边名称。
 attr_value	输入	需设置的int64_t表示的整型类型属性值。
 attr_value	输入	需设置的int32_t表示的整型类型属性值。
 attr_value	输入	需设置的uint32_t表示的整型类型属性值。
@@ -68,9 +81,12 @@ attr_value	输入	需设置的布尔类型的属性值。
 attr_value	输入	需设置的布尔列表类型的属性值。
 attr_value	输入	需设置的字符串类型的属性值。
 attr_value	输入	需设置的字符串列表类型的属性值。
+
 返回值
+
 类型	描述
 Operator&	对象本身。
+
 异常处理
 
 无
@@ -79,5 +95,49 @@ Operator&	对象本身。
 
 无
 
-SetInputAttr
-GetInputAttr
+## Code blocks
+
+### Code block 1
+
+```
+SetOutputAttr(const char_t *dst_name, const char_t *name, int64_t attr_value);
+SetOutputAttr(const int32_t index, const char_t *name, int64_t attr_value);
+```
+
+### Code block 2
+
+```
+GetOutputAttr(const int32_t index, const char_t *name, int64_t &attr_value) const;
+GetOutputAttr(const char_t *dst_name, const char_t *name, int64_t &attr_value) const;
+```
+
+### Code block 3
+
+```
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const char_t *attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const char_t *attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const AscendString &attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const AscendString &attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, int64_t attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, int64_t attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, int32_t attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, int32_t attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, uint32_t attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, uint32_t attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, bool attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, bool attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, float32_t attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, float32_t attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vector<AscendString> &attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<AscendString> &attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vector<int64_t> &attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<int64_t> &attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vector<int32_t> &attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<int32_t> &attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vector<uint32_t> &attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<uint32_t> &attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vector<bool> &attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<bool> &attr_value);
+Operator &SetOutputAttr(const int32_t index, const char_t *name, const std::vector<float32_t> &attr_value);
+Operator &SetOutputAttr(const char_t *dst_name, const char_t *name, const std::vector<float32_t> &attr_value);
+```

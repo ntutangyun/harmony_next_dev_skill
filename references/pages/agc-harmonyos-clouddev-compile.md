@@ -7,6 +7,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmo
 注意
 
 当前自动签名仅支持“关联注册应用进行签名”方式。
-
-（可选）通过CloudDev面板获取云开发资源支持
-发布上架

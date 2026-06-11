@@ -2,3 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-package-dev_
 
+HAP
+
+HAR
+
+HSP

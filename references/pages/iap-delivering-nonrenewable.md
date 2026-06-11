@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-delivering-nonrenewable_
 
+场景介绍
+
 用户购买商品后，开发者需要及时发放相关权益。但实际应用场景中，若出现异常（网络错误、进程被中止等）将导致应用无法知道用户实际是否支付成功，从而无法及时发放权益，即出现掉单情况。为了确保权益发放，需要在以下场景检查用户是否存在已购未发货的商品：
 
 应用启动时。
@@ -66,11 +68,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 // JWSUtil为自定义类
 import { JWSUtil } from '../common/JWSUtil';
 
-
 @Entry
 @Component
 struct Index {
-
 
   queryPurchases(context: common.UIAbilityContext) {
     const param: iap.QueryPurchasesParameter = {
@@ -102,6 +102,68 @@ struct Index {
     });
   }
 
+  finishPurchase(context: common.UIAbilityContext, purchaseOrder: PurchaseOrderPayload) {
+    const finishPurchaseParam: iap.FinishPurchaseParameter = {
+      productType: Number(purchaseOrder.productType),
+      purchaseToken: purchaseOrder.purchaseToken,
+      purchaseOrderId: purchaseOrder.purchaseOrderId
+    };
+    iap.finishPurchase(context, finishPurchaseParam).then(() => {
+      // 请求成功
+      console.info('Succeeded in finishing purchase.');
+    }).catch((err: BusinessError) => {
+      // 请求失败
+      console.error(`Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+
+  build() {}
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { iap } from '@kit.IAPKit';
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+// JWSUtil为自定义类
+import { JWSUtil } from '../common/JWSUtil';
+
+@Entry
+@Component
+struct Index {
+
+  queryPurchases(context: common.UIAbilityContext) {
+    const param: iap.QueryPurchasesParameter = {
+      productType: iap.ProductType.NONRENEWABLE,
+      queryType: iap.PurchaseQueryType.UNFINISHED
+    };
+    iap.queryPurchases(context, param).then((res: iap.QueryPurchaseResult) => {
+      console.info('Succeeded in querying purchases.');
+      const purchaseDataList: string[] = res.purchaseDataList;
+      if (purchaseDataList === undefined || purchaseDataList.length <= 0) {
+        return;
+      }
+      for (let i = 0; i < purchaseDataList.length; i++) {
+        const jwsPurchaseOrder: string = JSON.parse(purchaseDataList[i]).jwsPurchaseOrder;
+        if (!jwsPurchaseOrder) {
+          continue;
+        }
+        const purchaseStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
+        // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
+        const purchaseOrderPayload = JSON.parse(purchaseStr) as PurchaseOrderPayload;
+        // 处理发货
+        // ...
+        // 发货成功后向IAP Kit发送finishPurchase请求，确认发货，完成购买
+        this.finishPurchase(context, purchaseOrderPayload);
+      }
+    }).catch((err: BusinessError) => {
+      // 请求失败
+      console.error(`Failed to query purchases. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
 
   finishPurchase(context: common.UIAbilityContext, purchaseOrder: PurchaseOrderPayload) {
     const finishPurchaseParam: iap.FinishPurchaseParameter = {
@@ -118,8 +180,6 @@ struct Index {
     });
   }
 
-
   build() {}
 }
-接入购买
-沙盒测试
+```

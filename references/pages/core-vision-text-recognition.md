@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/core-vision-text-recognition_
 
+适用场景
+
 通用文字识别，是通过拍照、扫描等光学输入方式，将各种票据、卡证、表格、报刊、书籍等印刷品文字转化为图像信息，再利用文字识别技术将图像信息转化为计算机等设备可以使用的字符信息的技术。
 
 可以对文档翻拍、街景翻拍等图片进行文字检测和识别，也可以集成于其他应用中，提供文字检测、识别的功能，并根据识别结果提供翻译、搜索等相关服务。
@@ -12,37 +14,30 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/core-visi
 
 效果如下图所示：
 
-约束与限制
-
-该能力当前不支持模拟器。
-
-AI能力	约束
-文字识别	
-
-- 支持的图片格式：JPEG、JPG、PNG。
-
-- 支持的语言：简体中文、英文、日文、韩文、繁体中文。
-
-- 文本长度：不超过10000字符。
-
-- 支持文档印刷体识别，在识别手写字体方面能力有所欠缺。
-
-- 输入图像具有合适成像的质量（建议720p以上），100px<高度<15210px，100px<宽度<10000px，高宽比例建议10:1以下（高度小于宽度的10倍），接近手机屏幕高宽比例为宜。
-
-- 拍摄角度与文本所在平面垂直方向的夹角应小于30度。
-
 开发步骤
 
 在使用通用文字识别时，将实现文字识别的相关的类添加至工程。
 
-import { textRecognition } from '@kit.CoreVisionKit'
+import { textRecognition } from '@kit.CoreVisionKit';
 import { image } from '@kit.ImageKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-简单配置页面的布局，并在Button组件添加点击事件，拉起图库，选择图片。
+初始化和释放：在aboutToAppear中调用textRecognition.init()初始化文字识别服务（加载模型），在aboutToDisappear中调用textRecognition.release()释放资源。
+
+async aboutToAppear(): Promise<void> {
+  const initResult = await textRecognition.init();
+  hilog.info(0x0000, 'OCRDemo', `OCR service initialization result:${initResult}`);
+}
+
+async aboutToDisappear(): Promise<void> {
+  await textRecognition.release();
+  hilog.info(0x0000, 'OCRDemo', 'OCR service released successfully');
+}
+
+通过photoAccessHelper.PhotoViewPicker拉起图库选择图片，使用fileIo与image模块将URI转换为PixelMap，为后续识别接口准备输入数据。
 
 Button('选择图片')
   .type(ButtonType.Capsule)
@@ -55,29 +50,16 @@ Button('选择图片')
     void this.selectImage();
   })
 
-通过图库获取图片资源，将图片转换为PixelMap，并添加初始化和释放方法。
-
-async aboutToAppear(): Promise<void> {
-  const initResult = await textRecognition.init();
-  hilog.info(0x0000, 'OCRDemo', `OCR service initialization result:${initResult}`);
-}
-
-
-async aboutToDisappear(): Promise<void> {
-  await textRecognition.release();
-  hilog.info(0x0000, 'OCRDemo', 'OCR service released successfully');
-}
-
+选择图片与解码图片的方法实现如下：
 
 private async selectImage() {
   let uri = await this.openPhoto();
   if (uri === undefined) {
-    hilog.error(0x0000, 'OCRDemo', "Failed to get uri.");
+    hilog.error(0x0000, 'OCRDemo', 'Failed to get uri.');
     return;
   }
   this.loadImage(uri);
 }
-
 
 private async openPhoto(): Promise<string> {
   return new Promise<string>((resolve) => {
@@ -90,62 +72,70 @@ private async openPhoto(): Promise<string> {
     }).catch((err: BusinessError) => {
       hilog.error(0x0000, 'OCRDemo', `Failed to get photo image uri. code: ${err.code}, message: ${err.message}`);
       resolve('');
-    })
-  })
+    });
+  });
 }
-
 
 private loadImage(name: string) {
   setTimeout(async () => {
-    let imageSource: image.ImageSource | undefined = undefined;
     let fileSource = await fileIo.open(name, fileIo.OpenMode.READ_ONLY);
-    imageSource = image.createImageSource(fileSource.fd);
-    this.chooseImage = await imageSource.createPixelMap();
-  }, 100)
+    this.imageSource = image.createImageSource(fileSource.fd);
+    this.chooseImage = await this.imageSource.createPixelMap();
+    await fileIo.close(fileSource);
+  }, 100);
 }
 
-实例化VisionInfo对象，并传入待检测图片的PixelMap。
+构造VisionInfo并传入待检测图片的PixelMap，同时配置TextRecognitionConfiguration（用于配置是否支持朝向检测），调用textRecognition.recognizeText接口，获取图片中文字识别的结果并展示在界面上。
 
-VisionInfo为待OCR检测识别的入参项，目前仅支持PixelMap类型的视觉信息。
-
-let visionInfo: textRecognition.VisionInfo = {
-  pixelMap: this.chooseImage
-};
-
-配置通用文本识别的配置项TextRecognitionConfiguration，用于配置是否支持朝向检测。
-
-let textConfiguration: textRecognition.TextRecognitionConfiguration = {
-  isDirectionDetectionSupported: false
-};
-
-调用textRecognition的recognizeText接口，对识别到的结果进行处理。
-
-当调用成功时，获取文字识别的结果；调用失败时，将返回对应错误码。recognizeText接口提供了三种调用形式，当前以其中一种作为示例，其他方式可参考API参考。
-
-textRecognition.recognizeText(visionInfo, textConfiguration)
-  .then((data: textRecognition.TextRecognitionResult) => {
-    // 识别成功，获取对应的结果
-    let recognitionString = JSON.stringify(data);
-    hilog.info(0x0000, 'OCRDemo', `Succeeded in recognizing text: ${recognitionString}`);
-    // 将结果更新到Text中显示
-    this.dataValues = data.value;
+Button('开始识别')
+  .type(ButtonType.Capsule)
+  .fontColor(Color.White)
+  .alignSelf(ItemAlign.Center)
+  .width('80%')
+  .margin(10)
+  .onClick(() => {
+    this.textRecognitionTest();
   })
-  .catch((error: BusinessError) => {
-    hilog.error(0x0000, 'OCRDemo', `Failed to recognize text. Code: ${error.code}, message: ${error.message}`);
-    this.dataValues = `Error: ${error.message}`;
-  });
+
+文字识别的方法实现如下：
+
+private textRecognitionTest() {
+  if (!this.chooseImage) {
+    return;
+  }
+  // 调用文本识别接口
+  let visionInfo: textRecognition.VisionInfo = {
+    pixelMap: this.chooseImage
+  };
+  let textConfiguration: textRecognition.TextRecognitionConfiguration = {
+    isDirectionDetectionSupported: false
+  };
+  textRecognition.recognizeText(visionInfo, textConfiguration)
+    .then((data: textRecognition.TextRecognitionResult) => {
+      // 识别成功，获取对应的结果
+      let recognitionString = JSON.stringify(data);
+      hilog.info(0x0000, 'OCRDemo', `Succeeded in recognizing text: ${recognitionString}`);
+      // 将结果更新到Text中显示
+      this.dataValues = data.value;
+    })
+    .catch((error: BusinessError) => {
+      hilog.error(0x0000, 'OCRDemo', `Failed to recognize text. Code: ${error.code}, message: ${error.message}`);
+      this.dataValues = `Error: ${error.message}`;
+    });
+}
+
 开发实例
 
 点击按钮，识别一张图片的文字内容，并通过日志打印。
 
-Index.ets
-import { textRecognition } from '@kit.CoreVisionKit'
+[h2]Index.ets
+
+import { textRecognition } from '@kit.CoreVisionKit';
 import { image } from '@kit.ImageKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
-
 
 @Entry
 @Component
@@ -154,18 +144,15 @@ struct Index {
   @State chooseImage: PixelMap | undefined = undefined;
   @State dataValues: string = '';
 
-
   async aboutToAppear(): Promise<void> {
     const initResult = await textRecognition.init();
     hilog.info(0x0000, 'OCRDemo', `OCR service initialization result:${initResult}`);
   }
 
-
   async aboutToDisappear(): Promise<void> {
     await textRecognition.release();
     hilog.info(0x0000, 'OCRDemo', 'OCR service released successfully');
   }
-
 
   build() {
     Column() {
@@ -173,13 +160,11 @@ struct Index {
         .objectFit(ImageFit.Fill)
         .height('60%')
 
-
       Text(this.dataValues)
         .copyOption(CopyOptions.LocalDevice)
         .height('15%')
         .margin(10)
         .width('60%')
-
 
       Button('选择图片')
         .type(ButtonType.Capsule)
@@ -191,7 +176,6 @@ struct Index {
           // 拉起图库，获取图片资源
           void this.selectImage();
         })
-
 
       Button('开始识别')
         .type(ButtonType.Capsule)
@@ -207,7 +191,6 @@ struct Index {
     .height('100%')
     .justifyContent(FlexAlign.Center)
   }
-
 
   private textRecognitionTest() {
     if (!this.chooseImage) {
@@ -234,16 +217,14 @@ struct Index {
       });
   }
 
-
   private async selectImage() {
     let uri = await this.openPhoto();
     if (uri === undefined) {
-      hilog.error(0x0000, 'OCRDemo', "Failed to get uri.");
+      hilog.error(0x0000, 'OCRDemo', 'Failed to get uri.');
       return;
     }
     this.loadImage(uri);
   }
-
 
   private async openPhoto(): Promise<string> {
     return new Promise<string>((resolve) => {
@@ -256,23 +237,263 @@ struct Index {
       }).catch((err: BusinessError) => {
         hilog.error(0x0000, 'OCRDemo', `Failed to get photo image uri. code: ${err.code}, message: ${err.message}`);
         resolve('');
-      })
-    })
+      });
+    });
   }
-
 
   private loadImage(name: string) {
     setTimeout(async () => {
-      try {
-        let fileSource = await fileIo.open(name, fileIo.OpenMode.READ_ONLY);
-        this.imageSource = image.createImageSource(fileSource.fd);
-        this.chooseImage = await this.imageSource.createPixelMap();
-        await fileIo.close(fileSource);
-      } catch (error) {
-        hilog.error(0x0000, 'OCRDemo', `Failed to open file. Error: ${error}`);
-      }
-    }, 100)
+      let fileSource = await fileIo.open(name, fileIo.OpenMode.READ_ONLY);
+      this.imageSource = image.createImageSource(fileSource.fd);
+      this.chooseImage = await this.imageSource.createPixelMap();
+      await fileIo.close(fileSource);
+    }, 100);
   }
 }
-Core Vision Kit简介
-人脸检测
+
+## Code blocks
+
+### Code block 1
+
+```
+import { textRecognition } from '@kit.CoreVisionKit';
+import { image } from '@kit.ImageKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+```
+
+### Code block 2
+
+```
+async aboutToAppear(): Promise<void> {
+  const initResult = await textRecognition.init();
+  hilog.info(0x0000, 'OCRDemo', `OCR service initialization result:${initResult}`);
+}
+
+async aboutToDisappear(): Promise<void> {
+  await textRecognition.release();
+  hilog.info(0x0000, 'OCRDemo', 'OCR service released successfully');
+}
+```
+
+### Code block 3
+
+```
+Button('选择图片')
+  .type(ButtonType.Capsule)
+  .fontColor(Color.White)
+  .alignSelf(ItemAlign.Center)
+  .width('80%')
+  .margin(10)
+  .onClick(() => {
+    // 拉起图库，获取图片资源
+    void this.selectImage();
+  })
+```
+
+### Code block 4
+
+```
+private async selectImage() {
+  let uri = await this.openPhoto();
+  if (uri === undefined) {
+    hilog.error(0x0000, 'OCRDemo', 'Failed to get uri.');
+    return;
+  }
+  this.loadImage(uri);
+}
+
+private async openPhoto(): Promise<string> {
+  return new Promise<string>((resolve) => {
+    let photoPicker: photoAccessHelper.PhotoViewPicker = new photoAccessHelper.PhotoViewPicker();
+    photoPicker.select({
+      MIMEType: photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE,
+      maxSelectNumber: 1
+    }).then((res: photoAccessHelper.PhotoSelectResult) => {
+      resolve(res.photoUris[0]);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'OCRDemo', `Failed to get photo image uri. code: ${err.code}, message: ${err.message}`);
+      resolve('');
+    });
+  });
+}
+
+private loadImage(name: string) {
+  setTimeout(async () => {
+    let fileSource = await fileIo.open(name, fileIo.OpenMode.READ_ONLY);
+    this.imageSource = image.createImageSource(fileSource.fd);
+    this.chooseImage = await this.imageSource.createPixelMap();
+    await fileIo.close(fileSource);
+  }, 100);
+}
+```
+
+### Code block 5
+
+```
+Button('开始识别')
+  .type(ButtonType.Capsule)
+  .fontColor(Color.White)
+  .alignSelf(ItemAlign.Center)
+  .width('80%')
+  .margin(10)
+  .onClick(() => {
+    this.textRecognitionTest();
+  })
+```
+
+### Code block 6
+
+```
+private textRecognitionTest() {
+  if (!this.chooseImage) {
+    return;
+  }
+  // 调用文本识别接口
+  let visionInfo: textRecognition.VisionInfo = {
+    pixelMap: this.chooseImage
+  };
+  let textConfiguration: textRecognition.TextRecognitionConfiguration = {
+    isDirectionDetectionSupported: false
+  };
+  textRecognition.recognizeText(visionInfo, textConfiguration)
+    .then((data: textRecognition.TextRecognitionResult) => {
+      // 识别成功，获取对应的结果
+      let recognitionString = JSON.stringify(data);
+      hilog.info(0x0000, 'OCRDemo', `Succeeded in recognizing text: ${recognitionString}`);
+      // 将结果更新到Text中显示
+      this.dataValues = data.value;
+    })
+    .catch((error: BusinessError) => {
+      hilog.error(0x0000, 'OCRDemo', `Failed to recognize text. Code: ${error.code}, message: ${error.message}`);
+      this.dataValues = `Error: ${error.message}`;
+    });
+}
+```
+
+### Code block 7
+
+```
+import { textRecognition } from '@kit.CoreVisionKit';
+import { image } from '@kit.ImageKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+@Entry
+@Component
+struct Index {
+  private imageSource: image.ImageSource | undefined = undefined;
+  @State chooseImage: PixelMap | undefined = undefined;
+  @State dataValues: string = '';
+
+  async aboutToAppear(): Promise<void> {
+    const initResult = await textRecognition.init();
+    hilog.info(0x0000, 'OCRDemo', `OCR service initialization result:${initResult}`);
+  }
+
+  async aboutToDisappear(): Promise<void> {
+    await textRecognition.release();
+    hilog.info(0x0000, 'OCRDemo', 'OCR service released successfully');
+  }
+
+  build() {
+    Column() {
+      Image(this.chooseImage)
+        .objectFit(ImageFit.Fill)
+        .height('60%')
+
+      Text(this.dataValues)
+        .copyOption(CopyOptions.LocalDevice)
+        .height('15%')
+        .margin(10)
+        .width('60%')
+
+      Button('选择图片')
+        .type(ButtonType.Capsule)
+        .fontColor(Color.White)
+        .alignSelf(ItemAlign.Center)
+        .width('80%')
+        .margin(10)
+        .onClick(() => {
+          // 拉起图库，获取图片资源
+          void this.selectImage();
+        })
+
+      Button('开始识别')
+        .type(ButtonType.Capsule)
+        .fontColor(Color.White)
+        .alignSelf(ItemAlign.Center)
+        .width('80%')
+        .margin(10)
+        .onClick(() => {
+          this.textRecognitionTest();
+        })
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  private textRecognitionTest() {
+    if (!this.chooseImage) {
+      return;
+    }
+    // 调用文本识别接口
+    let visionInfo: textRecognition.VisionInfo = {
+      pixelMap: this.chooseImage
+    };
+    let textConfiguration: textRecognition.TextRecognitionConfiguration = {
+      isDirectionDetectionSupported: false
+    };
+    textRecognition.recognizeText(visionInfo, textConfiguration)
+      .then((data: textRecognition.TextRecognitionResult) => {
+        // 识别成功，获取对应的结果
+        let recognitionString = JSON.stringify(data);
+        hilog.info(0x0000, 'OCRDemo', `Succeeded in recognizing text: ${recognitionString}`);
+        // 将结果更新到Text中显示
+        this.dataValues = data.value;
+      })
+      .catch((error: BusinessError) => {
+        hilog.error(0x0000, 'OCRDemo', `Failed to recognize text. Code: ${error.code}, message: ${error.message}`);
+        this.dataValues = `Error: ${error.message}`;
+      });
+  }
+
+  private async selectImage() {
+    let uri = await this.openPhoto();
+    if (uri === undefined) {
+      hilog.error(0x0000, 'OCRDemo', 'Failed to get uri.');
+      return;
+    }
+    this.loadImage(uri);
+  }
+
+  private async openPhoto(): Promise<string> {
+    return new Promise<string>((resolve) => {
+      let photoPicker: photoAccessHelper.PhotoViewPicker = new photoAccessHelper.PhotoViewPicker();
+      photoPicker.select({
+        MIMEType: photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE,
+        maxSelectNumber: 1
+      }).then((res: photoAccessHelper.PhotoSelectResult) => {
+        resolve(res.photoUris[0]);
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, 'OCRDemo', `Failed to get photo image uri. code: ${err.code}, message: ${err.message}`);
+        resolve('');
+      });
+    });
+  }
+
+  private loadImage(name: string) {
+    setTimeout(async () => {
+      let fileSource = await fileIo.open(name, fileIo.OpenMode.READ_ONLY);
+      this.imageSource = image.createImageSource(fileSource.fd);
+      this.chooseImage = await this.imageSource.createPixelMap();
+      await fileIo.close(fileSource);
+    }, 100);
+  }
+}
+```

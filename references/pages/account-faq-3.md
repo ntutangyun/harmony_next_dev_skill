@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-faq-3_
 
+在华为账号一键登录场景下无法获取到匿名手机号时，建议通过以下步骤排查解决：
+
 当开发者开启了代码混淆时，为了防止quickLoginAnonymousPhone（匿名手机号）属性在release包中被混淆，请在调用“获取匿名手机号”方法所在工程模块的混淆文件obfuscation-rules.txt中添加如下配置：
 
 # 开发者开启属性混淆需要配置quickLoginAnonymousPhone属性白名单防止其被混淆
@@ -9,7 +11,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-f
 -keep-property-name
 quickLoginAnonymousPhone
 
-Wearable、TV（非5.1.1版本）设备无法获取到手机号，会报1001500003 不支持该scopes或permissions。
+Wearable设备无法获取到手机号，会报1001500003 不支持该scopes或permissions。
 
 华为账号未绑定手机号，该异常场景应用需要展示其他登录方式。
 
@@ -25,5 +27,23 @@ Wearable、TV（非5.1.1版本）设备无法获取到手机号，会报10015000
 const authRequest = new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
 // 获取匿名手机号需传quickLoginAnonymousPhone这个scope，传参之前需要先申请“华为账号一键登录”权限，否则会返回1001502014错误码
 authRequest.scopes = ['quickLoginAnonymousPhone'];
-1001502014 应用未申请scopes或permissions权限的可能原因和解决方法
-一键登录场景下无法获取到明文手机号如何解决
+
+## Code blocks
+
+### Code block 1
+
+```
+# 开发者开启属性混淆需要配置quickLoginAnonymousPhone属性白名单防止其被混淆
+-enable-property-obfuscation
+-keep-property-name
+quickLoginAnonymousPhone
+```
+
+### Code block 2
+
+```
+// 创建授权请求，并设置参数
+const authRequest = new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
+// 获取匿名手机号需传quickLoginAnonymousPhone这个scope，传参之前需要先申请“华为账号一键登录”权限，否则会返回1001502014错误码
+authRequest.scopes = ['quickLoginAnonymousPhone'];
+```

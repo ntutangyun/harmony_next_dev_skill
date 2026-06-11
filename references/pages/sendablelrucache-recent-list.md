@@ -17,10 +17,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/sendablel
 // LruCache.ets
 import { ArkTSUtils } from '@kit.ArkTS';
 
-
 // 使用use shared标记为共享模块
 'use shared'
-
 
 // SendableClass实例对象在不同线程间可共享
 @Sendable
@@ -29,14 +27,12 @@ class SendableClass {
   private lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
   private books_: ArkTSUtils.SendableLruCache<string, string> = new ArkTSUtils.SendableLruCache<string, string>(4);
 
-
   constructor() {
     this.books_.put('fourth', 'Book4');
     this.books_.put('third', 'Book3');
     this.books_.put('second', 'Book2');
     this.books_.put('first', 'Book1');
   }
-
 
   // 封装put、get、keys方法，加锁操作
   public async put(key: string, value: string) {
@@ -45,13 +41,11 @@ class SendableClass {
     })
   }
 
-
   public async get(key: string): Promise<string | undefined> {
     return this.lock_.lockAsync(() => {
       return this.books_.get(key);
     });
   }
-
 
   public async keys(): Promise<string[]> {
     return this.lock_.lockAsync(() => {
@@ -60,9 +54,7 @@ class SendableClass {
   }
 }
 
-
 export let lruCache = new SendableClass();
-LruCache.ets
 
 在Index.ets页面同目录下创建4个图书页面，每个页面显示相应的图书信息，并将每个页面的路径注册到src/main/resources/base/profile/main_pages.json文件中。
 
@@ -71,7 +63,6 @@ LruCache.ets
 @Component
 struct Index1 {
   @State message: string = 'Hello World!';
-
 
   build() {
     RelativeContainer() {
@@ -97,13 +88,12 @@ struct Index1 {
     .width('100%')
   }
 }
-Book1.ets
+
 // Book2.ets
 @Entry
 @Component
 struct Index2 {
   @State message: string = 'Hello World!';
-
 
   build() {
     RelativeContainer() {
@@ -129,13 +119,12 @@ struct Index2 {
     .width('100%')
   }
 }
-Book2.ets
+
 // Book3.ets
 @Entry
 @Component
 struct Index3 {
   @State message: string = 'Hello World!';
-
 
   build() {
     RelativeContainer() {
@@ -161,13 +150,12 @@ struct Index3 {
     .width('100%')
   }
 }
-Book3.ets
+
 // Book4.ets
 @Entry
 @Component
 struct Index4 {
   @State message: string = 'Hello World!';
-
 
   build() {
     RelativeContainer() {
@@ -193,9 +181,8 @@ struct Index4 {
     .width('100%')
   }
 }
-Book4.ets
-// main_pages.json
 
+// main_pages.json
 
 {
   "src": [
@@ -215,13 +202,11 @@ import { taskpool } from '@kit.ArkTS';
 import { lruCache } from '../utils/LruCache'
 // ...
 
-
 @Concurrent
 async function updateBooks(key: string, value: string) {
   // 在子线程更新最近访问列表
   await lruCache.put(key, value);
 }
-
 
 @Entry
 @Component
@@ -229,12 +214,10 @@ struct GetRecentList {
   @State message: string = '书架';
   @State books: string[] = [];
 
-
   async aboutToAppear () {
     // 自动获取最近访问的图书列表
     this.books = await lruCache.keys();
   }
-
 
   build() {
     Column({ space: 1 }) {
@@ -296,6 +279,295 @@ struct GetRecentList {
     .width('100%')
   }
 }
-GetRecentList.ets
-ArkUI瀑布流渲染场景
-多线程取消TaskPool任务场景
+
+## Code blocks
+
+### Code block 1
+
+```
+// LruCache.ets
+import { ArkTSUtils } from '@kit.ArkTS';
+
+// 使用use shared标记为共享模块
+'use shared'
+
+// SendableClass实例对象在不同线程间可共享
+@Sendable
+class SendableClass {
+  // 使用SendableLruCache实例对象时需加锁，避免多线程同时操作导致数据不一致
+  private lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
+  private books_: ArkTSUtils.SendableLruCache<string, string> = new ArkTSUtils.SendableLruCache<string, string>(4);
+
+  constructor() {
+    this.books_.put('fourth', 'Book4');
+    this.books_.put('third', 'Book3');
+    this.books_.put('second', 'Book2');
+    this.books_.put('first', 'Book1');
+  }
+
+  // 封装put、get、keys方法，加锁操作
+  public async put(key: string, value: string) {
+    await this.lock_.lockAsync(() => {
+      this.books_.put(key, value);
+    })
+  }
+
+  public async get(key: string): Promise<string | undefined> {
+    return this.lock_.lockAsync(() => {
+      return this.books_.get(key);
+    });
+  }
+
+  public async keys(): Promise<string[]> {
+    return this.lock_.lockAsync(() => {
+      return this.books_.keys();
+    });
+  }
+}
+
+export let lruCache = new SendableClass();
+```
+
+### Code block 2
+
+```
+// Book1.ets
+@Entry
+@Component
+struct Index1 {
+  @State message: string = 'Hello World!';
+
+  build() {
+    RelativeContainer() {
+      Text('第一本书的内容')
+        .id('first book')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: 'container', align: VerticalAlign.Center },
+          middle: { anchor: 'container', align: HorizontalAlign.Center }
+        })
+      Button('返回')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .position({ x: '50%' })
+        .onClick(() => {
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 3
+
+```
+// Book2.ets
+@Entry
+@Component
+struct Index2 {
+  @State message: string = 'Hello World!';
+
+  build() {
+    RelativeContainer() {
+      Text('第二本书的内容')
+        .id('second book')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: 'container', align: VerticalAlign.Center },
+          middle: { anchor: 'container', align: HorizontalAlign.Center }
+        })
+      Button('返回')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .position({ x: '50%' })
+        .onClick(() => {
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 4
+
+```
+// Book3.ets
+@Entry
+@Component
+struct Index3 {
+  @State message: string = 'Hello World!';
+
+  build() {
+    RelativeContainer() {
+      Text('第三本书的内容')
+        .id('third book')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: 'container', align: VerticalAlign.Center },
+          middle: { anchor: 'container', align: HorizontalAlign.Center }
+        })
+      Button('返回')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .position({ x: '50%' })
+        .onClick(() => {
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 5
+
+```
+// Book4.ets
+@Entry
+@Component
+struct Index4 {
+  @State message: string = 'Hello World!';
+
+  build() {
+    RelativeContainer() {
+      Text('第四本书的内容')
+        .id('fourth book')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: 'container', align: VerticalAlign.Center },
+          middle: { anchor: 'container', align: HorizontalAlign.Center }
+        })
+      Button('返回')
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .position({ x: '50%' })
+        .onClick(() => {
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 6
+
+```
+// main_pages.json
+
+{
+  "src": [
+    "pages/Index",
+    "pages/Book1",
+    "pages/Book2",
+    "pages/Book3",
+    "pages/Book4",
+    "pages/GetRecentList"
+  ]
+}
+```
+
+### Code block 7
+
+```
+// GetRecentList.ets
+import { taskpool } from '@kit.ArkTS';
+import { lruCache } from '../utils/LruCache'
+// ...
+
+@Concurrent
+async function updateBooks(key: string, value: string) {
+  // 在子线程更新最近访问列表
+  await lruCache.put(key, value);
+}
+
+@Entry
+@Component
+struct GetRecentList {
+  @State message: string = '书架';
+  @State books: string[] = [];
+
+  async aboutToAppear () {
+    // 自动获取最近访问的图书列表
+    this.books = await lruCache.keys();
+  }
+
+  build() {
+    Column({ space: 1 }) {
+      Text(this.message)
+        .id('HelloWorld')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: 'container', align: VerticalAlign.Center },
+          middle: { anchor: 'container', align: HorizontalAlign.Center }
+        })
+      Button(this.books[3])
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .onClick(async () => {
+          // 获取绑定的图书信息
+          let value = await lruCache.get(this.books[3]);
+          // 更新最近访问列表
+          taskpool.execute(updateBooks, this.books[3], value);
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/' + value });
+        })
+      Button(this.books[2])
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .onClick(async () => {
+          // 获取绑定的图书信息
+          let value = await lruCache.get(this.books[2]);
+          // 更新最近访问列表
+          taskpool.execute(updateBooks, this.books[2], value);
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/' + value });
+        })
+      Button(this.books[1])
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .onClick(async () => {
+          // 获取绑定的图书信息
+          let value = await lruCache.get(this.books[1]);
+          // 更新最近访问列表
+          taskpool.execute(updateBooks, this.books[1], value);
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/' + value });
+        })
+      Button(this.books[0])
+        .fontSize(20)
+        .padding(10)
+        .fontWeight(FontWeight.Bold)
+        .onClick(async () => {
+          // 获取绑定的图书信息
+          let value = await lruCache.get(this.books[0]);
+          // 更新最近访问列表
+          taskpool.execute(updateBooks, this.books[0], value);
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/' + value });
+        })
+      // ...
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```

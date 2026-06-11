@@ -28,16 +28,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/request_u
 import { wearEngine } from '@kit.WearEngine';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 // 步骤1：获取AuthClient对象
 let authClient: wearEngine.AuthClient = wearEngine.getAuthClient(this.getUIContext().getHostContext());
-
 
 // 步骤2：基于需要用户授权的权限定义权限请求类
 let request: wearEngine.AuthorizationRequest = {
   permissions: [wearEngine.Permission.USER_STATUS]
 }
-
 
 // 步骤3：请求用户授权
 authClient.requestAuthorization(request).then(result => {
@@ -45,6 +42,7 @@ authClient.requestAuthorization(request).then(result => {
 }).catch((error: BusinessError) => {
   console.error(`Failed to request authorize. Code is ${error.code}, message is ${error.message}`);
 })
+
 查询用户授权结果
 
 用于查询已被用户授予的应用权限。如果所需权限用户未授权，请参见上一节申请用户穿戴设备权限向用户请求权限。建议在请求用户授权前，先使用该接口查询应用是否已有相关权限。
@@ -61,10 +59,8 @@ authClient.requestAuthorization(request).then(result => {
 import { wearEngine } from '@kit.WearEngine';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 // 步骤1：获取AuthClient对象
 let authClient: wearEngine.AuthClient = wearEngine.getAuthClient(this.getUIContext().getHostContext());
-
 
 // 步骤2：调用API查询已授权权限
 authClient.getAuthorization().then(result => {
@@ -72,5 +68,46 @@ authClient.getAuthorization().then(result => {
 }).catch((error: BusinessError) => {
   console.error(`Failed to get authorized permissions. Code is ${error.code}, message is ${error.message}`);
 })
-已连接穿戴设备查询
-穿戴设备信息查询
+
+## Code blocks
+
+### Code block 1
+
+```
+// 在使用Wear Engine服务前，请导入WearEngine与相关模块
+import { wearEngine } from '@kit.WearEngine';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 步骤1：获取AuthClient对象
+let authClient: wearEngine.AuthClient = wearEngine.getAuthClient(this.getUIContext().getHostContext());
+
+// 步骤2：基于需要用户授权的权限定义权限请求类
+let request: wearEngine.AuthorizationRequest = {
+  permissions: [wearEngine.Permission.USER_STATUS]
+}
+
+// 步骤3：请求用户授权
+authClient.requestAuthorization(request).then(result => {
+  console.info(`Succeeded in requesting authorize, authorized permissions is ${result.permissions}`);
+}).catch((error: BusinessError) => {
+  console.error(`Failed to request authorize. Code is ${error.code}, message is ${error.message}`);
+})
+```
+
+### Code block 2
+
+```
+// 在使用Wear Engine服务前，请导入WearEngine与相关模块
+import { wearEngine } from '@kit.WearEngine';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 步骤1：获取AuthClient对象
+let authClient: wearEngine.AuthClient = wearEngine.getAuthClient(this.getUIContext().getHostContext());
+
+// 步骤2：调用API查询已授权权限
+authClient.getAuthorization().then(result => {
+  console.info(`Succeeded in getting authorized permissions, authorized permissions is ${result.permissions}`);
+}).catch((error: BusinessError) => {
+  console.error(`Failed to get authorized permissions. Code is ${error.code}, message is ${error.message}`);
+})
+```

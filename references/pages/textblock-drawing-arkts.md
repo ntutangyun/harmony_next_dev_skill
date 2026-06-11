@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/textblock-drawing-arkts_
 
+场景介绍
+
+字块（TextBlob）是指文本的集合。无论是单个的文字还是大块的文本，都可以通过字块来绘制。
+
 除了基本的字块绘制之外，还可以给文字添加各种绘制效果。常见的字块绘制场景包括文字描边、文字渐变等，更多效果请见绘制效果。
 
 本节不涉及文本测量和布局排版相关内容，如需在开发中处理此类文本绘制需求，可参考文本开发概述，该文档系统讲解了排版策略与相关使用指导。
@@ -23,8 +27,11 @@ font字型对象。其中font用于设置和获取字体的各种属性，如字
 文本编码方式。当前支持的文本编码方式如下：
 
 TEXT_ENCODING_UTF8：使用1个字节表示UTF-8或ASCII；
+
 TEXT_ENCODING_UTF16：使用2个字节表示大部分unicode；
+
 TEXT_ENCODING_UTF32：使用4个字节表示全部unicode；
+
 TEXT_ENCODING_GLYPH_ID：使用2个字节表示glyph index。
 
 基本效果的示例代码和效果图如下：
@@ -37,7 +44,6 @@ font.setSize(100);
 const textBlob = drawing.TextBlob.makeFromString('Hello world', font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
 // 绘制字块
 canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
-TextBlockDrawing.ets
 
 文字描边
 
@@ -45,7 +51,7 @@ TextBlockDrawing.ets
 
 以下以英文文字描边和中文文字描边给出示例和指导。
 
-英文文字描边
+[h2]英文文字描边
 
 英文文字描边的简要示例和示意图如下：
 
@@ -69,9 +75,8 @@ const textBlob = drawing.TextBlob.makeFromString('Hello world', font, drawing.Te
 canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
 // 去除描边效果
 canvas.detachPen();
-TextBlockDrawing.ets
 
-中文文字描边
+[h2]中文文字描边
 
 首先需要通过画笔描边，然后需要调用画刷填充内部颜色，去除字体中间的杂质和重叠部分，实现中文文字描边效果。
 
@@ -86,13 +91,11 @@ brush.setAntiAlias(true);
 // 设置描边颜色
 brush.setColor(0xFF, 0xFF, 0xFF, 0xFF);
 
-
 pen.setAntiAlias(true);
 // 设置描边线宽
 pen.setStrokeWidth(3.0);
 // 设置描边颜色
 pen.setColor(0xFF, 0xFF, 0x00, 0x00);
-
 
 // 创建字型对象
 const font = new drawing.Font();
@@ -107,11 +110,9 @@ canvas.drawTextBlob(textBlob, VALUE_200,  VALUE_300);
 // 去除描边效果
 canvas.detachPen();
 
-
 canvas.attachBrush(brush);
 canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
 canvas.detachBrush();
-TextBlockDrawing.ets
 
 文字渐变
 
@@ -140,7 +141,6 @@ const textBlob = drawing.TextBlob.makeFromString('Hello world', font, drawing.Te
 canvas.drawTextBlob(textBlob, VALUE_100, VALUE_300);
 // 去除填充效果
 canvas.detachBrush();
-TextBlockDrawing.ets
 
 主题字体
 
@@ -148,7 +148,7 @@ TextBlockDrawing.ets
 
 设置跟随主题字体的示例代码和效果图如下：
 
-// 创建线性渐变着色器
+// 创建字型对象
 const font = new drawing.Font();
 // 设置文字大小
 font.setSize(100);
@@ -158,16 +158,17 @@ font.setThemeFontFollowed(true);
 const textBlob = drawing.TextBlob.makeFromString('Hello World', font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
 // 绘制字块
 canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
-TextBlockDrawing.ets
+
 未跟随主题字体的效果图	跟随主题字体的效果图（不同主题字体显示效果不同，此处仅示意）
 	
+
 说明
 
 需要在应用入口文件（默认工程中为EntryAbility.ets）中复写onConfigurationUpdate函数，以响应切换主题字体的操作，确保切换后页面能够及时刷新并生效。具体实现可参考使用主题字体（ArkTS）。
 
 单字绘制
 
-单字绘制是图形渲染中针对文本渲染的一种精细化控制技术。相比字块绘制，其核心优势在于能够利用字体退化机制，在当前字体无法显示某字符时，自动退化到使用系统字体绘制字符，提升对特殊字符的兼容性，避免字符缺失。同时，单字绘制支持逐字符配置字体特征（如连字、替代字形），满足复杂排版需求，增强用户体验。详细API说明请见drawing.Canvas。
+单字绘制是图形渲染中针对文本渲染的一种精细化控制技术。相比字块绘制，其核心优势在于能够利用字体退化机制，在当前字体无法显示某字符时，自动退化到使用系统字体绘制字符，提升对特殊字符的兼容性，避免字符缺失。同时，单字绘制支持逐字符配置字体特征（如连字、替代字形），满足复杂排版需求，增强用户体验。详细API说明请见drawSingleCharacter。
 
 基础场景：绘制无字体特征的字符。
 
@@ -187,7 +188,6 @@ for (let s of text) {
   let textWidth = font.measureSingleCharacter(s);
   startX += textWidth;
 }
-TextBlockDrawing.ets
 
 进阶场景：绘制带字体特征的字符。
 
@@ -209,13 +209,168 @@ for (let s of text) {
   let textWidth = font.measureSingleCharacterWithFeatures(s, fontFeatures);
   startX += textWidth;
 }
-TextBlockDrawing.ets
 
 说明
 
 如果 drawSingleCharacterWithFeatures 与 measureSingleCharacter 混合使用，或者 drawSingleCharacter 与 measureSingleCharacterWithFeatures 混合使用，字体绘制可能会重叠。
 
 示例代码
+
 图形绘制（ArkTS）
-图片绘制（ArkTS）
-几何形状绘制（C/C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+// 创建字型对象
+const font = new drawing.Font();
+// 设置字体大小
+font.setSize(100);
+// 创建字块对象
+const textBlob = drawing.TextBlob.makeFromString('Hello world', font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+// 绘制字块
+canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
+```
+
+### Code block 2
+
+```
+// 创建画笔
+let pen = new drawing.Pen();
+// 设置抗锯齿
+pen.setAntiAlias(true);
+// 设置描边线宽
+pen.setStrokeWidth(3.0);
+// 设置描边颜色
+pen.setColor(0xFF, 0xFF, 0x00, 0x00);
+// 创建字型对象
+const font = new drawing.Font();
+// 设置字体大小
+font.setSize(100);
+// 添加画笔描边效果
+canvas.attachPen(pen);
+// 创建字块对象
+const textBlob = drawing.TextBlob.makeFromString('Hello world', font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+// 绘制字块
+canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
+// 去除描边效果
+canvas.detachPen();
+```
+
+### Code block 3
+
+```
+// 创建画刷
+let brush = new drawing.Brush();
+// 创建画笔
+let pen = new drawing.Pen();
+// 设置抗锯齿
+brush.setAntiAlias(true);
+// 设置描边颜色
+brush.setColor(0xFF, 0xFF, 0xFF, 0xFF);
+
+pen.setAntiAlias(true);
+// 设置描边线宽
+pen.setStrokeWidth(3.0);
+// 设置描边颜色
+pen.setColor(0xFF, 0xFF, 0x00, 0x00);
+
+// 创建字型对象
+const font = new drawing.Font();
+// 设置字体大小
+font.setSize(100);
+// 添加画笔描边效果
+canvas.attachPen(pen);
+// 创建字块对象
+const textBlob = drawing.TextBlob.makeFromString(STROKE_SAMPLE, font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+// 绘制字块
+canvas.drawTextBlob(textBlob, VALUE_200,  VALUE_300);
+// 去除描边效果
+canvas.detachPen();
+
+canvas.attachBrush(brush);
+canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
+canvas.detachBrush();
+```
+
+### Code block 4
+
+```
+let startPt: common2D.Point = { x: VALUE_100, y: VALUE_100 };
+let endPt: common2D.Point = { x: VALUE_900, y: VALUE_900 };
+let colors = [0xFFFFFF00, 0xFFFF0000, 0xFF0000FF];
+// 创建线性渐变着色器
+let shaderEffect = drawing.ShaderEffect.createLinearGradient(startPt, endPt, colors, drawing.TileMode.CLAMP);
+// 创建画刷
+let brush = new drawing.Brush();
+// 设置着色器
+brush.setShaderEffect(shaderEffect);
+// 添加画刷填充效果
+canvas.attachBrush(brush);
+// 创建字型
+const font = new drawing.Font();
+// 设置字体大小
+font.setSize(VALUE_200);
+// 创建字块
+const textBlob = drawing.TextBlob.makeFromString('Hello world', font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+// 绘制字块
+canvas.drawTextBlob(textBlob, VALUE_100, VALUE_300);
+// 去除填充效果
+canvas.detachBrush();
+```
+
+### Code block 5
+
+```
+// 创建字型对象
+const font = new drawing.Font();
+// 设置文字大小
+font.setSize(100);
+// 设置跟随主题字体
+font.setThemeFontFollowed(true);
+// 创建字块对象
+const textBlob = drawing.TextBlob.makeFromString('Hello World', font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+// 绘制字块
+canvas.drawTextBlob(textBlob, VALUE_200, VALUE_300);
+```
+
+### Code block 6
+
+```
+// 创建字型对象
+const font = new drawing.Font();
+// 设置文字大小
+font.setSize(100);
+let startX = 100;
+let startY = 100;
+let text = ['H', 'e', 'l', 'l', 'o'];
+for (let s of text) {
+  // 单字绘制
+  canvas.drawSingleCharacter(s, font, startX, startY);
+  // 测量单个字符的宽度
+  let textWidth = font.measureSingleCharacter(s);
+  startX += textWidth;
+}
+```
+
+### Code block 7
+
+```
+// 创建字型对象
+const font = new drawing.Font();
+// 设置文字大小
+font.setSize(100);
+let startX = 100;
+let startY = 100;
+let text = ['a', '2', '+', 'b', '2'];
+// 创建字体特征对象数组
+let fontFeatures: drawing.FontFeature[] = [{name: 'frac', value: 1}];
+for (let s of text) {
+  // 单字绘制
+  canvas.drawSingleCharacterWithFeatures(s, font, startX, startY, fontFeatures);
+  // 测量单个字符的宽度
+  let textWidth = font.measureSingleCharacterWithFeatures(s, fontFeatures);
+  startX += textWidth;
+}
+```

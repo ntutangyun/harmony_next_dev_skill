@@ -2,6 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-generation-ndk_
 
+以ECC算法为例，生成随机密钥。具体的场景介绍及支持的算法规格，请参考密钥生成支持的算法。
+
+注意
+
+密钥别名中禁止包含个人数据等敏感信息。
+
+在CMake脚本中链接相关动态库
+
+target_link_libraries(entry PUBLIC libhuks_ndk.z.so)
+
+开发步骤
+
+指定密钥别名，密钥别名命名规范参考密钥生成介绍及算法规格。
+
 初始化密钥属性集。通过OH_Huks_InitParamSet、OH_Huks_AddParams、OH_Huks_BuildParamSet构造密钥属性集paramSet。
 
 密钥属性集中必须包含OH_Huks_KeyAlg、OH_Huks_KeySize、OH_Huks_KeyPurpose属性。注：一个密钥只能有一类PURPOSE，并且，生成密钥时指定的用途要与使用时的方式一致，否则会导致异常。
@@ -17,7 +31,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 #include "huks/native_huks_param.h"
 #include "napi/native_api.h"
 #include <cstring>
-
 
 OH_Huks_Result InitParamSet(struct OH_Huks_ParamSet **paramSet, const struct OH_Huks_Param *params,
                             uint32_t paramCount)
@@ -39,12 +52,10 @@ OH_Huks_Result InitParamSet(struct OH_Huks_ParamSet **paramSet, const struct OH_
     return ret;
 }
 
-
 struct OH_Huks_Param g_testGenerateKeyParam[] = {{.tag = OH_HUKS_TAG_ALGORITHM, .uint32Param = OH_HUKS_ALG_ECC},
                                                  {.tag = OH_HUKS_TAG_PURPOSE, .uint32Param = OH_HUKS_KEY_PURPOSE_AGREE},
                                                  {.tag = OH_HUKS_TAG_KEY_SIZE, .uint32Param = OH_HUKS_ECC_KEY_SIZE_256},
                                                  {.tag = OH_HUKS_TAG_DIGEST, .uint32Param = OH_HUKS_DIGEST_NONE}};
-
 
 static napi_value GenerateKey(napi_env env, napi_callback_info info)
 {
@@ -68,6 +79,69 @@ static napi_value GenerateKey(napi_env env, napi_callback_info info)
     napi_create_int32(env, ohResult.errorCode, &ret);
     return ret;
 }
-napi_init.cpp
-生成密钥(ArkTS)
-密钥导入
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libhuks_ndk.z.so)
+```
+
+### Code block 2
+
+```
+/* 以下以生成ECC密钥为例 */
+#include "huks/native_huks_api.h"
+#include "huks/native_huks_param.h"
+#include "napi/native_api.h"
+#include <cstring>
+
+OH_Huks_Result InitParamSet(struct OH_Huks_ParamSet **paramSet, const struct OH_Huks_Param *params,
+                            uint32_t paramCount)
+{
+    OH_Huks_Result ret = OH_Huks_InitParamSet(paramSet);
+    if (ret.errorCode != OH_HUKS_SUCCESS) {
+        return ret;
+    }
+    ret = OH_Huks_AddParams(*paramSet, params, paramCount);
+    if (ret.errorCode != OH_HUKS_SUCCESS) {
+        OH_Huks_FreeParamSet(paramSet);
+        return ret;
+    }
+    ret = OH_Huks_BuildParamSet(paramSet);
+    if (ret.errorCode != OH_HUKS_SUCCESS) {
+        OH_Huks_FreeParamSet(paramSet);
+        return ret;
+    }
+    return ret;
+}
+
+struct OH_Huks_Param g_testGenerateKeyParam[] = {{.tag = OH_HUKS_TAG_ALGORITHM, .uint32Param = OH_HUKS_ALG_ECC},
+                                                 {.tag = OH_HUKS_TAG_PURPOSE, .uint32Param = OH_HUKS_KEY_PURPOSE_AGREE},
+                                                 {.tag = OH_HUKS_TAG_KEY_SIZE, .uint32Param = OH_HUKS_ECC_KEY_SIZE_256},
+                                                 {.tag = OH_HUKS_TAG_DIGEST, .uint32Param = OH_HUKS_DIGEST_NONE}};
+
+static napi_value GenerateKey(napi_env env, napi_callback_info info)
+{
+    /* 1.确定密钥别名 */
+    const char *alias = "test_generate";
+    struct OH_Huks_Blob aliasBlob = {.size = (uint32_t)strlen(alias), .data = (uint8_t *)alias};
+    struct OH_Huks_ParamSet *testGenerateKeyParamSet = nullptr;
+    struct OH_Huks_Result ohResult;
+    do {
+        /* 2.初始化密钥属性集 */
+        ohResult = InitParamSet(&testGenerateKeyParamSet, g_testGenerateKeyParam,
+                                sizeof(g_testGenerateKeyParam) / sizeof(OH_Huks_Param));
+        if (ohResult.errorCode != OH_HUKS_SUCCESS) {
+            break;
+        }
+        /* 3.生成密钥 */
+        ohResult = OH_Huks_GenerateKeyItem(&aliasBlob, testGenerateKeyParamSet, nullptr);
+    } while (0);
+    OH_Huks_FreeParamSet(&testGenerateKeyParamSet);
+    napi_value ret;
+    napi_create_int32(env, ohResult.errorCode, &ret);
+    return ret;
+}
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphic-drawing-overview_
 
+场景介绍
+
 应用在开发中，经常需要针对不同的元素内容进行绘制，开发者通常可以选择直接使用ArkUI组件来绘制想要的元素或效果，但有些自定义图形或效果无法满足，此时可以选择使用Drawing来实现灵活的自定义绘制效果。另外，ArkUI组件具备直接上屏显示的能力，而Drawing更加关注绘制，需要依靠其他模块来完成绘制结果的上屏显示。
 
 绘制能力范围及实现流程
@@ -47,7 +49,7 @@ Canvas组件的底层也使用了Native Drawing接口来实现绘制功能，在
 针对图形绘制过程中，使用的单位为像素（px）。
 
 示例代码
+
 图形绘制（ArkTS）
+
 图形绘制（C/C++）
-图形绘制与显示
-画布的获取与绘制结果的显示

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-nethandovercallback-c_
 
+场景介绍
+
 在弱网环境下，系统发起多网迁移（WiFi<->蜂窝，主卡<->副卡等）的过程中，给应用提供连接迁移开始和完成通知，应用根据连接迁移通知的建议进行网络连接重建，快速恢复业务，给用户带来平滑、高速、低时延的上网体验。
 
 接口说明
@@ -11,6 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 接口名	描述
 int32_t HMS_NetworkBoost_RegisterHandoverChangeCallback(HMS_NetworkBoost_HandoverCallback* callback, uint32_t* callbackId)	注册连接迁移回调。
 int32_t HMS_NetworkBoost_UnregisterHandoverChangeCallback(uint32_t callbackId)	取消注册连接迁移回调。
+
 开发步骤
 
 导入Network Boost Kit模块。
@@ -30,12 +33,10 @@ void onNetworkHandoverStart(NetworkBoost_HandoverStart* handoverStart)
     // 连接迁移开始回调，应用按照HandoverStart的建议调整数传策略
 }
 
-
 void onNetworkHandoverComplete(NetworkBoost_HandoverComplete* handoverComplete)
 {
     // 连接迁移完成回调，应用按照HandoverComplete的建议进行调速和重建恢复
 }
-
 
 int32_t RegisterNetworkHandoverCallback()
 {
@@ -56,5 +57,55 @@ int32_t UnregisterNetworkHandoverCallback() {
     printf("取消注册连接迁移结果: %d\n", ret);
     return ret;
 }
-连接迁移(多网切换) (C/C++)
-迁移模式设置 (C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "NetworkBoostKit/network_boost_handover.h"
+#include <cstdio>
+```
+
+### Code block 2
+
+```
+libnetwork_boost.so
+```
+
+### Code block 3
+
+```
+uint32_t callbackId = 0;
+void onNetworkHandoverStart(NetworkBoost_HandoverStart* handoverStart)
+{
+    // 连接迁移开始回调，应用按照HandoverStart的建议调整数传策略
+}
+
+void onNetworkHandoverComplete(NetworkBoost_HandoverComplete* handoverComplete)
+{
+    // 连接迁移完成回调，应用按照HandoverComplete的建议进行调速和重建恢复
+}
+
+int32_t RegisterNetworkHandoverCallback()
+{
+    HMS_NetworkBoost_HandoverCallback callback;
+    callback.onNetworkHandoverStart = onNetworkHandoverStart;
+    callback.onNetworkHandoverComplete = onNetworkHandoverComplete;
+    // 注册回调，获取回调Id
+    int32_t ret = HMS_NetworkBoost_RegisterHandoverChangeCallback(&callback, &callbackId);
+    printf("注册连接迁移结果: %d, Id：%d\n", ret, callbackId);
+    return ret;
+}
+```
+
+### Code block 4
+
+```
+int32_t UnregisterNetworkHandoverCallback() {
+    // 使用注册时获取的回调Id取消注册
+    int32_t ret = HMS_NetworkBoost_UnregisterHandoverChangeCallback(callbackId);
+    printf("取消注册连接迁移结果: %d\n", ret);
+    return ret;
+}
+```

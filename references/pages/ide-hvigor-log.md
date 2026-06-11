@@ -6,98 +6,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 
 日志级别
 
-日志级别
-
-	
-
-日志信息
-
-
-
-
-ERROR
-
-	
-
-错误信息
-
-
-
-
-WARN
-
-	
-
-告警信息
-
-
-
-
-INFO
-
-	
-
-正常信息
-
-
-
-
-DEBUG
-
-	
-
-调试信息
+日志级别	日志信息
+ERROR	错误信息
+WARN	告警信息
+INFO	正常信息
+DEBUG	调试信息
 
 选择日志级别
 
 您可以使用命令行中的日志选项开关来控制输出不同的日志级别，还可通过配置hvigor-config.json5中日志选项logging.level来设置。在stacktrace命令选项中，您可以找到影响堆栈跟踪记录的命令开关，当然，你也可以通过配置hvigor-config.json5中日志选项debugging.stacktrace来设置堆栈跟踪日志开关。
 
-日志级别命令行选项
-表1 日志级别命令行选项
+[h2]日志级别命令行选项
 
-日志选项
+日志选项	输出日志级别
+-e 或 --error	错误且更高级别
+-w 或 --warn	告警且更高级别
+-i 或 --info	信息且更高级别
+-d 或 --debug	调试且更高级别（即所有日志信息）
 
-	
-
-输出日志级别
-
-
-
-
--e 或 --error
-
-	
-
-错误且更高级别
-
-
-
-
--w 或 --warn
-
-	
-
-告警且更高级别
-
-
-
-
--i 或 --info
-
-	
-
-信息且更高级别
-
-
-
-
--d 或 --debug
-
-	
-
-调试且更高级别（即所有日志信息）
-
-堆栈跟踪命令行选项
+[h2]堆栈跟踪命令行选项
 
 --stacktrace
 
@@ -106,6 +33,3 @@ DEBUG
 --no-stacktrace
 
 如果出现构建错误（例如编译错误），则不会将堆栈跟踪信息打印到控制台。
-
-构建报错排查
-编译构建常见问题

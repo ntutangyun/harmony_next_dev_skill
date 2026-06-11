@@ -1,6 +1,6 @@
 ---
 name: harmonyos-app-dev
-description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits. Also covers Xiaoyi (小艺) agent development on the Xiaoyi Open Platform — creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration, AgentKit, and agent publishing. Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, 小艺, Xiaoyi, 智能体, intelligent agent, agent development, A2A protocol, AgentKit, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility, DevEco Studio, hvigor, ohpm, kit imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app or agent. Do NOT trigger for OpenHarmony. Also trigger when the user pastes ArkTS code with Entry/Component/State decorators or struct declarations with build(). Also use when driving real Huawei devices (e.g. Mate 80, MatePad Pro) running HarmonyOS NEXT as Wi-Fi **stations (STA)** for hardware-in-the-loop (HIL) experiments against an access point under test — building/sideloading an on-device test app and reading Wi-Fi link state; in that mode the first step is always to confirm a device is connected via `hdc`.
+description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits. Also covers Xiaoyi (小艺) agent development on the Xiaoyi Open Platform — creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration, AgentKit, and agent publishing, plus device-side agents (端侧A2A / HMAF / AgentExtensionAbility). Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, 小艺, Xiaoyi, 智能体, intelligent agent, agent development, A2A protocol, AgentKit, HMAF, AgentExtensionAbility, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility, DevEco Studio, hvigor, ohpm, kit imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app or agent. Do NOT trigger for OpenHarmony. Also trigger when the user pastes ArkTS code with Entry/Component/State decorators or struct declarations with build(). Also use when driving real Huawei devices (e.g. Mate 80, MatePad Pro) running HarmonyOS NEXT as Wi-Fi **stations (STA)** for hardware-in-the-loop (HIL) experiments against an access point under test — building/sideloading an on-device test app and reading Wi-Fi link state; in that mode the first step is always to confirm a device is connected via `hdc`.
 ---
 
 # HarmonyOS NEXT app development
@@ -22,7 +22,7 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Project layout, `app.json5`, `module.json5`, HAP/HSP/HAR, resource access | `references/01-app-structure.md` |
 | ArkTS language: decorators (`@Entry`, `@Component`, `@State`, `@Prop`, `@Link`, `@Provide`, etc.), state management, `LocalStorage`/`AppStorage`/`PersistentStorage`, `@Builder`/`@Extend`, conditional/loop rendering | `references/02-arkts-language.md` |
 | Building UI: layouts (Row/Column/Stack/List/Grid/Tabs), common components (Text, TextInput, Button, Image), animation, gestures, Navigation/router | `references/03-arkui-ui.md` |
-| App lifecycle: UIAbility, ExtensionAbility, Want, launch types, AbilityStage, Context, multi-window, page route | `references/04-ability-and-lifecycle.md` |
+| App lifecycle: UIAbility, ExtensionAbility, Want, launch types, AbilityStage, Context, multi-window, page route, inter-app redirection, device-side agents (端侧A2A / HMAF / AgentExtensionAbility, API 24+) | `references/04-ability-and-lifecycle.md` |
 | Background work, notifications, common events, permissions, IPC/RPC | `references/05-services-and-system.md` |
 | Files, preferences, KV store, relational DB, network (HTTP / WebSocket / connection manager) | `references/06-data-and-network.md` |
 | Cards (ArkTS widgets), i18n/l10n, localization | `references/07-cards-and-i18n.md` |
@@ -32,7 +32,7 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Kit overviews (Push, IAP, Payment, Map, Audio, Media, Image, Vision, Speech, Intents, ArkGraphics, NDK) | `references/10-kits-catalog.md` |
 | Quick start — "build my first HarmonyOS app" walkthrough | `references/00-quick-start.md` |
 
-If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5301 pages from the official `harmonyos-guides` docs are bundled offline** — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
+If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5351 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-06-11) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
 
 To find a slug:
 - `grep -lir "<keyword>" references/pages/` to search by content
@@ -54,7 +54,7 @@ The 12 curated reference files (00–11) above are entry points / hand-written d
 
 6. **UIContext, not `router` global.** Modern code uses `this.getUIContext().getRouter()` or, preferably, the `Navigation` component for page navigation. Avoid recommending the global `router` import — it still exists but is being phased out.
 
-7. **API level matters.** HarmonyOS NEXT starts at API 11. Many newer features (Navigation, V2 state management) require API 12/13/14+. When suggesting code, prefer features that are stable at API 12 unless the user has stated a higher target.
+7. **API level matters.** HarmonyOS NEXT starts at API 11; the current docs go up to **API 24** (DevEco Studio 6.1.1). Many newer features require higher levels (Navigation, V2 state management: API 12+; device-side A2A agents / AgentExtensionAbility: API 24). When suggesting code, prefer features that are stable at API 12 unless the user's project (`compileSdkVersion` / `compatibleSdkVersion` in the project config) shows a higher target.
 
 ## Default code style
 
@@ -91,7 +91,7 @@ struct MyPage {
 
 ## Building & running
 
-To create a new app: open DevEco Studio → `Create Project` → `Application` → `Empty Ability` template → pick `Compatible SDK` (≥ API 12 recommended) → `Finish`. The generated project already wires up `entry/src/main/ets/entryability/EntryAbility.ets` and `entry/src/main/ets/pages/Index.ets`.
+To create a new app: open DevEco Studio (current release 6.1.1) → `Create Project` → `Application` → `Empty Ability` template → pick `Compatible SDK` (the docs' walkthrough uses `6.1.1(24)`; ≥ API 12 is the practical minimum) → `Finish`. The generated project already wires up `entry/src/main/ets/entryability/EntryAbility.ets` and `entry/src/main/ets/pages/Index.ets`.
 
 To run on device: `File > Project Structure > Signing Configs` → enable `Automatically generate signature` (requires Huawei developer login), then click the green Run button. For more on signing/run, see `references/08-tooling-and-build.md`.
 
@@ -113,7 +113,7 @@ The HarmonyOS docs evolve fast and the user's project may target a specific API 
 
 ## Reaching beyond this skill
 
-**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5301 pages, 36 MB). For:
+**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5351 pages, ~51 MB, synced 2026-06-11 — re-sync with `python scripts/update_docs.py`). For:
 - Doc URLs to cite: `https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/<slug>`
 - API reference root (not bundled — visit if needed): `https://developer.huawei.com/consumer/cn/doc/harmonyos-references/development-intro-api`
 - Best practices (not bundled): `https://developer.huawei.com/consumer/cn/doc/best-practices/...`

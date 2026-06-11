@@ -2,6 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/local-avsession-overview_
 
+交互过程
+
+本地媒体会话的数据源均在设备本地，交互过程如图所示。
+
+此过程中涉及两大角色，媒体会话提供方和媒体会话控制方。
+
+说明
+
+媒体会话控制方为系统应用，三方应用可以成为媒体会话提供方。
+
+本地媒体会话中，媒体会话提供方通过媒体会话管理器和媒体会话控制方进行信息交互：
+
+媒体会话提供方通过AVSessionManager创建AVSession对象。
+
 媒体会话提供方通过AVSession对象，设置会话元数据（媒体ID、标题、媒体时长等）、会话播放属性（播放状态、播放倍速、播放位置等）等。
 
 媒体会话控制方通过AVSessionManager创建AVSessionController对象。
@@ -19,7 +33,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/local-avs
 实际上，AVSessionManager与AVSession、AVSessionController对象不同，并不是一个具体的对象，它是媒体会话的根命名域。在实际编程过程中，可以通过如下方式引入：
 
 import { avSession as AVSessionManager } from '@kit.AVSessionKit';
-Index.ets
 
 根命名域中的所有方法都可以作为AVSessionManager的方法。
 
@@ -35,6 +48,39 @@ import { avSession as AVSessionManager } from '@kit.AVSessionKit';
 struct Index {
   @State message: string = 'hello world';
 
+  build() {
+    Column() {
+      Text(this.message)
+        .onClick(async () => {
+          // 创建session。
+          let context = this.getUIContext().getHostContext() as Context;
+          let session: AVSessionManager.AVSession = await AVSessionManager.createAVSession(context, 'SESSION_NAME', 'audio');
+          console.info(`session create done : sessionId : ${session.sessionId}`);
+        })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+
+更多关于AVSessionManager的方法，请参考API文档：模块描述。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { avSession as AVSessionManager } from '@kit.AVSessionKit';
+```
+
+### Code block 2
+
+```
+import { avSession as AVSessionManager } from '@kit.AVSessionKit';
+@Entry
+@Component
+struct Index {
+  @State message: string = 'hello world';
 
   build() {
     Column() {
@@ -50,9 +96,4 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
-
-更多关于AVSessionManager的方法，请参考API文档：模块描述。
-
-本地媒体会话
-媒体会话提供方(ArkTS)
+```

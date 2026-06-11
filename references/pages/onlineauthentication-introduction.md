@@ -57,15 +57,16 @@ SOTER提供一套生物认证平台和标准，使得业务可以采用设备上
 跨设备扫码认证：支持使用已注册通行密钥的移动设备作为漫游认证器，使用跨设备扫码的方式，在其他设备上进行应用或网页的免密认证。
 
 约束与限制
-支持的国家和地区
+
+[h2]支持的国家和地区
 
 中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-支持的设备
+[h2]支持的设备
 
 本Kit仅适用于Phone、PC/2in1、Tablet。
 
-能力使用限制
+[h2]能力使用限制
 
 Online Authentication Kit提供的FIDO、IFAA、SOTER及通行密钥能力有以下使用限制：
 
@@ -78,6 +79,3 @@ Online Authentication Kit提供的FIDO、IFAA、SOTER及通行密钥能力有以
 模拟器支持情况
 
 本Kit暂不支持模拟器。
-
-Online Authentication Kit（在线认证服务）
-开发准备

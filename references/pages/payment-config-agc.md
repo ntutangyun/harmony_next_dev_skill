@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-config-agc_
 
+请先参考“应用开发准备”完成基本准备工作及指纹配置，再继续进行以下开发活动。
+
+说明
+
 后续接入涉及AppID绑定，仅限企业开发者接入。开发者注册后发起实名认证请选择企业开发者实名认证，并且需要准备企业营业执照等必要材料。
 
 每个应用/元服务最多支持添加4个签名证书指纹。
@@ -21,6 +25,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-c
 HarmonyOS应用：“盈利 > 鸿蒙支付服务（可在‘全部功能’中搜索服务并固定到导航栏）> 支付服务（非虚拟类）> 立即开通”。
 
 如涉及商户入网，在服务开通后需要为商户号申请绑定AppID，详细参见商户号绑定AppID（如未完成商户入网，可点击“申请支付商户号”先进行商户入网，详细介绍参考商户入网章节）。
-
-（可选）特定场景配置操作
-商户号绑定AppID

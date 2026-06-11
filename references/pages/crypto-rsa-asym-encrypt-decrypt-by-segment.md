@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rsa-asym-encrypt-decrypt-by-segment_
 
+对应的算法规格请查看非对称密钥加解密算法规格：RSA。
+
+加密
+
 调用cryptoFramework.createAsyKeyGenerator、AsyKeyGenerator.generateKeyPair，生成RSA密钥类型为RSA1024、素数个数为2（不填默认）的非对称密钥对（KeyPair）。KeyPair对象中包括公钥PubKey、私钥PriKey。
 
 如何生成RSA非对称密钥对，开发者可参考下文示例，并结合非对称密钥生成和转换规格：RSA和随机生成非对称密钥对理解，参考文档与当前示例可能存在入参差异，请在阅读时注意区分。
@@ -33,7 +37,6 @@ doFinal输出结果可能为null，在访问具体数据前，需要先判断结
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
 
-
 // 分段加密消息
 async function rsaEncryptBySegment(pubKey: cryptoFramework.PubKey, plainText: cryptoFramework.DataBlob) {
   let cipher = cryptoFramework.createCipher('RSA1024|PKCS1');
@@ -43,7 +46,7 @@ async function rsaEncryptBySegment(pubKey: cryptoFramework.PubKey, plainText: cr
   for (let i = 0; i < plainText.data.length; i += plainTextSplitLen) {
     let updateMessage = plainText.data.subarray(i, i + plainTextSplitLen);
     let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
-    // 将原文按64字符进行拆分，循环调用doFinal进行加密，使用1024bit密钥时，每次加密生成128字节长度的密文
+    // 将原文按64字节进行拆分，循环调用doFinal进行加密，使用1024bit密钥时，每次加密生成128字节长度的密文
     let updateOutput = await cipher.doFinal(updateMessageBlob);
     let mergeText = new Uint8Array(cipherText.length + updateOutput.data.length);
     mergeText.set(cipherText);
@@ -53,7 +56,6 @@ async function rsaEncryptBySegment(pubKey: cryptoFramework.PubKey, plainText: cr
   let cipherBlob: cryptoFramework.DataBlob = { data: cipherText };
   return cipherBlob;
 }
-
 
 // 分段解密消息
 async function rsaDecryptBySegment(priKey: cryptoFramework.PriKey, cipherText: cryptoFramework.DataBlob) {
@@ -74,7 +76,6 @@ async function rsaDecryptBySegment(priKey: cryptoFramework.PriKey, cipherText: c
   let decryptBlob: cryptoFramework.DataBlob = { data: decryptText };
   return decryptBlob;
 }
-
 
 async function rsaEncryptLongMessage() {
   let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
@@ -97,13 +98,11 @@ async function rsaEncryptLongMessage() {
     console.error('decrypt failed.');
   }
 }
-RSASegmentationAsync.ets
 
 同步方法示例：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
-
 
 // 分段加密消息
 function rsaEncryptBySegment(pubKey: cryptoFramework.PubKey, plainText: cryptoFramework.DataBlob) {
@@ -125,7 +124,6 @@ function rsaEncryptBySegment(pubKey: cryptoFramework.PubKey, plainText: cryptoFr
   return cipherBlob;
 }
 
-
 // 分段解密消息
 function rsaDecryptBySegment(priKey: cryptoFramework.PriKey, cipherText: cryptoFramework.DataBlob) {
   let decoder = cryptoFramework.createCipher('RSA1024|PKCS1');
@@ -145,7 +143,6 @@ function rsaDecryptBySegment(priKey: cryptoFramework.PriKey, cipherText: cryptoF
   let decryptBlob: cryptoFramework.DataBlob = { data: decryptText };
   return decryptBlob;
 }
-
 
 function main() {
   let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
@@ -168,6 +165,143 @@ function main() {
     console.error('decrypt failed.');
   }
 }
-RSASegmentationSync.ets
-使用RSA非对称密钥（PKCS1模式）加解密(C/C++)
-使用RSA非对称密钥分段加解密(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+// 分段加密消息
+async function rsaEncryptBySegment(pubKey: cryptoFramework.PubKey, plainText: cryptoFramework.DataBlob) {
+  let cipher = cryptoFramework.createCipher('RSA1024|PKCS1');
+  await cipher.init(cryptoFramework.CryptoMode.ENCRYPT_MODE, pubKey, null);
+  let plainTextSplitLen = 64;
+  let cipherText = new Uint8Array();
+  for (let i = 0; i < plainText.data.length; i += plainTextSplitLen) {
+    let updateMessage = plainText.data.subarray(i, i + plainTextSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 将原文按64字节进行拆分，循环调用doFinal进行加密，使用1024bit密钥时，每次加密生成128字节长度的密文
+    let updateOutput = await cipher.doFinal(updateMessageBlob);
+    let mergeText = new Uint8Array(cipherText.length + updateOutput.data.length);
+    mergeText.set(cipherText);
+    mergeText.set(updateOutput.data, cipherText.length);
+    cipherText = mergeText;
+  }
+  let cipherBlob: cryptoFramework.DataBlob = { data: cipherText };
+  return cipherBlob;
+}
+
+// 分段解密消息
+async function rsaDecryptBySegment(priKey: cryptoFramework.PriKey, cipherText: cryptoFramework.DataBlob) {
+  let decoder = cryptoFramework.createCipher('RSA1024|PKCS1');
+  await decoder.init(cryptoFramework.CryptoMode.DECRYPT_MODE, priKey, null);
+  let cipherTextSplitLen = 128; // RSA密钥每次加密生成的密文字节长度计算方式：密钥位数/8
+  let decryptText = new Uint8Array();
+  for (let i = 0; i < cipherText.data.length; i += cipherTextSplitLen) {
+    let updateMessage = cipherText.data.subarray(i, i + cipherTextSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 将密文按128字节进行拆分解密，得到原文后进行拼接
+    let updateOutput = await decoder.doFinal(updateMessageBlob);
+    let mergeText = new Uint8Array(decryptText.length + updateOutput.data.length);
+    mergeText.set(decryptText);
+    mergeText.set(updateOutput.data, decryptText.length);
+    decryptText = mergeText;
+  }
+  let decryptBlob: cryptoFramework.DataBlob = { data: decryptText };
+  return decryptBlob;
+}
+
+async function rsaEncryptLongMessage() {
+  let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!';
+  let asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024'); // 创建非对称密钥生成器对象
+  let keyPair = await asyKeyGenerator.generateKeyPair(); // 随机生成RSA密钥
+  let plainText: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from(message, 'utf-8').buffer) };
+  let encryptText = await rsaEncryptBySegment(keyPair.pubKey, plainText);
+  let decryptText = await rsaDecryptBySegment(keyPair.priKey, encryptText);
+  if (plainText.data.toString() === decryptText.data.toString()) {
+    console.info('decrypt ok.');
+    console.info('decrypt plainText: ' + buffer.from(decryptText.data).toString('utf-8'));
+  } else {
+    console.error('decrypt failed.');
+  }
+}
+```
+
+### Code block 2
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+// 分段加密消息
+function rsaEncryptBySegment(pubKey: cryptoFramework.PubKey, plainText: cryptoFramework.DataBlob) {
+  let cipher = cryptoFramework.createCipher('RSA1024|PKCS1');
+  cipher.initSync(cryptoFramework.CryptoMode.ENCRYPT_MODE, pubKey, null);
+  let plainTextSplitLen = 64;
+  let cipherText = new Uint8Array();
+  for (let i = 0; i < plainText.data.length; i += plainTextSplitLen) {
+    let updateMessage = plainText.data.subarray(i, i + plainTextSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 将原文按64字符进行拆分，循环调用doFinal进行加密，使用1024bit密钥时，每次加密生成128字节长度的密文
+    let updateOutput = cipher.doFinalSync(updateMessageBlob);
+    let mergeText = new Uint8Array(cipherText.length + updateOutput.data.length);
+    mergeText.set(cipherText);
+    mergeText.set(updateOutput.data, cipherText.length);
+    cipherText = mergeText;
+  }
+  let cipherBlob: cryptoFramework.DataBlob = { data: cipherText };
+  return cipherBlob;
+}
+
+// 分段解密消息
+function rsaDecryptBySegment(priKey: cryptoFramework.PriKey, cipherText: cryptoFramework.DataBlob) {
+  let decoder = cryptoFramework.createCipher('RSA1024|PKCS1');
+  decoder.initSync(cryptoFramework.CryptoMode.DECRYPT_MODE, priKey, null);
+  let cipherTextSplitLen = 128; // RSA密钥每次加密生成的密文字节长度计算方式：密钥位数/8
+  let decryptText = new Uint8Array();
+  for (let i = 0; i < cipherText.data.length; i += cipherTextSplitLen) {
+    let updateMessage = cipherText.data.subarray(i, i + cipherTextSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 将密文按128字节进行拆分解密，得到原文后进行拼接
+    let updateOutput = decoder.doFinalSync(updateMessageBlob);
+    let mergeText = new Uint8Array(decryptText.length + updateOutput.data.length);
+    mergeText.set(decryptText);
+    mergeText.set(updateOutput.data, decryptText.length);
+    decryptText = mergeText;
+  }
+  let decryptBlob: cryptoFramework.DataBlob = { data: decryptText };
+  return decryptBlob;
+}
+
+function main() {
+  let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!';
+  let asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024'); // 创建非对称密钥生成器对象
+  let keyPair = asyKeyGenerator.generateKeyPairSync(); // 随机生成RSA密钥
+  let plainText: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from(message, 'utf-8').buffer) };
+  let encryptText = rsaEncryptBySegment(keyPair.pubKey, plainText);
+  let decryptText = rsaDecryptBySegment(keyPair.priKey, encryptText);
+  if (plainText.data.toString() === decryptText.data.toString()) {
+    console.info('decrypt ok.');
+    console.info('decrypt plainText: ' + buffer.from(decryptText.data).toString('utf-8'));
+  } else {
+    console.error('decrypt failed.');
+  }
+}
+```

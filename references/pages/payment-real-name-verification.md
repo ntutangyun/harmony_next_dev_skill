@@ -2,9 +2,29 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-real-name-verification_
 
+场景介绍
+
+从5.1.1(19)版本开始，新增支持实名信息验证/授权场景。
+
+例如应用/元服务登录、注册或账户认证等操作，开发者需要验证或获取用户实名信息时可接入实名信息验证/授权能力。
+
+支持商户模型：不涉及
+
+实名信息验证授权页面展示：
+
+接入流程
+
+华为支付实名信息验证授权接入流程如下：
+
+步骤	说明
+开发准备	请先完成开发准备后再进行下面的开发接入。 - 端侧应用配置 - 用户信息验证授权接入准备
+接入实名信息验证/授权	根据实名信息验证/授权场景开发步骤完成接入。
+
+业务流程
+
 开发者通过接入Payment Kit实名信息验证授权能力，可以简便快捷地实现用户实名信息验证或获取用户授权后的实名信息（可二选一）。具体接入流程如下：
 
-实名信息验证
+[h2]实名信息验证
 
 开发者客户端收集用户实名信息请求开发者服务端发起实名信息预验证。
 
@@ -32,7 +52,7 @@ Payment Kit服务端返回实名信息验证结果给开发者服务端。
 
 开发者服务端将实名信息验证结果返回给开发者客户端，开发者客户端根据验证结果进行下一步业务处理。
 
-实名信息授权
+[h2]实名信息授权
 
 开发者客户端如需要获取用户实名信息，可调用startRealNameAuth接口拉起实名信息授权页面。
 
@@ -61,8 +81,10 @@ Payment Kit服务端会使用开发者上传的公钥证书进行隐私信息加
 接口名	描述
 startRealNameVerification(context: common.UIAbilityContext | common.UIExtensionContext, preVerifyId: string): Promise<string>;	拉起用户实名信息验证页面。
 startRealNameAuth(context: common.UIAbilityContext | common.UIExtensionContext): Promise<string>;	拉起用户实名信息授权页面。
+
 开发步骤
-实名信息验证
+
+[h2]实名信息验证
 
 发起实名信息预验证（服务器开发）
 
@@ -103,7 +125,6 @@ private String getaccessToken(String clientId, String clientSecret) {
         "https://oauth-login.cloud.huawei.com/oauth2/v3/token", params, null, headers, Map.class);
      return (String) atRspResponseEntity.getBody().get("access_token");
 }
-
 
 // 构建PayDevAuth请求头
 private String buildPayMercAuth(HashMap<String, String> body) {
@@ -150,7 +171,6 @@ public String getPreVerifyId(String clientId, String clientSecret, String creden
     return (String) responseEntity.getBody().get("preVerifyId");
 }
 
-
 public String getHashStr(String input) throws NoSuchAlgorithmException {
     byte[] encodedhash = MessageDigest.getInstance("SHA-256")
         .digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
@@ -172,7 +192,7 @@ public String getHashStr(String input) throws NoSuchAlgorithmException {
 import { BusinessError } from '@kit.BasicServicesKit';
 import { realNameService } from '@kit.PaymentKit';
 import { common } from '@kit.AbilityKit';
- 
+
 @Entry
 @Component
 struct Index {
@@ -190,7 +210,7 @@ struct Index {
         console.error(`failed to verify, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
- 
+
   build() {
     Column() {
       Button('requestStartVerifyRealNameInfoPromise')
@@ -210,7 +230,7 @@ struct Index {
 
 请求实名信息验证结果查询接口获取实名信息验证结果返回给客户端。
 
-实名信息授权
+[h2]实名信息授权
 
 拉起实名信息授权（端侧开发）
 
@@ -219,7 +239,7 @@ struct Index {
 import { BusinessError } from '@kit.BasicServicesKit';
 import { realNameService } from '@kit.PaymentKit';
 import { common } from '@kit.AbilityKit';
- 
+
 @Entry
 @Component
 struct Index {
@@ -235,7 +255,7 @@ struct Index {
         console.error(`failed to authorise, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
- 
+
   build() {
     Column() {
       Button('requestStartRealNameAuthPromise')
@@ -255,5 +275,183 @@ struct Index {
 
 请求实名信息授权结果查询接口获取实名信息并使用publicKeyId配对的SM2私钥证书进行实名信息解密，根据业务需要返回给客户端。
 
-用户身份验证服务
-人脸核身实人验证场景
+## Code blocks
+
+### Code block 1
+
+```
+@Data
+public class PayDevAuth {
+    // 应用ID
+    private String clientId;
+    // 应用级token
+    private String accessToken;
+    private String traceId;
+    private Long time;
+    // 开发者加密公钥ID。用于华为对接口响应敏感字段加密
+    private String developerEncKeyId;
+    // 华为加密公钥ID。用于开发者对接口请求敏感字段加密
+    private String petalpayEncKeyId;
+    // 开发者验签公钥ID。用于华为对开发者加签的请求报文验签
+    private String developerSignKeyId;
+    // 华为验签公钥ID。用于开发者对华为加签的响应报文验签
+    private String petalpaySignKeyId;
+    private String headerSign;
+    private String bodySign;
+}
+```
+
+### Code block 2
+
+```
+// 获取accessToken
+private String getaccessToken(String clientId, String clientSecret) {
+    HashMap<String, String> params = new HashMap<>();
+    params.put("grant_type", "client_credentials");
+    params.put("client_id", clientId);
+    params.put("client_secret", clientSecret);
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Content-Type", "application/x-www-form-urlencoded");
+    // restfulClient为http请求客户端对象，请自行实现相关对象及方法的处理逻辑。
+    ResponseEntity<Map> atRspResponseEntity = restfulClient.postForEntity(
+        "https://oauth-login.cloud.huawei.com/oauth2/v3/token", params, null, headers, Map.class);
+     return (String) atRspResponseEntity.getBody().get("access_token");
+}
+
+// 构建PayDevAuth请求头
+private String buildPayMercAuth(HashMap<String, String> body) {
+    // 对body进行排序拼接
+    String bodyStr = SignStringUtil.signString(body);
+    // 构建 PayDevAuth 请求头
+    PayDevAuth payDevAuth = new PayDevAuth();
+    payDevAuth.setTraceId("tid" + System.currentTimeMillis());
+    payDevAuth.setTime(System.currentTimeMillis());
+    // 获取accessToken
+    payDevAuth.setAccessToken(getAccessToken("clientId", "clientSecret"));
+    // 获取签名priKey
+    String priKey = "";
+    // 请求体签名
+    String bodySign = Sm2Utils.sign(Objects.requireNonNull(priKey, "The signing private key can’t null"), bodyStr);
+    payDevAuth.setBodySign(bodySign);
+    // 请求头签名
+    String headerStr = ToStringUtil.signString(payDevAuth);
+    String headerSign = Sm2Utils.sign(priKey, headerStr);
+    payDevAuth.setHeaderSign(headerSign);
+    return JsonUtils.obj2Json(payDevAuth);
+}
+```
+
+### Code block 3
+
+```
+public String getPreVerifyId(String clientId, String clientSecret, String credentialIdNo, String realName, String openId)
+    throws NoSuchAlgorithmException {
+    HashMap<String, String> body = new HashMap<>();
+    body.put("credentialType", "01");
+    // 人脸核身实人验证场景
+    body.put("credentialIdNo", getHashStr(credentialIdNo));
+    body.put("realName", getHashStr(realName));
+    body.put("openId", openId);
+    HashMap<String, String> header = new HashMap<>();
+    header.put("Content-Type", "application/json;charset=UTF-8");
+    header.put("payDevAuth", buildPayMercAuth(body));
+    // restfulClient为http请求客户端对象，请自行实现postForEntity请求方法。
+    ResponseEntity<Map> responseEntity = restfulClient.postForEntity(
+        "https://petalpay-developer.cloud.huawei.com.cn/api/v1/realname/verification/preverify", null, body, header, Map.class);
+    return (String) responseEntity.getBody().get("preVerifyId");
+}
+
+public String getHashStr(String input) throws NoSuchAlgorithmException {
+    byte[] encodedhash = MessageDigest.getInstance("SHA-256")
+        .digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    StringBuilder hexString = new StringBuilder();
+    for (byte b : encodedhash) {
+        String hex = Integer.toHexString(0xff & b);
+        if (hex.length() == 1) {
+            hexString.append('0');
+        }
+        hexString.append(hex);
+    }
+    return hexString.toString();
+}
+```
+
+### Code block 4
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { realNameService } from '@kit.PaymentKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  requestStartVerifyRealNameInfoPromise() {
+    // use your own preVerifyId
+    let preVerifyId = '';
+    realNameService.startRealNameVerification(this.context, preVerifyId)
+      .then((verifyResultId: string) => {
+        // verify success
+        console.info(`succeeded in verifying, verifyResultId: ${verifyResultId}`);
+      })
+      .catch((error: BusinessError) => {
+        // failed to verify
+        console.error(`failed to verify, error.code: ${error.code}, error.message: ${error.message}`);
+      });
+  }
+
+  build() {
+    Column() {
+      Button('requestStartVerifyRealNameInfoPromise')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          this.requestStartVerifyRealNameInfoPromise();
+        })
+      }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 5
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { realNameService } from '@kit.PaymentKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  requestStartRealNameAuthPromise() {
+    realNameService.startRealNameAuth(this.context)
+      .then((realNameAuthId: string) => {
+        // authorize success
+        console.info(`succeeded in authorizing, realNameAuthId: ${realNameAuthId}`);
+      })
+      .catch((error: BusinessError) => {
+        // failed to authorise
+        console.error(`failed to authorise, error.code: ${error.code}, error.message: ${error.message}`);
+      });
+  }
+
+  build() {
+    Column() {
+      Button('requestStartRealNameAuthPromise')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          this.requestStartRealNameAuthPromise();
+        })
+      }
+    .width('100%')
+    .height('100%')
+  }
+}
+```

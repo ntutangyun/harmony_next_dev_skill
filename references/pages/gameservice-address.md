@@ -16,6 +16,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 说明
 
 回调地址要求支持HTTPS协议，且具有合法商用证书。
-
-附录
-获取游戏密钥

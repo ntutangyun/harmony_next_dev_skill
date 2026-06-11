@@ -29,6 +29,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 调试凭据未注册。请先注册模拟器调试凭据。
 
 注册调试凭据时绑定了错误的应用/元服务。请先删除该调试凭据，重新绑定正确的应用/元服务，等待30分钟后再进行调试。
-
-错误码
-Cloud Foundation Kit常见问题

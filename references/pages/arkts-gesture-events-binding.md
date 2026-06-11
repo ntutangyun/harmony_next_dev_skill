@@ -9,6 +9,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ges
 gesture、priorityGesture和parallelGesture当前不支持使用三目运算符（条件? 表达式1 : 表达式2）切换手势绑定。
 
 gesture（常规手势绑定方法）
+
 .gesture(gesture: GestureType, mask?: GestureMask)
 
 gesture为通用的一种手势绑定方法，可以将手势绑定到对应的组件上。
@@ -33,8 +34,9 @@ struct RegularBinding {
     .width(250)
   }
 }
-Gesture.ets
+
 priorityGesture（带优先级的手势绑定方法）
+
 .priorityGesture(gesture: GestureType, mask?: GestureMask)
 
 priorityGesture是带优先级的手势绑定方法，可以在组件上绑定优先识别的手势。
@@ -68,8 +70,9 @@ struct PriorityBinding {
         }), GestureMask.IgnoreInternal)
   }
 }
-PriorityGesture.ets
+
 parallelGesture（并行手势绑定方法）
+
 .parallelGesture(gesture: GestureType, mask?: GestureMask)
 
 parallelGesture是并行的手势绑定方法，可以在父子组件上绑定可以同时响应的相同手势。
@@ -99,6 +102,102 @@ struct ParallelBinding {
         }), GestureMask.Normal)
   }
 }
-ParallelGesture.ets
-添加手势响应
-单一手势
+
+## Code blocks
+
+### Code block 1
+
+```
+.gesture(gesture: GestureType, mask?: GestureMask)
+```
+
+### Code block 2
+
+```
+// xxx.ets
+@Entry
+@Component
+struct RegularBinding {
+  build() {
+    Column() {
+      Text('Gesture').fontSize(28)
+      // 采用gesture手势绑定方法绑定TapGesture
+        .gesture(
+          TapGesture()
+            .onAction(() => {
+              console.info('TapGesture is onAction');
+            }))
+    }
+    .height(200)
+    .width(250)
+  }
+}
+```
+
+### Code block 3
+
+```
+.priorityGesture(gesture: GestureType, mask?: GestureMask)
+```
+
+### Code block 4
+
+```
+// xxx.ets
+@Entry
+@Component
+struct PriorityBinding {
+  build() {
+    Column() {
+      Text('Gesture').fontSize(28)
+        .gesture(
+          TapGesture()
+            .onAction(() => {
+              hilog.info(DOMAIN, TAG,'Text TapGesture is onAction');
+            }))
+    }
+    .height(200)
+    .width(250)
+    // 设置为priorityGesture时，点击文本区域会忽略Text组件的TapGesture手势事件，优先响应父组件Column的TapGesture手势事件
+    .priorityGesture(
+      TapGesture()
+        .onAction(() => {
+          hilog.info(DOMAIN, TAG,'Column TapGesture is onAction');
+        }), GestureMask.IgnoreInternal)
+  }
+}
+```
+
+### Code block 5
+
+```
+.parallelGesture(gesture: GestureType, mask?: GestureMask)
+```
+
+### Code block 6
+
+```
+// xxx.ets
+@Entry
+@Component
+struct ParallelBinding {
+  build() {
+    Column() {
+      Text('Gesture').fontSize(28)
+        .gesture(
+          TapGesture()
+            .onAction(() => {
+              hilog.info(DOMAIN, TAG,'Text TapGesture is onAction');
+            }))
+    }
+    .height(200)
+    .width(250)
+    // 设置为parallelGesture时，点击文本区域会同时响应父组件Column和子组件Text的TapGesture手势事件
+    .parallelGesture(
+      TapGesture()
+        .onAction(() => {
+          hilog.info(DOMAIN, TAG,'Column TapGesture is onAction');
+        }), GestureMask.Normal)
+  }
+}
+```

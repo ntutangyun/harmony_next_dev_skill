@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-netmultipath-overview_
 
+从6.0.0(20)版本开始，支持连接迁移（多网并发）功能。
+
 多网并发是系统提供接口可以建立多个网络通路，应用发起多网请求后，系统依据业务场景决定并发组合和实施相应的并发管控，并对并发做收益度量。使用多网并发功能的原则是应用申请（受限权限）、系统管控、最小化使用。
 
 其中各步骤功能如下：
@@ -19,6 +21,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 收益度量：根据APP传输体验反馈信息和系统Qoe算法，查看系统计算和应用反馈的一致性。
 
 注：多网并发能力受网络加速开关、权限、配额、功耗等方面管控，同时针对不规范的行为将进行惩罚，包括但不限于并发终止、配额降低、受限权限吊销等。
-
-连接迁移（多网并发）
-业务场景设置

@@ -91,7 +91,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/typical-s
     // ...
   },
 }
-module.json5
 
 安装应用后，长按桌面上的应用图标，图标上方会显示开发者配置的快捷方式：“添加收藏”和“分享好友”。点击相应标签，可启动对应的组件。应用配置的静态快捷方式在桌面上的展示效果如下图所示。
 
@@ -99,5 +98,84 @@ module.json5
 
 可以通过setShortcutVisibleForSelf接口隐藏或展示快捷方式。
 
-典型场景的开发指导
-创建应用分身
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "string": [
+    {
+      "name": "share",
+      "value": "分享好友"
+    },
+    {
+      "name": "add",
+      "value": "添加收藏"
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+{
+  "shortcuts": [
+   {
+      "shortcutId": "id_test1",
+      "label": "$string:add",
+      "icon": "$media:add_icon",
+      "wants": [
+        {
+          "bundleName": "com.ohos.hello",
+          "moduleName": "entry",
+          "abilityName": "EntryAbility1",
+          "parameters": {
+            "testKey": "testValue"
+          }
+        }
+      ]
+    },
+    {
+      "shortcutId": "id_test2",
+      "label": "$string:share",
+      "icon": "$media:share_icon",
+      "wants": [
+        {
+          "bundleName": "com.ohos.hello",
+          "moduleName": "entry",
+          "abilityName": "EntryAbility",
+          "parameters": {
+            "testKey": "testValue"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Code block 3
+
+```
+{
+  "module": {
+    // ...
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "metadata": [
+          {
+            "name": "ohos.ability.shortcuts",  // 配置快捷方式，该值固定为ohos.ability.shortcuts
+            "resource": "$profile:shortcuts_config"  // 指定shortcuts信息的资源位置
+          }
+        ],
+        // ...
+      }
+    ],
+    // ...
+  },
+}
+```

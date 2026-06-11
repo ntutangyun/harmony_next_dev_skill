@@ -2,8 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-environment-guidelines_
 
+场景介绍
+
+Environment提供了获取公共文件用户目录路径的能力，以支持三方应用在公共文件用户目录下进行文件访问操作。
+
+约束限制
+
 使用此接口，需确认设备具有以下系统能力：SystemCapability.FileManagement.File.Environment.FolderObtain。
+
 此接口仅用作公共沙箱目录路径的获取接口，操作对应的公共目录及其子目录需获取通过弹窗授权方式向用户申请授予对应目录的权限，具体参考访问控制-向用户申请授权。
+
 接口说明
 
 接口的详细说明，请参考oh_environment.h。
@@ -12,6 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-en
 FileManagement_ErrCode OH_Environment_GetUserDownloadDir (char **result)	获取用户Download目录沙箱路径。只支持2in1设备。
 FileManagement_ErrCode OH_Environment_GetUserDesktopDir (char **result)	获取用户Desktop目录沙箱路径。只支持2in1设备。
 FileManagement_ErrCode OH_Environment_GetUserDocumentDir (char **result)	获取用户Document目录沙箱路径。只支持2in1设备。
+
 开发步骤
 
 在CMake脚本中链接动态库
@@ -40,7 +49,6 @@ void GetUserDownloadDirPathExample()
         OH_LOG_ERROR(LOG_APP, "Failed to get download path, error code is %{public}d", ret);
     }
 }
-napi_init.cpp
 
 调用OH_Environment_GetUserDesktopDir接口获取用户Desktop目录沙箱路径，在接口中使用malloc申请的内存需要在使用完后释放因此需要free对应的内存。示例代码如下所示：
 
@@ -55,7 +63,6 @@ void GetUserDesktopDirPathExample()
         OH_LOG_ERROR(LOG_APP, "Failed to get user desktop path, error code is %{public}d", ret);
     }
 }
-napi_init.cpp
 
 调用OH_Environment_GetUserDocumentDir接口获取用户Document目录沙箱路径，在接口中使用malloc申请的内存需要在使用完后释放因此需要free对应的内存。示例代码如下所示：
 
@@ -70,13 +77,13 @@ void GetUserDocumentDirPathExample()
         OH_LOG_ERROR(LOG_APP, "Failed to get user document path, error code is %{public}d", ret);
     }
 }
-napi_init.cpp
 
 调用OH_Environment_GetUserDocumentDir接口获取用户Document目录沙箱路径，使用stat函数判断Document目录空间大小。示例代码如下所示：
 
 使用前需要引入如下头文件：
 
 #include <sys/stat.h>
+
 void GetUserDownloadDirSizeExample()
 {
     char *documentPath = nullptr;
@@ -95,6 +102,97 @@ void GetUserDownloadDirSizeExample()
         OH_LOG_ERROR(LOG_APP, "Failed to get user document directory, error code is %{public}d", ret);
     }
 }
-napi_init.cpp
-FileUri开发指导(C/C++)
-选择与保存用户文件
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC libohenvironment.so libhilog_ndk.z.so)
+```
+
+### Code block 2
+
+```
+#include <cstdlib>
+#include <filemanagement/environment/oh_environment.h>
+#include <filemanagement/fileio/oh_fileio.h>
+#include <hilog/log.h>
+```
+
+### Code block 3
+
+```
+void GetUserDownloadDirPathExample()
+{
+    char *downloadPath = nullptr;
+    FileManagement_ErrCode ret = OH_Environment_GetUserDownloadDir(&downloadPath);
+    if (ret == 0) {
+        OH_LOG_INFO(LOG_APP, "Succeeded in getting user download directory, path=%{public}s", downloadPath);
+        free(downloadPath);
+    } else {
+        OH_LOG_ERROR(LOG_APP, "Failed to get download path, error code is %{public}d", ret);
+    }
+}
+```
+
+### Code block 4
+
+```
+void GetUserDesktopDirPathExample()
+{
+    char *desktopPath = nullptr;
+    FileManagement_ErrCode ret = OH_Environment_GetUserDesktopDir(&desktopPath);
+    if (ret == 0) {
+        OH_LOG_INFO(LOG_APP, "Succeeded in getting user desktop directory, path=%{public}s", desktopPath);
+        free(desktopPath);
+    } else {
+        OH_LOG_ERROR(LOG_APP, "Failed to get user desktop path, error code is %{public}d", ret);
+    }
+}
+```
+
+### Code block 5
+
+```
+void GetUserDocumentDirPathExample()
+{
+    char *documentPath = nullptr;
+    FileManagement_ErrCode ret = OH_Environment_GetUserDocumentDir(&documentPath);
+    if (ret == 0) {
+        OH_LOG_INFO(LOG_APP, "Succeeded in getting user document directory, path=%{public}s", documentPath);
+        free(documentPath);
+    } else {
+        OH_LOG_ERROR(LOG_APP, "Failed to get user document path, error code is %{public}d", ret);
+    }
+}
+```
+
+### Code block 6
+
+```
+#include <sys/stat.h>
+```
+
+### Code block 7
+
+```
+void GetUserDownloadDirSizeExample()
+{
+    char *documentPath = nullptr;
+    FileManagement_ErrCode ret = OH_Environment_GetUserDocumentDir(&documentPath);
+    if (ret == 0) {
+        OH_LOG_INFO(LOG_APP, "Succeeded in getting user document directory, path=%{public}s", documentPath);
+        struct stat fileStat;
+        int result = stat(documentPath, &fileStat);
+        if (result == 0) {
+            OH_LOG_INFO(LOG_APP, "Succeeded in getting file info. document Size=%{public}ld", fileStat.st_size);
+        } else {
+            OH_LOG_ERROR(LOG_APP, "Failed to stat user document directory, error code is %{public}d", result);
+        }
+        free(documentPath);
+    } else {
+        OH_LOG_ERROR(LOG_APP, "Failed to get user document directory, error code is %{public}d", ret);
+    }
+}
+```

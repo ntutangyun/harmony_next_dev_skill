@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/theme_skinning_
 
+概述
+
 对于采用ArkTS开发的应用，提供了应用内组件的主题换肤功能，支持局部的深浅色切换及动态换肤。目前，该功能只支持设置应用内主题换肤，暂不支持在UIAbility或窗口层面进行主题设置，同时也不支持C-API和Node-API。
 
 自定义主题色
@@ -10,7 +12,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/theme_ski
 
 import { CustomColors, CustomTheme } from '@kit.ArkUI';
 
-
 export class AppColors implements CustomColors {
   // 自定义主题色
   public brand: ResourceColor = '#FF75D9';
@@ -18,14 +19,12 @@ export class AppColors implements CustomColors {
   public warning: ResourceColor = $r('sys.color.ohos_id_color_warning');
 }
 
-
 export class AppTheme implements CustomTheme {
   public colors: AppColors = new AppColors();
 }
 
-
 export let gAppTheme: CustomTheme = new AppTheme();
-AppTheme.ets
+
 设置应用内组件自定义主题色
 
 若在页面入口处设置应用内组件自定义主题色，需确保在页面build前执行ThemeControl.setDefaultTheme。
@@ -36,21 +35,17 @@ AppTheme.ets
 import { Theme, ThemeControl } from '@kit.ArkUI';
 import { gAppTheme } from './AppTheme';
 
-
 //在页面build前执行ThemeControl
 ThemeControl.setDefaultTheme(gAppTheme);
-
 
 @Entry
 @Component
 struct DisplayPage {
   @State menuItemColor: ResourceColor = $r('sys.color.background_primary');
 
-
   onWillApplyTheme(theme: Theme) {
     this.menuItemColor = theme.colors.backgroundPrimary;
   }
-
 
   build() {
     Column() {
@@ -71,7 +66,6 @@ struct DisplayPage {
               }
               .width('50%')
 
-
               Column() {
                 Text('Dark')
                   .fontSize('16fp')
@@ -88,7 +82,6 @@ struct DisplayPage {
           .backgroundColor(this.menuItemColor)
         }
 
-
         ListItem() {
           Column() {
             Text('Brightness')
@@ -101,7 +94,6 @@ struct DisplayPage {
           .borderRadius('10vp')
           .backgroundColor(this.menuItemColor)
         }
-
 
         ListItem() {
           Column() {
@@ -121,7 +113,6 @@ struct DisplayPage {
               .alignSelf(ItemAlign.Center)
               .margin({ left: '14fp' })
               .width('75%')
-
 
               Toggle({ type: ToggleType.Switch, isOn: true })
                 .margin({ right: '14fp' })
@@ -157,7 +148,6 @@ struct DisplayPage {
     .height('100%')
   }
 }
-Theme1.ets
 
 若在UIAbility中设置应用内组件自定义主题色，需在onWindowStageCreate()方法的windowStage.loadContent的完成时回调中调用ThemeControl.setDefaultTheme，设置应用内组件的自定义主题色。
 
@@ -166,32 +156,26 @@ import {AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window, CustomColors, ThemeControl } from '@kit.ArkUI';
 
-
 class AppColors implements CustomColors {
   fontPrimary = 0xFFD53032;
   iconOnPrimary = 0xFFD53032;
   iconFourth = 0xFFD53032;
 }
 
-
 const abilityThemeColors = new AppColors();
-
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
-
   onDestroy() {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
-
   onWindowStageCreate(windowStage: window.WindowStage) {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-
 
     windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {
@@ -205,7 +189,6 @@ export default class EntryAbility extends UIAbility {
     });
   }
 }
-EntryAbility.ets
 
 说明
 
@@ -231,22 +214,18 @@ class AppColors implements CustomColors {
   public backgroundEmphasize: ResourceColor = $r('app.color.brand_purple');
 }
 
-
 class AppColorsSec implements CustomColors {
   public fontPrimary: ResourceColor = $r('app.color.brand');
   public backgroundEmphasize: ResourceColor = $r('app.color.brand');
 }
 
-
 class AppTheme implements CustomTheme {
   public colors: AppColors = new AppColors();
 }
 
-
 class AppThemeSec implements CustomTheme {
   public colors: AppColors = new AppColorsSec();
 }
-
 
 @Entry
 @Component
@@ -255,7 +234,6 @@ struct DisplayPage1 {
   // 请将$r('app.string.SetCustomThemeStyle')替换为实际资源文件，在本示例中该资源文件的value值为"设置应用局部页面自定义主题风格"
   @State message: ResourceStr = $r('app.string.SetCustomThemeStyle');
   count = 0;
-
 
   build() {
     WithTheme({ theme: this.customTheme }) {
@@ -290,7 +268,6 @@ struct DisplayPage1 {
     }
   }
 }
-Theme2.ets
 
 设置应用页面局部深浅色
 
@@ -312,18 +289,16 @@ dark.json数据示例：
       }
     ]
   }
+
 import { ThemeControl } from '@kit.ArkUI';
 
-
 ThemeControl.setDefaultTheme(undefined);
-
 
 @Entry
 @Component
 struct DisplayPage3 {
   @State message: string = 'Hello World';
   @State colorMode: ThemeColorMode = ThemeColorMode.DARK;
-
 
   build() {
     WithTheme({ colorMode: this.colorMode }) {
@@ -350,9 +325,9 @@ struct DisplayPage3 {
     }
   }
 }
-Theme3.ets
 
 系统缺省token色值
+
 Token	场景类别	Light	说明	Dark	说明
 theme.colors.brand	品牌色	#ff0a59f7		#ff317af7	
 theme.colors.warning	一级警示色	#ffe84026		#ffd94838	
@@ -408,5 +383,308 @@ theme.colors.interactiveClick	通用点击交互式颜色	#19000000		#19ffffff
 
 各个token色值可影响的组件可参考Colors接口说明。
 
-应用深浅色适配
-UI系统场景化能力
+## Code blocks
+
+### Code block 1
+
+```
+import { CustomColors, CustomTheme } from '@kit.ArkUI';
+
+export class AppColors implements CustomColors {
+  // 自定义主题色
+  public brand: ResourceColor = '#FF75D9';
+  // 使用$r，让一级警示色在深色和浅色模式下，设置为不同的颜色
+  public warning: ResourceColor = $r('sys.color.ohos_id_color_warning');
+}
+
+export class AppTheme implements CustomTheme {
+  public colors: AppColors = new AppColors();
+}
+
+export let gAppTheme: CustomTheme = new AppTheme();
+```
+
+### Code block 2
+
+```
+// Index.ets
+import { Theme, ThemeControl } from '@kit.ArkUI';
+import { gAppTheme } from './AppTheme';
+
+//在页面build前执行ThemeControl
+ThemeControl.setDefaultTheme(gAppTheme);
+
+@Entry
+@Component
+struct DisplayPage {
+  @State menuItemColor: ResourceColor = $r('sys.color.background_primary');
+
+  onWillApplyTheme(theme: Theme) {
+    this.menuItemColor = theme.colors.backgroundPrimary;
+  }
+
+  build() {
+    Column() {
+      List({ space: 10 }) {
+        ListItem() {
+          Column({ space: '5vp' }) {
+            Text('Color mode')
+              .margin({ top: '5vp', left: '14fp' })
+              .width('100%')
+            Row() {
+              Column() {
+                Text('Light')
+                  .fontSize('16fp')
+                  .textAlign(TextAlign.Start)
+                  .alignSelf(ItemAlign.Center)
+                Radio({ group: 'light or dark', value: 'light' })
+                  .checked(true)
+              }
+              .width('50%')
+
+              Column() {
+                Text('Dark')
+                  .fontSize('16fp')
+                  .textAlign(TextAlign.Start)
+                  .alignSelf(ItemAlign.Center)
+                Radio({ group: 'light or dark', value: 'dark' })
+              }
+              .width('50%')
+            }
+          }
+          .width('100%')
+          .height('90vp')
+          .borderRadius('10vp')
+          .backgroundColor(this.menuItemColor)
+        }
+
+        ListItem() {
+          Column() {
+            Text('Brightness')
+              .width('100%')
+              .margin({ top: '5vp', left: '14fp' })
+            Slider({ value: 40, max: 100 })
+          }
+          .width('100%')
+          .height('70vp')
+          .borderRadius('10vp')
+          .backgroundColor(this.menuItemColor)
+        }
+
+        ListItem() {
+          Column() {
+            Row() {
+              Column({ space: '5vp' }) {
+                Text('Touch sensitivity')
+                  .fontSize('16fp')
+                  .textAlign(TextAlign.Start)
+                  .width('100%')
+                Text('Increase the touch sensitivity of your screen' +
+                  ' for use with screen protectors')
+                  .fontSize('12fp')
+                  .fontColor(Color.Blue)
+                  .textAlign(TextAlign.Start)
+                  .width('100%')
+              }
+              .alignSelf(ItemAlign.Center)
+              .margin({ left: '14fp' })
+              .width('75%')
+
+              Toggle({ type: ToggleType.Switch, isOn: true })
+                .margin({ right: '14fp' })
+                .alignSelf(ItemAlign.Center)
+            }
+            .width('100%')
+            .height('80vp')
+          }
+          .width('100%')
+          .borderRadius('10vp')
+          .backgroundColor(this.menuItemColor)
+        }
+        ListItem() {
+          Column() {
+            Text('Warning')
+              .width('100%')
+              .margin({ top: '5vp', left: '14fp' })
+            Button('Text')
+              .type(ButtonType.Capsule)
+              .role(ButtonRole.ERROR)
+              .width('40%')
+          }
+          .width('100%')
+          .height('70vp')
+          .borderRadius('10vp')
+          .backgroundColor(this.menuItemColor)
+        }
+      }
+    }
+    .padding('10vp')
+    .backgroundColor('#dcdcdc')
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 3
+
+```
+// EntryAbility.ets
+import {AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window, CustomColors, ThemeControl } from '@kit.ArkUI';
+
+class AppColors implements CustomColors {
+  fontPrimary = 0xFFD53032;
+  iconOnPrimary = 0xFFD53032;
+  iconFourth = 0xFFD53032;
+}
+
+const abilityThemeColors = new AppColors();
+
+export default class EntryAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+  }
+
+  onDestroy() {
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+  }
+
+  onWindowStageCreate(windowStage: window.WindowStage) {
+    // Main window is created, set main page for this ability
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err.code) {
+        hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
+        return;
+      }
+      hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
+      // 在onWindowStageCreate()方法中setDefaultTheme
+      ThemeControl.setDefaultTheme({ colors: abilityThemeColors });
+      hilog.info(0x0000, 'testTag', '%{public}s', 'ThemeControl.setDefaultTheme done');
+    });
+  }
+}
+```
+
+### Code block 4
+
+```
+import { CustomColors, CustomTheme, Theme } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
+//请将$r('app.color.xxx')替换为实际资源文件
+class AppColors implements CustomColors {
+  public fontPrimary: ResourceColor = $r('app.color.brand_purple');
+  public backgroundEmphasize: ResourceColor = $r('app.color.brand_purple');
+}
+
+class AppColorsSec implements CustomColors {
+  public fontPrimary: ResourceColor = $r('app.color.brand');
+  public backgroundEmphasize: ResourceColor = $r('app.color.brand');
+}
+
+class AppTheme implements CustomTheme {
+  public colors: AppColors = new AppColors();
+}
+
+class AppThemeSec implements CustomTheme {
+  public colors: AppColors = new AppColorsSec();
+}
+
+@Entry
+@Component
+struct DisplayPage1 {
+  @State customTheme: CustomTheme = new AppTheme();
+  // 请将$r('app.string.SetCustomThemeStyle')替换为实际资源文件，在本示例中该资源文件的value值为"设置应用局部页面自定义主题风格"
+  @State message: ResourceStr = $r('app.string.SetCustomThemeStyle');
+  count = 0;
+
+  build() {
+    WithTheme({ theme: this.customTheme }) {
+      Row(){
+        Column() {
+          Text('WithTheme')
+            .fontSize(30)
+            .margin({bottom: 10})
+          Text(this.message)
+            .margin({bottom: 10})
+          Button('change theme').onClick(() => {
+            this.count++;
+            if (this.count > 1) {
+              this.count = 0;
+            }
+            switch (this.count) {
+              case 0:
+                this.customTheme = new AppTheme();
+                break;
+              case 1:
+                this.customTheme = new AppThemeSec();
+                break;
+              default:
+                break;
+            }
+          })
+        }
+        .width('100%')
+      }
+      .height('100%')
+      .width('100%')
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+  {
+    "color": [
+      {
+        "name": "start_window_background",
+        "value": "#000000"
+      }
+    ]
+  }
+```
+
+### Code block 6
+
+```
+import { ThemeControl } from '@kit.ArkUI';
+
+ThemeControl.setDefaultTheme(undefined);
+
+@Entry
+@Component
+struct DisplayPage3 {
+  @State message: string = 'Hello World';
+  @State colorMode: ThemeColorMode = ThemeColorMode.DARK;
+
+  build() {
+    WithTheme({ colorMode: this.colorMode }) {
+      Row() {
+        Column() {
+          Text(this.message)
+            .fontSize(50)
+            .fontWeight(FontWeight.Bold)
+          Button('Switch ColorMode').onClick(() => {
+            if (this.colorMode === ThemeColorMode.LIGHT) {
+              this.colorMode = ThemeColorMode.DARK;
+            } else if (this.colorMode === ThemeColorMode.DARK) {
+              this.colorMode = ThemeColorMode.LIGHT;
+            }
+          })
+        }
+        .width('100%')
+      }
+      .backgroundColor($r('sys.color.background_primary'))
+      .height('100%')
+      // 扩展安全区，实现沉浸式深浅色变更效果
+      .expandSafeArea(
+        [SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.END, SafeAreaEdge.BOTTOM, SafeAreaEdge.START])
+    }
+  }
+}
+```

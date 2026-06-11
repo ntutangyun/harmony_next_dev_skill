@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-18_
 
+App和元服务属于不同的应用，appId因此不同，商户号、证书等是可以共用一套的。

@@ -15,9 +15,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/one-time-
 当前仅支持以下权限，当应用向用户申请这些权限时，弹窗将显示“允许本次使用”的选项；在设置中修改这些权限时，系统将显示“每次询问”的选项。
 
 剪切板："ohos.permission.READ_PASTEBOARD"
+
 模糊位置："ohos.permission.APPROXIMATELY_LOCATION"
+
 位置："ohos.permission.LOCATION"
+
 后台位置："ohos.permission.LOCATION_IN_BACKGROUND"
+
 使用限制
 
 当用户点击“允许本次使用”按钮后，应用将获得临时权限。
@@ -33,6 +37,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/one-time-
 如下图样例所示，小艺建议处于卡片可见状态：
 
 当用户在权限设置中选择“每次询问”时，应用将获得模糊位置和位置临时权限。取消临时授权的操作与此相同。
-
-再次向用户申请授权
-手动设置授权

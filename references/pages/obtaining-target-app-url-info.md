@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/obtaining-target-app-url-info_
 
+场景介绍
+
 开发者在使用UIAbilityContext.openLink接口拉起目标应用时，需要传入目标应用的URL信息。本章节主要介绍如何获取目标应用的URL信息。
 
 假设目标应用的UIAbility的module.json5配置信息如下：
@@ -27,6 +29,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/obtaining
     // ...
   ]
 }
+
 环境要求
 
 开发者需要先获取hdc工具。
@@ -116,9 +119,13 @@ path	path1
 根据上述参数，拼接得到的完整URL为：
 
 appurl://www.example.com/path1
+
 说明
+
 不同应用的bundleName和URL配置可能因版本不同而有所变化。
+
 建议在实际使用前，通过hdc命令确认目标应用的最新配置信息。
+
 如果应用未配置skills中的uris字段，则不支持通过Deep Linking方式拉起。
 
 使用Deep Linking方式拉起目标应用。
@@ -135,11 +142,9 @@ import { common } from '@kit.AbilityKit'
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct SpecifiedPage {
-
 
   build() {
     Row() {
@@ -148,7 +153,6 @@ struct SpecifiedPage {
           .onClick(() => {
             let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
             let link: string = 'appurl://www.example.com/path1';
-
 
             context.openLink(link, { appLinkingOnly: false })
               .then(() => {
@@ -171,5 +175,141 @@ struct SpecifiedPage {
 
 图1 拉起目标应用演示
 
-（可选）使用canOpenLink判断应用是否可访问
-使用Deep Linking实现应用间跳转
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "name": "EntryAbility",
+  "srcEntry": "./ets/entryability/EntryAbility.ets",
+  "icon": "$media:layered_image",
+  "label": "$string:EntryAbility_label",
+  // ···
+  "skills": [
+    {
+      "uris": [
+        {
+          "scheme": "appurl",
+          "host": "www.example.com",
+          "path": "path1"
+          // ...
+        }
+      ],
+      "domainVerify": false,
+    }
+    // ...
+  ]
+}
+```
+
+### Code block 2
+
+```
+hdc shell bm dump -a
+```
+
+### Code block 3
+
+```
+hdc shell "aa dump -l | grep com.example.myapplication"
+```
+
+### Code block 4
+
+```
+# 执行结果
+Mission ID #48  mission name #[#com.example.myapplication:entry:EntryAbility] lockedStat#0 mission affinity #[]
+      app name [com.example.myapplication]
+      bundle name [com.example.myapplication]
+```
+
+### Code block 5
+
+```
+hdc shell bm dump -n com.example.myapplication
+```
+
+### Code block 6
+
+```
+// 输出示例（skills部分）：
+// ...
+"name": "EntryAbility",
+// ...
+{
+  "skills": [
+    {
+      "actions": [
+        "ohos.want.action.viewData"
+      ],
+      "domainVerify": false,
+      "entities": [
+        "entity.system.browsable"
+      ],
+      "permissions": [],
+      "uris": [
+        {
+          "host": "www.example.com",
+          "linkFeature": "",
+          "maxFileSupported": 0,
+          "path": "path1",
+          "pathRegex": "",
+          "pathStartWith": "",
+          "port": "",
+          "scheme": "appurl",
+          "type": "",
+          "utd": ""
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Code block 7
+
+```
+scheme://host:port/path
+```
+
+### Code block 8
+
+```
+appurl://www.example.com/path1
+```
+
+### Code block 9
+
+```
+import { common } from '@kit.AbilityKit'
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct SpecifiedPage {
+
+  build() {
+    Row() {
+      Column() {
+        Button("拉起目标应用")
+          .onClick(() => {
+            let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+            let link: string = 'appurl://www.example.com/path1';
+
+            context.openLink(link, { appLinkingOnly: false })
+              .then(() => {
+                hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+              })
+              .catch((error: BusinessError) => {
+                hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+              });
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

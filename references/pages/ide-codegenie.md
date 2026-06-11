@@ -16,18 +16,10 @@ DevEco CodeGenie是DevEco Studio AI辅助编程工具，支持智能问答、代
 
 下载完成后，插件安装包无需解压，依照下方步骤进行安装：
 
-在DevEco Studio菜单栏，点击File > Settings（macOS为DevEco Studio > Preferences/Settings）> Plugins，点击 > Install Plugin from Disk…安装本地插件。
-
-在弹出的文件选择窗口中，选择未解压的插件包的存放位置，点击OK确认安装插件。
-
-点击Restart IDE，重新启动DevEco Studio。
-
 在DevEco Studio右侧边栏点击CodeGenie，完成登录并开始体验。
+
 说明
 
 进入File > Settings（macOS为DevEco Studio > Preferences/Settings） > CodeGenie > General页面，勾选Auto Update，可以自动升级插件配置。
 
 若管理台配置的插件可以静默升级，且系统检测到插件需要更新时，插件会自动升级；不勾选时会有弹框提示用户手动升级。若管理台配置的插件不支持静默升级，均有弹框提示用户手动升级。
-
-版本说明
-智能问答

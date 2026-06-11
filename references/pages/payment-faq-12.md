@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-12_
 
+请检查是否使用相同的订单号重复预下单，需要更换下商户订单号mercOrderNo再重新发起预下单请求。

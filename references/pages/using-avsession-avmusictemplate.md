@@ -30,20 +30,17 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { TemplateManager } from '../manager/TemplateManager';
 
-
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     console.info('onCreate');
     TemplateManager.getInstance().createTemplate();
   }
 
-
   // ...
   onForeground(): void {
     console.info('onForeground');
     this.startTemplateControllerAbility();
   }
-
 
   private startTemplateControllerAbility() {
     let want: Want = {
@@ -60,9 +57,9 @@ export default class EntryAbility extends UIAbility {
     });
   }
 }
+
 import { avMusicTemplate } from '@kit.AVSessionKit';
 // ...
-
 
 export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
@@ -70,7 +67,6 @@ export class TemplateManager {
   // ...
   private constructor() {
   }
-
 
   /**
    * 获取模板控制器实例。
@@ -83,7 +79,6 @@ export class TemplateManager {
     }
     return TemplateManager.sInstance;
   };
-
 
   /**
    * 创建音频模板。
@@ -109,10 +104,11 @@ export class TemplateManager {
 音频模板主界面显示需要同时注册如下两个接口：
 
 onQueryMainTabs：注册查询主标签事件监听。提供主界面展示的TAB数据集合，并规定“我的主页”的tabId为"minePage"。
+
 onQueryMediaTabContent：注册查询媒体标签内容事件监听。根据tabId提供页面展示内容数据。
+
 import { avMusicTemplate } from '@kit.AVSessionKit';
 // ...
-
 
 export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
@@ -141,7 +137,6 @@ export class TemplateManager {
   };
   // ...
 
-
   /**
    * 注册监听。
    */
@@ -150,7 +145,6 @@ export class TemplateManager {
     this.template?.onQueryMediaTabContent(this.queryMediaTabContentEvent);
     // ...
   };
-
 
   // ...
   /**
@@ -171,7 +165,6 @@ export class TemplateManager {
     return mainTabs;
   };
 
-
   /**
    * 模拟获取TAB内容。
    *
@@ -186,7 +179,6 @@ export class TemplateManager {
     }
     return mediaTabContent;
   };
-
 
   /**
    * 模拟获取合集数据。
@@ -206,7 +198,6 @@ export class TemplateManager {
     }
     return compilation;
   };
-
 
   /**
    * 模拟获取媒体数据。
@@ -235,13 +226,11 @@ export class TemplateManager {
 import { avMusicTemplate } from '@kit.AVSessionKit';
 // ...
 
-
 export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
   // ...
   private isLogin: boolean = false;
   // ...
-
 
   /**
    * 模拟登录状态改变。
@@ -252,7 +241,6 @@ export class TemplateManager {
     this.isLogin = isLogin;
     this.setUserInfo();
   }
-
 
   /**
    * 用户信息发生变化后通知界面刷新用户信息，如登陆账号后。
@@ -275,7 +263,6 @@ export class TemplateManager {
 
 import { avMusicTemplate } from '@kit.AVSessionKit';
 // ...
-
 
 export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
@@ -313,5 +300,286 @@ export class TemplateManager {
   };
   // ...
 }
-音频模板
-Camera Kit（相机服务）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { TemplateManager } from '../manager/TemplateManager';
+
+export default class EntryAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    console.info('onCreate');
+    TemplateManager.getInstance().createTemplate();
+  }
+
+  // ...
+  onForeground(): void {
+    console.info('onForeground');
+    this.startTemplateControllerAbility();
+  }
+
+  private startTemplateControllerAbility() {
+    let want: Want = {
+      bundleName: 'com.example.templatecontroller',
+      abilityName: 'EntryAbility',
+      parameters: {
+        bundleName: 'com.example.templateprovider'
+      }
+    }
+    this.context.startAbility(want).then(() => {
+      console.info('startTemplateControllerAbility: startAbility success');
+    }).catch((e: BusinessError) => {
+      console.error(`startTemplateControllerAbility: startAbility: errCode: ${e?.code}}`);
+    });
+  }
+}
+```
+
+### Code block 2
+
+```
+import { avMusicTemplate } from '@kit.AVSessionKit';
+// ...
+
+export class TemplateManager {
+  private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
+  private static sInstance: TemplateManager;
+  // ...
+  private constructor() {
+  }
+
+  /**
+   * 获取模板控制器实例。
+   *
+   * @returns 模板控制器实例。
+   */
+  public static getInstance(): TemplateManager {
+    if (!TemplateManager.sInstance) {
+      TemplateManager.sInstance = new TemplateManager();
+    }
+    return TemplateManager.sInstance;
+  };
+
+  /**
+   * 创建音频模板。
+   */
+  public createTemplate() {
+    if (this.template) {
+      console.warn('createTemplate: template not undefined');
+      return
+    }
+    try {
+      this.template = avMusicTemplate.createAVMusicTemplate(avMusicTemplate.AVMusicTemplateType.DEFAULT);
+      console.info('createTemplate: success');
+      // ...
+    } catch (e) {
+      console.error(`createTemplate, errCode: ${e?.code}`);
+    }
+  }
+  // ...
+}
+```
+
+### Code block 3
+
+```
+import { avMusicTemplate } from '@kit.AVSessionKit';
+// ...
+
+export class TemplateManager {
+  private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
+  // ...
+  private queryMainTabsEvent: avMusicTemplate.QueryMainTabsEvent = async () => {
+    return new Promise<avMusicTemplate.MediaTab[]>(async (resolve, reject) => {
+      try {
+        let tabs: avMusicTemplate.MediaTab[] = await this.getMainTabs();
+        resolve(tabs);
+      } catch (e) {
+        console.error(`queryMainTabsEvent fail, errCode: ${e?.code}`);
+        reject(e);
+      }
+    });
+  };
+  private queryMediaTabContentEvent: avMusicTemplate.QueryMediaTabContentEvent = async (tabId: string) => {
+    return new Promise<avMusicTemplate.MediaTabContent>(async (resolve, reject) => {
+      try {
+        let tabContent: avMusicTemplate.MediaTabContent = await this.createMediaTabContent();
+        resolve(tabContent);
+      } catch (e) {
+        console.error(`queryMediaTabContentEvent fail, errCode: ${e?.code}`);
+        reject(e);
+      }
+    });
+  };
+  // ...
+
+  /**
+   * 注册监听。
+   */
+  private registerListener() {
+    this.template?.onQueryMainTabs(this.queryMainTabsEvent);
+    this.template?.onQueryMediaTabContent(this.queryMediaTabContentEvent);
+    // ...
+  };
+
+  // ...
+  /**
+   * 模拟获取主界面的所有TAB。
+   *
+   * @returns Promise类型MediaTab数组。
+   */
+  private async getMainTabs(): Promise<avMusicTemplate.MediaTab[]> {
+    let homeTab: avMusicTemplate.MediaTab = {
+      tabId: 'home',
+      tabName: '首页'
+    };
+    let mineTab: avMusicTemplate.MediaTab = {
+      tabId: 'mine',
+      tabName: '我的'
+    };
+    let mainTabs: avMusicTemplate.MediaTab[] = [homeTab, mineTab];
+    return mainTabs;
+  };
+
+  /**
+   * 模拟获取TAB内容。
+   *
+   * @returns 标签页内容。
+   */
+  private async createMediaTabContent(): Promise<avMusicTemplate.MediaTabContent> {
+    let compilation: avMusicTemplate.Compilation = await this.createCompilation();
+    let mediaTabContent: avMusicTemplate.MediaTabContent = {
+      errorCode: 0,
+      tabId: 'tabId',
+      compilations: [compilation]
+    }
+    return mediaTabContent;
+  };
+
+  /**
+   * 模拟获取合集数据。
+   *
+   * @returns 合集。
+   */
+  private async createCompilation(): Promise<avMusicTemplate.Compilation> {
+    let mediaEntity: avMusicTemplate.MediaEntity = await this.createMediaEntity();
+    let compilation: avMusicTemplate.Compilation = {
+      errorCode: 0,
+      id: '',
+      title: '',
+      hasMoreData: false,
+      totalSize: 1,
+      memberMediaType: avMusicTemplate.EntityType.SINGLE,
+      topElements: [mediaEntity],
+    }
+    return compilation;
+  };
+
+  /**
+   * 模拟获取媒体数据。
+   *
+   * @returns 媒体数据。
+   */
+  private async createMediaEntity(): Promise<avMusicTemplate.MediaEntity> {
+    let mediaEntity: avMusicTemplate.MediaEntity = {
+      mediaId: 'mediaId',
+      mediaType: avMusicTemplate.EntityType.SINGLE,
+      parentId: 'parentId',
+      parentMediaType: avMusicTemplate.EntityType.SINGLE,
+      title: 'title',
+      imageUrl: 'imageUrl',
+      playState: avMusicTemplate.PlaybackState.PLAYBACK_STATE_PREPARE
+    };
+    return mediaEntity;
+  };
+  // ...
+}
+```
+
+### Code block 4
+
+```
+import { avMusicTemplate } from '@kit.AVSessionKit';
+// ...
+
+export class TemplateManager {
+  private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
+  // ...
+  private isLogin: boolean = false;
+  // ...
+
+  /**
+   * 模拟登录状态改变。
+   *
+   * @param isLogin 是否登录。
+   */
+  public setLoginState(isLogin: boolean) {
+    this.isLogin = isLogin;
+    this.setUserInfo();
+  }
+
+  /**
+   * 用户信息发生变化后通知界面刷新用户信息，如登陆账号后。
+   */
+  public setUserInfo() {
+    let userInfo: avMusicTemplate.UserInfo = {
+      userInfoId: this.isLogin ? 'userInfoId' : '',
+      nickName: this.isLogin ? '昵称' : '',
+      profilePicUrl: this.isLogin ? 'profilePicUrl' : '',
+      tips: this.isLogin ? 'tips' : '',
+      isLogin: this.isLogin,
+      isVip: false
+    };
+    this.template?.setUserInfo(userInfo);
+  };
+  // ...
+}
+```
+
+### Code block 5
+
+```
+import { avMusicTemplate } from '@kit.AVSessionKit';
+// ...
+
+export class TemplateManager {
+  private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
+  // ...
+  /**
+   * 注销监听。
+   */
+  public unregisterListener() {
+    this.template?.offQueryMainTabs();
+    this.template?.offQueryMediaTabContent();
+    this.template?.offQueryMediaEntity();
+    this.template?.offQueryCompilation();
+    this.template?.offQueryPlaylist();
+    this.template?.offQueryCurrentSingle();
+    this.template?.offQueryCompilationByKeyword();
+    this.template?.offQueryMediaEntityByKeyword();
+    this.template?.offQueryRecommendMediaEntityList();
+    this.template?.offQueryHotWords();
+    this.template?.offQuerySearchHistory();
+    this.template?.offClearSearchHistory();
+    this.template?.offLogin();
+    this.template?.offRequestDialogInfo();
+    this.template?.offHandleMemberPurchase();
+    this.template?.offQueryMemberPurchase();
+    this.template?.offQueryCustomContent();
+    this.template?.offDownloadMediaEntity();
+    this.template?.offSettingsChange();
+    this.template?.offProblemAndAdvice();
+    this.template?.offPlayForSearch();
+    this.template?.offExecuteAction();
+    this.template?.offPlayMediaEntity();
+    this.template?.offFavoriteMediaEntity();
+    this.template?.destroy();
+    this.template = undefined;
+  };
+  // ...
+}
+```

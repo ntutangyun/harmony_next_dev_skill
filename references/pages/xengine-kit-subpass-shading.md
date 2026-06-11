@@ -19,6 +19,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/xengine-k
 通过Vulkan扩展接口VK_HUAWEI_subpass_shading提供Subpass Shading API，该扩展支持在Subpass中使用Compute Shader，并在Compute Shader中使用SubpassLoad从Tile buffer中直接读取数据，可用于降低DDR带宽，适用于TBDR和Forward+管线。
 
 Subpass Shading能力具体使用请参见Demo（GPU加速引擎-Subpass Shading）。
-
-自适应VRS
-光线追踪反射

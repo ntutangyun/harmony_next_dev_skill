@@ -2,18 +2,25 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mdm-kit-term_
 
+EDM
+
+Enterprise device manager 企业设备管理, EDM服务是企业设备管理框架中的核心底座。
+
+BYOD
+
 Bring Your Own Device，自带设备办公。指一些企业允许员工携带自己平板或智能手机到公司，并使用这些设备接入办公环境，用户企业办公或者外来访客携带设备访问工厂、实验室等场景。
 
 Admin角色
-SDA
+
+[h2]SDA
 
 Super Device Admin，超级设备管理员。激活为SDA的Admin组件，可以对设备进行管控以及管理其他的DA应用（包括激活、解除激活DA应用），适用于企业设备办公。
 
-DA
+[h2]DA
 
 Device Admin，普通设备管理员。激活为DA的Admin组件，可以对设备进行管控，适用于企业设备办公。
 
-BDA
+[h2]BDA
 
 Byod Device Admin，BYOD设备管理员。激活为BDA的组件，可以对设备进行一些如禁用拍照、录音等简单管控。
 
@@ -28,6 +35,3 @@ MDM应用（设备管理应用）
 EMM厂商
 
 EMM厂商是指为其他企业提供企业移动管理全套软件、解决方案和服务的公司。
-
-个人数据处理说明
-硬件

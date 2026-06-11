@@ -9,6 +9,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-enabl
 说明
 
 发布阶段必须申请发布证书、开启和激活“应用内购买服务”后需要重新申请发布Profile文件，并完成手动签名。
-
-创建项目和应用
-（可选）申请嵌入式收银台开放能力权限

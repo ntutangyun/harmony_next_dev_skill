@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-environment-preparation_
 
+进行环境准备前，你需要了解如下基本概念，以便更好的理解后续操作。
+
+开发环境：指编译开发代码的环境。
+
+运行环境：指运行算子、推理程序等的Linux环境。运行环境必须连接上带有Kirin AI处理器的设备，如手机、平板等。
+
 开发环境与运行环境合设场景：开发环境和运行环境在同一台机器上，开发者使用连接上Kirin AI处理器的机器作为运行环境，同时在该环境上进行代码开发与编译。
 
 开发环境与运行环境分设场景：开发环境和运行环境不在同一台机器上，开发者使用连接上Kirin AI处理器的机器作为运行环境；使用其他独立机器进行代码开发与编译，作为开发环境。
@@ -53,5 +59,28 @@ torch	输入、输出数据格式转换使用。	pip3 install torch
 sympy	用于进行符号计算	pip3 install sympy
 paramiko	与远程linux环境连接	pip3 install paramiko
 protobuf	模型解析	pip3 install protobuf
-AscendC简介
-快速入门
+
+## Code blocks
+
+### Code block 1
+
+```
+tools
+├── platform
+│   ├── kirin9020
+│   ├── kirinx90
+```
+
+### Code block 2
+
+```
+cd ddk/tools/tools_ascendc
+chmod +x install.sh
+source ./install.sh
+```
+
+### Code block 3
+
+```
+source  /usr/local/ddk/tools/tools_ascendc/set_ascendc_env.sh
+```

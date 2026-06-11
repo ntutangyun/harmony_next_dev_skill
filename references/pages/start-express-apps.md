@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/start-express-apps_
 
+本章节介绍如何拉起快递类应用扩展面板。
+
 例如，在消息类App中，用户收到快递单号，应用能够识别快递单号信息并提供快递查询的链接。用户点击链接后，应用将通过调用UIAbilityContext.startAbilityByType或UIExtensionContentSession.startAbilityByType接口，拉起快递类应用的扩展面板。面板上将展示设备上所有支持快递查询的应用，供用户选择并跳转至所需应用。
 
 快递类应用扩展面板参数说明
@@ -11,6 +13,7 @@ startAbilityByType接口中type字段为express，支持查询快递意图，对
 参数名	类型	必填	说明
 sceneType	number	否	意图场景，表明本次请求对应的操作意图。默认为1，查询快递填场景填1或不填。
 expressNo	string	是	快递单号。
+
 拉起方开发步骤
 
 导入相关模块。
@@ -23,7 +26,6 @@ import { common } from '@kit.AbilityKit';
 @Component
 struct Index {
     @State hideAbility: string = 'hideAbility';
-
 
     build() {
         Row() {
@@ -45,7 +47,6 @@ struct Index {
                                 console.info(`onResult result: ${JSON.stringify(result)}`);
                             }
                         }
-
 
                         context.startAbilityByType("express", wantParam, abilityStartCallback,
                             (err) => {
@@ -69,10 +70,9 @@ struct Index {
 
 在module.json5中配置uris：
 
-设置linkFeature属性以声明当前应用支持的特性功能，从而系统可以从设备已安装应用中找到当前支持该特性的应用，取值范围如下：
 取值	含义
 QueryExpress	声明应用支持快递查询。
-设置scheme、host、port、path/pathStartWith属性，与Want中URI相匹配，以便区分不同功能。
+
 {
     "abilities": [
         {
@@ -109,24 +109,19 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 
-
 const TAG = 'EntryAbility';
-
 
 export default class EntryAbility extends UIAbility {
     windowStage: window.WindowStage | null = null;
 
-
     uri?: string;
     expressNo?: string;
-
 
     onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
         hilog.info(0x0000, TAG, `onCreate, want=${JSON.stringify(want)}`);
         super.onCreate(want, launchParam);
         this.parseWant(want);
     }
-
 
     onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
         hilog.info(0x0000, TAG, `onNewWant, want=${JSON.stringify(want)}`);
@@ -140,12 +135,10 @@ export default class EntryAbility extends UIAbility {
         this.loadPage(this.windowStage);
     }
 
-
     private parseWant(want: Want): void {
         this.uri = want.uri as string | undefined;
         this.expressNo = want.parameters?.expressNo as string | undefined;
     }
-
 
     private loadPage(windowStage: window.WindowStage): void {
         hilog.info(0x0000, TAG, `loadPage, uri=${this.uri}`);
@@ -169,11 +162,9 @@ export default class EntryAbility extends UIAbility {
         }
     }
 
-
     onDestroy(): void {
         hilog.info(0x0000, TAG, `onDestroy`);
     }
-
 
     onWindowStageCreate(windowStage: window.WindowStage): void {
         hilog.info(0x0000, TAG, `onWindowStageCreate`);
@@ -181,20 +172,182 @@ export default class EntryAbility extends UIAbility {
         this.loadPage(this.windowStage);
     }
 
-
     onWindowStageDestroy(): void {
         hilog.info(0x0000, TAG, '%{public}s', 'Ability onWindowStageDestroy');
     }
-
 
     onForeground(): void {
         hilog.info(0x0000, TAG, '%{public}s', 'Ability onForeground');
     }
 
+    onBackground(): void {
+        hilog.info(0x0000, TAG, '%{public}s', 'Ability onBackground');
+    }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+    @State hideAbility: string = 'hideAbility';
+
+    build() {
+        Row() {
+            Column() {
+                Text(this.hideAbility)
+                .fontSize(30)
+                .fontWeight(FontWeight.Bold)
+                    .onClick(() => {
+                        let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                        let wantParam: Record<string, Object> = {
+                            'sceneType': 1,
+                            'expressNo': 'SF123456'
+                        };
+                        let abilityStartCallback: common.AbilityStartCallback = {
+                            onError: (code: number, name: string, message: string) => {
+                                console.error(`onError code ${code} name: ${name} message: ${message}`);
+                            },
+                            onResult: (result) => {
+                                console.info(`onResult result: ${JSON.stringify(result)}`);
+                            }
+                        }
+
+                        context.startAbilityByType("express", wantParam, abilityStartCallback,
+                            (err) => {
+                                if (err) {
+                                    console.error(`startAbilityByType fail, err: ${JSON.stringify(err)}`);
+                                } else {
+                                    console.info(`success`);
+                                }
+                            });
+                    });
+            }
+            .width('100%')
+        }
+        .height('100%')
+    }
+}
+```
+
+### Code block 3
+
+```
+{
+    "abilities": [
+        {
+            "skills": [
+                {
+                    "uris": [
+                        {
+                            "scheme": "express",
+                            "host": "queryExpress",
+                            "path": "",
+                            "linkFeature": "QueryExpress"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+### Code block 4
+
+```
+UIAbility.onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void
+```
+
+### Code block 5
+
+```
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
+
+const TAG = 'EntryAbility';
+
+export default class EntryAbility extends UIAbility {
+    windowStage: window.WindowStage | null = null;
+
+    uri?: string;
+    expressNo?: string;
+
+    onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+        hilog.info(0x0000, TAG, `onCreate, want=${JSON.stringify(want)}`);
+        super.onCreate(want, launchParam);
+        this.parseWant(want);
+    }
+
+    onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+        hilog.info(0x0000, TAG, `onNewWant, want=${JSON.stringify(want)}`);
+        super.onNewWant(want, launchParam);
+        this.parseWant(want);
+        if (!this.windowStage) {
+            hilog.error(0x0000, TAG, 'windowStage is null');
+            this.context.terminateSelf();
+            return;
+        }
+        this.loadPage(this.windowStage);
+    }
+
+    private parseWant(want: Want): void {
+        this.uri = want.uri as string | undefined;
+        this.expressNo = want.parameters?.expressNo as string | undefined;
+    }
+
+    private loadPage(windowStage: window.WindowStage): void {
+        hilog.info(0x0000, TAG, `loadPage, uri=${this.uri}`);
+        if (this.uri === 'express://queryExpress') {
+            // 构建快递查询参数
+            const storage: LocalStorage = new LocalStorage({
+                "expressNo": this.expressNo
+            } as Record<string, Object>);
+            // 拉起快递查询页面
+            windowStage.loadContent('pages/QueryExpressPage', storage)
+        } else {
+            // 默认拉起首页
+            windowStage.loadContent('pages/Index', (err) => {
+                if (err.code) {
+                    hilog.error(0x0000, TAG, 'Failed to load the content. Cause: %{public}s',
+                        JSON.stringify(err) ?? '');
+                    return;
+                }
+                hilog.info(0x0000, TAG, 'Succeeded in loading the content.');
+            });
+        }
+    }
+
+    onDestroy(): void {
+        hilog.info(0x0000, TAG, `onDestroy`);
+    }
+
+    onWindowStageCreate(windowStage: window.WindowStage): void {
+        hilog.info(0x0000, TAG, `onWindowStageCreate`);
+        this.windowStage = windowStage;
+        this.loadPage(this.windowStage);
+    }
+
+    onWindowStageDestroy(): void {
+        hilog.info(0x0000, TAG, '%{public}s', 'Ability onWindowStageDestroy');
+    }
+
+    onForeground(): void {
+        hilog.info(0x0000, TAG, '%{public}s', 'Ability onForeground');
+    }
 
     onBackground(): void {
         hilog.info(0x0000, TAG, '%{public}s', 'Ability onBackground');
     }
 }
-拉起航班类应用（startAbilityByType）
-拉起图片编辑类应用（startAbilityByType）
+```

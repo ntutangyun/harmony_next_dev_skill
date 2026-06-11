@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/photoaccesshelper-systemalbum-guidelines_
 
+photoAccessHelper提供对收藏夹、视频相册、截屏和录屏相册的相关操作。
+
+说明
+
+在进行功能开发前，请查阅开发准备，了解如何获取相册管理模块实例及申请相关权限。
+
 文档中使用到PhotoAccessHelper的地方，默认使用开发准备中获取的对象，如未添加此段代码提示PhotoAccessHelper未定义的错误请自行添加。
 
 为了保证应用的运行效率，大部分photoAccessHelper的接口调用都是异步的。以下异步调用的API示例均采用Promise函数，更多方式可以查阅模块描述。
@@ -12,24 +18,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/photoacce
 
 收藏夹属于系统相册，对图片或视频设置收藏时会自动将其加入到收藏夹中，取消收藏则会从收藏夹中移除。
 
-获取收藏夹对象
+[h2]获取收藏夹对象
 
 通过PhotoAccessHelper.getAlbums接口获取收藏夹对象。
 
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.READ_IMAGEVIDEO'。
 
 开发步骤
 
 设置获取收藏夹的参数为photoAccessHelper.AlbumType.SYSTEM和photoAccessHelper.AlbumSubtype.FAVORITE。
+
 调用PhotoAccessHelper.getAlbums接口获取收藏夹对象。
+
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
   try {
@@ -44,14 +51,15 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     // ...
   }
 }
-GetFavoriteObjectAbility.ets
-获取收藏夹中的图片和视频
+
+[h2]获取收藏夹中的图片和视频
 
 先获取收藏夹对象。然后调用Album.getAssets接口获取收藏夹中的资源。
 
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.READ_IMAGEVIDEO'。
 
 下面以获取收藏夹中的一张图片为例。
@@ -59,15 +67,17 @@ GetFavoriteObjectAbility.ets
 开发步骤
 
 获取收藏夹对象。
+
 建立图片检索条件，用于获取图片。
+
 调用Album.getAssets接口获取图片资源。
+
 调用FetchResult.getFirstObject接口获取第一张图片。
+
 import { dataSharePredicates } from '@kit.ArkData';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
   let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
@@ -76,13 +86,11 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     predicates: predicates
   };
 
-
   try {
     let albumFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.Album> =
       await phAccessHelper.getAlbums(photoAccessHelper.AlbumType.SYSTEM, photoAccessHelper.AlbumSubtype.FAVORITE);
     let album: photoAccessHelper.Album = await albumFetchResult.getFirstObject();
     console.info('get favorite album successfully, albumUri: ' + album.albumUri);
-
 
     let photoFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
       await album.getAssets(fetchOptions);
@@ -96,29 +104,30 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     // ...
   }
 }
-GetMediaFromFavoritesAbility.ets
+
 视频相册
 
 视频相册属于系统相册，用户文件中属于视频类型的媒体文件会自动加入到视频相册中。
 
-获取视频相册对象
+[h2]获取视频相册对象
 
 通过PhotoAccessHelper.getAlbums接口获取视频相册对象。
 
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.READ_IMAGEVIDEO'。
 
 开发步骤
 
 设置获取视频相册的参数为photoAccessHelper.AlbumType.SYSTEM和photoAccessHelper.AlbumSubtype.VIDEO。
+
 调用PhotoAccessHelper.getAlbums接口获取视频相册。
+
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
   try {
@@ -133,14 +142,15 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     // ...
   }
 }
-GetVideoAlbumAbility.ets
-获取视频相册中的视频
+
+[h2]获取视频相册中的视频
 
 先获取视频相册对象。然后调用Album.getAssets接口获取视频相册对象中的视频资源。
 
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.READ_IMAGEVIDEO'。
 
 下面以获取视频相册中的一个视频为例。
@@ -148,15 +158,17 @@ GetVideoAlbumAbility.ets
 开发步骤
 
 先获取视频相册对象。
+
 建立视频检索条件，用于获取视频。
+
 调用Album.getAssets接口获取视频资源。
+
 调用FetchResult.getFirstObject接口获取第一个视频。
+
 import { dataSharePredicates } from '@kit.ArkData';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
   let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
@@ -165,13 +177,11 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     predicates: predicates
   };
 
-
   try {
     let albumFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.Album> =
       await phAccessHelper.getAlbums(photoAccessHelper.AlbumType.SYSTEM, photoAccessHelper.AlbumSubtype.VIDEO);
     let album: photoAccessHelper.Album = await albumFetchResult.getFirstObject();
     console.info('get video album successfully, albumUri: ' + album.albumUri);
-
 
     let videoFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
       await album.getAssets(fetchOptions);
@@ -185,6 +195,119 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     // ...
   }
 }
-GetVideosFromVideoAlbumAbility.ets
-用户相册资源使用指导
-媒体资源变更通知相关指导
+
+## Code blocks
+
+### Code block 1
+
+```
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
+  try {
+    let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.Album> =
+      await phAccessHelper.getAlbums(photoAccessHelper.AlbumType.SYSTEM, photoAccessHelper.AlbumSubtype.FAVORITE);
+    let album: photoAccessHelper.Album = await fetchResult.getFirstObject();
+    console.info('get favorite album successfully, albumUri: ' + album.albumUri);
+    fetchResult.close();
+    // ...
+  } catch (err) {
+    console.error('get favorite album failed with err: ' + err);
+    // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+import { dataSharePredicates } from '@kit.ArkData';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
+  let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
+  let fetchOptions: photoAccessHelper.FetchOptions = {
+    fetchColumns: [],
+    predicates: predicates
+  };
+
+  try {
+    let albumFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.Album> =
+      await phAccessHelper.getAlbums(photoAccessHelper.AlbumType.SYSTEM, photoAccessHelper.AlbumSubtype.FAVORITE);
+    let album: photoAccessHelper.Album = await albumFetchResult.getFirstObject();
+    console.info('get favorite album successfully, albumUri: ' + album.albumUri);
+
+    let photoFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
+      await album.getAssets(fetchOptions);
+    let photoAsset: photoAccessHelper.PhotoAsset = await photoFetchResult.getFirstObject();
+    console.info('favorite album getAssets successfully, photoAsset displayName: ' + photoAsset.displayName);
+    photoFetchResult.close();
+    albumFetchResult.close();
+    // ...
+  } catch (err) {
+    console.error('favorite failed with err: ' + err);
+    // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
+  try {
+    let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.Album> =
+      await phAccessHelper.getAlbums(photoAccessHelper.AlbumType.SYSTEM, photoAccessHelper.AlbumSubtype.VIDEO);
+    let album: photoAccessHelper.Album = await fetchResult.getFirstObject();
+    console.info('get video album successfully, albumUri: ' + album.albumUri);
+    fetchResult.close();
+    // ...
+  } catch (err) {
+    console.error('get video album failed with err: ' + err);
+    // ...
+  }
+}
+```
+
+### Code block 4
+
+```
+import { dataSharePredicates } from '@kit.ArkData';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
+  let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
+  let fetchOptions: photoAccessHelper.FetchOptions = {
+    fetchColumns: [],
+    predicates: predicates
+  };
+
+  try {
+    let albumFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.Album> =
+      await phAccessHelper.getAlbums(photoAccessHelper.AlbumType.SYSTEM, photoAccessHelper.AlbumSubtype.VIDEO);
+    let album: photoAccessHelper.Album = await albumFetchResult.getFirstObject();
+    console.info('get video album successfully, albumUri: ' + album.albumUri);
+
+    let videoFetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
+      await album.getAssets(fetchOptions);
+    let photoAsset: photoAccessHelper.PhotoAsset = await videoFetchResult.getFirstObject();
+    console.info('video album getAssets successfully, photoAsset displayName: ' + photoAsset.displayName);
+    videoFetchResult.close();
+    albumFetchResult.close();
+    // ...
+  } catch (err) {
+    console.error('video failed with err: ' + err);
+    // ...
+  }
+}
+```

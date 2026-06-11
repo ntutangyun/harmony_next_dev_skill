@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-development-practice_
 
+开发者可以参考以下开发实践，学习相关场景开发，在HarmonyOS平台上更高效、准确地开发加解密的功能。
+
+加解密跨平台数据兼容性开发实践
+
 为确保数据安全，在数据传输过程中对数据进行加解密操作至关重要。为确保跨平台数据兼容，实现加密和解密操作在不同环境下的一致性和互操作性，同样极为关键。加解密跨平台数据兼容性开发实践将从以下两方面讲解如何适配差异：
 
 适配数据编码格式差异
@@ -15,6 +19,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-de
 不同平台都会支持相同的算法，但不同平台的加解密算法可能在使用时有所不同，这些差异可能会导致加解密无法正常的跨平台使用。
 
 当前开发实践将以SM2、AES为例，讲解HarmonyOS平台与其他平台在加解密过程中的差异。
-
-使用X963KDF进行密钥派生(C/C++)
-Crypto Architecture Kit常见问题

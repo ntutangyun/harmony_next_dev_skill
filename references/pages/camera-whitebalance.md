@@ -51,5 +51,53 @@ function getWhiteBalanceRange(session: camera.PhotoSession | camera.VideoSession
    }
    return range;
 }
-自动切换摄像头实践(ArkTS)
-压力管控(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+function isWhiteBalanceModeSupported(session: camera.PhotoSession | camera.VideoSession): boolean {
+   let status: boolean = false;
+   let whiteBalanceMode: camera.WhiteBalanceMode | undefined = undefined;
+   try {
+      let mode: camera.WhiteBalanceMode = camera.WhiteBalanceMode.DAYLIGHT;
+      status = session.isWhiteBalanceModeSupported(mode);
+      if(status){
+         session.setWhiteBalanceMode(mode);
+      }
+      whiteBalanceMode = session.getWhiteBalanceMode();
+   } catch (error) {
+      let err = error as BusinessError;
+      console.error(`The isWhiteBalanceModeSupported call failed. error code: ${err.code}`);
+   }
+   return status;
+}
+```
+
+### Code block 3
+
+```
+function getWhiteBalanceRange(session: camera.PhotoSession | camera.VideoSession): Array<number> {
+   let range: Array<number> = [];
+   try {
+      range = session.getWhiteBalanceRange();
+      let whiteBalance: number = 3000;
+      if(whiteBalance >= range[0] && whiteBalance <= range[1]) {
+         session.setWhiteBalance(whiteBalance);
+      }
+      whiteBalance = session.getWhiteBalance();
+   } catch (error) {
+     let err = error as BusinessError;
+     console.error(`The getWhiteBalanceRange call failed. error code: ${err.code}`);
+   }
+   return range;
+}
+```

@@ -2,7 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-launch-prepare_
 
+请先参考应用开发准备完成基本准备工作，再继续以下开发准备项。
+
+申请秒级启动开放能力
+
 基于安全考虑，系统侧对秒级启动功能做了权限保护处理，使用相关接口开发者需先提交“秒级启动”能力开关的申请，在申请通过后，再使用该能力开关。
+
+[h2]审核规则
+
+仅对游戏类应用开放。
+
+游戏冷启动时长需大于5秒。
+
+[h2]申请步骤
 
 登录AppGallery Connect，选择“开发与服务”。
 
@@ -15,6 +27,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 返回“开放能力管理”页面，原“申请”变为“申请中”，1~3个工作日内反馈申请结果，请留意互动中心的“服务开通申请”信息。
 
 申请通过后，互动中心会发送通知给您，同时“申请中”会变为置灰显示的“申请”，至此，应用已成功开启秒级启动开放能力。
-
-业务概述
-实现游戏启动加速

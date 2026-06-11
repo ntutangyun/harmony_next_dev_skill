@@ -2,6 +2,44 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-opattrdef_
 
+功能说明
+
+定义算子属性。
+
+定义原型
+
+class OpAttrDef {
+public:
+  explicit OpAttrDef(const char *name);
+  OpAttrDef(const OpAttrDef &attr_def);
+  ~OpAttrDef();
+  OpAttrDef &operator=(const OpAttrDef &attr_def);
+  OpAttrDef &AttrType(Option attr_type);
+  OpAttrDef &Bool(void);
+  OpAttrDef &Bool(bool value);
+  OpAttrDef &Float(void);
+  OpAttrDef &Float(float value);
+  OpAttrDef &Int(void);
+  OpAttrDef &Int(int64_t value);
+  OpAttrDef &String(void);
+  OpAttrDef &String(const char *value);
+  OpAttrDef &ListBool(void);
+  OpAttrDef &ListBool(std::vector<bool> value);
+  OpAttrDef &ListFloat(void);
+  OpAttrDef &ListFloat(std::vector<float> value);
+  OpAttrDef &ListInt(void);
+  OpAttrDef &ListInt(std::vector<int64_t> value);
+  ge::AscendString &GetName(void) const;
+  bool IsRequired(void);
+private:
+  // ...
+};
+
+函数说明
+
+表1 OpAttrDef类成员函数说明
+
+函数名称	入参说明	功能说明
 AttrType	attr_type: 属性类型	设置算子属性类型，取值为：OPTIONAL（可选）、REQUIRED（必选）。
 Bool	无	设置算子属性数据类型为Bool。
 Bool	value	设置算子属性数据类型为Bool, 并设置属性默认值为value。属性类型设置为OPTIONAL时必须调用该类接口设置默认值。
@@ -19,5 +57,36 @@ ListInt	无	设置算子属性数据类型为ListInt。
 ListInt	value	设置算子属性数据类型为ListInt, 并设置属性默认值为value。属性类型设置为OPTIONAL时必须调用该类接口设置默认值。
 GetName	无	获取属性名称。
 IsRequired	无	判断算子属性是否为必选，必选返回true, 可选返回false。
-Follow
-OpAICoreDef
+
+## Code blocks
+
+### Code block 1
+
+```
+class OpAttrDef {
+public:
+  explicit OpAttrDef(const char *name);
+  OpAttrDef(const OpAttrDef &attr_def);
+  ~OpAttrDef();
+  OpAttrDef &operator=(const OpAttrDef &attr_def);
+  OpAttrDef &AttrType(Option attr_type);
+  OpAttrDef &Bool(void);
+  OpAttrDef &Bool(bool value);
+  OpAttrDef &Float(void);
+  OpAttrDef &Float(float value);
+  OpAttrDef &Int(void);
+  OpAttrDef &Int(int64_t value);
+  OpAttrDef &String(void);
+  OpAttrDef &String(const char *value);
+  OpAttrDef &ListBool(void);
+  OpAttrDef &ListBool(std::vector<bool> value);
+  OpAttrDef &ListFloat(void);
+  OpAttrDef &ListFloat(std::vector<float> value);
+  OpAttrDef &ListInt(void);
+  OpAttrDef &ListInt(std::vector<int64_t> value);
+  ge::AscendString &GetName(void) const;
+  bool IsRequired(void);
+private:
+  // ...
+};
+```

@@ -5,49 +5,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mindspore
 本文档介绍了MindSpore Lite Kit与ONNX Opset18相比所支持的CPU后端算子列表以及对应关系。在使用模型转换工具将ONNX模型转换为ms模型进行部署时，通过查询此表可以知道MindSpore Lite Kit所支持的常用ONNX算子，以确保模型转换成功。
 
 说明
+
 以下所有算子，均不支持int64类型输入。
+
 MindSpore Lite算子名称	算子功能	对应ONNX算子名称	算子规格
 Abs	逐元素计算绝对值	Abs	不支持uint8类型。不支持输入张量量化参数为空。
-Activation	激活函数	
-
-Celu
-
-Clip
-
-Elu
-
-Gelu
-
-HSigmoid
-
-LeakyRelu
-
-PRelu
-
-Relu
-
-Sigmoid
-
-SoftMax
-
-SoftPlus
-
-Tanh
-
-	-
+Activation	激活函数	Celu Clip Elu Gelu HSigmoid LeakyRelu PRelu Relu Sigmoid SoftMax SoftPlus Tanh	-
 AddFusion	逐元素计算加法	Add	-
 ArgMaxFusion	求某一维度最大值	ArgMax	不支持uint8类型。不支持输入张量量化参数为空。
-AvgPoolFusion	平均池化	
-
-AveragePool
-
-GlobalAveragePool
-
-GlobalMaxPool
-
-MaxPool
-
-	-
+AvgPoolFusion	平均池化	AveragePool GlobalAveragePool GlobalMaxPool MaxPool	-
 BatchNorm	批量归一化	BatchNormalization	-
 BroadcastTo	扩维	Expand	-
 Cast	数据类型转换	Cast	不支持以下数值类型转换：fp32转int8、fp32转uint32、int32转int8、int32转uint32、int32转uint8、int8转bool、int8转uint8。
@@ -74,21 +40,9 @@ Log	逐元素求对数	Log	不支持负数输入。
 LogicalNot	元素级逻辑非	Not	-
 LogSoftmax	对输入向量进行softmax操作，然后再对softmax结果取对数	LogSoftmax	不支持inf输入。
 LRN	局部响应标准化，用于防止数据过度拟合	LRN	-
-MatMulFusion	对2个输入做矩阵乘法运算；使用输入张量、一组学习的权重计算内积，并添加偏差	
-
-Gemm
-
-MatMul
-
-	-
+MatMulFusion	对2个输入做矩阵乘法运算；使用输入张量、一组学习的权重计算内积，并添加偏差	Gemm MatMul	-
 Maximum	取元素级最大值	Max	-
-MaxPoolFusion	最大池化	
-
-GlobalMaxPool
-
-MaxPool
-
-	-
+MaxPoolFusion	最大池化	GlobalMaxPool MaxPool	-
 Minimum	取元素级最小值	Min	-
 Mod	返回除法元素的余数	Mod	-
 MulFusion	逐元素乘法	Mul	-
@@ -98,29 +52,7 @@ PowFusion	逐元素求幂	Pow	仅支持指数为单个常数。
 PReLUFusion	PRelu激活函数	PRelu	-
 Range	生成某个区间内的元素	Range	-
 Reciprocal	返回倒数	Reciprocal	-
-Reduce	对指定维度进行聚合计算来减少张量维度	
-
-ReduceSum
-
-ReduceMean
-
-ReduceMax
-
-ReduceMin
-
-ReduceProd
-
-ReduceLogSum
-
-ReduceLogSumExp
-
-ReduceSumSquare
-
-ReduceL1
-
-ReduceL2
-
-	从HarmonyOS 6.1.0开始支持空shape推理。
+Reduce	对指定维度进行聚合计算来减少张量维度	ReduceSum ReduceMean ReduceMax ReduceMin ReduceProd ReduceLogSum ReduceLogSumExp ReduceSumSquare ReduceL1 ReduceL2	从HarmonyOS 6.1.0开始支持空shape推理。
 Reshape	改变张量形状，总元素个数不变	Reshape	-
 Round	四舍五入到最接近的整数数值	Round	-
 ScatterNdUpdate	使用给定值以及输入索引更新输入数据的值	ScatterND	-
@@ -141,5 +73,3 @@ Tril	下三角矩阵	Trilu（属性upper=0）	-
 Triu	上三角矩阵	Trilu（属性upper=1）	-
 Unsqueeze	将输入张量添加一个新的维度	Unsqueeze	-
 Where	元素选择	Where	-
-附录
-Natural Language Kit（自然语言理解服务）

@@ -2,11 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-addautomappingsubgraphioindexfunc_
 
+函数功能
+
+注册的具体网络类型的自动映射函数。
+
+函数原型
+
 void AddAutoMappingSubgraphIOIndexFunc(domi::FrameworkType framework, AutoMappingSubgraphIOIndexFunc fun);
+
 参数说明
+
 参数	输入/输出	说明
 framework	输入	网络类型，FrameworkType类型定义请参考FrameworkType。
 fun	输入	自动映射输入输出函数，函数类型详见AutoMappingSubgraphIndex。
+
 返回值
 
 无
@@ -19,5 +28,10 @@ fun	输入	自动映射输入输出函数，函数类型详见AutoMappingSubgrap
 
 无
 
-GetAutoMappingSubgraphIOIndexFunc
-InferenceContext
+## Code blocks
+
+### Code block 1
+
+```
+void AddAutoMappingSubgraphIOIndexFunc(domi::FrameworkType framework, AutoMappingSubgraphIOIndexFunc fun);
+```

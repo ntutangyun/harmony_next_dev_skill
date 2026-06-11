@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-withhold-process_
 
+场景介绍
+
+从4.1.0(11)版本开始，新增支持签约代扣场景。
+
 用户在商户APP应用/元服务开通会员一段时间后，想要每个月自动续费而不用自己每个月都重新开通，商户可提供自动续费选项，用户主动选择开启，商户通过请求预签约接口发起签约，待签约生效后，商家可以按照协议中的时间，会员到期后直接发起免密代扣请求完成扣款续费，无需用户每个月都进行开通会员操作。
 
 支持商户模型：直连商户、平台类商户、服务商
@@ -53,8 +57,10 @@ Payment Kit服务端处理代扣扣款成功后，会调用商户服务器请求
 接口名	描述
 requestContract(context: common.UIAbilityContext, contractStr: string): Promise<void>;	拉起Payment Kit签约收银台。
 requestContract(context: common.UIAbilityContext, contractStr: string, callback: AsyncCallback<void>): void;	拉起Payment Kit签约收银台。
+
 开发步骤
-预签约（服务器开发）
+
+[h2]预签约（服务器开发）
 
 开发者按照商户模型调用预直连商户预签约或服务商预签约接口获取preSignNo构建签约信息参数contractStr。
 
@@ -70,7 +76,6 @@ import com.huawei.petalpay.paymentservice.core.client.PetalPayClient;
 import com.huawei.petalpay.paymentservice.example.common.CommonResponse;
 import com.huawei.petalpay.paymentservice.example.common.MercConfigUtil;
 
-
 public class MercApiController {
     private static PetalPayClient payClient = new DefaultPetalPayClient(MercConfigUtil.getMercConfig());
     /**
@@ -83,12 +88,12 @@ public class MercApiController {
         try {
             response = payClient.execute("POST", "/api/v2/contract/presign/app", PreSignResponse.class, preSignReq);
         } catch (Exception e) {
-            // todo 异常处理
+            // 异常处理
             log.error("request error ", e);
             return CommonResponse.buildErrorRsp(e.getMessage());
         }
         if (!validResponse(response)) {
-            // todo 异常处理
+            // 异常处理
             log.error("response is invalid ", response);
             return CommonResponse.buildFailRsp(response);
         }
@@ -109,7 +114,8 @@ public class MercApiController {
             .build();
     }
 }
-拉起华为支付签约收银台（端侧开发）
+
+[h2]拉起华为支付签约收银台（端侧开发）
 
 商户客户端使用contractStr作为参数调用requestContract接口拉起Payment Kit签约收银台。
 
@@ -118,7 +124,6 @@ public class MercApiController {
 import { BusinessError } from '@kit.BasicServicesKit';
 import { paymentService } from '@kit.PaymentKit';
 import { common } from '@kit.AbilityKit';
-
 
 @Entry
 @Component
@@ -138,7 +143,6 @@ struct Index {
       });
   }
 
-
   build() {
     Column() {
       Button('requestContractPromise')
@@ -153,13 +157,14 @@ struct Index {
     .height('100%')
   }
 }
+
 说明
 
-如果用户没有提前登录，系统会自动拉起华为账号登录页面让用户登录。
+如果用户未提前登录，系统会自动拉起华为账号登录页面让用户登录。若用户取消登录或登录失败，则签约流程将中断。
 
 签约成功，不建议以客户端返回作为用户的签约结果，需以服务器接收到的结果通知或者查询API返回为准。
 
-签约结果回调通知（服务器开发）
+[h2]签约结果回调通知（服务器开发）
 
 支付成功后华为支付服务器会调用开发者提供的回调接口，将签约信息返回给开发者服务器，回调详细信息按商户模式请参见签约结果回调通知。
 
@@ -179,13 +184,104 @@ struct Index {
 
 当开发者完成上述能力之后还可以调用以下API接口完成订单相关操作。
 
-直连商户
+[h2]直连商户
 
 申请免密代扣、查询签约订单、查询代扣订单、申请解约、申请退款、查询退款订单、查询对账单、查询结算账单。
 
-服务商
+[h2]服务商
 
 申请免密代扣、查询签约订单、查询代扣订单、申请解约、申请退款、查询退款订单、查询对账单、查询结算账单。
 
-支付并签约场景
-数字人民币支付场景
+## Code blocks
+
+### Code block 1
+
+```
+import com.huawei.petalpay.paymentservice.apiservice.client.model.BaseGwRspWithSign;
+import com.huawei.petalpay.paymentservice.apiservice.client.model.PreSignRequestV2;
+import com.huawei.petalpay.paymentservice.apiservice.client.model.PreSignResponse;
+import com.huawei.petalpay.paymentservice.core.client.DefaultPetalPayClient;
+import com.huawei.petalpay.paymentservice.core.client.PetalPayClient;
+import com.huawei.petalpay.paymentservice.example.common.CommonResponse;
+import com.huawei.petalpay.paymentservice.example.common.MercConfigUtil;
+
+public class MercApiController {
+    private static PetalPayClient payClient = new DefaultPetalPayClient(MercConfigUtil.getMercConfig());
+    /**
+     * 预签约接口调用
+     */
+    public CommonResponse contractPreSignAppV2() {
+        // 组装对象
+        PreSignRequestV2 preSignReq = getPreSignRequestV2();
+        PreSignResponse response = null;
+        try {
+            response = payClient.execute("POST", "/api/v2/contract/presign/app", PreSignResponse.class, preSignReq);
+        } catch (Exception e) {
+            // 异常处理
+            log.error("request error ", e);
+            return CommonResponse.buildErrorRsp(e.getMessage());
+        }
+        if (!validResponse(response)) {
+            // 异常处理
+            log.error("response is invalid ", response);
+            return CommonResponse.buildFailRsp(response);
+        }
+        return CommonResponse.buildSuccessRsp(payClient.buildContractStr(response.getPreSignNo()));
+    }
+    public static boolean validResponse(BaseGwRspWithSign rsp) {
+        return rsp != null && "000000".equals(rsp.getResultCode());
+    }
+    /**
+     * 预签约接口请求参数组装，商户请根据业务自行实现
+     */
+    private PreSignRequestV2 getPreSignRequestV2() {
+        return PreSignRequestV2.builder().appId(MercConfigUtil.APP_ID) // appId，需要配置为与商户绑定的正确的appId
+            .mercContractCode("pay-example-" + System.currentTimeMillis()) // 签约协议号，每次请求都要变，请将pay-example-修改为商户自己的订单前缀
+            .mercNo(MercConfigUtil.MERC_NO) // 商户号
+            .planId("100") // 协议模板ID，该模板ID是商户在向华为支付提交代扣权限申请时由华为支付生成。请填写正确的协议模板ID。
+            .callbackUrl("https://www.xxxxxx.com/hw/sign/callback") // 回调通知地址，通知URL必须为直接可访问的URL，要求为https地址。最大长度为512。请替换为格式正确的结果通知回调地址。
+            .build();
+    }
+}
+```
+
+### Code block 2
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { paymentService } from '@kit.PaymentKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  requestContractPromise() {
+    // use your own contractStr
+    const contractStr = '{"appId":"***","preSignNo":"***"}';
+    paymentService.requestContract(this.context, contractStr)
+      .then(() => {
+        // succeeded in signing
+        console.info('succeeded in signing');
+      })
+      .catch((error: BusinessError) => {
+        // failed to sign
+        console.error(`failed to sign, error.code: ${error.code}, error.message: ${error.message}`);
+      });
+  }
+
+  build() {
+    Column() {
+      Button('requestContractPromise')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          this.requestContractPromise();
+        })
+      }
+    .width('100%')
+    .height('100%')
+  }
+}
+```

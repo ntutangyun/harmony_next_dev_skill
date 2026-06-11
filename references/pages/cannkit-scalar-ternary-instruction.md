@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-scalar-ternary-instruction_
 
+Axpy
+
+更多样例

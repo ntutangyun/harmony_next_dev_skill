@@ -16,7 +16,6 @@ struct Index {
   message?: string;
   @BuilderParam myBuilder: () => void;
 
-
   build() {
     Row() {
       Column() {
@@ -31,7 +30,6 @@ struct Index {
 
 @Builder function MyBuilderFunction(): void {}
 
-
 @Entry
 @Component
 struct Index {
@@ -43,7 +41,6 @@ struct Index {
   @LocalStorageProp('PropB') storageLink2: number = 2;
   @BuilderParam myBuilder: () => void = MyBuilderFunction;
 
-
   build() {
     Row() {
       Column() {
@@ -53,6 +50,7 @@ struct Index {
     }
   }
 }
+
 @previewer/no-unallowed-decorator-on-root-component
 
 不允许直接预览包含@Consume、@Link、@ObjectLink、@Prop等装饰器的子组件；建议使用一个定义了完整的、合法的、不依赖运行时的默认值的父组件，并预览此父组件来查看子组件的预览效果。
@@ -63,7 +61,6 @@ struct Index {
 @Component
 struct LinkSample {
   @Link message: string;
-
 
   build() {
     Row() {
@@ -79,18 +76,16 @@ struct LinkSample {
 struct LinkSampleContainer {
   @State message: string = 'Hello World';
 
-
   build() {
     Row() {
       LinkSample({message: this.message})
     }
   }
 }
- 
+
 @Component
 struct LinkSample {
   @Link message: string;
-
 
   build() {
     Row() {
@@ -98,6 +93,7 @@ struct LinkSample {
     }
   }
 }
+
 @previewer/paired-use-of-consume-and-provide
 
 如果缺少@Provide定义，@Consume组件在预览时将无法获取有效值。
@@ -117,11 +113,11 @@ struct Parent {
     }
   }
 }
- 
+
 @Component
 struct Child {
   @Consume message: string;
- 
+
   build() {
     Text(this.message)
   }
@@ -149,22 +145,23 @@ struct Parent {
 @Component
 struct Parent {
   @Provide message: string = 'hello world';
- 
+
   build() {
     Column() {
       Child()
     }
   }
 }
- 
+
 @Component
 struct Child {
   @Consume message: string;
- 
+
   build() {
     Text(this.message)
   }
 }
+
 @previewer/no-page-method-on-preview-component
 
 @Preview通常修饰在组件上，而非@Entry的页面入口。onPageShow、onPageHide、onBackPress仅在@Entry组件上生效。因此禁止在非路由组件上实例化onPageShow等页面级方法。
@@ -176,11 +173,9 @@ struct Child {
 struct Index {
   @State message: string = 'Hello World';
 
-
   onPageShow(): void {}
   onPageHide(): void {}
   onBackPress(): void {}
-
 
   build() {
     Column() {
@@ -196,11 +191,9 @@ struct Index {
 struct Index {
   @State message: string = 'Hello World';
 
-
   onPageShow(): void {}
   onPageHide(): void {}
   onBackPress(): void {}
-
 
   build() {
     Column() {
@@ -208,6 +201,7 @@ struct Index {
     }
   }
 }
+
 @previewer/no-page-import-unmocked-hsp
 
 由于能力缺失，预览器无法确保HSP是可以正常运行的。界面代码调用HSP可能会在预览运行时无法按预期执行，未正确初始化的接口调用可能会导致运行异常，从而影响界面渲染结果。建议待预览的组件及其依赖的组件避免引用HSP，或为该HSP设置Mock实现，更多关于Mock实现的介绍请参考预览数据模拟。
@@ -216,12 +210,10 @@ struct Index {
 
 import { add } from 'library'; // 该模块未配置自定义mock。
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -235,12 +227,10 @@ struct Index {
 
 import { add } from 'library'; // 该模块已配置自定义mock，配置方法见下文。
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -258,10 +248,264 @@ struct Index {
     "source": "src/mock/myhsp.mock.ets"
   },
 }
+
 // src/mock/myhsp.mock.ets
 export function add(a: number, b: number): number {
   return a + b;
 }
 
-概述
-查看ArkTS/JS预览效果
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct Index {
+  message?: string;
+  @BuilderParam myBuilder: () => void;
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+        this.myBuilder()
+      }
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+@Builder function MyBuilderFunction(): void {}
+
+@Entry
+@Component
+struct Index {
+  message?: string = 'message';
+  @Provide messageA: string = 'messageA';
+  @StorageLink('varA') varA: number = 2;
+  @StorageProp('languageCode') lang: string = 'en';
+  @LocalStorageLink('PropA') storageLink1: number = 1;
+  @LocalStorageProp('PropB') storageLink2: number = 2;
+  @BuilderParam myBuilder: () => void = MyBuilderFunction;
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+        this.myBuilder()
+      }
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+@Preview
+@Component
+struct LinkSample {
+  @Link message: string;
+
+  build() {
+    Row() {
+      Text(this.message)
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+@Entry
+@Component
+struct LinkSampleContainer {
+  @State message: string = 'Hello World';
+
+  build() {
+    Row() {
+      LinkSample({message: this.message})
+    }
+  }
+}
+
+@Component
+struct LinkSample {
+  @Link message: string;
+
+  build() {
+    Row() {
+      Text(this.message)
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+@Entry
+@Component
+struct Parent {
+  build() {
+    Column() {
+      Child()
+    }
+  }
+}
+
+@Component
+struct Child {
+  @Consume message: string;
+
+  build() {
+    Text(this.message)
+  }
+}
+```
+
+### Code block 6
+
+```
+// API 20及以上推荐此方式
+@Entry
+@Component
+struct Parent {
+  @Consume message: string = 'hello world';
+  build() {
+    Column() {
+      Text(this.message)
+        .fontSize(50)
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+// 所有版本均可使用此方式
+@Entry
+@Component
+struct Parent {
+  @Provide message: string = 'hello world';
+
+  build() {
+    Column() {
+      Child()
+    }
+  }
+}
+
+@Component
+struct Child {
+  @Consume message: string;
+
+  build() {
+    Text(this.message)
+  }
+}
+```
+
+### Code block 8
+
+```
+@Preview
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  onPageShow(): void {}
+  onPageHide(): void {}
+  onBackPress(): void {}
+
+  build() {
+    Column() {
+      Text(this.message)
+    }
+  }
+}
+```
+
+### Code block 9
+
+```
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  onPageShow(): void {}
+  onPageHide(): void {}
+  onBackPress(): void {}
+
+  build() {
+    Column() {
+      Text(this.message)
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+import { add } from 'library'; // 该模块未配置自定义mock。
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  build() {
+    Row() {
+      Text(this.message)
+        .onClick(() => add(1, 2))
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+import { add } from 'library'; // 该模块已配置自定义mock，配置方法见下文。
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  build() {
+    Row() {
+      Text(this.message)
+        .onClick(() => add(1, 2))
+    }
+  }
+}
+```
+
+### Code block 12
+
+```
+// src/mock/mock-config.json5
+{
+  "library": {
+    "source": "src/mock/myhsp.mock.ets"
+  },
+}
+```
+
+### Code block 13
+
+```
+// src/mock/myhsp.mock.ets
+export function add(a: number, b: number): number {
+  return a + b;
+}
+```

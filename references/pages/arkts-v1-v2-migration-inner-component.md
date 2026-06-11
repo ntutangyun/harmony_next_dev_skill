@@ -2,6 +2,24 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-v1-v2-migration-inner-component_
 
+本文档主要介绍组件内的状态变量的迁移场景，包含以下场景：
+
+V1装饰器名	V2装饰器名
+@State	无外部初始化：@Local 外部初始化一次：@Param/@Once
+@Prop	@Param
+@Link	@Param/@Event
+@ObjectLink	@Param/@Event
+@Provide	@Provider
+@Consume	@Consumer
+@Watch	@Monitor
+无计算属性相关能力，需要重复计算	@Computed
+
+各装饰器迁移示例
+
+[h2]@State -> @Local
+
+迁移规则
+
 在V1中，@State装饰器用于装饰组件内部的状态变量，在V2中提供了@Local作为其替代能力，但两者在观察能力和初始化规则上存在明显差异。针对不同的使用场景，迁移策略如下：
 
 简单类型：对于简单类型的变量，可以直接将@State替换为@Local。
@@ -20,24 +38,20 @@ V1：
 
 const INITIAL_VALUE = 10;
 
-
 @Entry
 @Component
 struct Child {
   // V1的@State装饰简单类型变量
   @State val: number = INITIAL_VALUE;
 
-
   build() {
     Text(this.val.toString())
   }
 }
-StateEasyV1.ets
 
 V2迁移策略：直接替换。
 
 const INITIAL_VALUE = 10;
-
 
 @Entry
 @ComponentV2
@@ -45,12 +59,10 @@ struct Child {
   // V2的@Local装饰简单类型变量
   @Local val: number = INITIAL_VALUE;
 
-
   build() {
     Text(this.val.toString())
   }
 }
-StateEasyV2.ets
 
 复杂类型
 
@@ -60,17 +72,14 @@ V1：
 
 const INITIAL_VALUE = 10;
 
-
 class Child {
   public value: number = INITIAL_VALUE;
 }
-
 
 @Component
 @Entry
 struct Example {
   @State child: Child = new Child();
-
 
   build() {
     Column() {
@@ -83,25 +92,21 @@ struct Example {
     }
   }
 }
-StateComplexV1.ets
 
 V2迁移策略：使用@ObservedV2和@Trace。
 
 const INITIAL_VALUE = 10;
-
 
 @ObservedV2
 class Child {
   @Trace public value: number = INITIAL_VALUE;
 }
 
-
 @ComponentV2
 @Entry
 struct Example {
   // @Local只能观察自身，需要给Child加上@ObservedV2和@Trace
   @Local child: Child = new Child();
-
 
   build() {
     Column() {
@@ -113,7 +118,6 @@ struct Example {
     }
   }
 }
-StateComplexV2.ets
 
 外部初始化状态变量
 
@@ -125,12 +129,10 @@ V1实现：
 struct Child {
   @State value: number = 0;
 
-
   build() {
     Text(this.value.toString())
   }
 }
-
 
 @Entry
 @Component
@@ -142,7 +144,6 @@ struct Parent {
     }
   }
 }
-StateExternalInitializationV1.ets
 
 V2迁移策略：使用@Param和@Once。
 
@@ -150,12 +151,10 @@ V2迁移策略：使用@Param和@Once。
 struct Child {
   @Param @Once value: number = 0;
 
-
   build() {
     Text(this.value.toString())
   }
 }
-
 
 @Entry
 @ComponentV2
@@ -167,8 +166,8 @@ struct Parent {
     }
   }
 }
-StateExternalInitializationV2.ets
-@Link -> @Param/@Event
+
+[h2]@Link -> @Param/@Event
 
 迁移规则
 
@@ -180,12 +179,10 @@ V1实现：
 
 const INITIAL_MYVAL = 10;
 
-
 @Component
 struct Child {
   // @Link可以双向同步数据
   @Link val: number;
-
 
   build() {
     Column() {
@@ -198,12 +195,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   @State myVal: number = INITIAL_MYVAL;
-
 
   build() {
     Column() {
@@ -212,19 +207,16 @@ struct Parent {
     }
   }
 }
-LinkMiigrationV1.ets
 
 V2迁移策略：使用@Param和@Event。
 
 const INITIAL_MYVAL = 10;
-
 
 @ComponentV2
 struct Child {
   // @Param搭配@Event回调实现数据双向同步
   @Param val: number = 0;
   @Event addOne: () => void;
-
 
   build() {
     Column() {
@@ -237,12 +229,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Parent {
   @Local myVal: number = INITIAL_MYVAL;
-
 
   build() {
     Column() {
@@ -251,8 +241,8 @@ struct Parent {
     }
   }
 }
-LinkMiigrationV2.ets
-@Prop -> @Param
+
+[h2]@Prop -> @Param
 
 迁移规则
 
@@ -277,12 +267,10 @@ struct Child {
   // V1的@Prop装饰简单类型变量
   @Prop value: number;
 
-
   build() {
     Text(this.value.toString())
   }
 }
-
 
 @Entry
 @Component
@@ -293,7 +281,6 @@ struct Parent {
     }
   }
 }
-PropEasyV1.ets
 
 V2迁移策略：直接替换。
 
@@ -302,12 +289,10 @@ struct Child {
   // V2的@Param装饰简单类型变量
   @Param value: number = 0;
 
-
   build() {
     Text(this.value.toString())
   }
 }
-
 
 @Entry
 @ComponentV2
@@ -318,7 +303,6 @@ struct Parent {
     }
   }
 }
-PropEasyV2.ets
 
 复杂类型的单向数据传递
 
@@ -329,18 +313,15 @@ V1实现：
 const APPLE_INITIAL_COUNT = 5;
 const ORANGE_INITIAL_COUNT = 10;
 
-
 class Fruit {
   public apple: number = APPLE_INITIAL_COUNT;
   public orange: number = ORANGE_INITIAL_COUNT;
 }
 
-
 @Component
 struct Child {
   // @Prop传递Fruit类，当子类修改属性，父类不受影响
   @Prop fruit: Fruit;
-
 
   build() {
     Column() {
@@ -358,12 +339,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   @State parentFruit: Fruit = new Fruit();
-
 
   build() {
     Column() {
@@ -373,19 +352,16 @@ struct Parent {
     }
   }
 }
-PropComplexV1.ets
 
 V2迁移策略：使用深拷贝。
 
 const APPLE_INITIAL_COUNT = 5;
 const ORANGE_INITIAL_COUNT = 10;
 
-
 @ObservedV2
 class Fruit {
   @Trace public apple: number = APPLE_INITIAL_COUNT;
   @Trace public orange: number = ORANGE_INITIAL_COUNT;
-
 
   // 实现深拷贝，子组件不会修改父组件的数据
   clone(): Fruit {
@@ -396,11 +372,9 @@ class Fruit {
   }
 }
 
-
 @ComponentV2
 struct Child {
   @Param fruit: Fruit = new Fruit();
-
 
   build() {
     Column() {
@@ -419,12 +393,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Parent {
   @Local parentFruit: Fruit = new Fruit();
-
 
   build() {
     Column() {
@@ -435,7 +407,6 @@ struct Parent {
     }
   }
 }
-PropComplexV2.ets
 
 子组件修改变量
 
@@ -448,7 +419,6 @@ struct Child {
   // @Prop可以直接修改变量值
   @Prop value: number;
 
-
   build() {
     Column() {
       Text(this.value.toString())
@@ -460,7 +430,6 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
@@ -470,7 +439,6 @@ struct Parent {
     }
   }
 }
-PropSubComponentUpdateVarV1.ets
 
 V2迁移策略：使用@Param和@Once。
 
@@ -479,7 +447,6 @@ struct Child {
   // @Param搭配@Once使用，可以在本地修改@Param变量
   @Param @Once value: number = 0;
 
-
   build() {
     Column() {
       Text(this.value.toString())
@@ -491,7 +458,6 @@ struct Child {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Parent {
@@ -501,21 +467,20 @@ struct Parent {
     }
   }
 }
-PropSubComponentUpdateVarV2.ets
 
 在V1中，子组件可以修改@Prop的变量，且只会在本地更新，不会同步回父组件。父组件数据源更新时，会通知子组件更新，并覆写子组件本地@Prop的值。
 
 V1：
 
 改变子组件Child的localValue，不会同步回父组件Parent。
-父组件更新value，通知子组件Child更新，并覆写本地子组件localValue的值。
-const PARENT_INITIAL_STATE_VALUE = 10;
 
+父组件更新value，通知子组件Child更新，并覆写本地子组件localValue的值。
+
+const PARENT_INITIAL_STATE_VALUE = 10;
 
 @Component
 struct Child {
   @Prop localValue: number = 0;
-
 
   build() {
     Column() {
@@ -529,12 +494,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   @State value: number = PARENT_INITIAL_STATE_VALUE;
-
 
   build() {
     Column() {
@@ -547,26 +510,26 @@ struct Parent {
     }
   }
 }
-PropSubComponentUpdateVarLocalV1.ets
 
 V2中，@Param本地不可写，与@Once搭配使用时只同步一次。若要实现子组件本地可写，且父组件后续更新仍能通知子组件，可借助@Monitor实现。
 
 V2实现：
 
 父组件Parent更新通知子组件value的刷新，并回调@Monitor修饰的onValueChange回调方法，onValueChange将更新后的值赋值给localValue。
+
 子组件Child改变localValue的值，不会同步给父组件Parent。
+
 父组件Parent中再次改变value，将会继续通知给子组件，并覆写子组件本地localValue的值。
+
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xFF00;
 const TAG = '[Sample_StateMigration_App]';
 const PARENT_INITIAL_LOCAL_VALUE = 10;
 
-
 @ComponentV2
 struct Child {
   @Local localValue: number = 0;
   @Param value: number = 0;
-
 
   @Monitor('value')
   onValueChange(mon: IMonitor) {
@@ -574,7 +537,6 @@ struct Child {
     // 父组件value变化时，通知子组件value更新，回调Monitor函数，将更新的值覆写给本地的localValue
     this.localValue = this.value;
   }
-
 
   build() {
     Column() {
@@ -588,12 +550,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Parent {
   @Local value: number = PARENT_INITIAL_LOCAL_VALUE;
-
 
   build() {
     Column() {
@@ -606,8 +566,8 @@ struct Parent {
     }
   }
 }
-PropSubComponentUpdateVarLocalV2.ets
-@Provide/@Consume -> @Provider/@Consumer
+
+[h2]@Provide/@Consume -> @Provider/@Consumer
 
 迁移规则
 
@@ -639,7 +599,6 @@ struct Child {
   @Consume('text') childMessage: string;
   @Consume message: string;
 
-
   build() {
     Column() {
       Text(this.childMessage)
@@ -648,12 +607,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   @Provide('text') message: string = 'Hello World';
-
 
   build() {
     Column() {
@@ -661,7 +618,6 @@ struct Parent {
     }
   }
 }
-ProvideAliasV1.ets
 
 V2迁移策略：确保alias一致，没有指定alias的情况下，依赖属性名进行匹配。
 
@@ -671,7 +627,6 @@ struct Child {
   @Consumer('text') childMessage: string = 'default';
   @Consumer() message: string = 'default';
 
-
   build() {
     Column() {
       Text(this.childMessage)
@@ -680,12 +635,10 @@ struct Child {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Parent {
   @Provider('text') message: string = 'Hello World';
-
 
   build() {
     Column() {
@@ -693,7 +646,6 @@ struct Parent {
     }
   }
 }
-ProvideAliasV2.ets
 
 V1的@Consume不支持本地初始化，V2支持
 
@@ -706,18 +658,15 @@ struct Child {
   // @Consume禁止本地初始化，当找不到对应的@Provide时抛出异常
   @Consume message: string;
 
-
   build() {
     Text(this.message)
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   @Provide message: string = 'Hello World';
-
 
   build() {
     Column() {
@@ -725,7 +674,6 @@ struct Parent {
     }
   }
 }
-ProvideConsumeNoInitV1.ets
 
 V2迁移策略：@Consumer可以本地初始化。
 
@@ -734,12 +682,10 @@ struct Child {
   // @Consumer允许本地初始化，当找不到@Provider的时候使用本地默认值
   @Consumer() message: string = 'Hello World';
 
-
   build() {
     Text(this.message)
   }
 }
-
 
 @Entry
 @ComponentV2
@@ -750,7 +696,6 @@ struct Parent {
     }
   }
 }
-ProvideConsumeInitV2.ets
 
 V1的@Provide可以从父组件初始化，V2不支持
 
@@ -760,12 +705,10 @@ V1实现：
 
 const STATE_INITIAL_PARENT_VALUE = 42;
 
-
 @Entry
 @Component
 struct Parent {
   @State parentValue: number = STATE_INITIAL_PARENT_VALUE;
-
 
   build() {
     Column() {
@@ -775,11 +718,9 @@ struct Parent {
   }
 }
 
-
 @Component
 struct Child {
   @Provide childValue: number = 0;
-
 
   build() {
     Column() {
@@ -787,18 +728,15 @@ struct Child {
     }
   }
 }
-ProvideParentInitV1.ets
 
 V2迁移策略：使用@Param接受初始值，再赋值给@Provider。
 
 const LOCAL_INITIAL_PARENT_VALUE = 42;
 
-
 @Entry
 @ComponentV2
 struct Parent {
   @Local parentValue: number = LOCAL_INITIAL_PARENT_VALUE;
-
 
   build() {
     Column() {
@@ -808,12 +746,10 @@ struct Parent {
   }
 }
 
-
 @ComponentV2
 struct Child {
   @Param @Once initialValue: number = 0;
   @Provider() childValue: number = this.initialValue;
-
 
   build() {
     Column() {
@@ -821,7 +757,6 @@ struct Child {
     }
   }
 }
-ProvideParentNoInitV2.ets
 
 V1的@Provide默认不支持重载，V2默认支持
 
@@ -832,12 +767,10 @@ V1实现：
 const GRANDPARENT_REVIEW_VOTES_INITIAL = 40;
 const PARENT_REVIEW_VOTES_INITIAL = 20;
 
-
 @Entry
 @Component
 struct GrandParent {
   @Provide('reviewVotes') reviewVotes: number = GRANDPARENT_REVIEW_VOTES_INITIAL;
-
 
   build() {
     Column() {
@@ -845,42 +778,35 @@ struct GrandParent {
     }
   }
 }
-
 
 @Component
 struct Parent {
   // @Provide默认不支持重载，支持重载需设置allowOverride函数
   @Provide({ allowOverride: 'reviewVotes' }) reviewVotes: number = PARENT_REVIEW_VOTES_INITIAL;
 
-
   build() {
     Child()
   }
 }
 
-
 @Component
 struct Child {
   @Consume('reviewVotes') reviewVotes: number;
-
 
   build() {
     Text(this.reviewVotes.toString()) // Text显示20
   }
 }
-ProvideNoAllowOverrideV1.ets
 
 V2迁移策略：取消allowOverride设置。
 
 const GRANDPARENT_REVIEW_VOTES_INITIAL = 40;
 const PARENT_REVIEW_VOTES_INITIAL = 20;
 
-
 @Entry
 @ComponentV2
 struct GrandParent {
   @Provider('reviewVotes') reviewVotes: number = GRANDPARENT_REVIEW_VOTES_INITIAL;
-
 
   build() {
     Column() {
@@ -889,30 +815,26 @@ struct GrandParent {
   }
 }
 
-
 @ComponentV2
 struct Parent {
   // @Provider默认支持重载，@Consumer向上查找最近的@Provider
   @Provider() reviewVotes: number = PARENT_REVIEW_VOTES_INITIAL;
-
 
   build() {
     Child()
   }
 }
 
-
 @ComponentV2
 struct Child {
   @Consumer() reviewVotes: number = 0;
-
 
   build() {
     Text(this.reviewVotes.toString()) // Text显示20
   }
 }
-ProvideAllowOverrideV2.ets
-@Watch -> @Monitor
+
+[h2]@Watch -> @Monitor
 
 迁移规则
 
@@ -932,21 +854,17 @@ V1实现：
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0xFF00;
 const TAG = '[Sample_StateMigration_App]';
-
 
 @Entry
 @Component
 struct WatchExample {
   @State @Watch('onAppleChange') apple: number = 0;
 
-
   onAppleChange(): void {
     hilog.info(DOMAIN, TAG, 'apple count changed to ' + this.apple);
   }
-
 
   build() {
     Column() {
@@ -959,28 +877,23 @@ struct WatchExample {
     }
   }
 }
-WatchSingleVarV1.ets
 
 V2迁移策略：直接替换。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0xFF00;
 const TAG = '[Sample_StateMigration_App]';
-
 
 @Entry
 @ComponentV2
 struct MonitorExample {
   @Local apple: number = 0;
 
-
   @Monitor('apple')
   onFruitChange(monitor: IMonitor) {
     hilog.info(DOMAIN, TAG, `apple changed from ${monitor.value()?.before} to ${monitor.value()?.now}`);
   }
-
 
   build() {
     Column() {
@@ -993,7 +906,6 @@ struct MonitorExample {
     }
   }
 }
-WatchSingleVarV2.ets
 
 多变量监听
 
@@ -1003,10 +915,8 @@ V1实现：
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0xFF00;
 const TAG = '[Sample_StateMigration_App]';
-
 
 @Entry
 @Component
@@ -1014,17 +924,14 @@ struct WatchExample {
   @State @Watch('onAppleChange') apple: number = 0;
   @State @Watch('onOrangeChange') orange: number = 0;
 
-
   // @Watch 回调，只能监听单个变量，不能获取变化前的值
   onAppleChange(): void {
     hilog.info(DOMAIN, TAG, 'apple count changed to ' + this.apple);
   }
 
-
   onOrangeChange(): void {
     hilog.info(DOMAIN, TAG, 'orange count changed to ' + this.orange);
   }
-
 
   build() {
     Column() {
@@ -1041,23 +948,19 @@ struct WatchExample {
     }
   }
 }
-WatchMoreVarV1.ets
 
 V2迁移策略：同时监听多个变量，以及获取变化前的值。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0xFF00;
 const TAG = '[Sample_StateMigration_App]';
-
 
 @Entry
 @ComponentV2
 struct MonitorExample {
   @Local apple: number = 0;
   @Local orange: number = 0;
-
 
   // @Monitor回调，支持监听多个变量，可以获取变化前的值
   @Monitor('apple','orange')
@@ -1067,7 +970,6 @@ struct MonitorExample {
     });
   }
 
-
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
@@ -1083,8 +985,8 @@ struct MonitorExample {
     }
   }
 }
-WatchMoreVarV2.ets
-重复计算 -> @Computed计算属性
+
+[h2]重复计算 -> @Computed计算属性
 
 迁移规则
 
@@ -1100,7 +1002,6 @@ struct Index {
   @State firstName: string = 'Li';
   @State lastName: string = 'Hua';
 
-
   build() {
     Column() {
       Text(this.lastName + ' ' + this.firstName)
@@ -1110,11 +1011,9 @@ struct Index {
         this.lastName += 'a';
       })
 
-
     }
   }
 }
-ComputedV1.ets
 
 V2:
 
@@ -1126,13 +1025,11 @@ struct Index {
   @Local firstName: string = 'Li';
   @Local lastName: string = 'Hua';
 
-
   @Computed
   get fullName() {
     // 每次改变lastName仅会触发一次计算
     return this.firstName + ' ' + this.lastName;
   }
-
 
   build() {
     Column() {
@@ -1144,8 +1041,8 @@ struct Index {
     }
   }
 }
-ComputedV2.ets
-双向绑定由$$迁移!!
+
+[h2]双向绑定由$$迁移!!
 
 状态管理V1中，推荐使用$$实现系统组件的双向绑定；在状态管理V2中，推荐使用!!语法糖统一处理双向绑定。
 
@@ -1165,7 +1062,6 @@ struct TextInputExample {
   @State text: string = '';
   controller: TextInputController = new TextInputController();
 
-
   build() {
     Column({ space: 20 }) {
       Text(this.text)
@@ -1181,7 +1077,6 @@ struct TextInputExample {
     .justifyContent(FlexAlign.Center)
   }
 }
-SyncUsageExample.ets
 
 V2迁移策略：装饰器修改为V1的同时，$$直接替换为!!。
 
@@ -1190,7 +1085,6 @@ V2迁移策略：装饰器修改为V1的同时，$$直接替换为!!。
 struct TextInputExampleV2 {
   @Local text: string = '';
   controller: TextInputController = new TextInputController();
-
 
   build() {
     Column({ space: 20 }) {
@@ -1207,6 +1101,1003 @@ struct TextInputExampleV2 {
     .justifyContent(FlexAlign.Center)
   }
 }
-SyncUsageExampleV2.ets
-状态管理V1向V2迁移场景
-数据对象状态变量迁移
+
+## Code blocks
+
+### Code block 1
+
+```
+const INITIAL_VALUE = 10;
+
+@Entry
+@Component
+struct Child {
+  // V1的@State装饰简单类型变量
+  @State val: number = INITIAL_VALUE;
+
+  build() {
+    Text(this.val.toString())
+  }
+}
+```
+
+### Code block 2
+
+```
+const INITIAL_VALUE = 10;
+
+@Entry
+@ComponentV2
+struct Child {
+  // V2的@Local装饰简单类型变量
+  @Local val: number = INITIAL_VALUE;
+
+  build() {
+    Text(this.val.toString())
+  }
+}
+```
+
+### Code block 3
+
+```
+const INITIAL_VALUE = 10;
+
+class Child {
+  public value: number = INITIAL_VALUE;
+}
+
+@Component
+@Entry
+struct Example {
+  @State child: Child = new Child();
+
+  build() {
+    Column() {
+      Text(this.child.value.toString())
+      // @State可以观察第一层变化
+      Button('value+1')
+        .onClick(() => {
+          this.child.value++;
+        })
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+const INITIAL_VALUE = 10;
+
+@ObservedV2
+class Child {
+  @Trace public value: number = INITIAL_VALUE;
+}
+
+@ComponentV2
+@Entry
+struct Example {
+  // @Local只能观察自身，需要给Child加上@ObservedV2和@Trace
+  @Local child: Child = new Child();
+
+  build() {
+    Column() {
+      Text(this.child.value.toString())
+      Button('value+1')
+        .onClick(() => {
+          this.child.value++;
+        })
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+@Component
+struct Child {
+  @State value: number = 0;
+
+  build() {
+    Text(this.value.toString())
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  build() {
+    Column() {
+      // @State可以从外部初始化
+      Child({ value: 30 })
+    }
+  }
+}
+```
+
+### Code block 6
+
+```
+@ComponentV2
+struct Child {
+  @Param @Once value: number = 0;
+
+  build() {
+    Text(this.value.toString())
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  build() {
+    Column() {
+      // @Local禁止从外部初始化，可以用@Param和@Once替代实现
+      Child({ value: 30 })
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+const INITIAL_MYVAL = 10;
+
+@Component
+struct Child {
+  // @Link可以双向同步数据
+  @Link val: number;
+
+  build() {
+    Column() {
+      Text('child: ' + this.val.toString())
+      Button('+1')
+        .onClick(() => {
+          this.val++;
+        })
+    }
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State myVal: number = INITIAL_MYVAL;
+
+  build() {
+    Column() {
+      Text('parent: ' + this.myVal.toString())
+      Child({ val: this.myVal })
+    }
+  }
+}
+```
+
+### Code block 8
+
+```
+const INITIAL_MYVAL = 10;
+
+@ComponentV2
+struct Child {
+  // @Param搭配@Event回调实现数据双向同步
+  @Param val: number = 0;
+  @Event addOne: () => void;
+
+  build() {
+    Column() {
+      Text('child: ' + this.val.toString())
+      Button('+1')
+        .onClick(() => {
+          this.addOne();
+        })
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local myVal: number = INITIAL_MYVAL;
+
+  build() {
+    Column() {
+      Text('parent: ' + this.myVal.toString())
+      Child({ val: this.myVal, addOne: () => this.myVal++ })
+    }
+  }
+}
+```
+
+### Code block 9
+
+```
+@Component
+struct Child {
+  // V1的@Prop装饰简单类型变量
+  @Prop value: number;
+
+  build() {
+    Text(this.value.toString())
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  build() {
+    Column() {
+      Child({ value: 30 })
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+@ComponentV2
+struct Child {
+  // V2的@Param装饰简单类型变量
+  @Param value: number = 0;
+
+  build() {
+    Text(this.value.toString())
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  build() {
+    Column() {
+      Child({ value: 30 })
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+const APPLE_INITIAL_COUNT = 5;
+const ORANGE_INITIAL_COUNT = 10;
+
+class Fruit {
+  public apple: number = APPLE_INITIAL_COUNT;
+  public orange: number = ORANGE_INITIAL_COUNT;
+}
+
+@Component
+struct Child {
+  // @Prop传递Fruit类，当子类修改属性，父类不受影响
+  @Prop fruit: Fruit;
+
+  build() {
+    Column() {
+      Text('child apple: ' + this.fruit.apple.toString())
+      Text('child orange: ' + this.fruit.orange.toString())
+      Button('apple+1')
+        .onClick(() => {
+          this.fruit.apple++;
+        })
+      Button('orange+1')
+        .onClick(() => {
+          this.fruit.orange++;
+        })
+    }
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State parentFruit: Fruit = new Fruit();
+
+  build() {
+    Column() {
+      Text('parent apple: ' + this.parentFruit.apple.toString())
+      Text('parent orange: ' + this.parentFruit.orange.toString())
+      Child({ fruit: this.parentFruit })
+    }
+  }
+}
+```
+
+### Code block 12
+
+```
+const APPLE_INITIAL_COUNT = 5;
+const ORANGE_INITIAL_COUNT = 10;
+
+@ObservedV2
+class Fruit {
+  @Trace public apple: number = APPLE_INITIAL_COUNT;
+  @Trace public orange: number = ORANGE_INITIAL_COUNT;
+
+  // 实现深拷贝，子组件不会修改父组件的数据
+  clone(): Fruit {
+    let newFruit: Fruit = new Fruit();
+    newFruit.apple = this.apple;
+    newFruit.orange = this.orange;
+    return newFruit;
+  }
+}
+
+@ComponentV2
+struct Child {
+  @Param fruit: Fruit = new Fruit();
+
+  build() {
+    Column() {
+      Text('child')
+      Text(this.fruit.apple.toString())
+      Text(this.fruit.orange.toString())
+      Button('apple+1')
+        .onClick(() => {
+          this.fruit.apple++;
+        })
+      Button('orange+1')
+        .onClick(() => {
+          this.fruit.orange++;
+        })
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local parentFruit: Fruit = new Fruit();
+
+  build() {
+    Column() {
+      Text('parent')
+      Text(this.parentFruit.apple.toString())
+      Text(this.parentFruit.orange.toString())
+      Child({ fruit: this.parentFruit.clone() })
+    }
+  }
+}
+```
+
+### Code block 13
+
+```
+@Component
+struct Child {
+  // @Prop可以直接修改变量值
+  @Prop value: number;
+
+  build() {
+    Column() {
+      Text(this.value.toString())
+      Button('+1')
+        .onClick(() => {
+          this.value++;
+        })
+    }
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  build() {
+    Column() {
+      Child({ value: 30 })
+    }
+  }
+}
+```
+
+### Code block 14
+
+```
+@ComponentV2
+struct Child {
+  // @Param搭配@Once使用，可以在本地修改@Param变量
+  @Param @Once value: number = 0;
+
+  build() {
+    Column() {
+      Text(this.value.toString())
+      Button('+1')
+        .onClick(() => {
+          this.value++;
+        })
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  build() {
+    Column() {
+      Child({ value: 30 })
+    }
+  }
+}
+```
+
+### Code block 15
+
+```
+const PARENT_INITIAL_STATE_VALUE = 10;
+
+@Component
+struct Child {
+  @Prop localValue: number = 0;
+
+  build() {
+    Column() {
+      Text(`${this.localValue}`).fontSize(25)
+      Button('Child +100')
+        .onClick(() => {
+          // 改变localValue不会传递给父组件Parent
+          this.localValue += 100;
+        })
+    }
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State value: number = PARENT_INITIAL_STATE_VALUE;
+
+  build() {
+    Column() {
+      Button('Parent +1')
+        .onClick(() => {
+          // 改变value的值，通知子组件Child value更新
+          this.value += 1;
+        })
+      Child({ localValue: this.value })
+    }
+  }
+}
+```
+
+### Code block 16
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xFF00;
+const TAG = '[Sample_StateMigration_App]';
+const PARENT_INITIAL_LOCAL_VALUE = 10;
+
+@ComponentV2
+struct Child {
+  @Local localValue: number = 0;
+  @Param value: number = 0;
+
+  @Monitor('value')
+  onValueChange(mon: IMonitor) {
+    hilog.info(DOMAIN, TAG, `value has been changed from ${mon.value()?.before} to ${mon.value()?.now}`);
+    // 父组件value变化时，通知子组件value更新，回调Monitor函数，将更新的值覆写给本地的localValue
+    this.localValue = this.value;
+  }
+
+  build() {
+    Column() {
+      Text(`${this.localValue}`).fontSize(25)
+      Button('Child +100')
+        .onClick(() => {
+          // 改变localValue不会传递给父组件Parent
+          this.localValue += 100;
+        })
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local value: number = PARENT_INITIAL_LOCAL_VALUE;
+
+  build() {
+    Column() {
+      Button('Parent +1')
+        .onClick(() => {
+          // 改变value的值，通知子组件Child value更新
+          this.value += 1;
+        })
+      Child({ value: this.value })
+    }
+  }
+}
+```
+
+### Code block 17
+
+```
+@Component
+struct Child {
+  // alias和属性名都为key，alias和属性名都可以匹配
+  @Consume('text') childMessage: string;
+  @Consume message: string;
+
+  build() {
+    Column() {
+      Text(this.childMessage)
+      Text(this.message) // Text是Hello World
+    }
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @Provide('text') message: string = 'Hello World';
+
+  build() {
+    Column() {
+      Child()
+    }
+  }
+}
+```
+
+### Code block 18
+
+```
+@ComponentV2
+struct Child {
+  // alias是唯一匹配的key，有alias情况下无法通过属性名匹配
+  @Consumer('text') childMessage: string = 'default';
+  @Consumer() message: string = 'default';
+
+  build() {
+    Column() {
+      Text(this.childMessage)
+      Text(this.message) // Text是default
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Provider('text') message: string = 'Hello World';
+
+  build() {
+    Column() {
+      Child()
+    }
+  }
+}
+```
+
+### Code block 19
+
+```
+@Component
+struct Child {
+  // @Consume禁止本地初始化，当找不到对应的@Provide时抛出异常
+  @Consume message: string;
+
+  build() {
+    Text(this.message)
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @Provide message: string = 'Hello World';
+
+  build() {
+    Column() {
+      Child()
+    }
+  }
+}
+```
+
+### Code block 20
+
+```
+@ComponentV2
+struct Child {
+  // @Consumer允许本地初始化，当找不到@Provider的时候使用本地默认值
+  @Consumer() message: string = 'Hello World';
+
+  build() {
+    Text(this.message)
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  build() {
+    Column() {
+      Child()
+    }
+  }
+}
+```
+
+### Code block 21
+
+```
+const STATE_INITIAL_PARENT_VALUE = 42;
+
+@Entry
+@Component
+struct Parent {
+  @State parentValue: number = STATE_INITIAL_PARENT_VALUE;
+
+  build() {
+    Column() {
+      // @Provide可以从父组件初始化
+      Child({ childValue: this.parentValue })
+    }
+  }
+}
+
+@Component
+struct Child {
+  @Provide childValue: number = 0;
+
+  build() {
+    Column() {
+      Text(this.childValue.toString())
+    }
+  }
+}
+```
+
+### Code block 22
+
+```
+const LOCAL_INITIAL_PARENT_VALUE = 42;
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local parentValue: number = LOCAL_INITIAL_PARENT_VALUE;
+
+  build() {
+    Column() {
+      // @Provider禁止从父组件初始化，替代方案为先用@Param接受，再赋值给@Provider
+      Child({ initialValue: this.parentValue })
+    }
+  }
+}
+
+@ComponentV2
+struct Child {
+  @Param @Once initialValue: number = 0;
+  @Provider() childValue: number = this.initialValue;
+
+  build() {
+    Column() {
+      Text(this.childValue.toString())
+    }
+  }
+}
+```
+
+### Code block 23
+
+```
+const GRANDPARENT_REVIEW_VOTES_INITIAL = 40;
+const PARENT_REVIEW_VOTES_INITIAL = 20;
+
+@Entry
+@Component
+struct GrandParent {
+  @Provide('reviewVotes') reviewVotes: number = GRANDPARENT_REVIEW_VOTES_INITIAL;
+
+  build() {
+    Column() {
+      Parent()
+    }
+  }
+}
+
+@Component
+struct Parent {
+  // @Provide默认不支持重载，支持重载需设置allowOverride函数
+  @Provide({ allowOverride: 'reviewVotes' }) reviewVotes: number = PARENT_REVIEW_VOTES_INITIAL;
+
+  build() {
+    Child()
+  }
+}
+
+@Component
+struct Child {
+  @Consume('reviewVotes') reviewVotes: number;
+
+  build() {
+    Text(this.reviewVotes.toString()) // Text显示20
+  }
+}
+```
+
+### Code block 24
+
+```
+const GRANDPARENT_REVIEW_VOTES_INITIAL = 40;
+const PARENT_REVIEW_VOTES_INITIAL = 20;
+
+@Entry
+@ComponentV2
+struct GrandParent {
+  @Provider('reviewVotes') reviewVotes: number = GRANDPARENT_REVIEW_VOTES_INITIAL;
+
+  build() {
+    Column() {
+      Parent()
+    }
+  }
+}
+
+@ComponentV2
+struct Parent {
+  // @Provider默认支持重载，@Consumer向上查找最近的@Provider
+  @Provider() reviewVotes: number = PARENT_REVIEW_VOTES_INITIAL;
+
+  build() {
+    Child()
+  }
+}
+
+@ComponentV2
+struct Child {
+  @Consumer() reviewVotes: number = 0;
+
+  build() {
+    Text(this.reviewVotes.toString()) // Text显示20
+  }
+}
+```
+
+### Code block 25
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0xFF00;
+const TAG = '[Sample_StateMigration_App]';
+
+@Entry
+@Component
+struct WatchExample {
+  @State @Watch('onAppleChange') apple: number = 0;
+
+  onAppleChange(): void {
+    hilog.info(DOMAIN, TAG, 'apple count changed to ' + this.apple);
+  }
+
+  build() {
+    Column() {
+      Text(`apple count: ${this.apple}`)
+      // 点击Button累加apple，触发UI刷新
+      Button('add apple')
+        .onClick(() => {
+          this.apple++;
+        })
+    }
+  }
+}
+```
+
+### Code block 26
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0xFF00;
+const TAG = '[Sample_StateMigration_App]';
+
+@Entry
+@ComponentV2
+struct MonitorExample {
+  @Local apple: number = 0;
+
+  @Monitor('apple')
+  onFruitChange(monitor: IMonitor) {
+    hilog.info(DOMAIN, TAG, `apple changed from ${monitor.value()?.before} to ${monitor.value()?.now}`);
+  }
+
+  build() {
+    Column() {
+      Text(`apple count: ${this.apple}`)
+      // 点击Button累加apple，触发UI刷新
+      Button('add apple')
+        .onClick(() => {
+          this.apple++;
+        })
+    }
+  }
+}
+```
+
+### Code block 27
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0xFF00;
+const TAG = '[Sample_StateMigration_App]';
+
+@Entry
+@Component
+struct WatchExample {
+  @State @Watch('onAppleChange') apple: number = 0;
+  @State @Watch('onOrangeChange') orange: number = 0;
+
+  // @Watch 回调，只能监听单个变量，不能获取变化前的值
+  onAppleChange(): void {
+    hilog.info(DOMAIN, TAG, 'apple count changed to ' + this.apple);
+  }
+
+  onOrangeChange(): void {
+    hilog.info(DOMAIN, TAG, 'orange count changed to ' + this.orange);
+  }
+
+  build() {
+    Column() {
+      Text(`apple count: ${this.apple}`)
+      Text(`orange count: ${this.orange}`)
+      Button('add apple')
+        .onClick(() => {
+          this.apple++;
+        })
+      Button('add orange')
+        .onClick(() => {
+          this.orange++;
+        })
+    }
+  }
+}
+```
+
+### Code block 28
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0xFF00;
+const TAG = '[Sample_StateMigration_App]';
+
+@Entry
+@ComponentV2
+struct MonitorExample {
+  @Local apple: number = 0;
+  @Local orange: number = 0;
+
+  // @Monitor回调，支持监听多个变量，可以获取变化前的值
+  @Monitor('apple','orange')
+  onFruitChange(monitor: IMonitor) {
+    monitor.dirty.forEach((name: string) => {
+      hilog.info(DOMAIN, TAG, `${name} changed from ${monitor.value(name)?.before} to ${monitor.value(name)?.now}`);
+    });
+  }
+
+  build() {
+    Column() {
+      Text(`apple count: ${this.apple}`)
+      Text(`orange count: ${this.orange}`)
+      Button('add apple')
+        .onClick(() => {
+          this.apple++;
+        })
+      Button('add orange')
+        .onClick(() => {
+          this.orange++;
+        })
+    }
+  }
+}
+```
+
+### Code block 29
+
+```
+@Entry
+@Component
+struct Index {
+  @State firstName: string = 'Li';
+  @State lastName: string = 'Hua';
+
+  build() {
+    Column() {
+      Text(this.lastName + ' ' + this.firstName)
+      Text(this.lastName + ' ' + this.firstName)
+      // 每次改变lastName都会触发Text组件的刷新
+      Button('changed lastName').onClick(() => {
+        this.lastName += 'a';
+      })
+
+    }
+  }
+}
+```
+
+### Code block 30
+
+```
+@Entry
+@ComponentV2
+struct Index {
+  @Local firstName: string = 'Li';
+  @Local lastName: string = 'Hua';
+
+  @Computed
+  get fullName() {
+    // 每次改变lastName仅会触发一次计算
+    return this.firstName + ' ' + this.lastName;
+  }
+
+  build() {
+    Column() {
+      Text(this.fullName)
+      Text(this.fullName)
+      Button('changed lastName').onClick(() => {
+        this.lastName += 'a';
+      })
+    }
+  }
+}
+```
+
+### Code block 31
+
+```
+@Entry
+@Component
+struct TextInputExample {
+  @State text: string = '';
+  controller: TextInputController = new TextInputController();
+
+  build() {
+    Column({ space: 20 }) {
+      Text(this.text)
+      // $$运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步
+      TextInput({ text: $$this.text, placeholder: 'input your word...', controller: this.controller })
+        .placeholderColor(Color.Grey)
+        .placeholderFont({ size: 14, weight: 400 })
+        .caretColor(Color.Blue)
+        .width(300)
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```
+
+### Code block 32
+
+```
+@Entry
+@ComponentV2
+struct TextInputExampleV2 {
+  @Local text: string = '';
+  controller: TextInputController = new TextInputController();
+
+  build() {
+    Column({ space: 20 }) {
+      Text(this.text)
+      // V2中直接用!!替换$$
+      TextInput({ text: this.text!!, placeholder: 'input your word...', controller: this.controller })
+        .placeholderColor(Color.Grey)
+        .placeholderFont({ size: 14, weight: 400 })
+        .caretColor(Color.Blue)
+        .width(300)
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```

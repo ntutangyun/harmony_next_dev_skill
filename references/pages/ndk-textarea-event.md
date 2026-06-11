@@ -1,6 +1,8 @@
-# 监听输入框事件
+# 添加输入框文本事件监听
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ndk-textarea-event_
+
+输入框包含多种交互行为，开发者可注册事件监听并获取状态。以下以多行文本输入框为例进行说明，单行文本输入框添加文本事件监听的步骤与此类似。
 
 要实现实时搜索功能，可注册NODE_TEXT_AREA_ON_CHANGE事件，输入框文本发生变化时会收到通知，并能获取当前文本内容。
 
@@ -12,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ndk-texta
 
 注册事件
 
-事件注册有统一接口，详情请参见registerNodeEvent。输入框支持的事件类型，请参见NativeNode组件支持的事件类型定义，搜索前缀NODE_TEXT_AREA_。
+事件注册有统一接口，详情请参见registerNodeEvent。输入框支持的事件类型，请参见NativeNode组件支持的事件类型定义ArkUI_NodeEventType，搜索前缀NODE_TEXT_AREA_。
 
 ArkUI_NodeHandle text = nodeApi->createNode(ARKUI_NODE_TEXT);
 ArkUI_NumberValue textWidth[] = {{.f32 = 300}};
@@ -29,7 +31,6 @@ auto id = attributeItem->value[0].i32;
 nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_CHANGE, id, text);
 nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_PASTE, id, text);
 nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_TEXT_SELECTION_CHANGE, id, selectionText);
-manager.cpp
 
 注册事件回调
 
@@ -56,7 +57,6 @@ nodeApi->registerNodeEventReceiver([](ArkUI_NodeEvent *event) {
         nodeApi->setAttribute(textNode, NODE_TEXT_CONTENT, &content);
     }
 });
-manager.cpp
 
 完整示例
 
@@ -66,7 +66,6 @@ manager.cpp
 #include <sstream>
 #include <arkui/native_interface.h>
 #include <arkui/styled_string.h>
-
 
 namespace NativeNode::Manager {
 constexpr int32_t NUM_10 = 10;
@@ -78,9 +77,7 @@ NodeManager &NodeManager::GetInstance()
     return instance;
 }
 
-
 void NodeManager::SetXComponent(OH_NativeXComponent *xComponent) { xComponent_ = xComponent; }
-
 
 void NodeManager::CreateTextAreaNode()
 {
@@ -97,7 +94,6 @@ void NodeManager::CreateTextAreaNode()
     ArkUI_AttributeItem widthItem = {.value = colWidth, .size = 1};
     nodeApi->setAttribute(column, NODE_WIDTH, &widthItem);
 
-
     ArkUI_NodeHandle text = nodeApi->createNode(ARKUI_NODE_TEXT);
     ArkUI_NumberValue textWidth[] = {{.f32 = 300}};
     ArkUI_AttributeItem textWidthItem = {.value = textWidth, .size = 1};
@@ -105,9 +101,9 @@ void NodeManager::CreateTextAreaNode()
     ArkUI_NumberValue textHeight[] = {{.f32 = 100}};
     ArkUI_AttributeItem textHeightItem = {.value = textHeight, .size = 1};
     nodeApi->setAttribute(text, NODE_HEIGHT, &textHeightItem);
-    
+
     nodeApi->addChild(column, text);
-    
+
     ArkUI_NodeHandle selectionText = nodeApi->createNode(ARKUI_NODE_TEXT);
     ArkUI_NumberValue selectionTextWidth[] = {{.f32 = 300}};
     ArkUI_AttributeItem selectionTextWidthItem = {.value = selectionTextWidth, .size = 1};
@@ -118,11 +114,9 @@ void NodeManager::CreateTextAreaNode()
     ArkUI_AttributeItem textAreaWidthItem = {.value = textAreaWidth, .size = 1};
     nodeApi->setAttribute(textArea, NODE_WIDTH, &textAreaWidthItem);
 
-
     ArkUI_NumberValue borderWidth[] = {{.f32 = 1}};
     ArkUI_AttributeItem borderWidthItem = {.value = borderWidth, .size = 1};
     nodeApi->setAttribute(textArea, NODE_BORDER_WIDTH, &borderWidthItem);
-
 
     const ArkUI_AttributeItem *attributeItem = nodeApi->getAttribute(textArea, NODE_UNIQUE_ID);
     auto id = attributeItem->value[0].i32;
@@ -133,7 +127,6 @@ void NodeManager::CreateTextAreaNode()
     nodeApi->addChild(column, textArea);
     OH_NativeXComponent_AttachNativeRootNode(xComponent_, column);
 }
-
 
 void NodeManager::TextAreaNodeEventReceiver(ArkUI_NativeNodeAPI_1* nodeApi)
 {
@@ -160,7 +153,147 @@ void NodeManager::TextAreaNodeEventReceiver(ArkUI_NativeNodeAPI_1* nodeApi)
     });
 }
 } // namespace NativeNode::Manager
-manager.cpp
 
-Text组件的文本绘制与显示
-构建弹窗
+## Code blocks
+
+### Code block 1
+
+```
+ArkUI_NodeHandle text = nodeApi->createNode(ARKUI_NODE_TEXT);
+ArkUI_NumberValue textWidth[] = {{.f32 = 300}};
+ArkUI_AttributeItem textWidthItem = {.value = textWidth, .size = 1};
+nodeApi->setAttribute(text, NODE_WIDTH, &textWidthItem);
+// ···
+ArkUI_NodeHandle selectionText = nodeApi->createNode(ARKUI_NODE_TEXT);
+ArkUI_NumberValue selectionTextWidth[] = {{.f32 = 300}};
+ArkUI_AttributeItem selectionTextWidthItem = {.value = selectionTextWidth, .size = 1};
+nodeApi->setAttribute(selectionText, NODE_WIDTH, &selectionTextWidthItem);
+// ···
+const ArkUI_AttributeItem *attributeItem = nodeApi->getAttribute(textArea, NODE_UNIQUE_ID);
+auto id = attributeItem->value[0].i32;
+nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_CHANGE, id, text);
+nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_PASTE, id, text);
+nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_TEXT_SELECTION_CHANGE, id, selectionText);
+```
+
+### Code block 2
+
+```
+nodeApi->registerNodeEventReceiver([](ArkUI_NodeEvent *event) {
+    ArkUI_NodeEventType eventType = OH_ArkUI_NodeEvent_GetEventType(event);
+    ArkUI_AttributeItem content;
+    if (eventType == NODE_TEXT_AREA_ON_CHANGE || eventType == NODE_TEXT_AREA_ON_PASTE) {
+        ArkUI_StringAsyncEvent *stringEvent = OH_ArkUI_NodeEvent_GetStringAsyncEvent(event);
+        content = {.string = stringEvent->pStr };
+    } else if (eventType == NODE_TEXT_AREA_ON_TEXT_SELECTION_CHANGE) {
+        ArkUI_NodeComponentEvent *componentEvent = OH_ArkUI_NodeEvent_GetNodeComponentEvent(event);
+        std::stringstream selectContent;
+        selectContent << "start: " << componentEvent->data[0].i32 << " , end: " << componentEvent->data[1].i32;
+        content = {.string = selectContent.str().c_str() };
+    } else {
+        return;
+    }
+    ArkUI_NodeHandle textNode = reinterpret_cast<ArkUI_NodeHandle>(OH_ArkUI_NodeEvent_GetUserData(event));
+    if (textNode) {
+        ArkUI_NativeNodeAPI_1 *nodeApi = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+            OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+        nodeApi->setAttribute(textNode, NODE_TEXT_CONTENT, &content);
+    }
+});
+```
+
+### Code block 3
+
+```
+#include "manager.h"
+#include <sstream>
+#include <arkui/native_interface.h>
+#include <arkui/styled_string.h>
+
+namespace NativeNode::Manager {
+constexpr int32_t NUM_10 = 10;
+constexpr int32_t NUM_28 = 28;
+constexpr int32_t NUM_400 = 400;
+NodeManager &NodeManager::GetInstance()
+{
+    static NodeManager instance;
+    return instance;
+}
+
+void NodeManager::SetXComponent(OH_NativeXComponent *xComponent) { xComponent_ = xComponent; }
+
+void NodeManager::CreateTextAreaNode()
+{
+    if (!xComponent_) {
+        return;
+    }
+    ArkUI_NativeNodeAPI_1 *nodeApi = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+    if (nodeApi == nullptr) {
+        return;
+    }
+    ArkUI_NodeHandle column = nodeApi->createNode(ARKUI_NODE_COLUMN);
+    ArkUI_NumberValue colWidth[] = {{.f32 = 300}};
+    ArkUI_AttributeItem widthItem = {.value = colWidth, .size = 1};
+    nodeApi->setAttribute(column, NODE_WIDTH, &widthItem);
+
+    ArkUI_NodeHandle text = nodeApi->createNode(ARKUI_NODE_TEXT);
+    ArkUI_NumberValue textWidth[] = {{.f32 = 300}};
+    ArkUI_AttributeItem textWidthItem = {.value = textWidth, .size = 1};
+    nodeApi->setAttribute(text, NODE_WIDTH, &textWidthItem);
+    ArkUI_NumberValue textHeight[] = {{.f32 = 100}};
+    ArkUI_AttributeItem textHeightItem = {.value = textHeight, .size = 1};
+    nodeApi->setAttribute(text, NODE_HEIGHT, &textHeightItem);
+
+    nodeApi->addChild(column, text);
+
+    ArkUI_NodeHandle selectionText = nodeApi->createNode(ARKUI_NODE_TEXT);
+    ArkUI_NumberValue selectionTextWidth[] = {{.f32 = 300}};
+    ArkUI_AttributeItem selectionTextWidthItem = {.value = selectionTextWidth, .size = 1};
+    nodeApi->setAttribute(selectionText, NODE_WIDTH, &selectionTextWidthItem);
+    nodeApi->addChild(column, selectionText);
+    ArkUI_NodeHandle textArea = nodeApi->createNode(ARKUI_NODE_TEXT_AREA);
+    ArkUI_NumberValue textAreaWidth[] = {{.f32 = 300}};
+    ArkUI_AttributeItem textAreaWidthItem = {.value = textAreaWidth, .size = 1};
+    nodeApi->setAttribute(textArea, NODE_WIDTH, &textAreaWidthItem);
+
+    ArkUI_NumberValue borderWidth[] = {{.f32 = 1}};
+    ArkUI_AttributeItem borderWidthItem = {.value = borderWidth, .size = 1};
+    nodeApi->setAttribute(textArea, NODE_BORDER_WIDTH, &borderWidthItem);
+
+    const ArkUI_AttributeItem *attributeItem = nodeApi->getAttribute(textArea, NODE_UNIQUE_ID);
+    auto id = attributeItem->value[0].i32;
+    nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_CHANGE, id, text);
+    nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_PASTE, id, text);
+    nodeApi->registerNodeEvent(textArea, NODE_TEXT_AREA_ON_TEXT_SELECTION_CHANGE, id, selectionText);
+    TextAreaNodeEventReceiver(nodeApi);
+    nodeApi->addChild(column, textArea);
+    OH_NativeXComponent_AttachNativeRootNode(xComponent_, column);
+}
+
+void NodeManager::TextAreaNodeEventReceiver(ArkUI_NativeNodeAPI_1* nodeApi)
+{
+    nodeApi->registerNodeEventReceiver([](ArkUI_NodeEvent *event) {
+        ArkUI_NodeEventType eventType = OH_ArkUI_NodeEvent_GetEventType(event);
+        ArkUI_AttributeItem content;
+        if (eventType == NODE_TEXT_AREA_ON_CHANGE || eventType == NODE_TEXT_AREA_ON_PASTE) {
+            ArkUI_StringAsyncEvent *stringEvent = OH_ArkUI_NodeEvent_GetStringAsyncEvent(event);
+            content = {.string = stringEvent->pStr };
+        } else if (eventType == NODE_TEXT_AREA_ON_TEXT_SELECTION_CHANGE) {
+            ArkUI_NodeComponentEvent *componentEvent = OH_ArkUI_NodeEvent_GetNodeComponentEvent(event);
+            std::stringstream selectContent;
+            selectContent << "start: " << componentEvent->data[0].i32 << " , end: " << componentEvent->data[1].i32;
+            content = {.string = selectContent.str().c_str() };
+        } else {
+            return;
+        }
+        ArkUI_NodeHandle textNode = reinterpret_cast<ArkUI_NodeHandle>(OH_ArkUI_NodeEvent_GetUserData(event));
+        if (textNode) {
+            ArkUI_NativeNodeAPI_1 *nodeApi = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+                OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+            nodeApi->setAttribute(textNode, NODE_TEXT_CONTENT, &content);
+        }
+    });
+}
+} // namespace NativeNode::Manager
+```

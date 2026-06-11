@@ -35,6 +35,3 @@ other：100~102、200~202、1000、10000...
 开发步骤
 
 接口具体使用方法请参考getIntPluralStringValueSync的API文档。
-
-提供翻译场景
-本地化测试

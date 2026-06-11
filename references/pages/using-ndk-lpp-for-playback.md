@@ -98,8 +98,8 @@ int32_t ret = GetTrackInfo(sourceFormat, info);
 
 根据视频元信息，调用 OH_LowPowerAudioSink_CreateByMime或OH_LowPowerVideoSink_CreateByMime来创建播放器。
 
-lppVideoStreamer_ = OH_LowPowerVideoSink_CreateByMime(codecMime.c_str());
-lppAudioStreamer_ = OH_LowPowerAudioSink_CreateByMime(codecMime.c_str());
+lppVideoStreamer_ = OH_LowPowerVideoSink_CreateByMime(videoCodecMime.c_str());
+lppAudioStreamer_ = OH_LowPowerAudioSink_CreateByMime(audioCodecMime.c_str());
 
 设置回调监听函数。
 
@@ -115,20 +115,22 @@ ret = OH_LowPowerAudioSink_RegisterCallback(lppAudioStreamer_, lppAudioStreamerC
 根据之前通过解封装获得的元信息，创建并配置OH_AVFormat。通过configure接口 OH_LowPowerAudioSink_Configure / OH_LowPowerVideoSink_Configure进行播放器的配置，详细参数可参考示例代码。视频流需要使用OH_LowPowerVideoSink_SetVideoSurface接口来设置显示窗口。
 
 OH_AVFormat *format = OH_AVFormat_Create();
- 
+
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, sampleInfo.videoWidth);
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, sampleInfo.videoHeight);
 OH_AVFormat_SetDoubleValue(format, OH_MD_KEY_FRAME_RATE, sampleInfo.frameRate);
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, sampleInfo.pixelFormat);
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_ROTATION, sampleInfo.rotation);
- 
+
 int ret = OH_LowPowerVideoSink_Configure(lppVideoStreamer_, format);
 
 准备播放。
 
 准备播放前，需要调用OH_LowPowerVideoSink_SetSyncAudioSink设置音画同步绑定。然后调用prepare方法，OH_LowPowerAudioSink_Prepare或OH_LowPowerVideoSink_Prepare进入'准备'阶段。
 
+OH_LowPowerVideoSink_SetSyncAudioSink(lppVideoStreamer_, lppAudioStreamer_);
 OH_LowPowerVideoSink_Prepare(lppVideoStreamer_);
+OH_LowPowerAudioSink_Prepare(lppAudioStreamer_);
 
 开始播放。
 
@@ -210,5 +212,144 @@ lpp_demo-sample/entry/src/main/
 
 编译新建工程并运行。
 
-使用AVPlayer播放视频(C/C++)
-录制
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC liblowpower_avsink.so)
+```
+
+### Code block 2
+
+```
+#include "multimedia/player_framework/lowpower_audio_sink_base.h"
+#include "multimedia/player_framework/lowpower_audio_sink.h"
+#include "multimedia/player_framework/lowpower_video_sink.h"
+#include "multimedia/player_framework/lowpower_video_sink_base.h"
+```
+
+### Code block 3
+
+```
+#include <hilog/log.h>
+```
+
+### Code block 4
+
+```
+target_link_libraries(sample PUBLIC libhilog_ndk.z.so)
+```
+
+### Code block 5
+
+```
+set(BASE_LIBRARY
+    libnative_media_codecbase.so libnative_media_core.so libnative_media_vdec.so libnative_window.so
+    libnative_media_venc.so libnative_media_acodec.so libnative_media_avdemuxer.so libnative_media_avsource.so
+    libohaudio.so
+)
+target_link_libraries(sample PUBLIC ${BASE_LIBRARY})
+```
+
+### Code block 6
+
+```
+source_ = OH_AVSource_CreateWithFD(info.inputFd, info.inputFileOffset, info.inputFileSize);
+demuxer_ = OH_AVDemuxer_CreateWithSource(source_);
+int32_t ret = GetTrackInfo(sourceFormat, info);
+```
+
+### Code block 7
+
+```
+lppVideoStreamer_ = OH_LowPowerVideoSink_CreateByMime(videoCodecMime.c_str());
+lppAudioStreamer_ = OH_LowPowerAudioSink_CreateByMime(audioCodecMime.c_str());
+```
+
+### Code block 8
+
+```
+lppAudioStreamerCallback_ = OH_LowPowerAudioSinkCallback_Create();
+OH_LowPowerAudioSinkCallback_SetDataNeededListener(lppAudioStreamerCallback_, LppCallback::OnDataNeeded, lppUserData);
+OH_LowPowerAudioSinkCallback_SetPositionUpdateListener(lppAudioStreamerCallback_, LppCallback::OnPositionUpdated, lppUserData);
+ret = OH_LowPowerAudioSink_RegisterCallback(lppAudioStreamer_, lppAudioStreamerCallback_);
+```
+
+### Code block 9
+
+```
+OH_AVFormat *format = OH_AVFormat_Create();
+
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, sampleInfo.videoWidth);
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, sampleInfo.videoHeight);
+OH_AVFormat_SetDoubleValue(format, OH_MD_KEY_FRAME_RATE, sampleInfo.frameRate);
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, sampleInfo.pixelFormat);
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_ROTATION, sampleInfo.rotation);
+
+int ret = OH_LowPowerVideoSink_Configure(lppVideoStreamer_, format);
+```
+
+### Code block 10
+
+```
+OH_LowPowerVideoSink_SetSyncAudioSink(lppVideoStreamer_, lppAudioStreamer_);
+OH_LowPowerVideoSink_Prepare(lppVideoStreamer_);
+OH_LowPowerAudioSink_Prepare(lppAudioStreamer_);
+```
+
+### Code block 11
+
+```
+OH_LowPowerVideoSink_StartDecoder(lppVideoStreamer_);
+OH_LowPowerVideoSink_StartRenderer(lppVideoStreamer_);
+```
+
+### Code block 12
+
+```
+lpp_demo-sample/entry/src/main/
+├── cpp                                # Native层
+│   ├── capabilities                   # 能力接口和实现
+│   │   ├── include                    # 能力接口
+│   │   ├── demuxer.cpp                # 解封装实现
+│   │   ├── lpp_audio_streamer.cpp     # 低功耗音频流实现
+│   │   └── lpp_video_streamer.cpp     # 低功耗视频流实现
+│   ├── common                         # 公共模块
+│   │   ├── dfx                        # 日志
+│   │   ├── lpp_callback.cpp           # 低功耗音视频回调实现
+│   │   ├── lpp_callback.h             # 低功耗音视频回调接口
+│   │   └── sample_info.h              # 功能实现公共类
+│   ├── render                         # 送显模块接口和实现 * window player设置
+│   │   ├── include                    # 送显模块接口
+│   │   ├── egl_core.cpp               # 送显参数设置
+│   │   ├── plugin_manager.cpp         # 送显模块管理实现
+│   │   └── plugin_render.cpp          # 送显逻辑实现
+│   ├── sample                         # Native层
+│   │   ├── player                     # Native层播放接口和实现
+│   │   │   ├── Player.cpp             # Native层播放功能调用逻辑的实现
+│   │   │   ├── Player.h               # Native层播放功能调用逻辑的接口
+│   │   │   ├── PlayerNative.cpp       # Native层播放的入口
+│   │   │   └── PlayerNative.h         # Native层暴露上来的接口
+│   ├── types                          #
+│   │   └── libplayer                  # 播放模块暴露给UI层的接口
+│   └── CMakeLists.txt                 # 编译入口
+├── ets                                # UI层
+│   ├── common                         # 公共模块
+│   │   ├── utils                      # 共用的工具类
+│   │   │   ├── DateTimeUtils.ets      # 获取当前时间
+│   │   │   └── Logger.ts              # 日志工具
+│   |   └───CommonConstants.ets        # 参数常量
+│   ├── entryability                   # 应用的入口
+│   │   └── EntryAbility.ts            # 申请权限弹窗实现
+│   ├── pages                          # EntryAbility包含的页面
+│   │   └── Index.ets                  # 首页/播放页面
+├── resources                          # 用于存放应用所用到的资源文件
+│   ├── base                           # 该目录下的资源文件会被赋予唯一的ID
+│   │   ├── element                    # 用于存放字体和颜色
+│   │   ├── media                      # 用于存放图片
+│   │   └── profile                    # 应用入口首页
+│   ├── en_US                          # 设备语言是美式英文时，优先匹配此目录下资源
+│   └── zh_CN                          # 设备语言是简体中文时，优先匹配此目录下资源
+└── module.json5                       # 模块配置信息
+```

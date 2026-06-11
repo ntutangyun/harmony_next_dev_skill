@@ -2,3 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-workspace-api_
 
+GetSysWorkSpacePtr
+
+SetSysWorkSpace
+
+GetUserWorkspace

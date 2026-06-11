@@ -13,6 +13,3 @@ HarmonyOS支持播放Audio Vivid格式音源，并在耳机实现双耳空间音
 以下主要介绍使用HarmonyOS进行Audio Vivid格式音源的端到端播放的流程。
 
 Audio Vivid端到端播放包括调用系统编解码能力进行解封装、解码，以及调用系统播放能力进行渲染播放两个部分。
-
-Audio Vivid能力
-Audio Vivid解封装

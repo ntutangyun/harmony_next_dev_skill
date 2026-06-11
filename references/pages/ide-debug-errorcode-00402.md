@@ -2,6 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-errorcode-00402_
 
+00402001 找不到SDK
+
+错误信息
+
+Install the SDK first.
+
+错误描述
+
+请先安装SDK。
+
+可能原因
+
+找不到SDK。
+
+处理步骤
+
 检查DevEco Studio安装目录下sdk/default/openharmony路径下面是否有ets目录，如果不存在，在官网上重新下载DevEco Studio。
 
 00402002 热重载只支持STAGE模型工程
@@ -203,7 +219,9 @@ Reloaded XXX files failed. Please reinstall and restart.
 可检查以下几方面：
 
 检查工程签名是否正确，热重载需要使用调试证书签名，不支持使用发布证书签名，具体参考配置调试签名。
+
 检查工程的构建模式，热重载需要使用debug模式，不支持release模式，具体参考指定构建模式。
+
 00402013 执行Apply Changes超时
 
 错误信息
@@ -379,12 +397,15 @@ Failed to deploy the incremental changes on the device. Update the device image 
 可能原因
 
 执行bm quickfix命令失败，可能设备镜像版本比较低。
+
 如果是2in1设备，可能是应用开启了应用加速服务。
 
 处理步骤
 
 请将设备镜像更新至最新版本后重试，或点击运行/调试按钮。
+
 如果是2in1设备，请在设备的设置 > 应用和元服务 > 应用加速服务中，查看应用是否开启了应用加速服务，并关闭应用的加速服务。
+
 00402025 hqf和hap的ASan/TSan/UBSan/HWASan不一致
 
 错误信息
@@ -456,7 +477,9 @@ Ability不可见。
 处理步骤
 
 Stage模型工程：在module.json5文件中，将abilities字段下的exported设置为true。
+
 FA模型工程：在config.json文件中，将abilities字段下的visible设置为true。
+
 00402030 无法创建changedFileList.json文件
 
 错误信息
@@ -582,6 +605,3 @@ hdc版本不兼容。请使用DevEco Studio安装目录下sdk\default\openharmon
 处理步骤
 
 hdc环境变量更新为DevEco Studio安装目录下sdk\default\openharmony\toolchains下的hdc，再重启DevEco Studio。
-
-运行配置错误码
-调试失败错误码

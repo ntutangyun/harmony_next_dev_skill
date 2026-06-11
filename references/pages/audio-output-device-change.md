@@ -11,6 +11,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-out
 在AudioRenderer的on('outputDeviceChangeWithInfo')或AudioSessionManager的on('currentOutputDeviceChanged')返回的音频流设备变更信息中，包含当前音频流输出设备信息，以数组形式发送，一般该列表仅包含一个设备信息，具体可参考AudioDeviceDescriptors（设备信息列表）。
 
 音频流输出设备变更原因
+
 说明
 
 当发生下述四种情况（AudioStreamDeviceChangeReason）时，系统将向应用发送设备变更回调。
@@ -32,8 +33,11 @@ REASON_OLD_DEVICE_UNAVAILABLE：旧设备不可用。
 针对此场景，常用业务场景的处理建议如下：
 
 游戏场景：不暂停
+
 听书场景：暂停
+
 音乐场景：暂停
+
 视频场景：暂停
 
 REASON_OVERRODE：用户强制选择设备。
@@ -48,7 +52,8 @@ REASON_UNKNOWN：未知原因。
 
 以下各步骤示例为片段代码，可通过示例代码右下方链接获取完整示例。
 
-AudioRenderer示例
+[h2]AudioRenderer示例
+
 import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 let audioRenderer: audio.AudioRenderer | undefined = undefined;
@@ -68,7 +73,6 @@ let audioRendererOptions: audio.AudioRendererOptions = {
 };
 // ...
 
-
   // 创建AudioRenderer实例。
   audio.createAudioRenderer(audioRendererOptions).then((data) => {
     audioRenderer = data;
@@ -78,7 +82,6 @@ let audioRendererOptions: audio.AudioRendererOptions = {
     console.error(`AudioFrameworkRenderLog: AudioRenderer Created : ERROR : ${err}`);
     // ...
   });
-
 
   if (audioRenderer) {
     // 订阅监听音频流输出设备变化及原因。
@@ -101,11 +104,11 @@ let audioRendererOptions: audio.AudioRendererOptions = {
       }
     });
   }
-OutputDeviceChangePause.ets
-AudioSessionManager示例
+
+[h2]AudioSessionManager示例
+
 import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 let audioRenderer: audio.AudioRenderer | undefined = undefined;
 let audioStreamInfo: audio.AudioStreamInfo = {
@@ -123,7 +126,6 @@ let audioRendererOptions: audio.AudioRendererOptions = {
   rendererInfo: audioRendererInfo
 };
 
-
 // 创建AudioRenderer实例。
 audio.createAudioRenderer(audioRendererOptions).then((data) => {
   audioRenderer = data;
@@ -131,7 +133,6 @@ audio.createAudioRenderer(audioRendererOptions).then((data) => {
 }).catch((err: BusinessError) => {
   console.error(`AudioFrameworkRenderLog: AudioRenderer Created : ERROR : ${err}`);
 });
-
 
 if (audioRenderer) {
   try {
@@ -160,5 +161,119 @@ if (audioRenderer) {
     console.error(`on sessionManager#currentOutputDeviceChanged fail: ${err}`);
   }
 }
-实现音频输出设备路由切换
-音频通话
+
+## Code blocks
+
+### Code block 1
+
+```
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+let audioRenderer: audio.AudioRenderer | undefined = undefined;
+let audioStreamInfo: audio.AudioStreamInfo = {
+  samplingRate: audio.AudioSamplingRate.SAMPLE_RATE_48000, // 采样率。
+  channels: audio.AudioChannel.CHANNEL_2, // 通道。
+  sampleFormat: audio.AudioSampleFormat.SAMPLE_FORMAT_S16LE, // 采样格式。
+  encodingType: audio.AudioEncodingType.ENCODING_TYPE_RAW // 编码格式。
+};
+let audioRendererInfo: audio.AudioRendererInfo = {
+  usage: audio.StreamUsage.STREAM_USAGE_MUSIC, // 音频流使用类型:音乐。根据业务场景配置,参考StreamUsage。
+  rendererFlags: 0 // 音频渲染器标志。
+};
+let audioRendererOptions: audio.AudioRendererOptions = {
+  streamInfo: audioStreamInfo,
+  rendererInfo: audioRendererInfo
+};
+// ...
+
+  // 创建AudioRenderer实例。
+  audio.createAudioRenderer(audioRendererOptions).then((data) => {
+    audioRenderer = data;
+    console.info('AudioFrameworkRenderLog: AudioRenderer Created : Success : Stream Type: SUCCESS');
+    // ...
+  }).catch((err: BusinessError) => {
+    console.error(`AudioFrameworkRenderLog: AudioRenderer Created : ERROR : ${err}`);
+    // ...
+  });
+
+  if (audioRenderer) {
+    // 订阅监听音频流输出设备变化及原因。
+    (audioRenderer as audio.AudioRenderer).on('outputDeviceChangeWithInfo', async (deviceChangeInfo: audio
+    .AudioStreamDeviceChangeInfo) => {
+      switch (deviceChangeInfo.changeReason) {
+        case audio.AudioStreamDeviceChangeReason.REASON_OLD_DEVICE_UNAVAILABLE:
+          // 响应设备不可用事件,如果应用处于播放状态,应暂停播放,更新UX界面。
+          // await audioRenderer.pause();
+          break;
+        case audio.AudioStreamDeviceChangeReason.REASON_NEW_DEVICE_AVAILABLE:
+          // 应用根据业务情况响应设备可用事件。
+          break;
+        case audio.AudioStreamDeviceChangeReason.REASON_OVERRODE:
+          // 应用根据业务情况响应设备强选事件。
+          break;
+        case audio.AudioStreamDeviceChangeReason.REASON_UNKNOWN:
+          // 应用根据业务情况响应未知原因事件。
+          break;
+      }
+    });
+  }
+```
+
+### Code block 2
+
+```
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+let audioRenderer: audio.AudioRenderer | undefined = undefined;
+let audioStreamInfo: audio.AudioStreamInfo = {
+  samplingRate: audio.AudioSamplingRate.SAMPLE_RATE_48000, // 采样率。
+  channels: audio.AudioChannel.CHANNEL_2, // 通道。
+  sampleFormat: audio.AudioSampleFormat.SAMPLE_FORMAT_S16LE, // 采样格式。
+  encodingType: audio.AudioEncodingType.ENCODING_TYPE_RAW // 编码格式。
+};
+let audioRendererInfo: audio.AudioRendererInfo = {
+  usage: audio.StreamUsage.STREAM_USAGE_MUSIC, // 音频流使用类型：音乐。根据业务场景配置，参考StreamUsage。
+  rendererFlags: 0 // 音频渲染器标志。
+};
+let audioRendererOptions: audio.AudioRendererOptions = {
+  streamInfo: audioStreamInfo,
+  rendererInfo: audioRendererInfo
+};
+
+// 创建AudioRenderer实例。
+audio.createAudioRenderer(audioRendererOptions).then((data) => {
+  audioRenderer = data;
+  console.info('AudioFrameworkRenderLog: AudioRenderer Created : Success : Stream Type: SUCCESS');
+}).catch((err: BusinessError) => {
+  console.error(`AudioFrameworkRenderLog: AudioRenderer Created : ERROR : ${err}`);
+});
+
+if (audioRenderer) {
+  try {
+    let sessionManager = audio.getAudioManager().getSessionManager();
+    sessionManager.activateAudioSession({ concurrencyMode: audio.AudioConcurrencyMode.CONCURRENCY_MIX_WITH_OTHERS });
+    // 订阅监听音频流输出设备变化及原因。
+    sessionManager.on('currentOutputDeviceChanged', async (deviceChangeInfo: audio.CurrentOutputDeviceChangedEvent) => {
+      switch (deviceChangeInfo.changeReason) {
+        case audio.AudioStreamDeviceChangeReason.REASON_OLD_DEVICE_UNAVAILABLE:
+          // 响应设备不可用事件，如果应用处于播放状态，应暂停播放，更新UX界面。
+          // await audioRenderer.pause();
+          console.info('REASON_OLD_DEVICE_UNAVAILABLE, pause audio is recommended');
+          break;
+        case audio.AudioStreamDeviceChangeReason.REASON_NEW_DEVICE_AVAILABLE:
+          // 应用根据业务情况响应设备可用事件。
+          break;
+        case audio.AudioStreamDeviceChangeReason.REASON_OVERRODE:
+          // 应用根据业务情况响应设备强选事件。
+          break;
+        case audio.AudioStreamDeviceChangeReason.REASON_UNKNOWN:
+          // 应用根据业务情况响应未知原因事件。
+          break;
+      }
+    });
+  } catch (err) {
+    console.error(`on sessionManager#currentOutputDeviceChanged fail: ${err}`);
+  }
+}
+```

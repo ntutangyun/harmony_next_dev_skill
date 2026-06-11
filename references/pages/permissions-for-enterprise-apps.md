@@ -2,6 +2,36 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/permissions-for-enterprise-apps_
 
+以下权限面向企业类应用开放。
+
+企业类应用包括企业普通应用和MDM（Mobile Device Management）设备管理应用。
+
+企业类应用有以下特征：
+
+仅在企业定制设备上运行，不会在普通消费者设备上运行。
+
+分发类型分别为enterprise_normal（企业普通应用）和enterprise_mdm（MDM应用）。
+
+不会上架华为应用市场。
+
+企业类应用可参考声明权限，申请以下权限。
+
+注意
+
+以下权限不支持自动签名，因此在调试和发布阶段，均需参照手动签名的步骤，完成手动签名。
+
+ohos.permission.SET_FILE_GUARD_POLICY
+
+允许应用下发文件管控策略。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+起始版本：10
+
 变更信息：API 10-14时，其权限级别为system_core，仅面向MDM应用开放；从API 14开始，权限级别变更为system_basic，开放范围变更为企业普通应用。
 
 ohos.permission.FILE_GUARD_MANAGER
@@ -188,7 +218,7 @@ ohos.permission.MANAGE_ENTERPRISE_WIFI_CONNECTION
 
 授权方式：系统授权（system_grant）
 
-ACL使能：true
+是否支持证书授权：true
 
 起始版本：15
 
@@ -495,6 +525,3 @@ ohos.permission.ENTERPRISE_MANAGE_PRINT
 支持设备：PC/2in1
 
 起始版本：24
-
-受限开放权限
-仅MDM应用可用权限

@@ -19,7 +19,6 @@ Button('Ok', { type: ButtonType.Normal, stateEffect: true })
   .backgroundColor(0x317aff)
   .width(90)
   .height(40)
-CreateButton.ets
 
 通过ButtonOptions创建包含子组件的按钮。以ButtonOptions中的type和stateEffect为例。
 
@@ -34,7 +33,6 @@ Button({ type: ButtonType.Normal, stateEffect: true }) {
     Text('loading').fontSize(12).fontColor(0xffffff).margin({ left: 5, right: 12 })
   }.alignItems(VerticalAlign.Center)
 }.borderRadius(8).backgroundColor(0x317aff).width(90).height(40)
-CreateButton.ets
 
 设置按钮类型
 
@@ -48,7 +46,6 @@ Button('Disable', { type: ButtonType.Capsule, stateEffect: false })
   .backgroundColor(0x317aff)
   .width(90)
   .height(40)
-SetButtonType.ets
 
 圆形按钮。
 
@@ -58,7 +55,6 @@ Button('Circle', { type: ButtonType.Circle, stateEffect: false })
   .backgroundColor(0x317aff)
   .width(90)
   .height(90)
-SetButtonType.ets
 
 普通按钮。
 
@@ -69,7 +65,6 @@ Button('Ok', { type: ButtonType.Normal, stateEffect: true })
   .backgroundColor(0x317aff)
   .width(90)
   .height(40)
-SetButtonType.ets
 
 圆角矩形按钮。
 
@@ -79,7 +74,6 @@ Button('Disable', { type: ButtonType.ROUNDED_RECTANGLE, stateEffect: true })
   .backgroundColor(0x317aff)
   .width(90)
   .height(40)
-SetButtonType.ets
 
 自定义样式
 
@@ -90,7 +84,6 @@ SetButtonType.ets
 Button('circle border', { type: ButtonType.Normal })
   .borderRadius(20)
   .height(40)
-ButtonCustomStyle.ets
 
 设置文本样式。
 
@@ -100,14 +93,12 @@ Button('font style', { type: ButtonType.Normal })
   .fontSize(20)
   .fontColor(Color.Pink)
   .fontWeight(800)
-ButtonCustomStyle.ets
 
 设置背景颜色。
 
 添加backgroundColor属性设置按钮的背景颜色。
 
 Button('background color').backgroundColor(0xF55A42)
-ButtonCustomStyle.ets
 
 创建功能型按钮。
 
@@ -117,7 +108,6 @@ Button({ type: ButtonType.Circle, stateEffect: true }) {
   // 请将$r('app.media.ic_public_delete_filled3')替换为实际资源文件
   Image($r('app.media.ic_public_delete_filled')).width(30).height(30)
 }.width(55).height(55).margin({ 'left': 20 }).backgroundColor(0xF55A42)
-ButtonCustomStyle.ets
 
 添加事件
 
@@ -127,7 +117,7 @@ Button('Ok', { type: ButtonType.Normal, stateEffect: true })
   .onClick(()=>{
     hilog.info(DOMAIN, 'testTag', 'Button onClick');
   }).margin(10)
-ButtonCaseLogin.ets
+
 场景示例
 
 用于启动操作。
@@ -141,7 +131,6 @@ const DOMAIN = 0x0000;
 export struct ButtonCaseTouch {
   pathStack: NavPathStack = new NavPathStack();
 
-
   @Builder
   PageMap(name: string) {
     if (name === 'first_page') {
@@ -152,7 +141,6 @@ export struct ButtonCaseTouch {
       pageThreeTmp()
     }
   }
-
 
   build() {
     NavDestination() {
@@ -165,14 +153,12 @@ export struct ButtonCaseTouch {
               .width('100%')
           }
 
-
           ListItem() {
             Button('Second').onClick(() => {
               this.pathStack.pushPath({ name: 'second_page' });
             })
               .width('100%')
           }
-
 
           ListItem() {
             Button('Third').onClick(() => {
@@ -190,12 +176,10 @@ export struct ButtonCaseTouch {
   }
 }
 
-
 // pageOne
 @Component
 export struct pageOneTmp {
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -215,12 +199,10 @@ export struct pageOneTmp {
   }
 }
 
-
 // pageTwo
 @Component
 export struct pageTwoTmp {
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -240,12 +222,10 @@ export struct pageTwoTmp {
   }
 }
 
-
 // pageThree
 @Component
 export struct pageThreeTmp {
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -264,7 +244,6 @@ export struct pageThreeTmp {
     })
   }
 }
-ButtonCaseTouch.ets
 
 用于提交表单。
 
@@ -289,7 +268,6 @@ export struct ButtonCaseLogin {
     }
   }
 }
-ButtonCaseLogin.ets
 
 悬浮按钮。
 
@@ -317,7 +295,6 @@ export struct HoverButtonExample {
           }, (item: number) => item.toString())
         }.width('90%')
 
-
         Button() {
           // 请将$r('app.media.ic_public_add')替换为实际资源文件
           Image($r('app.media.ic_public_add'))
@@ -339,10 +316,6 @@ export struct HoverButtonExample {
     }
   }
 }
-HoverButtonExample.ets
-
-按钮与选择组件概述
-弧形按钮 (ArcButton)(圆形屏幕推荐使用)
 
 ## Code blocks
 
@@ -468,7 +441,6 @@ const DOMAIN = 0x0000;
 export struct ButtonCaseTouch {
   pathStack: NavPathStack = new NavPathStack();
 
-
   @Builder
   PageMap(name: string) {
     if (name === 'first_page') {
@@ -479,7 +451,6 @@ export struct ButtonCaseTouch {
       pageThreeTmp()
     }
   }
-
 
   build() {
     NavDestination() {
@@ -492,14 +463,12 @@ export struct ButtonCaseTouch {
               .width('100%')
           }
 
-
           ListItem() {
             Button('Second').onClick(() => {
               this.pathStack.pushPath({ name: 'second_page' });
             })
               .width('100%')
           }
-
 
           ListItem() {
             Button('Third').onClick(() => {
@@ -517,12 +486,10 @@ export struct ButtonCaseTouch {
   }
 }
 
-
 // pageOne
 @Component
 export struct pageOneTmp {
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -542,12 +509,10 @@ export struct pageOneTmp {
   }
 }
 
-
 // pageTwo
 @Component
 export struct pageTwoTmp {
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -567,12 +532,10 @@ export struct pageTwoTmp {
   }
 }
 
-
 // pageThree
 @Component
 export struct pageThreeTmp {
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -641,7 +604,6 @@ export struct HoverButtonExample {
             }
           }, (item: number) => item.toString())
         }.width('90%')
-
 
         Button() {
           // 请将$r('app.media.ic_public_add')替换为实际资源文件

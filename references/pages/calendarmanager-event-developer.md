@@ -20,6 +20,7 @@ editEvent(event: Event): Promise<number>	通过跳转到日程创建界面创建
 deleteEvent(id: number): Promise<void>	删除指定日程id的日程，使用Promise异步回调。
 updateEvent(event: Event): Promise<void>	更新日程，使用Promise异步回调。
 getEvents(eventFilter?: EventFilter, eventKey?: (keyof Event)[]): Promise<Event[]>	获取Calendar下符合查询条件的Event，使用Promise异步回调。
+
 开发步骤
 
 导入相关依赖。
@@ -29,7 +30,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { calendarManager } from '@kit.CalendarKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-EntryAbility.ets
 
 申请权限。使用Calendar Kit时，需要在module.json5中声明申请读写日历日程所需的权限：ohos.permission.READ_CALENDAR和ohos.permission.WRITE_CALENDAR。具体指导可见声明权限。
 
@@ -37,27 +37,22 @@ EntryAbility.ets
 
 const DOMAIN = 0x0000;
 
-
 export let calendarMgr: calendarManager.CalendarManager | null = null;
-
 
 export let mContext: common.UIAbilityContext | null = null;
 
-
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    hilog.info(DOMAIN, 'testTag', '%{public}s', "Ability onCreate");
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
   }
-
 
   onDestroy(): void {
-    hilog.info(DOMAIN, 'testTag', '%{public}s', "Ability onDestroy");
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
-
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    // Main window is created, set main page for this ability
-    hilog.info(DOMAIN, 'testTag', '%{public}s', "Ability onWindowStageCreate");
+    // 主窗口已创建，请为此Ability设置主页
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
@@ -76,25 +71,21 @@ export default class EntryAbility extends UIAbility {
     })
   }
 
-
   onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
-    hilog.info(DOMAIN, 'testTag', '%{public}s', "Ability onWindowStageDestroy");
+    // 主窗口已销毁，释放 UI 相关资源
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
   }
-
 
   onForeground(): void {
-    // Ability has brought to foreground
-    hilog.info(DOMAIN, 'testTag', '%{public}s', "Ability onForeground");
+    // Ability 进入前台
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
   }
-
 
   onBackground(): void {
-    // Ability has back to background
-    hilog.info(DOMAIN, 'testTag', '%{public}s', "Ability onBackground");
+    // Ability 进入后台
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
   }
 }
-EntryAbility.ets
 
 根据日历账户信息创建Calendar对象，用于进行日程管理。设置日历配置信息，可以根据需要打开日程提醒、设置日历账户颜色。
 
@@ -103,9 +94,7 @@ import { calendarMgr } from '../entryability/EntryAbility';
 import { calendarManager } from '@kit.CalendarKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 let calendar: calendarManager.Calendar | undefined = undefined;
 // 指定日历账户信息
@@ -122,13 +111,12 @@ const config: calendarManager.CalendarConfig = {
   // 设置日历账户颜色
   color: '#aabbcc'
 };
-Index.ets
+
 // 创建日历账户
 calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
   hilog.info(DOMAIN, 'testTag', `Succeeded in creating calendar data->${JSON.stringify(data)}`);
   calendar = data;
   // 请确保日历账户创建成功后，再进行相关日程的管理
-
 
   // 设置日历配置信息，打开日程提醒、设置日历账户颜色
   calendar.setConfig(config).then(() => {
@@ -140,7 +128,6 @@ calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calenda
 }).catch((error: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `Failed to create calendar. Code: ${error.code}, message: ${error.message}`);
 });
-Index.ets
 
 在当前日历账户下添加日历日程，注意入参中不需要填写日程id。
 
@@ -156,7 +143,7 @@ Index.ets
 
 let eventId : number | undefined = undefined;
 const date = new Date();
-Index.ets
+
 const event: calendarManager.Event = {
   // 日程标题
   title: 'title',
@@ -192,6 +179,251 @@ const event: calendarManager.Event = {
     description: '一键服务'
   }
 
+};
+// 方式一
+calendar.addEvent(event).then((data: number) => {
+  hilog.info(DOMAIN, 'testTag', `Succeeded in adding event, id -> ${data}`);
+  eventId = data;
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to addEvent. Code: ${err.code}, message: ${err.message}`);
+});
+// 方式二
+const eventInfo: calendarManager.Event = {
+  // 日程标题
+  title: 'title',
+  // 日程类型
+  type: calendarManager.EventType.NORMAL,
+  // 日程开始时间
+  startTime: date.getTime(),
+  // 日程结束时间
+  endTime: date.getTime() + 60 * 60 * 1000
+};
+calendarMgr?.editEvent(eventInfo).then((id: number): void => {
+  hilog.info(DOMAIN, 'testTag', `create Event id = ${id}`);
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to create Event. Code: ${err.code}, message: ${err.message}`);
+});
+
+按照日程id进行指定日程的更新，更新日程相关信息。
+
+const updateEvent: calendarManager.Event = {
+  title: 'updateTitle',
+  description: 'updateEventTest',
+  type: calendarManager.EventType.NORMAL,
+  id: eventId,
+  startTime: date.getTime(),
+  endTime: date.getTime() + 60 * 60 * 1000
+};
+calendar.updateEvent(updateEvent).then(() => {
+  hilog.info(DOMAIN, 'testTag', `Succeeded in updating event`);
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to update event. Code: ${err.code}, message: ${err.message}`);
+});
+
+查询当前日历账户下的所有日程。由于涉及数据隐私安全，进行了权限管控的应用无法获取其他创建的日程信息。根据不同的查询条件和查询字段，返回不同的查询结果。
+
+当没有查询条件和查询字段时，可查询指定日历账户下的所有日程。
+
+calendar.getEvents().then((data: calendarManager.Event[]) => {
+  hilog.info(DOMAIN, 'testTag', `Succeeded in getting events, data -> ${JSON.stringify(data)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to get events. Code: ${err.code}, message: ${err.message}`);
+});
+
+还支持根据日程id、日程开始和结束时间、日程标题等查询条件来查询日程。
+
+// 根据日程id查询
+const filterId = calendarManager.EventFilter.filterById([eventId]);
+calendar.getEvents(filterId).then((data: calendarManager.Event[]) => {
+  hilog.info(DOMAIN, 'testTag', `Succeeded in getting events filter by eventId, data -> ${JSON.stringify(data)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to get events. Code: ${err.code}, message: ${err.message}`);
+});
+
+// 根据日程标题查询
+const filterTitle = calendarManager.EventFilter.filterByTitle('update');
+calendar.getEvents(filterTitle).then((data: calendarManager.Event[]) => {
+  hilog.info(DOMAIN, 'testTag', `Succeeded in getting events filter by title, data -> ${JSON.stringify(data)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to get events. Code: ${err.code}, message: ${err.message}`);
+});
+
+// 根据日程开始和结束时间查询
+const filterTime = calendarManager.EventFilter.filterByTime(1686931200000, 1687017600000);
+calendar.getEvents(filterTime).then((data: calendarManager.Event[]) => {
+  hilog.info(DOMAIN, 'testTag', `Succeeded in getting events filter by time, data -> ${JSON.stringify(data)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to filter by time. Code: ${err.code}, message: ${err.message}`);
+});
+
+按照日程id进行指定日程的删除。可以通过deleteEvent()接口进行单个日程的删除，也可以通过deleteEvents()接口批量删除指定日程，此处以删除单个指定日程为例。
+
+calendar.deleteEvent(eventId).then(() => {
+  hilog.info(DOMAIN, 'testTag', 'Succeeded in deleting event');
+}).catch((err: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to delete event. Code: ${err.code}, message: ${err.message}`);
+});
+
+## Code blocks
+
+### Code block 1
+
+```
+import { abilityAccessCtrl, AbilityConstant, common, PermissionRequestResult, Permissions, UIAbility, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { calendarManager } from '@kit.CalendarKit';
+import { window } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+const DOMAIN = 0x0000;
+
+export let calendarMgr: calendarManager.CalendarManager | null = null;
+
+export let mContext: common.UIAbilityContext | null = null;
+
+export default class EntryAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+  }
+
+  onDestroy(): void {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onDestroy');
+  }
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    // 主窗口已创建，请为此Ability设置主页
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err.code) {
+        hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
+        return;
+      }
+      hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+    });
+    mContext = this.context;
+    const permissions: Permissions[] = ['ohos.permission.READ_CALENDAR', 'ohos.permission.WRITE_CALENDAR'];
+    let atManager = abilityAccessCtrl.createAtManager();
+    atManager.requestPermissionsFromUser(mContext, permissions).then((result: PermissionRequestResult) => {
+      hilog.info(DOMAIN, 'testTag', 'get Permission success');
+      calendarMgr = calendarManager.getCalendarManager(mContext);
+    }).catch((error: BusinessError) => {
+      hilog.error(DOMAIN, 'testTag', 'get Permission error, Cause: %{public}s', JSON.stringify(error));
+    })
+  }
+
+  onWindowStageDestroy(): void {
+    // 主窗口已销毁，释放 UI 相关资源
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
+  }
+
+  onForeground(): void {
+    // Ability 进入前台
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
+  }
+
+  onBackground(): void {
+    // Ability 进入后台
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
+  }
+}
+```
+
+### Code block 3
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { calendarMgr } from '../entryability/EntryAbility';
+import { calendarManager } from '@kit.CalendarKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+let calendar: calendarManager.Calendar | undefined = undefined;
+// 指定日历账户信息
+const calendarAccount: calendarManager.CalendarAccount = {
+  name: 'MyCalendar',
+  type: calendarManager.CalendarType.LOCAL,
+  // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
+  displayName: 'MyCalendar'
+};
+// 日历配置信息
+const config: calendarManager.CalendarConfig = {
+  // 打开日程提醒
+  enableReminder: true,
+  // 设置日历账户颜色
+  color: '#aabbcc'
+};
+```
+
+### Code block 4
+
+```
+// 创建日历账户
+calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
+  hilog.info(DOMAIN, 'testTag', `Succeeded in creating calendar data->${JSON.stringify(data)}`);
+  calendar = data;
+  // 请确保日历账户创建成功后，再进行相关日程的管理
+
+  // 设置日历配置信息，打开日程提醒、设置日历账户颜色
+  calendar.setConfig(config).then(() => {
+    hilog.info(DOMAIN, 'testTag', `Succeeded in setting config, data->${JSON.stringify(config)}`);
+  }).catch((err: BusinessError) => {
+    hilog.error(DOMAIN, 'testTag', `Failed to set config. Code: ${err.code}, message: ${err.message}`);
+  });
+  // ...
+}).catch((error: BusinessError) => {
+  hilog.error(DOMAIN, 'testTag', `Failed to create calendar. Code: ${error.code}, message: ${error.message}`);
+});
+```
+
+### Code block 5
+
+```
+let eventId : number | undefined = undefined;
+const date = new Date();
+```
+
+### Code block 6
+
+```
+const event: calendarManager.Event = {
+  // 日程标题
+  title: 'title',
+  // 日程类型，不推荐三方开发者使用calendarManager.EventType.IMPORTANT，重要日程类型不支持一键服务跳转功能及无法自定义提醒时间
+  type: calendarManager.EventType.NORMAL,
+  // 日程开始时间
+  startTime: date.getTime(),
+  // 日程结束时间
+  endTime: date.getTime() + 60 * 60 * 1000,
+  // 距开始时间提前10分钟提醒
+  reminderTime: [10],
+  // 日程重复规则，可选属性。如果日程为周期性日程需要填写该属性。
+  recurrenceRule: {
+    // 日程重复规则类型，支持按天、按周、按月、按年重复
+    recurrenceFrequency: calendarManager.RecurrenceFrequency.DAILY,
+    // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
+    count: 100,
+    // 重复日程间隔时间，与recurrenceFrequency相关，此示例表示日程每隔2天进行重复。
+    interval: 2,
+    // 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
+    expire: date.getTime() + 60 * 60 * 1000 * 3,
+    // 日程排除日期，将该日期从重复日程中排除掉
+    excludedDates: [date.getTime() + 60 * 60 * 1000 * 2]
+  },
+  // 日程服务，可选字段，需要一键服务功能的日程，填写该属性。
+  service: {
+    // 服务类型，比如一键查看、一键入会、一键追剧等。
+    type: calendarManager.ServiceType.TRIP,
+    // 服务的uri。可以跳转到三方应用相应界面，格式为DeepLink。使用DeepLink方式需要在华为HAG云侧进行注册，注册提供的信息为应用包名、应用的服务类型。
+    // DeepLink包括scheme、host、path以及参数（不包含参数值）
+    uri: 'xxx://xxx.xxx.com/xxx',
+    // 服务辅助描述信息，可选字段
+    description: '一键服务'
+  }
 
 };
 // 方式一
@@ -217,10 +449,11 @@ calendarMgr?.editEvent(eventInfo).then((id: number): void => {
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `Failed to create Event. Code: ${err.code}, message: ${err.message}`);
 });
-Index.ets
+```
 
-按照日程id进行指定日程的更新，更新日程相关信息。
+### Code block 7
 
+```
 const updateEvent: calendarManager.Event = {
   title: 'updateTitle',
   description: 'updateEventTest',
@@ -234,21 +467,21 @@ calendar.updateEvent(updateEvent).then(() => {
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `Failed to update event. Code: ${err.code}, message: ${err.message}`);
 });
-Index.ets
+```
 
-查询当前日历账户下的所有日程。由于涉及数据隐私安全，进行了权限管控的应用无法获取其他创建的日程信息。根据不同的查询条件和查询字段，返回不同的查询结果。
+### Code block 8
 
-当没有查询条件和查询字段时，可查询指定日历账户下的所有日程。
-
+```
 calendar.getEvents().then((data: calendarManager.Event[]) => {
   hilog.info(DOMAIN, 'testTag', `Succeeded in getting events, data -> ${JSON.stringify(data)}`);
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `Failed to get events. Code: ${err.code}, message: ${err.message}`);
 });
-Index.ets
+```
 
-还支持根据日程id、日程开始和结束时间、日程标题等查询条件来查询日程。
+### Code block 9
 
+```
 // 根据日程id查询
 const filterId = calendarManager.EventFilter.filterById([eventId]);
 calendar.getEvents(filterId).then((data: calendarManager.Event[]) => {
@@ -256,7 +489,6 @@ calendar.getEvents(filterId).then((data: calendarManager.Event[]) => {
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `Failed to get events. Code: ${err.code}, message: ${err.message}`);
 });
-
 
 // 根据日程标题查询
 const filterTitle = calendarManager.EventFilter.filterByTitle('update');
@@ -266,7 +498,6 @@ calendar.getEvents(filterTitle).then((data: calendarManager.Event[]) => {
   hilog.error(DOMAIN, 'testTag', `Failed to get events. Code: ${err.code}, message: ${err.message}`);
 });
 
-
 // 根据日程开始和结束时间查询
 const filterTime = calendarManager.EventFilter.filterByTime(1686931200000, 1687017600000);
 calendar.getEvents(filterTime).then((data: calendarManager.Event[]) => {
@@ -274,15 +505,14 @@ calendar.getEvents(filterTime).then((data: calendarManager.Event[]) => {
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `Failed to filter by time. Code: ${err.code}, message: ${err.message}`);
 });
-Index.ets
+```
 
-按照日程id进行指定日程的删除。可以通过deleteEvent()接口进行单个日程的删除，也可以通过deleteEvents()接口批量删除指定日程，此处以删除单个指定日程为例。
+### Code block 10
 
+```
 calendar.deleteEvent(eventId).then(() => {
-  hilog.info(DOMAIN, 'testTag', "Succeeded in deleting event");
+  hilog.info(DOMAIN, 'testTag', 'Succeeded in deleting event');
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `Failed to delete event. Code: ${err.code}, message: ${err.message}`);
 });
-Index.ets
-日历账户管理
-注册并管理一键服务日程
+```

@@ -2,13 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-persistence-by-vector-store_
 
+场景介绍
+
 向量数据库是一种支持存储、管理和检索向量数据的数据库，也支持标量的关系型数据处理。数据类型"floatvector"用来存储数据向量化的结果，从而实现对这些数据的快速检索和相似性搜索‌。
 
 从API version 18开始，支持通过向量数据库实现数据持久化。
 
 基本概念
+
 结果集：指用户查询之后的结果集合，可以对数据进行访问。结果集提供了灵活的数据访问方式，可以更方便地拿到用户想要的数据。
+
 floatvector：该数据类型表示向量数据，例如[1.0, 3.0, 2.4, 5.1, 6.2, 11.7]。
+
 约束限制
 
 系统默认日志方式是WAL（Write Ahead Log）模式，系统默认落盘方式是FULL模式。
@@ -24,7 +29,8 @@ ArkTS侧支持的基本数据类型：number、string、二进制类型数据、
 为保证插入并读取数据成功，建议一条数据不要超过2M。单条数据超出该大小时，即使插入成功，也会出现读取失败的情况。
 
 规格限制
-数据类型
+
+[h2]数据类型
 
 数据库表字段的类型，如下所示：
 
@@ -35,7 +41,8 @@ DOUBLE	浮点类型	是
 TEXT	字符串类型	是
 BLOB	二进制类型	是
 FLOATVECTOR	向量数据类型	是
-字段约束
+
+[h2]字段约束
 
 数据库表字段的约束，如下所示：
 
@@ -46,7 +53,8 @@ FLOATVECTOR	向量数据类型	是
 主键索引	PRIMARY KEY	是
 外键索引	FOREIGN	否
 CHECK约束	CHECK	否
-子句
+
+[h2]子句
 
 查询语句中的子句，如下所示：
 
@@ -59,14 +67,16 @@ GROUP BY	对相同的数据进行分组。	是
 HAVING	过滤聚合函数的结果。	是
 INDEXED BY	查询时必须使用特定索引。	是
 DISTINCT	消除重复记录。	否
-集合
+
+[h2]集合
 
 查询语句中的集合语句，如下所示：
 
 关键字	描述	是否支持
 UNION	合并两个或多个查询语句的结果并去重。	是
 UNION ALL	合并两个或多个查询语句的结果。	是
-运算符
+
+[h2]运算符
 
 针对某个条件做筛选时，可以使用运算符，一般在查询语句中使用。运算符如下所示：
 
@@ -77,7 +87,8 @@ UNION ALL	合并两个或多个查询语句的结果。	是
 字符串拼接运算	||	是
 位运算	&、|、~、<<、>>	是
 向量距离运算	<->、<=>	是，支持在聚合函数max和min中使用
-时间&日期
+
+[h2]时间&日期
 
 根据不同的时间函数返回不同格式的日期，一般在查询语句中使用。时间&日期函数如下所示：
 
@@ -87,7 +98,8 @@ TIME	以"HH:MM:SS"格式返回时间。	是
 DATETIME	以"YYYY-MM-DD HH:MM:SS"格式返回。	是
 JULIANDAY	返回从格林尼治时间的公元前4714年11月24日正午算起的天数。	是
 STRFTIME	根据第一个参数指定的格式字符串返回格式化的日期。	是
-函数
+
+[h2]函数
 
 SQL语句中的函数，如下所示：
 
@@ -100,6 +112,7 @@ RANDOM	返回一个'-9223372036854775808'到'9223372036854775807'之间的伪随
 ABS	计算绝对值。	是
 UPPER/LOWER	将字符串转换为大/小写字母。	是
 LENGTH	返回字符串的长度。	是
+
 接口说明
 
 以下是向量数据库持久化功能的相关接口，更多接口及使用方式请见@ohos.data.relationalStore (关系型数据库)。
@@ -113,6 +126,7 @@ commit(txId : number):Promise<void>	提交已经执行的SQL语句，跟beginTra
 rollback(txId : number):Promise<void>	回滚已经执行的SQL语句，跟beginTrans配合使用。
 deleteRdbStore(context: Context, config: StoreConfig): Promise<void>	删除数据库。
 isVectorSupported(): boolean	判断系统是否提供向量数据库能力。
+
 开发步骤
 
 判断当前系统是否支持向量数据库，若不支持，则表示当前系统不具备向量数据库能力。示例代码如下：
@@ -128,7 +142,6 @@ import { UIContext } from '@kit.ArkUI';
     console.error(`vectorDB is not supported.`);
     return;
   }
-vectorStoreCTUD.ets
 
 若支持向量数据库则需要获取一个RdbStore。通过getRdbStore接口创建数据库，并执行建表操作。
 
@@ -160,7 +173,6 @@ const STORE_CONFIG: relationalStore.StoreConfig = {
   } catch(err) {
     console.error(`Get RdbStore failed, code is ${err.code}, message is ${err.message}`);
   };
-vectorStoreCTUD.ets
 
 获取到RdbStore后，调用execute接口插入数据。
 
@@ -179,7 +191,6 @@ try {
 } catch (err) {
   console.error(`execute insert failed, code is ${err.code}, message is ${err.message}`);
 }
-vectorStoreCTUD.ets
 
 获取到RdbStore后，调用execute接口修改或删除数据。示例代码如下：
 
@@ -194,7 +205,6 @@ try {
   console.error(`execute update failed, code is ${err.code}, message is ${err.message}`);
 }
 
-
 // 删除数据
 try {
   // 使用参数绑定
@@ -204,7 +214,6 @@ try {
 } catch (err) {
   console.error(`execute delete failed, code is ${err.code}, message is ${err.message}`);
 }
-vectorStoreCTUD.ets
 
 获取到RdbStore后，调用querySql方法查找数据，返回一个ResultSet结果集。
 
@@ -226,7 +235,6 @@ try {
   }
   resultSet!.close();
 
-
   // 不使用参数绑定
   const QUERY_SQL1 = "select id, repr <-> '[6.2, 7.3]' as distance from test where id > 0 order by repr <-> '[6.2, 7.3]' limit 5;";
   resultSet = await store!.querySql(QUERY_SQL1);
@@ -234,7 +242,6 @@ try {
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);
 }
-
 
 // 子查询
 try {
@@ -247,7 +254,6 @@ try {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);
 }
 
-
 // 聚合查询
 try {
   let resultSet = await store!.querySql("select * from test where repr <-> '[1.0, 1.0]' > 0 group by id having max(repr <=> '[1.0, 1.0]');");
@@ -255,7 +261,6 @@ try {
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);
 }
-
 
 // 多表查询
 try {
@@ -265,7 +270,6 @@ try {
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);
 }
-vectorStoreCTUD.ets
 
 创建视图并执行查询。示例代码如下：
 
@@ -278,7 +282,6 @@ try {
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);
 }
-vectorStoreCTUD.ets
 
 ‌使用向量索引进行查询，提升查询效率。
 
@@ -290,7 +293,6 @@ vectorStoreCTUD.ets
 
 // index_name为索引名称，index_type是索引类型，dist_function是索引距离度量类型
 CREATE INDEX [IF NOT EXISTS] index_name ON table_name USING index_type (column_name dist_function);
-
 
 DROP INDEX table_name.index_name;
 
@@ -314,6 +316,7 @@ COSINE	<=>	余弦距离。
 参数名称	取值范围和约束	备注说明
 QUEUE_SIZE	设置范围是[10, 1000]，默认值 20。	代表创建索引搜索近邻的时候候选队列的长度，queue_size越大，构建速度降低，召回率有略微提升。
 OUT_DEGREE	设置范围是[1, 1200] ，默认值 60。	邻居节点出度数量。out_degree与pageSize也有关系，out_degree的数量超过pageSize的存储范围将报错GRD_INVALID_ARGS。
+
 说明
 
 删除索引的时候需要指定表名称，即Drop Index table.index_name。
@@ -334,7 +337,6 @@ try {
   console.error(`create index failed, code is ${err.code}, message is ${err.message}`);
 }
 
-
 // 扩展语法
 try {
   // 设置QUEUE_SIZE为20，OUT_DEGREE为50
@@ -342,18 +344,19 @@ try {
 } catch (err) {
   console.error(`create ext index failed, code is ${err.code}, message is ${err.message}`);
 }
-vectorStoreCTUD.ets
 
 手动回收索引删除产生的磁盘碎片。从API version 20 开始支持此功能。
 
 向量数据库对已创建gsdiskann索引的表执行向量删除操作后，会自动执行磁盘碎片回收，但在以下两个场景下自动回收可能会无法触发：
 
 删除gsdiskann索引下的向量后，立刻关闭数据库。
+
 批量删除gsdiskann索引下的向量后，后续不对该表进行任何操作。
 
 因此提供手动触发gsdiskann索引磁盘碎片回收的语句，语法如下所示：
 
 PRAGMA DISKANN_ASYNC_COLLECTING;
+
 说明
 
 一次触发对向量数据库中所有表下的全部gsdiskann索引执行回收。
@@ -370,7 +373,6 @@ try {
 } catch (err) {
   console.error(`diskann async collecting failed, code is ${err.code}, message is ${err.message}`);
 }
-vectorStoreCTUD.ets
 
 配置数据老化功能。当应用的数据需要经常清理时，可以按时间或空间配置数据老化策略，从而实现数据的自动化清理。
 
@@ -407,7 +409,6 @@ try {
  } catch (err) {
    console.error(`configure data aging failed, code is ${err.code}, message is ${err.message}`);
  }
-vectorStoreCTUD.ets
 
 配置数据压缩功能。该功能在建表时配置，可以压缩数据类型为text的列数据。
 
@@ -427,7 +428,6 @@ try {
 } catch (err) {
   console.error(`configure data compress failed, code is ${err.code}, message is ${err.message}`);
 }
-vectorStoreCTUD.ets
 
 删除数据库。
 
@@ -440,6 +440,249 @@ try {
 } catch (err) {
   console.error(`delete rdbStore failed, code is ${err.code},message is ${err.message}`);
 }
-vectorStoreCTUD.ets
-通过关系型数据库实现数据持久化 (C/C++)
-通过向量数据库实现数据持久化 (C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { relationalStore } from '@kit.ArkData'; // 导入模块
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import { UIContext } from '@kit.ArkUI';
+// ...
+  // 判断当前系统是否支持向量数据库
+  let ret = relationalStore.isVectorSupported();
+  if (!ret) {
+    console.error(`vectorDB is not supported.`);
+    return;
+  }
+```
+
+### Code block 2
+
+```
+let store: relationalStore.RdbStore | undefined = undefined;
+/* context为应用的上下文信息，此处获取方式仅为示例。 */
+let context: Context = new UIContext().getHostContext() as common.UIAbilityContext;
+const STORE_CONFIG: relationalStore.StoreConfig = {
+  name: 'VectorTest.db', // 数据库文件名
+  securityLevel: relationalStore.SecurityLevel.S1, // 数据库安全级别
+  vector: true // 可选参数，该参数为true时才可以使用向量数据库。
+};
+// ...
+  try {
+    store = await relationalStore.getRdbStore(context, STORE_CONFIG);
+    // 建表语句，floatvector(2)代表repr的维度是2
+    const SQL_CREATE_TABLE = 'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY, repr floatvector(2));';
+    // 第二个入参表示不开启显示事务，第三个参数undefined表示未使用参数绑定
+    await store!.execute(SQL_CREATE_TABLE, 0, undefined);
+  } catch(err) {
+    console.error(`Get RdbStore failed, code is ${err.code}, message is ${err.message}`);
+  };
+```
+
+### Code block 3
+
+```
+try {
+  // 使用参数绑定
+  const vectorValue: Float32Array = Float32Array.from([1.2, 2.3]);
+  await store!.execute('insert into test VALUES(?, ?);', 0, [0, vectorValue]);
+  // 不使用参数绑定
+  await store!.execute("insert into test VALUES(1, '[1.3, 2.4]');", 0, undefined);
+} catch (err) {
+  console.error(`execute insert failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 4
+
+```
+// 修改数据
+try {
+  // 使用参数绑定
+  const vectorValue1: Float32Array = Float32Array.from([2.1, 3.2]);
+  await store!.execute('update test set repr = ? where id = ?', 0, [vectorValue1, 0]);
+  // 不使用参数绑定
+  await store!.execute("update test set repr = '[5.1, 6.1]' where id = 0", 0, undefined);
+} catch (err) {
+  console.error(`execute update failed, code is ${err.code}, message is ${err.message}`);
+}
+
+// 删除数据
+try {
+  // 使用参数绑定
+  await store!.execute('delete from test where id = ?', 0, [0]);
+  // 不使用参数绑定
+  await store!.execute('delete from test where id = 0', 0, undefined);
+} catch (err) {
+  console.error(`execute delete failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 5
+
+```
+// 单表查询
+try {
+  // 使用参数绑定
+  const QUERY_SQL = 'select id, repr <-> ? as distance from test where id > ? order by repr <-> ? limit 5;';
+  const vectorValue2: Float32Array = Float32Array.from([6.2, 7.3]);
+  let resultSet = await store!.querySql(QUERY_SQL, [vectorValue2, 0, vectorValue2]);
+  while (resultSet!.goToNextRow()) {
+    let id = resultSet.getValue(0);
+    let dis = resultSet.getValue(1);
+  }
+  resultSet!.close();
+
+  // 不使用参数绑定
+  const QUERY_SQL1 = "select id, repr <-> '[6.2, 7.3]' as distance from test where id > 0 order by repr <-> '[6.2, 7.3]' limit 5;";
+  resultSet = await store!.querySql(QUERY_SQL1);
+  resultSet!.close();
+} catch (err) {
+  console.error(`query failed, code is ${err.code}, message is ${err.message}`);
+}
+
+// 子查询
+try {
+  // 创建第二张表
+  let CREATE_SQL = 'CREATE TABLE IF NOT EXISTS test1(id text PRIMARY KEY);';
+  await store!.execute(CREATE_SQL);
+  let resultSet = await store!.querySql('select * from test where id in (select id from test1);');
+  resultSet!.close();
+} catch (err) {
+  console.error(`query failed, code is ${err.code}, message is ${err.message}`);
+}
+
+// 聚合查询
+try {
+  let resultSet = await store!.querySql("select * from test where repr <-> '[1.0, 1.0]' > 0 group by id having max(repr <=> '[1.0, 1.0]');");
+  resultSet!.close();
+} catch (err) {
+  console.error(`query failed, code is ${err.code}, message is ${err.message}`);
+}
+
+// 多表查询
+try {
+  // union all与union的区别在于union会将数据去重
+  let resultSet = await store!.querySql("select id, repr <-> '[1.5, 5.6]' as distance from test union select id, repr <-> '[1.5, 5.6]' as distance from test order by distance limit 5;");
+  resultSet!.close();
+} catch (err) {
+  console.error(`query failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 6
+
+```
+// 视图查询
+try {
+  // 创建视图
+  await store!.execute('CREATE VIEW v1 as select * from test where id > 0;');
+  let resultSet = await store!.querySql('select * from v1;');
+  resultSet!.close();
+} catch (err) {
+  console.error(`query failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 7
+
+```
+// index_name为索引名称，index_type是索引类型，dist_function是索引距离度量类型
+CREATE INDEX [IF NOT EXISTS] index_name ON table_name USING index_type (column_name dist_function);
+
+DROP INDEX table_name.index_name;
+```
+
+### Code block 8
+
+```
+CREATE INDEX [基础语法] [WITH(parameter = value [, ...])];
+```
+
+### Code block 9
+
+```
+// 基础用法
+try {
+  // 创建的索引名称为diskann_l2_idx，索引列为repr，类型为gsdiskann，距离度量类型为L2
+  await store!.execute('CREATE INDEX diskann_l2_idx ON test USING GSDISKANN(repr L2);');
+  // 删除表test中的diskann_l2_idx索引
+  await store!.execute('DROP INDEX test.diskann_l2_idx;');
+} catch (err) {
+  console.error(`create index failed, code is ${err.code}, message is ${err.message}`);
+}
+
+// 扩展语法
+try {
+  // 设置QUEUE_SIZE为20，OUT_DEGREE为50
+  await store!.execute('CREATE INDEX diskann_l2_idx ON test USING GSDISKANN(repr L2) WITH (queue_size=20, out_degree=50);');
+} catch (err) {
+  console.error(`create ext index failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 10
+
+```
+PRAGMA DISKANN_ASYNC_COLLECTING;
+```
+
+### Code block 11
+
+```
+try {
+  // 手动触发异步删除整理，对向量数据库下所有gsdiskann执行磁盘碎片回收
+  await store!.execute('PRAGMA DISKANN_ASYNC_COLLECTING;');
+} catch (err) {
+  console.error(`diskann async collecting failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 12
+
+```
+CREATE TABLE table_name(column_name type [, ...]) [WITH(parameter = value [, ...])];
+```
+
+### Code block 13
+
+```
+try {
+   // 每隔五分钟执行写操作后，会触发数据老化任务
+   await store!.execute("CREATE TABLE test2(rec_time integer not null) WITH (time_col = 'rec_time', interval = '5 minute');");
+ } catch (err) {
+   console.error(`configure data aging failed, code is ${err.code}, message is ${err.message}`);
+ }
+```
+
+### Code block 14
+
+```
+CREATE TABLE table_name(content text [, ...]) [WITH(compress_col = 'content')];
+```
+
+### Code block 15
+
+```
+try {
+  // content列配置了数据压缩，并且配置了数据老化。
+  await store!.execute("CREATE TABLE IF NOT EXISTS test3 (time integer not null, content text) with (time_col = 'time', interval = '5 minute', compress_col = 'content');");
+} catch (err) {
+  console.error(`configure data compress failed, code is ${err.code}, message is ${err.message}`);
+}
+```
+
+### Code block 16
+
+```
+try {
+  // 删除数据库前，需要先将store对象关闭，否则会导致下一次调用getRdbStore接口创建数据库失败
+  await store!.close();
+  await relationalStore.deleteRdbStore(context, STORE_CONFIG);
+} catch (err) {
+  console.error(`delete rdbStore failed, code is ${err.code},message is ${err.message}`);
+}
+```

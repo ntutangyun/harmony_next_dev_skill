@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-get-workspace-policy_
 
+场景介绍
+
+从6.0.2(22)开始，支持查询工作空间策略的能力。
+
 Enterprise Space Kit为应用提供查询工作空间策略的能力。从6.0.2(22)版本开始支持深度冻结策略“lockdown”，从6.1.0(23)版本开始支持个人空间创建引导页展示策略“spaceguide”。
 
 接口说明
@@ -10,6 +14,7 @@ Enterprise Space Kit为应用提供查询工作空间策略的能力。从6.0.2(
 
 接口名	描述
 getWorkspacePolicy(key: string, workspaceId?: number): Promise<number>	查询工作空间策略并返回结果。使用Promise异步回调。
+
 开发步骤
 
 导入Enterprise Space Kit模块和相关依赖模块。
@@ -26,5 +31,24 @@ try {
 } catch (err) {
   console.error(`Failed to get workspace policy. Code: ${err.code}, message: ${err.message}`);
 }
-设置工作空间策略
-设置深度冻结豁免名单
+
+## Code blocks
+
+### Code block 1
+
+```
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+```
+
+### Code block 2
+
+```
+const key: string = 'lockdown';
+const workspaceId: number = 100;
+try {
+  const value: number = await spaceManager.getWorkspacePolicy(key, workspaceId);
+  console.info(`Succeeded in getting workspace policy. value: ${value}`);
+} catch (err) {
+  console.error(`Failed to get workspace policy. Code: ${err.code}, message: ${err.message}`);
+}
+```

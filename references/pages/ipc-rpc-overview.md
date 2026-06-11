@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ipc-rpc-overview_
 
+基本概念
+
+缩写	全称	中文描述	说明
+IPC	Inter Process Communication	进程间通信	指设备内的进程间通信。
+RPC	Remote Procedure Call	远程过程调用	指设备间的进程间通信。
+Client	Client	客户端	请求服务的一端，称为代理（Proxy）。
+Server	Server	服务端	提供服务的一端，称为Stub。
+
+说明
+
 使用IPC和RPC进行跨进程通信时，需要先调用元能力的连接服务接口获取Proxy对象。IPC和RPC的典型使用场景包括：
 
 IPC典型使用场景是后台服务，后台服务通过IPC机制提供单设备跨进程接口调用与数据传递能力。
@@ -29,6 +39,3 @@ IPC和RPC采用客户端-服务端（Client-Server）模型。在使用时，Cli
 本Kit支持模拟器。
 
 模拟器与真机存在通用差异，详情请参见“模拟器与真机的差异”。
-
-IPC Kit（进程间通信服务）
-IPC与RPC通信开发指导(ArkTS)

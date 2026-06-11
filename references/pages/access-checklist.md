@@ -2,3 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/access-checklist_
 
+基础播控
+
+快捷播放
+
+音视频投播

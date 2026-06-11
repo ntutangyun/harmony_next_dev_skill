@@ -2,10 +2,43 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-components-qrcode_
 
-<option for="{{bcol_list}}" value="{{$item}}">{{$item}}</option>
+生成并显示二维码，具体用法请参考qrcode。
+
+创建qrcode组件
+
+在pages/index目录下的hml文件中创建一个qrcode组件。
+
+<!-- xxx.hml-->
+<div class="container">
+  <qrcode value="Hello"></qrcode>
+</div>
+
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+
+说明
+
+qrcode组件在创建的时候value的值为必填项。
+
+设置组件类型
+
+通过设置qrcode的type属性来选择二维码类型，如定义qrcode为矩形二维码、圆形二维码。
+
+<!-- xxx.hml-->
+<div class="container">
+  <select onchange="settype">
+    <option for="{{bcol_list}}" value="{{$item}}">{{$item}}</option>
   </select>
   <qrcode value="Hello" type="{{qr_type}}"></qrcode>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -19,6 +52,7 @@ select{
   margin-top: 50px;
   margin-bottom: 50px;
 }
+
 // index.js
 export default {
   data: {
@@ -38,6 +72,7 @@ export default {
 <div class="container">
   <qrcode value="Hello" type="rect"></qrcode>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -68,6 +103,7 @@ width和height只设置一个时，取设置的值作为二维码的边长。都
   <input style="margin-bottom: 100px;" onchange="change"></input>
   <qrcode value="{{textVal}}"></qrcode>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -81,6 +117,7 @@ qrcode{
   width: 400px;
   height: 400px;
 }
+
 // index.js
 export default{
   data: {
@@ -91,5 +128,142 @@ export default{
   }
 }
 
-marquee开发指导
-search开发指导
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <qrcode value="Hello"></qrcode>
+</div>
+```
+
+### Code block 2
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+```
+
+### Code block 3
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <select onchange="settype">
+    <option for="{{bcol_list}}" value="{{$item}}">{{$item}}</option>
+  </select>
+  <qrcode value="Hello" type="{{qr_type}}"></qrcode>
+</div>
+```
+
+### Code block 4
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+select{
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+```
+
+### Code block 5
+
+```
+// index.js
+export default {
+  data: {
+    qr_type: 'rect',
+    bcol_list: ['rect','circle']
+  },
+  settype(e) {
+    this.qr_type = e.newValue
+  },
+}
+```
+
+### Code block 6
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <qrcode value="Hello" type="rect"></qrcode>
+</div>
+```
+
+### Code block 7
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+qrcode{
+  width: 300px;
+  height: 300px;
+ color: blue;  background-color: #ffffff;
+}
+```
+
+### Code block 8
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <input style="margin-bottom: 100px;" onchange="change"></input>
+  <qrcode value="{{textVal}}"></qrcode>
+</div>
+```
+
+### Code block 9
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+qrcode{
+  width: 400px;
+  height: 400px;
+}
+```
+
+### Code block 10
+
+```
+// index.js
+export default{
+  data: {
+    textVal: ''
+  },
+  change(e){
+    this.textVal = e.value
+  }
+}
+```

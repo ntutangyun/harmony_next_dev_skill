@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgallery-productview-loadservice_
 
+场景介绍
+
 为了快速访问和管理元服务卡片信息，用户可以将常用的元服务卡片添加到桌面。应用可通过调用应用市场服务提供的loadService接口来加载元服务卡片加桌页面，用户点击“添加至桌面”按钮，将元服务卡片添加至桌面。
 
 业务流程
@@ -26,6 +28,7 @@ AppGallery Kit API获取应用传入的信息，生成展示页面。
 
 接口名	描述
 loadService(context: common.UIAbilityContext, want: Want, callback?: ServiceViewCallback): void	加载元服务加桌页面接口。
+
 开发步骤
 
 导入productViewManager模块及相关公共模块。
@@ -41,7 +44,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
 @Component
 struct LoadServiceView {
   @State message: string = '拉起应用市场详情页';
-
 
   build() {
     Row() {
@@ -84,5 +86,67 @@ struct LoadServiceView {
 
 // 调用接口，加载元服务加桌页面
 productViewManager.loadService(uiContext, wantParam, callback);
-应用市场推荐
-展示应用详情页面
+
+## Code blocks
+
+### Code block 1
+
+```
+import { productViewManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct LoadServiceView {
+  @State message: string = '拉起应用市场详情页';
+
+  build() {
+    Row() {
+      Column() {
+        Button(this.message)
+          .fontSize(24)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+            const wantParam: Want = {
+              // 此处填入要加载的元服务的加桌链接
+              uri: 'xxx'
+            }
+            const callback: productViewManager.ServiceViewCallback = {
+              // 接收元服务卡片加桌结果信息
+              onReceive: (data: productViewManager.ServiceViewReceiveData) => {
+                hilog.info(0x0001, 'TAG', `loadService onReceive.result is ${data.result}, msg is ${data.msg}, formInfo is ${JSON.stringify(data.formInfo)}`);
+              },
+              onError: (error: BusinessError) => {
+                hilog.error(0, 'TAG', `loadService onError.code is ${error.code}, message is ${error.message}`)
+           },
+              // 当元服务卡片加桌页成功打开时回调
+              onAppear: () => {
+                hilog.info(0, 'TAG', `loadService onAppear.`);
+              },
+              // 当元服务卡片加桌页关闭时回调
+              onDisappear: () => {
+                hilog.info(0, 'TAG', `loadService onDisappear.`);
+              }
+            }
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 3
+
+```
+// 调用接口，加载元服务加桌页面
+productViewManager.loadService(uiContext, wantParam, callback);
+```

@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-wor
 
 对于播放音频类应用，开发者需要先创建音频工作组，再将工作组运行信息的周期性告知系统。当工作结束后，需要对音频工作组进行清理。
 
-创建音频工作组示例
+[h2]创建音频工作组示例
 
 开发者在使用OH_AudioWorkgroup的API前，需要先用OH_AudioManager_GetAudioResourceManager获取OH_AudioResourceManager实例。
 
@@ -19,8 +19,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-wor
 OH_AudioResourceManager *resMgr;
 // ...
     OH_AudioManager_GetAudioResourceManager(&resMgr);
-renderer.cpp
-创建音频工作组并将关键线程加入音频工作组
+
+[h2]创建音频工作组并将关键线程加入音频工作组
 
 开发者先使用OH_AudioResourceManager_CreateWorkgroup创建一个新的音频工作组，再使用OH_AudioWorkgroup_AddCurrentThread将关键线程加入音频工作组。
 
@@ -31,14 +31,13 @@ OH_AudioWorkgroup *grp = nullptr;
 // ...
     OH_AudioResourceManager_CreateWorkgroup(resMgr, "workgroup", &grp);
     OH_AudioWorkgroup_AddCurrentThread(grp, &g_tokenId);
-renderer.cpp
-通知系统音频工作组的开始与结束
+
+[h2]通知系统音频工作组的开始与结束
 
 当音频工作组开始一个工作周期时，开发者可以通知系统任务的开始时间和预期完成时间。在音频工作组完成当前周期内的工作时，开发者应再次通知系统任务已结束。
 
 constexpr static uint64_t intervalMs = 20;
 bool threadShouldRun = true;
-
 
 while (threadShouldRun) {
     auto now = std::chrono::system_clock::now().time_since_epoch();
@@ -48,14 +47,61 @@ while (threadShouldRun) {
     // 应用音频数据处理。
     OH_AudioWorkgroup_Stop(grp);
 }
-renderer.cpp
-工作组任务结束后进行清理
+
+[h2]工作组任务结束后进行清理
+
 // 当线程已经不需要接入分组时，将其从工作组中移除。
 OH_AudioWorkgroup_RemoveThread(grp, g_tokenId);
 
+OH_AudioResourceManager_ReleaseWorkgroup(resMgr, grp);
+grp = nullptr;
+
+## Code blocks
+
+### Code block 1
+
+```
+#include <ohaudio/native_audio_resource_manager.h>
+// ...
+OH_AudioResourceManager *resMgr;
+// ...
+    OH_AudioManager_GetAudioResourceManager(&resMgr);
+```
+
+### Code block 2
+
+```
+#include <chrono>
+// ...
+int32_t g_tokenId;
+OH_AudioWorkgroup *grp = nullptr;
+// ...
+    OH_AudioResourceManager_CreateWorkgroup(resMgr, "workgroup", &grp);
+    OH_AudioWorkgroup_AddCurrentThread(grp, &g_tokenId);
+```
+
+### Code block 3
+
+```
+constexpr static uint64_t intervalMs = 20;
+bool threadShouldRun = true;
+
+while (threadShouldRun) {
+    auto now = std::chrono::system_clock::now().time_since_epoch();
+    auto startTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+    OH_AudioWorkgroup_Start(grp, startTimeMs, startTimeMs + intervalMs);
+    threadShouldRun = false;
+    // 应用音频数据处理。
+    OH_AudioWorkgroup_Stop(grp);
+}
+```
+
+### Code block 4
+
+```
+// 当线程已经不需要接入分组时，将其从工作组中移除。
+OH_AudioWorkgroup_RemoveThread(grp, g_tokenId);
 
 OH_AudioResourceManager_ReleaseWorkgroup(resMgr, grp);
 grp = nullptr;
-renderer.cpp
-提升音频性能体验
-音频编创
+```

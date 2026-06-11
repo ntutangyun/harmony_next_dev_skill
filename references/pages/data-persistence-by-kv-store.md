@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-persistence-by-kv-store_
 
+场景介绍
+
 键值型数据库存储键值对形式的数据，当需要存储的数据没有复杂的关系模型，比如存储商品名称及对应价格、员工工号及今日是否已出勤等，由于数据复杂度低，更容易兼容不同数据库版本和设备类型，因此推荐使用键值型数据库持久化此类数据。
 
 约束限制
@@ -26,6 +28,7 @@ get(key: string, callback: AsyncCallback<boolean | string | number | Uint8Array>
 delete(key: string, callback: AsyncCallback<void>): void	从数据库中删除指定键值的数据。
 closeKVStore(appId: string, storeId: string, callback: AsyncCallback<void>): void	通过storeId的值关闭指定的分布式键值数据库。
 deleteKVStore(appId: string, storeId: string, callback: AsyncCallback<void>): void	通过storeId的值删除指定的分布式键值数据库。
+
 开发步骤
 
 若要使用键值型数据库，首先要使用createKVManager()方法获取一个KVManager实例，用于管理数据库对象。示例代码如下所示：
@@ -38,7 +41,6 @@ import EntryAbility from '../entryability/EntryAbility';
 // Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
-
 let kvManager: distributedKVStore.KVManager | undefined = undefined;
 let kvStore: distributedKVStore.SingleKVStore | undefined = undefined;
 let appId: string = 'com.example.kvstoresamples';
@@ -46,18 +48,16 @@ let storeId: string = 'storeId';
 // Stage模型context从EntryAbility.ets中获取
 const context = EntryAbility.getContext();
 
-
 // FA模型获取context
 import { featureAbility } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let context = featureAbility.getContext();
-
 
 // 下面所有接口的代码都实现在KvInterface中
 export class KvInterface {
 }
+
 public CreateKvManager = (() => {
   Logger.info('CreateKvManager start');
   if (typeof (kvManager) === 'undefined') {
@@ -76,7 +76,6 @@ public CreateKvManager = (() => {
     Logger.info ('KVManager has created');
   }
 })
-KvStoreInterface.ets
 
 使用getKVStore()方法创建并获取键值数据库。示例代码如下所示：
 
@@ -96,7 +95,6 @@ public GetKvStore = (() => {
     child2.nullable = false;
     child2.default = 'zhangsan';
 
-
     let schema = new distributedKVStore.Schema();
     schema.root.appendChild(child1);
     schema.root.appendChild(child2);
@@ -105,7 +103,6 @@ public GetKvStore = (() => {
     schema.mode = 1;
     // 支持在检查Value时，跳过skip指定的字节数，且取值范围为[0,4M-2]。
     schema.skip = 0;
-
 
     const options: distributedKVStore.Options = {
       createIfMissing: true,
@@ -135,7 +132,6 @@ public GetKvStore = (() => {
     Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 使用on()方法订阅分布式数据变化，如需关闭订阅分布式数据变化，调用off('dataChange')关闭。示例代码如下所示：
 
@@ -154,7 +150,6 @@ public On = (() =>{
     Logger.error(`An unexpected error occurred. code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用put()方法向键值数据库中插入数据。示例代码如下所示：
 
@@ -180,7 +175,7 @@ public Put = (() => {
     Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
+
 说明
 
 当Key值存在时，put()方法会修改其值，否则新增一条数据。
@@ -207,7 +202,6 @@ public Get = (() => {
     Logger.error(`Failed to get data. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用delete()方法删除指定键值的数据。示例代码如下所示：
 
@@ -231,7 +225,6 @@ public Delete = (() => {
     Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用closeKVStore()方法通过storeId的值关闭指定的分布式键值数据库。示例代码如下所示：
 
@@ -256,7 +249,6 @@ public CloseKVStore = (()=>{
     Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用deleteKVStore()方法通过storeId的值删除指定的分布式键值数据库。示例代码如下所示：
 
@@ -281,11 +273,10 @@ public DeleteKvStore = (()=>{
     Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
+
 示例代码
+
 实现键值型数据库读写功能
-通过用户首选项实现数据持久化 (C/C++)
-通过关系型数据库实现数据持久化 (ArkTS)
 
 ## Code blocks
 
@@ -300,7 +291,6 @@ import EntryAbility from '../entryability/EntryAbility';
 // Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
-
 let kvManager: distributedKVStore.KVManager | undefined = undefined;
 let kvStore: distributedKVStore.SingleKVStore | undefined = undefined;
 let appId: string = 'com.example.kvstoresamples';
@@ -308,14 +298,11 @@ let storeId: string = 'storeId';
 // Stage模型context从EntryAbility.ets中获取
 const context = EntryAbility.getContext();
 
-
 // FA模型获取context
 import { featureAbility } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let context = featureAbility.getContext();
-
 
 // 下面所有接口的代码都实现在KvInterface中
 export class KvInterface {
@@ -364,7 +351,6 @@ public GetKvStore = (() => {
     child2.nullable = false;
     child2.default = 'zhangsan';
 
-
     let schema = new distributedKVStore.Schema();
     schema.root.appendChild(child1);
     schema.root.appendChild(child2);
@@ -373,7 +359,6 @@ public GetKvStore = (() => {
     schema.mode = 1;
     // 支持在检查Value时，跳过skip指定的字节数，且取值范围为[0,4M-2]。
     schema.skip = 0;
-
 
     const options: distributedKVStore.Options = {
       createIfMissing: true,

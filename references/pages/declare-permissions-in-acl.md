@@ -35,10 +35,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/declare-p
 应用因特殊场景要求使用受限开放权限，请务必在申请发布Profile“添加Profile页面”时，申请使用相应权限，否则应用将在审核时被驳回。
 
 注意
+
 请确保应用申请受限开放权限时提供的场景和功能信息准确。
+
 如果应用内使用的受限开放权限超出您申请的范围，或申请权限后使用的功能和场景超出可使用的范围，将影响您的应用上架。
+
 说明
+
 在调试阶段，除下述方式外，还可以通过DevEco Studio自动签名完成申请。在自动签名的过程中，将由DevEco Studio完成向AGC申请受限权限的步骤，开发者可直接使用，具体请参考自动签名-操作步骤。
+
 在发布阶段，必须根据申请发布Profile完成受限权限的手动申请。
 
 在配置文件中声明权限。
@@ -46,6 +51,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/declare-p
 通过权限列表中的“授权方式”字段，判断是否需要用户授权。
 
 （可选）如果权限的授权方式为user_grant（用户授权）时，还需要通过弹窗向用户申请权限。
-
-手动设置授权
-应用权限列表

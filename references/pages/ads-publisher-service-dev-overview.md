@@ -27,6 +27,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ads-publi
 丰富的广告形式
 
 主流广告场景，灵活满足展示需求；统一UI设计，适配各类华为终端设备，提供一致性品牌展示。
-
-流量变现服务开发
-横幅广告

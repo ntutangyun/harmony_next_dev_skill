@@ -2,7 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/napi-faq-about-memory-leak_
 
+当前是否有机制来检查是否有泄漏的napi_ref
+
 具体问题：napi_create_reference可以创建对js对象的引用，保持js对象不释放，正常来说使用完需要使用napi_delete_reference进行释放，但怕漏delete导致js对象内存泄漏，当前是否有机制来检查/测试是否有泄漏的napi_ref？
+
 检测方式：
 
 可使用 DevEco Studio（IDE）提供的 Allocation 工具进行检测。
@@ -47,21 +50,17 @@ napi_threadsafe_function（下文简称tsfn）在使用时，常常会调用 nap
 #include <thread> // 创建线程
 #include <unistd.h> // 线程休眠
 
-
 // 定义输出日志的标签和域
 #undef LOG_DOMAIN
 #undef LOG_TAG
 #define LOG_DOMAIN 0x2342
 #define LOG_TAG "MY_TSFN_DEMO"
 
-
 /*
   为构建一个 env 生命周期短于 native 生命周期的场景,
   本示例需要使用worker, taskpool 或 napi_create_ark_runtime 等方法,
   创建非主线程的ArkTS运行环境，并人为的提前结束掉该线程
 */
-
-
 
 
 // 定义一个数据结构，模拟存储tsfn的场景
@@ -79,15 +78,12 @@ MyTsfnContext(napi_env env, napi_value workName) {
     };
 };
 
-
 ~MyTsfnContext() { OH_LOG_INFO(LOG_APP, "MyTsfnContext is deconstructed"); };
-
 
 napi_threadsafe_function GetTsfn() {
     std::unique_lock<std::mutex> lock(mutex_);
     return tsfn_;
 }
-
 
 bool Acquire() {
     if (GetTsfn() == nullptr) {
@@ -96,14 +92,12 @@ bool Acquire() {
     return (napi_acquire_threadsafe_function(GetTsfn()) == napi_ok);
 };
 
-
 bool Release() {
     if (GetTsfn() == nullptr) {
         return false;
     };
     return (napi_release_threadsafe_function(GetTsfn(), napi_tsfn_release) == napi_ok);
 };
-
 
 bool Call(void *data) {
     if (GetTsfn() == nullptr) {
@@ -112,12 +106,10 @@ bool Call(void *data) {
     return (napi_call_threadsafe_function(GetTsfn(), data, napi_tsfn_blocking) == napi_ok);
 };
 
-
 private:
 // 保护多线程读写tsfn的准确性
 std::mutex mutex_;
 napi_threadsafe_function tsfn_ = nullptr;
-
 
 // napi_add_env_cleanup_hook 回调
 static void Cleanup(void *data) {
@@ -129,7 +121,6 @@ static void Cleanup(void *data) {
     OH_LOG_WARN(LOG_APP, "cleanup is called");
     napi_release_threadsafe_function(tsfn, napi_tsfn_abort);
 };
-
 
 // tsfn 释放时的回调
 static void TsfnFinalize(napi_env env, void *data, void *hint) {
@@ -143,7 +134,6 @@ static void TsfnFinalize(napi_env env, void *data, void *hint) {
     }
 };
 
-
 // tsfn 发送到 ArkTS 线程执行的回调
 static void TsfnCallJs(napi_env env, napi_value func, void *context, void *data) {
     MyTsfnContext *ctx = reinterpret_cast<MyTsfnContext *>(context);
@@ -152,7 +142,6 @@ static void TsfnCallJs(napi_env env, napi_value func, void *context, void *data)
     // 业务逻辑已省略，应该包括开发者额外创建的资源的释放逻辑
 };
 };
-
 
 // 该方法需注册到模块Index.d.ts, 注册名为 myTsfnDemo, 接口描述如下
 // export const myTsfnDemo: () => void;
@@ -170,7 +159,6 @@ napi_value MyTsfnDemo(napi_env env, napi_callback_info info) {
     if (!myContext->Call(data0)) {
         OH_LOG_INFO(LOG_APP, "call tsfn failed");
     };
-
 
     // 创建一个线程，模拟异步场景
     std::thread(
@@ -197,6 +185,7 @@ napi_value MyTsfnDemo(napi_env env, napi_callback_info info) {
         .detach();
     return nullptr;
 };
+
 //Index.d.ts
 export const myTsfnDemo: () => void;
 
@@ -205,7 +194,6 @@ export const myTsfnDemo: () => void;
 // 主线程 Index.ets
 import  {worker, MessageEvents } from '@kit.ArkTS';
 
-
 const mWorker = new worker.ThreadWorker('../workers/worker');
 mWorker.onmessage = (e: MessageEvents) => {
     const action: string | undefined = e.data?.action;
@@ -213,7 +201,6 @@ mWorker.onmessage = (e: MessageEvents) => {
         mWorker.terminate();
     }
 }
-
 
 // 触发方式的注册已省略
 mWorker.postMessage({action: 'tsfn-demo'});
@@ -224,9 +211,7 @@ mWorker.postMessage({action: 'tsfn-demo'});
 import  {worker, ThreadWorkerGlobalScope, MessageEvents} from '@kit.ArkTS';
 import napiModule from 'libentry.so'; // libentry.so: Node-API 库的模块名称
 
-
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
-
 
 workerPort.onmessage = (e: MessageEvents) => {
     const action: string | undefined = e.data?.action;
@@ -237,5 +222,196 @@ workerPort.onmessage = (e: MessageEvents) => {
         workerPort.postMessage({action: 'kill'});
     };
 }
-稳定性相关问题汇总
-常见基本功能问题汇总
+
+## Code blocks
+
+### Code block 1
+
+```
+//napi_init.cpp
+#include "napi/native_api.h"
+#include <hilog/log.h> // hilog, 输出日志, 需链接 libhilog_ndk.z.so
+#include <thread> // 创建线程
+#include <unistd.h> // 线程休眠
+
+// 定义输出日志的标签和域
+#undef LOG_DOMAIN
+#undef LOG_TAG
+#define LOG_DOMAIN 0x2342
+#define LOG_TAG "MY_TSFN_DEMO"
+
+/*
+  为构建一个 env 生命周期短于 native 生命周期的场景,
+  本示例需要使用worker, taskpool 或 napi_create_ark_runtime 等方法,
+  创建非主线程的ArkTS运行环境，并人为的提前结束掉该线程
+*/
+
+
+// 定义一个数据结构，模拟存储tsfn的场景
+class MyTsfnContext {
+public:
+// 因使用了Node-API方法, MyTsfnContext 应当只在ArkTS线程被构造
+MyTsfnContext(napi_env env, napi_value workName) {
+    // 注册env销毁钩子函数
+    napi_add_env_cleanup_hook(env, Cleanup, this);
+    // 创建线程安全函数
+    if (napi_create_threadsafe_function(env, nullptr, nullptr, workName, 1, 1, this,
+            TsfnFinalize, this, TsfnCallJs, &tsfn_) != napi_ok) {
+        OH_LOG_INFO(LOG_APP, "tsfn is created failed");
+        return;
+    };
+};
+
+~MyTsfnContext() { OH_LOG_INFO(LOG_APP, "MyTsfnContext is deconstructed"); };
+
+napi_threadsafe_function GetTsfn() {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return tsfn_;
+}
+
+bool Acquire() {
+    if (GetTsfn() == nullptr) {
+        return false;
+    };
+    return (napi_acquire_threadsafe_function(GetTsfn()) == napi_ok);
+};
+
+bool Release() {
+    if (GetTsfn() == nullptr) {
+        return false;
+    };
+    return (napi_release_threadsafe_function(GetTsfn(), napi_tsfn_release) == napi_ok);
+};
+
+bool Call(void *data) {
+    if (GetTsfn() == nullptr) {
+        return false;
+    };
+    return (napi_call_threadsafe_function(GetTsfn(), data, napi_tsfn_blocking) == napi_ok);
+};
+
+private:
+// 保护多线程读写tsfn的准确性
+std::mutex mutex_;
+napi_threadsafe_function tsfn_ = nullptr;
+
+// napi_add_env_cleanup_hook 回调
+static void Cleanup(void *data) {
+    MyTsfnContext *that = reinterpret_cast<MyTsfnContext *>(data);
+    napi_threadsafe_function tsfn = that->GetTsfn();
+    std::unique_lock<std::mutex> lock(that->mutex_);
+    that->tsfn_ = nullptr;
+    lock.unlock();
+    OH_LOG_WARN(LOG_APP, "cleanup is called");
+    napi_release_threadsafe_function(tsfn, napi_tsfn_abort);
+};
+
+// tsfn 释放时的回调
+static void TsfnFinalize(napi_env env, void *data, void *hint) {
+    MyTsfnContext *ctx = reinterpret_cast<MyTsfnContext *>(data);
+    OH_LOG_INFO(LOG_APP, "tsfn is released");
+    napi_remove_env_cleanup_hook(env, MyTsfnContext::Cleanup, ctx);
+    // cleanup 提前释放线程安全函数, 为避免UAF, 将释放工作交给调用方
+    if (ctx->GetTsfn() != nullptr) {
+        OH_LOG_INFO(LOG_APP, "ctx is released");
+        delete ctx;
+    }
+};
+
+// tsfn 发送到 ArkTS 线程执行的回调
+static void TsfnCallJs(napi_env env, napi_value func, void *context, void *data) {
+    MyTsfnContext *ctx = reinterpret_cast<MyTsfnContext *>(context);
+    char *str = reinterpret_cast<char *>(data);
+    OH_LOG_INFO(LOG_APP, "tsfn is called, data is: \"%{public}s\"", str);
+    // 业务逻辑已省略，应该包括开发者额外创建的资源的释放逻辑
+};
+};
+
+// 该方法需注册到模块Index.d.ts, 注册名为 myTsfnDemo, 接口描述如下
+// export const myTsfnDemo: () => void;
+napi_value MyTsfnDemo(napi_env env, napi_callback_info info) {
+    OH_LOG_ERROR(LOG_APP, "MyTsfnDemo is called");
+    napi_value workName = nullptr;
+    napi_create_string_utf8(env, "MyTsfnWork", NAPI_AUTO_LENGTH, &workName);
+    MyTsfnContext *myContext = new MyTsfnContext(env, workName);
+    if (myContext->GetTsfn() == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "failed to create tsfn");
+        delete myContext;
+        return nullptr;
+    };
+    char *data0 = new char[]{"Im call in ArkTS Thread"};
+    if (!myContext->Call(data0)) {
+        OH_LOG_INFO(LOG_APP, "call tsfn failed");
+    };
+
+    // 创建一个线程，模拟异步场景
+    std::thread(
+        [](MyTsfnContext *myCtx) {
+            if (!myCtx->Acquire()) {
+                OH_LOG_ERROR(LOG_APP, "acquire tsfn failed");
+                return;
+            };
+            char *data1 = new char[]{"Im call in std::thread"};
+            // 非必要操作, 仅用于异步流程tsfn仍有效
+            if (!myCtx->Call(data1)) {
+                OH_LOG_ERROR(LOG_APP, "call tsfn failed");
+            };
+            // 休眠 5s, 模拟耗时场景, env退出后, 异步任务仍未执行完成
+            sleep(5);
+            // 此时异步任务已执行完成, 但tsfn已被释放并置为 nullptr
+            char *data2 = new char[]{"Im call after work"};
+            if (!myCtx->Call(data2) && !myCtx->Release()) {
+                OH_LOG_ERROR(LOG_APP, "call and release tsfn failed");
+                delete myCtx;
+            }
+        },
+        myContext)
+        .detach();
+    return nullptr;
+};
+```
+
+### Code block 2
+
+```
+//Index.d.ts
+export const myTsfnDemo: () => void;
+```
+
+### Code block 3
+
+```
+// 主线程 Index.ets
+import  {worker, MessageEvents } from '@kit.ArkTS';
+
+const mWorker = new worker.ThreadWorker('../workers/worker');
+mWorker.onmessage = (e: MessageEvents) => {
+    const action: string | undefined = e.data?.action;
+    if (action === 'kill') {
+        mWorker.terminate();
+    }
+}
+
+// 触发方式的注册已省略
+mWorker.postMessage({action: 'tsfn-demo'});
+```
+
+### Code block 4
+
+```
+// worker.ets
+import  {worker, ThreadWorkerGlobalScope, MessageEvents} from '@kit.ArkTS';
+import napiModule from 'libentry.so'; // libentry.so: Node-API 库的模块名称
+
+const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
+
+workerPort.onmessage = (e: MessageEvents) => {
+    const action: string | undefined = e.data?.action;
+    if (action === 'tsfn-demo') {
+        // 触发 C++ 层的 tsfn demo
+        napiModule.myTsfnDemo();
+        // 通知主线程结束 worker
+        workerPort.postMessage({action: 'kill'});
+    };
+}
+```

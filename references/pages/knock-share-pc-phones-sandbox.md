@@ -27,7 +27,7 @@ aboutToAppear(): void {
     windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
     capabilities: [{ // 设置接收端支持的数据类型及数量
       utd: utd.UniformDataType.IMAGE,
-      maxSupportedCount: 1,
+      maxSupportedCount: 1
     }]
   }
   // 注册沙箱接收'dataReceive'监听事件
@@ -50,26 +50,26 @@ aboutToAppear(): void {
   });
 }
 
-关闭可接收数据的窗口，解除沙箱接收事件。
+关闭可接收数据的窗口，取消沙箱接收事件。
 
 aboutToDisappear(): void {
   let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
     windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
     capabilities: [{
       utd: utd.UniformDataType.IMAGE,
-      maxSupportedCount: 1,
+      maxSupportedCount: 1
     }]
   }
-  // 解除沙箱接收'dataReceive'监听事件
+  // 取消沙箱接收'dataReceive'监听事件
   harmonyShare.off('dataReceive', capabilityRegistry);
 }
+
 拒绝本次沙箱接收
 
 当本次沙箱接收回调触发时，如果应用因为业务实现需要拒绝本次接收时，可使用ReceivableTarget.reject()方法拒绝本次接收。
 
 import { uniformTypeDescriptor as utd } from '@kit.ArkData';
 import { harmonyShare } from '@kit.ShareKit';
-
 
 @Component
 export default struct Index {
@@ -78,7 +78,7 @@ export default struct Index {
       windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
       capabilities: [{
         utd: utd.UniformDataType.IMAGE,
-        maxSupportedCount: 1,
+        maxSupportedCount: 1
       }]
     }
     // 注册沙箱接收'dataReceive'监听事件
@@ -87,22 +87,115 @@ export default struct Index {
     });
   }
 
+  aboutToDisappear(): void {
+    let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
+      windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
+      capabilities: [{
+        utd: utd.UniformDataType.IMAGE,
+        maxSupportedCount: 1
+      }]
+    }
+    // 取消沙箱接收'dataReceive'监听事件
+    harmonyShare.off('dataReceive', capabilityRegistry);
+  }
+
+  build() {
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { uniformTypeDescriptor as utd } from '@kit.ArkData';
+import { systemShare, harmonyShare } from '@kit.ShareKit';
+import { common } from '@kit.AbilityKit';
+```
+
+### Code block 2
+
+```
+aboutToAppear(): void {
+  let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
+    windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
+    capabilities: [{ // 设置接收端支持的数据类型及数量
+      utd: utd.UniformDataType.IMAGE,
+      maxSupportedCount: 1
+    }]
+  }
+  // 注册沙箱接收'dataReceive'监听事件
+  harmonyShare.on('dataReceive', capabilityRegistry, (receivableTarget: harmonyShare.ReceivableTarget) => {
+    let uiContext: UIContext = this.getUIContext();
+    let context = uiContext.getHostContext() as common.UIAbilityContext;
+    receivableTarget.receive(context.filesDir, { // 此路径仅为示例 使用时请替换实际路径
+      onDataReceived: (sharedData: systemShare.SharedData) => {
+        let sharedRecords = sharedData.getRecords();
+        sharedRecords.forEach((record: systemShare.SharedRecord) => {
+          // 处理分享数据
+        });
+      },
+      onResult(resultCode: harmonyShare.ShareResultCode) {
+        if (resultCode === harmonyShare.ShareResultCode.SHARE_SUCCESS) {
+          // To do things.
+        }
+      }
+    });
+  });
+}
+```
+
+### Code block 3
+
+```
+aboutToDisappear(): void {
+  let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
+    windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
+    capabilities: [{
+      utd: utd.UniformDataType.IMAGE,
+      maxSupportedCount: 1
+    }]
+  }
+  // 取消沙箱接收'dataReceive'监听事件
+  harmonyShare.off('dataReceive', capabilityRegistry);
+}
+```
+
+### Code block 4
+
+```
+import { uniformTypeDescriptor as utd } from '@kit.ArkData';
+import { harmonyShare } from '@kit.ShareKit';
+
+@Component
+export default struct Index {
+  aboutToAppear(): void {
+    let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
+      windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
+      capabilities: [{
+        utd: utd.UniformDataType.IMAGE,
+        maxSupportedCount: 1
+      }]
+    }
+    // 注册沙箱接收'dataReceive'监听事件
+    harmonyShare.on('dataReceive', capabilityRegistry, (receivableTarget: harmonyShare.ReceivableTarget) => {
+      receivableTarget.reject(harmonyShare.ReceivableErrorCode.NO_RECEIVABLE_ERROR);
+    });
+  }
 
   aboutToDisappear(): void {
     let capabilityRegistry: harmonyShare.RecvCapabilityRegistry = {
       windowId: 999, // 此值仅为示例 实际使用时请替换正确的windowId
       capabilities: [{
         utd: utd.UniformDataType.IMAGE,
-        maxSupportedCount: 1,
+        maxSupportedCount: 1
       }]
     }
-    // 解除沙箱接收'dataReceive'监听事件
+    // 取消沙箱接收'dataReceive'监听事件
     harmonyShare.off('dataReceive', capabilityRegistry);
   }
-
 
   build() {
   }
 }
-概述
-手机与PC/2in1间相互分享
+```

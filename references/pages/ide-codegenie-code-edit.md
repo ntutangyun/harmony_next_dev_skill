@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codegenie-code-edit_
 
+编辑区对话
+
+代码续写

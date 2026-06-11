@@ -2,7 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/obtain-enrolled-state-capabilities_
 
+调用者需感知用户注册凭据（人脸、指纹、口令）的变化，可使用该接口查询当前用户注册凭据的状态。
+
+接口说明
+
+具体参数、返回值、错误码等描述，请参考对应的userAuth.getEnrolledState。
+
+接口名称	功能描述
 getEnrolledState(authType : UserAuthType): EnrolledState	根据指定的认证类型，查询用户注册凭据的状态，用于感知注册凭据变化。
+
 开发步骤
 
 申请权限：ohos.permission.ACCESS_BIOMETRIC。
@@ -22,8 +30,25 @@ obtainingEnrolledCredentialInformation() {
     return false;
   }
 }
-Index.ets
+
 示例代码
+
 查询用户注册凭据的状态
-切换自定义认证
-使用嵌入式用户身份认证控件
+
+## Code blocks
+
+### Code block 1
+
+```
+obtainingEnrolledCredentialInformation() {
+  try {
+    let enrolledState = userAuth.getEnrolledState(userAuth.UserAuthType.FACE);
+    Logger.info('get current enrolled state successfully.');
+    return enrolledState.credentialDigest;
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    Logger.error(`get current enrolled state failed, code is ${err?.code}, message is ${err?.message}`);
+    return false;
+  }
+}
+```

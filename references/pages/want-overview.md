@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/want-overview_
 
+Want的定义与用途
+
+Want是一种对象，用于在应用组件之间传递信息。
+
 其中，一种常见的使用场景是作为startAbility()方法的参数。例如，当UIAbilityA需要启动UIAbilityB并向UIAbilityB传递一些数据时，可以使用Want作为一个载体，将数据传递给UIAbilityB。
 
 图1 Want用法示意
@@ -19,13 +23,11 @@ Want的类型
 import { common, Want } from '@kit.AbilityKit';
 // ···
 
-
 let wantInfo: Want = {
   deviceId: '', // deviceId为空表示本设备
   bundleName: 'com.samples.wantoverview',
   abilityName: 'ExplicitAbility',
 };
-ExplicitPage.ets
 
 隐式Want：在启动目标应用组件时，调用方传入的want参数中未指定abilityName，称为隐式Want。
 
@@ -33,7 +35,6 @@ ExplicitPage.ets
 
 import { common, Want } from '@kit.AbilityKit';
 // ···
-
 
 let wantInfo: Want = {
   // uncomment line below if wish to implicitly query only in the specific bundle.
@@ -44,14 +45,14 @@ let wantInfo: Want = {
   uri: 'https://www.test.com:8080/query/student',
   type: 'text/plain',
 };
-ImplicitPage.ets
+
 说明
-根据系统中待匹配应用组件的匹配情况不同，使用隐式Want启动应用组件时会出现以下三种情况。
+
 未匹配到满足条件的应用组件：启动失败。
+
 匹配到一个满足条件的应用组件：直接启动该应用组件。
+
 匹配到多个满足条件的应用组件（UIAbility）：弹出选择框让用户选择。
-信息传递载体Want
-显式Want与隐式Want匹配规则
 
 ## Code blocks
 
@@ -60,7 +61,6 @@ ImplicitPage.ets
 ```
 import { common, Want } from '@kit.AbilityKit';
 // ···
-
 
 let wantInfo: Want = {
   deviceId: '', // deviceId为空表示本设备
@@ -74,7 +74,6 @@ let wantInfo: Want = {
 ```
 import { common, Want } from '@kit.AbilityKit';
 // ···
-
 
 let wantInfo: Want = {
   // uncomment line below if wish to implicitly query only in the specific bundle.

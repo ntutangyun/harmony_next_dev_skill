@@ -96,9 +96,13 @@ Camera_PhotoOutput* CreatePhotoOutput(Camera_Manager* cameraManager, const Camer
 单段式拍照（PhotoAvailable）开发流程：
 
 在会话OH_CaptureSession_CommitConfig前注册单段式拍照回调。
+
 在单段式拍照回调函数中获取图片信息，解析出pixelMap数据，做自定义业务处理。
+
 将处理完的pixelMap通过回调传给ArkTS侧，做图片显示或通过安全控件写文件保存图片。
+
 使用完后解注册单段式拍照回调函数。
+
 // 单段式拍照回调函数。
 void OnPhotoAvailable(Camera_PhotoOutput* photoOutput, OH_PhotoNative* photo)
 {
@@ -127,7 +131,6 @@ void OnPhotoAvailable(Camera_PhotoOutput* photoOutput, OH_PhotoNative* photo)
     imageErr = OH_PixelmapNative_GetImageInfo(mainPixelmap, imageInfo);
     OH_LOG_INFO(LOG_APP, "OH_PixelmapNative_GetImageInfo errorCode:%{public}d", imageErr);
 
-
     uint32_t width = 0;
     uint32_t height = 0;
     uint32_t rowStride = 0;
@@ -152,7 +155,6 @@ void OnPhotoAvailable(Camera_PhotoOutput* photoOutput, OH_PhotoNative* photo)
     OH_PictureNative_Release(picture);
 }
 
-
 // 注册单段式拍照回调。
 Camera_ErrorCode PhotoOutputRegisterPhotoAvailableCallback(Camera_PhotoOutput* photoOutput)
 {
@@ -164,7 +166,6 @@ Camera_ErrorCode PhotoOutputRegisterPhotoAvailableCallback(Camera_PhotoOutput* p
     OH_LOG_INFO(LOG_APP, "PhotoOutputRegisterPhotoAvailableCallback return with ret code: %{public}d!", ret);
     return ret;
 }
-
 
 // 解注册单段式拍照回调。
 Camera_ErrorCode PhotoOutputUnRegisterPhotoAvailableCallback(Camera_PhotoOutput* photoOutput)
@@ -181,10 +182,15 @@ Camera_ErrorCode PhotoOutputUnRegisterPhotoAvailableCallback(Camera_PhotoOutput*
 分段式拍照（PhotoAvailable）开发流程：
 
 在会话OH_CaptureSession_CommitConfig前注册分段式拍照回调。
+
 在分段式拍照回调函数中获取图片信息，解析出pixelMap数据，做自定义业务处理。
+
 将处理完的pixelMap通过回调传给ArkTS侧，做图片显示或通过安全控件写文件保存图片。
+
 调用OH_PhotoOutput_Capture拍照后，需要及时调用OH_MediaAssetChangeRequest_SaveCameraPhoto保存图片或OH_MediaAssetChangeRequest_DiscardCameraPhoto取消保存图片，否则会影响后续图片的拍摄。
+
 使用完后解注册分段式拍照回调函数。
+
 // 声明快速返图回调。
 void OnRequestQuickImageDataPreparedWithDetails(MediaLibrary_ErrorCode result, MediaLibrary_RequestId requestId, MediaLibrary_MediaQuality mediaQuality, MediaLibrary_MediaContentType type, OH_ImageSourceNative* imageSourceNative, OH_PictureNative* pictureNative)
 {
@@ -200,7 +206,6 @@ void OnRequestQuickImageDataPreparedWithDetails(MediaLibrary_ErrorCode result, M
         OH_LOG_INFO(LOG_APP, "OnRequestQuickImageDataPreparedWithDetails, pictureNative and imageSourceNative are not null.");
     }
 }
-
 
 // 分段式拍照回调函数。
 void OnPhotoAssetAvailable(Camera_PhotoOutput* photoOutput, OH_MediaAsset* mediaAsset)
@@ -259,7 +264,6 @@ void OnPhotoAssetAvailable(Camera_PhotoOutput* photoOutput, OH_MediaAsset* media
         return;
     }
 
-
     // 创建媒体资产变更请求。
     OH_MediaAssetChangeRequest* changeRequest = OH_MediaAssetChangeRequest_Create(mediaAsset);
     if (changeRequest == nullptr) {
@@ -283,7 +287,6 @@ void OnPhotoAssetAvailable(Camera_PhotoOutput* photoOutput, OH_MediaAsset* media
         OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to apply changes.");
     }
 }
-
 
 // 注册分段式拍照回调函数。
 Camera_ErrorCode RegisterPhotoAssetAvailable(Camera_PhotoOutput* photoOutput)
@@ -320,6 +323,7 @@ Camera_ErrorCode Capture(Camera_PhotoOutput* photoOutput)
     }
     return ret;
 }
+
 状态监听
 
 在相机应用开发过程中，可以随时监听拍照输出流状态，包括拍照流开始、拍照帧的开始与结束、拍摄下一张图片是否就绪、拍照输出流的错误。
@@ -350,7 +354,6 @@ void CaptureReadyCb(Camera_PhotoOutput* photoOutput) {
   OH_LOG_INFO(LOG_APP, "PhotoOutputOnCaptureReady captureReadyFlag = %{public}d", g_captureReadyFlag);
 }
 
-
 void OnPhotoOutputOnCaptureReady(Camera_PhotoOutput* photoOutput)
 {
     OH_LOG_INFO(LOG_APP, "PhotoOutputOnCaptureReady");
@@ -363,6 +366,7 @@ void PhotoOutputOnError(Camera_PhotoOutput* photoOutput, Camera_ErrorCode errorC
 {
     OH_LOG_INFO(LOG_APP, "PhotoOutput errorCode = %{public}d", errorCode);
 }
+
 PhotoOutput_Callbacks* GetPhotoOutputListener()
 {
     static PhotoOutput_Callbacks photoOutputListener = {
@@ -381,5 +385,369 @@ Camera_ErrorCode RegisterPhotoOutputCallback(Camera_PhotoOutput* photoOutput)
     }
     return ret;
 }
-多摄同开(C/C++)
-对焦(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+// 导入NDK接口头文件。
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <string.h>
+#include <new>
+#include "hilog/log.h"
+#include "multimedia/image_framework/image/image_source_native.h"
+#include "multimedia/image_framework/image/image_packer_native.h"
+#include "multimedia/media_library/media_access_helper_capi.h"
+#include "multimedia/media_library/media_asset_base_capi.h"
+#include "multimedia/media_library/media_asset_capi.h"
+#include "multimedia/media_library/media_asset_change_request_capi.h"
+#include "multimedia/media_library/media_asset_manager_capi.h"
+#include "ohcamera/camera.h"
+#include "ohcamera/camera_input.h"
+#include "ohcamera/camera_manager.h"
+#include "ohcamera/capture_session.h"
+#include "ohcamera/photo_native.h"
+#include "ohcamera/photo_output.h"
+#include "ohcamera/preview_output.h"
+#include "ohcamera/video_output.h"
+```
+
+### Code block 2
+
+```
+target_link_libraries(entry PUBLIC
+    libace_napi.z.so
+    libhilog_ndk.z.so
+    libnative_buffer.so
+    libohcamera.so
+    libohimage.so
+    libohfileuri.so
+    libmedia_asset_manager.so
+    libimage_source.so
+    libpixelmap.so
+    libimage_packer.so
+    libpicture.so
+)
+```
+
+### Code block 3
+
+```
+Camera_OutputCapability* GetSupportedFullCameraOutputCapability(Camera_Manager* cameraManager, Camera_Device &camera)
+{
+     Camera_OutputCapability* cameraOutputCapability = nullptr;
+     // 获取相机设备支持的输出流能力。
+     const Camera_Profile* previewProfile = nullptr;
+     const Camera_Profile* photoProfile = nullptr;
+     Camera_ErrorCode ret = OH_CameraManager_GetSupportedFullCameraOutputCapabilityWithSceneMode(cameraManager, &camera,
+         Camera_SceneMode::NORMAL_PHOTO, &cameraOutputCapability);
+     if (cameraOutputCapability == nullptr || ret != CAMERA_OK) {
+         OH_LOG_ERROR(LOG_APP, "OH_CameraManager_GetSupportedCameraOutputCapability failed.");
+         return nullptr;
+     }
+     return cameraOutputCapability;
+}
+```
+
+### Code block 4
+
+```
+Camera_PhotoOutput* CreatePhotoOutput(Camera_Manager* cameraManager, const Camera_Profile* photoProfile)
+{
+    Camera_PhotoOutput* photoOutput = nullptr;
+    // 无需传入surfaceId，直接创建拍照流。
+    Camera_ErrorCode ret = OH_CameraManager_CreatePhotoOutputWithoutSurface(cameraManager, photoProfile, &photoOutput);
+    if (photoOutput == nullptr || ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_CameraManager_CreatePhotoOutputWithoutSurface failed.");
+    }
+    return photoOutput;
+}
+```
+
+### Code block 5
+
+```
+// 单段式拍照回调函数。
+void OnPhotoAvailable(Camera_PhotoOutput* photoOutput, OH_PhotoNative* photo)
+{
+    OH_LOG_INFO(LOG_APP, "OnPhotoAvailable start!");
+    OH_PictureNative* picture;
+    Camera_ErrorCode errCode = OH_PhotoNative_GetUncompressedImage(photo, &picture);
+    if (errCode != CAMERA_OK || picture == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "OH_PhotoNative_GetUncompressedImage call failed, errorCode: %{public}d", errCode);
+        return;
+    }
+    OH_LOG_INFO(LOG_APP, "OnPhotoAvailable errCode:%{public}d picture:%{public}p", errCode, picture);
+    // 读取OH_PictureNative中的主图mainPixelMap。
+    OH_PixelmapNative* mainPixelmap;
+    Image_ErrorCode imageErr = OH_PictureNative_GetMainPixelmap(picture, &mainPixelmap);
+    if (imageErr != IMAGE_SUCCESS || mainPixelmap == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImageNative_GetImageSize call failed, errorCode: %{public}d", imageErr);
+        return;
+    }
+    OH_LOG_INFO(LOG_APP, "OH_PictureNative_GetMainPixelmap success");
+    // 获取主图Pixelmap中所有像素所占用的总字节数。
+    uint32_t byteCount = 0;
+    imageErr = OH_PixelmapNative_GetByteCount(mainPixelmap, &byteCount);
+    OH_LOG_INFO(LOG_APP, "OH_PixelmapNative_GetByteCount count:%{public}u", byteCount);
+    // 获取主图的图像像素信息。
+    OH_Pixelmap_ImageInfo* imageInfo;
+    imageErr = OH_PixelmapNative_GetImageInfo(mainPixelmap, imageInfo);
+    OH_LOG_INFO(LOG_APP, "OH_PixelmapNative_GetImageInfo errorCode:%{public}d", imageErr);
+
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t rowStride = 0;
+    int32_t pixelFormat = PIXEL_FORMAT::PIXEL_FORMAT_UNKNOWN;
+    int32_t alphaMode = PIXELMAP_ALPHA_TYPE::PIXELMAP_ALPHA_TYPE_UNKNOWN;
+    int32_t alphaType = PIXELMAP_ALPHA_TYPE::PIXELMAP_ALPHA_TYPE_UNKNOWN;
+    // 获取主图图像像素信息中的宽度。
+    OH_PixelmapImageInfo_GetWidth(imageInfo, &width);
+    // 获取主图图像像素信息中的高度。
+    OH_PixelmapImageInfo_GetHeight(imageInfo, &height);
+    // 获取主图图像像素信息中的行跨距。
+    OH_PixelmapImageInfo_GetRowStride(imageInfo, &rowStride);
+    // 获取主图图像像素信息中的像素格式。
+    OH_PixelmapImageInfo_GetPixelFormat(imageInfo, &pixelFormat);
+    // 获取主图图像像素信息中的透明通道类型。
+    OH_PixelmapImageInfo_GetAlphaMode(imageInfo, &alphaMode);
+    // 获取主图图像像素信息中的默认的透明通道类型。
+    OH_PixelmapImageInfo_GetAlphaType(imageInfo, &alphaType);
+    OH_LOG_INFO(LOG_APP, "OH_PixelmapNative_GetImageInfo width:%{public}u height:%{public}u rowStride:%{public}u pixelFormat:%{public}d alphaMode:%{public}d alphaType:%{public}d", width, height, rowStride, pixelFormat, alphaMode, alphaType);
+   // 释放资源。
+    OH_PixelmapNative_Release(mainPixelmap);
+    OH_PictureNative_Release(picture);
+}
+
+// 注册单段式拍照回调。
+Camera_ErrorCode PhotoOutputRegisterPhotoAvailableCallback(Camera_PhotoOutput* photoOutput)
+{
+    OH_LOG_INFO(LOG_APP, "PhotoOutputRegisterPhotoAvailableCallback start!");
+    Camera_ErrorCode ret = OH_PhotoOutput_RegisterPhotoAvailableCallback(photoOutput, OnPhotoAvailable);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "PhotoOutputRegisterPhotoAvailableCallback failed.");
+    }
+    OH_LOG_INFO(LOG_APP, "PhotoOutputRegisterPhotoAvailableCallback return with ret code: %{public}d!", ret);
+    return ret;
+}
+
+// 解注册单段式拍照回调。
+Camera_ErrorCode PhotoOutputUnRegisterPhotoAvailableCallback(Camera_PhotoOutput* photoOutput)
+{
+    OH_LOG_INFO(LOG_APP, "PhotoOutputUnRegisterPhotoAvailableCallback start!");
+    Camera_ErrorCode ret = OH_PhotoOutput_UnregisterPhotoAvailableCallback(photoOutput, OnPhotoAvailable);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "PhotoOutputUnRegisterPhotoAvailableCallback failed.");
+    }
+    OH_LOG_INFO(LOG_APP, "PhotoOutputUnRegisterPhotoAvailableCallback return with ret code: %{public}d!", ret);
+    return ret;
+}
+```
+
+### Code block 6
+
+```
+// 声明快速返图回调。
+void OnRequestQuickImageDataPreparedWithDetails(MediaLibrary_ErrorCode result, MediaLibrary_RequestId requestId, MediaLibrary_MediaQuality mediaQuality, MediaLibrary_MediaContentType type, OH_ImageSourceNative* imageSourceNative, OH_PictureNative* pictureNative)
+{
+    OH_LOG_INFO(LOG_APP, "OnRequestQuickImageDataPreparedWithDetails start!");
+    if (!pictureNative && !imageSourceNative) {
+        OH_LOG_ERROR(LOG_APP, "OnRequestQuickImageDataPreparedWithDetails, pictureNative and imageSourceNative are null.");
+        return;
+    } else if (!pictureNative && imageSourceNative) {
+        OH_LOG_ERROR(LOG_APP, "OnRequestQuickImageDataPreparedWithDetails, pictureNative is null.");
+    } else if (pictureNative && !imageSourceNative) {
+        OH_LOG_ERROR(LOG_APP, "OnRequestQuickImageDataPreparedWithDetails, imageSourceNative is null.");
+    } else {
+        OH_LOG_INFO(LOG_APP, "OnRequestQuickImageDataPreparedWithDetails, pictureNative and imageSourceNative are not null.");
+    }
+}
+
+// 分段式拍照回调函数。
+void OnPhotoAssetAvailable(Camera_PhotoOutput* photoOutput, OH_MediaAsset* mediaAsset)
+{
+    OH_LOG_INFO(LOG_APP, "OnPhotoAssetAvailable start!");
+    if (mediaAsset == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable invalid error, mediaAsset is null.");
+        return;
+    }
+    // 尝试获取mediaAsset中的uri信息。
+    const char* uri = nullptr;
+    MediaLibrary_ErrorCode result = OH_MediaAsset_GetUri(mediaAsset, &uri);
+    if (uri == nullptr || result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get uri.");
+    }
+    // 尝试获取mediaAsset中的displayName信息。
+    const char* displayName = nullptr;
+    result = OH_MediaAsset_GetDisplayName(mediaAsset, &displayName);
+    if (displayName == nullptr || result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get displayName.");
+    }
+    // 尝试获取mediaAsset中的size信息。
+    uint32_t mediaAssetSize = 0;
+    result = OH_MediaAsset_GetSize(mediaAsset, &mediaAssetSize);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get size.");
+    }
+    // 尝试获取mediaAsset中的修改时间信息。
+    uint32_t modifiedMs = 0;
+    result = OH_MediaAsset_GetDateModifiedMs(mediaAsset, &modifiedMs);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get modifiedMs.");
+    }
+    // 尝试获取mediaAsset中的图片宽度信息。
+    uint32_t width = 0;
+    result = OH_MediaAsset_GetWidth(mediaAsset, &width);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get width.");
+    }
+    // 尝试获取mediaAsset中的图片高度信息。
+    uint32_t height = 0;
+    result = OH_MediaAsset_GetHeight(mediaAsset, &height);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get height.");
+    }
+    // 尝试获取mediaAsset中的图片方向信息。
+    uint32_t orientation = 0;
+    result = OH_MediaAsset_GetOrientation(mediaAsset, &orientation);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get orientation.");
+    }
+    // 创建媒体资产管理对象。
+    OH_MediaAssetManager* mediaAssetManager = OH_MediaAssetManager_Create();
+    if (mediaAssetManager == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to create mediaAssetManager.");
+        return;
+    }
+
+    // 创建媒体资产变更请求。
+    OH_MediaAssetChangeRequest* changeRequest = OH_MediaAssetChangeRequest_Create(mediaAsset);
+    if (changeRequest == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to create changeRequest.");
+    }
+    // 注册媒体资产快速请求回调。
+    MediaLibrary_RequestOptions requestOptions;
+    requestOptions.deliveryMode = MEDIA_LIBRARY_BALANCED_MODE;
+    MediaLibrary_RequestId requestId;
+    result = OH_MediaAssetManager_QuickRequestImage(mediaAssetManager, mediaAsset, requestOptions, &requestId, OnRequestQuickImageDataPreparedWithDetails);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to quick image.");
+    }
+    // 创建媒体资产保存变更请求。
+    result = OH_MediaAssetChangeRequest_SaveCameraPhoto(changeRequest, MediaLibrary_ImageFileType::MEDIA_LIBRARY_IMAGE_JPEG);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to save camera photo.");
+    }
+    result = OH_MediaAccessHelper_ApplyChanges(changeRequest);
+    if (result != MEDIA_LIBRARY_OK) {
+        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to apply changes.");
+    }
+}
+
+// 注册分段式拍照回调函数。
+Camera_ErrorCode RegisterPhotoAssetAvailable(Camera_PhotoOutput* photoOutput)
+{
+    Camera_ErrorCode ret = OH_PhotoOutput_RegisterPhotoAssetAvailableCallback(photoOutput, OnPhotoAssetAvailable);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "RegisterPhotoAssetAvailable failed. %d ", ret);
+    }
+    return ret;
+}
+// 解注册分段式拍照回调函数。
+Camera_ErrorCode UnregisterPhotoAssetAvailable(Camera_PhotoOutput* photoOutput)
+{
+    Camera_ErrorCode ret = OH_PhotoOutput_UnregisterPhotoAssetAvailableCallback(photoOutput, OnPhotoAssetAvailable);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "UnregisterPhotoAssetAvailable failed. %d ", ret);
+    }
+    return ret;
+}
+```
+
+### Code block 7
+
+```
+Camera_ErrorCode Capture(Camera_PhotoOutput* photoOutput)
+{
+    Camera_ErrorCode ret = OH_PhotoOutput_Capture(photoOutput);
+    if (ret == CAMERA_OK) {
+        OH_LOG_INFO(LOG_APP, "OH_PhotoOutput_Capture success ");
+    } else {
+        OH_LOG_ERROR(LOG_APP, "OH_PhotoOutput_Capture failed. %d ", ret);
+    }
+    return ret;
+}
+```
+
+### Code block 8
+
+```
+void PhotoOutputOnFrameStart(Camera_PhotoOutput* photoOutput)
+{
+    OH_LOG_INFO(LOG_APP, "PhotoOutputOnFrameStart");
+}
+void PhotoOutputOnFrameShutter(Camera_PhotoOutput* photoOutput, Camera_FrameShutterInfo* info)
+{
+    OH_LOG_INFO(LOG_APP, "PhotoOutputOnFrameShutter");
+}
+```
+
+### Code block 9
+
+```
+void PhotoOutputOnFrameEnd(Camera_PhotoOutput* photoOutput, int32_t frameCount)
+{
+    OH_LOG_INFO(LOG_APP, "PhotoOutput frameCount = %{public}d", frameCount);
+}
+```
+
+### Code block 10
+
+```
+static bool g_captureReadyFlag = false;
+void CaptureReadyCb(Camera_PhotoOutput* photoOutput) {
+  g_captureReadyFlag = true;
+  OH_LOG_INFO(LOG_APP, "PhotoOutputOnCaptureReady captureReadyFlag = %{public}d", g_captureReadyFlag);
+}
+
+void OnPhotoOutputOnCaptureReady(Camera_PhotoOutput* photoOutput)
+{
+    OH_LOG_INFO(LOG_APP, "PhotoOutputOnCaptureReady");
+    Camera_ErrorCode ret = OH_PhotoOutput_RegisterCaptureReadyCallback(photoOutput, CaptureReadyCb);
+}
+```
+
+### Code block 11
+
+```
+void PhotoOutputOnError(Camera_PhotoOutput* photoOutput, Camera_ErrorCode errorCode)
+{
+    OH_LOG_INFO(LOG_APP, "PhotoOutput errorCode = %{public}d", errorCode);
+}
+```
+
+### Code block 12
+
+```
+PhotoOutput_Callbacks* GetPhotoOutputListener()
+{
+    static PhotoOutput_Callbacks photoOutputListener = {
+        .onFrameStart = PhotoOutputOnFrameStart,
+        .onFrameShutter = PhotoOutputOnFrameShutter,
+        .onFrameEnd = PhotoOutputOnFrameEnd,
+        .onError = PhotoOutputOnError
+    };
+    return &photoOutputListener;
+}
+Camera_ErrorCode RegisterPhotoOutputCallback(Camera_PhotoOutput* photoOutput)
+{
+    Camera_ErrorCode ret = OH_PhotoOutput_RegisterCallback(photoOutput, GetPhotoOutputListener());
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PhotoOutput_RegisterCallback failed.");
+    }
+    return ret;
+}
+```

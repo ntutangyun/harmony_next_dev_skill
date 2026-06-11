@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-netmultipath-request-release_
 
+场景介绍
+
 应用可根据自身业务的需要，以及系统的建议来发起多网络加速的请求，并在使用结束后及时释放。支持WiFi和蜂窝并发以及主卡和副卡并发，不支持开发者指定并发组合，并发组合由系统决定。
 
 说明
@@ -23,6 +25,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 接口名	描述
 requestMultiPath(callback: Callback<MultiPathRequestResult>): void	发起多网请求。
 releaseMultiPath(): void	释放多网。
+
 开发步骤
 
 导入Network Boost Kit模块。
@@ -47,5 +50,34 @@ try {
  } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
 }
-多网配额查询
-多网并发网络加速
+
+## Code blocks
+
+### Code block 1
+
+```
+import { netHandover } from '@kit.NetworkBoostKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+try {
+  netHandover.requestMultiPath((data: netHandover.MultiPathRequestResult) => {
+   console.info(` requestMultiPath result:` + JSON.stringify(data));
+  });
+ } catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 3
+
+```
+try {
+  netHandover.releaseMultiPath();
+ } catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```

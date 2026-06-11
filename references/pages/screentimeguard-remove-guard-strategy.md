@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-remove-guard-strategy_
 
+场景介绍
+
 当应用希望删除现有的屏幕时间守护规则时，可以调用删除管控策略的接口。根据参数中传入的策略名删除对应的策略。一旦策略被删除，系统将不再根据该规则对用户的屏幕使用行为进行监管。
 
 用户体验设计
@@ -24,6 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 接口名	描述
 removeGuardStrategy(strategyName: string): Promise<void>	删除管控策略。
+
 开发前提
 
 删除管控策略需要申请用户授权，请先参考请求用户授权章节完成用户授权。
@@ -47,5 +50,27 @@ private async removeStrategy(strategyName: string): Promise<void> {
          `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
    }
 }
-查询策略
-启动策略
+
+## Code blocks
+
+### Code block 1
+
+```
+import { guardService } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+private async removeStrategy(strategyName: string): Promise<void> {
+   try {
+      await guardService.removeGuardStrategy(strategyName);
+   } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, 'GuardService',
+         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```

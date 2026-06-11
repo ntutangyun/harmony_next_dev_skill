@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-scenecallback-c_
 
+场景介绍
+
 应用在订阅网络场景识别后，系统在网络场景实时信息或预测信息发生变化后回调给应用，回调的网络场景信息包括数据传输的链路类型、网络场景类型、数传策略建议、弱信号信息等。
 
 接口说明
@@ -11,6 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 接口名	描述
 int32_t HMS_NetworkBoost_RegisterNetSceneCallback(HMS_NetworkBoost_NetSceneChange callback, uint32_t* callbackId)	注册网络场景信息状态变化回调。
 int32_t HMS_NetworkBoost_UnregisterNetSceneCallback(uint32_t callbackId)	取消注册网络场景信息状态变化回调。
+
 开发步骤
 
 导入Network Boost Kit模块。
@@ -50,7 +53,6 @@ void onNetworkSceneChanged(NetworkBoost_NetworkScene *ns)
     }
 }
 
-
 int32_t RegisterNetSceneCallback()
 {
     HMS_NetworkBoost_NetSceneChange callback;
@@ -70,5 +72,70 @@ int32_t UnregisterNetSceneCallback()
     printf("取消注册网络场景结果: %d\n", ret);
     return ret;
 }
-网络质量评估 (C/C++)
-应用传输体验反馈 (C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "NetworkBoostKit/network_boost_quality.h"
+#include <cstdio>
+```
+
+### Code block 2
+
+```
+libnetwork_boost.so
+```
+
+### Code block 3
+
+```
+uint32_t callbackId = 0;
+void onNetworkSceneChanged(NetworkBoost_NetworkScene *ns)
+{
+    // 网络场景识别回调信息处理
+    printf("数据路径类型: %d\n", ns->pathType);
+    printf("网络场景: %d\n", ns->scene);
+    switch (ns->scene) {
+        case NB_SCENE_NORMAL:
+            // 普通场景处理
+            break;
+        case NB_SCENE_CONGESTION:
+            // 拥塞场景处理
+            break;
+        case NB_SCENE_FREQUENT_HANDOVER:
+            // 信号快切场景处理
+            break;
+        case NB_SCENE_WEAK_SIGNAL:
+            // 弱信号场景处理
+            break;
+    }
+    printf("应用数传策略建议: %d\n", ns->recommendedAction);
+    if (ns->weakSignalPrediction.duration > 0) {
+        // 弱信号预测处理
+    }
+}
+
+int32_t RegisterNetSceneCallback()
+{
+    HMS_NetworkBoost_NetSceneChange callback;
+    callback = onNetworkSceneChanged;
+    // 注册回调，获取回调Id
+    int32_t ret = HMS_NetworkBoost_RegisterNetSceneCallback(callback, &callbackId);
+    printf("注册网络场景结果: %d, Id：%d\n", ret, callbackId);
+    return ret;
+}
+```
+
+### Code block 4
+
+```
+int32_t UnregisterNetSceneCallback()
+{
+    // 使用注册时获取的回调Id取消注册
+    int32_t ret = HMS_NetworkBoost_UnregisterNetSceneCallback(callbackId);
+    printf("取消注册网络场景结果: %d\n", ret);
+    return ret;
+}
+```

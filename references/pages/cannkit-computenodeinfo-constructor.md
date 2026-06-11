@@ -2,8 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-computenodeinfo-constructor_
 
+函数功能
+
+ComputeNodeInfo类的构造函数。
+
+函数原型
+
+ComputeNodeInfo() = delete;
+ComputeNodeInfo(const ComputeNodeInfo &) = delete;
+ComputeNodeInfo(ComputeNodeInfo &&) = delete;
 ComputeNodeInfo &operator=(const ComputeNodeInfo &) = delete;
 ComputeNodeInfo &operator=(ComputeNodeInfo &&) = delete;
+
 参数说明
 
 无
@@ -16,5 +26,14 @@ ComputeNodeInfo &operator=(ComputeNodeInfo &&) = delete;
 
 POD类型，当前不允许通过调用构造函数显式构造，可通过显式申请内存构造。
 
-简介
-GetNodeType
+## Code blocks
+
+### Code block 1
+
+```
+ComputeNodeInfo() = delete;
+ComputeNodeInfo(const ComputeNodeInfo &) = delete;
+ComputeNodeInfo(ComputeNodeInfo &&) = delete;
+ComputeNodeInfo &operator=(const ComputeNodeInfo &) = delete;
+ComputeNodeInfo &operator=(ComputeNodeInfo &&) = delete;
+```

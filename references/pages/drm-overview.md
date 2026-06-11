@@ -16,13 +16,7 @@ DRM许可证管理：支持离线许可证的请求、处理及删除等。
 
 DRM节目授权：支持在线许可证请求及处理、离线许可证的加载、媒体密钥状态查询，并支持按照DRM许可证的权限要求对DRM节目授权。
 
-DRM节目解密：支持的媒体协议：HLS、DASH；封装格式：MP4、TS；视频编码格式：H264、H265<!--RP2End->
-
-、H265<!--RP2End->
-
-模拟器支持情况
-
-本Kit暂不支持模拟器。；音频编码格式：AAC。
+DRM节目解密：支持的媒体协议：HLS、DASH；封装格式：MP4、TS；视频编码格式：H264、H265；音频编码格式：AAC。
 
 注意
 
@@ -100,11 +94,6 @@ DRM节目解密：应用将MediaKeySession设置到Media Kit或AVCodec Kit，用
 
 许可证更新或过期：在节目播放过程中，在许可证需要更新的情况下，MediaKeySession将抛出许可证更新事件（keyRequired），此时需要重新请求DRM许可证。MediaKeySession如抛出许可证过期事件（keyExpired），则需要停止DRM节目播放。
 
-、H265<!--RP2End->
-
 模拟器支持情况
 
 本Kit暂不支持模拟器。
-
-DRM Kit（数字版权保护服务）
-数字版权保护(ArkTS)

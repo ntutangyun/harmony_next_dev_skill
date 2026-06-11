@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ads-kit-glossary_
 
+Banner Ad 横幅广告
+
+横幅广告又名Banner广告，是在应用程序顶部、中部或底部占据一个位置的矩形图片，广告内容每隔一段时间会自动刷新。
+
+Interstital Ad 插屏广告
+
 插屏广告是一种在应用开启、暂停或退出时以全屏或半屏的形式弹出的广告形式，展示时机巧妙避开用户对应用的正常体验，尺寸大，曝光效果好。
 
 Native Ad 原生广告
@@ -31,6 +37,3 @@ Petal Ads 鲸鸿动能
 eCPM
 
 每千次有效收入（Effective Cost Per Mille），表示每一千次展示可以获得的广告收入。
-
-Ads Kit简介
-开发准备

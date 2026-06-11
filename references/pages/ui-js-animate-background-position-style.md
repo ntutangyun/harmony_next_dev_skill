@@ -1,4 +1,4 @@
-# background
+# background-position样式动画
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-animate-background-position-style_
 
@@ -9,6 +9,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-ani
   <div class="content"></div>
   <div class="content1"></div>
 </div>
+
 /* xxx.css */
 .container {
   height: 100%;
@@ -72,9 +73,87 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-ani
     background-position:left top;
   }
 }
+
 说明
 
 background-position仅支持背景图片的移动，不支持背景颜色（background-color）。
 
-transform样式动画
-svg动画
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <div class="content"></div>
+  <div class="content1"></div>
+</div>
+```
+
+### Code block 2
+
+```
+/* xxx.css */
+.container {
+  height: 100%;
+  background-color:#F1F3F5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.content{
+  width: 400px;
+  height: 400px;
+  /* 不建议图片长宽比为1:1 */
+  background-image: url('common/images/bg-tv.jpg');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  animation: change 3s infinite;
+  border: 1px solid black;
+}
+.content1{
+  margin-top:50px;
+  width: 400px;
+  height: 400px;
+  background-image: url('common/images/bg-tv.jpg');
+  background-size: 50%;
+  background-repeat: no-repeat;
+  animation: change1 5s infinite;
+  border: 1px solid black;
+}
+/* 背景图片移动出组件 */
+@keyframes change{
+  0%{
+    background-position:0px top;
+  }
+  25%{
+    background-position:400px top;
+  }
+  50%{
+    background-position:0px top;
+  }
+  75%{
+    background-position:0px bottom;
+  }
+  100%{
+    background-position:0px top;
+  }
+}
+/* 背景图片在组件内移动 */
+@keyframes change1{
+  0%{
+    background-position:left top;
+  }
+  25%{
+    background-position:50% 50%;
+  }
+  50%{
+    background-position:right bottom;
+  }
+  100%{
+    background-position:left top;
+  }
+}
+```

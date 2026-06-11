@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-key-derivation-using-pbkdf2_
 
+对应的算法规格请查看密钥派生算法规格：PBKDF2。
+
+开发步骤
+
+构造PBKDF2Spec对象，作为密钥派生参数进行密钥派生。
+
+PBKDF2Spec是KdfSpec的子类，需要指定：
+
+algName：指定算法'PBKDF2'。
+
+password：用于生成派生密钥的原始密码。
+
 如果使用string类型，需要直接传入用于密钥派生的数据，而不是HexString、base64等字符串类型。同时需要确保该字符串为utf-8编码，否则派生结果会有差异。
 
 salt：盐值。
@@ -25,7 +37,6 @@ generateSecretSync(params: KdfSpec): DataBlob	同步生成。
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 
-
 async function kdfAwait() {
   let spec: cryptoFramework.PBKDF2Spec = {
     algName: 'PBKDF2',
@@ -38,13 +49,11 @@ async function kdfAwait() {
   let secret = await kdf.generateSecret(spec);
   console.info('key derivation output: ' + secret.data);
 }
-Await.ets
 
 通过Promise返回结果：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 function kdfPromise() {
   let spec: cryptoFramework.PBKDF2Spec = {
@@ -62,12 +71,10 @@ function kdfPromise() {
     console.error(`key derivation failed: errCode: ${error.code}, message: ${error.message}`);
   });
 }
-Promise.ets
 
 通过同步方式返回结果：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
-
 
 function kdfSync() {
   let spec: cryptoFramework.PBKDF2Spec = {
@@ -81,6 +88,67 @@ function kdfSync() {
   let secret = kdf.generateSecretSync(spec);
   console.info('[Sync]key derivation output: ' + secret.data);
 }
-Sync.ets
-密钥派生介绍及算法规格
-使用PBKDF2进行密钥派生(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+
+async function kdfAwait() {
+  let spec: cryptoFramework.PBKDF2Spec = {
+    algName: 'PBKDF2',
+    password: '123456',
+    salt: new Uint8Array(16),
+    iterations: 10000,
+    keySize: 32
+  };
+  let kdf = cryptoFramework.createKdf('PBKDF2|SHA256');
+  let secret = await kdf.generateSecret(spec);
+  console.info('key derivation output: ' + secret.data);
+}
+```
+
+### Code block 2
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+function kdfPromise() {
+  let spec: cryptoFramework.PBKDF2Spec = {
+    algName: 'PBKDF2',
+    password: '123456',
+    salt: new Uint8Array(16),
+    iterations: 10000,
+    keySize: 32
+  };
+  let kdf = cryptoFramework.createKdf('PBKDF2|SHA256');
+  let kdfPromise = kdf.generateSecret(spec);
+  kdfPromise.then((secret) => {
+    console.info('key derivation output: ' + secret.data);
+  }).catch((error: BusinessError) => {
+    console.error(`key derivation failed: errCode: ${error.code}, message: ${error.message}`);
+  });
+}
+```
+
+### Code block 3
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+
+function kdfSync() {
+  let spec: cryptoFramework.PBKDF2Spec = {
+    algName: 'PBKDF2',
+    password: '123456',
+    salt: new Uint8Array(16),
+    iterations: 10000,
+    keySize: 32
+  };
+  let kdf = cryptoFramework.createKdf('PBKDF2|SHA256');
+  let secret = kdf.generateSecretSync(spec);
+  console.info('[Sync]key derivation output: ' + secret.data);
+}
+```

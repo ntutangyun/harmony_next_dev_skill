@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap-config-agc_
 
+请先参考“应用开发准备”完成基本准备工作及指纹配置，再继续进行以下开发活动。
+
+说明
+
+配置签名信息时，请使用手动签名方式。
+
+接入数字商品服务，需要添加公钥指纹。
+
+开通商户服务
+
 开发者需开通商户服务才能使用华为数字商品服务，具体请登录华为开发者联盟官网，点击“管理中心”>“开发者中心”>“商户服务”进入商户服务页面。
 
 商户服务里配置的银行卡账号、币种，用于开发者接收华为分成收益。需要提供如下信息，具体可详见商户服务：
@@ -35,6 +45,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap
 数字商品服务器要求对每个服务端API请求进行JSON Web Token（JWT）授权。开发者可以使用从AppGallery Connect下载的API密钥对Token签名生成JWT，授权发起的服务端API请求。
 
 开发者可参见创建密钥、下载密钥、撤销密钥管理服务端密钥。
-
-启用数字商品服务
-配置应用

@@ -2,3 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-2_
 
+问题现象
+
+扫码直达跳转失败。
+
+解决措施
+
+请检查App Linking配置是否正确：
+
+检查开发者网站服务器配置是否正确。
+
+检查App Linking中网址域名关联是否正确。
+
+检查应用的module.json5文件中域名关联是否正确。
+
+检查应用的签名是否正确，参考手动签名。
+
+详情参考：App Linking的FAQ。

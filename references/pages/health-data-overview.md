@@ -29,5 +29,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-da
 睡眠	睡眠分期采样数据、睡眠记录		分钟级	Y	Y
 生理周期	月经量、痛经程度、身体状况、心情、皮肤状态、排卵检测结果、阴道斑点		小时级	Y	N
 锻炼记录数据	跑步、骑行、健走、跳绳、跑步机等运动和健身类型		分钟级	Y	Y
-开发接入
-开发准备

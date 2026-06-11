@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-customprocessconfig_
 
+场景介绍
+
 ProcessingConfiguration 是 Remote Communication Kit 中用于定制响应处理行为的一个重要组件。它允许你在消息被分发到不同的处理器之前或之后执行一些自定义的逻辑。场景如检验响应状态是否为成功即响应码是否为200。
 
 约束与限制
@@ -20,14 +22,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
 const session = rcp.createSession();
 const request = new rcp.Request('https://www.example.com');
 
-
 // 定义处理配置，用于验证响应状态码是否为200
 const processing: rcp.ProcessingConfiguration = {
   validateResponse: (response: rcp.Response): boolean => {
     return response.statusCode === 200;
   },
 };
-
 
 // 将处理配置应用到请求中
 request.configuration = {
@@ -49,5 +49,49 @@ session.fetch(request).then((response: rcp.Response) => {
   console.error(`The error code is ${err.code}, error data is ${err.data}`);
   session.close();
 });
-SecurityConfiguration：定制安全传输行为
-拦截器：更丰富、更高阶的定制能力
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+const session = rcp.createSession();
+const request = new rcp.Request('https://www.example.com');
+
+// 定义处理配置，用于验证响应状态码是否为200
+const processing: rcp.ProcessingConfiguration = {
+  validateResponse: (response: rcp.Response): boolean => {
+    return response.statusCode === 200;
+  },
+};
+
+// 将处理配置应用到请求中
+request.configuration = {
+  processing: processing,
+};
+```
+
+### Code block 3
+
+```
+session.fetch(request).then((response: rcp.Response) => {
+  // 如果 processing.validateResponse 返回值是true，则会执行以下流程。
+  if (response) {
+    console.info(`Response received with status code: ${response.statusCode}`);
+  } else {
+    console.error('No response received');
+  }
+  session.close();
+}).catch((err: BusinessError) => {
+  // 如果 processing.validateResponse 返回值是false，则会执行以下流程。
+  console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  session.close();
+});
+```

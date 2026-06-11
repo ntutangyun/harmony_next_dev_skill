@@ -13,18 +13,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 图1 全场景通知去重流程图
 
 约束条件
+
 appMessageId的唯一性需由开发者保证，同一条通知在各个设备形态上需保证该字段相同。
+
 该字段仅在发布通知的24小时内有效，超过24小时或者设备重启时都会失效。
+
 接口说明
+
 接口名	描述	说明
 publish(request: NotificationRequest): Promise<void>	发布通知。	使用方法见对象NotificationRequest中appMessageId字段说明。
+
 开发步骤
 
 导入模块。
 
 import { notificationManager } from '@kit.NotificationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-ClearDuplicateNotifications.ets
 
 发布通知消息，通知消息中包含appMessageId字段。
 
@@ -50,5 +54,39 @@ let notificationRequest: notificationManager.NotificationRequest = {
   appMessageId: 'test_appMessageId_1'
 };
 notificationManager.publish(notificationRequest, publishCallback);
-跨设备协同通知概述
-通知订阅扩展能力
+
+## Code blocks
+
+### Code block 1
+
+```
+import { notificationManager } from '@kit.NotificationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// publish回调
+let publishCallback = (err: BusinessError): void => {
+  if (err) {
+    console.error(`Failed to publish notification. Code is ${err.code}, message is ${err.message}`);
+  } else {
+    console.info(`Succeeded in publishing notification.`);
+  }
+};
+// 通知Request对象
+let notificationRequest: notificationManager.NotificationRequest = {
+  id: 1,
+  content: {
+    notificationContentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
+    normal: {
+      title: 'test_title',
+      text: 'test_text',
+      additionalText: 'test_additionalText'
+    }
+  },
+  appMessageId: 'test_appMessageId_1'
+};
+notificationManager.publish(notificationRequest, publishCallback);
+```

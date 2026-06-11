@@ -2,11 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-app-launch-event_
 
+简介
+
 用户在使用应用时，如果出现点击应用后启动缓慢的情况，并且整个过程超过了一定的时间，就会被定义为启动耗时事件。系统会采集相关流程耗时，并生成HiappEvent事件，供应用开发者分析。
 
 如何使用HiAppEvent提供订阅启动耗时事件的接口可参见以下文档：
 
 订阅启动耗时事件（ArkTS）
+
 说明
 
 启动耗时事件支持在元服务场景下使用HiAppEvent进行订阅。不支持在应用分身场景或输入法应用场景下使用HiAppEvent进行订阅。
@@ -28,6 +31,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappeven
 启动耗时优化方法可参看优化应用冷启动时延问题。
 
 事件params属性描述
+
 名称	类型	说明
 time	number	事件生成时间，单位为ms。
 bundle_version	string	应用版本。
@@ -35,70 +39,13 @@ bundle_name	string	应用名称。
 process_name	string	应用进程名称。
 start_type	number	启动类型。0：冷启动，1：热启动，4：温启动（预加载后启动应用）。
 icon_input_time	number	点击桌面应用图标离手时间戳，若无法获取（如语音唤醒）则表示系统开始启动应用的时间戳，单位为ms。
-animation_finish_time	number	
-
-动效完成耗时，单位为ms。
-
-在无法获取点击离手时间戳或依赖的系统内部事件打点次数超限时，该值为 0。
-
-
-extend_time	number	
-
-手指离开屏幕到开发者调用reportDrawnCompleted接口时间，单位为ms。
-
-若用户不调用或手指离开屏幕后5s未调用reportDrawnCompleted接口，该值为0。
-
-
-response_latency	number	
-
-手指离开屏幕到动效开始的耗时，单位为ms。
-
-在无法获取点击离手时间戳或依赖的系统内部事件打点次数超限时，该值为 0。从API version 22开始提供。
-
-
-laun_to_start_ability_dur	number	
-
-手指离开屏幕到系统开始启动Ability的耗时，单位为ms。
-
-在无法获取点击离手时间戳或依赖的系统内部事件打点次数超限时，该值为 0。从API version 22开始提供。
-
-
-startability_processstart_dur	number	
-
-冷启动过程中系统开始启动Ability到完成应用进程创建的耗时，单位为ms。
-
-仅在冷启动中存在该值，若依赖的系统内部事件打点次数超限或在非冷启动类型中，该值为 0。从API version 22开始提供。
-
-
-processstart_to_appattach_dur	number	
-
-冷启动过程中应用进程初始化的耗时，单位为ms。
-
-仅在冷启动中存在该值，若依赖的系统内部事件打点次数超限或在非冷启动类型中，该值为 0。从API version 22开始提供。
-
-
-appattach_to_appforeground_dur	number	
-
-冷启动过程中完成应用进程初始化到应用切换到前台的耗时，单位为ms。
-
-该阶段包括资源加载、虚拟机创建、Application&Ability 对象的创建与初始化、依赖模块加载等。
-
-仅在冷启动中存在该值，若依赖的系统内部事件打点次数超限或在非冷启动类型中，该值为 0。从API version 22开始提供。
-
-
-startability_appforeground_dur	number	
-
-启动过程中系统开始启动Ability到应用切换到前台状态的耗时，单位为ms。
-
-在冷启动中，该值为startability_processstart_dur、processstart_to_appattach_dur和appattach_to_appforeground_dur三者之和；其余启动类型中，该过程包括系统启动Ability和应用切换到前台。从API version 22开始提供。
-
-
+animation_finish_time	number	动效完成耗时，单位为ms。 在无法获取点击离手时间戳或依赖的系统内部事件打点次数超限时，该值为 0。
+extend_time	number	手指离开屏幕到开发者调用reportDrawnCompleted接口时间，单位为ms。 若用户不调用或手指离开屏幕后5s未调用reportDrawnCompleted接口，该值为0。
+response_latency	number	手指离开屏幕到动效开始的耗时，单位为ms。 在无法获取点击离手时间戳或依赖的系统内部事件打点次数超限时，该值为 0。从API version 22开始提供。
+laun_to_start_ability_dur	number	手指离开屏幕到系统开始启动Ability的耗时，单位为ms。 在无法获取点击离手时间戳或依赖的系统内部事件打点次数超限时，该值为 0。从API version 22开始提供。
+startability_processstart_dur	number	冷启动过程中系统开始启动Ability到完成应用进程创建的耗时，单位为ms。 仅在冷启动中存在该值，若依赖的系统内部事件打点次数超限或在非冷启动类型中，该值为 0。从API version 22开始提供。
+processstart_to_appattach_dur	number	冷启动过程中应用进程初始化的耗时，单位为ms。 仅在冷启动中存在该值，若依赖的系统内部事件打点次数超限或在非冷启动类型中，该值为 0。从API version 22开始提供。
+appattach_to_appforeground_dur	number	冷启动过程中完成应用进程初始化到应用切换到前台的耗时，单位为ms。 该阶段包括资源加载、虚拟机创建、Application&Ability 对象的创建与初始化、依赖模块加载等。 仅在冷启动中存在该值，若依赖的系统内部事件打点次数超限或在非冷启动类型中，该值为 0。从API version 22开始提供。
+startability_appforeground_dur	number	启动过程中系统开始启动Ability到应用切换到前台状态的耗时，单位为ms。 在冷启动中，该值为startability_processstart_dur、processstart_to_appattach_dur和appattach_to_appforeground_dur三者之和；其余启动类型中，该过程包括系统启动Ability和应用切换到前台。从API version 22开始提供。
 appforegr_abilityonforegr_dur	number	应用切换到前台状态到UIAbility切换至前台（系统触发onForeground回调）的耗时，单位为ms。从API version 22开始提供。
-abilityonforeg_startwindow_dur	number	
-
-系统完成创建应用窗口WindowStage（系统触发onWindowStageCreate()回调）到UIAbility切换到前台的耗时，单位为ms。
-
-仅在冷启动和预加载启动中存在该值，若依赖的系统内部事件打点次数超限或在热启动类型中，该值为0。从API version 22开始提供。
-
-启动耗时事件
-订阅启动耗时事件（ArkTS）
+abilityonforeg_startwindow_dur	number	系统完成创建应用窗口WindowStage（系统触发onWindowStageCreate()回调）到UIAbility切换到前台的耗时，单位为ms。 仅在冷启动和预加载启动中存在该值，若依赖的系统内部事件打点次数超限或在热启动类型中，该值为0。从API version 22开始提供。

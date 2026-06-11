@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgallery-faq-33_
 
+支持，如果模块A依赖模块B，按需加载模块A时也会同步加载模块B。

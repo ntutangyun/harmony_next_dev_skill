@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-matrix-programming-operator_
 
+实现流程
+
 上文介绍了Matmul矩阵乘的数据切分方案和数据流。AscendC提供一组Matmul高阶API，封装了这些常用的切分和数据搬运、计算的算法逻辑，方便开发者快速实现Matmul矩阵乘法的运算操作。开发者在host侧通过调用API自动获取Tiling参数，该参数传递到kernel侧后，在初始化操作时传入，通过几个简单的API即可完成矩阵乘操作。以下代码仅包含Matmul的关键步骤，不能直接运行。
 
 host侧自动获取Tiling参数的关键步骤介绍如下。
@@ -61,22 +63,22 @@ mm.Init(&tiling.cubeTilingData, &pipe); // 初始化
 
 设置左矩阵A、右矩阵B、Bias。
 
-mm.SetTensorA(gm_a);    // 设置左矩阵A
-mm.SetTensorB(gm_b);    // 设置右矩阵B
-mm.SetBias(gm_bias);    // 设置Bias
+mm.SetTensorA(gm_a); // 设置左矩阵A
+mm.SetTensorB(gm_b); // 设置右矩阵B
+mm.SetBias(gm_bias); // 设置Bias
 
 完成矩阵乘操作。
 
-调用Iterate完成单次迭代计算，叠加while循环完成单核全量数据的计算。Iterate方式，可以自行控制迭代次数，完成所需数据量的计算，方式比较灵活。
 while (mm.Iterate()) {
      mm.GetTensorC(gm_c);
  }
-调用IterateAll完成单核上所有数据的计算。IterateAll方式，无需循环迭代，使用比较简单。
+
 mm.IterateAll(gm_c);
 
 结束矩阵乘操作。
 
 mm.End();
+
 设置format格式
 
 创建Matmul对象时需要传入A、B、C、Bias的参数类型信息， 类型信息通过MatmulType来定义，包括：内存逻辑位置、数据格式、数据类型。示例如下。
@@ -107,5 +109,103 @@ baseShape：baseM、baseN、baseK
 
 除此之外，单核的Matmul Tiling时，实际参与Matmul计算的shape可以是原始shape中的一部分，singleM, singleN, singleK用于表达实际参与Matmul计算的shape，如下图所示。在单核的情况下，singleM, singleN, singleK会透传给singleCoreM, singleCoreN, singleCoreK。
 
-基础知识
-工程化算子开发
+## Code blocks
+
+### Code block 1
+
+```
+auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
+matmul_tiling::MatmulApiTiling cubeTiling(ascendcPlatform);
+```
+
+### Code block 2
+
+```
+cubeTiling.SetAType(AscendC::TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT16);
+cubeTiling.SetBType(AscendC::TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT16);
+cubeTiling.SetCType(AscendC::TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+cubeTiling.SetBiasType(AscendC::TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+```
+
+### Code block 3
+
+```
+cubeTiling.SetShape(M, N, K);
+cubeTiling.SetOrgShape(M, N, K);
+```
+
+### Code block 4
+
+```
+cubeTiling.SetBufferSpace(-1, -1, -1);
+```
+
+### Code block 5
+
+```
+cubeTiling.SetBias(true);
+```
+
+### Code block 6
+
+```
+MatmulCustomTilingData tiling;
+if (cubeTiling.GetTiling(tiling.cubeTilingData) == -1){
+    return ge::GRAPH_FAILED;
+}
+```
+
+### Code block 7
+
+```
+#include "lib/matmul_intf.h"
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
+matmul::Matmul<aType, bType, cType, biasType> mm;
+```
+
+### Code block 8
+
+```
+mm.Init(&tiling.cubeTilingData, &pipe); // 初始化
+```
+
+### Code block 9
+
+```
+mm.SetTensorA(gm_a); // 设置左矩阵A
+mm.SetTensorB(gm_b); // 设置右矩阵B
+mm.SetBias(gm_bias); // 设置Bias
+```
+
+### Code block 10
+
+```
+while (mm.Iterate()) {
+     mm.GetTensorC(gm_c);
+ }
+```
+
+### Code block 11
+
+```
+mm.IterateAll(gm_c);
+```
+
+### Code block 12
+
+```
+mm.End();
+```
+
+### Code block 13
+
+```
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> aType;
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half> bType;
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> cType;
+typedef matmul::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float> biasType;
+matmul::Matmul<aType, bType, cType, biasType> mm;
+```

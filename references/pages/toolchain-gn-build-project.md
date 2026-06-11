@@ -2,12 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/toolchain-gn-build-project_
 
+概述
+
 本文将介绍如何在GN工程中配置HarmonyOS工具链，然后通过HarmonyOS工具链编译出可以在HarmonyOS环境下使用的三方库。
 
 HarmonyOS编译子系统是以GN和Ninja构建为基座，对构建和配置粒度进行部件化抽象、对内建模块进行功能增强、对业务模块进行功能扩展的系统，该系统提供以下基本功能：
 
 以部件为最小粒度拼装产品和独立编译。
+
 支持轻量、小型、标准三种系统的解决方案级版本构建，以及用于支撑应用开发者使用DevEco Studio开发的SDK开发套件的构建。
+
 支持芯片解决方案厂商的灵活定制和独立编译。
 
 Ninja： 是一个专注于快速编译的小型构建系统。
@@ -68,18 +72,24 @@ sudo apt install python
 GN构建工程适配流程
 
 新增HarmonyOS平台的宏定义。
+
 配置HarmonyOS平台的工具链核心信息，涵盖clang工具链路径，sysroot系统根目录以及clang版本等关键参数。
+
 在toolchain目录下，为各架构分别配置对应的ohos_clang_toolchain。
+
 扩充gcc_toolchain模版功能，补充HarmonyOS启动引导程序所需的.o文件相关配置。
+
 设置HarmonyOS编译参数，重点配置基础编译选项、宏定义等核心内容。
+
 在BUILD.gn文件的各架构平台分支逻辑中，新增HarmonyOS平台对应的分支配置；对于暂未适配HarmonyOS的三方库，可暂时沿用Linux分支的编译配置。
+
 webRTC适配案例
 
 本文将通过webRTC的GN构建工程案例来对上一章节的流程进行实操讲解。WebRTC (Web Real-Time Communications) 是一项实时通讯技术，它允许网络应用或者站点，在不借助中间媒介的情况下，建立浏览器之间点对点（Peer-to-Peer）的连接，实现视频流和（或）音频流或者其他任意数据的传输。下面了解下如何通过GN构建工程将webRTC适配到HarmonyOS系统上。
 
 三方库获取地址：下载链接。
 
-适配流程
+[h2]适配流程
 
 添加HarmonyOS平台宏定义
 
@@ -106,7 +116,6 @@ webRTC适配案例
 import("//build/config/sysroot.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
-
 declare_args() {
   # Whether unstripped binaries, i.e. compiled with debug symbols, should be
   # considered runtime_deps rather than stripped ones.
@@ -117,7 +126,6 @@ declare_args() {
   ohos_extra_asmflags = ""
   ohos_extra_ldflags = ""
 }
-
 
 # The ohos clang toolchains share most of the same parameters, so we have this
 # wrapper around gcc_toolchain to avoid duplication of logic.
@@ -138,17 +146,14 @@ template("ohos_clang_toolchain") {
     toolchain_args = invoker.toolchain_args
     toolchain_args.current_os = "ohos"
 
-
     # Output linker map files for binary size analysis.
     enable_linker_map = true
-
 
     ohos_libc_dir =
         rebase_path(invoker.sysroot + "/" + invoker.lib_dir, root_build_dir)
     libs_section_prefix = "${ohos_libc_dir}/Scrt1.o"
     libs_section_prefix += " ${ohos_libc_dir}/crti.o"
     libs_section_postfix = "${ohos_libc_dir}/crtn.o"
-
 
     if (invoker.target_name == "ohos_clang_arm") {
       abi_target = "arm-linux-ohos"
@@ -157,7 +162,6 @@ template("ohos_clang_toolchain") {
     } else if (invoker.target_name == "ohos_clang_x86_64") {
       abi_target = "x86_64-linux-ohos"
     }
-
 
     clang_rt_dir =
         rebase_path("${clang_lib_path}/${abi_target}/nanlegacy",
@@ -168,7 +172,6 @@ template("ohos_clang_toolchain") {
     solink_libs_section_prefix += " ${clang_rt_dir}/clang_rt.crtbegin.o"
     solink_libs_section_postfix = "${ohos_libc_dir}/crtn.o"
     solink_libs_section_postfix += " ${clang_rt_dir}/clang_rt.crtend.o"
-
 
     _prefix = rebase_path("${clang_base_path}/bin", root_build_dir)
     cc = "${_prefix}/clang"
@@ -189,7 +192,6 @@ template("ohos_clang_toolchain") {
   }
 }
 
-
 ohos_clang_toolchain("ohos_clang_arm") {
   sysroot = "${sysroot}"
   lib_dir = "usr/lib/arm-linux-ohos"
@@ -198,7 +200,6 @@ ohos_clang_toolchain("ohos_clang_arm") {
   }
 }
 
-
 ohos_clang_toolchain("ohos_clang_arm64") {
   sysroot = "${sysroot}"
   lib_dir = "usr/lib/aarch64-linux-ohos"
@@ -206,7 +207,6 @@ ohos_clang_toolchain("ohos_clang_arm64") {
     current_cpu = "arm64"
   }
 }
-
 
 ohos_clang_toolchain("ohos_clang_x86_64") {
   sysroot = "${sysroot}"
@@ -233,10 +233,8 @@ ohos_clang_toolchain("ohos_clang_x86_64") {
 import("//build/config/sysroot.gni")
 assert(is_ohos)
 
-
 ohos_clang_base_path = "/mnt/d/ohos/ohos-sdk/linux/native/llvm"
 ohos_clang_version = "15.0.4"
-
 
 if (is_ohos) {
   if (current_cpu == "arm") {
@@ -252,14 +250,12 @@ if (is_ohos) {
   }
 }
 
-
 config("compiler") {
   cflags = [
     "-ffunction-sections",
     "-fno-short-enums",
     "-fno-addrsig",
   ]
-
 
   cflags += [
     "-Wno-unknown-warning-option",
@@ -279,7 +275,6 @@ config("compiler") {
     "HAVE_SYS_UIO_H",
   ]
 
-
   defines += [
     "OHOS",
     "__MUSL__",
@@ -289,24 +284,25 @@ config("compiler") {
     "_GNU_SOURCE",
   ]
 
-
   ldflags = [
     "-Wl,--no-undefined",
     "-Wl,--exclude-libs=libunwind_llvm.a",
     "-Wl,--exclude-libs=libc++_static.a",
-
 
     # Don't allow visible symbols from libraries that contain
     # assembly code with symbols that aren't hidden properly.
     # http://crbug.com/448386
     "-Wl,--exclude-libs=libvpx_assembly_arm.a",
   ]
+
   cflags += [ "--target=$abi_target" ]
   include_dirs = [
     "${sysroot}/usr/include/${abi_target}",
     "${ohos_clang_base_path}/lib/clang/${ohos_clang_version}/include",
   ]
+
   ldflags += [ "--target=$abi_target" ]
+
   # Assign any flags set for the C compiler to asmflags so that they are sent
   # to the assembler.
   asmflags = cflags
@@ -343,7 +339,7 @@ ninja -v -C ../out/xxx ${target_name} -j16
 
 例如gn refs out/intermediate/arm64_72 //pc:rtc_pc_base。这个命令将显示与目标//pc:rtc_pc_base相关的所有依赖项并列出所有引用了该目标的其他目标或文件。
 
-常见问题总结
+[h2]常见问题总结
 
 在对webRTC的GN工程进行HarmonyOS工具链适配过程中，遇到了一些常见问题场景。下面针对这些问题做一个具体分析。
 
@@ -427,5 +423,239 @@ fatal error: 'sys/queue.h' file not found
 
 修改third_party/libevent中的BUILD.gn。
 
-编译工具链
-CMake构建工程配置HarmonyOS编译工具链
+## Code blocks
+
+### Code block 1
+
+```
+mkdir depot_tools
+cd depot_tools
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+```
+
+### Code block 2
+
+```
+vi ~/.bashrc
+```
+
+### Code block 3
+
+```
+export PATH="$PATH:/xxx/depot_tools"
+```
+
+### Code block 4
+
+```
+source ~/.bashrc
+```
+
+### Code block 5
+
+```
+sudo apt update
+sudo apt install python
+```
+
+### Code block 6
+
+```
+import("//build/config/sysroot.gni")
+import("//build/toolchain/gcc_toolchain.gni")
+
+declare_args() {
+  # Whether unstripped binaries, i.e. compiled with debug symbols, should be
+  # considered runtime_deps rather than stripped ones.
+  ohos_unstripped_runtime_outputs = true
+  ohos_extra_cflags = ""
+  ohos_extra_cppflags = ""
+  ohos_extra_cxxflags = ""
+  ohos_extra_asmflags = ""
+  ohos_extra_ldflags = ""
+}
+
+# The ohos clang toolchains share most of the same parameters, so we have this
+# wrapper around gcc_toolchain to avoid duplication of logic.
+#
+# Parameters:
+#  - toolchain_root
+#      Path to cpu-specific toolchain within the ndk.
+#  - sysroot
+#      Sysroot for this architecture.
+#  - lib_dir
+#      Subdirectory inside of sysroot where libs go.
+#  - binary_prefix
+#      Prefix of compiler executables.
+template("ohos_clang_toolchain") {
+  gcc_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args),
+           "toolchain_args must be defined for ohos_clang_toolchain()")
+    toolchain_args = invoker.toolchain_args
+    toolchain_args.current_os = "ohos"
+
+    # Output linker map files for binary size analysis.
+    enable_linker_map = true
+
+    ohos_libc_dir =
+        rebase_path(invoker.sysroot + "/" + invoker.lib_dir, root_build_dir)
+    libs_section_prefix = "${ohos_libc_dir}/Scrt1.o"
+    libs_section_prefix += " ${ohos_libc_dir}/crti.o"
+    libs_section_postfix = "${ohos_libc_dir}/crtn.o"
+
+    if (invoker.target_name == "ohos_clang_arm") {
+      abi_target = "arm-linux-ohos"
+    } else if (invoker.target_name == "ohos_clang_arm64") {
+      abi_target = "aarch64-linux-ohos"
+    } else if (invoker.target_name == "ohos_clang_x86_64") {
+      abi_target = "x86_64-linux-ohos"
+    }
+
+    clang_rt_dir =
+        rebase_path("${clang_lib_path}/${abi_target}/nanlegacy",
+                    root_build_dir)
+    print("ohos_libc_dir :", ohos_libc_dir)
+    print("clang_rt_dir :", clang_rt_dir)
+    solink_libs_section_prefix = "${ohos_libc_dir}/crti.o"
+    solink_libs_section_prefix += " ${clang_rt_dir}/clang_rt.crtbegin.o"
+    solink_libs_section_postfix = "${ohos_libc_dir}/crtn.o"
+    solink_libs_section_postfix += " ${clang_rt_dir}/clang_rt.crtend.o"
+
+    _prefix = rebase_path("${clang_base_path}/bin", root_build_dir)
+    cc = "${_prefix}/clang"
+    cxx = "${_prefix}/clang++"
+    ar = "${_prefix}/llvm-ar"
+    ld = cxx
+    readelf = "${_prefix}/llvm-readobj"
+    nm = "${_prefix}/llvm-nm"
+    if (!is_debug) {
+      strip = rebase_path("${clang_base_path}/bin/llvm-strip", root_build_dir)
+      use_unstripped_as_runtime_outputs = ohos_unstripped_runtime_outputs
+    }
+    extra_cflags = ohos_extra_cflags
+    extra_cppflags = ohos_extra_cppflags
+    extra_cxxflags = ohos_extra_cxxflags
+    extra_asmflags = ohos_extra_asmflags
+    extra_ldflags = ohos_extra_ldflags
+  }
+}
+
+ohos_clang_toolchain("ohos_clang_arm") {
+  sysroot = "${sysroot}"
+  lib_dir = "usr/lib/arm-linux-ohos"
+  toolchain_args = {
+    current_cpu = "arm"
+  }
+}
+
+ohos_clang_toolchain("ohos_clang_arm64") {
+  sysroot = "${sysroot}"
+  lib_dir = "usr/lib/aarch64-linux-ohos"
+  toolchain_args = {
+    current_cpu = "arm64"
+  }
+}
+
+ohos_clang_toolchain("ohos_clang_x86_64") {
+  sysroot = "${sysroot}"
+  lib_dir = "usr/lib/x86_64-linux-ohos"
+  toolchain_args = {
+    current_cpu = "x86_64"
+  }
+}
+```
+
+### Code block 7
+
+```
+import("//build/config/sysroot.gni")
+assert(is_ohos)
+
+ohos_clang_base_path = "/mnt/d/ohos/ohos-sdk/linux/native/llvm"
+ohos_clang_version = "15.0.4"
+
+if (is_ohos) {
+  if (current_cpu == "arm") {
+    abi_target = "arm-linux-ohos"
+  } else if (current_cpu == "x86") {
+    abi_target = ""
+  } else if (current_cpu == "arm64") {
+    abi_target = "aarch64-linux-ohos"
+  } else if (current_cpu == "x86_64") {
+    abi_target = "x86_64-linux-ohos"
+  } else {
+    assert(false, "Architecture not supported")
+  }
+}
+
+config("compiler") {
+  cflags = [
+    "-ffunction-sections",
+    "-fno-short-enums",
+    "-fno-addrsig",
+  ]
+
+  cflags += [
+    "-Wno-unknown-warning-option",
+    "-Wno-int-conversion",
+    "-Wno-unused-variable",
+    "-Wno-misleading-indentation",
+    "-Wno-missing-field-initializers",
+    "-Wno-unused-parameter",
+    "-Wno-c++11-narrowing",
+    "-Wno-unneeded-internal-declaration",
+    "-Wno-undefined-var-template",
+    "-Wno-implicit-int-float-conversion",
+  ]
+  defines = [
+    # The NDK has these things, but doesn't define the constants to say that it
+    # does. Define them here instead.
+    "HAVE_SYS_UIO_H",
+  ]
+
+  defines += [
+    "OHOS",
+    "__MUSL__",
+    "_LIBCPP_HAS_MUSL_LIBC",
+    "__BUILD_LINUX_WITH_CLANG",
+    "__GNU_SOURCE",
+    "_GNU_SOURCE",
+  ]
+
+  ldflags = [
+    "-Wl,--no-undefined",
+    "-Wl,--exclude-libs=libunwind_llvm.a",
+    "-Wl,--exclude-libs=libc++_static.a",
+
+    # Don't allow visible symbols from libraries that contain
+    # assembly code with symbols that aren't hidden properly.
+    # http://crbug.com/448386
+    "-Wl,--exclude-libs=libvpx_assembly_arm.a",
+  ]
+
+  cflags += [ "--target=$abi_target" ]
+  include_dirs = [
+    "${sysroot}/usr/include/${abi_target}",
+    "${ohos_clang_base_path}/lib/clang/${ohos_clang_version}/include",
+  ]
+
+  ldflags += [ "--target=$abi_target" ]
+
+  # Assign any flags set for the C compiler to asmflags so that they are sent
+  # to the assembler.
+  asmflags = cflags
+}
+```
+
+### Code block 8
+
+```
+gn gen ../out/xxx --args='is_clang=true target_os="ohos" target_cpu="arm64" xxx'
+ninja -v -C ../out/xxx ${target_name} -j16
+```
+
+### Code block 9
+
+```
+sudo apt-get install pkg-config
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-start-guard-strategy_
 
+场景介绍
+
 当应用希望启动某个管控规则时，可以调用启动管控策略的接口。根据参数中传入的策略名，应用可以启动对应管控策略。一旦策略被创建并启用，系统将根据规则对用户的屏幕使用行为进行监管。
 
 用户体验设计
@@ -31,6 +33,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 接口名	描述
 startGuardStrategy(strategyName: string): Promise<void>	根据策略名称，启动其管控策略。
 onStart(strategyName: string): Promise<void>	在策略启动时执行特定逻辑。
+
 开发前提
 
 启动管控策略需要申请用户授权，请先参考请求用户授权章节完成用户授权。
@@ -55,6 +58,7 @@ private async startStrategy(strategyName: string): Promise<void> {
          `startGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
    }
 }
+
 接收管控策略生效回调（可选）
 
 开发者若需要在策略生效时执行特定逻辑（如发送通知提醒用户），可以通过接收策略生效时的回调来实现。
@@ -89,5 +93,65 @@ export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
      ],
    }
  ],
-删除策略
-停止策略
+
+## Code blocks
+
+### Code block 1
+
+```
+import { guardService } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+private async startStrategy(strategyName: string): Promise<void> {
+   try {
+      await guardService.startGuardStrategy(strategyName);
+      // ...
+   } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, 'GuardService',
+         `startGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```
+
+### Code block 3
+
+```
+import { TimeGuardExtensionAbility } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 4
+
+```
+export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
+   async onStart(strategyName: string): Promise<void> {
+      hilog.info(0x0000, 'TimeGuardExtensionAbility', `Strategy-${strategyName} onStart`);
+   }
+}
+```
+
+### Code block 5
+
+```
+"extensionAbilities": [
+   {
+     "name": "TimeGuardExtAbility",
+     "type": "screenTimeGuard",
+     "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
+     "exported": false,
+     "skills": [
+       {
+         "actions": [
+           "action.ohos.timeGuard.listener"
+         ]
+       }
+     ],
+   }
+ ],
+```

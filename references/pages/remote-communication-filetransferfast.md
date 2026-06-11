@@ -25,13 +25,11 @@ const securityConfig: rcp.SecurityConfiguration = {
   remoteValidation: 'skip'
 }
 
-
 // 创建了一个下载配置对象，其中kind设置为'folder'，表示下载的目标是文件夹，path设置为之前定义的DOWNLOAD_TO_PATH。
 let downloadToFile: rcp.DownloadToFile = {
   kind: 'folder',
   path: DOWNLOAD_TO_PATH
 }
-
 
 // 创建一个HTTP会话，其中请求配置包括传输超时设置和安全配置（配置可自定义）
 const session = rcp.createSession({
@@ -54,6 +52,7 @@ session.downloadToFile('https://example.com/test.png', downloadToFile)
   }).catch((err: BusinessError) => {
   console.error(`Failed, the error code is ${err.code}, error data is ${err.data}`)
 })
+
 上传功能实现
 
 导入需要的模块，示例中除去发起请求以及响应错误处理，还需用到CoreFileKit中的fileIo，需导入以下模块。
@@ -85,11 +84,9 @@ let SESSION_CONFIG: rcp.SessionConfiguration = {
 class FdReadFile {
   readonly fd: number;
 
-
   constructor(fd: number) {
     this.fd = fd;
   }
-
 
   async read(buffer: ArrayBuffer): Promise<number> {
     return fileIo.read(this.fd, buffer);
@@ -126,5 +123,137 @@ session.uploadFromFile('https://httpbin.org/anything', new rcp.UploadFromFile(fd
 
 fileIo.closeSync(file.fd);
 session.close();
-文件上传下载
-实现请求暂停、恢复与断点续传
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
+```
+
+### Code block 2
+
+```
+// 下载文件保存的文件夹路径，仅为示例，请按需求进行替换。
+const DOWNLOAD_TO_PATH = `/data/storage/el2/base/haps/entry/files`;
+// 创建了一个安全配置对象，其中remoteValidation设置为'skip'，表示将跳过远程验证。
+const securityConfig: rcp.SecurityConfiguration = {
+  remoteValidation: 'skip'
+}
+
+// 创建了一个下载配置对象，其中kind设置为'folder'，表示下载的目标是文件夹，path设置为之前定义的DOWNLOAD_TO_PATH。
+let downloadToFile: rcp.DownloadToFile = {
+  kind: 'folder',
+  path: DOWNLOAD_TO_PATH
+}
+
+// 创建一个HTTP会话，其中请求配置包括传输超时设置和安全配置（配置可自定义）
+const session = rcp.createSession({
+  requestConfiguration: {
+    transfer: { timeout: { connectMs: 6000, transferMs: 6000, inactivityMs: 6000 } },
+    security: securityConfig
+  }
+})
+```
+
+### Code block 3
+
+```
+// 检查目标路径是否存在
+if (fileIo.accessSync(DOWNLOAD_TO_PATH)) {
+  fileIo.rmdirSync(DOWNLOAD_TO_PATH);
+}
+// 发起请求，执行下载操作，这里的'https://example.com/test.png'网址为示例图片网址，模拟下载图片场景
+session.downloadToFile('https://example.com/test.png', downloadToFile)
+  .then((response: rcp.Response) => {
+    console.info(`Successfully received the response, statusCode: ${JSON.stringify(response.statusCode)}`);
+  }).catch((err: BusinessError) => {
+  console.error(`Failed, the error code is ${err.code}, error data is ${err.data}`)
+})
+```
+
+### Code block 4
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
+```
+
+### Code block 5
+
+```
+let SESSION_CONFIG: rcp.SessionConfiguration = {
+  requestConfiguration: {
+    transfer: {
+      timeout: {
+        connectMs: 6000
+      }
+    },
+    security: {
+      remoteValidation: 'skip',
+      tlsOptions: {
+        tlsVersion: 'TlsV1.3'
+      }
+    }
+  }
+}
+```
+
+### Code block 6
+
+```
+class FdReadFile {
+  readonly fd: number;
+
+  constructor(fd: number) {
+    this.fd = fd;
+  }
+
+  async read(buffer: ArrayBuffer): Promise<number> {
+    return fileIo.read(this.fd, buffer);
+  }
+}
+```
+
+### Code block 7
+
+```
+const session = rcp.createSession(SESSION_CONFIG);
+const file = fileIo.openSync('/data/storage/el1/bundle/entry_test/resources/resfile/upload_file.txt',
+  fileIo.OpenMode.READ_ONLY);
+if (!file) {
+  console.error('fileIo.openSync failed');
+  return;
+}
+```
+
+### Code block 8
+
+```
+const fdReadFile = new FdReadFile(file.fd);
+const buffer = new ArrayBuffer(1024 * 1024); // 假设文件大小为1MB
+await fdReadFile.read(buffer);
+```
+
+### Code block 9
+
+```
+session.uploadFromFile('https://httpbin.org/anything', new rcp.UploadFromFile(fdReadFile))
+  .then((response: rcp.Response) => {
+    console.info(`Upload succeeded: ${response}`)
+  })
+  .catch((err: BusinessError) => {
+    console.error(`Upload failed: error code is ${err.code}, error data is ${err.data}`)
+  });
+```
+
+### Code block 10
+
+```
+fileIo.closeSync(file.fd);
+session.close();
+```

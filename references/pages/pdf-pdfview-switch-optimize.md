@@ -2,12 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-pdfview-switch-optimize_
 
+场景介绍
+
+在应用中进行多文档切换时，为了提供更加流畅和清晰的视觉体验，推荐结合状态管理来控制PdfView的渲染时机。
+
 通过引入加载状态，可以在文档加载过程中暂时隐藏预览组件并展示加载动画，待loadDocument异步加载完成且页面布局准备就绪后，再展示清晰的文档内容。这种方式能有效优化切换过程中的视觉跳变，提升交互质感。
 
 接口说明
+
 接口名	描述
 loadDocument(path: string, password?: string, initPageIndex?: number, onProgress?: Callback<number>): Promise<pdfService.ParseResult>	加载PDF文档。
 setPageFit(pageFit: pdfService.PageFit): void	设置页面的适配模式。
+
 示例代码
 
 定义@State变量isLoading，用于标记文档的加载状态，并以此控制PdfView组件的挂载与显示。
@@ -21,10 +27,8 @@ import { fileIo } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@ohos.base';
 
-
 const DOMAIN: number = 0x0000;
 const TAG: string = 'SwitchDocumentDemo';
-
 
 @Entry
 @Component
@@ -34,7 +38,6 @@ struct Index {
   private filePath2: string = '';
   private switchFlag: boolean = true; // true，加载pdf1；false，加载pdf2
   @State isLoading: boolean = false;
-
 
   private makeSureFileExist(filePath: string): void {
     let fileName: string = filePath.split('/').pop() || '';
@@ -54,7 +57,6 @@ struct Index {
     }
   }
 
-
   aboutToAppear(): void {
     let context = this.getUIContext().getHostContext() as Context;
     let dir: string = context.filesDir
@@ -63,7 +65,6 @@ struct Index {
     this.filePath2 = dir + '/pdf2.pdf';
     this.makeSureFileExist(this.filePath1);
     this.makeSureFileExist(this.filePath2);
-
 
     (async () => {
       let filePath: string = this.switchFlag ? this.filePath1 : this.filePath2;
@@ -76,7 +77,6 @@ struct Index {
       }
     })();
   }
-
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
@@ -112,5 +112,100 @@ struct Index {
     .width('100%')
   }
 }
-PDF缩略图转换为图片
-PDF Kit 常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit'
+import { fileIo } from '@kit.CoreFileKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@ohos.base';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = 'SwitchDocumentDemo';
+
+@Entry
+@Component
+struct Index {
+  private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
+  private filePath1: string = '';
+  private filePath2: string = '';
+  private switchFlag: boolean = true; // true，加载pdf1；false，加载pdf2
+  @State isLoading: boolean = false;
+
+  private makeSureFileExist(filePath: string): void {
+    let fileName: string = filePath.split('/').pop() || '';
+    try {
+      let context = this.getUIContext().getHostContext() as Context;
+      let res = fileIo.accessSync(filePath);
+      if (!res) {
+        let content: Uint8Array = context.resourceManager.getRawFileContentSync(`rawfile/${fileName}`);
+        let fdSand =
+          fileIo.openSync(filePath, fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
+        fileIo.writeSync(fdSand.fd, content.buffer);
+        fileIo.closeSync(fdSand.fd);
+      }
+    } catch (e) {
+      let error: BusinessError = e as BusinessError;
+      hilog.error(DOMAIN, TAG, `Code: ${error.code}, message: ${error.message} `);
+    }
+  }
+
+  aboutToAppear(): void {
+    let context = this.getUIContext().getHostContext() as Context;
+    let dir: string = context.filesDir
+    // 确保沙箱目录内有pdf1.pdf、pdf2.pdf文档
+    this.filePath1 = dir + '/pdf1.pdf';
+    this.filePath2 = dir + '/pdf2.pdf';
+    this.makeSureFileExist(this.filePath1);
+    this.makeSureFileExist(this.filePath2);
+
+    (async () => {
+      let filePath: string = this.switchFlag ? this.filePath1 : this.filePath2;
+      this.isLoading = true;
+      let loadResult: pdfService.ParseResult = await this.controller.loadDocument(filePath);
+      this.isLoading = false;
+      if (loadResult !== pdfService.ParseResult.PARSE_SUCCESS) {
+        hilog.error(DOMAIN, TAG, 'Controller load PDF failed');
+        return;
+      }
+    })();
+  }
+
+  build() {
+    Stack({ alignContent: Alignment.TopStart }) {
+      if (!this.isLoading) {
+        PdfView({
+          controller: this.controller,
+          pageFit: pdfService.PageFit.FIT_WIDTH,
+          showScroll: false
+        })
+          .width('100%')
+          .height('100%')
+      } else {
+        // 此处可自定义loading界面
+      }
+      Row() {
+        Button('SwitchDocument')
+          .onClick(async () => {
+            this.switchFlag = !this.switchFlag;
+            let filePath: string = this.switchFlag ? this.filePath1 : this.filePath2;
+            this.controller.releaseDocument();
+            this.isLoading = true;
+            let loadResult: pdfService.ParseResult = await this.controller.loadDocument(filePath);
+            this.isLoading = false;
+            if (loadResult !== pdfService.ParseResult.PARSE_SUCCESS) {
+              hilog.error(DOMAIN, TAG, 'Controller load PDF failed');
+              return;
+            }
+            this.controller.setPageFit(pdfService.PageFit.FIT_WIDTH);
+          })
+      }
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```

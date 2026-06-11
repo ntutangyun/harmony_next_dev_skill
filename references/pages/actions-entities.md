@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/actions-entities_
 
+说明
+
 由于action/entity被泛化使用，系统对应用声明action/entity的行为缺少管控，恶意应用虚假声明，抢占流量，导致跳转后功能不可用。后续系统会逐步废弃非必要action/entity，建议通过指定类型的方式拉起应用。
 
 action：表示调用方要执行的通用操作（如查看、分享、应用详情）。在隐式Want中，您可定义该字段，配合uri或parameters来表示对数据要执行的操作。如打开，查看该uri数据。例如，当uri为一段网址，action为ACTION_VIEW_DATA则表示匹配可访问该网址的应用组件。在Want内声明action字段表示希望被调用方应用支持声明的操作。在被调用方应用配置文件的skills字段内声明actions表示该应用支持声明操作。常见的action如下，具体的action取值请见action常数说明。
@@ -25,6 +27,3 @@ ENTITY_DEFAULT：默认类别无实际意义。
 ENTITY_HOME：主屏幕有图标点击入口类别。
 
 ENTITY_BROWSABLE：指示浏览器类别。
-
-使用显式Want启动应用组件
-组件启动规则（Stage模型）

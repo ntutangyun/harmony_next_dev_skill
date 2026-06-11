@@ -11,12 +11,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkui-ui-
 在待机屏保界面下默认为深色模式不会跟随系统。
 
 亮点/特征
+
 丰富待机显示，提供个性美观的待机显示页面，打造全场景、个性化的“百变”心灵陪伴。
+
 提供情感陪伴和情绪价值，在工作的时候，日程待办，提升工作效率；在学习的时候，作为时钟摆台，陪伴学习。
+
 约束和限制
+
 待机屏保卡片只支持 2*2尺寸的卡片。
+
 待机屏保卡片不推荐展示用户个人隐私敏感数据。
+
 待机屏保卡片有明确的UX设计规范。具体请参考设计指南中的待机屏保。
+
 开启方式
 
 待机屏保功能在系统上默认是开启的，功能开关路径“设置>桌面和个性化>待机屏保设置”，开关界面如下图。
@@ -38,9 +45,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkui-ui-
 移除卡片：进入待机屏保编辑界面，点击卡片右上角的“-”即可移除卡片。
 
 开发准备
-待机屏保开放能力申请
+
+[h2]待机屏保开放能力申请
 
 待机屏保卡片会展示在设备的待机屏保界面，开发者需申请上架开放能力，用以保护数据隐私安全。
+
+因此在应用调试或发布时，必须使用手动签名，并在手动签名申请Profile过程中创建HarmonyOS应用，创建应用时参考如下指导为应用接入开放能力。
 
 登录AppGallery Connect，选择“开发与服务”。
 
@@ -96,5 +106,38 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkui-ui-
       }
     ]
   }
-背板透明卡片开发指导
-互动卡片开发
+
+## Code blocks
+
+### Code block 1
+
+```
+  // entry/src/main/resources/base/profile/form_config.json
+  {
+    "forms": [
+      {
+        "name": "widget",
+        "displayName": "$string:widget_display_name",
+        "description": "$string:widget_desc",
+        "src": "./ets/widget/pages/WidgetCard.ets",
+        "uiSyntax": "arkts",
+        "isDynamic": true,
+        "isDefault": true,
+        "updateEnabled": false,
+        "scheduledUpdateTime": "10:30",
+        "renderingMode": "autoColor",
+        "updateDuration": 1,
+        "defaultDimension": "1*2",
+        "supportDimensions": [
+          "1*2",
+          "2*2"
+        ],
+        "standby": {
+          "isSupported": true,
+          "isAdapted": true,
+          "isPrivacySensitive": false
+        }
+      }
+    ]
+  }
+```

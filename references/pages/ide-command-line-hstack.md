@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-command-line-hstack_
 
+简介
+
 hstack是为开发人员提供的用于将release应用混淆后的crash堆栈解析为源码对应堆栈的工具，支持Windows、Mac、Linux三个平台，关于堆栈解析的原理，请查看异常堆栈解析原理。
 
 hstack命令行格式为：
@@ -10,107 +12,35 @@ hstack [options]
 
 options: 可选配置，请参考表hstack命令行配置。
 
-表1 hstack命令行配置
-
-指令
-
-	
-
-说明
-
-
-
-
--i/--input
-
-	
-
-可选，指定工程crash文件归档目录。
-
-
-
-
--c/--crash
-
-	
-
-可选，指定一条crash堆栈。
-
-
-
-
--o/--output
-
-	
-
-可选，指定解析结果输出目录（输入指定为-c时， -o参数指定一个输出文件）。
-
-
-
-
--s/--sourcemapDir
-
-	
-
-可选，指定工程sourceMap文件归档目录。
-
-
-
-
---so/--soDir
-
-	
-
-可选，指定工程shared object文件归档目录。
-
-
-
-
--n/--nameObfuscation
-
-	
-
-可选 ，指定工程nameCache文件归档目录。
-
-
-
-
--v/--version
-
-	
-
-查看hstack版本。
-
-
-
-
--h/--help
-
-	
-
-查询hstack命令行帮助。
+指令	说明
+-i/--input	可选，指定工程crash文件归档目录。
+-c/--crash	可选，指定一条crash堆栈。
+-o/--output	可选，指定解析结果输出目录（输入指定为-c时， -o参数指定一个输出文件）。
+-s/--sourcemapDir	可选，指定工程sourceMap文件归档目录。
+--so/--soDir	可选，指定工程shared object文件归档目录。
+-n/--nameObfuscation	可选 ，指定工程nameCache文件归档目录。
+-v/--version	查看hstack版本。
+-h/--help	查询hstack命令行帮助。
 
 说明
+
 crash文件归档目录与crash堆栈必须且只能提供一项。
+
 sourceMap与shared object文件归档目录至少提供一项。
+
 如果需要对方法名进行解析还原，则需要同时提供sourceMap与nameCache文件。
+
 路径参数不支持以下特殊字符：`~!@#$^&*=|{};,\s\[\]<>?~！@#￥……&*（）——|{}【】‘；：。，、？
+
 环境配置
+
 hstack工具在Command Line Tools的bin目录下，需要将bin目录配置到PATH变量中。
+
 本工具依赖Node环境，需要将Node.js配置到环境变量中。
-如果需要对C++文件产生的异常进行解析，则需要将SDK中的native\llvm\bin目录配置到环境变量中，变量名设置为“ADDR2LINE_PATH”。
 
 使用示例
-将应用产生的crash文件归档到crashDir目录下（或者-c指定一条crash堆栈），关于堆栈的获取方式请参考崩溃检测。
 
 使用-o指定输出目录，当不指定时，会输出至-i指定的crashDir目录下（通过-c输入为crash堆栈时，可以使用-o指定一个输出文件，或不指定，直接将结果输出至控制台）。
-使用-s指定工程对应sourceMap文件归档目录（可选，与shared object文件归档目录至少提供一项）。
-
-使用--so指定shared object文件归档目录（可选，与sourceMap归档目录至少提供一项）。
-
-使用-n指定nameCache文件归档目录（可选）。
-
-执行以下命令，可将release应用crash堆栈解析为源码对应堆栈。
 
 # 通过-i指定crash文件归档目录，并将解析结果输出至outputDir目录
 hstack -i D:\crashDir -o D:\outputDir -s D:\sourcemapDir --so D:\soDir -n D:\nameCacheDir
@@ -155,16 +85,15 @@ struct Index {
   }
 }
 
-
 class EntryClass {
   callHarFunction() {
     har()
   }
 }
+
 @Component
 export struct MainPage {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -179,7 +108,6 @@ export struct MainPage {
   }
 }
 
-
 export function har() {
   BigInt(1.1)
 }
@@ -193,12 +121,12 @@ at anonymous (entry|entry|1.0.0|src/main/ets/pages/Index.ts:55:55)
 crash中，包含混淆后的方法名（或属性名）、路径信息以及混淆后的行列号信息，其中：
 
 方法名在配置相应混淆规则后，会进行混淆处理（例如上述例子中EntryClass的callHarFunction被混淆为i）。方法名混淆前后的映射关系保存在对应模块编译产物的nameCache文件中。
+
 路径信息格式为：引用方entry-packageName|被引用方packageName|version|源码相对路径，其中packageName以及version保存在对应模块编译产物的sourceMap文件中。
+
 行列号混淆前后的映射关系保存在对应模块编译产物的sourceMap文件中，可利用文件对应的mappings字段进行解析还原。
 
 在对堆栈进行还原时，可分为以下三步：
-
-根据路径信息，找到引用方模块sourceMap。例如第一条堆栈：
 
 at har (entry|har|1.0.0|src/main/ets/components/mainpage/MainPage.js:58:58)
 
@@ -216,8 +144,6 @@ at har (entry|har|1.0.0|src/main/ets/components/mainpage/MainPage.js:58:58)
     "package-info": "har|1.0.0"
   }
 
-利用对应sourceMap信息进行堆栈路径以及行列号还原：
-
 基于步骤1找到的sourceMap信息，根据sources及mappings字段进行解析，可以将路径以及行列号还原如下：
 
 at har (oh_modules/.ohpm/Har@ue9rwlwgmslvadnmypsedjcin6a=/oh_modules/Har/src/main/ets/components/mainpage/MainPage.js:58:58)
@@ -226,11 +152,10 @@ at har (oh_modules/.ohpm/Har@ue9rwlwgmslvadnmypsedjcin6a=/oh_modules/Har/src/mai
 
 如果对应sourceMap中包含package-info字段，则可以利用package-info中对应模块的sourceMap，对该条堆栈进行二次解析。例如该堆栈中包package-info为har|1.0.0，可利用har中的sourceMap对该堆栈进行再次解析，方案如下：
 
-由路径中最后一个oh_modules起，向下两级，截断上述第一次解析结果路径，结果如下：
 src/main/ets/components/mainpage/MainPage.js
-上述路径拼接package-info， 拼接方式为：packageName|packageName|version|截断路径，得到拼接路径如下：
+
 har|har|1.0.0|src/main/ets/components/mainpage/MainPage.js
-利用拼接后的路径，在har模块sourceMap文件中找到如下字段：
+
 "har|har|1.0.0|src/main/ets/components/mainpage/MainPage.js": {
   "version": 3,
   "file": "MainPage.ets",
@@ -241,10 +166,8 @@ har|har|1.0.0|src/main/ets/components/mainpage/MainPage.js
   "mappings": ";;;AAEA,MAAA,OAAA,QAAA,SAAA,MAAA;IADA,YAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA,IAAA,CAAA,CAAA,EAAA,IAAA,SAAA,EAAA,CAAA;;;;;;;;IADyB,CAAA;;;;;;;;;;;;;;;;;;;;;;IAKvB,aAAA;;;;;;;;;;;;YAGM,IAAA,CAAA,UAAA,CAAA,UAAA,CAAA,IAAA,CAAA,CAAA;;;;;IAOL,CAAA;;;;;AAGH,MAAA,UAAA,GAAA;;AAEA,CAAA",
   "entry-package-info": "har|1.0.0"
 }
-根据该sourceMap的sources及mappings字段进行再次解析，可得到该堆栈对应的源码信息为：
-at har (har/src/main/ets/components/mainpage/MainPage.ets:20:1)
 
-利用nameCache文件，对方法名进行解析还原。
+at har (har/src/main/ets/components/mainpage/MainPage.ets:20:1)
 
 以第二条堆栈为例：
 
@@ -276,13 +199,11 @@ at i (entry/src/main/ets/pages/Index.ets:25:3)
 
 第二条堆栈混淆后的方法名为"i"，利用上述字段对该方法名进行还原：
 
-在上述字段中找出所有混淆后方法名为"i"的条目，可能存在多个，该字段中为：
 "callHarFunction:24:26": "i"
+
 找到行号范围包含步骤2中还原后行号的条目，根据步骤2得到还原后的行号为25，包含在24-26之内，因此可以得到源码对应方法名为"callHarFunction"。
 
 通过上述方式，可以得到源码的方法名。
-
-步骤2与步骤3所得结果进行整合，得到最终堆栈结果如下：
 
 at har (har/src/main/ets/components/mainpage/MainPage.ets:20:1)
 at callHarFunction (entry/src/main/ets/pages/Index.ets:25:3)
@@ -290,5 +211,199 @@ at anonymous (entry/src/main/ets/pages/Index.ets:14:47)
 
 通过上述方式，即可利用编译产物对release应用的crash信息进行解析还原。
 
-代码检查工具（codelinter）
-命令行构建工具（hvigorw）
+## Code blocks
+
+### Code block 1
+
+```
+hstack [options]
+```
+
+### Code block 2
+
+```
+# 通过-i指定crash文件归档目录，并将解析结果输出至outputDir目录
+hstack -i D:\crashDir -o D:\outputDir -s D:\sourcemapDir --so D:\soDir -n D:\nameCacheDir
+# 通过-c指定一条堆栈，并将解析结果输出至out.txt文件
+hstack -c "at anonymous (entry|entry|1.0.0|src/main/ets/pages/Index.ts:401:1)" -o D:\outputDir\out.txt -s D:\sourcemapDir --so D:\soDir -n D:\nameCacheDir
+```
+
+### Code block 3
+
+```
+"buildOption": {
+  "externalNativeOptions": {
+    "arguments": "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  }
+}
+```
+
+### Code block 4
+
+```
+import {har} from 'Har'
+@Entry
+@Component
+struct Index {
+  @State har: string = 'Har';
+  build() {
+    Row() {
+      Column() {
+        Text(this.har)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            let entryClass = new EntryClass();
+            entryClass.callHarFunction();
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+
+class EntryClass {
+  callHarFunction() {
+    har()
+  }
+}
+```
+
+### Code block 5
+
+```
+@Component
+export struct MainPage {
+  @State message: string = 'Hello World';
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+
+export function har() {
+  BigInt(1.1)
+}
+```
+
+### Code block 6
+
+```
+at har (entry|har|1.0.0|src/main/ets/components/mainpage/MainPage.js:58:58)
+at i (entry|entry|1.0.0|src/main/ets/pages/Index.ts:71:71)
+at anonymous (entry|entry|1.0.0|src/main/ets/pages/Index.ts:55:55)
+```
+
+### Code block 7
+
+```
+at har (entry|har|1.0.0|src/main/ets/components/mainpage/MainPage.js:58:58)
+```
+
+### Code block 8
+
+```
+"entry|har|1.0.0|src/main/ets/components/mainpage/MainPage.js": {
+    "version": 3,
+    "file": "MainPage.js",
+    "sources": [
+      "oh_modules/.ohpm/Har@ue9rwlwgmslvadnmypsedjcin6a=/oh_modules/Har/src/main/ets/components/mainpage/MainPage.js"
+    ],
+    "names": [],
+    "mappings": "AAAA,IAAA,CAAA,CAAA,sBAAA,IAAA,MAAA,CAAA,SAAA,CAAA,EAAA;IACA,OAAA,CAAA,GAAA,CAAA,MAAA,CAAA,SAAA,EAAA,sBAAA,EAAA,GAAA,EAAA,GAAA,CAAA,CAAA,CAAA;CACA;AACA,MAAA,OAAA,QAAA,SAAA,MAAA;IACA,YAAA,CAAA,EAAA,EAAA,EAAA,CAAA,EAAA,CAAA,GAAA,CAAA,CAAA,EAAA,CAAA,GAAA,SAAA,EAAA,CAAA;QACA,KAAA,CAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA,CAAA,CAAA,CAAA;QACA,IAAA,OAAA,CAAA,KAAA,UAAA,EAAA;YACA,IAAA,CAAA,gBAAA,GAAA,CAAA,CAAA;SACA;QACA,IAAA,EAAA,GAAA,IAAA,wBAAA,CAAA,aAAA,EAAA,IAAA,EAAA,SAAA,CAAA,CAAA;QACA,IAAA,CAAA,yBAAA,IAAA,CAAA;QACA,IAAA,CAAA,oBAAA,EAAA,CAAA;IACA,CAAA;IACA,yBAAA,CAAA,EAAA;QACA,IAAA,GAAA,OAAA,KAAA,SAAA,EAAA;YACA,IAAA,CAAA,OAAA,GAAA,GAAA,OAAA,CAAA;SACA;IACA,CAAA;IACA,eAAA,CAAA,CAAA;IACA,CAAA;IACA,iCAAA,CAAA,CAAA;QACA,IAAA,EAAA,CAAA,uBAAA,CAAA,CAAA,CAAA,CAAA;IACA,CAAA;IACA,gBAAA;QACA,IAAA,EAAA,CAAA,gBAAA,EAAA,CAAA;QACA,iBAAA,CAAA,GAAA,EAAA,CAAA,MAAA,CAAA,IAAA,CAAA,IAAA,EAAA,CAAA,CAAA;QACA,IAAA,CAAA,wBAAA,EAAA,CAAA;IACA,CAAA;IACA,IAAA,OAAA;QACA,OAAA,IAAA,EAAA,CAAA,GAAA,EAAA,CAAA;IACA,CAAA;IACA,IAAA,OAAA,CAAA,EAAA;QACA,IAAA,EAAA,CAAA,GAAA,IAAA,CAAA;IACA,CAAA;IACA,aAAA;QACA,IAAA,CAAA,yBAAA,CAAA,CAAA,CAAA,EAAA,EAAA,EAAA,EAAA;YACA,GAAA,CAAA,MAAA,EAAA,CAAA;YACA,GAAA,CAAA,MAAA,CAAA,MAAA,CAAA,CAAA;QACA,CAAA,EAAA,GAAA,CAAA,CAAA;QACA,IAAA,CAAA,yBAAA,CAAA,CAAA,CAAA,EAAA,CAAA,EAAA,EAAA;YACA,MAAA,CAAA,MAAA,EAAA,CAAA;YACA,MAAA,CAAA,KAAA,CAAA,MAAA,CAAA,CAAA;QACA,CAAA,EAAA,MAAA,CAAA,CAAA;QACA,IAAA,CAAA,yBAAA,CAAA,CAAA,CAAA,EAAA,CAAA,EAAA,EAAA;YACA,IAAA,CAAA,MAAA,CAAA,IAAA,CAAA,OAAA,CAAA,CAAA;YACA,IAAA,CAAA,QAAA,CAAA,EAAA,CAAA,CAAA;YACA,IAAA,CAAA,UAAA,CAAA,UAAA,CAAA,IAAA,CAAA,CAAA;QACA,CAAA,EAAA,IAAA,CAAA,CAAA;QACA,IAAA,CAAA,GAAA,EAAA,CAAA;QACA,MAAA,CAAA,GAAA,EAAA,CAAA;QACA,GAAA,CAAA,GAAA,EAAA,CAAA;IACA,CAAA;IACA,QAAA;QACA,IAAA,CAAA,mBAAA,EAAA,CAAA;IACA,CAAA;CACA;AACA,MAAA,UAAA,GAAA;IACA,MAAA,CAAA,GAAA,CAAA,CAAA;AACA,CAAA",
+    "entry-package-info": "entry|1.0.0",
+    "package-info": "har|1.0.0"
+  }
+```
+
+### Code block 9
+
+```
+at har (oh_modules/.ohpm/Har@ue9rwlwgmslvadnmypsedjcin6a=/oh_modules/Har/src/main/ets/components/mainpage/MainPage.js:58:58)
+```
+
+### Code block 10
+
+```
+src/main/ets/components/mainpage/MainPage.js
+```
+
+### Code block 11
+
+```
+har|har|1.0.0|src/main/ets/components/mainpage/MainPage.js
+```
+
+### Code block 12
+
+```
+"har|har|1.0.0|src/main/ets/components/mainpage/MainPage.js": {
+  "version": 3,
+  "file": "MainPage.ets",
+  "sources": [
+    "har/src/main/ets/components/mainpage/MainPage.ets"
+  ],
+  "names": [],
+  "mappings": ";;;AAEA,MAAA,OAAA,QAAA,SAAA,MAAA;IADA,YAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA,IAAA,CAAA,CAAA,EAAA,IAAA,SAAA,EAAA,CAAA;;;;;;;;IADyB,CAAA;;;;;;;;;;;;;;;;;;;;;;IAKvB,aAAA;;;;;;;;;;;;YAGM,IAAA,CAAA,UAAA,CAAA,UAAA,CAAA,IAAA,CAAA,CAAA;;;;;IAOL,CAAA;;;;;AAGH,MAAA,UAAA,GAAA;;AAEA,CAAA",
+  "entry-package-info": "har|1.0.0"
+}
+```
+
+### Code block 13
+
+```
+at har (har/src/main/ets/components/mainpage/MainPage.ets:20:1)
+```
+
+### Code block 14
+
+```
+at i (entry|entry|1.0.0|src/main/ets/pages/Index.ts:71:71)
+```
+
+### Code block 15
+
+```
+at i (entry/src/main/ets/pages/Index.ets:25:3)
+```
+
+### Code block 16
+
+```
+"entry/src/main/ets/pages/Index.ets": {
+  "IdentifierCache": {
+    "Index#initialRender#__function": "o",
+    "Index#initialRender#$2#__function": "t",
+    "Index#initialRender#$2#$0#entryClass": "u",
+    "$0#__function": "a1"
+  },
+  "MemberMethodCache": {
+    "initialRender:6:20": "initialRender",
+    "callHarFunction:24:26": "i"
+  },
+  "obfName": "entry/src/main/ets/pages/Index.ets"
+}
+```
+
+### Code block 17
+
+```
+"callHarFunction:24:26": "i"
+```
+
+### Code block 18
+
+```
+at har (har/src/main/ets/components/mainpage/MainPage.ets:20:1)
+at callHarFunction (entry/src/main/ets/pages/Index.ets:25:3)
+at anonymous (entry/src/main/ets/pages/Index.ets:14:47)
+```

@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/servicecollaboration-richeditor-title_
 
-富文本控件RichEditor已集成跨设备互通能力。在平板或2in1设备上，用户可通过其右键菜单调用手机的相机、扫描及图库（访问图片）功能。
+富文本控件RichEditor已集成跨设备互通能力。在Tablet或PC/2in1设备上，用户可通过其右键菜单调用Phone的相机、扫描及图库（访问图片）功能。
 
 场景介绍
 
@@ -14,17 +14,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/serviceco
 
 设备限制
 
-本端设备：HarmonyOS版本为HarmonyOS NEXT及以上的平板或2in1设备。
-远端设备：HarmonyOS版本为HarmonyOS NEXT及以上、具有相机能力的手机或平板设备。
+本端设备：HarmonyOS版本为HarmonyOS 5及以上的Tablet或PC/2in1设备。
+
+远端设备：HarmonyOS版本为HarmonyOS 5及以上、具有相机能力的Phone或Tablet设备。
 
 使用限制
 
 双端设备需要登录同一华为账号。
-跨设备互通API支持根据特定调用策略调用设备。调用策略：2in1设备可以调用平板和手机，平板可以调用手机，同类型设备不可调用。
 
-双端设备需要打开WLAN和蓝牙开关。
+跨设备互通API支持根据特定调用策略调用设备。调用策略：PC/2in1设备可以调用Tablet和Phone，Tablet可以调用Phone，同类型设备不可调用。
 
-条件允许时，建议双端设备接入同一个局域网，可提升唤醒相机的速度。
+双端设备需要打开WLAN和蓝牙开关。条件允许时，建议双端设备接入同一个局域网，可提升唤醒相机的速度。
 
 开发步骤
 
@@ -33,9 +33,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/serviceco
 @Entry
 @Component
 struct Index {
-  controller: RichEditorController = new RichEditorController()
-  options: RichEditorOptions = { controller: this.controller }
-
+  controller: RichEditorController = new RichEditorController();
+  options: RichEditorOptions = { controller: this.controller };
 
   build() {
     Column() {
@@ -45,27 +44,27 @@ struct Index {
             if (value?.replacedImageSpans[0]?.imageStyle?.objectFit != 0) {
               return true;
             }
-            for(let item of value.replacedImageSpans) {
+            for (let item of value.replacedImageSpans) {
               this.controller.addImageSpan(item.valuePixelMap, {
                 imageStyle: {
-                  size: ["500px", "500px"],
+                  size: ['500px', '500px'],
                   layoutStyle: {
-                    borderRadius: '10px',
+                    borderRadius: '10px'
                   }
                 }
-              })
+              });
             }
             return false;
           })
           .borderWidth(1)
           .borderColor(Color.Green)
-          .width("100%")
-          .height("100%")
+          .width('100%')
+          .height('100%')
       }
       .borderWidth(1)
       .borderColor(Color.Red)
-      .width("100%")
-      .height("70%")
+      .width('100%')
+      .height('70%')
     }
   }
 }
@@ -87,9 +86,8 @@ struct Index {
 @Entry
 @Component
 struct Index {
-  controller: RichEditorController = new RichEditorController()
-  options: RichEditorOptions = { controller: this.controller }
-
+  controller: RichEditorController = new RichEditorController();
+  options: RichEditorOptions = { controller: this.controller };
 
   build() {
     Column() {
@@ -102,10 +100,10 @@ struct Index {
               }
               let newMenuItems: TextMenuItem[] = [];
               menuItems.forEach((item, index) => {
-                if(!item.id.equals(TextMenuItemId.COLLABORATION_SERVICE)) {
+                if (!item.id.equals(TextMenuItemId.COLLABORATION_SERVICE)) {
                   newMenuItems.push(item);
                 }
-              })
+              });
               return newMenuItems;
             },
             onMenuItemClick: (menuItem: TextMenuItem, textRange: TextRange) => {
@@ -114,15 +112,102 @@ struct Index {
           })
           .borderWidth(1)
           .borderColor(Color.Green)
-          .width("100%")
-          .height("100%")
+          .width('100%')
+          .height('100%')
       }
       .borderWidth(1)
       .borderColor(Color.Red)
-      .width("100%")
-      .height("70%")
+      .width('100%')
+      .height('70%')
     }
   }
 }
-跨设备互通NDK开发指导
-Service Collaboration Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct Index {
+  controller: RichEditorController = new RichEditorController();
+  options: RichEditorOptions = { controller: this.controller };
+
+  build() {
+    Column() {
+      Column() {
+        RichEditor(this.options)
+          .onWillChange((value: RichEditorChangeValue) => {
+            if (value?.replacedImageSpans[0]?.imageStyle?.objectFit != 0) {
+              return true;
+            }
+            for (let item of value.replacedImageSpans) {
+              this.controller.addImageSpan(item.valuePixelMap, {
+                imageStyle: {
+                  size: ['500px', '500px'],
+                  layoutStyle: {
+                    borderRadius: '10px'
+                  }
+                }
+              });
+            }
+            return false;
+          })
+          .borderWidth(1)
+          .borderColor(Color.Green)
+          .width('100%')
+          .height('100%')
+      }
+      .borderWidth(1)
+      .borderColor(Color.Red)
+      .width('100%')
+      .height('70%')
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  controller: RichEditorController = new RichEditorController();
+  options: RichEditorOptions = { controller: this.controller };
+
+  build() {
+    Column() {
+      Column() {
+        RichEditor(this.options)
+          .editMenuOptions({
+            onCreateMenu: (menuItems: Array<TextMenuItem>) => {
+              if (menuItems.length === 0) {
+                return menuItems;
+              }
+              let newMenuItems: TextMenuItem[] = [];
+              menuItems.forEach((item, index) => {
+                if (!item.id.equals(TextMenuItemId.COLLABORATION_SERVICE)) {
+                  newMenuItems.push(item);
+                }
+              });
+              return newMenuItems;
+            },
+            onMenuItemClick: (menuItem: TextMenuItem, textRange: TextRange) => {
+              return false;
+            }
+          })
+          .borderWidth(1)
+          .borderColor(Color.Green)
+          .width('100%')
+          .height('100%')
+      }
+      .borderWidth(1)
+      .borderColor(Color.Red)
+      .width('100%')
+      .height('70%')
+    }
+  }
+}
+```

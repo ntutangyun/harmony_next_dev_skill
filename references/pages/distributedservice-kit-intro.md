@@ -19,6 +19,3 @@ Distributed Service Kit（分布式管理服务）实现了分布式设备管理
 模拟器支持情况
 
 本模块暂不支持模拟器。
-
-Distributed Service Kit（分布式管理服务）
-分布式设备管理开发指南

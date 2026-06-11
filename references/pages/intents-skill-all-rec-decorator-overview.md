@@ -23,6 +23,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-s
 在目标执行函数上添加@InsightIntentFunctionMethod装饰器，以及在目标执行函数所属Class上添加@InsightIntentFunction进行意图声明，实现目标函数的执行。
 
 约束：仅支持后台执行。
-
-任务执行类场景方案（装饰器接入方式）
-基于Link的装饰器方案

@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-7_
 
+同一个商户号、使用同一个华为支付账号、使用同一套签约模板时，多次重复签约时只会生成一笔签约。

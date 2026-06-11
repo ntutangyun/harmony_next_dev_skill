@@ -2,6 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-navi-matrix_
 
+场景介绍
+
+多个起点到多个终点的批量算路功能，在驾车、步行、骑行模式下，快速批量计算多个起点分别到多个终点的路线距离和耗时。
+
+接口说明
+
+以下是路径规划功能相关接口，主要由navi命名空间下的方法提供，更多接口及使用方法请参见接口文档。
+
+接口名	描述
 getDrivingMatrix(params: DrivingMatrixParams): Promise<MatrixResult>	驾车批量算路。
 getDrivingMatrix(context: common.Context, params: DrivingMatrixParams): Promise<MatrixResult>	驾车批量算路。支持传入Context上下文。
 getWalkingMatrix(params: MatrixParams): Promise<MatrixResult>	步行批量算路。
@@ -11,13 +20,15 @@ getCyclingMatrix(context: common.Context, params: MatrixParams): Promise<MatrixR
 DrivingMatrixParams	驾车批量算路的参数。
 MatrixParams	步行、骑行批量算路的参数。
 MatrixResult	批量算路的结果。
+
 开发步骤
 
 导入相关模块。
 
 import { navi } from '@kit.MapKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-驾车批量算路
+
+[h2]驾车批量算路
 
 根据多组起终点坐标批量检索符合条件的驾车路径规划方案。支持以下功能：
 
@@ -58,7 +69,8 @@ async testDrivingMatrix() {
     console.error(`Failed in getting driving matrix. Code is ${err.code}, message is ${err.message}`);
   }
 }
-步行批量算路
+
+[h2]步行批量算路
 
 根据多组起终点坐标批量检索符合条件的步行路径规划方案。支持以下功能：
 
@@ -96,7 +108,8 @@ async testWalkingMatrix() {
     console.error(`Failed in getting walking matrix. Code is ${err.code}, message is ${err.message}`);
   }
 }
-骑行批量算路
+
+[h2]骑行批量算路
 
 根据多组起终点坐标批量检索符合条件的骑行路径规划方案。支持以下功能：
 
@@ -133,5 +146,105 @@ async testCyclingMatrix() {
     console.error(`Failed in getting cycling matrix. Code is ${err.code}, message is ${err.message}`);
   }
 }
-出行路线规划
-轨迹绑路
+
+## Code blocks
+
+### Code block 1
+
+```
+import { navi } from '@kit.MapKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+async testDrivingMatrix() {
+  let params: navi.DrivingMatrixParams = {
+    // 起点的经纬度
+    origins: [{
+      latitude: 31.9844,
+      longitude: 118.766253
+    }, {
+      latitude: 31.9644,
+      longitude: 118.746253
+    }],
+    // 终点的经纬度
+    destinations: [{
+      latitude: 31.9344,
+      longitude: 118.706253
+    }],
+    // 时间预估模型
+    trafficMode: 2,
+    language: 'zh_CN'
+  };
+  try {
+    const result = await navi.getDrivingMatrix(params);
+    console.info(`Succeeded in getting driving matrix. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in getting driving matrix. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+```
+
+### Code block 3
+
+```
+async testWalkingMatrix() {
+  let params: navi.MatrixParams = {
+    // 起点的经纬度
+    origins: [
+      {
+        latitude: 31.9844,
+        longitude: 118.766253
+      }, {
+      latitude: 31.9644,
+      longitude: 118.746253
+    }],
+    // 终点的经纬度
+    destinations: [{
+      latitude: 31.9344,
+      longitude: 118.706253
+    }],
+    language: 'zh_CN'
+  };
+  try {
+    const result = await navi.getWalkingMatrix(params);
+    console.info(`Succeeded in getting walking matrix. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in getting walking matrix. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+```
+
+### Code block 4
+
+```
+async testCyclingMatrix() {
+  let params: navi.MatrixParams = {
+    // 起点的经纬度
+    origins: [{
+      latitude: 31.9844,
+      longitude: 118.766253
+    }, {
+      latitude: 31.9644,
+      longitude: 118.746253
+    }],
+    // 终点的经纬度
+    destinations: [{
+      latitude: 31.9344,
+      longitude: 118.706253
+    }],
+    language: 'zh_CN'
+  };
+  try {
+    const result = await navi.getCyclingMatrix(params);
+    console.info(`Succeeded in getting cycling matrix. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in getting cycling matrix. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+```

@@ -13,7 +13,8 @@ API详细介绍请参见ohos.file.securityLabel。
 接口名	功能	接口类型	支持同步	支持异步
 setSecurityLabel	设置文件安全标签。	方法	√	√
 getSecurityLabel	获取文件安全标签。	方法	√	√
-注意
+
+须知
 
 对于不满足安全等级的文件，跨设备仍然可以看到该文件，但是无权限打开访问该文件。
 
@@ -27,11 +28,11 @@ import { securityLabel } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { fileIo } from '@kit.CoreFileKit';
+
 // 获取需要设备数据等级的文件沙箱路径，请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
 let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 let pathDir = context.filesDir;
 let filePath = pathDir + '/test.txt';
-
 
 // 打开文件
 let file: fileIo.File | null = null;
@@ -61,6 +62,52 @@ try {
     }
   }
 }
-Index.ets
-分布式文件系统概述
-跨设备文件共享和访问
+
+## Code blocks
+
+### Code block 1
+
+```
+import { securityLabel } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import { fileIo } from '@kit.CoreFileKit';
+```
+
+### Code block 2
+
+```
+// 获取需要设备数据等级的文件沙箱路径，请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
+let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+let pathDir = context.filesDir;
+let filePath = pathDir + '/test.txt';
+
+// 打开文件
+let file: fileIo.File | null = null;
+try {
+  file = fileIo.openSync(filePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+  // 设置文件的数据等级为s0
+  securityLabel.setSecurityLabel(filePath, 's0').then(() => {
+    console.info('Succeeded in setting security label.');
+    fileIo.closeSync(file);
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to set security label. Code: ${err.code}, message: ${err.message}`);
+    if (file) {
+      try {
+        fileIo.closeSync(file);
+      } catch (closeErr) {
+        console.error(`Failed to close file`);
+      }
+    }
+  });
+} catch (err) {
+  console.error(`Failed to open file. Code: ${err.code}, message: ${err.message}`);
+  if (file) {
+    try {
+      fileIo.closeSync(file);
+    } catch (closeErr) {
+      console.error(`Failed to close file`);
+    }
+  }
+}
+```

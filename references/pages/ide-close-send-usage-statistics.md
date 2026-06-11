@@ -5,6 +5,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-close
 DevEco Studio在首次启动时，弹窗出现提示开启数据采集功能。该功能用于帮助DevEco Studio改进使用体验，收集的数据将按照关于HUAWEI DevEco Studio 平台与隐私的声明处理。
 
 若开发者后续需要关闭数据采集功能，请在File > Settings （macOS为DevEco Studio > Preferences/Settings）> Appearance & Behavior > System Settings > Data Sharing设置界面，取消勾选Send usage statistics关闭数据采集开关。
-
-DevEco Studio配置参数列表
-日志上传

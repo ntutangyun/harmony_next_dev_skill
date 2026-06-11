@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-release_
 
+调试完毕后，将工程打包成APP，提交至AGC申请上架。具体请参见HarmonyOS应用/服务发布。

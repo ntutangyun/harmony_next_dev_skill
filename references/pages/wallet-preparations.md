@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-preparations_
 
+请先参考“应用开发准备”完成基本准备工作和指纹配置，再继续以下开发活动。
+
+登录AppGallery Connect，选择“我的项目”。
+
 点击进入对应的项目，在左侧“项目设置”页签，上侧导航选择“开放能力管理”，打开华为钱包的开关。用于钱包对车钥匙管理台向钱包服务器发起http/https请求时的权限控制。关闭状态下，开发者服务器将访问不了钱包服务器。
 
 在“项目设置”页签，左侧导航选择“盈利 > 华为钱包”，点击“申请Wallet Kit服务”，进入申请Wallet Kit服务。
@@ -16,13 +20,7 @@ Wallet Kit服务参数名称	参数值
 服务名称	Wallet Kit首页列表展示该开发者所有创建的服务时，服务名称用于区分不同的服务。
 服务号	用于Wallet Kit服务器区分不同的服务且保证唯一性。
 接入方式	国内支持三种接入方式，App接入，云端接入，代理接入。商户可以根据自己的需求选择适合自己类型的接入方式。选择云端接入时用户需要填写“回调地址”、“用户公钥”二项资料，选择App接入则只需要上传证书请求文件生成证书即可，选择代理接入时用户需要填写“回调地址”一项资料，而用户公钥则会发送默认值到Wallet Kit服务器。
-回调地址	
-
-开发者提供给Wallet Kit的地址，用于Wallet Kit回调开发者，用户领卡成功或删卡时回调开发者。
-
-注：如果不需要Wallet Kit通知开发者用户领卡或删卡的状态，可以不填该字段。
-
-
+回调地址	开发者提供给Wallet Kit的地址，用于Wallet Kit回调开发者，用户领卡成功或删卡时回调开发者。 注：如果不需要Wallet Kit通知开发者用户领卡或删卡的状态，可以不填该字段。
 用户公钥	开发者将生成的公钥复制粘贴到此处，后续该公钥将作为Wallet Kit服务器认证开发者身份的方式，参考如下公钥生成方式。
 
 公钥生成方式：
@@ -62,5 +60,26 @@ NFC参数名称	参数值
 
 点击“下一步”，创建完成后，返回Wallet Kit服务创建页面，可对所创建的服务进行查看、修改和删除。
 
-Wallet Kit简介
-数字车钥匙
+## Code blocks
+
+### Code block 1
+
+```
+const crypto = require('crypto');
+// 生成密钥对
+const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+  modulusLength: 4096, // 密钥长度，不少于4096
+  publicKeyEncoding: {
+    type: 'spki', // 公钥编码格式
+    format: 'der' // 公钥输出格式
+  },
+  privateKeyEncoding: {
+    type: 'pkcs8', // 私钥编码格式
+    format: 'der' // 私钥输出格式
+  }
+});
+console.info('生成的公钥：');
+console.info(publicKey.toString('base64'));
+console.info('生成的私钥：');
+console.info(privateKey.toString('base64'));
+```

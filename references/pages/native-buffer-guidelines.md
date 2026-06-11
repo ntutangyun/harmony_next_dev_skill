@@ -2,9 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-buffer-guidelines_
 
+场景介绍
+
+NativeBuffer模块提供共享内存功能，支持内存的申请、使用、查询和释放等操作。
+
 NativeBuffer的常见开发场景：通过Native API申请OH_NativeBuffer实例，获取内存属性，将ION内存映射到进程空间。
 
 接口说明
+
 接口名	描述
 OH_NativeBuffer_Alloc (const OH_NativeBuffer_Config *config)	通过OH_NativeBuffer_Config创建OH_NativeBuffer实例，每次调用都会产生一个新的OH_NativeBuffer实例。本接口需要与OH_NativeBuffer_Unreference接口配合使用，否则会存在内存泄露。
 OH_NativeBuffer_Reference (OH_NativeBuffer *buffer)	将OH_NativeBuffer对象的引用计数增加1。
@@ -39,12 +44,10 @@ OH_NativeBuffer_Config config {
     .usage = NATIVEBUFFER_USAGE_CPU_READ | NATIVEBUFFER_USAGE_CPU_WRITE | NATIVEBUFFER_USAGE_MEM_DMA,
 };
 
-
 OH_NativeBuffer *nativeBuffer = OH_NativeBuffer_Alloc(&config);
 if (nativeBuffer == nullptr) {
     LOGE("OH_NativeBuffer_Alloc fail, nativeBuffer is null");
 }
-NativeRender.cpp
 
 将OH_NativeBuffer对应的ION内存映射到进程空间。
 
@@ -60,19 +63,74 @@ ret = OH_NativeBuffer_Unmap(nativeBuffer);
 if (ret != 0) {
     LOGE("OH_NativeBuffer_Unmap Failed");
 }
-NativeRender.cpp
 
 获取内存的属性信息。
 
 OH_NativeBuffer_Config config2 = {};
 OH_NativeBuffer_GetConfig(nativeBuffer, &config2);
 uint32_t hwBufferID = OH_NativeBuffer_GetSeqNum(nativeBuffer);
-NativeRender.cpp
 
 销毁OH_NativeBuffer。
 
 OH_NativeBuffer_Unreference(nativeBuffer);
 nativeBuffer = nullptr;
-NativeRender.cpp
-图形缓冲区
-NativeImage开发指导 (C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+libnative_buffer.so
+```
+
+### Code block 2
+
+```
+#include <native_buffer/native_buffer.h>
+```
+
+### Code block 3
+
+```
+OH_NativeBuffer_Config config {
+    .width = 0x100,
+    .height = 0x100,
+    .format = NATIVEBUFFER_PIXEL_FMT_RGBA_8888,
+    .usage = NATIVEBUFFER_USAGE_CPU_READ | NATIVEBUFFER_USAGE_CPU_WRITE | NATIVEBUFFER_USAGE_MEM_DMA,
+};
+
+OH_NativeBuffer *nativeBuffer = OH_NativeBuffer_Alloc(&config);
+if (nativeBuffer == nullptr) {
+    LOGE("OH_NativeBuffer_Alloc fail, nativeBuffer is null");
+}
+```
+
+### Code block 4
+
+```
+void* virAddr = nullptr;
+int32_t ret = OH_NativeBuffer_Map(nativeBuffer, &virAddr);
+if (ret != 0) {
+    LOGE("OH_NativeBuffer_Map Failed");
+}
+// ...
+ret = OH_NativeBuffer_Unmap(nativeBuffer);
+if (ret != 0) {
+    LOGE("OH_NativeBuffer_Unmap Failed");
+}
+```
+
+### Code block 5
+
+```
+OH_NativeBuffer_Config config2 = {};
+OH_NativeBuffer_GetConfig(nativeBuffer, &config2);
+uint32_t hwBufferID = OH_NativeBuffer_GetSeqNum(nativeBuffer);
+```
+
+### Code block 6
+
+```
+OH_NativeBuffer_Unreference(nativeBuffer);
+nativeBuffer = nullptr;
+```

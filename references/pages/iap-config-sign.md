@@ -7,6 +7,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-confi
 说明
 
 如果开发者DevEco Studio版本低于6.0.0.848，请使用手动签名完成工程应用的签名配置。
-
-配置商品信息
-配置应用身份信息

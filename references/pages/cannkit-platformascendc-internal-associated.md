@@ -14,6 +14,7 @@ CTilingDataClassFactory类用于注册AscendC高阶API和开发者自定义tilin
 GetInstance	获取CTilingDataClassFactory类的单例。
 RegisterTilingData	注册op_type的tiling结构constructor至CTilingDataClassFactory工厂类。
 CreateTilingDataInstance	根据算子名获取tiling结构。
+
 OpDef相关接口
 
 原型注册相关类的一些非对外开放接口，包括OpDef、OpParamDef、OpAICoreConfig等，下述接口均为框架生成相关工程所需，开发者无需关心。
@@ -25,6 +26,7 @@ OpAICoreDef	GetTiling	获取Tiling信息。
 OpDef	GetInferShape	获取Shape推导函数。
 OpDef	GetInferDataType	获取DataType推导函数。
 OpDefFactory	OpDefRegister	注册算子。
+
 Tiling定义辅助接口
 
 以下接口为Tiling定义辅助接口。AscendC提供了一系列Tiling类型定义宏，包含BEGIN_TILING_DATA_DEF、TILING_DATA_FIELD_DEF、TILING_DATA_FIELD_DEF_ARR、TILING_DATA_FIELD_DEF_STRUCT、REGISTER_TILING_DATA_CLASS。开发者调用该系列宏会调用以下接口对tiling信息进一步处理，包含结构信息保留、字节对齐等。
@@ -40,5 +42,21 @@ void CheckAlignAndGenPlaceHolder(const char *name, size_t typeSize);
 FieldInfo(const char *dtype, const char *name)
 FieldInfo(const char *dtype, const char *name, size_t arrSize)
 FieldInfo(const char *dtype, const char *name, const char *structType,size_t structSize)
-GetLibApiWorkSpaceSize
-算子调测API
+
+## Code blocks
+
+### Code block 1
+
+```
+// TilingDef类
+void SaveToBuffer(void *pdata, size_t capacity);
+std::vector<FieldInfo> GetFieldInfo() const;
+const char *GetTilingClassName() const;
+size_t GetDataSize() const;
+void SetDataPtr(void *dataPtr);
+void CheckAlignAndGenPlaceHolder(const char *name, size_t typeSize);
+// FieldInfo类
+FieldInfo(const char *dtype, const char *name)
+FieldInfo(const char *dtype, const char *name, size_t arrSize)
+FieldInfo(const char *dtype, const char *name, const char *structType,size_t structSize)
+```

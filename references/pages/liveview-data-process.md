@@ -19,6 +19,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/liveview-
 说明
 
 如果设置的数据处理位置与开发者的服务器位置不一致，或者设置的数据处理位置与应用所服务的用户所在地不一致，都会导致推送消息无法下发。
-
-开通推送服务权益
-开通实况窗服务权益

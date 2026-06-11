@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-trustedauth-backupdata_
 
+场景介绍
+
 在数字盾激活前，应用需向密钥管理服务提交密钥生成申请，指定所需密钥的技术参数（如算法、长度等），成功生成的密钥将存储于密钥管理服务侧，应用可申请使用对应密钥进行数字盾服务相关业务数据的签名/验签操作。若应用被卸载，密钥管理服务将自动删除对应的密钥数据，导致应用重新安装后，数字盾功能无法继续使用。
 
 若您希望当应用在原设备上重新安装后仍能通过历史数据恢复数字盾功能，请在激活数字盾后，执行以下操作：
@@ -35,6 +37,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口名	描述
 importData(data: ArrayBuffer, authID: bigint): Promise<void>	导入数据（即与HUKS签名验签时使用的加密密钥信息）
 exportData(authID: bigint, label: TUILable): Promise<ArrayBuffer>	导出数据（即与HUKS签名验签时使用的加密密钥信息）
+
 开发步骤
 
 导入huks trustedAuthentication 和相关依赖模块。
@@ -79,11 +82,9 @@ let properties: Array<huks.HuksParam> = [
   }
 ];
 
-
 let options: huks.HuksOptions = {
   properties: properties,
 };
-
 
 let wrapKeyProperties: Array<huks.HuksParam> = [
   {
@@ -92,14 +93,11 @@ let wrapKeyProperties: Array<huks.HuksParam> = [
   }
 ];
 
-
 let wrapKeyOptions: huks.HuksOptions = {
   properties: wrapKeyProperties,
 };
 
-
 let wrappedKey: Uint8Array | undefined = undefined;
-
 
 // 调用生成密钥接口
 await huks.generateKeyItem(keyAlias, options).then(() => {
@@ -107,7 +105,6 @@ await huks.generateKeyItem(keyAlias, options).then(() => {
 }).catch((error: Error) => {
   console.error(`promise: generateKeyItem failed`);
 });
-
 
 // 从密钥管理服务导出生成密钥的密文数据
 await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
@@ -156,5 +153,129 @@ await huks.unwrapKeyItem(keyAlias, wrapKeyOptions, wrappedKey).then((data) => {
 }).catch((error: Error) => {
   console.error(`promise: unwrapKeyItem failed`);
 });
-关闭指定生物类型认证能力
-安全审计
+
+## Code blocks
+
+### Code block 1
+
+```
+import { resourceManager } from '@kit.LocalizationKit'
+import { huks } from '@kit.UniversalKeystoreKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { trustedAuthentication } from '@kit.DeviceSecurityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common } from '@kit.AbilityKit';
+```
+
+### Code block 2
+
+```
+// 密钥别名
+let keyAlias = "testWrapKey";
+// 密钥属性集合
+let properties: Array<huks.HuksParam> = [
+  {
+    tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
+    value: huks.HuksKeyAlg.HUKS_ALG_AES
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
+    value: huks.HuksKeySize.HUKS_AES_KEY_SIZE_256
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_PURPOSE,
+    value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_ENCRYPT | huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_DECRYPT
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_PADDING,
+    value: huks.HuksKeyPadding.HUKS_PADDING_PKCS7
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_BLOCK_MODE,
+    value: huks.HuksCipherMode.HUKS_MODE_GCM
+  },
+  /* 生成密钥时指定允许加密导出 */
+  {
+    tag: huks.HuksTag.HUKS_TAG_IS_ALLOWED_WRAP,
+    value: true
+  }
+];
+
+let options: huks.HuksOptions = {
+  properties: properties,
+};
+
+let wrapKeyProperties: Array<huks.HuksParam> = [
+  {
+    tag: huks.HuksTag.HUKS_TAG_KEY_WRAP_TYPE,
+    value: huks.HuksKeyWrapType.HUKS_KEY_WRAP_TYPE_HUK_BASED
+  }
+];
+
+let wrapKeyOptions: huks.HuksOptions = {
+  properties: wrapKeyProperties,
+};
+
+let wrappedKey: Uint8Array | undefined = undefined;
+
+// 调用生成密钥接口
+await huks.generateKeyItem(keyAlias, options).then(() => {
+  console.info(`promise: generateKeyItem success`);
+}).catch((error: Error) => {
+  console.error(`promise: generateKeyItem failed`);
+});
+
+// 从密钥管理服务导出生成密钥的密文数据
+await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
+  wrappedKey = data.outData as Uint8Array;
+  console.info(`promise: wrapKeyItem success, data = ${JSON.stringify(data)}`);
+}).catch((error: Error) => {
+  console.error(`promise: wrapKeyItem failed`);
+});
+```
+
+### Code block 3
+
+```
+  try {
+    const authID: bigint = 11842183505170721246n; //实际填充为从服务器获取到的账号对应的authID值
+    const buffer = new ArrayBuffer(8);
+    const bufferArray = new Uint8Array(buffer);
+    bufferArray.set([1, 2, 3, 4, 5, 6, 7, 8]);//实际使用时替换为从密钥管理服务获取的备份密钥信息
+    await trustedAuthentication.importData(buffer, authID);
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to importData, code:${err.code}, message:${err.message}`);
+    throw new Error('Import data failed:' + (err as BusinessError).message);
+  }
+```
+
+### Code block 4
+
+```
+try {
+  const authID: bigint = 11842183505170721246n; //实际填充为从服务器获取到的账号对应的authID值
+  let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
+  const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+  const buffer = fileData.buffer;
+  const label:trustedAuthentication.TUILable = {
+    image: buffer as ArrayBuffer,
+    title: "导出密钥信息",
+  }
+  const data = await trustedAuthentication.exportData(authID, label);
+} catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to exportData, code:${err.code}, message:${err.message}`);
+    throw new Error('Export data failed:' + (err as BusinessError).message);
+}
+```
+
+### Code block 5
+
+```
+// 在密钥管理服务侧进行密钥导入恢复，其中keyAlias、wrapKeyOptions、wrappedKey为步骤二定义参数
+await huks.unwrapKeyItem(keyAlias, wrapKeyOptions, wrappedKey).then((data) => {
+  console.info(`promise: unwrapKeyItem success`);
+}).catch((error: Error) => {
+  console.error(`promise: unwrapKeyItem failed`);
+});
+```

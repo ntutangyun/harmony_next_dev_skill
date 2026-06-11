@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ads-publisher-service-interstitial_
 
+场景介绍
+
 插屏广告是一种在应用开启、暂停或退出时以全屏或半屏的形式弹出的广告形式，展示时机巧妙避开用户对应用的正常体验，尺寸大，曝光效果好。
 
 约束与限制
@@ -11,16 +13,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ads-publi
 使用PC/2in1设备时，需要确保设备上智慧营销服务或广告服务的版本在8.4.80.300及以上，版本号可通过选择“设置> 应用和元服务 > 更多应用”查看。
 
 接口说明
+
 接口名	描述
 loadAd(adParam: AdRequestParams, adOptions: AdOptions, listener: AdLoadListener): void	请求单广告位广告，通过AdRequestParams、AdOptions进行广告请求参数设置，通过AdLoadListener监听广告请求回调。
-showAd(ad: Advertisement, options: AdDisplayOptions, context?: common.UIAbilityContext): void	
-
-展示广告，通过AdDisplayOptions进行广告展示参数设置。
-
-说明：为了保证广告能正确展示，该接口必须和请求广告接口配套使用。
+showAd(ad: Advertisement, options: AdDisplayOptions, context?: common.UIAbilityContext): void	展示广告，通过AdDisplayOptions进行广告展示参数设置。 说明：为了保证广告能正确展示，该接口必须和请求广告接口配套使用。
 
 开发步骤
-请求广告
+
+[h2]请求广告
 
 导入相关模块。
 
@@ -45,16 +45,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 请求广告关键参数如下所示：
 
 请求广告参数名	类型	必填	说明
-adType	number	是	请求广告类型，插屏广告类型为12。
-adId	string	是	
-
-广告位ID。
-
-- 如果仅调测广告，可使用测试广告位ID：p540739a8w。
-
-- 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
-
-
+adType	number	否	请求广告类型，插屏广告类型为12。不填默认为原生广告类型。
+adId	string	是	广告位ID。 - 如果仅调测广告，可使用测试广告位ID：p540739a8w。 - 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
 oaid	string	否	开放匿名设备标识符，用于精准推送广告。不填无法获取到个性化广告。
 
 示例代码如下所示：
@@ -63,7 +55,6 @@ oaid	string	否	开放匿名设备标识符，用于精准推送广告。不填�
 @Component
 struct Index {
   private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -76,7 +67,6 @@ struct Index {
     .height('100%')
     .justifyContent(FlexAlign.Center)
   }
-
 
   private async loadAd(): Promise<void> {
     // 广告请求回调监听
@@ -111,7 +101,6 @@ struct Index {
   }
 }
 
-
 async function requestOAID(context: Context): Promise<string | undefined> {
   // 向用户请求授权广告跨应用关联访问权限
   let isPermissionGranted: boolean = false;
@@ -137,7 +126,8 @@ async function requestOAID(context: Context): Promise<string | undefined> {
   }
   return undefined;
 }
-事件订阅
+
+[h2]事件订阅
 
 导入相关模块。
 
@@ -163,11 +153,9 @@ onVideoPlayEnd	广告视频播放结束。
 
 const KEY_INTERSTITIAL_STATUS = 'interstitial_ad_status';
 
-
 export class InterstitialAdStatusHandler {
   // 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
   private subscriber: commonEventManager.CommonEventSubscriber | null = null;
-
 
   // 订阅方法，需要在每次展示广告前调用
   public registerPPSReceiver(): void {
@@ -225,7 +213,6 @@ export class InterstitialAdStatusHandler {
       });
   }
 
-
   // 取消订阅
   public unRegisterPPSReceiver(): void {
     commonEventManager.unsubscribe(this.subscriber, (err: BusinessError) => {
@@ -238,7 +225,8 @@ export class InterstitialAdStatusHandler {
     });
   }
 }
-展示广告
+
+[h2]展示广告
 
 导入相关模块。
 
@@ -259,11 +247,9 @@ import { InterstitialAdStatusHandler } from './InterstitialAdStatusHandler';
 struct Index {
   private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
-
   build() {
     // ...
   }
-
 
   private async loadAd(): Promise<void> {
     // 广告请求回调监听
@@ -291,6 +277,7 @@ struct Index {
     // ...
   }
 }
+
 测试插屏广告
 
 测试插屏广告时，需要使用专门的测试广告位ID来获取测试广告，以避免在测试过程中产生无效的广告点击量。测试广告位ID仅作为功能调试使用，不可用于广告变现。您应在应用发布前先进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台，申请正式的广告位ID并替换测试广告位ID，具体操作详情请参见展示位创建。
@@ -299,6 +286,230 @@ struct Index {
 
 广告位类型	测试广告位ID	展示形式	比例	推广类型
 插屏	p540739a8w	图片	16:9	网页推广
-插屏	v1rknehtfa	视频	9:16	推广元服务
-激励广告
-开屏广告
+插屏	v1rknehtfa	视频	9:16	元服务推广
+
+## Code blocks
+
+### Code block 1
+
+```
+import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
+import { advertising, identifier } from '@kit.AdsKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Button('LoadAd')
+        .onClick(async () => {
+          await this.loadAd();
+        })
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  private async loadAd(): Promise<void> {
+    // 广告请求回调监听
+    const adLoadListener: advertising.AdLoadListener = {
+      onAdLoadFailure: (errorCode: number, errorMsg: string) => {
+        hilog.error(0x0000, 'testTag', `Failed to load ad. Code is ${errorCode}, message is ${errorMsg}`);
+      },
+      onAdLoadSuccess: (ads: Array<advertising.Advertisement>) => {
+        hilog.info(0x0000, 'testTag', 'Succeeded in loading ad');
+        // ...
+      }
+    };
+    // 广告请求参数
+    const adRequestParams: advertising.AdRequestParams = {
+      // 'p540739a8w'为测试专用的广告位ID，App正式发布时需要改为正式的广告位ID
+      adId: 'p540739a8w',
+      // 插屏广告类型
+      adType: 12,
+      // 开放匿名设备标识符
+      oaid: await requestOAID(this.context)
+    };
+    // 广告配置参数，开发者可根据项目实际情况设置
+    const adOptions: advertising.AdOptions = {};
+    // 创建AdLoader广告对象
+    const adLoader: advertising.AdLoader = new advertising.AdLoader(this.context);
+    try {
+      // 调用广告请求接口
+      adLoader.loadAd(adRequestParams, adOptions, adLoadListener);
+    } catch (e) {
+      hilog.error(0x0000, 'testTag', `Failed to load ad. Code is ${e.code}, message is ${e.message}`);
+    }
+  }
+}
+
+async function requestOAID(context: Context): Promise<string | undefined> {
+  // 向用户请求授权广告跨应用关联访问权限
+  let isPermissionGranted: boolean = false;
+  try {
+    const atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+    const result: PermissionRequestResult =
+      await atManager.requestPermissionsFromUser(context, ['ohos.permission.APP_TRACKING_CONSENT']);
+    isPermissionGranted = result.authResults[0] === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to request permission. Code is ${err.code}, message is ${err.message}`);
+  }
+  if (isPermissionGranted) {
+    hilog.info(0x0000, 'testTag', 'Succeeded in requesting permission');
+    try {
+      const oaid = await identifier.getOAID();
+      hilog.info(0x0000, 'testTag', 'Succeeded in getting OAID');
+      return oaid;
+    } catch (err) {
+      hilog.error(0x0000, 'testTag', `Failed to get OAID. Code is ${err.code}, message is ${err.message}`);
+    }
+  } else {
+    hilog.error(0x0000, 'testTag', 'Failed to request permission. User rejected');
+  }
+  return undefined;
+}
+```
+
+### Code block 3
+
+```
+import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 4
+
+```
+const KEY_INTERSTITIAL_STATUS = 'interstitial_ad_status';
+
+export class InterstitialAdStatusHandler {
+  // 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
+  private subscriber: commonEventManager.CommonEventSubscriber | null = null;
+
+  // 订阅方法，需要在每次展示广告前调用
+  public registerPPSReceiver(): void {
+    if (this.subscriber) {
+      this.unRegisterPPSReceiver();
+    }
+    // 订阅者信息
+    const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
+      events: ['com.huawei.hms.pps.action.PPS_INTERSTITIAL_STATUS_CHANGED'],
+      // publisherBundleName被设置为"com.huawei.hms.adsservice"，这意味着只有来自该包名的事件才会被订阅者接收和处理。
+      // 如果没有明确声明publisherBundleName，那么订阅者可能会收到来自其它包名的伪造事件，从而导致安全性问题或误导。
+      publisherBundleName: 'com.huawei.hms.adsservice'
+    };
+    // 创建订阅者回调
+    commonEventManager.createSubscriber(subscribeInfo,
+      (err: BusinessError, commonEventSubscriber: commonEventManager.CommonEventSubscriber) => {
+        if (err) {
+          hilog.error(0x0000, 'testTag', `Failed to create subscriber. Code is ${err.code}, message is ${err.message}`);
+          return;
+        }
+        hilog.info(0x0000, 'testTag', 'Succeeded in creating subscriber');
+        this.subscriber = commonEventSubscriber;
+        // 订阅公共事件回调
+        commonEventManager.subscribe(this.subscriber,
+          (err: BusinessError, commonEventData: commonEventManager.CommonEventData) => {
+            if (err) {
+              hilog.error(0x0000, 'testTag', `Failed to subscribe. Code is ${err.code}, message is ${err.message}`);
+            } else {
+              // 订阅者成功接收到公共事件
+              hilog.info(0x0000, 'testTag', 'Succeeded in subscribing data');
+              // 获取插屏广告页面变化状态
+              const status: string = commonEventData?.parameters?.[KEY_INTERSTITIAL_STATUS];
+              switch (status) {
+                case 'onAdOpen':
+                  hilog.info(0x0000, 'testTag', 'Status is onAdOpen');
+                  break;
+                case 'onAdClick':
+                  hilog.info(0x0000, 'testTag', 'Status is onAdClick');
+                  break;
+                case 'onAdClose':
+                  hilog.info(0x0000, 'testTag', 'Status is onAdClose');
+                  this.unRegisterPPSReceiver();
+                  break;
+                case 'onVideoPlayBegin':
+                  hilog.info(0x0000, 'testTag', 'Status is onVideoPlayBegin');
+                  break;
+                case 'onVideoPlayEnd':
+                  hilog.info(0x0000, 'testTag', 'Status is onVideoPlayEnd');
+                  break;
+                default:
+                  break;
+              }
+            }
+          });
+      });
+  }
+
+  // 取消订阅
+  public unRegisterPPSReceiver(): void {
+    commonEventManager.unsubscribe(this.subscriber, (err: BusinessError) => {
+      if (err) {
+        hilog.error(0x0000, 'testTag', `Failed to unsubscribe. Code is ${err.code}, message is ${err.message}`);
+      } else {
+        hilog.info(0x0000, 'testTag', 'Succeeded in unsubscribing');
+        this.subscriber = null;
+      }
+    });
+  }
+}
+```
+
+### Code block 5
+
+```
+import { common } from '@kit.AbilityKit';
+import { advertising } from '@kit.AdsKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// 事件订阅步骤中创建的文件
+import { InterstitialAdStatusHandler } from './InterstitialAdStatusHandler';
+```
+
+### Code block 6
+
+```
+@Entry
+@Component
+struct Index {
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    // ...
+  }
+
+  private async loadAd(): Promise<void> {
+    // 广告请求回调监听
+    const adLoadListener: advertising.AdLoadListener = {
+      onAdLoadFailure: (errorCode: number, errorMsg: string) => {
+        hilog.error(0x0000, 'testTag', `Failed to load ad. Code is ${errorCode}, message is ${errorMsg}`);
+      },
+      onAdLoadSuccess: (ads: Array<advertising.Advertisement>) => {
+        hilog.info(0x0000, 'testTag', 'Succeeded in loading ad');
+        try {
+          // 注册插屏广告状态监听器
+          new InterstitialAdStatusHandler().registerPPSReceiver();
+          // 广告展示参数，开发者可根据项目实际情况设置
+          const adDisplayOptions: advertising.AdDisplayOptions = {
+            // 是否静音
+            mute: true
+          };
+          // 此处ads[0]表示请求到的第一个广告，开发者可根据项目实际情况选择
+          advertising.showAd(ads[0], adDisplayOptions, this.context);
+        } catch (e) {
+          hilog.error(0x0000, 'testTag', `Failed to show ad. Code is ${e.code}, message is ${e.message}`);
+        }
+      }
+    };
+    // ...
+  }
+}
+```

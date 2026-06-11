@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-session-management_
 
+相机使用预览、拍照、录像、元数据功能前，均需要创建相机会话。
+
+在会话中，可以完成以下功能：
+
+配置相机的输入流和输出流。相机在拍摄前，必须完成输入输出流的配置。
+
 配置输入流即添加设备输入，对用户而言，相当于选择设备的某一相机拍摄；配置输出流，即选择数据将以什么形式输出。当应用需要实现拍照时，输出流应配置为预览流和拍照流，预览流的数据将显示在XComponent组件上，拍照流的数据将通过ImageReceiver接口的能力保存到相册中。
 
 添加闪光灯、调整焦距等配置。具体支持的配置及接口说明请参考@ohos.multimedia.camera (相机管理)。
@@ -101,7 +107,6 @@ async function startSession(videoSession: camera.VideoSession, cameraInput: came
    return;
   }
 
-
   try {
     await videoSession.start();
   } catch (error) {
@@ -119,7 +124,6 @@ async function switchOutput(videoSession: camera.VideoSession, videoOutput: came
     let err = error as BusinessError;
     console.error(`Failed to stop. error: ${err.code}`);
   }
-
 
   try {
     videoSession.beginConfig();
@@ -154,6 +158,103 @@ async function switchOutput(videoSession: camera.VideoSession, videoOutput: came
     console.error(`Failed to commitConfig. error: ${err.code}`);
   }
 
+  try {
+    await videoSession.start();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to start. error: ${err.code}`);
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 此处以videoSession为例。
+function getSession(cameraManager: camera.CameraManager): camera.VideoSession | undefined {
+  let videoSession: camera.VideoSession | undefined = undefined;
+  try {
+    videoSession = cameraManager.createSession(camera.SceneMode.NORMAL_VIDEO) as camera.VideoSession;
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to create the session instance. error: ${err.code}`);
+  }
+  return videoSession;
+}
+```
+
+### Code block 3
+
+```
+function beginConfig(videoSession: camera.VideoSession): void {
+  try {
+    videoSession.beginConfig();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to beginConfig. error: ${err.code}`);
+  }
+}
+```
+
+### Code block 4
+
+```
+async function startSession(videoSession: camera.VideoSession, cameraInput: camera.CameraInput, previewOutput: camera.PreviewOutput, photoOutput: camera.PhotoOutput): Promise<void> {
+  try {
+    videoSession.addInput(cameraInput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to addInput. error: ${err.code}`);
+  }
+  let canAddPreviewOutput : boolean = false;
+  try {
+    canAddPreviewOutput = videoSession.canAddOutput(previewOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add previewOutput. error: ${err.code}`);
+  }
+  if (!canAddPreviewOutput) {
+    console.error(`Failed to add preview output.`);
+    return;
+  }
+  try {
+    videoSession.addOutput(previewOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add previewOutput. error: ${err.code}`);
+  }
+  let canAddPhotoOutput : boolean = false
+  try {
+    canAddPhotoOutput = videoSession.canAddOutput(photoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add photoOutput error: ${err.code}`);
+  }
+  if (!canAddPhotoOutput) {
+    console.error(`Failed to add photo output.`);
+    return;
+  }
+  try {
+    videoSession.addOutput(photoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add photoOutput. error: ${err.code}`);
+  }
+  try {
+    await videoSession.commitConfig();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to commitConfig. error: ${err.code}`);
+   return;
+  }
 
   try {
     await videoSession.start();
@@ -162,5 +263,57 @@ async function switchOutput(videoSession: camera.VideoSession, videoOutput: came
     console.error(`Failed to start. error: ${err.code}`);
   }
 }
-设备输入(ArkTS)
-开发相机应用基础能力(ArkTS)
+```
+
+### Code block 5
+
+```
+async function switchOutput(videoSession: camera.VideoSession, videoOutput: camera.VideoOutput, photoOutput: camera.PhotoOutput): Promise<void> {
+  try {
+    await videoSession.stop();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to stop. error: ${err.code}`);
+  }
+
+  try {
+    videoSession.beginConfig();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to beginConfig. error: ${err.code}`);
+  }
+  // 从会话中移除拍照输出流。
+  try {
+    videoSession.removeOutput(photoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to remove photoOutput. error: ${err.code}`);
+  }
+  try {
+    videoSession.canAddOutput(videoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add videoOutput error: ${err.code}`);
+  }
+  // 向会话中添加视频输出流。
+  try {
+    videoSession.addOutput(videoOutput);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to add videoOutput. error: ${err.code}`);
+  }
+  try {
+    await videoSession.commitConfig();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to commitConfig. error: ${err.code}`);
+  }
+
+  try {
+    await videoSession.start();
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to start. error: ${err.code}`);
+  }
+}
+```

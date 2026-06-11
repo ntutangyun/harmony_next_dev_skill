@@ -9,6 +9,7 @@ Intents Kit支持开发者自定义意图，开发者可通过在其代码上添
 意图名称应当遵循动词+名词的结构，命名风格通常使用大写字母开头的驼峰式命名法。命名应精准反映意图的核心功能，不宜过长（最大长度：64）或模糊。
 
 形式：动词+名词，采用驼峰命名，如CancelAlarm、CheckWeather、CreateReminder等。
+
 逻辑：意图名应直接描述该意图的操作行为，看到意图名称即可推测出意图功能，且避免使用模棱两可的词汇。例如，SwitchRoute本意是切换导航路线，但SwitchRoute也有切换路由的意思，可以改为SwitchNavigationRoute。
 
 意图描述
@@ -32,14 +33,15 @@ Intents Kit支持开发者自定义意图，开发者可通过在其代码上添
 参数定义包含参数的功能描述、参数类型（type）、必须参数（required）。
 
 功能描述：需详细描述每个参数的含义及其对意图功能的影响，每个参数应仅负责一个功能，避免单一参数混合多种用途。例如，modifyAttribute参数，不能同时具有修改属性和属性值的含义。
+
 参数类型（type）：定义参数的类型，如string、int、array等。
+
 必须参数（required）：定位意图的必须参数，使用某一意图时必须指定的参数。
 
 以购买电影票为例，使用基于Link的装饰器来进行意图声明，实现的功能为通过deepLink的方式来拉起电影票购买页面，包含影院，影片名，时间三个自定义参数。
 
 import { InsightIntentLink, LinkParamCategory } from '@kit.AbilityKit';
 import { url } from '@kit.ArkTS';
-
 
 @InsightIntentLink({
   intentName: 'PurchaseMovieTickets',
@@ -99,5 +101,71 @@ export class PurchaseMovieTicketsLinkIntent {
      }
    }
  }
-基于函数的装饰器方案
-功能一步达场景方案
+
+## Code blocks
+
+### Code block 1
+
+```
+import { InsightIntentLink, LinkParamCategory } from '@kit.AbilityKit';
+import { url } from '@kit.ArkTS';
+
+@InsightIntentLink({
+  intentName: 'PurchaseMovieTickets',
+  domain: 'PurchaseTickets',
+  intentVersion: '1.0.1',
+  displayName: '购买电影票',
+  llmDescription: '用于在线购买电影票，允许用户选择指定影院、电影和场次时间进行购票。在用户明确表达购票需求，且已提供所有必要信息（cinema, film, time）时使用。如果信息不全或者用户只是查询电影信息、放映时间或票价，不应调用此工具。',
+  uri: 'decorator://ability.entry/main',
+  parameters: {
+    'type': 'object',
+    'properties': {
+      'cinema': {
+        'type': 'string',
+        'description': '目标影院名称，仅支持平台合作的影院'
+      },
+      'film': {
+        'type': 'string',
+        'description': '目标电影名称，需为当前上映或即将上映且在影院排片列表中的电影'
+      },
+      'time': {
+        'type': 'string',
+        'description': '放映时间，必须为未来的场次，且需为影院当天有效排片时间；时间格式应为\'YYYY-MM-DD HH:MM\'（例如\'2025-07-01 19:30\'）'
+      }
+    },
+    'required': ['cinema', 'film', 'time']
+  },
+  paramMappings:[
+    {
+      paramName: 'cinema',
+      paramMappingName: 'location',
+      paramCategory: LinkParamCategory.LINK
+    },
+    {
+      paramName: 'film',
+      paramMappingName: 'title',
+      paramCategory: LinkParamCategory.LINK
+    },
+    {
+      paramName: 'time',
+      paramMappingName: 'time',
+      paramCategory: LinkParamCategory.LINK
+    }
+  ]
+})
+export class PurchaseMovieTicketsLinkIntent {
+   private purchaseMovieTickets(uri: string): void {
+     // 从want中获取传入的链接信息。
+     // 如传入的url为：decorator://ability.entry/main?location=XXX影城&title=XXX&time=2025.06.01
+     try {
+       let urlObject = url.URL.parseURL(uri);
+       let location = urlObject.params.get('location');
+       if (location === 'XXX影城') {
+         // ...
+       }
+     } catch (error) {
+       console.error('Failed to parse URL:', error);
+     }
+   }
+ }
+```

@@ -37,12 +37,10 @@ function springCurve(velocity: number, mass: number, stiffness: number, damping:
 import { curves } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 
-
 class Spring {
   public title: string;
   public subTitle: ResourceStr;
   public iCurve: ICurve;
-
 
   constructor(title: string, subTitle: ResourceStr, iCurve: ICurve) {
     this.title = title;
@@ -50,7 +48,6 @@ class Spring {
     this.subTitle = subTitle;
   }
 }
-
 
 // 弹簧组件
 @Component
@@ -60,7 +57,6 @@ struct Motion {
   private subTitle: ResourceStr = '';
   private iCurve: ICurve | undefined = undefined;
 
-
   build() {
     Column() {
       Circle()
@@ -69,7 +65,6 @@ struct Motion {
         .foregroundColor('#317AF7')
         .width(30)
         .height(30)
-
 
       Column() {
         Text(this.title)
@@ -85,14 +80,12 @@ struct Motion {
       .alignItems(HorizontalAlign.Center)
       .height(100)
 
-
     }
     .height(110)
     .margin({ bottom: 5 })
     .alignItems(HorizontalAlign.Center)
   }
 }
-
 
 @Entry
 @Component
@@ -112,7 +105,6 @@ export struct SpringCurve {
     new Spring('springCurve', $r('app.string.springCurve_text1'),
       curves.springCurve(10, 1, 228, 30))
   ];
-
 
   build() {
     Row() {
@@ -135,7 +127,127 @@ export struct SpringCurve {
     })
   }
 }
-SpringCurve.ets
 
-传统曲线
-动画衔接
+## Code blocks
+
+### Code block 1
+
+```
+function springMotion(response?: number, dampingFraction?: number, overlapDuration?: number): ICurve;
+```
+
+### Code block 2
+
+```
+function responsiveSpringMotion(response?: number, dampingFraction?: number, overlapDuration?: number): ICurve;
+```
+
+### Code block 3
+
+```
+function interpolatingSpring(velocity: number, mass: number, stiffness: number, damping: number): ICurve;
+```
+
+### Code block 4
+
+```
+function springCurve(velocity: number, mass: number, stiffness: number, damping: number): ICurve;
+```
+
+### Code block 5
+
+```
+import { curves } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
+
+class Spring {
+  public title: string;
+  public subTitle: ResourceStr;
+  public iCurve: ICurve;
+
+  constructor(title: string, subTitle: ResourceStr, iCurve: ICurve) {
+    this.title = title;
+    this.iCurve = iCurve;
+    this.subTitle = subTitle;
+  }
+}
+
+// 弹簧组件
+@Component
+struct Motion {
+  @Prop dRotate: number = 0;
+  private title: string = '';
+  private subTitle: ResourceStr = '';
+  private iCurve: ICurve | undefined = undefined;
+
+  build() {
+    Column() {
+      Circle()
+        .translate({ y: this.dRotate })
+        .animation({ curve: this.iCurve, iterations: -1 })
+        .foregroundColor('#317AF7')
+        .width(30)
+        .height(30)
+
+      Column() {
+        Text(this.title)
+          .fontColor(Color.Black)
+          .fontSize(10).height(30)
+        Text(this.subTitle)
+          .fontColor(0xcccccc)
+          .fontSize(10).width(50)
+      }
+      .borderWidth({ top: 1 })
+      .borderColor(0xf5f5f5)
+      .width(80)
+      .alignItems(HorizontalAlign.Center)
+      .height(100)
+
+    }
+    .height(110)
+    .margin({ bottom: 5 })
+    .alignItems(HorizontalAlign.Center)
+  }
+}
+
+@Entry
+@Component
+export struct SpringCurve {
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  @State dRotate: number = 0;
+  private springs: Spring[] = [
+    // 请将$r('app.string.springCurve_text1')替换为实际资源文件，在本示例中该资源文件的value值为"周期1, 阻尼0.25"
+    new Spring('springMotion', $r('app.string.springCurve_text1'), curves.springMotion(1, 0.25)),
+    // 请将$r('app.string.springCurve_text2')替换为实际资源文件，在本示例中该资源文件的value值为"弹性跟手曲线"
+    new Spring('responsive' + '\n' + 'SpringMotion', $r('app.string.springCurve_text2'),
+      curves.responsiveSpringMotion(1, 0.25)),
+    // 请将$r('app.string.springCurve_text3')替换为实际资源文件，在本示例中该资源文件的value值为"初始速度10， 质量1， 刚度228， 阻尼30"
+    new Spring('interpolating' + '\n' + 'Spring', $r('app.string.springCurve_text3'),
+      curves.interpolatingSpring(10, 1, 228, 30)),
+    // 请将$r('app.string.springCurve_text1')替换为实际资源文件，在本示例中该资源文件的value值为"周期1, 阻尼0.25"
+    new Spring('springCurve', $r('app.string.springCurve_text1'),
+      curves.springCurve(10, 1, 228, 30))
+  ];
+
+  build() {
+    Row() {
+      ForEach(this.springs, (item: Spring) => {
+        Motion({
+          title: item.title,
+          subTitle: item.subTitle,
+          iCurve: item.iCurve,
+          dRotate: this.dRotate
+        })
+      })
+    }
+    .justifyContent(FlexAlign.Center)
+    .alignItems(VerticalAlign.Bottom)
+    .width('100%')
+    .height(437)
+    .margin({ top: 20 })
+    .onClick(() => {
+      this.dRotate = -50;
+    })
+  }
+}
+```

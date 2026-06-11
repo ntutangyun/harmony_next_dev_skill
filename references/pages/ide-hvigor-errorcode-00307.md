@@ -2,6 +2,28 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-errorcode-00307_
 
+00307001 创建或写文件失败
+
+错误信息
+
+EPERM: operation not permitted,create XXX failed.
+
+错误描述
+
+创建或写文件XXX失败。
+
+可能原因
+
+缺少创建或写文件的权限。
+
+处理步骤
+
+确保用户具有创建文件、写文件的权限。
+
+00307003 HSP依赖包的bundleType不正确
+
+错误信息
+
 The currentBundleType is shared, but the Package XXX bundleType is not shared.
 
 错误描述
@@ -33,6 +55,5 @@ The file is occupied.
 处理步骤
 
 排查报错文件是否被其他进程占用，工程目录、DevEco Studio的安装目录是否有特殊的权限控制。
+
 可尝试将杀毒软件临时关闭来验证报错是否由杀毒软件导致。
-规格错误码
-操作异常错误码

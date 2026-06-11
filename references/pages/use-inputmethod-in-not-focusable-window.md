@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/use-inputmethod-in-not-focusable-window_
 
+场景介绍
+
+应用获得焦点是使用输入法的必要条件，开发者需要正确处理焦点以确保输入法的正常工作。
+
 例如，在应用开发中，开发者可以通过setWindowFocusable，将创建的窗口的可获焦属性设置为false（如悬浮窗、辅助交互窗口等），并希望在该窗口中绘制输入框（如TextInput、TextArea或自绘输入框）以支持用户输入，即拉起系统键盘进行输入操作。
 
 系统限制
@@ -18,7 +22,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/use-input
 
 // Index.ets实现主窗的布局内容
 import { window } from '@kit.ArkUI';
-
 
 @Entry
 @Component
@@ -46,7 +49,6 @@ struct Index {
     }
   }
 
-
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
       TextInput({ placeholder: '点击创建并显示子窗' })
@@ -61,7 +63,6 @@ struct Index {
 
 // SubWindowIndex.ets实现子窗的布局内容
 import { window } from '@kit.ArkUI';
-
 
 @Entry
 @Component
@@ -85,7 +86,6 @@ struct SubWindowIndex {
       console.error(`Failed to shift focus to subWindow. Cause code: ${exception.code}, message: ${exception.message}`);
     }
   }
-
 
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
@@ -103,6 +103,111 @@ struct SubWindowIndex {
 // SubWindowIndex.ets实现子窗的布局内容
 import { window } from '@kit.ArkUI';
 
+@Entry
+@Component
+struct SubWindowIndex {
+  async shiftFocusToSubWindow() {
+    try {
+      let windowStage: window.WindowStage | undefined = AppStorage.get('windowStage');
+      if (windowStage == null) {
+        console.error('Failed to get the subwindow. Cause: windowStage is undefined');
+        return;
+      }
+      let subWindowList: window.Window[] = await windowStage?.getSubWindow();
+      let subWindow: window.Window = subWindowList[0];
+      // 1.将子窗口设置为可获焦
+      subWindow?.setWindowFocusable(true);
+      // 2.将焦点切换到子窗口
+      const mainWindowId: number = AppStorage.get('mainWindowId') || 0;
+      const subWindowId: number = AppStorage.get('subWindowId') || 0;
+      await window.shiftAppWindowFocus(mainWindowId, subWindowId);
+    } catch (exception) {
+      console.error(`Failed to shift focus to subWindow. Cause code: ${exception.code}, message: ${exception.message}`);
+    }
+  }
+
+  async shiftFocusToMainWindow() {
+    try {
+      let windowStage: window.WindowStage | undefined = AppStorage.get('windowStage');
+      if (windowStage == null) {
+        console.error('Failed to get the subwindow. Cause: windowStage is undefined');
+        return;
+      }
+      let subWindowList: window.Window[] = await windowStage?.getSubWindow();
+      let subWindow: window.Window = subWindowList[0];
+      // 将子窗口设置为不可获焦
+      subWindow?.setWindowFocusable(false);
+    } catch (exception) {
+      console.error(`Failed to shift focus to main window. Cause code: ${exception.code}, message: ${exception.message}`);
+    }
+  }
+
+  build() {
+    Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
+      TextInput({ placeholder: '这是一个输入组件' })
+        .onClick(() => {
+          // 点击子窗输入组件时，切换焦点至子窗口
+          this.shiftFocusToSubWindow();
+        })
+      Button('这是一个普通组件')
+        .onClick(() => {
+          // 点击子窗非输入组件时，可切换焦点回主窗口
+          this.shiftFocusToMainWindow();
+        })
+    }
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+// Index.ets实现主窗的布局内容
+import { window } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct Index {
+  async createSubWindow() {
+    try {
+      // 1.创建子窗并设置子窗id
+      let windowStage: window.WindowStage | undefined = AppStorage.get('windowStage');
+      if (windowStage == null) {
+        console.error('Failed to get windowStage');
+        return;
+      }
+      let options: window.SubWindowOptions = { title: 'title', decorEnabled: true };
+      let subWindow = await windowStage?.createSubWindowWithOptions('mySubWindow', options);
+      const subWindowId: number | undefined = subWindow?.getWindowProperties().id;
+      AppStorage.setOrCreate('subWindowId', subWindowId);
+      // 2.设置子窗为不可获焦
+      subWindow?.resize(500, 500);
+      subWindow?.setUIContent("pages/SubWindowIndex");
+      subWindow?.setWindowFocusable(false);
+      // 3.显示子窗
+      subWindow?.showWindow();
+    } catch (exception) {
+      console.error(`Failed to create the subWindow. Cause code: ${exception.code}, message: ${exception.message}`);
+    }
+  }
+
+  build() {
+    Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
+      TextInput({ placeholder: '点击创建并显示子窗' })
+        .onClick(() => {
+          this.createSubWindow();
+        })
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+// SubWindowIndex.ets实现子窗的布局内容
+import { window } from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -127,6 +232,46 @@ struct SubWindowIndex {
     }
   }
 
+  build() {
+    Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
+      TextInput({ placeholder: '这是一个输入组件' })
+        .onClick(() => {
+          // 用户点击子窗的输入组件，切换焦点至子窗
+          this.shiftFocusToSubWindow();
+        })
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+// SubWindowIndex.ets实现子窗的布局内容
+import { window } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct SubWindowIndex {
+  async shiftFocusToSubWindow() {
+    try {
+      let windowStage: window.WindowStage | undefined = AppStorage.get('windowStage');
+      if (windowStage == null) {
+        console.error('Failed to get the subwindow. Cause: windowStage is undefined');
+        return;
+      }
+      let subWindowList: window.Window[] = await windowStage?.getSubWindow();
+      let subWindow: window.Window = subWindowList[0];
+      // 1.将子窗口设置为可获焦
+      subWindow?.setWindowFocusable(true);
+      // 2.将焦点切换到子窗口
+      const mainWindowId: number = AppStorage.get('mainWindowId') || 0;
+      const subWindowId: number = AppStorage.get('subWindowId') || 0;
+      await window.shiftAppWindowFocus(mainWindowId, subWindowId);
+    } catch (exception) {
+      console.error(`Failed to shift focus to subWindow. Cause code: ${exception.code}, message: ${exception.message}`);
+    }
+  }
 
   async shiftFocusToMainWindow() {
     try {
@@ -144,7 +289,6 @@ struct SubWindowIndex {
     }
   }
 
-
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
       TextInput({ placeholder: '这是一个输入组件' })
@@ -160,5 +304,4 @@ struct SubWindowIndex {
     }
   }
 }
-Ime工具
-IPC Kit（进程间通信服务）
+```

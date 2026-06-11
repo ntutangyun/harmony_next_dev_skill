@@ -3,6 +3,3 @@
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-2_
 
 签名的公私钥对是由开发者自行生成，生成后将公钥上传到华为支付商户平台后可获取相应的请求参数authId，具体流程查看准备证书章节。
-
-接入开发时，请求参数的签名、结果验签在什么场景使用？
-GET请求的bodySign是对谁签名得到的？

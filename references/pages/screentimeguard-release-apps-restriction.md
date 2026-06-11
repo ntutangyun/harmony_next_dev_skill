@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-release-apps-restriction_
 
+场景介绍
+
 当用户希望解除用户访问某些特定应用的限制时，可以调用解除应用访问限制的接口。根据参数中传入的token以及限制类型（允许/禁用），将允许/禁用清单解析后，解除对应的应用的限制。
 
 业务流程
@@ -22,6 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 接口名	描述
 releaseAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	根据传入的应用token数组和限制类型（允许/禁用清单），解除对应应用的访问限制。
+
 说明
 
 定义释义：
@@ -66,5 +69,28 @@ private async releaseApps(appInfo: guardService.AppInfo): Promise<void> {
          `releaseAppsRestriction failed, errCode is ${err.code}, errMessage is ${err.message}`);
    }
 }
-设置应用访问限制
-Share Kit（分享服务）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { guardService } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+private async releaseApps(appInfo: guardService.AppInfo): Promise<void> {
+   try {
+      await guardService.releaseAppsRestriction(appInfo, guardService.RestrictionType.BLOCKLIST_TYPE);
+      // ...
+   } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, 'GuardService',
+         `releaseAppsRestriction failed, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```

@@ -2,6 +2,114 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-install-errorcode_
 
+00604001 无匹配版本
+
+错误信息
+
+No Match.
+
+错误描述
+
+无匹配版本。
+
+可能原因
+
+从服务器获取的ohpm版本号和oh-package.json5中配置的版本号不匹配。
+
+处理步骤
+
+检查包的可用版本，确保指定的版本存在，修改oh-package.json5中ohpm版本号。
+
+00604002 安装HAR包失败
+
+错误信息
+
+Install Pkg To Local Failed.
+
+错误描述
+
+安装本地包HAR失败。
+
+可能原因
+
+本地包或依赖的远程包不存在。
+
+安装目录权限不足或磁盘空间不足。
+
+处理步骤
+
+查看本地包的依赖配置是否正确。
+
+尝试写入权限的目录下进行操作，或清理磁盘后进行操作。
+
+00604003 本地安装HSP包失败
+
+错误信息
+
+Install Local Hsp Failed.
+
+错误描述
+
+安装本地HSP包失败。
+
+可能原因
+
+安装本地HSP包失败，路径下缺少.hsp和.har 文件。
+
+检查HSP包内的信息是否完整。
+
+处理步骤
+
+通过DevEco Studio生成一个新的TGZ包，通过对比，排查本地HSP包缺失的信息。
+
+00604004 未找到HSP文件
+
+错误信息
+
+Not FoundHsp File By Registry Tgz.
+
+错误描述
+
+未找到HSP文件。
+
+可能原因
+
+无法从HSP包中找到.hsp文件。
+
+处理步骤
+
+检查HSP包，确保包含.hsp 文件。
+
+00604005 依赖的包名无效
+
+错误信息
+
+Invalid CliInput Pkg.
+
+错误描述
+
+依赖的包名无效。
+
+可能原因
+
+从中心仓/私仓中未获取的依赖包名。
+
+处理步骤
+
+在中心仓或私仓搜索包名，确保输入包名正确。
+
+00604006 依赖项中包名与实际包名不一致
+
+错误信息
+
+Inconsistent Dep Names.
+
+错误描述
+
+依赖名称不一致。
+
+可能原因
+
 工程级build-profile.json5文件中useNormalizedOHMUrl或 .ohpmrc文件中enforce_dependency_key设置为true后，ohpm会校验配置的本地依赖名称与其对应的包名是否一致，若不一致会导致命令执行失败。
 
 处理步骤
@@ -97,6 +205,3 @@ Invalid Group Option.
 处理步骤
 
 检查包名，确保正确。
-
-ohpm info错误码
-ohpm list错误码

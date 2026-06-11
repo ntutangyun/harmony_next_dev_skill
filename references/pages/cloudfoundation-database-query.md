@@ -28,7 +28,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 async queryAll() {
   try {
     let resultArray = await databaseZone.query(condition);
@@ -37,6 +36,7 @@ async queryAll() {
     hilog.error(0x0000, 'testTag', `Failed to query data, code: ${err.code}, message: ${err.message}`);
   }
 }
+
 说明
 
 后续hilog都需要从@kit.PerformanceAnalysisKit中引入，将不在示例代码中呈现。
@@ -55,6 +55,7 @@ async queryBook(bookName: string): Promise<BookInfo> {
     return Promise.reject(err);
   }
 }
+
 复合查询
 
 开发者可以通过多个链式过滤条件，来获取满足条件的对象。多个链式条件之间默认用“与”运算。
@@ -102,6 +103,7 @@ condition.contains('bookName', '数据库')
   .and()
   .lessThan('borrowerTime', end);
 let resultArray = await databaseZone.query(condition);
+
 数据排序
 
 开发者可以通过orderByAsc()或者orderByDesc()实现对查询结果集中的对象按某个字段进行升序或者降序排列，排序谓词需要在其它查询谓词之后且在限定数据查询数量谓词之前。
@@ -109,6 +111,7 @@ let resultArray = await databaseZone.query(condition);
 condition.lessThan('price', 50.0)
   .orderByDesc('price');
 let resultArray = await databaseZone.query(condition);
+
 随机查询
 
 从6.0.1(21)版本开始，新增支持随机查询功能。
@@ -120,6 +123,7 @@ let resultArray = await databaseZone.query(condition);
 condition.orderByRandom()
   .limit(10);
 let resultArray = await databaseZone.query(condition);
+
 限定数据查询返回数量
 
 在查询数据时，开发者可以通过limit()限定查询返回数据的起始位置和数量，实现数据的分页。例如与排序查询谓词组合使用，可以实现获取top-N条数据。
@@ -138,6 +142,7 @@ condition.lessThan('price', 50.0)
   .orderByDesc('price')
   .limit(10, 6);
 let resultArray = await databaseZone.query(condition);
+
 对查询结果进行算术计算
 
 在查询数据时，可以通过calculateQuery()对查询结果对象中的某个字段进行算术计算并返回计算的结果。
@@ -153,5 +158,138 @@ async calculateQuery() {
     hilog.error(0x0000, 'testTag', `Failed to calculate queried data, code: ${err.code}, message: ${err.message}`);
   }
 }
-初始化数据库访问
-写入数据
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+async queryAll() {
+  try {
+    let resultArray = await databaseZone.query(condition);
+    hilog.info(0x0000, 'testTag', `Succeeded in querying data, result: ${JSON.stringify(resultArray)}`);
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to query data, code: ${err.code}, message: ${err.message}`);
+  }
+}
+```
+
+### Code block 2
+
+```
+async queryBook(bookName: string): Promise<BookInfo> {
+  try {
+    condition.equalTo('bookName', bookName);
+    let resultArray = await databaseZone.query(condition);
+    let bookInfo = resultArray[0];
+    hilog.info(0x0000, 'testTag', `Succeeded in querying data, result: ${JSON.stringify(resultArray)}`);
+    return Promise.resolve(bookInfo);
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to query data, code: ${err.code}, message: ${err.message}`);
+    return Promise.reject(err);
+  }
+}
+```
+
+### Code block 3
+
+```
+condition.contains('bookName', '数据库')
+  .greaterThan('price', 20.0)
+  .and()
+  .lessThan('price', 50.0);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 4
+
+```
+condition.contains('bookName', '数据库')
+  .lessThan('price', 20.0)
+  .or()
+  .greaterThan('price', 50.0);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 5
+
+```
+condition.contains('bookName', '史记')
+  .equalTo('author', '司马迁')
+  .greaterThan('price', 60.0);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 6
+
+```
+condition.contains('bookName', '自传')
+  .beginGroup()
+  .equalTo('author', '齐白石')
+  .or()
+  .equalTo('author', '司马迁')
+  .endGroup()
+  .greaterThan('price', 60.0);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 7
+
+```
+let begin = (new Date("2025-12-29T08:00:00.000+08:00")).getTime();
+let end = (new Date("2025-12-31T08:00:00.000+08:00")).getTime();
+condition.contains('bookName', '数据库')
+  .greaterThan('borrowerTime', begin)
+  .and()
+  .lessThan('borrowerTime', end);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 8
+
+```
+condition.lessThan('price', 50.0)
+  .orderByDesc('price');
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 9
+
+```
+condition.orderByRandom()
+  .limit(10);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 10
+
+```
+condition.lessThan('price', 50.0)
+  .limit(10);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 11
+
+```
+condition.lessThan('price', 50.0)
+  .orderByDesc('price')
+  .limit(10, 6);
+let resultArray = await databaseZone.query(condition);
+```
+
+### Code block 12
+
+```
+async calculateQuery() {
+  try {
+    condition.lessThan('price', 50.0);
+    let resultNum = await databaseZone.calculateQuery(condition, 'price', cloudDatabase.QueryCalculate.AVERAGE);
+    hilog.info(0x0000, 'testTag', `Succeeded in calculating queried data, result: ${JSON.stringify(resultNum)}`);
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to calculate queried data, code: ${err.code}, message: ${err.message}`);
+  }
+}
+```

@@ -9,6 +9,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 优化方案：
 
 优化前：在执行增量任务时，需要多次调用任务的输入输出方法。
+
 优化后：执行增量任务时，会缓存输入输出方法的结果，后续再次调用时会直接读取缓存结果，减少多次调用的开销。
 
 优化结果：减少编译时间。
@@ -26,6 +27,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 优化方案：
 
 优化前：任务调度时，待执行队列中的任务依次执行，增量构建的执行时间受到CompileArkTs任务开始执行时间的影响，CompileArkTs任务越晚执行，构建时间可能越长。
+
 优化后：通过优先执行CompileArkTs及其依赖的任务，能够尽早启动编译任务CompileArkTs，从而减少构建时间。
 
 优化结果：减少编译时间。
@@ -43,6 +45,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 优化方案：
 
 优化前：ArkTS代码编译时，单文件解析完成后会缓存在内存中。
+
 优化后：ArkTS代码编译时，在单文件解析完成后会写入磁盘，可以降低编译过程的峰值内存。
 
 优化结果：减少内存占用。
@@ -56,13 +59,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 可能影响：单文件解析后写入磁盘的时序被提前，可能导致用户自定义源码插桩插件在文件写入磁盘后执行，无法生效。
 
 说明
+
 仅在debug模式下生效。
+
 当进行代码覆盖率编译时，该字段不生效。
+
 优化编译中间产物生成
 
 优化方案：
 
 优化前：ArkTS代码编译时，会把ets/ts代码编译成中间态的js代码。
+
 优化后：ArkTS代码编译时，不会再生成中间态的js代码。
 
 优化结果：减少编译时间和内存占用。
@@ -80,24 +87,31 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 以下场景均不支持该字段，配置后也会生成中间态的js代码：
 
 FA模型。
+
 覆盖率测试。
+
 在release模式下，开启混淆构建包含js中间码的HAR。
+
 LiteWearable设备对应的工程。
+
 增量判断模块级跳过
 
-使用场景
+使用场景：
 
 从DevEco Studio 6.0.0 Beta3版本开始，如果有频繁修改代码进行增量构建的需求，可开启开关优化增量编译速度。
 
-使用约束
+使用约束：
 
 开启开关前，需要进行一次全量构建，确保构建产物build目录存在。
+
 开启开关后，仅支持修改模块src目录下的内容，如果修改src目录以外的其他内容，可能导致修改不生效或编译问题。
+
 不支持预览和Local Test。
 
 优化方案：
 
 优化前：各模块所有任务都需要进行增量判断。
+
 优化后：开启开关后，修改模块src目录下的内容，构建时，未修改的模块不会进行增量判断。
 
 优化结果：减少增量构建编译时间。
@@ -117,9 +131,6 @@ LiteWearable设备对应的工程。
 开启开关后，可通过excludeNodeByName方法排除一个不存在的模块。
 
 按照以上方式开启开关Enable ohpm execution by hvigor。
-在工程级build-profile.json5的module字段下，添加工程中不存在的模块，如testModule。
-
-调用excludeNodeByName方法，排除不存在的模块testModule。
 
 执行构建成功。
 
@@ -129,21 +140,24 @@ LiteWearable设备对应的工程。
 
 通过IClang提升C++增量编译效率
 
-使用场景
+使用场景：
 
 从DevEco Studio 6.0.1 Beta1版本开始，如果需要频繁修改某个cpp源文件，可开启IClang相关的开关，提升C++增量编译效率。IClang是一项C++函数级增量编译优化技术，详细介绍请参考毕昇编译器。
 
-使用约束
+使用约束：
 
 仅支持在debug编译模式下使用。
+
 需要使用毕昇编译器进行编译，即工程级build-profile.json5的nativeCompiler配置为BiSheng。
+
 首次修改cpp文件时，IClang会将该文件识别为频繁修改的目标文件，并为其生成缓存。因此，当第二次修改cpp文件并进行增量编译时，才会提升编译效率。
+
 修改头文件的内容或头文件的导入语句，包括顺序、语句间的空行或任何格式上的调整，都会导致缓存失效，无法提升编译效率。
 
 开启方式：
 
 方式一：点击File > Settings（macOS为DevEco Studio > Preferences/Settings） > Build, Execution, Deployment > Build Tools > Hvigor，勾选Enable C++ function level incremental compilation。
-方式二：模块级build-profile.json5的cppFlags、cFlags配置"-iclang"参数。
+
 "buildOption": {
   "externalNativeOptions": {
     "cppFlags": "-iclang",
@@ -153,5 +167,47 @@ LiteWearable设备对应的工程。
 
 可能影响：build-profile.json5文件会纳入项目版本管理，在该文件中增加-iclang参数后，项目其他开发人员会被动开启该实验特性。因此请在充分验证功能正确性后，再通过配置文件上传到代码仓。
 
-增量构建
-模块化编译
+## Code blocks
+
+### Code block 1
+
+```
+"properties": {
+  "hvigor.incremental.optimization": true
+}
+```
+
+### Code block 2
+
+```
+"properties": {
+  "hvigor.task.schedule.optimization": true
+}
+```
+
+### Code block 3
+
+```
+"properties": {
+  "ohos.arkCompile.singleFileEmit": true
+}
+```
+
+### Code block 4
+
+```
+"properties": {
+  "ohos.arkCompile.noEmitJs": true
+}
+```
+
+### Code block 5
+
+```
+"buildOption": {
+  "externalNativeOptions": {
+    "cppFlags": "-iclang",
+    "cFlags": "-iclang",
+  }
+}
+```

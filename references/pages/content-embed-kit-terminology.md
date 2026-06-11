@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/content-embed-kit-terminology_
 
+本文介绍Content Embed Kit相关术语。
+
+OE
+
 OE是Object Editor（对象编辑）的缩写，代表HarmonyOS提供的对象编辑框架与技术，用来实现应用间文档嵌入与协同编辑。
 
 OE文档
@@ -17,8 +21,11 @@ OE文档存储结构
 OE文档是一种采用结构化存储的复合文件，结构化存储定义了如何将单个文件视为有两种类型对象（存储对象和流对象）组成的层次化集合，这两种对象分别表现为目录和文件，如下图所示：
 
 root storage对象：在复合文件中，这个特殊的存储对象扮演着“根节点”的角色。它不仅是storage对象和stream对象层级结构的最顶层父对象，在访问任何子存储对象或流对象之前，必须先访问它。
+
 storage对象：复合文件中的一个对象，类似于文件系统中的目录。storage对象的父对象必须是另一个storage对象或root storage对象。
+
 stream对象：复合文件中的一个对象，类似于文件系统中的文件。stream对象的父对象必须是一个storage对象或root storage对象。
+
 OEID
 
 系统可识别的OE文档标识符，包含在文档中。系统通过OEID定位并加载支持该OE文档的OE服务端应用，从而实现编辑功能。
@@ -46,6 +53,3 @@ AMS (Ability Manager Service)：Ability管理服务，为OE SA提供内部接口
 BMS
 
 BMS (Bundle Manager Service)：包管理服务，为OE SA提供已安装应用中注册的OE Extension信息查询功能，并支持通过事件通知实现OE Extension信息的动态增加、修改和删除。
-
-Content Embed Kit常见问题
-Core File Kit（文件基础服务）

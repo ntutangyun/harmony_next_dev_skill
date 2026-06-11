@@ -2,10 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cancel-authentication_
 
+统一用户认证框架提供了cancel接口，当应用在认证过程中，需要取消认证时可调用该接口。
+
+接口说明
+
+具体参数、返回值、错误码等描述，请参考对应的cancel。
+
 此处仅展示了取消认证操作的接口，在取消认证前，需要先发起认证，发起认证的接口列表、详细说明可参考发起认证章节和API文档。
 
 接口名称	功能描述
 cancel(): void	取消本次认证操作。
+
 开发步骤
 
 申请权限：ohos.permission.ACCESS_BIOMETRIC。
@@ -27,7 +34,6 @@ handleAuthResultAndCanceling(userAuthInstance: userAuth.UserAuthInstance, exampl
       Logger.info('auth cancel successfully.');
       // ...
 }
-
 
 /*
  * cancel-authentication.md
@@ -58,8 +64,55 @@ cancelingUserAuthentication() {
     Logger.error(`auth failed, code is ${err?.code as number}, message is ${err?.message}`);
   }
 }
-Index.ets
+
 示例代码
+
 认证过程中取消认证
-发起认证
-感知和调整认证过程
+
+## Code blocks
+
+### Code block 1
+
+```
+handleAuthResultAndCanceling(userAuthInstance: userAuth.UserAuthInstance, exampleNumber: number) {
+  // ...
+    // 启动认证
+    userAuthInstance.start();
+    Logger.info('auth start successfully.');
+    // ...
+      // 取消认证
+      userAuthInstance.cancel();
+      Logger.info('auth cancel successfully.');
+      // ...
+}
+
+/*
+ * cancel-authentication.md
+ * 发起认证可信等级≥ATL3的人脸+锁屏密码认证后，取消认证请求
+ * */
+cancelingUserAuthentication() {
+  try {
+    const randData = getRandData();
+    if (!randData) {
+      return;
+    }
+    // 设置认证参数
+    const authParam: userAuth.AuthParam = {
+      challenge: randData,
+      authType: [userAuth.UserAuthType.PIN, userAuth.UserAuthType.FACE, userAuth.UserAuthType.FINGERPRINT],
+      authTrustLevel: userAuth.AuthTrustLevel.ATL3,
+    };
+    // 配置认证界面
+    const widgetParam: userAuth.WidgetParam = {
+      title: resourceToString($r('app.string.title')),
+    };
+    // 获取认证对象
+    const userAuthInstance = userAuth.getUserAuthInstance(authParam, widgetParam);
+    Logger.info('get userAuth instance successfully.');
+    this.handleAuthResultAndCanceling(userAuthInstance, ResultIndex.CANCEL);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    Logger.error(`auth failed, code is ${err?.code as number}, message is ${err?.message}`);
+  }
+}
+```

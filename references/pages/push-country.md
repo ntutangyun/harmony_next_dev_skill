@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-country_
 
+说明
+
 支持的设备中Wearable设备支持以下国家/地区，其他设备仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
 国家/地区名	英文名称
@@ -232,5 +234,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-coun
 也门	Yemen
 赞比亚	Zambia
 津巴布韦	Zimbabwe
-通知违规处罚标准
-Reader Kit（阅读服务）

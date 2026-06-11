@@ -131,6 +131,8 @@ Optional/notable fields:
 - `deviceTypes` values: `phone`, `tablet`, `2in1`, `tv`, `car`, `wearable`. Different modules can declare different sets.
 - `installationFree` is **auto-set** when `bundleType: atomicService` — don't set manually.
 - `isolationMode` (HAP only, on 2in1/tablet): `nonisolationFirst` / `isolationFirst` / `isolationOnly` / `nonisolationOnly` controls whether the module runs in its own process.
+- `executableBinaryPaths` (API 24+, object array): declares paths of in-app executable binaries. Only takes effect on PC/2in1 devices. Optional, defaults to empty. See `pages/module-configuration-file.md`.
+- `deviceTypes` `wearable` now accepts a `child` flag (API 24+) to require a kids' smart watch; the `selection` (划词/word-selection) ExtensionAbility type accepts third-party app config from API 24 (was system-app-only). See `pages/module-configuration-file.md` for the full tag table.
 
 ## Resources & references
 

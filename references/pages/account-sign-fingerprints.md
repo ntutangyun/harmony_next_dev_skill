@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-sign-fingerprints_
 
+请参考“应用开发准备”章节，完成以下操作步骤：
+
+创建项目和工程（如已完成，请跳过此步骤）。
+
+配置签名信息 （未成年人模式接口支持自动签名，其他接口仅支持手动签名方式）。
+
+添加公钥指纹。
+
+注意
+
+发布阶段，请参考发布流程章节，重新配置用于应用发布的签名信息、添加公钥指纹（必选）。
+
 检查是否需要配置公钥指纹：应用仅接入未成年人模式或compatibleSdkVersion>=20不需要配置公钥指纹，其他场景均需配置。
 
 检查公钥指纹是否配置成功：请在开发与服务中选择对应的项目和应用，检查是否已成功配置该应用的公钥指纹。
@@ -13,6 +25,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-s
 图1 修改前
 
 图2 修改后
-
-申请账号权限
-配置Client ID

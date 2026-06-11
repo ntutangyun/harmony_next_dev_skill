@@ -2,6 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-aipp-deployment_
 
+基本概念
+
+AIPP部署是指动态AIPP推理时开发者按需配置动态AIPP参数，从而达到使能AIPP功能。
+
+业务流程
+
+接口说明
+
+以下接口为AIPP参数设置接口，如要使用更丰富的设置和查询接口，请参见API参考。
+
+表1 CANN Kit模型推理AIPP设置相关接口功能介绍
+
+接口名	描述
 HiAI_AippParam* HMS_HiAIAippParam_Create(uint32_t batchNum);	动态AIPP配置实例创建。
 void HMS_HiAIAippParam_Destroy(HiAI_AippParam** aippParam);	动态AIPP配置实例销毁。
 OH_NN_ReturnCode HMS_HiAIAippParam_SetInputIndex(HiAI_AippParam* aippParam, uint32_t inputIndex);	设置动态AIPP配置作用于输入上的索引。
@@ -19,6 +32,7 @@ OH_NN_ReturnCode HMS_HiAIAippParam_SetDtcMeanPixel(HiAI_AippParam* aippParam, ui
 OH_NN_ReturnCode HMS_HiAIAippParam_SetDtcMinPixel(HiAI_AippParam* aippParam, uint32_t batchIndex, float minPixel[], uint32_t channelCount);	设置图片数据类型转换的通道像素最小值。
 OH_NN_ReturnCode HMS_HiAIAippParam_SetDtcVarReciPixel(HiAI_AippParam* aippParam, uint32_t batchIndex, float varReciPixel[], uint32_t channelCount);	设置图片数据类型转换的通道像素方差。
 OH_NN_ReturnCode HMS_HiAITensor_SetAippParams(NN_Tensor* tensor, HiAI_AippParam* aippParams[], size_t aippNum);	给输入Tensor设置AIPP参数。
+
 开发步骤
 
 调用HMS_HiAIAippParam_Create创建动态AIPP配置实例。
@@ -26,24 +40,35 @@ OH_NN_ReturnCode HMS_HiAITensor_SetAippParams(NN_Tensor* tensor, HiAI_AippParam*
 设置与计算图关联的配置。
 
 调用HMS_HiAIAippParam_SetInputIndex设置此动态AIPP配置所在输入的索引。
+
 调用HMS_HiAIAippParam_SetInputAippIndex设置此动态AIPP配置所在某个输入的输出分支索引。
 
 设置动态AIPP输入图片相关配置。
 
 调用HMS_HiAIAippParam_SetInputFormat设置输入图片的格式。
+
 调用HMS_HiAIAippParam_SetInputShape设置输入图片原始宽高。
 
 开发者按需设置以下动态AIPP功能参数。
 
 调用HMS_HiAIAippParam_SetChannelSwapConfig设置通道交换参数。
+
 调用HMS_HiAIAippParam_SetCscConfig设置图片色域转换参数。
+
 调用HMS_HiAIAippParam_SetCropConfig设置图片裁剪参数。
+
 调用HMS_HiAIAippParam_SetResizeConfig设置图片缩放大小参数。
+
 调用HMS_HiAIAippParam_SetPadConfig设置图片填充大小参数。
+
 调用HMS_HiAIAippParam_SetChannelPadding设置各通道上的填充值参数。
+
 调用HMS_HiAIAippParam_SetRotationAngle设置旋转角度。
+
 调用HMS_HiAIAippParam_SetDtcMeanPixel设置数据类型转换通道像素平均值。
+
 调用HMS_HiAIAippParam_SetDtcMinPixel设置数据类型转换通道像素最小值。
+
 调用HMS_HiAIAippParam_SetDtcVarReciPixel设置数据类型转换通道像素方差。
 
 将AIPP配置设置到NN_Tensor。
@@ -62,7 +87,6 @@ OH_NN_ReturnCode HMS_HiAITensor_SetAippParams(NN_Tensor* tensor, HiAI_AippParam*
 #include "CANNKit/hiai_aipp_param.h"
 #include "CANNKit/hiai_tensor.h"
 #include <vector>
-
 
 constexpr uint32_t BATCH_NUM = 1;
 // 创建一个batch数为1的动态aipp配置实例
@@ -94,6 +118,82 @@ constexpr unsigned int chnNum = 4;
 unsigned int pixelMeanPara[chnNum] = {1, 2, 3, 4};
 HMS_HiAIAippParam_SetDtcMeanPixel(aippPara, 0, pixelMeanPara, chnNum);
 
+// 准备输入Tensor
+size_t inputCount = 0;
+ret = OH_NNExecutor_GetInputCount(executor, &inputCount); // 创建executor可参考CANN Kit Codelab
+std::vector<NN_Tensor *> inputTensors;
+for (size_t i = 0; i < inputCount; ++i) {
+    // 创建executor可参考CANN Kit Codelab
+    NN_TensorDesc* desc = OH_NNExecutor_CreateInputTensorDesc(executor, i);
+    NN_Tensor* tensor = OH_NNTensor_Create(deviceID, desc); // 获取deviceID可参考CANN Kit Codelab
+    inputTensors.push_back(tensor);
+}
+// 准备aipp输入Tensor
+HiAI_AippParam* aippParas[1] = {aippPara};
+NN_Tensor* tensor = nullptr;
+ret = HMS_HiAITensor_SetAippParams(tensor, aippParas, 1);
+if (ret != OH_NN_SUCCESS ) {
+    return;
+}
+inputTensors.push_back(tensor);
+
+// 准备输出Tensor
+size_t outputCount = 0;
+ret = OH_NNExecutor_GetOutputCount(executor, &outputCount); // 创建executor可参考CANN Kit Codelab
+std::vector<NN_Tensor *> outputTensors;
+for (size_t i = 0; i < outputCount; i++) {
+    NN_TensorDesc* desc = OH_NNExecutor_CreateOutputTensorDesc(executor, i); // 创建executor可参考CANN Kit Codelab
+    NN_Tensor* tensor = OH_NNTensor_Create(deviceID, desc); // 获取deviceID可参考CANN Kit Codelab
+    outputTensors.push_back(tensor);
+}
+// 执行推理
+ret = OH_NNExecutor_RunSync(executor_, inputTensors.data(), 1, outputTensors.data(), 1);
+if (ret != OH_NN_SUCCESS ) {
+    return;
+}
+if (aippPara != nullptr) {
+    HMS_HiAIAippParam_Destroy(&aippPara);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "neural_network_runtime/neural_network_core.h"
+#include "CANNKit/hiai_aipp_param.h"
+#include "CANNKit/hiai_tensor.h"
+#include <vector>
+
+constexpr uint32_t BATCH_NUM = 1;
+// 创建一个batch数为1的动态aipp配置实例
+HiAI_AippParam* aippPara = HMS_HiAIAippParam_Create(BATCH_NUM);
+// 在多个输入情况下，设置索引以确定该AippParam对象作用于第几个输入
+uint32_t inputIndex = 0;
+OH_NN_ReturnCode ret = HMS_HiAIAippParam_SetInputIndex(aippPara, inputIndex);
+// 在data有多个输出分支时，设置AippParam对象作用域该输入的第几个输出分支
+uint32_t validInputAippIndex = 0;
+HMS_HiAIAippParam_SetInputAippIndex(aippPara, validInputAippIndex);
+// 设置AippParam对象的输入图像格式
+HMS_HiAIAippParam_SetInputFormat(aippPara, HIAI_YUV420SP_U8);
+// 设置AippParam对象的输入图像宽高
+HMS_HiAIAippParam_SetInputShape(aippPara, 224, 224);
+// 设置AippParam对象的CSC色域转换参数
+HMS_HiAIAippParam_SetCscConfig(aippPara, HIAI_YUV420SP_U8, HIAI_RGB888_U8, HIAI_JPEG);
+// 设置AippParam对象RB/UV通道交换
+HMS_HiAIAippParam_SetChannelSwapConfig(aippPara, true, false);
+// 设置AippParam对象第0个索引batch的crop参数
+HMS_HiAIAippParam_SetCropConfig(aippPara, 0, 0, 0, 100, 100);
+// 设置AippParam对象第0个索引batch的resize参数
+HMS_HiAIAippParam_SetResizeConfig(aippPara, 0, 110, 110);
+// 设置AippParam对象第0个索引batch的通道padding填充值
+HMS_HiAIAippParam_SetPadConfig(aippPara, 0, 1, 1, 1, 1);
+// 设置AippParam对象第0个索引batch的旋转角度
+HMS_HiAIAippParam_SetRotationAngle(aippPara, 0, 90.0);
+// 设置AippParam对象第0个batch的数据类型转换通道像素平均值
+constexpr unsigned int chnNum = 4;
+unsigned int pixelMeanPara[chnNum] = {1, 2, 3, 4};
+HMS_HiAIAippParam_SetDtcMeanPixel(aippPara, 0, pixelMeanPara, chnNum);
 
 // 准备输入Tensor
 size_t inputCount = 0;
@@ -114,7 +214,6 @@ if (ret != OH_NN_SUCCESS ) {
 }
 inputTensors.push_back(tensor);
 
-
 // 准备输出Tensor
 size_t outputCount = 0;
 ret = OH_NNExecutor_GetOutputCount(executor, &outputCount); // 创建executor可参考CANN Kit Codelab
@@ -132,5 +231,4 @@ if (ret != OH_NN_SUCCESS ) {
 if (aippPara != nullptr) {
     HMS_HiAIAippParam_Destroy(&aippPara);
 }
-模型推理
-异构
+```

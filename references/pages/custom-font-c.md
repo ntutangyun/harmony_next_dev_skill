@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/custom-font-c_
 
+场景介绍
+
 自定义字体是指开发者根据应用需求创建或选择的字体，通常用于实现特定的文字风格或满足独特的设计要求。当应用需要使用特定的文本样式和字符集时，可以注册并使用自定义字体进行文本渲染。
 
 实现流程
@@ -20,6 +22,7 @@ OH_Drawing_RegisterFont (OH_Drawing_FontCollection* , const char* fontFamily, co
 OH_Drawing_CreateTextStyle(void)	创建指向OH_Drawing_TextStyle对象的指针，用于设置文本样式。
 OH_Drawing_SetTextStyleFontFamilies (OH_Drawing_TextStyle *, int, const char *fontFamilies[])	设置字体类型。
 OH_Drawing_UnregisterFont (OH_Drawing_FontCollection* , const char* fontFamily)	通过字体家族名称取消注册自定义字体。
+
 开发步骤
 
 在工程的src/main/cpp/CMakeLists.txt文件中添加以下lib。
@@ -31,7 +34,6 @@ libnative_drawing.so
 #include <native_drawing/drawing_font_collection.h>
 #include <native_drawing/drawing_text_typography.h>
 #include <native_drawing/drawing_register_font.h>
-sample_bitmap.cpp
 
 创建字体管理器，建议优先使用OH_Drawing_CreateSharedFontCollection()创建可共享的字体集对象。
 
@@ -40,7 +42,6 @@ sample_bitmap.cpp
 使用OH_Drawing_CreateFontCollection()和OH_Drawing_CreateSharedFontCollection()均可创建字体管理器OH_Drawing_FontCollection对象，但前者创建的字体集指针对象只能被一个段落生成器OH_Drawing_TypographyCreate对象使用，无法被多个段落生成器OH_Drawing_TypographyCreate对象共享使用。如需在多个段落生成器OH_Drawing_TypographyCreate对象间共享使用，请使用后者创建可共享的字体集对象。
 
 OH_Drawing_FontCollection *fontCollection = OH_Drawing_CreateSharedFontCollection();
-sample_bitmap.cpp
 
 设置自定义字体的字体家族名和字体文件所在的沙箱路径。
 
@@ -52,7 +53,6 @@ sample_bitmap.cpp
 const char* fontFamily = "myFamilyName";
 // 该路径是待注册的自定义字体文件在应用设备下的路径，确保该自定义字体文件已正确放置在该路径下
 const char* fontPath = "/system/fonts/NotoSerifTamil[wdth,wght].ttf";
-sample_bitmap.cpp
 
 在字体管理器中使用OH_Drawing_RegisterFont()注册自定义字体。
 
@@ -64,7 +64,6 @@ OH_Drawing_RegisterFont接口返回结果的几种情况及含义如下所示：
 
 // 返回0为成功，1为文件不存在，2为打开文件失败，3为读取文件失败，4为寻找文件失败，5为获取大小失败，9文件损坏
 int errorCode = OH_Drawing_RegisterFont(fontCollection, fontFamily, fontPath);
-sample_bitmap.cpp
 
 确保自定义字体注册成功后，使用OH_Drawing_CreateTextStyle()接口创建文本样式对象，并使用OH_Drawing_SetTextStyleFontFamilies()接口加入自定义字体。
 
@@ -72,7 +71,6 @@ sample_bitmap.cpp
 const char* myFontFamilies[] = {"myFamilyName"};
 // 加入可使用的自定义字体
 OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
-sample_bitmap.cpp
 
 生成最终段落文本，使用自定义字体，以便实现最终的文本绘制和显示。
 
@@ -97,7 +95,6 @@ double maxWidth = width_;
 OH_Drawing_TypographyLayout(typography, maxWidth);
 // 将文本绘制到画布(0,100)上
 OH_Drawing_TypographyPaint(typography, cCanvas_, 0, 100);
-sample_bitmap.cpp
 
 如果需要释放自定义字体，可以使用OH_Drawing_UnregisterFont接口。
 
@@ -114,6 +111,94 @@ OH_Drawing_Typography* typography1 = OH_Drawing_CreateTypography(handler1);
 OH_Drawing_TypographyLayout(typography1, maxWidth);
 // 将文本绘制到画布(0,300)上
 OH_Drawing_TypographyPaint(typography1, cCanvas_, 0, 300);
-sample_bitmap.cpp
-使用主题字体（C/C++）
-系统字体的信息获取和使用（C/C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+libnative_drawing.so
+```
+
+### Code block 2
+
+```
+#include <native_drawing/drawing_font_collection.h>
+#include <native_drawing/drawing_text_typography.h>
+#include <native_drawing/drawing_register_font.h>
+```
+
+### Code block 3
+
+```
+OH_Drawing_FontCollection *fontCollection = OH_Drawing_CreateSharedFontCollection();
+```
+
+### Code block 4
+
+```
+// 后续使用自定义字体时，需使用到该字体家族名
+const char* fontFamily = "myFamilyName";
+// 该路径是待注册的自定义字体文件在应用设备下的路径，确保该自定义字体文件已正确放置在该路径下
+const char* fontPath = "/system/fonts/NotoSerifTamil[wdth,wght].ttf";
+```
+
+### Code block 5
+
+```
+// 返回0为成功，1为文件不存在，2为打开文件失败，3为读取文件失败，4为寻找文件失败，5为获取大小失败，9文件损坏
+int errorCode = OH_Drawing_RegisterFont(fontCollection, fontFamily, fontPath);
+```
+
+### Code block 6
+
+```
+// 如果已经注册成功自定义字体，填入自定义字体的字体家族名
+const char* myFontFamilies[] = {"myFamilyName"};
+// 加入可使用的自定义字体
+OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
+```
+
+### Code block 7
+
+```
+// 设置其他文本样式
+OH_Drawing_SetTextStyleColor(textStyle , OH_Drawing_ColorSetArgb(0xFF, 0x00, 0x00, 0x00));
+// 设置字体大小为60.0
+OH_Drawing_SetTextStyleFontSize(textStyle, 60.0);
+// 创建一个段落样式对象，以设置排版风格
+OH_Drawing_TypographyStyle *typographyStyle = OH_Drawing_CreateTypographyStyle();
+OH_Drawing_SetTypographyTextAlign(typographyStyle, TEXT_ALIGN_LEFT); // 设置段落样式为左对齐
+// 创建一个段落生成器
+OH_Drawing_TypographyCreate* handler = OH_Drawing_CreateTypographyHandler(typographyStyle, fontCollection);
+// 在段落生成器中设置文本样式
+OH_Drawing_TypographyHandlerPushTextStyle(handler, textStyle);
+// 在段落生成器中设置文本内容
+const char* text = "hello, 这段文字使用了自定义字体";
+OH_Drawing_TypographyHandlerAddText(handler, text);
+// 通过段落生成器生成段落
+OH_Drawing_Typography* typography = OH_Drawing_CreateTypography(handler);
+// 设置页面最大宽度
+double maxWidth = width_;
+OH_Drawing_TypographyLayout(typography, maxWidth);
+// 将文本绘制到画布(0,100)上
+OH_Drawing_TypographyPaint(typography, cCanvas_, 0, 100);
+```
+
+### Code block 8
+
+```
+// 注销对应的自定义字体
+OH_Drawing_UnregisterFont(fontCollection, fontFamily);
+OH_Drawing_TypographyCreate* handler1 = OH_Drawing_CreateTypographyHandler(typographyStyle, fontCollection);
+// 在段落生成器中设置文本样式
+OH_Drawing_TypographyHandlerPushTextStyle(handler1, textStyle);
+// 在段落生成器中设置文本内容
+const char* text1 = "hello, 这段文本的自定义字体被注销了";
+OH_Drawing_TypographyHandlerAddText(handler1, text1);
+// 通过段落生成器生成段落
+OH_Drawing_Typography* typography1 = OH_Drawing_CreateTypography(handler1);
+OH_Drawing_TypographyLayout(typography1, maxWidth);
+// 将文本绘制到画布(0,300)上
+OH_Drawing_TypographyPaint(typography1, cCanvas_, 0, 300);
+```

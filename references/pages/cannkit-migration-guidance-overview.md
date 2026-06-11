@@ -26,5 +26,3 @@ Kirin9030	3113
 不支持训练特性，包括右矩阵Load 3D功能、LoadDataTranspose部分特性	不支持。
 KirinX90/Kirin9030 AI处理器为耦合架构，而Ascend910B/Ascend910C AI处理器为分离架构	开发者编程时，不可以利用ASCENDC_IS_AIV/ASCENDC_IS_AIC宏进行AIV/AIC区分编程。
 硬件规格	开发者编程时，开发者应避免对硬件规格进行硬编码，而应通过从Platform中获取硬件规范，实现参数化编程。
-Ascend910B/Ascend910C到KirinX90/Kirin9030迁移指导
-基础API迁移指导

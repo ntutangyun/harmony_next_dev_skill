@@ -44,6 +44,7 @@ V1状态管理装饰器	装饰器说明
 ArkUI包含的通用UI装饰器列表如下：
 
 通用装饰器	装饰器说明
+@Entry	标记页面入口。
 @Builder	自定义构建函数。
 @LocalBuilder	维持组件关系。
 @BuilderParam	引用@Builder函数。
@@ -52,5 +53,3 @@ ArkUI包含的通用UI装饰器列表如下：
 @AnimatableExtend	定义可动画属性。
 @Require	校验构造传参。
 @Env	环境变量。
-基本语法概述
-声明式UI描述

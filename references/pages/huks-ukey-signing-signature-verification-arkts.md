@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-ukey-signing-signature-verification-arkts_
 
+当前指导提供以下示例，供开发者参考完成签名、验签开发：
+
+密钥算法为RSA、摘要算法为SHA256、填充模式为PSS
+
+具体的场景介绍及支持的算法规格，请参考签名/验签介绍及算法规格。
+
+开发步骤
+
+签名
+
 通过证书管理系统能力提供的证书选择接口获取keyUri作为resourceId，并作为密钥别名，打开资源后完成PIN码认证。
 
 指定待签名的明文数据。
@@ -27,18 +37,18 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-ukey
 调用finishSession结束密钥会话，验证签名。
 
 开发案例
-RSA/SHA256/PSS
+
+[h2]RSA/SHA256/PSS
+
 /*
  * 密钥算法为RSA，摘要算法为SHA256，填充模式为PSS
  */
 import { huks } from '@kit.UniversalKeystoreKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let handle: number;
 let plaintext = '123456';
 let signature: Uint8Array;
-
 
 function StringToUint8Array(str: string) {
   let arr: number[] = [];
@@ -48,7 +58,6 @@ function StringToUint8Array(str: string) {
   return new Uint8Array(arr);
 }
 
-
 function Uint8ArrayToString(fileData: Uint8Array) {
   let dataString = '';
   for (let i = 0; i < fileData.length; i++) {
@@ -56,7 +65,6 @@ function Uint8ArrayToString(fileData: Uint8Array) {
   }
   return dataString;
 }
-
 
 function GetRsaSignProperties() {
   let properties: Array<huks.HuksParam> = [{
@@ -81,6 +89,172 @@ function GetRsaSignProperties() {
   return properties;
 }
 
+function GetRsaVerifyProperties() {
+  let properties: Array<huks.HuksParam> = [{
+    tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
+    value: huks.HuksKeyAlg.HUKS_ALG_RSA
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
+    value: huks.HuksKeySize.HUKS_RSA_KEY_SIZE_2048
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_PADDING,
+    value: huks.HuksKeyPadding.HUKS_PADDING_PSS
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_DIGEST,
+    value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_PURPOSE,
+    value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_VERIFY
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_KEY_CLASS,
+    value: huks.HuksKeyClassType.HUKS_KEY_CLASS_EXTENSION
+  }];
+  return properties;
+}
+
+async function initSession(keyAlias: string, huksOptions: huks.HuksOptions) {
+  console.info(`promise: enter initSession`);
+  try {
+    await huks.initSession(keyAlias, huksOptions)
+      .then((data) => {
+        handle = data.handle;
+        console.info(`promise: initSession success`);
+      }).catch((error: BusinessError) => {
+        console.error(`promise: initSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
+      })
+  } catch (error) {
+    console.error(`promise: initSession input arg invalid`);
+  }
+}
+
+async function updateSession(handle: number, huksOptions: huks.HuksOptions) {
+  console.info(`promise: enter updateSession`);
+  try {
+    await huks.updateSession(handle, huksOptions)
+      .then((data) => {
+        let outData = data.outData as Uint8Array;
+        console.info(`promise: updateSession success, data = ${Uint8ArrayToString(outData)}`);
+      }).catch((error: BusinessError) => {
+        console.error(`promise: updateSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
+      })
+  } catch (error) {
+    console.error(`promise: updateSession input arg invalid`);
+  }
+}
+
+async function finishSession(handle: number, huksOptions: huks.HuksOptions) {
+  console.info(`promise: enter finishSession`);
+  try {
+    await huks.finishSession(handle, huksOptions)
+      .then((data) => {
+        signature = data.outData as Uint8Array;
+        console.info(`promise: finishSession success, data = ${Uint8ArrayToString(signature)}`);
+      }).catch((error: BusinessError) => {
+        console.error(`promise: finishSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
+      })
+  } catch (error) {
+    console.error(`promise: finishSession input arg invalid`);
+  }
+}
+
+async function Sign(keyAlias: string, plaintext: string) {
+  console.info(`enter Sign`);
+  let signProperties = GetRsaSignProperties();
+  let options: huks.HuksOptions = {
+    properties: signProperties,
+  }
+  await initSession(keyAlias, options);
+
+  if (handle !== undefined) {
+    options.inData = StringToUint8Array(plaintext);
+    await finishSession(handle, options);
+  }
+}
+
+async function Verify(keyAlias: string, plaintext: string, signature: Uint8Array) {
+  console.info(`enter Verify`);
+  let verifyProperties = GetRsaVerifyProperties();
+  let options: huks.HuksOptions = {
+    properties: verifyProperties,
+  }
+
+  await initSession(keyAlias, options);
+
+  if (handle !== undefined) {
+    options.inData = StringToUint8Array(plaintext);
+    await updateSession(handle, options);
+    options.inData = signature;
+    await finishSession(handle, options);
+  }
+}
+
+async function testSignVerify() {
+  // 假设keyAlias是已获取的resourceId
+  let keyAlias = JSON.stringify({
+    providerName: "testProviderName",
+    bundleName: "com.example.cryptoapplication",
+    abilityName: "CryptoExtension",
+    index: {
+      key: "testKey"
+    } as ESObject
+  });
+  await Sign(keyAlias, plaintext);
+  await Verify(keyAlias, plaintext, signature);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+/*
+ * 密钥算法为RSA，摘要算法为SHA256，填充模式为PSS
+ */
+import { huks } from '@kit.UniversalKeystoreKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+let handle: number;
+let plaintext = '123456';
+let signature: Uint8Array;
+
+function StringToUint8Array(str: string) {
+  let arr: number[] = [];
+  for (let i = 0, j = str.length; i < j; ++i) {
+    arr.push(str.charCodeAt(i));
+  }
+  return new Uint8Array(arr);
+}
+
+function Uint8ArrayToString(fileData: Uint8Array) {
+  let dataString = '';
+  for (let i = 0; i < fileData.length; i++) {
+    dataString += String.fromCharCode(fileData[i]);
+  }
+  return dataString;
+}
+
+function GetRsaSignProperties() {
+  let properties: Array<huks.HuksParam> = [{
+    tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
+    value: huks.HuksKeyAlg.HUKS_ALG_RSA
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
+    value: huks.HuksKeySize.HUKS_RSA_KEY_SIZE_2048
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_PADDING,
+    value: huks.HuksKeyPadding.HUKS_PADDING_PSS
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_DIGEST,
+    value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_PURPOSE,
+    value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN
+  }, {
+    tag: huks.HuksTag.HUKS_TAG_KEY_CLASS,
+    value: huks.HuksKeyClassType.HUKS_KEY_CLASS_EXTENSION
+  }];
+  return properties;
+}
 
 function GetRsaVerifyProperties() {
   let properties: Array<huks.HuksParam> = [{
@@ -105,7 +279,6 @@ function GetRsaVerifyProperties() {
   return properties;
 }
 
-
 async function initSession(keyAlias: string, huksOptions: huks.HuksOptions) {
   console.info(`promise: enter initSession`);
   try {
@@ -120,7 +293,6 @@ async function initSession(keyAlias: string, huksOptions: huks.HuksOptions) {
     console.error(`promise: initSession input arg invalid`);
   }
 }
-
 
 async function updateSession(handle: number, huksOptions: huks.HuksOptions) {
   console.info(`promise: enter updateSession`);
@@ -137,7 +309,6 @@ async function updateSession(handle: number, huksOptions: huks.HuksOptions) {
   }
 }
 
-
 async function finishSession(handle: number, huksOptions: huks.HuksOptions) {
   console.info(`promise: enter finishSession`);
   try {
@@ -153,7 +324,6 @@ async function finishSession(handle: number, huksOptions: huks.HuksOptions) {
   }
 }
 
-
 async function Sign(keyAlias: string, plaintext: string) {
   console.info(`enter Sign`);
   let signProperties = GetRsaSignProperties();
@@ -162,13 +332,11 @@ async function Sign(keyAlias: string, plaintext: string) {
   }
   await initSession(keyAlias, options);
 
-
   if (handle !== undefined) {
     options.inData = StringToUint8Array(plaintext);
     await finishSession(handle, options);
   }
 }
-
 
 async function Verify(keyAlias: string, plaintext: string, signature: Uint8Array) {
   console.info(`enter Verify`);
@@ -177,9 +345,7 @@ async function Verify(keyAlias: string, plaintext: string, signature: Uint8Array
     properties: verifyProperties,
   }
 
-
   await initSession(keyAlias, options);
-
 
   if (handle !== undefined) {
     options.inData = StringToUint8Array(plaintext);
@@ -188,7 +354,6 @@ async function Verify(keyAlias: string, plaintext: string, signature: Uint8Array
     await finishSession(handle, options);
   }
 }
-
 
 async function testSignVerify() {
   // 假设keyAlias是已获取的resourceId
@@ -203,5 +368,4 @@ async function testSignVerify() {
   await Sign(keyAlias, plaintext);
   await Verify(keyAlias, plaintext, signature);
 }
-签名/验签介绍及算法规格
-签名/验签(C/C++)
+```

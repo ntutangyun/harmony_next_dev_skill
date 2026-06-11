@@ -21,7 +21,6 @@ HAR转HSP的操作步骤
     // ...
   }
 }
-module.json5
 
 在resources\base下新增profile文件夹，在profile下新增一个main_pages.json文件，并配置如下内容。
 
@@ -38,7 +37,6 @@ module.json5
 struct PageIndex {
   @State message: string = 'hello world';
 
-
   build() {
     Row() {
       Column() {
@@ -51,7 +49,6 @@ struct PageIndex {
     .height('100%')
   }
 }
-PageIndex.ets
 
 删除HAR模块的build-profile.json5文件中的consumerFiles字段配置。
 
@@ -60,12 +57,10 @@ PageIndex.ets
 // library\hvigorfile.ts
 import { hspTasks } from '@ohos/hvigor-ohos-plugin';
 
-
 export default {
   system: hspTasks,  // 编译修改成HSP的任务
   plugins:[]
 }
-hvigorfile.ts
 
 修改oh-package.json5文件，新增packageType配置。
 
@@ -73,7 +68,6 @@ hvigorfile.ts
   // ...
   "packageType": "InterfaceHar"
 }
-oh-package.json5
 
 修改项目根目录下的build-profile.json5文件，在modules标签下找到library的配置，新增targets标签。
 
@@ -92,6 +86,92 @@ oh-package.json5
     ]
   }
 ],
-build-profile.json5
-配置应用图标和名称
-HSP转HAR指导
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    // ...
+    "type": "shared",
+    "deliveryWithInstall": true,
+    "pages": "$profile:main_pages",
+    // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "src": [
+    "pages/PageIndex"
+  ]
+}
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct PageIndex {
+  @State message: string = 'hello world';
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 4
+
+```
+// library\hvigorfile.ts
+import { hspTasks } from '@ohos/hvigor-ohos-plugin';
+
+export default {
+  system: hspTasks,  // 编译修改成HSP的任务
+  plugins:[]
+}
+```
+
+### Code block 5
+
+```
+{
+  // ...
+  "packageType": "InterfaceHar"
+}
+```
+
+### Code block 6
+
+```
+"modules": [
+  // ...
+  {
+    "name": "library",
+    "srcPath": "./library",
+    "targets": [
+      {
+        "name": "default",
+        "applyToProducts": [
+          "default"
+        ]
+      }
+    ]
+  }
+],
+```

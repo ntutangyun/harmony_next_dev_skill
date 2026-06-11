@@ -16,7 +16,7 @@ Image(src: PixelMap | ResourceStr | DrawableDescriptor)
 
 Image支持加载存档图、多媒体像素图和可绘制描述符三种类型。
 
-存档图类型数据源
+[h2]存档图类型数据源
 
 存档图类型的数据源可以分为本地资源、网络资源、Resource资源、媒体库资源和base64。
 
@@ -33,7 +33,6 @@ Image组件引入本地图片路径，即可显示图片（根目录为ets文件
 // 'images/view.jpg'需要替换为开发者所需的资源文件
 Image('images/view.jpg')
   .width(200)
-LoadingResources.ets
 
 加载本地图片过程中，如果对图片进行修改或者替换，可能会引起应用崩溃。因此需要覆盖图片文件时，应该先删除该文件再重新创建一个同名文件。
 
@@ -48,6 +47,7 @@ LoadingResources.ets
 更多图片缓存设置请参考setImageCacheCount、setImageRawDataCacheSize和setImageFileCacheSize。这三个图片缓存接口主要用于支持简单、通用的场景，后续不再继续演进，且在灵活和扩展性方面存在一定限制，例如：
 
 无法获取当前缓存占用信息。Image组件目前不支持查询磁盘缓存的实时状态，包括文件总大小和文件数量。
+
 缓存策略不可定制，缺乏缓存状态观测能力。开发者无法通过接口感知缓存命中率、淘汰次数等运行时的指标，难以基于实际缓存效果进行动态调优。
 
 对于复杂情况，推荐使用ImageKnife，该图像库提供了更灵活、可扩展的缓存策略以及完善的生命周期管理能力，更适合复杂业务需求。
@@ -60,7 +60,6 @@ LoadingResources.ets
 
 // $r('app.string.LoadingResources')需要替换为开发者所需的资源文件，资源文件中的value值请替换为真实路径
 Image($r('app.string.LoadingResources'))
-LoadingResources.ets
 
 Resource资源
 
@@ -72,7 +71,6 @@ Resource资源
 
 // 请将$r('app.media.icon')替换为实际资源文件
 Image($r('app.media.icon'))
-LoadingResources.ets
 
 还可以将图片放在rawfile文件夹下。
 
@@ -82,19 +80,16 @@ LoadingResources.ets
 
 // $rawfile('example1.png')需要替换为开发者所需的资源文件
 Image($rawfile('example1.png'))
-LoadingResources.ets
 
 媒体库file://data/storage
 
 支持file://路径前缀的字符串，用于访问通过选择器提供的图片路径。
 
-调用接口获取图库的照片url。
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0001;
 const TAG = 'Sample_imagecomponent';
-
 
 @Entry
 @Component
@@ -123,7 +118,6 @@ struct MediaLibraryFile {
     };
   };
 
-
   // aboutToAppear中调用上述函数，获取图库的所有图片url，存在imgDatas中
   async aboutToAppear() {
     this.getAllImg();
@@ -142,12 +136,10 @@ struct MediaLibraryFile {
     }.width('100%').height('100%')
   }
 }
-LoadImageResources.ets
-从媒体库获取的url格式通常如下。
+
 // 'file://media/Photos/5'需要替换为开发者所需的资源文件，资源文件中的value值请替换为真实路径
 Image('file://media/Photos/5')
   .width(200)
-LoadingResources.ets
 
 base64
 
@@ -155,7 +147,7 @@ base64
 
 Base64格式字符串可用于存储图片的像素数据，在网页上使用较为广泛。
 
-多媒体像素图
+[h2]多媒体像素图
 
 PixelMap是图片解码后的像素图，具体用法请参考Image Kit简介。以下示例将加载的网络图片返回的数据解码成PixelMap格式，再显示在Image组件上。
 
@@ -166,14 +158,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0001;
 const TAG = 'Sample_imagecomponent';
 
-
 @Entry
 @Component
 struct HttpExample {
   outData: http.HttpResponse | undefined = undefined;
   code: http.ResponseCode | number | undefined = undefined;
   @State image: PixelMap | undefined = undefined; // 创建PixelMap状态变量
-
 
   // 使用createHttp接口将加载的网络图片返回的数据解码成PixelMap格式，再显示在Image组件上
   aboutToAppear(): void {
@@ -198,7 +188,6 @@ struct HttpExample {
       });
   };
 
-
   build() {
     Column() {
       // 显示图片
@@ -208,8 +197,8 @@ struct HttpExample {
     }
   }
 }
-MultimediaPixelArt.ets
-可绘制描述符
+
+[h2]可绘制描述符
 
 DrawableDescriptor是ArkUI提供的一种高级图片抽象机制，它通过将图片资源封装为可编程对象，实现了传统Image组件难以实现的动态组合与运行时控制功能。开发者可利用它实现图片的分层叠加（如徽章图标）、动态属性调整（如颜色滤镜）、复杂动画序列等高级效果，适用于需要灵活控制图片展现或实现复杂视觉交互的场景。详细使用方法，请参考DrawableDescriptor。
 
@@ -224,7 +213,6 @@ import {
 } from '@kit.ArkUI';
 import { image } from '@kit.ImageKit';
 
-
 @Entry
 @Component
 struct DrawableDescriptorType {
@@ -238,7 +226,6 @@ struct DrawableDescriptorType {
     duration: 3000,
     iterations: -1
   };
-
 
   // 开发者可利用DrawableDescriptor实现图片的分层叠加（如徽章图标），动态属性调整（如颜色滤镜），复杂动画序列等高级效果
   async aboutToAppear() {
@@ -274,7 +261,6 @@ struct DrawableDescriptorType {
     };
   };
 
-
   // 辅助方法：从资源获取PixelMap
   private async getPixmapFromMedia(resource: Resource): Promise<image.PixelMap | undefined> {
     const unit8Array = await this.getUIContext().getHostContext()?.resourceManager.getMediaContent(resource.id);
@@ -289,7 +275,6 @@ struct DrawableDescriptorType {
     return pixelMap;
   };
 
-
   // 辅助方法：获取DrawableDescriptor
   private async getDrawableDescriptor(resource: Resource): Promise<DrawableDescriptor | undefined> {
     const resManager = this.getUIContext().getHostContext()?.resourceManager;
@@ -298,7 +283,6 @@ struct DrawableDescriptorType {
     };
     return (resManager.getDrawableDescriptor(resource.id)) as DrawableDescriptor;
   };
-
 
   build() {
     RelativeContainer() {
@@ -334,7 +318,6 @@ struct DrawableDescriptorType {
     .margin(50)
   }
 }
-DrawableDescriptor.ets
 
 显示矢量图
 
@@ -348,13 +331,12 @@ SVG格式的图片可以使用fillColor属性改变图片的绘制颜色。
 Image($r('app.media.cloud'))
   .width(50)
   .fillColor(Color.Blue)
-DisplayVectorDiagram.ets
 
 图3 原始图片
 
 图4 设置绘制颜色后的SVG图片
 
-矢量图引用位图
+[h2]矢量图引用位图
 
 如果Image加载的SVG图源中包含对本地位图的引用，则SVG图源的路径应当设置为以ets为根目录的工程路径，同时，本地位图的路径应设置为与SVG图源同级的相对路径。
 
@@ -368,7 +350,6 @@ Image加载的SVG图源路径设置方法如下所示：
 Image('/images/icon.svg')
   .width(50)
   .height(50)
-DisplayVectorDiagram.ets
 
 SVG图源通过<image>标签的xlink:href属性指定本地位图路径，本地位图路径设置为跟SVG图源同级的相对路径：
 
@@ -382,7 +363,7 @@ SVG图源通过<image>标签的xlink:href属性指定本地位图路径，本地
 
 给Image组件设置属性可以使图片显示更灵活，达到一些自定义的效果。以下是几个常用属性的使用示例，完整属性信息详见Image。
 
-设置图片缩放类型
+[h2]设置图片缩放类型
 
 通过设置objectFit属性，可以使图片在高度和宽度确定的框内进行缩放。
 
@@ -390,7 +371,6 @@ SVG图源通过<image>标签的xlink:href属性指定本地位图路径，本地
 @Component
 struct ImageScalingType {
   scroller: Scroller = new Scroller();
-
 
   build() {
     Scroll(this.scroller) {
@@ -431,7 +411,6 @@ struct ImageScalingType {
             .overlay('Auto', { align: Alignment.Bottom, offset: { x: 0, y: 20 } })
         }
 
-
         Column() {
           // 请将$r('app.media.img_2')替换为实际资源文件
           Image($r('app.media.img_2'))
@@ -471,9 +450,8 @@ struct ImageScalingType {
     }
   }
 }
-SetImageZoomType.ets
 
-图片插值
+[h2]图片插值
 
 当原图分辨率较低并放大显示时，图片会变得模糊并出现锯齿。这时可以使用interpolation属性对图片进行插值，以提高显示清晰度。
 
@@ -504,7 +482,6 @@ struct ImageInterpolationType {
       }.width('100%')
       .justifyContent(FlexAlign.Center)
 
-
       Row() {
         // 请将$r('app.media.grass')替换为实际资源文件
         Image($r('app.media.grass'))
@@ -530,9 +507,8 @@ struct ImageInterpolationType {
     .height('100%')
   }
 }
-ImageInterpolation.ets
 
-设置图片重复样式
+[h2]设置图片重复样式
 
 通过objectRepeat属性设置图片的重复样式方式，重复样式请参考ImageRepeat枚举说明。
 
@@ -579,9 +555,8 @@ struct ImageRepetitionStyle {
     }.height(150).width('100%').padding(8)
   }
 }
-SetImageRepetitionStyle.ets
 
-设置图片渲染模式
+[h2]设置图片渲染模式
 
 通过renderMode属性设置图片的渲染模式为原色或黑白。
 
@@ -613,9 +588,8 @@ struct SetImageRenderingMode {
     }.height(150).width('100%').padding({ top: 20,right: 10 })
   }
 }
-SetImageRenderingMode.ets
 
-设置图片解码尺寸
+[h2]设置图片解码尺寸
 
 通过sourceSize属性设置图片解码尺寸，降低图片的分辨率。
 
@@ -658,9 +632,8 @@ struct SetImageDecodingSize {
     }
   }
 }
-SetImageDecodingSize.ets
 
-为图片添加滤镜效果
+[h2]为图片添加滤镜效果
 
 通过colorFilter调整图片的像素颜色，为图片添加滤镜。
 
@@ -689,16 +662,15 @@ struct AddFilterEffectsToImages {
     }
   }
 }
-AddFilterEffectsToImages.ets
 
-同步加载图片
+[h2]同步加载图片
 
 一般情况下，图片加载流程会异步进行，以避免阻塞主线程，影响UI交互。但是特定情况下，图片刷新时会出现闪烁，这时可以使用syncLoad属性，使图片同步加载，从而避免出现闪烁。不建议图片加载较长时间时使用，会导致页面无法响应。
 
 // 请将$r('app.media.icon')替换为实际资源文件
 Image($r('app.media.icon'))
   .syncLoad(true)
-DisplayVectorDiagram.ets
+
 事件调用
 
 通过在Image组件上绑定onComplete事件，图片加载成功后可以获取图片的必要信息。如果图片加载失败，也可以通过绑定onError回调来获得结果。
@@ -707,7 +679,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0001;
 const TAG = 'Sample_imagecomponent';
 
-
 @Entry
 @Component
 struct EventCall {
@@ -715,7 +686,6 @@ struct EventCall {
   @State heightValue: number = 0;
   @State componentWidth: number = 0;
   @State componentHeight: number = 0;
-
 
   build() {
     Column() {
@@ -748,10 +718,6 @@ struct EventCall {
     }
   }
 }
-EventCall.ets
-
-媒体展示
-视频播放 (Video)
 
 ## Code blocks
 
@@ -799,7 +765,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0001;
 const TAG = 'Sample_imagecomponent';
 
-
 @Entry
 @Component
 struct MediaLibraryFile {
@@ -826,7 +791,6 @@ struct MediaLibraryFile {
       hilog.info(DOMAIN, TAG,`PhotoViewPicker failed with. Code: ${code}, message: ${message}`);
     };
   };
-
 
   // aboutToAppear中调用上述函数，获取图库的所有图片url，存在imgDatas中
   async aboutToAppear() {
@@ -866,14 +830,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0001;
 const TAG = 'Sample_imagecomponent';
 
-
 @Entry
 @Component
 struct HttpExample {
   outData: http.HttpResponse | undefined = undefined;
   code: http.ResponseCode | number | undefined = undefined;
   @State image: PixelMap | undefined = undefined; // 创建PixelMap状态变量
-
 
   // 使用createHttp接口将加载的网络图片返回的数据解码成PixelMap格式，再显示在Image组件上
   aboutToAppear(): void {
@@ -898,7 +860,6 @@ struct HttpExample {
       });
   };
 
-
   build() {
     Column() {
       // 显示图片
@@ -922,7 +883,6 @@ import {
 } from '@kit.ArkUI';
 import { image } from '@kit.ImageKit';
 
-
 @Entry
 @Component
 struct DrawableDescriptorType {
@@ -936,7 +896,6 @@ struct DrawableDescriptorType {
     duration: 3000,
     iterations: -1
   };
-
 
   // 开发者可利用DrawableDescriptor实现图片的分层叠加（如徽章图标），动态属性调整（如颜色滤镜），复杂动画序列等高级效果
   async aboutToAppear() {
@@ -972,7 +931,6 @@ struct DrawableDescriptorType {
     };
   };
 
-
   // 辅助方法：从资源获取PixelMap
   private async getPixmapFromMedia(resource: Resource): Promise<image.PixelMap | undefined> {
     const unit8Array = await this.getUIContext().getHostContext()?.resourceManager.getMediaContent(resource.id);
@@ -987,7 +945,6 @@ struct DrawableDescriptorType {
     return pixelMap;
   };
 
-
   // 辅助方法：获取DrawableDescriptor
   private async getDrawableDescriptor(resource: Resource): Promise<DrawableDescriptor | undefined> {
     const resManager = this.getUIContext().getHostContext()?.resourceManager;
@@ -996,7 +953,6 @@ struct DrawableDescriptorType {
     };
     return (resManager.getDrawableDescriptor(resource.id)) as DrawableDescriptor;
   };
-
 
   build() {
     RelativeContainer() {
@@ -1068,7 +1024,6 @@ Image('/images/icon.svg')
 struct ImageScalingType {
   scroller: Scroller = new Scroller();
 
-
   build() {
     Scroll(this.scroller) {
       Row() {
@@ -1107,7 +1062,6 @@ struct ImageScalingType {
             // overlay接口暂不支持深色模式
             .overlay('Auto', { align: Alignment.Bottom, offset: { x: 0, y: 20 } })
         }
-
 
         Column() {
           // 请将$r('app.media.img_2')替换为实际资源文件
@@ -1179,7 +1133,6 @@ struct ImageInterpolationType {
           .margin(10)
       }.width('100%')
       .justifyContent(FlexAlign.Center)
-
 
       Row() {
         // 请将$r('app.media.grass')替换为实际资源文件
@@ -1376,7 +1329,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0x0001;
 const TAG = 'Sample_imagecomponent';
 
-
 @Entry
 @Component
 struct EventCall {
@@ -1384,7 +1336,6 @@ struct EventCall {
   @State heightValue: number = 0;
   @State componentWidth: number = 0;
   @State componentHeight: number = 0;
-
 
   build() {
     Column() {

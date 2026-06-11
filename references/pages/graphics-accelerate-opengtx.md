@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-opengtx_
 
+概述
+
 OpenGTX是GPU Turbo X的开放式入口，根据游戏开发者主动提供的游戏过程中的关键信息，使能LTPO（动态帧率/刷新率）等游戏加速方案，助力游戏开发者打造高画质、高流畅、低功耗极致体验。LTPO通过动态感知游戏渲染状态、游戏场景、设备状态等关键信息，动态调整游戏的帧率/刷新率以及设备的SOC/DDR频率。
 
 业务流程
@@ -36,7 +38,7 @@ LTPO的主要业务流程如下：
 
 本节介绍OpenGTX的开发接入，从流程上分别阐述每个步骤的实现和调用。详细代码请参考OpenGTX Sample。
 
-设置项目配置项
+[h2]设置项目配置项
 
 在“src/main/module.json5”的module层级中添加以下配置。
 
@@ -46,13 +48,16 @@ LTPO的主要业务流程如下：
     "value": "true"
   }
 ]
-头文件引用
+
+[h2]头文件引用
 
 引用Graphics Accelerate Kit OpenGTX头文件：opengtx_base.h。
 
 // 引用OpenGTX头文件 opengtx_base.h
 #include <graphics_game_sdk/opengtx_base.h>
-编写CMakeLists.txt
+
+[h2]编写CMakeLists.txt
+
 find_library(
     # Sets the name of the path variable.
     opengtx-lib
@@ -72,11 +77,11 @@ find_library(
     hilog_ndk.z
 )
 
-
 target_link_libraries(entry PUBLIC
     ${opengtx-lib} ${GLES-lib} ${hilog-lib}
 )
-OpenGTX初始化
+
+[h2]OpenGTX初始化
 
 在surface创建后，会触发其事件回调函数Core::OnSurfaceCreated()，在该函数中完成OpenGTX上下文实例创建、OpenGTX属性配置和功能激活。其中OpenGTX上下文实例负责管理OpenGTX整个生命周期。
 
@@ -145,7 +150,8 @@ errorCode = HMS_OpenGTX_Deactivate(context_);
 if (errorCode != OPENGTX_SUCCESS) {
     return false;
 }
-OpenGTX关键信息更新
+
+[h2]OpenGTX关键信息更新
 
 游戏切换不同游戏场景后调用HMS_OpenGTX_DispatchGameSceneInfo接口发送游戏场景信息，包含场景类型、指定帧率、调度帧率范围、当前分辨率等信息。
 
@@ -206,7 +212,8 @@ errorCode = HMS_OpenGTX_DispatchNetworkInfo(context_, &networkInfo);
 if (errorCode != OPENGTX_SUCCESS) {
     return false;
 }
-销毁OpenGTX实例
+
+[h2]销毁OpenGTX实例
 
 在surface销毁时，会触发其事件回调函数Core::OnSurfaceDestroyed()，在该函数中完成OpenGTX实例的销毁。
 
@@ -217,5 +224,200 @@ errorCode = HMS_OpenGTX_DestroyContext(&context_);
 if (errorCode != OPENGTX_SUCCESS) {
     return false;
 }
-ABR功能开发
-游戏资源加速服务
+
+## Code blocks
+
+### Code block 1
+
+```
+"metadata": [
+  {
+    "name": "GraphicsAccelerateKit_LTPO",
+    "value": "true"
+  }
+]
+```
+
+### Code block 2
+
+```
+// 引用OpenGTX头文件 opengtx_base.h
+#include <graphics_game_sdk/opengtx_base.h>
+```
+
+### Code block 3
+
+```
+find_library(
+    # Sets the name of the path variable.
+    opengtx-lib
+    # Specifies the name of the NDK library that you want CMake to locate.
+    libopengtx.so
+)
+find_library(
+    # Sets the name of the path variable.
+    GLES-lib
+    # Specifies the name of the NDK library that you want CMake to locate.
+    GLESv3
+)
+find_library(
+    # Sets the name of the path variable.
+    hilog-lib
+    # Specifies the name of the NDK library that you want CMake to locate.
+    hilog_ndk.z
+)
+
+target_link_libraries(entry PUBLIC
+    ${opengtx-lib} ${GLES-lib} ${hilog-lib}
+)
+```
+
+### Code block 4
+
+```
+// 创建OpenGTX上下文实例
+OpenGTX_Context *context_ = HMS_OpenGTX_CreateContext(nullptr);
+if (context_ == nullptr) {
+    return false;
+}
+```
+
+### Code block 5
+
+```
+// 初始化OpenGTX接口调用错误码
+OpenGTX_ErrorCode errorCode = OPENGTX_SUCCESS;
+// OpenGTX属性配置结构体
+OpenGTX_ConfigDescription config;
+// LTPO调度模式
+config.mode = ADAPTIVE_MODE;
+// 游戏设置目标帧率
+config.targetFPS = 120;
+// 游戏包名
+config.packageName = (char*)"OpenGTX";
+// 游戏版本
+config.appVersion = (char*)"1.1.0";
+// 引擎类型
+config.engineType = UNREAL;
+// 引擎版本
+config.engineVersion = (char*)"4.26.2";
+// 游戏类别
+config.gameType = RPG;
+// 游戏最高画质等级
+config.pictureQualityMaxLevel = HD;
+// 游戏设置最大分辨率
+config.resolutionMaxValue = OpenGTX_ResolutionValue { 1280, 720};
+// 游戏逻辑线程
+config.gameMainThreadId = 11;
+// 游戏渲染线程
+config.gameRenderThreadId = 11;
+// 游戏运行其他关键线程
+config.gameKeyThreadIds[0] = 0;
+config.gameKeyThreadIds[1] = 0;
+config.gameKeyThreadIds[2] = 0;
+config.gameKeyThreadIds[3] = 0;
+config.gameKeyThreadIds[4] = 0;
+// 游戏图形API是否为Vulkan
+config.vulkanSupport = false;
+// 初始化OpenGTX实例，配置OpenGTX属性
+errorCode = HMS_OpenGTX_SetConfiguration(context_, &config);
+if (errorCode != OPENGTX_SUCCESS) {
+    return false;
+}
+```
+
+### Code block 6
+
+```
+// 激活OpenGTX上下文实例
+errorCode = HMS_OpenGTX_Activate(context_);
+if (errorCode != OPENGTX_SUCCESS) {
+    return false;
+}
+```
+
+### Code block 7
+
+```
+// 去激活OpenGTX上下文实例
+errorCode = HMS_OpenGTX_Deactivate(context_);
+if (errorCode != OPENGTX_SUCCESS) {
+    return false;
+}
+```
+
+### Code block 8
+
+```
+// OpenGTX游戏场景信息结构体
+OpenGTX_GameSceneInfo gameSceneInfo;
+// 游戏场景类型ID
+gameSceneInfo.sceneID = OTHERS_SCENE;
+// 游戏场景描述
+gameSceneInfo.description = (char*)"其他场景";
+// 游戏场景推荐帧率
+gameSceneInfo.recommendFPS = 60;
+// 游戏场景最小帧率
+gameSceneInfo.minFPS = 30;
+// 游戏场景最大帧率
+gameSceneInfo.maxFPS = 90;
+// 屏幕分辨率 高度
+gameSceneInfo.resolutionCurValue.height = 360;
+// 屏幕分辨率 宽度
+gameSceneInfo.resolutionCurValue.width = 1920;
+// OpenGTX接收游戏场景信息
+errorCode = HMS_OpenGTX_DispatchGameSceneInfo(context_, &gameSceneInfo);
+if (errorCode != OPENGTX_SUCCESS) {
+    return false;
+}
+```
+
+### Code block 9
+
+```
+// OpenGTX游戏渲染信息结构体
+OpenGTX_FrameRenderInfo frameRenderInfo;
+// 主相机位置
+frameRenderInfo.mainCameraPosition = { 0.0f, 0.0f, 0.0f };
+// 主相机欧拉角
+frameRenderInfo.mainCameraRotate = { 0.0f, 0.0f, 0.0f };
+// OpenGTX接收游戏渲染信息
+errorCode = HMS_OpenGTX_DispatchFrameRenderInfo(context_, &frameRenderInfo);
+if (errorCode != OPENGTX_SUCCESS) {
+    return false;
+}
+```
+
+### Code block 10
+
+```
+// OpenGTX游戏网络信息结构体
+OpenGTX_NetworkInfo networkInfo;
+// OpenGTX游戏网络时延结构体
+OpenGTX_NetworkLatency networkLatency;
+// 网络总时延
+networkLatency.total = 50;
+// 网络上行时延
+networkLatency.up = 10;
+// 网络下行时延
+networkLatency.down = 40;
+// 游戏网络时延
+networkInfo.networkLatency = networkLatency;
+// 游戏服务器IP地址
+networkInfo.networkServerIP = (char*)"10.10.10.10";
+// OpenGTX接收游戏网络信息
+errorCode = HMS_OpenGTX_DispatchNetworkInfo(context_, &networkInfo);
+if (errorCode != OPENGTX_SUCCESS) {
+    return false;
+}
+```
+
+### Code block 11
+
+```
+// 销毁OpenGTX上下文实例并释放内存资源
+errorCode = HMS_OpenGTX_DestroyContext(&context_);
+if (errorCode != OPENGTX_SUCCESS) {
+    return false;
+}
+```

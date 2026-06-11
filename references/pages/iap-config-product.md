@@ -23,6 +23,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-confi
 说明
 
 在AppGallery Connect完成商品配置后，AppGallery Connect不会跟随汇率实时刷新商品价格，需要开发者定期手动刷新价格，具体请参见修改单个商品。
-
-（可选）配置应用内购买服务参数
-配置签名

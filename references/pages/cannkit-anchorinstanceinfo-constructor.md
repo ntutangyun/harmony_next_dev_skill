@@ -2,11 +2,21 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-anchorinstanceinfo-constructor_
 
+函数功能
+
+提供了默认的构造函数以及指定了两个数据成员信息的构造函数。
+
+函数原型
+
+AnchorInstanceInfo()
 AnchorInstanceInfo(const uint32_t instance_start, const uint32_t instantiation_num)
+
 参数说明
+
 参数	输入/输出	说明
 instance_start	输入	指定了本对象的instance_start_。
 instantiation_num	输入	指定了本对象的instantiation_num_。
+
 返回值
 
 返回一个AnchorInstanceInfo对象。
@@ -16,7 +26,22 @@ instantiation_num	输入	指定了本对象的instantiation_num_。
 无
 
 调用示例
+
 // IR定义的第一个输入是动态输入，且有10个实际输入。
 AnchorInstanceInfo anchor_0(0, 10);
-简介
-GetInstanceNum
+
+## Code blocks
+
+### Code block 1
+
+```
+AnchorInstanceInfo()
+AnchorInstanceInfo(const uint32_t instance_start, const uint32_t instantiation_num)
+```
+
+### Code block 2
+
+```
+// IR定义的第一个输入是动态输入，且有10个实际输入。
+AnchorInstanceInfo anchor_0(0, 10);
+```

@@ -2,16 +2,21 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/applinking-deferredlink_
 
+场景介绍
+
+从5.0.3(15)版本开始，新增支持延迟链接能力。
+
 当被分享用户未安装应用时，通过延迟链接能力，应用首次打开时，调用延迟链接接口，系统仍能获取用户之前点击的应用相关链接。在获取链接后，应用可直接跳转至对应的详情页，无需先跳转至应用首页，从而提升用户体验和链接的转化率。
 
 例如：华为阅读结合App Linking Kit延迟链接能力，实现了即使用户未安装应用，点击链接完成下载并首次打开时，仍能直接跳转至预设页面（如书籍详情页）。与传统方式（需先打开APP再手动定位内容）相比，操作步骤减少了43%。
 
 原理机制
-一次性机制
+
+[h2]一次性机制
 
 延迟链接只能获取一次，获取后，系统会从缓存中删除该链接；后续调用时，返回为空。
 
-缓存机制
+[h2]缓存机制
 
 缓存时效性：系统缓存链接的最大时长为10分钟，超过则自动删除该缓存链接。
 
@@ -33,10 +38,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/applinkin
 
 获取延迟链接。
 
-在入口类文件页面Index.ets中添加如下代码。当应用首次启动时，调用deferredLink.popDeferredLink()接口，获取用户此前点击的该应用相关链接。
 import { deferredLink } from '@kit.AppLinkingKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 @Entry
 @Component
@@ -60,11 +63,10 @@ pageStack: NavPathStack = new NavPathStack();
       }
    }
 }
-根据自身业务逻辑配置链接，实现跳转到对应的详情页面。
+
 import { deferredLink } from '@kit.AppLinkingKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { url } from '@kit.ArkTS';
-
 
 @Entry
 @Component
@@ -122,29 +124,25 @@ openLink接口提供了两种拉起目标应用的方式，开发者可根据业
 
 本文为了方便验证App Linking的配置是否正确，选择方式一，示例如下。
 
-在“entry/src/main/ets/common”目录下添加GlobalContext.ets文件，开发初始化和获取应用上下文的接口。
 import { common } from '@kit.AbilityKit';
-
 
 export class GlobalContext {
   private static context: common.UIAbilityContext;
-
 
   public static initContext(context: common.UIAbilityContext): void {
     GlobalContext.context = context;
   }
 
-
   public static getContext(): common.UIAbilityContext {
     return GlobalContext.context;
   }
 }
+
 在“entry/src/main/ets/entryability/EntryAbility.ets”文件中导入GlobalContext，在onCreate方法中使用GlobalContext.initContext(this.context)初始化全局应用上下文。
-在“entry/src/main/ets/pages/Index.ets”文件中，使用UIAbilityContext.openLink()接口打开应用。
+
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { GlobalContext } from '../common/GlobalContext';
-
 
 @Entry
 @Component
@@ -175,5 +173,127 @@ struct Index {
 
 安装目标方应用后，会根据获取的延迟链接直接跳转到目标方应用的详情页面。
 
-通过直达应用市场能力跳转至应用市场下载详情页
-通过聚合链接按指定方式跳转至应用
+## Code blocks
+
+### Code block 1
+
+```
+import { deferredLink } from '@kit.AppLinkingKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+pageStack: NavPathStack = new NavPathStack();
+   build() {
+      Column() {
+         Navigation(this.pageStack) {
+            Button("获取延迟链接").onClick(() => {
+               // 应用首次启动时，获取用户此前点击的该应用相关链接
+               deferredLink.popDeferredLink().then((link: string) => {
+                  hilog.info(0x0000, 'testTag', `Succeeded in getting deferred link, result: ${link}`);
+               }).catch(() => {
+                 // 发生未知错误
+                  hilog.error(0x0000, 'testTag', `Failed to get deferred link.`);
+               })
+            })
+            // ...
+         }
+         // ...
+      }
+   }
+}
+```
+
+### Code block 2
+
+```
+import { deferredLink } from '@kit.AppLinkingKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { url } from '@kit.ArkTS';
+
+@Entry
+@Component
+struct Index {
+  pageStack: NavPathStack = new NavPathStack();
+  build() {
+    Column() {
+      Navigation(this.pageStack) {
+        Button("获取延迟链接").onClick(() => {
+          // 应用首次启动时，获取用户此前点击的该应用相关链接
+          deferredLink.popDeferredLink().then((link: string) => {
+            hilog.info(0x0000, 'testTag', `Succeeded in getting deferred link, result: ${link}`);
+            // 若延迟链接不为空，开发者可根据自身业务逻辑配置链接，跳转至详情页面
+            if (link) {
+              // 根据业务逻辑配置链接，自行跳转至详情页面
+              // 如传入的url为：<https://www.example.com/product?pageName=productDetail>
+              // 从链接中解析query参数，拿到参数后，开发者可根据自己的业务需求进行后续的处理，示例如下：
+              try {
+                let urlObject = url.URL.parseURL(link);
+                let pageName = urlObject.params.get('pageName');
+                this.pageStack.pushPath({ name: pageName });
+              } catch (error) {
+                hilog.error(0x0000, 'testTag', `Failed to parse url.`);
+              }
+            }
+          }).catch(() => {
+            // 发生未知错误
+            hilog.error(0x0000, 'testTag', `Failed to get deferred link.`);
+          })
+        })
+        // ...
+      }
+      // ...
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+import { common } from '@kit.AbilityKit';
+
+export class GlobalContext {
+  private static context: common.UIAbilityContext;
+
+  public static initContext(context: common.UIAbilityContext): void {
+    GlobalContext.context = context;
+  }
+
+  public static getContext(): common.UIAbilityContext {
+    return GlobalContext.context;
+  }
+}
+```
+
+### Code block 4
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { GlobalContext } from '../common/GlobalContext';
+
+@Entry
+@Component
+struct Index {
+  build() {
+    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
+      .width('87%')
+      .height('5%')
+      .margin({ bottom: '12vp' })
+      .onClick(() => {
+        let context = GlobalContext.getContext();
+        let link: string = "https://www.example.com/product?pageName=productDetail";
+        // 仅以App Linking的方式打开应用
+        context.openLink(link, { appLinkingOnly: true })
+          .then(() => {
+            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+          })
+          .catch((error: BusinessError) => {
+            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+          })
+      })
+  }
+}
+```

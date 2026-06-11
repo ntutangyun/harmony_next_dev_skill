@@ -2,11 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-getconstdata_
 
+函数功能
+
+如果TensorDesc是常量节点的描述，获取TensorDesc中的权重值。
+
+函数原型
+
 bool GetConstData(uint8_t **const_data_buffer, size_t &const_data_len) const;
+
 参数说明
+
 参数名	输入/输出	描述
 const_data_buffer	输出	权重地址。
 const_data_len	输出	权重长度。
+
 返回值
 
 获取成功，返回true。
@@ -21,5 +30,10 @@ const_data_len	输出	权重长度。
 
 无
 
-构造函数和析构函数
-GetDataType
+## Code blocks
+
+### Code block 1
+
+```
+bool GetConstData(uint8_t **const_data_buffer, size_t &const_data_len) const;
+```

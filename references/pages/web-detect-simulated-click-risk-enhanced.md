@@ -2,13 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-detect-simulated-click-risk-enhanced_
 
+从API version 23开始，新增支持Web应用模拟点击检测。
+
 Web应用通过Javascript调用window.detectSimulatedClickRiskEnhanced接口，获取模拟点击检测结果。用于自动化点击、设备墙等作弊行为检测。
 
 应用可以根据检测结果评估如何进行业务操作。
 
 约束与限制
+
 每30秒最多可以调用10次，每个应用在每个设备上每天最多可以调用20次。
+
 当前检测仅支持设备：Phone。
+
 接口说明
 
 window.detectSimulatedClickRiskEnhanced(algorithm, nonce, version)
@@ -18,25 +23,9 @@ window.detectSimulatedClickRiskEnhanced(algorithm, nonce, version)
 入参：
 
 参数名	类型	可选	说明
-algorithm	number	否	
-
-数字签名算法。可选值：
-
-0 - SHA256withECDSA算法。
-
-
-nonce	array	否	
-
-包含随机数的数组，用于防重放攻击，在检测结果中会包含该值。
-
-长度范围[24, 80]，元素数值范围[-128, 127]。
-
-
-version	number	是	
-
-检测结果消息格式的版本，当前仅支持1。
-
-默认值：1。
+algorithm	number	否	数字签名算法。可选值： 0 - SHA256withECDSA算法。
+nonce	array	否	包含随机数的数组，用于防重放攻击，在检测结果中会包含该值。 长度范围[24, 80]，元素数值范围[-128, 127]。
+version	number	是	检测结果消息格式的版本，当前仅支持1。 默认值：1。
 
 返回值：
 
@@ -53,11 +42,13 @@ Header
     "appId": "xxxxxxxx",
     "authToken": "xxxxxxxx"
 }
+
 字段	描述
 alg	签名算法名称，ES256表示为使用ECDSA和SHA256算法进行签名。
 x5c	华为签名服务器对JWS签名的证书链，x5c[0]为给JWS签名的证书，x5c[1]为签名证书链二级CA。
 nonce	请求参数nonce值的Base64编码。
 appId	您在华为开发者联盟网站上申请的APP ID。
+
 Payload
 
 样例：
@@ -68,24 +59,23 @@ Payload
     "riskDecision": "fake",
     "tags": ["AbnormalTap"]
 }
+
 字段	描述
 timestampMs	发起请求时生成的时间戳。
 version	检测结果消息格式的版本。默认值为1，当前只支持1。
 riskDecision	风险检测结果。
-tags	
-
-模拟点击关键特征。
-
-如果tags列表为空，表示未发现关键特征。
+tags	模拟点击关键特征。 如果tags列表为空，表示未发现关键特征。
 
 riskDecision	含义
 fake	当前设备存在作弊风险行为。存在自动化操控行为或设备墙作弊行为，详情见tags。
 likelyReal	当前操作设备的时真人用户的可能性较高。
 unknown	未知。未检测到明显特征，无法识别。
+
 tags	含义
 AbnormalDeviceIntegrity	设备完整性遭到破坏。
 AbnormalDeviceBehavior	设备行为异常，例如，设备连接状态、传感器状态等行为异常。
 AbnormalTap	存在异常点击行为，例如，点击事件注入，自动化点击等。
+
 Signature
 
 使用JWS签名证书x5c[0]对包含Header和Payload计算的签名。签名的输出格式参考RFC7518标准。
@@ -101,7 +91,9 @@ Signature
 1012500005	The interface access frequency exceeds the limit.
 1012500006	Internal timeout.
 1012500007	Invalid parameters.
+
 代码示例
+
 // 兼容性判断
 if (window.detectSimulatedClickRiskEnhanced) {
     // 此处nonce入参仅为示例，实际开发时应为包含随机数的数组
@@ -117,6 +109,7 @@ if (window.detectSimulatedClickRiskEnhanced) {
 } else {
 // 不支持该接口时
 }
+
 开发流程
 
 1. 开发者应用获取nonce
@@ -124,7 +117,9 @@ if (window.detectSimulatedClickRiskEnhanced) {
 在调用window.detectSimulatedClickRiskEnhanced接口时，开发者必须传入一个随机生成的nonce数组。在检测结果中会包含这个nonce值，您可以通过校验这个nonce值来确定返回结果能够对应您的请求，并且没有被重放攻击。
 
 说明
+
 nonce是一个数组，数组长度范围[24, 80]，其中元素数值范围[-128, 127]。
+
 推荐的做法是，每次请求都从服务器随机生成新的nonce数组。
 
 2. 发起模拟点击检测请求
@@ -136,12 +131,58 @@ nonce是一个数组，数组长度范围[24, 80]，其中元素数值范围[-12
 在发起业务请求之前，开发者应用需在应用服务器中验证模拟点击检测结果。按以下步骤验证检测结果：
 
 解析JWS，获取header、payload、signature。
+
 从header中获取证书链，使用Huawei CBG Device Attestation Root CA证书对其进行验证。
+
 校验证书链中x5c[0]证书的Common Name是否为Harmony OS Device Attestation Service。
+
 从signature中获取签名，校验其签名。
+
 最后从payload中获取模拟点击检测结果。
 
 验证检测结果的完整示例可参考java示例代码。
 
-使用Web组件的拖拽功能与网页交互
-管理Web组件的网络安全与隐私
+## Code blocks
+
+### Code block 1
+
+```
+{
+    "alg": "ES256",
+    "x5c": ["", ""],
+    "nonce": "R2Rra24fVm5xa2Mg",
+    "appId": "xxxxxxxx",
+    "authToken": "xxxxxxxx"
+}
+```
+
+### Code block 2
+
+```
+{
+    "timestampMs": 9860437986543,
+    "version": 1,
+    "riskDecision": "fake",
+    "tags": ["AbnormalTap"]
+}
+```
+
+### Code block 3
+
+```
+// 兼容性判断
+if (window.detectSimulatedClickRiskEnhanced) {
+    // 此处nonce入参仅为示例，实际开发时应为包含随机数的数组
+    window.detectSimulatedClickRiskEnhanced(0, new Array(48).fill(0), 1).then(result => {
+        console.info('Detect simulated click risk success. length: ', result.length);
+        const resultArray = result.split('.');
+        const header = resultArray[0];
+        const payload = resultArray[1];
+        const signature = resultArray[2];
+    }).catch(e => {
+        console.error('Detect simulated click risk failed: ', e.code, e.message);
+    });
+} else {
+// 不支持该接口时
+}
+```

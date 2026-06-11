@@ -2,11 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-calculate-distance_
 
+场景介绍
+
+根据用户指定的两个经纬度坐标点，计算这两个点间的直线距离，单位为米。
+
+接口说明
+
 以下是距离计算功能相关接口，主要由map命名空间下的calculateDistance方法提供，更多接口及使用方法请参见接口文档。
 
 接口名	描述
 mapCommon.LatLng	经纬度对象。
 calculateDistance(from: mapCommon.LatLng, to: mapCommon.LatLng): number	计算坐标点之间的距离。
+
 开发步骤
 
 导入相关模块。
@@ -25,5 +32,26 @@ let toLatLng: mapCommon.LatLng = {
 };
 // 计算坐标点之间的距离
 let distance = map.calculateDistance(fromLatLng, toLatLng);
-坐标纠偏
-Map Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+import { map, mapCommon } from '@kit.MapKit';
+```
+
+### Code block 2
+
+```
+let fromLatLng: mapCommon.LatLng = {
+  latitude: 38,
+  longitude: 118
+};
+let toLatLng: mapCommon.LatLng = {
+  latitude: 39,
+  longitude: 119
+};
+// 计算坐标点之间的距离
+let distance = map.calculateDistance(fromLatLng, toLatLng);
+```

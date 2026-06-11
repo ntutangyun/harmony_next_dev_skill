@@ -9,6 +9,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 示例工程中包含一个模块entry，将entry模块交付到构建产物default中，模块定制两种不同的编译模式debug、release，将两种构建模式均绑定到构建产物default中。工程示例图如下（模块）：
 
 工程级build-profile.json5示例
+
 {
   "app": {
     "signingConfigs": [],
@@ -50,8 +51,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
     }
   ]
 }
+
 模块级build-profile.json5示例
-entry模块
+
+[h2]entry模块
+
 {
   "apiType": "stageMode",
   "buildOption": {
@@ -111,8 +115,10 @@ entry模块
     }
   ]
 }
+
 指定构建模式
-命令行
+
+[h2]命令行
 
 示例1：构建APP时，构建产物为default，指定构建模式为debug，可执行如下命令：
 
@@ -126,9 +132,130 @@ hvigorw --mode project -p product=default -p buildMode=release assembleApp
 
 编译产物示例如下：
 
-DevEco Studio界面
+[h2]DevEco Studio界面
 
 在DevEco Studio界面进行可视化配置，Build Mode下拉选择对应配置选项debug后，点击Build -> Build Hap(s)/APP(s) -> Build APP(s) ，构建编译模式为debug，构建产物为default的APP包。
 
-能力说明
-获取自定义编译参数
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    "signingConfigs": [],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "6.1.1(24)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+{
+  "apiType": "stageMode",
+  "buildOption": {
+  },
+  "buildOptionSet": [
+    {
+      "name": "release",
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": true,
+            "files": [
+              "./obfuscation-rules.txt"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "debug",
+      "debuggable": true,
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": false
+          }
+        }
+      }
+    }
+  ],
+  "buildModeBinder": [
+    {
+      "buildModeName": "release",
+      "mappings": [
+        {
+          "buildOptionName": "release",
+          "targetName": "default"
+        }
+      ]
+    },
+    {
+      "buildModeName": "debug",
+      "mappings": [
+        {
+          "buildOptionName": "debug",
+          "targetName": "default"
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "default",
+    },
+    {
+      "name": "ohosTest",
+    }
+  ]
+}
+```
+
+### Code block 3
+
+```
+hvigorw --mode project -p product=default -p buildMode=debug assembleApp
+```
+
+### Code block 4
+
+```
+hvigorw --mode project -p product=default -p buildMode=release assembleApp
+```

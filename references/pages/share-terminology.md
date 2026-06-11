@@ -2,6 +2,30 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/share-terminology_
 
+Content area内容预览区
+
+负责显示分享内容标题、预览、是否选中等信息，供用户选择。
+
+Host app宿主应用
+
+分享行为的发起者。通过调用分享接口，配置分享的内容、预览样式等信息后展示分享面板。
+
+Operation area操作区
+
+内容相关的操作，由系统提供的复制、保存、另存为、打印等能力。
+
+Recommendation area推荐区
+
+对接华为分享和意图框架，通过算法高效、精准推荐能够处理内容的设备和目标应用用户。
+
+Sharing mode area分享方式区
+
+通过HarmonyOS的包管理服务获取支持分享内容的目标应用。支持2种跳转方式：
+
+1、跳转目标应用内UIAbility组件。
+
+2、跳转目标应用提供的ExtensionAbility组件。
+
 应用组件需通过在module.json5配置文件中配置UIAbility组件和ExtensionAbility组件的描述信息，以声明支持分享的能力。
 
 Sharing details page分享详情页
@@ -19,6 +43,3 @@ Target app目标应用
 Target device目标设备
 
 分享内容的接收设备。接收端将根据分享数据类型，选择合适的应用存储或打开分享内容。
-
-Share Kit简介
-Share Kit体验规范

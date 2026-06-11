@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-get-risklevel-byquicklogin_
 
+场景介绍
+
+应用登录风控场景，可以通过华为账号一键登录获取用户风险等级，对恶意账号进行风控，提升应用的安全等级。
+
+约束与限制
+
 通过华为账号一键登录获取用户风险等级能力支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
 
 业务流程
@@ -24,6 +30,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-g
 
 接口名	描述
 LoginWithHuaweiIDButtonParams	LoginWithHuaweiIDButton组件参数，支持传入riskLevel字段（可选），标识一键登录后可查询用户风险等级。
+
 开发前提
 
 在进行代码开发前，请确认已完成一键登录开发前提工作。
@@ -108,5 +115,32 @@ Refresh Token过期处理
 
 应用基于风险等级判别用户风险程度，决定是否需要对用户进行额外验证或拦截用户行为。
 
-概述
-华为账号其他方式登录获取用户风险等级
+## Code blocks
+
+### Code block 1
+
+```
+LoginWithHuaweiIDButton({
+  params: {
+    // LoginWithHuaweiIDButton支持的样式
+    style: loginComponentManager.Style.BUTTON_RED,
+    // 账号登录按钮在登录过程中展示加载态
+    extraStyle: {
+      buttonStyle: new loginComponentManager.ButtonStyle().loadingStyle({
+        show: true
+      })
+    },
+    // LoginWithHuaweiIDButton的边框圆角半径
+    borderRadius: 24,
+    // LoginWithHuaweiIDButton支持的登录类型
+    loginType: loginComponentManager.LoginType.QUICK_LOGIN,
+    // LoginWithHuaweiIDButton支持按钮的样式跟随系统深浅色模式切换
+    supportDarkMode: true,
+    // verifyPhoneNumber：如果华为账号用户在过去90天内未进行短信验证，是否拉起Account Kit提供的短信验证码页面
+    verifyPhoneNumber: true,
+    // riskLevel：标识应用期望在登录后获取华为账号的风险等级
+    riskLevel: true,
+  },
+  controller: this.controller
+})
+```

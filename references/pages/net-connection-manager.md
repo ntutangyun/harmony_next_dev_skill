@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/net-connection-manager_
 
+简介
+
 网络连接管理提供管理网络的一些基础能力，包括WiFi/蜂窝/Ethernet等多网络连接优先级管理、网络质量评估、订阅默认/指定网络连接状态变化、查询网络连接信息、DNS解析等功能。
 
 说明
@@ -9,19 +11,29 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/net-conne
 为了保证应用的运行效率，大部分API调用都是异步的，对于异步调用的API，均提供了callback和Promise两种方式，以下示例均采用promise函数，更多方式可以查阅@ohos.net.connection (网络连接管理)。
 
 基本概念
+
 网络生产者：数据网络的提供方。例如WiFi、蜂窝、Ethernet等。
+
 网络消费者：数据网络的使用方。例如应用或系统服务。
+
 网络探测：检测网络有效性，避免将网络从可用网络切换到不可用网络。包括绑定网络探测、DNS探测、HTTP探测及HTTPS探测。
+
 网络优选：处理多网络共存时选择最优网络。在网络状态、网络信息及评分发生变化时被触发。
+
 默认网络：系统默认使用的网络。由系统决定，与应用是否指定网络无关，通常为WIFI /蜂窝/以太网/蓝牙其中之一。
+
 网络句柄：网络的唯一标识。
+
 场景介绍
 
 网络连接管理的典型场景如下所示。
 
 接收指定网络的状态变化通知。
+
 获取所有注册的网络。
+
 查询默认网络或者指定网络的连接信息。
+
 使用默认网络解析域名，获取所有IP。
 
 具体开发方式介绍如下。
@@ -38,7 +50,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/net-conne
 import { connection } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-ConnectNetworkBtn.ets
 
 调用createNetConnection方法，指定网络能力、网络类型和超时时间(可选，如不传入代表默认网络；创建不同于默认网络时可通过指定这些参数完成)，创建一个NetConnection对象。
 
@@ -51,14 +62,11 @@ let netSpecifier: connection.NetSpecifier = {
   }
 };
 
-
 // 指定超时时间为10s(默认值为0)
 let TIMEOUT = 10 * NETWORK_CONNECTION_TIMEOUT;
 
-
 // 创建NetConnection对象
 let conn = connection.createNetConnection(netSpecifier, TIMEOUT);
-ConnectNetworkBtn.ets
 
 调用该对象的on()方法，传入type和callback，订阅关心的事件。
 
@@ -67,7 +75,7 @@ conn.on('netAvailable', (data: connection.NetHandle) => {
   hilog.info(0x0000, 'testTag', 'Network available, NetId is ' + data.netId);
   // ...
 });
-  
+
 // 订阅事件，如果当前指定网络不可用，通过on_netUnavailable通知用户
 conn.on('netUnavailable', (data: void) => {
   hilog.info(0x0000, 'testTag', 'Network unavailable, data is ' + JSON.stringify(data));
@@ -78,19 +86,18 @@ conn.on('netCapabilitiesChange', (data: connection.NetCapabilityInfo) => {
   hilog.info(0x0000, 'testTag', 'Network netCapabilitiesChange, data is ' + JSON.stringify(data));
   // ...
 });
-  
+
 // 订阅网络连接信息变化事件，如果当前指定网络的连接信息发生变化，通过on_netConnectionPropertiesChange通知用户
 conn.on('netConnectionPropertiesChange', (data: connection.NetConnectionPropertyInfo) => {
   hilog.info(0x0000, 'testTag', 'Network netConnectionPropertiesChange, data is ' + JSON.stringify(data));
   // ...
 });
-  
+
 // 订阅网络丢失事件，如果当前处于连接状态的指定网络断开，通过on_netLost通知用户
 conn.on('netLost', (data: connection.NetHandle) => {
   hilog.info(0x0000, 'testTag', 'Network netLost, data is ' + JSON.stringify(data));
   // ...
 });
-ConnectNetworkBtn.ets
 
 调用该对象的register()方法，订阅指定网络状态变化的通知。当网络可用时，会触发netAvailable事件的回调；当网络从连接到断开时，会触发netLost事件的回调；当网络连接信息变化时（例如linkAddresses增加V6地址），会触发netConnectionPropertiesChange事件回调；当网络能力发生变化时（例如网络的连通性发生变化），会触发netCapabilitiesChange回调。
 
@@ -100,7 +107,6 @@ conn.register((err: BusinessError, data: void) => {
     hilog.error(0x0000, 'testTag', 'Error occurred during connection:', JSON.stringify(err));
     // ...
 });
-ConnectNetworkBtn.ets
 
 当不使用该网络时，可以调用该对象的unregister()方法，取消订阅。
 
@@ -113,39 +119,45 @@ conn.unregister((err: BusinessError, data: void) => {
     hilog.info(0x0000, 'testTag', 'Network connection disconnected.');
   }
 });
-ConnectNetworkBtn.ets
+
 监控默认网络变化并主动重建网络连接
 
 根据当前网络状态及网络质量情况，默认网络可能会发生变化，如下所示。
 
 在WiFi弱信号的情况下，默认网络可能会切换到蜂窝网络。
+
 在蜂窝网络状态差的情况下，默认网络可能会切换到WiFi。
+
 关闭WiFi后，默认网络可能会切换到蜂窝网络。
+
 关闭蜂窝网络后，默认网络可能会切换到WiFi。
+
 在WiFi弱信号的情况下，默认网络可能会切换到其他WiFi(存在跨网情况)。
+
 在蜂窝网络状态差的情况下，默认网络可能会切换到其他蜂窝(存在跨网情况)。
 
 本节旨在介绍监控默认网络的变化后，应用报文能够快速迁移到新默认网络上，具体做法如下。
 
-导入connection命名空间
+[h2]导入connection命名空间
+
 import { connection, socket } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-Index.ets
-监控默认网络变化
+
+[h2]监控默认网络变化
+
 const netConnection = connection.createNetConnection();
 /* 监听默认网络改变 */
 netConnection.on('netAvailable', (data: connection.NetHandle) => {
   hilog.info(0x0000, 'testTag', JSON.stringify(data));
 });
-Index.ets
-默认网络变化后重新建立网络连接
+
+[h2]默认网络变化后重新建立网络连接
 
 原网络连接使用Socket模块建立连接
 
 // 创建socket对象。
 let sock: socket.TCPSocket = socket.constructTCPSocketInstance();
-
 
 // 原网络连接使用Socket模块建立连接
 function useSocket() {
@@ -154,12 +166,10 @@ function useSocket() {
     port: 8080 // 端口号，默认设置为8080
   };
 
-
   let tcpConnectOptions: socket.TCPConnectOptions = {
     address: netAddress,
     timeout: 6000 // 连接超时时间
   };
-
 
   // 建立socket连接
   sock.connect(tcpConnectOptions, (err: BusinessError) => {
@@ -170,7 +180,6 @@ function useSocket() {
     }
     hilog.info(0x0000, 'testTag', 'connect success');
 
-
     // 通过socket发送数据
     let tcpSendOptions: socket.TCPSendOptions = {
       data: 'Hello, server!'
@@ -178,7 +187,6 @@ function useSocket() {
     socketSend(tcpSendOptions);
   });
 }
-
 
 // 通过socket发送数据。
 function socketSend(tcpSendOptions: socket.TCPSendOptions) {
@@ -190,7 +198,6 @@ function socketSend(tcpSendOptions: socket.TCPSendOptions) {
     // ···
   });
 }
-
 
 function socketTest() {
   const netConnection = connection.createNetConnection();
@@ -213,7 +220,6 @@ function socketTest() {
     });
     // ···
 }
-Index.ets
 
 原网络连接使用Socket Library建立网络连接
 
@@ -240,7 +246,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
         // ...
       }
     });
-GetAllNets.ets
+
 查询默认网络或者指定网络的连接信息
 
 声明接口调用所需要的权限：ohos.permission.GET_NETWORK_INFO。
@@ -287,7 +293,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
               }
             }
 
-
             // 获取网络具体能力(networkCap)
             let itemNumber: Set<number> = new Set(data.networkCap);
             let dataNumber = Array.from(itemNumber.values());
@@ -313,13 +318,11 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
       }
     });
 
-
     // 获取netHandle对应的网络的连接信息。
     connection.getConnectionProperties(netHandleInfo).then((data: connection.ConnectionProperties) => {
       hilog.info(0x0000, 'testTag', 'getConnectionProperties get data: ' + JSON.stringify(data));
     })
 // ···
-DefaultNetworkBtn.ets
 
 查询所有网络连接信息代码示例
 
@@ -343,7 +346,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
             hilog.info(0x0000, 'testTag', 'getNetCapabilities get data: ' + JSON.stringify(data));
           });
 
-
           // 循环获取网络列表每个netHandle对应的网络的连接信息
           connection.getConnectionProperties(item).then((data: connection.ConnectionProperties) => {
             hilog.info(0x0000, 'testTag', 'getConnectionProperties get data: ' + JSON.stringify(data));
@@ -352,7 +354,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
       }
     });
   }
-AllNetworksBtn.ets
+
 判断默认网络是否可以访问互联网
 
 如果应用需要检查当前连接的网络是否可以访问互联网，可参考以下步骤进行判断：
@@ -398,7 +400,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
         }
       }
     }
-DefaultNetSyncBtn.ets
+
 使用默认网络解析域名，获取所有IP
 
 声明接口调用所需要的权限：ohos.permission.GET_NETWORK_INFO
@@ -419,9 +421,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
         hilog.info(0x0000, 'testTag', 'Successfully retrieved default network IP address: ' + JSON.stringify(data));
         // ...
       })
-DefaultNetworkIPBtn.ets
-连接网络
-管理网络连接(C/C++)
 
 ## Code blocks
 
@@ -446,10 +445,8 @@ let netSpecifier: connection.NetSpecifier = {
   }
 };
 
-
 // 指定超时时间为10s(默认值为0)
 let TIMEOUT = 10 * NETWORK_CONNECTION_TIMEOUT;
-
 
 // 创建NetConnection对象
 let conn = connection.createNetConnection(netSpecifier, TIMEOUT);
@@ -463,7 +460,7 @@ conn.on('netAvailable', (data: connection.NetHandle) => {
   hilog.info(0x0000, 'testTag', 'Network available, NetId is ' + data.netId);
   // ...
 });
-  
+
 // 订阅事件，如果当前指定网络不可用，通过on_netUnavailable通知用户
 conn.on('netUnavailable', (data: void) => {
   hilog.info(0x0000, 'testTag', 'Network unavailable, data is ' + JSON.stringify(data));
@@ -474,13 +471,13 @@ conn.on('netCapabilitiesChange', (data: connection.NetCapabilityInfo) => {
   hilog.info(0x0000, 'testTag', 'Network netCapabilitiesChange, data is ' + JSON.stringify(data));
   // ...
 });
-  
+
 // 订阅网络连接信息变化事件，如果当前指定网络的连接信息发生变化，通过on_netConnectionPropertiesChange通知用户
 conn.on('netConnectionPropertiesChange', (data: connection.NetConnectionPropertyInfo) => {
   hilog.info(0x0000, 'testTag', 'Network netConnectionPropertiesChange, data is ' + JSON.stringify(data));
   // ...
 });
-  
+
 // 订阅网络丢失事件，如果当前处于连接状态的指定网络断开，通过on_netLost通知用户
 conn.on('netLost', (data: connection.NetHandle) => {
   hilog.info(0x0000, 'testTag', 'Network netLost, data is ' + JSON.stringify(data));
@@ -537,7 +534,6 @@ netConnection.on('netAvailable', (data: connection.NetHandle) => {
 // 创建socket对象。
 let sock: socket.TCPSocket = socket.constructTCPSocketInstance();
 
-
 // 原网络连接使用Socket模块建立连接
 function useSocket() {
   let netAddress: socket.NetAddress = {
@@ -545,12 +541,10 @@ function useSocket() {
     port: 8080 // 端口号，默认设置为8080
   };
 
-
   let tcpConnectOptions: socket.TCPConnectOptions = {
     address: netAddress,
     timeout: 6000 // 连接超时时间
   };
-
 
   // 建立socket连接
   sock.connect(tcpConnectOptions, (err: BusinessError) => {
@@ -561,7 +555,6 @@ function useSocket() {
     }
     hilog.info(0x0000, 'testTag', 'connect success');
 
-
     // 通过socket发送数据
     let tcpSendOptions: socket.TCPSendOptions = {
       data: 'Hello, server!'
@@ -569,7 +562,6 @@ function useSocket() {
     socketSend(tcpSendOptions);
   });
 }
-
 
 // 通过socket发送数据。
 function socketSend(tcpSendOptions: socket.TCPSendOptions) {
@@ -581,7 +573,6 @@ function socketSend(tcpSendOptions: socket.TCPSendOptions) {
     // ···
   });
 }
-
 
 function socketTest() {
   const netConnection = connection.createNetConnection();
@@ -663,7 +654,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
               }
             }
 
-
             // 获取网络具体能力(networkCap)
             let itemNumber: Set<number> = new Set(data.networkCap);
             let dataNumber = Array.from(itemNumber.values());
@@ -688,7 +678,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
           });
       }
     });
-
 
     // 获取netHandle对应的网络的连接信息。
     connection.getConnectionProperties(netHandleInfo).then((data: connection.ConnectionProperties) => {
@@ -717,7 +706,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
           connection.getNetCapabilities(item).then((data: connection.NetCapabilities) => {
             hilog.info(0x0000, 'testTag', 'getNetCapabilities get data: ' + JSON.stringify(data));
           });
-
 
           // 循环获取网络列表每个netHandle对应的网络的连接信息
           connection.getConnectionProperties(item).then((data: connection.ConnectionProperties) => {

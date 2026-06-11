@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fileguard-set-tags_
 
+场景介绍
+
 Enterprise Data Guard Kit为应用提供对文件设置属性标签的能力，方便应用对管控文件进行标识、分类。
 
 接口说明
@@ -15,6 +17,7 @@ setFileCustomTag(path: string, tagList: Array<string>, callback: AsyncCallback<v
 setFileCustomTag(path: string, tagList: Array<string>): Promise<void>;	使用Promise方式设置文件自定义属性标签。
 unsetFileCustomTag(path: string, tagList: Array<string>, callback: AsyncCallback<void>): void;	使用Callback方式取消设置文件自定义属性标签。
 unsetFileCustomTag(path: string, tagList: Array<string>): Promise<void>;	使用Promise方式取消设置文件自定义属性标签。
+
 开发步骤
 
 导入模块。
@@ -51,5 +54,44 @@ function setFileTagPromise() {
     console.error(`Failed to set file tag. Code: ${err.code}, message: ${err.message}.`);
   });
 }
-打开文件
-获取文件属性标签
+
+## Code blocks
+
+### Code block 1
+
+```
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+function setFileTagCallback() {
+  let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
+  let path: string = '/data/service/el2/test/test.txt';
+  let tag: string = 'test';
+  guard.setFileTag(path, fileGuard.SecurityLevel.EXTERNAL, tag, (err: BusinessError) => {
+    if (err) {
+      console.error(`Failed to set file tag. Code: ${err.code}, message: ${err.message}.`);
+      return;
+    }
+    console.info(`Succeeded in setting file tag.`);
+  });
+}
+```
+
+### Code block 3
+
+```
+function setFileTagPromise() {
+  let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
+  let path: string = '/data/service/el2/test/test.txt';
+  let tag: string = 'test';
+  guard.setFileTag(path, fileGuard.SecurityLevel.EXTERNAL, tag).then(() => {
+    console.info(`Succeeded in setting file tag.`);
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to set file tag. Code: ${err.code}, message: ${err.message}.`);
+  });
+}
+```

@@ -21,33 +21,39 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-clipb
 异步剪贴板接口（Async Clipboard API）提供给网页开发者读写系统剪贴板的方法，这让Web应用程序可以实现剪切、复制和粘贴的功能。
 
 writeText：将文本内容写入系统剪贴板。
+
 // 写入文本到剪贴板
 await navigator.clipboard.writeText("文本内容");
+
 write：将任意类型内容写入系统剪贴板。
+
 // 写入 HTML到剪贴板
 const clipboardItem = new ClipboardItem({
     'text/html': new Blob(["HTML内容"], { type: 'text/html' })
 });
 await navigator.clipboard.write([clipboardItem]);
+
 readText：从系统剪贴板读取文本内容。
+
 // 从剪贴板读取文本
 const text = await navigator.clipboard.readText()
+
 read()：从系统剪贴板读取任意类型内容。
+
 // 从剪贴板读取 HTML
 const clipboardItems = await navigator.clipboard.read();
 const htmlBlob = await clipboardItems[0].getType('text/html');
+
 说明
 
 通过异步剪贴板接口read()和readText()方法读取系统剪贴板数据，需申请访问剪贴板权限：ohos.permission.READ_PASTEBOARD。
 
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct WebComponent {
   controller: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -55,7 +61,6 @@ struct WebComponent {
     }
   }
 }
-WebClipboard.ets
 
 加载的html：
 
@@ -85,26 +90,25 @@ WebClipboard.ets
     <button id="copyHtmlButton">复制HTML</button>
 </div>
 
-
 <div class="button-group">
     <button id="pasteTextButton">粘贴文本</button>
     <button id="pasteHtmlButton">粘贴HTML</button>
     <button id="clearOutputButton">清空输入框</button>
 </div>
 
-
 <div id="result"></div>
 <div id="output" contenteditable="true"></div>
-
 
 <script>
     const textContent = "这是一些文本内容";
     const htmlContent = `<strong><em>这是一些 HTML 内容</em></strong>`;
+
     // writeText()接口
     async function copyText() {
         await navigator.clipboard.writeText(textContent);
         document.getElementById('result').innerText = "文本已复制到剪贴板！";
     }
+
     // write()接口
     async function copyHtml() {
         const clipboardItem = new ClipboardItem({
@@ -113,11 +117,13 @@ WebClipboard.ets
         await navigator.clipboard.write([clipboardItem]);
         document.getElementById('result').innerText = "HTML 已复制到剪贴板！";
     }
+
     // readText()接口
     async function pasteText() {
         const text = await navigator.clipboard.readText();
         document.getElementById('output').innerText = text;
     }
+
     // read()接口
     async function pasteHtml() {
         const items = await navigator.clipboard.read();
@@ -132,10 +138,12 @@ WebClipboard.ets
         }
         document.getElementById('result').innerText = "剪贴板中没有 HTML 内容。";
     }
+
     function clearOutput() {
         document.getElementById('result').innerText = " ";
         document.getElementById('output').innerHTML = '';
     }
+
     // 事件监听
     document.getElementById('copyTextButton').addEventListener('click', copyText);
     document.getElementById('copyHtmlButton').addEventListener('click', copyHtml);
@@ -167,7 +175,6 @@ module.json5权限配置：
     ]
   }
 }
-module.json5
 
 通过W3C剪贴板事件接口与系统剪贴板交互
 
@@ -175,12 +182,10 @@ module.json5
 
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct WebComponent {
   controller: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -188,7 +193,6 @@ struct WebComponent {
     }
   }
 }
-WebClipboardEvent.ets
 
 加载的html：
 
@@ -212,16 +216,15 @@ WebClipboardEvent.ets
 <h2>Clipboard Event监听示例</h2>
 <textarea id="inputArea" rows="4" cols="50" placeholder="在这里输入文本，尝试复制和粘贴..."></textarea>
 
-
 <div class="output" id="output">
     <h3>输出内容:</h3>
     <p id="resultText">没有复制或粘贴内容。</p>
 </div>
 
-
 <script>
     const inputArea = document.getElementById('inputArea');
     const resultText = document.getElementById('resultText');
+
     // 监听复制事件
     inputArea.addEventListener('copy', (event) => {
         const selection = document.getSelection();
@@ -230,11 +233,13 @@ WebClipboardEvent.ets
         event.preventDefault();
         resultText.textContent = `复制的内容: "${copiedText}"`;
     });
+
     // 监听粘贴事件
     inputArea.addEventListener('paste', (event) => {
         const pastedData = event.clipboardData.getData('text');
         resultText.textContent = `粘贴的内容: "${pastedData}"`;
     });
+
     // 监听剪切事件
     inputArea.addEventListener('cut', (event) => {
         const selection = document.getSelection();
@@ -254,13 +259,11 @@ WebClipboardEvent.ets
 
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct WebComponent {
   controller: webview.WebviewController = new webview.WebviewController();
   @State copyOption: CopyOptions = CopyOptions.LocalDevice;
-
 
   build() {
     Column() {
@@ -269,7 +272,6 @@ struct WebComponent {
     }
   }
 }
-WebCopyOptions.ets
 
 加载的html：
 
@@ -286,5 +288,288 @@ WebCopyOptions.ets
 <textarea id="inputArea"></textarea>
 </body>
 </html>
-使用Web组件菜单处理网页内容
-使用Web组件的智能分词能力
+
+## Code blocks
+
+### Code block 1
+
+```
+// 写入文本到剪贴板
+await navigator.clipboard.writeText("文本内容");
+```
+
+### Code block 2
+
+```
+// 写入 HTML到剪贴板
+const clipboardItem = new ClipboardItem({
+    'text/html': new Blob(["HTML内容"], { type: 'text/html' })
+});
+await navigator.clipboard.write([clipboardItem]);
+```
+
+### Code block 3
+
+```
+// 从剪贴板读取文本
+const text = await navigator.clipboard.readText()
+```
+
+### Code block 4
+
+```
+// 从剪贴板读取 HTML
+const clipboardItems = await navigator.clipboard.read();
+const htmlBlob = await clipboardItems[0].getType('text/html');
+```
+
+### Code block 5
+
+```
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct WebComponent {
+  controller: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Web({ src: $rawfile('clipboard.html'), controller: this.controller })
+    }
+  }
+}
+```
+
+### Code block 6
+
+```
+<!--clipboard.html-->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clipboard API demo</title>
+    <style>
+        #output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 50px;
+        }
+        .button-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Clipboard API demo</h1>
+<div class="button-group">
+    <button id="copyTextButton">复制文本</button>
+    <button id="copyHtmlButton">复制HTML</button>
+</div>
+
+<div class="button-group">
+    <button id="pasteTextButton">粘贴文本</button>
+    <button id="pasteHtmlButton">粘贴HTML</button>
+    <button id="clearOutputButton">清空输入框</button>
+</div>
+
+<div id="result"></div>
+<div id="output" contenteditable="true"></div>
+
+<script>
+    const textContent = "这是一些文本内容";
+    const htmlContent = `<strong><em>这是一些 HTML 内容</em></strong>`;
+
+    // writeText()接口
+    async function copyText() {
+        await navigator.clipboard.writeText(textContent);
+        document.getElementById('result').innerText = "文本已复制到剪贴板！";
+    }
+
+    // write()接口
+    async function copyHtml() {
+        const clipboardItem = new ClipboardItem({
+            'text/html': new Blob([htmlContent], { type: 'text/html' })
+        });
+        await navigator.clipboard.write([clipboardItem]);
+        document.getElementById('result').innerText = "HTML 已复制到剪贴板！";
+    }
+
+    // readText()接口
+    async function pasteText() {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('output').innerText = text;
+    }
+
+    // read()接口
+    async function pasteHtml() {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+            const types = item.types;
+            if (types.includes('text/html')) {
+                const blob = await item.getType('text/html');
+                const html = await blob.text();
+                document.getElementById('output').innerHTML = html;
+                return;
+            }
+        }
+        document.getElementById('result').innerText = "剪贴板中没有 HTML 内容。";
+    }
+
+    function clearOutput() {
+        document.getElementById('result').innerText = " ";
+        document.getElementById('output').innerHTML = '';
+    }
+
+    // 事件监听
+    document.getElementById('copyTextButton').addEventListener('click', copyText);
+    document.getElementById('copyHtmlButton').addEventListener('click', copyHtml);
+    document.getElementById('pasteTextButton').addEventListener('click', pasteText);
+    document.getElementById('pasteHtmlButton').addEventListener('click', pasteHtml);
+    document.getElementById('clearOutputButton').addEventListener('click', clearOutput);
+</script>
+</body>
+</html>
+```
+
+### Code block 7
+
+```
+{
+  "module": {
+    // ···
+    "requestPermissions": [
+      {
+        "name" : "ohos.permission.READ_PASTEBOARD",
+        "reason": "$string:module_desc",
+        "usedScene": {
+          "abilities": [
+            "FormAbility"
+          ],
+          "when":"inuse"
+        }
+      }
+    ]
+  }
+}
+```
+
+### Code block 8
+
+```
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct WebComponent {
+  controller: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Web({ src: $rawfile('clipboard_event.html'), controller: this.controller })
+    }
+  }
+}
+```
+
+### Code block 9
+
+```
+<!--clipboard_event.html-->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clipboard Event demo</title>
+    <style>
+        .output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+<h2>Clipboard Event监听示例</h2>
+<textarea id="inputArea" rows="4" cols="50" placeholder="在这里输入文本，尝试复制和粘贴..."></textarea>
+
+<div class="output" id="output">
+    <h3>输出内容:</h3>
+    <p id="resultText">没有复制或粘贴内容。</p>
+</div>
+
+<script>
+    const inputArea = document.getElementById('inputArea');
+    const resultText = document.getElementById('resultText');
+
+    // 监听复制事件
+    inputArea.addEventListener('copy', (event) => {
+        const selection = document.getSelection();
+        const copiedText = selection.toString() + "(复制自ArkWeb)"
+        event.clipboardData.setData("text/plain", copiedText);
+        event.preventDefault();
+        resultText.textContent = `复制的内容: "${copiedText}"`;
+    });
+
+    // 监听粘贴事件
+    inputArea.addEventListener('paste', (event) => {
+        const pastedData = event.clipboardData.getData('text');
+        resultText.textContent = `粘贴的内容: "${pastedData}"`;
+    });
+
+    // 监听剪切事件
+    inputArea.addEventListener('cut', (event) => {
+        const selection = document.getSelection();
+        const cutText = selection.toString() + "(剪切自ArkWeb)"
+        event.clipboardData.setData("text/plain", cutText);
+        selection.deleteFromDocument();
+        event.preventDefault();
+        resultText.textContent = `剪切的内容: "${cutText}"`;
+    });
+</script>
+</body>
+</html>
+```
+
+### Code block 10
+
+```
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct WebComponent {
+  controller: webview.WebviewController = new webview.WebviewController();
+  @State copyOption: CopyOptions = CopyOptions.LocalDevice;
+
+  build() {
+    Column() {
+      Web({ src: $rawfile('copyOptions.html'), controller: this.controller })
+        .copyOptions(this.copyOption)
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+<!--copyOptions.html-->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clipboard CopyOption demo</title>
+</head>
+<body>
+<h2>Clipboard CopyOption示例</h2>
+<textarea id="inputArea"></textarea>
+</body>
+</html>
+```

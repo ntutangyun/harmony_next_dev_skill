@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/permissions-for-all-user_
 
+此列表内所有权限均为用户授权（user_grant）的开放权限，面向所有应用开放。
+
 该类型权限不仅需要在安装包中申请权限，还需要在应用动态运行时，通过发送弹窗的方式请求用户授权。在用户手动允许授权后，应用才会真正获取相应权限，从而成功访问操作目标对象。
 
 申请方式
@@ -39,6 +41,7 @@ ohos.permission.APP_TRACKING_CONSENT
 在申请此权限时，是否弹窗向用户请求授权，取决于“要求应用请求关联”的开关状态。
 
 如果开关关闭，当应用请求权限时，系统不会弹窗，默认授予应用权限。
+
 如果开关开启，当应用请求权限时，系统将弹窗，需要用户确认才能授予应用权限。
 
 “要求应用请求关联”的开关状态可在“设置 > 隐私与安全 > 跨应用关联”页面中查看。
@@ -92,6 +95,7 @@ ohos.permission.LOCATION_IN_BACKGROUND
 由于在申请后台位置权限前，必须先申请前台位置权限，因此开发者在配置时，应同时配置后台位置权限和前台位置权限。前台位置权限的申请有两种允许情况：
 
 申请前台模糊位置权限：声明权限ohos.permission.APPROXIMATELY_LOCATION。
+
 申请前台精确位置权限：同时声明权限ohos.permission.APPROXIMATELY_LOCATION和ohos.permission.LOCATION。
 
 应用调用requestPermissionsFromUser()拉起弹窗向用户申请对应的前台位置权限。
@@ -261,6 +265,3 @@ ohos.permission.WRITE_MEDIA
 替代方案：
 
 请参考文件权限组废弃替代方案。
-
-开放权限（系统授权）
-受限开放权限

@@ -2,54 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-setup-hilog_
 
+说明
+
+打印日志请查看使用HiLog打印日志。
+
 DevEco Studio提供了“Log > HiLog”窗口查看设备当前所有应用实时打印的日志信息。HiLog默认显示的日志为以下6个部分。
 
-第一列
-
-	
-
-第二列
-
-	
-
-第三列
-
-	
-
-第四列
-
-	
-
-第五列
-
-	
-
-第六列
-
-
-
-
-时间戳
-
-	
-
-进程ID和线程ID
-
-	
-
-日志标签
-
-	
-
-应用包名
-
-	
-
-日志级别
-
-	
-
-日志内容
+第一列	第二列	第三列	第四列	第五列	第六列
+时间戳	进程ID和线程ID	日志标签	应用包名	日志级别	日志内容
 
 开发者可通过设置包名、日志级别和搜索关键词来筛选日志信息，还可以使用自定义日志显示格式、日志导出、显示最新日志等功能。
 
@@ -82,7 +42,8 @@ HiLog窗口左侧各个按钮的作用为：
 ：单击该按钮可以跳转到HiLog日志相关的在线帮助文档。
 
 过滤日志
-按关键字过滤日志
+
+[h2]按关键字过滤日志
 
 在HiLog搜索框中输入希望过滤的信息，即可过滤显示所有包含此信息的日志。
 
@@ -90,11 +51,12 @@ HiLog窗口左侧各个按钮的作用为：
 
 从DevEco Studio 6.0.2 Beta1版本开始，支持使用逻辑运算符&拼接多个关键字，精准搜索日志，&字符前后要有空格。
 
-使用默认提供的过滤配置
+[h2]使用默认提供的过滤配置
 
 HiLog提供多种默认的过滤模式，开发者不需要反复输入关键字过滤日志信息，只需要切换相应的过滤项，即可快速过滤所需的日志。
 
 All logs of selected app：按照应用进程过滤日志。
+
 User logs of selected app：按照应用进程过滤用户输出的日志。
 
 当选择All logs of selected app或User logs of selected app时，进程过滤下拉框处于可选状态，可选择相应的选项过滤想查看的进程日志。
@@ -105,13 +67,13 @@ User logs of selected app：按照应用进程过滤用户输出的日志。
 
 进程选择窗口可输入PID或应用名的关键字搜索要过滤的进程。
 
-按日志级别过滤日志
+[h2]按日志级别过滤日志
 
 HiLog提供日志级别过滤以过滤某一级别及以上的日志。日志级别分为Debug、Info、Warn、Error、Fatal五个级别。
 
 如选择Warn级别，则过滤展示Warn级别与Warn级别以上的日志信息，即展示Warn、Error、Fatal3个级别。
 
-按自定义过滤项过滤日志
+[h2]按自定义过滤项过滤日志
 
 除默认过滤项外，HiLog还提供配置自定义过滤项的途径以供开发者按照实际需求过滤日志，并保存此过滤配置以供重复使用。
 
@@ -120,6 +82,7 @@ HiLog提供日志级别过滤以过滤某一级别及以上的日志。日志级
 先前介绍的过滤选项此处均可配置，同时增加了Package name和Set to all projects配置项。
 
 Set to all projects：此配置当前工程及其他所有工程均可用。
+
 Package name：按应用包名过滤日志。
 
 当配置完后将自动切换至此过滤配置。
@@ -133,21 +96,18 @@ Package name：按应用包名过滤日志。
 点击左侧图标，将弹出自定义格式窗口。
 
 Standard Views：默认显示所有信息。
+
 Compact Views：默认显示日志级别与日志信息。
+
 Modify Views：进入“Hilog Format”窗口后，可以按照需要自定义日志格式。
 
 在“Hilog Format”中自定义日志格式：
 
 Use as default view for new windows：新建的HiLog窗口以Standard模式显示还是以Compact模式显示，新建后开发者可再自行切换其显示模式。
-Show timestamp：是否显示日期时间 。
 
 Format：Datetime/Time 显示日期时间/只显示时间。
 
-Show process id：是否显示PID-TID 。
-
 Include thread id：是否显示TID。
-
-Show domain/processname/tags：可以勾选以下三个选项决定是否显示domain、processname、tag。
 
 Show domains：是否显示domain。
 
@@ -157,17 +117,11 @@ Show tags：是否显示tag。
 
 Total column width：domain/processname/tags列的最大宽度，超长信息将会缩略显示并以ToolTip形式显示以上勾选内容的完整信息。
 
-Show package names：是否显示应用包名。
-
 Package column width：包名列的最大宽度，超长信息将会缩略显示并以ToolTip形式显示完整信息。
 
 超长日志自动换行
 
 当日志的消息过长时，日志窗口可能不能完整显示日志消息，需要拖动滚动条查看信息。此时开发者可以点击Soft-Wrap按钮控制日志消息自动换行。
-
-图1 未开启自动换行
-
-图2 开启自动换行
 
 显示最新日志
 
@@ -186,7 +140,9 @@ Package column width：包名列的最大宽度，超长信息将会缩略显示
 HiLog显示日志信息的流程为：
 
 应用输出日志信息至设备端日志缓存；
+
 Log组件将设备端日志缓存取出，保存在HiLog窗口缓存中；
+
 HiLog窗口根据过滤条件，将HiLog窗口缓存中的消息显示窗口在界面中。
 
 点击Clear All按钮，将同时清除设备日志缓存和HiLog窗口日志缓存，以及当前已经打印的日志。HiLog窗口将显示执行清除操作后，新输出至设备端缓存的日志信息。
@@ -234,6 +190,3 @@ DevEco Studio提供查看设备离线日志的功能，支持查看设备中/dat
 终止应用
 
 从DevEco Studio 6.0.0 Beta5版本开始，在日志窗口点击右键 > Force Stop App，可以终止该日志所属进程的应用，不支持系统应用和release签名的应用。
-
-日志与故障分析
-故障分析

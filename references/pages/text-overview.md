@@ -29,6 +29,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-over
 实现文本绘制显示或文本测量的主要流程如下图所示，ArkTS侧和Native侧请注意使用对应的能力接口。
 
 图2 文本测量与文本绘制显示的实现流程
-
-文本
-字体管理

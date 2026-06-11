@@ -35,6 +35,7 @@ Payment Kit服务提供了支付系统相关的一系列API接口。为减少API
   <artifactId>pay-java</artifactId>
   <version>1.0.0.331</version>
 </dependency>
+
 配置初始化
 
 将以下商户相关配置添加到示例代码配置文件src/main/resources/petalpayconfig.properties。
@@ -71,6 +72,7 @@ PETALPAY.HW_PAY_PUBLIC_KEY_FOR_CALLBACK=6D015316F09CB747E4467*******************
 PETALPAY.HW_PUBLIC_KEY_FOR_SESSIONKEY=042A7D32FA19C29D3E722D6C4ACAC0B******************************E5A5B1C8120DAC9882E4B093B9CE7A38296F87F41747D319A
 # 商户号关联的APPID
 PETALPAY.APPID=111831***
+
 业务接口请求
 
 获取发起请求客户端对象
@@ -100,13 +102,14 @@ public class MercPetalPayClient extends PetalPayClient {
     }
     @Override
     public String doPost(String url, Map<String, String> headers, String requestBody) throws Exception {
-        // todo
+        // 开发者业务侧post请求实现
     }
     @Override
     public String doGet(String url, Map<String, String> headers, String requestBody) throws Exception {
-        // todo
+        // 开发者业务侧get请求实现
     }
 }
+
 说明
 
 需要使用最新开放的API接口，如示例代码未及时更新，未找到默认提供用于接口请求的对象信息，可直接调用PetalPayClient的execute方法构建接口请求。
@@ -172,6 +175,7 @@ public CommonResponse aggrPreOrderForAppV2() {
 public static boolean validResponse(BaseGwRspWithSign rsp) {
     return rsp != null && "000000".equals(rsp.getResultCode());
 }
+
 通知回调处理
 
 可使用VerifyTools.getCallbackResult方法自动处理回调结果验签并返回响应给华为支付服务器以及实现CallBackHandleInterface接口来处理回调结果。
@@ -222,6 +226,205 @@ import com.huawei.petalpay.paymentservice.core.config.RequestConfig;
 import com.huawei.petalpay.paymentservice.core.tools.SM4Util;
 import com.huawei.petalpay.paymentservice.example.common.MercConfigUtil;
 
+public class SignRegister {
+    public static void main(String[] args) {
+        PetalPayClient payClient = new DefaultPetalPayClient(MercConfigUtil.getMercConfig());
+        String sessionKey = SM4Util.getSM4GCMSessionKey();
+        String message = "xxxxxx";
+        RegisterSubmercReq req = new RegisterSubmercReq(SM4Util.getSM4GCMContent(sessionKey, message));
+        RequestConfig config = RequestConfig.builder()
+            .publicKeyForSessionKey(MercConfigUtil.HW_PUBLIC_KEY_FOR_SESSIONKEY)
+            .sessionKey(sessionKey)
+            .build();
+        try {
+            MgmtSubmercRsp response = payClient.execute("POST", "/api/v1/partner/mgmt/submerc/register",
+                MgmtSubmercRsp.class, config, req);
+        } catch (Exception e) {
+            // todo 异常处理
+        }
+    }
+    static class RegisterSubmercReq {
+        private String message;
+        public RegisterSubmercReq(String message) {
+            this.message = message;
+        }
+    }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+<mirror>
+  <id>central</id>
+  <mirrorOf>central</mirrorOf>
+  <url>https://developer.huawei.com/repo/</url>
+</mirror>
+```
+
+### Code block 2
+
+```
+<dependency>
+  <groupId>com.huawei.petalpay</groupId>
+  <artifactId>pay-java</artifactId>
+  <version>1.0.0.331</version>
+</dependency>
+```
+
+### Code block 3
+
+```
+# 商户号
+PETALPAY.MERC_NO=121540000***
+# 商户私钥
+PETALPAY.MERC_PRIVATE_KEY=MIIJQwIBADAN=9w0BAQEFAASCCS0wg******************************CldcDlDCSsdfDceCSDr+RyvJdfcXssdEA=
+# 商户证书ID
+PETALPAY.MERC_AUTH_ID=101540200089***
+# 商户私钥签名类型
+PETALPAY.SIGN_TYPE=RSA
+# 鸿蒙支付服务域名
+PETALPAY.SERVER_HOST=https://petalpay-developer.cloud.huawei.com.cn
+# 鸿蒙支付服务验签公钥
+PETALPAY.HW_PAY_PUBLIC_KEY_FOR_CALLBACK=6D015316F09CB747E4467******************************DB46DA4BD0960ADD500D84912
+# 鸿蒙支付服务加密公钥（非必选）
+PETALPAY.HW_PUBLIC_KEY_FOR_SESSIONKEY=042A7D32FA19C29D3E722D6C4ACAC0B******************************E5A5B1C8120DAC9882E4B093B9CE7A38296F87F41747D319A
+# 商户号关联的APPID
+PETALPAY.APPID=111831***
+```
+
+### Code block 4
+
+```
+// 商户配置
+public static PetalPayConfig getMercConfig() {
+    return PetalPayConfig.builder().callerId(MERC_NO) // （必填）商户号
+        .appId(APP_ID) // （必填）商户号关联的APPID
+        .privateKey(MERC_PRIVATE_KEY) // （必填）商户私钥
+        .authId(MERC_AUTH_ID) // （必填）商户证书ID
+        .signType(SIGN_TYPE) // （选填）商户公私钥类型，默认RSA加密
+        .petalpayPublicKey(HW_PAY_PUBLIC_KEY_FOR_CALLBACK) // （非必填）验签公钥(和接口级配置needVerifyRsp对应，公钥和商户通知回调验签公钥同一个)
+        .domainHost(SERVER_HOST).build();
+}
+```
+
+### Code block 5
+
+```
+private static PetalPayClient payClient = new DefaultPetalPayClient(MercConfigUtil.getMercConfig());
+```
+
+### Code block 6
+
+```
+public class MercPetalPayClient extends PetalPayClient {
+    public MercPetalPayClient(PetalPayConfig petalPayConfig) {
+        super(petalPayConfig);
+    }
+    @Override
+    public String doPost(String url, Map<String, String> headers, String requestBody) throws Exception {
+        // 开发者业务侧post请求实现
+    }
+    @Override
+    public String doGet(String url, Map<String, String> headers, String requestBody) throws Exception {
+        // 开发者业务侧get请求实现
+    }
+}
+```
+
+### Code block 7
+
+```
+# 查看熵值
+cat /proc/sys/kernel/random/entropy_avail
+# 安装haveged
+yum install haveged
+# 启动haveged
+systemctl start haveged.service
+# 开启haveged服务开机自启动
+systemctl enable haveged.service
+```
+
+### Code block 8
+
+```
+public <T> T execute(String httpMethod, String apiUrl, Class<T> rspType, RequestConfig requestConfig, Object requestObj) throws Exception;
+```
+
+### Code block 9
+
+```
+public static PreOrderCreateRequestV2 getPreOrderCreateRequestV2() {
+    return PreOrderCreateRequestV2.builder()
+        .mercOrderNo("pay-example-" + System.currentTimeMillis()) // 每次订单号都要变，请将pay-example-修改为商户自己的订单前缀
+        .appId(MercConfigUtil.APP_ID)  // appId，需要配置为与商户绑定的正确的appId
+        .mercNo(MercConfigUtil.MERC_NO) // 商户的商户号
+        .tradeSummary("请修改为对应的商品简称") // 请修改为商品简称
+        .totalAmount(2L)
+        .callbackUrl("https://www.xxxxxx.com/hw/pay/callback") //回调通知地址，通知URL必须为直接可访问的URL，要求为https地址。最大长度为512。请替换为格式正确的结果通知回调地址。
+        .build();
+}
+```
+
+### Code block 10
+
+```
+public CommonResponse aggrPreOrderForAppV2() {
+    // 组装对象
+    PreOrderCreateRequestV2 preOrderReq = getPreOrderCreateRequestV2();
+    PreOrderCreateResponse response = null;
+    try {
+        response = payClient.execute("POST", "/api/v2/aggr/preorder/create/app", PreOrderCreateResponse.class,
+            preOrderReq);
+    } catch (Exception e) {
+        // todo 异常处理
+        log.error("request error ", e);
+        return CommonResponse.buildErrorRsp(e.getMessage());
+    }
+    if (!validResponse(response)) {
+        // todo 异常处理
+        log.error("response is invalid ", response);
+        return CommonResponse.buildFailRsp(response);
+    }
+    // 获取prepayId构建orderStr返回
+    return CommonResponse.buildSuccessRsp(payClient.buildOrderStr(response.getPrepayId()));
+}
+public static boolean validResponse(BaseGwRspWithSign rsp) {
+    return rsp != null && "000000".equals(rsp.getResultCode());
+}
+```
+
+### Code block 11
+
+```
+public CallBackBaseResponse transactionResultNotify(@RequestBody Object callbackRequest) {
+    String callbackStr = JSONObject.toJSONString(callbackRequest);
+    return VerifyTools.getCallbackResult(callbackStr, MercConfigUtil.HW_PAY_PUBLIC_KEY_FOR_CALLBACK, new CallBackHandleInterface() {
+        @Override
+         public void fail(CallBackBaseResponse response, String reqString) {
+              // 未获取到字节流或者验签失败
+              // 商户自己业务处理
+              log.error("CallBack failed: ", response != null ? response.getResultCode() : null);
+         }
+         @Override
+         public void success(String reqString) {
+              NotifyPaymentReq callbackReq = JSONObject.parseObject(reqString, NotifyPaymentReq.class);
+              // 验签成功，商户自己业务处理
+         }
+    });
+}
+```
+
+### Code block 12
+
+```
+import com.huawei.petalpay.paymentservice.apiservice.client.model.MgmtSubmercRsp;
+import com.huawei.petalpay.paymentservice.core.client.DefaultPetalPayClient;
+import com.huawei.petalpay.paymentservice.core.client.PetalPayClient;
+import com.huawei.petalpay.paymentservice.core.config.RequestConfig;
+import com.huawei.petalpay.paymentservice.core.tools.SM4Util;
+import com.huawei.petalpay.paymentservice.example.common.MercConfigUtil;
 
 public class SignRegister {
     public static void main(String[] args) {
@@ -247,5 +450,4 @@ public class SignRegister {
         }
     }
 }
-端侧应用配置
-（可选）数字人民币接入准备
+```

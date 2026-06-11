@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-11_
 
+检查网络是否正常。
+
 检查orderStr入参格式、字段值（如merc_no、app_id、auth_id等）是否正确，auth_id是否归属于merc_no(即公私钥对以及商户是否匹配）。
 
 应用是否在AppGallery Connect上面注册了，本地使用的调试签名证书是否是从AppGallery Connect上面下载的。
@@ -9,6 +11,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-f
 订单信息orderStr传入的app_id 是否与AppGallery Connect上面创建应用的APPID一致（如orderStr不传app_id字段时可正常拉起收银台，则需仔细检查传递时的app_id是否正确）。
 
 使用“hdc hilog > 日志路径”抓取运行日志，参考错误码及日志来分析具体的报错异常。
-
-接口请求响应“无效的签名”应该如何排查？
-预下单请求报错“交易订单状态异常”？

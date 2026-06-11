@@ -5,7 +5,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-co
 以3DES和HMAC为例，根据指定的对称密钥二进制数据生成密钥（OH_CryptoSymKey），将外部或存储的二进制数据转换为算法库的密钥对象，该对象可用于后续的加解密操作。
 
 在CMake脚本中链接相关动态库
+
 target_link_libraries(entry PUBLIC libohcrypto.so)
+
 指定二进制数据转换3DES密钥
 
 查看对称密钥生成和转换规格：3DES。
@@ -23,7 +25,6 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 #include "CryptoArchitectureKit/crypto_common.h"
 #include "CryptoArchitectureKit/crypto_sym_key.h"
 #include "file.h"
-
 
 OH_Crypto_ErrCode doTestDataCovertSymKey()
 {
@@ -53,7 +54,7 @@ OH_Crypto_ErrCode doTestDataCovertSymKey()
     OH_Crypto_FreeDataBlob(&out);
     return ret;
 }
-3des.cpp
+
 指定二进制数据转换HMAC密钥
 
 查看对称密钥生成和转换规格：HMAC。
@@ -73,7 +74,6 @@ OH_Crypto_ErrCode doTestDataCovertSymKey()
 #include <cstring>
 #include "file.h"
 
-
 OH_Crypto_ErrCode testConvertHmacKey()
 {
     const char *algName = "HMAC";
@@ -81,7 +81,6 @@ OH_Crypto_ErrCode testConvertHmacKey()
     OH_CryptoSymKey *convertKeyCtx = nullptr;
     Crypto_DataBlob out = {.data = nullptr, .len = 0};
     OH_Crypto_ErrCode ret;
-
 
     char *arr = const_cast<char *>("12345678abcdefgh12345678abcdefgh12345678abcdefgh12345678abcdefgh");
     Crypto_DataBlob convertBlob = {.data = (uint8_t *)(arr), .len = strlen(arr)};
@@ -103,6 +102,86 @@ OH_Crypto_ErrCode testConvertHmacKey()
     OH_Crypto_FreeDataBlob(&out);
     return ret;
 }
-hmac.cpp
-指定二进制数据转换对称密钥(ArkTS)
-随机生成非对称密钥对(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libohcrypto.so)
+```
+
+### Code block 2
+
+```
+#include "CryptoArchitectureKit/crypto_common.h"
+#include "CryptoArchitectureKit/crypto_sym_key.h"
+#include "file.h"
+
+OH_Crypto_ErrCode doTestDataCovertSymKey()
+{
+    const char *algName = "3DES192";
+    OH_CryptoSymKeyGenerator *ctx = nullptr;
+    OH_CryptoSymKey *convertKeyCtx = nullptr;
+    Crypto_DataBlob out = {.data = nullptr, .len = 0};
+    OH_Crypto_ErrCode ret;
+    uint8_t arr[] = {0xba, 0x3d, 0xc2, 0x71, 0x21, 0x1e, 0x30, 0x56, 0xad, 0x47, 0xfc, 0x5a,
+                     0x46, 0x39, 0xee, 0x7c, 0xba, 0x3b, 0xc2, 0x71, 0xab, 0xa0, 0x30, 0x72};
+    Crypto_DataBlob convertBlob = {.data = arr, .len = sizeof(arr)};
+    ret = OH_CryptoSymKeyGenerator_Create(algName, &ctx);
+    if (ret != CRYPTO_SUCCESS) {
+        return ret;
+    }
+    ret = OH_CryptoSymKeyGenerator_Convert(ctx, &convertBlob, &convertKeyCtx);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoSymKeyGenerator_Destroy(ctx);
+        return ret;
+    }
+    ret = OH_CryptoSymKey_GetKeyData(convertKeyCtx, &out);
+    OH_CryptoSymKeyGenerator_Destroy(ctx);
+    OH_CryptoSymKey_Destroy(convertKeyCtx);
+    if (ret != CRYPTO_SUCCESS) {
+        return ret;
+    }
+    OH_Crypto_FreeDataBlob(&out);
+    return ret;
+}
+```
+
+### Code block 3
+
+```
+#include "CryptoArchitectureKit/crypto_common.h"
+#include "CryptoArchitectureKit/crypto_sym_key.h"
+#include <cstring>
+#include "file.h"
+
+OH_Crypto_ErrCode testConvertHmacKey()
+{
+    const char *algName = "HMAC";
+    OH_CryptoSymKeyGenerator *ctx = nullptr;
+    OH_CryptoSymKey *convertKeyCtx = nullptr;
+    Crypto_DataBlob out = {.data = nullptr, .len = 0};
+    OH_Crypto_ErrCode ret;
+
+    char *arr = const_cast<char *>("12345678abcdefgh12345678abcdefgh12345678abcdefgh12345678abcdefgh");
+    Crypto_DataBlob convertBlob = {.data = (uint8_t *)(arr), .len = strlen(arr)};
+    ret = OH_CryptoSymKeyGenerator_Create(algName, &ctx);
+    if (ret != CRYPTO_SUCCESS) {
+        return ret;
+    }
+    ret = OH_CryptoSymKeyGenerator_Convert(ctx, &convertBlob, &convertKeyCtx);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoSymKeyGenerator_Destroy(ctx);
+        return ret;
+    }
+    ret = OH_CryptoSymKey_GetKeyData(convertKeyCtx, &out);
+    OH_CryptoSymKeyGenerator_Destroy(ctx);
+    OH_CryptoSymKey_Destroy(convertKeyCtx);
+    if (ret != CRYPTO_SUCCESS) {
+        return ret;
+    }
+    OH_Crypto_FreeDataBlob(&out);
+    return ret;
+}
+```

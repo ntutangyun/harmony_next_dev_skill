@@ -18,15 +18,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hdrvivid2
 
 通过配置OH_MD_KEY_VIDEO_DECODER_OUTPUT_COLOR_SPACE，支持在解码后输出SDR图像，目前输入仅支持为HDR Vivid的码流，输出仅支持配置为OH_COLORSPACE_BT709_LIMIT。
 
-在 CMake 脚本中链接动态库
+[h2]在 CMake 脚本中链接动态库
+
 target_link_libraries(sample PUBLIC libnative_media_avsource.so)
 target_link_libraries(sample PUBLIC libnative_media_vdec.so)
 target_link_libraries(sample PUBLIC libnative_media_core.so)
+
 说明
 
 上述'sample'字样仅为示例，此处由开发者根据实际工程目录自定义。
 
-开发步骤
+[h2]开发步骤
 
 添加头文件。
 
@@ -54,8 +56,11 @@ target_link_libraries(sample PUBLIC libnative_media_core.so)
 示例中的变量说明如下：
 
 videoDec：视频解码器实例的指针。
+
 capability：解码器能力查询实例的指针。
+
 OH_AVCODEC_MIMETYPE_VIDEO_HEVC：HEVC格式视频编解码器。
+
 //3.1 获取指定硬件的视频HEVC解码器能力实例。
 OH_AVCapability *capability = OH_AVCodec_GetCapabilityByCategory(OH_AVCODEC_MIMETYPE_VIDEO_HEVC, false, HARDWARE);
 if (capability == nullptr){
@@ -65,6 +70,7 @@ if (capability == nullptr){
 const char *name = OH_AVCapability_GetName(capability);
 // 3.3 创建HEVC硬件解码实例。
 OH_AVCodec *videoDec = OH_VideoDecoder_CreateByName(name);
+
 说明
 
 由于目前仅硬件解码器支持该能力，因此必须根据解码器name进行创建。
@@ -78,8 +84,11 @@ OH_AVCodec *videoDec = OH_VideoDecoder_CreateByName(name);
 需配置项：视频帧宽度、视频帧高度、视频像素格式、指定输出为SDR。具体示例如下：
 
 DEFAULT_WIDTH：320像素宽度；
+
 DEFAULT_HEIGHT：240像素高度；
+
 DEFAULT_PIXELFORMAT： 像素格式，因为示例需要保存的YUV文件像素格式是NV12，所以设置为 AV_PIXEL_FORMAT_NV12。
+
 // 视频帧宽度。
 int32_t width = 320;
 // 视频帧高度。
@@ -99,11 +108,68 @@ if (ret != AV_ERR_OK) {
     // 异常处理。
 }
 OH_AVFormat_Destroy(format);
+
 说明
 
 通过配置OH_MD_KEY_VIDEO_DECODER_OUTPUT_COLOR_SPACE，支持在解码后输出SDR图像，目前输入仅支持为HDR Vivid的码流，输出仅支持配置为OH_COLORSPACE_BT709_LIMIT。
 
 后续步骤具体可参考：视频解码Surface模式。
 
-HDR Vivid视频录制
-媒体数据封装与解析
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC libnative_media_avsource.so)
+target_link_libraries(sample PUBLIC libnative_media_vdec.so)
+target_link_libraries(sample PUBLIC libnative_media_core.so)
+```
+
+### Code block 2
+
+```
+#include <multimedia/player_framework/native_avcodec_videodecoder.h>
+#include <multimedia/player_framework/native_avcapability.h>
+#include <multimedia/player_framework/native_avcodec_base.h>
+#include <multimedia/player_framework/native_avformat.h>
+#include <multimedia/player_framework/native_avbuffer.h>
+#include <fstream>
+```
+
+### Code block 3
+
+```
+//3.1 获取指定硬件的视频HEVC解码器能力实例。
+OH_AVCapability *capability = OH_AVCodec_GetCapabilityByCategory(OH_AVCODEC_MIMETYPE_VIDEO_HEVC, false, HARDWARE);
+if (capability == nullptr){
+ // 异常处理。
+}
+// 3.2 获取HEVC硬件解码器名称。
+const char *name = OH_AVCapability_GetName(capability);
+// 3.3 创建HEVC硬件解码实例。
+OH_AVCodec *videoDec = OH_VideoDecoder_CreateByName(name);
+```
+
+### Code block 4
+
+```
+// 视频帧宽度。
+int32_t width = 320;
+// 视频帧高度。
+int32_t height = 240;
+// 视频像素格式。
+constexpr OH_AVPixelFormat DEFAULT_PIXELFORMAT = AV_PIXEL_FORMAT_NV12;
+OH_AVFormat *format = OH_AVFormat_Create();
+// 5.1 配置视频宽、高、像素格式。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, width);
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, height);
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, DEFAULT_PIXELFORMAT);
+// 5.2 指定输出为SDR视频。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_DECODER_OUTPUT_COLOR_SPACE, OH_COLORSPACE_BT709_LIMIT);
+// 5.3 配置解码器。
+int32_t ret = OH_VideoDecoder_Configure(videoDec, format);
+if (ret != AV_ERR_OK) {
+    // 异常处理。
+}
+OH_AVFormat_Destroy(format);
+```

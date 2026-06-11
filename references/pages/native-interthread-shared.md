@@ -20,15 +20,12 @@ export class SendableObjTest {
     return 1024;
   }
 }
-SendableObjTest.ets
 
 实现Native加载ArkTS模块的能力。
 
 #include <thread>
 
-
 #include "napi/native_api.h"
-
 
 static void* g_serializationData = nullptr;
 static void* CreateEnvAndSendSendable(void*)
@@ -72,7 +69,6 @@ static void* CreateEnvAndSendSendable(void*)
     }
     return nullptr;
 }
-napi_init.cpp
 
 主要步骤包括：创建执行环境、加载模块、查找并调用模块函数（或直接通过Node-API接口创建Sendable对象），最后销毁执行环境。加载模块的详细信息，请参见使用Node-API接口进行模块加载。查找并调用函数及更多Node-API接口能力，请参见Node-API。
 
@@ -90,15 +86,12 @@ export class SendableObjTest {
     return 1024;
   }
 }
-SendableObjTest.ets
 
 在Native中实现两个线程的序列化和反序列化Sendable的逻辑。
 
 #include <thread>
 
-
 #include "napi/native_api.h"
-
 
 static void* g_serializationData = nullptr;
 static void* CreateEnvAndSendSendable(void*)
@@ -142,7 +135,6 @@ static void* CreateEnvAndSendSendable(void*)
     }
     return nullptr;
 }
-
 
 static void* CreateEnvAndReceiveSendable(void*)
 {
@@ -177,7 +169,6 @@ static void* CreateEnvAndReceiveSendable(void*)
     return nullptr;
 }
 
-
 static napi_value TestSendSendable([[maybe_unused]] napi_env env, [[maybe_unused]] napi_callback_info info)
 {
     std::thread t1(CreateEnvAndSendSendable, nullptr);
@@ -186,7 +177,6 @@ static napi_value TestSendSendable([[maybe_unused]] napi_env env, [[maybe_unused
     t2.join();
     return nullptr;
 }
-
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
@@ -198,7 +188,6 @@ static napi_value Init(napi_env env, napi_value exports)
 }
 EXTERN_C_END
 
-
 static napi_module demoModule = {
     .nm_version = 1,
     .nm_flags = 0,
@@ -209,14 +198,12 @@ static napi_module demoModule = {
     .reserved = { 0 },
 };
 
-
 extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
 {
     napi_module_register(&demoModule);
 }
-napi_init.cpp
+
 export const testSendSendable: () => void;
-Index.d.ts
 
 UI主线程发起调用。
 
@@ -224,12 +211,10 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import testNapi from 'libentry.so';
 import { SendableObjTest } from './SendableObjTest'
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -250,7 +235,6 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
 
 整个过程主要包括的逻辑实现为：
 
@@ -262,5 +246,234 @@ Index.ets
 
 操作对象需要符合Sendable对象的规则，具体可见Sendable使用规则与约束。
 
-ArkUI数据更新场景
-TaskPool指定任务并发度场景
+## Code blocks
+
+### Code block 1
+
+```
+@Sendable
+export class SendableObjTest {
+  static newSendable() {
+    return 1024;
+  }
+}
+```
+
+### Code block 2
+
+```
+#include <thread>
+
+#include "napi/native_api.h"
+
+static void* g_serializationData = nullptr;
+static void* CreateEnvAndSendSendable(void*)
+{
+    // 1. 创建基础运行环境
+    napi_env env = nullptr;
+    napi_status ret = napi_create_ark_runtime(&env);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 2. 加载自定义模块，假定SendableObjTest中提供创建sendable对象的方法newSendable
+    napi_value test = nullptr;
+    ret = napi_load_module_with_info(
+        env, "entry/src/main/ets/pages/SendableObjTest", "com.example.myapplication/entry", &test);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    napi_value sendableObjTest = nullptr;
+    ret = napi_get_named_property(env, test, "SendableObjTest", &sendableObjTest);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 3. 使用ArkTS中的newSendable，假设sendableObjTest中有一个函数newSendable能返回sendable对象
+    napi_value newSendable = nullptr;
+    ret = napi_get_named_property(env, sendableObjTest, "newSendable", &newSendable);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 4. 调用newSendable函数返回新创建的sendable对象，并保存在result中
+    napi_value result = nullptr;
+    ret = napi_call_function(env, sendableObjTest, newSendable, 0, nullptr, &result);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 5. 序列化sendable对象
+    napi_value undefined;
+    napi_get_undefined(env, &undefined);
+    ret = napi_serialize(env, result, undefined, undefined, &g_serializationData);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    return nullptr;
+}
+```
+
+### Code block 3
+
+```
+@Sendable
+export class SendableObjTest {
+  static newSendable() {
+    return 1024;
+  }
+}
+```
+
+### Code block 4
+
+```
+#include <thread>
+
+#include "napi/native_api.h"
+
+static void* g_serializationData = nullptr;
+static void* CreateEnvAndSendSendable(void*)
+{
+    // 1. 创建基础运行环境
+    napi_env env = nullptr;
+    napi_status ret = napi_create_ark_runtime(&env);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 2. 加载自定义模块，假定SendableObjTest中提供创建sendable对象的方法newSendable
+    napi_value test = nullptr;
+    ret = napi_load_module_with_info(
+        env, "entry/src/main/ets/pages/SendableObjTest", "com.example.myapplication/entry", &test);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    napi_value sendableObjTest = nullptr;
+    ret = napi_get_named_property(env, test, "SendableObjTest", &sendableObjTest);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 3. 使用ArkTS中的newSendable，假设sendableObjTest中有一个函数newSendable能返回sendable对象
+    napi_value newSendable = nullptr;
+    ret = napi_get_named_property(env, sendableObjTest, "newSendable", &newSendable);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 4. 调用newSendable函数返回新创建的sendable对象，并保存在result中
+    napi_value result = nullptr;
+    ret = napi_call_function(env, sendableObjTest, newSendable, 0, nullptr, &result);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 5. 序列化sendable对象
+    napi_value undefined;
+    napi_get_undefined(env, &undefined);
+    ret = napi_serialize(env, result, undefined, undefined, &g_serializationData);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    return nullptr;
+}
+
+static void* CreateEnvAndReceiveSendable(void*)
+{
+    // 1. 创建基础运行环境
+    napi_env env = nullptr;
+    napi_status ret = napi_create_ark_runtime(&env);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 2. 反序列化获取sendable共享对象，结果保存在result中，这个result就可以通过napi接口进行各种操作了
+    napi_value result = nullptr;
+    ret = napi_deserialize(env, g_serializationData, &result);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    // 3. 删除序列化数据
+    ret = napi_delete_serialization_data(env, g_serializationData);
+    if (ret != napi_ok) {
+        std::abort();
+    }
+    napi_valuetype valuetype0;
+    napi_typeof(env, result, &valuetype0);
+    if (valuetype0 != napi_number) {
+        std::abort();
+    }
+    int value0;
+    napi_get_value_int32(env, result, &value0);
+    // 1024是判断ArkTS返回的结果是否正确
+    if (value0 != 1024) {
+        std::abort();
+    }
+    return nullptr;
+}
+
+static napi_value TestSendSendable([[maybe_unused]] napi_env env, [[maybe_unused]] napi_callback_info info)
+{
+    std::thread t1(CreateEnvAndSendSendable, nullptr);
+    t1.join();
+    std::thread t2(CreateEnvAndReceiveSendable, nullptr);
+    t2.join();
+    return nullptr;
+}
+
+EXTERN_C_START
+static napi_value Init(napi_env env, napi_value exports)
+{
+    napi_property_descriptor desc[] = { { "testSendSendable", nullptr, TestSendSendable, nullptr, nullptr, nullptr,
+        napi_default, nullptr } };
+    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    return exports;
+}
+EXTERN_C_END
+
+static napi_module demoModule = {
+    .nm_version = 1,
+    .nm_flags = 0,
+    .nm_filename = nullptr,
+    .nm_register_func = Init,
+    .nm_modname = "entry",
+    .nm_priv = ((void*)0),
+    .reserved = { 0 },
+};
+
+extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
+{
+    napi_module_register(&demoModule);
+}
+```
+
+### Code block 5
+
+```
+export const testSendSendable: () => void;
+```
+
+### Code block 6
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import testNapi from 'libentry.so';
+import { SendableObjTest } from './SendableObjTest'
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            SendableObjTest.newSendable()
+            hilog.info(0x0000, 'testTag', 'Test send Sendable begin');
+            testNapi.testSendSendable();
+            hilog.info(0x0000, 'testTag', 'Test send Sendable end');
+            this.message = 'success';
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

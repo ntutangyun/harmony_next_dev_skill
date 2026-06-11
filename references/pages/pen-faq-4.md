@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-faq-4_
 
+Pen Kit手写套件画布和工具栏是配套提供的，暂不支持单独使用。

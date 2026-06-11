@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-tpms_
 
+约束与限制
+
 性能维测能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备。
 
 捕获有关HTTP请求/响应流的详细信息
@@ -63,6 +65,7 @@ session.get('http://developer.huawei.com').then((response) => {
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
 });
+
 HTTP请求过程中各时间点详解
 
 在实施性能维测的过程中，HTTP请求的各个时间点至关重要。借助TimeInfo提供的详细字段，可以精准控制请求过程，无论是直接利用这些字段，还是通过它们之间的运算，都能准确获取所需的时间点，从而提升测试效率。
@@ -71,7 +74,7 @@ HTTP请求过程中各时间点详解
 
 从图中可以看到HTTP请求过程的基本过程，并且有一些关键的时间点，下面将以时间线的方式对其进行说明：
 
-TimeInfo时间线
+[h2]TimeInfo时间线
 
 请求开始 （0时刻） -> nameLookupTimeMs（DNS解析）-> connectTimeMs（建立连接）-> tlsHandshakeTimeMs（TLS握手）-> preTransferTimeMs（请求业务数据发送到服务器的时间点） -> startTransferTimeMs（从服务器接收到首包数据的时间点）。
 
@@ -87,18 +90,16 @@ TLS握手（不包含建连时间）耗时：tlsHandshakeTimeMs - connectTimeMs
 
 接收剩余数据的耗时：totalTimeMs - startTransferTimeMs
 
-示例代码
+[h2]示例代码
 
 这段代码在使用过程中会将上述说明中三个比较关键的时间点打印出来，开发者可以根据获取到的时间对应用性能实现动态调整，获取最佳体验。
 
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 // 1、创建session、requestURL
 const session = rcp.createSession();
 const requestURL = "https://www.example.com";
-
 
 // 2、在需要跟踪分析请求过程中各个时间段消耗的时间，请将此开关打开
 const configuration: rcp.Configuration = {
@@ -107,11 +108,9 @@ const configuration: rcp.Configuration = {
   }
 }
 
-
 // 3、创建请求
 const request = new rcp.Request(requestURL, "GET");
 request.configuration = configuration;
-
 
 // 4、使用fetch发起网络请求，request中携带上面配置好的configuration
 session.fetch(request).then((response: rcp.Response) => {
@@ -123,12 +122,114 @@ session.fetch(request).then((response: rcp.Response) => {
   let remainderDataTime = response.timeInfo?.totalTimeMs - response.timeInfo?.startTransferTimeMs;
   let firstPackageTime = response.timeInfo?.startTransferTimeMs - response.timeInfo?.preTransferTimeMs;
   let TLSTime = response.timeInfo?.tlsHandshakeTimeMs - response.timeInfo?.connectTimeMs;
-  
+
   console.info(`首包耗时${firstPackageTime}`);
   console.info(`TLS握手（不包含建连时间）耗时${TLSTime}`);
   console.info(`接收剩余数据的耗时${remainderDataTime}`);
 }).catch((err: BusinessError) => {
   console.error(`Response err, the error code is ${err.code}, error data is ${err.data}`);
 })
-提升HTTP传输性能
-通过配置Configuration优化传输性能
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 定义自定义响应处理程序
+const customHttpEventsHandler: rcp.HttpEventsHandler = {
+  onDataReceive: (incomingData: ArrayBuffer) => {
+    // 用于处理传入数据的自定义逻辑
+    console.info(`Received data: ${incomingData.byteLength}`, );
+    return incomingData.byteLength;
+  },
+  onHeaderReceive: (headers: rcp.RequestHeaders) => {
+    // 处理响应头的自定义逻辑
+    console.info(`Received headers: ${JSON.stringify(headers)}`);
+  },
+  onDataEnd: () => {
+    // 用于处理数据传输完成的自定义逻辑
+    console.info('Data transfer complete');
+  }
+};
+```
+
+### Code block 3
+
+```
+// 配置跟踪设置
+const tracingConfig: rcp.TracingConfiguration = {
+  verbose: true,
+  infoToCollect: {
+    incomingHeader: true, // 收集传入的header信息事件
+    outgoingHeader: true, // 收集传出的header信息事件
+    incomingData: true, // 收集传入数据信息事件
+    outgoingData: true // 收集传出数据信息事件
+  },
+  collectTimeInfo: true,
+  httpEventsHandler: customHttpEventsHandler
+};
+const securityConfig: rcp.SecurityConfiguration = {
+  tlsOptions: {
+    tlsVersion: 'TlsV1.3'
+  }
+};
+```
+
+### Code block 4
+
+```
+// 创建通信会话对象，并传入相关配置
+const session = rcp.createSession({ requestConfiguration: { tracing: tracingConfig, security: securityConfig } });
+session.get('http://developer.huawei.com').then((response) => {
+  console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+}).catch((err: BusinessError) => {
+  console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+});
+```
+
+### Code block 5
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 1、创建session、requestURL
+const session = rcp.createSession();
+const requestURL = "https://www.example.com";
+
+// 2、在需要跟踪分析请求过程中各个时间段消耗的时间，请将此开关打开
+const configuration: rcp.Configuration = {
+  tracing: {
+    collectTimeInfo: true
+  }
+}
+
+// 3、创建请求
+const request = new rcp.Request(requestURL, "GET");
+request.configuration = configuration;
+
+// 4、使用fetch发起网络请求，request中携带上面配置好的configuration
+session.fetch(request).then((response: rcp.Response) => {
+// 由于timeInfo中各个参数有可能为undefined，所以需要在两个时间段做运算前添加判空操作
+  if (!response.timeInfo) {
+    console.error(`timeInfo is undefined ${response.timeInfo}`);
+    return;
+  }
+  let remainderDataTime = response.timeInfo?.totalTimeMs - response.timeInfo?.startTransferTimeMs;
+  let firstPackageTime = response.timeInfo?.startTransferTimeMs - response.timeInfo?.preTransferTimeMs;
+  let TLSTime = response.timeInfo?.tlsHandshakeTimeMs - response.timeInfo?.connectTimeMs;
+
+  console.info(`首包耗时${firstPackageTime}`);
+  console.info(`TLS握手（不包含建连时间）耗时${TLSTime}`);
+  console.info(`接收剩余数据的耗时${remainderDataTime}`);
+}).catch((err: BusinessError) => {
+  console.error(`Response err, the error code is ${err.code}, error data is ${err.data}`);
+})
+```

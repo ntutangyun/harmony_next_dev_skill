@@ -19,7 +19,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wra
 @Builder
 function builderElement() {}
 
-
 let builderArr: Function[] = [builderElement];
 @Builder
 function testBuilder() {
@@ -44,9 +43,9 @@ declare function wrapBuilder<Args extends Object[]>(builder: (...args: Args) => 
 declare class WrappedBuilder<Args extends Object[]> {
   builder: (...args: Args) => void;
 
-
   constructor(builder: (...args: Args) => void);
 }
+
 说明
 
 模板参数Args extends Object[]需要匹配@Builder函数参数的类型。
@@ -55,6 +54,7 @@ declare class WrappedBuilder<Args extends Object[]> {
 
 let builderVar: WrappedBuilder<[string, number]> = wrapBuilder(MyBuilder);
 let builderArr: WrappedBuilder<[string, number]>[] = [wrapBuilder(MyBuilder)]; // 可以放入数组
+
 限制条件
 
 wrapBuilder方法只能传入全局@Builder方法。
@@ -71,16 +71,13 @@ function myBuilder(value: string, size: number) {
     .fontSize(size)
 }
 
-
 // 使用wrapBuilder封装myBuilder，并赋值给globalBuilder变量
 let globalBuilder: WrappedBuilder<[string, number]> = wrapBuilder(myBuilder);
-
 
 @Entry
 @Component
 struct TestIndex {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -92,7 +89,7 @@ struct TestIndex {
     .height('100%')
   }
 }
-PageTwo.ets
+
 @Builder方法赋值给变量在UI语法中使用
 
 自定义组件IndexItem使用ForEach进行不同@Builder函数的渲染，可以使用builderArr声明的wrapBuilder数组来实现不同的@Builder函数的效果。整体代码会更加整洁。
@@ -104,7 +101,6 @@ function myBuilder0(value: string, size: number) {
     .fontColor(Color.Blue)
 }
 
-
 @Builder
 function yourBuilder(value: string, size: number) {
   Text(value)
@@ -112,9 +108,7 @@ function yourBuilder(value: string, size: number) {
     .fontColor(Color.Pink)
 }
 
-
 const builderArr: WrappedBuilder<[string, number]>[] = [wrapBuilder(myBuilder0), wrapBuilder(yourBuilder)];
-
 
 @Entry
 @Component
@@ -127,7 +121,6 @@ struct IndexItem {
     })
   }
 
-
   build() {
     Row() {
       Column() {
@@ -138,7 +131,7 @@ struct IndexItem {
     .height('100%')
   }
 }
-PageThree.ets
+
 @Builder方法赋值给类或者接口的属性
 
 使用@Builder装饰器装饰的方法MyBuilder作为wrapBuilder的参数，然后将wrapBuilder的返回值赋值给接口ChildOptions中的属性，可以以数据的形式传递给其他子组件调用。
@@ -149,11 +142,9 @@ function MyBuilder(value: string, size: number) {
     .fontSize(size)
 }
 
-
 interface ChildOptions {
   wrappedBuilder: WrappedBuilder<[string, number]>; // 类型为WrappedBuilder的属性可以传递@Builder函数
 }
-
 
 @Entry
 @Component
@@ -161,7 +152,6 @@ struct Index {
   childOptions: ChildOptions = {
     wrappedBuilder: wrapBuilder(MyBuilder)
   };
-
 
   build() {
     Row() {
@@ -174,7 +164,6 @@ struct Index {
   }
 }
 
-
 @Component
 struct Child {
   @Prop options: ChildOptions;
@@ -182,6 +171,7 @@ struct Child {
     this.options.wrappedBuilder.builder('Hello', 20);
   }
 }
+
 引用传递
 
 按引用传递参数时，状态变量的改变会引起@Builder方法内的UI刷新。
@@ -190,7 +180,6 @@ class Tmp {
   public paramA2: string = 'hello';
 }
 
-
 @Builder
 function overBuilder(param: Tmp) {
   Column() {
@@ -198,15 +187,12 @@ function overBuilder(param: Tmp) {
   }
 }
 
-
 const wBuilder: WrappedBuilder<[Tmp]> = wrapBuilder(overBuilder);
-
 
 @Entry
 @Component
 struct Parent {
   @State label: Tmp = new Tmp();
-
 
   build() {
     Column() {
@@ -218,9 +204,10 @@ struct Parent {
     }
   }
 }
-PageFour.ets
+
 常见问题
-重复定义wrapBuilder失效
+
+[h2]重复定义wrapBuilder失效
 
 在同一个自定义组件内，同一个wrapBuilder只能初始化一次。例如，builderObj通过wrapBuilder(MyBuilderFirst)初始化后，再次对builderObj赋值wrapBuilder(MyBuilderSecond)将不会生效。
 
@@ -230,18 +217,15 @@ function myBuilderFirst(value: string, size: number) {
     .fontSize(size)
 }
 
-
 @Builder
 function myBuilderSecond(value: string, size: number) {
   Text('MyBuilderSecond：' + value)
     .fontSize(size)
 }
 
-
 interface BuilderModel {
   globalBuilder: WrappedBuilder<[string, number]>;
 }
-
 
 @Entry
 @Component
@@ -249,14 +233,12 @@ struct TestBuilderIndex {
   @State message: string = 'Hello World';
   @State builderObj: BuilderModel = { globalBuilder: wrapBuilder(myBuilderFirst) };
 
-
   aboutToAppear(): void {
     setTimeout(() => {
       // wrapBuilder(myBuilderSecond) 不会生效
       this.builderObj.globalBuilder = wrapBuilder(myBuilderSecond);
     }, 1000);
   }
-
 
   build() {
     Row() {
@@ -268,6 +250,232 @@ struct TestBuilderIndex {
     .height('100%')
   }
 }
-PageFive.ets
-@BuilderParam装饰器：引用@Builder函数
-mutableBuilder：实现全局@Builder动态更新
+
+## Code blocks
+
+### Code block 1
+
+```
+@Builder
+function builderElement() {}
+
+let builderArr: Function[] = [builderElement];
+@Builder
+function testBuilder() {
+  // builderElement赋值给变量或者数组后，在UI方法中无法使用
+  ForEach(builderArr, (item: Function) => {
+    item();
+  })
+}
+```
+
+### Code block 2
+
+```
+declare function wrapBuilder<Args extends Object[]>(builder: (...args: Args) => void): WrappedBuilder<Args>;
+```
+
+### Code block 3
+
+```
+declare class WrappedBuilder<Args extends Object[]> {
+  builder: (...args: Args) => void;
+
+  constructor(builder: (...args: Args) => void);
+}
+```
+
+### Code block 4
+
+```
+let builderVar: WrappedBuilder<[string, number]> = wrapBuilder(MyBuilder);
+let builderArr: WrappedBuilder<[string, number]>[] = [wrapBuilder(MyBuilder)]; // 可以放入数组
+```
+
+### Code block 5
+
+```
+@Builder
+function myBuilder(value: string, size: number) {
+  Text(value)
+    .fontSize(size)
+}
+
+// 使用wrapBuilder封装myBuilder，并赋值给globalBuilder变量
+let globalBuilder: WrappedBuilder<[string, number]> = wrapBuilder(myBuilder);
+
+@Entry
+@Component
+struct TestIndex {
+  @State message: string = 'Hello World';
+
+  build() {
+    Row() {
+      Column() {
+        globalBuilder.builder(this.message, 50);
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 6
+
+```
+@Builder
+function myBuilder0(value: string, size: number) {
+  Text(value)
+    .fontSize(size)
+    .fontColor(Color.Blue)
+}
+
+@Builder
+function yourBuilder(value: string, size: number) {
+  Text(value)
+    .fontSize(size)
+    .fontColor(Color.Pink)
+}
+
+const builderArr: WrappedBuilder<[string, number]>[] = [wrapBuilder(myBuilder0), wrapBuilder(yourBuilder)];
+
+@Entry
+@Component
+struct IndexItem {
+  @Builder
+  IndexItem() {
+    // IndexItem使用ForEach进行不同@Builder函数的渲染
+    ForEach(builderArr, (item: WrappedBuilder<[string, number]>) => {
+      item.builder('Hello World', 30);
+    })
+  }
+
+  build() {
+    Row() {
+      Column() {
+        this.IndexItem();
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 7
+
+```
+@Builder
+function MyBuilder(value: string, size: number) {
+  Text(value)
+    .fontSize(size)
+}
+
+interface ChildOptions {
+  wrappedBuilder: WrappedBuilder<[string, number]>; // 类型为WrappedBuilder的属性可以传递@Builder函数
+}
+
+@Entry
+@Component
+struct Index {
+  childOptions: ChildOptions = {
+    wrappedBuilder: wrapBuilder(MyBuilder)
+  };
+
+  build() {
+    Row() {
+      Column() {
+        Child({ options: this.childOptions })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+
+@Component
+struct Child {
+  @Prop options: ChildOptions;
+  build() {
+    this.options.wrappedBuilder.builder('Hello', 20);
+  }
+}
+```
+
+### Code block 8
+
+```
+class Tmp {
+  public paramA2: string = 'hello';
+}
+
+@Builder
+function overBuilder(param: Tmp) {
+  Column() {
+    Text(`wrapBuildervalue:${param.paramA2}`)
+  }
+}
+
+const wBuilder: WrappedBuilder<[Tmp]> = wrapBuilder(overBuilder);
+
+@Entry
+@Component
+struct Parent {
+  @State label: Tmp = new Tmp();
+
+  build() {
+    Column() {
+      // 引用传递参数，label.paramA2的改变会引起overBuilder内的UI刷新
+      wBuilder.builder({ paramA2: this.label.paramA2 });
+      Button('Click me').onClick(() => {
+        this.label.paramA2 = 'ArkUI';
+      })
+    }
+  }
+}
+```
+
+### Code block 9
+
+```
+@Builder
+function myBuilderFirst(value: string, size: number) {
+  Text('MyBuilderFirst：' + value)
+    .fontSize(size)
+}
+
+@Builder
+function myBuilderSecond(value: string, size: number) {
+  Text('MyBuilderSecond：' + value)
+    .fontSize(size)
+}
+
+interface BuilderModel {
+  globalBuilder: WrappedBuilder<[string, number]>;
+}
+
+@Entry
+@Component
+struct TestBuilderIndex {
+  @State message: string = 'Hello World';
+  @State builderObj: BuilderModel = { globalBuilder: wrapBuilder(myBuilderFirst) };
+
+  aboutToAppear(): void {
+    setTimeout(() => {
+      // wrapBuilder(myBuilderSecond) 不会生效
+      this.builderObj.globalBuilder = wrapBuilder(myBuilderSecond);
+    }, 1000);
+  }
+
+  build() {
+    Row() {
+      Column() {
+        this.builderObj.globalBuilder.builder(this.message, 20)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

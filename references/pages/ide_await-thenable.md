@@ -1,39 +1,81 @@
-# @typescript
+# @typescript-eslint/await-thenable
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_await-thenable_
 
 不允许对不是“Thenable”对象的值使用await关键字（“Thenable”表示某个对象拥有“then”方法，比如Promise）。
 
 规则配置
+
 // code-linter.json5
 {
   "rules": {
     "@typescript-eslint/await-thenable": "error"
   }
 }
+
 选项
 
 该规则无需配置额外选项。
 
 正例
+
 async function test() {
   await Promise.resolve('value');
 }
 
-
 export { test };
+
 反例
+
 async function test() {
   await 'value';
 }
 
-
 export { test };
+
 规则集
+
 plugin:@typescript-eslint/recommended
 plugin:@typescript-eslint/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@typescript-eslint/array-type
-@typescript-eslint/ban-ts-comment
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/await-thenable": "error"
+  }
+}
+```
+
+### Code block 2
+
+```
+async function test() {
+  await Promise.resolve('value');
+}
+
+export { test };
+```
+
+### Code block 3
+
+```
+async function test() {
+  await 'value';
+}
+
+export { test };
+```
+
+### Code block 4
+
+```
+plugin:@typescript-eslint/recommended
+plugin:@typescript-eslint/all
+```

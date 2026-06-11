@@ -6,14 +6,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 
 Hvigor默认开启并行构建，您也可以通过以下几种方式来控制是否启用并行构建：
 
-通过DevEco Studio菜单栏构建：
 点击File > Settings（macOS为DevEco Studio > Preferences/Settings） > Build, Execution, Deployment > Build Tools > Hvigor，勾选或取消勾选字段Execute tasks in parallel mode(may require larger heap size)。
-通过命令行构建：
-执行命令，其中<task>替换为具体任务名：
+
 // 启用并行构建
 hvigorw <task> --parallel
 // 关闭并行构建
 hvigorw <task> --no-parallel
+
 在hvigor-config.json5中配置execution.parallel选项。
-守护进程
-增量构建
+
+## Code blocks
+
+### Code block 1
+
+```
+// 启用并行构建
+hvigorw <task> --parallel
+// 关闭并行构建
+hvigorw <task> --no-parallel
+```

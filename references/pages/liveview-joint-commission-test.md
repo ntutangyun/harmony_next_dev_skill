@@ -19,6 +19,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/liveview-
 登录AppGallery Connect网站，点击“开发与服务”，在项目列表中找到开发者的项目，通过“增长 > 推送服务 > 配置”导航到“配置”页签。
 
 选择开发者的应用，点击实况窗-调测设备管理，根据Push Token添加调测设备后即可进行接入调测。
-
-开通实况窗服务权益
-申请实况窗正式权限

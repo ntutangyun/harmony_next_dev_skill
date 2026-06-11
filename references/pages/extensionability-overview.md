@@ -11,35 +11,20 @@ ExtensionAbility类型说明
 当前系统已定义的ExtensionAbility类型如下表所示。
 
 说明
+
 “是否允许三方应用实现”是指：三方应用能否继承该类型ExtensionAbility实现自己的业务逻辑。
+
 “是否有独立Extension沙箱”是指：该类型ExtensionAbility的沙箱是否与主应用沙箱相对独立、不可互相访问。
+
 ExtensionAbility类型	功能描述	是否允许三方应用实现	是否有独立Extension沙箱
 FormExtensionAbility	卡片扩展能力，用于提供服务卡片的相关能力。	是	否
 WorkSchedulerExtensionAbility	延时任务扩展能力，用于提供延迟任务的相关能力。	是	否
 InputMethodExtensionAbility	输入法扩展能力，用于实现输入法应用的开发。	是	是
-ServiceExtensionAbility	
-
-后台服务扩展能力，提供后台运行并对外提供相应能力。
-
-三方应用可以连接该ExtensionAbility，并进行通信。
-
-	否	否
+ServiceExtensionAbility	后台服务扩展能力，提供后台运行并对外提供相应能力。 三方应用可以连接该ExtensionAbility，并进行通信。	否	否
 AccessibilityExtensionAbility	无障碍服务扩展能力，支持访问与操作前台界面。	是	否
-DataShareExtensionAbility	
-
-数据共享扩展能力，用于对外提供数据读写服务。
-
-三方应用可以连接该ExtensionAbility，进行数据读写。
-
-	否	否
+DataShareExtensionAbility	数据共享扩展能力，用于对外提供数据读写服务。 三方应用可以连接该ExtensionAbility，进行数据读写。	否	否
 BackupExtensionAbility	数据备份扩展能力，用于提供备份及恢复应用数据的能力。	是	否
-EnterpriseAdminExtensionAbility	
-
-企业设备管理扩展能力，提供企业管理时处理管理事件的能力，
-
-比如设备上应用安装事件、锁屏密码输入错误次数过多事件等。
-
-	是	否
+EnterpriseAdminExtensionAbility	企业设备管理扩展能力，提供企业管理时处理管理事件的能力， 比如设备上应用安装事件、锁屏密码输入错误次数过多事件等。	是	否
 PrintExtensionAbility	文件打印扩展能力，提供应用打印照片、文档等办公场景。	是	否
 ShareExtensionAbility	分享扩展组件，用于提供分享模板服务扩展的能力。	是	否
 DriverExtensionAbility	驱动扩展能力，用于提供驱动相关扩展框架。	是	否
@@ -68,12 +53,15 @@ CallerInfoQueryExtensionAbility	来电信息查询扩展能力，提供通话来
 StatusBarViewExtensionAbility	状态栏视图扩展能力，提供三方应用接入PC状态栏的能力。	是	否
 TimeGuardExtensionAbility	屏幕时间守护扩展能力，为开发者提供策略管控生效、停止和应用权限授予、取消时执行特定逻辑的能力。	是	否
 LiveViewLockScreenExtensionAbility	锁屏沉浸实况窗扩展能力，提供通过实况窗开放能力和锁屏展示地图轨迹的能力。	是	否
+
 说明
 
 通常情况下，应用中（同一Bundle名称）所有同一类型的ExtensionAbility均运行在同一个独立进程。以下为例外场景：
 
 ServiceExtensionAbility（仅系统应用涉及）、DataShareExtensionAbility（仅系统应用涉及）与所有UIAbility均运行在同一个独立进程（主进程）。
+
 UIExtensionAbility以及继承该类型的ExtensionAbility可以通过module.json5配置文件中的extensionProcessMode字段，配置进程运行模式。
+
 访问指定类型的ExtensionAbility组件
 
 所有类型的ExtensionAbility组件均不能被应用直接启动，而是由相应的系统管理服务拉起，以确保其生命周期受系统管控，使用时拉起，使用完销毁。ExtensionAbility组件的调用方无需关心目标ExtensionAbility组件的生命周期。
@@ -91,8 +79,3 @@ UIExtensionAbility以及继承该类型的ExtensionAbility可以通过module.jso
 EmbeddedUIExtensionAbility
 
 使用AppServiceExtensionAbility组件实现后台服务
-
-使用AgentExtensionAbility组件实现智能体服务
-
-UIAbility备份恢复
-EmbeddedUIExtensionAbility

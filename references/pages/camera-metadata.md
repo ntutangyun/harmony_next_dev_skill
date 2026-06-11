@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-metadata_
 
+在开发相机应用时，需要先申请相关权限。
+
 元数据（Metadata）是对相机返回的图像信息的描述和上下文。针对图像信息，提供更详细的数据，如照片或视频中，识别人像的取景框坐标的信息等。
 
 Metadata主要是通过一个TAG（Key），去找对应的Data，用于传递参数和配置信息，减少内存拷贝操作。
@@ -88,6 +90,7 @@ function stopMetadataOutput(session: camera.Session): void {
     console.error(`Failed to session stop, error code: ${err.code}`);
   });
 }
+
 状态监听
 
 在相机应用开发过程中，可以随时监听metadata数据以及输出流的状态。
@@ -102,6 +105,7 @@ function onMetadataObjectsAvailable(metadataOutput: camera.MetadataOutput): void
     console.info('metadata output metadataObjectsAvailable');
   });
 }
+
 说明
 
 当前的元数据类型仅支持人脸检测（FACE_DETECTION）功能。元数据信息对象为识别到的人脸区域的矩形信息（Rect），包含矩形区域的左上角x坐标、y坐标和矩形的宽高数据。
@@ -113,5 +117,109 @@ function onMetadataError(metadataOutput: camera.MetadataOutput): void {
     console.error(`Metadata output error code: ${metadataOutputError.code}`);
   });
 }
-录像实践(ArkTS)
-手电筒使用(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+function getMetadataOutput(cameraManager: camera.CameraManager, cameraOutputCapability: camera.CameraOutputCapability): camera.MetadataOutput | undefined {
+  let metadataObjectTypes: Array<camera.MetadataObjectType> = cameraOutputCapability.supportedMetadataObjectTypes;
+  let metadataOutput: camera.MetadataOutput | undefined = undefined;
+  try {
+    metadataOutput = cameraManager.createMetadataOutput(metadataObjectTypes);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to createMetadataOutput, error code: ${err.code}`);
+  }
+  return metadataOutput;
+}
+```
+
+### Code block 3
+
+```
+async function startMetadataOutput(previewOutput: camera.PreviewOutput, metadataOutput: camera.MetadataOutput, cameraManager: camera.CameraManager): Promise<void> {
+  let cameraArray: Array<camera.CameraDevice> = [];
+  try {
+    cameraArray = cameraManager.getSupportedCameras();
+    if (cameraArray.length == 0) {
+      console.error('no camera.');
+      return;
+    }
+    // 示例代码默认选择第一个镜头，实际开发需根据所需镜头。
+    const cameraDevice: camera.CameraDevice = cameraArray[0];
+    // 获取支持的模式类型。
+    let sceneModes: Array<camera.SceneMode> = cameraManager.getSupportedSceneModes(cameraDevice);
+    let isSupportPhotoMode: boolean = sceneModes.indexOf(camera.SceneMode.NORMAL_PHOTO) >= 0;
+    if (!isSupportPhotoMode) {
+      console.error('photo mode not support');
+      return;
+    }
+    let cameraInput: camera.CameraInput | undefined = undefined;
+    cameraInput = cameraManager.createCameraInput(cameraDevice);
+    if (cameraInput === undefined) {
+      console.error('cameraInput is undefined');
+      return;
+    }
+    // 打开相机。
+    await cameraInput.open();
+    let session = cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO);
+    if (!session) {
+      console.error('session is null');
+      return;
+    }
+    let photoSession: camera.PhotoSession = session as camera.PhotoSession;
+    photoSession.beginConfig();
+    photoSession.addInput(cameraInput);
+    photoSession.addOutput(previewOutput);
+    photoSession.addOutput(metadataOutput);
+    await photoSession.commitConfig();
+    await photoSession.start();
+  } catch (error) {
+    console.error('startMetadataOutput call failed');
+  }
+}
+```
+
+### Code block 4
+
+```
+function stopMetadataOutput(session: camera.Session): void {
+  session.stop().then(() => {
+    console.info('Callback returned with session stopped.');
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to session stop, error code: ${err.code}`);
+  });
+}
+```
+
+### Code block 5
+
+```
+function onMetadataObjectsAvailable(metadataOutput: camera.MetadataOutput): void {
+  metadataOutput.on('metadataObjectsAvailable', (err: BusinessError, metadataObjectArr: Array<camera.MetadataObject>) => {
+    if (err !== undefined && err.code !== 0) {
+      return;
+    }
+    console.info('metadata output metadataObjectsAvailable');
+  });
+}
+```
+
+### Code block 6
+
+```
+function onMetadataError(metadataOutput: camera.MetadataOutput): void {
+  metadataOutput.on('error', (metadataOutputError: BusinessError) => {
+    console.error(`Metadata output error code: ${metadataOutputError.code}`);
+  });
+}
+```

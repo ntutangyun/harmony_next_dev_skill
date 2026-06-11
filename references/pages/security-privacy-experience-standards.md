@@ -2,3 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/security-privacy-experience-standards_
 
+概述
+
+安全
+
+隐私
+
+纯净

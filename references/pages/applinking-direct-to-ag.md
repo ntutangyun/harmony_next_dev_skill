@@ -2,12 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/applinking-direct-to-ag_
 
+场景介绍
+
+从5.0.3(15)版本开始，新增支持直达应用市场能力。
+
 当成功配置App Linking应用链接后，可以构建App Linking直达应用市场下载详情页链接。当应用已安装时，点击链接直接跳转应用；当应用未安装时，点击链接跳转应用市场下载详情页，引导用户下载应用。
 
 华为分享打开场景	其他社交APP打开场景
 	
+
 原理机制
-链接生效机制
+
+[h2]链接生效机制
 
 直达应用市场链接配置后不是即时生效的，一般要24小时生效，也有可能出现48小时生效的情况。
 
@@ -82,15 +88,12 @@ path，手动输入精确匹配的路径（不允许以“/”开头，不允许
 
 import { common } from '@kit.AbilityKit';
 
-
 export class GlobalContext {
 private static context: common.UIAbilityContext;
-
 
 public static initContext(context: common.UIAbilityContext): void {
 GlobalContext.context = context;
 }
-
 
 public static getContext(): common.UIAbilityContext {
 return GlobalContext.context;
@@ -104,7 +107,6 @@ return GlobalContext.context;
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { GlobalContext } from '../common/GlobalContext';
-
 
 @Entry
 @Component
@@ -135,11 +137,12 @@ struct Index {
 安装目标方应用后，点击拉起方应用的跳转按钮，会直接打开应用。
 
 FAQ
-使用ArkWeb拉起目标应用，当目标应用未安装时，会直接跳转到应用市场下载详情页面吗？
+
+[h2]使用ArkWeb拉起目标应用，当目标应用未安装时，会直接跳转到应用市场下载详情页面吗？
 
 当开发者通过系统浏览器或ArkWeb拉起目标应用时，如果目标应用未安装，不会直接跳转应用市场，需要开发者根据自身业务自行实现跳转应用市场的能力。详细可参见“Web和应用的跳转与拉起”开发实践中的《ArkWeb页面指定应用跳转》章节。
 
-哪些服务支持接入App Linking Kit的直达应用市场能力？
+[h2]哪些服务支持接入App Linking Kit的直达应用市场能力？
 
 支持的服务如下：
 
@@ -149,9 +152,56 @@ FAQ
 
 浏览器、扫码（规划中，上线后自动生效，无需适配）。
 
-直达链接的路径（path、pathStartWith或pathRegex）可以配置多少条？
+[h2]直达链接的路径（path、pathStartWith或pathRegex）可以配置多少条？
 
 每个应用支持配置1条。
 
-通过App Linking应用链接拉起指定应用
-通过延迟链接跳转至应用详情页
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+
+export class GlobalContext {
+private static context: common.UIAbilityContext;
+
+public static initContext(context: common.UIAbilityContext): void {
+GlobalContext.context = context;
+}
+
+public static getContext(): common.UIAbilityContext {
+return GlobalContext.context;
+}
+}
+```
+
+### Code block 2
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { GlobalContext } from '../common/GlobalContext';
+
+@Entry
+@Component
+struct Index {
+  build() {
+    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
+      .width('87%')
+      .height('5%')
+      .margin({ bottom: '12vp' })
+      .onClick(() => {
+        let context = GlobalContext.getContext();
+        let link: string = "https://www.example.com/product?pageName=productDetail";
+        context.openLink(link, { appLinkingOnly: false })
+          .then(() => {
+            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+          })
+          .catch((error: BusinessError) => {
+            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+          })
+      })
+  }
+}
+```

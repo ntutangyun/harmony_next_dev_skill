@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-attribution-trigger-custom_
 
+开发者角色的合作伙伴在转化事件管理页面可以做如下操作：
+
+新增、修改、删除、查看自定义转化事件。
+
+新增、修改、删除自定义转化事件时，相应的操作会被运营人员在后台审核通过或驳回，仅被审核通过的自定义转化事件才能生效。
+
+新增
+
+在左侧点击转化事件管理菜单栏，进入自定义转化事件页面。
+
+点击右上角“新增”按钮，进入新增自定义转化事件页面。
+
 填写“转化事件名称”、“转化事件编码”、“含义说明”信息，点击“确认”按钮后会生成一条状态是“新建待审核”的自定义转化事件。
 
 说明
@@ -39,6 +51,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-att
 查看
 
 点击左侧转化事件管理菜单栏，进入自定义转化事件页面查看自定义转化事件信息。
-
-标准转化事件
-管理归因策略

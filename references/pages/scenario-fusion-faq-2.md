@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-fusion-faq-2_
 
+现象描述
+
+日志报错示例：
+
 startAbility failed, code is 16000018, message is The application is not allow jumping to other applications when api version is above 11.
 
 解决措施
@@ -9,5 +13,17 @@ startAbility failed, code is 16000018, message is The application is not allow j
 需要执行命令手动开启限制开关。
 
 hdc shell param set persist.sys.abilityms.support.start_other_app true
-单击快速验证手机号按钮，无法拉起页面
-剪贴板粘贴框遮挡智能填充选择框
+
+## Code blocks
+
+### Code block 1
+
+```
+startAbility failed, code is 16000018, message is The application is not allow jumping to other applications when api version is above 11.
+```
+
+### Code block 2
+
+```
+hdc shell param set persist.sys.abilityms.support.start_other_app true
+```

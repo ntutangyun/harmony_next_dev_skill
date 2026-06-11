@@ -2,14 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-healthsequence-manage_
 
+场景介绍
+
 健康记录，记录健康记录的基本信息，包括健康记录的起止时间，数据类型，字段值，明细数据等，支持写入、读取和删除，每条健康记录需要关联数据源。
 
 接口说明
+
 接口名	描述
 saveData(healthSequence: HealthSequence[] | HealthSequence): Promise<void>	保存健康记录，入参为单个HealthSequence或HealthSequence数组。
 readData<T extends HealthSequence>(request: HealthSequenceReadRequest): Promise<T[]>	查询健康记录，通过HealthSequenceReadRequest设置查询条件，可按数据类型，字段、时间范围等条件查询。
 deleteData(healthSequence: HealthSequence | HealthSequence[]): Promise<void>	删除健康记录，按入参删除指定的健康记录，可传入单个HealthSequence或HealthSequence数组。
 deleteData(request: HealthSequenceDeleteRequest | HealthSequenceDeleteRequest[]): Promise<void>	删除健康记录，按HealthSequenceDeleteRequest删除，可设置数据类型、时间范围、数据源等删除条件。
+
 开发前检查
 
 完成申请运动健康服务与配置Client ID。
@@ -21,7 +25,8 @@ deleteData(request: HealthSequenceDeleteRequest | HealthSequenceDeleteRequest[])
 错误码请参考ArkTS API错误码，常见问题请参考Health Service Kit常见问题。
 
 开发步骤
-保存用户的健康记录
+
+[h2]保存用户的健康记录
 
 导入运动健康服务功能模块及相关公共模块。
 
@@ -87,7 +92,8 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to save data. Code: ${err.code}, message: ${err.message}`);
 }
-读取用户的健康记录
+
+[h2]读取用户的健康记录
 
 导入运动健康服务功能模块及相关公共模块。
 
@@ -120,7 +126,8 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
 }
-删除指定的健康记录
+
+[h2]删除指定的健康记录
 
 导入运动健康服务功能模块及相关公共模块。
 
@@ -147,7 +154,8 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to delete data. Code: ${err.code}, message: ${err.message}`);
 }
-根据请求删除用户健康记录
+
+[h2]根据请求删除用户健康记录
 
 导入运动健康服务功能模块及相关公共模块。
 
@@ -170,5 +178,172 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to delete data. Code: ${err.code}, message: ${err.message}`);
 }
-锻炼记录
-实时三环数据
+
+## Code blocks
+
+### Code block 1
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+let healthSequence: healthStore.healthSequenceHelper.sleepRecord.Model = {
+  summaries: {
+    fallAsleepTime: 1695740400000, // 2023-09-26 23:00:00
+    wakeupTime: 1695769200000, // 2023-09-27 7:00:00
+    sleepScore: 80,
+    wakeCount: 2,
+    sleepType: 1,
+    shallowDuration: 14400,
+    deepDuration: 7200,
+    dreamDuration: 7200,
+    wakeDuration: 0,
+    duration: 28800
+  },
+  dataType: healthStore.healthSequenceHelper.sleepRecord.DATA_TYPE,
+  // insertDataSource插入数据源接口返回的dataSourceId，或读取已有数据源的dataSourceId
+  dataSourceId: 'xxx',
+  localDate: '09/26/2023',
+  startTime: 1695740400000,
+  endTime: 1695769200000,
+  timeZone: '+0800',
+  modifiedTime: 1695769200000,
+  details: {
+    sleepSegment: [
+      {
+        startTime: 1695740400000, // 2023-09-26 23:00:00
+        endTime: 1695747600000, // 2023-09-27 01:00:00
+        sleepStatus: 2
+      },
+      {
+        startTime: 1695747600000, // 2023-09-27 01:00:00
+        endTime: 1695754800000, // 2023-09-27 03:00:00
+        sleepStatus: 1
+      },
+      {
+        startTime: 1695754800000, // 2023-09-27 03:00:00
+        endTime: 1695762000000, // 2023-09-27 05:00:00
+        sleepStatus: 3
+      },
+      {
+        startTime: 1695762000000, // 2023-09-27 05:00:00
+        endTime: 1695769200000, // 2023-09-27 07:00:00
+        sleepStatus: 2
+      }
+    ]
+  }
+}
+```
+
+### Code block 3
+
+```
+try {
+  await healthStore.saveData(healthSequence);
+  hilog.info(0x0000, 'testTag', 'Succeeded in saving data.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to save data. Code: ${err.code}, message: ${err.message}`);
+}
+```
+
+### Code block 4
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 5
+
+```
+let healthSequenceReadRequest: healthStore.HealthSequenceReadRequest = {
+  healthSequenceDataType: healthStore.healthSequenceHelper.sleepRecord.DATA_TYPE,
+  startTime: 1695740400000,
+  endTime: 1695769200000,
+  readOptions: {
+    withDetails: true
+  }
+}
+```
+
+### Code block 6
+
+```
+try {
+  const healthSequences = await healthStore.readData(healthSequenceReadRequest);
+  hilog.info(0x0000, 'testTag', 'Succeeded in reading data.');
+  healthSequences.forEach((healthSequence) => {
+    hilog.info(0x0000, 'testTag', `the start time is ${healthSequence.startTime}.`);
+    hilog.info(0x0000, 'testTag', `the end time is ${healthSequence.endTime}.`);
+    Object.keys(healthSequence.summaries).forEach((key) => {
+      hilog.info(0x0000, 'testTag', `the summaries of ${key} is ${healthSequence.summaries[key]}.`);
+    });
+  });
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
+}
+```
+
+### Code block 7
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 8
+
+```
+let healthSequenceReadRequest: healthStore.HealthSequenceReadRequest = {
+  healthSequenceDataType: healthStore.healthSequenceHelper.sleepRecord.DATA_TYPE,
+  startTime: 1695740400000,
+  endTime: 1695769200000
+}
+const healthSequences = await healthStore.readData(healthSequenceReadRequest);
+```
+
+### Code block 9
+
+```
+try {
+  for (let index = 0; index < healthSequences.length; index++) {
+    const healthSequence = healthSequences[index];
+    await healthStore.deleteData(healthSequence);
+  }
+  hilog.info(0x0000, 'testTag', 'Succeeded in deleting data.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to delete data. Code: ${err.code}, message: ${err.message}`);
+}
+```
+
+### Code block 10
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 11
+
+```
+const healthSequenceDeleteRequest: healthStore.HealthSequenceDeleteRequest= {
+  healthSequenceDataType: healthStore.healthSequenceHelper.sleepRecord.DATA_TYPE,
+  startTime: 1695740400000,
+  endTime: 1695769200000
+}
+```
+
+### Code block 12
+
+```
+try {
+  await healthStore.deleteData(healthSequenceDeleteRequest);
+  hilog.info(0x0000, 'testTag', 'Succeeded in deleting data.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to delete data. Code: ${err.code}, message: ${err.message}`);
+}
+```

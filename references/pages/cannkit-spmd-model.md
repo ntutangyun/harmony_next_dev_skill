@@ -19,19 +19,19 @@ public:
     __aicore__ inline KernelAdd() {}
     __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z)
     {
-        // get start index for current core, core parallel
+        // 获取当前核心的起始索引，用于核心并行计算
         xGm.SetGlobalBuffer((__gm__ half*)x + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
         yGm.SetGlobalBuffer((__gm__ half*)y + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
         zGm.SetGlobalBuffer((__gm__ half*)z + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
-        // pipe alloc memory to queue, the unit is Bytes
+        // 将分配的内存通过管道传递给队列，单位为字节
         pipe.InitBuffer(inQueueX, BUFFER_NUM, TILE_LENGTH * sizeof(half));
         pipe.InitBuffer(inQueueY, BUFFER_NUM, TILE_LENGTH * sizeof(half));
         pipe.InitBuffer(outQueueZ, BUFFER_NUM, TILE_LENGTH * sizeof(half));
     }
     // ...
 }
- 
- 
+
+
 // 实现核函数
 extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z)
 {
@@ -42,5 +42,38 @@ extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z
     // 核心处理函数，完成算子的数据搬运与计算等核心逻辑
     op.Process();
 }
-编程模型
-核函数
+
+## Code blocks
+
+### Code block 1
+
+```
+class KernelAdd {
+public:
+    __aicore__ inline KernelAdd() {}
+    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z)
+    {
+        // 获取当前核心的起始索引，用于核心并行计算
+        xGm.SetGlobalBuffer((__gm__ half*)x + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
+        yGm.SetGlobalBuffer((__gm__ half*)y + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
+        zGm.SetGlobalBuffer((__gm__ half*)z + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
+        // 将分配的内存通过管道传递给队列，单位为字节
+        pipe.InitBuffer(inQueueX, BUFFER_NUM, TILE_LENGTH * sizeof(half));
+        pipe.InitBuffer(inQueueY, BUFFER_NUM, TILE_LENGTH * sizeof(half));
+        pipe.InitBuffer(outQueueZ, BUFFER_NUM, TILE_LENGTH * sizeof(half));
+    }
+    // ...
+}
+
+
+// 实现核函数
+extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z)
+{
+    // 初始化算子类，算子类提供算子初始化和核心处理等方法
+    KernelAdd op;
+    // 初始化函数，获取该核函数需要处理的输入输出地址，同时完成必要的内存初始化工作
+    op.Init(x, y, z);
+    // 核心处理函数，完成算子的数据搬运与计算等核心逻辑
+    op.Process();
+}
+```

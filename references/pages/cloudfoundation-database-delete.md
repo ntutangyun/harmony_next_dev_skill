@@ -35,5 +35,21 @@ async delete() {
     hilog.error(0x0000, 'testTag', `Failed to delete data, code: ${err.code}, message: ${err.message}`);
   }
 }
-写入数据
-云存储
+
+## Code blocks
+
+### Code block 1
+
+```
+// 假设图书遗失，图书管理员需要将遗失的书籍从BookInfo表中删除
+async delete() {
+  try {
+    let book = new BookInfo();
+    book.id = 3;
+    let deleteNum = await databaseZone.delete(book);
+    hilog.info(0x0000, 'testTag', `Succeeded in deleting data, result: ${JSON.stringify(deleteNum)}`);
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to delete data, code: ${err.code}, message: ${err.message}`);
+  }
+}
+```

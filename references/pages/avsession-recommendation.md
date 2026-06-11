@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avsession-recommendation_
 
+播控特性简介
+
 播控推荐服务致力于为用户提供更便捷的操作路径、更精准的内容推荐服务，帮助用户发现更感兴趣的内容，助力应用从系统级入口直达服务。
 
 播控推荐服务基于用户使用音频类应用的习惯来分配播控推荐服务的资源位，保障用户常用的应用有更多的曝光。
@@ -27,6 +29,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avsession
 邮箱地址：support@huawei.com
 
 邮件标题：[申请使用播控推荐服务]-[公司名称]-[APP ID或APP包名]，APP ID或APP包名等查询方法可参见查看应用基本信息。
-
-音视频投播
-音频模板

@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/development-practices-file-management_
 
+Native侧实现文件访问

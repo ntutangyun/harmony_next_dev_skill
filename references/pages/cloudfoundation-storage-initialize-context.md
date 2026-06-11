@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-storage-initialize-context_
 
+约束与限制
+
 支持Phone、Tablet设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持PC/2in1设备。
 
 操作步骤
@@ -12,15 +14,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 import { common } from '@kit.AbilityKit';
 
-
 export class GlobalContext {
   private static context: common.UIAbilityContext;
-
 
   public static initContext(context: common.UIAbilityContext): void {
     GlobalContext.context = context;
   }
-
 
   public static getContext(): common.UIAbilityContext {
     return GlobalContext.context;
@@ -29,5 +28,22 @@ export class GlobalContext {
 
 在“entry/src/main/ets/entryability/EntryAbility.ets”文件中导入GlobalContext，在onCreate方法中使用GlobalContext.initContext(this.context)初始化全局应用上下文。
 
-设置云存储配置项
-初始化存储实例
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+
+export class GlobalContext {
+  private static context: common.UIAbilityContext;
+
+  public static initContext(context: common.UIAbilityContext): void {
+    GlobalContext.context = context;
+  }
+
+  public static getContext(): common.UIAbilityContext {
+    return GlobalContext.context;
+  }
+}
+```

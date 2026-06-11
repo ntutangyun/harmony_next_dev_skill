@@ -16,18 +16,17 @@ ArkTS要求类的所有属性在声明时或者在构造函数中显式地初始
 
 class Person {
   name: string; // undefined
-  
+
   setName(n: string): void {
     this.name = n;
   }
-  
+
   getName(): string {
   // 开发者使用"string"作为返回类型，这隐藏了name可能为"undefined"的事实。
   // 更合适的做法是将返回类型标注为"string | undefined"，以告诉开发者这个API所有可能的返回值的类型。
     return this.name;
   }
 }
-
 
 let buddy = new Person()
 // 假设代码中没有对name的赋值，例如没有调用"buddy.setName('John')"
@@ -38,11 +37,9 @@ ArkTS要求属性显式初始化，代码应如下所示：
 class Person {
   name: string = ''; // undefined
 
-
   setName(n: string): void {
     this.name = n;
   }
-
 
   // 类型为"string"，不可能为"null"或者"undefined"。
   getName(): string {
@@ -59,11 +56,9 @@ class Person {
 class Person1 {
   name?: string; // 可能为undefined。
 
-
   setName(n: string): void {
     this.name = n;
   }
-
 
   getName(): string | undefined { // 返回类型匹配name的类型。
     return this.name;
@@ -73,8 +68,8 @@ class Person1 {
   let buddy = new Person1()
   // 假设代码中没有对name的赋值，例如没有调用"buddy.setName('John')"。
 
-
   let len = buddy.getName()?.length; // 编译成功，没有运行时错误。
+
 程序性能
 
 为了确保程序的正确性，动态类型语言需要在运行时检查对象的类型。例如JavaScript不允许访问undefined的属性。检查一个值是否为undefined的唯一方法是在运行时进行类型检查。所有JavaScript引擎都会执行以下操作：如果一个值不是undefined，则可以访问其属性；如果尝试访问的值是undefined，则会抛出异常。虽然现代JavaScript引擎可以优化这类操作，但仍然存在一些无法消除的运行时检查，这会导致程序变慢。由于TypeScript代码总是先被编译成JavaScript代码，因此在TypeScript中也会遇到相同的问题。ArkTS解决了这个问题。通过启用静态类型检查，ArkTS代码将被编译成方舟字节码文件，而不是JavaScript代码。因此，ArkTS运行速度更快，更容易被进一步优化。
@@ -84,7 +79,6 @@ Null Safety
 function notify(who: string, what: string) {
   console.info(`Dear ${who}, a message for you: ${what}`);
 }
-
 
 // ...
   notify('Jack', 'You look great today');
@@ -111,7 +105,6 @@ function notify(who: string, what: string) {
   console.info(`Dear ${who}, a message for you: ${what}`);
 }
 
-
 notify('Jack', 'You look great today');
 notify(null, undefined); // 编译时错误
 
@@ -124,7 +117,9 @@ TS通过启用编译选项strictNullChecks实现此特性。虽然TS被编译成
 根据工程的compatibleSdkVersion，具体策略如下：
 
 compatibleSdkVersion >= 10 为标准模式。在该模式下，所有.ets文件必须严格遵循ArkTS语法规则，任何语法违规工程都会编译不通过，开发者需要修正所有语法问题后才能获得编译通过。
+
 compatibleSdkVersion < 10 为兼容模式。在该模式下，对.ets文件以warning形式提示违反ArkTS语法规则的所有代码。尽管违反ArkTS语法规则的工程在兼容模式下仍可编译成功，但需完全适配ArkTS语法后方可在标准模式下编译成功。
+
 支持与TS/JS的交互
 
 ArkTS支持与TS/JS的高效互操作。在当前版本中，ArkTS运行时兼容动态类型对象语义。在ArkTS与TypeScript/JavaScript交互操作场景中，直接复用TS/JS的数据和对象作为ArkTS的实体使用时，可能规避ArkTS的静态类型检查机制，进而引发运行时异常或引入额外的性能损耗。
@@ -134,20 +129,17 @@ export class C {
   v: string; // 在TS严格模式下，编译期报错 Property 'v' has no initializer
 }
 
-
 export let c = new C()
-
 
 // app.ets
 import { C, c } from './lib';
-
 
 function foo(c: C) {
   c.v.length;
 }
 
-
 foo(c);
+
 方舟运行时兼容TS/JS
 
 在API version 11上，HarmonyOS SDK中的TypeScript版本为4.9.5，target字段为es2017。应用中支持使用ECMA2017及更高版本的语法进行TS/JS开发。
@@ -170,11 +162,11 @@ foo(c);
 import {v} from './foo'; // bar.ets依赖foo.ets
 export let u = 0;
 console.info(`v: ${v}`);
+
 // foo.ets
 import {u} from './bar'; // foo.ets同时又依赖bar.ets
 export let v = 0;
 console.info(`u: ${u}`);
-
 
 // 应用加载失败
 
@@ -182,5 +174,144 @@ console.info(`u: ${u}`);
 
 在标准的TS/JS中，JSON的数字格式要求小数点后必须跟随数字，例如 2.e3 这类科学计数法不被允许，会导致 SyntaxError。方舟运行时则支持这类科学计数法。
 
-从TypeScript到ArkTS的适配指导
-从TypeScript到ArkTS的适配规则
+## Code blocks
+
+### Code block 1
+
+```
+class Person {
+  name: string; // undefined
+
+  setName(n: string): void {
+    this.name = n;
+  }
+
+  getName(): string {
+  // 开发者使用"string"作为返回类型，这隐藏了name可能为"undefined"的事实。
+  // 更合适的做法是将返回类型标注为"string | undefined"，以告诉开发者这个API所有可能的返回值的类型。
+    return this.name;
+  }
+}
+
+let buddy = new Person()
+// 假设代码中没有对name的赋值，例如没有调用"buddy.setName('John')"
+buddy.getName().length; // 运行时异常：name is undefined
+```
+
+### Code block 2
+
+```
+class Person {
+  name: string = ''; // undefined
+
+  setName(n: string): void {
+    this.name = n;
+  }
+
+  // 类型为"string"，不可能为"null"或者"undefined"。
+  getName(): string {
+    return this.name;
+  }
+}
+// ...
+  let buddy = new Person()
+  // 假设代码中没有对name的赋值，例如没有调用"buddy.setName('John')"。
+  let len = buddy.getName().length; // 0, 没有运行时异常。
+```
+
+### Code block 3
+
+```
+class Person1 {
+  name?: string; // 可能为undefined。
+
+  setName(n: string): void {
+    this.name = n;
+  }
+
+  getName(): string | undefined { // 返回类型匹配name的类型。
+    return this.name;
+  }
+}
+// ...
+  let buddy = new Person1()
+  // 假设代码中没有对name的赋值，例如没有调用"buddy.setName('John')"。
+
+  let len = buddy.getName()?.length; // 编译成功，没有运行时错误。
+```
+
+### Code block 4
+
+```
+function notify(who: string, what: string) {
+  console.info(`Dear ${who}, a message for you: ${what}`);
+}
+
+// ...
+  notify('Jack', 'You look great today');
+```
+
+### Code block 5
+
+```
+function __internal_tostring(s: any): string {
+  if (typeof s === 'string')
+    return s;
+  if (s === undefined)
+    return 'undefined';
+  if (s === null)
+    return 'null';
+  // ...
+}
+```
+
+### Code block 6
+
+```
+function notify(who: string, what: string) {
+  console.info(`Dear ${who}, a message for you: ${what}`);
+}
+
+notify('Jack', 'You look great today');
+notify(null, undefined); // 编译时错误
+```
+
+### Code block 7
+
+```
+// lib.ts
+export class C {
+  v: string; // 在TS严格模式下，编译期报错 Property 'v' has no initializer
+}
+
+export let c = new C()
+
+// app.ets
+import { C, c } from './lib';
+
+function foo(c: C) {
+  c.v.length;
+}
+
+foo(c);
+```
+
+### Code block 8
+
+```
+// bar.ets
+import {v} from './foo'; // bar.ets依赖foo.ets
+export let u = 0;
+console.info(`v: ${v}`);
+```
+
+### Code block 9
+
+```
+// foo.ets
+import {u} from './bar'; // foo.ets同时又依赖bar.ets
+export let v = 0;
+console.info(`u: ${u}`);
+
+// 应用加载失败
+```

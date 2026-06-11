@@ -2,17 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-faq-9_
 
+长度
+
 为减少开发者接入和迁移成本，Account Kit在2023年09月21日对OpenID、UnionID的长度做出了如下调整：
 
 OpenID
 
 应用创建时间晚于（含）2023年09月21日 23:00:00，OpenID固定28位。
+
 应用创建时间早于2023年09月21日 23:00:00，OpenID长度不固定，限制在1-256位。
 
 UnionID
 
 开发者账号注册时间晚于（含）2023年09月21日 23:00:00，UnionID固定29位。
+
 开发者账号注册时间早于2023年09月21日 23:00:00，UnionID长度不固定，限制在1-92位。
+
 唯一性标识
 
 开发者账号下管理了多个应用时，针对同一个华为账号，不同的应用返回的OpenID值不同，但返回的UnionID相同。
@@ -30,6 +35,3 @@ OpenID和UnionID严格区分大小写。
 实际应用中的注意事项
 
 在存储、查询、比较OpenID或UnionID时，请务必保持其原始的大小写格式。
-
-无法获取到头像昵称如何解决
-Access Token和Refresh Token的有效时长是多久

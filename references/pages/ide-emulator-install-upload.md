@@ -6,13 +6,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emula
 
 您也可以在命令行窗口进入DevEco Studio安装目录的sdk\default\openharmony\toolchains目录下，使用hdc app install命令安装包。安装完成后，可在应用列表里查看已安装的应用。
 
-上传文件
-
 您可以将本地文件上传到模拟器中，只需要将文件拖动至模拟器屏幕上即可。模拟器支持批量上传文件，上传的文件存放在虚拟设备的/storage/media/100/local/files/Docs/Download/目录下。您可以在模拟器上打开文件管理 > 我的手机 > 下载查看上传的文件。
 
 此外，您也可以在命令行窗口进入DevEco Studio安装目录的sdk\default\openharmony\toolchains目录下，使用hdc file send命令上传文件。
 
 从DevEco Studio 6.1.0 Beta2版本开始，使用API 21及以上的镜像时，上传的图片类文件将保存在图库中。
-
-模拟器访问网络
-更多的扩展能力

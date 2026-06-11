@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-20_
 
+callerId和mercNo或者combineMercNo都是请求发起方商户号。

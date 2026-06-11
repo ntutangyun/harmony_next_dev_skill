@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-custom-symbol-res-register_
 
+场景介绍
+
+从5.1.1 (19)版本开始，新增支持资源注册。
+
+适用于需要快速定制应用内Symbol图标，不想强依赖于系统版本中预制的系统Symbol图标资源。
+
+约束条件
+
+资源注册支持Phone、Tablet、PC/2in1设备。
+
+开发步骤
+
 将UX设计师提供的Symbol图标资源（TTF文件）与动效参数资源（JSON文件）放入entry/src/main/resources/rawfile下，可新建目录。
 
 说明：Symbol资源制作流程参考
@@ -41,10 +53,11 @@ struct test {
     }
   }
 }
+
 开发实例
+
 import { symbolRegister } from '@kit.UIDesignKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-
 
 @Entry
 @Component
@@ -65,5 +78,74 @@ struct test {
   }
 }
 
-设置列表卡片样式
-视效
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "string": [
+    {
+      "name": "symbol_custom_phone_fill_1",
+      "value": "0x100016"
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+import { symbolRegister } from '@kit.UIDesignKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 3
+
+```
+try {
+  let result = symbolRegister.registerSymbol($rawfile("symbol/symbol_register.ttf"), $rawfile("symbol/symbol_register.json"));
+} catch (error) {
+  let err = error as BusinessError;
+  console.error("errCode: " + err.code)
+  console.error("error: " + err.message);
+}
+```
+
+### Code block 4
+
+```
+struct test {
+  build() {
+    Column(){
+      SymbolGlyph($r('app.string.symbol_custom_phone_fill_1'))
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+import { symbolRegister } from '@kit.UIDesignKit'
+import { BusinessError } from '@kit.BasicServicesKit'
+
+@Entry
+@Component
+struct test {
+  aboutToAppear(): void {
+    try {
+      let result = symbolRegister.registerSymbol($rawfile("symbol/symbol_register.ttf"), $rawfile("symbol/symbol_register.json"));
+    } catch (error) {
+      let err = error as BusinessError;
+      console.error("errCode: " + err.code)
+      console.error("error: " + err.message);
+    }
+  }
+  build() {
+    Column(){
+      SymbolGlyph($r('app.string.symbol_custom_phone_fill_1'))
+    }
+  }
+}
+```

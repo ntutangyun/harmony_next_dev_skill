@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgallery-productview-removeshortcut_
 
+说明
+
+6.1.1(24)版本开始，新增删除桌面快捷方式接口，支持用户删除桌面快捷方式。
+
+场景介绍
+
 当应用的桌面快捷方式功能发生变化或者用户希望删除不再使用的桌面快捷方式时，用户可以通过调用removePinShortcut接口删除当前应用的桌面快捷方式。
 
 业务流程
@@ -26,8 +32,10 @@ AppGallery Kit向应用弹出快捷方式删除确认框。
 
 接口名	描述
 removePinShortcut(context: common.UIAbilityContext, shortcutId: string): Promise<void>	删除桌面快捷方式。
+
 开发准备
-（可选）静默删除桌面快捷方式开放能力申请
+
+[h2]（可选）静默删除桌面快捷方式开放能力申请
 
 当应用已有自己的删除确认弹框并在弹框中提示用户删除桌面快捷方式时，开发者可以申请静默删除权限，实现在不显示系统确认弹框的情况下完成删除操作。
 
@@ -58,11 +66,9 @@ import { productViewManager } from '@kit.AppGalleryKit';
 
 const TAG: string = 'RemovePinShortcut';
 
-
 @Entry
 @Component
 struct RemovePinShortcut {
-
 
 build() {
   Column() {
@@ -88,5 +94,49 @@ build() {
   .justifyContent(FlexAlign.Center)
  }
 }
-查询应用内快捷方式
-产品特性按需分发
+
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { productViewManager } from '@kit.AppGalleryKit';
+```
+
+### Code block 2
+
+```
+const TAG: string = 'RemovePinShortcut';
+
+@Entry
+@Component
+struct RemovePinShortcut {
+
+build() {
+  Column() {
+    Button("RemovePinShortcut")
+      .onClick(() => {
+        try {
+         const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+         const shortcutId = 'xxx'; // 通过checkPinShortcutPermitted接口获取
+         productViewManager.removePinShortcut(uiContext, shortcutId)
+           .then(() => {
+             hilog.info(0x0001, TAG, `removePinShortcut success.`);
+           }).catch((error: BusinessError) => {
+           hilog.error(0x0001, TAG, `removePinShortcut error. code is ${error.code}, message is ${error.message}`);
+         })
+        } catch (err) {
+          hilog.error(0x0001, TAG, `removePinShortcut failed, code is ${err.code}, message is ${err.message}`);
+         }
+        })
+        .width('100%')
+  }
+  .margin(16)
+  .height('100%')
+  .justifyContent(FlexAlign.Center)
+ }
+}
+```

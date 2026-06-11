@@ -9,11 +9,10 @@ A [Claude Code](https://claude.com/claude-code) **skill** that lets Claude devel
 ## What's in the skill
 
 - **`SKILL.md`** — triggering description + routing table that fires whenever the user mentions HarmonyOS, ArkTS, ArkUI, `.ets`, `module.json5`, UIAbility, DevEco, `@kit.*` imports, etc.
-- **`references/00-quick-start.md` → `10-kits-catalog.md`** — 11 hand-written reference files that distill the most important areas (project structure, ArkTS language, ArkUI, abilities & lifecycle, services, data & network, cards, tooling, testing, kits).
-- **`references/pages/`** — **all 5301 pages** from the official HarmonyOS application-dev guide, crawled from `developer.huawei.com`, cleaned (nav/footer stripped), and stored per-slug. Code blocks preserved.
+- **`references/00-quick-start.md` → `11-xiaoyi-agent-dev.md`** — 12 hand-written reference files that distill the most important areas (project structure, ArkTS language, ArkUI, abilities & lifecycle, services, data & network, cards, tooling, testing, kits, Xiaoyi agent development).
+- **`references/pages/`** — **all 5351 pages** from the official HarmonyOS application-dev guide (synced 2026-06-11), fetched from `developer.huawei.com`'s docs API, cleaned, and stored per-slug. Code blocks preserved. Plus 3 hand-distilled Xiaoyi agent pages (`service-agent-*.md`).
 - **`references/manifest.json`** — the full slug index (title + depth) so Claude can find a page by keyword without internet.
-- **`scripts/`** — the crawler / cleaner Python scripts used to build the skill (kept for re-crawl when docs evolve).
-- **`assets/`** — reserved for future asset files.
+- **`scripts/`** — the Python scripts that sync the bundled docs from Huawei's docs API (`update_docs.py`, `fetch_xiaoyi.py`, `convert.py`).
 
 ## Installation
 
@@ -45,20 +44,24 @@ When Claude sees a HarmonyOS-related prompt:
 3. For the matching surface (UI, abilities, networking, …), Claude reads the curated reference file.
 4. For deeper / edge-case lookups, Claude greps `references/pages/` directly — no internet needed.
 
-## Re-crawl
+## Re-sync when the docs update
 
-The crawler is iframe-based and runs against the live SPA on `developer.huawei.com`. To refresh:
+No browser needed — the docs SPA is backed by a public JSON API
+(`documentPortal/getCatalogTree` + `documentPortal/getDocumentById` on
+`svc-drcn.developer.huawei.com`), and the scripts drive it directly:
 
 ```bash
-# Open https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-dev-guide in Chrome
-# Then in Claude Code with browser tools enabled:
-python scripts/analyze_manifest.py     # rebuild manifest from current nav
-python scripts/build_full_plan.py      # plan the crawl
-# … then drive the iframe crawler from the browser tab
-python scripts/clean_pages.py          # strip nav/footer from raw_docs/pages → raw_docs/clean
+pip install beautifulsoup4 lxml
+
+python scripts/update_docs.py --diff   # just show what was added/removed upstream
+python scripts/update_docs.py          # fetch all ~5,350 pages (~10 min), swap into references/pages/, rebuild manifest
+python scripts/fetch_xiaoyi.py         # fetch the Xiaoyi (小艺) agent doc subtree into _update_work/ for review
 ```
 
-See `scripts/step.py` for the per-batch state machine.
+After a sync, review the catalog diff and refresh the curated files
+(`references/00-*.md` … `11-*.md`) plus the three distilled
+`references/pages/service-agent-*.md` against the new content, then delete
+`_update_work/`.
 
 ## Source authority
 

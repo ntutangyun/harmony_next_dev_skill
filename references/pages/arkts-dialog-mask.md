@@ -22,6 +22,7 @@ showDatePickerDialog	不支持	支持	不支持	不支持
 CalendarPickerDialog	不支持	不支持	不支持	不支持
 showTimePickerDialog	不支持	支持	不支持	不支持
 showTextPickerDialog	不支持	支持	不支持	不支持
+
 说明
 
 设置autoCancel参数，可控制弹出框蒙层被点击时是否消失。
@@ -46,6 +47,7 @@ showDatePickerDialog	不支持	不支持	不支持
 CalendarPickerDialog	不支持	不支持	不支持
 showTimePickerDialog	不支持	不支持	不支持
 showTextPickerDialog	不支持	不支持	不支持
+
 说明
 
 设置maskColor参数，可定制弹出框蒙层的颜色。
@@ -80,14 +82,13 @@ showTextPickerDialog	不支持	不支持	不支持
           .onClick(() => {
             this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
           })
-         
+
         // ···
       }
       .width('100%')
       .height('100%')
     }
   }
-CustomDialogControl.ets
 
 设置isModal为false，将默认的模态弹出框变为非模态弹出框。
 
@@ -109,14 +110,12 @@ CustomDialogControl.ets
             this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
           })
 
-
         // ···
       }
       .width('100%')
       .height('100%')
     }
   }
-CustomDialogControl.ets
 
 弹出框蒙层样式控制
 
@@ -148,14 +147,12 @@ CustomDialogControl.ets
             this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
           })
 
-
         // ···
       }
       .width('100%')
       .height('100%')
     }
   }
-CustomDialogControl.ets
 
 在levelMode为LevelMode.EMBEDDED下，展示不同immersiveMode对蒙层在导航栏和状态栏的延伸效果。
 
@@ -180,14 +177,12 @@ CustomDialogControl.ets
             })
           })
 
-
         // ···
       }
       .width('100%')
       .height('100%')
     }
   }
-CustomDialogControl.ets
 
 弹出框蒙层动画控制
 
@@ -213,14 +208,12 @@ CustomDialogControl.ets
             this.getUIContext().getPromptAction().openCustomDialog(this.transitionOpt);
           })
 
-
         // ···
       }
       .width('100%')
       .height('100%')
     }
   }
-CustomDialogControl.ets
 
 设置maskTransition，实现弹出框中蒙层单独的动画定制能力。
 
@@ -236,18 +229,15 @@ Button('openCustomDialog maskTransition')
         .combine(TransitionEffect.rotate({ z: 1, angle: 180 })),
     });
   })
-CustomDialogControl.ets
 
 CustomDialog虽然不支持transition接口，但与之对应的openAnimation和closeAnimation接口在动画的打开和关闭时可进行定制，示例代码如下：
 
 // xxx.ets
 
-
 @CustomDialog
 @Component
 struct CustomDialogAnimationBuilder {
   controller?: CustomDialogController;
-
 
   build() {
     Column() {
@@ -271,7 +261,6 @@ struct CustomDialogAnimationBuilder {
   }
 }
 
-
 @Entry
 @Component
 export struct CustomDialogAnimation {
@@ -282,11 +271,9 @@ export struct CustomDialogAnimation {
       openAnimation: { duration: 2000 }
     });
 
-
   aboutToDisappear(): void {
     this.animationController = null;
   }
-
 
   build() {
     NavDestination() {
@@ -301,18 +288,16 @@ export struct CustomDialogAnimation {
     }
   }
 }
-CustomDialogAnimation.ets
 
 完整示例
+
 // xxx.ets
 import { ImmersiveMode, LevelMode, promptAction } from '@kit.ArkUI';
-
 
 @Entry
 @Component
 export struct CustomDialogControl {
   @State immersiveMode: ImmersiveMode = ImmersiveMode.DEFAULT;
-
 
   autoCancelOpt: promptAction.CustomDialogOptions = {
     builder: () => {
@@ -321,14 +306,12 @@ export struct CustomDialogControl {
     autoCancel: false,
   } as promptAction.CustomDialogOptions;
 
-
   modalOpt: promptAction.CustomDialogOptions = {
     builder: () => {
       this.myBuilder();
     },
     isModal: false,
   } as promptAction.CustomDialogOptions;
-
 
   maskOpt: promptAction.CustomDialogOptions = {
     builder: () => {
@@ -342,14 +325,13 @@ export struct CustomDialogControl {
     },
     maskColor: '#33AA0000'
   } as promptAction.CustomDialogOptions;
-  
+
   transitionOpt: promptAction.CustomDialogOptions = {
     builder: () => {
       this.myBuilder();
     },
     transition: TransitionEffect.OPACITY.animation({ duration: 3000 })
   } as promptAction.CustomDialogOptions;
-
 
   @Builder
   myBuilder() {
@@ -360,7 +342,6 @@ export struct CustomDialogControl {
     }.width('100%').height('50%')
   }
 
-
   build() {
     NavDestination() {
       Column() {
@@ -370,14 +351,13 @@ export struct CustomDialogControl {
           .onClick(() => {
             this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
           })
-         
+
         Button('openCustomDialog isModal:false')
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
             this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
           })
-
 
         Button('openCustomDialog maskOpt')
           .width('100%')
@@ -386,14 +366,12 @@ export struct CustomDialogControl {
             this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
           })
 
-
         Button('openCustomDialog transition')
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
             this.getUIContext().getPromptAction().openCustomDialog(this.transitionOpt);
           })
-
 
         Button('openCustomDialog immersiveMode')
           .width('100%')
@@ -409,7 +387,6 @@ export struct CustomDialogControl {
               immersiveMode: this.immersiveMode,
             })
           })
-
 
         Button('openCustomDialog maskTransition')
           .width('100%')
@@ -429,7 +406,356 @@ export struct CustomDialogControl {
     }
   }
 }
-CustomDialogControl.ets
 
-弹出框焦点策略
-菜单
+## Code blocks
+
+### Code block 1
+
+```
+  autoCancelOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    autoCancel: false,
+  } as promptAction.CustomDialogOptions;
+  // ···
+  build() {
+    NavDestination() {
+      Column() {
+        Button('openCustomDialog autoCancel:false')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
+          })
+
+        // ···
+      }
+      .width('100%')
+      .height('100%')
+    }
+  }
+```
+
+### Code block 2
+
+```
+  modalOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    isModal: false,
+  } as promptAction.CustomDialogOptions;
+  // ···
+  build() {
+    NavDestination() {
+      Column() {
+        // ···
+        Button('openCustomDialog isModal:false')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
+          })
+
+        // ···
+      }
+      .width('100%')
+      .height('100%')
+    }
+  }
+```
+
+### Code block 3
+
+```
+  maskOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    maskRect: {
+      x: 0,
+      y: 10,
+      width: '100%',
+      height: '90%'
+    },
+    maskColor: '#33AA0000'
+  } as promptAction.CustomDialogOptions;
+  // ···
+  build() {
+    NavDestination() {
+      Column() {
+        // ···
+        Button('openCustomDialog maskOpt')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
+          })
+
+        // ···
+      }
+      .width('100%')
+      .height('100%')
+    }
+  }
+```
+
+### Code block 4
+
+```
+  @State immersiveMode: ImmersiveMode = ImmersiveMode.DEFAULT;
+  // ···
+  build() {
+    NavDestination() {
+      Column() {
+        // ···
+        Button('openCustomDialog immersiveMode')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.immersiveMode =
+              this.immersiveMode == ImmersiveMode.DEFAULT ? ImmersiveMode.EXTEND : ImmersiveMode.DEFAULT;
+            this.getUIContext().getPromptAction().openCustomDialog({
+              builder: () => {
+                this.myBuilder();
+              },
+              levelMode: LevelMode.EMBEDDED,
+              immersiveMode: this.immersiveMode,
+            })
+          })
+
+        // ···
+      }
+      .width('100%')
+      .height('100%')
+    }
+  }
+```
+
+### Code block 5
+
+```
+  transitionOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    transition: TransitionEffect.OPACITY.animation({ duration: 3000 })
+  } as promptAction.CustomDialogOptions;
+  // ···
+  build() {
+    NavDestination() {
+      Column() {
+        // ···
+        Button('openCustomDialog transition')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.transitionOpt);
+          })
+
+        // ···
+      }
+      .width('100%')
+      .height('100%')
+    }
+  }
+```
+
+### Code block 6
+
+```
+Button('openCustomDialog maskTransition')
+  .width('100%')
+  .margin({ top: 10 })
+  .onClick(() => {
+    this.getUIContext().getPromptAction().openCustomDialog({
+      builder: () => {
+        this.myBuilder();
+      },
+      maskTransition: TransitionEffect.OPACITY.animation({ duration: 2000 })
+        .combine(TransitionEffect.rotate({ z: 1, angle: 180 })),
+    });
+  })
+```
+
+### Code block 7
+
+```
+// xxx.ets
+
+@CustomDialog
+@Component
+struct CustomDialogAnimationBuilder {
+  controller?: CustomDialogController;
+
+  build() {
+    Column() {
+      Text('title')
+        .margin(10)
+        .fontSize(20)
+      Button('button1')
+        .margin(10)
+        .fontSize(20)
+        .onClick(() => {
+          this.controller?.close();
+        })
+      Button('button2')
+        .margin(10)
+        .fontSize(20)
+        .onClick(() => {
+          this.controller?.close();
+        })
+    }.width('100%')
+    .height('50%')
+  }
+}
+
+@Entry
+@Component
+export struct CustomDialogAnimation {
+  animationController: CustomDialogController | null =
+    new CustomDialogController({
+      builder: CustomDialogAnimationBuilder(),
+      closeAnimation: { duration: 2000 },
+      openAnimation: { duration: 2000 }
+    });
+
+  aboutToDisappear(): void {
+    this.animationController = null;
+  }
+
+  build() {
+    NavDestination() {
+      Column() {
+        Button('CustomDialogController animate')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.animationController?.open();
+          })
+      }
+    }
+  }
+}
+```
+
+### Code block 8
+
+```
+// xxx.ets
+import { ImmersiveMode, LevelMode, promptAction } from '@kit.ArkUI';
+
+@Entry
+@Component
+export struct CustomDialogControl {
+  @State immersiveMode: ImmersiveMode = ImmersiveMode.DEFAULT;
+
+  autoCancelOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    autoCancel: false,
+  } as promptAction.CustomDialogOptions;
+
+  modalOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    isModal: false,
+  } as promptAction.CustomDialogOptions;
+
+  maskOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    maskRect: {
+      x: 0,
+      y: 10,
+      width: '100%',
+      height: '90%'
+    },
+    maskColor: '#33AA0000'
+  } as promptAction.CustomDialogOptions;
+
+  transitionOpt: promptAction.CustomDialogOptions = {
+    builder: () => {
+      this.myBuilder();
+    },
+    transition: TransitionEffect.OPACITY.animation({ duration: 3000 })
+  } as promptAction.CustomDialogOptions;
+
+  @Builder
+  myBuilder() {
+    Column() {
+      Text('title').margin(10).fontSize(20)
+      Button('button1').margin(10).fontSize(20)
+      Button('button2').margin(10).fontSize(20)
+    }.width('100%').height('50%')
+  }
+
+  build() {
+    NavDestination() {
+      Column() {
+        Button('openCustomDialog autoCancel:false')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
+          })
+
+        Button('openCustomDialog isModal:false')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
+          })
+
+        Button('openCustomDialog maskOpt')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
+          })
+
+        Button('openCustomDialog transition')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog(this.transitionOpt);
+          })
+
+        Button('openCustomDialog immersiveMode')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.immersiveMode =
+              this.immersiveMode == ImmersiveMode.DEFAULT ? ImmersiveMode.EXTEND : ImmersiveMode.DEFAULT;
+            this.getUIContext().getPromptAction().openCustomDialog({
+              builder: () => {
+                this.myBuilder();
+              },
+              levelMode: LevelMode.EMBEDDED,
+              immersiveMode: this.immersiveMode,
+            })
+          })
+
+        Button('openCustomDialog maskTransition')
+          .width('100%')
+          .margin({ top: 10 })
+          .onClick(() => {
+            this.getUIContext().getPromptAction().openCustomDialog({
+              builder: () => {
+                this.myBuilder();
+              },
+              maskTransition: TransitionEffect.OPACITY.animation({ duration: 2000 })
+                .combine(TransitionEffect.rotate({ z: 1, angle: 180 })),
+            });
+          })
+      }
+      .width('100%')
+      .height('100%')
+    }
+  }
+}
+```

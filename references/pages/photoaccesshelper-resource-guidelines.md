@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/photoaccesshelper-resource-guidelines_
 
+应用可以通过photoAccessHelper的接口，对媒体资源（图片、视频）进行相关操作。
+
+说明
+
+在进行功能开发前，请查阅开发准备，了解如何获取相册管理模块实例和如何申请相册管理模块功能开发相关权限。
+
 文档中使用到photoAccessHelper的地方，默认为使用开发准备中获取的对象，如果未添加此段代码，报photoAccessHelper未定义的错误，请自行添加。
 
 为了保证应用的运行效率，大部分photoAccessHelper的接口调用都是异步的。示例采用Promise函数，更多方式可以查阅模块描述。
@@ -21,19 +27,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/photoacce
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.READ_IMAGEVIDEO'。
+
 导入dataSharePredicates模块。
-指定媒体文件名获取图片或视频资源
+
+[h2]指定媒体文件名获取图片或视频资源
 
 下面以查询文件名为'test.jpg'的图片资源为例。
 
 import { dataSharePredicates } from '@kit.ArkData';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
-
 
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
@@ -55,7 +61,7 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     // ...
   }
 }
-GetMediaResourceAbility.ets
+
 获取图片和视频缩略图
 
 在相册展示图片和视频、编辑预览时，应用需要获取图片和视频的缩略图。
@@ -65,7 +71,9 @@ GetMediaResourceAbility.ets
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.READ_IMAGEVIDEO'。
+
 导入dataSharePredicates模块。
 
 参考以下示例，获取图片的文件描述符fd后，需要解码为统一的PixelMap，以便在应用中进行图片显示或图片处理，具体请参考图片解码。
@@ -75,16 +83,18 @@ GetMediaResourceAbility.ets
 开发步骤
 
 建立检索条件，用于获取图片资源。
+
 调用PhotoAccessHelper.getAssets接口获取图片资源。
+
 调用FetchResult.getFirstObject接口获取第一张图片。
+
 调用PhotoAsset.getThumbnail获取图片的缩略图的PixelMap。
+
 import { dataSharePredicates } from '@kit.ArkData';
 import { image } from '@kit.ImageKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
   let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
@@ -92,7 +102,6 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     fetchColumns: [],
     predicates: predicates
   };
-
 
   try {
     let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
@@ -110,7 +119,7 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     // ...
   }
 }
-GetMediaThumbnailsAbility.ets
+
 重命名媒体资源
 
 重命名修改的是文件的PhotoAsset.displayName属性，即文件的显示文件名，包含文件后缀。
@@ -122,6 +131,7 @@ GetMediaThumbnailsAbility.ets
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.WRITE_IMAGEVIDEO'和'ohos.permission.READ_IMAGEVIDEO'。
 
 下面以重命名标题为'oldTestPhoto'的图片为例。
@@ -129,16 +139,19 @@ GetMediaThumbnailsAbility.ets
 开发步骤
 
 建立检索条件，获取标题为'oldTestPhoto'的图片资源。
+
 调用PhotoAccessHelper.getAssets接口获取目标图片资源。
+
 调用FetchResult.getFirstObject接口获取要重命名的图片对象。
+
 调用MediaAssetChangeRequest.setTitle接口将图片重命名。
+
 调用PhotoAccessHelper.applyChanges接口将修改的图片属性更新到数据库中完成修改。
+
 import { dataSharePredicates } from '@kit.ArkData';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
   let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
@@ -148,7 +161,6 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     predicates: predicates
   };
   let newTitle: string = 'newTestPhoto';
-
 
   try {
     let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
@@ -165,7 +177,7 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
     // ...
   }
 }
-RenameMediaAbility.ets
+
 将文件放入回收站
 
 通过MediaAssetChangeRequest.deleteAssets可以将文件放入回收站。
@@ -175,6 +187,7 @@ RenameMediaAbility.ets
 前提条件
 
 获取相册管理模块photoAccessHelper实例。
+
 申请相册管理模块功能相关权限'ohos.permission.WRITE_IMAGEVIDEO'和'ohos.permission.READ_IMAGEVIDEO'。
 
 下面以将文件检索结果中第一个文件放入回收站为例。
@@ -182,15 +195,17 @@ RenameMediaAbility.ets
 开发步骤
 
 建立检索条件，用于获取图片资源。
+
 调用PhotoAccessHelper.getAssets接口获取目标图片资源。
+
 调用FetchResult.getFirstObject接口获取第一张图片，即要放入回收站的图片对象。
+
 调用MediaAssetChangeRequest.deleteAssets接口将文件放入回收站。
+
 import { dataSharePredicates } from '@kit.ArkData';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-
 // ...
-
 
 async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper, context: Context) {
   let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
@@ -198,7 +213,6 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper, cont
     fetchColumns: [],
     predicates: predicates
   };
-
 
   try {
     let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
@@ -212,6 +226,132 @@ async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper, cont
     // ...
   }
 }
-MoveMediaToRecycleBinAbility.ets
-开发准备
-用户相册资源使用指导
+
+## Code blocks
+
+### Code block 1
+
+```
+import { dataSharePredicates } from '@kit.ArkData';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
+  let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
+  predicates.equalTo(photoAccessHelper.PhotoKeys.DISPLAY_NAME, 'test.jpg');
+  let fetchOptions: photoAccessHelper.FetchOptions = {
+    fetchColumns: [],
+    predicates: predicates
+  };
+  try {
+    let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
+      await phAccessHelper.getAssets(fetchOptions);
+    let photoAsset: photoAccessHelper.PhotoAsset = await fetchResult.getFirstObject();
+    console.info('getAssets photoAsset.displayName : ' + photoAsset.displayName);
+    fetchResult.close();
+    // ...
+  } catch (err) {
+    console.error('getAssets failed with err: ' + err);
+    // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+import { dataSharePredicates } from '@kit.ArkData';
+import { image } from '@kit.ImageKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
+  let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
+  let fetchOptions: photoAccessHelper.FetchOptions = {
+    fetchColumns: [],
+    predicates: predicates
+  };
+
+  try {
+    let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
+      await phAccessHelper.getAssets(fetchOptions);
+    let photoAsset: photoAccessHelper.PhotoAsset = await fetchResult.getFirstObject();
+    console.info('getAssets photoAsset.displayName : ' + photoAsset.displayName);
+    let size: image.Size = { width: 720, height: 720 };
+    let pixelMap: image.PixelMap =  await photoAsset.getThumbnail(size);
+    let imageInfo: image.ImageInfo = await pixelMap.getImageInfo()
+    console.info('getThumbnail successful, pixelMap ImageInfo size: ' + JSON.stringify(imageInfo.size));
+    fetchResult.close();
+    // ...
+  } catch (err) {
+    console.error('getThumbnail failed with err: ' + err);
+    // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+import { dataSharePredicates } from '@kit.ArkData';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper) {
+  let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
+  predicates.equalTo(photoAccessHelper.PhotoKeys.TITLE, 'test')
+  let fetchOptions: photoAccessHelper.FetchOptions = {
+    fetchColumns: ['title'],
+    predicates: predicates
+  };
+  let newTitle: string = 'newTestPhoto';
+
+  try {
+    let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
+      await phAccessHelper.getAssets(fetchOptions);
+    let photoAsset: photoAccessHelper.PhotoAsset = await fetchResult.getFirstObject();
+    let assetChangeRequest: photoAccessHelper.MediaAssetChangeRequest =
+      new photoAccessHelper.MediaAssetChangeRequest(photoAsset);
+    assetChangeRequest.setTitle(newTitle);
+    await phAccessHelper.applyChanges(assetChangeRequest);
+    fetchResult.close();
+    // ...
+  } catch (err) {
+    console.error(`rename failed with error: ${err.code}, ${err.message}`);
+    // ...
+  }
+}
+```
+
+### Code block 4
+
+```
+import { dataSharePredicates } from '@kit.ArkData';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+// ...
+
+async function example(phAccessHelper: photoAccessHelper.PhotoAccessHelper, context: Context) {
+  let predicates: dataSharePredicates.DataSharePredicates = new dataSharePredicates.DataSharePredicates();
+  let fetchOptions: photoAccessHelper.FetchOptions = {
+    fetchColumns: [],
+    predicates: predicates
+  };
+
+  try {
+    let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
+      await phAccessHelper.getAssets(fetchOptions);
+    let photoAsset: photoAccessHelper.PhotoAsset = await fetchResult.getFirstObject();
+    await photoAccessHelper.MediaAssetChangeRequest.deleteAssets(context, [photoAsset]);
+    fetchResult.close();
+    // ...
+  } catch (err) {
+    console.error(`deleteAssets failed with error: ${err.code}, ${err.message}`);
+    // ...
+  }
+}
+```

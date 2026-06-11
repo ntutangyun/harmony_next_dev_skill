@@ -18,7 +18,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mic-manag
 
 import { audio } from '@kit.AudioKit';
 
-
 let audioVolumeGroupManager: audio.AudioVolumeGroupManager;
 // 创建audioVolumeGroupManager对象。
 async function loadVolumeGroupManager(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
@@ -27,7 +26,6 @@ async function loadVolumeGroupManager(updateCallback?: (msg: string, isError: bo
   console.info('audioVolumeGroupManager create success.');
   // ...
 }
-MacManager.ets
 
 调用on('micStateChange')监听麦克风状态变化，当麦克风静音状态发生变化时将通知应用。
 
@@ -39,7 +37,6 @@ async function on() {
     console.info(`Current microphone status is: ${micStateChange.mute} `);
   });
 }
-MacManager.ets
 
 调用isMicrophoneMute查询麦克风当前静音状态，返回true为静音，false为非静音。
 
@@ -50,6 +47,43 @@ async function isMicrophoneMute(updateCallback?: (msg: string, isError: boolean)
     // ...
   });
 }
-MacManager.ets
-低时延音频录制(C/C++)
-查询和监听其他应用录制状态
+
+## Code blocks
+
+### Code block 1
+
+```
+import { audio } from '@kit.AudioKit';
+
+let audioVolumeGroupManager: audio.AudioVolumeGroupManager;
+// 创建audioVolumeGroupManager对象。
+async function loadVolumeGroupManager(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
+  const groupid = audio.DEFAULT_VOLUME_GROUP_ID;
+  audioVolumeGroupManager = await audio.getAudioManager().getVolumeManager().getVolumeGroupManager(groupid);
+  console.info('audioVolumeGroupManager create success.');
+  // ...
+}
+```
+
+### Code block 2
+
+```
+// 监听麦克风状态变化。
+async function on() {
+  audioVolumeGroupManager.on('micStateChange', (micStateChange: audio.MicStateChangeEvent) => {
+    console.info(`Current microphone status is: ${micStateChange.mute} `);
+  });
+}
+```
+
+### Code block 3
+
+```
+// 查询麦克风是否静音。
+async function isMicrophoneMute(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
+  await audioVolumeGroupManager.isMicrophoneMute().then((value: boolean) => {
+    console.info(`isMicrophoneMute is: ${value}.`);
+    // ...
+  });
+}
+```

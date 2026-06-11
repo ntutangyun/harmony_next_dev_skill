@@ -2,6 +2,32 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/js-framework-file_
 
+目录结构
+
+JS FA应用的JS模块（entry/src/main/js/module）的典型开发目录结构如下：
+
+图1 目录结构
+
+图2 多实例资源共享目录结构
+
+目录结构中文件分类如下：
+
+.hml结尾的HML模板文件，描述当前页面的文件布局结构。
+
+.css结尾的CSS样式文件，描述页面样式。
+
+.js结尾的JS文件，处理页面间的交互。
+
+各个文件夹的作用：
+
+app.js文件用于全局JavaScript逻辑和应用生命周期管理，详见app.js。
+
+pages目录用于存放所有组件页面。
+
+common目录用于存放公共资源文件，比如：媒体资源，自定义组件和JS文件。
+
+resources目录用于存放资源配置文件，比如：多分辨率加载等配置文件，详见资源限定与访问章节。
+
 share目录用于配置多个实例共享的资源内容，比如：share中的图片和JSON文件可被default1和default2实例共享。
 
 说明
@@ -52,5 +78,3 @@ WebP	.webp
 格式	支持的文件类型
 H.264 AVC	.3gp
 Baseline Profile (BP)	.mp4
-框架说明
-js标签配置

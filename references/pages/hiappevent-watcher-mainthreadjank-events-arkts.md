@@ -2,14 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-mainthreadjank-events-arkts_
 
+简介
+
 本文介绍如何使用HiAppEvent提供的ArkTS接口订阅主线程超时事件。接口的详细使用说明（参数限制、取值范围等）请参考@ohos.hiviewdfx.hiAppEvent。
 
 接口说明
+
 接口名	描述
 addWatcher(watcher: Watcher): AppEventPackageHolder	添加应用事件观察者，以添加对应用事件的订阅。
 removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对应用事件的订阅。
+
 开发步骤
-添加事件观察者
+
+[h2]添加事件观察者
 
 以主线程超时事件订阅为例，说明开发步骤。
 
@@ -59,7 +64,6 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.app_start_jiffies_time=${JSON.stringify(eventInfo.params['app_start_jiffies_time'])}`);
          // 开发者可以获取到生成的主线程超时日志文件中，打印最多次的调用栈（主线程超时采集堆栈参数）
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.heaviest_stack=${eventInfo.params['heaviest_stack']}`);
-
 
          // 开发者可以获取到主线程超时事件发生时的故障日志文件
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.external_log=${JSON.stringify(eventInfo.params['external_log'])}`);
@@ -112,7 +116,6 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
   import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
   import { BusinessError } from '@kit.BasicServicesKit';
 
-
   // 模拟超时事件函数定义，示例代码：
   function wait150ms() {
     let t = Date.now();
@@ -120,13 +123,11 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
     }
   }
 
-
   function wait500ms() {
     let t = Date.now();
     while (Date.now() - t <= 500){
     }
   }
-
 
   @Entry
   @Component
@@ -221,7 +222,7 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
 
 用户可以快速点击2~3次触发超时的按钮（如：timeOut350、timeOut150或timeOut500三种不同卡顿场景的按钮），以触发主线程超时事件。
 
-验证观察者是否订阅到主线程超时事件
+[h2]验证观察者是否订阅到主线程超时事件
 
 主线程超时事件上报后，系统会回调应用的onReceive函数，可以在Log窗口看到对系统事件数据的处理日志：
 
@@ -248,8 +249,229 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
   采样栈增加两个参数：app_start_jiffies_time和heaviest_stack。
   external_log=["/data/storage/el2/log/watchdog/MAIN_THREAD_JANK_yyyyMMDDHHmmss_xxxx.txt"]。xxxx：代表进程pid
 
+trace：
+  external_log=["/data/storage/el2/log/watchdog/MAIN_THREAD_JANK_unix时间戳_xxxx.trace"]。xxxx：代表进程pid
+
+## Code blocks
+
+### Code block 1
+
+```
+ import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
+ import { buffer, util } from '@kit.ArkTS'
+ import { fileIo } from '@kit.CoreFileKit';
+```
+
+### Code block 2
+
+```
+ hiAppEvent.addWatcher({
+   // 开发者可以自定义观察者名称，系统会使用名称来标识不同的观察者
+   name: "watcher",
+   // 开发者可以订阅感兴趣的系统事件，此处是订阅了主线程超时事件
+   appEventFilters: [
+     {
+       domain: hiAppEvent.domain.OS,
+       names: [hiAppEvent.event.MAIN_THREAD_JANK]
+     }
+   ],
+   // 开发者可以自行实现订阅实时回调函数，以便对订阅获取到的事件数据进行自定义处理
+   onReceive: (domain: string, appEventGroups: Array<hiAppEvent.AppEventGroup>) => {
+     hilog.info(0x0000, 'testTag', `HiAppEvent onReceive: domain=${domain}`);
+     for (const eventGroup of appEventGroups) {
+       // 开发者可以根据事件集合中的事件名称区分不同的系统事件
+       hilog.info(0x0000, 'testTag', `HiAppEvent eventName=${eventGroup.name}`);
+       for (const eventInfo of eventGroup.appEventInfos) {
+         // 开发者可以对事件集合中的事件数据进行自定义处理，此处是将事件数据打印在日志中
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.domain=${eventInfo.domain}`);
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.name=${eventInfo.name}`);
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.eventType=${eventInfo.eventType}`);
+         // 开发者可以获取到主线程超时事件发生的时间戳
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.time=${eventInfo.params['time']}`);
+         // 开发者可以获取到主线程超时应用的版本信息
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.bundle_version=${eventInfo.params['bundle_version']}`);
+         // 开发者可以获取到主线程超时应用的包名
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.bundle_name=${eventInfo.params['bundle_name']}`);
+         // 开发者可以获取到主线程超时应用的pid、uid
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.pid=${eventInfo.params['pid']}`);
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.uid=${eventInfo.params['uid']}`);
+         // 开发者可以获取主线程处理开始和结束时间
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.begin_time=${eventInfo.params['begin_time']}`);
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.end_time=${eventInfo.params['end_time']}`);
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.log_over_limit=${eventInfo.params['log_over_limit']}`);
+         // 开发者可以获取到主线程超时事件时，任务执行的开始时间（主线程超时采集堆栈参数）
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.app_start_jiffies_time=${JSON.stringify(eventInfo.params['app_start_jiffies_time'])}`);
+         // 开发者可以获取到生成的主线程超时日志文件中，打印最多次的调用栈（主线程超时采集堆栈参数）
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.heaviest_stack=${eventInfo.params['heaviest_stack']}`);
+
+         // 开发者可以获取到主线程超时事件发生时的故障日志文件
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.external_log=${JSON.stringify(eventInfo.params['external_log'])}`);
+         // 开发者可以通过以下方式移动文件到新的目录
+         let path: string = String(eventInfo.params['external_log']);
+         // 自定义的新的存储路径
+         let targetPath: string = "";
+         if (path.endsWith(".txt")) {
+           targetPath= "/data/storage/el2/base/mainThreadJank.txt";
+         } else if (path.endsWith(".trace")) {
+           targetPath= "/data/storage/el2/base/mainThreadJank.trace";
+         }
+         fileIo.copyFileSync(path.toString(), targetPath.toString());
+       }
+     }
+   }
+ });
+```
+
+### Code block 3
+
+```
+  @Entry
+  @Component
+  struct Index {
+    build() {
+      RelativeContainer() {
+        Column() {
+          Button("timeOut350", { stateEffect:true, type: ButtonType.Capsule})
+            .width('75%')
+            .height(50)
+            .margin(15)
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              let t = Date.now();
+              while (Date.now() - t <= 350) {}
+            })
+        }.width('100%')
+      }
+      .height('100%')
+      .width('100%')
+    }
+  }
+```
+
+### Code block 4
+
+```
+  import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
+  import { BusinessError } from '@kit.BasicServicesKit';
+
+  // 模拟超时事件函数定义，示例代码：
+  function wait150ms() {
+    let t = Date.now();
+    while (Date.now() - t <= 150){
+    }
+  }
+
+  function wait500ms() {
+    let t = Date.now();
+    while (Date.now() - t <= 500){
+    }
+  }
+
+  @Entry
+  @Component
+  struct Index {
+    build() {
+      RelativeContainer() {
+        Column() {
+          // 自定义设置采样栈参数按钮
+          Button("customSample", { stateEffect:true, type: ButtonType.Capsule})
+            .width('75%')
+            .height(50)
+            .margin(15)
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              // 在按钮点击函数中进行事件打点，以记录按钮点击事件
+              let params: Record<string, hiAppEvent.ParamType> = {
+                // 事件类型定义， 0-默认值，1-只采样栈 2-只收集trace
+                "log_type": "1",
+                // 超时时间 & 采样间隔
+                "sample_interval": "100",
+                // 忽略启动开始时间
+                "ignore_startup_time": "11",
+                // 采样次数
+                "sample_count": "21",
+                // 事件上报次数定义
+                "report_times_per_app": "3"
+              };
+              hiAppEvent.setEventConfig(hiAppEvent.event.MAIN_THREAD_JANK, params).then(() => {
+                hilog.info(0x0000, 'testTag', `HiAppEvent success to set event params.`)
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'testTag', `HiAppEvent err.code: ${err.code}, err.message: ${err.message}`)
+              });
+            })
+          // 触发150ms超时事件按钮
+          Button("timeOut150", { stateEffect:true, type: ButtonType.Capsule})
+            .width('75%')
+            .height(50)
+            .margin(15)
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              wait150ms();
+            })
+        }.width('100%')
+      }
+      .height('100%')
+      .width('100%')
+    }
+  }
+```
+
+### Code block 5
+
+```
+  @Entry
+  @Component
+  struct Index {
+    build() {
+      RelativeContainer() {
+        Column() {
+          Button("timeOut500", { stateEffect:true, type: ButtonType.Capsule})
+            .width('75%')
+            .height(50)
+            .margin(15)
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              let t = Date.now();
+              while (Date.now() - t <= 500) {}
+            })
+        }.width('100%')
+      }
+      .height('100%')
+      .width('100%')
+    }
+  }
+```
+
+### Code block 6
+
+```
+ HiAppEvent eventInfo.domain=OS
+ HiAppEvent eventInfo.name=MAIN_THREAD_JANK
+ HiAppEvent eventInfo.eventType=1
+ HiAppEvent eventInfo.params.time=1717593620518
+ HiAppEvent eventInfo.params.bundle_version=1.0.0
+ HiAppEvent eventInfo.params.bundle_name=com.example.main_thread_jank
+ HiAppEvent eventInfo.params.pid=40986
+ HiAppEvent eventInfo.params.uid=20020150
+ HiAppEvent eventInfo.params.begin_time=1717593620016
+ HiAppEvent eventInfo.params.end_time=1717593620518
+ HiAppEvent eventInfo.params.external_log=["/data/storage/el2/log/watchdog/MAIN_THREAD_JANK_20240613211739_40986.XXX"]
+ HiAppEvent eventInfo.params.log_over_limit=false
+ HiAppEvent eventInfo.params.app_start_jiffies_time=XXXX
+ HiAppEvent eventInfo.params.heaviest_stack=XXXX
+```
+
+### Code block 7
+
+```
+栈：
+  采样栈增加两个参数：app_start_jiffies_time和heaviest_stack。
+  external_log=["/data/storage/el2/log/watchdog/MAIN_THREAD_JANK_yyyyMMDDHHmmss_xxxx.txt"]。xxxx：代表进程pid
 
 trace：
   external_log=["/data/storage/el2/log/watchdog/MAIN_THREAD_JANK_unix时间戳_xxxx.trace"]。xxxx：代表进程pid
-主线程超时事件介绍
-订阅主线程超时事件（C/C++）
+```

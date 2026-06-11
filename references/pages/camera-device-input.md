@@ -2,6 +2,25 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-device-input_
 
+在开发相机应用时，需要先申请相关权限。
+
+相机应用可通过调用和控制相机设备，完成预览、拍照和录像等基础操作。
+
+开发步骤
+
+详细的API说明请参考@ohos.multimedia.camera (相机管理)。
+
+导入camera接口，接口中提供了相机相关的属性和方法，导入方法如下。
+
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+说明
+
+在相机设备输入之前需要先完成相机管理，详细开发步骤请参考相机管理。
+
+通过cameraManager中的createCameraInput方法创建相机输入流。
+
 async function createInput(cameraDevice: camera.CameraDevice, cameraManager: camera.CameraManager): Promise<camera.CameraInput | undefined> {
   // 创建相机输入流。
   let cameraInput: camera.CameraInput | undefined = undefined;
@@ -62,5 +81,81 @@ async function getSupportedOutputCapability(cameraDevice: camera.CameraDevice, c
    }
    return cameraOutputCapability;
 }
-相机管理(ArkTS)
-会话管理(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+async function createInput(cameraDevice: camera.CameraDevice, cameraManager: camera.CameraManager): Promise<camera.CameraInput | undefined> {
+  // 创建相机输入流。
+  let cameraInput: camera.CameraInput | undefined = undefined;
+  try {
+    cameraInput = cameraManager.createCameraInput(cameraDevice);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error('Failed to createCameraInput errorCode = ' + err.code);
+  }
+  if (cameraInput === undefined) {
+    return undefined;
+  }
+  // 监听cameraInput错误信息。
+  cameraInput.on('error', cameraDevice, (error: BusinessError) => {
+    console.error(`Camera input error code: ${error.code}`);
+  });
+  // 打开相机。
+  await cameraInput.open();
+  return cameraInput;
+}
+```
+
+### Code block 3
+
+```
+function getSupportedSceneMode(cameraDevice: camera.CameraDevice, cameraManager: camera.CameraManager): Array<camera.SceneMode> {
+  // 获取相机设备支持的模式列表。
+  let sceneModeArray: Array<camera.SceneMode> = cameraManager.getSupportedSceneModes(cameraDevice);
+  if (sceneModeArray != undefined && sceneModeArray.length > 0) {
+    for (let index = 0; index < sceneModeArray.length; index++) {
+      console.info('Camera SceneMode : ' + sceneModeArray[index]);
+  }
+    return sceneModeArray;
+  } else {
+      console.error("cameraManager.getSupportedSceneModes error");
+      return [];
+  }
+}
+```
+
+### Code block 4
+
+```
+async function getSupportedOutputCapability(cameraDevice: camera.CameraDevice, cameraManager: camera.CameraManager, sceneMode: camera.SceneMode): Promise<camera.CameraOutputCapability | undefined> {
+   // 获取相机设备支持的输出流能力。
+   let cameraOutputCapability: camera.CameraOutputCapability = cameraManager.getSupportedOutputCapability(cameraDevice, sceneMode);
+   if (!cameraOutputCapability) {
+     console.error("cameraManager.getSupportedOutputCapability error");
+     return undefined;
+   }
+   console.info("outputCapability: " + JSON.stringify(cameraOutputCapability));
+   // 以NORMAL_PHOTO模式为例，需要添加预览流、拍照流。
+   // previewProfiles属性为获取当前设备支持的预览输出流。
+   let previewProfilesArray: Array<camera.Profile> = cameraOutputCapability.previewProfiles;
+   if (!previewProfilesArray) {
+     console.error("createOutput previewProfilesArray == null || undefined");
+   }
+   // photoProfiles属性为获取当前设备支持的拍照输出流。
+   let photoProfilesArray: Array<camera.Profile> = cameraOutputCapability.photoProfiles;
+   if (!photoProfilesArray) {
+     console.error("createOutput photoProfilesArray == null || undefined");
+   }
+   return cameraOutputCapability;
+}
+```

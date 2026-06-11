@@ -38,7 +38,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 
 卡片创建完成后，需要完成锁屏卡片配置，并接入锁屏卡片开放能力，其他开发流程与普通卡片一致，具体步骤参考如下。
 
-锁屏卡片配置
+[h2]锁屏卡片配置
 
 在form_config.json配置文件中，锁屏卡片必须配置renderingMode和supportDimensions字段。其中renderingMode字段仅支持配置为“singleColor”或者“autoColor”，supportDimensions字段取值中必须包含"1*1"或"1*2"，具体参考配置文件字段说明。renderingMode字段在API version 18版本后，配置方法有变动。
 
@@ -66,6 +66,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
     }
   ]
 }
+
 // 在API version 18之前的版本，renderingMode的配置方法如下。value值“0”表示“autoColor”，value值“1”代表“fullColor”，value值“2”代表“singleColor”
 // entry/src/main/resources/base/profile/form_config.json
 {
@@ -95,7 +96,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
     }
   ]
 }
-锁屏卡片开放能力申请
+
+[h2]锁屏卡片开放能力申请
 
 因为锁屏卡片会展示在设备的锁屏界面，出于数据隐私安全考虑，需要开发者申请上架开放能力。
 
@@ -111,5 +113,67 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 
 能力申请通过后，勾选锁屏卡片的能力开关，点击右上角“保存”。至此，您的应用已成功接入开放能力。
 
-ArkTS锁屏卡片
-ArkTS背板透明卡片
+## Code blocks
+
+### Code block 1
+
+```
+// 在API version 18及以上的版本，renderingMode的配置方法如下
+// entry/src/main/resources/base/profile/form_config.json
+{
+  "forms": [
+    {
+      "name": "widget",
+      "displayName": "$string:widget_display_name",
+      "description": "$string:widget_desc",
+      "src": "./ets/widget/pages/WidgetCard.ets",
+      "uiSyntax": "arkts",
+      "isDynamic": true,
+      "isDefault": true,
+      "updateEnabled": false,
+      "scheduledUpdateTime": "10:30",
+      "renderingMode": "autoColor",
+      "updateDuration": 1,
+      "defaultDimension": "1*2",
+      "supportDimensions": [
+        "1*2",
+        "2*2"
+      ]
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+// 在API version 18之前的版本，renderingMode的配置方法如下。value值“0”表示“autoColor”，value值“1”代表“fullColor”，value值“2”代表“singleColor”
+// entry/src/main/resources/base/profile/form_config.json
+{
+  "forms": [
+    {
+      "name": "widget",
+      "displayName": "$string:widget_display_name",
+      "description": "$string:widget_desc",
+      "src": "./ets/widget/pages/WidgetCard.ets",
+      "uiSyntax": "arkts",
+      "isDynamic": true,
+      "isDefault": true,
+      "updateEnabled": false,
+      "scheduledUpdateTime": "10:30",
+      "updateDuration": 1,
+      "defaultDimension": "1*2",
+      "supportDimensions": [
+        "1*2",
+        "2*2"
+      ],
+      "metadata": [
+        {
+          "name": "renderingMode",
+          "value": "2"
+        }
+      ]
+    }
+  ]
+}
+```

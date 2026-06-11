@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/device-attestation-practice_
 
+本文档提供了验证应用请求真实性的集成设计方案实践。
+
+创建密钥确立可信凭证流程
+
+一个登录用户只进行一次创建密钥确立可信凭证流程，触发时机为用户登录成功。
+
+查询应用公私钥对是否存在：应用公私钥对的别名Alias取值：固定值“serviceKey”+ 用户ID。
+
+如果应用公私钥对已存在，则说明用户在本设备曾经登录过，“创建密钥确立可信凭证”流程结束；否则进入步骤2。
+
 创建应用公私钥对：创建一个用于证明设备真实性和应用身份的非对称算法密钥对（包含应用公钥和应用私钥），比如RSA、ECC算法的密钥对。
 
 获取挑战值Challenge：为了在步骤6“发送密钥证明证书链”中，能够防重放攻击，建议应用先从应用服务器获取一次性的挑战值Challenge。应用服务器采用安全随机数生成挑战值Challenge，并缓存到服务器中，缓存包含如下字段：
@@ -67,6 +77,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/device-at
 说明
 
 应用可能会基于服务器数据库容量的考虑，会删除长时间不使用的应用公钥记录，此时会触发步骤7。
-
-服务器端开发
-其他操作

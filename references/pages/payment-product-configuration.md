@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-product-configuration_
 
+如涉及以下场景，需提前完成相关产品的开通或配置操作。如不涉及，请直接跳转下一章节。
+
+场景一：产品开通操作
+
 部分支付场景接入涉及产品开通，未开通产品直接接入，商户请求华为支付开放的API接口时可能会导致“商户未找到对应的产品示例”、“不支持的操作”等异常响应。开通产品需商户侧与华为支付侧沟通（合作咨询可点击此处）后申请开通对应产品。
 
 涉及产品开通的支付场景如下：
@@ -51,6 +55,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-p
 涉及商户：直连商户、服务商、平台类商户
 
 处理人：商户在华为支付商户平台设置的超级管理员
-
-商户入网和获取商户号
-开通支付服务

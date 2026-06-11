@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-introduction-c_
 
+接入全局取色
+
+接入报点预测

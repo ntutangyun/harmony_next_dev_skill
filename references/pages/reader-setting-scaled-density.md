@@ -10,6 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/reader-se
 
 接口名	描述
 setPageConfig(pageConfig: ReaderSetting): void	设置或者修改页面排版属性。
+
 开发准备
 
 在监听文本缩放因子变化之前，请先确保已经'构建阅读器'。
@@ -30,14 +31,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 struct Reader {
   private screenDensityCallBack: Callback<number> | null = null;
 
-
   aboutToAppear(): void {
     this.registerScreenDensityChange();
     hilog.info(0x0000, 'testTag',
       'aboutToAppear : current scaledDensity = ' + this.readerSetting.scaledDensity + ', change scaledDensity = ' +
       display.getDefaultDisplaySync().scaledDensity);
   }
-
 
   /**
    * 注册缩放文本缩放因子变化监听
@@ -54,11 +53,9 @@ struct Reader {
     display.on('change', this.screenDensityCallBack);
   }
 
-
   aboutToDisappear(): void {
     display.off('change', this.screenDensityCallBack);
   }
-
 
   build() {
     // 需要开发者根据构建阅读器章节自行实现
@@ -73,7 +70,6 @@ struct Reader {
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 struct Index {
@@ -81,7 +77,6 @@ struct Index {
    * 系统字体缩放因子是否发生变化，如果变化需要重启阅读器
    */
   @StorageLink('isDensityChange') isDensityChange: boolean = false;
-
 
   onPageShow(): void {
     // 文本缩放因子变化需要重新打开书籍
@@ -91,6 +86,86 @@ struct Index {
     }
   }
 
+  private jumper() {
+    this.getUIContext().getRouter().pushUrl({ url: "pages/Reader" }).catch(() => {
+      hilog.error(0x0000, 'testTag', 'pushUrl failed');
+    });
+  }
+
+  build() {
+    // 需要开发者根据业务需要自行实现
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { display } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Reader {
+  private screenDensityCallBack: Callback<number> | null = null;
+
+  aboutToAppear(): void {
+    this.registerScreenDensityChange();
+    hilog.info(0x0000, 'testTag',
+      'aboutToAppear : current scaledDensity = ' + this.readerSetting.scaledDensity + ', change scaledDensity = ' +
+      display.getDefaultDisplaySync().scaledDensity);
+  }
+
+  /**
+   * 注册缩放文本缩放因子变化监听
+   */
+  registerScreenDensityChange() {
+    this.screenDensityCallBack = (data: number) => {
+      let displaySync = display.getDefaultDisplaySync();
+      let scaledDensity = displaySync.scaledDensity;
+      if (scaledDensity !== this.readerSetting.scaledDensity) {
+        AppStorage.setOrCreate('isDensityChange', true);
+        this.getUIContext().getRouter().back();
+      }
+    }
+    display.on('change', this.screenDensityCallBack);
+  }
+
+  aboutToDisappear(): void {
+    display.off('change', this.screenDensityCallBack);
+  }
+
+  build() {
+    // 需要开发者根据构建阅读器章节自行实现
+  }
+}
+```
+
+### Code block 3
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+  /**
+   * 系统字体缩放因子是否发生变化，如果变化需要重启阅读器
+   */
+  @StorageLink('isDensityChange') isDensityChange: boolean = false;
+
+  onPageShow(): void {
+    // 文本缩放因子变化需要重新打开书籍
+    if (this.isDensityChange) {
+      this.jumper();
+      AppStorage.setOrCreate('isDensityChange', false);
+    }
+  }
 
   private jumper() {
     this.getUIContext().getRouter().pushUrl({ url: "pages/Reader" }).catch(() => {
@@ -98,10 +173,8 @@ struct Index {
     });
   }
 
-
   build() {
     // 需要开发者根据业务需要自行实现
   }
 }
-适配深、浅色模式
-书籍内容交互
+```

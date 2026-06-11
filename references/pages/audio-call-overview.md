@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-call-overview_
 
+常用的音频通话模式包括VoIP通话和蜂窝通话。
+
+VoIP通话：
+
 VoIP（Voice over Internet Protocol）通话是指基于互联网协议（IP）进行通讯的一种语音通话技术。VoIP通话会将通话信息打包成数据包，通过网络进行传输，因此VoIP通话对网络要求较高，通话质量与网络连接速度紧密相关。
 
 蜂窝通话（仅对系统应用开放）：
@@ -45,6 +49,3 @@ RINGER_MODE_NORMAL：响铃模式，此模式下铃声音量正常。
 在通话场景下，系统会根据默认优先级选择合适的音频设备。应用可以根据需要，切换音频设备。
 
 切换方式可参考AVSession Kit使用通话设备切换组件。
-
-音频通话
-开发音频通话功能

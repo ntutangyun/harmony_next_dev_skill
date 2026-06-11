@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-storage-getdownloadurl_
 
+文件上传至云侧后，开发者可以获取云侧文件的下载地址，将下载地址放到网站中提供文件下载的体验。
+
+约束与限制
+
 支持Phone、Tablet设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持PC/2in1设备。
 
 前提条件
@@ -20,15 +24,12 @@ import { cloudStorage } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
-
 
 @Component
 export struct testPage {
   build() {
   }
-
 
   // 获取云侧文件下载地址
   getUrl() {
@@ -40,5 +41,31 @@ export struct testPage {
     })
   }
 }
-下载云侧文件至本地
-删除云侧文件
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cloudStorage } from '@kit.CloudFoundationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+
+@Component
+export struct testPage {
+  build() {
+  }
+
+  // 获取云侧文件下载地址
+  getUrl() {
+    // 获取云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的下载地址
+    storageBucket.getDownloadURL('screenshot/screenshot_20250115_155321.jpg').then((downloadURL: string) => {
+      hilog.info(0x0000, 'testTag', `Succeeded in getting download URL: ${downloadURL}`);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'testTag', `Failed to get download URL, code: ${err.code}, message: ${err.message}`);
+    })
+  }
+}
+```

@@ -2,7 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-query-workspace_
 
+场景介绍
+
+Enterprise Space Kit为应用提供查询工作空间信息的能力。
+
+接口说明
+
+详细接口说明可参考接口文档。
+
+接口名	描述
 queryWorkspace(queryFlag: QueryType): Promise<WorkspaceInfo[]>	查询工作空间信息并返回结果。使用Promise异步回调。
+
 开发步骤
 
 导入Enterprise Space Kit模块。
@@ -18,5 +28,23 @@ try {
 } catch (err) {
   console.error(`Failed to query workspace. Code: ${err.code}, message: ${err.message}`);
 }
-使能工作空间
-移除工作空间
+
+## Code blocks
+
+### Code block 1
+
+```
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+```
+
+### Code block 2
+
+```
+const queryFlag: spaceManager.QueryType = spaceManager.QueryType.ALL;
+try {
+  const spaces: spaceManager.WorkspaceInfo[] = await spaceManager.queryWorkspace(queryFlag);
+  console.info(`Succeeded in querying workspace` + JSON.stringify(spaces));
+} catch (err) {
+  console.error(`Failed to query workspace. Code: ${err.code}, message: ${err.message}`);
+}
+```

@@ -2,6 +2,36 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fenceextensionability_
 
+概述
+
+云侧围栏是指开发者直接使用云侧公共围栏，当用户进入这个区域，在移动设备上进行有针对性的提醒。
+
+开通云侧围栏服务
+
+在开通定位服务前，请先参考“应用开发准备”创建项目和应用工程。
+
+说明
+
+从HarmonyOS NEXT Developer Beta2起，开发者无需配置公钥指纹和Client ID。
+
+操作步骤
+
+登录AppGallery Connect网站，选择“开发与服务”。
+
+在项目列表中找到您的项目，在项目下的应用列表中选择需要配置定位服务参数的应用。
+
+在左侧导航栏选择“定位服务”，并点击收藏。
+
+在左侧导航栏选择“构建 > 定位服务”。
+
+使用场景
+
+开发者可以通过该围栏扩展能力来使用云侧公共围栏。
+
+开发者首先需要在AGC（AppGallery Connect）平台定位服务选择右侧“添加围栏组触发”开始创建地理围栏。
+
+可以根据商圈、景点等类别，配置围栏组下发围栏策略。
+
 定位服务在满足围栏触发条件后，通过FenceExtensionAbility把围栏事件通知给APP，APP接收到围栏事件后完成相关的业务处理。
 
 接口介绍
@@ -11,6 +41,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fenceexte
 接口	描述
 onFenceStatusChange(transition: geoLocationManager.GeofenceTransition, additions: Record<string, string>): void	接收系统通知的地理围栏事件，根据围栏事件类型和数据进行相应处理。
 onDestroy(): void	接收FenceExtensionAbility的销毁事件并处理，会在FenceExtensionAbility销毁前回调。
+
 开发步骤
 
 要实现一个地理围栏扩展服务，开发者需要实现FenceExtensionAbility的能力，具体步骤如下：
@@ -27,23 +58,18 @@ import { FenceExtensionAbility, geoLocationManager } from '@kit.LocationKit';
 import { wantAgent } from '@kit.AbilityKit';
 import { notificationManager } from '@kit.NotificationKit';
 
-
 export default class MyFenceExtensionAbility extends FenceExtensionAbility {
   async onFenceStatusChange(transition: geoLocationManager.GeofenceTransition, additions: Record<string, string>): Promise<void> {
     super.onFenceStatusChange(transition, additions);
 
-
     // 接收围栏触发信息
     console.info('MyFenceExtensionAbility onFenceStatusChange');
-
 
     let poiId: string = additions['poiId'];// 围栏id，唯一标识，示例：'999287512272780934'
     let policyType: string = additions['policyType'];// 策略类型：'0'-普通策略;'1'-标签策略
     let policyResult: string = additions['policyResult'];// 策略结果：标签等策略的额外信息
 
-
     console.info(`poiId:${poiId},policyType:${policyType},policyResult:${policyResult}`);
-
 
     // 可以发送围栏业务通知
     let wantAgentInfo: wantAgent.WantAgentInfo = {
@@ -72,7 +98,6 @@ export default class MyFenceExtensionAbility extends FenceExtensionAbility {
     notificationManager.publish(notificationRequest);
   }
 
-
   onDestroy(): void {
     super.onDestroy();
     console.info('MyFenceExtensionAbility onDestroy');
@@ -94,5 +119,77 @@ export default class MyFenceExtensionAbility extends FenceExtensionAbility {
     ]
   }
 }
-端侧GNSS围栏开发指导
-个人数据处理说明
+
+## Code blocks
+
+### Code block 1
+
+```
+import { FenceExtensionAbility, geoLocationManager } from '@kit.LocationKit';
+import { wantAgent } from '@kit.AbilityKit';
+import { notificationManager } from '@kit.NotificationKit';
+
+export default class MyFenceExtensionAbility extends FenceExtensionAbility {
+  async onFenceStatusChange(transition: geoLocationManager.GeofenceTransition, additions: Record<string, string>): Promise<void> {
+    super.onFenceStatusChange(transition, additions);
+
+    // 接收围栏触发信息
+    console.info('MyFenceExtensionAbility onFenceStatusChange');
+
+    let poiId: string = additions['poiId'];// 围栏id，唯一标识，示例：'999287512272780934'
+    let policyType: string = additions['policyType'];// 策略类型：'0'-普通策略;'1'-标签策略
+    let policyResult: string = additions['policyResult'];// 策略结果：标签等策略的额外信息
+
+    console.info(`poiId:${poiId},policyType:${policyType},policyResult:${policyResult}`);
+
+    // 可以发送围栏业务通知
+    let wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: 'com.huawei.hmos.locationtest.smartfence',
+          abilityName: 'EntryAbility'
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITY,
+      requestCode: 100
+    };
+    let wantAgentMy = await wantAgent.getWantAgent(wantAgentInfo);
+    let notificationRequest: notificationManager.NotificationRequest = {
+      id: 1,
+      content: {
+        notificationContentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
+        normal: {
+          title: `围栏通知`,
+          text: `poiId:${poiId},policyType:${policyType},policyResult:${policyResult}`,
+        }
+      },
+      notificationSlotType: notificationManager.SlotType.SOCIAL_COMMUNICATION,
+      wantAgent: wantAgentMy
+    };
+    notificationManager.publish(notificationRequest);
+  }
+
+  onDestroy(): void {
+    super.onDestroy();
+    console.info('MyFenceExtensionAbility onDestroy');
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "module": {
+    "extensionAbilities": [
+      {
+        "name": "MyFenceExtensionAbility",
+        "srcEntry": "./ets/fenceextensionability/MyFenceExtensionAbility.ets",
+        "description": "MyFenceExtensionAbility",
+        "type": "fence",
+        "exported": false
+      },
+    ]
+  }
+}
+```

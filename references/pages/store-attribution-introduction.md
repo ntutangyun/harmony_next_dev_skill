@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-attribution-introduction_
 
+应用归因服务是华为提供的不依赖用户标识符的端侧归因能力。
+
 当用户完成应用安装或在已安装应用内完成转化时，应用归因服务通过匹配用户在转化前的行为数据，分析用户的来源渠道以及转化的原因，并将归因结果回传给分发平台、开发者、归因监测平台。开发者可以通过归因结果数据分析投放效果、评估渠道质量，进而优化投放策略，分发平台可以评估渠道商业价值，优化营销效果。
 
 业务流程
@@ -14,6 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-att
 3	登记归因转化	开发者App、归因监测平台通过调用registerTrigger接口登记归因转化事件。
 4	归因结果回传	应用归因服务将归因结果通过回传地址回传至应用生态伙伴。
 5	接入调试	应用归因服务提供接入调试功能，开发者通过调用调试接口验证接入的准确性及归因结果回传等基础能力。
+
 约束与限制
 
 应用需要在应用市场上架。
@@ -25,6 +28,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-att
 应用归因服务接入调试功能接口当前支持ARM版本、X86版本的模拟器。
 
 应用归因服务支持Phone、Tablet设备。并且从6.1.0(23)版本开始，新增支持PC/2in1、TV设备。
-
-应用归因服务
-开发准备

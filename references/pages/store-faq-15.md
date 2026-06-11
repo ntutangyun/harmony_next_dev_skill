@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-faq-15_
 
+若开发者有架设服务器，建议在服务器执行签名校验。

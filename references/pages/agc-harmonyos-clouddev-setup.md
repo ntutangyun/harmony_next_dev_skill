@@ -7,6 +7,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmo
 说明
 
 端云一体化开发工程在初始化时需要从npm仓库下载依赖，如果需要代理才能访问网络，请配置NPM代理。
-
-注册华为开发者账号并实名认证
-在AGC创建项目和HarmonyOS应用/元服务

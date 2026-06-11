@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rsa-sign-sig-verify-pkcs1-by-segment_
 
+对应的算法规格请查看签名验签算法规格：RSA。
+
+签名
+
 调用cryptoFramework.createAsyKeyGenerator、AsyKeyGenerator.generateKeyPair，生成密钥算法为RSA、密钥长度为1024位、素数个数为2的非对称密钥对象（KeyPair），包括公钥（PubKey）和私钥（PriKey）。
 
 如何生成RSA非对称密钥，开发者可参考下文示例，并结合非对称密钥生成和转换规格：RSA和随机生成非对称密钥对理解，参考文档与当前示例可能存在入参差异，请在阅读时注意区分。
@@ -29,7 +33,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rs
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
 
-
 async function signMessageBySegment(priKey: cryptoFramework.PriKey, plainText: Uint8Array) {
   let signAlg = 'RSA1024|PKCS1|SHA256';
   let signer = cryptoFramework.createSign(signAlg);
@@ -45,7 +48,6 @@ async function signMessageBySegment(priKey: cryptoFramework.PriKey, plainText: U
   let signData = await signer.sign(null);
   return signData;
 }
-
 
 async function verifyMessageBySegment(pubKey: cryptoFramework.PubKey, plainText: Uint8Array,
   signMessageBlob: cryptoFramework.DataBlob) {
@@ -64,7 +66,6 @@ async function verifyMessageBySegment(pubKey: cryptoFramework.PubKey, plainText:
   console.info('verify result: ' + res);
   return res;
 }
-
 
 async function rsaSignatureBySegment() {
   let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
@@ -87,13 +88,11 @@ async function rsaSignatureBySegment() {
     console.error('verify result: failed.');
   }
 }
-rsa_pkcs1_segment_signature_asynchronous.ets
 
 同步方法示例：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
-
 
 function signMessageBySegment(priKey: cryptoFramework.PriKey, plainText: Uint8Array) {
   let signAlg = 'RSA1024|PKCS1|SHA256';
@@ -110,7 +109,6 @@ function signMessageBySegment(priKey: cryptoFramework.PriKey, plainText: Uint8Ar
   let signData = signer.signSync(null);
   return signData;
 }
-
 
 function verifyMessageBySegment(pubKey: cryptoFramework.PubKey, plainText: Uint8Array,
   signMessageBlob: cryptoFramework.DataBlob) {
@@ -129,7 +127,6 @@ function verifyMessageBySegment(pubKey: cryptoFramework.PubKey, plainText: Uint8
   console.info('verify result: ' + res);
   return res;
 }
-
 
 function rsaSignatureBySegment() {
   let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
@@ -152,6 +149,131 @@ function rsaSignatureBySegment() {
     console.error('verify result: failed.');
   }
 }
-rsa_pkcs1_segment_signature_synchronous.ets
-使用RSA密钥对（PKCS1模式）签名恢复(C/C++)
-使用RSA密钥对分段签名验签 (PKCS1模式)(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+async function signMessageBySegment(priKey: cryptoFramework.PriKey, plainText: Uint8Array) {
+  let signAlg = 'RSA1024|PKCS1|SHA256';
+  let signer = cryptoFramework.createSign(signAlg);
+  await signer.init(priKey);
+  let textSplitLen = 64; // 自定义的数据拆分长度，此处取64
+  for (let i = 0; i < plainText.length; i += textSplitLen) {
+    let updateMessage = plainText.subarray(i, i + textSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 分段update
+    await signer.update(updateMessageBlob);
+  }
+  // 已通过分段传入所有明文，故此处sign传入null
+  let signData = await signer.sign(null);
+  return signData;
+}
+
+async function verifyMessageBySegment(pubKey: cryptoFramework.PubKey, plainText: Uint8Array,
+  signMessageBlob: cryptoFramework.DataBlob) {
+  let verifyAlg = 'RSA1024|PKCS1|SHA256';
+  let verifier = cryptoFramework.createVerify(verifyAlg);
+  await verifier.init(pubKey);
+  let textSplitLen = 64; // 自定义的数据拆分长度，此处取64
+  for (let i = 0; i < plainText.length; i += textSplitLen) {
+    let updateMessage = plainText.subarray(i, i + textSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 分段update
+    await verifier.update(updateMessageBlob);
+  }
+  // 已通过分段传入所有明文，故此处verify第一个参数传入null
+  let res = await verifier.verify(null, signMessageBlob);
+  console.info('verify result: ' + res);
+  return res;
+}
+
+async function rsaSignatureBySegment() {
+  let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!';
+  let keyGenAlg = 'RSA1024';
+  let generator = cryptoFramework.createAsyKeyGenerator(keyGenAlg);
+  let keyPair = await generator.generateKeyPair();
+  let messageData = new Uint8Array(buffer.from(message, 'utf-8').buffer);
+  let signData = await signMessageBySegment(keyPair.priKey, messageData);
+  let verifyResult = await verifyMessageBySegment(keyPair.pubKey, messageData, signData);
+  if (verifyResult === true) {
+    console.info('verify result: success.');
+  } else {
+    console.error('verify result: failed.');
+  }
+}
+```
+
+### Code block 2
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+function signMessageBySegment(priKey: cryptoFramework.PriKey, plainText: Uint8Array) {
+  let signAlg = 'RSA1024|PKCS1|SHA256';
+  let signer = cryptoFramework.createSign(signAlg);
+  signer.initSync(priKey);
+  let textSplitLen = 64; // 自定义的数据拆分长度，此处取64
+  for (let i = 0; i < plainText.length; i += textSplitLen) {
+    let updateMessage = plainText.subarray(i, i + textSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 分段update
+    signer.updateSync(updateMessageBlob);
+  }
+  // 已通过分段传入所有明文，故此处sign传入null
+  let signData = signer.signSync(null);
+  return signData;
+}
+
+function verifyMessageBySegment(pubKey: cryptoFramework.PubKey, plainText: Uint8Array,
+  signMessageBlob: cryptoFramework.DataBlob) {
+  let verifyAlg = 'RSA1024|PKCS1|SHA256';
+  let verifier = cryptoFramework.createVerify(verifyAlg);
+  verifier.initSync(pubKey);
+  let textSplitLen = 64; // 自定义的数据拆分长度，此处取64
+  for (let i = 0; i < plainText.length; i += textSplitLen) {
+    let updateMessage = plainText.subarray(i, i + textSplitLen);
+    let updateMessageBlob: cryptoFramework.DataBlob = { data: updateMessage };
+    // 分段update
+    verifier.updateSync(updateMessageBlob);
+  }
+  // 已通过分段传入所有明文，故此处verify第一个参数传入null
+  let res = verifier.verifySync(null, signMessageBlob);
+  console.info('verify result: ' + res);
+  return res;
+}
+
+function rsaSignatureBySegment() {
+  let message = 'This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!' +
+    'This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!';
+  let keyGenAlg = 'RSA1024';
+  let generator = cryptoFramework.createAsyKeyGenerator(keyGenAlg);
+  let keyPair = generator.generateKeyPairSync();
+  let messageData = new Uint8Array(buffer.from(message, 'utf-8').buffer);
+  let signData = signMessageBySegment(keyPair.priKey, messageData);
+  let verifyResult = verifyMessageBySegment(keyPair.pubKey, messageData, signData);
+  if (verifyResult === true) {
+    console.info('verify result: success.');
+  } else {
+    console.error('verify result: failed.');
+  }
+}
+```

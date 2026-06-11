@@ -2,9 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/event-subscription-overview_
 
+事件介绍
+
+HiAppEvent能够订阅应用事件和系统事件。
+
+[h2]应用事件
+
 应用事件由开发者自行定义，例如点击按钮。应用事件的事件参数对象params包含的字段来源于应用，由开发者通过打点接口write自定义配置。具体字段含义根据开发者需求确定。
 
-系统事件
+[h2]系统事件
 
 系统事件是指应用运行期间发生的性能、功耗、稳定性等问题。系统事件的事件参数对象params包含的字段来源于系统服务，已由系统服务定义。此外，系统事件中的崩溃事件和应用冻屏事件还支持开发者通过setEventParam接口向事件参数对象params中添加自定义参数。
 
@@ -51,6 +57,3 @@ HiAppEvent通过addWatcher接口提供系统事件的订阅功能，支持三种
 方式三：实现onReceive()回调，当监听的事件发生后实时触发回调。
 
 ArkTS接口事件订阅参考hiAppEvent.addWatcher；C/C++接口事件订阅只支持方式一和方式三，参考事件订阅。
-
-使用HiAppEvent订阅事件
-事件订阅（ArkTS）

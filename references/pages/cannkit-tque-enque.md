@@ -2,10 +2,24 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-tque-enque_
 
+功能说明
+
+将Tensor push到队列。
+
+函数原型
+
+无需指定源和目的位置
+
+template <typename T>
+__aicore__ inline bool EnQue(const LocalTensor<T>& tensor)
+
+需要指定源和目的位置
+
 通过TQueBind绑定VECIN和VECOUT可实现VECIN和VECOUT内存复用，如下接口用于存在Vector计算的场景下实现复用，在入队时需要指定源和目的位置，不存在Vector计算的场景下可直接调用bool EnQue(LocalTensor<T>& tensor)入队接口。
 
 template <TPosition srcUserPos, TPosition dstUserPos, typename T>
 __aicore__ inline bool EnQue(const LocalTensor<T>& tensor)
+
 参数说明
 
 表1 bool EnQue(LocalTensor<T>& tensor)原型定义参数说明
@@ -39,6 +53,7 @@ true：表示Tensor加入Queue成功。
 false：表示Queue已满，入队失败。
 
 调用示例
+
 // 接口: EnQue Tensor
 AscendC::TPipe pipe;
 AscendC::TQue<AscendC::TPosition::VECOUT, 4> que;
@@ -56,5 +71,41 @@ int len = 1024;
 pipe.InitBuffer(que, num, len);
 AscendC::LocalTensor<half> tensor1 = que.AllocTensor<half>();
 que.EnQue<AscendC::TPosition::GM, AscendC::TPosition::VECIN, half>(tensor1);// 将tensor加入VECIN的Queue中，实现内存复用
-FreeTensor
-DeQue
+
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T>
+__aicore__ inline bool EnQue(const LocalTensor<T>& tensor)
+```
+
+### Code block 2
+
+```
+template <TPosition srcUserPos, TPosition dstUserPos, typename T>
+__aicore__ inline bool EnQue(const LocalTensor<T>& tensor)
+```
+
+### Code block 3
+
+```
+// 接口: EnQue Tensor
+AscendC::TPipe pipe;
+AscendC::TQue<AscendC::TPosition::VECOUT, 4> que;
+int num = 4;
+int len = 1024;
+pipe.InitBuffer(que, num, len);
+AscendC::LocalTensor<half> tensor1 = que.AllocTensor<half>();
+que.EnQue(tensor1);// 将tensor加入VECOUT的Queue中
+// 接口：EnQue指定特定的src/dst position，加入相应的队列
+// template <TPosition srcUserPos, TPosition dstUserPos> bool EnQue(LocalTensor<T>& tensor)
+AscendC::TPipe pipe;
+AscendC::TQueBind<AscendC::TPosition::VECIN, AscendC::TPosition::VECOUT, 1> que;
+int num = 4;
+int len = 1024;
+pipe.InitBuffer(que, num, len);
+AscendC::LocalTensor<half> tensor1 = que.AllocTensor<half>();
+que.EnQue<AscendC::TPosition::GM, AscendC::TPosition::VECIN, half>(tensor1);// 将tensor加入VECIN的Queue中，实现内存复用
+```

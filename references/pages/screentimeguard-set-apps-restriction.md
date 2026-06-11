@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-set-apps-restriction_
 
+场景介绍
+
 当用户希望限制用户访问某些特定应用时，可以调用限制应用访问的接口。根据参数中传入的token以及限制类型（允许/禁用），可以限制用户对禁用名单中应用的访问，或只允许用户访问允许清单中的应用。
 
 业务流程
@@ -18,6 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 接口名	描述
 setAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	根据传入的应用token数组和限制类型（禁用/允许清单），确定是否限制对应应用的访问。
+
 说明
 
 定义释义：
@@ -60,5 +63,28 @@ private async restrictApps(appInfo: guardService.AppInfo): Promise<void> {
          `setAppsRestriction fail, errCode is ${err.code}, errMessage is ${err.message}`);
    }
 }
-概述
-解除应用访问限制
+
+## Code blocks
+
+### Code block 1
+
+```
+import { guardService } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+private async restrictApps(appInfo: guardService.AppInfo): Promise<void> {
+   try {
+      await guardService.setAppsRestriction(appInfo, guardService.RestrictionType.BLOCKLIST_TYPE);
+      // ...
+   } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, 'GuardService',
+         `setAppsRestriction fail, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```

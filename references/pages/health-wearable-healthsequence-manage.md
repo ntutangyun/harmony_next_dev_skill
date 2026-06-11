@@ -2,7 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-wearable-healthsequence-manage_
 
+场景介绍
+
+读取最新一条健康记录。
+
+约束与限制
+
+从5.1.1(19) Release版本开始支持。
+
+接口说明
+
+接口名	描述
 readData<T extends HealthSequence>(request: HealthSequenceReadRequest): Promise<T[]>	查询最新一条健康记录。
+
 说明
 
 当前HealthSequenceReadRequest里的时间参数暂不生效，仅支持返回手表侧最新一条数据。
@@ -50,5 +62,43 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
 }
-读取锻炼记录
-实时三环数据
+
+## Code blocks
+
+### Code block 1
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+let healthSequenceReadRequest: healthStore.HealthSequenceReadRequest = {
+  healthSequenceDataType: healthStore.healthSequenceHelper.sleepRecord.DATA_TYPE,
+  startTime: 1695740400000,
+  endTime: 1695769200000,
+  readOptions: {
+    withDetails: true
+  }
+}
+```
+
+### Code block 3
+
+```
+try {
+  const healthSequences = await healthStore.readData(healthSequenceReadRequest);
+  hilog.info(0x0000, 'testTag', 'Succeeded in reading data.');
+  healthSequences.forEach((healthSequence) => {
+    hilog.info(0x0000, 'testTag', `the start time is ${healthSequence.startTime}.`);
+    hilog.info(0x0000, 'testTag', `the end time is ${healthSequence.endTime}.`);
+    Object.keys(healthSequence.summaries).forEach((key) => {
+      hilog.info(0x0000, 'testTag', `the summaries of ${key} is ${healthSequence.summaries[key]}.`);
+    });
+  });
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to read data. Code: ${err.code}, message: ${err.message}`);
+}
+```

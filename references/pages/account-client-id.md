@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-client-id_
 
+获取Client ID和APP ID
+
 在 AppGallery Connect（简称AGC）的开发与服务中，选择对应的项目和对应的应用，在“常规 > 应用 ”下，找到应用的Client ID和APP ID。
 
 确认是否需要配置Client ID
@@ -33,5 +35,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
     }
   ]
  }
-配置签名和指纹
-登录
+
+## Code blocks
+
+### Code block 1
+
+```
+"module": {
+  "name": "<name>",
+  "type": "entry",
+  "description": "<description>",
+  "mainElement": "<mainElement>",
+  "deviceTypes": [],
+  "pages": "<pages>",
+  "abilities": [],
+  "metadata": [ // 配置信息如下
+    {
+      "name": "client_id",
+      "value": "xxxxx" // 将上一步获取到的Client ID赋值给value，请注意不要使用其他方式设置value值
+    }
+  ]
+ }
+```

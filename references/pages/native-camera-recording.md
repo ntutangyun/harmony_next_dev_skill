@@ -24,7 +24,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-ca
 #include "iostream"
 #include "mutex"
 
-
 #include "hilog/log.h"
 #include "ohcamera/camera.h"
 #include "ohcamera/camera_input.h"
@@ -36,7 +35,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-ca
 #include "ohcamera/camera_manager.h"
 #include <window_manager/oh_display_info.h>
 #include <window_manager/oh_display_manager.h>
-
 
 namespace OHOS_CAMERA_SAMPLE {
 class NDKCamera {
@@ -54,7 +52,6 @@ class NDKCamera {
     // ...
 };
 } // namespace OHOS_CAMERA_SAMPLE
-camera_manager.h
 
 在CMake脚本中链接相关动态库。
 
@@ -94,7 +91,6 @@ Camera_ErrorCode NDKCamera::CreateVideoOutput(char *videoId)
     VideoOutputRegisterCallback();
     return ret_;
 }
-camera_manager.cpp
 
 开始录像。
 
@@ -111,7 +107,6 @@ Camera_ErrorCode NDKCamera::VideoOutputStart(void)
     }
     return ret;
 }
-camera_manager.cpp
 
 停止录像。
 
@@ -127,7 +122,7 @@ Camera_ErrorCode NDKCamera::VideoOutputStop(void)
     }
     return ret_;
 }
-camera_manager.cpp
+
 状态监听
 
 在相机应用开发过程中，可以随时监听录像输出流状态，包括录像开始、录像结束、录像流输出的错误。
@@ -138,7 +133,6 @@ void VideoOutputOnFrameStart(Camera_VideoOutput *videoOutput)
 {
     OH_LOG_INFO(LOG_APP, "VideoOutputOnFrameStart");
 }
-camera_manager.cpp
 
 通过注册固定的frameEnd回调函数获取监听录像结束结果，videoOutput创建成功时即可监听，录像完成最后一帧时触发，有该事件返回结果则认为录像流已结束。
 
@@ -146,7 +140,6 @@ void VideoOutputOnFrameEnd(Camera_VideoOutput *videoOutput, int32_t frameCount)
 {
     OH_LOG_INFO(LOG_APP, "VideoOutput frameCount = %{public}d", frameCount);
 }
-camera_manager.cpp
 
 通过注册固定的error回调函数获取监听录像输出错误结果，callback返回录像输出接口使用错误时对应的错误码，错误码类型参见Camera_ErrorCode。
 
@@ -154,7 +147,7 @@ void VideoOutputOnError(Camera_VideoOutput *videoOutput, Camera_ErrorCode errorC
 {
     OH_LOG_INFO(LOG_APP, "VideoOutput errorCode = %{public}d", errorCode);
 }
-camera_manager.cpp
+
 VideoOutput_Callbacks *NDKCamera::GetVideoOutputListener(void)
 {
     static VideoOutput_Callbacks videoOutputListener = {
@@ -165,6 +158,165 @@ VideoOutput_Callbacks *NDKCamera::GetVideoOutputListener(void)
     return &videoOutputListener;
 }
 
+Camera_ErrorCode NDKCamera::VideoOutputRegisterCallback(void)
+{
+    ret_ = OH_VideoOutput_RegisterCallback(videoOutput_, GetVideoOutputListener());
+    if (ret_ != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_VideoOutput_RegisterCallback failed.");
+    }
+    return ret_;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+#include <cstdint>
+#include <native_buffer/buffer_common.h>
+#include <unistd.h>
+#include <string>
+#include <thread>
+#include <cstdio>
+#include <fcntl.h>
+#include <map>
+#include <string>
+#include <vector>
+#include <native_buffer/native_buffer.h>
+#include "iostream"
+#include "mutex"
+
+#include "hilog/log.h"
+#include "ohcamera/camera.h"
+#include "ohcamera/camera_input.h"
+#include "ohcamera/capture_session.h"
+#include "ohcamera/photo_output.h"
+#include "ohcamera/preview_output.h"
+#include "ohcamera/video_output.h"
+#include "napi/native_api.h"
+#include "ohcamera/camera_manager.h"
+#include <window_manager/oh_display_info.h>
+#include <window_manager/oh_display_manager.h>
+
+namespace OHOS_CAMERA_SAMPLE {
+class NDKCamera {
+  public:
+    struct CameraBuildingConfig {
+        char *str;
+        uint32_t focusMode;
+        uint32_t cameraDeviceIndex;
+        bool isVideo;
+        bool isHdr;
+        char *videoId;
+    };
+    ~NDKCamera();
+    explicit NDKCamera(CameraBuildingConfig config);
+    // ...
+};
+} // namespace OHOS_CAMERA_SAMPLE
+```
+
+### Code block 2
+
+```
+target_link_libraries(entry PUBLIC
+    libace_napi.z.so
+    libohcamera.so
+    libhilog_ndk.z.so
+)
+```
+
+### Code block 3
+
+```
+Camera_ErrorCode NDKCamera::CreateVideoOutput(char *videoId)
+{
+    if (videoProfile_ == nullptr) {
+        OH_LOG_ERROR(LOG_APP, "Get videoProfiles failed.");
+        return CAMERA_INVALID_ARGUMENT;
+    }
+    ret_ = OH_CameraManager_CreateVideoOutput(cameraManager_, videoProfile_, videoId, &videoOutput_);
+    OH_LOG_ERROR(LOG_APP, " create video width: %{public}d, height: %{public}d, format: %{public}d",
+        videoProfile_->size.width, videoProfile_->size.height, videoProfile_->format);
+    if (videoId == nullptr || videoOutput_ == nullptr || ret_ != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "CreateVideoOutput failed.");
+        return CAMERA_INVALID_ARGUMENT;
+    }
+    VideoOutputRegisterCallback();
+    return ret_;
+}
+```
+
+### Code block 4
+
+```
+Camera_ErrorCode NDKCamera::VideoOutputStart(void)
+{
+    OH_LOG_INFO(LOG_APP, "VideoOutputStart begin.");
+    Camera_ErrorCode ret = OH_VideoOutput_Start(videoOutput_);
+    if (ret == CAMERA_OK) {
+        OH_LOG_INFO(LOG_APP, "OH_VideoOutput_Start success.");
+    } else {
+        OH_LOG_ERROR(LOG_APP, "OH_VideoOutput_Start failed. %d ", ret);
+    }
+    return ret;
+}
+```
+
+### Code block 5
+
+```
+Camera_ErrorCode NDKCamera::VideoOutputStop(void)
+{
+    OH_LOG_ERROR(LOG_APP, "enter VideoOutputStop.");
+    ret_ = OH_VideoOutput_Stop(videoOutput_);
+    if (ret_ != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "VideoOutputStop failed.");
+        return CAMERA_INVALID_ARGUMENT;
+    }
+    return ret_;
+}
+```
+
+### Code block 6
+
+```
+void VideoOutputOnFrameStart(Camera_VideoOutput *videoOutput)
+{
+    OH_LOG_INFO(LOG_APP, "VideoOutputOnFrameStart");
+}
+```
+
+### Code block 7
+
+```
+void VideoOutputOnFrameEnd(Camera_VideoOutput *videoOutput, int32_t frameCount)
+{
+    OH_LOG_INFO(LOG_APP, "VideoOutput frameCount = %{public}d", frameCount);
+}
+```
+
+### Code block 8
+
+```
+void VideoOutputOnError(Camera_VideoOutput *videoOutput, Camera_ErrorCode errorCode)
+{
+    OH_LOG_INFO(LOG_APP, "VideoOutput errorCode = %{public}d", errorCode);
+}
+```
+
+### Code block 9
+
+```
+VideoOutput_Callbacks *NDKCamera::GetVideoOutputListener(void)
+{
+    static VideoOutput_Callbacks videoOutputListener = {
+        .onFrameStart = VideoOutputOnFrameStart,
+        .onFrameEnd = VideoOutputOnFrameEnd,
+        .onError = VideoOutputOnError
+    };
+    return &videoOutputListener;
+}
 
 Camera_ErrorCode NDKCamera::VideoOutputRegisterCallback(void)
 {
@@ -174,6 +326,4 @@ Camera_ErrorCode NDKCamera::VideoOutputRegisterCallback(void)
     }
     return ret_;
 }
-camera_manager.cpp
-分段式拍照(C/C++)
-录像实践(C/C++)
+```

@@ -43,6 +43,3 @@ AscendC API所在头文件目录为：
 基础API：${DDK_INSTALL_PATH}/tools/tools_ascendc/include/tikcpp/tikcfw/kernel_operator.h。
 
 高阶API：${DDK_INSTALL_PATH}/tools/tools_ascendc/include/tikcpp/tikcfw/lib，其中${DDK_INSTALL_PATH}表示DDK软件安装目录。（目录头文件中包含的接口如果未在资料中声明，属于间接调用接口，开发者无需关注）
-
-编程API
-基础API

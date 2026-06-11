@@ -30,26 +30,9 @@ scopes	允许共享的范围，详见scopes标签说明。	对象数组	否
 scopes标签说明
 
 属性名称	含义	数据类型	必填
-path	
+path	共享路径配置，当前仅支持el2目录，scopes中的path不可重复。支持的取值如下： - /base/files - /base/preferences - /base/haps	string	scopes存在时必填
+permission	共享路径权限。支持的取值如下： - r：只读。 - r+w：读写。	string	scopes存在时必填
 
-共享路径配置，当前仅支持el2目录，scopes中的path不可重复。支持的取值如下：
-
-- /base/files
-
-- /base/preferences
-
-- /base/haps
-
-	string	scopes存在时必填
-permission	
-
-共享路径权限。支持的取值如下：
-
-- r：只读。
-
-- r+w：读写。
-
-	string	scopes存在时必填
 说明
 
 应用更新时如涉及配置变更，将依据新配置进行管控，已分享文件的临时权限不受影响。
@@ -66,5 +49,32 @@ share_files.json示例：
     ]
   }
 }
-应用文件分享
-应用数据备份恢复
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    // ...
+    "shareFiles": "$profile:share_files", // 资源配置，指向profile下面定义的配置文件share_files.json
+    // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "share_files": {
+    "scopes": [
+      {
+        "path": "/base/files",
+        "permission": "r+w"
+      }
+    ]
+  }
+}
+```

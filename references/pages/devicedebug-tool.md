@@ -13,7 +13,9 @@ devicedebug工具向开发者提供对调试应用发送信号的能力，目前
 命令	描述
 help/-h	帮助命令，显示devicedebug支持的命令信息。
 kill	终止进程命令，用来终止对应pid进程。
+
 帮助命令
+
 devicedebug help
 
 表2 help命令列表
@@ -25,7 +27,9 @@ devicedebug help	显示devicedebug支持的命令信息。
 
 # 显示帮助信息。
 devicedebug help
+
 终止进程命令
+
 devicedebug kill
 
 用于向debug类型的应用进程发送signal（1-64）信号，应用进程接收到信号后终止对应pid进程。
@@ -44,5 +48,31 @@ help/-h	帮助信息。
 
 # 以终止12111进程，signal信号9为例。
 devicedebug kill -9 12111
-媒体库资源访问工具
-rawheap-translator工具
+
+## Code blocks
+
+### Code block 1
+
+```
+devicedebug help
+```
+
+### Code block 2
+
+```
+# 显示帮助信息。
+devicedebug help
+```
+
+### Code block 3
+
+```
+devicedebug kill
+```
+
+### Code block 4
+
+```
+# 以终止12111进程，signal信号9为例。
+devicedebug kill -9 12111
+```

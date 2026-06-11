@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/liveview-update-by-push_
 
+场景介绍
+
 本地实况窗的更新依赖于应用进程的存活，为了让实况窗在生命周期内正常完成更新和结束，我们更推荐开发者使用Push Kit实时更新实况窗状态。
 
 通过Push Kit更新实况窗的流程如下图：
@@ -13,6 +15,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/liveview-
 当业务服务的用户订单状态发生变化时，通过Push Kit通道推送更新消息，更新/结束实况窗。
 
 详细开发流程请参见Push Kit推送实况窗消息。
-
-构建本地实况窗
-Live View Kit常见问题

@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ringtone-preparations_
 
+导入ringtone模块和相关公共模块。
+
+import { common } from '@kit.AbilityKit';
+import { ringtone } from '@kit.RingtoneKit'
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const APP_TAG = "Msc_Demo"
+const DOMAIN = 0x0001
+
+调用ringtone.getSupportedRingtoneTypes接口，查询支持设置的铃声类型。
+
 let ringtoneTypeList: Array<ringtone.RingtoneType> = ringtone.getSupportedRingtoneTypes();
 hilog.info(DOMAIN, APP_TAG,'getSupportedRingtoneTypes : ' + JSON.stringify(ringtoneTypeList));
 
@@ -39,5 +51,65 @@ ringtone.startRingtoneSetting(this.context, audioPath, fileName, (err, data) => 
 let maxDuration: number =
   ringtone.getSupportedMaxDuration(ringtone.RingtoneType.MESSAGE, uniformTypeDescriptor.UniformDataType.MP3)
 hilog.info(DOMAIN, APP_TAG,'getSupportedMaxDuration: ' + maxDuration);
-Ringtone Kit简介
-Scan Kit（统一扫码服务）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+import { ringtone } from '@kit.RingtoneKit'
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const APP_TAG = "Msc_Demo"
+const DOMAIN = 0x0001
+```
+
+### Code block 2
+
+```
+let ringtoneTypeList: Array<ringtone.RingtoneType> = ringtone.getSupportedRingtoneTypes();
+hilog.info(DOMAIN, APP_TAG,'getSupportedRingtoneTypes : ' + JSON.stringify(ringtoneTypeList));
+```
+
+### Code block 3
+
+```
+// 其中 ringtone.RingtoneType.NOTIFICATION 为通知铃声
+let dataTypeList: Array<uniformTypeDescriptor.UniformDataType> = ringtone.getSupportedDataTypes(ringtone.RingtoneType.NOTIFICATION);
+hilog.info(DOMAIN, APP_TAG,'getSupportedDataTypes: ' + JSON.stringify(dataTypeList));
+```
+
+### Code block 4
+
+```
+// 详细代码参考API参考
+let prefixUri: string = '';
+let audioPath: string = prefixUri + '/' + this.buttonText;
+let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
+await ringtone.startRingtoneSetting(this.context, audioPath, fileName).then(res => {
+  hilog.info(DOMAIN, APP_TAG,'setFlag :' + res);
+});
+```
+
+### Code block 5
+
+```
+// 详细代码参考API参考
+let prefixUri: string = '';
+let audioPath: string = prefixUri + '/' + this.buttonText;
+let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
+ringtone.startRingtoneSetting(this.context, audioPath, fileName, (err, data) => {
+  hilog.info(DOMAIN, APP_TAG,'setFlag :' + data);
+});
+```
+
+### Code block 6
+
+```
+// 其中 ringtone.RingtoneType.MESSAGE 为短信铃声
+let maxDuration: number =
+  ringtone.getSupportedMaxDuration(ringtone.RingtoneType.MESSAGE, uniformTypeDescriptor.UniformDataType.MP3)
+hilog.info(DOMAIN, APP_TAG,'getSupportedMaxDuration: ' + maxDuration);
+```

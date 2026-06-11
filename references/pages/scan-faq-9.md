@@ -2,7 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-9_
 
-参考ArkTS API错误码1000500001：如首次未调用customScan.init初始化，直接调用customScan.start启动扫码相机流，请参考自定义界面扫码的业务流程。
+问题现象
 
-自定义界面扫码预览画面出现拉伸
-自定义界面扫码如何连续扫码（customScan.rescan）
+自定义启动相机却显示黑屏现象。
+
+解决措施
+
+权限校验错误码：201，没有申请相机权限，向用户申请授权。
+
+参考ArkTS API错误码1000500001：如首次未调用customScan.init初始化，直接调用customScan.start启动扫码相机流，请参考自定义界面扫码的业务流程。

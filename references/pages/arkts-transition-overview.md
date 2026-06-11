@@ -17,6 +17,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-tra
 页面转场动画：页面的路由转场方式，可以通过在pageTransition函数中自定义页面入场和页面退场的转场动效。为了实现更好的转场效果，推荐使用导航转场和模态转场。
 
 导航转场：页面的路由转场方式，对应一个界面消失，另外一个界面出现的动画效果，如设置应用一级菜单切换到二级界面。
-
-转场动画
-出现/消失转场

@@ -1,18 +1,28 @@
-# @performance/hp
+# @performance/hp-arkui-set-cache-count-for-lazyforeach-grid
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_hp-arkui-set-cache-count-for-lazyforeach-grid_
 
-"@performance/hp-arkui-set-cache-count-for-lazyforeach-grid": "suggestion",
+建议在Grid下使用LazyForEach时设置合理的cacheCount。
+
+滑动丢帧场景下，建议优先修改。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@performance/hp-arkui-set-cache-count-for-lazyforeach-grid": "suggestion",
   }
 }
+
 选项
 
 该规则无需配置额外选项。
 
 正例
+
 // 源码文件，请以工程实际为准
 import { MyDataSource } from './MyDataSource';
-
 
 @Entry
 @Component
@@ -20,13 +30,11 @@ struct MyComponent {
   // 数据源
   private data: MyDataSource = new MyDataSource();
 
-
   aboutToAppear() {
     for (let i = 1; i < 1000; i++) {
       this.data.pushData(i);
     }
   }
-
 
   build() {
     Column({ space: 5 }) {
@@ -49,10 +57,11 @@ struct MyComponent {
     }
   }
 }
+
 反例
+
 // 源码文件，请以工程实际为准
 import { MyDataSource } from './MyDataSource';
-
 
 @Entry
 @Component
@@ -60,13 +69,11 @@ struct MyComponent {
   // 数据源
   private data: MyDataSource = new MyDataSource();
 
-
   aboutToAppear() {
     for (let i = 1; i < 1000; i++) {
       this.data.pushData(i);
     }
   }
-
 
   build() {
     Column({ space: 5 }) {
@@ -88,11 +95,111 @@ struct MyComponent {
     }
   }
 }
+
 规则集
+
 plugin:@performance/recommended
 plugin:@performance/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@performance/hp-arkui-remove-unchanged-state-var
-@performance/hp-arkui-suggest-cache-avplayer
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@performance/hp-arkui-set-cache-count-for-lazyforeach-grid": "suggestion",
+  }
+}
+```
+
+### Code block 2
+
+```
+// 源码文件，请以工程实际为准
+import { MyDataSource } from './MyDataSource';
+
+@Entry
+@Component
+struct MyComponent {
+  // 数据源
+  private data: MyDataSource = new MyDataSource();
+
+  aboutToAppear() {
+    for (let i = 1; i < 1000; i++) {
+      this.data.pushData(i);
+    }
+  }
+
+  build() {
+    Column({ space: 5 }) {
+      Grid() {
+        LazyForEach(this.data, (item: number) => {
+          GridItem() {
+            // 使用可复用自定义组件
+            // 业务逻辑
+          }
+        }, (item: string) => item.toString())
+      }
+      // 设置GridItem的缓存数量
+      .cachedCount(2)
+      .columnsTemplate('1fr 1fr 1fr')
+      .columnsGap(10)
+      .rowsGap(10)
+      .margin(10)
+      .height(500)
+      .backgroundColor(0xFAEEE0)
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+// 源码文件，请以工程实际为准
+import { MyDataSource } from './MyDataSource';
+
+@Entry
+@Component
+struct MyComponent {
+  // 数据源
+  private data: MyDataSource = new MyDataSource();
+
+  aboutToAppear() {
+    for (let i = 1; i < 1000; i++) {
+      this.data.pushData(i);
+    }
+  }
+
+  build() {
+    Column({ space: 5 }) {
+      Grid() {
+        LazyForEach(this.data, (item: number) => {
+          GridItem() {
+            // 使用可复用自定义组件
+            // 业务逻辑
+          }
+        }, (item: string) => item.toString())
+      }
+      // 未设置GridItem的缓存数量
+      .columnsTemplate('1fr 1fr 1fr')
+      .columnsGap(10)
+      .rowsGap(10)
+      .margin(10)
+      .height(500)
+      .backgroundColor(0xFAEEE0)
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+plugin:@performance/recommended
+plugin:@performance/all
+```

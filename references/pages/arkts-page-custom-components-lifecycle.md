@@ -44,7 +44,7 @@ aboutToDisappear：aboutToDisappear函数在自定义组件析构销毁之前执
 
 在删除组件之前，将调用其aboutToDisappear生命周期函数，标记着该节点将要被销毁。ArkUI的节点删除机制是：后端节点直接从组件树上摘下，后端节点被销毁，对前端节点解引用，前端节点已经没有引用时，将被Ark虚拟机垃圾回收。
 
-自定义组件和它的变量将被删除，如果组件有同步的变量（如@Link、@Prop、@StorageLink），将从同步源上取消注册。
+自定义组件和它的变量将被删除，如果组件有同步的变量（如@Link、@Prop、@StorageLink），将从状态数据源上取消注册。
 
 不建议在生命周期aboutToDisappear中使用async await。如果在此生命周期中使用异步操作（如 Promise 或回调方法），自定义组件将被保留在Promise的闭包中，直到回调方法执行完毕，这会阻止自定义组件的垃圾回收。
 
@@ -54,31 +54,26 @@ aboutToDisappear：aboutToDisappear函数在自定义组件析构销毁之前执
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 struct Parent {
   @State showChild: boolean = true;
   @State btnColor: string = '#FF007DFF';
 
-
   // 组件生命周期
   aboutToAppear() {
     hilog.info(0x0000, 'testTag', 'Parent aboutToAppear');
   }
-
 
   // 组件生命周期
   onDidBuild() {
     hilog.info(0x0000, 'testTag', 'Parent onDidBuild');
   }
 
-
   // 组件生命周期
   aboutToDisappear() {
     hilog.info(0x0000, 'testTag', 'Parent aboutToDisappear');
   }
-
 
   build() {
     Column() {
@@ -98,29 +93,24 @@ struct Parent {
   }
 }
 
-
 @Component
 struct Child {
   @State title: string = 'Hello World';
-
 
   // 组件生命周期
   aboutToDisappear() {
     hilog.info(0x0000, 'testTag', 'Child aboutToDisappear');
   }
 
-
   // 组件生命周期
   onDidBuild() {
     hilog.info(0x0000, 'testTag', 'Child onDidBuild');
   }
 
-
   // 组件生命周期
   aboutToAppear() {
     hilog.info(0x0000, 'testTag', 'Child aboutToAppear');
   }
-
 
   build() {
     Text(this.title)
@@ -131,11 +121,11 @@ struct Child {
       })
   }
 }
-Index.ets
 
 以上示例中，Index页面包含两个自定义组件，一个是Parent，一个是Child，Parent及其子组件Child分别声明了各自的自定义组件生命周期函数（aboutToAppear / onDidBuild / aboutToDisappear）。
 
 应用冷启动的初始化流程为：Parent aboutToAppear --> Parent build --> Parent onDidBuild --> Child aboutToAppear --> Child build --> Child onDidBuild。此处体现了自定义组件懒展开特性，即Parent执行完onDidBuild之后才会执行Child组件的aboutToAppear。日志输出信息如下：
+
 Parent aboutToAppear
 Parent onDidBuild
 Child aboutToAppear
@@ -164,5 +154,108 @@ Child onDidBuild
 
 当showChild为默认值true时，该示例的生命周期流程图如下所示：
 
-创建自定义组件
-自定义组件生命周期（推荐）
+## Code blocks
+
+### Code block 1
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Parent {
+  @State showChild: boolean = true;
+  @State btnColor: string = '#FF007DFF';
+
+  // 组件生命周期
+  aboutToAppear() {
+    hilog.info(0x0000, 'testTag', 'Parent aboutToAppear');
+  }
+
+  // 组件生命周期
+  onDidBuild() {
+    hilog.info(0x0000, 'testTag', 'Parent onDidBuild');
+  }
+
+  // 组件生命周期
+  aboutToDisappear() {
+    hilog.info(0x0000, 'testTag', 'Parent aboutToDisappear');
+  }
+
+  build() {
+    Column() {
+      // this.showChild为true，创建Child子组件，执行Child aboutToAppear和Child onDidBuild。
+      if (this.showChild) {
+        Child()
+      }
+      Button(this.showChild ? 'delete Child' : 'add Child')
+        .margin(20)
+        .backgroundColor(this.btnColor)
+        .onClick(() => {
+          // 更改this.showChild为false，删除Child子组件，执行Child aboutToDisappear。
+          // 更改this.showChild为true，添加Child子组件，执行Child aboutToAppear和Child onDidBuild。
+          this.showChild = !this.showChild;
+        })
+    }
+  }
+}
+
+@Component
+struct Child {
+  @State title: string = 'Hello World';
+
+  // 组件生命周期
+  aboutToDisappear() {
+    hilog.info(0x0000, 'testTag', 'Child aboutToDisappear');
+  }
+
+  // 组件生命周期
+  onDidBuild() {
+    hilog.info(0x0000, 'testTag', 'Child onDidBuild');
+  }
+
+  // 组件生命周期
+  aboutToAppear() {
+    hilog.info(0x0000, 'testTag', 'Child aboutToAppear');
+  }
+
+  build() {
+    Text(this.title)
+      .fontSize(50)
+      .margin(20)
+      .onClick(() => {
+        this.title = 'Hello ArkUI';
+      })
+  }
+}
+```
+
+### Code block 2
+
+```
+Parent aboutToAppear
+Parent onDidBuild
+Child aboutToAppear
+Child onDidBuild
+```
+
+### Code block 3
+
+```
+Parent aboutToDisappear
+Child aboutToDisappear
+```
+
+### Code block 4
+
+```
+Parent aboutToAppear
+Parent onDidBuild
+```
+
+### Code block 5
+
+```
+Child aboutToAppear
+Child onDidBuild
+```

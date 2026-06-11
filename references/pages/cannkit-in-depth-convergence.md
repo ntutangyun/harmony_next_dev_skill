@@ -3,6 +3,3 @@
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-in-depth-convergence_
 
 模型推理时结合硬件深度融合，减少对DDR的访问，提升能效比。目前仅支持编译前可变shape场景，调用HMS_HiAIOptions_SetTuningStrategy设置模型优化策略为"HIAI_TUNING_STRATEGY_ON_DEVICE_TUNING"。
-
-内存零拷贝
-App集成

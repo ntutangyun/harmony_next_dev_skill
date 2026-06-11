@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-faq-5_
 
+不需要，手写套件已经自带报点预测功能。

@@ -47,7 +47,6 @@ struct WidgetEventRouterCard {
             });
           })
 
-
           Button() {
             // $r('app.string.ButtonB_label')需要替换为开发者所需的资源文件
             Text($r('app.string.ButtonB_label'))
@@ -86,15 +85,12 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = 'EntryAbility';
 const DOMAIN_NUMBER: number = 0xFF00;
-
 
 export default class EntryAbility extends UIAbility {
   private selectPage: string = 'funA';
   private currentWindowStage: window.WindowStage | null = null;
-
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 获取router事件中传递的targetPage参数
@@ -106,7 +102,6 @@ export default class EntryAbility extends UIAbility {
       hilog.info(DOMAIN_NUMBER, TAG, `onCreate selectPage: ${this.selectPage}`);
     }
   }
-
 
   // 如果UIAbility已在后台运行，在收到Router事件后会触发onNewWant生命周期回调
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -121,7 +116,6 @@ export default class EntryAbility extends UIAbility {
       this.onWindowStageCreate(this.currentWindowStage);
     }
   }
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
@@ -175,13 +169,11 @@ struct FunA {
       .height(56)
       .justifyContent(FlexAlign.Start)
 
-
       // $r('app.media.pic_empty')需要替换为开发者所需的资源文件
       Image($r('app.media.pic_empty'))
         .width(120)
         .height(120)
         .margin({ top: 224 })
-
 
       // $r('app.string.NoContentAvailable')需要替换为开发者所需的资源文件
       Text($r('app.string.NoContentAvailable'))
@@ -200,6 +192,7 @@ struct FunA {
     .height('100%')
   }
 }
+
 // src/main/ets/funpages/FunB.ets
 @Entry
 @Component
@@ -223,13 +216,11 @@ struct FunB {
       .height(56)
       .justifyContent(FlexAlign.Start)
 
-
       // $r('app.media.pic_empty')需要替换为开发者所需的资源文件
       Image($r('app.media.pic_empty'))
         .width(120)
         .height(120)
         .margin({ top: 224 })
-
 
       // $r('app.string.NoContentAvailable')需要替换为开发者所需的资源文件
       Text($r('app.string.NoContentAvailable'))
@@ -284,7 +275,285 @@ struct FunB {
     }
   ]
 }
+
 运行效果
 
-ArkTS卡片页面交互概述
-卡片拉起应用UIAbility到后台（call事件）
+## Code blocks
+
+### Code block 1
+
+```
+// src/main/ets/widgeteventrouter/pages/WidgetEventRouterCard.ets
+@Entry
+@Component
+struct WidgetEventRouterCard {
+  build() {
+    Column() {
+      // $r('app.string.JumpLabel')需要替换为开发者所需的资源文件
+      Text($r('app.string.JumpLabel'))
+        .fontColor('#FFFFFF')
+        .opacity(0.9)
+        .fontSize(14)
+        .margin({ top: '8%', left: '10%' })
+      Row() {
+        Column() {
+          Button() {
+            // $r('app.string.ButtonA_label')需要替换为开发者所需的资源文件
+            Text($r('app.string.ButtonA_label'))
+              .fontColor('#45A6F4')
+              .fontSize(12)
+          }
+          .width(120)
+          .height(32)
+          .margin({ top: '20%' })
+          .backgroundColor('#FFFFFF')
+          .borderRadius(16)
+          .onClick(() => {
+            postCardAction(this, {
+              action: 'router',
+              abilityName: 'EntryAbility',
+              params: { targetPage: 'funA' }
+            });
+          })
+
+          Button() {
+            // $r('app.string.ButtonB_label')需要替换为开发者所需的资源文件
+            Text($r('app.string.ButtonB_label'))
+              .fontColor('#45A6F4')
+              .fontSize(12)
+          }
+          .width(120)
+          .height(32)
+          .margin({ top: '8%', bottom: '15vp' })
+          .backgroundColor('#FFFFFF')
+          .borderRadius(16)
+          .onClick(() => {
+            postCardAction(this, {
+              action: 'router',
+              abilityName: 'EntryAbility',
+              params: { targetPage: 'funB' }
+            });
+          })
+        }
+      }.width('100%').height('80%')
+      .justifyContent(FlexAlign.Center)
+    }
+    .width('100%')
+    .height('100%')
+    .alignItems(HorizontalAlign.Start)
+    // $r('app.media.CardEvent')需要替换为开发者所需的资源文件
+    .backgroundImage($r('app.media.CardEvent'))
+    .backgroundImageSize(ImageSize.Cover)
+  }
+}
+```
+
+### Code block 2
+
+```
+// src/main/ets/entryability/EntryAbility.ts
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = 'EntryAbility';
+const DOMAIN_NUMBER: number = 0xFF00;
+
+export default class EntryAbility extends UIAbility {
+  private selectPage: string = 'funA';
+  private currentWindowStage: window.WindowStage | null = null;
+
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // 获取router事件中传递的targetPage参数
+    hilog.info(DOMAIN_NUMBER, TAG, `Ability onCreate, ${JSON.stringify(want)}`);
+    if (want?.parameters?.params) {
+      // want.parameters.params 对应 postCardAction() 中 params 内容
+      let params: Record<string, Object> = JSON.parse(want.parameters.params as string);
+      this.selectPage = params.targetPage as string;
+      hilog.info(DOMAIN_NUMBER, TAG, `onCreate selectPage: ${this.selectPage}`);
+    }
+  }
+
+  // 如果UIAbility已在后台运行，在收到Router事件后会触发onNewWant生命周期回调
+  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    hilog.info(DOMAIN_NUMBER, TAG, `onNewWant Want: ${JSON.stringify(want)}`);
+    if (want?.parameters?.params) {
+      // want.parameters.params 对应 postCardAction() 中 params 内容
+      let params: Record<string, Object> = JSON.parse(want.parameters.params as string);
+      this.selectPage = params.targetPage as string;
+      hilog.info(DOMAIN_NUMBER, TAG, `onNewWant selectPage: ${this.selectPage}`);
+    }
+    if (this.currentWindowStage !== null) {
+      this.onWindowStageCreate(this.currentWindowStage);
+    }
+  }
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    // Main window is created, set main page for this ability
+    let targetPage: string;
+    // 根据传递的targetPage不同，选择拉起不同的页面
+    switch (this.selectPage) {
+      case 'funA':
+        targetPage = 'funpages/FunA';
+        break;
+      case 'funB':
+        targetPage = 'funpages/FunB';
+        break;
+      default:
+        targetPage = 'pages/Index';
+    }
+    if (this.currentWindowStage === null) {
+      this.currentWindowStage = windowStage;
+    }
+    windowStage.loadContent(targetPage, (err, data) => {
+      if (err.code) {
+        hilog.error(DOMAIN_NUMBER, TAG, 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
+        return;
+      }
+      hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
+    });
+  }
+}
+```
+
+### Code block 3
+
+```
+// src/main/ets/funpages/FunA.ets
+@Entry
+@Component
+struct FunA {
+  build() {
+    Column() {
+      Row() {
+        // $r('app.string.ButtonA_label')需要替换为开发者所需的资源文件
+        Text(($r('app.string.ButtonA_label')))
+          .fontSize(24)
+          .fontWeight(FontWeight.Bold)
+          .textAlign(TextAlign.Start)
+          .margin({
+            top: 12,
+            bottom: 11,
+            right: 24,
+            left: 24
+          })
+      }
+      .width('100%')
+      .height(56)
+      .justifyContent(FlexAlign.Start)
+
+      // $r('app.media.pic_empty')需要替换为开发者所需的资源文件
+      Image($r('app.media.pic_empty'))
+        .width(120)
+        .height(120)
+        .margin({ top: 224 })
+
+      // $r('app.string.NoContentAvailable')需要替换为开发者所需的资源文件
+      Text($r('app.string.NoContentAvailable'))
+        .fontSize(14)
+        // $r('app.color.text_color')需要替换为开发者所需的资源文件
+        .fontColor($r('app.color.text_color'))
+        .opacity(0.4)
+        .margin({
+          top: 8,
+          bottom: 317,
+          right: 152,
+          left: 152
+        })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 4
+
+```
+// src/main/ets/funpages/FunB.ets
+@Entry
+@Component
+struct FunB {
+  build() {
+    Column() {
+      Row() {
+        // $r('app.string.ButtonB_label')需要替换为开发者所需的资源文件
+        Text(($r('app.string.ButtonB_label')))
+          .fontSize(24)
+          .fontWeight(FontWeight.Bold)
+          .textAlign(TextAlign.Start)
+          .margin({
+            top: 12,
+            bottom: 11,
+            right: 24,
+            left: 24
+          })
+      }
+      .width('100%')
+      .height(56)
+      .justifyContent(FlexAlign.Start)
+
+      // $r('app.media.pic_empty')需要替换为开发者所需的资源文件
+      Image($r('app.media.pic_empty'))
+        .width(120)
+        .height(120)
+        .margin({ top: 224 })
+
+      // $r('app.string.NoContentAvailable')需要替换为开发者所需的资源文件
+      Text($r('app.string.NoContentAvailable'))
+        .fontSize(14)
+        // $r('app.color.text_color')需要替换为开发者所需的资源文件
+        .fontColor($r('app.color.text_color'))
+        .opacity(0.4)
+        .margin({
+          top: 8,
+          bottom: 317,
+          right: 152,
+          left: 152
+        })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 5
+
+```
+// src/main/resources/base/profile/main_pages.json
+{
+    "src": [
+      "pages/Index",
+      "funpages/FunA",
+      "funpages/FunB"
+    ]
+}
+```
+
+### Code block 6
+
+```
+// src/main/resources/zh_CN/element/string.json
+{
+  "string": [
+    // ...
+    {
+      "name": "ButtonA_label",
+      "value": "FunA页面"
+    },
+    {
+      "name": "ButtonB_label",
+      "value": "FunB页面"
+    },
+    {
+      "name": "JumpLabel",
+      "value": "router事件跳转"
+    },
+    {
+      "name": "NoContentAvailable",
+      "value": "暂无内容"
+    }
+  ]
+}
+```

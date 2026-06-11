@@ -5,7 +5,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avcodec-s
 音视频的编解码能力以及文件格式封装和解封装能力的支持情况，在不同平台存在能力和规格的差异。开发者可以通过获取支持的编解码能力来获取实际的支持情况和规格情况。
 
 媒体编解码
-视频解码
+
+[h2]视频解码
 
 当前支持的解码能力如下：
 
@@ -38,7 +39,7 @@ VVC(H.266)	OH_AVCODEC_MIMETYPE_VIDEO_VVC
 
 具体开发指导请参考视频解码。
 
-视频编码
+[h2]视频编码
 
 当前支持的编码能力如下：
 
@@ -54,7 +55,7 @@ AVC(H.264)	OH_AVCODEC_MIMETYPE_VIDEO_AVC
 
 具体开发指导请参考视频编码。
 
-音频解码
+[h2]音频解码
 
 当前支持的解码能力：
 
@@ -83,7 +84,7 @@ opus	OH_AVCODEC_MIMETYPE_AUDIO_OPUS
 
 具体开发指导请参考音频解码。
 
-音频编码
+[h2]音频编码
 
 当前支持的编码能力：
 
@@ -102,101 +103,24 @@ opus	OH_AVCODEC_MIMETYPE_AUDIO_OPUS
 具体开发指导请参考音频编码。
 
 媒体数据封装与解析
-媒体数据解析
+
+[h2]媒体数据解析
 
 支持的解封装格式如下：
 
 媒体格式	封装格式	轨道格式
-音视频	mp4	
-
-视频轨：AVC(H.264)、HEVC(H.265)、VVC(H.266)、MPEG4
-
-音频轨：AAC、MPEG(MP3)、Audio Vivid、ALAC22+
-
-字幕轨：WEBVTT
-
-辅助轨：AUXL（音频RAW信息、视频深度信息等。）
-
-timed metadata轨：有时间属性的描述信息，如帧级的维测信息、传感器信息等。
-
-
-音视频	fmp4	
-
-视频轨：AVC(H.264)、HEVC(H.265)
-
-音频轨：AAC、MPEG(MP3)、Audio Vivid
-
-
-音视频	mkv	
-
-视频轨：AVC(H.264)、HEVC(H.265)、MSVIDEO122+
-
-音频轨：AAC、MPEG(MP3)、OPUS、ADPCM_YAMAHA22+、ADPCM_G72222+、ALAC22+
-
-
-音视频	mpeg-ts	
-
-视频轨：AVC(H.264)、HEVC(H.265)、MPEG2、MPEG4
-
-音频轨：AAC、MPEG(MP3)、Audio Vivid
-
-
-音视频	flv	
-
-视频轨：AVC(H.264)、HEVC(H.265)
-
-音频轨：AAC
-
-
-音视频	mpeg-ps	
-
-视频轨：AVC(H.264)、MPEG2
-
-音频轨：MPEG(MP2、MP3)、DTS23+
-
-
-音视频	avi	
-
-视频轨：H.263、AVC(H.264)、MPEG2、MPEG4、MJPEG22+、MSVIDEO122+
-
-音频轨：AAC、MPEG(MP2、MP3)、PCM、GSM_MS22+、ADPCM_YAMAHA22+、ADPCM_G72222+、DVAUDIO23+、DTS23+
-
-
-音视频	3gp22+	
-
-视频轨：H.263、AVC(H.264)、MPEG4
-
-音频轨：AAC、AMR(amrnb、amrwb)
-
-
-音视频	3g222+	
-
-视频轨：H.263、AVC(H.264)、MPEG4
-
-音频轨：AAC、AMR(amrnb、amrwb)
-
-
-音视频	m4v22+	
-
-视频轨：AVC(H.264)、HEVC(H.265)、MPEG4
-
-音频轨：AAC、ALAC、AC3
-
-
-音视频	wmv22+	
-
-视频轨：AVC(H.264)、WMV3
-
-音频轨：WMAV1、WMAV2、WMAPRO
-
-
-音视频	rm23+、rmvb23+	
-
-视频轨：RV30、RV40
-
-音频轨：AAC、AC3、COOK
-
-
+音视频	mp4	视频轨：AVC(H.264)、HEVC(H.265)、VVC(H.266)、MPEG4 音频轨：AAC、MPEG(MP3)、Audio Vivid、ALAC22+ 字幕轨：WEBVTT 辅助轨：AUXL（音频RAW信息、视频深度信息等。） timed metadata轨：有时间属性的描述信息，如帧级的维测信息、传感器信息等。
+音视频	fmp4	视频轨：AVC(H.264)、HEVC(H.265) 音频轨：AAC、MPEG(MP3)、Audio Vivid
+音视频	mkv	视频轨：AVC(H.264)、HEVC(H.265)、MSVIDEO122+ 音频轨：AAC、MPEG(MP3)、OPUS、ADPCM_YAMAHA22+、ADPCM_G72222+、ALAC22+
+音视频	mpeg-ts	视频轨：AVC(H.264)、HEVC(H.265)、MPEG2、MPEG4 音频轨：AAC、MPEG(MP3)、Audio Vivid
+音视频	flv	视频轨：AVC(H.264)、HEVC(H.265) 音频轨：AAC
+音视频	mpeg-ps	视频轨：AVC(H.264)、MPEG2 音频轨：MPEG(MP2、MP3)、DTS23+
+音视频	avi	视频轨：H.263、AVC(H.264)、MPEG2、MPEG4、MJPEG22+、MSVIDEO122+ 音频轨：AAC、MPEG(MP2、MP3)、PCM、GSM_MS22+、ADPCM_YAMAHA22+、ADPCM_G72222+、DVAUDIO23+、DTS23+
+音视频	3gp22+	视频轨：H.263、AVC(H.264)、MPEG4 音频轨：AAC、AMR(amrnb、amrwb)
+音视频	3g222+	视频轨：H.263、AVC(H.264)、MPEG4 音频轨：AAC、AMR(amrnb、amrwb)
+音视频	m4v22+	视频轨：AVC(H.264)、HEVC(H.265)、MPEG4 音频轨：AAC、ALAC、AC3
+音视频	wmv22+	视频轨：AVC(H.264)、WMV3 音频轨：WMAV1、WMAV2、WMAPRO
+音视频	rm23+、rmvb23+	视频轨：RV30、RV40 音频轨：AAC、AC3、COOK
 音频	m4a	音频轨：AAC、Audio Vivid、ALAC22+
 音频	aac	音频轨：AAC
 音频	mp3	音频轨：MPEG(MP3)
@@ -215,22 +139,25 @@ DRM解密能力支持的解封装格式：mp4(H.264，H.265，AAC)、mpeg-ts(H.2
 
 具体开发指导请参考媒体数据解析。
 
-媒体数据封装
+[h2]媒体数据封装
 
 当前支持的封装能力如下：
 
 封装格式	视频编解码类型	音频编解码类型	封面类型
-mp4	AVC（H.264）、HEVC（H.265）	AAC、MPEG（MP3）	jpeg、png、bmp
-m4a	-	AAC	jpeg、png、bmp
-mp3	-	MPEG（MP3）	-
+mp4	AVC（H.264）、HEVC（H.265）	AAC、MPEG（MP3）	jpg、png、bmp
+m4a	-	AAC	jpg、png、bmp
+mp3	-	MPEG（MP3）	jpg
 amr	-	AMR(amrnb、amrwb)	-
 wav	-	G711mu(pcm-mulaw) 、raw(pcm)	-
 aac	-	AAC	-
-flac	-	Flac	jpeg、png、bmp
+flac	-	Flac	jpg、png、bmp
 ogg23+	-	Vorbis、OPUS	-
+
 说明
-封装格式为mp4，音频编解码类型为MPEG（MP3）时采样率需大于等于16000Hz。
-封装格式为mp4/m4a，音频编解码类型为AAC时声道数范围为1~7。
+
+封装格式为mp4时，音频编解码类型为MPEG（MP3）时采样率需大于等于16000Hz。
+
+封装格式为mp4/m4a时，音频编解码类型为AAC时声道数范围为[1, 7]。
 
 文件级数据已定义的key如下所示：
 
@@ -241,30 +168,31 @@ OH_MD_KEY_ENABLE_MOOV_FRONT	媒体文件moov元数据是否前置标志，值类
 OH_MD_KEY_LATITUDE	纬度的键，值类型为float，范围为[-90.0, 90.0]。表示地理位置信息中的纬度（从API version 24开始支持）。
 OH_MD_KEY_LONGITUDE	经度的键，值类型为float，范围为[-180.0, 180.0]。表示地理位置信息中的经度（从API version 24开始支持）。
 OH_MD_KEY_ALTITUDE	海拔的键，值类型为float，该键是可选的。表示地理位置信息中的海拔（从API version 24开始支持）。
+
 说明
 
-用户自定义的key必须以"com.openharmony."为开头。值类型可以为int32_t、float、string，从API20开始增加支持uint8_t*。
+封装格式为mp4时，用户自定义的key必须以"com.openharmony."为开头。值类型可以为int32_t、float、string，从API version 20开始增加支持uint8_t*。
 
 配置选项key值说明：
 
 mp4封装格式：
 
-key	描述	aac	mp3	H.264	H.265	jpg	png	bmp
-OH_MD_KEY_AUD_SAMPLE_RATE	采样率	必须	必须	-	-	-	-	-
-OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须	必须	-	-	-	-	-
-OH_MD_KEY_AUDIO_SAMPLE_FORMAT	输出音频流格式	可选	可选	-	-	-	-	-
-OH_MD_KEY_CHANNEL_LAYOUT	通道布局	可选	可选	-	-	-	-	-
-OH_MD_KEY_PROFILE	编码档次	可选	-	-	-	-	-	-
-OH_MD_KEY_BITRATE	码率	可选	可选	可选	可选	-	-	-
-OH_MD_KEY_CODEC_CONFIG	编解码器特定数据	可选	-	可选	可选	-	-	-
-OH_MD_KEY_WIDTH	宽度	-	-	必须	必须	必须	必须	必须
-OH_MD_KEY_HEIGHT	高度	-	-	必须	必须	必须	必须	必须
-OH_MD_KEY_FRAME_RATE	视频流帧率	-	-	可选	可选	-	-	-
-OH_MD_KEY_COLOR_PRIMARIES	视频色域	-	-	可选	可选	-	-	-
-OH_MD_KEY_TRANSFER_CHARACTERISTICS	视频传递函数	-	-	可选	可选	-	-	-
-OH_MD_KEY_MATRIX_COEFFICIENTS	视频矩阵系数	-	-	可选	可选	-	-	-
-OH_MD_KEY_RANGE_FLAG	值域标志	-	-	可选	可选	-	-	-
-OH_MD_KEY_VIDEO_IS_HDR_VIVID	视频轨是否为HDR VIVID	-	-	-	可选	-	-	-
+key	描述	aac	mp3	H.264	H.265	封面类型（jpg、png、bmp）
+OH_MD_KEY_AUD_SAMPLE_RATE	采样率	必须	必须	-	-	-
+OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须	必须	-	-	-
+OH_MD_KEY_AUDIO_SAMPLE_FORMAT	输出音频流格式	可选	可选	-	-	-
+OH_MD_KEY_CHANNEL_LAYOUT	通道布局	可选	可选	-	-	-
+OH_MD_KEY_PROFILE	编码档次	可选	-	-	-	-
+OH_MD_KEY_BITRATE	码率	可选	可选	可选	可选	-
+OH_MD_KEY_CODEC_CONFIG	编解码器特定数据	可选	-	可选	可选	-
+OH_MD_KEY_WIDTH	宽度	-	-	必须	必须	必须
+OH_MD_KEY_HEIGHT	高度	-	-	必须	必须	必须
+OH_MD_KEY_FRAME_RATE	视频流帧率	-	-	可选	可选	-
+OH_MD_KEY_COLOR_PRIMARIES	视频色域	-	-	可选	可选	-
+OH_MD_KEY_TRANSFER_CHARACTERISTICS	视频传递函数	-	-	可选	可选	-
+OH_MD_KEY_MATRIX_COEFFICIENTS	视频矩阵系数	-	-	可选	可选	-
+OH_MD_KEY_RANGE_FLAG	值域标志	-	-	可选	可选	-
+OH_MD_KEY_VIDEO_IS_HDR_VIVID	视频轨是否为HDR VIVID	-	-	-	可选	-
 
 mp4封装辅助轨格式：
 
@@ -291,16 +219,16 @@ OH_MD_KEY_VIDEO_IS_HDR_VIVID	视频轨是否为HDR VIVID	-	-	-	可选
 
 m4a封装格式：
 
-key	描述	aac	jpg	png	bmp
-OH_MD_KEY_AUD_SAMPLE_RATE	采样率	必须	-	-	-
-OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须	-	-	-
-OH_MD_KEY_AUDIO_SAMPLE_FORMAT	输出音频流格式	可选	-	-	-
-OH_MD_KEY_CHANNEL_LAYOUT	通道布局	可选	-	-	-
-OH_MD_KEY_PROFILE	编码档次	可选	-	-	-
-OH_MD_KEY_BITRATE	码率	可选	-	-	-
-OH_MD_KEY_CODEC_CONFIG	编解码器特定数据	可选	-	-	-
-OH_MD_KEY_WIDTH	宽度	-	必须	必须	必须
-OH_MD_KEY_HEIGHT	高度	-	必须	必须	必须
+key	描述	aac	封面类型（jpg、png、bmp）
+OH_MD_KEY_AUD_SAMPLE_RATE	采样率	必须	-
+OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须	-
+OH_MD_KEY_AUDIO_SAMPLE_FORMAT	输出音频流格式	可选	-
+OH_MD_KEY_CHANNEL_LAYOUT	通道布局	可选	-
+OH_MD_KEY_PROFILE	编码档次	可选	-
+OH_MD_KEY_BITRATE	码率	可选	-
+OH_MD_KEY_CODEC_CONFIG	编解码器特定数据	可选	-
+OH_MD_KEY_WIDTH	宽度	-	必须
+OH_MD_KEY_HEIGHT	高度	-	必须
 
 amr封装格式：
 
@@ -313,7 +241,7 @@ OH_MD_KEY_BITRATE	码率	可选	可选
 
 mp3封装格式：
 
-key	描述	mp3	jpg
+key	描述	mp3	封面类型（jpg）
 OH_MD_KEY_AUD_SAMPLE_RATE	采样率	必须	-
 OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须	-
 OH_MD_KEY_AUDIO_SAMPLE_FORMAT	输出音频流格式	可选	-
@@ -344,13 +272,15 @@ OH_MD_KEY_AAC_IS_ADTS	是否为ADTS格式	必须
 
 flac封装格式：
 
-key	描述	flac
-OH_MD_KEY_AUD_SAMPLE_RATE	采样率	必须
-OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须
-OH_MD_KEY_AUDIO_SAMPLE_FORMAT	输出音频流格式	必须
-OH_MD_KEY_CHANNEL_LAYOUT	通道布局	可选
-OH_MD_KEY_BITRATE	码率	可选
-OH_MD_KEY_CODEC_CONFIG	编解码器特定数据	可选
+key	描述	flac	封面类型（jpg、png、bmp）
+OH_MD_KEY_AUD_SAMPLE_RATE	采样率	必须	-
+OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须	-
+OH_MD_KEY_AUDIO_SAMPLE_FORMAT	输出音频流格式	必须	-
+OH_MD_KEY_CHANNEL_LAYOUT	通道布局	可选	-
+OH_MD_KEY_BITRATE	码率	可选	-
+OH_MD_KEY_CODEC_CONFIG	编解码器特定数据	可选	-
+OH_MD_KEY_WIDTH	宽度	-	必须
+OH_MD_KEY_HEIGHT	高度	-	必须
 
 ogg封装格式（从API version 23开始支持）：
 
@@ -360,6 +290,3 @@ OH_MD_KEY_AUD_CHANNEL_COUNT	声道数	必须	必须
 OH_MD_KEY_CODEC_CONFIG	编解码器特定数据	必须	必须
 
 具体开发指导请参考媒体数据封装。
-
-AVCodec Kit简介
-音视频编解码

@@ -29,19 +29,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wro
 {bundleName}	字符串	com.example.helloworld	应用的bundleName。
 {moduleName}	字符串	entry	当前模块的moduleName。
 {thisInstanceId}	正数	100000	被通知UI实例的ID。
-{status}	实例被通知的状态	focus	
-
-可选值为:
-
-- focus：获焦
-
-- unfocus：失焦
-
-- foreground：前台
-
-- background：后台
-
-- destroy：销毁
+{status}	实例被通知的状态	focus	可选值为: - focus：获焦 - unfocus：失焦 - foreground：前台 - background：后台 - destroy：销毁
 
 可使用如下正则表达式匹配相关日志：
 
@@ -70,20 +58,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wro
 某些实例相关接口的报错信息会包含对应实例的信息，仅有缓存列表中的实例会输出详细信息。缓存列表仅保存被销毁的实例的信息。
 
 说明
+
 当前缓存列表大小为10，采用LRU（最近最少使用）机制进行淘汰。
-缓存命中
+
+[h2]缓存命中
 
 异常实例命中缓存时，详细信息的输出格式如下：
 
 DestroyedUIContextCacheInfo: instanceInfo: [instanceId:<instanceId_>, createTime:<createTime_>, destroyTime:<destroyTime_>], windowInfo: [windowId: <windowId_>, windowName: <windowName_>]
 
-缓存未命中
+[h2]缓存未命中
 
 当请求的实例在缓存中不存在（从未被缓存、或已因超出缓存大小被移除）时，详细信息的输出格式如下：
 
 InstanceId not found in destroyed cache.
 
-完整消息示例
+[h2]完整消息示例
 
 被缓存的已销毁的实例详细信息按照如下格式进行输出，包括实例ID、创建时间、销毁时间、窗口ID、窗口名称字段：
 
@@ -96,10 +86,15 @@ DestroyedUIContextCacheInfo: instanceInfo: [instanceId:100001, createTime:2026-0
 消息中各字段含义如下：
 
 instanceId:100001：表示请求的是100001号实例。
+
 Reason to get the instance: The instance is determined by the caller：表示由调用方显式指定了实例ID。
+
 createTime:2026-04-14 10:30:00.123：表示该实例创建时间为2026-04-14 10:30。
+
 destroyTime:2026-04-14 10:35:22.456：表示该实例销毁时间为2026-04-14 10:35，存活了约5分22秒。
+
 windowId: 1001：表示该实例关联窗口ID为1001。
+
 windowName: EntryAbility：表示该实例关联窗口名为EntryAbility。
 
 表2 完整消息字段含义说明
@@ -121,6 +116,7 @@ No specific instance was specified, return the foreground instance.	未显式指
 No specific instance was specified, return the only remaining instance.	未显式指定实例ID，系统返回唯一的实例（仅存在一个UI实例时）。
 No specific instance was specified, using default.	未显式指定实例ID，使用默认实例（最后创建的实例）。
 No valid instance exists.	不存在有效的UI实例。
+
 解决UIContext错误导致的显示异常问题
 
 问题现象
@@ -128,6 +124,7 @@ No valid instance exists.	不存在有效的UI实例。
 当发生以下问题时，可根据上文的关键日志或异常进行判断：
 
 使用setStyledString方法设置字体大小时，字体大小未发生预期变化。
+
 使用UIContext成员方法时，界面没有响应或显示异常。
 
 解决措施
@@ -135,6 +132,5 @@ No valid instance exists.	不存在有效的UI实例。
 重新获取有效的UIContext对象。可通过以下方式获取：
 
 使用自定义组件的getUIContext方法获取。
+
 通过窗口的getUIContext方法获取。
-UI显示异常调试
-UI预览

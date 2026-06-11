@@ -2,13 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-uicontext-component-snapshot_
 
+能力介绍
+
 组件截图是将应用内一个组件节点树的渲染结果生成位图（PixelMap）的能力，支持两种方式：一种是对已挂树显示的组件进行截图，另一种是对通过Builder或ComponentContent实现的离线组件进行截图。
 
 说明
 
 组件截图依赖UI上下文，需要在具备明确上下文的环境中调用，因此请优先使用UIContext的getComponentSnapshot接口返回的ComponentSnapshot对象的接口，不建议直接使用从@kit.ArkUI导入的componentSnapshot接口。
 
-对挂树组件截图
+[h2]对挂树组件截图
 
 对已明确挂树的组件进行截图，可通过get或getSync实现，传入组件标识（需提前通过.id通用属性配置）以指定组件根节点。系统在通过指定的ID查找待截图组件时，仅遍历已挂树的组件，不对cache或离屏组件进行查找。系统以首个查找到的结果为准，故应用需确保组件标识ID的唯一性。
 
@@ -20,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-uic
 
 尽量避免在使用截图时触发待截图组件的刷新，防止对截图内容的干扰。
 
-对离线组件截图
+[h2]对离线组件截图
 
 离线组件是指通过Builder或ComponentContent封装的、尚未挂载到树上的组件，可以使用createFromBuilder来实现。从API version 18开始，也可以使用createFromComponent实现离线组件截图。
 
@@ -30,7 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-uic
 
 以下通过几个典型场景来说明组件截图能力的常见使用方式。
 
-截取长内容（滚动截图）
+[h2]截取长内容（滚动截图）
 
 较长内容通常使用滚动类容器组件实现。截图时，仅能捕获容器内可见内容，超出边界部分无法截取。若使用LazyForEach或Repeat，超出显示范围内容亦不会被系统构建及截取。
 
@@ -50,7 +52,6 @@ export struct ScrollSnapshot {
   private curYOffset: number = 0;
   // 每次滚动距离
   private scrollHeight: number = 0;
-
 
   // ...
   build() {
@@ -81,7 +82,6 @@ export struct ScrollSnapshot {
     }
   }
 }
-ScrollSnapshot.ets
 
 步骤2：循环滚动截图并缓存
 
@@ -102,7 +102,6 @@ async scrollSnapAndMerge() {
         this.listComponentHeight)
     this.areaArray.push(area);
 
-
     // 判断是否滚动到底以及用户是否已经强制停止
     if (!this.scroller.isAtEnd() && !this.isClickStop) {
       // 如果没有到底或被停止，则播放一个滚动动效，延迟一段时间后，继续递归截图
@@ -120,7 +119,7 @@ async scrollSnapAndMerge() {
     Logger.error(TAG, `scrollSnapAndMerge err, errCode: ${error.code}, error message: ${error.message}`);
   }
 }
-ScrollSnapshot.ets
+
 // src/main/ets/common/CommonUtils.ets
 static scrollAnimation(scroller: Scroller, duration: number, scrollHeight: number): void {
   scroller.scrollTo({
@@ -133,7 +132,6 @@ static scrollAnimation(scroller: Scroller, duration: number, scrollHeight: numbe
     }
   });
 }
-CommonUtils.ets
 
 步骤3：拼接长截图
 
@@ -152,7 +150,6 @@ static async mergeImage(areaArray: image.PositionArea[], lastOffsetY: number, li
   };
   let longPixelMap = image.createPixelMapSync(opts);
   let imgPosition: number = 0;
-
 
   for (let i = 0; i < areaArray.length; i++) {
     let readArea = areaArray[i];
@@ -179,7 +176,6 @@ static async mergeImage(areaArray: image.PositionArea[], lastOffsetY: number, li
   }
   return longPixelMap;
 }
-ImageUtils.ets
 
 步骤4：保存截图
 
@@ -195,7 +191,7 @@ SaveButton({
   .onClick((event, result) => {
     this.saveSnapshot(result);
   })
-SnapshotPreview.ets
+
 async saveSnapshot(result: SaveButtonOnClickResult): Promise<void> {
   try {
     if (result === SaveButtonOnClickResult.SUCCESS) {
@@ -226,7 +222,6 @@ async saveSnapshot(result: SaveButtonOnClickResult): Promise<void> {
     Logger.error(TAG, `saveSnapshot err, errCode: ${error.code}, error message: ${error.message}`);
   }
 }
-SnapshotPreview.ets
 
 步骤5：保存完成后释放位图
 
@@ -244,24 +239,21 @@ closeSnapPopup(): void {
     PopupUtils.calcPopupCenter(this.screenWidth, this.screenHeight, this.snapPopupWidth, this.snapPopupHeight);
   this.isLargePreview = false;
 }
-SnapshotPreview.ets
-封装全局截图接口
+
+[h2]封装全局截图接口
 
 如前文所述，截图接口必须在UI上下文明确的位置使用。然而，应用有时希望对不同模块封装统一的全局截图方法。例如，在下述示例中，awardBuilder构建的组件是固定结构的。GlobalStaticSnapshot提供了一个getAwardSnapshot全局方法，能够满足不同模块的需求，对同一固定模式的组件进行截图，从而实现全局截图接口的封装。本示例从API version 18开始支持。
 
 import { image } from '@kit.ImageKit';
 import { ComponentContent } from '@kit.ArkUI';
 
-
 export class Params {
   public text: string | undefined | null = '';
-
 
   constructor(text: string | undefined | null) {
     this.text = text;
   }
 }
-
 
 @Builder
 function awardBuilder(params: Params) {
@@ -274,7 +266,6 @@ function awardBuilder(params: Params) {
       .height('100%')
   }.backgroundColor('#FFF0F0F0')
 }
-
 
 export class GlobalStaticSnapshot {
   /**
@@ -294,14 +285,14 @@ export class GlobalStaticSnapshot {
     return resultPixmap;
   }
 }
-GlobalScreenshot.ets
 
 完整示例：
 
 完整示例请参考长截图。
 
 组件截图最佳实践
-合理控制截图时机
+
+[h2]合理控制截图时机
 
 在实现截图功能时，需注意组件的渲染过程非一次性完成。系统在构建与显示组件时，将经过测量、布局、提交指令等多个复杂步骤，最终在一次硬件刷新时呈现于屏幕上。因此，在特定情况下，若在组件刷新后立即调用截图，可能无法获取预期内容或出现截图失败报错。
 
@@ -328,19 +319,277 @@ GlobalScreenshot.ets
 应用可通过以下几种方式进行优化：
 
 自行提前解析图片为PixelMap格式，将PixelMap配置给图片组件；建议优先以此方法进行优化。
+
 配置所使用的图片组件的syncLoad属性为true来强制同步加载，这样组件被构建时，即可确保资源可以直接被提交；
+
 通过指定延迟时长以及checkImageStatus设置为true，尝试截图，当返回160001错误后，重新加大时长进行截图；
-及时保存和释放位图对象
+
+[h2]及时保存和释放位图对象
 
 为了及时释放资源，当截图接口返回的PixelMap对象不再使用时，应将其赋值为空。
 
-合理控制采样精度
+[h2]合理控制采样精度
 
 请不要截取过大尺寸的图片，截图不建议超过屏幕尺寸大小。当要截取的图片目标长宽超过底层限制时，截图会返回失败，不同设备的底层限制并不相同。可以通过控制SnapshotOptions中的scale参数，减小采样精度，这可以在很大程度上节省内存，并大幅度提高截图的效率。
 
-使用其他能力对自渲染场景实现截图
+[h2]使用其他能力对自渲染场景实现截图
 
 尽管截图只需传入一个组件根节点即可实现对其下所有组件进行截图，但当子组件中存在Video、XComponent或Web组件时，这并不是推荐的截图方式。建议直接使用image.createPixelMapFromSurface接口来实现。
 
-使用UI上下文接口操作界面（UIContext）
-感知组件可见性
+## Code blocks
+
+### Code block 1
+
+```
+// src/main/ets/view/ScrollSnapshot.ets
+@Component
+export struct ScrollSnapshot {
+  private scroller: Scroller = new Scroller();
+  private listComponentWidth: number = 0; // 组件宽度，默认值为0
+  private listComponentHeight: number = 0; // 组件高度，默认值为0
+  // list组件的当前偏移量
+  private curYOffset: number = 0;
+  // 每次滚动距离
+  private scrollHeight: number = 0;
+
+  // ...
+  build() {
+    // ...
+        Stack() {
+          // ...
+          // 1.1 绑定滚动控制器，并通过`.id`配置组件唯一标识。
+          List({ space: 12, scroller: this.scroller }) {
+              LazyForEach(this.dataSource, (item: number) => {
+              ListItem() {
+                NewsItem({ index: item })
+              }
+            }, (item: number) => item.toString())
+          }
+          // ...
+          .id(LIST_ID)
+          // 1.2 通过回调获取滚动偏移量。
+          .onDidScroll(() => {
+            this.curYOffset = this.scroller.currentOffset().yOffset;
+          })
+          .onAreaChange((oldValue, newValue) => {
+            // 1.3 获取组件的宽高。
+            this.listComponentWidth = newValue.width as number;
+            this.listComponentHeight = newValue.height as number;
+            this.scrollHeight = this.listComponentHeight;
+          })
+          // ...
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+/**
+ * 递归滚动截图，直到滚动到底，最后合并所有截图
+ */
+async scrollSnapAndMerge() {
+  try {
+    // 记录滚动偏移
+    this.scrollYOffsets.push(this.curYOffset - this.yOffsetBefore);
+    // 调用组件截图接口，获取list组件的截图
+    const pixelMap = await this.getUIContext().getComponentSnapshot().get(LIST_ID);
+    // 获取位图像素字节，并保存在数组中
+    let area: image.PositionArea =
+      await ImageUtils.getSnapshotArea(pixelMap, this.scrollYOffsets, this.listComponentWidth,
+        this.listComponentHeight)
+    this.areaArray.push(area);
+
+    // 判断是否滚动到底以及用户是否已经强制停止
+    if (!this.scroller.isAtEnd() && !this.isClickStop) {
+      // 如果没有到底或被停止，则播放一个滚动动效，延迟一段时间后，继续递归截图
+      CommonUtils.scrollAnimation(this.scroller, 1000, this.scrollHeight);
+      await CommonUtils.sleep(1500);
+      await this.scrollSnapAndMerge();
+    } else {
+      // 当滚动到底时，调用`mergeImage`将所有保存的位图数据进行拼接，返回长截图位图对象
+      this.mergedImage =
+        await ImageUtils.mergeImage(this.areaArray, this.scrollYOffsets[this.scrollYOffsets.length - 1],
+          this.listComponentWidth, this.listComponentHeight);
+    }
+  } catch (err) {
+    let error = err as BusinessError;
+    Logger.error(TAG, `scrollSnapAndMerge err, errCode: ${error.code}, error message: ${error.message}`);
+  }
+}
+```
+
+### Code block 3
+
+```
+// src/main/ets/common/CommonUtils.ets
+static scrollAnimation(scroller: Scroller, duration: number, scrollHeight: number): void {
+  scroller.scrollTo({
+    xOffset: 0,
+    yOffset: (scroller.currentOffset().yOffset + scrollHeight),
+    animation: {
+      duration: duration,
+      curve: Curve.Smooth,
+      canOverScroll: false
+    }
+  });
+}
+```
+
+### Code block 4
+
+```
+static async mergeImage(areaArray: image.PositionArea[], lastOffsetY: number, listWidth: number,
+  listHeight: number): Promise<PixelMap> {
+  // 创建一个长截图位图对象
+  let opts: image.InitializationOptions = {
+    editable: true,
+    pixelFormat: 4,
+    size: {
+      width: uiContext?.vp2px(listWidth) || 0,
+      height: uiContext?.vp2px(lastOffsetY + listHeight) || 0
+    }
+  };
+  let longPixelMap = image.createPixelMapSync(opts);
+  let imgPosition: number = 0;
+
+  for (let i = 0; i < areaArray.length; i++) {
+    let readArea = areaArray[i];
+    let area: image.PositionArea = {
+      pixels: readArea.pixels,
+      offset: 0,
+      stride: readArea.stride,
+      region: {
+        size: {
+          width: readArea.region.size.width,
+          height: readArea.region.size.height
+        },
+        x: 0,
+        y: imgPosition
+      }
+    }
+    imgPosition += readArea.region.size.height;
+    try {
+      longPixelMap.writePixelsSync(area);
+    } catch (err) {
+      let error = err as BusinessError;
+      Logger.error(TAG, `writePixelsSync err, code: ${error.code}, message: ${error.message}`);
+    }
+  }
+  return longPixelMap;
+}
+```
+
+### Code block 5
+
+```
+// src/main/ets/view/SnapshotPreview.ets
+SaveButton({
+  icon: SaveIconStyle.FULL_FILLED,
+  text: SaveDescription.SAVE_IMAGE,
+  buttonType: ButtonType.Capsule
+})
+  // ···
+  .onClick((event, result) => {
+    this.saveSnapshot(result);
+  })
+```
+
+### Code block 6
+
+```
+async saveSnapshot(result: SaveButtonOnClickResult): Promise<void> {
+  try {
+    if (result === SaveButtonOnClickResult.SUCCESS) {
+      const helper = photoAccessHelper.getPhotoAccessHelper(this.context);
+      const uri = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'png');
+      const file = await fileIo.open(uri, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+      const imagePackerApi: image.ImagePacker = image.createImagePacker();
+      const packOpts: image.PackingOption = {
+        format: 'image/png',
+        quality: 100,
+      };
+      imagePackerApi.packToData(this.mergedImage, packOpts).then((data) => {
+        fileIo.writeSync(file.fd, data);
+        fileIo.closeSync(file.fd);
+        Logger.info(TAG, `Succeeded in packToFile`);
+        this.getUIContext().getPromptAction().showToast({
+          // 请将$r('app.string.save_album_success')替换为实际资源文件，在本示例中该资源文件的value值为"Saved to album"
+          message: $r('app.string.save_album_success'),
+          duration: 1800
+        })
+      }).catch((error: BusinessError) => {
+        Logger.error(TAG, `Failed to packToFile. Error code is ${error.code}, message is ${error.message}`);
+      });
+    }
+    // ...
+  } catch (err) {
+    let error = err as BusinessError;
+    Logger.error(TAG, `saveSnapshot err, errCode: ${error.code}, error message: ${error.message}`);
+  }
+}
+```
+
+### Code block 7
+
+```
+closeSnapPopup(): void {
+  // 关闭弹窗
+  this.isShowPreview = false;
+  // 释放位图对象
+  this.mergedImage = undefined;
+  // 重置相关参数
+  this.snapPopupWidth = 100;
+  this.snapPopupHeight = 200;
+  this.snapPopupPosition =
+    PopupUtils.calcPopupCenter(this.screenWidth, this.screenHeight, this.snapPopupWidth, this.snapPopupHeight);
+  this.isLargePreview = false;
+}
+```
+
+### Code block 8
+
+```
+import { image } from '@kit.ImageKit';
+import { ComponentContent } from '@kit.ArkUI';
+
+export class Params {
+  public text: string | undefined | null = '';
+
+  constructor(text: string | undefined | null) {
+    this.text = text;
+  }
+}
+
+@Builder
+function awardBuilder(params: Params) {
+  Column() {
+    Text(params.text)
+      .fontSize(90)
+      .fontWeight(FontWeight.Bold)
+      .margin({ bottom: 36 })
+      .width('100%')
+      .height('100%')
+  }.backgroundColor('#FFF0F0F0')
+}
+
+export class GlobalStaticSnapshot {
+  /**
+   * 一个可以获取固定对象截图的静态方法
+   */
+  static async getAwardSnapshot(uiContext: UIContext, textParam: Params): Promise<image.PixelMap | undefined> {
+    let resultPixmap: image.PixelMap | undefined = undefined
+    let contentNode = new ComponentContent(uiContext, wrapBuilder(awardBuilder), textParam);
+    await uiContext.getComponentSnapshot()
+      .createFromComponent(contentNode, 320, true, { scale: 1, waitUntilRenderFinished: true })
+      .then((pixmap: image.PixelMap) => {
+        resultPixmap = pixmap;
+      })
+      .catch((err: Error) => {
+        console.error(`error: ${err}`);
+      })
+    return resultPixmap;
+  }
+}
+```

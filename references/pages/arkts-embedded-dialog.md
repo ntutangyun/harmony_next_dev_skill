@@ -15,6 +15,7 @@ ArkUI的弹出框默认设置为全局级别，弹窗节点作为页面根节点
 页面级弹出框的使用方式是在当前弹出框的入参之中新增了相关属性能力，使用前可以通过弹出框概述了解基础的弹出框使用方法。
 
 设置参数
+
 说明
 
 详细变量定义请参考完整示例。
@@ -34,7 +35,9 @@ this.getUIContext().getPromptAction().openCustomDialog({
 如果希望弹出框显示在某个指定页面内，需通过第二个参数levelUniqueId来实现。此参数接收页面内的节点id，设置后，弹出框显示时会自动查询此id对应的节点所在的Navigation页面，并将其挂载在子页面的NavDestination节点下。
 
 说明
+
 当levelMode参数设置为LevelMode.EMBEDDED，但是levelUniqueId传入的ID无法正确找到节点时，页面级能力不生效。如果levelUniqueId所映射的节点存在但向上遍历不存在NavDestination节点则会将弹出框节点挂载在Page节点下。
+
 levelUniqueId必须传入FrameNode的uniqueId，建议使用FrameNode的getUniqueId方法获取uniqueId。
 
 如下代码示例所示，Text节点为指定页面的节点，设置自定义id后，通过getFrameNodeById方法获取该节点，再通过getUniqueId获取节点的内部id，并将其作为levelUniqueId的值传入。
@@ -74,7 +77,7 @@ Text(this.message).id('test_text')
         customDialogId = dialogId;
       });
   })
-PageLevelDialogBox.ets
+
 交互说明
 
 页面内弹出框在部分交互逻辑上依然遵循部分弹出框指定的交互策略：
@@ -89,9 +92,7 @@ PageLevelDialogBox.ets
 
 import { LevelMode, ImmersiveMode } from '@kit.ArkUI';
 
-
 let customDialogId: number = 0;
-
 
 @Builder
 function customDialogBuilder(uiContext: UIContext) {
@@ -110,19 +111,16 @@ function customDialogBuilder(uiContext: UIContext) {
   }.padding(20)
 }
 
-
 @Entry
 @Component
 export struct PageLevelDialogBox {
   @State message: string = 'Hello World';
   private uiContext: UIContext = this.getUIContext();
 
-
   @Builder
   customDialogComponent() {
     customDialogBuilder(this.uiContext);
   }
-
 
   build() {
     NavDestination() {
@@ -152,12 +150,12 @@ export struct PageLevelDialogBox {
     }
   }
 }
+
 // Next.ets
 @Entry
 @Component
 struct Next {
   @State message: string = 'Back';
-
 
   build() {
     Row() {
@@ -174,14 +172,12 @@ struct Next {
     .height('100%')
   }
 }
-Next.ets
 
 下述示例为基于Navigation导航模式下的页面级弹出框。使用本示例前需要参考Navigation使用NavDestination作为导航页文档完成Index首页和router_map.json的创建与配置。并使用下述示例代码中的PageLevelDialogInNavigation和PageLevelDialogInNavigationTestTwo组件替换Navigation参考文档中的PageHome和PageOne组件。
 
 import { LevelMode, ImmersiveMode } from '@kit.ArkUI';
-     
-let customDialogId: number = 0;
 
+let customDialogId: number = 0;
 
 @Builder
 function customDialogBuilder(uiContext: UIContext, stack: NavPathStack | undefined) {
@@ -202,7 +198,6 @@ function customDialogBuilder(uiContext: UIContext, stack: NavPathStack | undefin
   }.padding(20)
 }
 
-
 @Component
 export struct PageLevelDialogInNavigation {
   @State info: string = '';
@@ -210,12 +205,10 @@ export struct PageLevelDialogInNavigation {
   private uiContext: UIContext = this.getUIContext();
   @State message: string = 'Hello World';
 
-
   @Builder
   customDialogComponent() {
     customDialogBuilder(this.uiContext, this.stack);
   }
-
 
   build() {
     NavDestination() {
@@ -249,12 +242,10 @@ export struct PageLevelDialogInNavigation {
   }
 }
 
-
 @Component
 export struct PageLevelDialogInNavigationTestTwo {
   @State message: string = 'Back';
   private stack: NavPathStack | undefined = undefined;
-
 
   build() {
     NavDestination() {
@@ -280,5 +271,249 @@ export struct PageLevelDialogInNavigationTestTwo {
   }
 }
 
-固定样式弹出框
-弹出框层级管理
+## Code blocks
+
+### Code block 1
+
+```
+this.getUIContext().getPromptAction().openCustomDialog({
+  builder: () => {
+    this.customDialogComponent();
+  },
+  levelMode: LevelMode.EMBEDDED, // 启用页面级弹出框
+  // ···
+})
+```
+
+### Code block 2
+
+```
+Text(this.message).id('test_text')
+  .onClick(() => {
+    const node: FrameNode | null = this.getUIContext().getFrameNodeById('test_text') || null;
+    this.getUIContext().getPromptAction().openCustomDialog({
+      builder: () => {
+        this.customDialogComponent();
+      },
+      // ···
+      levelMode: LevelMode.EMBEDDED, // 启用页面级弹出框
+      levelUniqueId: node?.getUniqueId(), // 设置页面级弹出框所在页面的任意节点ID
+    })
+      .then((dialogId: number) => {
+        customDialogId = dialogId;
+      });
+  })
+```
+
+### Code block 3
+
+```
+Text(this.message).id('test_text')
+  .fontSize(50)
+  .fontWeight(FontWeight.Bold)
+  .onClick(() => {
+    const node: FrameNode | null = this.getUIContext().getFrameNodeById('test_text') || null;
+    this.getUIContext().getPromptAction().openCustomDialog({
+      builder: () => {
+        this.customDialogComponent();
+      },
+      levelMode: LevelMode.EMBEDDED, // 启用页面级弹出框
+      levelUniqueId: node?.getUniqueId(), // 设置页面级弹出框所在页面的任意节点ID
+      immersiveMode: ImmersiveMode.EXTEND, // 设置页面级弹出框蒙层的显示模式
+    })
+      .then((dialogId: number) => {
+        customDialogId = dialogId;
+      });
+  })
+```
+
+### Code block 4
+
+```
+import { LevelMode, ImmersiveMode } from '@kit.ArkUI';
+
+let customDialogId: number = 0;
+
+@Builder
+function customDialogBuilder(uiContext: UIContext) {
+  Column() {
+    Text('Custom dialog Message').fontSize(20).height(100)
+    Row() {
+      Button('Next').onClick(() => {
+        // 在弹窗内部进行路由跳转。
+        uiContext.getRouter().pushUrl({ url: 'pages/Next' });
+      })
+      Blank().width(50)
+      Button('Close').onClick(() => {
+        uiContext.getPromptAction().closeCustomDialog(customDialogId);
+      })
+    }
+  }.padding(20)
+}
+
+@Entry
+@Component
+export struct PageLevelDialogBox {
+  @State message: string = 'Hello World';
+  private uiContext: UIContext = this.getUIContext();
+
+  @Builder
+  customDialogComponent() {
+    customDialogBuilder(this.uiContext);
+  }
+
+  build() {
+    NavDestination() {
+      Row() {
+        Column() {
+          Text(this.message).id('test_text')
+            .fontSize(50)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              const node: FrameNode | null = this.getUIContext().getFrameNodeById('test_text') || null;
+              this.getUIContext().getPromptAction().openCustomDialog({
+                builder: () => {
+                  this.customDialogComponent();
+                },
+                levelMode: LevelMode.EMBEDDED, // 启用页面级弹出框
+                levelUniqueId: node?.getUniqueId(), // 设置页面级弹出框所在页面的任意节点ID
+                immersiveMode: ImmersiveMode.EXTEND, // 设置页面级弹出框蒙层的显示模式
+              })
+                .then((dialogId: number) => {
+                  customDialogId = dialogId;
+                });
+            })
+        }
+        .width('100%')
+      }
+      .height('100%')
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+// Next.ets
+@Entry
+@Component
+struct Next {
+  @State message: string = 'Back';
+
+  build() {
+    Row() {
+      Column() {
+        Button(this.message)
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .onClick(() => {
+            this.getUIContext().getRouter().back();
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 6
+
+```
+import { LevelMode, ImmersiveMode } from '@kit.ArkUI';
+
+let customDialogId: number = 0;
+
+@Builder
+function customDialogBuilder(uiContext: UIContext, stack: NavPathStack | undefined) {
+  Column() {
+    Text('Custom dialog Message').fontSize(20).height(100)
+    Row() {
+      Button('Next').onClick(() => {
+        // 在弹窗内部进行路由跳转。
+        if (stack) {
+          stack.pushPath({ name: 'Custom_ROUTE_PREFIX/PageLevelDialogInNavigationPageTwo'})
+        }
+      })
+      Blank().width(50)
+      Button('Close').onClick(() => {
+        uiContext.getPromptAction().closeCustomDialog(customDialogId);
+      })
+    }
+  }.padding(20)
+}
+
+@Component
+export struct PageLevelDialogInNavigation {
+  @State info: string = '';
+  private stack: NavPathStack | undefined = undefined;
+  private uiContext: UIContext = this.getUIContext();
+  @State message: string = 'Hello World';
+
+  @Builder
+  customDialogComponent() {
+    customDialogBuilder(this.uiContext, this.stack);
+  }
+
+  build() {
+    NavDestination() {
+      Stack({alignContent: Alignment.Center}) {
+        Column() {
+          Text(this.message).id('test_text')
+            .fontSize(50)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              const node: FrameNode | null = this.getUIContext().getFrameNodeById('test_text') || null;
+              this.uiContext.getPromptAction().openCustomDialog({
+                builder: () => {
+                  this.customDialogComponent();
+                },
+                levelMode: LevelMode.EMBEDDED, // 启用页面级弹出框
+                levelUniqueId: node?.getUniqueId(), // 设置页面级弹出框所在页面的任意节点ID
+                immersiveMode: ImmersiveMode.EXTEND, // 设置页面级弹出框蒙层的显示模式
+              }).then((dialogId: number) => {
+                customDialogId = dialogId;
+              })
+            })
+        }
+        .width('100%')
+      }.width('100%').height('100%')
+    }
+    .width('100%').height('100%')
+    .title('PageOne')
+    .onReady((ctx: NavDestinationContext) => {
+      this.stack = ctx.pathStack;
+    })
+  }
+}
+
+@Component
+export struct PageLevelDialogInNavigationTestTwo {
+  @State message: string = 'Back';
+  private stack: NavPathStack | undefined = undefined;
+
+  build() {
+    NavDestination() {
+      Stack({alignContent: Alignment.Center}) {
+        Column() {
+          Button(this.message)
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              if (this.stack) {
+                this.stack.pop()
+              }
+            })
+        }
+        .width('100%')
+      }.width('100%').height('100%')
+    }
+    .width('100%').height('100%')
+    .title('PageTwo')
+    .onReady((ctx: NavDestinationContext) => {
+      this.stack = ctx.pathStack;
+    })
+  }
+}
+```

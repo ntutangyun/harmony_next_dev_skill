@@ -32,6 +32,7 @@ public:
 };
 OP_ADD(AddCustom);
 } // namespace ops
+
 说明
 
 注册算子类型后，框架会根据算子类型获取算子注册信息，同时在编译和运行时按照一定的规则匹配算子实现文件名称和kernel侧核函数名称。为了保证正确匹配，算子类型、算子实现文件名称和核函数名称需要遵循如下定义规则。通常情况下，开发者只需要保证创建算子工程时原型定义json文件中算子类型op的参数值为大驼峰命名方式即可，工程创建后自动生成的代码即满足该规则。在手动编写算子原型定义和算子实现文件时需要按照如下规则定义。
@@ -62,17 +63,7 @@ this->Input("x")
 表1 输入输出参数说明
 
 原型定义	参数	具体描述
-Input/Output	ParamType	
-
-参数类型，Option取值为：OPTIONAL（可选）、REQUIRED（必选）、DYNAMIC（动态输入）。
-
-- 类似于上文中的Add样例，其输入输出是必选的。
-
-- 有些算子的输入或者输出个数是动态的，例如AddN，将N个输入Tensor累加到一起，输出一个Tensor；SplitV，将一个Tensor在某个轴上，拆分为N个Tensor输出。
-
-- 有些算子的输入是可选的，例如BatchNorm算子，在训练的时候没有均值和方差输入，在推理的时候有均值和方差的输入。
-
-
+Input/Output	ParamType	参数类型，Option取值为：OPTIONAL（可选）、REQUIRED（必选）、DYNAMIC（动态输入）。 - 类似于上文中的Add样例，其输入输出是必选的。 - 有些算子的输入或者输出个数是动态的，例如AddN，将N个输入Tensor累加到一起，输出一个Tensor；SplitV，将一个Tensor在某个轴上，拆分为N个Tensor输出。 - 有些算子的输入是可选的，例如BatchNorm算子，在训练的时候没有均值和方差输入，在推理的时候有均值和方差的输入。
 Input/Output	DataType	算子输入输出支持的datatype。datatype的取值请参考DataType。
 Input/Output	Format	算子输入输出支持的format。format的取值请参考Format。
 
@@ -109,6 +100,7 @@ this->Attr("isKeepDim")
 原型定义	注册方式	具体描述
 Attr	AttrType	设置算子属性类型，取值为：OPTIONAL（可选）、REQUIRED（必选）。
 Attr	Bool/Float/Int...	设置算子属性数据类型为Bool/Float/Int...。具体说明请参考OpAttrDef。
+
 AI处理器上相关实现信息
 
 通过AddConfig注册算子支持的AI处理器型号以及相关的配置信息。AddConfig接口原型如下。
@@ -121,6 +113,7 @@ void AddConfig(const char *soc, OpAICoreConfig &aicore_config);
 通过该接口注册AI处理器型号的样例如下，ascendxxx请替换为实际的AI处理器型号。
 
 this->AICore().AddConfig("ascendxxx");
+
 关联Tiling实现、Shape推导等函数
 
 通过SetInferShape、SetInferDataType、SetTiling接口来关联对应的shape推导函数和Tiling函数，样例如下。
@@ -129,6 +122,7 @@ this->SetInferShape(ge::InferShape);
 this->SetInferDataType(ge::InferDataType);
 this->AICore()
     .SetTiling(optiling::TilingFunc);
+
 多硬件平台注册差异化的算子原型
 
 算子类继承基类OpDef，使用Input、Output、Attr等注册算子原型信息，硬件平台支持相同的算子原型的情况下，直接通过AICore().AddConfig添加支持的AI处理器型号即可；不同的硬件形态算子原型定义不同的情况，可以通过新增OpAICoreConfig的方式，针对不同的AI处理器型号注册差异化的算子原型。
@@ -206,5 +200,169 @@ public:
         this->AICore().AddConfig("kirinxxxx2", aicConfig2);
     }
 };
-基于工程实现算子
-Kernel侧算子实现
+
+## Code blocks
+
+### Code block 1
+
+```
+namespace ops {
+class AddCustom : public OpDef {
+public:
+    AddCustom(const char* name) : OpDef(name)
+    {
+        this->Input("x")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16, ge::DT_FLOAT, ge::DT_INT32})
+            .Format({ge::FORMAT_ND, ge::FORMAT_ND, ge::FORMAT_ND});
+        this->Input("y")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16, ge::DT_FLOAT, ge::DT_INT32})
+            .Format({ge::FORMAT_ND, ge::FORMAT_ND, ge::FORMAT_ND});
+        this->Output("z")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16, ge::DT_FLOAT, ge::DT_INT32})
+            .Format({ge::FORMAT_ND, ge::FORMAT_ND, ge::FORMAT_ND});
+        // 根据开发者的算子调用方式决定需不需要注册 单算子API调用方式下不需要
+        this->SetInferShape(ge::InferShape);
+        this->SetInferDataType(ge::InferDataType);
+        this->AICore()
+            .SetTiling(optiling::TilingFunc);
+        // 请替换为实际的Kirin AI处理器型号
+        this->AICore().AddConfig("kirin9020");
+    }
+};
+OP_ADD(AddCustom);
+} // namespace ops
+```
+
+### Code block 2
+
+```
+this->Input("x")
+    .ParamType(REQUIRED)
+    .DataType({ge::DT_FLOAT16, ge::DT_FLOAT, ge::DT_INT32})
+    .Format({ge::FORMAT_ND, ge::FORMAT_ND, ge::FORMAT_ND});
+```
+
+### Code block 3
+
+```
+this->Input("x1")
+     .ParamType(REQUIRED)
+     .DataType({ge::DT_FLOAT, ge::DT_FLOAT})
+     .Format({ge::FORMAT_ND, ge::FORMAT_ND});
+ this->Input("x2")
+     .ParamType(REQUIRED)
+     .DataType({ge::DT_FLOAT, ge::DT_FLOAT})
+     .Format({ge::FORMAT_ND, ge::FORMAT_ND});
+ this->Output("y1")
+     .ParamType(REQUIRED)
+     .Follow("x1")
+     .OutputShapeDependOnCompute();
+```
+
+### Code block 4
+
+```
+this->Attr("reduceDim")
+    .AttrType(REQUIRED)
+    .Int();
+this->Attr("isKeepDim")
+    .AttrType(OPTIONAL)
+    .Int(1);
+```
+
+### Code block 5
+
+```
+void AddConfig(const char *soc);
+void AddConfig(const char *soc, OpAICoreConfig &aicore_config);
+```
+
+### Code block 6
+
+```
+this->AICore().AddConfig("ascendxxx");
+```
+
+### Code block 7
+
+```
+this->SetInferShape(ge::InferShape);
+this->SetInferDataType(ge::InferDataType);
+this->AICore()
+    .SetTiling(optiling::TilingFunc);
+```
+
+### Code block 8
+
+```
+namespace ops {
+class MyAdd : public OpDef {
+public:
+    MyAdd(const char* name) : OpDef(name)
+    {
+        // ascendxxx1 ascendxxx2 AI处理器型号原型定义
+        this->Input("x")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16})
+            .Format({ge::FORMAT_ND});
+        this->Input("y")
+            .ParamType(OPTIONAL)
+            .DataType({ge::DT_INT64})
+            .ValueDepend(REQUIRED)
+            .Format({ge::FORMAT_ND});
+        this->Output("z")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16})
+            .Format({ge::FORMAT_ND});
+        this->AICore()
+            .SetTiling(optiling::TilingFunc);
+        this->AICore().AddConfig("ascendxxx1");
+        this->AICore().AddConfig("ascendxxx2");
+        // ascendxxx3芯片定义OpAICoreConfig变量，定制化原型
+        OpAICoreConfig config;
+        config.Input("x")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16, ge::DT_BF16})
+            .Format({ge::FORMAT_ND, ge::FORMAT_ND});
+        config.Input("y")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16, ge::DT_BF16})
+            .Format({ge::FORMAT_ND, ge::FORMAT_ND});
+        config.Output("z")
+            .ParamType(REQUIRED)
+            .DataType({ge::DT_FLOAT16, ge::DT_BF16})
+            .Format({ge::FORMAT_ND, ge::FORMAT_ND});
+        this->AICore().AddConfig("kirin9020", config);
+    }
+};
+OP_ADD(MyAdd);
+}
+```
+
+### Code block 9
+
+```
+class AddCustom : public OpDef {
+public:
+    AddCustom(const char* name) : OpDef(name)
+    {
+        this->Input("x").DataType({ ge::DT_FLOAT16 }).ParamType(OPTIONAL);
+        this->Output("y").DataType({ ge::DT_FLOAT16 });
+        OpAICoreConfig aicConfig1;
+        OpAICoreConfig aicConfig2;
+        aicConfig1.Input("x")
+            .ParamType(OPTIONAL)
+            .DataType({ ge::DT_FLOAT })
+            .Format({ ge::FORMAT_ND });
+        aicConfig2.Input("x")
+            .ParamType(REQUIRED)
+            .DataType({ ge::DT_INT32 })
+            .Format({ ge::FORMAT_ND });
+        this->AICore().AddConfig("kirinxxxx1", aicConfig1);
+        this->AICore().AddConfig("kirinxxxx2", aicConfig2);
+    }
+};
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-erms_
 
+场景介绍
+
 生态查询服务可以为您提供应用/元服务运行信息的查询，当前提供场景值查询和广告验签信息查询。场景值是用来描述用户进入应用和元服务的路径。您可以通过本服务，来查询您的元服务/应用是通过何种场景被打开的（场景值列表）。当前我们支持元服务的场景值查询，后续我们会继续公布应用场景值的查询。广告验签版本查询只在您的应用涉及广告场景下才会被使用到。您可以通过本查询服务，查询广告验签参数处理逻辑。
 
 业务流程
@@ -29,8 +31,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-erm
 接口名	描述
 getSelfSceneCode():string	获取自身场景值。
 getAdsVerificationVersion(): number	查询广告验签版本。
+
 开发步骤
-查询自身场景值
+
+[h2]查询自身场景值
 
 导入模块。
 
@@ -45,7 +49,8 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', `getSelfSceneCode failed. code is ${error.code}, message is ${error.message}`);
 }
-查询广告验签版本
+
+[h2]查询广告验签版本
 
 导入模块。
 
@@ -60,5 +65,41 @@ try {
 } catch (error) {
   hilog.error(0, 'TAG', `getAdsVerificationVersion failed. code is ${error.code}, message is ${error.message}`);
 }
-产品特性按需分发(C/C++)
-应用市场更新功能
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { sceneManager } from '@kit.AppGalleryKit';
+```
+
+### Code block 2
+
+```
+try {
+  const sceneCode: string = sceneManager.getSelfSceneCode();
+  hilog.info(0, 'TAG', "Succeeded in getting SelfSceneCode res = " + sceneCode);
+} catch (error) {
+  hilog.error(0, 'TAG', `getSelfSceneCode failed. code is ${error.code}, message is ${error.message}`);
+}
+```
+
+### Code block 3
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { sceneManager } from '@kit.AppGalleryKit';
+```
+
+### Code block 4
+
+```
+try {
+  const version: number = sceneManager.getAdsVerificationVersion();
+  hilog.info(0, 'TAG', "Succeeded in getting AdsVerificationVersion res = " + version);
+} catch (error) {
+  hilog.error(0, 'TAG', `getAdsVerificationVersion failed. code is ${error.code}, message is ${error.message}`);
+}
+```

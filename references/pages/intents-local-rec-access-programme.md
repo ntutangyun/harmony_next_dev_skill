@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-local-rec-access-programme_
 
+方案概述
+
 位置感知推荐能力支持开发者云侧共享位置信息与关联推荐的内容，结合实时位置、设备状态与习惯标签完成系统智慧决策，在小艺建议智慧推荐更符合用户诉求的内容信息。
 
 开通近场服务权限
@@ -42,6 +44,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-l
     }
   ]
 }
+
 端侧前台意图调用
 
 开发者需自己实现InsightIntentExecutor，并在对应回调实现打开落地页（点击推荐卡片跳转的界面，如旅游攻略落地页）的能力，ViewTravelGuides的意图调用字段定义见查看旅游攻略（ViewTravelGuides）。
@@ -57,7 +60,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-l
 import { insightIntent, InsightIntentExecutor } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 /**
  * 意图调用样例
@@ -90,6 +92,113 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
     return Promise.resolve(data);
   }
 
+  /**
+   * 实现调用查看旅游攻略功能
+   *
+   * @param param 意图参数
+   * @param pageLoader 窗口
+   */
+  private viewTravelGuides(param: Record<string, Object>,
+    pageLoader: window.WindowStage): Promise<insightIntent.ExecuteResult> {
+    return new Promise((resolve, reject) => {
+      pageLoader.loadContent('pages/TravelGuidePage')
+        .then(() => {
+          const entityId: string = (typeof param.entityId === 'string') ? param.entityId : '';
+          console.info(`Intent param, entityId: ${entityId}`);
+          const data: insightIntent.ExecuteResult = {
+            code: 0,
+            result: {
+              message: 'Intent execute succeed'
+            }
+          };
+          resolve(data);
+        })
+        .catch((err: BusinessError) => {
+          console.error(`Intent execute failed, Code: ${err?.code}, message: ${err?.message}`);
+          const data: insightIntent.ExecuteResult = {
+            code: -1,
+            result: {
+              message: 'Intent execute failed'
+            }
+          };
+          reject(data);
+        });
+    })
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  // 应用支持的意图列表
+  // 必须声明应用支持插件包含的必选意图，应用上架时会进行校验
+  "insightIntents": [
+    {
+      // 意图名称
+      // 名称应当遵循意图框架规范，当前仅支持预置垂域意图，不允许自定义
+      // 应用内意图名称唯一，不允许出现相同的名称定义
+      "intentName": "ViewTravelGuides",
+      // 意图所属的垂域
+      "domain": "TravelDomain",
+      // 意图版本号
+      // 插件引用意图时会校验该版本号，只有和插件定义的版本号一致才能正常调用
+      "intentVersion": "1.0.1",
+      // 意图调用逻辑入口
+      "srcEntry": "./ets/entryability/InsightIntentExecutorImpl.ets",
+      "uiAbility": {
+        // 意图所在ability
+        "ability": "EntryAbility",
+        // UIAbility支持前后台两种执行模式
+        "executeMode": [
+          "background",
+          "foreground"
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+import { insightIntent, InsightIntentExecutor } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+/**
+ * 意图调用样例
+ */
+export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
+  private static readonly VIEW_TRAVEL_GUIDES = 'ViewTravelGuides';
+  /**
+   * override 执行前台UIAbility意图
+   *
+   * @param name 意图名称
+   * @param param 意图参数
+   * @param pageLoader 窗口
+   * @returns 意图调用结果
+   */
+  onExecuteInUIAbilityForegroundMode(name: string, param: Record<string, Object>, pageLoader: window.WindowStage):
+    Promise<insightIntent.ExecuteResult> {
+    // 根据意图名称分发处理逻辑，接入方可根据实际业务实现页面跳转
+    switch (name) {
+      case InsightIntentExecutorImpl.VIEW_TRAVEL_GUIDES:
+        return this.viewTravelGuides(param, pageLoader);
+      default:
+        break;
+    }
+    const data: insightIntent.ExecuteResult = {
+      code: -1,
+      result: {
+        message: 'unknown intent'
+      }
+    };
+    return Promise.resolve(data);
+  }
 
   /**
    * 实现调用查看旅游攻略功能
@@ -113,7 +222,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
           resolve(data);
         })
         .catch((err: BusinessError) => {
-          console.info(`Intent execute failed, Code: ${err?.code}, message: ${err?.message}`);
+          console.error(`Intent execute failed, Code: ${err?.code}, message: ${err?.message}`);
           const data: insightIntent.ExecuteResult = {
             code: -1,
             result: {
@@ -125,5 +234,4 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
     })
   }
 }
-场景体验
-开发者测试
+```

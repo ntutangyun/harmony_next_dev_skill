@@ -22,6 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-com
     <option value="contrast(200%)">contrast</option>
   </select>
 </div>
+
 /* xxx.css */
 .container {
     width: 100%;
@@ -32,7 +33,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-com
     background-color: #F1F3F5;
 }
 
-
 canvas {
     width: 600px;
     height: 500px;
@@ -40,16 +40,15 @@ canvas {
     border: 5px solid red;
 }
 
-
 select {
     margin-top: 50px;
     width: 250px;
     height: 100px;
     background-color: white;
 }
+
 // xxx.js
 import promptAction from '@ohos.promptAction';
-
 
 export default {
     data: {
@@ -99,6 +98,7 @@ export default {
   <canvas ref="canvas"></canvas>
   <button onclick="change">Add(50)</button>
 </div>
+
 /* xxx.css */
 .container {
     width: 100%;
@@ -110,7 +110,6 @@ export default {
     display: flex;
 }
 
-
 canvas {
     width: 600px;
     height: 500px;
@@ -118,13 +117,11 @@ canvas {
     border: 5px solid red;
 }
 
-
 .content {
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-
 
 text {
     font-size: 30px;
@@ -133,12 +130,12 @@ text {
     text-align: center;
 }
 
-
 button {
     width: 180px;
     height: 75px;
     margin-top: 50px;
 }
+
 // xxx.js
 export default {
     data: {
@@ -182,5 +179,197 @@ export default {
     }
 }
 
-Path2D对象
-栅格布局
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <canvas ref="canvas1"></canvas>
+  <select @change="change()">
+    <option value="blur(5px)">blur</option>
+    <option value="grayscale(50%)">grayscale</option>
+    <option value="hue-rotate(45deg)">hue-rotate</option>
+    <option value="invert(100%)">invert</option>
+    <option value="drop-shadow(8px 8px 10px green)">drop-shadow</option>
+    <option value="brightness(0.4)">brightness</option>
+    <option value="opacity(0.25)">opacity</option>
+    <option value="saturate(30%)">saturate</option>
+    <option value="sepia(60%)">sepia</option>
+    <option value="contrast(200%)">contrast</option>
+  </select>
+</div>
+```
+
+### Code block 2
+
+```
+/* xxx.css */
+.container {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #F1F3F5;
+}
+
+canvas {
+    width: 600px;
+    height: 500px;
+    background-color: #fdfdfd;
+    border: 5px solid red;
+}
+
+select {
+    margin-top: 50px;
+    width: 250px;
+    height: 100px;
+    background-color: white;
+}
+```
+
+### Code block 3
+
+```
+// xxx.js
+import promptAction from '@ohos.promptAction';
+
+export default {
+    data: {
+        el: null,
+        ctx: null,
+        offscreen: null,
+        offCanvas: null,
+        img: null,
+    },
+    onShow() {
+        this.ctx = this.$refs.canvas1.getContext('2d');
+        this.offscreen = new OffscreenCanvas(600, 500);
+        this.offCanvas = this.offscreen.getContext('2d');
+        this.img = new Image();
+        // "common/images/2.png"需要替换为开发者所需的图像资源文件
+        this.img.src = 'common/images/2.png';
+        // 图片成功获取触发方法
+        let _this = this;
+        this.img.onload = function () {
+            _this.offCanvas.drawImage(_this.img, 100, 100, 400, 300);
+        };
+        this.img.onerror = function () {
+            promptAction.showToast({ message: 'error', duration: 2000 })
+        };
+        var bitmap = this.offscreen.transferToImageBitmap();
+        this.ctx.transferFromImageBitmap(bitmap);
+    },
+    change(e) {
+        this.offCanvas.filter = e.newValue;
+        this.offCanvas.drawImage(this.img, 100, 100, 400, 300);
+        var bitmap = this.offscreen.transferToImageBitmap();
+        this.ctx.transferFromImageBitmap(bitmap);
+    },
+}
+```
+
+### Code block 4
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <div class="content">
+    <text>坐标：{{X}}, {{Y}}</text>
+    <text>In path:{{textValue}}</text>
+    <text>In stroke:{{textValue1}}</text>
+  </div>
+  <canvas ref="canvas"></canvas>
+  <button onclick="change">Add(50)</button>
+</div>
+```
+
+### Code block 5
+
+```
+/* xxx.css */
+.container {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #F1F3F5;
+    display: flex;
+}
+
+canvas {
+    width: 600px;
+    height: 500px;
+    background-color: #fdfdfd;
+    border: 5px solid red;
+}
+
+.content {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+text {
+    font-size: 30px;
+    width: 300px;
+    height: 80px;
+    text-align: center;
+}
+
+button {
+    width: 180px;
+    height: 75px;
+    margin-top: 50px;
+}
+```
+
+### Code block 6
+
+```
+// xxx.js
+export default {
+    data: {
+        textValue: 0,
+        textValue1: 0,
+        X: 0,
+        Y: 250,
+    },
+    onShow() {
+        let canvas = this.$refs.canvas.getContext('2d');
+        let offscreen = new OffscreenCanvas(500, 500);
+        let offscreenCanvasCtx = offscreen.getContext('2d');
+        let offscreenCanvasCtx1 = offscreen.getContext('2d');
+        offscreenCanvasCtx1.arc(this.X, this.Y, 2, 0, 6.28);
+        offscreenCanvasCtx.lineWidth = 20;
+        offscreenCanvasCtx.rect(200, 150, 200, 200);
+        offscreenCanvasCtx.stroke();
+        this.textValue1 = offscreenCanvasCtx.isPointInStroke(this.X, this.Y) ? 'true' : 'false';
+        this.textValue = offscreenCanvasCtx.isPointInPath(this.X, this.Y) ? 'true' : 'false';
+        let bitmap = offscreen.transferToImageBitmap();
+        canvas.transferFromImageBitmap(bitmap);
+    },
+    change() {
+        if (this.X < 500) {
+            this.X = this.X + 50;
+        } else {
+            this.X = 0;
+        }
+        let canvas = this.$refs.canvas.getContext('2d');
+        let offscreen = new OffscreenCanvas(500, 500);
+        let offscreenCanvasCtx = offscreen.getContext('2d');
+        let offscreenCanvasCtx1 = offscreen.getContext('2d');
+        offscreenCanvasCtx1.arc(this.X, this.Y, 1, 0, 6.28)
+        offscreenCanvasCtx.lineWidth = 20
+        offscreenCanvasCtx.rect(200, 150, 200, 200);
+        offscreenCanvasCtx.stroke();
+        this.textValue1 = offscreenCanvasCtx.isPointInStroke(this.X, this.Y) ? 'true' : 'false';
+        this.textValue = offscreenCanvasCtx.isPointInPath(this.X, this.Y) ? 'true' : 'false';
+        let bitmap = offscreen.transferToImageBitmap();
+        canvas.transferFromImageBitmap(bitmap);
+    }
+}
+```

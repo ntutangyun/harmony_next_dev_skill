@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-add-guard-strategy_
 
+场景介绍
+
 当用户希望创建新的屏幕时间守护规则时，可以调用添加管控策略的接口。根据参数中传入的策略，用户可以添加各种策略，如设置各个应用的停用起止时间。一旦策略被创建并启用，系统将根据规则对用户的屏幕使用行为进行监管。
 
 用户体验设计
@@ -30,6 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 接口名	描述
 addGuardStrategy(guardStrategy: GuardStrategy): Promise<void>	添加屏幕时间管控策略。
+
 开发前提
 
 添加管控策略需要申请用户授权，请先参考请求用户授权章节完成用户授权。
@@ -67,5 +70,43 @@ private async addStrategy(guardStrategy: guardService.GuardStrategy): Promise<vo
          `addGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
    }
 }
-概述
-修改策略
+
+## Code blocks
+
+### Code block 1
+
+```
+import { guardService } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+guardStrategy: guardService.GuardStrategy = {
+      name: 'GuardStrategy',
+      timeStrategy: {
+      type: guardService.TimeStrategyType.START_END_TIME_TYPE,
+      startTime: '19:00',
+      endTime: '21:00',
+      repeat: [1, 2, 3, 4, 5, 6, 7]
+   },
+   appInfo: { appTokens: [] }, // 可通过startAppPicker接口获取
+   appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE
+};
+```
+
+### Code block 3
+
+```
+private async addStrategy(guardStrategy: guardService.GuardStrategy): Promise<void> {
+   try {
+   await guardService.addGuardStrategy(guardStrategy);
+   } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, 'GuardService',
+         `addGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```

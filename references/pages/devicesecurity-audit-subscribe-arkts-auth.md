@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-audit-subscribe-arkts-auth_
 
+场景介绍
+
 从6.0.0(20) 开始，新增提供统一的安全审计数据多客户端订阅/取消订阅、添加/删除过滤条件、阻断接口，应用可以获取设备上的安全审计数据（如下表），并按需进行订阅、过滤与阻断，以支撑审计相关业务。
 
 审计事件ID	说明
@@ -11,6 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 0x1C801103	文件删除阻断事件。
 0x1C801104	文件设置扩展属性的阻断事件。
 0x1C801105	文件删除扩展属性的阻断事件。
+
 约束与限制
 
 当前能力仅支持2in1设备。
@@ -52,52 +55,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口名	描述
 newAuthClient(callback: Callback<AuditEvent>): AuthClient;	创建审计阻断类事件管理对象AuthClient，AuthClient提供订阅、解订阅、增加事件过滤、移除事件过滤、阻断功能
 deleteAuthClient(client: AuthClient): void;	删除审计阻断类事件管理对象
+interface AuthClient { subscribe(events: AuthEvent[]): void; }	订阅审计阻断类事件
+interface AuthClient { unsubscribe(events: AuthEvent[]): void; }	解订阅审计阻断类事件
+interface AuthClient { addFilter(event: AuthEvent, filter: Filter): void； }	添加审计阻断类事件过滤条件
+interface AuthClient { removeFilter(event: AuthEvent, filter: Filter): void; }	移除审计阻断类事件过滤条件
+interface AuthClient { auth(auditEvent: AuditEvent, authResult: AuthResult): void; }	设置审计阻断类事件的阻断结果
 
-
-interface AuthClient {
-
-subscribe(events: AuthEvent[]): void;
-
-}
-
-	订阅审计阻断类事件
-
-
-interface AuthClient {
-
-unsubscribe(events: AuthEvent[]): void;
-
-}
-
-	解订阅审计阻断类事件
-
-
-interface AuthClient {
-
-addFilter(event: AuthEvent, filter: Filter): void；
-
-}
-
-	添加审计阻断类事件过滤条件
-
-
-interface AuthClient {
-
-removeFilter(event: AuthEvent, filter: Filter): void;
-
-}
-
-	移除审计阻断类事件过滤条件
-
-
-interface AuthClient {
-
-auth(auditEvent: AuditEvent, authResult: AuthResult): void;
-
-}
-
-	设置审计阻断类事件的阻断结果
 开发步骤
+
 说明
 
 在开发准备过程中，需要申请权限：ohos.permission.kernel.AUTH_AUDIT_EVENT。
@@ -189,5 +154,105 @@ try {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'deleteAuthClient failed: %{public}d %{public}s', e.code, e.message);
 }
-订阅通知类事件
-进程信息查询场景
+
+## Code blocks
+
+### Code block 1
+
+```
+import { securityAudit } from '@kit.DeviceSecurityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+const TAG = "SecurityAuditAuthJsTest";
+let authClient: securityAudit.AuthClient | undefined = undefined;
+const allowEventCallback = (event: securityAudit.AuditEvent) => {
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func eventId= ' + event.eventId);
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func content= ' + event.content);
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func metadata= ' + event.metadata);
+  try {
+    authClient?.auth(event, securityAudit.AuthResult.ALLOW);
+  } catch (error) {
+    let e: BusinessError = error as BusinessError;
+    hilog.error(0x0000, TAG, 'allowEventCallback', 'auth error:' + e.code);
+  }
+};
+try {
+  authClient = securityAudit.newAuthClient(allowEventCallback);
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'newAuthClient failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 3
+
+```
+try {
+  hilog.info(0x0000, TAG, 'subscribe begin.');
+  authClient?.subscribe([securityAudit.AuthEvent.FILE_CREATE]);
+  hilog.info(0x0000, TAG, 'Succeeded in subscribe.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'subscribe failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 4
+
+```
+let filter : securityAudit.Filter = {
+  type: securityAudit.FilterType.PROCESS_PID_EQUAL,
+  isInclude: true,
+  values : ["2"]
+};
+try {
+  hilog.info(0x0000, TAG, 'addFilter begin.');
+  authClient?.addFilter(securityAudit.AuthEvent.FILE_CREATE, filter);
+  hilog.info(0x0000, TAG, 'Succeeded in addFilter.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'addFilter failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 5
+
+```
+try {
+  hilog.info(0x0000, TAG, 'unsubscribe begin.');
+  authClient?.unsubscribe([securityAudit.AuthEvent.FILE_CREATE]);
+  hilog.info(0x0000, TAG, 'Succeeded in unsubscribe.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'unsubscribe failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 6
+
+```
+try {
+  hilog.info(0x0000, TAG, 'removeFilter begin.');
+  authClient?.removeFilter(securityAudit.AuthEvent.FILE_CREATE, filter);
+  hilog.info(0x0000, TAG, 'Succeeded in removeFilter.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'removeFilter failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 7
+
+```
+try {
+  securityAudit.deleteAuthClient(authClient);
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'deleteAuthClient failed: %{public}d %{public}s', e.code, e.message);
+}
+```

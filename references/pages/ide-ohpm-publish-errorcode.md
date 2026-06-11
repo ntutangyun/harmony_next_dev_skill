@@ -2,6 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-publish-errorcode_
 
+00609001 依赖声明缺失
+
+错误信息
+
+Dep Statements Missing.
+
+错误描述
+
+依赖声明缺失。
+
+可能原因
+
+在oh-package.json5的dependencies/dynamicDependencies未声明。
+
+处理步骤
+
 确保导入的依赖项在oh-package.json5文件的 "dependencies" 或 "dynamicDependencies" 中声明，具体可参考ensure_dependency_include。
 
 00609002 私钥路径不存在
@@ -255,6 +271,3 @@ System Error.
 处理步骤
 
 检查日志文件，寻找错误信息定位根源。
-
-ohpm list错误码
-ohpm uninstall错误码

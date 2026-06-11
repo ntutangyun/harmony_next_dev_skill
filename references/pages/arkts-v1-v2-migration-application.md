@@ -2,11 +2,24 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-v1-v2-migration-application_
 
+本文档主要介绍应用内状态变量迁移，包含以下场景。
+
+V1装饰器名称/场景	迁移方案
+LocalStorage	@ObservedV2 @Trace
+AppStorage	AppStorageV2
+Environment	通过UIAbilityContext的config属性获取系统环境变量
+PersistentStorage	PersistenceV2
+存量迁移场景	@ObservedV2、@Trace、@Monitor
+
+LocalStorage->@ObservedV2/@Trace
+
+迁移规则
+
 LocalStorage的目的是实现页面间的状态变量共享。由于V1状态变量和View层耦合，开发者难以自主实现页面间状态变量的共享，因此框架提供了该能力。
 
 状态管理V2将状态变量的观察能力内嵌到数据本身，不再和View层耦合。因此，不再需要类似LocalStorage的能力，可以使用创建@ObservedV2和@Trace装饰类的实例，开发者需自行import和export，实现状态变量的页面间共享。
 
-基本场景
+[h2]基本场景
 
 V1:
 
@@ -15,17 +28,14 @@ V1:
 import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 
-
 export default class EntryAbility extends UIAbility {
   public para: Record<string, number> = { 'count': 47 };
   public storage: LocalStorage = new LocalStorage(this.para);
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     windowStage.loadContent('pages/Page1', this.storage);
   }
 }
-EntryAbility.ets
 
 在下面的示例中，使用@LocalStorageLink，可以将开发者本地的修改同步回LocalStorage中。
 
@@ -36,7 +46,6 @@ EntryAbility.ets
 struct Page1 {
   @LocalStorageLink('count') count: number = 0;
   pageStack: NavPathStack = new NavPathStack();
-
 
   build() {
     Navigation(this.pageStack) {
@@ -54,20 +63,18 @@ struct Page1 {
     }
   }
 }
-Page1.ets
+
 // Page2.ets
 @Builder
 export function Page2Builder() {
   Page2()
 }
 
-
 // Page2组件获得了父亲Page1组件的LocalStorage实例
 @Component
 struct Page2 {
   @LocalStorageLink('count') count: number = 0;
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -92,7 +99,6 @@ struct Page2 {
     })
   }
 }
-Page2.ets
 
 使用Navigation时，需要添加配置系统路由表文件src/main/resources/base/profile/route_map.json，并替换pageSourceFile为Page2页面的路径，并且在module.json5中添加："routerMap": "$profile:route_map"。
 
@@ -112,12 +118,13 @@ Page2.ets
 V2:
 
 声明@ObservedV2装饰的MyStorage类，并import到需要使用的页面中。
+
 声明被@Trace的属性作为页面间共享的可观察的数据。
+
 // 声明@ObservedV2装饰的MyStorage类
 @ObservedV2
 export class MyStorage {
   public static singleton_: MyStorage;
-
 
   static instance() {
     if (!MyStorage.singleton_) {
@@ -127,17 +134,15 @@ export class MyStorage {
   }
   @Trace public count: number = 47;
 }
-storage.ets
+
 // Page1.ets
 import { MyStorage } from './storage';
-
 
 @Entry
 @ComponentV2
 struct Page1 {
   storage: MyStorage = MyStorage.instance();
   pageStack: NavPathStack = new NavPathStack();
-
 
   build() {
     Navigation(this.pageStack) {
@@ -155,22 +160,19 @@ struct Page1 {
     }
   }
 }
-Page1.ets
+
 // Page2.ets
 import { MyStorage } from './storage';
-
 
 @Builder
 export function Page2Builder() {
   Page2()
 }
 
-
 @ComponentV2
 struct Page2 {
   storage: MyStorage = MyStorage.instance();
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -187,7 +189,6 @@ struct Page2 {
     })
   }
 }
-Page2.ets
 
 使用Navigation时，需要添加配置系统路由表文件src/main/resources/base/profile/route_map.json，并替换pageSourceFile为Page2页面的路径，并且在module.json5中添加："routerMap": "$profile:route_map"。
 
@@ -207,21 +208,21 @@ Page2.ets
 如果开发者需要实现类似于@LocalStorageProp的效果，但希望本地的修改不同步回LocalStorage中，可参考以下示例：
 
 在Page1中改变count值，由于count被@LocalStorageProp装饰的，因此其更改仅在本地生效，不会同步到LocalStorage。
+
 点击push to Page2按钮，跳转到Page2。由于在Page1中改变count值不会同步到LocalStorage，因此Page2中的Text组件仍显示初始值47。
+
 点击change Storage Count按钮，调用LocalStorage的setOrCreate，改变count对应的值，并通知所有绑定该key的变量。
+
 // Page1.ets
 export let storage: LocalStorage = new LocalStorage();
 
-
 storage.setOrCreate('count', 47);
-
 
 @Entry(storage)
 @Component
 struct Page1 {
   @LocalStorageProp('count') count: number = 0;
   pageStack: NavPathStack = new NavPathStack();
-
 
   build() {
     Navigation(this.pageStack) {
@@ -243,23 +244,20 @@ struct Page1 {
     }
   }
 }
-Page1.ets
+
 // Page2.ets
 import { storage } from './Page1'
-
 
 @Builder
 export function Page2Builder() {
   Page2()
 }
 
-
 // Page2组件获得了父亲Page1组件的LocalStorage实例
 @Component
 struct Page2 {
   @LocalStorageProp('count') count: number = 0;
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -280,19 +278,18 @@ struct Page2 {
     })
   }
 }
-Page2.ets
 
 在V2中，可以借助@Local和@Monitor实现类似的效果。
 
 @Local装饰的count变量为组件本地的值，其改变不会同步回storage。
+
 @Monitor监听storage.count的变化，当storage.count改变时，在@Monitor的回调里改变本地@Local的值。
+
 // Page1.ets
 import { MyStorage } from './storage';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 @Entry
 @ComponentV2
@@ -301,13 +298,11 @@ struct Page1 {
   pageStack: NavPathStack = new NavPathStack();
   @Local count: number = this.storage.count;
 
-
   @Monitor('storage.count')
   onCountChange(mon: IMonitor) {
     hilog.info(DOMAIN, 'testTag', '%{public}s', `Page1 ${mon.value()?.before} to ${mon.value()?.now}`);
     this.count = this.storage.count;
   }
-
 
   build() {
     Navigation(this.pageStack) {
@@ -329,20 +324,17 @@ struct Page1 {
     }
   }
 }
-Page1.ets
+
 // Page2.ets
 import { MyStorage } from './storage';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 @Builder
 export function Page2Builder() {
   Page2()
 }
-
 
 @ComponentV2
 struct Page2 {
@@ -350,13 +342,11 @@ struct Page2 {
   pathStack: NavPathStack = new NavPathStack();
   @Local count: number = this.storage.count;
 
-
   @Monitor('storage.count')
   onCountChange(mon: IMonitor) {
     hilog.info(DOMAIN, 'testTag', '%{public}s', `Page2 ${mon.value()?.before} to ${mon.value()?.now}`);
     this.count = this.storage.count;
   }
-
 
   build() {
     NavDestination() {
@@ -377,8 +367,8 @@ struct Page2 {
     })
   }
 }
-Page2.ets
-自定义组件接收LocalStorage实例场景
+
+[h2]自定义组件接收LocalStorage实例场景
 
 为了配合Navigation的场景，LocalStorage支持作为自定义组件的入参，传递给以当前自定义组件为根节点的所有子自定义组件。
 
@@ -389,20 +379,16 @@ V1:
 let localStorageA: LocalStorage = new LocalStorage();
 localStorageA.setOrCreate('propA', 'propA');
 
-
 let localStorageB: LocalStorage = new LocalStorage();
 localStorageB.setOrCreate('propB', 'propB');
 
-
 let localStorageC: LocalStorage = new LocalStorage();
 localStorageC.setOrCreate('propC', 'propC');
-
 
 @Entry
 @Component
 struct MyNavigationTestStack {
   @Provide('pageInfo') pageInfo: NavPathStack = new NavPathStack();
-
 
   @Builder
   PageMap(name: string) {
@@ -415,7 +401,6 @@ struct MyNavigationTestStack {
       PageThreeStack({}, localStorageC)
     }
   }
-
 
   build() {
     Column({ space: 5 }) {
@@ -437,12 +422,10 @@ struct MyNavigationTestStack {
   }
 }
 
-
 @Component
 struct PageOneStack {
   @Consume('pageInfo') pageInfo: NavPathStack;
   @LocalStorageLink('propA') propA: string = 'Hello World';
-
 
   build() {
     NavDestination() {
@@ -467,12 +450,10 @@ struct PageOneStack {
   }
 }
 
-
 @Component
 struct PageTwoStack {
   @Consume('pageInfo') pageInfo: NavPathStack;
   @LocalStorageLink('propB') propB: string = 'Hello World';
-
 
   build() {
     NavDestination() {
@@ -489,7 +470,6 @@ struct PageTwoStack {
             this.pageInfo.pushPathByName('pageThree', null);
           })
 
-
       }.width('100%').height('100%')
     }.title('pageTwo')
     .onBackPressed(() => {
@@ -499,12 +479,10 @@ struct PageTwoStack {
   }
 }
 
-
 @Component
 struct PageThreeStack {
   @Consume('pageInfo') pageInfo: NavPathStack;
   @LocalStorageLink('propC') propC: string = 'pageThreeStack';
-
 
   build() {
     NavDestination() {
@@ -521,7 +499,6 @@ struct PageThreeStack {
             this.pageInfo.pushPathByName('pageOne', null);
           })
 
-
       }.width('100%').height('100%')
     }.title('pageThree')
     .onBackPressed(() => {
@@ -531,11 +508,9 @@ struct PageThreeStack {
   }
 }
 
-
 @Component
 struct NavigationContentMsgStack {
   @LocalStorageLink('propA') propA: string = 'Hello';
-
 
   build() {
     Column() {
@@ -545,7 +520,6 @@ struct NavigationContentMsgStack {
     }
   }
 }
-InternalTraceCustomizeV1.ets
 
 V2：
 
@@ -556,17 +530,14 @@ V2：
 export class MyStorageA {
   @Trace public propA: string = 'Hello';
 
-
   constructor(propA?: string) {
     this.propA = propA ? propA : this.propA;
   }
 }
 
-
 @ObservedV2
 export class MyStorageB extends MyStorageA {
   @Trace public propB: string = 'Hello';
-
 
   constructor(propB: string) {
     super();
@@ -574,30 +545,25 @@ export class MyStorageB extends MyStorageA {
   }
 }
 
-
 @ObservedV2
 export class MyStorageC extends MyStorageA {
   @Trace public propC: string = 'Hello';
-
 
   constructor(propC: string) {
     super();
     this.propC = propC;
   }
 }
-storage.ets
 
 在PageOneStack、PageTwoStack和PageThreeStack组件内分别创建MyStorageA、MyStorageB、MyStorageC的实例，并通过@Param传递给其子组件NavigationContentMsgStack，从而实现类似LocalStorage实例在子组件树上共享的能力。
 
 // Index.ets
 import { MyStorageA, MyStorageB, MyStorageC } from './storage';
 
-
 @Entry
 @ComponentV2
 struct MyNavigationTestStack {
   pageInfo: NavPathStack = new NavPathStack();
-
 
   @Builder
   PageMap(name: string) {
@@ -609,7 +575,6 @@ struct MyNavigationTestStack {
       PageThreeStack()
     }
   }
-
 
   build() {
     Column({ space: 5 }) {
@@ -631,12 +596,10 @@ struct MyNavigationTestStack {
   }
 }
 
-
 @ComponentV2
 struct PageOneStack {
   pageInfo: NavPathStack = new NavPathStack();
   @Local storageA: MyStorageA = new MyStorageA('PropA');
-
 
   build() {
     NavDestination() {
@@ -664,12 +627,10 @@ struct PageOneStack {
   }
 }
 
-
 @ComponentV2
 struct PageTwoStack {
   pageInfo: NavPathStack = new NavPathStack();
   @Local storageB: MyStorageB = new MyStorageB('PropB');
-
 
   build() {
     NavDestination() {
@@ -686,7 +647,6 @@ struct PageTwoStack {
             this.pageInfo.pushPathByName('pageThree', null);
           })
 
-
       }.width('100%').height('100%')
     }.title('pageTwo')
     .onBackPressed(() => {
@@ -699,12 +659,10 @@ struct PageTwoStack {
   }
 }
 
-
 @ComponentV2
 struct PageThreeStack {
   pageInfo: NavPathStack = new NavPathStack();
   @Local storageC: MyStorageC = new MyStorageC('PropC');
-
 
   build() {
     NavDestination() {
@@ -721,7 +679,6 @@ struct PageThreeStack {
             this.pageInfo.pushPathByName('pageOne', null);
           })
 
-
       }.width('100%').height('100%')
     }.title('pageThree')
     .onBackPressed(() => {
@@ -734,11 +691,9 @@ struct PageThreeStack {
   }
 }
 
-
 @ComponentV2
 struct NavigationContentMsgStack {
   @Require @Param storage: MyStorageA;
-
 
   build() {
     Column() {
@@ -748,8 +703,8 @@ struct NavigationContentMsgStack {
     }
   }
 }
-Index.ets
-多实例场景LocalStorage的迁移
+
+[h2]多实例场景LocalStorage的迁移
 
 为了解决不同Ability之间数据的共享，LocalStorage支持跨Ability存取数据。
 
@@ -760,12 +715,10 @@ Index.ets
 // Index.ets
 import { common, Want } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct Index {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -805,7 +758,6 @@ struct Index {
     .width('100%')
   }
 }
-Index.ets
 
 V2:
 
@@ -819,10 +771,8 @@ export default class PDFData {
   @Trace private data: Map<string, string> = new Map();
   @Trace private flag: string = '';
 
-
   private constructor() {
   }
-
 
   static getInstance(): PDFData {
     if (!PDFData.instance_) {
@@ -831,31 +781,26 @@ export default class PDFData {
     return PDFData.instance_;
   }
 
-
   setData(key: string, value: string) {
     this.data.set(key, value);
   }
-
 
   getData() {
     return this.data;
   }
 
-
   setFlage(value: string) {
     this.flag = value;
   }
-
 
   getFlag() {
     return this.flag;
   }
 }
-PDFData.ets
+
 import { UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import PDFData from './model/PDFData';
-
 
 export default class PDFAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -866,16 +811,14 @@ export default class PDFAbility extends UIAbility {
     windowStage.loadContent('pages/internalmigrate/LocalStorageMultiInstance/PDF').catch();
   }
 }
-PdfEntryAbility.ets
+
 // PDF.ets
 import PDFData from './model/PDFData';
-
 
 @Entry
 @ComponentV2
 struct PDF {
   @Local message: string = 'uri';
-
 
   build() {
     Column() {
@@ -888,7 +831,6 @@ struct PDF {
     .width('100%')
   }
 
-
   aboutToAppear(): void {
     // 此处只做简略显示uri，实际功能为打开渲染PDF文件
     const key: string = PDFData.getInstance().getFlag();
@@ -896,7 +838,7 @@ struct PDF {
     this.message = PDFData.getInstance().getData().get(key) || '';
   }
 }
-PDF.ets
+
 AppStorage->AppStorageV2
 
 上一小节中，对于创建全局@ObserveV2和@Trace装饰实例的改造不适用于跨Ability的数据共享，可以使用AppStorageV2替代。
@@ -910,13 +852,11 @@ AppStorage与应用进程绑定，支持跨Ability数据共享。
 // EntryAbility Index.ets
 import { common, Want } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct Index {
   @StorageLink('count') count: number = 0;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -935,17 +875,15 @@ struct Index {
     }
   }
 }
-InternalAppStorageV1one.ets
+
 // EntryAbility1 Index1.ets
 import { common, Want } from '@kit.AbilityKit';
-
 
 @Entry
 @Component
 struct Index1 {
   @StorageLink('count') count: number = 0;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -964,7 +902,6 @@ struct Index1 {
     }
   }
 }
-InternalAppStorageV1two.ets
 
 V2:
 
@@ -975,19 +912,16 @@ V2:
 import { common, Want } from '@kit.AbilityKit';
 import { AppStorageV2 } from '@kit.ArkUI';
 
-
 @ObservedV2
 export class MyStorage {
   @Trace public count: number = 0;
 }
-
 
 @Entry
 @ComponentV2
 struct Index {
   @Local storage: MyStorage = AppStorageV2.connect(MyStorage, 'storage', () => new MyStorage())!;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -1006,23 +940,20 @@ struct Index {
     }
   }
 }
-InternalAppStorageV2one.ets
+
 import { common, Want } from '@kit.AbilityKit';
 import { AppStorageV2 } from '@kit.ArkUI';
-
 
 @ObservedV2
 export class MyStorage {
   @Trace public count: number = 0;
 }
 
-
 @Entry
 @ComponentV2
 struct Index1 {
   @Local storage: MyStorage = AppStorageV2.connect(MyStorage, 'storage', () => new MyStorage())!;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -1041,7 +972,6 @@ struct Index1 {
     }
   }
 }
-InternalAppStorageV2two.ets
 
 如果开发者需要实现类似于@StorageProp的效果，希望本地的修改不同步回AppStorage，而AppStorage的变化能够通知到使用@StorageProp装饰器的组件，可以参考以下示例对比。
 
@@ -1050,13 +980,11 @@ V1：
 // EntryAbility Index.ets
 import { common, Want } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct Index {
   @StorageProp('count') count: number = 0;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -1079,17 +1007,15 @@ struct Index {
     }
   }
 }
-InternalStoragePropV1one.ets
+
 // EntryAbility1 Index1.ets
 import { common, Want } from '@kit.AbilityKit';
-
 
 @Entry
 @Component
 struct Index1 {
   @StorageProp('count') count: number = 0;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-
 
   build() {
     Column() {
@@ -1112,7 +1038,6 @@ struct Index1 {
     }
   }
 }
-InternalStoragePropV1two.ets
 
 V2:
 
@@ -1122,15 +1047,12 @@ import { common, Want } from '@kit.AbilityKit';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 @ObservedV2
 export class MyStorage {
   @Trace public count: number = 0;
 }
-
 
 @Entry
 @ComponentV2
@@ -1139,13 +1061,11 @@ struct Index {
   @Local count: number = this.storage.count;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
-
   @Monitor('storage.count')
   onCountChange(mon: IMonitor) {
     hilog.info(DOMAIN, 'testTag', '%{public}s', `Index1 ${mon.value()?.before} to ${mon.value()?.now}`);
     this.count = this.storage.count;
   }
-
 
   build() {
     Column() {
@@ -1168,20 +1088,17 @@ struct Index {
     }
   }
 }
-InternalStoragePropV2one.ets
+
 import { common, Want } from '@kit.AbilityKit';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 @ObservedV2
 export class MyStorage {
   @Trace public count: number = 0;
 }
-
 
 @Entry
 @ComponentV2
@@ -1190,13 +1107,11 @@ struct Index1 {
   @Local count: number = this.storage.count;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
-
   @Monitor('storage.count')
   onCountChange(mon: IMonitor) {
     hilog.info(DOMAIN, 'testTag', '%{public}s', `Index1 ${mon.value()?.before} to ${mon.value()?.now}`);
     this.count = this.storage.count;
   }
-
 
   build() {
     Column() {
@@ -1219,7 +1134,7 @@ struct Index1 {
     }
   }
 }
-InternalStoragePropV2two.ets
+
 Environment->调用Ability接口直接获取系统环境变量
 
 V1中，开发者可以通过Environment来获取环境变量，但Environment获取的结果无法直接使用，需要配合AppStorage才能得到对应环境变量的值。
@@ -1233,12 +1148,10 @@ V1:
 // 将设备languageCode存入AppStorage中
 Environment.envProp('languageCode', 'en');
 
-
 @Entry
 @Component
 struct Index {
   @StorageProp('languageCode') languageCode: string = 'en';
-
 
   build() {
     Row() {
@@ -1249,7 +1162,6 @@ struct Index {
     }
   }
 }
-InternalEnvironmentV1.ets
 
 V2:
 
@@ -1257,7 +1169,6 @@ V2:
 
 // Env.ets
 import { ConfigurationConstant } from '@kit.AbilityKit';
-
 
 export class Env {
   public language: string | undefined;
@@ -1268,16 +1179,13 @@ export class Env {
   public fontWeightScale: number | undefined;
 }
 
-
 export let env: Env = new Env();
-Env.ets
 
 在onCreate里获取需要的系统环境变量。
 
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { env } from '../pages/Env';
-
 
 export default class EntryAbility extends UIAbility {
   // 在onCreate里获取需要的系统环境变量
@@ -1288,18 +1196,15 @@ export default class EntryAbility extends UIAbility {
     env.fontWeightScale = this.context.config.fontWeightScale;
   }
 
-
   onWindowStageCreate(windowStage: window.WindowStage): void {
     windowStage.loadContent('pages/Index');
   }
 }
-EntryAbility.ets
 
 在页面中获取当前Env的值。
 
 // Index.ets
 import { env } from '../pages/Env';
-
 
 @Entry
 @ComponentV2
@@ -1316,7 +1221,7 @@ struct Index {
     }
   }
 }
-Index.ets
+
 PersistentStorage->PersistenceV2
 
 V1中PersistentStorage提供了持久化UI数据的能力，而V2则提供了更加方便使用的PersistenceV2接口来替代它。
@@ -1338,17 +1243,14 @@ class Data {
   public id: number = 0;
 }
 
-
 PersistentStorage.persistProp('numProp', 47);
 PersistentStorage.persistProp('dataProp', new Data());
-
 
 @Entry
 @Component
 struct Index {
   @StorageLink('numProp') numProp: number = 48;
   @StorageLink('dataProp') dataProp: Data = new Data();
-
 
   build() {
     Column() {
@@ -1358,7 +1260,6 @@ struct Index {
           this.numProp += 1;
         })
         .fontSize(30)
-
 
       // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
       Text(`dataProp.name: ${this.dataProp.name}`)
@@ -1373,23 +1274,22 @@ struct Index {
         })
         .fontSize(30)
 
-
     }
     .width('100%')
   }
 }
-InternalPersistentStorageV1.ets
 
 V2:
 
 下面的案例展示了：
 
 将PersistentStorage的持久化数据迁移到V2的PersistenceV2中。V2对被@Trace标记的数据可以自动持久化，对于非@Trace数据，需要手动调用save进行持久化。
+
 示例中的move函数和需要显示的组件放在了一个ets中，开发者可以定义自己的move函数，并放入合适的位置进行统一迁移操作。
+
 // 迁移到globalConnect
 import { PersistenceV2, Type } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 const DOMAIN = 0x0000;
 // 接受序列化失败的回调
@@ -1397,19 +1297,16 @@ PersistenceV2.notifyOnError((key: string, reason: string, msg: string) => {
   hilog.error(DOMAIN, 'testTag', '%{public}s', `error key: ${key}, reason: ${reason}, message: ${msg}`);
 });
 
-
 class Data {
   public name: string = 'ZhangSan';
   public id: number = 0;
 }
-
 
 @ObservedV2
 class V2Data {
   @Trace public name: string = '';
   @Trace public id: number = 1;
 }
-
 
 @ObservedV2
 export class Sample {
@@ -1419,13 +1316,11 @@ export class Sample {
   @Trace public V2: V2Data = new V2Data();
 }
 
-
 // 用于判断是否完成数据迁移的辅助数据
 @ObservedV2
 class StorageState {
   @Trace public isCompleteMoving: boolean = false;
 }
-
 
 function move() {
   let movingState = PersistenceV2.globalConnect({ type: StorageState, defaultCreator: () => new StorageState() })!;
@@ -1436,7 +1331,6 @@ function move() {
     let v1Data = AppStorage.get<Data>('dataProp')!;
     PersistentStorage.deleteProp('numProp');
     PersistentStorage.deleteProp('dataProp');
-
 
     // V2创建对应数据
     let migrate = PersistenceV2.globalConnect({
@@ -1449,15 +1343,12 @@ function move() {
     migrate.V2.name = v1Data.name;
     migrate.V2.id = v1Data.id;
 
-
     // 将迁移标志设置为true
     movingState.isCompleteMoving = true;
   }
 }
 
-
 move();
-
 
 @Entry
 @ComponentV2
@@ -1467,7 +1358,6 @@ struct Page1 {
   @Local p: Sample =
     PersistenceV2.globalConnect({ type: Sample, key: 'connect2', defaultCreator: () => new Sample() })!;
 
-
   build() {
     Column({ space: 5 }) {
       // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
@@ -1476,7 +1366,6 @@ struct Page1 {
           this.p.num += 1;
         })
         .fontSize(30)
-
 
       // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
       Text(`dataProp.name: ${this.p.V2.name}`)
@@ -1494,6 +1383,1378 @@ struct Page1 {
     .width('100%')
   }
 }
-InternalPersistentStorageV2.ets
-数据对象状态变量迁移
-组件复用迁移
+
+## Code blocks
+
+### Code block 1
+
+```
+import { UIAbility } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+
+export default class EntryAbility extends UIAbility {
+  public para: Record<string, number> = { 'count': 47 };
+  public storage: LocalStorage = new LocalStorage(this.para);
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Page1', this.storage);
+  }
+}
+```
+
+### Code block 2
+
+```
+// Page1.ets
+// 预览器上不支持获取页面共享的LocalStorage实例。
+@Entry({ useSharedStorage: true })
+@Component
+struct Page1 {
+  @LocalStorageLink('count') count: number = 0;
+  pageStack: NavPathStack = new NavPathStack();
+
+  build() {
+    Navigation(this.pageStack) {
+      Column() {
+        Text(`${this.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.count++;
+          })
+        Button('push to Page2')
+          .onClick(() => {
+            this.pageStack.pushPathByName('Page2', null);
+          })
+      }
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+// Page2.ets
+@Builder
+export function Page2Builder() {
+  Page2()
+}
+
+// Page2组件获得了父亲Page1组件的LocalStorage实例
+@Component
+struct Page2 {
+  @LocalStorageLink('count') count: number = 0;
+  pathStack: NavPathStack = new NavPathStack();
+
+  build() {
+    NavDestination() {
+      Column() {
+        Text(`${this.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.count++;
+          })
+        Button('change')
+          .fontSize(50)
+          .onClick(() => {
+            const storage = this.getUIContext().getSharedLocalStorage();
+            if (storage) {
+              storage.set('count', 20);
+            }
+          })
+      }
+    }
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack;
+    })
+  }
+}
+```
+
+### Code block 4
+
+```
+{
+  "routerMap": [
+    {
+      "name": "Page2",
+      "pageSourceFile": "src/main/ets/pages/Page2.ets",
+      "buildFunction": "Page2Builder",
+      "data": {
+        "description": "LocalStorage example"
+      }
+    }
+  ]
+}
+```
+
+### Code block 5
+
+```
+// 声明@ObservedV2装饰的MyStorage类
+@ObservedV2
+export class MyStorage {
+  public static singleton_: MyStorage;
+
+  static instance() {
+    if (!MyStorage.singleton_) {
+      MyStorage.singleton_ = new MyStorage();
+    }
+    return MyStorage.singleton_;
+  }
+  @Trace public count: number = 47;
+}
+```
+
+### Code block 6
+
+```
+// Page1.ets
+import { MyStorage } from './storage';
+
+@Entry
+@ComponentV2
+struct Page1 {
+  storage: MyStorage = MyStorage.instance();
+  pageStack: NavPathStack = new NavPathStack();
+
+  build() {
+    Navigation(this.pageStack) {
+      Column() {
+        Text(`${this.storage.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.storage.count++;
+          })
+        Button('push to Page2')
+          .onClick(() => {
+            this.pageStack.pushPathByName('Page2', null);
+          })
+      }
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+// Page2.ets
+import { MyStorage } from './storage';
+
+@Builder
+export function Page2Builder() {
+  Page2()
+}
+
+@ComponentV2
+struct Page2 {
+  storage: MyStorage = MyStorage.instance();
+  pathStack: NavPathStack = new NavPathStack();
+
+  build() {
+    NavDestination() {
+      Column() {
+        Text(`${this.storage.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.storage.count++;
+          })
+      }
+    }
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack;
+    })
+  }
+}
+```
+
+### Code block 8
+
+```
+{
+  "routerMap": [
+    {
+      "name": "Page2",
+      "pageSourceFile": "src/main/ets/pages/Page2.ets",
+      "buildFunction": "Page2Builder",
+      "data": {
+        "description" : "LocalStorage example"
+      }
+    }
+  ]
+}
+```
+
+### Code block 9
+
+```
+// Page1.ets
+export let storage: LocalStorage = new LocalStorage();
+
+storage.setOrCreate('count', 47);
+
+@Entry(storage)
+@Component
+struct Page1 {
+  @LocalStorageProp('count') count: number = 0;
+  pageStack: NavPathStack = new NavPathStack();
+
+  build() {
+    Navigation(this.pageStack) {
+      Column() {
+        Text(`${this.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.count++;
+          })
+        Button('change Storage Count')
+          .onClick(() => {
+            storage.setOrCreate('count', storage.get<number>('count') as number + 100);
+          })
+        Button('push to Page2')
+          .onClick(() => {
+            this.pageStack.pushPathByName('Page2', null);
+          })
+      }
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+// Page2.ets
+import { storage } from './Page1'
+
+@Builder
+export function Page2Builder() {
+  Page2()
+}
+
+// Page2组件获得了父亲Page1组件的LocalStorage实例
+@Component
+struct Page2 {
+  @LocalStorageProp('count') count: number = 0;
+  pathStack: NavPathStack = new NavPathStack();
+
+  build() {
+    NavDestination() {
+      Column() {
+        Text(`${this.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.count++;
+          })
+        Button('change Storage Count')
+          .onClick(() => {
+            storage.setOrCreate('count', storage.get<number>('count') as number + 100);
+          })
+      }
+    }
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack;
+    })
+  }
+}
+```
+
+### Code block 11
+
+```
+// Page1.ets
+import { MyStorage } from './storage';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+@Entry
+@ComponentV2
+struct Page1 {
+  storage: MyStorage = MyStorage.instance();
+  pageStack: NavPathStack = new NavPathStack();
+  @Local count: number = this.storage.count;
+
+  @Monitor('storage.count')
+  onCountChange(mon: IMonitor) {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', `Page1 ${mon.value()?.before} to ${mon.value()?.now}`);
+    this.count = this.storage.count;
+  }
+
+  build() {
+    Navigation(this.pageStack) {
+      Column() {
+        Text(`${this.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.count++;
+          })
+        Button('change Storage Count')
+          .onClick(() => {
+            this.storage.count += 100;
+          })
+        Button('push to Page2')
+          .onClick(() => {
+            this.pageStack.pushPathByName('Page2', null);
+          })
+      }
+    }
+  }
+}
+```
+
+### Code block 12
+
+```
+// Page2.ets
+import { MyStorage } from './storage';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+@Builder
+export function Page2Builder() {
+  Page2()
+}
+
+@ComponentV2
+struct Page2 {
+  storage: MyStorage = MyStorage.instance();
+  pathStack: NavPathStack = new NavPathStack();
+  @Local count: number = this.storage.count;
+
+  @Monitor('storage.count')
+  onCountChange(mon: IMonitor) {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', `Page2 ${mon.value()?.before} to ${mon.value()?.now}`);
+    this.count = this.storage.count;
+  }
+
+  build() {
+    NavDestination() {
+      Column() {
+        Text(`${this.count}`)
+          .fontSize(50)
+          .onClick(() => {
+            this.count++;
+          })
+        Button('change Storage Count')
+          .onClick(() => {
+            this.storage.count += 100;
+          })
+      }
+    }
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack;
+    })
+  }
+}
+```
+
+### Code block 13
+
+```
+let localStorageA: LocalStorage = new LocalStorage();
+localStorageA.setOrCreate('propA', 'propA');
+
+let localStorageB: LocalStorage = new LocalStorage();
+localStorageB.setOrCreate('propB', 'propB');
+
+let localStorageC: LocalStorage = new LocalStorage();
+localStorageC.setOrCreate('propC', 'propC');
+
+@Entry
+@Component
+struct MyNavigationTestStack {
+  @Provide('pageInfo') pageInfo: NavPathStack = new NavPathStack();
+
+  @Builder
+  PageMap(name: string) {
+    if (name === 'pageOne') {
+      // 传递不同的LocalStorage实例
+      PageOneStack({}, localStorageA)
+    } else if (name === 'pageTwo') {
+      PageTwoStack({}, localStorageB)
+    } else if (name === 'pageThree') {
+      PageThreeStack({}, localStorageC)
+    }
+  }
+
+  build() {
+    Column({ space: 5 }) {
+      Navigation(this.pageInfo) {
+        Column() {
+          Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+            .width('80%')
+            .height(40)
+            .margin(20)
+            .onClick(() => {
+              this.pageInfo.pushPath({ name: 'pageOne' }); // 将name指定的NavDestination页面信息入栈
+            })
+        }
+      }.title('NavIndex')
+      .navDestination(this.PageMap)
+      .mode(NavigationMode.Stack)
+      .borderWidth(1)
+    }
+  }
+}
+
+@Component
+struct PageOneStack {
+  @Consume('pageInfo') pageInfo: NavPathStack;
+  @LocalStorageLink('propA') propA: string = 'Hello World';
+
+  build() {
+    NavDestination() {
+      Column() {
+        // 显示'propA'
+        NavigationContentMsgStack()
+        // 显示'propA'
+        Text(`${this.propA}`)
+        Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+          .width('80%')
+          .height(40)
+          .margin(20)
+          .onClick(() => {
+            this.pageInfo.pushPathByName('pageTwo', null);
+          })
+      }.width('100%').height('100%')
+    }.title('pageOne')
+    .onBackPressed(() => {
+      this.pageInfo.pop();
+      return true;
+    })
+  }
+}
+
+@Component
+struct PageTwoStack {
+  @Consume('pageInfo') pageInfo: NavPathStack;
+  @LocalStorageLink('propB') propB: string = 'Hello World';
+
+  build() {
+    NavDestination() {
+      Column() {
+        // 显示'Hello'，当前LocalStorage实例localStorageB没有propA对应的值，使用本地默认值'Hello'
+        NavigationContentMsgStack()
+        // 显示'propB'
+        Text(`${this.propB}`)
+        Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+          .width('80%')
+          .height(40)
+          .margin(20)
+          .onClick(() => {
+            this.pageInfo.pushPathByName('pageThree', null);
+          })
+
+      }.width('100%').height('100%')
+    }.title('pageTwo')
+    .onBackPressed(() => {
+      this.pageInfo.pop();
+      return true;
+    })
+  }
+}
+
+@Component
+struct PageThreeStack {
+  @Consume('pageInfo') pageInfo: NavPathStack;
+  @LocalStorageLink('propC') propC: string = 'pageThreeStack';
+
+  build() {
+    NavDestination() {
+      Column() {
+        // 显示'Hello'，当前LocalStorage实例localStorageC没有propA对应的值，使用本地默认值'Hello'
+        NavigationContentMsgStack()
+        // 显示'propC'
+        Text(`${this.propC}`)
+        Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+          .width('80%')
+          .height(40)
+          .margin(20)
+          .onClick(() => {
+            this.pageInfo.pushPathByName('pageOne', null);
+          })
+
+      }.width('100%').height('100%')
+    }.title('pageThree')
+    .onBackPressed(() => {
+      this.pageInfo.pop();
+      return true;
+    })
+  }
+}
+
+@Component
+struct NavigationContentMsgStack {
+  @LocalStorageLink('propA') propA: string = 'Hello';
+
+  build() {
+    Column() {
+      Text(`${this.propA}`)
+        .fontSize(30)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 14
+
+```
+// @ObservedV2装饰的class代替LocalStorage
+@ObservedV2
+export class MyStorageA {
+  @Trace public propA: string = 'Hello';
+
+  constructor(propA?: string) {
+    this.propA = propA ? propA : this.propA;
+  }
+}
+
+@ObservedV2
+export class MyStorageB extends MyStorageA {
+  @Trace public propB: string = 'Hello';
+
+  constructor(propB: string) {
+    super();
+    this.propB = propB;
+  }
+}
+
+@ObservedV2
+export class MyStorageC extends MyStorageA {
+  @Trace public propC: string = 'Hello';
+
+  constructor(propC: string) {
+    super();
+    this.propC = propC;
+  }
+}
+```
+
+### Code block 15
+
+```
+// Index.ets
+import { MyStorageA, MyStorageB, MyStorageC } from './storage';
+
+@Entry
+@ComponentV2
+struct MyNavigationTestStack {
+  pageInfo: NavPathStack = new NavPathStack();
+
+  @Builder
+  PageMap(name: string) {
+    if (name === 'pageOne') {
+      PageOneStack()
+    } else if (name === 'pageTwo') {
+      PageTwoStack()
+    } else if (name === 'pageThree') {
+      PageThreeStack()
+    }
+  }
+
+  build() {
+    Column({ space: 5 }) {
+      Navigation(this.pageInfo) {
+        Column() {
+          Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+            .width('80%')
+            .height(40)
+            .margin(20)
+            .onClick(() => {
+              this.pageInfo.pushPath({ name: 'pageOne' }); // 将name指定的NavDestination页面信息入栈
+            })
+        }
+      }.title('NavIndex')
+      .navDestination(this.PageMap)
+      .mode(NavigationMode.Stack)
+      .borderWidth(1)
+    }
+  }
+}
+
+@ComponentV2
+struct PageOneStack {
+  pageInfo: NavPathStack = new NavPathStack();
+  @Local storageA: MyStorageA = new MyStorageA('PropA');
+
+  build() {
+    NavDestination() {
+      Column() {
+        // 显示'PropA'
+        NavigationContentMsgStack({ storage: this.storageA })
+        // 显示'PropA'
+        Text(`${this.storageA.propA}`)
+        Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+          .width('80%')
+          .height(40)
+          .margin(20)
+          .onClick(() => {
+            this.pageInfo.pushPathByName('pageTwo', null);
+          })
+      }.width('100%').height('100%')
+    }.title('pageOne')
+    .onBackPressed(() => {
+      this.pageInfo.pop();
+      return true;
+    })
+    .onReady((context: NavDestinationContext) => {
+      this.pageInfo = context.pathStack;
+    })
+  }
+}
+
+@ComponentV2
+struct PageTwoStack {
+  pageInfo: NavPathStack = new NavPathStack();
+  @Local storageB: MyStorageB = new MyStorageB('PropB');
+
+  build() {
+    NavDestination() {
+      Column() {
+        // 显示'Hello'
+        NavigationContentMsgStack({ storage: this.storageB })
+        // 显示'PropB'
+        Text(`${this.storageB.propB}`)
+        Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+          .width('80%')
+          .height(40)
+          .margin(20)
+          .onClick(() => {
+            this.pageInfo.pushPathByName('pageThree', null);
+          })
+
+      }.width('100%').height('100%')
+    }.title('pageTwo')
+    .onBackPressed(() => {
+      this.pageInfo.pop();
+      return true;
+    })
+    .onReady((context: NavDestinationContext) => {
+      this.pageInfo = context.pathStack;
+    })
+  }
+}
+
+@ComponentV2
+struct PageThreeStack {
+  pageInfo: NavPathStack = new NavPathStack();
+  @Local storageC: MyStorageC = new MyStorageC('PropC');
+
+  build() {
+    NavDestination() {
+      Column() {
+        // 显示'Hello'
+        NavigationContentMsgStack({ storage: this.storageC })
+        // 显示'PropC'
+        Text(`${this.storageC.propC}`)
+        Button('Next Page', { stateEffect: true, type: ButtonType.Capsule })
+          .width('80%')
+          .height(40)
+          .margin(20)
+          .onClick(() => {
+            this.pageInfo.pushPathByName('pageOne', null);
+          })
+
+      }.width('100%').height('100%')
+    }.title('pageThree')
+    .onBackPressed(() => {
+      this.pageInfo.pop();
+      return true;
+    })
+    .onReady((context: NavDestinationContext) => {
+      this.pageInfo = context.pathStack;
+    })
+  }
+}
+
+@ComponentV2
+struct NavigationContentMsgStack {
+  @Require @Param storage: MyStorageA;
+
+  build() {
+    Column() {
+      Text(`${this.storage.propA}`)
+        .fontSize(30)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 16
+
+```
+// Index.ets
+import { common, Want } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Text('使用文件管理器，使用本应用打开多个PDF')
+        .fontSize($r('app.float.page_text_font_size'))
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+      Button('Jump to PDF_A').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.samples.paradigmstatemanagement',
+          abilityName: 'PdfEntryAbility',
+          uri: 'PDF_A',
+          parameters: {
+            key: 'PDF_A',
+            value: 'PDF_A-1111111111',
+          }
+        };
+        this.context.startAbility(wantInfo);
+      })
+      Button('Jump to PDF_B').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.samples.paradigmstatemanagement',
+          abilityName: 'PdfEntryAbility',
+          uri: 'PDF_B',
+          parameters: {
+            key: 'PDF_B',
+            value: 'PDF_B-22222222222',
+          }
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 17
+
+```
+// model/PDFData.ets
+@ObservedV2
+export default class PDFData {
+  // 单例实例
+  private static instance_: PDFData | null = null;
+  @Trace private data: Map<string, string> = new Map();
+  @Trace private flag: string = '';
+
+  private constructor() {
+  }
+
+  static getInstance(): PDFData {
+    if (!PDFData.instance_) {
+      PDFData.instance_ = new PDFData();
+    }
+    return PDFData.instance_;
+  }
+
+  setData(key: string, value: string) {
+    this.data.set(key, value);
+  }
+
+  getData() {
+    return this.data;
+  }
+
+  setFlage(value: string) {
+    this.flag = value;
+  }
+
+  getFlag() {
+    return this.flag;
+  }
+}
+```
+
+### Code block 18
+
+```
+import { UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import PDFData from './model/PDFData';
+
+export default class PDFAbility extends UIAbility {
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    // 用单例存储数据
+    const data = this.launchWant.parameters as Record<string, string>;
+    PDFData.getInstance().setData(data.key, data.value);
+    PDFData.getInstance().setFlage(this.launchWant.uri || '');
+    windowStage.loadContent('pages/internalmigrate/LocalStorageMultiInstance/PDF').catch();
+  }
+}
+```
+
+### Code block 19
+
+```
+// PDF.ets
+import PDFData from './model/PDFData';
+
+@Entry
+@ComponentV2
+struct PDF {
+  @Local message: string = 'uri';
+
+  build() {
+    Column() {
+      Text(this.message)
+        .fontSize($r('app.float.page_text_font_size'))
+        .fontWeight(FontWeight.Bold)
+    }
+    .backgroundColor(Color.Pink)
+    .height('100%')
+    .width('100%')
+  }
+
+  aboutToAppear(): void {
+    // 此处只做简略显示uri，实际功能为打开渲染PDF文件
+    const key: string = PDFData.getInstance().getFlag();
+    // 根据唯一标识，从单例中获取页面对应数据
+    this.message = PDFData.getInstance().getData().get(key) || '';
+  }
+}
+```
+
+### Code block 20
+
+```
+// EntryAbility Index.ets
+import { common, Want } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  @StorageLink('count') count: number = 0;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Text(`EntryAbility count: ${this.count}`)
+        .fontSize(50)
+        .onClick(() => {
+          this.count++;
+        })
+      Button('Jump to EntryAbility1').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility1'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 21
+
+```
+// EntryAbility1 Index1.ets
+import { common, Want } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index1 {
+  @StorageLink('count') count: number = 0;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Text(`EntryAbility1 count: ${this.count}`)
+        .fontSize(50)
+        .onClick(() => {
+          this.count++;
+        })
+      Button('Jump to EntryAbility').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 22
+
+```
+import { common, Want } from '@kit.AbilityKit';
+import { AppStorageV2 } from '@kit.ArkUI';
+
+@ObservedV2
+export class MyStorage {
+  @Trace public count: number = 0;
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  @Local storage: MyStorage = AppStorageV2.connect(MyStorage, 'storage', () => new MyStorage())!;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Text(`EntryAbility1 count: ${this.storage.count}`)
+        .fontSize(50)
+        .onClick(() => {
+          this.storage.count++;
+        })
+      Button('Jump to EntryAbility1').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility1'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 23
+
+```
+import { common, Want } from '@kit.AbilityKit';
+import { AppStorageV2 } from '@kit.ArkUI';
+
+@ObservedV2
+export class MyStorage {
+  @Trace public count: number = 0;
+}
+
+@Entry
+@ComponentV2
+struct Index1 {
+  @Local storage: MyStorage = AppStorageV2.connect(MyStorage, 'storage', () => new MyStorage())!;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Text(`EntryAbility1 count: ${this.storage.count}`)
+        .fontSize(50)
+        .onClick(() => {
+          this.storage.count++;
+        })
+      Button('Jump to EntryAbility').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 24
+
+```
+// EntryAbility Index.ets
+import { common, Want } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  @StorageProp('count') count: number = 0;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Text(`EntryAbility count: ${this.count}`)
+        .fontSize(25)
+        .onClick(() => {
+          this.count++;
+        })
+      Button('change Storage Count')
+        .onClick(() => {
+          AppStorage.setOrCreate('count', AppStorage.get<number>('count') as number + 100);
+        })
+      Button('Jump to EntryAbility1').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility1'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 25
+
+```
+// EntryAbility1 Index1.ets
+import { common, Want } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index1 {
+  @StorageProp('count') count: number = 0;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  build() {
+    Column() {
+      Text(`EntryAbility1 count: ${this.count}`)
+        .fontSize(50)
+        .onClick(() => {
+          this.count++;
+        })
+      Button('change Storage Count')
+        .onClick(() => {
+          AppStorage.setOrCreate('count', AppStorage.get<number>('count') as number + 100);
+        })
+      Button('Jump to EntryAbility').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 26
+
+```
+import { common, Want } from '@kit.AbilityKit';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+@ObservedV2
+export class MyStorage {
+  @Trace public count: number = 0;
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  @Local storage: MyStorage = AppStorageV2.connect(MyStorage, 'storage', () => new MyStorage())!;
+  @Local count: number = this.storage.count;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  @Monitor('storage.count')
+  onCountChange(mon: IMonitor) {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', `Index1 ${mon.value()?.before} to ${mon.value()?.now}`);
+    this.count = this.storage.count;
+  }
+
+  build() {
+    Column() {
+      Text(`EntryAbility1 count: ${this.count}`)
+        .fontSize(25)
+        .onClick(() => {
+          this.count++;
+        })
+      Button('change Storage Count')
+        .onClick(() => {
+          this.storage.count += 100;
+        })
+      Button('Jump to EntryAbility1').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility1'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 27
+
+```
+import { common, Want } from '@kit.AbilityKit';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+@ObservedV2
+export class MyStorage {
+  @Trace public count: number = 0;
+}
+
+@Entry
+@ComponentV2
+struct Index1 {
+  @Local storage: MyStorage = AppStorageV2.connect(MyStorage, 'storage', () => new MyStorage())!;
+  @Local count: number = this.storage.count;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  @Monitor('storage.count')
+  onCountChange(mon: IMonitor) {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', `Index1 ${mon.value()?.before} to ${mon.value()?.now}`);
+    this.count = this.storage.count;
+  }
+
+  build() {
+    Column() {
+      Text(`EntryAbility1 count: ${this.count}`)
+        .fontSize(25)
+        .onClick(() => {
+          this.count++;
+        })
+      Button('change Storage Count')
+        .onClick(() => {
+          this.storage.count += 100;
+        })
+      Button('Jump to EntryAbility').onClick(() => {
+        let wantInfo: Want = {
+          bundleName: 'com.example.myapplication', // 替换成AppScope/app.json5里的bundleName
+          abilityName: 'EntryAbility'
+        };
+        this.context.startAbility(wantInfo);
+      })
+    }
+  }
+}
+```
+
+### Code block 28
+
+```
+// 将设备languageCode存入AppStorage中
+Environment.envProp('languageCode', 'en');
+
+@Entry
+@Component
+struct Index {
+  @StorageProp('languageCode') languageCode: string = 'en';
+
+  build() {
+    Row() {
+      Column() {
+        // 输出当前设备的languageCode
+        Text(this.languageCode)
+      }
+    }
+  }
+}
+```
+
+### Code block 29
+
+```
+// Env.ets
+import { ConfigurationConstant } from '@kit.AbilityKit';
+
+export class Env {
+  public language: string | undefined;
+  public colorMode: ConfigurationConstant.ColorMode | undefined;
+  // 字体大小缩放的倍数
+  public fontSizeScale: number | undefined;
+  // 字体粗细缩放的倍数
+  public fontWeightScale: number | undefined;
+}
+
+export let env: Env = new Env();
+```
+
+### Code block 30
+
+```
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import { env } from '../pages/Env';
+
+export default class EntryAbility extends UIAbility {
+  // 在onCreate里获取需要的系统环境变量
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    env.language = this.context.config.language;
+    env.colorMode = this.context.config.colorMode;
+    env.fontSizeScale = this.context.config.fontSizeScale;
+    env.fontWeightScale = this.context.config.fontWeightScale;
+  }
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index');
+  }
+}
+```
+
+### Code block 31
+
+```
+// Index.ets
+import { env } from '../pages/Env';
+
+@Entry
+@ComponentV2
+struct Index {
+  build() {
+    Row() {
+      Column() {
+        // 输出当前设备的环境变量
+        Text(`languageCode: ${env.language}`).fontSize(20)
+        Text(`colorMode: ${env.colorMode}`).fontSize(20)
+        Text(`fontSizeScale: ${env.fontSizeScale}`).fontSize(20)
+        Text(`fontWeightScale: ${env.fontWeightScale}`).fontSize(20)
+      }
+    }
+  }
+}
+```
+
+### Code block 32
+
+```
+class Data {
+  public name: string = 'ZhangSan';
+  public id: number = 0;
+}
+
+PersistentStorage.persistProp('numProp', 47);
+PersistentStorage.persistProp('dataProp', new Data());
+
+@Entry
+@Component
+struct Index {
+  @StorageLink('numProp') numProp: number = 48;
+  @StorageLink('dataProp') dataProp: Data = new Data();
+
+  build() {
+    Column() {
+      // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
+      Text(`numProp: ${this.numProp}`)
+        .onClick(() => {
+          this.numProp += 1;
+        })
+        .fontSize(30)
+
+      // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
+      Text(`dataProp.name: ${this.dataProp.name}`)
+        .onClick(() => {
+          this.dataProp.name += 'a';
+        })
+        .fontSize(30)
+      // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
+      Text(`dataProp.id: ${this.dataProp.id}`)
+        .onClick(() => {
+          this.dataProp.id += 1;
+        })
+        .fontSize(30)
+
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 33
+
+```
+// 迁移到globalConnect
+import { PersistenceV2, Type } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+// 接受序列化失败的回调
+PersistenceV2.notifyOnError((key: string, reason: string, msg: string) => {
+  hilog.error(DOMAIN, 'testTag', '%{public}s', `error key: ${key}, reason: ${reason}, message: ${msg}`);
+});
+
+class Data {
+  public name: string = 'ZhangSan';
+  public id: number = 0;
+}
+
+@ObservedV2
+class V2Data {
+  @Trace public name: string = '';
+  @Trace public id: number = 1;
+}
+
+@ObservedV2
+export class Sample {
+  // 对于复杂对象需要@Type修饰，确保序列化成功
+  @Type(V2Data)
+  @Trace public num: number = 1;
+  @Trace public V2: V2Data = new V2Data();
+}
+
+// 用于判断是否完成数据迁移的辅助数据
+@ObservedV2
+class StorageState {
+  @Trace public isCompleteMoving: boolean = false;
+}
+
+function move() {
+  let movingState = PersistenceV2.globalConnect({ type: StorageState, defaultCreator: () => new StorageState() })!;
+  if (!movingState.isCompleteMoving) {
+    PersistentStorage.persistProp('numProp', 47);
+    PersistentStorage.persistProp('dataProp', new Data());
+    let num = AppStorage.get<number>('numProp')!;
+    let v1Data = AppStorage.get<Data>('dataProp')!;
+    PersistentStorage.deleteProp('numProp');
+    PersistentStorage.deleteProp('dataProp');
+
+    // V2创建对应数据
+    let migrate = PersistenceV2.globalConnect({
+      type: Sample,
+      key: 'connect2',
+      defaultCreator: () => new Sample()
+    })!; // 使用默认构造函数也可以
+    // 赋值数据，@Trace修饰的会自动保存，对于非@Trace对象，也可以调用save保存，如：PersistenceV2.save('connect2');
+    migrate.num = num;
+    migrate.V2.name = v1Data.name;
+    migrate.V2.id = v1Data.id;
+
+    // 将迁移标志设置为true
+    movingState.isCompleteMoving = true;
+  }
+}
+
+move();
+
+@Entry
+@ComponentV2
+struct Page1 {
+  @Local refresh: number = 0;
+  // 使用key:connect2存入数据
+  @Local p: Sample =
+    PersistenceV2.globalConnect({ type: Sample, key: 'connect2', defaultCreator: () => new Sample() })!;
+
+  build() {
+    Column({ space: 5 }) {
+      // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
+      Text(`numProp: ${this.p.num}`)
+        .onClick(() => {
+          this.p.num += 1;
+        })
+        .fontSize(30)
+
+      // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
+      Text(`dataProp.name: ${this.p.V2.name}`)
+        .onClick(() => {
+          this.p.V2.name += 'a';
+        })
+        .fontSize(30)
+      // 应用退出时会保存当前结果。重新启动后，会显示上一次的保存结果
+      Text(`dataProp.id: ${this.p.V2.id}`)
+        .onClick(() => {
+          this.p.V2.id += 1;
+        })
+        .fontSize(30)
+    }
+    .width('100%')
+  }
+}
+```

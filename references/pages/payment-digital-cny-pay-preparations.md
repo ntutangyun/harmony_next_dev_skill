@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-digital-cny-pay-preparations_
 
+如不接入数字人民币支付能力或已完成运营机构或受理服务机构商户入网并获取了商户号和APPID，可跳过该步骤。
+
 数字人民币支付仅支持通过运营机构或受理服务机构申请的商户接入，在开发前需要先完成商户入网（可拨打数字人民币客服热线956196根据指引完成商户入网）。
 
 商户入网后，数字人民币的运营机构会分配对应的商户号和APPID，商户号和APPID是开放API接口请求的必要入参。
@@ -17,5 +19,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-d
     ]
   }
 }
-云侧服务准备
-（可选）用户身份验证服务接入准备
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    "querySchemes": [
+      "wallet"
+    ]
+  }
+}
+```

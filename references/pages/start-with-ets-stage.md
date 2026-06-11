@@ -2,13 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/start-with-ets-stage_
 
+说明
+
+为确保运行效果，本文以使用DevEco Studio 6.1.1 Release版本为例。
+
+创建ArkTS工程
+
 若首次打开DevEco Studio，请单击Create Project创建工程。如果已经打开了一个工程，请在菜单栏选择File > New > Create Project来创建一个新工程。
 
 选择Application应用开发（本文以应用开发为例，Atomic Service对应为元服务开发），选择模板Empty Ability，单击Next进行下一步配置。
 
 若开发者需要进行Native相关工程的开发，请选择Native C++ 模板，更多模板的使用和说明请见工程模板介绍。
 
-进入配置工程界面，Compatible SDK表示兼容的最低API Version，此处以选择6.1.0(23) 为例，其他参数保持默认设置即可。
+进入配置工程界面，Compatible SDK表示兼容的最低API Version，此处以选择6.1.1(24) 为例，其他参数保持默认设置即可。
 
 单击Finish，工具会自动生成示例代码和相关资源，等待工程创建完成。
 
@@ -62,7 +68,6 @@ Index.ets文件的示例如下：
 struct Index {
   @State message: string = 'Hello World';
 
-
   build() {
     Row() {
       Column() {
@@ -85,7 +90,6 @@ struct Index {
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -144,7 +148,6 @@ struct Index {
 struct Second {
   @State message: string = 'Hi there';
 
-
   build() {
     Row() {
       Column() {
@@ -169,6 +172,7 @@ struct Second {
     .height('100%')
   }
 }
+
 实现页面间的跳转
 
 页面间的导航可以通过页面路由router来实现。页面路由router根据页面url找到目标页面，从而实现跳转。
@@ -182,12 +186,10 @@ struct Second {
 // Index.ets
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -218,7 +220,6 @@ struct Index {
           router.pushUrl({ url: 'pages/Second' }).then(() => {
             console.info('Succeeded in jumping to the second page.')
 
-
           }).catch((err: BusinessError) => {
             console.error(`Failed to jump to the second page. Code is ${err.code}, message is ${err.message}`)
           })
@@ -237,12 +238,10 @@ struct Index {
 // Second.ets
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Second {
   @State message: string = 'Hi there';
-
 
   build() {
     Row() {
@@ -297,9 +296,6 @@ struct Second {
 
 恭喜您已经基于ArkTS语言构建完成第一个HarmonyOS应用，快来探索更多的HarmonyOS功能吧。
 
-开发准备
-开发基础知识
-
 ## Code blocks
 
 ### Code block 1
@@ -310,7 +306,6 @@ struct Second {
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -334,7 +329,6 @@ struct Index {
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -383,7 +377,6 @@ struct Index {
 struct Second {
   @State message: string = 'Hi there';
 
-
   build() {
     Row() {
       Column() {
@@ -416,12 +409,10 @@ struct Second {
 // Index.ets
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     Row() {
@@ -452,7 +443,6 @@ struct Index {
           router.pushUrl({ url: 'pages/Second' }).then(() => {
             console.info('Succeeded in jumping to the second page.')
 
-
           }).catch((err: BusinessError) => {
             console.error(`Failed to jump to the second page. Code is ${err.code}, message is ${err.message}`)
           })
@@ -471,12 +461,10 @@ struct Index {
 // Second.ets
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Second {
   @State message: string = 'Hi there';
-
 
   build() {
     Row() {

@@ -2,12 +2,32 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-components-switch_
 
+switch为开关选择器，切换开启或关闭状态。具体用法请参考switch。
+
+创建switch组件
+
+在pages/index目录下的hml文件中创建一个switch组件。
+
+<!-- xxx.hml -->
+<div class="container">
+    <switch checked="true"></switch>
+</div>
+
+/* xxx.css */
+.container {
+  flex-direction: column;
+  background-color: #F1F3F5;
+}
+
+添加属性和方法
+
 switch组件通过textoff和showtext属性设置文本选中和未选中时的状态。设置checked属性值为true（组件为打开状态）。添加change事件，当组件状态改变时触发，触发后执行switchChange函数获取组件当前状态（关闭/打开）。
 
 <!-- xxx.hml -->
 <div class="container">
   <switch showtext="true" texton="open" textoff="close" checked="true" @change="switchChange"></switch>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -23,6 +43,7 @@ switch {
   text-padding: 20px;
   font-size: 50px;
 }
+
 // xxx.js
 import promptAction from '@ohos.promptAction';
 export default {
@@ -64,6 +85,7 @@ export default {
     for="item in addressList"@click="changeAddress({{$idx}}})">{{item}}</text>
   </div>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -115,6 +137,7 @@ switch{
   border-radius: 10px;
   border: 1px solid #0fabe7;
 }
+
 // xxx.js
 export default {
   data:{
@@ -138,5 +161,175 @@ export default {
   }
 }
 
-chart开发指导
-toolbar开发指导
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml -->
+<div class="container">
+    <switch checked="true"></switch>
+</div>
+```
+
+### Code block 2
+
+```
+/* xxx.css */
+.container {
+  flex-direction: column;
+  background-color: #F1F3F5;
+}
+```
+
+### Code block 3
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <switch showtext="true" texton="open" textoff="close" checked="true" @change="switchChange"></switch>
+</div>
+```
+
+### Code block 4
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F1F3F5;
+}
+switch {
+  texton-color: #002aff;
+  textoff-color: silver;
+  text-padding: 20px;
+  font-size: 50px;
+}
+```
+
+### Code block 5
+
+```
+// xxx.js
+import promptAction from '@ohos.promptAction';
+export default {
+  switchChange(e){
+    if(e.checked){
+      promptAction.showToast({
+        message: "open"
+      });
+    }else{
+      promptAction.showToast({
+        message: "close"
+      });
+    }
+  }
+}
+```
+
+### Code block 6
+
+```
+<!-- xxx.hml -->
+<div class="container">
+  <div class="change">
+    <text>Choose default address:</text>
+    <switch showtext="true" texton="on" textoff="off" checked="true" @change="switchChange"></switch>
+  </div>
+  <div class="content">
+    <text class="address"><span>Shipping address:</span><span class="textSpan">{{address}}</span></text>
+  </div>
+  <div class="myAddress" style="display: {{addressDisplay}};">
+    <text style="font-size: 30px;margin-bottom: 50px;">Choose an address:</text>
+    <text class="addressText" style="background-color: {{item == address?'#0fabe7':''}};color: {{item == address?'white':'black'}};"
+    for="item in addressList"@click="changeAddress({{$idx}}})">{{item}}</text>
+  </div>
+</div>
+```
+
+### Code block 7
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  background-color: #F1F3F5;
+  flex-direction: column;
+  padding: 50px;
+}
+.change{
+  margin-top: 20%;
+  width: 100%;
+  justify-content: center;
+}
+switch{
+  texton-color: #002aff;
+  textoff-color: silver;
+  text-padding: 20px;
+}
+.content{
+  width: 70%;
+  text-align: center;
+  flex-direction: column;
+  border: 1px solid #002aff;
+  margin-left: 15%;
+  text-align: center;
+}
+.address{
+  width: 100%;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 50px;
+}
+.textSpan{
+  color: #0aa9f1;
+}
+.myAddress{
+  flex-direction: column;
+  margin-top: 50px;
+}
+.addressText{
+  margin-left: 35%;
+  width: 30%;
+  height: 75px;
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  border: 1px solid #0fabe7;
+}
+```
+
+### Code block 8
+
+```
+// xxx.js
+export default {
+  data:{
+    address: '',
+    addressDisplay: 'none',
+    addressList: ['family','company','commissary'],
+  },
+  onInit(){
+    // 初始化默认地址为地址列表中的第一个
+    this.address = this.addressList[0];
+  },
+  switchChange(e){
+    if(e.checked){
+        this.addressDisplay = "none";
+    }else{
+        this.addressDisplay = "flex";
+    }
+  },
+  changeAddress(i){
+    this.address= this.addressList[i];
+  }
+}
+```

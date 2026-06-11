@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-faq-1_
 
+现象描述
+
 调用HMS_AREngine_ARPlane_GetPolygonSize获取检测到平面的二维顶点数组大小时报错：“plane is nullptr!”，返回错误码：401。
 
 可能原因
@@ -11,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 处理步骤
 
 开发者从AR Engine获取平面之后需判断其有效性后使用，例如，进行非空判断。
-
-AR Engine常见问题
-摄像头被遮挡一段时间后再放开，输出的位姿有跳变

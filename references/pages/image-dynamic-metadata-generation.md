@@ -2,6 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-dynamic-metadata-generation_
 
+调用者可以调用本模块提供的C API接口，实现HDR图片动态元数据生成。
+
+该能力常用于图片编辑中，如下图所示：
+
+规格说明
+
+支持的数据输入格式：
+
+输入ColorSpaceName	输入HdrMetadataType	输入PIXEL_FORMAT
 BT2020_PQ_LIMIT / BT2020_PQ	HDR_METADATA_TYPE_ALTERNATE	PIXEL_FORMAT_YCBCR_P010 / PIXEL_FORMAT_YCRCB_P010 / PIXEL_FORMAT_RGBA_1010102
 BT2020_HLG_LIMIT / BT2020_HLG	HDR_METADATA_TYPE_ALTERNATE	PIXEL_FORMAT_YCBCR_P010 / PIXEL_FORMAT_YCRCB_P010 / PIXEL_FORMAT_RGBA_1010102
 BT2020_PQ_LIMIT / BT2020_PQ	HDR_METADATA_TYPE_BASE	PIXEL_FORMAT_YCBCR_P010 / PIXEL_FORMAT_YCRCB_P010 / PIXEL_FORMAT_RGBA_1010102
@@ -22,10 +31,12 @@ BT2020_HLG_LIMIT / BT2020_HLG	HDR_METADATA_TYPE_NONE	PIXEL_FORMAT_YCBCR_P010 / P
 
 具体实现可参考示例工程。
 
-在 CMake 脚本中链接动态库
+[h2]在 CMake 脚本中链接动态库
+
 add_library(entry SHARED napi_init.cpp ImageProcessing/ImageProcessing.cpp)
 target_link_libraries(entry PUBLIC ${BASE_LIBRARY})
-ArkTS侧调用的开发步骤
+
+[h2]ArkTS侧调用的开发步骤
 
 通过解码器获取10 bit的PixelMap。
 
@@ -50,7 +61,8 @@ photoViewPicker.select(photoSelectOptions)
 let colorSpaceBT2020_HLG : colorSpaceManager.ColorSpaceManager = colorSpaceManager.create(colorSpaceManager.ColorSpace.BT2020_HLG);
 hdrpixelMap.setColorSpace(colorSpaceBT2020_HLG);
 hdrpixelMap.setMetadata(image.HdrMetadataKey.HDR_METADATA_TYPE, image.HdrMetadataType.ALTERNATE);
-Native侧调用的开发步骤
+
+[h2]Native侧调用的开发步骤
 
 添加头文件。
 
@@ -107,6 +119,7 @@ instance = nullptr;
 释放初始化环境资源。
 
 ret = OH_ImageProcessing_DeinitializeEnvironment();
+
 完整示例代码
 
 ArkTS示例代码：
@@ -121,5 +134,101 @@ ImageProcessing.h示例代码
 
 ImageProcessing.cpp示例代码
 
-图片缩放
-图片色彩空间转换
+## Code blocks
+
+### Code block 1
+
+```
+add_library(entry SHARED napi_init.cpp ImageProcessing/ImageProcessing.cpp)
+target_link_libraries(entry PUBLIC ${BASE_LIBRARY})
+```
+
+### Code block 2
+
+```
+const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+photoSelectOptions.maxSelectNumber = 1;
+const photoViewPicker = new photoAccessHelper.PhotoViewPicker();
+photoViewPicker.select(photoSelectOptions)
+  .then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+    let fd = fileIo.openSync(photoSelectResult.photoUris[0], fileIo.OpenMode.READ_ONLY);
+    const imageSource = image.createImageSource(fd.fd);
+    let option: image.DecodingOptions = {};
+    option.index = 0;
+    option.desiredDynamicRange = image.DecodingDynamicRange.AUTO;
+    this.pixelMapSrc = imageSource.createPixelMapSync(option);
+    this.getColorSpace();
+    this.hasPhoto = true;
+  })
+```
+
+### Code block 3
+
+```
+let colorSpaceBT2020_HLG : colorSpaceManager.ColorSpaceManager = colorSpaceManager.create(colorSpaceManager.ColorSpace.BT2020_HLG);
+hdrpixelMap.setColorSpace(colorSpaceBT2020_HLG);
+hdrpixelMap.setMetadata(image.HdrMetadataKey.HDR_METADATA_TYPE, image.HdrMetadataType.ALTERNATE);
+```
+
+### Code block 4
+
+```
+#include <multimedia/image_framework/image_mdk_common.h>
+#include <multimedia/image_framework/image_pixel_map_mdk.h>
+#include <multimedia/image_framework/image/pixelmap_native.h>
+#include <multimedia/video_processing_engine/image_processing.h>
+#include <multimedia/video_processing_engine/image_processing_types.h>
+#include <native_color_space_manager/native_color_space_manager.h>
+```
+
+### Code block 5
+
+```
+ImageProcessing_ErrorCode ret =  OH_ImageProcessing_InitializeEnvironment();
+```
+
+### Code block 6
+
+```
+//输入格式
+ImageProcessing_ColorSpaceInfo SRC_INFO;
+SRC_INFO.colorSpace = BT2020_HLG;
+SRC_INFO.metadataType = HDR_METADATA_TYPE_ALTERNATE;
+SRC_INFO.pixelFormat = PIXEL_FORMAT_RGBA_1010102;
+//能力查询
+bool flag = OH_ImageProcessing_IsMetadataGenerationSupported(&SRC_INFO);
+```
+
+### Code block 7
+
+```
+OH_PixelmapNative* hdr = nullptr;
+OH_PixelmapNative_ConvertPixelmapNativeFromNapi(env, argValue[0], &hdr);
+```
+
+### Code block 8
+
+```
+OH_ImageProcessing* instance = nullptr;
+ret = OH_ImageProcessing_Create(&instance, IMAGE_PROCESSING_TYPE_METADATA_GENERATION);
+```
+
+### Code block 9
+
+```
+ret = OH_ImageProcessing_GenerateMetadata(instance, hdr);
+```
+
+### Code block 10
+
+```
+ret = OH_ImageProcessing_Destroy(instance);
+instance = nullptr;
+```
+
+### Code block 11
+
+```
+ret = OH_ImageProcessing_DeinitializeEnvironment();
+```

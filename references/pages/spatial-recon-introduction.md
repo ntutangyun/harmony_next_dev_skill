@@ -13,11 +13,12 @@ Spatial Recon Kit提供了和空间重建有关的能力，帮助开发者实现
 滤镜：对渲染图像进行风格化处理。
 
 约束与限制
-支持的国家和地区
+
+[h2]支持的国家和地区
 
 本Kit仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-支持的设备
+[h2]支持的设备
 
 本Kit适用于Phone、Tablet、PC/2in1和TV设备。
 
@@ -28,6 +29,3 @@ Spatial Recon Kit提供了和空间重建有关的能力，帮助开发者实现
 与ArkGraphics 3D 模块的关系
 
 Spatial Recon Kit是ArkGraphics 3D 模块的扩展，需与ArkGraphics 3D 模块联合使用。
-
-Spatial Recon Kit（空间建模服务）
-Spatial Recon Kit术语

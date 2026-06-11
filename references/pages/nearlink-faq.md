@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-faq_
 
+连续进行数据传输时数据发送失败的问题
+
+连续多次调用writeData接口可能会导致发送队列拥塞，从而发送失败。
+
 您可以通过设置数据发送间隔来解决连续传输数据时失败的问题。使用setInterval设置函数调用的时间间隔，建议的数据发送时间间隔为10ms。
 
 星闪标准服务UUID的格式
@@ -11,6 +15,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 星闪目前支持的UUID格式形如：37BEA880-FC70-11EA-B720-00000000FDEE，包含128比特。其中前112比特由基础标识决定，128比特基础标识为固定值：37BEA880-FC70-11EA-B720-000000000000；后16比特通用唯一标识指示标准服务或标准服务成员。
 
 标准服务或标准服务成员使用的 16 比特通用唯一标识由星闪联盟统一进行分配，具有全局的唯一性。通过标识，客户端可以明确条目承载的是某一个服务、属性、方法、事件和引用了某一个服务。详情可查阅“星闪标准服务标识”。
-
-获取星闪合作设备集合信息
-Network Kit（网络服务）

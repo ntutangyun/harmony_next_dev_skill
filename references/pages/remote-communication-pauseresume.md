@@ -2,14 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-pauseresume_
 
+约束与限制
+
 请求暂停、恢复与断点续传能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备。
 
 请求暂停、恢复
-场景介绍
+
+[h2]场景介绍
 
 Remote Communication Kit提供完善的功能支持，包括请求的暂停和恢复功能。这不仅涵盖接收暂停，还包括发送暂停。
 
-使用实例
+[h2]使用实例
 
 导入需要的模块。
 
@@ -27,18 +30,15 @@ interface StringifiedDebugInfo {
 // 定义调试信息源类型
 type DebugInfoSource = undefined | rcp.DebugInfo[] | rcp.Response;
 
-
 // 定义调试信息序列化函数
 function debugInfoStringify(infoSource: DebugInfoSource): StringifiedDebugInfo[] {
   const debugInfo = Array.isArray(infoSource)
     ? (infoSource as rcp.DebugInfo[])
     : (infoSource as rcp.Response).debugInfo;
 
-
   if (!debugInfo) {
     return [];
   }
-
 
   const decoder = util.TextDecoder.create('utf-8');
   return debugInfo.map((i: rcp.DebugInfo): StringifiedDebugInfo => {
@@ -54,7 +54,6 @@ function debugInfoStringify(infoSource: DebugInfoSource): StringifiedDebugInfo[]
 function getSendPausedEvents(debugInfo: DebugInfoSource) {
   return debugInfoStringify(debugInfo).filter((i) => i.data.startsWith('[[RCP]]: Pause sending'));
 }
-
 
 function getSendResumedEvents(debugInfo: DebugInfoSource) {
   return debugInfoStringify(debugInfo).filter((i) => i.data.startsWith('[[RCP]]: Resume sending'));
@@ -106,27 +105,26 @@ const SendingPauseByTimeout = async (done: Function): Promise<void> => {
     return buffer;
   };
 
-
   // 发送请求并等待响应
   const response = await session.fetch(request)
-
 
   // 从响应的调试信息中获取发送暂停和恢复事件
   const pausedEvents = getSendPausedEvents(response);
   const resumedEvents = getSendResumedEvents(response);
-
 
   // 关闭会话
   session.close();
   // 调用完成回调函数
   done();
 }
+
 实现断点续传
-场景介绍
+
+[h2]场景介绍
 
 在需要接续数据请求的场景中，用户可以通过定义TransferRange对象的from和to属性来控制数据的截取范围。下载的内容可以被准确地截取并拼接到目标文件中，确保数据的完整性和一致性，开发者可以灵活地管理和恢复下载过程。
 
-使用示例
+[h2]使用示例
 
 导入模块。
 
@@ -254,5 +252,260 @@ function stopDownload() {
   session?.close();
   session = null;
 }
-快速实现上传下载
-实现流式请求
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { util } from '@kit.ArkTS';
+```
+
+### Code block 2
+
+```
+const HTTP_SERVER_POST: string = 'https://example.org/anything';
+// 定义调试信息接口
+interface StringifiedDebugInfo {
+  type: rcp.DebugEvent;
+  data: string;
+};
+// 定义调试信息源类型
+type DebugInfoSource = undefined | rcp.DebugInfo[] | rcp.Response;
+
+// 定义调试信息序列化函数
+function debugInfoStringify(infoSource: DebugInfoSource): StringifiedDebugInfo[] {
+  const debugInfo = Array.isArray(infoSource)
+    ? (infoSource as rcp.DebugInfo[])
+    : (infoSource as rcp.Response).debugInfo;
+
+  if (!debugInfo) {
+    return [];
+  }
+
+  const decoder = util.TextDecoder.create('utf-8');
+  return debugInfo.map((i: rcp.DebugInfo): StringifiedDebugInfo => {
+    return {
+      type: i.type,
+      data: decoder.decodeToString(new Uint8Array(i.data)).trim(),
+    };
+  });
+}
+```
+
+### Code block 3
+
+```
+function getSendPausedEvents(debugInfo: DebugInfoSource) {
+  return debugInfoStringify(debugInfo).filter((i) => i.data.startsWith('[[RCP]]: Pause sending'));
+}
+
+function getSendResumedEvents(debugInfo: DebugInfoSource) {
+  return debugInfoStringify(debugInfo).filter((i) => i.data.startsWith('[[RCP]]: Resume sending'));
+}
+```
+
+### Code block 4
+
+```
+const SendingPauseByTimeout = async (done: Function): Promise<void> => {
+  const session = rcp.createSession();
+  const request = new rcp.Request(HTTP_SERVER_POST);
+  // 定义发送暂停策略，kind为'timeout'，timeoutMs为1ms
+  const sendPolicy: rcp.SendingPausePolicy = {
+    kind: 'timeout',
+    timeoutMs: 1,
+  };
+  // 定义暂停策略，sending字段引用了上述定义的发送暂停策略
+  const pausePolicy: rcp.PausePolicy = {
+    sending: sendPolicy,
+  };
+  // 设置请求的配置，包括传输策略和跟踪信息
+  request.configuration = {
+    transfer: {
+      pausePolicy: pausePolicy,
+    },
+    tracing: {
+      infoToCollect: {
+        textual: true,
+      },
+    },
+  };
+  // 定义请求体数据
+  const data = 'TestData';
+  // 设置请求头，'Content-Length'字段表示请求体的长度
+  request.headers = {
+    'Content-Length': data.length.toString(),
+  };
+  // 定义布尔型标志变量用于控制请求体生成
+  let isReadCompleted = false;
+  // 设置请求方法为POST
+  request.method = 'POST';
+  // 定义请求体内容生成函数，如果read为true，则返回空的ArrayBuffer，否则生成包含请求体数据的ArrayBuffer
+  request.content = (maxSize) => {
+    if (isReadCompleted) {
+      return new ArrayBuffer(0);
+    }
+    isReadCompleted = true;
+    const buffer = new ArrayBuffer(data.length);
+    util.TextEncoder.create('utf-8').encodeIntoUint8Array(data, new Uint8Array(buffer));
+    return buffer;
+  };
+
+  // 发送请求并等待响应
+  const response = await session.fetch(request)
+
+  // 从响应的调试信息中获取发送暂停和恢复事件
+  const pausedEvents = getSendPausedEvents(response);
+  const resumedEvents = getSendResumedEvents(response);
+
+  // 关闭会话
+  session.close();
+  // 调用完成回调函数
+  done();
+}
+```
+
+### Code block 5
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 6
+
+```
+// 创建会话
+let session: rcp.Session | null = rcp.createSession();
+// 定义服务器地址
+const kHttpServerAddress = 'http://www.example.com/fetch';
+// 创建请求
+const request = new rcp.Request(kHttpServerAddress, 'GET');
+// 定义变量记录下载文件的大小
+let totalSize = 0;
+// 定义一个存储上次传输位置的变量
+let lastTransferPosition = 0;
+```
+
+### Code block 7
+
+```
+/**
+ * 获取要下载文件的大小
+ *
+ * @returns 文件的大小
+ */
+async function getTotalSize(): Promise<number> {
+  request.transferRange = { from: 0, to: 1 };
+  try {
+    let rep = await session?.fetch(request);
+    if (rep) {
+      // 从响应数据的header的content-range字段中提取出文件的大小
+      let contentRange = rep.headers['content-range'];
+      let sizeStr = contentRange ? contentRange.substring(contentRange.indexOf('\/') + 1, contentRange.length) : '0';
+      totalSize = Number(sizeStr);
+    }
+  } catch (err) {
+    console.error(`getTotalSize error code is ${err.code}, error data is ${err.data}`);
+  }
+  console.info(`getTotalSize totalSize: ${totalSize.toString()}`);
+  return totalSize;
+}
+```
+
+### Code block 8
+
+```
+/**
+ * 根据传输范围下载文件
+ *
+ * @param from - 传输范围的起始位置
+ * @param to - 传输范围的结束位置
+ */
+function downloadTransfer(from: number, to: number) {
+  // 设置请求的数据传输范围
+  request.transferRange = { from: from, to: to };
+  session?.fetch(request).then((rep) => {
+    if (rep.body) {
+      // 处理响应，可以在此处将文件保存到本地
+      console.info(`Response succeeded: ${JSON.stringify(rep.headers)}`);
+      // 下次传输的起始位置 = 上次的位置 + 本次传输数据的长度
+      lastTransferPosition += rep.body.byteLength;
+      if (lastTransferPosition < totalSize) {
+        // 计算下一次传输范围的结束位置
+        const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+        // 递归调用继续下载下一段数据
+        downloadTransfer(lastTransferPosition, nextTo);
+      } else {
+        console.info('Response succeeded, completed.');
+      }
+    }
+  }).catch((err: BusinessError) => {
+    console.error(`Continue transfer error: code is ${err.code}, message is ${err.message}`);
+  });
+}
+```
+
+### Code block 9
+
+```
+/**
+ * 开始下载
+ */
+async function startDownload() {
+  if (!session) {
+    session = rcp.createSession();
+  }
+  // 传输位置归零
+  lastTransferPosition = 0;
+  // 获取要下载文件的总大小
+  totalSize = await getTotalSize();
+  // 计算传输范围的结束位置
+  const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+  // 开始下载
+  downloadTransfer(lastTransferPosition, nextTo);
+}
+```
+
+### Code block 10
+
+```
+/**
+ * 暂停下载
+ */
+function pauseDownload() {
+  // 取消下载请求
+  session?.cancel(request);
+}
+```
+
+### Code block 11
+
+```
+/**
+ * 继续下载
+ */
+function resumeDownload() {
+  // 计算传输范围的结束位置
+  const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+  // 开始下载
+  downloadTransfer(lastTransferPosition, nextTo);
+}
+```
+
+### Code block 12
+
+```
+/**
+ * 停止下载
+ */
+function stopDownload() {
+  // 取消下载请求
+  session?.cancel(request);
+  // 关闭session
+  session?.close();
+  session = null;
+}
+```

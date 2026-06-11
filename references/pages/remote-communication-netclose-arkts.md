@@ -24,6 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 接口名	描述
 close(): void	关闭会话。返回为空。
+
 使用示例
 
 导入模块。
@@ -46,5 +47,30 @@ session.fetch(req).then((response) => {
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
 });
 session.close();
-取消网络请求（ArkTS）
-发送网络请求（C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 1、创建会话
+const session = rcp.createSession();
+// 2、创建Request，"http://www.example.com"请根据实际情况替换为想要请求的URL地址。
+let req = new rcp.Request("http://www.example.com/fetch", "GET");
+// 3、利用fetch发起网络请求
+session.fetch(req).then((response) => {
+  // 4、对响应的处理，此处为示例，只做打印处理
+  console.info(`Response succeeded: ${response}`);
+}).catch((err: BusinessError) => {
+  // 5、请求错误处理
+  console.error(`Response error code is ${err.code}, error data is ${err.data}`);
+});
+session.close();
+```

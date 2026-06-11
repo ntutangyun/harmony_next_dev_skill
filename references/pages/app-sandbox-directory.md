@@ -37,7 +37,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-sandb
 图3 应用文件目录结构图
 
 说明
+
 禁止直接使用上图中四级目录之前的目录名组成的路径字符串，否则可能导致后续应用版本因应用文件路径变化导致不兼容问题。
+
 应通过Context属性获取应用文件路径，包括但不限于上图中绿色背景的路径。 Context上下文获取及上述应用文件路径的获取，详见应用上下文Context。
 
 一级目录data/：应用文件根目录。
@@ -49,11 +51,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-sandb
 EL1(Encryption Level 1):
 
 保护设备上所有文件的基础安全能力。设备开机后，用户无需完成身份验证即可访问EL1保护的文件。除非有特殊需求，否则不建议使用此方法。
+
 如果直接窃取设备存储介质上的密文，攻击者无法脱机进行解密。
 
 EL2(Encryption Level 2):
 
 在EL1的基础上，增加首次认证后的文件保护能力。设备开机后，用户在通过首次认证后，通过EL2能力保护的文件才能被访问。此后只要设备没有关机，通过EL2能力保护的文件一直可被访问。推荐应用默认使用该方式。
+
 如果在关机后丢失手机，攻击者无法读取EL2保护的文件。
 
 EL3(Encryption Level 3):
@@ -63,12 +67,15 @@ EL3(Encryption Level 3):
 EL4(Encryption Level 4):
 
 在EL2的基础上，增加设备锁屏时的文件保护能力。在用户锁屏时，通过EL4能力保护的数据将无法被访问。如无特殊必要，无需使用该方式。
+
 如果设备在锁屏状态下被盗，攻击者无法读取EL4保护的文件。
 
 EL5(Encryption Level 5):
 
 在EL2的基础上，增加设备锁屏时的文件保护能力。在用户锁屏后，满足一定条件时，通过EL5能力保护的数据将无法被访问，但可以继续创建和读写新的文件。如无特殊必要，无需使用该方式。
+
 默认情况下不会生成EL5的相关目录，应用若需要使用EL5目录，则需要配置访问E类加密数据库的权限。具体配置方法详见E类加密数据库的使用。
+
 说明
 
 应用如无特殊需要，应将数据存放在el2加密目录下，以尽可能保证数据安全。但是对于某些场景，一些应用文件需要在用户首次认证前就可被访问，例如时钟、闹铃、壁纸等，此时应用需要将这些文件存放到设备级加密区（el1）。
@@ -88,68 +95,14 @@ EL5(Encryption Level 5):
 表1 应用文件路径详细说明
 
 目录名	Context属性名称	类型	说明
-bundle	bundleCodeDir	安装文件路径	
-
-应用安装后的App的HAP资源包所在目录；随应用卸载而清理。
-
-不能通过拼接路径访问资源文件，应使用资源管理接口访问资源。
-
-可以用于存储应用的代码资源数据，主要包括应用安装的HAP资源包、可重复使用的库文件以及插件资源等。此路径下存储的代码资源数据可以被用于动态加载。
-
-
-base	NA	本设备文件路径	
-
-应用在本设备上存放持久化数据的目录（随应用卸载而清理），子目录包含files/、cache/、temp/和haps/。
-
-不建议将cookie、密码和token等高风险信息明文存储在此目录下。
-
-
-database	databaseDir	数据库路径	
-
-应用在el2加密条件下存放通过分布式数据库服务操作的文件目录；随应用卸载而清理。
-
-仅用于保存应用的私有数据库数据，主要包括数据库文件等。此路径下仅适用于存储分布式数据库相关文件数据。
-
-
-distributedfiles	distributedFilesDir	分布式文件路径	
-
-应用在el2加密条件下存放分布式文件的目录，应用将文件放入该目录可分布式跨设备直接访问；随应用卸载而清理。
-
-可以用于保存应用分布式场景下的数据，主要包括应用多设备共享文件、应用多设备备份文件、应用多设备群组协助文件。此路径下存储这些数据，使得应用更加适合多设备使用场景。
-
-注意：
-
-distributedfiles下的.remote_share目录由系统创建管理，应用请勿创建或操作。
-
-distributedfiles目录支持直接操作其他设备文件，请勿随意删除该目录下的文件。详细注意事项请参考跨设备文件共享和访问 。
-
-
-files	filesDir	应用通用文件路径	
-
-应用在本设备内部存储上通用的存放默认长期保存的文件路径；随应用卸载而清理。
-
-可以用于保存应用的任何私有数据，主要包括用户持久性文件、图片、媒体文件以及日志文件等。此路径下存储这些数据，使得数据保持私有、安全且持久有效。
-
-
-cache	cacheDir	应用缓存文件路径	
-
-应用在本设备内部存储上用于缓存下载的文件或可重新生成的缓存文件的路径，应用cache目录大小超过配额或者系统空间达到一定条件，自动触发清理该目录下文件；用户通过系统空间管理类应用也可能触发清理该目录。应用需判断文件是否仍存在，决策是否需重新缓存该文件；随应用卸载而清理。
-
-可以用于保存应用的缓存数据，主要包括离线数据、图片缓存、数据库备份以及临时文件等。此路径下存储的数据可能会被系统自动清理，因此不要存储重要数据。
-
-
-preferences	preferencesDir	应用首选项文件路径	
-
-应用在本设备内部存储上通过数据库API存储配置类或首选项的目录；随应用卸载而清理。详见通过用户首选项实现数据持久化。
-
-可以用于保存应用的首选项数据，主要包括应用首选项文件以及配置文件等。此路径下仅适用于存储少量数据。
-
-
-temp	tempDir	应用临时文件路径	
-
-应用在本设备内部存储上仅在应用运行期间产生和需要的文件，应用退出后即清理。
-
-可以用于保存应用的临时生成的数据，主要包括数据库缓存、图片缓存、临时日志文件、以及下载的应用安装包文件等。此路径下存储使用后即可删除的数据。
+bundle	bundleCodeDir	安装文件路径	应用安装后的App的HAP资源包所在目录；随应用卸载而清理。 不能通过拼接路径访问资源文件，应使用资源管理接口访问资源。 可以用于存储应用的代码资源数据，主要包括应用安装的HAP资源包、可重复使用的库文件以及插件资源等。此路径下存储的代码资源数据可以被用于动态加载。
+base	NA	本设备文件路径	应用在本设备上存放持久化数据的目录（随应用卸载而清理），子目录包含files/、cache/、temp/和haps/。 不建议将cookie、密码和token等高风险信息明文存储在此目录下。
+database	databaseDir	数据库路径	应用在el2加密条件下存放通过分布式数据库服务操作的文件目录；随应用卸载而清理。 仅用于保存应用的私有数据库数据，主要包括数据库文件等。此路径下仅适用于存储分布式数据库相关文件数据。
+distributedfiles	distributedFilesDir	分布式文件路径	应用在el2加密条件下存放分布式文件的目录，应用将文件放入该目录可分布式跨设备直接访问；随应用卸载而清理。 可以用于保存应用分布式场景下的数据，主要包括应用多设备共享文件、应用多设备备份文件、应用多设备群组协助文件。此路径下存储这些数据，使得应用更加适合多设备使用场景。 注意： distributedfiles下的.remote_share目录由系统创建管理，应用请勿创建或操作。 distributedfiles目录支持直接操作其他设备文件，请勿随意删除该目录下的文件。详细注意事项请参考跨设备文件共享和访问 。
+files	filesDir	应用通用文件路径	应用在本设备内部存储上通用的存放默认长期保存的文件路径；随应用卸载而清理。 可以用于保存应用的任何私有数据，主要包括用户持久性文件、图片、媒体文件以及日志文件等。此路径下存储这些数据，使得数据保持私有、安全且持久有效。
+cache	cacheDir	应用缓存文件路径	应用在本设备内部存储上用于缓存下载的文件或可重新生成的缓存文件的路径，应用cache目录大小超过配额或者系统空间达到一定条件，自动触发清理该目录下文件；用户通过系统空间管理类应用也可能触发清理该目录。应用需判断文件是否仍存在，决策是否需重新缓存该文件；随应用卸载而清理。 可以用于保存应用的缓存数据，主要包括离线数据、图片缓存、数据库备份以及临时文件等。此路径下存储的数据可能会被系统自动清理，因此不要存储重要数据。
+preferences	preferencesDir	应用首选项文件路径	应用在本设备内部存储上通过数据库API存储配置类或首选项的目录；随应用卸载而清理。详见通过用户首选项实现数据持久化。 可以用于保存应用的首选项数据，主要包括应用首选项文件以及配置文件等。此路径下仅适用于存储少量数据。
+temp	tempDir	应用临时文件路径	应用在本设备内部存储上仅在应用运行期间产生和需要的文件，应用退出后即清理。 可以用于保存应用的临时生成的数据，主要包括数据库缓存、图片缓存、临时日志文件、以及下载的应用安装包文件等。此路径下存储使用后即可删除的数据。
 
 应用沙箱路径和真实物理路径的对应关系
 
@@ -158,54 +111,9 @@ temp	tempDir	应用临时文件路径
 其中<USERID>为当前用户ID，从100开始递增，<EXTENSIONPATH>为moduleName-extensionName。应用是否以Extension独立沙箱运行可参考ExtensionAbility组件。
 
 应用沙箱路径	物理路径
-/data/storage/el1/bundle	
-
-应用安装包目录：
-
-/data/app/el1/bundle/public/<PACKAGENAME>
-
-
-/data/storage/el1/base	
-
-应用el1级别加密数据目录：
-
-- 非独立沙箱运行的应用：/data/app/el1/<USERID>/base/<PACKAGENAME>
-
-- 以独立沙箱运行的Extension应用： /data/app/el1/<USERID>/base/+extension-<EXTENSIONPATH>+<PACKAGENAME>
-
-
-/data/storage/el2/base	
-
-应用el2级别加密数据目录：
-
-- 非独立沙箱运行的应用：/data/app/el2/<USERID>/base/<PACKAGENAME>
-
-- 以独立沙箱运行的Extension应用： /data/app/el2/<USERID>/base/+extension-<EXTENSIONPATH>+<PACKAGENAME>
-
-
-/data/storage/el1/database	
-
-应用el1级别加密数据库目录：
-
-- 非独立沙箱运行的应用：/data/app/el1/<USERID>/database/<PACKAGENAME>
-
-- 以独立沙箱运行的Extension应用：/data/app/el1/<USERID>/database/+extension-<EXTENSIONPATH>+<PACKAGENAME>
-
-
-/data/storage/el2/database	
-
-应用el2级别加密数据库目录：
-
-- 非独立沙箱运行的应用：/data/app/el2/<USERID>/database/<PACKAGENAME>
-
-- 以独立沙箱运行的Extension应用：/data/app/el2/<USERID>/database/+extension-<EXTENSIONPATH>+<PACKAGENAME>
-
-
-/data/storage/el2/distributedfiles	
-
-应用el2加密级别有账号分布式数据融合目录：
-
-- 物理目录：/mnt/hmdfs/<USERID>/account/merge_view/data/<PACKAGENAME>
-
-应用文件概述
-应用文件访问与管理
+/data/storage/el1/bundle	应用安装包目录： /data/app/el1/bundle/public/<PACKAGENAME>
+/data/storage/el1/base	应用el1级别加密数据目录： - 非独立沙箱运行的应用：/data/app/el1/<USERID>/base/<PACKAGENAME> - 以独立沙箱运行的Extension应用： /data/app/el1/<USERID>/base/+extension-<EXTENSIONPATH>+<PACKAGENAME>
+/data/storage/el2/base	应用el2级别加密数据目录： - 非独立沙箱运行的应用：/data/app/el2/<USERID>/base/<PACKAGENAME> - 以独立沙箱运行的Extension应用： /data/app/el2/<USERID>/base/+extension-<EXTENSIONPATH>+<PACKAGENAME>
+/data/storage/el1/database	应用el1级别加密数据库目录： - 非独立沙箱运行的应用：/data/app/el1/<USERID>/database/<PACKAGENAME> - 以独立沙箱运行的Extension应用：/data/app/el1/<USERID>/database/+extension-<EXTENSIONPATH>+<PACKAGENAME>
+/data/storage/el2/database	应用el2级别加密数据库目录： - 非独立沙箱运行的应用：/data/app/el2/<USERID>/database/<PACKAGENAME> - 以独立沙箱运行的Extension应用：/data/app/el2/<USERID>/database/+extension-<EXTENSIONPATH>+<PACKAGENAME>
+/data/storage/el2/distributedfiles	应用el2加密级别有账号分布式数据融合目录： - 物理目录：/mnt/hmdfs/<USERID>/account/merge_view/data/<PACKAGENAME>

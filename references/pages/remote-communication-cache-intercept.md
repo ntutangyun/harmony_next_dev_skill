@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-cache-intercept_
 
+从6.0.0(20)开始，支持自定义缓存拦截器。
+
 Remote Communication Kit模块提供了拦截器能力，支持开发者根据业务需求，实现自定义缓存拦截器。通过拦截器机制，开发者能够介入缓存处理流程，包括缓存数据的预处理、加载逻辑定制等，从而精准匹配复杂业务场景对缓存逻辑的差异化需求，提升系统的灵活性与可扩展性。
 
 约束与限制
@@ -62,5 +64,70 @@ const responseB = await session.put('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
 console.info(`The current cache hit count is: ${cacheState.hitCount}`);
-Session间缓存共享
-通过预建连接提升HTTP传输性能
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+```
+
+### Code block 2
+
+```
+class BlindCacheInterceptor implements rcp.Interceptor {
+  private readonly cache: rcp.ResponseCache;
+  constructor(cache: rcp.ResponseCache) {
+    this.cache = cache;
+  }
+  async intercept(context: rcp.RequestContext, next: rcp.RequestHandler): Promise<rcp.Response> {
+    const key: rcp.ResponseCacheKey = {
+      url: context.request.url,
+      method: context.request.method,
+    };
+    const responseInCache = await this.cache.get(key);
+    if (responseInCache) {
+      return rcp.createResponse(context.request, responseInCache.response, new Date());
+    }
+    const networkResponse = await next.handle(context);
+    await this.cache.set(key, rcp.createCachedResponse(networkResponse));
+    return networkResponse;
+  }
+}
+```
+
+### Code block 3
+
+```
+const responseCache = new rcp.ResponseCache({
+  persistent: {
+    kind: 'file-system',
+    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+  }
+});
+```
+
+### Code block 4
+
+```
+const session: rcp.Session = rcp.createSession({ interceptors: [new BlindCacheInterceptor(responseCache)] });
+```
+
+### Code block 5
+
+```
+const responseA = await session.put('https://www.example.com');
+console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
+let cacheState = await responseCache.getState();
+console.info(`The current number of cache entries is: ${cacheState.count}`);
+```
+
+### Code block 6
+
+```
+const responseB = await session.put('https://www.example.com');
+console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
+cacheState = await responseCache.getState();
+console.info(`The current cache hit count is: ${cacheState.hitCount}`);
+```

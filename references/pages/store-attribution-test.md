@@ -22,18 +22,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-att
 
 接口名	描述
 validateSource(adSourceInfo: AdSourceInfo, publicKey: string): Promise<void>	验证归因来源接口，用于媒体App/分发平台验证adSourceInfo入参的合法性。
-setPostback(postbackInfo: PostbackInfo): Promise<void>	
-
-设置归因结果回传接口，用于应用生态伙伴：
-
-- 验证triggerData是否合法。
-
-- 设置调试使用的回传数据。
-
-
+setPostback(postbackInfo: PostbackInfo): Promise<void>	设置归因结果回传接口，用于应用生态伙伴： - 验证triggerData是否合法。 - 设置调试使用的回传数据。
 flushPostbacks(adTechId: string): Promise<void>	主动、实时触发归因结果回传接口，用于应用生态伙伴验证接收及处理回传的逻辑是否正确。
+
 开发步骤
-验证归因来源
+
+[h2]验证归因来源
 
 导入相关模块。
 
@@ -71,7 +65,8 @@ attributionTestManager.validateSource(adSourceInfo, publicKey).then(() => {
 }).catch((error: BusinessError) => {
   hilog.error(0, "testTag", `testValidateSource failed.code is ${error.code}, message is ${error.message}`);
 })
-设置归因结果回传
+
+[h2]设置归因结果回传
 
 导入相关模块。
 
@@ -105,7 +100,8 @@ attributionTestManager.setPostback(postbackInfo).then(() => {
 }).catch((error: BusinessError) => {
   hilog.error(0, "testTag", `setPostback onError.code is ${error.code}, message is ${error.message}`);
 })
-触发归因结果回传
+
+[h2]触发归因结果回传
 
 导入相关模块。
 
@@ -124,5 +120,111 @@ attributionTestManager.flushPostbacks(adTechId).then(() => {
 }).catch((error: BusinessError) => {
   hilog.error(0, "testTag", `flushPostbacks onError.code is ${error.code}, message is ${error.message}`);
 })
-归因结果回传
-隐私管理服务
+
+## Code blocks
+
+### Code block 1
+
+```
+import { attributionTestManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError,deviceInfo} from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 注册归因角色时提供给应用归因服务云侧的公钥
+let publicKey: string = '';
+let adSourceInfo: attributionTestManager.AdSourceInfo = {
+  // 可以使用虚拟的adTechId
+  adTechId: '2******8',
+  campaignId: '',
+  destinationId: '1*******8',
+  sourceType: attributionTestManager.SourceType.IMPRESSION,
+  mmpIds: ['1******8', '2******9'],
+  serviceTag: 'testServiceTag',
+  nonce: '123***2',
+  timestamp: Date.now(),
+  signature: 'MEQCIEQlmZ****zKBSE8QnhLTIHZZZ****ZpRqRxHss65Ko****JgJKjdrWdkL****juEx2RmFS7da****ZRVZ8RyMyUXg=='
+};
+let osApiVersion: number = deviceInfo.sdkApiVersion;
+if (osApiVersion >= 22) {
+  adSourceInfo.campaignId = '1*******9';
+} else {
+  adSourceInfo.campaignId = '1****6';
+}
+```
+
+### Code block 3
+
+```
+attributionTestManager.validateSource(adSourceInfo, publicKey).then(() => {
+  hilog.info(0, "testTag", 'Succeeded in validating source.');
+}).catch((error: BusinessError) => {
+  hilog.error(0, "testTag", `testValidateSource failed.code is ${error.code}, message is ${error.message}`);
+})
+```
+
+### Code block 4
+
+```
+import { attributionTestManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError,deviceInfo } from '@kit.BasicServicesKit';
+```
+
+### Code block 5
+
+```
+let postbackInfo: attributionTestManager.PostbackInfo = {
+  adTechId: '1******8',
+  campaignId: '',
+  sourceId: '1*******8',
+  destinationId: '1*******8',
+  serviceTag: 'testServiceTag',
+  businessScene: 5,
+  triggerData: 123,
+  postbackUrl: 'https://xxx.com'
+};
+let osApiVersion: number = deviceInfo.sdkApiVersion;
+if (osApiVersion >= 22) {
+  postbackInfo.campaignId = '1*******9';
+} else {
+  postbackInfo.campaignId = '1****6';
+}
+```
+
+### Code block 6
+
+```
+attributionTestManager.setPostback(postbackInfo).then(() => {
+  hilog.info(0, "testTag", 'Succeeded in setting postback.');
+}).catch((error: BusinessError) => {
+  hilog.error(0, "testTag", `setPostback onError.code is ${error.code}, message is ${error.message}`);
+})
+```
+
+### Code block 7
+
+```
+import { attributionTestManager } from '@kit.AppGalleryKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 8
+
+```
+let adTechId: string = '1******8';
+```
+
+### Code block 9
+
+```
+attributionTestManager.flushPostbacks(adTechId).then(() => {
+  hilog.info(0, "testTag", 'Succeeded in flushing postbacks.');
+}).catch((error: BusinessError) => {
+  hilog.error(0, "testTag", `flushPostbacks onError.code is ${error.code}, message is ${error.message}`);
+})
+```

@@ -1,31 +1,69 @@
-# @security/no
+# @security/no-unsafe-aes
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_no-unsafe-aes_
 
 该规则禁止在AES加密算法中使用不安全的ECB加密模式。推荐使用Petal Aegis SDK中的安全AES接口，详情请参见对称加解密。
 
 规则配置
+
 // code-linter.json5
 {
   "rules": {
     "@security/no-unsafe-aes": "error"
   }
 }
+
 选项
 
 该规则无需配置额外选项。
 
 正例
+
 import cryptoFramework from '@ohos.security.cryptoFramework';
 cryptoFramework.createCipher('AES128|CBC|PKCS5');
+
 反例
+
 import cryptoFramework from '@ohos.security.cryptoFramework';
 cryptoFramework.createCipher('AES128|ECB|NoPadding');
+
 规则集
+
 plugin:@security/recommended
 plugin:@security/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@security/no-cycle
-@security/no-unsafe-dh
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@security/no-unsafe-aes": "error"
+  }
+}
+```
+
+### Code block 2
+
+```
+import cryptoFramework from '@ohos.security.cryptoFramework';
+cryptoFramework.createCipher('AES128|CBC|PKCS5');
+```
+
+### Code block 3
+
+```
+import cryptoFramework from '@ohos.security.cryptoFramework';
+cryptoFramework.createCipher('AES128|ECB|NoPadding');
+```
+
+### Code block 4
+
+```
+plugin:@security/recommended
+plugin:@security/all
+```

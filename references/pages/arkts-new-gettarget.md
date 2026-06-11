@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new-gettarget_
 
+为了获取状态管理框架代理前的原始对象，开发者可以使用getTarget接口。
+
+在阅读本文档前，建议提前阅读：@Observed、@ObservedV2。
+
+说明
+
 从API version 12开始，开发者可以使用UIUtils中的getTarget接口获取状态管理框架代理前的原始对象。
 
 概述
@@ -25,6 +31,7 @@ getTarget仅支持对象类型传参。
 import { UIUtils } from '@kit.ArkUI';
 let resNumber = UIUtils.getTarget(2); // 非对象类型入参，编译时报错
 let resObject = UIUtils.getTarget(2 as Object); // 非对象类型入参，绕过编译拦截，直接返回传入值，错误用法
+
 import { UIUtils } from '@kit.ArkUI';
 @Observed
 class Info {
@@ -45,7 +52,6 @@ class Info {
 struct GetTargetObject {
   @State info: Info = new Info();
 
-
   build() {
     Column() {
       Text(`info.name: ${this.info.name}`)
@@ -61,9 +67,10 @@ struct GetTargetObject {
     }
   }
 }
-GetTargetObject.ets
+
 使用场景
-获取状态管理V1代理前的原始对象
+
+[h2]获取状态管理V1代理前的原始对象
 
 状态管理V1有两种场景会给对象增加代理：
 
@@ -78,7 +85,6 @@ class NonObservedClass {
 }
 let observedClass: ObservedClass = new ObservedClass(); // 被代理
 let nonObservedClass: NonObservedClass = new NonObservedClass(); // 不被代理
-GetTargetAgent.ets
 
 【2】状态变量装饰器装饰的复杂类型对象。使用@State、@Prop等状态变量装饰器装饰Class、Map、Set、Date、Array时，会添加代理。若该对象已经是代理对象，则不会重复创建代理。
 
@@ -101,7 +107,6 @@ struct GetTargetNoChange {
   @State sampleSet: Set<number> = new Set([0, 1, 2, 3, 4]); // Set类型创建代理
   @State sampleDate: Date = new Date(); // Date类型创建代理
 
-
   build() {
     Column() {
       Text(`this.observedObject === observedClass: ${this.observedObject === observedClass}`) // true
@@ -109,7 +114,6 @@ struct GetTargetNoChange {
     }
   }
 }
-GetTargetNoChange.ets
 
 使用UIUtils.getTarget接口可以获取代理前的原始对象。
 
@@ -137,7 +141,6 @@ struct GetTargetAgent {
   @State sampleSet: Set<number> = globalSampleSet; // Set类型创建代理
   @State sampleDate: Date = globalSampleDate; // Date类型创建代理
 
-
   build() {
     Column() {
       Text(`this.observedObject === observedClass: ${this.observedObject ===
@@ -155,8 +158,8 @@ struct GetTargetAgent {
     }
   }
 }
-GetTargetAgent.ets
-获取状态管理V2代理前的原始对象
+
+[h2]获取状态管理V2代理前的原始对象
 
 状态管理V2会给状态变量装饰器如@Trace、@Local装饰的Map、Set、Date、Array添加一层代理。和V1不同的是，状态管理V2不会对类对象实例进行代理。
 
@@ -178,7 +181,6 @@ struct GetAgentObject {
   @Local sampleSet: Set<number> = globalSampleSet; // Set类型创建代理
   @Local sampleDate: Date = globalSampleDate; // Date类型创建代理
 
-
   build() {
     Column() {
       Text(`this.observedObject === globalObservedObject ${this.observedObject === globalObservedObject}`) // true
@@ -186,7 +188,6 @@ struct GetAgentObject {
     }
   }
 }
-GetAgentObject.ets
 
 使用UIUtils.getTarget接口可以获取代理前的原始对象。
 
@@ -209,6 +210,244 @@ struct GetBeforeAgent {
   @Local sampleSet: Set<number> = globalSampleSet; // Set类型创建代理
   @Local sampleDate: Date = globalSampleDate; // Date类型创建代理
 
+  build() {
+    Column() {
+      Text(`this.observedObject === globalObservedObject ${this.observedObject ===
+        globalObservedObject}`) // true
+      Text(`UIUtils.getTarget(this.numberList) === globalNumberList: ${UIUtils.getTarget(this.numberList) ===
+        globalNumberList}`) // true
+      Text(`UIUtils.getTarget(this.sampleMap) === globalSampleMap: ${UIUtils.getTarget(this.sampleMap) ===
+        globalSampleMap}`) // true
+      Text(`UIUtils.getTarget(this.sampleSet) === globalSampleSet: ${UIUtils.getTarget(this.sampleSet) ===
+        globalSampleSet}`) // true
+      Text(`UIUtils.getTarget(this.sampleDate) === globalSampleDate: ${UIUtils.getTarget(this.sampleDate) ===
+        globalSampleDate}`) // true
+    }
+  }
+}
+
+状态管理V2装饰器会为装饰的变量生成getter和setter方法，同时为原有变量名添加"__ob_"的前缀。出于性能考虑，getTarget接口不会对V2装饰器生成的前缀进行处理，因此向getTarget接口传入@ObservedV2装饰的类对象实例时，返回的对象依旧为对象本身，且被@Trace装饰的属性名仍有"__ob_"前缀。
+
+该前缀会导致某些NAPI接口无法按预期处理对象的属性，以下面的对象为例，目前已知影响的NAPI接口如下：
+
+@ObservedV2
+class Info {
+  @Trace public name: string = 'Tom';
+  @Trace public age: number = 24;
+}
+let info: Info = new Info(); // NAPI接口传入info实例
+
+影响接口名	影响结果
+napi_get_property_names	返回值为"__ob_name"，"__ob_age"。
+napi_set_property	使用"name"，"__ob_name"均能赋值成功。
+napi_get_property	使用"name"，"__ob_name"均能获取到值。
+napi_has_property	使用"name"，"__ob_name"均返回true。
+napi_delete_property	删除属性时需要加上"__ob_"前缀才能删除成功。
+napi_has_own_property	使用"name"，"__ob_name"均返回true。
+napi_set_named_property	使用"name"，"__ob_name"均能赋值成功。
+napi_get_named_property	使用"name"，"__ob_name"均能获取到值。
+napi_has_named_property	使用"name"，"__ob_name"均返回true。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { UIUtils } from '@kit.ArkUI';
+```
+
+### Code block 2
+
+```
+import { UIUtils } from '@kit.ArkUI';
+let resNumber = UIUtils.getTarget(2); // 非对象类型入参，编译时报错
+let resObject = UIUtils.getTarget(2 as Object); // 非对象类型入参，绕过编译拦截，直接返回传入值，错误用法
+```
+
+### Code block 3
+
+```
+import { UIUtils } from '@kit.ArkUI';
+@Observed
+class Info {
+  public name: string = 'Tom';
+}
+let info: Info = new Info();
+let rawInfo: Info = UIUtils.getTarget(info); // 正确用法
+```
+
+### Code block 4
+
+```
+import { UIUtils } from '@kit.ArkUI';
+@Observed
+class Info {
+  public name: string = 'Tom';
+}
+@Entry
+@Component
+struct GetTargetObject {
+  @State info: Info = new Info();
+
+  build() {
+    Column() {
+      Text(`info.name: ${this.info.name}`)
+      Button('Change Proxy Object Properties')
+        .onClick(() => {
+          this.info.name = 'Alice'; // Text组件能够刷新
+        })
+      Button('Change Original Object Properties')
+        .onClick(() => {
+          let rawInfo: Info = UIUtils.getTarget(this.info);
+          rawInfo.name = 'Bob'; // Text组件不能刷新
+        })
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+@Observed
+class ObservedClass {
+  public name: string = 'Tom';
+}
+class NonObservedClass {
+  public name: string = 'Tom';
+}
+let observedClass: ObservedClass = new ObservedClass(); // 被代理
+let nonObservedClass: NonObservedClass = new NonObservedClass(); // 不被代理
+```
+
+### Code block 6
+
+```
+@Observed
+class ObservedClassOne {
+  public name: string = 'Tom';
+}
+class NonObservedClassOne {
+  public name: string = 'Tom';
+}
+let observedClass: ObservedClassOne = new ObservedClassOne(); // 被代理
+let nonObservedClass: NonObservedClassOne = new NonObservedClassOne(); // 不被代理
+@Entry
+@Component
+struct GetTargetNoChange {
+  @State observedObject: ObservedClassOne = observedClass; // 已被代理数据不会重复创建代理
+  @State nonObservedObject: NonObservedClassOne = nonObservedClass; // 创建代理
+  @State numberList: number[] = [1, 2, 3]; // Array类型创建代理
+  @State sampleMap: Map<number, string> = new Map([[0, 'a'], [1, 'b'], [3, 'c']]); // Map类型创建代理
+  @State sampleSet: Set<number> = new Set([0, 1, 2, 3, 4]); // Set类型创建代理
+  @State sampleDate: Date = new Date(); // Date类型创建代理
+
+  build() {
+    Column() {
+      Text(`this.observedObject === observedClass: ${this.observedObject === observedClass}`) // true
+      Text(`this.nonObservedObject === nonObservedClass: ${this.nonObservedObject === nonObservedClass}`) // false
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+import { UIUtils } from '@kit.ArkUI';
+@Observed
+class ObservedClass {
+  public name: string = 'Tom';
+}
+class NonObservedClass {
+  public name: string = 'Tom';
+}
+let observedClass: ObservedClass = new ObservedClass(); // 被代理
+let nonObservedClass: NonObservedClass = new NonObservedClass(); // 不被代理
+let globalNumberList: number[] = [1, 2, 3]; // 不被代理
+let globalSampleMap: Map<number, string> = new Map([[0, 'a'], [1, 'b'], [3, 'c']]); // 不被代理
+let globalSampleSet: Set<number> = new Set([0, 1, 2, 3, 4]); // 不被代理
+let globalSampleDate: Date = new Date(); // 不被代理
+@Entry
+@Component
+struct GetTargetAgent {
+  @State observedObject: ObservedClass = observedClass; // 已被代理数据不会重复创建代理
+  @State nonObservedObject: NonObservedClass = nonObservedClass; // 创建代理
+  @State numberList: number[] = globalNumberList; // Array类型创建代理
+  @State sampleMap: Map<number, string> = globalSampleMap; // Map类型创建代理
+  @State sampleSet: Set<number> = globalSampleSet; // Set类型创建代理
+  @State sampleDate: Date = globalSampleDate; // Date类型创建代理
+
+  build() {
+    Column() {
+      Text(`this.observedObject === observedClass: ${this.observedObject ===
+        observedClass}`) // true
+      Text(`UIUtils.getTarget(this.nonObservedObject) === nonObservedClass: ${UIUtils.getTarget(this.nonObservedObject) ===
+        nonObservedClass}`) // true
+      Text(`UIUtils.getTarget(this.numberList) === globalNumberList: ${UIUtils.getTarget(this.numberList) ===
+        globalNumberList}`) // true
+      Text(`UIUtils.getTarget(this.sampleMap) === globalSampleMap: ${UIUtils.getTarget(this.sampleMap) ===
+        globalSampleMap}`) // true
+      Text(`UIUtils.getTarget(this.sampleSet) === globalSampleSet: ${UIUtils.getTarget(this.sampleSet) ===
+        globalSampleSet}`) // true
+      Text(`UIUtils.getTarget(this.sampleDate) === globalSampleDate: ${UIUtils.getTarget(this.sampleDate) ===
+        globalSampleDate}`) // true
+    }
+  }
+}
+```
+
+### Code block 8
+
+```
+@ObservedV2
+class ObservedClassTwo {
+  @Trace public name: string = 'Tom';
+}
+let globalObservedObject: ObservedClassTwo = new ObservedClassTwo(); // 不被代理
+let globalNumberList: number[] = [1, 2, 3]; // 不被代理
+let globalSampleMap: Map<number, string> = new Map([[0, 'a'], [1, 'b'], [3, 'c']]); // 不被代理
+let globalSampleSet: Set<number> = new Set([0, 1, 2, 3, 4]); // 不被代理
+let globalSampleDate: Date = new Date(); // 不被代理
+@Entry
+@ComponentV2
+struct GetAgentObject {
+  @Local observedObject: ObservedClassTwo = globalObservedObject; // V2中对象不被代理
+  @Local numberList: number[] = globalNumberList; // Array类型创建代理
+  @Local sampleMap: Map<number, string> = globalSampleMap; // Map类型创建代理
+  @Local sampleSet: Set<number> = globalSampleSet; // Set类型创建代理
+  @Local sampleDate: Date = globalSampleDate; // Date类型创建代理
+
+  build() {
+    Column() {
+      Text(`this.observedObject === globalObservedObject ${this.observedObject === globalObservedObject}`) // true
+      Text(`this.numberList === globalNumberList ${this.numberList === globalNumberList}`) // false
+    }
+  }
+}
+```
+
+### Code block 9
+
+```
+import { UIUtils } from '@kit.ArkUI';
+@ObservedV2
+class ObservedClassThree {
+  @Trace public name: string = 'Tom';
+}
+let globalObservedObject: ObservedClassThree = new ObservedClassThree(); // 不被代理
+let globalNumberList: number[] = [1, 2, 3]; // 不被代理
+let globalSampleMap: Map<number, string> = new Map([[0, 'a'], [1, 'b'], [3, 'c']]); // 不被代理
+let globalSampleSet: Set<number> = new Set([0, 1, 2, 3, 4]); // 不被代理
+let globalSampleDate: Date = new Date(); // 不被代理
+@Entry
+@ComponentV2
+struct GetBeforeAgent {
+  @Local observedObject: ObservedClassThree = globalObservedObject; // V2中对象不被代理
+  @Local numberList: number[] = globalNumberList; // Array类型创建代理
+  @Local sampleMap: Map<number, string> = globalSampleMap; // Map类型创建代理
+  @Local sampleSet: Set<number> = globalSampleSet; // Set类型创建代理
+  @Local sampleDate: Date = globalSampleDate; // Date类型创建代理
 
   build() {
     Column() {
@@ -225,27 +464,15 @@ struct GetBeforeAgent {
     }
   }
 }
-GetBeforeAgent.ets
+```
 
-状态管理V2装饰器会为装饰的变量生成getter和setter方法，同时为原有变量名添加"__ob_"的前缀。出于性能考虑，getTarget接口不会对V2装饰器生成的前缀进行处理，因此向getTarget接口传入@ObservedV2装饰的类对象实例时，返回的对象依旧为对象本身，且被@Trace装饰的属性名仍有"__ob_"前缀。
+### Code block 10
 
-该前缀会导致某些NAPI接口无法按预期处理对象的属性，以下面的对象为例，目前已知影响的NAPI接口如下：
-
+```
 @ObservedV2
 class Info {
   @Trace public name: string = 'Tom';
   @Trace public age: number = 24;
 }
 let info: Info = new Info(); // NAPI接口传入info实例
-影响接口名	影响结果
-napi_get_property_names	返回值为"__ob_name"，"__ob_age"。
-napi_set_property	使用"name"，"__ob_name"均能赋值成功。
-napi_get_property	使用"name"，"__ob_name"均能获取到值。
-napi_has_property	使用"name"，"__ob_name"均返回true。
-napi_delete_property	删除属性时需要加上"__ob_"前缀才能删除成功。
-napi_has_own_property	使用"name"，"__ob_name"均返回true。
-napi_set_named_property	使用"name"，"__ob_name"均能赋值成功。
-napi_get_named_property	使用"name"，"__ob_name"均能获取到值。
-napi_has_named_property	使用"name"，"__ob_name"均返回true。
-辅助接口
-makeObserved接口：将非观察数据变为可观察数据
+```

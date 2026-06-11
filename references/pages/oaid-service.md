@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/oaid-service_
 
+获取OAID信息
+
+[h2]场景介绍
+
 开放匿名设备标识符（Open Anonymous Device Identifier, OAID，以下简称OAID）：是一种非永久性设备标识符，基于开放匿名设备标识符，可在保护用户个人数据隐私安全的前提下，向用户提供个性化广告，同时三方监测平台也可以向广告主提供转化归因分析。
 
 媒体App、广告平台、三方监测平台等开发者，可获取设备上的OAID，您可基于OAID进行个性化广告推荐或广告转化归因分析。
@@ -26,7 +30,7 @@ OAID会在下述场景中发生变化：
 
 用户操作重置OAID。
 
-约束和限制
+[h2]约束和限制
 
 开放匿名设备标识服务能力支持Phone、Tablet、PC/2in1设备，并且从6.0.0（20）版本开始，新增支持TV设备。
 
@@ -34,10 +38,12 @@ OAID会在下述场景中发生变化：
 
 获取OAID信息前，请确保已充分告知用户相关信息并取得用户授权同意。请务必先弹出隐私协议窗口，获得用户的明确同意后再获取OAID。未经用户同意，获取 OAID 将涉嫌违反数据采集相关规定，可能会面临隐私合规风险。
 
-接口说明
+[h2]接口说明
+
 接口名	描述
 getOAID(): Promise<string>	获取OAID，通过Promise异步返回结果。
 getOAID(callback: AsyncCallback<string>): void	获取OAID，通过Callback异步回调返回值。
+
 说明
 
 如调用getOAID接口需要申请ohos.permission.APP_TRACKING_CONSENT权限，且“要求应用请求关联”保持关闭状态。存在如下三种情况：
@@ -48,7 +54,7 @@ getOAID(callback: AsyncCallback<string>): void	获取OAID，通过Callback异步
 
 3.如应用未配置ohos.permission.APP_TRACKING_CONSENT权限，则返回00000000-0000-0000-0000-000000000000。
 
-开发步骤
+[h2]开发步骤
 
 在模块的module.json5文件中，申请跨应用关联权限ohos.permission.APP_TRACKING_CONSENT，该权限为user_grant权限，当申请的权限为user_grant权限时，reason，abilities标签必填，配置方式参见requestPermissions标签说明，示例代码如下所示：
 
@@ -79,6 +85,61 @@ import { abilityAccessCtrl, PermissionRequestResult } from '@kit.AbilityKit';
 import { identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
+async function requestOAID(context: Context): Promise<string | undefined> {
+  // 向用户请求授权广告跨应用关联访问权限
+  let isPermissionGranted: boolean = false;
+  try {
+    const atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+    const result: PermissionRequestResult =
+      await atManager.requestPermissionsFromUser(context, ['ohos.permission.APP_TRACKING_CONSENT']);
+    isPermissionGranted = result.authResults[0] === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to request permission. Code is ${err.code}, message is ${err.message}`);
+  }
+  if (isPermissionGranted) {
+    hilog.info(0x0000, 'testTag', 'Succeeded in requesting permission');
+    try {
+      const oaid = await identifier.getOAID();
+      hilog.info(0x0000, 'testTag', 'Succeeded in getting OAID');
+      return oaid;
+    } catch (err) {
+      hilog.error(0x0000, 'testTag', `Failed to get OAID. Code is ${err.code}, message is ${err.message}`);
+    }
+  } else {
+    hilog.error(0x0000, 'testTag', 'Failed to request permission. User rejected');
+  }
+  return undefined;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.APP_TRACKING_CONSENT",
+        "reason": "$string:reason",
+        "usedScene": {
+          "abilities": [
+            "EntryFormAbility"
+          ],
+          "when": "inuse"
+        }
+      }
+    ]
+  }
+}
+```
+
+### Code block 2
+
+```
+import { abilityAccessCtrl, PermissionRequestResult } from '@kit.AbilityKit';
+import { identifier } from '@kit.AdsKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 async function requestOAID(context: Context): Promise<string | undefined> {
   // 向用户请求授权广告跨应用关联访问权限
@@ -105,5 +166,4 @@ async function requestOAID(context: Context): Promise<string | undefined> {
   }
   return undefined;
 }
-PC设备请求或展示广告时返回了801错误码
-鲸鸿动能Ads Kit个人数据处理说明
+```

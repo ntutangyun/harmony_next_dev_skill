@@ -2,24 +2,23 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ndk-build-pop-up-window_
 
-通过创建弹窗控制器显示自定义弹窗：在命名为ArkUI_NativeDialogAPI_x （x表示版本）的结构体中，定义了弹窗接口集合，用于实现各种弹窗控制。
+可以通过创建弹窗控制器和创建自定义弹窗的内容对象两种方法显示自定义弹窗，设置其样式和内容。
 
-通过创建自定义弹窗的内容对象显示自定义弹窗：该方式下的弹窗接口在native_dialog.h的函数中定义。
+通过创建弹窗控制器显示自定义弹窗：在命名为ArkUI_NativeDialogAPI_x （x表示版本）的结构体中，定义了弹窗接口集合，用于实现各种弹窗控制。从API version 12开始支持，使用方式可以参考openCustomDialogWithController接口。
+
+通过创建自定义弹窗的内容对象显示自定义弹窗：该方式下的弹窗接口在native_dialog.h的函数中定义。从API version 19开始支持，使用方式可以参考openCustomDialog接口。
 
 说明
-
-通过创建弹窗控制器来显示自定义弹窗，使用方式可以参考openCustomDialogWithController接口。
-
-通过创建自定义弹窗的内容对象来显示自定义弹窗，使用方式可以参考openCustomDialog接口。
 
 OH_ArkUI_QueryModuleInterfaceByName用于获取指定类型的Native模块接口集合，可以通过其返回ArkUI_NativeDialogHandle类型的数据调用Native模块中的接口。
 
 创建和销毁自定义弹窗
-通过创建弹窗控制器显示自定义弹窗
+
+[h2]通过创建弹窗控制器显示自定义弹窗
 
 创建弹窗控制器：
 
-ArkUI_NativeDialogHandle表示指向弹窗控制器的指针，可以通过调用ArkUI_NativeDialogAPI_x的create接口创建一个弹窗控制器。
+ArkUI_NativeDialogHandle表示指向弹窗控制器的指针，可以通过调用ArkUI_NativeDialogAPI_1的create接口创建一个弹窗控制器。
 
 该方法返回ArkUI_NativeDialogHandle类型的数据。
 
@@ -30,7 +29,6 @@ ArkUI_NativeDialogHandle g_dialogController = nullptr;
     if (!g_dialogController) {
         g_dialogController = dialogAPI->create();
     }
-nativedialogdemo.cpp
 
 当不再需要弹窗操作时，需要主动调用dispose接口销毁弹窗控制器对象。
 
@@ -38,8 +36,8 @@ ArkUI_NativeDialogAPI_1 *dialogAPI = reinterpret_cast<ArkUI_NativeDialogAPI_1 *>
     OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_DIALOG, "ArkUI_NativeDialogAPI_1"));
 dialogAPI->dispose(g_dialogController);
 g_dialogController = nullptr;
-nativedialogdemo.cpp
-通过创建自定义弹窗的内容对象显示自定义弹窗
+
+[h2]通过创建自定义弹窗的内容对象显示自定义弹窗
 
 创建弹窗的内容对象：
 
@@ -53,7 +51,7 @@ ArkUI_CustomDialogOptions* g_dialogOptions = nullptr;
     if (!g_dialogOptions) {
         g_dialogOptions = OH_ArkUI_CustomDialog_CreateOptions(textNode->GetHandle());
     }
-nativedialogdemo.cpp
+
 说明
 
 ArkUITextNode的声明方式可以查看ArkUINode.h文件中的实现文本组件。
@@ -61,7 +59,7 @@ ArkUITextNode的声明方式可以查看ArkUINode.h文件中的实现文本组�
 当不再需要弹窗操作时，需要主动调用OH_ArkUI_CustomDialog_DisposeOptions接口销毁弹窗控制器对象。
 
 OH_ArkUI_CustomDialog_DisposeOptions(g_dialogOptions);
-nativedialogdemo.cpp
+
 设置弹窗样式
 
 可以设置弹窗对齐方式、偏移量，弹窗背板圆角弧度、背景色、蒙层颜色以及区域等。
@@ -104,7 +102,6 @@ ArkUI_NodeHandle CreateDialogContent()
     nodeAPI->addChild(text, imageSpan);
     return text;
 }
-nativedialogdemo.cpp
 
 以下介绍两种控制弹窗样式的方式，弹窗接口请参考native_dialog.h。
 
@@ -126,7 +123,6 @@ void ShowDialog()
     dialogAPI->setAutoCancel(g_dialogController, true);
     dialogAPI->show(g_dialogController, false);
 }
-nativedialogdemo.cpp
 
 通过dialogOptions控制弹窗样式。
 
@@ -135,7 +131,6 @@ void OpenDialogCallBack(int32_t dialogId)
 {
     g_id = dialogId;
 }
-
 
 void OpenCustomDialog()
 {
@@ -152,7 +147,6 @@ void OpenCustomDialog()
                                          ARKUI_BORDER_STYLE_SOLID, ARKUI_BORDER_STYLE_SOLID, ARKUI_BORDER_STYLE_SOLID);
     OH_ArkUI_CustomDialog_OpenDialog(g_dialogOptions, OpenDialogCallBack);
 }
-nativedialogdemo.cpp
 
 弹窗关闭方式。
 
@@ -164,7 +158,6 @@ void CloseDialog()
         OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_DIALOG, "ArkUI_NativeDialogAPI_1"));
     dialogAPI->close(g_dialogController);
 }
-nativedialogdemo.cpp
 
 通过dialogOptions关闭弹窗。
 
@@ -172,7 +165,7 @@ void CloseCustomDialog()
 {
     OH_ArkUI_CustomDialog_CloseDialog(g_id);
 }
-nativedialogdemo.cpp
+
 弹窗的交互
 
 可创建交互页面，打开或关闭弹窗。
@@ -181,7 +174,6 @@ nativedialogdemo.cpp
 
 constexpr int32_t BUTTON_CLICK_ID = 1;
 ArkUI_NodeHandle g_buttonNode = nullptr;
-
 
 void MainViewMethod(ArkUI_NodeContentHandle handle)
 {
@@ -194,7 +186,7 @@ void MainViewMethod(ArkUI_NodeContentHandle handle)
     ArkUI_NumberValue heightValue[] = {{.f32 = 300}};
     ArkUI_AttributeItem heightItem = {.value = heightValue, .size = sizeof(heightValue) / sizeof(ArkUI_NumberValue)};
     nodeAPI->setAttribute(column, NODE_HEIGHT, &heightItem);
-    
+
     g_buttonNode = nodeAPI->createNode(ARKUI_NODE_BUTTON);
     ArkUI_NumberValue buttonWidthValue[] = {{.f32 = 200}};
     ArkUI_AttributeItem buttonWidthItem = {.value = buttonWidthValue,
@@ -215,14 +207,12 @@ void MainViewMethod(ArkUI_NodeContentHandle handle)
     nodeAPI->addChild(column, g_buttonNode);
     OH_ArkUI_NodeContent_AddNode(handle, column);
 }
-nativedialogdemo.cpp
 
 创建Button事件的回调函数，当Button被点击时触发弹窗显示或关闭。
 
 触发controller弹窗。
 
 bool g_isShown = false;
-
 
 void OnButtonClicked(ArkUI_NodeEvent *event)
 {
@@ -246,7 +236,6 @@ void OnButtonClicked(ArkUI_NodeEvent *event)
         }
     }
 }
-nativedialogdemo.cpp
 
 触发dialogOptions弹窗。
 
@@ -272,7 +261,6 @@ void OnButtonClicked(ArkUI_NodeEvent *event)
         }
     }
 }
-nativedialogdemo.cpp
 
 弹窗的生命周期
 
@@ -321,30 +309,25 @@ ArkUI_NodeHandle CreateDialogContent()
     return text;
 }
 
-
 void OnWillAppearCallBack(void* userdata)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnWillAppearCallBack");
 }
-
 
 void OnDidAppearCallBack(void* userdata)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnDidAppearCallBack");
 }
 
-
 void OnWillDisappearCallBack(void* userdata)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnWillDisappearCallBack");
 }
 
-
 void OnDidDisappearCallBack(void* userdata)
 {
     OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnDidDisappearCallBack");
 }
-
 
 void ShowDialog()
 {
@@ -362,6 +345,317 @@ void ShowDialog()
     dialogAPI->registerOnDidDisappear(g_dialogController, nullptr, OnDidDisappearCallBack);
     dialogAPI->nativeDialogAPI1.show(g_dialogController, false);
 }
-nativedialogdemo.cpp
-监听输入框事件
-构建自定义组件
+
+## Code blocks
+
+### Code block 1
+
+```
+ArkUI_NativeDialogHandle g_dialogController = nullptr;
+// ···
+    ArkUI_NativeDialogAPI_1 *dialogAPI = reinterpret_cast<ArkUI_NativeDialogAPI_1 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_DIALOG, "ArkUI_NativeDialogAPI_1"));
+    if (!g_dialogController) {
+        g_dialogController = dialogAPI->create();
+    }
+```
+
+### Code block 2
+
+```
+ArkUI_NativeDialogAPI_1 *dialogAPI = reinterpret_cast<ArkUI_NativeDialogAPI_1 *>(
+    OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_DIALOG, "ArkUI_NativeDialogAPI_1"));
+dialogAPI->dispose(g_dialogController);
+g_dialogController = nullptr;
+```
+
+### Code block 3
+
+```
+ArkUI_CustomDialogOptions* g_dialogOptions = nullptr;
+// ···
+    auto textNode = std::make_shared<NativeModule::ArkUITextNode>();
+    if (!g_dialogOptions) {
+        g_dialogOptions = OH_ArkUI_CustomDialog_CreateOptions(textNode->GetHandle());
+    }
+```
+
+### Code block 4
+
+```
+OH_ArkUI_CustomDialog_DisposeOptions(g_dialogOptions);
+```
+
+### Code block 5
+
+```
+ArkUI_NodeHandle CreateDialogContent()
+{
+    ArkUI_NativeNodeAPI_1 *nodeAPI = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+    ArkUI_NodeHandle text = nodeAPI->createNode(ARKUI_NODE_TEXT);
+    ArkUI_NumberValue textWidthValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem textWidthItem = {.value = textWidthValue,
+                                         .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(text, NODE_WIDTH, &textWidthItem);
+    ArkUI_NumberValue textHeightValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem textHeightItem = {.value = textHeightValue,
+                                          .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(text, NODE_HEIGHT, &textHeightItem);
+    ArkUI_NodeHandle span = nodeAPI->createNode(ARKUI_NODE_SPAN);
+    ArkUI_AttributeItem spanItem = {.string = "This is a dialog box"};
+    nodeAPI->setAttribute(span, NODE_SPAN_CONTENT, &spanItem);
+    ArkUI_NodeHandle imageSpan = nodeAPI->createNode(ARKUI_NODE_IMAGE_SPAN);
+    // 图片src/main/ets/pages/common/sky.jpg需要替换为开发者所需的资源文件
+    ArkUI_AttributeItem imageSpanItem = {.string = "/pages/common/sky.jpg"};
+    nodeAPI->setAttribute(imageSpan, NODE_IMAGE_SPAN_SRC, &imageSpanItem);
+    ArkUI_NumberValue imageSpanWidthValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem imageSpanWidthItem = {.value = imageSpanWidthValue,
+                                              .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(imageSpan, NODE_WIDTH, &imageSpanWidthItem);
+    ArkUI_NumberValue imageSpanHeightValue[] = {{.f32 = 200}};
+    ArkUI_AttributeItem imageSpanHeightItem = {.value = imageSpanHeightValue,
+                                               .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(imageSpan, NODE_HEIGHT, &imageSpanHeightItem);
+    nodeAPI->addChild(text, span);
+    nodeAPI->addChild(text, imageSpan);
+    return text;
+}
+```
+
+### Code block 6
+
+```
+void ShowDialog()
+{
+    ArkUI_NativeDialogAPI_1 *dialogAPI = reinterpret_cast<ArkUI_NativeDialogAPI_1 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_DIALOG, "ArkUI_NativeDialogAPI_1"));
+    if (!g_dialogController) {
+        g_dialogController = dialogAPI->create();
+    }
+    auto contentNode = CreateDialogContent();
+    dialogAPI->setContent(g_dialogController, contentNode);
+    dialogAPI->setContentAlignment(g_dialogController, static_cast<int32_t>(ARKUI_ALIGNMENT_BOTTOM), 0, 0);
+    dialogAPI->setBackgroundColor(g_dialogController, 0xffffffff);
+    dialogAPI->setCornerRadius(g_dialogController, 6.0f, 6.0f, 6.0f, 6.0f);
+    dialogAPI->setModalMode(g_dialogController, false);
+    dialogAPI->setAutoCancel(g_dialogController, true);
+    dialogAPI->show(g_dialogController, false);
+}
+```
+
+### Code block 7
+
+```
+int32_t g_id = 0;
+void OpenDialogCallBack(int32_t dialogId)
+{
+    g_id = dialogId;
+}
+
+void OpenCustomDialog()
+{
+    auto contentNode = CreateDialogContent();
+    if (!g_dialogOptions) {
+        g_dialogOptions = OH_ArkUI_CustomDialog_CreateOptions(contentNode);
+    }
+    OH_ArkUI_CustomDialog_SetAlignment(g_dialogOptions, static_cast<int32_t>(ARKUI_ALIGNMENT_BOTTOM), 0, 0);
+    OH_ArkUI_CustomDialog_SetBackgroundColor(g_dialogOptions, 0xffffffff);
+    OH_ArkUI_CustomDialog_SetCornerRadius(g_dialogOptions, 6.0f, 6.0f, 6.0f, 6.0f);
+    OH_ArkUI_CustomDialog_SetModalMode(g_dialogOptions, false);
+    OH_ArkUI_CustomDialog_SetAutoCancel(g_dialogOptions, true);
+    OH_ArkUI_CustomDialog_SetBorderStyle(g_dialogOptions, ARKUI_BORDER_STYLE_SOLID,
+                                         ARKUI_BORDER_STYLE_SOLID, ARKUI_BORDER_STYLE_SOLID, ARKUI_BORDER_STYLE_SOLID);
+    OH_ArkUI_CustomDialog_OpenDialog(g_dialogOptions, OpenDialogCallBack);
+}
+```
+
+### Code block 8
+
+```
+void CloseDialog()
+{
+    ArkUI_NativeDialogAPI_1 *dialogAPI = reinterpret_cast<ArkUI_NativeDialogAPI_1 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_DIALOG, "ArkUI_NativeDialogAPI_1"));
+    dialogAPI->close(g_dialogController);
+}
+```
+
+### Code block 9
+
+```
+void CloseCustomDialog()
+{
+    OH_ArkUI_CustomDialog_CloseDialog(g_id);
+}
+```
+
+### Code block 10
+
+```
+constexpr int32_t BUTTON_CLICK_ID = 1;
+ArkUI_NodeHandle g_buttonNode = nullptr;
+
+void MainViewMethod(ArkUI_NodeContentHandle handle)
+{
+    ArkUI_NativeNodeAPI_1 *nodeAPI = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+    ArkUI_NodeHandle column = nodeAPI->createNode(ARKUI_NODE_COLUMN);
+    ArkUI_NumberValue widthValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem widthItem = {.value = widthValue, .size = sizeof(widthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(column, NODE_WIDTH, &widthItem);
+    ArkUI_NumberValue heightValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem heightItem = {.value = heightValue, .size = sizeof(heightValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(column, NODE_HEIGHT, &heightItem);
+
+    g_buttonNode = nodeAPI->createNode(ARKUI_NODE_BUTTON);
+    ArkUI_NumberValue buttonWidthValue[] = {{.f32 = 200}};
+    ArkUI_AttributeItem buttonWidthItem = {.value = buttonWidthValue,
+                                           .size = sizeof(buttonWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(g_buttonNode, NODE_WIDTH, &buttonWidthItem);
+    ArkUI_NumberValue buttonHeightValue[] = {{.f32 = 50}};
+    ArkUI_AttributeItem buttonHeightItem = {.value = buttonHeightValue,
+                                            .size = sizeof(buttonHeightValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(g_buttonNode, NODE_HEIGHT, &buttonHeightItem);
+    ArkUI_AttributeItem labelItem = {.string = "Click Dialog Box"};
+    nodeAPI->setAttribute(g_buttonNode, NODE_BUTTON_LABEL, &labelItem);
+    ArkUI_NumberValue buttonTypeValue[] = {{.i32 = static_cast<int32_t>(ARKUI_BUTTON_TYPE_NORMAL)}};
+    ArkUI_AttributeItem buttonTypeItem = {.value = buttonTypeValue,
+                                          .size = sizeof(buttonTypeValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(g_buttonNode, NODE_BUTTON_TYPE, &buttonTypeItem);
+    nodeAPI->registerNodeEvent(g_buttonNode, NODE_ON_CLICK, BUTTON_CLICK_ID, nullptr);
+    nodeAPI->addNodeEventReceiver(g_buttonNode, OnButtonClicked);
+    nodeAPI->addChild(column, g_buttonNode);
+    OH_ArkUI_NodeContent_AddNode(handle, column);
+}
+```
+
+### Code block 11
+
+```
+bool g_isShown = false;
+
+void OnButtonClicked(ArkUI_NodeEvent *event)
+{
+    if (!event || !g_buttonNode) {
+        return;
+    }
+    auto eventId = OH_ArkUI_NodeEvent_GetTargetId(event);
+    if (eventId == BUTTON_CLICK_ID) {
+        ArkUI_NativeNodeAPI_1 *nodeAPI = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+            OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+        if (g_isShown) {
+            g_isShown = false;
+            ArkUI_AttributeItem labelItem = {.string = "Show Dialog Box"};
+            nodeAPI->setAttribute(g_buttonNode, NODE_BUTTON_LABEL, &labelItem);
+            CloseDialog();
+        } else {
+            g_isShown = true;
+            ArkUI_AttributeItem labelItem = {.string = "Close Dialog Box"};
+            nodeAPI->setAttribute(g_buttonNode, NODE_BUTTON_LABEL, &labelItem);
+            ShowDialog();
+        }
+    }
+}
+```
+
+### Code block 12
+
+```
+void OnButtonClicked(ArkUI_NodeEvent *event)
+{
+    if (!event || !g_buttonNode) {
+        return;
+    }
+    auto eventId = OH_ArkUI_NodeEvent_GetTargetId(event);
+    if (eventId == BUTTON_CLICK_ID) {
+        ArkUI_NativeNodeAPI_1 *nodeAPI = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+            OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+        if (g_isShown) {
+            g_isShown = false;
+            ArkUI_AttributeItem labelItem = {.string = "Show Dialog Box"};
+            nodeAPI->setAttribute(g_buttonNode, NODE_BUTTON_LABEL, &labelItem);
+            CloseCustomDialog();
+        } else {
+            g_isShown = true;
+            ArkUI_AttributeItem labelItem = {.string = "Close Dialog Box"};
+            nodeAPI->setAttribute(g_buttonNode, NODE_BUTTON_LABEL, &labelItem);
+            OpenCustomDialog();
+        }
+    }
+}
+```
+
+### Code block 13
+
+```
+ArkUI_NodeHandle CreateDialogContent()
+{
+    ArkUI_NativeNodeAPI_1 *nodeAPI = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
+    ArkUI_NodeHandle text = nodeAPI->createNode(ARKUI_NODE_TEXT);
+    ArkUI_NumberValue textWidthValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem textWidthItem = {.value = textWidthValue,
+                                         .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(text, NODE_WIDTH, &textWidthItem);
+    ArkUI_NumberValue textHeightValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem textHeightItem = {.value = textHeightValue,
+                                          .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(text, NODE_HEIGHT, &textHeightItem);
+    ArkUI_NodeHandle span = nodeAPI->createNode(ARKUI_NODE_SPAN);
+    ArkUI_AttributeItem spanItem = {.string = "This is a dialog box"};
+    nodeAPI->setAttribute(span, NODE_SPAN_CONTENT, &spanItem);
+    ArkUI_NodeHandle imageSpan = nodeAPI->createNode(ARKUI_NODE_IMAGE_SPAN);
+    // 图片src/main/ets/pages/common/sky.jpg需要替换为开发者所需的资源文件
+    ArkUI_AttributeItem imageSpanItem = {.string = "/pages/common/sky.jpg"};
+    nodeAPI->setAttribute(imageSpan, NODE_IMAGE_SPAN_SRC, &imageSpanItem);
+    ArkUI_NumberValue imageSpanWidthValue[] = {{.f32 = 300}};
+    ArkUI_AttributeItem imageSpanWidthItem = {.value = imageSpanWidthValue,
+                                              .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(imageSpan, NODE_WIDTH, &imageSpanWidthItem);
+    ArkUI_NumberValue imageSpanHeightValue[] = {{.f32 = 200}};
+    ArkUI_AttributeItem imageSpanHeightItem = {.value = imageSpanHeightValue,
+                                               .size = sizeof(textWidthValue) / sizeof(ArkUI_NumberValue)};
+    nodeAPI->setAttribute(imageSpan, NODE_HEIGHT, &imageSpanHeightItem);
+    nodeAPI->addChild(text, span);
+    nodeAPI->addChild(text, imageSpan);
+    return text;
+}
+
+void OnWillAppearCallBack(void* userdata)
+{
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnWillAppearCallBack");
+}
+
+void OnDidAppearCallBack(void* userdata)
+{
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnDidAppearCallBack");
+}
+
+void OnWillDisappearCallBack(void* userdata)
+{
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnWillDisappearCallBack");
+}
+
+void OnDidDisappearCallBack(void* userdata)
+{
+    OH_LOG_Print(LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "CustomDialogContentTest", "OnDidDisappearCallBack");
+}
+
+void ShowDialog()
+{
+    ArkUI_NativeDialogAPI_3 *dialogAPI = reinterpret_cast<ArkUI_NativeDialogAPI_3 *>(
+        OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_DIALOG, "ArkUI_NativeDialogAPI_3"));
+    if (!g_dialogController) {
+        g_dialogController = dialogAPI->nativeDialogAPI1.create();
+    }
+    auto contentNode = CreateDialogContent();
+    dialogAPI->nativeDialogAPI1.setContent(g_dialogController, contentNode);
+    dialogAPI->nativeDialogAPI1.setAutoCancel(g_dialogController, true);
+    dialogAPI->registerOnWillAppear(g_dialogController, nullptr, OnWillAppearCallBack);
+    dialogAPI->registerOnDidAppear(g_dialogController, nullptr, OnDidAppearCallBack);
+    dialogAPI->registerOnWillDisappear(g_dialogController, nullptr, OnWillDisappearCallBack);
+    dialogAPI->registerOnDidDisappear(g_dialogController, nullptr, OnDidDisappearCallBack);
+    dialogAPI->nativeDialogAPI1.show(g_dialogController, false);
+}
+```

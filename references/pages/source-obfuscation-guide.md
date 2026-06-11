@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/source-obfuscation-guide_
 
+开启源码混淆
+
+[h2]开启混淆步骤
+
+系统已集成源码混淆功能，开发者可通过以下方式在DevEco Studio中启用。
+
+开启混淆开关
+
 在本模块build-profile.json5配置文件中的arkOptions.obfuscation.ruleOptions字段中，通过enable字段配置是否开启混淆。
 
 "arkOptions": {
@@ -13,7 +21,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/source-ob
     // ...
   }
 },
-build-profile.json5
 
 配置混淆规则
 
@@ -38,7 +45,9 @@ build-profile.json5
 推荐参考混淆选项配置指导进行混淆选项的配置。关于混淆过程中涉及的所有配置文件的详情，请参考三种混淆配置文件。
 
 说明
+
 在DevEco Studio 5.0.3.600之前，新建工程默认开启源码混淆，自动对API 10及以上版本的Stage模型进行混淆。
+
 在DevEco Studio 5.0.3.600及更高版本中，新建工程的默认设置为关闭源码混淆。若需开启混淆，需将模块的build-profile.json5文件中的ruleOptions.enable字段设置为true。同时，混淆规则配置文件 obfuscation-rules.txt 默认启用了以下四项推荐的混淆选项：-enable-property-obfuscation、-enable-toplevel-obfuscation、-enable-filename-obfuscation和-enable-export-obfuscation。开发者可以根据需要进一步修改混淆配置。
 
 配置混淆保留选项
@@ -55,7 +64,7 @@ build-profile.json5
 
 release编译支持混淆，而debug编译不支持混淆。若要明确应用行为差异是否由混淆引起，应通过开启或关闭混淆开关进行排查，而不是仅通过切换编译模式。
 
-三种混淆配置文件
+[h2]三种混淆配置文件
 
 obfuscation-rules.txt
 
@@ -76,7 +85,7 @@ build-profile.json5配置示例：
     "consumerFiles": ["./consumer-rules.txt"] // 指定配置混淆规则文件, 在编译依赖本模块的其他模块时生效。
   }
 },
-build-profile.json5
+
 说明
 
 如果在consumer-rules.txt文件中配置了混淆选项，可能会对依赖了HAR或HSP的主模块产生影响。因此，建议仅在该文件中配置保留选项。
@@ -95,9 +104,10 @@ obfuscation.txt
 obfuscation-rules.txt	自定义	是	是	否
 consumer-rules.txt	自定义	是	否	是
 obfuscation.txt	编译产物	不涉及，构建HAR或HSP时自动生成。	不涉及	是
-混淆选项配置指导
+
+[h2]混淆选项配置指导
+
 开启-enable-toplevel-obfuscation选项时，如果代码中使用globalThis访问全局变量，可能会导致访问失败。此时，需要使用-keep-global-name选项来保留该全局变量的名称。
-待上述选项应用适配成功后，开启-enable-property-obfuscation选项。此选项开启后，以下场景需要适配：
 
 若代码中存在静态定义、动态访问的情况，或动态定义、静态访问的情况，需要使用-keep-property-name保留属性名称。示例如下：
 
@@ -108,7 +118,7 @@ const obj001 = {
 };
 const fieldName = 'static' + 'Name';  // 动态构建属性名，需使用-keep-property-name staticName来保留该属性名
 console.info(obj001[fieldName]);  // 使用方括号语法动态访问属性
-ArkGuardAbility.ts
+
 // 动态定义，静态访问：属性名通过动态表达式在对象定义时确定，但访问时直接使用点语法（假设开发者知道属性名的结果）
 // ArkGuardAbility.ts
 const dynamicExpression = 'dynamicPropertyName';
@@ -116,31 +126,41 @@ const obj002 = {
   [dynamicExpression]: 'value'  // 动态定义属性
 };
 console.info(obj002.dynamicPropertyName);// 使用点语法静态访问属性，需使用-keep-property-name dynamicPropertyName来保留该属性名
-ArkGuardAbility.ts
 
 若代码中使用点语法访问未在ArkTS/TS/JS代码中定义的字段，比如访问native实现的so库，字段固定的json文件与数据库等场景：
 
 若在代码中引用so库的api，如import testNapi from 'library.so';testNapi.foo();需要使用-keep-property-name foo保留属性名称，详见选项说明。
+
 若在代码中使用json文件中的字段，需要使用-keep-property-name保留json文件中的字段名称。
+
 若在代码中使用数据库相关的字段，需要使用-keep-property-name保留数据库中的字段名称。
 
 若构建HAR模块并发布给其他模块使用的场景，要在HAR模块中的consumer-rules.txt文件中将不能被二次混淆的属性使用-keep-property-name保留。consumer-rules.txt文件在构建HAR时会生成obfuscation.txt文件。此HAR被其它模块依赖时，DevEco Studio会解析obfuscation.txt文件，读取文件中的白名单。
 
 验证应用功能，排查遗漏的场景。若应用出现功能异常，依据混淆后的报错栈从对应的中间产物中找到报错行的代码，排查需要配置的白名单并使用-keep-property-name进行保留。
 
-待上述选项应用适配成功后，开启-enable-export-obfuscation选项。此选项开启后，以下场景需要适配：
 若构建HSP模块，它会提供接口及其属性给其它模块调用，因此需要将对外接口使用-keep-global-name来保留、将对外暴露的class/interface等语法中的属性使用-keep-property-name保留。
+
 若构建HAR模块并发布给其他模块使用的场景，要在HAR模块中的obfuscation-rules.txt文件中将对外接口使用-keep-global-name来保留，将对外暴露的class/interface等语法中的属性使用-keep-property-name保留。
+
 若在代码中引用so库的api，如import { napiA } from 'library.so'；需要使用-keep-global-namenapiA保留so接口名称。
+
 验证应用功能以及模块被依赖时的接口调用功能，排查遗漏的场景。若应用出现功能异常，依据混淆后的报错栈从对应的中间产物中找到报错行的代码，排查需要配置的白名单并进行保留。
-待上述选项应用适配成功后，开启-enable-filename-obfuscation选项。此选项开启后，以下场景需要适配：
+
 若代码中有动态import语句，如const path = './filePath'; import(path)，会出现文件引用失败的情况，需要使用-keep-file-name filePath来保留这个文件名。
+
 若应用中有描述路由表信息的routerMap配置，其中的pageSourceFile字段标记页面在模块的路径，需要使用-keep-file-name来保留这个路径。
+
 若代码中有传入ohmUrl进行页面跳转，如router.pushUrl({url: '@bundle:com.example.routerPage/Library/Index'})，使用-keep-file-name来保留这个路径。
+
 验证应用功能，排查遗漏的场景。若应用出现功能异常，且报错栈中的路径为混淆后的路径，可以在模块中的build/default/[...]/release/obfuscation/nameCache.json文件中查询到原始路径，进而找到源码文件。另外，插件hstack支持自动还原混淆后的报错堆栈。在定位到需要保留的路径后，使用-keep-file-name来保留此路径。
-说明
+
+[h2]说明
+
 目前不支持在hvigor构建流程中添加自定义混淆插件。
+
 混淆后的远程HAR包被某模块依赖，如果该模块开启混淆，HAR包会被二次混淆。
+
 查看混淆效果
 
 混淆结束后，会在编译产物的build目录中生成混淆后的中间产物。开发者可以查看这些中间产物以确认混淆效果。同时，该目录中还会生成名称映射表和系统API白名单文件。
@@ -150,6 +170,7 @@ ArkGuardAbility.ts
 混淆名称映射表及系统API白名单目录：build/default/[...]/release/obfuscation。
 
 名称映射表文件：nameCache.json，该文件记录了源码名称混淆的映射关系。
+
 系统API白名单文件：systemApiCache.json，该文件记录了SDK中的接口与属性名称，工程源码中与其重名的元素不会被混淆。
 
 报错栈还原
@@ -162,5 +183,76 @@ ArkGuardAbility.ts
 
 源代码映射信息文件：sourceMaps.map，该文件记录了压缩/转换后的代码到原始源代码之间的映射关系。
 
-ArkGuard混淆原理及功能
-不同包类型的源码混淆建议
+## Code blocks
+
+### Code block 1
+
+```
+"arkOptions": {
+  "obfuscation": {
+    "ruleOptions": {
+      "enable": true, // 开启混淆开关。
+      "files": ["./obfuscation-rules.txt"] // 指定配置混淆规则文件, 在编译本模块时生效。
+    },
+    // ...
+  }
+},
+```
+
+### Code block 2
+
+```
+-enable-property-obfuscation
+-enable-toplevel-obfuscation
+-enable-filename-obfuscation
+-enable-export-obfuscation
+```
+
+### Code block 3
+
+```
+# options:
+-enable-property-obfuscation
+-enable-toplevel-obfuscation
+-enable-filename-obfuscation
+# -enable-export-obfuscation
+-keep-property-name # white list for dynamic property names
+```
+
+### Code block 4
+
+```
+"arkOptions": {
+  "obfuscation": {
+    "ruleOptions": {
+      "enable": true, // 开启混淆开关。
+      "files": ["./obfuscation-rules.txt"] // 指定配置混淆规则文件, 在编译本模块时生效。
+    },
+    "consumerFiles": ["./consumer-rules.txt"] // 指定配置混淆规则文件, 在编译依赖本模块的其他模块时生效。
+  }
+},
+```
+
+### Code block 5
+
+```
+// 静态定义，动态访问：属性名在对象定义时是静态的，但访问时通过动态构建属性名（通常使用字符串拼接）来访问
+// ArkGuardAbility.ts
+const obj001 = {
+  staticName: 'value'  // 静态定义属性
+};
+const fieldName = 'static' + 'Name';  // 动态构建属性名，需使用-keep-property-name staticName来保留该属性名
+console.info(obj001[fieldName]);  // 使用方括号语法动态访问属性
+```
+
+### Code block 6
+
+```
+// 动态定义，静态访问：属性名通过动态表达式在对象定义时确定，但访问时直接使用点语法（假设开发者知道属性名的结果）
+// ArkGuardAbility.ts
+const dynamicExpression = 'dynamicPropertyName';
+const obj002 = {
+  [dynamicExpression]: 'value'  // 动态定义属性
+};
+console.info(obj002.dynamicPropertyName);// 使用点语法静态访问属性，需使用-keep-property-name dynamicPropertyName来保留该属性名
+```

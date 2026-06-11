@@ -2,6 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/access-dataability_
 
+访问DataAbility需导入基础依赖包，以及获取与DataAbility子模块通信的URI字符串。
+
+其中，基础依赖包包括：
+
+@ohos.ability.featureAbility
+
+@ohos.data.dataAbility
+
+访问DataAbility的示例代码如下：
+
+创建工具接口类对象。
+
+import featureAbility from '@ohos.ability.featureAbility';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import ability from '@ohos.ability.ability';
+// 作为参数传递的URI,与config中定义的URI的区别是多了一个"/",有三个"/"
 let uri: string = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
 let DAHelper: ability.DataAbilityHelper = featureAbility.acquireDataAbilityHelper(uri);
 
@@ -28,13 +44,10 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
-
 
 // callback方式调用:
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -42,7 +55,6 @@ struct PageDataAbility {
   private valuesBucket_insert: rdb.ValuesBucket = { name: 'Rose', introduction: 'insert' };
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -80,6 +92,7 @@ struct PageDataAbility {
     // ...
   }
 }
+
 import ability from '@ohos.ability.ability';
 import featureAbility from '@ohos.ability.featureAbility';
 import { BusinessError } from '@ohos.base';
@@ -88,10 +101,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -99,7 +110,6 @@ struct PageDataAbility {
   private valuesBucket_insert: rdb.ValuesBucket = { name: 'Rose', introduction: 'insert' };
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -146,10 +156,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -157,7 +165,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -195,6 +202,7 @@ struct PageDataAbility {
     // ...
   }
 }
+
 import ability from '@ohos.ability.ability';
 import featureAbility from '@ohos.ability.featureAbility';
 import { BusinessError } from '@ohos.base';
@@ -203,10 +211,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -214,7 +220,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -261,10 +266,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -273,7 +276,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -312,6 +314,7 @@ struct PageDataAbility {
     // ...
   }
 }
+
 import ability from '@ohos.ability.ability';
 import featureAbility from '@ohos.ability.featureAbility';
 import { BusinessError } from '@ohos.base';
@@ -320,10 +323,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -332,7 +333,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -380,10 +380,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -392,7 +390,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -440,6 +437,7 @@ struct PageDataAbility {
     // ...
   }
 }
+
 import ability from '@ohos.ability.ability';
 import featureAbility from '@ohos.ability.featureAbility';
 import { BusinessError } from '@ohos.base';
@@ -448,10 +446,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -460,7 +456,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -516,10 +511,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -528,7 +521,6 @@ struct PageDataAbility {
     { name: 'Rose', introduction: 'batchInsert_two' } as rdb.ValuesBucket);
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -566,6 +558,7 @@ struct PageDataAbility {
     // ...
   }
 }
+
 import ability from '@ohos.ability.ability';
 import featureAbility from '@ohos.ability.featureAbility';
 import { BusinessError } from '@ohos.base';
@@ -574,10 +567,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -586,7 +577,6 @@ struct PageDataAbility {
     { name: 'Rose', introduction: 'batchInsert_two' } as rdb.ValuesBucket);
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -633,10 +623,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -644,7 +632,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -690,6 +677,7 @@ struct PageDataAbility {
     // ...
     }
   }
+
 import ability from '@ohos.ability.ability';
 import featureAbility from '@ohos.ability.featureAbility';
 import { BusinessError } from '@ohos.base';
@@ -698,10 +686,8 @@ import rdb from '@ohos.data.rdb';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PageDataAbility';
 const domain: number = 0xFF00;
-
 
 @Entry
 @Component
@@ -709,7 +695,6 @@ struct PageDataAbility {
   private predicates = new ohos_data_ability.DataAbilityPredicates();
   private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
   private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
-
 
   build() {
     Column() {
@@ -757,5 +742,770 @@ struct PageDataAbility {
 
 DataAbility的客户端的接口是由工具接口类对象DataAbilityHelper向外提供，相关接口可参考DataAbilityHelper模块。
 
-启动DataAbility
-DataAbility权限控制
+## Code blocks
+
+### Code block 1
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import ability from '@ohos.ability.ability';
+// 作为参数传递的URI,与config中定义的URI的区别是多了一个"/",有三个"/"
+let uri: string = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+let DAHelper: ability.DataAbilityHelper = featureAbility.acquireDataAbilityHelper(uri);
+```
+
+### Code block 2
+
+```
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+let valuesBucket_insert: rdb.ValuesBucket = { name: 'Rose', introduction: 'insert' };
+let valuesBucket_update: rdb.ValuesBucket = { name: 'Rose', introduction: 'update' };
+let crowd = new Array({ name: 'Rose', introduction: 'batchInsert_one' } as rdb.ValuesBucket,
+  { name: 'Rose', introduction: 'batchInsert_two' } as rdb.ValuesBucket);
+let columnArray = new Array('id', 'name', 'introduction');
+let predicates = new ohos_data_ability.DataAbilityPredicates();
+```
+
+### Code block 3
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+
+// callback方式调用:
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private valuesBucket_insert: rdb.ValuesBucket = { name: 'Rose', introduction: 'insert' };
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // callback方式调用:
+              this.DAHelper.insert(this.uri, this.valuesBucket_insert, (error: BusinessError, data: number) => {
+                if (error && error.code !== 0) {
+                  promptAction.showToast({
+                    message: 'insert_failed_toast'
+                  });
+                } else {
+                  promptAction.showToast({
+                    message: 'insert_success_toast'
+                  });
+                }
+                hilog.info(domain, TAG, 'DAHelper insert result: ' + data + ', error: ' + JSON.stringify(error));
+              }
+              );
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 4
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private valuesBucket_insert: rdb.ValuesBucket = { name: 'Rose', introduction: 'insert' };
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // promise方式调用(await需要在async方法中使用):
+              this.DAHelper.insert(this.uri, this.valuesBucket_insert).then((datainsert) => {
+                promptAction.showToast({
+                  message: 'insert_success_toast'
+                });
+                hilog.info(domain, TAG, 'DAHelper insert result: ' + datainsert);
+              }).catch((error: BusinessError) => {
+                promptAction.showToast({
+                  message: 'insert_failed_toast'
+                });
+                hilog.error(domain, TAG, `DAHelper insert failed. Cause: ${error.message}`);
+              });
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 5
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // callback方式调用:
+              this.DAHelper.delete(this.uri, this.predicates, (error, data) => {
+                if (error && error.code !== 0) {
+                  promptAction.showToast({
+                    message: 'delete_failed_toast'
+                  });
+                } else {
+                  promptAction.showToast({
+                    message: 'delete_success_toast'
+                  });
+                }
+                hilog.info(domain, TAG, 'DAHelper delete result: ' + data + ', error: ' + JSON.stringify(error));
+              }
+              );
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 6
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // promise方式调用(await需要在async方法中使用):
+              this.DAHelper.delete(this.uri, this.predicates).then((datadelete) => {
+                promptAction.showToast({
+                  message: 'delete_success_toast'
+                });
+                hilog.info(domain, TAG, 'DAHelper delete result: ' + datadelete);
+              }).catch((error: BusinessError) => {
+                promptAction.showToast({
+                  message: 'delete_failed_toast'
+                });
+                hilog.error(domain, TAG, `DAHelper delete failed. Cause: ${error.message}`);
+              });
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 7
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private valuesBucket_update: rdb.ValuesBucket = { name: 'Rose', introduction: 'update' };
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // callback方式调用:
+              this.predicates.equalTo('name', 'Rose');
+              this.DAHelper.update(this.uri, this.valuesBucket_update, this.predicates, (error, data) => {
+                if (error && error.code !== 0) {
+                  promptAction.showToast({
+                    message: 'update_failed_toast'
+                  });
+                } else {
+                  promptAction.showToast({
+                    message: 'update_success_toast'
+                  });
+                }
+                hilog.info(domain, TAG, 'DAHelper update result: ' + data + ', error: ' + JSON.stringify(error));
+              }
+              );
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 8
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private valuesBucket_update: rdb.ValuesBucket = { name: 'Rose', introduction: 'update' };
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // promise方式调用(await需要在async方法中使用):
+              this.predicates.equalTo('name', 'Rose');
+              this.DAHelper.update(this.uri, this.valuesBucket_update, this.predicates).then((dataupdate) => {
+                promptAction.showToast({
+                  message: 'update_success_toast'
+                });
+                hilog.info(domain, TAG, 'DAHelper update result: ' + dataupdate);
+              }).catch((error: BusinessError) => {
+                promptAction.showToast({
+                  message: 'update_failed_toast'
+                });
+                hilog.error(domain, TAG, `DAHelper update failed. Cause: ${error.message}`);
+              });
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 9
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private columnArray = new Array('id', 'name', 'introduction');
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // callback方式调用:
+              this.predicates.equalTo('name', 'Rose');
+              this.DAHelper.query(this.uri, this.columnArray, this.predicates, (error, data) => {
+                if (error && error.code !== 0) {
+                  promptAction.showToast({
+                    message: 'query_failed_toast'
+                  });
+                  hilog.error(domain, TAG, `DAHelper query failed. Cause: ${error.message}`);
+                } else {
+                  promptAction.showToast({
+                    message: 'query_success_toast'
+                  });
+                }
+                // ResultSet是一个数据集合的游标，默认指向第-1个记录，有效的数据从0开始。
+                while (data.goToNextRow()) {
+                  const id = data.getLong(data.getColumnIndex('id'));
+                  const name = data.getString(data.getColumnIndex('name'));
+                  const introduction = data.getString(data.getColumnIndex('introduction'));
+                  hilog.info(domain, TAG, `DAHelper query result:id = [${id}], name = [${name}], introduction = [${introduction}]`);
+                }
+                // 释放数据集的内存
+                data.close();
+              }
+              );
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 10
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private columnArray = new Array('id', 'name', 'introduction');
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // promise方式调用(await需要在async方法中使用):
+              this.predicates.equalTo('name', 'Rose');
+              this.DAHelper.query(this.uri, this.columnArray, this.predicates).then((dataquery) => {
+                promptAction.showToast({
+                  message: 'query_success_toast'
+                });
+                // ResultSet是一个数据集合的游标，默认指向第-1个记录，有效的数据从0开始。
+                while (dataquery.goToNextRow()) {
+                  const id = dataquery.getLong(dataquery.getColumnIndex('id'));
+                  const name = dataquery.getString(dataquery.getColumnIndex('name'));
+                  const introduction = dataquery.getString(dataquery.getColumnIndex('introduction'));
+                  hilog.info(domain, TAG, `DAHelper query result:id = [${id}], name = [${name}], introduction = [${introduction}]`);
+                }
+                // 释放数据集的内存
+                dataquery.close();
+              }).catch((error: BusinessError) => {
+                promptAction.showToast({
+                  message: 'query_failed_toast'
+                });
+                hilog.error(domain, TAG, `DAHelper query failed. Cause: ${error.message}`);
+              });
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 11
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private crowd = new Array({ name: 'Rose', introduction: 'batchInsert_one' } as rdb.ValuesBucket,
+    { name: 'Rose', introduction: 'batchInsert_two' } as rdb.ValuesBucket);
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // callback方式调用:
+              this.DAHelper.batchInsert(this.uri, this.crowd, (error, data) => {
+                if (error && error.code !== 0) {
+                  promptAction.showToast({
+                    message: 'batchInsert_failed_toast'
+                  });
+                } else {
+                  promptAction.showToast({
+                    message: 'batchInsert_success_toast'
+                  });
+                }
+                hilog.info(domain, TAG, 'DAHelper batchInsert result: ' + data + ', error: ' + JSON.stringify(error));
+              }
+              );
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 12
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private crowd = new Array({ name: 'Rose', introduction: 'batchInsert_one' } as rdb.ValuesBucket,
+    { name: 'Rose', introduction: 'batchInsert_two' } as rdb.ValuesBucket);
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // promise方式调用(await需要在async方法中使用):
+              this.DAHelper.batchInsert(this.uri, this.crowd).then((databatchInsert) => {
+                promptAction.showToast({
+                  message: 'batchInsert_success_toast'
+                });
+                hilog.info(domain, TAG, 'DAHelper batchInsert result: ' + databatchInsert);
+              }).catch((error: BusinessError) => {
+                promptAction.showToast({
+                  message: 'batchInsert_failed_toast'
+                });
+                hilog.error(domain, TAG, `DAHelper batchInsert failed. Cause: ${error.message}`);
+              });
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```
+
+### Code block 13
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // callback方式调用:
+              let operations: Array<ability.DataAbilityOperation> = [{
+                uri: this.uri,
+                type: featureAbility.DataAbilityOperationType.TYPE_INSERT,
+                valuesBucket: { name: 'Rose', introduction: 'executeBatch' },
+                predicates: this.predicates,
+                expectedCount: 0,
+                predicatesBackReferences: undefined,
+                interrupted: true,
+              }];
+              this.DAHelper.executeBatch(this.uri, operations, (error, data) => {
+                if (error && error.code !== 0) {
+                  promptAction.showToast({
+                    message: 'executeBatch_failed_toast'
+                  });
+                } else {
+                  promptAction.showToast({
+                    message: 'executeBatch_success_toast'
+                  });
+                }
+                hilog.info(domain, TAG, `DAHelper executeBatch, result: ` + JSON.stringify(data) + ', error: ' + JSON.stringify(error));
+              });
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+    }
+  }
+```
+
+### Code block 14
+
+```
+import ability from '@ohos.ability.ability';
+import featureAbility from '@ohos.ability.featureAbility';
+import { BusinessError } from '@ohos.base';
+import ohos_data_ability from '@ohos.data.dataAbility';
+import rdb from '@ohos.data.rdb';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PageDataAbility';
+const domain: number = 0xFF00;
+
+@Entry
+@Component
+struct PageDataAbility {
+  private predicates = new ohos_data_ability.DataAbilityPredicates();
+  private uri = 'dataability:///com.samples.famodelabilitydevelop.DataAbility';
+  private DAHelper = featureAbility.acquireDataAbilityHelper(this.uri);
+
+  build() {
+    Column() {
+      // ...
+      List({ initialIndex: 0 }) {
+        // ...
+        ListItemGroup() {
+          ListItem() {
+            Flex({ justifyContent: FlexAlign.SpaceBetween, alignContent: FlexAlign.Center }) {
+              // ...
+            }
+            .onClick(() => {
+              // promise方式调用(await需要在async方法中使用):
+              let operations: Array<ability.DataAbilityOperation> = [{
+                uri: this.uri,
+                type: featureAbility.DataAbilityOperationType.TYPE_INSERT,
+                valuesBucket: { name: 'Rose', introduction: 'executeBatch' },
+                predicates: this.predicates,
+                expectedCount: 0,
+                predicatesBackReferences: undefined,
+                interrupted: true,
+              }];
+              this.DAHelper.executeBatch(this.uri, operations).then((dataquery) => {
+                promptAction.showToast({
+                  message: 'executeBatch_success_toast'
+                });
+                hilog.info(domain, TAG, 'DAHelper executeBatch result: ' + JSON.stringify(dataquery));
+              }).catch((error: BusinessError) => {
+                promptAction.showToast({
+                  message: 'executeBatch_failed_toast'
+                });
+                hilog.error(domain, TAG, `DAHelper executeBatch failed. Cause: ${error.message}`);
+              });
+            })
+          }
+          // ...
+        }
+        // ...
+      }
+      // ...
+    }
+    // ...
+  }
+}
+```

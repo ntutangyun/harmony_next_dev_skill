@@ -1,10 +1,11 @@
-# 文档中心
+# HAP
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hap-package_
 
 HAP（Harmony Ability Package）是应用安装和运行的基本单元。HAP包是由代码、资源、三方库、配置文件等打包生成的模块包，其主要分为两种类型：entry和feature。
 
 entry：应用的主模块，作为应用的入口，提供了应用的基础功能。
+
 feature：应用的动态特性模块，作为应用能力的扩展，可以根据用户的需求和设备类型进行选择性安装。
 
 应用程序包可以只包含一个基础的entry包，也可以包含一个基础的entry包和多个功能性的feature包。
@@ -88,6 +89,7 @@ uninstall bundle successfully.
 完成HAP安装或更新后，即可参考相关调试命令进行调试。
 
 示例代码
+
 多HAP
 
 ## Code blocks

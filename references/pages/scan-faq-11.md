@@ -2,14 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-11_
 
-集成游戏资源加速ExtensionAbility方法，未配置游戏资源加速ExtensionAbility组件类型信息，导致功能未生效
-文档
-ContinuationResult
-文档
-条形码识别错误
-文档
-通过字节数组生成码图
-文档
-扫码时无法识别多个码图
-示例代码
-实现骨骼点识别
+问题现象
+
+Scan Kit识别该码图内容显示为乱码，无法解析。
+
+解决措施
+
+通过字节数组生成码图，Scan Kit识别该码图内容显示为乱码，这种字节数组需要专门的解码器解析，例如地铁闸机。

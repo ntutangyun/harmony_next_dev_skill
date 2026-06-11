@@ -13,103 +13,29 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-sca
 当前仅支持处理同时满足以下条件的图片：
 
 图片为SDR（Standard dynamic range）图片。
+
 图片的像素格式为RGBA、BGRA、NV12、NV21，输出格式与输入格式一致。
+
 处理的PixelMap对象需为DMA内存。
 
 本模块提供4个质量档位的算法，处理效果逐渐变优，但性能也会逐渐下降。
 
-质量档位	
-
-输入分辨率要求
-
-（单位：像素）
-
-	
-
-输出分辨率要求
-
-（单位：像素）
-
-	说明
-NONE	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	仅适用于缩放场景，支持改变宽高比例，无清晰度增强效果。
-LOW	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-仅适用于缩放场景，支持改变宽高比例。
-
-缩放时会对图像进行低质量的清晰度增强，处理效率较高。
-
-此质量档位为默认设置。
-
-
-MEDIUM	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-宽：[32,3000]
-
-高：[32,3000]
-
-	
-
-仅适用于缩放场景，支持改变宽高比例。
-
-缩放时会对图像进行中等质量的清晰度增强，处理效率适中。
-
-
-HIGH	
-
-宽：[512,2000]
-
-高：[512,2000]
-
-	
-
-宽：[512,2000]
-
-高：[512,2000]
-
-	
-
-适用于缩放及清晰度增强场景，支持改变宽高比例。
-
-缩放时会对图像进行高质量的清晰度增强，处理效率相对较低。
+质量档位	输入分辨率要求 （单位：像素）	输出分辨率要求 （单位：像素）	说明
+NONE	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例，无清晰度增强效果。
+LOW	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图像进行低质量的清晰度增强，处理效率较高。 此质量档位为默认设置。
+MEDIUM	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图像进行中等质量的清晰度增强，处理效率适中。
+HIGH	宽：[512,2000] 高：[512,2000]	宽：[512,2000] 高：[512,2000]	适用于缩放及清晰度增强场景，支持改变宽高比例。 缩放时会对图像进行高质量的清晰度增强，处理效率相对较低。
 
 开发指导
 
 具体实现可参考示例工程。
 
-在 CMake 脚本中链接动态库
+[h2]在 CMake 脚本中链接动态库
+
 add_library(entry SHARED napi_init.cpp ImageProcessing/ImageProcessing.cpp)
 target_link_libraries(entry PUBLIC ${BASE_LIBRARY})
-开发步骤
+
+[h2]开发步骤
 
 添加头文件。
 
@@ -132,8 +58,11 @@ ImageProcessing_ErrorCode ret =  OH_ImageProcessing_InitializeEnvironment();
 应用可以通过图片处理引擎模块类型来创建图片细节增强模块。示例中的变量说明如下：
 
 imageProcessor：细节增强模块实例。
+
 IMAGE_PROCESSING_TYPE_DETAIL_ENHANCER：细节增强类型。
+
 预期返回值：IMAGE_PROCESSING_SUCCESS
+
 // 创建图片细节增强模块实例
 OH_ImageProcessing* imageProcessor = nullptr;
 ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor, IMAGE_PROCESSING_TYPE_DETAIL_ENHANCER);
@@ -161,6 +90,7 @@ imageProcessor = nullptr;
 释放处理资源。
 
 OH_ImageProcessing_DeinitializeEnvironment();
+
 完整示例代码
 
 ArkTS示例代码：
@@ -175,5 +105,69 @@ ImageProcessing.h示例代码
 
 ImageProcessing.cpp示例代码
 
-使用ImageProcessing处理图片
-图片动态元数据生成
+## Code blocks
+
+### Code block 1
+
+```
+add_library(entry SHARED napi_init.cpp ImageProcessing/ImageProcessing.cpp)
+target_link_libraries(entry PUBLIC ${BASE_LIBRARY})
+```
+
+### Code block 2
+
+```
+#include <hilog/log.h>
+#include <multimedia/image_framework/image_pixel_map_mdk.h>
+#include <multimedia/image_framework/image/pixelmap_native.h>
+#include <multimedia/video_processing_engine/image_processing.h>
+#include <multimedia/video_processing_engine/image_processing_types.h>
+#include <multimedia/player_framework/native_avformat.h>
+#include <napi/native_api.h>
+```
+
+### Code block 3
+
+```
+ImageProcessing_ErrorCode ret =  OH_ImageProcessing_InitializeEnvironment();
+```
+
+### Code block 4
+
+```
+// 创建图片细节增强模块实例
+OH_ImageProcessing* imageProcessor = nullptr;
+ImageProcessing_ErrorCode ret = OH_ImageProcessing_Create(&imageProcessor, IMAGE_PROCESSING_TYPE_DETAIL_ENHANCER);
+```
+
+### Code block 5
+
+```
+// 创建format实例
+OH_AVFormat* parameter = OH_AVFormat_Create();
+// 指定质量档位
+OH_AVFormat_SetIntValue(parameter, IMAGE_DETAIL_ENHANCER_PARAMETER_KEY_QUALITY_LEVEL,
+    IMAGE_DETAIL_ENHANCER_QUALITY_LEVEL_HIGH);
+// 配置参数
+ImageProcessing_ErrorCode ret = OH_ImageProcessing_SetParameter(imageProcessor,parameter);
+```
+
+### Code block 6
+
+```
+// 启动细节增强处理
+ImageProcessing_ErrorCode ret = OH_ImageProcessing_EnhanceDetail(imageProcessor, srcImage, dstImage);
+```
+
+### Code block 7
+
+```
+ImageProcessing_ErrorCode ret = OH_ImageProcessing_Destroy(imageProcessor);
+imageProcessor = nullptr;
+```
+
+### Code block 8
+
+```
+OH_ImageProcessing_DeinitializeEnvironment();
+```

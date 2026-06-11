@@ -2,18 +2,31 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-tools-overview_
 
+HarmonyOS应用/元服务开发
+
+[h2]DevEco Studio集成开发环境
+
 HUAWEI DevEco Studio（获取工具请单击链接下载，以下简称DevEco Studio）是基于IntelliJ IDEA Community开源版本打造，面向HarmonyOS应用/元服务开发场景的一站式集成开发环境。提供AI辅助编程、编译构建、UI实时预览、代码调试、性能调优、模拟器等功能，帮助你高效开发HarmonyOS应用/元服务。
 
 CodeGenie AI辅助编程：提供HarmonyOS应用开发智能知识问答、代码生成&补全、万能卡片生成、UI界面生成等能力。
+
 智能代码编辑：代码编辑功能为ArkTS、JS和C/C++编程语言提供代码智能补全、代码重构等能力，帮助你高效编码。
+
 多端双向实时预览：界面预览功能帮助你在UI编码时快速预览界面在多种设备上的显示效果，查看组件布局，提升UI开发效率。
+
 Hvigor轻量级构建工具：支持源码、资源、构建流程的自定义，可以灵活构建差异化的多目标产物。提供Build Analyzer帮助分析构建性能，提升构建效率。
+
 跨语言调试：支持ArkTS&C++语言调试、汇编调试、lldb命令调试、反向调试、智能跳转和数据断点等丰富调试能力。
+
 Profiler应用调优：支持分析多种场景应用性能问题，包括内存泄漏、组件耗时、网络请求、应用启动、界面卡顿等。提供可视化泳道图帮助优化HarmonyOS应用性能。
+
 AppAnalyzer应用与元服务体检：使用体检工具在开发阶段发现可能影响上架的兼容性、性能、功耗、稳定性等问题，并支持场景化检测，提升应用基础体验及上架成功率。
+
 本地模拟器：提供手机（包括折叠屏）、平板、PC/2in1等类型的模拟器，可以帮助你在各种HarmonyOS设备上调测应用，以更好地适配不同的机型和HarmonyOS版本。
+
 依赖管理：ohpm是DevEco Studio默认的包管理工具，可以使用ohpm安装、更新、删除和管理HAR、HSP或模块之间的依赖关系，帮助开发者简化了代码的共享、分发和依赖管理。同时，提供ohpm-repo工具帮助开发者搭建轻量级的HarmonyOS三方库私有仓服务。它与ohpm兼容，用来存储和管理您独有的三方库，保证这些三方库的私有性的同时，便于这些三方库能在开发团队内部共享复用，从而提升团队的开发效率。
-开发流程
+
+[h2]开发流程
 
 开发一个应用/元服务流程如图所示：
 
@@ -46,25 +59,37 @@ HarmonyOS应用/元服务开发、测试完成后，需要将应用/元服务发
 针对流水线或命令行开发场景，推荐使用Command Line Tools命令行工具，其中集合了HarmonyOS应用开发所用到的系列工具，包括代码检查工具codelinter、三方包管理工具ohpm、堆栈解析工具hstack、命令行构建工具hvigorw。
 
 代码检查工具codelinter：对代码进行检查与快速修复，可将codelinter工具集成到门禁或持续集成环境中。
+
 三方包管理工具ohpm：作为OpenHarmony三方库的包管理工具，支持OpenHarmony共享包的发布、安装和依赖管理。
+
 堆栈解析工具hstack：用于将Release应用混淆后的crash堆栈还原为源码对应堆栈。
+
 命令行构建工具hvigorw：作为Hvigor的wrapper包装工具，支持自动安装Hvigor构建工具和相关插件依赖，以及执行Hvigor构建命令。
+
 约束与限制
 
 以下功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）：
 
 Partner SDK功能
+
 Template Market模板市场
-Sample导入功能
+
 端云一体化工程创建及开发
+
 软件包及符号表上传功能
+
 Collect Logs and Diagnostic Data日志回传功能
+
 Operation Analyzer运维服务
+
 AppAnalyzer应用与元服务体检
+
 AI辅助编程工具DevEco CodeGenie
+
 OHPM Index OpenHarmony开源中心仓
+
+API变更查询
+
 文档声明
 
 HUAWEI DevEco Studio使用指南配套DevEco Studio最新版本。如使用DevEco Studio其它版本，可能存在文档与产品功能界面、操作不一致的情况，请以实际功能界面为准。
-
-下载与安装DevEco Studio

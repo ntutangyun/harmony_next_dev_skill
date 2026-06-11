@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/natural-language-getwordsegmentation_
 
+适用场景
+
 分词的目的是让文本文件的中文、英文、数字内容变成一个一个的单词或者词组，从而为后续的转变为词向量提供基础。使用场景例如搜索引擎会将用户输入的文本分词处理后提取关键词送搜索。
 
 约束与限制
@@ -9,11 +11,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/natural-l
 该能力当前不支持模拟器。
 
 AI能力	约束
-分词	
-
-- 支持的语言：简体中文、英文、繁体中文。
-
-- 文本长度：不超过1000字符。
+分词	- 支持的语言：简体中文、英文、繁体中文。 - 文本长度：不超过1000字符。
 
 开发步骤
 
@@ -26,7 +24,6 @@ import { textProcessing } from '@kit.NaturalLanguageKit';
 private inputText: string = '';
 @State outputText: string = '';
 
-
 TextInput({ placeholder: '请输入文本' })
   .height(40)
   .fontSize(16)
@@ -35,7 +32,6 @@ TextInput({ placeholder: '请输入文本' })
   .onChange((value: string) => {
     this.inputText = value;
   })
-
 
 Button('获取分词结果')
   .type(ButtonType.Capsule)
@@ -60,16 +56,16 @@ private formatWordSegmentResult(segments: textProcessing.WordSegment[]): string 
   });
   return output;
 }
-开发实例
-import { textProcessing } from '@kit.NaturalLanguageKit';
 
+开发实例
+
+import { textProcessing } from '@kit.NaturalLanguageKit';
 
 @Entry
 @Component
 struct Index {
   private inputText: string = '';
   @State outputText: string = '';
-
 
   build() {
     Column() {
@@ -82,7 +78,6 @@ struct Index {
           this.inputText = value;
         })
 
-
       Scroll() {
         Text(this.outputText)
           .fontSize(16)
@@ -90,7 +85,6 @@ struct Index {
           .margin(10)
       }
       .height('40%')
-
 
       // 调用分词接口
       Row() {
@@ -114,6 +108,117 @@ struct Index {
     .justifyContent(FlexAlign.Center)
   }
 
+  // 分词结果转义
+  private formatWordSegmentResult(segments: textProcessing.WordSegment[]): string {
+    let output = 'Word Segments:\n';
+    segments.forEach((segment, index) => {
+      output += `Word[${index}]: ${segment.word}, Tag: ${segment.wordTag}\n`;
+    });
+    return output;
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { textProcessing } from '@kit.NaturalLanguageKit';
+```
+
+### Code block 2
+
+```
+private inputText: string = '';
+@State outputText: string = '';
+
+TextInput({ placeholder: '请输入文本' })
+  .height(40)
+  .fontSize(16)
+  .width('90%')
+  .margin(10)
+  .onChange((value: string) => {
+    this.inputText = value;
+  })
+
+Button('获取分词结果')
+  .type(ButtonType.Capsule)
+  .fontColor(Color.White)
+  .width('45%')
+  .margin(10)
+  .onClick(async () => {
+    try {
+      let result = await textProcessing.getWordSegment(this.inputText);
+      this.outputText = this.formatWordSegmentResult(result);
+    } catch (err) {
+      console.error(`getWordSegment errorCode: ${err.code}, errorMessage: ${err.message}`);
+    }
+  })
+```
+
+### Code block 3
+
+```
+private formatWordSegmentResult(segments: textProcessing.WordSegment[]): string {
+  let output = 'Word Segments:\n';
+  segments.forEach((segment, index) => {
+    output += `Word[${index}]: ${segment.word}, Tag: ${segment.wordTag}\n`;
+  });
+  return output;
+}
+```
+
+### Code block 4
+
+```
+import { textProcessing } from '@kit.NaturalLanguageKit';
+
+@Entry
+@Component
+struct Index {
+  private inputText: string = '';
+  @State outputText: string = '';
+
+  build() {
+    Column() {
+      TextInput({ placeholder: '请输入文本' })
+        .height(40)
+        .fontSize(16)
+        .width('90%')
+        .margin(10)
+        .onChange((value: string) => {
+          this.inputText = value;
+        })
+
+      Scroll() {
+        Text(this.outputText)
+          .fontSize(16)
+          .width('90%')
+          .margin(10)
+      }
+      .height('40%')
+
+      // 调用分词接口
+      Row() {
+        Button('获取分词结果')
+          .type(ButtonType.Capsule)
+          .fontColor(Color.White)
+          .width('45%')
+          .margin(10)
+          .onClick(async () => {
+            try {
+              let result = await textProcessing.getWordSegment(this.inputText);
+              this.outputText = this.formatWordSegmentResult(result);
+            } catch (err) {
+              console.error(`getWordSegment errorCode: ${err.code}, errorMessage: ${err.message}`);
+            }
+          })
+      }
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
 
   // 分词结果转义
   private formatWordSegmentResult(segments: textProcessing.WordSegment[]): string {
@@ -124,5 +229,4 @@ struct Index {
     return output;
   }
 }
-Natural Language Kit简介
-实体抽取
+```

@@ -2,11 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/servicecollaboration-faq-1_
 
-跨设备互通API支持根据特定调用策略调用设备。调用策略：2in1设备可以调用平板和手机，平板可以调用手机，同类型设备不可调用。
+跨设备互通API支持根据特定调用策略调用设备。调用策略：PC/2in1设备可以调用Tablet和Phone，Tablet可以调用Phone，并且从API 6.1.0(23)开始支持TV、Phone、Tablet或PC/2in1设备调用支持拍照、扫描、选择图库中图片与视频能力的Phone，支持拍照、扫描、选择图库中图片与视频能力的Tablet，以及支持选择图库中图片与视频能力的PC/2in1设备。
 
 确保设备调用策略无误。
 
 设备选择列表仍没有周围设备，请检查双端设备是否开启WLAN、蓝牙，并且登录同一个华为账号。
-
-Service Collaboration Kit常见问题
-Telephony Kit（蜂窝通信服务）

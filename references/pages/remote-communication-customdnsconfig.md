@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-customdnsconfig_
 
+场景介绍
+
 在远程通信服务框架中，Remote Communication Kit提供了一套高度可定制的 DNS（Domain Name System）请求规则服务，这一服务允许开发者根据自身需求调整 DNS 查询行为。此外，支持用户自定义 DNS 服务器设置。开发者可根据具体的网络环境或安全需求，选择最适合的 DNS 服务器进行配置。通过这些功能，开发者不仅能够实现网络管理的高效性，还能增强网络的安全性，确保数据传输的稳定与安全。DnsConfiguration中可设置dnsRules、dnsOverHttps。
 
 dnsRules（配置DNS规则）
@@ -28,7 +30,7 @@ DNS over HTTPS配置（DnsOverHttpsConfiguration）：配置HTTPS上的DNS（DOH
 
 下面以定制DNS服务器、重写DNS解析函数两个示例来说明如何进行DNS的定制，从而获取最佳的DNS性能体验。
 
-定制DNS服务器
+[h2]定制DNS服务器
 
 导入需要的模块。
 
@@ -65,7 +67,8 @@ session.fetch(request).then((response: rcp.Response) => {
   // 关闭会话
   session.close();
 })
-定制DNS解析函数
+
+[h2]定制DNS解析函数
 
 导入需要的模块。
 
@@ -105,5 +108,96 @@ session.fetch(request).then((response: rcp.Response) => {
   // 关闭会话
   session.close();
 })
-Configuration：高效实现定制功能
-TransferConfiguration：定制数据传输
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+const session = rcp.createSession();
+// 其中的URL需要根据自身业务需要调整
+const request = new rcp.Request('https://example.com');
+```
+
+### Code block 3
+
+```
+request.configuration = {
+  dns: {
+    dnsRules: [
+      {
+        ip: 'x.xxx.x.xx', // DNS服务器的IP地址
+        port: 53, // DNS服务器的端口号
+      },
+    ]
+  }
+};
+```
+
+### Code block 4
+
+```
+session.fetch(request).then((response: rcp.Response) => {
+  console.info(`The response is ${JSON.stringify(response)}`); // 处理成功响应
+  // 关闭会话
+  session.close();
+}).catch((err: BusinessError) => {
+  console.error(`The error code is ${err.code}, error data is ${err.data}`); // 处理错误
+  // 关闭会话
+  session.close();
+})
+```
+
+### Code block 5
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 6
+
+```
+const session = rcp.createSession();
+// 定义请求的URL（请根据实际需求调整）
+const requestURL = 'https://example.com';
+const request = new rcp.Request(requestURL);
+```
+
+### Code block 7
+
+```
+request.configuration = {
+  dns: {
+    dnsRules: (host: string, port: number): rcp.IpAddress[] => {
+      if (host === 'example.com') {
+        return ['x.xxx.x.xx', 'x.xxx.x.xx']; // 此处请根据实际情况填写
+      }
+      return [];
+    }
+  }
+};
+```
+
+### Code block 8
+
+```
+session.fetch(request).then((response: rcp.Response) => {
+  // 处理成功响应
+  console.info(`The response is ${JSON.stringify(response)}`);
+  // 关闭会话
+  session.close();
+}).catch((err: BusinessError) => {
+  // 处理错误
+  console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // 关闭会话
+  session.close();
+})
+```

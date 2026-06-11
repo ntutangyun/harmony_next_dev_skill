@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-faq-4_
 
+该默认价格在AppGallery Connect页面其他地方涉及商品价格展示时使用。

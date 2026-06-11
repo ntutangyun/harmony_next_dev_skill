@@ -11,6 +11,7 @@ Account Kit提供了华为账号一键登录、华为账号登录、静默登录
 项目/ID类型	UnionID	OpenID
 定义	UnionID是华为账号用户同一开发者账号下的唯一标识。开发者有多个HarmonyOS应用时，同一个开发者账号下的HarmonyOS应用获取到用户的UnionID相同。	OpenID是华为账号用户在HarmonyOS应用的唯一标识。不同HarmonyOS应用（不管是否在同一个开发者账号下）获取到用户的OpenID不同。
 使用场景	在同一个开发者账号下标识用户的唯一性。建议使用UnionID。	在同一个应用下标识用户的唯一性。
+
 说明
 
 在开发HarmonyOS应用时，您需要考虑同一用户在非HarmonyOS应用和HarmonyOS应用的用户数据是否互通。如果您之前使用OpenID来关联用户数据，我们建议将用户数据关系切换成UnionID，以确保用户使用HarmonyOS应用后可以继承老版本的用户数据。具体切换指导可以参考：通过OpenID获取UnionID。
@@ -32,6 +33,3 @@ Account Kit提供了华为账号一键登录、华为账号登录、静默登录
 订阅华为账号登录/登出事件
 
 当应用需要跟随华为账号的登录状态进行登录登出时，可以通过订阅华为账号的登录登出事件进行判断。
-
-登录
-华为账号一键登录（获取手机号和UnionID/OpenID）

@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-faq2_
 
+问题现象
+
+调用接口报错401 参数检查失败。
+
+Parameter error. The value of bundleName is incorrect.
+
 Parameter error. The value of layeredDrawableDescriptor is incorrect.
 
 Parameter error. The value of size is incorrect.
@@ -47,5 +53,3 @@ Parameter error. The json resource schema is incorrect.
 请检查传入的资源是否为空。
 
 请检查注册自定义的Symbol资源时传入的JSON资源格式是否正确。
-
-怎么获取layeredDrawableDescriptor对象信息？

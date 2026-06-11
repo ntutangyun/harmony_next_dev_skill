@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-taas-securecamera_
 
+场景介绍
+
 在安全摄像头场景中，通过创建证明密钥、打开证明会话的方式，对安全摄像头捕捉到的图像数据进行签名，确保图像数据的真实性和完整性。
 
 约束与限制
@@ -33,6 +35,7 @@ function getSecureCameraDevice(cameraManager: camera.CameraManager): camera.Came
     }
     return frontCamera;
   }
+
 业务流程
 
 接口说明
@@ -44,6 +47,7 @@ createAttestKey(options: AttestOptions): Promise<void>	创建证明密钥。
 initializeAttestContext(userData: string, options: AttestOptions): Promise<AttestReturnResult>	初始化证明会话。
 finalizeAttestContext(options: AttestOptions): Promise<void>	结束证明会话。
 destroyAttestKey(): Promise<void>	销毁证明密钥。
+
 开发步骤
 
 导入camera模块、trustedAppService模块和相关依赖模块。
@@ -57,8 +61,11 @@ import { BusinessError } from '@kit.BasicServicesKit';
 开发者需要完成：
 
 选择支持安全相机的设备。
+
 查询相机设备在安全模式下支持的输出能力。
+
 创建设备输入输出。
+
 打开安全设备（安全摄像头），并获取安全设备序列号。
 
 创建证明密钥和初始化证明会话。
@@ -138,5 +145,107 @@ try {
 
 如果需要销毁证明密钥，请在结束证明会话后，调用destroyAttestKey接口。由于安全摄像头、安全地理位置和安全图像压缩、裁剪共用同一个证明密钥，销毁前需要保证安全地理位置功能未在使用该证明密钥。
 
-可信应用服务
-安全地理位置场景
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+// 获得安全摄像头
+function getSecureCameraDevice(cameraManager: camera.CameraManager): camera.CameraDevice {
+    // 获得设备支持的摄像头列表
+    const cameraDevices = cameraManager.getSupportedCameras();
+    if (cameraDevices.length < 1) {
+      throw new Error('no camera devices');
+    }
+    // 获取前置镜头对象。当前安全摄像头仅支持前置镜头。
+    const frontCamera: camera.CameraDevice | undefined = cameraDevices.find((profile: camera.CameraDevice) => {
+      return profile.cameraPosition != camera.CameraPosition.CAMERA_POSITION_BACK;
+    });
+    if (frontCamera === undefined) {
+      throw new Error('no front cameras');
+    }
+    // 检查前置摄像头设备是否支持安全模式；若支持，即可使用该前置摄像头做后续安全摄像头操作。
+    const modes = cameraManager.getSupportedSceneModes(frontCamera);
+    if (modes.indexOf(camera.SceneMode.SECURE_PHOTO) === -1) {
+      throw new Error('current device not support secure camera');
+    }
+    return frontCamera;
+  }
+```
+
+### Code block 2
+
+```
+import { camera } from '@kit.CameraKit';
+import { trustedAppService } from '@kit.DeviceSecurityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 3
+
+```
+// 创建证明密钥的参数
+const createProperties: Array<trustedAppService.AttestParam> = [
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_ALGORITHM,
+    value: trustedAppService.AttestKeyAlg.ATTEST_ALG_ECC
+  },
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_KEY_SIZE,
+    value: trustedAppService.AttestKeySize.ATTEST_ECC_KEY_SIZE_256
+  }
+];
+const createOptions: trustedAppService.AttestOptions = {
+  properties: createProperties
+};
+// 初始化证明会话的参数
+const userData = "trusted_app_service_demo"; // 示例值，实际值请自行生成，长度在16到127Bytes之间
+const deviceId = 7483679320805398131; // 示例值，实际值请通过Camera Kit获取
+const initProperties: Array<trustedAppService.AttestParam> = [
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+  },
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
+    value: BigInt(deviceId)
+  }
+];
+const initOptions: trustedAppService.AttestOptions = {
+  properties: initProperties
+};
+// 创建证明密钥并打开证明会话
+let certChainList: Array<string>;
+try {
+  await trustedAppService.createAttestKey(createOptions);
+  const result = await trustedAppService.initializeAttestContext(userData, initOptions);
+  certChainList = result.certChains;
+} catch (err) {
+  const error = err as BusinessError;
+  console.error(`Failed to initialize attest context, message:${error.message}, code:${error.code}`);
+}
+```
+
+### Code block 4
+
+```
+// 结束证明会话的参数
+const finalProperties: Array<trustedAppService.AttestParam> = [
+  {
+    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+  }
+];
+const finalOptions: trustedAppService.AttestOptions = {
+  properties: finalProperties,
+};
+// 结束证明会话
+try {
+  await trustedAppService.finalizeAttestContext(finalOptions);
+} catch (err) {
+  const error = err as BusinessError;
+  console.error(`Failed to finalize attest context, message:${error.message}, code:${error.code}`);
+}
+```

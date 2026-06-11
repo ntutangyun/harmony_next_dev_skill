@@ -14,7 +14,6 @@ ArkGraphics 3D支持用户创建环境资源，定义3D场景的背景。
 
 import { Camera, Environment, Geometry, Image, Material, MaterialType, Scene, SceneResourceFactory,
   SceneResourceParameters, Shader, ShaderMaterial, EnvironmentBackgroundType } from '@kit.ArkGraphics3D';
-resource.ets
 
 加载场景并设置渲染参数。
 
@@ -35,7 +34,6 @@ if (this.scene === null) {
       console.error('init error: ' + error + '.');
     });
 }
-resource.ets
 
 初始化相机。
 
@@ -44,7 +42,6 @@ resource.ets
 this.cam = await this.rf.createCamera({ 'name': 'Camera1' });
 this.cam.enabled = true;
 this.cam.position.z = 5;
-resource.ets
 
 获取几何体节点。
 
@@ -52,10 +49,8 @@ resource.ets
 
 this.geom = this.scene.getNodeByPath('rootNode_/Unnamed Node 1/AnimatedCube') as Geometry;
 
-
 // record original material
 this.originalMat = this.geom.mesh.subMeshes[0].material;
-resource.ets
 
 创建环境并绑定图片。
 
@@ -66,7 +61,6 @@ function createEnvironmentPromise() : Promise<Environment> {
     // Ensure the scene is loaded before accessing sceneFactory
     if (globalScene) {
       let sceneFactory: SceneResourceFactory = globalScene.getResourceFactory();
-
 
       // Manually load environment maps (.ktx/.jpg/.png etc.)
       let sceneImageParameter: SceneResourceParameters = { name: 'image', uri: $rawfile('image/Cube_BaseColor.png') };
@@ -97,7 +91,6 @@ function createEnvironmentPromise() : Promise<Environment> {
     }
   });
 }
-resource.ets
 
 应用环境到场景。
 
@@ -108,17 +101,117 @@ Button('Add to Environment')
   .onClick(async (): Promise<void> => {
     console.info('Start to replace with a material of image');
 
-
     if (!this.scene || !this.cam) {
       return;
     }
-
 
     this.env = await createEnvironmentPromise();
     if (this.env) {
       this.scene.environment = this.env;
     }
   });
-resource.ets
-创建并使用图片资源
-.shader资源文件格式要求
+
+## Code blocks
+
+### Code block 1
+
+```
+import { Camera, Environment, Geometry, Image, Material, MaterialType, Scene, SceneResourceFactory,
+  SceneResourceParameters, Shader, ShaderMaterial, EnvironmentBackgroundType } from '@kit.ArkGraphics3D';
+```
+
+### Code block 2
+
+```
+if (this.scene === null) {
+  // Switched from .gltf to .glb; same content, different format
+  Scene.load($rawfile('gltf/CubeWithFloor/glTF/AnimatedCube.glb'))
+    .then(async (result: Scene) => {
+      // Assign loaded scene to globalScene for unified resource creation
+      globalScene = result;
+      this.scene = result;
+      this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
+      this.rf = this.scene.getResourceFactory();
+      // ...
+    })
+    .catch((error: string) => {
+      console.error('init error: ' + error + '.');
+    });
+}
+```
+
+### Code block 3
+
+```
+this.cam = await this.rf.createCamera({ 'name': 'Camera1' });
+this.cam.enabled = true;
+this.cam.position.z = 5;
+```
+
+### Code block 4
+
+```
+this.geom = this.scene.getNodeByPath('rootNode_/Unnamed Node 1/AnimatedCube') as Geometry;
+
+// record original material
+this.originalMat = this.geom.mesh.subMeshes[0].material;
+```
+
+### Code block 5
+
+```
+function createEnvironmentPromise() : Promise<Environment> {
+  return new Promise((resolve, reject) => {
+    // Ensure the scene is loaded before accessing sceneFactory
+    if (globalScene) {
+      let sceneFactory: SceneResourceFactory = globalScene.getResourceFactory();
+
+      // Manually load environment maps (.ktx/.jpg/.png etc.)
+      let sceneImageParameter: SceneResourceParameters = { name: 'image', uri: $rawfile('image/Cube_BaseColor.png') };
+      let image: Promise<Image> = sceneFactory.createImage(sceneImageParameter);
+      image.then(async (imageEntity: Image) => {
+        // Create Environment
+        let sceneEnvironmentParameter: SceneResourceParameters = { name: 'env' };
+        let env: Promise<Environment> = sceneFactory.createEnvironment(sceneEnvironmentParameter);
+        env.then(async (envEntity: Environment) => {
+          envEntity.backgroundType = EnvironmentBackgroundType.BACKGROUND_EQUIRECTANGULAR;
+          envEntity.environmentImage  = imageEntity;
+          // Set environment related properties
+          envEntity.indirectDiffuseFactor.x = 1;
+          envEntity.indirectDiffuseFactor.y = 1;
+          envEntity.indirectDiffuseFactor.z = 1;
+          envEntity.indirectDiffuseFactor.w = 1;
+          resolve(envEntity);
+        }).catch((err: string) => {
+          console.error('Environment mapping material create failed: ' + err + '.');
+          reject(err);
+        });
+      }).catch((err: string) => {
+        console.error('Image load failed: ' + err);
+        reject(err);
+      });
+    } else {
+      reject('Scene is not loaded yet.');
+    }
+  });
+}
+```
+
+### Code block 6
+
+```
+Button('Add to Environment')
+  // ...
+  .onClick(async (): Promise<void> => {
+    console.info('Start to replace with a material of image');
+
+    if (!this.scene || !this.cam) {
+      return;
+    }
+
+    this.env = await createEnvironmentPromise();
+    if (this.env) {
+      this.scene.environment = this.env;
+    }
+  });
+```

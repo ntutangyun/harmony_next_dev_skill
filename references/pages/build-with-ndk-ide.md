@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/build-with-ndk-ide_
 
+NDK通过CMake和Ninja编译应用的C/C++代码，编译过程如下图所示。
+
+核心编译过程如下：
+
 根据CMake配置脚本以及build-profile.json5中配置的externalNativeOptions构建参数，与缓存中的配置比对后，生成CMake命令并执行CMake。
 
 执行Ninja，按照Makefile执行编译和链接，将生成的.so以及运行时依赖的.so同步到输出目录，完成构建过程。
@@ -16,19 +20,15 @@ CMakeLists.txt
 cmake_minimum_required(VERSION 3.4.1)
 project(MyApplication)
 
-
 # 定义一个变量，并赋值为当前模块cpp目录
 set(NATIVERENDER_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-
 
 # 添加头文件.h目录，包括cpp，cpp/include，告诉cmake去这里找到代码引入的头文件
 include_directories(${NATIVERENDER_ROOT_PATH}
                     ${NATIVERENDER_ROOT_PATH}/include)
 
-
 # 声明一个产物libentry.so，SHARED表示产物为动态库，hello.cpp为产物的源代码
 add_library(entry SHARED hello.cpp)
-
 
 # 声明产物entry链接时需要的三方库libace_napi.z.so
 # 这里直接写三方库的名称是因为它是在ndk中，已在链接寻址路径中，无需额外声明
@@ -59,21 +59,51 @@ externalNativeOptions具体参数说明如下表所示。
 
 配置项	类型	说明
 path	string	CMake构建脚本地址，即CMakeLists.txt文件地址。
-abiFilters	array	
-
-本机的ABI编译环境，包括：
-
-- arm64-v8a
-
-- x86_64
-
-如不配置该参数，编译时默认编译出arm64-v8a架构相关的so。
-
-
+abiFilters	array	本机的ABI编译环境，包括： - arm64-v8a - x86_64 如不配置该参数，编译时默认编译出arm64-v8a架构相关的so。
 arguments	string	CMake编译参数。
 cppFlags	string	C++编译器参数。
 
 更多关于build-profile.json5中参数的说明，请参考build-profile.json5。
 
-NDK工程构建概述
-使用命令行CMake构建NDK工程
+## Code blocks
+
+### Code block 1
+
+```
+# the minimum version of CMake.
+cmake_minimum_required(VERSION 3.4.1)
+project(MyApplication)
+
+# 定义一个变量，并赋值为当前模块cpp目录
+set(NATIVERENDER_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
+# 添加头文件.h目录，包括cpp，cpp/include，告诉cmake去这里找到代码引入的头文件
+include_directories(${NATIVERENDER_ROOT_PATH}
+                    ${NATIVERENDER_ROOT_PATH}/include)
+
+# 声明一个产物libentry.so，SHARED表示产物为动态库，hello.cpp为产物的源代码
+add_library(entry SHARED hello.cpp)
+
+# 声明产物entry链接时需要的三方库libace_napi.z.so
+# 这里直接写三方库的名称是因为它是在ndk中，已在链接寻址路径中，无需额外声明
+target_link_libraries(entry PUBLIC libace_napi.z.so)
+```
+
+### Code block 2
+
+```
+"apiType": "stageMode",
+"buildOption": {
+  "arkOptions": {
+   },
+  "externalNativeOptions": {
+    "path": "./src/main/cpp/CMakeLists.txt",
+    "arguments": "",
+    "cppFlags": "",
+    "abiFilters": [
+       "arm64-v8a",
+       "x86_64"
+    ],
+  }
+}
+```

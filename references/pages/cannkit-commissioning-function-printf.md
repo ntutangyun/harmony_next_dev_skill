@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-commissioning-function-printf_
 
+功能介绍
+
+使用工具进行算子调测时，支持printf/PRINTF功能，可以打印Scalar数据。
+
+说明
+
 CPU调测场景支持printf和PRINTF打印，其中printf采用C++自身打印功能，不受dump-mode参数控制。
 
 simulator调测场景支持printf和PRINTF打印，受dump mode参数控制。
@@ -30,21 +36,27 @@ printf/PRINTF接口说明如下。
 函数原型： template <class... Args>
 
 void printf(gm const char* fmt, Args&&... args);
+
 void PRINTF(gm const char* fmt, Args&&... args);
 
 函数功能： 打印Scalar数据。
 
 参数(IN)：
 
-fmt： 格式控制字符串，包含两种类型的对象：普通字符和转换说明。
 普通字符将原样不动地打印输出。
-转换说明并不直接输出而是用于控制printf中参数的转换和打印。每个转换说明都由一个百分号字符（%）开始，以转换说明结束，从而说明输出数据的类型 。支持的转换类型包括：
+
 %d / %i：输出十进制数，支持打印的数据类型：bool/int8_t/int16_t/int32_t/int64_t
+
 %f：输出实数，支持打印的数据类型：float/half/bfloat16_t
+
 %x：输出十六进制整数，支持打印的数据类型：int8_t/int16_t/int32_t/int64_t/uint8_t/uint16_t/uint32_t/uint64_t
+
 %s：输出字符串
+
 %u：输出unsigned类型数据，支持打印的数据类型：bool/uint8_t/uint16_t/uint32_t/uint64_t
+
 %p：输出指针地址
+
 args： 附加参数，个数和类型可变的输出列表：根据不同的fmt字符串，函数可能需要一系列的附加参数，每个参数包含了一个要被插入的值，替换了fmt参数中指定的每个%标签。参数的个数应与%标签的个数相同。
 
 参数(OUT)： NA
@@ -54,12 +66,17 @@ args： 附加参数，个数和类型可变的输出列表：根据不同的fmt
 使用约束：
 
 不支持转义字符打印。
-当前支持的打印类型：
+
 %d / %i：输出十进制数。
+
 %f：输出实数。
+
 %x：输出十六进制整数。
+
 %s：输出字符串。
+
 %u：输出unsigned类型数据。
+
 %p：输出指针地址。
 
 调用示例：
@@ -71,5 +88,30 @@ args： 附加参数，个数和类型可变的输出列表：根据不同的fmt
  int *a;
  printf("TEST %p", a);
  PRINTF("TEST %p", a);
-更多功能
-DumpTensor功能
+
+## Code blocks
+
+### Code block 1
+
+```
+PRINTF("1 fmt string d %d\n", 6666);
+PRINTF("1 fmt string lf %lf\n", float(61.556));
+```
+
+### Code block 2
+
+```
+ascendebug kernel --backend simulator --dump-mode normal ... {其他simulator调测参数}
+```
+
+### Code block 3
+
+```
+// 整型打印：
+ printf("fmt string %d", 0x123);
+ PRINTF("fmt string %d", 0x123);
+ // 指针打印：
+ int *a;
+ printf("TEST %p", a);
+ PRINTF("TEST %p", a);
+```

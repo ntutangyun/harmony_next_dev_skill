@@ -2,13 +2,27 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/geocode-guidelines_
 
+场景概述
+
+使用经纬度坐标描述一个位置，非常准确，但是并不直观，面向用户表达并不友好。系统向开发者提供了以下两种转化能力。
+
+正地理编码：将地理编码转化为具体经纬度坐标。
+
+逆地理编码：将具体的经纬度坐标转化为地理编码。
+
+其中地理编码包含多个属性来描述位置信息，包括国家、行政区划、街道、门牌号、地址描述等等，这样的信息更便于用户理解。
+
+接口说明
+
 进行经纬度坐标和地理编码的相互转化，所使用的接口说明如下，详细信息参见Location Kit API参考：@ohos.geoLocationManager (位置服务)。
 
 接口名	功能描述
 isGeocoderAvailable(): boolean	判断地理编码与逆地理编码服务是否可用。
 getAddressesFromLocation(request: ReverseGeoCodeRequest, callback: AsyncCallback<Array<GeoAddress>>): void	调用逆地理编码服务，将坐标转换为地理描述，使用callback回调异步返回结果。
 getAddressesFromLocationName(request: GeoCodeRequest, callback: AsyncCallback<Array<GeoAddress>>): void	调用地理编码服务，将地理描述转换为具体坐标，使用callback回调异步返回结果。
+
 开发步骤
+
 说明
 
 正地理编码与逆地理编码功能需要访问后端服务，请确保设备联网，以进行信息获取。
@@ -64,5 +78,55 @@ try {
 
 如果需要查询的位置信息可能出现多地重名的请求，可以设置GeoCodeRequest，通过设置一个经纬度范围，以高效地获取期望的准确结果。
 
-获取设备的位置信息开发指导(C/C++)
-地理围栏开发指导
+## Code blocks
+
+### Code block 1
+
+```
+import { geoLocationManager } from '@kit.LocationKit';
+```
+
+### Code block 2
+
+```
+import { geoLocationManager } from '@kit.LocationKit';
+try {
+    let isAvailable = geoLocationManager.isGeocoderAvailable();
+} catch (err) {
+    console.error("errCode:" + JSON.stringify(err));
+}
+```
+
+### Code block 3
+
+```
+let reverseGeocodeRequest:geoLocationManager.ReverseGeoCodeRequest = {"latitude": 31.12, "longitude": 121.11, "maxItems": 1};
+try {
+    geoLocationManager.getAddressesFromLocation(reverseGeocodeRequest, (err, data) => {
+        if (err) {
+            console.error('getAddressesFromLocation err: ' + JSON.stringify(err));
+        } else {
+            console.info('getAddressesFromLocation data: ' + JSON.stringify(data));
+        }
+    });
+} catch (err) {
+    console.error("errCode:" + JSON.stringify(err));
+}
+```
+
+### Code block 4
+
+```
+let geocodeRequest:geoLocationManager.GeoCodeRequest = {"description": "上海市浦东新区xx路xx号", "maxItems": 1};
+try {
+    geoLocationManager.getAddressesFromLocationName(geocodeRequest, (err, data) => {
+        if (err) {
+            console.error('getAddressesFromLocationName err: ' + JSON.stringify(err));
+        } else {
+            console.info('getAddressesFromLocationName data: ' + JSON.stringify(data));
+        }
+    });
+} catch (err) {
+    console.error("errCode:" + JSON.stringify(err));
+}
+```

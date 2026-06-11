@@ -24,10 +24,6 @@ DevEco Studio支持在声明或引用了Native接口的文件中（如d.ts）跨
 
 如果部分代码片段不需要进行自动的格式化处理，可以通过如下方式进行设置：
 
-在File > Settings >Editor > Code Style（macOS为DevEco Studio > Preferences/Settings > Editor > Code Style），单击“Formatter”，勾选“Turn formatter on/off with markers in code comments”。
-
-在不需要进行格式化操作的代码块前增加“//@formatter:off”，并在该代码块的最后增加“//@formatter:on”，即表示对该范围的代码块不需要进行格式化操作。
-
 若工程已配置code-linter.json5文件，选中code-linter.json5文件右键选择Apply CodeLinter Style Rules，代码格式化规则将与已配置的code-linter.json5文件中相关规则保持一致。code-linter.json5文件配置请参考配置代码检查规则。
 
 代码折叠
@@ -75,6 +71,7 @@ DevEco Studio集成了离线版API参考类文档，最新版本请参考官网H
 在弹窗中可以查看：
 
 使用的API是否涉及权限申请或仅支持在测试框架下使用。
+
 使用的接口状态。deprecated标签表示即将废弃的API接口，可使用useinstead标记的API进行替代，请开发时关注。
 
 Optimize Imports功能
@@ -93,10 +90,12 @@ API变更查询
 
 从DevEco Studio 6.1.0 Beta2版本开始，API变更查询接入CodeGenie快速问答功能，CodeGenie提供根据代码文件和变更文档输出非兼容API的修改建议，以及新增筛选API变更类型功能。
 
-使用约束
+[h2]使用约束
+
 仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+
 API废弃情况不在API变更查询的扫描范围。
-ArkTS API函数调用过程中，当开发者使用的API存在泛型参数和包含extends或keyof关键字时，不支持变更查询。示例如下：
+
 // API定义
 interface ProgressInterface {
   <Type extends keyof ProgressStyleMap>(options: ProgressOptions<Type>): ProgressAttribute<Type>;   //包含extends或keyof关键字不支持变更查询
@@ -104,11 +103,12 @@ interface ProgressInterface {
 // API调用
 Progress({ value: 10, type: ProgressType.Capsule })
 .style({content:'Install'})
-使用C++语法实现的API函数变更，不支持查询。示例如下：
+
 template <class _Rep, class _Period>
 cv_status condition_variable::wait_for(unique_lock<mutex>& __lk,const chrono::duration<_Rep, _Period>& __d)  //C++语法实现的API函数不支持查询
+
 C API扫描过程中，若存在与变更接口同名的函数，扫描结果可能会出现误报。
-特殊调用方式下，不支持API变更查询。示例如下：
+
 // 反例：函数指针方式
 int (*sigptr)(int, const struct sigaction *__restrict, struct sigaction *__restrict) = &sigaction;
 sigptr(NULL,NULL);
@@ -117,51 +117,55 @@ callback(sigaction);
 // 反例：自定义宏
 #define MySig sigaction
 MySig(NULL,NULL);
-操作步骤
+
+[h2]操作步骤
 
 使用DevEco Studio 6.0.0 Release及以上版本，按以下步骤操作：
-
-在菜单栏点击Tools > API Change Assistant，编辑区下方的API Change Assistant页签中，支持按模块查看API变更情况，选择需要对比的SDK版本号范围，点击Start Scan开始扫描。同时，有进度条提示扫描进度。
 
 说明
 
 API变更查询以选择的起始版本为基线，查询当前工程中所使用的API是否存在行为变更。如选择的SDK版本为5.0.0(12) Release 到 6.0.0(20) Release，查询的是5.0.1(13) Beta3到6.0.0(20) Release版本相比5.0.0(12) Release的API变更。
 
-点击扫描结果中的代码地址，跳转到相应的代码编写位置；点击蓝色高亮的变更描述，跳转至版本说明文档中查看详情；修改完后可点击图标，标注已修改。同时，可通过如下入口搜索或筛选API变更扫描结果、导出扫描结果数据等。
-
 Search：支持在Search框中输入API名称或文件路径，对扫描结果搜索。
+
 API Version：通过选择API版本，对扫描结果筛选。
+
 Language：通过ArkTS或C语言，对扫描结果筛选。
+
 API ID：通过行为变更的API接口，对扫描结果筛选。
+
 API Change Type：API变更类型，取值包括All、UX visual Layout Change（UX视觉布局变更）、UX Interaction Behavior Change（UX交互行为变更）、API Behavior Change（接口行为变更）、API Change Deprecation（接口废弃变更）、API Definition Change（接口定义变更）。
+
 Fix Status：API变更扫描结果的修复情况，All表示所有，Fixed表示已修复，Unfixed表示未修复。通过修复情况，对扫描结果筛选。
+
 Scan Again：重新扫描。
+
 Export：将API变更扫描结果数据导出到本地。
+
 Settings：设置在扫描API时，可使用的最大堆内存的大小，默认值为3072MB。当工程代码量较大导致扫描缓慢时，可以调整该参数。
+
 Code Location：变更接口在代码文件中的具体位置，点击可跳转至接口所在的代码行。点击位置右侧的Quick Ask可打开CodeGenie，在CodeGenie对话框点击发送，会根据代码文件和变更文档输出不兼容API修改建议；若文件中存在多处变更，CodeGenie根据文件中所有变更点输出不兼容API修改建议。
+
 说明
 
 通过Quick Ask打开CodeGenie后，仅支持使用HarmonyOS Ask智能体进行快速问答。
 
 使用DevEco Studio 6.0.0 Release以下版本，按以下步骤操作：
 
-在菜单栏点击Tools > API Change Assistant，编辑区下方的API Change Assistant页签中，支持按模块查看API变更情况，选择需要对比的SDK版本号范围，点击Start Scan开始扫描。
-
 说明
 
 API变更查询以选择的起始版本为基线，查询当前工程中所使用的API是否存在行为变更。如选择的SDK版本为5.0.0(12) Release 到 6.0.0(20) Release，查询的是5.0.1(13) Beta3到6.0.0(20) Release版本相比5.0.0(12) Release的API变更。
-
-点击Code Location中的代码地址，跳转到相应的代码编写位置；如需更多指导，可点击Guidance link中的链接，跳转至版本说明文档中查看详情。
-
-点击Export，选择API变更的存放位置后导出变更数据；点击Scan Again可重新进行扫描。通过右侧Settings按钮，可以设置在扫描API时，可使用的最大堆内存的大小，默认值为3072MB，当工程代码量较大导致扫描缓慢时，可以调整该参数。
 
 父/子类快速跳转
 
 编辑器支持快速跳转至当前接口、类、方法、属性的子类/父类。点击代码编辑区域左侧的Gutter Icons（装订线图标）可以跳转到对应的父/子接口或类。如有多个继承关系，在弹窗的文件列表中选择需要查看的接口/类即可。
 
 Implemented：支持跳转到对应的实现类或子接口及其对应的属性/方法。
+
 Implementing：支持跳转到对应的父接口或父接口的属性/方法。
+
 Overridden：支持跳转到对应的子类或子类的属性/方法。
+
 Overriding：支持跳转到对应的父类或父类的属性/方法。
 
 本功能默认开启，可以通过菜单栏进入File > Settings（macOS为DevEco Studio > Preferences/Settings） > Editor > General > Gutter Icons，通过勾选或取消勾选Implemented、Implementing、Overridden、Overriding四项可以开启或关闭该功能。
@@ -172,83 +176,17 @@ Overriding：支持跳转到对应的父类或父类的属性/方法。
 
 Hierarchy窗口按钮功能：
 
-图标
-
-	
-
-功能
-
-
-
-
-	
-
-显示所选类的父类和子类。
-
-该功能不支持查看接口的继承关系。
-
-
-
-
-	
-
-显示当前类/接口的父类。
-
-
-
-
-	
-
-显示当前类/接口的子类。
-
-
-
-
-	
-
-按字母顺序对继承关系结构树中的所有同级元素进行排序。
-
-
-
-
-	
-
-更新显示所有的类/接口的继承关系结构。
-
-
-
-
-	
-
-默认双击结构树中类/接口名称时，编辑窗口将跳转至所选类/接口所在的代码位置。勾选该选项后，单击结构树中类/接口名称，即可跳转访问。
-
-
-
-
-	
-
-展开/折叠继承关系结构。
-
-
-
-
-	
-
-锁定当前Hierarchy窗口显示于编辑窗口上。
-
-
-
-
-	
-
-将类/接口的继承关系结构导出到文本文件中。
-
-
-
-
-	
-
-关闭工具窗口。
+图标	功能
+	显示所选类的父类和子类。 该功能不支持查看接口的继承关系。
+	显示当前类/接口的父类。
+	显示当前类/接口的子类。
+	按字母顺序对继承关系结构树中的所有同级元素进行排序。
+	更新显示所有的类/接口的继承关系结构。
+	默认双击结构树中类/接口名称时，编辑窗口将跳转至所选类/接口所在的代码位置。勾选该选项后，单击结构树中类/接口名称，即可跳转访问。
+	展开/折叠继承关系结构。
+	锁定当前Hierarchy窗口显示于编辑窗口上。
+	将类/接口的继承关系结构导出到文本文件中。
+	关闭工具窗口。
 
 添加嵌入提示
 
@@ -260,5 +198,36 @@ Copy Reference
 
 从DevEco Studio 6.0.0 Beta2 版本开始，在编辑页面选中代码行或类、方法、参数、变量等名称，右键选择Copy / Paste Special > Copy Reference，将自动复制定义处的地址。复制成功的地址可以在双击Shift弹出的搜索框中进行搜索，帮助开发者快速找到该接口的定义位置。
 
-代码编辑
-代码生成/补全
+## Code blocks
+
+### Code block 1
+
+```
+// API定义
+interface ProgressInterface {
+  <Type extends keyof ProgressStyleMap>(options: ProgressOptions<Type>): ProgressAttribute<Type>;   //包含extends或keyof关键字不支持变更查询
+}
+// API调用
+Progress({ value: 10, type: ProgressType.Capsule })
+.style({content:'Install'})
+```
+
+### Code block 2
+
+```
+template <class _Rep, class _Period>
+cv_status condition_variable::wait_for(unique_lock<mutex>& __lk,const chrono::duration<_Rep, _Period>& __d)  //C++语法实现的API函数不支持查询
+```
+
+### Code block 3
+
+```
+// 反例：函数指针方式
+int (*sigptr)(int, const struct sigaction *__restrict, struct sigaction *__restrict) = &sigaction;
+sigptr(NULL,NULL);
+// 反例：回调方式
+callback(sigaction);
+// 反例：自定义宏
+#define MySig sigaction
+MySig(NULL,NULL);
+```

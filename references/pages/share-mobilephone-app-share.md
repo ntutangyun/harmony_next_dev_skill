@@ -2,10 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/share-mobilephone-app-share_
 
+接口说明
+
+表1 宿主应用发起分享接口功能介绍
+
+类名	接口名	描述
+SharedData	constructor(record: SharedRecord)	SharedData构造函数
+SharedData	addRecord(record: SharedRecord): void	添加分享记录
+SharedData	getRecords(): Array<SharedRecord>	获取分享记录
 ShareController	constructor(data: SharedData)	ShareController构造函数
 ShareController	show(context: common.UIAbilityContext, options: ShareControllerOptions): Promise<void>	显示分享面板
 ShareController	on(event: 'dismiss', callback: () => void): void	注册分享面板关闭事件监听
 ShareController	off(event: 'dismiss', callback: () => void): void	取消分享面板关闭事件监听
+
 开发步骤
 
 根据不同的分享场景，参考下表：
@@ -46,6 +55,54 @@ controller.on('dismiss', () => {
   // 分享结束，可处理其他业务。
 });
 
+// 进行分享面板显示
+// 方法一：配置分享面板关联的控件ID
+controller.show(context, {
+  anchor: 'shareButtonId'
+});
+// 方法二：配置分享面板显示的坐标
+controller.show(context, {
+  anchor: {
+    // 必选 相对锚点的窗体偏移值
+    windowOffset: { x: 100, y: 100 },
+    // 可选 组件的宽高 配置后会综合计算组件的大小
+    size: { width: 0, height: 0 }
+  }
+});
+
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+import { systemShare } from '@kit.ShareKit';
+import { uniformTypeDescriptor as utd } from '@kit.ArkData';
+```
+
+### Code block 2
+
+```
+// 构造ShareData，需配置一条有效数据信息
+let data: systemShare.SharedData = new systemShare.SharedData({
+  utd: utd.UniformDataType.PLAIN_TEXT,
+  content: 'Hello HarmonyOS'
+});
+```
+
+### Code block 3
+
+```
+// 构建ShareController
+let controller: systemShare.ShareController = new systemShare.ShareController(data);
+// 获取UIAbility上下文对象
+let uiContext: UIContext = this.getUIContext();
+let context: common.UIAbilityContext = uiContext.getHostContext() as common.UIAbilityContext;
+// 注册分享面板关闭监听
+controller.on('dismiss', () => {
+  console.info('Share panel closed');
+  // 分享结束，可处理其他业务。
+});
 
 // 进行分享面板显示
 // 方法一：配置分享面板关联的控件ID
@@ -61,5 +118,4 @@ controller.show(context, {
     size: { width: 0, height: 0 }
   }
 });
-宿主应用接入模式
-配置目标应用名单（仅对企业应用开放）
+```

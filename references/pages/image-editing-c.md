@@ -2,3 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-editing-c_
 
+使用Image_NativeModule完成位图操作
+
+使用ImageEffect编辑图片
+
+使用ImageProcessing处理图片
+
+使用Image_NativeModule编辑图片Exif信息

@@ -2,12 +2,39 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/incoming-calls_
 
+场景介绍
+
+应用接收到来自网络的音/视频通话，称为来电场景。
+
+来电场景的效果图展示如下：
+
+语音来电	视频来电	视频来电（不支持语音接听）
+		
+通话中	锁屏语音来电	锁屏视频来电
+		
+
+约束与限制
+
+来电场景支持Phone、Tablet设备，并从6.0(20)版本开始支持Wearable设备。
+
+业务流程
+
+[h2]来电场景：接听流程图
+
+[h2]来电场景：拒接流程图
+
+接口说明
+
+来电场景的接口，由voipCall提供。更多接口信息详见接口文档。
+
+接口名	描述
 on(type: 'voipCallUiEvent', callback: Callback<VoipCallUiEventInfo>): void	订阅voipCallUiEvent事件。
 off(type: 'voipCallUiEvent', callback?: Callback<VoipCallUiEventInfo>): void	取消订阅voipCallUiEvent事件。
 reportIncomingCall(voipCallAttribute: VoipCallAttribute): Promise<ErrorReason>	上报来电。
 reportCallAudioEventChange(callId: string, callAudioEvent: CallAudioEvent): Promise<void>	上报音频事件。
 reportCallStateChange(callId: string, callState: VoipCallState): Promise<void>	上报通话状态改变。
 reportCallStateChange(callId: string, callState: VoipCallState, callType: VoipCallType): Promise<void>	上报通话状态改变，并指定通话类型。
+
 开发步骤
 
 导入相关依赖。
@@ -41,7 +68,6 @@ let voipCallAttribute: voipCall.VoipCallAttribute = {
   voipCallState: voipCall.VoipCallState.VOIP_CALL_STATE_RINGING,
   showBannerForIncomingCall: true
 };
-
 
 // 上报来电
 voipCall.reportIncomingCall(voipCallAttribute).then(errorReason => {
@@ -83,9 +109,7 @@ voipCall.on('voipCallUiEvent', callback => {
     // 立即向Call Service Kit上报answered状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ANSWERED);
 
-
     //...在应用内完成接听
-
 
     // 应用内接听后，向Call Service Kit上报active状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
@@ -96,6 +120,7 @@ voipCall.on('voipCallUiEvent', callback => {
 
 正在接通	接通后
 	
+
 说明
 
 通话接听时，上报两次状态的好处是：
@@ -116,7 +141,6 @@ voipCall.on('voipCallUiEvent', callback => {
   if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_VOICE_ANSWER) {
     //...在应用内完成接听
 
-
     // 应用内接听后，向Call Service Kit上报通话状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
   }
@@ -131,7 +155,6 @@ voipCall.on('voipCallUiEvent', callback => {
 voipCall.on('voipCallUiEvent', callback => {
   if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_REJECT) {
     // ...应用内完成拒接
-
 
     // 向Call Service Kit上报通话状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_DISCONNECTED);
@@ -171,7 +194,6 @@ voipCall.on('voipCallUiEvent', callback => {
   if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_HANGUP) {
     // ...应用内完成挂断
 
-
     // 向Call Service Kit上报通话状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_DISCONNECTED);
   }
@@ -185,5 +207,140 @@ voipCall.on('voipCallUiEvent', callback => {
 voipCall.off('voipCallUiEvent', callback => {
   hilog.info(0x0000, 'CallDemo', `Succeeded in unRegistering voipCallUiEvent, callId: ${callback.callId}`);
 });
-开发准备
-去电场景
+
+## Code blocks
+
+### Code block 1
+
+```
+import { voipCall } from '@kit.CallServiceKit';
+import { image } from '@kit.ImageKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+// 注册voipCallUiEvent事件
+voipCall.on('voipCallUiEvent', callback => {
+  hilog.info(0x0000, 'CallDemo', 'Succeeded in registering voipCallUiEvent');
+});
+```
+
+### Code block 3
+
+```
+// 构造上报来电的参数
+let voipCallAttribute: voipCall.VoipCallAttribute = {
+  callId: '1234567890',
+  voipCallType: voipCall.VoipCallType.VOIP_CALL_VOICE,
+  userName: 'Callman',
+  userProfile: image.createPixelMapSync(new ArrayBuffer(100), { size: { width: 90, height: 90 } }),
+  abilityName: 'VoipCallAbility',
+  voipCallState: voipCall.VoipCallState.VOIP_CALL_STATE_RINGING,
+  showBannerForIncomingCall: true
+};
+
+// 上报来电
+voipCall.reportIncomingCall(voipCallAttribute).then(errorReason => {
+  if (errorReason == voipCall.ErrorReason.ERROR_NONE) {
+    hilog.info(0x0000, 'CallDemo', 'Succeeded in reporting the incoming call');
+  } else {
+    hilog.error(0x0000, 'CallDemo', 'Failed to report the incoming call: %{public}d', errorReason);
+  }
+});
+```
+
+### Code block 4
+
+```
+// 构造上报来电的参数
+let voipCallAttribute: voipCall.VoipCallAttribute = {
+  callId: '1234567890',
+  voipCallType: voipCall.VoipCallType.VOIP_CALL_VIDEO,
+  userName: 'Jack',
+  userProfile: image.createPixelMapSync(new ArrayBuffer(100), { size: { width: 90, height: 90 } }),
+  abilityName: 'VoipCallAbility',
+  voipCallState: voipCall.VoipCallState.VOIP_CALL_STATE_RINGING,
+  showBannerForIncomingCall: true,
+  isVoiceAnswerSupported: false  // 视频通话不支持语音接听
+};
+```
+
+### Code block 5
+
+```
+voipCall.on('voipCallUiEvent', callback => {
+  if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_VOICE_ANSWER) {
+    // 立即向Call Service Kit上报answered状态
+    voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ANSWERED);
+
+    //...在应用内完成接听
+
+    // 应用内接听后，向Call Service Kit上报active状态
+    voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
+  }
+});
+```
+
+### Code block 6
+
+```
+voipCall.on('voipCallUiEvent', callback => {
+  if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_VOICE_ANSWER) {
+    //...在应用内完成接听
+
+    // 应用内接听后，向Call Service Kit上报通话状态
+    voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
+  }
+});
+```
+
+### Code block 7
+
+```
+voipCall.on('voipCallUiEvent', callback => {
+  if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_REJECT) {
+    // ...应用内完成拒接
+
+    // 向Call Service Kit上报通话状态
+    voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_DISCONNECTED);
+  }
+});
+```
+
+### Code block 8
+
+```
+voipCall.on('voipCallUiEvent', callback => {
+  if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_MUTED) {
+    // 向Call Service Kit上报静音
+    voipCall.reportCallAudioEventChange(callback.callId, voipCall.CallAudioEvent.AUDIO_EVENT_MUTED);
+  } else if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_UNMUTED) {
+    // 向Call Service Kit上报解除静音
+    voipCall.reportCallAudioEventChange(callback.callId, voipCall.CallAudioEvent.AUDIO_EVENT_UNMUTED);
+  }
+});
+```
+
+### Code block 9
+
+```
+voipCall.on('voipCallUiEvent', callback => {
+  if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_HANGUP) {
+    // ...应用内完成挂断
+
+    // 向Call Service Kit上报通话状态
+    voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_DISCONNECTED);
+  }
+});
+```
+
+### Code block 10
+
+```
+// 解除voipCallUiEvent事件
+voipCall.off('voipCallUiEvent', callback => {
+  hilog.info(0x0000, 'CallDemo', `Succeeded in unRegistering voipCallUiEvent, callId: ${callback.callId}`);
+});
+```

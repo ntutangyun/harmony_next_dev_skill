@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/preload-application_
 
+概述
+
 从API version 20开始，提供应用预加载机制。该机制会根据用户的使用习惯，在系统资源充足时提前加载应用至特定阶段。当用户启动应用时，由于此前已完成了应用的部分加载，所需的启动时间会缩短，有助于提升用户体验和应用竞争力。
 
 该机制尤其适用于因加载大量资源而启动耗时较长的应用，例如大型游戏应用和大型办公应用。
@@ -85,6 +87,68 @@ windowStageCreated：WindowStage创建完成阶段。开发者配置此阶段后
 
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 
+export default class EntryAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    console.info(`EntryAbility onCreate, LaunchReason:${launchParam.launchReason}`);
+    // 判断是否是预加载启动
+    let isPreloadStart = launchParam.launchReason === AbilityConstant.LaunchReason.PRELOAD;
+    // ...
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    "bundleName": "com.demo.preloadtest",
+    "vendor": "example",
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "icon": "$media:layered_image",
+    "label": "$string:app_name",
+    "appPreloadPhase": "windowStageCreated"
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "mainElement": "EntryAbility",
+    // ...
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "launchType": "singleton",
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "ohos.want.action.home"
+            ]
+          }
+        ]
+        // ...
+      }
+    ]
+  }
+}
+```
+
+### Code block 3
+
+```
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -94,5 +158,4 @@ export default class EntryAbility extends UIAbility {
     // ...
   }
 }
-应用启动框架AppStartup
-获取应用异常退出原因
+```

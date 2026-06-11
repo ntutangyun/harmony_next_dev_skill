@@ -2,7 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-vector-calculation-lnln_
 
-__aicore__ inline void Ln(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const int32_t& calCount)
+函数功能
+
+按元素取自然对数，计算公式如下，其中PAR表示矢量计算单元一个迭代能够处理的元素个数：
+
+函数原型
+
+tensor前n个数据计算：
+
+template <typename T>
+ __aicore__ inline void Ln(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const int32_t& calCount)
+
 参数说明
 
 表1 模板参数说明
@@ -13,35 +23,10 @@ T	操作数数据类型。
 表2 参数说明
 
 参数名	输入/输出	描述
-dstLocal	输出	
-
-目的操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-Kirin9020系列处理器，支持的数据类型为：half/float。
-
-KirinX90系列处理器，支持的数据类型为：half/float。
-
-
-srcLocal	输入	
-
-源操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-源操作数的数据类型需要与目的操作数保持一致。
-
-Kirin9020系列处理器，支持的数据类型为：half/float。
-
-KirinX90系列处理器，支持的数据类型为：half/float。
-
-
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为：half/float。 KirinX90系列处理器，支持的数据类型为：half/float。
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 源操作数的数据类型需要与目的操作数保持一致。 Kirin9020系列处理器，支持的数据类型为：half/float。 KirinX90系列处理器，支持的数据类型为：half/float。
 calCount	输入	输入数据元素个数。
+
 返回值
 
 无
@@ -71,5 +56,26 @@ AscendC::Ln(dstLocal, srcLocal, 512);
 输入数据(srcLocal): [1 2 3 4 ...]
 输出数据(dstLocal):
 [0 0.6931 1.0986 1.3863 ...]
-Exp
-Abs
+
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T>
+ __aicore__ inline void Ln(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const int32_t& calCount)
+```
+
+### Code block 2
+
+```
+AscendC::Ln(dstLocal, srcLocal, 512);
+```
+
+### Code block 3
+
+```
+输入数据(srcLocal): [1 2 3 4 ...]
+输出数据(dstLocal):
+[0 0.6931 1.0986 1.3863 ...]
+```

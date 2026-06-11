@@ -2,6 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/net-mdns_
 
+简介
+
+MDNS即多播DNS（Multicast DNS），提供局域网内的本地服务添加、移除、发现、解析等能力。
+
+本地服务：局域网内服务的提供方，比如打印机、扫描仪等。
+
+MDNS管理的典型场景有：
+
+管理本地服务，通过对本地服务的创建，删除和解析等管理本地服务。
+
+发现本地服务，通过DiscoveryService对象，对指定类型的本地服务状态变化进行监听。
+
+说明
+
 为了保证应用的运行效率，大部分API调用都是异步的，对于异步调用的API均提供了callback和Promise两种方式，以下示例均采用promise函数，更多方式可以查阅@ohos.net.mdns (MDNS管理)。
 
 以下分别介绍具体开发方式。
@@ -21,7 +35,6 @@ import { mdns } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-Index.ets
 
 调用addLocalService方法，添加本地服务。
 
@@ -43,7 +56,6 @@ private localServiceInfo: mdns.LocalServiceInfo = {
     hilog.info(0x0000, 'testTag', `Local Service Added: ${JSON.stringify(data)}`);
   })
   // ...
-Index.ets
 
 通过resolveLocalService方法，解析本地网络的IP地址（非必要，根据需求使用）。
 
@@ -52,7 +64,6 @@ mdns.resolveLocalService(context, this.localServiceInfo).then((data: mdns.LocalS
   // ...
   hilog.info(0x0000, 'testTag', `Resolved Local Service: ${JSON.stringify(data)}`);
 })
-Index.ets
 
 通过removeLocalService方法，移除本地服务。
 
@@ -61,7 +72,7 @@ mdns.removeLocalService(context, this.localServiceInfo).then((data: mdns.LocalSe
   // ...
   hilog.info(0x0000, 'testTag', `Local Service Removed: ${JSON.stringify(data)}`);
 })
-Index.ets
+
 发现本地服务
 
 设备连接WiFi。
@@ -73,17 +84,15 @@ import { mdns } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-Index.ets
 
 创建DiscoveryService对象，用于发现指定服务类型的MDNS服务。
 
 let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-    
+
 // ...
 // 创建DiscoveryService对象，用于发现指定服务类型的MDNS服务。
 let serviceType = '_print._tcp';
 let discoveryService = mdns.createDiscoveryService(context, serviceType);
-Index.ets
 
 订阅MDNS服务发现相关状态变化。
 
@@ -102,19 +111,16 @@ discoveryService.on('serviceLost', (data: mdns.LocalServiceInfo) => {
   hilog.info(0x0000, 'testTag', JSON.stringify(data));
   // ...
 });
-Index.ets
 
 启动搜索局域网内的MDNS服务。
 
 // 启动搜索局域网内的MDNS服务。
 discoveryService.startSearchingMDNS();
-Index.ets
 
 停止搜索局域网内的MDNS服务。
 
 // 停止搜索局域网内的MDNS服务。
 discoveryService.stopSearchingMDNS();
-Index.ets
 
 取消订阅的MDNS服务。
 
@@ -133,6 +139,133 @@ discoveryService.off('serviceLost', (data: mdns.LocalServiceInfo) => {
   hilog.info(0x0000, 'testTag', JSON.stringify(data));
   // ...
 });
-Index.ets
-使用Socket访问网络
-使用DNS解析域名
+
+## Code blocks
+
+### Code block 1
+
+```
+// 从@kit.NetworkKit中导入mdns命名空间。
+import { mdns } from '@kit.NetworkKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+// 建立LocalService对象。
+private localServiceInfo: mdns.LocalServiceInfo = {
+  serviceType: '_print._tcp',
+  serviceName: 'servicename',
+  port: 5555,
+  host: {
+    address: '127.0.0.1'
+  },
+  serviceAttribute: [{ key: '111', value: [1] }]
+};
+// ...
+  let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  // addLocalService添加本地服务。
+  mdns.addLocalService(context, this.localServiceInfo).then((data) => {
+    // ...
+    hilog.info(0x0000, 'testTag', `Local Service Added: ${JSON.stringify(data)}`);
+  })
+  // ...
+```
+
+### Code block 3
+
+```
+// resolveLocalService解析本地服务对象（非必要，根据需求使用）。
+mdns.resolveLocalService(context, this.localServiceInfo).then((data: mdns.LocalServiceInfo) => {
+  // ...
+  hilog.info(0x0000, 'testTag', `Resolved Local Service: ${JSON.stringify(data)}`);
+})
+```
+
+### Code block 4
+
+```
+// removeLocalService移除本地服务。
+mdns.removeLocalService(context, this.localServiceInfo).then((data: mdns.LocalServiceInfo) => {
+  // ...
+  hilog.info(0x0000, 'testTag', `Local Service Removed: ${JSON.stringify(data)}`);
+})
+```
+
+### Code block 5
+
+```
+// 从@kit.NetworkKit中导入mdns命名空间。
+import { mdns } from '@kit.NetworkKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 6
+
+```
+let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+// ...
+// 创建DiscoveryService对象，用于发现指定服务类型的MDNS服务。
+let serviceType = '_print._tcp';
+let discoveryService = mdns.createDiscoveryService(context, serviceType);
+```
+
+### Code block 7
+
+```
+// 订阅MDNS服务发现相关状态变化。
+discoveryService.on('discoveryStart', (data: mdns.DiscoveryEventInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+});
+discoveryService.on('discoveryStop', (data: mdns.DiscoveryEventInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+});
+discoveryService.on('serviceFound', (data: mdns.LocalServiceInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+  // ...
+});
+discoveryService.on('serviceLost', (data: mdns.LocalServiceInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+  // ...
+});
+```
+
+### Code block 8
+
+```
+// 启动搜索局域网内的MDNS服务。
+discoveryService.startSearchingMDNS();
+```
+
+### Code block 9
+
+```
+// 停止搜索局域网内的MDNS服务。
+discoveryService.stopSearchingMDNS();
+```
+
+### Code block 10
+
+```
+// 取消订阅的MDNS服务。
+discoveryService.off('discoveryStart', (data: mdns.DiscoveryEventInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+});
+discoveryService.off('discoveryStop', (data: mdns.DiscoveryEventInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+});
+discoveryService.off('serviceFound', (data: mdns.LocalServiceInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+  // ...
+});
+discoveryService.off('serviceLost', (data: mdns.LocalServiceInfo) => {
+  hilog.info(0x0000, 'testTag', JSON.stringify(data));
+  // ...
+});
+```

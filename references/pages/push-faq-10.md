@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-faq-10_
 
+可以使用通知消息，详情请参见发送通知消息。

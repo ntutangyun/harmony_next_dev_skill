@@ -2,3 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-prototype-registration-and-management_
 
+原型注册接口(OP_ADD)
+
+OpDef
+
+OpParamDef
+
+OpAttrDef
+
+OpAICoreDef

@@ -16,13 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/apply-cus
 
 锁屏口令认证与业务自定义认证只能二选一，不能同时存在。
 
-认证类型	
-
-支持切换业务自定义认证方式。
-
-（√表示支持，x表示不支持。）
-
-
+认证类型	支持切换业务自定义认证方式。 （√表示支持，x表示不支持。）
 锁屏口令认证	×
 人脸认证	√
 指纹认证	√
@@ -30,6 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/apply-cus
 人脸+锁屏口令认证	×
 指纹+锁屏口令认证	×
 人脸+指纹+锁屏口令认证	×
+
 开发示例
 
 针对需要切换自定义认证方式的场景，发起认证请求的方式请参考发起认证，但传入的widgetParam必须包含navigationButtonText字段。
@@ -56,7 +51,6 @@ handleCustomAuthResult(userAuthInstance: userAuth.UserAuthInstance, exampleNumbe
     Logger.info('auth start successfully.');
     // ...
 }
-
 
 /*
  * apply-custom-authentication.md
@@ -88,8 +82,65 @@ applyingCustomAuthentication() {
     Logger.error(`auth failed, code is ${err?.code}, message is ${err?.message}`);
   }
 }
-Index.ets
+
 示例代码
+
 切换自定义认证
-感知和调整认证过程
-查询用户注册凭据的状态
+
+## Code blocks
+
+### Code block 1
+
+```
+handleCustomAuthResult(userAuthInstance: userAuth.UserAuthInstance, exampleNumber: number) {
+  // ...
+    userAuthInstance.on('result', {
+      onResult: (result: userAuth.UserAuthResult) => {
+        // ...
+          Logger.info('userAuthInstance callback');
+          // ...
+          if (result.result == userAuth.UserAuthResultCode.CANCELED_FROM_WIDGET ||
+            result.result == userAuth.UserAuthResultCode.NOT_ENROLLED) {
+            // 请开发者自行完成拉起自定义认证界面的实现
+            // ...
+          }
+          // ...
+      }
+    });
+    // 启动认证
+    userAuthInstance.start();
+    Logger.info('auth start successfully.');
+    // ...
+}
+
+/*
+ * apply-custom-authentication.md
+ * 当前示例仅展示如何配置界面、选择切换到自定义认证界面，具体拉起的页面及对应页面的实现，请开发者自行实现
+ * */
+applyingCustomAuthentication() {
+  try {
+    const randData = getRandData();
+    if (!randData) {
+      return;
+    }
+    const authParam: userAuth.AuthParam = {
+      challenge: randData,
+      authType: [userAuth.UserAuthType.FACE],
+      authTrustLevel: userAuth.AuthTrustLevel.ATL3,
+    };
+    // 配置自定义认证，需设置导航键文本
+    const widgetParam: userAuth.WidgetParam = {
+      title: resourceToString($r('app.string.title')),
+      navigationButtonText: resourceToString($r('app.string.navigationButtonText'))
+    };
+    // 获取认证对象
+    const userAuthInstance = userAuth.getUserAuthInstance(authParam, widgetParam);
+    Logger.info('get userAuth instance successfully.');
+    // 订阅认证结果
+    this.handleCustomAuthResult(userAuthInstance, ResultIndex.CUSTOMIZE);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    Logger.error(`auth failed, code is ${err?.code}, message is ${err?.message}`);
+  }
+}
+```

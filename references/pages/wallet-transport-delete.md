@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-transport-delete_
 
+交通卡的删卡过程分为：卡片展示、生成删卡业务订单和发起删卡三个步骤，整体流程如下图，相关接口定义请参照钱包服务API。
+
 开发者的app启动后，可调用getCardMetadataInDevice接口获取指定设备上开发者的app可以访问的交通卡的信息以数组的方式返回。如返回的数组为空，则表示开发者的app在该设备上没有可访问的交通卡，无需显示卡片开通入口；如返回数组不为空，则按具体的交通卡信息做展示。
 
 如果交通卡信息中包括卡号、余额信息，则表明该卡片在设备上已开通，显示卡片信息即可；否则可显示卡片的开通入口。
@@ -20,12 +22,10 @@ import { common } from '@kit.AbilityKit';
 import { walletTransitCard } from '@kit.WalletKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
-
 
   async getCardMetadataInDevice() {
     this.transitCardClient.getCardMetadataInDevice(walletTransitCard.DeviceType.DEVICE_PHONE).then((result) => {
@@ -34,7 +34,6 @@ struct Index {
       console.error(`Failed to get CardMetadataInDevice, code:${err.code}, message:${err.message}`);
     })
   }
-
 
   build() {
     // your application UI
@@ -47,12 +46,10 @@ import { common } from '@kit.AbilityKit';
 import { walletTransitCard } from '@kit.WalletKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
-
 
   async deleteTransitCard() {
     // number of the enabled traffic card returned by the step 1
@@ -68,10 +65,67 @@ struct Index {
     })
   }
 
+  build() {
+    // your application UI
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+import { walletTransitCard } from '@kit.WalletKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
+
+  async getCardMetadataInDevice() {
+    this.transitCardClient.getCardMetadataInDevice(walletTransitCard.DeviceType.DEVICE_PHONE).then((result) => {
+      console.info(`Succeeded in getting cardMetadataInDevice`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to get CardMetadataInDevice, code:${err.code}, message:${err.message}`);
+    })
+  }
 
   build() {
     // your application UI
   }
 }
-交通卡更新
-Wallet Kit常见问题
+```
+
+### Code block 2
+
+```
+import { common } from '@kit.AbilityKit';
+import { walletTransitCard } from '@kit.WalletKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
+
+  async deleteTransitCard() {
+    // number of the enabled traffic card returned by the step 1
+    const logicalCardNumber = 'logicalCardNumber';
+    // the specifiedDeviceId returned by the step 1
+    const specifiedDeviceId = 'specifiedDeviceId';
+    // order ID generated after payment in a developer's app, which is implemented by the developer
+    const serverOrderId = 'serverOrderId';
+    this.transitCardClient.deleteTransitCard(logicalCardNumber, specifiedDeviceId, serverOrderId).then(() => {
+      console.info(`Succeeded in deleting TransitCard`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to delete TransitCard, code:${err.code}, message:${err.message}`);
+    })
+  }
+
+  build() {
+    // your application UI
+  }
+}
+```

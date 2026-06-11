@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-multiwindowentryinapp_
 
+场景介绍
+
+从6.0.0(20)版本开始，新增支持应用内多窗。
+
 通过应用内多窗组件MultiWindowEntryInAPP提供的单应用多窗口接口，实现一个应用多个窗口并行运行的体验。并且可以设置图标大小颜色、背板大小颜色、文字大小颜色等。
 
 如果开发者未集成HdsNavigation组件，可使用应用内多窗组件实现应用内多窗体验。
@@ -40,7 +44,6 @@ struct MultiWindowEntryInAPPTest {
     abilityName: 'FuncAbility'
   };
 
-
   build() {
     Row() {
       MultiWindowEntryInAPP({
@@ -62,5 +65,49 @@ struct MultiWindowEntryInAPPTest {
   }
 }
 
-自带背景的双边流光
-沉浸光感
+## Code blocks
+
+### Code block 1
+
+```
+// 从6.0.2(22)版本开始，无需手动导入MultiWindowEntryInAPPAttribute。具体请参考MultiWindowEntryInAPP的导入模块说明。
+import { MultiWindowEntryInAPP, MultiWindowEntryInAPPAttribute } from '@kit.UIDesignKit';
+import { Want } from '@kit.AbilityKit';
+import { TextModifier } from '@kit.ArkUI';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct MultiWindowEntryInAPPTest {
+  @State textModifier: TextModifier = new TextModifier();
+  private want: Want = {
+    // 修改为当前应用的bundleName、moduleName、abilityName，启动应用内的UIAbility
+    bundleName: 'com.example.myapplication',
+    moduleName: 'entry',
+    abilityName: 'FuncAbility'
+  };
+
+  build() {
+    Row() {
+      MultiWindowEntryInAPP({
+        want: this.want, isShowSubtitle: true, multiWindowEntryInAPPStyle: {
+          iconOptions: {
+            iconSize: 24,
+            iconColor: $r('sys.color.font_primary'),
+            iconWeight: FontWeight.Normal,
+            backgroundColor: $r('sys.color.comp_background_tertiary')
+          },
+          subtitleOptions: {
+            modifier: this.textModifier.fontColor(Color.Black)
+          }
+        }
+      })
+        .size({ width: 48, height: 48 })
+        .position({ x: 400, y: 30 })
+    }
+  }
+}
+```

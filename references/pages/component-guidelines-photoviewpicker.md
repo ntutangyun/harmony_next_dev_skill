@@ -8,6 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/component
 
 宫格页	大图页
 	
+
 开发步骤
 
 导入PhotoPicker模块文件。
@@ -37,18 +38,14 @@ import {
 // 组件初始化时设置参数信息。
 pickerOptions: PickerOptions = new PickerOptions();
 
-
 // 组件初始化完成后，可控制组件部分行为。
 @State pickerController: PickerController = new PickerController();
-
 
 // 宫格图内已选择的图片uri数组。
 @State selectUris: Array<string> = new Array<string>();
 
-
 // 目前选择的图片uri。
 @State currentUri: string = '';
-
 
 // 标识当前是否显示大图页面，false表示不显示大图页面，true表示显示大图页面。
 @State isBrowserShow: boolean = false;
@@ -125,13 +122,11 @@ private onItemClicked(itemInfo: ItemInfo, clickType: ClickType): boolean {
   }
 }
 
-
 // 点击缩略图从宫格进入大图时产生的回调。
 private onEnterPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
   this.isBrowserShow = true;
   return true;
 }
-
 
 // 退出大图时的回调。
 private onExitPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
@@ -139,13 +134,11 @@ private onExitPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
   return true;
 }
 
-
 // 接收到该回调后，便可通过pickerController相关接口向picker发送数据，在此之前不生效。
 private onPickerControllerReady(): void {
   let elements: number[] = [PhotoBrowserUIElement.BACK_BUTTON];
   this.pickerController.setPhotoBrowserUIElementVisibility(elements, false); // 设置大图页不显示返回按钮。
 }
-
 
 // 大图左右滑动的回调。
 private onPhotoBrowserChanged(browserItemInfo: BaseItemInfo): boolean {
@@ -153,16 +146,13 @@ private onPhotoBrowserChanged(browserItemInfo: BaseItemInfo): boolean {
   return true;
 }
 
-
 // 已勾选图片被删除时的回调。
 private onSelectedItemsDeleted(baseItemInfos: Array<BaseItemInfo>): void {
 }
 
-
 // 超过最大选择数量再次点击时的回调。
 private onExceedMaxSelected(exceedMaxCountType: MaxCountType): void {
 }
-
 
 // 当前相册被删除时的回调。
 private onCurrentAlbumDeleted(): void {
@@ -188,6 +178,7 @@ PhotoPickerComponent({
 存在多种用法，详见PickerControllerAPI文档。
 
 完整示例
+
 import {
   PhotoPickerComponent,
   PickerController,
@@ -204,29 +195,23 @@ import {
   photoAccessHelper
 } from '@kit.MediaLibraryKit';
 
-
 @Entry
 @Component
 struct PhotoPickerComponentDemo {
   // 组件初始化时设置参数信息。
   pickerOptions: PickerOptions = new PickerOptions();
 
-
   // 组件初始化完成后，可控制组件部分行为。
   @State pickerController: PickerController = new PickerController();
-
 
   // 宫格图内已选择的图片uri数组。
   @State selectUris: Array<string> = new Array<string>();
 
-
   // 目前选择的图片uri。
   @State currentUri: string = '';
 
-
   // 标识当前是否显示大图页面，false表示不显示大图页面，true表示显示大图页面。
   @State isBrowserShow: boolean = false;
-
 
   aboutToAppear() {
     // 设置picker宫格页可选择的媒体文件类型，这里设置图片和视频类型。
@@ -240,7 +225,6 @@ struct PhotoPickerComponentDemo {
     // 将宫格页面内第一个宫格置为拍照按钮，false为不展示拍照按钮。
     this.pickerOptions.isPhotoTakingSupported = true;
   }
-
 
   // 资源被选中回调，返回资源的信息，以及选中方式。
   // 应用根据自己的业务来决定，资源是否勾选或者是否进入系统相机。
@@ -279,13 +263,11 @@ struct PhotoPickerComponentDemo {
     }
   }
 
-
   // 点击缩略图从宫格进入大图时产生的回调。
   private onEnterPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
     this.isBrowserShow = true;
     return true;
   }
-
 
   // 退出大图时的回调。
   private onExitPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
@@ -293,11 +275,9 @@ struct PhotoPickerComponentDemo {
     return true;
   }
 
-
   // 接收到该回调后，便可通过pickerController相关接口向picker发送数据，在此之前不生效。
   private onPickerControllerReady(): void {
   }
-
 
   // 大图左右滑动的回调。
   private onPhotoBrowserChanged(browserItemInfo: BaseItemInfo): boolean {
@@ -305,21 +285,17 @@ struct PhotoPickerComponentDemo {
     return true;
   }
 
-
   // 已勾选图片被删除时的回调。
   private onSelectedItemsDeleted(baseItemInfos: Array<BaseItemInfo>): void {
   }
-
 
   // 超过最大选择数量再次点击时的回调。
   private onExceedMaxSelected(exceedMaxCountType: MaxCountType): void {
   }
 
-
   // 当前相册被删除时的回调。
   private onCurrentAlbumDeleted(): void {
   }
-
 
   build() {
     Flex({
@@ -338,7 +314,6 @@ struct PhotoPickerComponentDemo {
         onCurrentAlbumDeleted: () => this.onCurrentAlbumDeleted(),
         pickerController: this.pickerController,
       })
-
 
       // 这里模拟应用侧底部的选择栏。
       if (this.isBrowserShow) {
@@ -372,5 +347,326 @@ struct PhotoPickerComponentDemo {
     }
   }
 }
-保存媒体库资源
-使用AlbumPicker组件访问相册列表
+
+## Code blocks
+
+### Code block 1
+
+```
+import {
+  PhotoPickerComponent,
+  PickerController,
+  PickerOptions,
+  DataType,
+  BaseItemInfo,
+  ItemInfo,
+  PhotoBrowserInfo,
+  ItemType,
+  ClickType,
+  MaxCountType,
+  PhotoBrowserRange,
+  ReminderMode,
+  photoAccessHelper
+} from '@kit.MediaLibraryKit';
+```
+
+### Code block 2
+
+```
+// 组件初始化时设置参数信息。
+pickerOptions: PickerOptions = new PickerOptions();
+
+// 组件初始化完成后，可控制组件部分行为。
+@State pickerController: PickerController = new PickerController();
+
+// 宫格图内已选择的图片uri数组。
+@State selectUris: Array<string> = new Array<string>();
+
+// 目前选择的图片uri。
+@State currentUri: string = '';
+
+// 标识当前是否显示大图页面，false表示不显示大图页面，true表示显示大图页面。
+@State isBrowserShow: boolean = false;
+```
+
+### Code block 3
+
+```
+// 设置picker宫格页可选择的媒体文件类型，这里设置图片和视频类型。
+this.pickerOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_VIDEO_TYPE;
+// 设置宫格页内资源的最大选择数量，示例设置为5。
+this.pickerOptions.maxSelectNumber = 5;
+// 选择数量达到最大时的提示方式，示例设置为弹窗提示。
+this.pickerOptions.maxSelectedReminderMode = ReminderMode.TOAST;
+// 设置picker页面内是否需要展示搜索框，false为不展示。
+this.pickerOptions.isSearchSupported = true;
+// 将宫格页面内第一个宫格置为拍照按钮，false为不展示拍照按钮。
+this.pickerOptions.isPhotoTakingSupported = true;
+```
+
+### Code block 4
+
+```
+// 资源被选中回调，返回资源的信息，以及选中方式。
+// 应用根据自己的业务来决定，资源是否勾选或者是否进入系统相机。
+private onItemClicked(itemInfo: ItemInfo, clickType: ClickType): boolean {
+  if (!itemInfo) {
+    return false;
+  }
+  let type: ItemType | undefined = itemInfo.itemType;
+  let uri: string | undefined = itemInfo.uri;
+  if (type === ItemType.CAMERA) {
+    // 如果宫格页面第一个宫格的类型为ItemType.CAMERA，则是相机按钮。
+    // 返回true则拉起系统相机；如果返回false应用可以自己拉起相机。
+    return true;
+  } else {
+    // 如果是选中操作。
+    if (clickType === ClickType.SELECTED) {
+      // 应用做自己的业务处理。
+      if (uri) {
+        this.selectUris.push(uri);
+        this.pickerOptions.preselectedUris = [...this.selectUris];
+      }
+      // 返回true则该宫格响应勾选，否则不响应勾选。
+      return true;
+    } else {
+      // 如果是取消选中操作。
+      // 应用做自己的业务处理。
+      if (uri) {
+        this.selectUris = this.selectUris.filter((item: string) => {
+          return item != uri;
+        });
+        this.pickerOptions.preselectedUris = [...this.selectUris];
+      }
+      // 返回true则该宫格响应取消勾选，否则不响应取消勾选。
+      return true;
+    }
+  }
+}
+
+// 点击缩略图从宫格进入大图时产生的回调。
+private onEnterPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
+  this.isBrowserShow = true;
+  return true;
+}
+
+// 退出大图时的回调。
+private onExitPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
+  this.isBrowserShow = false;
+  return true;
+}
+
+// 接收到该回调后，便可通过pickerController相关接口向picker发送数据，在此之前不生效。
+private onPickerControllerReady(): void {
+  let elements: number[] = [PhotoBrowserUIElement.BACK_BUTTON];
+  this.pickerController.setPhotoBrowserUIElementVisibility(elements, false); // 设置大图页不显示返回按钮。
+}
+
+// 大图左右滑动的回调。
+private onPhotoBrowserChanged(browserItemInfo: BaseItemInfo): boolean {
+  this.currentUri = browserItemInfo.uri ?? '';
+  return true;
+}
+
+// 已勾选图片被删除时的回调。
+private onSelectedItemsDeleted(baseItemInfos: Array<BaseItemInfo>): void {
+}
+
+// 超过最大选择数量再次点击时的回调。
+private onExceedMaxSelected(exceedMaxCountType: MaxCountType): void {
+}
+
+// 当前相册被删除时的回调。
+private onCurrentAlbumDeleted(): void {
+}
+```
+
+### Code block 5
+
+```
+PhotoPickerComponent({
+  pickerOptions: this.pickerOptions,
+  onItemClicked: (itemInfo: ItemInfo, clickType: ClickType): boolean => this.onItemClicked(itemInfo, clickType),
+  onEnterPhotoBrowser: (photoBrowserInfo: PhotoBrowserInfo): boolean => this.onEnterPhotoBrowser(photoBrowserInfo),
+  onExitPhotoBrowser: (photoBrowserInfo: PhotoBrowserInfo): boolean => this.onExitPhotoBrowser(photoBrowserInfo),
+  onPickerControllerReady: (): void => this.onPickerControllerReady(),
+  onPhotoBrowserChanged: (browserItemInfo: BaseItemInfo): boolean => this.onPhotoBrowserChanged(browserItemInfo),
+  onSelectedItemsDeleted: (BaseItemInfo: Array<BaseItemInfo>) => this.onSelectedItemsDeleted(BaseItemInfo),
+  onExceedMaxSelected: (exceedMaxCountType: MaxCountType) => this.onExceedMaxSelected(exceedMaxCountType),
+  onCurrentAlbumDeleted: () => this.onCurrentAlbumDeleted(),
+  pickerController: this.pickerController,
+})
+```
+
+### Code block 6
+
+```
+import {
+  PhotoPickerComponent,
+  PickerController,
+  PickerOptions,
+  DataType,
+  BaseItemInfo,
+  ItemInfo,
+  PhotoBrowserInfo,
+  ItemType,
+  ClickType,
+  MaxCountType,
+  PhotoBrowserRange,
+  ReminderMode,
+  photoAccessHelper
+} from '@kit.MediaLibraryKit';
+
+@Entry
+@Component
+struct PhotoPickerComponentDemo {
+  // 组件初始化时设置参数信息。
+  pickerOptions: PickerOptions = new PickerOptions();
+
+  // 组件初始化完成后，可控制组件部分行为。
+  @State pickerController: PickerController = new PickerController();
+
+  // 宫格图内已选择的图片uri数组。
+  @State selectUris: Array<string> = new Array<string>();
+
+  // 目前选择的图片uri。
+  @State currentUri: string = '';
+
+  // 标识当前是否显示大图页面，false表示不显示大图页面，true表示显示大图页面。
+  @State isBrowserShow: boolean = false;
+
+  aboutToAppear() {
+    // 设置picker宫格页可选择的媒体文件类型，这里设置图片和视频类型。
+    this.pickerOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_VIDEO_TYPE;
+    // 设置宫格页内资源的最大选择数量，示例设置为5。
+    this.pickerOptions.maxSelectNumber = 5;
+    // 选择数量达到最大时的提示方式，示例设置为弹窗提示。
+    this.pickerOptions.maxSelectedReminderMode = ReminderMode.TOAST;
+    // 设置picker页面内是否需要展示搜索框，false为不展示。
+    this.pickerOptions.isSearchSupported = true;
+    // 将宫格页面内第一个宫格置为拍照按钮，false为不展示拍照按钮。
+    this.pickerOptions.isPhotoTakingSupported = true;
+  }
+
+  // 资源被选中回调，返回资源的信息，以及选中方式。
+  // 应用根据自己的业务来决定，资源是否勾选或者是否进入系统相机。
+  private onItemClicked(itemInfo: ItemInfo, clickType: ClickType): boolean {
+    if (!itemInfo) {
+      return false;
+    }
+    let type: ItemType | undefined = itemInfo.itemType;
+    let uri: string | undefined = itemInfo.uri;
+    if (type === ItemType.CAMERA) {
+      // 如果宫格页面第一个宫格的类型为ItemType.CAMERA，则是相机按钮。
+      // 返回true则拉起系统相机；如果返回false应用可以自己拉起相机。
+      return true;
+    } else {
+      // 如果是选中操作。
+      if (clickType === ClickType.SELECTED) {
+        // 应用做自己的业务处理。
+        if (uri) {
+          this.selectUris.push(uri);
+          this.pickerOptions.preselectedUris = [...this.selectUris];
+        }
+        // 返回true则该宫格响应勾选，否则不响应勾选。
+        return true;
+      } else {
+        // 如果是取消选中操作。
+        // 应用做自己的业务处理。
+        if (uri) {
+          this.selectUris = this.selectUris.filter((item: string) => {
+            return item != uri;
+          });
+          this.pickerOptions.preselectedUris = [...this.selectUris];
+        }
+        // 返回true则该宫格响应取消勾选，否则不响应取消勾选。
+        return true;
+      }
+    }
+  }
+
+  // 点击缩略图从宫格进入大图时产生的回调。
+  private onEnterPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
+    this.isBrowserShow = true;
+    return true;
+  }
+
+  // 退出大图时的回调。
+  private onExitPhotoBrowser(photoBrowserInfo: PhotoBrowserInfo): boolean {
+    this.isBrowserShow = false;
+    return true;
+  }
+
+  // 接收到该回调后，便可通过pickerController相关接口向picker发送数据，在此之前不生效。
+  private onPickerControllerReady(): void {
+  }
+
+  // 大图左右滑动的回调。
+  private onPhotoBrowserChanged(browserItemInfo: BaseItemInfo): boolean {
+    this.currentUri = browserItemInfo.uri ?? '';
+    return true;
+  }
+
+  // 已勾选图片被删除时的回调。
+  private onSelectedItemsDeleted(baseItemInfos: Array<BaseItemInfo>): void {
+  }
+
+  // 超过最大选择数量再次点击时的回调。
+  private onExceedMaxSelected(exceedMaxCountType: MaxCountType): void {
+  }
+
+  // 当前相册被删除时的回调。
+  private onCurrentAlbumDeleted(): void {
+  }
+
+  build() {
+    Flex({
+      direction: FlexDirection.Column,
+      alignItems: ItemAlign.Start
+    }) {
+      PhotoPickerComponent({
+        pickerOptions: this.pickerOptions,
+        onItemClicked: (itemInfo: ItemInfo, clickType: ClickType): boolean => this.onItemClicked(itemInfo, clickType),
+        onEnterPhotoBrowser: (photoBrowserInfo: PhotoBrowserInfo): boolean => this.onEnterPhotoBrowser(photoBrowserInfo),
+        onExitPhotoBrowser: (photoBrowserInfo: PhotoBrowserInfo): boolean => this.onExitPhotoBrowser(photoBrowserInfo),
+        onPickerControllerReady: (): void => this.onPickerControllerReady(),
+        onPhotoBrowserChanged: (browserItemInfo: BaseItemInfo): boolean => this.onPhotoBrowserChanged(browserItemInfo),
+        onSelectedItemsDeleted: (BaseItemInfo: Array<BaseItemInfo>) => this.onSelectedItemsDeleted(BaseItemInfo),
+        onExceedMaxSelected: (exceedMaxCountType: MaxCountType) => this.onExceedMaxSelected(exceedMaxCountType),
+        onCurrentAlbumDeleted: () => this.onCurrentAlbumDeleted(),
+        pickerController: this.pickerController,
+      })
+
+      // 这里模拟应用侧底部的选择栏。
+      if (this.isBrowserShow) {
+        // 已选择的图片缩略图。
+        Row() {
+          ForEach(this.selectUris, (uri: string) => {
+            if (uri === this.currentUri) {
+              Image(uri).height(50).width(50)
+                .onClick(() => {
+                })
+                .borderWidth(1)
+                .borderColor('red')
+            } else {
+              Image(uri).height(50).width(50).onClick(() => {
+                this.pickerController.setData(DataType.SET_SELECTED_URIS, this.selectUris);
+                // 点击底部缩略图，切换大图浏览的照片为点击的缩略图；本示例设置浏览范围为全部，包括图片和视频。
+                this.pickerController.setPhotoBrowserItem(uri, PhotoBrowserRange.ALL);
+              })
+            }
+          }, (uri: string) => JSON.stringify(uri))
+        }.alignSelf(ItemAlign.Center).margin(this.selectUris.length ? 10 : 0)
+      } else {
+        // 进入大图，预览已选择的图片。
+        Button('预览').width('33%').alignSelf(ItemAlign.Start).height('5%').margin(10).onClick(() => {
+          if (this.selectUris.length > 0) {
+            // 切换picker组件至大图浏览模式浏览图片。
+            this.pickerController.setPhotoBrowserItem(this.selectUris[0], PhotoBrowserRange.SELECTED_ONLY);
+          }
+        })
+      }
+    }
+  }
+}
+```

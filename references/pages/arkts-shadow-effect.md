@@ -21,6 +21,51 @@ struct ShadowOptionDemo {
         .borderRadius(20)
         .shadow({ radius: 10, color: Color.Gray })
 
+        Column() {
+          Text('shadowOption').fontSize(12)
+        }
+        .width(100)
+        .aspectRatio(1)
+        .margin(10)
+        .justifyContent(FlexAlign.Center)
+        .backgroundColor('#a8a888')
+        .borderRadius(20)
+        .shadow({
+          radius: 10,
+          color: Color.Gray,
+          offsetX: 20,
+          offsetY: 20
+        })
+      }
+      .width('100%')
+      .height('100%')
+      .justifyContent(FlexAlign.Center)
+    }
+    .height('100%')
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct ShadowOptionDemo {
+  build() {
+    Row() {
+      Column() {
+        Column() {
+          Text('shadowOption').fontSize(12)
+        }
+        .width(100)
+        .aspectRatio(1)
+        .margin(10)
+        .justifyContent(FlexAlign.Center)
+        .backgroundColor(Color.White)
+        .borderRadius(20)
+        .shadow({ radius: 10, color: Color.Gray })
 
         Column() {
           Text('shadowOption').fontSize(12)
@@ -45,7 +90,4 @@ struct ShadowOptionDemo {
     .height('100%')
   }
 }
-Shadow.ets
-
-模糊
-色彩
+```

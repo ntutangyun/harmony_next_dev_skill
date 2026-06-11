@@ -1,13 +1,113 @@
-# @typescript
+# @typescript-eslint/no-invalid-this
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_no-invalid-this_
 
-商户提供的回调通知接口在Payment Kit生产环境需要加网络允许清单吗？如何验证提供的回调地址Payment Kit服务器访问是否正常？
-文档
-SetDataType
-文档
-@typescript-eslint/no-restricted-syntax
-文档
-@typescript-eslint/no-unnecessary-condition
-文档
-@typescript-eslint/no-explicit-any
+禁止在this值为undefined的上下文中使用this。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/no-invalid-this": "error"
+  }
+}
+
+选项
+
+详情请参考@typescript-eslint/no-invalid-this选项。
+
+正例
+
+// ts代码文件中需要添加"use strict"
+function baz(arg0: () => object) {
+  return arg0;
+}
+
+export class Bar {
+  public a: number;
+
+  public constructor() {
+    this.a = 0;
+    baz(() => this);
+  }
+}
+
+反例
+
+// ts代码文件中需要添加"use strict"
+function baz(arg0: () => object) {
+  return arg0;
+}
+
+export function foo1() {
+  this.a = 0;
+  baz(() => this);
+}
+
+export const foo2 = () => {
+  this.a = 0;
+  baz(() => this);
+};
+
+规则集
+
+plugin:@typescript-eslint/all
+
+Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
+
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/no-invalid-this": "error"
+  }
+}
+```
+
+### Code block 2
+
+```
+// ts代码文件中需要添加"use strict"
+function baz(arg0: () => object) {
+  return arg0;
+}
+
+export class Bar {
+  public a: number;
+
+  public constructor() {
+    this.a = 0;
+    baz(() => this);
+  }
+}
+```
+
+### Code block 3
+
+```
+// ts代码文件中需要添加"use strict"
+function baz(arg0: () => object) {
+  return arg0;
+}
+
+export function foo1() {
+  this.a = 0;
+  baz(() => this);
+}
+
+export const foo2 = () => {
+  this.a = 0;
+  baz(() => this);
+};
+```
+
+### Code block 4
+
+```
+plugin:@typescript-eslint/all
+```

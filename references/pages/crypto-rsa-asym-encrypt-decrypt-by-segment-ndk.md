@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rsa-asym-encrypt-decrypt-by-segment-ndk_
 
+对应的算法规格请查看非对称密钥加解密算法规格：RSA。
+
+加密
+
 调用OH_CryptoAsymKeyGenerator_Create、OH_CryptoAsymKeyGenerator_Generate，生成RSA密钥类型为RSA1024、素数个数为2的非对称密钥对（keyPair）。keyPair对象中包括公钥PubKey、私钥PriKey。
 
 如何生成RSA非对称密钥对，开发者可参考下文示例，并结合非对称密钥生成和转换规格：RSA和随机生成非对称密钥对理解。参考文档与当前示例可能存在入参差异，请在阅读时注意区分。
@@ -33,7 +37,6 @@ OH_CryptoAsymCipher_Final输出结果可能为NULL，在访问具体数据前，
 #include <vector>
 #include <string>
 
-
 static std::vector<uint8_t> doTestRsaEnc(OH_CryptoKeyPair *keyPair, std::vector<uint8_t> &plainText)
 {
     std::vector<uint8_t> cipherText;
@@ -43,13 +46,11 @@ static std::vector<uint8_t> doTestRsaEnc(OH_CryptoKeyPair *keyPair, std::vector<
         return std::vector<uint8_t>{};
     }
 
-
     ret = OH_CryptoAsymCipher_Init(cipher, CRYPTO_ENCRYPT_MODE, keyPair);
     if (ret != CRYPTO_SUCCESS) {
         OH_CryptoAsymCipher_Destroy(cipher);
         return std::vector<uint8_t>{};
     }
-
 
     size_t plainTextSplitLen = 64;
     for (size_t i = 0; i < plainText.size(); i += plainTextSplitLen) {
@@ -70,11 +71,9 @@ static std::vector<uint8_t> doTestRsaEnc(OH_CryptoKeyPair *keyPair, std::vector<
         OH_Crypto_FreeDataBlob(&out);
     }
 
-
     OH_CryptoAsymCipher_Destroy(cipher);
     return cipherText;
 }
-
 
 static std::vector<uint8_t> doTestRsaDec(OH_CryptoKeyPair *keyPair, std::vector<uint8_t> &encryptText)
 {
@@ -85,13 +84,11 @@ static std::vector<uint8_t> doTestRsaDec(OH_CryptoKeyPair *keyPair, std::vector<
         return std::vector<uint8_t>{};
     }
 
-
     ret = OH_CryptoAsymCipher_Init(cipher, CRYPTO_DECRYPT_MODE, keyPair);
     if (ret != CRYPTO_SUCCESS) {
         OH_CryptoAsymCipher_Destroy(cipher);
         return std::vector<uint8_t>{};
     }
-
 
     size_t cipherTextSplitLen = 128; // RSA密钥每次加密生成的密文字节长度计算方式：密钥位数/8。
     for (size_t i = 0; i < encryptText.size(); i += cipherTextSplitLen) {
@@ -112,11 +109,9 @@ static std::vector<uint8_t> doTestRsaDec(OH_CryptoKeyPair *keyPair, std::vector<
         OH_Crypto_FreeDataBlob(&out);
     }
 
-
     OH_CryptoAsymCipher_Destroy(cipher);
     return decryptText;
 }
-
 
 OH_Crypto_ErrCode doTestRsaEncLongMessage()
 {
@@ -132,6 +127,131 @@ OH_Crypto_ErrCode doTestRsaEncLongMessage()
         return ret;
     }
 
+    std::string message =
+        "This is a long plainText! This is a long plainText! This is a long plainText!"
+        "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!"
+        "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!"
+        "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!"
+        "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!"
+        "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!"
+        "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!"
+        "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!";
+
+    std::vector<uint8_t> plainText(message.begin(), message.end());
+    std::vector<uint8_t> cipherText = doTestRsaEnc(keyPair, plainText);
+    std::vector<uint8_t> decryptText = doTestRsaDec(keyPair, cipherText);
+
+    if ((plainText.size() != decryptText.size()) ||
+        (!std::equal(plainText.begin(), plainText.end(), decryptText.begin()))) {
+        OH_CryptoKeyPair_Destroy(keyPair);
+        OH_CryptoAsymKeyGenerator_Destroy(keyGen);
+        return CRYPTO_OPERTION_ERROR;
+    }
+
+    OH_CryptoKeyPair_Destroy(keyPair);
+    OH_CryptoAsymKeyGenerator_Destroy(keyGen);
+    return CRYPTO_SUCCESS;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "CryptoArchitectureKit/crypto_architecture_kit.h"
+#include <algorithm>
+#include <vector>
+#include <string>
+
+static std::vector<uint8_t> doTestRsaEnc(OH_CryptoKeyPair *keyPair, std::vector<uint8_t> &plainText)
+{
+    std::vector<uint8_t> cipherText;
+    OH_CryptoAsymCipher *cipher = nullptr;
+    OH_Crypto_ErrCode ret = OH_CryptoAsymCipher_Create("RSA1024|PKCS1", &cipher);
+    if (ret != CRYPTO_SUCCESS) {
+        return std::vector<uint8_t>{};
+    }
+
+    ret = OH_CryptoAsymCipher_Init(cipher, CRYPTO_ENCRYPT_MODE, keyPair);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoAsymCipher_Destroy(cipher);
+        return std::vector<uint8_t>{};
+    }
+
+    size_t plainTextSplitLen = 64;
+    for (size_t i = 0; i < plainText.size(); i += plainTextSplitLen) {
+        Crypto_DataBlob in = {};
+        in.data = plainText.data() + i;
+        if (i + plainTextSplitLen > plainText.size()) {
+            in.len = plainText.size() - i;
+        } else {
+            in.len = plainTextSplitLen;
+        }
+        Crypto_DataBlob out = {};
+        ret = OH_CryptoAsymCipher_Final(cipher, &in, &out);
+        if (ret != CRYPTO_SUCCESS) {
+            OH_CryptoAsymCipher_Destroy(cipher);
+            return std::vector<uint8_t>{};
+        }
+        cipherText.insert(cipherText.end(), out.data, out.data + out.len);
+        OH_Crypto_FreeDataBlob(&out);
+    }
+
+    OH_CryptoAsymCipher_Destroy(cipher);
+    return cipherText;
+}
+
+static std::vector<uint8_t> doTestRsaDec(OH_CryptoKeyPair *keyPair, std::vector<uint8_t> &encryptText)
+{
+    std::vector<uint8_t> decryptText;
+    OH_CryptoAsymCipher *cipher = nullptr;
+    OH_Crypto_ErrCode ret = OH_CryptoAsymCipher_Create("RSA1024|PKCS1", &cipher);
+    if (ret != CRYPTO_SUCCESS) {
+        return std::vector<uint8_t>{};
+    }
+
+    ret = OH_CryptoAsymCipher_Init(cipher, CRYPTO_DECRYPT_MODE, keyPair);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoAsymCipher_Destroy(cipher);
+        return std::vector<uint8_t>{};
+    }
+
+    size_t cipherTextSplitLen = 128; // RSA密钥每次加密生成的密文字节长度计算方式：密钥位数/8。
+    for (size_t i = 0; i < encryptText.size(); i += cipherTextSplitLen) {
+        Crypto_DataBlob in = {};
+        in.data = encryptText.data() + i;
+        if (i + cipherTextSplitLen > encryptText.size()) {
+            in.len = encryptText.size() - i;
+        } else {
+            in.len = cipherTextSplitLen;
+        }
+        Crypto_DataBlob out = {};
+        ret = OH_CryptoAsymCipher_Final(cipher, &in, &out);
+        if (ret != CRYPTO_SUCCESS) {
+            OH_CryptoAsymCipher_Destroy(cipher);
+            return std::vector<uint8_t>{};
+        }
+        decryptText.insert(decryptText.end(), out.data, out.data + out.len);
+        OH_Crypto_FreeDataBlob(&out);
+    }
+
+    OH_CryptoAsymCipher_Destroy(cipher);
+    return decryptText;
+}
+
+OH_Crypto_ErrCode doTestRsaEncLongMessage()
+{
+    OH_CryptoAsymKeyGenerator *keyGen = nullptr;
+    OH_Crypto_ErrCode ret = OH_CryptoAsymKeyGenerator_Create("RSA1024", &keyGen);
+    if (ret != CRYPTO_SUCCESS) {
+        return ret;
+    }
+    OH_CryptoKeyPair *keyPair = nullptr;
+    ret = OH_CryptoAsymKeyGenerator_Generate(keyGen, &keyPair);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoAsymKeyGenerator_Destroy(keyGen);
+        return ret;
+    }
 
     std::string message =
         "This is a long plainText! This is a long plainText! This is a long plainText!"
@@ -143,11 +263,9 @@ OH_Crypto_ErrCode doTestRsaEncLongMessage()
         "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!"
         "This is a long plainText! This is a long plainText! This is a long plainText! This is a long plainText!";
 
-
     std::vector<uint8_t> plainText(message.begin(), message.end());
     std::vector<uint8_t> cipherText = doTestRsaEnc(keyPair, plainText);
     std::vector<uint8_t> decryptText = doTestRsaDec(keyPair, cipherText);
-
 
     if ((plainText.size() != decryptText.size()) ||
         (!std::equal(plainText.begin(), plainText.end(), decryptText.begin()))) {
@@ -156,11 +274,8 @@ OH_Crypto_ErrCode doTestRsaEncLongMessage()
         return CRYPTO_OPERTION_ERROR;
     }
 
-
     OH_CryptoKeyPair_Destroy(keyPair);
     OH_CryptoAsymKeyGenerator_Destroy(keyGen);
     return CRYPTO_SUCCESS;
 }
-RSAEncryptDecrypt.cpp
-使用RSA非对称密钥分段加解密(ArkTS)
-使用RSA非对称密钥（PKCS1_OAEP模式）加解密
+```

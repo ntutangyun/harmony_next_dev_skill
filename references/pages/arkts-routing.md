@@ -39,7 +39,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
 const TAG = '[Sample_ArkTSRouter]';
 
-
 @Entry
 @Component
 struct Index {
@@ -56,12 +55,11 @@ struct Index {
     });
   }
 
-
   build() {
     // ···
   }
 }
-Index.ets
+
 说明
 
 多实例模式下，router.RouterMode.Standard参数可以省略。
@@ -72,7 +70,6 @@ import { router } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
 const TAG = '[Sample_ArkTSRouter]';
-
 
 @Entry
 @Component
@@ -90,12 +87,11 @@ struct Login {
     });
   }
 
-
   build() {
     // ...
   }
 }
-Login.ets
+
 说明
 
 多实例模式下，router.RouterMode.Standard参数可以省略。
@@ -106,7 +102,6 @@ import { router } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
 const TAG = '[Sample_ArkTSRouter]';
-
 
 @Entry
 @Component
@@ -124,12 +119,10 @@ struct Login {
     });
   }
 
-
   build() {
     // ...
   }
 }
-Setting.ets
 
 场景四：有一个搜索结果列表页（SearchResult）和一个搜索结果详情页（SearchDetail），希望从搜索结果列表页点击某一项结果，跳转到搜索结果详情页。同时，如果该结果已经被查看过，则不需要再新建一个详情页，而是直接跳转到已经存在的详情页。这种场景下，可以使用replaceUrl方法，并且使用Single实例模式。
 
@@ -137,7 +130,6 @@ import { router } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
 const TAG = '[Sample_ArkTSRouter]';
-
 
 @Entry
 @Component
@@ -155,14 +147,11 @@ struct SearchResult {
     });
   }
 
-
   build() {
     // ...
   }
 
-
 }
-SearchResult.ets
 
 以上是不带参数传递的场景。
 
@@ -172,12 +161,11 @@ class DataModelInfo {
   public age: number = 0;
 }
 
-
 class DataModel {
   public id: number = 0;
   public info: DataModelInfo | null = null;
 }
-IndexPara.ets
+
 onJumpClick(): void {
   // 在Home页面中
   let paramsInfo: DataModel = {
@@ -186,7 +174,6 @@ onJumpClick(): void {
       age: 20
     }
   };
-
 
   this.getUIContext().getRouter().pushUrl({
     url: 'pages/pageRouter/jumpPage/DetailPara', // 目标url
@@ -199,7 +186,6 @@ onJumpClick(): void {
     hilog.info(DOMAIN, TAG,'Invoke pushUrl succeeded.');
   });
 }
-IndexPara.ets
 
 在目标页面中，可以通过调用Router模块的getParams方法来获取传递过来的参数。例如：
 
@@ -207,18 +193,17 @@ class InfoTmp {
   public age: number = 0;
 }
 
-
 class RouTmp {
   // id: object = () => {
   // };
   public id: number = 0;
   public info: InfoTmp = new InfoTmp();
 }
-DetailPara.ets
+
 private params: RouTmp = (this.getUIContext().getRouter().getParams()) as RouTmp; // 获取传递过来的参数对象
 // private id: number = this.params.id; // 获取id属性的值
 private age: number = this.params.info.age; // 获取age属性的值
-DetailPara.ets
+
 页面返回
 
 当用户在一个页面完成操作后，通常需要返回到上一个页面或者指定页面，这就需要用到页面返回功能。在返回的过程中，可能需要将数据传递给目标页面，这就需要用到数据传递功能。
@@ -230,8 +215,8 @@ DetailPara.ets
 可以使用以下几种方式返回页面：
 
 方式一：返回到上一个页面。
+
 this.getUIContext().getRouter().back();
-BackDetail.ets
 
 这种方式会返回到上一个页面，即上一个页面在页面栈中的位置。但是，上一个页面必须存在于页面栈中才能够返回，否则该方法将无效。
 
@@ -242,14 +227,12 @@ BackDetail.ets
 this.getUIContext().getRouter().back({
   url: 'pages/pageRouter/jumpPage/BackHome'
 });
-BackDetail.ets
 
 返回命名路由页面。
 
 this.getUIContext().getRouter().back({
   url: 'myPage' // myPage为返回的命名路由页面别名
 });
-BackDetail.ets
 
 这种方式可以返回到指定页面，需要指定目标页面的路径。目标页面必须存在于页面栈中才能够返回。
 
@@ -264,7 +247,6 @@ this.getUIContext().getRouter().back({
     info: $r('app.string.pageRouter_jump_text7_fromHome')
   }
 });
-BackDetail.ets
 
 返回命名路由页面。
 
@@ -275,7 +257,6 @@ this.getUIContext().getRouter().back({
     info: $r('app.string.pageRouter_jump_text7_fromHome')
   }
 });
-BackDetail.ets
 
 这种方式不仅可以返回到指定页面，还可以在返回的同时传递自定义参数信息。这些参数信息可以在目标页面中通过调用getParams方法进行获取和解析。
 
@@ -290,7 +271,6 @@ BackDetail.ets
 struct Home {
   @State message: string = 'Hello World';
 
-
   onPageShow() {
     const params = this.getUIContext().getRouter().getParams() as Record<string, string>; // 获取传递过来的参数对象
     if (params) {
@@ -298,10 +278,9 @@ struct Home {
     }
   }
 
-
 // ···
 }
-Home.ets
+
 说明
 
 当使用back方法返回到指定页面时，原栈顶页面（包括）到指定页面（不包括）之间的所有页面栈都将从栈中弹出并销毁。
@@ -330,12 +309,10 @@ struct MyComponent {
     hilog.info(DOMAIN, TAG, 'Index onPageShow');
   }
 
-
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onPageHide() {
     hilog.info(DOMAIN, TAG, 'Index onPageHide');
   }
-
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onBackPress() {
@@ -343,7 +320,6 @@ struct MyComponent {
     // 返回true表示页面自己处理返回逻辑，不进行页面路由；返回false表示使用默认的路由返回逻辑，不设置返回值按照false处理
     return true;
   }
-
 
   build() {
     Column() {
@@ -355,7 +331,7 @@ struct MyComponent {
     }
   }
 }
-Index.ets
+
 // Page.ets
 @Entry
 @Component
@@ -363,19 +339,16 @@ struct Page {
   @State textColor: Color = Color.Black;
   @State num: number = 0;
 
-
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onPageShow() {
     console.info('Page onPageShow');
     this.num = 5;
   }
 
-
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onPageHide() {
     console.info('Page onPageHide');
   }
-
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onBackPress() { // 不设置返回值按照false处理
@@ -383,7 +356,6 @@ struct Page {
     this.textColor = Color.Grey;
     this.num = 0;
   }
-
 
   build() {
     Column() {
@@ -403,7 +375,6 @@ struct Page {
     .width('100%')
   }
 }
-Page.ets
 
 自定义转场
 
@@ -417,7 +388,7 @@ router自定义转场可以通过pageTransition实现，具体参考页面间转
 
 图3 页面返回前增加一个询问框
 
-系统默认询问框
+[h2]系统默认询问框
 
 为了实现这个功能，可以使用页面路由Router模块提供的两个方法：showAlertBeforeBackPage和back来实现这个功能。
 
@@ -429,7 +400,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
 const TAG = '[Sample_ArkTSRouter]';
-ShowAlert.ets
+
 // 定义一个返回按钮的点击事件处理函数
 onBackClick(): void {
   // 调用this.getUIContext().getRouter().showAlertBeforeBackPage方法，设置返回询问框的信息
@@ -444,11 +415,9 @@ onBackClick(): void {
     hilog.error(DOMAIN, TAG,`Invoke showAlertBeforeBackPage failed, code is ${code}, message is ${message}`);
   }
 
-
   // 调用this.getUIContext().getRouter().back()方法，返回上一个页面
   this.getUIContext().getRouter().back();
 }
-ShowAlert.ets
 
 其中，this.getUIContext().getRouter().showAlertBeforeBackPage方法接收一个对象作为参数，该对象包含以下属性：
 
@@ -458,7 +427,7 @@ message：string类型，表示询问框的内容。
 
 当用户点击“返回”按钮时，会弹出确认对话框，询问用户是否确认返回。选择“取消”将停留在当前页目标页面；选择“确认”将触发back方法，并根据参数决定如何执行跳转。
 
-自定义询问框
+[h2]自定义询问框
 
 自定义询问框的方式，可以使用弹窗showDialog或者自定义弹窗实现。这样可以让应用界面与系统默认询问框有所区别，提高应用的用户体验度。本文以弹窗为例，介绍如何实现自定义询问框。
 
@@ -471,7 +440,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
 const TAG = '[Sample_ArkTSRouter]';
-ShowDialog.ets
+
 onBackClick() {
   // 弹出自定义的询问框
   this.getUIContext().getPromptAction().showDialog({
@@ -506,7 +475,6 @@ onBackClick() {
     hilog.error(DOMAIN, TAG, `Invoke showDialog failed, code is ${code}, message is ${message}`);
   });
 }
-ShowDialog.ets
 
 当用户点击“返回”按钮时，会弹出自定义的询问框，询问用户是否确认返回。选择“取消”将停留在当前页目标页面；选择“确认”将触发back方法，并根据参数决定如何执行跳转。
 
@@ -535,7 +503,6 @@ export struct MyComponent {
     .height('100%')
   }
 }
-Hsp12.ets
 
 配置成功后需要在跳转的页面中引入命名路由的页面：
 
@@ -547,12 +514,12 @@ Hsp12.ets
    "library": "file:../library",
    // ...
 }
+
 import { BusinessError } from '@kit.BasicServicesKit';
 import 'library/src/main/ets/pages/Index'; // 引入共享包中的命名路由页面
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
 const TAG = '[Sample_ArkTSRouter]';
-
 
 @Entry
 @Component
@@ -586,6 +553,493 @@ struct Index {
     .height('100%')
   }
 }
-Hsp3.ets
-Navigation分栏开发
-Router切换Navigation
+
+## Code blocks
+
+### Code block 1
+
+```
+import { router } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+
+@Entry
+@Component
+struct Index {
+  // 在Home页面中
+  onJumpClick(): void {
+    this.getUIContext().getRouter().pushUrl({
+      url: 'pages/pageRouter/jumpPage/Detail' // 目标url
+    }, router.RouterMode.Standard, (err) => {
+      if (err) {
+        hilog.error(DOMAIN, TAG,`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+        return;
+      }
+      hilog.info(DOMAIN, TAG,'Invoke pushUrl succeeded.');
+    });
+  }
+
+  build() {
+    // ···
+  }
+}
+```
+
+### Code block 2
+
+```
+import { router } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+
+@Entry
+@Component
+struct Login {
+  // 在Login页面中
+  onJumpClick(): void {
+    this.getUIContext().getRouter().replaceUrl({
+      url: 'pages/pageRouter/jumpPage/Profile' // 目标url
+    }, router.RouterMode.Standard, (err) => {
+      if (err) {
+        hilog.error(DOMAIN, TAG,`Invoke replaceUrl failed, code is ${err.code}, message is ${err.message}`);
+        return;
+      }
+      hilog.info(DOMAIN, TAG,'Invoke replaceUrl succeeded.');
+    });
+  }
+
+  build() {
+    // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+import { router } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+
+@Entry
+@Component
+struct Login {
+  // 在Setting页面中
+  onJumpClick(): void {
+    this.getUIContext().getRouter().pushUrl({
+      url: 'pages/pageRouter/jumpPage/SetTheme' // 目标url
+    }, router.RouterMode.Single, (err) => {
+      if (err) {
+        hilog.error(DOMAIN, TAG, `Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+        return;
+      }
+      hilog.info(DOMAIN, TAG, 'Invoke pushUrl succeeded.');
+    });
+  }
+
+  build() {
+    // ...
+  }
+}
+```
+
+### Code block 4
+
+```
+import { router } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+
+@Entry
+@Component
+struct SearchResult {
+  // 在SearchResult页面中
+  onJumpClick(): void {
+    this.getUIContext().getRouter().replaceUrl({
+      url: 'pages/pageRouter/jumpPage/SearchDetail' // 目标url
+    }, router.RouterMode.Single, (err) => {
+      if (err) {
+        hilog.error(DOMAIN, TAG, `Invoke replaceUrl failed, code is ${err.code}, message is ${err.message}`);
+        return;
+      }
+      hilog.error(DOMAIN, TAG, 'Invoke replaceUrl succeeded.');
+    });
+  }
+
+  build() {
+    // ...
+  }
+
+}
+```
+
+### Code block 5
+
+```
+class DataModelInfo {
+  public age: number = 0;
+}
+
+class DataModel {
+  public id: number = 0;
+  public info: DataModelInfo | null = null;
+}
+```
+
+### Code block 6
+
+```
+onJumpClick(): void {
+  // 在Home页面中
+  let paramsInfo: DataModel = {
+    id: 123,
+    info: {
+      age: 20
+    }
+  };
+
+  this.getUIContext().getRouter().pushUrl({
+    url: 'pages/pageRouter/jumpPage/DetailPara', // 目标url
+    params: paramsInfo // 添加params属性，传递自定义参数
+  }, (err) => {
+    if (err) {
+      hilog.error(DOMAIN, TAG,`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+      return;
+    }
+    hilog.info(DOMAIN, TAG,'Invoke pushUrl succeeded.');
+  });
+}
+```
+
+### Code block 7
+
+```
+class InfoTmp {
+  public age: number = 0;
+}
+
+class RouTmp {
+  // id: object = () => {
+  // };
+  public id: number = 0;
+  public info: InfoTmp = new InfoTmp();
+}
+```
+
+### Code block 8
+
+```
+private params: RouTmp = (this.getUIContext().getRouter().getParams()) as RouTmp; // 获取传递过来的参数对象
+// private id: number = this.params.id; // 获取id属性的值
+private age: number = this.params.info.age; // 获取age属性的值
+```
+
+### Code block 9
+
+```
+this.getUIContext().getRouter().back();
+```
+
+### Code block 10
+
+```
+this.getUIContext().getRouter().back({
+  url: 'pages/pageRouter/jumpPage/BackHome'
+});
+```
+
+### Code block 11
+
+```
+this.getUIContext().getRouter().back({
+  url: 'myPage' // myPage为返回的命名路由页面别名
+});
+```
+
+### Code block 12
+
+```
+this.getUIContext().getRouter().back({
+  url: 'pages/pageRouter/jumpPage/BackHome',
+  params: {
+    // 请将$r('app.string.pageRouter_jump_text7_fromHome')替换为实际资源文件，在本示例中该资源文件的value值为"来自Home页"
+    info: $r('app.string.pageRouter_jump_text7_fromHome')
+  }
+});
+```
+
+### Code block 13
+
+```
+this.getUIContext().getRouter().back({
+  url: 'myPage', // myPage为返回的命名路由页面别名
+  params: {
+    // 请将$r('app.string.pageRouter_jump_text7_fromHome')替换为实际资源文件，在本示例中该资源文件的value值为"来自Home页"
+    info: $r('app.string.pageRouter_jump_text7_fromHome')
+  }
+});
+```
+
+### Code block 14
+
+```
+@Entry
+@Component
+struct Home {
+  @State message: string = 'Hello World';
+
+  onPageShow() {
+    const params = this.getUIContext().getRouter().getParams() as Record<string, string>; // 获取传递过来的参数对象
+    if (params) {
+      const info: string = params.info as string; // 获取info属性的值
+    }
+  }
+
+// ···
+}
+```
+
+### Code block 15
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+// Index.ets
+@Entry
+@Component
+struct MyComponent {
+  // 只有被@Entry装饰的组件才可以调用页面的生命周期
+  onPageShow() {
+    hilog.info(DOMAIN, TAG, 'Index onPageShow');
+  }
+
+  // 只有被@Entry装饰的组件才可以调用页面的生命周期
+  onPageHide() {
+    hilog.info(DOMAIN, TAG, 'Index onPageHide');
+  }
+
+  // 只有被@Entry装饰的组件才可以调用页面的生命周期
+  onBackPress() {
+    hilog.info(DOMAIN, TAG, 'Index onBackPress');
+    // 返回true表示页面自己处理返回逻辑，不进行页面路由；返回false表示使用默认的路由返回逻辑，不设置返回值按照false处理
+    return true;
+  }
+
+  build() {
+    Column() {
+      // push到Page页面，执行onPageHide
+      Button('push to next page')
+        .onClick(() => {
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/pageRouter/lifeCycle/Page' });
+        })
+    }
+  }
+}
+```
+
+### Code block 16
+
+```
+// Page.ets
+@Entry
+@Component
+struct Page {
+  @State textColor: Color = Color.Black;
+  @State num: number = 0;
+
+  // 只有被@Entry装饰的组件才可以调用页面的生命周期
+  onPageShow() {
+    console.info('Page onPageShow');
+    this.num = 5;
+  }
+
+  // 只有被@Entry装饰的组件才可以调用页面的生命周期
+  onPageHide() {
+    console.info('Page onPageHide');
+  }
+
+  // 只有被@Entry装饰的组件才可以调用页面的生命周期
+  onBackPress() { // 不设置返回值按照false处理
+    console.info('Page onBackPress');
+    this.textColor = Color.Grey;
+    this.num = 0;
+  }
+
+  build() {
+    Column() {
+      Text(`num is：${this.num}`)
+        .fontSize(30)
+        .fontWeight(FontWeight.Bold)
+        .fontColor(this.textColor)
+        .margin(20)
+        .onClick(() => {
+          this.num += 5;
+        })
+      Button('pop to previous page')
+        .onClick(() => {
+          this.getUIContext().getRouter().back();
+        })
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 17
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+```
+
+### Code block 18
+
+```
+// 定义一个返回按钮的点击事件处理函数
+onBackClick(): void {
+  // 调用this.getUIContext().getRouter().showAlertBeforeBackPage方法，设置返回询问框的信息
+  try {
+    this.getUIContext().getRouter().showAlertBeforeBackPage({
+      // 请在resources\base\element\string.json文件中配置name为'pageRouter_dialog_context'，value为非空字符串的资源
+      message: this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('pageRouter_dialog_context') as string, // 设置询问框的内容
+    });
+  } catch (err) {
+    let message = (err as BusinessError).message;
+    let code = (err as BusinessError).code;
+    hilog.error(DOMAIN, TAG,`Invoke showAlertBeforeBackPage failed, code is ${code}, message is ${message}`);
+  }
+
+  // 调用this.getUIContext().getRouter().back()方法，返回上一个页面
+  this.getUIContext().getRouter().back();
+}
+```
+
+### Code block 19
+
+```
+import { promptAction} from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+```
+
+### Code block 20
+
+```
+onBackClick() {
+  // 弹出自定义的询问框
+  this.getUIContext().getPromptAction().showDialog({
+    // 您还没有完成支付，确定要返回吗？
+    // 请将$r('app.string.pageRouter_dialog_context')替换为实际资源文件，在本示例中该资源文件的value值为"您还没有完成支付，确定要返回吗？"
+    message: $r('app.string.pageRouter_dialog_context'),
+    buttons: [
+      {
+        // 请将$r('app.string.pageRouter_dialog_canceled')替换为实际资源文件，在本示例中该资源文件的value值为"取消"
+        text: $r('app.string.pageRouter_dialog_canceled'),
+        color: '#FF0000'
+      },
+      {
+        // 请将$r('app.string.pageRouter_dialog_confirmed')替换为实际资源文件，在本示例中该资源文件的value值为"确认"
+        text: $r('app.string.pageRouter_dialog_confirmed'),
+        color: '#0099FF'
+      }
+    ]
+  }).then((result: promptAction.ShowDialogSuccessResponse) => {
+    if (result.index === 0) {
+      // 用户点击了“取消”按钮
+      hilog.info(DOMAIN, TAG, 'User canceled the operation.');
+    } else if (result.index === 1) {
+      // 用户点击了“确认”按钮
+      hilog.info(DOMAIN, TAG, 'User confirmed the operation.');
+      // 调用this.getUIContext().getRouter().back()方法，返回上一个页面
+      this.getUIContext().getRouter().back();
+    }
+  }).catch((err: Error) => {
+    let message = (err as BusinessError).message;
+    let code = (err as BusinessError).code;
+    hilog.error(DOMAIN, TAG, `Invoke showDialog failed, code is ${code}, message is ${message}`);
+  });
+}
+```
+
+### Code block 21
+
+```
+// library/src/main/ets/pages/Index.ets
+// library为新建共享包自定义的名字
+@Entry({ routeName: 'myPage' })
+@Component
+export struct MyComponent {
+  build() {
+    Row() {
+      Column() {
+        Text('Library Page')
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 22
+
+```
+"dependencies": {
+   "library": "file:../library",
+   // ...
+}
+```
+
+### Code block 23
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import 'library/src/main/ets/pages/Index'; // 引入共享包中的命名路由页面
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const DOMAIN = 0xF811;
+const TAG = '[Sample_ArkTSRouter]';
+
+@Entry
+@Component
+struct Index {
+  build() {
+    Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
+      Text('Hello World')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+        .margin({ top: 20 })
+        .backgroundColor('#ccc')
+        .onClick(() => { // 点击跳转到其他共享包中的页面
+          try {
+            this.getUIContext().getRouter().pushNamedRoute({
+              name: 'myPage',
+              params: {
+                data1: 'message',
+                data2: {
+                  data3: [123, 456, 789]
+                }
+              }
+            });
+          } catch (err) {
+            let message = (err as BusinessError).message;
+            let code = (err as BusinessError).code;
+            hilog.error(DOMAIN, TAG,`pushNamedRoute failed, code is ${code}, message is ${message}`);
+          }
+        })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```

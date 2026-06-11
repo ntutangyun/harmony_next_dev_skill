@@ -46,7 +46,7 @@ PhotoPicker推荐图片的功能依赖于图片分析的结果，只有在媒体
 
 接下来将以通过PhotoPickerComponent为例，指导开发者如何配置PhotoPicker推荐参数，从而实现PhotoPicker推荐图片。
 
-根据特定类型推荐图片
+[h2]根据特定类型推荐图片
 
 当需要推荐特定类型的图片，如身份证、银行卡、驾驶证、行驶证、二维码等，可通过配置RecommendationOptions.recommendationType，指定推荐的图片类型。支持的图片类型可参考RecommendationType。
 
@@ -54,13 +54,14 @@ let recommendationOptions: photoAccessHelper.RecommendationOptions = {
   recommendationType: photoAccessHelper.RecommendationType.QR_CODE // 配置枚举类型，不同的枚举值，推荐不同种类的图片
 };
 this.pickerOptions.recommendationOptions = recommendationOptions;// 将推荐参数赋值给 pickerOptions.recommendationOptions
+
 说明
 
 当前示例以通过Picker组件实现推荐图片为例。
 
 如果使用Picker接口，需要将推荐参数赋值给 photoSelectOptions.recommendationOptions。
 
-根据文本信息推荐图片
+[h2]根据文本信息推荐图片
 
 当需要在图文编辑时，根据文本信息推荐图片，可通过配置RecommendationOptions.textContextInfo。
 
@@ -75,6 +76,7 @@ let recommendationOptions: photoAccessHelper.RecommendationOptions = {
   textContextInfo: textInfo
 };
 this.pickerOptions.recommendationOptions = recommendationOptions;// 将推荐参数赋值给 pickerOptions.recommendationOptions
+
 说明
 
 当前示例以通过Picker组件实现推荐图片为例。
@@ -82,6 +84,28 @@ this.pickerOptions.recommendationOptions = recommendationOptions;// 将推荐参
 如果使用Picker接口，需要将推荐参数赋值给 photoSelectOptions.recommendationOptions。
 
 示例代码
+
 基于PhotoPicker实现图片推荐功能
-使用PickerController将编辑后的图片替换原图
-动态照片
+
+## Code blocks
+
+### Code block 1
+
+```
+let recommendationOptions: photoAccessHelper.RecommendationOptions = {
+  recommendationType: photoAccessHelper.RecommendationType.QR_CODE // 配置枚举类型，不同的枚举值，推荐不同种类的图片
+};
+this.pickerOptions.recommendationOptions = recommendationOptions;// 将推荐参数赋值给 pickerOptions.recommendationOptions
+```
+
+### Code block 2
+
+```
+let textInfo: photoAccessHelper.TextContextInfo = {
+  text: '国庆节，带着女儿去了上海野生动物园，看到了凶猛的大象，漂亮的火烈鸟，还有她心心念念的大熊猫，小家伙可开心了。'
+};
+let recommendationOptions: photoAccessHelper.RecommendationOptions = {
+  textContextInfo: textInfo
+};
+this.pickerOptions.recommendationOptions = recommendationOptions;// 将推荐参数赋值给 pickerOptions.recommendationOptions
+```

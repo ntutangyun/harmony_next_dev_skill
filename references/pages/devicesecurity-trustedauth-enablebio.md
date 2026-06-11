@@ -2,9 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-trustedauth-enablebio_
 
+场景介绍
+
 本功能在API 24之前版本仅支持Phone；API24及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
+
 人脸认证功能需设备具备3D人脸识别能力，可通过调用查询支持的认证能力确认设备是否支持3D人脸识别。当前仅支持绑定一个指纹或人脸用于支付认证。
+
 本功能需应用服务器端完成接口接入，以配合端云协同认证流程。
+
 约束与限制
 
 本功能在API24之前版本仅在手机设备支持。对于API24及之后版本，本功能在手机设备、部分PC/2in1、部分Tablet设备支持。人脸认证功能仅支持具备3D人脸识别能力的设备，目前仅支持绑定一个指纹/人脸用于支付认证，且需应用服务器端同步接入配合端云协同认证。通过用户认证服务提供的接口查询支持的认证能力，可确认设备是否支持3D人脸。
@@ -18,6 +23,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口名	描述
 trustedAuthentication(challenge: Uint8Array, authID: bigint, label: TUILable): Promise<AuthToken>	数字盾密码认证
 getBiometricAuthToken(operType: OperateType, tuiAuthToken: Uint8Array, bioAuthToken: Uint8Array): Promise<AuthToken>	获取生物特征绑定完成后生成的authToken信息
+
 开通生物特征认证能力界面介绍
 
 如图表示开通人脸认证时对应的UI界面示例，当密码认证通过后，则会拉起系统人脸认证界面进行人脸信息绑定。
@@ -79,5 +85,55 @@ trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken
 
 应用可将签名获取的生物特征进行验签校验，并将生物特征credential信息与账号信息在服务器端绑定。
 
-生物特征绑定、认证与解绑
-生物特征认证交易
+## Code blocks
+
+### Code block 1
+
+```
+import { resourceManager } from '@kit.LocalizationKit'
+import { huks } from '@kit.UniversalKeystoreKit';
+import { userAuth } from '@kit.UserAuthenticationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { trustedAuthentication } from '@kit.DeviceSecurityKit';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common } from '@kit.AbilityKit';
+```
+
+### Code block 2
+
+```
+async function PwdVerify(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
+  try {
+    const authID: bigint = 11842183505170721246n;//实际填充为从服务器获取到的账号对应的authID值
+    const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
+    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+    const buffer = fileData.buffer;
+    const label:trustedAuthentication.TUILable = {
+      image: buffer as ArrayBuffer,
+      title: "数字盾密码认证",
+    }
+    const result = await trustedAuthentication.trustedAuthentication(challenge, authID, label);
+    return result;
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', `Failed to trustedAuthentication, code:${err.code}, message:${err.message}`);
+    throw new Error('Password verify failed:' + (err as BusinessError).message);
+  }
+}
+const rand = cryptoFramework.createRandom();
+const len: number = 32;
+const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
+let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+const authToken: trustedAuthentication.AuthToken = await PwdVerify(challenge, context);
+```
+
+### Code block 3
+
+```
+let tuiAuthToken = new Uint8Array(1024);//实际使用时请替换为步骤6密码认证获取的authToken
+let bioAuthToken = new Uint8Array(1024);//实际使用时请替换为步骤7生物特征认证获取的authToken
+let operType = trustedAuthentication.OperateType.OPERATE_TYPE_BIOMETRIC_AUTH;
+trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken).then((newBioAuthToken) => {
+  let authToken = newBioAuthToken.authToken as Uint8Array;
+});
+```

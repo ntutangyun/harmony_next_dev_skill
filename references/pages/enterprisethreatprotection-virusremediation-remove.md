@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisethreatprotection-virusremediation-remove_
 
+基本概念
+
+隔离区：是指系统中临时存放被识别为威胁的文件的区域。
+
+文件隔离删除是指将隔离区的文件永久删除。
+
+场景介绍
+
 当隔离区文件的日益增加，内存占用持续增长时，可通过调用隔离文件删除接口，对已隔离文件进行删除，保证系统资源的高效利用并持续维护防护性能。
 
 接口说明
@@ -10,6 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterpris
 
 接口	描述
 removeIsolatedFile(id: string): Promise<void>	对指定隔离ID的文件进行删除。删除后无法恢复。
+
 开发步骤
 
 导入模块。
@@ -19,7 +28,6 @@ import { virusRemediation } from '@kit.EnterpriseThreatProtectionKit';
 通过调用接口removeIsolatedFile，实现对指定隔离ID文件的删除。id参数为隔离文件的唯一标识符，可通过调用queryIsolatedFiles接口获取。
 
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 // 对指定隔离文件ID进行删除
 function removeIsolatedFilePromise() {
@@ -38,5 +46,35 @@ function removeIsolatedFilePromise() {
     }
   });
 }
-文件隔离恢复
-隔离查询
+
+## Code blocks
+
+### Code block 1
+
+```
+import { virusRemediation } from '@kit.EnterpriseThreatProtectionKit';
+```
+
+### Code block 2
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 对指定隔离文件ID进行删除
+function removeIsolatedFilePromise() {
+  // 隔离文件ID，可通过queryIsolatedFiles()接口获取
+  let isolatedFileId: string = 'example-id-12345';
+  virusRemediation.removeIsolatedFile(isolatedFileId).then(() => {
+    console.info('Succeeded in removing isolated file.');
+  }).catch((err: BusinessError) => {
+  // 根据错误码进行不同的业务处理
+    if (err.code === 1023806001) {
+      console.error('Database error, please retry or contact support.');
+    } else if (err.code === 1023804003) {
+      console.error('Invalid isolation ID, please verify the ID exists.');
+    } else {
+      console.error(`Failed to remove isolated file. Code: ${err.code}, message: ${err.message}.`);
+    }
+  });
+}
+```

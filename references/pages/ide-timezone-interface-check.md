@@ -1,15 +1,131 @@
-# @performance/timezone
+# @performance/timezone-interface-check
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-timezone-interface-check_
 
-@performance/hp-arkui-suggest-reuseid-for-if-else-reusable-component
-文档
-使用JSVM-API进行内存管理
-文档
-@performance/gif-hardware-decoding-check
-文档
-@correctness/audio-interrupt-check
-文档
-@security/no-commented-code
-文档
-TimeZoneRules
+在获取非本地时间时，建议使用统一标准的i18n.Calendar接口获取时间时区相关信息。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@performance/timezone-interface-check": "suggestion",
+  }
+}
+
+选项
+
+该规则无需配置额外选项。
+
+正例1
+
+import i18n from '@ohos.i18n';
+
+let calendar = i18n.getCalendar(i18n.getSystemLocale());
+calendar.setTimeZone(i18n.getTimeZone().getID());
+
+正例2
+
+import i18n from '@ohos.i18n';
+
+let timeZone1 = '123';
+let calendar1 = i18n.getCalendar(i18n.getSystemLocale());
+calendar1.setTimeZone(timeZone1);
+calendar1.get('zone_offset');
+calendar1.get('dst_offset');
+
+反例1
+
+import i18n from '@ohos.i18n';
+
+let timeZone1 = '123';
+let calendar1 = i18n.getCalendar(i18n.getSystemLocale());
+calendar1.setTimeZone(timeZone1);
+//告警，缺少获取dst_offset
+calendar1.get('zone_offset');
+//calendar1.get('dst_offset');
+
+反例2
+
+import moment from '@hview/moment';
+//告警
+moment().utcOffset();
+//告警
+moment().utcOffset(120);
+//告警
+moment().utcOffset("+08:00");
+//告警
+moment().utcOffset(-5, true);
+
+规则集
+
+plugin:@performance/all
+
+Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
+
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@performance/timezone-interface-check": "suggestion",
+  }
+}
+```
+
+### Code block 2
+
+```
+import i18n from '@ohos.i18n';
+
+let calendar = i18n.getCalendar(i18n.getSystemLocale());
+calendar.setTimeZone(i18n.getTimeZone().getID());
+```
+
+### Code block 3
+
+```
+import i18n from '@ohos.i18n';
+
+let timeZone1 = '123';
+let calendar1 = i18n.getCalendar(i18n.getSystemLocale());
+calendar1.setTimeZone(timeZone1);
+calendar1.get('zone_offset');
+calendar1.get('dst_offset');
+```
+
+### Code block 4
+
+```
+import i18n from '@ohos.i18n';
+
+let timeZone1 = '123';
+let calendar1 = i18n.getCalendar(i18n.getSystemLocale());
+calendar1.setTimeZone(timeZone1);
+//告警，缺少获取dst_offset
+calendar1.get('zone_offset');
+//calendar1.get('dst_offset');
+```
+
+### Code block 5
+
+```
+import moment from '@hview/moment';
+//告警
+moment().utcOffset();
+//告警
+moment().utcOffset(120);
+//告警
+moment().utcOffset("+08:00");
+//告警
+moment().utcOffset(-5, true);
+```
+
+### Code block 6
+
+```
+plugin:@performance/all
+```

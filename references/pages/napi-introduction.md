@@ -1,6 +1,8 @@
-# Node
+# Node-API简介
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/napi-introduction_
+
+场景介绍
 
 HarmonyOS Node-API是基于Node.js 18.x LTS的Node-API规范扩展开发的机制，为开发者提供了ArkTS/JS与C/C++模块之间的交互能力。它提供了一组稳定的、跨平台的API，可以在不同的操作系统上使用。
 
@@ -43,6 +45,3 @@ ArkTS和C++之间的交互流程，主要分为以下两步：
 初始化阶段：当ArkTS侧在import一个Native模块时，ArkTS引擎会调用ModuleManager加载模块对应的so及其依赖。首次加载时会触发模块的注册，将模块定义的方法属性挂载到exports对象上并返回该对象。
 
 调用阶段：当ArkTS侧通过上述import返回的对象调用方法时，ArkTS引擎会找到并调用对应的C/C++方法。
-
-使用Node-API实现ArkTS/JS与C/C++语言交互
-Node-API接口返回状态码介绍

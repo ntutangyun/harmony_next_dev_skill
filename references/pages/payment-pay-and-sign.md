@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-pay-and-sign_
 
+场景介绍
+
+从4.1.0(11)版本开始，新增支持支付并签约场景。
+
 用户在商户APP应用/元服务选购完不同的商品确认订单后，跳转至用户支付并签约确认页面，用户完成支付并签约后，后续再次购买商品时，商户可以直接发起代扣，减少用户拉起收银台、输入支付密码等相关操作。
 
 支持商户模型：直连商户、服务商
@@ -47,8 +51,10 @@ Payment Kit客户端展示结果页。
 接口名	描述
 requestPayment(context:common.UIAbilityContext, orderStr: string): Promise<void>;	拉起Payment Kit支付收银台。
 requestPayment(context:common.UIAbilityContext, orderStr: string, callback: AsyncCallback<void>): void;	拉起Payment Kit支付收银台。
+
 开发步骤
-预下单（服务器开发）
+
+[h2]预下单（服务器开发）
 
 按照商户模型调用直连商户预下单或服务商预下单接口获取预支付ID（prepayId）。
 
@@ -56,19 +62,19 @@ requestPayment(context:common.UIAbilityContext, orderStr: string, callback: Asyn
 
 构建订单信息参数orderStr返回给客户端，业务接口请求示例代码可参考业务接口请求。
 
-拉起华为支付收银台（端侧开发）
+[h2]拉起华为支付收银台（端侧开发）
 
 使用orderStr调用requestPayment接口拉起Payment Kit支付收银台。
 
 支付并签约拉起支付收银台与商户基础支付场景处理逻辑一致，可参见这里。
 
-支付并签约结果处理（服务器开发）
+[h2]支付并签约结果处理（服务器开发）
 
 商户在构建直连商户预下单或服务商预下单请求参数时，传入一个callbackUrl。在完成支付并签约后，华为支付服务器将以POST方式调用callbackUrl，将支付并签约的结果返回给商户服务器。
 
 说明
 
-如果用户没有提前登录，系统会自动拉起华为账号登录页面让用户登录。
+如果用户未提前登录，系统会自动拉起华为账号登录页面让用户登录。若用户取消登录或登录失败，则签约流程将中断。
 
 支付并签约接口请求成功不代表支付或签约成功，建议不要以客户端签约收银台返回作为用户支付并签约的最终结果，需以服务器接收到的结果通知或者查询API返回为准。
 
@@ -84,13 +90,10 @@ requestPayment(context:common.UIAbilityContext, orderStr: string, callback: Asyn
 
 当开发者完成上述支付并签约接入操作之后还可以调用以下API接口完成订单相关操作。
 
-直连商户
+[h2]直连商户
 
 查询支付订单、申请退款、查询退款订单、查询签约订单、申请解约、查询对账单、查询结算账单。
 
-服务商
+[h2]服务商
 
 查询支付订单、申请退款、查询退款订单、查询签约订单、申请解约、查询对账单、查询结算账单。
-
-免密代扣说明
-签约代扣场景

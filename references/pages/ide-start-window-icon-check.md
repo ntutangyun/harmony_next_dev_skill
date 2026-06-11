@@ -1,6 +1,31 @@
-# @performance/start
+# @performance/start-window-icon-check
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-start-window-icon-check_
+
+启动页图标分辨率建议不超过256 * 256，冷启动响应时延场景下，建议优先修改。
+
+说明
+
+在检查整个工程时，该规则才生效。
+
+code-linter.json5配置文件中的overrides和ignore字段对该规则不生效。
+
+若想关闭该规则检查，可将code-linter.json5配置文件中rules字段设置为off。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@performance/start-window-icon-check": "suggestion",
+  }
+}
+
+选项
+
+该规则无需配置额外选项。
+
+正例
 
 1、entry/src/main/module.json5中的mainElement对应的ability中配置了startWindowIcon
 
@@ -13,10 +38,28 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-start
 2、entry/src/main/resources/base/media目录下对应的图片文件分辨率大于256*256
 
 规则集
+
 plugin:@performance/recommended
 plugin:@performance/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@performance/sparse-array-check
-@performance/state-variable-usage-in-ui-format-check
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@performance/start-window-icon-check": "suggestion",
+  }
+}
+```
+
+### Code block 2
+
+```
+plugin:@performance/recommended
+plugin:@performance/all
+```

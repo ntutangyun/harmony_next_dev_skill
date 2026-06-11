@@ -9,6 +9,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/liveview-
 系统级流控（针对所有应用），实况通知创建每秒最多15次，实况通知更新每秒最多30次，超过频次部分被丢弃不下发。
 
 应用级流控（针对单个应用），实况通知创建每秒最多10次，实况通知更新每秒最多20次，超过频次部分被丢弃不下发。
-
-Live View Kit常见问题
-三方开发框架接入的问题

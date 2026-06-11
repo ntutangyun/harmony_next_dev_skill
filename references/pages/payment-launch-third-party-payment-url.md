@@ -10,25 +10,23 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { paymentService } from '@kit.PaymentKit';
 import { common } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestPaymentPromise() {
-    // used orderStr to jump third-party payment, use your own orderStr.
+    // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
     const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
     paymentService.requestPayment(this.context, orderStr, "AP")
       .then((payResult: paymentService.PayResult) => {
-        // succeeded in paying
+        // 支付成功
         console.info('succeeded in paying, pay result: ', payResult);
       })
       .catch((error: BusinessError) => {
-        // failed to pay
+        // 支付失败
         console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
-
 
   build() {
     Column() {
@@ -47,5 +45,45 @@ struct Index {
 
 开发者按照三方支付平台要求完成订单支付后的下一步业务处理，如对返回的支付结果信息验签等。
 
-拉起三方支付收银台
-基于接口拉起方式
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { paymentService } from '@kit.PaymentKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  requestPaymentPromise() {
+    // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
+    const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
+    paymentService.requestPayment(this.context, orderStr, "AP")
+      .then((payResult: paymentService.PayResult) => {
+        // 支付成功
+        console.info('succeeded in paying, pay result: ', payResult);
+      })
+      .catch((error: BusinessError) => {
+        // 支付失败
+        console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+      });
+  }
+
+  build() {
+    Column() {
+      Button('requestPaymentPromise')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          this.requestPaymentPromise();
+        })
+      }
+    .width('100%')
+    .height('100%')
+  }
+}
+```

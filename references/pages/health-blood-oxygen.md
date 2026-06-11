@@ -5,18 +5,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-bl
 此数据记录用户在某时刻的血氧，每一条数据都代表该时刻的血氧值。每条数据不能存在交叉，后一条数据的开始时间应该大于或等于前一条数据的结束时间。
 
 Harmony SDK类型常量：samplePointHelper.bloodOxygenSaturation.DATA_TYPE
+
 OAuth权限
 
 联盟卡片申请的权限名称：健康数据 > 血氧数据
 
 采样明细数据
-明细字段说明
+
+[h2]明细字段说明
+
 字段定义：samplePointHelper.bloodOxygenSaturation.Fields
+
 字段列表	描述	类型	可选/必选	单位	取值范围
 spo2	血氧饱和度	number	M	百分比	(0, 100]
-数据开放说明
+
+[h2]数据开放说明
+
 开放API	查询及时性	数据源
 healthStore.readData	小时级	部分手表、手环等
+
 采样统计数据
 
 聚合统计策略说明
@@ -25,8 +32,8 @@ healthStore.readData	小时级	部分手表、手环等
 
 字段列表	描述	聚合策略	类型	单位
 spo2	血氧饱和度	avg | max | min | last	number	百分比
-数据开放说明
+
+[h2]数据开放说明
+
 开放API	查询及时性	数据源
 healthStore.aggregateData	小时级	部分手表、手环等
-心率
-压力

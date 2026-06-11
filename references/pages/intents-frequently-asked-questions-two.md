@@ -2,5 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-frequently-asked-questions-two_
 
-intentName报错Intent 'xxxxxx' is not included in domain 'xxxxxx'. Select an intent from the list of suggestions.如何解决？
-使用意图框架调试助手Agent进行联调时，小艺拉起应用后，出现闪退情况，应该如何处理？
+从5.1.0(18)开始支持功能一步达接入方案，可通过升级对应版本DevEco Studio解决。

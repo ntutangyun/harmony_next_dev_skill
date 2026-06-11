@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-layout-development-stack-layout_
 
+概述
+
 层叠布局（StackLayout）用于在屏幕上预留一块区域来显示组件中的元素，提供元素可以重叠的布局。层叠布局通过Stack容器组件实现位置的固定定位与层叠，容器中的子元素依次入栈，后一个子元素覆盖前一个子元素，子元素可以叠加，也可以设置位置。
 
 层叠布局具有较强的页面层叠、位置定位能力，其使用场景有广告、卡片层叠效果等。
@@ -21,7 +23,6 @@ Stack组件为容器组件，容器内可包含各种子元素。其中子元素
 // xxx.ets
 let mTop:Record<string,number> = { 'top': 50 }
 
-
 @Entry
 @Component
 struct StackLayoutExample {
@@ -35,7 +36,6 @@ struct StackLayoutExample {
     }
   }
 }
-StackLayoutExample.ets
 
 对齐方式
 
@@ -55,7 +55,7 @@ struct StackAlignContentExample {
     }.width('100%').height(150).margin({ top: 5 })
   }
 }
-StackLayoutAlignContent.ets
+
 Z序控制
 
 Stack容器中兄弟组件显示层级关系可以通过Z序控制的zIndex属性改变。zIndex值越大，显示层级越高，即zIndex值大的组件会覆盖在zIndex值小的组件上方。
@@ -68,19 +68,16 @@ Stack({ alignContent: Alignment.BottomStart }) {
     Text($r('app.string.stack_num1')).textAlign(TextAlign.End).fontSize(20)
   }.width(100).height(100).backgroundColor(0xffd306)
 
-
   Column() {
     // 请将$r('app.string.stack_num2')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素2"
     Text($r('app.string.stack_num2')).fontSize(20)
   }.width(150).height(150).backgroundColor(Color.Pink)
-
 
   Column() {
     // 请将$r('app.string.stack_num3')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素3"
     Text($r('app.string.stack_num3')).fontSize(20)
   }.width(200).height(200).backgroundColor(Color.Grey)
 }.width(350).height(350).backgroundColor(0xe0e0e0)
-StackLayoutNozIndex.ets
 
 上图中，最后的子元素3的尺寸大于前面的所有子元素，所以，前面两个元素完全隐藏。改变子元素1、子元素2的zIndex属性后，可以将元素展示出来。
 
@@ -90,19 +87,16 @@ Stack({ alignContent: Alignment.BottomStart }) {
     Text($r('app.string.stack_num1')).fontSize(20)
   }.width(100).height(100).backgroundColor(0xffd306).zIndex(2)
 
-
   Column() {
     // 请将$r('app.string.stack_num2')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素2"
     Text($r('app.string.stack_num2')).fontSize(20)
   }.width(150).height(150).backgroundColor(Color.Pink).zIndex(1)
-
 
   Column() {
     // 请将$r('app.string.stack_num3')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素3"
     Text($r('app.string.stack_num3')).fontSize(20)
   }.width(200).height(200).backgroundColor(Color.Grey)
 }.width(350).height(350).backgroundColor(0xe0e0e0)
-StackLayoutzIndex.ets
 
 场景示例
 
@@ -112,7 +106,6 @@ StackLayoutzIndex.ets
 @Component
 struct StackSample {
   private arr: string[] = ['APP1', 'APP2', 'APP3', 'APP4', 'APP5', 'APP6', 'APP7', 'APP8'];
-
 
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
@@ -128,7 +121,6 @@ struct StackSample {
             .backgroundColor(0xFFFFFF)
         }, (item:string):string => item)
       }.width('100%').height('100%')
-
 
       Flex({ justifyContent: FlexAlign.SpaceAround, alignItems: ItemAlign.Center }) {
         // 请将$r('app.string.contacts')替换为实际资源文件，在本示例中该资源文件的value值为"联系人"
@@ -146,12 +138,10 @@ struct StackSample {
     }.width('100%').height('100%').backgroundColor('#CFD0CF')
   }
 }
-StackLayoutSceneExample.ets
 
 示例代码
+
 组件堆叠
-线性布局 (Row/Column)
-弹性布局 (Flex)
 
 ## Code blocks
 
@@ -160,7 +150,6 @@ StackLayoutSceneExample.ets
 ```
 // xxx.ets
 let mTop:Record<string,number> = { 'top': 50 }
-
 
 @Entry
 @Component
@@ -203,12 +192,10 @@ Stack({ alignContent: Alignment.BottomStart }) {
     Text($r('app.string.stack_num1')).textAlign(TextAlign.End).fontSize(20)
   }.width(100).height(100).backgroundColor(0xffd306)
 
-
   Column() {
     // 请将$r('app.string.stack_num2')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素2"
     Text($r('app.string.stack_num2')).fontSize(20)
   }.width(150).height(150).backgroundColor(Color.Pink)
-
 
   Column() {
     // 请将$r('app.string.stack_num3')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素3"
@@ -226,12 +213,10 @@ Stack({ alignContent: Alignment.BottomStart }) {
     Text($r('app.string.stack_num1')).fontSize(20)
   }.width(100).height(100).backgroundColor(0xffd306).zIndex(2)
 
-
   Column() {
     // 请将$r('app.string.stack_num2')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素2"
     Text($r('app.string.stack_num2')).fontSize(20)
   }.width(150).height(150).backgroundColor(Color.Pink).zIndex(1)
-
 
   Column() {
     // 请将$r('app.string.stack_num3')替换为实际资源文件，在本示例中该资源文件的value值为"Stack子元素3"
@@ -248,7 +233,6 @@ Stack({ alignContent: Alignment.BottomStart }) {
 struct StackSample {
   private arr: string[] = ['APP1', 'APP2', 'APP3', 'APP4', 'APP5', 'APP6', 'APP7', 'APP8'];
 
-
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
       Flex({ wrap: FlexWrap.Wrap }) {
@@ -263,7 +247,6 @@ struct StackSample {
             .backgroundColor(0xFFFFFF)
         }, (item:string):string => item)
       }.width('100%').height('100%')
-
 
       Flex({ justifyContent: FlexAlign.SpaceAround, alignItems: ItemAlign.Center }) {
         // 请将$r('app.string.contacts')替换为实际资源文件，在本示例中该资源文件的value值为"联系人"

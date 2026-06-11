@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/media-library-kit-frequently-asked-questions_
 
+如何正确管理媒体资源
+
+如何正确判断媒体资源类型

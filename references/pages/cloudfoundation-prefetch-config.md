@@ -13,13 +13,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 下文介绍如何配置两种数据来源方式的预加载实现。
 
 数据来源为云函数
-前提条件
+
+[h2]前提条件
 
 已开通预加载服务。
 
 已创建函数。
 
-绑定云函数
+[h2]绑定云函数
 
 登录AppGallery Connect，点击“开发与服务”。
 
@@ -44,11 +45,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 （可选）若后续需要修改绑定的云函数，只需点击“函数名称”后的“修改”进行更新。
 
 数据来源为开发者服务器
-前提条件
+
+[h2]前提条件
 
 已开通预加载服务。
 
-配置服务器地址
+[h2]配置服务器地址
 
 登录AppGallery Connect，点击“开发与服务”。
 
@@ -89,6 +91,3 @@ IP地址：须填写准确的IP地址，确保没有输入错误。
 若配置“安装预加载”，重复步骤4-6即可。
 
 （可选）若后续需要修改下载地址，只需点击“下载地址”后的“修改”进行更新。
-
-开发流程
-开发预加载资源接口

@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-window-support_
 
+当应用需要智慧多窗的能力时，可以通过在module.json5配置文件中对应标签添加相关字段声明支持。
+
+声明支持悬浮窗
+
 开发者可以通过在module.json5配置文件中abilities标签下的supportWindowMode属性增加“floating”字段或使用缺省值以声明应用支持悬浮窗。
 
 说明
@@ -22,90 +26,10 @@ floating	窗口支持悬浮窗显示。
 preferMultiWindowOrientation属性主要标识当前UIAbility组件多窗布局方向，支持的字段及含义如下表所示。
 
 配置值	说明	效果
-portrait	多窗布局方向为竖向。建议竖向游戏类应用配置。	
-
-手机
-
-手势触发悬浮窗：竖向悬浮窗
-
-手势触发分屏：不支持
-
-分屏样式切换：不涉及
-
-折叠屏手机展开态
-
-手势触发悬浮窗：竖向悬浮窗
-
-手势触发分屏：形成左右分屏
-
-分屏样式切换：不支持样式切换
-
-
-landscape	多窗布局方向为横向，配置后支持横向悬浮窗和上下分屏。建议横向游戏类应用配置。	
-
-手机
-
-手势触发悬浮窗：横向悬浮窗
-
-手势触发分屏：不支持
-
-分屏样式切换：不涉及
-
-折叠屏手机展开态
-
-手势触发悬浮窗：横向悬浮窗
-
-手势触发分屏：形成上下分屏
-
-分屏样式切换：不支持样式切换
-
-
-landscape_auto	多窗布局动态可变为横向，需要配合API（enableLandscapeMultiWindow / disableLandscapeMultiWindow）使用。建议视频类应用配置。	
-
-系统识别应用为横向全屏播放：
-
-手机
-
-手势触发悬浮窗：横向悬浮窗
-
-手势触发分屏：形成上下分屏
-
-分屏样式切换：不涉及
-
-折叠屏手机展开态
-
-手势触发悬浮窗：横向悬浮窗
-
-手势触发分屏：形成上下分屏
-
-分屏样式切换：支持样式切换
-
-系统识别应用为非横向全屏播放： 同配置为default
-
-
-default	
-
-缺省值，参数不配置时默认为default。
-
-建议其他应用类配置。
-
-	
-
-折叠屏手机折叠态 & 手机
-
-手势触发悬浮窗：竖向悬浮窗
-
-手势触发分屏：形成上下分屏
-
-分屏样式切换：不涉及
-
-折叠屏手机展开态
-
-手势触发悬浮窗：竖向悬浮窗
-
-手势触发分屏：形成左右分屏
-
-分屏样式切换：支持样式切换
+portrait	多窗布局方向为竖向。建议竖向游戏类应用配置。	手机 手势触发悬浮窗：竖向悬浮窗 手势触发分屏：不支持 分屏样式切换：不涉及 折叠屏手机展开态 手势触发悬浮窗：竖向悬浮窗 手势触发分屏：形成左右分屏 分屏样式切换：不支持样式切换
+landscape	多窗布局方向为横向，配置后支持横向悬浮窗和上下分屏。建议横向游戏类应用配置。	手机 手势触发悬浮窗：横向悬浮窗 手势触发分屏：不支持 分屏样式切换：不涉及 折叠屏手机展开态 手势触发悬浮窗：横向悬浮窗 手势触发分屏：形成上下分屏 分屏样式切换：不支持样式切换
+landscape_auto	多窗布局动态可变为横向，需要配合API（enableLandscapeMultiWindow / disableLandscapeMultiWindow）使用。建议视频类应用配置。	系统识别应用为横向全屏播放： 手机 手势触发悬浮窗：横向悬浮窗 手势触发分屏：形成上下分屏 分屏样式切换：不涉及 折叠屏手机展开态 手势触发悬浮窗：横向悬浮窗 手势触发分屏：形成上下分屏 分屏样式切换：支持样式切换 系统识别应用为非横向全屏播放： 同配置为default
+default	缺省值，参数不配置时默认为default。 建议其他应用类配置。	折叠屏手机折叠态 & 手机 手势触发悬浮窗：竖向悬浮窗 手势触发分屏：形成上下分屏 分屏样式切换：不涉及 折叠屏手机展开态 手势触发悬浮窗：竖向悬浮窗 手势触发分屏：形成左右分屏 分屏样式切换：支持样式切换
 
 声明支持分屏
 
@@ -121,6 +45,7 @@ supportWindowMode属性主要标识当前UIAbility所支持的窗口模式，支
 fullscreen	窗口支持全屏显示。
 split	窗口支持分屏显示。
 floating	窗口支持悬浮窗显示。
+
 应用内分屏
 
 应用内分屏功能允许声明支持分屏的应用在全屏显示模式下，通过调用startAbility方法启动UIAbility并形成分屏。该功能能够增强应用的多任务处理能力，提升用户的操作体验。
@@ -149,24 +74,20 @@ import { AbilityConstant, common, StartOptions, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   @State name: string = '';
   private hostContext: common.UIAbilityContext | null = null;
 
-
   aboutToAppear(): void {
     this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
     this.name = this.hostContext.abilityInfo.name;
   }
 
-
   build() {
     Column({ space: 20 }) {
       Text(this.name)
-
 
       Button() {
         Text('启动应用内分屏')
@@ -179,7 +100,6 @@ struct Index {
         let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
         this.hostContext?.startAbility(want, option);
       })
-
 
       Button() {
         Text('启动另一分屏窗口')
@@ -213,5 +133,77 @@ struct Index {
 
 当应用开发者需要使用应用内多窗图标时，可以使用高级组件MultiWindowEntryInAPP实现该功能。
 
-应用适配智慧多窗
-应用布局适配智慧多窗
+## Code blocks
+
+### Code block 1
+
+```
+this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
+```
+
+### Code block 2
+
+```
+// 创建StartOptions并设置为主窗口模式
+let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
+let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
+this.hostContext?.startAbility(want, option);
+```
+
+### Code block 3
+
+```
+// Index.ets
+import { AbilityConstant, common, StartOptions, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  @State name: string = '';
+  private hostContext: common.UIAbilityContext | null = null;
+
+  aboutToAppear(): void {
+    this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
+    this.name = this.hostContext.abilityInfo.name;
+  }
+
+  build() {
+    Column({ space: 20 }) {
+      Text(this.name)
+
+      Button() {
+        Text('启动应用内分屏')
+      }
+      .height(40)
+      .onClick(() => {
+        // 指定拉起的分屏窗口的应用信息
+        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
+        // 创建StartOptions并设置窗口模式为分屏模式，左侧分屏
+        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
+        this.hostContext?.startAbility(want, option);
+      })
+
+      Button() {
+        Text('启动另一分屏窗口')
+      }
+      .height(40)
+      .onClick(() => {
+        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' };
+        // 指定启动EntryAbility2的窗口模式，右侧分屏
+        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY };
+        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
+          if (error.code) {
+            return;
+          }
+          hilog.info(0x0000, 'testTag', '启动分屏成功');
+        });
+      })
+    }
+    .padding(20)
+    .height('100%')
+    .width('100%')
+  }
+}
+```

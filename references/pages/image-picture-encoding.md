@@ -14,9 +14,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-pic
 import { image } from '@kit.ImageKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
-import { fileIo as fs } from '@kit.CoreFileKit';
+import { fileIo } from '@kit.CoreFileKit';
 import { resourceManager } from '@kit.LocalizationKit';
-EncodingPicture.ets
 
 设置编码选项PackingOption。
 
@@ -27,10 +26,8 @@ EncodingPicture.ets
 let packOpts: image.PackingOption = {
   format: 'image/jpeg',
   quality: 95,
-  desiredDynamicRange: image.PackingDynamicRange.AUTO,
   needsPackProperties: true
 };
-CodecUtility.ets
 
 封装函数，传入picture，使用packing接口编码到ArrayBuffer，或使用packToFile接口编码到文件。
 
@@ -48,22 +45,93 @@ async function packing(picture: image.Picture, packOpts: image.PackingOption) {
     console.info('Succeeded in packing the image.');
   } catch (error) {
     console.error('Failed to pack the picture to data. And the error is: ' + error);
+  } finally {
+    await imagePackerApi.release();
   }
 }
-CodecUtility.ets
 
 picture编码到文件。
 
 async function packToFile(picture: image.Picture, packOpts: image.PackingOption, context: Context) {
+  let imagePackerApi: image.ImagePacker | undefined = undefined;
+  let file: fileIo.File | undefined = undefined;
   try {
     const path : string = context.cacheDir + '/picture.jpg';
-    let file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
-    const imagePackerApi = image.createImagePacker();
+    file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+    imagePackerApi = image.createImagePacker();
     await imagePackerApi.packToFile(picture, file.fd, packOpts);
   } catch (error) {
     console.error('Failed to pack the picture to file. And the error is: ' + error);
+  } finally {
+    if (file) {
+      fileIo.closeSync(file.fd);
+    }
+    if (imagePackerApi) {
+      await imagePackerApi.release();
+    }
   }
 }
-CodecUtility.ets
-使用ImagePacker完成图片编码
-图片编辑和处理
+
+## Code blocks
+
+### Code block 1
+
+```
+// 导入相关模块。
+import { image } from '@kit.ImageKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { resourceManager } from '@kit.LocalizationKit';
+```
+
+### Code block 2
+
+```
+let packOpts: image.PackingOption = {
+  format: 'image/jpeg',
+  quality: 95,
+  needsPackProperties: true
+};
+```
+
+### Code block 3
+
+```
+async function packing(picture: image.Picture, packOpts: image.PackingOption) {
+  const imagePackerApi = image.createImagePacker();
+  try {
+    let data = await imagePackerApi.packing(picture, packOpts);
+    copyData = data;
+    console.info('Succeeded in packing the image.');
+  } catch (error) {
+    console.error('Failed to pack the picture to data. And the error is: ' + error);
+  } finally {
+    await imagePackerApi.release();
+  }
+}
+```
+
+### Code block 4
+
+```
+async function packToFile(picture: image.Picture, packOpts: image.PackingOption, context: Context) {
+  let imagePackerApi: image.ImagePacker | undefined = undefined;
+  let file: fileIo.File | undefined = undefined;
+  try {
+    const path : string = context.cacheDir + '/picture.jpg';
+    file = fileIo.openSync(path, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+    imagePackerApi = image.createImagePacker();
+    await imagePackerApi.packToFile(picture, file.fd, packOpts);
+  } catch (error) {
+    console.error('Failed to pack the picture to file. And the error is: ' + error);
+  } finally {
+    if (file) {
+      fileIo.closeSync(file.fd);
+    }
+    if (imagePackerApi) {
+      await imagePackerApi.release();
+    }
+  }
+}
+```

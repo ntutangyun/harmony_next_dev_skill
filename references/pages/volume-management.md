@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/volume-management_
 
+本模块提供播放音量管理能力，包括对系统音量、应用音量和音频流音量的管理。
+
 系统音量是由HarmonyOS系统全局管理的音量设置，适用于所有应用程序和设备。HarmonyOS系统将音频分为不同的流类型，每种流类型有独立的系统音量控制。
 
 说明
@@ -11,8 +13,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/volume-ma
 常见的流类型以及对应的系统音量如下所示。
 
 媒体音量：用于音乐、视频、游戏等媒体播放。
+
 通话音量：用于语音通话。
+
 铃声音量：用于来电铃声。
+
 闹钟音量：用于闹钟提醒。
 
 应用音量是HarmonyOS提供给三方应用用来控制该应用下所有音频流音量的一种音量类型。三方应用设置应用音量之后，该应用中起的所有音频流默认使用该音量大小。另外具有系统应用权限的应用可以通过UID单独调整指定应用的音量。
@@ -43,8 +48,8 @@ import { audio } from '@kit.AudioKit';
 // ...
 let audioManager = audio.getAudioManager();
 let audioVolumeManager = audioManager.getVolumeManager();
-renderer.ets
-获取音量信息
+
+[h2]获取音量信息
 
 管理系统音量的接口由AudioVolumeManager提供，在使用之前，需要使用getVolumeManager获取AudioVolumeManager实例。
 
@@ -52,7 +57,6 @@ import { audio } from '@kit.AudioKit';
 // ...
 let audioManager = audio.getAudioManager();
 let audioVolumeManager = audioManager.getVolumeManager();
-renderer.ets
 
 使用AudioVolumeManager获取指定流类型的音量信息。
 
@@ -67,11 +71,10 @@ import { BusinessError } from '@kit.BasicServicesKit';
   // 获取指定流的最小音量。
   audioVolumeManager.getMinVolumeByStream(audio.StreamUsage.STREAM_USAGE_MUSIC);
 
-
   // 获取指定流的最大音量。
   audioVolumeManager.getMaxVolumeByStream(audio.StreamUsage.STREAM_USAGE_MUSIC);
-renderer.ets
-监听系统音量变化
+
+[h2]监听系统音量变化
 
 通过设置监听事件，可以监听系统音量的变化：
 
@@ -84,8 +87,8 @@ import { audio } from '@kit.AudioKit';
     console.info(`Whether to updateUI: ${streamVolumeEvent.updateUi} `);
     // ...
   });
-renderer.ets
-使用音量面板调节系统音量
+
+[h2]使用音量面板调节系统音量
 
 应用无法直接调节系统音量，可以通过系统音量面板，让用户通过界面操作来调节音量。当用户通过应用内音量面板调节音量时，系统会展示音量提示界面，显性地提示用户系统音量发生改变。
 
@@ -97,7 +100,8 @@ renderer.ets
 
 当音量模式设置为APP_INDIVIDUAL时，可通过下面示例接口设置、查询应用音量。
 
-调节应用音量
+[h2]调节应用音量
+
 import { audio } from '@kit.AudioKit';
 // ...
 let audioManager = audio.getAudioManager();
@@ -109,13 +113,11 @@ let audioVolumeManager = audioManager.getVolumeManager();
     // ...
   });
 
-
   // 查询应用音量。
   audioVolumeManager.getAppVolumePercentage().then((value: number) => {
     console.info(`app volume is ${value}.`);
     // ...
   });
-
 
   // 监听应用音量变化，on方法和off方法传入callback参数一致，off方法取消对应on方法订阅的监听。
   let appVolumeChangeCallback = (volumeEvent: audio.VolumeEvent) => {
@@ -126,14 +128,13 @@ let audioVolumeManager = audioManager.getVolumeManager();
   };
   audioVolumeManager.on('appVolumeChange', appVolumeChangeCallback);
   audioVolumeManager.off('appVolumeChange', appVolumeChangeCallback);
-renderer.ets
+
 音频流音量
 
 管理音频流音量的接口是AVPlayer或AudioRenderer的setVolume()方法，使用AVPlayer设置音频流音量的示例代码如下：
 
 let volume = 1.0;  // 指定的音量大小，取值范围为[0.00-1.00]，1表示最大音量。
 avPlayer.setVolume(volume);
-renderer.ets
 
 使用AudioRenderer的setVolume和getVolume接口分别完成音频流音量的设置和获取。
 
@@ -150,6 +151,118 @@ import { BusinessError } from '@kit.BasicServicesKit';
       // ...
     });
 
+    // 获取音频流音量。
+    try {
+      let value: number = audioRenderer.getVolume();
+      console.info(`Indicate that the volume is obtained ${value}.`);
+      // ...
+    } catch (err) {
+      let error = err as BusinessError;
+      console.error(`Failed to obtain the volume, error ${error}.`);
+      // ...
+    }
+
+## Code blocks
+
+### Code block 1
+
+```
+import { audio } from '@kit.AudioKit';
+// ...
+let audioManager = audio.getAudioManager();
+let audioVolumeManager = audioManager.getVolumeManager();
+```
+
+### Code block 2
+
+```
+import { audio } from '@kit.AudioKit';
+// ...
+let audioManager = audio.getAudioManager();
+let audioVolumeManager = audioManager.getVolumeManager();
+```
+
+### Code block 3
+
+```
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+  // 获取指定流的音量。
+  audioVolumeManager.getVolumeByStream(audio.StreamUsage.STREAM_USAGE_MUSIC);
+  // ...
+  // 获取指定流的最小音量。
+  audioVolumeManager.getMinVolumeByStream(audio.StreamUsage.STREAM_USAGE_MUSIC);
+
+  // 获取指定流的最大音量。
+  audioVolumeManager.getMaxVolumeByStream(audio.StreamUsage.STREAM_USAGE_MUSIC);
+```
+
+### Code block 4
+
+```
+import { audio } from '@kit.AudioKit';
+// ...
+  audioVolumeManager.on('streamVolumeChange', audio.StreamUsage.STREAM_USAGE_MUSIC,
+    (streamVolumeEvent: audio.StreamVolumeEvent) => {
+    console.info(`StreamUsagem: ${streamVolumeEvent.streamUsage} `);
+    console.info(`Volume level: ${streamVolumeEvent.volume} `);
+    console.info(`Whether to updateUI: ${streamVolumeEvent.updateUi} `);
+    // ...
+  });
+```
+
+### Code block 5
+
+```
+import { audio } from '@kit.AudioKit';
+// ...
+let audioManager = audio.getAudioManager();
+let audioVolumeManager = audioManager.getVolumeManager();
+// ...
+  // 设置应用的音量（范围为0到100）。
+  audioVolumeManager.setAppVolumePercentage(20).then(() => {
+    console.info(`set app volume success.`);
+    // ...
+  });
+
+  // 查询应用音量。
+  audioVolumeManager.getAppVolumePercentage().then((value: number) => {
+    console.info(`app volume is ${value}.`);
+    // ...
+  });
+
+  // 监听应用音量变化，on方法和off方法传入callback参数一致，off方法取消对应on方法订阅的监听。
+  let appVolumeChangeCallback = (volumeEvent: audio.VolumeEvent) => {
+    console.info(`VolumeType of stream: ${volumeEvent.volumeType} `);
+    console.info(`Volume level: ${volumeEvent.volume} `);
+    console.info(`Whether to updateUI: ${volumeEvent.updateUi} `);
+    // ...
+  };
+  audioVolumeManager.on('appVolumeChange', appVolumeChangeCallback);
+  audioVolumeManager.off('appVolumeChange', appVolumeChangeCallback);
+```
+
+### Code block 6
+
+```
+let volume = 1.0;  // 指定的音量大小，取值范围为[0.00-1.00]，1表示最大音量。
+avPlayer.setVolume(volume);
+```
+
+### Code block 7
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+    // 设置音频流音量。
+    audioRenderer.setVolume(0.5).then(() => {  // 音量范围为[0.0-1.0]。
+      console.info('Invoke setVolume succeeded.');
+      // ...
+    }).catch((err: BusinessError) => {
+      console.error(`Invoke setVolume failed, code is ${err.code}, message is ${err.message}`);
+      // ...
+    });
 
     // 获取音频流音量。
     try {
@@ -161,6 +274,4 @@ import { BusinessError } from '@kit.BasicServicesKit';
       console.error(`Failed to obtain the volume, error ${error}.`);
       // ...
     }
-renderer.ets
-使用SoundPlayer开发系统音效播放功能
-空间音频能力查询和状态订阅
+```

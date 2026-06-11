@@ -23,16 +23,17 @@ Kirin9020/KirinX90系列处理器：耦合架构
 AIC架构
 
 包含4个并行执行单元（搬运单元和计算单元）：MTE1、MTE2、Cube、Scalar。
+
 包含7个内存单元：GM（核外）、L1、L0A、L0B，L0C、BiasTable Buffer、FixPipe Buffer。
 
 AIV架构
 
 包含4个并行执行单元：MTE2、MTE3、Vector、Scalar。
+
 包含2个内存单元：GM（核外）、UB。
 
 典型计算数据流
 
 Vector计算：GM-UB- [Vector]-UB-GM。
+
 Cube计算：GM-L1-L0A/L0B-Cube-L0C-FixPipe-GM、GM-L1-L0A/L0B-Cube-L0C-FixPipe-L1。
-硬件架构
-计算单元

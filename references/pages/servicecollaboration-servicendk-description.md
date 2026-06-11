@@ -2,15 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/servicecollaboration-servicendk-description_
 
-跨设备互通提供相机、扫描以及图库（图片和视频）的跨设备调用能力，TV、平板或2in1设备可以调用手机的相机、扫描、图库等功能。
+跨设备互通提供相机、扫描以及图库（图片和视频）的跨设备调用能力，TV、Tablet或PC/2in1设备可以调用Phone的相机、扫描、图库等功能。
 
 说明
 
 本章节以拍照为例展开介绍，扫描、图库功能的使用与拍照类似。
 
-用户在TV、平板或2in1设备上使用富文本类编辑应用（如：备忘录、邮件、笔记等）时，想要拍摄一些照片作为素材，但是当前设备拍摄不太方便。通过跨设备互通-拍照，用户可以在当前设备的应用中指定平板或手机设备，并打开平板或手机的相机来拍摄所需的素材。通过手机或者平板设备拍摄，移动更便利、取景更灵巧、相机能力也更强大。拍摄的照片将实现快速回传到TV、平板或2in1设备的应用中，帮助用户高效完成图文并茂的文档设计。
+用户在TV、Tablet或PC/2in1设备上使用富文本类编辑应用（如：备忘录、邮件、笔记等）时，想要拍摄一些照片作为素材，但是当前设备拍摄不太方便。通过跨设备互通-拍照，用户可以在当前设备的应用中指定Tablet或Phone设备，并打开Tablet或Phone的相机来拍摄所需的素材。通过Phone或者Tablet设备拍摄，移动更便利、取景更灵巧、相机能力也更强大。拍摄的照片将实现快速回传到TV、Tablet或PC/2in1设备的应用中，帮助用户高效完成图文并茂的文档设计。
 
-如果同一组网下有多台手机或平板设备，用户可以选择不同的设备进行拍摄。
+如果同一组网下有多台Phone或Tablet设备，用户可以选择不同的设备进行拍摄。
 
 运作机制
 
@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/serviceco
 
 系统分布式协同框架跨设备自动建链
 
-a. 通过系统的分布式协同框架，同账号下的本端设备（2in1设备/平板）与远端设备（手机/平板）自动建立连接。系统将自动完成设备的发现、连接、认证等流程，通过HMS_ServiceCollaboration_GetCollaborationDeviceInfos接口提供可用的具有相机、扫描和图库能力的远端设备信息。
+a. 通过系统的分布式协同框架，同账号下的本端设备（PC/2in1设备/Tablet）与远端设备（Phone/Tablet）自动建立连接。系统将自动完成设备的发现、连接、认证等流程，通过HMS_ServiceCollaboration_GetCollaborationDeviceInfos接口提供可用的具有相机、扫描和图库能力的远端设备信息。
 
 b. 通过HMS_ServiceCollaboration_StartCollaboration或者HMS_ServiceCollaboration_StartCollaborationV2拉起对应跨设备互通能力，通过HMS_ServiceCollaboration_StopCollaboration终止跨设备互通能力。分布式协同框架会将远端拍摄状态信息实时回传到应用侧，应用侧会根据错误码做相关提示。
 
@@ -30,6 +30,5 @@ b. 通过HMS_ServiceCollaboration_StartCollaboration或者HMS_ServiceCollaborati
 用户使用远端设备拍照
 
 用户使用远端设备完成拍照并确认，照片将回传到本端设备的应用，完成整个流程。
+
 远端设备将自动退出相机界面，回到初始状态。
-跨设备互通NDK（C）
-跨设备互通NDK开发指导

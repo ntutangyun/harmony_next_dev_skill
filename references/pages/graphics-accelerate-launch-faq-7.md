@@ -13,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 对于依赖UIAbilityContext的三方SDK，是否在每次启动时同步更新Context。
 
 若三方SDK在初始化或调用过程中依赖UIAbilityContext，需要在UIAbility重新创建时，将最新的UIAbilityContext重新传递给SDK，避免继续使用旧的Context实例。
-
-游戏出现卡死后，应该如何避免下一次秒启后还是卡死场景
-游戏因未实现防沉迷提醒提审被拒，应该如何解决

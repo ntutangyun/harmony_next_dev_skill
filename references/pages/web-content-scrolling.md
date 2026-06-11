@@ -9,8 +9,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-conte
 可以使用以下方式，通过触屏、触摸板和鼠标滚轮控制Web页面滚动。
 
 通过触屏控制Web页面滚动：支持在触摸屏上单指上下左右滑动可以控制页面滚动。
+
 通过触摸板控制Web页面滚动：支持在笔记本触摸板或者外接触摸板双指上下左右滑动，可以控制页面滚动。
+
 通过鼠标滚轮控制Web页面滚动：支持用鼠标滚轮上下滑动来控制页面滚动。
+
 调用ArkTS侧接口控制Web页面滚动
 
 scrollTo：在指定时间内，将页面滚动到指定的绝对位置。
@@ -18,7 +21,6 @@ scrollTo：在指定时间内，将页面滚动到指定的绝对位置。
 返回页面顶部。
 
 this.webController.scrollTo(0, 0);
-WebScrollDemo.ets
 
 scrollBy：在指定时间内将页面滚动指定的偏移量。
 
@@ -51,6 +53,7 @@ window.scrollTo(0, 0);
 (2) 跳转到页面特定位置。
 
 window.scrollTo(0, 500); // 滚动到某个固定像素位置（如：500px）
+
 点击状态栏回顶
 
 当Web页面处于非顶部状态或向下抛滑时，此时若需返回Web页面顶部，可以使用backToTop方法，开启后通过点击状态栏，打断抛滑并将Web页面滚动到页面顶部。
@@ -60,12 +63,10 @@ window.scrollTo(0, 500); // 滚动到某个固定像素位置（如：500px）
 // xxx.ets
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct WebComponent {
   controller: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -112,5 +113,99 @@ struct WebComponent {
 
 效果展示：
 
-Web组件嵌套滚动
-Web组件对接软键盘
+## Code blocks
+
+### Code block 1
+
+```
+this.webController.scrollTo(0, 0);
+```
+
+### Code block 2
+
+```
+window.scrollBy(deltaX, deltaY);// deltaX是元素要在横轴上滚动的距离，deltaY是元素要在纵轴上滚动的距离。
+```
+
+### Code block 3
+
+```
+document.getElementById("read-more").addEventListener("click", ()=>{
+  window.scrollBy(0, 300);
+})
+```
+
+### Code block 4
+
+```
+window.scrollTo(x, y);// X是你想要显示在左上角的元素沿水平轴的像素，Y是你想要显示在左上角的元素沿垂直轴的像素。
+```
+
+### Code block 5
+
+```
+window.scrollTo(0, 0);
+```
+
+### Code block 6
+
+```
+window.scrollTo(0, 500); // 滚动到某个固定像素位置（如：500px）
+```
+
+### Code block 7
+
+```
+// xxx.ets
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct WebComponent {
+  controller: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Web({ src: $rawfile("index.html"), controller: this.controller })
+        .backToTop(true)
+    }
+  }
+}
+```
+
+### Code block 8
+
+```
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .blue {
+          background-color: lightblue;
+        }
+        .green {
+          background-color: lightgreen;
+        }
+        .blue, .green {
+         font-size:16px;
+         height:200px;
+         text-align: center;       /* 水平居中 */
+         line-height: 200px;       /* 垂直居中（值等于容器高度） */
+        }
+    </style>
+</head>
+<body>
+<div class="blue" >webArea</div>
+<div class="green">webArea</div>
+<div class="blue">webArea</div>
+<div class="green">webArea</div>
+<div class="blue">webArea</div>
+<div class="green">webArea</div>
+<div class="blue">webArea</div>
+<div class="green">webArea</div>
+<div class="blue">webArea</div>
+</body>
+</html>
+```

@@ -50,14 +50,15 @@ try {
 } catch(error) {
   console.error("requestPhotoUrisReadPermission error: " + JSON.stringify(error));
 }
+
 完整示例
+
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { common } from '@kit.AbilityKit';
 @Entry
 @Component
 struct Index{
   private uris: Array<string> = new Array<string>();
-
 
   build() {
     Row() {
@@ -87,5 +88,86 @@ struct Index{
     .height('100%')
   }
 }
-使用MovingPhotoView播放动态照片
-受限开放能力
+
+## Code blocks
+
+### Code block 1
+
+```
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+```
+
+### Code block 2
+
+```
+// 用于初始化时接口类实例
+// 请在组件内获取context，确保this.getUiContext().getHostContext()返回结果为UIAbilityContext
+import { common } from '@kit.AbilityKit';
+let context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+let phAccessHelper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+```
+
+### Code block 3
+
+```
+private uris: Array<string> = new Array<string>();
+// 自行对其赋值，输入需要授权的uri信息
+this.uris = [];
+```
+
+### Code block 4
+
+```
+try {
+  phAccessHelper.requestPhotoUrisReadPermission(this.uris).then((result: Array<string>) => {
+    console.info("requestPhotoUrisReadPermission, result = " + JSON.stringify(result));
+    if (result) {
+      // 授权成功返回授权后新的uri列表
+    } else {
+      // 授权失败后的处理
+    }
+  })
+} catch(error) {
+  console.error("requestPhotoUrisReadPermission error: " + JSON.stringify(error));
+}
+```
+
+### Code block 5
+
+```
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { common } from '@kit.AbilityKit';
+@Entry
+@Component
+struct Index{
+  private uris: Array<string> = new Array<string>();
+
+  build() {
+    Row() {
+      Column() {
+        Button("拉起授权界面").width('100%').height('10%').margin({top: 150})
+          .onClick(()=>{
+            // 自行对其赋值，输入需要授权的uri信息
+            this.uris = [];
+            let context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+            let phAccessHelper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+            try {
+              phAccessHelper.requestPhotoUrisReadPermission(this.uris).then((result: Array<string>) => {
+                console.info("requestPhotoUrisReadPermission, result = " + JSON.stringify(result));
+                if (result) {
+                  // 授权成功返回授权后新的uri列表
+                } else {
+                  // 授权失败后的处理
+                }
+              })
+            } catch(error) {
+              console.error("requestPhotoUrisReadPermission error: " + JSON.stringify(error));
+            }
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

@@ -2,3 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-kit-guide_
 
+Remote Communication Kit简介
+
+开发准备
+
+使用HTTP协议进行网络通信
+
+提升HTTP传输性能
+
+URPC场景
+
+Remote Communication Kit术语

@@ -29,10 +29,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new
 @Param标志着组件的输入，表明该变量受父组件影响，而@Event标志着组件的输出，可以通过该方法影响父组件。使用@Event装饰回调方法是一种规范，表明该回调作为自定义组件的输出。父组件需要判断是否提供对应方法用于子组件更改@Param变量的数据源。
 
 装饰器说明
+
 @Event属性装饰器	说明
 装饰器参数	无。
 允许装饰的变量类型	回调方法，例如()=>void、(x:number)=>boolean等。回调方法是否含有参数以及返回值由开发者决定。
 允许传入的函数类型	箭头函数。
+
 限制条件
 
 @Event只能用在@ComponentV2装饰的自定义组件中。当装饰非方法类型的变量时，不会有任何作用。
@@ -46,8 +48,10 @@ struct Index {
 struct Index {
   @Event changeFactory: () => void = () => {}; // 错误用法，编译时报错
 }
+
 使用场景
-更改父组件中变量
+
+[h2]更改父组件中变量
 
 使用@Event可以更改父组件中变量，当该变量作为子组件@Param变量的数据源时，该变化会同步回子组件的@Param变量。
 
@@ -56,7 +60,6 @@ struct Index {
 struct Index {
   @Local title: string = 'Title One';
   @Local fontColor: Color = Color.Red;
-
 
   build() {
     Column() {
@@ -77,13 +80,11 @@ struct Index {
   }
 }
 
-
 @ComponentV2
 struct Child {
   @Param title: string = '';
   @Param fontColor: Color = Color.Black;
   @Event changeFactory: (x: number) => void = (x: number) => {};
-
 
   build() {
     Column() {
@@ -101,7 +102,6 @@ struct Child {
     }
   }
 }
-EventDecoratorTest1.ets
 
 值得注意的是，使用@Event修改父组件的值是立刻生效的，但从父组件将变化同步回子组件的过程是异步的，即在调用完@Event的方法后，子组件内的值不会立刻变化。这是因为@Event将子组件值实际的变化能力交由父组件处理，在父组件实际决定如何处理后，将最终值在渲染之前同步回子组件。
 
@@ -112,7 +112,6 @@ const DOMAIN = 0xF811;
 struct Child2 {
   @Param index: number = 0;
   @Event changeIndex: (val: number) => void;
-
 
   build() {
     Column() {
@@ -130,6 +129,121 @@ struct Child2 {
 struct Index2 {
   @Local index: number = 0;
 
+  build() {
+    Column() {
+      Child2({
+        index: this.index,
+        changeIndex: (val: number) => {
+          this.index = val;
+          // 输出父组件的index，用于对比子组件侧日志
+          hilog.info(DOMAIN, TAG, `in changeIndex ${this.index}`);
+        }
+      })
+    }
+  }
+}
+
+在上面的示例中，点击文字触发@Event函数事件改变子组件的值，打印出的日志为：
+
+in changeIndex 20
+after changeIndex 0
+
+这表明在调用changeIndex之后，父组件中index的值已经变化，但子组件中的index值还没有同步变化。
+
+## Code blocks
+
+### Code block 1
+
+```
+@ComponentV2
+struct Index {
+  @Event changeFactory: () => void = () => {}; // 正确用法
+  @Event message: string = 'abcd'; // 错误用法，装饰非函数类型变量，@Event无作用
+}
+@Component
+struct Index {
+  @Event changeFactory: () => void = () => {}; // 错误用法，编译时报错
+}
+```
+
+### Code block 2
+
+```
+@Entry
+@ComponentV2
+struct Index {
+  @Local title: string = 'Title One';
+  @Local fontColor: Color = Color.Red;
+
+  build() {
+    Column() {
+      Child({
+        title: this.title,
+        fontColor: this.fontColor,
+        changeFactory: (type: number) => {
+          if (type == 1) {
+            this.title = 'Title One';
+            this.fontColor = Color.Red;
+          } else if (type == 2) {
+            this.title = 'Title Two';
+            this.fontColor = Color.Green;
+          }
+        }
+      })
+    }
+  }
+}
+
+@ComponentV2
+struct Child {
+  @Param title: string = '';
+  @Param fontColor: Color = Color.Black;
+  @Event changeFactory: (x: number) => void = (x: number) => {};
+
+  build() {
+    Column() {
+      Text(`${this.title}`)
+        .fontColor(this.fontColor)
+      // 使用changeFactory更改父组件中的变量type
+      Button('change to Title Two')
+        .onClick(() => {
+          this.changeFactory(2);
+        })
+      Button('change to Title One')
+        .onClick(() => {
+          this.changeFactory(1);
+        })
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_EventDecorator]';
+const DOMAIN = 0xF811;
+@ComponentV2
+struct Child2 {
+  @Param index: number = 0;
+  @Event changeIndex: (val: number) => void;
+
+  build() {
+    Column() {
+      Text(`Child index: ${this.index}`)
+        .onClick(() => {
+          this.changeIndex(20);
+          // 输出子组件this.index，验证调用@Event后值不会立即同步回子组件
+          hilog.info(DOMAIN, TAG, `after changeIndex ${this.index}`);
+        })
+    }
+  }
+}
+@Entry
+@ComponentV2
+struct Index2 {
+  @Local index: number = 0;
 
   build() {
     Column() {
@@ -144,14 +258,11 @@ struct Index2 {
     }
   }
 }
-EventDecoratorTest2.ets
+```
 
-在上面的示例中，点击文字触发@Event函数事件改变子组件的值，打印出的日志为：
+### Code block 4
 
+```
 in changeIndex 20
 after changeIndex 0
-
-这表明在调用changeIndex之后，父组件中index的值已经变化，但子组件中的index值还没有同步变化。
-
-@Once：初始化同步一次
-@Provider装饰器和@Consumer装饰器：跨组件层级双向同步
+```

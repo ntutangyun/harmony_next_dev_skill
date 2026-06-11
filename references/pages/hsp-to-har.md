@@ -24,7 +24,6 @@ HSP转HAR的操作步骤
     ]
   }
 }
-module.json5
 
 在resource\base\profile文件夹下，删除main_pages.json文件。
 
@@ -33,16 +32,40 @@ module.json5
 // MyApplication\library\hvigorfile.ts
 import { harTasks } from '@ohos/hvigor-ohos-plugin';
 
-
 export default {
   system: harTasks,  // 编译修改成HAR的任务
   plugins:[]
 }
-hvigorfile.ts
 
 修改HSP模块的oh-package.json5文件，删除packageType配置。
 
 修改项目级的配置文件 build-profile.json5，在 modules 模块下找到 HSP 的配置信息，删除 HSP 配置下的 targets。
 
-HAR转HSP指导
-HAP转HAR指导
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "module": {
+    "name": "har",
+    "type": "har",
+    "deviceTypes": [
+      "tablet",
+      "2in1"
+    ]
+  }
+}
+```
+
+### Code block 2
+
+```
+// MyApplication\library\hvigorfile.ts
+import { harTasks } from '@ohos/hvigor-ohos-plugin';
+
+export default {
+  system: harTasks,  // 编译修改成HAR的任务
+  plugins:[]
+}
+```

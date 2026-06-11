@@ -30,6 +30,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-route
 
 Web({ src: $rawfile('xxx.html'),  controller: this.webController})
   .backgroundColor(Color.Gray)
-FixingPageFlickering.ets
-Web组件大小自适应页面内容布局
-获取网页内容高度
+
+## Code blocks
+
+### Code block 1
+
+```
+Web({ src: $rawfile('xxx.html'),  controller: this.webController})
+  .backgroundColor(Color.Gray)
+```

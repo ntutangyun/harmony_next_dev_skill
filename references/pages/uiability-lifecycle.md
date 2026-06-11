@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/uiability-lifecycle_
 
+概述
+
 当用户在执行应用启动、应用前后台切换、应用退出等操作时，系统会触发相关应用组件的生命周期回调。其中，UIAbility组件的核心生命周期回调包括onCreate、onForeground、onBackground、onDestroy。作为一种包含UI的应用组件，UIAbility的生命周期不可避免地与WindowStage的生命周期存在关联关系。
 
 UIAbility的生命周期示意图如下所示。
@@ -23,16 +25,19 @@ UIAbility启动到后台，对应流程图参见下图。
 当用户将UIAbility拉到前台，系统会依次触发onNewWant()、onWindowStageCreate()、onForeground()生命周期回调。
 
 生命周期回调
+
 说明
+
 生命周期回调是在应用主线程执行，为了确保应用性能，建议在生命周期回调中，仅执行必要的轻量级操作。对于耗时任务，推荐采用异步处理或交由子线程执行，避免阻塞主线程。
+
 如果需要感知UIAbility生命周期变化，开发者可以使用ApplicationContext注册接口监听UIAbility生命周期变化。详见监听UIAbility生命周期变化。
-onCreate()
+
+[h2]onCreate()
 
 在首次创建UIAbility实例时，系统触发onCreate()回调。开发者可以在该回调中执行UIAbility整个生命周期中仅发生一次的启动逻辑。
 
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
-
 
 export default class EntryAbility extends UIAbility {
   // ···
@@ -41,30 +46,29 @@ export default class EntryAbility extends UIAbility {
   }
   // ···
 }
-EntryAbility.ets
-onWindowStageCreate()
+
+[h2]onWindowStageCreate()
 
 UIAbility实例创建完成之后，在进入前台之前，系统会创建一个WindowStage。WindowStage创建完成后会进入onWindowStageCreate()回调，开发者可以在该回调中进行UI加载、WindowStage的事件订阅。
 
 在onWindowStageCreate()回调中通过loadContent()方法设置应用要加载的页面，并根据需要调用on('windowStageEvent')方法订阅WindowStage的事件（获焦/失焦、切到前台/切到后台、前台可交互/前台不可交互）。
 
 说明
+
 不同开发场景下WindowStage事件的时序可能存在差异，WindowStage的相关使用请参见窗口开发指导。
+
 对于不同类型的产品，当应用主窗口从前台进入后台时，UIAbility生命周期的变化也会存在差异。详见不同设备生命周期的差异化行为。
+
 import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 // ···
 
-
 const DOMAIN = 0x0000;
-
 
 export default class EntryAbility extends UIAbility {
 
-
   // ···
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // ···
@@ -106,11 +110,10 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
-
 // ···
 }
-EntryAbility.ets
-onForeground()
+
+[h2]onForeground()
 
 在UIAbility切换至前台时且UIAbility的UI可见之前，系统触发onForeground回调。开发者可以在该回调中申请系统需要的资源，或者重新申请在onBackground()中释放的资源。系统回调该方法后，UIAbility实例进入前台状态，即UIAbility实例可以与用户交互的状态。UIAbility实例会一直处于这个状态，直到被某些动作打断（例如屏幕关闭、用户跳转到其他UIAbility）。
 
@@ -119,20 +122,17 @@ onForeground()
 import { UIAbility } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onForeground(): void {
     // 申请系统需要的资源，或者重新申请在onBackground()中释放的资源
   }
 
-
 // ···
 }
-EntryAbility.ets
-onBackground()
+
+[h2]onBackground()
 
 在UIAbility的UI完全不可见之后，系统触发onBackground回调，将UIAbility实例切换至后台状态。开发者可以在该回调中释放UI不可见时的无用资源，例如停止定位功能，以节省系统的资源消耗。
 
@@ -141,20 +141,17 @@ onBackground()执行时间较短，无法提供足够的时间做一些耗时动
 import { UIAbility } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onBackground(): void {
     // 释放UI不可见时无用的资源
   }
 
-
 // ···
 }
-EntryAbility.ets
-onWindowStageWillDestroy()
+
+[h2]onWindowStageWillDestroy()
 
 在UIAbility实例销毁之前，系统触发onWindowStageWillDestroy()回调。该回调在WindowStage销毁前执行，此时WindowStage可以使用。开发者可以在该回调中释放通过WindowStage获取的资源、注销WindowStage事件订阅等。
 
@@ -163,23 +160,18 @@ import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 const DOMAIN = 0x0000;
-
 
 export default class EntryAbility extends UIAbility {
   public windowStage: window.WindowStage | undefined = undefined;
 
-
 // ···
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // 加载UI资源
     this.windowStage = windowStage;
     // ···
   }
-
 
   onWindowStageWillDestroy(windowStage: window.WindowStage): void {
     // 释放通过windowStage对象获取的资源
@@ -195,11 +187,10 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
-
 // ···
 }
-EntryAbility.ets
-onWindowStageDestroy()
+
+[h2]onWindowStageDestroy()
 
 在UIAbility实例销毁之前，系统触发onWindowStageDestroy()回调，开发者可以在该回调中释放UI资源。该回调在WindowStage销毁后执行，此时WindowStage不可以使用。
 
@@ -207,70 +198,61 @@ import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // 加载UI资源
     // ···
   }
 
-
 // ···
-
 
   onWindowStageDestroy(): void {
     // 释放UI资源
   }
   // ···
 }
-EntryAbility.ets
-onDestroy()
+
+[h2]onDestroy()
 
 在UIAbility实例销毁之前，系统触发onDestroy回调。该回调是UIAbility接收到的最后一个生命周期回调，开发者可以在onDestroy()回调中进行系统资源的释放、数据的保存等操作。
 
 例如，开发者调用terminateSelf()方法通知系统停止当前UIAbility实例时，系统会触发onDestroy()回调。
 
 说明
+
 从API version 13开始，用户在最近任务列表中使用一键清理来关闭应用，对于无实况窗的应用将不会触发onDestroy()回调，而是会直接终止进程；对于有实况窗的应用会继续触发onDestroy()回调。
+
 当在开发者模式下调试某个应用时，如果用户从最近任务列表中移除了该调试应用的一个任务，则该调试应用的进程会被强制销毁，不会触发onDestroy()回调。
+
 import { UIAbility } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onDestroy(): void {
     // 系统资源的释放、数据的保存等
   }
 
-
 // ···
 }
-EntryAbility.ets
-onNewWant()
+
+[h2]onNewWant()
 
 当应用的UIAbility实例已创建，再次调用方法启动该UIAbility实例时，系统触发该UIAbility的onNewWant()回调。开发者可以在该回调中更新要加载的资源和数据等，用于后续的UI展示。
 
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam) {
     // 更新资源、数据
   }
 }
-EntryAbility.ets
-UIAbility组件概述
-UIAbility组件启动模式
 
 ## Code blocks
 
@@ -279,7 +261,6 @@ UIAbility组件启动模式
 ```
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
-
 
 export default class EntryAbility extends UIAbility {
   // ···
@@ -298,15 +279,11 @@ import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 // ···
 
-
 const DOMAIN = 0x0000;
-
 
 export default class EntryAbility extends UIAbility {
 
-
   // ···
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // ···
@@ -348,7 +325,6 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
-
 // ···
 }
 ```
@@ -359,15 +335,12 @@ export default class EntryAbility extends UIAbility {
 import { UIAbility } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onForeground(): void {
     // 申请系统需要的资源，或者重新申请在onBackground()中释放的资源
   }
-
 
 // ···
 }
@@ -379,15 +352,12 @@ export default class EntryAbility extends UIAbility {
 import { UIAbility } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onBackground(): void {
     // 释放UI不可见时无用的资源
   }
-
 
 // ···
 }
@@ -401,23 +371,18 @@ import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 const DOMAIN = 0x0000;
-
 
 export default class EntryAbility extends UIAbility {
   public windowStage: window.WindowStage | undefined = undefined;
 
-
 // ···
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // 加载UI资源
     this.windowStage = windowStage;
     // ···
   }
-
 
   onWindowStageWillDestroy(windowStage: window.WindowStage): void {
     // 释放通过windowStage对象获取的资源
@@ -433,7 +398,6 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
-
 // ···
 }
 ```
@@ -445,19 +409,15 @@ import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // 加载UI资源
     // ···
   }
 
-
 // ···
-
 
   onWindowStageDestroy(): void {
     // 释放UI资源
@@ -472,15 +432,12 @@ export default class EntryAbility extends UIAbility {
 import { UIAbility } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onDestroy(): void {
     // 系统资源的释放、数据的保存等
   }
-
 
 // ···
 }
@@ -492,10 +449,8 @@ export default class EntryAbility extends UIAbility {
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
-
 export default class EntryAbility extends UIAbility {
 // ···
-
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam) {
     // 更新资源、数据

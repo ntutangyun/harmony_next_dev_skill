@@ -11,6 +11,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multimoda
 约束与限制
 
 使用多模态融合感知，需要用户进行相关权限的申请。设备需要支持对应能力所需的传感器。
-
-Multimodal Awareness Kit（多模态融合感知服务）
-Stationary开发指导

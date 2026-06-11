@@ -2,9 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ipc-rpc-development-guideline_
 
+场景介绍
+
 IPC/RPC的主要工作是跨进程建立对象通信的连接（客户端进程的Proxy和服务端进程的Stub建立一一对应关系），从而通过Proxy的接口可以和Stub进行IPC/RPC通信。
 
 开发步骤
+
 说明
 
 在进行IPC&RPC跨进程通信前需要通过Ability Kit获取服务端的代理对象。
@@ -17,7 +20,7 @@ IPC/RPC的主要工作是跨进程建立对象通信的连接（客户端进程�
 
 完整的IPC&RPC通信开发流程涉及系统ServiceExtensionAbility的实现，故本篇指南仅提供客户端示例代码。
 
-客户端实现
+[h2]客户端实现
 
 创建变量want，指定要连接的Ability所在应用的包名、组件名。
 
@@ -30,6 +33,7 @@ IPC/RPC的主要工作是跨进程建立对象通信的连接（客户端进程�
 通信结束后，断开连接，移除服务代理对象Proxy的死亡监听。
 
 说明
+
 在本文档的示例中，通过this.getUIContext().getHostContext()来获取UIAbilityContext，其中this代表继承自UIAbility的UIAbility实例。如需要在页面中使用UIAbilityContext提供的能力，请参见获取UIAbility的上下文信息。
 
 在IPC（同设备的跨进程通信）场景中，客户端的示例如下：
@@ -43,10 +47,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { PromptAction  } from '@kit.ArkUI';
 import { JSON } from '@kit.ArkTS';
 
-
 let proxy: rpc.IRemoteObject | undefined;
 let connectId: number | undefined;
-
 
 // 死亡通知
 class MyDeathRecipient implements rpc.DeathRecipient {
@@ -81,7 +83,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
       // ...
     },
 
-
     onDisconnect: (elementName) => {
       hilog.info(0x0000, 'testTag', 'onDisconnect. elementName is ' + JSON.stringify(elementName));
       // 客户端移除死亡监听
@@ -97,13 +98,11 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
       // ...
     },
 
-
     onFailed: (code: number) => {
       hilog.info(0x0000, 'testTag', 'onFailed. code is ' + code);
       // ...
     },
   }
-
 
   try {
     connectId = context.connectServiceExtensionAbility(want, connect);
@@ -114,7 +113,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     hilog.error(0x0000, 'testTag', 'connectAbility failed, code is ' + code + ', message is ' + message);
   }
 }
-
 
 // 断开连接
 function disconnectAbility(context: common.UIAbilityContext) {
@@ -129,7 +127,6 @@ function disconnectAbility(context: common.UIAbilityContext) {
     }
   }
 }
-
 
 // 发送消息
 async function sendString(promptAction: PromptAction) : Promise <void> {
@@ -177,13 +174,11 @@ import { abilityAccessCtrl, PermissionRequestResult, common, Want} from '@kit.Ab
 import { JSON } from '@kit.ArkTS';
 import { PromptAction  } from '@kit.ArkUI';
 
-
 let proxy: rpc.IRemoteObject | undefined;
 let connectId: number | undefined;
 let dmInstance: distributedDeviceManager.DeviceManager;
 let deviceList: Array<distributedDeviceManager.DeviceBasicInfo> | undefined;
 let deviceId: string| undefined;
-
 
 // 死亡通知
 class MyDeathRecipient implements rpc.DeathRecipient {
@@ -219,7 +214,6 @@ function getPermission(context:common.UIAbilityContext) {
   }
 }
 
-
 // 获取对端设备信息
 function getDeviceId(promptAction: PromptAction) {
   hilog.info(0x00000, 'testTag', 'begin to getDeviceId');
@@ -241,7 +235,6 @@ function getDeviceId(promptAction: PromptAction) {
   }
 }
 
-
 // 连接服务
 function connectAbility(context:common.UIAbilityContext, promptAction: PromptAction) {
   hilog.info(0x00000, 'testTag', 'begin to connect Ability');
@@ -250,7 +243,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     abilityName: 'ServiceAbility',
     deviceId: deviceId,
   }
-
 
   let connect: common.ConnectOptions = {
     onConnect: (elementName, remoteProxy) => {
@@ -287,7 +279,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     },
   }
 
-
   try {
     connectId = context.connectServiceExtensionAbility(want, connect);
   } catch (err) {
@@ -296,7 +287,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     hilog.error(0x0000, 'testTag', 'connectService failed, code is ' + code + ', message is ' + message);
   }
 }
-
 
 // 断开连接
 function disconnectAbility(context: common.UIAbilityContext) {
@@ -312,7 +302,6 @@ function disconnectAbility(context: common.UIAbilityContext) {
   }
 }
 
-
 // 发送消息
 async function sendString(promptAction: PromptAction) : Promise <void> {
   hilog.info(0x00000, 'testTag', 'begin to send string');
@@ -321,7 +310,6 @@ async function sendString(promptAction: PromptAction) : Promise <void> {
   let reply = rpc.MessageSequence.create();
   // 在data里写入参数，以传递字符串为例
   data.writeString('hello world');
-
 
   if (proxy != undefined) {
     await proxy.sendMessageRequest(1, data, reply, option)
@@ -350,17 +338,20 @@ async function sendString(promptAction: PromptAction) : Promise <void> {
     // ...
   }
 }
+
 完整示例
+
 说明
+
 以下完整示例涉及到ServiceExtensionAbility，需要使用full-SDK。参考示例前，请先阅读对应示例的ReadMe进行相应的配置后，再进行编译。
 
 针对IPC与RPC通信开发，端到端的完整示例，请参考：
 
 IPC通信完整示例-使用Parcelable/ArrayBuffer通信
+
 IPC通信完整示例-传递字符串及死亡监听使用
+
 RPC通信完整示例-传递字符串及死亡监听使用
-IPC Kit简介
-IPC与RPC通信开发指导(C/C++)
 
 ## Code blocks
 
@@ -374,10 +365,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { PromptAction  } from '@kit.ArkUI';
 import { JSON } from '@kit.ArkTS';
 
-
 let proxy: rpc.IRemoteObject | undefined;
 let connectId: number | undefined;
-
 
 // 死亡通知
 class MyDeathRecipient implements rpc.DeathRecipient {
@@ -414,7 +403,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
       // ...
     },
 
-
     onDisconnect: (elementName) => {
       hilog.info(0x0000, 'testTag', 'onDisconnect. elementName is ' + JSON.stringify(elementName));
       // 客户端移除死亡监听
@@ -430,13 +418,11 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
       // ...
     },
 
-
     onFailed: (code: number) => {
       hilog.info(0x0000, 'testTag', 'onFailed. code is ' + code);
       // ...
     },
   }
-
 
   try {
     connectId = context.connectServiceExtensionAbility(want, connect);
@@ -447,7 +433,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     hilog.error(0x0000, 'testTag', 'connectAbility failed, code is ' + code + ', message is ' + message);
   }
 }
-
 
 // 断开连接
 function disconnectAbility(context: common.UIAbilityContext) {
@@ -462,7 +447,6 @@ function disconnectAbility(context: common.UIAbilityContext) {
     }
   }
 }
-
 
 // 发送消息
 async function sendString(promptAction: PromptAction) : Promise <void> {
@@ -510,13 +494,11 @@ import { abilityAccessCtrl, PermissionRequestResult, common, Want} from '@kit.Ab
 import { JSON } from '@kit.ArkTS';
 import { PromptAction  } from '@kit.ArkUI';
 
-
 let proxy: rpc.IRemoteObject | undefined;
 let connectId: number | undefined;
 let dmInstance: distributedDeviceManager.DeviceManager;
 let deviceList: Array<distributedDeviceManager.DeviceBasicInfo> | undefined;
 let deviceId: string| undefined;
-
 
 // 死亡通知
 class MyDeathRecipient implements rpc.DeathRecipient {
@@ -554,7 +536,6 @@ function getPermission(context:common.UIAbilityContext) {
   }
 }
 
-
 // 获取对端设备信息
 function getDeviceId(promptAction: PromptAction) {
   hilog.info(0x00000, 'testTag', 'begin to getDeviceId');
@@ -576,7 +557,6 @@ function getDeviceId(promptAction: PromptAction) {
   }
 }
 
-
 // 连接服务
 function connectAbility(context:common.UIAbilityContext, promptAction: PromptAction) {
   hilog.info(0x00000, 'testTag', 'begin to connect Ability');
@@ -585,7 +565,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     abilityName: 'ServiceAbility',
     deviceId: deviceId,
   }
-
 
   let connect: common.ConnectOptions = {
     onConnect: (elementName, remoteProxy) => {
@@ -622,7 +601,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     },
   }
 
-
   try {
     connectId = context.connectServiceExtensionAbility(want, connect);
   } catch (err) {
@@ -631,7 +609,6 @@ function connectAbility(context:common.UIAbilityContext, promptAction: PromptAct
     hilog.error(0x0000, 'testTag', 'connectService failed, code is ' + code + ', message is ' + message);
   }
 }
-
 
 // 断开连接
 function disconnectAbility(context: common.UIAbilityContext) {
@@ -647,7 +624,6 @@ function disconnectAbility(context: common.UIAbilityContext) {
   }
 }
 
-
 // 发送消息
 async function sendString(promptAction: PromptAction) : Promise <void> {
   hilog.info(0x00000, 'testTag', 'begin to send string');
@@ -656,7 +632,6 @@ async function sendString(promptAction: PromptAction) : Promise <void> {
   let reply = rpc.MessageSequence.create();
   // 在data里写入参数，以传递字符串为例
   data.writeString('hello world');
-
 
   if (proxy != undefined) {
     await proxy.sendMessageRequest(1, data, reply, option)

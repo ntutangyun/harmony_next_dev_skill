@@ -7,29 +7,31 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 您可在工程或模块下的oh-package.json5文件中的dependencies（生产依赖）/devDependencies（开发依赖）字段中指定依赖项，以上两种依赖字段均支持引用远程三方包、本地模块和本地HAR/HSP三种方式。oh-package.json5文件中的dynamicDependencies（动态依赖）仅限于动态依赖HSP的使用场景。以下配置以dependencies为例，更多关于依赖的设置方式请参考oh-package.json5。
 
 配置依赖项
-远程三方包
-在需要引入三方包的模块的oh-package.json5文件中设置三方包依赖，配置示例如下：
+
+[h2]远程三方包
+
 "dependencies": {
   "@ohos/lottie": "^2.0.0"
 }
-本地模块
+
+[h2]本地模块
 
 在模块的oh-package.json5文件中设置本地模块依赖，有两种方式：
 
-配置本地文件夹路径，示例如下：
 "dependencies": {
   "folder": "file:../folder"
 }
-配置本地模块名，例如依赖本地模块moduleA（从DevEco Studio 6.0.0 Beta1版本开始支持）：
+
 "dependencies": {
   "moduleA": "@module:moduleA"
 }
-本地HAR/HSP包
-引用HAR：
+
+[h2]本地HAR/HSP包
+
 "dependencies": {
   "package": "file:../package.har"
 }
-引用HSP（在release模式下，构建HSP会生成tgz包）：
+
 "dependencies": {
   "package": "file:../package.tgz"
 }
@@ -41,16 +43,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 根据当前的依赖配置规格，您可以在以下字段中指定依赖项：
 
 工程级oh-package.json5文件中的dependencies、dynamicDependencies、devDependencies
+
 模块级oh-package.json5文件中的dependencies、dynamicDependencies、devDependencies
 
 虽然以上字段都可以指定依赖项，但使用不同的字段，在编译期间的处理逻辑和编译结果是不同的。举个例子：
 
 新建工程，新建HAR模块。
-在entry模块级oh-package.json5的dependencies设置HAR本地文件夹，编译entry：
+
 "dependencies": {
   "har": "file:../har"
 }
-在entry模块级oh-package.json5的devDependencies设置HAR本地文件夹，编译entry：
+
 "devDependencies": {
   "har": "file:../har"
 }
@@ -62,279 +65,39 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 为方便后续说明，需要了解以下名词，仅在本文内有效：
 
 三方包依赖：通过远程三方包和本地HAR/HSP包的方式指定依赖项
+
 本地依赖：通过本地模块的方式指定依赖项
+
 开启bundledDependencies的字节码HAR：字节码HAR的build-profile.json5的buildOption/arkOptions下的bundledDependencies字段配置为true
+
 依赖项的自身配置：依赖项自身的resources/workers/runtimeOnly/UIAbilities/ExtensionAbilities/C++编译产物/路由表等
+
 说明
+
 下表的devDependencies指工程级和模块级oh-package.json5中的devDependencies。
+
 下表仅对可能导致编译异常的场景进行说明，其他编译正常的场景不进行说明，例如在模块级oh-package.json5中配置dependencies。
-表1 编译行为差异说明
 
-依赖项
-
-	
-
-编译HAP
-
-	
-
-编译HSP
-
-	
-
-编译未开启 bundledDependencies 的字节码HAR
-
-	
-
-编译开启 bundledDependencies 的字节码HAR
-
-
-
-
-源码HAR
-
-	
-
-三方包依赖
-
-	
-
-devDependencies
-
-	
-
-1
-
-	
-
-1
-
-	
-
-2
-
-	
-
-1
-
-
-
-
-工程级的dependencies
-
-	
-
-/
-
-	
-
-/
-
-	
-
-3
-
-	
-
-3
-
-
-
-
-本地依赖
-
-	
-
-devDependencies
-
-	
-
-1
-
-	
-
-1
-
-	
-
-2
-
-	
-
-1
-
-
-
-
-工程级的dependencies
-
-	
-
-/
-
-	
-
-1
-
-	
-
-2
-
-	
-
-1
-
-
-
-
-字节码HAR
-
-	
-
-三方包依赖
-
-	
-
-devDependencies
-
-	
-
-2
-
-	
-
-2
-
-	
-
-2
-
-	
-
-2
-
-
-
-
-工程级的dependencies
-
-	
-
-/
-
-	
-
-/
-
-	
-
-3
-
-	
-
-3
-
-
-
-
-HSP
-
-	
-
-三方包依赖
-
-	
-
-devDependencies
-
-	
-
-1
-
-	
-
-1
-
-	
-
-2
-
-	
-
-1
-
-
-
-
-工程级的dependencies、dynamicDependencies
-
-	
-
-/
-
-	
-
-/
-
-	
-
-/
-
-	
-
-/
-
-
-
-
-本地依赖
-
-	
-
-devDependencies
-
-	
-
-1
-
-	
-
-1
-
-	
-
-2
-
-	
-
-1
-
-
-
-
-工程级的dependencies、dynamicDependencies
-
-	
-
-/
-
-	
-
-1
-
-	
-
-2
-
-	
-
-1
+依赖项	编译HAP	编译HSP	编译未开启 bundledDependencies 的字节码HAR	编译开启 bundledDependencies 的字节码HAR
+源码HAR	三方包依赖	devDependencies	1	1	2	1
+工程级的dependencies	/	/	3	3
+本地依赖	devDependencies	1	1	2	1
+工程级的dependencies	/	1	2	1
+字节码HAR	三方包依赖	devDependencies	2	2	2	2
+工程级的dependencies	/	/	3	3
+HSP	三方包依赖	devDependencies	1	1	2	1
+工程级的dependencies、dynamicDependencies	/	/	/	/
+本地依赖	devDependencies	1	1	2	1
+工程级的dependencies、dynamicDependencies	/	1	2	1
 
 表格中各符号的含义如下：
 
 1：依赖项仅代码文件（ets/ts/js等）参与编译，依赖项的自身配置不会参与收集，可能造成编译/运行时异常。
+
 2：依赖项没有被收集，会导致编译异常。
+
 3：编译正常，后续集成时可能会造成运行时异常。
+
 /：编译和运行都正常。
 
 针对以上几类编译/运行时可能异常的场景，从DevEco Studio 5.1.1 Beta1版本开始，hvigor-config.json5文件提供一个字段ohos.byteCodeHar.integratedOptimization，开启后，可以优化表格中加粗符号对应的场景。
@@ -344,6 +107,7 @@ devDependencies
 "properties": {
   "ohos.byteCodeHar.integratedOptimization": true
 }
+
 说明
 
 依赖包提供方和集成方都需要配置该字段。
@@ -351,6 +115,71 @@ devDependencies
 综上所述，我们建议您：
 
 当前模块使用到的依赖配置在本模块的oh-package.json5中。
+
 除辅助语法检查TypeScript的类型声明包（如：@types/commonmark）外，其他类型的依赖项，都不要配置在devDependencies中。
-多模块管理
-配置多目标产物
+
+## Code blocks
+
+### Code block 1
+
+```
+"dependencies": {
+  "@ohos/lottie": "^2.0.0"
+}
+```
+
+### Code block 2
+
+```
+"dependencies": {
+  "folder": "file:../folder"
+}
+```
+
+### Code block 3
+
+```
+"dependencies": {
+  "moduleA": "@module:moduleA"
+}
+```
+
+### Code block 4
+
+```
+"dependencies": {
+  "package": "file:../package.har"
+}
+```
+
+### Code block 5
+
+```
+"dependencies": {
+  "package": "file:../package.tgz"
+}
+```
+
+### Code block 6
+
+```
+"dependencies": {
+  "har": "file:../har"
+}
+```
+
+### Code block 7
+
+```
+"devDependencies": {
+  "har": "file:../har"
+}
+```
+
+### Code block 8
+
+```
+"properties": {
+  "ohos.byteCodeHar.integratedOptimization": true
+}
+```

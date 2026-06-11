@@ -1,18 +1,37 @@
-# ohpm
+# ohpm-repo restore
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-repo-restore_
+
+将ohpm-repo pack打包产物替换<deploy_root>目录下相应文件，重启服务。
+
+前提条件
+
+已成功执行start 命令或者restart 命令，ohpm-repo服务启动成功。
+
+已获得由pack 命令打包的.zip 文件。
+
+命令格式
+
+ohpm-repo restore <file_path>
+
+功能描述
 
 该命令会停止当前ohpm-repo服务，并用打包文件<file_path>中的内容替换ohpm-repo部署根目录<deploy_root>的相应文件，然后重启ohpm-repo服务。该命令执行前必须已执行过ohpm-repo实例启动命令ohpm-repo start。
 
 说明
+
 <file_path>：由ohpm-repo pack命令得到的打包产物。
 
 支持相对和绝对路径配置，当配置为相对路径时，以当前命令行工作路径为根目录。
 
 <deploy_root>：ohpm-repo部署根目录 执行install命令后，会创建一个名为OHPM_REPO_DEPLOY_ROOT的环境变量，记录的是ohpm-repo私仓部署目录。
+
 参数
-<file_path>
+
+[h2]<file_path>
+
 类型：String
+
 必填参数
 
 指定待解压的打包文件路径。
@@ -25,5 +44,16 @@ ohpm-repo restore "D:\pack_1702625827995.zip"
 
 结果示例：
 
-ohpm-repo deploy
-ohpm-repo mirror_storage
+## Code blocks
+
+### Code block 1
+
+```
+ohpm-repo restore <file_path>
+```
+
+### Code block 2
+
+```
+ohpm-repo restore "D:\pack_1702625827995.zip"
+```

@@ -2,12 +2,26 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-init_
 
+创建 oh-package.json5 文件。
+
+命令格式
+
+ohpm init [options]
+
+功能描述
+
+在工作目录下，生成一个新的 oh-package.json5 文件，初始化一个 package。
+
 执行命令时，命令行会出现交互界面，可填写一系列关于三方库的基本信息，例如：三方库名称、版本等。ohpm 会根据现有字段、依赖项和所选选项做出合理的猜测，它会保留已设置的任何字段和值，在工作目录下创建一个 oh-package.json5 文件。
 
 Options
-yes
+
+[h2]yes
+
 默认值：null
+
 类型：null 或 Boolean
+
 别名：y
 
 可以在 init 命令后面指定 -y或者--yes 参数，命令行将会完全跳过交互界面，创建默认的 oh-package.json5 文件。
@@ -23,25 +37,33 @@ yes
     "license": "ISC",
     "dependencies": {}
   }
+
 说明
 
 若当前工作目录下不存在 oh-package.json5 文件，则文件中 name 字段默认为当前工作目录名称；若当前工作目录下已存在 oh-package.json5 文件，则新文件中 name 字段复用已存在文件中的 name 字段，并且最后覆盖原有oh-package.json5文件。
 
-group
+[h2]group
+
 默认值：当前项目的命名空间 或 ""
+
 类型：String
+
 别名：g
 
 可以在 init 命令后面配置 -g <group_name> 或者 --group <group_name>参数，创建一个 oh-package.json5 文件，其中 name 字段的命名空间为 @group_name。
 
-log_level
+[h2]log_level
+
 默认值：无
+
 类型： string
 
 从ohpm 6.0.2.636版本开始，可以在 init 命令后配置--log_level <string>参数，指定执行当前命令的日志级别（info、debug、warn、error），如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
 
-debug
+[h2]debug
+
 默认值：false
+
 类型： Boolean
 
 从ohpm 6.0.2.636版本开始，可以在命令后配置--debug参数，指定执行当前命令的日志级别为debug，该配置仅在当前命令行生效，不修改.ohpmrc中的日志级别，如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
@@ -57,7 +79,6 @@ ohpm init -y
 执行结果为：
 
 Wrote to D:\demo\oh-package.json5:
-
 
 {
     "name": "demo",
@@ -79,7 +100,6 @@ ohpm init -y
 
 Wrote to D:\demo\oh-package.json5:
 
-
 {
     "name": "demo_name",
     "version": "1.0.0",
@@ -97,5 +117,81 @@ ohpm init -g group_name
 执行结果为：示例中 name 字段自动显示为 @group_name/demo。
 
 package name: (@group_name/demo)
-ohpm info
-ohpm install
+
+## Code blocks
+
+### Code block 1
+
+```
+ohpm init [options]
+```
+
+### Code block 2
+
+```
+{
+    "name": "work_dir",
+    "version": "1.0.0",
+    "description": "",
+    "main": "Index.ets",
+    "author": "",
+    "license": "ISC",
+    "dependencies": {}
+  }
+```
+
+### Code block 3
+
+```
+ohpm init -y
+```
+
+### Code block 4
+
+```
+Wrote to D:\demo\oh-package.json5:
+
+{
+    "name": "demo",
+    "version": "1.0.0",
+    "description": "",
+    "main": "Index.ets",
+    "author": "",
+    "license": "ISC",
+    "dependencies": {}
+}
+```
+
+### Code block 5
+
+```
+ohpm init -y
+```
+
+### Code block 6
+
+```
+Wrote to D:\demo\oh-package.json5:
+
+{
+    "name": "demo_name",
+    "version": "1.0.0",
+    "description": "",
+    "main": "Index.ets",
+    "author": "",
+    "license": "ISC",
+    "dependencies": {}
+}
+```
+
+### Code block 7
+
+```
+ohpm init -g group_name
+```
+
+### Code block 8
+
+```
+package name: (@group_name/demo)
+```

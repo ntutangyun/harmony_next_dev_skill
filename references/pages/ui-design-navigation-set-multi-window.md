@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-navigation-set-multi-window_
 
+场景介绍
+
+从6.0.0(20)版本开始，新增支持应用内多窗。
+
 当应用开发者需要使用应用内多窗图标（分屏按钮）时，可通过配置titleBar中的menu的multiWindowEntryInAPPMenu属性实现该功能。
 
 约束条件
@@ -31,6 +35,7 @@ import { Want } from '@kit.AbilityKit';
 struct MultiWindowEntryInAPPTest {
   private want: Want = {
     // 修改为当前应用的bundleName、moduleName、abilityName，启动应用内的UIAbility
+    // 注意：以下参数仅为示例，请替换为实际应用的参数
     bundleName: 'com.example.myapplication',
     moduleName: 'entry',
     abilityName: 'FuncAbility',
@@ -45,7 +50,6 @@ struct MultiWindowEntryInAPPTest {
       { content: { label: 'menu2', icon: $r('sys.symbol.plus'), } }
     ]
   }
-
 
   build() {
     HdsNavigation() {
@@ -68,5 +72,58 @@ struct MultiWindowEntryInAPPTest {
   }
 }
 
-图标类型设置
-开发实例
+## Code blocks
+
+### Code block 1
+
+```
+// 从6.0.2(22)版本开始，无需手动导入HdsNavigationAttribute。具体请参考HdsNavigation的导入模块说明。
+import { HdsNavigation, HdsNavigationMenuContentOptions, HdsNavigationAttribute } from '@kit.UIDesignKit';
+import { Want } from '@kit.AbilityKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct MultiWindowEntryInAPPTest {
+  private want: Want = {
+    // 修改为当前应用的bundleName、moduleName、abilityName，启动应用内的UIAbility
+    // 注意：以下参数仅为示例，请替换为实际应用的参数
+    bundleName: 'com.example.myapplication',
+    moduleName: 'entry',
+    abilityName: 'FuncAbility',
+  }
+  @State menuContent: HdsNavigationMenuContentOptions = {
+    multiWindowEntryInAPPMenu: {
+      want: this.want
+    },
+    maxCount: 3,
+    value: [
+      { content: { label: 'menu1', icon: $r('sys.symbol.search_things'), } },
+      { content: { label: 'menu2', icon: $r('sys.symbol.plus'), } }
+    ]
+  }
+
+  build() {
+    HdsNavigation() {
+      Stack() {
+        Text('Page1')
+      }.alignContent(Alignment.Center)
+      .width('100%')
+      .height('100%')
+    }
+    .hideToolBar(false)
+    .navBarWidth('100%')
+    .titleBar({
+      content: {
+        title: {
+          mainTitle: "Index"
+        },
+        menu: this.menuContent
+      }
+    })
+  }
+}
+```

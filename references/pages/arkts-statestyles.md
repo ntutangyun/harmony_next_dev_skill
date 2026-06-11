@@ -29,7 +29,8 @@ selected10+：选中态。
 获焦态目前仅支持通过外接键盘的Tab键或方向键触发，不支持在嵌套滚动组件场景下通过按键触发。
 
 使用场景
-基础场景
+
+[h2]基础场景
 
 下面的示例展示了stateStyles最基本的使用场景。Button1处于第一个组件，Button2处于第二个组件。按压时显示为pressed态指定的黑色。使用Tab键走焦，Button1获焦并显示为focused态指定的粉色。当Button2获焦的时候，Button2显示为focused态指定的粉色，Button1失焦显示normal态指定的蓝色。
 
@@ -66,11 +67,10 @@ struct StateStylesSample {
     }.margin('30%')
   }
 }
-StateStylesSample.ets
 
 图1 获焦态和按压态
 
-@Styles和stateStyles联合使用
+[h2]@Styles和stateStyles联合使用
 
 以下示例通过@Styles指定stateStyles的不同状态。
 
@@ -80,7 +80,6 @@ struct MyComponent {
   @Styles normalStyle() {
     .backgroundColor(Color.Gray)
   }
-
 
   @Styles pressedStyle() {
     .backgroundColor(Color.Red)
@@ -97,11 +96,10 @@ struct MyComponent {
     }
   }
 }
-MyComponent.ets
 
 图2 正常态和按压态
 
-在stateStyles里使用常规变量和状态变量
+[h2]在stateStyles里使用常规变量和状态变量
 
 stateStyles可以通过this绑定组件内的常规变量和状态变量。
 
@@ -110,7 +108,6 @@ stateStyles可以通过this绑定组件内的常规变量和状态变量。
 struct CompWithInlineStateStyles {
   @State focusedColor: Color = 0xD5D5D5;
   normalColor: Color = 0x004AAF;
-
 
   build() {
     Column() {
@@ -132,11 +129,105 @@ struct CompWithInlineStateStyles {
     }
   }
 }
-CompWithInlineStateStyles.ets
 
 Button默认normal态显示蓝色，第一次按下Tab键让Button获焦显示为focus态的浅灰色，点击事件触发后，再次按下Tab键让Button获焦，focus态变为深灰色。
 
 图3 点击改变获焦态样式
 
-@Extend装饰器：定义扩展组件样式
-@AnimatableExtend装饰器：定义可动画属性
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct StateStylesSample {
+  build() {
+    Column() {
+      Button('Button1')
+        .stateStyles({
+          focused: {
+            .backgroundColor('#ffffeef0')
+          },
+          pressed: {
+            .backgroundColor('#ff707070')
+          },
+          normal: {
+            .backgroundColor('#ff2787d9')
+          }
+        })
+        .margin(20)
+      Button('Button2')
+        .stateStyles({
+          focused: {
+            .backgroundColor('#ffffeef0')
+          },
+          pressed: {
+            .backgroundColor('#ff707070')
+          },
+          normal: {
+            .backgroundColor('#ff2787d9')
+          }
+        })
+    }.margin('30%')
+  }
+}
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct MyComponent {
+  @Styles normalStyle() {
+    .backgroundColor(Color.Gray)
+  }
+
+  @Styles pressedStyle() {
+    .backgroundColor(Color.Red)
+  }
+  build() {
+    Column() {
+      Text('Text1')
+        .fontSize(50)
+        .fontColor(Color.White)
+        .stateStyles({
+          normal: this.normalStyle,
+          pressed: this.pressedStyle,
+        })
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct CompWithInlineStateStyles {
+  @State focusedColor: Color = 0xD5D5D5;
+  normalColor: Color = 0x004AAF;
+
+  build() {
+    Column() {
+      Button('clickMe')
+        .height(100)
+        .width(100)
+        .stateStyles({
+          normal: {
+            .backgroundColor(this.normalColor)
+          },
+          focused: {
+            .backgroundColor(this.focusedColor)
+          }
+        })
+        .onClick(() => {
+          this.focusedColor = 0x707070;
+        })
+        .margin('30%')
+    }
+  }
+}
+```

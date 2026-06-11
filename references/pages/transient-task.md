@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/transient-task_
 
+概述
+
 应用退至后台一小段时间后，应用进程会被挂起，无法执行对应的任务。如果应用需在被挂起前，执行一些耗时不长的任务，如状态保存、消息发送等，可以通过本文申请短时任务，扩展应用在后台的运行时间。
 
 约束与限制
@@ -32,6 +34,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/transient
 requestSuspendDelay(reason: string, callback: Callback<void>): DelaySuspendInfo	申请短时任务。
 getRemainingDelayTime(requestId: number): Promise<number>	获取对应短时任务的剩余时间。
 cancelSuspendDelay(requestId: number): void	取消短时任务。
+
 开发步骤
 
 导入模块。
@@ -41,16 +44,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 申请短时任务并实现回调。此处回调在短时任务即将结束时触发，与应用的业务功能不耦合，短时任务申请成功后，正常执行应用本身的任务。
 
-let id: number;         // 申请短时任务ID
+let id: number = -1;         // 申请短时任务ID
 let delayTime: number;  // 本次申请短时任务的剩余时间
-
 
 // 申请短时任务
 function requestSuspendDelay() {
   let myReason = 'test requestSuspendDelay';   // 申请原因
   try {
     let delayInfo = backgroundTaskManager.requestSuspendDelay(myReason, () => {
-    // 回调函数。应用申请的短时任务即将超时，通过此函数回调应用，执行一些清理和标注工作，并取消短时任务
+      // 回调函数。应用申请的短时任务即将超时，通过此函数回调应用，执行一些清理和标注工作，并取消短时任务
       console.info('suspend delay task will timeout');
       try {
         backgroundTaskManager.cancelSuspendDelay(id);
@@ -60,12 +62,11 @@ function requestSuspendDelay() {
     })
     id = delayInfo.requestId;
     delayTime = delayInfo.actualDelayTime;
-    console.info(`Operation requestSuspendDelay failed. id is ${id} delayTime is ${delayTime}`);
+    console.info(`Operation requestSuspendDelay success. id is ${id} delayTime is ${delayTime}`);
   } catch (error) {
     console.error(`Operation requestSuspendDelay failed. code is ${(error as BusinessError).code} message is ${(error as BusinessError).message}`);
   }
 }
-TransientTaskDialog.ets
 
 获取短时任务剩余时间。查询本次短时任务的剩余时间，用以判断是否继续运行其他业务，例如应用有两个小任务，在执行完第一个小任务后，可以判断本次短时任务是否还有剩余时间从而决定是否执行第二个小任务。
 
@@ -76,7 +77,6 @@ async function getRemainingDelayTime() {
     console.error(`Failed to get remaining delay time. Code: ${err.code}, message: ${err.message}`);
   })
 }
-TransientTaskDialog.ets
 
 取消短时任务。
 
@@ -88,9 +88,6 @@ function cancelSuspendDelay() {
     console.error(`Operation cancelSuspendDelay failed. code is ${(error as BusinessError).code} message is ${(error as BusinessError).message}`);
   }
 }
-TransientTaskDialog.ets
-Background Tasks Kit简介
-短时任务(C/C++)
 
 ## Code blocks
 
@@ -104,16 +101,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-let id: number;         // 申请短时任务ID
+let id: number = -1;         // 申请短时任务ID
 let delayTime: number;  // 本次申请短时任务的剩余时间
-
 
 // 申请短时任务
 function requestSuspendDelay() {
   let myReason = 'test requestSuspendDelay';   // 申请原因
   try {
     let delayInfo = backgroundTaskManager.requestSuspendDelay(myReason, () => {
-    // 回调函数。应用申请的短时任务即将超时，通过此函数回调应用，执行一些清理和标注工作，并取消短时任务
+      // 回调函数。应用申请的短时任务即将超时，通过此函数回调应用，执行一些清理和标注工作，并取消短时任务
       console.info('suspend delay task will timeout');
       try {
         backgroundTaskManager.cancelSuspendDelay(id);
@@ -123,7 +119,7 @@ function requestSuspendDelay() {
     })
     id = delayInfo.requestId;
     delayTime = delayInfo.actualDelayTime;
-    console.info(`Operation requestSuspendDelay failed. id is ${id} delayTime is ${delayTime}`);
+    console.info(`Operation requestSuspendDelay success. id is ${id} delayTime is ${delayTime}`);
   } catch (error) {
     console.error(`Operation requestSuspendDelay failed. code is ${(error as BusinessError).code} message is ${(error as BusinessError).message}`);
   }

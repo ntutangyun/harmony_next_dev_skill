@@ -49,5 +49,31 @@ SPM	当Unified Buffer内存有溢出风险时，用于Unified Buffer的数据暂
 TSCM	Temp Swap Cache Memory, 用于临时把数据交换到额外空间，进行Matmul运算。
 C2PIPE2GM	用于存放FIXPIPE量化参数。
 C2PIPE2LOCAL	预留参数。为后续的功能做保留，开发者暂时无需关注。
-PipeBarrier(ISASI)
-系统变量访问
+
+## Code blocks
+
+### Code block 1
+
+```
+enum class TPosition : uint8_t {
+    GM,
+    A1,
+    A2,
+    B1,
+    B2,
+    C1,
+    C2,
+    CO1,
+    CO2,
+    VECIN,
+    VECOUT,
+    VECCALC,
+    LCM = VECCALC,
+    SPM,
+    SHM = SPM,
+    TSCM,
+    C2PIPE2GM,
+    C2PIPE2LOCAL,
+    MAX,
+};
+```

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/spp-development-guide_
 
+简介
+
 本指南主要提供了基于串口通信协议（Serial Port Profile，SPP）实现设备间连接和传输数据的开发指导。当两个设备间进行SPP通信交互时，依据设备功能的不同，可区分为客户端与服务端，本指南将分别介绍客户端与服务端的实现方法。
 
 实现原理
@@ -13,17 +15,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/spp-devel
 客户端和服务端都可以主动断开连接，应用需要根据实际场景决定由哪一端执行断开操作。
 
 开发步骤
-申请蓝牙权限
+
+[h2]申请蓝牙权限
 
 需要申请权限ohos.permission.ACCESS_BLUETOOTH。如何配置和申请权限，请参考声明权限和向用户申请授权。
 
-导入所需API模块
+[h2]导入所需API模块
 
 导入socket和错误码模块。
 
 import { socket } from '@kit.ConnectivityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-客户端
+
+[h2]客户端
 
 1. 发起连接
 
@@ -32,10 +36,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 // 设备地址可以通过查找设备流程获取
 let peerDevice = 'XX:XX:XX:XX:XX:XX';
 
-
 // 定义客户端socket id
 let clientNumber = -1;
-
 
 // 配置连接参数
 let option: socket.SppOptions = {
@@ -77,13 +79,11 @@ try {
 
 let clientNumber = 1; // 注意：该值需要的是客户端发起连接时，异步callback获取到的客户端socket id，此处是伪代码id
 
-
 // 定义接收数据的回调函数
 function read(dataBuffer: ArrayBuffer) {
   let data = new Uint8Array(dataBuffer);
   console.info('client data: ' + JSON.stringify(data));
 }
-
 
 try {
   // 发起订阅
@@ -98,13 +98,11 @@ try {
 
 let clientNumber = 1; // 注意：该值需要的是客户端发起连接时，异步callback获取到的客户端socket id，此处是伪代码id
 
-
 // 定义接收数据的回调函数
 function read(dataBuffer: ArrayBuffer) {
   let data = new Uint8Array(dataBuffer);
   console.info('client data: ' + JSON.stringify(data));
 }
-
 
 try {
   // 取消接收数据订阅
@@ -118,7 +116,8 @@ try {
 } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
 }
-服务端
+
+[h2]服务端
 
 1. 创建服务端套接字
 
@@ -127,14 +126,12 @@ try {
 // 定义服务端socket id
 let serverNumber = -1;
 
-
 // 配置监听参数
 let option: socket.SppOptions = {
   uuid: '00009999-0000-1000-8000-00805F9B34FB',
   secure: false,
   type: socket.SppType.SPP_RFCOMM
 };
-
 
 // 创建服务端监听socket，将在蓝牙子系统中注册该UUID服务
 socket.sppListen("demonstration", option, (err, num: number) => {
@@ -152,10 +149,8 @@ socket.sppListen("demonstration", option, (err, num: number) => {
 
 let serverNumber = 1; // 注意：该值需要的是创建服务端套接字时，异步callback获取到的服务端socket id，此处是伪代码id
 
-
 // 定义客户端socket id
 let clientNumber = -1;
-
 
 socket.sppAccept(serverNumber, (err, num: number) => {
   if (err) {
@@ -174,7 +169,6 @@ socket.sppAccept(serverNumber, (err, num: number) => {
 
 let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
 
-
 let arrayBuffer = new ArrayBuffer(2);
 let data = new Uint8Array(arrayBuffer);
 data[0] = 9;
@@ -191,13 +185,11 @@ try {
 
 let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
 
-
 // 定义接收数据的回调函数
 function read(dataBuffer: ArrayBuffer) {
   let data = new Uint8Array(dataBuffer);
   console.info('client data: ' + JSON.stringify(data));
 }
-
 
 try {
   // 发起订阅
@@ -211,15 +203,14 @@ try {
 当应用不再需要已建立的连接时，可以通过服务端主动断开连接。
 
 需要先取消读取数据的订阅，再断开连接。
-let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
 
+let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
 
 // 定义接收数据的回调函数
 function read(dataBuffer: ArrayBuffer) {
   let data = new Uint8Array(dataBuffer);
   console.info('client data: ' + JSON.stringify(data));
 }
-
 
 try {
   // 取消订阅
@@ -239,16 +230,15 @@ try {
 当应用不再需要该服务端套接字时，需要主动关闭创建时获取到的套接字，蓝牙子系统会删除此前注册的UUID服务。如果此时客户端发起连接，就会连接失败。
 
 应用也可以通过删除套接字时，实现断开连接。在此之前，需要先取消读取数据的订阅。
+
 let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
 let serverNumber = 1; // 注意：该值需要的是创建服务端套接字时，异步callback获取到的服务端socket id，此处是伪代码id
-
 
 // 定义接收数据的回调函数
 function read(dataBuffer: ArrayBuffer) {
   let data = new Uint8Array(dataBuffer);
   console.info('client data: ' + JSON.stringify(data));
 }
-
 
 try {
   // 取消订阅
@@ -257,23 +247,23 @@ try {
   console.error('off sppRead errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
 }
 
-
 try {
   // 若应用不再需要此能力，则主动删除
   socket.sppCloseServerSocket(serverNumber);
 } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
 }
+
 完整示例
-客户端
+
+[h2]客户端
+
 import { socket } from '@kit.ConnectivityKit'
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 class SppClientManager {
   // 定义客户端的socket id
   clientNumber: number = -1;
-
 
   // 发起连接
   public startConnect(peerDevice: string): void {
@@ -295,7 +285,6 @@ class SppClientManager {
     console.info('startConnect after ' + peerDevice);
   }
 
-
   // 发送数据
   public sendData() {
     console.info('sendData ' + this.clientNumber);
@@ -314,13 +303,11 @@ class SppClientManager {
     }
   }
 
-
   // 定义接收数据的回调函数
   read = (dataBuffer: ArrayBuffer) => {
     let data = new Uint8Array(dataBuffer);
     console.info('client data: ' + JSON.stringify(data));
   };
-
 
   // 接收数据
   public readData() {
@@ -335,7 +322,6 @@ class SppClientManager {
       console.error('readData errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
   }
-
 
   // 断开连接
   public stopConnect() {
@@ -359,23 +345,21 @@ class SppClientManager {
   }
 }
 
-
 let sppClientManager = new SppClientManager();
 export default sppClientManager as SppClientManager;
-服务端
+
+[h2]服务端
+
 import { socket } from '@kit.ConnectivityKit'
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 class SppServerManager {
   serverNumber: number = -1;
   clientNumber: number = -1;
 
-
   // 创建服务端监听socket
   public startListen(): void {
     console.info('startListen');
-
 
     // 配置监听参数
     let option: socket.SppOptions = {
@@ -383,7 +367,6 @@ class SppServerManager {
       secure: false,
       type: socket.SppType.SPP_RFCOMM
     };
-
 
     // 创建服务端监听socket，将在蓝牙子系统中注册该UUID服务
     socket.sppListen("demonstration", option, (err, num: number) => {
@@ -395,7 +378,6 @@ class SppServerManager {
       }
     });
   }
-
 
   // 监听连接请求，等待连接
   public accept() {
@@ -413,7 +395,6 @@ class SppServerManager {
       }
     });
   }
-
 
   // 发送数据
   public sendData() {
@@ -433,13 +414,11 @@ class SppServerManager {
     }
   }
 
-
   // 定义接收数据的回调函数
   read = (dataBuffer: ArrayBuffer) => {
     let data = new Uint8Array(dataBuffer);
     console.info('client data: ' + JSON.stringify(data));
   };
-
 
   // 接收数据
   public readData() {
@@ -454,7 +433,6 @@ class SppServerManager {
       console.error('readData errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
   }
-
 
   // 停止连接
   public stopConnect() {
@@ -477,6 +455,450 @@ class SppServerManager {
     }
   }
 
+  // 删除能力
+  public closeSppServer() {
+    console.info('closeSppServer');
+    try {
+      // 若应用不再需要此能力，则主动删除
+      if (this.serverNumber == -1) {
+        console.error('invalid serverNumber');
+        return;
+      }
+      socket.sppCloseServerSocket(this.serverNumber);
+    } catch (err) {
+      console.error('sppCloseServerSocket errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+  }
+}
+
+let sppServerManager = new SppServerManager();
+export default sppServerManager as SppServerManager;
+
+## Code blocks
+
+### Code block 1
+
+```
+import { socket } from '@kit.ConnectivityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 设备地址可以通过查找设备流程获取
+let peerDevice = 'XX:XX:XX:XX:XX:XX';
+
+// 定义客户端socket id
+let clientNumber = -1;
+
+// 配置连接参数
+let option: socket.SppOptions = {
+  uuid: '00009999-0000-1000-8000-00805F9B34FB', // 需要连接的服务端UUID服务，确保服务端支持
+  secure: false,
+  type: socket.SppType.SPP_RFCOMM
+};
+console.info('startConnect ' + peerDevice);
+socket.sppConnect(peerDevice, option, (err, num: number) => {
+  if (err) {
+    console.error('startConnect errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  } else {
+    console.info('startConnect clientNumber: ' + num);
+    clientNumber = num;
+  }
+});
+console.info('startConnect after ' + peerDevice);
+```
+
+### Code block 3
+
+```
+let clientNumber = 1; // 注意：该值需要的是客户端发起连接时，异步callback获取到的客户端socket id，此处是伪代码id
+let arrayBuffer = new ArrayBuffer(2);
+let data = new Uint8Array(arrayBuffer);
+data[0] = 3;
+data[1] = 4;
+try {
+  socket.sppWrite(clientNumber, arrayBuffer);
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 4
+
+```
+let clientNumber = 1; // 注意：该值需要的是客户端发起连接时，异步callback获取到的客户端socket id，此处是伪代码id
+
+// 定义接收数据的回调函数
+function read(dataBuffer: ArrayBuffer) {
+  let data = new Uint8Array(dataBuffer);
+  console.info('client data: ' + JSON.stringify(data));
+}
+
+try {
+  // 发起订阅
+  socket.on('sppRead', clientNumber, read);
+} catch (err) {
+  console.error('readData errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 5
+
+```
+let clientNumber = 1; // 注意：该值需要的是客户端发起连接时，异步callback获取到的客户端socket id，此处是伪代码id
+
+// 定义接收数据的回调函数
+function read(dataBuffer: ArrayBuffer) {
+  let data = new Uint8Array(dataBuffer);
+  console.info('client data: ' + JSON.stringify(data));
+}
+
+try {
+  // 取消接收数据订阅
+  socket.off('sppRead', clientNumber, read);
+} catch (err) {
+  console.error('off sppRead errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+try {
+  // 从client端断开连接
+  socket.sppCloseClientSocket(clientNumber);
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 6
+
+```
+// 定义服务端socket id
+let serverNumber = -1;
+
+// 配置监听参数
+let option: socket.SppOptions = {
+  uuid: '00009999-0000-1000-8000-00805F9B34FB',
+  secure: false,
+  type: socket.SppType.SPP_RFCOMM
+};
+
+// 创建服务端监听socket，将在蓝牙子系统中注册该UUID服务
+socket.sppListen("demonstration", option, (err, num: number) => {
+  if (err) {
+    console.error('sppListen errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  } else {
+    console.info('sppListen serverNumber: ' + num);
+    serverNumber = num;
+  }
+});
+```
+
+### Code block 7
+
+```
+let serverNumber = 1; // 注意：该值需要的是创建服务端套接字时，异步callback获取到的服务端socket id，此处是伪代码id
+
+// 定义客户端socket id
+let clientNumber = -1;
+
+socket.sppAccept(serverNumber, (err, num: number) => {
+  if (err) {
+    console.error('accept errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  } else {
+    console.info('accept clientNumber: ' + num);
+    clientNumber = num;
+  }
+});
+```
+
+### Code block 8
+
+```
+let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
+
+let arrayBuffer = new ArrayBuffer(2);
+let data = new Uint8Array(arrayBuffer);
+data[0] = 9;
+data[1] = 8;
+try {
+  socket.sppWrite(clientNumber, arrayBuffer);
+} catch (err) {
+  console.error('sppWrite errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 9
+
+```
+let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
+
+// 定义接收数据的回调函数
+function read(dataBuffer: ArrayBuffer) {
+  let data = new Uint8Array(dataBuffer);
+  console.info('client data: ' + JSON.stringify(data));
+}
+
+try {
+  // 发起订阅
+  socket.on('sppRead', clientNumber, read);
+} catch (err) {
+  console.error('readData errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 10
+
+```
+let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
+
+// 定义接收数据的回调函数
+function read(dataBuffer: ArrayBuffer) {
+  let data = new Uint8Array(dataBuffer);
+  console.info('client data: ' + JSON.stringify(data));
+}
+
+try {
+  // 取消订阅
+  socket.off('sppRead', clientNumber, read);
+} catch (err) {
+  console.error('off sppRead errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+try {
+  // 从server断开连接
+  socket.sppCloseClientSocket(clientNumber);
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 11
+
+```
+let clientNumber = 1; // 注意：该值需要的是服务端监听连接时，异步callback获取到的客户端socket id，此处是伪代码id
+let serverNumber = 1; // 注意：该值需要的是创建服务端套接字时，异步callback获取到的服务端socket id，此处是伪代码id
+
+// 定义接收数据的回调函数
+function read(dataBuffer: ArrayBuffer) {
+  let data = new Uint8Array(dataBuffer);
+  console.info('client data: ' + JSON.stringify(data));
+}
+
+try {
+  // 取消订阅
+  socket.off('sppRead', clientNumber, read);
+} catch (err) {
+  console.error('off sppRead errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+
+try {
+  // 若应用不再需要此能力，则主动删除
+  socket.sppCloseServerSocket(serverNumber);
+} catch (err) {
+  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+}
+```
+
+### Code block 12
+
+```
+import { socket } from '@kit.ConnectivityKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+
+class SppClientManager {
+  // 定义客户端的socket id
+  clientNumber: number = -1;
+
+  // 发起连接
+  public startConnect(peerDevice: string): void {
+    // 配置连接参数
+    let option: socket.SppOptions = {
+      uuid: '00009999-0000-1000-8000-00805F9B34FB', // 需要连接的服务端UUID服务，确保服务端支持
+      secure: false,
+      type: socket.SppType.SPP_RFCOMM
+    };
+    console.info('startConnect ' + peerDevice);
+    socket.sppConnect(peerDevice, option, (err, num: number) => {
+      if (err) {
+        console.error('startConnect errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+      } else {
+        console.info('startConnect clientNumber: ' + num);
+        this.clientNumber = num;
+      }
+    });
+    console.info('startConnect after ' + peerDevice);
+  }
+
+  // 发送数据
+  public sendData() {
+    console.info('sendData ' + this.clientNumber);
+    if (this.clientNumber == -1) {
+      console.error('invalid clientNumber');
+      return;
+    }
+    let arrayBuffer = new ArrayBuffer(2);
+    let data = new Uint8Array(arrayBuffer);
+    data[0] = 3;
+    data[1] = 4;
+    try {
+      socket.sppWrite(this.clientNumber, arrayBuffer);
+    } catch (err) {
+      console.error('sppWrite errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+  }
+
+  // 定义接收数据的回调函数
+  read = (dataBuffer: ArrayBuffer) => {
+    let data = new Uint8Array(dataBuffer);
+    console.info('client data: ' + JSON.stringify(data));
+  };
+
+  // 接收数据
+  public readData() {
+    try {
+      // 发起订阅
+      if (this.clientNumber == -1) {
+        console.error('invalid clientNumber');
+        return;
+      }
+      socket.on('sppRead', this.clientNumber, this.read);
+    } catch (err) {
+      console.error('readData errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+  }
+
+  // 断开连接
+  public stopConnect() {
+    console.info('closeSppClient ' + this.clientNumber);
+    if (this.clientNumber == -1) {
+      console.error('invalid clientNumber');
+      return;
+    }
+    try {
+      // 取消接收数据订阅
+      socket.off('sppRead', this.clientNumber, this.read);
+    } catch (err) {
+      console.error('off sppRead errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+    try {
+      // 从client端断开连接
+      socket.sppCloseClientSocket(this.clientNumber);
+    } catch (err) {
+      console.error('stopConnect errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+  }
+}
+
+let sppClientManager = new SppClientManager();
+export default sppClientManager as SppClientManager;
+```
+
+### Code block 13
+
+```
+import { socket } from '@kit.ConnectivityKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+
+class SppServerManager {
+  serverNumber: number = -1;
+  clientNumber: number = -1;
+
+  // 创建服务端监听socket
+  public startListen(): void {
+    console.info('startListen');
+
+    // 配置监听参数
+    let option: socket.SppOptions = {
+      uuid: '00009999-0000-1000-8000-00805F9B34FB',
+      secure: false,
+      type: socket.SppType.SPP_RFCOMM
+    };
+
+    // 创建服务端监听socket，将在蓝牙子系统中注册该UUID服务
+    socket.sppListen("demonstration", option, (err, num: number) => {
+      if (err) {
+        console.error('sppListen errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+      } else {
+        console.info('sppListen serverNumber: ' + num);
+        this.serverNumber = num;
+      }
+    });
+  }
+
+  // 监听连接请求，等待连接
+  public accept() {
+    console.info('accept ' + this.serverNumber);
+    if (this.serverNumber == -1) {
+      console.error('invalid serverNumber');
+      return;
+    }
+    socket.sppAccept(this.serverNumber, (err, num: number) => {
+      if (err) {
+        console.error('accept errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+      } else {
+        console.info('accept clientNumber: ' + num);
+        this.clientNumber = num;
+      }
+    });
+  }
+
+  // 发送数据
+  public sendData() {
+    console.info('sendData serverNumber: ' + this.serverNumber + ' clientNumber: ' + this.clientNumber);
+    if (this.clientNumber == -1) {
+      console.error('invalid clientNumber');
+      return;
+    }
+    let arrayBuffer = new ArrayBuffer(2);
+    let data = new Uint8Array(arrayBuffer);
+    data[0] = 9;
+    data[1] = 8;
+    try {
+      socket.sppWrite(this.clientNumber, arrayBuffer);
+    } catch (err) {
+      console.error('sppWrite errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+  }
+
+  // 定义接收数据的回调函数
+  read = (dataBuffer: ArrayBuffer) => {
+    let data = new Uint8Array(dataBuffer);
+    console.info('client data: ' + JSON.stringify(data));
+  };
+
+  // 接收数据
+  public readData() {
+    try {
+      // 发起订阅
+      if (this.clientNumber == -1) {
+        console.error('invalid clientNumber');
+        return;
+      }
+      socket.on('sppRead', this.clientNumber, this.read);
+    } catch (err) {
+      console.error('readData errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+  }
+
+  // 停止连接
+  public stopConnect() {
+    console.info('stopConnect');
+    try {
+      // 取消订阅
+      if (this.clientNumber == -1) {
+        console.error('invalid clientNumber');
+        return;
+      }
+      socket.off('sppRead', this.clientNumber, this.read);
+    } catch (err) {
+      console.error('off sppRead errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+    try {
+      // 从server断开连接
+      socket.sppCloseClientSocket(this.clientNumber);
+    } catch (err) {
+      console.error('stopConnect errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+    }
+  }
 
   // 删除能力
   public closeSppServer() {
@@ -494,8 +916,6 @@ class SppServerManager {
   }
 }
 
-
 let sppServerManager = new SppServerManager();
 export default sppServerManager as SppServerManager;
-配对与连接设备
-低功耗蓝牙
+```

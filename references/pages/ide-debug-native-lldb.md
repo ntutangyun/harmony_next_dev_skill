@@ -2,12 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-native-lldb_
 
-@performance/hp-arkui-use-attributeUpdater-control-refresh-scope
-文档
-等待调试
-文档
-启动调试
-文档
-Native调试无法与lldb-server连接
-文档
-LLDB高性能调试器
+在调试过程中，您可以在native调试窗口的lldb页面中执行lldb命令。

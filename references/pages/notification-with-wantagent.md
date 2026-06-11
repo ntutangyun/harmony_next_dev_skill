@@ -9,9 +9,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 运行机制
 
 接口说明
+
 接口名	描述
 publish(request: NotificationRequest): Promise<void>	发布通知。
 getWantAgent(info: WantAgentInfo, callback: AsyncCallback<WantAgent>): void	创建WantAgent。
+
 开发步骤
 
 导入模块。
@@ -21,17 +23,14 @@ import { wantAgent, WantAgent } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = '[PublishOperation]';
 const DOMAIN_NUMBER: number = 0xFF00;
-AddWantAgent.ets
 
 创建WantAgentInfo信息。
 
 场景一：创建拉起UIAbility的WantAgent的WantAgentInfo信息。
 
 let wantAgentObj: WantAgent | null = null; // 用于保存创建成功的wantAgent对象，后续使用其完成触发的动作。
-
 
 // 通过WantAgentInfo的operationType设置动作类型
 let wantAgentInfo: wantAgent.WantAgentInfo = {
@@ -55,7 +54,6 @@ let wantAgentInfo: wantAgent.WantAgentInfo = {
 
 let wantAgentObj: WantAgent | null = null; // 用于保存创建成功的WantAgent对象，后续使用其完成触发的动作。
 
-
 // 通过WantAgentInfo的operationType设置动作类型
 let wantAgentInfo: wantAgent.WantAgentInfo = {
   wants: [
@@ -68,7 +66,6 @@ let wantAgentInfo: wantAgent.WantAgentInfo = {
   requestCode: 0,
   actionFlags: [wantAgent.WantAgentFlags.CONSTANT_FLAG],
 };
-AddWantAgent.ets
 
 调用getWantAgent()方法进行创建WantAgent。
 
@@ -82,10 +79,8 @@ wantAgent.getWantAgent(wantAgentInfo, (err: BusinessError, data: WantAgent) => {
   hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in getting want agent.');
   wantAgentObj = data;
 
-
   // ...
 });
-AddWantAgent.ets
 
 构造NotificationRequest对象，并发布携带WantAgent的通知。
 
@@ -102,7 +97,6 @@ let actionButton: notificationManager.NotificationActionButton = {
   // 通知按钮的WantAgent
   wantAgent: wantAgentObj!
 };
-
 
 // 构造NotificationRequest对象
 let notificationRequest: notificationManager.NotificationRequest = {
@@ -121,7 +115,6 @@ let notificationRequest: notificationManager.NotificationRequest = {
   actionButtons: [actionButton],
 };
 
-
 notificationManager.publish(notificationRequest, (err: BusinessError) => {
   if (err) {
     hilog.error(DOMAIN_NUMBER, TAG,
@@ -130,11 +123,10 @@ notificationManager.publish(notificationRequest, (err: BusinessError) => {
   }
   hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in publishing notification.');
 });
-AddWantAgent.ets
+
 示例代码
+
 自定义通知
-为通知添加自定义铃声
-更新通知
 
 ## Code blocks
 
@@ -146,7 +138,6 @@ import { wantAgent, WantAgent } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = '[PublishOperation]';
 const DOMAIN_NUMBER: number = 0xFF00;
 ```
@@ -155,7 +146,6 @@ const DOMAIN_NUMBER: number = 0xFF00;
 
 ```
 let wantAgentObj: WantAgent | null = null; // 用于保存创建成功的wantAgent对象，后续使用其完成触发的动作。
-
 
 // 通过WantAgentInfo的operationType设置动作类型
 let wantAgentInfo: wantAgent.WantAgentInfo = {
@@ -180,7 +170,6 @@ let wantAgentInfo: wantAgent.WantAgentInfo = {
 
 ```
 let wantAgentObj: WantAgent | null = null; // 用于保存创建成功的WantAgent对象，后续使用其完成触发的动作。
-
 
 // 通过WantAgentInfo的operationType设置动作类型
 let wantAgentInfo: wantAgent.WantAgentInfo = {
@@ -209,7 +198,6 @@ wantAgent.getWantAgent(wantAgentInfo, (err: BusinessError, data: WantAgent) => {
   hilog.info(DOMAIN_NUMBER, TAG, 'Succeeded in getting want agent.');
   wantAgentObj = data;
 
-
   // ...
 });
 ```
@@ -224,7 +212,6 @@ let actionButton: notificationManager.NotificationActionButton = {
   // 通知按钮的WantAgent
   wantAgent: wantAgentObj!
 };
-
 
 // 构造NotificationRequest对象
 let notificationRequest: notificationManager.NotificationRequest = {
@@ -242,7 +229,6 @@ let notificationRequest: notificationManager.NotificationRequest = {
   // 通知按钮
   actionButtons: [actionButton],
 };
-
 
 notificationManager.publish(notificationRequest, (err: BusinessError) => {
   if (err) {

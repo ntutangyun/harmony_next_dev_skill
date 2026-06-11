@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-sign-sig-verify-overview_
 
+当需要判断接收的数据是否被篡改、数据是否为指定对象发送的数据时，可以使用签名验签操作。
+
+接下来将说明系统目前支持的算法及其对应的规格。
+
+说明
+
+当前使用C/C++的方式从API version 12开始支持验签，从API version 20开始支持签名。
+
+RSA
+
+算法库框架目前提供了两种RSA签名验签的填充模式：
+
 PKCS1：即RFC3447规范中的RSAES-PKCS1-V1_5模式，对应OpenSSL中的RSA_PKCS1_PADDING。
 
 使用该模式时需要设置摘要（md），摘要算法输出的长度需要小于RSA密钥长度。例如RSA2048的密钥字节长度为256。
@@ -18,13 +30,14 @@ mgf	掩码生成算法，目前仅支持MGF1。
 mgf1_md	MGF1算法中使用的摘要算法。
 saltLen	盐值长度。（单位：字节）
 trailer_field	用于编码操作的整数，只支持为1。
+
 注意
 
 使用同步接口生成RSA2048、RSA3072、RSA4096、RSA8192非对称密钥或者明文长度超过2048会导致耗时增加。
 
 由于系统对主线程有时间限制，耗时较长会导致失败，建议开发者在生成位数较大的密钥时，使用对应的异步接口或是使用多线程并发能力进行开发。
 
-填充模式为PKCS1
+[h2]填充模式为PKCS1
 
 以字符串参数完成RSA签名验签，具体的“字符串参数”由“非对称密钥类型”、“填充模式 PKCS1”和“摘要”使用符号“|”拼接而成，用于在创建非对称签名验签实例时，指定非对称签名验签算法规格。
 
@@ -46,7 +59,7 @@ RSA	PKCS1	符合长度要求的摘要算法	10+
 
 如表中最后一行所示，为了兼容由密钥参数生成的密钥，RSA签名验签参数输入密钥类型时支持不带长度，签名验签运算取决于实际输入的密钥长度。
 
-填充模式为PSS
+[h2]填充模式为PSS
 
 以字符串参数完成RSA签名验签，具体的“字符串参数”由“非对称密钥类型”、“填充模式 PSS”、“摘要”和“掩码摘要”使用符号“|”拼接而成，用于在创建非对称签名验签实例时，指定非对称签名验签算法规格。
 
@@ -97,7 +110,7 @@ RSA	PSS	符合长度要求的摘要算法	MGF1_符合长度要求的摘要算法
 
 如表中最后一行所示，为了兼容由密钥参数生成的密钥，RSA签名验签参数输入密钥类型时支持不带长度，签名验签运算取决于实际输入的密钥长度。
 
-获取/设置PSS填充模式的参数
+[h2]获取/设置PSS填充模式的参数
 
 当前支持RSA使用PSS填充模式时，获取、设置相关参数，“√”表示支持对获取或设置该参数。
 
@@ -107,7 +120,8 @@ mgf	PSS_MGF_NAME_STR	√	-
 mgf1_md	PSS_MGF1_MD_STR	√	-
 saltLen	PSS_SALT_LEN_NUM	√	√
 trailer_field	PSS_TRAILER_FIELD_NUM	√	-
-签名模式为OnlySign
+
+[h2]签名模式为OnlySign
 
 算法库框架目前提供了RSA签名不做摘要仅签名功能。
 
@@ -120,8 +134,11 @@ trailer_field	PSS_TRAILER_FIELD_NUM	√	-
 RSA仅签名时，对待签名数据有长度要求：
 
 PKCS1填充模式，NoHash不设置摘要算法，数据需要小于RSA密钥字节长度-11（PKCS1填充长度）。
+
 PKCS1填充模式，设置任意摘要算法，待签名的数据必须是对应的摘要数据。
+
 NoPadding不设置填充模式，NoHash不设置摘要算法，待签名的数据长度需要等于RSA密钥字节长度，且其数值小于RSA模数。
+
 非对称密钥类型	填充模式	摘要算法	签名模式	API版本
 RSA512	PKCS1	[NoHash|MD5|SHA1|SHA224|SHA256]	OnlySign	12+
 RSA768	PKCS1	[NoHash|MD5|SHA1|SHA224|SHA256|SHA384|SHA512]	OnlySign	12+
@@ -135,7 +152,7 @@ RSA	PKCS1	符合长度要求的摘要算法	OnlySign	12+
 
 如表中最后一行所示，为了兼容由密钥参数生成的密钥，RSA签名参数输入密钥类型时支持不带长度，签名运算取决于实际输入的密钥长度。
 
-验签模式为Recover
+[h2]验签模式为Recover
 
 算法库框架目前提供了RSA签名恢复原始数据功能。
 
@@ -143,7 +160,7 @@ RSA	PKCS1	符合长度要求的摘要算法	OnlySign	12+
 
 如表所示，各取值范围（即[]中的内容）中，只能选取一项完成字符串拼接。举例说明，当需要非对称密钥类型为RSA2048、填充模式为PKCS1、摘要算法为SHA256、验签模式为Recover的密钥时，其字符串参数为"RSA2048|PKCS1|SHA256|Recover"。
 
-非对称密钥类型	填充模式	摘要算法	签名模式	API版本
+非对称密钥类型	填充模式	摘要算法	验签模式	API版本
 RSA512	PKCS1	[NoHash|MD5|SHA1|SHA224|SHA256]	Recover	12+
 RSA768	PKCS1	[NoHash|MD5|SHA1|SHA224|SHA256|SHA384|SHA512]	Recover	12+
 RSA1024	PKCS1	[NoHash|MD5|SHA1|SHA224|SHA256|SHA384|SHA512]	Recover	12+
@@ -232,5 +249,3 @@ Ed25519是基于椭圆曲线的签名验签算法。
 
 非对称密钥类型	字符串参数	API版本
 Ed25519	Ed25519	11+
-签名验签
-签名验签开发指导

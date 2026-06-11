@@ -2,11 +2,13 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-scalar-binocular-leakyrelu_
 
+功能说明
+
+按元素做带泄露线性整流Leaky ReLU：
+
 带泄露线性整流函数（Leaky Rectified Linear Unit, Leaky ReLU激活函数），是一种人工神经网络中常用的激活函数，其数学表达式为：
 
 和ReLU的区别是：ReLU是将所有的负值都设为零，而Leaky Relu 是给所有负值赋予一个斜率。下图表示了Relu和Leaky Relu的区别：
-
- 
 
 对于Leaky ReLU函数，如果src的值小于零，dst的值等于src的值乘以scalar的值。如果src大于等于零，则dst的值等于src的值。
 
@@ -14,8 +16,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-s
 
 tensor前n个数据计算：
 
-template <typename T, bool isSetMask = true> 
+template <typename T, bool isSetMask = true>
 __aicore__ inline void LeakyRelu(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const T& scalarValue, const int32_t& calCount)
+
 参数说明
 
 表1 模板参数说明
@@ -23,55 +26,16 @@ __aicore__ inline void LeakyRelu(const LocalTensor<T>& dstLocal, const LocalTens
 参数名	描述
 T	操作数数据类型。
 U	scalarValue数据类型。
-isSetMask	
-
-是否在接口内部设置mask模式和mask值。
-
-- true，表示在接口内部设置。
-
-- false，表示在接口外部设置。
+isSetMask	是否在接口内部设置mask模式和mask值。 - true，表示在接口内部设置。 - false，表示在接口外部设置。
 
 表2 参数说明
 
 参数名称	类型	说明
-dstLocal	输出	
-
-目的操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-Kirin9020训练系列产品，支持的数据类型为：Tensor（half/float）
-
-KirinX90系列处理器，支持的数据类型为：Tensor（half/float）
-
-
-srcLocal	输入	
-
-源操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-数据类型需要与目的操作数保持一致。
-
-Kirin9020训练系列产品，支持的数据类型为：Tensor（half/float）
-
-KirinX90系列处理器，支持的数据类型为：Tensor（half/float）
-
-
-scalarValue	输入	
-
-源操作数，数据类型需要与目的操作数Tensor中的元素保持一致。
-
-Kirin9020训练系列产品，支持的数据类型为：half/float
-
-KirinX90系列处理器，支持的数据类型为：Tensor（half/float）
-
-
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020训练系列产品，支持的数据类型为：Tensor（half/float） KirinX90系列处理器，支持的数据类型为：Tensor（half/float）
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型需要与目的操作数保持一致。 Kirin9020训练系列产品，支持的数据类型为：Tensor（half/float） KirinX90系列处理器，支持的数据类型为：Tensor（half/float）
+scalarValue	输入	源操作数，数据类型需要与目的操作数Tensor中的元素保持一致。 Kirin9020训练系列产品，支持的数据类型为：half/float KirinX90系列处理器，支持的数据类型为：Tensor（half/float）
 calCount	输入	输入数据元素个数。
+
 返回值
 
 无
@@ -98,5 +62,27 @@ AscendC::LeakyRelu(dstLocal, srcLocal, scalar, 512);
 输入数据(srcLocal): [-1. -2. 3. ... 512.]
 输入数据 scalar = 2.
 输出数据(dstLocal): [-2. -4. 3. ... 512.]
-ShiftRight
-更多样例
+
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T, bool isSetMask = true>
+__aicore__ inline void LeakyRelu(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const T& scalarValue, const int32_t& calCount)
+```
+
+### Code block 2
+
+```
+half scalar = 2;
+AscendC::LeakyRelu(dstLocal, srcLocal, scalar, 512);
+```
+
+### Code block 3
+
+```
+输入数据(srcLocal): [-1. -2. 3. ... 512.]
+输入数据 scalar = 2.
+输出数据(dstLocal): [-2. -4. 3. ... 512.]
+```

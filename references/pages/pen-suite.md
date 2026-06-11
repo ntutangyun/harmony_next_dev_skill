@@ -23,9 +23,11 @@ Pen Kit手写套件仅支持上下滑动，不支持左右滑动。
 开发流程
 
 接口说明
+
 接口	接口描述
 HandwriteComponent	构建画布控件
 HandwriteController	画布的主要功能入口类
+
 开发步骤
 
 EntryAbility入口设置Context。
@@ -34,9 +36,7 @@ import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import GlobalContext from '../utils/ContextConfig';
 
-
 export default class EntryAbility extends UIAbility {
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // 主窗口已创建，为此功能设置主页面
@@ -53,17 +53,14 @@ export default class EntryAbility extends UIAbility {
 
 import { common } from '@kit.AbilityKit';
 
-
 declare namespace globalThis {
   let _brushEngineContext: common.UIAbilityContext;
-};
-
+}
 
 export default class GlobalContext {
   static getContext(): common.UIAbilityContext {
     return globalThis._brushEngineContext;
   }
-
 
   static setContext(context: common.UIAbilityContext): void {
     globalThis._brushEngineContext = context;
@@ -73,7 +70,6 @@ export default class GlobalContext {
 构造包含手写组件的控件/页面，下面以控件为例。
 
 import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
-
 
 @Entry
 @Component
@@ -85,18 +81,15 @@ struct HandWriteDemoComp {
   ballpointPenWidth: number = 6;
   @State yOffset: number = 0;
 
-
   aboutToAppear() {
     // 加载时设置保存动作完成后的回调。
     this.controller.onLoad(this.callback);
   }
 
-
-  // 手写文件内容加载完毕渲染上屏后的回调,通知接入用户,可在此处进行自定义行为
+  // 手写文件内容加载完毕渲染上屏后的回调，通知接入用户，可在此处进行自定义行为
   callback = () => {
-    // 自定义行为,例如文件加载完毕后展示用户操作指导
+    // 自定义行为，例如文件加载完毕后展示用户操作指导
   }
-
 
   build() {
     Row() {
@@ -119,7 +112,7 @@ struct HandWriteDemoComp {
           },
           onDidScroll: (yOffset: number) => {
             // 画布滚动时的回调方法，将返回当前滚动位置的纵坐标，可在此处进行自定义行为。
-            this.yOffset = yOffset
+            this.yOffset = yOffset;
           }
         })
         // 保存及获取缩略图。非必要组件，用户可自行调整或删除。
@@ -129,20 +122,20 @@ struct HandWriteDemoComp {
             const path = this.getUIContext().getHostContext()?.filesDir + '/aa';
             await this.controller?.save(path).then().catch((error: Error) => {
               console.error('save err: ' + error.message);
-            })
+            });
             // 获取缩略图
             this.controller.getThumbnail(this.controller?.getContentRange())?.then((pixelMap: PixelMap) => {
               if (pixelMap) {
-                pixelMap.release()
-                console.info('getThumbnail success')
+                pixelMap.release();
+                console.info('getThumbnail success');
               }
-            })
+            });
           })
         // 设置长画布的滚动位置。当前可滚动最大距离为px2vp(1000000)减去list组件高度。
         Search()
           .searchButton('scrollTo').onSubmit((value: string) => {
           if (!Number.isNaN(Number(value))) {
-            this.controller.scrollTo(Number(value))
+            this.controller.scrollTo(Number(value));
           }
         }).margin({ top: 100 }).width(220)
         // 当前画布的偏移量。
@@ -157,5 +150,128 @@ struct HandWriteDemoComp {
 
 完整示例代码可参考手写笔服务（ArkTS）。
 
-手写功能开发
-接入报点预测
+## Code blocks
+
+### Code block 1
+
+```
+import { UIAbility } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import GlobalContext from '../utils/ContextConfig';
+
+export default class EntryAbility extends UIAbility {
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    // 主窗口已创建，为此功能设置主页面
+    windowStage.loadContent('pages/HandWritingDemo', (err) => {
+      if (err.code) {
+        return;
+      }
+    });
+    GlobalContext.setContext(this.context);
+  }
+}
+```
+
+### Code block 2
+
+```
+import { common } from '@kit.AbilityKit';
+
+declare namespace globalThis {
+  let _brushEngineContext: common.UIAbilityContext;
+}
+
+export default class GlobalContext {
+  static getContext(): common.UIAbilityContext {
+    return globalThis._brushEngineContext;
+  }
+
+  static setContext(context: common.UIAbilityContext): void {
+    globalThis._brushEngineContext = context;
+  }
+}
+```
+
+### Code block 3
+
+```
+import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
+
+@Entry
+@Component
+struct HandWriteDemoComp {
+  controller: HandwriteController = new HandwriteController();
+  // 根据应用存储规则，获取到手写文件保存的路径，此处仅为实例参考
+  initPath: string = this.getUIContext().getHostContext()?.filesDir + '/aa';
+  penWidth: number = 5;
+  ballpointPenWidth: number = 6;
+  @State yOffset: number = 0;
+
+  aboutToAppear() {
+    // 加载时设置保存动作完成后的回调。
+    this.controller.onLoad(this.callback);
+  }
+
+  // 手写文件内容加载完毕渲染上屏后的回调，通知接入用户，可在此处进行自定义行为
+  callback = () => {
+    // 自定义行为，例如文件加载完毕后展示用户操作指导
+  }
+
+  build() {
+    Row() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        HandwriteComponent({
+          handwriteController: this.controller,
+          defaultPenType: PenType.PEN, // 可选属性，默认笔刷
+          defaultPenInfo: [{ penType: PenType.PEN, penWidth: this.penWidth },
+            { penType: PenType.BALLPOINT_PEN, penWidth: this.ballpointPenWidth }] as PenHspInfo[], // 可选属性，各笔刷的默认宽度
+          widthRatio: 1, // 可选属性，自定义画布大小，宽度占比（0-1）。
+          heightRatio: 1, // 可选属性，自定义画布大小，高度占比（0-1）。
+          maxCanvasHeight: 5000, // 可选属性，自定义画布最大高度
+          scaleDisabled: false, // 可选属性，是否禁止缩放
+          onInit: () => {
+            // 画布初始化完成时的回调。此时可以调用接口加载和显示笔记内容
+            this.controller?.load(this.initPath);
+          },
+          onScale: (scale: number) => {
+            // 画布缩放时的回调方法，将返回当前手写控件的缩放比例，可在此处进行自定义行为。
+          },
+          onDidScroll: (yOffset: number) => {
+            // 画布滚动时的回调方法，将返回当前滚动位置的纵坐标，可在此处进行自定义行为。
+            this.yOffset = yOffset;
+          }
+        })
+        // 保存及获取缩略图。非必要组件，用户可自行调整或删除。
+        Button('save')
+          .onClick(async () => {
+            // 需根据应用存储规则，获取到手写文件保存的路径，此处仅为实例参考
+            const path = this.getUIContext().getHostContext()?.filesDir + '/aa';
+            await this.controller?.save(path).then().catch((error: Error) => {
+              console.error('save err: ' + error.message);
+            });
+            // 获取缩略图
+            this.controller.getThumbnail(this.controller?.getContentRange())?.then((pixelMap: PixelMap) => {
+              if (pixelMap) {
+                pixelMap.release();
+                console.info('getThumbnail success');
+              }
+            });
+          })
+        // 设置长画布的滚动位置。当前可滚动最大距离为px2vp(1000000)减去list组件高度。
+        Search()
+          .searchButton('scrollTo').onSubmit((value: string) => {
+          if (!Number.isNaN(Number(value))) {
+            this.controller.scrollTo(Number(value));
+          }
+        }).margin({ top: 100 }).width(220)
+        // 当前画布的偏移量。
+        Text('onDidScroll:' + this.yOffset)
+          .margin({ top: 150 }).width(220)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

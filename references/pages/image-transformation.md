@@ -64,6 +64,74 @@ pixelMap.flip(true, false);
 pixelMap.opacity(0.5);
 
 示例代码
+
 拼图
-图片编辑和处理
-使用PixelMap完成位图操作
+
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+// 获取图片大小。
+pixelMap.getImageInfo().then( (info : image.ImageInfo) => {
+  console.info('info.width = ' + info.size.width);
+  console.info('info.height = ' + info.size.height);
+}).catch((err : BusinessError) => {
+  console.error("Failed to obtain the image pixel map information.And the error is: " + err);
+});
+```
+
+### Code block 2
+
+```
+// x：裁剪起始点横坐标0。
+// y：裁剪起始点纵坐标0。
+// height：裁剪高度400，方向为从上往下（裁剪后的图片高度为400）。
+// width：裁剪宽度400，方向为从左到右（裁剪后的图片宽度为400）。
+pixelMap.crop({x: 0, y: 0, size: { height: 400, width: 400 } });
+```
+
+### Code block 3
+
+```
+// 宽为原来的0.5。
+// 高为原来的0.5。
+pixelMap.scale(0.5, 0.5);
+```
+
+### Code block 4
+
+```
+// 向下偏移100。
+// 向右偏移100。
+pixelMap.translate(100, 100);
+```
+
+### Code block 5
+
+```
+// 顺时针旋转90°。
+pixelMap.rotate(90);
+```
+
+### Code block 6
+
+```
+// 垂直翻转。
+pixelMap.flip(false, true);
+```
+
+### Code block 7
+
+```
+// 水平翻转。
+pixelMap.flip(true, false);
+```
+
+### Code block 8
+
+```
+// 透明度0.5。
+pixelMap.opacity(0.5);
+```

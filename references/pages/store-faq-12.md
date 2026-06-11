@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-faq-12_
 
+不会，除非开发者自己修改，修改方法请参考修改数字商品。

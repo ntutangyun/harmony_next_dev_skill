@@ -57,6 +57,3 @@ inputMethodList
 InputMethodSubtype
 
 inputMethod.Panel
-
-IME Kit（输入法开发服务）
-实现一个输入法应用

@@ -8,12 +8,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-relea
 
 Release应用堆栈解析功能操作方法如下：
 
-单击菜单栏Code > Analyze Stack Trace，或在FaultLog页面异常堆栈信息处右键选择Analyze Stack Trace。
-
-在弹出的Analyze Stack Trace对话框中，粘贴Release应用的异常堆栈信息。
-
-如果当前工程为堆栈所在应用对应的工程，且存在Release构建产物，点击Start Analyze即可进行解析。
-
 如果当前工程不是堆栈所在应用对应的工程，则需要配置应用对应构建产物：勾选Unscramble stack trace, 在下方的文件选择框中，分别添加应用对应的sourceMap文件、so文件以及nameCache文件，点击Start Analyze进行转换。
 
 DevEco Studio将解析后的堆栈信息显示在右侧的输出框中。
@@ -28,5 +22,14 @@ DevEco Studio将解析后的堆栈信息显示在右侧的输出框中。
 
 如果引用release Har包中native方法产生了异常堆栈，解析时请勾选Unscramble stack trace, 并选择har模块中编译出的带有符号信息的so文件，引用方build产物中的har模块so不带有符号信息。so文件在模块中相对路径为build/default/intermediates/libs/default/{cpu类型}/libxxx.so。
 
-查看App Killed（应用终止）日志
-异常堆栈解析原理
+## Code blocks
+
+### Code block 1
+
+```
+"buildOption": {
+  "externalNativeOptions": {
+    "arguments": "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  }
+}
+```

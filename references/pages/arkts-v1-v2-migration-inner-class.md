@@ -2,6 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-v1-v2-migration-inner-class_
 
+本文档主要介绍数据对象内的状态变量的迁移场景，包含以下场景：
+
+V1装饰器名	V2装饰器名
+@ObjectLink/@Observed /@Track	@ObservedV2/@Trace
+
+各装饰器迁移示例
+
+[h2]@ObjectLink/@Observed/@Track -> @ObservedV2/@Trace
+
+迁移规则
+
 在V1中，@Observed与@ObjectLink装饰器用于观察类对象及其嵌套属性的变化，但V1只能观察对象的第一层属性。嵌套对象的属性需要通过自定义组件和@ObjectLink观察。此外，V1中提供了@Track装饰器实现对属性级别变化的精确控制。
 
 在V2中，结合使用@ObservedV2和@Trace，可以高效实现类对象及其嵌套属性的深度观察，省去对自定义组件的依赖，简化开发流程。同时，@Trace装饰器具备精确更新能力，替代V1中的@Track，实现更高效的UI刷新控制。根据不同场景，有以下迁移策略：
@@ -22,18 +33,15 @@ V1实现：
 class Address {
   public city: string;
 
-
   constructor(city: string) {
     this.city = city;
   }
 }
 
-
 @Observed
 class User {
   public name: string;
   public address: Address;
-
 
   constructor(name: string, address: Address) {
     this.name = name;
@@ -41,12 +49,10 @@ class User {
   }
 }
 
-
 @Component
 struct AddressView {
   // 子组件中@ObjectLink装饰的address从父组件初始化，接收被@Observed装饰的Address实例
   @ObjectLink address: Address;
-
 
   build() {
     Column() {
@@ -59,12 +65,10 @@ struct AddressView {
   }
 }
 
-
 @Entry
 @Component
 struct UserProfile {
   @State user: User = new User('Alice', new Address('New York'));
-
 
   build() {
     Column() {
@@ -75,7 +79,6 @@ struct UserProfile {
     }
   }
 }
-MigrationNestedObjectPropertiesV1.ets
 
 V2迁移策略：使用@ObservedV2和@Trace。
 
@@ -83,18 +86,15 @@ V2迁移策略：使用@ObservedV2和@Trace。
 class Address {
   @Trace public city: string;
 
-
   constructor(city: string) {
     this.city = city;
   }
 }
 
-
 @ObservedV2
 class User {
   @Trace public name: string;
   @Trace public address: Address;
-
 
   constructor(name: string, address: Address) {
     this.name = name;
@@ -102,12 +102,10 @@ class User {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct UserProfile {
   @Local user: User = new User('Alice', new Address('New York'));
-
 
   build() {
     Column() {
@@ -121,7 +119,6 @@ struct UserProfile {
     }
   }
 }
-MigrationNestedObjectPropertiesV2.ets
 
 类属性变化观测
 
@@ -134,19 +131,16 @@ class User {
   @Track public name: string;
   @Track public age: number;
 
-
   constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
   }
 }
 
-
 @Entry
 @Component
 struct UserProfile {
   @State user: User = new User('Alice', 30);
-
 
   build() {
     Column() {
@@ -160,7 +154,6 @@ struct UserProfile {
     }
   }
 }
-MigrationClassAttributeV1.ets
 
 V2迁移策略：使用@ObservedV2和@Trace。
 
@@ -171,19 +164,16 @@ class User {
   @Trace public name: string;
   @Trace public age: number;
 
-
   constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
   }
 }
 
-
 @Entry
 @ComponentV2
 struct UserProfile {
   @Local user: User = new User('Alice', 30);
-
 
   build() {
     Column() {
@@ -196,6 +186,169 @@ struct UserProfile {
     }
   }
 }
-MigrationClassAttributeV2.ets
-组件内状态变量迁移
-应用内状态变量迁移
+
+## Code blocks
+
+### Code block 1
+
+```
+@Observed
+class Address {
+  public city: string;
+
+  constructor(city: string) {
+    this.city = city;
+  }
+}
+
+@Observed
+class User {
+  public name: string;
+  public address: Address;
+
+  constructor(name: string, address: Address) {
+    this.name = name;
+    this.address = address;
+  }
+}
+
+@Component
+struct AddressView {
+  // 子组件中@ObjectLink装饰的address从父组件初始化，接收被@Observed装饰的Address实例
+  @ObjectLink address: Address;
+
+  build() {
+    Column() {
+      Text(`City: ${this.address.city}`)
+      Button('city +a')
+        .onClick(() => {
+          this.address.city += 'a';
+        })
+    }
+  }
+}
+
+@Entry
+@Component
+struct UserProfile {
+  @State user: User = new User('Alice', new Address('New York'));
+
+  build() {
+    Column() {
+      Text(`Name: ${this.user.name}`)
+      // 无法直接观察嵌套对象的属性变化，例如this.user.address.city
+      // 只能观察到对象第一层属性变化，所以需要将嵌套的对象Address抽取到自定义组件AddressView
+      AddressView({ address: this.user.address })
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+@ObservedV2
+class Address {
+  @Trace public city: string;
+
+  constructor(city: string) {
+    this.city = city;
+  }
+}
+
+@ObservedV2
+class User {
+  @Trace public name: string;
+  @Trace public address: Address;
+
+  constructor(name: string, address: Address) {
+    this.name = name;
+    this.address = address;
+  }
+}
+
+@Entry
+@ComponentV2
+struct UserProfile {
+  @Local user: User = new User('Alice', new Address('New York'));
+
+  build() {
+    Column() {
+      Text(`Name: ${this.user.name}`)
+      // 通过@ObservedV2和@Trace可以直接观察嵌套属性
+      Text(`City: ${this.user.address.city}`)
+      Button('city +a')
+        .onClick(() => {
+          this.user.address.city += 'a';
+        })
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+@Observed
+class User {
+  @Track public name: string;
+  @Track public age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+@Entry
+@Component
+struct UserProfile {
+  @State user: User = new User('Alice', 30);
+
+  build() {
+    Column() {
+      Text(`Name: ${this.user.name}`)
+      Text(`Age: ${this.user.age}`)
+      // 点击Button更新user.age，触发UI刷新
+      Button('increase age')
+        .onClick(() => {
+          this.user.age++;
+        })
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+// V2使用@ObservedV2代替V1的@Observed
+@ObservedV2
+class User {
+  // V2使用@Trace代替V1的@Track
+  @Trace public name: string;
+  @Trace public age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+@Entry
+@ComponentV2
+struct UserProfile {
+  @Local user: User = new User('Alice', 30);
+
+  build() {
+    Column() {
+      Text(`Name: ${this.user.name}`)
+      Text(`Age: ${this.user.age}`)
+      Button('Increase age')
+        .onClick(() => {
+          this.user.age++;
+        })
+    }
+  }
+}
+```

@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avscreencapture-faqs_
 
+录屏启动报错AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT
+
+实例数量超出规格限制，当前规格为每种数据格式最多两个实例。建议释放多余实例后再使用新实例。
+
+可能原因：录屏过程中，点击“不允许”、在通知栏停止录屏和通话打断录屏后，未释放资源。
+
 解决方法：在录屏过程中因为状态改变导致的录屏停止，需要在OH_AVScreenCapture_SetStateCallback()（状态回调）中，对录屏资源进行异步释放。
 
 录屏会话限制策略：
@@ -13,6 +19,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avscreenc
 通话中无法启动录屏报错AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT
 
 从API version 20开始，如需在通话中开启录屏，可使用OH_AVScreenCapture_StrategyForKeepCaptureDuringCall()设置“蜂窝通话时保持录屏”状态。
-
-AVScreenCapture录屏自定义场景
-使用AVScreenCapture录屏写文件(C/C++)

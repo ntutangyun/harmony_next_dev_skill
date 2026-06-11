@@ -25,14 +25,12 @@ ArrayBuffer拷贝传输方式
 import { taskpool } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 // 在Task执行的处理函数，用于处理ArrayBuffer数据
 @Concurrent
 function adjustImageValue(arrayBuffer: ArrayBuffer): ArrayBuffer {
   // 对arrayBuffer进行操作，返回值默认转移
   return arrayBuffer;
 }
-
 
 /*
  * 创建一个Task，用于将ArrayBuffer传入Task执行
@@ -47,12 +45,10 @@ function createImageTask(arrayBuffer: ArrayBuffer, isParamsByTransfer: boolean):
   return task;
 }
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
-
 
   build() {
     RelativeContainer() {
@@ -73,7 +69,7 @@ struct Index {
           for (let i: number = 0; i < taskNum; i++) {
             let arrayBufferSlice: ArrayBuffer =
               arrayBuffer.slice(arrayBuffer.byteLength / taskNum * i, arrayBuffer.byteLength / taskNum * (i + 1));
-            // 使用拷贝方式传入ArrayBuffer，所以isParamsByTransfer为false
+            // 使用拷贝方式传入ArrayBuffer，所以isParamsByTransfer为false，改成true，就可以实现转移方式的传输
             taskPoolGroup.addTask(createImageTask(arrayBufferSlice, false));
           }
           // 执行Task，UI主线程接收处理完成后的结果
@@ -89,10 +85,77 @@ struct Index {
     .width('100%')
   }
 }
-ArrayBufferObject.ets
+
 ArrayBuffer转移传输方式
 
 在TaskPool中，传递ArrayBuffer数据时，默认使用转移方式，原线程将无法再使用已传输给子线程的ArrayBuffer。 在上文示例的基础上去除task.setTransferList接口调用，即在createImageTask的第二个参数传入true，就可以实现转移方式的传输。
 
-容器类对象
-SharedArrayBuffer对象
+## Code blocks
+
+### Code block 1
+
+```
+import { taskpool } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+// 在Task执行的处理函数，用于处理ArrayBuffer数据
+@Concurrent
+function adjustImageValue(arrayBuffer: ArrayBuffer): ArrayBuffer {
+  // 对arrayBuffer进行操作，返回值默认转移
+  return arrayBuffer;
+}
+
+/*
+ * 创建一个Task，用于将ArrayBuffer传入Task执行
+ * isParamsByTransfer用于控制ArrayBuffer是“拷贝”还是“转移”传递
+ */
+function createImageTask(arrayBuffer: ArrayBuffer, isParamsByTransfer: boolean): taskpool.Task {
+  let task: taskpool.Task = new taskpool.Task(adjustImageValue, arrayBuffer);
+  if (!isParamsByTransfer) {
+    // 传递空数组[]，全部arrayBuffer参数传递均采用拷贝方式
+    task.setTransferList([]);
+  }
+  return task;
+}
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+
+  build() {
+    RelativeContainer() {
+      Text(this.message)
+        .id('HelloWorld')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+        .onClick(() => {
+          // 创建待处理的ArrayBuffer，并按taskNum进行切分
+          let taskNum = 4;
+          let arrayBuffer = new ArrayBuffer(1024 * 1024);
+          let taskPoolGroup = new taskpool.TaskGroup();
+          // 创建taskNum个Task
+          for (let i: number = 0; i < taskNum; i++) {
+            let arrayBufferSlice: ArrayBuffer =
+              arrayBuffer.slice(arrayBuffer.byteLength / taskNum * i, arrayBuffer.byteLength / taskNum * (i + 1));
+            // 使用拷贝方式传入ArrayBuffer，所以isParamsByTransfer为false，改成true，就可以实现转移方式的传输
+            taskPoolGroup.addTask(createImageTask(arrayBufferSlice, false));
+          }
+          // 执行Task，UI主线程接收处理完成后的结果
+          taskpool.execute(taskPoolGroup).then((data) => {
+            // 将各Task返回的ArrayBuffer数据进行拼接
+          }).catch((e: BusinessError) => {
+            console.error(e.message);
+          })
+          // ...
+        })
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```

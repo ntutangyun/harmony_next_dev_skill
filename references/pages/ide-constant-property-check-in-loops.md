@@ -1,15 +1,26 @@
-# @performance/constant
+# @performance/constant-property-referencing-check-in-loops
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-constant-property-check-in-loops_
 
-"@performance/constant-property-referencing-check-in-loops": "suggestion",
+在循环如需频繁访问某个常量，且该属性引用常量在循环中不会改变，建议提取到循环外部，减少属性访问的次数。
+
+根据ArkTS高性能编程实践，建议修改。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@performance/constant-property-referencing-check-in-loops": "suggestion",
   }
 }
+
 选项
 
 该规则无需配置额外选项。
 
 正例
+
 class Time {
   static start: number = 0;
   static info: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -17,7 +28,7 @@ class Time {
 function getNum(num: number): number {
   /* Year has (12 * 29 =) 348 days at least */
   let total: number = 348;
-  const info = Time.info[num- Time.start];  
+  const info = Time.info[num- Time.start];
   for (let index: number = 0x8000; index > 0x8; index >>= 1) {
     if ((info & index) != 0) {
       total++;
@@ -25,7 +36,9 @@ function getNum(num: number): number {
   }
   return total;
 }
+
 反例
+
 class Time {
   static start: number = 0;
   static info: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -39,10 +52,66 @@ function getNum(num: number): number {
   }
   return total;
 }
+
 规则集
+
 plugin:@performance/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@performance/bad-deep-clone-check
-@performance/crypto-replacement-check
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@performance/constant-property-referencing-check-in-loops": "suggestion",
+  }
+}
+```
+
+### Code block 2
+
+```
+class Time {
+  static start: number = 0;
+  static info: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+}
+function getNum(num: number): number {
+  /* Year has (12 * 29 =) 348 days at least */
+  let total: number = 348;
+  const info = Time.info[num- Time.start];
+  for (let index: number = 0x8000; index > 0x8; index >>= 1) {
+    if ((info & index) != 0) {
+      total++;
+    }
+  }
+  return total;
+}
+```
+
+### Code block 3
+
+```
+class Time {
+  static start: number = 0;
+  static info: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+}
+function getNum(num: number): number {
+  /* Year has (12 * 29 =) 348 days at least */
+  let total: number = 348;
+  for (let index: number = 0x8000; index > 0x8; index >>= 1) {
+    // warning
+    total += ((Time.info[num - Time.start] & index) !== 0) ? 1 : 0;
+  }
+  return total;
+}
+```
+
+### Code block 4
+
+```
+plugin:@performance/all
+```

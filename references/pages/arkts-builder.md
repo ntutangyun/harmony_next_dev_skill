@@ -10,7 +10,7 @@ ArkUI提供轻量的UI元素复用机制@Builder，其内部UI结构固定，仅
 
 @Builder装饰器和@Component装饰器在功能和使用方式上的主要差异：
 
-@Builder装饰器用于封装可复用的UI结构，通过提取重复的布局代码提高开发效率。该装饰器严格禁止在其内部定义状态变量或使用生命周期函数，必须通过参数传递或者访问所属组件的状态变量完成数据交互。
+@Builder装饰器用于封装可复用的UI结构，通过提取重复的布局代码提高开发效率。该装饰器严格禁止在其内部定义状态变量或使用自定义组件的生命周期函数，必须通过参数传递或者访问所属组件的状态变量完成数据交互。
 
 在ArkUI框架中，@Component装饰器作为封装复杂UI组件的核心机制，允许开发者通过组合多个基础组件来构建可复用的复合界面。该装饰器不仅支持内部状态变量的定义，还能完整管理组件的生命周期。
 
@@ -26,7 +26,7 @@ ArkUI提供轻量的UI元素复用机制@Builder，其内部UI结构固定，仅
 
 @Builder装饰器有两种使用方式，分别是定义在自定义组件内部的私有自定义构建函数和定义在全局的全局自定义构建函数。
 
-私有自定义构建函数
+[h2]私有自定义构建函数
 
 示例：
 
@@ -41,14 +41,12 @@ struct BuilderDemo {
       .fontWeight(FontWeight.Bold)
   }
 
-
   @Builder
   showTextValueBuilder(param: string) {
     Text(param)
       .fontSize(30)
       .fontWeight(FontWeight.Bold)
   }
-
 
   build() {
     Column() {
@@ -59,7 +57,6 @@ struct BuilderDemo {
     }
   }
 }
-PrivateCustomConstructor.ets
 
 使用方法：
 
@@ -69,7 +66,7 @@ PrivateCustomConstructor.ets
 
 在自定义组件中，this指代当前所属组件，组件的状态变量可在自定义构建函数内访问。建议通过this访问组件的状态变量，而不是通过参数传递。
 
-全局自定义构建函数
+[h2]全局自定义构建函数
 
 示例：
 
@@ -81,7 +78,6 @@ function showTextBuilder() {
     .fontWeight(FontWeight.Bold)
 }
 
-
 @Entry
 @Component
 struct BuilderSample {
@@ -91,7 +87,6 @@ struct BuilderSample {
     }
   }
 }
-GlobalCustomConstructor.ets
 
 如果不涉及组件状态变量变化，建议使用全局的自定义构建函数。
 
@@ -111,14 +106,13 @@ GlobalCustomConstructor.ets
 
 使用引用传递时，在@Builder函数中不能修改参数的属性，但使用UIUtils.makeBinding并传入写回调时，我们可以在@Builder函数内修改属性，并同步到调用@Builder的组件中。
 
-按回调传递参数
+[h2]按回调传递参数
 
 从API version 20开始，开发者可以通过使用UIUtils.makeBinding()函数、Binding类和MutableBinding类实现@Builder函数中状态变量的刷新。详细用例见@Builder支持状态变量刷新。
 
 使用UIUtils.makeBinding()包装读取状态变量的回调函数作为参数传入@Builder函数，可以支持@Builder函数中UI组件刷新；UIUtils.makeBinding()中额外传入写状态变量的回调函数可以将@Builder函数内对参数的修改，传递到调用@Builder函数的组件中。
 
 import { Binding, MutableBinding, UIUtils } from '@kit.ArkUI';
-
 
 @Builder
 function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
@@ -134,13 +128,11 @@ function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParameterMakeBinding {
   @Local number1: number = 5;
   @Local number2: number = 12;
-
 
   build() {
     Column() {
@@ -157,15 +149,14 @@ struct ParameterMakeBinding {
     }
   }
 }
-ParameterMakeBinding.ets
-按引用传递参数
+
+[h2]按引用传递参数
 
 按引用传递参数时，传递的参数可为状态变量，且状态变量的改变会引起@Builder函数内的UI刷新。
 
 class Tmp {
   public paramA1: string = '';
 }
-
 
 @Builder
 function overBuilderByReference(params: Tmp) {
@@ -174,12 +165,10 @@ function overBuilderByReference(params: Tmp) {
   }
 }
 
-
 @Entry
 @Component
 struct ParameterReference {
   @State label: string = 'Hello';
-
 
   build() {
     Column() {
@@ -193,8 +182,8 @@ struct ParameterReference {
     }
   }
 }
-ParameterReference.ets
-按值传递参数
+
+[h2]按值传递参数
 
 调用@Builder装饰的函数默认按值传递。当传递的参数为状态变量时，状态变量的改变不会引起@Builder函数内的UI刷新。所以当使用状态变量的时候，推荐使用按回调传递或按引用传递。
 
@@ -205,12 +194,10 @@ function overBuilderByValue(paramA1: string) {
   }
 }
 
-
 @Entry
 @Component
 struct ParameterValue {
   @State label: string = 'Hello';
-
 
   build() {
     Column() {
@@ -219,7 +206,7 @@ struct ParameterValue {
     }
   }
 }
-ParameterValue.ets
+
 限制条件
 
 @Builder装饰的函数内部在没有使用MutableBinding时不允许修改参数值，修改不会触发UI刷新。若按引用传递参数且仅传入一个参数时，修改参数内部的属性会抛出运行时错误。使用MutableBinding可以帮助开发者在@Builder装饰的函数内部修改参数值，请参考在@Builder装饰的函数内部修改入参内容。
@@ -233,7 +220,8 @@ ParameterValue.ets
 不允许在@Builder函数里修改参数的属性，否则会抛出运行时错误，从API version 23开始，将返回错误码140109，示例请参考在@Builder装饰的函数内部修改入参内容。
 
 使用场景
-自定义组件内使用自定义构建函数
+
+[h2]自定义组件内使用自定义构建函数
 
 创建私有的@Builder函数，在Column中使用this.builder()调用。通过aboutToAppear生命周期函数和按钮的点击事件更新builderValue，实现UI的动态渲染。
 
@@ -241,7 +229,6 @@ ParameterValue.ets
 @Component
 struct PrivateBuilder {
   @State builderValue: string = 'Hello';
-
 
   @Builder
   builder() {
@@ -256,13 +243,11 @@ struct PrivateBuilder {
     }
   }
 
-
   aboutToAppear(): void {
     setTimeout(() => {
       this.builderValue = 'Hello World';
     }, 2000);
   }
-
 
   build() {
     Row() {
@@ -285,11 +270,10 @@ struct PrivateBuilder {
     }
   }
 }
-InCustomComponent.ets
 
 示例效果图
 
-全局自定义构建函数
+[h2]全局自定义构建函数
 
 创建全局的@Builder函数，并在Column中通过overBuilder()方式调用。传递参数时，可以使用对象字面量形式，无论是简单类型还是复杂类型，值的任何变化都会触发UI界面的刷新。
 
@@ -297,14 +281,12 @@ class ChildTmp {
   public val: number = 1;
 }
 
-
 class ParamTmp {
   public strValue: string = 'Hello';
   public numValue: number = 0;
   public tmpValue: ChildTmp = new ChildTmp();
   public arrayTmpValue: Array<ChildTmp> = [];
 }
-
 
 @Builder
 function overBuilder(param: ParamTmp) {
@@ -348,12 +330,10 @@ function overBuilder(param: ParamTmp) {
   }
 }
 
-
 @Entry
 @Component
 struct ParentDemo {
   @State objParam: ParamTmp = new ParamTmp();
-
 
   build() {
     Column() {
@@ -382,11 +362,10 @@ struct ParentDemo {
     .width('100%')
   }
 }
-GlobalCustomBuilder.ets
 
 示例效果图
 
-修改装饰器修饰的变量触发UI刷新
+[h2]修改装饰器修饰的变量触发UI刷新
 
 在该场景中，@Builder被用来展示Text组件，不会参与动态UI刷新。Text组件中值的变化是通过使用装饰器的特性，监听到值的改变触发的UI刷新，而不是通过@Builder的能力触发的。
 
@@ -394,13 +373,11 @@ class ChildrenTmp {
   public strValue: string = 'Hello';
 }
 
-
 @Entry
 @Component
 struct ParentSample {
   @State objParam: ChildrenTmp = new ChildrenTmp();
   @State label: string = 'World';
-
 
   @Builder
   privateBuilder() {
@@ -424,7 +401,6 @@ struct ParentSample {
     }
   }
 
-
   build() {
     Column() {
       Text('UI Rendered via @Builder')
@@ -440,11 +416,10 @@ struct ParentSample {
     .width('100%')
   }
 }
-ChangingByDecorator.ets
 
 示例效果图
 
-将@Builder装饰的函数当作CustomBuilder类型使用
+[h2]将@Builder装饰的函数当作CustomBuilder类型使用
 
 当参数类型为CustomBuilder时，可以传入定义的@Builder函数。因为CustomBuilder实际上是Function(() => any)或void类型，而@Builder也是Function类型。所以通过传入@Builder可以实现特定效果。
 
@@ -459,12 +434,10 @@ function overBuilderDemo() {
   }
 }
 
-
 @Entry
 @Component
 struct customBuilderDemo {
   @State arr: number[] = [0, 1, 2, 3, 4];
-
 
   @Builder
   privateBuilder() {
@@ -474,7 +447,6 @@ struct customBuilderDemo {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -505,18 +477,16 @@ struct customBuilderDemo {
     }
   }
 }
-AsCustomBuilder.ets
 
 示例效果图
 
-多层@Builder函数嵌套
+[h2]多层@Builder函数嵌套
 
 在@Builder函数内调用自定义组件或其他@Builder函数，实现多个@Builder嵌套使用。若要实现最内层的@Builder动态UI刷新功能，每层调用@Builder的地方必须使用按引用传递的方式。这里$$不是必须的参数形式，可以换成其他名称。
 
 class ThisTmp {
   public paramA1: string = '';
 }
-
 
 @Builder
 function parentBuilder($$: ThisTmp) {
@@ -538,11 +508,9 @@ function parentBuilder($$: ThisTmp) {
   }
 }
 
-
 @Component
 struct HelloComponent {
   @Prop message: string = '';
-
 
   build() {
     Row() {
@@ -557,7 +525,6 @@ struct HelloComponent {
     }
   }
 }
-
 
 @Builder
 function childBuilder($$: ThisTmp) {
@@ -579,11 +546,9 @@ function childBuilder($$: ThisTmp) {
   }
 }
 
-
 @Component
 struct HelloChildComponent {
   @Prop message: string = '';
-
 
   build() {
     Row() {
@@ -598,7 +563,6 @@ struct HelloChildComponent {
     }
   }
 }
-
 
 @Builder
 function grandsonBuilder($$: ThisTmp) {
@@ -618,11 +582,9 @@ function grandsonBuilder($$: ThisTmp) {
   }
 }
 
-
 @Component
 struct HelloGrandsonComponent {
   @Prop message: string;
-
 
   build() {
     Row() {
@@ -638,12 +600,10 @@ struct HelloGrandsonComponent {
   }
 }
 
-
 @Entry
 @Component
 struct ParentExample {
   @State label: string = 'Hello';
-
 
   build() {
     Column() {
@@ -657,11 +617,10 @@ struct ParentExample {
     .width('100%')
   }
 }
-NestedBuilderFunctions.ets
 
 示例效果图
 
-@Builder函数联合V2装饰器
+[h2]@Builder函数联合V2装饰器
 
 由@ObservedV2和@Trace装饰的类对象实例具备深度观测属性变化的能力。在@ComponentV2装饰的自定义组件中，当调用全局Builder或局部Builder且使用值传递的方式传递参数时，修改@Trace装饰的对象属性可以触发UI刷新。
 
@@ -670,13 +629,11 @@ class Info {
   @Trace public name: string;
   @Trace public age: number;
 
-
   constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
   }
 }
-
 
 @Builder
 function overBuilderTest(param: Info) {
@@ -692,11 +649,9 @@ function overBuilderTest(param: Info) {
   .borderRadius(20)
 }
 
-
 @ComponentV2
 struct ChildPage {
   @Require @Param childInfo: Info;
-
 
   build() {
     Column() {
@@ -706,13 +661,11 @@ struct ChildPage {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentPage {
   info1: Info = new Info('Tom', 25);
   info2: Info = new Info('Tom', 25);
-
 
   @Builder
   privateBuilder() {
@@ -726,7 +679,6 @@ struct ParentPage {
     .backgroundColor('#0d000000')
     .borderRadius(20)
   }
-
 
   build() {
     Column() {
@@ -742,7 +694,6 @@ struct ParentPage {
       .padding({ left: 60 })
       .backgroundColor('#0d000000')
       .borderRadius(20)
-
 
       // 调用局部@Builder
       this.privateBuilder()
@@ -762,7 +713,6 @@ struct ParentPage {
     .width('100%')
   }
 }
-BuilderCombined.ets
 
 示例效果图
 
@@ -772,7 +722,6 @@ class LocalInfo {
   public name: string = 'Tom';
   public age: number = 25;
 }
-
 
 @Builder
 function overBuilderLocal(param: LocalInfo) {
@@ -788,11 +737,9 @@ function overBuilderLocal(param: LocalInfo) {
   .borderRadius(20)
 }
 
-
 @ComponentV2
 struct ChildLocalPage {
   @Require @Param childLocalInfo: LocalInfo;
-
 
   build() {
     Column() {
@@ -802,13 +749,11 @@ struct ChildLocalPage {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentLocalPage {
   LocalInfo1: LocalInfo = { name: 'Tom', age: 25 };
   @Local LocalInfo2: LocalInfo = { name: 'Tom', age: 25 };
-
 
   @Builder
   privateBuilder() {
@@ -822,7 +767,6 @@ struct ParentLocalPage {
     .backgroundColor('#0d000000')
     .borderRadius(20)
   }
-
 
   build() {
     Column() {
@@ -838,7 +782,6 @@ struct ParentLocalPage {
       .padding({ left: 60 })
       .backgroundColor('#0d000000')
       .borderRadius(20)
-
 
       // 调用局部@Builder
       this.privateBuilder()
@@ -856,18 +799,16 @@ struct ParentLocalPage {
     .width('100%')
   }
 }
-BuilderCombinedLocal.ets
 
 示例效果图
 
-跨组件复用的全局@Builder
+[h2]跨组件复用的全局@Builder
 
 在跨组件的场景中调用全局@Builder，通过按引用传递的方式传递参数，可以实现UI的动态刷新功能。
 
 class ReusableTmp {
   public componentName: string = 'Child';
 }
-
 
 @Builder
 function itemBuilder(params: ReusableTmp) {
@@ -883,12 +824,10 @@ function itemBuilder(params: ReusableTmp) {
   }
 }
 
-
 @Entry
 @Component
 struct ReusablePage {
   @State switchFlag: boolean = true;
-
 
   build() {
     Column() {
@@ -909,18 +848,15 @@ struct ReusablePage {
   }
 }
 
-
 @Reusable
 @Component
 struct ReusableChildPage {
   @State message: string = 'Child';
 
-
   aboutToReuse(params: Record<string, ESObject>): void {
     console.info('Recycle ====Child');
     this.message = params.message;
   }
-
 
   build() {
     Column() {
@@ -938,18 +874,15 @@ struct ReusableChildPage {
   }
 }
 
-
 @Reusable
 @Component
 struct ReusableChildTwoPage {
   @State message: string = 'ChildTwo';
 
-
   aboutToReuse(params: Record<string, ESObject>): void {
     console.info('Recycle ====ChildTwo');
     this.message = params.message;
   }
-
 
   build() {
     Column() {
@@ -966,22 +899,19 @@ struct ReusableChildTwoPage {
     }
   }
 }
-AcrossComponents.ets
 
 示例效果图
 
-@Builder支持状态变量刷新
+[h2]@Builder支持状态变量刷新
 
-从API version 20开始，开发者可以通过使用UIUtils.makeBinding()函数、Binding类和MutableBinding类实现@Builder函数中状态变量的刷新。详情请参考状态管理API文档。
+从API version 20开始，开发者可以通过使用UIUtils.makeBinding()函数、Binding类和MutableBinding类实现@Builder函数中状态变量的刷新。详情请参考makeBinding。
 
 import { Binding, MutableBinding, UIUtils } from '@kit.ArkUI';
-
 
 @ObservedV2
 class ClassA {
   @Trace public props: string = 'Hello';
 }
-
 
 @Builder
 function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
@@ -996,7 +926,6 @@ function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
         .borderRadius(20)
         .textAlign(TextAlign.Center)
 
-
       Button(`only change number2`)
         .onClick(() => {
           num2.value += 1;
@@ -1004,7 +933,6 @@ function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
     }
   }
 }
-
 
 @Builder
 function customButtonObj(obj1: MutableBinding<ClassA>) {
@@ -1019,7 +947,6 @@ function customButtonObj(obj1: MutableBinding<ClassA>) {
         .borderRadius(20)
         .textAlign(TextAlign.Center)
 
-
       Button(`change props`)
         .onClick(() => {
           obj1.value.props += 'Hi';
@@ -1028,14 +955,12 @@ function customButtonObj(obj1: MutableBinding<ClassA>) {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Single {
   @Local number1: number = 5;
   @Local number2: number = 12;
   @Local classA: ClassA = new ClassA();
-
 
   build() {
     Column() {
@@ -1092,12 +1017,12 @@ struct Single {
     .justifyContent(FlexAlign.Center)
   }
 }
-BuilderSupports.ets
 
 示例效果图
 
 常见问题
-@Builder存在两个或两个以上参数
+
+[h2]@Builder存在两个或两个以上参数
 
 当存在两个或两个以上的参数时，即使通过对象字面量形式传递，值的改变也不会触发UI刷新。
 
@@ -1107,7 +1032,6 @@ class GlobalTmp1 {
   public strValue: string = 'Hello';
 }
 
-
 @Builder
 function overBuilder1(param: GlobalTmp1, num: number) {
   Column() {
@@ -1116,13 +1040,11 @@ function overBuilder1(param: GlobalTmp1, num: number) {
   }
 }
 
-
 @Entry
 @Component
 struct Parent1 {
   @State objParam: GlobalTmp1 = new GlobalTmp1();
   @State num: number = 0;
-
 
   build() {
     Column() {
@@ -1141,7 +1063,6 @@ struct Parent1 {
     }
   }
 }
-MultipleIncorrectUsage1.ets
 
 【反例】
 
@@ -1149,11 +1070,9 @@ class GlobalTmp2 {
   public strValue: string = 'Hello';
 }
 
-
 class SecondTmp {
   public numValue: number = 0;
 }
-
 
 @Builder
 function overBuilder2(param: GlobalTmp2, num: SecondTmp) {
@@ -1163,13 +1082,11 @@ function overBuilder2(param: GlobalTmp2, num: SecondTmp) {
   }
 }
 
-
 @Entry
 @Component
 struct Parent2 {
   @State strParam: GlobalTmp2 = new GlobalTmp2();
   @State numParam: SecondTmp = new SecondTmp();
-
 
   build() {
     Column() {
@@ -1188,7 +1105,6 @@ struct Parent2 {
     }
   }
 }
-MultipleIncorrectUsage2.ets
 
 @Builder只接受一个参数。当传入一个参数的时候，通过对象字面量的形式传递，值的改变会引起UI的刷新。
 
@@ -1199,7 +1115,6 @@ class GlobalTmp3 {
   public numValue: number = 0;
 }
 
-
 @Builder
 function overBuilder3(param: GlobalTmp3) {
   Column() {
@@ -1208,12 +1123,10 @@ function overBuilder3(param: GlobalTmp3) {
   }
 }
 
-
 @Entry
 @Component
 struct Parent3 {
   @State objParam: GlobalTmp3 = new GlobalTmp3();
-
 
   build() {
     Column() {
@@ -1232,8 +1145,8 @@ struct Parent3 {
     }
   }
 }
-MultipleCorrectUsage.ets
-使用@ComponentV2装饰器触发动态刷新
+
+[h2]使用@ComponentV2装饰器触发动态刷新
 
 在@ComponentV2装饰的组件中，配合@ObservedV2和@Trace装饰器，通过按值传递实现UI刷新功能。
 
@@ -1246,14 +1159,12 @@ class ParamTemp {
   @Trace public count : number = 0;
 }
 
-
 @Builder
 function renderNumber(paramNum: number) {
   Text(`paramNum : ${paramNum}`)
     .fontSize(30)
     .fontWeight(FontWeight.Bold)
 }
-
 
 @Entry
 @ComponentV2
@@ -1262,7 +1173,6 @@ struct PageBuilderIncorrectUsage {
   // 此处使用简单数据类型不支持刷新UI的能力。
   @Local numValue: number = 0;
   private progressTimer: number = -1;
-
 
   aboutToAppear(): void {
     this.progressTimer = setInterval(() => {
@@ -1275,7 +1185,6 @@ struct PageBuilderIncorrectUsage {
     }, 500);
   }
 
-
   build() {
     Column() {
       renderNumber(this.numValue)
@@ -1285,7 +1194,6 @@ struct PageBuilderIncorrectUsage {
     .padding(50)
   }
 }
-DynamicIncorrectUsage.ets
 
 【正例】
 
@@ -1296,7 +1204,6 @@ class ParamTmpClass {
   @Trace public count: number = 0;
 }
 
-
 @Builder
 function renderText(param: ParamTmpClass) {
   Column() {
@@ -1306,14 +1213,12 @@ function renderText(param: ParamTmpClass) {
   }
 }
 
-
 @Builder
 function renderMap(paramMap: Map<string, number>) {
   Text(`paramMap : ${paramMap.get('name')}`)
     .fontSize(20)
     .fontWeight(FontWeight.Bold)
 }
-
 
 @Builder
 function renderSet(paramSet: Set<number>) {
@@ -1322,14 +1227,12 @@ function renderSet(paramSet: Set<number>) {
     .fontWeight(FontWeight.Bold)
 }
 
-
 @Builder
 function renderNumberArr(paramNumArr: number[]) {
   Text(`paramNumArr : ${paramNumArr[0]}`)
     .fontSize(20)
     .fontWeight(FontWeight.Bold)
 }
-
 
 @Entry
 @ComponentV2
@@ -1339,7 +1242,6 @@ struct PageBuilderCorrectUsage {
   @Local setValue: Set<number> = new Set([0]);
   @Local numArrValue: number[] = [0];
   private progressTimer: number = -1;
-
 
   aboutToAppear(): void {
     this.progressTimer = setInterval(() => {
@@ -1357,7 +1259,6 @@ struct PageBuilderCorrectUsage {
     }, 500);
   }
 
-
   @Builder
   localBuilder() {
     Column() {
@@ -1366,7 +1267,6 @@ struct PageBuilderCorrectUsage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -1384,8 +1284,8 @@ struct PageBuilderCorrectUsage {
     .height('100%')
   }
 }
-DynamicCorrectUsage.ets
-在@Builder内创建自定义组件传递参数不刷新问题
+
+[h2]在@Builder内创建自定义组件传递参数不刷新问题
 
 在parentBuilder1函数中创建自定义组件HelloComponent1，传递参数为class对象并修改对象内的值时，UI不会触发刷新功能。
 
@@ -1395,7 +1295,6 @@ class Tmp4 {
   public name: string = 'Hello';
   public age: number = 16;
 }
-
 
 @Builder
 function parentBuilder1(params: Tmp4) {
@@ -1410,11 +1309,9 @@ function parentBuilder1(params: Tmp4) {
   }
 }
 
-
 @Component
 struct HelloComponent1 {
   @Prop info: Tmp4 = new Tmp4();
-
 
   build() {
     Row() {
@@ -1425,13 +1322,11 @@ struct HelloComponent1 {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage1 {
   @State nameValue: string = 'Zhang San';
   @State ageValue: number = 18;
-
 
   build() {
     Column() {
@@ -1447,7 +1342,6 @@ struct ParentPage1 {
     .width('100%')
   }
 }
-BuilderIncorrectUsage.ets
 
 在parentBuilder2函数中创建自定义组件HelloComponent2，传递参数为对象字面量形式并修改对象内的值时，UI触发刷新功能。
 
@@ -1457,7 +1351,6 @@ class Tmp5 {
   public name: string = 'Hello';
   public age: number = 16;
 }
-
 
 @Builder
 function parentBuilder2(params: Tmp5) {
@@ -1472,12 +1365,10 @@ function parentBuilder2(params: Tmp5) {
   }
 }
 
-
 @Component
 struct HelloComponent2 {
   @Prop childName: string = '';
   @Prop childAge: number = 0;
-
 
   build() {
     Row() {
@@ -1488,13 +1379,11 @@ struct HelloComponent2 {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage2 {
   @State nameValue: string = 'Zhang San';
   @State ageValue: number = 18;
-
 
   build() {
     Column() {
@@ -1510,8 +1399,8 @@ struct ParentPage2 {
     .width('100%')
   }
 }
-BuilderCorrectUsage.ets
-在UI语句外调用@Builder函数或方法影响节点正常刷新
+
+[h2]在UI语句外调用@Builder函数或方法影响节点正常刷新
 
 当@Builder方法赋值给变量或者数组后，在UI方法中无法使用，且会造成刷新时节点显示异常。
 
@@ -1528,7 +1417,6 @@ struct BackGround1 {
     }
   };
 
-
   @Builder
   myImages2() {
     Column() {
@@ -1537,20 +1425,17 @@ struct BackGround1 {
     }
   };
 
-
   private bgList: Array<CustomBuilder> = [this.myImages(), this.myImages2()]; // 错误用法，应避免在UI方法外调用@Builder方法
   @State bgBuilder: CustomBuilder = this.myImages(); // 错误用法，应避免在UI方法外调用@Builder方法
   @State bgColor: ResourceColor = Color.Orange;
   @State bgColor2: ResourceColor = Color.Orange;
   @State index: number = 0;
 
-
   build() {
     Column({ space: 10 }) {
       Text('1').width(100).height(50)
       Text('2').width(100).height(50)
       Text('3').width(100).height(50)
-
 
       Text('4-1').width(100).height(50).fontColor(this.bgColor)
       Text('5-1').width(100).height(50)
@@ -1566,7 +1451,6 @@ struct BackGround1 {
       .size({ width: 100, height: 80 })
       .backgroundColor('#ffbbd4bb')
 
-
       Button('change').onClick((event: ClickEvent) => {
         this.index = 1;
         this.bgColor = Color.Red;
@@ -1576,7 +1460,6 @@ struct BackGround1 {
     .margin(10)
   }
 }
-OutsideIncorrectUsage.ets
 
 @Builder方法赋值给变量或数组后在UI方法中无法使用，开发者应避免将@Builder赋值给变量或数组后再使用。
 
@@ -1593,7 +1476,6 @@ struct BackGround2 {
     }
   }
 
-
   @Builder
   myImages2() {
     Column() {
@@ -1602,18 +1484,15 @@ struct BackGround2 {
     }
   }
 
-
   @State bgColor: ResourceColor = Color.Orange;
   @State bgColor2: ResourceColor = Color.Orange;
   @State index: number = 0;
-
 
   build() {
     Column({ space: 10 }) {
       Text('1').width(100).height(50)
       Text('2').width(100).height(50).background(this.myImages) // 直接传递@Builder方法
       Text('3').width(100).height(50).background(this.myImages()) // 直接调用@Builder方法
-
 
       Text('4-1').width(100).height(50).fontColor(this.bgColor)
       Text('5-1').width(100).height(50)
@@ -1629,7 +1508,6 @@ struct BackGround2 {
       .size({ width: 100, height: 80 })
       .backgroundColor('#ffbbd4bb')
 
-
       Button('change').onClick((event: ClickEvent) => {
         this.index = 1;
         this.bgColor = Color.Red;
@@ -1639,8 +1517,8 @@ struct BackGround2 {
     .margin(10)
   }
 }
-OutsideCorrectUsage.ets
-在@Builder方法中使用MutableBinding未传递set访问器
+
+[h2]在@Builder方法中使用MutableBinding未传递set访问器
 
 @Builder方法定义时使用MutableBinding，构造时没有给MutableBinding类型参数传递set访问器，触发set访问器会造成运行时错误。
 
@@ -1648,12 +1526,10 @@ OutsideCorrectUsage.ets
 
 import { UIUtils, Binding, MutableBinding } from '@kit.ArkUI';
 
-
 @ObservedV2
 class GlobalTmp1 {
   @Trace public strValue: string = 'Hello';
 }
-
 
 @Builder
 function builderWithTwoParams1(param1: Binding<GlobalTmp1>, param2: MutableBinding<number>) {
@@ -1666,13 +1542,11 @@ function builderWithTwoParams1(param1: Binding<GlobalTmp1>, param2: MutableBindi
   }.borderWidth(1)
 }
 
-
 @Entry
 @ComponentV2
 struct MakeBindingTest1 {
   @Local GlobalTmp1: GlobalTmp1 = new GlobalTmp1();
   @Local num: number = 0;
-
 
   build() {
     Column() {
@@ -1686,7 +1560,6 @@ struct MakeBindingTest1 {
     }
   }
 }
-AccessorIncorrectUsage.ets
 
 使用规格详见状态管理API文档中的MutableBinding。
 
@@ -1694,12 +1567,10 @@ AccessorIncorrectUsage.ets
 
 import { UIUtils, Binding, MutableBinding } from '@kit.ArkUI';
 
-
 @ObservedV2
 class GlobalTmp2 {
   @Trace public strValue: string = 'Hello';
 }
-
 
 @Builder
 function builderWithTwoParams2(param1: Binding<GlobalTmp2>, param2: MutableBinding<number>) {
@@ -1712,13 +1583,11 @@ function builderWithTwoParams2(param1: Binding<GlobalTmp2>, param2: MutableBindi
   }.borderWidth(1)
 }
 
-
 @Entry
 @ComponentV2
 struct MakeBindingTest2 {
   @Local GlobalTmp2: GlobalTmp2 = new GlobalTmp2();
   @Local num: number = 0;
-
 
   build() {
     Column() {
@@ -1735,8 +1604,8 @@ struct MakeBindingTest2 {
     }
   }
 }
-AccessorCorrectUsage.ets
-在@Builder装饰的函数内部修改入参内容
+
+[h2]在@Builder装饰的函数内部修改入参内容
 
 不使用MutableBinding的情况下，在@Builder装饰的函数内部修改参数值，修改不会生效且可能造成运行时错误。从API version 23开始，将返回错误码140109。
 
@@ -1754,11 +1623,9 @@ function myGlobalBuilder(value: string) {
   }.borderWidth(1)
 }
 
-
 interface TempMod1 {
   paramA: string;
 }
-
 
 @Builder
 function overBuilderMod1(param: TempMod1) {
@@ -1778,13 +1645,11 @@ function overBuilderMod1(param: TempMod1) {
   }
 }
 
-
 @Entry
 @Component
 struct ParentMod1 {
   @State label: string = 'Hello';
   @State message1: string = 'Value Passing';
-
 
   @Builder
   extendBlank() {
@@ -1793,7 +1658,6 @@ struct ParentMod1 {
     }
     .height(20)
   }
-
 
   build() {
     Column() {
@@ -1809,14 +1673,12 @@ struct ParentMod1 {
     }
   }
 }
-ChangingIncorrectUsage.ets
 
 正确使用MutableBinding可以帮助开发者在@Builder装饰的函数内部修改参数值。
 
 【正例】
 
 import { UIUtils, MutableBinding } from '@kit.ArkUI';
-
 
 // 使用MutableBinding在@Builder装饰的函数中修改参数值
 @Builder
@@ -1830,11 +1692,9 @@ function myGlobalBuilderMod(str: MutableBinding<string>) {
   }
 }
 
-
 interface TempMod2 {
   paramA: string;
 }
-
 
 // 使用MutableBinding在@Builder装饰的函数内部修改参数值
 @Builder
@@ -1851,7 +1711,6 @@ function overBuilderMod2(param: MutableBinding<TempMod2>) {
   }
 }
 
-
 @Entry
 @Component
 struct ParentMod2 {
@@ -1861,7 +1720,6 @@ struct ParentMod2 {
     paramA: this.label
   };
 
-
   @Builder
   extendBlank() {
     Row() {
@@ -1869,7 +1727,6 @@ struct ParentMod2 {
     }
     .height(20)
   }
-
 
   build() {
     Column() {
@@ -1899,8 +1756,8 @@ struct ParentMod2 {
     }
   }
 }
-ChangingCorrectUsage.ets
-在@Watch函数中执行@Builder函数
+
+[h2]在@Watch函数中执行@Builder函数
 
 在@Watch函数中执行@Builder函数，会导致UI刷新异常。
 
@@ -1911,7 +1768,6 @@ ChangingCorrectUsage.ets
 struct Child1 {
   @Provide @Watch('provideWatch') content: string = 'Index: hello world';
 
-
   @Builder
   watchBuilder(content: string) {
     Row() {
@@ -1919,11 +1775,9 @@ struct Child1 {
     }
   }
 
-
   provideWatch() {
     this.watchBuilder(this.content); // 错误写法，在@Watch函数中使用@Builder函数
   }
-
 
   build() {
     Column() {
@@ -1935,7 +1789,6 @@ struct Child1 {
     }
   }
 }
-WatchIncorrectUsage.ets
 
 Button按钮会出现UI异常的情况，开发者需要避免在@Watch函数中使用@Builder函数。
 
@@ -1946,7 +1799,6 @@ Button按钮会出现UI异常的情况，开发者需要避免在@Watch函数中
 struct Child2 {
   @Provide @Watch('provideWatch') content: string = 'Index: hello world';
 
-
   @Builder
   watchBuilder(content: string) {
     Row() {
@@ -1954,12 +1806,10 @@ struct Child2 {
     }
   }
 
-
   provideWatch() {
     // 正确写法，不在@Watch函数中使用@Builder函数
     console.info(`content value has changed.`);
   }
-
 
   build() {
     Column() {
@@ -1971,9 +1821,6 @@ struct Child2 {
     }
   }
 }
-WatchCorrectUsage.ets
-组件扩展概述
-@LocalBuilder装饰器： 维持组件关系
 
 ## Code blocks
 
@@ -1991,14 +1838,12 @@ struct BuilderDemo {
       .fontWeight(FontWeight.Bold)
   }
 
-
   @Builder
   showTextValueBuilder(param: string) {
     Text(param)
       .fontSize(30)
       .fontWeight(FontWeight.Bold)
   }
-
 
   build() {
     Column() {
@@ -2022,7 +1867,6 @@ function showTextBuilder() {
     .fontWeight(FontWeight.Bold)
 }
 
-
 @Entry
 @Component
 struct BuilderSample {
@@ -2039,7 +1883,6 @@ struct BuilderSample {
 ```
 import { Binding, MutableBinding, UIUtils } from '@kit.ArkUI';
 
-
 @Builder
 function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
   Row() {
@@ -2054,13 +1897,11 @@ function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParameterMakeBinding {
   @Local number1: number = 5;
   @Local number2: number = 12;
-
 
   build() {
     Column() {
@@ -2086,7 +1927,6 @@ class Tmp {
   public paramA1: string = '';
 }
 
-
 @Builder
 function overBuilderByReference(params: Tmp) {
   Row() {
@@ -2094,12 +1934,10 @@ function overBuilderByReference(params: Tmp) {
   }
 }
 
-
 @Entry
 @Component
 struct ParameterReference {
   @State label: string = 'Hello';
-
 
   build() {
     Column() {
@@ -2125,12 +1963,10 @@ function overBuilderByValue(paramA1: string) {
   }
 }
 
-
 @Entry
 @Component
 struct ParameterValue {
   @State label: string = 'Hello';
-
 
   build() {
     Column() {
@@ -2149,7 +1985,6 @@ struct ParameterValue {
 struct PrivateBuilder {
   @State builderValue: string = 'Hello';
 
-
   @Builder
   builder() {
     Column() {
@@ -2163,13 +1998,11 @@ struct PrivateBuilder {
     }
   }
 
-
   aboutToAppear(): void {
     setTimeout(() => {
       this.builderValue = 'Hello World';
     }, 2000);
   }
-
 
   build() {
     Row() {
@@ -2201,14 +2034,12 @@ class ChildTmp {
   public val: number = 1;
 }
 
-
 class ParamTmp {
   public strValue: string = 'Hello';
   public numValue: number = 0;
   public tmpValue: ChildTmp = new ChildTmp();
   public arrayTmpValue: Array<ChildTmp> = [];
 }
-
 
 @Builder
 function overBuilder(param: ParamTmp) {
@@ -2252,12 +2083,10 @@ function overBuilder(param: ParamTmp) {
   }
 }
 
-
 @Entry
 @Component
 struct ParentDemo {
   @State objParam: ParamTmp = new ParamTmp();
-
 
   build() {
     Column() {
@@ -2295,13 +2124,11 @@ class ChildrenTmp {
   public strValue: string = 'Hello';
 }
 
-
 @Entry
 @Component
 struct ParentSample {
   @State objParam: ChildrenTmp = new ChildrenTmp();
   @State label: string = 'World';
-
 
   @Builder
   privateBuilder() {
@@ -2324,7 +2151,6 @@ struct ParentSample {
         .textAlign(TextAlign.Center)
     }
   }
-
 
   build() {
     Column() {
@@ -2355,12 +2181,10 @@ function overBuilderDemo() {
   }
 }
 
-
 @Entry
 @Component
 struct customBuilderDemo {
   @State arr: number[] = [0, 1, 2, 3, 4];
-
 
   @Builder
   privateBuilder() {
@@ -2370,7 +2194,6 @@ struct customBuilderDemo {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -2410,7 +2233,6 @@ class ThisTmp {
   public paramA1: string = '';
 }
 
-
 @Builder
 function parentBuilder($$: ThisTmp) {
   Row() {
@@ -2431,11 +2253,9 @@ function parentBuilder($$: ThisTmp) {
   }
 }
 
-
 @Component
 struct HelloComponent {
   @Prop message: string = '';
-
 
   build() {
     Row() {
@@ -2450,7 +2270,6 @@ struct HelloComponent {
     }
   }
 }
-
 
 @Builder
 function childBuilder($$: ThisTmp) {
@@ -2472,11 +2291,9 @@ function childBuilder($$: ThisTmp) {
   }
 }
 
-
 @Component
 struct HelloChildComponent {
   @Prop message: string = '';
-
 
   build() {
     Row() {
@@ -2491,7 +2308,6 @@ struct HelloChildComponent {
     }
   }
 }
-
 
 @Builder
 function grandsonBuilder($$: ThisTmp) {
@@ -2511,11 +2327,9 @@ function grandsonBuilder($$: ThisTmp) {
   }
 }
 
-
 @Component
 struct HelloGrandsonComponent {
   @Prop message: string;
-
 
   build() {
     Row() {
@@ -2531,12 +2345,10 @@ struct HelloGrandsonComponent {
   }
 }
 
-
 @Entry
 @Component
 struct ParentExample {
   @State label: string = 'Hello';
-
 
   build() {
     Column() {
@@ -2560,13 +2372,11 @@ class Info {
   @Trace public name: string;
   @Trace public age: number;
 
-
   constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
   }
 }
-
 
 @Builder
 function overBuilderTest(param: Info) {
@@ -2582,11 +2392,9 @@ function overBuilderTest(param: Info) {
   .borderRadius(20)
 }
 
-
 @ComponentV2
 struct ChildPage {
   @Require @Param childInfo: Info;
-
 
   build() {
     Column() {
@@ -2596,13 +2404,11 @@ struct ChildPage {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentPage {
   info1: Info = new Info('Tom', 25);
   info2: Info = new Info('Tom', 25);
-
 
   @Builder
   privateBuilder() {
@@ -2616,7 +2422,6 @@ struct ParentPage {
     .backgroundColor('#0d000000')
     .borderRadius(20)
   }
-
 
   build() {
     Column() {
@@ -2632,7 +2437,6 @@ struct ParentPage {
       .padding({ left: 60 })
       .backgroundColor('#0d000000')
       .borderRadius(20)
-
 
       // 调用局部@Builder
       this.privateBuilder()
@@ -2662,7 +2466,6 @@ class LocalInfo {
   public age: number = 25;
 }
 
-
 @Builder
 function overBuilderLocal(param: LocalInfo) {
   Column() {
@@ -2677,11 +2480,9 @@ function overBuilderLocal(param: LocalInfo) {
   .borderRadius(20)
 }
 
-
 @ComponentV2
 struct ChildLocalPage {
   @Require @Param childLocalInfo: LocalInfo;
-
 
   build() {
     Column() {
@@ -2691,13 +2492,11 @@ struct ChildLocalPage {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct ParentLocalPage {
   LocalInfo1: LocalInfo = { name: 'Tom', age: 25 };
   @Local LocalInfo2: LocalInfo = { name: 'Tom', age: 25 };
-
 
   @Builder
   privateBuilder() {
@@ -2711,7 +2510,6 @@ struct ParentLocalPage {
     .backgroundColor('#0d000000')
     .borderRadius(20)
   }
-
 
   build() {
     Column() {
@@ -2727,7 +2525,6 @@ struct ParentLocalPage {
       .padding({ left: 60 })
       .backgroundColor('#0d000000')
       .borderRadius(20)
-
 
       // 调用局部@Builder
       this.privateBuilder()
@@ -2754,7 +2551,6 @@ class ReusableTmp {
   public componentName: string = 'Child';
 }
 
-
 @Builder
 function itemBuilder(params: ReusableTmp) {
   Column() {
@@ -2769,12 +2565,10 @@ function itemBuilder(params: ReusableTmp) {
   }
 }
 
-
 @Entry
 @Component
 struct ReusablePage {
   @State switchFlag: boolean = true;
-
 
   build() {
     Column() {
@@ -2795,18 +2589,15 @@ struct ReusablePage {
   }
 }
 
-
 @Reusable
 @Component
 struct ReusableChildPage {
   @State message: string = 'Child';
 
-
   aboutToReuse(params: Record<string, ESObject>): void {
     console.info('Recycle ====Child');
     this.message = params.message;
   }
-
 
   build() {
     Column() {
@@ -2824,18 +2615,15 @@ struct ReusableChildPage {
   }
 }
 
-
 @Reusable
 @Component
 struct ReusableChildTwoPage {
   @State message: string = 'ChildTwo';
 
-
   aboutToReuse(params: Record<string, ESObject>): void {
     console.info('Recycle ====ChildTwo');
     this.message = params.message;
   }
-
 
   build() {
     Column() {
@@ -2859,12 +2647,10 @@ struct ReusableChildTwoPage {
 ```
 import { Binding, MutableBinding, UIUtils } from '@kit.ArkUI';
 
-
 @ObservedV2
 class ClassA {
   @Trace public props: string = 'Hello';
 }
-
 
 @Builder
 function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
@@ -2879,7 +2665,6 @@ function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
         .borderRadius(20)
         .textAlign(TextAlign.Center)
 
-
       Button(`only change number2`)
         .onClick(() => {
           num2.value += 1;
@@ -2887,7 +2672,6 @@ function customButton(num1: Binding<number>, num2: MutableBinding<number>) {
     }
   }
 }
-
 
 @Builder
 function customButtonObj(obj1: MutableBinding<ClassA>) {
@@ -2902,7 +2686,6 @@ function customButtonObj(obj1: MutableBinding<ClassA>) {
         .borderRadius(20)
         .textAlign(TextAlign.Center)
 
-
       Button(`change props`)
         .onClick(() => {
           obj1.value.props += 'Hi';
@@ -2911,14 +2694,12 @@ function customButtonObj(obj1: MutableBinding<ClassA>) {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Single {
   @Local number1: number = 5;
   @Local number2: number = 12;
   @Local classA: ClassA = new ClassA();
-
 
   build() {
     Column() {
@@ -2984,7 +2765,6 @@ class GlobalTmp1 {
   public strValue: string = 'Hello';
 }
 
-
 @Builder
 function overBuilder1(param: GlobalTmp1, num: number) {
   Column() {
@@ -2993,13 +2773,11 @@ function overBuilder1(param: GlobalTmp1, num: number) {
   }
 }
 
-
 @Entry
 @Component
 struct Parent1 {
   @State objParam: GlobalTmp1 = new GlobalTmp1();
   @State num: number = 0;
-
 
   build() {
     Column() {
@@ -3027,11 +2805,9 @@ class GlobalTmp2 {
   public strValue: string = 'Hello';
 }
 
-
 class SecondTmp {
   public numValue: number = 0;
 }
-
 
 @Builder
 function overBuilder2(param: GlobalTmp2, num: SecondTmp) {
@@ -3041,13 +2817,11 @@ function overBuilder2(param: GlobalTmp2, num: SecondTmp) {
   }
 }
 
-
 @Entry
 @Component
 struct Parent2 {
   @State strParam: GlobalTmp2 = new GlobalTmp2();
   @State numParam: SecondTmp = new SecondTmp();
-
 
   build() {
     Column() {
@@ -3076,7 +2850,6 @@ class GlobalTmp3 {
   public numValue: number = 0;
 }
 
-
 @Builder
 function overBuilder3(param: GlobalTmp3) {
   Column() {
@@ -3085,12 +2858,10 @@ function overBuilder3(param: GlobalTmp3) {
   }
 }
 
-
 @Entry
 @Component
 struct Parent3 {
   @State objParam: GlobalTmp3 = new GlobalTmp3();
-
 
   build() {
     Column() {
@@ -3119,14 +2890,12 @@ class ParamTemp {
   @Trace public count : number = 0;
 }
 
-
 @Builder
 function renderNumber(paramNum: number) {
   Text(`paramNum : ${paramNum}`)
     .fontSize(30)
     .fontWeight(FontWeight.Bold)
 }
-
 
 @Entry
 @ComponentV2
@@ -3135,7 +2904,6 @@ struct PageBuilderIncorrectUsage {
   // 此处使用简单数据类型不支持刷新UI的能力。
   @Local numValue: number = 0;
   private progressTimer: number = -1;
-
 
   aboutToAppear(): void {
     this.progressTimer = setInterval(() => {
@@ -3147,7 +2915,6 @@ struct PageBuilderIncorrectUsage {
       }
     }, 500);
   }
-
 
   build() {
     Column() {
@@ -3168,7 +2935,6 @@ class ParamTmpClass {
   @Trace public count: number = 0;
 }
 
-
 @Builder
 function renderText(param: ParamTmpClass) {
   Column() {
@@ -3178,14 +2944,12 @@ function renderText(param: ParamTmpClass) {
   }
 }
 
-
 @Builder
 function renderMap(paramMap: Map<string, number>) {
   Text(`paramMap : ${paramMap.get('name')}`)
     .fontSize(20)
     .fontWeight(FontWeight.Bold)
 }
-
 
 @Builder
 function renderSet(paramSet: Set<number>) {
@@ -3194,14 +2958,12 @@ function renderSet(paramSet: Set<number>) {
     .fontWeight(FontWeight.Bold)
 }
 
-
 @Builder
 function renderNumberArr(paramNumArr: number[]) {
   Text(`paramNumArr : ${paramNumArr[0]}`)
     .fontSize(20)
     .fontWeight(FontWeight.Bold)
 }
-
 
 @Entry
 @ComponentV2
@@ -3211,7 +2973,6 @@ struct PageBuilderCorrectUsage {
   @Local setValue: Set<number> = new Set([0]);
   @Local numArrValue: number[] = [0];
   private progressTimer: number = -1;
-
 
   aboutToAppear(): void {
     this.progressTimer = setInterval(() => {
@@ -3229,7 +2990,6 @@ struct PageBuilderCorrectUsage {
     }, 500);
   }
 
-
   @Builder
   localBuilder() {
     Column() {
@@ -3238,7 +2998,6 @@ struct PageBuilderCorrectUsage {
         .fontWeight(FontWeight.Bold)
     }
   }
-
 
   build() {
     Column() {
@@ -3266,7 +3025,6 @@ class Tmp4 {
   public age: number = 16;
 }
 
-
 @Builder
 function parentBuilder1(params: Tmp4) {
   Row() {
@@ -3280,11 +3038,9 @@ function parentBuilder1(params: Tmp4) {
   }
 }
 
-
 @Component
 struct HelloComponent1 {
   @Prop info: Tmp4 = new Tmp4();
-
 
   build() {
     Row() {
@@ -3295,13 +3051,11 @@ struct HelloComponent1 {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage1 {
   @State nameValue: string = 'Zhang San';
   @State ageValue: number = 18;
-
 
   build() {
     Column() {
@@ -3327,7 +3081,6 @@ class Tmp5 {
   public age: number = 16;
 }
 
-
 @Builder
 function parentBuilder2(params: Tmp5) {
   Row() {
@@ -3341,12 +3094,10 @@ function parentBuilder2(params: Tmp5) {
   }
 }
 
-
 @Component
 struct HelloComponent2 {
   @Prop childName: string = '';
   @Prop childAge: number = 0;
-
 
   build() {
     Row() {
@@ -3357,13 +3108,11 @@ struct HelloComponent2 {
   }
 }
 
-
 @Entry
 @Component
 struct ParentPage2 {
   @State nameValue: string = 'Zhang San';
   @State ageValue: number = 18;
-
 
   build() {
     Column() {
@@ -3395,7 +3144,6 @@ struct BackGround1 {
     }
   };
 
-
   @Builder
   myImages2() {
     Column() {
@@ -3404,20 +3152,17 @@ struct BackGround1 {
     }
   };
 
-
   private bgList: Array<CustomBuilder> = [this.myImages(), this.myImages2()]; // 错误用法，应避免在UI方法外调用@Builder方法
   @State bgBuilder: CustomBuilder = this.myImages(); // 错误用法，应避免在UI方法外调用@Builder方法
   @State bgColor: ResourceColor = Color.Orange;
   @State bgColor2: ResourceColor = Color.Orange;
   @State index: number = 0;
 
-
   build() {
     Column({ space: 10 }) {
       Text('1').width(100).height(50)
       Text('2').width(100).height(50)
       Text('3').width(100).height(50)
-
 
       Text('4-1').width(100).height(50).fontColor(this.bgColor)
       Text('5-1').width(100).height(50)
@@ -3432,7 +3177,6 @@ struct BackGround1 {
       }
       .size({ width: 100, height: 80 })
       .backgroundColor('#ffbbd4bb')
-
 
       Button('change').onClick((event: ClickEvent) => {
         this.index = 1;
@@ -3459,7 +3203,6 @@ struct BackGround2 {
     }
   }
 
-
   @Builder
   myImages2() {
     Column() {
@@ -3468,18 +3211,15 @@ struct BackGround2 {
     }
   }
 
-
   @State bgColor: ResourceColor = Color.Orange;
   @State bgColor2: ResourceColor = Color.Orange;
   @State index: number = 0;
-
 
   build() {
     Column({ space: 10 }) {
       Text('1').width(100).height(50)
       Text('2').width(100).height(50).background(this.myImages) // 直接传递@Builder方法
       Text('3').width(100).height(50).background(this.myImages()) // 直接调用@Builder方法
-
 
       Text('4-1').width(100).height(50).fontColor(this.bgColor)
       Text('5-1').width(100).height(50)
@@ -3494,7 +3234,6 @@ struct BackGround2 {
       }
       .size({ width: 100, height: 80 })
       .backgroundColor('#ffbbd4bb')
-
 
       Button('change').onClick((event: ClickEvent) => {
         this.index = 1;
@@ -3512,12 +3251,10 @@ struct BackGround2 {
 ```
 import { UIUtils, Binding, MutableBinding } from '@kit.ArkUI';
 
-
 @ObservedV2
 class GlobalTmp1 {
   @Trace public strValue: string = 'Hello';
 }
-
 
 @Builder
 function builderWithTwoParams1(param1: Binding<GlobalTmp1>, param2: MutableBinding<number>) {
@@ -3530,13 +3267,11 @@ function builderWithTwoParams1(param1: Binding<GlobalTmp1>, param2: MutableBindi
   }.borderWidth(1)
 }
 
-
 @Entry
 @ComponentV2
 struct MakeBindingTest1 {
   @Local GlobalTmp1: GlobalTmp1 = new GlobalTmp1();
   @Local num: number = 0;
-
 
   build() {
     Column() {
@@ -3557,12 +3292,10 @@ struct MakeBindingTest1 {
 ```
 import { UIUtils, Binding, MutableBinding } from '@kit.ArkUI';
 
-
 @ObservedV2
 class GlobalTmp2 {
   @Trace public strValue: string = 'Hello';
 }
-
 
 @Builder
 function builderWithTwoParams2(param1: Binding<GlobalTmp2>, param2: MutableBinding<number>) {
@@ -3575,13 +3308,11 @@ function builderWithTwoParams2(param1: Binding<GlobalTmp2>, param2: MutableBindi
   }.borderWidth(1)
 }
 
-
 @Entry
 @ComponentV2
 struct MakeBindingTest2 {
   @Local GlobalTmp2: GlobalTmp2 = new GlobalTmp2();
   @Local num: number = 0;
-
 
   build() {
     Column() {
@@ -3615,11 +3346,9 @@ function myGlobalBuilder(value: string) {
   }.borderWidth(1)
 }
 
-
 interface TempMod1 {
   paramA: string;
 }
-
 
 @Builder
 function overBuilderMod1(param: TempMod1) {
@@ -3639,13 +3368,11 @@ function overBuilderMod1(param: TempMod1) {
   }
 }
 
-
 @Entry
 @Component
 struct ParentMod1 {
   @State label: string = 'Hello';
   @State message1: string = 'Value Passing';
-
 
   @Builder
   extendBlank() {
@@ -3654,7 +3381,6 @@ struct ParentMod1 {
     }
     .height(20)
   }
-
 
   build() {
     Column() {
@@ -3677,7 +3403,6 @@ struct ParentMod1 {
 ```
 import { UIUtils, MutableBinding } from '@kit.ArkUI';
 
-
 // 使用MutableBinding在@Builder装饰的函数中修改参数值
 @Builder
 function myGlobalBuilderMod(str: MutableBinding<string>) {
@@ -3690,11 +3415,9 @@ function myGlobalBuilderMod(str: MutableBinding<string>) {
   }
 }
 
-
 interface TempMod2 {
   paramA: string;
 }
-
 
 // 使用MutableBinding在@Builder装饰的函数内部修改参数值
 @Builder
@@ -3711,7 +3434,6 @@ function overBuilderMod2(param: MutableBinding<TempMod2>) {
   }
 }
 
-
 @Entry
 @Component
 struct ParentMod2 {
@@ -3721,7 +3443,6 @@ struct ParentMod2 {
     paramA: this.label
   };
 
-
   @Builder
   extendBlank() {
     Row() {
@@ -3729,7 +3450,6 @@ struct ParentMod2 {
     }
     .height(20)
   }
-
 
   build() {
     Column() {
@@ -3769,7 +3489,6 @@ struct ParentMod2 {
 struct Child1 {
   @Provide @Watch('provideWatch') content: string = 'Index: hello world';
 
-
   @Builder
   watchBuilder(content: string) {
     Row() {
@@ -3777,11 +3496,9 @@ struct Child1 {
     }
   }
 
-
   provideWatch() {
     this.watchBuilder(this.content); // 错误写法，在@Watch函数中使用@Builder函数
   }
-
 
   build() {
     Column() {
@@ -3803,7 +3520,6 @@ struct Child1 {
 struct Child2 {
   @Provide @Watch('provideWatch') content: string = 'Index: hello world';
 
-
   @Builder
   watchBuilder(content: string) {
     Row() {
@@ -3811,12 +3527,10 @@ struct Child2 {
     }
   }
 
-
   provideWatch() {
     // 正确写法，不在@Watch函数中使用@Builder函数
     console.info(`content value has changed.`);
   }
-
 
   build() {
     Column() {

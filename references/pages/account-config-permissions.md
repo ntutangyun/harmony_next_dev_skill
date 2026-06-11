@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-config-permissions_
 
+请参考“应用开发准备”章节，创建应用、使用DevEco Studio创建应用工程。
+
+说明
+
+如需申请华为账号一键登录、获取您的手机号、获取收货地址权限，则需按照以下步骤完成权限申请，否则可跳过本章节。
+
+申请前自检
+
 申请权限前请参考表1，了解账号权限支持的能力和使用条件，并根据表2、表3、表4完成自检，确认您的应用类型、设备类型、开发者类型等是否符合申请条件，不符合条件的申请将被驳回。
 
 说明
@@ -14,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 华为账号一键登录	支持应用获取用户的Union ID、Open ID和华为账号绑定的手机号。	非游戏类应用、非银行类应用	企业开发者	Phone、Tablet、PC/2in1、TV
 获取您的手机号	支持应用获取华为账号绑定的手机号或用户选择的其他手机号。	游戏类应用	企业开发者	Phone、Tablet、PC/2in1、Wearable、TV
 获取收货地址	支持应用获取用户的地址，地址可以用做收货或者发货。	无限制	企业开发者	Phone、Tablet、PC/2in1
-获取您的年龄段信息	支持应用获取用户的实名年龄段信息	游戏类应用	企业开发者	Phone、Tablet、PC/2in1、Wearable、TV
+获取您的年龄段	支持应用获取用户的实名年龄段信息	游戏类应用	企业开发者	Phone、Tablet、PC/2in1、Wearable、TV
 
 表2 华为账号一键登录权限申请自检表
 
@@ -43,7 +51,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 3	若应用近期存在违规记录，则不予审批或有权收回权限。
 4	若用户举报或发现开发者不合理的使用，华为有权收回权限。
 
-表5 获取您的年龄段信息申请自检表
+表5 获取您的年龄段权限申请自检表
 
 序号	自检项内容
 1	开发者必须为企业开发者。
@@ -51,6 +59,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 3	应用是否上架应用市场，如不上架需要说明原因。
 4	若应用近期存在违规记录，则不予审批或有权收回权限。
 5	若用户举报或发现开发者不合理的使用，华为有权收回权限。
+
 申请步骤
 
 在 AppGallery Connect（简称AGC）的开发与服务中，选择相应的项目，然后选择需要申请对应权限的HarmonyOS应用。
@@ -108,7 +117,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 
 说明
 
-5个工作日内审核结果会通过站内消息的形式发送到互动中心，请注意查收。
+3个工作日内审核结果会通过站内消息的形式发送到互动中心，请注意查收。
 
 权限申请通过后最迟在25小时后生效。
 
@@ -117,6 +126,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 图1 修改前
 
 图2 修改后
-
-开发准备
-配置签名和指纹

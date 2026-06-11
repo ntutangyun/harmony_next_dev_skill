@@ -2,14 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-axpy_
 
+函数功能
+
 源操作数(srcLocal)中每个元素与标量求积后和目的操作数(dstLocal)中的对应元素相加，计算公式如下，其中PAR表示矢量计算单元一个迭代能够处理的元素个数：
 
 函数原型
 
 tensor前n个数据计算：
 
-template <typename T, typename U> 
+template <typename T, typename U>
 __aicore__ inline void Axpy(const LocalTensor<T>& dstLocal, const LocalTensor<U>& srcLocal, const U& scalarValue, const int32_t& calCount)
+
 参数说明
 
 表1 模板参数说明
@@ -21,34 +24,11 @@ U	源操作数数据类型。
 表2 参数说明
 
 参数名称	类型	说明
-dstLocal	输出	
-
-目的操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-Kirin9020训练系列产品，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
-
-KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
-
-
-srcLocal	输入	
-
-源操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-Kirin9020训练系列产品，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
-
-KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
-
-
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020训练系列产品，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020训练系列产品，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
 scalarValue	输入	源操作数，scalar标量。支持的数据类型为：half/float。scalarValue的数据类型需要和srcLocal保持一致。
 calCount	输入	输入数据元素个数。
+
 返回值
 
 无
@@ -76,5 +56,18 @@ mixed精度组合：srcLocal数据类型=half；scalar数据类型=half；dstLoc
 tensor前n个数据计算样例：
 
 AscendC::Axpy(dstLocal, src0Local, (half)2.0, 512);// half精度组合
-标量三目指令
-更多样例
+
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T, typename U>
+__aicore__ inline void Axpy(const LocalTensor<T>& dstLocal, const LocalTensor<U>& srcLocal, const U& scalarValue, const int32_t& calCount)
+```
+
+### Code block 2
+
+```
+AscendC::Axpy(dstLocal, src0Local, (half)2.0, 512);// half精度组合
+```

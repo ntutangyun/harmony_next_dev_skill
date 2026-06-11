@@ -8,14 +8,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-no-ne
 
 工程模板的工程级oh-package.json5文件中默认配置了hypium依赖，因此需要安装hypium，如果配置了其他依赖，也可参考以下步骤安装。
 
-在可访问网络的电脑上创建一个空文件夹（如命名为third_library），在文件夹中创建一个oh-package.json5文件，配置hypium依赖，配置如下：
 {
   "dependencies": {
     "@ohos/hypium": "1.0.18"
   }
 }
 
-先配置环境变量，再打开命令行工具，执行 ohpm install 命令，会生成oh_modules文件夹和oh-package-lock.json5文件。
+配置环境变量并打开命令行工具，执行ohpm install命令，会生成oh_modules文件夹和oh-package-lock.json5文件。
 
 将oh_modules文件夹和oh-package-lock.json5文件拷贝到无网络电脑的工程根目录下。
 
@@ -24,17 +23,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-no-ne
 有网环境和无网环境下使用的ohpm版本需保持一致，否则可能导致oh-package-lock.json5文件不生效。
 
 安装三方库
-通过如下两种方式使用三方库：
+
 方式一：使用ohpm-repo搭建私仓，将需要依赖的三方包发布至私仓中，并将.ohpmrc文件中的registry配置项的值替换为该私仓地址，以此从私仓中获取依赖。
-方式二：在可访问网络的电脑上创建一个空文件夹（如命名为third_library），在文件夹中创建一个oh-package.json5文件，设置三方包依赖，配置示例如下：
+
 {
   "dependencies": {
     "@ohos/hypium": "1.0.17",
-    "@ohos/lottie": "^2.0.0" 
+    "@ohos/lottie": "^2.0.0"
   }
 }
 
-打开命令行工具，执行 ohpm install 命令，会生成oh_modules文件夹和oh-package-lock.json5文件。
+打开命令行工具，执行ohpm install命令，会生成oh_modules文件夹和oh-package-lock.json5文件。
 
 将oh_modules文件夹和oh-package-lock.json5文件拷贝到无网络电脑的工程根目录下。
 
@@ -46,4 +45,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-no-ne
 
 请参考离线部署模拟器。
 
-通用云开发模板
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "dependencies": {
+    "@ohos/hypium": "1.0.18"
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "dependencies": {
+    "@ohos/hypium": "1.0.17",
+    "@ohos/lottie": "^2.0.0"
+  }
+}
+```

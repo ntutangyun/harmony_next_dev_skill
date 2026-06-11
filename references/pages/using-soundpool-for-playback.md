@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-soundpool-for-playback_
 
+使用SoundPool（音频池）提供的接口，可以实现低时延短音播放。
+
 当应用开发时，经常需要使用一些急促简短的音效（如相机快门音效、系统通知音效等），此时建议调用SoundPool，实现一次加载，多次低时延播放。
 
 SoundPool当前支持播放解码后1MB以下的音频资源，解码后大小超过1MB的长音频将截取前面的1MB大小数据进行播放，这相当于44.1kHz的16bit位深的立体声下约5.6秒的音频时长（在较低采样率或单声道配置下，持续时间会相应延长）。
@@ -24,7 +26,6 @@ import { media } from '@kit.MediaKit';
 import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 private soundPool: media.SoundPool | undefined = undefined;
 // audioRenderInfo中的参数usage取值为STREAM_USAGE_UNKNOWN，STREAM_USAGE_MUSIC，STREAM_USAGE_MOVIE。
 // STREAM_USAGE_AUDIOBOOK时，SoundPool播放短音时为混音模式，不会打断其他音频播放。
@@ -32,7 +33,6 @@ let audioRendererInfo: audio.AudioRendererInfo = {
   usage: audio.StreamUsage.STREAM_USAGE_MUSIC, // 音频流使用类型：音乐。根据业务场景配置，参考StreamUsage。
   rendererFlags: 1 // 音频渲染器标志。
 };
-
 
 // 创建soundPool实例。
 this.soundPool = await media.createSoundPool(14, audioRendererInfo); // 最大播放的流数为14。
@@ -74,7 +74,6 @@ this.soundPool!.on('error', (error: BusinessError) => {
 当系统加载完毕音频资源文件的时候，会通过loadComplete回调，通知用户资源加载完成，请在收到回调之后，再进行后续的play操作。
 
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 private soundId: number = 0;
 // 获取当前组件所在Ability的Context，以通过Context获取应用文件路径。
@@ -146,6 +145,7 @@ await this.soundPool!.off('error');
 
 // 释放SoundPool。
 await this.soundPool!.release();
+
 运行示例工程
 
 参考以下示例，使用SoundPool进行低时延播放。
@@ -169,5 +169,171 @@ entry/src/main/resources/
 
 编译新建工程并运行。
 
-使用AVPlayer添加视频外挂字幕(ArkTS)
-录制
+## Code blocks
+
+### Code block 1
+
+```
+import { media } from '@kit.MediaKit';
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+private soundPool: media.SoundPool | undefined = undefined;
+// audioRenderInfo中的参数usage取值为STREAM_USAGE_UNKNOWN，STREAM_USAGE_MUSIC，STREAM_USAGE_MOVIE。
+// STREAM_USAGE_AUDIOBOOK时，SoundPool播放短音时为混音模式，不会打断其他音频播放。
+let audioRendererInfo: audio.AudioRendererInfo = {
+  usage: audio.StreamUsage.STREAM_USAGE_MUSIC, // 音频流使用类型：音乐。根据业务场景配置，参考StreamUsage。
+  rendererFlags: 1 // 音频渲染器标志。
+};
+
+// 创建soundPool实例。
+this.soundPool = await media.createSoundPool(14, audioRendererInfo); // 最大播放的流数为14。
+```
+
+### Code block 2
+
+```
+private soundId: number = 0;
+// 加载完成回调。
+this.soundPool!.on('loadComplete', (soundId_: number) => {
+  this.soundId = soundId_;
+  console.info('loadComplete soundId: ' + soundId_);
+})
+```
+
+### Code block 3
+
+```
+this.soundPool!.on('playFinished', () => {
+  console.info("receive play finished message");
+  // 可进行下次播放。
+});
+this.soundPool!.on('playFinishedWithStreamId', (streamId) => {
+  console.info("receive play finished message, streamId: " + streamId);
+});
+```
+
+### Code block 4
+
+```
+this.soundPool!.on('error', (error: BusinessError) => {
+  console.error('error happened,message is :' + error.code);
+  console.error('error happened,message is :' + error.message);
+});
+```
+
+### Code block 5
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+
+private soundId: number = 0;
+// 获取当前组件所在Ability的Context，以通过Context获取应用文件路径。
+let context = this.getUIContext().getHostContext();
+// 获取输入文件fd，test.ogg为rawfile目录下的预置资源，需要开发者根据实际情况进行替换。
+let fileDescriptor = await context!.resourceManager.getRawFd('test.ogg');
+this.soundId = await this.soundPool!.load(fileDescriptor.fd, fileDescriptor.offset, fileDescriptor.length);
+console.info(`load soundPool soundId: ${this.soundId}`)
+```
+
+### Code block 6
+
+```
+private soundId: number = 0;
+private streamId: number = 0;
+let playParameters: media.PlayParameters = {
+  loop: 1, // 循环1次，即播放2次。
+  rate: 1, // 2倍速播放。
+  leftVolume: 0.5, // 取值范围0.0-1.0。
+  rightVolume: 0.5, // 取值范围0.0-1.0。
+  priority: 0, // 最低优先级。
+};
+// 开始播放，调用play可携带播放参数PlayParameters。请在音频资源加载完毕，即收到loadComplete回调之后再执行play操作。
+this.soundPool!.play(this.soundId, playParameters, (error, streamID: number) => {
+  if (error) {
+    console.error(`play sound Error: errCode is ${error.code}, errMessage is ${error.message}`)
+  } else {
+    this.streamId = streamID;
+    console.info('play success soundId:' + this.streamId);
+  }
+});
+```
+
+### Code block 7
+
+```
+// 设置循环播放次数。
+await this.soundPool!.setLoop(this.streamId, 2); // 播放3次。
+```
+
+### Code block 8
+
+```
+// 设置对应流的优先级。
+await this.soundPool!.setPriority(this.streamId, 1);
+```
+
+### Code block 9
+
+```
+// 设置音量。
+await this.soundPool!.setVolume(this.streamId, 0.5, 0.5);
+```
+
+### Code block 10
+
+```
+// 终止指定流的播放。
+await this.soundPool!.stop(this.streamId);
+```
+
+### Code block 11
+
+```
+// 卸载音频资源。
+await this.soundPool!.unload(this.soundId);
+```
+
+### Code block 12
+
+```
+await this.soundPool!.off('loadComplete');
+```
+
+### Code block 13
+
+```
+await this.soundPool!.off('playFinished');
+```
+
+### Code block 14
+
+```
+await this.soundPool!.off('error');
+```
+
+### Code block 15
+
+```
+// 释放SoundPool。
+await this.soundPool!.release();
+```
+
+### Code block 16
+
+```
+SoundPoolArkTS
+entry/src/main/ets/
+└── pages
+    └── Index.ets (播放界面)
+entry/src/main/resources/
+├── base
+│   ├── element
+│   │   ├── color.json
+│   │   ├── float.json
+│   │   └── string.json
+│   └── media
+│
+└── rawfile
+    └── test.ogg (音频资源)
+```

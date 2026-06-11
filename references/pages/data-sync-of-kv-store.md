@@ -2,17 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-sync-of-kv-store_
 
+场景介绍
+
 键值型数据库适合不涉及过多数据关系和业务关系的业务数据存储，比SQL数据库存储拥有更好的读写性能，同时因其在分布式场景中降低了解决数据库版本兼容问题的复杂度，和数据端端同步过程中冲突解决的复杂度而被广泛使用。
 
 基本概念
 
 在使用键值型数据库跨设备数据端端同步前，请先了解以下概念。
 
-单版本数据库
+[h2]单版本数据库
 
 单版本是指数据在本地是以单个条目为单位的方式保存，当用户修改时，直接在这个条目上进行修改。在数据端端同步后多个设备全局只保留一份数据，多个设备的相同记录（主码相同）会按时间最新保留一条记录，数据不分设备，设备之间修改相同的key会覆盖。端端同步也以此为基础，按照它在本地被写入或更改的顺序将当前最新一次修改逐条同步至远端设备，常用于联系人、天气等应用存储场景。
 
-多设备协同数据库
+[h2]多设备协同数据库
 
 多设备协同分布式数据库建立在单版本数据库之上，对应用程序存入的键值型数据中的Key前面拼接了本设备的DeviceID标识符，这样能保证每个设备产生的数据严格隔离。数据以设备的维度管理，不存在冲突；支持按照设备的维度查询数据。
 
@@ -22,11 +24,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-sync
 
 数据管理服务提供了两种同步方式：手动同步和自动同步。键值型数据库可选择其中一种方式实现同应用跨设备数据端端同步。
 
-手动同步
+[h2]手动同步
 
 由应用程序调用sync接口来触发，需要指定端端同步的设备列表和同步模式。同步模式分为PULL_ONLY（将远端数据拉取到本端）、PUSH_ONLY（将本端数据推送到远端）和PUSH_PULL（将本端数据推送到远端同时也将远端数据拉取到本端）。带有Query参数的端端同步接口，支持按条件过滤的方法进行端端同步，将符合条件的数据同步到远端。
 
-自动同步
+[h2]自动同步
 
 在跨设备Call调用实现的多端协同场景中，在应用程序更新数据后，由分布式数据库自动将本端数据推送到远端，同时也将远端数据拉取到本端来完成数据同步，应用不需要主动调用sync接口。
 
@@ -34,13 +36,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-sync
 
 底层通信组件完成设备发现和认证，会通知上层应用程序设备上线。收到设备上线的消息后数据管理服务可以在两个设备之间建立加密的数据传输通道，利用该通道在两个设备之间进行数据端端同步。
 
-数据跨设备端端同步机制
+[h2]数据跨设备端端同步机制
 
 如图所示，通过put、delete接口触发自动端端同步，将分布式数据通过通信适配层发送给对端设备，实现分布式数据的自动端端同步。
 
 手动同步则是手动调用sync接口触发端端同步，将分布式数据通过通信适配层发送给对端设备。
 
-数据变化通知机制
+[h2]数据变化通知机制
 
 增、删、改数据时，会给订阅者发送数据变化的通知。主要分为本地数据变化通知和分布式数据变化通知。
 
@@ -71,6 +73,7 @@ put(key: string, value: Uint8Array | string | number | boolean, callback: AsyncC
 on(event: 'dataChange', type: SubscribeType, listener: Callback<ChangeNotification>): void	订阅数据库中数据的变化。
 get(key: string, callback: AsyncCallback<boolean | string | number | Uint8Array>): void	查询指定Key键的值。
 sync(deviceIds: string[], mode: SyncMode, delayMs?: number): void	在手动模式下，触发数据库端端同步。
+
 开发步骤
 
 此处以单版本键值型数据库跨设备数据端端同步的开发为例。以下是具体的开发流程和开发步骤。
@@ -90,7 +93,6 @@ import EntryAbility from '../entryability/EntryAbility';
 // Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
-
 let kvManager: distributedKVStore.KVManager | undefined = undefined;
 let kvStore: distributedKVStore.SingleKVStore | undefined = undefined;
 let appId: string = 'com.example.kvstoresamples';
@@ -98,14 +100,11 @@ let storeId: string = 'storeId';
 // Stage模型context从EntryAbility.ets中获取
 const context = EntryAbility.getContext();
 
-
 // FA模型获取context
 import { featureAbility } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let context = featureAbility.getContext();
-
 
 // 下面所有接口的代码都实现在KvInterface中
 export class KvInterface {
@@ -114,12 +113,15 @@ export class KvInterface {
 请求权限。
 
 需要申请ohos.permission.DISTRIBUTED_DATASYNC权限，配置方式请参见声明权限。
+
 同时需要在应用首次启动时弹窗向用户申请授权，使用方式请参见向用户申请授权。
 
 根据配置调用createKVManager()方法构造分布式数据库管理类实例。
 
 根据应用上下文创建kvManagerConfig对象。
+
 创建分布式数据库管理器实例。
+
 public CreateKvManager = (() => {
   Logger.info('CreateKvManager start');
   if (typeof (kvManager) === 'undefined') {
@@ -138,12 +140,13 @@ public CreateKvManager = (() => {
     Logger.info ('KVManager has created');
   }
 })
-KvStoreInterface.ets
 
 调用getKVStore()方法获取并得到指定类型的键值型数据库。
 
 声明需要创建的分布式数据库ID描述（例如示例代码中的'storeId'）。
+
 创建分布式数据库，建议关闭自动端端同步功能（autoSync:false），方便后续对端端同步功能进行验证，需要端端同步时主动调用sync接口。
+
 public GetKvStore = (() => {
   Logger.info('GetKvStore start');
   if (kvManager === undefined) {
@@ -160,7 +163,6 @@ public GetKvStore = (() => {
     child2.nullable = false;
     child2.default = 'zhangsan';
 
-
     let schema = new distributedKVStore.Schema();
     schema.root.appendChild(child1);
     schema.root.appendChild(child2);
@@ -169,7 +171,6 @@ public GetKvStore = (() => {
     schema.mode = 1;
     // 支持在检查Value时，跳过skip指定的字节数，且取值范围为[0,4M-2]。
     schema.skip = 0;
-
 
     const options: distributedKVStore.Options = {
       createIfMissing: true,
@@ -199,7 +200,6 @@ public GetKvStore = (() => {
     Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用on()方法订阅分布式数据变化，如需关闭订阅分布式数据变化，调用off('dataChange')关闭。
 
@@ -218,12 +218,13 @@ public On = (() =>{
     Logger.error(`An unexpected error occurred. code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用put()方法将数据写入分布式数据库。
 
 构造需要写入分布式数据库的Key（键）和Value（值）。
+
 将键值数据写入分布式数据库。
+
 public Put = (() => {
   Logger.info('Put start');
   if (kvStore === undefined) {
@@ -246,12 +247,13 @@ public Put = (() => {
     Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用get()方法查询分布式数据库数据。
 
 构造需要从单版本分布式数据库中查询的Key（键）。
+
 从单版本分布式数据库中获取数据。
+
 public Get = (() => {
   Logger.info('Get start');
   if (kvStore === undefined) {
@@ -272,7 +274,6 @@ public Get = (() => {
     Logger.error(`Failed to get data. Code:${error.code},message:${error.message}`);
   }
 })
-KvStoreInterface.ets
 
 调用sync()方法同步数据到其他设备。
 
@@ -316,6 +317,227 @@ public Sync = (() =>{
     Logger.error('createDeviceManager errCode:' + error.code + ',errMessage:' + error.message);
   }
 })
-KvStoreInterface.ets
-同应用跨设备数据同步概述
-关系型数据库跨设备数据同步 (ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+// 导入模块
+// 在pages目录下新建KvStoreInterface.ets
+import { distributedKVStore } from '@kit.ArkData';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { distributedDeviceManager } from '@kit.DistributedServiceKit';
+import EntryAbility from '../entryability/EntryAbility';
+// Logger为hilog封装后实现的打印功能
+import Logger from '../common/Logger';
+
+let kvManager: distributedKVStore.KVManager | undefined = undefined;
+let kvStore: distributedKVStore.SingleKVStore | undefined = undefined;
+let appId: string = 'com.example.kvstoresamples';
+let storeId: string = 'storeId';
+// Stage模型context从EntryAbility.ets中获取
+const context = EntryAbility.getContext();
+
+// FA模型获取context
+import { featureAbility } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+let context = featureAbility.getContext();
+
+// 下面所有接口的代码都实现在KvInterface中
+export class KvInterface {
+}
+```
+
+### Code block 2
+
+```
+public CreateKvManager = (() => {
+  Logger.info('CreateKvManager start');
+  if (typeof (kvManager) === 'undefined') {
+    const kvManagerConfig: distributedKVStore.KVManagerConfig = {
+      bundleName: appId,
+      context: context
+    };
+    try {
+      // 创建KVManager实例
+      kvManager = distributedKVStore.createKVManager(kvManagerConfig);
+      Logger.info('Succeeded in creating KVManager.');
+    } catch (err) {
+      Logger.error(`Failed to create KVManager. Code:${err.code},message:${err.message}`);
+    }
+  } else {
+    Logger.info ('KVManager has created');
+  }
+})
+```
+
+### Code block 3
+
+```
+public GetKvStore = (() => {
+  Logger.info('GetKvStore start');
+  if (kvManager === undefined) {
+    Logger.info('KvManager not initialized');
+    return;
+  }
+  try {
+    let child1 = new distributedKVStore.FieldNode('id');
+    child1.type = distributedKVStore.ValueType.INTEGER;
+    child1.nullable = false;
+    child1.default = '1';
+    let child2 = new distributedKVStore.FieldNode('name');
+    child2.type = distributedKVStore.ValueType.STRING;
+    child2.nullable = false;
+    child2.default = 'zhangsan';
+
+    let schema = new distributedKVStore.Schema();
+    schema.root.appendChild(child1);
+    schema.root.appendChild(child2);
+    schema.indexes = ['$.id', '$.name'];
+    // 0表示COMPATIBLE模式，1表示STRICT模式。
+    schema.mode = 1;
+    // 支持在检查Value时，跳过skip指定的字节数，且取值范围为[0,4M-2]。
+    schema.skip = 0;
+
+    const options: distributedKVStore.Options = {
+      createIfMissing: true,
+      // 设置数据库加密
+      encrypt: true,
+      backup: false,
+      autoSync: false,
+      // kvStoreType不填时，默认创建多设备协同数据库
+      kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
+      // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION,
+      schema: schema,
+      // schema未定义可以不填，定义方法请参考上方schema示例。
+      securityLevel: distributedKVStore.SecurityLevel.S3
+    };
+    kvManager.getKVStore<distributedKVStore.SingleKVStore>(storeId, options,
+      (err, store: distributedKVStore.SingleKVStore) => {
+        if (err) {
+          Logger.error(`Failed to get KVStore: Code:${err.code},message:${err.message}`);
+          return;
+        }
+        Logger.info('Succeeded in getting KVStore.');
+        kvStore = store;
+        // 请确保获取到键值数据库实例后，再进行相关数据操作
+      });
+  } catch (e) {
+    let error = e as BusinessError;
+    Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
+  }
+})
+```
+
+### Code block 4
+
+```
+public On = (() =>{
+  Logger.info('On start');
+  if(kvStore === undefined) {
+    Logger.info('On: kvStore not initialized');
+    return;
+  }
+  try {
+    kvStore.on('dataChange', distributedKVStore.SubscribeType.SUBSCRIBE_TYPE_ALL, (data) => {
+      Logger.info(`dataChange callback call data: ${data}`);
+    });
+  } catch (e) {
+    let error = e as BusinessError;
+    Logger.error(`An unexpected error occurred. code:${error.code},message:${error.message}`);
+  }
+})
+```
+
+### Code block 5
+
+```
+public Put = (() => {
+  Logger.info('Put start');
+  if (kvStore === undefined) {
+    Logger.info('Put: kvStore not initialized');
+    return;
+  }
+  const KEY_TEST_STRING_ELEMENT = 'key_test_string';
+  // 如果未定义Schema则Value可以传其他符合要求的值。
+  const VALUE_TEST_STRING_ELEMENT = '{"id":0, "name":"lisi"}';
+  try {
+    kvStore.put(KEY_TEST_STRING_ELEMENT, VALUE_TEST_STRING_ELEMENT, (err) => {
+      if (err !== undefined) {
+        Logger.error(`Failed to put data. Code:${err.code},message:${err.message}`);
+        return;
+      }
+      Logger.info('Succeeded in putting data.');
+    });
+  } catch (e) {
+    let error = e as BusinessError;
+    Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
+  }
+})
+```
+
+### Code block 6
+
+```
+public Get = (() => {
+  Logger.info('Get start');
+  if (kvStore === undefined) {
+    Logger.info('Get: kvStore not initialized');
+    return;
+  }
+  const KEY_TEST_STRING_ELEMENT = 'key_test_string';
+  try {
+    kvStore.get(KEY_TEST_STRING_ELEMENT, (err, data) => {
+      if (err != undefined) {
+        Logger.error(`Failed to get data. Code:${err.code},message:${err.message}`);
+        return;
+      }
+      Logger.info(`Succeeded in getting data. Data:${data}`);
+    });
+  } catch (e) {
+    let error = e as BusinessError;
+    Logger.error(`Failed to get data. Code:${error.code},message:${error.message}`);
+  }
+})
+```
+
+### Code block 7
+
+```
+public Sync = (() =>{
+  Logger.info('Sync start');
+  if(kvStore === undefined) {
+    Logger.info('Sync: kvStore not initialized');
+    return;
+  }
+  let devManager: distributedDeviceManager.DeviceManager;
+  try {
+    // create deviceManager
+    devManager = distributedDeviceManager.createDeviceManager(context.applicationInfo.name);
+    // deviceIds由deviceManager调用getAvailableDeviceListSync方法得到
+    let deviceIds: string[] = [];
+    if (devManager != null) {
+      let devices = devManager.getAvailableDeviceListSync();
+      for (let i = 0; i < devices.length; i++) {
+        deviceIds[i] = devices[i].networkId as string;
+      }
+    }
+    if (deviceIds.length === 0) {
+      Logger.info('Sync failed networkId is empty.');
+      return;
+    }
+    try {
+      // 1000表示最大延迟时间为1000ms
+      kvStore.sync(deviceIds, distributedKVStore.SyncMode.PUSH_PULL, 1000);
+    } catch (e) {
+      let error = e as BusinessError;
+      Logger.error(`An unexpected error occurred. Code:${error.code},message:${error.message}`);
+    }
+  } catch (err) {
+    let error = err as BusinessError;
+    Logger.error('createDeviceManager errCode:' + error.code + ',errMessage:' + error.message);
+  }
+})
+```

@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-hds-tabs-sidebar-alignment-substyle_
 
+场景介绍
+
+从6.0.0(20)版本开始，新增支持设置侧边栏半屏居中对齐样式。
+
 HdsTabs容器组件侧边栏支持半屏居中对齐布局。横向Tabs时，若没有主动设置TabBar高度，则TabBar默认高度为48vp，纵向TabBar默认宽度为96vp，barHeight设成固定值后，TabBar无法扩展底部安全区。当safeAreaPadding不设置bottom或者bottom设置为0时，可以实现扩展安全区。
 
 半屏居中对齐布局
@@ -27,7 +31,6 @@ import { HdsTabs, ExtendBarMode, HdsTabsAttribute } from '@kit.UIDesignKit';
 @Component
 struct Index {
   @State isVertical: boolean = false;
-
 
   build() {
     Column() {
@@ -63,5 +66,56 @@ struct Index {
     }
   }
 }
-设置页签的图标出血样式
-设置页签栏的悬浮样式
+
+## Code blocks
+
+### Code block 1
+
+```
+// 从6.0.2(22)版本开始，无需手动导入HdsTabsAttribute。具体请参考HdsTabs的导入模块说明。
+import { HdsTabs, ExtendBarMode, HdsTabsAttribute } from '@kit.UIDesignKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  @State isVertical: boolean = false;
+
+  build() {
+    Column() {
+      Column() {
+        Row() {
+          Button('verticalChange')
+            .onClick(() => {
+              this.isVertical = !this.isVertical;
+            })
+        }
+      }
+      .margin({ top: 20 })
+      .width('100%')
+      .height('10%')
+      HdsTabs({ barPosition: BarPosition.End }) {
+        TabContent() {
+          Column().width('100%').height('100%').backgroundColor(Color.Yellow)
+        }
+        .tabBar(new BottomTabBarStyle($r('sys.media.ohos_app_icon'), 'Yellow'))
+        TabContent() {
+          Column().width('100%').height('100%').backgroundColor(Color.Blue)
+        }
+        .tabBar(new BottomTabBarStyle($r('sys.media.ohos_app_icon'), 'Blue'))
+        TabContent() {
+          Column().width('100%').height('100%').backgroundColor(Color.Pink)
+        }
+        .tabBar(new BottomTabBarStyle($r('sys.media.ohos_app_icon'), 'Pink'))
+      }
+      .vertical(this.isVertical)
+      .barMode(ExtendBarMode.HALF_SCREEN_FIXED)
+      .width('100%')
+      .height('90%')
+    }
+  }
+}
+```

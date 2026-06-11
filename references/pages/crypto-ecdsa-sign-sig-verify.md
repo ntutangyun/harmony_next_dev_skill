@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ecdsa-sign-sig-verify_
 
+对应的算法规格请查看签名验签算法规格：ECDSA。
+
+签名
+
 调用cryptoFramework.createAsyKeyGenerator、AsyKeyGenerator.generateKeyPair，生成非对称密钥算法为ECC、密钥长度为256位的密钥对（KeyPair）。
 
 如何生成ECC非对称密钥，开发者可参考下文示例，并结合非对称密钥生成和转换规格：ECC和随机生成非对称密钥对理解，参考文档与当前示例可能存在入参差异，请在阅读时注意区分。
@@ -29,11 +33,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ec
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
 
-
 // 完整的明文被拆分为input1和input2
 let input1: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan1', 'utf-8').buffer) };
 let input2: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan2', 'utf-8').buffer) };
-
 
 async function signMessagePromise(priKey: cryptoFramework.PriKey) {
   let signAlg = 'ECC256|SHA256';
@@ -44,7 +46,6 @@ async function signMessagePromise(priKey: cryptoFramework.PriKey) {
   return signData;
 }
 
-
 async function verifyMessagePromise(signMessageBlob: cryptoFramework.DataBlob, pubKey: cryptoFramework.PubKey) {
   let verifyAlg = 'ECC256|SHA256';
   let verifier = cryptoFramework.createVerify(verifyAlg);
@@ -54,7 +55,6 @@ async function verifyMessagePromise(signMessageBlob: cryptoFramework.DataBlob, p
   console.info('verify result: ' + res);
   return res;
 }
-
 
 async function main() {
   let keyGenAlg = 'ECC256';
@@ -68,18 +68,15 @@ async function main() {
     console.error('verify result: failed.');
   }
 }
-ecdsa_signature_verification_asynchronous.ets
 
 同步方法示例：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { buffer } from '@kit.ArkTS';
 
-
 // 完整的明文被拆分为input1和input2
 let input1: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan1', 'utf-8').buffer) };
 let input2: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan2', 'utf-8').buffer) };
-
 
 function signMessagePromise(priKey: cryptoFramework.PriKey) {
   let signAlg = 'ECC256|SHA256';
@@ -90,7 +87,6 @@ function signMessagePromise(priKey: cryptoFramework.PriKey) {
   return signData;
 }
 
-
 function verifyMessagePromise(signMessageBlob: cryptoFramework.DataBlob, pubKey: cryptoFramework.PubKey) {
   let verifyAlg = 'ECC256|SHA256';
   let verifier = cryptoFramework.createVerify(verifyAlg);
@@ -100,7 +96,6 @@ function verifyMessagePromise(signMessageBlob: cryptoFramework.DataBlob, pubKey:
   console.info('verify result: ' + res);
   return res;
 }
-
 
 function main() {
   let keyGenAlg = 'ECC256';
@@ -114,6 +109,91 @@ function main() {
     console.error('verify result: failed.');
   }
 }
-ecdsa_signature_verification_synchronous.ets
-使用RSA密钥对签名验签 (PSS模式)(C/C++)
-使用ECDSA密钥对签名验签 (C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+// 完整的明文被拆分为input1和input2
+let input1: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan1', 'utf-8').buffer) };
+let input2: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan2', 'utf-8').buffer) };
+
+async function signMessagePromise(priKey: cryptoFramework.PriKey) {
+  let signAlg = 'ECC256|SHA256';
+  let signer = cryptoFramework.createSign(signAlg);
+  await signer.init(priKey);
+  await signer.update(input1); // 如果明文较短，可以直接调用sign接口一次性传入
+  let signData = await signer.sign(input2);
+  return signData;
+}
+
+async function verifyMessagePromise(signMessageBlob: cryptoFramework.DataBlob, pubKey: cryptoFramework.PubKey) {
+  let verifyAlg = 'ECC256|SHA256';
+  let verifier = cryptoFramework.createVerify(verifyAlg);
+  await verifier.init(pubKey);
+  await verifier.update(input1); // 如果明文较短，可以直接调用verify接口一次性传入
+  let res = await verifier.verify(input2, signMessageBlob);
+  console.info('verify result: ' + res);
+  return res;
+}
+
+async function main() {
+  let keyGenAlg = 'ECC256';
+  let generator = cryptoFramework.createAsyKeyGenerator(keyGenAlg);
+  let keyPair = await generator.generateKeyPair();
+  let signData = await signMessagePromise(keyPair.priKey);
+  let verifyResult = await verifyMessagePromise(signData, keyPair.pubKey);
+  if (verifyResult === true) {
+    console.info('verify result: success.');
+  } else {
+    console.error('verify result: failed.');
+  }
+}
+```
+
+### Code block 2
+
+```
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { buffer } from '@kit.ArkTS';
+
+// 完整的明文被拆分为input1和input2
+let input1: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan1', 'utf-8').buffer) };
+let input2: cryptoFramework.DataBlob = { data: new Uint8Array(buffer.from('This is Sign test plan2', 'utf-8').buffer) };
+
+function signMessagePromise(priKey: cryptoFramework.PriKey) {
+  let signAlg = 'ECC256|SHA256';
+  let signer = cryptoFramework.createSign(signAlg);
+  signer.initSync(priKey);
+  signer.updateSync(input1); // 如果明文较短，可以直接调用sign接口一次性传入
+  let signData = signer.signSync(input2);
+  return signData;
+}
+
+function verifyMessagePromise(signMessageBlob: cryptoFramework.DataBlob, pubKey: cryptoFramework.PubKey) {
+  let verifyAlg = 'ECC256|SHA256';
+  let verifier = cryptoFramework.createVerify(verifyAlg);
+  verifier.initSync(pubKey);
+  verifier.updateSync(input1); // 如果明文较短，可以直接调用verify接口一次性传入
+  let res = verifier.verifySync(input2, signMessageBlob);
+  console.info('verify result: ' + res);
+  return res;
+}
+
+function main() {
+  let keyGenAlg = 'ECC256';
+  let generator = cryptoFramework.createAsyKeyGenerator(keyGenAlg);
+  let keyPair = generator.generateKeyPairSync();
+  let signData = signMessagePromise(keyPair.priKey);
+  let verifyResult = verifyMessagePromise(signData, keyPair.pubKey);
+  if (verifyResult === true) {
+    console.info('verify result: success.');
+  } else {
+    console.error('verify result: failed.');
+  }
+}
+```

@@ -250,6 +250,18 @@ For complex pipelines combine `PriorityGesture`, `ParallelGesture`, `GestureGrou
 - `@Watch` triggers callbacks on state writes.
 - `@Builder` and `@BuilderParam` (see `references/02-arkts-language.md`) compose UI snippets.
 
+## Building ArkUI from C/C++ (ArkUI-NDK)
+
+When you need to construct the UI tree from native code (`ArkUI_NodeHandle` via `arkui/native_node.h`), the C-API now mirrors most of the declarative surface. Recently expanded native-side guides (see `references/pages/<slug>.md`):
+
+- Layout: `ndk-layout-container` (使用布局组件), `ndk-common-attribute-layout` (设置通用布局属性).
+- Collections: `arkts-list-and-grid-ndk` (使用列表与网格).
+- Containers & nav: `ndk-swiper` (Swiper 滑块视图), `ndk-navigation-query` (导航类组件).
+- Components: `ndk-use-text-component` (Text), `ndk-build-form-components` (表单组件), `arkts-build-media-ndk` (媒体展示).
+- Events/input: `ndk-add-component-events` (添加事件监听), `ndk-add-event-response` (添加事件响应), `ndk-bind-input-events` (绑定基础输入事件).
+
+Mount native nodes inside ArkUI through an `XComponent`'s `NodeContent`. See also the NDK overview in `references/10-kits-catalog.md`.
+
 ## Beyond this page
 
 For graphics (Canvas, Image processing, ArkGraphics2D/3D, XComponent, GPU/WebGL): `references/10-kits-catalog.md`.

@@ -2,12 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/preferences-guidelines_
 
+场景介绍
+
 用户首选项（Preferences）模块主要提供轻量级Key-Value操作，支持本地存储少量数据，数据存储在文件和内存中，访问速度快。如果存在大量数据场景，请考虑使用键值型数据库或关系型数据库。
 
 约束限制
+
 API version 18之前：ArkTS API仅支持XML存储模式；C API仅支持GSKV存储模式；存储模式互不兼容，不支持ArkTS和C API操作同一个Preferences实例。
+
 API version 18及之后：ArkTS和C API均支持XML和GSKV双模式；ArkTS和C API使用相同的存储模式时，可以正常操作同一Preferences实例；禁止ArkTS和C API选择不同的存储模式，来操作同一个Preferences实例。
+
 Key的最大长度限制为1024个字节，Value的最大长度限制为16MB。
+
 接口说明
 
 详细的接口说明请参考Preferences接口文档。
@@ -38,16 +44,20 @@ Preference_ValueType OH_PreferencesValue_GetValueType (const OH_PreferencesValue
 int OH_PreferencesValue_GetInt (const OH_PreferencesValue *object, int *value)	从PreferencesValue对象OH_PreferencesValue中获取一个整型值。
 int OH_PreferencesValue_GetBool (const OH_PreferencesValue *object, bool *value)	从PreferencesValue对象OH_PreferencesValue中获取一个布尔值。
 int OH_PreferencesValue_GetString (const OH_PreferencesValue *object, char **value, uint32_t *valueLen)	从PreferencesValue对象OH_PreferencesValue中获取字符串。
+
 添加动态链接库
 
 CMakeLists.txt中添加以下lib。
 
 libohpreferences.so
+
 引用头文件
+
 #include <database/preferences/oh_preferences.h>
 #include <database/preferences/oh_preferences_err_code.h>
 #include <database/preferences/oh_preferences_option.h>
 #include <database/preferences/oh_preferences_value.h>
+
 开发步骤
 
 下列实例展示如何通过Preferences实现对键值数据的修改与持久化。
@@ -222,13 +232,13 @@ ret = OH_Preferences_GetInt(preference, keys[0], &intValue);
 if (ret == PREFERENCES_OK) {
     // 业务逻辑
 }
-    
+
 bool boolValue = false;
 ret = OH_Preferences_GetBool(preference, keys[1], &boolValue);
 if (ret == PREFERENCES_OK) {
     // 业务逻辑
 }
-    
+
 char *stringValue = nullptr;
 uint32_t valueLen = 0;
 int32_t stringIndex = 2;
@@ -240,7 +250,6 @@ if (ret == PREFERENCES_OK) {
     stringValue = nullptr;
 }
 
-
 OH_PreferencesValue* getIntValue = OH_PreferencesValue_Create();
 if (getIntValue  == nullptr) {
     // 错误处理
@@ -249,7 +258,6 @@ ret = OH_Preferences_GetValue(preference, "int_key", &getIntValue);
 if (ret == PREFERENCES_OK) {
     // 业务逻辑
 }
-
 
 OH_PreferencesPair* pairs = nullptr;
 uint32_t count = 0;
@@ -262,13 +270,11 @@ if (ret == PREFERENCES_OK) {
     }
 }
 
-
 // 查询Preferences实例中的Key是否有数据
 bool result = OH_Preferences_HasKey(preference, "int_key");
 if (result == true) {
     // 有数据 业务逻辑
 }
-
 
 // 清理缓存数据
 ret = OH_Preferences_ClearCache(preference);
@@ -298,7 +304,6 @@ if (ret != PREFERENCES_OK) {
     // 错误处理
 }
 
-
 const char* strArray[] = {"hello", "world", "test"};
 ret = OH_PreferencesValue_SetStringArray(setValue, strArray, arg3);
 if (ret != PREFERENCES_OK) {
@@ -309,7 +314,6 @@ ret = OH_PreferencesValue_GetStringArray(setValue, &outStrArray, &count);
 if (ret != PREFERENCES_OK) {
     // 错误处理
 }
-
 
 int64_t int64Array[] = {1234567890LL, 9876543210LL, -1234567890LL};
 ret = OH_PreferencesValue_SetInt64Array(setValue, int64Array, arg3);
@@ -322,6 +326,319 @@ if (ret != PREFERENCES_OK) {
     // 错误处理
 }
 
+double doubleArray[] = {1.1, 2.2, 3.3, 4.4};
+ret = OH_PreferencesValue_SetDoubleArray(setValue, doubleArray, arg4);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+double* outDoubleArray = nullptr;
+ret = OH_PreferencesValue_GetDoubleArray(setValue, &outDoubleArray, &count);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+
+uint8_t blobData[] = {0x01, 0x02, 0x03, 0x04, 0x05};
+ret = OH_PreferencesValue_SetBlob(setValue, blobData, arg5);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+uint8_t* outBlob = nullptr;
+ret = OH_PreferencesValue_GetBlob(setValue, &outBlob, &count);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+libohpreferences.so
+```
+
+### Code block 2
+
+```
+#include <database/preferences/oh_preferences.h>
+#include <database/preferences/oh_preferences_err_code.h>
+#include <database/preferences/oh_preferences_option.h>
+#include <database/preferences/oh_preferences_value.h>
+```
+
+### Code block 3
+
+```
+// 1. 创建Preferences配置选项。
+OH_PreferencesOption *option = OH_PreferencesOption_Create();
+if (option == nullptr) {
+    // 错误处理
+}
+// 设置Preferences配置选项的文件名称。
+int ret = OH_PreferencesOption_SetFileName(option, "testdb");
+if (ret != PREFERENCES_OK) {
+    (void)OH_PreferencesOption_Destroy(option);
+    // 错误处理
+}
+// 设置Preferences配置选项的应用组ID。
+ret = OH_PreferencesOption_SetDataGroupId(option, "");
+if (ret != PREFERENCES_OK) {
+    (void)OH_PreferencesOption_Destroy(option);
+    // 错误处理
+}
+// 设置Preferences配置选项的包名称。
+ret = OH_PreferencesOption_SetBundleName(option, "com.example");
+if (ret != PREFERENCES_OK) {
+    (void)OH_PreferencesOption_Destroy(option);
+    // 错误处理
+}
+// 设置Preferences配置选项的存储模式，需要注意的是，设置之前需要调用OH_Preferences_IsStorageTypeSupported接口判断当前平台是否支持需要选择的模式。
+bool isGskvSupported = false;
+ret = OH_Preferences_IsStorageTypeSupported(Preferences_StorageType::PREFERENCES_STORAGE_GSKV, &isGskvSupported);
+if (ret != PREFERENCES_OK) {
+    (void)OH_PreferencesOption_Destroy(option);
+    // 错误处理
+}
+if (isGskvSupported) {
+    ret = OH_PreferencesOption_SetStorageType(option, Preferences_StorageType::PREFERENCES_STORAGE_GSKV);
+    if (ret != PREFERENCES_OK) {
+        (void)OH_PreferencesOption_Destroy(option);
+        // 错误处理
+    }
+} else {
+    ret = OH_PreferencesOption_SetStorageType(option, Preferences_StorageType::PREFERENCES_STORAGE_XML);
+    if (ret != PREFERENCES_OK) {
+        (void)OH_PreferencesOption_Destroy(option);
+        // 错误处理
+    }
+}
+// 2. 打开一个Preferences实例。
+int errCode = PREFERENCES_OK;
+OH_Preferences *preference = OH_Preferences_Open(option, &errCode);
+// option使用完毕后可直接释放，释放后需要将指针置空。
+(void)OH_PreferencesOption_Destroy(option);
+option = nullptr;
+if (preference == nullptr || errCode != PREFERENCES_OK) {
+    // 错误处理
+}
+// option使用完毕后删除配置选项
+errCode = OH_Preferences_DeletePreferences(option);
+if (errCode != PREFERENCES_OK) {
+    // 错误处理
+}
+```
+
+### Code block 4
+
+```
+// 数据变更回调函数
+void DataChangeObserverCallback(void *context, const OH_PreferencesPair *pairs, uint32_t count)
+{
+    for (uint32_t i = 0; i < count; i++) {
+        // 获取索引i对应的PreferencesValue
+        const OH_PreferencesValue *pValue = OH_PreferencesPair_GetPreferencesValue(pairs, i);
+        // 获取PreferencesValue的数据类型
+        Preference_ValueType type = OH_PreferencesValue_GetValueType(pValue);
+        int ret = PREFERENCES_OK;
+        if (type == PREFERENCE_TYPE_INT) {
+            int intValue = 0;
+            ret = OH_PreferencesValue_GetInt(pValue, &intValue);
+            if (ret == PREFERENCES_OK) {
+                // 业务逻辑
+            }
+        } else if (type == PREFERENCE_TYPE_BOOL) {
+            bool boolValue = true;
+            ret = OH_PreferencesValue_GetBool(pValue, &boolValue);
+            if (ret == PREFERENCES_OK) {
+                // 业务逻辑
+            }
+        } else if (type == PREFERENCE_TYPE_STRING) {
+            char *stringValue = nullptr;
+            uint32_t valueLen = 0;
+            ret = OH_PreferencesValue_GetString(pValue, &stringValue, &valueLen);
+            if (ret == PREFERENCES_OK) {
+                // 业务逻辑
+                OH_Preferences_FreeString(stringValue);
+            }
+        } else {
+            // 无效类型
+        }
+    }
+}
+```
+
+### Code block 5
+
+```
+// 3. 对key_int、key_bool和key_string注册数据变更订阅。
+const char *keys[] = {"key_int", "key_bool", "key_string"};
+int ret = OH_Preferences_RegisterDataObserver(preference, nullptr, DataChangeObserverCallback, keys, 3);
+if (ret != PREFERENCES_OK) {
+    (void)OH_Preferences_Close(preference);
+    // 错误处理
+}
+// 兼容多种类型的注册数据变更订阅。
+int contextData = 42;
+ret = OH_Preferences_RegisterMultiProcessDataObserver(preference, &contextData, DataChangeObserverCallback);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+// 取消兼容多种类型的注册数据变更订阅。
+ret = OH_Preferences_UnregisterMultiProcessDataObserver(preference, &contextData, DataChangeObserverCallback);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+```
+
+### Code block 6
+
+```
+// 4. 设置Preferences实例中的KV数据。
+ret = OH_Preferences_SetInt(preference, keys[0], 0);
+if (ret != PREFERENCES_OK) {
+    (void)OH_Preferences_Close(preference);
+    // 错误处理
+}
+ret = OH_Preferences_SetBool(preference, keys[1], true);
+if (ret != PREFERENCES_OK) {
+    (void)OH_Preferences_Close(preference);
+    // 错误处理
+}
+int32_t stringIndex = 2;
+ret = OH_Preferences_SetString(preference, keys[stringIndex], "string value");
+if (ret != PREFERENCES_OK) {
+    (void)OH_Preferences_Close(preference);
+    // 错误处理
+}
+ret = OH_Preferences_Flush(preference);
+if (ret != PREFERENCES_OK) {
+    (void)OH_Preferences_Close(preference);
+    // 错误处理
+}
+OH_PreferencesValue* setIntValue = OH_PreferencesValue_Create();
+if (setIntValue  == nullptr) {
+    // 错误处理
+}
+const int value = 456;
+ret = OH_PreferencesValue_SetInt(setIntValue, value);
+if (ret != PREFERENCES_OK) {
+    (void)OH_PreferencesValue_Destroy(setIntValue);
+    // 错误处理
+}
+ret = OH_Preferences_SetValue(preference, "int_key", setIntValue);
+if (ret != PREFERENCES_OK) {
+    (void)OH_Preferences_Close(preference);
+    // 错误处理
+}
+```
+
+### Code block 7
+
+```
+// 5. 获取Preferences实例中的KV数据。
+int intValue = 0;
+int ret = PREFERENCES_OK;
+const char *keys[] = {"key_int", "key_bool", "key_string"};
+ret = OH_Preferences_GetInt(preference, keys[0], &intValue);
+if (ret == PREFERENCES_OK) {
+    // 业务逻辑
+}
+
+bool boolValue = false;
+ret = OH_Preferences_GetBool(preference, keys[1], &boolValue);
+if (ret == PREFERENCES_OK) {
+    // 业务逻辑
+}
+
+char *stringValue = nullptr;
+uint32_t valueLen = 0;
+int32_t stringIndex = 2;
+ret = OH_Preferences_GetString(preference, keys[stringIndex], &stringValue, &valueLen);
+if (ret == PREFERENCES_OK) {
+    // 业务逻辑
+    // 使用完OH_Preferences_GetString接口后，需要对字符串进行释放。
+    OH_Preferences_FreeString(stringValue);
+    stringValue = nullptr;
+}
+
+OH_PreferencesValue* getIntValue = OH_PreferencesValue_Create();
+if (getIntValue  == nullptr) {
+    // 错误处理
+}
+ret = OH_Preferences_GetValue(preference, "int_key", &getIntValue);
+if (ret == PREFERENCES_OK) {
+    // 业务逻辑
+}
+
+OH_PreferencesPair* pairs = nullptr;
+uint32_t count = 0;
+ret = OH_Preferences_GetAll(preference, &pairs, &count);
+if (ret == PREFERENCES_OK) {
+    // 业务逻辑
+    if (pairs != nullptr) {
+        // 销毁例对象中所有的KV数据。
+        OH_PreferencesPair_Destroy(pairs, count);
+    }
+}
+
+// 查询Preferences实例中的Key是否有数据
+bool result = OH_Preferences_HasKey(preference, "int_key");
+if (result == true) {
+    // 有数据 业务逻辑
+}
+
+// 清理缓存数据
+ret = OH_Preferences_ClearCache(preference);
+```
+
+### Code block 8
+
+```
+// 6. 使用完Preferences实例后需要关闭实例，关闭后需要将指针置空。
+(void)OH_Preferences_Close(preference);
+preference = nullptr;
+```
+
+### Code block 9
+
+```
+const int arg5 = 5;
+const int arg4 = 4;
+const int arg3 = 3;
+int ret = PREFERENCES_OK;
+OH_PreferencesValue* setValue = OH_PreferencesValue_Create();
+bool boolArray[] = {true, false, true, false};
+ret = OH_PreferencesValue_SetBoolArray(setValue, boolArray, arg4);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+uint32_t count = 0;
+bool* outBoolArray = nullptr;
+ret = OH_PreferencesValue_GetBoolArray(setValue, &outBoolArray, &count);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+
+const char* strArray[] = {"hello", "world", "test"};
+ret = OH_PreferencesValue_SetStringArray(setValue, strArray, arg3);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+char** outStrArray = nullptr;
+ret = OH_PreferencesValue_GetStringArray(setValue, &outStrArray, &count);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+
+int64_t int64Array[] = {1234567890LL, 9876543210LL, -1234567890LL};
+ret = OH_PreferencesValue_SetInt64Array(setValue, int64Array, arg3);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
+int64_t* outArrayInt64 = nullptr;
+ret = OH_PreferencesValue_GetInt64Array(setValue, &outArrayInt64, &count);
+if (ret != PREFERENCES_OK) {
+    // 错误处理
+}
 
 double doubleArray[] = {1.1, 2.2, 3.3, 4.4};
 ret = OH_PreferencesValue_SetDoubleArray(setValue, doubleArray, arg4);
@@ -334,7 +651,6 @@ if (ret != PREFERENCES_OK) {
     // 错误处理
 }
 
-
 uint8_t blobData[] = {0x01, 0x02, 0x03, 0x04, 0x05};
 ret = OH_PreferencesValue_SetBlob(setValue, blobData, arg5);
 if (ret != PREFERENCES_OK) {
@@ -345,5 +661,4 @@ ret = OH_PreferencesValue_GetBlob(setValue, &outBlob, &count);
 if (ret != PREFERENCES_OK) {
     // 错误处理
 }
-通过用户首选项实现数据持久化 (ArkTS)
-通过键值型数据库实现数据持久化 (ArkTS)
+```

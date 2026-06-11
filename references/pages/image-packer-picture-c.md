@@ -2,10 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-packer-picture-c_
 
+图像编码类，用于创建以及释放ImagePacker实例，并编码多图对象。
+
+开发步骤
+
+[h2]添加链接库
+
 在进行应用开发之前，开发者需要打开native工程的src/main/cpp/CMakeLists.txt，在target_link_libraries依赖中添加libimage_packer.so 以及日志依赖libhilog_ndk.z.so。
 
 target_link_libraries(entry PUBLIC libhilog_ndk.z.so libimage_source.so libimage_packer.so libpixelmap.so)
-Native接口调用
+
+[h2]Native接口调用
 
 具体接口说明请参考Image_NativeModule。
 
@@ -27,7 +34,6 @@ Native接口调用
 #include <multimedia/image_framework/image/image_source_native.h>
 #include <multimedia/image_framework/image/picture_native.h>
 #include <multimedia/image_framework/image/pixelmap_native.h>
-loadPicture.cpp
 
 日志宏定义可参考下述代码按实际需求自行修改。
 
@@ -35,7 +41,6 @@ loadPicture.cpp
 #undef LOG_TAG
 #define LOG_DOMAIN 0x3200
 #define LOG_TAG "IMAGE_SAMPLE"
-loadImageSource.cpp
 
 定义用于图像处理的常量。
 
@@ -43,7 +48,6 @@ loadImageSource.cpp
 #define SDR 1
 const int MAX_SIZE = 1024;
 const int MAX_FORMAT_LENGTH = 20;
-loadPicture.cpp
 
 定义ImagePictureNative类。
 
@@ -58,12 +62,10 @@ public:
     ImagePictureNative() {}
     ~ImagePictureNative() {}
 };
-imageKits.h
 
 创建ImagePictureNative的一个实例。
 
 static ImagePictureNative *g_thisPicture = new ImagePictureNative();
-loadPicture.cpp
 
 创建GetJsResult函数处理napi返回值。
 
@@ -74,7 +76,6 @@ napi_value GetJsResult(napi_env env, int result)
     napi_create_int32(env, result, &resultNapi);
     return resultNapi;
 }
-napi_init.cpp
 
 创建ImagePacker实例，指定编码参数后，将Picture多图对象编码至文件或缓冲区。
 
@@ -91,7 +92,6 @@ void SetPackOptions(OH_PackingOptions *packerOptions,
     OH_PackingOptions_SetDesiredDynamicRange(packerOptions, desiredDynamicRange);
 }
 
-
 // PackToData。
 napi_value PackToDataFromPicture(napi_env env, napi_callback_info info)
 {
@@ -101,10 +101,9 @@ napi_value PackToDataFromPicture(napi_env env, napi_callback_info info)
         OH_LOG_ERROR(LOG_APP, "napi_get_cb_info failed!");
         return GetJsResult(env, g_thisPicture->errorCode);
     }
-    
+
     size_t outDataSize = 10000 * 10000;
     uint8_t *outData = new uint8_t[outDataSize];
-
 
     if (g_thisPicture->packerOptions == nullptr) {
         g_thisPicture->errorCode = OH_PackingOptions_Create(&g_thisPicture->packerOptions);
@@ -112,12 +111,11 @@ napi_value PackToDataFromPicture(napi_env env, napi_callback_info info)
     if (g_thisPicture->imagePacker == nullptr) {
         g_thisPicture->errorCode = OH_ImagePackerNative_Create(&g_thisPicture->imagePacker);
     }
-    
+
     char strFormat[MAX_FORMAT_LENGTH];
     size_t strFormatSize;
     napi_get_value_string_utf8(env, args[0], strFormat, MAX_FORMAT_LENGTH, &strFormatSize);
     OH_LOG_DEBUG(LOG_APP, "PackToDataFromPicture format: %{public}s", strFormat);
-
 
     Image_MimeType format;
     format.size = strFormatSize;
@@ -129,13 +127,13 @@ napi_value PackToDataFromPicture(napi_env env, napi_callback_info info)
     // 确保picture对象已被创建。
     g_thisPicture->errorCode = OH_ImagePackerNative_PackToDataFromPicture(
         g_thisPicture->imagePacker, g_thisPicture->packerOptions, g_thisPicture->picture, outData, &outDataSize);
-    
+
     // 释放imagePacker和packerOptions。
     OH_PackingOptions_Release(g_thisPicture->packerOptions);
     g_thisPicture->packerOptions = nullptr;
     OH_ImagePackerNative_Release(g_thisPicture->imagePacker);
     g_thisPicture->imagePacker = nullptr;
-    
+
     if (g_thisPicture->errorCode != IMAGE_SUCCESS) {
         OH_LOG_ERROR(LOG_APP, "OH_ImagePackerNative_PackToDataFromPicture failed, errCode: %{public}d.",
                      g_thisPicture->errorCode);
@@ -147,7 +145,6 @@ napi_value PackToDataFromPicture(napi_env env, napi_callback_info info)
     delete[] outData;
     return GetJsResult(env, g_thisPicture->errorCode);
 }
-
 
 // PackToFile。
 napi_value PackToFileFromPicture(napi_env env, napi_callback_info info)
@@ -161,19 +158,17 @@ napi_value PackToFileFromPicture(napi_env env, napi_callback_info info)
     uint32_t fd = 0;
     napi_get_value_uint32(env, args[0], &fd);
 
-
     if (g_thisPicture->packerOptions == nullptr) {
         g_thisPicture->errorCode = OH_PackingOptions_Create(&g_thisPicture->packerOptions);
     }
     if (g_thisPicture->imagePacker == nullptr) {
         g_thisPicture->errorCode = OH_ImagePackerNative_Create(&g_thisPicture->imagePacker);
     }
-    
+
     char strFormat[MAX_FORMAT_LENGTH];
     size_t strFormatSize;
     napi_get_value_string_utf8(env, args[1], strFormat, MAX_FORMAT_LENGTH, &strFormatSize);
     OH_LOG_INFO(LOG_APP, "PackToFileFromPicture format: %{public}s", strFormat);
-
 
     Image_MimeType format;
     format.size = strFormatSize;
@@ -185,13 +180,13 @@ napi_value PackToFileFromPicture(napi_env env, napi_callback_info info)
     // 确保picture对象已被创建。
     g_thisPicture->errorCode = OH_ImagePackerNative_PackToFileFromPicture(
         g_thisPicture->imagePacker, g_thisPicture->packerOptions, g_thisPicture->picture, fd);
-    
+
     // 释放imagePacker和packerOptions。
     OH_PackingOptions_Release(g_thisPicture->packerOptions);
     g_thisPicture->packerOptions = nullptr;
     OH_ImagePackerNative_Release(g_thisPicture->imagePacker);
     g_thisPicture->imagePacker = nullptr;
-    
+
     if (g_thisPicture->errorCode != IMAGE_SUCCESS) {
         OH_LOG_ERROR(LOG_APP, "OH_ImagePackerNative_PackToFileFromPicture failed,"
                      "errCode: %{public}d.", g_thisPicture->errorCode);
@@ -200,9 +195,199 @@ napi_value PackToFileFromPicture(napi_env env, napi_callback_info info)
         OH_LOG_DEBUG(LOG_APP, "OH_ImagePackerNative_PackToFileFromPicture success !");
     }
 
+    return GetJsResult(env, g_thisPicture->errorCode);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libhilog_ndk.z.so libimage_source.so libimage_packer.so libpixelmap.so)
+```
+
+### Code block 2
+
+```
+#include <hilog/log.h>
+#include <multimedia/image_framework/image/image_native.h>
+#include <multimedia/image_framework/image/image_packer_native.h>
+#include <multimedia/image_framework/image/image_source_native.h>
+#include <multimedia/image_framework/image/picture_native.h>
+#include <multimedia/image_framework/image/pixelmap_native.h>
+```
+
+### Code block 3
+
+```
+#undef LOG_DOMAIN
+#undef LOG_TAG
+#define LOG_DOMAIN 0x3200
+#define LOG_TAG "IMAGE_SAMPLE"
+```
+
+### Code block 4
+
+```
+#define AUTO 0
+#define SDR 1
+const int MAX_SIZE = 1024;
+const int MAX_FORMAT_LENGTH = 20;
+```
+
+### Code block 5
+
+```
+class ImagePictureNative {
+public:
+    Image_ErrorCode errorCode = IMAGE_SUCCESS;
+    OH_DecodingOptionsForPicture *options = nullptr;
+    OH_ImagePackerNative *imagePacker = nullptr;
+    OH_PackingOptions *packerOptions = nullptr;
+    OH_PictureNative *picture = nullptr;
+    OH_ImageSourceNative *source = nullptr;
+    ImagePictureNative() {}
+    ~ImagePictureNative() {}
+};
+```
+
+### Code block 6
+
+```
+static ImagePictureNative *g_thisPicture = new ImagePictureNative();
+```
+
+### Code block 7
+
+```
+// 处理napi返回值。
+napi_value GetJsResult(napi_env env, int result)
+{
+    napi_value resultNapi = nullptr;
+    napi_create_int32(env, result, &resultNapi);
+    return resultNapi;
+}
+```
+
+### Code block 8
+
+```
+// 设置编码参数。
+void SetPackOptions(OH_PackingOptions *packerOptions,
+                    Image_MimeType format,
+                    uint32_t quality,
+                    bool needsPackProperties,
+                    int32_t desiredDynamicRange)
+{
+    OH_PackingOptions_SetMimeType(packerOptions, &format);
+    OH_PackingOptions_SetQuality(packerOptions, quality);
+    OH_PackingOptions_SetNeedsPackProperties(packerOptions, needsPackProperties);
+    OH_PackingOptions_SetDesiredDynamicRange(packerOptions, desiredDynamicRange);
+}
+
+// PackToData。
+napi_value PackToDataFromPicture(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+    if (napi_get_cb_info(env, info, &argc, args, nullptr, nullptr) != napi_ok) {
+        OH_LOG_ERROR(LOG_APP, "napi_get_cb_info failed!");
+        return GetJsResult(env, g_thisPicture->errorCode);
+    }
+
+    size_t outDataSize = 10000 * 10000;
+    uint8_t *outData = new uint8_t[outDataSize];
+
+    if (g_thisPicture->packerOptions == nullptr) {
+        g_thisPicture->errorCode = OH_PackingOptions_Create(&g_thisPicture->packerOptions);
+    }
+    if (g_thisPicture->imagePacker == nullptr) {
+        g_thisPicture->errorCode = OH_ImagePackerNative_Create(&g_thisPicture->imagePacker);
+    }
+
+    char strFormat[MAX_FORMAT_LENGTH];
+    size_t strFormatSize;
+    napi_get_value_string_utf8(env, args[0], strFormat, MAX_FORMAT_LENGTH, &strFormatSize);
+    OH_LOG_DEBUG(LOG_APP, "PackToDataFromPicture format: %{public}s", strFormat);
+
+    Image_MimeType format;
+    format.size = strFormatSize;
+    format.data = const_cast<char *>(strFormat);
+    uint32_t quality = 95;
+    bool needsPackProperties = true;
+    int32_t desiredDynamicRange = AUTO;
+    SetPackOptions(g_thisPicture->packerOptions, format, quality, needsPackProperties, desiredDynamicRange);
+    // 确保picture对象已被创建。
+    g_thisPicture->errorCode = OH_ImagePackerNative_PackToDataFromPicture(
+        g_thisPicture->imagePacker, g_thisPicture->packerOptions, g_thisPicture->picture, outData, &outDataSize);
+
+    // 释放imagePacker和packerOptions。
+    OH_PackingOptions_Release(g_thisPicture->packerOptions);
+    g_thisPicture->packerOptions = nullptr;
+    OH_ImagePackerNative_Release(g_thisPicture->imagePacker);
+    g_thisPicture->imagePacker = nullptr;
+
+    if (g_thisPicture->errorCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImagePackerNative_PackToDataFromPicture failed, errCode: %{public}d.",
+                     g_thisPicture->errorCode);
+        delete[] outData;
+        return GetJsResult(env, g_thisPicture->errorCode);
+    } else {
+        OH_LOG_DEBUG(LOG_APP, "OH_ImagePackerNative_PackToDataFromPicture success !");
+    }
+    delete[] outData;
+    return GetJsResult(env, g_thisPicture->errorCode);
+}
+
+// PackToFile。
+napi_value PackToFileFromPicture(napi_env env, napi_callback_info info)
+{
+    size_t argc = 2;
+    napi_value args[2] = {nullptr};
+    if (napi_get_cb_info(env, info, &argc, args, nullptr, nullptr) != napi_ok) {
+    OH_LOG_ERROR(LOG_APP, "napi_get_cb_info failed!");
+        return GetJsResult(env, g_thisPicture->errorCode);
+    }
+    uint32_t fd = 0;
+    napi_get_value_uint32(env, args[0], &fd);
+
+    if (g_thisPicture->packerOptions == nullptr) {
+        g_thisPicture->errorCode = OH_PackingOptions_Create(&g_thisPicture->packerOptions);
+    }
+    if (g_thisPicture->imagePacker == nullptr) {
+        g_thisPicture->errorCode = OH_ImagePackerNative_Create(&g_thisPicture->imagePacker);
+    }
+
+    char strFormat[MAX_FORMAT_LENGTH];
+    size_t strFormatSize;
+    napi_get_value_string_utf8(env, args[1], strFormat, MAX_FORMAT_LENGTH, &strFormatSize);
+    OH_LOG_INFO(LOG_APP, "PackToFileFromPicture format: %{public}s", strFormat);
+
+    Image_MimeType format;
+    format.size = strFormatSize;
+    format.data = const_cast<char *>(strFormat);
+    uint32_t quality = 95;
+    bool needsPackProperties = false;
+    int32_t desiredDynamicRange = SDR;
+    SetPackOptions(g_thisPicture->packerOptions, format, quality, needsPackProperties, desiredDynamicRange);
+    // 确保picture对象已被创建。
+    g_thisPicture->errorCode = OH_ImagePackerNative_PackToFileFromPicture(
+        g_thisPicture->imagePacker, g_thisPicture->packerOptions, g_thisPicture->picture, fd);
+
+    // 释放imagePacker和packerOptions。
+    OH_PackingOptions_Release(g_thisPicture->packerOptions);
+    g_thisPicture->packerOptions = nullptr;
+    OH_ImagePackerNative_Release(g_thisPicture->imagePacker);
+    g_thisPicture->imagePacker = nullptr;
+
+    if (g_thisPicture->errorCode != IMAGE_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "OH_ImagePackerNative_PackToFileFromPicture failed,"
+                     "errCode: %{public}d.", g_thisPicture->errorCode);
+        return GetJsResult(env, g_thisPicture->errorCode);
+    } else {
+        OH_LOG_DEBUG(LOG_APP, "OH_ImagePackerNative_PackToFileFromPicture success !");
+    }
 
     return GetJsResult(env, g_thisPicture->errorCode);
 }
-loadPicture.cpp
-使用Image_NativeModule完成图片编码
-图片编辑和处理
+```

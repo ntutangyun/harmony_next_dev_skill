@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-layout-development-flex-layout_
 
+概述
+
 弹性布局（Flex）提供更加有效的方式对容器中的子元素进行排列、对齐和分配剩余空间。常用于页面头部导航栏的均匀分布、页面框架的搭建、多行数据的排列等。
 
 容器默认存在主轴与交叉轴，子元素默认沿主轴排列，子元素在主轴方向的尺寸称为主轴尺寸，在交叉轴方向的尺寸称为交叉轴尺寸。
@@ -31,7 +33,6 @@ Flex({ direction: FlexDirection.Row }) {
 .width('90%')
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexDirectionRow.ets
 
 FlexDirection.RowReverse：主轴为水平方向，子元素从终点端沿着FlexDirection.Row相反的方向开始排布。
 
@@ -44,7 +45,6 @@ Flex({ direction: FlexDirection.RowReverse }) {
 .width('90%')
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexDirectionRowReverse.ets
 
 FlexDirection.Column：主轴为垂直方向，子元素从起始端沿着垂直方向开始排布。
 
@@ -57,7 +57,6 @@ Flex({ direction: FlexDirection.Column }) {
 .width('90%')
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexDirectionColumn.ets
 
 FlexDirection.ColumnReverse：主轴为垂直方向，子元素从终点端沿着FlexDirection.Column相反的方向开始排布。
 
@@ -70,7 +69,6 @@ Flex({ direction: FlexDirection.ColumnReverse }) {
 .width('90%')
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexDirectionColumnReverse.ets
 
 布局换行
 
@@ -86,7 +84,6 @@ Flex({ wrap: FlexWrap.NoWrap }) {
 .width('90%')
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexWrapNoWrap.ets
 
 FlexWrap.Wrap：换行，每一行子元素按照主轴方向排列。
 
@@ -98,7 +95,6 @@ Flex({ wrap: FlexWrap.Wrap }) {
 .width('90%')
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexWrapWrap.ets
 
 FlexWrap.WrapReverse：换行，每一行子元素按照主轴反方向排列。
 
@@ -110,7 +106,6 @@ Flex({ wrap: FlexWrap.WrapReverse}) {
 .width('90%')
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexWrapWrapReverse.ets
 
 主轴对齐方式
 
@@ -126,7 +121,6 @@ Flex({ justifyContent: FlexAlign.Start }) {
 .width('90%')
 .padding({ top: 10, bottom: 10 })
 .backgroundColor('#AFEEEE')
-FlexAlignStart.ets
 
 FlexAlign.Center：子元素在主轴方向居中对齐。
 
@@ -138,7 +132,6 @@ Flex({ justifyContent: FlexAlign.Center }) {
 .width('90%')
 .padding({ top: 10, bottom: 10 })
 .backgroundColor('#AFEEEE')
-FlexAlignCenter.ets
 
 FlexAlign.End：子元素在主轴方向终点端对齐，最后一个子元素与父元素边沿对齐，其他元素与后一个元素对齐。
 
@@ -150,7 +143,6 @@ Flex({ justifyContent: FlexAlign.End }) {
 .width('90%')
 .padding({ top: 10, bottom: 10 })
 .backgroundColor('#AFEEEE')
-FlexAlignEnd.ets
 
 FlexAlign.SpaceBetween：Flex主轴方向均匀分配弹性元素，相邻子元素之间距离相同。第一个子元素和最后一个子元素与父元素边沿对齐。
 
@@ -162,7 +154,6 @@ Flex({ justifyContent: FlexAlign.SpaceBetween }) {
 .width('90%')
 .padding({ top: 10, bottom: 10 })
 .backgroundColor('#AFEEEE')
-FlexAlignSpaceBetween.ets
 
 FlexAlign.SpaceAround：Flex主轴方向均匀分配弹性元素，相邻子元素之间距离相同。第一个子元素到主轴起始端的距离和最后一个子元素到主轴终点端的距离是相邻元素之间距离的一半。
 
@@ -174,7 +165,6 @@ Flex({ justifyContent: FlexAlign.SpaceAround }) {
 .width('90%')
 .padding({ top: 10, bottom: 10 })
 .backgroundColor('#AFEEEE')
-FlexAlignSpaceAround.ets
 
 FlexAlign.SpaceEvenly：Flex主轴方向元素等间距布局，相邻子元素之间的间距、第一个子元素与主轴起始端的间距、最后一个子元素到主轴终点端的间距均相等。
 
@@ -186,13 +176,12 @@ Flex({ justifyContent: FlexAlign.SpaceEvenly }) {
 .width('90%')
 .padding({ top: 10, bottom: 10 })
 .backgroundColor('#AFEEEE')
-FlexAlignSpaceEvenly.ets
 
 交叉轴对齐方式
 
 容器和子元素都可以设置交叉轴对齐方式，且子元素设置的对齐方式优先级较高。
 
-容器组件设置交叉轴对齐
+[h2]容器组件设置交叉轴对齐
 
 可以通过设置FlexOptions的参数alignItems，设置子元素在交叉轴的对齐方式。
 
@@ -206,7 +195,6 @@ Flex({ alignItems: ItemAlign.Auto }) {
 .size({ width: '90%', height: 80 })
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexItemAlignAuto.ets
 
 ItemAlign.Start：交叉轴方向首部对齐。
 
@@ -218,7 +206,6 @@ Flex({ alignItems: ItemAlign.Start }) {
 .size({ width: '90%', height: 80 })
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexItemAlignStart.ets
 
 ItemAlign.Center：交叉轴方向居中对齐。
 
@@ -230,7 +217,6 @@ Flex({ alignItems: ItemAlign.Center }) {
 .size({ width: '90%', height: 80 })
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexItemAlignCenter.ets
 
 ItemAlign.End：交叉轴方向底部对齐。
 
@@ -242,7 +228,6 @@ Flex({ alignItems: ItemAlign.End }) {
 .size({ width: '90%', height: 80 })
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexItemAlignEnd.ets
 
 ItemAlign.Stretch：交叉轴方向拉伸填充，在未设置尺寸时，拉伸到容器尺寸。元素在Flex容器中，沿交叉轴方向拉伸填充。容器为Flex且设置FlexWrap为FlexWrap.Wrap或FlexWrap.WrapReverse时，元素拉伸到与当前行或列交叉轴长度最长的元素尺寸。其余情况下，无论元素尺寸是否设置，均拉伸到容器尺寸。
 
@@ -254,7 +239,6 @@ Flex({ alignItems: ItemAlign.Stretch }) {
 .size({ width: '90%', height: 80 })
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexItemAlignStretch.ets
 
 ItemAlign.Baseline：交叉轴方向文本基线对齐。
 
@@ -266,9 +250,8 @@ Flex({ alignItems: ItemAlign.Baseline }) {
 .size({ width: '90%', height: 80 })
 .padding(10)
 .backgroundColor('#AFEEEE')
-FlexItemAlignBaseline.ets
 
-子元素设置交叉轴对齐
+[h2]子元素设置交叉轴对齐
 
 子元素的alignSelf属性也可以设置子元素在父容器交叉轴的对齐方式，且会覆盖Flex布局容器中alignItems配置。如下例所示：
 
@@ -289,13 +272,11 @@ Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) { // 容器
   Text('no alignSelf').width('25%').height(100)
     .backgroundColor('#F5DEB3')
 
-
 }.width('90%').height(220).backgroundColor('#AFEEEE')
-FlexAlignSelf.ets
 
 上例中，Flex容器中alignItems设置交叉轴子元素的对齐方式为居中，子元素自身设置了alignSelf属性的情况，覆盖父组件的alignItems值，表现为alignSelf的定义。
 
-内容对齐
+[h2]内容对齐
 
 可以通过alignContent参数设置子元素各行在交叉轴剩余空间内的对齐方式，只在多行的Flex布局中生效，可选值有：
 
@@ -311,7 +292,6 @@ Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent
 .width('90%')
 .height(100)
 .backgroundColor('#AFEEEE')
-FlexAlignCenterFlexAlignStart.ets
 
 FlexAlign.Center：子元素各行在交叉轴方向居中对齐。
 
@@ -325,7 +305,6 @@ Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent
 .width('90%')
 .height(100)
 .backgroundColor('#AFEEEE')
-FlexAlignCenterFlexAlignCenter.ets
 
 FlexAlign.End：子元素各行与交叉轴终点对齐。
 
@@ -339,7 +318,6 @@ Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent
 .width('90%')
 .height(100)
 .backgroundColor('#AFEEEE')
-FlexAlignCenterFlexAlignEnd.ets
 
 FlexAlign.SpaceBetween：子元素各行与交叉轴两端对齐，各行间垂直间距平均分布。
 
@@ -353,7 +331,6 @@ Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent
 .width('90%')
 .height(100)
 .backgroundColor('#AFEEEE')
-FlexAlignCenterFlexAlignSpaceBetween.ets
 
 FlexAlign.SpaceAround：子元素各行间距相等，是元素首尾行与交叉轴两端距离的两倍。
 
@@ -367,7 +344,6 @@ Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent
 .width('90%')
 .height(100)
 .backgroundColor('#AFEEEE')
-FlexAlignCenterFlexAlignSpaceAround.ets
 
 FlexAlign.SpaceEvenly: 子元素各行间距，子元素首尾行与交叉轴两端距离都相等。
 
@@ -381,7 +357,6 @@ Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent
 .width('90%')
 .height(100)
 .backgroundColor('#AFEEEE')
-FlexAlignCenterFlexAlignSpaceEvenly.ets
 
 自适应拉伸
 
@@ -400,12 +375,10 @@ Flex() {
     .height(100)
     .backgroundColor('#D2B48C')
 
-
   Text('flexBasis(100)') // 未设置width以及flexBasis值为100，宽度为100vp
     .flexBasis(100)
     .height(100)
     .backgroundColor('#F5DEB3')
-
 
   Text('flexBasis(100)')
     .flexBasis(100)
@@ -413,7 +386,6 @@ Flex() {
     .height(100)
     .backgroundColor('#D2B48C')
 }.width('90%').height(120).padding(10).backgroundColor('#AFEEEE')
-FlexBasis.ets
 
 flexGrow：设置父容器的剩余空间分配给此属性所在组件的比例，用于分配父组件的剩余空间。
 
@@ -429,13 +401,11 @@ Flex() {
     .height(100)
     .backgroundColor('#D2B48C')
 
-
   Text('no flexGrow')
     .width(100)
     .height(100)
     .backgroundColor('#F5DEB3')
 }.width(360).height(120).padding(10).backgroundColor('#AFEEEE')
-FlexGrow.ets
 
 父容器宽度360vp，三个子元素原始宽度均为100vp，左右padding为20vp，总和320vp，剩余空间40vp根据flexGrow值的占比分配给子元素，未设置flexGrow的子元素不参与分配。
 
@@ -450,12 +420,10 @@ Flex({ direction: FlexDirection.Row }) {
     .height(100)
     .backgroundColor('#F5DEB3')
 
-
   Text('no flexShrink')
     .width(200)
     .height(100)
     .backgroundColor('#D2B48C')
-
 
   Text('flexShrink(2)')
     .flexShrink(2)
@@ -463,7 +431,6 @@ Flex({ direction: FlexDirection.Row }) {
     .height(100)
     .backgroundColor('#F5DEB3')
 }.width(400).height(120).padding(10).backgroundColor('#AFEEEE')
-FlexShrink.ets
 
 父容器宽度400vp，三个子元素原始宽度为200vp，左右padding为20vp，父容器给子元素的布局空间为380vp，超出父容器空间220vp。
 
@@ -496,7 +463,469 @@ struct FlexExample {
     }.width('100%')
   }
 }
-FlexExample.ets
 
-层叠布局 (Stack)
-相对布局 (RelativeContainer)
+## Code blocks
+
+### Code block 1
+
+```
+Flex({ direction: FlexDirection.Row }) {
+  Text('1').width('33%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('33%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('33%').height(50).backgroundColor('#F5DEB3')
+}
+.height(70)
+.width('90%')
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 2
+
+```
+Flex({ direction: FlexDirection.RowReverse }) {
+  Text('1').width('33%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('33%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('33%').height(50).backgroundColor('#F5DEB3')
+}
+.height(70)
+.width('90%')
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 3
+
+```
+Flex({ direction: FlexDirection.Column }) {
+  Text('1').width('100%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('100%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('100%').height(50).backgroundColor('#F5DEB3')
+}
+.height(70)
+.width('90%')
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 4
+
+```
+Flex({ direction: FlexDirection.ColumnReverse }) {
+  Text('1').width('100%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('100%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('100%').height(50).backgroundColor('#F5DEB3')
+}
+.height(70)
+.width('90%')
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 5
+
+```
+Flex({ wrap: FlexWrap.NoWrap }) {
+  Text('1').width('50%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('50%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('50%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 6
+
+```
+Flex({ wrap: FlexWrap.Wrap }) {
+  Text('1').width('50%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('50%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('50%').height(50).backgroundColor('#D2B48C')
+}
+.width('90%')
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 7
+
+```
+Flex({ wrap: FlexWrap.WrapReverse}) {
+  Text('1').width('50%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('50%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('50%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 8
+
+```
+Flex({ justifyContent: FlexAlign.Start }) {
+  Text('1').width('20%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('20%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('20%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding({ top: 10, bottom: 10 })
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 9
+
+```
+Flex({ justifyContent: FlexAlign.Center }) {
+  Text('1').width('20%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('20%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('20%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding({ top: 10, bottom: 10 })
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 10
+
+```
+Flex({ justifyContent: FlexAlign.End }) {
+  Text('1').width('20%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('20%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('20%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding({ top: 10, bottom: 10 })
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 11
+
+```
+Flex({ justifyContent: FlexAlign.SpaceBetween }) {
+  Text('1').width('20%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('20%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('20%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding({ top: 10, bottom: 10 })
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 12
+
+```
+Flex({ justifyContent: FlexAlign.SpaceAround }) {
+  Text('1').width('20%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('20%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('20%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding({ top: 10, bottom: 10 })
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 13
+
+```
+Flex({ justifyContent: FlexAlign.SpaceEvenly }) {
+  Text('1').width('20%').height(50).backgroundColor('#F5DEB3')
+  Text('2').width('20%').height(50).backgroundColor('#D2B48C')
+  Text('3').width('20%').height(50).backgroundColor('#F5DEB3')
+}
+.width('90%')
+.padding({ top: 10, bottom: 10 })
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 14
+
+```
+Flex({ alignItems: ItemAlign.Auto }) {
+  Text('1').width('33%').height(30).backgroundColor('#F5DEB3')
+  Text('2').width('33%').height(40).backgroundColor('#D2B48C')
+  Text('3').width('33%').height(50).backgroundColor('#F5DEB3')
+}
+.size({ width: '90%', height: 80 })
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 15
+
+```
+Flex({ alignItems: ItemAlign.Start }) {
+  Text('1').width('33%').height(30).backgroundColor('#F5DEB3')
+  Text('2').width('33%').height(40).backgroundColor('#D2B48C')
+  Text('3').width('33%').height(50).backgroundColor('#F5DEB3')
+}
+.size({ width: '90%', height: 80 })
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 16
+
+```
+Flex({ alignItems: ItemAlign.Center }) {
+  Text('1').width('33%').height(30).backgroundColor('#F5DEB3')
+  Text('2').width('33%').height(40).backgroundColor('#D2B48C')
+  Text('3').width('33%').height(50).backgroundColor('#F5DEB3')
+}
+.size({ width: '90%', height: 80 })
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 17
+
+```
+Flex({ alignItems: ItemAlign.End }) {
+  Text('1').width('33%').height(30).backgroundColor('#F5DEB3')
+  Text('2').width('33%').height(40).backgroundColor('#D2B48C')
+  Text('3').width('33%').height(50).backgroundColor('#F5DEB3')
+}
+.size({ width: '90%', height: 80 })
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 18
+
+```
+Flex({ alignItems: ItemAlign.Stretch }) {
+  Text('1').width('33%').backgroundColor('#F5DEB3')
+  Text('2').width('33%').backgroundColor('#D2B48C')
+  Text('3').width('33%').backgroundColor('#F5DEB3')
+}
+.size({ width: '90%', height: 80 })
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 19
+
+```
+Flex({ alignItems: ItemAlign.Baseline }) {
+  Text('1').width('33%').height(30).backgroundColor('#F5DEB3')
+  Text('2').width('33%').height(40).backgroundColor('#D2B48C')
+  Text('3').width('33%').height(50).backgroundColor('#F5DEB3')
+}
+.size({ width: '90%', height: 80 })
+.padding(10)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 20
+
+```
+Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) { // 容器组件设置子元素居中
+  Text('alignSelf Start').width('25%').height(80)
+    .alignSelf(ItemAlign.Start)
+    .backgroundColor('#F5DEB3')
+  Text('alignSelf Baseline')
+    .alignSelf(ItemAlign.Baseline)
+    .width('25%')
+    .height(80)
+    .backgroundColor('#D2B48C')
+  Text('alignSelf Baseline').width('25%').height(100)
+    .backgroundColor('#F5DEB3')
+    .alignSelf(ItemAlign.Baseline)
+  Text('no alignSelf').width('25%').height(100)
+    .backgroundColor('#D2B48C')
+  Text('no alignSelf').width('25%').height(100)
+    .backgroundColor('#F5DEB3')
+
+}.width('90%').height(220).backgroundColor('#AFEEEE')
+```
+
+### Code block 21
+
+```
+Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.Start }) {
+  Text('1').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('2').width('60%').height(20).backgroundColor('#D2B48C')
+  Text('3').width('40%').height(20).backgroundColor('#D2B48C')
+  Text('4').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('5').width('20%').height(20).backgroundColor('#D2B48C')
+}
+.width('90%')
+.height(100)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 22
+
+```
+Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.Center }) {
+  Text('1').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('2').width('60%').height(20).backgroundColor('#D2B48C')
+  Text('3').width('40%').height(20).backgroundColor('#D2B48C')
+  Text('4').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('5').width('20%').height(20).backgroundColor('#D2B48C')
+}
+.width('90%')
+.height(100)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 23
+
+```
+Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.End }) {
+  Text('1').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('2').width('60%').height(20).backgroundColor('#D2B48C')
+  Text('3').width('40%').height(20).backgroundColor('#D2B48C')
+  Text('4').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('5').width('20%').height(20).backgroundColor('#D2B48C')
+}
+.width('90%')
+.height(100)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 24
+
+```
+Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceBetween }) {
+  Text('1').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('2').width('60%').height(20).backgroundColor('#D2B48C')
+  Text('3').width('40%').height(20).backgroundColor('#D2B48C')
+  Text('4').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('5').width('20%').height(20).backgroundColor('#D2B48C')
+}
+.width('90%')
+.height(100)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 25
+
+```
+Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceAround }) {
+  Text('1').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('2').width('60%').height(20).backgroundColor('#D2B48C')
+  Text('3').width('40%').height(20).backgroundColor('#D2B48C')
+  Text('4').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('5').width('20%').height(20).backgroundColor('#D2B48C')
+}
+.width('90%')
+.height(100)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 26
+
+```
+Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
+  Text('1').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('2').width('60%').height(20).backgroundColor('#D2B48C')
+  Text('3').width('40%').height(20).backgroundColor('#D2B48C')
+  Text('4').width('30%').height(20).backgroundColor('#F5DEB3')
+  Text('5').width('20%').height(20).backgroundColor('#D2B48C')
+}
+.width('90%')
+.height(100)
+.backgroundColor('#AFEEEE')
+```
+
+### Code block 27
+
+```
+Flex() {
+  Text('flexBasis("auto")')
+    .flexBasis('auto')// 未设置width以及flexBasis值为auto，内容自身宽度
+    .height(100)
+    .backgroundColor('#F5DEB3')
+  Text('flexBasis("auto")'+' width("40%")')
+    .width('40%')
+    .flexBasis('auto')// 设置width以及flexBasis值auto，使用width的值
+    .height(100)
+    .backgroundColor('#D2B48C')
+
+  Text('flexBasis(100)') // 未设置width以及flexBasis值为100，宽度为100vp
+    .flexBasis(100)
+    .height(100)
+    .backgroundColor('#F5DEB3')
+
+  Text('flexBasis(100)')
+    .flexBasis(100)
+    .width(200)// flexBasis值为100，覆盖width的设置值，宽度为100vp
+    .height(100)
+    .backgroundColor('#D2B48C')
+}.width('90%').height(120).padding(10).backgroundColor('#AFEEEE')
+```
+
+### Code block 28
+
+```
+Flex() {
+  Text('flexGrow(1)')
+    .flexGrow(1)
+    .width(100)
+    .height(100)
+    .backgroundColor('#F5DEB3')
+  Text('flexGrow(4)')
+    .flexGrow(4)
+    .width(100)
+    .height(100)
+    .backgroundColor('#D2B48C')
+
+  Text('no flexGrow')
+    .width(100)
+    .height(100)
+    .backgroundColor('#F5DEB3')
+}.width(360).height(120).padding(10).backgroundColor('#AFEEEE')
+```
+
+### Code block 29
+
+```
+Flex({ direction: FlexDirection.Row }) {
+  Text('flexShrink(3)')
+    .flexShrink(3)
+    .width(200)
+    .height(100)
+    .backgroundColor('#F5DEB3')
+
+  Text('no flexShrink')
+    .width(200)
+    .height(100)
+    .backgroundColor('#D2B48C')
+
+  Text('flexShrink(2)')
+    .flexShrink(2)
+    .width(200)
+    .height(100)
+    .backgroundColor('#F5DEB3')
+}.width(400).height(120).padding(10).backgroundColor('#AFEEEE')
+```
+
+### Code block 30
+
+```
+@Entry
+@Component
+struct FlexExample {
+  build() {
+    Column() {
+      Column({ space: 5 }) {
+        Flex({
+          direction: FlexDirection.Row,
+          wrap: FlexWrap.NoWrap,
+          justifyContent: FlexAlign.SpaceBetween,
+          alignItems: ItemAlign.Center
+        }) {
+          Text('1').width('30%').height(50).backgroundColor('#F5DEB3')
+          Text('2').width('30%').height(50).backgroundColor('#D2B48C')
+          Text('3').width('30%').height(50).backgroundColor('#F5DEB3')
+        }
+        .height(70)
+        .width('90%')
+        .backgroundColor('#AFEEEE')
+      }.width('100%').margin({ top: 5 })
+    }.width('100%')
+  }
+}
+```

@@ -1,6 +1,21 @@
-# @typescript
+# @typescript-eslint/no-implicit-any-catch
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_no-implicit-any-catch_
+
+禁止在 catch 表达式中使用隐式“any”类型。
+
+该规则仅支持对.js/.ts文件进行检查。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/no-implicit-any-catch": "error"
+  }
+}
+
+选项
 
 该规则默认不允许使用隐式any类型。但是可以接受{"allowExplicitAny": true}对象作为规则参数，以允许使用显式的any类型。
 
@@ -20,23 +35,87 @@ try {
 } catch (e: any) {
   // ...
 }
+
 正例
+
 try {
   // ...
 } catch (e: unknown) {
   // ...
 }
+
 反例
+
 try {
   // ...
 // 默认不允许使用隐式any类型
 } catch (e) {
   // ...
 }
+
 规则集
+
 plugin:@typescript-eslint/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@typescript-eslint/no-for-in-array
-@typescript-eslint/no-implied-eval
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/no-implicit-any-catch": "error"
+  }
+}
+```
+
+### Code block 2
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@typescript-eslint/no-implicit-any-catch": ["error", {"allowExplicitAny": true}]
+  }
+}
+```
+
+### Code block 3
+
+```
+try {
+  // ...
+} catch (e: any) {
+  // ...
+}
+```
+
+### Code block 4
+
+```
+try {
+  // ...
+} catch (e: unknown) {
+  // ...
+}
+```
+
+### Code block 5
+
+```
+try {
+  // ...
+// 默认不允许使用隐式any类型
+} catch (e) {
+  // ...
+}
+```
+
+### Code block 6
+
+```
+plugin:@typescript-eslint/all
+```

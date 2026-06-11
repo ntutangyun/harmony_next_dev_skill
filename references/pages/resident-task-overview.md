@@ -11,5 +11,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resident-
 常见业务场景	具体业务描述
 游戏中台场景	启动子线程作为游戏业务的主逻辑线程，UI线程只负责渲染。
 长耗时任务场景	后台长时间的模型预测任务以及硬件测试等。
-常驻任务并发场景
-常驻任务开发指导（Worker）

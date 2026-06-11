@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/query_and_subscribe_status_
 
+说明
+
 该接口的调用需要在开发者联盟申请设备基础信息权限与穿戴用户状态权限（请参考申请接入Wear Engine服务），穿戴用户状态权限还需获得用户授权。
 
 实时查询穿戴设备可用空间、电量状态。
@@ -15,113 +17,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/query_and
 表1 申请权限：设备基础信息
 
 穿戴设备状态与运动健康状态	查询结果	订阅事件的触发条件	订阅结果
-连接状态	N/A	
-
-- 2：手机连接设备成功
-
-- 3：手机与设备断开（断开蓝牙或拉远距离）
-
-	
-
-- 2：连接成功
-
-- 3：连接断开
-
-- 4：连接失败
-
-- 5：设备被删除
-
-
+连接状态	N/A	- 2：手机连接设备成功 - 3：手机与设备断开（断开蓝牙或拉远距离）	- 2：连接成功 - 3：连接断开 - 4：连接失败 - 5：设备被删除
 可用空间	可用存储空间，单位：KB（例如：20480）	N/A	N/A
 电量状态	电量值（例如：97）	设备电量每减少1% （例如：由98%降到97%），且设备处于非充电状态	电量值（例如：97）
-充电状态	
-
-- 1：设备正在充电状态
-
-- 2：设备为非充电状态
-
-- 3：设备正在充电，且为满电状态
-
-	
-
-- 1：给设备进行充电
-
-- 2：设备停止充电
-
-- 3：设备达到充满电的状态
-
-	
-
-- 1：充电开始
-
-- 2：充电结束
-
-- 3：充电完成
-
-
-设备模式	
-
-- -1：设备不支持模式切换
-
-- 0：设备处于智能模式
-
-- 1：设备处于超长续航模式
-
-	
-
-- 0：设备从超长续航模式切换到智能模式
-
-- 1：设备从智能模式切换到超长续航模式
-
-	
-
-- 0：设备处于智能模式
-
-- 1：设备处于超长续航模式
+充电状态	- 1：设备正在充电状态 - 2：设备为非充电状态 - 3：设备正在充电，且为满电状态	- 1：给设备进行充电 - 2：设备停止充电 - 3：设备达到充满电的状态	- 1：充电开始 - 2：充电结束 - 3：充电完成
+设备模式	- -1：设备不支持模式切换 - 0：设备处于智能模式 - 1：设备处于超长续航模式	- 0：设备从超长续航模式切换到智能模式 - 1：设备从智能模式切换到超长续航模式	- 0：设备处于智能模式 - 1：设备处于超长续航模式
 
 表2 申请权限：穿戴用户状态USER_STATUS（仅限企业开发者）
 
 穿戴设备状态与运动健康状态	查询结果	订阅事件的触发条件	订阅结果
-佩戴状态	
-
-- 1：佩戴中
-
-- 2：未佩戴
-
-	
-
-- 1：将穿戴设备戴在手腕上
-
-- 2：将穿戴设备由手腕摘下
-
-	
-
-- 1：佩戴
-
-- 2：未佩戴
-
-
-心率告警	N/A	
-
-- 1：静态心率连续10分钟高于上限值
-
-- 2：静态心率连续10分钟低于下限值
-
-- 3：运动心率过高
-
-- 4：运动心率过低
-
-备注：打开运动健康App 设备，在应用和服务列表中，点击心率，设置相应的心率提醒。
-
-	
-
-- 1：静态心率过高
-
-- 2：静态心率过低
-
-- 3：运动心率过高
-
-- 4：运动心率过低
+佩戴状态	- 1：佩戴中 - 2：未佩戴	- 1：将穿戴设备戴在手腕上 - 2：将穿戴设备由手腕摘下	- 1：佩戴 - 2：未佩戴
+心率告警	N/A	- 1：静态心率连续10分钟高于上限值 - 2：静态心率连续10分钟低于下限值 - 3：运动心率过高 - 4：运动心率过低 备注：打开运动健康App 设备，在应用和服务列表中，点击心率，设置相应的心率提醒。	- 1：静态心率过高 - 2：静态心率过低 - 3：运动心率过高 - 4：运动心率过低
 
 说明
 
@@ -143,16 +49,18 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/query_and
 
 调用queryStatus方法，查询指定指标状态。
 
-通过MonitorItem对象，查询指定指标状态。目前支持查询的状态如下：
 “电量状态”字段：POWER_STATUS。
+
 “充电状态”字段：CHARGE_STATUS。
+
 “佩戴状态”字段：WEAR_STATUS。
+
 “设备模式”字段：POWER_MODE。
+
 “可用内存”字段：AVAILABLE_STORAGE_SPACE
-通过MonitorData对象，返回指定指标状态的查询结果。
+
 // 步骤3 获取MonitorClient对象
 let monitorClient: wearEngine.MonitorClient = wearEngine.getMonitorClient(this.getUIContext().getHostContext());
-
 
 // 步骤4 查询指定指标状态（以佩戴状态为例）
 monitorClient.queryStatus(targetDevice.randomId, wearEngine.MonitorItem.WEAR_STATUS).then((result: wearEngine.MonitorData) => {
@@ -161,7 +69,8 @@ monitorClient.queryStatus(targetDevice.randomId, wearEngine.MonitorItem.WEAR_STA
 }).catch((error: BusinessError) => {
   // 处理调用失败时捕获到的异常
   console.error(`Failed to query wear status. Code is ${error.code}, message is ${error.message}.`);
-})
+});
+
 订阅设备状态
 
 参见已连接穿戴设备查询章节，获取已连接的设备列表。
@@ -174,39 +83,106 @@ monitorClient.queryStatus(targetDevice.randomId, wearEngine.MonitorItem.WEAR_STA
 
 调用subscribeEvent方法，订阅指定指标状态变化的订阅。
 
-通过MonitorEvent对象，订阅穿戴设备与运动健康状态。目前支持的订阅状态如下：
 “设备连接状态”字段： EVENT_CONNECTION_STATUS_CHANGED。
+
 “电量降低状态”字段：EVENT_BATTERY_LEVEL_DROPPED。
+
 “充电状态”字段： EVENT_CHARGE_STATUS_CHANGED。
+
 “佩戴状态”字段：EVENT_WEAR_STATUS_CHANGED。
+
 “心率告警”字段：EVENT_HEART_RATE_ALARM。
+
 “设备模式”字段：EVENT_POWER_MODE_CHANGED。
+
 通过Callback<MonitorEventData>对象，返回设备状态的订阅结果。
+
 // 步骤3 获取MonitorClient对象
 let monitorClient: wearEngine.MonitorClient = wearEngine.getMonitorClient(this.getUIContext().getHostContext());
-
 
 // 步骤4 定义回调函数
 let callback = (monitorEventData: wearEngine.MonitorEventData) => {
   // 处理监听到状态变化后的业务逻辑
-  console.info(`Succeeded in listening change of ${monitorEventData.event}, the new status is ${monitorEventData.data}.`)
-}
-
+  console.info(`Succeeded in listening change of ${monitorEventData.event}, the new status is ${monitorEventData.data}.`);
+};
 
 // 步骤5 调用订阅方法
-monitorClient.subscribeEvent(targetDevice.randomId, wearEngine.MonitorEvent.EVENT_WEAR_STATUS_CHANGED, callback).then(() => {
+monitorClient.subscribeEvent(
+  targetDevice.randomId,
+  wearEngine.MonitorEvent.EVENT_WEAR_STATUS_CHANGED,
+  callback
+).then(() => {
   console.info(`Succeeded in subscribing wear status.`);
 }).catch((error: BusinessError) => {
   console.error(`Failed to subscribe wear status. Code is ${error.code}, message is ${error.message}.`);
-})
+});
 
 调用unsubscribeEvent方法，解除穿戴设备状态变化的订阅。（需要传入订阅时使用的回调函数对象）
 
 // 步骤6 取消订阅，取消订阅时需要传入与订阅时相同的回调函数对象才可正常取消订阅
-monitorClient.unsubscribeEvent(targetDevice.randomId, wearEngine.MonitorEvent.EVENT_WEAR_STATUS_CHANGED, callback).then(() => {
+monitorClient.unsubscribeEvent(
+  targetDevice.randomId,
+  wearEngine.MonitorEvent.EVENT_WEAR_STATUS_CHANGED,
+  callback
+).then(() => {
   console.info(`Succeeded in unsubscribing wear status`);
 }).catch((error: BusinessError) => {
   console.error(`Failed to unsubscribe wear status. Code is ${error.code}, message is ${error.message}.`);
-})
-应用间消息通信
-穿戴设备模板化通知
+});
+
+## Code blocks
+
+### Code block 1
+
+```
+// 步骤3 获取MonitorClient对象
+let monitorClient: wearEngine.MonitorClient = wearEngine.getMonitorClient(this.getUIContext().getHostContext());
+
+// 步骤4 查询指定指标状态（以佩戴状态为例）
+monitorClient.queryStatus(targetDevice.randomId, wearEngine.MonitorItem.WEAR_STATUS).then((result: wearEngine.MonitorData) => {
+  // 获取到所查状态的状态值，处理对应业务逻辑
+  console.info(`Succeeded in querying wear status, result is ${result.code}.`);
+}).catch((error: BusinessError) => {
+  // 处理调用失败时捕获到的异常
+  console.error(`Failed to query wear status. Code is ${error.code}, message is ${error.message}.`);
+});
+```
+
+### Code block 2
+
+```
+// 步骤3 获取MonitorClient对象
+let monitorClient: wearEngine.MonitorClient = wearEngine.getMonitorClient(this.getUIContext().getHostContext());
+
+// 步骤4 定义回调函数
+let callback = (monitorEventData: wearEngine.MonitorEventData) => {
+  // 处理监听到状态变化后的业务逻辑
+  console.info(`Succeeded in listening change of ${monitorEventData.event}, the new status is ${monitorEventData.data}.`);
+};
+
+// 步骤5 调用订阅方法
+monitorClient.subscribeEvent(
+  targetDevice.randomId,
+  wearEngine.MonitorEvent.EVENT_WEAR_STATUS_CHANGED,
+  callback
+).then(() => {
+  console.info(`Succeeded in subscribing wear status.`);
+}).catch((error: BusinessError) => {
+  console.error(`Failed to subscribe wear status. Code is ${error.code}, message is ${error.message}.`);
+});
+```
+
+### Code block 3
+
+```
+// 步骤6 取消订阅，取消订阅时需要传入与订阅时相同的回调函数对象才可正常取消订阅
+monitorClient.unsubscribeEvent(
+  targetDevice.randomId,
+  wearEngine.MonitorEvent.EVENT_WEAR_STATUS_CHANGED,
+  callback
+).then(() => {
+  console.info(`Succeeded in unsubscribing wear status`);
+}).catch((error: BusinessError) => {
+  console.error(`Failed to unsubscribe wear status. Code is ${error.code}, message is ${error.message}.`);
+});
+```

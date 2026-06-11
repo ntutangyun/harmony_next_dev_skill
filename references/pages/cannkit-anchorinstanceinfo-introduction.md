@@ -8,5 +8,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-a
 必选输入	必为1，否则报错	起始索引从0开始，instance_start_[i] = instance_start_[i-1] + instantiation_num_[i-1]
 可选输入	有实际输入时为1，否则为0	起始索引从0开始，instance_start_[i] = instance_start_[i-1] + instantiation_num_[i-1]
 动态输入	根据实际输入个数对应0~N个。	起始索引从0开始，instance_start_[i] = instance_start_[i-1] + instantiation_num_[i-1]
-AnchorInstanceInfo
-构造函数

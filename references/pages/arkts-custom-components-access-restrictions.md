@@ -38,7 +38,6 @@ struct LinkErrorAccessRestrictions {
     Text('Parent builder')
   }
 
-
   build() {
     Column() {
       LinkErrorComponentChild({
@@ -53,7 +52,6 @@ struct LinkErrorAccessRestrictions {
   }
 }
 
-
 @Component
 struct LinkErrorComponentChild {
   // 此处使用private修饰符时会出现告警日志
@@ -67,12 +65,10 @@ struct LinkErrorComponentChild {
   // 此处使用private修饰符时会出现告警日志
   private regularValue: string = 'Hello';
 
-
   @Builder
   buildTest() {
     Text('Child builder')
   }
-
 
   build() {
     Column() {
@@ -82,7 +78,6 @@ struct LinkErrorComponentChild {
     }
   }
 }
-LlinkWithPrivateErrorCase.ets
 
 编译告警日志如下：
 
@@ -102,7 +97,6 @@ struct LinkAccessRestrictions {
     Text('Parent builder')
   }
 
-
   build() {
     Column() {
       LinkComponentChild({
@@ -117,7 +111,6 @@ struct LinkAccessRestrictions {
   }
 }
 
-
 @Component
 struct LinkComponentChild {
   @State stateValue: string = 'Hello';
@@ -126,12 +119,10 @@ struct LinkComponentChild {
   @BuilderParam builderValue: () => void = this.buildTest;
   regularValue: string = 'Hello';
 
-
   @Builder
   buildTest() {
     Text('Child builder')
   }
-
 
   build() {
     Column() {
@@ -141,9 +132,8 @@ struct LinkComponentChild {
     }
   }
 }
-LlinkWithPrivateCorrectCase.ets
 
-当成员变量被public访问限定符和@StorageLink/@StorageProp/@LocalStorageLink/@LocalStorageProp/@Consume装饰器同时修饰，并且通过父组件进行初始化赋值，ArkTS会进行校验并产生告警日志。
+当成员变量被public访问限定符和@StorageLink/@StorageProp/@LocalStorageLink/@LocalStorageProp/@Consume装饰器同时修饰时，ArkTS会进行校验并产生告警日志。
 
 【反例】
 
@@ -152,7 +142,6 @@ LlinkWithPrivateCorrectCase.ets
 struct PublicErrorAccessRestrictions {
   @Provide consumeValue: string = 'Hello';
 
-
   build() {
     Column() {
       PublicErrorComponentChild()
@@ -160,7 +149,6 @@ struct PublicErrorAccessRestrictions {
     .width('100%')
   }
 }
-
 
 @Component
 struct PublicErrorComponentChild {
@@ -175,7 +163,6 @@ struct PublicErrorComponentChild {
   // 此处使用public修饰符时会出现告警日志
   @Consume public consumeValue: string;
 
-
   build() {
     Column() {
       Text('Hello')
@@ -184,7 +171,6 @@ struct PublicErrorComponentChild {
     }
   }
 }
-PublicWithStoragePropErrorCase.ets
 
 编译告警日志如下：
 
@@ -201,7 +187,6 @@ Property 'consumeValue' can not be decorated with both '@Consume' and public.
 struct PublicCorrectAccessRestrictions {
   @Provide consumeValue: string = 'Hello';
 
-
   build() {
     Column() {
       PublicCorrectComponentChild()
@@ -209,7 +194,6 @@ struct PublicCorrectAccessRestrictions {
     .width('100%')
   }
 }
-
 
 @Component
 struct PublicCorrectComponentChild {
@@ -219,7 +203,6 @@ struct PublicCorrectComponentChild {
   @StorageLink('sessionLink') storageLinkValue: string = 'Hello';
   @Consume consumeValue: string;
 
-
   build() {
     Column() {
       Text('Hello')
@@ -228,9 +211,8 @@ struct PublicCorrectComponentChild {
     }
   }
 }
-PublicWithStoragePropCorrectCase.ets
 
-当成员变量被private访问限定符和@Link/@ObjectLink装饰器同时修饰，并且通过父组件进行初始化赋值，ArkTS会进行校验并产生告警日志。
+当成员变量被private访问限定符和@Link/@ObjectLink装饰器同时修饰时，ArkTS会进行校验并产生告警日志。
 
 【反例】
 
@@ -240,7 +222,6 @@ struct PrivateWithLinkErrorAccessRestrictions {
   @State linkValue: string = 'Hello';
   @State objectLinkValue: PrivateErrorComponentObj = new PrivateErrorComponentObj();
 
-
   build() {
     Column() {
       PrivateWithLinkErrorComponentChild({ linkValue: this.linkValue, objectLinkValue: this.objectLinkValue })
@@ -249,12 +230,10 @@ struct PrivateWithLinkErrorAccessRestrictions {
   }
 }
 
-
 @Observed
 class PrivateErrorComponentObj {
   public count: number = 0;
 }
-
 
 @Component
 struct PrivateWithLinkErrorComponentChild {
@@ -262,7 +241,6 @@ struct PrivateWithLinkErrorComponentChild {
   @Link private linkValue: string;
   // 此处使用private修饰符时会出现告警日志
   @ObjectLink private objectLinkValue: PrivateErrorComponentObj;
-
 
   build() {
     Column() {
@@ -272,7 +250,6 @@ struct PrivateWithLinkErrorComponentChild {
     }
   }
 }
-PrivateWithLinkEerrorCase.ets
 
 编译告警日志如下：
 
@@ -287,7 +264,6 @@ struct PrivateWithLinkAccessRestrictions {
   @State linkValue: string = 'Hello';
   @State objectLinkValue: PrivateComponentObj = new PrivateComponentObj();
 
-
   build() {
     Column() {
       PrivateWithLinkComponentChild({ linkValue: this.linkValue, objectLinkValue: this.objectLinkValue })
@@ -296,18 +272,15 @@ struct PrivateWithLinkAccessRestrictions {
   }
 }
 
-
 @Observed
 class PrivateComponentObj {
   public count: number = 0;
 }
 
-
 @Component
 struct PrivateWithLinkComponentChild {
   @Link linkValue: string;
   @ObjectLink objectLinkValue: PrivateComponentObj;
-
 
   build() {
     Column() {
@@ -317,9 +290,8 @@ struct PrivateWithLinkComponentChild {
     }
   }
 }
-PrivateWithLinkCorrectCase.ets
 
-当成员变量被protected访问限定符修饰，并且通过父组件进行初始化赋值，ArkTS会进行校验并产生告警日志。
+当成员变量被protected访问限定符修饰时，ArkTS会进行校验并产生告警日志。
 
 【反例】
 
@@ -334,12 +306,10 @@ struct ProtectedErrorAccessRestrictions {
   }
 }
 
-
 @Component
 struct ProtectedErrorComponentChild {
   // 此处使用protected修饰符时会出现告警日志
   protected regularValue: string = 'Hello';
-
 
   build() {
     Column() {
@@ -349,7 +319,6 @@ struct ProtectedErrorComponentChild {
     }
   }
 }
-ProtectedInStructErrorCase.ets
 
 编译告警日志如下：
 
@@ -368,11 +337,9 @@ struct ProtectedCorrectAccessRestrictions {
   }
 }
 
-
 @Component
 struct ProtectedCorrectComponentChild {
   regularValue: string = 'Hello';
-
 
   build() {
     Column() {
@@ -382,9 +349,8 @@ struct ProtectedCorrectComponentChild {
     }
   }
 }
-ProtectedInStructCorrectCase.ets
 
-当成员变量被private访问限定符、@Require和@State/@Prop/@Provide/@BuilderParam装饰器同时修饰，并且通过父组件初始化赋值时，ArkTS会进行校验并产生告警日志。
+当成员变量被private访问限定符、@Require和@State/@Prop/@Provide/@BuilderParam装饰器同时修饰时，ArkTS会进行校验并产生告警日志。
 
 【反例】
 
@@ -399,12 +365,10 @@ struct PrivateErrorAccessRestrictions {
   }
 }
 
-
 @Component
 struct PrivateErrorComponentChild {
   // 此处使用private修饰符时会出现告警日志
   @Require @Prop private propValue: string = 'Hello';
-
 
   build() {
     Column() {
@@ -414,7 +378,6 @@ struct PrivateErrorComponentChild {
     }
   }
 }
-PrivateWithRequireErrorCase.ets
 
 编译告警日志如下：
 
@@ -434,11 +397,9 @@ struct PrivateCorrectAccessRestrictions {
   }
 }
 
-
 @Component
 struct PrivateCorrectComponentChild {
   @Require @Prop propValue: string = 'Hello';
-
 
   build() {
     Column() {
@@ -448,6 +409,409 @@ struct PrivateCorrectComponentChild {
     }
   }
 }
-PrivateWithRequireCorrectCase.ets
-自定义组件的自定义布局
-自定义组件复用
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct LinkErrorAccessRestrictions {
+  @Builder
+  buildTest() {
+    Text('Parent builder')
+  }
+
+  build() {
+    Column() {
+      LinkErrorComponentChild({
+        stateValue: 'Hello',
+        propValue: 'Hello',
+        provideValue: 'Hello',
+        builderValue: this.buildTest,
+        regularValue: 'Hello'
+      })
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct LinkErrorComponentChild {
+  // 此处使用private修饰符时会出现告警日志
+  @State private stateValue: string = 'Hello';
+  // 此处使用private修饰符时会出现告警日志
+  @Prop private propValue: string = 'Hello';
+  // 此处使用private修饰符时会出现告警日志
+  @Provide private provideValue: string = 'Hello';
+  // 此处使用private修饰符时会出现告警日志
+  @BuilderParam private builderValue: () => void = this.buildTest;
+  // 此处使用private修饰符时会出现告警日志
+  private regularValue: string = 'Hello';
+
+  @Builder
+  buildTest() {
+    Text('Child builder')
+  }
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+Property 'stateValue' is private and can not be initialized through the component constructor.
+Property 'propValue' is private and can not be initialized through the component constructor.
+Property 'provideValue' is private and can not be initialized through the component constructor.
+Property 'builderValue' is private and can not be initialized through the component constructor.
+Property 'regularValue' is private and can not be initialized through the component constructor.
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct LinkAccessRestrictions {
+  @Builder
+  buildTest() {
+    Text('Parent builder')
+  }
+
+  build() {
+    Column() {
+      LinkComponentChild({
+        stateValue: 'Hello',
+        propValue: 'Hello',
+        provideValue: 'Hello',
+        builderValue: this.buildTest,
+        regularValue: 'Hello'
+      })
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct LinkComponentChild {
+  @State stateValue: string = 'Hello';
+  @Prop propValue: string = 'Hello';
+  @Provide provideValue: string = 'Hello';
+  @BuilderParam builderValue: () => void = this.buildTest;
+  regularValue: string = 'Hello';
+
+  @Builder
+  buildTest() {
+    Text('Child builder')
+  }
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+@Entry
+@Component
+struct PublicErrorAccessRestrictions {
+  @Provide consumeValue: string = 'Hello';
+
+  build() {
+    Column() {
+      PublicErrorComponentChild()
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct PublicErrorComponentChild {
+  // 此处使用public修饰符时会出现告警日志
+  @LocalStorageProp('sessionLocalProp') public localPropValue: string = 'Hello';
+  // 此处使用public修饰符时会出现告警日志
+  @LocalStorageLink('sessionLocalLink') public localLinkValue: string = 'Hello';
+  // 此处使用public修饰符时会出现告警日志
+  @StorageProp('sessionProp') public storagePropValue: string = 'Hello';
+  // 此处使用public修饰符时会出现告警日志
+  @StorageLink('sessionLink') public storageLinkValue: string = 'Hello';
+  // 此处使用public修饰符时会出现告警日志
+  @Consume public consumeValue: string;
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 5
+
+```
+Property 'localPropValue' can not be decorated with both '@LocalStorageProp' and public.
+Property 'localLinkValue' can not be decorated with both '@LocalStorageLink' and public.
+Property 'storagePropValue' can not be decorated with both '@StorageProp' and public.
+Property 'storageLinkValue' can not be decorated with both '@StorageLink' and public.
+Property 'consumeValue' can not be decorated with both '@Consume' and public.
+```
+
+### Code block 6
+
+```
+@Entry
+@Component
+struct PublicCorrectAccessRestrictions {
+  @Provide consumeValue: string = 'Hello';
+
+  build() {
+    Column() {
+      PublicCorrectComponentChild()
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct PublicCorrectComponentChild {
+  @LocalStorageProp('sessionLocalProp') localPropValue: string = 'Hello';
+  @LocalStorageLink('sessionLocalLink') localLinkValue: string = 'Hello';
+  @StorageProp('sessionProp') storagePropValue: string = 'Hello';
+  @StorageLink('sessionLink') storageLinkValue: string = 'Hello';
+  @Consume consumeValue: string;
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+@Entry
+@Component
+struct PrivateWithLinkErrorAccessRestrictions {
+  @State linkValue: string = 'Hello';
+  @State objectLinkValue: PrivateErrorComponentObj = new PrivateErrorComponentObj();
+
+  build() {
+    Column() {
+      PrivateWithLinkErrorComponentChild({ linkValue: this.linkValue, objectLinkValue: this.objectLinkValue })
+    }
+    .width('100%')
+  }
+}
+
+@Observed
+class PrivateErrorComponentObj {
+  public count: number = 0;
+}
+
+@Component
+struct PrivateWithLinkErrorComponentChild {
+  // 此处使用private修饰符时会出现告警日志
+  @Link private linkValue: string;
+  // 此处使用private修饰符时会出现告警日志
+  @ObjectLink private objectLinkValue: PrivateErrorComponentObj;
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 8
+
+```
+Property 'linkValue' can not be decorated with both '@Link' and private.
+Property 'objectLinkValue' can not be decorated with both '@ObjectLink' and private.
+```
+
+### Code block 9
+
+```
+@Entry
+@Component
+struct PrivateWithLinkAccessRestrictions {
+  @State linkValue: string = 'Hello';
+  @State objectLinkValue: PrivateComponentObj = new PrivateComponentObj();
+
+  build() {
+    Column() {
+      PrivateWithLinkComponentChild({ linkValue: this.linkValue, objectLinkValue: this.objectLinkValue })
+    }
+    .width('100%')
+  }
+}
+
+@Observed
+class PrivateComponentObj {
+  public count: number = 0;
+}
+
+@Component
+struct PrivateWithLinkComponentChild {
+  @Link linkValue: string;
+  @ObjectLink objectLinkValue: PrivateComponentObj;
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+@Entry
+@Component
+struct ProtectedErrorAccessRestrictions {
+  build() {
+    Column() {
+      ProtectedErrorComponentChild({ regularValue: 'Hello' })
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct ProtectedErrorComponentChild {
+  // 此处使用protected修饰符时会出现告警日志
+  protected regularValue: string = 'Hello';
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+The member attributes of a struct can not be protected.
+```
+
+### Code block 12
+
+```
+@Entry
+@Component
+struct ProtectedCorrectAccessRestrictions {
+  build() {
+    Column() {
+      ProtectedCorrectComponentChild({ regularValue: 'Hello' })
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct ProtectedCorrectComponentChild {
+  regularValue: string = 'Hello';
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 13
+
+```
+@Entry
+@Component
+struct PrivateErrorAccessRestrictions {
+  build() {
+    Column() {
+      PrivateErrorComponentChild({ propValue: 'Hello' })
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct PrivateErrorComponentChild {
+  // 此处使用private修饰符时会出现告警日志
+  @Require @Prop private propValue: string = 'Hello';
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```
+
+### Code block 14
+
+```
+Property 'propValue' can not be decorated with both '@Require' and private.
+Property 'propValue' is private and can not be initialized through the component constructor.
+```
+
+### Code block 15
+
+```
+@Entry
+@Component
+struct PrivateCorrectAccessRestrictions {
+  build() {
+    Column() {
+      PrivateCorrectComponentChild({ propValue: 'Hello' })
+    }
+    .width('100%')
+  }
+}
+
+@Component
+struct PrivateCorrectComponentChild {
+  @Require @Prop propValue: string = 'Hello';
+
+  build() {
+    Column() {
+      Text('Hello')
+        .fontSize(50)
+        .fontWeight(FontWeight.Bold)
+    }
+  }
+}
+```

@@ -5,8 +5,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/layered-i
 本页面提供应用图标和名称的配置指导。应用图标分为单层图标和分层图标。单层图标包含一个图片，分层图标包含前景图和背景图。图标规范详见图标资源规范，图标和名称配置约束详见图标和名称配置。
 
 使用场景
+
 用于在设备桌面上展示当前应用。例如：桌面或者最近任务列表中显示应用。
+
 用于在应用界面内展示当前应用。例如：在设置应用中展示应用列表。
+
 用于在通知栏中展示发出通知消息的应用。
 
 效果图如下。
@@ -42,7 +45,9 @@ HAP中不包含UIAbility，系统将返回app.json5中的icon和label。
 如果应用配置中未设置入口UIAbility，点击桌面图标将直接进入应用详情页（设置->应用和元服务下，点击任意应用即可进入该应用的应用详情页）。其他情况下，点击桌面图标将直接进入应用页面。应用未配置入口UIAbility包含2种场景：
 
 应用没有配置任何UIAbility。
+
 所有UIAbility中skills标签下的entities未配置或配置内容不包括 "entity.system.home"，并且actions未配置或配置内容不包括 "ohos.want.action.home"。
+
 配置单层图标和应用名称
 
 方式一：配置app.json5
@@ -56,7 +61,6 @@ HAP中不包含UIAbility，系统将返回app.json5中的icon和label。
     "label": "$string:app_name" // 需要在AppScope/resources/base/element/string.json配置name为app_name的资源，已存在可以忽略
   }
 }
-app.json5
 
 方式二：配置module.json5
 
@@ -86,7 +90,7 @@ app.json5
     // ...
   }
 }
-module.json5
+
 配置分层图标和应用名称
 
 方式一：配置app.json5
@@ -116,7 +120,6 @@ module.json5
     "label": "$string:app_name" // 需要在AppScope/resources/base/element/string.json配置name为app_name的资源，已存在可以忽略
   }
 }
-app.json5
 
 方式二：配置module.json5
 
@@ -161,10 +164,116 @@ app.json5
     // ...
   }
 }
-module.json5
+
 说明
 
 DevEco Studio NEXT Beta1(5.0.3.814) 及之后的版本，创建应用时默认模板中包含分层图标的资源文件，不同版本生成的资源文件名称可能不同，文件名称支持手动修改。如果分层图标资源文件不存在则需要手动创建，文件名称需要符合资源命名规范，由数字、字母、点和下划线组成。
 
-创建应用多实例
-HAR转HSP指导
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    // ...
+    "icon": "$media:app_icon",
+    "label": "$string:app_name" // 需要在AppScope/resources/base/element/string.json配置name为app_name的资源，已存在可以忽略
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "module": {
+    // ...
+    "abilities": [
+      {
+        // ...
+        "icon": "$media:icon",
+        // 需要在entry/src/main/resources/base/element/string.json配置name为EntryAbility_label的资源，已存在可以忽略
+        "label": "$string:EntryAbility_label",
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "ohos.want.action.home"
+            ]
+          }
+        ]
+      }
+    ],
+    // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+{
+  "layered-image":
+  {
+    "background" : "$media:background",
+    "foreground" : "$media:foreground"
+  }
+}
+```
+
+### Code block 4
+
+```
+{
+  "app": {
+    // ...
+    "icon": "$media:layered_image",
+    "label": "$string:app_name" // 需要在AppScope/resources/base/element/string.json配置name为app_name的资源，已存在可以忽略
+  }
+}
+```
+
+### Code block 5
+
+```
+{
+  "layered-image":
+  {
+    "background" : "$media:background",
+    "foreground" : "$media:foreground"
+  }
+}
+```
+
+### Code block 6
+
+```
+{
+  "module": {
+    // ...
+    "abilities": [
+      {
+        // ...
+        // icon配置为分层图标资源文件的索引
+        "icon": "$media:layered_image",
+        // 需要在entry/src/main/resources/base/element/string.json配置name为EntryAbility_label的资源，已存在可以忽略
+        "label": "$string:EntryAbility_label",
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "ohos.want.action.home"
+            ]
+          }
+        ]
+      }
+    ],
+    // ...
+  }
+}
+```

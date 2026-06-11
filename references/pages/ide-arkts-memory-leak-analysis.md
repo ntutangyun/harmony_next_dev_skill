@@ -2,57 +2,57 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-arkts-memory-leak-analysis_
 
+本案例介绍如何判断应用存在ArkTS泄漏，以及如何通过快照对比找出ArkTS内存泄漏的原因。
+
+初步识别内存问题
+
 当在一段时间内应用内存没有明显增加或者在内存上涨后又逐渐回落至正常水平，则基本可以排除应用存在内存问题；反之，在一段时间内不断上涨且无回落或者内存占用明显增长超出预期，那么则可初步判断应用可能存在内存问题。
 
 当从实时监控页面初步判断应用可能存在内存问题后，通过深度录制抓取应用内存在问题场景下的详细数据，初步定界问题出现的位置。Memory泳道存在Allocation或Snapshot模板中，使用Allocation或Snapshot模板录制均可。
-以Allocation模板为例，创建模板后，将模板中的其余泳道去除勾选，仅录制Memory泳道的数据。
 
 说明
 
 其余泳道会抓取内存分配、内存对象等数据，为避免额外开销和影响分析，建议先排除录制。
 
 点击三角按钮即开始录制。
-录制过程中，不断操作应用在问题场景的功能，将问题放大，便于快速定界问题点。
-点击下图中方块按钮或者左侧停止按钮结束录制。
 
-录制完成后，展开Memory泳道，其中ArkTS Heap表示方舟虚拟机内存，这部分内存受到方舟虚拟机的管控。当ArkTS Heap有明显的上涨，说明在方舟虚拟机内的堆内存上可能存在内存泄漏，可以使用Snapshot模板进行下一步分析。
+录制过程中，不断操作应用在问题场景的功能，将问题放大，便于快速定界问题点。
 
 使用Snapshot模板分析ArkTS内存问题
 
 分析内存泄漏问题步骤如下：
 
 使用Snapshot模板录制数据；
+
 在问题场景前拍摄快照；
+
 触发问题场景后，再次拍摄快照；
+
 对比两次快照的数据，可快速找到泄漏对象并做进一步分析；
+
 当有多个对象在比较视图都存在时，可以重复多次触发问题场景后拍摄快照，分别和问题场景前拍摄的快照进行对比，观察是否有对象出现明显的线性变化趋势，进一步缩小泄漏对象的范围。
-录制模板数据
+
+[h2]录制模板数据
+
 连接设备后启动应用，点击应用选择框选择需要录制的应用，选择Snapshot模板，点击Create Session或双击Snapshot图标即可创建一个Snapshot的录制模板。
-创建模板后，点击三角按钮即开始录制。
-
-待右侧泳道全部显示recording后则表明正在录制中。
-
-拍摄第一次堆快照作为基准（点击图中①处拍摄按钮，待②处显示出紫色条块表示快照拍摄完成）。
 
 说明
 
 方舟虚拟机提供了在获取快照前自动GC（Garbage Collection，对堆内存进行垃圾回收）的能力，因此拍摄快照之前不用主动触发GC。
 
 多次触发内存泄漏操作。可以操作5，7，11等这种特殊的次数。比如操作了5次对比两个快照发现有很多创建了5次没释放的场景，则可能存在内存泄漏，再操作7次，如果创建了7次那就可以确认发生了泄漏。
+
 拍摄第二次堆快照。
-点击下图中方块按钮或者左侧停止按钮结束录制。
 
-分析ArkTS Heap
-在每次拍摄堆快照之前，虚拟机都会触发GC，所以理论上堆快照内存在的对象都是当前虚拟机已经无法GC掉的对象。我们可以将两个堆快照进行比较，来查看哪些对象是在触发问题场景时新增了且不能释放的。切换到窗口下方详情区域的“Comparison”页签，将两次快照进行对比。图中数据的含义是以Snapshot2作为基准，Snapshot2对比Snapshot1的数据变化量。
-
-优先寻找与触发内存泄漏操作次数强相关、与业务代码强相关的Constructor，首先来分析这些对象是否正常。主要是按照Distance逐渐减小的方式找引用链，可以从references里面一层层去寻找，排查引用链上的可疑对象（一般指与业务代码关联的对象）。
+[h2]分析ArkTS Heap
 
 说明
 
 选择一个实例节点，系统会计算从GC Roots到选定对象的最短路径，并在右侧Shortest Paths页签实时切换和展示。
 
 分析Snapshot数据
-常见对象介绍
+
+[h2]常见对象介绍
 
 JSArray
 
@@ -94,13 +94,11 @@ class People {
   }
 }
 
-
 @Entry
 @Component
 struct HelloWorldPage {
   @State message: string = 'Hello World';
   private people: People = new People(20, "Tom");
-
 
   build() {
     Row() {
@@ -153,123 +151,23 @@ GlobalHandleRoot
 
 DevEco Studio 6.1.0 Release版本新增，位于(handle)标签中，允许用户管理ArkTS/JS值的生命周期的引用句柄（napi_ref）。
 
-常见属性介绍
-
-属性
-
-	
-
-含义
-
-
-
-
-__proto__
-
-	
-
-原型对象
-
-
-
-
-(object elements)
-
-	
-
-对象元素
-
-
-
-
-(object properties)
-
-	
-
-对象属性
-
-
-
-
-hclass
-
-	
-
-隐藏类
-
-
-
-
-ArkInternalHash
-
-	
-
-ArkTS运行时内部的哈希值
-
-
-
-
-ProtoOrHClass
-
-	
-
-原型或隐藏类指针
-
-
-
-
-RawProfileTypeInfo
-
-	
-
-运行时类型剖析信息
-
-
-
-
-HomeObject
-
-	
-
-父类对象
-
-
-
-
-FunctionKind
-
-	
-
-函数类型标识
-
-
-
-
-FunctionExtraInfo
-
-	
-
-函数附加信息
-
-
-
-
-prototype
-
-	
-
-构造函数或类对象关联的原型对象
-
-
-
-
-Inlineproperty
-
-	
-
-内联属性
-
-分析方法
+[h2]常见属性介绍
+
+属性	含义
+__proto__	原型对象
+(object elements)	对象元素
+(object properties)	对象属性
+hclass	隐藏类
+ArkInternalHash	ArkTS运行时内部的哈希值
+ProtoOrHClass	原型或隐藏类指针
+RawProfileTypeInfo	运行时类型剖析信息
+HomeObject	父类对象
+FunctionKind	函数类型标识
+FunctionExtraInfo	函数附加信息
+prototype	构造函数或类对象关联的原型对象
+Inlineproperty	内联属性
+
+[h2]分析方法
 
 查看对象名称
 
@@ -283,5 +181,43 @@ Inlineproperty
 
 如上图则表明Man对象继承自People对象。
 
-Snapshot模板基本操作
-基础内存：Allocation分析
+## Code blocks
+
+### Code block 1
+
+```
+// HelloWorldPage.ets
+class People {
+  old: number
+  name: string
+  constructor(old: number, name: string) {
+    this.old = old;
+    this.name = name;
+  }
+  printOld() {
+    console.log("old = ", this.old);
+  }
+  printName() {
+    console.log("name = ", this.name);
+  }
+}
+
+@Entry
+@Component
+struct HelloWorldPage {
+  @State message: string = 'Hello World';
+  private people: People = new People(20, "Tom");
+
+  build() {
+    Row() {
+      Column() {
+        Text(this.message)
+          .fontSize(50)
+          .fontWeight(FontWeight.Bold)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```

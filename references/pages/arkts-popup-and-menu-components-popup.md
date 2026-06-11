@@ -21,7 +21,6 @@ Popup属性可绑定在组件上显示气泡弹窗提示，设置弹窗内容、
 export struct TextPopupExample {
   @State handlePopup: boolean = false;
 
-
   build() {
     NavDestination() {
       Column() {
@@ -39,7 +38,6 @@ export struct TextPopupExample {
     // ...
   }
 }
-TextPrompts.ets
 
 添加气泡状态变化的事件
 
@@ -49,7 +47,6 @@ TextPrompts.ets
 @Component
 export struct StatePopupExample {
   @State handlePopup: boolean = false;
-
 
   build() {
     NavDestination() {
@@ -73,7 +70,6 @@ export struct StatePopupExample {
     // ...
   }
 }
-PopupStateChange.ets
 
 带按钮的提示气泡
 
@@ -81,12 +77,10 @@ PopupStateChange.ets
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 export struct ButtonPopupExample {
   @State handlePopup: boolean = false;
-
 
   build() {
     NavDestination() {
@@ -122,7 +116,6 @@ export struct ButtonPopupExample {
     // ...
   }
 }
-ButtonPopup.ets
 
 气泡的动画
 
@@ -135,7 +128,6 @@ export struct AnimationPopupExample {
   @State handlePopup: boolean = false;
   @State customPopup: boolean = false;
 
-
   // popup构造器定义弹框内容
   @Builder
   popupBuilder() {
@@ -143,7 +135,6 @@ export struct AnimationPopupExample {
       Text('Custom Popup with transitionEffect').fontSize(10)
     }.height(50).padding(5)
   }
-
 
   build() {
     NavDestination() {
@@ -171,7 +162,6 @@ export struct AnimationPopupExample {
           })
           .position({ x: 100, y: 150 })
 
-
         // CustomPopupOptions 类型设置弹框内容
         Button('CustomPopupOptions')
           .id('CustomPopupOptions')
@@ -196,7 +186,6 @@ export struct AnimationPopupExample {
     // ...
   }
 }
-PopupAnimation.ets
 
 自定义气泡
 
@@ -208,7 +197,6 @@ PopupAnimation.ets
 export struct CustomPopupExample {
   @State customPopup: boolean = false;
 
-
   // popup构造器定义弹框内容
   @Builder
   popupBuilder() {
@@ -217,7 +205,6 @@ export struct CustomPopupExample {
       Text('This is Custom Popup').fontSize(15)
     }.width(200).height(50).padding(5)
   }
-
 
   build() {
     NavDestination() {
@@ -245,7 +232,6 @@ export struct CustomPopupExample {
     // ...
   }
 }
-CustomPopup.ets
 
 使用者通过配置placement参数将弹出的气泡放到需要提示的位置。弹窗构造器会触发弹出提示信息，来引导使用者完成操作，也让使用者有更好的UI体验。
 
@@ -265,12 +251,10 @@ CustomPopup.ets
 
 // xxx.ets
 
-
 @Entry
 @Component
 export struct StylePopupExample {
   @State handlePopup: boolean = false;
-
 
   build() {
     NavDestination() {
@@ -295,7 +279,6 @@ export struct StylePopupExample {
     // ...
   }
 }
-PopupStyle.ets
 
 气泡避让软键盘
 
@@ -307,7 +290,6 @@ PopupStyle.ets
 export struct AvoidSoftKeyboardPopupExample {
   @State handlePopup: boolean = false;
 
-
   @Builder
   popupBuilder() {
     Column({ space: 2 }) {
@@ -316,7 +298,6 @@ export struct AvoidSoftKeyboardPopupExample {
       TextInput()
     }.width(200).padding(5)
   }
-
 
   build() {
     NavDestination() {
@@ -342,7 +323,6 @@ export struct AvoidSoftKeyboardPopupExample {
     // ...
   }
 }
-PopupAvoidSoftKeyboard.ets
 
 设置气泡内的多态效果
 
@@ -361,13 +341,11 @@ export struct PolymorphicEffectPopupExample {
     this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Electronic_work_card') as string;
   private menus: Array<string> = [this.scan, this.createGroupChat, this.electronicWorkCard];
 
-
   // popup构造器定义弹框内容
   @Builder
   popupItemBuilder(name: string, action: string) {
     PopupItemChild({ childName: name, childAction: action })
   }
-
 
   // popup构造器定义弹框内容
   @Builder
@@ -385,9 +363,7 @@ export struct PolymorphicEffectPopupExample {
     .padding(8)
   }
 
-
   @State customPopup: boolean = false;
-
 
   build() {
     NavDestination() {
@@ -417,14 +393,12 @@ export struct PolymorphicEffectPopupExample {
   }
 }
 
-
 @Component
 struct PopupItemChild {
   @Prop childName: string = '';
   @Prop childAction: string = '';
   @State selected: string =
     this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Selected') as string;
-
 
   build() {
     Row({ space: 8 }) {
@@ -450,15 +424,17 @@ struct PopupItemChild {
     })
   }
 }
-PopupPolymorphicEffect.ets
 
 气泡支持避让中轴
 
 从API version 18起，气泡支持中轴避让功能。从API version 20开始，在2in1设备上默认启用（仅在窗口处于瀑布模式时产生避让）。开发者可通过PopupOptions中的enableHoverMode属性，控制气泡是否启用中轴避让。
 
 说明
+
 如果气泡的点击位置在中轴区域，则气泡不会避让。
+
 2in1设备上需同时满足窗口处于瀑布模式才会产生避让。
+
 @Entry
 @Component
 export struct SupportedAvoidAxisPopupExample {
@@ -480,7 +456,6 @@ export struct SupportedAvoidAxisPopupExample {
   @State hoverModeStart: string =
     this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('hoverMode_start') as string;
 
-
   @State message: string = 'Hello World';
   @State index: number = 0;
   @State arrayStr: Array<string> = [this.upScreen, this.middleAxle, this.lowerScreen];
@@ -488,7 +463,6 @@ export struct SupportedAvoidAxisPopupExample {
   @State showInSubwindow: boolean = false;
   @State placement: Placement | undefined = undefined;
   @State isShow: boolean = false;
-
 
   build() {
     NavDestination() {
@@ -503,12 +477,10 @@ export struct SupportedAvoidAxisPopupExample {
               }
             })
 
-
           Button(this.subwindowDisplay + (this.showInSubwindow ? this.subwindow : this.nonSubwindow))
             .onClick(() => {
               this.showInSubwindow = !this.showInSubwindow
             })
-
 
           Button(this.hoverModeStart + this.enableHoverMode)
             .onClick(() => {
@@ -521,7 +493,6 @@ export struct SupportedAvoidAxisPopupExample {
               }
             })
         }
-
 
         Row() {
           Button('Popup')
@@ -551,6 +522,498 @@ export struct SupportedAvoidAxisPopupExample {
     // ...
   }
 }
-PopupSupportedAvoidAxis.ets
-气泡提示概述
-不依赖UI组件的全局气泡提示 (openPopup)
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+export struct TextPopupExample {
+  @State handlePopup: boolean = false;
+
+  build() {
+    NavDestination() {
+      Column() {
+        Button('PopupOptions')
+          .id('PopupOptions')
+          .margin({ top: 300 })
+          .onClick(() => {
+            this.handlePopup = !this.handlePopup;
+          })
+          .bindPopup(this.handlePopup, {
+            message: 'This is a popup with PopupOptions',
+          })
+      }.width('100%').padding({ top: 5 })
+    }
+    // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+export struct StatePopupExample {
+  @State handlePopup: boolean = false;
+
+  build() {
+    NavDestination() {
+        Column() {
+          Button('PopupOptions')
+            .id('PopupOptions')
+            .margin({ top: 300 })
+            .onClick(() => {
+              this.handlePopup = !this.handlePopup;
+            })
+            .bindPopup(this.handlePopup, {
+              message: 'This is a popup with PopupOptions',
+              onStateChange: (e)=> { // 返回当前的气泡状态
+                if (!e.isVisible) {
+                  this.handlePopup = false;
+                }
+              }
+            })
+        }.width('100%').padding({ top: 5 })
+    }
+    // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+export struct ButtonPopupExample {
+  @State handlePopup: boolean = false;
+
+  build() {
+    NavDestination() {
+        Column() {
+          Button('PopupOptions').margin({ top: 300 })
+            .id('PopupOptions')
+            .onClick(() => {
+              this.handlePopup = !this.handlePopup;
+            })
+            .bindPopup(this.handlePopup, {
+              message: 'This is a popup with PopupOptions',
+              primaryButton: {
+                value: 'Confirm',
+                action: () => {
+                  this.handlePopup = !this.handlePopup;
+                  hilog.info(0xFF00, 'DialogProject', 'confirm Button click');
+                }
+              },
+              secondaryButton: {
+                value: 'Cancel',
+                action: () => {
+                  this.handlePopup = !this.handlePopup;
+                }
+              },
+              onStateChange: (e) => {
+                if (!e.isVisible) {
+                  this.handlePopup = false;
+                }
+              }
+            })
+        }.width('100%').padding({ top: 5 })
+    }
+    // ...
+  }
+}
+```
+
+### Code block 4
+
+```
+// xxx.ets
+@Entry
+@Component
+export struct AnimationPopupExample {
+  @State handlePopup: boolean = false;
+  @State customPopup: boolean = false;
+
+  // popup构造器定义弹框内容
+  @Builder
+  popupBuilder() {
+    Row() {
+      Text('Custom Popup with transitionEffect').fontSize(10)
+    }.height(50).padding(5)
+  }
+
+  build() {
+    NavDestination() {
+      Flex({ direction: FlexDirection.Column }) {
+        // PopupOptions 类型设置弹框内容
+        Button('PopupOptions')
+          .id('PopupOptions')
+          .onClick(() => {
+            this.handlePopup = !this.handlePopup;
+          })
+          .bindPopup(this.handlePopup, {
+            message: 'This is a popup with transitionEffect',
+            placement: Placement.Top,
+            showInSubWindow: false,
+            onStateChange: (e) => {
+              if (!e.isVisible) {
+                this.handlePopup = false;
+              }
+            },
+            // 设置弹窗显示动效为透明度动效与平移动效的组合效果，无退出动效
+            transition: TransitionEffect.asymmetric(
+              TransitionEffect.OPACITY.animation({ duration: 1000, curve: Curve.Ease }).combine(
+                TransitionEffect.translate({ x: 50, y: 50 })),
+              TransitionEffect.IDENTITY)
+          })
+          .position({ x: 100, y: 150 })
+
+        // CustomPopupOptions 类型设置弹框内容
+        Button('CustomPopupOptions')
+          .id('CustomPopupOptions')
+          .onClick(() => {
+            this.customPopup = !this.customPopup;
+          })
+          .bindPopup(this.customPopup, {
+            builder: this.popupBuilder,
+            placement: Placement.Top,
+            showInSubWindow: false,
+            onStateChange: (e) => {
+              if (!e.isVisible) {
+                this.customPopup = false;
+              }
+            },
+            // 设置弹窗显示动效与退出动效为缩放动效
+            transition: TransitionEffect.scale({ x: 1, y: 0 }).animation({ duration: 500, curve: Curve.Ease })
+          })
+          .position({ x: 80, y: 300 })
+      }.width('100%').padding({ top: 5 })
+    }
+    // ...
+  }
+}
+```
+
+### Code block 5
+
+```
+// 请将$r('app.media.xxx')替换为实际资源文件
+@Entry
+@Component
+export struct CustomPopupExample {
+  @State customPopup: boolean = false;
+
+  // popup构造器定义弹框内容
+  @Builder
+  popupBuilder() {
+    Row({ space: 2 }) {
+      Image($r('app.media.app_icon')).width(24).height(24).margin({ left: 5 })
+      Text('This is Custom Popup').fontSize(15)
+    }.width(200).height(50).padding(5)
+  }
+
+  build() {
+    NavDestination() {
+      Column() {
+        Button('CustomPopupOptions')
+          .id('CustomPopupOptions')
+          .margin({ top: 300 })
+          .onClick(() => {
+            this.customPopup = !this.customPopup;
+          })
+          .bindPopup(this.customPopup, {
+            builder: this.popupBuilder, // 气泡的内容
+            placement: Placement.Bottom, // 气泡的弹出位置
+            popupColor: Color.Pink, // 气泡的背景色
+            backgroundBlurStyle: BlurStyle.NONE,
+            onStateChange: (e) => {
+              if (!e.isVisible) {
+                this.customPopup = false
+              }
+            }
+          })
+      }
+      .height('100%')
+    }
+    // ...
+  }
+}
+```
+
+### Code block 6
+
+```
+// xxx.ets
+
+@Entry
+@Component
+export struct StylePopupExample {
+  @State handlePopup: boolean = false;
+
+  build() {
+    NavDestination() {
+      Column({ space: 100 }) {
+        Button('PopupOptions')
+          .onClick(() => {
+            this.handlePopup = !this.handlePopup;
+          })
+          .bindPopup(this.handlePopup, {
+            width: 200,
+            message: 'This is a popup.',
+            popupColor: Color.Red, // 设置气泡的背景色
+            mask: {
+              color: '#33d9d9d9'
+            },
+            placement: Placement.Top,
+            backgroundBlurStyle: BlurStyle.NONE // 去除背景模糊效果需要关闭气泡的模糊背景
+          })
+      }
+      .width('100%')
+    }
+    // ...
+  }
+}
+```
+
+### Code block 7
+
+```
+// xxx.ets
+@Entry
+@Component
+export struct AvoidSoftKeyboardPopupExample {
+  @State handlePopup: boolean = false;
+
+  @Builder
+  popupBuilder() {
+    Column({ space: 2 }) {
+      Text('Custom Popup').fontSize(20)
+        .borderWidth(2)
+      TextInput()
+    }.width(200).padding(5)
+  }
+
+  build() {
+    NavDestination() {
+      Column({ space: 100 }) {
+        TextInput()
+        Button('PopupOptions')
+          .id('PopupOptions')
+          .onClick(() => {
+            this.handlePopup = !this.handlePopup;
+          })
+          .bindPopup(this.handlePopup!!, {
+            width: 200,
+            builder: this.popupBuilder(),
+            placement: Placement.Bottom,
+            mask: false,
+            autoCancel: false,
+            keyboardAvoidMode: KeyboardAvoidMode.DEFAULT
+          })
+          .position({ x: 100, y: 300 })
+      }
+      .width('100%')
+    }
+    // ...
+  }
+}
+```
+
+### Code block 8
+
+```
+// 请将$r('app.media.xxx')替换为实际资源文件
+@Entry
+@Component
+export struct PolymorphicEffectPopupExample {
+  // 请在resources\base\element\string.json文件中配置name为'xxx'，value为非空字符串的资源
+  @State scan: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Scan_title') as string;
+  @State createGroupChat: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Create_group_chat') as string;
+  @State electronicWorkCard: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Electronic_work_card') as string;
+  private menus: Array<string> = [this.scan, this.createGroupChat, this.electronicWorkCard];
+
+  // popup构造器定义弹框内容
+  @Builder
+  popupItemBuilder(name: string, action: string) {
+    PopupItemChild({ childName: name, childAction: action })
+  }
+
+  // popup构造器定义弹框内容
+  @Builder
+  popupBuilder() {
+    Column() {
+      ForEach(
+        this.menus,
+        (item: string, index) => {
+          this.popupItemBuilder(item, String(index))
+        },
+        (item: string, index) => {
+          return item
+        })
+    }
+    .padding(8)
+  }
+
+  @State customPopup: boolean = false;
+
+  build() {
+    NavDestination() {
+      Column() {
+        Button('click me')
+          .id('click me')
+          .onClick(() => {
+            this.customPopup = !this.customPopup
+          })
+          .bindPopup(
+            this.customPopup,
+            {
+              builder: this.popupBuilder, // 气泡的内容
+              placement: Placement.Bottom, // 气泡的弹出位置
+              popupColor: Color.White, // 气泡的背景色
+              onStateChange: (event) => {
+                if (!event.isVisible) {
+                  this.customPopup = false
+                }
+              }
+            })
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+    }
+    // ...
+  }
+}
+
+@Component
+struct PopupItemChild {
+  @Prop childName: string = '';
+  @Prop childAction: string = '';
+  @State selected: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Selected') as string;
+
+  build() {
+    Row({ space: 8 }) {
+      Image($r('app.media.startIcon'))
+        .width(24)
+        .height(24)
+      Text(this.childName)
+        .fontSize(16)
+    }
+    .width(130)
+    .height(50)
+    .padding(8)
+    .onClick(() => {
+      this.getUIContext().getPromptAction().showToast({ message: this.selected + this.childName })
+    })
+    .stateStyles({
+      normal: {
+        .backgroundColor(Color.White)
+      },
+      pressed: {
+        .backgroundColor('#d4f1ff')
+      }
+    })
+  }
+}
+```
+
+### Code block 9
+
+```
+@Entry
+@Component
+export struct SupportedAvoidAxisPopupExample {
+  // 请在resources\base\element\string.json文件中配置name为'xxx'，value为非空字符串的资源
+  @State upScreen: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Upper_half_screen') as string;
+  @State middleAxle: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Middle_axle') as string;
+  @State lowerScreen: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Lower_half_screen') as string;
+  @State subwindowDisplay: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Subwindow_display') as string;
+  @State subwindow: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Subwindow') as string;
+  @State nonSubwindow: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Non_Subwindow') as string;
+  @State zone: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('zone') as string;
+  @State hoverModeStart: string =
+    this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('hoverMode_start') as string;
+
+  @State message: string = 'Hello World';
+  @State index: number = 0;
+  @State arrayStr: Array<string> = [this.upScreen, this.middleAxle, this.lowerScreen];
+  @State enableHoverMode: boolean | undefined = true;
+  @State showInSubwindow: boolean = false;
+  @State placement: Placement | undefined = undefined;
+  @State isShow: boolean = false;
+
+  build() {
+    NavDestination() {
+      RelativeContainer() {
+        Column() {
+          Button(this.zone + this.arrayStr[this.index])
+            .onClick(() => {
+              if (this.index < 2) {
+                this.index++
+              } else {
+                this.index = 0
+              }
+            })
+
+          Button(this.subwindowDisplay + (this.showInSubwindow ? this.subwindow : this.nonSubwindow))
+            .onClick(() => {
+              this.showInSubwindow = !this.showInSubwindow
+            })
+
+          Button(this.hoverModeStart + this.enableHoverMode)
+            .onClick(() => {
+              if (this.enableHoverMode === undefined) {
+                this.enableHoverMode = true
+              } else if (this.enableHoverMode === true) {
+                this.enableHoverMode = false
+              } else {
+                this.enableHoverMode = undefined
+              }
+            })
+        }
+
+        Row() {
+          Button('Popup')
+            .id('Popup')
+            .fontWeight(FontWeight.Bold)
+            .bindPopup(this.isShow, {
+              message: 'popup',
+              enableHoverMode: this.enableHoverMode,
+              showInSubWindow: this.showInSubwindow,
+            })
+            .onClick(() => {
+              this.isShow = !this.isShow
+            })
+        }
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
+        .margin({
+          top: this.index === 2 ? 330 : this.index === 1 ? 50 : 0,
+          bottom: this.index === 0 ? 330 : 0
+        })
+      }
+      .height('100%')
+      .width('100%')
+    }
+    // ...
+  }
+}
+```

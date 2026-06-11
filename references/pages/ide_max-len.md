@@ -1,13 +1,83 @@
-# @hw
+# @hw-stylistic/max-len
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_max-len_
 
+强制代码行最大长度为120个字符。该规则仅检查.ets文件类型。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@hw-stylistic/max-len": "error"
+  }
+}
+
+选项
+
+该规则无需配置额外选项。
+
+正例
+
+@Entry
+@Component
+struct Index {
+  message: string = 'hello';
+
+  build() {
+    Text(this.message)
+  }
+}
+
+反例
+
+// This line has a length of 135. Maximum allowed is 120.
 export const longLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName = 10;
+
 规则集
+
 "plugin:@hw-stylistic/recommended"
 "plugin:@hw-stylistic/all"
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@hw-stylistic/keyword-spacing
-@hw-stylistic/no-multi-spaces
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@hw-stylistic/max-len": "error"
+  }
+}
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  message: string = 'hello';
+
+  build() {
+    Text(this.message)
+  }
+}
+```
+
+### Code block 3
+
+```
+// This line has a length of 135. Maximum allowed is 120.
+export const longLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName = 10;
+```
+
+### Code block 4
+
+```
+"plugin:@hw-stylistic/recommended"
+"plugin:@hw-stylistic/all"
+```

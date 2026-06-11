@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-preparing-input-data-and-benchmark_
 
+使用AscendC调测工具进行算子调测前，必须提供算子的输入数据和标杆数据。
+
+输入数据（input数据）：固定shape算子运行时的输入数据，bin格式。
+
+标杆数据（golden数据）：根据输入数据计算出来的真值数据，用于与输出数据进行精度比对，bin格式。
+
+本章节提供多种方式来准备数据，开发者可以根据实际情况选择合适的方式。
+
+方式1：采用外部提供的input/golden数据。
+
+开发者采用外部数据源进行算子调测，一般适合首次调测场景。
+
 在算子信息json配置文件中，将gen_data配置为false，data_file配置为输入数据、标杆数据对应的路径（必须为绝对路径），示例如下。
 
 {
@@ -53,7 +65,6 @@ torch.save(model, 'model.bin')   # 将模型参数保存为二进制文件
 "data_script": "",
 "gen_data": true,
 
-
 "shape": [1, 16384],
 "data_file": "sample.bin",
 
@@ -66,7 +77,6 @@ torch.save(model, 'model.bin')   # 将模型参数保存为二进制文件
 "data_script": "${fa_case_dir}/flash_attention_score_golden.py",
 "gen_data": true,
 
-
 "data_file": "sample.bin",
 
 生成数据时，会调用该脚本，并固定传入以下参数：
@@ -76,6 +86,70 @@ sys.argv[1]：输入的算子json配置文件。
 sys.argv[2]：输出bin文件路径（工作路径下的data文件夹，例如debug_workspace/FlashAttentionScore/data/）。
 
 开发者需要根据输入的sys.argv[1]读取算子json配置文件内容，获取生成数据所需的算子shape信息、数据文件的文件名，并在脚本中适配生成的文件名。
+
 开发者需要根据输入的sys.argv[2]设置存放input/output数据文件的路径，将生成的文件保存到该路径下。
-数据准备和配置说明
-算子json配置模板获取
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+    "gen_data": false,
+    "inputs": [
+        {
+            "data_file": "/path/to/input_data_q.bin"
+        }
+    ],
+    "outputs": [
+        {
+            "data_file": "/path/to/golden_data_out.bin"
+        }
+    ]
+}
+```
+
+### Code block 2
+
+```
+import torch
+model = torch.load('model.pt')   # 加载.pt文件
+torch.save(model, 'model.bin')   # 将模型参数保存为二进制文件
+```
+
+### Code block 3
+
+```
+{
+    "gen_data": false,
+    "inputs": [
+        {
+            "data_file": "input_data_q.bin"
+        }
+    ],
+    "outputs": [
+        {
+            "data_file": "golden_data_out.bin"
+        }
+    ]
+}
+```
+
+### Code block 4
+
+```
+"data_script": "",
+"gen_data": true,
+
+"shape": [1, 16384],
+"data_file": "sample.bin",
+```
+
+### Code block 5
+
+```
+"data_script": "${fa_case_dir}/flash_attention_score_golden.py",
+"gen_data": true,
+
+"data_file": "sample.bin",
+```

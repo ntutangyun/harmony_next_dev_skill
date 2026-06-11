@@ -22,12 +22,10 @@ import { common } from '@kit.AbilityKit';
 import { walletTransitCard } from '@kit.WalletKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
-
 
   async getCardMetadataInDevice() {
     this.transitCardClient.getCardMetadataInDevice(walletTransitCard.DeviceType.DEVICE_PHONE).then((result) => {
@@ -36,7 +34,6 @@ struct Index {
       console.error(`Failed to get CardMetadataInDevice, code:${err.code}, message:${err.message}`);
     })
   }
-
 
   build() {
     // your application UI
@@ -51,12 +48,10 @@ import { common } from '@kit.AbilityKit';
 import { walletTransitCard } from '@kit.WalletKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
-
 
   async canAddTransitCard() {
     // the issuerId returned by the getCardMetadataInDevice interface
@@ -71,7 +66,6 @@ struct Index {
     })
   }
 
-
   build() {
     // your application UI
   }
@@ -85,12 +79,10 @@ import { common } from '@kit.AbilityKit';
 import { walletTransitCard } from '@kit.WalletKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
-
 
   async addTransitCard() {
     // order ID generated after payment in a developer's app, which is implemented by the developer
@@ -104,10 +96,96 @@ struct Index {
     })
   }
 
+  build() {
+    // your application UI
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { common } from '@kit.AbilityKit';
+import { walletTransitCard } from '@kit.WalletKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
+
+  async getCardMetadataInDevice() {
+    this.transitCardClient.getCardMetadataInDevice(walletTransitCard.DeviceType.DEVICE_PHONE).then((result) => {
+      console.info(`Succeeded in getting cardMetadataInDevice`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to get CardMetadataInDevice, code:${err.code}, message:${err.message}`);
+    })
+  }
 
   build() {
     // your application UI
   }
 }
-云侧准备
-交通卡充值
+```
+
+### Code block 2
+
+```
+import { common } from '@kit.AbilityKit';
+import { walletTransitCard } from '@kit.WalletKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
+
+  async canAddTransitCard() {
+    // the issuerId returned by the getCardMetadataInDevice interface
+    const issuerId = 'issuerId';
+    // the specifiedDeviceId returned by the getCardMetadataInDevice interface
+    const specifiedDeviceId = 'specifiedDeviceId';
+    this.transitCardClient.canAddTransitCard(issuerId, specifiedDeviceId).then((result) => {
+      console.info(`Succeeded in canning AddTransitCard`);
+      // save the result as the input parameter addCardOpaqueData of addTransitCard.
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to can AddTransitCard, code:${err.code}, message:${err.message}`);
+    })
+  }
+
+  build() {
+    // your application UI
+  }
+}
+```
+
+### Code block 3
+
+```
+import { common } from '@kit.AbilityKit';
+import { walletTransitCard } from '@kit.WalletKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  private transitCardClient: walletTransitCard.TransitCardClient = new walletTransitCard.TransitCardClient(this.getUIContext().getHostContext() as common.UIAbilityContext, 'callerId');
+
+  async addTransitCard() {
+    // order ID generated after payment in a developer's app, which is implemented by the developer
+    let serverOrderId = 'serverOrderId';
+    // the addCardOpaqueData returned by step 2
+    let addCardOpaqueData = 'addCardOpaqueData';
+    this.transitCardClient.addTransitCard(addCardOpaqueData, serverOrderId).then((result) => {
+      console.info(`Succeeded in adding TransitCard`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to add TransitCard, code:${err.code}, message:${err.message}`);
+    })
+  }
+
+  build() {
+    // your application UI
+  }
+}
+```

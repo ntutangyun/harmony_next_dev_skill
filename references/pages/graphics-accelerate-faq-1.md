@@ -1,8 +1,5 @@
-# 超帧和ABR支持的图形API有哪些？
+# 超帧和ABR支持的图形API有哪些
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-faq-1_
 
 目前超帧接口支持OpenGL ES和Vulkan图形API平台。ABR接口仅支持OpenGL ES图形API平台，暂不支持Vulkan平台。
-
-游戏渲染加速服务
-Kit支持的设备类型有哪些？

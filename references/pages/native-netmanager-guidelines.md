@@ -2,6 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-netmanager-guidelines_
 
+场景介绍
+
+NetConnection模块提供了常用网络信息查询的能力。
+
+接口说明
+
+NetConnection常用接口如下表所示，详细的接口说明请参考net_connection.h。
+
+接口名	描述
 OH_NetConn_HasDefaultNet(int32_t *hasDefaultNet)	检查默认数据网络是否被激活，判断设备是否有网络连接，以便在应用程序中采取相应的措施。
 OH_NetConn_GetDefaultNet(NetConn_NetHandle *netHandle)	获得默认激活的数据网络。
 OH_NetConn_IsDefaultNetMetered(int32_t *isMetered)	检查当前网络上的数据流量使用是否被计量。
@@ -11,32 +20,18 @@ OH_NetConn_GetDefaultHttpProxy (NetConn_HttpProxy *httpProxy)	获取网络默认
 OH_NetConn_GetAddrInfo (char *host, char *serv, struct addrinfo *hint, struct addrinfo **res, int32_t netId)	通过netId获取DNS结果。
 OH_NetConn_FreeDnsResult(struct addrinfo *res)	释放DNS结果内存。
 OH_NetConn_GetAllNets(NetConn_NetHandleList *netHandleList)	获取所有处于连接状态的网络列表。
-OHOS_NetConn_RegisterDnsResolver(OH_NetConn_CustomDnsResolver resolver)	
-
-注册自定义DNS解析器。
-
-弃用： 从API version 13开始废弃。
-
-替代： 推荐使用OH_NetConn_RegisterDnsResolver。
-
-
-OHOS_NetConn_UnregisterDnsResolver(void)	
-
-取消注册自定义DNS解析器。
-
-弃用： 从API version 13开始废弃。
-
-替代： 推荐使用OH_NetConn_UnregisterDnsResolver。
-
-
+OHOS_NetConn_RegisterDnsResolver(OH_NetConn_CustomDnsResolver resolver)	注册自定义DNS解析器。 弃用： 从API version 13开始废弃。 替代： 推荐使用OH_NetConn_RegisterDnsResolver。
+OHOS_NetConn_UnregisterDnsResolver(void)	取消注册自定义DNS解析器。 弃用： 从API version 13开始废弃。 替代： 推荐使用OH_NetConn_UnregisterDnsResolver。
 OH_NetConn_RegisterDnsResolver(OH_NetConn_CustomDnsResolver resolver)	注册自定义DNS解析器。
 OH_NetConn_UnregisterDnsResolver(void)	取消注册自定义DNS解析器。
 OH_NetConn_SetPacUrl(const char *pacUrl)	设置系统级代理自动配置(PAC)脚本地址。
 OH_NetConn_GetPacUrl(char *pacUrl)	获取系统级代理自动配置(PAC)脚本地址。
 OH_NetConn_QueryProbeResult(char *destination, int32_t duration, NetConn_ProbeResultInfo *probeResultInfo)	查询探测结果。
 OH_NetConn_QueryTraceRoute(char *destination, NetConn_TraceRouteOption *option, NetConn_TraceRouteInfo *traceRouteInfo)	查询跟踪路由。
+
 网络管理接口开发示例
-开发步骤
+
+[h2]开发步骤
 
 使用本文档涉及接口获取网络相关信息时，需先创建Native C++工程，在源文件中将相关接口封装，再在ArkTS层对封装的接口进行调用，使用hilog或者console.log等手段选择打印在控制台或者生成设备日志。
 
@@ -44,7 +39,7 @@ OH_NetConn_QueryTraceRoute(char *destination, NetConn_TraceRouteOption *option, 
 
 其他接口开发请参考：完整示例代码。
 
-添加开发依赖
+[h2]添加开发依赖
 
 添加动态链接库
 
@@ -58,8 +53,8 @@ libnet_connection.so
 #include "napi/native_api.h"
 #include "network/netmanager/net_connection.h"
 #include "network/netmanager/net_connection_type.h"
-napi_init.cpp
-构建工程
+
+[h2]构建工程
 
 在源文件中编写调用该API的代码，并将结果封装成一个napi_value类型的值返回给Node.js环境。
 
@@ -72,7 +67,7 @@ static napi_value GetDefaultNet(napi_env env, napi_callback_info info)
     // ...
     int32_t param;
     napi_get_value_int32(env, args[0], &param); // 从 args[0] 获取整数值并存储到 param 中
-    
+
     NetConn_NetHandle netHandle;
     if (param == 0) { // 如果参数是0
         param = OH_NetConn_GetDefaultNet(NULL);
@@ -80,12 +75,10 @@ static napi_value GetDefaultNet(napi_env env, napi_callback_info info)
         param = OH_NetConn_GetDefaultNet(&netHandle);
     }
 
-
     napi_value result;
     napi_create_int32(env, param, &result);
     return result;
 }
-
 
 // 获取默认网络ID的函数
 static napi_value NetId(napi_env env, napi_callback_info info)
@@ -98,7 +91,6 @@ static napi_value NetId(napi_env env, napi_callback_info info)
     napi_create_int32(env, defaultNetId, &result);
     return result;
 }
-napi_init.cpp
 
 简要说明：这两个函数用于获取系统默认网络连接的相关信息。其中，GetDefaultNet是接收ArkTS端传入的测试参数，返回调用接口后对应的返回值，param可以自行调整；如果返回值为0，代表获取成功，401代表参数错误，201代表没有权限；而NetId函数则用于获取默认网络连接的ID。这些信息可以用于进一步的网络操作。
 
@@ -117,7 +109,6 @@ static napi_value Init(napi_env env, napi_value exports)
     return exports;
 }
 EXTERN_C_END
-napi_init.cpp
 
 将上一步中初始化成功的对象通过RegisterEntryModule函数，使用napi_module_register函数将模块注册到Node.js中。
 
@@ -130,23 +121,22 @@ static napi_module demoModule = {
     .nm_priv = ((void *)0),
     .reserved = {0},
 };
- 
+
 extern "C" __attribute__((constructor)) void RegisterEntryModule(void) { napi_module_register(&demoModule); }
-napi_init.cpp
 
 在工程的index.d.ts文件中定义两个函数的类型。
 
 GetDefaultNet函数接受一个数字参数code，返回一个数字类型的值。
+
 NetId函数不接受参数，返回一个数字类型的值。
+
 export const GetDefaultNet: (code: number) => number;
 export const NetId: () => number;
-Index.d.ts
 
 在index.ets文件中对上述封装好的接口进行调用。
 
 import testNetManager from 'libentry.so';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 enum ReturnCode {
   SUCCESS = 0, // 操作成功
@@ -154,14 +144,12 @@ enum ReturnCode {
   PARAMETER_ERROR = 401, // 参数错误
 }
 
-
 // ...
 @Entry
 @Component
 struct Index {
   @State message: string = ''; // 用于展示日志消息
   // ...
-
 
   build() {
     Column() { // 显示 Logger 输出的日志
@@ -172,13 +160,11 @@ struct Index {
         .margin({ bottom: 10 })
         .id('test-message') // 为测试消息设置 ID，便于测试获取内容
 
-
       Button($r('app.string.GetDefaultNet'))
         .onClick(() => {
           this.GetDefaultNet();
         })
           // ...
-
 
       Button($r('app.string.CodeNumber'))
         .onClick(() => {
@@ -187,14 +173,13 @@ struct Index {
           // ...
     }.width('100%').height('100%').justifyContent(FlexAlign.Center);
   }
-  
+
   GetDefaultNet() {
     let netId = testNetManager.NetId();
     // ...
       hilog.info(0x0000, 'testTag', 'The defaultNetId is [' + netId + ']');
       // ...
   }
-
 
   CodeNumber() {
     let testParam = 1;
@@ -222,7 +207,6 @@ struct Index {
   }
   // ...
 }
-Index.ets
 
 配置CMakeLists.txt，本模块需要用到的共享库是libnet_connection.so，在工程自动生成的CMakeLists.txt中的target_link_libraries中添加此共享库。
 
@@ -239,11 +223,182 @@ Index.ets
 运行工程，设备上会弹出以下所示图片。
 
 点击GetDefaultNet时获取的是默认网络ID。
+
 点击codeNumber时获取的是接口返回的响应状态码。
 
 点击GetDefaultNet按钮，控制台会打印日志。
 
 点击codeNumber按钮，控制台会打印相应的响应状态码。
 
-管理网络连接
-连接VPN
+## Code blocks
+
+### Code block 1
+
+```
+libace_napi.z.so
+libnet_connection.so
+```
+
+### Code block 2
+
+```
+#include "napi/native_api.h"
+#include "network/netmanager/net_connection.h"
+#include "network/netmanager/net_connection_type.h"
+```
+
+### Code block 3
+
+```
+// 获取默认网络的函数
+static napi_value GetDefaultNet(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1; // 期望接收一个函数
+    napi_value args[1] = {nullptr}; // 存储接收到的参数
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    // ...
+    int32_t param;
+    napi_get_value_int32(env, args[0], &param); // 从 args[0] 获取整数值并存储到 param 中
+
+    NetConn_NetHandle netHandle;
+    if (param == 0) { // 如果参数是0
+        param = OH_NetConn_GetDefaultNet(NULL);
+    } else {
+        param = OH_NetConn_GetDefaultNet(&netHandle);
+    }
+
+    napi_value result;
+    napi_create_int32(env, param, &result);
+    return result;
+}
+
+// 获取默认网络ID的函数
+static napi_value NetId(napi_env env, napi_callback_info info)
+{
+    int32_t defaultNetId;
+    NetConn_NetHandle netHandle;
+    OH_NetConn_GetDefaultNet(&netHandle);
+    defaultNetId = netHandle.netId; // 获取默认的 netId
+    napi_value result;
+    napi_create_int32(env, defaultNetId, &result);
+    return result;
+}
+```
+
+### Code block 4
+
+```
+EXTERN_C_START
+static napi_value Init(napi_env env, napi_value exports)
+{
+    // Information used to describe an exported attribute. Two properties are defined here: `GetDefaultNet` and `NetId`.
+    napi_property_descriptor desc[] = {
+        {"GetDefaultNet", nullptr, GetDefaultNet, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"NetId", nullptr, NetId, nullptr, nullptr, nullptr, napi_default, nullptr},
+        // ...
+    };
+    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    return exports;
+}
+EXTERN_C_END
+```
+
+### Code block 5
+
+```
+static napi_module demoModule = {
+    .nm_version = 1,
+    .nm_flags = 0,
+    .nm_filename = nullptr,
+    .nm_register_func = Init,
+    .nm_modname = "entry",
+    .nm_priv = ((void *)0),
+    .reserved = {0},
+};
+
+extern "C" __attribute__((constructor)) void RegisterEntryModule(void) { napi_module_register(&demoModule); }
+```
+
+### Code block 6
+
+```
+export const GetDefaultNet: (code: number) => number;
+export const NetId: () => number;
+```
+
+### Code block 7
+
+```
+import testNetManager from 'libentry.so';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+enum ReturnCode {
+  SUCCESS = 0, // 操作成功
+  MISSING_PERMISSION = 201, // 缺少权限
+  PARAMETER_ERROR = 401, // 参数错误
+}
+
+// ...
+@Entry
+@Component
+struct Index {
+  @State message: string = ''; // 用于展示日志消息
+  // ...
+
+  build() {
+    Column() { // 显示 Logger 输出的日志
+      // ...
+      Text(this.message)
+        .fontSize(16)
+        .fontColor(Color.Black)
+        .margin({ bottom: 10 })
+        .id('test-message') // 为测试消息设置 ID，便于测试获取内容
+
+      Button($r('app.string.GetDefaultNet'))
+        .onClick(() => {
+          this.GetDefaultNet();
+        })
+          // ...
+
+      Button($r('app.string.CodeNumber'))
+        .onClick(() => {
+          this.CodeNumber();
+        })
+          // ...
+    }.width('100%').height('100%').justifyContent(FlexAlign.Center);
+  }
+
+  GetDefaultNet() {
+    let netId = testNetManager.NetId();
+    // ...
+      hilog.info(0x0000, 'testTag', 'The defaultNetId is [' + netId + ']');
+      // ...
+  }
+
+  CodeNumber() {
+    let testParam = 1;
+    // ...
+      let codeNumber = testNetManager.GetDefaultNet(testParam);
+      switch (codeNumber) {
+        case ReturnCode.SUCCESS:
+          hilog.info(0x0000, 'testTag', 'Test success. [' + codeNumber + ']');
+          // ...
+          break;
+        case ReturnCode.MISSING_PERMISSION:
+          hilog.info(0x0000, 'testTag', 'Missing permissions. [' + codeNumber + ']');
+          // ...
+          break;
+        case ReturnCode.PARAMETER_ERROR:
+          hilog.info(0x0000, 'testTag', 'Parameter error. [' + codeNumber + ']');
+          // ...
+          break;
+        default:
+          hilog.info(0x0000, 'testTag', 'Unexpected result: [' + codeNumber + ']');
+          // ...
+          break;
+      }
+    // ...
+  }
+  // ...
+}
+```

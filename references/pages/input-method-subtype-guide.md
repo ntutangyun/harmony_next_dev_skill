@@ -24,7 +24,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/input-met
     ]
   }
 ],
-module.json5
 
 子类型配置文件input_method_config.json需要放在应用资源目录的profile文件夹中，格式如下，字段释义参照InputMethodSubtype；开发者需要严格按照配置文件格式及字段进行子类型信息配置，locale字段的配置参照i18n-locale-culture。
 
@@ -58,7 +57,7 @@ inputMethodAbility.on('setSubtype', (inputMethodSubtype: InputMethodSubtype) => 
     AppStorage.setOrCreate('subtypeChange', 1);
   }
 });
-KeyboardController.ets
+
 输入法子类型相关信息的获取
 
 开发者可以通过调用getCurrentInputMethodSubtype获取当前输入法应用的当前子类型。
@@ -73,5 +72,62 @@ KeyboardController.ets
 
 开发者可以通过调用switchCurrentInputMethodAndSubtype切换至指定输入法应用的指定子类型。
 
-切换输入法应用
-输入法安全模式介绍
+## Code blocks
+
+### Code block 1
+
+```
+"extensionAbilities": [
+  {
+    "srcEntry": "./ets/InputMethodExtensionAbility/InputMethodService.ets",
+    "name": "InputMethodService",
+    "label": "$string:MainAbility_label",
+    "description": "$string:extension_ability_descriptor",
+    "type": "inputMethod",
+    "exported": true,
+    "metadata": [
+      {
+        "name": "ohos.extension.input_method",
+        "resource": "$profile:input_method_config"
+      }
+    ]
+  }
+],
+```
+
+### Code block 2
+
+```
+{
+  "subtypes": [
+    {
+      "icon": "$media:icon",
+      "id": "InputMethodExtAbility",
+      "label": "$string:english",
+      "locale": "en-US",
+      "mode": "lower"
+    },
+    {
+      "icon": "$media:icon",
+      "id": "InputMethodExtAbility1",
+      "label": "$string:chinese",
+      "locale": "zh-CN",
+      "mode": "lower"
+    }
+  ]
+}
+```
+
+### Code block 3
+
+```
+// 设置监听子类型事件，改变输入法应用界面
+inputMethodAbility.on('setSubtype', (inputMethodSubtype: InputMethodSubtype) => {
+  if (inputMethodSubtype.id === 'InputMethodExtAbility') {
+    AppStorage.setOrCreate('subtypeChange', 0);
+  }
+  if (inputMethodSubtype.id === 'InputMethodExtAbility1') {
+    AppStorage.setOrCreate('subtypeChange', 1);
+  }
+});
+```

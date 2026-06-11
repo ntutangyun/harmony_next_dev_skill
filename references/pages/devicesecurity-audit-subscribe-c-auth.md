@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-audit-subscribe-c-auth_
 
+场景介绍
+
 从6.0.0(20) 开始，新增提供统一的安全审计数据多客户端订阅/取消订阅、添加/删除过滤条件、阻断接口，应用可以获取设备上的安全审计数据（如下表），并按需进行订阅、过滤与阻断，以支撑审计相关业务。
 
 审计事件ID	说明
@@ -11,6 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 0x1C801103	文件删除阻断事件。
 0x1C801104	文件设置扩展属性的阻断事件。
 0x1C801105	文件删除扩展属性的阻断事件。
+
 约束与限制
 
 当前能力仅支持2in1设备。
@@ -57,7 +60,9 @@ int32_t HMS_SecurityAudit_UnsubscribeAuthEvent(const SecurityAudit_AuthClient* c
 int32_t HMS_SecurityAudit_AddAuthEventFilter(const SecurityAudit_AuthClient* client, SecurityAudit_Auth_Event event, const SecurityAudit_Filter *filter);	添加审计阻断类事件过滤条件
 int32_t HMS_SecurityAudit_RemoveAuthEventFilter(const SecurityAudit_AuthClient* client, SecurityAudit_Auth_Event event, const SecurityAudit_Filter *filter);	移除审计阻断类事件过滤条件
 int32_t HMS_SecurityAudit_Auth(const SecurityAudit_AuthClient* client, const SecurityAudit_Event *event, SecurityAudit_AuthResult authResult);	设置审计阻断类事件的阻断结果
+
 开发步骤
+
 说明
 
 在开发准备过程中，需要申请权限：ohos.permission.kernel.AUTH_AUDIT_EVENT。
@@ -152,5 +157,112 @@ if (ret != 0) {
     printf("deleteclient fail");
     return;
 }
-订阅通知类事件
-进程信息查询场景（C/C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+find_library(dsm-lib libsecurityaudit_ndk.z.so)
+target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
+```
+
+### Code block 2
+
+```
+#include <DeviceSecurityKit/security_audit.h>
+#include <cstdio>
+```
+
+### Code block 3
+
+```
+SecurityAudit_AuthClient *client = nullptr;
+void AuthAllowCb(const SecurityAudit_Event *events, uint64_t count)
+{
+    if (events == nullptr) {
+        printf("events nullptr");
+        return;
+    }
+    if (client == nullptr) {
+        printf("client nullptr");
+        return;
+    }
+    for (uint64_t i = 0; i < count; i++) {
+        printf("event metadata = %s \n", events[i].metadata);
+        printf("event content = %s \n", events[i].content);
+        printf("event id = %ld \n", events[i].eventId);
+        const SecurityAudit_Event *singleEvent = &events[i];
+        HMS_SecurityAudit_Auth(client, singleEvent, SECURITY_AUDIT_AUTH_RESULT_DENY);
+    }
+}
+```
+
+### Code block 4
+
+```
+SecurityAudit_Handler handler = AuthAllowCb;
+HMS_SecurityAudit_NewAuthClient(&client, handler);
+if (client == nullptr) {
+    printf("client is null");
+    return;
+}
+```
+
+### Code block 5
+
+```
+SecurityAudit_Auth_Event event[1] = {};
+event[0] = SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE;
+int ret = HMS_SecurityAudit_SubscribeAuthEvent(client, event, 1);
+if (ret != 0) {
+    printf("subscribe fail");
+    return;
+}
+```
+
+### Code block 6
+
+```
+SecurityAudit_Filter filter = {};
+filter.type = PROCESS_NAME_PREFIX;
+const char* filterStr[1] = {};
+filterStr[0] = "1";
+filter.value = filterStr;
+filter.valueCount = 1;
+ret = HMS_SecurityAudit_AddAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
+if (ret != 0) {
+    printf("addfilter fail");
+    return;
+}
+```
+
+### Code block 7
+
+```
+ret = HMS_SecurityAudit_UnsubscribeAuthEvent(client, event, 1);
+if (ret != 0) {
+    printf("unsubscribe fail");
+    return;
+}
+```
+
+### Code block 8
+
+```
+ret = HMS_SecurityAudit_RemoveAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
+if (ret != 0) {
+    printf("removefilter fail");
+    return;
+}
+```
+
+### Code block 9
+
+```
+ret = HMS_SecurityAudit_DeleteAuthClient(client);
+if (ret != 0) {
+    printf("deleteclient fail");
+    return;
+}
+```

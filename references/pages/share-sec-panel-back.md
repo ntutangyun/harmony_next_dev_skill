@@ -26,5 +26,24 @@ export default class TestShareAbility extends ShareExtensionAbility {
     });
   }
 }
-分享详情页处理分享内容
-判断应用是否被系统分享拉起
+
+## Code blocks
+
+### Code block 1
+
+```
+import { ShareExtensionAbility, UIExtensionContentSession, Want } from '@kit.AbilityKit';
+import { systemShare } from '@kit.ShareKit';
+```
+
+### Code block 2
+
+```
+export default class TestShareAbility extends ShareExtensionAbility {
+  async onSessionCreate(want: Want, session: UIExtensionContentSession) {
+    session.terminateSelfWithResult({
+      resultCode: systemShare.ShareAbilityResultCode.CLOSE
+    });
+  }
+}
+```

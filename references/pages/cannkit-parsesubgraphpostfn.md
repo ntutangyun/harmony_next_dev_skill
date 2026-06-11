@@ -2,15 +2,23 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-parsesubgraphpostfn_
 
+函数功能
+
+根据算子类型，注册算子的子图中输入输出节点跟算子的输入输出的对应关系函数实现。
+
+函数原型
+
+说明
+
+数据类型为string的接口后续版本会废弃，建议使用数据类型为非string的接口。
+
 OpRegistrationData &ParseSubgraphPostFn(const ParseSubgraphFunc &subgraph_post_fn)
 OpRegistrationData &ParseSubgraphPostFn(const ParseSubgraphFuncV2 &subgraph_post_fn);
+
 参数说明
+
 参数	输入/输出	说明
-subgraph_post_fn	输入	
-
-子图中输入输出节点跟算子的输入输出的对应关系函数对象。
-
-详见回调函数ParseSubgraphFuncV2 。
+subgraph_post_fn	输入	子图中输入输出节点跟算子的输入输出的对应关系函数对象。 详见回调函数ParseSubgraphFuncV2 。
 
 约束说明
 
@@ -27,5 +35,18 @@ Status ParseSubgraphFuncV2(const ge::AscendString &subgraph_name, const ge::Grap
 参数	输入/输出	说明
 subgraph_name	输入	子图名字。
 graph	输出	构造的子图。
-FusionParseParamsFn（Overload）
-ParseOpToGraphFn
+
+## Code blocks
+
+### Code block 1
+
+```
+OpRegistrationData &ParseSubgraphPostFn(const ParseSubgraphFunc &subgraph_post_fn)
+OpRegistrationData &ParseSubgraphPostFn(const ParseSubgraphFuncV2 &subgraph_post_fn);
+```
+
+### Code block 2
+
+```
+Status ParseSubgraphFuncV2(const ge::AscendString &subgraph_name, const ge::Graph &graph)
+```

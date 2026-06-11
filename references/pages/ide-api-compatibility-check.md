@@ -1,16 +1,20 @@
-# @compatibility/api
+# @compatibility/api-compatibility-check
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-api-compatibility-check_
+
+从DevEco Studio 6.0.1 Beta1开始，Code Linter新增版本兼容性规则扫描。
 
 工程代码中调用的API版本比工程配置中的compatibleSdkVersion版本高，可能会导致兼容性问题。建议添加代码报错措施，消除兼容性问题。
 
 规则配置
+
 // code-linter.json5
 {
   "rules": {
     "@compatibility/api-compatibility-check": "warn"
   }
 }
+
 选项
 
 该规则无需配置额外选项。
@@ -22,7 +26,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-api-c
 import { dataUriUtils } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 
-
 @Component
 struct Test {
   build() {
@@ -31,7 +34,6 @@ struct Test {
       if (deviceInfo.distributionOSApiVersion >= 60000) {
         dataUriUtils.getId('');
       }
-
 
       // 使用接口前增加SDK版本的判断
       if (deviceInfo.sdkApiVersion >= 20) {
@@ -44,7 +46,6 @@ struct Test {
 示例二：API调用前，增加判空。
 
 import { dataUriUtils } from '@kit.AbilityKit';
-
 
 @Component
 struct Test {
@@ -62,6 +63,101 @@ struct Test {
 
 import { dataUriUtils } from '@kit.AbilityKit'
 
+@Component
+struct Test {
+  build() {
+    Text('hello').onClick(() => {
+      // 使用try-catch语法
+      try {
+        dataUriUtils.getId('');
+      } catch (error) {
+        // 异常处理
+      }
+    })
+  }
+}
+
+反例
+
+// 工程中compatibleSdkVersion配置为5.0.5(17)
+import { ScrollEffectType } from '@kit.UIDesignKit';
+
+@Component
+struct Test {
+  build() {
+    Text('hello').onClick(() => {
+      // ScrollEffectType.COMMON_BLUR从5.1.0(18)开始支持，不可直接调用
+      const value = ScrollEffectType.COMMON_BLUR
+      console.info(value.toString())
+    })
+  }
+}
+
+规则集
+
+plugin:@compatibility/all
+
+Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
+
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@compatibility/api-compatibility-check": "warn"
+  }
+}
+```
+
+### Code block 2
+
+```
+import { dataUriUtils } from '@kit.AbilityKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
+
+@Component
+struct Test {
+  build() {
+    Text('hello').onClick(() => {
+      // 使用接口前增加SDK版本的判断，SDK版本计算方式具体请参考应用升级targetSDKVersion兼容低版本指导
+      if (deviceInfo.distributionOSApiVersion >= 60000) {
+        dataUriUtils.getId('');
+      }
+
+      // 使用接口前增加SDK版本的判断
+      if (deviceInfo.sdkApiVersion >= 20) {
+        dataUriUtils.getId('');
+      }
+    })
+  }
+}
+```
+
+### Code block 3
+
+```
+import { dataUriUtils } from '@kit.AbilityKit';
+
+@Component
+struct Test {
+  build() {
+    Text("hello").onClick(() => {
+      // 判空
+      if (dataUriUtils.getId !== undefined) {
+        dataUriUtils.getId('');
+      }
+    })
+  }
+}
+```
+
+### Code block 4
+
+```
+import { dataUriUtils } from '@kit.AbilityKit'
 
 @Component
 struct Test {
@@ -76,10 +172,13 @@ struct Test {
     })
   }
 }
-反例
+```
+
+### Code block 5
+
+```
 // 工程中compatibleSdkVersion配置为5.0.5(17)
 import { ScrollEffectType } from '@kit.UIDesignKit';
-
 
 @Component
 struct Test {
@@ -91,10 +190,10 @@ struct Test {
     })
   }
 }
-规则集
+```
+
+### Code block 6
+
+```
 plugin:@compatibility/all
-
-Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
-
-兼容性规则@compatibility
-代码重构
+```

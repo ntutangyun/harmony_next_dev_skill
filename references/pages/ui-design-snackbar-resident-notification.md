@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design-snackbar-resident-notification_
 
+场景介绍
+
+从6.0.0(20)版本开始，新增支持设置常驻通知弹窗。
+
 HdsSnackBar支持常驻通知弹窗。当应用开发者需要常驻通知提醒弹窗时，可以通过HdsSnackBar的show方法显示HdsSnackBar弹窗，设置duration是-1表示常驻弹窗。
 
 开发步骤
@@ -43,7 +47,6 @@ struct TestSnackBar {
     duration: -1
   }
 
-
   build() {
     Column() {
       Blank()
@@ -53,7 +56,6 @@ struct TestSnackBar {
           this.hdsSnackBar.show(this.icon, this.message, this.operation, this.style);
         })
         .id("button")
-
 
       Button('关注')
         .nextFocus({
@@ -66,5 +68,66 @@ struct TestSnackBar {
     .backgroundColor(0xF1F3F5)
   }
 }
-即时操作
-设置定时通知弹窗
+
+## Code blocks
+
+### Code block 1
+
+```
+import {
+  HdsSnackBar,
+  SnackBarIconOptions,
+  SnackBarMessageOptions,
+  SnackBarOperationOptions,
+  SnackBarStyleOptions,
+  SnackBarOperationType
+} from '@kit.UIDesignKit';
+```
+
+### Code block 2
+
+```
+@Entry
+@ComponentV2
+struct TestSnackBar {
+  uiContext: UIContext = this.getUIContext();
+  hdsSnackBar: HdsSnackBar = new HdsSnackBar(this.uiContext);
+  icon: SnackBarIconOptions = {
+    icon: $r('sys.symbol.checkmark_circle')
+  }
+  message: SnackBarMessageOptions = {
+    title: $r('sys.string.ohos_id_text_location_button_description_current_position'),
+    content: $r('sys.string.ohos_id_text_save_button_description_save')
+  }
+  operation: SnackBarOperationOptions = {
+    operationType: SnackBarOperationType.TEXT_WITH_CLOSE,
+    content: $r('sys.string.ohos_id_text_save_button_description_save_image'),
+    textButtonId: 'snackBarTextButton'
+  }
+  style: SnackBarStyleOptions = {
+    nextFocusId: 'button',
+    duration: -1
+  }
+
+  build() {
+    Column() {
+      Blank()
+        .height(400)
+      Button('右侧操作区是文字按钮和关闭按钮的SnackBar弹窗，常驻')
+        .onClick(() => {
+          this.hdsSnackBar.show(this.icon, this.message, this.operation, this.style);
+        })
+        .id("button")
+
+      Button('关注')
+        .nextFocus({
+          // 这里forward的id必须和SnackBarOperationOptions接口中传入的textButtonId相同
+          forward: 'snackBarTextButton'
+        })
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor(0xF1F3F5)
+  }
+}
+```

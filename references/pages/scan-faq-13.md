@@ -2,3 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-13_
 
+问题现象
+
+Scan Kit没有提供H5的方案接入扫码。
+
+解决措施
+
+开发者可参考前端页面调用应用侧函数方式调用扫码接口，实现网页扫码功能。

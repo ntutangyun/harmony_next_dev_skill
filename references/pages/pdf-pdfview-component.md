@@ -2,6 +2,24 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-pdfview-component_
 
+PDF Kit提供了丰富的PDF文档预览能力，比如：
+
+页面跳转
+
+页面缩放
+
+单双页显示
+
+页面适配
+
+滚动视图方式预览
+
+详细说明及使用请参考：PdfView组件。
+
+示例代码
+
+导入相关模块。
+
 以下示例代码中以预览“input.pdf”文件名为例，此时需要确保在工程目录“src/main/resources/rawfile”里存在input.pdf文档，并且拷贝input.pdf文档到沙箱目录。
 
 调用loadDocument方法，加载PDF文档。
@@ -13,12 +31,10 @@ import { fileIo } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 @Entry
 @Component
 struct Index {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
-
 
   aboutToAppear(): void {
     let context = this.getUIContext().getHostContext() as Context;
@@ -48,6 +64,63 @@ struct Index {
     })()
   }
 
+  build() {
+    Row() {
+      PdfView({
+        controller: this.controller,
+        pageFit: pdfService.PageFit.FIT_WIDTH,
+        showScroll: true
+      })
+        .id('pdfview_app_view')
+        .layoutWeight(1);
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit'
+import { fileIo } from '@kit.CoreFileKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+@Entry
+@Component
+struct Index {
+  private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
+
+  aboutToAppear(): void {
+    let context = this.getUIContext().getHostContext() as Context;
+    let dir: string = context.resourceDir
+    // 确保在工程目录src/main/resources/resfile里存在input.pdf文档
+    let filePath: string = dir + '/input.pdf';
+    try {
+      let res = fileIo.accessSync(filePath);
+      if (!res) {
+        let content: Uint8Array = context.resourceManager.getRawFileContentSync('rawfile/input.pdf');
+        let fdSand =
+          fileIo.openSync(filePath, fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
+        fileIo.writeSync(fdSand.fd, content.buffer);
+        fileIo.closeSync(fdSand.fd);
+      }
+    } catch (e) {
+      let error: BusinessError = e as BusinessError;
+      hilog.error(0x0000, 'IndexPage', `Code: ${error.code}, message: ${error.message} `);
+    }
+    (async () => {
+      // 该监听方法只能在文档加载前调用一次
+      this.controller.registerPageCountChangedListener((pageCount: number) => {
+        hilog.info(0x0000, 'registerPageCountChanged-', pageCount.toString());
+      });
+      let loadResult1: pdfService.ParseResult = await this.controller.loadDocument(filePath);
+      // 注意：这里刚加载文档，请不要在这里立即设置PDF文档的预览方式
+    })()
+  }
 
   build() {
     Row() {
@@ -63,5 +136,4 @@ struct Index {
     .height('100%')
   }
 }
-PdfView预览组件
-打开和保存PDF文档
+```

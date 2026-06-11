@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-task_
 
+了解任务
+
 任务是Hvigor构建过程中的基本执行单元，通常包含一段可执行代码；一个任务可以依赖其他多个任务。Hvigor任务调度执行时通过解析依赖关系确定任务执行时序。
 
 UP-TO-DATE
@@ -24,16 +26,11 @@ Finished
 
 使用HvigorNode节点对象注册任务。
 
-编辑工程下hvigorfile.ts文件。
-
 // 导入模块
 import { getNode, HvigorNode, HvigorTask } from '@ohos/hvigor';
 
-编写任务代码。
-
 // 获取当前hvigorNode节点对象
 const node: HvigorNode = getNode(__filename);
-
 
 // 注册Task
 node.registerTask({
@@ -43,13 +40,48 @@ node.registerTask({
   }
 });
 
-执行任务。
-
 使用hvigor命令行工具执行任务：
 
 hvigorw customTask
 
-查看任务执行结果。
+## Code blocks
 
-扩展构建能力
-开发Hvigor插件
+### Code block 1
+
+```
+> hvigor UP-TO-DATE ::PackageApp...
+```
+
+### Code block 2
+
+```
+> hvigor Finished ::PackageApp... after 310 ms
+```
+
+### Code block 3
+
+```
+// 导入模块
+import { getNode, HvigorNode, HvigorTask } from '@ohos/hvigor';
+```
+
+### Code block 4
+
+```
+// 获取当前hvigorNode节点对象
+const node: HvigorNode = getNode(__filename);
+
+// 注册Task
+node.registerTask({
+  name: 'customTask',
+  run() {
+    console.log('this is Task');
+  }
+});
+```
+
+### Code block 5
+
+```
+hvigorw customTask
+```

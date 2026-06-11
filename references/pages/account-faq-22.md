@@ -2,6 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-faq-22_
 
+问题现象
+
+调用接口报错1001502003 输入参数值无效。
+
+可能原因
+
+client_id未配置或配置错误。
+
+Profile文件无效。
+
 一键登录场景，传入的匿名手机号不正确，或是未调用授权API（AuthorizationWithHuaweiIDRequest）获取匿名手机号。
 
 接口传参异常，如调用授权API（AuthorizationWithHuaweiIDRequest）时scopes和permissions属性均为空。
@@ -19,6 +29,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-f
 需要通过授权API（AuthorizationWithHuaweiIDRequest）获取到匿名手机号，将其作为参数调用一键登录接口。
 
 检查authentication相关接口参数。
-
-60180007 服务端通过Authorization Code无法获取到华为账号一键登录手机号如何解决
-个人数据处理说明

@@ -27,7 +27,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-fr
 动态调整帧率在预览里属于可选操作，可以完成：
 
 查询当前支持调整的帧率范围
+
 设置当前帧率
+
 获取当前生效的帧率设置
 
 如何配置会话（Session）、释放资源，请参考会话管理 > 预览，或是完整流程示例。
@@ -38,6 +40,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-fr
 
 import { camera } from '@kit.CameraKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+
 创建Session会话并指定模式
 
 相机使用预览等功能前，均需完成相机管理和创建相机会话，调用CameraManager的createSession创建一个会话。
@@ -57,6 +60,7 @@ function createPhotoSession(cameraManager: camera.CameraManager): camera.Session
   }
   return session;
 }
+
 调整帧率
 
 调用PreviewOutput的getSupportedFrameRates，查询当前支持的帧率范围。
@@ -77,12 +81,15 @@ function getSupportedFrameRange(previewOutput: camera.PreviewOutput): Array<came
 调用时机：
 
 需要在Session调用commitConfig完成配流之后调用。
+
 可在Session调用start启动预览前后任意时刻调用。
 
 setFrameRate调用限制：
 
 在调用setFrameRate接口设置非固定帧率后，不支持再次调用该接口重新设置动态帧率。
+
 在调用setFrameRate接口设置固定帧率后，支持重新设置固定帧率，但必须保证新设置的帧率可以整除之前设置的帧率或者被之前设置的帧率整除。
+
 function setFrameRate(previewOutput: camera.PreviewOutput, minFps: number, maxFps: number): void {
   try {
     previewOutput.setFrameRate(minFps, maxFps);
@@ -99,13 +106,13 @@ function setFrameRate(previewOutput: camera.PreviewOutput, minFps: number, maxFp
 function getActiveFrameRange(previewOutput: camera.PreviewOutput): camera.FrameRateRange {
   return previewOutput.getActiveFrameRate();
 }
+
 完整流程
 
 结合上述开发流程1~3，完整的session配流及previewOutput在session.start前后调整帧率示例代码如下。
 
 import { camera } from '@kit.CameraKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
 
 async function sessionConfig(cameraManager: camera.CameraManager, cameraInput: camera.CameraInput,
   previewOutput: camera.PreviewOutput): Promise<void> {
@@ -126,7 +133,6 @@ async function sessionConfig(cameraManager: camera.CameraManager, cameraInput: c
     await session.commitConfig();
     // 获取当前支持的帧率范围
     let supportFrameRateArray: Array<camera.FrameRateRange> = getSupportedFrameRange(previewOutput);
-
 
     console.info(`frame rate supported by previewOutput: ${JSON.stringify(supportFrameRateArray)}`);
     // 可在start前对帧率进行设置
@@ -152,5 +158,110 @@ async function sessionConfig(cameraManager: camera.CameraManager, cameraInput: c
     console.error(`sessionConfig fail : ${err}`);
   }
 }
-安全相机(ArkTS)
-使用相机预配置(ArkTS)
+
+## Code blocks
+
+### Code block 1
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+function createPhotoSession(cameraManager: camera.CameraManager): camera.Session | undefined {
+  let session: camera.Session | undefined = undefined;
+  try {
+    // 创建Session会话并指定为NORMAL_PHOTO模式
+    session = cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO) as camera.PhotoSession;
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to create the session instance. error: ${err}`);
+  }
+  return session;
+}
+```
+
+### Code block 3
+
+```
+function getSupportedFrameRange(previewOutput: camera.PreviewOutput): Array<camera.FrameRateRange> {
+// 获取支持的帧率范围，不同的硬件平台可能提供不同的帧率范围
+  return previewOutput.getSupportedFrameRates();
+}
+```
+
+### Code block 4
+
+```
+function setFrameRate(previewOutput: camera.PreviewOutput, minFps: number, maxFps: number): void {
+  try {
+    previewOutput.setFrameRate(minFps, maxFps);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`Failed to setFrameRate for previewOutput. error: ${err}`);
+  }
+}
+```
+
+### Code block 5
+
+```
+function getActiveFrameRange(previewOutput: camera.PreviewOutput): camera.FrameRateRange {
+  return previewOutput.getActiveFrameRate();
+}
+```
+
+### Code block 6
+
+```
+import { camera } from '@kit.CameraKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+async function sessionConfig(cameraManager: camera.CameraManager, cameraInput: camera.CameraInput,
+  previewOutput: camera.PreviewOutput): Promise<void> {
+  try {
+    let session: camera.Session | undefined = undefined;
+    // 创建CaptureSession实例
+    session = createPhotoSession(cameraManager);
+    if (session === undefined) {
+      return;
+    }
+    // 开始配置会话
+    session.beginConfig();
+    // 把CameraInput加入到会话
+    session.addInput(cameraInput);
+    // 把previewOutput加入到会话
+    session.addOutput(previewOutput);
+    // 提交配置信息
+    await session.commitConfig();
+    // 获取当前支持的帧率范围
+    let supportFrameRateArray: Array<camera.FrameRateRange> = getSupportedFrameRange(previewOutput);
+
+    console.info(`frame rate supported by previewOutput: ${JSON.stringify(supportFrameRateArray)}`);
+    // 可在start前对帧率进行设置
+    if (supportFrameRateArray.length !== 0) {
+      // 将帧率设置为第一组帧率范围的最大值
+      setFrameRate(previewOutput, supportFrameRateArray[0].max, supportFrameRateArray[0].max);
+    }
+    // 获取当前生效的帧率设置
+    let activeFrameRateArray: camera.FrameRateRange = getActiveFrameRange(previewOutput);
+    console.info(`current effective frame rate for this previewOutput: ${activeFrameRateArray}`);
+    // 开始会话工作并启动预览
+    await session.start();
+    // 可在start后对帧率进行设置
+    if (supportFrameRateArray.length !== 0) {
+      // 可将帧率设置为最大值的一半（能否设置成功取决于平台是否支持）
+      setFrameRate(previewOutput, supportFrameRateArray[0].max / 2, supportFrameRateArray[0].max / 2);
+    }
+    // 获取当前生效的帧率设置
+    activeFrameRateArray = getActiveFrameRange(previewOutput);
+    console.info(`current effective frame rate for this previewOutput: ${activeFrameRateArray}`);
+  } catch (error) {
+    let err = error as BusinessError;
+    console.error(`sessionConfig fail : ${err}`);
+  }
+}
+```

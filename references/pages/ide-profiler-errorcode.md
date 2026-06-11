@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-profiler-errorcode_
 
+00701101 应用拉起失败
+
+错误信息
+
 Failed to start this app. If the app is of the release type, make sure you have enabled it to be started. For more details, see the logs.
 
 错误描述
@@ -47,12 +51,15 @@ Failed to import data file. Please check file version or storage space.
 可能原因
 
 版本不匹配。导入的数据文件版本与当前使用的DevEco Studio版本不匹配。
+
 磁盘空间不足。
 
 处理步骤
 
 尝试使用数据文件导出时或更高版本的DevEco Studio导入数据。
+
 清理磁盘空间。
+
 00702101 离线符号解析失败
 
 错误信息
@@ -448,6 +455,3 @@ Failed to stop the session.
 处理步骤
 
 本次录制结束后，需重新录制。
-
-快捷键
-DevEco Profiler术语

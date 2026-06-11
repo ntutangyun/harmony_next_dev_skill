@@ -38,5 +38,16 @@ ArkGraphics 2D（方舟2D图形服务 ）主要提供图形绘制与显示相关
 
 支持多种渲染后端：一次开发，支持多种渲染绘制后端，以降低多端适配成本，并满足应用的差异化需求。
 
-ArkGraphics 2D（方舟2D图形服务）
-使用可变帧率能力定制不同内容的绘制帧率
+模拟器支持情况
+
+本Kit部分能力支持模拟器，且与真机存在能力差异，具体如下。
+
+模拟器上不支持广色域效果显示。
+
+模拟器上不支持HDR效果显示。
+
+模拟器上可变帧率的setExpectedFrameRateRange接口可能无法设置预期帧率。
+
+因模拟器与真机的绘制引擎不同，@ohos.graphics.drawing、NativeWindow、NativeBuffer、NativeImage、NativeVsync以及Drawing等模块的部分接口在模拟器与真机上会有显示效果差异。
+
+通用差异：请参见模拟器与真机的差异。

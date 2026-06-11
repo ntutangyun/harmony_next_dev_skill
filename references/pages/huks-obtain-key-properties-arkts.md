@@ -20,6 +20,96 @@ HUKS提供了接口供业务获取指定密钥的相关属性。在获取指定�
 
 import { huks } from '@kit.UniversalKeystoreKit';
 
+/* 1. 设置密钥别名 */
+let keyAlias = 'keyAlias';
+/* option对象传空 */
+let emptyOptions: huks.HuksOptions = {
+  properties: []
+};
+let properties1: huks.HuksParam[] = [
+  {
+    tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
+    value: huks.HuksKeyAlg.HUKS_ALG_DH
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_PURPOSE,
+    value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_AGREE
+  },
+  {
+    tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
+    value: huks.HuksKeySize.HUKS_DH_KEY_SIZE_2048
+  }
+];
+
+let huksOptions: huks.HuksOptions = {
+  properties: properties1,
+  inData: new Uint8Array([])
+}
+
+/* 3.生成密钥 */
+function generateKeyItem(keyAlias: string, huksOptions: huks.HuksOptions) {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      huks.generateKeyItem(keyAlias, huksOptions, (error, data) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      });
+    } catch (error) {
+      throw (error as Error);
+    }
+  });
+}
+
+async function publicGenKeyFunc(keyAlias: string, huksOptions: huks.HuksOptions): Promise<string> {
+  console.info(`enter promise generateKeyItem`);
+  try {
+    await generateKeyItem(keyAlias, huksOptions)
+      .then((data) => {
+        console.info(`promise: generateKeyItem success, data = ${JSON.stringify(data)}`);
+      })
+      .catch((error: Error) => {
+        console.error(`promise: generateKeyItem failed, ${JSON.stringify(error)}`);
+      });
+    return 'Success';
+  } catch (error) {
+    console.error(`promise: generateKeyItem input arg invalid, ${JSON.stringify(error)}`);
+    return 'Failed';
+  }
+}
+
+async function testGenKey(): Promise<string> {
+  let ret = await publicGenKeyFunc(keyAlias, huksOptions);
+  return ret;
+}
+
+function check(): string {
+  try {
+    /* 1. 生成密钥 */
+    testGenKey();
+    /* 2. 获取密钥属性 */
+    huks.getKeyItemProperties(keyAlias, emptyOptions, (error, data) => {
+      if (error) {
+        console.error(`callback: getKeyItemProperties failed, ${JSON.stringify(error)}`);
+      } else {
+        console.info(`callback: getKeyItemProperties success, data = ${JSON.stringify(data)}`);
+      }
+    });
+    return 'Success';
+  } catch (error) {
+    console.error(`callback: getKeyItemProperties input arg invalid, ${JSON.stringify(error)}`);
+    return 'Failed';
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { huks } from '@kit.UniversalKeystoreKit';
 
 /* 1. 设置密钥别名 */
 let keyAlias = 'keyAlias';
@@ -42,12 +132,10 @@ let properties1: huks.HuksParam[] = [
   }
 ];
 
-
 let huksOptions: huks.HuksOptions = {
   properties: properties1,
   inData: new Uint8Array([])
 }
-
 
 /* 3.生成密钥 */
 function generateKeyItem(keyAlias: string, huksOptions: huks.HuksOptions) {
@@ -66,7 +154,6 @@ function generateKeyItem(keyAlias: string, huksOptions: huks.HuksOptions) {
   });
 }
 
-
 async function publicGenKeyFunc(keyAlias: string, huksOptions: huks.HuksOptions): Promise<string> {
   console.info(`enter promise generateKeyItem`);
   try {
@@ -84,12 +171,10 @@ async function publicGenKeyFunc(keyAlias: string, huksOptions: huks.HuksOptions)
   }
 }
 
-
 async function testGenKey(): Promise<string> {
   let ret = await publicGenKeyFunc(keyAlias, huksOptions);
   return ret;
 }
-
 
 function check(): string {
   try {
@@ -109,6 +194,4 @@ function check(): string {
     return 'Failed';
   }
 }
-GetKeyAttributes.ets
-获取密钥属性
-获取密钥属性(C/C++)
+```

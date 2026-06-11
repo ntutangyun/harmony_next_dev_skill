@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-select-invoice-title_
 
+场景介绍
+
 当应用需要获取用户发票抬头时，可使用Account Kit提供的发票助手能力，打开发票抬头选择页面，帮助用户快速选择或管理发票抬头。以下对Account Kit提供的发票助手能力进行介绍，获取发票抬头功能还可使用场景化控件选择发票抬头Button进行实现。
 
 约束与限制
@@ -22,6 +24,7 @@ Wearable、TV设备暂不支持使用获取发票抬头功能。
 
 接口名	描述
 selectInvoiceTitle(context: common.Context): Promise<InvoiceTitle>	调用该方法打开发票抬头选择页面，使用Promise异步回调返回选择的发票抬头。
+
 注意
 
 上述接口需在页面或自定义组件生命周期内调用。
@@ -55,10 +58,8 @@ if (canIUse('SystemCapability.HuaweiID.InvoiceAssistant')) {
         const bankName: string = data.bankName;
         const bankAccount: string = data.bankAccount;
 
-
         // 开发者处理type, title, taxNumber, companyAddress, telephone, bankName, bankAccount
         // ...
-
 
       })
       .catch((error: BusinessError<Object>) => {
@@ -71,9 +72,61 @@ if (canIUse('SystemCapability.HuaweiID.InvoiceAssistant')) {
   hilog.info(0x0000, 'testTag',
     'The current device does not support the invoking of the selectInvoiceTitle interface.');
 }
+
 // 错误处理
 function dealAllError(error: BusinessError<Object>): void {
   hilog.error(0x0000, 'testTag', `Failed to selectInvoiceTitle. Code: ${error.code}, message: ${error.message}`);
 }
-获取收货地址
-获取风险等级
+
+## Code blocks
+
+### Code block 1
+
+```
+import { invoiceAssistant } from '@kit.AccountKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 执行请求
+if (canIUse('SystemCapability.HuaweiID.InvoiceAssistant')) {
+  try {
+    // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
+    invoiceAssistant.selectInvoiceTitle(this.getUIContext().getHostContext())
+      .then((data: invoiceAssistant.InvoiceTitle) => {
+        hilog.info(0x0000, 'testTag', 'Succeeded in selecting invoice title');
+        const type: string = data.type;
+        const title: string = data.title;
+        const taxNumber: string = data.taxNumber;
+        const companyAddress: string = data.companyAddress;
+        const telephone: string = data.telephone;
+        const bankName: string = data.bankName;
+        const bankAccount: string = data.bankAccount;
+
+        // 开发者处理type, title, taxNumber, companyAddress, telephone, bankName, bankAccount
+        // ...
+
+      })
+      .catch((error: BusinessError<Object>) => {
+        dealAllError(error);
+      });
+  } catch (error) {
+    dealAllError(error);
+  }
+} else {
+  hilog.info(0x0000, 'testTag',
+    'The current device does not support the invoking of the selectInvoiceTitle interface.');
+}
+```
+
+### Code block 3
+
+```
+// 错误处理
+function dealAllError(error: BusinessError<Object>): void {
+  hilog.error(0x0000, 'testTag', `Failed to selectInvoiceTitle. Code: ${error.code}, message: ${error.message}`);
+}
+```

@@ -2,7 +2,16 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-generation-overview_
 
+当业务需要使用HUKS生成随机密钥，并由HUKS进行安全保存时，可以调用HUKS的接口生成密钥。
+
+说明
+
+密钥别名长度最大为128字节。
+
+密钥别名中禁止包含个人数据等敏感信息。不建议包含加密算法、密钥长度、加密模式等信息。
+
 使用当前业务已有的密钥别名作为生成的密钥别名默认会把现有密钥覆盖，可以使用HUKS_TAG_KEY_OVERRIDE指定当密钥别名冲突时返回错误。
+
 对于不同业务生成的密钥将基于业务身份信息进行存储路径隔离，避免不同业务因密钥别名相同导致冲突。
 
 从API 23开始支持群组密钥特性。
@@ -21,6 +30,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 HUKS_AUTH_STORAGE_LEVEL_DE	0	表示密钥仅在开机后可访问。
 HUKS_AUTH_STORAGE_LEVEL_CE	1	表示密钥仅在首次解锁后可访问。
 HUKS_AUTH_STORAGE_LEVEL_ECE	2	表示密钥仅在解锁状态时可访问。
+
 说明
 
 业务在使用存储等级为ECE的密钥时，建议通过感知锁屏事件来清理使用该密钥创建的会话资源，以保证安全性。
@@ -44,6 +54,7 @@ SM2	256	9+
 SM4	128	9+
 DES	64	18+
 3DES	128、192	18+
+
 说明
 
 DH算法采用FFDHE知名安全素数群。
@@ -59,5 +70,3 @@ DES	64	12+
 RSA	1024-2048（含），必须是8的倍数	12+
 HMAC	8-1024（含），必须是8的倍数	12+
 CMAC	128 算法仅支持3DES	12+
-密钥生成
-生成密钥(ArkTS)

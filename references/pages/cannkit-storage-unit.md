@@ -21,40 +21,13 @@ FP Buffer	Fixpipe Buffer，存放量化参数、Relu参数等。
 表2 搬运单元介绍
 
 搬运单元	描述
-MTE1	
-
-负责如下通路的数据搬运：
-
-- L1->L0A/L0B
-
-- L1->UB（只有耦合架构支持）
-
-- L1->BT Buffer
-
-
-MTE2	
-
-负责如下通路的数据搬运：
-
-- GM->{L1, L0A/B}，在该通路下，基于分形大小搬运，搬运时满足cacheline(512Byte)对齐，性能更优。
-
-- GM->UB，基于cacheline大小搬运性能更优。
-
-
+MTE1	负责如下通路的数据搬运： - L1->L0A/L0B - L1->UB（只有耦合架构支持） - L1->BT Buffer
+MTE2	负责如下通路的数据搬运： - GM->{L1, L0A/B}，在该通路下，基于分形大小搬运，搬运时满足cacheline(512Byte)对齐，性能更优。 - GM->UB，基于cacheline大小搬运性能更优。
 MTE3	负责如下通路的数据搬运：UB -> GM
-FixPipe	
-
-只有分离架构支持，负责如下通路的数据搬运，搬运过程中可以完成随路数据格式/类型转换：
-
-- L0C->{GM/L1}
-
-- L1->FP Buffer
+FixPipe	只有分离架构支持，负责如下通路的数据搬运，搬运过程中可以完成随路数据格式/类型转换： - L0C->{GM/L1} - L1->FP Buffer
 
 说明
 
 不同类型的AI处理器，存储单元大小不同，开发者可通过GetCoreMemSize接口获取。
 
 所有通过搬运单元读写GM的数据都缺省被缓存在L2Cache，以此加快访问速度，提高访问效率。核外L2Cache以cacheline为单位加载数据，根据硬件规格不同，cacheline大小不同（128/256/512Byte等）。
-
-计算单元
-控制单元

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/spatial-recon-glossary_
 
+颜色抖动
+
 颜色抖动通过有规律地混合相邻像素的颜色来模拟更多色彩。它在一定区域内混合排列不同颜色的像素点、使人眼产生一种视觉上的混合效果，从而用有限的颜色深度模拟出更多种颜色。
 
 3DGS
@@ -11,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/spatial-r
 Kuwahara filter
 
 一种滤波器，可以在平滑图像的同时保留图像的边缘信息。
-
-Spatial Recon Kit简介
-加载3DGS模型

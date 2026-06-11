@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/customize-bytecode-during-compilation_
 
+如果开发者希望自定义修改方舟字节码文件的内容，可以使用ArkTS编译工具链提供的方法自定义修改方舟字节码文件。
+
+能力配置说明
+
 准备一个操作方舟字节码文件的动态库文件，在工程的配置文件build-profile.json5中配置编译选项transformLib，选项值为这个动态库的路径，编译器会在指定时机加载该动态库，并执行其中指定的Transform方法。
 
 能力执行机制
@@ -46,5 +50,36 @@ g++ --shared -o example.so example.cpp
 
 重新编译项目，即可完成自定义修改方舟字节码。
 
-方舟字节码函数命名规则
-方舟字节码生成常见问题
+## Code blocks
+
+### Code block 1
+
+```
+/**
+ * @brief 方舟字节码文件修改的入口方法
+ * @param abc_path 待处理的方舟字节码文件的存储路径
+ */
+extern "C" int Transform(const char *abc_path)
+{
+    // 开发者可以在这里读取abc_path对应的方舟字节码文件，然后根据方舟字节码格式修改相关数据，然后再重新生成方舟字节码文件
+    return 0;
+}
+```
+
+### Code block 2
+
+```
+g++ --shared -o example.dll example.cpp
+```
+
+### Code block 3
+
+```
+g++ --shared -o example.so example.cpp
+```
+
+### Code block 4
+
+```
+g++ --shared -o example.so example.cpp
+```

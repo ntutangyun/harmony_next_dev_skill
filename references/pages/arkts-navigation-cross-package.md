@@ -2,8 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-navigation-cross-package_
 
+Navigation提供系统路由表和自定义路由表两种实现方式，通过路由表的配置可以完成本包和跨包的页面跳转。
+
+支持自定义路由表和系统路由表混用。
+
+路由表能力对比
+
+不同路由方式适用于不同需求，易用性或可扩展性需根据项目特点权衡选择。
+
+路由方式	跨包跳转能力	可扩展性	易用性
 系统路由表	跳转前无需import页面文件，页面按需动态加载。	可扩展性一般。	易用性更强，系统自动维护路由表。使用简单，开发者只需要添加对应页面跳转配置项，即可实现页面跳转。
 自定义路由表	跳转前需要import页面文件。	可扩展性更强。	易用性一般，需要开发者自行维护路由表。使用复杂，但是可以根据应用业务进行定制处理。
+
 系统路由表
 
 系统路由表是动态路由的一种实现方式。从API version 12开始，Navigation支持使用系统路由表的方式进行动态路由。从API version 23开始，Navigation组件支持跳转到按需加载的HSP页面。
@@ -36,7 +46,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-nav
     // ...
   }
 }
-module.json5
 
 在跳转目标页面，配置入口Builder函数，函数名称需要和router_map.json配置文件中的buildFunction保持一致，否则在编译时会报错。
 
@@ -46,11 +55,9 @@ export function PageOneBuilder() {
   PageOne();
 }
 
-
 @Component
 struct PageOne {
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -61,7 +68,6 @@ struct PageOne {
     })
   }
 }
-PageOne.ets
 
 通过pushPathByName等路由接口进行页面跳转。
 
@@ -69,7 +75,6 @@ PageOne.ets
 @Component
 struct SystemRoutingTable {
   pageStack : NavPathStack = new NavPathStack();
-
 
   build() {
     Navigation(this.pageStack){
@@ -79,7 +84,7 @@ struct SystemRoutingTable {
     .hideNavBar(true)
   }
 }
-PageOne.ets
+
 自定义路由表
 
 自定义路由表通过给Navigation的navDestination属性设置Builder函数实现，其特点是需要import页面。有两种import页面的方式，静态import和动态import，二者的区别在于：
@@ -87,44 +92,50 @@ PageOne.ets
 import方式	模块间耦合度	实现复杂度	性能
 动态import	模块间解耦。	复杂度高。	性能好，按需加载，跳转前再加载对应页面。
 静态import	模块间耦合。	复杂度低。	性能一般，初始化时一次性加载所有依赖的页面。
-动态import
+
+[h2]动态import
 
 动态import主要用于多个模块（HAR/HSP）复用相同业务逻辑的场景，实现各业务模块间的解耦，同时支持路由功能的扩展与整合，可以按需import。
 
 动态import的优势：
 
 路由定义除了跳转的URL以外，可以配置丰富的扩展信息，如横竖屏默认模式、是否需要鉴权等等，做路由跳转时统一处理。
+
 给每个路由页面设置一个名字，按照名称进行跳转而不是文件路径。
+
 页面的加载可以使用动态import（按需加载），防止首个页面加载大量代码导致卡顿。
 
 实现步骤如下，具体请参考自动生成动态路由示例。
 
-定义页面跳转配置项。
 使用资源文件进行定义，通过资源管理@ohos.resourceManager在运行时对资源文件解析。
+
 在ets文件中配置路由加载配置项，一般包括路由页面名称（即pushPath等接口中页面的别名），文件所在模块名称（HSP/HAR的模块名），加载页面在模块内的路径（相对src目录的路径）。
+
 加载目标跳转页面，通过动态import将跳转目标页面所在的模块在运行时加载，在模块加载完成后，调用模块中的方法，通过import在模块的方法中加载模块中显示的目标页面，并返回页面加载完成后定义的Builder函数。
+
 触发页面跳转，在Navigation的navDestination属性中执行步骤2加载的Builder函数，即可跳转到目标页面。
-静态import
+
+[h2]静态import
 
 静态import实现方式简单，但通过静态import页面进行路由跳转会导致不同模块之间的依赖耦合，并存在首页加载时间长等问题。建议使用动态import或系统路由表。
 
 静态import实现步骤如下：
 
 使用@Builder装饰器创建自定义构造函数pageMap。
+
 在自定义构造函数pageMap里实现路由表，根据传入的页面名称构造不同的页面。
+
 将pageMap配置到Navigation的navDestination属性中，完成路由表注册。
+
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 @Entry
 @Component
 struct NavigationExample {
   @Provide('navPathStack') navPathStack: NavPathStack = new NavPathStack();
   private arr: number[] = [1, 2];
-
 
   @Builder
   pageMap(name: string) {
@@ -135,14 +146,12 @@ struct NavigationExample {
     }
   }
 
-
   build() {
     Column() {
       Navigation(this.navPathStack) {
         TextInput({ placeholder: 'search...' })
           .width('90%')
           .height(40)
-
 
         List({ space: 12 }) {
           ForEach(this.arr, (item: number) => {
@@ -173,12 +182,10 @@ struct NavigationExample {
   }
 }
 
-
 @Component
 export struct pageTwoTmp {
   @Consume('navPathStack') navPathStack: NavPathStack;
   context = this.getUIContext().getHostContext();
-
 
   build() {
     NavDestination() {
@@ -196,12 +203,10 @@ export struct pageTwoTmp {
   }
 }
 
-
 @Component
 export struct pageOneTmp {
   @Consume('navPathStack') navPathStack: NavPathStack;
   context = this.getUIContext().getHostContext();
-
 
   build() {
     NavDestination() {
@@ -218,7 +223,7 @@ export struct pageOneTmp {
     })
   }
 }
-CustomRoutingTable.ets
+
 开发步骤
 
 如下示例展示了基于系统路由表的跨包跳转，实现六个页面之间的相互跳转，其中HAP包有两个页面HapPageA和HapPageB，HSP包中有两个页面HspPageA和HspPageB，HAR包中也有两个页面HarPageA、HarPageB。
@@ -259,7 +264,6 @@ CustomRoutingTable.ets
     // ...
   }
 }
-module.json5
 
 跳转功能开发。
 
@@ -267,7 +271,6 @@ module.json5
 
 // 仅作为示例写法，其余页面、模块需自行创建
 import { ControlPanel } from './Common';
-
 
 @Component
 export struct HapPageA {
@@ -283,13 +286,11 @@ export struct HapPageA {
   }
 }
 
-
 // 页面的buildFunction，用于构造页面
 @Builder
 export function HapPageABuilder(): void {
   HapPageA();
 }
-HapPageA.ets
 
 其中Common是为了方便演示页面间跳转抽出来的一个控制面板组件，示例如下：
 
@@ -297,12 +298,10 @@ HapPageA.ets
 export struct ControlPanel {
   private stack: NavPathStack | undefined = undefined;
 
-
   aboutToAppear(): void {
     let info = this.queryNavigationInfo();
     this.stack = info?.pathStack;
   }
-
 
   build() {
     Column({ space: 20 }) {
@@ -327,7 +326,6 @@ export struct ControlPanel {
     }
   }
 }
-Common.ets
 
 编译构建。
 
@@ -354,5 +352,294 @@ Common.ets
 
 图2 Navigation跨包跳转示例
 
-Navigation转场动画
-Navigation分栏开发
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "routerMap": [
+    {
+      "name": "PageOne",
+      "pageSourceFile": "src/main/ets/pages/PageOne.ets",
+      "buildFunction": "PageOneBuilder",
+      "data": {
+        "description" : "this is PageOne"
+      }
+    }
+  ]
+}
+```
+
+### Code block 2
+
+```
+{
+  "module": {
+    // ...
+    "routerMap": "$profile:router_map",
+    // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+// 跳转页面入口函数
+@Builder
+export function PageOneBuilder() {
+  PageOne();
+}
+
+@Component
+struct PageOne {
+  pathStack: NavPathStack = new NavPathStack();
+
+  build() {
+    NavDestination() {
+    }
+    .title('PageOne')
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack;
+    })
+  }
+}
+```
+
+### Code block 4
+
+```
+@Entry
+@Component
+struct SystemRoutingTable {
+  pageStack : NavPathStack = new NavPathStack();
+
+  build() {
+    Navigation(this.pageStack){
+    }.onAppear(() => {
+      this.pageStack.pushPathByName('PageOne', null, false);
+    })
+    .hideNavBar(true)
+  }
+}
+```
+
+### Code block 5
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+@Entry
+@Component
+struct NavigationExample {
+  @Provide('navPathStack') navPathStack: NavPathStack = new NavPathStack();
+  private arr: number[] = [1, 2];
+
+  @Builder
+  pageMap(name: string) {
+    if (name === 'NavDestinationTitle1') {
+      pageOneTmp();
+    } else if (name === 'NavDestinationTitle2') {
+      pageTwoTmp();
+    }
+  }
+
+  build() {
+    Column() {
+      Navigation(this.navPathStack) {
+        TextInput({ placeholder: 'search...' })
+          .width('90%')
+          .height(40)
+
+        List({ space: 12 }) {
+          ForEach(this.arr, (item: number) => {
+            ListItem() {
+              Text('Page' + item)
+                .width('100%')
+                .height(72)
+                .borderRadius(24)
+                .fontSize(16)
+                .fontWeight(500)
+                .textAlign(TextAlign.Center)
+                .onClick(() => {
+                  this.navPathStack.pushPath({ name: 'NavDestinationTitle' + item });
+                })
+            }
+          }, (item: number) => item.toString())
+        }
+        .width('90%')
+        .margin({ top: 12 })
+      }
+      // $r('app.string.mainTitle')需要替换为开发者所需的字符串资源文件，资源文件中的value值为“主标题”
+      .title($r('app.string.mainTitle'))
+      .navDestination(this.pageMap)
+      .mode(NavigationMode.Split)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+
+@Component
+export struct pageTwoTmp {
+  @Consume('navPathStack') navPathStack: NavPathStack;
+  context = this.getUIContext().getHostContext();
+
+  build() {
+    NavDestination() {
+      Column() {
+        Text('NavDestinationContent2')
+      }.width('100%').height('100%')
+    }.title('NavDestinationTitle2')
+    .onBackPressed(() => {
+      const popDestinationInfo = this.navPathStack.pop(); // 弹出路由栈的栈顶元素
+      // $r('app.string.returnValue')需要替换为开发者所需的字符串资源文件，资源文件中的value值为“返回值”
+      hilog.info(DOMAIN, 'testTag', 'pop', this.context!.resourceManager.getStringSync($r('app.string.returnValue').id),
+        JSON.stringify(popDestinationInfo));
+      return true;
+    })
+  }
+}
+
+@Component
+export struct pageOneTmp {
+  @Consume('navPathStack') navPathStack: NavPathStack;
+  context = this.getUIContext().getHostContext();
+
+  build() {
+    NavDestination() {
+      Column() {
+        Text('NavDestinationContent1')
+      }.width('100%').height('100%')
+    }.title('NavDestinationTitle1')
+    .onBackPressed(() => {
+      const popDestinationInfo = this.navPathStack.pop(); // 弹出路由栈的栈顶元素
+      // $r('app.string.returnValue')需要替换为开发者所需的字符串资源文件，资源文件中的value值为“返回值”
+      hilog.info(DOMAIN, 'testTag', 'pop', this.context!.resourceManager.getStringSync($r('app.string.returnValue').id),
+        JSON.stringify(popDestinationInfo));
+      return true;
+    })
+  }
+}
+```
+
+### Code block 6
+
+```
+{
+  "routerMap": [
+    {
+      "name": "HapPageA",
+      "pageSourceFile": "src/main/ets/pages/HapPageA.ets",
+      "buildFunction": "HapPageABuilder",
+      "data": {
+        "description": "this is HapPageA"
+      }
+    },
+    {
+      "name": "HapPageB",
+      "pageSourceFile": "src/main/ets/pages/HapPageB.ets",
+      "buildFunction": "HapPageBBuilder",
+      "data": {
+        "description": "this is HapPageB"
+      }
+    }
+  ]
+}
+```
+
+### Code block 7
+
+```
+{
+  "module": {
+    // ...
+    "routerMap": "$profile:router_map",
+    // ...
+  }
+}
+```
+
+### Code block 8
+
+```
+// 仅作为示例写法，其余页面、模块需自行创建
+import { ControlPanel } from './Common';
+
+@Component
+export struct HapPageA {
+  build() {
+    NavDestination() {
+      Stack({alignContent: Alignment.Center}) {
+        ControlPanel()
+      }.width('100%').height('100%')
+    }.title('HapPageA')
+    .onReady((ctx: NavDestinationContext) => {
+      let config = ctx.getConfigInRouteMap();
+    })
+  }
+}
+
+// 页面的buildFunction，用于构造页面
+@Builder
+export function HapPageABuilder(): void {
+  HapPageA();
+}
+```
+
+### Code block 9
+
+```
+@Component
+export struct ControlPanel {
+  private stack: NavPathStack | undefined = undefined;
+
+  aboutToAppear(): void {
+    let info = this.queryNavigationInfo();
+    this.stack = info?.pathStack;
+  }
+
+  build() {
+    Column({ space: 20 }) {
+      Button('push HapPageA').onClick(() => {
+        this.stack?.pushPath({ name: 'HapPageA' });
+      })
+      Button('push HapPageB').onClick(() => {
+        this.stack?.pushPath({ name: 'HapPageB' });
+      })
+      Button('push HarPageA').onClick(() => {
+        this.stack?.pushPath({ name: 'HarPageA' });
+      })
+      Button('push HarPageB').onClick(() => {
+        this.stack?.pushPath({ name: 'HarPageB' });
+      })
+      Button('push HspPageA').onClick(() => {
+        this.stack?.pushPath({ name: 'HspPageA' });
+      })
+      Button('push HspPageB').onClick(() => {
+        this.stack?.pushPath({ name: 'HspPageB' });
+      })
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "har_a": "file:../libs/HAR_A.har", // 因为演示中使用的是本地依赖包，所以通过file指示一个固定的文件。
+    "hsp_a": "file:../libs/HSP_A-default.tgz", // 因为演示中使用的是本地依赖包，所以通过file指示一个固定的文件。
+  }
+}
+```

@@ -11,6 +11,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-byt
 方舟字节码函数命名规则：介绍字节码文件中函数名字的字符串的命名规则。
 
 编译期自定义修改方舟字节码：介绍如何修改字节码文件的内容。
-
-方舟字节码
-方舟字节码文件格式

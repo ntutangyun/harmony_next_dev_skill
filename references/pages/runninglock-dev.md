@@ -2,10 +2,13 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/runninglock-dev_
 
+场景介绍
+
 当计算机在一段时间内没有检测到用户活动（如键盘或鼠标输入）时，系统会自动尝试进入睡眠，使用RunningLockType.BACKGROUND_USER_IDLE运行锁，保证在持锁过程中系统不会进入自动睡眠，保证业务正常运行。
 
 环境准备
-环境要求
+
+[h2]环境要求
 
 开发工具及配置：
 
@@ -19,13 +22,19 @@ HDC配置：
 
 HDC（HarmonyOS Device Connector）是为开发人员提供的用于调试的命令行工具，通过该工具可以在Windows/Linux/Mac系统上与真实设备或者模拟器进行交互，详细参考HDC配置。
 
-搭建环境
+[h2]搭建环境
+
 在PC上安装DevEco Studio，要求版本在4.1及以上。
+
 将public-SDK更新到API version 23或以上，更新SDK的具体操作可参见更新指南。
+
 PC安装HDC工具，通过该工具可以在Windows/Linux/Mac系统上与真实设备或者模拟器进行交互。
+
 用USB线缆将搭载HarmonyOS的设备连接到PC。
+
 开发指导
-接口说明
+
+[h2]接口说明
 
 介绍自动睡眠与强制睡眠:
 
@@ -45,7 +54,7 @@ RunningLockType.BACKGROUND_USER_IDLE接口的使用约束和设备差异：
 
 进入强制睡眠时系统会做兜底来强制释放该锁，确保系统能正常进入睡眠，公共事件提供给业务测一个感知强制睡眠并处理相应业务的途径。
 
-开发步骤
+[h2]开发步骤
 
 使用RunningLockType.BACKGROUND_USER_IDLE运行锁，开发示例如下：
 
@@ -64,11 +73,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { commonEventManager } from '@kit.BasicServicesKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 type SubscriberInfo = commonEventManager.CommonEventSubscribeInfo;
 type Subscriber = commonEventManager.CommonEventSubscriber;
 type EventData = commonEventManager.CommonEventData;
-
 
 // 公共事件工具类，用来创建公共事件监听者以及订阅、取消订阅公共事件
 export class CommonEventHelper {
@@ -94,7 +101,7 @@ export class CommonEventHelper {
       return undefined;
     }
   }
-  
+
   // 根据传入的监听者取消订阅公共事件
   public static async unsubscribeSystemCommonEvent(subscriber: Subscriber | undefined): Promise<boolean> {
     try {
@@ -113,15 +120,14 @@ export class CommonEventHelper {
     }
   }
 }
+
 // RunningLockUtil.ets
 import { runningLock } from '@kit.BasicServicesKit';
-
 
 // 运行锁工具类，用来创建运行锁、持锁以及释放锁
 export class RunningLockUtil {
   // 保存运行锁对象
   public static recordLock: runningLock.RunningLock | undefined;
-
 
   public static holdRunningLock(): void {
     // 通过isSupport接口查询当前设备是否支持该类型锁
@@ -143,7 +149,6 @@ export class RunningLockUtil {
     }
   }
 
-
   private static async createRunningLockAndHold(): Promise<void> {
     try {
       const lock = await runningLock.create(
@@ -159,7 +164,6 @@ export class RunningLockUtil {
       console.error('create or hold failed, err: ' + err);
     }
   }
-
 
   public static unholdRunningLock(): void {
     if (!RunningLockUtil.recordLock) {
@@ -185,11 +189,10 @@ import { CommonEventHelper } from './CommonEventHelper';
 import { RunningLockUtil } from './RunningLockUtil';
 import { commonEventManager } from '@kit.BasicServicesKit';
 
-
 // 闲时任务类，可参考下方步骤开发
 class UserIdleTask {
   private static subscriber: Nullable<commonEventManager.CommonEventSubscriber> = undefined;
-  
+
   // 1、初始化监听公共事件以及其他业务流程，示例只完成监听
   public async init(): Promise<void> {
     if (UserIdleTask.subscriber === undefined) {
@@ -205,7 +208,7 @@ class UserIdleTask {
       );
     }
   }
-  
+
   // 2、持锁后执行任务，任务执行完成后释放锁
   public runUserIdleTask(): void {
     RunningLockUtil.holdRunningLock();
@@ -213,7 +216,7 @@ class UserIdleTask {
     console.info('background user idle task run');
     RunningLockUtil.unholdRunningLock();
   }
-  
+
   // 3、实现收到进入强制睡眠或退出强制睡眠事件的回调函数
   private onReceiveEvent(data: commonEventManager.CommonEventData): void {
     if (data?.event === commonEventManager.Support.COMMON_EVENT_ENTER_FORCE_SLEEP) {
@@ -226,6 +229,192 @@ class UserIdleTask {
   }
 }
 
+// 创建并执行任务
+function main() {
+  let task: UserIdleTask = new UserIdleTask();
+  task.init();
+  task.runUserIdleTask();
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+// 导入runningLock、commonEventManager模块
+import { runningLock } from '@kit.BasicServicesKit';
+import { commonEventManager } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// CommonEventHelper.ets
+import { commonEventManager } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+type SubscriberInfo = commonEventManager.CommonEventSubscribeInfo;
+type Subscriber = commonEventManager.CommonEventSubscriber;
+type EventData = commonEventManager.CommonEventData;
+
+// 公共事件工具类，用来创建公共事件监听者以及订阅、取消订阅公共事件
+export class CommonEventHelper {
+  // 创建监听者以及订阅公共事件
+  public static async subscribeSystemCommonEvent(info: SubscriberInfo,
+    callback: (data: EventData) => void): Promise<Subscriber | undefined> {
+    try {
+      // 创建监听对象
+      const subscriber: Subscriber = await commonEventManager.createSubscriber(info);
+      // 订阅指定的公共事件
+      commonEventManager.subscribe(subscriber, (err: BusinessError, data: EventData): void => {
+        if (err) {
+          console.error(`Failed to subscribe. Code is ${err.code}, message is ${err.message}`);
+          return;
+        }
+        // 监听到公共事件后执行回调
+        callback(data);
+      });
+      // 返回监听者对象
+      return subscriber;
+    } catch (error) {
+      console.error('Failed to subscribe system common event, err: ' + error);
+      return undefined;
+    }
+  }
+
+  // 根据传入的监听者取消订阅公共事件
+  public static async unsubscribeSystemCommonEvent(subscriber: Subscriber | undefined): Promise<boolean> {
+    try {
+      // 取消订阅公共事件
+      commonEventManager.unsubscribe(subscriber, (error: BusinessError): void => {
+        if (error) {
+          console.error(`Failed to unsubscribe. Code is ${error.code}, message is ${error.message}`);
+        } else {
+          console.info('unsubscribe success');
+        }
+      });
+      return true;
+    } catch (error) {
+      console.error('Failed to unsubscribe event, err: ' + error);
+      return false;
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+// RunningLockUtil.ets
+import { runningLock } from '@kit.BasicServicesKit';
+
+// 运行锁工具类，用来创建运行锁、持锁以及释放锁
+export class RunningLockUtil {
+  // 保存运行锁对象
+  public static recordLock: runningLock.RunningLock | undefined;
+
+  public static holdRunningLock(): void {
+    // 通过isSupport接口查询当前设备是否支持该类型锁
+    if (!runningLock.isSupported(runningLock.RunningLockType.BACKGROUND_USER_IDLE)) {
+        console.error('type BACKGROUND_USER_IDLE is not support in the device.');
+        return;
+    }
+    if (RunningLockUtil.recordLock) {
+      try {
+        // 持锁时长取决于具体业务场景，锁超时自动释放；这里示例持锁5000ms
+        RunningLockUtil.recordLock.hold(5000);
+        console.info('hold running lock success');
+      } catch (err) {
+        console.error('hold running lock failed, err: ' + err);
+      }
+    } else {
+      // 创建运行锁，并保存运行锁
+      RunningLockUtil.createRunningLockAndHold();
+    }
+  }
+
+  private static async createRunningLockAndHold(): Promise<void> {
+    try {
+      const lock = await runningLock.create(
+        'running_lock_user_idle',
+        runningLock.RunningLockType.BACKGROUND_USER_IDLE
+      );
+      console.info('create running lock: ' + lock);
+      RunningLockUtil.recordLock = lock;
+      // 持锁时长取决于具体业务场景，锁超时自动释放；示例持锁5000ms
+      lock.hold(5000);
+      console.info('hold running lock success');
+    } catch (err) {
+      console.error('create or hold failed, err: ' + err);
+    }
+  }
+
+  public static unholdRunningLock(): void {
+    if (!RunningLockUtil.recordLock) {
+      console.error('lock is null');
+      return;
+    }
+    try {
+      // 判断是否持锁，并进行释放操作
+      if (RunningLockUtil.recordLock.isHolding()) {
+        RunningLockUtil.recordLock.unhold();
+        console.info('unhold running lock success');
+      }
+    } catch (error) {
+      console.error('unhold running lock failed, err: ' + error);
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+// UserIdleTask.ets
+import { CommonEventHelper } from './CommonEventHelper';
+import { RunningLockUtil } from './RunningLockUtil';
+import { commonEventManager } from '@kit.BasicServicesKit';
+
+// 闲时任务类，可参考下方步骤开发
+class UserIdleTask {
+  private static subscriber: Nullable<commonEventManager.CommonEventSubscriber> = undefined;
+
+  // 1、初始化监听公共事件以及其他业务流程，示例只完成监听
+  public async init(): Promise<void> {
+    if (UserIdleTask.subscriber === undefined) {
+      // 监听进入强制睡眠和退出强制睡眠公共事件，并保存监听者对象
+      UserIdleTask.subscriber = await CommonEventHelper.subscribeSystemCommonEvent(
+        {
+          events: [
+            commonEventManager.Support.COMMON_EVENT_ENTER_FORCE_SLEEP,
+            commonEventManager.Support.COMMON_EVENT_EXIT_FORCE_SLEEP,
+          ],
+        },
+        this.onReceiveEvent
+      );
+    }
+  }
+
+  // 2、持锁后执行任务，任务执行完成后释放锁
+  public runUserIdleTask(): void {
+    RunningLockUtil.holdRunningLock();
+    // 开发者需要自行实现执行系统闲时任务的具体业务逻辑，这里是空实现
+    console.info('background user idle task run');
+    RunningLockUtil.unholdRunningLock();
+  }
+
+  // 3、实现收到进入强制睡眠或退出强制睡眠事件的回调函数
+  private onReceiveEvent(data: commonEventManager.CommonEventData): void {
+    if (data?.event === commonEventManager.Support.COMMON_EVENT_ENTER_FORCE_SLEEP) {
+      // 收到进入强制睡眠公共事件后需要在1s内暂停或结束任务（如有），然后释放锁
+      RunningLockUtil.unholdRunningLock();
+    }
+    if (data?.event === commonEventManager.Support.COMMON_EVENT_EXIT_FORCE_SLEEP) {
+      // 收到退出强制睡眠公共事件后由业务自行决策是否需要继续执行未完成的任务（如有），示例不做处理
+    }
+  }
+}
 
 // 创建并执行任务
 function main() {
@@ -233,5 +422,4 @@ function main() {
   task.init();
   task.runUserIdleTask();
 }
-运行锁使用指南
-打印
+```

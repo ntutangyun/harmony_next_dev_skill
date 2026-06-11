@@ -2,13 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/continuous-task_
 
+概述
+
+[h2]功能介绍
+
 应用退至后台后，在后台需要长时间运行用户可感知的任务，如播放音乐、导航等。为防止应用进程被挂起，导致对应功能异常，可以申请长时任务，使应用在后台长时间运行。在长时任务中，支持同时申请多种类型的任务，也可以对任务类型进行更新。应用退至后台执行业务时，系统会做一致性校验，确保应用在执行相应的长时任务。应用在申请长时任务成功后，通知栏会显示与长时任务相关联的消息，用户删除通知栏消息时，系统会自动停止长时任务。
 
 说明
 
 应用退至后台后，在不同类型设备上生命周期变化存在差异，详见不同设备生命周期的差异化行为。
 
-使用场景
+[h2]使用场景
 
 下表给出了当前长时任务支持的类型，包含数据传输、音视频播放、录制、定位导航、蓝牙相关业务、多设备互联、音视频通话和计算任务。可以参考下表中的场景举例，选择合适的长时任务类型。
 
@@ -16,51 +20,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/continuou
 
 参数名	描述	配置项	场景举例
 DATA_TRANSFER	数据传输。	dataTransfer	非托管形式的上传、下载，如在浏览器后台上传或下载数据。
-AUDIO_PLAYBACK	音视频播放。	audioPlayback	
-
-音频、视频在后台播放，音视频投播。
-
-说明： 支持在元服务中使用。
-
-
+AUDIO_PLAYBACK	音视频播放。	audioPlayback	音频、视频在后台播放，音视频投播。 说明： 支持在元服务中使用。
 AUDIO_RECORDING	录制。	audioRecording	录音、录屏退后台。
 LOCATION	定位导航。	location	定位、导航。
 BLUETOOTH_INTERACTION	蓝牙相关业务。	bluetoothInteraction	通过蓝牙传输文件时退后台。
-MULTI_DEVICE_CONNECTION	多设备互联。	multiDeviceConnection	
-
-分布式业务连接、投播。
-
-说明： 支持在元服务中使用。
-
-
-VOIP	
-
-音视频通话。
-
-说明： 从API version 13开始支持。
-
-	voip	某些聊天类应用（具有音视频业务）音频、视频通话时退后台。
-TASK_KEEPING	
-
-计算任务。
-
-说明： 从API version 21开始，对PC/2in1设备、非PC/2in1设备但申请了ACL权限为ohos.permission.KEEP_BACKGROUND_RUNNING_SYSTEM的应用开放。 API version 20及之前版本，仅对PC/2in1设备开放。
-
-	taskKeeping	如杀毒软件。
-MODE_AV_PLAYBACK_AND_RECORD	
-
-多媒体相关业务。
-
-说明： 从API version 22开始支持。
-
-	avPlaybackAndRecord	音视频播放，录制，音视频通话时退后台。在上述三种场景下，选择本类型或对应类型的长时任务均可。例如：音视频播放场景下，选择AUDIO_PLAYBACK或者MODE_AV_PLAYBACK_AND_RECORD任意一个即可。
-MODE_SPECIAL_SCENARIO_PROCESSING	
-
-特殊场景类型（仅对Phone、Tablet、PC/2in1设备开放）。
-
-说明： 从API version 22开始支持。
-
-	specialScenarioProcessing	在后台进行导出媒体文件，使用三方投播组件在后台进行投播。
+MULTI_DEVICE_CONNECTION	多设备互联。	multiDeviceConnection	分布式业务连接、投播。 说明： 支持在元服务中使用。
+VOIP	音视频通话。 说明： 从API version 13开始支持。	voip	某些聊天类应用（具有音视频业务）音频、视频通话时退后台。
+TASK_KEEPING	计算任务。 说明： 从API version 21开始，对PC/2in1设备、非PC/2in1设备但申请了ACL权限为ohos.permission.KEEP_BACKGROUND_RUNNING_SYSTEM的应用开放。 API version 20及之前版本，仅对PC/2in1设备开放。	taskKeeping	如杀毒软件。
+MODE_AV_PLAYBACK_AND_RECORD	多媒体相关业务。 说明： 从API version 22开始支持。	avPlaybackAndRecord	音视频播放，录制，音视频通话时退后台。在上述三种场景下，选择本类型或对应类型的长时任务均可。例如：音视频播放场景下，选择AUDIO_PLAYBACK或者MODE_AV_PLAYBACK_AND_RECORD任意一个即可。
+MODE_SPECIAL_SCENARIO_PROCESSING	特殊场景类型（仅对Phone、Tablet、PC/2in1设备开放）。 说明： 从API version 22开始支持。	specialScenarioProcessing	在后台进行导出媒体文件，使用三方投播组件在后台进行投播。
 
 关于DATA_TRANSFER（数据传输）说明：
 
@@ -87,15 +55,19 @@ MODE_SPECIAL_SCENARIO_PROCESSING
 如果应用仅申请了蓝牙长时任务，因设备远离等原因导致蓝牙断连，系统将取消应用的蓝牙长时任务。为确保蓝牙接续使用体验，在断连后的一段时间内（具体时长受系统负载影响，最长可达十分钟），系统允许满足如下条件的应用在恢复连接时重新保活，实现在后台长时间运行。
 
 主动注册长时任务暂停监听的事件以避免蓝牙断连之后长时任务被系统直接取消，可参考on('continuousTaskSuspend')，这样在蓝牙断连时系统不会立即取消长时任务，而是将其标记为暂停态。
+
 为保证在蓝牙断连之后能及时恢复连接，在蓝牙连接之后通过on('connectionStateChange')订阅蓝牙连接状态变化的事件，断连之后通过startScan主动发起BLE蓝牙扫描，订阅BLE设备扫描结果上报on('BLEDeviceFind')事件，检测设备是否重回连接范围。
+
 成功扫描到设备之后，应用需要通过connect主动恢复蓝牙连接，使系统检测到蓝牙恢复连接后重新激活暂停的长时任务，实现重新保活。
-约束与限制
+
+[h2]约束与限制
 
 申请限制：Stage模型中，长时任务仅支持UIAbility申请；FA模型中，长时任务仅支持ServiceAbility申请。长时任务支持设备当前应用申请，也支持跨设备或跨应用申请，跨设备或跨应用仅对系统应用开放。
 
 数量限制：
 
 从API version 21开始，支持一个UIAbility同一时刻申请多个长时任务，最多可申请10个，具体实现可参考startBackgroundRunning()。对于API version 20及之前版本，一个UIAbility（FA模型则为ServiceAbility）同一时刻仅支持申请一个长时任务，即在一个长时任务结束后才能继续申请。如果一个应用同时需要申请多个长时任务，需要创建多个UIAbility。
+
 如果一个应用创建了多个UIAbility，一个UIAbility申请长时任务后，整个应用下的所有进程均不会被挂起。
 
 运行限制：
@@ -127,6 +99,7 @@ startBackgroundRunning(context: Context, bgMode: BackgroundMode, wantAgent: Want
 stopBackgroundRunning(context: Context): Promise<void>	取消长时任务。
 startBackgroundRunning(context: Context, request: ContinuousTaskRequest): Promise<ContinuousTaskNotification>	申请多个长时任务。本接口支持一个UIAbility同一时刻申请多个长时任务，最多可申请10个。
 stopBackgroundRunning(context: Context, continuousTaskId: number): Promise<void>	取消指定Id的长时任务。
+
 开发步骤
 
 本文以申请一个录制长时任务为例，实现如下功能：
@@ -135,7 +108,7 @@ stopBackgroundRunning(context: Context, continuousTaskId: number): Promise<void>
 
 点击“取消长时任务”按钮，取消长时任务，通知栏撤销相关通知。
 
-Stage模型
+[h2]Stage模型
 
 需要申请ohos.permission.KEEP_BACKGROUND_RUNNING权限，配置方式请参见声明权限。
 
@@ -144,17 +117,20 @@ Stage模型
 在module.json5配置文件中abilities下的backgroundModes字段里，为需要使用长时任务的UIAbility声明相应的长时任务类型，配置文件中填写长时任务类型的配置项。
 
 "module": {
-    "abilities": [
-        {
-           "backgroundModes": [
-           // 长时任务类型的配置项
-           "audioRecording",
-           "bluetoothInteraction",
-           "audioPlayback"
-           ]
-        }
-    ],
-    // ...
+  // ...
+  "abilities": [
+    {
+      // ...
+      "backgroundModes": [
+        // 长时任务类型的配置项
+        "audioRecording",
+        "bluetoothInteraction",
+        "audioPlayback"
+      ],
+      // ...
+    }
+  ],
+  // ...
 }
 
 导入模块。
@@ -181,17 +157,14 @@ function callback(info: backgroundTaskManager.ContinuousTaskCancelInfo) {
   console.info('OnContinuousTaskCancel callback reason ' + info.reason);
 }
 
-
 @Entry
 @Component
-struct Index {
+struct AudioPlaybackIndex {
   @State message: string = 'ContinuousTask';
   // 通过getUIContext().getHostContext()方法，来获取page所在的UIAbility上下文
   private context: Context | undefined = this.getUIContext().getHostContext();
 
-
   // ...
-
 
   OnContinuousTaskCancel() {
     try {
@@ -202,7 +175,6 @@ struct Index {
     }
   }
 
-
   OffContinuousTaskCancel() {
     try {
       // callback参数不传，则取消所有已注册的回调
@@ -212,7 +184,6 @@ struct Index {
       console.error(`Operation OffContinuousTaskCancel failed. code is ${(error as BusinessError).code} message is ${(error as BusinessError).message}`);
     }
   }
-
 
   // 申请长时任务.then()写法
   startContinuousTask() {
@@ -237,7 +208,6 @@ struct Index {
         // [backgroundTaskManager.BackgroundModeType.SUB_MODE] :backgroundTaskManager.BackgroundSubMode.CAR_KEY
       // }
     };
-
 
     try {
       // 通过wantAgent模块下getWantAgent方法获取WantAgent对象
@@ -264,7 +234,6 @@ struct Index {
     }
   }
 
-
   // 取消长时任务.then()写法
   stopContinuousTask() {
     backgroundTaskManager.stopBackgroundRunning(this.context).then(() => {
@@ -275,14 +244,12 @@ struct Index {
     });
   }
 
-
   build() {
     Row() {
       Column() {
         Text('Index')
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
-
 
         Button() {
           Text('申请长时任务').fontSize(25).fontWeight(FontWeight.Bold)
@@ -298,7 +265,6 @@ struct Index {
           this.startContinuousTask();
         })
 
-
         Button() {
           Text('取消长时任务').fontSize(25).fontWeight(FontWeight.Bold)
         }
@@ -311,11 +277,9 @@ struct Index {
         .onClick(() => {
           // 此处结束具体的长时任务的执行
 
-
           // 通过按钮取消长时任务
           this.stopContinuousTask();
         })
-
 
         Button() {
           Text('注册长时任务取消回调').fontSize(25).fontWeight(FontWeight.Bold)
@@ -329,7 +293,6 @@ struct Index {
           // 通过按钮注册长时任务取消回调
           this.OnContinuousTaskCancel();
         })
-
 
         Button() {
           Text('取消注册长时任务取消回调').fontSize(25).fontWeight(FontWeight.Bold)
@@ -350,7 +313,6 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
 
 申请和取消长时任务async/await写法。
 
@@ -367,9 +329,7 @@ struct IndexAsyncAndAwait {
   // 通过getUIContext().getHostContext()方法，来获取page所在的UIAbility上下文
   private context: Context | undefined = this.getUIContext().getHostContext();
 
-
   // ...
-
 
   // 申请长时任务async/await写法
   async startContinuousTask() {
@@ -395,7 +355,6 @@ struct IndexAsyncAndAwait {
       // }
     };
 
-
     try {
       // 通过wantAgent模块下getWantAgent方法获取WantAgent对象
       // 在元服务中，使用const wantAgentObj: object = await wantAgent.getWantAgent(wantAgentInfo);替换下面一行代码
@@ -417,7 +376,6 @@ struct IndexAsyncAndAwait {
     }
   }
 
-
   // 取消长时任务async/await写法
   async stopContinuousTask() {
     try {
@@ -429,14 +387,12 @@ struct IndexAsyncAndAwait {
     }
   }
 
-
   build() {
     Row() {
       Column() {
         Text('Index')
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
-
 
         Button() {
           Text('申请长时任务').fontSize(25).fontWeight(FontWeight.Bold)
@@ -452,7 +408,6 @@ struct IndexAsyncAndAwait {
           this.startContinuousTask();
         })
 
-
         Button() {
           Text('取消长时任务').fontSize(25).fontWeight(FontWeight.Bold)
         }
@@ -465,7 +420,6 @@ struct IndexAsyncAndAwait {
         .onClick(() => {
           // 此处结束具体的长时任务的执行
 
-
           // 通过按钮取消长时任务
           this.stopContinuousTask();
         })
@@ -476,9 +430,6 @@ struct IndexAsyncAndAwait {
     .height('100%')
   }
 }
-IndexAsyncAndAwait.ets
-短时任务(C/C++)
-延迟任务(ArkTS)
 
 ## Code blocks
 
@@ -486,17 +437,20 @@ IndexAsyncAndAwait.ets
 
 ```
 "module": {
-    "abilities": [
-        {
-           "backgroundModes": [
-           // 长时任务类型的配置项
-           "audioRecording",
-           "bluetoothInteraction",
-           "audioPlayback"
-           ]
-        }
-    ],
-    // ...
+  // ...
+  "abilities": [
+    {
+      // ...
+      "backgroundModes": [
+        // 长时任务类型的配置项
+        "audioRecording",
+        "bluetoothInteraction",
+        "audioPlayback"
+      ],
+      // ...
+    }
+  ],
+  // ...
 }
 ```
 
@@ -519,17 +473,14 @@ function callback(info: backgroundTaskManager.ContinuousTaskCancelInfo) {
   console.info('OnContinuousTaskCancel callback reason ' + info.reason);
 }
 
-
 @Entry
 @Component
-struct Index {
+struct AudioPlaybackIndex {
   @State message: string = 'ContinuousTask';
   // 通过getUIContext().getHostContext()方法，来获取page所在的UIAbility上下文
   private context: Context | undefined = this.getUIContext().getHostContext();
 
-
   // ...
-
 
   OnContinuousTaskCancel() {
     try {
@@ -540,7 +491,6 @@ struct Index {
     }
   }
 
-
   OffContinuousTaskCancel() {
     try {
       // callback参数不传，则取消所有已注册的回调
@@ -550,7 +500,6 @@ struct Index {
       console.error(`Operation OffContinuousTaskCancel failed. code is ${(error as BusinessError).code} message is ${(error as BusinessError).message}`);
     }
   }
-
 
   // 申请长时任务.then()写法
   startContinuousTask() {
@@ -575,7 +524,6 @@ struct Index {
         // [backgroundTaskManager.BackgroundModeType.SUB_MODE] :backgroundTaskManager.BackgroundSubMode.CAR_KEY
       // }
     };
-
 
     try {
       // 通过wantAgent模块下getWantAgent方法获取WantAgent对象
@@ -602,7 +550,6 @@ struct Index {
     }
   }
 
-
   // 取消长时任务.then()写法
   stopContinuousTask() {
     backgroundTaskManager.stopBackgroundRunning(this.context).then(() => {
@@ -613,14 +560,12 @@ struct Index {
     });
   }
 
-
   build() {
     Row() {
       Column() {
         Text('Index')
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
-
 
         Button() {
           Text('申请长时任务').fontSize(25).fontWeight(FontWeight.Bold)
@@ -636,7 +581,6 @@ struct Index {
           this.startContinuousTask();
         })
 
-
         Button() {
           Text('取消长时任务').fontSize(25).fontWeight(FontWeight.Bold)
         }
@@ -649,11 +593,9 @@ struct Index {
         .onClick(() => {
           // 此处结束具体的长时任务的执行
 
-
           // 通过按钮取消长时任务
           this.stopContinuousTask();
         })
-
 
         Button() {
           Text('注册长时任务取消回调').fontSize(25).fontWeight(FontWeight.Bold)
@@ -667,7 +609,6 @@ struct Index {
           // 通过按钮注册长时任务取消回调
           this.OnContinuousTaskCancel();
         })
-
 
         Button() {
           Text('取消注册长时任务取消回调').fontSize(25).fontWeight(FontWeight.Bold)
@@ -700,9 +641,7 @@ struct IndexAsyncAndAwait {
   // 通过getUIContext().getHostContext()方法，来获取page所在的UIAbility上下文
   private context: Context | undefined = this.getUIContext().getHostContext();
 
-
   // ...
-
 
   // 申请长时任务async/await写法
   async startContinuousTask() {
@@ -728,7 +667,6 @@ struct IndexAsyncAndAwait {
       // }
     };
 
-
     try {
       // 通过wantAgent模块下getWantAgent方法获取WantAgent对象
       // 在元服务中，使用const wantAgentObj: object = await wantAgent.getWantAgent(wantAgentInfo);替换下面一行代码
@@ -750,7 +688,6 @@ struct IndexAsyncAndAwait {
     }
   }
 
-
   // 取消长时任务async/await写法
   async stopContinuousTask() {
     try {
@@ -762,14 +699,12 @@ struct IndexAsyncAndAwait {
     }
   }
 
-
   build() {
     Row() {
       Column() {
         Text('Index')
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
-
 
         Button() {
           Text('申请长时任务').fontSize(25).fontWeight(FontWeight.Bold)
@@ -785,7 +720,6 @@ struct IndexAsyncAndAwait {
           this.startContinuousTask();
         })
 
-
         Button() {
           Text('取消长时任务').fontSize(25).fontWeight(FontWeight.Bold)
         }
@@ -797,7 +731,6 @@ struct IndexAsyncAndAwait {
         .id('resetContinuousTask')
         .onClick(() => {
           // 此处结束具体的长时任务的执行
-
 
           // 通过按钮取消长时任务
           this.stopContinuousTask();

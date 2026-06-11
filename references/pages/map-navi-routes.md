@@ -2,6 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-navi-routes_
 
+场景介绍
+
+从5.1.1(19)开始，支持公共交通规划功能。
+
+提供两点之间驾车、步行、骑行和公共交通的路径规划能力。其中驾车路径规划支持添加途经点。
+
+接口说明
+
+以下是路径规划功能相关接口，主要由navi命名空间下的方法提供，更多接口及使用方法请参见接口文档。
+
+接口名	描述
 getDrivingRoutes(params: DrivingRouteParams): Promise<RouteResult>	驾车路径规划。
 getDrivingRoutes(context: common.Context, params: DrivingRouteParams): Promise<RouteResult>	驾车路径规划。支持传入Context上下文。
 getWalkingRoutes(params: RouteParams): Promise<RouteResult>	步行路径规划。
@@ -14,13 +25,15 @@ RouteParams	步行、骑行路径规划的参数。
 TransitRouteParams	公共交通规划的参数。
 RouteResult	路径规划的结果。
 TransitRouteResult	公共交通规划的结果。
+
 开发步骤
 
 导入相关模块。
 
 import { navi } from '@kit.MapKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-驾车路径规划
+
+[h2]驾车路径规划
 
 根据起终点坐标检索符合条件的驾车路径规划方案。支持以下功能：
 
@@ -67,7 +80,8 @@ async testDrivingRoutes() {
     console.error(`Failed in getting driving routes. Code is ${err.code}, message is ${err.message}`);
   }
 }
-步行路径规划
+
+[h2]步行路径规划
 
 根据起终点坐标检索符合条件的步行路径规划方案。支持以下功能：
 
@@ -100,7 +114,8 @@ async testWalkingRoutes() {
     console.error(`Failed in getting walking routes. Code is ${err.code}, message is ${err.message}`);
   }
 }
-骑行路径规划
+
+[h2]骑行路径规划
 
 根据起终点坐标检索符合条件的骑行路径规划方案。支持以下功能：
 
@@ -130,7 +145,8 @@ async testCyclingRoutes() {
     console.error(`Failed in getting cycling routes. Code is ${err.code}, message is ${err.message}`);
   }
 }
-公共交通规划
+
+[h2]公共交通规划
 
 根据起点终点坐标规划道路，从而返回两地之间的多种公共交通中转路线，仅支持中国大陆。
 
@@ -157,5 +173,135 @@ async testGetTransitRoutes() {
     console.error(`Failed in getting transit routes. Code is ${err.code}, message is ${err.message}`);
   }
 }
-路径规划
-批量算路
+
+## Code blocks
+
+### Code block 1
+
+```
+import { navi } from '@kit.MapKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+async testDrivingRoutes() {
+  let params: navi.DrivingRouteParams = {
+    // 起点的经纬度
+    origins: [{
+      latitude: 31.982129213545843,
+      longitude: 120.27745557768591
+    }],
+    // 终点的经纬度
+    destination: {
+      latitude: 31.986129213545843,
+      longitude: 120.32745557768591
+    },
+    // 路径的途经点
+    waypoints: [{
+      latitude: 31.967236140819114,
+      longitude: 120.27142088866847
+    }, {
+      latitude: 31.972868002238872,
+      longitude: 120.2943211817165
+    }, {
+      latitude: 31.98469327973332,
+      longitude: 120.29101107384068
+    }],
+    language: 'zh_CN'
+  };
+  try {
+    const result = await navi.getDrivingRoutes(params);
+    console.info(`Succeeded in getting driving routes. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in getting driving routes. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+```
+
+### Code block 3
+
+```
+async testWalkingRoutes() {
+  let params: navi.RouteParams = {
+    // 起点的经纬度
+    origins: [{
+      latitude: 39.992281,
+      longitude: 116.31088
+    }, {
+      latitude: 39.996,
+      longitude: 116.311
+    }],
+    // 终点的经纬度
+    destination: {
+      latitude: 39.94,
+      longitude: 116.311
+    },
+    language: 'zh_CN'
+  };
+  try {
+    const result = await navi.getWalkingRoutes(params);
+    console.info(`Succeeded in getting walking routes. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in getting walking routes. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+```
+
+### Code block 4
+
+```
+async testCyclingRoutes() {
+  let params: navi.RouteParams = {
+    // 起点的经纬度
+    origins: [{
+      latitude: 31.9844102,
+      longitude: 118.7662537
+    }],
+    // 终点的经纬度
+    destination: {
+      latitude: 31.9874102,
+      longitude: 118.7362537
+    },
+    language: 'zh_CN'
+  };
+  try {
+    const result = await navi.getCyclingRoutes(params);
+    console.info(`Succeeded in getting cycling routes. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in getting cycling routes. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+```
+
+### Code block 5
+
+```
+async testGetTransitRoutes() {
+  let params: navi.TransitRouteParams = {
+    // 起点经纬度
+    origin: {
+      latitude: 39.921619,
+      longitude: 116.356587
+    },
+    // 终点经纬度
+    destination: {
+      latitude: 39.94161,
+      longitude: 116.353621
+    },
+    // 设置出发时间为当前时间（单位s）
+    departureTime: new Date().getTime() / 1000
+  };
+  try {
+    const result = await navi.getTransitRoutes(this.getUIContext().getHostContext(), params);
+    console.info(`Succeeded in getting transit routes. result is ${JSON.stringify(result)}`);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed in getting transit routes. Code is ${err.code}, message is ${err.message}`);
+  }
+}
+```

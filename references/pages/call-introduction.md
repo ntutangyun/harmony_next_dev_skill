@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/call-introduction_
 
+Call Service Kit（通话服务）是HarmonyOS为开发者提供的应用内通话管理服务。
+
 开发者通过集成Call Service Kit，可以实现便捷的来电一键接听、横幅通知、静音与取消静音等功能，提升用户体验。
 
 场景分类
@@ -21,7 +23,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/call-intr
 应用主动发起音/视频通话，称为去电场景。去电场景与来电场景大部分功能相似，但有以下几点区别：
 
 去电时，由于应用在前台，不需要展示横幅通知，只在屏幕左上角展示通话胶囊。
+
 去电不支持多路共存，即同一时间，只能有1路去电存在。
+
 与相关Kit的关系
 
 当应用在后台时，如果有来电，需要Push Kit（推送服务）先拉起应用主进程，应用才能给Call Service Kit上报来电。
@@ -29,31 +33,30 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/call-intr
 业务流程如下图所示：
 
 约束和限制
-设备限制
+
+[h2]设备限制
 
 本示例仅支持标准系统上运行，不支持模拟器。
 
 能力	支持设备
-来电场景	Phone、Tablet，Wearable。
-去电场景	Phone、Tablet，Wearable。
+来电场景	Phone、Tablet、PC/2in1、Wearable。
+去电场景	Phone、Tablet、PC/2in1、Wearable。
 企业联系人信息来去电页面显示	Phone、Tablet、PC/2in1、Wearable。
-通话数量
+
+[h2]通话数量
 
 同一时间，最多支持3路应用内来电。
 
 同一时间，最多支持1路应用内去电。
 
-支持的国家/地区
+[h2]支持的国家/地区
 
-Call Service Kit提供的能力当前只支持中国大陆。
+Call Service Kit提供的能力当前只支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-相关Kit的约束和限制
+[h2]相关Kit的约束和限制
 
 由于Call Service Kit依赖Push Kit，还需要参考Push Kit的约束和限制。
 
 模拟器支持情况
 
 本Kit暂不支持模拟器。
-
-Call Service Kit（通话服务）
-开发准备

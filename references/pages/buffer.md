@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/buffer_
 
+场景介绍
+
 Buffer和FastBuffer模块将内存区域抽象为可读写、修改的逻辑对象，提供高效的二进制数据处理接口。每个Buffer实例是连续的字节序列，支持创建自定义大小的内存块，用于存储和操作序列化后的数据。
 
 Buffer和FastBuffer模块的主要应用场景包括：
@@ -43,6 +45,3 @@ FastBuffer模块的核心功能包括：
 内存操作：支持截取部分FastBuffer、切片和合并多个FastBuffer，便于数据流的处理和管理。
 
 FastBuffer模块各接口使用详见：@ohos.fastbuffer。
-
-XML转换
-JSON扩展库

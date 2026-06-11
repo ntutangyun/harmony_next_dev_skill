@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/theme-font-arkts_
 
+场景介绍
+
+主题字体，特指系统主题应用中能使用的字体，属于一种特殊的自定义字体，可以通过相关接口调用使能主题应用中的主题字体。
+
+实现机制
+
+图1 主题字体的切换和使用
+
 针对主题字的切换使用，应用方应确保订阅主题字体变更事件，当接收到字体变更事件后，由应用方主动调用页面刷新才能实现主题字的切换，否则主题字只能在重启应用后才生效。
 
 接口说明
@@ -10,6 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/theme-fon
 
 接口	描述
 getGlobalInstance(): FontCollection	获取应用全局字体集的实例。
+
 开发步骤
 
 请确保在设备系统主题应用中，能成功应用一项主题字体。
@@ -17,13 +26,11 @@ getGlobalInstance(): FontCollection	获取应用全局字体集的实例。
 导入依赖的相关模块。
 
 import { text } from '@kit.ArkGraphics2D';
-Index.ets
 
 使用getGlobalInstance()接口获取全局字体集对象，系统框架在注册主题字体过程中仅会将主题字体信息传入全局字体集对象中。
 
 // 获取字体管理器全局FontCollection实例
 let fontCollection = text.FontCollection.getGlobalInstance();
-Index.ets
 
 创建段落样式，并使用字体管理器实例构造段落生成器ParagraphBuilder实例，用于生成段落。
 
@@ -46,7 +53,6 @@ let myParagraphStyle: text.ParagraphStyle = {
 };
 // 创建一个段落生成器
 let paragraphGraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
-Index.ets
 
 设置文本样式，添加文本内容，并生成段落文本用于后续文本的绘制显示。
 
@@ -56,7 +62,6 @@ paragraphGraphBuilder.pushStyle(myTextStyle);
 paragraphGraphBuilder.addText("Hello World. \nThis is the theme font.");
 // 通过段落生成器生成段落
 let paragraph = paragraphGraphBuilder.build();
-Index.ets
 
 创建渲染节点，并保存到数组。（此处示例代码为简化逻辑，采用数组作为容器，实际开发中应结合应用情况选择更恰当的容器来保证节点的添加与删除对应。）
 
@@ -100,7 +105,6 @@ class MyNodeController extends NodeController {
     }
   }
 }
-Index.ets
 
 创建渲染节点更新函数，并导出函数，供其他文件（如：EntryAbility.ets）使用；重绘制节点目的为更新排版中字体信息，若不更新字体信息，使用之前残留结果，可能造成文字乱码。
 
@@ -111,7 +115,6 @@ export function updateRenderNodeData() {
     node.invalidate();
   });
 }
-Index.ets
 
 在EntryAbility.ets中接收主题字变更事件，并调用渲染节点更新函数。
 
@@ -120,14 +123,11 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { updateRenderNodeData } from '../pages/Index';
 
-
 // ...
-
 
 export default class EntryAbility extends UIAbility {
   preFontId = "";
   // ...
-
 
   onConfigurationUpdate(newConfig: Configuration): void {
     let fontId = newConfig.fontId;
@@ -138,7 +138,7 @@ export default class EntryAbility extends UIAbility {
     }
   }
 }
-EntryAbility.ets
+
 效果展示
 
 以下展示了在系统主题应用中切换使用不同主题字体后，对应的文字渲染效果。
@@ -149,5 +149,128 @@ EntryAbility.ets
 
 图3 主题字体2的效果
 
-字体管理
-自定义字体的注册和使用（ArkTS）
+## Code blocks
+
+### Code block 1
+
+```
+import { text } from '@kit.ArkGraphics2D';
+```
+
+### Code block 2
+
+```
+// 获取字体管理器全局FontCollection实例
+let fontCollection = text.FontCollection.getGlobalInstance();
+```
+
+### Code block 3
+
+```
+// 设置文本样式
+let myTextStyle: text.TextStyle = {
+  color: { alpha: 255, red: 255, green: 0, blue: 0 },
+  fontSize: 33
+};
+// 创建一个段落样式对象，以设置排版风格
+let myParagraphStyle: text.ParagraphStyle = {
+  textStyle: myTextStyle,
+  align: 3,
+  wordBreak:text.WordBreak.NORMAL
+};
+// 创建一个段落生成器
+let paragraphGraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
+```
+
+### Code block 4
+
+```
+// 在段落生成器中设置文本样式
+paragraphGraphBuilder.pushStyle(myTextStyle);
+// 在段落生成器中设置文本内容
+paragraphGraphBuilder.addText("Hello World. \nThis is the theme font.");
+// 通过段落生成器生成段落
+let paragraph = paragraphGraphBuilder.build();
+```
+
+### Code block 5
+
+```
+// 创建渲染节点数组
+const renderNodeMap: Array<RenderNode> = new Array();
+// 创建节点控制器
+class MyNodeController extends NodeController {
+  private rootNode: FrameNode | null = null;
+  makeNode(uiContext: UIContext): FrameNode {
+    this.rootNode = new FrameNode(uiContext);
+    if (this.rootNode == null) {
+      return this.rootNode;
+    }
+    const renderNode = this.rootNode.getRenderNode();
+    if (renderNode != null) {
+      renderNode.frame = { x: 0, y: 0, width: 300, height: 50 };
+      renderNode.pivot = { x: 0, y: 0 };
+    }
+    return this.rootNode;
+  }
+  addNode(node: RenderNode): void {
+    if (this.rootNode == null) {
+      return;
+    }
+    const renderNode = this.rootNode.getRenderNode();
+    if (renderNode != null) {
+      renderNode.appendChild(node);
+      // 将节点添加到渲染节点数组中
+      renderNodeMap.push(node);
+    }
+  }
+  clearNodes(): void {
+    if (this.rootNode == null) {
+      return;
+    }
+    const renderNode = this.rootNode.getRenderNode();
+    if (renderNode != null) {
+      renderNode.clearChildren();
+      // 将节点从渲染节点数组中移除
+      renderNodeMap.pop();
+    }
+  }
+}
+```
+
+### Code block 6
+
+```
+// 导出渲染节点更新函数
+export function updateRenderNodeData() {
+  renderNodeMap.forEach((node) => {
+    // 主动触发节点重绘制
+    node.invalidate();
+  });
+}
+```
+
+### Code block 7
+
+```
+import { AbilityConstant, Configuration, UIAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
+import { updateRenderNodeData } from '../pages/Index';
+
+// ...
+
+export default class EntryAbility extends UIAbility {
+  preFontId = "";
+  // ...
+
+  onConfigurationUpdate(newConfig: Configuration): void {
+    let fontId = newConfig.fontId;
+    if (fontId && fontId !== this.preFontId) {
+      this.preFontId = fontId;
+      updateRenderNodeData();
+      // ...
+    }
+  }
+}
+```

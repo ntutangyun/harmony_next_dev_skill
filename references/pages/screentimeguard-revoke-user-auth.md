@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-revoke-user-auth_
 
+场景介绍
+
 当开发者希望取消应用的Screen Time Guard Kit授权时，可以通过调用取消用户授权的接口进行取消。一旦权限被取消，应用将无法再访问或使用对用户设备的时间管理等功能。如果应用尝试继续调用与屏幕守护时间模块相关的接口，系统会返回用户未授权使用的错误码，以确保功能的安全性和隐私保护。
 
 业务流程
@@ -19,6 +21,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 接口名	描述
 revokeUserAuth(): Promise<void>	取消用户授权访问Screen Time Guard Kit的相关管控接口。
 getUserAuthStatus(): Promise<AuthStatus>	获取用户授权状态。
+
 开发步骤
 
 导入相关模块。
@@ -51,5 +54,42 @@ public async getUserAuthStatus(): Promise<void> {
          `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
    }
 }
-请求用户授权
-健康使用设备授权列表页中应用授权开关打开/关闭时触发回调
+
+## Code blocks
+
+### Code block 1
+
+```
+import { guardService } from '@kit.ScreenTimeGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+public async revokeUserAuth(): Promise<void> {
+   try {
+      await guardService.revokeUserAuth();
+   } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, 'GuardService',
+         `revokeUserAuth failed, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```
+
+### Code block 3
+
+```
+public async getUserAuthStatus(): Promise<void> {
+   try {
+      const status = await guardService.getUserAuthStatus();
+      hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
+   } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, 'GuardService',
+         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+   }
+}
+```

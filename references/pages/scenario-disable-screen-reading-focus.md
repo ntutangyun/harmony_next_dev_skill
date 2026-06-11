@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-disable-screen-reading-focus_
 
+设计场景
+
 装饰性的控件一般为分隔符、占位符和美化图标等，这类图形元素仅仅起到调整页面布局或装饰性效果，并不会向用户传达有效的信息或提供交互功能，删除后不影响指引用户体验。可以设置控件的无障碍组accessibilityGroup、无障碍重要性accessibilityLevel、组件可见性visibility等属性将其设置为无障碍不可聚焦，这样在屏幕朗读模式下控件就不会获取焦点和朗读。
 
 通过以下无障碍属性可以改变控件可聚焦属性：
@@ -22,7 +24,6 @@ export struct Rule_2_1_2 {
   title: string = 'Rule 2.1.2'
   @State message: string = 'Broadcast';
   @State message1: string = 'No broadcast';
-
 
   build() {
     NavDestination() {
@@ -58,5 +59,51 @@ export struct Rule_2_1_2 {
     .title(this.title)
   }
 }
-标注屏幕朗读内容的场景
-多维嵌套场景
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+export struct Rule_2_1_2 {
+  title: string = 'Rule 2.1.2'
+  @State message: string = 'Broadcast';
+  @State message1: string = 'No broadcast';
+
+  build() {
+    NavDestination() {
+      Column() {
+        Row() {
+          Text(this.message)
+            .fontSize(40)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(Color.Blue)
+            .margin({
+              left: 40
+            })
+        }
+        .width('100%')
+        .height('50%')
+        Row() {
+          Text(this.message1)
+            .fontSize(40)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(Color.Grey)
+            .margin({
+              left: 40
+            }).accessibilityLevel("no") // use for component
+        }
+        //.accessibilityGroup(true)
+        //.accessibilityLevel("no-hide-descendants") // use for container
+        // 可以使用这两行代替28行的accessibilityLevel("no")
+        .width('100%')
+        .height('50%')
+      }
+      .height('100%')
+    }
+    .title(this.title)
+  }
+}
+```

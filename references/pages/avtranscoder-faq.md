@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avtranscoder-faq_
 
+应用发送视频进行转码，音频编码格式为什么变化
+
+在转码过程中，若未指定音频轨道格式，系统默认将其转换为AAC编码格式。
+
+转码是否支持HDR转SDR？为什么使用其他系统的设备录制HDR视频转码会失败
+
 当前转码仅支持HDR vivid至SDR视频的转换，其他HDR格式不支持。可以通过OH_VideoProcessing_IsColorSpaceConversionSupported接口查询当前设备是否支持，具体可以参考：VPE支持规格。
 
 按照原视频的比例缩放设置目标视频的分辨率，为何仍会报告参数错误
@@ -25,6 +31,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avtransco
 当前转码能力支持情况：AVTranscoder支持的格式、AVCodec支持的格式、VPE支持规格。
 
 应用在收到error事件后，建议发送原视频；应用在收到complete事件后，建议先调用release再对转码后的视频做发送、上云等操作。
-
-创建异步线程执行AVTranscoder视频转码(ArkTS)
-媒体开发指导(C/C++)

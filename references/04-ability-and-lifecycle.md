@@ -198,6 +198,24 @@ this.context.terminateSelf()
 
 For self-termination with a result use `terminateSelfWithResult(result)`.
 
+### Inter-app redirection (应用间跳转) practices
+
+For the "open another app" family of flows there's now a dedicated practice set (`pages/typical-scenarios-for-inter-app-jumping.md`, `pages/inter-application-redirection.md`):
+- **Social sharing** redirection — `pages/social-sharing-redirection.md`.
+- **Ad** redirection — `pages/ad-redirection.md`.
+- **Special text recognition** redirection (jump from recognized phone/address/etc.) — `pages/special-text-recognition-redirection.md`.
+- **Web ⇄ app** mutual launch — `pages/navigating-between-web-and-apps.md`.
+
+These build on App Linking (`openLink`, see above), implicit Want, and Universal Link patterns. Prefer App Linking (HTTPS, verified domain) over scheme-only `uri` for cross-app entry points.
+
+### App restart (应用重启)
+
+`pages/app-restart.md` documents two active-restart paths plus failure-recovery restart:
+- `ApplicationContext.restartApp()` (API 12+) — restart **without** keeping the app window (user briefly sees the launcher). Main thread only; app must be focused; no repeat within 3 s; does **not** fire abilities' `onDestroy`.
+- `UIAbilityContext.restartApp()` (API 22+) — restart **keeping** the window for a seamless experience.
+
+Use after a dynamic update or to fully re-initialize internal state.
+
 ## ExtensionAbility quick map
 
 | Use case | Pick |
@@ -207,9 +225,40 @@ For self-termination with a result use `terminateSelfWithResult(result)`.
 | ArkTS card / widget | `FormExtensionAbility` (see `references/07-cards-and-i18n.md`) |
 | Action panel / share UI | `UIExtensionAbility` |
 | Input method | `InputMethodExtensionAbility` |
+| Device-side agent (端侧A2A) | `AgentExtensionAbility` (type `"agent"`, API 24+) — see below |
 | Wallpaper, sticker, accessibility, work scheduler, etc. | Matching `*ExtensionAbility` |
 
 Declare them under `module.json5 → extensionAbilities[]` with a `type` field that matches the kind.
+
+## Device-side agents — 端侧A2A / HMAF (API 24+)
+
+From API 24, HarmonyOS adds a **device-side A2A (Agent-to-Agent) framework**, the on-device extension of HMAF (Harmony Agent Framework). It lets an app expose an intelligent agent that *system apps* (the Agent client) can discover and talk to over a standardized A2A protocol — capability description, two-way data channel, optional auth, optional UI rendering — without pre-agreed tight coupling. Source: `pages/agent-guideline.md`, `pages/agent-overview.md`, `pages/agent-development.md`.
+
+Core pieces:
+- **AgentCard** describes the agent (name, description, skills, input/output MIME modes, provider, version). Configured by hand in `resources/base/profile/agent_config.json`; an `AgentExtensionAbility` references it via `metadata`. One `agent_config.json` per AgentExtensionAbility. Field reference (retitled page): `pages/agent-extension-configuration.md` ("AgentExtensionAbility配置文件说明").
+- **AgentSkill** — a concrete function the agent can run; an agent needs ≥1 skill.
+
+Service-side skeleton (`pages/agent-extension-ability.md`):
+
+```typescript
+import { common, AgentExtensionAbility, Want } from '@kit.AbilityKit';
+
+export default class AgentExtAbility extends AgentExtensionAbility {
+  private comProxy: common.AgentHostProxy | null = null;
+  onCreate(want: Want) {}
+  onConnect(want: Want, proxy: common.AgentHostProxy) { this.comProxy = proxy; }
+  onDisconnect(want: Want, proxy: common.AgentHostProxy) { this.comProxy = null; }
+  onData(proxy: common.AgentHostProxy, data: string) {
+    proxy.sendData('reply message');           // respond to the client
+  }
+  onAuth(proxy: common.AgentHostProxy, handshakeData: string) {
+    proxy.authorize('auth success');           // optional mutual auth
+  }
+  onDestroy() {}
+}
+```
+
+Register it in `module.json5 → extensionAbilities[]` with `"type": "agent"` and a `srcEntry` pointing at the file (plus `metadata` referencing `agent_config.json`). Results can optionally be rendered into the client app via `AgentUIExtensionAbility`. Note this is distinct from the higher-level **Agent Framework Kit** (`pages/hmaf-introduction.md`, Function component that *launches* an agent published on the Xiaoyi open platform) — see `references/10-kits-catalog.md`.
 
 ## Permissions runtime grant
 

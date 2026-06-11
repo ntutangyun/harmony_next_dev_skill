@@ -2,24 +2,35 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-examples_
 
+TensorFlow Quant_INT8-8无训练量化Demo
+
+[h2]环境准备
+
+请参见环境准备，安装TensorFlow及依赖。
+
+[h2]模型配置
+
+准备量化模型
+
 将基线模型的pb文件放入"dopt_tf_py3/demo/quant8-8/notrain/tensorflow_mnist/basemodel/"中。该路径下已经放入了mnist基线模型mnist.pb。
 
 准备量化输入数据
 
 参见模型量化，将图片或二进制形式的校准集放入"dopt_tf_py3/demo/quant8-8/notrain/tensorflow_mnist/mnist_test/"中。该路径下已经放入了图片校准集。
 
-模型量化
+[h2]模型量化
 
 执行"dopt_tf_py3/demo/quant8-8/notrain/tensorflow_mnist/"下run_release.sh即可。
 
 "dopt_tf_py3/demo/quant8-8/notrain/tensorflow_mnist"中存有量化后的pb模型和量化配置文件，运行demo后生成的文件如下图所示：
 
 PyTorch Quant_INT8-8无训练量化Demo
-环境准备
+
+[h2]环境准备
 
 请参见环境准备，安装PyTorch及依赖。
 
-模型配置
+[h2]模型配置
 
 准备量化模型
 
@@ -31,18 +42,19 @@ PyTorch Quant_INT8-8无训练量化Demo
 
 参见模型量化，将图片或二进制形式的校准集放入"dopt_pytorch_py3/demo/quant8-8/notrain/pytorch_mnist/"中。
 
-模型量化
+[h2]模型量化
 
 执行"dopt_pytorch_py3/demo/quant8-8/notrain/pytorch_mnist/"下run_release.sh即可。
 
 "dopt_pytorch_py3/demo/quant8-8/notrain/pytorch_mnist/"中存有PyTorch无训练量化示例文件，如下图所示：
 
 ONNX Quant_INT8-8无训练量化Demo
-环境准备
+
+[h2]环境准备
 
 环境准备请参见环境准备，安装ONNX及依赖。
 
-示例代码
+[h2]示例代码
 
 将dopt_onnx_py3 目录添加到系统环境中，在终端环境执行
 
@@ -64,22 +76,23 @@ preprocess_parameter:
     input_type: BINARY
     input_file_path: './input1.bin'
 }
+
 TensorFlow Quant_INT8-8插件式量化Demo
-环境准备
+
+[h2]环境准备
 
 请参见准备TensorFlow环境。安装TensorFlow-gpu 2.8.0版本以及其必要的依赖。
 
-示例代码
+[h2]示例代码
+
 import sys
 sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
-
 
 def generate_config():
     with tf.Session(config=config) as sess:
         build_tf_model() ## 自定义tf模型graph，仅构建拓扑图，不可加载权重
         from dopt.dopt_tf.opt_main import generate_config_file
         generate_config_file(sess, dst_path="./config_gen.json")
-
 
 def train_model():
     with tf.Session(config=config) as sess:
@@ -110,7 +123,6 @@ def train_model():
         sess.run(output, feed_dict)
         evaluate_output(output)
 
-
 def calibrate_model():
     with tf.Session(config=config) as sess:
         build_tf_model() ## 自定义tf模型graph，仅构建拓扑图，不可加载权重
@@ -128,7 +140,6 @@ def calibrate_model():
         saver = tf.Saver()
         saver.restore(ckpt)
 
-
         calibration_mode = True
         set_calibrate_state(sess, calibration_mode )
         ## eval model
@@ -136,7 +147,6 @@ def calibrate_model():
         feed_dict[quant_flag] = 1
         sess.run(output, feed_dict)
         evaluate_output(output)
-
 
 def generate_params():
     with tf.Session(config=config) as sess:
@@ -153,68 +163,67 @@ if __name__ == "__main__":
     ## step 1
     ## 开发者接入，配置修改
     generate_config()
-    
+
     ## step 2
     ## 训练模型，直至达标
     train_model() ## 重训练量化模型
     ## calibrate_model()  ## 校准量化模型
-    
+
     ## step 3
     ## 提取参数，用于后续模型部署
     generate_params()
+
 PyTorch Quant_INT8-8插件式量化Demo
-环境准备
+
+[h2]环境准备
 
 请参见准备PyTorch环境。安装PyTorch-gpu 1.11版本以及其必要的依赖。
 
-示例代码
+[h2]示例代码
+
 import sys
 sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
-
 
 def generate_config():
     model = build_torch_model()  ## 开发者待量化的浮点模型
     generate_config_file(model, input_shape, dst_path="./config_gen.json") # model：torch.nn.Module， input_shape : "input1:input1.shape;input2:input2.shape"
     return model
 
-
 def train_model():
     model = build_torch_model() ## 开发者待量化的浮点模型
     from dopt.dopt_torch.opt_main import optimize_model
     model.load_state_dict(state)  ## load 浮点模型参数
-    
+
     ## 调用optimize model 量化模型
     quanted_model = optimize_model(model, config_path)
-    
+
     ## train model
     quant_loss = get_quant_loss(quant_model)
     optimizer = torch.optim.SGD(quanted_model.parameters(), lr=0.001, momentum=0.9) ## 假设使用SGD优化器
-    
+
     for input_data, label in range(...):
         optimizer.zero_grad()
         outputs = model(input_data)
         loss = loss_fn(outputs, label) ## loss_fn 为原始浮点网络训练loss
-        
+
         total_loss = loss + quant_weight * quant_loss ## quant_weight是指量化损失所占比例
         loss.backward()
-        
-        optimizer.step()
 
+        optimizer.step()
 
 def calibrate_model():
     model = build_torch_model() ## 开发者待量化的浮点模型
     from dopt.dopt_torch.opt_main import optimize_model, set_calibrate_state
     model.load_state_dict(state)  ## load 浮点模型参数
-    
+
     ## 调用optimize model 量化模型
     quanted_model = optimize_model(model, config_path)
-    
+
     calibrate_mode = True
     set_calibrate_state(model, calibrate_mode)
-    
+
     for input_data, label in range(...):
         outputs = model(input_data)
-
 
 def generate_params():
     model = build_torch_model()
@@ -224,23 +233,24 @@ def generate_params():
                         pth_file="quant.pth",
                         output_dir="./results_dir")
 
-
 if __name__ == "__main__":
     ## step 1
     ## 开发者接入，配置修改
     generate_config()
-    
+
     ## step 2
     ## 训练模型，直至达标
     train_model()
     ## 无训练模式
     ## calibrate_model()
- 
+
     ## step 3
     ## 提取参数，用于后续模型部署
     generate_params()
+
 TensorFlow NASEA网络结构搜索Demo
-NASEA分类网络
+
+[h2]NASEA分类网络
 
 分类网络Demo位于tools_dopt/dopt_tf_py3/demo/nas_ea/ea_cls_imagenet，包含5个文件，如下图所示：
 
@@ -291,6 +301,7 @@ cd ..
 设置PYTHONPATH默认路径：
 
 export PYTHONPATH=$PYTHONPATH:`pwd`/models/
+
 说明
 
 每次打开终端需要重新执行一次上述命令，或添加到“~/.bashrc”文件，并执行“source ~/.bashrc”。
@@ -301,7 +312,7 @@ export PYTHONPATH=$PYTHONPATH:`pwd`/models/
 
 执行脚本run_release.sh，在results下，生成多个model_arch_result_*.py文件。开发者可根据log_classification中提供的信息选择合适的网络结构进行训练。后续训练可参考readme.md中的指导。
 
-NASEA检测网络
+[h2]NASEA检测网络
 
 检测网络Demo位于"tools_dopt/dopt_tf_py3/demo/nas_ea/ea_det_coco"，包含6个文件，如下图所示：
 
@@ -376,7 +387,7 @@ export PYTHONPATH=$PYTHONPATH:`pwd`/models/
 
 执行脚本run_release.sh，在results下，生成多个model_arch_result_*.py文件。开发者可根据log_detection中提供的信息选择合适的网络结构进行训练。后续训练可参考readme.md中的指导。
 
-NASEA分割网络
+[h2]NASEA分割网络
 
 分割网络Demo位于tools_dopt/dopt_tf_py3/demo/nas_ea/ea_seg_voc，包含 6个文件，如下图所示：
 
@@ -400,19 +411,17 @@ user_module.py：工具的自定义接口。
 
 加载依赖的开源代码。
 
-进入分割网络demo目录。
 cd tools_dopt/dopt_tf_py3/demo/nas_ea/ea_seg_voc
-下载开源代码：
+
 git clone https://github.com/Tensorflow/models.git
-进入开源代码目录。
+
 cd models
-切换到指定版本。
+
 git checkout v1.13.0
-返回分割网络demo目录。
+
 cd ..
-设置PYTHONPATH默认路径：
+
 export PYTHONPATH=$PYTHONPATH:`pwd`/models/research:`pwd`/models/research/slim
-如果TensorFlow版本为2.1.0，需要执行如下命令：
 
 创建models_tf2.1，并进入文件夹
 
@@ -438,6 +447,7 @@ cd ..
 设置PYTHONPATH默认路径
 
 export PYTHONPATH=$PYTHONPATH:`pwd`/models/
+
 说明
 
 每次打开终端需要重新执行一次上述命令，或添加到"~/.bashrc"文件，并执行"source ~/.bashrc"。
@@ -451,7 +461,8 @@ export PYTHONPATH=$PYTHONPATH:`pwd`/models/
 执行脚本run_release.sh，在results下，生成多个model_arch_result_*.py文件。开发者可根据log_segmentation中提供的信息选择合适的网络结构进行训练。后续训练可参考readme.md中的指导。
 
 PyTorch NASEA网络结构搜索Demo
-NASEA分类网络
+
+[h2]NASEA分类网络
 
 分类网络Demo位于tools_dopt/dopt_pytorch_py3/demo/nas_ea/ea_cls_imagenet_pytorch，包含5个文件，如下：
 
@@ -477,7 +488,7 @@ user_module.py：工具的自定义接口
 
 执行脚本run_release.sh，在results下，生成多个model_arch_result_*.py文件。开发者可根据log_classification中提供的信息选择合适的网络结构进行训练。后续训练可参考readme.md中的指导。
 
-NASEA分割网络
+[h2]NASEA分割网络
 
 分割网络Demo位于tools_dopt/dopt_pytorch_py3/demo/nas_ea/ea_seg_voc_pytorch，包含 6个文件，如下：
 
@@ -507,5 +518,368 @@ user_module.py：工具的自定义接口
 
 执行脚本run_release.sh，在results下，生成多个model_arch_result_*.py文件。开发者可根据log_segmentation中提供的信息选择合适的网络结构进行训练。后续训练可参考readme.md中的指导。
 
-网络结构搜索训练
-常见问题
+## Code blocks
+
+### Code block 1
+
+```
+python3 ./dopt_so.py \
+    --framework 5 \
+    --mode   0 \
+    --model "./resnet18_matmul.onnx" \          ## 待量化的ONNX模型
+    --cal_conf "./config.prototxt" \            ## 校准集配置文件
+    --output  "./resnet18_matmul_quant.onnx" \  ## 量化后的ONNX文件
+    --input_shape   input:1,3,128,128 \         ## 浮点模型输入shape
+    --compress_conf  ./mnist_param              ## dopt 工具生成的量化文件
+```
+
+### Code block 2
+
+```
+strategy: 'Quant_INT8-8'
+device: USE_CPU
+preprocess_parameter:
+{
+    input_type: BINARY
+    input_file_path: './input1.bin'
+}
+```
+
+### Code block 3
+
+```
+import sys
+sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
+
+def generate_config():
+    with tf.Session(config=config) as sess:
+        build_tf_model() ## 自定义tf模型graph，仅构建拓扑图，不可加载权重
+        from dopt.dopt_tf.opt_main import generate_config_file
+        generate_config_file(sess, dst_path="./config_gen.json")
+
+def train_model():
+    with tf.Session(config=config) as sess:
+        build_tf_model() ## 自定义tf模型graph，仅构建拓扑图，不可加载权重
+        from dopt.dopt_tf.opt_main import optimize_model
+        quant_flag = tf.placeholder(tf.int32)
+        is_train_flag = tf.placeholder(tf.bool, name='is_train')
+        ## 模型量化，自动在 tf.get_default_graph()上进行改图操作
+        optimize_model(
+            sess,
+            "./config_gen.json",
+            is_train_flag,
+            quant_flag
+        )
+        ## 调用完optimize_model之后，加载模型权重
+        saver = tf.Saver()
+        saver.restore(ckpt)
+        tf.global_variables_initializer().run()
+        ## train model
+        for i in range(...):
+            optimizer = ...
+            feed_dict[is_train_flag] = True
+            feed_dict[quant_flag] = 1
+            sess.run(train_op, feed_dict)
+        ## eval model
+        feed_dict[is_train_flag] = False
+        feed_dict[quant_flag] = 1
+        sess.run(output, feed_dict)
+        evaluate_output(output)
+
+def calibrate_model():
+    with tf.Session(config=config) as sess:
+        build_tf_model() ## 自定义tf模型graph，仅构建拓扑图，不可加载权重
+        from dopt.dopt_tf.opt_main import optimize_model, set_calibrate_state
+        quant_flag = tf.placeholder(tf.int32)
+        is_train_flag = tf.placeholder(tf.bool, name='is_train')
+        ## 模型量化，自动在 tf.get_default_graph()上进行改图操作
+        optimize_model(
+            sess,
+            "./config_gen.json",
+            is_train_flag,
+            quant_flag
+        )
+        ## 调用完optimize_model之后，加载模型权重
+        saver = tf.Saver()
+        saver.restore(ckpt)
+
+        calibration_mode = True
+        set_calibrate_state(sess, calibration_mode )
+        ## eval model
+        feed_dict[is_train_flag] = False
+        feed_dict[quant_flag] = 1
+        sess.run(output, feed_dict)
+        evaluate_output(output)
+
+def generate_params():
+    with tf.Session(config=config) as sess:
+        build_tf_model()
+        from dopt.dopt_tf.opt_main import generate_final_model
+        generate_final_model(
+            sess,
+            config_file         = "./config_gen.json",
+            output_name_list    = ["output"],
+            ckpt_file           = "train_ckpt_path",
+            output_dir          = "./output_dir"
+        )
+if __name__ == "__main__":
+    ## step 1
+    ## 开发者接入，配置修改
+    generate_config()
+
+    ## step 2
+    ## 训练模型，直至达标
+    train_model() ## 重训练量化模型
+    ## calibrate_model()  ## 校准量化模型
+
+    ## step 3
+    ## 提取参数，用于后续模型部署
+    generate_params()
+```
+
+### Code block 4
+
+```
+import sys
+sys.path.append(".../dopt_tf_py3") ## 其中路径为绝对路径
+
+def generate_config():
+    model = build_torch_model()  ## 开发者待量化的浮点模型
+    generate_config_file(model, input_shape, dst_path="./config_gen.json") # model：torch.nn.Module， input_shape : "input1:input1.shape;input2:input2.shape"
+    return model
+
+def train_model():
+    model = build_torch_model() ## 开发者待量化的浮点模型
+    from dopt.dopt_torch.opt_main import optimize_model
+    model.load_state_dict(state)  ## load 浮点模型参数
+
+    ## 调用optimize model 量化模型
+    quanted_model = optimize_model(model, config_path)
+
+    ## train model
+    quant_loss = get_quant_loss(quant_model)
+    optimizer = torch.optim.SGD(quanted_model.parameters(), lr=0.001, momentum=0.9) ## 假设使用SGD优化器
+
+    for input_data, label in range(...):
+        optimizer.zero_grad()
+        outputs = model(input_data)
+        loss = loss_fn(outputs, label) ## loss_fn 为原始浮点网络训练loss
+
+        total_loss = loss + quant_weight * quant_loss ## quant_weight是指量化损失所占比例
+        loss.backward()
+
+        optimizer.step()
+
+def calibrate_model():
+    model = build_torch_model() ## 开发者待量化的浮点模型
+    from dopt.dopt_torch.opt_main import optimize_model, set_calibrate_state
+    model.load_state_dict(state)  ## load 浮点模型参数
+
+    ## 调用optimize model 量化模型
+    quanted_model = optimize_model(model, config_path)
+
+    calibrate_mode = True
+    set_calibrate_state(model, calibrate_mode)
+
+    for input_data, label in range(...):
+        outputs = model(input_data)
+
+def generate_params():
+    model = build_torch_model()
+    from dopt.dopt_torch.opt_main import generate_final_model
+    generate_final_model(model,
+                        config_file,
+                        pth_file="quant.pth",
+                        output_dir="./results_dir")
+
+if __name__ == "__main__":
+    ## step 1
+    ## 开发者接入，配置修改
+    generate_config()
+
+    ## step 2
+    ## 训练模型，直至达标
+    train_model()
+    ## 无训练模式
+    ## calibrate_model()
+
+    ## step 3
+    ## 提取参数，用于后续模型部署
+    generate_params()
+```
+
+### Code block 5
+
+```
+cd tools_dopt/dopt_tf_py3/demo/nas_ea/ea_cls_imagenet
+```
+
+### Code block 6
+
+```
+git clone https://github.com/Tensorflow/models.git
+```
+
+### Code block 7
+
+```
+cd models
+```
+
+### Code block 8
+
+```
+git checkout v1.12.0
+```
+
+### Code block 9
+
+```
+git checkout v2.1.0
+```
+
+### Code block 10
+
+```
+cd ..
+```
+
+### Code block 11
+
+```
+export PYTHONPATH=$PYTHONPATH:`pwd`/models/
+```
+
+### Code block 12
+
+```
+cd tools_dopt/dopt_tf_py3/demo/nas_ea/ea_det_coco
+```
+
+### Code block 13
+
+```
+git clone https://github.com/pierluigiferrari/ssd_keras.git
+git clone https://github.com/Tensorflow/models.git
+```
+
+### Code block 14
+
+```
+cd ssd_keras
+```
+
+### Code block 15
+
+```
+git checkout -b v0.9.0
+```
+
+### Code block 16
+
+```
+cd ..
+```
+
+### Code block 17
+
+```
+cd models
+```
+
+### Code block 18
+
+```
+git checkout v1.12.0
+```
+
+### Code block 19
+
+```
+git checkout v2.1.0
+```
+
+### Code block 20
+
+```
+cd models
+```
+
+### Code block 21
+
+```
+export PYTHONPATH=$PYTHONPATH:`pwd`/models/
+```
+
+### Code block 22
+
+```
+cd tools_dopt/dopt_tf_py3/demo/nas_ea/ea_seg_voc
+```
+
+### Code block 23
+
+```
+git clone https://github.com/Tensorflow/models.git
+```
+
+### Code block 24
+
+```
+cd models
+```
+
+### Code block 25
+
+```
+git checkout v1.13.0
+```
+
+### Code block 26
+
+```
+cd ..
+```
+
+### Code block 27
+
+```
+export PYTHONPATH=$PYTHONPATH:`pwd`/models/research:`pwd`/models/research/slim
+```
+
+### Code block 28
+
+```
+mkdir models_tf2.1
+cd models_tf2.1
+```
+
+### Code block 29
+
+```
+git clone https://github.com/Tensorflow/models.git
+```
+
+### Code block 30
+
+```
+cd models
+```
+
+### Code block 31
+
+```
+git checkout v2.1.0
+```
+
+### Code block 32
+
+```
+cd ..
+```
+
+### Code block 33
+
+```
+export PYTHONPATH=$PYTHONPATH:`pwd`/models/
+```

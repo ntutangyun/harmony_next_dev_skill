@@ -13,14 +13,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 import { GlobalContext } from '../common/GlobalContext';
 import { PrefetchWrapper } from '../prefetchUtil/PrefetchWrapper';
 
+onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+  GlobalContext.initContext(this.context); // 初始化全局上下文
+  PrefetchWrapper.getInstance().doInstallPrefetch();
+}
+
+说明
+
+调用安装预加载过程中，可参考FAQ定位预加载问题。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { GlobalContext } from '../common/GlobalContext';
+import { PrefetchWrapper } from '../prefetchUtil/PrefetchWrapper';
 
 onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
   GlobalContext.initContext(this.context); // 初始化全局上下文
   PrefetchWrapper.getInstance().doInstallPrefetch();
 }
-说明
-
-调用安装预加载过程中，可参考FAQ定位预加载问题。
-
-预加载实现类
-调用周期性预加载
+```

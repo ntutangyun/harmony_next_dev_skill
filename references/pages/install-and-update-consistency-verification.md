@@ -11,13 +11,16 @@ app.json5配置文件中versionCode字段一致，表示安装或更新包同版
 使用打包工具进行打包时，会进行合法性校验。详情请参考打包工具。
 
 签名证书一致性校验
+
 字段名称	说明	安装一致性校验规则	更新一致性校验规则
 appId	应用的appId，表示应用的唯一标识，详情信息可参考什么是appId。	是	appId和appIdentifier任一相同即可。
 appIdentifier	应用的唯一标识。详情信息可参考什么是appIdentifier。	是	appId和appIdentifier任一相同即可。
 appDistributionType	应用Profile文件中的类型，标识应用的发布上架类型，如类型为企业MDM应用发布。	是	更新不同版本时无校验，同版本有校验。
 appProvisionType	应用签名证书类型。Profile签名文件的类型，分为debug和release。debug为本地调试使用，release为上架应用市场使用。	是	更新不同版本时无校验，同版本有校验。
 apl	表示应用程序的APL等级，系统定义的apl包括：normal、system_basic和system_core。	是	更新不同版本时无校验，同版本有校验。
+
 配置文件一致性校验
+
 字段名称	说明	安装一致性校验规则	更新一致性校验规则
 bundleName	标识应用名称。该字段来源于app.json5配置文件中的bundleName字段。	是	是
 versionCode	标识应用版本号。该字段来源于app.json5配置文件中的versionCode字段。	是	是
@@ -28,5 +31,3 @@ bundleType	标识应用的类型。该字段来源于app.json5配置文件中的
 installationFree	标识是否支持免安装。该字段来源于module.json5配置文件中的installationFree字段。	是	是
 debug	标识应用是否可调试。该字段来源于app.json5配置文件中的debug字段。	是	否
 moduleType	标识模块的类型。该字段来源于module.json5配置文件中的type字段。	是，同版本entry类型的moduleName不能修改	是
-应用安装卸载与更新开发指导
-应用配置文件（Stage模型）

@@ -2,59 +2,40 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-local-test_
 
-在工程目录下打开待测试模块（支持HAP、HAR、HSP模块）下的ets文件，将光标置于代码中任意位置，单击右键 > Show Context Actions > Create Local Test或快捷键Alt+Enter（macOS为Option+Enter） > Create Local Test创建测试类。
+说明
 
-在弹出的Create Local Test窗口，输入或选择如下参数。
+当前不支持测试C/C++方法及系统API。
+
+创建Local Test测试用例
 
 Testing library：测试类型，默认为DECC-ArkTSUnit。
-ArkTS name：创建的测试文件名称，测试文件中包含了测试用例。测试文件名称要求在工程目录范围内具有唯一性，仅支持字母、数字、下划线（_）和点（.）。
-Destination package：测试文件存放的位置，建议存放在待测试模块的test目录下。
 
-DevEco Studio在test目录下自动生成对应的测试类。在测试类中，DevEco Studio会生成对应方法的用例模板，具体测试代码需要开发者根据业务逻辑进行开发，具体请参考单元测试框架。
+ArkTS name：创建的测试文件名称，测试文件中包含了测试用例。测试文件名称要求在工程目录范围内具有唯一性，仅支持字母、数字、下划线（_）和点（.）。
+
+Destination package：测试文件存放的位置，建议存放在待测试模块的test目录下。
 
 说明
 
 您也可以手动在test文件夹下创建测试用例，手动创建后，需要在List.test.ets文件中添加创建的用例类。
 
 运行Local Test测试用例
-运行模式
+
+[h2]运行模式
 
 可以采用运行工程目录（test）、测试文件（如Index.test.ets）、测试套件（describe）、测试方法（it）的方式来执行Local Test，各级别测试执行入口如下。
 
 	
-
-
-
-
-目录级
-
+目录级	文件级
 	
-
-文件级
-
-
-
-
-	
-
-
-
-
-套件级
-
-	
-
-方法级
+套件级	方法级
 
 以文件级别为例，在工程目录中，选中文件，单击右键 > Run'测试文件名称'，执行测试。
 
-也可以通过如下方式，执行Local Test：
 在工具栏主菜单单击Run > Run'测试名称'。
-在DevEco Studio的右上角，选择一项测试任务的配置，然后单击右侧的按钮，执行Local Test。
 
 执行完测试任务后，查看测试结果。
 
-调试模式
+[h2]调试模式
 
 调试模式相比运行模式增加了断点管理功能。在断点命中时，可以选择单步执行、步入步出、进入下个断点等方式进行调试，另外可以使用线程堆栈可视化、变量和表达式可视化功能，快速定位问题。
 
@@ -66,17 +47,13 @@ DevEco Studio在test目录下自动生成对应的测试类。在测试类中，
 
 在跳出所有断点后，测试结束，与运行模式相同，在测试窗口查看测试结果。
 
-覆盖率统计模式
+[h2]覆盖率统计模式
 
 在LocalTest运行的基础上支持代码覆盖率统计，当前仅支持ArkTS工程。
 
 开发者可以自定义需要参与覆盖率测试的文件，具体配置方法请参考配置覆盖率过滤文件。
 
 如前所述，覆盖率统计模式也有多级别入口，以文件级别为例，有两种方式启动测试：
-
-方式一：在工程目录中，选中文件，单击右键 > Run '测试文件名称' with Coverage，以覆盖率统计模式执行测试任务。
-
-方式二：在DevEco Studio的右上角，选择测试任务，然后单击右侧的按钮，执行测试。
 
 启动测试后，进行编译构建，底部将出现Cover窗口，构建结束后自动拉起Cover窗口，测试任务结束后，窗口中会打印测试报告的路径。
 
@@ -89,21 +66,29 @@ DevEco Studio在test目录下自动生成对应的测试类。在测试类中，
 默认情况下，测试用例可直接运行。如果需要自定义测试用例运行任务，可通过如下方法进行设置。
 
 在工具栏主菜单单击Run>Edit Configurations，进入Run/Debug Configurations界面。
-在Run/Debug Configurations界面，单击+按钮，在弹出的下拉菜单中，单击Local Test。
-
-根据实际情况，配置Local Test的运行参数。 然后单击OK，完成配置。
 
 使用命令行执行Local Test
-通过命令行方式执行Local Test，在工程根目录下执行命令：
+
 hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName}
+
 module：执行测试的模块。缺省默认是执行所有模块的用例。
+
 coverage：是否生成覆盖率报告，缺省默认是true，在<module-path>/.test/default/outputs/test/reports路径下生成两份报告，一份是html格式（index.html），一份是json格式（coverageReport.json），具体参考查看覆盖率报告。
+
 scope：格式为{suiteName}#{methodName}或{suiteName}，分别表示测试用例级别或测试套件级别的测试，缺省默认是执行当前模块的所有用例。
+
 说明
+
 多个module和scope之间用英文逗号隔开。
+
 暂不支持在Linux上执行该命令。
 
 测试结果文件：<module-path>/.test/default/intermediates/test/coverage_data/test_result.txt
 
-Instrument Test
-Mock能力
+## Code blocks
+
+### Code block 1
+
+```
+hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName}
+```

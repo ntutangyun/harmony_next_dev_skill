@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-faq-31_
 
+解决措施
+
+过滤关键词：AppGalleryKit|ShortcutManager

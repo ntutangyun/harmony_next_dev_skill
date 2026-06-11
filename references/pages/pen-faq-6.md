@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-faq-6_
 
+不需要，手写套件已经自带一笔成形功能。

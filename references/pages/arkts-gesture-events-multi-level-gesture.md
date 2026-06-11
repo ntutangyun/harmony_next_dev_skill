@@ -7,15 +7,24 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ges
 本章主要介绍了多层级手势事件的默认响应顺序，以及如何通过设置相关属性影响多层级手势事件的响应顺序。
 
 默认多层级手势事件
-触摸事件
+
+[h2]触摸事件
 
 触摸事件（onTouch事件）是所有手势组成的基础，包括Down、Move、Up、Cancel四种类型。手势均由触摸事件组成，例如，点击为Down和Up，滑动为Down和一系列Move及Up。触摸事件具有以下特殊性：
 
-1.监听了onTouch事件的组件，在手指落下被触摸时均会收到onTouch事件的回调，被触摸受到触摸热区和触摸控制影响。
+监听了onTouch事件的组件，在手指落下被触摸时均会收到onTouch事件的回调，被触摸受到触摸热区和触摸控制影响。
 
-2.onTouch事件的回调是闭环的。若一个组件收到了手指Id为0的Down事件，后续也会收到手指Id为0的Move事件和Up事件。
+onTouch事件的回调是闭环的。若一个组件收到了手指Id为0的Down事件，后续也会收到手指Id为0的Move事件和Up事件。
 
-3.onTouch事件的回调是一致的。若一个组件收到了手指Id为0的Down事件，但未收到手指Id为1的Down事件，则后续只会收到手指Id为0的touch事件，不会收到手指Id为1的后续touch事件。
+onTouch事件的回调是一致的。若一个组件收到了手指Id为0的Down事件，但未收到手指Id为1的Down事件，则后续只会收到手指Id为0的touch事件，不会收到手指Id为1的后续touch事件。
+
+onTouch事件在以下场景会触发Cancel类型事件：
+
+手指按住屏幕同时点击Home键返回桌面，此时触发Cancel事件。
+
+折叠屏手机，应用在按住屏幕的情况下折叠手机切换到外屏，此时触发Cancel事件。
+
+手指触摸过程中存在手写笔操作，手指的触摸操作会收到Cancel事件。
 
 对于一般的容器组件（例如：Column），父子组件之间onTouch事件能够同时触发，兄弟组件之间onTouch事件根据布局进行触发。
 
@@ -23,7 +32,6 @@ Column() {
   Column().id('ComponentB').onTouch(() => {})
   Column().id('ComponentC').onTouch(() => {})
 }.id('ComponentA').onTouch(() => {})
-TouchEvent.ets
 
 组件B和组件C作为组件A的子组件，当触摸到组件B或者组件C时，组件A也会被触摸到。onTouch事件允许多个组件同时触发，因此，当触摸组件B时，会触发组件A和组件B的onTouch回调，不会触发组件C的onTouch回调。
 
@@ -37,11 +45,10 @@ Stack() {
   Column().id('ComponentB').onTouch(() => {})
   Column().id('ComponentC').onTouch(() => {})
 }.id('Stack A').onTouch(() => {})
-TouchEvent.ets
 
 组件B和组件C作为Stack A的子组件，组件C覆盖在组件B上。当触摸到组件B或者组件C时，Stack A也会被触摸到。onTouch事件允许多个组件同时触发，因此，当触摸组件B和组件C的重叠区域时，会触发Stack A和组件C的onTouch回调，不会触发组件B的onTouch回调（组件B被组件C遮盖）。
 
-手势与事件
+[h2]手势与事件
 
 除了触摸事件（onTouch事件）外的所有手势与事件，均是通过基础手势或者组合手势实现的。例如，拖拽事件是由长按手势和滑动手势组成的一个顺序手势。
 
@@ -58,7 +65,6 @@ TouchEvent.ets
 Column() {
   Column().id('ComponentB').gesture(TapGesture({ count: 1 }))
 }.id('ComponentA').gesture(TapGesture({ count: 1 }))
-GesturesEvents.ets
 
 当父组件和子组件均绑定点击手势时，子组件的优先级高于父组件。
 
@@ -73,7 +79,6 @@ Column()
       PanGesture({distance: 5})
     )
   )
-GesturesEvents.ets
 
 当组件A上绑定了由点击和滑动手势组成的互斥手势组时，先达到触发条件的手势触发对应的回调。
 
@@ -85,7 +90,7 @@ GesturesEvents.ets
 
 目前，通过设置触摸热区和触摸测试可以控制Touch事件的分发，从而可以影响到onTouch事件和手势的响应。而绑定手势方法属性可以控制手势的竞争从而影响手势的响应，但不能影响到onTouch事件。
 
-触摸热区对手势和事件的控制
+[h2]触摸热区对手势和事件的控制
 
 通过responseRegion和mouseResponseRegion属性可以设置组件的触摸热区。从API version 22开始，支持通过responseRegionList设置组件的触摸热区。触摸热区范围可以超出或者小于组件的布局范围。
 
@@ -100,7 +105,6 @@ Column() {
 .onTouch(() => {})
 .gesture(TapGesture({count: 1}))
 .responseRegion([rect4])
-CustomEvent.ets
 
 当组件A绑定了.responseRegion({Rect4})的属性后，所有落在Rect4区域范围的触摸事件和手势可被组件A对应的回调响应。
 
@@ -110,7 +114,7 @@ CustomEvent.ets
 
 此外，responseRegion属性支持由多个Rect组成的数组作为入参，以支持更多开发需求。
 
-触摸测试对手势和事件的控制
+[h2]触摸测试对手势和事件的控制
 
 hitTestBehavior属性可以实现在复杂的多层级场景下，一些组件能够响应手势和事件，而一些组件不能响应手势和事件。
 
@@ -119,7 +123,6 @@ Column() {
     .id('ComponentB')
     .onTouch(() => {})
     .gesture(TapGesture({count: 1}))
-
 
   Column() {
     Column()
@@ -135,7 +138,6 @@ Column() {
 .id('ComponentA')
 .onTouch(() => {})
 .gesture(TapGesture({count: 1}))
-CustomEvent.ets
 
 HitTestMode.Block自身会响应触摸测试，阻塞子节点和兄弟节点的触摸测试，从而导致子节点和兄弟节点的onTouch事件和手势均无法触发。
 
@@ -149,7 +151,6 @@ Stack() {
     .onTouch(() => {})
     .gesture(TapGesture({count: 1}))
 
-
   Column()
     .id('ComponentC')
     .onTouch(() => {})
@@ -159,7 +160,6 @@ Stack() {
 .id('Stack A')
 .onTouch(() => {})
 .gesture(TapGesture({count: 1}))
-CustomEvent.ets
 
 HitTestMode.Transparent自身响应触摸测试，不会阻塞兄弟节点的触摸测试。
 
@@ -177,7 +177,6 @@ Column() {
 .onTouch(() => {})
 .gesture(TapGesture({count: 1}))
 .hitTestBehavior(HitTestMode.None)
-CustomEvent.ets
 
 HitTestMode.None自身不响应触摸测试，不会阻塞子节点和兄弟节点的触摸控制。
 
@@ -204,7 +203,6 @@ Stack() {
 .id('Stack A')
 .onTouch(() => {})
 .gesture(TapGesture({count: 1}))
-CustomEvent.ets
 
 从API version 20开始，HitTestMode.BLOCK_HIERARCHY自身和子节点响应触摸测试，阻止所有优先级较低的兄弟节点和父节点参与触摸测试。
 
@@ -231,7 +229,6 @@ Stack() {
 .id('Stack A')
 .onTouch(() => {})
 .gesture(TapGesture({count: 1}))
-CustomEvent.ets
 
 从API version 20开始，HitTestMode.BLOCK_DESCENDANTS自身不响应触摸测试，并且所有的后代（孩子，孙子等）也不响应触摸测试，不会影响祖先节点的触摸测试。
 
@@ -243,7 +240,7 @@ CustomEvent.ets
 
 针对复杂场景，建议在多个组件上绑定不同的hitTestBehavior来控制Touch事件的分发。
 
-绑定手势方法对手势的控制
+[h2]绑定手势方法对手势的控制
 
 设置绑定手势的方法可以实现在多层级场景下，当父组件与子组件绑定了相同的手势时，设置不同的绑定手势方法有不同的响应优先级。
 
@@ -256,7 +253,6 @@ Column() {
 }
 .id('ComponentA')
 .gesture(TapGesture({count: 1}))
-CustomEvent.ets
 
 当父子组件均正常绑定点击手势时，子组件优先于父组件响应。
 
@@ -271,7 +267,6 @@ Column() {
 }
 .id('ComponentA')
 .priorityGesture(TapGesture({count: 1}))
-CustomEvent.ets
 
 当父组件以.priorityGesture的形式绑定手势时，父组件所绑定的手势优先级高于子组件。
 
@@ -286,13 +281,12 @@ Column() {
 }
 .id('ComponentA')
 .parallelGesture(TapGesture({count: 1}))
-CustomEvent.ets
 
 当父组件以.parallelGesture的形式绑定手势时，父组件和子组件所绑定的手势均可触发。
 
 此时，单击组件B区域范围，组件A和组件B的点击手势均会触发。
 
-OverlayManager的事件透传
+[h2]OverlayManager的事件透传
 
 OverlayManager事件机制，默认优先被WrappedBuilder内组件先接收，不会向下传递。
 
@@ -303,9 +297,7 @@ function builderOverlay(params: Params) {
   Component1().hitTestBehavior(HitTestMode.Transparent)
 }
 
-
 // ···
-
 
   aboutToAppear(): void {
     // ···
@@ -315,6 +307,225 @@ function builderOverlay(params: Params) {
     );
     this.overlayManager.addComponentContent(componentContent, 0);
   }
-OverlayManager.ets
-组合手势
-手势冲突处理
+
+## Code blocks
+
+### Code block 1
+
+```
+Column() {
+  Column().id('ComponentB').onTouch(() => {})
+  Column().id('ComponentC').onTouch(() => {})
+}.id('ComponentA').onTouch(() => {})
+```
+
+### Code block 2
+
+```
+Stack() {
+  Column().id('ComponentB').onTouch(() => {})
+  Column().id('ComponentC').onTouch(() => {})
+}.id('Stack A').onTouch(() => {})
+```
+
+### Code block 3
+
+```
+Column() {
+  Column().id('ComponentB').gesture(TapGesture({ count: 1 }))
+}.id('ComponentA').gesture(TapGesture({ count: 1 }))
+```
+
+### Code block 4
+
+```
+Column()
+  .id('ComponentA')
+  .gesture(
+    GestureGroup(
+      GestureMode.Exclusive,
+      TapGesture({count: 1}),
+      PanGesture({distance: 5})
+    )
+  )
+```
+
+### Code block 5
+
+```
+Column() {
+  Column()
+    .id('ComponentB')
+    .onTouch(() => {})
+    .gesture(TapGesture({count: 1}))
+    .responseRegion([rect1, rect2, rect3])
+}
+.id('ComponentA')
+.onTouch(() => {})
+.gesture(TapGesture({count: 1}))
+.responseRegion([rect4])
+```
+
+### Code block 6
+
+```
+Column() {
+  Column()
+    .id('ComponentB')
+    .onTouch(() => {})
+    .gesture(TapGesture({count: 1}))
+
+  Column() {
+    Column()
+      .id('ComponentD')
+      .onTouch(() => {})
+      .gesture(TapGesture({count: 1}))
+  }
+  .id('ComponentC')
+  .onTouch(() => {})
+  .gesture(TapGesture({count: 1}))
+  .hitTestBehavior(HitTestMode.Block)
+}
+.id('ComponentA')
+.onTouch(() => {})
+.gesture(TapGesture({count: 1}))
+```
+
+### Code block 7
+
+```
+Stack() {
+  Column()
+    .id('ComponentB')
+    .onTouch(() => {})
+    .gesture(TapGesture({count: 1}))
+
+  Column()
+    .id('ComponentC')
+    .onTouch(() => {})
+    .gesture(TapGesture({count: 1}))
+    .hitTestBehavior(HitTestMode.Transparent)
+}
+.id('Stack A')
+.onTouch(() => {})
+.gesture(TapGesture({count: 1}))
+```
+
+### Code block 8
+
+```
+Column() {
+  Column()
+    .id('ComponentB')
+    .onTouch(() => {})
+    .gesture(TapGesture({count: 1}))
+}
+.id('ComponentA')
+.onTouch(() => {})
+.gesture(TapGesture({count: 1}))
+.hitTestBehavior(HitTestMode.None)
+```
+
+### Code block 9
+
+```
+Stack() {
+  Column()
+    .id('ComponentB')
+    .onTouch(() => {})
+    .gesture(TapGesture({count: 1}))
+  Column() {
+    Column()
+      .id('ComponentD')
+      .onTouch(() => {})
+      .gesture(TapGesture({count: 1}))
+  }
+  .id('ComponentC')
+  .onTouch(() => {})
+  .gesture(TapGesture({count: 1}))
+  .hitTestBehavior(HitTestMode.BLOCK_HIERARCHY)
+}
+.id('Stack A')
+.onTouch(() => {})
+.gesture(TapGesture({count: 1}))
+```
+
+### Code block 10
+
+```
+Stack() {
+  Column()
+    .id('ComponentB')
+    .onTouch(() => {})
+    .gesture(TapGesture({count: 1}))
+  Column() {
+    Column()
+      .id('ComponentD')
+      .onTouch(() => {})
+      .gesture(TapGesture({count: 1}))
+  }
+  .id('ComponentC')
+  .onTouch(() => {})
+  .gesture(TapGesture({count: 1}))
+  .hitTestBehavior(HitTestMode.BLOCK_DESCENDANTS)
+}
+.id('Stack A')
+.onTouch(() => {})
+.gesture(TapGesture({count: 1}))
+```
+
+### Code block 11
+
+```
+Column() {
+  Column()
+    .id('ComponentB')
+    .gesture(TapGesture({count: 1}))
+}
+.id('ComponentA')
+.gesture(TapGesture({count: 1}))
+```
+
+### Code block 12
+
+```
+Column() {
+  Column()
+    .id('ComponentB')
+    .gesture(TapGesture({count: 1}))
+}
+.id('ComponentA')
+.priorityGesture(TapGesture({count: 1}))
+```
+
+### Code block 13
+
+```
+Column() {
+  Column()
+    .id('ComponentB')
+    .gesture(TapGesture({count: 1}))
+}
+.id('ComponentA')
+.parallelGesture(TapGesture({count: 1}))
+```
+
+### Code block 14
+
+```
+@Builder
+function builderOverlay(params: Params) {
+  Component1().hitTestBehavior(HitTestMode.Transparent)
+}
+
+// ···
+
+  aboutToAppear(): void {
+    // ···
+    let componentContent = new ComponentContent(
+      this.context, wrapBuilder<[Params]>(builderOverlay),
+      new Params(uiContext, {x:0, y: 100})
+    );
+    this.overlayManager.addComponentContent(componentContent, 0);
+  }
+```

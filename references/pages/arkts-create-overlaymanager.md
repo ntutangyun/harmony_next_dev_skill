@@ -7,12 +7,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-cre
 可以通过使用UIContext中的getOverlayManager方法获取当前UI上下文关联的OverlayManager对象，再通过该对象调用对应方法。
 
 规格约束
+
 OverlayManager上节点的层级在Page页面层级之上，在Dialog、Popup、Menu、BindSheet、BindContentCover和Toast等组件之下。
+
 OverlayManager添加的节点显示和消失时没有默认动画。
+
 OverlayManager上节点安全区域内外的绘制方式与Page一致，键盘避让方式与Page一致。
+
 推荐使用AppStorage存储与OverlayManager相关的属性，以避免页面切换时属性值变化导致业务错误。
+
 当使用API version 19以下版本时，OverlayManager不支持侧滑（左滑/右滑）关闭，需在onBackPress中添加OverlayManager关闭的逻辑。API 19及以上版本可通过配置OverlayManagerOptions中的enableBackPressedEvent属性设置OverlayManager是否响应侧滑手势。
+
 OverlayManager中的事件机制优先被WrappedBuilder装饰的组件接收。若需实现浮层底部接收事件，可通过设置hitTestBehavior为HitTestMode.Transparent将事件传递至底层。
+
 设置浮层
 
 在OverlayManager上新增指定节点（addComponentContent）、删除指定节点（removeComponentContent）、显示所有节点（showAllComponentContents）和隐藏所有节点（hideAllComponentContents）。
@@ -20,22 +27,18 @@ OverlayManager中的事件机制优先被WrappedBuilder装饰的组件接收。�
 import { ComponentContent, OverlayManager } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = '[Sample_dialogproject]';
 const DOMAIN: number = 0xFF00;
-
 
 class Params {
   public text: string = '';
   public offset: Position;
-
 
   constructor(text: string, offset: Position) {
     this.text = text;
     this.offset = offset;
   }
 }
-
 
 @Builder
 function builderText(params: Params) {
@@ -45,7 +48,6 @@ function builderText(params: Params) {
       .fontWeight(FontWeight.Bold)
   }.offset(params.offset)
 }
-
 
 @Entry
 @Component
@@ -57,7 +59,6 @@ export struct OverlayManagerComponent {
   @StorageLink('componentContentIndex') componentContentIndex: number = 0;
   @StorageLink('arrayIndex') arrayIndex: number = 0;
   @StorageLink('componentOffset') componentOffset: Position = { x: 0, y: 30 };
-
 
   build() {
     // ...
@@ -123,7 +124,6 @@ export struct OverlayManagerComponent {
             this.overlayNode.hideAllComponentContents();
           })
 
-
         Button('Go')
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({
@@ -136,12 +136,10 @@ export struct OverlayManagerComponent {
       // ...
   }
 }
-OverlayManagerComponent.ets
 
 显示一个始终在屏幕左侧的悬浮球，点击可以弹出alertDialog弹窗。
 
 import { ComponentContent, OverlayManager } from '@kit.ArkUI';
-
 
 class Params {
   public context: UIContext;
@@ -175,7 +173,6 @@ function builderOverlay(params: Params) {
   }.focusable(false).width('100%').height('100%').hitTestBehavior(HitTestMode.Transparent)
 }
 
-
 @Entry
 @Component
 export struct OverlayManagerAlertDialog {
@@ -183,7 +180,6 @@ export struct OverlayManagerAlertDialog {
   private overlayNode: OverlayManager = this.uiContext.getOverlayManager();
   private overlayContent:ComponentContent<Params>[] = [];
   controller: TextInputController = new TextInputController();
-
 
   aboutToAppear(): void {
     let uiContext = this.getUIContext();
@@ -195,17 +191,14 @@ export struct OverlayManagerAlertDialog {
     this.overlayContent.push(componentContent);
   }
 
-
   aboutToDisappear(): void {
     let componentContent = this.overlayContent.pop();
     this.overlayNode.removeComponentContent(componentContent);
   }
 
-
   build() {
     // ...
       Column() {
-
 
       }
       .width('100%')
@@ -213,29 +206,24 @@ export struct OverlayManagerAlertDialog {
     // ...
   }
 }
-OverlayManagerAlertDialog.ets
 
 从API version 18开始，可以通过调用UIContext中getOverlayManager方法获取OverlayManager对象，并利用该对象在指定层级上新增指定节点（addComponentContentWithOrder），层次高的浮层会覆盖在层级低的浮层之上。
 
 import { ComponentContent, LevelOrder, OverlayManager } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const TAG: string = '[Sample_dialogproject]';
 const DOMAIN: number = 0xFF00;
-
 
 class Params {
   public text: string = '';
   public offset: Position;
-
 
   constructor(text: string, offset: Position) {
     this.text = text;
     this.offset = offset;
   }
 }
-
 
 @Builder
 function builderTopText(params: Params) {
@@ -253,7 +241,6 @@ function builderTopText(params: Params) {
   }.offset(params.offset)
 }
 
-
 @Builder
 function builderNormalText(params: Params) {
   Column() {
@@ -270,7 +257,6 @@ function builderNormalText(params: Params) {
   }.offset(params.offset)
 }
 
-
 @Entry
 @Component
 export struct OverlayManagerWithOrder {
@@ -280,7 +266,6 @@ export struct OverlayManagerWithOrder {
   @StorageLink('componentContentIndex') componentContentIndex: number = 0;
   @StorageLink('arrayIndex') arrayIndex: number = 0;
   @StorageLink('componentOffset') componentOffset: Position = { x: 0, y: 80 };
-
 
   build() {
     // ...
@@ -317,7 +302,292 @@ export struct OverlayManagerWithOrder {
       // ...
   }
 }
-OverlayManagerWithOrder.ets
 
-即时反馈（Toast）
-几何图形绘制
+## Code blocks
+
+### Code block 1
+
+```
+import { ComponentContent, OverlayManager } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = '[Sample_dialogproject]';
+const DOMAIN: number = 0xFF00;
+
+class Params {
+  public text: string = '';
+  public offset: Position;
+
+  constructor(text: string, offset: Position) {
+    this.text = text;
+    this.offset = offset;
+  }
+}
+
+@Builder
+function builderText(params: Params) {
+  Column() {
+    Text(params.text)
+      .fontSize(30)
+      .fontWeight(FontWeight.Bold)
+  }.offset(params.offset)
+}
+
+@Entry
+@Component
+export struct OverlayManagerComponent {
+  @State message: string = 'ComponentContent';
+  private uiContext: UIContext = this.getUIContext();
+  private overlayNode: OverlayManager = this.uiContext.getOverlayManager();
+  @StorageLink('contentArray') contentArray: ComponentContent<Params>[] = [];
+  @StorageLink('componentContentIndex') componentContentIndex: number = 0;
+  @StorageLink('arrayIndex') arrayIndex: number = 0;
+  @StorageLink('componentOffset') componentOffset: Position = { x: 0, y: 30 };
+
+  build() {
+    // ...
+      Column({ space: 10 }) {
+        Button('Increment componentContentIndex:' + this.componentContentIndex)
+          .onClick(() => {
+            ++this.componentContentIndex;
+          })
+        Button('Decrement componentContentIndex:' + this.componentContentIndex)
+          .onClick(() => {
+            --this.componentContentIndex;
+          })
+        Button('Add ComponentContent:' + this.contentArray.length)
+          .onClick(() => {
+            let componentContent = new ComponentContent(
+              this.uiContext, wrapBuilder<[Params]>(builderText),
+              new Params(this.message + (this.contentArray.length), this.componentOffset)
+            )
+            this.contentArray.push(componentContent);
+            this.overlayNode.addComponentContent(componentContent, this.componentContentIndex);
+          })
+        Button('Increment arrayIndex:' + this.arrayIndex)
+          .onClick(() => {
+            ++this.arrayIndex;
+          })
+        Button('Decrement arrayIndex:' + this.arrayIndex)
+          .onClick(() => {
+            --this.arrayIndex;
+          })
+        Button('Delete ComponentContent:' + this.arrayIndex)
+          .onClick(() => {
+            if (this.arrayIndex >= 0 && this.arrayIndex < this.contentArray.length) {
+              let componentContent = this.contentArray.splice(this.arrayIndex, 1);
+              this.overlayNode.removeComponentContent(componentContent.pop());
+            } else {
+              hilog.info(DOMAIN, TAG, '%{public}s', 'arrayIndex error');
+            }
+          })
+        Button('Show ComponentContent:' + this.arrayIndex)
+          .onClick(() => {
+            if (this.arrayIndex >= 0 && this.arrayIndex < this.contentArray.length) {
+              let componentContent = this.contentArray[this.arrayIndex];
+              this.overlayNode.showComponentContent(componentContent);
+            } else {
+              hilog.info(DOMAIN, TAG, '%{public}s', 'arrayIndex error');
+            }
+          })
+        Button('Hide ComponentContent:' + this.arrayIndex)
+          .onClick(() => {
+            if (this.arrayIndex >= 0 && this.arrayIndex < this.contentArray.length) {
+              let componentContent = this.contentArray[this.arrayIndex];
+              this.overlayNode.hideComponentContent(componentContent);
+            } else {
+              hilog.info(DOMAIN, TAG, '%{public}s', 'arrayIndex error');
+            }
+          })
+        Button('Show All ComponentContent')
+          .onClick(() => {
+            this.overlayNode.showAllComponentContents();
+          })
+        Button('Hide All ComponentContent')
+          .onClick(() => {
+            this.overlayNode.hideAllComponentContents();
+          })
+
+        Button('Go')
+          .onClick(() => {
+            this.getUIContext().getRouter().pushUrl({
+              url: 'pages/Second'
+            })
+          })
+      }
+      .width('100%')
+      .height('100%')
+      // ...
+  }
+}
+```
+
+### Code block 2
+
+```
+import { ComponentContent, OverlayManager } from '@kit.ArkUI';
+
+class Params {
+  public context: UIContext;
+  public offset: Position;
+  constructor(context: UIContext, offset: Position) {
+    this.context = context;
+    this.offset = offset;
+  }
+}
+@Builder
+function builderOverlay(params: Params) {
+  Column() {
+    Stack(){
+    }.width(50).height(50).backgroundColor(Color.Yellow).position(params.offset).borderRadius(50)
+    .onClick(() => {
+      params.context.showAlertDialog(
+        {
+          title: 'title',
+          message: 'Text',
+          autoCancel: true,
+          alignment: DialogAlignment.Center,
+          gridCount: 3,
+          confirm: {
+            value: 'Button',
+            action: () => {}
+          },
+          cancel: () => {}
+        }
+      )
+    })
+  }.focusable(false).width('100%').height('100%').hitTestBehavior(HitTestMode.Transparent)
+}
+
+@Entry
+@Component
+export struct OverlayManagerAlertDialog {
+  private uiContext: UIContext = this.getUIContext();
+  private overlayNode: OverlayManager = this.uiContext.getOverlayManager();
+  private overlayContent:ComponentContent<Params>[] = [];
+  controller: TextInputController = new TextInputController();
+
+  aboutToAppear(): void {
+    let uiContext = this.getUIContext();
+    let componentContent = new ComponentContent(
+      this.uiContext, wrapBuilder<[Params]>(builderOverlay),
+      new Params(uiContext, {x:0, y: 100})
+    );
+    this.overlayNode.addComponentContent(componentContent, 0);
+    this.overlayContent.push(componentContent);
+  }
+
+  aboutToDisappear(): void {
+    let componentContent = this.overlayContent.pop();
+    this.overlayNode.removeComponentContent(componentContent);
+  }
+
+  build() {
+    // ...
+      Column() {
+
+      }
+      .width('100%')
+      .height('100%')
+    // ...
+  }
+}
+```
+
+### Code block 3
+
+```
+import { ComponentContent, LevelOrder, OverlayManager } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = '[Sample_dialogproject]';
+const DOMAIN: number = 0xFF00;
+
+class Params {
+  public text: string = '';
+  public offset: Position;
+
+  constructor(text: string, offset: Position) {
+    this.text = text;
+    this.offset = offset;
+  }
+}
+
+@Builder
+function builderTopText(params: Params) {
+  Column() {
+    Stack() {
+      Text(params.text)
+        .fontSize(30)
+        .fontWeight(FontWeight.Bold)
+    }
+    .width(300)
+    .height(200)
+    .padding(5)
+    .backgroundColor('#F7F7F7')
+    .alignContent(Alignment.Top)
+  }.offset(params.offset)
+}
+
+@Builder
+function builderNormalText(params: Params) {
+  Column() {
+    Stack() {
+      Text(params.text)
+        .fontSize(30)
+        .fontWeight(FontWeight.Bold)
+    }
+    .width(300)
+    .height(400)
+    .padding(5)
+    .backgroundColor('#D5D5D5')
+    .alignContent(Alignment.Top)
+  }.offset(params.offset)
+}
+
+@Entry
+@Component
+export struct OverlayManagerWithOrder {
+  private ctx: UIContext = this.getUIContext();
+  private overlayManager: OverlayManager = this.ctx.getOverlayManager();
+  @StorageLink('contentArray') contentArray: ComponentContent<Params>[] = [];
+  @StorageLink('componentContentIndex') componentContentIndex: number = 0;
+  @StorageLink('arrayIndex') arrayIndex: number = 0;
+  @StorageLink('componentOffset') componentOffset: Position = { x: 0, y: 80 };
+
+  build() {
+    // ...
+      Row() {
+        Column({ space: 5 }) {
+          Button('Open Top-Level Dialog Box')
+            .onClick(() => {
+              let componentContent = new ComponentContent(
+                this.ctx, wrapBuilder<[Params]>(builderTopText),
+                new Params('I am a top-level dialog box', this.componentOffset)
+              );
+              this.contentArray.push(componentContent);
+              this.overlayManager.addComponentContentWithOrder(componentContent, LevelOrder.clamp(100000));
+            })
+          Button('Open Normal Dialog Box')
+            .onClick(() => {
+              let componentContent = new ComponentContent(
+                this.ctx, wrapBuilder<[Params]>(builderNormalText),
+                new Params('I am a normal dialog box', this.componentOffset)
+              );
+              this.contentArray.push(componentContent);
+              this.overlayManager.addComponentContentWithOrder(componentContent, LevelOrder.clamp(0));
+            })
+          Button('Remove Dialog Box').onClick(() => {
+            if (this.arrayIndex >= 0 && this.arrayIndex < this.contentArray.length) {
+              let componentContent = this.contentArray.splice(this.arrayIndex, 1);
+              this.overlayManager.removeComponentContent(componentContent.pop());
+            } else {
+              hilog.info(DOMAIN, TAG, '%{public}s', 'arrayIndex error');
+            }
+          })
+        }.width('100%')
+      }
+      // ...
+  }
+}
+```

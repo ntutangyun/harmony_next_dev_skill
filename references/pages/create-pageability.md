@@ -7,10 +7,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/create-pa
 import featureAbility from '@ohos.ability.featureAbility';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'MainAbility';
 const domain: number = 0xFF00;
-
 
 class MainAbility {
   onCreate() {
@@ -22,37 +20,30 @@ class MainAbility {
     hilog.info(domain, TAG, 'Application onCreate');
   }
 
-
   onDestroy() {
     hilog.info(domain, TAG, 'Application onDestroy');
   }
-
 
   onShow(): void {
     hilog.info(domain, TAG, 'Application onShow');
   }
 
-
   onHide(): void {
     hilog.info(domain, TAG, 'Application onHide');
   }
-
 
   onActive(): void {
     hilog.info(domain, TAG, 'Application onActive');
   }
 
-
   onInactive(): void {
     hilog.info(domain, TAG, 'Application onInactive');
   }
-
 
   onNewWant() {
     hilog.info(domain, TAG, 'Application onNewWant');
   }
 }
-
 
 export default new MainAbility();
 
@@ -102,9 +93,9 @@ import fileIo from '@ohos.file.fs';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
 
-
 const TAG: string = 'PagePageAbilityFirst';
 const domain: number = 0xFF00;
+
 (async (): Promise<void> => {
   let dir: string;
   try {
@@ -122,5 +113,120 @@ const domain: number = 0xFF00;
     hilog.error(domain, TAG, 'getOrCreateDistributedDir failed with : ' + error);
   }
 })()
-PageAbility的启动模式
-启动本地PageAbility
+
+## Code blocks
+
+### Code block 1
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'MainAbility';
+const domain: number = 0xFF00;
+
+class MainAbility {
+  onCreate() {
+    // 获取context并调用相关方法
+    let context = featureAbility.getContext();
+    context.getBundleName((data, bundleName) => {
+      hilog.info(domain, TAG, 'ability bundleName:' ,bundleName);
+    });
+    hilog.info(domain, TAG, 'Application onCreate');
+  }
+
+  onDestroy() {
+    hilog.info(domain, TAG, 'Application onDestroy');
+  }
+
+  onShow(): void {
+    hilog.info(domain, TAG, 'Application onShow');
+  }
+
+  onHide(): void {
+    hilog.info(domain, TAG, 'Application onHide');
+  }
+
+  onActive(): void {
+    hilog.info(domain, TAG, 'Application onActive');
+  }
+
+  onInactive(): void {
+    hilog.info(domain, TAG, 'Application onInactive');
+  }
+
+  onNewWant() {
+    hilog.info(domain, TAG, 'Application onNewWant');
+  }
+}
+
+export default new MainAbility();
+```
+
+### Code block 2
+
+```
+{
+  "module": {
+    "abilities": [
+      {
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ],
+        "orientation": "unspecified",
+        "formsEnabled": false,
+        "name": ".MainAbility",
+        "srcLanguage": "ets",
+        "srcPath": "MainAbility",
+        "icon": "$media:icon",
+        "description": "$string:MainAbility_desc",
+        "label": "$string:MainAbility_label",
+        "type": "page",
+        "visible": true,
+        "launchType": "singleton"
+      },
+    ]
+  }
+}
+```
+
+### Code block 3
+
+```
+import featureAbility from '@ohos.ability.featureAbility';
+import fileIo from '@ohos.file.fs';
+import promptAction from '@ohos.promptAction';
+import hilog from '@ohos.hilog';
+
+const TAG: string = 'PagePageAbilityFirst';
+const domain: number = 0xFF00;
+```
+
+### Code block 4
+
+```
+(async (): Promise<void> => {
+  let dir: string;
+  try {
+    hilog.info(domain, TAG, 'Begin to getOrCreateDistributedDir');
+    dir = await featureAbility.getContext().getOrCreateDistributedDir();
+    promptAction.showToast({
+      message: dir
+    });
+    hilog.info(domain, TAG, 'distribute dir is ' + dir);
+    let fd: number;
+    let path = dir + '/a.txt';
+    fd = fileIo.openSync(path, fileIo.OpenMode.READ_WRITE).fd;
+    fileIo.close(fd);
+  } catch (error) {
+    hilog.error(domain, TAG, 'getOrCreateDistributedDir failed with : ' + error);
+  }
+})()
+```

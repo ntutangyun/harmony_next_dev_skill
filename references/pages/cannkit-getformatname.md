@@ -2,10 +2,35 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-getformatname_
 
-集成游戏资源加速ExtensionAbility方法，未配置游戏资源加速ExtensionAbility组件类型信息，导致功能未生效
-文档
-GetName
-文档
-GetStr
-文档
-GetShape
+函数功能
+
+根据传入的format类型，获取format的字符串描述。
+
+函数原型
+
+const char_t *GetFormatName(Format format)
+
+参数说明
+
+参数	输入/输出	说明
+format	输入	format枚举值。
+
+返回值
+
+该format所对应的字符串描述，若format不合法或不被识别，则返回nullptr。
+
+异常处理
+
+无
+
+约束说明
+
+返回的字符串不可被修改。
+
+## Code blocks
+
+### Code block 1
+
+```
+const char_t *GetFormatName(Format format)
+```

@@ -1,8 +1,48 @@
-# ohpm dependency
+# ohpm dependency-check错误码
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-dependency-check-errorcode_
 
-When no module is specified, querying update information for a specified package is not supported
+00680001 更新信息查询失败
+
+错误信息
+
+querying update information from remote repository failed.
+
+错误描述
+
+更新信息查询失败。
+
+可能原因
+
+执行ohpm dependency-check命令时，中心仓或私仓的地址错误。
+
+处理步骤
+
+检查中心仓或私仓的地址，确保正确。
+
+00680002 指定模块下不存在oh-package.json5文件
+
+错误信息
+
+Specified module path or json file not exist.
+
+错误描述
+
+查询更新信息时，指定的模块路径不存在或指定的模块下没有oh-package.json5文件。
+
+可能原因
+
+指定的模块不正确，或者模块下缺少oh-package.json5文件。
+
+处理步骤
+
+确认模块名称正确，以及配置oh-package.json5文件。
+
+00680003 指定包查询失败
+
+错误信息
+
+When no module is specified, querying update information for a specified package is not supported.
 
 错误描述
 
@@ -15,6 +55,3 @@ When no module is specified, querying update information for a specified package
 处理步骤
 
 确保填写正确的模块/工程名称、三方库名称。
-
-ohpm convert错误码
-ohpm命令公共错误码

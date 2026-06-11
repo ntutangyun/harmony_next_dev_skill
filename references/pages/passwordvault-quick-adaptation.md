@@ -12,21 +12,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/passwordv
 
 InputType名称	描述	使用场景
 USER_NAME	用户名输入模式。	用于登录、注册等场景的用户名输入。
-Password	
-
-密码输入模式。支持输入数字、字母、下划线、空格、特殊字符。
-
-密码显示小眼睛图标并且默认会将文字变成圆点。
-
-	用于登录、注册等场景的密码输入。
-NUMBER_PASSWORD	
-
-数字密码输入模式。仅支持输入数字。
-
-密码显示小眼睛图标并且默认会将文字变成圆点。
-
-	用于登录、注册等场景的密码输入。
+Password	密码输入模式。支持输入数字、字母、下划线、空格、特殊字符。 密码显示小眼睛图标并且默认会将文字变成圆点。	用于登录、注册等场景的密码输入。
+NUMBER_PASSWORD	数字密码输入模式。仅支持输入数字。 密码显示小眼睛图标并且默认会将文字变成圆点。	用于登录、注册等场景的密码输入。
 NEW_PASSWORD	新密码输入模式。	用于注册、修改密码等场景的新密码输入。
+
 说明
 
 本文档中类型描述为Password的类型，均可用NUMBER_PASSWORD类型替代。
@@ -46,5 +35,17 @@ TextInput({ placeholder: '用户名' })
   .width('100%')
   .placeholderFont({ size: 16, weight: FontWeight.Regular })
   .margin({ top: 32, bottom: 8 })
-应用接入密码保险箱
-自动保存
+
+## Code blocks
+
+### Code block 1
+
+```
+TextInput({ placeholder: '用户名' })
+  .opacity(0.6)
+  .type(InputType.USER_NAME)
+  .placeholderColor(0x182431)
+  .width('100%')
+  .placeholderFont({ size: 16, weight: FontWeight.Regular })
+  .margin({ top: 32, bottom: 8 })
+```

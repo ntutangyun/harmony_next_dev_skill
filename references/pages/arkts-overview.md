@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-overview_
 
+ArkTS是HarmonyOS应用开发的官方高级语言。
+
 ArkTS在TypeScript（简称TS）生态基础上做了进一步扩展，保持了TS的基本风格，同时通过规范定义强化开发期静态检查和分析，提升代码健壮性，并实现更好的程序执行稳定性和性能。对比标准TS的差异可以参考从TypeScript到ArkTS的适配规则。ArkTS同时也支持与TS/JavaScript（简称JS）高效互操作。
 
 ArkTS基础类库和容器类库增强了语言的基础功能，提供包括高精度浮点运算、二进制Buffer、XML生成解析转换和多种容器库等能力，协助开发者简化开发工作，提升开发效率。
@@ -17,6 +19,5 @@ ArkTS基础类库和容器类库增强了语言的基础功能，提供包括高
 本Kit支持模拟器，但与真机存在部分能力差异，具体差异如下。
 
 通用差异：请参见模拟器与真机的差异。
+
 ArkTS基础库与ArkTS并发暂不支持模拟器。
-ArkTS（方舟编程语言）
-ArkTS基础类库

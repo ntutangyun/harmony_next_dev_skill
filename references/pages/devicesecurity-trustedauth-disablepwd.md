@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-trustedauth-disablepwd_
 
+场景介绍
+
 当用户不再使用数字盾时，可以通过密码认证主动发起关闭数字盾的操作；若用户忘记密码或连续密码认证失败次数达到最大限制导致数字盾密码锁定，当应用将在重新激活数字盾时，无需进行密码认证直接关闭最初激活的数字盾，并通过设置数字盾密码重新创建新的数字盾密码。
 
 约束与限制
@@ -18,12 +20,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 接口名	描述
 disableTrustedAuthentication(challenge: Uint8Array, needAuth: boolean, authID: bigint, label: TUILable): Promise<AuthToken>	关闭数字盾服务
+
 关闭数字盾服务界面介绍
 
 如图为需要进行密码认证的方式关闭数字盾服务时对应的TUI界面示例。
 
 开发步骤
-密码认证方式关闭数字盾服务
+
+[h2]密码认证方式关闭数字盾服务
 
 导入huks 、trustedAuthentication 和相关依赖模块。
 
@@ -67,7 +71,7 @@ const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge, c
 
 参考密钥管理服务提供的签名/验签指导, 对通过关闭数字盾获取到的authToken数据进行签名，并结束会话。
 
-无需密码认证方式关闭数字盾服务
+[h2]无需密码认证方式关闭数字盾服务
 
 使用cryptoFramework生成的32字节随机数作为challenge，直接调用关闭数字盾服务接口即可，生成的authToken信息未经过密码认证，不可进行签名校验。
 
@@ -91,5 +95,70 @@ const rand = cryptoFramework.createRandom();
 const len: number = 32;
 const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//此处使用的challenge为通过cryptoFramework生成的32字节随机数即可
 const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge);
-修改数字盾密码
-交易信息密码认证
+
+## Code blocks
+
+### Code block 1
+
+```
+import { resourceManager } from '@kit.LocalizationKit'
+import { huks } from '@kit.UniversalKeystoreKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { trustedAuthentication } from '@kit.DeviceSecurityKit';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common } from '@kit.AbilityKit';
+```
+
+### Code block 2
+
+```
+// 关闭数字盾服务
+async function DisablePwd(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
+ try {
+   const authID: bigint = 1687413472599354502n;//实际填充为从服务器获取到的账号对应的authID值
+   const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
+   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+   const buffer = fileData.buffer;
+   const label:trustedAuthentication.TUILable = {
+     image: buffer as ArrayBuffer,
+     title: "关闭数字盾",
+   }
+   const authToken = await trustedAuthentication.disableTrustedAuthentication(challenge, true, authID, label);
+   return authToken;
+ } catch (err) {
+   hilog.error(0x0000, 'testTag', `Failed to disableTrustedAuthentication, code:${err.code}, message:${err.message}`);
+   throw new Error('Close trusted authentication failed:' + (err as BusinessError).message);
+ }
+}
+const rand = cryptoFramework.createRandom();
+const len: number = 32;
+const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
+let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge, context);
+```
+
+### Code block 3
+
+```
+// 关闭数字盾服务
+async function DisablePwd(challenge: Uint8Array):Promise<trustedAuthentication.AuthToken> {
+ try {
+   const authID: bigint = 1687413472599354502n;//实际填充为从服务器获取到的账号对应的authID值
+   let emptyBuffer = new ArrayBuffer(0);
+   const label:trustedAuthentication.TUILable = {
+     image: emptyBuffer,
+     title: "",
+   }
+   const authToken = await trustedAuthentication.disableTrustedAuthentication(challenge, false, authID, label);
+   return authToken;
+ } catch (err) {
+   hilog.error(0x0000, 'testTag', `Failed to disableTrustedAuthentication, code:${err.code}, message:${err.message}`);
+   throw new Error('Close trusted authentication failed:' + (err as BusinessError).message);
+ }
+}
+const rand = cryptoFramework.createRandom();
+const len: number = 32;
+const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//此处使用的challenge为通过cryptoFramework生成的32字节随机数即可
+const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge);
+```

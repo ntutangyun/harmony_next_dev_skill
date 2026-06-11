@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-8_
 
+问题现象
+
 XComponent的宽高比与自定义界面扫码接口中ViewControl的宽高比不一致，导致自定义界面扫码预览画面出现拉伸。
 
 解决措施
@@ -14,7 +16,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { scanBarcode, customScan } from '@kit.ScanKit';
 
-
 @Entry
 @Component
 struct CustomScanPage {
@@ -23,7 +24,6 @@ struct CustomScanPage {
   // 设置预览流宽度，默认单位：px
   @State cameraWidth: number = 1080;
   private mXComponentController: XComponentController = new XComponentController();
-
 
   build() {
     Stack() {
@@ -66,5 +66,64 @@ struct CustomScanPage {
     .position({ x: 0, y: 0 })
   }
 }
-条形码识别坐标信息为空
-自定义界面扫码黑屏现象
+
+## Code blocks
+
+### Code block 1
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { scanBarcode, customScan } from '@kit.ScanKit';
+
+@Entry
+@Component
+struct CustomScanPage {
+  // 设置预览流高度，默认单位：px
+  @State cameraHeight: number = 1920;
+  // 设置预览流宽度，默认单位：px
+  @State cameraWidth: number = 1080;
+  private mXComponentController: XComponentController = new XComponentController();
+
+  build() {
+    Stack() {
+      XComponent({
+        id: 'componentId',
+        type: XComponentType.SURFACE,
+        controller: this.mXComponentController
+      })
+        .onLoad(() => {
+          hilog.info(0x0001, '[Scan Sample]', 'onLoad is called');
+          // 获取XComponent的surfaceId
+          let surfaceId: string = this.mXComponentController.getXComponentSurfaceId();
+          hilog.info(0x0001, 'viewControl', `onLoad surfaceId: ${surfaceId}`);
+          // 设置viewControl相应字段
+          let viewControl: customScan.ViewControl = {
+            width: this.cameraWidth,
+            height: this.cameraHeight,
+            surfaceId: surfaceId
+          };
+          try {
+            customScan.start(viewControl).then((scanResult: Array<scanBarcode.ScanResult>) => {
+              hilog.info(0x0001, '[Scan Sample]',
+                `Succeeded in getting ScanResult by promise, scanResult is ${JSON.stringify(scanResult)}`);
+            }).catch((err: BusinessError) => {
+              hilog.error(0x0001, '[Scan Sample]',
+                `Failed to get ScanResult by promise. Code: ${err.code}, message: ${err.message}`);
+            });
+          } catch (err) {
+            hilog.error(0x0001, '[Scan Sample]',
+              `Failed to start customScan. Code: ${err.code}, message: ${err.message}`);
+          }
+        })
+        .height(this.cameraHeight + 'px')
+        .width(this.cameraWidth + 'px')
+        .position({ x: 0, y: 0 })
+    }
+    .alignContent(Alignment.Bottom)
+    .height('100%')
+    .width('100%')
+    .position({ x: 0, y: 0 })
+  }
+}
+```

@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-netmultipath-request-release-c_
 
+从6.0.2(22)开始，支持多网发起和释放。
+
+场景介绍
+
 应用可根据自身业务的需要，以及系统的建议来发起多网络加速的请求，并在使用结束后及时释放。支持WiFi和蜂窝并发以及主卡和副卡并发，不支持开发者指定并发组合，并发组合由系统决定。
 
 说明
@@ -23,6 +27,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 接口名	描述
 int32_t HMS_NetworkBoost_RequestMultiPath(HMS_NetworkBoost_OnMultiPathRequestResult result)	发起多网请求。
 int32_t HMS_NetworkBoost_ReleaseMultiPath()	释放多网请求。
+
 开发步骤
 
 导入Network Boost Kit模块。
@@ -41,7 +46,6 @@ void onMultiPathRequestResultCallback(NetworkBoost_MultiPathRequestResult* resul
     // 多网请求的结果处理
 }
 
-
 int32_t RequestMultiPath()
 {
     // 发起多网请求
@@ -59,5 +63,47 @@ int32_t ReleasetMultipath()
     printf("释放多网请求结果: %d\n", ret);
     return ret;
 }
-多网配额查询(C/C++)
-Network Boost Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "NetworkBoostKit/network_boost_handover.h"
+#include <cstdio>
+```
+
+### Code block 2
+
+```
+libnetwork_boost.so
+```
+
+### Code block 3
+
+```
+void onMultiPathRequestResultCallback(NetworkBoost_MultiPathRequestResult* result)
+{
+    // 多网请求的结果处理
+}
+
+int32_t RequestMultiPath()
+{
+    // 发起多网请求
+    int32_t ret = HMS_NetworkBoost_RequestMultiPath(onMultiPathRequestResultCallback);
+    printf("注册多网建议监听回调结果: %d\n", ret);
+    return ret;
+}
+```
+
+### Code block 4
+
+```
+int32_t ReleasetMultipath()
+{
+    // 释放多网请求
+    int32_t ret = HMS_NetworkBoost_ReleaseMultiPath();
+    printf("释放多网请求结果: %d\n", ret);
+    return ret;
+}
+```

@@ -9,6 +9,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/e2e-verif
 将终端设备回退到HarmonyOS后，需要预置APK应用的数据。在数据预置完成后，开发者需要将终端设备从HarmonyOS升级到HarmonyOS NEXT。系统更新的入口为：设置 > 系统和更新 > 软件更新。
 
 终端设备成功从HarmonyOS升级到HarmonyOS NEXT，走过开机向导界面后，开始执行应用数据迁移。开发者请在应用数据迁移结束后，验证应用数据迁移的结果。
-
-开发者自验证
-常见问题与异常处理

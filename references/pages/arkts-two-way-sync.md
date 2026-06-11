@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-two-way-sync_
 
+$$运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步。
+
+内部状态的具体含义取决于组件。例如，TextInput组件的text参数。
+
+使用规则
+
 当前$$支持基础类型变量，当该变量使用@State、@Link、@Prop、@Provide等状态管理V1装饰器装饰，或者@Local等状态管理V2装饰器装饰时，变量值的变化会触发UI刷新。
 
 当前$$支持的组件：
@@ -32,6 +38,7 @@ BindContentCover	isShow	10
 Refresh	refreshing	8
 GridItem	selected	10
 ListItem	selected	10
+
 使用示例
 
 以TextInput方法的text参数为例：
@@ -42,7 +49,6 @@ ListItem	selected	10
 struct TextInputExample {
   @State text: string = '';
   controller: TextInputController = new TextInputController();
-
 
   build() {
     Column({ space: 20 }) {
@@ -58,7 +64,31 @@ struct TextInputExample {
     .justifyContent(FlexAlign.Center)
   }
 }
-SyncUsageExample.ets
 
-语法糖
-!!语法：双向绑定
+## Code blocks
+
+### Code block 1
+
+```
+// xxx.ets
+@Entry
+@Component
+struct TextInputExample {
+  @State text: string = '';
+  controller: TextInputController = new TextInputController();
+
+  build() {
+    Column({ space: 20 }) {
+      Text(this.text)
+      TextInput({ text: $$this.text, placeholder: 'input your word...', controller: this.controller })
+        .placeholderColor(Color.Grey)
+        .placeholderFont({ size: 14, weight: 400 })
+        .caretColor(Color.Blue)
+        .width(300)
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```

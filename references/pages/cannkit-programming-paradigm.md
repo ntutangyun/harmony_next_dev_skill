@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-programming-paradigm_
 
+编程范式描述了算子实现的固定流程，基于编程范式进行编程，可以快速搭建算子实现的代码框架。
+
 根据硬件架构抽象可以了解到，AI Core内部的执行单元异步并行地执行接收到的指令。如下图所示，从输入数据到输出数据需要经过3个阶段任务的处理（T1、T2、T3），多个执行单元并行处理，每个执行单元只会专注于一个任务的处理，会处理所有的数据分片。可以看出，流水线并行和工业生产中的流水线是类似的，每一个执行单元都可以看成是流水线上的节点，通过流水线并行的方式来提高计算效率：执行单元1完成对某个数据分片的处理后，将其加入到通信队列，执行单元2空闲时就会从队列中取出数据继续处理；可以类比为生产流水线中的工人只完成某一项固定工序，完成后就交由下一项工序负责人继续处理。
 
 AscendC编程范式就是这样一种流水线式的编程范式，把算子核内的处理程序，分成多个流水任务，通过队列(Queue)完成任务间通信和同步，并通过统一的资源管理模块(Pipe)来统一管理内存、事件等资源。
@@ -28,25 +30,25 @@ VECCALC	Unified Buffer
 
 从编程的角度来讲，具体流程（如下文的伪代码）和流程图如下。
 
-AscendC::TPipe pipe;                                    // 创建全局的资源管理
-AscendC::TQue<AscendC::QuePosition::VecIn, 1> queIn;    // 创建CopyIn阶段的队列
-AscendC::TQue<AscendC::QuePosition::VecOut, 1> queOut;  // 创建CopyOut阶段的队列
-// Init 阶段：
-pipe.InitBuffer(queIn, 2, 1024);                        // 开启double buffer,将待处理的数据一分为二,实现流水并行
+AscendC::TPipe pipe; // 创建全局的资源管理
+AscendC::TQue<AscendC::QuePosition::VecIn, 1> queIn; // 创建CopyIn阶段的队列
+AscendC::TQue<AscendC::QuePosition::VecOut, 1> queOut; // 创建CopyOut阶段的队列
+// Init阶段：
+pipe.InitBuffer(queIn, 2, 1024); // 开启double buffer，将待处理的数据一分为二，实现流水并行
 for-loop {
-    // CopyIn 阶段{
-    auto tensor = queIn.AllocTensor<half>();            // 从Que上申请资源, 长度1024字节
-    AscendC::DataCopy(tensor, gm, len);                 // 搬运数据从GM到VECIN
+    // CopyIn阶段{
+    auto tensor = queIn.AllocTensor<half>(); // 从Que上申请资源，长度1024字节
+    AscendC::DataCopy(tensor, gm, len); // 搬运数据从GM到VECIN
     queIn.EnQue(tensor);
     // }
-    // Compute 阶段{
+    // Compute阶段{
     auto tensor = queIn.DeQue<half>();
     auto tensorOut = queOut.AllocTensor<half>();
     AscendC::Abs(tensorOut, tensor, 1024);
     queIn.FreeTensor(tensor);
     queOut.EnQue(tensorOut);
     // }
-    // CopyOut 阶段{
+    // CopyOut阶段{
     auto tensor = queOut.DeQue<half>();
     AscendC::DataCopy(gmOut, tensor, 1024);
     queOut.FreeTensor(tensor);
@@ -117,12 +119,12 @@ typedef MatmulType<TPosition::GM, CubeFormat::ND, half> bType;
 typedef MatmulType<TPosition::GM, CubeFormat::ND, float> cType;
 typedef MatmulType<TPosition::GM, CubeFormat::ND, float> biasType;
 Matmul<aType, bType, cType, biasType> mm;
- 
+
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling); // 初始化
 // CopyIn阶段：完成从GM到LocalMemory的搬运
-mm.SetTensorA(gm_a);    // 设置左矩阵A
-mm.SetTensorB(gm_b);    // 设置右矩阵B
-mm.SetBias(gm_bias);    // 设置Bias
+mm.SetTensorA(gm_a); // 设置左矩阵A
+mm.SetTensorB(gm_b); // 设置右矩阵B
+mm.SetBias(gm_bias); // 设置Bias
 // Compute阶段：完成矩阵乘计算
 while (mm.Iterate()) {
     // CopyOut阶段：完成从LocalMemory到GM的搬运
@@ -130,6 +132,7 @@ while (mm.Iterate()) {
 }
 // 结束矩阵乘操作
 mm.End();
+
 融合算子编程范式
 
 支持Vector与Cube混合计算的算子称之为融合算子。AscendC提供融合算子的编程范式，方便开发者基于该范式表达融合算子的数据流，快速实现自己的融合算子。
@@ -154,7 +157,7 @@ Vector的输出可以作为Cube的输入：VECOUT->A1->A2、VECOUT->B1->B2
 
 整个过程的示例代码如下（伪代码）：
 
-template<typename aType, typename bType, typename cType, typename biasType> 
+template<typename aType, typename bType, typename cType, typename biasType>
 __aicore__ inline void MatmulLeakyKernel<aType, bType, cType, biasType>::Process()
 {
     // 步骤1：初始化一个MatMul对象，将输入数据从Global Memory搬运到Cube核上。
@@ -164,7 +167,7 @@ __aicore__ inline void MatmulLeakyKernel<aType, bType, cType, biasType>::Process
     matmulObj.SetTensorA(aGlobal);
     matmulObj.SetTensorB(bGlobal);
     matmulObj.SetBias(biasGlobal);
-     
+
     while (matmulObj.template Iterate<true>()) { // 步骤2：进行MatMul内部的计算。
         // 步骤3：将MatMul的计算结果搬运到Vector核上。
         reluOutLocal = reluOutQueue_.AllocTensor<cType>();
@@ -177,11 +180,12 @@ __aicore__ inline void MatmulLeakyKernel<aType, bType, cType, biasType>::Process
         // ...
         AscendC::DataCopy(cGlobal[startOffset], reluOutLocal, copyParam);
         reluOutQueue_.FreeTensor(reluOutLocal);
- 
+
         computeRound++;
     }
     matmulObj.End();
 }
+
 编程模型背后的奥秘
 
 由上文可知，AscendC的并行编程范式核心要素是：任务并行计算、队列管理通信和同步、自定义任务资源调度。本节介绍编程模型的实现原理，作为扩展阅读，便于开发者更好的理解编程模型的设计思路和优势，对于后续的深度开发也会有所帮助。
@@ -198,7 +202,7 @@ __aicore__ inline void MatmulLeakyKernel<aType, bType, cType, biasType>::Process
 
 以最简单的矢量编程范式为例，在调用上述接口时，实际上会给各执行单元下发一些指令，如下图所示：
 
-EnQue/DeQue处理流程
+[h2]EnQue/DeQue处理流程
 
 标量执行单元读取算子指令序列。
 
@@ -209,12 +213,14 @@ EnQue/DeQue处理流程
 EnQue/DeQue解决对内存的写后读问题。
 
 EnQue调用会发射同步指令set，发送信号激活wait。
+
 DeQue调用会发射同步指令wait，等待数据写入完成。
+
 wait需要等到set信号才能执行否则阻塞。
 
 由此可以看出，EnQue/DeQue主要解决了存在数据依赖时，并行执行单元的写后读同步控制问题。
 
-AllocTensor/FreeTensor处理流程
+[h2]AllocTensor/FreeTensor处理流程
 
 标量执行单元读取算子指令序列。
 
@@ -225,12 +231,99 @@ AllocTensor/FreeTensor处理流程
 AllocTensor/FreeTensor，解决对内存的读后写问题。
 
 AllocTensor调用会发射同步指令wait等待内存被读完成。
+
 FreeTensor调用会发射同步指令set，通知内存释放，可以重复写。
+
 wait需要等到set信号才能执行否则阻塞。
 
 由此可以看出，AllocTensor/FreeTensor主要解决了存在数据依赖时，并行执行单元的读后写同步控制问题。
 
 通过上文的详细说明，可以看出异步并行程序需要考虑复杂的同步控制，而AscendC编程模型将这些流程进行了封装，同时对外接口通过EnQue/DeQue/AllocTensor/FreeTensor这种开发者熟悉的资源控制方式来体现，同时达到了简化编程和易于理解的目的。
 
-硬件架构抽象
-编程API
+## Code blocks
+
+### Code block 1
+
+```
+AscendC::TPipe pipe; // 创建全局的资源管理
+AscendC::TQue<AscendC::QuePosition::VecIn, 1> queIn; // 创建CopyIn阶段的队列
+AscendC::TQue<AscendC::QuePosition::VecOut, 1> queOut; // 创建CopyOut阶段的队列
+// Init阶段：
+pipe.InitBuffer(queIn, 2, 1024); // 开启double buffer，将待处理的数据一分为二，实现流水并行
+for-loop {
+    // CopyIn阶段{
+    auto tensor = queIn.AllocTensor<half>(); // 从Que上申请资源，长度1024字节
+    AscendC::DataCopy(tensor, gm, len); // 搬运数据从GM到VECIN
+    queIn.EnQue(tensor);
+    // }
+    // Compute阶段{
+    auto tensor = queIn.DeQue<half>();
+    auto tensorOut = queOut.AllocTensor<half>();
+    AscendC::Abs(tensorOut, tensor, 1024);
+    queIn.FreeTensor(tensor);
+    queOut.EnQue(tensorOut);
+    // }
+    // CopyOut阶段{
+    auto tensor = queOut.DeQue<half>();
+    AscendC::DataCopy(gmOut, tensor, 1024);
+    queOut.FreeTensor(tensor);
+    // }
+}
+```
+
+### Code block 2
+
+```
+// 创建Matmul对象 创建对象时需要传入A、B、C、Bias的参数类型信息， 类型信息通过MatmulType来定义，包括：内存逻辑位置、数据格式、数据类型。
+typedef MatmulType<TPosition::GM, CubeFormat::ND, half> aType;
+typedef MatmulType<TPosition::GM, CubeFormat::ND, half> bType;
+typedef MatmulType<TPosition::GM, CubeFormat::ND, float> cType;
+typedef MatmulType<TPosition::GM, CubeFormat::ND, float> biasType;
+Matmul<aType, bType, cType, biasType> mm;
+
+REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling); // 初始化
+// CopyIn阶段：完成从GM到LocalMemory的搬运
+mm.SetTensorA(gm_a); // 设置左矩阵A
+mm.SetTensorB(gm_b); // 设置右矩阵B
+mm.SetBias(gm_bias); // 设置Bias
+// Compute阶段：完成矩阵乘计算
+while (mm.Iterate()) {
+    // CopyOut阶段：完成从LocalMemory到GM的搬运
+    mm.GetTensorC(gm_c);
+}
+// 结束矩阵乘操作
+mm.End();
+```
+
+### Code block 3
+
+```
+template<typename aType, typename bType, typename cType, typename biasType>
+__aicore__ inline void MatmulLeakyKernel<aType, bType, cType, biasType>::Process()
+{
+    // 步骤1：初始化一个MatMul对象，将输入数据从Global Memory搬运到Cube核上。
+    uint32_t computeRound = 0;
+    REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), matmulObj);
+    matmulObj.Init(&tiling);
+    matmulObj.SetTensorA(aGlobal);
+    matmulObj.SetTensorB(bGlobal);
+    matmulObj.SetBias(biasGlobal);
+
+    while (matmulObj.template Iterate<true>()) { // 步骤2：进行MatMul内部的计算。
+        // 步骤3：将MatMul的计算结果搬运到Vector核上。
+        reluOutLocal = reluOutQueue_.AllocTensor<cType>();
+        matmulObj.template GetTensorC<true>(reluOutLocal, false, true);
+       // 步骤4：进行Vector矢量计算。
+        AscendC::LeakyRelu(reluOutLocal, reluOutLocal, (cType)alpha, tiling.baseM * tiling.baseN);
+        reluOutQueue_.EnQue(reluOutLocal);
+        // 步骤5：将输出结果搬运到Global Memory上
+        reluOutQueue_.DeQue<cType>();
+        // ...
+        AscendC::DataCopy(cGlobal[startOffset], reluOutLocal, copyParam);
+        reluOutQueue_.FreeTensor(reluOutLocal);
+
+        computeRound++;
+    }
+    matmulObj.End();
+}
+```

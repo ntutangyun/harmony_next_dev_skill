@@ -13,14 +13,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 // entry/src/main/ets/updatebymessage/pages/UpdateByMessageCard.ets
 let storageUpdateByMsg = new LocalStorage();
 
-
 @Entry(storageUpdateByMsg)
 @Component
 struct UpdateByMessageCard {
   // $r('app.string.default_title')和$r('app.string.DescriptionDefault')需要替换为开发者所需的资源文件
   @LocalStorageProp('title') title: ResourceStr = $r('app.string.default_title');
   @LocalStorageProp('detail') detail: ResourceStr = $r('app.string.DescriptionDefault');
-
 
   build() {
     Column() {
@@ -37,7 +35,6 @@ struct UpdateByMessageCard {
           .margin({ top: '5%', left: '10%' })
       }.width('100%').height('50%')
       .alignItems(HorizontalAlign.Start)
-
 
       Row() {
         // ...
@@ -84,19 +81,16 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const TAG: string = 'EntryFormAbility';
 const DOMAIN_NUMBER: number = 0xFF00;
 
-
 export default class EntryFormAbility extends FormExtensionAbility {
   // ...
   onFormEvent(formId: string, message: string): void {
     // 若卡片支持触发事件，则需要重写该方法并实现对事件的触发
     hilog.info(DOMAIN_NUMBER, TAG, `FormAbility onFormEvent, formId = ${formId}, message: ${message}`);
 
-
     class FormDataClass {
       title: string = 'Title Update.'; // 和卡片布局中对应
       detail: string = 'Description update success.'; // 和卡片布局中对应
     }
-
 
     // 请根据业务替换为实际刷新的卡片数据
     let formData = new FormDataClass();
@@ -108,7 +102,6 @@ export default class EntryFormAbility extends FormExtensionAbility {
     });
   }
 
-
   // ...
 }
 
@@ -116,5 +109,108 @@ export default class EntryFormAbility extends FormExtensionAbility {
 
 初始状态	点击刷新
 	
-卡片拉起应用UIAbility到后台（call事件）
-通过router或call事件刷新卡片内容
+
+## Code blocks
+
+### Code block 1
+
+```
+// entry/src/main/ets/updatebymessage/pages/UpdateByMessageCard.ets
+let storageUpdateByMsg = new LocalStorage();
+
+@Entry(storageUpdateByMsg)
+@Component
+struct UpdateByMessageCard {
+  // $r('app.string.default_title')和$r('app.string.DescriptionDefault')需要替换为开发者所需的资源文件
+  @LocalStorageProp('title') title: ResourceStr = $r('app.string.default_title');
+  @LocalStorageProp('detail') detail: ResourceStr = $r('app.string.DescriptionDefault');
+
+  build() {
+    Column() {
+      Column() {
+        Text(this.title)
+          .fontColor('#FFFFFF')
+          .opacity(0.9)
+          .fontSize(14)
+          .margin({ top: '8%', left: '10%' })
+        Text(this.detail)
+          .fontColor('#FFFFFF')
+          .opacity(0.6)
+          .fontSize(12)
+          .margin({ top: '5%', left: '10%' })
+      }.width('100%').height('50%')
+      .alignItems(HorizontalAlign.Start)
+
+      Row() {
+        // ...
+        Button() {
+          // $r('app.string.update')需要替换为开发者所需的资源文件
+          Text($r('app.string.update'))
+            .fontColor('#45A6F4')
+            .fontSize(12)
+        }
+        .width(120)
+        .height(32)
+        .margin({ top: '30%', bottom: '10%' })
+        .backgroundColor('#FFFFFF')
+        .borderRadius(16)
+        .onClick(() => {
+          postCardAction(this, {
+            action: 'message',
+            params: { msgTest: 'messageEvent' }
+          });
+        })
+      }.width('100%').height('40%')
+      .justifyContent(FlexAlign.Center)
+    }
+    .width('100%')
+    .height('100%')
+    .alignItems(HorizontalAlign.Start)
+    // $r('app.media.CardEvent')需要替换为开发者所需的资源文件
+    .backgroundImage($r('app.media.CardEvent'))
+    .backgroundImageSize(ImageSize.Cover)
+  }
+}
+```
+
+### Code block 2
+
+```
+// entry/src/main/ets/entryformability/EntryFormAbility.ts
+import { formBindingData, FormExtensionAbility, formProvider } from '@kit.FormKit';
+import { Configuration, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 3
+
+```
+// entry/src/main/ets/entryformability/EntryFormAbility.ts
+const TAG: string = 'EntryFormAbility';
+const DOMAIN_NUMBER: number = 0xFF00;
+
+export default class EntryFormAbility extends FormExtensionAbility {
+  // ...
+  onFormEvent(formId: string, message: string): void {
+    // 若卡片支持触发事件，则需要重写该方法并实现对事件的触发
+    hilog.info(DOMAIN_NUMBER, TAG, `FormAbility onFormEvent, formId = ${formId}, message: ${message}`);
+
+    class FormDataClass {
+      title: string = 'Title Update.'; // 和卡片布局中对应
+      detail: string = 'Description update success.'; // 和卡片布局中对应
+    }
+
+    // 请根据业务替换为实际刷新的卡片数据
+    let formData = new FormDataClass();
+    let formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
+    formProvider.updateForm(formId, formInfo).then(() => {
+      hilog.info(DOMAIN_NUMBER, TAG, 'FormAbility updateForm success.');
+    }).catch((error: BusinessError) => {
+      hilog.error(DOMAIN_NUMBER, TAG, `Operation updateForm failed. Cause: ${JSON.stringify(error)}`);
+    });
+  }
+
+  // ...
+}
+```

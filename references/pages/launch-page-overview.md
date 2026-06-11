@@ -19,6 +19,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/launch-pa
 应用主动销毁退出
 
 当应用主动销毁，且系统侧未生成快照时，会在应用退出动效中展示为启动页。
-
-应用启动页的配置与使用
-配置应用启动页

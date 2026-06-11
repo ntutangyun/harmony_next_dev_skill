@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/one-to-many-data-share_
 
+应用间配置共享 (ArkTS)

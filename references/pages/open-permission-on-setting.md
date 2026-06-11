@@ -29,11 +29,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/open-perm
 import { abilityAccessCtrl, bundleManager, Permissions } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 async function checkPermissionGrant(permission: Permissions): Promise<abilityAccessCtrl.GrantStatus> {
   let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
   let grantStatus: abilityAccessCtrl.GrantStatus = abilityAccessCtrl.GrantStatus.PERMISSION_DENIED;
-
 
   // 获取应用程序的accessTokenID
   let tokenId: number = 0;
@@ -47,7 +45,6 @@ async function checkPermissionGrant(permission: Permissions): Promise<abilityAcc
     console.error(`Failed to get bundle info for self, code: ${err.code}, message: ${err.message}`);
   }
 
-
   // 校验应用是否被授予权限
   try {
     grantStatus = await atManager.checkAccessToken(tokenId, permission);
@@ -56,10 +53,8 @@ async function checkPermissionGrant(permission: Permissions): Promise<abilityAcc
     console.error(`Failed to check access token, code: ${err.code}, message: ${err.message}`);
   }
 
-
   return grantStatus;
 }
-
 
 async function checkPermissions(): Promise<void> {
   let grantStatus: boolean = await checkPermissionGrant('ohos.permission.HOOK_KEY_EVENT') === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;// 获取拦截键盘输入事件权限状态。
@@ -94,7 +89,6 @@ import { abilityAccessCtrl, common, Permissions, UIAbility } from '@kit.AbilityK
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 function openPermOnSetting(permission: Permissions, context: common.UIAbilityContext): void {
   let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
   // openPermissionOnSetting会判断权限的授权状态来决定是否唤起弹窗
@@ -113,7 +107,6 @@ function openPermOnSetting(permission: Permissions, context: common.UIAbilityCon
     console.error(`Failed to openPermissionOnSetting, code: ${err.code}, message: ${err.message}`);
   })
 }
-
 
 export default class OpenPermAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -131,6 +124,99 @@ export default class OpenPermAbility extends UIAbility {
 import { abilityAccessCtrl, common, Permissions } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
+function openPermOnSetting(permission: Permissions, context: common.UIAbilityContext): void {
+  let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+  // openPermissionOnSetting会判断权限的授权状态来决定是否唤起弹窗
+  atManager.openPermissionOnSetting(context, permission).then((data) => {
+    if (data === abilityAccessCtrl.SelectedResult.REJECTED) {
+      // 用户不允许跳转到“设置”
+      console.info(`user not allowed.`);
+    } else if (data === abilityAccessCtrl.SelectedResult.OPENED) {
+      // 用户选择跳转到“设置”
+      console.info(`user allowed to setting.`);
+    } else {
+      // 权限已授权，无需弹窗
+      console.info(`permission is granted.`);
+    }
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to openPermissionOnSetting, code: ${err.code}, message: ${err.message}`);
+  })
+}
+
+@Entry
+@Component
+struct Index {
+  aboutToAppear() {
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    openPermOnSetting('ohos.permission.HOOK_KEY_EVENT', context);
+  }
+
+  build() {
+    // ···
+  }
+}
+
+处理授权结果。
+
+调用openPermissionOnSetting()方法后，应用程序需重新校验是否已经授权。
+
+如果用户授权，则可以继续访问目标操作。
+
+如果用户拒绝授权，则需要提示用户必须授权才能访问当前页面的功能，重新引导用户跳转到系统应用“设置”中的对应路径打开权限。
+
+## Code blocks
+
+### Code block 1
+
+```
+import { abilityAccessCtrl, bundleManager, Permissions } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+async function checkPermissionGrant(permission: Permissions): Promise<abilityAccessCtrl.GrantStatus> {
+  let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+  let grantStatus: abilityAccessCtrl.GrantStatus = abilityAccessCtrl.GrantStatus.PERMISSION_DENIED;
+
+  // 获取应用程序的accessTokenID
+  let tokenId: number = 0;
+  try {
+    let bundleInfo: bundleManager.BundleInfo =
+      await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
+    let appInfo: bundleManager.ApplicationInfo = bundleInfo.appInfo;
+    tokenId = appInfo.accessTokenId;
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed to get bundle info for self, code: ${err.code}, message: ${err.message}`);
+  }
+
+  // 校验应用是否被授予权限
+  try {
+    grantStatus = await atManager.checkAccessToken(tokenId, permission);
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`Failed to check access token, code: ${err.code}, message: ${err.message}`);
+  }
+
+  return grantStatus;
+}
+
+async function checkPermissions(): Promise<void> {
+  let grantStatus: boolean = await checkPermissionGrant('ohos.permission.HOOK_KEY_EVENT') === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;// 获取拦截键盘输入事件权限状态。
+  if (grantStatus) {
+    // 已经授权，可以继续访问目标操作
+    console.info(`permission is granted.`);
+  } else {
+    // 未授权，引导用户跳转到系统应用“设置”中进行授权
+    console.info(`permission is not granted.`);
+  }
+}
+```
+
+### Code block 2
+
+```
+import { abilityAccessCtrl, common, Permissions, UIAbility } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 function openPermOnSetting(permission: Permissions, context: common.UIAbilityContext): void {
   let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
@@ -151,6 +237,42 @@ function openPermOnSetting(permission: Permissions, context: common.UIAbilityCon
   })
 }
 
+export default class OpenPermAbility extends UIAbility {
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    // ···
+    windowStage.loadContent('openpermpages/Index', (err) => {
+      openPermOnSetting('ohos.permission.HOOK_KEY_EVENT', this.context);
+    // ···
+    });
+  }
+// ···
+}
+```
+
+### Code block 3
+
+```
+import { abilityAccessCtrl, common, Permissions } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+function openPermOnSetting(permission: Permissions, context: common.UIAbilityContext): void {
+  let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+  // openPermissionOnSetting会判断权限的授权状态来决定是否唤起弹窗
+  atManager.openPermissionOnSetting(context, permission).then((data) => {
+    if (data === abilityAccessCtrl.SelectedResult.REJECTED) {
+      // 用户不允许跳转到“设置”
+      console.info(`user not allowed.`);
+    } else if (data === abilityAccessCtrl.SelectedResult.OPENED) {
+      // 用户选择跳转到“设置”
+      console.info(`user allowed to setting.`);
+    } else {
+      // 权限已授权，无需弹窗
+      console.info(`permission is granted.`);
+    }
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to openPermissionOnSetting, code: ${err.code}, message: ${err.message}`);
+  })
+}
 
 @Entry
 @Component
@@ -160,19 +282,8 @@ struct Index {
     openPermOnSetting('ohos.permission.HOOK_KEY_EVENT', context);
   }
 
-
   build() {
     // ···
   }
 }
-
-处理授权结果。
-
-调用openPermissionOnSetting()方法后，应用程序需重新校验是否已经授权。
-
-如果用户授权，则可以继续访问目标操作。
-
-如果用户拒绝授权，则需要提示用户必须授权才能访问当前页面的功能，重新引导用户跳转到系统应用“设置”中的对应路径打开权限。
-
-向用户申请单次授权
-申请受限权限
+```

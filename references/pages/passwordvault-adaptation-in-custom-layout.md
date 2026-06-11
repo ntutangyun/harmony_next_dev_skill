@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/passwordvault-adaptation-in-custom-layout_
 
+登录
+
 应用在设置“登录”页面时，需要“用户名/账号名”、“密码”在同一个界面，具体可参照账号密码保存-登录、账号密码填充-登录中的介绍。
 
 注册
@@ -27,13 +29,11 @@ struct LoginExample {
   // 保存填充功能初始值：true
   @State enableAutoFill: boolean = true;
 
-
   onBackPress() {
     // 当非成功登录、返回等页面跳转时，将enableAutoFill设置为false，密码保险箱将不启用自动填充功能
     this.enableAutoFill = false;
     return false;
   }
-
 
   @Builder
   PageMap(name: string) {
@@ -42,13 +42,11 @@ struct LoginExample {
     }
   }
 
-
   build() {
     Navigation(this.pathInfos) {
       Column({ space: 16 }) {
         Text("账户登录")
           .commonTitleStyles()
-
 
         TextInput({ placeholder: '账号' })
           .commonInputStyles()
@@ -58,7 +56,6 @@ struct LoginExample {
             this.ReserveAccount = value;
           })
 
-
         TextInput({ placeholder: '密码' })
           .commonInputStyles()
           .showPasswordIcon(true)
@@ -67,7 +64,6 @@ struct LoginExample {
           .onChange((value: string) => {
             this.ReservePassword = value;
           })
-
 
         Button('登录', { type: ButtonType.Capsule, stateEffect: false })
           .borderRadius(20)
@@ -88,11 +84,9 @@ struct LoginExample {
   }
 }
 
-
 @Component
 struct HomePage {
   pathInfos: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -106,7 +100,6 @@ struct HomePage {
   }
 }
 
-
 @Extend(Text)
 function commonTitleStyles() {
   .fontSize(24)
@@ -115,7 +108,6 @@ function commonTitleStyles() {
   .margin({ top: 18 })
 }
 
-
 @Extend(TextInput)
 function commonInputStyles() {
   .placeholderColor(0x182431)
@@ -123,6 +115,7 @@ function commonInputStyles() {
   .opacity(0.6)
   .placeholderFont({ size: 16, weight: FontWeight.Regular })
 }
+
 将导致功能受限的布局
 
 除上述典型场景外，以下界面布局对密码保险箱功能的使用存在限制：
@@ -134,5 +127,105 @@ function commonInputStyles() {
 修改密码	界面只有用户名、新密码	不支持	支持	支持
 修改密码	界面只有旧密码、新密码	不支持	不支持	不支持
 修改密码	界面只有新密码	不支持	不支持	不支持
-为应用添加自动生成高强度密码的建议
-系统可适配的场景
+
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct LoginExample {
+  pathInfos: NavPathStack = new NavPathStack();
+  @State ReserveAccount: string = '';
+  @State ReservePassword: string = '';
+  // 保存填充功能初始值：true
+  @State enableAutoFill: boolean = true;
+
+  onBackPress() {
+    // 当非成功登录、返回等页面跳转时，将enableAutoFill设置为false，密码保险箱将不启用自动填充功能
+    this.enableAutoFill = false;
+    return false;
+  }
+
+  @Builder
+  PageMap(name: string) {
+    if (name === 'home_page') {
+      HomePage()
+    }
+  }
+
+  build() {
+    Navigation(this.pathInfos) {
+      Column({ space: 16 }) {
+        Text("账户登录")
+          .commonTitleStyles()
+
+        TextInput({ placeholder: '账号' })
+          .commonInputStyles()
+          .type(InputType.USER_NAME)// 账号框使用USER_NAME属性
+          .enableAutoFill(this.enableAutoFill)// 保存填充功能属性
+          .onChange((value: string) => {
+            this.ReserveAccount = value;
+          })
+
+        TextInput({ placeholder: '密码' })
+          .commonInputStyles()
+          .showPasswordIcon(true)
+          .type(InputType.Password)// 密码框使用Password属性
+          .enableAutoFill(this.enableAutoFill)// 保存填充功能属性
+          .onChange((value: string) => {
+            this.ReservePassword = value;
+          })
+
+        Button('登录', { type: ButtonType.Capsule, stateEffect: false })
+          .borderRadius(20)
+          .width('100%')
+          .height(40)
+          .enabled((this.ReserveAccount !== '') && (this.ReservePassword !== ''))
+          .onClick(() => {
+            // 成功登录时页面跳转将enableAutoFill设置为true，密码保险箱使能
+            this.enableAutoFill = true;
+            this.pathInfos.pushPathByName('home_page', null)
+          })
+      }
+      .padding(16)
+    }
+    .navDestination(this.PageMap)
+    .height('100%')
+    .width('100%')
+  }
+}
+
+@Component
+struct HomePage {
+  pathInfos: NavPathStack = new NavPathStack();
+
+  build() {
+    NavDestination() {
+      Column() {
+        Text("Home Page").commonTitleStyles()
+      }.width('100%').height('100%')
+    }.title("Home Page")
+    .onReady((context: NavDestinationContext) => {
+      this.pathInfos = context.pathStack;
+    })
+  }
+}
+
+@Extend(Text)
+function commonTitleStyles() {
+  .fontSize(24)
+  .fontColor('#000000')
+  .fontWeight(FontWeight.Medium)
+  .margin({ top: 18 })
+}
+
+@Extend(TextInput)
+function commonInputStyles() {
+  .placeholderColor(0x182431)
+  .width('100%')
+  .opacity(0.6)
+  .placeholderFont({ size: 16, weight: FontWeight.Regular })
+}
+```

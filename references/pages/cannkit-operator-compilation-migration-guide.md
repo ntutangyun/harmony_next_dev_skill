@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-operator-compilation-migration-guide_
 
+进行算子编译时，开发者需要感知不同架构、不同的AI处理器型号。
+
+异构编译场景：当前KirinX90/Kirin9030不支持异构编译。
+
 标准自定义算子工程的场景：开发者需要在进行算子原型定义时，通过AddConfig接口注册算子支持的AI处理器型号以及相关的配置信息。AddConfig接口原型如下：soc参数表示AI处理器型号，aicore_config表示其他配置信息。
 
 void AddConfig(const char *soc);
@@ -23,5 +27,31 @@ public:
 };
 OP_ADD(AddCustom);
 } // namespace ops
-高阶API迁移指导
-CANN Kit常见问题
+
+## Code blocks
+
+### Code block 1
+
+```
+void AddConfig(const char *soc);
+void AddConfig(const char *soc, OpAICoreConfig &aicore_config);
+```
+
+### Code block 2
+
+```
+// ...
+namespace ops {
+class AddCustom : public OpDef {
+public:
+    AddCustom(const char* name) : OpDef(name)
+    {
+        // ...
+        this->AICore().AddConfig("ascend910b");
+        // 示例：添加KirinX90处理器系列
+        this->AICore().AddConfig("kirinx90");
+    }
+};
+OP_ADD(AddCustom);
+} // namespace ops
+```

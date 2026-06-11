@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-ear-monitor-loopback_
 
+从API version 20开始，支持音频低时延耳返。
+
 AudioLoopback是音频返听器，可将音频以更低时延的方式实时传输到耳机中，让用户可以实时听到自己或者其他的相关声音。
 
 常用于K歌类应用，将录制的人声和背景音乐实时传送到耳机中，使用户通过反馈即时进行调整，获得更好的使用体验。
@@ -28,7 +30,7 @@ AudioLoopback状态变化示意图
 
 使用on('statusChange')方法可以监听AudioLoopback的状态变化，每个状态对应值与说明见AudioLoopbackStatus。
 
-开发步骤及注意事项
+[h2]开发步骤及注意事项
 
 以下各步骤示例为片段代码，可通过示例代码右下方链接获取完整示例。
 
@@ -58,7 +60,6 @@ let audioLoopback: audio.AudioLoopback | undefined = undefined;
     console.error('Audio loopback is unsupported.');
     // ...
   }
-AudioLoopback.ets
 
 调用getStatus方法，查询当前返听状态。
 
@@ -75,14 +76,17 @@ import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
       console.error(`getStatus failed, code is ${err.code}, message is ${err.message}.`);
       // ...
     })
-AudioLoopback.ets
 
 调用setVolume方法，设置音频返听音量。
 
 注意
+
 在启用返听前设置音量，音量将在启用返听成功后生效。
+
 在启用返听后设置音量，音量将立即生效。
+
 启用返听前未设置音量，启用返听时将采用默认音量0.5。
+
 import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
 // ...
     try {
@@ -93,14 +97,17 @@ import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
       console.error(`Invoke setVolume failed, code is ${err.code}, message is ${err.message}.`);
       // ...
     }
-AudioLoopback.ets
 
 从API21开始，支持调用setReverbPreset方法，设置音频返听的混响模式。
 
 注意
+
 在启用返听前设置混响模式，混响模式将在启用返听成功后生效。
+
 在启用返听后设置混响模式，混响模式将立即生效。
+
 启用返听前未设置混响模式，启用返听时将采用默认混响模式THEATER。
+
 import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
 // ...
     try {
@@ -112,7 +119,6 @@ import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
       console.error(`setReverbPreset( failed, code is ${err.code}, message is ${err.message}.`);
       // ...
     }
-AudioLoopback.ets
 
 从API21开始，支持调用getReverbPreset方法，查询当前的音频返听的混响模式。
 
@@ -128,21 +134,23 @@ import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
       console.error(`getReverbPreset:ERROR: ${err}`);
       // ...
     }
-AudioLoopback.ets
 
 从API21开始，支持调用setEqualizerPreset方法，设置音频返听的均衡器类型。
 
 注意
+
 在启用返听前设置均衡器类型，均衡器类型将在启用返听成功后生效。
+
 在启用返听后设置均衡器类型，均衡器类型将立即生效。
+
 启用返听前未设置均衡器类型，启用返听时将采用默认均衡器类型FULL。
+
 import { BusinessError } from '@kit.BasicServicesKit';
 try {
   audioLoopback.setEqualizerPreset(audio.AudioLoopbackEqualizerPreset.FULL);
 } catch (err) {
   console.error(`setEqualizerPreset :ERROR: ${err}`);
 }
-AudioLoopback.ets
 
 从API21开始，支持调用getEqualizerPreset方法，查询当前的音频返听的均衡器类型。
 
@@ -158,7 +166,6 @@ import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
       console.error(`getEqualizerPreset:ERROR: ${err}`);
       // ...
     }
-AudioLoopback.ets
 
 调用enable方法，启用或禁用音频返听功能。
 
@@ -194,7 +201,6 @@ async function enable(updateCallback?: (msg: string, isError: boolean) => void):
   }
 }
 
-
 // 禁用音频返听，关闭监听事件。
 async function disable(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
   if (audioLoopback !== undefined) {
@@ -224,15 +230,14 @@ async function disable(updateCallback?: (msg: string, isError: boolean) => void)
     // ...
   }
 }
-AudioLoopback.ets
-完整示例
+
+[h2]完整示例
 
 使用AudioLoopback启用音频低时延返听示例代码如下所示。
 
 import { audio } from '@kit.AudioKit'; // 导入audio模块。
 import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
 import { common, abilityAccessCtrl, PermissionRequestResult } from '@kit.AbilityKit'; // 导入UIAbilityContext。
-
 
 const TAG = 'AudioLoopbackDemo';
 let mode: audio.AudioLoopbackMode = audio.AudioLoopbackMode.HARDWARE;
@@ -241,9 +246,7 @@ let currentReverbPreset: audio.AudioLoopbackReverbPreset = audio.AudioLoopbackRe
 let currentEqualizerPreset: audio.AudioLoopbackEqualizerPreset = audio.AudioLoopbackEqualizerPreset.FULL;
 // ...
 
-
 // ...
-
 
 // 查询能力，创建实例。
 function init(updateCallback?: (msg: string, isError: boolean) => void): void {
@@ -263,7 +266,6 @@ function init(updateCallback?: (msg: string, isError: boolean) => void): void {
   }
 }
 
-
 // 设置音频返听音量。
 async function setVolume(volume: number, updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
   if (audioLoopback !== undefined) {
@@ -280,7 +282,6 @@ async function setVolume(volume: number, updateCallback?: (msg: string, isError:
     // ...
   }
 }
-
 
 // 设置音频返听的混响模式。
 async function setReverbPreset(preset: audio.AudioLoopbackReverbPreset, updateCallback?: (msg: string,
@@ -301,7 +302,6 @@ async function setReverbPreset(preset: audio.AudioLoopbackReverbPreset, updateCa
   }
 }
 
-
 // 设置音频返听的均衡器类型。
 async function setEqualizerPreset(preset: audio.AudioLoopbackEqualizerPreset, updateCallback?:
   (msg: string, isError: boolean) => void): Promise<void> {
@@ -320,7 +320,6 @@ async function setEqualizerPreset(preset: audio.AudioLoopbackEqualizerPreset, up
     // ...
   }
 }
-
 
 // 设置监听事件，启用音频返听。
 async function enable(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
@@ -352,6 +351,179 @@ async function enable(updateCallback?: (msg: string, isError: boolean) => void):
   }
 }
 
+// 禁用音频返听，关闭监听事件。
+async function disable(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
+  if (audioLoopback !== undefined) {
+    try {
+      let status = await audioLoopback.getStatus();
+      if (status == audio.AudioLoopbackStatus.AVAILABLE_RUNNING) {
+        // 禁用返听。
+        let success = await audioLoopback.enable(false);
+        if (success) {
+          console.info('Invoke disable succeeded');
+          // ...
+          // 关闭监听。
+          audioLoopback.off('statusChange', statusChangeCallback);
+        } else {
+          status = await audioLoopback.getStatus();
+          statusChangeCallback(status);
+        }
+      } else {
+        statusChangeCallback(status);
+      }
+    } catch (err) {
+      console.error(`Invoke disable failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+  } else {
+    console.error('Audio loopback not created.');
+    // ...
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { audio } from '@kit.AudioKit'; // 导入audio模块。
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+// ...
+let mode: audio.AudioLoopbackMode = audio.AudioLoopbackMode.HARDWARE;
+let audioLoopback: audio.AudioLoopback | undefined = undefined;
+// ...
+  let isSupported = audio.getAudioManager().getStreamManager().isAudioLoopbackSupported(mode);
+  if (isSupported) {
+    audio.createAudioLoopback(mode).then((loopback) => {
+      console.info('Invoke createAudioLoopback succeeded.');
+      // ...
+      audioLoopback = loopback;
+    }).catch((err: BusinessError) => {
+      console.error(`Invoke createAudioLoopback failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    });
+  } else {
+    console.error('Audio loopback is unsupported.');
+    // ...
+  }
+```
+
+### Code block 2
+
+```
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+// ...
+    audioLoopback.getStatus().then((status: audio.AudioLoopbackStatus) => {
+      console.info(`getStatus success, status is ${status}.`);
+      // ...
+    }).catch((err: BusinessError) => {
+      console.error(`getStatus failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    })
+```
+
+### Code block 3
+
+```
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+// ...
+    try {
+      await audioLoopback.setVolume(volume);
+      console.info(`Invoke setVolume ${volume} succeeded.`);
+      // ...
+    } catch (err) {
+      console.error(`Invoke setVolume failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+```
+
+### Code block 4
+
+```
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+// ...
+    try {
+      audioLoopback.setReverbPreset(preset);
+      console.info(`setReverbPreset( ${preset} succeeded.`);
+      // ...
+      currentReverbPreset = audioLoopback.getReverbPreset(); // 查询当前的混响模式，防止设置失败。
+    } catch (err) {
+      console.error(`setReverbPreset( failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+```
+
+### Code block 5
+
+```
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+// ...
+    try {
+      let reverbPreset = audioLoopback.getReverbPreset();
+    } catch (err) {
+      console.error(`getReverbPreset:ERROR: ${err}`);
+      // ...
+    }
+```
+
+### Code block 6
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+try {
+  audioLoopback.setEqualizerPreset(audio.AudioLoopbackEqualizerPreset.FULL);
+} catch (err) {
+  console.error(`setEqualizerPreset :ERROR: ${err}`);
+}
+```
+
+### Code block 7
+
+```
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+// ...
+    try {
+      let equalizerPreset = audioLoopback.getEqualizerPreset();
+    } catch (err) {
+      console.error(`getEqualizerPreset:ERROR: ${err}`);
+      // ...
+    }
+```
+
+### Code block 8
+
+```
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+// ...
+// 设置监听事件，启用音频返听。
+async function enable(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
+  if (audioLoopback !== undefined) {
+    try {
+      let status = await audioLoopback.getStatus();
+      if (status == audio.AudioLoopbackStatus.AVAILABLE_IDLE) {
+        // 注册监听。
+        audioLoopback.on('statusChange', statusChangeCallback);
+        // 启动返听。
+        let success = await audioLoopback.enable(true);
+        if (success) {
+          console.info('Invoke enable succeeded');
+          // ...
+        } else {
+          status = await audioLoopback.getStatus();
+          statusChangeCallback(status);
+        }
+      } else {
+        statusChangeCallback(status);
+      }
+    } catch (err) {
+      console.error(`Invoke enable failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+  } else {
+    console.error('Audio loopback not created.');
+    // ...
+  }
+}
 
 // 禁用音频返听，关闭监听事件。
 async function disable(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
@@ -382,6 +554,154 @@ async function disable(updateCallback?: (msg: string, isError: boolean) => void)
     // ...
   }
 }
-AudioLoopback.ets
-实现音频耳返
-音频设备路由管理
+```
+
+### Code block 9
+
+```
+import { audio } from '@kit.AudioKit'; // 导入audio模块。
+import { BusinessError } from '@kit.BasicServicesKit'; // 导入BusinessError。
+import { common, abilityAccessCtrl, PermissionRequestResult } from '@kit.AbilityKit'; // 导入UIAbilityContext。
+
+const TAG = 'AudioLoopbackDemo';
+let mode: audio.AudioLoopbackMode = audio.AudioLoopbackMode.HARDWARE;
+let audioLoopback: audio.AudioLoopback | undefined = undefined;
+let currentReverbPreset: audio.AudioLoopbackReverbPreset = audio.AudioLoopbackReverbPreset.THEATER;
+let currentEqualizerPreset: audio.AudioLoopbackEqualizerPreset = audio.AudioLoopbackEqualizerPreset.FULL;
+// ...
+
+// ...
+
+// 查询能力，创建实例。
+function init(updateCallback?: (msg: string, isError: boolean) => void): void {
+  let isSupported = audio.getAudioManager().getStreamManager().isAudioLoopbackSupported(mode);
+  if (isSupported) {
+    audio.createAudioLoopback(mode).then((loopback) => {
+      console.info('Invoke createAudioLoopback succeeded.');
+      // ...
+      audioLoopback = loopback;
+    }).catch((err: BusinessError) => {
+      console.error(`Invoke createAudioLoopback failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    });
+  } else {
+    console.error('Audio loopback is unsupported.');
+    // ...
+  }
+}
+
+// 设置音频返听音量。
+async function setVolume(volume: number, updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
+  if (audioLoopback !== undefined) {
+    try {
+      await audioLoopback.setVolume(volume);
+      console.info(`Invoke setVolume ${volume} succeeded.`);
+      // ...
+    } catch (err) {
+      console.error(`Invoke setVolume failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+  } else {
+    console.error('Audio loopback not created.');
+    // ...
+  }
+}
+
+// 设置音频返听的混响模式。
+async function setReverbPreset(preset: audio.AudioLoopbackReverbPreset, updateCallback?: (msg: string,
+  isError: boolean) => void): Promise<void> {
+  if (audioLoopback !== undefined) {
+    try {
+      audioLoopback.setReverbPreset(preset);
+      console.info(`setReverbPreset( ${preset} succeeded.`);
+      // ...
+      currentReverbPreset = audioLoopback.getReverbPreset(); // 查询当前的混响模式，防止设置失败。
+    } catch (err) {
+      console.error(`setReverbPreset( failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+  } else {
+    console.error('Audio loopback not created.');
+    // ...
+  }
+}
+
+// 设置音频返听的均衡器类型。
+async function setEqualizerPreset(preset: audio.AudioLoopbackEqualizerPreset, updateCallback?:
+  (msg: string, isError: boolean) => void): Promise<void> {
+  if (audioLoopback !== undefined) {
+    try {
+      audioLoopback.setEqualizerPreset(preset);
+      console.info(`setEqualizerPreset ${preset} succeeded.`);
+      // ...
+      currentEqualizerPreset = audioLoopback.getEqualizerPreset(); // 查询当前的均衡器类型，防止设置失败。
+    } catch (err) {
+      console.error(`setEqualizerPreset failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+  } else {
+    console.error('Audio loopback not created.');
+    // ...
+  }
+}
+
+// 设置监听事件，启用音频返听。
+async function enable(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
+  if (audioLoopback !== undefined) {
+    try {
+      let status = await audioLoopback.getStatus();
+      if (status == audio.AudioLoopbackStatus.AVAILABLE_IDLE) {
+        // 注册监听。
+        audioLoopback.on('statusChange', statusChangeCallback);
+        // 启动返听。
+        let success = await audioLoopback.enable(true);
+        if (success) {
+          console.info('Invoke enable succeeded');
+          // ...
+        } else {
+          status = await audioLoopback.getStatus();
+          statusChangeCallback(status);
+        }
+      } else {
+        statusChangeCallback(status);
+      }
+    } catch (err) {
+      console.error(`Invoke enable failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+  } else {
+    console.error('Audio loopback not created.');
+    // ...
+  }
+}
+
+// 禁用音频返听，关闭监听事件。
+async function disable(updateCallback?: (msg: string, isError: boolean) => void): Promise<void> {
+  if (audioLoopback !== undefined) {
+    try {
+      let status = await audioLoopback.getStatus();
+      if (status == audio.AudioLoopbackStatus.AVAILABLE_RUNNING) {
+        // 禁用返听。
+        let success = await audioLoopback.enable(false);
+        if (success) {
+          console.info('Invoke disable succeeded');
+          // ...
+          // 关闭监听。
+          audioLoopback.off('statusChange', statusChangeCallback);
+        } else {
+          status = await audioLoopback.getStatus();
+          statusChangeCallback(status);
+        }
+      } else {
+        statusChangeCallback(status);
+      }
+    } catch (err) {
+      console.error(`Invoke disable failed, code is ${err.code}, message is ${err.message}.`);
+      // ...
+    }
+  } else {
+    console.error('Audio loopback not created.');
+    // ...
+  }
+}
+```

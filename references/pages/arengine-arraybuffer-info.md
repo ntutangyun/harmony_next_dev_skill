@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-arraybuffer-info_
 
+在开发AR应用时，部分数据类型需要转换才能使用，以下进行汇总及示例。
+
+ArrayBuffer
+
 在一些不支持接收ArrayBuffer数据类型的方法中，需要将其反序列化为int32或者float32类型，涉及转换的接口列表如下：
 
 接口名	描述
@@ -23,6 +27,24 @@ function arrayBufferFloat32ToNumber(buffer: ArrayBuffer): number[] {
   return numberArray;
 }
 
+// ArrayBuffer转int32
+function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
+  let view: Int32Array = new Int32Array(buffer);
+  let numberArray: number[] = Array.from(view);
+  return numberArray;
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+// ArrayBuffer转float32
+function arrayBufferFloat32ToNumber(buffer: ArrayBuffer): number[] {
+  let view: Float32Array = new Float32Array(buffer);
+  let numberArray: number[] = Array.from(view);
+  return numberArray;
+}
 
 // ArrayBuffer转int32
 function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
@@ -30,5 +52,4 @@ function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
   let numberArray: number[] = Array.from(view);
   return numberArray;
 }
-某些特殊场景下（如附近存在磁场干扰、手机发烫或扫描到重复纹理等），出现平面漂移或者位姿数据跳变现象
-个人数据处理说明
+```

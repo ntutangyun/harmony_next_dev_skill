@@ -2,12 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappevent-watcher-app-killed-events_
 
+概述
+
+从API version 20开始，HiAppEvent提供接口用于订阅应用终止事件。
+
 应用终止是指应用程序被系统强制退出的一种现象。与应用崩溃不同，终止并非源于应用自身业务代码的异常，而是主要归因于系统基于资源管控策略而对应用实施的终止行为。
 
 HiAppEvent提供接口用于订阅应用终止事件。
 
 订阅应用终止事件（ArkTS）
+
 订阅应用终止事件（C/C++）
+
 说明
 
 应用终止事件支持在应用分身场景下使用 HiAppEvent 进行订阅，支持在元服务场景下使用 HiAppEvent 进行订阅，从 API version 22 开始支持在输入法应用场景下使用 HiAppEvent 进行订阅。
@@ -15,7 +21,8 @@ HiAppEvent提供接口用于订阅应用终止事件。
 应用终止事件信息中params属性的详细描述如下：
 
 事件字段说明
-params字段说明
+
+[h2]params字段说明
 
 终止事件信息中params属性的详细描述如下：
 
@@ -23,20 +30,11 @@ params字段说明
 time	number	事件触发时间，单位为ms。
 reason	string	终止原因，原因范围详见reason字段说明。
 foreground	boolean	应用是否处于前台状态。true表示应用处于前台；false表示应用处于后台。
-app_running_unique_id	string	
+app_running_unique_id	string	应用运行时唯一关联的id。 说明：从API version 24开始支持该参数。
+bundle_version	string	应用版本信息。 说明：从API version 24开始支持该参数。
 
-应用运行时唯一关联的id。
+[h2]reason字段说明
 
-说明：从API version 24开始支持该参数。
-
-
-bundle_version	string	
-
-应用版本信息。
-
-说明：从API version 24开始支持该参数。
-
-reason字段说明
 类型	说明
 LowMemoryKill	整机低内存触发，优先级由低到高终止应用。
 SwapFull	Swap交换空间接近占满。
@@ -92,5 +90,3 @@ GpuKiller	整机低内存，单进程GPU占用达到阈值。
 DmaKiller	整机低内存，单进程Dma占用达到阈值。
 ThreadKiller	单进程线程超限。
 UninstallStorage	卸载存储卡。
-应用终止事件
-订阅应用终止事件（ArkTS）

@@ -9,6 +9,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-faq-2
 时间轴（MM/dd）如下：
 
 对于沙盒环境，按照生产1天 = 沙盒10s换算，等效时间轴（hh:mm:ss）如下：
-
-应用迁移后，JWT密钥验签错误自查方法
-附录

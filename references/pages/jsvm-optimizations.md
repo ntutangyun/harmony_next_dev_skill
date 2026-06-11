@@ -2,8 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-optimizations_
 
+JSVM调用结构
+
+小程序使用JSVM执行JS代码的过程可以分为 Native，JSVM-API，JSVM 三层：
+
 Native：小程序运行JS的逻辑层，使用JSVM提供的接口完成JS代码编译，运行，code cache生成等操作的逻辑排布和组合
+
 JSVM-API：连接native和v8的接口兼容层，保持对不同版本JS引擎的兼容，提供JS引擎标准化的使用实践
+
 JSVM：JS引擎层，负责JS代码实际的编译运行
 
 使用JSVM的过程中，可能会因为多种原因产生不必要的开销，导致启动速度变慢。可以从以下三个层面进行分析。
@@ -16,7 +22,7 @@ JSVM：JS引擎层，负责JS代码实际的编译运行
 
 热启动则是已经充分预热，在多次启动之后获取了足量用于优化的cache的场景。
 
-减少 JS 引擎层的开销
+[h2]减少 JS 引擎层的开销
 
 引擎层的开销很大程度上来源于编译。通过合理调整调用JSVM-API时传入的选项，可以降低主线程上JS引擎的编译开销。
 
@@ -51,7 +57,7 @@ JSVM_EXTERN JSVM_Status OH_JSVM_CompileScript(JSVM_Env env,
 
 因此，在冷启动时，可以通过关闭eager compile选项来避免阻塞主线程，从而获得足够的冷启动优化效果。
 
-在native层减少时间开销
+[h2]在native层减少时间开销
 
 冷启动：减少code cache的影响
 
@@ -64,6 +70,7 @@ JSVM_EXTERN JSVM_Status OH_JSVM_CompileScript(JSVM_Env env,
 有两个方法可以参考（以下伪代码仅用于展示逻辑流程，不涉及实际的API调用）：
 
 将生成code cache必需的前置编译也放到新增的线程上，这样编译选项可以分开使用：生成code cache打开eager compile，冷启动运行则关闭，这样做的缺点是可能进一步提高运行时的峰值资源占用，优点是code cache生成和运行可以完全解耦，不再需要考虑生成code cache的时间点。该流程的伪代码如下所示
+
 async_create_code_cache() {
   compile_with_eager_compile();
   create_code_cache();
@@ -72,16 +79,15 @@ async_create_code_cache() {
 
 
 
-
-
-
 if (has_code_cache) {
   evaluate_script_with_code_cache();
 } else {
   start_thread(async_create_code_cache());
   evaluate_script_without_code_cache();
 }
+
 在启动过程中的所有路径运行完之后，再启动新线程生成code cache，这样不必使用eager compile也能获取足量的code cache，同时保证热启动性能不受影响，这样做的缺点是生成code cache的时间点受限，优点是峰值资源占用相对更少，且不必生成过量的code cache导致io变慢。这个流程可以用如下所示的伪代码来表示
+
 async_create_code_cache() {
   compile_with_out_eager_compile();
   create_code_cache();
@@ -90,9 +96,6 @@ async_create_code_cache() {
 
 
 
-
-
-
 if (has_code_cache) {
   evaluate_script_with_code_cache();
 } else {
@@ -101,13 +104,11 @@ if (has_code_cache) {
 
 
 
-
-
-
 if (script_run_completed) {
   start_thread(async_create_code_cache());
 }
-使用更高效的JSVM-API
+
+[h2]使用更高效的JSVM-API
 
 在能达到相同效果时，使用更高效的JSVM-API是一种有效的性能优化方法，以下是一些具体的实践示例。
 
@@ -120,13 +121,16 @@ if (script_run_completed) {
 这种方法需要先查询object的类型，这种方法相对于直接使用is方法会更慢，因此我们新增了针对基础类型的IsXXX系列方法，用更高效的接口代替了相对低效的接口。下面的示例中使用到的JSVM-API可以参考 JSVM数据类型与接口说明，这里仅展示调用的步骤。
 
 低效用例
+
 bool Test::IsFunction(JSVM_Env env, JSVM_Value jsvmValue) const {
     // type judgment
     JSVM_ValueType valueType;
     OH_JSVM_TypeOf(*env, jsvmValue, &valueType);
     return valueType == JSVM_FUNCTION;
 }
+
 高效用例
+
 bool Test::IsFunction(JSVM_Env env, JSVM_Value jsvmValue) const {
     // type judgment
     bool result = false;
@@ -147,6 +151,7 @@ bool Test::IsFunction(JSVM_Env env, JSVM_Value jsvmValue) const {
 下面的示例中使用的JSVM-API可以参考 JSVM数据类型与接口说明，这里仅展示调用的步骤。
 
 低效用例
+
 // (1) open handle scope
 JSVM_HandleScope scope;
 OH_JSVM_OpenHandleScope(*env, &scope);
@@ -160,7 +165,9 @@ OH_JSVM_SetElement(*env, wrappingObject, 1, jsvmValue);
 OH_JSVM_CreateReference(*env, wrappingObject, 1, &result->p_member->jsvmRef);
 // (4) close handle scope
 OH_JSVM_CloseHandleScope(*env, scope);
+
 高效用例
+
 // (1) open handle scope
 JSVM_HandleScope scope;
 OH_JSVM_OpenHandleScope(*env, &scope);
@@ -174,5 +181,119 @@ OH_JSVM_CloseHandleScope(*env, scope);
 
 同样以某生态应用小程序场景为例，这个改动减少了大量冗余的接口调用，最终带来的端到端时间收益有100+ms，约3%。
 
-使用code cache加速编译
-JSVM性能调试指导
+## Code blocks
+
+### Code block 1
+
+```
+/**
+ * ...
+ * @param eagerCompile: Whether to compile the script eagerly.
+ * ...
+ */
+JSVM_EXTERN JSVM_Status OH_JSVM_CompileScript(JSVM_Env env,
+                                              JSVM_Value script,
+                                              const uint8_t* cachedData,
+                                              size_t cacheDataLength,
+                                              bool eagerCompile, // 开启全量编译
+                                              bool* cacheRejected,
+                                              JSVM_Script* result);
+```
+
+### Code block 2
+
+```
+async_create_code_cache() {
+  compile_with_eager_compile();
+  create_code_cache();
+  save_code_cache();
+}
+
+
+
+if (has_code_cache) {
+  evaluate_script_with_code_cache();
+} else {
+  start_thread(async_create_code_cache());
+  evaluate_script_without_code_cache();
+}
+```
+
+### Code block 3
+
+```
+async_create_code_cache() {
+  compile_with_out_eager_compile();
+  create_code_cache();
+  save_code_cache();
+}
+
+
+
+if (has_code_cache) {
+  evaluate_script_with_code_cache();
+} else {
+  evaluate_script_without_code_cache();
+}
+
+
+
+if (script_run_completed) {
+  start_thread(async_create_code_cache());
+}
+```
+
+### Code block 4
+
+```
+bool Test::IsFunction(JSVM_Env env, JSVM_Value jsvmValue) const {
+    // type judgment
+    JSVM_ValueType valueType;
+    OH_JSVM_TypeOf(*env, jsvmValue, &valueType);
+    return valueType == JSVM_FUNCTION;
+}
+```
+
+### Code block 5
+
+```
+bool Test::IsFunction(JSVM_Env env, JSVM_Value jsvmValue) const {
+    // type judgment
+    bool result = false;
+    OH_JSVM_IsFunction(*env, jsvmValue, &result); // 可直接判断是否为Function类型
+    return result;
+}
+```
+
+### Code block 6
+
+```
+// (1) open handle scope
+JSVM_HandleScope scope;
+OH_JSVM_OpenHandleScope(*env, &scope);
+// (2) get JSVM_Value
+JSVM_Value jsvmValue;
+OH_JSVM_GetNull(*env, &jsvmValue);
+// (3) create and store Reference for JSVM_Value
+JSVM_Value wrappingObject;
+OH_JSVM_CreateObject(*env, &wrappingObject);
+OH_JSVM_SetElement(*env, wrappingObject, 1, jsvmValue);
+OH_JSVM_CreateReference(*env, wrappingObject, 1, &result->p_member->jsvmRef);
+// (4) close handle scope
+OH_JSVM_CloseHandleScope(*env, scope);
+```
+
+### Code block 7
+
+```
+// (1) open handle scope
+JSVM_HandleScope scope;
+OH_JSVM_OpenHandleScope(*env, &scope);
+// (2) get JSVM_Value
+JSVM_Value jsvmValue;
+OH_JSVM_GetNull(*env, &jsvmValue);
+// (3) create and store Reference for JSVM_Value
+OH_JSVM_CreateReference(*env, jsvmValue, 1, &result->p_member->jsvmRef); // 可从任意对象类型直接创建Reference，代码更为简洁高效
+// (4) close handle scope
+OH_JSVM_CloseHandleScope(*env, scope);
+```

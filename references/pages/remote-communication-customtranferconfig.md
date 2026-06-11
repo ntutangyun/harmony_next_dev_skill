@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-customtranferconfig_
 
+场景介绍
+
 在远场通信框架中，开发者们利用 TransferConfiguration，可以对 HTTP请求期间的数据传输行为进行精细化管理和定制化调整。TransferConfiguration提供了自动重定向策略、超时时间设定等关键功能的配置选项。通过理解和灵活运用这些属性，开发者可以根据项目需求，实现数据传输策略的个性化定制，从而获得更高效、更可靠的数据传输体验。
 
 约束与限制
@@ -12,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 下面会介绍超时重试场景下TransferConfiguration如何去使用。
 
-超时重试
+[h2]超时重试
 
 导入需要的模块。
 
@@ -32,7 +34,6 @@ const sessionConfig: rcp.SessionConfiguration = {
     }
   }
 };
-
 
 // 创建会话
 const session = rcp.createSession(sessionConfig);
@@ -61,14 +62,11 @@ async function retryRequest(url: string, retryCount: number, attempt: number): P
 // 定义URL
 const URL = 'https://www.example.com'
 
-
 // 定义重试次数，值为3
 const retryCount = 3
 
-
 // 定义当前尝试次数，初始值为1
 const attempt = 1
-
 
 // 调用retryRequest函数进行网络请求，参数为URL、重试次数和当前尝试次数，将retryRequest函数返回的结果存储在response变量中
 const response = retryRequest(URL, retryCount, attempt);
@@ -78,5 +76,74 @@ response.then((res) => {
 }).catch((err: BusinessError) => {
   console.error(`retryRequest error code: ${err.code}, err data: ${err.data}`);
 })
-DnsConfiguration：定制DNS
-ProxyConfiguration：定制代理
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 定义会话配置
+const sessionConfig: rcp.SessionConfiguration = {
+  requestConfiguration: {
+    transfer: {
+      timeout: {
+        connectMs: 3000,
+        transferMs: 6000
+      }
+    }
+  }
+};
+
+// 创建会话
+const session = rcp.createSession(sessionConfig);
+```
+
+### Code block 3
+
+```
+async function retryRequest(url: string, retryCount: number, attempt: number): Promise<rcp.Response> {
+  try {
+    const response = await session.get(url);
+    return Promise.resolve(response);
+  } catch (e) {
+    if (e.code === 1007900006 || e.code === 1007900005 || e.code === 1007900007 || e.code === 1007900035) {
+      if (attempt < retryCount) {
+        return retryRequest(url, retryCount, attempt + 1);
+      } else {
+        return Promise.reject(e);
+      }
+    } else {
+      return Promise.reject(e);
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+// 定义URL
+const URL = 'https://www.example.com'
+
+// 定义重试次数，值为3
+const retryCount = 3
+
+// 定义当前尝试次数，初始值为1
+const attempt = 1
+
+// 调用retryRequest函数进行网络请求，参数为URL、重试次数和当前尝试次数，将retryRequest函数返回的结果存储在response变量中
+const response = retryRequest(URL, retryCount, attempt);
+// 使用then方法处理response的成功返回情况
+response.then((res) => {
+  console.info(`retryRequest result: ${res.statusCode.toString()}`);
+}).catch((err: BusinessError) => {
+  console.error(`retryRequest error code: ${err.code}, err data: ${err.data}`);
+})
+```

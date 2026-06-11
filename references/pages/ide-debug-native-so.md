@@ -2,19 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-native-so_
 
-在native调试期间，Modules窗口会列出并显示有关应用使用的so信息。点击各属性可按升序/降序来排序，支持字符串匹配搜索。
+在native调试窗口中，点击Layout Settings，勾选Modules，打开模块视图。
 
-加载符号表文件
+在native调试期间，Modules窗口会列出并显示有关应用使用的so信息。点击各属性可按升序/降序来排序，支持字符串匹配搜索。
 
 如果符号未加载，可右键点击模块，选择Load Modules，加载本地携带符号信息的so文件。加载成功后，Symbol Status列会显示"Symbols Loaded"。
 
 如需将符号恢复为初始状态，可右键点击模块，选择Reset Modules。
 
-添加源码地址映射
-
 加载的符号表文件路径默认是编译时的路径，若与本地的源码文件路径不一致时，需要关联源码文件。右键点击模块，选择Set Source Mapping，选择本地源码文件路径，映射成功后，Source Root Path列会显示映射后的路径。
 
 如需恢复为默认路径，可右键点击模块，选择Reset Source Mappings。
-
-堆栈可视化
-设置执行点

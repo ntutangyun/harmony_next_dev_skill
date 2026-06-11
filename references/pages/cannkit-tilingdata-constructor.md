@@ -2,3 +2,36 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-tilingdata-constructor_
 
+函数功能
+
+TilingData类的构造函数。
+
+函数原型
+
+TilingData(const TilingData &) = delete;
+TilingData(TilingData &&) = delete;
+TilingData operator=(const TilingData &) = delete;
+TilingData operator=(TilingData &&) = delete;
+
+参数说明
+
+无
+
+返回值
+
+无
+
+约束说明
+
+无
+
+## Code blocks
+
+### Code block 1
+
+```
+TilingData(const TilingData &) = delete;
+TilingData(TilingData &&) = delete;
+TilingData operator=(const TilingData &) = delete;
+TilingData operator=(TilingData &&) = delete;
+```

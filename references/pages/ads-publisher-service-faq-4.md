@@ -11,6 +11,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ads-publi
 打印展示广告时入参的广告数据，对比两者是否一致。
 
 检查请求的广告类型与使用的展示组件是否匹配。
-
-流量变现服务常见问题
-鲸鸿动能媒体服务平台打开受限

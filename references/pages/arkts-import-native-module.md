@@ -8,44 +8,62 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-imp
 
 在Native模块的index.d.ts文件中导出，并在文件内直接导入。
 
-具名导入
+[h2]具名导入
+
 // libentry.so对应的index.d.ts
 export const add: (a: number, b: number) => number;
+
 // NameImport.ets
 import { add } from 'libentry.so'
 add(2, 3);
-默认导入
+
+[h2]默认导入
+
 // libentry.so对应的index.d.ts
 export const add: (a: number, b: number) => number;
+
 // DefaultImport.ets
 import entry from 'libentry.so'
 entry.add(2, 3);
-命名空间导入
+
+[h2]命名空间导入
+
 // libentry.so对应的index.d.ts
 export const add: (a: number, b: number) => number;
+
 // NamespaceImport.ets
 import * as entry from 'libentry.so'
 entry.add(2, 3);
+
 间接导入
-转为具名变量导出再导入
+
+[h2]转为具名变量导出再导入
+
 // libentry.so对应的index.d.ts
 export const add: (a: number, b: number) => number;
+
 // NameExport.ets
 // 将libentry.so的API封装后导出
 import { add } from 'libentry.so';
 export { add };
+
 // NameImportFromExport.ets
 // 从中间模块导入API
 import { add } from './NameExport';
 const result = add(2, 3);
-转为命名空间导出再导入
+
+[h2]转为命名空间导出再导入
+
 // libentry.so对应的index.d.ts
 export const add: (a: number, b: number) => number;
+
 // NamespaceExport.ets
 export * from 'libentry.so'
+
 // NamespaceImportFromExport.ets
 import { add } from './NamespaceExport'
 add(2, 3);
+
 注意
 
 不支持Native模块导出和导入同时使用命名空间。
@@ -54,25 +72,34 @@ add(2, 3);
 
 // test1.ets
 export * from 'libentry.so'
+
 // test2.ets
 import * as add from './test1'
 // 无法获取add对象
+
 动态导入
-直接导入
+
+[h2]直接导入
+
 // libentry.so对应的index.d.ts
 export const add: (a: number, b: number) => number;
+
 // DynamicImport.ets
 import('libentry.so').then((entry:ESObject) => {
   entry.default.add(2, 3);
 })
-间接导入
+
+[h2]间接导入
+
 // DynamicExport.ets
 import entry from 'libentry.so'
 export { entry }
+
 // DynamicImportFromExport.ets
 import('./DynamicExport').then((ns:ESObject) => {
   ns.entry.add(2, 3);
 })
+
 注意
 
 不支持动态加载时，导出文件使用命名空间。
@@ -81,9 +108,166 @@ import('./DynamicExport').then((ns:ESObject) => {
 
 // test1.ets
 export * from 'libentry.so'
+
 // test2.ets
 import('./test1').then((ns:ESObject) => {
     // 无法获取ns对象
 })
-同步方式动态加载Native模块
-基于Node-API加载模块
+
+## Code blocks
+
+### Code block 1
+
+```
+// libentry.so对应的index.d.ts
+export const add: (a: number, b: number) => number;
+```
+
+### Code block 2
+
+```
+// NameImport.ets
+import { add } from 'libentry.so'
+add(2, 3);
+```
+
+### Code block 3
+
+```
+// libentry.so对应的index.d.ts
+export const add: (a: number, b: number) => number;
+```
+
+### Code block 4
+
+```
+// DefaultImport.ets
+import entry from 'libentry.so'
+entry.add(2, 3);
+```
+
+### Code block 5
+
+```
+// libentry.so对应的index.d.ts
+export const add: (a: number, b: number) => number;
+```
+
+### Code block 6
+
+```
+// NamespaceImport.ets
+import * as entry from 'libentry.so'
+entry.add(2, 3);
+```
+
+### Code block 7
+
+```
+// libentry.so对应的index.d.ts
+export const add: (a: number, b: number) => number;
+```
+
+### Code block 8
+
+```
+// NameExport.ets
+// 将libentry.so的API封装后导出
+import { add } from 'libentry.so';
+export { add };
+```
+
+### Code block 9
+
+```
+// NameImportFromExport.ets
+// 从中间模块导入API
+import { add } from './NameExport';
+const result = add(2, 3);
+```
+
+### Code block 10
+
+```
+// libentry.so对应的index.d.ts
+export const add: (a: number, b: number) => number;
+```
+
+### Code block 11
+
+```
+// NamespaceExport.ets
+export * from 'libentry.so'
+```
+
+### Code block 12
+
+```
+// NamespaceImportFromExport.ets
+import { add } from './NamespaceExport'
+add(2, 3);
+```
+
+### Code block 13
+
+```
+// test1.ets
+export * from 'libentry.so'
+```
+
+### Code block 14
+
+```
+// test2.ets
+import * as add from './test1'
+// 无法获取add对象
+```
+
+### Code block 15
+
+```
+// libentry.so对应的index.d.ts
+export const add: (a: number, b: number) => number;
+```
+
+### Code block 16
+
+```
+// DynamicImport.ets
+import('libentry.so').then((entry:ESObject) => {
+  entry.default.add(2, 3);
+})
+```
+
+### Code block 17
+
+```
+// DynamicExport.ets
+import entry from 'libentry.so'
+export { entry }
+```
+
+### Code block 18
+
+```
+// DynamicImportFromExport.ets
+import('./DynamicExport').then((ns:ESObject) => {
+  ns.entry.add(2, 3);
+})
+```
+
+### Code block 19
+
+```
+// test1.ets
+export * from 'libentry.so'
+```
+
+### Code block 20
+
+```
+// test2.ets
+import('./test1').then((ns:ESObject) => {
+    // 无法获取ns对象
+})
+```

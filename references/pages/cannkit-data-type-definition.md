@@ -2,3 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-data-type-definition_
 
+LocalTensor
+
+GlobalTensor
+
+ShapeInfo
+
+UnaryRepeatParams
+
+BinaryRepeatParams

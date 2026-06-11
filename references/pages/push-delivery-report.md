@@ -67,6 +67,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-deli
 30日活跃用户数：查询日往前30日内设备与Push服务端建立连接的用户数量。
 
 总用户数：已安装的总用户数量。
-
-（可选）开发消息回执
-获取AAID

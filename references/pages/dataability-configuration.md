@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/dataability-configuration_
 
+URI介绍
+
 DataAbility的提供方和使用方都通过URI（Uniform Resource Identifier）来标识一个具体的数据，例如数据库中的某个表或磁盘上的某个文件。此处的URI仍基于URI通用标准，格式如下：
 
 scheme：协议方案名，固定为"dataability"，代表Data Ability所使用的协议类型。
@@ -57,5 +59,25 @@ config.json配置样例
 
 DataAbility支持的配置项及详细说明详见module对象内部结构。
 
-DataAbility组件概述
-DataAbility的生命周期
+## Code blocks
+
+### Code block 1
+
+```
+"abilities": [
+  ...
+  {
+    "name": ".DataAbility",
+    "srcLanguage": "ets",
+    "srcPath": "DataAbility",
+    "icon": "$media:icon",
+    "description": "$string:DataAbility_desc",
+    "type": "data",
+    "visible": true,
+    "uri": "dataability://com.samples.famodelabilitydevelop.DataAbility",
+    "readPermission": "ohos.permission.READ_CONTACTS",
+    "writePermission": "ohos.permission.WRITE_CONTACTS"
+  },
+  ...
+]
+```

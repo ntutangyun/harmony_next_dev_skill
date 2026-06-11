@@ -2,9 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-add-permissions_
 
+场景介绍
+
+应用拉起华为账号登录和授权界面，由用户授权相应的数据访问权限。用户可以自主选择授权的数据类型，可以只授权部分数据权限。
+
+应用所能操作的用户数据，是用户授权和运动健康服务审批通过的数据权限的交集。
+
+接口说明
+
+接口名	描述
 requestAuthorizations(context: common.UIAbilityContext, request: AuthorizationRequest): Promise<AuthorizationResponse>	用户授权，入参为UIAbility上下文和授权参数AuthorizationRequest，添加需要读写的数据类型，拉起账号授权页面，引导用户完成授权，返回结果中的数据类型列表，其对应权限在应用申请权限和用户授权权限的交集中。
 getAuthorizations(request: AuthorizationRequest): Promise<AuthorizationResponse>	查询用户权限，入参为AuthorizationRequest，添加需要查询的数据类型，查询传入类型是否有权限，返回结果中的数据类型列表，其对应权限在应用申请权限和用户授权权限的交集中。
 cancelAuthorizations(): Promise<void>	取消用户所有授权。
+
 开发前检查
 
 完成申请运动健康服务与配置Client ID。
@@ -14,7 +24,8 @@ cancelAuthorizations(): Promise<void>	取消用户所有授权。
 错误码请参考ArkTS API错误码，常见问题请参考Health Service Kit常见问题。
 
 开发步骤
-用户授权
+
+[h2]用户授权
 
 1.导入运动健康功能模块及相关公共模块。
 
@@ -33,7 +44,9 @@ let authorizationParameter: healthStore.AuthorizationRequest = {
 
 try {
   // 请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
-  let authorizationResponse = await healthStore.requestAuthorizations(this.getUIContext().getHostContext() as common.UIAbilityContext, authorizationParameter);
+  let authorizationResponse =
+    await healthStore.requestAuthorizations(this.getUIContext().getHostContext() as common.UIAbilityContext,
+      authorizationParameter);
   hilog.info(0x0000, 'testTag', 'Succeeded in requesting authorization.');
   authorizationResponse.writeDataTypes.forEach(dataType => {
     hilog.info(0x0000, 'testTag', `grantedWriteDataType is : ${dataType.name}`);
@@ -44,7 +57,8 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to request authorization. Code: ${err.code}, message: ${err.message}`);
 }
-查询权限
+
+[h2]查询权限
 
 1.导入运动健康服务功能模块及相关公共模块。
 
@@ -72,7 +86,8 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to get authorization. Code: ${err.code}, message: ${err.message}`);
 }
-取消授权
+
+[h2]取消授权
 
 1.导入运动健康服务功能模块及相关公共模块。
 
@@ -87,5 +102,93 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to cancel authorization. Code: ${err.code}, message: ${err.message}`);
 }
-拉起运动健康App隐私授权
-管理数据源
+
+## Code blocks
+
+### Code block 1
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+let authorizationParameter: healthStore.AuthorizationRequest = {
+  readDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE],
+  writeDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE]
+}
+```
+
+### Code block 3
+
+```
+try {
+  // 请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
+  let authorizationResponse =
+    await healthStore.requestAuthorizations(this.getUIContext().getHostContext() as common.UIAbilityContext,
+      authorizationParameter);
+  hilog.info(0x0000, 'testTag', 'Succeeded in requesting authorization.');
+  authorizationResponse.writeDataTypes.forEach(dataType => {
+    hilog.info(0x0000, 'testTag', `grantedWriteDataType is : ${dataType.name}`);
+  });
+  authorizationResponse.readDataTypes.forEach(dataType => {
+    hilog.info(0x0000, 'testTag', `grantedReadDataTypes is : ${dataType.name}`);
+  });
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to request authorization. Code: ${err.code}, message: ${err.message}`);
+}
+```
+
+### Code block 4
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 5
+
+```
+let queryAuthorizationRequest: healthStore.AuthorizationRequest = {
+  readDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE],
+  writeDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE]
+}
+```
+
+### Code block 6
+
+```
+try {
+  let queryAuthorizationResponse = await healthStore.getAuthorizations(queryAuthorizationRequest);
+  hilog.info(0x0000, 'testTag', 'Succeeded in getting authorization.');
+  queryAuthorizationResponse.writeDataTypes.forEach(dataType => {
+    hilog.info(0x0000, 'testTag', `grantedWriteDataType is : ${dataType.name}`);
+  });
+  queryAuthorizationResponse.readDataTypes.forEach(dataType => {
+    hilog.info(0x0000, 'testTag', `grantedReadDataTypes is : ${dataType.name}`);
+  });
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to get authorization. Code: ${err.code}, message: ${err.message}`);
+}
+```
+
+### Code block 7
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 8
+
+```
+try {
+  await healthStore.cancelAuthorizations();
+  hilog.info(0x0000, 'testTag', 'Succeeded in canceling authorization.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to cancel authorization. Code: ${err.code}, message: ${err.message}`);
+}
+```

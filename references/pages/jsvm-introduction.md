@@ -1,6 +1,8 @@
-# JSVM
+# JSVM-API简介
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-introduction_
+
+场景介绍
 
 HarmonyOS JSVM-API基于标准JS引擎提供了一套稳定的API，支持创建和销毁引擎、执行JS代码、JS与C++的交互等关键功能。
 
@@ -57,6 +59,3 @@ JSVM-API与Native模块之间的交互流程主要分为以下两步：
 初始化阶段：在Native模块上初始化JSVM和JS上下文，并完成Native函数的注册。Native方法将被挂载到JS执行环境的全局上下文即GlobalThis。
 
 调用阶段：当JS侧调用通过JSVM-API注册到JS全局上下文的方法时，JS引擎会找到并调用对应的C/C++方法。
-
-使用JSVM-API实现JS与C/C++语言交互
-JSVM-API 支持的数据类型和接口

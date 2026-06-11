@@ -14,11 +14,13 @@ List组件
     <text class="desc-text">{{$item.value}}</text>
   </list-item>
 </list>
+
 /* xxx.css */
 .desc-text {
   width: 683.3px;
   font-size: 35.4px;
 }
+
 // xxx.js
 export default {
   data: {
@@ -45,6 +47,7 @@ Tabs组件
     <image src="{{detailImage}}"></image>
   </tab-content>
 </tabs>
+
 // xxx.js
 export default {
   data: {
@@ -56,5 +59,67 @@ export default {
 
 tab-content组件用来展示页签的内容区，高度默认充满tabs剩余空间。
 
-添加留言区域
-添加交互
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml -->
+<list class="list">
+  <list-item type="listItem" for="{{textList}}">
+    <text class="desc-text">{{$item.value}}</text>
+  </list-item>
+</list>
+```
+
+### Code block 2
+
+```
+/* xxx.css */
+.desc-text {
+  width: 683.3px;
+  font-size: 35.4px;
+}
+```
+
+### Code block 3
+
+```
+// xxx.js
+export default {
+  data: {
+    textList:  [{value: 'JS FA'}],
+  },
+}
+```
+
+### Code block 4
+
+```
+<!-- xxx.hml -->
+<tabs>
+  <tab-bar>
+    <text>Home</text>
+    <text>Index</text>
+    <text>Detail</text>
+  </tab-bar>
+  <tab-content>
+    <image src="{{homeImage}}"></image>
+    <image src="{{indexImage}}"></image>
+    <image src="{{detailImage}}"></image>
+  </tab-content>
+</tabs>
+```
+
+### Code block 5
+
+```
+// xxx.js
+export default {
+  data: {
+    homeImage: '/common/home.png',
+    indexImage: '/common/index.png',
+    detailImage: '/common/detail.png',
+  },
+}
+```

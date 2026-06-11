@@ -135,8 +135,8 @@ general.p7r	general.text	.p7r	application/x-pkcs7-certreqresp	证书请求响应
 general.pem	general.text	.pem	application/x-pem-file	增强私隐邮件证书文件类型。
 general.log	general.text	.log	text/plain	日志文件类型。
 general.tel	general.text	.tel	-	包含器件封装、网络拓扑、编码信息等的原理图信息文件类型。
-general.ion	general.text	.ion	text/plain	文件内容描述类型。
-general.conf	general.text	.conf	text/plain	通用配置文件类型。
+general.ion	general.text	.ion	-	文件内容描述类型。
+general.conf	general.text	.conf	-	通用配置文件类型。
 general.calendar	general.text	-	-	所有日程类数据的基类型。
 general.vcs	general.calendar	.vcs	text/calendar	VCalendar日历数据类型。
 general.ics	general.calendar	.ics	text/calendar	ICalendar日历数据类型。
@@ -211,6 +211,9 @@ com.apple.iwork	general.archive	-	-	iWork类型基类。从HarmonyOS 6.0.2开始
 com.apple.iwork.keynote.key	general.composite-object,com.apple.iwork	.key	application/vnd.apple.keynote	iWork Keynote演示文稿文件。从HarmonyOS 6.0.2开始支持此类型。
 com.apple.iwork.numbers.numbers	general.composite-object,com.apple.iwork	.numbers	application/vnd.apple.numbers	iWork Numbers电子表格文件。从HarmonyOS 6.0.2开始支持此类型。
 com.apple.iwork.pages.pages	general.composite-object,com.apple.iwork	.pages	application/vnd.apple.pages	iWork Pages文档文件。从HarmonyOS 6.0.2开始支持此类型。
+com.huawei.hmos.musiccreate.gofile	general.archive	.gomusic	-	musiccreate文件格式。从HarmonyOS 6.1.0开始支持此类型。
+com.apple.coreaudio-format	general.audio	.caf	audio/x-caf	CAF音频数据文件。从HarmonyOS 6.1.0开始支持此类型。
+
 系统关联类型
 
 系统定义数据类型与具体的平台/操作系统有较为深入的关联，支持系统/平台内的跨应用交互，标识UTD-ID为os-name.xxx。当前系统中预定义的系统关联类型列表如下：
@@ -236,6 +239,7 @@ com.android.apk	general.archive	.apk, .apks, .aab, .xapk, .apkm, .akp	applicatio
 redhat.rpm-archive	general.archive	.rpm	application/x-rpm	RedHat软件安装包类型。
 com.huawei.hmos.settings.wifi	general.text	.hmoswifi	-	HarmonyOS wifi分享配置文件类型。
 openharmony.dlp	general.composite-object	.dlp	-	HarmonyOS系统定义的基于账号身份加密的文件类型。
+
 应用定义类型
 
 应用定义类型表示该类型由具体的应用或者组织进行定义与维护，数据的交互依赖特定的应用进行识别，标识UTD-ID为com.company-name.xxx或org.organization-name.xxx。当前系统中预定义的应用定义类型列表如下：
@@ -497,5 +501,3 @@ com.microsoft.registry	general.database	.reg	-	DOS批处理文件类型。
 com.microsoft.dos-batch	general.script	.bat	application/x-bat	Windows注册表类型。
 com.microsoft.inf	general.text	.inf	text/plain	安装信息文件。
 com.microsoft.sccd	general.xml	.sccd	-	签名自定义功能描述符。
-基于标准化数据结构的控件 (ArkTS)
-应用数据持久化

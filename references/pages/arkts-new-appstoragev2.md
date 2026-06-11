@@ -21,7 +21,9 @@ AppStorageV2可以修改connect的返回值，实现与UI组件的同步。
 AppStorageV2支持应用的主线程内多个UIAbility实例间的状态共享。
 
 使用说明
+
 connect：创建或获取存储的数据。
+
 说明
 
 1、若未指定key，使用第二个参数作为默认构造器；否则使用第三个参数作为默认构造器（第二个参数非法也使用第三个参数作为默认构造器）。
@@ -35,6 +37,7 @@ connect：创建或获取存储的数据。
 5、关联@Observed对象时，由于该类型的name属性未定义，需要指定key或者自定义name属性。
 
 remove：删除指定key的存储数据。
+
 说明
 
 删除AppStorageV2中不存在的key会报警告。
@@ -56,18 +59,17 @@ keys：返回所有AppStorageV2中的key。
 5、不支持存储基本类型，如string、number、boolean等。注意：不支持存储基本类型意味着connect接口传入的类型不能是基本类型，但connect传入的class中可以包含基本类型。
 
 使用场景
-使用AppStorageV2
+
+[h2]使用AppStorageV2
 
 AppStorageV2使用connect接口即可实现对AppStorageV2中数据的修改和同步，如果修改的数据被@Trace装饰，该数据的修改会同步更新UI。需要注意的是，使用remove接口只会将数据从AppStorageV2中删除，不影响组件中已创建的数据，详见以下示例代码：
 
 import { AppStorageV2 } from '@kit.ArkUI';
 
-
 @ObservedV2
 class Message {
   @Trace public userID: number;
   public userName: string;
-
 
   constructor(userID?: number, userName?: string) {
     this.userID = userID ?? 1;
@@ -75,14 +77,12 @@ class Message {
   }
 }
 
-
 @Entry
 @ComponentV2
 struct Index {
   // 使用connect在AppStorageV2中创建一个key为Message的对象
   // 修改connect的返回值即可同步回AppStorageV2
   @Local message: Message = AppStorageV2.connect<Message>(Message, () => new Message())!;
-
 
   build() {
     Column() {
@@ -116,13 +116,11 @@ struct Index {
   }
 }
 
-
 @ComponentV2
 struct Child {
   // 使用connect在AppStorageV2中取出一个key为Message的对象，已在父组件中创建
   @Local message: Message = AppStorageV2.connect<Message>(Message, () => new Message())!;
   @Local name: string = this.message.userName;
-
 
   build() {
     Column() {
@@ -151,8 +149,8 @@ struct Child {
     .height('100%')
   }
 }
-AppStorageV2.ets
-在两个页面之间存储数据
+
+[h2]在两个页面之间存储数据
 
 数据页面
 
@@ -163,13 +161,11 @@ export class Sample {
   @Trace public p1: number = 0;
   public p2: number = 10;
 }
-Sample.ets
 
 页面1
 
 import { AppStorageV2 } from '@kit.ArkUI';
 import { Sample } from './Sample';
-
 
 @Entry
 @ComponentV2
@@ -177,7 +173,6 @@ struct PageOne {
   // 在AppStorageV2中创建一个key为Sample的键值对（如果存在，则返回AppStorageV2中的数据），并且和prop关联
   @Local prop: Sample = AppStorageV2.connect(Sample, () => new Sample())!;
   pageStack: NavPathStack = new NavPathStack();
-
 
   build() {
     Navigation(this.pageStack) {
@@ -187,13 +182,11 @@ struct PageOne {
             this.pageStack.pushPathByName('PageTwo', null);
           })
 
-
         Button('PageOne connect the key Sample')
           .onClick(() => {
             // 在AppStorageV2中创建一个key为Sample的键值对（如果存在，则返回AppStorageV2中的数据），并且和prop关联
             this.prop = AppStorageV2.connect(Sample, 'Sample', () => new Sample())!;
           })
-
 
         Button('PageOne remove the key Sample')
           .onClick(() => {
@@ -201,13 +194,11 @@ struct PageOne {
             AppStorageV2.remove(Sample);
           })
 
-
         Text(`PageOne add 1 to prop.p1: ${this.prop.p1}`)
           .fontSize(30)
           .onClick(() => {
             this.prop.p1++;
           })
-
 
         Text(`PageOne add 1 to prop.p2: ${this.prop.p2}`)
           .fontSize(30)
@@ -216,7 +207,6 @@ struct PageOne {
             this.prop.p2++;
           })
 
-
         // 获取当前AppStorageV2里面的所有key
         Text(`all keys in AppStorage: ${AppStorageV2.keys()}`)
           .fontSize(30)
@@ -224,26 +214,22 @@ struct PageOne {
     }
   }
 }
-PageOne.ets
 
 页面2
 
 import { AppStorageV2 } from '@kit.ArkUI';
 import { Sample } from './Sample';
 
-
 @Builder
 export function PageTwoBuilder() {
   PageTwo()
 }
-
 
 @ComponentV2
 struct PageTwo {
   // 在AppStorageV2中创建一个key为Sample的键值对（如果存在，则返回AppStorageV2中的数据），并且和prop关联
   @Local prop: Sample = AppStorageV2.connect(Sample, () => new Sample())!;
   pathStack: NavPathStack = new NavPathStack();
-
 
   build() {
     NavDestination() {
@@ -254,13 +240,11 @@ struct PageTwo {
             this.prop = AppStorageV2.connect(Sample, 'Sample1', () => new Sample())!;
           })
 
-
         Text(`PageTwo add 1 to prop.p1: ${this.prop.p1}`)
           .fontSize(30)
           .onClick(() => {
             this.prop.p1++;
           })
-
 
         Text(`PageTwo add 1 to prop.p2: ${this.prop.p2}`)
           .fontSize(30)
@@ -268,7 +252,6 @@ struct PageTwo {
             // 页面不刷新，但是p2的值改变了；只有重新初始化才会改变
             this.prop.p2++;
           })
-
 
         // 获取当前AppStorageV2里面的所有key
         Text(`all keys in AppStorage: ${AppStorageV2.keys()}`)
@@ -280,7 +263,6 @@ struct PageTwo {
     })
   }
 }
-PageTwo.ets
 
 使用Navigation时，需要添加配置系统路由表文件src/main/resources/base/profile/route_map.json，并替换pageSourceFile为PageTwo页面的路径，并且在module.json5中添加："routerMap": "$profile:route_map"。
 
@@ -296,5 +278,230 @@ PageTwo.ets
     }
   ]
 }
-管理应用拥有的状态
-PersistenceV2: 持久化存储UI状态
+
+## Code blocks
+
+### Code block 1
+
+```
+import { AppStorageV2 } from '@kit.ArkUI';
+
+@ObservedV2
+class Message {
+  @Trace public userID: number;
+  public userName: string;
+
+  constructor(userID?: number, userName?: string) {
+    this.userID = userID ?? 1;
+    this.userName = userName ?? 'Jack';
+  }
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  // 使用connect在AppStorageV2中创建一个key为Message的对象
+  // 修改connect的返回值即可同步回AppStorageV2
+  @Local message: Message = AppStorageV2.connect<Message>(Message, () => new Message())!;
+
+  build() {
+    Column() {
+      // 修改@Trace装饰的类属性，UI能同步刷新
+      Button(`Index userID: ${this.message.userID}`)
+        .onClick(() => {
+          this.message.userID += 1;
+        })
+      // 修改非@Trace装饰的类属性，UI不会同步刷新，但修改的类属性已同步回AppStorageV2
+      Button(`Index userName: ${this.message.userName}`)
+        .onClick(() => {
+          this.message.userName += 'suf';
+        })
+      // remove key Message, 会从AppStorageV2中删除key为Message的对象
+      // remove之后，修改父组件的userId，子组件能同步变化，因为remove只是从AppStorageV2删除，不会影响组件中已存在的数据
+      Button('remove key: Message')
+        .onClick(() => {
+          AppStorageV2.remove<Message>(Message);
+        })
+      // connect key Message, 会从AppStorageV2中添加key为Message的对象
+      // remove之后，重新添加，修改父子组件的userID，可以发现数据已经不同步，子组件重新connect之后，数据一致
+      Button('connect key: Message')
+        .onClick(() => {
+          this.message = AppStorageV2.connect<Message>(Message, () => new Message(5, 'Rose'))!;
+        })
+      Divider()
+      Child()
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+
+@ComponentV2
+struct Child {
+  // 使用connect在AppStorageV2中取出一个key为Message的对象，已在父组件中创建
+  @Local message: Message = AppStorageV2.connect<Message>(Message, () => new Message())!;
+  @Local name: string = this.message.userName;
+
+  build() {
+    Column() {
+      // 修改@Trace装饰的类属性，UI同步刷新，父组件能感知该变化
+      Button(`Child userID: ${this.message.userID}`)
+        .onClick(() => {
+          this.message.userID += 5;
+        })
+      // 修改父组件中的userName属性，点击name可以同步父组件的类属性修改
+      Button(`Child name: ${this.name}`)
+        .onClick(() => {
+          this.name = this.message.userName;
+        })
+      // remove key Message, 会从AppStorageV2中删除key为Message的对象
+      Button('remove key: Message')
+        .onClick(() => {
+          AppStorageV2.remove<Message>(Message);
+        })
+      // connect key Message, 会从AppStorageV2中添加key为Message的对象
+      Button('connect key: Message')
+        .onClick(() => {
+          this.message = AppStorageV2.connect<Message>(Message, () => new Message(10, 'Lucy'))!;
+        })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 2
+
+```
+// 数据中心
+// Sample.ets
+@ObservedV2
+export class Sample {
+  @Trace public p1: number = 0;
+  public p2: number = 10;
+}
+```
+
+### Code block 3
+
+```
+import { AppStorageV2 } from '@kit.ArkUI';
+import { Sample } from './Sample';
+
+@Entry
+@ComponentV2
+struct PageOne {
+  // 在AppStorageV2中创建一个key为Sample的键值对（如果存在，则返回AppStorageV2中的数据），并且和prop关联
+  @Local prop: Sample = AppStorageV2.connect(Sample, () => new Sample())!;
+  pageStack: NavPathStack = new NavPathStack();
+
+  build() {
+    Navigation(this.pageStack) {
+      Column() {
+        Button('Go to pageTwo')
+          .onClick(() => {
+            this.pageStack.pushPathByName('PageTwo', null);
+          })
+
+        Button('PageOne connect the key Sample')
+          .onClick(() => {
+            // 在AppStorageV2中创建一个key为Sample的键值对（如果存在，则返回AppStorageV2中的数据），并且和prop关联
+            this.prop = AppStorageV2.connect(Sample, 'Sample', () => new Sample())!;
+          })
+
+        Button('PageOne remove the key Sample')
+          .onClick(() => {
+            // 从AppStorageV2中删除后，prop将不会再与key为Sample的值关联
+            AppStorageV2.remove(Sample);
+          })
+
+        Text(`PageOne add 1 to prop.p1: ${this.prop.p1}`)
+          .fontSize(30)
+          .onClick(() => {
+            this.prop.p1++;
+          })
+
+        Text(`PageOne add 1 to prop.p2: ${this.prop.p2}`)
+          .fontSize(30)
+          .onClick(() => {
+            // 页面不刷新，但是p2的值改变了
+            this.prop.p2++;
+          })
+
+        // 获取当前AppStorageV2里面的所有key
+        Text(`all keys in AppStorage: ${AppStorageV2.keys()}`)
+          .fontSize(30)
+      }
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+import { AppStorageV2 } from '@kit.ArkUI';
+import { Sample } from './Sample';
+
+@Builder
+export function PageTwoBuilder() {
+  PageTwo()
+}
+
+@ComponentV2
+struct PageTwo {
+  // 在AppStorageV2中创建一个key为Sample的键值对（如果存在，则返回AppStorageV2中的数据），并且和prop关联
+  @Local prop: Sample = AppStorageV2.connect(Sample, () => new Sample())!;
+  pathStack: NavPathStack = new NavPathStack();
+
+  build() {
+    NavDestination() {
+      Column() {
+        Button('PageTwo connect the key Sample1')
+          .onClick(() => {
+            // 在AppStorageV2中创建一个key为Sample1的键值对（如果存在，则返回AppStorageV2中的数据），并且和prop关联
+            this.prop = AppStorageV2.connect(Sample, 'Sample1', () => new Sample())!;
+          })
+
+        Text(`PageTwo add 1 to prop.p1: ${this.prop.p1}`)
+          .fontSize(30)
+          .onClick(() => {
+            this.prop.p1++;
+          })
+
+        Text(`PageTwo add 1 to prop.p2: ${this.prop.p2}`)
+          .fontSize(30)
+          .onClick(() => {
+            // 页面不刷新，但是p2的值改变了；只有重新初始化才会改变
+            this.prop.p2++;
+          })
+
+        // 获取当前AppStorageV2里面的所有key
+        Text(`all keys in AppStorage: ${AppStorageV2.keys()}`)
+          .fontSize(30)
+      }
+    }
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack;
+    })
+  }
+}
+```
+
+### Code block 5
+
+```
+{
+  "routerMap": [
+    {
+      "name": "PageTwo",
+      "pageSourceFile": "src/main/ets/pages/PageTwo.ets",
+      "buildFunction": "PageTwoBuilder",
+      "data": {
+        "description" : "AppStorageV2 example"
+      }
+    }
+  ]
+}
+```

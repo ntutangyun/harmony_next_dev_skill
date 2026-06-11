@@ -17,6 +17,7 @@ ArkUI的弹出框控制器在绑定弹出框后，可提供对弹出框的操作
 使用getDialogController获取弹出框控制器时，如果当前自定义组件不在弹出框中显示则获取为undefined。
 
 创建自定义内容为ComponentContent的弹出框控制器
+
 说明
 
 详细变量定义请参考完整示例。
@@ -27,13 +28,11 @@ class Params {
   public text: string = '';
   public dialogController: promptAction.CommonController = new promptAction.DialogController();
 
-
   constructor(text: string, dialogController: promptAction.CommonController) {
     this.text = text;
     this.dialogController = dialogController;
   }
 }
-DialogController.ets
 
 初始化一个自定义的弹出框内容区，内部包含一个按钮，该按钮通过该自定义组件自带的弹出框控制器实现关闭功能。
 
@@ -51,7 +50,6 @@ struct MyComponent {
     }
   }
 }
-DialogController.ets
 
 初始化另一自定义弹出框内容区，其中包含一个Text组件和一个按钮，该按钮通过外部传递的弹出框控制器用于关闭弹出框，并且该内容区还包含前一个自定义弹出框内容区。
 
@@ -72,7 +70,6 @@ function buildText(params: Params) {
   .height(200)
   .backgroundColor('#FFF0F0F0')
 }
-DialogController.ets
 
 初始化一个弹出框控制器，并通过设置控制器参数来初始化一个弹出框内容实体对象。最后，通过调用UIContext中的getPromptAction方法获取PromptAction对象，再通过该对象调用openCustomDialogWithController接口，并且设置初始化的内容实体对象和控制器参数以创建弹出框。
 
@@ -85,8 +82,9 @@ this.getUIContext().getPromptAction().openCustomDialogWithController(
   hilog.error(0x0000, 'dialogController',
     'openCustomDialogWithController error: ' + err.code + ' ' + err.message);
 });
-DialogController.ets
+
 创建自定义内容为CustomBuilder的弹出框控制器
+
 说明
 
 详细变量定义请参考完整示例。
@@ -110,7 +108,6 @@ customDialogComponent(dialogController: promptAction.DialogController) {
   .justifyContent(FlexAlign.SpaceBetween)
   .backgroundColor('#FFF0F0F0')
 }
-DialogController.ets
 
 初始化一个弹出框控制器，并通过调用UIContext中的getPromptAction方法获取PromptAction对象，再通过该对象调用presentCustomDialog接口，设置初始化的内容实体对象和控制器参数以创建弹出框。
 
@@ -120,8 +117,9 @@ this.getUIContext().getPromptAction().presentCustomDialog(() => {
 }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
   hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
 });
-DialogController.ets
+
 创建自定义内容为CustomBuilderWithId的弹出框控制器
+
 说明
 
 详细变量定义请参考完整示例。
@@ -151,7 +149,6 @@ customDialogComponentWithId(dialogId: number, dialogController: promptAction.Dia
   .justifyContent(FlexAlign.SpaceBetween)
   .backgroundColor('#FFF0F0F0')
 }
-DialogController.ets
 
 初始化一个弹出框控制器，并通过调用UIContext中的getPromptAction方法获取PromptAction对象，再通过该对象调用presentCustomDialog接口，设置初始化的内容实体对象和控制器参数以创建弹出框。
 
@@ -161,8 +158,9 @@ this.getUIContext().getPromptAction().presentCustomDialog((dialogId: number) => 
 }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
   hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
 });
-DialogController.ets
+
 在CustomDialogController内容区直接获取弹出框控制器
+
 说明
 
 详细变量定义请参考完整示例。
@@ -173,7 +171,6 @@ DialogController.ets
 @Component
 struct CustomDialogExample {
   controller?: CustomDialogController;
-
 
   build() {
     Column({ space: 5 }) {
@@ -191,7 +188,6 @@ struct CustomDialogExample {
     .backgroundColor('#FFF0F0F0')
   }
 }
-DialogController.ets
 
 初始化一个自定义弹出框构造器，关联自定义弹出框内容区。
 
@@ -203,7 +199,7 @@ let customDialogController: CustomDialogController = new CustomDialogController(
   }
 });
 customDialogController.open();
-DialogController.ets
+
 使用控制器获取弹出框的状态
 
 在自定义弹出框场景中，从API version 20 开始，可以通过控制器调用getState接口获取弹出框状态。
@@ -235,7 +231,7 @@ customDialogComponentGetState(dialogController: promptAction.DialogController) {
   .justifyContent(FlexAlign.SpaceBetween)
   .backgroundColor('#FFF0F0F0')
 }
-DialogController.ets
+
 完整示例
 
 通过外部传递的弹出框控制器和自定义组件自带的弹出框控制器，在自定义弹出框内容区域内实现关闭功能。
@@ -244,22 +240,17 @@ import { ComponentContent, promptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 class Params {
   public text: string = '';
   public dialogController: promptAction.CommonController = new promptAction.DialogController();
-
 
   constructor(text: string, dialogController: promptAction.CommonController) {
     this.text = text;
     this.dialogController = dialogController;
   }
 }
-
-
 
 
 @Component
@@ -276,8 +267,6 @@ struct MyComponent {
     }
   }
 }
-
-
 
 
 @Builder
@@ -299,13 +288,10 @@ function buildText(params: Params) {
 }
 
 
-
-
 @CustomDialog
 @Component
 struct CustomDialogExample {
   controller?: CustomDialogController;
-
 
   build() {
     Column({ space: 5 }) {
@@ -323,8 +309,6 @@ struct CustomDialogExample {
     .backgroundColor('#FFF0F0F0')
   }
 }
-
-
 
 
 @Entry
@@ -349,7 +333,6 @@ export struct DialogController {
     }
   };
 
-
   @Builder
   customDialogComponent(dialogController: promptAction.DialogController) {
     Column({ space: 5 }) {
@@ -367,8 +350,6 @@ export struct DialogController {
     .justifyContent(FlexAlign.SpaceBetween)
     .backgroundColor('#FFF0F0F0')
   }
-
-
 
 
   @Builder
@@ -396,8 +377,6 @@ export struct DialogController {
   }
 
 
-
-
   @Builder
   customDialogComponentGetState(dialogController: promptAction.DialogController) {
     Column({ space: 5 }) {
@@ -419,8 +398,6 @@ export struct DialogController {
     .justifyContent(FlexAlign.SpaceBetween)
     .backgroundColor('#FFF0F0F0')
   }
-
-
 
 
   build() {
@@ -480,7 +457,437 @@ export struct DialogController {
     }
   }
 }
-DialogController.ets
 
-弹出框层级管理
-弹出框焦点策略
+## Code blocks
+
+### Code block 1
+
+```
+class Params {
+  public text: string = '';
+  public dialogController: promptAction.CommonController = new promptAction.DialogController();
+
+  constructor(text: string, dialogController: promptAction.CommonController) {
+    this.text = text;
+    this.dialogController = dialogController;
+  }
+}
+```
+
+### Code block 2
+
+```
+@Component
+struct MyComponent {
+  build() {
+    Column({ space: 5 }) {
+      Button('Close Dialog(Built-in Controller)')
+        .onClick(() => {
+          let dialogController: promptAction.DialogController = this.getDialogController();
+          if (dialogController !== undefined) {
+            dialogController.close();
+          }
+        })
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+@Builder
+function buildText(params: Params) {
+  Column({ space: 5 }) {
+    Text(params.text)
+      .fontSize(30)
+    if (params.dialogController !== undefined) {
+      Button('Close Dialog(External Controller)')
+        .onClick(() => {
+          params.dialogController.close();
+        })
+    }
+    MyComponent()
+  }
+  .width(300)
+  .height(200)
+  .backgroundColor('#FFF0F0F0')
+}
+```
+
+### Code block 4
+
+```
+let dialogController: promptAction.CommonController = new promptAction.DialogController();
+let contentNode: ComponentContent<Object> =
+  new ComponentContent(this.getUIContext(), wrapBuilder(buildText),
+    new Params(this.message, dialogController));
+this.getUIContext().getPromptAction().openCustomDialogWithController(
+  contentNode, dialogController, this.baseDialogOptions).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'dialogController',
+    'openCustomDialogWithController error: ' + err.code + ' ' + err.message);
+});
+```
+
+### Code block 5
+
+```
+@Builder
+customDialogComponent(dialogController: promptAction.DialogController) {
+  Column({ space: 5 }) {
+    Text(this.message)
+      .fontSize(30)
+    if (dialogController !== undefined) {
+      Button('Close Dialog(External Controller)')
+        .onClick(() => {
+          dialogController.close();
+        })
+    }
+  }
+  .height(200)
+  .padding(5)
+  .justifyContent(FlexAlign.SpaceBetween)
+  .backgroundColor('#FFF0F0F0')
+}
+```
+
+### Code block 6
+
+```
+let dialogController: promptAction.CommonController = new promptAction.DialogController();
+this.getUIContext().getPromptAction().presentCustomDialog(() => {
+  this.customDialogComponent(dialogController);
+}, dialogController, this.dialogOptions).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+});
+```
+
+### Code block 7
+
+```
+@Builder
+customDialogComponentWithId(dialogId: number, dialogController: promptAction.DialogController) {
+  Column({ space: 5 }) {
+    Text(this.message)
+      .fontSize(30)
+    if (dialogId !== undefined) {
+      Button('Close Dialog(DialogID)')
+        .onClick(() => {
+          this.getUIContext().getPromptAction().closeCustomDialog(dialogId);
+        })
+    }
+    if (dialogController !== undefined) {
+      Button('Close Dialog(External Controller)')
+        .onClick(() => {
+          dialogController.close();
+        })
+    }
+  }
+  .height(200)
+  .padding(5)
+  .justifyContent(FlexAlign.SpaceBetween)
+  .backgroundColor('#FFF0F0F0')
+}
+```
+
+### Code block 8
+
+```
+let dialogController: promptAction.CommonController = new promptAction.DialogController();
+this.getUIContext().getPromptAction().presentCustomDialog((dialogId: number) => {
+  this.customDialogComponentWithId(dialogId, dialogController);
+}, dialogController, this.dialogOptions).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+});
+```
+
+### Code block 9
+
+```
+@CustomDialog
+@Component
+struct CustomDialogExample {
+  controller?: CustomDialogController;
+
+  build() {
+    Column({ space: 5 }) {
+      Text('I am content')
+        .fontSize(30)
+      Button('Close Dialog(Built-in Controller)')
+        .onClick(() => {
+          let dialogController: PromptActionDialogController = this.getDialogController();
+          if (dialogController !== undefined) {
+            dialogController.close();
+          }
+        })
+    }
+    .height(200)
+    .backgroundColor('#FFF0F0F0')
+  }
+}
+```
+
+### Code block 10
+
+```
+let customDialogController: CustomDialogController = new CustomDialogController({
+  builder: CustomDialogExample(),
+  offset: {
+    dx: 0,
+    dy: 50
+  }
+});
+customDialogController.open();
+```
+
+### Code block 11
+
+```
+@Builder
+customDialogComponentGetState(dialogController: promptAction.DialogController) {
+  Column({ space: 5 }) {
+    Text(this.message)
+      .fontSize(30)
+    if (dialogController !== undefined) {
+      Button('Check Status:' + this.dialogState)
+        .onClick(() => {
+          this.dialogState = dialogController.getState();
+        })
+      Button('Close Dialog(External Controller)')
+        .onClick(() => {
+          dialogController.close();
+        })
+    }
+  }
+  .height(200)
+  .padding(5)
+  .justifyContent(FlexAlign.SpaceBetween)
+  .backgroundColor('#FFF0F0F0')
+}
+```
+
+### Code block 12
+
+```
+import { ComponentContent, promptAction } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+class Params {
+  public text: string = '';
+  public dialogController: promptAction.CommonController = new promptAction.DialogController();
+
+  constructor(text: string, dialogController: promptAction.CommonController) {
+    this.text = text;
+    this.dialogController = dialogController;
+  }
+}
+
+
+@Component
+struct MyComponent {
+  build() {
+    Column({ space: 5 }) {
+      Button('Close Dialog(Built-in Controller)')
+        .onClick(() => {
+          let dialogController: promptAction.DialogController = this.getDialogController();
+          if (dialogController !== undefined) {
+            dialogController.close();
+          }
+        })
+    }
+  }
+}
+
+
+@Builder
+function buildText(params: Params) {
+  Column({ space: 5 }) {
+    Text(params.text)
+      .fontSize(30)
+    if (params.dialogController !== undefined) {
+      Button('Close Dialog(External Controller)')
+        .onClick(() => {
+          params.dialogController.close();
+        })
+    }
+    MyComponent()
+  }
+  .width(300)
+  .height(200)
+  .backgroundColor('#FFF0F0F0')
+}
+
+
+@CustomDialog
+@Component
+struct CustomDialogExample {
+  controller?: CustomDialogController;
+
+  build() {
+    Column({ space: 5 }) {
+      Text('I am content')
+        .fontSize(30)
+      Button('Close Dialog(Built-in Controller)')
+        .onClick(() => {
+          let dialogController: PromptActionDialogController = this.getDialogController();
+          if (dialogController !== undefined) {
+            dialogController.close();
+          }
+        })
+    }
+    .height(200)
+    .backgroundColor('#FFF0F0F0')
+  }
+}
+
+
+@Entry
+@Component
+export struct DialogController {
+  @State dialogState: promptAction.CommonState = 0;
+  private message = 'dialog';
+  private baseDialogOptions: promptAction.BaseDialogOptions = {
+    isModal: false,
+    autoCancel: false,
+    offset: {
+      dx: 0,
+      dy: 50
+    }
+  };
+  private dialogOptions: promptAction.DialogOptions = {
+    isModal: false,
+    autoCancel: false,
+    offset: {
+      dx: 0,
+      dy: 50
+    }
+  };
+
+  @Builder
+  customDialogComponent(dialogController: promptAction.DialogController) {
+    Column({ space: 5 }) {
+      Text(this.message)
+        .fontSize(30)
+      if (dialogController !== undefined) {
+        Button('Close Dialog(External Controller)')
+          .onClick(() => {
+            dialogController.close();
+          })
+      }
+    }
+    .height(200)
+    .padding(5)
+    .justifyContent(FlexAlign.SpaceBetween)
+    .backgroundColor('#FFF0F0F0')
+  }
+
+
+  @Builder
+  customDialogComponentWithId(dialogId: number, dialogController: promptAction.DialogController) {
+    Column({ space: 5 }) {
+      Text(this.message)
+        .fontSize(30)
+      if (dialogId !== undefined) {
+        Button('Close Dialog(DialogID)')
+          .onClick(() => {
+            this.getUIContext().getPromptAction().closeCustomDialog(dialogId);
+          })
+      }
+      if (dialogController !== undefined) {
+        Button('Close Dialog(External Controller)')
+          .onClick(() => {
+            dialogController.close();
+          })
+      }
+    }
+    .height(200)
+    .padding(5)
+    .justifyContent(FlexAlign.SpaceBetween)
+    .backgroundColor('#FFF0F0F0')
+  }
+
+
+  @Builder
+  customDialogComponentGetState(dialogController: promptAction.DialogController) {
+    Column({ space: 5 }) {
+      Text(this.message)
+        .fontSize(30)
+      if (dialogController !== undefined) {
+        Button('Check Status:' + this.dialogState)
+          .onClick(() => {
+            this.dialogState = dialogController.getState();
+          })
+        Button('Close Dialog(External Controller)')
+          .onClick(() => {
+            dialogController.close();
+          })
+      }
+    }
+    .height(200)
+    .padding(5)
+    .justifyContent(FlexAlign.SpaceBetween)
+    .backgroundColor('#FFF0F0F0')
+  }
+
+
+  build() {
+    NavDestination() {
+      Column({ space: 5 }) {
+        Button('OpenCustomDialogWithController')
+          .onClick(() => {
+            let dialogController: promptAction.CommonController = new promptAction.DialogController();
+            let contentNode: ComponentContent<Object> =
+              new ComponentContent(this.getUIContext(), wrapBuilder(buildText),
+                new Params(this.message, dialogController));
+            this.getUIContext().getPromptAction().openCustomDialogWithController(
+              contentNode, dialogController, this.baseDialogOptions).catch((err: BusinessError) => {
+              hilog.error(DOMAIN, 'dialogController',
+                'openCustomDialogWithController error: ' + err.code + ' ' + err.message);
+            });
+          })
+        Button('PresentCustomDialog+CustomBuilder')
+          .onClick(() => {
+            let dialogController: promptAction.CommonController = new promptAction.DialogController();
+            this.getUIContext().getPromptAction().presentCustomDialog(() => {
+              this.customDialogComponent(dialogController);
+            }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
+              hilog.error(DOMAIN, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+            });
+          })
+        Button('PresentCustomDialog+CustomBuilderWithId')
+          .onClick(() => {
+            let dialogController: promptAction.CommonController = new promptAction.DialogController();
+            this.getUIContext().getPromptAction().presentCustomDialog((dialogId: number) => {
+              this.customDialogComponentWithId(dialogId, dialogController);
+            }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
+              hilog.error(DOMAIN, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+            });
+          })
+        Button('PresentCustomDialog+CustomBuilderGetState')
+          .onClick(() => {
+            let dialogController: promptAction.CommonController = new promptAction.DialogController();
+            this.getUIContext().getPromptAction().presentCustomDialog(() => {
+              this.customDialogComponentGetState(dialogController);
+            }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
+              hilog.error(DOMAIN, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+            });
+          })
+        Button('CustomDialogController')
+          .onClick(() => {
+            let customDialogController: CustomDialogController = new CustomDialogController({
+              builder: CustomDialogExample(),
+              offset: {
+                dx: 0,
+                dy: 50
+              }
+            });
+            customDialogController.open();
+          })
+      }.width('100%')
+    }
+  }
+}
+```

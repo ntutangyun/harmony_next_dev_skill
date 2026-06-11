@@ -2,6 +2,24 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/car-walk-navi-hop_
 
+支持将车机指定的地图应用的步行导航数据流转至手机。
+
+场景介绍
+
+下车步行导航流转：用户下车前，车机地图应用导航还未结束，下车后可将车机上的导航数据流转至手机，发起步行导航。
+
+接口说明
+
+接口名	描述
+registerSystemNavigationListener	注册监听系统导航信息和指令。
+unregisterSystemNavigationListener	取消注册监听系统导航信息和指令。
+
+开发流程
+
+开发步骤
+
+能力配置。
+
 请参考配置能力进行配置。下车步行导航流转场景下，metadata的name取值为carHopCapability，value取值应为getOffCarNavi。示例代码如下所示：
 
 "metadata": [
@@ -36,6 +54,101 @@ class Listener implements navigationInfoMgr.SystemNavigationListener {
     });
   }
 
+  // 实现onReceiveNavigationCmd方法
+  onReceiveNavigationCmd(command: navigationInfoMgr.CommandType,
+    args: Record<string, Object>): Promise<navigationInfoMgr.ResultData> {
+    if (command == navigationInfoMgr.CommandType.START_NAVIGATION) {
+      // 地图应用处理下车后自动开启步行导航的逻辑
+      if (args !== undefined && args !== null) {
+        // 获取导航类型
+        let naviType: navigationInfoMgr.NaviType = args['naviType'] as navigationInfoMgr.NaviType;
+        // 如果是步行导航
+        if (naviType === navigationInfoMgr.NaviType.WALKING) {
+          let destPoi: string = args['destPoi'] as string;
+          // 获取目的地名
+          let destLocationName: string = args['destName'] as string;
+          // 获取目的地纬度
+          let destLatitude: string = destPoi?.split(',')[0].toString();
+          // 获取目的地经度
+          let destLongitude: string = destPoi?.split(',')[1].toString();
+          // 开发者根据destLocationName、destLatitude、destLongitude发起步行导航
+          // ...
+        }
+      }
+    }
+    return new Promise(resolve => {
+      let ret: navigationInfoMgr.ResultData = {
+        code: 1002,
+        message: 'message test2',
+        data: args
+      };
+      resolve(ret);
+    });
+  }
+}
+
+try {
+  // 获取NavigationController实例
+  let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
+  // 注册监听系统导航信息和指令
+  navInfoController.registerSystemNavigationListener(new Listener());
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `register system navigation listener, error code: ${e?.code}`);
+}
+
+取消监听。
+
+在地图应用退出时，需要取消之前注册的监听，减少手机系统不必要的资源消耗。
+
+try {
+  // 获取NavigationController实例
+  let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
+  // 取消注册监听系统导航信息和指令
+  navInfoController.unregisterSystemNavigationListener();
+} catch (e) {
+  // 捕获接口调用异常时的错误码并做相应处理
+  hilog.error(0x0000, 'testTag', `unregister system navigation listener error, error code: ${e?.code}`);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+"metadata": [
+  {
+    "name": "carHopCapability",
+    "value": "getOffCarNavi"
+  }
+]
+```
+
+### Code block 2
+
+```
+import { navigationInfoMgr } from '@kit.CarKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 3
+
+```
+// 实现SystemNavigationListener接口
+class Listener implements navigationInfoMgr.SystemNavigationListener {
+  // 实现onQueryNavigationInfo方法
+  onQueryNavigationInfo(query: navigationInfoMgr.QueryType,
+    args: Record<string, Object>): Promise<navigationInfoMgr.ResultData> {
+    // 返回导航信息给系统
+    return new Promise(resolve => {
+      let ret: navigationInfoMgr.ResultData = {
+        code: 1001,
+        message: 'message test1',
+        data: args
+      };
+      resolve(ret);
+    });
+  }
 
   // 实现onReceiveNavigationCmd方法
   onReceiveNavigationCmd(command: navigationInfoMgr.CommandType,
@@ -70,7 +183,6 @@ class Listener implements navigationInfoMgr.SystemNavigationListener {
   }
 }
 
-
 try {
   // 获取NavigationController实例
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
@@ -80,11 +192,11 @@ try {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `register system navigation listener, error code: ${e?.code}`);
 }
+```
 
-取消监听。
+### Code block 4
 
-在地图应用退出时，需要取消之前注册的监听，减少手机系统不必要的资源消耗。
-
+```
 try {
   // 获取NavigationController实例
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
@@ -94,5 +206,4 @@ try {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister system navigation listener error, error code: ${e?.code}`);
 }
-地址流转至车机
-获取HiCar连接状态
+```

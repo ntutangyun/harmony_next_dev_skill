@@ -18,6 +18,8 @@ Key panels:
 
 Tip: the *Code Linter* feature is configurable via `codelinter.json5`. To run from CLI: `codelinter -p ./entry` (see command-line tools below).
 
+For **C/C++** (NDK) code, DevEco has a built-in **Clang-Tidy** static checker (`pages/ide-clang-tidy.md`). Configure rules in the *Clang-Tidy Checks* panel, a project-root `.clang-tidy` file, or *Code > Inspect Code…* (Inspection-checks). Supports live (real-time) checking and manual checks; ticking *live update (show in "Current File")* enables all three rule sources.
+
 ## hvigor (build tool)
 
 `hvigor` is the HarmonyOS build orchestrator. Each project has:

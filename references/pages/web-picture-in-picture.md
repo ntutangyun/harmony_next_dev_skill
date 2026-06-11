@@ -11,10 +11,13 @@ Web组件提供画中画功能支持，应用可利用W3C标准的Picture-in-Pic
     "name": "ohos.permission.INTERNET"
   }
 ]
-module.json5
+
 约束与限制
+
 当前H264/H265/HLS格式的视频可在创建的画中画窗口中播放。
+
 画中画窗口的大小调整依据系统能力，具体参照设计指南中的系统特性与能力部分。
+
 进入画中画
 
 以仅包含媒体源的video元素和一个用户交互的button元素为例，介绍如何创建一个浮动窗口播放视频，使用户在浏览其他网页或与其他应用交互时，能够通过该画中画窗口持续观看视频。
@@ -34,6 +37,7 @@ togglePipButton.addEventListener("click", async () => {
     console.error("Picture-in-Picture mode failed:", err);
   }
 });
+
 退出画中画
 
 请求退出画中画模式，请使用Document接口的exitPictureInPicture()方法，视频将重新在原始标签页中显示。
@@ -47,6 +51,7 @@ try {
   }
 }
 // ...
+
 监听画中画事件
 
 当用户进入画中画模式播放视频时，会显示一个浮动窗口用于播放视频。系统规定每次只能播放一个画中画视频。
@@ -59,10 +64,10 @@ videoElement.addEventListener('enterpictureinpicture', function (event) {
 // 视频进入画中画模式。
 });
 
-
 videoElement.addEventListener('leavepictureinpicture', function (event) {
 // 视频退出画中画模式。
 });
+
 画中画窗口交互
 
 画中画整体窗口控制：
@@ -87,13 +92,11 @@ videoElement.addEventListener('leavepictureinpicture', function (event) {
 
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct Index {
   @State videoSrc: Resource = $rawfile('PictureInPicture.html');
   controller: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -101,7 +104,6 @@ struct Index {
     }
   }
 }
-Index.ets
 
 前端页面HTML代码。
 
@@ -140,13 +142,14 @@ Index.ets
 <video id="video" src="https://example.com/file.mp4" controls></video>
 <button id="togglePipButton">开启画中画</button>
 
-
 <script>
     const video = document.getElementById("video");
     const togglePipButton = document.getElementById("togglePipButton");
+
     // 如果浏览器不支持画中画功能或被禁用，则隐藏按钮
     togglePipButton.hidden =
       !document.pictureInPictureEnabled || video.disablePictureInPicture;
+
     // 监听按钮单击事件，切换画中画模式
     togglePipButton.addEventListener("click", async () => {
       try {
@@ -162,11 +165,13 @@ Index.ets
         console.error("Picture-in-Picture mode failed:", err);
       }
     });
+
     // 监听进入画中画事件
     video.addEventListener("enterpictureinpicture", () => {
       // 更新按钮文本为“退出画中画”
       togglePipButton.textContent = "退出画中画";
     });
+
     // 监听退出画中画事件
     video.addEventListener("leavepictureinpicture", () => {
       // 更新按钮文本为“开启画中画”
@@ -175,5 +180,160 @@ Index.ets
 </script>
 </body>
 </html>
-托管网页中的媒体播放
-Web组件支持视频沉浸式全屏播放
+
+## Code blocks
+
+### Code block 1
+
+```
+"requestPermissions": [
+  {
+    "name": "ohos.permission.INTERNET"
+  }
+]
+```
+
+### Code block 2
+
+```
+<!-- 使用时需要自行替换视频链接 -->
+<video id="video" src="https://example.com/file.mp4" controls></video>
+<button id="togglePipButton">开启画中画</button>
+```
+
+### Code block 3
+
+```
+togglePipButton.addEventListener("click", async () => {
+  try {
+    // 请求进入画中画模式
+    await video.requestPictureInPicture();
+  } catch (err) {
+    // 如果画中画模式切换失败，打印错误信息
+    console.error("Picture-in-Picture mode failed:", err);
+  }
+});
+```
+
+### Code block 4
+
+```
+// ...
+try {
+  if (videoElement !== document.pictureInPictureElement) {
+    await videoElement.requestPictureInPicture();
+  } else {
+    await document.exitPictureInPicture();
+  }
+}
+// ...
+```
+
+### Code block 5
+
+```
+videoElement.addEventListener('enterpictureinpicture', function (event) {
+// 视频进入画中画模式。
+});
+
+videoElement.addEventListener('leavepictureinpicture', function (event) {
+// 视频退出画中画模式。
+});
+```
+
+### Code block 6
+
+```
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct Index {
+  @State videoSrc: Resource = $rawfile('PictureInPicture.html');
+  controller: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Web({src: this.videoSrc, controller: this.controller})
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+<!-- PictureInPicture.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Picture-in-Picture Demo</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          margin: 0;
+        }
+        video {
+          width: 60%;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          margin-bottom: 20px;
+        }
+        button {
+          padding: 10px 20px;
+          font-size: 16px;
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!-- 使用时需要自行替换视频链接 -->
+<video id="video" src="https://example.com/file.mp4" controls></video>
+<button id="togglePipButton">开启画中画</button>
+
+<script>
+    const video = document.getElementById("video");
+    const togglePipButton = document.getElementById("togglePipButton");
+
+    // 如果浏览器不支持画中画功能或被禁用，则隐藏按钮
+    togglePipButton.hidden =
+      !document.pictureInPictureEnabled || video.disablePictureInPicture;
+
+    // 监听按钮单击事件，切换画中画模式
+    togglePipButton.addEventListener("click", async () => {
+      try {
+        if (document.pictureInPictureElement) {
+          // 如果当前处于画中画模式，退出画中画
+          await document.exitPictureInPicture();
+        } else {
+          // 否则，进入画中画模式
+          await video.requestPictureInPicture();
+        }
+      } catch (err) {
+        // 如果画中画模式切换失败，打印错误信息
+        console.error("Picture-in-Picture mode failed:", err);
+      }
+    });
+
+    // 监听进入画中画事件
+    video.addEventListener("enterpictureinpicture", () => {
+      // 更新按钮文本为“退出画中画”
+      togglePipButton.textContent = "退出画中画";
+    });
+
+    // 监听退出画中画事件
+    video.addEventListener("leavepictureinpicture", () => {
+      // 更新按钮文本为“开启画中画”
+      togglePipButton.textContent = "开启画中画";
+    });
+</script>
+</body>
+</html>
+```

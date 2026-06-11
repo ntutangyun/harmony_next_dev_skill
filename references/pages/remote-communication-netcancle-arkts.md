@@ -13,11 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 具体API说明详见接口文档。
 
 接口名	描述
-cancel(requestToCancel?: Request| Request[]): void	
-
-- 取消指定网络请求：传入需要取消的请求，返回值为空。
-
-- 取消所有网络请求：无需传入参数，直接调用，返回值为空。
+cancel(requestToCancel?: Request| Request[]): void	- 取消指定网络请求：传入需要取消的请求，返回值为空。 - 取消所有网络请求：无需传入参数，直接调用，返回值为空。
 
 使用示例
 
@@ -28,13 +24,11 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 创建会话并创建两个Request，分别发起请求，在请求完成后进行cancel操作。
 
-单独取消某个请求
 // 创建会话
 const session = rcp.createSession();
 // 创建request1、request2
 let request1 = new rcp.Request("https://www.example.com");
 let request2 = new rcp.Request("https://www.example.com");
-
 
 // 分别发起请求
 session.fetch(request1).then((response: rcp.Response) => {
@@ -42,7 +36,6 @@ session.fetch(request1).then((response: rcp.Response) => {
 }).catch((err: BusinessError) => {
   console.error(`Request1 error code is ${err.code}, error data is ${err.data}`);
 })
-
 
 session.fetch(request2).then((response: rcp.Response) => {
   console.info(`The response2 code is ${response.statusCode}`);
@@ -50,17 +43,15 @@ session.fetch(request2).then((response: rcp.Response) => {
   console.error(`Request2 error code is ${err.code}, error data is ${err.data}`);
 })
 
-
 // 单独取消Request1、request2
 session.cancel(request1);
 session.cancel(request2);
-取消全部请求
+
 // 创建会话
 const session = rcp.createSession();
 // 创建request1、request2
 let request1 = new rcp.Request("https://www.example.com");
 let request2 = new rcp.Request("https://www.example.com");
-
 
 // 分别发起请求
 session.fetch(request1).then((response: rcp.Response) => {
@@ -68,7 +59,6 @@ session.fetch(request1).then((response: rcp.Response) => {
 }).catch((err: BusinessError) => {
   console.error(`Request1 error code is ${err.code}, error data is ${err.data}`);
 })
-
 
 session.fetch(request2).then((response: rcp.Response) => {
   console.info(`The response2 code is ${response.statusCode}`);
@@ -77,5 +67,64 @@ session.fetch(request2).then((response: rcp.Response) => {
 })
 // 取消全部request
 session.cancel();
-发送网络请求（ArkTS）
-关闭会话（ArkTS）
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+// 创建会话
+const session = rcp.createSession();
+// 创建request1、request2
+let request1 = new rcp.Request("https://www.example.com");
+let request2 = new rcp.Request("https://www.example.com");
+
+// 分别发起请求
+session.fetch(request1).then((response: rcp.Response) => {
+  console.info(`The response1 code is ${response.statusCode}`);
+}).catch((err: BusinessError) => {
+  console.error(`Request1 error code is ${err.code}, error data is ${err.data}`);
+})
+
+session.fetch(request2).then((response: rcp.Response) => {
+  console.info(`The response2 code is ${response.statusCode}`);
+}).catch((err: BusinessError) => {
+  console.error(`Request2 error code is ${err.code}, error data is ${err.data}`);
+})
+
+// 单独取消Request1、request2
+session.cancel(request1);
+session.cancel(request2);
+```
+
+### Code block 3
+
+```
+// 创建会话
+const session = rcp.createSession();
+// 创建request1、request2
+let request1 = new rcp.Request("https://www.example.com");
+let request2 = new rcp.Request("https://www.example.com");
+
+// 分别发起请求
+session.fetch(request1).then((response: rcp.Response) => {
+  console.info(`The response1 code is ${response.statusCode}`);
+}).catch((err: BusinessError) => {
+  console.error(`Request1 error code is ${err.code}, error data is ${err.data}`);
+})
+
+session.fetch(request2).then((response: rcp.Response) => {
+  console.info(`The response2 code is ${response.statusCode}`);
+}).catch((err: BusinessError) => {
+  console.error(`Request2 error code is ${err.code}, error data is ${err.data}`);
+})
+// 取消全部request
+session.cancel();
+```

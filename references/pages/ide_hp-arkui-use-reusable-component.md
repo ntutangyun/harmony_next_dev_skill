@@ -1,23 +1,289 @@
-# @performance/hp
+# @performance/hp-arkui-use-reusable-component
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_hp-arkui-use-reusable-component_
 
-@performance/hp-arkui-suggest-reuseid-for-if-else-reusable-component
-文档
-@performance/hp-arkui-load-on-demand
-文档
-@performance/sparse-array-check
-文档
-@performance/hp-arkui-use-transition-to-replace-animateto
-文档
-@performance/number-init-check
-文档
-随路格式转换
-文档
-图片接收
-文档
-@performance/hp-arkui-no-func-as-arg-for-reusable-component
-文档
-@performance/hp-arkui-replace-nested-reusable-component-by-builder
-文档
-@performance/hp-arkui-image-async-load
+建议复杂组件的定义，尽量使用组件复用。
+
+滑动丢帧场景下，建议优先修改。
+
+规则配置
+
+// code-linter.json5
+{
+  "rules": {
+    "@performance/hp-arkui-use-reusable-component": "warn",
+  }
+}
+
+选项
+
+该规则无需配置额外选项。
+
+正例
+
+// 源码文件，请以工程实际为准
+import { MyDataSource } from './MyDataSource';
+import { GoodItems } from './data/DataEntry';
+
+@Reusable
+@Component
+struct GoodItemComponent {
+  @State introduce: string = ''
+  @State price: string = ''
+  @State numb: string = ''
+
+  aboutToReuse(params: Record<string, ESObject>) {
+    this.introduce = params.introduce
+    this.price = params.price
+    this.numb = params.numb
+  }
+
+  build() {
+    Column() {
+      Text(this.introduce)
+        .fontSize(14)
+        .padding({ left: 5, right: 5 })
+        .margin({ top: 5 })
+      Row() {
+        Text('￥')
+          .fontSize(10)
+          .fontColor(Color.Red)
+          .baselineOffset(-4)
+        Text(this.price)
+          .fontSize(16)
+          .fontColor(Color.Red)
+        Text(this.numb)
+          .fontSize(10)
+          .fontColor(Color.Gray)
+          .baselineOffset(-4)
+          .margin({ left: 5 })
+
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+      .padding({ left: 5, right: 5 })
+      .margin({ top: 15 })
+    }
+  }
+}
+
+@Entry
+@Component
+struct MyComponent{
+  private data: MyDataSource = new MyDataSource([]);
+
+  build() {
+    Column() {
+      LazyForEach(this.data, (item: GoodItems, index) => {
+        GridItem() {
+          GoodItemComponent({
+            introduce: item.data.introduce,
+            price: item.data.price,
+            numb: item.data.numb,
+          }).reuseId(item.numb)
+        }
+      }, (item: GoodItems) => item.index)
+    }
+  }
+}
+
+反例
+
+// 源码文件，请以工程实际为准
+import { MyDataSource } from './MyDataSource';
+import { GoodItems } from './data/DataEntry';
+
+@Entry
+@Component
+struct MyComponent{
+  private data: MyDataSource = new MyDataSource([]);
+
+  build() {
+    Column() {
+      LazyForEach(this.data, (item: GoodItems) => {
+        GridItem() {
+          Column() {
+            Text(item.introduce)
+              .fontSize(14)
+              .padding({ left: 5, right: 5 })
+              .margin({ top: 5 })
+            Row() {
+              Text('￥')
+                .fontSize(10)
+                .fontColor(Color.Red)
+                .baselineOffset(-4)
+              Text(item.price)
+                .fontSize(16)
+                .fontColor(Color.Red)
+              Text(item.numb)
+                .fontSize(10)
+                .fontColor(Color.Gray)
+                .baselineOffset(-4)
+                .margin({ left: 5 })
+
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.SpaceBetween)
+            .padding({ left: 5, right: 5 })
+            .margin({ top: 15 })
+          }
+          .borderRadius(10)
+          .backgroundColor(Color.White)
+          .clip(true)
+          .width('100%')
+          .height(290)
+        }
+      }, (item: GoodItems) => item.index)
+    }
+  }
+}
+
+规则集
+
+plugin:@performance/recommended
+plugin:@performance/all
+
+Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
+
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@performance/hp-arkui-use-reusable-component": "warn",
+  }
+}
+```
+
+### Code block 2
+
+```
+// 源码文件，请以工程实际为准
+import { MyDataSource } from './MyDataSource';
+import { GoodItems } from './data/DataEntry';
+
+@Reusable
+@Component
+struct GoodItemComponent {
+  @State introduce: string = ''
+  @State price: string = ''
+  @State numb: string = ''
+
+  aboutToReuse(params: Record<string, ESObject>) {
+    this.introduce = params.introduce
+    this.price = params.price
+    this.numb = params.numb
+  }
+
+  build() {
+    Column() {
+      Text(this.introduce)
+        .fontSize(14)
+        .padding({ left: 5, right: 5 })
+        .margin({ top: 5 })
+      Row() {
+        Text('￥')
+          .fontSize(10)
+          .fontColor(Color.Red)
+          .baselineOffset(-4)
+        Text(this.price)
+          .fontSize(16)
+          .fontColor(Color.Red)
+        Text(this.numb)
+          .fontSize(10)
+          .fontColor(Color.Gray)
+          .baselineOffset(-4)
+          .margin({ left: 5 })
+
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+      .padding({ left: 5, right: 5 })
+      .margin({ top: 15 })
+    }
+  }
+}
+
+@Entry
+@Component
+struct MyComponent{
+  private data: MyDataSource = new MyDataSource([]);
+
+  build() {
+    Column() {
+      LazyForEach(this.data, (item: GoodItems, index) => {
+        GridItem() {
+          GoodItemComponent({
+            introduce: item.data.introduce,
+            price: item.data.price,
+            numb: item.data.numb,
+          }).reuseId(item.numb)
+        }
+      }, (item: GoodItems) => item.index)
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+// 源码文件，请以工程实际为准
+import { MyDataSource } from './MyDataSource';
+import { GoodItems } from './data/DataEntry';
+
+@Entry
+@Component
+struct MyComponent{
+  private data: MyDataSource = new MyDataSource([]);
+
+  build() {
+    Column() {
+      LazyForEach(this.data, (item: GoodItems) => {
+        GridItem() {
+          Column() {
+            Text(item.introduce)
+              .fontSize(14)
+              .padding({ left: 5, right: 5 })
+              .margin({ top: 5 })
+            Row() {
+              Text('￥')
+                .fontSize(10)
+                .fontColor(Color.Red)
+                .baselineOffset(-4)
+              Text(item.price)
+                .fontSize(16)
+                .fontColor(Color.Red)
+              Text(item.numb)
+                .fontSize(10)
+                .fontColor(Color.Gray)
+                .baselineOffset(-4)
+                .margin({ left: 5 })
+
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.SpaceBetween)
+            .padding({ left: 5, right: 5 })
+            .margin({ top: 15 })
+          }
+          .borderRadius(10)
+          .backgroundColor(Color.White)
+          .clip(true)
+          .width('100%')
+          .height(290)
+        }
+      }, (item: GoodItems) => item.index)
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+plugin:@performance/recommended
+plugin:@performance/all
+```

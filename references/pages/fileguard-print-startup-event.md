@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fileguard-print-startup-event_
 
+说明
+
 从6.1.1(24)版本开始，新增订阅或取消订阅打印服务启动事件接口，帮助用户获取打印服务启动时机，便于及时注册水印回调，从而启用打印水印功能。
 
 场景介绍
@@ -15,6 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fileguard
 接口名	描述
 onPrintStartup(callback: Callback<void>): void	订阅打印服务启动事件。
 offPrintStartup(callback?: Callback<void>): void	取消订阅打印服务启动事件。
+
 开发步骤
 
 导入模块。
@@ -38,5 +41,33 @@ function testOffPrintStartup() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   guard.offPrintStartup();
 }
-设置HDC鉴权密钥
-企业恢复密钥
+
+## Code blocks
+
+### Code block 1
+
+```
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+```
+
+### Code block 2
+
+```
+function testOnPrintStartup() {
+  console.info(`onPrintStartup start.`);
+  let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
+  guard.onPrintStartup(() => {
+    console.info(`Succeeded in listening print-startup.`);
+  });
+}
+```
+
+### Code block 3
+
+```
+function testOffPrintStartup() {
+  console.info(`offPrintStartup start.`);
+  let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
+  guard.offPrintStartup();
+}
+```

@@ -2,11 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/vibrator-guidelines_
 
+场景介绍
+
 当设备需要设置不同的振动效果时，可以调用Vibrator模块，例如：设备的按键可以设置不同强度和不同时长的振动，闹钟和来电可以设置不同强度和时长的单次或周期振动。
 
 详细的接口介绍请参考@ohos.vibrator (振动)。
 
 接口说明
+
 名称	描述
 startVibration(effect: VibrateEffect, attribute: VibrateAttribute): Promise<void>	根据指定振动效果和振动属性触发马达振动，使用Promise异步回调。
 startVibration(effect: VibrateEffect, attribute: VibrateAttribute, callback: AsyncCallback<void>): void	根据指定振动效果和振动属性触发马达振动，使用Callback异步回调。
@@ -22,6 +25,7 @@ getVibratorInfoSync(param?: VibratorInfoParam): Array<VibratorInfo>	同步查询
 on(type: 'vibratorStateChange', callback: Callback<VibratorStatusEvent>): void	注册马达设备上线下状态变化的监听。callback参数VibratorStatusEvent可返回事件时间戳、设备ID、马达数量、上线或下线等信息。
 off(type: 'vibratorStateChange', callback?: Callback<VibratorStatusEvent>): void	注销马达设备上线下状态变化的监听。
 isHdHapticSupported(): boolean	查询是否支持高清振动。
+
 振动效果说明
 
 目前支持三类振动效果，如下所示：
@@ -130,21 +134,14 @@ Duration	是	振动持续时间，仅当类型为"continuous"时有效，单位m
 名称	必填项	说明
 Intensity	是	振动事件强度，有效范围为[0, 100]，数字大小代表最大振动量的xx%。
 Frequency	是	振动事件频率，有效范围为[0, 100]，一般支持频率调节的马达设置为55时为器件的谐振频率，此时振动量最大，越靠近谐振频率的振动，同强度设置的振动量越大。
-Curve	否	
-
-振动曲线，当振动事件类型为"continuous"时有效，为Json数组，支持设置一组调节点，调节点数量最大支持16个，最小为4个，每个调节点需包含如下属性：
-
-"Time"：相对事件起始时间的偏移，最小为0，最大不能超过事件振动时长；
-
-"Intensity"：相对事件振动强度的增益，范围为[0, 1]，此值乘上振动事件强度为对应时间点调节后的强度；
-
-"Frequency"：相对事件振动频率的变化，范围为[-100, 100]，此值加上振动事件频率为对应时间点调节后的频率。
+Curve	否	振动曲线，当振动事件类型为"continuous"时有效，为Json数组，支持设置一组调节点，调节点数量最大支持16个，最小为4个，每个调节点需包含如下属性： "Time"：相对事件起始时间的偏移，最小为0，最大不能超过事件振动时长； "Intensity"：相对事件振动强度的增益，范围为[0, 1]，此值乘上振动事件强度为对应时间点调节后的强度； "Frequency"：相对事件振动频率的变化，范围为[-100, 100]，此值加上振动事件频率为对应时间点调节后的频率。
 
 其他要求：
 
 参数	要求
 振动事件(event)的数量	不得超过128个。
 振动配置文件长度	不得超过64KB。
+
 开发步骤
 
 新建一个工程。
@@ -156,7 +153,6 @@ Curve	否
     "name": "ohos.permission.VIBRATE"
   }
 ],
-module.json5
 
 导入模块。
 
@@ -164,13 +160,11 @@ import { vibrator } from '@kit.SensorServiceKit';
 import { resourceManager } from '@kit.LocalizationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-Index.ets
 
 定义常量。
 
 const fileName: string = 'vibrator.json';
 let TAG = 'vibrator:';
-Index.ets
 
 振动器查询。
 
@@ -184,7 +178,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 情形二 查询指定设备的一个或多个马达信息：
 
@@ -199,7 +192,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 根据指定振动效果和振动属性触发马达振动。
 
@@ -224,7 +216,6 @@ try {
   let e: BusinessError = err as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 情形二 按照预置振动效果触发马达振动，可先查询振动效果是否被支持，再调用振动接口：
 
@@ -262,7 +253,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 情形三 按照自定义振动配置文件触发马达振动：
 
@@ -292,7 +282,6 @@ if (rawFd != undefined) {
     this.uiContext.getHostContext()?.resourceManager.closeRawFdSync(fileName);
   }
 }
-Index.ets
 
 情形四 Pattern类型的马达振动：
 
@@ -332,7 +321,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 添加长振事件的方式获取Pattern，并触发振动：
 
@@ -384,7 +372,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 停止马达的振动。
 
@@ -405,7 +392,6 @@ try {
   let e: BusinessError = err as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 ​停止预置振动：
 
@@ -422,7 +408,6 @@ try {
   let e: BusinessError = err as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 方式二 停止所有模式的马达振动，包括自定义振动：
 
@@ -439,7 +424,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 方式三 停止指定设备的振动：
 
@@ -456,7 +440,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 动态马达状态变化监听。
 
@@ -475,7 +458,6 @@ vibratorStateChangeCallback = (data: vibrator.VibratorStatusEvent) => {
               let e: BusinessError = error as BusinessError;
               console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
             }
-Index.ets
 
 取消监听,取消传入的callback需与注册的一致。
 
@@ -494,7 +476,6 @@ vibratorStateChangeCallback = (data: vibrator.VibratorStatusEvent) => {
               let e: BusinessError = error as BusinessError;
               console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
             }
-Index.ets
 
 通过设备ID和马达ID获取预置振动效果信息。
 
@@ -506,7 +487,6 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
 
 查询是否支持高清振动。
 
@@ -519,6 +499,448 @@ try {
   let e: BusinessError = error as BusinessError;
   console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
 }
-Index.ets
-振动开发概述
-振动开发指导(C/C++)
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+    "MetaData": {
+        "Create": "2023-01-09",
+        "Description": "a haptic case",
+        "Version": 1.0,
+        "ChannelNumber": 1
+    },
+    "Channels": [
+        {
+            "Parameters": {
+                "Index": 0
+            },
+            "Pattern": [
+                {
+                    "Event": {
+                        "Type": "transient",
+                        "StartTime": 0,
+                        "Parameters": {
+                            "Frequency": 31,
+                            "Intensity": 100
+                        }
+                    }
+                },
+                {
+                    "Event": {
+                        "Type": "continuous",
+                        "StartTime": 40,
+                        "Duration": 54,
+                        "Parameters": {
+                            "Frequency": 30,
+                            "Intensity": 38,
+                            "Curve": [
+                                {
+                                    "Time": 0,
+                                    "Frequency": 0,
+                                    "Intensity": 0
+                                },
+                                {
+                                    "Time": 1,
+                                    "Frequency": 15,
+                                    "Intensity": 0.5
+                                },
+                                {
+                                    "Time": 40,
+                                    "Frequency": -8,
+                                    "Intensity": 1.0
+                                },
+                                {
+                                    "Time": 54,
+                                    "Frequency": 0,
+                                    "Intensity": 0
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+
+### Code block 2
+
+```
+"requestPermissions": [
+  {
+    "name": "ohos.permission.VIBRATE"
+  }
+],
+```
+
+### Code block 3
+
+```
+import { vibrator } from '@kit.SensorServiceKit';
+import { resourceManager } from '@kit.LocalizationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 4
+
+```
+const fileName: string = 'vibrator.json';
+let TAG = 'vibrator:';
+```
+
+### Code block 5
+
+```
+try {
+  const vibratorInfoList: vibrator.VibratorInfo[] = vibrator.getVibratorInfoSync();
+  console.info(`vibratorInfoList: ${JSON.stringify(vibratorInfoList)}`);
+  // ...
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 6
+
+```
+try {
+  const vibratorParam: vibrator.VibratorInfoParam = {
+    deviceId: -1    // deviceId 需要是查询出来真实存在的设备
+  }
+  const vibratorInfoList: vibrator.VibratorInfo[] = vibrator.getVibratorInfoSync(vibratorParam);
+  console.info(`vibratorInfoList: ${JSON.stringify(vibratorInfoList)}`);
+  // ...
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 7
+
+```
+try {
+  // 触发马达振动
+  vibrator.startVibration({
+    type: 'time',
+    duration: 1000,
+  }, {
+    id: 0,
+    usage: 'alarm'
+  }, (error: BusinessError) => {
+    if (error) {
+      console.error(`Failed to start vibration. Code: ${error.code}, message: ${error.message}`);
+      return;
+    }
+    console.info('Succeed in starting vibration');
+  });
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 8
+
+```
+try {
+  vibrator.isSupportEffect(this.realEffectId, (err: BusinessError, state: boolean) => {
+    if (err) {
+      console.error(`Failed to query effect. Code: ${err.code}, message: ${err.message}`);
+      return;
+    }
+    console.info('Succeed in querying effect');
+    if (state) {
+      try {
+        // 触发马达振动
+        vibrator.startVibration({
+          type: 'preset',
+          effectId: this.realEffectId,
+          count: 1,
+          intensity: 50,
+        }, {
+          usage: 'unknown'
+        }, (error: BusinessError) => {
+          if (error) {
+            console.error(`Failed to start vibration. Code: ${error.code}, message: ${error.message}`);
+          } else {
+            console.info('Succeed in starting vibration');
+          }
+        });
+      } catch (error) {
+        let e: BusinessError = error as BusinessError;
+        console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+      }
+    }
+  })
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 9
+
+```
+// 获取文件资源描述符
+let rawFd: resourceManager.RawFileDescriptor | undefined = this.uiContext.getHostContext()?.resourceManager.getRawFdSync(fileName);
+if (rawFd != undefined) {
+  // 触发马达振动
+  try {
+    vibrator.startVibration({
+      type: "file",
+      hapticFd: { fd: rawFd.fd, offset: rawFd.offset, length: rawFd.length }
+    }, {
+      id: 0,
+      usage: 'alarm' // 根据实际选择类型归属不同的开关管控
+    }, (error: BusinessError) => {
+      if (error) {
+        console.error(`Failed to start vibration. Code: ${error.code}, message: ${error.message}`);
+        return;
+      }
+      console.info('Succeed in starting vibration');
+    });
+  } catch (err) {
+    let e: BusinessError = err as BusinessError;
+    console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+  } finally {
+    vibrator.stopVibration();
+    this.uiContext.getHostContext()?.resourceManager.closeRawFdSync(fileName);
+  }
+}
+```
+
+### Code block 10
+
+```
+let builder: vibrator.VibratorPatternBuilder = new vibrator.VibratorPatternBuilder();
+try {
+  let param: vibrator.TransientParam = {
+    intensity: 80,
+    frequency: 70,
+    index: 0
+  }
+  builder.addTransientEvent(0, param);
+  console.info(`addTransientEvent builder is ${builder.build()}`);
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+try {
+  vibrator.startVibration({
+    type: "pattern",
+    pattern: builder.build()
+  }, {
+    id: 1,
+    deviceId: -1,
+    // 根据实际选择类型归属不同的开关管控
+    usage: "alarm"
+  }, (error: BusinessError) => {
+    if (error) {
+      let e: BusinessError = error as BusinessError;
+      console.error(`Vibrate fail. Code: ${e.code}, message: ${e.message}`);
+    } else {
+      console.info(`vibrate success`);
+    }
+  });
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 11
+
+```
+let builder: vibrator.VibratorPatternBuilder = new vibrator.VibratorPatternBuilder();
+try {
+  // VibratorCurvePoint参数最少设置4个，最大设置16个
+  let pointsMe: vibrator.VibratorCurvePoint[] = [
+    { time: 0, intensity: 0, frequency: -7 },
+    { time: 42, intensity: 1, frequency: -6 },
+    { time: 128, intensity: 0.94, frequency: -4 },
+    { time: 217, intensity: 0.63, frequency: -14 },
+    { time: 763, intensity: 0.48, frequency: -14 },
+    { time: 1125, intensity: 0.53, frequency: -10 },
+    { time: 1503, intensity: 0.42, frequency: -14 },
+    { time: 1858, intensity: 0.39, frequency: -14 },
+    { time: 2295, intensity: 0.34, frequency: -17 },
+    { time: 2448, intensity: 0.21, frequency: -14 },
+    { time: 2468, intensity: 0, frequency: -21 }
+  ]
+  let param: vibrator.ContinuousParam = {
+    intensity: 97,
+    frequency: 34,
+    points: pointsMe,
+    index: 0
+  }
+  builder.addContinuousEvent(0, 2468, param);
+  console.info(`addContinuousEvent builder is ${builder.build()}`);
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`Exception. Code ${e.code}`);
+}
+try {
+  vibrator.startVibration({
+    type: 'pattern',
+    pattern: builder.build()
+  }, {
+    id: 1,
+    deviceId: -1,
+    usage:"alarm",
+  }, (error: BusinessError) => {
+    if (error) {
+      let e: BusinessError = error as BusinessError;
+      console.error(`Vibrate fail. Code: ${e.code}, message: ${e.message}`);
+    } else {
+      console.info(`vibrate success`);
+    }
+  });
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 12
+
+```
+try {
+  // 按照VIBRATOR_STOP_MODE_TIME模式停止振动
+  vibrator.stopVibration(vibrator.VibratorStopMode.VIBRATOR_STOP_MODE_TIME, (error: BusinessError) => {
+    if (error) {
+      console.error(`Failed to stop vibration. Code: ${error.code}, message: ${error.message}`);
+      return;
+    }
+    console.info('Succeed in stopping vibration');
+  })
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 13
+
+```
+try {
+  // 按照VIBRATOR_STOP_MODE_PRESET模式停止振动
+  vibrator.stopVibration(vibrator.VibratorStopMode.VIBRATOR_STOP_MODE_PRESET, (error: BusinessError) => {
+    if (error) {
+      console.error(`Failed to stop vibration. Code: ${error.code}, message: ${error.message}`);
+      return;
+    }
+    console.info('Succeed in stopping vibration');
+  })
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 14
+
+```
+try {
+  // 停止所有模式的马达振动
+  vibrator.stopVibration((error: BusinessError) => {
+    if (error) {
+      console.error(`Failed to stop vibration. Code: ${error.code}, message: ${error.message}`);
+      return;
+    }
+    console.info('Succeed in stopping vibration');
+  })
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 15
+
+```
+const vibratorInfoParam: vibrator.VibratorInfoParam = {
+  deviceId: -1   // deviceId 需要是查询出来真实存在的设备
+}
+try {
+  vibrator.stopVibration(vibratorInfoParam).then(() => {
+    console.info('Succeed in stopping vibration');
+  }, (error: BusinessError) => {
+    console.error(`Failed to stop vibration. Code: ${error.code}, message: ${error.message}`);
+  });
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 16
+
+```
+// 回调函数
+vibratorStateChangeCallback = (data: vibrator.VibratorStatusEvent) => {
+  console.info('vibrator state callback info:', JSON.stringify(data));
+  // ...
+}
+// ...
+            try {
+              // 订阅 vibratorStateChange事件
+              vibrator.on('vibratorStateChange', this.vibratorStateChangeCallback);
+            } catch (error) {
+              let e: BusinessError = error as BusinessError;
+              console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+            }
+```
+
+### Code block 17
+
+```
+// 回调函数
+vibratorStateChangeCallback = (data: vibrator.VibratorStatusEvent) => {
+  console.info('vibrator state callback info:', JSON.stringify(data));
+  // ...
+}
+// ...
+            try {
+              // 取消订阅 vibratorStateChange事件
+              vibrator.off('vibratorStateChange', this.vibratorStateChangeCallback);
+              // 取消订阅所有 vibratorStateChange事件
+              // vibrator.off('vibratorStateChange');
+            } catch (error) {
+              let e: BusinessError = error as BusinessError;
+              console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+            }
+```
+
+### Code block 18
+
+```
+try {
+  const effectInfo: vibrator.EffectInfo = vibrator.getEffectInfoSync('haptic.clock.timer', { deviceId: -1, vibratorId: 1});
+  console.info(`isEffectSupported: ${effectInfo.isEffectSupported}`);
+  // ...
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```
+
+### Code block 19
+
+```
+try {
+  // 查询是否支持高清振动
+  let ret = vibrator.isHdHapticSupported();
+  console.info(`The query result is ${ret}`);
+  // ...
+} catch (error) {
+  let e: BusinessError = error as BusinessError;
+  console.error(`An unexpected error occurred. Code: ${e.code}, message: ${e.message}`);
+}
+```

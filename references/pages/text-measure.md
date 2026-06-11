@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-measure_
 
+文本测量（ArkTS）
+
+文本测量（C/C++）

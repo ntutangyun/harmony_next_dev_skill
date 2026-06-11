@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-pdf-preview_
 
-Web组件支持在网页中预览PDF。应用通过WebOptions的src参数和loadUrl()接口加载PDF文档。具体场景包括：网络PDF文档、应用沙箱内PDF文档和本地PDF文档。
+Web组件支持在网页中预览PDF。但受限于性能表现，部分场景存在掉帧现象。若对流畅度有要求，建议使用PdfView，或第三方解析库PDF.js。应用通过WebOptions的src参数和loadUrl()接口加载PDF文档。具体场景包括：网络PDF文档、应用沙箱内PDF文档和本地PDF文档。
 
 若涉及网络文档获取，需在module.json5中配置网络访问权限。添加方法请参考在配置文件中声明权限。
 
@@ -11,19 +11,17 @@ Web组件支持在网页中预览PDF。应用通过WebOptions的src参数和load
     "name" : "ohos.permission.INTERNET"
   }
 ],
-module.json5
+
 通过不同的方式加载PDF文档
 
 在下面的示例中，Web组件创建时指定默认加载的网络PDF文档https://www.example.com/test.pdf。使用时需替换为真实的可访问URL。
 
 import { webview } from '@kit.ArkWeb';
 
-
 @Entry
 @Component
 struct WebComponent {
   controller: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -39,7 +37,6 @@ struct WebComponent {
     }
   }
 }
-PreviewPDF.ets
 
 PDF预览页面会根据用户操作使用window.localStorage记录侧导航栏的展开状态，因此需要开启文档对象模型存储domStorageAccess权限:
 
@@ -74,6 +71,7 @@ Web({
   controller: this.controller
 })
   .domStorageAccess(true)
+
 通过配置PDF文件预览参数，控制打开预览时页面状态
 
 当前支持如下参数:
@@ -95,6 +93,7 @@ https://example.com/test.pdf#page=3&zoom=200,250,100
 https://example.com/test.pdf#toolbar=0
 https://example.com/test.pdf#navpanes=0
 https://example.com/test.pdf#pdfbackgroundcolor=ffffff
+
 PDF文档预览回调功能
 
 从API version 20开始，PDF文档预览支持两种回调功能：加载成功/失败回调和滚动到底部事件回调。
@@ -124,7 +123,123 @@ Web({
       console.info(`Scroll at bottom callback called. url: ${eventInfo.url}.`)
     }
   )
+
 示例代码
+
 Web组件预览PDF文件
-使用Web组件保存前端页面为PDF
-网页中安全区域计算和避让适配
+
+## Code blocks
+
+### Code block 1
+
+```
+"requestPermissions":[
+  {
+    "name" : "ohos.permission.INTERNET"
+  }
+],
+```
+
+### Code block 2
+
+```
+import { webview } from '@kit.ArkWeb';
+
+@Entry
+@Component
+struct WebComponent {
+  controller: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Web({
+        src:
+        'https://www.example.com/test.pdf',                     // 方式一 加载网络PDF文档
+          // this.getUIContext().getHostContext()!.filesDir + '/test.pdf', // 方式二 加载本地应用沙箱内PDF文档
+          // 'resource://rawfile/test.pdf',                         // 方式三 本地PDF文档 (格式一)
+          // $rawfile('test.pdf'),                                 // 方式三 本地PDF文档 (格式二)
+          controller: this.controller
+      })
+        .domStorageAccess(true)
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+Web().domStorageAccess(true)
+```
+
+### Code block 4
+
+```
+Web({
+  src: "https://www.example.com/test.pdf",
+  controller: this.controller
+})
+  .domStorageAccess(true)
+```
+
+### Code block 5
+
+```
+Web({
+  src: this.getUIContext().getHostContext()!.filesDir + "/test.pdf",
+  controller: this.controller
+})
+  .domStorageAccess(true)
+  .fileAccess(true)
+```
+
+### Code block 6
+
+```
+Web({
+  src: "resource://rawfile/test.pdf",            // 格式一 加载本地PDF文档
+  // src: $rawfile('test.pdf'),                  // 格式二 加载本地PDF文档
+  controller: this.controller
+})
+  .domStorageAccess(true)
+```
+
+### Code block 7
+
+```
+https://example.com/test.pdf#nameddest=Chapter6
+https://example.com/test.pdf#page=3
+https://example.com/test.pdf#zoom=50
+https://example.com/test.pdf#page=3&zoom=200,250,100
+https://example.com/test.pdf#toolbar=0
+https://example.com/test.pdf#navpanes=0
+https://example.com/test.pdf#pdfbackgroundcolor=ffffff
+```
+
+### Code block 8
+
+```
+Web({
+  src: 'https://www.example.com/test.pdf',
+  controller: this.controller
+})
+  .onPdfLoadEvent(
+    (eventInfo: OnPdfLoadEvent) => {
+      console.info(`Load event callback called. url: ${eventInfo.url}, result: ${eventInfo.result}.`)
+    }
+  )
+```
+
+### Code block 9
+
+```
+Web({
+  src: 'https://www.example.com/test.pdf',
+  controller: this.controller
+})
+  .onPdfScrollAtBottom(
+    (eventInfo: OnPdfScrollEvent) => {
+      console.info(`Scroll at bottom callback called. url: ${eventInfo.url}.`)
+    }
+  )
+```

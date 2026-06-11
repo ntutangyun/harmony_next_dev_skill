@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-database-add-file_
 
+约束与限制
+
 支持Phone、Tablet设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持PC/2in1设备。
 
 前提条件
@@ -32,6 +34,27 @@ Date对应Date。
 
 import { cloudDatabase } from '@kit.CloudFoundationKit';
 
+class BookInfo extends cloudDatabase.DatabaseObject{
+  public naturalbase_ClassName(): string {
+    return "BookInfo";
+  }
+  public id: number | undefined;
+  public bookName: string | undefined;
+  public author: string | undefined;
+  public price: number | undefined;
+  public borrowerId: number | undefined;
+  public borrowerName: string | undefined;
+  public borrowerTime: Date | undefined;
+}
+
+export { BookInfo };
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cloudDatabase } from '@kit.CloudFoundationKit';
 
 class BookInfo extends cloudDatabase.DatabaseObject{
   public naturalbase_ClassName(): string {
@@ -46,7 +69,5 @@ class BookInfo extends cloudDatabase.DatabaseObject{
   public borrowerTime: Date | undefined;
 }
 
-
 export { BookInfo };
-新增存储区
-初始化数据库访问
+```

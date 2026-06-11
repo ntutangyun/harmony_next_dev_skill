@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-audit-subscribe-arkts-filterevent_
 
+场景介绍
+
 从6.0.0(20)开始，新增提供统一的安全审计数据多客户端订阅/取消订阅与添加/删除过滤条件接口，应用可以获取设备上的安全审计数据（如下表），并按需进行过滤，以支撑审计相关业务。
 
 审计事件ID	说明
@@ -32,137 +34,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 0x018000103	app恢复拦截事件
 0x018000104	app启动拦截事件
 0x030000000	USB访问拦截事件
-0x0F000001	
-
-SMB(Samba)外发事件
-
-起始版本： 6.1.0(23)
-
-
-0x1C000014	
-
-KIA文件秒开事件
-
-起始版本： 6.1.0(23)
-
-
-0x27000100	
-
-HDC(HarmonyOS Device Connector)调测文件事件
-
-起始版本： 6.1.0(23)
-
-
-0x27000101	
-
-HDC(HarmonyOS Device Connector)调测拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x2F000000	
-
-多用户空间数据互传事件
-
-起始版本： 6.1.0(23)
-
-
-0x2F000001	
-
-多用户空间互换审核策略事件
-
-起始版本： 6.1.0(23)
-
-
-0x30000100	
-
-串口访问审计事件
-
-起始版本： 6.1.0(23)
-
-
-0x03000002	
-
-网络拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x03000100	
-
-WI-FI拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x2E000001	
-
-打印拦截事件
-
-起始版本： 6.1.0(23)
-
-
-0x12001081	
-
-应用代码未签名
-
-起始版本： 6.1.1(24)
-
-
-0x12001082	
-
-应用代码验签异常
-
-起始版本： 6.1.1(24)
-
-
-0x1C001102	
-
-系统目录异常挂载
-
-起始版本： 6.1.1(24)
-
-
-0x1C001200	
-
-驱动代码验签异常
-
-起始版本： 6.1.1(24)
-
-
-0x1C001201	
-
-驱动非法映射内核内存
-
-起始版本： 6.1.1(24)
-
-
-0x1C001300	
-
-内核内存异常使用
-
-起始版本： 6.1.1(24)
-
-
-0x1C001401	
-
-进程异常调试
-
-起始版本： 6.1.1(24)
-
-
-0x1C001402	
-
-进程异常崩溃
-
-起始版本： 6.1.1(24)
-
-
-0x1C001403	
-
-进程提权
-
-起始版本： 6.1.1(24)
+0x0F000001	SMB(Samba)外发事件 起始版本： 6.1.0(23)
+0x1C000014	KIA文件秒开事件 起始版本： 6.1.0(23)
+0x27000100	HDC(HarmonyOS Device Connector)调测文件事件 起始版本： 6.1.0(23)
+0x27000101	HDC(HarmonyOS Device Connector)调测拦截事件 起始版本： 6.1.0(23)
+0x2F000000	多用户空间数据互传事件 起始版本： 6.1.0(23)
+0x2F000001	多用户空间互换审核策略事件 起始版本： 6.1.0(23)
+0x30000100	串口访问审计事件 起始版本： 6.1.0(23)
+0x03000002	网络拦截事件 起始版本： 6.1.0(23)
+0x03000100	WI-FI拦截事件 起始版本： 6.1.0(23)
+0x2E000001	打印拦截事件 起始版本： 6.1.0(23)
+0x12001081	应用代码未签名 起始版本： 6.1.1(24)
+0x12001082	应用代码验签异常 起始版本： 6.1.1(24)
+0x1C001102	系统目录异常挂载 起始版本： 6.1.1(24)
+0x1C001200	驱动代码验签异常 起始版本： 6.1.1(24)
+0x1C001201	驱动非法映射内核内存 起始版本： 6.1.1(24)
+0x1C001300	内核内存异常使用 起始版本： 6.1.1(24)
+0x1C001401	进程异常调试 起始版本： 6.1.1(24)
+0x1C001402	进程异常崩溃 起始版本： 6.1.1(24)
+0x1C001403	进程提权 起始版本： 6.1.1(24)
 
 约束与限制
 
@@ -207,7 +97,9 @@ subscribe(events: NotifyEvent[]): void	订阅审计通知类事件。
 unsubscribe(events: NotifyEvent[]): void	解订阅审计通知类事件。
 addFilter(event: NotifyEvent, filter: Filter): void	添加审计通知类事件过滤条件。
 removeFilter(event: NotifyEvent, filter: Filter): void	移除审计通知类事件过滤条件。
+
 开发步骤
+
 说明
 
 在开发准备过程中，需要申请权限：ohos.permission.QUERY_AUDIT_EVENT。
@@ -296,5 +188,102 @@ try {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'deleteClient failed: %{public}d %{public}s', e.code, e.message);
 }
-多客户端订阅场景
-订阅阻断类事件
+
+## Code blocks
+
+### Code block 1
+
+```
+import { securityAudit } from '@kit.DeviceSecurityKit';
+import { BusinessError} from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+let client: securityAudit.Client | undefined = undefined;
+const TAG = "SecurityAuditJsTest";
+const callback = (event: securityAudit.AuditEvent) => {
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func eventId= ' + event.eventId);
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func version= ' + event.version);
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func content= ' + event.content);
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func timestamp= ' + event.timestamp);
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func userId= ' + event.userId);
+  hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func deviceId= ' + event.deviceId);
+};
+try {
+  client = securityAudit.newClient(callback);
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'newClient failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 3
+
+```
+try {
+  hilog.info(0x0000, TAG, 'subscribe begin.');
+  client?.subscribe([0x02D000000]);
+  hilog.info(0x0000, TAG, 'Succeeded in subscribe.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'subscribe failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 4
+
+```
+let filter : securityAudit.Filter = {
+  type: 0x00000200,
+  isInclude: true,
+  values : ["2"]
+};
+try {
+  hilog.info(0x0000, TAG, 'addFilter begin.');
+  client?.addFilter(0x02D000000, filter);
+  hilog.info(0x0000, TAG, 'Succeeded in addFilter.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'addFilter failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 5
+
+```
+try {
+  hilog.info(0x0000, TAG, 'unsubscribe begin.');
+  client?.unsubscribe([0x2E000000]);
+  hilog.info(0x0000, TAG, 'Succeeded in unsubscribe.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'unsubscribe failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 6
+
+```
+try {
+  hilog.info(0x0000, TAG, 'removeFilter begin.');
+  client?.removeFilter(0x02D000000, filter);
+  hilog.info(0x0000, TAG, 'Succeeded in removeFilter.');
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'removeFilter failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 7
+
+```
+try {
+  securityAudit.deleteClient(client);
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'deleteClient failed: %{public}d %{public}s', e.code, e.message);
+}
+```

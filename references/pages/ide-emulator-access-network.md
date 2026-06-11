@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-access-network_
 
+模拟器访问互联网
+
+模拟器可以通过本地计算机的网络直接访问互联网。
+
 模拟器访问互联网实际上利用的是本地计算机的以太网或者WLAN，与本地计算机共享同一网络资源。如果无法连接网络，请确认本地网络访问是否受到了限制（如使用公司内网）。如果网络访问受到限制，则需要在模拟器上配置网络代理，请参考网络代理设置。
 
 如果访问网络时需要安装数字证书，请参考使用模拟器发起https请求时如何安装数字证书。
@@ -19,13 +23,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emula
 如果两个模拟器需要进行通信互联，请按如下步骤进行设置。
 
 在本地计算机上，运行模拟器A和模拟器B，模拟器本机IP为10.0.2.15。
+
 在模拟器B上设置服务端，使其监听10.0.2.15:<serverPort>。
-在本地计算机上，设置从本地计算机localhost:<localPort>到模拟器B 10.0.2.15:<serverPort>的重定向，如：
+
 hdc -t 127.0.0.1:5555 fport tcp:<localPort> tcp:<serverPort>
 
 该命令中127.0.0.1:5555为模拟器B的HDC服务端口号，可通过hdc list targets命令查询。
 
 在模拟器A上，设置客户端连接到10.0.2.2:<localPort>，其中10.0.2.2为模拟器的默认网关。
 
-移动和缩放模拟器
-安装应用程序包和上传文件
+## Code blocks
+
+### Code block 1
+
+```
+hdc -t 127.0.0.1:5555 fport tcp:<localPort> tcp:<serverPort>
+```

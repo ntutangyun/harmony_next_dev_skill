@@ -2,9 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-vsync-guidelines_
 
+场景介绍
+
 NativeVSync模块用于获取系统VSync信号，提供OH_NativeVSync实例的创建、销毁及设置VSync回调函数的功能。VSync信号触发时，将调用已设置的回调函数。
 
 接口说明
+
 接口名	描述
 OH_NativeVSync_Create (const char *name, unsigned int length)	创建一个OH_NativeVSync实例，每次调用都会产生一个新的实例并创建一个vsync线程接收处理回调。本接口需要与OH_NativeVSync_Destroy接口配合使用，否则会存在内存泄露。
 OH_NativeVSync_Destroy (OH_NativeVSync *nativeVsync)	销毁OH_NativeVSync实例。
@@ -37,17 +40,14 @@ void RenderEngine::OnVsync(long long timestamp, void *data)
         return;
     }
 
-
     renderEngine->vSyncCnt_++;
     renderEngine->wakeUpCond_.notify_one();
 }
-render_engine.cpp
 
 创建OH_NativeVSync实例。
 
 const char* demoName = "NativeImageSample";
 nativeVsync_ = OH_NativeVSync_Create(demoName, strlen(demoName));
-render_engine.cpp
 
 通过OH_NativeVSync实例设置VSync回调函数。
 
@@ -58,12 +58,64 @@ if (vSyncCnt_ > 0) {
     (void)OH_NativeVSync_RequestFrame(nativeVsync_, &RenderEngine::OnVsync, this);
     OH_NativeVSync_GetPeriod(nativeVsync_, &period);
 }
-render_engine.cpp
 
 销毁OH_NativeVSync实例。
 
 OH_NativeVSync_Destroy(nativeVsync_);
 nativeVsync_ = nullptr;
-render_engine.cpp
-添加图像效果（C/C++）
-图形缓冲区
+
+## Code blocks
+
+### Code block 1
+
+```
+libnative_vsync.so
+```
+
+### Code block 2
+
+```
+#include <native_vsync/native_vsync.h>
+```
+
+### Code block 3
+
+```
+void RenderEngine::OnVsync(long long timestamp, void *data)
+{
+    OH_LOG_Print(LOG_APP, LOG_DEBUG, LOG_PRINT_DOMAIN, "RenderEngine", "OnVsync %{public}lld.", timestamp);
+    auto renderEngine = reinterpret_cast<RenderEngine *>(data);
+    if (renderEngine == nullptr) {
+        return;
+    }
+
+    renderEngine->vSyncCnt_++;
+    renderEngine->wakeUpCond_.notify_one();
+}
+```
+
+### Code block 4
+
+```
+const char* demoName = "NativeImageSample";
+nativeVsync_ = OH_NativeVSync_Create(demoName, strlen(demoName));
+```
+
+### Code block 5
+
+```
+wakeUpCond_.wait(lock, [this]() { return wakeUp_ || vSyncCnt_ > 0; });
+wakeUp_ = false;
+if (vSyncCnt_ > 0) {
+    vSyncCnt_--;
+    (void)OH_NativeVSync_RequestFrame(nativeVsync_, &RenderEngine::OnVsync, this);
+    OH_NativeVSync_GetPeriod(nativeVsync_, &period);
+}
+```
+
+### Code block 6
+
+```
+OH_NativeVSync_Destroy(nativeVsync_);
+nativeVsync_ = nullptr;
+```

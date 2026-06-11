@@ -11,6 +11,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug
 从DevEco Studio 6.0.2 Beta1版本开始，支持预览pixelMap类型的变量。点击pixelMap变量右侧的View PixelMap，即可预览pixelMap。
 
 预览效果如下：
-
-使用断点
-反向调试

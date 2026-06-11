@@ -2,6 +2,64 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-errorcode-00403_
 
+00403001 离线日志解析失败
+
+错误信息
+
+Failed to parse the HiLog file: XXX.
+
+错误描述
+
+离线日志解析失败。
+
+可能原因
+
+离线日志解析失败。
+
+处理步骤
+
+重新选择离线日志。
+
+00403003 应用堆栈解析出现错误
+
+错误信息
+
+应用堆栈解析相关报错，具体报错视情况而定。
+
+错误描述
+
+应用堆栈解析出现错误。
+
+可能原因
+
+根据报错提示信息来查找原因，具体参考处理步骤。
+
+处理步骤
+
+参考Release应用堆栈解析相关错误提示及解决措施。
+
+00403028 应用程序意外退出
+
+错误信息
+
+App have been shutdown unexpectedly.
+
+错误描述
+
+应用程序意外退出。
+
+可能原因
+
+应用程序意外退出，因此调试服务也退出。
+
+处理步骤
+
+重新启动调试。
+
+00403029 sourceMaps.map文件内容为空
+
+错误信息
+
 The JSON content is empty when the sourceMaps.map file is read.
 
 错误描述
@@ -29,12 +87,15 @@ Failed to connect to the WebSocket. Restart the debugging. If the problem persis
 可能原因
 
 连接WebSocket失败。
+
 如果是2in1设备，可能是应用开启了应用加速服务。
 
 处理步骤
 
 请重新启动调试。如果问题仍然存在，请重启DevEco Studio并重新启动调试。
+
 如果是2in1设备，请在设备的设置 > 应用加速服务中，查看应用是否开启了应用加速服务，并关闭应用的加速服务。
+
 00403031 进程pid无效
 
 错误信息
@@ -250,6 +311,3 @@ Jerry调试引擎异常停止。
 处理步骤
 
 点击菜单栏Build > Clean Project清理缓存后重试，如果未解决，重启DevEco Studio。
-
-热重载和增量调试错误码
-hdc命令失败错误码

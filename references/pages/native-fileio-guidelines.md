@@ -2,9 +2,23 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-fileio-guidelines_
 
+场景介绍
+
+FileIO模块提供了部分文件基础操作能力，其他能力请参考libc标准库/c++标准库。
+
+约束限制
+
+进行文件操作之前，必须保证传入正确有效的URI或path。
+
+接口说明
+
+接口的详细说明，请参考FileIO。
+
+接口名称	描述
 FileManagement_ErrCode OH_FileIO_GetFileLocation(char *uri, int uriLength, FileIO_FileLocation *location)	获取文件存储位置。
 enum FileIO_FileLocation FileIO_FileLocation	文件存储位置枚举值。
 enum FileManagement_ErrCode FileManagement_ErrCode	文件管理模块错误码。
+
 开发步骤
 
 在CMake脚本中链接动态库
@@ -37,6 +51,40 @@ void GetFileLocationExample(char *uri)
         printf("Failed to get file location, error code is %d", ret);
     }
 }
-napi_init.cpp
-应用文件访问(ArkTS)
-应用及文件系统空间统计
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(sample PUBLIC libohfileio.so)
+```
+
+### Code block 2
+
+```
+#include <cstdio>
+#include <cstring>
+#include <filemanagement/fileio/oh_fileio.h>
+```
+
+### Code block 3
+
+```
+void GetFileLocationExample(char *uri)
+{
+    FileIO_FileLocation location;
+    FileManagement_ErrCode ret = OH_FileIO_GetFileLocation(uri, strlen(uri), &location);
+    if (ret == 0) {
+        if (location == FileIO_FileLocation::LOCAL) {
+            printf("Succeeded in getting file location, this file is on local.");
+        } else if (location == FileIO_FileLocation::CLOUD) {
+            printf("Succeeded in getting file location, this file is on cloud.");
+        } else if (location == FileIO_FileLocation::LOCAL_AND_CLOUD) {
+            printf("Succeeded in getting file location, this file is on  local and cloud.");
+        }
+    } else {
+        printf("Failed to get file location, error code is %d", ret);
+    }
+}
+```

@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-common-pay-external_
 
+场景介绍
+
+从5.0.2(14)版本开始，新增支持通用收银台纯外部支付场景。
+
 用户在开发者的应用/元服务中选购完商品，点击下单购买，应用/元服务拉起通用收银台支付仅可以选择三方支付方式完成商品订单的支付。
 
 支持商户模型：不涉及华为支付商户入网。
@@ -13,15 +17,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-c
 华为支付通用收银台纯外部支付接入流程如下：
 
 步骤	说明
-商户入网（非必选）	
-
-三方支付商户入网（非必选）
-
-由于三方支付为直接连接第三方支付平台完成支付，故可能涉及需要开发者在第三方支付平台注册、创建商户（建议开发者用新申请的商户号与现有商户号做区分）。
-
-
+商户入网（非必选）	三方支付商户入网（非必选） 由于三方支付为直接连接第三方支付平台完成支付，故可能涉及需要开发者在第三方支付平台注册、创建商户（建议开发者用新申请的商户号与现有商户号做区分）。
 产品开通与配置	申请开通三方支付及完成相关支付模式配置。
 通用收银台接入	根据纯外部支付场景开发步骤完成通用收银台支付接入。
+
 业务流程
 
 纯外部支付模式下，收银台仅支持第三方平台支付，用户无法使用华为支付。具体接入流程如下：
@@ -95,8 +94,10 @@ cashierPicker(context: common.UIAbilityContext, paymentInfo: PaymentInfo): Promi
 requestPayment(context: common.UIAbilityContext, orderStr: string, payload: string): Promise<PayResult>	跳转三方支付收银台。
 pay(payInfo: string): Promise<void>;	拉起三方支付收银台。
 handlePayCallback(want: Want): boolean;	三方支付结果回调同步华为支付收银台。
+
 开发步骤
-拉起通用收银台（端侧开发）
+
+[h2]拉起通用收银台（端侧开发）
 
 商户客户端构建PaymentInfo参数调用cashierPicker接口拉起Payment Kit通用收银台，用户选择支付方式并确认支付后，Payment Kit客户端将支付信息PickerResult返回给商户客户端 。
 
@@ -106,13 +107,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { paymentService } from '@kit.PaymentKit';
 import { common } from '@kit.AbilityKit';
 
-
 @Entry
 @Component
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestCashierPickerCallBack() {
-    // use your own paymentInfo
+    // 请开发者使用自己的支付订单信息（paymentInfo）
     const paymentInfo: paymentService.PaymentInfo= {
       tradeSummary: "***交易",
       amount: 100,
@@ -121,15 +121,14 @@ struct Index {
     }
     paymentService.cashierPicker(this.context, paymentInfo)
       .then((pickerResult: paymentService.PickerResult) => {
-        // succeeded in paying
+        // 支付成功
         console.info('succeeded in paying, picker result: ', pickerResult);
       })
       .catch((error: BusinessError) => {
-        // failed to pay
+        // 支付失败
         console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
-
 
   build() {
     Column() {
@@ -145,9 +144,55 @@ struct Index {
     .height('100%')
   }
 }
-拉起三方支付收银台（端侧开发）
+
+[h2]拉起三方支付收银台（端侧开发）
 
 根据产品开通与配置中的所配置的支付方式，参考拉起三方支付收银台进行三方支付收银台拉起处理。
 
-混合支付场景
-拉起三方支付收银台
+## Code blocks
+
+### Code block 1
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { paymentService } from '@kit.PaymentKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct Index {
+  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  requestCashierPickerCallBack() {
+    // 请开发者使用自己的支付订单信息（paymentInfo）
+    const paymentInfo: paymentService.PaymentInfo= {
+      tradeSummary: "***交易",
+      amount: 100,
+      currency: "CNY",
+      extraInfo: '{"***":"***"}'
+    }
+    paymentService.cashierPicker(this.context, paymentInfo)
+      .then((pickerResult: paymentService.PickerResult) => {
+        // 支付成功
+        console.info('succeeded in paying, picker result: ', pickerResult);
+      })
+      .catch((error: BusinessError) => {
+        // 支付失败
+        console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+      });
+  }
+
+  build() {
+    Column() {
+      Button('requestCashierPickerCallBack')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          this.requestCashierPickerCallBack();
+        })
+      }
+    .width('100%')
+    .height('100%')
+  }
+}
+```

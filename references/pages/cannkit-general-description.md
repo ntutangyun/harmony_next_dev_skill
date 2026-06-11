@@ -11,5 +11,15 @@ REGISTER_CUSTOM_OP("OpType")
    .OriginOpType("OriginOpType")
    .ParseParamsByOperatorFn(ParseParamFunc)
    .ImplyType(ImplyType::TVM);
-OpRegistrationData
-构造函数和析构函数
+
+## Code blocks
+
+### Code block 1
+
+```
+REGISTER_CUSTOM_OP("OpType")
+   .FrameworkType(TENSORFLOW)
+   .OriginOpType("OriginOpType")
+   .ParseParamsByOperatorFn(ParseParamFunc)
+   .ImplyType(ImplyType::TVM);
+```

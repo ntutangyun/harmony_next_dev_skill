@@ -71,6 +71,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgaller
 图标删除不需要审批，删除之后不可恢复，请谨慎操作。
 
 如果被删除的图标正在用户设备桌面上使用，图标删除后，桌面上的图标不会自动回退，需要客户端触发图标切换。
-
-图标管理服务
-实现应用图标动态切换

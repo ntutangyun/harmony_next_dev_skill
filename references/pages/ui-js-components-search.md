@@ -2,8 +2,36 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-components-search_
 
-<search hint="Please enter the search content"  searchbutton="search" icon="/common/search1.png"></search>
+提供搜索框组件，用于提供用户搜索内容的输入区域，具体用法请参考search。
+
+创建search组件
+
+在pages/index目录下的hml文件中创建一个search组件。
+
+<!-- xxx.hml-->
+<div class="container">
+  <search></search>
 </div>
+
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+
+设置属性
+
+通过设置hint、icon和searchbutton属性设置搜索框的提示文字、图标和末尾搜索按钮的内容。
+
+<!-- xxx.hml-->
+<div class="container">
+  <search hint="Please enter the search content"  searchbutton="search" icon="/common/search1.png"></search>
+</div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -22,6 +50,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-com
 <div class="container">
   <search hint="Please enter the search content"  searchbutton="search" ></search>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -50,6 +79,7 @@ search{
   onsubmit="submit">
   </search>
 </div>
+
 /* xxx.css */
 .container {
   width: 100%;
@@ -65,6 +95,7 @@ text{
   text-align: center;
   margin-bottom: 100px;
 }
+
 // index.js
 import promptAction from '@ohos.promptAction';
 export default {
@@ -124,6 +155,7 @@ export default {
     <input type="text" class="field" id="input2" placeholder="input2" onchange="change" show="{{showsec}}"></input>
   </div>
 </div>
+
 /* xxx.css */
 .field {
   width: 80%;
@@ -137,6 +169,7 @@ export default {
   left: 50px;
   top: 50px;
 }
+
 // index.js
 import promptAction from '@ohos.promptAction';
 export default {
@@ -176,5 +209,237 @@ export default {
   }
 }
 
-qrcode开发指导
-Canvas开发指导
+## Code blocks
+
+### Code block 1
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <search></search>
+</div>
+```
+
+### Code block 2
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+```
+
+### Code block 3
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <search hint="Please enter the search content"  searchbutton="search" icon="/common/search1.png"></search>
+</div>
+```
+
+### Code block 4
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+```
+
+### Code block 5
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <search hint="Please enter the search content"  searchbutton="search" ></search>
+</div>
+```
+
+### Code block 6
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+search{
+  color: black;
+  placeholder-color: black;
+  caret-color: red;
+}
+```
+
+### Code block 7
+
+```
+<!-- xxx.hml-->
+<div class="container">
+  <text style="margin-left: -7px;">
+    <span>Enter text and then touch and hold what you've entered</span>
+  </text>
+  <search hint="Please enter the search content"  searchbutton="search" onsearch="search" onchange="change" ontranslate="translate" onshare="share"
+  onsubmit="submit">
+  </search>
+</div>
+```
+
+### Code block 8
+
+```
+/* xxx.css */
+.container {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F1F3F5;
+}
+text{
+  width: 100%;
+  font-size: 25px;
+  text-align: center;
+  margin-bottom: 100px;
+}
+```
+
+### Code block 9
+
+```
+// index.js
+import promptAction from '@ohos.promptAction';
+export default {
+  search(e){
+    promptAction.showToast({
+      message: e.value,
+      duration: 3000,
+    });
+  },
+  translate(e){
+    promptAction.showToast({
+      message:  e.value,
+      duration: 3000,
+    });
+  },
+  share(e){
+    promptAction.showToast({
+      message:  e.value,
+      duration: 3000,
+    });
+  },
+  change(e){
+    promptAction.showToast({
+      message:  e.value,
+      duration: 3000,
+    });
+  },
+  submit(e){
+    promptAction.showToast({
+      message: 'submit',
+      duration: 3000,
+    });
+  }
+}
+```
+
+### Code block 10
+
+```
+<!-- xxx.hml-->
+<div style="flex-direction: column;align-items: center;justify-content: center; width: 100%;">
+  <select class="slt1" id="slt1" onchange="setfield">
+    <option value="search">search</option>
+    <option value="textarea">Textarea</option>
+    <option value="input">Input</option>
+  </select>
+  <div if="{{showsearch}}" style="flex-direction: column;align-items: center;margin-top: 50px;height: 400px;justify-content: space-around;">
+    <search class="field" id="search1" hint="search1" onsubmit="submit" onchange="change" ></search>
+    <search class="field" id="search2" icon="common/search1.png" hint="search2" show="{{showsec}}" onsubmit="submit" onchange="change" ></search>
+  </div>
+  <div if="{{showtextarea}}" style="flex-direction: column;align-items: center;margin-top: 50px;height: 400px;justify-content: space-around;">
+    <textarea class="field" id="textarea1" extend="true" placeholder="textarea1" onchange="change" ></textarea>
+    <textarea class="field" id="textarea2" extend="true" placeholder="textarea2" onchange="change" show="{{showsec}}"></textarea>
+  </div>
+  <div if="{{showinput}}" style="flex-direction: column;align-items: center;margin-top: 50px;height: 400px;justify-content: space-around;">
+    <input type="text" class="field" id="input1" placeholder="input1" onchange="change" ></input>
+    <input type="text" class="field" id="input2" placeholder="input2" onchange="change" show="{{showsec}}"></input>
+  </div>
+</div>
+```
+
+### Code block 11
+
+```
+/* xxx.css */
+.field {
+  width: 80%;
+  color: mediumaquamarine;
+  font-weight: 600;
+  placeholder-color: orangered;
+}
+.slt1{
+  font-size: 50px;
+  position: absolute;
+  left: 50px;
+  top: 50px;
+}
+```
+
+### Code block 12
+
+```
+// index.js
+import promptAction from '@ohos.promptAction';
+export default {
+  data: {
+    showsearch: true,
+    showtextarea: false,
+    showinput: false,
+    showsec: true,
+  },
+  setfield(e) {
+    this.field = e.newValue
+    if (e.newValue == 'search') {
+      this.showsearch = true
+      this.showtextarea = false
+      this.showinput = false
+    } else if (e.newValue == 'textarea') {
+      this.showsearch = false
+      this.showtextarea = true
+      this.showinput = false
+    } else {
+      this.showsearch = false
+      this.showtextarea = false
+      this.showinput = true
+    }
+  },
+  submit(e) {
+    promptAction.showToast({
+      message: '搜索！',
+      duration: 2000
+    })
+  },
+  change(e) {
+    promptAction.showToast({
+      message: '内容:' + e.text,
+      duration: 2000
+    })
+  }
+}
+```

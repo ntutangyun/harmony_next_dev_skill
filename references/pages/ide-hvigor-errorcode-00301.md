@@ -2,6 +2,28 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-errorcode-00301_
 
+00301001 SDK中找不到签名工具
+
+错误信息
+
+No HAP signing tool found in the SDK.
+
+错误描述
+
+SDK中找不到签名工具。
+
+可能原因
+
+SDK中缺少签名工具。
+
+处理步骤
+
+根据报错信息检查对应目录下是否存在签名工具，如果不存在，在官网上重新下载DevEco Studio。
+
+00301002 SDK版本过低
+
+错误信息
+
 The SDK version configured for the current project is too low.
 
 错误描述
@@ -141,6 +163,5 @@ The useNormalizedOHMUrl settings of packages XXX and the project useNormalizedOH
 处理步骤
 
 将报错的依赖包的工程级build-profile.json5中的useNormalizedOHMUrl修改为与当前工程一致，重新生成依赖包并替换(useNormalizedOHMUrl缺省默认值为false)。
+
 如果与工程不一致的依赖包较多，建议修改工程的工程级build-profile.json5中的useNormalizedOHMUrl值以及替换其他的不一致的依赖包。
-编译构建错误码
-脚本错误码

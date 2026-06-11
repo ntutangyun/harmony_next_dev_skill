@@ -18,11 +18,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-man
 
 软键盘分为系统软键盘和自定义键盘。输入框的enableKeyboardOnFocus属性会影响系统软键盘弹出。当enableKeyboardOnFocus属性设置为false时，只有通过点击、按键走焦才能弹出系统软键盘。enableKeyboardOnFocus属性对自定义键盘的弹出无影响。外接物理键盘会阻止弹出系统软键盘，对自定义键盘无影响。
 
-人机交互获得焦点
+[h2]人机交互获得焦点
 
 以下示例展示了单击、双击和长按输入框时，软键盘弹出效果。
 
-通过代码请求焦点
+[h2]通过代码请求焦点
 
 可以通过代码控制将焦点转移到输入框，包括使用defaultFocus和requestFocus方法。更多细节请参见支持焦点处理。
 
@@ -33,7 +33,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-man
 struct demo {
   controller: TextInputController = new TextInputController();
   @State inputValue: string = "";
-
 
   build() {
     Column({ space: 20 }) {
@@ -50,7 +49,7 @@ struct demo {
   }
 }
 
-使用外接键盘的按键走焦
+[h2]使用外接键盘的按键走焦
 
 外接物理键盘时，按下物理键盘的Tab键、Shift+Tab键、方向键可以转移焦点。按键走焦到输入框时，显示物理键盘悬浮栏。更多细节请参见支持焦点处理。
 
@@ -64,9 +63,7 @@ struct Index {
       Text('Text.focusable(true)')
         .focusable(true)
 
-
       TextInput({ placeholder: "TextInput" })
-
 
       TextInput({ placeholder: "TextInput" })
     }
@@ -95,7 +92,7 @@ struct Index {
 
 焦点从输入框转移到另一个不需要软键盘的组件。
 
-点击软键盘的关闭按钮
+[h2]点击软键盘的关闭按钮
 
 软键盘自带关闭按钮，用户点击该按钮时，软键盘将被收起。
 
@@ -119,7 +116,7 @@ struct Index {
   }
 }
 
-拖拽文本
+[h2]拖拽文本
 
 用户主动拖拽输入框的文本，开始拖拽时，软键盘将收起。更多细节请参见支持统一拖拽。
 
@@ -145,11 +142,11 @@ struct Index {
   }
 }
 
-接收侧滑手势
+[h2]接收侧滑手势
 
 下面的动图展示了“用户侧滑时软键盘收起”的场景。
 
-页面发生切换
+[h2]页面发生切换
 
 以下示例展示了页面切换过程中，软键盘收起的场景。
 
@@ -163,7 +160,6 @@ struct Index {
 struct Index {
   // 创建一个导航控制器对象并传入Navigation
   pathStack: NavPathStack = new NavPathStack()
-
 
   build() {
     Navigation(this.pathStack) {
@@ -190,7 +186,6 @@ struct Index {
 export function demo_text_1_Builder() {
   demo_text_1()
 }
-
 
 @Component
 struct demo_text_1 {
@@ -236,7 +231,7 @@ struct demo_text_1 {
   ]
 }
 
-通过输入框的controller退出编辑态
+[h2]通过输入框的controller退出编辑态
 
 通过输入框的TextInputController调用stopEditing方法后，软键盘会自动收起。
 
@@ -245,7 +240,6 @@ struct demo_text_1 {
 struct textInputControllerCloseKeyboard {
   controller: TextInputController = new TextInputController();
   @State inputValue: string = '';
-
 
   build() {
     NavDestination() {
@@ -264,7 +258,7 @@ struct textInputControllerCloseKeyboard {
   }
 }
 
-焦点转移到不需要软键盘的组件
+[h2]焦点转移到不需要软键盘的组件
 
 焦点转移到不需要软键盘的组件时，软键盘会自动收起。
 
@@ -277,7 +271,6 @@ struct textInputControllerCloseKeyboard {
 struct requestFocusCloseKeyBoard {
   controller: TextInputController = new TextInputController();
   @State inputValue: string = '';
-
 
   build() {
     NavDestination() {
@@ -306,7 +299,6 @@ struct Index {
     (_, i: number) => i + 1
   );
 
-
   build() {
     Column() {
       List({ space: 20, initialIndex: 0 }) {
@@ -334,7 +326,7 @@ struct Index {
 
 在软键盘的实际应用中，开发者可能会遇到一些特殊的使用场景或个性化需求。本节将针对这些常见问题提供相应的解决方案，帮助开发者更好地控制软键盘的行为。
 
-获得焦点时阻止弹出软键盘
+[h2]获得焦点时阻止弹出软键盘
 
 问题现象
 
@@ -356,14 +348,12 @@ struct demo {
   controller: TextInputController = new TextInputController();
   @State inputValue: string = "";
 
-
   // 自定义键盘组件
   @Builder
   CustomKeyboardBuilder() {
     Column() {
     }
   }
-
 
   build() {
     Column() {
@@ -377,7 +367,7 @@ struct demo {
   }
 }
 
-点击发送按钮后不收起键盘
+[h2]点击发送按钮后不收起键盘
 
 问题现象
 
@@ -401,7 +391,6 @@ struct demo {
       TextArea({ placeholder: '点击发送收起键盘' })
         .enterKeyType(EnterKeyType.Send)
 
-
       TextArea({ placeholder: 'onSubmit中设置keepEditableState，点击发送不收起键盘' })
         .enterKeyType(EnterKeyType.Send)
         .onSubmit((enterKey: EnterKeyType, event: SubmitEvent) => {
@@ -416,5 +405,323 @@ struct demo {
   }
 }
 
-图文混排
-媒体展示
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct demo {
+  controller: TextInputController = new TextInputController();
+  @State inputValue: string = "";
+
+  build() {
+    Column({ space: 20 }) {
+      Button('输入框请求焦点').onClick(() => {
+        this.getUIContext().getFocusController().requestFocus("textInput1")
+      })
+      TextInput({ controller: this.controller, text: this.inputValue })
+        .id("textInput1")
+    }
+    .height('100%')
+    .width('80%')
+    .margin('10%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct Index {
+  build() {
+    Column({ space: 20 }) {
+      Text('Text.focusable(true)')
+        .focusable(true)
+
+      TextInput({ placeholder: "TextInput" })
+
+      TextInput({ placeholder: "TextInput" })
+    }
+    .height('100%')
+    .width('80%')
+    .margin('10%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct Index {
+  build() {
+    Column({ space: 20 }) {
+      Blank()
+        .height(350)
+      Flex({ direction: FlexDirection.Row }) {
+        TextInput({ placeholder: 'TextInput' })
+      }
+      .width(250)
+    }
+    .height('100%')
+    .width('90%')
+    .padding('5%')
+  }
+}
+```
+
+### Code block 4
+
+```
+@Entry
+@Component
+struct Index {
+  build() {
+    Column({ space: 20 }) {
+      Blank()
+        .height(350)
+      Flex({ direction: FlexDirection.Row }) {
+        TextInput({ text: '用户主动拖拽文本' })
+          .selectAll(true)
+          .defaultFocus(true)
+      }
+      .width(250)
+    }
+    .height('100%')
+    .width('90%')
+    .padding('5%')
+  }
+}
+```
+
+### Code block 5
+
+```
+// Index.ets
+@Entry
+@Component
+struct Index {
+  // 创建一个导航控制器对象并传入Navigation
+  pathStack: NavPathStack = new NavPathStack()
+
+  build() {
+    Navigation(this.pathStack) {
+      Column({ space: 30 }) {
+        Blank().height(150)
+        TextInput({ placeholder: 'TextInput' })
+        Button('跳转到下一个页面')
+          .onClick(() => {
+            this.pathStack.pushPath({ name: 'demo_text_1' })
+          })
+      }
+      .height('100%')
+      .width('80%')
+      .margin('10%')
+    }
+    .title('用Navigation实现页面跳转')
+  }
+}
+```
+
+### Code block 6
+
+```
+// demo_text_1.ets
+@Builder
+export function demo_text_1_Builder() {
+  demo_text_1()
+}
+
+@Component
+struct demo_text_1 {
+  pathStack: NavPathStack = new NavPathStack()
+  // 跳转后的页面
+  build() {
+    NavDestination() {
+      Column({ space: 20 }) {
+        Text('跳转后的页面没有需要键盘的组件')
+      }
+      .width('100%')
+      .height('100%')
+      .justifyContent(FlexAlign.Center)
+    }
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
+  }
+}
+```
+
+### Code block 7
+
+```
+{
+  "module": {
+    // ...
+    "routerMap": "$profile:route_map",
+    // ...
+  }
+}
+```
+
+### Code block 8
+
+```
+// route_map.json
+{
+  "routerMap": [
+    {
+      "name": "demo_text_1",
+      "pageSourceFile": "src/main/ets/pages/demo_text_1.ets",
+      "buildFunction": "demo_text_1_Builder"
+    }
+  ]
+}
+```
+
+### Code block 9
+
+```
+struct textInputControllerCloseKeyboard {
+  controller: TextInputController = new TextInputController();
+  @State inputValue: string = '';
+
+  build() {
+    NavDestination() {
+    Column({ space: 30 }) {
+      // 请将$r('app.string.close_keyboard')替换为实际资源文件，在本示例中该资源文件的value值为"close keyboard"
+      Button($r('app.string.close_keyboard')).onClick(() => {
+        this.controller.stopEditing()
+      })
+      TextInput({ controller: this.controller, text: this.inputValue })
+    }
+    .width('80%')
+    .height('100%')
+    .margin('10%')
+    .justifyContent(FlexAlign.Center)
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+struct requestFocusCloseKeyBoard {
+  controller: TextInputController = new TextInputController();
+  @State inputValue: string = '';
+
+  build() {
+    NavDestination() {
+    Column({ space: 20 }) {
+      // 请将$r('app.string.button_get_focus')替换为实际资源文件，在本示例中该资源文件的value值为"按钮获得焦点"
+      Button($r('app.string.button_get_focus')).onClick(() => {
+        this.getUIContext().getFocusController().requestFocus('button')
+      }).id('button')
+      TextInput({ controller: this.controller, text: this.inputValue })
+    }
+    .justifyContent(FlexAlign.Center)
+    .height('100%')
+    .width('80%')
+    .margin('10%')
+  }
+  }
+}
+```
+
+### Code block 11
+
+```
+@Entry
+@Component
+struct Index {
+  private arr: number[] = Array.from<number, number>(
+    { length: 100 } as ArrayLike<number>,
+    (_, i: number) => i + 1
+  );
+
+  build() {
+    Column() {
+      List({ space: 20, initialIndex: 0 }) {
+        ForEach(this.arr, (item: number, index?: number) => {
+          ListItem() {
+            Flex({ direction: FlexDirection.Row, alignItems: ItemAlign.Center }) {
+              TextInput({ placeholder: 'TextInput ' + item })
+            }
+          }
+        }, (item: string) => item)
+      }
+      .onScrollStart(() => {
+        // List开始滚动时清理焦点，达成收起键盘的目的
+        this.getUIContext().getFocusController().clearFocus()
+      })
+      .width('80%')
+      .height('80%')
+      .margin('10%')
+    }
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```
+
+### Code block 12
+
+```
+@Entry
+@Component
+struct demo {
+  controller: TextInputController = new TextInputController();
+  @State inputValue: string = "";
+
+  // 自定义键盘组件
+  @Builder
+  CustomKeyboardBuilder() {
+    Column() {
+    }
+  }
+
+  build() {
+    Column() {
+      TextInput({ placeholder: 'TextInput', controller: this.controller, text: this.inputValue })// 绑定自定义键盘
+        .customKeyboard(this.CustomKeyboardBuilder())
+    }
+    .justifyContent(FlexAlign.Center)
+    .width('80%')
+    .margin('10%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 13
+
+```
+@Entry
+@Component
+struct demo {
+  build() {
+    Column({ space: 20 }) {
+      TextArea({ placeholder: '点击发送收起键盘' })
+        .enterKeyType(EnterKeyType.Send)
+
+      TextArea({ placeholder: 'onSubmit中设置keepEditableState，点击发送不收起键盘' })
+        .enterKeyType(EnterKeyType.Send)
+        .onSubmit((enterKey: EnterKeyType, event: SubmitEvent) => {
+          // 调用keepEditableState方法，输入框保持编辑态
+          event.keepEditableState();
+        })
+    }
+    .justifyContent(FlexAlign.Center)
+    .height('100%')
+    .width('80%')
+    .margin('10%')
+  }
+}
+```

@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-common-components-progress-indicator_
 
+Progress是进度条显示组件，显示内容通常为目标操作的当前进度。具体用法请参考Progress。
+
+创建进度条
+
+Progress通过调用接口来创建，接口调用方式如下：
+
 Progress(options: {value: number, total?: number, type?: ProgressType})
 
 其中，value用于设置初始进度值，total用于设置进度总长度，type用于设置Progress样式。
@@ -20,7 +26,6 @@ Progress有5种可选类型，通过ProgressType可以设置进度条样式。Pr
 
 Progress({ value: 20, total: 100, type: ProgressType.Linear }).width(200).height(50)
 Progress({ value: 20, total: 100, type: ProgressType.Linear }).width(50).height(200)
-Index.ets
 
 环形无刻度样式进度条
 
@@ -30,7 +35,6 @@ Progress({ value: 40, total: 150, type: ProgressType.Ring }).width(100).height(1
 Progress({ value: 40, total: 150, type: ProgressType.Ring }).width(100).height(100)
   .color(Color.Grey)    // 进度条前景色为灰色
   .style({ strokeWidth: 15})    // 设置strokeWidth进度条宽度为15.0vp
-Index.ets
 
 环形有刻度样式进度条
 
@@ -43,7 +47,6 @@ Progress({ value: 20, total: 150, type: ProgressType.ScaleRing }).width(100).hei
 Progress({ value: 20, total: 150, type: ProgressType.ScaleRing }).width(100).height(100)
   .backgroundColor(Color.Black)
   .style({ strokeWidth: 15, scaleCount: 20, scaleWidth: 3 })    // 设置环形有刻度进度条宽度15，总刻度数为20，刻度宽度为3vp
-Index.ets
 
 圆形样式进度条
 
@@ -51,7 +54,6 @@ Index.ets
 Progress({ value: 10, total: 150, type: ProgressType.Eclipse }).width(100).height(100)
 // 从左往右，2号圆形进度条，指定前景色为灰色
 Progress({ value: 20, total: 150, type: ProgressType.Eclipse }).color(Color.Grey).width(100).height(100)
-Index.ets
 
 胶囊样式进度条
 
@@ -66,7 +68,6 @@ Index.ets
 Progress({ value: 10, total: 150, type: ProgressType.Capsule }).width(100).height(50)
 Progress({ value: 20, total: 150, type: ProgressType.Capsule }).width(50).height(100).color(Color.Grey)
 Progress({ value: 50, total: 150, type: ProgressType.Capsule }).width(50).height(100).color(Color.Blue).backgroundColor(Color.Black)
-Index.ets
 
 场景示例
 
@@ -93,7 +94,92 @@ struct ProgressCase1 {
     }.width('100%').height('100%')
   }
 }
-ProgressCase1.ets
 
-自定义渲染 (XComponent)
-使用弹窗
+## Code blocks
+
+### Code block 1
+
+```
+Progress(options: {value: number, total?: number, type?: ProgressType})
+```
+
+### Code block 2
+
+```
+Progress({ value: 24, total: 100, type: ProgressType.Linear }) // 创建一个进度总长为100，初始进度值为24的线性进度条
+```
+
+### Code block 3
+
+```
+Progress({ value: 20, total: 100, type: ProgressType.Linear }).width(200).height(50)
+Progress({ value: 20, total: 100, type: ProgressType.Linear }).width(50).height(200)
+```
+
+### Code block 4
+
+```
+// 从左往右，1号环形进度条，默认前景色为蓝色渐变，默认strokeWidth进度条宽度为2.0vp
+Progress({ value: 40, total: 150, type: ProgressType.Ring }).width(100).height(100)
+// 从左往右，2号环形进度条
+Progress({ value: 40, total: 150, type: ProgressType.Ring }).width(100).height(100)
+  .color(Color.Grey)    // 进度条前景色为灰色
+  .style({ strokeWidth: 15})    // 设置strokeWidth进度条宽度为15.0vp
+```
+
+### Code block 5
+
+```
+Progress({ value: 20, total: 150, type: ProgressType.ScaleRing }).width(100).height(100)
+  .backgroundColor(Color.Black)
+  .style({ scaleCount: 20, scaleWidth: 5 })    // 设置环形有刻度进度条总刻度数为20，刻度宽度为5vp
+Progress({ value: 20, total: 150, type: ProgressType.ScaleRing }).width(100).height(100)
+  .backgroundColor(Color.Black)
+  .style({ strokeWidth: 15, scaleCount: 20, scaleWidth: 5 })    // 设置环形有刻度进度条宽度15，总刻度数为20，刻度宽度为5vp
+Progress({ value: 20, total: 150, type: ProgressType.ScaleRing }).width(100).height(100)
+  .backgroundColor(Color.Black)
+  .style({ strokeWidth: 15, scaleCount: 20, scaleWidth: 3 })    // 设置环形有刻度进度条宽度15，总刻度数为20，刻度宽度为3vp
+```
+
+### Code block 6
+
+```
+// 从左往右，1号圆形进度条，默认前景色为蓝色
+Progress({ value: 10, total: 150, type: ProgressType.Eclipse }).width(100).height(100)
+// 从左往右，2号圆形进度条，指定前景色为灰色
+Progress({ value: 20, total: 150, type: ProgressType.Eclipse }).color(Color.Grey).width(100).height(100)
+```
+
+### Code block 7
+
+```
+Progress({ value: 10, total: 150, type: ProgressType.Capsule }).width(100).height(50)
+Progress({ value: 20, total: 150, type: ProgressType.Capsule }).width(50).height(100).color(Color.Grey)
+Progress({ value: 50, total: 150, type: ProgressType.Capsule }).width(50).height(100).color(Color.Blue).backgroundColor(Color.Black)
+```
+
+### Code block 8
+
+```
+@Entry
+@Component
+struct ProgressCase1 {
+  @State progressValue: number = 0;    // 设置进度条初始值为0
+  build() {
+    Column() {
+      Column() {
+        Progress({value:0, total:100, type:ProgressType.Capsule}).width(200).height(50).value(this.progressValue)
+        Row().width('100%').height(5)
+        // 请将$r('app.string.progress_add')替换为实际资源文件，在本示例中该资源文件的value值为"进度条+5"
+        Button($r('app.string.progress_add'))
+          .onClick(()=>{
+            this.progressValue += 5;
+            if (this.progressValue > 100){
+              this.progressValue = 0;
+            }
+          })
+      }
+    }.width('100%').height('100%')
+  }
+}
+```

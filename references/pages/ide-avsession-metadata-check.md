@@ -1,4 +1,4 @@
-# @correctness/avsession
+# @correctness/avsession-metadata-check
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-avsession-metadata-check_
 
@@ -7,17 +7,20 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-avses
 改善音视频播放体验场景下，建议优先修改。
 
 规则配置
+
 // code-linter.json5
 {
   "rules": {
     "@correctness/avsession-metadata-check": "warn"
   }
 }
+
 选项
 
 该规则无需配置额外选项。
 
 正例
+
 import { BusinessError } from '@kit.BasicServicesKit';
 import { avSession } from '@kit.AVSessionKit';
 let tag = "createNewSession";
@@ -88,7 +91,9 @@ avSession.createAVSession(context, tag, "audio", (err: BusinessError, data: avSe
     });
   }
 });
+
 反例
+
 import { BusinessError } from '@kit.BasicServicesKit';
 import { avSession } from '@kit.AVSessionKit';
 let tag = "createNewSession";
@@ -156,10 +161,175 @@ avSession.createAVSession(context, tag, "audio", (err: BusinessError, data: avSe
     });
   }
 });
+
 规则集
+
 plugin:@correctness/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@correctness/audio-pause-or-mute-check
-@correctness/image-pixel-format-check
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@correctness/avsession-metadata-check": "warn"
+  }
+}
+```
+
+### Code block 2
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { avSession } from '@kit.AVSessionKit';
+let tag = "createNewSession";
+let context: Context = getContext(this);
+let metadata: avSession.AVMetadata = {
+  assetId: "121278",
+  // Title
+  title: "lose yourself",
+  artist: "Eminem",
+  // Lyrics generator
+  author: "ST",
+  album: "Slim shady",
+  writer: "",
+  composer: "ST",
+  // Subtitle
+  subtitle: "8 Mile",
+  // Duration
+  duration: 2222,
+  // Cover art
+  mediaImage: "https://www.example.com/example.jpg",
+  description: "Rap",
+  // The LRC format contains two types of elements: time tag + lyrics, and ID tag.
+  // Example: [00:25.44]xxx\r\n[00:26.44]xxx\r\n
+  lyric: "Lyrics in LRC format",
+  previousAssetId: "121277",
+  nextAssetId: "121279"
+};
+let playbackState: avSession.AVPlaybackState = {
+  // Playing state.
+  state:avSession.PlaybackState.PLAYBACK_STATE_PLAY,
+  speed: 1.0,
+  // Playback position.
+  position:{elapsedTime:10, updateTime:(new Date()).getTime()},
+  bufferedTime:1000,
+  loopMode:avSession.LoopMode.LOOP_MODE_SINGLE,
+  isFavorite:true
+};
+avSession.createAVSession(context, tag, "audio", (err: BusinessError, data: avSession.AVSession) => {
+  if (err) {
+    console.error(`CreateAVSession BusinessError: code: ${err.code}, message: ${err.message}`);
+  } else {
+    data.setAVMetadata(metadata, (err: BusinessError) => {
+      if (err) {
+        console.error(`SetAVMetadata BusinessError: code: ${err.code}, message: ${err.message}`);
+      } else {
+        console.info('SetAVMetadata successfully');
+      }
+    });
+    data.setAVPlaybackState(playbackState).then(() => {
+      console.info('SetAVPlaybackState successfully');
+    }).catch((err: BusinessError) => {
+      console.error(`SetAVPlaybackState BusinessError: code: ${err.code}, message: ${err.message}`);
+    });
+    // Process the play command.
+    data.on('play', () => {
+    });
+    // Process the pause command.
+    data.on('pause', () => {
+    });
+    // Process the stop command.
+    data.on('stop', () => {
+    });
+    // Process the play-next command.
+    data.on('playNext', () => {
+    });
+    // Process the play-previous command.
+    data.on('playPrevious', () => {
+    });
+  }
+});
+```
+
+### Code block 3
+
+```
+import { BusinessError } from '@kit.BasicServicesKit';
+import { avSession } from '@kit.AVSessionKit';
+let tag = "createNewSession";
+let context: Context = getContext(this);
+let metadata: avSession.AVMetadata = {
+  assetId: "121278",
+  // Title
+  title: "lose yourself",
+  artist: "Eminem",
+  // Lyrics generator
+  author: "ST",
+  album: "Slim shady",
+  writer: "",
+  composer: "ST",
+  // Subtitle
+  subtitle: "8 Mile",
+  description: "Rap",
+  // The LRC format contains two types of elements: time tag + lyrics, and ID tag.
+  // Example: [00:25.44]xxx\r\n[00:26.44]xxx\r\n
+  lyric: "Lyrics in LRC format",
+  previousAssetId: "121277",
+  nextAssetId: "121279"
+};
+let playbackState: avSession.AVPlaybackState = {
+  // Playing state.
+  state:avSession.PlaybackState.PLAYBACK_STATE_PLAY,
+  speed: 1.0,
+  // Playback position.
+  position:{elapsedTime:10, updateTime:(new Date()).getTime()},
+  bufferedTime:1000,
+  loopMode:avSession.LoopMode.LOOP_MODE_SINGLE,
+  isFavorite:true
+};
+// warning
+avSession.createAVSession(context, tag, "audio", (err: BusinessError, data: avSession.AVSession) => {
+  if (err) {
+    console.error(`CreateAVSession BusinessError: code: ${err.code}, message: ${err.message}`);
+  } else {
+    data.setAVMetadata(metadata, (err: BusinessError) => {
+      if (err) {
+        console.error(`SetAVMetadata BusinessError: code: ${err.code}, message: ${err.message}`);
+      } else {
+        console.info('SetAVMetadata successfully');
+      }
+    });
+    data.setAVPlaybackState(playbackState).then(() => {
+      console.info('SetAVPlaybackState successfully');
+    }).catch((err: BusinessError) => {
+      console.error(`SetAVPlaybackState BusinessError: code: ${err.code}, message: ${err.message}`);
+    });
+    // Process the play command.
+    data.on('play', () => {
+    });
+    // Process the pause command.
+    data.on('pause', () => {
+    });
+    // Process the stop command.
+    data.on('stop', () => {
+    });
+    // Process the play-next command.
+    data.on('playNext', () => {
+    });
+    // Process the play-previous command.
+    data.on('playPrevious', () => {
+    });
+  }
+});
+```
+
+### Code block 4
+
+```
+plugin:@correctness/all
+```

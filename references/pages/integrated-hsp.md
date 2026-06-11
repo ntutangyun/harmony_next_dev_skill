@@ -2,16 +2,31 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/integrated-hsp_
 
+集成态HSP是应用内HSP的中间编译产物，用于解决使用方的bundleName和签名之间的强耦合问题。
+
+说明
+
+HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bundleName的工程集成使用。
+
+使用方使用集成态HSP时，需要采用使用方的签名文件对集成态HSP重新签名，且需要优先安装重新签名后的集成态HSP。
+
+使用场景
+
 如果存在多个应用包含相同的基础能力，例如日志打印模块，为节约开发成本并实现代码和资源的共享，多个应用可以共用一个日志模块。此时，可以通过应用内HSP方式提供能力。由于应用内HSP的限制，每个应用在使用前都需要调整其bundleName，并使用当前应用的签名重新签名，构建一个新的HSP提供给当前应用使用。这意味着，每增加一个应用，就需要进行一次调整bundleName和重新签名的操作，导致签名和打包过程繁琐。
 
 而集成态HSP在DevEco Studio编译过程中，bundleName和重签名的动作会自动完成，开发者无需关注重复签名的操作，可以专注于功能业务的开发。
 
 约束限制
+
 集成态HSP只支持Stage模型。
+
 从API version 12开始，支持使用集成态HSP。
+
 使用集成态HSP要求使用标准化的OHMUrl格式。需要在工程级的build-profile.json5文件中，将strictMode下的useNormalizedOHMUrl字段设置为true。
+
 开发使用说明
-配置集成态HSP
+
+[h2]配置集成态HSP
 
 工程配置：配置工程级的build-profile.json5文件，将useNormalizedOHMUrl字段设置为true。
 
@@ -38,7 +53,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/integrate
   },
   // ...
 }
-build-profile.json5
 
 模块配置：修改模块级构建配置文件build-profile.json5，将integratedHsp配置项设置为true，指定构建的HSP模块为集成态HSP。
 
@@ -57,7 +71,6 @@ build-profile.json5
   ],
   // ...
 }
-build-profile.json5
 
 打包配置（tgz包）。
 
@@ -67,7 +80,7 @@ build-profile.json5
 
 (3) 选择library目录，执行Build -> Make Module 'library'。
 
-使用方集成
+[h2]使用方集成
 
 创建目录并拷贝文件：在entry目录下新建libs目录，将集成态打包产物tgz包拷贝到libs目录下。
 
@@ -76,7 +89,6 @@ build-profile.json5
 "dependencies": {
   "library": "file:./libs/library-default.tgz"
 },
-oh-package.json5
 
 工程配置：在工程级的build-profile.json5文件中，将useNormalizedOHMUrl字段设置为true。
 
@@ -103,7 +115,6 @@ oh-package.json5
   },
   // ...
 }
-build-profile.json5
 
 配置签名。
 
@@ -111,5 +122,88 @@ build-profile.json5
 
 安装和运行。
 
-HAP转HAR指导
-应用程序包常见问题
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    "signingConfigs": [
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "5.1.1(19)",
+        "compatibleSdkVersion": "5.1.1(19)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            // ...
+            "useNormalizedOHMUrl": true,
+          }
+        }
+      }
+    ],
+    // ...
+  },
+  // ...
+}
+```
+
+### Code block 2
+
+```
+// library/build-profile.json5
+{
+  "apiType": "stageMode",
+  // ...
+  "buildOptionSet": [
+    {
+      // ...
+      "arkOptions": {
+        "integratedHsp": true,
+        // ...
+      },
+    },
+  ],
+  // ...
+}
+```
+
+### Code block 3
+
+```
+"dependencies": {
+  "library": "file:./libs/library-default.tgz"
+},
+```
+
+### Code block 4
+
+```
+{
+  "app": {
+    "signingConfigs": [
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "5.1.1(19)",
+        "compatibleSdkVersion": "5.1.1(19)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            // ...
+            "useNormalizedOHMUrl": true,
+          }
+        }
+      }
+    ],
+    // ...
+  },
+  // ...
+}
+```

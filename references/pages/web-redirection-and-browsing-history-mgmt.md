@@ -23,7 +23,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-redir
 struct WebComponent {
   webviewController: webview.WebviewController = new webview.WebviewController();
 
-
   build() {
     Column() {
       Button('loadData')
@@ -36,7 +35,6 @@ struct WebComponent {
     }
   }
 }
-HistoryNavigati.ets
 
 如果存在历史记录，accessBackward()接口将返回true。同样，开发者可以使用accessForward()接口检查是否存在前进的历史记录。如果未执行检查，当用户浏览到历史记录的末尾时，调用forward()和backward()接口将不会执行任何操作。
 
@@ -51,12 +49,10 @@ HistoryNavigati.ets
 import { webview } from '@kit.ArkWeb';
 import { router } from '@kit.ArkUI';
 
-
 @Entry
 @Component
 struct WebComponent {
   webviewController: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -76,7 +72,6 @@ struct WebComponent {
     }
   }
 }
-PageRedirection.ets
 
 route.html前端页面代码。
 
@@ -97,7 +92,6 @@ route.html前端页面代码。
 struct ProfilePage {
   @State message: string = 'Hello World';
 
-
   build() {
     Column() {
       Text(this.message)
@@ -105,7 +99,7 @@ struct ProfilePage {
     }
   }
 }
-ProfilePage.ets
+
 跨应用跳转
 
 Web组件可以实现点击前端页面超链接跳转到其他应用。
@@ -117,12 +111,10 @@ Web组件可以实现点击前端页面超链接跳转到其他应用。
 import { webview } from '@kit.ArkWeb';
 import { call } from '@kit.TelephonyKit';
 
-
 @Entry
 @Component
 struct WebComponent {
   webviewController: webview.WebviewController = new webview.WebviewController();
-
 
   build() {
     Column() {
@@ -148,7 +140,6 @@ struct WebComponent {
     }
   }
 }
-CrossApplicationRedirection.ets
 
 前端页面call.html代码。
 
@@ -162,5 +153,149 @@ CrossApplicationRedirection.ets
 </body>
 </html>
 
-使用Web组件加载页面
-拦截Web组件发起的网络请求
+## Code blocks
+
+### Code block 1
+
+```
+"requestPermissions":[
+    {
+      "name" : "ohos.permission.INTERNET"
+    }
+  ]
+```
+
+### Code block 2
+
+```
+@Entry
+@Component
+struct WebComponent {
+  webviewController: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Button('loadData')
+        .onClick(() => {
+          if (this.webviewController.accessBackward()) {
+            this.webviewController.backward();
+          }
+        })
+      Web({ src: 'https://www.example.com/cn/', controller: this.webviewController });
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+import { webview } from '@kit.ArkWeb';
+import { router } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct WebComponent {
+  webviewController: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      // 资源文件route.html存放路径src/main/resources/rawfile
+      Web({ src: $rawfile('route.html'), controller: this.webviewController })
+        .onLoadIntercept((event) => {
+          if (event) {
+            let url: string = event.data.getRequestUrl();
+            if (url.indexOf('native://') === 0) {
+              // 跳转其他界面
+              this.getUIContext().getRouter().pushUrl({ url: url.substring(9) });
+              return true;
+            }
+          }
+          return false;
+        })
+    }
+  }
+}
+```
+
+### Code block 4
+
+```
+<!-- route.html -->
+<!DOCTYPE html>
+<html>
+<body>
+  <div>
+      <a href="native://pages/ProfilePage">个人中心</a>
+   </div>
+</body>
+</html>
+```
+
+### Code block 5
+
+```
+@Entry
+@Component
+struct ProfilePage {
+  @State message: string = 'Hello World';
+
+  build() {
+    Column() {
+      Text(this.message)
+        .fontSize(20)
+    }
+  }
+}
+```
+
+### Code block 6
+
+```
+import { webview } from '@kit.ArkWeb';
+import { call } from '@kit.TelephonyKit';
+
+@Entry
+@Component
+struct WebComponent {
+  webviewController: webview.WebviewController = new webview.WebviewController();
+
+  build() {
+    Column() {
+      Web({ src: $rawfile('call.html'), controller: this.webviewController })
+        .onLoadIntercept((event) => {
+          if (event) {
+            let url: string = event.data.getRequestUrl();
+            // 判断链接是否为拨号链接
+            if (url.indexOf('tel://') === 0) {
+              // 跳转拨号界面
+              call.makeCall(url.substring(6), (err) => {
+                if (!err) {
+                  console.info('make call succeeded.');
+                } else {
+                  console.info('make call fail, err is:' + JSON.stringify(err));
+                }
+              });
+              return true;
+            }
+          }
+          return false;
+        })
+    }
+  }
+}
+```
+
+### Code block 7
+
+```
+<!-- call.html -->
+<!DOCTYPE html>
+<html>
+<body>
+  <div>
+    <a href="tel://***********">拨打电话</a>
+  </div>
+</body>
+</html>
+```

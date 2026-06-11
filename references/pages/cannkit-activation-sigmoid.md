@@ -2,17 +2,25 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-activation-sigmoid_
 
+功能说明
+
+按元素做逻辑回归Sigmoid，计算公式如下，其中PAR表示矢量计算单元一个迭代能够处理的元素个数 ：
+
+函数原型
+
+通过sharedTmpBuffer入参传入临时空间
+
+template <typename T, bool isReuseSource = false>
 __aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
-源操作数Tensor全部参与计算
+
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
 
 接口框架申请临时空间
 
-源操作数Tensor全部/部分参与计算
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
-源操作数Tensor全部参与计算
+
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
 
@@ -35,30 +43,11 @@ isReuseSource	是否允许修改源操作数。该参数预留，传入默认值
 表2 接口参数说明
 
 参数名	输入/输出	描述
-dstTensor	输出	
-
-目的操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-
-srcTensor	输入	
-
-源操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-
-sharedTmpBuffer	输入	
-
-临时缓存。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-用于Sigmoid内部复杂计算时存储中间变量，由开发者提供。
-
-
+dstTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
+srcTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
+sharedTmpBuffer	输入	临时缓存。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 用于Sigmoid内部复杂计算时存储中间变量，由开发者提供。
 calCount	输入	实际计算数据元素个数。
+
 返回值
 
 无
@@ -76,9 +65,10 @@ KirinX90系列处理器
 输入输出操作数参与计算的数据长度要求32B对齐。
 
 调用示例
+
 AscendC::TPipe pipe;
 AscendC::TQue<AscendC::TPosition::VECCALC, 1> tmpQue;
-pipe.InitBuffer(tmpQue, 1, bufferSize);  // bufferSize 通过Host侧tiling参数获取
+pipe.InitBuffer(tmpQue, 1, bufferSize); // bufferSize 通过Host侧tiling参数获取
 AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
 // 输入shape信息为1024Bytes, 算子输入的数据类型为half, 实际计算个数为512
 AscendC::Sigmoid(dstLocal, srcLocal, sharedTmpBuffer, 512);
@@ -87,5 +77,51 @@ AscendC::Sigmoid(dstLocal, srcLocal, sharedTmpBuffer, 512);
 
 输入数据(srcLocal): [1.762616 7.9542747 ... 7.8306146 6.3167496]
 输出数据(dstLocal):  [0.853537 0.996489 ... 0.996027 0.998197]
-SoftmaxFlashV2
-数据填充
+
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T, bool isReuseSource = false>
+__aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+```
+
+### Code block 2
+
+```
+template <typename T, bool isReuseSource = false>
+__aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
+```
+
+### Code block 3
+
+```
+template <typename T, bool isReuseSource = false>
+__aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
+```
+
+### Code block 4
+
+```
+template <typename T, bool isReuseSource = false>
+__aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
+```
+
+### Code block 5
+
+```
+AscendC::TPipe pipe;
+AscendC::TQue<AscendC::TPosition::VECCALC, 1> tmpQue;
+pipe.InitBuffer(tmpQue, 1, bufferSize); // bufferSize 通过Host侧tiling参数获取
+AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
+// 输入shape信息为1024Bytes, 算子输入的数据类型为half, 实际计算个数为512
+AscendC::Sigmoid(dstLocal, srcLocal, sharedTmpBuffer, 512);
+```
+
+### Code block 6
+
+```
+输入数据(srcLocal): [1.762616 7.9542747 ... 7.8306146 6.3167496]
+输出数据(dstLocal):  [0.853537 0.996489 ... 0.996027 0.998197]
+```

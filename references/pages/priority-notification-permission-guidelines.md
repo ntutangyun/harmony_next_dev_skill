@@ -27,6 +27,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/priority-
 开发者可通过互动中心的“服务开通申请”消息获取优先通知权益申请结果。
 
 优先通知权益申请通过后，须在“证书、APP ID和Profile”页面下左侧树形菜单的“Profile”页签，点击“添加”重新生成Profile文件，并下载Profile文件到本地，然后在“发布应用”时，须将该Profile打包到应用包中。
-
-通知订阅扩展能力开发步骤
-应用内通知设置快捷入口开发指导

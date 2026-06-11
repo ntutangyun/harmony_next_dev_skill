@@ -15,15 +15,19 @@ build函数中更改状态变量导致appfreeze
 执行Index的build方法：
 
 创建Column组件。
+
 创建Text组件。创建Text组件的过程中，触发this.count++。
+
 count的改变再次触发Text组件的刷新。
+
 刷新过程中组件不会再标脏自己。
+
 Text最终显示为2。
+
 @Entry
 @Component
 struct Index {
   @State count: number = 1;
-
 
   build() {
     Column() {
@@ -34,7 +38,6 @@ struct Index {
     }
   }
 }
-StateProblemNotUpdateInBuildError01.ets
 
 在首次创建的过程中，Text组件被多渲染了一次，最终显示为2。
 
@@ -51,7 +54,6 @@ FIX THIS APPLICATION ERROR: @Component 'Index': State variable 'count' has chang
 struct Index {
   @State message: number = 20;
 
-
   build() {
     Column() {
       // 典型错误，会导致appfreeze
@@ -62,16 +64,21 @@ struct Index {
     .width('100%')
   }
 }
-StateProblemNotUpdateInBuildError02.ets
 
 上面示例的渲染过程为：
 
 创建第一个Text组件，触发this.message改变，标脏第一个Text组件。
+
 创建第二个Text组件，触发this.message改变，标脏两个Text组件。
+
 下一帧到来时，刷新脏系统组件。
+
 刷新第一个Text组件，触发this.message改变，不会标脏自己，仅标脏第二个Text组件。
+
 刷新第二个Text组件，触发this.message改变，不会标脏自己，仅标脏第一个Text组件。
+
 上述4、5步骤循环。
+
 系统长时间无响应，appfreeze。
 
 因此，在build方法中改变状态变量是完全错误的。当发现“FIX THIS APPLICATION ERROR: @Component ... has changed during render! It's illegal to change @Component state while build (initial render or re-render) is on-going. Application error!”日志时，即使当前没有带来严重后果，也应该警惕并修改错误写法。
@@ -86,21 +93,17 @@ StateProblemNotUpdateInBuildError02.ets
 
 import { common } from '@kit.AbilityKit';
 
-
 class Model {
   private callback: (() => void) | undefined = () => {
   };
-
 
   add(callback: () => void): void {
     this.callback = callback;
   }
 
-
   delete(): void {
     this.callback = undefined;
   }
-
 
   call(): void {
     if (this.callback) {
@@ -109,9 +112,7 @@ class Model {
   }
 }
 
-
 let model: Model = new Model();
-
 
 @Entry
 @Component
@@ -119,13 +120,11 @@ struct Test {
   @State count: number = 10;
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
-
   aboutToAppear(): void {
     model.add(() => {
       this.count++;
     })
   }
-
 
   build() {
     Column() {
@@ -138,12 +137,10 @@ struct Test {
     }
   }
 
-
   aboutToDisappear(): void {
     model.delete();
   }
 }
-StateProblemUnregisterStateCallback.ets
 
 此外，也可以使用 LocalStorage在自定义组件外改变状态变量。
 
@@ -156,28 +153,23 @@ StateProblemUnregisterStateCallback.ets
 class Balloon {
   public volume: number;
 
-
   constructor(volume: number) {
     this.volume = volume;
   }
-
 
   static increaseVolume(balloon: Balloon) {
     balloon.volume += 2;
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   @State balloon: Balloon = new Balloon(10);
 
-
   reduceVolume(balloon: Balloon) {
     balloon.volume -= 1;
   }
-
 
   build() {
     Column({ space: 8 }) {
@@ -198,7 +190,6 @@ struct Index {
     .height('100%')
   }
 }
-StateProblemABCallUiRefreshOpposite.ets
 
 状态变量观察类属性变化是通过代理捕获其变化的，当使用a.b(this.object)调用时，框架会将代理对象转换为原始对象。修改原始对象属性，无法观察，因此UI不会刷新。开发者可以使用如下方法修改：
 
@@ -213,28 +204,23 @@ StateProblemABCallUiRefreshOpposite.ets
 class Balloon {
   public volume: number;
 
-
   constructor(volume: number) {
     this.volume = volume;
   }
-
 
   static increaseVolume(balloon: Balloon) {
     balloon.volume += 2;
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   @State balloon: Balloon = new Balloon(10);
 
-
   reduceVolume(balloon: Balloon) {
     balloon.volume -= 1;
   }
-
 
   build() {
     Column({ space: 8 }) {
@@ -257,31 +243,28 @@ struct Index {
     .height('100%')
   }
 }
-StateProblemABCallUiRefreshPositive.ets
+
 复杂类型常量重复赋值给状态变量触发不必要的刷新
-状态管理V1
+
+[h2]状态管理V1
 
 在状态管理V1中，会给被@Observed装饰的类对象以及使用状态变量装饰器如@State装饰的Class、Date、Map、Set、Array类型的对象添加一层代理，用于观测一层属性或API调用产生的变化。当复杂类型常量重复赋值给状态变量时，可能会由于加了代理而判断为新旧值不相等，导致不必要的刷新。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 class DataObj {
   public name: string = 'default name';
-
 
   constructor(name: string) {
     this.name = name;
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   list: DataObj[] = [new DataObj('a'), new DataObj('b'), new DataObj('c')];
   @State dataObjFromList: DataObj = this.list[0];
-
 
   build() {
     Column() {
@@ -294,22 +277,18 @@ struct Index {
   }
 }
 
-
 @Component
 struct ConsumerChild {
   @Link @Watch('onDataObjChange') dataObj: DataObj;
-
 
   onDataObjChange() {
     hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObj changed');
   }
 
-
   getContent() {
     hilog.info(0xFF00, 'testTag', '%{public}s', `this.dataObj.name change: ${this.dataObj.name}`);
     return this.dataObj.name;
   }
-
 
   build() {
     Column() {
@@ -317,7 +296,6 @@ struct ConsumerChild {
     }
   }
 }
-StateProblemComplexConstantRepeatRefresh.ets
 
 以上示例每次点击Button('change to self')，把相同的类实例赋值给一个Class类型的状态变量，会触发刷新并输出this.dataObj.name change: a日志。这是因为当再次赋值list[0]时，dataObjFromList已经是Proxy类型，而list[0]是Object类型，因此判断两者不相等，会触发赋值和刷新。
 
@@ -327,24 +305,20 @@ StateProblemComplexConstantRepeatRefresh.ets
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 @Observed
 class DataObj {
   public name: string = 'default name';
-
 
   constructor(name: string) {
     this.name = name;
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   list: DataObj[] = [new DataObj('a'), new DataObj('b'), new DataObj('c')];
   @State dataObjFromList: DataObj = this.list[0];
-
 
   build() {
     Column() {
@@ -358,16 +332,13 @@ struct Index {
   }
 }
 
-
 @Component
 struct ConsumerChild {
   @Link @Watch('onDataObjChange') dataObj: DataObj;
 
-
   onDataObjChange() {
     hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObj changed');
   }
-
 
   build() {
     Column() {
@@ -375,7 +346,6 @@ struct ConsumerChild {
     }
   }
 }
-StateProblemComplexSolution01.ets
 
 以上示例，给对应的类增加了@Observed装饰器后，list[0]已经是Proxy类型了，这样再次赋值时，相同的对象，就不会触发刷新。
 
@@ -384,23 +354,19 @@ StateProblemComplexSolution01.ets
 import { UIUtils } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 class DataObj {
   public name: string = 'default name';
-
 
   constructor(name: string) {
     this.name = name;
   }
 }
 
-
 @Entry
 @Component
 struct Index {
   list: DataObj[] = [new DataObj('a'), new DataObj('b'), new DataObj('c')];
   @State dataObjFromList: DataObj = this.list[0];
-
 
   build() {
     Column() {
@@ -415,16 +381,13 @@ struct Index {
   }
 }
 
-
 @Component
 struct ConsumerChild {
   @Link @Watch('onDataObjChange') dataObj: DataObj;
 
-
   onDataObjChange() {
     hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObj changed');
   }
-
 
   build() {
     Column() {
@@ -432,16 +395,14 @@ struct ConsumerChild {
     }
   }
 }
-StateProblemComplexSolution02.ets
 
 以上示例，在赋值前，使用getTarget获取了对应状态变量的原始对象，经过对比后，如果和当前对象一样，就不赋值，不触发刷新。
 
-状态管理V2
+[h2]状态管理V2
 
 在状态管理V2中，会给使用状态变量装饰器如@Trace、@Local装饰的Date、Map、Set、Array添加一层代理用于观测API调用产生的变化。当复杂类型常量重复赋值给状态变量时，可能会由于加了代理而判断为新旧值不相等，导致不必要的刷新。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
 
 @Entry
 @ComponentV2
@@ -449,12 +410,10 @@ struct Index {
   list: string[][] = [['a'], ['b'], ['c']];
   @Local dataObjFromList: string[] = this.list[0];
 
-
   @Monitor('dataObjFromList')
   onStrChange(monitor: IMonitor) {
     hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObjFromList has changed');
   }
-
 
   build() {
     Column() {
@@ -465,7 +424,6 @@ struct Index {
     }
   }
 }
-LocalQuestionSparkUpdate.ets
 
 以上示例每次点击Button('change to self')，把相同的Array类型常量赋值给一个Array类型的状态变量，都会触发刷新。这是因为当再次赋值list[0]时，dataObjFromList已经是Proxy类型，而list[0]是Array类型。由于类型不相等，会触发赋值和刷新。
 
@@ -476,9 +434,7 @@ LocalQuestionSparkUpdate.ets
 import { UIUtils } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
-
 
 @Entry
 @ComponentV2
@@ -486,12 +442,10 @@ struct Index {
   list: string[][] = [['a'], ['b'], ['c']];
   @Local dataObjFromList: string[] = this.list[0];
 
-
   @Monitor('dataObjFromList')
   onStrChange(monitor: IMonitor) {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'dataObjFromList has changed');
   }
-
 
   build() {
     Column() {
@@ -504,7 +458,7 @@ struct Index {
     }
   }
 }
-LocalQuestionUIUtils.ets
+
 子组件无需修改状态变量时，使用@Prop导致不必要的深拷贝
 
 在应用开发中，父组件常向子组件传值。如果子组件不需要修改该状态变量，子组件使用@Prop装饰器会增加组件创建时间并影响性能，此时建议改用@ObjectLink。
@@ -515,29 +469,24 @@ LocalQuestionUIUtils.ets
 class DeepReMyClass {
   public num: number = 0;
 
-
   constructor(num: number) {
     this.num = num;
   }
 }
 
-
 @Component
 struct DeepRePropChild {
   @Prop testClass: DeepReMyClass; // @Prop装饰状态变量会深拷贝。
-
 
   build() {
     Text(`PropChild testNum ${this.testClass.num}`)
   }
 }
 
-
 @Entry
 @Component
 struct DeepReParent {
   @State testClass: DeepReMyClass[] = [new DeepReMyClass(1)];
-
 
   build() {
     Column() {
@@ -546,13 +495,11 @@ struct DeepReParent {
           this.testClass[0].num += 1;
         })
 
-
       // DeepRePropChild没有改变@Prop testClass: DeepReMyClass的值，所以这时最优的选择是使用@ObjectLink。
       DeepRePropChild({ testClass: this.testClass[0] })
     }
   }
 }
-DeepCopyReverse.ets
 
 在以上示例中，DeepRePropChild组件没有改变@Prop testClass: MyClass的值，因此使用@ObjectLink更为合适。因为@Prop会深拷贝数据带来性能开销，所以@ObjectLink是比@Prop更优的选择。
 
@@ -562,29 +509,24 @@ DeepCopyReverse.ets
 class MyClass {
   public num: number = 0;
 
-
   constructor(num: number) {
     this.num = num;
   }
 }
 
-
 @Component
 struct PropChild {
   @ObjectLink testClass: MyClass; // @ObjectLink装饰状态变量不会深拷贝。
-
 
   build() {
     Text(`PropChild testNum ${this.testClass.num}`)
   }
 }
 
-
 @Entry
 @Component
 struct Parent {
   @State testClass: MyClass[] = [new MyClass(1)];
-
 
   build() {
     Column() {
@@ -593,16 +535,15 @@ struct Parent {
           this.testClass[0].num += 1;
         })
 
-
       // 当子组件不需要本地修改状态时，应优先使用@ObjectLink，因为@Prop会执行深拷贝并带来性能开销，此时@ObjectLink是比@Link和@Prop更优的选择。
       PropChild({ testClass: this.testClass[0] })
     }
   }
 }
-DeepCopyCorrect.ets
+
 状态变量关联的组件数过多导致性能下降
 
-建议每个状态变量关联的组件数少于20个。精准控制状态变量关联的组件数量可减少不必要的组件刷新，提升刷新效率。有时开发者会将同一状态变量绑定于多个同级组件属性，状态变化时将导致这些组件同步更新，产生不必要的刷新，当组件复杂度较高时会显著影响整体性能。相反，将该状态变量绑定在这些组件的父组件上，可以减少需要刷新的组件数，提高性能。在应用开发中，可以通过HiDumper查看状态变量关联的组件数。具体可参考状态变量组件定位工具实践。
+建议每个状态变量关联的组件数少于20个。精准控制状态变量关联的组件数量可减少不必要的组件刷新，提升刷新效率。有时开发者会将同一状态变量绑定于多个同级组件属性，状态变化时将导致这些组件同步更新，产生不必要的刷新，当组件复杂度较高时会显著影响整体性能。相反，将该状态变量绑定在这些组件的父组件上，可以减少需要刷新的组件数，提高性能。在应用开发中，可以通过HiDumper查看状态变量关联的组件数。
 
 【反例】
 
@@ -611,11 +552,9 @@ class Translate {
   public translateX: number = 20;
 }
 
-
 @Component
 struct Title {
   @ObjectLink translateObj: Translate;
-
 
   build() {
     Row() {
@@ -635,12 +574,10 @@ struct Title {
   }
 }
 
-
 @Entry
 @Component
 struct Page {
   @State translateObj: Translate = new Translate();
-
 
   build() {
     Column() {
@@ -669,7 +606,6 @@ struct Page {
     }
   }
 }
-PreciseControlCounterexamples.ets
 
 在上面的示例中，状态变量this.translateObj.translateX被用在多个同级的子组件下，当this.translateObj.translateX变化时，会导致所有关联它的组件一起刷新，但实际上由于这些组件的变化是相同的，因此可以将这个属性绑定到他们共同的父组件上，来实现减少组件的刷新数量。经过分析，所有子组件均位于Page组件的Column下，因此将所有子组件相同的translate属性统一到Column上，来实现精准控制状态变量关联的组件数。
 
@@ -679,7 +615,6 @@ PreciseControlCounterexamples.ets
 class PageTranslate {
   public translateX: number = 20;
 }
-
 
 @Component
 struct PageTitle {
@@ -695,12 +630,10 @@ struct PageTitle {
   }
 }
 
-
 @Entry
 @Component
 struct Page1 {
   @State translateObj: PageTranslate = new PageTranslate();
-
 
   build() {
     Column() {
@@ -725,7 +658,7 @@ struct Page1 {
     })
   }
 }
-PreciseControlPositiveCases.ets
+
 在for、while等循环逻辑中频繁读取状态变量导致性能下降
 
 在应用开发中，应避免在循环逻辑中频繁读取状态变量，而是应该放在循环外面读取。
@@ -734,12 +667,10 @@ PreciseControlPositiveCases.ets
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = '';
-
 
   build() {
     Column() {
@@ -764,18 +695,15 @@ struct Index {
     })
   }
 }
-LoopStateInefficient.ets
 
 【正例】
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = '';
-
 
   build() {
     Column() {
@@ -801,7 +729,7 @@ struct Index {
     })
   }
 }
-LoopStateOptimized.ets
+
 频繁修改状态变量导致性能下降
 
 在应用开发中，应尽量减少对状态变量的直接赋值，通过临时变量完成数据计算操作。
@@ -812,12 +740,10 @@ LoopStateOptimized.ets
 
 import { hiTraceMeter } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = '';
-
 
   appendMsg(newMsg: string) {
     // 性能打点
@@ -827,7 +753,6 @@ struct Index {
     this.message += '<br/>';
     hiTraceMeter.finishTrace('StateVariable', 1);
   }
-
 
   build() {
     Column() {
@@ -849,7 +774,6 @@ struct Index {
     })
   }
 }
-CalculationDirectState.ets
 
 直接操作状态变量，三次触发计算函数，运行耗时结果如下：
 
@@ -857,12 +781,10 @@ CalculationDirectState.ets
 
 import { hiTraceMeter } from '@kit.PerformanceAnalysisKit';
 
-
 @Entry
 @Component
 struct Index {
   @State message: string = '';
-
 
   appendMsg(newMsg: string) {
     // 性能打点。
@@ -874,7 +796,6 @@ struct Index {
     this.message = message;
     hiTraceMeter.finishTrace('TemporaryVariable', 2);
   }
-
 
   build() {
     Column() {
@@ -896,7 +817,6 @@ struct Index {
     })
   }
 }
-CalculationTempVariable.ets
 
 使用临时变量取代状态变量的计算，三次触发计算函数，运行耗时结果如下：
 
@@ -905,31 +825,27 @@ CalculationTempVariable.ets
 计算方式	耗时(局限不同设备和场景，数据仅供参考)	说明
 直接操作状态变量	1.01ms	增加了ArkUI不必要的查询和渲染行为，导致性能劣化。
 使用临时变量计算	0.63ms	减少了ArkUI不必要的行为，优化性能。
+
 使用LazyForEach的重建机制刷新UI导致性能下降
 
 开发过程中通常会将LazyForEach和状态变量结合起来使用。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN_NUMBER: number = 0XFF00;
 const TAG: string = '[Sample_StateManagement]';
-
 
 class BasicDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private originDataArray: StringData[] = [];
 
-
   public totalCount(): number {
     return 0;
   }
 
-
   public getData(index: number): StringData {
     return this.originDataArray[index];
   }
-
 
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
@@ -937,7 +853,6 @@ class BasicDataSource implements IDataSource {
       this.listeners.push(listener);
     }
   }
-
 
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
@@ -947,13 +862,11 @@ class BasicDataSource implements IDataSource {
     }
   }
 
-
   notifyDataReload(): void {
     this.listeners.forEach(listener => {
       listener.onDataReloaded();
     })
   }
-
 
   notifyDataAdd(index: number): void {
     this.listeners.forEach(listener => {
@@ -961,20 +874,17 @@ class BasicDataSource implements IDataSource {
     })
   }
 
-
   notifyDataChange(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataChange(index);
     })
   }
 
-
   notifyDataDelete(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataDelete(index);
     })
   }
-
 
   notifyDataMove(from: number, to: number): void {
     this.listeners.forEach(listener => {
@@ -983,43 +893,35 @@ class BasicDataSource implements IDataSource {
   }
 }
 
-
 class MyDataSource extends BasicDataSource {
   private dataArray: StringData[] = [];
-
 
   public totalCount(): number {
     return this.dataArray.length;
   }
 
-
   public getData(index: number): StringData {
     return this.dataArray[index];
   }
-
 
   public addData(index: number, data: StringData): void {
     this.dataArray.splice(index, 0, data);
     this.notifyDataAdd(index);
   }
 
-
   public pushData(data: StringData): void {
     this.dataArray.push(data);
     this.notifyDataAdd(this.dataArray.length - 1);
   }
-
 
   public reloadData(): void {
     this.notifyDataReload();
   }
 }
 
-
 class StringData {
   public message: string;
   public imgSrc: Resource;
-
 
   constructor(message: string, imgSrc: Resource) {
     this.message = message;
@@ -1027,12 +929,10 @@ class StringData {
   }
 }
 
-
 @Entry
 @Component
 struct MyComponent {
   private data: MyDataSource = new MyDataSource();
-
 
   aboutToAppear() {
     for (let i = 0; i <= 9; i++) {
@@ -1040,7 +940,6 @@ struct MyComponent {
       this.data.pushData(new StringData(`Click to add ${i}`, $r('app.media.icon')));
     }
   }
-
 
   build() {
     List({ space: 3 }) {
@@ -1067,7 +966,6 @@ struct MyComponent {
     }.cachedCount(5)
   }
 }
-StateArrayLazy.ets
 
 上述代码运行效果如下。
 
@@ -1077,25 +975,20 @@ StateArrayLazy.ets
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN_NUMBER: number = 0XFF00;
 const TAG: string = '[Sample_StateManagement]';
-
 
 class BasicDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private originDataArray: StringData[] = [];
 
-
   public totalCount(): number {
     return 0;
   }
 
-
   public getData(index: number): StringData {
     return this.originDataArray[index];
   }
-
 
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
@@ -1103,7 +996,6 @@ class BasicDataSource implements IDataSource {
       this.listeners.push(listener);
     }
   }
-
 
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
@@ -1113,13 +1005,11 @@ class BasicDataSource implements IDataSource {
     }
   }
 
-
   notifyDataReload(): void {
     this.listeners.forEach(listener => {
       listener.onDataReloaded();
     })
   }
-
 
   notifyDataAdd(index: number): void {
     this.listeners.forEach(listener => {
@@ -1127,20 +1017,17 @@ class BasicDataSource implements IDataSource {
     })
   }
 
-
   notifyDataChange(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataChange(index);
     })
   }
 
-
   notifyDataDelete(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataDelete(index);
     })
   }
-
 
   notifyDataMove(from: number, to: number): void {
     this.listeners.forEach(listener => {
@@ -1149,26 +1036,21 @@ class BasicDataSource implements IDataSource {
   }
 }
 
-
 class MyDataSource extends BasicDataSource {
   private dataArray: StringData[] = [];
-
 
   public totalCount(): number {
     return this.dataArray.length;
   }
 
-
   public getData(index: number): StringData {
     return this.dataArray[index];
   }
-
 
   public addData(index: number, data: StringData): void {
     this.dataArray.splice(index, 0, data);
     this.notifyDataAdd(index);
   }
-
 
   public pushData(data: StringData): void {
     this.dataArray.push(data);
@@ -1176,12 +1058,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-
 @Observed
 class StringData {
   @Track public message: string;
   @Track public imgSrc: Resource;
-
 
   constructor(message: string, imgSrc: Resource) {
     this.message = message;
@@ -1189,12 +1069,10 @@ class StringData {
   }
 }
 
-
 @Entry
 @Component
 struct MyComponent {
   @State data: MyDataSource = new MyDataSource();
-
 
   aboutToAppear() {
     for (let i = 0; i <= 9; i++) {
@@ -1202,7 +1080,6 @@ struct MyComponent {
       this.data.pushData(new StringData(`Click to add ${i}`, $r('app.media.icon')));
     }
   }
-
 
   build() {
     List({ space: 3 }) {
@@ -1218,11 +1095,9 @@ struct MyComponent {
   }
 }
 
-
 @Component
 struct ChildComponent {
   @ObjectLink data: StringData;
-
 
   build() {
     Column() {
@@ -1236,7 +1111,6 @@ struct ChildComponent {
     }.margin({ left: 10, right: 10 })
   }
 }
-StateArrayLazy2.ets
 
 上述代码运行效果如下。
 
@@ -1250,39 +1124,32 @@ ForEach和对象数组结合使用导致UI不刷新
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN_NUMBER: number = 0XFF00;
 const TAG: string = '[Sample_StateManagement]';
-
 
 @Observed
 class StyleList extends Array<TextStyles> {
 }
 
-
 @Observed
 class TextStyles {
   public fontSize: number;
-
 
   constructor(fontSize: number) {
     this.fontSize = fontSize;
   }
 }
 
-
 @Entry
 @Component
 struct Page {
   @State styleList: StyleList = new StyleList();
-
 
   aboutToAppear() {
     for (let i = 15; i < 50; i++) {
       this.styleList.push(new TextStyles(i));
     }
   }
-
 
   build() {
     Column() {
@@ -1306,7 +1173,6 @@ struct Page {
     }
   }
 }
-StateArrayForeach.ets
 
 上述代码运行效果如下。
 
@@ -1314,31 +1180,25 @@ StateArrayForeach.ets
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN_NUMBER: number = 0XFF00;
 const TAG: string = '[Sample_StateManagement]';
-
 
 @Observed
 class StyleList extends Array<TextStyles> {
 }
 
-
 @Observed
 class TextStyles {
   public fontSize: number;
-
 
   constructor(fontSize: number) {
     this.fontSize = fontSize;
   }
 }
 
-
 @Component
 struct TextComponent {
   @ObjectLink textStyle: TextStyles;
-
 
   build() {
     Text('Hello World')
@@ -1346,19 +1206,16 @@ struct TextComponent {
   }
 }
 
-
 @Entry
 @Component
 struct Page {
   @State styleList: StyleList = new StyleList();
-
 
   aboutToAppear() {
     for (let i = 15; i < 50; i++) {
       this.styleList.push(new TextStyles(i));
     }
   }
-
 
   build() {
     Column() {
@@ -1381,7 +1238,6 @@ struct Page {
     }
   }
 }
-StateArrayForeach2.ets
 
 上述代码的运行效果如下。
 
@@ -1389,5 +1245,1159 @@ StateArrayForeach2.ets
 
 这是一个较为实用的使用状态管理进行刷新的开发方式。
 
-状态管理常见问题
-数据对象状态管理常见问题
+## Code blocks
+
+### Code block 1
+
+```
+@Entry
+@Component
+struct Index {
+  @State count: number = 1;
+
+  build() {
+    Column() {
+      // 应避免直接在Text组件内改变count的值
+      Text(`${this.count++}`)
+        .width(50)
+        .height(50)
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+FIX THIS APPLICATION ERROR: @Component 'Index': State variable 'count' has changed during render! It's illegal to change @Component state while build (initial render or re-render) is on-going. Application error!
+```
+
+### Code block 3
+
+```
+@Entry
+@Component
+struct Index {
+  @State message: number = 20;
+
+  build() {
+    Column() {
+      // 典型错误，会导致appfreeze
+      Text(`${this.message++}`)
+      Text(`${this.message++}`)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 4
+
+```
+import { common } from '@kit.AbilityKit';
+
+class Model {
+  private callback: (() => void) | undefined = () => {
+  };
+
+  add(callback: () => void): void {
+    this.callback = callback;
+  }
+
+  delete(): void {
+    this.callback = undefined;
+  }
+
+  call(): void {
+    if (this.callback) {
+      this.callback();
+    }
+  }
+}
+
+let model: Model = new Model();
+
+@Entry
+@Component
+struct Test {
+  @State count: number = 10;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  aboutToAppear(): void {
+    model.add(() => {
+      this.count++;
+    })
+  }
+
+  build() {
+    Column() {
+      // 请在resources\base\element\string.json文件中配置name为'state_countvalue_text1' ，value为非空字符串的资源
+      Text(resource.resourceToString($r('app.string.state_countvalue_text1')) + `${this.count}`)
+      Button('change')
+        .onClick(() => {
+          model.call();
+        })
+    }
+  }
+
+  aboutToDisappear(): void {
+    model.delete();
+  }
+}
+```
+
+### Code block 5
+
+```
+class Balloon {
+  public volume: number;
+
+  constructor(volume: number) {
+    this.volume = volume;
+  }
+
+  static increaseVolume(balloon: Balloon) {
+    balloon.volume += 2;
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  @State balloon: Balloon = new Balloon(10);
+
+  reduceVolume(balloon: Balloon) {
+    balloon.volume -= 1;
+  }
+
+  build() {
+    Column({ space: 8 }) {
+      Text(`The volume of the balloon is ${this.balloon.volume} cubic centimeters.`)
+        .fontSize(30)
+      Button(`increaseVolume`)
+        .onClick(() => {
+          // 通过静态方法调用，无法触发UI刷新
+          Balloon.increaseVolume(this.balloon);
+        })
+      Button(`reduceVolume`)
+        .onClick(() => {
+          // 使用this通过自定义组件内部方法调用，无法触发UI刷新
+          this.reduceVolume(this.balloon);
+        })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 6
+
+```
+class Balloon {
+  public volume: number;
+
+  constructor(volume: number) {
+    this.volume = volume;
+  }
+
+  static increaseVolume(balloon: Balloon) {
+    balloon.volume += 2;
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  @State balloon: Balloon = new Balloon(10);
+
+  reduceVolume(balloon: Balloon) {
+    balloon.volume -= 1;
+  }
+
+  build() {
+    Column({ space: 8 }) {
+      Text(`The volume of the balloon is ${this.balloon.volume} cubic centimeters.`)
+        .fontSize(30)
+      Button(`increaseVolume`)
+        .onClick(() => {
+          // 通过赋值给临时变量保留Proxy代理
+          let balloon1 = this.balloon;
+          Balloon.increaseVolume(balloon1);
+        })
+      Button(`reduceVolume`)
+        .onClick(() => {
+          // 通过赋值给临时变量保留Proxy代理
+          let balloon2 = this.balloon;
+          this.reduceVolume(balloon2);
+        })
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 7
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+class DataObj {
+  public name: string = 'default name';
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  list: DataObj[] = [new DataObj('a'), new DataObj('b'), new DataObj('c')];
+  @State dataObjFromList: DataObj = this.list[0];
+
+  build() {
+    Column() {
+      ConsumerChild({ dataObj: this.dataObjFromList })
+      Button('change to self').onClick(() => {
+        // 把相同的类实例赋值给一个Class类型的状态变量，会触发刷新
+        this.dataObjFromList = this.list[0];
+      })
+    }
+  }
+}
+
+@Component
+struct ConsumerChild {
+  @Link @Watch('onDataObjChange') dataObj: DataObj;
+
+  onDataObjChange() {
+    hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObj changed');
+  }
+
+  getContent() {
+    hilog.info(0xFF00, 'testTag', '%{public}s', `this.dataObj.name change: ${this.dataObj.name}`);
+    return this.dataObj.name;
+  }
+
+  build() {
+    Column() {
+      Text(this.getContent()).fontSize(30)
+    }
+  }
+}
+```
+
+### Code block 8
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Observed
+class DataObj {
+  public name: string = 'default name';
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  list: DataObj[] = [new DataObj('a'), new DataObj('b'), new DataObj('c')];
+  @State dataObjFromList: DataObj = this.list[0];
+
+  build() {
+    Column() {
+      ConsumerChild({ dataObj: this.dataObjFromList })
+      Button('change to self').onClick(() => {
+        // DataObj被@Observed装饰，list[0]也是Proxy类型
+        // 再次赋值相同的对象时，不会触发刷新
+        this.dataObjFromList = this.list[0];
+      })
+    }
+  }
+}
+
+@Component
+struct ConsumerChild {
+  @Link @Watch('onDataObjChange') dataObj: DataObj;
+
+  onDataObjChange() {
+    hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObj changed');
+  }
+
+  build() {
+    Column() {
+      Text(this.dataObj.name).fontSize(30)
+    }
+  }
+}
+```
+
+### Code block 9
+
+```
+import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+class DataObj {
+  public name: string = 'default name';
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+@Entry
+@Component
+struct Index {
+  list: DataObj[] = [new DataObj('a'), new DataObj('b'), new DataObj('c')];
+  @State dataObjFromList: DataObj = this.list[0];
+
+  build() {
+    Column() {
+      ConsumerChild({ dataObj: this.dataObjFromList })
+      Button('change to self').onClick(() => {
+        // 获取原始对象来和新值做对比
+        if (UIUtils.getTarget(this.dataObjFromList) !== this.list[0]) {
+          this.dataObjFromList = this.list[0];
+        }
+      })
+    }
+  }
+}
+
+@Component
+struct ConsumerChild {
+  @Link @Watch('onDataObjChange') dataObj: DataObj;
+
+  onDataObjChange() {
+    hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObj changed');
+  }
+
+  build() {
+    Column() {
+      Text(this.dataObj.name).fontSize(30)
+    }
+  }
+}
+```
+
+### Code block 10
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@ComponentV2
+struct Index {
+  list: string[][] = [['a'], ['b'], ['c']];
+  @Local dataObjFromList: string[] = this.list[0];
+
+  @Monitor('dataObjFromList')
+  onStrChange(monitor: IMonitor) {
+    hilog.info(0xFF00, 'testTag', '%{public}s', 'dataObjFromList has changed');
+  }
+
+  build() {
+    Column() {
+      Button('change to self').onClick(() => {
+        // 新值和本地初始化的值相同
+        this.dataObjFromList = this.list[0];
+      })
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+@Entry
+@ComponentV2
+struct Index {
+  list: string[][] = [['a'], ['b'], ['c']];
+  @Local dataObjFromList: string[] = this.list[0];
+
+  @Monitor('dataObjFromList')
+  onStrChange(monitor: IMonitor) {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'dataObjFromList has changed');
+  }
+
+  build() {
+    Column() {
+      Button('change to self').onClick(() => {
+        // 获取原始对象来和新值做对比
+        if (UIUtils.getTarget(this.dataObjFromList) !== this.list[0]) {
+          this.dataObjFromList = this.list[0];
+        }
+      })
+    }
+  }
+}
+```
+
+### Code block 12
+
+```
+@Observed
+class DeepReMyClass {
+  public num: number = 0;
+
+  constructor(num: number) {
+    this.num = num;
+  }
+}
+
+@Component
+struct DeepRePropChild {
+  @Prop testClass: DeepReMyClass; // @Prop装饰状态变量会深拷贝。
+
+  build() {
+    Text(`PropChild testNum ${this.testClass.num}`)
+  }
+}
+
+@Entry
+@Component
+struct DeepReParent {
+  @State testClass: DeepReMyClass[] = [new DeepReMyClass(1)];
+
+  build() {
+    Column() {
+      Text(`DeepReParent testNum ${this.testClass[0].num}`)
+        .onClick(() => {
+          this.testClass[0].num += 1;
+        })
+
+      // DeepRePropChild没有改变@Prop testClass: DeepReMyClass的值，所以这时最优的选择是使用@ObjectLink。
+      DeepRePropChild({ testClass: this.testClass[0] })
+    }
+  }
+}
+```
+
+### Code block 13
+
+```
+@Observed
+class MyClass {
+  public num: number = 0;
+
+  constructor(num: number) {
+    this.num = num;
+  }
+}
+
+@Component
+struct PropChild {
+  @ObjectLink testClass: MyClass; // @ObjectLink装饰状态变量不会深拷贝。
+
+  build() {
+    Text(`PropChild testNum ${this.testClass.num}`)
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State testClass: MyClass[] = [new MyClass(1)];
+
+  build() {
+    Column() {
+      Text(`Parent testNum ${this.testClass[0].num}`)
+        .onClick(() => {
+          this.testClass[0].num += 1;
+        })
+
+      // 当子组件不需要本地修改状态时，应优先使用@ObjectLink，因为@Prop会执行深拷贝并带来性能开销，此时@ObjectLink是比@Link和@Prop更优的选择。
+      PropChild({ testClass: this.testClass[0] })
+    }
+  }
+}
+```
+
+### Code block 14
+
+```
+@Observed
+class Translate {
+  public translateX: number = 20;
+}
+
+@Component
+struct Title {
+  @ObjectLink translateObj: Translate;
+
+  build() {
+    Row() {
+      // $r('app.media.background')需要替换为开发者所需的资源文件。
+      Image($r('app.media.background'))
+        .width(50)
+        .height(50)
+        .translate({
+          x: this.translateObj.translateX // this.translateObj.translateX 绑定在Image和Text组件上。
+        })
+      Text('Title')
+        .fontSize(20)
+        .translate({
+          x: this.translateObj.translateX
+        })
+    }
+  }
+}
+
+@Entry
+@Component
+struct Page {
+  @State translateObj: Translate = new Translate();
+
+  build() {
+    Column() {
+      Title({
+        translateObj: this.translateObj
+      })
+      Stack() {
+      }
+      .backgroundColor('black')
+      .width(200)
+      .height(400)
+      .translate({
+        x: this.translateObj.translateX // this.translateObj.translateX 绑定在Stack和Button组件上。
+      })
+      Button('move')
+        .translate({
+          x: this.translateObj.translateX
+        })
+        .onClick(() => {
+          this.getUIContext().animateTo({
+            duration: 50
+          }, () => {
+            this.translateObj.translateX = (this.translateObj.translateX + 50) % 150;
+          });
+        })
+    }
+  }
+}
+```
+
+### Code block 15
+
+```
+@Observed
+class PageTranslate {
+  public translateX: number = 20;
+}
+
+@Component
+struct PageTitle {
+  build() {
+    Row() {
+      // $r('app.media.background')需要替换为开发者所需的图像资源文件。
+      Image($r('app.media.background'))
+        .width(50)
+        .height(50)
+      Text('Title')
+        .fontSize(20)
+    }
+  }
+}
+
+@Entry
+@Component
+struct Page1 {
+  @State translateObj: PageTranslate = new PageTranslate();
+
+  build() {
+    Column() {
+      PageTitle()
+      Stack() {
+      }
+      .backgroundColor('black')
+      .width(200)
+      .height(400)
+      Button('move')
+        .onClick(() => {
+          this.getUIContext().animateTo({
+            duration: 50
+          }, () => {
+            this.translateObj.translateX = (this.translateObj.translateX + 50) % 150;
+          });
+        })
+    }
+    .translate({
+      // 子组件Stack和Button设置了同一个translate属性，可以统一到Column上设置。
+      x: this.translateObj.translateX
+    })
+  }
+}
+```
+
+### Code block 16
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = '';
+
+  build() {
+    Column() {
+      Button('Click to print log')
+        .onClick(() => {
+          for (let i = 0; i < 10; i++) {
+            // 循环逻辑中频繁读取状态变量
+            hilog.info(0x0000, 'TAG', '%{public}s', this.message);
+          }
+        })
+        .width('90%')
+        .backgroundColor(Color.Blue)
+        .fontColor(Color.White)
+        .margin({
+          top: 10
+        })
+    }
+    .justifyContent(FlexAlign.Start)
+    .alignItems(HorizontalAlign.Center)
+    .margin({
+      top: 15
+    })
+  }
+}
+```
+
+### Code block 17
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = '';
+
+  build() {
+    Column() {
+      Button('Click to print log')
+        .onClick(() => {
+          // 正确做法，在循环逻辑外读取状态变量
+          let logMessage: string = this.message;
+          for (let i = 0; i < 10; i++) {
+            hilog.info(0x0000, 'TAG', '%{public}s', logMessage);
+          }
+        })
+        .width('90%')
+        .backgroundColor(Color.Blue)
+        .fontColor(Color.White)
+        .margin({
+          top: 10
+        })
+    }
+    .justifyContent(FlexAlign.Start)
+    .alignItems(HorizontalAlign.Center)
+    .margin({
+      top: 15
+    })
+  }
+}
+```
+
+### Code block 18
+
+```
+import { hiTraceMeter } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = '';
+
+  appendMsg(newMsg: string) {
+    // 性能打点
+    hiTraceMeter.startTrace('StateVariable', 1);
+    this.message += newMsg;
+    this.message += ';';
+    this.message += '<br/>';
+    hiTraceMeter.finishTrace('StateVariable', 1);
+  }
+
+  build() {
+    Column() {
+      Button('Click to print log')
+        .onClick(() => {
+          this.appendMsg('Operating state variable');
+        })
+        .width('90%')
+        .backgroundColor(Color.Blue)
+        .fontColor(Color.White)
+        .margin({
+          top: 10
+        })
+    }
+    .justifyContent(FlexAlign.Start)
+    .alignItems(HorizontalAlign.Center)
+    .margin({
+      top: 15
+    })
+  }
+}
+```
+
+### Code block 19
+
+```
+import { hiTraceMeter } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+  @State message: string = '';
+
+  appendMsg(newMsg: string) {
+    // 性能打点。
+    hiTraceMeter.startTrace('TemporaryVariable', 2);
+    let message = this.message;
+    message += newMsg;
+    message += ';';
+    message += '<br/>';
+    this.message = message;
+    hiTraceMeter.finishTrace('TemporaryVariable', 2);
+  }
+
+  build() {
+    Column() {
+      Button('Click to print log')
+        .onClick(() => {
+          this.appendMsg('Operating temporary variable');
+        })
+        .width('90%')
+        .backgroundColor(Color.Blue)
+        .fontColor(Color.White)
+        .margin({
+          top: 10
+        })
+    }
+    .justifyContent(FlexAlign.Start)
+    .alignItems(HorizontalAlign.Center)
+    .margin({
+      top: 15
+    })
+  }
+}
+```
+
+### Code block 20
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN_NUMBER: number = 0XFF00;
+const TAG: string = '[Sample_StateManagement]';
+
+class BasicDataSource implements IDataSource {
+  private listeners: DataChangeListener[] = [];
+  private originDataArray: StringData[] = [];
+
+  public totalCount(): number {
+    return 0;
+  }
+
+  public getData(index: number): StringData {
+    return this.originDataArray[index];
+  }
+
+  registerDataChangeListener(listener: DataChangeListener): void {
+    if (this.listeners.indexOf(listener) < 0) {
+      hilog.info(DOMAIN_NUMBER, TAG, 'add listener');
+      this.listeners.push(listener);
+    }
+  }
+
+  unregisterDataChangeListener(listener: DataChangeListener): void {
+    const pos = this.listeners.indexOf(listener);
+    if (pos >= 0) {
+      hilog.info(DOMAIN_NUMBER, TAG, 'remove listener');
+      this.listeners.splice(pos, 1);
+    }
+  }
+
+  notifyDataReload(): void {
+    this.listeners.forEach(listener => {
+      listener.onDataReloaded();
+    })
+  }
+
+  notifyDataAdd(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataAdd(index);
+    })
+  }
+
+  notifyDataChange(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataChange(index);
+    })
+  }
+
+  notifyDataDelete(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataDelete(index);
+    })
+  }
+
+  notifyDataMove(from: number, to: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataMove(from, to);
+    })
+  }
+}
+
+class MyDataSource extends BasicDataSource {
+  private dataArray: StringData[] = [];
+
+  public totalCount(): number {
+    return this.dataArray.length;
+  }
+
+  public getData(index: number): StringData {
+    return this.dataArray[index];
+  }
+
+  public addData(index: number, data: StringData): void {
+    this.dataArray.splice(index, 0, data);
+    this.notifyDataAdd(index);
+  }
+
+  public pushData(data: StringData): void {
+    this.dataArray.push(data);
+    this.notifyDataAdd(this.dataArray.length - 1);
+  }
+
+  public reloadData(): void {
+    this.notifyDataReload();
+  }
+}
+
+class StringData {
+  public message: string;
+  public imgSrc: Resource;
+
+  constructor(message: string, imgSrc: Resource) {
+    this.message = message;
+    this.imgSrc = imgSrc;
+  }
+}
+
+@Entry
+@Component
+struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
+
+  aboutToAppear() {
+    for (let i = 0; i <= 9; i++) {
+      // 此处'app.media.icon'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+      this.data.pushData(new StringData(`Click to add ${i}`, $r('app.media.icon')));
+    }
+  }
+
+  build() {
+    List({ space: 3 }) {
+      LazyForEach(this.data, (item: StringData, index: number) => {
+        ListItem() {
+          Column() {
+            Text(item.message).fontSize(20)
+              .onAppear(() => {
+                hilog.info(DOMAIN_NUMBER, TAG, 'text appear:' + item.message);
+              })
+            Image(item.imgSrc)
+              .width(100)
+              .height(100)
+              .onAppear(() => {
+                hilog.info(DOMAIN_NUMBER, TAG, 'image appear');
+              })
+          }.margin({ left: 10, right: 10 })
+        }
+        .onClick(() => {
+          item.message += '0';
+          this.data.reloadData();
+        })
+      }, (item: StringData, index: number) => JSON.stringify(item))
+    }.cachedCount(5)
+  }
+}
+```
+
+### Code block 21
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN_NUMBER: number = 0XFF00;
+const TAG: string = '[Sample_StateManagement]';
+
+class BasicDataSource implements IDataSource {
+  private listeners: DataChangeListener[] = [];
+  private originDataArray: StringData[] = [];
+
+  public totalCount(): number {
+    return 0;
+  }
+
+  public getData(index: number): StringData {
+    return this.originDataArray[index];
+  }
+
+  registerDataChangeListener(listener: DataChangeListener): void {
+    if (this.listeners.indexOf(listener) < 0) {
+      hilog.info(DOMAIN_NUMBER, TAG, 'add listener');
+      this.listeners.push(listener);
+    }
+  }
+
+  unregisterDataChangeListener(listener: DataChangeListener): void {
+    const pos = this.listeners.indexOf(listener);
+    if (pos >= 0) {
+      hilog.info(DOMAIN_NUMBER, TAG, 'remove listener');
+      this.listeners.splice(pos, 1);
+    }
+  }
+
+  notifyDataReload(): void {
+    this.listeners.forEach(listener => {
+      listener.onDataReloaded();
+    })
+  }
+
+  notifyDataAdd(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataAdd(index);
+    })
+  }
+
+  notifyDataChange(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataChange(index);
+    })
+  }
+
+  notifyDataDelete(index: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataDelete(index);
+    })
+  }
+
+  notifyDataMove(from: number, to: number): void {
+    this.listeners.forEach(listener => {
+      listener.onDataMove(from, to);
+    })
+  }
+}
+
+class MyDataSource extends BasicDataSource {
+  private dataArray: StringData[] = [];
+
+  public totalCount(): number {
+    return this.dataArray.length;
+  }
+
+  public getData(index: number): StringData {
+    return this.dataArray[index];
+  }
+
+  public addData(index: number, data: StringData): void {
+    this.dataArray.splice(index, 0, data);
+    this.notifyDataAdd(index);
+  }
+
+  public pushData(data: StringData): void {
+    this.dataArray.push(data);
+    this.notifyDataAdd(this.dataArray.length - 1);
+  }
+}
+
+@Observed
+class StringData {
+  @Track public message: string;
+  @Track public imgSrc: Resource;
+
+  constructor(message: string, imgSrc: Resource) {
+    this.message = message;
+    this.imgSrc = imgSrc;
+  }
+}
+
+@Entry
+@Component
+struct MyComponent {
+  @State data: MyDataSource = new MyDataSource();
+
+  aboutToAppear() {
+    for (let i = 0; i <= 9; i++) {
+      // 此处'app.media.icon'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+      this.data.pushData(new StringData(`Click to add ${i}`, $r('app.media.icon')));
+    }
+  }
+
+  build() {
+    List({ space: 3 }) {
+      LazyForEach(this.data, (item: StringData, index: number) => {
+        ListItem() {
+          ChildComponent({ data: item })
+        }
+        .onClick(() => {
+          item.message += '0';
+        })
+      }, (item: StringData, index: number) => index.toString())
+    }.cachedCount(5)
+  }
+}
+
+@Component
+struct ChildComponent {
+  @ObjectLink data: StringData;
+
+  build() {
+    Column() {
+      Text(this.data.message).fontSize(20)
+        .onAppear(() => {
+          hilog.info(DOMAIN_NUMBER, TAG, 'text appear:' + this.data.message);
+        })
+      Image(this.data.imgSrc)
+        .width(100)
+        .height(100)
+    }.margin({ left: 10, right: 10 })
+  }
+}
+```
+
+### Code block 22
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN_NUMBER: number = 0XFF00;
+const TAG: string = '[Sample_StateManagement]';
+
+@Observed
+class StyleList extends Array<TextStyles> {
+}
+
+@Observed
+class TextStyles {
+  public fontSize: number;
+
+  constructor(fontSize: number) {
+    this.fontSize = fontSize;
+  }
+}
+
+@Entry
+@Component
+struct Page {
+  @State styleList: StyleList = new StyleList();
+
+  aboutToAppear() {
+    for (let i = 15; i < 50; i++) {
+      this.styleList.push(new TextStyles(i));
+    }
+  }
+
+  build() {
+    Column() {
+      Text('Font Size List')
+        .fontSize(50)
+        .onClick(() => {
+          for (let i = 0; i < this.styleList.length; i++) {
+            this.styleList[i].fontSize++;
+          }
+          hilog.info(DOMAIN_NUMBER, TAG, 'change font size');
+        })
+      List() {
+        // ForEach中生成的item是一个常量，点击改变item中的内容时没有办法观测到UI刷新
+        ForEach(this.styleList, (item: TextStyles) => {
+          ListItem() {
+            Text('Hello World')
+              .fontSize(item.fontSize)
+          }
+        })
+      }
+    }
+  }
+}
+```
+
+### Code block 23
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN_NUMBER: number = 0XFF00;
+const TAG: string = '[Sample_StateManagement]';
+
+@Observed
+class StyleList extends Array<TextStyles> {
+}
+
+@Observed
+class TextStyles {
+  public fontSize: number;
+
+  constructor(fontSize: number) {
+    this.fontSize = fontSize;
+  }
+}
+
+@Component
+struct TextComponent {
+  @ObjectLink textStyle: TextStyles;
+
+  build() {
+    Text('Hello World')
+      .fontSize(this.textStyle.fontSize)
+  }
+}
+
+@Entry
+@Component
+struct Page {
+  @State styleList: StyleList = new StyleList();
+
+  aboutToAppear() {
+    for (let i = 15; i < 50; i++) {
+      this.styleList.push(new TextStyles(i));
+    }
+  }
+
+  build() {
+    Column() {
+      Text('Font Size List')
+        .fontSize(50)
+        .onClick(() => {
+          for (let i = 0; i < this.styleList.length; i++) {
+            this.styleList[i].fontSize++;
+          }
+          hilog.info(DOMAIN_NUMBER, TAG, 'change font size');
+        })
+      List() {
+        // 使用@ObjectLink接受传入的item，TextComponent组件内的textStyle变量具有了被观测的能力
+        ForEach(this.styleList, (item: TextStyles) => {
+          ListItem() {
+            TextComponent({ textStyle: item })
+          }
+        })
+      }
+    }
+  }
+}
+```

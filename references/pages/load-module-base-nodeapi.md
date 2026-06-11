@@ -1,4 +1,4 @@
-# 基于Node
+# 基于Node-API加载模块
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/load-module-base-nodeapi_
 
@@ -15,6 +15,3 @@ napi_load_module
 在主线程内加载hap/hsp/har/native模块，参数传递简便。加载场景有限制，例如无法在子线程中使用该接口。
 
 具体参考：napi_load_module。
-
-静态方式加载Native模块
-模块加载副作用及优化

@@ -2,25 +2,36 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-coding-style-guide_
 
+目标和适用范围
+
+本文参考业界标准和实践，结合ArkTS语言特点，提供编码指南，以提高代码的规范性、安全性和性能。
+
+本文适用于使用ArkTS编写的开发场景。
+
+规则来源
+
 ArkTS在保持TypeScript基本语法风格的基础上，进一步强化静态检查和分析。本文部分规则筛选自《OpenHarmony应用TS&JS编程指南》，为ArkTS语言新增的语法添加了规则，旨在提高代码可读性、执行性能。
 
 章节概览
-代码风格
+
+[h2]代码风格
 
 包含命名和格式。
 
-编程实践
+[h2]编程实践
 
 包含声明与初始化、数据类型、运算与表达式、异常等。
 
 参考了《OpenHarmony应用TS&JS编程指南》中的规则，去除了ArkTS语言不涉及的部分，并为新增的语法添加了规则。
 
 术语和定义
+
 术语	缩略语	中文解释
 ArkTS	无	ArkTS编程语言
 TypeScript	TS	TypeScript编程语言
 JavaScript	JS	JavaScript编程语言
 ESObject	无	在ArkTS跨语言调用的场景中，用以标注JS/TS对象的类型
+
 总体原则
 
 规则分为两个级别：要求和建议。
@@ -30,16 +41,20 @@ ESObject	无	在ArkTS跨语言调用的场景中，用以标注JS/TS对象的类
 建议：表示该条款属于最佳实践，可结合实际情况考虑是否纳入。
 
 命名
-为标识符取一个好名字，提高代码可读性
+
+[h2]为标识符取一个好名字，提高代码可读性
 
 【描述】
 
 好的标识符命名应遵循以下原则：
 
 清晰表达意图，避免使用单个字母或非标准缩写命名。
+
 使用正确的英文单词并符合英文语法，不要使用中文拼音。
+
 确保语句清晰，避免歧义。
-类名、枚举名、命名空间名采用UpperCamelCase风格
+
+[h2]类名、枚举名、命名空间名采用UpperCamelCase风格
 
 【级别】建议
 
@@ -55,17 +70,14 @@ ESObject	无	在ArkTS跨语言调用的场景中，用以标注JS/TS对象的类
 class User {
   username: string
 
-
   constructor(username: string) {
     this.username = username;
   }
-
 
   sayHi() {
     console.info('hi' + this.username);
   }
 }
-
 
 // 枚举名
 enum UserType {
@@ -73,20 +85,18 @@ enum UserType {
   STUDENT = 1
 };
 
-
 // 命名空间
 namespace Base64Utils {
   export function encrypt() {
     // todo encrypt
   }
 
-
   export function decrypt() {
     // todo decrypt
   }
 };
-Index.ets
-变量名、方法名、参数名采用lowerCamelCase风格
+
+[h2]变量名、方法名、参数名采用lowerCamelCase风格
 
 【级别】建议
 
@@ -95,10 +105,15 @@ Index.ets
 函数的命名通常是动词或动词短语，采用小驼峰命名。示例如下：
 
 load + 属性名()
+
 put + 属性名()
+
 is + 布尔属性名()
+
 has + 名词/形容词()
+
 动词()
+
 动词 + 宾语()
 
 变量名通常是名词或名词短语，采用小驼峰命名，便于理解。
@@ -107,22 +122,19 @@ has + 名词/形容词()
 
 let msg = 'Hello world';
 
-
 function sendMsg(msg: string) {
   // todo send message
   // ...
 }
 
-
 let userName = 'Zhangsan';
-
 
 function findUser(userName: string) {
   // todo find user by user name
   // ...
 }
-Index.ets
-常量名、枚举值名采用全部大写，单词间使用下划线隔开
+
+[h2]常量名、枚举值名采用全部大写，单词间使用下划线隔开
 
 【级别】建议
 
@@ -137,10 +149,9 @@ enum UserType1 {
   STUDENT = 1
 };
 
-
 const MAX_USER_SIZE = 10000;
-Index.ets
-避免使用否定的布尔变量名，布尔型的局部变量或方法需加上表达是非意义的前缀
+
+[h2]避免使用否定的布尔变量名，布尔型的局部变量或方法需加上表达是非意义的前缀
 
 【级别】建议
 
@@ -153,22 +164,20 @@ Index.ets
 let isNoError = true;
 let isNotFound = false;
 
-
 function empty() {}
 function next() {}
-Index.ets
 
 【正例】
 
 let isError = false;
 let isFound = true;
 
-
 function isEmpty() {}
 function hasNext() {}
-Index.ets
+
 格式
-使用空格缩进，禁止使用tab字符
+
+[h2]使用空格缩进，禁止使用tab字符
 
 【级别】建议
 
@@ -188,7 +197,6 @@ class DataSource {
   content: string = ''
 }
 
-
 const dataSource: DataSource[] = [
   {
     id: 1,
@@ -201,15 +209,12 @@ const dataSource: DataSource[] = [
     content: 'Content 2'
   }
 
-
 ];
-
 
 function test(dataSource: DataSource[]) {
   if (!dataSource.length) {
     return;
   }
-
 
   for (let data of dataSource) {
     if (!data || !data.id || !data.title || !data.content) {
@@ -218,11 +223,10 @@ function test(dataSource: DataSource[]) {
     // some code
   }
 
-
   // some code
 }
-Index.ets
-行宽不超过120个字符
+
+[h2]行宽不超过120个字符
 
 【级别】建议
 
@@ -236,7 +240,7 @@ Index.ets
 
 例外：如果一行注释包含了超过120个字符的命令或URL，则可以保持一行，以方便复制、粘贴和通过grep查找；预处理的error信息在一行便于阅读和理解，即使超过120个字符。
 
-条件语句和循环语句的实现建议使用大括号
+[h2]条件语句和循环语句的实现建议使用大括号
 
 【级别】建议
 
@@ -251,7 +255,6 @@ if (condition)
   console.info('success');
 for (let idx = 0; idx < 5; ++idx)
   console.info('', idx);
-Index.ets
 
 【正例】
 
@@ -262,8 +265,8 @@ if (condition) {
 for (let idx = 0; idx < 5; ++idx) {
   console.info('', idx);
 }
-Index.ets
-switch语句的case和default需缩进一层
+
+[h2]switch语句的case和default需缩进一层
 
 【级别】建议
 
@@ -285,8 +288,8 @@ switch (condition) {
   default:
     break;
 }
-Index.ets
-表达式换行需保持一致性，运算符放行末
+
+[h2]表达式换行需保持一致性，运算符放行末
 
 【级别】建议
 
@@ -303,8 +306,8 @@ if (userCount > MAX_USER_COUNT ||
   userCount < MIN_USER_COUNT) {
   doSomething();
 }
-Index.ets
-多个变量定义和赋值语句不允许写在一行
+
+[h2]多个变量定义和赋值语句不允许写在一行
 
 【级别】要求
 
@@ -326,8 +329,8 @@ let maxCount = 10;
 let isCompleted = false;
 let pointX = 0;
 let pointY = 0;
-Index.ets
-空格应该突出关键字和重要信息，避免不必要的空格
+
+[h2]空格应该突出关键字和重要信息，避免不必要的空格
 
 【级别】建议
 
@@ -336,8 +339,11 @@ Index.ets
 空格应该突出关键字和重要信息。总体建议如下：
 
 if, for, while, switch等关键字与左括号(之间加空格。
+
 在函数定义和调用时，函数名称与参数列表的左括号(之间不加空格。
+
 关键字else或catch与其之前的大括号}之间加空格。
+
 任何打开大括号({)之前加空格，有两个例外：
 
 a) 在作为函数的第一个参数或数组中的第一个元素时，对象之前不用加空格，例如：foo({ name: 'abc' })。
@@ -365,7 +371,6 @@ b) 在模板中，不用加空格，例如：abc${name}。
 function fightBad (): void {
   console.info('Swooosh!');
 }
-Index.ets
 
 【正例】
 
@@ -378,7 +383,6 @@ Index.ets
 function fight(): void {
   console.info('Swooosh!');
 }
-Index.ets
 
 【反例】
 
@@ -387,7 +391,6 @@ if (flag) {
 }else { // else 与其前面的大括号 } 之间没有加空格
   // ...
 }
-Index.ets
 
 【正例】
 
@@ -396,7 +399,6 @@ if (flag) {
 } else { // else 与其前面的大括号 } 之间增加空格
   // ...
 }
-Index.ets
 
 【正例】
 
@@ -408,14 +410,13 @@ function foo() { // 函数声明时，左大括号 { 之前加个空格
     age: '1 year',
     sbreed: 'Bernese Mountain Dog',
   });
-Index.ets
 
 【正例】
 
 const arr = [1, 2, 3]; // 数组初始化中的逗号后面加个空格，逗号前面不加空格
 myFunc(bar1, foo1, baz); // 函数的多个参数之间的逗号后加个空格，逗号前面不加空格
-Index.ets
-建议字符串使用单引号
+
+[h2]建议字符串使用单引号
 
 【级别】建议
 
@@ -425,16 +426,15 @@ Index.ets
 
 【反例】
 
-let message1 = 'world';
+let message1 = "world";
 console.info(message1);
-Index.ets
 
 【正例】
 
 let message2 = 'world';
 console.info(message2);
-Index.ets
-对象字面量属性超过4个，需要都换行
+
+[h2]对象字面量属性超过4个，需要都换行
 
 【级别】建议
 
@@ -453,9 +453,7 @@ interface I {
   bar: boolean
 }
 
-
 let obj1: I = { name: 'tom', age: 16, value: 1, sum: 2, foo: true, bar: false }
-Index.ets
 
 【正例】
 
@@ -468,7 +466,6 @@ interface I {
   bar: boolean
 }
 
-
 // ...
 let obj2: I = {
   name: 'tom',
@@ -478,8 +475,8 @@ let obj2: I = {
   foo: true,
   bar: false
 }
-Index.ets
-把else/catch放在if/try代码块关闭括号的同一行
+
+[h2]把else/catch放在if/try代码块关闭括号的同一行
 
 【级别】建议
 
@@ -496,7 +493,6 @@ if (isOk) {
 else {
   doThing3();
 }
-Index.ets
 
 【正例】
 
@@ -506,7 +502,6 @@ if (isOk) {
 } else {
   doThing3();
 }
-Index.ets
 
 【反例】
 
@@ -516,7 +511,6 @@ try {
 catch (err) {
   // 处理错误。
 }
-Index.ets
 
 【正例】
 
@@ -525,8 +519,8 @@ try {
 } catch (err) {
   // 处理错误。
 }
-Index.ets
-大括号{和语句在同一行
+
+[h2]大括号{和语句在同一行
 
 【级别】建议
 
@@ -540,16 +534,16 @@ function foo1()
 {
   // ...
 }
-Index.ets
 
 【正例】
 
 function foo2() {
   // ...
 }
-Index.ets
+
 编程实践
-建议添加类属性的可访问修饰符
+
+[h2]建议添加类属性的可访问修饰符
 
 【级别】建议
 
@@ -562,25 +556,22 @@ ArkTS提供了private, protected和public可访问修饰符。默认情况下，
 class C1 {
   count: number = 0
 
-
   getCount(): number {
     return this.count
   }
 }
-Index.ets
 
 【正例】
 
 class C2 {
   private count: number = 0
 
-
   public getCount(): number {
     return this.count
   }
 }
-Index.ets
-不建议省略浮点数小数点前后的0
+
+[h2]不建议省略浮点数小数点前后的0
 
 【级别】建议
 
@@ -593,15 +584,14 @@ ArkTS中，浮点值包含一个小数点，不要求小数点之前或之后必
 const num1 = .5;
 const num2 = 2.;
 const num3 = -.7;
-Index.ets
 
 【正例】
 
 const num4 = 0.5;
 const num5 = 2.0;
 const num6 = -0.7;
-Index.ets
-判断变量是否为Number.NaN时必须使用Number.isNaN()方法
+
+[h2]判断变量是否为Number.NaN时必须使用Number.isNaN()方法
 
 【级别】要求
 
@@ -619,11 +609,9 @@ if (foo == Number.NaN) {
   // ...
 }
 
-
 if (foo != Number.NaN) {
   // ...
 }
-Index.ets
 
 【正例】
 
@@ -631,12 +619,11 @@ if (Number.isNaN(foo)) {
   // ...
 }
 
-
 if (!Number.isNaN(foo)) {
   // ...
 }
-Index.ets
-数组遍历优先使用Array对象方法
+
+[h2]数组遍历优先使用Array对象方法
 
 【级别】要求
 
@@ -652,7 +639,6 @@ const increasedByOne1: number[] = [];
 for (let i = 0; i < numbers.length; i++) {
   increasedByOne1.push(numbers[i] + 1);
 }
-Index.ets
 
 【正例】
 
@@ -660,8 +646,8 @@ const numbers = [1, 2, 3, 4, 5];
 // ...
 // better: 使用map方法是更好的方式
 const increasedByOne2: number[] = numbers.map(num => num + 1);
-Index.ets
-不要在控制性条件表达式中执行赋值操作
+
+[h2]不要在控制性条件表达式中执行赋值操作
 
 【级别】要求
 
@@ -677,7 +663,6 @@ Index.ets
 if (isFoo = false) {
   // ...
 }
-Index.ets
 
 【正例】
 
@@ -685,8 +670,8 @@ const isFoo = false; // 在上面赋值，if条件判断中直接使用
 if (isFoo) {
   // ...
 }
-Index.ets
-在finally代码块中，不要使用return、break、continue或抛出异常，避免finally块非正常结束
+
+[h2]在finally代码块中，不要使用return、break、continue或抛出异常，避免finally块非正常结束
 
 【级别】要求
 
@@ -707,7 +692,6 @@ function foo4() {
     return 3;
   }
 }
-Index.ets
 
 【正例】
 
@@ -722,8 +706,8 @@ function foo5() {
     console.info('XXX!');
   }
 }
-Index.ets
-避免使用ESObject
+
+[h2]避免使用ESObject
 
 【级别】建议
 
@@ -738,16 +722,15 @@ export interface I {
   sum: number
 }
 
-
 export function getObject1(value: number): I {
   let obj: I = { sum: value };
   return obj
 }
-lib.ets
-import { getObject1 } from './lib'
+
+// Index.ets
+import { getObject1 } from './lib';
 // ...
 let obj1: I = getObject1(123);
-Index.ets
 
 【正例】
 
@@ -756,19 +739,18 @@ export interface I {
   sum: number
 }
 
-
 // ...
 export function getObject2(value: number): I {
   let obj: I = { sum: value };
   return obj
 }
-lib.ets
+
 // Index.ets
 import { getObject2, I } from './lib';
 // ...
 let obj2: I = getObject2(123);
-Index.ets
-使用T[]表示数组类型
+
+[h2]使用T[]表示数组类型
 
 【级别】建议
 
@@ -786,5 +768,570 @@ let y: Array<string> = ['a', 'b', 'c'];
 // 统一使用T[]语法
 let x: number[] = [1, 2, 3];
 let y: string[] = ['a', 'b', 'c'];
-ArkTS语言介绍
-从TypeScript到ArkTS的适配指导
+
+## Code blocks
+
+### Code block 1
+
+```
+// 类名
+class User {
+  username: string
+
+  constructor(username: string) {
+    this.username = username;
+  }
+
+  sayHi() {
+    console.info('hi' + this.username);
+  }
+}
+
+// 枚举名
+enum UserType {
+  TEACHER = 0,
+  STUDENT = 1
+};
+
+// 命名空间
+namespace Base64Utils {
+  export function encrypt() {
+    // todo encrypt
+  }
+
+  export function decrypt() {
+    // todo decrypt
+  }
+};
+```
+
+### Code block 2
+
+```
+let msg = 'Hello world';
+
+function sendMsg(msg: string) {
+  // todo send message
+  // ...
+}
+
+let userName = 'Zhangsan';
+
+function findUser(userName: string) {
+  // todo find user by user name
+  // ...
+}
+```
+
+### Code block 3
+
+```
+enum UserType1 {
+  TEACHER = 0,
+  STUDENT = 1
+};
+
+const MAX_USER_SIZE = 10000;
+```
+
+### Code block 4
+
+```
+let isNoError = true;
+let isNotFound = false;
+
+function empty() {}
+function next() {}
+```
+
+### Code block 5
+
+```
+let isError = false;
+let isFound = true;
+
+function isEmpty() {}
+function hasNext() {}
+```
+
+### Code block 6
+
+```
+class DataSource {
+  id: number = 0
+  title: string = ''
+  content: string = ''
+}
+
+const dataSource: DataSource[] = [
+  {
+    id: 1,
+    title: 'Title 1',
+    content: 'Content 1'
+  },
+  {
+    id: 2,
+    title: 'Title 2',
+    content: 'Content 2'
+  }
+
+];
+
+function test(dataSource: DataSource[]) {
+  if (!dataSource.length) {
+    return;
+  }
+
+  for (let data of dataSource) {
+    if (!data || !data.id || !data.title || !data.content) {
+      continue;
+    }
+    // some code
+  }
+
+  // some code
+}
+```
+
+### Code block 7
+
+```
+let condition = true;
+if (condition)
+  console.info('success');
+for (let idx = 0; idx < 5; ++idx)
+  console.info('', idx);
+```
+
+### Code block 8
+
+```
+let condition = true;
+if (condition) {
+  console.info('success');
+}
+for (let idx = 0; idx < 5; ++idx) {
+  console.info('', idx);
+}
+```
+
+### Code block 9
+
+```
+switch (condition) {
+  case 0: {
+    doSomething();
+    break;
+  }
+  case 1: {
+    doOtherthing();
+    break;
+  }
+  default:
+    break;
+}
+```
+
+### Code block 10
+
+```
+// 假设条件语句超出行宽
+if (userCount > MAX_USER_COUNT ||
+  userCount < MIN_USER_COUNT) {
+  doSomething();
+}
+```
+
+### Code block 11
+
+```
+let maxCount = 10, isCompleted = false;
+let pointX, pointY;
+pointX = 10; pointY = 0;
+```
+
+### Code block 12
+
+```
+let maxCount = 10;
+let isCompleted = false;
+let pointX = 0;
+let pointY = 0;
+```
+
+### Code block 13
+
+```
+  // if 和左括号 ( 之间没有加空格
+  if(isJedi) {
+    fight();
+  }
+  // ...
+// 函数名fight和左括号 ( 之间加了空格
+function fightBad (): void {
+  console.info('Swooosh!');
+}
+```
+
+### Code block 14
+
+```
+  // if 和左括号之间加一个空格
+  if (isJedi) {
+    fight();
+  }
+  // ...
+// 函数名fight和左括号 ( 之间不加空格
+function fight(): void {
+  console.info('Swooosh!');
+}
+```
+
+### Code block 15
+
+```
+if (flag) {
+  // ...
+}else { // else 与其前面的大括号 } 之间没有加空格
+  // ...
+}
+```
+
+### Code block 16
+
+```
+if (flag) {
+  // ...
+} else { // else 与其前面的大括号 } 之间增加空格
+  // ...
+}
+```
+
+### Code block 17
+
+```
+function foo() { // 函数声明时，左大括号 { 之前加个空格
+  // ...
+}
+// ...
+  bar('attr', { // 左大括号前加个空格
+    age: '1 year',
+    sbreed: 'Bernese Mountain Dog',
+  });
+```
+
+### Code block 18
+
+```
+const arr = [1, 2, 3]; // 数组初始化中的逗号后面加个空格，逗号前面不加空格
+myFunc(bar1, foo1, baz); // 函数的多个参数之间的逗号后加个空格，逗号前面不加空格
+```
+
+### Code block 19
+
+```
+let message1 = "world";
+console.info(message1);
+```
+
+### Code block 20
+
+```
+let message2 = 'world';
+console.info(message2);
+```
+
+### Code block 21
+
+```
+interface I {
+  name: string
+  age: number
+  value: number
+  sum: number
+  foo: boolean
+  bar: boolean
+}
+
+let obj1: I = { name: 'tom', age: 16, value: 1, sum: 2, foo: true, bar: false }
+```
+
+### Code block 22
+
+```
+interface I {
+  name: string
+  age: number
+  value: number
+  sum: number
+  foo: boolean
+  bar: boolean
+}
+
+// ...
+let obj2: I = {
+  name: 'tom',
+  age: 16,
+  value: 1,
+  sum: 2,
+  foo: true,
+  bar: false
+}
+```
+
+### Code block 23
+
+```
+if (isOk) {
+  doThing1();
+  doThing2();
+}
+else {
+  doThing3();
+}
+```
+
+### Code block 24
+
+```
+if (isOk) {
+  doThing1();
+  doThing2();
+} else {
+  doThing3();
+}
+```
+
+### Code block 25
+
+```
+try {
+  doSomething();
+}
+catch (err) {
+  // 处理错误。
+}
+```
+
+### Code block 26
+
+```
+try {
+  doSomething();
+} catch (err) {
+  // 处理错误。
+}
+```
+
+### Code block 27
+
+```
+function foo1()
+{
+  // ...
+}
+```
+
+### Code block 28
+
+```
+function foo2() {
+  // ...
+}
+```
+
+### Code block 29
+
+```
+class C1 {
+  count: number = 0
+
+  getCount(): number {
+    return this.count
+  }
+}
+```
+
+### Code block 30
+
+```
+class C2 {
+  private count: number = 0
+
+  public getCount(): number {
+    return this.count
+  }
+}
+```
+
+### Code block 31
+
+```
+const num1 = .5;
+const num2 = 2.;
+const num3 = -.7;
+```
+
+### Code block 32
+
+```
+const num4 = 0.5;
+const num5 = 2.0;
+const num6 = -0.7;
+```
+
+### Code block 33
+
+```
+if (foo == Number.NaN) {
+  // ...
+}
+
+if (foo != Number.NaN) {
+  // ...
+}
+```
+
+### Code block 34
+
+```
+if (Number.isNaN(foo)) {
+  // ...
+}
+
+if (!Number.isNaN(foo)) {
+  // ...
+}
+```
+
+### Code block 35
+
+```
+const numbers = [1, 2, 3, 4, 5];
+// 依赖已有数组来创建新的数组时，通过for遍历，生成一个新数组
+const increasedByOne1: number[] = [];
+for (let i = 0; i < numbers.length; i++) {
+  increasedByOne1.push(numbers[i] + 1);
+}
+```
+
+### Code block 36
+
+```
+const numbers = [1, 2, 3, 4, 5];
+// ...
+// better: 使用map方法是更好的方式
+const increasedByOne2: number[] = numbers.map(num => num + 1);
+```
+
+### Code block 37
+
+```
+// 在控制性判断中赋值不易理解
+if (isFoo = false) {
+  // ...
+}
+```
+
+### Code block 38
+
+```
+const isFoo = false; // 在上面赋值，if条件判断中直接使用
+if (isFoo) {
+  // ...
+}
+```
+
+### Code block 39
+
+```
+function foo4() {
+  try {
+    // ...
+    return 1;
+  } catch (err) {
+    // ...
+    return 2;
+  } finally {
+    return 3;
+  }
+}
+```
+
+### Code block 40
+
+```
+function foo5() {
+  try {
+    // ...
+    return 1;
+  } catch (err) {
+    // ...
+    return 2;
+  } finally {
+    console.info('XXX!');
+  }
+}
+```
+
+### Code block 41
+
+```
+// lib.ets
+export interface I {
+  sum: number
+}
+
+export function getObject1(value: number): I {
+  let obj: I = { sum: value };
+  return obj
+}
+```
+
+### Code block 42
+
+```
+// Index.ets
+import { getObject1 } from './lib';
+// ...
+let obj1: I = getObject1(123);
+```
+
+### Code block 43
+
+```
+// lib.ets
+export interface I {
+  sum: number
+}
+
+// ...
+export function getObject2(value: number): I {
+  let obj: I = { sum: value };
+  return obj
+}
+```
+
+### Code block 44
+
+```
+// Index.ets
+import { getObject2, I } from './lib';
+// ...
+let obj2: I = getObject2(123);
+```
+
+### Code block 45
+
+```
+let x: Array<number> = [1, 2, 3];
+let y: Array<string> = ['a', 'b', 'c'];
+```
+
+### Code block 46
+
+```
+// 统一使用T[]语法
+let x: number[] = [1, 2, 3];
+let y: string[] = ['a', 'b', 'c'];
+```

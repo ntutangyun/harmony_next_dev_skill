@@ -14,7 +14,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-rec
 
 let audioCapturerState: audio.AudioState = audioCapturer.state;
 console.info(`Current state is: ${audioCapturerState }`)
-AudioCapture.ets
 
 方法2：注册stateChange监听AudioCapturer的状态变化：
 
@@ -22,7 +21,6 @@ audioCapturer.on('stateChange', (capturerState: audio.AudioState) => {
   console.info(`State change to: ${capturerState}`)
   // ...
 });
-AudioCapture.ets
 
 获取state后可对照AudioState来进行相应的操作，比如显示录制结束的提示等。
 
@@ -43,10 +41,8 @@ AudioCapture.ets
 import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let audioManager = audio.getAudioManager();
 let audioStreamManager = audioManager.getStreamManager();
-AudioStreamManager.ets
 
 使用on('audioCapturerChange')监听音频录制流更改事件。 如果音频流监听应用需要在音频录制流状态变化、设备变化时获取通知，可以订阅该事件。
 
@@ -58,9 +54,7 @@ audioStreamManager.on('audioCapturerChange', (audioCapturerChangeInfoArray: audi
     console.info(`Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}`);
     console.info(`Flag  ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}`);
 
-
     // ...
-
 
     let devDescriptor: audio.AudioDeviceDescriptors = audioCapturerChangeInfoArray[i].deviceDescriptors;
     for (let j = 0; j < audioCapturerChangeInfoArray[i].deviceDescriptors.length; j++) {
@@ -76,13 +70,11 @@ audioStreamManager.on('audioCapturerChange', (audioCapturerChangeInfoArray: audi
   }
   // ...
 });
-AudioStreamManager.ets
 
 （可选）使用off('audioCapturerChange')取消监听音频录制流变化。
 
 audioStreamManager.off('audioCapturerChange');
 console.info('CapturerChange Off is called');
-AudioStreamManager.ets
 
 （可选）使用getCurrentAudioCapturerInfoArray获取当前音频录制流的信息。该接口可获取音频录制流唯一ID、音频采集器信息以及音频录制设备信息。
 
@@ -96,7 +88,6 @@ async function getCurrentAudioCapturerInfoArray(updateCallback?:
   (msg: string, isError: boolean) => void): Promise<void>{
   // ...
 
-
   await audioStreamManager.getCurrentAudioCapturerInfoArray()
     .then((audioCapturerChangeInfoArray: audio.AudioCapturerChangeInfoArray) => {
       console.info('getCurrentAudioCapturerInfoArray Get Promise Called');
@@ -107,11 +98,9 @@ async function getCurrentAudioCapturerInfoArray(updateCallback?:
           console.info(`Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}`);
           console.info(`Flag  ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}`);
 
-
           detailInfo += `StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}\n`;
           detailInfo += `Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}\n`;
           detailInfo += `Flag ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}\n`;
-
 
           for (let j = 0; j < audioCapturerChangeInfoArray[i].deviceDescriptors.length; j++) {
             console.info(`Id: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].id}`);
@@ -139,6 +128,116 @@ async function getCurrentAudioCapturerInfoArray(updateCallback?:
   // 获取后取消监听
   cancelListenAudioStreamManager();
 }
-AudioStreamManager.ets
-管理麦克风静音状态
-录音并发策略说明
+
+## Code blocks
+
+### Code block 1
+
+```
+let audioCapturerState: audio.AudioState = audioCapturer.state;
+console.info(`Current state is: ${audioCapturerState }`)
+```
+
+### Code block 2
+
+```
+audioCapturer.on('stateChange', (capturerState: audio.AudioState) => {
+  console.info(`State change to: ${capturerState}`)
+  // ...
+});
+```
+
+### Code block 3
+
+```
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+let audioManager = audio.getAudioManager();
+let audioStreamManager = audioManager.getStreamManager();
+```
+
+### Code block 4
+
+```
+audioStreamManager.on('audioCapturerChange', (audioCapturerChangeInfoArray: audio.AudioCapturerChangeInfoArray) =>  {
+  // ...
+  for (let i = 0; i < audioCapturerChangeInfoArray.length; i++) {
+    console.info(`## CapChange on is called for element ${i} ##`);
+    console.info(`StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}`);
+    console.info(`Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}`);
+    console.info(`Flag  ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}`);
+
+    // ...
+
+    let devDescriptor: audio.AudioDeviceDescriptors = audioCapturerChangeInfoArray[i].deviceDescriptors;
+    for (let j = 0; j < audioCapturerChangeInfoArray[i].deviceDescriptors.length; j++) {
+      console.info(`Id: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].id}`);
+      console.info(`Type: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].deviceType}`);
+      console.info(`Role: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].deviceRole}`);
+      console.info(`Name: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].name}`);
+      console.info(`Address: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].address}`);
+      console.info(`SampleRates: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].sampleRates[0]}`);
+      console.info(`ChannelCounts ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].channelCounts[0]}`);
+      console.info(`ChannelMask: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].channelMasks}`);
+    }
+  }
+  // ...
+});
+```
+
+### Code block 5
+
+```
+audioStreamManager.off('audioCapturerChange');
+console.info('CapturerChange Off is called');
+```
+
+### Code block 6
+
+```
+async function getCurrentAudioCapturerInfoArray(updateCallback?:
+  (msg: string, isError: boolean) => void): Promise<void>{
+  // ...
+
+  await audioStreamManager.getCurrentAudioCapturerInfoArray()
+    .then((audioCapturerChangeInfoArray: audio.AudioCapturerChangeInfoArray) => {
+      console.info('getCurrentAudioCapturerInfoArray Get Promise Called');
+      let detailInfo = 'getCurrentAudioCapturerInfoArray Get Promise Called\n';
+      if (audioCapturerChangeInfoArray != null) {
+        for (let i = 0; i < audioCapturerChangeInfoArray.length; i++) {
+          console.info(`StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}`);
+          console.info(`Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}`);
+          console.info(`Flag  ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}`);
+
+          detailInfo += `StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}\n`;
+          detailInfo += `Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}\n`;
+          detailInfo += `Flag ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}\n`;
+
+          for (let j = 0; j < audioCapturerChangeInfoArray[i].deviceDescriptors.length; j++) {
+            console.info(`Id: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].id}`);
+            console.info(`Type: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].deviceType}`);
+            console.info(`Role: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].deviceRole}`);
+            console.info(`Name: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].name}`);
+            console.info(`Address: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].address}`);
+            console.info(`SampleRates: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].sampleRates[0]}`);
+            console.info(`ChannelCounts ${i} : ${audioCapturerChangeInfoArray[i]
+              .deviceDescriptors[j].channelCounts[0]}`);
+            console.info(`ChannelMask: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].channelMasks}`);
+          }
+        }
+      }
+      if (updateCallback) {
+        updateCallback(detailInfo, false);
+      }
+    }).catch((err: BusinessError) => {
+      console.error(`Invoke getCurrentAudioCapturerInfoArray failed, code is ${err.code}, message is ${err.message}`);
+      const errorMsg = `Invoke getCurrentAudioCapturerInfoArray failed, code is ${err.code}, message is ${err.message}`;
+      if (updateCallback) {
+        updateCallback(errorMsg, true);
+      }
+    });
+  // 获取后取消监听
+  cancelListenAudioStreamManager();
+}
+```

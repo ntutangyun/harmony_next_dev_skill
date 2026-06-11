@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/perftest-guideline_
 
+简介
+
 白盒性能测试框架（PerfTest），提供了针对指定代码段运行时的白盒性能测试能力，用于度量指定应用进程的性能表现。框架通过多轮迭代执行机制和环境复位机制实现自动化测试，支持耗时、CPU使用率等基础数据和启动时延、滑动帧率等场景化性能数据的采集和度量。使用PerfTest接口的性能测试脚本需基于单元测试框架进行开发。
 
 实现原理
@@ -34,7 +36,7 @@ PerfTest服务端负责白盒性能测试框架的主要功能处理，包含以
 
 下面以采集指定代码段执行期间的耗时、CPU使用率为例，介绍详细代码开发步骤。
 
-定义测试策略
+[h2]定义测试策略
 
 定义测试性能指标列表
 
@@ -71,25 +73,30 @@ let perfTestStrategy: PerfTestStrategy = {
   iterations: 10, // 定义测试迭代次数
   timeout: 20000  // 定义代码段单次执行超时时间
 };
-创建测试任务和启动测试
+
+[h2]创建测试任务和启动测试
 
 使用PerfTest.create()创建测试任务时，传入上文定义的PerfTestStrategy对象。然后调用PerfTest.run()异步接口启动测试。测试会自动迭代执行被测代码段并采集性能数据。使用await语法糖同步等待执行完成后再进行后续操作。
 
 let perfTest: PerfTest = PerfTest.create(perfTestStrategy); // 创建测试任务对象PerfTest
 await perfTest.run(); // 执行测试，异步函数需使用await同步等待完成
-获取测试结果
+
+[h2]获取测试结果
 
 性能测试运行完成后，调用PerfTest.getMeasureResult()获取各个指标的测试结果。结果存储在PerfMeasureResult对象中。若测试未完成或指标未定义，则抛出错误码。
 
 let res1: PerfMeasureResult = perfTest.getMeasureResult(PerfMetric.DURATION); // 获取耗时指标的测试结果
 let res2: PerfMeasureResult = perfTest.getMeasureResult(PerfMetric.CPU_USAGE); // 获取CPU使用率指标的测试结果
-销毁创建的对象
+
+[h2]销毁创建的对象
 
 性能测试完成后，若无需继续使用PerfTest对象，可以调用PerfTest.destroy()销毁对象以释放内存。
 
 perfTest.destroy(); // 销毁PerfTest对象
+
 完整示例
-基础性能数据采集示例
+
+[h2]基础性能数据采集示例
 
 下面以测试应用内指定逻辑执行时的基础性能数据为例，应用内定义了一个名为'Utils.CalculateTest()'的方法，性能测试时执行此方法，并采集执行期间的耗时和应用CPU占用率。
 
@@ -99,13 +106,11 @@ export class Utils {
   static num: number = 0;
   static maxNum: number = 10000;
 
-
   public static CalculateTest() {
     for (let index = 0; index < Utils.maxNum; index++) {
       Utils.num++;
     }
   }
-
 
   public static Reset() {
     Utils.num = 0;
@@ -117,7 +122,6 @@ export class Utils {
 import { describe, expect, it, Level } from '@ohos/hypium';
 import { abilityDelegatorRegistry, PerfMeasureResult, PerfMetric, PerfTest, PerfTestStrategy } from '@kit.TestKit';
 import { Utils } from '../../../main/ets/utils/Utils';
-
 
 export default function PerfTestTest() {
   describe('PerfTestTest2', () => {
@@ -155,7 +159,8 @@ export default function PerfTestTest() {
     })
   })
 }
-场景化性能数据采集示例
+
+[h2]场景化性能数据采集示例
 
 下面以测试应用内列表滑动的帧率为例，实现如下功能：打开指定应用，使用UI测试框架接口查找类型为'Scroll'的可滚动组件，并进行滑动操作，采集期间的列表滑动帧率数据。
 
@@ -166,7 +171,6 @@ export default function PerfTestTest() {
 struct ListPage {
   scroller: Scroller = new Scroller();
   private arr: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
 
   build() {
     Row() {
@@ -209,9 +213,7 @@ import {
 } from '@kit.TestKit';
 import { Want } from '@kit.AbilityKit';
 
-
 const delegator: abilityDelegatorRegistry.AbilityDelegator = abilityDelegatorRegistry.getAbilityDelegator();
-
 
 export default function PerfTestTest() {
   describe('PerfTestTest1', () => {
@@ -266,5 +268,236 @@ export default function PerfTestTest() {
     })
   })
 }
-UI测试框架使用指导
-应用UI测试（基于Python）
+
+## Code blocks
+
+### Code block 1
+
+```
+let metrics: Array<PerfMetric> = [PerfMetric.DURATION, PerfMetric.CPU_USAGE]; // 定义待测指标
+```
+
+### Code block 2
+
+```
+let actionCode: Callback<Callback<boolean>> = async (finish: Callback<boolean>) => { // 定义被测代码段
+  Utils.CalculateTest();
+  finish(true);
+};
+```
+
+### Code block 3
+
+```
+let resetCode: Callback<Callback<boolean>> = async (finish: Callback<boolean>) => { // 定义环境复位代码段
+  Utils.Reset();
+  finish(true);
+};
+```
+
+### Code block 4
+
+```
+let perfTestStrategy: PerfTestStrategy = {
+  // 定义测试策略
+  metrics: metrics,
+  actionCode: actionCode,
+  resetCode: resetCode,
+  bundleName: 'com.samples.test.perftest', // 定义被测应用包名，请开发者替换为实际包名
+  iterations: 10, // 定义测试迭代次数
+  timeout: 20000  // 定义代码段单次执行超时时间
+};
+```
+
+### Code block 5
+
+```
+let perfTest: PerfTest = PerfTest.create(perfTestStrategy); // 创建测试任务对象PerfTest
+await perfTest.run(); // 执行测试，异步函数需使用await同步等待完成
+```
+
+### Code block 6
+
+```
+let res1: PerfMeasureResult = perfTest.getMeasureResult(PerfMetric.DURATION); // 获取耗时指标的测试结果
+let res2: PerfMeasureResult = perfTest.getMeasureResult(PerfMetric.CPU_USAGE); // 获取CPU使用率指标的测试结果
+```
+
+### Code block 7
+
+```
+perfTest.destroy(); // 销毁PerfTest对象
+```
+
+### Code block 8
+
+```
+export class Utils {
+  static num: number = 0;
+  static maxNum: number = 10000;
+
+  public static CalculateTest() {
+    for (let index = 0; index < Utils.maxNum; index++) {
+      Utils.num++;
+    }
+  }
+
+  public static Reset() {
+    Utils.num = 0;
+  }
+}
+```
+
+### Code block 9
+
+```
+import { describe, expect, it, Level } from '@ohos/hypium';
+import { abilityDelegatorRegistry, PerfMeasureResult, PerfMetric, PerfTest, PerfTestStrategy } from '@kit.TestKit';
+import { Utils } from '../../../main/ets/utils/Utils';
+
+export default function PerfTestTest() {
+  describe('PerfTestTest2', () => {
+    it('testExample1', 0, async (done: Function) => {
+      let metrics: Array<PerfMetric> = [PerfMetric.DURATION, PerfMetric.CPU_USAGE]; // 定义待测指标
+      let actionCode: Callback<Callback<boolean>> = async (finish: Callback<boolean>) => { // 定义被测代码段
+        Utils.CalculateTest();
+        finish(true);
+      };
+      let resetCode: Callback<Callback<boolean>> = async (finish: Callback<boolean>) => { // 定义环境复位代码段
+        Utils.Reset();
+        finish(true);
+      };
+      let perfTestStrategy: PerfTestStrategy = {
+        // 定义测试策略
+        metrics: metrics,
+        actionCode: actionCode,
+        resetCode: resetCode,
+        bundleName: 'com.samples.test.perftest', // 定义被测应用包名，请开发者替换为实际包名
+        iterations: 10, // 定义测试迭代次数
+        timeout: 20000  // 定义代码段单次执行超时时间
+      };
+      try {
+        let perfTest: PerfTest = PerfTest.create(perfTestStrategy); // 创建测试任务对象PerfTest
+        await perfTest.run(); // 执行测试，异步函数需使用await同步等待完成
+        let res1: PerfMeasureResult = perfTest.getMeasureResult(PerfMetric.DURATION); // 获取耗时指标的测试结果
+        let res2: PerfMeasureResult = perfTest.getMeasureResult(PerfMetric.CPU_USAGE); // 获取CPU使用率指标的测试结果
+        perfTest.destroy(); // 销毁PerfTest对象
+        expect(res1.average).assertLessOrEqual(1000); // 断言性能测试结果
+        expect(res2.average).assertLessOrEqual(30); // 断言性能测试结果
+      } catch (error) {
+        expect(false).assertTrue();
+      }
+      done();
+    })
+  })
+}
+```
+
+### Code block 10
+
+```
+@Entry
+@Component
+struct ListPage {
+  scroller: Scroller = new Scroller();
+  private arr: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  build() {
+    Row() {
+      Column() {
+        Scroll(this.scroller) {
+          Column() {
+            ForEach(this.arr, (item: number) => {
+              Text(item.toString())
+                .width('90%')
+                .height('40%')
+                .fontSize(80)
+                .textAlign(TextAlign.Center)
+                .margin({ top: 10 })
+            }, (item: string) => item)
+          }
+        }
+        .width('100%')
+        .height('100%')
+        .scrollable(ScrollDirection.Vertical)
+        .scrollBar(BarState.On)
+        .scrollBarColor(Color.Gray)
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 11
+
+```
+import { describe, expect, it, Level } from '@ohos/hypium';
+import {
+  abilityDelegatorRegistry,
+  Driver,
+  ON,
+  PerfMeasureResult,
+  PerfMetric,
+  PerfTest,
+  PerfTestStrategy
+} from '@kit.TestKit';
+import { Want } from '@kit.AbilityKit';
+
+const delegator: abilityDelegatorRegistry.AbilityDelegator = abilityDelegatorRegistry.getAbilityDelegator();
+
+export default function PerfTestTest() {
+  describe('PerfTestTest1', () => {
+    it('testExample2', Level.LEVEL3, async (done: Function) => {
+      let driver = Driver.create();
+      await driver.delayMs(1000);
+      const bundleName = abilityDelegatorRegistry.getArguments().bundleName;
+      // 被拉起应用的包名和Ability组件名，请开发者替换为实际的bundleName和abilityName
+      const want: Want = {
+        bundleName: bundleName,
+        abilityName: 'EntryAbility'
+      };
+      await delegator.startAbility(want); // 拉起测试应用
+      await driver.delayMs(1000);
+      let toPageListBtn = await driver.findComponent(ON.id('toPageList'));
+      await toPageListBtn.click();
+      await driver.delayMs(1000);
+      let scroll = await driver.findComponent(ON.type('Scroll'));
+      await driver.delayMs(1000);
+      let center = await scroll.getBoundsCenter(); // 获取Scroll可滚动组件坐标
+      await driver.delayMs(1000);
+      let metrics: Array<PerfMetric> = [PerfMetric.LIST_SWIPE_FPS]; // 指定被测指标为列表滑动帧率
+      let actionCode = async (finish: Callback<boolean>) => { // 测试代码段中使用uitest进行列表滑动
+        await driver.fling({ x: center.x, y: Math.floor(center.y * 3 / 2) },
+          { x: center.x, y: Math.floor(center.y / 2) }, 50, 20000);
+        await driver.delayMs(3000);
+        finish(true);
+      };
+      let resetCode = async (finish: Callback<boolean>) => { // 复位环境，将列表划至顶部
+        await scroll.scrollToTop(40000);
+        await driver.delayMs(1000);
+        finish(true);
+      };
+      let perfTestStrategy: PerfTestStrategy = {
+        // 定义测试策略
+        metrics: metrics,
+        actionCode: actionCode,
+        resetCode: resetCode,
+        iterations: 5, // 指定测试迭代次数
+        timeout: 50000, // 指定actionCode和resetCode的超时时间
+      };
+      try {
+        let perfTest: PerfTest = PerfTest.create(perfTestStrategy); // 创建测试任务对象PerfTest
+        await perfTest.run(); // 执行测试，异步函数需使用await同步等待完成
+        let res: PerfMeasureResult = perfTest.getMeasureResult(PerfMetric.LIST_SWIPE_FPS); // 获取列表滑动帧率指标的测试结果
+        perfTest.destroy(); // 销毁PerfTest对象
+        expect(res.average).assertLargerOrEqual(30); // 断言性能测试结果
+      } catch (error) {
+        console.error(`Failed to execute perftest. Cause:${JSON.stringify(error)}`);
+      }
+      done();
+    })
+  })
+}
+```

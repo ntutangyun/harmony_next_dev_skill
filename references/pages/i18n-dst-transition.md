@@ -2,18 +2,19 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/i18n-dst-transition_
 
+功能介绍
+
 夏令时是一种为节约能源而规定的地方时间制度，即在天亮早的夏季人为将时间调快一段时间，使人们早起早睡，减少照明时间，从而节约照明用电。
 
 实现原理
 
 系统会配置夏令时跳变规则，当系统时间到达跳变点时，会自动实现跳变。如果应用通过标准的TS接口（例如 Date()）获取和显示时间，则到夏令时跳变时间点时，应用会同步显示夏令时时间。
 
-夏令时跳变计算
+[h2]夏令时跳变计算
 
 导入模块。
 
 import { i18n } from '@kit.LocalizationKit';
-TimezoneDstSetting.ets
 
 使用场景。
 
@@ -26,8 +27,8 @@ let startTime = calendar.getTimeInMillis();
 calendar.set(2021, 2, 28, 16, 0, 0); // 处于夏令时期间的时间
 let finishTime = calendar.getTimeInMillis();
 let hours = (finishTime - startTime) / (3600 * 1000); // hours = 23
-TimezoneDstSetting.ets
-存储和显示数据
+
+[h2]存储和显示数据
 
 按当地夏令时计时规则，存储和显示数据，需要处理夏令时跳变带来的时间空缺和重复。
 
@@ -35,9 +36,26 @@ TimezoneDstSetting.ets
 
 在夏令时内，本地时间显示建议添加夏令时标识。
 
-存储和传输时间数据
+[h2]存储和传输时间数据
 
 建议使用零时区标准时间（UTC或者GMT）存储和传输时间数据，避免夏令时跳变导致的信息丢失或异常。
 
-时区
-多语言排序
+## Code blocks
+
+### Code block 1
+
+```
+import { i18n } from '@kit.LocalizationKit';
+```
+
+### Code block 2
+
+```
+let calendar: i18n.Calendar = i18n.getCalendar('zh-Hans');
+calendar.setTimeZone('Europe/London');
+calendar.set(2021, 2, 27, 16, 0, 0); // 夏令时开始前的时间
+let startTime = calendar.getTimeInMillis();
+calendar.set(2021, 2, 28, 16, 0, 0); // 处于夏令时期间的时间
+let finishTime = calendar.getTimeInMillis();
+let hours = (finishTime - startTime) / (3600 * 1000); // hours = 23
+```

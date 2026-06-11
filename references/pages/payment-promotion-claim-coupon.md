@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-promotion-claim-coupon_
 
+场景介绍
+
+从6.1.0(23)版本开始，新增支持领券场景。
+
 如图1所示，当存在领券活动并且用户可参与时，在应用底部展示活动“领取”按钮，同时也支持用户关闭领券入口。用户点击“领取”按钮后，展示图2中的领券组件。
 
 如图2所示，在领券组件中，用户可点击“领取”按钮领券，领券成功时组件会将按钮刷成“去使用”。
@@ -13,9 +17,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-p
 领券场景展示效果如下：
 
 接入流程
+
 步骤	说明
 开发准备	根据端侧应用配置完成开发准备。
 接入活动入口组件	根据领券场景开发步骤完成接入。
+
 业务流程
 
 关于领券场景的业务流程如下：
@@ -58,13 +64,14 @@ Payment Kit客户端根据发券结果刷新领券组件。
 
 接口名	描述
 startPromotionEntryDialog(mercNo: string, offset?: number): Promise<UserAction>;	拉起活动入口组件。
+
 开发步骤
-拉起活动入口组件（端侧开发）
+
+[h2]拉起活动入口组件（端侧开发）
 
 针对领券场景，商户服务需要先拉起活动入口组件引导用户领券。示例代码如下：
 
 import { promotionService } from "@kit.PaymentKit";
-
 
 @Component
 struct StartPromotionEntryDialogDemo {
@@ -88,5 +95,34 @@ struct StartPromotionEntryDialogDemo {
     }
   }
 }
-平台券
-选券场景
+
+## Code blocks
+
+### Code block 1
+
+```
+import { promotionService } from "@kit.PaymentKit";
+
+@Component
+struct StartPromotionEntryDialogDemo {
+  controller: promotionService.PromotionComponentController = new promotionService.PromotionComponentController(this.getUIContext());
+  build() {
+    Column() {
+      Button('拉起活动入口组件')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(async () => {
+          try {
+            // 拉起活动入口组件
+            let userAction = await this.controller.startPromotionEntryDialog('100000000000', 10);
+            // 点击关闭、去使用后会分别返回doNothing、useButtonClicked为true
+            console.info(`userAction ${JSON.stringify(userAction)}`);
+          } catch (e) {
+            console.error(`startUserSelectCouponsPopup error ${JSON.stringify(e)}`);
+          }
+        })
+    }
+  }
+}
+```

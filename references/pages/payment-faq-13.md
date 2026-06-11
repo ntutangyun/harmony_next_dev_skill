@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-faq-13_
 
+prepayId有效期为10分钟。目前没有提供可以查询prepayId的接口。

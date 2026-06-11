@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/sync-app-data-across-devices-overview_
 
+场景介绍
+
 跨设备数据同步功能（即分布式功能）指将数据库中的数据同步到组网环境中的其他设备。该功能常用于在可信认证的不同设备间自由同步、修改和查询用户应用程序数据。
 
 例如：当设备1上的应用A在分布式数据库中增、删、改数据后，设备2上的应用A也可以获取到该数据库变化。可在分布式图库、备忘录、联系人、文件管理器等场景中使用。
@@ -31,6 +33,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/sync-app-
 跨设备同步访问控制机制
 
 数据跨设备同步时，数据管理基于设备等级和数据安全标签进行访问控制，具体可见跨设备同步访问控制机制。
-
-同应用跨设备数据同步（分布式）
-键值型数据库跨设备数据同步 (ArkTS)

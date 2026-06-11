@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap-preparations_
 
+启用数字商品服务
+
 请先参考“应用开发准备”完成基本准备工作及指纹配置，再继续进行后续开发活动。在启动开发之前，需先启用数字商品服务 ，打开相关服务API开关和配置服务参数，才能对数字商品相关的API进行调用。
 
 配置数字商品
@@ -15,6 +17,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap
 测试数字商品服务
 
 当前支持开发者使用沙盒测试，在接入数字商品服务的调测过程中无需真实付款即可完成数字商品的购买等相关测试。在进行测试前，需要在AppGallery Connect中的“用户与访问”中添加测试账号，这些测试账号都是真实的华为账号。开发者接入IAP沙盒测试时，需要在测试设备上登录已配置的测试账号。具体请参考“测试数字商品服务”章节。
-
-概述
-启用数字商品服务

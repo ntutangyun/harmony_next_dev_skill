@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ndk-access-the-arkts-page_
 
+占位组件
+
 使用NDK接口构建UI界面时，需要在ArkTS页面创建用于挂载NDK接口创建组件的占位组件。占位组件类型为ContentSlot，ContentSlot能够绑定一个NodeContent对象，该对象可通过Node-API传递到Native侧挂载显示Native组件。
 
 NDK配置文件entry/src/main/cpp/types/libentry/oh-package.json5如下。
@@ -12,13 +14,11 @@ NDK配置文件entry/src/main/cpp/types/libentry/oh-package.json5如下。
   "version": "1.0.0",
   "description": "Please describe the basic information."
 }
-oh-package.json5
 
 占位组件和其他ArkTS系统组件使用方法相同。详细代码请参考示例。
 
 import nativeNode from 'libentry.so';
 import { NodeContent } from '@kit.ArkUI';
-
 
 @Entry
 @Component
@@ -26,7 +26,6 @@ struct Index {
   // 初始化NodeContent对象。
   private rootSlot:NodeContent = new NodeContent();
   @State @Watch('changeNativeFlag') showNative: boolean = false;
-
 
   changeNativeFlag(): void {
     if (this.showNative) {
@@ -37,7 +36,6 @@ struct Index {
       nativeNode.destroyNativeRoot()
     }
   }
-
 
   build() {
     Column() {
@@ -55,7 +53,6 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
 
 占位组件可以通过相关接口在Native侧转化为挂载对象。
 
@@ -66,12 +63,15 @@ OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
 
 OH_ArkUI_NodeContent_AddNode(handle_, myNativeNode);
 OH_ArkUI_NodeContent_RemoveNode(handle_, myNativeNode);
+
 NDK组件模块
 
 NDK提供的UI组件能力如组件创建、树操作、属性设置、事件注册等是通过函数指针结构体（如ArkUI_NativeNodeAPI_1）进行暴露，该函数指针结构体可以通过模块查询接口获取。
 
 说明
+
 模块查询接口带有初始化NDK的逻辑，建议先调用该接口进行全局初始化，再使用NDK进行UI构造。
+
 ArkUI_NativeNodeAPI_1* arkUINativeNodeApi = nullptr;
 OH_ArkUI_GetModuleInterface(ARKUI_NATIVE_NODE, ArkUI_NativeNodeAPI_1, arkUINativeNodeApi);
 
@@ -148,14 +148,12 @@ arkUINativeNodeApi->registerNodeEvent(stack, NODE_ON_CLICK, 0, nullptr);
 import nativeNode from 'libentry.so';
 import { NodeContent } from '@kit.ArkUI';
 
-
 @Entry
 @Component
 struct Index {
   // 初始化NodeContent对象。
   private rootSlot:NodeContent = new NodeContent();
   @State @Watch('changeNativeFlag') showNative: boolean = false;
-
 
   changeNativeFlag(): void {
     if (this.showNative) {
@@ -166,7 +164,6 @@ struct Index {
       nativeNode.destroyNativeRoot()
     }
   }
-
 
   build() {
     Column() {
@@ -184,7 +181,6 @@ struct Index {
     .height('100%')
   }
 }
-Index.ets
 
 使用Native模板创建工程，并在Native侧提供Node-API的桥接方法，实现ArkTS侧的NativeNode模块接口。
 
@@ -193,14 +189,12 @@ Index.ets
 // entry/src/main/cpp/types/libentry/Index.d.ts
 export const createNativeRoot: (content: Object) => void;
 export const destroyNativeRoot: () => void;
-Index.d.ts
 
 Native实现。
 
 // entry/src/main/cpp/napi_init.cpp
 #include "napi/native_api.h"
 #include "NativeEntry.h"
-
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
@@ -218,7 +212,6 @@ static napi_value Init(napi_env env, napi_value exports)
 }
 EXTERN_C_END
 
-
 static napi_module demoModule = {
     .nm_version = 1,
     .nm_flags = 0,
@@ -229,32 +222,24 @@ static napi_module demoModule = {
     .reserved = {0},
 };
 
-
 extern "C" __attribute__((constructor)) void RegisterEntryModule(void) { napi_module_register(&demoModule); }
-napi_init.cpp
 
 在NativeEntry.h文件中创建Native界面。
 
 // NativeEntry.h
 
-
 #ifndef MYAPPLICATION_NATIVEENTRY_H
 #define MYAPPLICATION_NATIVEENTRY_H
-
 
 #include <ArkUIBaseNode.h>
 #include <arkui/native_type.h>
 #include <js_native_api_types.h>
 
-
 namespace NativeModule {
-
 
 napi_value CreateNativeRoot(napi_env env, napi_callback_info info);
 
-
 napi_value DestroyNativeRoot(napi_env env, napi_callback_info info);
-
 
 // 管理Native组件的生命周期和内存。
 class NativeEntry {
@@ -265,12 +250,10 @@ public:
         return &nativeEntry;
     }
 
-
     void SetContentHandle(ArkUI_NodeContentHandle handle)
     {
         handle_ = handle;
     }
-
 
     void SetRootNode(const std::shared_ptr<ArkUIBaseNode> &baseNode)
     {
@@ -285,57 +268,45 @@ public:
         root_.reset();
     }
 
-
 private:
     std::shared_ptr<ArkUIBaseNode> root_;
     ArkUI_NodeContentHandle handle_;
 };
 
-
 } // namespace NativeModule
 
-
 #endif  // MYAPPLICATION_NATIVEENTRY_H
-NativeEntry.h
 
 对应实现文件。
 
 // NativeEntry.cpp
-
 
 #include <arkui/native_node_napi.h>
 #include <js_native_api.h>
 #include "NativeEntry.h"
 #include "NormalTextListExample.h"
 
-
 namespace NativeModule {
-
 
 napi_value CreateNativeRoot(napi_env env, napi_callback_info info)
 {
     size_t argc = 1;
     napi_value args[1] = {nullptr};
 
-
     napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
-
 
     // 获取NodeContent
     ArkUI_NodeContentHandle contentHandle;
     OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
     NativeEntry::GetInstance()->SetContentHandle(contentHandle);
 
-
     // 创建文本列表
     auto list = CreateTextListExample();
-
 
     // 保持Native侧对象到管理类中，维护生命周期。
     NativeEntry::GetInstance()->SetRootNode(list);
     return nullptr;
 }
-
 
 napi_value DestroyNativeRoot(napi_env env, napi_callback_info info)
 {
@@ -344,7 +315,6 @@ napi_value DestroyNativeRoot(napi_env env, napi_callback_info info)
     return nullptr;
 }
 } // namespace NativeModule
-NativeEntry.cpp
 
 使用NDK提供的C接口需要在CMakeLists.txt中增加libace_ndk.z.so的引用，如下所示。其中entry为工程导出的动态库名称，如当前示例使用的是默认的名称libentry.so。新增cpp文件后，同样需要在CMakeLists.txt中添加相应的cpp文件。若未进行此配置，对应的文件将不会被编译。
 
@@ -358,20 +328,15 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libace_ndk.z.so)
 // NativeModule.h
 // 提供获取ArkUI在Native侧模块的封装接口
 
-
 #ifndef MYAPPLICATION_NATIVEMODULE_H
 #define MYAPPLICATION_NATIVEMODULE_H
-
 
 #include <arkui/native_node.h>
 #include <cassert>
 
-
 #include <arkui/native_interface.h>
 
-
 namespace NativeModule {
-
 
 class NativeModuleInstance {
 public:
@@ -387,17 +352,13 @@ public:
     // 暴露给其他模块使用。
     ArkUI_NativeNodeAPI_1 *GetNativeNodeAPI() { return arkUINativeNodeApi_; }
 
-
 private:
     ArkUI_NativeNodeAPI_1 *arkUINativeNodeApi_ = nullptr;
 };
 
-
 } // namespace NativeModule
 
-
 #endif // MYAPPLICATION_NATIVEMODULE_H
-NativeModule.h
 
 2）提供列表，文本组件的基类对象，用于封装通用属性和事件。
 
@@ -406,23 +367,18 @@ NativeModule.h
 #ifndef MYAPPLICATION_ARKUIBASENODE_H
 #define MYAPPLICATION_ARKUIBASENODE_H
 
-
 #include <arkui/native_type.h>
 #include <list>
 #include <memory>
 
-
 #include "NativeModule.h"
 
-
 namespace NativeModule {
-
 
 class ArkUIBaseNode {
 public:
     explicit ArkUIBaseNode(ArkUI_NodeHandle handle)
         : handle_(handle), nativeModule_(NativeModuleInstance::GetInstance()->GetNativeNodeAPI()) {}
-
 
     virtual ~ArkUIBaseNode()
     {
@@ -437,20 +393,17 @@ public:
         nativeModule_->disposeNode(handle_);
     }
 
-
     void AddChild(const std::shared_ptr<ArkUIBaseNode> &child)
     {
         children_.emplace_back(child);
         OnAddChild(child);
     }
 
-
     void RemoveChild(const std::shared_ptr<ArkUIBaseNode> &child)
     {
         children_.remove(child);
         OnRemoveChild(child);
     }
-
 
     void InsertChild(const std::shared_ptr<ArkUIBaseNode> &child, int32_t index)
     {
@@ -464,9 +417,7 @@ public:
         }
     }
 
-
     ArkUI_NodeHandle GetHandle() const { return handle_; }
-
 
 protected:
     // 针对父容器子类需要重载下面的函数，实现组件挂载和卸载。
@@ -474,41 +425,34 @@ protected:
     virtual void OnRemoveChild(const std::shared_ptr<ArkUIBaseNode> &child) {}
     virtual void OnInsertChild(const std::shared_ptr<ArkUIBaseNode> &child, int32_t index) {}
 
-
     ArkUI_NodeHandle handle_;
     ArkUI_NativeNodeAPI_1 *nativeModule_ = nullptr;
-
 
 private:
     std::list<std::shared_ptr<ArkUIBaseNode>> children_;
 };
 } // namespace NativeModule
 
-
 #endif // MYAPPLICATION_ARKUIBASENODE_H
-ArkUIBaseNode.h
+
 // ArkUINode.h
 // 提供通用属性和事件的封装。
 #ifndef MYAPPLICATION_ARKUINODE_H
 #define MYAPPLICATION_ARKUINODE_H
-
 
 #include "ArkUIBaseNode.h"
 #include "NativeModule.h"
 #include <arkui/native_node.h>
 #include <arkui/native_type.h>
 
-
 namespace NativeModule {
-
 
 class ArkUINode : public ArkUIBaseNode {
 public:
     explicit ArkUINode(ArkUI_NodeHandle handle) : ArkUIBaseNode(handle) {}
 
-
     ~ArkUINode() override {}
-    
+
     void SetWidth(float width)
     {
         ArkUI_NumberValue value[] = {{.f32 = width}};
@@ -540,7 +484,6 @@ public:
         nativeModule_->setAttribute(handle_, NODE_BACKGROUND_COLOR, &item);
     }
 
-
 protected:
     // 组件树操作的实现类对接。
     void OnAddChild(const std::shared_ptr<ArkUIBaseNode> &child) override
@@ -558,9 +501,7 @@ protected:
 };
 } // namespace NativeModule
 
-
 #endif // MYAPPLICATION_ARKUINODE_H
-ArkUINode.h
 
 3）实现列表组件。
 
@@ -569,9 +510,7 @@ ArkUINode.h
 #ifndef MYAPPLICATION_ARKUILISTNODE_H
 #define MYAPPLICATION_ARKUILISTNODE_H
 
-
 #include "ArkUINode.h"
-
 
 namespace NativeModule {
 class ArkUIListNode : public ArkUINode {
@@ -579,9 +518,8 @@ public:
     ArkUIListNode()
         : ArkUINode((NativeModuleInstance::GetInstance()->GetNativeNodeAPI())->createNode(ARKUI_NODE_LIST)) {}
 
-
     ~ArkUIListNode() override {}
-    
+
     void SetScrollBarState(bool isShow)
     {
         ArkUI_ScrollBarDisplayMode displayMode =
@@ -593,9 +531,7 @@ public:
 };
 } // namespace NativeModule
 
-
 #endif // MYAPPLICATION_ARKUILISTNODE_H
-ArkUIListNode.h
 
 4）实现列表项组件。
 
@@ -604,9 +540,7 @@ ArkUIListNode.h
 #ifndef MYAPPLICATION_ARKUISTACKNODE_H
 #define MYAPPLICATION_ARKUISTACKNODE_H
 
-
 #include "ArkUINode.h"
-
 
 namespace NativeModule {
 class ArkUIListItemNode : public ArkUINode {
@@ -616,9 +550,7 @@ public:
 };
 } // namespace NativeModule
 
-
 #endif // MYAPPLICATION_ARKUISTACKNODE_H
-ArkUIListItemNode.h
 
 5）实现文本组件。
 
@@ -627,19 +559,16 @@ ArkUIListItemNode.h
 #ifndef MYAPPLICATION_ARKUITEXTNODE_H
 #define MYAPPLICATION_ARKUITEXTNODE_H
 
-
 #include "ArkUINode.h"
 
-
 #include <string>
-
 
 namespace NativeModule {
 class ArkUITextNode : public ArkUINode {
 public:
     ArkUITextNode()
         : ArkUINode((NativeModuleInstance::GetInstance()->GetNativeNodeAPI())->createNode(ARKUI_NODE_TEXT)) {}
-    
+
     void SetFontSize(float fontSize)
     {
         ArkUI_NumberValue value[] = {{.f32 = fontSize}};
@@ -666,27 +595,21 @@ public:
 };
 } // namespace NativeModule
 
-
 #endif // MYAPPLICATION_ARKUITEXTNODE_H
-ArkUITextNode.h
 
 完善步骤3的CreateTextListExample函数，实现Native文本列表的创建和挂载显示。
 
 // NormalTextListExample.h
 
-
 #ifndef MYAPPLICATION_NORMALTEXTLISTEXAMPLE_H
 #define MYAPPLICATION_NORMALTEXTLISTEXAMPLE_H
-
 
 #include "ArkUIBaseNode.h"
 #include "ArkUIListItemNode.h"
 #include "ArkUIListNode.h"
 #include "ArkUITextNode.h"
 
-
 namespace NativeModule {
-
 
 std::shared_ptr<ArkUIBaseNode> CreateTextListExample()
 {
@@ -719,8 +642,668 @@ std::shared_ptr<ArkUIBaseNode> CreateTextListExample()
 }
 } // namespace NativeModule
 
+#endif // MYAPPLICATION_NORMALTEXTLISTEXAMPLE_H
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "name": "libentry.so",
+  "types": "./Index.d.ts",
+  "version": "1.0.0",
+  "description": "Please describe the basic information."
+}
+```
+
+### Code block 2
+
+```
+import nativeNode from 'libentry.so';
+import { NodeContent } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct Index {
+  // 初始化NodeContent对象。
+  private rootSlot:NodeContent = new NodeContent();
+  @State @Watch('changeNativeFlag') showNative: boolean = false;
+
+  changeNativeFlag(): void {
+    if (this.showNative) {
+      // 传递NodeContent对象用于Native创建组件的挂载显示
+      nativeNode.createNativeRoot(this.rootSlot)
+    } else {
+      // 销毁NativeModule组件
+      nativeNode.destroyNativeRoot()
+    }
+  }
+
+  build() {
+    Column() {
+      Button(this.showNative ? 'HideNativeUI' : 'ShowNativeUI')
+        .onClick(() => {
+        this.showNative = !this.showNative
+      })
+        .id('btn')
+      Row() {
+        // 将NodeContent和ContentSlot占位组件绑定
+        ContentSlot(this.rootSlot)
+      }.layoutWeight(1)
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 3
+
+```
+ArkUI_NodeContentHandle contentHandle;
+OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
+```
+
+### Code block 4
+
+```
+OH_ArkUI_NodeContent_AddNode(handle_, myNativeNode);
+OH_ArkUI_NodeContent_RemoveNode(handle_, myNativeNode);
+```
+
+### Code block 5
+
+```
+ArkUI_NativeNodeAPI_1* arkUINativeNodeApi = nullptr;
+OH_ArkUI_GetModuleInterface(ARKUI_NATIVE_NODE, ArkUI_NativeNodeAPI_1, arkUINativeNodeApi);
+```
+
+### Code block 6
+
+```
+auto listNode = arkUINativeNodeApi->createNode(ARKUI_NODE_LIST);
+arkUINativeNodeApi->disposeNode(listNode);
+```
+
+### Code block 7
+
+```
+auto parent = arkUINativeNodeApi->createNode(ARKUI_NODE_STACK);
+auto child = arkUINativeNodeApi->createNode(ARKUI_NODE_STACK);
+arkUINativeNodeApi->addChild(parent, child);
+arkUINativeNodeApi->removeChild(parent, child);
+```
+
+### Code block 8
+
+```
+auto stack = arkUINativeNodeApi->createNode(ARKUI_NODE_STACK);
+ArkUI_NumberValue value[] = {{.f32 = 100}};
+ArkUI_AttributeItem item = {value, 1};
+arkUINativeNodeApi->setAttribute(stack, NODE_WIDTH, &item);
+ArkUI_NumberValue value_color[] = {{.u32 = 0xff112233}};
+ArkUI_AttributeItem item_color = {value_color, 1};
+arkUINativeNodeApi->setAttribute(stack, NODE_BACKGROUND_COLOR, &item);
+```
+
+### Code block 9
+
+```
+auto stack = arkUINativeNodeApi->createNode(ARKUI_NODE_STACK);
+arkUINativeNodeApi->addNodeEventReceiver(stack, [](ArkUI_NodeEvent* event){
+    // process event
+});
+arkUINativeNodeApi->registerNodeEvent(stack, NODE_ON_CLICK, 0, nullptr);
+```
+
+### Code block 10
+
+```
+.
+|——cpp
+|    |——types
+|    |      |——libentry
+|    |      |       |——index.d.ts 提供Native和ArkTS侧的桥接方法。
+|    |——napi_init.cpp 与index.d.ts对应的桥接方法对接Native侧的定义处。
+|    |——NativeEntry.cpp 桥接方法的Native侧实现。
+|    |——NativeEntry.h 桥接方法的Native侧定义。
+|    |——NativeModule.h 提供获取ArkUI在Native侧模块的封装接口。
+|    |——CMakeLists.txt C语言库引用文件。
+|    |——ArkUIBaseNode.h 节点封装扩展类。
+|    |——ArkUINode.h 节点封装扩展类。
+|    |——ArkUIListNode.h 节点封装扩展类。
+|    |——ArkUIListItemNode.h 节点封装扩展类。
+|    |——ArkUITextNode.h 节点封装扩展类。
+|    |——NormalTextListExample.h 示例代码文件。
+|
+|——ets
+|    |——pages
+|         |——entry.ets 应用启动页，加载承载Native的容器。
+|
+```
+
+### Code block 11
+
+```
+import nativeNode from 'libentry.so';
+import { NodeContent } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct Index {
+  // 初始化NodeContent对象。
+  private rootSlot:NodeContent = new NodeContent();
+  @State @Watch('changeNativeFlag') showNative: boolean = false;
+
+  changeNativeFlag(): void {
+    if (this.showNative) {
+      // 传递NodeContent对象用于Native创建组件的挂载显示
+      nativeNode.createNativeRoot(this.rootSlot)
+    } else {
+      // 销毁NativeModule组件
+      nativeNode.destroyNativeRoot()
+    }
+  }
+
+  build() {
+    Column() {
+      Button(this.showNative ? 'HideNativeUI' : 'ShowNativeUI')
+        .onClick(() => {
+        this.showNative = !this.showNative
+      })
+        .id('btn')
+      Row() {
+        // 将NodeContent和ContentSlot占位组件绑定
+        ContentSlot(this.rootSlot)
+      }.layoutWeight(1)
+    }
+    .width('100%')
+    .height('100%')
+  }
+}
+```
+
+### Code block 12
+
+```
+// entry/src/main/cpp/types/libentry/Index.d.ts
+export const createNativeRoot: (content: Object) => void;
+export const destroyNativeRoot: () => void;
+```
+
+### Code block 13
+
+```
+// entry/src/main/cpp/napi_init.cpp
+#include "napi/native_api.h"
+#include "NativeEntry.h"
+
+EXTERN_C_START
+static napi_value Init(napi_env env, napi_value exports)
+{
+    // 绑定Native侧的创建组件和销毁组件。
+    napi_property_descriptor desc[] = {
+        {"createNativeRoot", nullptr,
+        NativeModule::CreateNativeRoot, nullptr, nullptr,
+        nullptr, napi_default, nullptr},
+        {"destroyNativeRoot", nullptr,
+        NativeModule::DestroyNativeRoot, nullptr, nullptr,
+        nullptr, napi_default, nullptr}};
+    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    return exports;
+}
+EXTERN_C_END
+
+static napi_module demoModule = {
+    .nm_version = 1,
+    .nm_flags = 0,
+    .nm_filename = nullptr,
+    .nm_register_func = Init,
+    .nm_modname = "entry",
+    .nm_priv = ((void *)0),
+    .reserved = {0},
+};
+
+extern "C" __attribute__((constructor)) void RegisterEntryModule(void) { napi_module_register(&demoModule); }
+```
+
+### Code block 14
+
+```
+// NativeEntry.h
+
+#ifndef MYAPPLICATION_NATIVEENTRY_H
+#define MYAPPLICATION_NATIVEENTRY_H
+
+#include <ArkUIBaseNode.h>
+#include <arkui/native_type.h>
+#include <js_native_api_types.h>
+
+namespace NativeModule {
+
+napi_value CreateNativeRoot(napi_env env, napi_callback_info info);
+
+napi_value DestroyNativeRoot(napi_env env, napi_callback_info info);
+
+// 管理Native组件的生命周期和内存。
+class NativeEntry {
+public:
+    static NativeEntry *GetInstance()
+    {
+        static NativeEntry nativeEntry;
+        return &nativeEntry;
+    }
+
+    void SetContentHandle(ArkUI_NodeContentHandle handle)
+    {
+        handle_ = handle;
+    }
+
+    void SetRootNode(const std::shared_ptr<ArkUIBaseNode> &baseNode)
+    {
+        root_ = baseNode;
+        // 添加Native组件到NodeContent上用于挂载显示。
+        OH_ArkUI_NodeContent_AddNode(handle_, root_->GetHandle());
+    }
+    void DisposeRootNode()
+    {
+        // 从NodeContent上卸载组件并销毁Native组件。
+        OH_ArkUI_NodeContent_RemoveNode(handle_, root_->GetHandle());
+        root_.reset();
+    }
+
+private:
+    std::shared_ptr<ArkUIBaseNode> root_;
+    ArkUI_NodeContentHandle handle_;
+};
+
+} // namespace NativeModule
+
+#endif  // MYAPPLICATION_NATIVEENTRY_H
+```
+
+### Code block 15
+
+```
+// NativeEntry.cpp
+
+#include <arkui/native_node_napi.h>
+#include <js_native_api.h>
+#include "NativeEntry.h"
+#include "NormalTextListExample.h"
+
+namespace NativeModule {
+
+napi_value CreateNativeRoot(napi_env env, napi_callback_info info)
+{
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+
+    // 获取NodeContent
+    ArkUI_NodeContentHandle contentHandle;
+    OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
+    NativeEntry::GetInstance()->SetContentHandle(contentHandle);
+
+    // 创建文本列表
+    auto list = CreateTextListExample();
+
+    // 保持Native侧对象到管理类中，维护生命周期。
+    NativeEntry::GetInstance()->SetRootNode(list);
+    return nullptr;
+}
+
+napi_value DestroyNativeRoot(napi_env env, napi_callback_info info)
+{
+    // 从管理类中释放Native侧对象。
+    NativeEntry::GetInstance()->DisposeRootNode();
+    return nullptr;
+}
+} // namespace NativeModule
+```
+
+### Code block 16
+
+```
+add_library(entry SHARED napi_init.cpp NativeEntry.cpp)
+target_link_libraries(entry PUBLIC libace_napi.z.so libace_ndk.z.so)
+```
+
+### Code block 17
+
+```
+// NativeModule.h
+// 提供获取ArkUI在Native侧模块的封装接口
+
+#ifndef MYAPPLICATION_NATIVEMODULE_H
+#define MYAPPLICATION_NATIVEMODULE_H
+
+#include <arkui/native_node.h>
+#include <cassert>
+
+#include <arkui/native_interface.h>
+
+namespace NativeModule {
+
+class NativeModuleInstance {
+public:
+    static NativeModuleInstance *GetInstance()
+    {
+        static NativeModuleInstance instance;
+        return &instance;
+    }
+    NativeModuleInstance()
+    {
+        OH_ArkUI_GetModuleInterface(ARKUI_NATIVE_NODE, ArkUI_NativeNodeAPI_1, arkUINativeNodeApi_);
+    }
+    // 暴露给其他模块使用。
+    ArkUI_NativeNodeAPI_1 *GetNativeNodeAPI() { return arkUINativeNodeApi_; }
+
+private:
+    ArkUI_NativeNodeAPI_1 *arkUINativeNodeApi_ = nullptr;
+};
+
+} // namespace NativeModule
+
+#endif // MYAPPLICATION_NATIVEMODULE_H
+```
+
+### Code block 18
+
+```
+// ArkUIBaseNode.h
+// 提供组件树操作的基类。
+#ifndef MYAPPLICATION_ARKUIBASENODE_H
+#define MYAPPLICATION_ARKUIBASENODE_H
+
+#include <arkui/native_type.h>
+#include <list>
+#include <memory>
+
+#include "NativeModule.h"
+
+namespace NativeModule {
+
+class ArkUIBaseNode {
+public:
+    explicit ArkUIBaseNode(ArkUI_NodeHandle handle)
+        : handle_(handle), nativeModule_(NativeModuleInstance::GetInstance()->GetNativeNodeAPI()) {}
+
+    virtual ~ArkUIBaseNode()
+    {
+        // 封装析构函数，实现子节点移除功能。
+        if (!children_.empty()) {
+            for (const auto& child : children_) {
+                nativeModule_->removeChild(handle_, child->GetHandle());
+            }
+            children_.clear();
+        }
+        // 封装析构函数，统一回收节点资源。
+        nativeModule_->disposeNode(handle_);
+    }
+
+    void AddChild(const std::shared_ptr<ArkUIBaseNode> &child)
+    {
+        children_.emplace_back(child);
+        OnAddChild(child);
+    }
+
+    void RemoveChild(const std::shared_ptr<ArkUIBaseNode> &child)
+    {
+        children_.remove(child);
+        OnRemoveChild(child);
+    }
+
+    void InsertChild(const std::shared_ptr<ArkUIBaseNode> &child, int32_t index)
+    {
+        if (index >= children_.size()) {
+            AddChild(child);
+        } else {
+            auto iter = children_.begin();
+            std::advance(iter, index);
+            children_.insert(iter, child);
+            OnInsertChild(child, index);
+        }
+    }
+
+    ArkUI_NodeHandle GetHandle() const { return handle_; }
+
+protected:
+    // 针对父容器子类需要重载下面的函数，实现组件挂载和卸载。
+    virtual void OnAddChild(const std::shared_ptr<ArkUIBaseNode> &child) {}
+    virtual void OnRemoveChild(const std::shared_ptr<ArkUIBaseNode> &child) {}
+    virtual void OnInsertChild(const std::shared_ptr<ArkUIBaseNode> &child, int32_t index) {}
+
+    ArkUI_NodeHandle handle_;
+    ArkUI_NativeNodeAPI_1 *nativeModule_ = nullptr;
+
+private:
+    std::list<std::shared_ptr<ArkUIBaseNode>> children_;
+};
+} // namespace NativeModule
+
+#endif // MYAPPLICATION_ARKUIBASENODE_H
+```
+
+### Code block 19
+
+```
+// ArkUINode.h
+// 提供通用属性和事件的封装。
+#ifndef MYAPPLICATION_ARKUINODE_H
+#define MYAPPLICATION_ARKUINODE_H
+
+#include "ArkUIBaseNode.h"
+#include "NativeModule.h"
+#include <arkui/native_node.h>
+#include <arkui/native_type.h>
+
+namespace NativeModule {
+
+class ArkUINode : public ArkUIBaseNode {
+public:
+    explicit ArkUINode(ArkUI_NodeHandle handle) : ArkUIBaseNode(handle) {}
+
+    ~ArkUINode() override {}
+
+    void SetWidth(float width)
+    {
+        ArkUI_NumberValue value[] = {{.f32 = width}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_WIDTH, &item);
+    }
+    void SetPercentWidth(float percent)
+    {
+        ArkUI_NumberValue value[] = {{.f32 = percent}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_WIDTH_PERCENT, &item);
+    }
+    void SetHeight(float height)
+    {
+        ArkUI_NumberValue value[] = {{.f32 = height}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_HEIGHT, &item);
+    }
+    void SetPercentHeight(float percent)
+    {
+        ArkUI_NumberValue value[] = {{.f32 = percent}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_HEIGHT_PERCENT, &item);
+    }
+    void SetBackgroundColor(uint32_t color)
+    {
+        ArkUI_NumberValue value[] = {{.u32 = color}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_BACKGROUND_COLOR, &item);
+    }
+
+protected:
+    // 组件树操作的实现类对接。
+    void OnAddChild(const std::shared_ptr<ArkUIBaseNode> &child) override
+    {
+        nativeModule_->addChild(handle_, child->GetHandle());
+    }
+    void OnRemoveChild(const std::shared_ptr<ArkUIBaseNode> &child) override
+    {
+        nativeModule_->removeChild(handle_, child->GetHandle());
+    }
+    void OnInsertChild(const std::shared_ptr<ArkUIBaseNode> &child, int32_t index) override
+    {
+        nativeModule_->insertChildAt(handle_, child->GetHandle(), index);
+    }
+};
+} // namespace NativeModule
+
+#endif // MYAPPLICATION_ARKUINODE_H
+```
+
+### Code block 20
+
+```
+// ArkUIListNode.h
+// 提供列表组件的封装。
+#ifndef MYAPPLICATION_ARKUILISTNODE_H
+#define MYAPPLICATION_ARKUILISTNODE_H
+
+#include "ArkUINode.h"
+
+namespace NativeModule {
+class ArkUIListNode : public ArkUINode {
+public:
+    ArkUIListNode()
+        : ArkUINode((NativeModuleInstance::GetInstance()->GetNativeNodeAPI())->createNode(ARKUI_NODE_LIST)) {}
+
+    ~ArkUIListNode() override {}
+
+    void SetScrollBarState(bool isShow)
+    {
+        ArkUI_ScrollBarDisplayMode displayMode =
+            isShow ? ARKUI_SCROLL_BAR_DISPLAY_MODE_ON : ARKUI_SCROLL_BAR_DISPLAY_MODE_OFF;
+        ArkUI_NumberValue value[] = {{.i32 = displayMode}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_SCROLL_BAR_DISPLAY_MODE, &item);
+    }
+};
+} // namespace NativeModule
+
+#endif // MYAPPLICATION_ARKUILISTNODE_H
+```
+
+### Code block 21
+
+```
+// ArkUIListItemNode.h
+// 提供列表项的封装类。
+#ifndef MYAPPLICATION_ARKUISTACKNODE_H
+#define MYAPPLICATION_ARKUISTACKNODE_H
+
+#include "ArkUINode.h"
+
+namespace NativeModule {
+class ArkUIListItemNode : public ArkUINode {
+public:
+    ArkUIListItemNode()
+        : ArkUINode((NativeModuleInstance::GetInstance()->GetNativeNodeAPI())->createNode(ARKUI_NODE_LIST_ITEM)) {}
+};
+} // namespace NativeModule
+
+#endif // MYAPPLICATION_ARKUISTACKNODE_H
+```
+
+### Code block 22
+
+```
+// ArkUITextNode.h
+// 实现文本组件的封装类。
+#ifndef MYAPPLICATION_ARKUITEXTNODE_H
+#define MYAPPLICATION_ARKUITEXTNODE_H
+
+#include "ArkUINode.h"
+
+#include <string>
+
+namespace NativeModule {
+class ArkUITextNode : public ArkUINode {
+public:
+    ArkUITextNode()
+        : ArkUINode((NativeModuleInstance::GetInstance()->GetNativeNodeAPI())->createNode(ARKUI_NODE_TEXT)) {}
+
+    void SetFontSize(float fontSize)
+    {
+        ArkUI_NumberValue value[] = {{.f32 = fontSize}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_FONT_SIZE, &item);
+    }
+    void SetFontColor(uint32_t color)
+    {
+        ArkUI_NumberValue value[] = {{.u32 = color}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_FONT_COLOR, &item);
+    }
+    void SetTextContent(const std::string &content)
+    {
+        ArkUI_AttributeItem item = {nullptr, 0, content.c_str()};
+        nativeModule_->setAttribute(handle_, NODE_TEXT_CONTENT, &item);
+    }
+    void SetTextAlign(ArkUI_TextAlignment align)
+    {
+        ArkUI_NumberValue value[] = {{.i32 = align}};
+        ArkUI_AttributeItem item = {value, 1};
+        nativeModule_->setAttribute(handle_, NODE_TEXT_ALIGN, &item);
+    }
+};
+} // namespace NativeModule
+
+#endif // MYAPPLICATION_ARKUITEXTNODE_H
+```
+
+### Code block 23
+
+```
+// NormalTextListExample.h
+
+#ifndef MYAPPLICATION_NORMALTEXTLISTEXAMPLE_H
+#define MYAPPLICATION_NORMALTEXTLISTEXAMPLE_H
+
+#include "ArkUIBaseNode.h"
+#include "ArkUIListItemNode.h"
+#include "ArkUIListNode.h"
+#include "ArkUITextNode.h"
+
+namespace NativeModule {
+
+std::shared_ptr<ArkUIBaseNode> CreateTextListExample()
+{
+    // 创建组件并挂载
+    // 1：使用智能指针创建List组件。
+    auto list = std::make_shared<ArkUIListNode>();
+    list->SetPercentWidth(1);
+    list->SetPercentHeight(1);
+    list->SetScrollBarState(true);
+    const int itemCount = 30;
+    const int fontSizes = 16;
+    const float screenWidth = 1;
+    const int defaultHeight = 100;
+    // 2：创建ListItem子组件并挂载到List上。
+    for (int32_t i = 0; i < itemCount; ++i) {
+        auto listItem = std::make_shared<ArkUIListItemNode>();
+        auto textNode = std::make_shared<ArkUITextNode>();
+        textNode->SetTextContent(std::to_string(i));
+        textNode->SetFontSize(fontSizes);
+        textNode->SetFontColor(0xFF000000);
+        textNode->SetPercentWidth(1);
+        textNode->SetPercentWidth(screenWidth);
+        textNode->SetHeight(defaultHeight);
+        textNode->SetBackgroundColor(0xFFfffacd);
+        textNode->SetTextAlign(ARKUI_TEXT_ALIGNMENT_CENTER);
+        listItem->InsertChild(textNode, i);
+        list->AddChild(listItem);
+    }
+    return list;
+}
+} // namespace NativeModule
 
 #endif // MYAPPLICATION_NORMALTEXTLISTEXAMPLE_H
-NormalTextListExample.h
-基于NDK构建UI概述
-添加交互事件
+```

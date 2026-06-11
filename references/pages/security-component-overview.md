@@ -85,6 +85,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/security-
 安全控件被其他组件或窗口遮挡。
 
 安全控件的父组件有类似变形模糊等可能导致安全控件显示不完整的属性。
-
-使用安全控件
-使用粘贴控件

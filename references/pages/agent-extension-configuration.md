@@ -1,4 +1,4 @@
-# Agent配置文件说明
+# AgentExtensionAbility配置文件说明
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agent-extension-configuration_
 
@@ -7,8 +7,10 @@ AgentCard作为Agent的“名片”，主要用于描述Agent的能力。AgentCa
 该配置文件由开发者手动创建，通常位于Module的resources/base/profile/目录下。AgentExtensionAbility可以在metadata配置项中引用该资源文件，来绑定对应的AgentCard。一个agent_config.json只能被一个AgentExtensionAbility引用。
 
 agent_config.json配置文件字段说明
+
 标签	含义	数据类型	是否可缺省
 agentCards	AgentExtensionAbility所包含的AgentCard配置信息列表。	对象数组	否
+
 agentCards标签
 
 本标签用于说明AgentCard对象的内部结构。
@@ -28,56 +30,27 @@ iconUrl	Agent图标的URL，提供Agent的可视化标识图标，用于在UI界
 category	Agent的类别，用于对Agent进行分类管理，常见的类别包括：“productivity”（生产力）、“entertainment”（娱乐）、“education”（教育）、“finance”（金融）、“health”（健康）等，最大长度为64字节。	字符串	否
 extension	Agent的扩展配置项，用于存储自定义的扩展配置信息，如Agent开场白、版本协议号等，格式为JSON字符串，最大长度为5120字节。	字符串	可缺省，缺省为空。
 appInfo	Agent所在的应用信息，包含Agent设备类型和可运行的最低版本号，用于定位和管理AgentExtensionAbility实例。	对象	可缺省，缺省值见appInfo。
-provider标签
+
+[h2]provider标签
 
 本标签用于说明provider对象的内部结构。
 
 属性名称	含义	数据类型	是否可缺省
 organization	Agent提供商的组织名称，标识开发或提供该Agent的公司、组织或个人名称，最大长度为128字节。	字符串	否
 url	Agent提供商的网站或相关文档的URL，提供指向提供商官方网站、产品页面或相关文档的HTTPS链接，用于用户了解更多信息或获取支持，最大长度为512字节。	字符串	否
-capabilities标签
+
+[h2]capabilities标签
 
 本标签用于说明capabilities对象的内部结构。
 
 属性名称	含义	数据类型	是否可缺省
-streaming	
-
-Agent是否支持流式响应。
-
-true：表示支持SSE（Server-Sent Events）流式响应，可以实时返回部分结果。
-
-false：表示不支持流式，仅支持一次性返回完整结果。
-
-	布尔值	可缺省，缺省为false。
-pushNotifications	
-
-Agent是否支持为异步任务更新发送推送通知。
-
-true：表示支持，当长时间运行的任务状态发生变化时（如任务完成、失败或进度更新），Agent可以主动推送通知给客户端。
-
-false：表示不支持，客户端需要轮询查询任务状态。
-
-	布尔值	可缺省，缺省为false。
-stateTransitionHistory	
-
-Agent是否支持查看任务状态变化历史。
-
-true：表示支持，客户端可以查询任务从创建到完成的完整状态转换记录（如pending->running->completed）。
-
-false：表示不支持状态历史查询。
-
-	布尔值	可缺省，缺省为false。
-extendedAgentCard	
-
-Agent是否支持在认证时提供扩展的AgentCard。
-
-true：表示支持，客户端在通过认证后可以获取包含额外信息（如私有配置、高级能力）的扩展AgentCard。
-
-false：表示仅提供基础AgentCard。
-
-	布尔值	可缺省，缺省为false。
+streaming	Agent是否支持流式响应。 true：表示支持SSE（Server-Sent Events）流式响应，可以实时返回部分结果。 false：表示不支持流式，仅支持一次性返回完整结果。	布尔值	可缺省，缺省为false。
+pushNotifications	Agent是否支持为异步任务更新发送推送通知。 true：表示支持，当长时间运行的任务状态发生变化时（如任务完成、失败或进度更新），Agent可以主动推送通知给客户端。 false：表示不支持，客户端需要轮询查询任务状态。	布尔值	可缺省，缺省为false。
+stateTransitionHistory	Agent是否支持查看任务状态变化历史。 true：表示支持，客户端可以查询任务从创建到完成的完整状态转换记录（如pending->running->completed）。 false：表示不支持状态历史查询。	布尔值	可缺省，缺省为false。
+extendedAgentCard	Agent是否支持在认证时提供扩展的AgentCard。 true：表示支持，客户端在通过认证后可以获取包含额外信息（如私有配置、高级能力）的扩展AgentCard。 false：表示仅提供基础AgentCard。	布尔值	可缺省，缺省为false。
 extension	Agent支持的协议扩展，用于存储自定义的扩展能力配置，格式为JSON字符串，可以包含协议级别的扩展参数和自定义字段，由开发者和Agent使用方约定，最大长度为2048字节。	字符串	可缺省，缺省为空。
-skills标签
+
+[h2]skills标签
 
 本标签用于说明skill对象的内部结构。
 
@@ -90,14 +63,17 @@ examples	skill可以处理的示例提示或使用场景，提供具体的示例
 inputModes	skill支持的输入模式，使用MIME类型格式定义，例如["text/plain"]。如果未设置，将使用AgentCard级别的defaultInputModes，该字段允许为特定技能自定义输入类型，覆盖默认设置，数组的每一个元素的最大长度为32字节。	字符串数组	可缺省，缺省为空。
 outputModes	skill支持的输出模式，使用MIME类型格式定义，例如["text/plain", "application/html", "video/mp4"]。如果未设置，将使用AgentCard级别的defaultOutputModes，该字段允许为特定技能自定义输出类型，覆盖默认设置，数组的每一个元素的最大长度为32字节。	字符串数组	可缺省，缺省为空。
 extension	skill的扩展配置项，用于存储自定义扩展配置，格式为JSON字符串，可以包含技能特有的参数和配置信息，最大长度为1024字节。	字符串	可缺省，缺省为空。
-appInfo标签
+
+[h2]appInfo标签
 
 本标签用于说明appInfo对象的内部结构。
 
 属性名称	含义	数据类型	是否可缺省
 deviceTypes	Agent支持的设备类型列表，取值范围参考deviceTypes。Agent配置的设备类型列表需要为所属Module设备类型列表的一个子集，如果配置了Module之外的设备类型，系统将会忽略掉。	字符串数组	可缺省，缺省为应用的deviceTypes。
 minAppVersion	Agent运行的最低应用版本要求，使用语义化版本号格式（如“1.0.0”），指定运行该Agent所需的应用最低版本，低于此版本的应用将无法正确加载和运行该Agent，最大长度为32字节。	字符串	可缺省，缺省为空。
+
 agent_config.json配置文件示例
+
 {
   "agentCards": [
     {
@@ -157,5 +133,69 @@ agent_config.json配置文件示例
     }
   ]
 }
-智能体开发指导
-FA模型开发指导
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "agentCards": [
+    {
+      "agentId": "weather_assistant_001",
+      "name": "WeatherAssistant",
+      "description": "提供天气查询和天气预报服务的智能助手",
+      "provider": {
+        "organization": "Example Weather Inc.",
+        "url": "https://example.com"
+      },
+      "version": "1.0.0",
+      "documentationUrl": "https://example.com/docs/weather-agent",
+      "capabilities": {
+        "streaming": true,
+        "pushNotifications": true,
+        "stateTransitionHistory": true,
+        "extendedAgentCard": false,
+        "extension": "custom_protocol_v1"
+      },
+      "defaultInputModes": ["text/plain", "audio/wav"],
+      "defaultOutputModes": ["text/plain", "application/json"],
+      "skills": [
+        {
+          "id": "get_weather",
+          "name": "获取天气",
+          "description": "查询指定城市的实时天气信息",
+          "tags": ["天气", "查询", "实时"],
+          "examples": [
+            "今天北京天气怎么样",
+            "查询上海当前的天气",
+            "帮我看看深圳今天天气如何"
+          ],
+          "inputModes": ["text/plain"],
+          "outputModes": ["text/plain", "application/json"],
+          "extension": ""
+        },
+        {
+          "id": "weather_forecast",
+          "name": "天气预报",
+          "description": "获取指定城市未来几天的天气预报",
+          "tags": ["天气", "预报", "未来"],
+          "examples": [
+            "我需要广州未来三天的天气预报",
+            "告诉我杭州明天的天气"
+          ],
+          "inputModes": ["text/plain"],
+          "outputModes": ["text/plain", "application/json"]
+        }
+      ],
+      "iconUrl": "common/weather_icon.png",
+      "category": "生活服务",
+      "extension": "",
+      "appInfo": {
+        "deviceTypes": ["phone", "tablet"],
+        "minAppVersion": "1.0.0"
+      }
+    }
+  ]
+}
+```

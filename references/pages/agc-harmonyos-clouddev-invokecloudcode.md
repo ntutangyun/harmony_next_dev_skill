@@ -11,6 +11,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmo
 在端侧访问云数据库
 
 在端侧调用云存储
-
-开发端侧工程
-在端侧调用云函数

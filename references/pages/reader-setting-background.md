@@ -20,6 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/reader-se
 
 接口名	描述
 setPageConfig(pageConfig: ReaderSetting): void	设置或者修改页面排版属性。
+
 开发准备
 
 进行自定义背景之前，请先确保已经“构建阅读器”。
@@ -65,12 +66,10 @@ aboutToAppear(): void {
   this.readerComponentController.on('resourceRequest', this.resourceRequest);
 }
 
-
 aboutToDisappear(): void {
   // 注销资源请求回调
   this.readerComponentController.off('resourceRequest');
 }
-
 
 /**
  * 资源请求回调
@@ -96,6 +95,94 @@ private resourceRequest: bookParser.CallbackRes<string, ArrayBuffer> = (filePath
   return this.loadFileFromPath(filePath);
 }
 
+private loadFileFromPath(filePath: string): ArrayBuffer {
+  try {
+    let stats = fs.statSync(filePath);
+    let file = fs.openSync(filePath, fs.OpenMode.READ_ONLY);
+    let buffer = new ArrayBuffer(stats.size);
+    fs.readSync(file.fd, buffer);
+    fs.closeSync(file);
+    return buffer;
+  } catch (err) {
+    hilog.error(0x0000, 'testTag', "mkdir failed with error message: ", err.message, ", error code: ", err.code);
+    return new ArrayBuffer(0);
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { fileIo as fs } from '@kit.CoreFileKit';
+import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+this.readerSetting.themeColor = '#000000';
+this.readerSetting.themeBgImg = '';
+// 当设置背景色为浅色时，需要将深色模式关掉
+this.readerSetting.nightMode = false;
+// 当设置背景色为浅色时，字体颜色也需要适配
+this.readerSetting.fontColor = '#FFFFFF';
+```
+
+### Code block 3
+
+```
+this.readerSetting.themeBgImg = 'dark_sky_first.jpg';
+this.readerSetting.themeColor = '#000000';
+// 当设置背景图为浅色时，需要将深色模式关掉
+this.readerSetting.nightMode = false;
+// 当设置背景图为浅色时，字体颜色也需要适配
+this.readerSetting.fontColor = '#FFFFFF';
+```
+
+### Code block 4
+
+```
+this.readerComponentController.setPageConfig(this.readerSetting);
+```
+
+### Code block 5
+
+```
+aboutToAppear(): void {
+  // 注册资源请求回调
+  this.readerComponentController.on('resourceRequest', this.resourceRequest);
+}
+
+aboutToDisappear(): void {
+  // 注销资源请求回调
+  this.readerComponentController.off('resourceRequest');
+}
+
+/**
+ * 资源请求回调
+ */
+private resourceRequest: bookParser.CallbackRes<string, ArrayBuffer> = (filePath: string): ArrayBuffer => {
+  hilog.info(0x0000, 'testTag', 'resourceRequest : filePath = ' + filePath);
+  if(filePath.length === 0){
+    return new ArrayBuffer(0);
+  }
+  try {
+    let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    // 获取资源路径resources/rawfile下的背景图片文件Uint8Array数据
+    let value: Uint8Array = context.resourceManager.getRawFileContentSync(filePath);
+    hilog.info(0x0000, 'testTag', 'resourceRequest : get other resource succeeded ');
+    return value.buffer as ArrayBuffer;
+  } catch (error) {
+    let code = (error as BusinessError).code;
+    let message = (error as BusinessError).message;
+    hilog.error(0x0000, 'testTag',
+      `resourceRequest : get other resource failed, error code: ${code}, message: ${message}.`);
+  }
+  // 如果在资源路径源路径resources/rawfile下获取背景图片文件数据失败，则去沙箱目录下获取背景图片数据
+  return this.loadFileFromPath(filePath);
+}
 
 private loadFileFromPath(filePath: string): ArrayBuffer {
   try {
@@ -110,5 +197,4 @@ private loadFileFromPath(filePath: string): ArrayBuffer {
     return new ArrayBuffer(0);
   }
 }
-自定义字体
-修改翻页方式、字体大小及行间距
+```

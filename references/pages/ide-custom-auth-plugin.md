@@ -2,3 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custom-auth-plugin_
 
+自定义认证插件配置
+
+模板文件

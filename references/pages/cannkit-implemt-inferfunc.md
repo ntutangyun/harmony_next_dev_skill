@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-implemt-inferfunc_
 
+函数功能
+
+封装算子的InferShape函数。
+
 该函数传入的OpType为基于Operator类派生出来的子类，会自动生成一个类型为此子类的对象op，可以使用子类的成员函数获取输入输出描述的方法，从而进行InferShape的实现。
 
 基于OpType派生出来的子类op的成员函数如下。
@@ -19,18 +23,27 @@ op.update_output_desc__y_(const TensorDesc& tensorDesc)：更新输出y的描述
 op.get_attr__attr1_(AscendString &val)：获取算子属性attr1的值val。
 
 函数原型
+
 IMPLEMT_INFERFUNC(op_name, func_name)
+
 约束说明
 
 无
 
 参数说明
+
 参数名	输入/输出	描述
 op_name	输入	算子类型。
 func_name	输入	InferShape函数名，开发者自定义。
+
 返回值
 
 无
 
-IMPLEMT_INFERFORMAT_FUNC
-IMPLEMT_VERIFIER
+## Code blocks
+
+### Code block 1
+
+```
+IMPLEMT_INFERFUNC(op_name, func_name)
+```

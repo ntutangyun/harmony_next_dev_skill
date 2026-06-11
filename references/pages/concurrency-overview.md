@@ -13,6 +13,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/concurren
 在并发多线程场景下，不同线程间需要进行数据通信。不同类别的对象采用不同的传输方式，如拷贝或内存共享。
 
 并发能力广泛应用于多种场景，包括异步并发任务、耗时任务（如CPU密集型任务、I/O密集型任务和同步任务等）、长时任务、常驻任务等。开发者可以根据不同的任务诉求和场景，选择相应的并发策略进行优化和开发，具体案例可以参见应用多线程开发实践案例。
-
-ArkTS并发
-异步并发 (Promise和async/await)

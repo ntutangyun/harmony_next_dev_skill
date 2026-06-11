@@ -2,28 +2,46 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/userstatus-guidelines_
 
+UserStatus（用户状态感知）模块提供用户感知能力，可以感知到操作者特定状态，例如：检测用户年龄组。
+
+详细的接口介绍请参考@ohos.multimodalAwareness.userStatus (用户状态感知)。
+
+说明
+
+本模块首批接口从API version 20开始支持，从API version 24废弃。
+
+感知用户年龄组开发指导
+
+[h2]场景介绍
+
+当应用需要获取用户年龄分类时，可以调用userStatus模块，例如判断设备具体操作者是儿童还是成年人。
+
+从API version 20开始，支持获取用户年龄组。
+
+[h2]接口说明
+
+接口名	描述
 on(type:'userAgeGroupDetected',callback:Callback<UserClassification>):void;	订阅年龄群组检测功能，检测结果通过callback返回。
 off(type: 'userAgeGroupDetected', callback?: Callback<UserClassification>): void;	取消年龄群组检测功能。
-约束与限制
+
+[h2]约束与限制
 
 此功能如果设备不支持，将返回801错误码。
 
 此功能涉及安全隐私，如需使用，请 联系技术人员。
 
-开发步骤
+[h2]开发步骤
 
 导入模块。
 
 import { userStatus } from '@kit.MultimodalAwarenessKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-Index.ets
 
 定义回调函数，监听年龄群组检测结果变化。
 
 let callback : Callback<userStatus.UserClassification> = (data : userStatus.UserClassification) => {
   console.info('callback succeeded, ageGroup:' + data.ageGroup + ", confidence:" + data.confidence);
 };
-Index.ets
 
 订阅年龄群组检测功能。
 
@@ -34,7 +52,6 @@ try {
    let error = err as BusinessError;
    console.error("Failed on and err code is " + error.code);
 }
-Index.ets
 
 取消订阅年龄群组检测功能。
 
@@ -45,6 +62,44 @@ try {
    let error = err as BusinessError;
    console.error("Failed off and err code is " + error.code);
 }
-Index.ets
-设备状态感知开发指导
-记忆链接开发指导
+
+## Code blocks
+
+### Code block 1
+
+```
+import { userStatus } from '@kit.MultimodalAwarenessKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+let callback : Callback<userStatus.UserClassification> = (data : userStatus.UserClassification) => {
+  console.info('callback succeeded, ageGroup:' + data.ageGroup + ", confidence:" + data.confidence);
+};
+```
+
+### Code block 3
+
+```
+try {
+   userStatus.on('userAgeGroupDetected', callback);
+   console.info("on succeeded");
+} catch (err) {
+   let error = err as BusinessError;
+   console.error("Failed on and err code is " + error.code);
+}
+```
+
+### Code block 4
+
+```
+try {
+   userStatus.off('userAgeGroupDetected');
+   console.info("off succeeded");
+} catch (err) {
+   let error = err as BusinessError;
+   console.error("Failed off and err code is " + error.code);
+}
+```

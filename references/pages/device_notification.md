@@ -15,14 +15,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/device_no
 穿戴设备振动或响铃的条件：
 
 穿戴设备侧已开启振动或响铃；
+
 穿戴设备处于佩戴状态；
+
 穿戴设备未开启勿扰模式。
 
 通知在穿戴设备上自动弹出通知的条件：
 
 穿戴设备处于佩戴状态；
+
 穿戴设备未开启勿扰模式。
+
 向穿戴设备侧发送通知
+
 说明
 
 该接口的调用需要在开发者联盟申请消息通知权限（请参考申请接入Wear Engine服务）。
@@ -39,7 +44,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/device_no
 
 // 步骤3 获取NotifyClient对象
 let notifyClient: wearEngine.NotifyClient = wearEngine.getNotifyClient(this.getUIContext().getHostContext());
-
 
 // 步骤4 构造NotificationOptions对象
 let button1: wearEngine.NotificationButton = {
@@ -63,6 +67,42 @@ let options: wearEngine.NotificationOptions = {
   }
 }
 
+// 步骤5 发送模板化通知至设备侧
+notifyClient.notify(targetDevice.randomId, options).then(result => {
+  console.info(`Succeeded in sending notification.`);
+}).catch((error: BusinessError) => {
+  console.error(`Failed to send notification. Code is ${error.code}, message is ${error.message}`);
+})
+
+## Code blocks
+
+### Code block 1
+
+```
+// 步骤3 获取NotifyClient对象
+let notifyClient: wearEngine.NotifyClient = wearEngine.getNotifyClient(this.getUIContext().getHostContext());
+
+// 步骤4 构造NotificationOptions对象
+let button1: wearEngine.NotificationButton = {
+  buttonId: wearEngine.ButtonId.FIRST_BUTTON,
+  // 按钮内容最大长度为12字节
+  content: 'button_1'
+}
+let type1Notification: wearEngine.Notification = {
+  type: wearEngine.NotificationType.NOTIFICATION_WITH_ONE_BUTTON,
+  // 包名与标题的最大长度为28字节
+  bundleName: 'bundleName',
+  title: 'title',
+  // 消息内容最大长度为400字节
+  text: 'text',
+  buttons: [button1]
+}
+let options: wearEngine.NotificationOptions = {
+  notification: type1Notification,
+  onAction: (feedback: wearEngine.NotificationFeedback) => {
+    console.info(`one button notify get feedback is ${feedback.action ? feedback.action : feedback.errorCode}`);
+  }
+}
 
 // 步骤5 发送模板化通知至设备侧
 notifyClient.notify(targetDevice.randomId, options).then(result => {
@@ -70,5 +110,4 @@ notifyClient.notify(targetDevice.randomId, options).then(result => {
 }).catch((error: BusinessError) => {
   console.error(`Failed to send notification. Code is ${error.code}, message is ${error.message}`);
 })
-状态查询与订阅
-穿戴设备传感器获取
+```

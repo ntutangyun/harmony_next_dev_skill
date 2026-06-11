@@ -19,7 +19,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ani
 引入相关依赖。
 
 import { AnimatorOptions, AnimatorResult } from '@kit.ArkUI';
-AnimatorPage.ets
 
 创建执行动画的对象。
 
@@ -41,27 +40,23 @@ let result: AnimatorResult | undefined = this.getUIContext().createAnimator(opti
 result.onFrame = (value: number) => {
   hilog.info(DOMAIN, TAG, 'current value is :' + value);
 
-
 }
-AnimatorPage.ets
 
 播放动画。
 
 // 播放动画
 result.play();
-AnimatorPage.ets
 
 动画执行完成后手动释放AnimatorResult对象。
 
 // 释放动画对象
 result = undefined;
-AnimatorPage.ets
+
 使用帧动画实现小球抛物运动
 
 引入相关依赖。
 
 import { AnimatorOptions, AnimatorResult } from '@kit.ArkUI';
-Index.ets
 
 定义要做动画的组件。
 
@@ -69,7 +64,6 @@ Button()
   .width(60)
   .height(60)
   .translate({ x: this.translateX, y: this.translateY })
-Index.ets
 
 在onPageShow中创建AnimatorResult对象。
 
@@ -98,7 +92,6 @@ onPageShow(): void {
     hilog.info(DOMAIN, TAG, this.manager.getStringByNameSync('repeat'));
   }
 }
-Index.ets
 
 定义动画播放，重置，暂停的按钮。
 
@@ -119,14 +112,12 @@ Button($r('app.string.pause')).onClick(() => {
   // 请将$r('app.string.pause')替换为实际资源文件，在本示例中该资源文件的value值为"暂停"
   this.animatorStatus = $r('app.string.pause');
 }).width(80).height(35)
-Index.ets
 
 在页面隐藏或销毁的生命周期中释放动画对象，避免内存泄漏。
 
 onPageHide(): void {
   this.animatorResult = undefined;
 }
-Index.ets
 
 完整示例如下。
 
@@ -134,10 +125,8 @@ import { AnimatorOptions, AnimatorResult } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 const DOMAIN = 0x0000;
 const TAG: string = '[AnimatorTest]';
-
 
 @Entry
 @Component
@@ -166,7 +155,6 @@ struct Index {
   @State translateX: number = 0;
   @State translateY: number = 0;
 
-
   onPageShow(): void {
     this.animatorResult = this.getUIContext().createAnimator(this.animatorOption);
     this.animatorResult.onFrame = (progress: number) => {
@@ -189,11 +177,9 @@ struct Index {
     }
   }
 
-
   onPageHide(): void {
     this.animatorResult = undefined;
   }
-
 
   build() {
     Column() {
@@ -217,6 +203,226 @@ struct Index {
         }).width(80).height(35)
       }.width('100%').height('25%')
 
+      Stack() {
+        Button()
+          .width(60)
+          .height(60)
+          .translate({ x: this.translateX, y: this.translateY })
+      }
+      .width('100%')
+      .height('45%')
+      .align(Alignment.Start)
+      // 'animatorStatus'资源文件中的value值为'当前动画状态为:'
+      Text(this.manager.getStringByNameSync('animatorStatus') + this.manager.getStringByNameSync(this.animatorStatus))
+    }.width('100%').height('100%')
+  }
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+import { AnimatorOptions, AnimatorResult } from '@kit.ArkUI';
+```
+
+### Code block 2
+
+```
+// 创建动画的初始参数
+let options: AnimatorOptions = {
+  duration: 1500,
+  easing: 'friction',
+  delay: 0,
+  fill: 'forwards',
+  direction: 'normal',
+  iterations: 2,
+  // 动画onFrame 插值首帧值
+  begin: 200.0,
+  // 动画onFrame 插值尾帧值
+  end: 400.0
+};
+let result: AnimatorResult | undefined = this.getUIContext().createAnimator(options);
+// 设置接收到帧时回调，动画播放过程中每帧会调用onFrame回调
+result.onFrame = (value: number) => {
+  hilog.info(DOMAIN, TAG, 'current value is :' + value);
+
+}
+```
+
+### Code block 3
+
+```
+// 播放动画
+result.play();
+```
+
+### Code block 4
+
+```
+// 释放动画对象
+result = undefined;
+```
+
+### Code block 5
+
+```
+import { AnimatorOptions, AnimatorResult } from '@kit.ArkUI';
+```
+
+### Code block 6
+
+```
+Button()
+  .width(60)
+  .height(60)
+  .translate({ x: this.translateX, y: this.translateY })
+```
+
+### Code block 7
+
+```
+onPageShow(): void {
+  // 创建animatorResult对象
+  this.animatorResult = this.getUIContext().createAnimator(this.animatorOption);
+  this.animatorResult.onFrame = (progress: number) => {
+    this.translateX = progress;
+    if (progress > this.topWidth && this.translateY < this.bottomHeight) {
+      this.translateY = Math.pow(progress - this.topWidth, 2) * this.g;
+    }
+  }
+  // 动画取消时执行方法
+  this.animatorResult.onCancel = () => {
+    // 请将$r('app.string.cancel')替换为实际资源文件，在本示例中该资源文件的value值为"取消"
+    this.animatorStatus = $r('app.string.cancel');
+  }
+  // 动画完成时执行方法
+  this.animatorResult.onFinish = () => {
+    // 请将$r('app.string.complete')替换为实际资源文件，在本示例中该资源文件的value值为"完成"
+    this.animatorStatus = $r('app.string.complete');
+  }
+  // 动画重复播放时执行方法
+  this.animatorResult.onRepeat = () => {
+    // 'repeat'资源文件中的value值为'动画重复播放'
+    hilog.info(DOMAIN, TAG, this.manager.getStringByNameSync('repeat'));
+  }
+}
+```
+
+### Code block 8
+
+```
+// 请将$r('app.string.play')替换为实际资源文件，在本示例中该资源文件的value值为"播放"
+Button($r('app.string.play')).onClick(() => {
+  this.animatorResult?.play();
+  // 请将$r('app.string.playing')替换为实际资源文件，在本示例中该资源文件的value值为"播放中"
+  this.animatorStatus = $r('app.string.playing');
+}).width(80).height(35)
+// 请将$r('app.string.reset')替换为实际资源文件，在本示例中该资源文件的value值为"重置"
+Button($r('app.string.reset')).onClick(() => {
+  this.translateX = 0;
+  this.translateY = 0;
+}).width(80).height(35)
+// 请将$r('app.string.pause')替换为实际资源文件，在本示例中该资源文件的value值为"暂停"
+Button($r('app.string.pause')).onClick(() => {
+  this.animatorResult?.pause();
+  // 请将$r('app.string.pause')替换为实际资源文件，在本示例中该资源文件的value值为"暂停"
+  this.animatorStatus = $r('app.string.pause');
+}).width(80).height(35)
+```
+
+### Code block 9
+
+```
+onPageHide(): void {
+  this.animatorResult = undefined;
+}
+```
+
+### Code block 10
+
+```
+import { AnimatorOptions, AnimatorResult } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+const TAG: string = '[AnimatorTest]';
+
+@Entry
+@Component
+struct Index {
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  private manager = this.context.resourceManager;
+  @State animatorResult: AnimatorResult | undefined = undefined;
+  // 'create'资源文件中的value值为'创建'
+  @State animatorStatus: string = 'create';
+  begin: number = 0;
+  end: number = 300;
+  topWidth: number = 150;
+  bottomHeight: number = 100;
+  // 自由落体运动的加速度系数
+  g: number = 0.18;
+  animatorOption: AnimatorOptions = {
+    duration: 4000,
+    delay: 0,
+    easing: 'linear',
+    iterations: 1,
+    fill: "forwards",
+    direction: 'normal',
+    begin: this.begin,
+    end: this.end
+  };
+  @State translateX: number = 0;
+  @State translateY: number = 0;
+
+  onPageShow(): void {
+    this.animatorResult = this.getUIContext().createAnimator(this.animatorOption);
+    this.animatorResult.onFrame = (progress: number) => {
+      this.translateX = progress;
+      if (progress > this.topWidth && this.translateY < this.bottomHeight) {
+        this.translateY = Math.pow(progress - this.topWidth, 2) * this.g;
+      }
+    }
+    this.animatorResult.onCancel = () => {
+      // 'cancel'资源文件中的value值为'取消'
+      this.animatorStatus = 'cancel';
+    }
+    this.animatorResult.onFinish = () => {
+      // 'complete'资源文件中的value值为'完成'
+      this.animatorStatus = 'complete';
+    }
+    this.animatorResult.onRepeat = () => {
+      // 'repeat'资源文件中的value值为'动画重复播放'
+      hilog.info(DOMAIN, TAG, this.manager.getStringByNameSync('repeat'));
+    }
+  }
+
+  onPageHide(): void {
+    this.animatorResult = undefined;
+  }
+
+  build() {
+    Column() {
+      Column({ space: 30 }) {
+        // 请将$r('app.string.play')替换为实际资源文件，在本示例中该资源文件的value值为"播放"
+        Button($r('app.string.play')).onClick(() => {
+          this.animatorResult?.play();
+          // 'playing'资源文件中的value值为'播放中'
+          this.animatorStatus = 'playing';
+        }).width(80).height(35)
+        // 请将$r('app.string.reset')替换为实际资源文件，在本示例中该资源文件的value值为"重置"
+        Button($r('app.string.reset')).onClick(() => {
+          this.translateX = 0;
+          this.translateY = 0;
+        }).width(80).height(35)
+        // 请将$r('app.string.pause')替换为实际资源文件，在本示例中该资源文件的value值为"暂停"
+        Button($r('app.string.pause')).onClick(() => {
+          this.animatorResult?.pause();
+          // 'pause'资源文件中的value值为'暂停'
+          this.animatorStatus = 'pause';
+        }).width(80).height(35)
+      }.width('100%').height('25%')
 
       Stack() {
         Button()
@@ -232,7 +438,4 @@ struct Index {
     }.width('100%').height('100%')
   }
 }
-Index.ets
-
-色彩
-使用自定义能力
+```

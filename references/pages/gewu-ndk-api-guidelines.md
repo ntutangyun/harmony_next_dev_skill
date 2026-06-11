@@ -2,24 +2,30 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gewu-ndk-api-guidelines_
 
+场景介绍
+
 从API version 20开始支持。端侧推理场景具有保障用户数据隐私、部署成本低、时延低、不受网络影响的高可用性等优点。但是，相比于云侧推理而言，端侧推理也面临着更大的挑战，因为端侧设备的内存资源受限、算力受限、对功耗敏感，并且还需要在运行端侧推理业务时保障用户体验、不卡顿。为了应对端侧推理的这些挑战，格物服务提供QoS感知的推理加速和资源管理优化能力。本文将指导开发者使用格物接口。
 
 接口
-错误码
+
+[h2]错误码
 
 OH_QoS_GewuErrorCode枚举型作为格物的错误码类型，各函数接口返回的错误码含义见接口描述。
 
-会话句柄
+[h2]会话句柄
 
 会话句柄用于会话的管理。通过OH_QoS_GewuSession成功创建会话时可获得会话句柄，可用于提交/中止请求和销毁会话。
 
 typedef unsigned int OH_QoS_GewuSession;
-请求句柄
+
+[h2]请求句柄
 
 请求句柄用于请求的管理。通过OH_QoS_GewuSubmitRequest成功提交请求时可获得请求句柄，可用于中止请求。
 
 typedef unsigned int OH_QoS_GewuRequest;
-函数
+
+[h2]函数
+
 函数名	简介
 OH_QoS_GewuCreateSession	创建会话
 OH_QoS_GewuDestroySession	销毁会话
@@ -43,12 +49,10 @@ typedef struct {
     OH_QoS_GewuErrorCode error;
 } OH_QoS_GewuCreateSessionResult;
 
-
 OH_QoS_GewuCreateSessionResult OH_QoS_GewuCreateSession(const char* attributes);
 
 参数
 
-const char* attributes参数表示会话属性的json字符串。该json字符串支持以下字段：
 "model": string 表示会话使用的模型的路径。
 
 attributes json字符串例子：
@@ -98,9 +102,7 @@ typedef struct {
     OH_QoS_GewuErrorCode error;
 } OH_QoS_GewuSubmitRequestResult;
 
-
 typedef void (*OH_QoS_GewuOnResponse)(void* context, const char* response);
-
 
 OH_QoS_GewuSubmitRequestResult OH_QoS_GewuSubmitRequest(OH_QoS_GewuSession session, const char* request,
     OH_QoS_GewuOnResponse callback, void* context);
@@ -110,25 +112,31 @@ OH_QoS_GewuSubmitRequestResult OH_QoS_GewuSubmitRequest(OH_QoS_GewuSession sessi
 OH_QoS_GewuSubmitRequest函数的各参数如下：
 
 OH_QoS_GewuSession session参数是会话句柄，表示请求要提交到哪个会话。
-const char* request参数为请求的json字符串，支持以下字段：
-"messages": array. 表示消息的数组其中每个元素支持以下字段：
+
 "role": string. 消息的角色类型。其中"developer"表示开发者或系统提供的指示，"user"表示用户输入，"assistant"表示模型生成结果。
+
 "content": string. 消息内容。
+
 "stream": boolean or null. 是否使能流式推理，默认为非流式。
+
 OH_QoS_GewuOnResponse callback参数为请求的回调函数。
+
 void* context参数为用户提供的上下文指针，用于传递给回调函数。一般用法中，用户代码可通过该参数找到与收到的回复对应的请求，从而进行相应的处理。
 
 另外，OH_QoS_GewuOnResponse回调函数的各参数如下：
 
 void* context参数是调用OH_QoS_GewuSubmitRequest时传进来的context指针。
-const char* response参数是回复的json字符串，包含以下字段：
-"message": 回复消息，包含以下字段：
+
 "role": string. 消息的角色类型，应为"assistant"。
+
 "content": string. 消息内容。
-"finish_reason": string or null. 停止原因，可能的值如下：
+
 null: 表示没有停止。流式推理中会有多次回复，只有最后一次回复有非空的"finish_reason"。而非流式推理只有一次回复，且"finish_reason"非空。
+
 "stop": 正常停止。
+
 "abort": 用户主动提前中止。
+
 "length": token数超过限制。
 
 返回值
@@ -155,7 +163,8 @@ OH_QoS_GewuErrorCode OH_QoS_GewuAbortRequest(OH_QoS_GewuSession session, OH_QoS_
 
 参数
 
-OH_QoS_GewuSession session参数为请求所述的会话的句柄。
+OH_QoS_GewuSession session参数为请求所属的会话的句柄。
+
 OH_QoS_GewuRequest request参数为要中止的请求的句柄。
 
 返回值
@@ -175,15 +184,12 @@ OH_QoS_GewuRequest request参数为要中止的请求的句柄。
 #include <qos/qos.h>
 #include <string>
 
-
 #define DEMO_LOGD(fmt, ...) OH_LOG_DEBUG(LOG_APP, fmt, ##__VA_ARGS__)
 #define DEMO_LOGI(fmt, ...) OH_LOG_INFO(LOG_APP, fmt, ##__VA_ARGS__)
 #define DEMO_LOGW(fmt, ...) OH_LOG_WARN(LOG_APP, fmt, ##__VA_ARGS__)
 #define DEMO_LOGE(fmt, ...) OH_LOG_ERROR(LOG_APP, fmt, ##__VA_ARGS__)
 
-
 using json = nlohmann::json;
-
 
 /* 用于保存聊天状态 */
 struct ChatContext {
@@ -193,7 +199,6 @@ public:
         future = promise.get_future();
     }
 
-
     void Join()
     {
         assert(future.valid());
@@ -201,13 +206,11 @@ public:
         DEMO_LOGI("stopReasonStr=%s", stopReasonStr.c_str());
     }
 
-
     std::promise<std::string> promise;
     std::future<std::string> future;
     std::string responseContent;
     bool earlyAbort = false;
 };
-
 
 /* 接收到推理结果时的回调函数 */
 void OnChatResponse(void *context, const char *response)
@@ -238,7 +241,6 @@ void OnChatResponse(void *context, const char *response)
     }
 }
 
-
 int Demo(void)
 {
     DEMO_LOGI("Demo starts");
@@ -248,7 +250,6 @@ int Demo(void)
     };
     std::string attrStr = attrJson.dump(4);
 
-
     /* 创建会话 */
     OH_QoS_GewuCreateSessionResult createResult = OH_QoS_GewuCreateSession(attrStr.c_str());
     if (createResult.error != OH_QOS_GEWU_OK) {
@@ -256,7 +257,6 @@ int Demo(void)
         return -1;
     }
     OH_QoS_GewuSession session = createResult.session;
-
 
     /* 创建并提交请求 */
     ChatContext context;
@@ -277,6 +277,196 @@ int Demo(void)
     OH_QoS_GewuRequest request = submitResult.request;
     context.Join();
 
+    /* 提前中止请求 */
+    if (context.earlyAbort) {
+        OH_QoS_GewuErrorCode error = OH_QoS_GewuAbortRequest(session, request);
+        if (error != OH_QOS_GEWU_OK) {
+            DEMO_LOGE("failed to abort request, error=%d", (int)error);
+            return -1;
+        }
+    }
+
+    /* 打印结果 */
+    DEMO_LOGI("response: %s", context.responseContent.c_str());
+
+    /* 销毁会话 */
+    OH_QoS_GewuErrorCode error = OH_QoS_GewuDestroySession(session);
+    if (error != OH_QOS_GEWU_OK) {
+        DEMO_LOGE("failed to destroy session, error=%d", (int)error);
+        return -1;
+    }
+    return 0;
+}
+
+说明
+
+在demo代码中，使用了第三方库nlohmann/json来简化JSON数据的解析与构造。nlohmann/json是一个现代C++的JSON库，提供了直观、简洁的方式来处理JSON数据。
+
+它的设计理念是让JSON操作像使用STL容器一样自然。
+
+开发者可以下载json.hpp文件并放入项目的include目录即可使用，无需额外链接库文件。
+
+## Code blocks
+
+### Code block 1
+
+```
+typedef unsigned int OH_QoS_GewuSession;
+```
+
+### Code block 2
+
+```
+typedef unsigned int OH_QoS_GewuRequest;
+```
+
+### Code block 3
+
+```
+typedef struct {
+    OH_QoS_GewuSession session;
+    OH_QoS_GewuErrorCode error;
+} OH_QoS_GewuCreateSessionResult;
+
+OH_QoS_GewuCreateSessionResult OH_QoS_GewuCreateSession(const char* attributes);
+```
+
+### Code block 4
+
+```
+{
+    "model": "/data/storage/el2/base/files/qwen2/"
+}
+```
+
+### Code block 5
+
+```
+OH_QoS_GewuErrorCode OH_QoS_GewuDestroySession(OH_QoS_GewuSession session);
+```
+
+### Code block 6
+
+```
+typedef struct {
+    OH_QoS_GewuRequest request;
+    OH_QoS_GewuErrorCode error;
+} OH_QoS_GewuSubmitRequestResult;
+
+typedef void (*OH_QoS_GewuOnResponse)(void* context, const char* response);
+
+OH_QoS_GewuSubmitRequestResult OH_QoS_GewuSubmitRequest(OH_QoS_GewuSession session, const char* request,
+    OH_QoS_GewuOnResponse callback, void* context);
+```
+
+### Code block 7
+
+```
+OH_QoS_GewuErrorCode OH_QoS_GewuAbortRequest(OH_QoS_GewuSession session, OH_QoS_GewuRequest request);
+```
+
+### Code block 8
+
+```
+#include <future>
+#define LOG_TAG "DEMO"
+#include <hilog/log.h>
+#include <nlohmann/json.hpp>
+#include <qos/qos.h>
+#include <string>
+
+#define DEMO_LOGD(fmt, ...) OH_LOG_DEBUG(LOG_APP, fmt, ##__VA_ARGS__)
+#define DEMO_LOGI(fmt, ...) OH_LOG_INFO(LOG_APP, fmt, ##__VA_ARGS__)
+#define DEMO_LOGW(fmt, ...) OH_LOG_WARN(LOG_APP, fmt, ##__VA_ARGS__)
+#define DEMO_LOGE(fmt, ...) OH_LOG_ERROR(LOG_APP, fmt, ##__VA_ARGS__)
+
+using json = nlohmann::json;
+
+/* 用于保存聊天状态 */
+struct ChatContext {
+public:
+    ChatContext()
+    {
+        future = promise.get_future();
+    }
+
+    void Join()
+    {
+        assert(future.valid());
+        std::string stopReasonStr = future.get();
+        DEMO_LOGI("stopReasonStr=%s", stopReasonStr.c_str());
+    }
+
+    std::promise<std::string> promise;
+    std::future<std::string> future;
+    std::string responseContent;
+    bool earlyAbort = false;
+};
+
+/* 接收到推理结果时的回调函数 */
+void OnChatResponse(void *context, const char *response)
+{
+    ChatContext *chatContext = static_cast<ChatContext *>(context);
+    if (chatContext->earlyAbort) {
+        DEMO_LOGD("ignore response after early abort");
+        return;
+    }
+    try {
+        json responseJson = json::parse(response);
+        chatContext->responseContent += responseJson.at("message").at("content").get<std::string>();
+        json finishReasonJson = responseJson.at("finish_reason");
+        if (!finishReasonJson.is_null()) {
+            /* finish */
+            std::string finishReasonStr = finishReasonJson.get<std::string>();
+            chatContext->promise.set_value(finishReasonStr);
+        } else if (chatContext->responseContent.find("\n") != std::string::npos) {
+            /* customized stop */
+            chatContext->promise.set_value("customized");
+            chatContext->earlyAbort = true;
+        } else {
+            /* continue */
+            ;
+        }
+    } catch (json::exception &e) {
+        DEMO_LOGE("failed to parse response: %s", e.what());
+    }
+}
+
+int Demo(void)
+{
+    DEMO_LOGI("Demo starts");
+    json attrJson = {
+        /* 模型文件位置，根据实际情况修改 */
+        {"model", "/data/storage/el2/base/files/qwen2-awq"},
+    };
+    std::string attrStr = attrJson.dump(4);
+
+    /* 创建会话 */
+    OH_QoS_GewuCreateSessionResult createResult = OH_QoS_GewuCreateSession(attrStr.c_str());
+    if (createResult.error != OH_QOS_GEWU_OK) {
+        DEMO_LOGE("failed to create session, error=%d", (int)createResult.error);
+        return -1;
+    }
+    OH_QoS_GewuSession session = createResult.session;
+
+    /* 创建并提交请求 */
+    ChatContext context;
+    json requestJson = {
+        {"messages", json::array({
+            {{"role", "developer"}, {"content", "You are a helpful assistant"}},
+            {{"role", "user"}, {"content", "What is LLM?"}},
+        })},
+        {"stream", true},
+    };
+    std::string requestStr = requestJson.dump(4);
+    OH_QoS_GewuSubmitRequestResult submitResult = OH_QoS_GewuSubmitRequest(session, requestStr.c_str(),
+                                                                           OnChatResponse, &context);
+    if (submitResult.error != OH_QOS_GEWU_OK) {
+        DEMO_LOGE("failed to submit request, error=%d", (int)submitResult.error);
+        return -1;
+    }
+    OH_QoS_GewuRequest request = submitResult.request;
+    context.Join();
 
     /* 提前中止请求 */
     if (context.earlyAbort) {
@@ -287,10 +477,8 @@ int Demo(void)
         }
     }
 
-
     /* 打印结果 */
     DEMO_LOGI("response: %s", context.responseContent.c_str());
-
 
     /* 销毁会话 */
     OH_QoS_GewuErrorCode error = OH_QoS_GewuDestroySession(session);
@@ -300,13 +488,4 @@ int Demo(void)
     }
     return 0;
 }
-说明
-
-在demo代码中，使用了第三方库nlohmann/json来简化JSON数据的解析与构造。nlohmann/json是一个现代C++的JSON库，提供了直观、简洁的方式来处理JSON数据。
-
-它的设计理念是让JSON操作像使用STL容器一样自然。
-
-开发者可以下载json.hpp文件并放入项目的include目录即可使用，无需额外链接库文件。
-
-QoS 开发指导
-内存管理
+```

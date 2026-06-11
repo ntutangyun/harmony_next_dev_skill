@@ -23,6 +23,3 @@ js文件夹中存放的是编译后的代码文件。
 pack.info 是 Bundle 中用于描述每个 HAP 属性的文件，包含应用的 bundleName 和 versionCode 信息、模块的 name、type 和 abilities 等信息。该文件由 DevEco Studio 工具在构建 Bundle 包时自动生成。
 
 图1 应用程序包结构（FA模型）
-
-Stage模型应用程序包结构
-应用程序包开发与使用

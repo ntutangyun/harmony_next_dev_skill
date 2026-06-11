@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-cache-basic_
 
+从6.0.0(20)开始，支持HTTP缓存。
+
 HTTP 缓存是一种在客户端存储网络资源副本的机制，当后续请求相同资源时，可直接从缓存中获取，无需再次向服务器发起完整请求。HTTP 缓存适用于静态资源（如图片、CSS）和高访问量内容，能有效提升网络资源获取性能。Remote Communication Kit模块提供HTTP缓存功能，遵循RFC 9111协议，支持独立配置缓存策略与持久化存储路径，实现内存、磁盘双重缓存管理，并提供自定义缓存拦截器能力。
 
 约束与限制
@@ -46,6 +48,7 @@ const responseB = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
 console.info(`The current cache hit count is: ${cacheState.hitCount}`);
+
 配置缓存过期策略
 
 Remote Communication Kit提供了丰富的缓存过期策略配置项供开发者使用，包括永不过期、绝对时间、相对时间以及滑动时间过期策略，具体API说明详见接口文档。开发者可以根据业务特性选择不同的缓存过期策略，灵活调整缓存生命周期。下面以相对时间过期策略配置为例，讲述如何配置缓存过期策略，并体会对应的缓存逻辑。
@@ -106,5 +109,119 @@ const responseB = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
 console.info(`The current cache hit count is: ${cacheState.hitCount}`);
-使用HTTP缓存功能提升资源获取性能
-Session间缓存共享
+
+## Code blocks
+
+### Code block 1
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+```
+
+### Code block 2
+
+```
+const responseCache = new rcp.ResponseCache({
+  persistent: {
+    kind: 'file-system',
+    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+  }
+});
+```
+
+### Code block 3
+
+```
+const session: rcp.Session = rcp.createSession({
+  requestConfiguration: {
+    cache: responseCache
+  }
+});
+```
+
+### Code block 4
+
+```
+const responseA = await session.get('https://www.example.com');
+console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
+let cacheState = await responseCache.getState();
+console.info(`The current number of cache entries is: ${cacheState.count}`);
+```
+
+### Code block 5
+
+```
+const responseB = await session.get('https://www.example.com');
+console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
+cacheState = await responseCache.getState();
+console.info(`The current cache hit count is: ${cacheState.hitCount}`);
+```
+
+### Code block 6
+
+```
+import { rcp } from '@kit.RemoteCommunicationKit';
+```
+
+### Code block 7
+
+```
+const responseCache = new rcp.ResponseCache({
+  persistent: {
+    kind: 'file-system',
+    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+  },
+  // 过期策略配置，可根据业务特性进行选择
+  defaultExpirationPolicy: {
+    kind: 'relative',
+    time: {
+      units: 'seconds',
+      value: 3,
+    }
+  }
+});
+```
+
+### Code block 8
+
+```
+const session: rcp.Session = rcp.createSession({
+  requestConfiguration: {
+    cache: responseCache
+  }
+});
+```
+
+### Code block 9
+
+```
+const responseA = await session.get('https://www.example.com');
+console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
+let cacheState = await responseCache.getState();
+console.info(`The current number of cache entries is: ${cacheState.count}`);
+```
+
+### Code block 10
+
+```
+// 定义sleep函数，入参timeout单位为ms。
+type sleepFn = (a: number) => Promise<null>
+const sleep: sleepFn = (timeout) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(null)
+    }, timeout);
+  });
+};
+// 延时4秒，使缓存过期。
+await sleep(4000);
+```
+
+### Code block 11
+
+```
+const responseB = await session.get('https://www.example.com');
+console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
+cacheState = await responseCache.getState();
+console.info(`The current cache hit count is: ${cacheState.hitCount}`);
+```

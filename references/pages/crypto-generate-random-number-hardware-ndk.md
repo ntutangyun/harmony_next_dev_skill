@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-generate-random-number-hardware-ndk_
 
+从API version 21开始，可以选择使用硬件熵源生成安全随机数。
+
 随机数主要用于临时会话密钥生成和非对称加密算法密钥生成等场景。在加解密场景中，安全随机数生成器需要具备随机性、不可预测性和不可重现性。
 
 使用更安全的熵源，对随机数而言，就意味着 “结果难以被猜测或复现”，是 “真随机性” 的量化体现。
@@ -34,6 +36,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ge
 
 算法	长度（Byte）
 CTR_DRBG	[1, INT_MAX]
+
 开发步骤
 
 调用OH_CryptoRand_Create，创建随机数生成器。
@@ -50,7 +53,6 @@ CTR_DRBG	[1, INT_MAX]
 #include <cstdio>
 #include "file.h"
 
-
 OH_Crypto_ErrCode doTestHardwareRandomNumber()
 {
     // 创建随机数生成器。
@@ -60,14 +62,12 @@ OH_Crypto_ErrCode doTestHardwareRandomNumber()
         return ret;
     }
 
-
     // 开启硬件熵源。
     ret = OH_CryptoRand_EnableHardwareEntropy(rand);
     if (ret != CRYPTO_SUCCESS) {
         OH_CryptoRand_Destroy(rand);
         return ret;
     }
-
 
     // 设置随机种子（可选）。
     uint8_t seedData[12] = {0x25, 0x65, 0x58, 0x89, 0x85, 0x55, 0x66, 0x77, 0x88, 0x99, 0x11, 0x22};
@@ -81,16 +81,14 @@ OH_Crypto_ErrCode doTestHardwareRandomNumber()
         return ret;
     }
 
-
     // 生成指定长度的随机数。
     Crypto_DataBlob out = {0};
-    uint32_t randomLength = 24; // 生成24字节的随机数。
+    int randomLength = 24; // 生成24字节的随机数。
     ret = OH_CryptoRand_GenerateRandom(rand, randomLength, &out);
     if (ret != CRYPTO_SUCCESS) {
         OH_CryptoRand_Destroy(rand);
         return ret;
     }
-
 
     // 获取并打印随机数生成器的算法名称。
     const char *algoName = OH_CryptoRand_GetAlgoName(rand);
@@ -98,15 +96,71 @@ OH_Crypto_ErrCode doTestHardwareRandomNumber()
         printf("Random number generator algorithm: %s\n", algoName);
     }
 
-
     printf("Generated random number length: %u\n", out.len);
-
 
     // 清理资源。
     OH_Crypto_FreeDataBlob(&out);
     OH_CryptoRand_Destroy(rand);
     return CRYPTO_SUCCESS;
 }
-rand_test.cpp
-使用硬件熵源生成安全随机数(ArkTS)
-密钥派生
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "CryptoArchitectureKit/crypto_architecture_kit.h"
+#include <cstdio>
+#include "file.h"
+
+OH_Crypto_ErrCode doTestHardwareRandomNumber()
+{
+    // 创建随机数生成器。
+    OH_CryptoRand *rand = nullptr;
+    OH_Crypto_ErrCode ret = OH_CryptoRand_Create(&rand);
+    if (ret != CRYPTO_SUCCESS) {
+        return ret;
+    }
+
+    // 开启硬件熵源。
+    ret = OH_CryptoRand_EnableHardwareEntropy(rand);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoRand_Destroy(rand);
+        return ret;
+    }
+
+    // 设置随机种子（可选）。
+    uint8_t seedData[12] = {0x25, 0x65, 0x58, 0x89, 0x85, 0x55, 0x66, 0x77, 0x88, 0x99, 0x11, 0x22};
+    Crypto_DataBlob seed = {
+        .data = seedData,
+        .len = sizeof(seedData)
+    };
+    ret = OH_CryptoRand_SetSeed(rand, &seed);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoRand_Destroy(rand);
+        return ret;
+    }
+
+    // 生成指定长度的随机数。
+    Crypto_DataBlob out = {0};
+    int randomLength = 24; // 生成24字节的随机数。
+    ret = OH_CryptoRand_GenerateRandom(rand, randomLength, &out);
+    if (ret != CRYPTO_SUCCESS) {
+        OH_CryptoRand_Destroy(rand);
+        return ret;
+    }
+
+    // 获取并打印随机数生成器的算法名称。
+    const char *algoName = OH_CryptoRand_GetAlgoName(rand);
+    if (algoName != nullptr) {
+        printf("Random number generator algorithm: %s\n", algoName);
+    }
+
+    printf("Generated random number length: %u\n", out.len);
+
+    // 清理资源。
+    OH_Crypto_FreeDataBlob(&out);
+    OH_CryptoRand_Destroy(rand);
+    return CRYPTO_SUCCESS;
+}
+```

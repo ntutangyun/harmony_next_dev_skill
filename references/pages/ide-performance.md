@@ -2,6 +2,26 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-performance_
 
+@performance/avoid-overusing-custom-component-check
+
+@performance/bad-deep-clone-check
+
+@performance/constant-property-referencing-check-in-loops
+
+@performance/crypto-replacement-check
+
+@performance/custom-node-memory-leak-check
+
+@performance/dark-color-mode-check
+
+@performance/datashare-query-unrelease-check
+
+@performance/foreach-args-check
+
+@performance/foreach-index-check
+
+@performance/gif-hardware-decoding-check
+
 @performance/hp-arkui-avoid-update-auto-state-var-in-aboutToReuse
 
 @performance/hp-arkui-avoid-empty-callback
@@ -133,6 +153,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-perfo
 @performance/web-on-active-check
 
 @performance/waterflow-data-preload-check
-
-@security/no-unsafe-huks
-@performance/avoid-overusing-custom-component-check

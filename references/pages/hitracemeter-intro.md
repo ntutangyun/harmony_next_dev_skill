@@ -21,6 +21,3 @@ trace节点为只读节点，可从中读取系统当前缓冲区内的所有记
 调用HiTraceMeter接口生成的打点信息格式可查看用户态trace格式说明。
 
 HiTraceMeter Tag：跟踪数据使用类别，每个软件子系统对应一个tag。可以在hdc命令行中用“hitrace -l”命令查看所有的tag名及其简介。使用hitrace命令行工具采集跟踪数据时，需要指定tag，采集结果仅包含指定tag类别的跟踪数据。应用中调用HiTraceMeter打点使用的tag是app。
-
-性能跟踪
-使用HiTraceMeter跟踪性能（ArkTS）

@@ -1,21 +1,24 @@
-# @performance/no
+# @performance/no-use-any-import
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-no-use-any-import_
 
 使用import的方式引入对应的模块时，建议按需引用使用到的变量代替“import *”的方式，以减少.ets文件的执行耗时和文件中所有export变量的初始化过程。
 
 规则配置
+
 // code-linter.json5
 {
   "rules": {
     "@performance/no-use-any-import": "warn",
   }
 }
+
 选项
 
 该规则无需配置额外选项。
 
 正例
+
 // Index.ets
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { One } from '../utils/Numbers'; // It is recommended to reference variables on demand
@@ -23,7 +26,9 @@ hilog.info(0x0000, 'testTag', '%{public}d', One); // Only the variable One is us
 // Numbers.ets
 export const One: number = 1;
 export const Two: number = 2;
+
 反例
+
 // Index.ets
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import * as nm from '../utils/Numbers'; // The import * method is not recommended
@@ -31,11 +36,54 @@ hilog.info(0x0000, 'testTag', '%{public}d', nm.One); // Only the variable One is
 // Numbers.ets
 export const One: number = 1;
 export const Two: number = 2;
+
 规则集
+
 plugin:@performance/recommended
 plugin:@performance/all
 
 Code Linter代码检查规则的配置指导请参考Code Linter代码检查。
 
-@performance/monitor-invisible-area-in-image-animation
-@performance/no-high-loaded-frame-rate-range
+## Code blocks
+
+### Code block 1
+
+```
+// code-linter.json5
+{
+  "rules": {
+    "@performance/no-use-any-import": "warn",
+  }
+}
+```
+
+### Code block 2
+
+```
+// Index.ets
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { One } from '../utils/Numbers'; // It is recommended to reference variables on demand
+hilog.info(0x0000, 'testTag', '%{public}d', One); // Only the variable One is used here
+// Numbers.ets
+export const One: number = 1;
+export const Two: number = 2;
+```
+
+### Code block 3
+
+```
+// Index.ets
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import * as nm from '../utils/Numbers'; // The import * method is not recommended
+hilog.info(0x0000, 'testTag', '%{public}d', nm.One); // Only the variable One is used here
+// Numbers.ets
+export const One: number = 1;
+export const Two: number = 2;
+```
+
+### Code block 4
+
+```
+plugin:@performance/recommended
+plugin:@performance/all
+```

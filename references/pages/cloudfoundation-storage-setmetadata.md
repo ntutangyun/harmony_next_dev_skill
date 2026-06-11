@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-storage-setmetadata_
 
+文件元数据包含云侧文件名、文件大小、文件类型等常用属性，也包括用户自定义的文件属性。
+
+文件保存至云侧后，开发者可以设置文件的自定义属性。
+
+约束与限制
+
 支持Phone、Tablet设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持PC/2in1设备。
 
 前提条件
@@ -18,15 +24,12 @@ import { cloudStorage } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-
 let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
-
 
 @Component
 export struct testPage {
   build() {
   }
-
 
   // 设置元数据
   setMetaData() {
@@ -43,5 +46,36 @@ export struct testPage {
     })
   }
 }
-获取云侧文件的元数据
-预加载
+
+## Code blocks
+
+### Code block 1
+
+```
+import { cloudStorage } from '@kit.CloudFoundationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+
+@Component
+export struct testPage {
+  build() {
+  }
+
+  // 设置元数据
+  setMetaData() {
+    // 设置云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的元数据信息
+    storageBucket.setMetadata('screenshot/screenshot_20250115_155321.jpg', {
+      customMetadata: {
+        key1: "value1",
+        key2: "value2"
+      }
+    }).then((metadata: cloudStorage.Metadata) => {
+      hilog.info(0x0000, 'testTag', `Succeeded in setting metadata: ${JSON.stringify(metadata)}`);
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'testTag', `Failed to set metadata, code: ${err.code}, message: ${err.message}`);
+    })
+  }
+}
+```

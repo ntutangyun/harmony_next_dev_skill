@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-scalar-binocular-shiftright_
 
+功能说明
+
+源操作数内每个元素做右移，右移的位数由输入参数scalar决定。
+
 对数据类型uint16_t/uint32_t的源操作数做逻辑右移，对数据类型int16_t/int32_t的源操作数做算术右移。
 
 逻辑右移为去掉最低位，最高位填充为0。
@@ -20,8 +24,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-s
 
 tensor前n个数据计算：
 
-template <typename T, bool isSetMask = true> 
+template <typename T, bool isSetMask = true>
 __aicore__ inline void ShiftRight(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const T& scalarValue, const int32_t& calCount)
+
 参数说明
 
 表1 模板参数说明
@@ -29,83 +34,16 @@ __aicore__ inline void ShiftRight(const LocalTensor<T>& dstLocal, const LocalTen
 参数名	描述
 T	操作数数据类型。
 U	scalarValue数据类型。
-isSetMask	
-
-是否在接口内部设置mask模式和mask值。
-
-- true，表示在接口内部设置。
-
-- false，表示在接口外部设置。
+isSetMask	是否在接口内部设置mask模式和mask值。 - true，表示在接口内部设置。 - false，表示在接口外部设置。
 
 表2 参数说明
 
 参数名称	类型	说明
-dstLocal	输出	
-
-目的操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-Kirin9020系列处理器，支持的数据类型为：
-
-前n个tensor：uint16_t、int16_t、uint32_t、int32_t
-
-不支持浮点类型（half、float32_t）
-
-KirinX90系列处理器，支持的数据类型为：
-
-前n个tensor、mask连续模式支持：uint16_t、int16_t、uint32_t、int32_t
-
-不支持浮点类型（half、float32_t）
-
-
-srcLocal	输入	
-
-源操作数。
-
-类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-
-LocalTensor的起始地址需要32字节对齐。
-
-数据类型需要与目的操作数保持一致。
-
-Kirin9020系列处理器，支持的数据类型为：
-
-前n个tensor：uint16_t、int16_t、uint32_t、int32_t、
-
-不支持浮点类型（half、float32_t）
-
-KirinX90系列处理器，支持的数据类型为：
-
-前n个tensor：uint16_t、int16_t、uint32_t、int32_t、
-
-不支持浮点类型（half、float32_t）
-
-
-scalarValue	输入	
-
-源操作数，数据类型需要与目的操作数Tensor中的元素数据类型保持一致。
-
-当src为uint16_t/int16_t类型时，scalar取值范围：[0, 16]。
-
-当src为uint32_t/int32_t类型时，scalar取值范围：[0, 32]。
-
-Kirin9020系列处理器，支持的数据类型为：
-
-前n个tensor：uint16_t、int16_t、uint32_t、int32_t
-
-不支持浮点类型（half、float32_t）
-
-KirinX90系列处理器，支持的数据类型为：
-
-前n个tensor：uint16_t、int16_t、uint32_t、int32_t
-
-不支持浮点类型（half、float32_t）
-
-
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：uint16_t、int16_t、uint32_t、int32_t 不支持浮点类型（half、float32_t） KirinX90系列处理器，支持的数据类型为： 前n个tensor、mask连续模式支持：uint16_t、int16_t、uint32_t、int32_t 不支持浮点类型（half、float32_t）
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型需要与目的操作数保持一致。 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：uint16_t、int16_t、uint32_t、int32_t、 不支持浮点类型（half、float32_t） KirinX90系列处理器，支持的数据类型为： 前n个tensor：uint16_t、int16_t、uint32_t、int32_t、 不支持浮点类型（half、float32_t）
+scalarValue	输入	源操作数，数据类型需要与目的操作数Tensor中的元素数据类型保持一致。 当src为uint16_t/int16_t类型时，scalar取值范围：[0, 16]。 当src为uint32_t/int32_t类型时，scalar取值范围：[0, 32]。 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：uint16_t、int16_t、uint32_t、int32_t 不支持浮点类型（half、float32_t） KirinX90系列处理器，支持的数据类型为： 前n个tensor：uint16_t、int16_t、uint32_t、int32_t 不支持浮点类型（half、float32_t）
 calCount	输入	输入数据元素个数。
+
 返回值
 
 无
@@ -134,5 +72,27 @@ AscendC::ShiftRight(dstLocal, srcLocal, scalar, 512);
 输入数据(src0Local): [1 2 3 ... 512]
 输入数据 scalar = 2
 输出数据(dstLocal): [0 0 0 1 1 1 1 ... 128]
-ShiftLeft
-LeakyRelu
+
+## Code blocks
+
+### Code block 1
+
+```
+template <typename T, bool isSetMask = true>
+__aicore__ inline void ShiftRight(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, const T& scalarValue, const int32_t& calCount)
+```
+
+### Code block 2
+
+```
+int16_t scalar = 2;
+AscendC::ShiftRight(dstLocal, srcLocal, scalar, 512);
+```
+
+### Code block 3
+
+```
+输入数据(src0Local): [1 2 3 ... 512]
+输入数据 scalar = 2
+输出数据(dstLocal): [0 0 0 1 1 1 1 ... 128]
+```

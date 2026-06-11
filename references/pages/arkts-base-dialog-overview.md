@@ -2,11 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-base-dialog-overview_
 
-弹出框是一种模态窗口，通常用于在保持当前上下文环境的同时，临时展示用户需关注的信息或待处理的操作。用户需在模态弹出框内完成相关交互任务之后，才能退出模态模式。弹出框可以不与任何组件绑定，其内容通常由多种组件组成，如文本、列表、输入框、图片等，以实现布局。ArkUI当前提供了自定义和固定样式两类弹出框组件。
+弹出框是一种模态窗口，通常用于在保持当前上下文环境的同时，临时展示用户需关注的信息或待处理的操作。弹出框可以不与任何组件绑定，其内容通常由多种组件组成，如文本、列表、输入框、图片等，以实现布局。ArkUI当前提供了自定义和固定样式两类弹出框组件。
 
 自定义弹出框： 开发者需要根据使用场景，传入自定义组件填充在弹出框中实现自定义的弹出框内容。主要包括基础自定义弹出框 (CustomDialog)、不依赖UI组件的自定义弹出框 (openCustomDialog)。
+
 固定样式弹出框： 开发者可使用固定样式弹出框，指定需要显示的文本内容和按钮操作，完成简单的交互效果。主要包括警告弹窗 (AlertDialog)、列表选择弹窗 (ActionSheet)、选择器弹窗 (PickerDialog)、对话框 (showDialog)、操作菜单 (showActionMenu)。
+
 使用场景
+
 名称	描述
 不依赖UI组件的全局自定义弹出框 (openCustomDialog)	当用户需要在自定义弹出框内动态更新弹出框属性时使用。
 基础自定义弹出框 (CustomDialog)	当用户需要自定义弹出框内的组件和内容时使用。
@@ -20,9 +23,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-bas
 弹出框控制器	从API version 18开始，可设置controller参数以绑定DialogController控制器，通过控制器可以对弹出框进行操作。
 弹出框焦点策略	从API version 19开始，可以通过设置focusable参数来管理弹出框是否获取焦点。
 弹出框蒙层控制	开发者可以通过设置maskColor、maskRect等参数来对弹出框蒙层进行定制。
+
 规格约束
+
 建议使用UIContext中的弹出框方法。
+
 可以通过使用UIContext中的getPromptAction方法获取当前UI上下文关联的PromptAction对象。
+
 由于系统安全管控原因，当弹出系统权限弹窗等场景时，弹出框在此状态下无法显示。
-弹出框 (Dialog)
-不依赖UI组件的全局自定义弹出框 (openCustomDialog)

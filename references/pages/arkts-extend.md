@@ -13,9 +13,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ext
 从API version 11开始，该装饰器支持在元服务中使用。
 
 装饰器使用说明
-语法
+
+[h2]语法
+
 @Extend(UIComponentName) function functionName { ... }
-使用规则
+
+[h2]使用规则
 
 和@Styles不同，@Extend支持封装指定组件的私有属性、私有事件和自身定义的全局方法。
 
@@ -25,14 +28,12 @@ function fancy() {
   .fontColor(Color.Red)
 }
 
-
 // superFancyText可以调用预定义的fancy
 @Extend(Text)
 function superFancyText(size: number) {
   .fontSize(size)
   .fancy()
 }
-GlobalFunctionExtension.ets
 
 使用@Extend封装指定组件的私有属性、私有事件和自身定义的全局方法时，不支持和@Styles混用。
 
@@ -40,7 +41,6 @@ GlobalFunctionExtension.ets
 function fancy() {
   .backgroundColor(Color.Red)
 }
-
 
 // superFancyText不可以调用预定义的fancy
 @Extend(Text)
@@ -58,7 +58,6 @@ function fancy(fontSize: number) {
   .fontSize(fontSize)
 }
 
-
 @Entry
 @Component
 struct FancyUse {
@@ -71,7 +70,6 @@ struct FancyUse {
     }
   }
 }
-ExtendParameterUsage.ets
 
 @Extend装饰的方法的参数可以为function，作为Event事件的句柄。
 
@@ -81,17 +79,14 @@ function makeMeClick(onClick: () => void) {
   .onClick(onClick)
 }
 
-
 @Entry
 @Component
 struct FancyUse {
   @State label: string = 'Hello World';
 
-
   onClickHandler() {
     this.label = 'Hello ArkUI';
   }
-
 
   build() {
     Row({ space: 10 }) {
@@ -102,7 +97,6 @@ struct FancyUse {
     }
   }
 }
-ExtendFunctionHandle.ets
 
 @Extend的参数可以为状态变量，当状态变量改变时，UI可以正常的被刷新渲染。
 
@@ -112,12 +106,10 @@ function fancy(fontSize: number) {
   .fontSize(fontSize)
 }
 
-
 @Entry
 @Component
 struct FancyUse {
   @State fontSizeValue: number = 20;
-
 
   build() {
     Column({ space: 10 }) {
@@ -130,10 +122,11 @@ struct FancyUse {
     .width('100%')
   }
 }
-ExtendUIStateVariable.ets
 
 限制条件
+
 和@Styles不同，@Extend仅支持在全局定义，不支持在组件内部定义。
+
 说明
 
 仅限在当前文件内使用，不支持导出。
@@ -149,7 +142,6 @@ struct FancyUse {
   @Extend(Text) function fancy (fontSize: number) {
     .fontSize(fontSize)
   }
-
 
   build() {
     Row({ space: 10 }) {
@@ -167,7 +159,6 @@ function fancy(fontSize: number) {
   .fontSize(fontSize)
 }
 
-
 @Entry
 @Component
 struct FancyUse {
@@ -178,7 +169,89 @@ struct FancyUse {
     }
   }
 }
-ExtendPositiveExample.ets
+
+@Extend装饰的函数仅限当前文件使用，不支持导出，不支持在其他文件调用。
+
+【反例】
+
+  // 错误写法 不要在pageTwo当中使用在其他文件比如pageOne中定义的@Extend函数
+  // pageOne.ets
+  @Extend(Button)
+  function ButtonUse() {
+    .width(100)
+    .buttonStyle(ButtonStyleMode.NORMAL)
+  }
+
+  @Entry
+  @Component
+  struct extendUseOne {
+    build() {
+      Row() {
+        Button()
+          .ButtonUse()
+          .height(200)
+      }
+    }
+  }
+
+  // pageTwo.ets
+  @Entry
+  @Component
+  struct TextUse {
+    build() {
+      Row() {
+        Text('this is TextUse')
+
+        Button()
+          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist on type 'ButtonAttribute'.
+          .height(50)
+      }
+    }
+  }
+
+【正例】
+
+  // 正确写法 在pageTwo文件当中可以定义与pageOne文件中的@Extend函数不重名的@Extend函数
+  // pageOne.ets
+  @Extend(Button)
+  function ButtonUse() {
+    .width(100)
+    .buttonStyle(ButtonStyleMode.NORMAL)
+  }
+
+  @Entry
+  @Component
+  struct extendUseOne {
+    build() {
+      Row() {
+        Button()
+          .ButtonUse()
+          .height(200)
+      }
+    }
+  }
+
+  // pageTwo.ets
+  @Extend(Button)
+  function ButtonUse2() {
+    .width(200)
+    .buttonStyle(ButtonStyleMode.EMPHASIZED)
+  }
+
+  @Entry
+  @Component
+  struct TextUse {
+    build() {
+      Row() {
+        Text('this is TextUse')
+
+        Button()
+          .ButtonUse2()
+          .height(50)
+      }
+    }
+  }
+
 使用场景
 
 以下示例声明了3个Text组件，每个Text组件均设置了fontStyle、fontWeight 和backgroundColor样式。
@@ -187,7 +260,6 @@ ExtendPositiveExample.ets
 @Component
 struct FancyUse {
   @State label: string = 'Hello World';
-
 
   build() {
     Row({ space: 10 }) {
@@ -206,7 +278,6 @@ struct FancyUse {
     }.margin('20%')
   }
 }
-ExtendUsageScenario.ets
 
 使用@Extend将样式组合复用，示例如下。
 
@@ -216,7 +287,6 @@ function fancyText(weightValue: number, color: Color) {
   .fontWeight(weightValue)
   .backgroundColor(color)
 }
-ExtendUsageScenariotwo.ets
 
 通过@Extend组合样式后，使得代码更加简洁，增强可读性。
 
@@ -224,7 +294,6 @@ ExtendUsageScenariotwo.ets
 @Component
 struct FancyUse {
   @State label: string = 'Hello World';
-
 
   build() {
     Row({ space: 10 }) {
@@ -237,9 +306,6 @@ struct FancyUse {
     }.margin('20%')
   }
 }
-ExtendUsageScenariotwo.ets
-@Styles装饰器：定义组件重用样式
-stateStyles：多态样式
 
 ## Code blocks
 
@@ -258,7 +324,6 @@ function fancy() {
   .fontColor(Color.Red)
 }
 
-
 // superFancyText可以调用预定义的fancy
 @Extend(Text)
 function superFancyText(size: number) {
@@ -274,7 +339,6 @@ function superFancyText(size: number) {
 function fancy() {
   .backgroundColor(Color.Red)
 }
-
 
 // superFancyText不可以调用预定义的fancy
 @Extend(Text)
@@ -293,7 +357,6 @@ function fancy(fontSize: number) {
   .fontColor(Color.Red)
   .fontSize(fontSize)
 }
-
 
 @Entry
 @Component
@@ -318,17 +381,14 @@ function makeMeClick(onClick: () => void) {
   .onClick(onClick)
 }
 
-
 @Entry
 @Component
 struct FancyUse {
   @State label: string = 'Hello World';
 
-
   onClickHandler() {
     this.label = 'Hello ArkUI';
   }
-
 
   build() {
     Row({ space: 10 }) {
@@ -350,12 +410,10 @@ function fancy(fontSize: number) {
   .fontSize(fontSize)
 }
 
-
 @Entry
 @Component
 struct FancyUse {
   @State fontSizeValue: number = 20;
-
 
   build() {
     Column({ space: 10 }) {
@@ -381,7 +439,6 @@ struct FancyUse {
     .fontSize(fontSize)
   }
 
-
   build() {
     Row({ space: 10 }) {
       Text('Fancy')
@@ -400,7 +457,6 @@ function fancy(fontSize: number) {
   .fontSize(fontSize)
 }
 
-
 @Entry
 @Component
 struct FancyUse {
@@ -416,11 +472,94 @@ struct FancyUse {
 ### Code block 9
 
 ```
+  // 错误写法 不要在pageTwo当中使用在其他文件比如pageOne中定义的@Extend函数
+  // pageOne.ets
+  @Extend(Button)
+  function ButtonUse() {
+    .width(100)
+    .buttonStyle(ButtonStyleMode.NORMAL)
+  }
+
+  @Entry
+  @Component
+  struct extendUseOne {
+    build() {
+      Row() {
+        Button()
+          .ButtonUse()
+          .height(200)
+      }
+    }
+  }
+
+  // pageTwo.ets
+  @Entry
+  @Component
+  struct TextUse {
+    build() {
+      Row() {
+        Text('this is TextUse')
+
+        Button()
+          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist on type 'ButtonAttribute'.
+          .height(50)
+      }
+    }
+  }
+```
+
+### Code block 10
+
+```
+  // 正确写法 在pageTwo文件当中可以定义与pageOne文件中的@Extend函数不重名的@Extend函数
+  // pageOne.ets
+  @Extend(Button)
+  function ButtonUse() {
+    .width(100)
+    .buttonStyle(ButtonStyleMode.NORMAL)
+  }
+
+  @Entry
+  @Component
+  struct extendUseOne {
+    build() {
+      Row() {
+        Button()
+          .ButtonUse()
+          .height(200)
+      }
+    }
+  }
+
+  // pageTwo.ets
+  @Extend(Button)
+  function ButtonUse2() {
+    .width(200)
+    .buttonStyle(ButtonStyleMode.EMPHASIZED)
+  }
+
+  @Entry
+  @Component
+  struct TextUse {
+    build() {
+      Row() {
+        Text('this is TextUse')
+
+        Button()
+          .ButtonUse2()
+          .height(50)
+      }
+    }
+  }
+```
+
+### Code block 11
+
+```
 @Entry
 @Component
 struct FancyUse {
   @State label: string = 'Hello World';
-
 
   build() {
     Row({ space: 10 }) {
@@ -441,7 +580,7 @@ struct FancyUse {
 }
 ```
 
-### Code block 10
+### Code block 12
 
 ```
 @Extend(Text)
@@ -452,14 +591,13 @@ function fancyText(weightValue: number, color: Color) {
 }
 ```
 
-### Code block 11
+### Code block 13
 
 ```
 @Entry
 @Component
 struct FancyUse {
   @State label: string = 'Hello World';
-
 
   build() {
     Row({ space: 10 }) {

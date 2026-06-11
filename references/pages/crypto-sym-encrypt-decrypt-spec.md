@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-sym-encrypt-decrypt-spec_
 
+当前章节将说明系统目前支持的算法及其对应的规格。
+
+对于每种算法采用支持的加密模式，将会在具体的每个算法规格中介绍。
+
+AES
+
 算法库当前提供了AES加解密常用的7种加密模式：ECB、CBC、OFB、CFB、CTR、GCM和CCM。不同的加密模式适用的加解密参数不同，具体请参考ParamsSpec。
 
 由于AES为分组加密算法，分组长度为128位。在实际应用中，最后一组明文可能不足128位（16字节），此时可以通过不同的填充模式进行数据填充。
@@ -33,7 +39,7 @@ CFB	[128|192|256]	[NoPadding|PKCS5|PKCS7]	9+
 GCM	[128|192|256]	[NoPadding|PKCS5|PKCS7]	9+
 CCM	[128|192|256]	[NoPadding|PKCS5|PKCS7]	9+
 
-从API版本10开始，支持对称加解密不带密钥长度的规格。加解密参数输入密钥类型时，支持不带长度，加解密运算取决于实际输入的密钥长度。
+从API version 10开始，支持对称加解密不带密钥长度的规格。加解密参数输入密钥类型时，支持不带长度，加解密运算取决于实际输入的密钥长度。
 
 举例说明，当需要分组模式为CFB、不带密钥长度、填充模式为NoPadding，其字符串参数为"AES|CFB|NoPadding"。
 
@@ -63,7 +69,7 @@ CBC	64	[NoPadding|PKCS5|PKCS7]	20+
 OFB	64	[NoPadding|PKCS5|PKCS7]	20+
 CFB	64	[NoPadding|PKCS5|PKCS7]	20+
 
-从API版本10开始，支持对称加解密不带密钥长度的规格。加解密参数输入密钥类型时，支持不带长度，加解密运算取决于实际输入的密钥长度。
+从API version 10开始，支持对称加解密不带密钥长度的规格。加解密参数输入密钥类型时，支持不带长度，加解密运算取决于实际输入的密钥长度。
 
 举例说明，当需要分组模式为CFB、不带密钥长度、填充模式为NoPadding，其字符串参数为"DES|CFB|NoPadding"。
 
@@ -97,7 +103,7 @@ CBC	192	[NoPadding|PKCS5|PKCS7]	9+
 OFB	192	[NoPadding|PKCS5|PKCS7]	9+
 CFB	192	[NoPadding|PKCS5|PKCS7]	9+
 
-从API版本10开始，支持对称加解密不带密钥长度的规格。加解密参数输入密钥类型时，支持不带长度，加解密运算取决于实际输入的密钥长度。
+从API version 10开始，支持对称加解密不带密钥长度的规格。加解密参数输入密钥类型时，支持不带长度，加解密运算取决于实际输入的密钥长度。
 
 举例说明，当需要分组模式为CFB、不带密钥长度、填充模式为NoPadding，其字符串参数为"3DES|CFB|NoPadding"。
 
@@ -133,14 +139,16 @@ OFB	128	[NoPadding|PKCS5|PKCS7]	10+
 CFB	128	[NoPadding|PKCS5|PKCS7]	10+
 CFB128	128	[NoPadding|PKCS5|PKCS7]	10+
 GCM	128	[NoPadding|PKCS5|PKCS7]	12+
+
 AES-WRAP
 
 算法库提供AES-WRAP算法，该算法是一种基于AES的加密算法，用于安全地存储或传输对称密钥。它的主要目的是通过加密保护密钥，防止密钥在存储或传输过程中被泄露或篡改。
 
 算法名称	字符串参数	API版本
 AES128_WRAP	AES128_WRAP	22+
+AES192_WRAP	AES192_WRAP	22+
 AES256_WRAP	AES256_WRAP	22+
-AES384_WRAP	AES384_WRAP	22+
+
 填充模式
 
 分组加密算法有固定的分组长度，在实际应用中，最后一组明文的数据量可能无法达到固定的长度要求，此时可以通过不同的填充模式进行数据填充。填充模式有：
@@ -155,7 +163,7 @@ PKCS7：填充方法和PKCS5一致。但PKCS7可以在1-255字节之间任意填
 
 ChaCha20
 
-从API22开始，算法库支持该算法。
+从API version 22开始，算法库支持该算法。
 
 算法库当前提供了ChaCha20加解密，默认的ChaCha20加解密时需要传入IV。默认ChaCha20需要的加解密参数为IvParamsSpec。
 
@@ -170,5 +178,3 @@ ChaCha20
 对称算法名	密钥长度（bit）	字符串参数	API版本
 ChaCha20	256	ChaCha20	22+
 ChaCha20	256	ChaCha20|Poly1305	22+
-加解密算法规格
-非对称密钥加解密算法规格

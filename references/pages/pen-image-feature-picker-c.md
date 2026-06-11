@@ -15,22 +15,29 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-image
 全局取色能力支持设备：Tablet、PC/2in1，并且从5.1.1(19)版本开始，新增支持设备：Phone（只支持部分机型）。
 
 接口说明
+
 名称	描述
 int32_t HMS_GCP_StartColorPicker (int32_t initialPosX, int32_t initialPosY, HMS_GCP_OnResult onResultCallback, void *userData)	启动取色器。此API用于启动取色器，在取色器移动时不显示色值。
 int32_t HMS_GCP_StartColorPickerWithColorValue (int32_t initialPosX, int32_t initialPosY, HMS_GCP_OnResult onResultCallback, void *userData)	启动取色器。此API用于启动取色器，在取色器移动时显示色值。
-接入步骤
-在 CMake 脚本中链接动态库
+
+开发步骤
+
+[h2]在 CMake 脚本中链接动态库
+
 target_link_libraries(entry PUBLIC libace_napi.z.so libcolorpicker_ndk.z.so  libhilog_ndk.z.so)
-导入模块
+
+[h2]导入模块
+
 #include "color_picker/native_gcp_api.h"
 #include "hilog/log.h"
-示例代码
+
+[h2]示例代码
 
 native_gcp_api.h提供HMS_GCP_StartColorPicker()和HMS_GCP_StartColorPickerWithColorValue()两种方式启动全局取色功能。
 
 通过调用HMS_GCP_StartColorPicker()，实现启动取色器。
 
-注意
+须知
 
 该启动方法不支持实时显示色值。
 
@@ -51,7 +58,7 @@ void startPick() {
 
 通过调用HMS_GCP_StartColorPickerWithColorValue()，实现启动取色器。
 
-注意
+须知
 
 该启动方法支持实时显示色值。
 
@@ -69,5 +76,56 @@ void startPickWithColorValue() {
     void *userData = nullptr;
     HMS_GCP_StartColorPickerWithColorValue(posX, posY, onSuccessCallback, userData);
 }
-手写功能开发指导（C/C++）
-接入报点预测
+
+## Code blocks
+
+### Code block 1
+
+```
+target_link_libraries(entry PUBLIC libace_napi.z.so libcolorpicker_ndk.z.so  libhilog_ndk.z.so)
+```
+
+### Code block 2
+
+```
+#include "color_picker/native_gcp_api.h"
+#include "hilog/log.h"
+```
+
+### Code block 3
+
+```
+void onSuccessCallback(void *userData, HMS_GCP_PickedColorInfo pickedColorInfo, const int32_t code) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked code is: %{public}d", code);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Red is: %{public}d", pickedColorInfo.color.red);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Green is:%{public}d ", pickedColorInfo.color.green);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Blue is: %{public}d", pickedColorInfo.color.blue);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Alpha is:%{public}d ", pickedColorInfo.color.alpha);
+    delete userData;
+}
+void startPick() {
+    int32_t posX = 200;
+    int32_t posY = 200;
+    void *userData = nullptr;
+    HMS_GCP_StartColorPicker(posX, posY, onSuccessCallback, userData);
+}
+```
+
+### Code block 4
+
+```
+void onSuccessCallback(void *userData, HMS_GCP_PickedColorInfo pickedColorInfo, const int32_t code) {
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked code is: %{public}d", code);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Red is: %{public}d", pickedColorInfo.color.red);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Green is:%{public}d ", pickedColorInfo.color.green);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Blue is: %{public}d", pickedColorInfo.color.blue);
+    OH_LOG_Print(LOG_APP, LOG_INFO, 0x0000, "penkit", "picked Alpha is:%{public}d ", pickedColorInfo.color.alpha);
+    delete userData;
+}
+void startPickWithColorValue() {
+    int32_t posX = 200;
+    int32_t posY = 200;
+    void *userData = nullptr;
+    HMS_GCP_StartColorPickerWithColorValue(posX, posY, onSuccessCallback, userData);
+}
+```

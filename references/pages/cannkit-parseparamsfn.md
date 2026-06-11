@@ -2,14 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-parseparamsfn_
 
+函数功能
+
+注册解析算子属性的函数。
+
+函数原型
+
 OpRegistrationData &ParseParamsFn(const ParseParamFunc &parseParamFn)
+
 参数说明
+
 参数	输入/输出	说明
-parseParamFn	输入	
-
-解析算子属性的函数ParseParamFunc，请参见回调函数ParseParamFunc。
-
-针对TensorFlow框架，若原始TensorFlow框架算子属性与适配AI处理器的模型中算子属性一一对应（属性个数与顺序一致），可直接使用AutoMappingFn函数自动实现映射。
+parseParamFn	输入	解析算子属性的函数ParseParamFunc，请参见回调函数ParseParamFunc。 针对TensorFlow框架，若原始TensorFlow框架算子属性与适配AI处理器的模型中算子属性一一对应（属性个数与顺序一致），可直接使用AutoMappingFn函数自动实现映射。
 
 约束说明
 
@@ -31,11 +35,18 @@ Status ParseParamFunc(const Message *op_origin, ge::Operator &op_dest)
 
 参数	输入/输出	说明
 op_origin	输入	protobuf格式的数据结构（来源于原始模型的prototxt文件），包含算子属性信息。
-op_dest	输出	
+op_dest	输出	适配AI处理器的模型的算子数据结构，保存算子信息。 关于Operator类，请参见Operator。
 
-适配AI处理器的模型的算子数据结构，保存算子信息。
+## Code blocks
 
-关于Operator类，请参见Operator。
+### Code block 1
 
-OriginOpType
-ParseParamsByOperatorFn
+```
+OpRegistrationData &ParseParamsFn(const ParseParamFunc &parseParamFn)
+```
+
+### Code block 2
+
+```
+Status ParseParamFunc(const Message *op_origin, ge::Operator &op_dest)
+```

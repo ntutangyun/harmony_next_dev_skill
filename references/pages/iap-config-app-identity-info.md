@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-config-app-identity-info_
 
+bundleName配置
+
 在工程“AppScope/app.json5”下的bundleName需要与开发者在应用开发准备中创建应用时的包名保持一致。
 
 配置内容示例如下：
@@ -11,6 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-confi
     "bundleName": "com.huawei.***.***.demo",
   }
 }
+
 配置应用身份信息
 
 登录AppGallery Connect平台，在“开发与服务”中选择目标项目，通过“项目设置 > 常规 > 应用”获取目标应用的Client ID。
@@ -38,5 +41,35 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-confi
     ]
   }
 }
-配置签名
-商品购买
+
+## Code blocks
+
+### Code block 1
+
+```
+{
+  "app": {
+    "bundleName": "com.huawei.***.***.demo",
+  }
+}
+```
+
+### Code block 2
+
+```
+{
+  "module":{
+    "type": "***",
+    "name": "***",
+    "description": "***",
+    "mainElement": "***",
+    "deviceTypes": [***],
+    "metadata": [
+      {
+        "name": "client_id",
+        "value": "***"
+      }
+    ]
+  }
+}
+```

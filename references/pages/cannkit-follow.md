@@ -2,21 +2,20 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-follow_
 
+函数功能
+
+用于指定当前输入/输出的datatype/format/shape信息与之前定义过的某个输入一致。
+
+函数原型
+
+OpParamDef &Follow(const char *paramName);
 OpParamDef &Follow(const char *paramName, FollowType ftype);
+
 参数说明
+
 参数	输入/输出	说明
 paramName	输入	之前定义过的输入名。
-ftype	输入	
-
-ftype类型为枚举类FollowType，表示Follow的模式，取值如下。
-
-- ALL，datatype/format/shape与paramName均保持一致。
-
-- DTYPE，datatype与paramName保持一致。
-
-- FORMAT，format与paramName保持一致。
-
-- SHAPE，shape与paramName保持一致。
+ftype	输入	ftype类型为枚举类FollowType，表示Follow的模式，取值如下。 - ALL，datatype/format/shape与paramName均保持一致。 - DTYPE，datatype与paramName保持一致。 - FORMAT，format与paramName保持一致。 - SHAPE，shape与paramName保持一致。
 
 返回值
 
@@ -50,5 +49,29 @@ this->Output("y1")
     .ParamType(REQUIRED)
     .Follow("x1")
     .OutputShapeDependOnCompute();
-ValueDepend
-OpAttrDef
+
+## Code blocks
+
+### Code block 1
+
+```
+OpParamDef &Follow(const char *paramName);
+OpParamDef &Follow(const char *paramName, FollowType ftype);
+```
+
+### Code block 2
+
+```
+this->Input("x1")
+    .ParamType(REQUIRED)
+    .DataType({ge::DT_FLOAT, ge::DT_FLOAT})
+    .Format({ge::FORMAT_ND, ge::FORMAT_ND});
+this->Input("x2")
+    .ParamType(REQUIRED)
+    .DataType({ge::DT_FLOAT, ge::DT_FLOAT})
+    .Format({ge::FORMAT_ND, ge::FORMAT_ND});
+this->Output("y1")
+    .ParamType(REQUIRED)
+    .Follow("x1")
+    .OutputShapeDependOnCompute();
+```

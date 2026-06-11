@@ -2,3 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-faq-4_
 
+不可以，PDF Kit移除页眉页脚、水印或背景不会针对具体页面，请参考页眉页脚，水印或背景图片。

@@ -2,3 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-faq-2_
 
+siteId有多种获取方式，这里提供其中的3种作为参考：
+
+可通过on('poiClick')方法获取。
+
+可通过位置搜索相关接口（关键字搜索、周边搜索、地点详情、自动补全、正地理编码）的返回结果中获取。
+
+可通过chooseLocation接口的返回结果中获取。

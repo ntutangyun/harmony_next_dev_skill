@@ -5,17 +5,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ren
 ArkUI通过自定义组件的build()函数和@Builder装饰器中的声明式UI描述语句构建相应的UI。在声明式描述语句中开发者除了使用系统组件外，还可以使用渲染控制组件来辅助UI的构建，这些渲染控制组件包括控制组件是否显示的条件渲染组件和基于数组数据快速生成组件的循环渲染组件。
 
 基本概念
+
 名词	含义
 条件渲染	根据给定的条件，判断是否渲染指定的UI组件。
 循环渲染	根据给定的数据源，渲染出一系列相似的UI组件。
 条件渲染组件	能够实现条件渲染的语法组件：if-else。
 循环渲染组件	能够实现循环渲染的语法组件：ForEach、LazyForEach、Repeat。
 滚动容器组件	List、ListItemGroup、Grid、Swiper、WaterFlow。
-预加载区域	
-
-懒加载模式下紧邻容器组件显示范围的区域。该区域内的子组件会在系统空闲时提前创建并布局。其大小由容器组件的cachedCount属性设定。
-
-以List为例，设置cachedCount属性后，显示区域外上下各会预加载并布局cachedCount行ListItem。cachedCount默认值等于显示区域中节点的数量。
+预加载区域	懒加载模式下紧邻容器组件显示范围的区域。该区域内的子组件会在系统空闲时提前创建并布局。其大小由容器组件的cachedCount属性设定。 以List为例，设置cachedCount属性后，显示区域外上下各会预加载并布局cachedCount行ListItem。cachedCount默认值等于显示区域中节点的数量。
 
 全量加载&懒加载介绍
 
@@ -33,8 +30,9 @@ ArkUI框架为鸿蒙应用开发者提供了ForEach组件（全量加载）和La
 ForEach	×	×	适用于数据量较少的短列表场景。
 LazyForEach	√	×	适用于长列表、网格等需要滚动浏览大量数据的场景。
 Repeat	√	√	适用于长列表、网格等需要滚动浏览大量数据的场景，并且其复用能力有助于优化渲染性能。
+
 最佳实践
+
 懒加载优化性能-界面渲染性能优化-性能场景优化案例
+
 长列表加载丢帧优化-界面渲染性能优化-性能场景优化案例
-学习UI范式渲染控制
-if/else：条件渲染

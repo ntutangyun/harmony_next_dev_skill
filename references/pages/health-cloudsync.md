@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-cloudsync_
 
+场景介绍
+
 为了保障生态应用数据的实时性，当运动健康App数据未能及时同步到云端时，生态App应用在获得用户授权的前提下，通过让用户主动触发数据同步的操作，以达到用户数据实时上云的目的，便于能够从Health Service Kit云及时获取到用户最新的运动健康数据。
 
 OAuth权限
@@ -10,13 +12,16 @@ OAuth权限
 
 权限	权限描述
 https://www.huawei.com/healthkit/huaweihealthdata.cloudsync	允许触发华为运动健康应用同步个人数据到云（基于华为运动健康应用的数据同步管理设置）。
+
 说明
 
 该权限仅企业开发者账号可见。
 
 接口说明
+
 接口名	描述
 syncAll(): Promise<void>	用户主动触发数据同步。
+
 开发前检查
 
 完成申请运动健康服务与配置Client ID。
@@ -42,5 +47,23 @@ try {
 } catch (err) {
   hilog.error(0x0000, 'testTag', `Failed to synchronize data. Code: ${err.code}, message: ${err.message}`);
 }
-实时三环数据
-Wearable应用开发
+
+## Code blocks
+
+### Code block 1
+
+```
+import { healthStore } from '@kit.HealthServiceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 2
+
+```
+try {
+  await healthStore.syncAll();
+  hilog.info(0x0000, 'testTag', 'Succeeded in synchronizing data.');
+} catch (err) {
+  hilog.error(0x0000, 'testTag', `Failed to synchronize data. Code: ${err.code}, message: ${err.message}`);
+}
+```

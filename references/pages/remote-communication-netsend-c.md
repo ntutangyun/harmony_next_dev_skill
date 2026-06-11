@@ -2,19 +2,22 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-communication-netsend-c_
 
+约束与限制
+
 发送网络请求能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备。
 
 如何使用fetchsync发起网络请求
 
 发送一个同步HTTP请求，也可以设置请求头和请求体等参数，并返回来自服务器的HTTP响应。常用于获取资源，支持通过拦截器来处理请求和响应。
 
-接口说明
+[h2]接口说明
 
 具体API说明详见接口文档。
 
 接口名	描述
 Rcp_Response *HMS_Rcp_FetchSync(Rcp_Session *session, Rcp_Request *request, uint32_t *errCode);	发送一个HTTP请求，并直接返回来自服务器的HTTP响应。
-使用示例
+
+[h2]使用示例
 
 CPP侧导入模块。
 
@@ -55,17 +58,19 @@ if (response != NULL) {
 // 关闭session
 errCode = HMS_Rcp_CloseSession(&session);
 // 处理errCode
+
 如何使用fetch发起异步网络请求
 
 发送一个异步HTTP请求，也可以设置请求头和请求体等参数，并返回来自服务器的HTTP响应。常用于获取资源，支持通过拦截器来处理请求和响应。
 
-接口说明
+[h2]接口说明
 
 具体API说明详见接口文档。
 
 接口名	描述
 uint32_t HMS_Rcp_Fetch(Rcp_Session *session, Rcp_Request *request, const Rcp_ResponseCallbackObject *responseCallback);	发送一个HTTP请求，并返回来自服务器的HTTP响应。使用responseCallback异步回调。
-使用示例
+
+[h2]使用示例
 
 CPP侧导入模块。
 
@@ -105,7 +110,6 @@ void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
     }
 }
 
-
 int main() {
     const char *kHttpServerAddress = "https://www.example.com";
     // 请求配置
@@ -139,11 +143,12 @@ int main() {
     // 处理errCode
     return 0;
 }
+
 如何使用get发送网络请求
 
 发送一个带有默认HTTP参数的HTTP GET请求，并返回来自服务器的HTTP响应。采用异步回调的方式进行处理，提高应用的响应性和效率。常用于从服务器获取数据。
 
-使用示例
+[h2]使用示例
 
 CPP侧导入模块。
 
@@ -171,7 +176,6 @@ void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
         response->destroyResponse(response);
     }
 }
-
 
 int main() {
     const char *kHttpServerAddress = "http://www.example.com";
@@ -206,11 +210,12 @@ int main() {
     // 处理errCode
     return 0;
 }
+
 如何使用post发送网络请求
 
 发送一个带有默认HTTP参数的HTTP POST请求，并返回来自服务器的HTTP响应。使用异步回调。常用于向服务器提交数据。与GET请求不同，POST请求将参数包含在请求主体中，适用于创建新资源、提交表单数据或执行某些操作。
 
-使用示例
+[h2]使用示例
 
 CPP侧导入模块。
 
@@ -240,7 +245,6 @@ void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
         response->destroyResponse(response);
     }
 }
-
 
 int main() {
     const char *kHttpServerAddress = "http://www.example.com";
@@ -281,11 +285,12 @@ int main() {
     // 处理errCode
     return 0;
 }
+
 如何使用put发送网络请求
 
 发送一个带有默认HTTP参数的HTTP PUT请求，并返回来自服务器的HTTP响应。使用异步回调。常用于向服务器更新资源。PUT请求将更新的数据发送到特定的URL，用于替换指定资源的全部内容。
 
-使用示例
+[h2]使用示例
 
 CPP侧导入模块。
 
@@ -315,7 +320,6 @@ void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
         response->destroyResponse(response);
     }
 }
-
 
 int main() {
     const char *kHttpServerAddress = "http://www.example.com";
@@ -358,11 +362,12 @@ int main() {
     // 处理errCode
     return 0;
 }
+
 如何使用head发送网络请求
 
 发送一个带有默认HTTP参数的HTTP HEAD请求，并返回来自服务器的HTTP响应。使用异步回调。类似GET请求，但只返回响应头，不返回实体内容。可以获取资源的元信息，如文件大小、修改日期等。
 
-使用示例
+[h2]使用示例
 
 CPP侧导入模块。
 
@@ -390,7 +395,6 @@ void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
         response->destroyResponse(response);
     }
 }
-
 
 int main() {
     const char *kHttpServerAddress = "http://www.example.com/head";
@@ -425,11 +429,12 @@ int main() {
     // 处理errCode
     return 0;
 }
+
 如何使用delete发送网络请求
 
 发送一个带有默认HTTP参数的HTTP DELETE请求，并返回来自服务器的HTTP响应，用于从服务器删除资源，通过向指定URL发送DELETE请求，可以删除该URL上对应的资源。使用异步回调。
 
-使用示例
+[h2]使用示例
 
 CPP侧导入模块。
 
@@ -456,7 +461,6 @@ void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
         response->destroyResponse(response);
     }
 }
-
 
 int main() {
     const char *kHttpServerAddress = "http://www.example.com/delete";
@@ -491,5 +495,491 @@ int main() {
     // 处理errCode
     return 0;
 }
-关闭会话（ArkTS）
-取消网络请求（C++）
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <stdio.h>
+```
+
+### Code block 2
+
+```
+librcp_c.so
+```
+
+### Code block 3
+
+```
+const char *kHttpServerAddress = "https://www.example.com";
+Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+```
+
+### Code block 4
+
+```
+uint32_t errCode = 0;
+Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+```
+
+### Code block 5
+
+```
+Rcp_Response *response = HMS_Rcp_FetchSync(session, request, &errCode);
+if (response != NULL) {
+    printf("Response status: %d\n", response->statusCode);
+} else {
+    printf("Fetch failed: errCode: %u\n", errCode);
+}
+```
+
+### Code block 6
+
+```
+// 清理request
+HMS_Rcp_DestroyRequest(request);
+// 处理response，并清理response
+if (response != NULL) {
+    response->destroyResponse(response);
+}
+// 关闭session
+errCode = HMS_Rcp_CloseSession(&session);
+// 处理errCode
+```
+
+### Code block 7
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <cstring>
+#include <stdio.h>
+#include <unistd.h>
+```
+
+### Code block 8
+
+```
+librcp_c.so
+```
+
+### Code block 9
+
+```
+const char *kHttpServerAddress = "https://www.example.com";
+Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+```
+
+### Code block 10
+
+```
+uint32_t errCode = 0;
+Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+```
+
+### Code block 11
+
+```
+// 异步请求的响应处理回调，请用户自定义
+void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
+{
+    (void *)usrCtx;
+    if (response != NULL) {
+        printf("Response status: %d\n", response->statusCode);
+    } else {
+        printf("Fetch failed: errCode: %u\n", errCode);
+    }
+    // 注意清理响应
+    if (response != NULL) {
+        response->destroyResponse(response);
+    }
+}
+
+int main() {
+    const char *kHttpServerAddress = "https://www.example.com";
+    // 请求配置
+    Rcp_Configuration config;
+    // 初始化配置参数
+    (void)memset(&config, 0, sizeof(Rcp_Configuration));
+    // 重新设置自动重定向
+    config.transferConfiguration.autoRedirect = true;
+    // 重新设置请求超时配置参数
+    config.transferConfiguration.timeout.transferMs = 1000 * 10;
+    config.transferConfiguration.timeout.connectMs = 1000 * 10;
+    Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+    request->method = RCP_METHOD_GET;
+    request->configuration = &config;
+    uint32_t errCode = 0;
+    // 创建session
+    Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+    // 配置请求回调
+    Rcp_ResponseCallbackObject responseCallback = {ResponseCallback, NULL};
+    // 发起fetch请求
+    errCode = HMS_Rcp_Fetch(session, request, &responseCallback);
+    // 等待fetch结果，仅是等待异步调用完成，开发者可根据自己实际场景处理回调。
+    usleep(1000 * 1000 * 3);
+    printf("Fetch completed, errCode: %u\n", errCode);
+    // 在退出前取消可能还在执行的requests
+    errCode = HMS_Rcp_CancelSession(session);
+    // 清理request
+    HMS_Rcp_DestroyRequest(request);
+    // 关闭session
+    errCode = HMS_Rcp_CloseSession(&session);
+    // 处理errCode
+    return 0;
+}
+```
+
+### Code block 12
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <cstring>
+#include <stdio.h>
+#include <unistd.h>
+```
+
+### Code block 13
+
+```
+librcp_c.so
+```
+
+### Code block 14
+
+```
+void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
+{
+    (void *)usrCtx;
+    if (response != NULL) {
+        printf("Response status: %d\n", response->statusCode);
+    } else {
+        printf("Fetch failed: errCode: %u\n", errCode);
+    }
+    // 注意清理响应
+    if (response != NULL) {
+        response->destroyResponse(response);
+    }
+}
+
+int main() {
+    const char *kHttpServerAddress = "http://www.example.com";
+    // 请求配置
+    Rcp_Configuration config;
+    // 初始化配置参数
+    (void)memset(&config, 0, sizeof(Rcp_Configuration));
+    // 重新设置自动重定向
+    config.transferConfiguration.autoRedirect = true;
+    // 重新设置请求超时配置参数
+    config.transferConfiguration.timeout.transferMs = 1000 * 10;
+    config.transferConfiguration.timeout.connectMs = 1000 * 10;
+    Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+    request->method = RCP_METHOD_GET;
+    request->configuration = &config;
+    uint32_t errCode = 0;
+    // 创建session
+    Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+    // 配置请求回调
+    Rcp_ResponseCallbackObject responseCallback = {ResponseCallback, NULL};
+    // 发起请求
+    errCode = HMS_Rcp_Fetch(session, request, &responseCallback);
+    // 等待结果，仅是等待异步调用完成，开发者可根据自己实际场景处理回调。
+    usleep(1000 * 1000 * 3);
+    printf("Fetch completed, errCode: %u\n", errCode);
+    // 在退出前取消可能还在执行的requests
+    errCode = HMS_Rcp_CancelSession(session);
+    // 清理request
+    HMS_Rcp_DestroyRequest(request);
+    // 关闭session
+    errCode = HMS_Rcp_CloseSession(&session);
+    // 处理errCode
+    return 0;
+}
+```
+
+### Code block 15
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <cstdlib>
+#include <cstring>
+#include <stdio.h>
+#include <unistd.h>
+#include <thread>
+```
+
+### Code block 16
+
+```
+librcp_c.so
+```
+
+### Code block 17
+
+```
+void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
+{
+    (void *)usrCtx;
+    if (response != NULL) {
+        printf("Response status: %d\n", response->statusCode);
+    } else {
+        printf("Fetch failed: errCode: %u\n", errCode);
+    }
+    // 注意清理响应
+    if (response != NULL) {
+        response->destroyResponse(response);
+    }
+}
+
+int main() {
+    const char *kHttpServerAddress = "http://www.example.com";
+    const char *content = "content";
+    Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+    // 设置request参数
+    request->method = RCP_METHOD_POST;
+    request->content = (Rcp_RequestContent *)calloc(1, sizeof(Rcp_RequestContent));
+    request->content->type = RCP_CONTENT_TYPE_STRING;
+    request->content->data.contentStr.buffer = content;
+    request->content->data.contentStr.length = strlen(content);
+    // 请求配置
+    Rcp_Configuration config;
+    // 初始化配置参数
+    (void)memset(&config, 0, sizeof(Rcp_Configuration));
+    // 重新设置自动重定向
+    config.transferConfiguration.autoRedirect = true;
+    // 重新设置请求超时配置参数
+    config.transferConfiguration.timeout.transferMs = 1000 * 10;
+    config.transferConfiguration.timeout.connectMs = 1000 * 10;
+    request->configuration = &config;
+    uint32_t errCode = 0;
+    // 创建session
+    Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+    // 配置请求回调
+    Rcp_ResponseCallbackObject responseCallback = {ResponseCallback, NULL};
+    // 发起请求
+    errCode = HMS_Rcp_Fetch(session, request, &responseCallback);
+    // 等待fetch结果，仅是等待异步调用完成，开发者可根据自己实际场景处理回调。
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000 * 1000 * 3));
+    printf("Fetch completed, errCode: %u\n", errCode);
+    // 清理request->content
+    free(request->content);
+    // 清理request
+    HMS_Rcp_DestroyRequest(request);
+    // 关闭session
+    errCode = HMS_Rcp_CloseSession(&session);
+    // 处理errCode
+    return 0;
+}
+```
+
+### Code block 18
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <cstdlib>
+#include <cstring>
+#include <stdio.h>
+#include <unistd.h>
+#include <thread>
+```
+
+### Code block 19
+
+```
+librcp_c.so
+```
+
+### Code block 20
+
+```
+void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
+{
+    (void *)usrCtx;
+    if (response != NULL) {
+        printf("Response status: %d\n", response->statusCode);
+    } else {
+        printf("Fetch failed: errCode: %u\n", errCode);
+    }
+    // 注意清理响应
+    if (response != NULL) {
+        response->destroyResponse(response);
+    }
+}
+
+int main() {
+    const char *kHttpServerAddress = "http://www.example.com";
+    const char *content = "content";
+    // 创建request，并设置request的参数
+    Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+    request->method = RCP_METHOD_PUT;
+    request->content = (Rcp_RequestContent *)calloc(1, sizeof(Rcp_RequestContent));
+    request->content->type = RCP_CONTENT_TYPE_STRING;
+    request->content->data.contentStr.buffer = content;
+    request->content->data.contentStr.length = strlen(content);
+    // 请求配置
+    Rcp_Configuration config;
+    // 初始化配置参数
+    (void)memset(&config, 0, sizeof(Rcp_Configuration));
+    // 重新设置自动重定向
+    config.transferConfiguration.autoRedirect = true;
+    // 重新设置请求超时配置参数
+    config.transferConfiguration.timeout.transferMs = 1000 * 10;
+    config.transferConfiguration.timeout.connectMs = 1000 * 10;
+    request->configuration = &config;
+    uint32_t errCode = 0;
+    // 创建session
+    Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+    // 配置请求回调
+    Rcp_ResponseCallbackObject responseCallback = {ResponseCallback, NULL};
+    // 发起fetch请求
+    errCode = HMS_Rcp_Fetch(session, request, &responseCallback);
+    // 等待结果，仅是等待异步调用完成，开发者可根据自己实际场景处理回调。
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000 * 1000 * 3));
+    printf("Fetch completed, errCode: %u\n", errCode);
+    // 在退出前取消可能还在执行的requests
+    errCode = HMS_Rcp_CancelSession(session);
+    // 清理request content
+    free(request->content);
+    // 清理request
+    HMS_Rcp_DestroyRequest(request);
+    // 关闭session
+    errCode = HMS_Rcp_CloseSession(&session);
+    // 处理errCode
+    return 0;
+}
+```
+
+### Code block 21
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <cstring>
+#include <stdio.h>
+#include <unistd.h>
+```
+
+### Code block 22
+
+```
+librcp_c.so
+```
+
+### Code block 23
+
+```
+void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
+{
+    (void *)usrCtx;
+    if (response != NULL) {
+        printf("Response status: %d\n", response->statusCode);
+    } else {
+        printf("Fetch failed: errCode: %u\n", errCode);
+    }
+    // 注意清理响应
+    if (response != NULL) {
+        response->destroyResponse(response);
+    }
+}
+
+int main() {
+    const char *kHttpServerAddress = "http://www.example.com/head";
+    Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+    request->method = RCP_METHOD_HEAD;
+    // 请求配置
+    Rcp_Configuration config;
+    // 初始化配置参数
+    (void)memset(&config, 0, sizeof(Rcp_Configuration));
+    // 重新设置自动重定向
+    config.transferConfiguration.autoRedirect = true;
+    // 重新设置请求超时配置参数
+    config.transferConfiguration.timeout.transferMs = 1000 * 10;
+    config.transferConfiguration.timeout.connectMs = 1000 * 10;
+    request->configuration = &config;
+    uint32_t errCode = 0;
+    // 创建session
+    Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+    // 配置请求回调
+    Rcp_ResponseCallbackObject responseCallback = {ResponseCallback, NULL};
+    // 发起fetch请求
+    errCode = HMS_Rcp_Fetch(session, request, &responseCallback);
+    // 等待fetch结果，仅是等待异步调用完成，开发者可根据自己实际场景处理回调。
+    usleep(1000 * 1000 * 3);
+    printf("Fetch completed, errCode: %u\n", errCode);
+    // 在退出前取消可能还在执行的requests
+    errCode = HMS_Rcp_CancelSession(session);
+    // 清理request
+    HMS_Rcp_DestroyRequest(request);
+    // 关闭session
+    errCode = HMS_Rcp_CloseSession(&session);
+    // 处理errCode
+    return 0;
+}
+```
+
+### Code block 24
+
+```
+#include "RemoteCommunicationKit/rcp.h"
+#include <cstring>
+#include <stdio.h>
+#include <unistd.h>
+```
+
+### Code block 25
+
+```
+librcp_c.so
+```
+
+### Code block 26
+
+```
+void ResponseCallback(void *usrCtx, Rcp_Response *response, uint32_t errCode)
+{
+    (void *)usrCtx;
+    if (response != NULL) {
+        printf("Response status: %d\n", response->statusCode);
+    } else {
+        printf("Fetch failed: errCode: %u\n", errCode);
+    }
+    if (response != NULL) {
+        response->destroyResponse(response);
+    }
+}
+
+int main() {
+    const char *kHttpServerAddress = "http://www.example.com/delete";
+    Rcp_Request *request = HMS_Rcp_CreateRequest(kHttpServerAddress);
+    request->method = RCP_METHOD_DELETE;
+    // 请求配置
+    Rcp_Configuration config;
+    // 初始化配置参数
+    (void)memset(&config, 0, sizeof(Rcp_Configuration));
+    // 重新设置自动重定向
+    config.transferConfiguration.autoRedirect = true;
+    // 重新设置请求超时配置参数
+    config.transferConfiguration.timeout.transferMs = 1000 * 10;
+    config.transferConfiguration.timeout.connectMs = 1000 * 10;
+    request->configuration = &config;
+    uint32_t errCode = 0;
+    // 创建session
+    Rcp_Session *session = HMS_Rcp_CreateSession(NULL, &errCode);
+    // 配置请求回调
+    Rcp_ResponseCallbackObject responseCallback = {ResponseCallback, NULL};
+    // 发起fetch请求
+    errCode = HMS_Rcp_Fetch(session, request, &responseCallback);
+    // 等待fetch结果，仅是等待异步调用完成，开发者可根据自己实际场景处理回调。
+    usleep(1000 * 1000 * 3);
+    printf("Fetch completed, errCode: %u\n", errCode);
+    // 在退出前取消可能还在执行的requests
+    errCode = HMS_Rcp_CancelSession(session);
+    // 清理request
+    HMS_Rcp_DestroyRequest(request);
+    // 关闭session
+    errCode = HMS_Rcp_CloseSession(&session);
+    // 处理errCode
+    return 0;
+}
+```

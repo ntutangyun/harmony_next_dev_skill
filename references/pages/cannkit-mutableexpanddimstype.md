@@ -2,9 +2,48 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-mutableexpanddimstype_
 
+函数功能
+
+获取可写的补维规则。
+
+函数原型
+
+ExpandDimsType &MutableExpandDimsType()
+
+参数说明
+
+无
+
+返回值
+
+补维规则引用。
+
+约束说明
+
+无
+
+调用示例
+
+ExpandDimsType dim_type("1100");
 StorageFormat format(ge::Format::FORMAT_NCHW, ge::Format::FORMAT_C1HWNC0, dim_type);
 ExpandDimsType new_dim_type("1010");
 format.SetExpandDimsType(new_dim_type);
 auto &fmt_dim_type = format.MutableExpandDimsType();
-SetExpandDimsType
-operator==
+
+## Code blocks
+
+### Code block 1
+
+```
+ExpandDimsType &MutableExpandDimsType()
+```
+
+### Code block 2
+
+```
+ExpandDimsType dim_type("1100");
+StorageFormat format(ge::Format::FORMAT_NCHW, ge::Format::FORMAT_C1HWNC0, dim_type);
+ExpandDimsType new_dim_type("1010");
+format.SetExpandDimsType(new_dim_type);
+auto &fmt_dim_type = format.MutableExpandDimsType();
+```
