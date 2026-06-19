@@ -34,7 +34,7 @@ Quota check: `backgroundTaskManager.getRemainingDelayTime(requestId).then(ms => 
 ### Continuous task
 
 1. Declare permission `ohos.permission.KEEP_BACKGROUND_RUNNING` in `module.json5`.
-2. Declare `backgroundModes` on the ability: e.g. `["audioPlayback", "audioRecording", "location", "bluetoothInteraction", "multiDeviceConnection", "wifiInteraction", "voip", "taskKeeping" /* device-dependent */]`.
+2. Declare `backgroundModes` on the ability — must be a REAL mode string from the official type table (表1 长时任务类型): `["dataTransfer", "audioPlayback", "audioRecording", "location", "bluetoothInteraction", "multiDeviceConnection", "voip", "taskKeeping", "avPlaybackAndRecord" /* API 22+ */, "specialScenarioProcessing" /* API 22+ */]`. There is **no** `wifiInteraction` (or generic "monitoring") mode — see the note below. `taskKeeping` (compute, e.g. antivirus) is API 21+ and on non-PC devices (phones/tablets) requires the ACL permission `ohos.permission.KEEP_BACKGROUND_RUNNING_SYSTEM` (system/restricted — not available to retail apps).
 3. Call `startBackgroundRunning` on the UIAbility and pass a `WantAgent` to a foreground notification:
 
 ```typescript
@@ -56,6 +56,8 @@ await backgroundTaskManager.stopBackgroundRunning(this.context);
 ```
 
 Stopping a continuous task while it's needed (e.g. paused music) gets you killed quickly — only stop when the user has finished.
+
+> **No background mode for idle monitoring (e.g. Wi-Fi events).** The official type table is exactly the modes listed above — there is NO `wifiInteraction` / `networkInteraction` / generic "keep-alive" mode. A continuous task must correspond to active, user-visible work, and the system verifies the declared activity is actually happening (e.g. `DATA_TRANSFER` needs real data transfer) — it cancels a task that just idles. So you **cannot** keep a backgrounded process alive merely to listen for Wi-Fi / common events. Dynamic `commonEventManager` subscriptions only deliver while the app is **foreground** (HarmonyOS freezes backgrounded processes; on return to foreground it replays up to ~30 s of missed events). For event-driven background wake-ups there is `StaticSubscriberExtensionAbility`, but **system** common events (Wi-Fi state, etc.) are gated and generally not statically subscribable by retail third-party apps. `WorkScheduler` deferred tasks are the retail background option, but the minimum interval is **2 h** (4 h / 24 h / 48 h for less-active app groups) — too slow for near-real-time reactions. Conclusion: on a retail phone, always-on / near-real-time background event listening needs **system privileges** (system app, or a Xiaoyi device-side agent via HMAF / `AgentExtensionAbility`).
 
 ## Notifications
 
