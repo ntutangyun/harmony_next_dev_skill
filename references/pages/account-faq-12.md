@@ -308,12 +308,12 @@ decodeIdToken(idToken: string): void {
   const ID_TOKEN_ISSUE: string = 'https://accounts.huawei.com';
   const iss: string = payLoad['iss'];
   const aud: string = payLoad['aud'];
-  if(iss !== ID_TOKEN_ISSUE){
+  if (iss !== ID_TOKEN_ISSUE) {
     // 验证失败，开发者处理失败场景
     hilog.error(0x0000, 'testTag', 'Failed to check iss');
     return;
   }
-  if(aud !== CLIENT_ID){
+  if (aud !== CLIENT_ID) {
     // 验证失败，开发者处理失败场景
     hilog.error(0x0000, 'testTag', 'Failed to check aud');
     return;
@@ -671,12 +671,12 @@ decodeIdToken(idToken: string): void {
   const ID_TOKEN_ISSUE: string = 'https://accounts.huawei.com';
   const iss: string = payLoad['iss'];
   const aud: string = payLoad['aud'];
-  if(iss !== ID_TOKEN_ISSUE){
+  if (iss !== ID_TOKEN_ISSUE) {
     // 验证失败，开发者处理失败场景
     hilog.error(0x0000, 'testTag', 'Failed to check iss');
     return;
   }
-  if(aud !== CLIENT_ID){
+  if (aud !== CLIENT_ID) {
     // 验证失败，开发者处理失败场景
     hilog.error(0x0000, 'testTag', 'Failed to check aud');
     return;

@@ -289,7 +289,7 @@ napi_value DestroyNativeRoot(napi_env env, napi_callback_info info)
 
 以下示例创建了一个消息提示组件，通过内容层绘制消息气泡与文本，并在前景层叠加星标装饰，实现消息高亮提示效果，常用于消息提醒和引导标记等场景。完整示例请参考NativeNodeUtilsSample。
 
-未添加消息蒙层，未添加蒙层，没有前景层叠加星标装饰效果：
+未添加消息蒙层，没有前景层叠加星标装饰效果：
 
 添加消息蒙层，添加后有前景层叠加星标装饰效果：
 

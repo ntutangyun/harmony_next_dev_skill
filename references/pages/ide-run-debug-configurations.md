@@ -40,7 +40,7 @@ Dual(ArkTS/JS + Native)	调试C/C++工程的ArkTS/JS和C/C++代码
 
 如果未进行自定义，将按默认配置安装和运行应用。如果开发者需要对应用安装、运行等流程增加参数配置，可在“Installation Options”和“Launch Options”下进行配置。
 
-DebugLine Support：勾选Enable DebugLine表示在build产物中系统组件增加debugline属性，用于开启ArkUI Inspector源码跳转功能。
+DebugLine Support：勾选Enable DebugLine表示在构建产物中系统组件增加debugline属性，用于开启ArkUI Inspector源码跳转功能。
 
 Install Flags：输入bm install命令相关的选项，请参见bm install 参数。如可以设置“-w 360”，表示将超时等待时间设置为360秒。
 

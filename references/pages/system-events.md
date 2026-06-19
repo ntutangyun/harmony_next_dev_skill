@@ -6,6 +6,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-ev
 
 应用冻屏事件
 
+应用冻屏告警事件
+
 资源泄漏事件
 
 地址越界事件

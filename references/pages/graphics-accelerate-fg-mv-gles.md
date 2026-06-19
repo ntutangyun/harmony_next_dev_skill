@@ -26,10 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 {
     "module": {
-        /*
-          其他的配置项
-          ...
-         */
+        // 其他的配置项...
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_VBMV",
@@ -72,10 +69,7 @@ void UpdateAndRenderOpaqueScene()
 ```
 {
     "module": {
-        /*
-          其他的配置项
-          ...
-         */
+        // 其他的配置项...
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_VBMV",

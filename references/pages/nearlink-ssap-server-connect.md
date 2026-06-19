@@ -17,10 +17,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 接口名	描述
 createServer(): Server	创建ssap服务端实例。
 addService(service: Service): void	服务端添加服务。
-on(type: 'connectionStateChange', callback: Callback<ConnectionChangeState>): void	订阅连接状态变化事件。
-on(type: 'propertyRead', callback: Callback<PropertyReadRequest>): void	订阅客户端的读属性请求事件。
+on(type: 'connectionStateChange', callback: Callback<ConnectionChangeState>): void	订阅连接状态变化事件。使用callback异步回调。
+on(type: 'propertyRead', callback: Callback<PropertyReadRequest>): void	订阅客户端的读属性请求事件。使用callback异步回调。
 sendResponse(response: ServerResponse): void	回复客户端读/写请求。
-notifyPropertyChanged(address: string, property: Property): Promise<void>	通知客户端属性值更新。
+notifyPropertyChanged(address: string, property: Property): Promise<void>	通知客户端属性值更新。使用Promise异步回调。
 
 开发步骤
 
@@ -91,7 +91,7 @@ try {
 
 let onReceiveConnectionChangeEvent:(data: ssap.ConnectionChangeState) => void = (data: ssap.ConnectionChangeState) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   server.on('connectionStateChange', onReceiveConnectionChangeEvent);
 } catch (err) {
@@ -102,7 +102,7 @@ try {
 
 let onReceivePropertyReadEvent:(data: ssap.PropertyReadRequest) => void = (data: ssap.PropertyReadRequest) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   server.on('propertyRead', onReceivePropertyReadEvent);
 } catch (err) {
@@ -230,7 +230,7 @@ try {
 ```
 let onReceiveConnectionChangeEvent:(data: ssap.ConnectionChangeState) => void = (data: ssap.ConnectionChangeState) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   server.on('connectionStateChange', onReceiveConnectionChangeEvent);
 } catch (err) {
@@ -243,7 +243,7 @@ try {
 ```
 let onReceivePropertyReadEvent:(data: ssap.PropertyReadRequest) => void = (data: ssap.PropertyReadRequest) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   server.on('propertyRead', onReceivePropertyReadEvent);
 } catch (err) {

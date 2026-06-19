@@ -8,7 +8,7 @@ HTTP 缓存是一种在客户端存储网络资源副本的机制，当后续请
 
 约束与限制
 
-HTTP缓存基本功能能力支持Phone、2in1、Tablet、Wearable、TV设备。
+HTTP缓存基本功能能力支持Phone、2in1、Tablet、Wearable、TV设备。并且从6.1.0(23)开始，新增支持Car设备。
 
 使用HTTP缓存
 

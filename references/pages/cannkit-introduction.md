@@ -76,7 +76,11 @@ AIPP是针对AI推理的输入数据进行预处理的模块。CANN Kit模型推
 
 约束与限制
 
-本Kit仅适用于带有Kirin NPU的Phone、Tablet、PC/2in1、TV设备。从5.1.0(18)版本开始，新增支持TV设备。
+本Kit仅适用于带有Kirin NPU的Phone、Tablet、PC/2in1、TV、Car设备。
+
+从5.1.1(19)版本开始，新增支持TV设备。
+
+从6.1.0(23)版本开始，新增支持Car设备。
 
 模拟器支持情况
 

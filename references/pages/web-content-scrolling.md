@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-conte
 
 通过触摸板控制Web页面滚动：支持在笔记本触摸板或者外接触摸板双指上下左右滑动，可以控制页面滚动。
 
-通过鼠标滚轮控制Web页面滚动：支持用鼠标滚轮上下滑动来控制页面滚动。
+通过鼠标滚轮控制Web页面滚动：支持用鼠标滚轮上下滚动来控制页面滚动。
 
 调用ArkTS侧接口控制Web页面滚动
 

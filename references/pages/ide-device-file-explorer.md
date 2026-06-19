@@ -40,7 +40,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-devic
 
 说明
 
-从DevEco Studio 6.0.0 Beta2版本开始，支持使用快捷键Ctrl或Shift+鼠标左键（macOS为Command或Shift+鼠标左键），选中多个文件或目录下载到本地计算机。
+从DevEco Studio 6.0.0 Beta2版本开始，支持使用快捷键Ctrl或Shift+鼠标左键（macOS为Command或Shift+鼠标左键），选中多个文件/目录下载到本地计算机；从DevEco Studio 6.0.2 Beta1版本开始，支持使用快捷键选中多个文件/目录删除。
 
 焦点在Device File Browser框中，输入字母可以快速进行搜索。
 

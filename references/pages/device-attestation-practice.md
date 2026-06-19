@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/device-at
 
 用户ID，Challenge值，业务流程（如“创建密钥确立可信凭证流程”）。
 
-对应用公钥和应用ID进行证明：调用Universal Keystore Kit密钥证明接口对生成的应用公钥和调用的应用身份进行证明，应用输入挑战值Challenge。
+对应用公钥和应用ID进行证明：调用Universal Keystore Kit的离线密钥证明接口（anonAttestKeyItemOffline）对生成的应用公钥和调用的应用身份进行证明，应用输入挑战值Challenge。
 
 获取密钥证明证书链：Universal Keystore Kit返回密钥证明证书链，包含应用公钥、挑战值Challenge、应用ID等。
 

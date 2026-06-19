@@ -39,7 +39,8 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct TileOverlayDemo {
+struct MapTileDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -62,7 +63,7 @@ struct TileOverlayDemo {
         let params: mapCommon.TileOverlayOptions = {
           // 设置地图瓦片图层的地址，必须是以http或者https开头的URL且包含占位符{x}、{y}和{z}
           // 需要替换为开发者自己的在线地址
-          tileUrl: "https://xxx/xxx?x={x}&y={y}&z={z}",
+          tileUrl: 'https://xxx/xxx?x={x}&y={y}&z={z}',
           // 透明度
           transparency: 0.5,
           // 开启瓦片图层淡入
@@ -80,13 +81,14 @@ struct TileOverlayDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-          .width('100%')
-          .height('100%')
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -94,21 +96,22 @@ struct TileOverlayDemo {
 
 导入相关模块。
 
-import { mapCommon, map, MapComponent } from '@kit.MapKit';
+import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 
 增加本地瓦片图层。
 
 @Entry
 @Component
-struct TileOverlayDemo {
-  private mapOption?: mapCommon.MapOptions;
+struct MapTileDemo {
+  // ...
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private tileOverlay?: map.TileOverlay;
 
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 31.98,
@@ -147,17 +150,19 @@ struct TileOverlayDemo {
 
   // 需要开发者自实现tileProviderMethod方法，负责加载本地项目中的瓦片图资源
   private tileProviderMethod(x: number, y: number, z: number): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+    });
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -172,14 +177,15 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct TileOverlayDemo {
-  private mapOption?: mapCommon.MapOptions;
+struct MapTileDemo {
+  // ...
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private tileOverlay?: map.TileOverlay;
 
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 48.87278,
@@ -196,7 +202,7 @@ struct TileOverlayDemo {
         let options: mapCommon.TileOverlayOptions = {
           // 设置地图瓦片图层的地址，必须是以http或者https开头的URL且包含占位符{x}、{y}和{z}
           // 需要替换为开发者自己的在线地址
-          tileUrl: "https://xxx/xxx?x={x}&y={y}&z={z}",
+          tileUrl: 'https://xxx/xxx?x={x}&y={y}&z={z}',
           // 是否开启磁盘缓存 true: 开启, false: 关闭
           diskCacheEnabled: true,
           // 磁盘缓存大小 默认大小 20480KB, 单位KB
@@ -224,17 +230,18 @@ struct TileOverlayDemo {
       this.tileOverlay.clearTileCache();
       // 清除磁盘和内存缓存
       this.tileOverlay.clearDiskCache();
-   }
- }
+    }
+  }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -246,12 +253,12 @@ struct TileOverlayDemo {
 
 let params: mapCommon.TileOverlayOptions = {
   // 开发者的地图瓦片图层地址，必须使用以http或者https开头的URL地址，且需包含?x={x}&y={y}&z={z}格式的占位符
-  tileUrl: "https://xxx/xxx?x={x}&y={y}&z={z}",
+  tileUrl: 'https://xxx/xxx?x={x}&y={y}&z={z}',
   diskCacheEnabled: true,
   diskCacheSize: 20480,
   diskCachePath: '/data/storage/el2/database',
   // 高层级复用低层级瓦片的配置项
-  tileDataReuse: [ 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7 ]
+  tileDataReuse: [2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
 };
 
 ## Code blocks
@@ -268,7 +275,8 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct TileOverlayDemo {
+struct MapTileDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -291,7 +299,7 @@ struct TileOverlayDemo {
         let params: mapCommon.TileOverlayOptions = {
           // 设置地图瓦片图层的地址，必须是以http或者https开头的URL且包含占位符{x}、{y}和{z}
           // 需要替换为开发者自己的在线地址
-          tileUrl: "https://xxx/xxx?x={x}&y={y}&z={z}",
+          tileUrl: 'https://xxx/xxx?x={x}&y={y}&z={z}',
           // 透明度
           transparency: 0.5,
           // 开启瓦片图层淡入
@@ -309,13 +317,14 @@ struct TileOverlayDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-          .width('100%')
-          .height('100%')
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -323,7 +332,7 @@ struct TileOverlayDemo {
 ### Code block 3
 
 ```
-import { mapCommon, map, MapComponent } from '@kit.MapKit';
+import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 
@@ -332,14 +341,15 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct TileOverlayDemo {
-  private mapOption?: mapCommon.MapOptions;
+struct MapTileDemo {
+  // ...
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private tileOverlay?: map.TileOverlay;
 
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 31.98,
@@ -378,17 +388,19 @@ struct TileOverlayDemo {
 
   // 需要开发者自实现tileProviderMethod方法，负责加载本地项目中的瓦片图资源
   private tileProviderMethod(x: number, y: number, z: number): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+    });
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -405,14 +417,15 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct TileOverlayDemo {
-  private mapOption?: mapCommon.MapOptions;
+struct MapTileDemo {
+  // ...
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private tileOverlay?: map.TileOverlay;
 
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 48.87278,
@@ -429,7 +442,7 @@ struct TileOverlayDemo {
         let options: mapCommon.TileOverlayOptions = {
           // 设置地图瓦片图层的地址，必须是以http或者https开头的URL且包含占位符{x}、{y}和{z}
           // 需要替换为开发者自己的在线地址
-          tileUrl: "https://xxx/xxx?x={x}&y={y}&z={z}",
+          tileUrl: 'https://xxx/xxx?x={x}&y={y}&z={z}',
           // 是否开启磁盘缓存 true: 开启, false: 关闭
           diskCacheEnabled: true,
           // 磁盘缓存大小 默认大小 20480KB, 单位KB
@@ -457,17 +470,18 @@ struct TileOverlayDemo {
       this.tileOverlay.clearTileCache();
       // 清除磁盘和内存缓存
       this.tileOverlay.clearDiskCache();
-   }
- }
+    }
+  }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -477,11 +491,11 @@ struct TileOverlayDemo {
 ```
 let params: mapCommon.TileOverlayOptions = {
   // 开发者的地图瓦片图层地址，必须使用以http或者https开头的URL地址，且需包含?x={x}&y={y}&z={z}格式的占位符
-  tileUrl: "https://xxx/xxx?x={x}&y={y}&z={z}",
+  tileUrl: 'https://xxx/xxx?x={x}&y={y}&z={z}',
   diskCacheEnabled: true,
   diskCacheSize: 20480,
   diskCachePath: '/data/storage/el2/database',
   // 高层级复用低层级瓦片的配置项
-  tileDataReuse: [ 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7 ]
+  tileDataReuse: [2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
 };
 ```

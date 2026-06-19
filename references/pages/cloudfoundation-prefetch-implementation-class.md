@@ -24,7 +24,7 @@ PrefetchWrapper：预加载包装类，为页面提供预加载封装接口。
 
 PrefetchUtil
 
-周期性预加载任务注册间隔需要大于12小时，建议按照如下示例取值为24小时。
+周期性预加载任务注册间隔需要大于12h，建议按照如下示例取值为24h。
 
 import { cloudResPrefetch } from '@kit.CloudFoundationKit'
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -34,8 +34,8 @@ import { GlobalContext } from '../common/GlobalContext';
 const PREFERENCES_PREFETCH_STORE_NAME = 'defaultStore';
 const PREFERENCES_PREFETCH_FIRST_REGISTER_TIME = 'prefetchTaskFirstRegisterTime'; // 首次注册时间
 const PREFERENCES_PREFETCH_TASK_EXPIRE_TIME = 'prefetchTaskExpireTime'; // 任务过期时间
-const PREFETCH_TASK_REGISTER_INTERVAL = 24 * 60 * 60 * 1000; // 24小时 < 72小时
-const PREFETCH_DATA_UPDATE_INTERVAL = 12 * 60 * 60 * 1000; // 12小时
+const PREFETCH_TASK_REGISTER_INTERVAL = 24 * 60 * 60 * 1000; // 24h < 72h
+const PREFETCH_DATA_UPDATE_INTERVAL = 12 * 60 * 60 * 1000; // 12h
 const HILOG_DOMAIN = 0x0000;
 const TAG = 'Prefetch';
 
@@ -59,7 +59,7 @@ export class PrefetchUtil {
   }
 
   /**
-   * 周期性预加载应用注册任务，间隔24小时
+   * 周期性预加载应用注册任务，间隔24h
    * @param token 应用/用户级token，可以为空
    * @param params 自定义筛选参数，定义为JSON格式，可以为空
    * @param forceRegister 是否强制注册
@@ -75,7 +75,7 @@ export class PrefetchUtil {
   }
 
   /**
-   * 是否有周期性预加载数据：如果是首次注册，12小时后才有周期性预加载数据
+   * 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
    * @returns boolean
    */
   public static hasPrefetchTaskData() : boolean {
@@ -91,7 +91,7 @@ export class PrefetchUtil {
       PREFERENCES_PREFETCH_FIRST_REGISTER_TIME) as number;
     if (firstRegisterTime) {
       PrefetchUtil.isPrefetchTaskRegistered = true;
-      // 判断任务是否已获取数据(首次注册后12小时，之后数据每隔12小时更新一次)
+      // 判断任务是否已获取数据(首次注册后12h，之后数据每隔12h更新一次)
       if (PrefetchUtil.now - firstRegisterTime >= PREFETCH_DATA_UPDATE_INTERVAL) {
         PrefetchUtil.hasPrefetchedData = true;
       }
@@ -162,7 +162,7 @@ PrefetchWrapper
 
 测试周期性预加载时，需要将下文示例代码periodicPrefetch方法中的如下代码块注释。若不注释，则需等待12h才能获取周期性预加载数据。
 
-if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12小时后才有周期性预加载数据
+if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
   hilog.info(HILOG_DOMAIN, TAG, 'not has prefetch data');
   this.cloudFunctionCall(); // 使用普通方式获取应用数据
   return;
@@ -308,7 +308,7 @@ export class PrefetchWrapper {
 
   private periodicPrefetch() {
     this.initPeriodPrefetch();
-    if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12小时后才有周期性预加载数据
+    if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
       hilog.info(HILOG_DOMAIN, TAG, 'not has prefetch data');
       this.cloudFunctionCall(); // 使用普通方式获取应用数据
       return;
@@ -374,8 +374,8 @@ import { GlobalContext } from '../common/GlobalContext';
 const PREFERENCES_PREFETCH_STORE_NAME = 'defaultStore';
 const PREFERENCES_PREFETCH_FIRST_REGISTER_TIME = 'prefetchTaskFirstRegisterTime'; // 首次注册时间
 const PREFERENCES_PREFETCH_TASK_EXPIRE_TIME = 'prefetchTaskExpireTime'; // 任务过期时间
-const PREFETCH_TASK_REGISTER_INTERVAL = 24 * 60 * 60 * 1000; // 24小时 < 72小时
-const PREFETCH_DATA_UPDATE_INTERVAL = 12 * 60 * 60 * 1000; // 12小时
+const PREFETCH_TASK_REGISTER_INTERVAL = 24 * 60 * 60 * 1000; // 24h < 72h
+const PREFETCH_DATA_UPDATE_INTERVAL = 12 * 60 * 60 * 1000; // 12h
 const HILOG_DOMAIN = 0x0000;
 const TAG = 'Prefetch';
 
@@ -399,7 +399,7 @@ export class PrefetchUtil {
   }
 
   /**
-   * 周期性预加载应用注册任务，间隔24小时
+   * 周期性预加载应用注册任务，间隔24h
    * @param token 应用/用户级token，可以为空
    * @param params 自定义筛选参数，定义为JSON格式，可以为空
    * @param forceRegister 是否强制注册
@@ -415,7 +415,7 @@ export class PrefetchUtil {
   }
 
   /**
-   * 是否有周期性预加载数据：如果是首次注册，12小时后才有周期性预加载数据
+   * 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
    * @returns boolean
    */
   public static hasPrefetchTaskData() : boolean {
@@ -431,7 +431,7 @@ export class PrefetchUtil {
       PREFERENCES_PREFETCH_FIRST_REGISTER_TIME) as number;
     if (firstRegisterTime) {
       PrefetchUtil.isPrefetchTaskRegistered = true;
-      // 判断任务是否已获取数据(首次注册后12小时，之后数据每隔12小时更新一次)
+      // 判断任务是否已获取数据(首次注册后12h，之后数据每隔12h更新一次)
       if (PrefetchUtil.now - firstRegisterTime >= PREFETCH_DATA_UPDATE_INTERVAL) {
         PrefetchUtil.hasPrefetchedData = true;
       }
@@ -494,7 +494,7 @@ export class PrefetchUtil {
 ### Code block 2
 
 ```
-if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12小时后才有周期性预加载数据
+if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
   hilog.info(HILOG_DOMAIN, TAG, 'not has prefetch data');
   this.cloudFunctionCall(); // 使用普通方式获取应用数据
   return;
@@ -642,7 +642,7 @@ export class PrefetchWrapper {
 
   private periodicPrefetch() {
     this.initPeriodPrefetch();
-    if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12小时后才有周期性预加载数据
+    if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
       hilog.info(HILOG_DOMAIN, TAG, 'not has prefetch data');
       this.cloudFunctionCall(); // 使用普通方式获取应用数据
       return;

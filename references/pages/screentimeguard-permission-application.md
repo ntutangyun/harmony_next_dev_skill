@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-permission-application_
 
+调用Screen Time Guard Kit相关能力之前，需要检查是否已经获取"ohos.permission.MANAGE_SCREEN_TIME_GUARD"权限。该权限允许应用调用屏幕时间守护相关接口，进行屏幕使用限制、应用访问控制、管控使用时间等操作。如未获取授权，则需申请相应的权限。
+
 在 申请调试Profile和发布Profile文件之前，需要申请相应的ACL权限。
 
 登录AppGallery Connect，点击“开发与服务”，在项目列表中找到对应的项目，并点击选择您需要申请ACL权限的应用。在“项目设置”页面，选择“ACL权限”页签，开始为应用申请ACL权限。
@@ -19,7 +21,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 在工程中entry模块的module.json5文件中添加"ohos.permission.MANAGE_SCREEN_TIME_GUARD"权限，如下所示：
 
 "requestPermissions": [{
-   "name": "ohos.permission.MANAGE_SCREEN_TIME_GUARD"
+  "name": "ohos.permission.MANAGE_SCREEN_TIME_GUARD"
 }]
 
 ## Code blocks
@@ -28,6 +30,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 ```
 "requestPermissions": [{
-   "name": "ohos.permission.MANAGE_SCREEN_TIME_GUARD"
+  "name": "ohos.permission.MANAGE_SCREEN_TIME_GUARD"
 }]
 ```

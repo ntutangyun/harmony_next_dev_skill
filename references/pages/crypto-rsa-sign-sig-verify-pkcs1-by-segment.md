@@ -1,4 +1,4 @@
-# 使用RSA密钥对分段签名验签（PKCS1模式）(ArkTS)
+# 使用RSA密钥对（PKCS1模式）分段签名验签(ArkTS)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rsa-sign-sig-verify-pkcs1-by-segment_
 

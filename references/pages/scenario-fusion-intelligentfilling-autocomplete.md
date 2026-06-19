@@ -35,8 +35,8 @@ const INIT_LAT = 39.5;
 const INIT_LON = 116.2;
 const ENGLISH = 'en';
 const SIMPLIFIED_CHINESE = 'zh_CN';
-const PERMISSIONS: Array<Permissions> = ['ohos.permission.APPROXIMATELY_LOCATION'];
-const ADMINISTRATIVE_REGION: Array<string> =
+const PERMISSIONS: Permissions[] = ['ohos.permission.APPROXIMATELY_LOCATION'];
+const ADMINISTRATIVE_REGION: string[] =
   ['countryName', 'adminLevel1', 'adminLevel2', 'adminLevel3', 'adminLevel4'];
 
 interface PersonInfo {
@@ -203,132 +203,134 @@ struct Index {
   }
 
   build() {
-    Column({ space: 8 }) {
-      Row({ space: 8 }) {
-        Text('姓名').textStyle()
-        TextInput({ text: this.personInfo.name, placeholder: '姓名' })
-          .layoutWeight(1)
-          .contentType(ContentType.PERSON_FULL_NAME)
-          .onChange((val: string) => {
-            this.personInfo.name = val;
-          })
-      }
+// ...
+      Column({ space: 8 }) {
+        Row({ space: 8 }) {
+          Text('姓名').textStyle()
+          TextInput({ text: this.personInfo.name, placeholder: '姓名' })
+            .layoutWeight(1)
+            .contentType(ContentType.PERSON_FULL_NAME)
+            .onChange((val: string) => {
+              this.personInfo.name = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('联系电话').textStyle()
-        TextInput({ text: this.personInfo.phone, placeholder: '手机号码' })
-          .layoutWeight(1)
-          .contentType(ContentType.PHONE_NUMBER)
-          .onChange((val: string) => {
-            this.personInfo.phone = val;
-          })
-      }
+        Row({ space: 8 }) {
+          Text('联系电话').textStyle()
+          TextInput({ text: this.personInfo.phone, placeholder: '手机号码' })
+            .layoutWeight(1)
+            .contentType(ContentType.PHONE_NUMBER)
+            .onChange((val: string) => {
+              this.personInfo.phone = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('身份证号').textStyle()
-        TextInput({ text: this.personInfo.idCard, placeholder: '身份证信息' })
-          .layoutWeight(1)
-          .contentType(ContentType.ID_CARD_NUMBER)
-          .onChange((val: string) => {
-            this.personInfo.idCard = val;
-          })
-      }
+        Row({ space: 8 }) {
+          Text('身份证号').textStyle()
+          TextInput({ text: this.personInfo.idCard, placeholder: '身份证信息' })
+            .layoutWeight(1)
+            .contentType(ContentType.ID_CARD_NUMBER)
+            .onChange((val: string) => {
+              this.personInfo.idCard = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('邮件地址').textStyle()
-        TextInput({ text: this.personInfo.email, placeholder: '电子邮件信息' })
-          .layoutWeight(1)
-          .contentType(ContentType.EMAIL_ADDRESS)
-          .onChange((val: string) => {
-            this.personInfo.email = val;
-          })
-      }
+        Row({ space: 8 }) {
+          Text('邮件地址').textStyle()
+          TextInput({ text: this.personInfo.email, placeholder: '电子邮件信息' })
+            .layoutWeight(1)
+            .contentType(ContentType.EMAIL_ADDRESS)
+            .onChange((val: string) => {
+              this.personInfo.email = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('所在地区').textStyle()
-        FunctionalInput({
-          params: {
-            // InputType.SELECT_DISTRICT表示输入类型为省/市/区选择器类型。
-            inputType: functionalInputComponentManager.InputType.SELECT_DISTRICT,
-            textInputValue: {
-              text: this.personInfo.region,
-              placeholder: '省、市、区、街道地址',
-            },
-            // 调整TextInput样式。
-            inputAttributeModifier: new TextInputModifier()
-              .backgroundColor(Color.Transparent)
-              .onChange((value) => {
-                if (value !== this.personInfo.region) {
-                  this.personInfo.region = value;
-                }
-              })
-          },
-          // 当InputType为SELECT_DISTRICT时，回调必须为onSelectDistrict。
-          controller: new functionalInputComponentManager.FunctionalInputController().onSelectDistrict((err,
-            data: functionalInputComponentManager.DistrictSelectResult) => {
-            if (err) {
-              // 错误日志处理。
-              hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
-              return;
-            }
-            // 成功日志处理。
-            hilog.info(0x0000, "testTag", "succeeded in selecting district");
-            this.personInfo.region = data.inputContent;
-          })
-        })
-      }
-
-      Row({ space: 8 }) {
-        Text('详细地址').textStyle()
-        TextInput({ text: this.personInfo.streetAddress, placeholder: '小区门牌信息' })
-          .layoutWeight(1)
-          .contentType(ContentType.DETAIL_INFO_WITHOUT_STREET)
-          .onDidInsert(() => {
-            // 当用户通过输入方法输入数据时触发。
-            this.isUserInput = true;
-          })
-          .onDidDelete((val: DeleteValue) => {
-            // 当用户通过输入方法删除数据时触发。
-            if (val?.deleteValue?.length > 0) {
-              this.isUserInput = true;
-            }
-          })
-          .onChange((val: string) => {
-            this.personInfo.streetAddress = val;
-            if (val && val.trim().length > 0) {
-              this.searchRegionByAddress(val);
-            } else {
-              this.currentRequestTag = util.generateRandomUUID();
-              this.personInfo.region = '';
-            }
-            this.isUserInput = false;
-          })
-      }
-
-      Button('保存')
-        .width('50%')
-        .onClick(() => {
-          if (!this.isClicked) {
-            this.isClicked = true;
-            autoFillManager.requestAutoSave(this.getUIContext(), {
-              onSuccess: () => {
-                hilog.info(0x0000, 'testTag', 'Succeeded in saving request');
+        Row({ space: 8 }) {
+          Text('所在地区').textStyle()
+          FunctionalInput({
+            params: {
+              // InputType.SELECT_DISTRICT表示输入类型为省/市/区选择器类型。
+              inputType: functionalInputComponentManager.InputType.SELECT_DISTRICT,
+              textInputValue: {
+                text: this.personInfo.region,
+                placeholder: '省、市、区、街道地址',
               },
-              onFailure: () => {
-                hilog.info(0x0000, 'testTag', 'Failed to save request');
+              // 调整TextInput样式。
+              inputAttributeModifier: new TextInputModifier()
+                .backgroundColor(Color.Transparent)
+                .onChange((value) => {
+                  if (value !== this.personInfo.region) {
+                    this.personInfo.region = value;
+                  }
+                })
+            },
+            // 当InputType为SELECT_DISTRICT时，回调必须为onSelectDistrict。
+            controller: new functionalInputComponentManager.FunctionalInputController().onSelectDistrict((err,
+              data: functionalInputComponentManager.DistrictSelectResult) => {
+              if (err) {
+                // 错误日志处理。
+                hilog.error(0x0000, 'testTag', 'Failed to select district, error: %{public}d %{public}s', err.code, err.message);
+                return;
               }
-            });
-            setTimeout(() => {
-              this.isClicked = false;
-            }, 2000);
-          }
-        })
-    }
-    .padding({ left: 16, right: 16 })
-    .backgroundColor($r('sys.color.ohos_id_color_list_card_bg'))
-    .alignItems(HorizontalAlign.Center)
-    .height('100%')
-    .width('100%')
+              // 成功日志处理。
+              hilog.info(0x0000, 'testTag', 'succeeded in selecting district');
+              this.personInfo.region = data.inputContent;
+            })
+          })
+        }
+
+        Row({ space: 8 }) {
+          Text('详细地址').textStyle()
+          TextInput({ text: this.personInfo.streetAddress, placeholder: '小区门牌信息' })
+            .layoutWeight(1)
+            .contentType(ContentType.DETAIL_INFO_WITHOUT_STREET)
+            .onDidInsert(() => {
+              // 当用户通过输入方法输入数据时触发。
+              this.isUserInput = true;
+            })
+            .onDidDelete((val: DeleteValue) => {
+              // 当用户通过输入方法删除数据时触发。
+              if (val?.deleteValue?.length > 0) {
+                this.isUserInput = true;
+              }
+            })
+            .onChange((val: string) => {
+              this.personInfo.streetAddress = val;
+              if (val && val.trim().length > 0) {
+                this.searchRegionByAddress(val);
+              } else {
+                this.currentRequestTag = util.generateRandomUUID();
+                this.personInfo.region = '';
+              }
+              this.isUserInput = false;
+            })
+        }
+
+        Button('保存')
+          .width('50%')
+          .onClick(() => {
+            if (!this.isClicked) {
+              this.isClicked = true;
+              autoFillManager.requestAutoSave(this.getUIContext(), {
+                onSuccess: () => {
+                  hilog.info(0x0000, 'testTag', 'Succeeded in saving request');
+                },
+                onFailure: () => {
+                  hilog.info(0x0000, 'testTag', 'Failed to save request');
+                }
+              });
+              setTimeout(() => {
+                this.isClicked = false;
+              }, 2000);
+            }
+          })
+      }
+      .padding({ left: 16, right: 16 })
+      .backgroundColor($r('sys.color.ohos_id_color_list_card_bg'))
+      .alignItems(HorizontalAlign.Center)
+      .height('100%')
+      .width('100%')
+// ...
   }
 }
 
@@ -358,8 +360,8 @@ const INIT_LAT = 39.5;
 const INIT_LON = 116.2;
 const ENGLISH = 'en';
 const SIMPLIFIED_CHINESE = 'zh_CN';
-const PERMISSIONS: Array<Permissions> = ['ohos.permission.APPROXIMATELY_LOCATION'];
-const ADMINISTRATIVE_REGION: Array<string> =
+const PERMISSIONS: Permissions[] = ['ohos.permission.APPROXIMATELY_LOCATION'];
+const ADMINISTRATIVE_REGION: string[] =
   ['countryName', 'adminLevel1', 'adminLevel2', 'adminLevel3', 'adminLevel4'];
 
 interface PersonInfo {
@@ -526,132 +528,134 @@ struct Index {
   }
 
   build() {
-    Column({ space: 8 }) {
-      Row({ space: 8 }) {
-        Text('姓名').textStyle()
-        TextInput({ text: this.personInfo.name, placeholder: '姓名' })
-          .layoutWeight(1)
-          .contentType(ContentType.PERSON_FULL_NAME)
-          .onChange((val: string) => {
-            this.personInfo.name = val;
-          })
-      }
+// ...
+      Column({ space: 8 }) {
+        Row({ space: 8 }) {
+          Text('姓名').textStyle()
+          TextInput({ text: this.personInfo.name, placeholder: '姓名' })
+            .layoutWeight(1)
+            .contentType(ContentType.PERSON_FULL_NAME)
+            .onChange((val: string) => {
+              this.personInfo.name = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('联系电话').textStyle()
-        TextInput({ text: this.personInfo.phone, placeholder: '手机号码' })
-          .layoutWeight(1)
-          .contentType(ContentType.PHONE_NUMBER)
-          .onChange((val: string) => {
-            this.personInfo.phone = val;
-          })
-      }
+        Row({ space: 8 }) {
+          Text('联系电话').textStyle()
+          TextInput({ text: this.personInfo.phone, placeholder: '手机号码' })
+            .layoutWeight(1)
+            .contentType(ContentType.PHONE_NUMBER)
+            .onChange((val: string) => {
+              this.personInfo.phone = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('身份证号').textStyle()
-        TextInput({ text: this.personInfo.idCard, placeholder: '身份证信息' })
-          .layoutWeight(1)
-          .contentType(ContentType.ID_CARD_NUMBER)
-          .onChange((val: string) => {
-            this.personInfo.idCard = val;
-          })
-      }
+        Row({ space: 8 }) {
+          Text('身份证号').textStyle()
+          TextInput({ text: this.personInfo.idCard, placeholder: '身份证信息' })
+            .layoutWeight(1)
+            .contentType(ContentType.ID_CARD_NUMBER)
+            .onChange((val: string) => {
+              this.personInfo.idCard = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('邮件地址').textStyle()
-        TextInput({ text: this.personInfo.email, placeholder: '电子邮件信息' })
-          .layoutWeight(1)
-          .contentType(ContentType.EMAIL_ADDRESS)
-          .onChange((val: string) => {
-            this.personInfo.email = val;
-          })
-      }
+        Row({ space: 8 }) {
+          Text('邮件地址').textStyle()
+          TextInput({ text: this.personInfo.email, placeholder: '电子邮件信息' })
+            .layoutWeight(1)
+            .contentType(ContentType.EMAIL_ADDRESS)
+            .onChange((val: string) => {
+              this.personInfo.email = val;
+            })
+        }
 
-      Row({ space: 8 }) {
-        Text('所在地区').textStyle()
-        FunctionalInput({
-          params: {
-            // InputType.SELECT_DISTRICT表示输入类型为省/市/区选择器类型。
-            inputType: functionalInputComponentManager.InputType.SELECT_DISTRICT,
-            textInputValue: {
-              text: this.personInfo.region,
-              placeholder: '省、市、区、街道地址',
-            },
-            // 调整TextInput样式。
-            inputAttributeModifier: new TextInputModifier()
-              .backgroundColor(Color.Transparent)
-              .onChange((value) => {
-                if (value !== this.personInfo.region) {
-                  this.personInfo.region = value;
-                }
-              })
-          },
-          // 当InputType为SELECT_DISTRICT时，回调必须为onSelectDistrict。
-          controller: new functionalInputComponentManager.FunctionalInputController().onSelectDistrict((err,
-            data: functionalInputComponentManager.DistrictSelectResult) => {
-            if (err) {
-              // 错误日志处理。
-              hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
-              return;
-            }
-            // 成功日志处理。
-            hilog.info(0x0000, "testTag", "succeeded in selecting district");
-            this.personInfo.region = data.inputContent;
-          })
-        })
-      }
-
-      Row({ space: 8 }) {
-        Text('详细地址').textStyle()
-        TextInput({ text: this.personInfo.streetAddress, placeholder: '小区门牌信息' })
-          .layoutWeight(1)
-          .contentType(ContentType.DETAIL_INFO_WITHOUT_STREET)
-          .onDidInsert(() => {
-            // 当用户通过输入方法输入数据时触发。
-            this.isUserInput = true;
-          })
-          .onDidDelete((val: DeleteValue) => {
-            // 当用户通过输入方法删除数据时触发。
-            if (val?.deleteValue?.length > 0) {
-              this.isUserInput = true;
-            }
-          })
-          .onChange((val: string) => {
-            this.personInfo.streetAddress = val;
-            if (val && val.trim().length > 0) {
-              this.searchRegionByAddress(val);
-            } else {
-              this.currentRequestTag = util.generateRandomUUID();
-              this.personInfo.region = '';
-            }
-            this.isUserInput = false;
-          })
-      }
-
-      Button('保存')
-        .width('50%')
-        .onClick(() => {
-          if (!this.isClicked) {
-            this.isClicked = true;
-            autoFillManager.requestAutoSave(this.getUIContext(), {
-              onSuccess: () => {
-                hilog.info(0x0000, 'testTag', 'Succeeded in saving request');
+        Row({ space: 8 }) {
+          Text('所在地区').textStyle()
+          FunctionalInput({
+            params: {
+              // InputType.SELECT_DISTRICT表示输入类型为省/市/区选择器类型。
+              inputType: functionalInputComponentManager.InputType.SELECT_DISTRICT,
+              textInputValue: {
+                text: this.personInfo.region,
+                placeholder: '省、市、区、街道地址',
               },
-              onFailure: () => {
-                hilog.info(0x0000, 'testTag', 'Failed to save request');
+              // 调整TextInput样式。
+              inputAttributeModifier: new TextInputModifier()
+                .backgroundColor(Color.Transparent)
+                .onChange((value) => {
+                  if (value !== this.personInfo.region) {
+                    this.personInfo.region = value;
+                  }
+                })
+            },
+            // 当InputType为SELECT_DISTRICT时，回调必须为onSelectDistrict。
+            controller: new functionalInputComponentManager.FunctionalInputController().onSelectDistrict((err,
+              data: functionalInputComponentManager.DistrictSelectResult) => {
+              if (err) {
+                // 错误日志处理。
+                hilog.error(0x0000, 'testTag', 'Failed to select district, error: %{public}d %{public}s', err.code, err.message);
+                return;
               }
-            });
-            setTimeout(() => {
-              this.isClicked = false;
-            }, 2000);
-          }
-        })
-    }
-    .padding({ left: 16, right: 16 })
-    .backgroundColor($r('sys.color.ohos_id_color_list_card_bg'))
-    .alignItems(HorizontalAlign.Center)
-    .height('100%')
-    .width('100%')
+              // 成功日志处理。
+              hilog.info(0x0000, 'testTag', 'succeeded in selecting district');
+              this.personInfo.region = data.inputContent;
+            })
+          })
+        }
+
+        Row({ space: 8 }) {
+          Text('详细地址').textStyle()
+          TextInput({ text: this.personInfo.streetAddress, placeholder: '小区门牌信息' })
+            .layoutWeight(1)
+            .contentType(ContentType.DETAIL_INFO_WITHOUT_STREET)
+            .onDidInsert(() => {
+              // 当用户通过输入方法输入数据时触发。
+              this.isUserInput = true;
+            })
+            .onDidDelete((val: DeleteValue) => {
+              // 当用户通过输入方法删除数据时触发。
+              if (val?.deleteValue?.length > 0) {
+                this.isUserInput = true;
+              }
+            })
+            .onChange((val: string) => {
+              this.personInfo.streetAddress = val;
+              if (val && val.trim().length > 0) {
+                this.searchRegionByAddress(val);
+              } else {
+                this.currentRequestTag = util.generateRandomUUID();
+                this.personInfo.region = '';
+              }
+              this.isUserInput = false;
+            })
+        }
+
+        Button('保存')
+          .width('50%')
+          .onClick(() => {
+            if (!this.isClicked) {
+              this.isClicked = true;
+              autoFillManager.requestAutoSave(this.getUIContext(), {
+                onSuccess: () => {
+                  hilog.info(0x0000, 'testTag', 'Succeeded in saving request');
+                },
+                onFailure: () => {
+                  hilog.info(0x0000, 'testTag', 'Failed to save request');
+                }
+              });
+              setTimeout(() => {
+                this.isClicked = false;
+              }, 2000);
+            }
+          })
+      }
+      .padding({ left: 16, right: 16 })
+      .backgroundColor($r('sys.color.ohos_id_color_list_card_bg'))
+      .alignItems(HorizontalAlign.Center)
+      .height('100%')
+      .width('100%')
+// ...
   }
 }
 ```

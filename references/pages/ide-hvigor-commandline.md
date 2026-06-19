@@ -125,6 +125,7 @@ buildInfo命令扩展参数：
 
 参数	说明
 -s,--sync	处理并持久化Hvigor部分工程信息到工程./hvigor/outputs/sync/output.json中。
+--syncNative	在sync阶段执行syncNative，可替换compileNative任务执行，完成并行编译，详细请参考通过syncNative提升sync阶段C++编译效率。
 -m,--mode	在对应的目录执行相应的task，例hvigorw clean -m project在工程目录下执行build目录清理（即清理工程级别的build文件夹）。
 --enable-build-script-type-check	开启工程中hvigorfile.ts的类型检查，该字段已废弃，请使用--type-check替换。
 --type-check, --no-type-check	Hvigor默认关闭工程中hvigorfile.ts的类型检查，如需开启，可在命令行后添加--type-check。

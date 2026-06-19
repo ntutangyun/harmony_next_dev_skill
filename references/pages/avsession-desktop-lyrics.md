@@ -8,9 +8,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avsession
 
 调用isDesktopLyricSupported接口判断系统/设备是否支持歌词组件能力，返回true时表示支持歌词组件能力。
 
-创建AVSession实例，通过设置元数据填入LRC格式的歌词数据，包含时间标签及对应的歌词文本。不符合LRC格式的歌词数据，系统可能存在解析异常导致无法展示歌词内容。
+创建AVSession实例，通过设置元数据信息填入LRC格式的歌词数据，包含时间标签及对应的歌词文本。不符合LRC格式的歌词数据，系统可能存在解析异常导致无法展示歌词内容。
 
-调用enableDesktopLyric接口进行使能，需传入参数true打开歌词组件。
+调用enableDesktopLyric接口进行使能需传入参数true打开歌词组件。
 
 歌词组件使能打开后默认是隐藏（不显示），应用可以通过接口主动显示/隐藏歌词组件，具体接口如下：
 

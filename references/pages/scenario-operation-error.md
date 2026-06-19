@@ -13,7 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 @Entry
 @Component
 export struct Rule_2_1_9 {
-  title: string = 'Rule 2.1.9'
+  title: string = 'Rule 2.1.9';
 
   build() {
     NavDestination() {
@@ -34,11 +34,12 @@ export struct Rule_2_1_9 {
               .height(50)
               .width(50)
               .onChange((isChecked: boolean) => {
-                console.log('Radio1 status is ' + isChecked)
+                console.info('Radio1 status is: ', isChecked);
               })
             Text('Connection interrupted').fontColor(Color.Red)
-          }.width('80%')
-          .accessibilityGroup(true) //将单选和文本合并到单个对象中
+          }
+          .width('80%')
+          .accessibilityGroup(true) // 将单选和文本合并到单个对象中。
         }
         .width('100%')
         .height('100%')
@@ -56,7 +57,7 @@ export struct Rule_2_1_9 {
 @Entry
 @Component
 export struct Rule_2_1_9 {
-  title: string = 'Rule 2.1.9'
+  title: string = 'Rule 2.1.9';
 
   build() {
     NavDestination() {
@@ -77,11 +78,12 @@ export struct Rule_2_1_9 {
               .height(50)
               .width(50)
               .onChange((isChecked: boolean) => {
-                console.log('Radio1 status is ' + isChecked)
+                console.info('Radio1 status is: ', isChecked);
               })
             Text('Connection interrupted').fontColor(Color.Red)
-          }.width('80%')
-          .accessibilityGroup(true) //将单选和文本合并到单个对象中
+          }
+          .width('80%')
+          .accessibilityGroup(true) // 将单选和文本合并到单个对象中。
         }
         .width('100%')
         .height('100%')

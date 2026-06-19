@@ -10,6 +10,8 @@ Spatial Recon Kit术语
 
 添加滤镜效果
 
+空间照片
+
 重建三维场景（C/C++）
 
 管理Spatial Recon会话

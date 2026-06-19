@@ -58,8 +58,10 @@ this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityCont
 
 调用startAbility接口启动UIAbility，形成分屏。调用startAbility接口时，设置StartOptions对象，需要指定窗口模式windowMode（需设置为WINDOW_MODE_SPLIT_PRIMARY或者WINDOW_MODE_SPLIT_SECONDARY），并可根据需要设置其他StartOptions属性或startAbility参数，如Want对象。
 
-// 创建StartOptions并设置为主窗口模式
-let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
+从API版本26.0.0开始，支持使用分屏比例字段splitRatio（需设置为EQUAL、PRIMARY_DOMINANT或者SECONDARY_DOMINANT，默认为EQUAL）设置应用内分屏比例。
+
+// 创建StartOptions并设置为主窗口模式，以主窗口占较大比例，副窗口占较小比例的布局启动分屏。
+let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY, splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT };
 let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
 this.hostContext?.startAbility(want, option);
 
@@ -67,12 +69,13 @@ this.hostContext?.startAbility(want, option);
 
 完整示例如下：
 
-使用DevEco Studio新建Ability，创建EntryAbility1和EntryAbility2，对应文中组成分屏的两个窗口页面，加载页面为默认页面Index.ets。
+使用DevEco Studio新建Ability，创建EntryAbility1和EntryAbility2，对应文中组成分屏的两个窗口页面；同时创建EntryAbility3和EntryAbility4，对应文中不同的分屏比例，加载页面为默认页面Index.ets。
 
 // Index.ets
 import { AbilityConstant, common, StartOptions, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { window } from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -98,7 +101,12 @@ struct Index {
         let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
         // 创建StartOptions并设置窗口模式为分屏模式，左侧分屏
         let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
-        this.hostContext?.startAbility(want, option);
+        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
+          if (error.code) {
+            return;
+          }
+          hilog.info(0x0000, 'testTag', '启动分屏成功');
+        });
       })
 
       Button() {
@@ -109,6 +117,40 @@ struct Index {
         let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' };
         // 指定启动EntryAbility2的窗口模式，右侧分屏
         let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY };
+        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
+          if (error.code) {
+            return;
+          }
+          hilog.info(0x0000, 'testTag', '启动分屏成功');
+        });
+      })
+
+      Button() {
+        Text('以左分屏占较大比例启动')
+      }
+      .height(40)
+      .onClick(() => {
+        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility3', moduleName: '' };
+        // 指定启动EntryAbility3的窗口模式，将左分屏以较大比例，右分屏以较小比例启动应用内分屏
+        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
+          splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT };
+        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
+          if (error.code) {
+            return;
+          }
+          hilog.info(0x0000, 'testTag', '启动分屏成功');
+        });
+      })
+
+      Button() {
+        Text('以右分屏占较大比例启动')
+      }
+      .height(40)
+      .onClick(() => {
+        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility4', moduleName: '' };
+        // 指定启动EntryAbility4的窗口模式，将左分屏以较小比例，右分屏以较大比例启动应用内分屏
+        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
+          splitRatio: window.SplitRatioPreference.SECONDARY_DOMINANT };
         this.hostContext?.startAbility(want, option, (error: BusinessError) => {
           if (error.code) {
             return;
@@ -127,6 +169,10 @@ struct Index {
 
 图2 启动右侧分屏
 
+图3 以左分屏占较大比例启动
+
+图4 以右分屏占较大比例启动
+
 应用内多窗
 
 从HarmonyOS 6.0.0版本开始，新增支持应用内多窗。应用内多窗功能支持应用拉起分屏或全景多窗，方便用户进行多任务处理。
@@ -144,8 +190,8 @@ this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityCont
 ### Code block 2
 
 ```
-// 创建StartOptions并设置为主窗口模式
-let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
+// 创建StartOptions并设置为主窗口模式，以主窗口占较大比例，副窗口占较小比例的布局启动分屏。
+let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY, splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT };
 let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
 this.hostContext?.startAbility(want, option);
 ```
@@ -157,6 +203,7 @@ this.hostContext?.startAbility(want, option);
 import { AbilityConstant, common, StartOptions, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { window } from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -182,7 +229,12 @@ struct Index {
         let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
         // 创建StartOptions并设置窗口模式为分屏模式，左侧分屏
         let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
-        this.hostContext?.startAbility(want, option);
+        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
+          if (error.code) {
+            return;
+          }
+          hilog.info(0x0000, 'testTag', '启动分屏成功');
+        });
       })
 
       Button() {
@@ -193,6 +245,40 @@ struct Index {
         let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' };
         // 指定启动EntryAbility2的窗口模式，右侧分屏
         let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY };
+        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
+          if (error.code) {
+            return;
+          }
+          hilog.info(0x0000, 'testTag', '启动分屏成功');
+        });
+      })
+
+      Button() {
+        Text('以左分屏占较大比例启动')
+      }
+      .height(40)
+      .onClick(() => {
+        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility3', moduleName: '' };
+        // 指定启动EntryAbility3的窗口模式，将左分屏以较大比例，右分屏以较小比例启动应用内分屏
+        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
+          splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT };
+        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
+          if (error.code) {
+            return;
+          }
+          hilog.info(0x0000, 'testTag', '启动分屏成功');
+        });
+      })
+
+      Button() {
+        Text('以右分屏占较大比例启动')
+      }
+      .height(40)
+      .onClick(() => {
+        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility4', moduleName: '' };
+        // 指定启动EntryAbility4的窗口模式，将左分屏以较小比例，右分屏以较大比例启动应用内分屏
+        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
+          splitRatio: window.SplitRatioPreference.SECONDARY_DOMINANT };
         this.hostContext?.startAbility(want, option, (error: BusinessError) => {
           if (error.code) {
             return;

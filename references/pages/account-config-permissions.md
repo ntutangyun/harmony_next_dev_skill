@@ -19,10 +19,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 表1 账号权限说明
 
 权限名称	权限描述	支持的应用类型	支持的开发者类型	支持的设备类型
-华为账号一键登录	支持应用获取用户的Union ID、Open ID和华为账号绑定的手机号。	非游戏类应用、非银行类应用	企业开发者	Phone、Tablet、PC/2in1、TV
+华为账号一键登录	支持应用获取用户的Union ID、Open ID和华为账号绑定的手机号。	非游戏类应用、非银行类应用	企业开发者	Phone、Tablet、PC/2in1、TV、Car
 获取您的手机号	支持应用获取华为账号绑定的手机号或用户选择的其他手机号。	游戏类应用	企业开发者	Phone、Tablet、PC/2in1、Wearable、TV
 获取收货地址	支持应用获取用户的地址，地址可以用做收货或者发货。	无限制	企业开发者	Phone、Tablet、PC/2in1
-获取您的年龄段	支持应用获取用户的实名年龄段信息	游戏类应用	企业开发者	Phone、Tablet、PC/2in1、Wearable、TV
+获取您的年龄段	支持应用获取用户的实名年龄段信息	游戏类应用	企业开发者	Phone、Tablet、PC/2in1、Wearable、TV、Car
 
 表2 华为账号一键登录权限申请自检表
 

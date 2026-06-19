@@ -36,6 +36,8 @@ scanTypes仅包含二维码类型，标题显示为“扫描二维码”。
 
 约束与限制
 
+从26.0.0版本开始，支持使用scanCore.isDefaultScanSupported接口查询当前设备是否支持默认界面扫码。
+
 从6.1.0(23)版本开始，默认界面扫码的标题支持根据ScanOptions的scanTypes进行动态显示。
 
 从6.1.0(23)版本开始，默认界面扫码能力支持带后置相机的Wearable，可以通过cameraManager.getSupportedCameras接口查询是否带后置相机。

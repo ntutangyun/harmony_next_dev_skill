@@ -20,6 +20,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/code-prot
 
 系统级的解密优化，相对于传统加壳等加固方式对性能的影响更小。
 
+支持的国家/地区
+
+中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）
+
 加密影响
 
 加密后的应用在程序启动和运行过程中可能会小幅度增加性能开销。

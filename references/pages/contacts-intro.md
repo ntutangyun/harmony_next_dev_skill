@@ -37,7 +37,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 contact.selectContacts({
   isMultiSelect:false
-},(err: BusinessError, data) => {
+}, (err: BusinessError, data) => {
     if (err) {
       console.error('selectContact callback, errCode:' + err.code + ', errMessage:' + err.message);
         return;
@@ -73,19 +73,22 @@ struct Contact {
     const permissions: Array<Permissions> = ['ohos.permission.WRITE_CONTACTS'];
     const contactInfo: contact.Contact = {
       name: { fullName: '王小明' },
-      phoneNumbers: [{ phoneNumber: '13912345678' }]
-    }
-    abilityAccessCtrl.createAtManager().requestPermissionsFromUser(context, permissions).then((result: PermissionRequestResult) => {
-      if (result.authResults[0] !== 0) { // 0 表示请求权限成功，其他任何非零值表示请求失败
-        console.error('request contact permissions failed');
-        return;
-      }
-      contact.addContact(context, contactInfo).then((data) => {
-        console.info(`Succeeded in adding Contact. data: ${JSON.stringify(data)}`);
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to add Contact. Code: ${err.code}, message: ${err.message}`);
-      });
-    })
+      phoneNumbers: [{ phoneNumber: '139xxxxxxxx' }]
+    };
+    abilityAccessCtrl.createAtManager().requestPermissionsFromUser(context, permissions).
+      then((result: PermissionRequestResult) => {
+       if (result.authResults[0] !== 0) { // 0 表示请求权限成功，其他任何非零值表示请求失败
+         console.error('request contact permissions failed');
+         return;
+       }
+       contact.addContact(context, contactInfo).then((data) => {
+         console.info(`Succeeded in adding Contact. data: ${JSON.stringify(data)}`);
+       }).catch((err: BusinessError) => {
+         console.error(`Failed to add Contact. Code: ${err.code}, message: ${err.message}`);
+       });
+     }).catch((err: BusinessError) => {
+         console.error(`Failed to createAtManager. Code: ${err.code}, message: ${err.message}`);
+     });
   }
 
   build() {
@@ -122,7 +125,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ```
 contact.selectContacts({
   isMultiSelect:false
-},(err: BusinessError, data) => {
+}, (err: BusinessError, data) => {
     if (err) {
       console.error('selectContact callback, errCode:' + err.code + ', errMessage:' + err.message);
         return;
@@ -148,19 +151,22 @@ struct Contact {
     const permissions: Array<Permissions> = ['ohos.permission.WRITE_CONTACTS'];
     const contactInfo: contact.Contact = {
       name: { fullName: '王小明' },
-      phoneNumbers: [{ phoneNumber: '13912345678' }]
-    }
-    abilityAccessCtrl.createAtManager().requestPermissionsFromUser(context, permissions).then((result: PermissionRequestResult) => {
-      if (result.authResults[0] !== 0) { // 0 表示请求权限成功，其他任何非零值表示请求失败
-        console.error('request contact permissions failed');
-        return;
-      }
-      contact.addContact(context, contactInfo).then((data) => {
-        console.info(`Succeeded in adding Contact. data: ${JSON.stringify(data)}`);
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to add Contact. Code: ${err.code}, message: ${err.message}`);
-      });
-    })
+      phoneNumbers: [{ phoneNumber: '139xxxxxxxx' }]
+    };
+    abilityAccessCtrl.createAtManager().requestPermissionsFromUser(context, permissions).
+      then((result: PermissionRequestResult) => {
+       if (result.authResults[0] !== 0) { // 0 表示请求权限成功，其他任何非零值表示请求失败
+         console.error('request contact permissions failed');
+         return;
+       }
+       contact.addContact(context, contactInfo).then((data) => {
+         console.info(`Succeeded in adding Contact. data: ${JSON.stringify(data)}`);
+       }).catch((err: BusinessError) => {
+         console.error(`Failed to add Contact. Code: ${err.code}, message: ${err.message}`);
+       });
+     }).catch((err: BusinessError) => {
+         console.error(`Failed to createAtManager. Code: ${err.code}, message: ${err.message}`);
+     });
   }
 
   build() {

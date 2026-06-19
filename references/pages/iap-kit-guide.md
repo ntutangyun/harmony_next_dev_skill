@@ -22,4 +22,6 @@ IAP Kit接入规范
 
 IAP Kit常见问题
 
+IAP Kit术语
+
 附录

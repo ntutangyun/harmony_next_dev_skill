@@ -55,7 +55,7 @@ nodeApi->setAttribute(swiper, NODE_SWIPER_AUTO_PLAY, &item);
 
 本示例仅展示核心功能代码，完整示例请参考工程NDKSwiperSample。
 
-// 设置导航指示器属性
+// 设置导航导航指示器属性
 ArkUI_SwiperIndicator *swiperIndicatorStyle = OH_ArkUI_SwiperIndicator_Create(ARKUI_SWIPER_INDICATOR_TYPE_DOT);
 OH_ArkUI_SwiperIndicator_SetEndPosition(swiperIndicatorStyle, 0);
 OH_ArkUI_SwiperIndicator_SetSelectedColor(swiperIndicatorStyle, INDICATOR_COLOR_SELECTED);
@@ -138,7 +138,7 @@ nodeApi->setAttribute(swiper, NODE_SWIPER_AUTO_PLAY, &item);
 ### Code block 3
 
 ```
-// 设置导航指示器属性
+// 设置导航导航指示器属性
 ArkUI_SwiperIndicator *swiperIndicatorStyle = OH_ArkUI_SwiperIndicator_Create(ARKUI_SWIPER_INDICATOR_TYPE_DOT);
 OH_ArkUI_SwiperIndicator_SetEndPosition(swiperIndicatorStyle, 0);
 OH_ArkUI_SwiperIndicator_SetSelectedColor(swiperIndicatorStyle, INDICATOR_COLOR_SELECTED);

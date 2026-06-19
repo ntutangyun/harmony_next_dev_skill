@@ -108,7 +108,7 @@ asrEngine?.writeAudio(sessionId, uint8Array);
 
 （可选）当需要查询语音识别服务支持的语种信息，可调用listLanguages方法。
 
-listLanguages方法提供了两种调用形式，当前以其中一种作为示例，其他方式可参见listlanguages。
+listLanguages方法提供了两种调用形式，当前以其中一种作为示例，其他方式可参见listLanguages。
 
 // 设置查询相关的参数
 let languageQuery: speechRecognizer.LanguageQuery = {

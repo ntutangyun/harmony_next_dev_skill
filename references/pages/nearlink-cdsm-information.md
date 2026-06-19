@@ -17,16 +17,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 接口名	描述
 createCdsmClient(address: string): CdsmClient	创建合作设备集合客户端实例。
 getCdsmInfo(): CdsmInfo	主动查询合作设备集合里所有成员设备的信息。
-onCdsmInfoChange(callback: Callback<CdsmInfo>): void	订阅合作设备集合成员设备的信息变化事件。
-offCdsmInfoChange(callback?: Callback<CdsmInfo>): void	取消订阅合作设备集合成员设备的信息变化事件。
+onCdsmInfoChange(callback: Callback<CdsmInfo>): void	订阅远端设备合作设备集合信息变化事件。使用callback异步回调。
+offCdsmInfoChange(callback?: Callback<CdsmInfo>): void	取消订阅远端设备合作设备集合信息变化事件。使用callback异步回调。
 
 开发步骤
 
 导入相关模块。
 
 import { cdsm } from '@kit.NearLinkKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { Callback } from '@kit.BasicServicesKit';
+import { BusinessError, Callback } from '@kit.BasicServicesKit';
 
 创建合作设备集合客户端实例，参数addr是通过getPairedDevices获取的设备地址，并且此设备是合作设备集合的成员设备。
 
@@ -74,8 +73,7 @@ try {
 
 ```
 import { cdsm } from '@kit.NearLinkKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { Callback } from '@kit.BasicServicesKit';
+import { BusinessError, Callback } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 2

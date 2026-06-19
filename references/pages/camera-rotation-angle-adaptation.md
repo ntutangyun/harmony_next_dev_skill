@@ -299,9 +299,9 @@ import { camera } from '@kit.CameraKit';
 
 function enablePhysicalCameraOrientation(cameraInput: camera.CameraInput) {
   // 查询设备的相机镜头安装角度是否可变
-  let isVariable: boolean = cameraInput.isPhysicalCameraOrientationVariable();
+  let isVarialbe: boolean = cameraInput.isPhysicalCameraOrientationVariable();
 
-  if (isVariable) {
+  if (isVarialbe) {
     // 获取设备当前折叠状态下真实的相机镜头安装角度
     let physicalOrientation: number = cameraInput.getPhysicalCameraOrientation();
     console.info(`physical Orientation is ${physicalOrientation}`);
@@ -870,9 +870,9 @@ import { camera } from '@kit.CameraKit';
 
 function enablePhysicalCameraOrientation(cameraInput: camera.CameraInput) {
   // 查询设备的相机镜头安装角度是否可变
-  let isVariable: boolean = cameraInput.isPhysicalCameraOrientationVariable();
+  let isVarialbe: boolean = cameraInput.isPhysicalCameraOrientationVariable();
 
-  if (isVariable) {
+  if (isVarialbe) {
     // 获取设备当前折叠状态下真实的相机镜头安装角度
     let physicalOrientation: number = cameraInput.getPhysicalCameraOrientation();
     console.info(`physical Orientation is ${physicalOrientation}`);

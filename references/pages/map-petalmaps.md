@@ -51,7 +51,8 @@ openMapOfflineDataManagement(context: common.Context, offlineDataParams: Offline
 
 导入相关模块
 
-import { petalMaps } from '@kit.MapKit'
+import { petalMaps } from '@kit.MapKit';
+import { mapCommon } from '@kit.MapKit';
 
 [h2]打开地图应用首页
 
@@ -205,7 +206,8 @@ try {
 ### Code block 1
 
 ```
-import { petalMaps } from '@kit.MapKit'
+import { petalMaps } from '@kit.MapKit';
+import { mapCommon } from '@kit.MapKit';
 ```
 
 ### Code block 2

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-get-i
 
 场景介绍
 
-PDF文档页面转换为图片，或将页面的指定区域转换为图片时使用。
+PDF文档页面转换为图片，或将页面的指定区域转换为图片时使用。从26.0.0版本开始，新增支持将多张页面的指定区域转化为一张图片。
 
 接口说明
 
@@ -13,6 +13,7 @@ getPagePixelMap(): image.PixelMap	获取当前页的图片。
 getCustomPagePixelMap(matrix: PdfMatrix, isGray: boolean, drawAnnotations: boolean): image.PixelMap	获取指定PdfPage区域的图片内容。
 getAreaPixelMap(matrix: PdfMatrix, bitmapwidth: number, bitmapHeight: number, isGray: boolean, drawAnnotations: boolean): image.PixelMap	获取指定PdfPage区域的图片内容，并指定图片的宽和高。
 getAreaPixelMapWithOptions(matrix: PdfMatrix, bitmapwidth: number, bitmapHeight: number, options?: PixelOptions): image.PixelMap	获取指定PdfPage区域的图片内容，并指定图片的宽和高等参数。
+getPixelMapWithPages(pageIndices: number[], matrices: PdfMatrix[], bitmapWidth: number, bitmapHeight: number, pixelOptions?: PixelOptions): image.PixelMap	获取多个页面合并后的pixelMap。
 
 示例代码
 
@@ -20,7 +21,7 @@ getAreaPixelMapWithOptions(matrix: PdfMatrix, bitmapwidth: number, bitmapHeight:
 
 调用getPage方法获取某个页面。
 
-调用getPagePixelMap，getAreaPixelMapWithOptions或getCustomPagePixelMap方法获取当前页面或者页面区域，这时获取的是image.PixelMap图像类型。
+调用getPagePixelMap，getAreaPixelMapWithOptions、getCustomPagePixelMap或getPixelMapWithPages方法获取当前页面、页面区域或指定多个页面，返回值均为image.PixelMap图像类型。
 
 将image.PixelMap图像类型转化为二进制图片文件并保存，参考以下方法pixelMap2Buffer。
 
@@ -132,7 +133,7 @@ struct PdfPage {
           const imgBuffer = await this.pixelMap2Buffer(pixmap)
           try {
             const file =
-              filelo.openSync(this.context.filesDir + `/${Date.now()}.bmp`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+              fileIo.openSync(this.context.filesDir + `/${Date.now()}.bmp`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
             await fileIo.write(file.fd, imgBuffer)
             // 关闭文件
             await fileIo.close(file.fd);
@@ -167,6 +168,47 @@ struct PdfPage {
           try {
             const file =
               fileIo.openSync(this.context.filesDir + `/${Date.now()}.bmp`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+            await fileIo.write(file.fd, imgBuffer)
+            // 关闭文件
+            await fileIo.close(file.fd);
+          } catch (e) {
+            let error: BusinessError = e as BusinessError;
+            hilog.error(0x0000, 'PdfPage', `Code: ${error.code}, message: ${error.message} `);
+          }
+        }
+      })
+      // 获取多个页面合并后的pixelMap
+      Button('getPixelMapWithPages').onClick(async () => {
+        if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+          let pageIndices: number[] = [0, 1];
+          let matrices: pdfService.PdfMatrix[] = [
+            new pdfService.PdfMatrix(),
+            new pdfService.PdfMatrix()
+          ];
+          // 设置matrix来控制需要获取的区域
+          matrices[0].x = 0;
+          matrices[0].y = 0;
+          matrices[0].width = 200;
+          matrices[0].height = 200;
+          matrices[0].rotate = 0;
+          matrices[1].x = 250;
+          matrices[1].y = 250;
+          matrices[1].width = 200;
+          matrices[1].height = 200;
+          matrices[1].rotate = 0;
+          // 设置pixelmap是否黑白，背景是否透明等参数
+          let options = new pdfService.PixelOptions();
+          options.isGray = false;
+          options.drawAnnotations = true;
+          options.isTransparent = false;
+          let pixmap: image.PixelMap = this.pdfDocument.getPixelMapWithPages(pageIndices, matrices, 500, 500, options);
+          if (!pixmap) {
+            return
+          }
+          const imgBuffer = await this.pixelMap2Buffer(pixmap)
+          try {
+            const file =
+              fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
             await fileIo.write(file.fd, imgBuffer)
             // 关闭文件
             await fileIo.close(file.fd);
@@ -293,7 +335,7 @@ struct PdfPage {
           const imgBuffer = await this.pixelMap2Buffer(pixmap)
           try {
             const file =
-              filelo.openSync(this.context.filesDir + `/${Date.now()}.bmp`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+              fileIo.openSync(this.context.filesDir + `/${Date.now()}.bmp`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
             await fileIo.write(file.fd, imgBuffer)
             // 关闭文件
             await fileIo.close(file.fd);
@@ -328,6 +370,47 @@ struct PdfPage {
           try {
             const file =
               fileIo.openSync(this.context.filesDir + `/${Date.now()}.bmp`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+            await fileIo.write(file.fd, imgBuffer)
+            // 关闭文件
+            await fileIo.close(file.fd);
+          } catch (e) {
+            let error: BusinessError = e as BusinessError;
+            hilog.error(0x0000, 'PdfPage', `Code: ${error.code}, message: ${error.message} `);
+          }
+        }
+      })
+      // 获取多个页面合并后的pixelMap
+      Button('getPixelMapWithPages').onClick(async () => {
+        if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+          let pageIndices: number[] = [0, 1];
+          let matrices: pdfService.PdfMatrix[] = [
+            new pdfService.PdfMatrix(),
+            new pdfService.PdfMatrix()
+          ];
+          // 设置matrix来控制需要获取的区域
+          matrices[0].x = 0;
+          matrices[0].y = 0;
+          matrices[0].width = 200;
+          matrices[0].height = 200;
+          matrices[0].rotate = 0;
+          matrices[1].x = 250;
+          matrices[1].y = 250;
+          matrices[1].width = 200;
+          matrices[1].height = 200;
+          matrices[1].rotate = 0;
+          // 设置pixelmap是否黑白，背景是否透明等参数
+          let options = new pdfService.PixelOptions();
+          options.isGray = false;
+          options.drawAnnotations = true;
+          options.isTransparent = false;
+          let pixmap: image.PixelMap = this.pdfDocument.getPixelMapWithPages(pageIndices, matrices, 500, 500, options);
+          if (!pixmap) {
+            return
+          }
+          const imgBuffer = await this.pixelMap2Buffer(pixmap)
+          try {
+            const file =
+              fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
             await fileIo.write(file.fd, imgBuffer)
             // 关闭文件
             await fileIo.close(file.fd);

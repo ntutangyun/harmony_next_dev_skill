@@ -470,7 +470,7 @@ export default class SubAbility extends UIAbility {
         'state': 'publish'
       }
     };
-    emitter.emit("onLoadSubAbility", eventData);
+    emitter.emit('onLoadSubAbility', eventData);
     this.link.set(true);
     console.debug(`onWindowStageCreate::isReadyToStart: ${AppStorage.get<boolean>('isReadyToStart')}`)
   }
@@ -601,7 +601,7 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
       'state': 'publish'
     }
   }
-  emitter.emit("onLoadSubAbility", eventData);
+  emitter.emit('onLoadSubAbility', eventData);
   this.link.set(true);
 };
 
@@ -620,8 +620,8 @@ async onWindowStageDestroy(): Promise<void> {
 在entryability中，onCreate方法需要用eventHub设置'onShowPanel'回调，用来创造新的ability；onShowPanel回调中，首先构造want，然后通过context.startAbility接口创建新的ability。
 
 import { AbilityConstant, Want } from '@kit.AbilityKit';
-import { common } from "@kit.AbilityKit";
-import { BusinessError } from "@kit.BasicServicesKit";
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 
 onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -1148,7 +1148,7 @@ export default class SubAbility extends UIAbility {
         'state': 'publish'
       }
     };
-    emitter.emit("onLoadSubAbility", eventData);
+    emitter.emit('onLoadSubAbility', eventData);
     this.link.set(true);
     console.debug(`onWindowStageCreate::isReadyToStart: ${AppStorage.get<boolean>('isReadyToStart')}`)
   }
@@ -1279,7 +1279,7 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
       'state': 'publish'
     }
   }
-  emitter.emit("onLoadSubAbility", eventData);
+  emitter.emit('onLoadSubAbility', eventData);
   this.link.set(true);
 };
 ```
@@ -1302,8 +1302,8 @@ async onWindowStageDestroy(): Promise<void> {
 
 ```
 import { AbilityConstant, Want } from '@kit.AbilityKit';
-import { common } from "@kit.AbilityKit";
-import { BusinessError } from "@kit.BasicServicesKit";
+import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 
 onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {

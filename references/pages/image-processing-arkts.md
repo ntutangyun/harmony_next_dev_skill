@@ -1,10 +1,10 @@
-# 使用VideoProcessingEngine完成图片超分
+# 使用VideoProcessingEngine实现图片超分辨率
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-processing-arkts_
 
-本模块提供图片细节增强的ArkTS接口，通过调用本模块，可以实现图片内容的清晰度增强及缩放功能，处理后的数据可以用于送显和输出。
+本模块提供图片细节增强的ArkTS接口，支持对图片内容进行清晰度增强和缩放处理。通过调用本模块，应用可以对低分辨率、细节不足或需要放大显示的图片进行超分处理，提升图片的视觉清晰度，处理后的图片数据可用于送显或输出。
 
-典型应用场景如：从URL获取图片源 > 图片细节增强 > 显示。
+超分，即超分辨率重建，是指在放大图片尺寸的同时，尽可能恢复和增强图片中的纹理、边缘等细节信息，减少普通插值缩放带来的模糊、锯齿或细节丢失问题。该能力适用于图片来源分辨率较低、图片需要放大显示、缩略图需要高清展示等场景。如需获得更明显的图片细节增强和超分效果，建议使用HIGH档。
 
 约束与限制
 
@@ -20,9 +20,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-pro
 
 质量档位	输入分辨率要求 （单位：像素）	输出分辨率要求 （单位：像素）	说明
 NONE	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例，无清晰度增强效果。
-LOW	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图像进行低质量的清晰度增强，处理效率较高。 此质量档位为默认设置。
-MEDIUM	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图像进行中等质量的清晰度增强，处理效率适中。
-HIGH	宽：[512,2000] 高：[512,2000]	宽：[512,2000] 高：[512,2000]	适用于缩放及清晰度增强场景，支持改变宽高比例。 缩放时会对图像进行高质量的清晰度增强，处理效率相对较低。
+LOW	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图片进行低质量的清晰度增强，处理效率较高。 此质量档位为默认设置。
+MEDIUM	宽：[32,3000] 高：[32,3000]	宽：[32,3000] 高：[32,3000]	仅适用于缩放场景，支持改变宽高比例。 缩放时会对图片进行中等质量的清晰度增强，处理效率适中。
+HIGH	宽：[512,2000] 高：[512,2000]	宽：[512,2000] 高：[512,2000]	适用于缩放及清晰度增强场景，支持改变宽高比例。 缩放时会对图片进行高质量的清晰度增强，处理效率相对较低。
 
 开发步骤
 
@@ -44,7 +44,7 @@ let opts: image.InitializationOptions = { editable: true, pixelFormat: image.Pix
 let sourceImage : image.PixelMap = image.createPixelMapSync(color, opts);
 let level : videoProcessingEngine.QualityLevel = videoProcessingEngine.QualityLevel.LOW;
 
-创建图像处理模块。
+创建图片处理模块。
 
 预期返回值：videoProcessingEngine.ImageProcessor，图片处理模块实例。
 
@@ -55,7 +55,7 @@ let imageProcessor = videoProcessingEngine.create() as videoProcessingEngine.Ima
 
 示例中的变量说明如下：
 
-sourceImage：PixelMap类型的输入图像，必填。
+sourceImage：PixelMap类型的输入图片，必填。
 
 width：目标宽度（单位px），当没有配置目标缩放比例时必填。
 

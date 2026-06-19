@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/allow-dow
 
 从API version 23开始，支持证书链校验时下载缺失的中间CA证书。
 
-以创建X509证书链为例，完成证书链对象的创建，创建过程校验时允许下载缺失的中间证书。
+以创建X.509证书链为例，完成证书链对象的创建，创建过程校验时允许下载缺失的中间证书。
 
 开发步骤
 
@@ -12,9 +12,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/allow-dow
 
 import { cert } from '@kit.DeviceCertificateKit';
 
-基于已有的证书数据，调用cert.createX509Cert创建X509证书对象，并返回结果。
+基于已有的证书数据，调用cert.createX509Cert创建X.509证书对象，并返回结果。
 
-调用cert.buildX509CertChain创建X509证书链对象，将validationParameters的allowDownloadIntermediateCa参数设置为true，开启允许校验过程中从网络下载缺失的中间CA。
+调用cert.buildX509CertChain创建X.509证书链对象，将validationParameters的allowDownloadIntermediateCa参数设置为true，开启允许校验过程中从网络下载缺失的中间CA。
 
 说明
 

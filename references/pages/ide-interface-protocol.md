@@ -60,7 +60,8 @@ authorization: NjJmNjFhODI3N2ZlNDUwMzlhYmUwNjQxZjQ3ZTNhZDU=
 
 属性	类型	必填项	描述
 authorization	string	是	填写只读或者读写AccessToken，选填项，当ohpm-repo配置不支持匿名访问时必须填写。
-x-ohpm-metadata-type	string	否	当值为"install+v1"，返回精简元数据。
+x-ohpm-metadata-type	string	否	当值为"install+v1"，返回所有精简元数据。
+x-ohpm-metadata-special-version	string	否	ohpm-repo 5.5.1版本新增。 用于返回指定版本的元数据，值支持确定版本号、latest版本号、tag版本号，示例如下。确定版本号： "3.0.0" latest版本号："latest" tag版本号："tag:t310" 与x-ohpm-metadata-type一起使用时，返回指定版本的精简元数据。
 
 响应失败示例（以请求一个应用内的HAR包 @test/package1 为例）：
 

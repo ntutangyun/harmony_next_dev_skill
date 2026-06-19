@@ -22,7 +22,7 @@ ohpm-repo batch_download <pkg_list>
 
 [h2]<pkg_list>
 
-类型： String
+类型：String
 
 必填参数
 

@@ -181,12 +181,36 @@ Hierarchy窗口按钮功能：
 	显示当前类/接口的父类。
 	显示当前类/接口的子类。
 	按字母顺序对继承关系结构树中的所有同级元素进行排序。
-	更新显示所有的类/接口的继承关系结构。
+	更新所有的类/接口的继承关系结构。
 	默认双击结构树中类/接口名称时，编辑窗口将跳转至所选类/接口所在的代码位置。勾选该选项后，单击结构树中类/接口名称，即可跳转访问。
 	展开/折叠继承关系结构。
 	锁定当前Hierarchy窗口显示于编辑窗口上。
 	将类/接口的继承关系结构导出到文本文件中。
 	关闭工具窗口。
+
+查看ArkUI组件状态变量关系
+
+从26.0.0 Beta1开始，编辑器支持查看状态变量关系。选中或将光标放置于装饰器/变量属性定义处，点击右键选择Show State Variable Binding Relationship，在State Variables弹窗中查看ArkUI组件状态变量关系。
+
+当前支持查看以下状态变量关系：
+
+@Provide和@Consume的关系。
+
+LocalStorage、@LocalStorageProp、@LocalStorageLink三者间或任意两者间的关系。
+
+AppStorage、@StorageProp、@StorageLink三者间或任意两者间的关系。
+
+PersistentStorage、@StorageProp、@StorageLink三者间或任意两者间的关系。
+
+@State、@Prop、@Link三者间或任意两者间的关系。
+
+State Variables窗口按钮功能：
+
+图标	功能
+	更新所有的状态变量关系。
+	移动到上一个节点。
+	移动到下一个节点。
+	展开/折叠状态变量关系。
 
 添加嵌入提示
 

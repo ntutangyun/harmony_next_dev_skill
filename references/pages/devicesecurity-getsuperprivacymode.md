@@ -1,4 +1,4 @@
-# 查询当前状态场景
+# 查询超级隐私模式状态场景
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-getsuperprivacymode_
 
@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 从6.0.2(22)开始，新增了查询设备当前超级隐私模式状态的功能。
 
-超级隐私模式为用户提供一键关闭敏感器件的能力，管控范围包括位置、相机和麦克风，且随着版本演进，超级隐私模式管控的敏感器件范围会相应调整。应用可通过Device Security Kit提供的接口查询当前超级隐私模式开关状态。
+超级隐私模式支持一键关闭位置、相机和麦克风等敏感器件。该模式管控的器件范围将随版本更新动态调整。应用可通过Device Security Kit提供的接口获取超级隐私模式的状态。
 
 约束与限制
 
@@ -16,11 +16,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 流程说明：
 
-开发者应用查询当前超级隐私模式状态。
+开发者应用调用getSuperPrivacyMode接口查询当前超级隐私模式状态。
 
-Device Security Kit接口同步返回当前超级隐私模式状态给HAP应用。
+Device Security Kit接口同步返回当前超级隐私模式状态给开发者应用。
 
-应用根据返回的超级隐私模式状态进行业务处理。
+开发者应用根据返回的超级隐私模式状态进行业务处理。
 
 接口说明
 
@@ -36,7 +36,7 @@ getSuperPrivacyMode() : Promise<SuperPrivacyMode>	查询当前超级隐私模式
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-查询超级隐私模式状态改变事件。
+调用getSuperPrivacyMode接口查询超级隐私模式的状态。
 
 const DOMAIN = 0x0000;
 const TAG = "SuperPrivacyModeTest";

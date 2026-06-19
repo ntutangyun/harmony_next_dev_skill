@@ -150,6 +150,10 @@ napi_strong_ref（扩展能力）
 
 提示： napi_strong_ref与napi_ref相比，具有更高的创建效率，但支持的功能受限（如：不支持强弱引用转换等）。
 
+napi_callsite_info（扩展能力）
+
+调用点信息句柄，用于缓存属性访问的对象结构信息以加速后续属性读写。每个不同的调用点应创建独立的napi_callsite_info句柄，同一句柄可跨多次调用复用，但不可跨线程使用。
+
 napi_sendable_ref（扩展能力）
 
 指向napi_value，允许调用者管理Sendable ArkTS对象的生命周期，并支持跨ArkTS线程操作napi_sendable_ref。
@@ -484,7 +488,7 @@ napi_remove_async_cleanup_hook	取消清理异步钩子函数。
 
 [h2]扩展能力
 
-Node-API组件扩展的符号列表
+Node-API组件扩展的接口
 
 接口	功能说明
 napi_queue_async_work_with_qos	将异步工作对象加到队列，由底层根据传入的qos优先级去调度执行。
@@ -527,6 +531,10 @@ napi_create_strong_sendable_reference	创建指向Sendable ArkTS对象的Sendabl
 napi_delete_strong_sendable_reference	删除Sendable强引用。
 napi_get_strong_sendable_reference_value	根据Sendable强引用获取其关联的ArkTS对象值。
 napi_throw_business_error	抛出一个带文本信息的ArkTS Error, 其错误对象的code属性类型为number。
+napi_create_callsite_info	创建调用点信息句柄，用于缓存属性访问信息。
+napi_delete_callsite_info	删除调用点信息句柄，释放关联的缓存资源。
+napi_get_property_with_callsite_info	使用调用点信息快速获取对象属性值。
+napi_set_property_with_callsite_info	使用调用点信息快速设置对象属性值。
 
 napi_queue_async_work_with_qos
 
@@ -776,6 +784,32 @@ napi_throw_business_error
 napi_status napi_throw_business_error(napi_env env,
                                       int32_t errorCode,
                                       const char* msg);
+
+napi_create_callsite_info
+
+napi_status napi_create_callsite_info(napi_env env, napi_callsite_info* result);
+
+napi_delete_callsite_info
+
+napi_status napi_delete_callsite_info(napi_env env, napi_callsite_info info);
+
+napi_get_property_with_callsite_info
+
+napi_status napi_get_property_with_callsite_info(napi_env env,
+                                                 napi_value object,
+                                                 napi_value key,
+                                                 napi_callsite_info info,
+                                                 napi_value* result,
+                                                 bool* hit);
+
+napi_set_property_with_callsite_info
+
+napi_status napi_set_property_with_callsite_info(napi_env env,
+                                                 napi_value object,
+                                                 napi_value key,
+                                                 napi_value value,
+                                                 napi_callsite_info info,
+                                                 bool* hit);
 
 [h2]其他实用工具
 
@@ -1220,4 +1254,38 @@ napi_status napi_get_strong_sendable_reference_value(napi_env env,
 napi_status napi_throw_business_error(napi_env env,
                                       int32_t errorCode,
                                       const char* msg);
+```
+
+### Code block 52
+
+```
+napi_status napi_create_callsite_info(napi_env env, napi_callsite_info* result);
+```
+
+### Code block 53
+
+```
+napi_status napi_delete_callsite_info(napi_env env, napi_callsite_info info);
+```
+
+### Code block 54
+
+```
+napi_status napi_get_property_with_callsite_info(napi_env env,
+                                                 napi_value object,
+                                                 napi_value key,
+                                                 napi_callsite_info info,
+                                                 napi_value* result,
+                                                 bool* hit);
+```
+
+### Code block 55
+
+```
+napi_status napi_set_property_with_callsite_info(napi_env env,
+                                                 napi_value object,
+                                                 napi_value key,
+                                                 napi_value value,
+                                                 napi_callsite_info info,
+                                                 bool* hit);
 ```

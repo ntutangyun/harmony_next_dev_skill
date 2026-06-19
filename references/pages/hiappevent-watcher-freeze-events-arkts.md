@@ -111,10 +111,10 @@ import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.test_data=${eventInfo.params['test_data']}`);
          // 开发者可以获取到应用冻屏事件的故障进程存活时间
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.process_life_time=${eventInfo.params['process_life_time']}`);
-         // 开发者可以获取到应用冻屏事件的页面切换日志
-         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.page_switch_log=${JSON.stringify(eventInfo.params['page_switch_log'])}`);
          // 开发者可以获取到应用冻屏事件的回调日志信息
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.external_callback_log=${eventInfo.params['external_callback_log']}`);
+         // 开发者可以获取到应用冻屏事件的页面切换日志
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.page_switch_log=${JSON.stringify(eventInfo.params['page_switch_log'])}`);
        }
      }
    }
@@ -296,10 +296,10 @@ import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.test_data=${eventInfo.params['test_data']}`);
          // 开发者可以获取到应用冻屏事件的故障进程存活时间
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.process_life_time=${eventInfo.params['process_life_time']}`);
-         // 开发者可以获取到应用冻屏事件的页面切换日志
-         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.page_switch_log=${JSON.stringify(eventInfo.params['page_switch_log'])}`);
          // 开发者可以获取到应用冻屏事件的回调日志信息
          hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.external_callback_log=${eventInfo.params['external_callback_log']}`);
+         // 开发者可以获取到应用冻屏事件的页面切换日志
+         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.page_switch_log=${JSON.stringify(eventInfo.params['page_switch_log'])}`);
        }
      }
    }

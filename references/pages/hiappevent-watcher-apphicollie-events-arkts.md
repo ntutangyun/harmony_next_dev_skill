@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappeven
 
 简介
 
-从API version 21开始，支持arkTS接口订阅任务执行超时事件。 本文介绍如何使用HiAppEvent提供的ArkTS接口订阅任务执行超时事件。接口的详细使用说明（参数限制、取值范围等）请参考@ohos.hiviewdfx.hiAppEvent。
+从API version 21开始，支持ArkTS接口订阅任务执行超时事件。 本文介绍如何使用HiAppEvent提供的ArkTS接口订阅任务执行超时事件。接口的详细使用说明（参数限制、取值范围等）请参考@ohos.hiviewdfx.hiAppEvent。
 
 接口说明
 
@@ -37,7 +37,7 @@ entry:
 
 编辑“CMakeLists.txt”文件，添加源文件及动态库。
 
-# 新增动态库依赖libhilog_ndk.z.so（日志输出）及libohhicollie.so（hicollie检测）
+# 新增动态库依赖libhilog_ndk.z.so（日志输出）及libohhicollie.so（HiCollie检测）
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohhicollie.so)
 
 编辑“EntryAbility.ets”文件，导入依赖模块，示例代码如下：
@@ -222,7 +222,7 @@ entry:
 ### Code block 2
 
 ```
-# 新增动态库依赖libhilog_ndk.z.so（日志输出）及libohhicollie.so（hicollie检测）
+# 新增动态库依赖libhilog_ndk.z.so（日志输出）及libohhicollie.so（HiCollie检测）
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohhicollie.so)
 ```
 

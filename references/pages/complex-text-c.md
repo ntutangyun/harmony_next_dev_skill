@@ -170,6 +170,12 @@ BREAK_HYPHEN（locale：未设置）	BREAK_HYPHEN（locale：en-gb）	BREAK_HYPH
 
 行间距调整： 通过调整行间距的方式可以实现行高调整一样的效果，优化阅读体验。
 
+省略号样式设置： 在文本内容超出显示区域时，可以使用省略号截断文本，支持头部、中部、尾部以及多行省略模式。
+
+文字换行方式设置： 文本排版时支持不同的断行策略，可根据场景选择合适的换行方式。
+
+行首标点压缩： 在排版中，通过开启行首标点压缩功能，将行首标点符号进行挤压处理，避免标点占用行首空间，提升排版紧凑度。
+
 [h2]装饰线
 
 装饰线是指在文本上方、下方或中间添加的装饰性线条，当前支持上划线、下划线、删除线。
@@ -916,6 +922,64 @@ OH_Drawing_DestroyTypography(typography);
 100	TEXT_HEIGHT_ALL	
 100	TEXT_HEIGHT_DISABLE_ALL	
 
+[h2]省略号样式设置
+
+从API version 22开始，支持设置省略号样式，在文本内容超出显示区域时截断文本。从API version 24开始，支持多行省略模式。
+
+使用OH_Drawing_SetTypographyStyleAttributeInt接口，传入TYPOGRAPHY_STYLE_ATTR_I_ELLIPSIS_MODAL设置省略号模式，可选的省略号模式可见OH_Drawing_EllipsisModal。
+
+// 创建一个带有省略号设置的 TypographyStyle
+OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
+// 设置最大行数为2，超过2行的部分将被省略
+OH_Drawing_SetTypographyTextMaxLines(typoStyle, 2);
+// 设置省略号模式为尾部省略
+OH_Drawing_SetTypographyStyleAttributeInt(typoStyle,
+    OH_Drawing_TypographyStyleAttributeId::TYPOGRAPHY_STYLE_ATTR_I_ELLIPSIS_MODAL, ELLIPSIS_MODAL_TAIL);
+// 设置自定义省略号字符串
+OH_Drawing_SetTypographyTextEllipsis(typoStyle, "...");
+
+省略号模式	效果
+ELLIPSIS_MODAL_TAIL	
+ELLIPSIS_MODAL_HEAD	
+ELLIPSIS_MODAL_MIDDLE	
+ELLIPSIS_MODAL_MULTILINE_HEAD	
+ELLIPSIS_MODAL_MULTILINE_MIDDLE	
+
+[h2]文字换行方式设置
+
+从API version 22开始，支持在文本排版时设置断行策略，断行策略决定了文本如何在行尾进行换行处理。
+
+使用OH_Drawing_SetTypographyTextBreakStrategy接口设置断行策略，可选的断行策略可见OH_Drawing_BreakStrategy。
+
+// 创建一个设置了均衡断行策略的 TypographyStyle
+OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
+// 设置断行策略为 BALANCED（均衡策略）
+OH_Drawing_SetTypographyTextBreakStrategy(typoStyle, BREAK_STRATEGY_BALANCED);
+
+换行方式	效果
+GREEDY	
+HIGH_QUALITY	
+BALANCED	
+
+[h2]行首标点压缩
+
+从API version 23开始，在文本排版中支持行首标点压缩功能。通过启用行首标点压缩功能，可以将行首标点符号进行挤压处理，提升排版紧凑度。
+
+使用OH_Drawing_SetTypographyStyleAttributeBool接口，传入TYPOGRAPHY_STYLE_ATTR_B_COMPRESS_HEAD_PUNCTUATION设置是否启用行首标点压缩，使用OH_Drawing_GetTypographyStyleAttributeBool接口查询是否启用了行首标点压缩。
+
+// 第二段：开启行首标点压缩
+OH_Drawing_TypographyStyle *typoStyleCompress = OH_Drawing_CreateTypographyStyle();
+OH_Drawing_SetTypographyTextAlign(typoStyleCompress, TEXT_ALIGN_LEFT);
+OH_Drawing_ErrorCode errorCode = OH_Drawing_SetTypographyStyleAttributeBool(typoStyleCompress,
+    OH_Drawing_TypographyStyleAttributeId::TYPOGRAPHY_STYLE_ATTR_B_COMPRESS_HEAD_PUNCTUATION, true);
+if (errorCode != OH_DRAWING_SUCCESS) {
+    DRAWING_LOGE("SetTypographyStyleAttributeBool failed, errorCode: %{public}d", errorCode);
+}
+
+是否开启行首标点压缩	效果
+关闭行首标点压缩	
+开启行首标点压缩	
+
 样式的拷贝、绘制与显示
 
 支持拷贝文本样式、段落样式、阴影样式，以便快速复制相关样式作用到不同文字上。
@@ -935,7 +999,8 @@ OH_Drawing_SetTypographyTextAutoSpace(typoStyle, true);
 // 设置段落最大行数为3行
 OH_Drawing_SetTypographyTextMaxLines(typoStyle, 3);
 // 设置省略号模式为尾部省略号
-OH_Drawing_SetTypographyTextEllipsisModal(typoStyle, ELLIPSIS_MODAL_TAIL);
+OH_Drawing_SetTypographyStyleAttributeInt(typoStyle,
+    OH_Drawing_TypographyStyleAttributeId::TYPOGRAPHY_STYLE_ATTR_I_ELLIPSIS_MODAL, ELLIPSIS_MODAL_TAIL);
 // 设置省略号文本
 OH_Drawing_SetTypographyTextEllipsis(typoStyle, "...");
 // 设置对齐方式为居中对齐
@@ -1738,6 +1803,42 @@ OH_Drawing_DestroyTypography(typography);
 ### Code block 16
 
 ```
+// 创建一个带有省略号设置的 TypographyStyle
+OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
+// 设置最大行数为2，超过2行的部分将被省略
+OH_Drawing_SetTypographyTextMaxLines(typoStyle, 2);
+// 设置省略号模式为尾部省略
+OH_Drawing_SetTypographyStyleAttributeInt(typoStyle,
+    OH_Drawing_TypographyStyleAttributeId::TYPOGRAPHY_STYLE_ATTR_I_ELLIPSIS_MODAL, ELLIPSIS_MODAL_TAIL);
+// 设置自定义省略号字符串
+OH_Drawing_SetTypographyTextEllipsis(typoStyle, "...");
+```
+
+### Code block 17
+
+```
+// 创建一个设置了均衡断行策略的 TypographyStyle
+OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
+// 设置断行策略为 BALANCED（均衡策略）
+OH_Drawing_SetTypographyTextBreakStrategy(typoStyle, BREAK_STRATEGY_BALANCED);
+```
+
+### Code block 18
+
+```
+// 第二段：开启行首标点压缩
+OH_Drawing_TypographyStyle *typoStyleCompress = OH_Drawing_CreateTypographyStyle();
+OH_Drawing_SetTypographyTextAlign(typoStyleCompress, TEXT_ALIGN_LEFT);
+OH_Drawing_ErrorCode errorCode = OH_Drawing_SetTypographyStyleAttributeBool(typoStyleCompress,
+    OH_Drawing_TypographyStyleAttributeId::TYPOGRAPHY_STYLE_ATTR_B_COMPRESS_HEAD_PUNCTUATION, true);
+if (errorCode != OH_DRAWING_SUCCESS) {
+    DRAWING_LOGE("SetTypographyStyleAttributeBool failed, errorCode: %{public}d", errorCode);
+}
+```
+
+### Code block 19
+
+```
 // 创建一个TypographyStyle，其中创建Typography时需要使用
 OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
 // 配置段落样式包括：使能自动间距、最大行数、省略号样式、省略号文本、对齐方式
@@ -1746,7 +1847,8 @@ OH_Drawing_SetTypographyTextAutoSpace(typoStyle, true);
 // 设置段落最大行数为3行
 OH_Drawing_SetTypographyTextMaxLines(typoStyle, 3);
 // 设置省略号模式为尾部省略号
-OH_Drawing_SetTypographyTextEllipsisModal(typoStyle, ELLIPSIS_MODAL_TAIL);
+OH_Drawing_SetTypographyStyleAttributeInt(typoStyle,
+    OH_Drawing_TypographyStyleAttributeId::TYPOGRAPHY_STYLE_ATTR_I_ELLIPSIS_MODAL, ELLIPSIS_MODAL_TAIL);
 // 设置省略号文本
 OH_Drawing_SetTypographyTextEllipsis(typoStyle, "...");
 // 设置对齐方式为居中对齐

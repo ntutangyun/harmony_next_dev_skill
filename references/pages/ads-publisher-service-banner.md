@@ -21,9 +21,9 @@ AutoAdComponent({adParam: advertising.AdRequestParams, adOptions: advertising.Ad
 
 导入相关模块。
 
-import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
 import { advertising, AutoAdComponent, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
 
 获取OAID。
 
@@ -173,17 +173,15 @@ async function requestOAID(context: Context): Promise<string | undefined> {
 
 广告位类型	测试广告位ID	展示形式	比例	推广类型
 横幅	h5xkz3mbr2	图片	19:3	应用下载
-横幅	f9enfij16h	图片	19:3	应用促活
-横幅	u8fqe1ru81	图片	5:2	应用促活
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
 import { advertising, AutoAdComponent, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
 ```
 
 ### Code block 2

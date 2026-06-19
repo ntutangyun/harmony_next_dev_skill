@@ -41,7 +41,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 let params: site.SearchByTextParams = {
   // 根据自定义关键字进行搜索，例如：“故宫”、“夫子庙”
-  query: "Piazzale Dante, 41, 55049 Viareggio, Tuscany, Italy",
+  query: 'Piazzale Dante, 41, 55049 Viareggio, Tuscany, Italy',
   // 经纬度坐标
   location: {
     latitude: 31.984,
@@ -50,7 +50,7 @@ let params: site.SearchByTextParams = {
   // 指定地理位置的范围半径
   radius: 10000,
   // 搜索结果的语言类型
-  language: "en"
+  language: 'en'
 };
 // 返回关键字搜索结果
 try {
@@ -67,14 +67,14 @@ try {
 
 let params: site.NearbySearchParams = {
   location: {
-    latitude:51.50811219132287,
-    longitude:-0.07594896472392065
+    latitude: 51.50811219132287,
+    longitude: -0.07594896472392065
   },
   poiTypes: [
-    "Watch_Store",
-    "SUBWAY",
-    "PRIMARY_SCHOOL",
-    "GENERAL_AUTO_REPAIR_SERVICE_CENTER"
+    'Watch_Store',
+    'SUBWAY',
+    'PRIMARY_SCHOOL',
+    'GENERAL_AUTO_REPAIR_SERVICE_CENTER'
   ]
 }
 // 返回周边搜索结果
@@ -92,13 +92,13 @@ try {
 
 let params: site.QueryAutoCompleteParams = {
   // 自定义关键字
-  query: "hotel",
+  query: 'hotel',
   // 经纬度坐标
   location: {
     latitude: 31.984410259206815,
     longitude: 118.76625379397866
   },
-  language: "en",
+  language: 'en',
   // 返回子节点
   isChildren: true
 };
@@ -117,8 +117,8 @@ try {
 
 let params: site.SearchByIdParams = {
   // 指定主键地点ID
-  siteId: "144129739873977856",
-  language: "en",
+  siteId: '144129739873977856',
+  language: 'en',
   // 返回子节点
   isChildren: true
 };
@@ -145,7 +145,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ```
 let params: site.SearchByTextParams = {
   // 根据自定义关键字进行搜索，例如：“故宫”、“夫子庙”
-  query: "Piazzale Dante, 41, 55049 Viareggio, Tuscany, Italy",
+  query: 'Piazzale Dante, 41, 55049 Viareggio, Tuscany, Italy',
   // 经纬度坐标
   location: {
     latitude: 31.984,
@@ -154,7 +154,7 @@ let params: site.SearchByTextParams = {
   // 指定地理位置的范围半径
   radius: 10000,
   // 搜索结果的语言类型
-  language: "en"
+  language: 'en'
 };
 // 返回关键字搜索结果
 try {
@@ -171,14 +171,14 @@ try {
 ```
 let params: site.NearbySearchParams = {
   location: {
-    latitude:51.50811219132287,
-    longitude:-0.07594896472392065
+    latitude: 51.50811219132287,
+    longitude: -0.07594896472392065
   },
   poiTypes: [
-    "Watch_Store",
-    "SUBWAY",
-    "PRIMARY_SCHOOL",
-    "GENERAL_AUTO_REPAIR_SERVICE_CENTER"
+    'Watch_Store',
+    'SUBWAY',
+    'PRIMARY_SCHOOL',
+    'GENERAL_AUTO_REPAIR_SERVICE_CENTER'
   ]
 }
 // 返回周边搜索结果
@@ -196,13 +196,13 @@ try {
 ```
 let params: site.QueryAutoCompleteParams = {
   // 自定义关键字
-  query: "hotel",
+  query: 'hotel',
   // 经纬度坐标
   location: {
     latitude: 31.984410259206815,
     longitude: 118.76625379397866
   },
-  language: "en",
+  language: 'en',
   // 返回子节点
   isChildren: true
 };
@@ -221,8 +221,8 @@ try {
 ```
 let params: site.SearchByIdParams = {
   // 指定主键地点ID
-  siteId: "144129739873977856",
-  language: "en",
+  siteId: '144129739873977856',
+  language: 'en',
   // 返回子节点
   isChildren: true
 };

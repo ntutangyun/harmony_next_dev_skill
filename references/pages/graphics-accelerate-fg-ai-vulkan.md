@@ -10,6 +10,8 @@ AI超帧调用流程上依赖系统送显模式功能，但与基本的系统送
 
 用户进入超帧适用的游戏场景。
 
+游戏应用调用HMS_FG_IsFrameGenerationSupported查询是否支持AI超帧特性。如果当前设备支持此特性，则继续步骤3创建超帧上下文实例，否则返回false，结束流程。
+
 游戏应用调用HMS_FG_CreateContext_VK接口创建超帧上下文实例。如超帧上下文实例创建失败，则无需在步骤6提供当前帧信息，只需逐帧对场景进行渲染送显即可。
 
 游戏应用调用接口配置超帧实例属性。包括调用HMS_FG_SetAlgorithmMode_VK（必选）设置超帧算法模式并选择内插模式；按需调用其他插帧相关配置接口。
@@ -34,8 +36,10 @@ AI超帧调用流程上依赖系统送显模式功能，但与基本的系统送
 
 {
     "module": {
-         // 其他的配置项
-         // ...
+        /*
+          其他的配置项
+          ...
+         */
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_FusionAware",
@@ -68,6 +72,12 @@ target_link_libraries(entry PUBLIC
 
 // 引用超帧frame_generation_vk.h头文件
 #include <graphics_game_sdk/frame_generation_vk.h>
+
+调用HMS_FG_IsFrameGenerationSupported查询是否支持AI超帧特性。如果当前设备支持此特性，则继续下一步创建超帧上下文实例，否则返回false，结束流程。
+
+if (!HMS_FG_IsFrameGenerationSupported(FG_FeatureType::INTERPOLATION_AI_VULKAN)) {
+    return false;
+}
 
 调用HMS_FG_CreateContext_VK接口创建超帧上下文实例。如果返回nullptr，则说明超帧上下文实例创建失败，或当前硬件设备不支持开启超帧。
 
@@ -225,8 +235,10 @@ if (errorCode != FG_SUCCESS) {
 ```
 {
     "module": {
-         // 其他的配置项
-         // ...
+        /*
+          其他的配置项
+          ...
+         */
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_FusionAware",
@@ -268,6 +280,14 @@ target_link_libraries(entry PUBLIC
 ### Code block 4
 
 ```
+if (!HMS_FG_IsFrameGenerationSupported(FG_FeatureType::INTERPOLATION_AI_VULKAN)) {
+    return false;
+}
+```
+
+### Code block 5
+
+```
 // 变量声明
 VkInstance vkInstance = VK_NULL_HANDLE;
 VkPhysicalDevice vkPhysicalDevice = VK_NULL_HANDLE;
@@ -286,7 +306,7 @@ if (m_context == nullptr) {
 }
 ```
 
-### Code block 5
+### Code block 6
 
 ```
 // 初始化超帧接口调用错误码
@@ -317,7 +337,7 @@ if (errorCode != FG_SUCCESS) {
 }
 ```
 
-### Code block 6
+### Code block 7
 
 ```
 // 激活超帧上下文实例
@@ -327,7 +347,7 @@ if (errorCode != FG_SUCCESS) {
 }
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 // 变量声明
@@ -341,7 +361,7 @@ if (!inputColor) {
 }
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 // 帧循环
@@ -416,7 +436,7 @@ while (true) {
 }
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 // 销毁超帧上下文实例并释放内存资源

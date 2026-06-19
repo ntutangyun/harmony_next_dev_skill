@@ -28,16 +28,20 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct StaticMapDemo {
+struct MapStaticDiagramDemo {
+  // ...
   @State image?: PixelMap = undefined;
 
   build() {
-    Column() {
-      this.buildDemoUI();
-    }.width('100%')
-    .margin({ bottom: 48 })
-    .backgroundColor(0xf2f2f2)
-    .height('100%')
+    // ...
+      Column() {
+        this.buildDemoUI();
+      }.width('100%')
+      .margin({ bottom: 48 })
+      .backgroundColor(0xf2f2f2)
+      .height('100%')
+
+      // ...
   }
 
   @Builder
@@ -49,14 +53,14 @@ struct StaticMapDemo {
       .border({ width: 1 })
       .borderStyle(BorderStyle.Dashed)
       .objectFit(ImageFit.Contain)
-      .height("90%")
+      .height('90%')
 
     Row() {
-      Button("getStaticMap")
+      Button('getStaticMap')
         .fontSize(12)
         .onClick(async () => {
           // 设置静态图标记参数
-          let markers: Array<staticMap.StaticMapMarker> = [{
+          let markers: staticMap.StaticMapMarker[] = [{
             location: {
               latitude: 50,
               longitude: 126.3
@@ -109,7 +113,7 @@ struct StaticMapDemo {
           try {
             // 获取静态图
             this.image = await staticMap.getMapImage(option);
-            console.info("Succeeded in getting image.");
+            console.info('Succeeded in getting image.');
           } catch (error) {
             const err: BusinessError = error as BusinessError;
             console.error(`Failed in getting image, code: ${err.code}, message: ${err.message}`);
@@ -135,16 +139,20 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct StaticMapDemo {
+struct MapStaticDiagramDemo {
+  // ...
   @State image?: PixelMap = undefined;
 
   build() {
-    Column() {
-      this.buildDemoUI();
-    }.width('100%')
-    .margin({ bottom: 48 })
-    .backgroundColor(0xf2f2f2)
-    .height('100%')
+    // ...
+      Column() {
+        this.buildDemoUI();
+      }.width('100%')
+      .margin({ bottom: 48 })
+      .backgroundColor(0xf2f2f2)
+      .height('100%')
+
+      // ...
   }
 
   @Builder
@@ -156,14 +164,14 @@ struct StaticMapDemo {
       .border({ width: 1 })
       .borderStyle(BorderStyle.Dashed)
       .objectFit(ImageFit.Contain)
-      .height("90%")
+      .height('90%')
 
     Row() {
-      Button("getStaticMap")
+      Button('getStaticMap')
         .fontSize(12)
         .onClick(async () => {
           // 设置静态图标记参数
-          let markers: Array<staticMap.StaticMapMarker> = [{
+          let markers: staticMap.StaticMapMarker[] = [{
             location: {
               latitude: 50,
               longitude: 126.3
@@ -216,7 +224,7 @@ struct StaticMapDemo {
           try {
             // 获取静态图
             this.image = await staticMap.getMapImage(option);
-            console.info("Succeeded in getting image.");
+            console.info('Succeeded in getting image.');
           } catch (error) {
             const err: BusinessError = error as BusinessError;
             console.error(`Failed in getting image, code: ${err.code}, message: ${err.message}`);

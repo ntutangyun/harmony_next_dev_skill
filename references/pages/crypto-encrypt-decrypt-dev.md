@@ -10,6 +10,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-en
 
 使用AES对称密钥（CCM模式）加解密(C/C++)
 
+使用AES对称密钥（CCM模式）参数为AeadParamsSpec加解密(ArkTS)
+
 使用AES对称密钥（CBC模式）加解密(ArkTS)
 
 使用AES对称密钥（CBC模式）加解密(C/C++)
@@ -19,6 +21,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-en
 使用AES对称密钥（ECB模式）加解密(C/C++)
 
 使用AES对称密钥（GCM模式）分段加解密(ArkTS)
+
+使用AES对称密钥（XTS模式）加解密(ArkTS)
 
 使用AES对称密钥（GCM模式）分段加解密(C/C++)
 
@@ -62,7 +66,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-en
 
 使用RSA非对称密钥分段加解密(C/C++)
 
-使用RSA非对称密钥（PKCS1_OAEP模式）加解密
+使用RSA非对称密钥（PKCS1_OAEP模式）加解密(ArkTS)
 
 使用SM2非对称密钥加解密(ArkTS)
 
@@ -75,3 +79,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-en
 使用SM2密文格式转换(ArkTS)
 
 使用SM2密文格式转换(C/C++)
+
+使用RC2对称密钥（CBC模式）加解密(ArkTS)
+
+使用RC4对称密钥加解密(ArkTS)
+
+使用ECIES混合加解密(ArkTS)
+
+使用ECIES混合加解密(C/C++)

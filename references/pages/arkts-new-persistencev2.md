@@ -381,7 +381,11 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
 
 12、globalConnect仅支持设置EL1-EL5加密级别，否则会抛出运行时异常，从API version 23开始，将返回错误码140106，示例见使用globalConnect存储数据。
 
-13、不支持在使用connect或globalConnect的类中使用@Computed。@Computed为只读属性，不支持赋值操作，因此会导致反序列化失败。
+13、当存储数据的结构与当前数据的结构不一致时，可能会导致反序列化失败。在API版本26.0.0以前，开发者无法获取旧的序列化数据，进而无法判断自己的数据结构有哪些改变。
+
+从API版本26.0.0开始，PersistenceErrorCallback支持传入oldValue参数，开发者可通过该参数获取存于磁盘的旧的序列化数据，具体用例可见通过notifyonerror获取旧的序列化数据。
+
+14、不支持在使用connect或globalConnect的类中使用@Computed。@Computed为只读属性，不支持赋值操作，因此会导致反序列化失败。
 
 globalConnect支持的类型
 
@@ -1018,6 +1022,81 @@ struct Page1 {
 
 globalConnect为应用级别存储，对于一个key，整个应用在对应加密分区只有一份存储路径；connect为module级别的存储路径，会因为module的启动方式不同而在各自的加密分区对应不同的存储路径。
 
+[h2]通过notifyOnError获取旧的序列化数据
+
+当存储数据的结构与当前数据的结构不同时，可能会导致反序列化失败。从API版本26.0.0开始，开发者可通过向notifyOnError的入参回调中加入oldValue参数来获取存于磁盘的旧的序列化数据，从而直观感知到数据结构的差异。
+
+import { PersistenceV2, Type } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+// 接受序列化失败的回调
+PersistenceV2.notifyOnError((key: string, reason: string, msg: string, oldValue?: string) => {
+  hilog.error(DOMAIN, 'testTag', '%{public}s',
+    `error key: ${key}, reason: ${reason}, message: ${msg}, oldValue: ${oldValue}`);
+});
+
+@ObservedV2
+class SampleInfo {
+  @Trace public info: boolean = true;
+  @Trace public propertyName: string = 'Hello';
+}
+
+@ObservedV2
+class SampleChild {
+  // 起始时childInfo类型为SampleInfo，使用connect/globalConnect将其存储到磁盘
+  @Type(SampleInfo)
+  @Trace public childInfo: SampleInfo = new SampleInfo();
+  // 将childInfo类型切换为number，并重新运行
+  // @Trace public childInfo: number = 0;
+  public groupId: number = 1;
+}
+
+@ObservedV2
+export class Sample {
+  // 对于复杂对象需要@Type修饰，确保序列化成功
+  @Type(SampleChild)
+  @Trace public father: SampleChild = new SampleChild();
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  @Local refresh: number = 0;
+  // 调用connect或globalConnect存储
+  @Local p: Sample = PersistenceV2.connect(Sample, 'connectSample', () => new Sample())!;
+  // @Local p: Sample = PersistenceV2.globalConnect({ type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
+
+  build() {
+    Column({ space: 5 }) {
+      // 显示数据
+      Text('Key connectSample: ' + this.p.father.groupId.toString())
+        .onClick(() => {
+          this.p.father.groupId += 1;
+        })
+        .fontSize(25)
+        .fontColor(Color.Red)
+
+      // save接口
+      // 未被@Trace装饰的变量需要借助状态变量refresh才能刷新
+      Text('save key connect3: ' + this.p.father.groupId.toString() + ' refresh:' + this.refresh)
+        .onClick(() => {
+          // 未被@Trace保存的对象无法自动存储，需要调用save存储
+          this.p.father.groupId += 1;
+          PersistenceV2.save('connectSample');
+          this.refresh += 1;
+        })
+        .fontSize(25)
+    }
+    .width('100%')
+  }
+}
+
+起始时，SampleChild中的childInfo变量类型为SampleInfo，正常存储后，将childInfo变量的类型切换为number，并赋值为1，之后再次启动程序，此时会由于存储数据的结构与当前数据的结构不一致，导致数据反序列化失败。此时会通过notifyOnError中写入的回调，将磁盘中存储的旧的序列化数据打印出来。即在Error日志中显示：
+
+error key: connectSample, reason: serialization, message: TypeError: Receiver is not a JSObject, oldValue: {"father":{"childInfo":{"info":true,"propertyName":"Hello"},"groupId":1}}
+
 使用建议
 
 建议开发者使用新接口globalConnect创建和获取数据。globalConnect的存储规格和内存规格一致，对于应用只有一份，并且支持设置加密级别，不需要去切换ability的加密才能设置数据的加密级别。当然如果开发者应用不涉及多模块，保持使用connect也不会有影响。
@@ -1159,6 +1238,90 @@ struct Page1 {
 }
 
 connect向globalConnect迁移，需要将key绑定的value赋值给globalConnect进行存储，之后当自定义组件使用globalConnect连接时，globalConnect绑定的数据即为之前使用connect保存的数据，开发者可以自定义move函数，并将其放在合适位置迁移即可。
+
+[h2]使用connect/globalConnect存储数据后，不建议变更数据结构
+
+在使用connect/globalConnect存储数据后，不建议变更数据结构，因为变更数据结构可能导致存储的数据反序列化失败，从而无法获取之前的数据。上文通过notifyOnError获取旧的序列化数据介绍了在变更数据结构后，如何通过旧的序列化数据定位数据结构的具体变更。但是，某些场景下由于代码实现中存在数据结构隐式转换等原因，不会触发notifyOnError，导致无法获取旧的序列化数据，例如下面代码所示场景。
+
+import { PersistenceV2, Type } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+// 接受序列化失败的回调
+PersistenceV2.notifyOnError((key: string, reason: string, msg: string, oldValue?: string) => {
+  hilog.error(DOMAIN, 'testTag', '%{public}s',
+    `error key: ${key}, reason: ${reason}, message: ${msg}, oldValue: ${oldValue}`);
+});
+
+@ObservedV2
+class SampleChild {
+  @Trace public info: string = 'Hello';
+}
+
+@ObservedV2
+class Sample {
+  // 起始时childInfo类型为SampleChild，使用connect/globalConnect将其存储到磁盘
+  @Type(SampleChild)
+  @Trace public childInfo: SampleChild = new SampleChild();
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  // 调用connect或globalConnect存储
+  @Local sample: Sample =
+    PersistenceV2.globalConnect({ type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
+
+  build() {
+    Column({ space: 5 }) {
+      Text(JSON.stringify(this.sample)) // 序列化sample变量并显示
+      Button('Change Info')
+        .onClick(() => {
+          // 通过将类型转换为ESObject，再转为SampleChild，绕过了类型校验，故点击后不会触发notifyOnError。
+          // 点击并重新运行后，由于此处存储的info为Array类型，但SampleChild中的info仍是string类型，故会触发notifyOnError。
+          this.sample.childInfo = { info: [1, 2] } as ESObject as SampleChild;
+        })
+    }
+    .width('100%')
+  }
+}
+
+下表将结合样例，说明在变更数据结构时会触发notifyOnError的情形。
+
+说明
+
+1、oldValue为notifyOnError的入参回调的参数，用于在反序列化失败时，获取旧的序列化数据。
+
+2、下表中会触发notifyOnError的类型，指的是将原始类型改变后，会触发notifyOnError回调的类型。
+
+3、下表中的类型，均是指class中属性的类型。
+
+4、在反序列化时，如果属性类型为Object，则会递归遍历并反序列化其内部属性。
+
+使用PersistenceV2.connect在数据结构变更后触发notifyOnError情况表
+
+原始类型	样例	样例的序列化存储结果	会触发notifyOnError的类型	oldValue
+number	50	50	boolean, Array, Set, Map, Object	50
+boolean	true	true	number, Array, Set, Map, Object	true
+string	'hello'	"hello"	number, boolean, Array, Set, Map, Object	"hello"
+Array	new Array<number>([1,2,3])	[1,2,3]	number, boolean, string	[1,2,3]
+Set	new Set<number>([1,2,3])	[1,2,3]	number, boolean, string	[1,2,3]
+Map	new Map<string, number>([['a',1],['b',2]])	[["a",1],["b",2]]	number, boolean, string, Array, Date	[["a",1],["b",2]]
+Date	new Date()	"2026-03-26T00:00:00.000Z"	number, boolean, Array, Set, Map, Object	"2026-03-26T00:00:00.000Z"
+Object	new Class A { public info: number = 100; }	{"info":100}	number, boolean, string	{"info":100}
+
+使用PersistenceV2.globalConnect在数据结构变更后触发notifyOnError情况表
+
+原始类型	样例	样例的序列化存储结果	会触发notifyOnError的类型	oldValue
+number	50	50	无	无
+boolean	true	true	无	无
+string	'hello'	"hello"	无	无
+Array	new Array<number>([1,2,3])	\"Ar0003[1,2,3]\"	number, boolean, string, Set, Map, Date, Object	[1,2,3]
+Set	new Set<number>([1,2,3])	\"Se0003\\\"Ar0004[1,2,3]\\\"\"	number, boolean, string, Array, Map, Date, Object	[1,2,3]
+Map	new Map<string, number>([['a',1],['b',2]])	\"Ma0003[[\\\"a\\\",\\\"1\\\"],[\\\"b\\\",\\\"2\\\"]]\"	number, boolean, string, Array, Set, Date, Object	[["a",1],["b",2]]
+Date	new Date()	\"Da00032026-03-26T00:00:00.000Z\"	无	无
+Object	new Class A { public info: number = 100; }	\"0b0003{\\\"info\\\":100}\"	number, boolean, string	{"info":100}
 
 ## Code blocks
 
@@ -2093,6 +2256,83 @@ struct Page1 {
 ### Code block 19
 
 ```
+import { PersistenceV2, Type } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+// 接受序列化失败的回调
+PersistenceV2.notifyOnError((key: string, reason: string, msg: string, oldValue?: string) => {
+  hilog.error(DOMAIN, 'testTag', '%{public}s',
+    `error key: ${key}, reason: ${reason}, message: ${msg}, oldValue: ${oldValue}`);
+});
+
+@ObservedV2
+class SampleInfo {
+  @Trace public info: boolean = true;
+  @Trace public propertyName: string = 'Hello';
+}
+
+@ObservedV2
+class SampleChild {
+  // 起始时childInfo类型为SampleInfo，使用connect/globalConnect将其存储到磁盘
+  @Type(SampleInfo)
+  @Trace public childInfo: SampleInfo = new SampleInfo();
+  // 将childInfo类型切换为number，并重新运行
+  // @Trace public childInfo: number = 0;
+  public groupId: number = 1;
+}
+
+@ObservedV2
+export class Sample {
+  // 对于复杂对象需要@Type修饰，确保序列化成功
+  @Type(SampleChild)
+  @Trace public father: SampleChild = new SampleChild();
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  @Local refresh: number = 0;
+  // 调用connect或globalConnect存储
+  @Local p: Sample = PersistenceV2.connect(Sample, 'connectSample', () => new Sample())!;
+  // @Local p: Sample = PersistenceV2.globalConnect({ type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
+
+  build() {
+    Column({ space: 5 }) {
+      // 显示数据
+      Text('Key connectSample: ' + this.p.father.groupId.toString())
+        .onClick(() => {
+          this.p.father.groupId += 1;
+        })
+        .fontSize(25)
+        .fontColor(Color.Red)
+
+      // save接口
+      // 未被@Trace装饰的变量需要借助状态变量refresh才能刷新
+      Text('save key connect3: ' + this.p.father.groupId.toString() + ' refresh:' + this.refresh)
+        .onClick(() => {
+          // 未被@Trace保存的对象无法自动存储，需要调用save存储
+          this.p.father.groupId += 1;
+          PersistenceV2.save('connectSample');
+          this.refresh += 1;
+        })
+        .fontSize(25)
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 20
+
+```
+error key: connectSample, reason: serialization, message: TypeError: Receiver is not a JSObject, oldValue: {"father":{"childInfo":{"info":true,"propertyName":"Hello"},"groupId":1}}
+```
+
+### Code block 21
+
+```
 // 使用connect存储数据
 import { PersistenceV2, Type } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -2150,7 +2390,7 @@ struct Page1 {
 }
 ```
 
-### Code block 20
+### Code block 22
 
 ```
 // 迁移到globalConnect
@@ -2226,6 +2466,54 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 23
+
+```
+import { PersistenceV2, Type } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+
+// 接受序列化失败的回调
+PersistenceV2.notifyOnError((key: string, reason: string, msg: string, oldValue?: string) => {
+  hilog.error(DOMAIN, 'testTag', '%{public}s',
+    `error key: ${key}, reason: ${reason}, message: ${msg}, oldValue: ${oldValue}`);
+});
+
+@ObservedV2
+class SampleChild {
+  @Trace public info: string = 'Hello';
+}
+
+@ObservedV2
+class Sample {
+  // 起始时childInfo类型为SampleChild，使用connect/globalConnect将其存储到磁盘
+  @Type(SampleChild)
+  @Trace public childInfo: SampleChild = new SampleChild();
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  // 调用connect或globalConnect存储
+  @Local sample: Sample =
+    PersistenceV2.globalConnect({ type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
+
+  build() {
+    Column({ space: 5 }) {
+      Text(JSON.stringify(this.sample)) // 序列化sample变量并显示
+      Button('Change Info')
+        .onClick(() => {
+          // 通过将类型转换为ESObject，再转为SampleChild，绕过了类型校验，故点击后不会触发notifyOnError。
+          // 点击并重新运行后，由于此处存储的info为Array类型，但SampleChild中的info仍是string类型，故会触发notifyOnError。
+          this.sample.childInfo = { info: [1, 2] } as ESObject as SampleChild;
+        })
     }
     .width('100%')
   }

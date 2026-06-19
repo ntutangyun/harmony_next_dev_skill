@@ -26,4 +26,8 @@ Performance Analysis Kit简介
 
 错误管理及应用恢复
 
+应用灰度采集
+
 Performance Analysis Kit术语
+
+个人数据处理说明

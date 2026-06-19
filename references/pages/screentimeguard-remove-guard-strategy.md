@@ -4,9 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当应用希望删除现有的屏幕时间守护规则时，可以调用删除管控策略的接口。根据参数中传入的策略名删除对应的策略。一旦策略被删除，系统将不再根据该规则对用户的屏幕使用行为进行监管。
-
-用户体验设计
+当管控应用希望删除现有的屏幕时间守护规则时，可以调用删除管控策略的接口。根据参数中传入的策略名删除对应的策略。一旦策略被删除，系统将不再根据该规则对用户的屏幕使用行为进行管控。
 
 业务流程
 
@@ -42,13 +40,13 @@ import { BusinessError } from '@kit.BasicServicesKit';
 调用removeGuardStrategy，删除管控策略。
 
 private async removeStrategy(strategyName: string): Promise<void> {
-   try {
-      await guardService.removeGuardStrategy(strategyName);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.removeGuardStrategy(strategyName);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 ## Code blocks
@@ -65,12 +63,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 private async removeStrategy(strategyName: string): Promise<void> {
-   try {
-      await guardService.removeGuardStrategy(strategyName);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.removeGuardStrategy(strategyName);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```

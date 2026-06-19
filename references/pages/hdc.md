@@ -500,12 +500,14 @@ hdc shell [-b bundlename] [command]
 参数：
 
 参数	说明
--b bundlename	3.1.0e版本新增参数。指定可调试应用包名，在可调试应用数据目录内，以非交互式模式执行命令。 命令行方式访问应用沙箱。 此参数当前仅支持以非交互式模式执行命令，不支持缺省command参数执行命令进入交互式shell会话。 未配置此参数时，默认执行路径为系统根目录。
+-b bundlename	3.1.0e版本新增参数。指定可调试应用包名。 - 指定command参数时：在该可调试应用数据目录内以非交互式模式执行命令。命令行方式访问应用沙箱。 自3.2.0e版本起，参数新增以下特性： - 缺省command参数时，支持进入可调试应用数据目录的交互式shell会话，默认工作目录即为可调试应用数据目录根路径。 - 缺省[-b bundlename]参数时，默认执行路径为系统根目录。
 command	需要在设备上执行的单次命令，不同类型或版本的系统支持的command命令有所差异，可以通过hdc shell ls /system/bin查阅支持的命令列表。当前大多数命令都是由toybox提供，可通过 hdc shell toybox --help 获取命令帮助。 缺省该参数，hdc将会启动一个交互式的shell会话，开发者可以在命令提示符下输入命令，比如 ls、cd、pwd 等。
 
 说明
 
 使用参数[-b bundlename]指定包名，该包名对应的已安装应用必须满足以下条件：使用调试证书签名，并且已在设备上启动。有关如何申请调试证书及签名可参考：申请调试证书。
+
+当设备系统版本和hdc版本均低于3.2.0e时，缺省command参数进入的交互式shell会话默认工作目录仍为系统根目录。建议升级设备系统版本并参考hdc版本配套表确认版本兼容性，可通过hdc shell hdcd -v命令查询设备系统版本号。
 
 返回信息：
 
@@ -539,6 +541,11 @@ name of a command to run, followed by any arguments to that command.
 # 在指定包名的应用数据目录内以非交互式模式执行命令，支持touch、rm、ls、stat、cat、mkdir等命令。
 $ hdc shell -b com.example.myapplication ls data/storage/el2/base/
 
+# 进入指定包名的可调试应用数据目录交互式shell会话。
+$ hdc shell -b com.example.myapplication
+$ pwd
+...（以设备实际输出为准）
+
 应用管理
 
 命令	说明
@@ -554,7 +561,7 @@ hdc install [-cwd path|-r|-s|-w waitingTime|-u userId|-p|-g|-h] src
 参数：
 
 参数名	说明
-src	应用安装包的文件路径。支持安装HAP、应用内HSP。从API version 22开始，支持安装APP包。
+src	应用安装包的文件路径。支持安装HAP、应用内HSP。从API version 22开始，支持安装APP应用包。
 -cwd	修改工作目录。 用于在应用安装时，切换src到指定path。例如，初始安装应用为test.hap，所在目录为C:\，实际安装应用文件路径为C:\test.hap；如果使用-cwd "D:\"，实际安装应用文件路径为D:\test.hap。
 -r	可选参数，覆盖安装一个HAP/HSP。默认缺省，缺省时表示覆盖安装。
 -s	安装应用HSP时为必选参数，其他场景为可选参数。用于指定待安装应用间HSP的路径。指定目录的时候，每个路径目录下只能存在一个HSP。
@@ -1028,7 +1035,7 @@ hdc track-jpid [-a|-p]
 
 返回信息	说明
 进程号和包名/进程名列表。	不加参数时仅显示已打开应用的进程pid，使用-p参数额外显示应用包名，使用-a参数同时显示debug和release标签。
-[Empty]	无开启JDWP调试协议的应用进程。
+[Empty]	无已打开的应用进程。
 
 使用方法：
 
@@ -1322,6 +1329,7 @@ hdc版本	API版本	新增特性
 3.1.0a	12	wait命令支持-t参数：详细说明参见等待设备正常连接。
 3.1.0e	15及以上版本	- file send命令支持-b参数：详细说明参见文件传输。 - file recv命令支持-b参数：详细说明参见文件传输。 - shell命令支持-b参数：详细说明参见执行交互命令。
 3.2.0b	20	- 端口转发任务支持监听远端主机IP：详细说明参见创建正向端口转发任务。
+3.2.0e	26.0.0及以上版本	- shell命令支持-b参数缺省command参数进入交互式shell会话：详细说明参见执行交互命令。
 
 注意
 
@@ -2491,6 +2499,11 @@ name of a command to run, followed by any arguments to that command.
 
 # 在指定包名的应用数据目录内以非交互式模式执行命令，支持touch、rm、ls、stat、cat、mkdir等命令。
 $ hdc shell -b com.example.myapplication ls data/storage/el2/base/
+
+# 进入指定包名的可调试应用数据目录交互式shell会话。
+$ hdc shell -b com.example.myapplication
+$ pwd
+...（以设备实际输出为准）
 ```
 
 ### Code block 33

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-在用户需要为特定应用设置使用时长或使用限制策略的场景下，开发者通过调用拉起应用选择页的接口拉起选择页后，使得用户能够选择目标应用。在用户选择完毕并点击完成按钮后，接口会返回应用的token。开发者获取到目标应用的token后，可以根据token为选定应用配置管控策略。
+在需要为指定应用设置管控规则的场景下，管控应用通过调用拉起应用选择页的接口拉起选择页后，使得用户能够选择目标应用。在用户选择完毕并点击完成按钮后，接口会返回选中应用的token。管控应用获取到目标应用的token后，可以根据token为选定应用设置管控规则。
 
 用户体验设计
 
@@ -46,16 +46,16 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 调用startAppPicker，拉起应用选择页。
 
 private async getAppTokens(selectedAppTokens: string[]): Promise<string[]> {
-   try {
-      let newSelectedAppTokens: string[] =
-         await appPicker.startAppPicker(this.getUIContext().getHostContext(), { appTokens: selectedAppTokens });
-      return newSelectedAppTokens;
-   } catch(error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(this.domainId, this.logTag,
-         `startAppPicker fail, errCode is ${err.code}, errMessage is ${err.message}`);
-      return selectedAppTokens;
-   }
+  try {
+    let newSelectedAppTokens: string[] =
+      await appPicker.startAppPicker(this.getUIContext().getHostContext(), { appTokens: selectedAppTokens });
+    return newSelectedAppTokens;
+  } catch(error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `startAppPicker fail, errCode is ${err.code}, errMessage is ${err.message}`);
+    return selectedAppTokens;
+  }
 }
 
 ## Code blocks
@@ -72,15 +72,15 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 ```
 private async getAppTokens(selectedAppTokens: string[]): Promise<string[]> {
-   try {
-      let newSelectedAppTokens: string[] =
-         await appPicker.startAppPicker(this.getUIContext().getHostContext(), { appTokens: selectedAppTokens });
-      return newSelectedAppTokens;
-   } catch(error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(this.domainId, this.logTag,
-         `startAppPicker fail, errCode is ${err.code}, errMessage is ${err.message}`);
-      return selectedAppTokens;
-   }
+  try {
+    let newSelectedAppTokens: string[] =
+      await appPicker.startAppPicker(this.getUIContext().getHostContext(), { appTokens: selectedAppTokens });
+    return newSelectedAppTokens;
+  } catch(error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `startAppPicker fail, errCode is ${err.code}, errMessage is ${err.message}`);
+    return selectedAppTokens;
+  }
 }
 ```

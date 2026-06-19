@@ -20,4 +20,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug
 
 录屏
 
+设备投屏
+
 调试错误码

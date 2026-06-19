@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-locat
 
 使用该功能需满足以下条件：
 
-仅支持手机、平板和2in1设备。
+仅支持手机、平板、PC/2in1和Car设备，并且从26.0.0版本开始，新增支持Car设备。
 
 接口说明
 
@@ -49,9 +49,9 @@ let locationChoosingOptions: sceneMap.LocationChoosingOptions = {
 // 拉起地点选取页
 sceneMap.chooseLocation(this.getUIContext().getHostContext() as common.UIAbilityContext,
   locationChoosingOptions).then((data) => {
-  console.info("ChooseLocation", "Succeeded in choosing location.");
+  console.info('ChooseLocation', 'Succeeded in choosing location.');
 }).catch((err: BusinessError) => {
-  console.error("ChooseLocation", `Failed to choose location, code: ${err.code}, message: ${err.message}`);
+  console.error('ChooseLocation', `Failed to choose location, code: ${err.code}, message: ${err.message}`);
 });
 
 ## Code blocks
@@ -81,8 +81,8 @@ let locationChoosingOptions: sceneMap.LocationChoosingOptions = {
 // 拉起地点选取页
 sceneMap.chooseLocation(this.getUIContext().getHostContext() as common.UIAbilityContext,
   locationChoosingOptions).then((data) => {
-  console.info("ChooseLocation", "Succeeded in choosing location.");
+  console.info('ChooseLocation', 'Succeeded in choosing location.');
 }).catch((err: BusinessError) => {
-  console.error("ChooseLocation", `Failed to choose location, code: ${err.code}, message: ${err.message}`);
+  console.error('ChooseLocation', `Failed to choose location, code: ${err.code}, message: ${err.message}`);
 });
 ```

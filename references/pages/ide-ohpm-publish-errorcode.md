@@ -14,7 +14,7 @@ Dep Statements Missing.
 
 可能原因
 
-在oh-package.json5的dependencies/dynamicDependencies未声明。
+oh-package.json5的dependencies/dynamicDependencies未声明。
 
 处理步骤
 
@@ -68,7 +68,7 @@ Key Path Is DirError.
 
 可能原因
 
-私钥路径文件错误。
+私钥文件路径错误。
 
 处理步骤
 

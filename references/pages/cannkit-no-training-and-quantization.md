@@ -160,7 +160,7 @@ pip3 install tensorflow-gpu==2.8
 --cal_conf	是	校准方式量化配置文件路径。 量化配置文件说明请参见填写config.prototxt文件。
 --output	是	存放量化完成后的模型文件绝对路径，例如"/path/to/out/resnet18.pb"。
 --input_format	是	输入格式数据，NHWC或NCHW。 当开发者选择IMAGE格式或文件头为510的bin文件作为输入数据，并选择输入格式数据为NHWC时，工具会自动调整通道顺序；当选择文件头为610的bin文件作为输入数据时不会调整通道顺序。
---input_shape	是	输入数据的shape。 例如：“input_name1: n1,c1; h1, w1; input_name2: n2, c2, h2, w2”。input_name必须是转换前的网络模型中的节点名称。多输入input_shape之间由';'进行分割。input_shape中指定各维度输入数据值需与网络模型中指定的输入节点所需形状保持一致。例如：假设转换前网络模型指定输入节点为input_shape_network: none, 224, 224, 3; input_shape第2、3、4维度输入数值必须为224,224,3，否则尺寸不匹配。假设转换前网络模型指定输入节点为input_shape_network: 1, 224, 224, 3；则input_shape各维度输入数据均不可变。
+--input_shape	是	输入数据的shape。 例如：“input_name1: n1, c1，h1, w1; input_name2: n2, c2, h2,w2”。input_name必须是转换前的网络模型中的节点名称。多输入input_shape之间由';'进行分割。input_shape中指定各维度输入数据值需与网络模型中指定的输入节点所需形状保持一致。例如：假设转换前网络模型指定输入节点为input_shape_network: none, 224, 224, 3; input_shape第2、3、4维度输入数值必须为224,224,3，否则尺寸不匹配。假设转换前网络模型指定输入节点为input_shape_network: 1, 224, 224, 3；则input_shape各维度输入数据均不可变。
 --out_nodes	是	指定输出节点。 例如：“node_name1; node_name2; node_name3”。node_name必须是模型转换前的网络模型中的节点名称。
 --compress_conf	是	模型文件转为二进制格式文件的路径。 例如：“param_file”。该文件为轻量化配置，在使用OMG离线模型转换时将被作为参数compress_conf的输入。
 --device_idx	否	GPU或CPU的设备号，默认为0。

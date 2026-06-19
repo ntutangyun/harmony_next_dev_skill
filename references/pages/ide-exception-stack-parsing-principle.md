@@ -54,7 +54,7 @@ stripped_native_libs：移除调试信息等冗余数据后的so。
 
 [h2]C++堆栈解析流程
 
-llvm-addr2line（获取llvm-addr2line工具）是将函数地址解析成文件名或行号的工具。
+llvm-addr2line（在DevEco Studio安装目录的sdk/default/openharmony/native/llvm/bin目录下）是将函数地址解析成文件名或行号的工具。
 
 给出一个可执行文件中的地址或一个可重定位对象中的偏移部分的地址，使用调试信息来找出与之相关的文件名和行号。
 
@@ -84,12 +84,6 @@ llvm-addr2line 0x00000000004005e7 -e test -f -C -s
 llvm-addr2line -e libapplication.so 00003714 -f -C
 
 ASan堆栈解析：
-
-[h2]常见问题
-
-每一个可执行程序都有一个build UUID来唯一标识。Crash日志包含发生crash的这个应用（app）的build UUID以及crash发生时应用加载的所有库文件的build UUID。
-
-在DevEco Studio安装目录/deveco-studio/sdk/default/openharmony/native/llvm/bin下即可找到llvm-addr2line.exe。
 
 ArkTS堆栈解析原理
 

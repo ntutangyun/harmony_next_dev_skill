@@ -20,7 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-frame
 
 说明
 
-在“RS Frame”和“App Frame”标签的泳道中，正常完成渲染的帧显示为绿色，出现卡顿的帧显示为红色。
+在带RS Frame和App Frame标签的子泳道中，正常完成渲染的帧显示为绿色，出现卡顿的帧显示为红色。
 
 AppDeadlineMissed：App侧的卡顿。
 

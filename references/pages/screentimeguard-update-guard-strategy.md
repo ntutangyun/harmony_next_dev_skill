@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当用户希望调整现有的屏幕时间守护规则时，可以调用更新管控策略的接口。我们kit支持根据参数中传入的策略名以及修改策略的方案，用户可以修改各种策略，如调整各个应用的停用起止时间。一旦修改完成并保存，系统将根据新的规则对用户的屏幕使用行为进行管控。
+当管控应用希望调整现有的管控策略时，可以调用更新管控策略的接口。Screen Time Guard Kit支持根据参数中传入的策略名以及新的管控策略来修改指定策略，如调整被管控应用的停用时间。一旦修改完成并保存，系统将根据新的规则对用户的屏幕使用行为进行管控。
 
 业务流程
 
@@ -18,7 +18,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 说明
 
-更新管控策略的策略名需和当前已有的策略一致，否则会抛出策略不存在错误。
+待更新管控策略的策略名需和当前已有的策略一致，否则会抛出策略不存在错误。
+
+新的策略名可以和当前待更新的策略名一致，除此之外，不能和其他当前已有的策略一致，否则会抛出参数错误。
 
 接口说明
 
@@ -42,13 +44,13 @@ import { BusinessError } from '@kit.BasicServicesKit';
 调用updateGuardStrategy，修改管控策略。
 
 private async updateStrategy(strategyName: string, guardStrategy: guardService.GuardStrategy): Promise<void> {
-   try {
-      await guardService.updateGuardStrategy(strategyName, guardStrategy);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `updateGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-      }
+  try {
+    await guardService.updateGuardStrategy(strategyName, guardStrategy);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `updateGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 ## Code blocks
@@ -65,12 +67,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 private async updateStrategy(strategyName: string, guardStrategy: guardService.GuardStrategy): Promise<void> {
-   try {
-      await guardService.updateGuardStrategy(strategyName, guardStrategy);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `updateGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-      }
+  try {
+    await guardService.updateGuardStrategy(strategyName, guardStrategy);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `updateGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```

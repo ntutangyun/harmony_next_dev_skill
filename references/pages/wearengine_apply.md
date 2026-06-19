@@ -4,6 +4,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wearengin
 
 申请Wear Engine服务前，请先参考应用开发准备（开发者需实名认证为个人开发者或者企业开发者，认证前，请先了解二者的权益区别），确认开发环境并完成创建项目、创建HarmonyOS应用等基本准备工作，再继续进行以下开发活动。
 
+登录AppGallery Connect，选择“开发与服务”。
+
+在项目列表选择项目，并在应用列表下选择需要申请的应用。
+
+进入“项目设置 > 开放能力管理”页面，点击“Wear Engine”对应的“管理”。
+
 进入华为开发者联盟的“管理中心”，点击“应用服务”页签下的“Wear Engine”卡片。
 
 说明

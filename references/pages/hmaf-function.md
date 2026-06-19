@@ -12,7 +12,7 @@ Function按钮组件：允许应用自定义功能描述的组件。
 
 开发前准备
 
-创建智能体，具体请参见快速创建智能体。
+开发智能体，具体请参见开发Agent。
 
 关联应用，具体请参见关联应用。
 
@@ -66,7 +66,7 @@ import { common } from '@kit.AbilityKit';
 @Component
 export struct AgentExample {
   private controller: FunctionController = new FunctionController();
-  private agentId: string = 'agentproxy65481da1fa2293a8482d45'; // 智能体对应的agentid，由小艺智能体平台在创建智能体时指定
+  private agentId: string = 'agentproxy65481da1fa2293a8482d45'; // 智能体对应的agentId，由小艺智能体平台在创建智能体时指定
   build() {
     Column() {
       FunctionComponent({
@@ -223,7 +223,7 @@ import { common } from '@kit.AbilityKit';
 @Component
 export struct AgentExample {
   private controller: FunctionController = new FunctionController();
-  private agentId: string = 'agentproxy65481da1fa2293a8482d45'; // 智能体对应的agentid，由小艺智能体平台在创建智能体时指定
+  private agentId: string = 'agentproxy65481da1fa2293a8482d45'; // 智能体对应的agentId，由小艺智能体平台在创建智能体时指定
   build() {
     Column() {
       FunctionComponent({

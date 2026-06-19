@@ -6,9 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emula
 
 使用约束
 
-phone类型的模拟器支持自定义屏幕配置。
+Phone类型的模拟器支持自定义屏幕配置。
 
-从DevEco Studio 6.0.1 Beta1版本开始，新增foldable、tablet和2in1类型的模拟器支持自定义屏幕配置。
+从DevEco Studio 6.0.1 Beta1版本开始，新增Foldable、Tablet和2in1类型的模拟器支持自定义屏幕配置。
+
+从26.0.0 Beta1版本开始，新增Car类型的模拟器支持自定义屏幕配置。
 
 操作步骤
 

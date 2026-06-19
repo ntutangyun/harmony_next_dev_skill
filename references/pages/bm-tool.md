@@ -409,7 +409,7 @@ error: user not exist.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 hdc file recv /data/log/hilog/
 
@@ -785,7 +785,7 @@ error: install host installer failed.
 
 请尝试重启设备后重新安装。
 
-[h2]9568262 插件安装命令错误
+[h2]9568262 安装解析应用失败
 
 错误信息
 
@@ -793,15 +793,23 @@ error: install parse failed.
 
 错误描述
 
-插件安装使用的命令不正确。
+安装解析应用失败。
 
 可能原因
 
-安装插件用了bm install命令。
+使用了bm install命令安装插件。
+
+使用了bm install命令安装bundleType为skill类型的包。
+
+待安装应用的module.json中配置了skillProfiles，但配置的skill名称、skill目录名与SKILL.md中frontmatter的name不一致。
 
 处理步骤
 
 安装插件请使用bm install-plugin命令。
+
+skill类型的包不支持命令行安装，请修改应用bundleType的类型。
+
+检查module.json中skillProfiles下skill的name、skills目录下的子目录名称、SKILL.md中frontmatter的name，确保三者一致。
 
 [h2]9568265 安装过程中内部参数有误
 
@@ -941,9 +949,7 @@ error: signature verification failed due to not trusted app source.
 
 场景二：请确保profile文件是由配置中的.cer文件生成的，可以登录AppGallery Connect，选择“证书、APP ID和Profile”，在左侧导航栏选择“证书、APP ID和Profile > Profile”，进入“Profile”页面，选择配置的profile文件，右侧操作点击“查看”，确认“查看Profile”页面中“归属证书”是否与配置的.cer文件一致。
 
-场景三：
-
-使用自动签名。在连接设备后，重新为应用进行签名。
+场景三：使用自动签名。在连接设备后，重新为应用进行签名。
 
 [h2]9568286 安装应用的签名证书profile文件中的类型与已安装应用的不相同
 
@@ -1023,7 +1029,7 @@ error: install failed due to update hap token failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 hdc file recv /data/log/hilog/
 
@@ -1169,7 +1175,7 @@ error: verify signature failed.
 
 场景一：HSP只能给同包名的应用使用，只有集成态HSP可以给不同包名的应用使用。需要用户与三方开发者确认，三方开发者应提供集成态HSP、或同包名的HSP给用户使用。
 
-场景二：检查签名流程和签名证书，参考应用/元服务签名。
+场景二：检查签名流程和签名证书，参考配置调试签名。
 
 [h2]9568266 安装权限拒绝
 
@@ -1577,7 +1583,7 @@ error: copy file failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 hdc file recv /data/log/hilog/
 
@@ -1631,7 +1637,7 @@ error: delivery sign profile failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 hdc file recv /data/log/hilog/
 
@@ -1657,7 +1663,7 @@ error: remove sign profile failed.
 
 重启手机后再次尝试卸载应用（PC/2in1设备需要确保所有用户下都卸载完成，手机/平板侧需要关注隐私空间和主用户下是否卸载完成）。
 
-重复上述步骤3到5次后依旧卸载失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧卸载失败，请导出日志文件，提在线工单获取帮助。
 
 hdc file recv /data/log/hilog/
 
@@ -1715,7 +1721,7 @@ bm工具进程异常或者权限丢失，导致卸载应用时无权限。
 
 设备重启之后再尝试卸载应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -1803,7 +1809,7 @@ error: unknown.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -2054,7 +2060,7 @@ error: installd param error.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -2077,7 +2083,7 @@ error: installd create dir failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -2100,7 +2106,7 @@ error: installd remove dir failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -2123,7 +2129,7 @@ error: installd extract files failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -2146,7 +2152,7 @@ error: installd rename dir failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -2169,7 +2175,7 @@ error: installd clean dir failed.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/
@@ -2686,7 +2692,7 @@ error: Install incompatible signature info.
 
 处理步骤
 
-重新签名，使多个HAP包签名信息一致。参考应用/元服务签名。
+重新签名，使多个HAP包签名信息一致。参考配置调试签名。
 
 [h2]9568334 模块名称重复
 
@@ -2820,7 +2826,7 @@ error: install parse native so failed.
 
 处理步骤
 
-将设备或模拟器与DevEco Studio进行连接，具体指导及要求可查看运行应用/元服务。
+将设备或模拟器与DevEco Studio进行连接，具体指导及要求可查看使用本地真机运行应用。
 
 在命令行执行如下hdc命令，查询设备支持的Abi列表。
 
@@ -2867,7 +2873,7 @@ error: Installd get proxy error.
 
 重启手机后再次尝试安装应用。
 
-重复上述步骤3到5次后依旧安装失败，请导出日志文件提在线工单获取帮助。
+重复上述步骤3到5次后依旧安装失败，请导出日志文件，提在线工单获取帮助。
 
 # 导出日志文件
 hdc file recv /data/log/hilog/

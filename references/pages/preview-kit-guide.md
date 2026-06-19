@@ -8,8 +8,10 @@ Preview Kit简介
 
 文件打开加速（C/C++）
 
-文件打开加速状态感知
+文件打开加速状态感知（已废弃）
 
 通用文件缓存加速（C/C++）
 
 Preview Kit常见问题
+
+Preview Kit术语

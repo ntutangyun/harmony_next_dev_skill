@@ -24,4 +24,8 @@ Media Library Kit 简介
 
 受限开放能力
 
+图片获取与保存实践
+
 Media Library Kit常见问题
+
+Media Library Kit术语

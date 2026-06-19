@@ -13,3 +13,5 @@ App Linking Kit简介
 通过延迟链接跳转至应用详情页
 
 通过聚合链接按指定方式跳转至应用
+
+App Linking Kit术语

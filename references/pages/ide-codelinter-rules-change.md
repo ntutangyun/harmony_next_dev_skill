@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codelinter-rules-change_
 
+26.0.0.461
+
+新增规则
+
+@correctness/accessibility-label-check
+
+@correctness/accessibility-focus-redundancy-check
+
+@correctness/accessibility-type-redundancy-check
+
+@correctness/accessibility-status-missing-check
+
 6.1.0.609
 
 新增规则
@@ -204,7 +216,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codel
 
 @performance/hp-arkui-avoid-update-auto-state-var-in-aboutToReuse，该规则新增至recommended规则集中。
 
-@performance/hp-arkui-image-async-load所属规则集由recommend改为all。
+@performance/hp-arkui-image-async-load所属规则集由recommended改为all。
 
 @performance/hp-arkui-load-on-demand告警级别由suggestion改为warn。
 

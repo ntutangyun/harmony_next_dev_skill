@@ -204,7 +204,7 @@ Async函数内部异常的处理机制
 
 Async函数内部异常的捕获方式
 
-使用errorManager.on()捕获到Async函数产生的unhandledrejection事件，再通过编写errorManager.on()注册的回调函数，来进行异常处理操作。
+使用errorManager.on()捕获到Async函数产生的unhandledRejection事件，再通过编写errorManager.on()注册的回调函数，来进行异常处理操作。
 
 import { errorManager } from '@kit.AbilityKit';
   // ...

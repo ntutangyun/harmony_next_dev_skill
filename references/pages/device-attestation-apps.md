@@ -16,9 +16,11 @@ Universal Keystore Kit简介
 
 生成密钥(C/C++)
 
-匿名密钥证明(ArkTS)
+在线匿名密钥证明(ArkTS)
 
-匿名密钥证明(C/C++)
+在线匿名密钥证明(C/C++)
+
+离线匿名密钥证明(ArkTS)
 
 签名/验签(ArkTS)
 
@@ -59,7 +61,7 @@ try {
 
 说明
 
-安全建议：为了提高安全性，建议为终端设备中登录的每个用户生成唯一的密钥对。
+实现建议：在免密登录/支付应用等场景，需要为应用中的每个登录用户生成唯一的密钥对。
 
 示例：
 
@@ -106,7 +108,7 @@ async function GenerateKey(keyAlias: string) {
 
 对应用公钥和应用ID进行证明
 
-应用调用Universal Keystore Kit的密钥证明接口对生成的应用公钥和调用的应用身份进行证明，Universal Keystore Kit返回密钥证明证书链给应用，证书链采用X509标准格式。
+您的应用调用Universal Keystore Kit的离线密钥证明接口（推荐）或在线密钥证明接口（不推荐）对生成的应用公钥和调用的应用身份进行证明，Universal Keystore Kit返回密钥证明证书链给应用，证书链采用X509标准格式。其中在线密钥证明接口返回的证书链包含3本证书，离线密钥证明接口返回的证书链包含4本证书。
 
 说明
 
@@ -115,12 +117,13 @@ async function GenerateKey(keyAlias: string) {
 示例：
 
 import { huks } from '@kit.UniversalKeystoreKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 class HuksProperties {
   tag: huks.HuksTag = huks.HuksTag.HUKS_TAG_ALGORITHM;
   value: huks.HuksKeyAlg | huks.HuksKeySize | huks.HuksKeyPurpose | huks.HuksKeyDigest |
-  huks.HuksKeyStorageType | huks.HuksKeyPadding | huks.HuksKeyGenerateType |
-  huks.HuksCipherMode | Uint8Array = huks.HuksKeyAlg.HUKS_ALG_ECC;
+    huks.HuksKeyStorageType | huks.HuksKeyPadding | huks.HuksKeyGenerateType |
+    huks.HuksCipherMode | Uint8Array = huks.HuksKeyAlg.HUKS_ALG_ECC;
 }
 
 let challenge = stringToUint8Array('challenge_data'); // 从服务器获取的挑战值Challenge
@@ -149,13 +152,34 @@ async function anonAttestKey(): Promise<void> {
     properties: properties
   };
 
+  let g_secInfo :Uint8Array = stringToUint8Array("hi_security_level_info");
+  let g_challenge : Uint8Array = stringToUint8Array("hi_challenge_data");
+  let g_version : Uint8Array = stringToUint8Array("hi_os_version_data");
+  let g_keyAlias : Uint8Array = stringToUint8Array("testKey");
+
+  let gCommonParam: Array<huks.HuksParam> = [
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_ID_SEC_LEVEL_INFO, value : g_secInfo },
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_CHALLENGE, value : g_challenge },
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_ID_VERSION_INFO, value : g_version },
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_ID_ALIAS, value : g_keyAlias },
+  ];
+
   try {
-    let data = await huks.anonAttestKeyItem(aliasString, options);
-    // todo：把证书链信息（data变量）发送到云侧的服务器。如下示例代码把证书链打印到日志中，供调测使用，商用代码不需要打印。
-    console.info(`anonAttestKeyItem success`);
-    data.certChains?.forEach(cert => {
-      console.info(cert);
-    });
+    let sdkApiVersionInfo: number = deviceInfo.sdkApiVersion;
+    if (sdkApiVersionInfo<26) {
+      let data = await huks.anonAttestKeyItem(aliasString, options);
+      console.info(`anonAttestKeyItem success`);
+      data.certChains?.forEach(cert => {
+          console.info(cert);
+      });
+    } else {
+      let data = await huks.anonAttestKeyItemOffline(aliasString, gCommonParam);
+      // todo：把证书链信息（data变量）发送到云侧的服务器。如下示例代码把证书链打印到日志中，供调测使用，商用代码不需要打印。
+      console.info(`anonAttestKeyItem success`);
+      data.certChains?.forEach(cert => {
+        console.info(cert);
+      });
+    }
   } catch (error) {
     console.error(`promise: anonAttestKeyItem fail`);
   }
@@ -239,12 +263,13 @@ async function GenerateKey(keyAlias: string) {
 
 ```
 import { huks } from '@kit.UniversalKeystoreKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 class HuksProperties {
   tag: huks.HuksTag = huks.HuksTag.HUKS_TAG_ALGORITHM;
   value: huks.HuksKeyAlg | huks.HuksKeySize | huks.HuksKeyPurpose | huks.HuksKeyDigest |
-  huks.HuksKeyStorageType | huks.HuksKeyPadding | huks.HuksKeyGenerateType |
-  huks.HuksCipherMode | Uint8Array = huks.HuksKeyAlg.HUKS_ALG_ECC;
+    huks.HuksKeyStorageType | huks.HuksKeyPadding | huks.HuksKeyGenerateType |
+    huks.HuksCipherMode | Uint8Array = huks.HuksKeyAlg.HUKS_ALG_ECC;
 }
 
 let challenge = stringToUint8Array('challenge_data'); // 从服务器获取的挑战值Challenge
@@ -273,13 +298,34 @@ async function anonAttestKey(): Promise<void> {
     properties: properties
   };
 
+  let g_secInfo :Uint8Array = stringToUint8Array("hi_security_level_info");
+  let g_challenge : Uint8Array = stringToUint8Array("hi_challenge_data");
+  let g_version : Uint8Array = stringToUint8Array("hi_os_version_data");
+  let g_keyAlias : Uint8Array = stringToUint8Array("testKey");
+
+  let gCommonParam: Array<huks.HuksParam> = [
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_ID_SEC_LEVEL_INFO, value : g_secInfo },
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_CHALLENGE, value : g_challenge },
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_ID_VERSION_INFO, value : g_version },
+    { tag : huks.HuksTag.HUKS_TAG_ATTESTATION_ID_ALIAS, value : g_keyAlias },
+  ];
+
   try {
-    let data = await huks.anonAttestKeyItem(aliasString, options);
-    // todo：把证书链信息（data变量）发送到云侧的服务器。如下示例代码把证书链打印到日志中，供调测使用，商用代码不需要打印。
-    console.info(`anonAttestKeyItem success`);
-    data.certChains?.forEach(cert => {
-      console.info(cert);
-    });
+    let sdkApiVersionInfo: number = deviceInfo.sdkApiVersion;
+    if (sdkApiVersionInfo<26) {
+      let data = await huks.anonAttestKeyItem(aliasString, options);
+      console.info(`anonAttestKeyItem success`);
+      data.certChains?.forEach(cert => {
+          console.info(cert);
+      });
+    } else {
+      let data = await huks.anonAttestKeyItemOffline(aliasString, gCommonParam);
+      // todo：把证书链信息（data变量）发送到云侧的服务器。如下示例代码把证书链打印到日志中，供调测使用，商用代码不需要打印。
+      console.info(`anonAttestKeyItem success`);
+      data.certChains?.forEach(cert => {
+        console.info(cert);
+      });
+    }
   } catch (error) {
     console.error(`promise: anonAttestKeyItem fail`);
   }

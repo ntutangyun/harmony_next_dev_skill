@@ -3989,6 +3989,132 @@ srcEntry配置so文件时，不支持配置绝对路径，不能以/开头，不
 
 srcEntry的so文件路径是相对于libs/{abi}的路径，其中{abi}为设备CPU架构类型（如arm64-v8a），例如so文件路径是libs/arm64-v8a/ole/liboleEntry.so，则srcEntry配置为"ole/liboleEntry.so"。
 
+00303303 skillProfiles的abilityName仅支持UIAbility或service类型的ExtensionAbility
+
+错误信息
+
+XXX configured for abilityName is invalid in skillProfiles[name='YYY']. Only UIAbilities or service-type extensionAbilities are supported. At file: ZZZ.
+
+错误描述
+
+skillProfiles的abilityName仅支持abilities标签下的UIAbility或extensionAbilities标签下type为service的ExtensionAbility。
+
+可能原因
+
+name为YYY的skillProfiles的abilityName XXX不是UIAbility或service类型的ExtensionAbility。
+
+处理步骤
+
+将abilityName修改为UIAbility或service类型的ExtensionAbility。
+
+00303304 skillProfiles的srcEntries只能配置ets文件
+
+错误信息
+
+The suffix of srcEntry value XXX is invalid in skillProfiles[name='YYY']. Only .ets source code files are supported. At file: ZZZ.
+
+错误描述
+
+skillProfiles的srcEntries只能配置ets文件。
+
+可能原因
+
+name为YYY的skillProfiles的srcEntries中的XXX后缀不是.ets。
+
+处理步骤
+
+将srcEntries中的XXX改成后缀为.ets的文件。
+
+00303305 skillProfiles的srcEntries只能以./或../开头
+
+错误信息
+
+srcEntry value XXX must start with ./ or ../ in skillProfiles[name='YYY']. At file: ZZZ.
+
+错误描述
+
+skillProfiles的srcEntries的值只能以./或../开头。
+
+可能原因
+
+name为YYY的skillProfiles的srcEntries中的XXX不是以./或../开头。
+
+处理步骤
+
+将srcEntries中的XXX改为以./或../开头。
+
+00303306 技能包应用中只能有一个类型为skill的模块
+
+错误信息
+
+When bundleType is 'skill', only one skill module is allowed, but XXX skill modules are found: YYY.
+
+错误描述
+
+当app.json5的bundleType配置为skill类型时，只允许创建一个类型为skill的模块。
+
+可能原因
+
+项目里配置了多个类型为skill的模块。
+
+处理步骤
+
+删除多余的类型为skill的模块，只保留一个。
+
+00303307 技能包应用中配置了非skill类型的模块
+
+错误信息
+
+When bundleType is 'skill', only one skill module is allowed and moduleType must be of type 'skill'. However, the following non-skill modules are found: XXX.
+
+错误描述
+
+当app.json5的bundleType配置为skill类型时，应用只允许包含1个模块，且模块的type必须配置为skill，即module.json5中的type字段需配置为skill。
+
+可能原因
+
+项目里配置了一个或多个类型非skill的模块。
+
+处理步骤
+
+删除非skill类型的模块，只保留一个类型为skill的模块。
+
+00303308 技能包应用中skillProfiles配置下只能有一个skillProfile
+
+错误信息
+
+A skill module supports only one skill profile, but XXX skill profiles are detected in module 'YYY'. At file: ZZZ.
+
+错误描述
+
+skill类型的模块的module.json5文件中skillProfiles配置项下只能有一个skillProfile，即skillProfiles数组只能有一个元素。
+
+可能原因
+
+skill类型模块的skillProfiles配置项下有多个skillProfile。
+
+处理步骤
+
+删除多余的skillProfile，只保留一个。
+
+00303309 Bundle类型和模块类型不匹配
+
+错误信息
+
+When bundleType is 'XXX', the skill module is not allowed. Remove module 'YYY' or change bundleType to 'skill'. At file: ZZZ.
+
+错误描述
+
+当app.json5的bundleType不是skill时，模块类型不允许为skill。
+
+可能原因
+
+项目中Bundle类型和模块类型不匹配。
+
+处理步骤
+
+移除类型为skill的模块，或者修改bundleType为skill。
+
 ## Code blocks
 
 ### Code block 1

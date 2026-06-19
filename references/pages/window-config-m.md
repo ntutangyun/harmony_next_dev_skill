@@ -83,7 +83,7 @@ name取值为ohos.ability.window.top表示主窗口顶部的位置。value表示
       {
         "name": "enable.remove.starting.window",
         "value": "true"
-      }
+      },
       {
         "name": "ohos.ability.window.supportWindowModeInFreeMultiWindow",
         "value": "fullscreen,split,floating",
@@ -146,7 +146,7 @@ name取值为ohos.ability.window.top表示主窗口顶部的位置。value表示
       {
         "name": "enable.remove.starting.window",
         "value": "true"
-      }
+      },
       {
         "name": "ohos.ability.window.supportWindowModeInFreeMultiWindow",
         "value": "fullscreen,split,floating",

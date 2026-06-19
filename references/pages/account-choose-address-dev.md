@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 
 收货地址中的手机号信息仅支持输入中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）手机号、地址信息只支持填写中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-Wearable、TV设备暂不支持使用获取收货地址功能。
+获取收货地址的能力支持Phone、Tablet、PC/2in1设备。并且从26.0.0版本开始，新增支持TV、Car设备。
 
 业务流程
 
@@ -56,21 +56,25 @@ import { BusinessError } from '@kit.BasicServicesKit';
 // 执行请求
 try {
   // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
-  shippingAddress.chooseAddress(this.getUIContext().getHostContext()).then((data: shippingAddress.AddressInfo) => {
-    hilog.info(0x0000, 'testTag', 'Succeeded in choosing address.');
-    const userName: string = data.userName;
-    const mobileNumber: string = data.mobileNumber;
-    const countryCode: string = data.countryCode;
-    const provinceName: string = data.provinceName;
-    const cityName: string = data.cityName;
-    const districtName: string = data.districtName;
-    const streetName: string = data.streetName;
-    const detailedAddress: string = data.detailedAddress;
-    // 开发者处理获取的收货地址信息
-  }).catch((error: BusinessError) => {
+  shippingAddress.chooseAddress(this.getUIContext().getHostContext())
+    .then((data: shippingAddress.AddressInfo) => {
+      hilog.info(0x0000, 'testTag', 'Succeeded in choosing address.');
+      const userName: string = data.userName;
+      const mobileNumber: string = data.mobileNumber;
+      const countryCode: string = data.countryCode;
+      const provinceName: string = data.provinceName;
+      const cityName: string = data.cityName;
+      const districtName: string = data.districtName;
+      const streetName: string = data.streetName;
+      const detailedAddress: string = data.detailedAddress;
+      // 开发者处理获取的收货地址信息
+      // ...
+    }).catch((error: BusinessError) => {
+    // ...
     dealAllError(error);
   });
 } catch (error) {
+  // ...
   dealAllError(error);
 }
 
@@ -95,21 +99,25 @@ import { BusinessError } from '@kit.BasicServicesKit';
 // 执行请求
 try {
   // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
-  shippingAddress.chooseAddress(this.getUIContext().getHostContext()).then((data: shippingAddress.AddressInfo) => {
-    hilog.info(0x0000, 'testTag', 'Succeeded in choosing address.');
-    const userName: string = data.userName;
-    const mobileNumber: string = data.mobileNumber;
-    const countryCode: string = data.countryCode;
-    const provinceName: string = data.provinceName;
-    const cityName: string = data.cityName;
-    const districtName: string = data.districtName;
-    const streetName: string = data.streetName;
-    const detailedAddress: string = data.detailedAddress;
-    // 开发者处理获取的收货地址信息
-  }).catch((error: BusinessError) => {
+  shippingAddress.chooseAddress(this.getUIContext().getHostContext())
+    .then((data: shippingAddress.AddressInfo) => {
+      hilog.info(0x0000, 'testTag', 'Succeeded in choosing address.');
+      const userName: string = data.userName;
+      const mobileNumber: string = data.mobileNumber;
+      const countryCode: string = data.countryCode;
+      const provinceName: string = data.provinceName;
+      const cityName: string = data.cityName;
+      const districtName: string = data.districtName;
+      const streetName: string = data.streetName;
+      const detailedAddress: string = data.detailedAddress;
+      // 开发者处理获取的收货地址信息
+      // ...
+    }).catch((error: BusinessError) => {
+    // ...
     dealAllError(error);
   });
 } catch (error) {
+  // ...
   dealAllError(error);
 }
 ```

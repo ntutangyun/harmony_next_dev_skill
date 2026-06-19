@@ -68,9 +68,11 @@ URI字段	说明
 
 [h2]媒体文件URI获取方式
 
-通过PhotoAccessHelper的PhotoViewPicker选择媒体文件，返回选择的媒体文件的URI。
+通过PhotoAccessHelper的PhotoViewPicker选择图片和视频资源，返回选择的图片和视频的URI。
 
 通过photoAccessHelper模块中的getAssets或createAsset接口获取媒体文件对应文件的URI。
+
+通过Picker的AudioViewPicker选择和保存音乐文件资源，返回选择和保存后的音乐文件的URI。
 
 [h2]媒体文件URI的使用方式
 

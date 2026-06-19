@@ -10,6 +10,8 @@ FaultLog
 
 查看App Killed（应用终止）日志
 
+解析应用dump文件
+
 堆栈轨迹分析
 
 异常堆栈解析原理

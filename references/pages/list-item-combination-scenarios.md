@@ -24,155 +24,160 @@ actionControllerId：指定特定唯一标识ID的子组件用于控制容器组
 
 @Entry
 @Component
-struct Rule_2_1_13 {
+export struct Rule_2_1_13 {
+  title: string = 'Rule 2.1.13';
   scroller: Scroller = new Scroller();
-  @State isToggleSwitch: boolean = false
-  @State isChecked: boolean = false
-  @State isSelected: boolean = false
+  @State isToggleSwitch: boolean = false;
+  @State isChecked: boolean = false;
+  @State isSelected: boolean = false;
+
   build() {
-    Column() {
-      Scroll(this.scroller) {
-        Column({ space: 30 }) {
-          Column() {
-            Text("按ID接管, state和action接管, 一个 toggle, 样式为开关")
-            // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为开关，桥接其无障碍状态和无障碍点击事件
+    NavDestination() {
+      Column() {
+        Scroll(this.scroller) {
+          Column({ space: 30 }) {
             Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否开启功能")
-                Toggle({ type: ToggleType.Switch, isOn: true })
-                  .selectedColor('#007DFF')
-                  .switchPointColor('#FFFFFF')
+              Text("按ID接管, state和action接管, 一个 toggle, 样式为开关")
+              // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为开关，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否开启功能")
+                  Toggle({ type: ToggleType.Switch, isOn: true })
+                    .selectedColor('#007DFF')
+                    .switchPointColor('#FFFFFF')
+                    .onChange((isOn: boolean) => {
+                      console.info('Component status:' + isOn);
+                    })
+                    .id("toggletest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "toggletest1",
+                actionControllerId: "toggletest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
+
+            Column() {
+              Text("按ID接管, state和action接管, 一个 toggle, 样式为按钮")
+              // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为按钮，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否改变状态")
+                  Toggle({ type: ToggleType.Button, isOn: true }) {
+                    Text('status button').fontColor('#182431').fontSize(12)
+                  }.width(106)
+                  .selectedColor('rgba(0,125,255,0.20)')
                   .onChange((isOn: boolean) => {
                     console.info('Component status:' + isOn);
                   })
                   .id("toggletest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "toggletest1",
-              actionControllerId: "toggletest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-          }
-
-          Column() {
-            Text("按ID接管, state和action接管, 一个 toggle, 样式为按钮")
-            // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为按钮，桥接其无障碍状态和无障碍点击事件
-            Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否改变状态")
-                Toggle({ type: ToggleType.Button, isOn: true }) {
-                  Text('status button').fontColor('#182431').fontSize(12)
-                }.width(106)
-                .selectedColor('rgba(0,125,255,0.20)')
-                .onChange((isOn: boolean) => {
-                  console.info('Component status:' + isOn);
-                })
-                .id("toggletest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "toggletest1",
-              actionControllerId: "toggletest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-          }
-
-          Column() {
-            Text("按ID接管, state和action接管, 一个 toggle, 样式为单选框")
-            // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为单选框，桥接其无障碍状态和无障碍点击事件
-            Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否选中功能")
-                Toggle({ type: ToggleType.Checkbox, isOn: false })
-                  .selectedColor('#007DFF')
-                  .switchPointColor('#FFFFFF')
-                  .onChange((isOn: boolean) => {
-                    console.info('Component status:' + isOn);
-                  })
-                  .id("toggletest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "toggletest1",
-              actionControllerId: "toggletest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-          }
-
-          Column() {
-            Text("按ID接管, state和action接管, 一个 raido")
-            // 指定特定唯一标识ID为radiotest1的radio子组件，桥接其无障碍状态和无障碍点击事件
-            Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否改变单选框")
-                Radio({
-                  value: 'Radio2.1', group: 'radioGroup2',
-                  indicatorType: RadioIndicatorType.TICK
-                })
-                  .radioStyle({
-                    checkedBackgroundColor: Color.Pink
-                  })
-                  .checked(false)
-                  .height(20)
-                  .width(20)
-                  .onChange((isChecked: boolean) => {
-                    console.info('Radio1 status is ' + isChecked);
-
-                  })
-                  .id("radiotest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "radiotest1",
-              actionControllerId: "radiotest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-
-            Radio({ value: 'Radio2.2', group: 'radioGroup2' })
-              .checked(false)
-              .radioStyle({
-                checkedBackgroundColor: Color.Pink
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "toggletest1",
+                actionControllerId: "toggletest1"
               })
-              .height(20)
-              .width(20)
-              .onChange((isChecked: boolean) => {
-                console.info('Radio2 status is ' + isChecked);
-              })
-          }
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
 
-          Column() {
-            Text("按ID接管, state和action接管, 一个 CheckBox")
-            // 指定特定唯一标识ID为checkboxtest1的checkbox子组件，桥接其无障碍状态和无障碍点击事件
             Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否改变复选框")
-                Checkbox({ name: 'checkbox2', group: 'checkboxGroup2' })
-                  .select(true)
-                  .selectedColor(0xed6f21)
-                  .shape(CheckBoxShape.CIRCLE)
-                  .onChange((value: boolean) => {
-                    console.info('Checkbox2 change is' + value);
+              Text("按ID接管, state和action接管, 一个 toggle, 样式为单选框")
+              // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为单选框，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否选中功能")
+                  Toggle({ type: ToggleType.Checkbox, isOn: false })
+                    .selectedColor('#007DFF')
+                    .switchPointColor('#FFFFFF')
+                    .onChange((isOn: boolean) => {
+                      console.info('Component status:' + isOn);
+                    })
+                    .id("toggletest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "toggletest1",
+                actionControllerId: "toggletest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
+
+            Column() {
+              Text("按ID接管, state和action接管, 一个 raido")
+              // 指定特定唯一标识ID为radiotest1的radio子组件，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否改变单选框")
+                  Radio({
+                    value: 'Radio2.1', group: 'radioGroup2',
+                    indicatorType: RadioIndicatorType.TICK
                   })
-                  .id("checkboxtest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "checkboxtest1",
-              actionControllerId: "checkboxtest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
+                    .radioStyle({
+                      checkedBackgroundColor: Color.Pink
+                    })
+                    .checked(false)
+                    .height(20)
+                    .width(20)
+                    .onChange((isChecked: boolean) => {
+                      console.info('Radio1 status is ' + isChecked);
+
+                    })
+                    .id("radiotest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "radiotest1",
+                actionControllerId: "radiotest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+
+              Radio({ value: 'Radio2.2', group: 'radioGroup2' })
+                .checked(false)
+                .radioStyle({
+                  checkedBackgroundColor: Color.Pink
+                })
+                .height(20)
+                .width(20)
+                .onChange((isChecked: boolean) => {
+                  console.info('Radio2 status is ' + isChecked);
+                })
+            }
+
+            Column() {
+              Text("按ID接管, state和action接管, 一个 CheckBox")
+              // 指定特定唯一标识ID为checkboxtest1的checkbox子组件，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否改变复选框")
+                  Checkbox({ name: 'checkbox2', group: 'checkboxGroup2' })
+                    .select(true)
+                    .selectedColor(0xed6f21)
+                    .shape(CheckBoxShape.CIRCLE)
+                    .onChange((value: boolean) => {
+                      console.info('Checkbox2 change is' + value);
+                    })
+                    .id("checkboxtest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "checkboxtest1",
+                actionControllerId: "checkboxtest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
           }
         }
+        .scrollable(ScrollDirection.Vertical)
+        .scrollBar(BarState.On)
+        .friction(0.6)
+        .edgeEffect(EdgeEffect.None)
+        .width("100%")
       }
-      .scrollable(ScrollDirection.Vertical)
-      .scrollBar(BarState.On)
-      .friction(0.6)
-      .edgeEffect(EdgeEffect.None)
       .width("100%")
+      .height("100%")
     }
-    .width("100%")
-    .height("100%")
+    .title(this.title)
   }
 }
 
@@ -183,155 +188,160 @@ struct Rule_2_1_13 {
 ```
 @Entry
 @Component
-struct Rule_2_1_13 {
+export struct Rule_2_1_13 {
+  title: string = 'Rule 2.1.13';
   scroller: Scroller = new Scroller();
-  @State isToggleSwitch: boolean = false
-  @State isChecked: boolean = false
-  @State isSelected: boolean = false
+  @State isToggleSwitch: boolean = false;
+  @State isChecked: boolean = false;
+  @State isSelected: boolean = false;
+
   build() {
-    Column() {
-      Scroll(this.scroller) {
-        Column({ space: 30 }) {
-          Column() {
-            Text("按ID接管, state和action接管, 一个 toggle, 样式为开关")
-            // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为开关，桥接其无障碍状态和无障碍点击事件
+    NavDestination() {
+      Column() {
+        Scroll(this.scroller) {
+          Column({ space: 30 }) {
             Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否开启功能")
-                Toggle({ type: ToggleType.Switch, isOn: true })
-                  .selectedColor('#007DFF')
-                  .switchPointColor('#FFFFFF')
+              Text("按ID接管, state和action接管, 一个 toggle, 样式为开关")
+              // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为开关，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否开启功能")
+                  Toggle({ type: ToggleType.Switch, isOn: true })
+                    .selectedColor('#007DFF')
+                    .switchPointColor('#FFFFFF')
+                    .onChange((isOn: boolean) => {
+                      console.info('Component status:' + isOn);
+                    })
+                    .id("toggletest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "toggletest1",
+                actionControllerId: "toggletest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
+
+            Column() {
+              Text("按ID接管, state和action接管, 一个 toggle, 样式为按钮")
+              // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为按钮，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否改变状态")
+                  Toggle({ type: ToggleType.Button, isOn: true }) {
+                    Text('status button').fontColor('#182431').fontSize(12)
+                  }.width(106)
+                  .selectedColor('rgba(0,125,255,0.20)')
                   .onChange((isOn: boolean) => {
                     console.info('Component status:' + isOn);
                   })
                   .id("toggletest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "toggletest1",
-              actionControllerId: "toggletest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-          }
-
-          Column() {
-            Text("按ID接管, state和action接管, 一个 toggle, 样式为按钮")
-            // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为按钮，桥接其无障碍状态和无障碍点击事件
-            Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否改变状态")
-                Toggle({ type: ToggleType.Button, isOn: true }) {
-                  Text('status button').fontColor('#182431').fontSize(12)
-                }.width(106)
-                .selectedColor('rgba(0,125,255,0.20)')
-                .onChange((isOn: boolean) => {
-                  console.info('Component status:' + isOn);
-                })
-                .id("toggletest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "toggletest1",
-              actionControllerId: "toggletest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-          }
-
-          Column() {
-            Text("按ID接管, state和action接管, 一个 toggle, 样式为单选框")
-            // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为单选框，桥接其无障碍状态和无障碍点击事件
-            Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否选中功能")
-                Toggle({ type: ToggleType.Checkbox, isOn: false })
-                  .selectedColor('#007DFF')
-                  .switchPointColor('#FFFFFF')
-                  .onChange((isOn: boolean) => {
-                    console.info('Component status:' + isOn);
-                  })
-                  .id("toggletest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "toggletest1",
-              actionControllerId: "toggletest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-          }
-
-          Column() {
-            Text("按ID接管, state和action接管, 一个 raido")
-            // 指定特定唯一标识ID为radiotest1的radio子组件，桥接其无障碍状态和无障碍点击事件
-            Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否改变单选框")
-                Radio({
-                  value: 'Radio2.1', group: 'radioGroup2',
-                  indicatorType: RadioIndicatorType.TICK
-                })
-                  .radioStyle({
-                    checkedBackgroundColor: Color.Pink
-                  })
-                  .checked(false)
-                  .height(20)
-                  .width(20)
-                  .onChange((isChecked: boolean) => {
-                    console.info('Radio1 status is ' + isChecked);
-
-                  })
-                  .id("radiotest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "radiotest1",
-              actionControllerId: "radiotest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
-
-            Radio({ value: 'Radio2.2', group: 'radioGroup2' })
-              .checked(false)
-              .radioStyle({
-                checkedBackgroundColor: Color.Pink
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "toggletest1",
+                actionControllerId: "toggletest1"
               })
-              .height(20)
-              .width(20)
-              .onChange((isChecked: boolean) => {
-                console.info('Radio2 status is ' + isChecked);
-              })
-          }
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
 
-          Column() {
-            Text("按ID接管, state和action接管, 一个 CheckBox")
-            // 指定特定唯一标识ID为checkboxtest1的checkbox子组件，桥接其无障碍状态和无障碍点击事件
             Column() {
-              Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
-                Text("是否改变复选框")
-                Checkbox({ name: 'checkbox2', group: 'checkboxGroup2' })
-                  .select(true)
-                  .selectedColor(0xed6f21)
-                  .shape(CheckBoxShape.CIRCLE)
-                  .onChange((value: boolean) => {
-                    console.info('Checkbox2 change is' + value);
+              Text("按ID接管, state和action接管, 一个 toggle, 样式为单选框")
+              // 指定特定唯一标识ID为toggletest1的toggle子组件，样式为单选框，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否选中功能")
+                  Toggle({ type: ToggleType.Checkbox, isOn: false })
+                    .selectedColor('#007DFF')
+                    .switchPointColor('#FFFFFF')
+                    .onChange((isOn: boolean) => {
+                      console.info('Component status:' + isOn);
+                    })
+                    .id("toggletest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "toggletest1",
+                actionControllerId: "toggletest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
+
+            Column() {
+              Text("按ID接管, state和action接管, 一个 raido")
+              // 指定特定唯一标识ID为radiotest1的radio子组件，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否改变单选框")
+                  Radio({
+                    value: 'Radio2.1', group: 'radioGroup2',
+                    indicatorType: RadioIndicatorType.TICK
                   })
-                  .id("checkboxtest1")
-              }
-            }.width('100%')
-            .accessibilityGroup(true, {
-              stateControllerId: "checkboxtest1",
-              actionControllerId: "checkboxtest1"
-            })
-            .border({ color: Color.Black, width: 2 }).padding(10)
+                    .radioStyle({
+                      checkedBackgroundColor: Color.Pink
+                    })
+                    .checked(false)
+                    .height(20)
+                    .width(20)
+                    .onChange((isChecked: boolean) => {
+                      console.info('Radio1 status is ' + isChecked);
+
+                    })
+                    .id("radiotest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "radiotest1",
+                actionControllerId: "radiotest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+
+              Radio({ value: 'Radio2.2', group: 'radioGroup2' })
+                .checked(false)
+                .radioStyle({
+                  checkedBackgroundColor: Color.Pink
+                })
+                .height(20)
+                .width(20)
+                .onChange((isChecked: boolean) => {
+                  console.info('Radio2 status is ' + isChecked);
+                })
+            }
+
+            Column() {
+              Text("按ID接管, state和action接管, 一个 CheckBox")
+              // 指定特定唯一标识ID为checkboxtest1的checkbox子组件，桥接其无障碍状态和无障碍点击事件。
+              Column() {
+                Flex({ justifyContent: FlexAlign.SpaceEvenly, alignItems: ItemAlign.Center }) {
+                  Text("是否改变复选框")
+                  Checkbox({ name: 'checkbox2', group: 'checkboxGroup2' })
+                    .select(true)
+                    .selectedColor(0xed6f21)
+                    .shape(CheckBoxShape.CIRCLE)
+                    .onChange((value: boolean) => {
+                      console.info('Checkbox2 change is' + value);
+                    })
+                    .id("checkboxtest1")
+                }
+              }.width('100%')
+              .accessibilityGroup(true, {
+                stateControllerId: "checkboxtest1",
+                actionControllerId: "checkboxtest1"
+              })
+              .border({ color: Color.Black, width: 2 }).padding(10)
+            }
           }
         }
+        .scrollable(ScrollDirection.Vertical)
+        .scrollBar(BarState.On)
+        .friction(0.6)
+        .edgeEffect(EdgeEffect.None)
+        .width("100%")
       }
-      .scrollable(ScrollDirection.Vertical)
-      .scrollBar(BarState.On)
-      .friction(0.6)
-      .edgeEffect(EdgeEffect.None)
       .width("100%")
+      .height("100%")
     }
-    .width("100%")
-    .height("100%")
+    .title(this.title)
   }
 }
 ```

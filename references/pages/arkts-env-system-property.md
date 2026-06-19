@@ -456,7 +456,7 @@ ComponentUnderBuilderNode在被挂载到新的窗口下时，会触发@Env重新
 
 @Env重新获取新的环境变量后，触发其关联组件的刷新。其中ComponentUnderBuilderNode中@Env(SystemProperties.BREAK_POINT) breakpoint: uiObserver.WindowSizeLayoutBreakpointInfo会通知CompV2内的@Param breakpoint刷新，但是并不会通知Comp内的常规变量breakpoint触发UI刷新。所以在切换窗口，@Env重新获取环境变量的场景下，建议开发者不要将@Env传递给常规变量，以避免常规变量不能被通知UI刷新的问题。
 
-下面的示例包含了创建子窗的流程，具体可参考管理应用窗口（Stage模型）。
+下面的示例包含了创建子窗的流程，具体可参考子窗口开发指导。
 
 // EntryAbility.ets
 import { UIAbility } from '@kit.AbilityKit';

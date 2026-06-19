@@ -211,7 +211,7 @@ TARGET_NAME	string	目标名称。
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {
@@ -408,7 +408,7 @@ const HAR_VERSION: string = BuildProfile.HAR_VERSION;
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {

@@ -1,10 +1,10 @@
-# 获取命令行工具
+# 获取Command Line Tools
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-commandline-get_
 
-该命令行工具集合了HarmonyOS应用开发所用到的系列工具，包括代码检查codelinter、堆栈解析hstack、命令行构建hvigorw、三方依赖管理ohpm和SDK中包含的一系列工具，本文主要讲解codelinter、hstack、hvigorw等工具的使用方式，关于SDK中包含的工具的使用指导请参考SDK命令行工具。
+Command Line Tools集合了HarmonyOS应用开发所用到的系列工具，包括代码检查codelinter、堆栈解析hstack、命令行构建hvigorw、三方依赖管理ohpm和SDK中包含的一系列工具，本文主要讲解codelinter、hstack、hvigorw等工具的使用方式，关于SDK中包含的工具的使用指导请参考SDK命令行工具。
 
-命令行工具获取
+下载Command Line Tools
 
 请前往下载中心获取命令行工具Command Line Tools，并根据下载中心页面工具完整性指导进行完整性校验。
 
@@ -14,7 +14,7 @@ HarmonyOS SDK已嵌入命令行工具中，无需额外下载配置。
 
 配置环境变量
 
-将命令行工具进行解压，codelinter、hstack等工具存放在Command Line Tools的bin目录下，需要将该目录配置到PATH环境变量中。
+将命令行工具进行解压，codelinter、ohpm等工具存放在Command Line Tools的bin目录下，需要将该目录配置到PATH环境变量中。
 
 [h2]Windows
 

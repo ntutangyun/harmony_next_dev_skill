@@ -35,7 +35,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
     "artifactName": "ultimate_version"
   },
   "bundleType": "app",
-  "compatibleSdkVersion": "6.1.1(24)",
+  "compatibleSdkVersion": "26.0.0",
   "runtimeOS": "HarmonyOS"
 },
 {
@@ -61,7 +61,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
     "artifactName": "community_version"
   },
   "bundleType": "app",
-  "compatibleSdkVersion": "6.1.1(24)",
+  "compatibleSdkVersion": "26.0.0",
   "runtimeOS": "HarmonyOS",
 }
 
@@ -190,7 +190,7 @@ target：free被应用至product：default、Community中。
     "artifactName": "ultimate_version"
   },
   "bundleType": "app",
-  "compatibleSdkVersion": "6.1.1(24)",
+  "compatibleSdkVersion": "26.0.0",
   "runtimeOS": "HarmonyOS"
 },
 {
@@ -216,7 +216,7 @@ target：free被应用至product：default、Community中。
     "artifactName": "community_version"
   },
   "bundleType": "app",
-  "compatibleSdkVersion": "6.1.1(24)",
+  "compatibleSdkVersion": "26.0.0",
   "runtimeOS": "HarmonyOS",
 }
 ```

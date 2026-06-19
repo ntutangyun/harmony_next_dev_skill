@@ -32,6 +32,7 @@ UIAbilityContext.startAbilityByType和UIExtensionContentSession.startAbilityByTy
 路线规划功能	- type：navigation - wantParams.sceneType：1	RoutePlan
 导航功能	- type：navigation - wantParams.sceneType：2	Navigation
 位置搜索功能	- type：navigation - wantParams.sceneType：3	PlaceSearch
+地点详情功能	- type：navigation - wantParams.sceneType：4	DetailLocation
 转账汇款功能	- type：finance - wantParams.sceneType：1	Transfer
 信用卡还款功能	- type：finance - wantParams.sceneType：2	CreditCardRepayment
 撰写邮件功能	- type：mail - wantParams.sceneType：1	ComposeMail

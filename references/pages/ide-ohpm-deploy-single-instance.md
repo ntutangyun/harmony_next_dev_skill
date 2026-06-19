@@ -8,7 +8,13 @@ ohpm-repo私仓不允许在Linux或macOS系统中使用root用户启动，请使
 
 安装ohpm-repo工具
 
-ohpm-repo依赖于Node运行，请提前安装Node.js，并完成环境变量的配置，推荐Node.js18.x版本。具体安装请参考Node.js官方网站。
+说明
+
+ohpm-repo和Node.js的配套版本如下：
+
+ohpm-repo 5.4.4之后版本，推荐使用Node.js 24.x版本。
+
+ohpm-repo 5.4.4及之前版本，当数据存储类型为mysql且文件存储类型为sftp模式时，支持Node.js版本范围为[18.x,22.x]。
 
 下载ohpm-repo工具包，点击链接获取。
 

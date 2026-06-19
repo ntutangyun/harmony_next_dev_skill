@@ -4,4 +4,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-reso
 
 资源管理介绍及规格
 
+获取资源ID(ArkTS)
+
+打开资源/关闭资源(ArkTS)
+
 打开资源/关闭资源(C/C++)

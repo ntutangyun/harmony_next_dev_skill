@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/create-ve
 
 import { cert } from '@kit.DeviceCertificateKit';
 
-cert.createCertChainValidator创建证书链校验器对象。
+调用cert.createCertChainValidator创建证书链校验器对象。
 
 基于已有的证书数据，创建证书链数据对象CertChainData。
 

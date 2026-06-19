@@ -9,5 +9,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/inter-app
 拉起指定类型的应用
 
 拉起系统应用
-
-应用间跳转典型场景

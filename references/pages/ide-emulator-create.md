@@ -30,15 +30,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emula
 
 Name：设置模拟器的名称。
 
+如果是Car设备，还支持新增或删除屏幕，关于多屏能力的介绍请参考Car设备多屏能力。
+
 Screen size：屏幕的对角线长度，单位为inch。
 
 Resolution：分辨率，包括宽度和高度，单位为px。
 
 DPI：像素密度，DPI 越高，UI组件占用的像素点越多，从而提供更精细的显示效果。
 
-Cold boot：以开机启动的方式重新启动。
+Cold boot：冷启动，以开机启动的方式重新启动。
 
-Quick boot：启动时加载上次关闭时保存的快照，启动后会恢复至上次关闭时的状态。
+Quick boot：热启动，启动时加载上次关闭时保存的快照，启动后会恢复至上次关闭时的状态。
 
 Memory：设置模拟器的内存。
 

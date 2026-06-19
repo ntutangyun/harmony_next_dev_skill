@@ -19,7 +19,7 @@ Live View Kit提供了“出行打车/即时配送/航班/高铁火车/排队叫
 import { liveViewManager } from '@kit.LiveViewKit';
 
 export class LiveViewController {
-  private static async isLiveViewEnabled(): Promise<boolean> {
+  public static async isLiveViewEnabled(): Promise<boolean> {
     return await liveViewManager.isLiveViewEnabled();
   }
 }
@@ -39,45 +39,68 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class ProgressLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await ProgressLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await ProgressLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "DELIVERY", // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
+      id: 106, // 实况窗ID，开发者生成。
+      event: 'DELIVERY', // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "骑手已接单",
+          title: '骑手已接单',
           content: [
-            { text: "距商家 " },
-            { text: "300 ", textColor: "#FF0A59F7" },
-            { text: "米 | " },
-            { text: "3 ", textColor: "#FF0A59F7" },
-            { text: "分钟到店" }
+            { text: '距商家 ' },
+            { text: '300 ', textColor: '#FF0A59F7' },
+            { text: '米 | ' },
+            { text: '3 ', textColor: '#FF0A59F7' },
+            { text: '分钟到店' }
           ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
+            weatherInfo : {
+              weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+            },
             progress: 40,
-            color: "#FF317AF7",
-            backgroundColor: "#f7819ae0",
+            color: '#FF317AF7',
+            backgroundColor: '#f7819ae0',
             indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            indicatorIcon: 'icon_rider.png', // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
             lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
-            nodeIcons: ["icon_1.png", "icon_2.png", "icon_3.png"] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            nodeIcons: ['icon_order.png', 'icon_store_white.png', 'icon_finish.png'] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -85,23 +108,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -112,36 +164,55 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class ProgressLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await ProgressLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await ProgressLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "DELIVERY", // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
+      id: 106, // 实况窗ID，开发者生成。
+      event: 'DELIVERY', // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "骑手已接单",
+          title: '骑手已接单',
           content: [
-            { text: "距商家 " },
-            { text: "300 ", textColor: "#FF0A59F7" },
-            { text: "米 | " },
-            { text: "3 ", textColor: "#FF0A59F7" },
-            { text: "分钟到店" }
+            { text: '距商家 ' },
+            { text: '300 ', textColor: '#FF0A59F7' },
+            { text: '米 | ' },
+            { text: '3 ', textColor: '#FF0A59F7' },
+            { text: '分钟到店' }
           ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
             weatherInfo : {
@@ -149,12 +220,12 @@ export class LiveViewController {
               locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
             },
             progress: 40,
-            color: "#FF317AF7",
-            backgroundColor: "#f7819ae0",
+            color: '#FF317AF7',
+            backgroundColor: '#f7819ae0',
             indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            indicatorIcon: 'icon_rider.png', // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
             lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
-            nodeIcons: ["icon_1.png", "icon_2.png", "icon_3.png"] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            nodeIcons: ['icon_order.png', 'icon_store_white.png', 'icon_finish.png'] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -162,23 +233,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  public static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -191,40 +291,63 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class PickupLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await PickupLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await PickupLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "PICK_UP", // 实况窗的应用场景。PICK_UP：取餐。
+      id: 105, // 实况窗ID，开发者生成。
+      event: 'PICK_UP', // 实况窗的应用场景。PICK_UP：取餐。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "餐品已备好",
+          title: '餐品已备好',
           content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取餐" },
+            { text: '请前往' },
+            { text: ' XXX店 ', textColor: '#FF0A59F7' },
+            { text: '取餐' },
           ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "取餐码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "coffee.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            weatherInfo: {
+              weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
+              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+            },
+            title: '取餐码',
+            content: '72988',
+            underlineColor: '#FF0A59F7',
+            descPic: 'coffee.png' // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -232,23 +355,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -259,44 +411,63 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class PickupLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await PickupLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await PickupLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "PICK_UP", // 实况窗的应用场景。PICK_UP：取餐。
+      id: 105, // 实况窗ID，开发者生成。
+      event: 'PICK_UP', // 实况窗的应用场景。PICK_UP：取餐。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "餐品已备好",
+          title: '餐品已备好',
           content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取餐" },
+            { text: '请前往' },
+            { text: ' XXX店 ', textColor: '#FF0A59F7' },
+            { text: '取餐' },
           ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
             weatherInfo: {
               weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
               locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
             },
-            title: "取餐码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "coffee.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            title: '取餐码',
+            content: '72988',
+            underlineColor: '#FF0A59F7',
+            descPic: 'coffee.png' // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -304,23 +475,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  public static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -333,44 +533,74 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class FlightLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await FlightLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await FlightLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "TRAIN", // 实况窗的应用场景。TRAIN：高铁/火车。
-      liveViewData: {
-        primary: {
-          title: "列车检票提醒",
-          content: [
-            { text: "检票口 " },
-            { text: "6B ", textColor: "#FF0A59F7" },
-            { text: "| 座位 " },
-            { text: "03车 12F", textColor: "#FF0A59F7" }
+      id : 103, // 实况窗ID，开发者生成。
+      event : 'FLIGHT', // 实况窗的应用场景。FLIGHT：航班。
+      isMute: false,
+      liveViewData : {
+        primary : {
+          title : '计划出发',
+          content : [
+            { text : '登机口'},
+            { text : '32', textColor: '#FF0A59F7' },
+            { text : ' | 座位'},
+            { text : ' 17H', textColor: '#FF0A59F7' }
           ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(), // 点击实况窗默认动作。
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
-            firstTitle: "09:00",
-            firstContent: "上海虹桥",
-            lastTitle: "14:20",
-            lastContent: "汉口",
-            spaceIcon: "icon.png", // 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            isHorizontalLineDisplayed: true,
-            additionalText: "以上信息仅供参考" // 扩展区底部内容，仅可用于左右文本模板。
+          keepTime : 0,
+          clickAction : await ContextUtil.buildWantAgent('GuideCode'),
+          /**
+           * 当传入实况窗卡片的背景氛围类型参数backgroundType值为赏月航班或夕阳航班时，
+           * 且同时传入天气类型(WeatherInfo)为雨、雪特殊天气，卡片上优先展示天气背景，
+           * 其余非特殊天气在卡片上展示赏月航班或夕阳航班背景氛围。
+           */
+          backgroundType : liveViewManager.BackgroundType.SYS_BACKGROUND_FLIGHT_SUNSET,
+          layoutData : {
+            layoutType : liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
+            weatherInfo : {
+              weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_DESTINATION,
+              highTemperature : 30,
+              lowTemperature : -10
+            },
+            firstTitle: '09:00',
+            firstContent: '上海虹桥',
+            lastTitle: '14:20',
+            lastContent: '汉口',
+            spaceIcon : 'icon_plane.png',// 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            isHorizontalLineDisplayed : false,
+            additionalText : '以上信息仅供参考' // 扩展区底部内容，仅可用于左右文本模板。
           }
         }
       }
@@ -378,23 +608,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -405,50 +664,74 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class FlightLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await FlightLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await FlightLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
-      id : 6, // 实况窗ID，开发者生成。
-      event : "FLIGHT", // 实况窗的应用场景。FLIGHT：航班。
+      id : 103, // 实况窗ID，开发者生成。
+      event : 'FLIGHT', // 实况窗的应用场景。FLIGHT：航班。
+      isMute: false,
       liveViewData : {
         primary : {
-          title : "计划出发",
+          title : '计划出发',
           content : [
-            { text : "登机口"},
-            { text : "32", textColor: "#FF0A59F7" },
-            { text : "| 座位"},
-            { text : " 17H", textColor: "#FF0A59F7" }
+            { text : '登机口'},
+            { text : '32', textColor: '#FF0A59F7' },
+            { text : ' | 座位'},
+            { text : ' 17H', textColor: '#FF0A59F7' }
           ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime : 15,
-          clickAction : await LiveViewController.buildWantAgent(),
-          backgroundType : liveViewManager.BackgroundType.SYS_BACKGROUND_FLIGHT_SUNSET,  // 当传入实况窗卡片的背景氛围类型参数backgroundType值为赏月航班或夕阳航班时，且同时传入天气类型(WeatherInfo)为雨、雪特殊天气，卡片上优先展示天气背景，其余非特殊天气在卡片上展示赏月航班或夕阳航班背景氛围。
+          keepTime : 0,
+          clickAction : await ContextUtil.buildWantAgent('GuideCode'),
+          /**
+           * 当传入实况窗卡片的背景氛围类型参数backgroundType值为赏月航班或夕阳航班时，
+           * 且同时传入天气类型(WeatherInfo)为雨、雪特殊天气，卡片上优先展示天气背景，
+           * 其余非特殊天气在卡片上展示赏月航班或夕阳航班背景氛围。
+           */
+          backgroundType : liveViewManager.BackgroundType.SYS_BACKGROUND_FLIGHT_SUNSET,
           layoutData : {
             layoutType : liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
             weatherInfo : {
               weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
-                    locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_DESTINATION,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_DESTINATION,
               highTemperature : 30,
-                    lowTemperature : -10
-              },
-            firstTitle: "09:00",
-                  firstContent: "上海虹桥",
-            lastTitle: "14:20",
-            lastContent: "汉口",
-            spaceIcon : "icon_plane.png",// 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+              lowTemperature : -10
+            },
+            firstTitle: '09:00',
+            firstContent: '上海虹桥',
+            lastTitle: '14:20',
+            lastContent: '汉口',
+            spaceIcon : 'icon_plane.png',// 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
             isHorizontalLineDisplayed : false,
-            additionalText : "以上信息仅供参考" // 扩展区底部内容，仅可用于左右文本模板。
+            additionalText : '以上信息仅供参考' // 扩展区底部内容，仅可用于左右文本模板。
           }
         }
       }
@@ -456,23 +739,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -485,49 +797,68 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class ScoreLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await ScoreLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await ScoreLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "SCORE", // 实况窗的应用场景。SCORE：赛事比分。
+      id: 108, // 实况窗 ID，开发者生成。
+      event: 'SCORE', // 实况窗的应用场景。SCORE：赛事比分。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "第四节比赛中",
+          title: '第四节比赛中',
           content: [
-            { text: "XX", textColor:"#FF0A59F7" },
-            { text: " VS " },
-            { text: "XX", textColor:"#FF0A59F7" },
-            { text: " | " },
-            { text: "小组赛 第五场", textColor:"#FF0A59F7" }
+            { text: 'XX', textColor:'#FF0A59F7' },
+            { text: ' VS ' },
+            { text: 'XX', textColor:'#FF0A59F7' },
+            { text: ' | ' },
+            { text: '小组赛 第五场', textColor:'#FF0A59F7' }
           ],
-          keepTime: 1,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_SCORE,
-            hostName: "队名A",
-            hostIcon: "host.png", // 扩展区左侧图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            hostScore: "110",
-            guestName: "队名B",
-            guestIcon: "guest.png", // 扩展区右侧图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            guestScore: "102",
+            hostName: '队名 A',
+            hostIcon: 'score_firefox.png',
+            hostScore: '110',
+            guestName: '队名 B',
+            guestIcon: 'score_m.png',
+            guestScore: '102',
             competitionDesc: [
-              { text: "●", textColor: "#FFFF0000" },
-              { text: "Q4" }
+              { text: '●', textColor: '#FFFF0000' },
+              { text: 'Q4' }
             ],
-            competitionTime: "02:16",
+            competitionTime: '02:16',
             isHorizontalLineDisplayed: true
           }
         }
@@ -536,23 +867,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -565,37 +925,56 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class NavigationLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await NavigationLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await NavigationLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "NAVIGATION", // 实况窗的应用场景。NAVIGATION：导航。
+      id: 104, // 实况窗ID，开发者生成。
+      event: 'NAVIGATION', // 实况窗的应用场景。NAVIGATION：导航。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "178米后左转",
+          title: '178米后左转',
           content: [
-            { text: "去往"},
-            { text: " 南京东路", textColor: "#FF0A59F7" }
+            { text: '去往'},
+            { text: ' xxx东路', textColor: '#FF0A59F7' }
           ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_NAVIGATION,
-            currentNavigationIcon: "navigation.png", // 当前导航方向，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            navigationIcons: ["left.png","straight.png","straight.png","right.png"] // 导航方向的箭头集合图片，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            currentNavigationIcon: 'arrow_left.png', // 当前导航方向，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            navigationIcons: ['arrow_left.png','arrow_up.png','arrow_up.png','arrow_right.png'] // 导航方向的箭头集合图片，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -603,23 +982,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -642,95 +1050,245 @@ export class LiveViewController {
 代码示例如下：
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
-import { geoLocationManager } from '@kit.LocationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { Model } from '../model';
+import { GeofenceRightsUtil } from './GeofenceRightsUtil';
 
-export class LiveViewController {
-  public async startLiveViewByTrigger(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+export class GeofenceExpressController {
+  private static defaultView: liveViewManager.LiveView | undefined = undefined;
+  private static trigger: liveViewManager.Trigger | undefined = undefined;
+  private static underLineColor: string = '#FF0A59F7';
+  private static capsuleColor: string = '#FF308977';
+
+  public static async startLiveViewExpress(model: Model): Promise<string> {
+    let checkRightsResult = await GeofenceRightsUtil.checkRights();
+    if (checkRightsResult != '') {
+      return checkRightsResult;
     }
-    // 校验实况窗地理围栏开关是否打开
-    if (!await LiveViewController.isGeofenceTriggerEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
+    try {
+      // 构建快递实况窗。
+      GeofenceExpressController.defaultView = await GeofenceExpressController.buildExpressLiveView();
+      // 构建实况窗提醒的触发条件
+      GeofenceExpressController.trigger = await GeofenceExpressController.buildDefaultTrigger(model);
+      let createResult = await GeofenceExpressController.startLiveViewByTrigger();
+      if (createResult != 0) {
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Create_failed').id);
+      }
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    } catch (e) {
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_failed').id);
     }
-    // 校验GPS开关是否打开
-    if (!geoLocationManager.isLocationEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
-    }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    const trigger = await LiveViewController.buildTrigger();
-    return await liveViewManager.startLiveViewByTrigger(defaultView, trigger);
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "EXPRESS", // 实况窗的应用场景。EXPRESS：快递。
-      liveViewData: {
-        primary: {
-          title: "快递已送达",
-          content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取快递" },
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "快递码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "express.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+  private static async startLiveViewByTrigger(): Promise<number> {
+    if (!GeofenceExpressController.defaultView || !GeofenceExpressController.trigger) {
+      Logger.warn('startLiveViewByTrigger, buildDefaultView or buildDefaultTrigger failed.')
+      return -1;
+    }
+    // 注册由地理围栏条件延迟触发创建的实况窗
+    try {
+      Logger.info('Request startLiveViewByTrigger req liveView: %{public}s, trigger: %{public}s',
+        JSON.stringify(GeofenceExpressController.defaultView), JSON.stringify(GeofenceExpressController.trigger));
+      const result = await liveViewManager.startLiveViewByTrigger(GeofenceExpressController.defaultView,
+        GeofenceExpressController.trigger);
+      Logger.info('Request startLiveViewByTrigger result: %{public}s', JSON.stringify(result));
+      return result.resultCode;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return -1;
+    }
+  }
+
+  private static async buildExpressLiveView(): Promise<liveViewManager.LiveView | undefined> {
+    try {
+      return {
+        id: 11, // 实况窗ID，开发者生成。
+        event: 'EXPRESS', // 实况窗的应用场景。EXPRESS：快递。
+        sequence: 1, // 序列号
+        isMute: false,
+        liveViewData: {
+          primary: {
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_title')
+              .id),
+            content: [
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_content')
+                  .id),
+              }
+            ],
+            keepTime: 0,
+            clickAction: await ContextUtil.buildWantAgent('Geofence'),
+            extensionData: {
+              type: liveViewManager.ExtensionType.EXTENSION_TYPE_ICON,
+              pic: 'express.png',
+              clickAction: await ContextUtil.buildWantAgent('Geofence', 11)
+            },
+            layoutData: {
+              layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+              title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_title')
+                .id),
+              content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_content')
+                .id),
+              underlineColor: GeofenceExpressController.underLineColor,
+              // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+              descPic: 'pick.png',
+            },
+          },
+          capsule: {
+            type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+            status: 1,
+            icon: 'pick.png',
+            backgroundColor: GeofenceExpressController.capsuleColor,
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_title')
+              .id),
+            content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_content')
+              .id),
           }
         }
       }
-    };
-  }
-
-  private static async buildTrigger(): Promise<liveViewManager.Trigger> {
-    return {
-      // 构造基于地理位置的实况窗提醒的触发条件
-      type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
-      displayTime: 15,
-      condition: {
-        // 触发条件：设备进入坐标点半径2000米范围内
-        longitude: 116.3971356415625,
-        latitude: 39.91800603311188,
-        coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
-        monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_ENTRY,
-        radius: 2000,
-        delayTime: 0
-      }
+    } catch (e) {
+      Logger.error('buildDefaultView failed:' + JSON.stringify(e))
+      return undefined;
     }
   }
 
+  private static async buildDefaultTrigger(model: Model): Promise<liveViewManager.Trigger | undefined> {
+    try {
+      return {
+        // 构造实况窗提醒的地理围栏触发条件。
+        type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
+        displayTime: 900,
+        condition: {
+          // 地理围栏触发条件：设备进入坐标点500米范围内。
+          longitude: model.longitude,
+          latitude: model.latitude,
+          coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
+          monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_ENTRY,
+          radius: 500,
+          delayTime: 0
+        }
+      }
+    } catch (e) {
+      Logger.error('buildDefaultTrigger failed:' + JSON.stringify(e))
+      return undefined;
+    }
+  }
+}
+
+import { liveViewManager } from '@kit.LiveViewKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { geoLocationManager } from '@kit.LocationKit';
+
+export class GeofenceRightsUtil {
+  // 检查权限
+  public static async checkRights(): Promise<string> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!await GeofenceRightsUtil.isLiveViewEnabled()) {
+        Logger.warn('checkRights, 实况开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_enabled').id);
+      }
+      // 校验实况窗地理围栏开关是否打开
+      if (!await GeofenceRightsUtil.isGeofenceTriggerEnabled()) {
+        Logger.warn('checkRights, 地理围栏开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_geofence_enabled').id);
+      }
+      // 校验GPS开关是否打开
+      if (!GeofenceRightsUtil.isLocationEnabled()) {
+        Logger.warn('checkRights, GPS 开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Gps_enabled').id);
+      }
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('checkRights error: %{public}d %{public}s', err.code, err.message);
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    }
+    return '';
+  }
+
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 
   private static async isGeofenceTriggerEnabled(): Promise<boolean> {
-    return await liveViewManager.isGeofenceTriggerEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isGeofenceTriggerEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isGeofenceTriggerEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isGeofenceTriggerEnabled result: %{public}s', result);
+    return result;
   }
 
-  private static async buildWantAgent(): Promise<Want> {
+  private static isLocationEnabled(): boolean {
+    let result: boolean = false;
+    try {
+      result = geoLocationManager.isLocationEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLocationEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLocationEnabled result: %{public}s', result);
+    return result;
+  }
+}
+
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -739,112 +1297,287 @@ export class LiveViewController {
 代码示例如下：
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
-import { geoLocationManager } from '@kit.LocationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { Model } from '../model';
+import { GeofenceRightsUtil } from './GeofenceRightsUtil';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+export class GeofenceFlightEndController {
+  private static defaultView: liveViewManager.LiveView | undefined = undefined;
+  private static trigger: liveViewManager.Trigger | undefined = undefined;
+  private static underLineColor: string = '#FF0A59F7';
+  private static capsuleColor: string = '#FF308977';
+
+  public static async stopLiveViewFlightEnds(model: Model): Promise<string> {
+    let checkRightsResult = await GeofenceRightsUtil.checkRights();
+    if (checkRightsResult != '') {
+      return checkRightsResult;
     }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      // 构造实况窗结构体
+      GeofenceFlightEndController.defaultView = await GeofenceFlightEndController.buildFlightLiveView();
+      // 创建实况窗
+      let createResult = await GeofenceFlightEndController.startLiveView();
+      if (createResult != 0) {
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Create_failed').id);
+      }
+      if (GeofenceFlightEndController.defaultView) {
+        if (GeofenceFlightEndController.defaultView.sequence) {
+          GeofenceFlightEndController.defaultView.sequence += 1;
+        }
+        GeofenceFlightEndController.defaultView.liveViewData.primary.title =
+          await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Flight_travel_end_title').id);
+        GeofenceFlightEndController.defaultView.liveViewData.primary.content = [
+          {
+            text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_travel_end_content')
+              .id)
+          },
+        ];
+      }
+      // 构造地理围栏条件
+      GeofenceFlightEndController.trigger = await GeofenceFlightEndController.buildTrigger(model);
+      // 注册由地理围栏条件延迟触发结束的实况窗
+      let stopTriggerLiveView = await GeofenceFlightEndController.stopLiveViewByTrigger();
+      // ...
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_failed').id);
+    }
   }
 
-  public async stopLiveViewByTrigger(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+  private static async startLiveView(): Promise<number> {
+    if (!GeofenceFlightEndController.defaultView) {
+      Logger.warn('startLiveViewByTrigger, buildDefaultView failed.')
+      return -1;
     }
-    // 校验实况窗地理围栏开关是否打开
-    if (!await LiveViewController.isGeofenceTriggerEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
+    try {
+      // 创建实况窗
+      // ...
+      const result = await liveViewManager.startLiveView(GeofenceFlightEndController.defaultView);
+      // ...
+      return result.resultCode;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return -1;
     }
-    // 校验GPS开关是否打开
-    if (!geoLocationManager.isLocationEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
-    }
-    // 构建实况窗对象
-    const defaultView = await LiveViewController.buildDefaultView();
-    defaultView.liveViewData.primary.title = '快递已取完';
-    defaultView.liveViewData.primary.content = [
-      { text: '感谢您的认可'}
-    ];
-    // 构建延迟触发条件
-    const trigger = await LiveViewController.buildTrigger();
-    trigger.condition.monitorEvent = liveViewManager.MonitorEvent.MONITOR_TYPE_LEAVE;
-    // 注册基于地理位置触发结束的实况窗
-    return await liveViewManager.stopLiveViewByTrigger(defaultView, trigger);
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "EXPRESS", // 实况窗的应用场景。EXPRESS：快递。
-      liveViewData: {
-        primary: {
-          title: "快递已送达",
-          content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取快递" },
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "快递码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "express.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+  private static async stopLiveViewByTrigger(): Promise<number> {
+    if (!GeofenceFlightEndController.defaultView || !GeofenceFlightEndController.trigger) {
+      Logger.warn('startLiveViewByTrigger, buildDefaultView or buildDefaultTrigger failed.')
+      return -1;
+    }
+    try {
+      // 注册由地理围栏条件延迟触发结束的实况窗
+      // ...
+      const result = await liveViewManager.stopLiveViewByTrigger(GeofenceFlightEndController.defaultView,
+        GeofenceFlightEndController.trigger);
+      // ...
+      return result.resultCode;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return -1;
+    }
+  }
+
+  private static async buildFlightLiveView(): Promise<liveViewManager.LiveView | undefined> {
+    try {
+      return {
+        id: 14, // 实况窗ID，开发者生成。
+        event: 'FLIGHT', // 实况窗的应用场景。EXPRESS：快递。
+        sequence: 1, // 序列号
+        isMute: false,
+        liveViewData: {
+          primary: {
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Luggage_prompt_title')
+              .id),
+            content: [
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Luggage_prompt_content1')
+                  .id)
+              },
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Luggage_prompt_content2')
+                  .id),
+                textColor: GeofenceFlightEndController.underLineColor
+              },
+            ],
+            keepTime: 15,
+            clickAction: await ContextUtil.buildWantAgent('Geofence'),
+            extensionData: {
+              type: liveViewManager.ExtensionType.EXTENSION_TYPE_ICON,
+              pic: 'flight.png',
+              clickAction: await ContextUtil.buildWantAgent('Geofence')
+            },
+            layoutData: {
+              layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
+              firstTitle: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_first_title')
+                .id),
+              firstContent: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_first_content')
+                .id),
+              lastTitle: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_last_title')
+                .id),
+              lastContent: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_last_content')
+                .id),
+              spaceIcon: 'icon_plane.png'
+            },
+          },
+          capsule: {
+            type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+            status: 1,
+            title: await ContextUtil.applicationContext.resourceManager
+              .getStringValue($r('app.string.Luggage_prompt_capsule_title').id),
+            content: await ContextUtil.applicationContext.resourceManager
+              .getStringValue($r('app.string.Flight_arrived_capsule_content').id),
+            icon: 'capsule_flight.png',
+            backgroundColor: GeofenceFlightEndController.capsuleColor,
           }
         }
       }
-    };
-  }
-
-  private static async buildTrigger(): Promise<liveViewManager.Trigger> {
-    return {
-      // 构造基于地理位置的实况窗提醒的触发条件
-      type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
-      displayTime: 15,
-      condition: {
-        // 触发条件：设备进入坐标点半径2000米范围内
-        longitude: 116.3971356415625,
-        latitude: 39.91800603311188,
-        coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
-        monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_ENTRY,
-        radius: 2000,
-        delayTime: 0
-      }
+    } catch (e) {
+      // ...
+      return undefined;
     }
   }
 
+  private static async buildTrigger(model: Model): Promise<liveViewManager.Trigger | undefined> {
+    try {
+      return {
+        type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
+        displayTime: 900,
+        condition: {
+          longitude: model.longitude,
+          latitude: model.latitude,
+          coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
+          monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_LEAVE,
+          radius: 500,
+          delayTime: 0
+        }
+      }
+    } catch (e) {
+      // ...
+      return undefined;
+    }
+  }
+}
+
+import { liveViewManager } from '@kit.LiveViewKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { geoLocationManager } from '@kit.LocationKit';
+
+export class GeofenceRightsUtil {
+  // 检查权限
+  public static async checkRights(): Promise<string> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!await GeofenceRightsUtil.isLiveViewEnabled()) {
+        Logger.warn('checkRights, 实况开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_enabled').id);
+      }
+      // 校验实况窗地理围栏开关是否打开
+      if (!await GeofenceRightsUtil.isGeofenceTriggerEnabled()) {
+        Logger.warn('checkRights, 地理围栏开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_geofence_enabled').id);
+      }
+      // 校验GPS开关是否打开
+      if (!GeofenceRightsUtil.isLocationEnabled()) {
+        Logger.warn('checkRights, GPS 开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Gps_enabled').id);
+      }
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('checkRights error: %{public}d %{public}s', err.code, err.message);
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    }
+    return '';
+  }
+
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 
   private static async isGeofenceTriggerEnabled(): Promise<boolean> {
-    return await liveViewManager.isGeofenceTriggerEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isGeofenceTriggerEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isGeofenceTriggerEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isGeofenceTriggerEnabled result: %{public}s', result);
+    return result;
   }
 
-  private static async buildWantAgent(): Promise<Want> {
+  private static isLocationEnabled(): boolean {
+    let result: boolean = false;
+    try {
+      result = geoLocationManager.isLocationEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLocationEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLocationEnabled result: %{public}s', result);
+    return result;
+  }
+}
+
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -865,75 +1598,126 @@ export class LiveViewController {
 除了实况窗卡片形态，开发者还需考虑实况窗胶囊形态的展示效果。若开发者创建实况窗时还想同步创建实况窗胶囊，则需在liveViewManager.LiveView（结构体）中携带胶囊所需的参数liveViewData.capsule（不同胶囊类型携带不同的参数）。示例代码如下：
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class LiveViewCapsuleController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await LiveViewCapsuleController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await LiveViewCapsuleController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "TAXI", // 实况窗的应用场景。TAXI：出行打车。
+      id: 101, // 实况窗ID，开发者生成。
+      event: 'TAXI', // 实况窗的应用场景。TAXI：出行打车。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "司机预计5分钟后到达",
+          title: '司机预计5分钟后到达',
           content: [
-            { text: "白", textColor: "#FF0A59F7" },
-            { text: "●" },
-            { text: "沪AXXXXXX", textColor: "#FF0A59F7" }
+            { text: '白' },
+            { text: ' | ' },
+            { text: '沪AXXXXXX', textColor: '#FF0A59F7' }
           ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
             progress: 30,
-            color: "#ff0959F8",
-            backgroundColor: "#ffc9d7e4",
+            color: '#ff0959F8',
+            backgroundColor: '#ffc9d7e4',
             indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            indicatorIcon: 'taxi-transport-icon.png',
             lineType: liveViewManager.LineType.LINE_TYPE_NORMAL_SOLID_LINE,
-            nodeIcons: ["icon_1.png", "icon_2.png", "icon_3.png"] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            nodeIcons: ['icon_order.png', 'icon_finish.png']
           }
         },
         // 实况胶囊相关参数
         capsule: {
           type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
           status: 1,
-          icon: "capsule_store.png", // 胶囊图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          backgroundColor: "#ff0959F8",
-          title: "5分钟"
+          icon: 'capsule_taxi.png', // 胶囊图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap对象
+          backgroundColor: '#ff0959F8',
+          title: '已接单',
+          content: '约3分钟'
         }
       }
     };
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -944,47 +1728,66 @@ export class LiveViewController {
 若开发者创建实况窗时需要同步创建，则需在liveViewManager.LiveView（结构体）中携带外屏所需的参数liveViewData.external。示例代码如下：
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class LiveViewExternalController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await LiveViewExternalController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await LiveViewExternalController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "FLIGHT", // 实况窗的应用场景。FLIGHT：航班
+      id: 102, // 实况窗 ID，开发者生成。
+      event: 'FLIGHT', // 实况窗的应用场景。FLIGHT：航班
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "航班XXX 已值机",
+          title: '航班 XXX 已值机',
           content: [
             { text: '登机口', },
             { text: '27 17:45', textColor: '#FFFF9C4F' },
             { text: '开始登机' }
-          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          ], // 设置 textColor 字段时，所有拥有 textColor 字段的对象仅能设置同一种颜色，不设置 textColor 时，默认展示#FF000000
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
-            firstTitle: "18:15",
-            firstContent: "上海",
-            lastTitle: "20:30",
-            lastContent: "成都",
-            spaceIcon: "icon.png", // 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            firstTitle: '18:15',
+            firstContent: '上海',
+            lastTitle: '20:30',
+            lastContent: '成都',
+            spaceIcon: 'icon_plane.png', // 扩展区中间间隔图标，取值为'/resources/rawfile'路径下的文件名或 image.PixelMap
             isHorizontalLineDisplayed: true,
-            additionalText: "以上信息仅供参考" // 扩展区底部内容，仅可用于左右文本模板
+            additionalText: '以上信息仅供参考' // 扩展区底部内容，仅可用于左右文本模板
           }
         },
         external: {
-          title: "已值机",
+          title: '已值机',
           content: [
             { text: '登机口' },
             { text: '27\n', textColor: '#FFFF9C4F' },
@@ -992,30 +1795,59 @@ export class LiveViewController {
             { text: '开始登机' }
           ],
           type: liveViewManager.ExternalType.BACKGROUND_PICTURE, // 外屏实况的背景样式类型
-          backgroundPicture: 'airplane.png' // 外屏实况的背景图片，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+          backgroundPicture: 'airplane.png' // 外屏实况的背景图片，取值为'/resources/rawfile'路径下的文件名或 image.PixelMap
         }
       }
     };
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -1032,48 +1864,66 @@ export class LiveViewController {
 构建LiveViewController后，请在代码中初始化LiveViewController并调用LiveViewController.startLiveView()方法。
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class QueueLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await QueueLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await QueueLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "QUEUE", // 实况窗的应用场景。QUEUE：排队
+      id: 107, // 实况窗 ID，开发者生成。
+      event: 'QUEUE', // 实况窗的应用场景。QUEUE：排队
+      isMute: false,
       timer: {
-        time: 620000,
+        time: 300000,
         isCountdown: false,
         isPaused: false
       },
       liveViewData: {
         primary: {
-          title: "大桌4人等位  32桌",
+          title: '大桌 4 人等位  32 桌',
           content: [
-            { text: "已等待 " },
-            { text: "${placeholder.timer}", textColor:"#ff10c1f7" },
-            { text: " | 预计还需>30分钟" }
-          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+            { text: '已等待 ' },
+            { text: ' ${placeholder.timer}', textColor:'#ff10c1f7' },
+            { text: '分钟 | 预计还需>30 分钟' }
+          ],
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-            progress: 0,
-            color: "#FFFF0000",
-            backgroundColor: "#FF000000",
-            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_OVERLAY,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            progress: 40,
+            color: '#FF317AF7',
+            backgroundColor: '#f7819ae0',
+            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UNDISPLAYED,
             lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
-            nodeIcons: ["icon_1.png","icon_2.png"] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            nodeIcons: ['icon_order.png','icon_finish.png']
           }
         }
       }
@@ -1081,23 +1931,52 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
 
-  private static async buildWantAgent(): Promise<Want> {
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -1114,139 +1993,226 @@ export class LiveViewController {
 调用liveViewManager.isLiveViewEnabled()确认实况窗开关打开后，调用liveViewManager的updateLiveView更新实况窗，调用stopLiveView结束实况窗。更新时需要修改请求体中对应的参数。示例代码如下：
 
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from './ContextUtil';
+import { ImageUtil } from './ImageUtil'
+import { Logger } from './LogUtil';
 
-export class LiveViewController {
-  private static contentColor: string = '#FF000000';
+export class PickLiveViewController {
+  private static defaultView: liveViewManager.LiveView | undefined = undefined;
+  private static contentColor: string = '#FF0A59F7';
+  private static underLineColor: string = '#FF0A59F7';
   private static capsuleColor: string = '#FF308977';
 
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await PickLiveViewController.isLiveViewEnabled()) {
+      return false;
     }
+    // 构造实况窗对象
+    PickLiveViewController.defaultView = await PickLiveViewController.buildDefaultView();
+    if (!PickLiveViewController.defaultView) {
+      return false;
+    }
+
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
-
-  public async updateLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    try {
+      const result = await liveViewManager.startLiveView(PickLiveViewController.defaultView);
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      return false;
     }
-    // 修改实况窗内容
-    const defaultView = await LiveViewController.buildDefaultView();
-    defaultView.liveViewData.primary.title = "预计23:49送达";
-    defaultView.liveViewData.primary.content = [
-      { text: "等待商家接单， " },
-      { text: "03:20", textColor: "#FFFF9C4F" },
-      { text: " 未接单自动取消" },
-    ];
-    defaultView.liveViewData.primary.layoutData = {
-      layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-      progress: 0,
-      lineType: 0,
-      nodeIcons: [
-        'icon_store_white.png',
-        'icon_finish.png'
-      ] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-    };
-    defaultView.liveViewData.capsule = {
-      type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
-      status: 1,
-      icon: 'capsule_store.png', // 实况胶囊的图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-      backgroundColor: LiveViewController.capsuleColor,
-      title: "待接单"
-    };
-    // 更新实况窗
-    return await liveViewManager.updateLiveView(defaultView);
+    return true;
   }
 
-  public async stopLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 修改实况窗内容
-    const defaultView = await LiveViewController.buildDefaultView();
-    defaultView.liveViewData.primary.title = '商品已送达';
-    defaultView.liveViewData.primary.content = [
-      { text: '感谢您的认可，' },
-      { text: '期待下一次光临' }
-    ];
-    defaultView.liveViewData.primary.layoutData = {
-      layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-      progress: 100,
-      lineType: 0,
-      nodeIcons: [
-        'icon_order.png',
-        'icon_finish.png'
-      ] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-    };
-    defaultView.liveViewData.capsule = {
-      type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
-      status: 1,
-      icon: 'capsule_gps.png', // 实况胶囊的图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-      backgroundColor: LiveViewController.capsuleColor,
-      title: '已送达'
-    };
-    // 结束实况窗
-    return await liveViewManager.stopLiveView(defaultView);
-  }
-
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "DELIVERY", // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
-      liveViewData: {
-        primary: {
-          title: "餐品待支付",
-          content: [
-            { text: "咖啡 ", textColor: "#FF0A59F7" },
-            { text: "等2件商品" }
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "待支付金额",
-            content: "25.5元",
-            underlineColor: "#FF0A59F7",
-            descPic: "coffee.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          }
-        },
-        // 实况胶囊相关参数
-        capsule: {
-          type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
-          status: 1,
-          icon: "capsule_store.png", // 实况胶囊的图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          backgroundColor: "#FF308977",
-          title: "待支付"
-        }
+  public async updateLiveView(): Promise<boolean> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!PickLiveViewController.defaultView) {
+        return false;
       }
-    };
+      // 修改实况窗内容
+      PickLiveViewController.defaultView.isMute = false;
+      PickLiveViewController.defaultView.liveViewData.primary.title =
+        await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_primary_title').id);
+      PickLiveViewController.defaultView.liveViewData.primary.content = [
+        {
+          text: await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Pick_wait_primary_content').id)
+        }
+      ];
+      PickLiveViewController.defaultView.liveViewData.primary.layoutData = {
+        layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+        title: await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_layout_title').id),
+        content: await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_layout_content').id),
+        underlineColor: PickLiveViewController.underLineColor,
+        descPic: 'coffee.png'
+      };
+      PickLiveViewController.defaultView.liveViewData.capsule = {
+        type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+        status: 1,
+        icon: 'capsule_to_pick.png',
+        backgroundColor: PickLiveViewController.capsuleColor,
+        title: await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_capsule_title').id)
+      }
+
+      // 更新实况窗
+
+      const result = await liveViewManager.updateLiveView(PickLiveViewController.defaultView);
+
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+
+      return false;
+    }
   }
+
+  public async stopLiveView(): Promise<void> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!await PickLiveViewController.isLiveViewEnabled() || !PickLiveViewController.defaultView) {
+        return;
+      }
+      // 修改实况窗内容
+      PickLiveViewController.defaultView.liveViewData.primary.title =
+        await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_finished_primary_title').id);
+      PickLiveViewController.defaultView.liveViewData.primary.content = [
+        {
+          text: await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Pick_finished_primary_content1').id)
+        },
+        {
+          text: await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Pick_finished_primary_content2').id)
+        }
+      ];
+      PickLiveViewController.defaultView.liveViewData.primary.layoutData = {
+        layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+        title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Pick_finished_primary_layout_title')
+          .id),
+        content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Pick_finished_primary_layout_content')
+          .id),
+        underlineColor: PickLiveViewController.underLineColor,
+        descPic: 'icon_store.png'
+      }
+      // 结束实况窗
+      const result = await liveViewManager.stopLiveView(PickLiveViewController.defaultView);
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request stopLiveView error: %{public}d %{public}s', err.code, err.message);
+    }
+  }
+
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    // 校验实况窗开关是否打开
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    return result;
   }
 
-  private static async buildWantAgent(): Promise<Want> {
+  private static async buildDefaultView(): Promise<liveViewManager.LiveView | undefined> {
+    try {
+      return {
+        id: 10, // 实况窗ID，开发者生成。
+        event: 'PICK_UP', // 实况窗的应用场景。PICK_UP：取餐
+        liveViewData: {
+          primary: {
+            title: await ContextUtil.applicationContext.resourceManager
+              .getStringValue($r('app.string.Delivery_default_primary_title').id),
+            content: [
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_primary_content1')
+                  .id),
+                textColor: PickLiveViewController.contentColor
+              },
+              {
+                text: ' ' +
+                  await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_primary_content2')
+                    .id)
+              }
+            ], // 设置 textColor 字段时，所有拥有 textColor 字段的对象仅能设置同一种颜色，不设置 textColor 时，默认展示#FF000000
+            keepTime: 15,
+            clickAction: await ContextUtil.buildWantAgent('PickUp'),
+            extensionData: {
+              // 辅助区
+              type: liveViewManager.ExtensionType.EXTENSION_TYPE_ICON,
+              pic: await ImageUtil.getNetworkPicture('', 'icon_merchant.png'),
+              clickAction: await ContextUtil.buildWantAgent('PickUp')
+            },
+            layoutData: {
+              // 扩展区
+              layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+              title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_layout_title')
+                .id),
+              content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_layout_content')
+                .id),
+              underlineColor: PickLiveViewController.underLineColor,
+              descPic: 'coffee.png'
+            },
+          },
+          capsule: {
+            // 实况胶囊
+            type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+            status: 1,
+            icon: 'capsule_purse.png',
+            backgroundColor: PickLiveViewController.capsuleColor,
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_capsule_title')
+              .id)
+          }
+        }
+      }
+    } catch (e) {
+      return undefined;
+    }
+  }
+}
+
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 
@@ -1254,7 +2220,7 @@ export class LiveViewController {
 
 说明
 
-以上是应用在本地创建、更新和结束实况窗通知的全部流程。此外，应用也可以通过Push Kit实现远程创建、更新和结束实况窗消息。
+以上是应用在本地创建、更新和结束实况窗通知的全部流程。应用在本地结束实况窗的方法还可参照关于实况窗生命周期的问题。此外，应用也可以通过Push Kit实现远程创建、更新和结束实况窗消息。
 
 ## Code blocks
 
@@ -1264,7 +2230,7 @@ export class LiveViewController {
 import { liveViewManager } from '@kit.LiveViewKit';
 
 export class LiveViewController {
-  private static async isLiveViewEnabled(): Promise<boolean> {
+  public static async isLiveViewEnabled(): Promise<boolean> {
     return await liveViewManager.isLiveViewEnabled();
   }
 }
@@ -1274,107 +2240,55 @@ export class LiveViewController {
 
 ```
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class ProgressLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await ProgressLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
-
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "DELIVERY", // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
-      liveViewData: {
-        primary: {
-          title: "骑手已接单",
-          content: [
-            { text: "距商家 " },
-            { text: "300 ", textColor: "#FF0A59F7" },
-            { text: "米 | " },
-            { text: "3 ", textColor: "#FF0A59F7" },
-            { text: "分钟到店" }
-          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-            progress: 40,
-            color: "#FF317AF7",
-            backgroundColor: "#f7819ae0",
-            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
-            nodeIcons: ["icon_1.png", "icon_2.png", "icon_3.png"] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          }
-        }
+    try {
+      const defaultView = await ProgressLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
       }
-    };
-  }
-
-  private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [
-        {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
-        } as Want
-      ],
-      actionType: wantAgent.OperationType.START_ABILITIES,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
-  }
-}
-```
-
-### Code block 3
-
-```
-import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
-
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
     }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
   }
+
+  // ...
 
   private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "DELIVERY", // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
+      id: 106, // 实况窗ID，开发者生成。
+      event: 'DELIVERY', // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "骑手已接单",
+          title: '骑手已接单',
           content: [
-            { text: "距商家 " },
-            { text: "300 ", textColor: "#FF0A59F7" },
-            { text: "米 | " },
-            { text: "3 ", textColor: "#FF0A59F7" },
-            { text: "分钟到店" }
+            { text: '距商家 ' },
+            { text: '300 ', textColor: '#FF0A59F7' },
+            { text: '米 | ' },
+            { text: '3 ', textColor: '#FF0A59F7' },
+            { text: '分钟到店' }
           ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
             weatherInfo : {
@@ -1382,12 +2296,12 @@ export class LiveViewController {
               locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
             },
             progress: 40,
-            color: "#FF317AF7",
-            backgroundColor: "#f7819ae0",
+            color: '#FF317AF7',
+            backgroundColor: '#f7819ae0',
             indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            indicatorIcon: 'icon_rider.png', // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
             lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
-            nodeIcons: ["icon_1.png", "icon_2.png", "icon_3.png"] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            nodeIcons: ['icon_order.png', 'icon_store_white.png', 'icon_finish.png'] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -1395,23 +2309,56 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
+}
+```
 
-  public static async buildWantAgent(): Promise<Want> {
+### Code block 3
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 ```
@@ -1420,40 +2367,68 @@ export class LiveViewController {
 
 ```
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class ProgressLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await ProgressLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await ProgressLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "PICK_UP", // 实况窗的应用场景。PICK_UP：取餐。
+      id: 106, // 实况窗ID，开发者生成。
+      event: 'DELIVERY', // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "餐品已备好",
+          title: '骑手已接单',
           content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取餐" },
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+            { text: '距商家 ' },
+            { text: '300 ', textColor: '#FF0A59F7' },
+            { text: '米 | ' },
+            { text: '3 ', textColor: '#FF0A59F7' },
+            { text: '分钟到店' }
+          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "取餐码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "coffee.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
+            weatherInfo : {
+              weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+            },
+            progress: 40,
+            color: '#FF317AF7',
+            backgroundColor: '#f7819ae0',
+            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
+            indicatorIcon: 'icon_rider.png', // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
+            nodeIcons: ['icon_order.png', 'icon_store_white.png', 'icon_finish.png'] // 进度条每个节点图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -1461,23 +2436,15 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [
-        {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
-        } as Want
-      ],
-      actionType: wantAgent.OperationType.START_ABILITIES,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 }
 ```
@@ -1485,69 +2452,40 @@ export class LiveViewController {
 ### Code block 5
 
 ```
-import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
 
-  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "PICK_UP", // 实况窗的应用场景。PICK_UP：取餐。
-      liveViewData: {
-        primary: {
-          title: "餐品已备好",
-          content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取餐" },
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            weatherInfo: {
-              weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
-              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
-            },
-            title: "取餐码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "coffee.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          }
-        }
-      }
-    };
-  }
-
-  private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  public static async buildWantAgent(): Promise<Want> {
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 ```
@@ -1556,44 +2494,63 @@ export class LiveViewController {
 
 ```
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class PickupLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await PickupLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await PickupLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "TRAIN", // 实况窗的应用场景。TRAIN：高铁/火车。
+      id: 105, // 实况窗ID，开发者生成。
+      event: 'PICK_UP', // 实况窗的应用场景。PICK_UP：取餐。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "列车检票提醒",
+          title: '餐品已备好',
           content: [
-            { text: "检票口 " },
-            { text: "6B ", textColor: "#FF0A59F7" },
-            { text: "| 座位 " },
-            { text: "03车 12F", textColor: "#FF0A59F7" }
-          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(), // 点击实况窗默认动作。
+            { text: '请前往' },
+            { text: ' XXX店 ', textColor: '#FF0A59F7' },
+            { text: '取餐' },
+          ],
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
-            firstTitle: "09:00",
-            firstContent: "上海虹桥",
-            lastTitle: "14:20",
-            lastContent: "汉口",
-            spaceIcon: "icon.png", // 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            isHorizontalLineDisplayed: true,
-            additionalText: "以上信息仅供参考" // 扩展区底部内容，仅可用于左右文本模板。
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+            weatherInfo: {
+              weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
+              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+            },
+            title: '取餐码',
+            content: '72988',
+            underlineColor: '#FF0A59F7',
+            descPic: 'coffee.png' // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -1601,23 +2558,15 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [
-        {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
-        } as Want
-      ],
-      actionType: wantAgent.OperationType.START_ABILITIES,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 }
 ```
@@ -1625,75 +2574,40 @@ export class LiveViewController {
 ### Code block 7
 
 ```
-import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
 
-  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
-    return {
-      id : 6, // 实况窗ID，开发者生成。
-      event : "FLIGHT", // 实况窗的应用场景。FLIGHT：航班。
-      liveViewData : {
-        primary : {
-          title : "计划出发",
-          content : [
-            { text : "登机口"},
-            { text : "32", textColor: "#FF0A59F7" },
-            { text : "| 座位"},
-            { text : " 17H", textColor: "#FF0A59F7" }
-          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime : 15,
-          clickAction : await LiveViewController.buildWantAgent(),
-          backgroundType : liveViewManager.BackgroundType.SYS_BACKGROUND_FLIGHT_SUNSET,  // 当传入实况窗卡片的背景氛围类型参数backgroundType值为赏月航班或夕阳航班时，且同时传入天气类型(WeatherInfo)为雨、雪特殊天气，卡片上优先展示天气背景，其余非特殊天气在卡片上展示赏月航班或夕阳航班背景氛围。
-          layoutData : {
-            layoutType : liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
-            weatherInfo : {
-              weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
-                    locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_DESTINATION,
-              highTemperature : 30,
-                    lowTemperature : -10
-              },
-            firstTitle: "09:00",
-                  firstContent: "上海虹桥",
-            lastTitle: "14:20",
-            lastContent: "汉口",
-            spaceIcon : "icon_plane.png",// 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            isHorizontalLineDisplayed : false,
-            additionalText : "以上信息仅供参考" // 扩展区底部内容，仅可用于左右文本模板。
-          }
-        }
-      }
-    };
-  }
-
-  private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 ```
@@ -1702,50 +2616,63 @@ export class LiveViewController {
 
 ```
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class PickupLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await PickupLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await PickupLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "SCORE", // 实况窗的应用场景。SCORE：赛事比分。
+      id: 105, // 实况窗ID，开发者生成。
+      event: 'PICK_UP', // 实况窗的应用场景。PICK_UP：取餐。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "第四节比赛中",
+          title: '餐品已备好',
           content: [
-            { text: "XX", textColor:"#FF0A59F7" },
-            { text: " VS " },
-            { text: "XX", textColor:"#FF0A59F7" },
-            { text: " | " },
-            { text: "小组赛 第五场", textColor:"#FF0A59F7" }
+            { text: '请前往' },
+            { text: ' XXX店 ', textColor: '#FF0A59F7' },
+            { text: '取餐' },
           ],
-          keepTime: 1,
-          clickAction: await LiveViewController.buildWantAgent(),
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_SCORE,
-            hostName: "队名A",
-            hostIcon: "host.png", // 扩展区左侧图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            hostScore: "110",
-            guestName: "队名B",
-            guestIcon: "guest.png", // 扩展区右侧图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            guestScore: "102",
-            competitionDesc: [
-              { text: "●", textColor: "#FFFF0000" },
-              { text: "Q4" }
-            ],
-            competitionTime: "02:16",
-            isHorizontalLineDisplayed: true
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+            weatherInfo: {
+              weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
+              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+            },
+            title: '取餐码',
+            content: '72988',
+            underlineColor: '#FF0A59F7',
+            descPic: 'coffee.png' // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
           }
         }
       }
@@ -1753,23 +2680,15 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [
-        {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
-        } as Want
-      ],
-      actionType: wantAgent.OperationType.START_ABILITIES,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 }
 ```
@@ -1777,62 +2696,40 @@ export class LiveViewController {
 ### Code block 9
 
 ```
-import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "NAVIGATION", // 实况窗的应用场景。NAVIGATION：导航。
-      liveViewData: {
-        primary: {
-          title: "178米后左转",
-          content: [
-            { text: "去往"},
-            { text: " 南京东路", textColor: "#FF0A59F7" }
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_NAVIGATION,
-            currentNavigationIcon: "navigation.png", // 当前导航方向，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            navigationIcons: ["left.png","straight.png","straight.png","right.png"] // 导航方向的箭头集合图片，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          }
-        }
-      }
-    };
-  }
-
-  private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 ```
@@ -1841,95 +2738,90 @@ export class LiveViewController {
 
 ```
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
-import { geoLocationManager } from '@kit.LocationKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveViewByTrigger(): Promise<liveViewManager.LiveViewResult> {
+export class FlightLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 校验实况窗地理围栏开关是否打开
-    if (!await LiveViewController.isGeofenceTriggerEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
-    }
-    // 校验GPS开关是否打开
-    if (!geoLocationManager.isLocationEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
+    if (!await FlightLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    const trigger = await LiveViewController.buildTrigger();
-    return await liveViewManager.startLiveViewByTrigger(defaultView, trigger);
+    try {
+      const defaultView = await FlightLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "EXPRESS", // 实况窗的应用场景。EXPRESS：快递。
-      liveViewData: {
-        primary: {
-          title: "快递已送达",
-          content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取快递" },
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "快递码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "express.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+      id : 103, // 实况窗ID，开发者生成。
+      event : 'FLIGHT', // 实况窗的应用场景。FLIGHT：航班。
+      isMute: false,
+      liveViewData : {
+        primary : {
+          title : '计划出发',
+          content : [
+            { text : '登机口'},
+            { text : '32', textColor: '#FF0A59F7' },
+            { text : ' | 座位'},
+            { text : ' 17H', textColor: '#FF0A59F7' }
+          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
+          keepTime : 0,
+          clickAction : await ContextUtil.buildWantAgent('GuideCode'),
+          /**
+           * 当传入实况窗卡片的背景氛围类型参数backgroundType值为赏月航班或夕阳航班时，
+           * 且同时传入天气类型(WeatherInfo)为雨、雪特殊天气，卡片上优先展示天气背景，
+           * 其余非特殊天气在卡片上展示赏月航班或夕阳航班背景氛围。
+           */
+          backgroundType : liveViewManager.BackgroundType.SYS_BACKGROUND_FLIGHT_SUNSET,
+          layoutData : {
+            layoutType : liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
+            weatherInfo : {
+              weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_DESTINATION,
+              highTemperature : 30,
+              lowTemperature : -10
+            },
+            firstTitle: '09:00',
+            firstContent: '上海虹桥',
+            lastTitle: '14:20',
+            lastContent: '汉口',
+            spaceIcon : 'icon_plane.png',// 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            isHorizontalLineDisplayed : false,
+            additionalText : '以上信息仅供参考' // 扩展区底部内容，仅可用于左右文本模板。
           }
         }
       }
     };
   }
 
-  private static async buildTrigger(): Promise<liveViewManager.Trigger> {
-    return {
-      // 构造基于地理位置的实况窗提醒的触发条件
-      type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
-      displayTime: 15,
-      condition: {
-        // 触发条件：设备进入坐标点半径2000米范围内
-        longitude: 116.3971356415625,
-        latitude: 39.91800603311188,
-        coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
-        monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_ENTRY,
-        radius: 2000,
-        delayTime: 0
-      }
-    }
-  }
-
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async isGeofenceTriggerEnabled(): Promise<boolean> {
-    return await liveViewManager.isGeofenceTriggerEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [
-        {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
-        } as Want
-      ],
-      actionType: wantAgent.OperationType.START_ABILITIES,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 }
 ```
@@ -1937,113 +2829,40 @@ export class LiveViewController {
 ### Code block 11
 
 ```
-import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
-import { geoLocationManager } from '@kit.LocationKit';
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
 
-  public async stopLiveViewByTrigger(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 校验实况窗地理围栏开关是否打开
-    if (!await LiveViewController.isGeofenceTriggerEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
-    }
-    // 校验GPS开关是否打开
-    if (!geoLocationManager.isLocationEnabled()) {
-      throw new Error("Live view geofence trigger is disabled.");
-    }
-    // 构建实况窗对象
-    const defaultView = await LiveViewController.buildDefaultView();
-    defaultView.liveViewData.primary.title = '快递已取完';
-    defaultView.liveViewData.primary.content = [
-      { text: '感谢您的认可'}
-    ];
-    // 构建延迟触发条件
-    const trigger = await LiveViewController.buildTrigger();
-    trigger.condition.monitorEvent = liveViewManager.MonitorEvent.MONITOR_TYPE_LEAVE;
-    // 注册基于地理位置触发结束的实况窗
-    return await liveViewManager.stopLiveViewByTrigger(defaultView, trigger);
-  }
-
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "EXPRESS", // 实况窗的应用场景。EXPRESS：快递。
-      liveViewData: {
-        primary: {
-          title: "快递已送达",
-          content: [
-            { text: "请前往" },
-            { text: " XXX店 ", textColor: "#FF0A59F7" },
-            { text: "取快递" },
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "快递码",
-            content: "72988",
-            underlineColor: "#FF0A59F7",
-            descPic: "express.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          }
-        }
-      }
-    };
-  }
-
-  private static async buildTrigger(): Promise<liveViewManager.Trigger> {
-    return {
-      // 构造基于地理位置的实况窗提醒的触发条件
-      type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
-      displayTime: 15,
-      condition: {
-        // 触发条件：设备进入坐标点半径2000米范围内
-        longitude: 116.3971356415625,
-        latitude: 39.91800603311188,
-        coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
-        monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_ENTRY,
-        radius: 2000,
-        delayTime: 0
-      }
-    }
-  }
-
-  private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async isGeofenceTriggerEnabled(): Promise<boolean> {
-    return await liveViewManager.isGeofenceTriggerEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 ```
@@ -2052,75 +2871,90 @@ export class LiveViewController {
 
 ```
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class FlightLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await FlightLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await FlightLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+  // ...
+
+  private static async buildDefaultView() : Promise < liveViewManager.LiveView > {
     return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "TAXI", // 实况窗的应用场景。TAXI：出行打车。
-      liveViewData: {
-        primary: {
-          title: "司机预计5分钟后到达",
-          content: [
-            { text: "白", textColor: "#FF0A59F7" },
-            { text: "●" },
-            { text: "沪AXXXXXX", textColor: "#FF0A59F7" }
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-            progress: 30,
-            color: "#ff0959F8",
-            backgroundColor: "#ffc9d7e4",
-            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            lineType: liveViewManager.LineType.LINE_TYPE_NORMAL_SOLID_LINE,
-            nodeIcons: ["icon_1.png", "icon_2.png", "icon_3.png"] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+      id : 103, // 实况窗ID，开发者生成。
+      event : 'FLIGHT', // 实况窗的应用场景。FLIGHT：航班。
+      isMute: false,
+      liveViewData : {
+        primary : {
+          title : '计划出发',
+          content : [
+            { text : '登机口'},
+            { text : '32', textColor: '#FF0A59F7' },
+            { text : ' | 座位'},
+            { text : ' 17H', textColor: '#FF0A59F7' }
+          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
+          keepTime : 0,
+          clickAction : await ContextUtil.buildWantAgent('GuideCode'),
+          /**
+           * 当传入实况窗卡片的背景氛围类型参数backgroundType值为赏月航班或夕阳航班时，
+           * 且同时传入天气类型(WeatherInfo)为雨、雪特殊天气，卡片上优先展示天气背景，
+           * 其余非特殊天气在卡片上展示赏月航班或夕阳航班背景氛围。
+           */
+          backgroundType : liveViewManager.BackgroundType.SYS_BACKGROUND_FLIGHT_SUNSET,
+          layoutData : {
+            layoutType : liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
+            weatherInfo : {
+              weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_DESTINATION,
+              highTemperature : 30,
+              lowTemperature : -10
+            },
+            firstTitle: '09:00',
+            firstContent: '上海虹桥',
+            lastTitle: '14:20',
+            lastContent: '汉口',
+            spaceIcon : 'icon_plane.png',// 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            isHorizontalLineDisplayed : false,
+            additionalText : '以上信息仅供参考' // 扩展区底部内容，仅可用于左右文本模板。
           }
-        },
-        // 实况胶囊相关参数
-        capsule: {
-          type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
-          status: 1,
-          icon: "capsule_store.png", // 胶囊图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          backgroundColor: "#ff0959F8",
-          title: "5分钟"
         }
       }
     };
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [
-        {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
-        } as Want
-      ],
-      actionType: wantAgent.OperationType.START_ABILITIES,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 }
 ```
@@ -2128,79 +2962,40 @@ export class LiveViewController {
 ### Code block 13
 
 ```
-import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
 
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "FLIGHT", // 实况窗的应用场景。FLIGHT：航班
-      liveViewData: {
-        primary: {
-          title: "航班XXX 已值机",
-          content: [
-            { text: '登机口', },
-            { text: '27 17:45', textColor: '#FFFF9C4F' },
-            { text: '开始登机' }
-          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
-            firstTitle: "18:15",
-            firstContent: "上海",
-            lastTitle: "20:30",
-            lastContent: "成都",
-            spaceIcon: "icon.png", // 扩展区中间间隔图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            isHorizontalLineDisplayed: true,
-            additionalText: "以上信息仅供参考" // 扩展区底部内容，仅可用于左右文本模板
-          }
-        },
-        external: {
-          title: "已值机",
-          content: [
-            { text: '登机口' },
-            { text: '27\n', textColor: '#FFFF9C4F' },
-            { text: '17:45', textColor: '#FFFF9C4F' },
-            { text: '开始登机' }
-          ],
-          type: liveViewManager.ExternalType.BACKGROUND_PICTURE, // 外屏实况的背景样式类型
-          backgroundPicture: 'airplane.png' // 外屏实况的背景图片，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-        }
-      }
-    };
-  }
-
-  private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 ```
@@ -2209,48 +3004,69 @@ export class LiveViewController {
 
 ```
 import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-export class LiveViewController {
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
+export class ScoreLiveViewController {
+  public async startLiveView(): Promise<boolean> {
     // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
+    if (!await ScoreLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
     }
     // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
+    try {
+      const defaultView = await ScoreLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
   }
+
+  // ...
 
   private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
     return {
       // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "QUEUE", // 实况窗的应用场景。QUEUE：排队
-      timer: {
-        time: 620000,
-        isCountdown: false,
-        isPaused: false
-      },
+      id: 108, // 实况窗 ID，开发者生成。
+      event: 'SCORE', // 实况窗的应用场景。SCORE：赛事比分。
+      isMute: false,
       liveViewData: {
         primary: {
-          title: "大桌4人等位  32桌",
+          title: '第四节比赛中',
           content: [
-            { text: "已等待 " },
-            { text: "${placeholder.timer}", textColor:"#ff10c1f7" },
-            { text: " | 预计还需>30分钟" }
-          ], // 设置textColor字段时，所有拥有textColor字段的对象仅能设置同一种颜色，不设置textColor时，默认展示#FF000000
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
+            { text: 'XX', textColor:'#FF0A59F7' },
+            { text: ' VS ' },
+            { text: 'XX', textColor:'#FF0A59F7' },
+            { text: ' | ' },
+            { text: '小组赛 第五场', textColor:'#FF0A59F7' }
+          ],
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
           layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-            progress: 0,
-            color: "#FFFF0000",
-            backgroundColor: "#FF000000",
-            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_OVERLAY,
-            indicatorIcon: "indicator.png", // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-            lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
-            nodeIcons: ["icon_1.png","icon_2.png"] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_SCORE,
+            hostName: '队名 A',
+            hostIcon: 'score_firefox.png',
+            hostScore: '110',
+            guestName: '队名 B',
+            guestIcon: 'score_m.png',
+            guestScore: '102',
+            competitionDesc: [
+              { text: '●', textColor: '#FFFF0000' },
+              { text: 'Q4' }
+            ],
+            competitionTime: '02:16',
+            isHorizontalLineDisplayed: true
           }
         }
       }
@@ -2258,23 +3074,15 @@ export class LiveViewController {
   }
 
   private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [
-        {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
-        } as Want
-      ],
-      actionType: wantAgent.OperationType.START_ABILITIES,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
   }
 }
 ```
@@ -2282,140 +3090,1328 @@ export class LiveViewController {
 ### Code block 15
 
 ```
-import { liveViewManager } from '@kit.LiveViewKit';
-import { Want, wantAgent } from '@kit.AbilityKit';
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
 
-export class LiveViewController {
-  private static contentColor: string = '#FF000000';
-  private static capsuleColor: string = '#FF308977';
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
 
-  public async startLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 创建实况窗
-    const defaultView = await LiveViewController.buildDefaultView();
-    return await liveViewManager.startLiveView(defaultView);
-  }
-
-  public async updateLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 修改实况窗内容
-    const defaultView = await LiveViewController.buildDefaultView();
-    defaultView.liveViewData.primary.title = "预计23:49送达";
-    defaultView.liveViewData.primary.content = [
-      { text: "等待商家接单， " },
-      { text: "03:20", textColor: "#FFFF9C4F" },
-      { text: " 未接单自动取消" },
-    ];
-    defaultView.liveViewData.primary.layoutData = {
-      layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-      progress: 0,
-      lineType: 0,
-      nodeIcons: [
-        'icon_store_white.png',
-        'icon_finish.png'
-      ] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-    };
-    defaultView.liveViewData.capsule = {
-      type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
-      status: 1,
-      icon: 'capsule_store.png', // 实况胶囊的图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-      backgroundColor: LiveViewController.capsuleColor,
-      title: "待接单"
-    };
-    // 更新实况窗
-    return await liveViewManager.updateLiveView(defaultView);
-  }
-
-  public async stopLiveView(): Promise<liveViewManager.LiveViewResult> {
-    // 校验实况窗开关是否打开
-    if (!await LiveViewController.isLiveViewEnabled()) {
-      throw new Error("Live view is disabled.");
-    }
-    // 修改实况窗内容
-    const defaultView = await LiveViewController.buildDefaultView();
-    defaultView.liveViewData.primary.title = '商品已送达';
-    defaultView.liveViewData.primary.content = [
-      { text: '感谢您的认可，' },
-      { text: '期待下一次光临' }
-    ];
-    defaultView.liveViewData.primary.layoutData = {
-      layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
-      progress: 100,
-      lineType: 0,
-      nodeIcons: [
-        'icon_order.png',
-        'icon_finish.png'
-      ] // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-    };
-    defaultView.liveViewData.capsule = {
-      type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
-      status: 1,
-      icon: 'capsule_gps.png', // 实况胶囊的图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-      backgroundColor: LiveViewController.capsuleColor,
-      title: '已送达'
-    };
-    // 结束实况窗
-    return await liveViewManager.stopLiveView(defaultView);
-  }
-
-  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
-    return {
-      // 构造实况窗请求体
-      id: 0, // 实况窗ID，开发者生成。
-      event: "DELIVERY", // 实况窗的应用场景。DELIVERY：即时配送（外卖、生鲜）
-      liveViewData: {
-        primary: {
-          title: "餐品待支付",
-          content: [
-            { text: "咖啡 ", textColor: "#FF0A59F7" },
-            { text: "等2件商品" }
-          ],
-          keepTime: 15,
-          clickAction: await LiveViewController.buildWantAgent(),
-          layoutData: {
-            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
-            title: "待支付金额",
-            content: "25.5元",
-            underlineColor: "#FF0A59F7",
-            descPic: "coffee.png" // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          }
-        },
-        // 实况胶囊相关参数
-        capsule: {
-          type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
-          status: 1,
-          icon: "capsule_store.png", // 实况胶囊的图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
-          backgroundColor: "#FF308977",
-          title: "待支付"
-        }
-      }
-    };
-  }
-
-  private static async isLiveViewEnabled(): Promise<boolean> {
-    return await liveViewManager.isLiveViewEnabled();
-  }
-
-  private static async buildWantAgent(): Promise<Want> {
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
     const wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
-          bundleName: 'xxx.xxx.xxx', // 应用实际bundleName
-          abilityName: 'EntryAbility'
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
         } as Want
       ],
       actionType: wantAgent.OperationType.START_ABILITIES,
       requestCode: 0,
       actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
     };
-    const agent = await wantAgent.getWantAgent(wantAgentInfo);
-    return agent;
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
+  }
+}
+```
+
+### Code block 16
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export class NavigationLiveViewController {
+  public async startLiveView(): Promise<boolean> {
+    // 校验实况窗开关是否打开
+    if (!await NavigationLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
+    }
+    // 创建实况窗
+    try {
+      const defaultView = await NavigationLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
+  }
+
+  // ...
+
+  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+    return {
+      // 构造实况窗请求体
+      id: 104, // 实况窗ID，开发者生成。
+      event: 'NAVIGATION', // 实况窗的应用场景。NAVIGATION：导航。
+      isMute: false,
+      liveViewData: {
+        primary: {
+          title: '178米后左转',
+          content: [
+            { text: '去往'},
+            { text: ' xxx东路', textColor: '#FF0A59F7' }
+          ],
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
+          layoutData: {
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_NAVIGATION,
+            currentNavigationIcon: 'arrow_left.png', // 当前导航方向，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            navigationIcons: ['arrow_left.png','arrow_up.png','arrow_up.png','arrow_right.png'] // 导航方向的箭头集合图片，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+          }
+        }
+      }
+    };
+  }
+
+  private static async isLiveViewEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
+  }
+}
+```
+
+### Code block 17
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
+    const wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITIES,
+      requestCode: 0,
+      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
+  }
+}
+```
+
+### Code block 18
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { Model } from '../model';
+import { GeofenceRightsUtil } from './GeofenceRightsUtil';
+
+export class GeofenceExpressController {
+  private static defaultView: liveViewManager.LiveView | undefined = undefined;
+  private static trigger: liveViewManager.Trigger | undefined = undefined;
+  private static underLineColor: string = '#FF0A59F7';
+  private static capsuleColor: string = '#FF308977';
+
+  public static async startLiveViewExpress(model: Model): Promise<string> {
+    let checkRightsResult = await GeofenceRightsUtil.checkRights();
+    if (checkRightsResult != '') {
+      return checkRightsResult;
+    }
+    try {
+      // 构建快递实况窗。
+      GeofenceExpressController.defaultView = await GeofenceExpressController.buildExpressLiveView();
+      // 构建实况窗提醒的触发条件
+      GeofenceExpressController.trigger = await GeofenceExpressController.buildDefaultTrigger(model);
+      let createResult = await GeofenceExpressController.startLiveViewByTrigger();
+      if (createResult != 0) {
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Create_failed').id);
+      }
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    } catch (e) {
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_failed').id);
+    }
+  }
+
+  private static async startLiveViewByTrigger(): Promise<number> {
+    if (!GeofenceExpressController.defaultView || !GeofenceExpressController.trigger) {
+      Logger.warn('startLiveViewByTrigger, buildDefaultView or buildDefaultTrigger failed.')
+      return -1;
+    }
+    // 注册由地理围栏条件延迟触发创建的实况窗
+    try {
+      Logger.info('Request startLiveViewByTrigger req liveView: %{public}s, trigger: %{public}s',
+        JSON.stringify(GeofenceExpressController.defaultView), JSON.stringify(GeofenceExpressController.trigger));
+      const result = await liveViewManager.startLiveViewByTrigger(GeofenceExpressController.defaultView,
+        GeofenceExpressController.trigger);
+      Logger.info('Request startLiveViewByTrigger result: %{public}s', JSON.stringify(result));
+      return result.resultCode;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return -1;
+    }
+  }
+
+  private static async buildExpressLiveView(): Promise<liveViewManager.LiveView | undefined> {
+    try {
+      return {
+        id: 11, // 实况窗ID，开发者生成。
+        event: 'EXPRESS', // 实况窗的应用场景。EXPRESS：快递。
+        sequence: 1, // 序列号
+        isMute: false,
+        liveViewData: {
+          primary: {
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_title')
+              .id),
+            content: [
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_content')
+                  .id),
+              }
+            ],
+            keepTime: 0,
+            clickAction: await ContextUtil.buildWantAgent('Geofence'),
+            extensionData: {
+              type: liveViewManager.ExtensionType.EXTENSION_TYPE_ICON,
+              pic: 'express.png',
+              clickAction: await ContextUtil.buildWantAgent('Geofence', 11)
+            },
+            layoutData: {
+              layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+              title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_title')
+                .id),
+              content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_content')
+                .id),
+              underlineColor: GeofenceExpressController.underLineColor,
+              // 扩展区右侧产品描述图，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+              descPic: 'pick.png',
+            },
+          },
+          capsule: {
+            type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+            status: 1,
+            icon: 'pick.png',
+            backgroundColor: GeofenceExpressController.capsuleColor,
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_title')
+              .id),
+            content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Express_layoutData_content')
+              .id),
+          }
+        }
+      }
+    } catch (e) {
+      Logger.error('buildDefaultView failed:' + JSON.stringify(e))
+      return undefined;
+    }
+  }
+
+  private static async buildDefaultTrigger(model: Model): Promise<liveViewManager.Trigger | undefined> {
+    try {
+      return {
+        // 构造实况窗提醒的地理围栏触发条件。
+        type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
+        displayTime: 900,
+        condition: {
+          // 地理围栏触发条件：设备进入坐标点500米范围内。
+          longitude: model.longitude,
+          latitude: model.latitude,
+          coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
+          monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_ENTRY,
+          radius: 500,
+          delayTime: 0
+        }
+      }
+    } catch (e) {
+      Logger.error('buildDefaultTrigger failed:' + JSON.stringify(e))
+      return undefined;
+    }
+  }
+}
+```
+
+### Code block 19
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { geoLocationManager } from '@kit.LocationKit';
+
+export class GeofenceRightsUtil {
+  // 检查权限
+  public static async checkRights(): Promise<string> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!await GeofenceRightsUtil.isLiveViewEnabled()) {
+        Logger.warn('checkRights, 实况开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_enabled').id);
+      }
+      // 校验实况窗地理围栏开关是否打开
+      if (!await GeofenceRightsUtil.isGeofenceTriggerEnabled()) {
+        Logger.warn('checkRights, 地理围栏开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_geofence_enabled').id);
+      }
+      // 校验GPS开关是否打开
+      if (!GeofenceRightsUtil.isLocationEnabled()) {
+        Logger.warn('checkRights, GPS 开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Gps_enabled').id);
+      }
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('checkRights error: %{public}d %{public}s', err.code, err.message);
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    }
+    return '';
+  }
+
+  private static async isLiveViewEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLiveViewEnabled result: %{public}s', result);
+    return result;
+  }
+
+  private static async isGeofenceTriggerEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isGeofenceTriggerEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isGeofenceTriggerEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isGeofenceTriggerEnabled result: %{public}s', result);
+    return result;
+  }
+
+  private static isLocationEnabled(): boolean {
+    let result: boolean = false;
+    try {
+      result = geoLocationManager.isLocationEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLocationEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLocationEnabled result: %{public}s', result);
+    return result;
+  }
+}
+```
+
+### Code block 20
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
+    const wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITIES,
+      requestCode: 0,
+      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
+  }
+}
+```
+
+### Code block 21
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { Model } from '../model';
+import { GeofenceRightsUtil } from './GeofenceRightsUtil';
+
+export class GeofenceFlightEndController {
+  private static defaultView: liveViewManager.LiveView | undefined = undefined;
+  private static trigger: liveViewManager.Trigger | undefined = undefined;
+  private static underLineColor: string = '#FF0A59F7';
+  private static capsuleColor: string = '#FF308977';
+
+  public static async stopLiveViewFlightEnds(model: Model): Promise<string> {
+    let checkRightsResult = await GeofenceRightsUtil.checkRights();
+    if (checkRightsResult != '') {
+      return checkRightsResult;
+    }
+    try {
+      // 构造实况窗结构体
+      GeofenceFlightEndController.defaultView = await GeofenceFlightEndController.buildFlightLiveView();
+      // 创建实况窗
+      let createResult = await GeofenceFlightEndController.startLiveView();
+      if (createResult != 0) {
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Create_failed').id);
+      }
+      if (GeofenceFlightEndController.defaultView) {
+        if (GeofenceFlightEndController.defaultView.sequence) {
+          GeofenceFlightEndController.defaultView.sequence += 1;
+        }
+        GeofenceFlightEndController.defaultView.liveViewData.primary.title =
+          await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Flight_travel_end_title').id);
+        GeofenceFlightEndController.defaultView.liveViewData.primary.content = [
+          {
+            text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_travel_end_content')
+              .id)
+          },
+        ];
+      }
+      // 构造地理围栏条件
+      GeofenceFlightEndController.trigger = await GeofenceFlightEndController.buildTrigger(model);
+      // 注册由地理围栏条件延迟触发结束的实况窗
+      let stopTriggerLiveView = await GeofenceFlightEndController.stopLiveViewByTrigger();
+      // ...
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_failed').id);
+    }
+  }
+
+  private static async startLiveView(): Promise<number> {
+    if (!GeofenceFlightEndController.defaultView) {
+      Logger.warn('startLiveViewByTrigger, buildDefaultView failed.')
+      return -1;
+    }
+    try {
+      // 创建实况窗
+      // ...
+      const result = await liveViewManager.startLiveView(GeofenceFlightEndController.defaultView);
+      // ...
+      return result.resultCode;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return -1;
+    }
+  }
+
+  private static async stopLiveViewByTrigger(): Promise<number> {
+    if (!GeofenceFlightEndController.defaultView || !GeofenceFlightEndController.trigger) {
+      Logger.warn('startLiveViewByTrigger, buildDefaultView or buildDefaultTrigger failed.')
+      return -1;
+    }
+    try {
+      // 注册由地理围栏条件延迟触发结束的实况窗
+      // ...
+      const result = await liveViewManager.stopLiveViewByTrigger(GeofenceFlightEndController.defaultView,
+        GeofenceFlightEndController.trigger);
+      // ...
+      return result.resultCode;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return -1;
+    }
+  }
+
+  private static async buildFlightLiveView(): Promise<liveViewManager.LiveView | undefined> {
+    try {
+      return {
+        id: 14, // 实况窗ID，开发者生成。
+        event: 'FLIGHT', // 实况窗的应用场景。EXPRESS：快递。
+        sequence: 1, // 序列号
+        isMute: false,
+        liveViewData: {
+          primary: {
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Luggage_prompt_title')
+              .id),
+            content: [
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Luggage_prompt_content1')
+                  .id)
+              },
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Luggage_prompt_content2')
+                  .id),
+                textColor: GeofenceFlightEndController.underLineColor
+              },
+            ],
+            keepTime: 15,
+            clickAction: await ContextUtil.buildWantAgent('Geofence'),
+            extensionData: {
+              type: liveViewManager.ExtensionType.EXTENSION_TYPE_ICON,
+              pic: 'flight.png',
+              clickAction: await ContextUtil.buildWantAgent('Geofence')
+            },
+            layoutData: {
+              layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
+              firstTitle: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_first_title')
+                .id),
+              firstContent: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_first_content')
+                .id),
+              lastTitle: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_last_title')
+                .id),
+              lastContent: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Flight_depart_layout_last_content')
+                .id),
+              spaceIcon: 'icon_plane.png'
+            },
+          },
+          capsule: {
+            type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+            status: 1,
+            title: await ContextUtil.applicationContext.resourceManager
+              .getStringValue($r('app.string.Luggage_prompt_capsule_title').id),
+            content: await ContextUtil.applicationContext.resourceManager
+              .getStringValue($r('app.string.Flight_arrived_capsule_content').id),
+            icon: 'capsule_flight.png',
+            backgroundColor: GeofenceFlightEndController.capsuleColor,
+          }
+        }
+      }
+    } catch (e) {
+      // ...
+      return undefined;
+    }
+  }
+
+  private static async buildTrigger(model: Model): Promise<liveViewManager.Trigger | undefined> {
+    try {
+      return {
+        type: liveViewManager.TriggerType.TRIGGER_TYPE_GEOFENCE,
+        displayTime: 900,
+        condition: {
+          longitude: model.longitude,
+          latitude: model.latitude,
+          coordinateSystemType: liveViewManager.CoordinateSystemType.COORDINATE_TYPE_GCJ02,
+          monitorEvent: liveViewManager.MonitorEvent.MONITOR_TYPE_LEAVE,
+          radius: 500,
+          delayTime: 0
+        }
+      }
+    } catch (e) {
+      // ...
+      return undefined;
+    }
+  }
+}
+```
+
+### Code block 22
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from '../ContextUtil';
+import { Logger } from '../LogUtil';
+import { geoLocationManager } from '@kit.LocationKit';
+
+export class GeofenceRightsUtil {
+  // 检查权限
+  public static async checkRights(): Promise<string> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!await GeofenceRightsUtil.isLiveViewEnabled()) {
+        Logger.warn('checkRights, 实况开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_enabled').id);
+      }
+      // 校验实况窗地理围栏开关是否打开
+      if (!await GeofenceRightsUtil.isGeofenceTriggerEnabled()) {
+        Logger.warn('checkRights, 地理围栏开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Live_view_geofence_enabled').id);
+      }
+      // 校验GPS开关是否打开
+      if (!GeofenceRightsUtil.isLocationEnabled()) {
+        Logger.warn('checkRights, GPS 开关未开启.')
+        return await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Gps_enabled').id);
+      }
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('checkRights error: %{public}d %{public}s', err.code, err.message);
+      return await ContextUtil.applicationContext.resourceManager
+        .getStringValue($r('app.string.Create_success').id);
+    }
+    return '';
+  }
+
+  private static async isLiveViewEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLiveViewEnabled result: %{public}s', result);
+    return result;
+  }
+
+  private static async isGeofenceTriggerEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isGeofenceTriggerEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isGeofenceTriggerEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isGeofenceTriggerEnabled result: %{public}s', result);
+    return result;
+  }
+
+  private static isLocationEnabled(): boolean {
+    let result: boolean = false;
+    try {
+      result = geoLocationManager.isLocationEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('isLocationEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('isLocationEnabled result: %{public}s', result);
+    return result;
+  }
+}
+```
+
+### Code block 23
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
+    const wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITIES,
+      requestCode: 0,
+      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
+  }
+}
+```
+
+### Code block 24
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export class LiveViewCapsuleController {
+  public async startLiveView(): Promise<boolean> {
+    // 校验实况窗开关是否打开
+    if (!await LiveViewCapsuleController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
+    }
+    // 创建实况窗
+    try {
+      const defaultView = await LiveViewCapsuleController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
+  }
+
+  // ...
+
+  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+    return {
+      // 构造实况窗请求体
+      id: 101, // 实况窗ID，开发者生成。
+      event: 'TAXI', // 实况窗的应用场景。TAXI：出行打车。
+      isMute: false,
+      liveViewData: {
+        primary: {
+          title: '司机预计5分钟后到达',
+          content: [
+            { text: '白' },
+            { text: ' | ' },
+            { text: '沪AXXXXXX', textColor: '#FF0A59F7' }
+          ],
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
+          layoutData: {
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
+            progress: 30,
+            color: '#ff0959F8',
+            backgroundColor: '#ffc9d7e4',
+            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UP,
+            // 进度条指示器图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            indicatorIcon: 'taxi-transport-icon.png',
+            lineType: liveViewManager.LineType.LINE_TYPE_NORMAL_SOLID_LINE,
+            // 进度条节点图标集合，每个元素取值为“/resources/rawfile”路径下的文件名或image.PixelMap
+            nodeIcons: ['icon_order.png', 'icon_finish.png']
+          }
+        },
+        // 实况胶囊相关参数
+        capsule: {
+          type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+          status: 1,
+          icon: 'capsule_taxi.png', // 胶囊图标，取值为“/resources/rawfile”路径下的文件名或image.PixelMap对象
+          backgroundColor: '#ff0959F8',
+          title: '已接单',
+          content: '约3分钟'
+        }
+      }
+    };
+  }
+
+  private static async isLiveViewEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
+  }
+}
+```
+
+### Code block 25
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
+    const wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITIES,
+      requestCode: 0,
+      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
+  }
+}
+```
+
+### Code block 26
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export class LiveViewExternalController {
+  public async startLiveView(): Promise<boolean> {
+    // 校验实况窗开关是否打开
+    if (!await LiveViewExternalController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
+    }
+    // 创建实况窗
+    try {
+      const defaultView = await LiveViewExternalController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
+  }
+
+  // ...
+
+  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+    return {
+      // 构造实况窗请求体
+      id: 102, // 实况窗 ID，开发者生成。
+      event: 'FLIGHT', // 实况窗的应用场景。FLIGHT：航班
+      isMute: false,
+      liveViewData: {
+        primary: {
+          title: '航班 XXX 已值机',
+          content: [
+            { text: '登机口', },
+            { text: '27 17:45', textColor: '#FFFF9C4F' },
+            { text: '开始登机' }
+          ], // 设置 textColor 字段时，所有拥有 textColor 字段的对象仅能设置同一种颜色，不设置 textColor 时，默认展示#FF000000
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
+          layoutData: {
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_FLIGHT,
+            firstTitle: '18:15',
+            firstContent: '上海',
+            lastTitle: '20:30',
+            lastContent: '成都',
+            spaceIcon: 'icon_plane.png', // 扩展区中间间隔图标，取值为'/resources/rawfile'路径下的文件名或 image.PixelMap
+            isHorizontalLineDisplayed: true,
+            additionalText: '以上信息仅供参考' // 扩展区底部内容，仅可用于左右文本模板
+          }
+        },
+        external: {
+          title: '已值机',
+          content: [
+            { text: '登机口' },
+            { text: '27\n', textColor: '#FFFF9C4F' },
+            { text: '17:45', textColor: '#FFFF9C4F' },
+            { text: '开始登机' }
+          ],
+          type: liveViewManager.ExternalType.BACKGROUND_PICTURE, // 外屏实况的背景样式类型
+          backgroundPicture: 'airplane.png' // 外屏实况的背景图片，取值为'/resources/rawfile'路径下的文件名或 image.PixelMap
+        }
+      }
+    };
+  }
+
+  private static async isLiveViewEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
+  }
+}
+```
+
+### Code block 27
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
+    const wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITIES,
+      requestCode: 0,
+      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
+  }
+}
+```
+
+### Code block 28
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { Logger } from '../LogUtil';
+import { ContextUtil } from '../ContextUtil';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export class QueueLiveViewController {
+  public async startLiveView(): Promise<boolean> {
+    // 校验实况窗开关是否打开
+    if (!await QueueLiveViewController.isLiveViewEnabled()) {
+      Logger.warn('startLiveView, live view is disabled.');
+      return false;
+    }
+    // 创建实况窗
+    try {
+      const defaultView = await QueueLiveViewController.buildDefaultView();
+      if (!defaultView) {
+        Logger.warn('buildDefaultView Failed.');
+        return false;
+      }
+      Logger.info('Request startLiveView req: %{public}s', JSON.stringify(defaultView));
+      const result = await liveViewManager.startLiveView(defaultView);
+      Logger.info('Request startLiveView result: %{public}s', JSON.stringify(result));
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request startLiveView error: %{public}d %{public}s', err.code, err.message);
+      return false;
+    }
+  }
+
+  // ...
+
+  private static async buildDefaultView(): Promise<liveViewManager.LiveView> {
+    return {
+      // 构造实况窗请求体
+      id: 107, // 实况窗 ID，开发者生成。
+      event: 'QUEUE', // 实况窗的应用场景。QUEUE：排队
+      isMute: false,
+      timer: {
+        time: 300000,
+        isCountdown: false,
+        isPaused: false
+      },
+      liveViewData: {
+        primary: {
+          title: '大桌 4 人等位  32 桌',
+          content: [
+            { text: '已等待 ' },
+            { text: ' ${placeholder.timer}', textColor:'#ff10c1f7' },
+            { text: '分钟 | 预计还需>30 分钟' }
+          ],
+          keepTime: 0,
+          clickAction: await ContextUtil.buildWantAgent('GuideCode'),
+          layoutData: {
+            layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
+            progress: 40,
+            color: '#FF317AF7',
+            backgroundColor: '#f7819ae0',
+            indicatorType: liveViewManager.IndicatorType.INDICATOR_TYPE_UNDISPLAYED,
+            lineType: liveViewManager.LineType.LINE_TYPE_DOTTED_LINE,
+            nodeIcons: ['icon_order.png','icon_finish.png']
+          }
+        }
+      }
+    };
+  }
+
+  private static async isLiveViewEnabled(): Promise<boolean> {
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    Logger.info('Request isLiveViewEnabled result: %{public}s', result);
+    return result;
+  }
+}
+```
+
+### Code block 29
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
+    const wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITIES,
+      requestCode: 0,
+      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
+  }
+}
+```
+
+### Code block 30
+
+```
+import { liveViewManager } from '@kit.LiveViewKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ContextUtil } from './ContextUtil';
+import { ImageUtil } from './ImageUtil'
+import { Logger } from './LogUtil';
+
+export class PickLiveViewController {
+  private static defaultView: liveViewManager.LiveView | undefined = undefined;
+  private static contentColor: string = '#FF0A59F7';
+  private static underLineColor: string = '#FF0A59F7';
+  private static capsuleColor: string = '#FF308977';
+
+  public async startLiveView(): Promise<boolean> {
+    // 校验实况窗开关是否打开
+    if (!await PickLiveViewController.isLiveViewEnabled()) {
+      return false;
+    }
+    // 构造实况窗对象
+    PickLiveViewController.defaultView = await PickLiveViewController.buildDefaultView();
+    if (!PickLiveViewController.defaultView) {
+      return false;
+    }
+
+    // 创建实况窗
+    try {
+      const result = await liveViewManager.startLiveView(PickLiveViewController.defaultView);
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      return false;
+    }
+    return true;
+  }
+
+  public async updateLiveView(): Promise<boolean> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!PickLiveViewController.defaultView) {
+        return false;
+      }
+      // 修改实况窗内容
+      PickLiveViewController.defaultView.isMute = false;
+      PickLiveViewController.defaultView.liveViewData.primary.title =
+        await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_primary_title').id);
+      PickLiveViewController.defaultView.liveViewData.primary.content = [
+        {
+          text: await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Pick_wait_primary_content').id)
+        }
+      ];
+      PickLiveViewController.defaultView.liveViewData.primary.layoutData = {
+        layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+        title: await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_layout_title').id),
+        content: await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_layout_content').id),
+        underlineColor: PickLiveViewController.underLineColor,
+        descPic: 'coffee.png'
+      };
+      PickLiveViewController.defaultView.liveViewData.capsule = {
+        type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+        status: 1,
+        icon: 'capsule_to_pick.png',
+        backgroundColor: PickLiveViewController.capsuleColor,
+        title: await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_wait_capsule_title').id)
+      }
+
+      // 更新实况窗
+
+      const result = await liveViewManager.updateLiveView(PickLiveViewController.defaultView);
+
+      return true;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+
+      return false;
+    }
+  }
+
+  public async stopLiveView(): Promise<void> {
+    try {
+      // 校验实况窗开关是否打开
+      if (!await PickLiveViewController.isLiveViewEnabled() || !PickLiveViewController.defaultView) {
+        return;
+      }
+      // 修改实况窗内容
+      PickLiveViewController.defaultView.liveViewData.primary.title =
+        await ContextUtil.applicationContext.resourceManager
+          .getStringValue($r('app.string.Pick_finished_primary_title').id);
+      PickLiveViewController.defaultView.liveViewData.primary.content = [
+        {
+          text: await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Pick_finished_primary_content1').id)
+        },
+        {
+          text: await ContextUtil.applicationContext.resourceManager
+            .getStringValue($r('app.string.Pick_finished_primary_content2').id)
+        }
+      ];
+      PickLiveViewController.defaultView.liveViewData.primary.layoutData = {
+        layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+        title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Pick_finished_primary_layout_title')
+          .id),
+        content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Pick_finished_primary_layout_content')
+          .id),
+        underlineColor: PickLiveViewController.underLineColor,
+        descPic: 'icon_store.png'
+      }
+      // 结束实况窗
+      const result = await liveViewManager.stopLiveView(PickLiveViewController.defaultView);
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request stopLiveView error: %{public}d %{public}s', err.code, err.message);
+    }
+  }
+
+
+  private static async isLiveViewEnabled(): Promise<boolean> {
+    // 校验实况窗开关是否打开
+    let result: boolean = false;
+    try {
+      result = await liveViewManager.isLiveViewEnabled();
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('Request isLiveViewEnabled error: %{public}d %{public}s', err.code, err.message);
+    }
+    return result;
+  }
+
+  private static async buildDefaultView(): Promise<liveViewManager.LiveView | undefined> {
+    try {
+      return {
+        id: 10, // 实况窗ID，开发者生成。
+        event: 'PICK_UP', // 实况窗的应用场景。PICK_UP：取餐
+        liveViewData: {
+          primary: {
+            title: await ContextUtil.applicationContext.resourceManager
+              .getStringValue($r('app.string.Delivery_default_primary_title').id),
+            content: [
+              {
+                text: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_primary_content1')
+                  .id),
+                textColor: PickLiveViewController.contentColor
+              },
+              {
+                text: ' ' +
+                  await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_primary_content2')
+                    .id)
+              }
+            ], // 设置 textColor 字段时，所有拥有 textColor 字段的对象仅能设置同一种颜色，不设置 textColor 时，默认展示#FF000000
+            keepTime: 15,
+            clickAction: await ContextUtil.buildWantAgent('PickUp'),
+            extensionData: {
+              // 辅助区
+              type: liveViewManager.ExtensionType.EXTENSION_TYPE_ICON,
+              pic: await ImageUtil.getNetworkPicture('', 'icon_merchant.png'),
+              clickAction: await ContextUtil.buildWantAgent('PickUp')
+            },
+            layoutData: {
+              // 扩展区
+              layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
+              title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_layout_title')
+                .id),
+              content: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_layout_content')
+                .id),
+              underlineColor: PickLiveViewController.underLineColor,
+              descPic: 'coffee.png'
+            },
+          },
+          capsule: {
+            // 实况胶囊
+            type: liveViewManager.CapsuleType.CAPSULE_TYPE_TEXT,
+            status: 1,
+            icon: 'capsule_purse.png',
+            backgroundColor: PickLiveViewController.capsuleColor,
+            title: await ContextUtil.applicationContext.resourceManager.getStringValue($r('app.string.Delivery_default_capsule_title')
+              .id)
+          }
+        }
+      }
+    } catch (e) {
+      return undefined;
+    }
+  }
+}
+```
+
+### Code block 31
+
+```
+import { common, Want, WantAgent, wantAgent } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { Logger } from './LogUtil';
+
+export class ContextUtil {
+  public static wantUrl: string | undefined;
+  public static liveViewId: number;
+  public static applicationContext: common.ApplicationContext;
+
+  public static async buildWantAgent(page: string, liveViewId: number = -1): Promise<Want> {
+    const wantAgentInfo: wantAgent.WantAgentInfo = {
+      wants: [
+        {
+          bundleName: ContextUtil.applicationContext.applicationInfo.name,
+          abilityName: 'EntryAbility',
+          parameters: {
+            page: page,
+            liveViewId: liveViewId
+          },
+        } as Want
+      ],
+      actionType: wantAgent.OperationType.START_ABILITIES,
+      requestCode: 0,
+      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+    try {
+      const agent: WantAgent = await wantAgent.getWantAgent(wantAgentInfo);
+      Logger.info('getWantAgent success! wantAgent: %{public}s', JSON.stringify(agent));
+      return agent;
+    } catch (e) {
+      const err: BusinessError = e as BusinessError;
+      Logger.error('getWantAgent failed! err: %{public}d %{public}s', err.code, err.message);
+      throw e as Error;
+    }
   }
 }
 ```

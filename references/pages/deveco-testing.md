@@ -4,13 +4,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/deveco-te
 
 快速上手
 
-专项测试
-
 上架预检
 
-探索测试
+性能测试
 
-回归测试
+稳定性测试
+
+UX测试
+
+其他测试服务
 
 实用工具
 

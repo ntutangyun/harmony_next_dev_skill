@@ -44,32 +44,34 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 继承TimeGuardExtensionAbility，重写onUserAuthSwitchOn和onUserAuthSwitchOff回调。
 
 export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
-   async onUserAuthSwitchOn(): Promise<void> {
-      hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOn');
-   }
+  // ...
 
-   async onUserAuthSwitchOff(): Promise<void> {
-      hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOff');
-   }
+  async onUserAuthSwitchOn(): Promise<void> {
+    hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOn');
+  }
+
+  async onUserAuthSwitchOff(): Promise<void> {
+    hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOff');
+  }
 }
 
 在工程中entry模块的module.json5文件中的"extensionAbilities"节点添加如下代码。
 
 "extensionAbilities": [
-   {
-     "name": "TimeGuardExtAbility",
-     "type": "screenTimeGuard",
-     "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
-     "exported": false,
-     "skills": [
-       {
-         "actions": [
-           "action.ohos.timeGuard.listener"
-         ]
-       }
-     ],
-   }
- ],
+  {
+    "name": "TimeGuardExtAbility",
+    "type": "screenTimeGuard",
+    "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
+    "exported": false,
+    "skills": [
+      {
+        "actions": [
+          "action.ohos.timeGuard.listener"
+        ]
+      }
+    ],
+  }
+],
 
 ## Code blocks
 
@@ -84,13 +86,15 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 ```
 export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
-   async onUserAuthSwitchOn(): Promise<void> {
-      hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOn');
-   }
+  // ...
 
-   async onUserAuthSwitchOff(): Promise<void> {
-      hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOff');
-   }
+  async onUserAuthSwitchOn(): Promise<void> {
+    hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOn');
+  }
+
+  async onUserAuthSwitchOff(): Promise<void> {
+    hilog.info(0x0000, 'TimeGuardExtensionAbility', 'onUserAuthSwitchOff');
+  }
 }
 ```
 
@@ -98,18 +102,18 @@ export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
 
 ```
 "extensionAbilities": [
-   {
-     "name": "TimeGuardExtAbility",
-     "type": "screenTimeGuard",
-     "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
-     "exported": false,
-     "skills": [
-       {
-         "actions": [
-           "action.ohos.timeGuard.listener"
-         ]
-       }
-     ],
-   }
- ],
+  {
+    "name": "TimeGuardExtAbility",
+    "type": "screenTimeGuard",
+    "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
+    "exported": false,
+    "skills": [
+      {
+        "actions": [
+          "action.ohos.timeGuard.listener"
+        ]
+      }
+    ],
+  }
+],
 ```

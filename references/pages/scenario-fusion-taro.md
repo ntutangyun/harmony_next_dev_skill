@@ -28,19 +28,21 @@ Taro及HarmonyOS版工程的搭建请参考官方文档Harmony Hybrid | Taro 文
 
 示例代码仅展示接入智能填充相关部分，请按照实际场景修改后使用。在Taro的Input组件（Form表单的子节点）中添加nativeProps属性，并配置nativeProps中autocomplete属性来支持智能填充，Form表单提交后，当页面导航发生变化时，满足历史表单输入保存的条件时会触发对应弹窗（建议使用HTML <button> 标签进行Form表单提交）。代码如下：
 
-import { View, Text, Input, Form } from "@tarojs/components";
-import Taro, { useLoad } from "@tarojs/taro";
-import "./index.scss";
+import React from 'react';
+import { View, Text, Input, Form } from '@tarojs/components';
+import Taro, { useLoad  } from '@tarojs/taro';
+import './index.scss';
 
-export default function Demo() {
+
+export default function Demo() : React.ReactNode {
   useLoad(() => {
-    console.info("Page loaded.");
+    console.info('Page loaded.');
   });
-  function handleSubmit(e) {
+  function handleSubmit(e) : void {
     Taro.request({
       // 将URL设置为实际的接口路径。
-      url: "",
-      method: "POST",
+      url: '',
+      method: 'POST',
     });
   }
   return (
@@ -53,7 +55,7 @@ export default function Demo() {
               className="form-value"
               name="nickname"
               type="text"
-              nativeProps={{ autocomplete: "nickname" }}
+              nativeProps={{ autocomplete: 'nickname' }}
             ></Input>
           </View>
         </View>
@@ -64,7 +66,7 @@ export default function Demo() {
               className="form-value"
               name="name"
               type="text"
-              nativeProps={{ autocomplete: "name" }}
+              nativeProps={{ autocomplete: 'name' }}
             ></Input>
           </View>
         </View>
@@ -75,7 +77,7 @@ export default function Demo() {
               className="form-value"
               name="tel"
               type="text"
-              nativeProps={{ autocomplete: "tel-national" }}
+              nativeProps={{ autocomplete: 'tel-national' }}
             ></Input>
           </View>
         </View>
@@ -86,7 +88,7 @@ export default function Demo() {
               className="form-value"
               name="email"
               type="text"
-              nativeProps={{ autocomplete: "email" }}
+              nativeProps={{ autocomplete: 'email' }}
             ></Input>
           </View>
         </View>
@@ -97,7 +99,7 @@ export default function Demo() {
               className="form-value"
               name="idcard"
               type="text"
-              nativeProps={{ autocomplete: "id-card-number" }}
+              nativeProps={{ autocomplete: 'id-card-number' }}
             ></Input>
           </View>
         </View>
@@ -108,13 +110,13 @@ export default function Demo() {
               className="form-value"
               name="street-address"
               type="text"
-              nativeProps={{ autocomplete: "street-address" }}
+              nativeProps={{ autocomplete: 'street-address' }}
             ></Input>
           </View>
         </View>
       </View>
-      <View className="button">
-        <button className="button"> 提交</button>
+      <View>
+        <button className="button">提交</button>
       </View>
     </Form>
   );
@@ -146,7 +148,7 @@ index.scss如下：
   }
 }
 .button {
-  width: 15%;
+  width: 20%;
   background-color: #4caf50;
   border: none;
   color: white;
@@ -164,19 +166,21 @@ index.scss如下：
 ### Code block 1
 
 ```
-import { View, Text, Input, Form } from "@tarojs/components";
-import Taro, { useLoad } from "@tarojs/taro";
-import "./index.scss";
+import React from 'react';
+import { View, Text, Input, Form } from '@tarojs/components';
+import Taro, { useLoad  } from '@tarojs/taro';
+import './index.scss';
 
-export default function Demo() {
+
+export default function Demo() : React.ReactNode {
   useLoad(() => {
-    console.info("Page loaded.");
+    console.info('Page loaded.');
   });
-  function handleSubmit(e) {
+  function handleSubmit(e) : void {
     Taro.request({
       // 将URL设置为实际的接口路径。
-      url: "",
-      method: "POST",
+      url: '',
+      method: 'POST',
     });
   }
   return (
@@ -189,7 +193,7 @@ export default function Demo() {
               className="form-value"
               name="nickname"
               type="text"
-              nativeProps={{ autocomplete: "nickname" }}
+              nativeProps={{ autocomplete: 'nickname' }}
             ></Input>
           </View>
         </View>
@@ -200,7 +204,7 @@ export default function Demo() {
               className="form-value"
               name="name"
               type="text"
-              nativeProps={{ autocomplete: "name" }}
+              nativeProps={{ autocomplete: 'name' }}
             ></Input>
           </View>
         </View>
@@ -211,7 +215,7 @@ export default function Demo() {
               className="form-value"
               name="tel"
               type="text"
-              nativeProps={{ autocomplete: "tel-national" }}
+              nativeProps={{ autocomplete: 'tel-national' }}
             ></Input>
           </View>
         </View>
@@ -222,7 +226,7 @@ export default function Demo() {
               className="form-value"
               name="email"
               type="text"
-              nativeProps={{ autocomplete: "email" }}
+              nativeProps={{ autocomplete: 'email' }}
             ></Input>
           </View>
         </View>
@@ -233,7 +237,7 @@ export default function Demo() {
               className="form-value"
               name="idcard"
               type="text"
-              nativeProps={{ autocomplete: "id-card-number" }}
+              nativeProps={{ autocomplete: 'id-card-number' }}
             ></Input>
           </View>
         </View>
@@ -244,13 +248,13 @@ export default function Demo() {
               className="form-value"
               name="street-address"
               type="text"
-              nativeProps={{ autocomplete: "street-address" }}
+              nativeProps={{ autocomplete: 'street-address' }}
             ></Input>
           </View>
         </View>
       </View>
-      <View className="button">
-        <button className="button"> 提交</button>
+      <View>
+        <button className="button">提交</button>
       </View>
     </Form>
   );
@@ -284,7 +288,7 @@ export default function Demo() {
   }
 }
 .button {
-  width: 15%;
+  width: 20%;
   background-color: #4caf50;
   border: none;
   color: white;

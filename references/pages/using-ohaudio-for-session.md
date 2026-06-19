@@ -239,6 +239,27 @@ void AudioSessionStateChangedCallback(OH_AudioSession_StateChangedEvent event)
     OH_AudioCommon_Result resultUnregister = OH_AudioSessionManager_UnregisterSessionDeactivatedCallback(
         audioSessionManager, MyAudioSessionDeactivatedCallback);
 
+设置音频会话行为
+
+从API version 24开始，应用可以通过OH_AudioSessionManager_SetBehavior接口设置音频会话行为参数，在特定场景下获得更优的音频焦点体验。
+
+在用户观看直播的场景中，当其他应用启动音频流（如使用键盘录音转文字）打断直播时，会导致直播的音频和画面暂停，影响用户的观看体验。直播应用可以通过设置OH_AudioSession_BehaviorFlags.MUTE_WHEN_INTERRUPTED会话行为，使直播在被打断时保持静音播放而非暂停，避免画面中断。
+
+如果本应用未使用音频会话管理，也可以针对单条音频流设置独立的音频会话行为。对于播放流，详情请参考OH_AudioRenderer_SetIndependentAudioSessionStrategy。对于录音流，详情请参考OH_AudioCapturer_SetIndependentAudioSessionStrategy。
+
+// AUDIO_SESSION_SCENE_MEDIA 仅为示例，实际使用时请根据具体情况进行修改。
+OH_AudioSessionManager_SetScene(audioSessionManager, AUDIO_SESSION_SCENE_MEDIA);
+
+// 本接口应在激活音频会话前调用。
+// 若音频会话在激活状态时调用此接口后，必须重新激活音频会话使其生效。
+uint32_t behavior = OH_AudioSession_BehaviorFlags::MUTE_WHEN_INTERRUPTED;
+OH_AudioSessionManager_SetBehavior(audioSessionManager, behavior);
+
+OH_AudioSession_Strategy strategy = {CONCURRENCY_PAUSE_OTHERS};
+
+// 设置音频并发模式并激活音频会话。
+OH_AudioSessionManager_ActivateAudioSession(audioSessionManager, &strategy);
+
 ## Code blocks
 
 ### Code block 1
@@ -452,4 +473,21 @@ void AudioSessionStateChangedCallback(OH_AudioSession_StateChangedEvent event)
     // ...
     OH_AudioCommon_Result resultUnregister = OH_AudioSessionManager_UnregisterSessionDeactivatedCallback(
         audioSessionManager, MyAudioSessionDeactivatedCallback);
+```
+
+### Code block 14
+
+```
+// AUDIO_SESSION_SCENE_MEDIA 仅为示例，实际使用时请根据具体情况进行修改。
+OH_AudioSessionManager_SetScene(audioSessionManager, AUDIO_SESSION_SCENE_MEDIA);
+
+// 本接口应在激活音频会话前调用。
+// 若音频会话在激活状态时调用此接口后，必须重新激活音频会话使其生效。
+uint32_t behavior = OH_AudioSession_BehaviorFlags::MUTE_WHEN_INTERRUPTED;
+OH_AudioSessionManager_SetBehavior(audioSessionManager, behavior);
+
+OH_AudioSession_Strategy strategy = {CONCURRENCY_PAUSE_OTHERS};
+
+// 设置音频并发模式并激活音频会话。
+OH_AudioSessionManager_ActivateAudioSession(audioSessionManager, &strategy);
 ```

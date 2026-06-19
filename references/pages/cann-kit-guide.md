@@ -18,6 +18,8 @@ AscendC算子开发
 
 LLM大模型能力开放
 
+CANN Kit术语
+
 CANN Kit常见问题
 
 附录

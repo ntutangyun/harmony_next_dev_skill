@@ -66,7 +66,7 @@ Options
 
 默认值：60000
 
-类型： Number
+类型：Number
 
 别名：ft
 
@@ -76,7 +76,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 可以在 unpublish 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
 
@@ -84,7 +84,7 @@ Options
 
 默认值：无
 
-类型： String
+类型：String
 
 从ohpm 6.0.2.636版本开始，可以在 unpublish 命令后配置--log_level <string>参数，指定执行当前命令的日志级别（info、debug、warn、error），如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
 
@@ -92,7 +92,7 @@ Options
 
 默认值：false
 
-类型： Boolean
+类型：Boolean
 
 从ohpm 6.0.2.636版本开始，可以在命令后配置--debug参数，指定执行当前命令的日志级别为debug，该配置仅在当前命令行生效，不修改.ohpmrc中的日志级别，如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
 

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/monitor-g
 
 接口说明
 
-创建和删除事件监听相关接口如下表所示，接口详细介绍请参考Input文档。
+创建和删除事件监听相关接口如下表所示，接口详细介绍请参考input。
 
 接口名称	描述
 Input_Result OH_Input_AddKeyEventMonitor(Input_KeyEventCallback callback)	创建按键事件监听。
@@ -50,11 +50,11 @@ struct KeyEvent {
     int64_t actionTime { -1 };
 };
 
-//定义按键事件回调函数
+// 定义按键事件回调函数
 void OnKeyEventCallback(const Input_KeyEvent* keyEvent)
 {
     KeyEvent event;
-    //Input_KeyEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_KeyEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     event.action = OH_Input_GetKeyEventAction(keyEvent);
     event.keyCode = OH_Input_GetKeyEventKeyCode(keyEvent);
     event.actionTime = OH_Input_GetKeyEventActionTime(keyEvent);
@@ -85,11 +85,11 @@ struct MouseEvent {
     int64_t actionTime { -1 };
 };
 
-//定义鼠标事件回调函数
+// 定义鼠标事件回调函数
 void OnMouseEventCallback(const Input_MouseEvent* mouseEvent)
 {
     MouseEvent event;
-    //Input_MouseEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_MouseEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     event.action = OH_Input_GetMouseEventAction(mouseEvent);
     event.displayX = OH_Input_GetMouseEventDisplayX(mouseEvent);
     event.displayY = OH_Input_GetMouseEventDisplayY(mouseEvent);
@@ -125,7 +125,7 @@ struct TouchEvent {
 void OnTouchEventCallback(const Input_TouchEvent* touchEvent)
 {
     TouchEvent event;
-    //Input_TouchEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_TouchEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     event.action = OH_Input_GetTouchEventAction(touchEvent);
     event.id = OH_Input_GetTouchEventFingerId(touchEvent);
     event.displayX = OH_Input_GetTouchEventDisplayX(touchEvent);
@@ -161,7 +161,7 @@ struct AxisEvent {
 void OnAllAxisEventCallback(const Input_AxisEvent* axisEvent)
 {
     AxisEvent event;
-    //Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     InputEvent_AxisAction action = static_cast<InputEvent_AxisAction>(0);
     Input_Result ret = OH_Input_GetAxisEventAction(axisEvent, &action);
     event.axisAction = action;
@@ -190,11 +190,11 @@ void OnAllAxisEventCallback(const Input_AxisEvent* axisEvent)
     // ...
 }
 
-//定义捏合类型轴事件回调函数
+// 定义捏合类型轴事件回调函数
 void OnPinchAxisEventCallback(const Input_AxisEvent* axisEvent)
 {
     AxisEvent event;
-    //Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     InputEvent_AxisAction action = static_cast<InputEvent_AxisAction>(0);
     Input_Result ret = OH_Input_GetAxisEventAction(axisEvent, &action);
     event.axisAction = action;
@@ -218,7 +218,7 @@ void OnPinchAxisEventCallback(const Input_AxisEvent* axisEvent)
 void OnScrollAxisEventCallback(const Input_AxisEvent* axisEvent)
 {
     AxisEvent event;
-    //Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     InputEvent_AxisAction action = static_cast<InputEvent_AxisAction>(0);
     Input_Result ret = OH_Input_GetAxisEventAction(axisEvent, &action);
     event.axisAction = action;
@@ -302,11 +302,11 @@ struct KeyEvent {
     int64_t actionTime { -1 };
 };
 
-//定义按键事件回调函数
+// 定义按键事件回调函数
 void OnKeyEventCallback(const Input_KeyEvent* keyEvent)
 {
     KeyEvent event;
-    //Input_KeyEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_KeyEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     event.action = OH_Input_GetKeyEventAction(keyEvent);
     event.keyCode = OH_Input_GetKeyEventKeyCode(keyEvent);
     event.actionTime = OH_Input_GetKeyEventActionTime(keyEvent);
@@ -339,11 +339,11 @@ struct MouseEvent {
     int64_t actionTime { -1 };
 };
 
-//定义鼠标事件回调函数
+// 定义鼠标事件回调函数
 void OnMouseEventCallback(const Input_MouseEvent* mouseEvent)
 {
     MouseEvent event;
-    //Input_MouseEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_MouseEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     event.action = OH_Input_GetMouseEventAction(mouseEvent);
     event.displayX = OH_Input_GetMouseEventDisplayX(mouseEvent);
     event.displayY = OH_Input_GetMouseEventDisplayY(mouseEvent);
@@ -381,7 +381,7 @@ struct TouchEvent {
 void OnTouchEventCallback(const Input_TouchEvent* touchEvent)
 {
     TouchEvent event;
-    //Input_TouchEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_TouchEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     event.action = OH_Input_GetTouchEventAction(touchEvent);
     event.id = OH_Input_GetTouchEventFingerId(touchEvent);
     event.displayX = OH_Input_GetTouchEventDisplayX(touchEvent);
@@ -419,7 +419,7 @@ struct AxisEvent {
 void OnAllAxisEventCallback(const Input_AxisEvent* axisEvent)
 {
     AxisEvent event;
-    //Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     InputEvent_AxisAction action = static_cast<InputEvent_AxisAction>(0);
     Input_Result ret = OH_Input_GetAxisEventAction(axisEvent, &action);
     event.axisAction = action;
@@ -448,11 +448,11 @@ void OnAllAxisEventCallback(const Input_AxisEvent* axisEvent)
     // ...
 }
 
-//定义捏合类型轴事件回调函数
+// 定义捏合类型轴事件回调函数
 void OnPinchAxisEventCallback(const Input_AxisEvent* axisEvent)
 {
     AxisEvent event;
-    //Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     InputEvent_AxisAction action = static_cast<InputEvent_AxisAction>(0);
     Input_Result ret = OH_Input_GetAxisEventAction(axisEvent, &action);
     event.axisAction = action;
@@ -476,7 +476,7 @@ void OnPinchAxisEventCallback(const Input_AxisEvent* axisEvent)
 void OnScrollAxisEventCallback(const Input_AxisEvent* axisEvent)
 {
     AxisEvent event;
-    //Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
+    // Input_AxisEvent的生命周期仅限于回调函数内，回调函数执行完毕后会被自动销毁
     InputEvent_AxisAction action = static_cast<InputEvent_AxisAction>(0);
     Input_Result ret = OH_Input_GetAxisEventAction(axisEvent, &action);
     event.axisAction = action;

@@ -68,12 +68,6 @@ E
 
 Stage模型中的组件类型名，即ExtensionAbility组件，提供特定场景（如卡片、输入法）的扩展能力，满足更多的使用场景。
 
-F
-
-[h2]FA模型
-
-HarmonyOS早期版本开始支持的应用模型，已经不再主推。建议使用新的Stage模型进行开发。
-
 H
 
 [h2]Hardware Driver Foundation (HDF)；硬件驱动框架
@@ -89,10 +83,6 @@ H
 HarmonyOS是新一代的智能终端操作系统，为不同设备的智能化、互联与协同提供了统一的语言。带来简洁、流畅、连续、安全可靠的全场景交互体验。
 
 2024年HarmonyOS以全新架构发布，命名为HarmonyOS NEXT。HarmonyOS NEXT于2024年6月21日公开发布首个Developer Beta版本，并于2024年10月22日正式公开发布首个Release版本（版本号5.0.0）。HarmonyOS NEXT采用OpenHarmony作为操作系统底座，并通过OpenHarmony兼容性标准认证。全新架构下的HarmonyOS实现了对全场景体验的底层优化，系统更流畅，隐私安全能力更强大。给消费者带来更高效、更流畅、更便捷、更安全的智能化操作体验。
-
-[h2]Hardware Driver Foundation (HDF)；硬件驱动框架
-
-提供统一外设访问能力以及驱动开发、管理框架。
 
 [h2]HarmonyOS Markup Language (HML)
 
@@ -142,7 +132,7 @@ O
 
 [h2]OpenHarmony
 
-2020年，华为将HarmonyOS基础能力捐赠给开放原子开源基金会，形成HarmonyOS开源项目。HarmonyOS能够提供操作系统底层能力，包括应用框架及UI框架，基础服务（如分布式管理、数据、文件等），基础应用（如桌面、设置的基本能力，以及日历、联系人等基础应用）。
+2020年，华为将HarmonyOS基础能力捐赠给开放原子开源基金会，形成OpenHarmony开源项目。OpenHarmony能够提供操作系统底层能力，包括应用框架及UI框架，基础服务（如分布式管理、数据、文件等），基础应用（如桌面、设置的基本能力，以及日历、联系人等基础应用）。
 
 [h2]OS collaboration；平台联动
 
@@ -163,10 +153,6 @@ S
 [h2]Software Development Kit (SDK)；软件开发工具包
 
 是用于创建应用软件的开发工具和开放能力的集合。
-
-[h2]Stage模型
-
-HarmonyOS 3.1 Developer Preview版本开始新增的应用模型，提供UIAbility、ExtensionAbility两大类应用组件。由于该模型还提供了AbilityStage、WindowStage等类作为应用组件和Window窗口的“舞台”，因此称之为Stage模型。
 
 [h2]Super virtual device；超级虚拟终端
 

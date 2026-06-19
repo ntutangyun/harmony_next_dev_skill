@@ -20,7 +20,7 @@ ohpm-repo import_userinfo <zip_file> [options]
 
 [h2]<zip_file>
 
-类型： String
+类型：String
 
 必填参数
 

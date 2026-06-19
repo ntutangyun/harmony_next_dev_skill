@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {
@@ -30,7 +30,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
       {
         "name": "mirror",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {
@@ -44,7 +44,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
       {
         "name": "product",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {
@@ -215,7 +215,7 @@ default模式下初始化的message为defaultMessage。
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {
@@ -229,7 +229,7 @@ default模式下初始化的message为defaultMessage。
       {
         "name": "mirror",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {
@@ -243,7 +243,7 @@ default模式下初始化的message为defaultMessage。
       {
         "name": "product",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "arkOptions": {

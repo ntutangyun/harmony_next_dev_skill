@@ -7,3 +7,5 @@ Media Kit简介
 媒体开发指导(ArkTS)
 
 媒体开发指导(C/C++)
+
+Media Kit术语

@@ -257,7 +257,7 @@ export default class EntryAbility extends UIAbility {
 
 [h2]获取应用文件路径
 
-基类Context提供了获取应用文件路径的能力，ApplicationContext、AbilityStageContext、UIAbilityContext和ExtensionContext均继承该能力。不同类型的Context获取的路径可能存在差异。
+Context提供了获取应用文件路径的能力，ApplicationContext、AbilityStageContext、UIAbilityContext和ExtensionContext均继承该能力。不同类型的Context获取的路径可能存在差异。
 
 通过ApplicationContext可以获取应用级的文件路径。该路径用于存放应用全局信息，路径下的文件会跟随应用的卸载而删除。
 
@@ -344,7 +344,7 @@ struct ApplicationContextFile {
         // ···
         Button() {
           Text('create file')
-              // ···
+          // ···
             .onClick(() => {
               let applicationContext = this.context.getApplicationContext();
               // 获取应用文件路径
@@ -477,39 +477,7 @@ struct AreaContext {
 
 [h2]监听应用前后台变化
 
-开发者可以使用ApplicationContext的相关能力，监听应用的前后台变化。当应用前后台切换时，可以收到相应回调函数的通知，从而执行一些依赖前后台的方法，或者进行应用前后台切换频率等数据统计。
-
-以UIAbilityContext中的使用为例进行说明。
-
-import { UIAbility, ApplicationStateChangeCallback } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const TAG = '[LifecycleAbility]';
-const DOMAIN = 0xF811;
-
-export default class LifecycleAbility extends UIAbility {
-  onCreate() {
-    let applicationStateChangeCallback: ApplicationStateChangeCallback = {
-      onApplicationForeground() {
-        hilog.info(DOMAIN, TAG, 'applicationStateChangeCallback onApplicationForeground');
-      },
-      onApplicationBackground() {
-        hilog.info(DOMAIN, TAG, 'applicationStateChangeCallback onApplicationBackground');
-      }
-    }
-
-    // 1.获取applicationContext
-    let applicationContext = this.context.getApplicationContext();
-    try {
-      // 2.通过applicationContext注册应用前后台状态监听
-      applicationContext.on('applicationStateChange', applicationStateChangeCallback);
-    } catch (paramError) {
-      hilog.error(DOMAIN, TAG, `error: ${(paramError as BusinessError).code}, ${(paramError as BusinessError).message}`);
-    }
-    hilog.info(DOMAIN, TAG, 'Register applicationStateChangeCallback');
-  }
-}
+开发者可以使用ApplicationContext的on('applicationStateChange')监听应用的前后台变化，详见监听应用前后台变化中的介绍。
 
 [h2]监听UIAbility生命周期变化
 
@@ -872,7 +840,7 @@ struct ApplicationContextFile {
         // ···
         Button() {
           Text('create file')
-              // ···
+          // ···
             .onClick(() => {
               let applicationContext = this.context.getApplicationContext();
               // 获取应用文件路径
@@ -995,40 +963,6 @@ struct AreaContext {
 ```
 
 ### Code block 14
-
-```
-import { UIAbility, ApplicationStateChangeCallback } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const TAG = '[LifecycleAbility]';
-const DOMAIN = 0xF811;
-
-export default class LifecycleAbility extends UIAbility {
-  onCreate() {
-    let applicationStateChangeCallback: ApplicationStateChangeCallback = {
-      onApplicationForeground() {
-        hilog.info(DOMAIN, TAG, 'applicationStateChangeCallback onApplicationForeground');
-      },
-      onApplicationBackground() {
-        hilog.info(DOMAIN, TAG, 'applicationStateChangeCallback onApplicationBackground');
-      }
-    }
-
-    // 1.获取applicationContext
-    let applicationContext = this.context.getApplicationContext();
-    try {
-      // 2.通过applicationContext注册应用前后台状态监听
-      applicationContext.on('applicationStateChange', applicationStateChangeCallback);
-    } catch (paramError) {
-      hilog.error(DOMAIN, TAG, `error: ${(paramError as BusinessError).code}, ${(paramError as BusinessError).message}`);
-    }
-    hilog.info(DOMAIN, TAG, 'Register applicationStateChangeCallback');
-  }
-}
-```
-
-### Code block 15
 
 ```
 import { AbilityConstant, AbilityLifecycleCallback, UIAbility, Want } from '@kit.AbilityKit';

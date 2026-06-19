@@ -8,22 +8,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 import { PromptAction } from "@kit.ArkUI"
 
-const RESOURCE_STR_PLAY = $r('app.media.play') // 此处为图片资源，请替换为本地图片
-const RESOURCE_STR_PAUSE = $r('app.media.pause') // 此处为图片资源，请替换为本地图片
+const RESOURCE_STR_PLAY: Resource = $r('sys.media.ohos_ic_public_play');
+const RESOURCE_STR_PAUSE: Resource = $r('sys.media.ohos_ic_public_pause');
 
 @Entry
 @Component
-export struct Rule_2_1_11 {
-  title: string = 'Rule 2.1.8'
-  @State isPlaying: boolean = true
+export struct Rule_2_1_8 {
+  title: string = 'Rule 2.1.8';
+  @State isPlaying: boolean = true;
   uiContext: UIContext = this.getUIContext();
   promptAction: PromptAction = this.uiContext.getPromptAction();
   play() {
-    // play audio file
+    console.info('play audio file');
   }
 
   pause() {
-    // pause playing of audio file
+    console.info('pause playing of audio file');
   }
 
   build() {
@@ -35,22 +35,21 @@ export struct Rule_2_1_11 {
           justifyContent: FlexAlign.Center,
         }) {
           Row() {
-
             Image(this.isPlaying ? RESOURCE_STR_PAUSE : RESOURCE_STR_PLAY)
               .width(50)
               .height(50)
               .onClick(() => {
                 this.promptAction.showToast({
-                  message :this.isPlaying ? "Play" : "Pause"
+                  message :this.isPlaying ? 'Play' : 'Pause'
                 })
-                this.isPlaying = !this.isPlaying
+                this.isPlaying = !this.isPlaying;
                 if (this.isPlaying) {
-                  this.play()
+                  this.play();
                 } else {
-                  this.pause()
+                  this.pause();
                 }
               })
-              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置可访问性框架的注释信息
+              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置可访问性框架的注释信息。
           }
         }
         .width('100%')
@@ -68,22 +67,22 @@ export struct Rule_2_1_11 {
 ```
 import { PromptAction } from "@kit.ArkUI"
 
-const RESOURCE_STR_PLAY = $r('app.media.play') // 此处为图片资源，请替换为本地图片
-const RESOURCE_STR_PAUSE = $r('app.media.pause') // 此处为图片资源，请替换为本地图片
+const RESOURCE_STR_PLAY: Resource = $r('sys.media.ohos_ic_public_play');
+const RESOURCE_STR_PAUSE: Resource = $r('sys.media.ohos_ic_public_pause');
 
 @Entry
 @Component
-export struct Rule_2_1_11 {
-  title: string = 'Rule 2.1.8'
-  @State isPlaying: boolean = true
+export struct Rule_2_1_8 {
+  title: string = 'Rule 2.1.8';
+  @State isPlaying: boolean = true;
   uiContext: UIContext = this.getUIContext();
   promptAction: PromptAction = this.uiContext.getPromptAction();
   play() {
-    // play audio file
+    console.info('play audio file');
   }
 
   pause() {
-    // pause playing of audio file
+    console.info('pause playing of audio file');
   }
 
   build() {
@@ -95,22 +94,21 @@ export struct Rule_2_1_11 {
           justifyContent: FlexAlign.Center,
         }) {
           Row() {
-
             Image(this.isPlaying ? RESOURCE_STR_PAUSE : RESOURCE_STR_PLAY)
               .width(50)
               .height(50)
               .onClick(() => {
                 this.promptAction.showToast({
-                  message :this.isPlaying ? "Play" : "Pause"
+                  message :this.isPlaying ? 'Play' : 'Pause'
                 })
-                this.isPlaying = !this.isPlaying
+                this.isPlaying = !this.isPlaying;
                 if (this.isPlaying) {
-                  this.play()
+                  this.play();
                 } else {
-                  this.pause()
+                  this.pause();
                 }
               })
-              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置可访问性框架的注释信息
+              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置可访问性框架的注释信息。
           }
         }
         .width('100%')

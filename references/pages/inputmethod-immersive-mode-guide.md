@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/inputmeth
 
 接入指导
 
-前台应用设置编辑框沉浸模式。示例代码如下。
+前台应用设置编辑框沉浸模式keyboardappearance。示例代码如下。
 
 TextArea({placeholder: '沉浸模式'})
   .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
@@ -24,7 +24,7 @@ TextArea({placeholder: '沉浸模式'})
 TextArea({placeholder: '非沉浸模式'})
   .keyboardAppearance(KeyboardAppearance.NONE_IMMERSIVE)
 
-输入法应用订阅编辑框属性变化事件，通过回调参数EditorAttribute中的immersiveMode字段感知前台应用期望的沉浸模式。示例代码如下。
+输入法应用订阅编辑框属性变化事件editorattributechanged，通过回调参数EditorAttribute中的immersiveMode字段感知前台应用期望的沉浸模式。示例代码如下。
 
 // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
 inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {
@@ -35,13 +35,13 @@ inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inp
   }
 })
 
-输入法应用设置沉浸模式。
+输入法应用设置沉浸模式setimmersivemode。
 
 IMMERSIVE表示沉浸模式由输入法应用决定。
 
 输入法应用不能设置IMMERSIVE模式给输入法框架。
 
-如果输入法应用收到前台应用期望的沉浸模式为IMMERSIVE，建议输入法应用根据当前系统所处颜色模式，将最终沉浸模式设置为浅色沉浸模式（LIGHT_IMMERSIVE）或深色沉浸模式（DARK_IMMERSIVE）。
+如果输入法应用收到前台应用期望的沉浸模式为IMMERSIVE，建议输入法应用根据当前系统所处主题模式，将最终沉浸模式设置为浅色沉浸模式（LIGHT_IMMERSIVE）或深色沉浸模式（DARK_IMMERSIVE）。
 
 设置沉浸模式，示例代码如下。setImmersiveMode接口需使用createPanel获取到Panel实例后，通过实例调用。
 

@@ -29,7 +29,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 调用call()方法设置函数，在方法中传入函数名称，返回调用结果。
 
-（可选）通过设置timeout属性对云函数设置超时时长，单位为毫秒。
+（可选）通过设置timeout属性对云函数设置超时时长，单位为ms。
 
 （可选）通过设置version属性对云函数设置函数版本号，默认为最新版本'$latest'。
 
@@ -45,7 +45,7 @@ function callFunction() {
   cloudFunction.call({
     name: 'functionName', // functionName需替换为实际的函数名
     version: '$latest',   // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,   // 单位为毫秒，默认为70*1000毫秒。
+    timeout: 10 * 1000,   // 单位为ms，默认为70*1000ms。
     data: {               // data为函数请求体
       param1: 'val1',
       param2: 'val2'
@@ -67,7 +67,7 @@ function callFunction() {
   cloudFunction.call({
     name: 'functionName', // functionName需替换成实际的函数名
     version: '$latest',  // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,  // 单位为毫秒，默认为70*1000毫秒。
+    timeout: 10 * 1000,  // 单位为ms，默认为70*1000ms。
     data: {              // data为函数请求体
       param1: 'val1',
       param2: 'val2'
@@ -117,7 +117,7 @@ function callFunction() {
   cloudFunction.call({
     name: 'functionName', // functionName需替换为实际的函数名
     version: '$latest',   // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,   // 单位为毫秒，默认为70*1000毫秒。
+    timeout: 10 * 1000,   // 单位为ms，默认为70*1000ms。
     data: {               // data为函数请求体
       param1: 'val1',
       param2: 'val2'
@@ -141,7 +141,7 @@ function callFunction() {
   cloudFunction.call({
     name: 'functionName', // functionName需替换成实际的函数名
     version: '$latest',  // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,  // 单位为毫秒，默认为70*1000毫秒。
+    timeout: 10 * 1000,  // 单位为ms，默认为70*1000ms。
     data: {              // data为函数请求体
       param1: 'val1',
       param2: 'val2'

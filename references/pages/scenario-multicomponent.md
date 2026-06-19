@@ -13,31 +13,31 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 @Entry
 @Component
 export struct Rule_2_1_4 {
-  title: string = 'Rule 2.1.4'
+  title: string = 'Rule 2.1.4';
 
   build() {
     NavDestination() {
       Column() {
 
         Row() {
-          //默认只有子组件才能获取焦点
-          //日期、天气、温度等信息在每个组件独立获取焦点时分别朗读
-          //在组合式组件规范里是不正确的。
-          Text("23 Dec 2023") // 日期信息。组件可独立对焦和朗读
+          // 默认只有子组件才能获取焦点。
+          // 日期、天气、温度等信息在每个组件独立获取焦点时分别朗读。
+          // 在组合式组件规范里是不正确的。
+          Text('23 Dec 2023') // 日期信息，组件可独立对焦和朗读。
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({ right: 20 })
 
-          Column() // 天气信息。组件可独立对焦和朗读
+          Column() // 天气信息，组件可独立对焦和朗读。
             .backgroundColor(Color.Blue)
             .width(50)
             .height(50)
-            .accessibilityText("Snow") // 当该组件被屏幕阅读器选中时，该组件不包含文本信息，因此将读取此文本
+            .accessibilityText('Snow') // 当该组件被屏幕阅读器选中时，该组件不包含文本信息，因此将读取此文本。
             .margin({ right: 20 })
 
-          Text("-1") // 温度信息。组件可独立对焦和朗读
+          Text('-1') // 温度信息，组件可独立对焦和朗读。
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
@@ -47,24 +47,24 @@ export struct Rule_2_1_4 {
         .margin({ bottom: 20 })
 
         Row() {
-          //因为accessibilityGroup属性设置为true，子组件无法获取焦点。
-          //获取焦点时，日期、天气、温度信息一起朗读
-          //此时只有Row可以获取焦点，这是符合组合式组件规范的。
-          Text("24 Dec 2023") //日期信息。组件无法聚焦，无法朗读，因为父组件的accessibilityGroup属性设置为true
+          // 因为accessibilityGroup属性设置为true，子组件无法获取焦点。
+          // 获取焦点时，日期、天气、温度信息一起朗读。
+          // 此时只有Row可以获取焦点，这是符合组合式组件规范的。
+          Text('24 Dec 2023') // 日期信息，组件无法聚焦，无法朗读，因为父组件的accessibilityGroup属性设置为true。
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({ right: 20 })
 
-          Column() //天气信息组件无法聚焦，无法朗读，因为父组件的accessibilityGroup为true
+          Column() // 天气信息组件无法聚焦，无法朗读，因为父组件的accessibilityGroup为true。
             .backgroundColor(Color.Yellow)
             .width(50)
             .height(50)
-            .accessibilityText("Sunny") // 组件不包含文本信息，当组件被屏幕阅读器选中时，因此将读取此文本
+            .accessibilityText('Sunny') // 组件不包含文本信息，当组件被屏幕阅读器选中时，因此将读取此文本。
             .margin({ right: 20 })
 
-          Text("-7") // //温度信息。组件无法聚焦，无法朗读因为父组件的accessibilityGroup为true
+          Text('-7') // 温度信息，组件无法聚焦，无法朗读因为父组件的accessibilityGroup为true。
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
@@ -72,7 +72,7 @@ export struct Rule_2_1_4 {
         }
         .height(50)
         .margin({ bottom: 20 })
-        .accessibilityGroup(true) // 将accessibilityGroup属性设置为true
+        .accessibilityGroup(true) // 将accessibilityGroup属性设置为true。
       }
       .alignItems(HorizontalAlign.Start)
       .padding(10)
@@ -89,31 +89,31 @@ export struct Rule_2_1_4 {
 @Entry
 @Component
 export struct Rule_2_1_4 {
-  title: string = 'Rule 2.1.4'
+  title: string = 'Rule 2.1.4';
 
   build() {
     NavDestination() {
       Column() {
 
         Row() {
-          //默认只有子组件才能获取焦点
-          //日期、天气、温度等信息在每个组件独立获取焦点时分别朗读
-          //在组合式组件规范里是不正确的。
-          Text("23 Dec 2023") // 日期信息。组件可独立对焦和朗读
+          // 默认只有子组件才能获取焦点。
+          // 日期、天气、温度等信息在每个组件独立获取焦点时分别朗读。
+          // 在组合式组件规范里是不正确的。
+          Text('23 Dec 2023') // 日期信息，组件可独立对焦和朗读。
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({ right: 20 })
 
-          Column() // 天气信息。组件可独立对焦和朗读
+          Column() // 天气信息，组件可独立对焦和朗读。
             .backgroundColor(Color.Blue)
             .width(50)
             .height(50)
-            .accessibilityText("Snow") // 当该组件被屏幕阅读器选中时，该组件不包含文本信息，因此将读取此文本
+            .accessibilityText('Snow') // 当该组件被屏幕阅读器选中时，该组件不包含文本信息，因此将读取此文本。
             .margin({ right: 20 })
 
-          Text("-1") // 温度信息。组件可独立对焦和朗读
+          Text('-1') // 温度信息，组件可独立对焦和朗读。
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
@@ -123,24 +123,24 @@ export struct Rule_2_1_4 {
         .margin({ bottom: 20 })
 
         Row() {
-          //因为accessibilityGroup属性设置为true，子组件无法获取焦点。
-          //获取焦点时，日期、天气、温度信息一起朗读
-          //此时只有Row可以获取焦点，这是符合组合式组件规范的。
-          Text("24 Dec 2023") //日期信息。组件无法聚焦，无法朗读，因为父组件的accessibilityGroup属性设置为true
+          // 因为accessibilityGroup属性设置为true，子组件无法获取焦点。
+          // 获取焦点时，日期、天气、温度信息一起朗读。
+          // 此时只有Row可以获取焦点，这是符合组合式组件规范的。
+          Text('24 Dec 2023') // 日期信息，组件无法聚焦，无法朗读，因为父组件的accessibilityGroup属性设置为true。
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({ right: 20 })
 
-          Column() //天气信息组件无法聚焦，无法朗读，因为父组件的accessibilityGroup为true
+          Column() // 天气信息组件无法聚焦，无法朗读，因为父组件的accessibilityGroup为true。
             .backgroundColor(Color.Yellow)
             .width(50)
             .height(50)
-            .accessibilityText("Sunny") // 组件不包含文本信息，当组件被屏幕阅读器选中时，因此将读取此文本
+            .accessibilityText('Sunny') // 组件不包含文本信息，当组件被屏幕阅读器选中时，因此将读取此文本。
             .margin({ right: 20 })
 
-          Text("-7") // //温度信息。组件无法聚焦，无法朗读因为父组件的accessibilityGroup为true
+          Text('-7') // 温度信息，组件无法聚焦，无法朗读因为父组件的accessibilityGroup为true。
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
@@ -148,7 +148,7 @@ export struct Rule_2_1_4 {
         }
         .height(50)
         .margin({ bottom: 20 })
-        .accessibilityGroup(true) // 将accessibilityGroup属性设置为true
+        .accessibilityGroup(true) // 将accessibilityGroup属性设置为true。
       }
       .alignItems(HorizontalAlign.Start)
       .padding(10)

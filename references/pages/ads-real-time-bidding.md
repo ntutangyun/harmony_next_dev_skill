@@ -132,7 +132,7 @@ const adLoaderListener: advertising.AdLoadListener = {
     hilog.info(0x0000, 'testTag', 'Succeeded in loading ad');
     // 期望的底价
     const bidFloor: number = 6;
-    const biddingSuccessAds: Array<advertising.Advertisement> = [];
+    const biddingSuccessAds: advertising.Advertisement[] = [];
     for (const ad of ads) {
       const biddingInfo: BiddingInfo = ad.biddingInfo as BiddingInfo;
       if (!biddingInfo) {
@@ -247,7 +247,7 @@ const adLoaderListener: advertising.AdLoadListener = {
     hilog.info(0x0000, 'testTag', 'Succeeded in loading ad');
     // 期望的底价
     const bidFloor: number = 6;
-    const biddingSuccessAds: Array<advertising.Advertisement> = [];
+    const biddingSuccessAds: advertising.Advertisement[] = [];
     for (const ad of ads) {
       const biddingInfo: BiddingInfo = ad.biddingInfo as BiddingInfo;
       if (!biddingInfo) {

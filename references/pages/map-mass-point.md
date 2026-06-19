@@ -30,17 +30,19 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct MassPointOverlayDemo {
+struct MapMassPointDemo {
+  // ...
   private TAG = 'OHMapSDK_MassPointOverlayDemo';
-  private mapOption?: mapCommon.MapOptions;
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private massPointOverlay?: map.MassPointOverlay;
   @State currentTimestamp: number = 0;
   @State mapHeight: string = '65%'
   @State mapWidth: string = '100%'
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 32.11111,
@@ -82,14 +84,18 @@ struct MassPointOverlayDemo {
       }
     }
   }
+
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback, })
-          .width(this.mapWidth)
-          .height(this.mapHeight);
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
+            .width(this.mapWidth)
+            .height(this.mapHeight);
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -101,11 +107,11 @@ let massCallback: map.MassPointOverlayCallback = (overlay, item) => {
   console.info(`overlayId:${overlay.getId()},item :${JSON.stringify(item)}`);
 }
 // 启动海量点点击事件监听
-mapEventManager.on('massPointOverlayClick', massCallback);
+mapEventManager?.on('massPointOverlayClick', massCallback);
 // 停止海量点点击事件监听,传入指定callback
-mapEventManager.off('massPointOverlayClick', massCallback);
+mapEventManager?.off('massPointOverlayClick', massCallback);
 // 停止所有海量点点击事件监听，无需传入callback
-mapEventManager.off('massPointOverlayClick');
+mapEventManager?.off('massPointOverlayClick');
 
 ## Code blocks
 
@@ -121,17 +127,19 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct MassPointOverlayDemo {
+struct MapMassPointDemo {
+  // ...
   private TAG = 'OHMapSDK_MassPointOverlayDemo';
-  private mapOption?: mapCommon.MapOptions;
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private massPointOverlay?: map.MassPointOverlay;
   @State currentTimestamp: number = 0;
   @State mapHeight: string = '65%'
   @State mapWidth: string = '100%'
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 32.11111,
@@ -173,14 +181,18 @@ struct MassPointOverlayDemo {
       }
     }
   }
+
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback, })
-          .width(this.mapWidth)
-          .height(this.mapHeight);
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
+            .width(this.mapWidth)
+            .height(this.mapHeight);
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -194,9 +206,9 @@ let massCallback: map.MassPointOverlayCallback = (overlay, item) => {
   console.info(`overlayId:${overlay.getId()},item :${JSON.stringify(item)}`);
 }
 // 启动海量点点击事件监听
-mapEventManager.on('massPointOverlayClick', massCallback);
+mapEventManager?.on('massPointOverlayClick', massCallback);
 // 停止海量点点击事件监听,传入指定callback
-mapEventManager.off('massPointOverlayClick', massCallback);
+mapEventManager?.off('massPointOverlayClick', massCallback);
 // 停止所有海量点点击事件监听，无需传入callback
-mapEventManager.off('massPointOverlayClick');
+mapEventManager?.off('massPointOverlayClick');
 ```

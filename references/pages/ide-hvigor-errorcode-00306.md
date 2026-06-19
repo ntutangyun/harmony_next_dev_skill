@@ -550,23 +550,39 @@ FA模型的模块依赖了Stage模型的库或模块。
 
 错误信息
 
-In HarmonyOS configuration mode, the value of compileSdkVersion/compatibleSdkVersion/targetSdkVersion must be M.S.F when API level is 10 or later, Example: '4.0.0(10)'; In OpenHarmony configuration mode, the value of compileSdkVersion/compatibleSdkVersion/targetSdkVersion must be a number when API level is 10 or later, Example: 10.
+In HarmonyOS configuration:
+
+- For API versions 10 to 25, the value of compatibleSdkVersion/targetSdkVersion must be a string (for example, '5.0.0(12)').
+
+- For API version 26 and later, the value of compatibleSdkVersion/targetSdkVersion must be a string (for example, '26.0.0').
+
+In OpenHarmony configuration:
+
+- For API versions 10 to 25, the value of compileSdkVersion/compatibleSdkVersion/targetSdkVersion must be a numeric value (for example, 12).
+
+- For API version 26 and later, the value of compileSdkVersion/compatibleSdkVersion/targetSdkVersion must be a string (for example,'26.0.0').
 
 错误描述
 
-当API版本为10或以上时，compileSdkVersion/compatibleSdkVersion/targetSdkVersion的格式要求：
+在HarmonyOS配置中：
 
-在HarmonyOS配置模式下，必须使用M.S.F格式，例如 '4.0.0(10)'。
+当API版本为10~25时，compatibleSdkVersion/targetSdkVersion是字符串类型，例如 '5.0.0(12)'。
 
-在OpenHarmony配置模式下，必须使用数值格式，例如10。
+当API版本为26及以上时，compatibleSdkVersion/targetSdkVersion是字符串类型，例如'26.0.0'。
+
+在OpenHarmony配置中：
+
+当API版本为10~25时，compileSdkVersion/compatibleSdkVersion/targetSdkVersion是数值类型，例如12。
+
+当API版本为26及以上时，compileSdkVersion/compatibleSdkVersion/targetSdkVersion是字符串类型，例如'26.0.0'。
 
 可能原因
 
-compileSdkVersion/compatibleSdkVersion/targetSdkVersion字段的格式不符合要求。
+compileSdkVersion/compatibleSdkVersion/targetSdkVersion字段的值类型不符合要求。
 
 处理步骤
 
-检查工程级build-profile.json5文件，确保以上字段的格式符合要求。
+检查工程级build-profile.json5文件，确保以上字段的值类型符合要求。
 
 00306043 JS模块不允许依赖ArkTS库
 
@@ -853,3 +869,43 @@ executableBinaryPaths-path的值应该是相对路径。
 处理步骤
 
 确保executableBinaryPaths-path的值是相对路径。
+
+00306058 应用skill的skillProfiles仅在bundleType为app或atomicService时可配置
+
+错误信息
+
+skillProfiles can be configured only when bundleType is set to app or atomicService. However, the current value of bundleType is XXX. At file: YYY.
+
+错误描述
+
+应用skill的skillProfiles仅在bundleType为app或atomicService时可配置。
+
+可能原因
+
+模块的module.json5中配置了skillProfiles，但是app.json5的bundleType不是app或atomicService。
+
+处理步骤
+
+删除module.json5中的skillProfiles。
+
+将app.json5文件中的bundleType修改为app或atomicService。
+
+00306059 integratedHsp模块不支持skillProfiles配置
+
+错误信息
+
+The integratedHsp module does not support skillProfiles. At file: XXX.
+
+错误描述
+
+integratedHsp模块不支持skillProfiles配置。
+
+可能原因
+
+integratedHsp模块不支持skillProfiles配置。
+
+处理步骤
+
+删除module.json5中的skillProfiles。
+
+在模块的build-profile.json5中将buildOption.arkOptions.integratedHsp设置为false。

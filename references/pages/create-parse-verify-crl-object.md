@@ -23,9 +23,9 @@ import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 
 调用X509CRL.verify校验签名合法性。
 
-基于已有的X509证书数据，调用cert.createX509Cert创建证书对象。
+基于已有的X.509证书数据，调用cert.createX509Cert创建证书对象。
 
-调用X509CRL.isRevoked判断X509证书是否已被吊销。
+调用X509CRL.isRevoked判断X.509证书是否已被吊销。
 
 调用X509CRL.getRevokedCert获取被吊销证书对象。
 

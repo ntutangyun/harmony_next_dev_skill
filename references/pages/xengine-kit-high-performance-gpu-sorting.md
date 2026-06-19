@@ -21,6 +21,22 @@ VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CreateHPS (VkDevice device, const XEG_HPS
 VKAPI_ATTR void VKAPI_CALL HMS_XEG_DestroyHPS (XEG_HPS hps)	销毁XEG_HPS对象。
 VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CmdRadixSortHPS (VkCommandBuffer commandBuffer, XEG_HPS hps, const XEG_HPSRadixSortDescription *pDescription)	录制HPS排序命令，使用此接口前需要通过HMS_XEG_EnumerateDeviceExtensionProperties接口查询是否支持XEG_HPS_RADIX_SORT_EXTENSION_NAME扩展。
 
+业务流程
+
+下面是以Vulkan应用程序渲染为例，说明使用高性能GPU排序的的主要业务流程
+
+应用调用HMS_XEG_EnumerateDeviceExtensionProperties接口获取扩展属性列表。如果在列表中未找到XEG_HPS_RADIX_SORT_EXTENSION_NAME，说明当前设备不支持高性能GPU排序。
+
+应用调用HMS_XEG_CmdRadixSortHPS录制排序命令。
+
+XEngine Kit返回一个command buffer。
+
+应用调用vkQueueSubmit接口将排序命令提交到GPU队列执行，GPU并行完成高性能排序。
+
+XEngine Kit返回排序结果。
+
+应用调用HMS_XEG_DestroyHPS接口销毁HPS实例，释放全部GPU资源。销毁后HPS句柄失效，不可再使用。
+
 开发步骤
 
 本章以在Vulkan应用程序渲染为例，说明使用高性能GPU排序的开发步骤。

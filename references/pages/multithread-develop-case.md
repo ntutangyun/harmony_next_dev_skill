@@ -25,3 +25,5 @@ ArkUI瀑布流渲染场景
 自定义Native Sendable对象的多线程操作场景
 
 Worker常驻线程通过TaskPool进行多任务并发处理
+
+Sendable对象改造实践

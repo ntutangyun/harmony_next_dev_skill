@@ -23,6 +23,7 @@ ICCID	开发者可以通过MDM API获取设备ICCID。	不留存。
 IMEI	开发者可以通过MDM API获取设备IMEI。	不留存。
 MEID	开发者可以通过MDM API获取设备MEID。	不留存。
 IMSI	开发者可以通过MDM API获取设备IMSI。	不留存。
+应用使用记录	开发者可以通过MDM API获取设备应用使用记录(应用使用时长)。	不留存。
 
 指导用户行使数据主体权利
 

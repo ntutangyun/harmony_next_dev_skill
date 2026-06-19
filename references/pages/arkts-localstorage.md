@@ -163,9 +163,9 @@ storage.setOrCreate('PropA', 48);
 @LocalStorageProp('PropA') localStorageProp: number = 1;
 @LocalStorageLink('PropA') localStorageLink: number = 2;
 
-@LocalStorageProp与@LocalStorageLink不支持装饰Function类型的变量，API version 23之前，应用在运行时会出现错误。
+@LocalStorageProp与@LocalStorageLink不支持装饰Function类型的变量，API version 23之前，框架会抛出运行时错误。
 
-从API version 23开始，在应用编译时添加了相关校验，@LocalStorageProp与@LocalStorageLink装饰Function类型变量会提示ERROR，应在代码中删除Function类型变量的@LocalStorageProp或@LocalStorageLink装饰器。
+从API version 23开始，添加对@LocalStorageProp与@LocalStorageLink装饰Function类型变量的校验，编译期会报错。
 
 LocalStorage创建后，命名属性的类型不可更改。后续调用Set时必须使用相同类型的值。
 

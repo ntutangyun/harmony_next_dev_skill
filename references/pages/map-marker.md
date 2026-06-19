@@ -38,7 +38,8 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -89,11 +90,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -148,7 +152,7 @@ let markerOptions: mapCommon.MarkerOptions = {
   flat: false,
   annotations: [{
     // 定义标题内容
-    content: "text",
+    content: 'text',
     fontStyle: 1,
     strokeWidth: 3,
     fontSize: 15
@@ -186,9 +190,9 @@ let markerOptions: mapCommon.MarkerOptions = {
   flat: false,
   // 图标存放在resources/rawfile，icon参数传入rawfile文件夹下的相对路径
   icon: 'icon.png',
-  annotations:  [{
+  annotations: [{
     // 定义标题内容
-    content: "Test",
+    content: 'Test',
     fontStyle: 1,
     strokeWidth: 3,
     fontSize: 15
@@ -204,7 +208,7 @@ this.marker = await this.mapController.addMarker(markerOptions);
 let callback = (marker: map.Marker) => {
   console.info(`on-markerClick marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerClick", callback);
+this.mapEventManager.on('markerClick', callback);
 
 [h2]设置监听标记拖动事件
 
@@ -225,24 +229,24 @@ this.marker.setDraggable(true);
 let markerCallback = (marker: map.Marker) => {
   console.info(`on-markerDragStart marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerDragStart", markerCallback);
+this.mapEventManager.on('markerDragStart', markerCallback);
 
 // 监听标记拖拽事件
 let markerDragCallback = (marker: map.Marker) => {
   console.info(`on-markerDrag marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerDrag", markerDragCallback);
+this.mapEventManager.on('markerDrag', markerDragCallback);
 
 // 监听标记拖拽结束
 let markerDragEndCallback = (marker: map.Marker) => {
   console.info(`on-markerDragEnd marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerDragEnd", markerDragEndCallback);
+this.mapEventManager.on('markerDragEnd', markerDragEndCallback);
 
 [h2]设置监听标记长按事件
 
 let callback = (markerLong: map.Marker) => {
-  console.info("markerLongClick", `callback markerLongClick = ${markerLong.getId()}`);
+  console.info('markerLongClick', `callback markerLongClick = ${markerLong.getId()}`);
 };
 this.mapEventManager.onMarkerLongClick(callback);
 
@@ -271,7 +275,8 @@ this.marker.setInfoWindowVisible(true);
 
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -297,7 +302,7 @@ struct MarkerDemo {
           },
           clickable: true,
           // 设置信息窗标题，点击标记后可展示信息窗
-          title: "自定义信息窗"
+          title: '自定义信息窗'
         };
         // 新建marker
         await this.mapController?.addMarker(markerOptions);
@@ -308,33 +313,43 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({
-          mapOptions: this.mapOptions,
-          mapCallback: this.callback,
-          // 自定义信息窗
-          customInfoWindow: this.customInfoWindow
-        })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({
+            mapOptions: this.mapOptions,
+            mapCallback: this.callback,
+            // 自定义信息窗
+            customInfoWindow: this.customInfoWindow
+          })
+            .width('100%')
+            .height('100%');
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
+
   // 自定义信息窗BuilderParam
   @BuilderParam customInfoWindow: ($$: map.MarkerDelegate) => void = this.customInfoWindowBuilder;
+
   // 自定义信息窗Builder
   @Builder
   customInfoWindowBuilder($$: map.MarkerDelegate) {
     if ($$.marker) {
       Text($$.marker.getTitle())
-        .width("50%")
+        .width('50%')
         .height(50)
         .backgroundColor(Color.Green)
         .textAlign(TextAlign.Center)
         .fontColor(Color.Black)
         .font({ size: 25, weight: 10, style: FontStyle.Italic })
-        .border({ width: 3, color: Color.Black, radius: 25, style: BorderStyle.Dashed })
+        .border({
+          width: 3,
+          color: Color.Black,
+          radius: 25,
+          style: BorderStyle.Dashed
+        })
     }
   }
 }
@@ -356,9 +371,11 @@ AnimationSet	动画集合。
 import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 
+// ...
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private callback?: AsyncCallback<map.MapComponentController>;
 
@@ -400,15 +417,15 @@ struct MarkerDemo {
 
         // 设置动画开始监听
         let callbackStart = () => {
-          console.info("animationStart", `callback`);
+          console.info('animationStart', `callback`);
         };
-        animation.on("animationStart", callbackStart);
+        animation.on('animationStart', callbackStart);
 
         // 设置动画结束监听
         let callbackEnd = () => {
-          console.info("animationEnd", `callback`);
+          console.info('animationEnd', `callback`);
         };
-        animation.on("animationEnd", callbackEnd);
+        animation.on('animationEnd', callbackEnd);
 
         // 设置动画
         marker.setAnimation(animation);
@@ -421,11 +438,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -437,9 +457,11 @@ import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 import { image } from '@kit.ImageKit';
 
+// ...
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private callback?: AsyncCallback<map.MapComponentController>;
 
@@ -463,12 +485,12 @@ struct MarkerDemo {
             longitude: 118.788765
           },
         };
-        let images: Array<ResourceStr | image.PixelMap> = [
+        let images: (ResourceStr | image.PixelMap)[] = [
           // 图标需存放在resources/rawfile目录下
           'icon/avocado.png',
           'icon/20231027.png',
           // 图标需存放在resources/base/media目录下
-          $r('app.media.maps_blue_dot')
+          $r('app.media.icon')
         ]
         let mContext = this.getUIContext().getHostContext();
         if (mContext) {
@@ -498,14 +520,14 @@ struct MarkerDemo {
 
         // 设置动画开始监听
         let callbackStart = () => {
-          console.info("animationStart", `callback`);
+          console.info('animationStart', `callback`);
         };
-        animation.on("animationStart", callbackStart);
+        animation.on('animationStart', callbackStart);
         // 设置动画结束监听
         let callbackEnd = () => {
-          console.info("animationEnd", `callback`);
+          console.info('animationEnd', `callback`);
         };
-        animation.on("animationEnd", callbackEnd);
+        animation.on('animationEnd', callbackEnd);
         // 设置动画
         marker.setAnimation(animation);
         // 开启动画
@@ -517,11 +539,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -534,15 +559,18 @@ struct MarkerDemo {
 import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 
+// ...
 @Entry
 @Component
-struct MarkerDemo {
-  private mapOption?: mapCommon.MapOptions;
+struct MapMarkerDemo {
+  // ...
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private marker?: map.Marker;
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 32.120750,
@@ -570,11 +598,12 @@ struct MarkerDemo {
       }
     }
   }
+
   @Builder
   renderBuilder() {
     Stack({ alignContent: Alignment.Center }) {
       // 需要替换您自己的资源图片，存放在resources/base/media目录下
-      Image($r('app.media.iconbuilder'))
+      Image($r('app.media.icon'))
         .syncLoad(true)
     }
     .height(50)
@@ -582,13 +611,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -608,7 +638,8 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -659,11 +690,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -720,7 +754,7 @@ let markerOptions: mapCommon.MarkerOptions = {
   flat: false,
   annotations: [{
     // 定义标题内容
-    content: "text",
+    content: 'text',
     fontStyle: 1,
     strokeWidth: 3,
     fontSize: 15
@@ -754,9 +788,9 @@ let markerOptions: mapCommon.MarkerOptions = {
   flat: false,
   // 图标存放在resources/rawfile，icon参数传入rawfile文件夹下的相对路径
   icon: 'icon.png',
-  annotations:  [{
+  annotations: [{
     // 定义标题内容
-    content: "Test",
+    content: 'Test',
     fontStyle: 1,
     strokeWidth: 3,
     fontSize: 15
@@ -774,7 +808,7 @@ this.marker = await this.mapController.addMarker(markerOptions);
 let callback = (marker: map.Marker) => {
   console.info(`on-markerClick marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerClick", callback);
+this.mapEventManager.on('markerClick', callback);
 ```
 
 ### Code block 8
@@ -787,26 +821,26 @@ this.marker.setDraggable(true);
 let markerCallback = (marker: map.Marker) => {
   console.info(`on-markerDragStart marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerDragStart", markerCallback);
+this.mapEventManager.on('markerDragStart', markerCallback);
 
 // 监听标记拖拽事件
 let markerDragCallback = (marker: map.Marker) => {
   console.info(`on-markerDrag marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerDrag", markerDragCallback);
+this.mapEventManager.on('markerDrag', markerDragCallback);
 
 // 监听标记拖拽结束
 let markerDragEndCallback = (marker: map.Marker) => {
   console.info(`on-markerDragEnd marker = ${marker.getId()}`);
 };
-this.mapEventManager.on("markerDragEnd", markerDragEndCallback);
+this.mapEventManager.on('markerDragEnd', markerDragEndCallback);
 ```
 
 ### Code block 9
 
 ```
 let callback = (markerLong: map.Marker) => {
-  console.info("markerLongClick", `callback markerLongClick = ${markerLong.getId()}`);
+  console.info('markerLongClick', `callback markerLongClick = ${markerLong.getId()}`);
 };
 this.mapEventManager.onMarkerLongClick(callback);
 ```
@@ -839,7 +873,8 @@ this.marker.setInfoWindowVisible(true);
 ```
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -865,7 +900,7 @@ struct MarkerDemo {
           },
           clickable: true,
           // 设置信息窗标题，点击标记后可展示信息窗
-          title: "自定义信息窗"
+          title: '自定义信息窗'
         };
         // 新建marker
         await this.mapController?.addMarker(markerOptions);
@@ -876,33 +911,43 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({
-          mapOptions: this.mapOptions,
-          mapCallback: this.callback,
-          // 自定义信息窗
-          customInfoWindow: this.customInfoWindow
-        })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({
+            mapOptions: this.mapOptions,
+            mapCallback: this.callback,
+            // 自定义信息窗
+            customInfoWindow: this.customInfoWindow
+          })
+            .width('100%')
+            .height('100%');
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
+
   // 自定义信息窗BuilderParam
   @BuilderParam customInfoWindow: ($$: map.MarkerDelegate) => void = this.customInfoWindowBuilder;
+
   // 自定义信息窗Builder
   @Builder
   customInfoWindowBuilder($$: map.MarkerDelegate) {
     if ($$.marker) {
       Text($$.marker.getTitle())
-        .width("50%")
+        .width('50%')
         .height(50)
         .backgroundColor(Color.Green)
         .textAlign(TextAlign.Center)
         .fontColor(Color.Black)
         .font({ size: 25, weight: 10, style: FontStyle.Italic })
-        .border({ width: 3, color: Color.Black, radius: 25, style: BorderStyle.Dashed })
+        .border({
+          width: 3,
+          color: Color.Black,
+          radius: 25,
+          style: BorderStyle.Dashed
+        })
     }
   }
 }
@@ -914,9 +959,11 @@ struct MarkerDemo {
 import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 
+// ...
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private callback?: AsyncCallback<map.MapComponentController>;
 
@@ -958,15 +1005,15 @@ struct MarkerDemo {
 
         // 设置动画开始监听
         let callbackStart = () => {
-          console.info("animationStart", `callback`);
+          console.info('animationStart', `callback`);
         };
-        animation.on("animationStart", callbackStart);
+        animation.on('animationStart', callbackStart);
 
         // 设置动画结束监听
         let callbackEnd = () => {
-          console.info("animationEnd", `callback`);
+          console.info('animationEnd', `callback`);
         };
-        animation.on("animationEnd", callbackEnd);
+        animation.on('animationEnd', callbackEnd);
 
         // 设置动画
         marker.setAnimation(animation);
@@ -979,11 +1026,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -995,9 +1045,11 @@ import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 import { image } from '@kit.ImageKit';
 
+// ...
 @Entry
 @Component
-struct MarkerDemo {
+struct MapMarkerDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private callback?: AsyncCallback<map.MapComponentController>;
 
@@ -1021,12 +1073,12 @@ struct MarkerDemo {
             longitude: 118.788765
           },
         };
-        let images: Array<ResourceStr | image.PixelMap> = [
+        let images: (ResourceStr | image.PixelMap)[] = [
           // 图标需存放在resources/rawfile目录下
           'icon/avocado.png',
           'icon/20231027.png',
           // 图标需存放在resources/base/media目录下
-          $r('app.media.maps_blue_dot')
+          $r('app.media.icon')
         ]
         let mContext = this.getUIContext().getHostContext();
         if (mContext) {
@@ -1056,14 +1108,14 @@ struct MarkerDemo {
 
         // 设置动画开始监听
         let callbackStart = () => {
-          console.info("animationStart", `callback`);
+          console.info('animationStart', `callback`);
         };
-        animation.on("animationStart", callbackStart);
+        animation.on('animationStart', callbackStart);
         // 设置动画结束监听
         let callbackEnd = () => {
-          console.info("animationEnd", `callback`);
+          console.info('animationEnd', `callback`);
         };
-        animation.on("animationEnd", callbackEnd);
+        animation.on('animationEnd', callbackEnd);
         // 设置动画
         marker.setAnimation(animation);
         // 开启动画
@@ -1075,11 +1127,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -1090,15 +1145,18 @@ struct MarkerDemo {
 import { map, mapCommon, MapComponent } from '@kit.MapKit';
 import { AsyncCallback } from '@kit.BasicServicesKit';
 
+// ...
 @Entry
 @Component
-struct MarkerDemo {
-  private mapOption?: mapCommon.MapOptions;
+struct MapMarkerDemo {
+  // ...
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
   private marker?: map.Marker;
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 32.120750,
@@ -1126,11 +1184,12 @@ struct MarkerDemo {
       }
     }
   }
+
   @Builder
   renderBuilder() {
     Stack({ alignContent: Alignment.Center }) {
       // 需要替换您自己的资源图片，存放在resources/base/media目录下
-      Image($r('app.media.iconbuilder'))
+      Image($r('app.media.icon'))
         .syncLoad(true)
     }
     .height(50)
@@ -1138,13 +1197,14 @@ struct MarkerDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%');
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```

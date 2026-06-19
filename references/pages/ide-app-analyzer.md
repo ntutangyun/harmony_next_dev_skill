@@ -14,6 +14,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-app-a
 
 导入DevEco Testing的检测报告进行诊断
 
+导入上架检测报告进行诊断
+
 管理体检报告
 
 附录

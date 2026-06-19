@@ -5,3 +5,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/startup-d
 启动耗时事件介绍
 
 订阅启动耗时事件（ArkTS）
+
+订阅启动耗时事件（C/C++）

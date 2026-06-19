@@ -1,4 +1,4 @@
-# 使用RSA密钥对签名验签 (PSS模式)(C/C++)
+# 使用RSA密钥对（PSS模式）签名验签(C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rsa-sign-sig-verify-pss-ndk_
 

@@ -77,7 +77,7 @@ const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
 };
 
 // 如开发者使用await改写createSubscriber方法，需要把此变量定义到全局(struct外层)
-let subscriber: commonEventManager.CommonEventSubscriber;
+ let subscriber: commonEventManager.CommonEventSubscriber | null = null;
 // 创建订阅者
 commonEventManager.createSubscriber(subscribeInfo)
   .then((commonEventSubscriber: commonEventManager.CommonEventSubscriber) => {
@@ -123,15 +123,18 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
       hilog.info(0x0000, 'testTag',
         `Succeeded in getting minorsProtectionMode is: ${minorsProtectionMode.valueOf()}`);
       // 未成年人模式已开启，获取年龄段信息
+      // ...
       if (minorsProtectionMode) {
         const ageGroup: minorsProtection.AgeGroup | undefined = minorsProtectionInfo.ageGroup;
         if (ageGroup) {
           hilog.info(0x0000, 'testTag', `Succeeded in getting lowerAge is: ${ageGroup.lowerAge}`);
           hilog.info(0x0000, 'testTag', `Succeeded in getting upperAge is: ${ageGroup.upperAge}`);
           // 根据年龄段刷新内容展示。如开发者有频繁使用到年龄段信息，这里则需缓存年龄段信息
+          // ...
         }
       } else {
         // 未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
+        // ...
       }
     } else {
       hilog.info(0x0000, 'testTag',
@@ -212,7 +215,7 @@ const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
 };
 
 // 如开发者使用await改写createSubscriber方法，需要把此变量定义到全局(struct外层)
-let subscriber: commonEventManager.CommonEventSubscriber;
+ let subscriber: commonEventManager.CommonEventSubscriber | null = null;
 // 创建订阅者
 commonEventManager.createSubscriber(subscribeInfo)
   .then((commonEventSubscriber: commonEventManager.CommonEventSubscriber) => {
@@ -262,15 +265,18 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
       hilog.info(0x0000, 'testTag',
         `Succeeded in getting minorsProtectionMode is: ${minorsProtectionMode.valueOf()}`);
       // 未成年人模式已开启，获取年龄段信息
+      // ...
       if (minorsProtectionMode) {
         const ageGroup: minorsProtection.AgeGroup | undefined = minorsProtectionInfo.ageGroup;
         if (ageGroup) {
           hilog.info(0x0000, 'testTag', `Succeeded in getting lowerAge is: ${ageGroup.lowerAge}`);
           hilog.info(0x0000, 'testTag', `Succeeded in getting upperAge is: ${ageGroup.upperAge}`);
           // 根据年龄段刷新内容展示。如开发者有频繁使用到年龄段信息，这里则需缓存年龄段信息
+          // ...
         }
       } else {
         // 未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
+        // ...
       }
     } else {
       hilog.info(0x0000, 'testTag',

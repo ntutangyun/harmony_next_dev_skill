@@ -21,7 +21,12 @@ onWindowStageWillDestroy(): void {
     Tuanjie.TuanjieSendMessage("GlobalObjectForArkTSCall", "OnMessageCall", "SwitchToLoginPage");
     let waitTime = 0; // 等待时长，单位：ms
     while(true) {
-      let sceneChangeResult = dataPreferences?.getSync('sceneChangeResult', undefined);
+      let sceneChangeResult: preferences.ValueType | undefined = undefined;
+      try {
+        sceneChangeResult = dataPreferences?.getSync('sceneChangeResult', undefined);
+      } catch (error) {
+        console.error(`getSync failed: ${(error as BusinessError).message}`);
+      }
       if (sceneChangeResult != undefined) {
         if (sceneChangeResult) {
           break; // 场景切换成功，跳出while循环
@@ -71,7 +76,12 @@ onWindowStageWillDestroy(): void {
     Tuanjie.TuanjieSendMessage("GlobalObjectForArkTSCall", "OnMessageCall", "SwitchToLoginPage");
     let waitTime = 0; // 等待时长，单位：ms
     while(true) {
-      let sceneChangeResult = dataPreferences?.getSync('sceneChangeResult', undefined);
+      let sceneChangeResult: preferences.ValueType | undefined = undefined;
+      try {
+        sceneChangeResult = dataPreferences?.getSync('sceneChangeResult', undefined);
+      } catch (error) {
+        console.error(`getSync failed: ${(error as BusinessError).message}`);
+      }
       if (sceneChangeResult != undefined) {
         if (sceneChangeResult) {
           break; // 场景切换成功，跳出while循环

@@ -30,6 +30,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-app-a
 
 请确保录制过程可循环，例如从B页面开始录制，最后结束录制时要停留在B页面。
 
+录制回放功能仅支持直板机真机。
+
 说明
 
 以下体检规则不支持在编译模式为release下运行，请把编译模式切换到debug再重新检测：组件树节点数目过大、执行函数耗时过长、渲染界面耗时过长、ForEach中item数量过大。

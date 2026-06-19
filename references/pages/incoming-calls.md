@@ -15,7 +15,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/incoming-
 
 约束与限制
 
-来电场景支持Phone、Tablet设备，并从6.0(20)版本开始支持Wearable设备。
+来电场景支持Phone、Tablet设备，并从6.0(20)版本开始支持Wearable设备，6.1.1(24)版本开始支持PC/2in1设备。
 
 业务流程
 
@@ -109,7 +109,7 @@ voipCall.on('voipCallUiEvent', callback => {
     // 立即向Call Service Kit上报answered状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ANSWERED);
 
-    //...在应用内完成接听
+    // ...在应用内完成接听
 
     // 应用内接听后，向Call Service Kit上报active状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
@@ -139,7 +139,7 @@ voipCall.on('voipCallUiEvent', callback => {
 
 voipCall.on('voipCallUiEvent', callback => {
   if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_VOICE_ANSWER) {
-    //...在应用内完成接听
+    // ...在应用内完成接听
 
     // 应用内接听后，向Call Service Kit上报通话状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
@@ -275,7 +275,7 @@ voipCall.on('voipCallUiEvent', callback => {
     // 立即向Call Service Kit上报answered状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ANSWERED);
 
-    //...在应用内完成接听
+    // ...在应用内完成接听
 
     // 应用内接听后，向Call Service Kit上报active状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
@@ -288,7 +288,7 @@ voipCall.on('voipCallUiEvent', callback => {
 ```
 voipCall.on('voipCallUiEvent', callback => {
   if (callback?.voipCallUiEvent == voipCall.VoipCallUiEvent.VOIP_CALL_EVENT_VOICE_ANSWER) {
-    //...在应用内完成接听
+    // ...在应用内完成接听
 
     // 应用内接听后，向Call Service Kit上报通话状态
     voipCall.reportCallStateChange(callback.callId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);

@@ -29,7 +29,7 @@ DevEco Studio新建Native C++模板工程，编辑“entry > src > main > ets > 
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 
-编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，在onCreate函数中设置事件的崩溃事件自定义参数和崩溃日志规格自定义参数，示例代码如下：
+编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，在onCreate函数中设置事件的崩溃事件自定义参数和崩溃日志自定义规格设置，示例代码如下：
 
 // 构建崩溃事件的自定义参数
 let crashParams: Record<string, hiAppEvent.ParamType> = {

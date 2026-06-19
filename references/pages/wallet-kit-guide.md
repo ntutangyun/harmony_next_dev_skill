@@ -11,3 +11,5 @@ Wallet Kit简介
 接入交通卡
 
 Wallet Kit常见问题
+
+Wallet Kit术语

@@ -13,12 +13,12 @@ deleteToTrash(uri: string): Promise<string>	删除指定文件到回收站，并
 
 示例代码
 
-1.导入文件管理服务模块及相关模块
+1.导入文件管理服务模块及相关模块。
 
 import { fileManagerService } from '@kit.FileManagerServiceKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-2.删除指定文件到回收站
+2.删除指定文件到回收站。
 
 async function deleteFile() {
   // 以内置存储目录为例

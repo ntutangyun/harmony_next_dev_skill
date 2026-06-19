@@ -5,3 +5,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-test-
 仪器测试错误码
 
 本地测试错误码
+
+命令行测试错误码

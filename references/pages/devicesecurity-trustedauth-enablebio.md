@@ -8,11 +8,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 人脸认证功能需设备具备3D人脸识别能力，可通过调用查询支持的认证能力确认设备是否支持3D人脸识别。当前仅支持绑定一个指纹或人脸用于支付认证。
 
-本功能需应用服务器端完成接口接入，以配合端云协同认证流程。
+本功能需企业开发者应用服务器端完成接口接入，以配合端云协同认证流程。
 
 约束与限制
 
-本功能在API24之前版本仅在手机设备支持。对于API24及之后版本，本功能在手机设备、部分PC/2in1、部分Tablet设备支持。人脸认证功能仅支持具备3D人脸识别能力的设备，目前仅支持绑定一个指纹/人脸用于支付认证，且需应用服务器端同步接入配合端云协同认证。通过用户认证服务提供的接口查询支持的认证能力，可确认设备是否支持3D人脸。
+本功能在API24之前版本仅在手机设备支持。对于API24及之后版本，本功能在手机设备、部分PC/2in1、部分Tablet设备支持。人脸认证功能仅支持具备3D人脸识别能力的设备，目前仅支持绑定一个指纹/人脸用于支付认证，且需企业开发者应用服务器端同步接入配合端云协同认证。通过用户认证服务提供的接口查询支持的认证能力，可确认设备是否支持3D人脸。
 
 业务流程
 
@@ -49,9 +49,9 @@ import { common } from '@kit.AbilityKit';
 
 async function PwdVerify(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
   try {
-    const authID: bigint = 11842183505170721246n;//实际填充为从服务器获取到的账号对应的authID值
+    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
     const buffer = fileData.buffer;
     const label:trustedAuthentication.TUILable = {
       image: buffer as ArrayBuffer,
@@ -66,7 +66,7 @@ async function PwdVerify(challenge: Uint8Array, context: common.UIAbilityContext
 }
 const rand = cryptoFramework.createRandom();
 const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
+const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
 let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 const authToken: trustedAuthentication.AuthToken = await PwdVerify(challenge, context);
 
@@ -74,8 +74,8 @@ const authToken: trustedAuthentication.AuthToken = await PwdVerify(challenge, co
 
 当订阅的生物认证结果获取到后，将数字盾密码认证结果和生物特征认证结果统一整合，发起生物特征绑定请求。
 
-let tuiAuthToken = new Uint8Array(1024);//实际使用时请替换为步骤6密码认证获取的authToken
-let bioAuthToken = new Uint8Array(1024);//实际使用时请替换为步骤7生物特征认证获取的authToken
+let tuiAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤6密码认证获取的authToken
+let bioAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤7生物特征认证获取的authToken
 let operType = trustedAuthentication.OperateType.OPERATE_TYPE_BIOMETRIC_AUTH;
 trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken).then((newBioAuthToken) => {
   let authToken = newBioAuthToken.authToken as Uint8Array;
@@ -83,7 +83,7 @@ trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken
 
 参考密钥管理服务提供的签名/验签指导, 对返回生物特征绑定对应的authToken数据进行签名，并结束会话。
 
-应用可将签名获取的生物特征进行验签校验，并将生物特征credential信息与账号信息在服务器端绑定。
+企业开发者应用可将签名获取的生物特征进行验签校验，并将生物特征credential信息与账号信息在服务器端绑定。
 
 ## Code blocks
 
@@ -105,9 +105,9 @@ import { common } from '@kit.AbilityKit';
 ```
 async function PwdVerify(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
   try {
-    const authID: bigint = 11842183505170721246n;//实际填充为从服务器获取到的账号对应的authID值
+    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
     const buffer = fileData.buffer;
     const label:trustedAuthentication.TUILable = {
       image: buffer as ArrayBuffer,
@@ -122,7 +122,7 @@ async function PwdVerify(challenge: Uint8Array, context: common.UIAbilityContext
 }
 const rand = cryptoFramework.createRandom();
 const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
+const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
 let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 const authToken: trustedAuthentication.AuthToken = await PwdVerify(challenge, context);
 ```
@@ -130,8 +130,8 @@ const authToken: trustedAuthentication.AuthToken = await PwdVerify(challenge, co
 ### Code block 3
 
 ```
-let tuiAuthToken = new Uint8Array(1024);//实际使用时请替换为步骤6密码认证获取的authToken
-let bioAuthToken = new Uint8Array(1024);//实际使用时请替换为步骤7生物特征认证获取的authToken
+let tuiAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤6密码认证获取的authToken
+let bioAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤7生物特征认证获取的authToken
 let operType = trustedAuthentication.OperateType.OPERATE_TYPE_BIOMETRIC_AUTH;
 trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken).then((newBioAuthToken) => {
   let authToken = newBioAuthToken.authToken as Uint8Array;

@@ -1,10 +1,10 @@
-# 查询策略
+# 查询策略配置数据
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentimeguard-query-guard-strategies_
 
 场景介绍
 
-当用户希望查看现有的屏幕时间守护规则时，可以调用查询管控策略的接口。通过成功调用查询策略接口，用户可以浏览已创建的所有管控策略，如查看各个应用的停用起止时间或可使用时长。
+当管控应用希望查看已添加的所有管控策略时，可以调用查询管控策略的接口。调用成功后，管控应用可以查看所有已添加管控策略的配置数据，如查看被管控应用的停用时间或可使用时长。
 
 业务流程
 
@@ -36,19 +36,19 @@ import { BusinessError } from '@kit.BasicServicesKit';
 调用queryGuardStrategy，查询对应应用下的所有管控策略。
 
 private async isStrategyExist(strategyName: string): Promise<boolean> {
-   try {
-      let guardStrategies: guardService.GuardStrategy[] = await guardService.queryGuardStrategies();
-      for (let i = 0; i < guardStrategies.length; i++) {
-         if (guardStrategies[i].name === strategyName) {
-            return true;
-         }
+  try {
+    let guardStrategies: guardService.GuardStrategy[] = await guardService.queryGuardStrategies();
+    for (let i = 0; i < guardStrategies.length; i++) {
+      if (guardStrategies[i].name === strategyName) {
+        return true;
       }
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `queryGuardStrategies failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
-   return false;
+    }
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `queryGuardStrategies failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
+  return false;
 }
 
 ## Code blocks
@@ -65,18 +65,18 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 private async isStrategyExist(strategyName: string): Promise<boolean> {
-   try {
-      let guardStrategies: guardService.GuardStrategy[] = await guardService.queryGuardStrategies();
-      for (let i = 0; i < guardStrategies.length; i++) {
-         if (guardStrategies[i].name === strategyName) {
-            return true;
-         }
+  try {
+    let guardStrategies: guardService.GuardStrategy[] = await guardService.queryGuardStrategies();
+    for (let i = 0; i < guardStrategies.length; i++) {
+      if (guardStrategies[i].name === strategyName) {
+        return true;
       }
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `queryGuardStrategies failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
-   return false;
+    }
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `queryGuardStrategies failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
+  return false;
 }
 ```

@@ -51,8 +51,9 @@ ArkWeb内核版本：ArkWeb基于谷歌Chromium内核开发，系统版本与Chr
 系统版本	Chromium版本
 HarmonyOS 4.0及之前	M99
 HarmonyOS 4.1-5.1	M114
-HarmonyOS 6.0	M132（默认，推荐使用） M114（可选，若应用需切换为此内核，请参考M114内核在HarmonyOS6.0系统上的适配指导）
+HarmonyOS 6.0	M132（默认，推荐使用，请参考M114->M132差异适配指南） M114（可选，若应用需切换为此内核，请参考M114内核在HarmonyOS 6.0系统上的适配指导）
 HarmonyOS 6.1	M132
+HarmonyOS 7.0	M144（默认，推荐使用，请参考M132->M144差异适配指南） M132（可选，若应用需切换为此内核，请参考M132内核在HarmonyOS 7.0系统上的适配指导）
 
 为保障用户隐私安全，HarmonyOS内置了ArkWeb组件，旨在为全场景设备提供安全、可靠且一致的网页浏览体验。应用渲染网页需调用ArkWeb组件；元服务内嵌网页渲染则需使用官方提供的Webview组件。开发者可根据其元服务开发框架，选择使用ASCF Webview或AtomicServiceEnhancedWeb组件。元服务内嵌页面内容需遵循元服务内嵌页面管理规范。
 

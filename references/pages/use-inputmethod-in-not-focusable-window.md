@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/use-input
 
 在主窗中创建一个子窗，设置其初始为不可获焦窗口。
 
-可达到效果：点击主窗输入组件，弹出子窗，焦点仍然在主窗的输入框上。
+实现效果：点击主窗输入组件，弹出子窗，焦点仍然在主窗的输入框上。
 
 // Index.ets实现主窗的布局内容
 import { window } from '@kit.ArkUI';
@@ -36,9 +36,13 @@ struct Index {
       }
       let options: window.SubWindowOptions = { title: 'title', decorEnabled: true };
       let subWindow = await windowStage?.createSubWindowWithOptions('mySubWindow', options);
+      if (!subWindow) {
+       console.error('Failed to create subWindow');
+       return;
+      }
       const subWindowId: number | undefined = subWindow?.getWindowProperties().id;
       AppStorage.setOrCreate('subWindowId', subWindowId);
-      // 2.设置子窗为不可获焦
+      // 2.设置子窗为不可获焦，true表示允许获取焦点，false表示不允许
       subWindow?.resize(500, 500);
       subWindow?.setUIContent("pages/SubWindowIndex");
       subWindow?.setWindowFocusable(false);
@@ -135,7 +139,7 @@ struct SubWindowIndex {
       }
       let subWindowList: window.Window[] = await windowStage?.getSubWindow();
       let subWindow: window.Window = subWindowList[0];
-      // 将子窗口设置为不可获焦
+      // 将子窗口设置为不可获焦，true表示允许获取焦点，false表示不允许
       subWindow?.setWindowFocusable(false);
     } catch (exception) {
       console.error(`Failed to shift focus to main window. Cause code: ${exception.code}, message: ${exception.message}`);
@@ -179,9 +183,13 @@ struct Index {
       }
       let options: window.SubWindowOptions = { title: 'title', decorEnabled: true };
       let subWindow = await windowStage?.createSubWindowWithOptions('mySubWindow', options);
+      if (!subWindow) {
+       console.error('Failed to create subWindow');
+       return;
+      }
       const subWindowId: number | undefined = subWindow?.getWindowProperties().id;
       AppStorage.setOrCreate('subWindowId', subWindowId);
-      // 2.设置子窗为不可获焦
+      // 2.设置子窗为不可获焦，true表示允许获取焦点，false表示不允许
       subWindow?.resize(500, 500);
       subWindow?.setUIContent("pages/SubWindowIndex");
       subWindow?.setWindowFocusable(false);
@@ -282,7 +290,7 @@ struct SubWindowIndex {
       }
       let subWindowList: window.Window[] = await windowStage?.getSubWindow();
       let subWindow: window.Window = subWindowList[0];
-      // 将子窗口设置为不可获焦
+      // 将子窗口设置为不可获焦，true表示允许获取焦点，false表示不允许
       subWindow?.setWindowFocusable(false);
     } catch (exception) {
       console.error(`Failed to shift focus to main window. Cause code: ${exception.code}, message: ${exception.message}`);

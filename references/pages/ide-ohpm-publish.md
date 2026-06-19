@@ -96,7 +96,7 @@ Options
 
 默认值：无
 
-类型： String
+类型：String
 
 从ohpm 6.1.1.816版本开始，可以在 publish 命令后配置--source_type <string>参数，指定将要发布的三方库的开闭源类型。如果值为closed，则不校验发布的三方包是否包含 LICENSE 文件，发布的三方库是闭源类型；如果值为open，则校验发布的三方包必须包含 LICENSE 文件，发布的三方库是开源类型。
 
@@ -104,7 +104,7 @@ Options
 
 默认值：60000
 
-类型： Number
+类型：Number
 
 别名：ft
 
@@ -114,7 +114,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 可以在 publish 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
 
@@ -122,7 +122,7 @@ Options
 
 默认值：无
 
-类型： String
+类型：String
 
 从ohpm 6.0.2.636版本开始，可以在 publish 命令后配置--log_level <string>参数，指定执行当前命令的日志级别（info、debug、warn、error），如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
 
@@ -130,7 +130,7 @@ Options
 
 默认值：false
 
-类型： Boolean
+类型：Boolean
 
 从ohpm 6.0.2.636版本开始，可以在命令后配置--debug参数，指定执行当前命令的日志级别为debug，该配置仅在当前命令行生效，不修改.ohpmrc中的日志级别，如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
 
@@ -138,7 +138,7 @@ Options
 
 默认值：无
 
-类型： Number
+类型：Number
 
 从ohpm 6.0.2.636版本开始，可以在 publish 命令后配置--use_stream_threshold_size <number>参数，指定流式上传阈值，取值范围：[0, 300]，单位mb。当publish三方库的文件体积超过阈值时，将使用流式方式上传；如果仓库不存在流式上传接口，则转为Base64方式上传。
 

@@ -76,7 +76,7 @@ ArkTS共享容器采用引用传递方式跨线程传递，与原生容器相比
 原生API方法	ArkTS容器集方法	是否有行为差异	在ArkTS容器中的差异表现
 length: number	readonly length: number	是	为了防止undefined扩散，不允许设置length。
 new(arrayLength ?: number): any[]	static create(arrayLength: number, initialValue: T): Array	是	为了防止undefined扩散，构造函数中必须提供一个初始值。
-new <T>(arrayLength: number): T[]	constructor()	否	构造时传入的数据必须为Sendable类型，否则将导致编译错误。
+new <T>(arrayLength: number): T[]	constructor()	是	构造时传入的数据必须为Sendable类型，否则将导致编译错误。
 new <T>(...items: T[]): T[]	constructor(first: T, ...left: T[])	是	为了防止undefined扩散，构造函数中必须提供一个初始值，继承场景下，无法调用该函数进行对象构造。
 from<T>(arrayLike: ArrayLike<T>): T[]	static from<T>(arrayLike: ArrayLike<T>): Array<T>	否	/
 from<T, U>(iterable: Iterable<T> | ArrayLike<T>, mapfn: (v: T, k: number) => U, thisArg?: any): U[]	static from<U, T>(arrayLike: ArrayLike<U> | Iterable<U>, mapFn: ArrayFromMapFn<U, T>): Array<T>	否	/

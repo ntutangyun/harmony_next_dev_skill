@@ -41,38 +41,38 @@ import { deviceStatus } from '@kit.MultimodalAwarenessKit';
 订阅设备静止姿态（支架态）感知事件。
 
 try {
-   deviceStatus.on('steadyStandingDetect', (data:deviceStatus.SteadyStandingStatus) => {
-      console.info('succeed to get status, now status = ' + data);
-   });
+  deviceStatus.on('steadyStandingDetect', (data:deviceStatus.SteadyStandingStatus) => {
+    console.info('succeed to get status, now status = ' + data);
+  });
 } catch (err) {
-   console.error('on failed, err = ' + err);
+  console.error('on failed, err = ' + err);
 }
 
 取消本客户端订阅的所有设备静止姿态（支架态）感知事件。
 
 try {
-   deviceStatus.off('steadyStandingDetect');
+  deviceStatus.off('steadyStandingDetect');
 } catch (err) {
-   console.error('off failed, err = ' + err);
+  console.error('off failed, err = ' + err);
 }
 
 取消订阅设备静止姿态（支架态）感知事件的特定回调。
 
 // 定义callback变量
 let callback : Callback<deviceStatus.SteadyStandingStatus> = (data : deviceStatus.SteadyStandingStatus) => {
-   console.info('succeed to get status, now status = ' + data);
+  console.info('succeed to get status, now status = ' + data);
 };
 // 以callback为回调函数，订阅设备静止姿态感知（支架态）事件
 try {
-   deviceStatus.on('steadyStandingDetect', callback);
+  deviceStatus.on('steadyStandingDetect', callback);
 } catch (err) {
-   console.error('on failed, err = ' + err);
+  console.error('on failed, err = ' + err);
 }
 // 取消该客户端订阅设备静止姿态感知（支架态）事件的特定回调函数
 try {
-   deviceStatus.off('steadyStandingDetect', callback);
+  deviceStatus.off('steadyStandingDetect', callback);
 } catch (err) {
-   console.error('off failed, err = ' + err);
+  console.error('off failed, err = ' + err);
 }
 
 ## Code blocks
@@ -87,11 +87,11 @@ import { deviceStatus } from '@kit.MultimodalAwarenessKit';
 
 ```
 try {
-   deviceStatus.on('steadyStandingDetect', (data:deviceStatus.SteadyStandingStatus) => {
-      console.info('succeed to get status, now status = ' + data);
-   });
+  deviceStatus.on('steadyStandingDetect', (data:deviceStatus.SteadyStandingStatus) => {
+    console.info('succeed to get status, now status = ' + data);
+  });
 } catch (err) {
-   console.error('on failed, err = ' + err);
+  console.error('on failed, err = ' + err);
 }
 ```
 
@@ -99,9 +99,9 @@ try {
 
 ```
 try {
-   deviceStatus.off('steadyStandingDetect');
+  deviceStatus.off('steadyStandingDetect');
 } catch (err) {
-   console.error('off failed, err = ' + err);
+  console.error('off failed, err = ' + err);
 }
 ```
 
@@ -110,18 +110,18 @@ try {
 ```
 // 定义callback变量
 let callback : Callback<deviceStatus.SteadyStandingStatus> = (data : deviceStatus.SteadyStandingStatus) => {
-   console.info('succeed to get status, now status = ' + data);
+  console.info('succeed to get status, now status = ' + data);
 };
 // 以callback为回调函数，订阅设备静止姿态感知（支架态）事件
 try {
-   deviceStatus.on('steadyStandingDetect', callback);
+  deviceStatus.on('steadyStandingDetect', callback);
 } catch (err) {
-   console.error('on failed, err = ' + err);
+  console.error('on failed, err = ' + err);
 }
 // 取消该客户端订阅设备静止姿态感知（支架态）事件的特定回调函数
 try {
-   deviceStatus.off('steadyStandingDetect', callback);
+  deviceStatus.off('steadyStandingDetect', callback);
 } catch (err) {
-   console.error('off failed, err = ' + err);
+  console.error('off failed, err = ' + err);
 }
 ```

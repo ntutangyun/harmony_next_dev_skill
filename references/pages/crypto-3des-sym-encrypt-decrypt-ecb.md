@@ -147,7 +147,7 @@ function main() {
 如果分组模式为CBC、CTR、OFB、CFB，需要参考如下设置加解密参数IV。ECB不需要设置加解密参数IV。
 
 function genIvParamsSpec() {
-  let ivBlob = generateRandom(8); //3DES的 CBC、CFB、OFB、CTR的iv长度为8字节。
+  let ivBlob = generateRandom(8); // 3DES的 CBC、CFB、OFB、CTR的iv长度为8字节。
   let ivParamsSpec: cryptoFramework.IvParamsSpec = {
     algName: "IvParamsSpec",
     iv: ivBlob
@@ -157,7 +157,7 @@ function genIvParamsSpec() {
 let iv = genIvParamsSpec();
 let cipher = cryptoFramework.createCipher('3DES192|CBC|PKCS7');
 cipher.initSync(cryptoFramework.CryptoMode.DECRYPT_MODE, symKey, iv);
-// 本段代码只展示CBC、CTR、OFB、CFB分段模式的不同，其他流程请参考开发示例。
+// 本段代码只展示CBC、CTR、OFB、CFB分组模式的不同，其他流程请参考开发示例。
 
 ## Code blocks
 
@@ -261,7 +261,7 @@ function main() {
 
 ```
 function genIvParamsSpec() {
-  let ivBlob = generateRandom(8); //3DES的 CBC、CFB、OFB、CTR的iv长度为8字节。
+  let ivBlob = generateRandom(8); // 3DES的 CBC、CFB、OFB、CTR的iv长度为8字节。
   let ivParamsSpec: cryptoFramework.IvParamsSpec = {
     algName: "IvParamsSpec",
     iv: ivBlob
@@ -271,5 +271,5 @@ function genIvParamsSpec() {
 let iv = genIvParamsSpec();
 let cipher = cryptoFramework.createCipher('3DES192|CBC|PKCS7');
 cipher.initSync(cryptoFramework.CryptoMode.DECRYPT_MODE, symKey, iv);
-// 本段代码只展示CBC、CTR、OFB、CFB分段模式的不同，其他流程请参考开发示例。
+// 本段代码只展示CBC、CTR、OFB、CFB分组模式的不同，其他流程请参考开发示例。
 ```

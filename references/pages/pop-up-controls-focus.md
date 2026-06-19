@@ -18,25 +18,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pop-up-co
 
 @Entry
 @Component
-struct Rule_2_1_17 {
+export struct Rule_2_1_17 {
   title: string = 'Rule 2.1.17';
-  // 模态对话框控制器
+  // 模态对话框控制器。
   private modelDialogController: CustomDialogController = this.createDialogController(true);
-  // 非模态对话框控制器
+  // 非模态对话框控制器。
   private nonModelDialogController: CustomDialogController = this.createDialogController(false);
 
   /**
    * 创建对话框控制器
-   * @param isModel 是否为模态对话框
+   * @param isModal 是否为模态对话框
    * @returns 返回创建的对话框控制器
    */
-  private createDialogController(isModel: boolean): CustomDialogController {
+  private createDialogController(isModal: boolean): CustomDialogController {
     return new CustomDialogController({
       builder: CustomDialogExample({
-        controller: isModel ? this.modelDialogController : this.nonModelDialogController,
-        isModel: isModel,
+        controller: isModal ? this.modelDialogController : this.nonModelDialogController,
+        isModal: isModal,
         cancel: () => {
-          if (isModel) {
+          if (isModal) {
             this.modelDialogController.close();
           } else {
             this.nonModelDialogController.close();
@@ -44,7 +44,7 @@ struct Rule_2_1_17 {
         }
       }),
       autoCancel: true,
-      isModal: isModel,
+      isModal: isModal,
       onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
         if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
           dismissDialogAction.dismiss();
@@ -64,14 +64,14 @@ struct Rule_2_1_17 {
     NavDestination() {
       Scroll() {
         Column() {
-          // 模态对话框按钮
+          // 模态对话框按钮。
           Button('模态dialog')
             .margin({ bottom: 5 })
             .onClick(() => {
               this.modelDialogController.open();
             })
 
-          // 非模态对话框按钮
+          // 非模态对话框按钮。
           Button('非模态dialog')
             .onClick(() => {
               this.nonModelDialogController.open();
@@ -84,23 +84,23 @@ struct Rule_2_1_17 {
 
 @CustomDialog
 struct CustomDialogExample {
-  // 是否为模态对话框
-  isModel?: boolean;
-  // 对话框控制器
+  // 是否为模态对话框。
+  isModal?: boolean;
+  // 对话框控制器。
   controller?: CustomDialogController;
-  // 关闭对话框的回调函数
+  // 关闭对话框的回调函数。
   cancel: () => void = () => {};
 
   build() {
     Column() {
-      // 显示对话框的标题
-      Text(this.isModel ? '模态弹窗' : '非模态弹窗')
+      // 显示对话框的标题。
+      Text(this.isModal ? '模态弹窗' : '非模态弹窗')
         .fontSize(30)
         .height(100)
       Text('测试节点1')
       Text('测试节点2')
       Text('测试节点3')
-      // 关闭对话框按钮
+      // 关闭对话框按钮。
       Button('关闭')
         .onClick(() => {
           this.cancel?.();
@@ -117,25 +117,25 @@ struct CustomDialogExample {
 ```
 @Entry
 @Component
-struct Rule_2_1_17 {
+export struct Rule_2_1_17 {
   title: string = 'Rule 2.1.17';
-  // 模态对话框控制器
+  // 模态对话框控制器。
   private modelDialogController: CustomDialogController = this.createDialogController(true);
-  // 非模态对话框控制器
+  // 非模态对话框控制器。
   private nonModelDialogController: CustomDialogController = this.createDialogController(false);
 
   /**
    * 创建对话框控制器
-   * @param isModel 是否为模态对话框
+   * @param isModal 是否为模态对话框
    * @returns 返回创建的对话框控制器
    */
-  private createDialogController(isModel: boolean): CustomDialogController {
+  private createDialogController(isModal: boolean): CustomDialogController {
     return new CustomDialogController({
       builder: CustomDialogExample({
-        controller: isModel ? this.modelDialogController : this.nonModelDialogController,
-        isModel: isModel,
+        controller: isModal ? this.modelDialogController : this.nonModelDialogController,
+        isModal: isModal,
         cancel: () => {
-          if (isModel) {
+          if (isModal) {
             this.modelDialogController.close();
           } else {
             this.nonModelDialogController.close();
@@ -143,7 +143,7 @@ struct Rule_2_1_17 {
         }
       }),
       autoCancel: true,
-      isModal: isModel,
+      isModal: isModal,
       onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
         if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
           dismissDialogAction.dismiss();
@@ -163,14 +163,14 @@ struct Rule_2_1_17 {
     NavDestination() {
       Scroll() {
         Column() {
-          // 模态对话框按钮
+          // 模态对话框按钮。
           Button('模态dialog')
             .margin({ bottom: 5 })
             .onClick(() => {
               this.modelDialogController.open();
             })
 
-          // 非模态对话框按钮
+          // 非模态对话框按钮。
           Button('非模态dialog')
             .onClick(() => {
               this.nonModelDialogController.open();
@@ -183,23 +183,23 @@ struct Rule_2_1_17 {
 
 @CustomDialog
 struct CustomDialogExample {
-  // 是否为模态对话框
-  isModel?: boolean;
-  // 对话框控制器
+  // 是否为模态对话框。
+  isModal?: boolean;
+  // 对话框控制器。
   controller?: CustomDialogController;
-  // 关闭对话框的回调函数
+  // 关闭对话框的回调函数。
   cancel: () => void = () => {};
 
   build() {
     Column() {
-      // 显示对话框的标题
-      Text(this.isModel ? '模态弹窗' : '非模态弹窗')
+      // 显示对话框的标题。
+      Text(this.isModal ? '模态弹窗' : '非模态弹窗')
         .fontSize(30)
         .height(100)
       Text('测试节点1')
       Text('测试节点2')
       Text('测试节点3')
-      // 关闭对话框按钮
+      // 关闭对话框按钮。
       Button('关闭')
         .onClick(() => {
           this.cancel?.();

@@ -9,3 +9,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 开发指导(ArkTS)
 
 开发指导(C/C++)
+
+游戏场景感知术语

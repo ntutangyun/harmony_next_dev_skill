@@ -41,6 +41,7 @@ DOUBLE	浮点类型	是
 TEXT	字符串类型	是
 BLOB	二进制类型	是
 FLOATVECTOR	向量数据类型	是
+GEOMETRY (搭载HarmonyOS 7.0.0及以上版本设备支持)	地理坐标类型	是
 
 [h2]字段约束
 
@@ -238,6 +239,17 @@ try {
   // 不使用参数绑定
   const QUERY_SQL1 = "select id, repr <-> '[6.2, 7.3]' as distance from test where id > 0 order by repr <-> '[6.2, 7.3]' limit 5;";
   resultSet = await store!.querySql(QUERY_SQL1);
+  resultSet!.close();
+} catch (err) {
+  console.error(`query failed, code is ${err.code}, message is ${err.message}`);
+}
+
+// 搭载HarmonyOS 7.0.0及以上版本的设备，支持使用表达式进行加权打分，基于表达式得分排序查询
+try {
+  // 创建第二张表
+  let CREATE_SQL = 'CREATE TABLE IF NOT EXISTS test1(id text PRIMARY KEY, location text, people text, age int, repr floatvector(2));';
+  await store!.execute(CREATE_SQL);
+  let resultSet = await store!.querySql('select *, (1000 * (location='local') + 500 * (people like 'Mike') + 100 * (age > 18)) as score from test1 where repr <-> '[6.2, 7.3]' < 0.8 order by score limit 5;');
   resultSet!.close();
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);
@@ -539,6 +551,17 @@ try {
   // 不使用参数绑定
   const QUERY_SQL1 = "select id, repr <-> '[6.2, 7.3]' as distance from test where id > 0 order by repr <-> '[6.2, 7.3]' limit 5;";
   resultSet = await store!.querySql(QUERY_SQL1);
+  resultSet!.close();
+} catch (err) {
+  console.error(`query failed, code is ${err.code}, message is ${err.message}`);
+}
+
+// 搭载HarmonyOS 7.0.0及以上版本的设备，支持使用表达式进行加权打分，基于表达式得分排序查询
+try {
+  // 创建第二张表
+  let CREATE_SQL = 'CREATE TABLE IF NOT EXISTS test1(id text PRIMARY KEY, location text, people text, age int, repr floatvector(2));';
+  await store!.execute(CREATE_SQL);
+  let resultSet = await store!.querySql('select *, (1000 * (location='local') + 500 * (people like 'Mike') + 100 * (age > 18)) as score from test1 where repr <-> '[6.2, 7.3]' < 0.8 order by score limit 5;');
   resultSet!.close();
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);

@@ -130,7 +130,7 @@ async function ContentVerifyByPwd(challenge: Uint8Array, context: common.UIAbili
   try {
     const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
+    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
     const reqParams:trustedAuthentication.AuthReqParams = {
       reqType: trustedAuthentication.AuthType.AUTH_TYPE_TUI_PIN,
       authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1000000000"], // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
@@ -172,7 +172,7 @@ function encodeUtf8(s: string): number[] {
   const encodedBytes = dest.subarray(0, result.written);
   return Array.from(encodedBytes);
 };
-// 实际为应用向密钥管理服务传入的验签数据
+// 实际为企业开发者应用向密钥管理服务传入的验签数据
 let str = "用户：王xx\n账号：95588180804408xxxx\n交易金额：1000000000";
 const utf8Bytes = new Uint8Array(encodeUtf8(str));
 
@@ -224,7 +224,7 @@ async function ContentVerifyByPwd(challenge: Uint8Array, context: common.UIAbili
   try {
     const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
+    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
     const reqParams:trustedAuthentication.AuthReqParams = {
       reqType: trustedAuthentication.AuthType.AUTH_TYPE_TUI_PIN,
       authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1000000000"], // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
@@ -266,7 +266,7 @@ function encodeUtf8(s: string): number[] {
   const encodedBytes = dest.subarray(0, result.written);
   return Array.from(encodedBytes);
 };
-// 实际为应用向密钥管理服务传入的验签数据
+// 实际为企业开发者应用向密钥管理服务传入的验签数据
 let str = "用户：王xx\n账号：95588180804408xxxx\n交易金额：1000000000";
 const utf8Bytes = new Uint8Array(encodeUtf8(str));
 ```

@@ -59,7 +59,7 @@ let params: site.ReverseGeocodeParams = {
     latitude: 31.984410259206815,
     longitude: 118.76625379397866
   },
-  language: "en",
+  language: 'en',
   radius: 0,
   isExtension: true,
   isNearbyAoi: true
@@ -109,7 +109,7 @@ let params: site.ReverseGeocodeParams = {
     latitude: 31.984410259206815,
     longitude: 118.76625379397866
   },
-  language: "en",
+  language: 'en',
   radius: 0,
   isExtension: true,
   isNearbyAoi: true

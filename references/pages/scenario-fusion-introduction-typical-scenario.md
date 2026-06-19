@@ -36,63 +36,66 @@ struct SmartFill {
   @State isClicked: boolean = false;
 
   build() {
-    Column({ space: 5 }) {
-      Row() {
-        Text('昵称：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.NICKNAME).selectionMenuHidden(true)
-      }
+// ...
 
-      Row() {
-        Text('姓名：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
-      }
+      Column({ space: 5 }) {
+        Row() {
+          Text('昵称：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.NICKNAME).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('手机号码：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PHONE_NUMBER).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('姓名：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('邮箱：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.EMAIL_ADDRESS).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('手机号码：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PHONE_NUMBER).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('身份证号：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.ID_CARD_NUMBER).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('邮箱：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.EMAIL_ADDRESS).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('地址：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.FORMAT_ADDRESS).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('身份证号：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.ID_CARD_NUMBER).selectionMenuHidden(true)
+        }
 
-      Button('保存')
-        .onClick(() => {
-          if (!this.isClicked) {
-            // 主动触发保存历史表单输入。
-            try {
-              autoFillManager.requestAutoSave(this.getUIContext())
-            } catch (err) {
-              let e: BusinessError = err as BusinessError;
-              hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+        Row() {
+          Text('地址：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.FORMAT_ADDRESS).selectionMenuHidden(true)
+        }
+
+        Button('保存')
+          .onClick(() => {
+            if (!this.isClicked) {
+              // 主动触发保存历史表单输入。
+              try {
+                autoFillManager.requestAutoSave(this.getUIContext())
+              } catch (err) {
+                let e: BusinessError = err as BusinessError;
+                hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+              }
+              this.isClicked = true;
+              // 设置超时时间以防止重复点击按钮保存历史表单输入。
+              setTimeout(() => {
+                this.isClicked = false;
+              }, 1000)
+              // 或者通过路由跳转其他页面触发保存历史表单输入。
+              this.getUIContext().getRouter().pushUrl({
+                url: 'xxx'
+              })
             }
-            this.isClicked = true;
-            // 设置超时时间以防止重复点击按钮保存历史表单输入。
-            setTimeout(() => {
-              this.isClicked = false;
-            }, 1000)
-            // 或者通过路由跳转其他页面触发保存历史表单输入。
-            this.getUIContext().getRouter().pushUrl({
-              url: 'xxx'
-            })
-          }
-        })
-        .width("50%")
-    }
-    .alignItems(HorizontalAlign.Center)
-    .height('100%')
-    .width('100%')
+          })
+          .width('50%')
+      }
+      .alignItems(HorizontalAlign.Center)
+      .height('100%')
+      .width('100%')
+// ...
   }
 }
 
@@ -123,63 +126,66 @@ struct SmartFill {
   @State isClicked: boolean = false;
 
   build() {
-    Column({ space: 5 }) {
-      Row() {
-        Text('昵称：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.NICKNAME).selectionMenuHidden(true)
-      }
+// ...
 
-      Row() {
-        Text('姓名：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
-      }
+      Column({ space: 5 }) {
+        Row() {
+          Text('昵称：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.NICKNAME).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('手机号码：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PHONE_NUMBER).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('姓名：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('邮箱：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.EMAIL_ADDRESS).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('手机号码：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PHONE_NUMBER).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('身份证号：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.ID_CARD_NUMBER).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('邮箱：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.EMAIL_ADDRESS).selectionMenuHidden(true)
+        }
 
-      Row() {
-        Text('地址：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.FORMAT_ADDRESS).selectionMenuHidden(true)
-      }
+        Row() {
+          Text('身份证号：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.ID_CARD_NUMBER).selectionMenuHidden(true)
+        }
 
-      Button('保存')
-        .onClick(() => {
-          if (!this.isClicked) {
-            // 主动触发保存历史表单输入。
-            try {
-              autoFillManager.requestAutoSave(this.getUIContext())
-            } catch (err) {
-              let e: BusinessError = err as BusinessError;
-              hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+        Row() {
+          Text('地址：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.FORMAT_ADDRESS).selectionMenuHidden(true)
+        }
+
+        Button('保存')
+          .onClick(() => {
+            if (!this.isClicked) {
+              // 主动触发保存历史表单输入。
+              try {
+                autoFillManager.requestAutoSave(this.getUIContext())
+              } catch (err) {
+                let e: BusinessError = err as BusinessError;
+                hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+              }
+              this.isClicked = true;
+              // 设置超时时间以防止重复点击按钮保存历史表单输入。
+              setTimeout(() => {
+                this.isClicked = false;
+              }, 1000)
+              // 或者通过路由跳转其他页面触发保存历史表单输入。
+              this.getUIContext().getRouter().pushUrl({
+                url: 'xxx'
+              })
             }
-            this.isClicked = true;
-            // 设置超时时间以防止重复点击按钮保存历史表单输入。
-            setTimeout(() => {
-              this.isClicked = false;
-            }, 1000)
-            // 或者通过路由跳转其他页面触发保存历史表单输入。
-            this.getUIContext().getRouter().pushUrl({
-              url: 'xxx'
-            })
-          }
-        })
-        .width("50%")
-    }
-    .alignItems(HorizontalAlign.Center)
-    .height('100%')
-    .width('100%')
+          })
+          .width('50%')
+      }
+      .alignItems(HorizontalAlign.Center)
+      .height('100%')
+      .width('100%')
+// ...
   }
 }
 ```

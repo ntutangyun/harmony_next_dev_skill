@@ -167,7 +167,7 @@ async updateTripEvent(): Promise<void> {
   try {
     // 更新行程
     await tripCalendar.updateEvent(oriEvent);
-    console.info("Succeeded in updating event");
+    console.info('Succeeded in updating event');
   } catch (err) {
     console.error(`Failed to update event. Code: ${err.code}, message: ${err.message}`);
   }
@@ -854,7 +854,7 @@ async updateTripEvent(): Promise<void> {
   try {
     // 更新行程
     await tripCalendar.updateEvent(oriEvent);
-    console.info("Succeeded in updating event");
+    console.info('Succeeded in updating event');
   } catch (err) {
     console.error(`Failed to update event. Code: ${err.code}, message: ${err.message}`);
   }

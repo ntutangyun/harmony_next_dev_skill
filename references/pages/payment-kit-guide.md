@@ -30,6 +30,8 @@ Payment Kit简介
 
 运营工具
 
+Payment Kit术语表
+
 服务与支持
 
 Payment Kit常见问题

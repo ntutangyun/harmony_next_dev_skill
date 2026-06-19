@@ -30,8 +30,14 @@ DocumentScannerResultCallback	文档扫描结果
 
 将文档扫描控件相关的类添加至工程。
 
-import { DocType, DocumentScanner, DocumentScannerConfig, SaveOption, FilterId, ShootingMode } from '@kit.VisionKit';
+import { DocType, DocumentScanner, DocumentScannerConfig, SaveOption, FilterId, ShootingMode, DocumentScannerController } from '@kit.VisionKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+
+部分设备不支持文档扫描控件的表格提取功能。在使用该功能前，建议先调用isSheetDetectionSupported接口查询当前设备是否支持。
+
+let documentScannerController: DocumentScannerController = new DocumentScannerController();
+let isSheetSupported = documentScannerController.isSheetDetectionSupported();
+hilog.info(0x0001, TAG, `isSheetSupported: ${isSheetSupported}`);
 
 配置布局，根据业务场景配置文档扫描控件的相关属性，获取返回的文档图片uri列表。
 
@@ -43,7 +49,13 @@ struct Index {
   private docScanConfig = new DocumentScannerConfig();
 
   aboutToAppear() {
-    this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    let documentScannerController: DocumentScannerController = new DocumentScannerController();
+    let isSheetSupported = documentScannerController.isSheetDetectionSupported();
+    if (isSheetSupported) {
+      this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    } else {
+      this.docScanConfig.supportType = [DocType.DOC];
+    }
     this.docScanConfig.isGallerySupported = true;
     this.docScanConfig.editTabs = [];
     this.docScanConfig.maxShotCount = 3;
@@ -113,7 +125,8 @@ import {
   DocumentScannerConfig,
   SaveOption,
   FilterId,
-  ShootingMode
+  ShootingMode,
+  DocumentScannerController
 } from '@kit.VisionKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -127,7 +140,13 @@ export struct DocDemoPage {
   private docScanConfig = new DocumentScannerConfig();
 
   aboutToAppear() {
-    this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    let documentScannerController: DocumentScannerController = new DocumentScannerController();
+    let isSheetSupported = documentScannerController.isSheetDetectionSupported();
+    if (isSheetSupported) {
+      this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    } else {
+      this.docScanConfig.supportType = [DocType.DOC];
+    }
     this.docScanConfig.isGallerySupported = true;
     this.docScanConfig.editTabs = [];
     this.docScanConfig.maxShotCount = 3;
@@ -189,11 +208,19 @@ export struct DocDemoPage {
 ### Code block 1
 
 ```
-import { DocType, DocumentScanner, DocumentScannerConfig, SaveOption, FilterId, ShootingMode } from '@kit.VisionKit';
+import { DocType, DocumentScanner, DocumentScannerConfig, SaveOption, FilterId, ShootingMode, DocumentScannerController } from '@kit.VisionKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
+
+```
+let documentScannerController: DocumentScannerController = new DocumentScannerController();
+let isSheetSupported = documentScannerController.isSheetDetectionSupported();
+hilog.info(0x0001, TAG, `isSheetSupported: ${isSheetSupported}`);
+```
+
+### Code block 3
 
 ```
 const TAG = 'DocumentScanner';
@@ -204,7 +231,13 @@ struct Index {
   private docScanConfig = new DocumentScannerConfig();
 
   aboutToAppear() {
-    this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    let documentScannerController: DocumentScannerController = new DocumentScannerController();
+    let isSheetSupported = documentScannerController.isSheetDetectionSupported();
+    if (isSheetSupported) {
+      this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    } else {
+      this.docScanConfig.supportType = [DocType.DOC];
+    }
     this.docScanConfig.isGallerySupported = true;
     this.docScanConfig.editTabs = [];
     this.docScanConfig.maxShotCount = 3;
@@ -232,7 +265,7 @@ struct Index {
 }
 ```
 
-### Code block 3
+### Code block 4
 
 ```
 // 开发实例分两页实现，一页为文档扫描入口页，一页为文档扫描实现页
@@ -266,7 +299,7 @@ struct MainPage {
 }
 ```
 
-### Code block 4
+### Code block 5
 
 ```
 // 文档扫描实现页，文件名为DocDemoPage，需被引入至入口页
@@ -276,7 +309,8 @@ import {
   DocumentScannerConfig,
   SaveOption,
   FilterId,
-  ShootingMode
+  ShootingMode,
+  DocumentScannerController
 } from '@kit.VisionKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -290,7 +324,13 @@ export struct DocDemoPage {
   private docScanConfig = new DocumentScannerConfig();
 
   aboutToAppear() {
-    this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    let documentScannerController: DocumentScannerController = new DocumentScannerController();
+    let isSheetSupported = documentScannerController.isSheetDetectionSupported();
+    if (isSheetSupported) {
+      this.docScanConfig.supportType = [DocType.DOC, DocType.SHEET];
+    } else {
+      this.docScanConfig.supportType = [DocType.DOC];
+    }
     this.docScanConfig.isGallerySupported = true;
     this.docScanConfig.editTabs = [];
     this.docScanConfig.maxShotCount = 3;

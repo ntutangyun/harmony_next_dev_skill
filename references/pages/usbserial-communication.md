@@ -35,7 +35,7 @@ writeSync(portId: number, buffer: Uint8Array, timeout?: number): number	以同�
 
 导入模块。
 
-// 导入usbManager模块
+// 导入serialManager模块
 import { serialManager } from '@kit.BasicServicesKit';
 import { BusinessError } from '@kit.BasicServicesKit'
 import { buffer } from '@kit.ArkTS';
@@ -162,7 +162,7 @@ try {
 ### Code block 1
 
 ```
-// 导入usbManager模块
+// 导入serialManager模块
 import { serialManager } from '@kit.BasicServicesKit';
 import { BusinessError } from '@kit.BasicServicesKit'
 import { buffer } from '@kit.ArkTS';

@@ -52,11 +52,11 @@ struct Index {
             .onChooseInvoiceTitle((err, data) => {
               if (err) {
                 // 错误日志处理。
-                hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
+                hilog.error(0x0000, 'testTag', 'Failed to obtain invoice title, error: %{public}d %{public}s', err.code, err.message);
                 return;
               }
               // 成功日志处理。
-              hilog.info(0x0000, "testTag", "succeeded in obtaining invoice title");
+              hilog.info(0x0000, 'testTag', 'succeeded in obtaining invoice title');
               // 获取发票信息。
               let type: string = data.type;
               let title: string = data.title;
@@ -127,11 +127,11 @@ struct Index {
             .onChooseInvoiceTitle((err, data) => {
               if (err) {
                 // 错误日志处理。
-                hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
+                hilog.error(0x0000, 'testTag', 'Failed to obtain invoice title, error: %{public}d %{public}s', err.code, err.message);
                 return;
               }
               // 成功日志处理。
-              hilog.info(0x0000, "testTag", "succeeded in obtaining invoice title");
+              hilog.info(0x0000, 'testTag', 'succeeded in obtaining invoice title');
               // 获取发票信息。
               let type: string = data.type;
               let title: string = data.title;

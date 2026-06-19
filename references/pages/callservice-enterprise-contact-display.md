@@ -49,21 +49,21 @@ import { CallerInfoQueryExtensionAbility, CallerInfo } from '@kit.CallServiceKit
 
 export default class EntryCallerInfoQueryExtAbility extends CallerInfoQueryExtensionAbility {
  // 来去电时由系统通话应用主动调用该接口查询企业联系人信息
-  onQueryCallerInfo(phoneNumber: string): Promise<CallerInfo> {
+  async onQueryCallerInfo(phoneNumber: string): Promise<CallerInfo> {
     return new Promise<CallerInfo>((resolve, reject) => {
       let isSuccess = true;
       // 在此处实现根据号码查询企业联系人的业务逻辑
       if (isSuccess) {
         // 查询成功，返回结果
         resolve({
-          contactName:"xxxx",
-          employeeId:"xxxx",
-          department:"xxxx",
-          position:"xxxx"
+          contactName:'xxxx',
+          employeeId:'xxxx',
+          department:'xxxx',
+          position:'xxxx'
         });
       } else {
         // 查询失败，返回错误原因
-        reject("error reason");
+        reject('error reason');
       }
     });
   }
@@ -98,21 +98,21 @@ import { CallerInfoQueryExtensionAbility, CallerInfo } from '@kit.CallServiceKit
 
 export default class EntryCallerInfoQueryExtAbility extends CallerInfoQueryExtensionAbility {
  // 来去电时由系统通话应用主动调用该接口查询企业联系人信息
-  onQueryCallerInfo(phoneNumber: string): Promise<CallerInfo> {
+  async onQueryCallerInfo(phoneNumber: string): Promise<CallerInfo> {
     return new Promise<CallerInfo>((resolve, reject) => {
       let isSuccess = true;
       // 在此处实现根据号码查询企业联系人的业务逻辑
       if (isSuccess) {
         // 查询成功，返回结果
         resolve({
-          contactName:"xxxx",
-          employeeId:"xxxx",
-          department:"xxxx",
-          position:"xxxx"
+          contactName:'xxxx',
+          employeeId:'xxxx',
+          department:'xxxx',
+          position:'xxxx'
         });
       } else {
         // 查询失败，返回错误原因
-        reject("error reason");
+        reject('error reason');
       }
     });
   }

@@ -261,8 +261,6 @@ static void StringFinalizerUTF16(void* data, void* hint)
 {
     // 释放外部资源
     delete[] static_cast<char16_t*>(data);
-    // 重要：析构回调执行的时候会挂起其它js线程，因此需要保证回调执行过程中无锁操作，否则可能导致死锁。
-    // 由于回调是在其它非注册线程执行，因此需要保证回调是线程安全的。
 }
 
 static napi_value CreateExternalStringUtf16(napi_env env, napi_callback_info info)
@@ -283,8 +281,6 @@ static napi_value CreateExternalStringUtf16(napi_env env, napi_callback_info inf
         nullptr,                // 传递给析构回调函数的hint参数，本例不需要
         &result                 // 接受创建的ArkTS字符串值
     );
-    // 重要：str指向的内存必须在ArkTS string对象的整个生命周期内保持有效。
-    // 而且在调用此接口后，str指向的内存内容必须保持不可变。任何对该内存的写入操作都可能导致程序崩溃。
     if (status != napi_ok) {
         // 处理错误
         delete[] str;
@@ -317,8 +313,6 @@ static void StringFinalizerASCII(void* data, void* hint)
 {
     // 释放外部资源
     delete[] static_cast<char*>(data);
-    // 重要：析构回调执行的时候会挂起其它js线程，因此需要保证回调执行过程中无锁操作，否则可能导致死锁。
-    // 由于回调是在其它非注册线程执行，因此需要保证回调是线程安全的。
 }
 
 static napi_value CreateExternalStringAscii(napi_env env, napi_callback_info info)
@@ -605,8 +599,6 @@ static void StringFinalizerUTF16(void* data, void* hint)
 {
     // 释放外部资源
     delete[] static_cast<char16_t*>(data);
-    // 重要：析构回调执行的时候会挂起其它js线程，因此需要保证回调执行过程中无锁操作，否则可能导致死锁。
-    // 由于回调是在其它非注册线程执行，因此需要保证回调是线程安全的。
 }
 
 static napi_value CreateExternalStringUtf16(napi_env env, napi_callback_info info)
@@ -627,8 +619,6 @@ static napi_value CreateExternalStringUtf16(napi_env env, napi_callback_info inf
         nullptr,                // 传递给析构回调函数的hint参数，本例不需要
         &result                 // 接受创建的ArkTS字符串值
     );
-    // 重要：str指向的内存必须在ArkTS string对象的整个生命周期内保持有效。
-    // 而且在调用此接口后，str指向的内存内容必须保持不可变。任何对该内存的写入操作都可能导致程序崩溃。
     if (status != napi_ok) {
         // 处理错误
         delete[] str;
@@ -661,8 +651,6 @@ static void StringFinalizerASCII(void* data, void* hint)
 {
     // 释放外部资源
     delete[] static_cast<char*>(data);
-    // 重要：析构回调执行的时候会挂起其它js线程，因此需要保证回调执行过程中无锁操作，否则可能导致死锁。
-    // 由于回调是在其它非注册线程执行，因此需要保证回调是线程安全的。
 }
 
 static napi_value CreateExternalStringAscii(napi_env env, napi_callback_info info)

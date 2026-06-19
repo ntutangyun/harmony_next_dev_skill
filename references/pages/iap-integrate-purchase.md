@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-integ
 
 约束与限制
 
-消耗型/非消耗型商品购买能力支持Phone、Tablet、PC/2in1设备，并且从5.1.0（18）版本开始，新增支持Wearable设备。从5.1.1(19）版本开始，新增支持TV设备。
+消耗型/非消耗型商品购买能力支持Phone、Tablet、PC/2in1设备，并且从5.1.0（18）版本开始，新增支持Wearable设备。从5.1.1(19）版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
 
 业务流程
 

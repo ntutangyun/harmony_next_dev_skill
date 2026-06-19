@@ -31,6 +31,7 @@ excludeFromHar	布尔值	可选	构建HAR时，是否排除依赖HAR模块中的
 excludeSoFromInterfaceHar	布尔值	可选	编译HSP模块时，打包的HAR产物是否排除.so文件，减少.tgz包体积大小。 true：排除。HAR产物不包含.so文件，HSP产物包含.so文件。 false（缺省默认值）：不排除。HAR产物和HSP产物都包含.so文件。 说明： 仅针对HSP模块生效。 当HSP模块的工程级或模块级build-profile.json5文件中配置headerPath字段时，excludeSoFromInterfaceHar字段不生效。
 excludeSoFromBinXO	字符串数组	可选	开启BinXO检测时，指定不需要进行二进制插桩的无源码so文件，支持正则匹配，具体使用方式请参考使用HWASan检测内存错误。 从DevEco Studio 6.1.0 Beta1版本开始支持。
 librariesInfo	对象数组	可选	声明so的透传依赖信息。仅模块级build-profile.json5文件支持配置。
+enableSoDirCollection	布尔值	可选	ets文件中是否能够加载libs/{ABI}/子目录下的so文件，其中{ABI}是设备CPU架构类型（如arm64-v8a）。 true：能够加载libs/{ABI}根目录及子目录下的so文件。 false（缺省默认值）：只能加载libs/{ABI}根目录下的so文件。 从26.0.0 Beta1版本开始支持。 说明： 仅HAP/HSP模块支持配置该字段。 配置为true时，libs/{ABI}根目录及子目录下不能有重名的so。
 
 [h2]filter
 

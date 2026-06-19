@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mdm-kit-a
 
 Admin组件的基础概念
 
-企业设备管理扩展组件，是MDM应用的必备组件。开发MDM应用时，需要定义一个EnterpriseAdminExtensionAbility类型的ExtensionAbility组件用于激活MDM应用，该组件被激活后将作为独立的后台进程存在。
+企业设备管理扩展能力组件，是MDM应用的必备组件。开发MDM应用时，需要定义一个EnterpriseAdminExtensionAbility类型的ExtensionAbility组件用于激活MDM应用，该组件被激活后将作为独立的后台进程存在。
 
 [h2]进程模型
 
@@ -53,7 +53,7 @@ MDM管控接口调用权限	支持所有public管控接口	支持所有public管
 
 说明
 
-1.BDA与其他admin角色不能同时存在。
+1.BDA与其他Admin角色不能同时存在。
 
 2.SDA和DA同时存在的数量加起来最多10个。SDA具备管理其他DA应用的能力（激活/去激活），而DA仅能对设备进行管控，无法管理其他DA应用。当MDM应用激活为SDA时，具备管控其他DA的能力，可以通过调用adminManager.enableDeviceAdmin接口激活其他DA应用，或调用adminManager.disableDeviceAdmin接口去激活其他DA应用。
 

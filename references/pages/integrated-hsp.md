@@ -12,9 +12,7 @@ HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bund
 
 使用场景
 
-如果存在多个应用包含相同的基础能力，例如日志打印模块，为节约开发成本并实现代码和资源的共享，多个应用可以共用一个日志模块。此时，可以通过应用内HSP方式提供能力。由于应用内HSP的限制，每个应用在使用前都需要调整其bundleName，并使用当前应用的签名重新签名，构建一个新的HSP提供给当前应用使用。这意味着，每增加一个应用，就需要进行一次调整bundleName和重新签名的操作，导致签名和打包过程繁琐。
-
-而集成态HSP在DevEco Studio编译过程中，bundleName和重签名的动作会自动完成，开发者无需关注重复签名的操作，可以专注于功能业务的开发。
+如果存在多个应用包含相同的基础能力，例如日志打印模块，为节约开发成本并实现代码和资源的共享，多个应用可以共用一个日志模块。此时，可以通过应用内HSP方式提供能力。由于应用内HSP的限制，每个应用在使用前都需要调整其bundleName，并使用当前应用的签名重新签名，构建一个新的HSP提供给当前应用使用。这意味着，每增加一个应用，就需要进行一次调整bundleName和重新签名的操作，导致签名和打包过程繁琐。而集成态HSP在DevEco Studio编译过程中，bundleName和重签名的动作会自动完成，开发者无需关注重复签名的操作，可以专注于功能业务的开发。
 
 约束限制
 
@@ -38,8 +36,9 @@ HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bund
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "5.1.1(19)",
-        "compatibleSdkVersion": "5.1.1(19)",
+        "targetSdkVersion": 19,
+        "compatibleSdkVersion": 19,
+        "compileSdkVersion": 19,
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
@@ -74,7 +73,7 @@ HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bund
 
 打包配置（tgz包）。
 
-(1) 配置项目签名信息，详情请参见应用/元服务签名。
+(1) 配置项目签名信息，详情请参见配置调试签名。
 
 (2) 配置release模式。
 
@@ -100,8 +99,9 @@ HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bund
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "5.1.1(19)",
-        "compatibleSdkVersion": "5.1.1(19)",
+        "targetSdkVersion": 19,
+        "compatibleSdkVersion": 19,
+        "compileSdkVersion": 19,
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
@@ -118,7 +118,7 @@ HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bund
 
 配置签名。
 
-安装和运行应用前，必须配置项目签名信息，详见应用/元服务签名。
+安装和运行应用前，必须配置项目签名信息，详见配置调试签名。
 
 安装和运行。
 
@@ -135,8 +135,9 @@ HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bund
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "5.1.1(19)",
-        "compatibleSdkVersion": "5.1.1(19)",
+        "targetSdkVersion": 19,
+        "compatibleSdkVersion": 19,
+        "compileSdkVersion": 19,
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
@@ -191,8 +192,9 @@ HSP只能给bundleName一样的工程使用，集成态HSP可以给不同的bund
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "5.1.1(19)",
-        "compatibleSdkVersion": "5.1.1(19)",
+        "targetSdkVersion": 19,
+        "compatibleSdkVersion": 19,
+        "compileSdkVersion": 19,
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {

@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/outgoing-
 
 约束与限制
 
-去电场景支持Phone、Tablet设备，并从6.0(20)版本开始支持Wearable设备。
+去电场景支持Phone、Tablet设备，并从6.0(20)版本开始支持Wearable设备，6.1.1(24)版本开始支持PC/2in1设备。
 
 业务流程
 
@@ -88,7 +88,7 @@ voipCall.reportOutgoingCall(voipCallAttribute).then(errorReason => {
 示例代码如下：
 
 // ...应用服务器收到对端接听的消息
-let answeredCallId = '123456'; //与reportOutgoingCall携带callId一致，应用内通话唯一ID。
+let answeredCallId = '123456'; // 与reportOutgoingCall携带callId一致，应用内通话唯一ID。
 
 // 向Call Service Kit上报通话状态
 voipCall.reportCallStateChange(answeredCallId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);
@@ -157,7 +157,7 @@ voipCall.reportOutgoingCall(voipCallAttribute).then(errorReason => {
 
 ```
 // ...应用服务器收到对端接听的消息
-let answeredCallId = '123456'; //与reportOutgoingCall携带callId一致，应用内通话唯一ID。
+let answeredCallId = '123456'; // 与reportOutgoingCall携带callId一致，应用内通话唯一ID。
 
 // 向Call Service Kit上报通话状态
 voipCall.reportCallStateChange(answeredCallId, voipCall.VoipCallState.VOIP_CALL_STATE_ACTIVE);

@@ -523,6 +523,24 @@ hvigorfile.ts文件YYY的代码执行报错。
 
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
 
+00302038 getAllDependencyInfo接口必须在所有node完成初始化后调用
+
+错误信息
+
+'getAllDependencyInfo()' must be called after all nodes have been evaluated.
+
+错误描述
+
+依赖信息在taskGraphResolved阶段完成更新，因此getAllDependencyInfo接口需要在taskGraphResolved及之后的生命周期hook中调用。
+
+可能原因
+
+getAllDependencyInfo接口在taskGraphResolved之前的阶段调用。
+
+处理步骤
+
+参考API示例代码，在taskGraphResolved及之后的生命周期hook中调用该接口。
+
 00302039 hvigorfile.ts中找不到模块
 
 错误信息

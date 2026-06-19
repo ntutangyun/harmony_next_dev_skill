@@ -6,6 +6,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-modul
 
 导入和引用模块
 
+卸载和加载模块
+
 开发发布和管理共享包
 
 ohpm-repo私仓搭建工具

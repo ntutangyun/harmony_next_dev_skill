@@ -327,7 +327,7 @@ void InitStuckDetectionWithTimeout()
   // 初始化线程卡死监控函数
   int initResult = OH_HiCollie_Init_StuckDetectionWithTimeout(Timer, BLOCK_TIME);
   // 成功结果：0
-  OH_LOG_INFO(LogType::LOG_APP, "OH_HiCollie_Init_StuckDetection: %{public}d", initResult);
+  OH_LOG_INFO(LogType::LOG_APP, "OH_HiCollie_Init_StuckDetectionWithTimeout: %{public}d", initResult);
 }
 
 static napi_value TestHiCollieStuckWithTimeoutNdk(napi_env env, napi_callback_info info)
@@ -487,38 +487,38 @@ extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
 #include <unistd.h>
 
 #undef LOG_TAG
-#define LOG_TAG "StruckTest"
+#define LOG_TAG "StuckTest"
 
 static size_t UserCall(OH_HiCollie_Freeze_Type type, void* buffer, size_t size)
 {
-    std::string source("Freeze is happened");
-    if (type == OH_THREAD_BLOCK_3S) {
-        source += ":block 3s";
-    } else if (type == OH_THREAD_BLOCK_6S) {
-    source += ":block 6s";
-    } else {
-        source += ":other block";
-    }
-    char* buffer1 = (char*)buffer;
-    int needed = snprintf(buffer1, size, "UserCallback%s", source.c_str());
-    return needed;
+   std::string source("Freeze is happened");
+   if (type == OH_THREAD_BLOCK_3S) {
+       source += ":block 3s";
+   } else if (type == OH_THREAD_BLOCK_6S) {
+       source += ":block 6s";
+   } else {
+       source += ":other block";
+   }
+   char* buffer1 = (char*)buffer;
+   int needed = snprintf(buffer1, size, "UserCallback%s", source.c_str());
+   return needed;
 }
 
 static napi_value TestHiCollieSetFreezeCallback(napi_env env, napi_callback_info info)
 {
-    // 设置用户回调
-    OH_HiCollie_SetFreezeCallback(UserCall);
-    return 0;
+   // 设置用户回调
+   OH_HiCollie_SetFreezeCallback(UserCall);
+   return 0;
 }
 
 static napi_value TestHiCollieAssociateProcessReport(napi_env env, napi_callback_info info)
 {
-    // 上报BUSINESS_THREAD_BLOCK_3S事件
-    OH_HiCollie_AssociateProcessReport(false);
-    sleep(3);
-    // 上报BUSINESS_THREAD_BLOCK_6S事件
-    OH_HiCollie_AssociateProcessReport(true);
-    return 0;
+   // 上报BUSINESS_THREAD_BLOCK_3S事件
+   OH_HiCollie_AssociateProcessReport(false);
+   sleep(3);
+   // 上报BUSINESS_THREAD_BLOCK_6S事件
+   OH_HiCollie_AssociateProcessReport(true);
+   return 0;
 }
 
 EXTERN_C_START
@@ -983,7 +983,7 @@ void InitStuckDetectionWithTimeout()
   // 初始化线程卡死监控函数
   int initResult = OH_HiCollie_Init_StuckDetectionWithTimeout(Timer, BLOCK_TIME);
   // 成功结果：0
-  OH_LOG_INFO(LogType::LOG_APP, "OH_HiCollie_Init_StuckDetection: %{public}d", initResult);
+  OH_LOG_INFO(LogType::LOG_APP, "OH_HiCollie_Init_StuckDetectionWithTimeout: %{public}d", initResult);
 }
 
 static napi_value TestHiCollieStuckWithTimeoutNdk(napi_env env, napi_callback_info info)
@@ -1147,38 +1147,38 @@ extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
 #include <unistd.h>
 
 #undef LOG_TAG
-#define LOG_TAG "StruckTest"
+#define LOG_TAG "StuckTest"
 
 static size_t UserCall(OH_HiCollie_Freeze_Type type, void* buffer, size_t size)
 {
-    std::string source("Freeze is happened");
-    if (type == OH_THREAD_BLOCK_3S) {
-        source += ":block 3s";
-    } else if (type == OH_THREAD_BLOCK_6S) {
-    source += ":block 6s";
-    } else {
-        source += ":other block";
-    }
-    char* buffer1 = (char*)buffer;
-    int needed = snprintf(buffer1, size, "UserCallback%s", source.c_str());
-    return needed;
+   std::string source("Freeze is happened");
+   if (type == OH_THREAD_BLOCK_3S) {
+       source += ":block 3s";
+   } else if (type == OH_THREAD_BLOCK_6S) {
+       source += ":block 6s";
+   } else {
+       source += ":other block";
+   }
+   char* buffer1 = (char*)buffer;
+   int needed = snprintf(buffer1, size, "UserCallback%s", source.c_str());
+   return needed;
 }
 
 static napi_value TestHiCollieSetFreezeCallback(napi_env env, napi_callback_info info)
 {
-    // 设置用户回调
-    OH_HiCollie_SetFreezeCallback(UserCall);
-    return 0;
+   // 设置用户回调
+   OH_HiCollie_SetFreezeCallback(UserCall);
+   return 0;
 }
 
 static napi_value TestHiCollieAssociateProcessReport(napi_env env, napi_callback_info info)
 {
-    // 上报BUSINESS_THREAD_BLOCK_3S事件
-    OH_HiCollie_AssociateProcessReport(false);
-    sleep(3);
-    // 上报BUSINESS_THREAD_BLOCK_6S事件
-    OH_HiCollie_AssociateProcessReport(true);
-    return 0;
+   // 上报BUSINESS_THREAD_BLOCK_3S事件
+   OH_HiCollie_AssociateProcessReport(false);
+   sleep(3);
+   // 上报BUSINESS_THREAD_BLOCK_6S事件
+   OH_HiCollie_AssociateProcessReport(true);
+   return 0;
 }
 
 EXTERN_C_START

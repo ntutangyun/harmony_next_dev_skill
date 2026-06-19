@@ -28,11 +28,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-vid
 
 说明
 
-调用解封装能力解析网络播放路径，需要声明权限：ohos.permission.INTERNET
+调用解封装能力解析网络播放路径，需要声明权限：ohos.permission.INTERNET。
 
-调用解封装能力解析本地文件，需要向用户申请授权：ohos.permission.READ_MEDIA
+调用解封装能力解析本地文件，需要向用户申请授权：ohos.permission.READ_MEDIA。
 
-如果使用ResourceManager.getRawFd打开HAP资源文件描述符，使用方法请参考ResourceManager API参考
+如果使用ResourceManager.getRawFd打开HAP资源文件描述符，使用方法请参考getRawFd。
 
 [h2]在 CMake 脚本中链接动态库
 
@@ -151,7 +151,7 @@ if (demuxer == nullptr) {
    return;
 }
 
-注册DRM信息监听函数（可选，若非DRM码流或已获得DRM信息，可跳过此步）。
+注册DRM信息监听函数，接口参考Demuxer_MediaKeySystemInfoCallback()（可选）。如果不是DRM码流或已获得DRM信息，可跳过此步骤。DRM信息内容参考DRM_MediaKeySystemInfo。
 
 设置DRM信息监听的接口，回调函数支持返回解封装器实例，适用于多个解封装器场景。
 
@@ -246,7 +246,7 @@ for (uint32_t index = 0; index < (static_cast<uint32_t>(trackCount)); index++) {
       }
       int32_t* referenceIds;
       size_t referenceIdsCount;
-      if (!OH_AVFormat_GetIntBuffer(trackFormat, OH_MD_KEY_TRACK_REFERENCE_TYPE, &referenceIds, &referenceIdsCount)) {
+      if (!OH_AVFormat_GetIntBuffer(trackFormat, OH_MD_KEY_REFERENCE_TRACK_IDS, &referenceIds, &referenceIdsCount)) {
          printf("get reference track ids from auxiliary track failed");
       }
       // 根据辅助轨类型处理轨道参考关系。
@@ -691,7 +691,7 @@ for (uint32_t index = 0; index < (static_cast<uint32_t>(trackCount)); index++) {
       }
       int32_t* referenceIds;
       size_t referenceIdsCount;
-      if (!OH_AVFormat_GetIntBuffer(trackFormat, OH_MD_KEY_TRACK_REFERENCE_TYPE, &referenceIds, &referenceIdsCount)) {
+      if (!OH_AVFormat_GetIntBuffer(trackFormat, OH_MD_KEY_REFERENCE_TRACK_IDS, &referenceIds, &referenceIdsCount)) {
          printf("get reference track ids from auxiliary track failed");
       }
       // 根据辅助轨类型处理轨道参考关系。

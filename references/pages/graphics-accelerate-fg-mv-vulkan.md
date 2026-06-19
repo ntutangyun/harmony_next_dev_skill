@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 须知
 
-请在会影响最终深度缓冲区写入的渲染Pass中，标记对应的Draw Call。比如对于延迟管线，建议在gbuffer pass中标记；对于有pre depth的前向管线，建议在pre depth pass标记；对于无pre depth的前向管线，建议在base pass(也叫forward pass)中进行标记。并且注意，不要在生成shadowmap pass中的动态物体Draw Call进行标记。
+请在会影响最终深度缓冲区写入的渲染Pass中，标记对应的Draw Call。比如对于延迟管线，建议在gbuffer pass中标记；对于有pre depth的前向管线，建议在pre depth pass标记；对于无pre depth的前向管线，建议在base pass(也叫forward pass)中进行标记。并且注意，不要在生成shadow map pass中的动态物体Draw Call进行标记。
 
 开发步骤
 
@@ -26,10 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 {
     "module": {
-        /*
-          其他的配置项
-          ...
-         */
+        // 其他的配置项...
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_VBMV",
@@ -77,10 +74,7 @@ void DrawDynamicObject()
 ```
 {
     "module": {
-        /*
-          其他的配置项
-          ...
-         */
+        // 其他的配置项...
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_VBMV",

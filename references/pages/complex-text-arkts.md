@@ -166,6 +166,12 @@ paragraph.paint(canvas, 10, 0);
 
 行间距调整： 通过调整行间距的方式可以实现行高调整一样的效果，优化阅读体验。
 
+省略号样式设置： 在文本内容超出显示区域时，可以使用省略号截断文本，支持头部、中部、尾部以及多行省略模式。
+
+文字换行方式设置： 文本排版时支持不同的断行策略，可根据场景选择合适的换行方式。
+
+行首标点压缩： 在排版中，通过开启行首标点压缩功能，将行首标点符号进行挤压处理，避免标点占用行首空间，提升排版紧凑度。
+
 [h2]装饰线
 
 装饰线（Decoration）是指在文本上方、下方或中间添加的装饰性线条，当前支持上划线、下划线、删除线。
@@ -293,9 +299,33 @@ let myParagraphStyle: text.ParagraphStyle = {
 
 具体使用效果可参见下文示例八。
 
-[h2]示例一（装饰线、字体特征）
+[h2]省略号样式设置
 
-这里以文本样式中的装饰线和字体特征为例，呈现多样式文本的绘制与显示。
+从API version 22开始，支持设置省略号样式，在文本内容超出显示区域时截断文本。从API version 24开始，支持多行省略模式。
+
+通过ParagraphStyle中的textStyle属性设置省略号模式，可选的省略号模式可见EllipsisMode。
+
+需要注意，省略号相关属性需要在ParagraphStyle的textStyle中设置才生效，通过pushStyle设置的省略号属性不会生效。
+
+具体使用效果可参见下文示例九。
+
+[h2]文字换行方式设置
+
+从API version 22开始，支持在文本排版时设置断行策略，断行策略决定了文本如何在行尾进行换行处理。
+
+通过设置ParagraphStyle中的breakStrategy属性可以控制断行策略，可选的断行策略可见BreakStrategy。
+
+具体使用效果可参见下文示例十。
+
+[h2]行首标点压缩
+
+从API version 23开始，在文本排版中支持行首标点压缩功能。通过启用行首标点压缩功能，可以将行首标点符号进行挤压处理，提升排版紧凑度。
+
+通过设置ParagraphStyle中的compressHeadPunctuation属性设置是否启用行首标点压缩。
+
+具体使用效果可参见下文示例十一。
+
+[h2]示例一（装饰线、字体特征）
 
 import { NodeController, FrameNode, RenderNode, DrawContext } from '@kit.ArkUI'
 import { UIContext } from '@kit.ArkUI'
@@ -511,7 +541,7 @@ class MyRenderNode extends RenderNode {
     // 绘制文本
     paragraph.paint(canvas, 0, 0);
 
-    //获取全部占位符的数组
+    // 获取全部占位符的数组
     let placeholderRects = paragraph.getRectsForPlaceholders();
     // 获取第一个占位符的左边界
     let left = placeholderRects[0].rect.left;
@@ -1438,6 +1468,75 @@ struct Font08 {
 DISABLE_ALL	
 ALL	
 
+[h2]示例九（省略号样式）
+
+以下示例展示了开启尾部省略号模式的文本截断效果。
+
+// 设置文本样式，包含省略号字符串和省略号模式
+let myTextStyle: text.TextStyle = {
+  color: {
+    alpha: 255,
+    red: 0,
+    green: 0,
+    blue: 0
+  },
+  fontSize: 40,
+  // 设置省略号字符串
+  ellipsis: '...',
+  // 设置省略号模式为尾部省略
+  ellipsisMode: text.EllipsisMode.END
+};
+// 设置段落样式，包含最大行数
+let myParagraphStyle: text.ParagraphStyle = {
+  textStyle: myTextStyle,
+  // 设置最大显示行数为2
+  maxLines: 2
+};
+
+具体效果如下所示：
+
+省略号模式	示意效果
+不开启省略号	
+开启头部省略号	
+开启中部省略号	
+开启尾部省略号	
+开启多行头部省略号	
+开启多行中部省略号	
+
+[h2]示例十（文字换行方式）
+
+以下示例展示了BALANCED断行策略对文本排版的影响。
+
+// 设置断行策略为均衡策略（BALANCED）
+let myParagraphStyle: text.ParagraphStyle = {
+  textStyle: myTextStyle,
+  // 设置断行策略为均衡策略，各行宽度尽量均衡
+  breakStrategy: text.BreakStrategy.BALANCED
+};
+
+具体效果如下所示：
+
+断行策略	示意效果
+GREEDY	
+BALANCED	
+HIGH_QUALITY	
+
+[h2]示例十一（行首标点压缩）
+
+以下示例展示了开启行首标点压缩的排版对比效果。
+
+// 开启行首标点压缩
+let myParagraphStyle: text.ParagraphStyle = {
+  textStyle: myTextStyle,
+  compressHeadPunctuation: true
+};
+
+具体效果如下所示：
+
+标点压缩设置	示意效果
+未开启标点压缩	
+开启标点压缩	
+
 ## Code blocks
 
 ### Code block 1
@@ -1824,7 +1923,7 @@ class MyRenderNode extends RenderNode {
     // 绘制文本
     paragraph.paint(canvas, 0, 0);
 
-    //获取全部占位符的数组
+    // 获取全部占位符的数组
     let placeholderRects = paragraph.getRectsForPlaceholders();
     // 获取第一个占位符的左边界
     let left = placeholderRects[0].rect.left;
@@ -2706,4 +2805,50 @@ struct Font08 {
     .width('100%')
   }
 }
+```
+
+### Code block 25
+
+```
+// 设置文本样式，包含省略号字符串和省略号模式
+let myTextStyle: text.TextStyle = {
+  color: {
+    alpha: 255,
+    red: 0,
+    green: 0,
+    blue: 0
+  },
+  fontSize: 40,
+  // 设置省略号字符串
+  ellipsis: '...',
+  // 设置省略号模式为尾部省略
+  ellipsisMode: text.EllipsisMode.END
+};
+// 设置段落样式，包含最大行数
+let myParagraphStyle: text.ParagraphStyle = {
+  textStyle: myTextStyle,
+  // 设置最大显示行数为2
+  maxLines: 2
+};
+```
+
+### Code block 26
+
+```
+// 设置断行策略为均衡策略（BALANCED）
+let myParagraphStyle: text.ParagraphStyle = {
+  textStyle: myTextStyle,
+  // 设置断行策略为均衡策略，各行宽度尽量均衡
+  breakStrategy: text.BreakStrategy.BALANCED
+};
+```
+
+### Code block 27
+
+```
+// 开启行首标点压缩
+let myParagraphStyle: text.ParagraphStyle = {
+  textStyle: myTextStyle,
+  compressHeadPunctuation: true
+};
 ```

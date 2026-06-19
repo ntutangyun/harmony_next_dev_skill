@@ -59,8 +59,8 @@ find_library(
     xengine
 )
 target_link_libraries(ohosmain PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib} RenderBehavior SceneLoader VulkanBase
 )
 
@@ -289,7 +289,7 @@ NNGI开发步骤
 
 编写CMakeLists.txt
 
-CMakeLists.txt部分示例代码如下。
+CMakeLists.txt部分示例代码如下：
 
 find_library(
     # 设置路径变量的名称。
@@ -298,8 +298,8 @@ find_library(
     xengine
 )
 target_link_libraries(nativerender PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib})
 
 [h2]业务流程
@@ -471,8 +471,8 @@ find_library(
     xengine
 )
 target_link_libraries(ohosmain PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib} RenderBehavior SceneLoader VulkanBase
 )
 ```
@@ -686,8 +686,8 @@ find_library(
     xengine
 )
 target_link_libraries(nativerender PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib})
 ```
 

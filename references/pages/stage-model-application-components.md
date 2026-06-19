@@ -1,4 +1,4 @@
-# Stage模型应用组件
+# 应用组件
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/stage-model-application-components_
 
@@ -14,14 +14,6 @@ AbilityStage组件管理器
 
 信息传递载体Want
 
-组件启动规则（Stage模型）
-
-应用启动框架AppStartup
-
-应用预加载
-
-应用重启
-
-获取应用异常退出原因
+组件启动规则
 
 获取/设置环境变量

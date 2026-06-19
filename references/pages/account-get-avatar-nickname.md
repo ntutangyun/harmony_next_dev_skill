@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-g
 
 约束与限制
 
-获取头像昵称能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备。
+获取头像昵称能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持Car设备。
 
 业务流程
 
@@ -40,6 +40,8 @@ executeRequest(request: AuthenticationRequest): Promise<AuthenticationResponse>	
 1.上述接口需在页面或自定义组件生命周期内调用。
 
 2.未设置昵称默认返回华为账号绑定的匿名手机号/邮箱。
+
+3.当用户更新头像后，原用户头像链接会立即失效。为确保头像正常显示，建议先将头像下载保存后再使用，避免因用户头像链接失效而影响业务流程。
 
 开发前提
 
@@ -81,7 +83,7 @@ try {
   const controller = new authentication.AuthenticationController(this.getUIContext().getHostContext());
   controller.executeRequest(authRequest).then((data) => {
     const authorizationWithHuaweiIDResponse = data as authentication.AuthorizationWithHuaweiIDResponse;
-    const state = authorizationWithHuaweiIDResponse.state;
+    const state = authorizationWithHuaweiIDResponse?.state;
     if (state && authRequest.state !== state) {
       hilog.error(0x0000, 'testTag', `Failed to authorize. The state is different, response state: ${state}`);
       return;
@@ -93,7 +95,9 @@ try {
     // 开发者处理avatarUri, nickName
     const authorizationCode = authorizationWithHuaweiIDCredential?.authorizationCode;
     // 涉及服务端开发以获取头像昵称场景，开发者处理authorizationCode
+    // ...
   }).catch((err: BusinessError) => {
+    // ...
     dealAllError(err);
   });
 } catch (error) {
@@ -107,7 +111,7 @@ function dealAllError(error: BusinessError): void {
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-    // 网络异常，请检查当前网络状态并重试
+    // 网络错误，请检查当前网络状态并重试
   } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
     // 用户取消授权
   } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {
@@ -189,7 +193,7 @@ try {
   const controller = new authentication.AuthenticationController(this.getUIContext().getHostContext());
   controller.executeRequest(authRequest).then((data) => {
     const authorizationWithHuaweiIDResponse = data as authentication.AuthorizationWithHuaweiIDResponse;
-    const state = authorizationWithHuaweiIDResponse.state;
+    const state = authorizationWithHuaweiIDResponse?.state;
     if (state && authRequest.state !== state) {
       hilog.error(0x0000, 'testTag', `Failed to authorize. The state is different, response state: ${state}`);
       return;
@@ -201,7 +205,9 @@ try {
     // 开发者处理avatarUri, nickName
     const authorizationCode = authorizationWithHuaweiIDCredential?.authorizationCode;
     // 涉及服务端开发以获取头像昵称场景，开发者处理authorizationCode
+    // ...
   }).catch((err: BusinessError) => {
+    // ...
     dealAllError(err);
   });
 } catch (error) {
@@ -219,7 +225,7 @@ function dealAllError(error: BusinessError): void {
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-    // 网络异常，请检查当前网络状态并重试
+    // 网络错误，请检查当前网络状态并重试
   } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
     // 用户取消授权
   } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {

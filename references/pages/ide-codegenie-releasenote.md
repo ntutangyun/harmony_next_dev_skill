@@ -2,6 +2,32 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codegenie-releasenote_
 
+26.0.0.461
+
+[h2]新增特性
+
+使用自定义Agent和HarmonyOS Act智能体时，支持展示当前会话token的使用量。
+
+选择HarmonyOS Act智能体进行对话、代码生成、代码修改等操作后，将鼠标悬浮在对话框的时间点会弹出Back to This Moment，点击可回退对话。
+
+工程问答支持调用MCP Market工具，调用LSP（Language Server Protocol，语言服务器协议）工具，以及ArkTS和C++代码语义检索能力。具体请参考工程问答。
+
+编辑区对话Inline Chat支持内置模型使用快捷指令，如File Comments和Parameter Validation，进行代码文件分析和参数校验等。具体请参考编辑区对话。
+
+自定义智能体（Agent）新增UI Verification的内置工具。具体请参考自定义智能体（Agent）配置和调用。
+
+支持创建自定义指令，该功能允许开发者将常用的提示词和工作流封装为可复用的命令，提升日常开发效率。具体请参考自定义指令（Commands）配置。
+
+[h2]变更特性
+
+代码续写设置入口变更为Enable Flow Editor，打开续写设置后，在代码编辑器区域，支持自动续写代码和给出代码修改建议。具体请参考代码续写。
+
+6.1.1.280
+
+[h2]变更特性
+
+智能体的限制字符数为100000字符。
+
 6.1.0.830
 
 [h2]新增特性
@@ -10,13 +36,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codeg
 
 [h2]变更特性
 
-HarmonyOS Ask智能体和HarmonyOS Act智能体不再限制字符数。
+智能体不再限制字符数。
 
 6.1.0.818
 
 [h2]变更特性
 
-HarmonyOS Ask智能体和HarmonyOS Act智能体的限制字符数放开到100000字符。
+智能体的限制字符数放开到100000字符。
 
 6.1.0.816
 
@@ -70,7 +96,7 @@ Inline Edit入口名称变更为Inline Chat。具体请参考编辑区对话。
 
 通过CodeGenie生成页面后，预览时支持切换亮色和暗色模式。具体请参考页面生成。
 
-智慧调优增加了Snapshot对比场景的分析能力，主要包括监听事件、动画资源、泄露次数分析等内存问题场景。具体请参考智慧调优。
+智慧调优增加了Snapshot对比场景的分析能力，主要包括监听事件、动画资源、泄漏次数分析等内存问题场景。具体请参考智慧调优。
 
 CodeGenie页面的字体大小可通过鼠标滚轮调节，字体大小范围为8pt~24pt，以及字体大小可被记忆。
 

@@ -14,13 +14,17 @@ ohpm-repo私仓不允许在Linux或macOS系统中使用root用户启动，请使
 
 准备至少一个sftp存储服务，ohpm-repo最大支持连接3个sftp服务；
 
-安装Node.js18.x版本。
+安装Node.js，并完成环境变量的配置。具体安装请参考Node.js官方网站。
 
 说明
 
 确保sftp服务端口能够被外部机器访问。
 
 sftp服务的读写用户应该指定相同的存储根目录。
+
+ohpm-repo 5.4.4之后版本，推荐使用Node.js 24.x版本。
+
+ohpm-repo 5.4.4及之前版本，当数据存储类型为mysql且文件存储类型为sftp模式时，支持Node.js版本范围为[18.x,22.x]。
 
 安装ohpm-repo工具
 

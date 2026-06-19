@@ -2,6 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-releasenote_
 
+DevEco Studio 26.0.0 Beta1
+
+工程级build-profile.json5文件的strictMode下新增apiCompatibilityCheck字段，用于设置ArkTS API兼容性检测级别。具体请参考工程级build-profile.json5文件。
+
+工程级build-profile.json5文件的tscConfig下新增tsImportSoCheck字段，用于指定编译时是否对.ts文件中导入.so文件内的符号进行类型解析。具体请参考工程级build-profile.json5文件。
+
+HAP/HSP模块级build-profile.json5文件的nativeLib下新增enableSoDirCollection字段，用于指定ets文件中是否能够加载libs/{ABI}/子目录下的so文件。具体请参考配置CPP。
+
+DevEco Studio的Settings界面新增一个开关，用于提升sync阶段C++编译效率。具体请参考通过syncNative提升sync阶段C++编译效率。
+
+Hvigor新增getAllDependencyInfo接口，用于获取工程或模块下所有的依赖信息。具体请参考getAllDependencyInfo（工程）和getAllDependencyInfo（模块）。
+
 DevEco Studio 6.1.1 Release
 
 工程级build-profile.json5文件的strictMode下新增strictCheckerOnly字段，用于指定是否对.ets文件仅执行严格语法检查，仅执行严格语法检查可以减少端到端编译时间，提升编译性能。具体请参考工程级build-profile.json5文件。

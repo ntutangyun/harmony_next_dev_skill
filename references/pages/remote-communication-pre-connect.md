@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 约束与限制
 
-通过预建连接提升HTTP传输性能，支持Phone、PC/2in1、Tablet、Wearable和TV设备。
+通过预建连接提升HTTP传输性能，支持Phone、PC/2in1、Tablet、Wearable、TV、Car设备。
 
 使用预建连接能力（ArkTS）
 

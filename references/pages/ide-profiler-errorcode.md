@@ -230,7 +230,7 @@ The lane does not exist. Please upgrade the DevEco Studio.
 
 错误描述
 
-导入的数据文件中包含的泳道在前版本的DevEco Studio中不存在。
+导入的数据文件中包含的泳道在当前版本的DevEco Studio中不存在。
 
 可能原因
 
@@ -324,7 +324,7 @@ Make sure the file name does not contain the following characters:* : ? " < > |
 
 可能原因
 
-导出文件时，文件名使用了不允许的字符，如 * : ? " < > |。
+在Windows环境中，导出文件时，文件名使用了不允许的字符，如 * : ? " < > |。
 
 处理步骤
 
@@ -342,7 +342,7 @@ Make sure that the file name does not exceed 238 characters.
 
 可能原因
 
-导出文件时，文件名超过238个字符的限制。
+在Windows环境中，导出文件时，文件名超过238个字符的限制。
 
 处理步骤
 
@@ -360,7 +360,7 @@ Invalid save path: {0}
 
 可能原因
 
-保存路径不存在。
+在Windows环境中，保存路径不存在。
 
 处理步骤
 

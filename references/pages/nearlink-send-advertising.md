@@ -9,10 +9,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 接口说明
 
 接口名	描述
-startAdvertising(advertisingParams: AdvertisingParams): Promise<number>	启动星闪广播。
-stopAdvertising(advertisingId: number): Promise<void>	停止星闪广播。
-on(type: 'advertisingStateChange', callback: Callback<AdvertisingStateChangeInfo>): void	订阅星闪广播状态变化事件。
-off(type: 'advertisingStateChange', callback?: Callback<AdvertisingStateChangeInfo>): void	取消订阅星闪广播状态变化事件。
+startAdvertising(advertisingParams: AdvertisingParams): Promise<number>	启动星闪广播。使用Promise异步回调。
+stopAdvertising(advertisingId: number): Promise<void>	停止星闪广播。使用Promise异步回调。
+on(type: 'advertisingStateChange', callback: Callback<AdvertisingStateChangeInfo>): void	订阅星闪广播状态变化事件。使用callback异步回调。
+off(type: 'advertisingStateChange', callback?: Callback<AdvertisingStateChangeInfo>): void	取消订阅星闪广播状态变化事件。使用callback异步回调。
 
 开发步骤
 
@@ -27,7 +27,7 @@ let onReceiveEvent:(data: advertising.AdvertisingStateChangeInfo) => void =
    (data:advertising.AdvertisingStateChangeInfo) => {
    console.info('advertisingId:' + data.advertisingId);
    console.info('advertisingState:' + data.state);
-}
+};
 try {
    advertising.on('advertisingStateChange', onReceiveEvent);
 } catch (err) {
@@ -88,7 +88,7 @@ try {
 
 try {
   advertising.stopAdvertising(advId).then(() => {
-      console.info("stop advertising success");
+      console.info('stop advertising success');
     }).catch ((err: BusinessError) => {
       console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
     });
@@ -124,7 +124,7 @@ let onReceiveEvent:(data: advertising.AdvertisingStateChangeInfo) => void =
    (data:advertising.AdvertisingStateChangeInfo) => {
    console.info('advertisingId:' + data.advertisingId);
    console.info('advertisingState:' + data.state);
-}
+};
 try {
    advertising.on('advertisingStateChange', onReceiveEvent);
 } catch (err) {
@@ -191,7 +191,7 @@ try {
 ```
 try {
   advertising.stopAdvertising(advId).then(() => {
-      console.info("stop advertising success");
+      console.info('stop advertising success');
     }).catch ((err: BusinessError) => {
       console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
     });

@@ -22,7 +22,7 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Project layout, `app.json5`, `module.json5`, HAP/HSP/HAR, resource access | `references/01-app-structure.md` |
 | ArkTS language: decorators (`@Entry`, `@Component`, `@State`, `@Prop`, `@Link`, `@Provide`, etc.), state management, `LocalStorage`/`AppStorage`/`PersistentStorage`, `@Builder`/`@Extend`, conditional/loop rendering | `references/02-arkts-language.md` |
 | Building UI: layouts (Row/Column/Stack/List/Grid/Tabs), common components (Text, TextInput, Button, Image), animation, gestures, Navigation/router | `references/03-arkui-ui.md` |
-| App lifecycle: UIAbility, ExtensionAbility, Want, launch types, AbilityStage, Context, multi-window, page route, inter-app redirection, device-side agents (端侧A2A / HMAF / AgentExtensionAbility, API 24+) | `references/04-ability-and-lifecycle.md` |
+| App lifecycle: UIAbility, ExtensionAbility, Want, launch types, AbilityStage, Context, multi-window, page route, inter-app redirection, device-side agents (端侧A2A / HMAF / AgentExtensionAbility); **ArkAF (Ark Agentic Framework / 方舟智能开发框架)** — Intent + Skill + device-side-A2A capability-opening to the system agent (Skill: API 26): `pages/arkaf-overview`, `pages/ark-agentic-framework`, `pages/arkts-skill-development-guide` | `references/04-ability-and-lifecycle.md` |
 | Background work, notifications, common events, permissions, IPC/RPC | `references/05-services-and-system.md` |
 | Files, preferences, KV store, relational DB, network (HTTP / WebSocket / connection manager) | `references/06-data-and-network.md` |
 | Cards (ArkTS widgets), i18n/l10n, localization | `references/07-cards-and-i18n.md` |
@@ -32,7 +32,7 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Kit overviews (Push, IAP, Payment, Map, Audio, Media, Image, Vision, Speech, Intents, ArkGraphics, NDK) | `references/10-kits-catalog.md` |
 | Quick start — "build my first HarmonyOS app" walkthrough | `references/00-quick-start.md` |
 
-If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5351 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-06-11) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
+If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5489 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-06-19) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
 
 To find a slug:
 - `grep -lir "<keyword>" references/pages/` to search by content
@@ -54,7 +54,7 @@ The 12 curated reference files (00–11) above are entry points / hand-written d
 
 6. **UIContext, not `router` global.** Modern code uses `this.getUIContext().getRouter()` or, preferably, the `Navigation` component for page navigation. Avoid recommending the global `router` import — it still exists but is being phased out.
 
-7. **API level matters.** HarmonyOS NEXT starts at API 11; the current docs go up to **API 24** (DevEco Studio 6.1.1). Many newer features require higher levels (Navigation, V2 state management: API 12+; device-side A2A agents / AgentExtensionAbility: API 24). When suggesting code, prefer features that are stable at API 12 unless the user's project (`compileSdkVersion` / `compatibleSdkVersion` in the project config) shows a higher target.
+7. **API level matters.** HarmonyOS NEXT starts at API 11; the current docs go up to **API 26** (DevEco Studio 6.1.1). Many newer features require higher levels (Navigation, V2 state management: API 12+; device-side A2A agents / AgentExtensionAbility: API 24; **ArkAF Skill — declarative app-capability exposure to the system agent: API 26**). When suggesting code, prefer features that are stable at API 12 unless the user's project (`compileSdkVersion` / `compatibleSdkVersion` in the project config) shows a higher target.
 
 ## Default code style
 

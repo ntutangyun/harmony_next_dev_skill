@@ -7,3 +7,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 模拟点击检测
 
 模拟点击增强检测
+
+业务风险检测术语

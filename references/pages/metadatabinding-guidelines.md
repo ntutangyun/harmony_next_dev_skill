@@ -45,32 +45,31 @@ let bundleName: string = '';
 订阅记忆服务。
 
 try {
-   metadataBinding.on('operationSubmitMetadata', bundleName, callback);
-   console.info("on succeeded");
+  metadataBinding.on('operationSubmitMetadata', bundleName, callback);
+  console.info('on succeeded');
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Register event error and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Register event error and err code is ' + error.code);
 }
 
 提供鸿蒙App Linking链接。
 
-// 应用先开通applink服务，然后获取applink，最后提供给记忆链接服务接口，submitMetadata接口applink长度限制为非空且小于128字符.
-let applink: string = "https://example.com/product/12345";
+let metadata: string = '';
 try {
-   metadataBinding.submitMetadata(applink);
+  metadataBinding.submitMetadata(metadata);
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Submit metadata error and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Submit metadata error and err code is ' + error.code);
 }
 
 取消订阅记忆服务。
 
 try {
   metadataBinding.off('operationSubmitMetadata', bundleName, callback);
-  console.info("off succeeded");
+  console.info('off succeeded');
 } catch (err) {
   let error = err as BusinessError;
-  console.error("Unregister event error and err code is " + error.code);
+  console.error('Unregister event error and err code is ' + error.code);
 }
 
 ## Code blocks
@@ -94,24 +93,23 @@ let bundleName: string = '';
 
 ```
 try {
-   metadataBinding.on('operationSubmitMetadata', bundleName, callback);
-   console.info("on succeeded");
+  metadataBinding.on('operationSubmitMetadata', bundleName, callback);
+  console.info('on succeeded');
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Register event error and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Register event error and err code is ' + error.code);
 }
 ```
 
 ### Code block 4
 
 ```
-// 应用先开通applink服务，然后获取applink，最后提供给记忆链接服务接口，submitMetadata接口applink长度限制为非空且小于128字符.
-let applink: string = "https://example.com/product/12345";
+let metadata: string = '';
 try {
-   metadataBinding.submitMetadata(applink);
+  metadataBinding.submitMetadata(metadata);
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Submit metadata error and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Submit metadata error and err code is ' + error.code);
 }
 ```
 
@@ -120,9 +118,9 @@ try {
 ```
 try {
   metadataBinding.off('operationSubmitMetadata', bundleName, callback);
-  console.info("off succeeded");
+  console.info('off succeeded');
 } catch (err) {
   let error = err as BusinessError;
-  console.error("Unregister event error and err code is " + error.code);
+  console.error('Unregister event error and err code is ' + error.code);
 }
 ```

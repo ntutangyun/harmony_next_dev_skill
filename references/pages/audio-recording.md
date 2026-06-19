@@ -16,6 +16,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-rec
 
 录音并发策略说明
 
-实现音频耳返
+实现自定义耳返
 
-实现音频低时延耳返
+实现低时延耳返

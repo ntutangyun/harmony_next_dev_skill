@@ -189,7 +189,7 @@ try {
 try {
   let thermalParam: gamePerformance.DeviceInfoParameter = {
     deviceInfoType: gamePerformance.DeviceInfoType.THERMAL
-  }
+  };
   let gameInfos: Array<gamePerformance.DeviceInfoParameter> = [thermalParam];
   gamePerformance.getDeviceInfoByScope(gameInfos).then((deviceInfo:gamePerformance.DeviceInfo) => {
     // 此处的查询结果中将不含有gpuInfo
@@ -349,7 +349,7 @@ try {
 try {
   let thermalParam: gamePerformance.DeviceInfoParameter = {
     deviceInfoType: gamePerformance.DeviceInfoType.THERMAL
-  }
+  };
   let gameInfos: Array<gamePerformance.DeviceInfoParameter> = [thermalParam];
   gamePerformance.getDeviceInfoByScope(gameInfos).then((deviceInfo:gamePerformance.DeviceInfo) => {
     // 此处的查询结果中将不含有gpuInfo

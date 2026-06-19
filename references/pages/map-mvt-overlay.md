@@ -28,14 +28,32 @@ MvtOverlay	矢量图层管理对象，支持添加和删除图层。
 在开发过程中，开发者需要在应用的module.json5文件中配置网络访问权限以支持在线下载矢量图层。具体操作如下：打开module.json5文件，在requestPermissions数组中添加如下配置项：允许应用使用Internet网络。
 
 {
-  "module" : {
+  "module": {
+    // ...
     // ...
     "requestPermissions":[
       {
-        // 允许应用使用Internet网络。
-        "name": "ohos.permission.INTERNET",
+        // 允许应用在前台运行时获取位置信息
+        "name" : "ohos.permission.LOCATION",
+        // reason需要在/resources/base/element/string.json中新建
+        "reason": "$string:location_permission",
         "usedScene": {
-          "when": "always"
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when":"inuse"
+        }
+      },
+      {
+        // 允许应用获取设备模糊位置信息
+        "name" : "ohos.permission.APPROXIMATELY_LOCATION",
+        // reason需要在/resources/base/element/string.json中新建
+        "reason": "$string:fuzzy_location_permission",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when":"inuse"
         }
       }
     ]
@@ -53,13 +71,15 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct MvtOverlayDemo {
+struct MapMvtOverlayDemo {
+  // ...
   private TAG = 'OHMapSDK_MvtOverlayDemo';
-  private mapOption?: mapCommon.MapOptions;
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 35.899780,
@@ -106,14 +126,16 @@ struct MvtOverlayDemo {
       }
     }
   }
+
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%')
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -128,13 +150,15 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct MvtOverlayDemo {
+struct MapMvtOverlayDemo {
+  // ...
   private TAG = 'OHMapSDK_MvtOverlayDemo';
-  private mapOption?: mapCommon.MapOptions;
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 35.899780,
@@ -184,17 +208,19 @@ struct MvtOverlayDemo {
 
   // 需要开发者自行实现tileProviderMethod方法，负责加载本地项目中的矢量图层资源
   private tileProviderMethod(x: number, y: number, z: number): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+    });
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%')
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -204,14 +230,32 @@ struct MvtOverlayDemo {
 
 ```
 {
-  "module" : {
+  "module": {
+    // ...
     // ...
     "requestPermissions":[
       {
-        // 允许应用使用Internet网络。
-        "name": "ohos.permission.INTERNET",
+        // 允许应用在前台运行时获取位置信息
+        "name" : "ohos.permission.LOCATION",
+        // reason需要在/resources/base/element/string.json中新建
+        "reason": "$string:location_permission",
         "usedScene": {
-          "when": "always"
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when":"inuse"
+        }
+      },
+      {
+        // 允许应用获取设备模糊位置信息
+        "name" : "ohos.permission.APPROXIMATELY_LOCATION",
+        // reason需要在/resources/base/element/string.json中新建
+        "reason": "$string:fuzzy_location_permission",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when":"inuse"
         }
       }
     ]
@@ -231,13 +275,15 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct MvtOverlayDemo {
+struct MapMvtOverlayDemo {
+  // ...
   private TAG = 'OHMapSDK_MvtOverlayDemo';
-  private mapOption?: mapCommon.MapOptions;
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 35.899780,
@@ -284,14 +330,16 @@ struct MvtOverlayDemo {
       }
     }
   }
+
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%')
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -308,13 +356,15 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct MvtOverlayDemo {
+struct MapMvtOverlayDemo {
+  // ...
   private TAG = 'OHMapSDK_MvtOverlayDemo';
-  private mapOption?: mapCommon.MapOptions;
+  private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
+
   aboutToAppear(): void {
-    this.mapOption = {
+    this.mapOptions = {
       position: {
         target: {
           latitude: 35.899780,
@@ -364,17 +414,19 @@ struct MvtOverlayDemo {
 
   // 需要开发者自行实现tileProviderMethod方法，负责加载本地项目中的矢量图层资源
   private tileProviderMethod(x: number, y: number, z: number): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+    });
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOption, mapCallback: this.callback })
-          .width('100%')
-          .height('100%')
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```

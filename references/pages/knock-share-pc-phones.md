@@ -6,4 +6,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/knock-sha
 
 分享内容直达应用界面
 
-手机与PC/2in1间相互分享
+手机与PC/2in1、手机与Tablet间相互分享

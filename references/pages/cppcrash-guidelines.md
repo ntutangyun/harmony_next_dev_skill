@@ -194,7 +194,7 @@ Process life time	故障进程存活时间	8	是	-
 Process Memory(kB)	故障进程内存占用	20	是	-
 Device Memory(kB)	整机内存状态	20	否	依赖维测服务进程，若发生故障时维测服务进程停止或设备重启则无此字段，详见实现原理。
 Reason	故障原因	8	是	-
-LastFatalMessage	Fatal消息	8	否	以下几种情况共用此字段： 解析到不可靠的栈帧地址时输出的提示信息； 因ABORT信号崩溃退出时保存最后一条FATAL级Hilog日志； 系统内部的维测信息； 应用通过OH_HiDebug_SetCrashObj设置的字符串信息。
+LastFatalMessage	Fatal消息	8	否	以下几种情况共用此字段： 解析到不可靠的栈帧地址时输出的提示信息。 因ABORT信号崩溃退出时保存最后一条FATAL级Hilog日志。 系统内部的维测信息。 应用通过OH_HiDebug_SetCrashObj设置的字符串信息。 从API版本26.0.0开始，应用若开启模块加载链路调试开关，则此字段包含模块加载链路。
 Fault thread info	故障线程信息	8	是	-
 SubmitterStacktrace	提交者线程栈	12	否	异步线程栈跟踪维测功能默认仅在ARM 64位系统中开启。 对于API version 22之前版本，三方和系统应用通过libuv和ffrt提交异步任务仅debug版本默认开启。 对于API version 22及之后版本，三方应用通过libuv提交异步任务debug和release版本均默认开启；三方和系统应用通过ffrt提交异步任务仅debug版本默认开启。
 Registers	故障现场寄存器	8	是	-
@@ -554,7 +554,31 @@ pstate:0000000060001000 esr:0000000000000000
 
 [h2]异步线程栈跟踪故障场景日志规格
 
-当异步线程发生崩溃后，把提交该异步任务的线程栈也打印出来，帮助定位由于异步任务提交者造成的崩溃问题。崩溃线程的调用栈和其提交线程的调用栈通过SubmitterStacktrace字符串分隔。以下是一份DevEco Studio归档在FaultLog的进程崩溃日志的核心内容。
+当异步线程发生崩溃后，把提交该异步任务的线程栈也打印出来，帮助定位由于异步任务提交者造成的崩溃问题。崩溃线程的调用栈和其提交线程的调用栈通过SubmitterStacktrace字符串分隔。
+
+异步线程栈生成原理
+
+原理示意图如下：
+
+提交线程搜集自身的调用栈信息，保存至进程特定区域内存的异步栈表中。
+
+记录保存后，异步栈表返回唯一标识stackId。
+
+提交线程提交异步任务，并传递标识stackId。
+
+执行线程在执行任务前保存stackId至线程局部存储区中。
+
+执行线程开始执行异步任务。
+
+执行线程在执行异步任务过程中发生崩溃，产生崩溃信号。
+
+信号处理函数通过GetStackId函数获取保存在线程局部存储区中的stackId。
+
+信号处理函数将stackId传递给回栈进程processdump。
+
+processdump跨进程读取异步栈表，根据stackId值查询获取提交线程的调用栈信息，填充至故障日志对应的SubmitterStacktrace字段。
+
+以下是一份DevEco Studio归档在FaultLog的进程崩溃日志的核心内容。
 
 注意
 
@@ -620,7 +644,9 @@ Tid:29192, Name:OS_FFRT_2_0                 <- 故障线程号，线程名
 
 [h2]应用通过HiAppEvent设置崩溃日志配置参数场景日志规格
 
-系统提供了通用的崩溃日志生成功能，但一些应用对崩溃日志打印内容有个性化的需求，因此从API version 20开始HiAppEvent的setEventConfig接口支持设置崩溃日志配置参数。以下是一份DevEco Studio归档在FaultLog的64位系统崩溃日志的核心内容：
+系统提供了通用的崩溃日志生成功能，但部分应用有自定义日志内容的需求。因此从API version 20开始，可通过设置setEventConfig接口配置自定义日志内容。
+
+以下是一份DevEco Studio归档在FaultLog的系统崩溃日志的核心内容：
 
 ...
 Build info:HarmonyOS 5.0.0.23

@@ -20,7 +20,7 @@ ohpm-repo batch_publish <zip_file>
 
 [h2]<zip_file>
 
-类型： String
+类型：String
 
 必填参数
 
@@ -34,13 +34,13 @@ ohpm-repo batch_publish <zip_file>
 
 类型：Boolean
 
-在batch_publish命令后面配置--force，进行批量上传时某个包的组织在ohpm-repo中不存在，将选取一位管理员用户作为组织负责人自动创建组织。
+在batch_publish命令后面配置--force，进行批量上传时某个包的组织在ohpm-repo中不存在，将选取一位管理员作为组织负责人自动创建组织。
 
 --target-repo
 
 默认值：无
 
-类型： string
+类型：string
 
 ohpm-repo 5.3.0版本开始支持配置多个仓库，当batch_download命令导出的zip文件中仅包含一个仓库目录时，可在batch_publish命令后面配置--target-repo <string>，用于指定待上传的仓库名称。未配置默认上传仓库名称与batch_download命令导出的zip文件中的目录仓库名称保持一致，否则将报错。
 

@@ -46,7 +46,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-ap
 
 拉起日历权限设置弹窗
 
-通知管理： 当应用通过requestEnableNotification()接口拉起通知授权弹框时，如果用户拒绝授权，将无法使用该接口再次拉起弹框，需要调用openNotificationSettings()接口，支持拉起通知管理弹窗。
+通知管理： 当应用通过requestEnableNotification()接口拉起通知授权弹框时，如果用户拒绝授权，将无法使用该接口再次拉起弹框，需要调用openNotificationSettingsWithResult()接口，支持拉起通知管理弹窗。
 
 网络管理： 当应用需要通过WLAN连接网络时，可以通过openNetworkManagerSettings()接口拉起WLAN设置弹窗。
 
@@ -99,3 +99,5 @@ Media Library Kit提供了照片Picker（PhotoViewPicker），用于访问、保
 示例代码
 
 拉起系统相机
+
+应用间跳转典型场景

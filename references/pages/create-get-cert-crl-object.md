@@ -10,9 +10,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/create-ge
 
 import { cert } from '@kit.DeviceCertificateKit';
 
-基于已有的证书数据，调用cert.createX509Cert创建X509证书的对象。
+基于已有的证书数据，调用cert.createX509Cert创建X.509证书的对象。
 
-基于已有的CRL数据，调用cert.createX509CRL创建X509证书吊销列表的对象。
+基于已有的CRL数据，调用cert.createX509CRL创建X.509证书吊销列表的对象。
 
 调用cert.createCertCRLCollection创建CertCRLCollection的对象，并返回相应的结果。
 

@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 例如，当前展示的网页书签被托起时，会播报”华为专区已托起”，移动的过程中，根据即将放置的位置播报“移动到华为手机服务|华为官网上面”。应用可调用主动播报的接口来进行主动播报。
 
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
@@ -18,7 +18,7 @@ export struct Rule_2_1_11 {
   title: string = 'Rule 2.1.11';
   eventInfo: accessibility.EventInfo = ({
     type: 'announceForAccessibility',
-    bundleName: 'com.example.pagesrouter',
+    bundleName: 'com.samples.uiextensionandaccessibility',
     triggerAction: 'common',
     textAnnouncedForAccessibility: '移动到华为手机服务|华为官网上面'
   });
@@ -51,7 +51,7 @@ export struct Rule_2_1_11 {
 ### Code block 1
 
 ```
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
@@ -59,7 +59,7 @@ export struct Rule_2_1_11 {
   title: string = 'Rule 2.1.11';
   eventInfo: accessibility.EventInfo = ({
     type: 'announceForAccessibility',
-    bundleName: 'com.example.pagesrouter',
+    bundleName: 'com.samples.uiextensionandaccessibility',
     triggerAction: 'common',
     textAnnouncedForAccessibility: '移动到华为手机服务|华为官网上面'
   });

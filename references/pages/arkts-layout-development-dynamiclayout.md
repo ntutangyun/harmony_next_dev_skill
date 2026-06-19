@@ -1296,6 +1296,8 @@ struct PropertyChangeExample {
 
 开发者可以结合mediaquery接口监听屏幕方向变化，自动切换商品列表的布局方式。竖屏时使用列表视图（每行一个商品），横屏时使用网格视图（2x2网格布局）。
 
+此示例在运行前需要在工程配置文件module.json5中的abilities字段里配置"orientation": "auto_rotation"。
+
 import {
   DynamicLayout, DynamicLayoutAttribute, ColumnLayoutAlgorithm, LayoutAlgorithm, LengthMetrics, mediaquery,
   GridLayoutAlgorithm

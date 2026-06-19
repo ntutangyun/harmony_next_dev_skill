@@ -13,3 +13,7 @@ Screen Time Guard Kit简介
 守护策略管理
 
 应用访问限制
+
+拦截页跳转至管控应用
+
+Screen Time Guard Kit术语

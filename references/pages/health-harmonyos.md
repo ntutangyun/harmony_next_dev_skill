@@ -10,8 +10,6 @@ Phone/Tablet应用开发
 
 Wearable应用开发
 
-LiteWearable应用开发
-
 数据类型
 
 申请验证获取正式权限

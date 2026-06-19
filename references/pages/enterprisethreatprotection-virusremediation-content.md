@@ -1,4 +1,4 @@
-# 文件访问与处置
+# 病毒检测与处置
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisethreatprotection-virusremediation-content_
 
@@ -13,3 +13,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterpris
 文件隔离删除
 
 隔离查询
+
+威胁进程终止

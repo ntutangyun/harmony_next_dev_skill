@@ -27,7 +27,7 @@ AdComponent({ads: advertising.Advertisement[], displayOptions: advertising.AdDis
 导入相关模块。
 
 import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
-import { advertising, identifier } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { router, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -94,12 +94,12 @@ struct Index {
   aboutToDisappear(): void {
     // 关闭全屏模式，开发者可根据实际情况修改
     void this.setWindowLayoutFullScreen(false).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowLayoutFullScreen. Code is ${error.code}, message is ${error.message}`);
     });
     // 设置屏幕方向为默认值，开发者可根据实际情况修改
     void this.setWindowPreferredOrientation(window.Orientation.UNSPECIFIED).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
     });
   }
@@ -216,8 +216,8 @@ async function requestOAID(context: Context): Promise<string | undefined> {
 
 导入相关模块。
 
-import { AdComponent, advertising } from '@kit.AdsKit';
-import { router } from '@kit.ArkUI';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
+import { router, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -385,8 +385,8 @@ struct Index {
 以下表格中提供了开屏广告的专用测试广告位ID：
 
 广告位类型	测试广告位ID	展示形式	比例	推广类型
-开屏	g3tl51sqih	图片	9:16	应用促活
-开屏	r145sz31dp	视频	9:16	应用促活
+开屏	u7w58nlimb	视频	9:16	元服务推广
+开屏	f068vmywiu	图片	2:3	网页推广
 
 ## Code blocks
 
@@ -394,7 +394,7 @@ struct Index {
 
 ```
 import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
-import { advertising, identifier } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { router, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -434,12 +434,12 @@ struct Index {
   aboutToDisappear(): void {
     // 关闭全屏模式，开发者可根据实际情况修改
     void this.setWindowLayoutFullScreen(false).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowLayoutFullScreen. Code is ${error.code}, message is ${error.message}`);
     });
     // 设置屏幕方向为默认值，开发者可根据实际情况修改
     void this.setWindowPreferredOrientation(window.Orientation.UNSPECIFIED).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
     });
   }
@@ -556,8 +556,8 @@ async function requestOAID(context: Context): Promise<string | undefined> {
 ### Code block 3
 
 ```
-import { AdComponent, advertising } from '@kit.AdsKit';
-import { router } from '@kit.ArkUI';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
+import { router, window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```

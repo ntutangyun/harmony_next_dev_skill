@@ -4,40 +4,38 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-use
 
 基于NDK构建UI概述
 
-接入ArkTS页面
-
-添加事件响应
-
-使用动画
+NDK对接ArkTS
 
 构建布局
+
+使用导航类组件
 
 使用列表与网格
 
 使用文本
 
-构建弹窗
+媒体展示
 
 构建表单组件
 
-媒体展示
+构建弹窗
 
-使用导航类组件
+使用动画
 
-构建自定义组件
+使用滑动选择器 (Picker)
 
-嵌入ArkTS组件
+添加事件响应
 
-构建渲染节点
+使用自定义能力
 
 通过自绘制接入无障碍
 
-自定义绘制
+通过EmbeddedComponent拉起EmbeddedUIExtensionAbility
 
 查询和操作自定义节点
-
-通过EmbeddedComponent拉起EmbeddedUIExtensionAbility
 
 在NDK中保证多实例场景功能正常
 
 使用多线程NDK接口并行化构建UI页面
+
+构建渲染节点

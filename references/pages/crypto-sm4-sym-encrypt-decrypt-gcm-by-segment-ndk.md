@@ -14,7 +14,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 如何生成SM4对称密钥，开发者可参考下文示例，并结合对称密钥生成和转换规格：SM4和随机生成对称密钥理解，参考文档与当前示例可能存在入参差异，请在阅读时注意区分。
 
-调用OH_CryptoSymCipher_Create，指定字符串参数'SM4_128|GCM|PKCS7'，创建对称密钥类型为SM4_128、分组模式为GCM、填充模式为PKCS7的Cipher实例，用于完成加密操作。
+调用OH_CryptoSymCipher_Create，指定字符串参数'SM4_128|GCM'，创建对称密钥类型为SM4_128、分组模式为GCM的Cipher实例，用于完成加密操作。
 
 调用OH_CryptoSymCipherParams_Create创建参数对象，调用OH_CryptoSymCipherParams_SetParam设置对应的加密参数。
 
@@ -44,7 +44,7 @@ doFinal输出结果可能为null，在访问具体数据前，需要先判断结
 
 解密
 
-调用OH_CryptoSymCipher_Create，指定字符串参数'SM4_128|GCM|PKCS7'，创建对称密钥类型为SM4_128、分组模式为GCM、填充模式为PKCS7的Cipher实例，用于完成解密操作。
+调用OH_CryptoSymCipher_Create，指定字符串参数'SM4_128|GCM'，创建对称密钥类型为SM4_128、分组模式为GCM的Cipher实例，用于完成解密操作。
 
 调用OH_CryptoSymCipher_Init，设置模式为解密（CRYPTO_DECRYPT_MODE），指定解密密钥（OH_CryptoSymKey）和GCM模式对应的解密参数（OH_CryptoSymCipherParams），初始化解密Cipher实例。
 
@@ -115,7 +115,7 @@ OH_Crypto_ErrCode doTestSm4GcmSeg()
     }
 
     // 加密
-    ret = OH_CryptoSymCipher_Create("SM4_128|GCM|PKCS7", &encCtx);
+    ret = OH_CryptoSymCipher_Create("SM4_128|GCM", &encCtx);
     if (ret != CRYPTO_SUCCESS) {
         goto end;
     }
@@ -154,7 +154,7 @@ OH_Crypto_ErrCode doTestSm4GcmSeg()
     cipherBlob = {.data = reinterpret_cast<uint8_t *>(cipherText), .len = (size_t)cipherLen};
     msgBlob.data -= strlen(plainText) - rem;
     msgBlob.len = strlen(plainText);
-    ret = OH_CryptoSymCipher_Create("SM4_128|GCM|PKCS7", &decCtx);
+    ret = OH_CryptoSymCipher_Create("SM4_128|GCM", &decCtx);
     if (ret != CRYPTO_SUCCESS) {
         goto end;
     }
@@ -256,7 +256,7 @@ OH_Crypto_ErrCode doTestSm4GcmSeg()
     }
 
     // 加密
-    ret = OH_CryptoSymCipher_Create("SM4_128|GCM|PKCS7", &encCtx);
+    ret = OH_CryptoSymCipher_Create("SM4_128|GCM", &encCtx);
     if (ret != CRYPTO_SUCCESS) {
         goto end;
     }
@@ -295,7 +295,7 @@ OH_Crypto_ErrCode doTestSm4GcmSeg()
     cipherBlob = {.data = reinterpret_cast<uint8_t *>(cipherText), .len = (size_t)cipherLen};
     msgBlob.data -= strlen(plainText) - rem;
     msgBlob.len = strlen(plainText);
-    ret = OH_CryptoSymCipher_Create("SM4_128|GCM|PKCS7", &decCtx);
+    ret = OH_CryptoSymCipher_Create("SM4_128|GCM", &decCtx);
     if (ret != CRYPTO_SUCCESS) {
         goto end;
     }

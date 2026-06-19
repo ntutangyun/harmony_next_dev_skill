@@ -32,7 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-faq-
 
 设置备用证书操作：
 
-参考场景2，进入“回执配置”页面。
+参考场景2的步骤1到步骤3进入“回执配置”页面。
 
 在“回执配置”页面，点击“设置备用证书”，填入新证书信息。
 

@@ -158,24 +158,6 @@ $ hdc shell mkdir data/local/tmp/3b7d97cdf4de41c4aecc465ff5069708
 $ hdc file send entry-default-signed.hqf "data/local/tmp/3b7d97cdf4de41c4aecc465ff5069708"
 $ hdc shell bm quickfix -a -f "data/local/tmp/3b7d97cdf4de41c4aecc465ff5069708" -d -o
 
-常见问题
-
-[h2]在其他的开发工具中修改打包so库文件，无法使用DevEco Studio的增量调试功能
-
-问题现象
-
-如果开发者在其他的开发工具中修改打包so库文件，在使用DevEco Studio 4.1 Canary2版本的增量调试功能时，出现无法使用增量调试功能的现象。
-
-解决措施
-
-导致这个问题的原因是在DevEco Studio 4.1 Canary2版本上，对于超过16KB的Native文件，在命中其中的断点后，LLDB调试器会默认持有文件句柄，导致调试过程中无法修改保存该文件。
-
-开发者可通过以下两种方式处理：
-
-settings set use-source-cache false
-
-方式二：建议开发者升级至DevEco Studio 5.1.0 Beta1版本。
-
 ## Code blocks
 
 ### Code block 1
@@ -300,10 +282,4 @@ java -jar hap-sign-tool.jar sign-app -keyAlias "OpenHarmony Application Release"
 $ hdc shell mkdir data/local/tmp/3b7d97cdf4de41c4aecc465ff5069708
 $ hdc file send entry-default-signed.hqf "data/local/tmp/3b7d97cdf4de41c4aecc465ff5069708"
 $ hdc shell bm quickfix -a -f "data/local/tmp/3b7d97cdf4de41c4aecc465ff5069708" -d -o
-```
-
-### Code block 12
-
-```
-settings set use-source-cache false
 ```

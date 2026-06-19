@@ -18,6 +18,8 @@ Cloud Foundation Kit简介
 
 Cloud Foundation Kit常见问题
 
+Cloud Foundation Kit术语
+
 个人数据处理说明
 
 附录

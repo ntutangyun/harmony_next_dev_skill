@@ -18,7 +18,7 @@ customId	string	组件id	abc345
 
 开发实例
 
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
@@ -26,7 +26,7 @@ export struct Rule_2_1_12 {
   title: string = 'Rule 2.1.12';
   eventInfo: accessibility.EventInfo = ({
     type: 'requestFocusForAccessibility',
-    bundleName: 'com.example.pagesrouter',
+    bundleName: 'com.samples.uiextensionandaccessibility',
     triggerAction: 'common',
     customId: 'button1'
   });
@@ -43,10 +43,11 @@ export struct Rule_2_1_12 {
           .onClick(() => {
             this.eventInfo.customId = 'button2';
             accessibility.sendAccessibilityEvent(this.eventInfo).then(() => {
-              console.info(`Succeeded in send event, eventInfo is ${JSON.stringify(this.eventInfo)}`);
+              console.info(`Succeeded in send event, eventInfo is: ${JSON.stringify(this.eventInfo)}`);
             });
           })
-        Blank().height('10px')
+        Blank()
+          .height(10)
         Button('button2')
           .accessibilityText('点击聚焦到button1')
           .align(Alignment.Center)
@@ -55,7 +56,7 @@ export struct Rule_2_1_12 {
           .onClick(() => {
             this.eventInfo.customId = 'button1';
             accessibility.sendAccessibilityEvent(this.eventInfo).then(() => {
-              console.info(`Succeeded in send event, eventInfo is ${JSON.stringify(this.eventInfo)}`);
+              console.info(`Succeeded in send event, eventInfo is: ${JSON.stringify(this.eventInfo)}`);
             });
           })
         Blank()
@@ -72,7 +73,7 @@ export struct Rule_2_1_12 {
 ### Code block 1
 
 ```
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
@@ -80,7 +81,7 @@ export struct Rule_2_1_12 {
   title: string = 'Rule 2.1.12';
   eventInfo: accessibility.EventInfo = ({
     type: 'requestFocusForAccessibility',
-    bundleName: 'com.example.pagesrouter',
+    bundleName: 'com.samples.uiextensionandaccessibility',
     triggerAction: 'common',
     customId: 'button1'
   });
@@ -97,10 +98,11 @@ export struct Rule_2_1_12 {
           .onClick(() => {
             this.eventInfo.customId = 'button2';
             accessibility.sendAccessibilityEvent(this.eventInfo).then(() => {
-              console.info(`Succeeded in send event, eventInfo is ${JSON.stringify(this.eventInfo)}`);
+              console.info(`Succeeded in send event, eventInfo is: ${JSON.stringify(this.eventInfo)}`);
             });
           })
-        Blank().height('10px')
+        Blank()
+          .height(10)
         Button('button2')
           .accessibilityText('点击聚焦到button1')
           .align(Alignment.Center)
@@ -109,7 +111,7 @@ export struct Rule_2_1_12 {
           .onClick(() => {
             this.eventInfo.customId = 'button1';
             accessibility.sendAccessibilityEvent(this.eventInfo).then(() => {
-              console.info(`Succeeded in send event, eventInfo is ${JSON.stringify(this.eventInfo)}`);
+              console.info(`Succeeded in send event, eventInfo is: ${JSON.stringify(this.eventInfo)}`);
             });
           })
         Blank()

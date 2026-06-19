@@ -121,7 +121,6 @@ OH_AI_ModelHandle CreateMSLiteModel(void *modelBuffer, size_t modelSize, OH_AI_C
     }
 
     // Build model object
-    // `OH_AI_MODELTYPE_MINDIR` 适用于 `.ms` 模型文件格式
     auto build_ret = OH_AI_ModelBuild(model, modelBuffer, modelSize, OH_AI_MODELTYPE_MINDIR, context);
     DestroyModelBuffer(&modelBuffer);
     if (build_ret != OH_AI_STATUS_SUCCESS) {
@@ -641,7 +640,6 @@ OH_AI_ModelHandle CreateMSLiteModel(void *modelBuffer, size_t modelSize, OH_AI_C
     }
 
     // Build model object
-    // `OH_AI_MODELTYPE_MINDIR` 适用于 `.ms` 模型文件格式
     auto build_ret = OH_AI_ModelBuild(model, modelBuffer, modelSize, OH_AI_MODELTYPE_MINDIR, context);
     DestroyModelBuffer(&modelBuffer);
     if (build_ret != OH_AI_STATUS_SUCCESS) {

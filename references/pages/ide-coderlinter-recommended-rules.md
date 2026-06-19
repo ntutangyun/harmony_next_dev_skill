@@ -72,7 +72,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-coder
 @performance/reuse-date-instances-check	用于检测在循环或调用频繁的方法中重复创建Date对象，建议开发者重用现有实例或使用时间戳进行计算，减少创建Date成本。
 @performance/crypto-replacement-check	对于三方库@ohos/crypto-js所提供的大部分接口，SDK（@ohos.security.cryptoFramework）中有对应的系统原生实现。建议使用系统原生接口。
 @performance/monitor-invisible-area-in-image-animation	使用ImageAnimation实现帧动画时，建议显式调用monitorInvisibleArea接口。在动画组件不可见时，会停止动画播放，减少无效的冗余动画带来的负载恶化。
-@performance/datashare-query-unrelease-check	建议使用DataShareHelper的query接口查询数据得到结果后，应及时关闭，避免造成内存泄露。
+@performance/datashare-query-unrelease-check	建议使用DataShareHelper的query接口查询数据得到结果后，应及时关闭，避免造成内存泄漏。
 @performance/update-state-var-between-animatetos-check	如果多个animateTo之间存在状态更新，会导致执行下一个animateTo之前又存在需要更新的脏节点，可能造成冗余更新。因此不建议在两次animateTo之间进行状态变量更新。
 
 预览规则集@previewer/recommended

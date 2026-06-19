@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 从6.0.2(22) 版本开始，新增支持模拟点击增强检测。
 
-应用通过调用Device Security Kit的detectSimulatedClickRiskEnhanced接口，获取模拟点击增强检测结果，用于自动化点击、设备墙等作弊行为检测。
+应用通过调用Device Security Kit的detectSimulatedClickRiskEnhanced接口，获取模拟点击增强检测结果，用于检测自动化点击、设备农场等作弊行为。
 
 应用可以根据检测结果评估如何进行业务操作。
 
@@ -45,33 +45,49 @@ detectSimulatedClickRiskEnhanced(params:SimulatedClickDetectionEnhancedRequest):
 
 导入Device Security Kit模块及相关公共模块。
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { businessRiskIntelligentDetection } from '@kit.DeviceSecurityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { cryptoFramework } from '@kit.CryptoArchitectureKit'
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 
 调用detectSimulatedClickRiskEnhanced接口获取模拟点击增强检测结果。
 
-const TAG = "BusinessRiskIntelligentDetectionJsTest";
+const TAG: string = '[SimulatedClickRiskEnhancedDetectModel]';
 
-let nonceLength = 48;
-let nonceBlob = cryptoFramework.createRandom().generateRandomSync(nonceLength);
-let params = {
-  version: 1,
-  nonce: nonceBlob.data,
-  algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
-} as businessRiskIntelligentDetection.SimulatedClickDetectionEnhancedRequest;
-try {
-  hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced begin.');
-  businessRiskIntelligentDetection.detectSimulatedClickRiskEnhanced(params).then((result: string) => {
-    hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced success: %{public}s', result);
-  }).catch((error: Error) => {
-    let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
+function simulatedClickRiskEnhancedDetectPromise(): Promise<String> {
+  let rand = cryptoFramework.createRandom();
+  let len = 48;
+  let randData = rand.generateRandomSync(len);
+
+  return new Promise(async (resolve: Function, reject: Function) => {
+
+    let params = {
+      nonce: randData.data,
+      version: 1,
+      algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
+    } as businessRiskIntelligentDetection.SimulatedClickDetectionEnhancedRequest;
+
+    try {
+      hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced begin.');
+      businessRiskIntelligentDetection.detectSimulatedClickRiskEnhanced(params).then((result: string) => {
+        // Indicates communication with the service was successful.
+        // Use result to get the result data.
+        // It is recommended that the result be parsed and verified on the server.
+        hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced success: %{public}s', result);
+        resolve(result);
+      }).catch((error: Error) => {
+        // An error occurred while communicating with the service.
+        let e: BusinessError = error as BusinessError;
+        hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
+        reject(error);
+      });
+    } catch (error) {
+      // An error occurred while using api.
+      let e: BusinessError = error as BusinessError;
+      hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
+      reject(error);
+    }
   });
-} catch (error) {
-  let e: BusinessError = error as BusinessError;
-  hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
 }
 
 在开发者应用服务器中验证模拟点击增强检测结果。
@@ -135,7 +151,7 @@ AbnormalDeviceBehavior	设备行为异常，例如，设备连接状态、传感
 AbnormalTap	存在异常点击行为，例如，点击事件注入，自动化点击等。
 
 riskDecision值	含义
-fake	当前设备存在作弊风险行为。存在自动化操控行为或设备墙作弊行为，详情见tags。
+fake	当前设备存在作弊风险行为。详情见上方tags表格。
 likelyReal	当前操作设备的是真人用户的可能性较高。
 unknown	未知。未检测到明显特征，无法识别。
 
@@ -144,35 +160,51 @@ unknown	未知。未检测到明显特征，无法识别。
 ### Code block 1
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { businessRiskIntelligentDetection } from '@kit.DeviceSecurityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { cryptoFramework } from '@kit.CryptoArchitectureKit'
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "BusinessRiskIntelligentDetectionJsTest";
+const TAG: string = '[SimulatedClickRiskEnhancedDetectModel]';
 
-let nonceLength = 48;
-let nonceBlob = cryptoFramework.createRandom().generateRandomSync(nonceLength);
-let params = {
-  version: 1,
-  nonce: nonceBlob.data,
-  algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
-} as businessRiskIntelligentDetection.SimulatedClickDetectionEnhancedRequest;
-try {
-  hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced begin.');
-  businessRiskIntelligentDetection.detectSimulatedClickRiskEnhanced(params).then((result: string) => {
-    hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced success: %{public}s', result);
-  }).catch((error: Error) => {
-    let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
+function simulatedClickRiskEnhancedDetectPromise(): Promise<String> {
+  let rand = cryptoFramework.createRandom();
+  let len = 48;
+  let randData = rand.generateRandomSync(len);
+
+  return new Promise(async (resolve: Function, reject: Function) => {
+
+    let params = {
+      nonce: randData.data,
+      version: 1,
+      algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
+    } as businessRiskIntelligentDetection.SimulatedClickDetectionEnhancedRequest;
+
+    try {
+      hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced begin.');
+      businessRiskIntelligentDetection.detectSimulatedClickRiskEnhanced(params).then((result: string) => {
+        // Indicates communication with the service was successful.
+        // Use result to get the result data.
+        // It is recommended that the result be parsed and verified on the server.
+        hilog.info(0x0000, TAG, 'Detect simulated click risk enhanced success: %{public}s', result);
+        resolve(result);
+      }).catch((error: Error) => {
+        // An error occurred while communicating with the service.
+        let e: BusinessError = error as BusinessError;
+        hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
+        reject(error);
+      });
+    } catch (error) {
+      // An error occurred while using api.
+      let e: BusinessError = error as BusinessError;
+      hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
+      reject(error);
+    }
   });
-} catch (error) {
-  let e: BusinessError = error as BusinessError;
-  hilog.error(0x0000, TAG, 'Detect simulated click risk enhanced failed: %{public}d %{public}s', e.code, e.message);
 }
 ```
 

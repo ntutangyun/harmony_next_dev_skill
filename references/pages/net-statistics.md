@@ -4,19 +4,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/net-stati
 
 简介
 
-流量管理提供了基于物理网络的数据流量统计能力，支持基于网卡/UID 的流量统计。
+流量管理提供了基于物理网络的数据流量统计能力，支持基于网卡/UID的流量统计。
 
 流量管理主要实现功能有：
 
-支持基于网卡/UID 的实时流量统计。
+支持基于网卡的流量统计。
 
-支持基于网卡/UID 的历史流量统计。
+支持基于应用UID的流量统计。
 
-支持基于网卡/UID 的流量变化订阅。
-
-说明
-
-为了保证应用的运行效率，大部分 API 调用都是异步的，对于异步调用的 API 均提供了 callback 和 Promise 两种方式，以下示例均采用 Promise 函数，更多方式可以查阅@ohos.net.statistics (流量管理)。
+> **说明：** > > - 为了保证应用的运行效率，大部分API调用都是异步的，对于异步调用的API均提供了callback和Promise两种方式，以下示例均采用Promise函数，更多方式可以查阅[@ohos.net.statistics (流量管理)](../reference/apis-network-kit/js-apis-net-statistics.md)。 > - 上行流量是指由终端设备向网络侧发送的数据量，下行流量是指由网络侧向终端设备发起传输的数据量。
 
 以下分别介绍具体开发方式。
 
@@ -28,9 +24,9 @@ import { socket, statistics } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-获取指定网卡实时流量数据
+获取指定网卡流量数据。
 
-调用getIfaceRxBytes接口传入网卡名获取实时下行流量数据。
+分别调用getIfaceRxBytes和getIfaceTxBytes接口传入网卡名获取指定网卡从最近一次开机至今的下行和上行流量数据。
 
   // wlan0为主WiFi网卡名，获取主WiFi实时下行流量数据。
   statistics.getIfaceRxBytes('wlan0').then((stats: number) => {
@@ -53,9 +49,9 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
   });
 // ...
 
-获取蜂窝实时流量数据
+获取蜂窝流量数据。
 
-调用getCellularRxBytes接口获取蜂窝实时上下行流量数据。
+分别调用getCellularRxBytes和getCellularTxBytes接口获取从最近一次开机至今的蜂窝下行和上行流量数据。
 
 // 获取蜂窝实时下行流量数据。
 statistics.getCellularRxBytes().then((stats: number) => {
@@ -70,9 +66,9 @@ statistics.getCellularTxBytes().then((stats: number) => {
 })
 // ...
 
-获取所有网卡实时流量数据
+获取所有网卡流量数据。
 
-调用getAllRxBytes接口获取所有网卡实时上下行流量数据。
+分别调用getAllRxBytes和getAllTxBytes接口获取所有网卡从最近一次开机到现在的下行和上行流量数据。
 
 // 获取所有网卡实时下行流量数据。
 statistics.getAllRxBytes().then((stats: number) => {
@@ -87,9 +83,11 @@ statistics.getAllTxBytes().then((stats: number) => {
 })
 // ...
 
-获取指定应用实时流量数据
+获取指定应用流量数据。
 
-调用getUidRxBytes接口，传入UID获取指定应用实时上下行流量数据。
+分别调用getUidRxBytes和getUidTxBytes接口，传入UID获取指定应用从最近一次开机至今的下行和上行流量数据。
+
+此处仅以应用UID为20010038为例，实际调用时需修改为真实UID。
 
  let UID = 20010038;
 
@@ -108,9 +106,9 @@ statistics.getUidTxBytes(UID).then((stats: number) => {
 })
 // ...
 
-获取指定socket实时流量数据
+获取指定Socket流量数据。
 
-调用getSockfdRxBytes接口，传入指定的sockFd获取指定socket实时上下行流量数据。
+分别调用getSockfdRxBytes和getSockfdTxBytes接口，传入Socket FD获取指定Socket的下行和上行流量数据。
 
 // 获取指定socket实时下行流量数据。
 let tcp: socket.TCPSocket = socket.constructTCPSocketInstance();

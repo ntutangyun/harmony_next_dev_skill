@@ -26,7 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 通过AuthProvider获取用户凭据。
 
-调用cloudCommon.init()方法进行初始化时，传入获取的凭据。
+调用init()方法进行初始化时，传入获取的凭据。
 
 在业务代码中，使用AGC开发平台上创建的存储区“QuickStartDemo”类初始化DatabaseZone。
 

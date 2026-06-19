@@ -20,9 +20,9 @@ enum Format {
   FORMAT_CHWN,
   FORMAT_FRACTAL_DECONV_SP_STRIDE8_TRANS = 15,
   FORMAT_HWCN,
-  FORMAT_NC1KHKWHWC0, // KH,KW kernel h和kernel w最大池化最大输出格式
+  FORMAT_NC1KHKWHWC0, // KH,KW kernel h& kernel w maxpooling max output format
   FORMAT_BN_WEIGHT,
-  FORMAT_FILTER_HWCK, // 滤波器输入张量格式
+  FORMAT_FILTER_HWCK, // filter input tensor format
   FORMAT_HASHTABLE_LOOKUP_LOOKUPS = 20,
   FORMAT_HASHTABLE_LOOKUP_KEYS,
   FORMAT_HASHTABLE_LOOKUP_VALUE,
@@ -34,13 +34,13 @@ enum Format {
   FORMAT_FRACTAL_ZZ,
   FORMAT_FRACTAL_NZ,
   FORMAT_NCDHW = 30,
-  FORMAT_DHWCN, // 3D滤波器输入张量格式
+  FORMAT_DHWCN, // 3D filter input tensor format
   FORMAT_NDC1HWC0,
   FORMAT_FRACTAL_Z_3D,
   FORMAT_CN,
   FORMAT_NC = 35,
   FORMAT_DHWNC,
-  FORMAT_FRACTAL_Z_3D_TRANSPOSE, // 3D滤波器(转置)输入张量格式
+  FORMAT_FRACTAL_Z_3D_TRANSPOSE, // 3D filter(transpose) input tensor format
   FORMAT_FRACTAL_ZN_LSTM,
   FORMAT_FRACTAL_Z_G,
   FORMAT_RESERVED = 40,
@@ -53,12 +53,12 @@ enum Format {
   FORMAT_NCL,
   FORMAT_FRACTAL_Z_WINO,
   FORMAT_C1HWC0,
-  // 在此添加新格式定义
+  // Add new formats definition here
   FORMAT_END,
-  // FORMAT_MAX定义了Format的最大值
-  // 任何Format都不应超过FORMAT_MAX的值
-  // 注意：FORMAT_MAX表示enum Format的规格，通常不应在代码中直接使用
-  // 如果需要判断Format的范围，可以使用FORMAT_END
+  // FORMAT_MAX defines the max value of Format.
+  // Any Format should not exceed the value of FORMAT_MAX.
+  // ** Attention ** : FORMAT_MAX stands for the SPEC of enum Format and almost SHOULD NOT be used in code.
+  // If you want to judge the range of Format, you can use FORMAT_END.
   FORMAT_MAX = 0xff
 };
 
@@ -114,9 +114,9 @@ enum Format {
   FORMAT_CHWN,
   FORMAT_FRACTAL_DECONV_SP_STRIDE8_TRANS = 15,
   FORMAT_HWCN,
-  FORMAT_NC1KHKWHWC0, // KH,KW kernel h和kernel w最大池化最大输出格式
+  FORMAT_NC1KHKWHWC0, // KH,KW kernel h& kernel w maxpooling max output format
   FORMAT_BN_WEIGHT,
-  FORMAT_FILTER_HWCK, // 滤波器输入张量格式
+  FORMAT_FILTER_HWCK, // filter input tensor format
   FORMAT_HASHTABLE_LOOKUP_LOOKUPS = 20,
   FORMAT_HASHTABLE_LOOKUP_KEYS,
   FORMAT_HASHTABLE_LOOKUP_VALUE,
@@ -128,13 +128,13 @@ enum Format {
   FORMAT_FRACTAL_ZZ,
   FORMAT_FRACTAL_NZ,
   FORMAT_NCDHW = 30,
-  FORMAT_DHWCN, // 3D滤波器输入张量格式
+  FORMAT_DHWCN, // 3D filter input tensor format
   FORMAT_NDC1HWC0,
   FORMAT_FRACTAL_Z_3D,
   FORMAT_CN,
   FORMAT_NC = 35,
   FORMAT_DHWNC,
-  FORMAT_FRACTAL_Z_3D_TRANSPOSE, // 3D滤波器(转置)输入张量格式
+  FORMAT_FRACTAL_Z_3D_TRANSPOSE, // 3D filter(transpose) input tensor format
   FORMAT_FRACTAL_ZN_LSTM,
   FORMAT_FRACTAL_Z_G,
   FORMAT_RESERVED = 40,
@@ -147,12 +147,12 @@ enum Format {
   FORMAT_NCL,
   FORMAT_FRACTAL_Z_WINO,
   FORMAT_C1HWC0,
-  // 在此添加新格式定义
+  // Add new formats definition here
   FORMAT_END,
-  // FORMAT_MAX定义了Format的最大值
-  // 任何Format都不应超过FORMAT_MAX的值
-  // 注意：FORMAT_MAX表示enum Format的规格，通常不应在代码中直接使用
-  // 如果需要判断Format的范围，可以使用FORMAT_END
+  // FORMAT_MAX defines the max value of Format.
+  // Any Format should not exceed the value of FORMAT_MAX.
+  // ** Attention ** : FORMAT_MAX stands for the SPEC of enum Format and almost SHOULD NOT be used in code.
+  // If you want to judge the range of Format, you can use FORMAT_END.
   FORMAT_MAX = 0xff
 };
 ```

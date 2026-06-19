@@ -90,7 +90,7 @@ dataset	extra_training_config	fp16	训练数据类型，仅支持fp16
 dataset	cutoff_len	128	激活量化样本序列长度。
 dataset	num_samples	256	激活量化校准样本数
 dataset	quant_param_2	False	- True：Kirin9020 - False：KirinX90
-dataset	embedding_separate	True	- True：单独保存为bin文件 - False：导出embedding的量化参数到量化文件。
+dataset	embedding_separate	True	- True：单独保存为bin文件 - False: 导出embedding的量化参数到量化文件，合并形态。
 dataset	lm_head_size:	-	可指定lmhead长度，硬件对齐。
 
 执行三段式量化

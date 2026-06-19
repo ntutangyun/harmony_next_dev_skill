@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-network_
 
+Accessory Kit（配件接入服务）
+
 Connectivity Kit（短距通信服务）
 
 Distributed Service Kit（分布式管理服务）

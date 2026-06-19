@@ -16,9 +16,11 @@ Universal Keystore Kit简介
 
 生成密钥(C/C++)
 
-匿名密钥证明(ArkTS)
+在线匿名密钥证明(ArkTS)
 
-匿名密钥证明(C/C++)
+在线匿名密钥证明(C/C++)
+
+离线匿名密钥证明(ArkTS)
 
 签名/验签(ArkTS)
 
@@ -50,10 +52,10 @@ import { huks } from '@kit.UniversalKeystoreKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { util } from '@kit.ArkTS';
 
-let keyAlias = 'serviceKey_user01'; //业务密钥别名
+let keyAlias = 'serviceKey_user01'; // 业务密钥别名
 let handle: number;
-let plaintext = '123456'; //待签名的明文数据，建议包含服务器端返回的Challenge。
-let signature: Uint8Array; //存储签名结果数据的变量
+let plaintext = '123456'; // 待签名的明文数据，建议包含服务器端返回的Challenge。
+let signature: Uint8Array; // 存储签名结果数据的变量
 
 function StringToUint8Array(str: String) {
   let arr: number[] = new Array();
@@ -103,7 +105,7 @@ async function Sign(keyAlias: string, plaintext: string) {
 
       let base64 = new util.Base64Helper();
       let signatureBase64 = base64.encodeToStringSync(signature);
-      //todo：把签名结果的Base64编码（signatureBase64变量）发送到云侧的服务器。如下示例代码把签名结果打印到日志中，供调测使用，商用代码不需要打印。
+      // todo：把签名结果的Base64编码（signatureBase64变量）发送到云侧的服务器。如下示例代码把签名结果打印到日志中，供调测使用，商用代码不需要打印。
       console.info(`sign success, result:` + signatureBase64);
 
     }).catch((err: BusinessError) => {
@@ -120,10 +122,10 @@ import { huks } from '@kit.UniversalKeystoreKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { util } from '@kit.ArkTS';
 
-let keyAlias = 'serviceKey_user01'; //业务密钥别名
+let keyAlias = 'serviceKey_user01'; // 业务密钥别名
 let handle: number;
-let plaintext = '123456'; //待签名的明文数据，建议包含服务器端返回的Challenge。
-let signature: Uint8Array; //存储签名结果数据的变量
+let plaintext = '123456'; // 待签名的明文数据，建议包含服务器端返回的Challenge。
+let signature: Uint8Array; // 存储签名结果数据的变量
 
 function StringToUint8Array(str: String) {
   let arr: number[] = new Array();
@@ -173,7 +175,7 @@ async function Sign(keyAlias: string, plaintext: string) {
 
       let base64 = new util.Base64Helper();
       let signatureBase64 = base64.encodeToStringSync(signature);
-      //todo：把签名结果的Base64编码（signatureBase64变量）发送到云侧的服务器。如下示例代码把签名结果打印到日志中，供调测使用，商用代码不需要打印。
+      // todo：把签名结果的Base64编码（signatureBase64变量）发送到云侧的服务器。如下示例代码把签名结果打印到日志中，供调测使用，商用代码不需要打印。
       console.info(`sign success, result:` + signatureBase64);
 
     }).catch((err: BusinessError) => {

@@ -72,17 +72,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 </template>
 <script>
 export default {
-  data() {
-    return {};
+  data () {
+    return {}
   }
-};
+}
 </script>
 <style scoped>
 .header {
   width: 100%;
   display: flex;
   justify-content: center;
-  font-size: 40px;
+  font-size: 20px;
 }
 .form-item {
   display: flex;
@@ -115,11 +115,11 @@ export default {
   .button {
     background-color:  blue;
     color: white;
-    height: 47px;
+    height: 25px;
     border: 0;
-    font-size: 30px;
-    border-radius: 15px;
-    width: 200px;
+    font-size: 15px;
+    border-radius: 10px;
+    width: 120px;
     text-align: center;
   }
 }
@@ -178,17 +178,17 @@ export default {
 </template>
 <script>
 export default {
-  data() {
-    return {};
+  data () {
+    return {}
   }
-};
+}
 </script>
 <style scoped>
 .header {
   width: 100%;
   display: flex;
   justify-content: center;
-  font-size: 40px;
+  font-size: 20px;
 }
 .form-item {
   display: flex;
@@ -221,11 +221,11 @@ export default {
   .button {
     background-color:  blue;
     color: white;
-    height: 47px;
+    height: 25px;
     border: 0;
-    font-size: 30px;
-    border-radius: 15px;
-    width: 200px;
+    font-size: 15px;
+    border-radius: 10px;
+    width: 120px;
     text-align: center;
   }
 }

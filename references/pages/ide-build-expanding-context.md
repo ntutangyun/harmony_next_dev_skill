@@ -331,14 +331,14 @@ export default {
 
 getOhpmDependencyInfo: () => Record<string, OhpmDependencyInfo> | object
 
-获取工程下oh-package.json5中配置的依赖信息。
+获取工程下的依赖信息，包括dependencies和dynamicDependencies中的har和hsp。
 
 起始版本：Hvigor 5.0.0
 
 返回值:
 
 类型	说明
-Record<string, OhpmDependencyInfo> | object	oh-package.json5中配置的依赖信息
+Record<string, OhpmDependencyInfo> | object	工程下的依赖信息
 
 示例：
 
@@ -367,11 +367,57 @@ export default {
     plugins:[customPlugin()]         /* Custom plugin to extend the functionality of Hvigor. */
 }
 
+[h2]getAllDependencyInfo
+
+getAllDependencyInfo: () => Record<string, OhpmDependencyInfo>
+
+获取工程下所有的依赖信息，包括dependencies和dynamicDependencies中的har、hsp、so、npm等。
+
+起始版本：Hvigor 6.26.1
+
+返回值:
+
+类型	说明
+Record<string, OhpmDependencyInfo>	工程下所有的依赖信息
+
+说明
+
+依赖信息在taskGraphResolved阶段完成更新，因此该接口需要在taskGraphResolved及之后的生命周期hook中调用。
+
+// 工程级hvigorfile.ts文件
+import { appTasks } from '@ohos/hvigor-ohos-plugin';
+import { hvigor, HvigorNode, HvigorPlugin } from '@ohos/hvigor';
+import { OhosPluginId } from '@ohos/hvigor-ohos-plugin';
+
+// 实现自定义插件
+export function customPlugin(): HvigorPlugin {
+  return {
+    pluginId: 'customPlugin',
+    async apply(currentNode: HvigorNode): Promise<void> {
+
+      // 依赖信息在taskGraphResolved阶段完成更新，因此getAllDependencyInfo需要在taskGraphResolved及之后的生命周期hook中调用
+      hvigor.taskGraphResolved(async () => {
+        const rootNodeContext = currentNode.getContext(OhosPluginId.OHOS_APP_PLUGIN);
+        if (!rootNodeContext) {
+          return;
+        }
+        const allDependencyInfo = rootNodeContext.getAllDependencyInfo();
+        console.log(allDependencyInfo);
+      })
+    }
+  };
+}
+
+export default {
+  system: appTasks, /* Built-in plugin of Hvigor. It cannot be modified. */
+  plugins: [customPlugin()]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+
 [h2]getOhpmRemoteHspDependencyInfo
 
 getOhpmRemoteHspDependencyInfo: (isSigned: boolean) => Record<string, OhpmDependencyInfo> | object
 
-获取工程下oh-package.json5中配置的hsp包依赖信息。
+获取工程下的hsp包依赖信息，包括dependencies和dynamicDependencies中的hsp包依赖。
 
 起始版本：Hvigor 5.6.2
 
@@ -383,7 +429,7 @@ signed	boolean	否	是否获取签名的hsp包路径，默认为false
 返回值:
 
 类型	说明
-Record<string, OhpmDependencyInfo> | object	工程下oh-package.json5中配置的hsp包依赖信息
+Record<string, OhpmDependencyInfo> | object	工程下的hsp包依赖信息
 
 示例：
 
@@ -1249,14 +1295,14 @@ export default {
 
 getOhpmDependencyInfo: () => Record<string, OhpmDependencyInfo> | object
 
-获取模块下oh-package.json5中配置的依赖信息。
+获取模块的依赖信息，包括dependencies和dynamicDependencies中的har和hsp。
 
 起始版本：Hvigor 5.0.0
 
 返回值:
 
 类型	说明
-Record<string, OhpmDependencyInfo> | object	oh-package.json5中配置的依赖信息
+Record<string, OhpmDependencyInfo> | object	模块的依赖信息
 
 示例：
 
@@ -1295,11 +1341,61 @@ export default {
     plugins:[customPlugin()]         /* Custom plugin to extend the functionality of Hvigor. */
 }
 
+[h2]getAllDependencyInfo
+
+getAllDependencyInfo: () => Record<string, OhpmDependencyInfo>
+
+获取模块所有的依赖信息，包括dependencies和dynamicDependencies中的har、hsp、so、npm等。
+
+起始版本：Hvigor 6.26.1
+
+返回值:
+
+类型	说明
+Record<string, OhpmDependencyInfo>	模块所有的依赖信息
+
+说明
+
+依赖信息在taskGraphResolved阶段完成更新，因此该接口需要在taskGraphResolved及之后的生命周期hook中调用。
+
+// 工程级hvigorfile.ts文件
+import { appTasks } from '@ohos/hvigor-ohos-plugin';
+import { hvigor, HvigorNode, HvigorPlugin } from '@ohos/hvigor';
+import { OhosPluginId } from '@ohos/hvigor-ohos-plugin';
+
+// 实现自定义插件
+export function customPlugin(): HvigorPlugin {
+  return {
+    pluginId: 'customPlugin',
+    async apply(currentNode: HvigorNode): Promise<void> {
+
+      // 依赖信息在taskGraphResolved阶段完成更新，因此getAllDependencyInfo需要在taskGraphResolved及之后的生命周期hook中调用
+      hvigor.taskGraphResolved(async () => {
+        currentNode.subNodes((node) => {
+            // 获取hap模块上下文信息
+            const nodeContext = node.getContext(OhosPluginId.OHOS_HAP_PLUGIN);
+            if (!nodeContext) {
+              return;
+            }
+            const allDependencyInfo = nodeContext.getAllDependencyInfo();
+            console.log(allDependencyInfo);
+          })
+        }
+      )
+    }
+  };
+}
+
+export default {
+  system: appTasks, /* Built-in plugin of Hvigor. It cannot be modified. */
+  plugins: [customPlugin()]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+
 [h2]getOhpmRemoteHspDependencyInfo
 
 getOhpmRemoteHspDependencyInfo: (isSigned: boolean) => Record<string, OhpmDependencyInfo> | object
 
-获取模块下oh-package.json5中配置的hsp包依赖信息。
+获取模块的hsp包依赖信息，包括dependencies和dynamicDependencies中的hsp包依赖。
 
 起始版本：Hvigor 5.6.2
 
@@ -1311,7 +1407,7 @@ isSigned	boolean	否	是否获取签名的hsp包路径，默认为false
 返回值:
 
 类型	说明
-Record<string, OhpmDependencyInfo> | object	模块下oh-package.json5中配置的hsp包依赖信息
+Record<string, OhpmDependencyInfo> | object	模块下的hsp包依赖信息
 
 // 工程级hvigorfile.ts文件
 import { appTasks, OhosHapContext, Target } from '@ohos/hvigor-ohos-plugin';
@@ -1447,6 +1543,19 @@ Hsp模块上下文接口信息与OhosHapContext一致，请参考上文中OhosHa
 OhosHarContext
 
 Har模块上下文接口信息与OhosHapContext一致，请参考上文中OhosHapContext接口描述。
+
+OhpmDependencyInfo
+
+工程中配置的依赖相关的信息，可以通过getOhpmDependencyInfo、getAllDependencyInfo等方法来获取本对象。
+
+成员	类型	只读	说明	开始支持的版本
+name	string	否	依赖的名称。	Hvigor 5.0.0
+version	string	否	依赖的版本。	Hvigor 5.0.0
+dependencies	Record<string, string>	否	子依赖的名称和路径，例如A依赖B，B是A的子依赖。	Hvigor 5.0.0
+packagePath	string	否	依赖的路径。	Hvigor 5.0.0
+remoteHspPath	string	否	未签名的远程hsp路径，如果不存在则不返回该成员。	Hvigor 5.6.2
+signedRemoteHspPath	string	否	签名的远程hsp路径，如果不存在则不返回该成员。	Hvigor 5.6.2
+dependencyType	string	否	依赖的类型，包括har、hsp、so和other。	Hvigor 6.26.1
 
 ## Code blocks
 
@@ -1698,6 +1807,39 @@ export default {
 
 ```
 // 工程级hvigorfile.ts文件
+import { appTasks } from '@ohos/hvigor-ohos-plugin';
+import { hvigor, HvigorNode, HvigorPlugin } from '@ohos/hvigor';
+import { OhosPluginId } from '@ohos/hvigor-ohos-plugin';
+
+// 实现自定义插件
+export function customPlugin(): HvigorPlugin {
+  return {
+    pluginId: 'customPlugin',
+    async apply(currentNode: HvigorNode): Promise<void> {
+
+      // 依赖信息在taskGraphResolved阶段完成更新，因此getAllDependencyInfo需要在taskGraphResolved及之后的生命周期hook中调用
+      hvigor.taskGraphResolved(async () => {
+        const rootNodeContext = currentNode.getContext(OhosPluginId.OHOS_APP_PLUGIN);
+        if (!rootNodeContext) {
+          return;
+        }
+        const allDependencyInfo = rootNodeContext.getAllDependencyInfo();
+        console.log(allDependencyInfo);
+      })
+    }
+  };
+}
+
+export default {
+  system: appTasks, /* Built-in plugin of Hvigor. It cannot be modified. */
+  plugins: [customPlugin()]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+```
+
+### Code block 15
+
+```
+// 工程级hvigorfile.ts文件
 import { hvigor, HvigorNode, HvigorPlugin } from '@ohos/hvigor';
 import { appTasks, OhosHapContext, OhosAppContext, OhosPluginId, Target } from '@ohos/hvigor-ohos-plugin';
 // 实现自定义插件
@@ -1755,7 +1897,7 @@ export default {
 };
 ```
 
-### Code block 15
+### Code block 16
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1784,7 +1926,7 @@ export default {
 }
 ```
 
-### Code block 16
+### Code block 17
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1814,7 +1956,7 @@ export default {
 }
 ```
 
-### Code block 17
+### Code block 18
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1843,7 +1985,7 @@ export default {
 }
 ```
 
-### Code block 18
+### Code block 19
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1873,7 +2015,7 @@ export default {
 }
 ```
 
-### Code block 19
+### Code block 20
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1902,7 +2044,7 @@ export default {
 }
 ```
 
-### Code block 20
+### Code block 21
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1932,7 +2074,7 @@ export default {
 }
 ```
 
-### Code block 21
+### Code block 22
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1952,7 +2094,7 @@ export default {
 }
 ```
 
-### Code block 22
+### Code block 23
 
 ```
 // 工程级hvigorfile.ts文件
@@ -1980,7 +2122,7 @@ export default {
 }
 ```
 
-### Code block 23
+### Code block 24
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2018,13 +2160,13 @@ export default {
 }
 ```
 
-### Code block 24
+### Code block 25
 
 ```
 import { OhosHapContext } from '@ohos/hvigor-ohos-plugin';
 ```
 
-### Code block 25
+### Code block 26
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2047,7 +2189,7 @@ export default {
 }
 ```
 
-### Code block 26
+### Code block 27
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2070,7 +2212,7 @@ export default {
 }
 ```
 
-### Code block 27
+### Code block 28
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2093,7 +2235,7 @@ export default {
 }
 ```
 
-### Code block 28
+### Code block 29
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2116,7 +2258,7 @@ export default {
 }
 ```
 
-### Code block 29
+### Code block 30
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2142,7 +2284,7 @@ export default {
 }
 ```
 
-### Code block 30
+### Code block 31
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2165,7 +2307,7 @@ export default {
 }
 ```
 
-### Code block 31
+### Code block 32
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2188,7 +2330,7 @@ export default {
 }
 ```
 
-### Code block 32
+### Code block 33
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2213,7 +2355,7 @@ export default {
 }
 ```
 
-### Code block 33
+### Code block 34
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2236,7 +2378,7 @@ export default {
 }
 ```
 
-### Code block 34
+### Code block 35
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2264,7 +2406,7 @@ export default {
 }
 ```
 
-### Code block 35
+### Code block 36
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2303,7 +2445,7 @@ export default {
 }
 ```
 
-### Code block 36
+### Code block 37
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2343,7 +2485,7 @@ export default {
 }
 ```
 
-### Code block 37
+### Code block 38
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2382,7 +2524,44 @@ export default {
 }
 ```
 
-### Code block 38
+### Code block 39
+
+```
+// 工程级hvigorfile.ts文件
+import { appTasks } from '@ohos/hvigor-ohos-plugin';
+import { hvigor, HvigorNode, HvigorPlugin } from '@ohos/hvigor';
+import { OhosPluginId } from '@ohos/hvigor-ohos-plugin';
+
+// 实现自定义插件
+export function customPlugin(): HvigorPlugin {
+  return {
+    pluginId: 'customPlugin',
+    async apply(currentNode: HvigorNode): Promise<void> {
+
+      // 依赖信息在taskGraphResolved阶段完成更新，因此getAllDependencyInfo需要在taskGraphResolved及之后的生命周期hook中调用
+      hvigor.taskGraphResolved(async () => {
+        currentNode.subNodes((node) => {
+            // 获取hap模块上下文信息
+            const nodeContext = node.getContext(OhosPluginId.OHOS_HAP_PLUGIN);
+            if (!nodeContext) {
+              return;
+            }
+            const allDependencyInfo = nodeContext.getAllDependencyInfo();
+            console.log(allDependencyInfo);
+          })
+        }
+      )
+    }
+  };
+}
+
+export default {
+  system: appTasks, /* Built-in plugin of Hvigor. It cannot be modified. */
+  plugins: [customPlugin()]         /* Custom plugin to extend the functionality of Hvigor. */
+}
+```
+
+### Code block 40
 
 ```
 // 工程级hvigorfile.ts文件
@@ -2434,7 +2613,7 @@ export default {
 }
 ```
 
-### Code block 39
+### Code block 41
 
 ```
 // 模块级hvigorfile.ts文件

@@ -34,7 +34,7 @@ resources
 
 资源目录和资源组目录下的文件均被视为资源文件，在应用打包时不会进行混淆。
 
-非resources目录下资源打包策略请参考copyCodeResource描述。
+非resources目录下资源打包策略请参考resOptions下copyCodeResource的描述。
 
 Stage模型多工程情况下，共有的资源文件放到AppScope下的resources目录。
 
@@ -55,7 +55,7 @@ resfile目录	支持创建多层子目录，子目录名称可以自定义，文
 表2 资源组目录说明
 
 目录类型	说明	资源文件
-element	表示元素资源，以下每一类数据都采用相应的JSON文件来表征（目录下仅支持文件类型）。 - boolean，布尔型 - color，颜色 - float，浮点型，范围是-2^128到2^128 - intarray，整型数组 - integer，整型，范围是-2^31到2^31-1 - plural，复数形式 - strarray，字符串数组 - string，字符串，格式化字符串请参考getStringSync接口	element目录中的文件名称建议与下面的文件名保持一致。每个文件中只能包含同一类型的数据。 - boolean.json - color.json - float.json - intarray.json - integer.json - plural.json - strarray.json - string.json
+element	表示元素资源，以下每一类数据都采用相应的JSON文件来表征（目录下仅支持文件类型）。 - boolean，布尔型。 - color，颜色。 - float，浮点型，范围是-2^128到2^128。 - intarray，整型数组。 - integer，整型，范围是-2^31到2^31-1。 - plural，复数形式。 - strarray，字符串数组。 - string，字符串，单个字符串最大长度为65535字节，超长字符串建议转换为文本文件存放在rawfile目录下。若想在字符串中添加占位符并对其进行格式化，请参考getStringSync接口。	element目录中的文件名称建议与下面的文件名保持一致。每个文件中只能包含同一类型的数据。 - boolean.json - color.json - float.json - intarray.json - integer.json - plural.json - strarray.json - string.json
 media	表示媒体资源，包括图片、音频、视频等非文本格式的文件（目录下只支持文件类型）。 图片和音视频的类型说明见表3和表4。	文件名可自定义，例如：icon.png。
 profile	表示自定义配置文件，其文件内容可通过包管理接口bundleManager.getProfileByAbility获取（目录下只支持json文件类型）。	文件名可自定义，例如：test_profile.json。
 
@@ -259,7 +259,7 @@ string资源配置attr属性示例如下，其中string1字符串被标记为不
 
 资源访问
 
-[h2]单HAP包应用资源
+[h2]访问本模块资源或模块依赖的HAR资源
 
 方式一： 通过$r或$rawfile访问资源。此方法适合简单的、静态的资源引用场景，比如在UI组件中直接引用。
 
@@ -592,7 +592,7 @@ overlay包被加载时，系统会取overlay包资源与目标模块资源的交
 
 [h2]静态overlay配置方式
 
-该功能默认使能，使能及去使能请参考@ohos.bundle.overlay (overlay模块)。
+该功能默认使能，使能及去使能请参考@ohos.bundle.overlay (overlay特征模块)。
 
 包内overlay资源包中的配置文件app.json5中支持的字段：
 
@@ -618,7 +618,7 @@ overlay包被加载时，系统会取overlay包资源与目标模块资源的交
       "default",
       "tablet"
     ],
-    "deliverywithInstall": true,
+    "deliveryWithInstall": true,
     "targetModuleName": "entry_module_name",
     "targetPriority": 1
   }
@@ -637,6 +637,24 @@ overlay不支持json类型的图片配置。
 overlay包被加载时，系统会取overlay包资源与目标模块资源的交集，overlay包中的其他资源不会生效。为了提升性能和内存效率，建议overlay资源包中仅放置用于替换的资源。
 
 在DevEco Studio中创建应用工程时，module的配置文件module.json5中包含targetModuleName和targetPriority字段时，该module将会在安装阶段被识别为overlay特征的module。overlay特征的module一般是为设备上存在的非overlay特征的module提供覆盖的资源文件，以便于targetModuleName指向的module在运行阶段可以使用overlay资源文件展示不同的颜色，标签，主题等等。
+
+术语
+
+[h2]Qualifier；限定词
+
+表征应用场景或设备特征的标签值，用于命名资源目录以实现资源动态匹配。包括移动国家码（MCC）、移动网络码（MNC）、语言、文字、国家或地区、横竖屏、设备类型、颜色模式和屏幕密度，各限定词按固定顺序组合并以特定分隔连接。限定词取值必须与当前设备状态一致才能参与资源匹配。
+
+[h2]Qualifiers directory；限定词目录
+
+由一个或多个限定词组合命名的资源目录，用于存放匹配特定设备特征或应用场景的资源文件。
+
+[h2]rawfile
+
+resources目录下的特殊资源目录，支持创建多层子目录存放各类文件。目录中的文件以原始形式直接打包进应用，通过指定文件路径和文件名访问。支持Native方式获取文件内容、文件列表和文件描述符。
+
+[h2]resfile
+
+resources目录下的特殊资源目录，支持创建多层子目录存放各类文件。目录中的文件以原始形式直接打包进应用。应用安装后目录中的文件会被解压到应用沙箱路径，通过Context的resourceDir属性获取目录后以只读方式通过文件路径访问。
 
 ## Code blocks
 
@@ -1043,7 +1061,7 @@ struct Index {
       "default",
       "tablet"
     ],
-    "deliverywithInstall": true,
+    "deliveryWithInstall": true,
     "targetModuleName": "entry_module_name",
     "targetPriority": 1
   }

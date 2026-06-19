@@ -30,7 +30,7 @@ guard strategy：守护策略，分为起止时间策略、总时长策略和共
 
 约束与限制
 
-支持的设备：Screen Time Guard Kit目前仅支持Phone、Tablet，支持模拟器设备。
+支持的设备：Screen Time Guard Kit（屏幕时间守护服务）目前仅支持Phone、Tablet。
 
 支持的国家/地区：目前仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 

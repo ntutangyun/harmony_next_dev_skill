@@ -93,7 +93,7 @@ struct WebComponent {
 
 监听页面缩放比例变化
 
-应用可以通过onScaleChange接口监听页面缩放比例的变化。该接口事件对应手势事件(双指缩放)，event.newScale对应网页属性visualViewport.scale。
+应用可以通过onScaleChange接口监听页面缩放比例的变化。该接口事件对应手势事件（双指缩放），event.newScale对应网页属性visualViewport.scale。
 
 import { webview } from '@kit.ArkWeb';
 

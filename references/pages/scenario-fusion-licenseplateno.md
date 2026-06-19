@@ -119,7 +119,7 @@ struct LicensePlate {
     for(let index = 0; index <= 7; index++) {
       let id = index + this.licenseItemId;
       let position = this.getUIContext().getComponentUtils().getRectangleById(id);
-      // 相对于屏幕的位置信息，单位px
+      // 相对于屏幕的位置信息,单位px
       let left = position?.screenOffset?.x ?? 0;
       let right = left + (position?.size?.width ?? 0);
       if (screenX >= left && screenX <= right) {
@@ -150,7 +150,7 @@ struct LicensePlate {
     }) {
       Column() {
         Row() {
-          Text("车牌号码")
+          Text('车牌号码')
         }.height(30)
 
         Stack({ alignContent: Alignment.BottomStart }) {
@@ -175,7 +175,7 @@ struct LicensePlate {
             .opacity(0)
             .contentType(ContentType.LICENSE_PLATE)
             .onClick((event) => {
-              // 相对于屏幕的X轴坐标，单位px
+              // 相对于屏幕的X轴坐标,单位px
               let displayX = this.getUIContext().vp2px(event.displayX);
               this.handleLicenseClick(displayX);
               if (this.activeIndex < 0) {
@@ -208,14 +208,16 @@ struct LicensePlate {
     .backgroundColor(Color.White)
     .height(50)
     .margin({ left: 15, right: 15 })
-    .id("customInput")
+    .id('customInput')
     .defaultFocus(false)
   }
 
   build() {
-    Column() {
-      this.buildLicensePlateNumber()
-    }
+// ...
+      Column() {
+        this.buildLicensePlateNumber()
+      }
+// ...
   }
 }
 
@@ -329,7 +331,7 @@ struct LicensePlate {
     for(let index = 0; index <= 7; index++) {
       let id = index + this.licenseItemId;
       let position = this.getUIContext().getComponentUtils().getRectangleById(id);
-      // 相对于屏幕的位置信息，单位px
+      // 相对于屏幕的位置信息,单位px
       let left = position?.screenOffset?.x ?? 0;
       let right = left + (position?.size?.width ?? 0);
       if (screenX >= left && screenX <= right) {
@@ -360,7 +362,7 @@ struct LicensePlate {
     }) {
       Column() {
         Row() {
-          Text("车牌号码")
+          Text('车牌号码')
         }.height(30)
 
         Stack({ alignContent: Alignment.BottomStart }) {
@@ -385,7 +387,7 @@ struct LicensePlate {
             .opacity(0)
             .contentType(ContentType.LICENSE_PLATE)
             .onClick((event) => {
-              // 相对于屏幕的X轴坐标，单位px
+              // 相对于屏幕的X轴坐标,单位px
               let displayX = this.getUIContext().vp2px(event.displayX);
               this.handleLicenseClick(displayX);
               if (this.activeIndex < 0) {
@@ -418,14 +420,16 @@ struct LicensePlate {
     .backgroundColor(Color.White)
     .height(50)
     .margin({ left: 15, right: 15 })
-    .id("customInput")
+    .id('customInput')
     .defaultFocus(false)
   }
 
   build() {
-    Column() {
-      this.buildLicensePlateNumber()
-    }
+// ...
+      Column() {
+        this.buildLicensePlateNumber()
+      }
+// ...
   }
 }
 ```

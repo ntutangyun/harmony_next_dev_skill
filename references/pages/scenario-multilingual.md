@@ -11,8 +11,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 @Entry
 @Component
 export struct Rule_2_1_10 {
-  title: string = 'Rule 2.1.10'
-  private multilingual: string = 'It is convenient: 屏幕朗读已开启 and use'
+  title: string = 'Rule 2.1.10';
+  private multilingual: string = 'It is convenient: 屏幕朗读已开启 and use';
 
   build() {
     NavDestination() {
@@ -45,8 +45,8 @@ export struct Rule_2_1_10 {
 @Entry
 @Component
 export struct Rule_2_1_10 {
-  title: string = 'Rule 2.1.10'
-  private multilingual: string = 'It is convenient: 屏幕朗读已开启 and use'
+  title: string = 'Rule 2.1.10';
+  private multilingual: string = 'It is convenient: 屏幕朗读已开启 and use';
 
   build() {
     NavDestination() {

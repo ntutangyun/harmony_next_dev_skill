@@ -32,7 +32,7 @@ Options
 
 默认值：60000
 
-类型： Number
+类型：Number
 
 别名：ft
 
@@ -42,7 +42,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 可以在 dependency-check 命令后面配置--strict_ssl true参数，校验 https 证书。配置为--strict_ssl false，不校验https证书。
 
@@ -50,7 +50,7 @@ Options
 
 默认值：1
 
-类型： Number
+类型：Number
 
 别名：rt
 
@@ -60,7 +60,7 @@ Options
 
 默认值：1000
 
-类型： Number
+类型：Number
 
 别名：ri
 
@@ -70,7 +70,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 别名：all
 
@@ -80,7 +80,7 @@ Options
 
 默认值：""
 
-类型： String
+类型：String
 
 别名：m
 
@@ -90,7 +90,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 别名：p
 
@@ -100,7 +100,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 别名：d
 
@@ -110,7 +110,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 别名：j
 
@@ -120,7 +120,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 别名：l
 
@@ -130,7 +130,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 别名：c
 

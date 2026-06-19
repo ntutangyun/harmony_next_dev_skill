@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-package-overview_
 
-在基于Stage模型开发应用之前，开发者需要了解应用的设计机制、应用程序包结构等基础知识。
+在开发应用之前，开发者需要了解应用的设计机制、应用程序包结构等基础知识。
 
 应用与应用程序包
 

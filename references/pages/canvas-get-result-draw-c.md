@@ -36,7 +36,7 @@ target_link_libraries(entry PUBLIC libnative_drawing.so)
 
 #include <native_drawing/drawing_surface.h>
 
-从XComponent对应的NativeWindow中获取BufferHandle对象。NativeWindow相关的API请参考_native_window。
+从XComponent对应的NativeWindow中获取BufferHandle对象。NativeWindow相关的API请参考NativeWindow。
 
 // 通过 OH_NativeWindow_NativeWindowRequestBuffer 获取 OHNativeWindowBuffer 实例
 int ret = OH_NativeWindow_NativeWindowRequestBuffer(nativeWindow_, &buffer_, &fenceFd_);

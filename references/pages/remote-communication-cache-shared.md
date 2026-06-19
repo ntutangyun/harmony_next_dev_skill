@@ -12,7 +12,7 @@ Session之间数据是隔离的，当业务场景需要实现跨Session访问缓
 
 约束与限制
 
-Session间缓存共享能力支持Phone、2in1、Tablet、Wearable、TV设备。
+Session间缓存共享能力支持Phone、2in1、Tablet、Wearable、TV设备。并且从6.1.0(23)开始，新增支持Car设备。
 
 引用相同HTTP响应缓存实例
 

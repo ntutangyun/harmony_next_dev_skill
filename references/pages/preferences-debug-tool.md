@@ -120,7 +120,7 @@ preference_xml>>> .help
 
 执行hdc shell命令进入shell交互模式。
 
-必须要先切换至目标调试应用路径下，再进入存在db文件的路径下，执行"arkdata -t preference_kv -f perfdata"或者"arkdata -t preference_xml -f perfdata"新建一个数据库。
+必须要先切换至目标调试应用路径下，再进入存在db文件的路径下，执行"arkdata -t preference_kv"(-f 缺省)或者"arkdata -t preference_xml"(-f 缺省)新建一个数据库。
 
 C:\Users\*****>hdc shell
 $ cd /data/app/el1/100/database/com.test.myapplication   // 进入到目标调试应用路径下.(当前路径为示例,开发者需自己获取调试应用路径)
@@ -234,21 +234,21 @@ preference_kv>>> get key:name
 
 带引号与不带引号查询的值不同，显示结果如下：
 
-preference_kv>>> put key:name
- ...>>> value:123
-preference_kv>>> put key:id_name
- ...>>> value:'123'
-preference_kv>>> put key:name
- ...>>> value:true
 preference_kv>>> put key:name1
+ ...>>> value:123
+preference_kv>>> put key:name2
+ ...>>> value:'123'
+preference_kv>>> put key:name3
+ ...>>> value:true
+preference_kv>>> put key:name4
  ...>>> value:'true'
-preference_kv>>> get key:name      // 数字不带引号结果
+preference_kv>>> get key:name1      // 数字不带引号结果
 type int: 123
-preference_kv>>> get key:id_name   // 数字带引号结果
+preference_kv>>> get key:name2      // 数字带引号结果
 type string: 123
-preference_kv>>> get key:name      // true不带引号结果
+preference_kv>>> get key:name3      // true不带引号结果
 type bool: 1
-preference_kv>>> get key:name1     // true带引号结果
+preference_kv>>> get key:name4      // true带引号结果
 type string: true
 
 [h2]更新数据
@@ -272,7 +272,7 @@ preference_kv>>> get key:name
 type string: y
 preference_kv>>> delete key:name
 preference_kv>>> get key:name
- No data for key = key:name
+ No data for key = name
 
 delete命令不指定键值对全表删除，显示结果如下：
 
@@ -492,21 +492,21 @@ preference_kv>>> get key:name
 ### Code block 15
 
 ```
-preference_kv>>> put key:name
- ...>>> value:123
-preference_kv>>> put key:id_name
- ...>>> value:'123'
-preference_kv>>> put key:name
- ...>>> value:true
 preference_kv>>> put key:name1
+ ...>>> value:123
+preference_kv>>> put key:name2
+ ...>>> value:'123'
+preference_kv>>> put key:name3
+ ...>>> value:true
+preference_kv>>> put key:name4
  ...>>> value:'true'
-preference_kv>>> get key:name      // 数字不带引号结果
+preference_kv>>> get key:name1      // 数字不带引号结果
 type int: 123
-preference_kv>>> get key:id_name   // 数字带引号结果
+preference_kv>>> get key:name2      // 数字带引号结果
 type string: 123
-preference_kv>>> get key:name      // true不带引号结果
+preference_kv>>> get key:name3      // true不带引号结果
 type bool: 1
-preference_kv>>> get key:name1     // true带引号结果
+preference_kv>>> get key:name4      // true带引号结果
 type string: true
 ```
 
@@ -530,7 +530,7 @@ preference_kv>>> get key:name
 type string: y
 preference_kv>>> delete key:name
 preference_kv>>> get key:name
- No data for key = key:name
+ No data for key = name
 ```
 
 ### Code block 18

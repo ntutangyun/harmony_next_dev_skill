@@ -21,20 +21,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 2.请确认获取的Client ID是应用Client ID，错配成项目Client ID将导致接口调用报错。
 
 "module": {
-  "name": "<name>",
+  "name": "entry",
   "type": "entry",
   "description": "<description>",
   "mainElement": "<mainElement>",
-  "deviceTypes": [],
-  "pages": "<pages>",
-  "abilities": [],
-  "metadata": [ // 配置信息如下
+  "deviceTypes": [
+  ],
+  // ...
+  "pages": "$profile:main_pages",
+  // ...
+  "metadata": [
+    // 配置信息如下
+    // ...
     {
       "name": "client_id",
-      "value": "xxxxx" // 将上一步获取到的Client ID赋值给value，请注意不要使用其他方式设置value值
+      // 将上一步获取到的Client ID赋值给value，请注意不要使用其他方式设置value值
+      "value": "xxxxx"
     }
   ]
- }
+}
 
 ## Code blocks
 
@@ -42,18 +47,23 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 
 ```
 "module": {
-  "name": "<name>",
+  "name": "entry",
   "type": "entry",
   "description": "<description>",
   "mainElement": "<mainElement>",
-  "deviceTypes": [],
-  "pages": "<pages>",
-  "abilities": [],
-  "metadata": [ // 配置信息如下
+  "deviceTypes": [
+  ],
+  // ...
+  "pages": "$profile:main_pages",
+  // ...
+  "metadata": [
+    // 配置信息如下
+    // ...
     {
       "name": "client_id",
-      "value": "xxxxx" // 将上一步获取到的Client ID赋值给value，请注意不要使用其他方式设置value值
+      // 将上一步获取到的Client ID赋值给value，请注意不要使用其他方式设置value值
+      "value": "xxxxx"
     }
   ]
- }
+}
 ```

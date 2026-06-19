@@ -9,3 +9,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/dlp_
 数据防泄漏服务开发指导(C/C++)
 
 适配加密分享
+
+Data Protection Kit术语

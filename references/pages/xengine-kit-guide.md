@@ -22,6 +22,8 @@ Subpass Shading
 
 光线追踪全局光照
 
+控显分离
+
 Maleoon API
 
 XEngine Kit常见问题

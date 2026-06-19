@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/desktop-q
 
 说明
 
-Desktop Extension Kit相关API仅在2in1设备上生效。
+Desktop Extension Kit相关API仅在PC/2in1设备上生效。
 
 表1 应用接入快捷栏菜单相关功能接口介绍
 

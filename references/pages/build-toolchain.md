@@ -11,3 +11,7 @@ Make构建工程配置HarmonyOS编译工具链
 Configure构建工程配置HarmonyOS编译工具链
 
 使用lycium交叉编译框架快速编译三方库
+
+跨语言调用复杂参数传递
+
+Native侧子线程与UI主线程通信

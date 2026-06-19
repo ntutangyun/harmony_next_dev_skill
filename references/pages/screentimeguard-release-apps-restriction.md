@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当用户希望解除用户访问某些特定应用的限制时，可以调用解除应用访问限制的接口。根据参数中传入的token以及限制类型（允许/禁用），将允许/禁用清单解析后，解除对应的应用的限制。
+当管控应用希望解除被管控应用的限制时，可以调用解除应用访问限制的接口。Screen Time Guard Kit根据参数中传入的token以及限制类型（允许/禁用），解除对应应用的限制。
 
 业务流程
 
@@ -23,7 +23,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 解除应用访问限制的关键接口如下表所示：
 
 接口名	描述
-releaseAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	根据传入的应用token数组和限制类型（允许/禁用清单），解除对应应用的访问限制。
+releaseAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	可根据传入应用token数组，以及限制类型（允许/禁用清单），来解除对应应用的访问限制
 
 说明
 
@@ -60,14 +60,14 @@ import { BusinessError } from '@kit.BasicServicesKit';
 调用releaseAppsRestriction，解除应用访问限制。
 
 private async releaseApps(appInfo: guardService.AppInfo): Promise<void> {
-   try {
-      await guardService.releaseAppsRestriction(appInfo, guardService.RestrictionType.BLOCKLIST_TYPE);
-      // ...
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `releaseAppsRestriction failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.releaseAppsRestriction(appInfo, guardService.RestrictionType.BLOCKLIST_TYPE);
+    // ...
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `releaseAppsRestriction failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 ## Code blocks
@@ -84,13 +84,13 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 private async releaseApps(appInfo: guardService.AppInfo): Promise<void> {
-   try {
-      await guardService.releaseAppsRestriction(appInfo, guardService.RestrictionType.BLOCKLIST_TYPE);
-      // ...
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `releaseAppsRestriction failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.releaseAppsRestriction(appInfo, guardService.RestrictionType.BLOCKLIST_TYPE);
+    // ...
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `releaseAppsRestriction failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```

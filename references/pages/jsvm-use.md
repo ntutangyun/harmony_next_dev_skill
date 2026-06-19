@@ -16,6 +16,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-use_
 
 使用JSVM-API接口进行ArrayBuffer相关开发
 
+使用JSVM-API接口从外部内存创建ArrayBuffer
+
 使用JSVM-API接口操作bigint类型值
 
 使用JSVM-API接口进行class相关开发
@@ -49,6 +51,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-use_
 使用JSVM-API进行异常的定制化处理
 
 使用JSVM-API感知JSVM引擎生命周期管理
+
+使用JSVM-API获取堆快照及监控堆内存阈值
 
 使用JSVM-API接口进行private相关开发
 

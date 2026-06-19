@@ -9,3 +9,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pasteboar
 使用剪贴板进行复制粘贴 (C/C++)
 
 使用剪贴板进行延迟复制粘贴
+
+剪贴板术语表

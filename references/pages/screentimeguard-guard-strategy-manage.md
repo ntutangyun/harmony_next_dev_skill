@@ -8,10 +8,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 修改策略
 
-查询策略
-
-删除策略
+查询策略配置数据
 
 启动策略
 
 停止策略
+
+查询策略运行数据
+
+删除策略

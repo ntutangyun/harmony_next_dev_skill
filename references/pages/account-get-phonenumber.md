@@ -88,7 +88,9 @@ try {
     const authorizationWithHuaweiIDCredential = authorizationWithHuaweiIDResponse?.data;
     const authorizationCode = authorizationWithHuaweiIDCredential?.authorizationCode;
     // 开发者处理authorizationCode
+    // ...
   }).catch((err: BusinessError) => {
+    // ...
     dealAllError(err);
   });
 } catch (error) {
@@ -102,7 +104,7 @@ function dealAllError(error: BusinessError): void {
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-    // 网络异常，请检查当前网络状态并重试
+    // 网络错误，请检查当前网络状态并重试
   } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
     // 用户取消授权
   } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {
@@ -191,7 +193,9 @@ try {
     const authorizationWithHuaweiIDCredential = authorizationWithHuaweiIDResponse?.data;
     const authorizationCode = authorizationWithHuaweiIDCredential?.authorizationCode;
     // 开发者处理authorizationCode
+    // ...
   }).catch((err: BusinessError) => {
+    // ...
     dealAllError(err);
   });
 } catch (error) {
@@ -209,7 +213,7 @@ function dealAllError(error: BusinessError): void {
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-    // 网络异常，请检查当前网络状态并重试
+    // 网络错误，请检查当前网络状态并重试
   } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
     // 用户取消授权
   } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {

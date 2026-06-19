@@ -49,7 +49,7 @@ try {
     hilog.error(0x0000, 'testTag', 'Promise error: %{public}d %{public}s', error.code, error.message);
   });
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'failReason: %{public}d %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag', 'Failed to convert file uris, failReason: %{public}d %{public}s', error.code, error.message);
 }
 
 ## Code blocks
@@ -91,6 +91,6 @@ try {
     hilog.error(0x0000, 'testTag', 'Promise error: %{public}d %{public}s', error.code, error.message);
   });
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'failReason: %{public}d %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag', 'Failed to convert file uris, failReason: %{public}d %{public}s', error.code, error.message);
 }
 ```

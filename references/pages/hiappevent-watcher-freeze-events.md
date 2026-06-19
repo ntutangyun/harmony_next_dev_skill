@@ -79,10 +79,10 @@ peer_binder	string[]	binder调用信息。
 threads	object[]	全量线程调用栈，详见thread属性。
 memory	object	内存信息，详见memory属性。
 external_log12+	string[]	故障日志文件路径。为避免目录空间超限（参考log_over_limit），导致新生成的日志文件写入失败，日志文件处理完后请及时删除。
-log_over_limit12+	boolean	生成的故障日志文件与已存在的日志文件总大小是否超过5M上限。true表示超过上限，日志写入失败；false表示未超过上限。
+log_over_limit12+	boolean	生成的故障日志文件与已存在的日志文件总大小是否超过5M上限。true表示超过上限，日志写入失败；false表示未超过上限。 启用minidump时，上限调整至35MB；关闭minidump时，上限恢复到5MB。
 process_life_time	number	故障进程存活时间。 说明：从API 22开始支持。
+external_callback_log	string	自定义回调日志信息，可通过OH_HiCollie_SetFreezeCallback写入。 说明：从API version 24开始支持。
 page_switch_log	string	页面切换日志路径，日志介绍详见页面切换日志。 说明：从API version 24开始支持。
-external_callback_log	string	自定义回调日志信息，可通过OH_HiCollie_SetFreezeCallback写入。 说明：从API 24开始支持。
 
 [h2]exception字段说明
 
@@ -110,7 +110,7 @@ Native帧frame字段说明
 名称	类型	说明
 symbol	string	函数名称。名称长度超过256字节时将被删除，防止超长字符串引起未知问题。
 file	string	文件名。
-buildId	string	文件唯一标识。文件可能没有buildId。
+buildId	string	来源于elf中.note.gnu.build-id。
 pc	string	程序执行的指令在文件内的偏移十六进制字节数。
 offset	number	程序执行的指令在函数内偏移字节数。
 

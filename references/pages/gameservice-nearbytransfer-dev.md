@@ -7,3 +7,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 开发准备
 
 开发指导
+
+游戏近场快传术语

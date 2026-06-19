@@ -8,18 +8,18 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 在代码文件中设置.selectionMenuHidden(true)，使剪贴板粘贴框隐藏。
 
-      Row() {
-        Text('收货人：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
-      }
+Row() {
+  Text('姓名：').textAlign(TextAlign.End).width('25%')
+  TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
+}
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-      Row() {
-        Text('收货人：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
-      }
+Row() {
+  Text('姓名：').textAlign(TextAlign.End).width('25%')
+  TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME).selectionMenuHidden(true)
+}
 ```

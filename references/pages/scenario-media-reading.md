@@ -9,8 +9,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 @Entry
 @Component
 export struct Rule_2_1_6_1 {
-  title: string = 'Rule 2.1.6.1'
-  private description: string = 'gesture swipe left then up'
+  title: string = 'Rule 2.1.6.1';
+  private description: string = 'gesture swipe left then up';
 
   build() {
     NavDestination() {
@@ -22,14 +22,16 @@ export struct Rule_2_1_6_1 {
         }) {
           Column() {
             Image($r("app.media.gesture_swipe_left_then_up"))
-              .width(220)
-              .height(220)
+              .width(200)
+              .height(180)
+              .objectFit(ImageFit.Contain)
             Text(this.description)
               .fontSize(22)
               .fontColor(Color.Red)
               .fontWeight(FontWeight.Bold)
               .textAlign(TextAlign.Center)
-          }.accessibilityGroup(true) // 将图像和文本合并为一个辅助功能对象
+          }
+          .accessibilityGroup(true) // 将图像和文本合并为一个辅助功能对象。
         }
         .width('100%')
         .height('100%')
@@ -53,10 +55,9 @@ export struct Rule_2_1_6_1 {
 它可以借助“accessibilityGroup(true)”属性来实现：
 
 @Entry
-@Preview
 @Component
 export struct Rule_2_1_6_2 {
-  title: string = 'Rule 2.1.6.2'
+  title: string = 'Rule 2.1.6.2';
 
   build() {
     NavDestination() {
@@ -104,10 +105,10 @@ export struct Rule_2_1_6_2 {
 
 @Component
 export struct Item_2_1_6_3 {
-  title: string = 'Video card'
-  subtitle: string = 'provided with additional options'
-  time: string = '1:23 hr'
-  color: ResourceColor = "#80FAFAFA"
+  title: string = 'Video card';
+  subtitle: string = 'provided with additional options';
+  time: string = '1:23 hr';
+  color: ResourceColor = "#80FAFAFA";
 
   build() {
     Flex({
@@ -138,12 +139,12 @@ export struct Item_2_1_6_3 {
       }
 
       Column() {
-        Image($r("app.media.ic_arrow")) // 此处为图片资源，请替换为本地图片
+        Image($r("sys.media.ohos_ic_public_arrow_right")) // 此处为图片资源，请替换为本地图片。
           .width(28)
           .height(28)
           .fillColor(Color.Gray)
-      }.align(Alignment.End)
-
+      }
+      .align(Alignment.End)
     }
     .width('90%')
     .height(75)
@@ -156,7 +157,7 @@ export struct Item_2_1_6_3 {
       }
     })
     .backgroundColor(this.color)
-    .accessibilityGroup(true) // combines text and image into single object
+    .accessibilityGroup(true) // combines text and image into single object.
     .margin({ top: 10 })
   }
 }
@@ -169,8 +170,8 @@ export struct Item_2_1_6_3 {
 @Entry
 @Component
 export struct Rule_2_1_6_1 {
-  title: string = 'Rule 2.1.6.1'
-  private description: string = 'gesture swipe left then up'
+  title: string = 'Rule 2.1.6.1';
+  private description: string = 'gesture swipe left then up';
 
   build() {
     NavDestination() {
@@ -182,14 +183,16 @@ export struct Rule_2_1_6_1 {
         }) {
           Column() {
             Image($r("app.media.gesture_swipe_left_then_up"))
-              .width(220)
-              .height(220)
+              .width(200)
+              .height(180)
+              .objectFit(ImageFit.Contain)
             Text(this.description)
               .fontSize(22)
               .fontColor(Color.Red)
               .fontWeight(FontWeight.Bold)
               .textAlign(TextAlign.Center)
-          }.accessibilityGroup(true) // 将图像和文本合并为一个辅助功能对象
+          }
+          .accessibilityGroup(true) // 将图像和文本合并为一个辅助功能对象。
         }
         .width('100%')
         .height('100%')
@@ -205,10 +208,9 @@ export struct Rule_2_1_6_1 {
 
 ```
 @Entry
-@Preview
 @Component
 export struct Rule_2_1_6_2 {
-  title: string = 'Rule 2.1.6.2'
+  title: string = 'Rule 2.1.6.2';
 
   build() {
     NavDestination() {
@@ -256,10 +258,10 @@ export struct Rule_2_1_6_2 {
 
 @Component
 export struct Item_2_1_6_3 {
-  title: string = 'Video card'
-  subtitle: string = 'provided with additional options'
-  time: string = '1:23 hr'
-  color: ResourceColor = "#80FAFAFA"
+  title: string = 'Video card';
+  subtitle: string = 'provided with additional options';
+  time: string = '1:23 hr';
+  color: ResourceColor = "#80FAFAFA";
 
   build() {
     Flex({
@@ -290,12 +292,12 @@ export struct Item_2_1_6_3 {
       }
 
       Column() {
-        Image($r("app.media.ic_arrow")) // 此处为图片资源，请替换为本地图片
+        Image($r("sys.media.ohos_ic_public_arrow_right")) // 此处为图片资源，请替换为本地图片。
           .width(28)
           .height(28)
           .fillColor(Color.Gray)
-      }.align(Alignment.End)
-
+      }
+      .align(Alignment.End)
     }
     .width('90%')
     .height(75)
@@ -308,7 +310,7 @@ export struct Item_2_1_6_3 {
       }
     })
     .backgroundColor(this.color)
-    .accessibilityGroup(true) // combines text and image into single object
+    .accessibilityGroup(true) // combines text and image into single object.
     .margin({ top: 10 })
   }
 }

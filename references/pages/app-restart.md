@@ -47,14 +47,12 @@ struct Index {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
         .onClick(() => {
-          // 指定当前UIAbility
           let want: Want = {
-            bundleName: 'com.example.myapplication',
+            bundleName: 'com.example.restartapp',
             abilityName: 'EntryAbility'
           };
           if (this.context) {
             try {
-              // 触发want指定的UIAbility重启
               this.context.restartApp(want);
             } catch (err) {
               hilog.error(0x0000, 'testTag', `restart failed: ${err.code}, ${err.message}`);
@@ -106,12 +104,11 @@ struct Index {
         .onClick(async () => {
           // 指定当前UIAbility，刷新当前窗口
           let want: Want = {
-            bundleName: 'com.example.myapplication',
+            bundleName: 'com.example.restartapp',
             abilityName: 'EntryAbility'
           };
           let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           try {
-            // 触发want指定的UIAbility重启
             await context.restartApp(want);
             hilog.info(0x0000, 'testTag', 'restart success');
           } catch (err) {
@@ -147,14 +144,13 @@ struct Index {
         .onClick(async () => {
           // 指定应用内其他UIAbility，跳转到新窗口
           let want: Want = {
-            bundleName: 'com.example.myapplication',
+            bundleName: 'com.example.restartapp',
             abilityName: 'SecondAbility'
           };
           let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           try {
-            // 触发want指定的UIAbility重启
             await context.restartApp(want);
-            hilog.info(0x0000, 'testTag', 'restart to new page success');
+            hilog.info(0x0000, 'testTag', 'restart success');
           } catch (err) {
             hilog.error(0x0000, 'testTag', `restart failed: ${err.code}, ${err.message}`);
           }
@@ -235,14 +231,12 @@ struct Index {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
         .onClick(() => {
-          // 指定当前UIAbility
           let want: Want = {
-            bundleName: 'com.example.myapplication',
+            bundleName: 'com.example.restartapp',
             abilityName: 'EntryAbility'
           };
           if (this.context) {
             try {
-              // 触发want指定的UIAbility重启
               this.context.restartApp(want);
             } catch (err) {
               hilog.error(0x0000, 'testTag', `restart failed: ${err.code}, ${err.message}`);
@@ -282,12 +276,11 @@ struct Index {
         .onClick(async () => {
           // 指定当前UIAbility，刷新当前窗口
           let want: Want = {
-            bundleName: 'com.example.myapplication',
+            bundleName: 'com.example.restartapp',
             abilityName: 'EntryAbility'
           };
           let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           try {
-            // 触发want指定的UIAbility重启
             await context.restartApp(want);
             hilog.info(0x0000, 'testTag', 'restart success');
           } catch (err) {
@@ -325,14 +318,13 @@ struct Index {
         .onClick(async () => {
           // 指定应用内其他UIAbility，跳转到新窗口
           let want: Want = {
-            bundleName: 'com.example.myapplication',
+            bundleName: 'com.example.restartapp',
             abilityName: 'SecondAbility'
           };
           let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           try {
-            // 触发want指定的UIAbility重启
             await context.restartApp(want);
-            hilog.info(0x0000, 'testTag', 'restart to new page success');
+            hilog.info(0x0000, 'testTag', 'restart success');
           } catch (err) {
             hilog.error(0x0000, 'testTag', `restart failed: ${err.code}, ${err.message}`);
           }

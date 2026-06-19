@@ -10,20 +10,20 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 在下面的代码片段中，您可以看到Image组件（它实际上是一个播放/暂停按钮），通过设置accessibilityText属性提供标注信息：
 
-const RESOURCE_STR_PLAY = $r('app.media.play')
-const RESOURCE_STR_PAUSE = $r('app.media.pause')
+const RESOURCE_STR_PLAY: Resource = $r('sys.media.ohos_ic_public_play');
+const RESOURCE_STR_PAUSE: Resource = $r('sys.media.ohos_ic_public_pause');
 
 @Entry
 @Component
 export struct Rule_2_1_5 {
-  title: string = 'Rule 2.1.5'
-  @State isPlaying: boolean = false
+  title: string = 'Rule 2.1.5';
+  @State isPlaying: boolean = false;
   play() {
-    // play audio file
+    console.info('play audio file');
   }
 
   pause() {
-    // pause playing of audio file
+    console.info('pause playing of audio file');
   }
 
   build() {
@@ -39,15 +39,15 @@ export struct Rule_2_1_5 {
               .width(50)
               .height(50)
               .onClick(() => {
-                this.isPlaying = !this.isPlaying
+                this.isPlaying = !this.isPlaying;
                 if (this.isPlaying) {
-                  this.play()
+                  this.play();
                 } else {
-                  this.pause()
+                  this.pause();
                 }
               })
-              .accessibilityRole(BUTTON_TYPE)
-              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置注释信息
+              .accessibilityRole(AccessibilityRoleType.BUTTON)
+              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置注释信息。
             Text('Good_morning.mp3')
               .margin({
                 left: 10
@@ -68,20 +68,20 @@ export struct Rule_2_1_5 {
 ### Code block 1
 
 ```
-const RESOURCE_STR_PLAY = $r('app.media.play')
-const RESOURCE_STR_PAUSE = $r('app.media.pause')
+const RESOURCE_STR_PLAY: Resource = $r('sys.media.ohos_ic_public_play');
+const RESOURCE_STR_PAUSE: Resource = $r('sys.media.ohos_ic_public_pause');
 
 @Entry
 @Component
 export struct Rule_2_1_5 {
-  title: string = 'Rule 2.1.5'
-  @State isPlaying: boolean = false
+  title: string = 'Rule 2.1.5';
+  @State isPlaying: boolean = false;
   play() {
-    // play audio file
+    console.info('play audio file');
   }
 
   pause() {
-    // pause playing of audio file
+    console.info('pause playing of audio file');
   }
 
   build() {
@@ -97,15 +97,15 @@ export struct Rule_2_1_5 {
               .width(50)
               .height(50)
               .onClick(() => {
-                this.isPlaying = !this.isPlaying
+                this.isPlaying = !this.isPlaying;
                 if (this.isPlaying) {
-                  this.play()
+                  this.play();
                 } else {
-                  this.pause()
+                  this.pause();
                 }
               })
-              .accessibilityRole(BUTTON_TYPE)
-              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置注释信息
+              .accessibilityRole(AccessibilityRoleType.BUTTON)
+              .accessibilityText(this.isPlaying ? 'Pause' : 'Play') // 设置注释信息。
             Text('Good_morning.mp3')
               .margin({
                 left: 10

@@ -31,3 +31,5 @@ Native与Sendable ArkTS对象绑定
 使用Node-API调用返回值为promise的ArkTS方法
 
 使用扩展的Node-API接口创建对ArkTS对象的Sendable强引用
+
+使用扩展的Node-API接口加速属性访问

@@ -72,7 +72,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/video-enc
 
 [h2]接口介绍
 
-全局时域可分层特性，适用于编码稳定和简单的时域分层结构，初始配置全局生效，不支持动态修改。开发配置参数如下。
+全局时域可分层特性，适用于低时延实时视频通信场景。编码器运行中，分层编码模式与普通编码模式支持相互切换。编码器配置时域分层生效后，分层的相关参数不支持动态修改。开发配置参数如下。
 
 配置参数	语义
 OH_MD_KEY_VIDEO_ENCODER_ENABLE_TEMPORAL_SCALABILITY	全局时域可分层编码使能参数。
@@ -127,6 +127,65 @@ OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_GOP_REFER
 // 2.4 参数配置。
 int32_t ret = OH_VideoEncoder_Configure(videoEnc, format.get());
 if (ret != AV_ERR_OK) {
+    // 异常处理。
+}
+
+（可选）在运行过程中，支持动态开启或关闭时域可分层能力。
+
+动态使能时域可分层能力的示例代码如下：
+
+std::unique_lock<std::shared_mutex> lock(codecMutex);
+// 重置编码器videoEnc。
+OH_AVErrCode resetRet = OH_VideoEncoder_Reset(videoEnc);
+if (resetRet != AV_ERR_OK) {
+    // 异常处理。
+}
+inQueue.Flush();
+outQueue.Flush();
+// 重新配置编码器参数。
+auto format = std::shared_ptr<OH_AVFormat>(OH_AVFormat_Create(), OH_AVFormat_Destroy);
+if (format == nullptr) {
+    // 异常处理。
+}
+// 配置时域可分层编码特性参数。
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_ENABLE_TEMPORAL_SCALABILITY, 1);
+constexpr int32_t TGOP_SIZE = 3;
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_GOP_SIZE, TGOP_SIZE);
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_GOP_REFERENCE_MODE, ADJACENT_REFERENCE);
+OH_AVErrCode configRet = OH_VideoEncoder_Configure(videoEnc, format.get());
+if (configRet != AV_ERR_OK) {
+    // 异常处理。
+}
+// 编码器重新就绪。
+OH_AVErrCode prepareRet = OH_VideoEncoder_Prepare(videoEnc);
+if (prepareRet != AV_ERR_OK) {
+    // 异常处理。
+}
+
+动态关闭时域可分层能力的示例代码如下：
+
+std::unique_lock<std::shared_mutex> lock(codecMutex);
+// 重置编码器videoEnc。
+OH_AVErrCode resetRet = OH_VideoEncoder_Reset(videoEnc);
+if (resetRet != AV_ERR_OK) {
+    // 异常处理。
+}
+inQueue.Flush();
+outQueue.Flush();
+// 重新配置编码器参数。
+auto format = std::shared_ptr<OH_AVFormat>(OH_AVFormat_Create(), OH_AVFormat_Destroy);
+if (format == nullptr) {
+    // 异常处理。
+}
+// 配置时域可分层编码特性参数。
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_ENABLE_TEMPORAL_SCALABILITY, 0);
+OH_AVErrCode configRet = OH_VideoEncoder_Configure(videoEnc, format.get());
+if (configRet != AV_ERR_OK) {
+    // 异常处理。
+}
+// 编码器重新就绪。
+OH_AVErrCode prepareRet = OH_VideoEncoder_Prepare(videoEnc);
+if (prepareRet != AV_ERR_OK) {
     // 异常处理。
 }
 
@@ -362,6 +421,67 @@ if (ret != AV_ERR_OK) {
 ### Code block 4
 
 ```
+std::unique_lock<std::shared_mutex> lock(codecMutex);
+// 重置编码器videoEnc。
+OH_AVErrCode resetRet = OH_VideoEncoder_Reset(videoEnc);
+if (resetRet != AV_ERR_OK) {
+    // 异常处理。
+}
+inQueue.Flush();
+outQueue.Flush();
+// 重新配置编码器参数。
+auto format = std::shared_ptr<OH_AVFormat>(OH_AVFormat_Create(), OH_AVFormat_Destroy);
+if (format == nullptr) {
+    // 异常处理。
+}
+// 配置时域可分层编码特性参数。
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_ENABLE_TEMPORAL_SCALABILITY, 1);
+constexpr int32_t TGOP_SIZE = 3;
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_GOP_SIZE, TGOP_SIZE);
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_GOP_REFERENCE_MODE, ADJACENT_REFERENCE);
+OH_AVErrCode configRet = OH_VideoEncoder_Configure(videoEnc, format.get());
+if (configRet != AV_ERR_OK) {
+    // 异常处理。
+}
+// 编码器重新就绪。
+OH_AVErrCode prepareRet = OH_VideoEncoder_Prepare(videoEnc);
+if (prepareRet != AV_ERR_OK) {
+    // 异常处理。
+}
+```
+
+### Code block 5
+
+```
+std::unique_lock<std::shared_mutex> lock(codecMutex);
+// 重置编码器videoEnc。
+OH_AVErrCode resetRet = OH_VideoEncoder_Reset(videoEnc);
+if (resetRet != AV_ERR_OK) {
+    // 异常处理。
+}
+inQueue.Flush();
+outQueue.Flush();
+// 重新配置编码器参数。
+auto format = std::shared_ptr<OH_AVFormat>(OH_AVFormat_Create(), OH_AVFormat_Destroy);
+if (format == nullptr) {
+    // 异常处理。
+}
+// 配置时域可分层编码特性参数。
+OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_ENABLE_TEMPORAL_SCALABILITY, 0);
+OH_AVErrCode configRet = OH_VideoEncoder_Configure(videoEnc, format.get());
+if (configRet != AV_ERR_OK) {
+    // 异常处理。
+}
+// 编码器重新就绪。
+OH_AVErrCode prepareRet = OH_VideoEncoder_Prepare(videoEnc);
+if (prepareRet != AV_ERR_OK) {
+    // 异常处理。
+}
+```
+
+### Code block 6
+
+```
 constexpr int32_t TGOP_SIZE = 3;
 uint32_t outPoc = 0;
 // 通过输出回调中有效帧数，获取TGOP内相对位置，对照配置确认层级。
@@ -389,7 +509,7 @@ static void OnNewOutputBuffer(OH_AVCodec *codec, uint32_t index, OH_AVBuffer *bu
 }
 ```
 
-### Code block 5
+### Code block 7
 
 ```
 constexpr int32_t NEEDED_LTR_COUNT = 5;
@@ -411,7 +531,7 @@ if (isSupported) {
 }
 ```
 
-### Code block 6
+### Code block 8
 
 ```
 // 2.1 编码输入回调OH_AVCodecOnNeedInputBuffer实现。
@@ -451,7 +571,7 @@ cb.onNewOutputBuffer = OnNewOutputBuffer;
 OH_VideoEncoder_RegisterCallback(videoEnc, cb, nullptr);
 ```
 
-### Code block 7
+### Code block 9
 
 ```
 // 2.1 编码输入参数回调OH_VideoEncoder_OnNeedInputParameter实现。
@@ -488,7 +608,7 @@ OH_VideoEncoder_OnNeedInputParameter inParaCb = OnNeedInputParameter;
 OH_VideoEncoder_RegisterParameterCallback(videoEnc, inParaCb, nullptr);
 ```
 
-### Code block 8
+### Code block 10
 
 ```
 constexpr int32_t NEEDED_LTR_COUNT = 5;

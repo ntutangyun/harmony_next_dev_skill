@@ -46,11 +46,12 @@ export struct Rule_2_1_2 {
             .fontColor(Color.Grey)
             .margin({
               left: 40
-            }).accessibilityLevel("no") // use for component
+            })
+            .accessibilityLevel("no") // use for component
         }
-        //.accessibilityGroup(true)
-        //.accessibilityLevel("no-hide-descendants") // use for container
-        // 可以使用这两行代替28行的accessibilityLevel("no")
+        // .accessibilityGroup(true)
+        // .accessibilityLevel("no-hide-descendants")
+        // 可以使用这两行代替28行的accessibilityLevel("no")。
         .width('100%')
         .height('50%')
       }
@@ -93,11 +94,12 @@ export struct Rule_2_1_2 {
             .fontColor(Color.Grey)
             .margin({
               left: 40
-            }).accessibilityLevel("no") // use for component
+            })
+            .accessibilityLevel("no") // use for component
         }
-        //.accessibilityGroup(true)
-        //.accessibilityLevel("no-hide-descendants") // use for container
-        // 可以使用这两行代替28行的accessibilityLevel("no")
+        // .accessibilityGroup(true)
+        // .accessibilityLevel("no-hide-descendants")
+        // 可以使用这两行代替28行的accessibilityLevel("no")。
         .width('100%')
         .height('50%')
       }

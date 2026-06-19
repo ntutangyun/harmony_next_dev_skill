@@ -6,6 +6,8 @@ Enterprise Threat Protection Kit简介
 
 开发准备
 
-文件访问与处置
+病毒检测与处置
 
 Enterprise Threat Protection Kit常见问题
+
+Enterprise Threat Protection Kit术语

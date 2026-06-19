@@ -8,7 +8,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-suite
 
 从6.0.0(20)开始，手写套件新增支持自定义画布大小、缩略图能力。
 
-从6.1.0(23)开始，手写套件新增禁用画布缩放、设置滚动位置ScrollTo及监听长画布滚动位置、自定义长画布最大高度能力，以及新增悬浮工具栏样式。
+从6.1.0(23)开始，手写套件新增禁用画布缩放、设置滚动位置ScrollTo及监听长画布滚动位置、自定义长画布最大高度能力。
+
+从26.0.0开始，手写套件新增手写波轮菜单、预置图形工具、矩形套索，以及新增自定义手写工具能力。
 
 场景介绍
 
@@ -69,7 +71,7 @@ export default class GlobalContext {
 
 构造包含手写组件的控件/页面，下面以控件为例。
 
-import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
+import { HandwriteController, HandwriteComponent, PenType, PenHspInfo} from '@kit.Penkit';
 
 @Entry
 @Component
@@ -139,7 +141,7 @@ struct HandWriteDemoComp {
           }
         }).margin({ top: 100 }).width(220)
         // 当前画布的偏移量。
-        Text('onDidScroll:' + this.yOffset)
+        Text('onDidScroll: ' + this.yOffset)
           .margin({ top: 150 }).width(220)
       }
       .width('100%')
@@ -196,7 +198,7 @@ export default class GlobalContext {
 ### Code block 3
 
 ```
-import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
+import { HandwriteController, HandwriteComponent, PenType, PenHspInfo} from '@kit.Penkit';
 
 @Entry
 @Component
@@ -266,7 +268,7 @@ struct HandWriteDemoComp {
           }
         }).margin({ top: 100 }).width(220)
         // 当前画布的偏移量。
-        Text('onDidScroll:' + this.yOffset)
+        Text('onDidScroll: ' + this.yOffset)
           .margin({ top: 150 }).width(220)
       }
       .width('100%')

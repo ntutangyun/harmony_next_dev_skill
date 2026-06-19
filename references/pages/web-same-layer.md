@@ -173,7 +173,7 @@ Web({src: $rawfile('test2.html'), controller: this.browserTabController})
   // 注册同层标签为'object'，类型为'test'前缀
   .registerNativeEmbedRule('object', 'test')
 
-与registerNativeEmbedRule相对应的前端页面代码，类型可使用"test"及以"test"为前缀的字符串。
+与registerNativeEmbedRule相对应的前端页面代码，类型可使用"test"及以"test"为前缀的字串。
 
 <!--HAP's src/main/resources/rawfile/test2.html-->
 <!DOCTYPE html>
@@ -182,10 +182,15 @@ Web({src: $rawfile('test2.html'), controller: this.browserTabController})
     <title>同层渲染HTML</title>
     <meta name="viewport">
 </head>
+
 <body style="background:white">
+
 <object id = "input1" type="test/input" style="width: 100%; height: 100px; margin: 30px; margin-top: 600px"></object>
+
 <object id = "input2" type="test/input" style="width: 100%; height: 100px; margin: 30px; margin-top: 50px"></object>
+
 <object id = "input3" type="test/input" style="width: 100%; height: 100px; margin: 30px; margin-top: 50px"></object>
+
 </body>
 </html>
 
@@ -1647,10 +1652,15 @@ Web({src: $rawfile('test2.html'), controller: this.browserTabController})
     <title>同层渲染HTML</title>
     <meta name="viewport">
 </head>
+
 <body style="background:white">
+
 <object id = "input1" type="test/input" style="width: 100%; height: 100px; margin: 30px; margin-top: 600px"></object>
+
 <object id = "input2" type="test/input" style="width: 100%; height: 100px; margin: 30px; margin-top: 50px"></object>
+
 <object id = "input3" type="test/input" style="width: 100%; height: 100px; margin: 30px; margin-top: 50px"></object>
+
 </body>
 </html>
 ```

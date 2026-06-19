@@ -26,11 +26,11 @@ ohos.permission.INTERNET：用于请求对应天气相关数据。
   "module": {
     // ...
     "requestPermissions": [
-    {
-      "name": "ohos.permission.INTERNET",
+      {
+        "name": "ohos.permission.INTERNET",
+        // ...
+      },
       // ...
-    }
-    // ...
     ]
   }
 }
@@ -52,11 +52,11 @@ ohos.permission.INTERNET：用于请求对应天气相关数据。
   "module": {
     // ...
     "requestPermissions": [
-    {
-      "name": "ohos.permission.INTERNET",
+      {
+        "name": "ohos.permission.INTERNET",
+        // ...
+      },
       // ...
-    }
-    // ...
     ]
   }
 }

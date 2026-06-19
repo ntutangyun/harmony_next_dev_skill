@@ -46,7 +46,7 @@ NFC标签后台读写
 
 接口说明
 
-NFC标签读写完整的JS API说明以及实例代码请参考：NFC标签接口。
+NFC标签读写完整的JS API说明以及实例代码请参考：@ohos.nfc.tag (标准NFC-Tag)。
 
 获取不同技术类型标签对象的接口说明如下表，根据不同技术的标签对象来执行NFC标签的读写。
 
@@ -139,7 +139,7 @@ import需要的tag模块和其他相关的模块。
       }
     ]
 
-import { tag } from '@kit.ConnectivityKit';
+import { tag, nfcController } from '@kit.ConnectivityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AbilityConstant, UIAbility, Want, bundleManager } from '@kit.AbilityKit';
@@ -218,7 +218,7 @@ export default class EntryAbility extends UIAbility {
 
     // 判断设备是否支持NFC能力
     if (!canIUse("SystemCapability.Communication.NFC.Core")) {
-      hilog.error(0x0000, 'testTag', 'nfc unavailable.');
+      hilog.error(0x0000, 'testTag', 'NFC System Capability not supported.');
       return;
     }
 
@@ -446,7 +446,7 @@ export default class EntryAbility extends UIAbility {
 ### Code block 2
 
 ```
-import { tag } from '@kit.ConnectivityKit';
+import { tag, nfcController } from '@kit.ConnectivityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AbilityConstant, UIAbility, Want, bundleManager } from '@kit.AbilityKit';
@@ -525,7 +525,7 @@ export default class EntryAbility extends UIAbility {
 
     // 判断设备是否支持NFC能力
     if (!canIUse("SystemCapability.Communication.NFC.Core")) {
-      hilog.error(0x0000, 'testTag', 'nfc unavailable.');
+      hilog.error(0x0000, 'testTag', 'NFC System Capability not supported.');
       return;
     }
 

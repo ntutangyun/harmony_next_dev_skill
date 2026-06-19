@@ -36,33 +36,34 @@ getUserAuthStatus(): Promise<AuthStatus>	获取用户授权状态。
 导入相关模块。
 
 import { guardService } from '@kit.ScreenTimeGuardKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
-import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 调用requestUserAuth，请求用户授权。
 
 const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// this.isUninstallable为boolean型变量，通过该变量设置此应用是否可卸载
 guardService.requestUserAuth(context, { isSupportAppUninstall: this.isUninstallable })
-   .then(async () => {
-      // ...
-   })
-   .catch((error: BusinessError) => {
-      hilog.error(this.domainId, this.logTag,
+  .then(async () => {
+    // ...
+  })
+  .catch((error: BusinessError) => {
+    hilog.error(0x0000, 'GuardService',
       `requestUserAuth fail, errCode is ${error.code}, errMessage is ${error.message}`);
-   })
+  })
 
 获取用户授权状态。
 
 public async getUserAuthStatus(): Promise<void> {
-   try {
-      const status = await guardService.getUserAuthStatus();
-      hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    const status = await guardService.getUserAuthStatus();
+    hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `getUserAuthStatus failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 ## Code blocks
@@ -71,36 +72,37 @@ public async getUserAuthStatus(): Promise<void> {
 
 ```
 import { guardService } from '@kit.ScreenTimeGuardKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
-import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
 const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// this.isUninstallable为boolean型变量，通过该变量设置此应用是否可卸载
 guardService.requestUserAuth(context, { isSupportAppUninstall: this.isUninstallable })
-   .then(async () => {
-      // ...
-   })
-   .catch((error: BusinessError) => {
-      hilog.error(this.domainId, this.logTag,
+  .then(async () => {
+    // ...
+  })
+  .catch((error: BusinessError) => {
+    hilog.error(0x0000, 'GuardService',
       `requestUserAuth fail, errCode is ${error.code}, errMessage is ${error.message}`);
-   })
+  })
 ```
 
 ### Code block 3
 
 ```
 public async getUserAuthStatus(): Promise<void> {
-   try {
-      const status = await guardService.getUserAuthStatus();
-      hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    const status = await guardService.getUserAuthStatus();
+    hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `getUserAuthStatus failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```

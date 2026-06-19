@@ -11,3 +11,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/media-kit
 视频转码
 
 视频处理
+
+基于AVScreenCapture实现屏幕录制（C/C++）

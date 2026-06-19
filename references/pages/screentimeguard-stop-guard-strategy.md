@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当用户希望停止某个管控规则时，可以调用停止管控策略的接口。根据参数中传入的策略名，应用可以停止对应管控策略。一旦策略被停止，系统将不再根据该规则对用户的屏幕使用行为进行监管。
+当管控应用希望停止某个管控策略时，可以调用停止管控策略的接口。根据参数中传入的策略名，应用可以停止对应管控策略。一旦策略被停止，系统将不再根据该规则对用户的屏幕使用行为进行管控。
 
 用户体验设计
 
@@ -51,14 +51,14 @@ import { BusinessError } from '@kit.BasicServicesKit';
 调用stopGuardStrategy，停止管控策略。
 
 private async stopStrategy(strategyName: string): Promise<void> {
- try {
-   await guardService.stopGuardStrategy(strategyName);
-   // ...
- } catch (error) {
-   let err: BusinessError = error as BusinessError;
-   hilog.error(0x0000, 'GuardService',
-     `stopGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
- }
+  try {
+    await guardService.stopGuardStrategy(strategyName);
+    // ...
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `stopGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 接收管控策略结束回调（可选）
@@ -73,28 +73,32 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 继承TimeGuardExtensionAbility，重写onStop回调。
 
 export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
-   async onStop(strategyName: string): Promise<void> {
-      hilog.info(0x0000, 'TimeGuardExtensionAbility', `Strategy-${strategyName} onStop`);
-   }
+  // ...
+
+  async onStop(strategyName: string): Promise<void> {
+    hilog.info(0x0000, 'TimeGuardExtensionAbility', `Strategy-${strategyName} onStop`);
+  }
+
+  // ...
 }
 
 在工程中entry模块的module.json5文件中的"extensionAbilities"节点添加如下代码。
 
 "extensionAbilities": [
-   {
-     "name": "TimeGuardExtAbility",
-     "type": "screenTimeGuard",
-     "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
-     "exported": false,
-     "skills": [
-       {
-         "actions": [
-           "action.ohos.timeGuard.listener"
-         ]
-       }
-     ],
-   }
- ],
+  {
+    "name": "TimeGuardExtAbility",
+    "type": "screenTimeGuard",
+    "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
+    "exported": false,
+    "skills": [
+      {
+        "actions": [
+          "action.ohos.timeGuard.listener"
+        ]
+      }
+    ],
+  }
+],
 
 ## Code blocks
 
@@ -110,14 +114,14 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 private async stopStrategy(strategyName: string): Promise<void> {
- try {
-   await guardService.stopGuardStrategy(strategyName);
-   // ...
- } catch (error) {
-   let err: BusinessError = error as BusinessError;
-   hilog.error(0x0000, 'GuardService',
-     `stopGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
- }
+  try {
+    await guardService.stopGuardStrategy(strategyName);
+    // ...
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `stopGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```
 
@@ -132,9 +136,13 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 ```
 export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
-   async onStop(strategyName: string): Promise<void> {
-      hilog.info(0x0000, 'TimeGuardExtensionAbility', `Strategy-${strategyName} onStop`);
-   }
+  // ...
+
+  async onStop(strategyName: string): Promise<void> {
+    hilog.info(0x0000, 'TimeGuardExtensionAbility', `Strategy-${strategyName} onStop`);
+  }
+
+  // ...
 }
 ```
 
@@ -142,18 +150,18 @@ export default class TimeGuardExtAbility extends TimeGuardExtensionAbility {
 
 ```
 "extensionAbilities": [
-   {
-     "name": "TimeGuardExtAbility",
-     "type": "screenTimeGuard",
-     "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
-     "exported": false,
-     "skills": [
-       {
-         "actions": [
-           "action.ohos.timeGuard.listener"
-         ]
-       }
-     ],
-   }
- ],
+  {
+    "name": "TimeGuardExtAbility",
+    "type": "screenTimeGuard",
+    "srcEntry": "./ets/timeguardextability/TimeGuardExtAbility.ets",
+    "exported": false,
+    "skills": [
+      {
+        "actions": [
+          "action.ohos.timeGuard.listener"
+        ]
+      }
+    ],
+  }
+],
 ```

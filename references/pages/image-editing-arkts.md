@@ -6,6 +6,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-edi
 
 使用PixelMap完成位图操作
 
-使用VideoProcessingEngine完成图片超分
-
-编辑图片Exif信息
+使用VideoProcessingEngine实现图片超分辨率

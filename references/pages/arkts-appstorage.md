@@ -136,9 +136,9 @@ AppStorage.setOrCreate('propA', 47);
 @StorageProp('propA') storageProp: number = 1;
 @StorageLink('propA') storageLink: number = 2;
 
-@StorageProp与@StorageLink不支持装饰Function类型的变量，API version 23之前，应用在运行时会出现错误。
+@StorageProp与@StorageLink不支持装饰Function类型的变量，API version 23之前，框架会抛出运行时错误。
 
-从API version 23开始，在应用编译时添加了相关校验，@StorageProp与@StorageLink装饰Function类型变量会提示ERROR，应在代码中删除Function类型变量的@StorageProp或@StorageLink装饰器。
+从API version 23开始，添加对@StorageProp与@StorageLink装饰Function类型变量的校验，编译期会报错。
 
 AppStorage与PersistentStorage以及Environment配合使用时，需要注意以下几点：
 

@@ -9,3 +9,5 @@ Asset Store Kit简介
 Asset Store Kit开发指导(ArkTS)
 
 Asset Store Kit开发指导(C/C++)
+
+Asset Store Kit术语

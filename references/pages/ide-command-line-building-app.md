@@ -62,7 +62,7 @@ node -v
 
 说明
 
-建议使用命令行工具中自带的Node.js工具，若另外单独下载配置其他版本的Node.js，推荐使用v18版本。
+建议使用命令行工具内置的Node.js，如需另行安装，推荐使用命令行工具配套的Node.js版本，具体配套关系请参考DevEco Studio兼容性配套关系。
 
 [h2]配置hdc环境变量
 
@@ -151,7 +151,7 @@ hvigorw assembleApp --mode project -p product=default -p buildMode=debug --no-da
 // build-profile.json5文件
 {
     "name": "default",
-    "compatibleSdkVersion": "6.1.1(24)",
+    "compatibleSdkVersion": "26.0.0",
     "runtimeOS": "HarmonyOS",
     "buildOption": {
       "strictMode": {
@@ -546,7 +546,7 @@ hvigorw assembleApp --mode project -p product=default -p buildMode=debug --no-da
 // build-profile.json5文件
 {
     "name": "default",
-    "compatibleSdkVersion": "6.1.1(24)",
+    "compatibleSdkVersion": "26.0.0",
     "runtimeOS": "HarmonyOS",
     "buildOption": {
       "strictMode": {

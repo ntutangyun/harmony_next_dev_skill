@@ -152,6 +152,8 @@ ohos.permission.INTERNET
 
 允许使用Internet网络。
 
+获取该权限后，应用可以获取IP地址、进行DNS解析或自定义DNS规则等。
+
 权限级别：normal
 
 授权方式：系统授权（system_grant）
@@ -677,3 +679,17 @@ ohos.permission.CONNECT_OBJECTEDITOR_EXTENSION
 支持设备：PC/2in1 | Phone | Tablet
 
 起始版本：24
+
+ohos.permission.STYLUS_FRAME_BOOST
+
+允许应用使用手写笔跟手性的增强接口。
+
+获取该权限后，应用可以优化手写效果跟手性，提升应用中使用手写笔书写场景的跟手性体验。
+
+权限级别：normal
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
+
+起始版本：26.0.0

@@ -8,18 +8,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 约束与限制
 
-使用URPC进行远程程序调用能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备。
+使用URPC进行远程程序调用能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备；从6.1.0(23)开始，新增支持Car设备。
 
 此功能需要配合部署远程服务器。如有需要，请通过在线提单的方式与我们联系。
-
-接口说明
-
-具体API说明详见接口文档。
-
-接口名	描述
-UrpcCall = (funcName: string, request: object, returnValue: object, config?: CallingOption) => UrpcPromise	发送一个URPC请求，并返回来自服务器的URPC响应。使用Promise异步回调。
-UrpcCancel = (callingId?: number | number[]) => void	取消指定或所有正在进行的URPC请求，返回值为空。
-UrpcDestroy = () => void	销毁UrpcStub实例
 
 使用示例
 

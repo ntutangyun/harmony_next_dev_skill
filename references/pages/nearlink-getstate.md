@@ -12,8 +12,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 
 接口名	描述
 getState(): NearlinkState	主动查询星闪开关状态。
-on(type: 'stateChange', callback: Callback<NearlinkState>): void	订阅星闪开关状态变化事件。
-off(type: 'stateChange', callback?: Callback<NearlinkState>): void	取消订阅星闪开关状态变化事件。
+on(type: 'stateChange', callback: Callback<NearlinkState>): void	订阅星闪开关状态变化事件。使用callback异步回调。
+off(type: 'stateChange', callback?: Callback<NearlinkState>): void	取消订阅星闪开关状态变化事件。使用callback异步回调。
 
 开发步骤
 
@@ -39,7 +39,7 @@ try {
 
 let onReceiveEvent:(data: manager.NearlinkState) => void = (data: manager.NearlinkState) => {
   console.info('nearlink state = ' + JSON.stringify(data));
-}
+};
 try {
   manager.on('stateChange', onReceiveEvent);
 } catch (err) {
@@ -79,7 +79,7 @@ try {
 ```
 let onReceiveEvent:(data: manager.NearlinkState) => void = (data: manager.NearlinkState) => {
   console.info('nearlink state = ' + JSON.stringify(data));
-}
+};
 try {
   manager.on('stateChange', onReceiveEvent);
 } catch (err) {

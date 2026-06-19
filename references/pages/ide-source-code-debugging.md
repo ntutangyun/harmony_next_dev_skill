@@ -55,7 +55,7 @@ localUrl：本地生成sourceMap中HAR的前缀路径。
 
 说明
 
-如果在HAR包工程中同时配置Symbol Directories和Ets Source Pairs，可同时attach调试ArkTS和C++断点。
+如果在HAR包工程中同时配置Symbol Directories和ArkTS Source Pairs，可同时attach调试ArkTS和C++断点。
 
 源码HAR调试
 

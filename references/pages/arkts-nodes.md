@@ -13,3 +13,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-nod
 自定义声明式节点 (BuilderNode)
 
 设置自定义节点跨语言属性
+
+组件动态创建

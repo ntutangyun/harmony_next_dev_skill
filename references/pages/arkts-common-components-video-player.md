@@ -23,11 +23,13 @@ Video组件支持加载本地视频和网络视频。具体的数据源配置请
 再使用资源访问符$rawfile()引用视频资源。
 
 // xxx.ets
-// ···
+// ...
 @Component
 export struct LocalVideo {
   private controller: VideoController = new VideoController();
+  // $r('app.media.preview')需要替换为开发者所需的图像资源文件
   private previewUris: Resource = $r('app.media.preview');
+  // $rawfile('videoTest.mp4')需要替换为开发者所需的影像资源文件
   private innerResource: Resource = $rawfile('videoTest.mp4');
 
   build() {
@@ -44,13 +46,11 @@ export struct LocalVideo {
 Data Ability提供的视频路径带有dataability://前缀，使用时确保对应视频资源存在。
 
 // xxx.ets
-// ...
+// ···
 @Component
 export struct LocalVideoTwo {
   private controller: VideoController = new VideoController();
-  // $r('app.media.preview')需要替换为开发者所需的图像资源文件
   private previewUris: Resource = $r('app.media.preview');
-  // $rawfile('videoTest.mp4')需要替换为开发者所需的影像资源文件
   private videoSrc: string = 'dataability://device_id/com.domainname.dataability.videodata/video/10';
 
   build() {
@@ -469,11 +469,13 @@ struct XComponentAVPlayer {
 
 ```
 // xxx.ets
-// ···
+// ...
 @Component
 export struct LocalVideo {
   private controller: VideoController = new VideoController();
+  // $r('app.media.preview')需要替换为开发者所需的图像资源文件
   private previewUris: Resource = $r('app.media.preview');
+  // $rawfile('videoTest.mp4')需要替换为开发者所需的影像资源文件
   private innerResource: Resource = $rawfile('videoTest.mp4');
 
   build() {
@@ -492,13 +494,11 @@ export struct LocalVideo {
 
 ```
 // xxx.ets
-// ...
+// ···
 @Component
 export struct LocalVideoTwo {
   private controller: VideoController = new VideoController();
-  // $r('app.media.preview')需要替换为开发者所需的图像资源文件
   private previewUris: Resource = $r('app.media.preview');
-  // $rawfile('videoTest.mp4')需要替换为开发者所需的影像资源文件
   private videoSrc: string = 'dataability://device_id/com.domainname.dataability.videodata/video/10';
 
   build() {

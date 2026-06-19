@@ -27,7 +27,7 @@ restartApp(): void	重启当前进程，并启动由setRestartWant指定的UIAbi
 saveAppState(context?: UIAbilityContext): boolean	主动保存由Context指定的UIAbility状态。
 setRestartWant(want: Want): void	设置主动调用restartApp以及RestartFlag不为NO_RESTART时重启的UIAbility（want的abilityName属性可设置为UIAbility的名称）。该UIAbility必须在同一个包名下。
 
-由于上述接口可能在故障处理时使用，所以不会返回异常，需要开发者熟悉使用的场景。具体其各参数定义详见应用故障恢复。
+由于上述接口可能在故障处理时使用，所以不会返回异常，需要开发者熟悉使用的场景。具体其各参数定义详见参数说明。
 
 enableAppRecovery：需要在应用初始化阶段调用，比如AbilityStage的onCreate调用。调用该接口后，应用恢复时将按首个支持恢复的UIAbility进行恢复。
 
@@ -61,7 +61,7 @@ API 10开始支持应用卡死时的状态保存。JsError故障时，onSaveStat
 
 故障监听指的是通过errorManager注册ErrorObserver，监听故障的发生，并通知到监听方。
 
-故障恢复指的是appRecovery，及故障发生后，将应用重启恢复到故障之前的状态。
+故障恢复指的是appRecovery，即故障发生后，将应用重启恢复到故障之前的状态。
 
 故障查询指的是faultLogger通过其查询接口获取当前的故障信息。
 

@@ -11,3 +11,5 @@ Enterprise Space Kit简介
 空间管理
 
 Enterprise Space Kit常见问题
+
+Enterprise Space Kit术语

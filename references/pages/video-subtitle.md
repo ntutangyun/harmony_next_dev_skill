@@ -64,22 +64,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/video-sub
 
 新建工程，下载示例工程，并将示例工程的以下资源复制到对应目录。
 
-AVPlayerArkTSSubtitle
-entry/src/main/ets/
-└── pages
-    └── Index.ets (播放界面)
-entry/src/main/resources/
-├── base
-│   ├── element
-│   │   ├── color.json
-│   │   ├── float.json
-│   │   └── string.json
-│   └── media
-│       ├── ic_video_play.svg  (播放键图片资源)
-│       └── ic_video_pause.svg (暂停键图片资源)
-└── rawfile
-    ├── test1.mp4 （视频资源）
-    └── test1.srt （字幕资源）
+ AVPlayerArkTSSubtitle
+ entry/src/main/ets/
+ └── pages
+     └── Index.ets (播放界面)
+ entry/src/main/resources/
+ ├── base
+ │   ├── element
+ │   │   ├── color.json
+ │   │   ├── float.json
+ │   │   └── string.json
+ │   └── media
+ │       ├── ic_video_play.svg  (播放键图片资源)
+ │       └── ic_video_pause.svg (暂停键图片资源)
+ └── rawfile
+     ├── test1.mp4 （视频资源）
+     └── test1.srt （字幕资源）
 
 编译新建工程并运行。
 
@@ -144,20 +144,20 @@ entry/src/main/resources/
 ### Code block 4
 
 ```
-AVPlayerArkTSSubtitle
-entry/src/main/ets/
-└── pages
-    └── Index.ets (播放界面)
-entry/src/main/resources/
-├── base
-│   ├── element
-│   │   ├── color.json
-│   │   ├── float.json
-│   │   └── string.json
-│   └── media
-│       ├── ic_video_play.svg  (播放键图片资源)
-│       └── ic_video_pause.svg (暂停键图片资源)
-└── rawfile
-    ├── test1.mp4 （视频资源）
-    └── test1.srt （字幕资源）
+ AVPlayerArkTSSubtitle
+ entry/src/main/ets/
+ └── pages
+     └── Index.ets (播放界面)
+ entry/src/main/resources/
+ ├── base
+ │   ├── element
+ │   │   ├── color.json
+ │   │   ├── float.json
+ │   │   └── string.json
+ │   └── media
+ │       ├── ic_video_play.svg  (播放键图片资源)
+ │       └── ic_video_pause.svg (暂停键图片资源)
+ └── rawfile
+     ├── test1.mp4 （视频资源）
+     └── test1.srt （字幕资源）
 ```

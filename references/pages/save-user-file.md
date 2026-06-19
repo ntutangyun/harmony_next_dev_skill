@@ -14,6 +14,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/save-user
 
 使用Picker对音频、图片、视频、文档类文件的保存操作无需申请权限。
 
+约束限制
+
+如果使用系统能力为SystemCapability.FileManagement.UserFileService.FolderSelection的接口时，可使用canIUse接口，确认设备是否具有该系统能力：
+
+if (!canIUse('SystemCapability.FileManagement.UserFileService.FolderSelection')) {
+      console.error('This API is not supported on this device');
+      return;
+}
+
 系统隔离说明
 
 通过Picker保存的文件存储在用户指定的目录。此类文件与图库管理的资源隔离，无法在图库中看到。
@@ -190,13 +199,22 @@ documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<str
 ### Code block 1
 
 ```
+if (!canIUse('SystemCapability.FileManagement.UserFileService.FolderSelection')) {
+      console.error('This API is not supported on this device');
+      return;
+}
+```
+
+### Code block 2
+
+```
 import { picker } from '@kit.CoreFileKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 ```
 
-### Code block 2
+### Code block 3
 
 ```
 // 创建文件管理器选项实例。
@@ -211,7 +229,7 @@ documentSaveOptions.fileSuffixChoices = ['文档|.txt', '.pdf'];
 documentSaveOptions.autoCreateEmptyFile = false;
 ```
 
-### Code block 3
+### Code block 4
 
 ```
 let uris: string[] = [];
@@ -226,7 +244,7 @@ documentViewPicker.save(documentSaveOptions).then((documentSaveResult: string[])
 });
 ```
 
-### Code block 4
+### Code block 5
 
 ```
 if (uris.length > 0) {
@@ -237,7 +255,7 @@ if (uris.length > 0) {
 }
 ```
 
-### Code block 5
+### Code block 6
 
 ```
 let writeLen: number = fileIo.writeSync(file.fd, 'hello, world');
@@ -245,7 +263,7 @@ console.info('write data to file succeed and size is:' + writeLen);
 fileIo.closeSync(file);
 ```
 
-### Code block 6
+### Code block 7
 
 ```
 import { picker } from '@kit.CoreFileKit';
@@ -254,7 +272,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 const audioSaveOptions = new picker.AudioSaveOptions();
@@ -262,7 +280,7 @@ const audioSaveOptions = new picker.AudioSaveOptions();
 audioSaveOptions.newFileNames = ['AudioViewPicker01.mp3'];
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 let uris: string[] = [];
@@ -277,7 +295,7 @@ audioViewPicker.save(audioSaveOptions).then((audioSelectResult: string[]) => {
 });
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 if (uris.length > 0) {
@@ -288,7 +306,7 @@ if (uris.length > 0) {
 }
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 let writeLen = fileIo.writeSync(file.fd, 'hello, world');
@@ -296,7 +314,7 @@ console.info('write data to file succeed and size is:' + writeLen);
 fileIo.closeSync(file);
 ```
 
-### Code block 11
+### Code block 12
 
 ```
 import { fileUri, picker } from '@kit.CoreFileKit';
@@ -305,7 +323,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 ```
 
-### Code block 12
+### Code block 13
 
 ```
 const documentSaveOptions = new picker.DocumentSaveOptions();
@@ -313,7 +331,7 @@ const documentSaveOptions = new picker.DocumentSaveOptions();
 documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
 ```
 
-### Code block 13
+### Code block 14
 
 ```
 let uri: string = '';

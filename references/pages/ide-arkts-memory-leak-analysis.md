@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-arkts-memory-leak-analysis_
 
-本案例介绍如何判断应用存在ArkTS泄漏，以及如何通过快照对比找出ArkTS内存泄漏的原因。
+本案例介绍如何判断应用存在ArkTS内存泄漏，以及如何通过快照对比找出ArkTS内存泄漏的原因。
 
 初步识别内存问题
 
@@ -150,6 +150,28 @@ DevEco Studio 6.1.0 Release版本新增，位于(handle)标签中，用于管理
 GlobalHandleRoot
 
 DevEco Studio 6.1.0 Release版本新增，位于(handle)标签中，允许用户管理ArkTS/JS值的生命周期的引用句柄（napi_ref）。
+
+VMRoot
+
+26.0.0 Beta1版本新增，位于(handle)标签中，表示虚拟机层面的根节点。
+
+FrameRoot
+
+26.0.0 Beta1版本新增，位于(handle)标签中，表示函数调用栈帧在GC遍历过程中的根节点。
+
+SourceTextModule
+
+SourceTextModule为虚拟机创建的对象，当应用使用export暴露对象后会被SourceTextModule对象持有。
+
+属性EcmaModuleRecordName表示export对象所在的文件名，属性EcmaModuleFileName表示export对象文件所在的abc文件名，这两个属性名在26.0.0 Beta1版本新增。如果快照用TRIM_LEVEL_2级别裁剪生成的.rawheap文件转换成的.heapsnapshot文件则不显示这两个属性名。
+
+Proxy-<对象实例名称>
+
+26.0.0 Beta1版本新增，被@Observed装饰的class实例，或被状态管理V1装饰器（如@State）装饰的对象实例，系统会自动在Proxy后带上对象实例名称。
+
+说明
+
+若开启进程级堆快照转储以后，是由子线程触发的进程级堆快照转储将不会展示对象实例名称。
 
 [h2]常见属性介绍
 

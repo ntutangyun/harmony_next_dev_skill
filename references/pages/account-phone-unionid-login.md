@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-p
 
 提供系统验证过的手机号，关联应用已有用户。
 
-实现Phone、Tablet、PC/2in1、TV设备一致的登录体验。
+实现Phone、Tablet、PC/2in1、TV、Car设备一致的登录体验。
 
 场景介绍
 
@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-p
 
 儿童账号一键登录场景：
 
-用户使用儿童账号进行登录，点击一键登录会触发Account Kit默认提供的家长验密流程（Account Kit提供的验证页，暂不可自定义），家长验密完成后可获取用户的身份标识和手机号。并且TV设备暂不支持儿童账号。
+用户使用儿童账号进行登录，点击一键登录会触发Account Kit默认提供的家长验密流程（Account Kit提供的验证页，暂不可自定义），家长验密完成后可获取用户的身份标识和手机号。并且TV设备、Car设备暂不支持儿童账号。
 
 手机号验证机制说明：
 
@@ -38,7 +38,7 @@ Account Kit调用系统能力获取华为账号登录设备上的SIM卡手机号
 
 华为账号一键登录服务当前仅限中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）用户可用。
 
-华为账号一键登录支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
+华为账号一键登录支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
 
 仅支持企业开发者使用一键登录，个人开发者请使用华为账号登录或静默登录实现登录。
 
@@ -70,13 +70,13 @@ Account Kit调用系统能力获取华为账号登录设备上的SIM卡手机号
 
 说明
 
-获取匿名手机号需要进行超时处理，应用可根据实际场景设置超时时间，推荐设置5秒保证用户体验。
+获取匿名手机号时建议设置超时处理，推荐设置5秒以保证用户体验。
 
 若华为账号未登录，调用AuthorizationWithHuaweiIDRequest授权请求会返回1001502001 用户未登录华为账号错误码，此时应用需要展示其他登录方式进行应用登录。
 
 展示一键登录页面阶段（序号5）：
 
-获取到的匿名手机号需要展示在页面上并设置好隐私协议，设置登录按钮类型为LoginType.QUICK_LOGIN，展示包含LoginWithHuaweiIDButton组件的一键登录页面。应用可结合实际登录风控场景，通过组件参数传入风险等级标识获取华为账号风险等级，通过华为账号一键登录获取用户风险等级，对恶意账号进行风控，提升应用的安全等级。
+获取到的匿名手机号需要展示在页面上并设置好隐私协议，设置登录按钮类型为LoginType.QUICK_LOGIN，展示包含LoginWithHuaweiIDButton组件的一键登录页面。应用可结合实际登录风控场景，通过组件参数传入风险等级标识以获取华为账号风险等级，从而对恶意账号进行风控，提升应用的安全等级。
 
 点击一键登录关联用户账号阶段（序号6-16）：
 
@@ -164,19 +164,19 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 错误码	错误描述	处理建议
 1001502001	用户未登录华为账号	应用展示其他登录方式
-1001502005	网络异常	提示用户检查当前网络状态后重试
+1001502005	网络错误	提示用户检查当前网络状态后重试
 1001502009	内部错误	应用展示其他登录方式
 1001502014	应用未申请scopes或permissions权限	请参考1001502014 应用未申请scopes或permissions权限的可能原因和解决方法解决该报错
 1001500001	应用指纹证书校验失败	请参考1001500001 应用指纹证书校验失败的可能原因和解决办法解决该报错
 1001500002	重复请求	重复请求，应用无需处理
-1001500003	不支持该scopes或permissions	1、华为账号用户注册地可能为中国境外、香港特别行政区、澳门特别行政区或中国台湾，应用展示其他登录方式 2、仅在5.1.1(19)支持TV设备，其他版本应用可以通过华为账号登录进行登录
+1001500003	不支持该scopes或permissions	1、华为账号用户注册地可能为中国境外、香港特别行政区、澳门特别行政区或中国台湾，应用展示其他登录方式 2、5.1.1(19)起支持TV设备，26.0.0起支持Car设备，其他版本应用可以通过华为账号登录进行登录
 12300001	系统服务异常	应用展示其他登录方式
 
 2）获取到的匿名手机号为空，说明华为账号没有绑定手机号、权限未申请或未生效，上述异常场景应用需要展示其他登录方式。
 
 3）若开发者开启了代码混淆，需将quickLoginAnonymousPhone（匿名手机号）属性加入混淆白名单，防止其被混淆。
 
-  getQuickLoginAnonymousPhone() {
+  async getQuickLoginAnonymousPhone(): Promise<string> {
     // 创建授权请求，并设置参数
     const authRequest = new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
     // 获取匿名手机号需传quickLoginAnonymousPhone这个scope，传参之前需要先申请“华为账号一键登录”权限，否则会返回1001502014错误码
@@ -186,22 +186,31 @@ import { BusinessError } from '@kit.BasicServicesKit';
     // 一键登录场景该参数必须设置为false
     authRequest.forceAuthorization = false;
     const controller = new authentication.AuthenticationController();
+    let quickLoginAnonymousPhone: string = '';
+    // ...
     try {
-      controller.executeRequest(authRequest).then((response: authentication.AuthorizationWithHuaweiIDResponse) => {
-        // 获取到匿名手机号
-        const anonymousPhone = response.data?.extraInfo?.quickLoginAnonymousPhone as string;
-        if (anonymousPhone) {
-          hilog.info(0x0000, 'testTag', 'Succeeded in authentication.');
-          const quickLoginAnonymousPhone: string = anonymousPhone;
-          return;
-        }
-        hilog.info(0x0000, 'testTag', 'Succeeded in authentication. AnonymousPhone is empty.');
-        // 未获取到匿名手机号，应用需要跳转到其他方式登录页面
-      }).catch((error: BusinessError) => {
-        this.dealAllError(error);
-      })
+      await controller.executeRequest(authRequest)
+        .then((response: authentication.AuthorizationWithHuaweiIDResponse) => {
+          // 获取到匿名手机号
+          quickLoginAnonymousPhone = response.data?.extraInfo?.quickLoginAnonymousPhone as string;
+          // ...
+          if (quickLoginAnonymousPhone) {
+            hilog.info(0x0000, 'testTag', 'Succeeded in authentication.');
+            // ...
+            return quickLoginAnonymousPhone;
+          }
+          hilog.info(0x0000, 'testTag', 'Succeeded in authentication. AnonymousPhone is empty.');
+          // ...
+          // 未获取到匿名手机号，应用需要跳转到其他方式登录页面
+          return quickLoginAnonymousPhone;
+        })
+        .catch((error: BusinessError) => {
+          this.dealAllError(error);
+        })
+      return quickLoginAnonymousPhone;
     } catch (error) {
       this.dealAllError(error);
+      return quickLoginAnonymousPhone;
     }
   }
 
@@ -213,7 +222,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
     if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
       // 华为账号未登录，应用需要展示其他登录方式
     } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-      // 网络异常，请检查当前网络状态并重试或展示其他登录方式
+      // 网络错误，请检查当前网络状态并重试
     } else if (error.code === ErrorCode.ERROR_CODE_INTERNAL_ERROR) {
       // 登录失败，应用需要展示其他登录方式
     } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {
@@ -224,7 +233,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
       // 应用登录失败，应用需要展示其他登录方式
     }
   }
-
+  // ...
   export enum ErrorCode {
     // 账号未登录
     ERROR_CODE_LOGIN_OUT = 1001502001,
@@ -874,7 +883,7 @@ struct WebPage {
         })
         .darkMode(WebDarkMode.Auto)
         .forceDarkAccess(true)
-        .onLoadIntercept((event) => {
+        .onLoadIntercept(() => {
           hilog.info(this.domainId, this.logTag, 'onLoadIntercept');
           return false;
         })
@@ -1569,7 +1578,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 3
 
 ```
-  getQuickLoginAnonymousPhone() {
+  async getQuickLoginAnonymousPhone(): Promise<string> {
     // 创建授权请求，并设置参数
     const authRequest = new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
     // 获取匿名手机号需传quickLoginAnonymousPhone这个scope，传参之前需要先申请“华为账号一键登录”权限，否则会返回1001502014错误码
@@ -1579,22 +1588,31 @@ import { BusinessError } from '@kit.BasicServicesKit';
     // 一键登录场景该参数必须设置为false
     authRequest.forceAuthorization = false;
     const controller = new authentication.AuthenticationController();
+    let quickLoginAnonymousPhone: string = '';
+    // ...
     try {
-      controller.executeRequest(authRequest).then((response: authentication.AuthorizationWithHuaweiIDResponse) => {
-        // 获取到匿名手机号
-        const anonymousPhone = response.data?.extraInfo?.quickLoginAnonymousPhone as string;
-        if (anonymousPhone) {
-          hilog.info(0x0000, 'testTag', 'Succeeded in authentication.');
-          const quickLoginAnonymousPhone: string = anonymousPhone;
-          return;
-        }
-        hilog.info(0x0000, 'testTag', 'Succeeded in authentication. AnonymousPhone is empty.');
-        // 未获取到匿名手机号，应用需要跳转到其他方式登录页面
-      }).catch((error: BusinessError) => {
-        this.dealAllError(error);
-      })
+      await controller.executeRequest(authRequest)
+        .then((response: authentication.AuthorizationWithHuaweiIDResponse) => {
+          // 获取到匿名手机号
+          quickLoginAnonymousPhone = response.data?.extraInfo?.quickLoginAnonymousPhone as string;
+          // ...
+          if (quickLoginAnonymousPhone) {
+            hilog.info(0x0000, 'testTag', 'Succeeded in authentication.');
+            // ...
+            return quickLoginAnonymousPhone;
+          }
+          hilog.info(0x0000, 'testTag', 'Succeeded in authentication. AnonymousPhone is empty.');
+          // ...
+          // 未获取到匿名手机号，应用需要跳转到其他方式登录页面
+          return quickLoginAnonymousPhone;
+        })
+        .catch((error: BusinessError) => {
+          this.dealAllError(error);
+        })
+      return quickLoginAnonymousPhone;
     } catch (error) {
       this.dealAllError(error);
+      return quickLoginAnonymousPhone;
     }
   }
 
@@ -1606,7 +1624,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
     if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
       // 华为账号未登录，应用需要展示其他登录方式
     } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-      // 网络异常，请检查当前网络状态并重试或展示其他登录方式
+      // 网络错误，请检查当前网络状态并重试
     } else if (error.code === ErrorCode.ERROR_CODE_INTERNAL_ERROR) {
       // 登录失败，应用需要展示其他登录方式
     } else if (error.code === ErrorCode.ERROR_CODE_SYSTEM_SERVICE) {
@@ -1617,7 +1635,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
       // 应用登录失败，应用需要展示其他登录方式
     }
   }
-
+  // ...
   export enum ErrorCode {
     // 账号未登录
     ERROR_CODE_LOGIN_OUT = 1001502001,
@@ -2269,7 +2287,7 @@ struct WebPage {
         })
         .darkMode(WebDarkMode.Auto)
         .forceDarkAccess(true)
-        .onLoadIntercept((event) => {
+        .onLoadIntercept(() => {
           hilog.info(this.domainId, this.logTag, 'onLoadIntercept');
           return false;
         })

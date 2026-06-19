@@ -230,6 +230,14 @@ Use after a dynamic update or to fully re-initialize internal state.
 
 Declare them under `module.json5 → extensionAbilities[]` with a `type` field that matches the kind.
 
+## ArkAF — Ark Agentic Framework (方舟智能开发框架)
+
+HarmonyOS now frames app↔system-agent integration under **ArkAF (Ark Agentic Framework / 方舟智能开发框架)** — the way an app "externalizes" its fine-grained business capabilities so the **system agent (Xiaoyi/小艺)** can invoke them as the user states a goal rather than opening an app. ArkAF has **three capability-opening mechanisms** (source: `pages/arkaf-overview.md`, `pages/ark-agentic-framework.md`):
+
+1. **Intent framework (意图框架)** — declare standardized *intents* an app can be woken to perform. Develop via config file or decorator. Source: `pages/insight-intent-overview.md`, `pages/insight-intent-development.md`, `pages/insight-intent-decorator-development.md`, `pages/intents-kit-guide.md` (Intents Kit), plus listing/上架 specs (`pages/intents-kit-listing-configuration.md`).
+2. **Skill framework (Skill, API 26+)** — *new.* Expose app business capabilities as declarative **Skills** the system agent can semantically match and call. Each Skill = a **description file** (trigger scenarios, input constraints, return contract) + an **ArkTS entry script** that bridges to existing business logic, bound to an Ability via module config — a thin wrapper, no rewrite of existing code. Stage model only. Source: `pages/arkts-skill-development-guide.md`. (This is the OS-native analog of an in-app "skill/tool" registry.)
+3. **Device-side A2A (端侧A2A)** — build an *app agent* that converses with the system agent — see below.
+
 ## Device-side agents — 端侧A2A / HMAF (API 24+)
 
 From API 24, HarmonyOS adds a **device-side A2A (Agent-to-Agent) framework**, the on-device extension of HMAF (Harmony Agent Framework). It lets an app expose an intelligent agent that *system apps* (the Agent client) can discover and talk to over a standardized A2A protocol — capability description, two-way data channel, optional auth, optional UI rendering — without pre-agreed tight coupling. Source: `pages/agent-guideline.md`, `pages/agent-overview.md`, `pages/agent-development.md`.

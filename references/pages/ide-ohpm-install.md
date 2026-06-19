@@ -99,7 +99,7 @@ Options
 
 默认值：""
 
-类型： string
+类型：string
 
 可以在 install 命令后面配置 --prefix <string> 参数，用来指定包的根目录，该目录下必须存在 oh-package.json5 文件。
 
@@ -107,7 +107,7 @@ Options
 
 默认值：无
 
-类型： string
+类型：string
 
 别名：pf
 
@@ -125,7 +125,7 @@ Options
 
 默认值：60000
 
-类型： Number
+类型：Number
 
 别名：ft
 
@@ -135,7 +135,7 @@ Options
 
 默认值：true
 
-类型： Boolean
+类型：Boolean
 
 可以在 install 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
 
@@ -143,7 +143,7 @@ Options
 
 默认值：50
 
-类型： Number
+类型：Number
 
 别名：mc
 
@@ -153,7 +153,7 @@ Options
 
 默认值：1
 
-类型： Number
+类型：Number
 
 别名：rt
 
@@ -163,7 +163,7 @@ Options
 
 默认值：1000
 
-类型： Number
+类型：Number
 
 别名：ri
 
@@ -189,7 +189,7 @@ Options
 
 默认值：无
 
-类型： String
+类型：String
 
 从ohpm 6.0.2.636版本开始，可以在 install 命令后配置--log_level <string>参数，指定执行当前命令的日志级别（info、debug、warn、error），如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
 
@@ -197,7 +197,7 @@ Options
 
 默认值：false
 
-类型： Boolean
+类型：Boolean
 
 从ohpm 6.0.2.636版本开始，可以在命令后配置--debug参数，指定执行当前命令的日志级别为debug，该配置仅在当前命令行生效，不修改.ohpmrc中的日志级别，如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
 
@@ -248,6 +248,22 @@ Options
 类型：String
 
 从ohpm 6.0.2.636版本开始，可以在 install 命令后面配置 --cache <string> 参数，设置缓存路径。
+
+[h2]auto_skip_install
+
+默认值：false
+
+类型：Boolean
+
+从ohpm 26.0.0.410版本开始，可以在 install 命令后面配置 --auto_skip_install参数，设置是否需要校验跳过本次安装，详情参见auto_skip_install。
+
+[h2]metadata_cache
+
+默认值：false
+
+类型：Boolean
+
+从ohpm 26.0.0.410版本开始，可以在 install 命令后面配置 --metadata_cache 参数，设置是否读取oh-install-meta.json5文件内的缓存元数据和~/.ohpm/cache/metadata下的元数据缓存文件，详情参见metadata_cache。
 
 示例
 

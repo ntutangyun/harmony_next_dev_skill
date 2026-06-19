@@ -53,7 +53,9 @@ C++工程目录结构（Stage模型）
 
 C++ Stage模型支持API Version 10以上版本，支持使用ArkTS和C++进行开发，其工程目录结构如下图所示。
 
-src > main > cpp > types：用于存放C++的API接口描述文件
+libs > {abi}：用于存放.so文件，此目录下.so文件默认打包到产物包中。其中，{abi}为设备CPU架构类型（如arm64-v8a）。
+
+src > main > cpp > types：用于存放C++的API接口描述文件。
 
 src > main > cpp > types > libentry > index.d.ts：描述C++ API接口行为，如接口名、入参、返回参数等。
 

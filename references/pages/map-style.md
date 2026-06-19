@@ -45,10 +45,16 @@ Map Kit提供两种方法设置样式ID：
 
 在创建地图后设置样式ID
 
+import { MapComponent, mapCommon, map } from '@kit.MapKit';
+import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
+
+在初始化地图时设置样式ID
+
 @Entry
 @Component
-struct CustomMapStyleDemo {
-  private TAG = "CustomMapStyleDemo";
+struct MapStyleDemo {
+  // ...
+  private TAG = 'MapStyleDemo';
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -69,13 +75,14 @@ struct CustomMapStyleDemo {
         this.mapController = mapController;
         // 自定义样式参数，styleId需要替换为您自己的样式ID或者预览ID，样式ID或者预览ID可在Petal Maps Studio平台上创建
         let param: mapCommon.CustomMapStyleOptions = {
-           styleId: "XXX"
+          styleId: 'XXX'
         };
         // 设置自定义样式
         await this.mapController.setCustomMapStyle(param).then(() => {
           console.info(this.TAG + `setCustomMapStyle OK`);
         }).catch((error: BusinessError) => {
-          console.error(this.TAG + `Failed in getting CustomMapStyle, code is：${error.code},message is ${error.message}`);
+          console.error(this.TAG + `Failed in getting CustomMapStyle, code is：${error.code}, message is
+          ${error.message}`);
         })
       } else {
         console.error(`Failed to initialize the map, code is：${err.code}, message is ${err.message}`);
@@ -84,51 +91,15 @@ struct CustomMapStyleDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
-  }
-}
+    // ...
+      Stack() {
+        // 调用MapComponent组件初始化地图
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
 
-在初始化地图时设置样式ID
-
-@Entry
-@Component
-struct CustomMapStyleDemo {
-  private mapOptions?: mapCommon.MapOptions;
-  private mapController?: map.MapComponentController;
-  private callback?: AsyncCallback<map.MapComponentController>;
-
-  aboutToAppear(): void {
-    // 地图初始化参数
-    this.mapOptions = {
-      position: {
-        target: {
-          latitude: 31.984410259206815,
-          longitude: 118.76625379397866
-        },
-        zoom: 15
-      },
-      // 自定义样式参数，styleId需要替换为您自己的样式ID或者预览ID，样式ID或者预览ID可在Petal Maps Studio平台上创建
-      styleId: "XXX"
-    };
-    this.callback = async (err, mapController) => {
-      if (!err) {
-        this.mapController = mapController;
-      } else {
-        console.error(`Failed to initialize the map, code is：${err.code}, message is ${err.message}`);
-      }
-    };
-  }
-
-  build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+      // ...
   }
 }
 
@@ -145,7 +116,8 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct CustomMapStyleDemo {
+struct MapStyleDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -166,17 +138,17 @@ struct CustomMapStyleDemo {
         this.mapController = mapController;
         // 自定义样式参数
         let param: mapCommon.CustomMapStyleOptions = {
-               styleContent: `[{
-                   "mapFeature": "landcover.natural",
-                   "options": "geometry.fill",
-                   "paint": {
-                       "color": "#8FBC8F"
+          styleContent: `[{
+                   'mapFeature': 'landcover.natural',
+                   'options': 'geometry.fill',
+                   'paint': {
+                       'color': '#8FBC8F'
                    }},
                    {
-                  "mapFeature": "water",
-                  "options": "geometry.fill",
-                  "paint": {
-                      "color": "#4682B4"
+                  'mapFeature': 'water',
+                  'options': 'geometry.fill',
+                  'paint': {
+                      'color': '#4682B4'
                   }}]`
         };
         // 设置自定义样式
@@ -188,11 +160,15 @@ struct CustomMapStyleDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        // 调用MapComponent组件初始化地图
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -326,10 +302,18 @@ import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
+import { MapComponent, mapCommon, map } from '@kit.MapKit';
+import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 3
+
+```
 @Entry
 @Component
-struct CustomMapStyleDemo {
-  private TAG = "CustomMapStyleDemo";
+struct MapStyleDemo {
+  // ...
+  private TAG = 'MapStyleDemo';
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -350,13 +334,14 @@ struct CustomMapStyleDemo {
         this.mapController = mapController;
         // 自定义样式参数，styleId需要替换为您自己的样式ID或者预览ID，样式ID或者预览ID可在Petal Maps Studio平台上创建
         let param: mapCommon.CustomMapStyleOptions = {
-           styleId: "XXX"
+          styleId: 'XXX'
         };
         // 设置自定义样式
         await this.mapController.setCustomMapStyle(param).then(() => {
           console.info(this.TAG + `setCustomMapStyle OK`);
         }).catch((error: BusinessError) => {
-          console.error(this.TAG + `Failed in getting CustomMapStyle, code is：${error.code},message is ${error.message}`);
+          console.error(this.TAG + `Failed in getting CustomMapStyle, code is：${error.code}, message is
+          ${error.message}`);
         })
       } else {
         console.error(`Failed to initialize the map, code is：${err.code}, message is ${err.message}`);
@@ -365,53 +350,15 @@ struct CustomMapStyleDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
-  }
-}
-```
+    // ...
+      Stack() {
+        // 调用MapComponent组件初始化地图
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
 
-### Code block 3
-
-```
-@Entry
-@Component
-struct CustomMapStyleDemo {
-  private mapOptions?: mapCommon.MapOptions;
-  private mapController?: map.MapComponentController;
-  private callback?: AsyncCallback<map.MapComponentController>;
-
-  aboutToAppear(): void {
-    // 地图初始化参数
-    this.mapOptions = {
-      position: {
-        target: {
-          latitude: 31.984410259206815,
-          longitude: 118.76625379397866
-        },
-        zoom: 15
-      },
-      // 自定义样式参数，styleId需要替换为您自己的样式ID或者预览ID，样式ID或者预览ID可在Petal Maps Studio平台上创建
-      styleId: "XXX"
-    };
-    this.callback = async (err, mapController) => {
-      if (!err) {
-        this.mapController = mapController;
-      } else {
-        console.error(`Failed to initialize the map, code is：${err.code}, message is ${err.message}`);
-      }
-    };
-  }
-
-  build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+      // ...
   }
 }
 ```
@@ -428,7 +375,8 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct CustomMapStyleDemo {
+struct MapStyleDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -449,17 +397,17 @@ struct CustomMapStyleDemo {
         this.mapController = mapController;
         // 自定义样式参数
         let param: mapCommon.CustomMapStyleOptions = {
-               styleContent: `[{
-                   "mapFeature": "landcover.natural",
-                   "options": "geometry.fill",
-                   "paint": {
-                       "color": "#8FBC8F"
+          styleContent: `[{
+                   'mapFeature': 'landcover.natural',
+                   'options': 'geometry.fill',
+                   'paint': {
+                       'color': '#8FBC8F'
                    }},
                    {
-                  "mapFeature": "water",
-                  "options": "geometry.fill",
-                  "paint": {
-                      "color": "#4682B4"
+                  'mapFeature': 'water',
+                  'options': 'geometry.fill',
+                  'paint': {
+                      'color': '#4682B4'
                   }}]`
         };
         // 设置自定义样式
@@ -471,11 +419,15 @@ struct CustomMapStyleDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        // 调用MapComponent组件初始化地图
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```

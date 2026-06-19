@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-sign
 
 密钥算法为RSA、摘要算法为SHA384、填充模式为PSS，请见开发案例：RSA2048/SHA384/PSS
 
-密钥算法为ECC、摘要算法为SHA256、用户认证类型包含TUI PIN、携带认证信息的签名类型
+ECC/SHA256/携带认证信息的签名类型
 
 具体的场景介绍及支持的算法规格，请参考签名/验签支持的算法。
 

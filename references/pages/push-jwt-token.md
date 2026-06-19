@@ -28,7 +28,7 @@ BRNss*****7az5oU7-Zp5g9X2WJVXXX
 
 创建服务账号密钥文件。
 
-您需要在华为开发者联盟的API Console上创建并下载推送服务API的服务账号密钥文件，凭证创建入口如下图所示，选择所在项目，创建“服务账号密钥”凭证。相关创建步骤请参见API服务操作指南-服务账号密钥。
+您需要在华为开发者联盟的API Console上创建并下载推送服务API的服务账号密钥文件，凭证创建入口如下图所示，选择所在项目，创建“服务账号密钥“凭证。相关创建步骤请参见API服务操作指南-服务账号密钥。
 
 您申请后的服务账号密钥样例文件形式可参考（文件内容已经经过脱敏处理）：
 
@@ -247,7 +247,7 @@ try {
   const header = {
     alg: 'PS256', // 建议使用PS256算法
     kid: privateJson?.key_id,
-    typ: 'JWT'    // 类型为JWT
+    typ: 'JWT' // 类型为JWT
   };
   // 创建JWT载荷
   const payload = {
@@ -468,7 +468,7 @@ def send_message(jwt_token):
     pass
 
 if __name__ == "__main__":
-    json_file = "private.json"  # 替换为实际JSON文件路径，此处以本文件同级目录为例
+    json_file = "private.json" # 替换为实际JSON文件路径，此处以本文件同级目录为例
 
     try:
         # jwt_token 为鉴权令牌，调用Push Kit REST API时放在Authorization头部来进行鉴权。
@@ -553,7 +553,7 @@ function generateJWTToken(ServiceAccount $serviceAccount)
 
     return $configuration->builder()
         ->withHeader('alg', 'PS256') // 指定PS256算法
-        ->withHeader('typ', 'JWT')   // JWT类型
+        ->withHeader('typ', 'JWT') // JWT类型
         ->withHeader('kid', $serviceAccount->keyId) // 密钥ID
         ->issuedBy($serviceAccount->subAccount) // iss
         ->permittedFor($serviceAccount->tokenURI) // aud
@@ -767,7 +767,7 @@ try {
   const header = {
     alg: 'PS256', // 建议使用PS256算法
     kid: privateJson?.key_id,
-    typ: 'JWT'    // 类型为JWT
+    typ: 'JWT' // 类型为JWT
   };
   // 创建JWT载荷
   const payload = {
@@ -992,7 +992,7 @@ def send_message(jwt_token):
     pass
 
 if __name__ == "__main__":
-    json_file = "private.json"  # 替换为实际JSON文件路径，此处以本文件同级目录为例
+    json_file = "private.json" # 替换为实际JSON文件路径，此处以本文件同级目录为例
 
     try:
         # jwt_token 为鉴权令牌，调用Push Kit REST API时放在Authorization头部来进行鉴权。
@@ -1079,7 +1079,7 @@ function generateJWTToken(ServiceAccount $serviceAccount)
 
     return $configuration->builder()
         ->withHeader('alg', 'PS256') // 指定PS256算法
-        ->withHeader('typ', 'JWT')   // JWT类型
+        ->withHeader('typ', 'JWT') // JWT类型
         ->withHeader('kid', $serviceAccount->keyId) // 密钥ID
         ->issuedBy($serviceAccount->subAccount) // iss
         ->permittedFor($serviceAccount->tokenURI) // aud

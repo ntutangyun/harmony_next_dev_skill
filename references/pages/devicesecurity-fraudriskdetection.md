@@ -54,26 +54,38 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 调用detectFraudRisk接口获取涉诈剧本检测结果。
 
-const TAG = "BusinessRiskIntelligentDetectionJsTest";
+const TAG: string = '[FraudRiskDetectModel]';
 
-let rand = cryptoFramework.createRandom();
-let len = 48;
-let randData = rand.generateRandomSync(len);
-let params = {
-  nonce: randData.data,
-  algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
-} as businessRiskIntelligentDetection.FraudDetectionRequest;
-try {
-  hilog.info(0x0000, TAG, 'Detect fraud risk begin.');
-  businessRiskIntelligentDetection.detectFraudRisk(params).then((result: string) => {
-    hilog.info(0x0000, TAG, 'Detect fraud risk success: %{public}s', result);
-  }).catch((error: Error) => {
-    let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
+function fraudRiskDetectPromise(): Promise<String> {
+  let rand = cryptoFramework.createRandom();
+  let len = 48;
+  let randData = rand.generateRandomSync(len);
+  return new Promise(async (resolve: Function, reject: Function) => {
+    let params = {
+      nonce: randData.data,
+      algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
+    } as businessRiskIntelligentDetection.FraudDetectionRequest;
+    try {
+      hilog.info(0x0000, TAG, 'Detect fraud risk begin.');
+      businessRiskIntelligentDetection.detectFraudRisk(params).then((result: string) => {
+        // Indicates communication with the service was successful.
+        // Use result to get the result data.
+        // It is recommended that the result be parsed and verified on the server.
+        hilog.info(0x0000, TAG, 'Detect fraud risk success: %{public}s', result);
+        resolve(result);
+      }).catch((error: Error) => {
+        // An error occurred while communicating with the service.
+        let e: BusinessError = error as BusinessError;
+        hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
+        reject(error);
+      });
+    } catch (error) {
+      // An error occurred while using api.
+      let e: BusinessError = error as BusinessError;
+      hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
+      reject(error);
+    }
   });
-} catch (error) {
-  let e: BusinessError = error as BusinessError;
-  hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
 }
 
 在开发者应用服务器中验证检测结果。
@@ -137,6 +149,24 @@ Payload字段如下：
   ]
 }
 
+从26.0.0版本开始，增加version为3的取值。
+
+当请求参数FraudDetectionRequest中的version为3，Payload样例：
+
+{
+  "timestampMs": 9xxxxxxxxx,
+  "nonce": "Rxxxxxxxxx",
+  "appId": "xxxxxxxxx",
+  "version": 3,
+  "riskScore": 90,
+  "tags": [
+    {"tag": "phishing", "level": "high", "lastTime": 9876543216548, "riskFactors": ["answerSuspectedFraudCall", "clickSuspectedFraudMessage", "visitSuspectedFraudURL"]},
+    {"tag": "malware", "level": "low", "lastTime": 965432198756, "riskFactors": ["installUnknownApp", "executedUnknownApp", "runCommonMeetingApp"]},
+    {"tag": "interdiction", "level": "medium", "lastTime": 965432198756, "riskFactors": ["inFlightMode", "callForward", "videoCalling"]},
+    {"tag": "control", "level": "medium", "lastTime": 965432198123, "riskFactors": ["screenSharing"]}
+  ]
+}
+
 说明
 
 nonce：调用detectFraudRisk接口时传入的nonce值Base64编码。
@@ -162,6 +192,18 @@ low	当前风险标签对应的风险等级为低
 medium	当前风险标签对应的风险等级为中
 high	当前风险标签对应的风险等级为高
 
+riskFactors值	含义
+answerSuspectedFraudCall	近期接听过疑似诈骗电话
+clickSuspectedFraudMessage	近期点击过疑似涉诈短信
+visitSuspectedFraudURL	近期访问过疑似诈骗网址
+installUnknownApp	近期安装过未知应用
+executedUnknownApp	近期运行过未知应用
+runCommonMeetingApp	正在运行主流会议类APP
+inFlightMode	近期开启过飞行模式
+callForward	近期开启过呼叫转移
+videoCalling	当前处于在电话语音中
+screenSharing	当前启用了共享屏幕
+
 ## Code blocks
 
 ### Code block 1
@@ -176,26 +218,38 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-const TAG = "BusinessRiskIntelligentDetectionJsTest";
+const TAG: string = '[FraudRiskDetectModel]';
 
-let rand = cryptoFramework.createRandom();
-let len = 48;
-let randData = rand.generateRandomSync(len);
-let params = {
-  nonce: randData.data,
-  algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
-} as businessRiskIntelligentDetection.FraudDetectionRequest;
-try {
-  hilog.info(0x0000, TAG, 'Detect fraud risk begin.');
-  businessRiskIntelligentDetection.detectFraudRisk(params).then((result: string) => {
-    hilog.info(0x0000, TAG, 'Detect fraud risk success: %{public}s', result);
-  }).catch((error: Error) => {
-    let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
+function fraudRiskDetectPromise(): Promise<String> {
+  let rand = cryptoFramework.createRandom();
+  let len = 48;
+  let randData = rand.generateRandomSync(len);
+  return new Promise(async (resolve: Function, reject: Function) => {
+    let params = {
+      nonce: randData.data,
+      algorithm: businessRiskIntelligentDetection.SigningAlgorithm.ES256
+    } as businessRiskIntelligentDetection.FraudDetectionRequest;
+    try {
+      hilog.info(0x0000, TAG, 'Detect fraud risk begin.');
+      businessRiskIntelligentDetection.detectFraudRisk(params).then((result: string) => {
+        // Indicates communication with the service was successful.
+        // Use result to get the result data.
+        // It is recommended that the result be parsed and verified on the server.
+        hilog.info(0x0000, TAG, 'Detect fraud risk success: %{public}s', result);
+        resolve(result);
+      }).catch((error: Error) => {
+        // An error occurred while communicating with the service.
+        let e: BusinessError = error as BusinessError;
+        hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
+        reject(error);
+      });
+    } catch (error) {
+      // An error occurred while using api.
+      let e: BusinessError = error as BusinessError;
+      hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
+      reject(error);
+    }
   });
-} catch (error) {
-  let e: BusinessError = error as BusinessError;
-  hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
 }
 ```
 
@@ -240,6 +294,24 @@ try {
     {"tag": "malware", "level": "low", "lastTime": 965432198756},
     {"tag": "interdiction", "level": "medium", "lastTime": 965432198756},
     {"tag": "control", "level": "medium", "lastTime": 965432198123}
+  ]
+}
+```
+
+### Code block 6
+
+```
+{
+  "timestampMs": 9xxxxxxxxx,
+  "nonce": "Rxxxxxxxxx",
+  "appId": "xxxxxxxxx",
+  "version": 3,
+  "riskScore": 90,
+  "tags": [
+    {"tag": "phishing", "level": "high", "lastTime": 9876543216548, "riskFactors": ["answerSuspectedFraudCall", "clickSuspectedFraudMessage", "visitSuspectedFraudURL"]},
+    {"tag": "malware", "level": "low", "lastTime": 965432198756, "riskFactors": ["installUnknownApp", "executedUnknownApp", "runCommonMeetingApp"]},
+    {"tag": "interdiction", "level": "medium", "lastTime": 965432198756, "riskFactors": ["inFlightMode", "callForward", "videoCalling"]},
+    {"tag": "control", "level": "medium", "lastTime": 965432198123, "riskFactors": ["screenSharing"]}
   ]
 }
 ```

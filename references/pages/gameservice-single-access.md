@@ -145,9 +145,9 @@ import { window } from '@kit.ArkUI';
 要求游戏先成功调用初始化init接口后再调用其他接口，否则将导致审核被驳回。
 
 onWindowStageCreate(windowStage: window.WindowStage) {
-  windowStage.loadContent("pages/index", (err, data) => {
+  windowStage.loadContent('pages/index', (err, data) => {
     try {
-      gamePlayer.init(this.context,()=>{
+      gamePlayer.init(this.context, ()=>{
         hilog.info(0x0000, 'testTag', `Succeeded in initializing.`);
       });
     } catch (error) {
@@ -254,9 +254,9 @@ import { window } from '@kit.ArkUI';
 
 ```
 onWindowStageCreate(windowStage: window.WindowStage) {
-  windowStage.loadContent("pages/index", (err, data) => {
+  windowStage.loadContent('pages/index', (err, data) => {
     try {
-      gamePlayer.init(this.context,()=>{
+      gamePlayer.init(this.context, ()=>{
         hilog.info(0x0000, 'testTag', `Succeeded in initializing.`);
       });
     } catch (error) {

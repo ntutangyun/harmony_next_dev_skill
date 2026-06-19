@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/we-business_introduction_
 
-Wear Engine（穿戴服务）面向手机和穿戴设备的应用与服务开发者，提供华为穿戴设备开放能力。
+Wear Engine Kit（穿戴服务）面向手机和穿戴设备的应用与服务开发者，提供华为穿戴设备开放能力。
 
 开发者通过调用Wear Engine开放能力，可以实现手机上的生态应用与服务给华为穿戴设备发消息、发通知、传输数据，并获取穿戴设备状态、读取传感器数据等，也可以实现华为穿戴设备上的生态应用与服务给手机发消息、传输数据等。
 

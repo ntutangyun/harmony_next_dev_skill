@@ -18,13 +18,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 
 hvigorw taskTree
 
-获取任务树时会根据工程中的模块将模块中注册的任务以下图形式输出：
+获取任务树时会根据工程中的模块，将模块中注册的任务以下图形式输出：
 
 执行顺序举例说明：如图所示，assembleHap依赖CollectDebugSymbol，CollectDebugSymbol依赖于PackageHap；则任务执行顺序为PackageHap->CollectDebugSymbol->assembleHap。
 
 任务详细说明
 
-根据任务职能的不同主要分为以下几个类型的任务。
+根据任务职能的不同，主要分为以下几种任务类型。
 
 任务类别	任务说明
 Hook	hook任务

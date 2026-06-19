@@ -26,7 +26,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 调用OH_CryptoAsymKeyGenerator_Convert，传入二进制密钥数据，生成非对称密钥对象（OH_CryptoKeyPair）。
 
-调用OH_CryptoPubKey_Encode，将非对称密钥对象中的公钥转换成PKCS#1或X.509格式。
+调用OH_CryptoPubKey_Encode，将非对称密钥对象中的公钥转换成PKCS #1或X.509格式。
 
 #include "CryptoArchitectureKit/crypto_common.h"
 #include "CryptoArchitectureKit/crypto_asym_key.h"

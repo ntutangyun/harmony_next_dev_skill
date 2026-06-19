@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 应用调用拉起许可应用跳转页的接口，拉起健康使用设备查询开发者是否已申请权限，以及用户是否授权。
 
-若状态为未授权，则抛出对应错误码；若状态为已授权，应用将根据传入的应用token信息获取全量应用信息，判断是否展示TrustApp，并拉起应用列表Form。
+若状态为未授权，则抛出对应错误码；若状态为已授权，将根据传入的token获取对应应用信息，同时判断是否展示TrustApp，并拉起应用列表Form。
 
 用户点击跳转页中的应用，跳转到相应的应用。
 
@@ -34,20 +34,20 @@ startAppForm(context: common.Context, appSelection: guardService.AppInfo, appSub
 导入相关模块。
 
 import { appPicker } from '@kit.ScreenTimeGuardKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 调用startAppForm，拉起许可应用跳转页。
 
-private async jumpTo3rdApp(selectedAppTokens: string[], subtitle: string): Promise<void> {
-   try {
-      await appPicker.startAppForm(
-         this.getUIContext().getHostContext(), { appTokens: selectedAppTokens }, subtitle, true);
-   } catch(error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(this.domainId, this.logTag,
-         `startAppForm fail, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+private async jumpToOtherApp(selectedAppTokens: string[], subtitle: string): Promise<void> {
+  try {
+    await appPicker.startAppForm(
+      this.getUIContext().getHostContext(), { appTokens: selectedAppTokens }, subtitle, true);
+  } catch(error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `startAppForm fail, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 ## Code blocks
@@ -56,21 +56,21 @@ private async jumpTo3rdApp(selectedAppTokens: string[], subtitle: string): Promi
 
 ```
 import { appPicker } from '@kit.ScreenTimeGuardKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-private async jumpTo3rdApp(selectedAppTokens: string[], subtitle: string): Promise<void> {
-   try {
-      await appPicker.startAppForm(
-         this.getUIContext().getHostContext(), { appTokens: selectedAppTokens }, subtitle, true);
-   } catch(error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(this.domainId, this.logTag,
-         `startAppForm fail, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+private async jumpToOtherApp(selectedAppTokens: string[], subtitle: string): Promise<void> {
+  try {
+    await appPicker.startAppForm(
+      this.getUIContext().getHostContext(), { appTokens: selectedAppTokens }, subtitle, true);
+  } catch(error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `startAppForm fail, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```

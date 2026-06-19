@@ -9,3 +9,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/localizat
 应用本地化
 
 本地化测试
+
+Localization Kit术语

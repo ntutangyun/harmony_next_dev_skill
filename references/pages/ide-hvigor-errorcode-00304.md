@@ -967,3 +967,39 @@ executableBinaryPaths-path的值对应的文件路径配置错误。
 处理步骤
 
 确保path配置的文件存在，且存放在本模块的libs/{abi}/目录下，其中{abi}为设备CPU架构类型（如arm64-v8a、x86_64、armeabi-v7a）。
+
+00304071 skillProfiles[name='XXX']中对应的skill目录不存在
+
+错误信息
+
+Directory XXX does not exist in skillProfiles[name='XXX']. At file: YYY.
+
+错误描述
+
+skillProfiles[name='XXX']中对应的skill目录不存在。
+
+可能原因
+
+skillProfiles[name='XXX']中对应的skill目录不存在。
+
+处理步骤
+
+创建skillProfiles[name='XXX']对应的skill目录：模块目录/skills/XXX。
+
+00304072 skillProfiles的srcEntries文件要在scripts目录下
+
+错误信息
+
+srcEntry value XXX is invalid in skillProfiles[name='YYY']. The file must exist in the skills/YYY/scripts directory. At file: ZZZ.
+
+错误描述
+
+skillProfiles的srcEntries中的文件要在scripts目录下。
+
+可能原因
+
+skillProfiles的srcEntries中的XXX文件不在skills/YYY/scripts目录下。
+
+处理步骤
+
+将skillProfiles的srcEntries中的XXX文件放在skills/YYY/scripts目录下。

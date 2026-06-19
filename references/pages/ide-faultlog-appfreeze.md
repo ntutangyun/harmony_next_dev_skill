@@ -87,7 +87,7 @@ Binder Communication页签包含以下内容：
 
 从DevEco Studio 6.1.1 Beta1版本开始，新增Sampling Stack页签，对应AppFreeze增强日志中的堆栈信息，用于查看采样栈数据，标记可疑问题栈。
 
-查看采样栈数据之前，需要在AppScope/app.json5文件中配置如下环境变量，获取AppFreeze增强日志。
+当设备版本低于API 26.0.0时，查看采样栈数据之前，需要在AppScope/app.json5文件中配置如下环境变量，获取AppFreeze增强日志。当设备版本为API 26.0.0及以上时，无需配置环境变量。
 
 "appEnvironments": [
   {

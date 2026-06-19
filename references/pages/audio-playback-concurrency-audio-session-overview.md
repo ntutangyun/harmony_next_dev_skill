@@ -49,9 +49,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 音频会话使用场景概述
 
-如果系统默认策略不满足场景需求，建议使用音频渲染、录制和会话相关接口进行处理，典型场景如下。
+如果系统默认焦点策略不满足场景需求，可使用音频渲染、录制和会话相关焦点接口进行处理，典型场景如下。
 
-音乐被后启动的应用打断后，无法恢复
+[h2]场景1：音乐被后启动应用打断后，无法恢复
 
 先打开应用A播放音乐，然后打开应用B，应用B有音频播放。默认焦点策略是STOP，应用A被应用B打断后，当B停止播放时，A不能恢复播放；要使A重新播放，系统当前有如下方案供选择：
 
@@ -61,7 +61,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 方案二	无需适配	使用音频会话，在启动时使用CONCURRENCY_PAUSE_OTHERS，打断时使用PAUSE策略。当应用B释放焦点时，会给A发送RESUME事件	B播放完成后，会发送RESUME，A继续播放	-
 方案三	应用A提供开关，音频会话并发策略使用CONCURRENCY_MIX_WITH_OTHERS	无需适配	应用A提供设置开关，用户手动开启生效，B播放后与A同时播放	开关参考系统音乐设置
 方案四	无需适配	应用B提供开关，音频会话并发策略使用CONCURRENCY_MIX_WITH_OTHERS	应用B提供设置开关，用户手动开启生效，B播放后与A同时播放	开关参考系统音乐设置
-方案五	使用音频会话接口setAudioSessionBehavior，AudioSessionBehaviorFlags使用MUTE_WHEN_INTERRUPTED	无需适配	A静音播放，效果同方案一	-
+方案五	使用音频会话接口setAudioSessionBehavior，AudioSessionBehaviorFlags使用MUTE_WHEN_INTERRUPTED	应用B提供开关，音频会话并发策略使用CONCURRENCY_MIX_WITH_OTHERS	应用提供设置开关，用户手动开启生效，B播放后与A同时播放	开关参考系统音乐设置
 
 [h2]场景2：录音被通话应用打断后，无法恢复
 

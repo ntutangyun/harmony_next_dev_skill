@@ -8,4 +8,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-edi
 
 使用ImageProcessing处理图片
 
-使用Image_NativeModule编辑图片Exif信息
+使用Image_NativeModule读取和编辑图片Exif信息

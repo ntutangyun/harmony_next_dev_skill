@@ -13,10 +13,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-upda
 更新实况窗	所有场景	所有场景皆支持通过Push Kit更新实况窗。
 结束实况窗	所有场景	所有场景皆支持通过Push Kit结束实况窗。
 
-说明
-
-推送实况窗消息仅支持Phone、Tablet设备。
-
 有关场景类型的详细说明请参见支持的范围与场景。
 
 根据创建实况窗的方式不同，通过Push Kit发送实况窗消息的流程有所区别。
@@ -44,6 +40,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-upda
 单个实况窗的生命周期最长不超过8小时，超过8小时后，系统会认为通知结束。
 
 为了确保用户看到内容的时效性，请您确保对实况窗内容进行及时更新。系统将在实况窗超过2小时未更新时，隐藏实况窗在状态栏胶囊和锁屏的展示，保留通知中心展示；超过4小时未更新，系统会认为实况窗结束，并从各个展示入口清除该实况窗。
+
+约束与限制
+
+推送实况窗消息能力支持Phone、Tablet设备，并且从26.0.0版本开始，新增支持Wearable设备。
+
+部分特性在Wearable设备中存在差异，详情请参考LiveViewPayload 实况窗消息相关字段描述。
 
 开通权益
 
@@ -121,7 +123,8 @@ push-type: 7
         },
         "extend": {
           "type": 3,
-          "pic": "phone.png", // 取值为“/resources/rawfile”路径下的文件名
+          "image": "phone.png", // 取值为“/resources/rawfile”路径下的文件名
+          "imageUrl": "https://www.xxx.com:8080/push/test", // 优先展示，如果图片无法显示则展示image的图片内容。传入图片的大小不超过512KB。从26.0.0版本开始支持此字段
           "clickAction": {
             "actionType": 0 // 点击辅助区打开应用首页
           }
@@ -130,7 +133,7 @@ push-type: 7
       "capsuleData": {
         "type": 1,
         "status": 1,
-        "icon": "icon.svg", // 取值为“/resources/rawfile”路径下的文件名
+        "icon": "icon.png", // 取值为“/resources/rawfile”路径下的文件名
         "bgColor": "#FF317AF7",
         "remind": "EXPAND",
         "title": "接驾中",
@@ -229,7 +232,7 @@ push-type: 7
       "capsuleData": {
         "type": 1,
         "status": 1,
-        "icon": "icon.svg", // 取值为“/resources/rawfile”路径下的文件名
+        "icon": "icon.png", // 取值为“/resources/rawfile”路径下的文件名
         "bgColor": "#FF317AF7",
         "title": "27分钟",
         "content": "距目的地7.2公里"
@@ -326,7 +329,8 @@ push-type: 7
         },
         "extend": {
           "type": 3,
-          "pic": "phone.png", // 取值为“/resources/rawfile”路径下的文件名
+          "image": "phone.png", // 取值为“/resources/rawfile”路径下的文件名
+          "imageUrl": "https://www.xxx.com:8080/push/test", // 优先展示，如果图片无法显示则展示image的图片内容。传入图片的大小不超过512KB。从26.0.0版本开始支持此字段
           "clickAction": {
             "actionType": 0 // 点击辅助区打开应用首页
           }
@@ -335,7 +339,7 @@ push-type: 7
       "capsuleData": {
         "type": 1,
         "status": 1,
-        "icon": "icon.svg", // 取值为“/resources/rawfile”路径下的文件名
+        "icon": "icon.png", // 取值为“/resources/rawfile”路径下的文件名
         "bgColor": "#FF317AF7",
         "remind": "EXPAND",
         "title": "接驾中",
@@ -414,7 +418,7 @@ push-type: 7
       "capsuleData": {
         "type": 1,
         "status": 1,
-        "icon": "icon.svg", // 取值为“/resources/rawfile”路径下的文件名
+        "icon": "icon.png", // 取值为“/resources/rawfile”路径下的文件名
         "bgColor": "#FF317AF7",
         "title": "27分钟",
         "content": "距目的地7.2公里"

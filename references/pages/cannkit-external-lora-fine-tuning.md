@@ -206,7 +206,7 @@ set_quant_state(transformer_model, False, False)
 ## 根据模型输入，随机生成导出onnx所用的输入。
 dummy_input = ()
 transformer_model(*dummy_input) ### 检查模型前向推理
-## 设置你的ONNX输入和输出节点名称
+## set you onnx input and output node name
 input_names=["in0_name", "in1_name", "..."]
 output_names=["out0_name", "out1_name", "..."]
 onnx_save_path = './xxx.onnx'
@@ -413,7 +413,7 @@ set_quant_state(transformer_model, False, False)
 ## 根据模型输入，随机生成导出onnx所用的输入。
 dummy_input = ()
 transformer_model(*dummy_input) ### 检查模型前向推理
-## 设置你的ONNX输入和输出节点名称
+## set you onnx input and output node name
 input_names=["in0_name", "in1_name", "..."]
 output_names=["out0_name", "out1_name", "..."]
 onnx_save_path = './xxx.onnx'

@@ -9,3 +9,5 @@ IPC与RPC通信开发指导(ArkTS)
 IPC与RPC通信开发指导(C/C++)
 
 远端状态订阅开发实例
+
+IPC与RPC通信术语

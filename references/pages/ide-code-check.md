@@ -8,4 +8,6 @@ Code Linter代码检查
 
 Code Linter代码检查规则
 
+Code Scanner代码检查
+
 Clang-Tidy代码检查

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/uiability
 
 概述
 
-当用户在执行应用启动、应用前后台切换、应用退出等操作时，系统会触发相关应用组件的生命周期回调。其中，UIAbility组件的核心生命周期回调包括onCreate、onForeground、onBackground、onDestroy。作为一种包含UI的应用组件，UIAbility的生命周期不可避免地与WindowStage的生命周期存在关联关系。
+当用户在执行应用启动、应用前后台切换、应用退出等操作时，系统会触发相关应用组件的生命周期回调。其中，UIAbility组件的核心生命周期回调包括onCreate、onForeground、onBackground、onDestroy。作为一种包含UI的应用组件，UIAbility的生命周期不可避免地与WindowStage的生命周期（可见窗口生命周期）存在关联关系。
 
 UIAbility的生命周期示意图如下所示。
 
@@ -30,7 +30,7 @@ UIAbility启动到后台，对应流程图参见下图。
 
 生命周期回调是在应用主线程执行，为了确保应用性能，建议在生命周期回调中，仅执行必要的轻量级操作。对于耗时任务，推荐采用异步处理或交由子线程执行，避免阻塞主线程。
 
-如果需要感知UIAbility生命周期变化，开发者可以使用ApplicationContext注册接口监听UIAbility生命周期变化。详见监听UIAbility生命周期变化。
+如果需要感知UIAbility生命周期变化，开发者可以使用ApplicationContext.on('abilityLifecycle')接口监听UIAbility生命周期变化。详见监听UIAbility生命周期变化。
 
 [h2]onCreate()
 
@@ -51,13 +51,13 @@ export default class EntryAbility extends UIAbility {
 
 UIAbility实例创建完成之后，在进入前台之前，系统会创建一个WindowStage。WindowStage创建完成后会进入onWindowStageCreate()回调，开发者可以在该回调中进行UI加载、WindowStage的事件订阅。
 
-在onWindowStageCreate()回调中通过loadContent()方法设置应用要加载的页面，并根据需要调用on('windowStageEvent')方法订阅WindowStage的事件（获焦/失焦、切到前台/切到后台、前台可交互/前台不可交互）。
+在onWindowStageCreate()回调中通过loadContent()方法设置应用要加载的页面，并根据需要调用on('windowStageEvent')方法订阅WindowStage生命周期状态（WindowStageEventType）变化事件（获焦/失焦、切到前台/切到后台、前台可交互/前台不可交互）。
 
 说明
 
-不同开发场景下WindowStage事件的时序可能存在差异，WindowStage的相关使用请参见窗口开发指导。
+不同开发场景下WindowStage生命周期状态（WindowStageEventType）变化事件的时序可能存在差异，具体请见窗口生命周期。
 
-对于不同类型的产品，当应用主窗口从前台进入后台时，UIAbility生命周期的变化也会存在差异。详见不同设备生命周期的差异化行为。
+对于不同类型的产品，当应用主窗口从前台进入后台时，UIAbility生命周期的变化也会存在差异。详见不同设备UIAbility生命周期的差异化行为。
 
 import { UIAbility } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';

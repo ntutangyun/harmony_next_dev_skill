@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/performan
 类型	建议
 适用设备	手机，平板，PC/2in1，智慧屏，车机，手表
 应用形态适用性	鸿蒙应用，鸿蒙元服务
-说明	开发自测试：DevEco Studio AppAnalyzer 性能分析诊断 本地自测试：DevEco Testing 性能测试 云端自测试：AppGallery Connect 云测试性能检测
+说明	无
 
 应用或元服务应用内点击操作响应快
 
@@ -56,7 +56,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/performan
 类型	规则
 适用设备	手机，平板，PC/2in1，智慧屏，车机
 应用形态适用性	鸿蒙应用
-说明	开发自测试：DevEco Studio AppAnalyzer 性能分析诊断 本地自测试：DevEco Testing 性能测试 云端自测试：AppGallery Connect 云测试性能检测
+说明	云端自测试：AppGallery Connect 云测试性能检测
 
 在线短视频类应用快速切换播放起播快
 
@@ -72,4 +72,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/performan
 类型	规则
 适用设备	手机，平板，PC/2in1，智慧屏，车机
 应用形态适用性	鸿蒙应用
-说明	开发自测试：DevEco Studio AppAnalyzer 性能分析诊断 本地自测试：DevEco Testing 性能测试 云端自测试：AppGallery Connect 云测试性能检测
+说明	云端自测试：AppGallery Connect 云测试性能检测

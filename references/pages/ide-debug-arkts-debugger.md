@@ -20,7 +20,7 @@ Debugger显示两个独立的窗格：
 	Resume Program	F9（macOS为Option+Command+R）	当程序执行到断点时停止执行，单击此按钮程序继续执行。
 	Step Over	F8（macOS为F8）	在单步调试时，直接前进到下一行（如果在函数中存在子函数时，不会进入子函数内单步执行，而是将整个子函数当作一步执行）。
 	Step Into	F7（macOS为F7）	在单步调试时，遇到子函数后，进入子函数并继续单步执行。
-	Force Step Into	Alt+Shift+F7（macOS为Option+Shift+F7）	在单步调试时，强制进入方法。
+	Smart Step Into	Shift+F7（macOS为Shift+F7）	代码行存在多个函数嵌套或调用时，可以智能步入选择想进入的方法。
 	Step Out	Shift+F8（macOS为Shift+F8）	在单步调试执行到子函数内时，单击Step Out会执行完子函数剩余部分，并跳出返回到上一层函数。
 	Stop	Ctrl+F2（macOS为Command+F2）	停止调试任务。
 	Run To Cursor	Alt+F9（macOS为Option+F9）	断点执行到鼠标停留处。
@@ -54,7 +54,7 @@ Debugger显示两个独立的窗格：
 
 [h2]JSVM Debug Port
 
-点击JSVM Debug Port，弹出输入转发端口的面板，输入端口并点击OK后会开始转发，转发成功后会有弹窗提示，打开对应的URL即可对JS代码进行调试。关于如何调试C++拉起的JS代码，请查阅JSVM-API调试&定位。
+点击JSVM Debug Port，弹出输入转发端口的面板，输入端口并点击OK后会开始转发，转发成功后会有弹窗提示，根据提示对JS代码进行调试。具体的调试方法请参考JSVM-API调试&定位。
 
 该功能从DevEco Studio 5.1.0 Release版本开始支持。
 

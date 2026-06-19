@@ -15,12 +15,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 接口名	描述
 createClient(address: string): Client	创建ssap客户端实例。
 connect(): Promise<void>	向服务端发起连接。
-getServices(): Promise<Array<Service>>	获取服务端支持的服务列表。
-readProperty(property: Property): Promise<Property>	读取服务端属性。
-writeProperty(property: Property, writeType: PropertyWriteType): Promise<void>	写入服务端属性。
+getServices(): Promise<Array<Service>>	获取服务端支持的服务列表。使用Promise异步回调。
+readProperty(property: Property): Promise<Property>	读取服务端属性。使用Promise异步回调。
+writeProperty(property: Property, writeType: PropertyWriteType): Promise<void>	写入服务端属性。使用Promise异步回调。
 setPropertyNotification(property: Property, enable: boolean): Promise<void>	启用/禁用某个属性变化的通知。
-on(type: 'propertyChange', callback: Callback<Property>): void	订阅属性变化事件。
-on(type: 'connectionStateChange', callback: Callback<ConnectionChangeState>): void	订阅连接状态变化事件。
+on(type: 'propertyChange', callback: Callback<Property>): void	订阅属性变化事件。使用callback异步回调。
+on(type: 'connectionStateChange', callback: Callback<ConnectionChangeState>): void	订阅连接状态变化事件。使用callback异步回调。
 
 开发步骤
 
@@ -44,7 +44,7 @@ try {
 
 let onReceiveConnectionChangeEvent:(data: ssap.ConnectionChangeState) => void = (data: ssap.ConnectionChangeState) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   client.on('connectionStateChange', onReceiveConnectionChangeEvent);
 } catch (err) {
@@ -55,7 +55,7 @@ try {
 
 let onReceivePropertyChangeEvent:(data: ssap.Property) => void = (data: ssap.Property) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   client.on('propertyChange', onReceivePropertyChangeEvent);
 } catch (err) {
@@ -181,7 +181,7 @@ try {
 ```
 let onReceiveConnectionChangeEvent:(data: ssap.ConnectionChangeState) => void = (data: ssap.ConnectionChangeState) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   client.on('connectionStateChange', onReceiveConnectionChangeEvent);
 } catch (err) {
@@ -194,7 +194,7 @@ try {
 ```
 let onReceivePropertyChangeEvent:(data: ssap.Property) => void = (data: ssap.Property) => {
   console.info('data:' + JSON.stringify(data));
-}
+};
 try {
   client.on('propertyChange', onReceivePropertyChangeEvent);
 } catch (err) {

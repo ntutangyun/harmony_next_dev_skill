@@ -134,17 +134,17 @@ ohos.permission.WRITE_AUDIO
 
 ohos.permission.READ_IMAGEVIDEO
 
-允许读取用户公共目录的图片或视频文件。
+允许读取用户本地公共目录的图片或视频文件。
 
 可申请此权限的特殊场景与功能：
 
-应用需要克隆、备份或同步图片/视频类文件。
+应用需要克隆、备份或同步本地图片/视频类文件。
 
 例如：
 
-应用需要批量读取媒体库的文件（图片、视频），并同步到云端服务器。
+应用需要批量读取本地媒体库的文件（图片、视频），并同步到云端服务器。
 
-应用需要批量读取媒体库的文件（图片、视频），在设备间进行同步或者克隆操作。
+应用需要批量读取本地媒体库的文件（图片、视频），在设备间进行同步或者克隆操作。
 
 其他场景下的使用方案： 使用“PhotoViewPicker”访问用户图片或视频，使用方式请参考：使用Picker选择媒体库资源。
 
@@ -167,6 +167,8 @@ ohos.permission.READ_IMAGEVIDEO
 授权方式：用户授权（user_grant）
 
 起始版本：9
+
+变更信息：在API版本9-24，申请该权限可访问云上和本地图片或视频文件；从API版本26.0.0开始，申请该权限仅能读取用户本地公共目录的图片或视频文件。
 
 ohos.permission.WRITE_IMAGEVIDEO
 
@@ -280,6 +282,8 @@ PC/2in1设备上的应用均可申请。
 
 授权方式：用户授权（user_grant）
 
+支持设备：Phone | TV | Wearable | PC/2in1 | Tablet | Car
+
 起始版本：11
 
 ohos.permission.FILE_ACCESS_PERSIST
@@ -316,9 +320,11 @@ ohos.permission.INTERCEPT_INPUT_EVENT
 
 授权方式：系统授权（system_grant）
 
+支持设备：General
+
 起始版本：11
 
-变更信息：API 11，权限等级为system_core；从API 12开始，权限等级变更为system_basic，向普通应用开放。
+变更信息：API 11，权限等级为system_core；从API 12开始，权限等级变更为system_basic，向普通应用开放。从API 26.0.0开始，该权限支持在全设备上申请。
 
 ohos.permission.INPUT_MONITORING
 
@@ -496,6 +502,8 @@ ohos.permission.MANAGE_PASTEBOARD_APP_SHARE_OPTION
 
 授权方式：系统授权（system_grant）
 
+支持设备：Phone | TV | Wearable | PC/2in1 | Tablet | Car
+
 起始版本：14
 
 ohos.permission.MANAGE_UDMF_APP_SHARE_OPTION
@@ -544,7 +552,11 @@ ohos.permission.PRELOAD_FILE
 
 授权方式：系统授权（system_grant）
 
+支持设备：PC/2in1 | Tablet
+
 起始版本：15
+
+变更信息：从API版本26.0.0开始，增加支持在平板上申请。
 
 ohos.permission.SET_PAC_URL
 
@@ -920,13 +932,13 @@ ohos.permission.ACCESS_FIDO2_ONLINEAUTH
 
 ohos.permission.USE_FLOAT_BALL
 
-允许应用使用全局闪控球的能力。
+允许应用使用闪控球的能力。
 
 获取该权限后，应用可实现跨应用交互，一步直达业务内以处理用户任务。
 
 申请条件：
 
-应用内需具备开启全局闪控球功能的独立开关，开关需默认关闭，需由用户主动开启。
+应用内需具备开启闪控球功能的独立开关，开关需默认关闭，需由用户主动开启。
 
 闪控球内呈现的内容及功能需与应用内实际功能匹配。
 
@@ -960,7 +972,7 @@ ohos.permission.USE_FLOAT_BALL
 
 ohos.permission.AUTO_RESTORE_MAIN_WINDOW
 
-允许应用使用全局闪控球的自动恢复到应用主窗口的能力。
+允许应用使用闪控球的自动恢复到应用主窗口的能力。
 
 申请条件：需要与闪控球权限ohos.permission.USE_FLOAT_BALL一起，才可申请此权限。
 
@@ -1324,11 +1336,11 @@ UKey厂商开发者。
 
 授权方式: 系统授权（system_grant）
 
-支持设备: PC/2in1 | Tablet
+支持设备: PC/2in1 | Tablet | Phone
 
 起始版本: 22
 
-变更信息： 从API 24开始，增加支持在平板上申请。
+变更信息： 从API版本24开始，增加支持在平板上申请；从API版本26.0.0开始，增加支持在手机上申请。
 
 ohos.permission.MANAGE_MEDIA_RESOURCES_FOR_PUBLIC
 
@@ -1347,6 +1359,46 @@ ohos.permission.MANAGE_MEDIA_RESOURCES_FOR_PUBLIC
 支持设备: Phone | PC/2in1 | Tablet | TV | Car
 
 起始版本: 23
+
+ohos.permission.MANAGE_RECENT_SNAPSHOT
+
+允许应用设置在多任务中和Dock栏悬停显示的预览图。
+
+多任务和鼠标悬停在Dock栏应用图标，将展示应用实时预览图，获取该权限后，应用可自定义此预览图。
+
+可申请此权限的特殊场景与功能：
+
+应用为虚拟机应用。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别: system_basic
+
+授权方式: 系统授权（system_grant）
+
+支持设备: PC/2in1
+
+起始版本: 26.0.0
+
+ohos.permission.SET_WINDOW_ALPHA
+
+允许应用设置主窗容器透明。
+
+获取该权限后，应用可以设置主窗口容器背景色。
+
+可申请此权限的特殊场景与功能：
+
+应用为虚拟机应用。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别: system_basic
+
+授权方式: 系统授权（system_grant）
+
+支持设备: PC/2in1
+
+起始版本: 26.0.0
 
 ohos.permission.MANAGE_CALL_FOR_DEVICES
 
@@ -1367,6 +1419,24 @@ ohos.permission.MANAGE_CALL_FOR_DEVICES
 支持设备: Phone | PC/2in1 | Tablet
 
 起始版本: 23
+
+ohos.permission.SET_WINDOW_TOUCH_AREAS
+
+允许应用设置窗口事件热区，非热区事件将被透传。
+
+可申请此权限的特殊场景与功能：
+
+虚拟机相关应用厂商开发者。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别: system_basic
+
+授权方式: 系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本: 26.0.0
 
 ohos.permission.MANAGE_BLUETOOTH_ADVERTISER_NAME
 
@@ -1428,6 +1498,30 @@ ohos.permission.REGISTER_OBJECTEDITOR_EXTENSION
 
 起始版本：24
 
+ohos.permission.ALLOW_ACCESSORY_ACCESS
+
+允许应用使用配件接入服务完成配件关联和自动唤醒等功能。
+
+可申请此权限的场景与功能：
+
+应用可申请此权限，实现已授信的配件和主机的无感协同。
+
+例如：
+
+配件发起到主机侧的文件传送时，需要使用配件接入服务接收来自配件的指令，完成主机侧应用和服务的后台唤醒。
+
+主机侧进行视频通话或者直播时，需要使用配件接入服务感知到配件在周边，并完成分布式相机服务的唤醒，以便可使用配件的摄像头。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet | Car
+
+起始版本：26.0.0
+
 ohos.permission.CHECK_CALL_LOG
 
 允许应用根据特定条件(手机号码、通话时长)，查询指定时间内系统是否存在匹配的通话记录。
@@ -1449,6 +1543,42 @@ ohos.permission.CHECK_CALL_LOG
 支持设备：General
 
 起始版本：24
+
+ohos.permission.ACCESS_DLP_SERVICE
+
+允许应用或服务使用DLP提供的注册、解注册连云插件功能。
+
+可申请此权限的场景与功能：
+
+应用需要使用DLP提供的注册、解注册连云插件功能。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet | Car
+
+起始版本：26.0.0
+
+ohos.permission.CONTROL_DEVICE
+
+允许应用注入输入事件以控制本设备。
+
+可申请此权限的场景与功能：
+
+面向远程登录器的被控端开放，当被控端需要接收主控端传递的输入事件来操作本地设备时申请。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：手动设置授权（manual_settings）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
 
 ohos.permission.KEEP_BACKGROUND_RUNNING_SPECIAL_SCENARIO
 
@@ -1476,13 +1606,127 @@ ohos.permission.KEEP_BACKGROUND_RUNNING_SPECIAL_SCENARIO
 
 起始版本：24
 
+ohos.permission.FLOAT_VIEW
+
+允许应用使用应用浮窗。
+
+可申请此权限的场景与功能：
+
+应用需支持跨应用悬浮显示关键信息，目前仅对直播类应用的游戏直播和金融类应用的实时盯盘场景开放。 例如：
+
+游戏直播：主播在直播应用中启用应用浮窗后，当应用退至后台时，可通过应用浮窗展示直播间互动内容，便于主播实时查看直播间动态并快速调整直播间设置。
+
+金融盯盘：用户在金融类应用中开启盯盘应用浮窗后，当应用退至后台时，可通过应用浮窗实时更新盯盘信息，便于用户随时掌握市场动态。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：用户授权（user_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
+
+起始版本：26.0.0
+
+ohos.permission.GET_CALL_TRANSFER_INFO
+
+允许应用查询呼叫转移状态。
+
+可申请此权限的场景与功能：
+
+应用为手机银行类应用。
+
+并且，应用需包含转账业务，用于转账前的风险评估。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
+
+起始版本：26.0.0
+
+ohos.permission.MANAGE_SKILL
+
+允许应用使用skill的能力。
+
+获取该权限后，应用可以：
+
+查询skill包的信息
+
+监听skill包的安装、更新、卸载事件
+
+访问skill包安装的沙箱目录
+
+可申请此权限的场景与功能：
+
+应用需要为智能体（AI Agent）应用。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.kernel.AS_LDK_DRIVER
+
+允许应用安装PCIe驱动。
+
+可申请此权限的场景与功能：
+
+当前仅面向PCIe设备厂商驱动开发者开放。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.KNOCK_COLLABORATION
+
+允许应用通过碰一碰的形式连接指定设备并实现信息交互和应用互动。
+
+可申请此权限的场景与功能：
+
+可申请此权限的特殊场景与功能：
+
+应用需要在不同设备间传输数据，如Hap包、资源包、应用内特殊类型数据等。
+
+如用户在设备A打开本应用，碰一碰设备B，如果设备B未安装此应用，可将设备A的Hap包传给设备B，接收完自动安装。
+
+应用需要拉起其他设备上的同应用。
+
+用户在设备A打开本应用，碰一碰设备B，如果设备B已安装此应用，可将设备B对应页面拉起。
+
+应用需要通过碰一碰进行设备间互动。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone
+
+起始版本：26.0.0
+
 ohos.permission.PRINTER_DRIVER
 
 允许应用管理打印系统。
 
 可申请此权限的场景与功能：
 
-打印驱动应用需要添加自定义的打印机、删除打印机等。例如：
+打印驱动应用需要添加自定义的打印机、删除打印机等。例如:
 
 打印驱动应用在首次打开时，新增一个特定的打印机。
 

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-polyl
 
 折线主要用于展示步行、驾车、骑行等各类导航路线，同时可记录并呈现用户的运动轨迹及历史行程信息。此外，在区域边界标注、距离测量、管网线路布局以及活动路径可视化等场景中也有广泛应用。
 
-5.0.3(15)开始，支持折线绘制纹理功能。
+5.0.3(15)开始，支持折线绘制纹理功能；26.0.0开始，支持折线添加文字。
 
 接口说明
 
@@ -33,6 +33,7 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 @Entry
 @Component
 struct MapPolylineDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -83,11 +84,14 @@ struct MapPolylineDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -97,9 +101,9 @@ struct MapPolylineDemo {
 
 let polylineOption: mapCommon.MapPolylineOptions = {
   points: [
-    { longitude:118.78, latitude:31.975 },
-    { longitude:118.78, latitude:31.982 },
-    { longitude:118.79, latitude:31.985 }
+    { longitude: 118.78, latitude: 31.975 },
+    { longitude: 118.78, latitude: 31.982 },
+    { longitude: 118.79, latitude: 31.985 }
   ],
   clickable: true,
   startCap: mapCommon.CapStyle.BUTT,
@@ -125,9 +129,9 @@ this.mapPolyline.setColors(colors);
 
 let polylineOption: mapCommon.MapPolylineOptions = {
   points: [
-    { longitude:118.78, latitude:31.975 },
-    { longitude:118.78, latitude:31.982 },
-    { longitude:118.79, latitude:31.985 }
+    { longitude: 118.78, latitude: 31.975 },
+    { longitude: 118.78, latitude: 31.982 },
+    { longitude: 118.79, latitude: 31.985 }
   ],
   clickable: true,
   startCap: mapCommon.CapStyle.BUTT,
@@ -162,12 +166,12 @@ let polylineOption: mapCommon.MapPolylineOptions = {
   jointType: mapCommon.JointType.DEFAULT,
   width: 20,
   // 图标需存放在resources/rawfile目录下
-  customTexture: "icon/naviline_arrow.png"
+  customTexture: 'icon/naviline_arrow.png'
 }
 
 方法二：调用MapPolyline的setCustomTexture方法。
 
-await this.mapPolyline.setCustomTexture("icon/naviline_arrow.png");
+await this.mapPolyline.setCustomTexture('icon/naviline_arrow.png');
 
 [h2]折线设置分段纹理
 
@@ -175,12 +179,13 @@ await this.mapPolyline.setCustomTexture("icon/naviline_arrow.png");
 
 import { image } from '@kit.ImageKit';
 
+// ...
 // 数组存放图片内容
-let customTextures: Array<ResourceStr | image.PixelMap> = new Array();
+let customTextures: (ResourceStr | image.PixelMap)[] = [];
 // 图标存放在resources/rawfile，'icon/img.png'参数值传入rawfile文件夹下的相对路径
 customTextures.push('icon/img.png');
 customTextures.push('icon/img_1.png');
-let cusIndexNumber: Array<number> = new Array();
+let cusIndexNumber: number[] = [];
 // cusIndexNumber数组长度与折线点数量必须相同，数组元素内容与customTextures下标相对应，图片从数组第二个元素开始选择
 cusIndexNumber.push(0, 0, 1);
 // polyline初始化参数
@@ -201,6 +206,25 @@ let polylineOption: mapCommon.MapPolylineOptions = {
 };
 let mapPolyline = await this.mapController.addPolyline(polylineOption);
 
+[h2]折线添加文字
+
+新建折线后可调用MapPolyline的addLineText方法给折线添加文字，通过removeLineText方法可删除折线文字。
+
+// 添加折线文字
+let textLine: mapCommon.LineText = {
+  lineNames: ['第一段文字', '第二段文字'],
+  lineNameIndexes: [0, 1, 1, 2],
+  nameOnRight: false,
+  color: 0xFF000000,
+  fontSize: 15,
+  strokeColor: 0xFFFFFFFF,
+  fontStyle: 0
+};
+this.mapPolyline.addLineText(textLine);
+
+// 删除折线文字
+this.mapPolyline.removeLineText();
+
 ## Code blocks
 
 ### Code block 1
@@ -216,6 +240,7 @@ import { AsyncCallback } from '@kit.BasicServicesKit';
 @Entry
 @Component
 struct MapPolylineDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
   private mapController?: map.MapComponentController;
   private callback?: AsyncCallback<map.MapComponentController>;
@@ -266,11 +291,14 @@ struct MapPolylineDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
-      }.width('100%')
-    }.height('100%')
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback });
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```
@@ -280,9 +308,9 @@ struct MapPolylineDemo {
 ```
 let polylineOption: mapCommon.MapPolylineOptions = {
   points: [
-    { longitude:118.78, latitude:31.975 },
-    { longitude:118.78, latitude:31.982 },
-    { longitude:118.79, latitude:31.985 }
+    { longitude: 118.78, latitude: 31.975 },
+    { longitude: 118.78, latitude: 31.982 },
+    { longitude: 118.79, latitude: 31.985 }
   ],
   clickable: true,
   startCap: mapCommon.CapStyle.BUTT,
@@ -310,9 +338,9 @@ this.mapPolyline.setColors(colors);
 ```
 let polylineOption: mapCommon.MapPolylineOptions = {
   points: [
-    { longitude:118.78, latitude:31.975 },
-    { longitude:118.78, latitude:31.982 },
-    { longitude:118.79, latitude:31.985 }
+    { longitude: 118.78, latitude: 31.975 },
+    { longitude: 118.78, latitude: 31.982 },
+    { longitude: 118.79, latitude: 31.985 }
   ],
   clickable: true,
   startCap: mapCommon.CapStyle.BUTT,
@@ -349,14 +377,14 @@ let polylineOption: mapCommon.MapPolylineOptions = {
   jointType: mapCommon.JointType.DEFAULT,
   width: 20,
   // 图标需存放在resources/rawfile目录下
-  customTexture: "icon/naviline_arrow.png"
+  customTexture: 'icon/naviline_arrow.png'
 }
 ```
 
 ### Code block 8
 
 ```
-await this.mapPolyline.setCustomTexture("icon/naviline_arrow.png");
+await this.mapPolyline.setCustomTexture('icon/naviline_arrow.png');
 ```
 
 ### Code block 9
@@ -364,12 +392,13 @@ await this.mapPolyline.setCustomTexture("icon/naviline_arrow.png");
 ```
 import { image } from '@kit.ImageKit';
 
+// ...
 // 数组存放图片内容
-let customTextures: Array<ResourceStr | image.PixelMap> = new Array();
+let customTextures: (ResourceStr | image.PixelMap)[] = [];
 // 图标存放在resources/rawfile，'icon/img.png'参数值传入rawfile文件夹下的相对路径
 customTextures.push('icon/img.png');
 customTextures.push('icon/img_1.png');
-let cusIndexNumber: Array<number> = new Array();
+let cusIndexNumber: number[] = [];
 // cusIndexNumber数组长度与折线点数量必须相同，数组元素内容与customTextures下标相对应，图片从数组第二个元素开始选择
 cusIndexNumber.push(0, 0, 1);
 // polyline初始化参数
@@ -389,4 +418,23 @@ let polylineOption: mapCommon.MapPolylineOptions = {
   customTextureIndexes: cusIndexNumber
 };
 let mapPolyline = await this.mapController.addPolyline(polylineOption);
+```
+
+### Code block 10
+
+```
+// 添加折线文字
+let textLine: mapCommon.LineText = {
+  lineNames: ['第一段文字', '第二段文字'],
+  lineNameIndexes: [0, 1, 1, 2],
+  nameOnRight: false,
+  color: 0xFF000000,
+  fontSize: 15,
+  strokeColor: 0xFFFFFFFF,
+  fontStyle: 0
+};
+this.mapPolyline.addLineText(textLine);
+
+// 删除折线文字
+this.mapPolyline.removeLineText();
 ```

@@ -8,4 +8,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-ark
 
 图片编辑和处理
 
+图片元数据处理
+
 图片接收

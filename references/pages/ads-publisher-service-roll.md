@@ -25,7 +25,8 @@ AdComponent({ads: advertising.Advertisement[], displayOptions: advertising.AdDis
 导入相关模块。
 
 import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
-import { advertising, identifier } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
+// ...
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 获取OAID。
@@ -144,8 +145,8 @@ async function requestOAID(context: Context): Promise<string | undefined> {
 
 导入相关模块。
 
-import { common } from '@kit.AbilityKit';
-import { AdComponent, advertising } from '@kit.AdsKit';
+import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -374,6 +375,7 @@ struct Index {
 
 广告位类型	测试广告位ID	展示形式	比例	推广类型
 贴片	o2e960bnfz	视频	16:9	应用下载
+贴片	v6dk3uf538	视频	16:9	网页推广
 
 ## Code blocks
 
@@ -381,7 +383,8 @@ struct Index {
 
 ```
 import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
-import { advertising, identifier } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
+// ...
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
@@ -479,8 +482,8 @@ async function requestOAID(context: Context): Promise<string | undefined> {
 ### Code block 3
 
 ```
-import { common } from '@kit.AbilityKit';
-import { AdComponent, advertising } from '@kit.AdsKit';
+import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```

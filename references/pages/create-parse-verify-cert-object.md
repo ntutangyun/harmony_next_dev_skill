@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/create-pa
 
 import { cert } from '@kit.DeviceCertificateKit';
 
-基于已有的X509证书数据，调用cert.createX509Cert创建证书对象。
+基于已有的X.509证书数据，调用cert.createX509Cert创建证书对象。
 
 解析证书的字段信息。
 
@@ -18,7 +18,7 @@ import { cert } from '@kit.DeviceCertificateKit';
 
 调用X509Cert.getPublicKey获取证书中的公钥，并调用X509Cert.verify校验签名。示例为自验签场景，因此获取的是本证书中的公钥。应用须结合自身场景获取用于验签的公钥。
 
-调用X509Cert.checkValidityWithDate校验证书有效期。入参date用于确认此日期是否在X509证书有效期内。
+调用X509Cert.checkValidityWithDate校验证书有效期。入参date用于确认此日期是否在X.509证书有效期内。
 
 import { cert } from '@kit.DeviceCertificateKit';
 import { BusinessError } from '@kit.BasicServicesKit';

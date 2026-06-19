@@ -35,7 +35,7 @@ struct Index {
             phoneNumbers: [{
               phoneNumber: '138xxxxxx'
             }]
-          }
+          };
           let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           let promise = contact.addContactViaUI(context, contactInfo);
           promise.then((data) => {
@@ -117,7 +117,7 @@ struct Index {
             phoneNumbers: [{
               phoneNumber: '138xxxxxx'
             }]
-          }
+          };
           let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           let promise = contact.addContactViaUI(context, contactInfo);
           promise.then((data) => {

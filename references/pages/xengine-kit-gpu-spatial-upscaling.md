@@ -146,7 +146,7 @@ ${Vulkan-lib} ${xengine-lib})
 const char* extensions = (const char*)HMS_XEG_GetString(XEG_EXTENSIONS);
 // 检查是否支持空域GPU超分
 if (!strstr(extensions, XEG_SPATIAL_UPSCALE_EXTENSION_NAME)) {
-    exit(1); // return error
+    exit(1); // 异常退出
 }
 
 调用HMS_XEG_SpatialUpscaleParameter接口，对空域GPU超分的参数赋值。
@@ -203,7 +203,7 @@ if (pPropertyCount > 0) {
 }
 // 查询是否支持空域GPU超分
 if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_SPATIAL_UPSCALE_EXTENSION_NAME) == supportedExtensions.end()) {
-    exit(1); // return error
+    exit(1); // 异常退出
 }
 
 声明实例句柄。
@@ -337,7 +337,7 @@ ${Vulkan-lib} ${xengine-lib})
 const char* extensions = (const char*)HMS_XEG_GetString(XEG_EXTENSIONS);
 // 检查是否支持空域GPU超分
 if (!strstr(extensions, XEG_SPATIAL_UPSCALE_EXTENSION_NAME)) {
-    exit(1); // return error
+    exit(1); // 异常退出
 }
 ```
 
@@ -390,7 +390,7 @@ if (pPropertyCount > 0) {
 }
 // 查询是否支持空域GPU超分
 if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_SPATIAL_UPSCALE_EXTENSION_NAME) == supportedExtensions.end()) {
-    exit(1); // return error
+    exit(1); // 异常退出
 }
 ```
 

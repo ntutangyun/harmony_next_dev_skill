@@ -398,6 +398,8 @@ ohos.permission.ENTERPRISE_ADMIN_MANAGE
 
 授权方式：系统授权（system_grant）
 
+支持设备：PC/2in1
+
 起始版本：12
 
 ohos.permission.ENTERPRISE_RECOVERY_KEY
@@ -655,3 +657,17 @@ ohos.permission.ENTERPRISE_DEACTIVATE_DEVICE_ADMIN
 支持设备：Phone | PC/2in1 | Tablet
 
 起始版本：23
+
+ohos.permission.ENTERPRISE_ACTIVATE_DEVICE_ADMIN
+
+允许企业MDM应用自行完成激活操作。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
+
+起始版本：26.0.0

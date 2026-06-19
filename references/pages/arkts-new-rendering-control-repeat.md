@@ -1532,7 +1532,7 @@ struct EntryCompSucc {
 
 [h2]与@Builder混用时状态变量未刷新
 
-当Repeat与@Builder混用时，如果只传递RepeatItem.item或RepeatItem.index，参数值的改变不会引起@Builder函数内的UI刷新。推荐使用按引用传递，即将RepeatItem类型整体进行传参，组件才能监听到数据变化。除此之外，从API version 20开始，开发者可以通过使用UIUtils.makeBinding()函数、Binding 类和MutableBinding 类实现@Builder函数中状态变量的刷新。
+当Repeat与@Builder混用时，如果只传递RepeatItem.item或RepeatItem.index，参数值的改变不会引起@Builder函数内的UI刷新。推荐使用按引用传递，即将RepeatItem类型整体进行传参，组件才能监听到数据变化。除此之外，从API version 20开始，开发者可以通过使用UIUtils.makeBinding()函数、Binding类和MutableBinding类实现@Builder函数中状态变量的刷新。
 
 示例代码如下：
 

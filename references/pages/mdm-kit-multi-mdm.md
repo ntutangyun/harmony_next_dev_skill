@@ -10,9 +10,9 @@ Admin组件的激活角色
 
 Admin组件可以通过不同的方式激活，不同的激活方式，成为的角色也不同。
 
-1.通过adminManager.enableDeviceAdmin接口, 激活后成为DA角色。当MDM应用仅需对设备进行管控，无需管理其他DA应用时，可选择被激活为DA。
+1.通过adminManager.enableDeviceAdmin接口，激活后成为DA角色。当MDM应用仅需对设备进行管控，无需管理其他DA应用时，可选择被激活为DA。
 
-2.通过adminManager.startAdminProvision接口, 激活后成为BDA角色。当MDM应用需要对员工使用的个人设备在特殊场景进行有限管控（如禁用拍照、录音等）时，可选择被激活为BDA。
+2.通过adminManager.startAdminProvision接口，激活后成为BDA角色。当MDM应用需要对员工使用的个人设备在特殊场景进行有限管控（如禁用拍照、录音等）时，可选择被激活为BDA。
 
 管控策略冲突
 

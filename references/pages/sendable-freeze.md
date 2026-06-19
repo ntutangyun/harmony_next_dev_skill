@@ -12,14 +12,12 @@ Sendable对象支持冻结操作。冻结后，对象变为只读，不能修改
 
 提供ts文件封装Object.freeze方法。
 
-// helper.ts
 export function freezeObj(obj: any) {
   Object.freeze(obj);
 }
 
 调用freeze方法冻结对象，然后将其发送到子线程。
 
-// SendableFreeze.ets
 import { freezeObj } from './helper';
 import { worker } from '@kit.ArkTS';
 
@@ -35,17 +33,24 @@ export class GlobalConfig {
 @Entry
 @Component
 struct Index {
+  @State message: string = 'Sendable freezeObj Test';
+
   build() {
-    Column() {
-      Text("Sendable freezeObj Test")
+    RelativeContainer() {
+      Text(this.message)
         .id('HelloWorld')
         .fontSize(50)
         .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
         .onClick(() => {
-          let gConfig = new GlobalConfig();
-          gConfig.init();
-          const workerInstance = new worker.ThreadWorker('entry/ets/workers/Worker.ets', { name: "Worker1" });
-          workerInstance.postMessage(gConfig);
+          let gConifg = new GlobalConfig();
+          gConifg.init();
+          const workerInstance = new worker.ThreadWorker('entry/ets/workers/Worker.ets', { name: 'Worker1' });
+          workerInstance.postMessage(gConifg);
+          this.message = 'success';
         })
     }
     .height('100%')
@@ -55,9 +60,9 @@ struct Index {
 
 子线程直接操作对象，不加锁。
 
-// Worker.ets
 import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
-import { GlobalConfig } from '../pages/Index';
+// import { GlobalConfig } from '../pages/Index';
+import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 workerPort.onmessage = (e: MessageEvents) => {
@@ -70,7 +75,6 @@ workerPort.onmessage = (e: MessageEvents) => {
 ### Code block 1
 
 ```
-// helper.ts
 export function freezeObj(obj: any) {
   Object.freeze(obj);
 }
@@ -79,7 +83,6 @@ export function freezeObj(obj: any) {
 ### Code block 2
 
 ```
-// SendableFreeze.ets
 import { freezeObj } from './helper';
 import { worker } from '@kit.ArkTS';
 
@@ -95,17 +98,24 @@ export class GlobalConfig {
 @Entry
 @Component
 struct Index {
+  @State message: string = 'Sendable freezeObj Test';
+
   build() {
-    Column() {
-      Text("Sendable freezeObj Test")
+    RelativeContainer() {
+      Text(this.message)
         .id('HelloWorld')
         .fontSize(50)
         .fontWeight(FontWeight.Bold)
+        .alignRules({
+          center: { anchor: '__container__', align: VerticalAlign.Center },
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
         .onClick(() => {
-          let gConfig = new GlobalConfig();
-          gConfig.init();
-          const workerInstance = new worker.ThreadWorker('entry/ets/workers/Worker.ets', { name: "Worker1" });
-          workerInstance.postMessage(gConfig);
+          let gConifg = new GlobalConfig();
+          gConifg.init();
+          const workerInstance = new worker.ThreadWorker('entry/ets/workers/Worker.ets', { name: 'Worker1' });
+          workerInstance.postMessage(gConifg);
+          this.message = 'success';
         })
     }
     .height('100%')
@@ -117,9 +127,9 @@ struct Index {
 ### Code block 3
 
 ```
-// Worker.ets
 import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
-import { GlobalConfig } from '../pages/Index';
+// import { GlobalConfig } from '../pages/Index';
+import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
 workerPort.onmessage = (e: MessageEvents) => {

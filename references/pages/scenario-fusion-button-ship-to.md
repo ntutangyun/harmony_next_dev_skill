@@ -52,11 +52,11 @@ struct Index {
             .onChooseAddress((err, data) => {
               if (err) {
                 // 错误日志处理。
-                hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
+                hilog.error(0x0000, 'testTag', 'Failed to choose address, error: %{public}d %{public}s', err.code, err.message);
                 return;
               }
               // 成功日志处理。
-              hilog.info(0x0000, "testTag", "succeeded in choosing address");
+              hilog.info(0x0000, 'testTag', 'succeeded in choosing address');
               // 获取地址信息。
               let userName: string = data.userName;
               let mobileNumber: string = data.mobileNumber as string;
@@ -126,11 +126,11 @@ struct Index {
             .onChooseAddress((err, data) => {
               if (err) {
                 // 错误日志处理。
-                hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
+                hilog.error(0x0000, 'testTag', 'Failed to choose address, error: %{public}d %{public}s', err.code, err.message);
                 return;
               }
               // 成功日志处理。
-              hilog.info(0x0000, "testTag", "succeeded in choosing address");
+              hilog.info(0x0000, 'testTag', 'succeeded in choosing address');
               // 获取地址信息。
               let userName: string = data.userName;
               let mobileNumber: string = data.mobileNumber as string;

@@ -24,7 +24,7 @@ DNS over HTTPS配置（DnsOverHttpsConfiguration）：配置HTTPS上的DNS（DOH
 
 约束与限制
 
-定制DNS能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备。
+定制DNS能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备；从6.1.0(23)开始，新增支持Car设备。
 
 使用示例
 

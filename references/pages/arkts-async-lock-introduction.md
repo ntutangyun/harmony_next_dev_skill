@@ -21,9 +21,9 @@ import { ArkTSUtils, taskpool } from '@kit.ArkTS';
 @Sendable
 export class A {
   private count_: number = 0;
-  lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
+  public lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
 
-  public getCount(): Promise<number> {
+  public async getCount(): Promise<number> {
     // 对需要保护的数据加异步锁
     return this.lock_.lockAsync(() => {
       return this.count_;
@@ -40,8 +40,8 @@ export class A {
 
 @Concurrent
 async function printCount(a: A) {
-  a.increaseCount();
-  console.info("InputModule: count is:" + await a.getCount());
+  await a.increaseCount();
+  console.info('InputModule: count is:' + await a.getCount());
 }
 
 @Entry
@@ -64,6 +64,7 @@ struct Index {
           let a: A = new A();
           // 将实例a传递给子线程
           await taskpool.execute(printCount, a);
+          this.message = 'success';
         })
     }
     .height('100%')
@@ -81,9 +82,9 @@ import { ArkTSUtils, taskpool } from '@kit.ArkTS';
 @Sendable
 export class A {
   private count_: number = 0;
-  lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
+  public lock_: ArkTSUtils.locks.AsyncLock = new ArkTSUtils.locks.AsyncLock();
 
-  public getCount(): Promise<number> {
+  public async getCount(): Promise<number> {
     // 对需要保护的数据加异步锁
     return this.lock_.lockAsync(() => {
       return this.count_;
@@ -100,8 +101,8 @@ export class A {
 
 @Concurrent
 async function printCount(a: A) {
-  a.increaseCount();
-  console.info("InputModule: count is:" + await a.getCount());
+  await a.increaseCount();
+  console.info('InputModule: count is:' + await a.getCount());
 }
 
 @Entry
@@ -124,6 +125,7 @@ struct Index {
           let a: A = new A();
           // 将实例a传递给子线程
           await taskpool.execute(printCount, a);
+          this.message = 'success';
         })
     }
     .height('100%')

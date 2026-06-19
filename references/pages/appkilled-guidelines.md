@@ -95,6 +95,7 @@ ResourceLeak(ThreadLeak)	线程泄漏。	尝试通过HiAppEvent订阅RESOURCE_OV
 ResourceLeak(KernelZoneLeak)	页表内存泄漏。	无需处理。	是	否
 IllegalAudioRendererBySuspend	应用的音频播放未申请合理的后台任务，其退至后台后仍有大量音频播放。	应用退至后台时，应避免不必要的后台音频播放，或者合理使用后台任务，具体参考后台任务开发服务。	是	否
 PowerSaveClean	整机切换到省电模式或应急模式。	无需处理。	否	否
+VrsKill	三方应用检测到恶意进程后，调用PC端病毒检测处置服务接口终止进程。	无需处理。	否	否
 RssThresholdKiller	应用的RSS内存超一定阈值。	尝试通过HiAppEvent订阅RESOURCE_OVERLIMIT获取更多的RSS内存日志，找到泄漏点后，尝试降低应用自身的内存占用，避免出现RSS内存超过阈值的情况。	是	是
 OomKiller	整机低内存，触发了内核管控，按照一定策略终止应用。	尝试降低应用自身的内存占用，以减少被整机管控策略选中的概率。	否	否
 CpaKiller	DRM（Digital Right Management）业务申请内存但是内存不足时，会按照一定策略终止进程以回收内存。	尝试降低应用自身的内存占用，以减少被整机管控策略选中的概率。	否	否
@@ -118,12 +119,12 @@ CPUHighloadUserRequest	应用后台CPU高负载，设置界面用户选择停止
 IllegalAudioCapturerBySuspend	应用录音未申请合理的后台任务，其退至后台后仍进行录音。	应用退至后台时，应避免不必要的后台录音，或者合理使用后台任务。	是	否
 IOHighload	IO高负载。	尝试降低应用自身的I/O操作。	否	否
 AppFreeze	应用冻屏无响应。	通过HiAppEvent订阅APP_FREEZE事件，到APP_FREEZE事件中去匹配。	是	是，具体参考AppFreeze。
-MALICIOUS_CONTINUOUSTASK_ACTIVE	恶意连续任务活跃。	检查应用是否存在恶意连续任务，优化任务调度。	是	否
+MaliciousContinuousTaskActive	恶意连续任务活跃。	检查应用是否存在恶意连续任务，优化任务调度。	是	否
 RsDataOverflow	RS数据溢出。	尝试降低应用RS数据使用量。	否	否
 HighTemperature	温度超限。	尝试降低应用自身的CPU负载，减少发热。	否	否
 TransientTaskTimeout	短时任务超时6s并且处于后台。	检查短时任务是否存在耗时操作，优化任务执行效率。	是	否
 TooManyReadyThreads	单进程就绪线程过多。	尝试减少应用创建的线程数量，优化线程管理。	是	否
-REASON_RESOURCE_CONTROL	资源控制原因。	尝试降低应用自身的资源占用。	否	否
+JsHeapSleepCleanKill	sleep状态（夜间充电）进行js heapsize检测，超限后终止应用。	归类为整机后台内存清理，尝试优化js heap的使用率。	否	否
 HardwareDecodingResourcesLimit	硬件解码资源限制。	尝试减少应用对硬件解码资源的使用。	否	否
 AppRecoveryNotifyAppOverLimit	应用恢复通知应用超限。	检查应用恢复机制是否存在异常，优化恢复逻辑。	是	否
 GpuError	GPU错误。	检查应用GPU使用是否合理，优化GPU资源管理。	是	否

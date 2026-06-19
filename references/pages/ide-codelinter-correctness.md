@@ -25,3 +25,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codel
 @correctness/v1-nested-object-property-change-format-check
 
 @correctness/v1-state-object-member-used-in-function-parameter-check
+
+@correctness/accessibility-label-check
+
+@correctness/accessibility-focus-redundancy-check
+
+@correctness/accessibility-type-redundancy-check
+
+@correctness/accessibility-status-missing-check

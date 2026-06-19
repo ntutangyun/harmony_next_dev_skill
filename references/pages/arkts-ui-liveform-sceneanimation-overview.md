@@ -22,9 +22,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 
 图3 点击触发互动卡片动效时序图
 
-定时定点刷新互动卡片动效的时序图如下。
-
 图4 定时定点触发互动卡片动效时序图
+
+图5 摇一摇触发互动卡片动效时序图
 
 约束和限制
 
@@ -49,7 +49,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 4 * 4	不超过AD边长的125%。	不超过AB边长的125%。
 6 * 4	不超过AD边长的125%。	不超过AB边长的110%。
 
-图5 互动卡片动效区域申请规则说明
+图6 互动卡片动效区域申请规则说明
 
 例如：某设备上一个2*2卡片宽度为158vp，高度为158vp。对应上图则有：
 

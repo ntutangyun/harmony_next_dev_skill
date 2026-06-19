@@ -54,7 +54,7 @@ static napi_value RunTest(napi_env env, napi_callback_info info)
 
 转发端口。hdc fport tcp:9229 tcp:9225。转发开发者个人计算机侧端口9229到端侧端口9225。结果为"Forwardport result:OK"即可。
 
-推荐使用Chrome inspect 页面进行调试。也可以获取“devtoolsFrontendUrl”字段进行调试，但该方式依赖Chrome DevTools Protocol及其WebSocket连接，不保证稳定连接，暂不支持Chrome 14x及以上版本。devtoolsFrontendUrl方式操作方法如下：在Chrome浏览器地址栏输入"localhost:9229/json"，回车获取端口连接信息；拷贝"devtoolsFrontendUrl"字段对应的url到地址栏，回车进入DevTools源码页。此时可以看到应用中通过OH_JSVM_RunScript执行的JS源码，并暂停在第一行JS源码处。(注："devtoolsFrontendUrl"字段对应的url只支持使用Chrome、Edge浏览器打开，不支持使用Firefox、Safari等浏览器打开。)
+在chrome浏览器地址栏输入"localhost:9229/json"，回车。获取端口连接信息。拷贝"devtoolsFrontendUrl"字段url内容到地址栏，回车，进入DevTools源码页，将看到在应用中通过OH_JSVM_RunScript执行的JS源码，此时暂停在第一行JS源码处。(注："devtoolsFrontendUrl"字段url只支持使用Chrome、Edge浏览器打开，不支持使用Firefox、Safari等浏览器打开。)
 
 用户可在源码页打断点，通过按钮发出各种调试命令控制JS代码执行，并查看变量。
 
@@ -151,7 +151,7 @@ void TestJSVM() {
 
 为避免debugger过程中的暂停被误报为无响应异常，可以开启DevEco Studio的Debug模式（无需设置断点），或者可以在非主线程的其他线程中运行JSVM。
 
-打开 inspector 端口，连接 devtools 用于调试，其流程如下：在执行JS代码之前，调用OH_JSVM_OpenInspector在指定的主机和端口上激活inspector，创建socket。例如OH_JSVM_OpenInspectorWithName(env, 123, "test")，创建 tcp socket 及其对应的 unix domain 端口。
+打开 inspector 端口，连接 devtools 用于调试，其流程如下：在执行JS代码之前，调用OH_JSVM_OpenInspector在指定的主机和端口上激活inspector，创建socket。例如OH_JSVM_OpenInspectorWithName(env, 123, "test")，创建 tcp socket 及其对应的 unixdomain 端口。
 
 调用OH_JSVM_WaitForDebugger，等待建立socket连接。
 
@@ -159,7 +159,7 @@ void TestJSVM() {
 
 转发端口。hdc fport tcp:9229 tcp:9229。转发开发者个人计算机侧端口9229到端侧端口9229。结果为"Forwardport result:OK"即可。
 
-推荐使用Chrome inspect 页面进行调试。也可以获取“devtoolsFrontendUrl”字段进行调试，但该方式依赖Chrome DevTools Protocol及其WebSocket连接，不保证稳定连接，暂不支持Chrome 14x及以上版本。devtoolsFrontendUrl操作方法如下：在Chrome浏览器地址栏输入"localhost:9229/json"，回车获取端口连接信息；打开Chrome开发者工具，拷贝"devtoolsFrontendUrl"字段对应的url到地址栏，回车进入DevTools源码页。此时可以看到应用中通过OH_JSVM_RunScript执行的JS源码，并暂停在第一行JS源码处。(注："devtoolsFrontendUrl"字段对应的url只支持使用Chrome、Edge浏览器打开，不支持使用Firefox、Safari等浏览器打开。)
+在 chrome 浏览器地址栏输入 "localhost:9229/json"，回车。获取端口连接信息。打开Chrome开发者工具，拷贝"devtoolsFrontendUrl"字段url内容到地址栏，回车，进入DevTools源码页，将看到在应用中通过OH_JSVM_RunScript执行的JS源码，此时暂停在第一行JS源码处。(注："devtoolsFrontendUrl"字段url只支持使用Chrome、Edge浏览器打开，不支持使用Firefox、Safari等浏览器打开。)
 
 用户可在源码页打断点，通过按钮发出各种调试命令控制JS代码执行，并查看变量。
 
@@ -179,7 +179,7 @@ static void EnableInspector(JSVM_Env env) {
 
 [h2]使用 Chrome inspect 页面进行调试
 
-推荐通过Chrome浏览器的 chrome://inspect/#devices 页面进行调试。方法如下：
+除了使用上述打开"devtoolsFrontendUrl"字段url的方法调试代码之外，也可以直接通过Chrome浏览器的 chrome://inspect/#devices 页面进行调试。方法如下：
 
 Chrome浏览器中打开 chrome://inspect/#devices，勾选以下内容：
 
@@ -195,7 +195,7 @@ Chrome浏览器中打开 chrome://inspect/#devices，勾选以下内容：
 
 [h2]使用 websocket 端口进行调试
 
-除了使用上述Chrome inspect页面和打开 "devtoolsFrontendUrl" 字段url的方法通过网页端 chrome devtools 调试代码之外，如果读者了解如何使用 CDP 协议代替网页端 devtools 功能，也可以通过连接 inspector 提供的 websocket 端口进行调试。
+除了使用上述打开 "devtoolsFrontendUrl" 字段url的方法通过网页端 chrome devtools 调试代码之外，如果读者了解如何使用 CDP 协议代替网页端 devtools 功能，也可以通过连接 inspector 提供的 websocket 端口进行调试。
 
 其中连接 websocket 的方法为，根据前面提供的网页端调试步骤，在做完端口映射之后（如映射到 9229 端口），在 chrome 浏览器地址栏输入 "localhost:9229/json"，回车，获取"webSocketDebuggerUrl" 字段所对应的 url，然后使用标准的 websocket 客户端连接这个 url 即可发送 CDP 调试协议进行调试。需要注意的是，当前版本 inspector 提供的websocket 端口仅支持接收 Text Frame, Ping Frame 和 Connection Close Frame，所有其他类型的帧都会被视为错误帧而导致 websocket 连接中断。
 

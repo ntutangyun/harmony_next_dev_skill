@@ -97,7 +97,7 @@ Build Analyzer不会全部显示构建操作中的所有任务，而是重点显
 hvigorw assembleHap --analyze=normal --config properties.hvigor.analyzeHtml=true
 
 {
-  "modelVersion": "6.1.1",
+  "modelVersion": "26.0.0",
   "dependencies": {
   },
   "execution": {
@@ -129,7 +129,7 @@ hvigorw assembleHap --analyze=normal --config properties.hvigor.analyzeHtml=true
 
 ```
 {
-  "modelVersion": "6.1.1",
+  "modelVersion": "26.0.0",
   "dependencies": {
   },
   "execution": {

@@ -60,7 +60,7 @@ VKAPI_ATTR void VKAPI_CALL HMS_XEG_DestroyRTReflection(XEG_RTReflection rtReflec
 
 编写CMakeLists.txt
 
-CMakeLists.txt部分示例代码如下
+CMakeLists.txt部分示例代码如下：
 
 find_library(
     # 设置路径变量的名称。
@@ -69,8 +69,8 @@ find_library(
     xengine
 )
 target_link_libraries(nativerender PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib})
 
 [h2]集成XEngine光线追踪反射（Vulkan）
@@ -180,8 +180,8 @@ find_library(
     xengine
 )
 target_link_libraries(nativerender PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib})
 ```
 

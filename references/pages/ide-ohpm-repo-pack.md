@@ -28,7 +28,7 @@ ohpm-repo pack <deploy_root>
 
 [h2]<deploy_root>
 
-类型： String
+类型：String
 
 必填参数
 

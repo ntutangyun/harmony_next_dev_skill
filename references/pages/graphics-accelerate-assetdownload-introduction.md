@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 游戏资源加速服务从5.1.0(18)版本开始支持extension系统托管下载、应用前台下载资源包、系统后台切应用前台接续下载资源包功能，并且从5.1.1(19)版本开始，新增extension协同下载功能。
 
-游戏资源加速服务从5.1.0(18)版本开始支持Phone、Tablet设备，并且从26.0.0版本开始，新增支持PC/2in1设备。
+游戏资源加速服务从5.1.0(18)版本开始支持Phone、Tablet设备，并且从API版本26.0.0开始，新增支持PC/2in1设备。
 
 主要功能
 

@@ -4,24 +4,20 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/window-ma
 
 窗口开发概述
 
-管理应用窗口（Stage模型）
+窗口类型
 
-管理应用窗口（FA模型）
+窗口模式
 
-窗口旋转
+窗口基础能力
 
-窗口元数据配置
-
-使用WindowManager管理多模输入事件（C/C++）
-
-在应用程序中使用画中画功能
-
-全局闪控球开发指导
-
-智慧多窗应用开发指南
+其他开发场景
 
 应用启动页的配置与使用
+
+窗口元数据配置
 
 窗口开发术语
 
 窗口开发常见问题
+
+窗口开发常见日志问题与定位

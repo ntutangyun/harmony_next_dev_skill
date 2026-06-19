@@ -4,9 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/developme
 
 应用程序包基础知识
 
-应用配置文件（Stage模型）
-
-应用配置文件（FA模型）
+应用配置文件
 
 典型场景的开发指导
 

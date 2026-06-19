@@ -19,3 +19,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-agent
 记忆（Memory）配置
 
 自定义提示词库（Prompts）配置
+
+自定义指令（Commands）配置

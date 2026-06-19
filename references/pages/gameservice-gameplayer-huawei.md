@@ -201,9 +201,9 @@ import { util } from '@kit.ArkTS';
 要求游戏先成功调用初始化init接口后再调用其他接口，否则将导致审核被驳回。
 
 onWindowStageCreate(windowStage: window.WindowStage) {
-  windowStage.loadContent("pages/index", (err, data) => {
+  windowStage.loadContent('pages/index', (err, data) => {
     try {
-      gamePlayer.init(this.context,()=>{
+      gamePlayer.init(this.context, ()=>{
         hilog.info(0x0000, 'testTag', `Succeeded in initializing.`);
       });
     } catch (error) {
@@ -371,7 +371,7 @@ try {
 
 说明
 
-若游戏没有角色系统，“roleId”请传入“0”，“roleName”请传入“default”，请勿传""和null。
+若游戏没有角色系统，roleId请传入'0'，roleName请传入'default'，请勿传""和null。
 
 let context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 let request: gamePlayer.GSKPlayerRole = {
@@ -450,9 +450,9 @@ import { util } from '@kit.ArkTS';
 
 ```
 onWindowStageCreate(windowStage: window.WindowStage) {
-  windowStage.loadContent("pages/index", (err, data) => {
+  windowStage.loadContent('pages/index', (err, data) => {
     try {
-      gamePlayer.init(this.context,()=>{
+      gamePlayer.init(this.context, ()=>{
         hilog.info(0x0000, 'testTag', `Succeeded in initializing.`);
       });
     } catch (error) {

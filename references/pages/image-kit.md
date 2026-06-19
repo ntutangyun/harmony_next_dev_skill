@@ -11,3 +11,5 @@ Image Kit简介
 Image Kit常见问题
 
 图片开发指导(依赖JS对象)(不再推荐)
+
+Image Kit术语

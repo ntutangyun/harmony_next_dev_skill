@@ -20,66 +20,68 @@ struct SmartFill {
   @State isClicked: boolean = false;
 
   build() {
-    Column({ space: 5 }) {
-      Row() {
-        Text('证件类型：').textAlign(TextAlign.End).width('25%')
-        Select([{ value: '身份证' }, { value: '港澳通行证' }])
-          .width('75%')
-          .selected(0)
-          .value('身份证')
-          .onSelect((index: number, value: string) => {
-            // 当用户选择ID类型时，更改与证件号码输入组件对应的ContentType值。
-            hilog.info(0x000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
-            if (value === "身份证") {
-              this.type = ContentType.ID_CARD_NUMBER;
-            } else if (value === "港澳通行证") {
-              this.type = undefined;
-            }
-            hilog.info(0x000, 'testTag', 'ContentType changed, current type: ' + this.type);
-          })
-      }
-
-      Row() {
-        Text('姓名：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME)
-      }
-
-      Row() {
-        Text('手机号码：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PHONE_NUMBER)
-      }
-
-      Row() {
-        Text('证件号码').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(this.type)
-      }
-
-      Button('保存')
-        .onClick(() => {
-          if (!this.isClicked) {
-            // 主动触发保存历史表单输入。
-            try {
-              autoFillManager.requestAutoSave(this.getUIContext())
-            } catch (err) {
-              let e: BusinessError = err as BusinessError;
-              hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
-            }
-            this.isClicked = true;
-            // 设置超时时间以防止重复点击按钮保存历史表单输入。
-            setTimeout(() => {
-              this.isClicked = false;
-            }, 1000)
-            // 或者通过路由跳转其他页面触发保存历史表单输入。
-            this.getUIContext().getRouter().pushUrl({
-              url: 'xxx'
+// ...
+      Column({ space: 5 }) {
+        Row() {
+          Text('证件类型：').textAlign(TextAlign.End).width('25%')
+          Select([{ value: '身份证' }, { value: '港澳通行证' }])
+            .width('75%')
+            .selected(0)
+            .value('身份证')
+            .onSelect((index: number, value: string) => {
+              // 当用户选择ID类型时，更改与证件号码输入组件对应的ContentType值。
+              hilog.info(0x000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
+              if (value === '身份证') {
+                this.type = ContentType.ID_CARD_NUMBER;
+              } else if (value === '港澳通行证') {
+                this.type = undefined;
+              }
+              hilog.info(0x000, 'testTag', 'ContentType changed, current type: ' + this.type);
             })
-          }
-        })
-        .width("50%")
-    }
-    .alignItems(HorizontalAlign.Center)
-    .height('100%')
-    .width('100%')
+        }
+
+        Row() {
+          Text('姓名：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME)
+        }
+
+        Row() {
+          Text('手机号码：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PHONE_NUMBER)
+        }
+
+        Row() {
+          Text('证件号码').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(this.type)
+        }
+
+        Button('保存')
+          .onClick(() => {
+            if (!this.isClicked) {
+              // 主动触发保存历史表单输入。
+              try {
+                autoFillManager.requestAutoSave(this.getUIContext())
+              } catch (err) {
+                let e: BusinessError = err as BusinessError;
+                hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+              }
+              this.isClicked = true;
+              // 设置超时时间以防止重复点击按钮保存历史表单输入。
+              setTimeout(() => {
+                this.isClicked = false;
+              }, 1000)
+              // 或者通过路由跳转其他页面触发保存历史表单输入。
+              this.getUIContext().getRouter().pushUrl({
+                url: 'xxx'
+              })
+            }
+          })
+          .width('50%')
+      }
+      .alignItems(HorizontalAlign.Center)
+      .height('100%')
+      .width('100%')
+// ...
   }
 }
 
@@ -100,66 +102,68 @@ struct SmartFill {
   @State isClicked: boolean = false;
 
   build() {
-    Column({ space: 5 }) {
-      Row() {
-        Text('证件类型：').textAlign(TextAlign.End).width('25%')
-        Select([{ value: '身份证' }, { value: '港澳通行证' }])
-          .width('75%')
-          .selected(0)
-          .value('身份证')
-          .onSelect((index: number, value: string) => {
-            // 当用户选择ID类型时，更改与证件号码输入组件对应的ContentType值。
-            hilog.info(0x000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
-            if (value === "身份证") {
-              this.type = ContentType.ID_CARD_NUMBER;
-            } else if (value === "港澳通行证") {
-              this.type = undefined;
-            }
-            hilog.info(0x000, 'testTag', 'ContentType changed, current type: ' + this.type);
-          })
-      }
-
-      Row() {
-        Text('姓名：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME)
-      }
-
-      Row() {
-        Text('手机号码：').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(ContentType.PHONE_NUMBER)
-      }
-
-      Row() {
-        Text('证件号码').textAlign(TextAlign.End).width('25%')
-        TextInput().width('75%').contentType(this.type)
-      }
-
-      Button('保存')
-        .onClick(() => {
-          if (!this.isClicked) {
-            // 主动触发保存历史表单输入。
-            try {
-              autoFillManager.requestAutoSave(this.getUIContext())
-            } catch (err) {
-              let e: BusinessError = err as BusinessError;
-              hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
-            }
-            this.isClicked = true;
-            // 设置超时时间以防止重复点击按钮保存历史表单输入。
-            setTimeout(() => {
-              this.isClicked = false;
-            }, 1000)
-            // 或者通过路由跳转其他页面触发保存历史表单输入。
-            this.getUIContext().getRouter().pushUrl({
-              url: 'xxx'
+// ...
+      Column({ space: 5 }) {
+        Row() {
+          Text('证件类型：').textAlign(TextAlign.End).width('25%')
+          Select([{ value: '身份证' }, { value: '港澳通行证' }])
+            .width('75%')
+            .selected(0)
+            .value('身份证')
+            .onSelect((index: number, value: string) => {
+              // 当用户选择ID类型时，更改与证件号码输入组件对应的ContentType值。
+              hilog.info(0x000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
+              if (value === '身份证') {
+                this.type = ContentType.ID_CARD_NUMBER;
+              } else if (value === '港澳通行证') {
+                this.type = undefined;
+              }
+              hilog.info(0x000, 'testTag', 'ContentType changed, current type: ' + this.type);
             })
-          }
-        })
-        .width("50%")
-    }
-    .alignItems(HorizontalAlign.Center)
-    .height('100%')
-    .width('100%')
+        }
+
+        Row() {
+          Text('姓名：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PERSON_FULL_NAME)
+        }
+
+        Row() {
+          Text('手机号码：').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(ContentType.PHONE_NUMBER)
+        }
+
+        Row() {
+          Text('证件号码').textAlign(TextAlign.End).width('25%')
+          TextInput().width('75%').contentType(this.type)
+        }
+
+        Button('保存')
+          .onClick(() => {
+            if (!this.isClicked) {
+              // 主动触发保存历史表单输入。
+              try {
+                autoFillManager.requestAutoSave(this.getUIContext())
+              } catch (err) {
+                let e: BusinessError = err as BusinessError;
+                hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+              }
+              this.isClicked = true;
+              // 设置超时时间以防止重复点击按钮保存历史表单输入。
+              setTimeout(() => {
+                this.isClicked = false;
+              }, 1000)
+              // 或者通过路由跳转其他页面触发保存历史表单输入。
+              this.getUIContext().getRouter().pushUrl({
+                url: 'xxx'
+              })
+            }
+          })
+          .width('50%')
+      }
+      .alignItems(HorizontalAlign.Center)
+      .height('100%')
+      .width('100%')
+// ...
   }
 }
 ```

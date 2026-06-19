@@ -56,6 +56,6 @@ Cannot resolve import statement XXX.
 
 处理步骤
 
-将import文件夹改为import具体的文件，如果要import文件夹，确保文件夹中存在index.ets或index.ts（小写i）。
+将import的文件夹改为具体的文件，如果要import文件夹，确保文件夹中存在index.ets或index.ts（小写i）。
 
 确保import的文件和实际的文件名大小写一致。

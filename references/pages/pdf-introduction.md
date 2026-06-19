@@ -36,7 +36,7 @@ PDF文档监听回调	不支持	支持
 
 [h2]支持的设备
 
-PDF Kit相关能力支持在Phone、Tablet和PC/2in1设备上运行。
+PDF Kit相关能力支持在Phone、Tablet、PC/2in1、Car设备上运行。
 
 模拟器支持的情况
 

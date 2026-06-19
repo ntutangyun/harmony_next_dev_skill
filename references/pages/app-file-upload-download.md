@@ -134,7 +134,7 @@ async requestAgentUpload(fileName: string, callback: (progress: number, isSuccee
 
 说明
 
-当前网络资源文件仅支持下载至应用文件目录。
+从API version 20开始支持下载网络资源文件到用户文件。
 
 使用上传下载模块，需声明权限：ohos.permission.INTERNET。
 
@@ -209,11 +209,11 @@ async requestAgentDownload(url: string, fileName: string, callback: (progress: n
 
 下载网络资源文件至用户文件
 
-开发者可以使用ohos.request的request.agent接口下载网络资源文件到指定的用户文件目录。
+开发者可以使用ohos.request的request.agent.create接口下载网络资源文件到指定的用户文件目录。
 
 说明
 
-从API version 20开始支持下载网络资源文件至用户文件。
+从API version 20开始支持下载网络资源文件到用户文件。
 
 [h2]下载文档类文件
 
@@ -544,7 +544,7 @@ async speedLimitDownload(url: string, fileName: string, callback: (progress: num
             "include-subdomains": true,
             "name": "*.example.com"
           }
-        ],
+        ]
       }
     ]
   }
@@ -1178,7 +1178,7 @@ async speedLimitDownload(url: string, fileName: string, callback: (progress: num
             "include-subdomains": true,
             "name": "*.example.com"
           }
-        ],
+        ]
       }
     ]
   }

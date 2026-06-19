@@ -40,7 +40,7 @@ deviceType相交是指两个Module的deviceType中包含了相同的设备，例
   "deviceType": ["car", "tablet"]
 }
 
-distributionFilter中包含属性apiVersion、screenShape、screenWindow、screenDensity和countryCode。相交的相关含义如下：
+distributionFilter中包含属性apiVersion、screenShape、screenWindow、screenDensity和countryCode，相交的相关含义如下：
 
 distributionFilter不相交：如果两个distributionFilter中任意一个属性不相交，则两个distributionFilter不相交。
 

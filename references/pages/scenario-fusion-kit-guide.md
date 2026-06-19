@@ -16,6 +16,8 @@ Scenario Fusion Kit简介
 
 智能填充服务
 
+Scenario Fusion Kit术语
+
 Scenario Fusion Kit常见问题
 
 个人数据处理说明

@@ -299,11 +299,11 @@ Configure 配置参数：
 
 视频解码开发指导 —— Surface模式/Buffer模式完整流程。
 
-native_avcodec_base.h —— 所有键名定义。
+Codec Base API参考 —— 所有键名定义。
 
-native_avcodec_videodecoder.h —— 编码器接口。
+AVCodec Kit API Reference - VideoEncoder —— 编码器接口。
 
-native_avcodec_videoencoder.h —— 解码器接口。
+AVCodec Kit API Reference - VideoDecoder —— 解码器接口。
 
 ## Code blocks
 

@@ -46,7 +46,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 请求广告参数名	类型	必填	说明
 adType	number	否	请求广告类型，插屏广告类型为12。不填默认为原生广告类型。
-adId	string	是	广告位ID。 - 如果仅调测广告，可使用测试广告位ID：p540739a8w。 - 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
+adId	string	是	广告位ID。 - 如果仅调测广告，可使用测试广告位ID：v1rknehtfa。 - 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
 oaid	string	否	开放匿名设备标识符，用于精准推送广告。不填无法获取到个性化广告。
 
 示例代码如下所示：
@@ -81,8 +81,8 @@ struct Index {
     };
     // 广告请求参数
     const adRequestParams: advertising.AdRequestParams = {
-      // 'p540739a8w'为测试专用的广告位ID，App正式发布时需要改为正式的广告位ID
-      adId: 'p540739a8w',
+      // 'v1rknehtfa'为测试专用的广告位ID，App正式发布时需要改为正式的广告位ID
+      adId: 'v1rknehtfa',
       // 插屏广告类型
       adType: 12,
       // 开放匿名设备标识符
@@ -165,7 +165,7 @@ export class InterstitialAdStatusHandler {
     // 订阅者信息
     const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
       events: ['com.huawei.hms.pps.action.PPS_INTERSTITIAL_STATUS_CHANGED'],
-      // publisherBundleName被设置为"com.huawei.hms.adsservice"，这意味着只有来自该包名的事件才会被订阅者接收和处理。
+      // publisherBundleName被设置为"com.huawei.hms.adsservice"，表示只有来自该包名的事件才会被订阅者接收和处理。
       // 如果没有明确声明publisherBundleName，那么订阅者可能会收到来自其它包名的伪造事件，从而导致安全性问题或误导。
       publisherBundleName: 'com.huawei.hms.adsservice'
     };
@@ -230,10 +230,9 @@ export class InterstitialAdStatusHandler {
 
 导入相关模块。
 
-import { common } from '@kit.AbilityKit';
-import { advertising } from '@kit.AdsKit';
+import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
+import { advertising, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-// 事件订阅步骤中创建的文件
 import { InterstitialAdStatusHandler } from './InterstitialAdStatusHandler';
 
 展示广告。
@@ -331,8 +330,8 @@ struct Index {
     };
     // 广告请求参数
     const adRequestParams: advertising.AdRequestParams = {
-      // 'p540739a8w'为测试专用的广告位ID，App正式发布时需要改为正式的广告位ID
-      adId: 'p540739a8w',
+      // 'v1rknehtfa'为测试专用的广告位ID，App正式发布时需要改为正式的广告位ID
+      adId: 'v1rknehtfa',
       // 插屏广告类型
       adType: 12,
       // 开放匿名设备标识符
@@ -402,7 +401,7 @@ export class InterstitialAdStatusHandler {
     // 订阅者信息
     const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
       events: ['com.huawei.hms.pps.action.PPS_INTERSTITIAL_STATUS_CHANGED'],
-      // publisherBundleName被设置为"com.huawei.hms.adsservice"，这意味着只有来自该包名的事件才会被订阅者接收和处理。
+      // publisherBundleName被设置为"com.huawei.hms.adsservice"，表示只有来自该包名的事件才会被订阅者接收和处理。
       // 如果没有明确声明publisherBundleName，那么订阅者可能会收到来自其它包名的伪造事件，从而导致安全性问题或误导。
       publisherBundleName: 'com.huawei.hms.adsservice'
     };
@@ -467,10 +466,9 @@ export class InterstitialAdStatusHandler {
 ### Code block 5
 
 ```
-import { common } from '@kit.AbilityKit';
-import { advertising } from '@kit.AdsKit';
+import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
+import { advertising, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-// 事件订阅步骤中创建的文件
 import { InterstitialAdStatusHandler } from './InterstitialAdStatusHandler';
 ```
 

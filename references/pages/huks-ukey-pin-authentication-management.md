@@ -7,3 +7,5 @@ Ukey PIN码认证介绍及规格
 查询认证状态(ArkTS)
 
 查询认证状态(C/C++)
+
+清除Ukey PIN码认证状态(ArkTS)

@@ -15,6 +15,7 @@ Tablet	Tablet	仅支持在中国境内（香港特别行政区、澳门特别行
 Wearable	Wearable	从DevEco Studio 6.0.0 Beta3版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。 从DevEco Studio 6.0.1 Release版本开始，支持在所有国家/地区使用。
 WearableKid	从DevEco Studio 6.1.0 Beta1版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。 从DevEco Studio 6.1.1 Release版本开始，支持在所有国家/地区使用。
 TV	TV	从DevEco Studio 5.1.1 Release (5.1.1.840)版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。
+Car	Car	从26.0.0 Beta1版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。
 
 说明
 

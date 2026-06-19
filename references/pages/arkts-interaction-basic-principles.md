@@ -44,6 +44,32 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 
 事件响应链是指通过触摸测试收集到的、能够响应本次交互的所有组件组成的有序链条。当用户触摸屏幕时，系统会从触摸点位置开始，遵循右子树优先的后序遍历顺序（即从最内层组件开始，自下而上、从右到左逐层向外收集），形成完整的响应链。
 
+ArkUI事件响应链收集，根据右子树（按组件布局的先后层级）优先的后序遍历流程。下面通过一个示例来介绍响应链收集的流程，示例伪代码如下：
+
+build() {
+  StackA() {
+    ComponentB() {
+      ComponentC()
+    }
+
+    ComponentD() {
+      ComponentE()
+    }
+  }
+}
+
+其中A是最外层组件，B和D是A的子组件，C是B的子组件，E是D的子组件。界面效果示例以及组件树结构图如下：
+
+用户触摸的动作如果发生在组件C上，事件响应链收集的流程如下，根据右子树（按组件布局的先后层级）优先的后序遍历流程，因为触摸点不在右边的树上，所以事件会从左边树的C节点开始往上传，触摸事件（onTouch事件）是冒泡事件默认会向上一直传递下去，直到被消费或者丢弃，允许多个组件同时触发。最终收集到的响应链是C->B->A。
+
+用户触摸的动作如果发生在组件E上，事件响应链收集的流程如下，根据右子树优先的后序遍历流程，所以事件会从右边树的D节点开始往上传。虽然触摸点在组件D和组件B的交集上，但组件D的hitTestBehavior属性默认为HitTestMode.Default，D组件收集到事件后会阻塞兄弟节点（组件B），所以没有收集组件A的左子树，最终收集到的响应链是E->D->A。
+
+上面介绍的事件响应链是系统默认的行为，如果需要改变响应的成员，比如触摸组件E的时候，希望把事件传递给B，开发者可以通过设置D组件的hitTestBehavior属性为HitTestMode.None或者HitTestMode.Transparent来实现，比如设置为HitTestMode.Transparent，那么组件D自身进行触摸测试，同时不阻塞兄弟及父组件。最终收集到的响应链是E->D->B->A。
+
+如果触摸组件E时，仅组件E响应触摸事件，其它组件不响应触摸事件。可以通过TouchEvent的stopPropagation()方法来阻止事件冒泡，阻止触摸事件往上传递；也可以通过设置E组件的hitTestBehavior属性为HitTestMode.Block来实现，那么最终收集到的响应链成员只有组件E。
+
+除了hitTestBehavior和stopPropagation，影响事件响应链的更多因素可以参考：触摸测试控制。
+
 下图展示了组件树的层级结构与事件响应链的收集过程。图中父、子节点分别对应父组件和子组件，左子树和右子树对应兄弟组件，右子树对应的组件会显示在左子树对应组件的上方。
 
 通过hitTestBehavior属性可以设置组件的触摸测试模式。在本示例中，所有组件的触摸测试模式均设置为HitTestMode.Default。如果用户点按的动作发生在组件5上，则响应链收集过程如下：
@@ -197,6 +223,22 @@ Cancel的含义与Up相同，均表示事件处理结束。若在处理Up/Releas
 ## Code blocks
 
 ### Code block 1
+
+```
+build() {
+  StackA() {
+    ComponentB() {
+      ComponentC()
+    }
+
+    ComponentD() {
+      ComponentE()
+    }
+  }
+}
+```
+
+### Code block 2
 
 ```
 @Entry

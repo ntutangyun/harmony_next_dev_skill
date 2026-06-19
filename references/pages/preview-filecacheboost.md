@@ -21,7 +21,7 @@ FileCacheBoost_ErrCode HMS_FileCacheBoost_GetSerialObjectByKey (const uint8_t *k
 
 开发准备
 
-需要先通过Syscap查询您的目标设备是否支持SystemCapability.PCService.OpenFileBoost系统能力，当前仅在2in1设备上支持该能力。
+需要先通过Syscap查询您的目标设备是否支持SystemCapability.PCService.OpenFileBoost系统能力，当前仅在PC/2in1设备上支持该能力。
 
 开发步骤
 

@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/statusbar
 
 说明
 
-Desktop Extension Kit（桌面拓展服务）相关API仅在2in1设备上生效。
+Desktop Extension Kit（桌面拓展服务）相关API仅在PC/2in1设备上生效。
 
 表1 应用接入状态栏相关功能接口介绍
 

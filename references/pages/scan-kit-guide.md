@@ -18,4 +18,6 @@ Scan Kit简介
 
 Scan Kit常见问题
 
+Scan Kit术语
+
 个人数据处理说明

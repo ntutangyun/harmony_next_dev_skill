@@ -4,8 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 
 NearLink Kit简介
 
-NearLink Kit术语
-
 开发准备
 
 查询是否支持星闪
@@ -23,3 +21,5 @@ SSAP连接及数据传输
 获取星闪合作设备集合信息
 
 NearLink Kit常见问题
+
+NearLink Kit术语

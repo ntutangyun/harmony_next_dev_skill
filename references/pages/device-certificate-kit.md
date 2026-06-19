@@ -6,4 +6,6 @@ Device Certificate Kit简介
 
 证书算法库框架
 
-证书管理
+证书管理服务
+
+Device Certificate Kit术语

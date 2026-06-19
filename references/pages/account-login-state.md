@@ -32,7 +32,7 @@ const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
   events: [commonEventManager.Support.COMMON_EVENT_DISTRIBUTED_ACCOUNT_LOGIN,
     commonEventManager.Support.COMMON_EVENT_DISTRIBUTED_ACCOUNT_LOGOUT]
 };
-let subscriber: commonEventManager.CommonEventSubscriber;
+ let subscriber: commonEventManager.CommonEventSubscriber | null = null;
 
 // 创建订阅者
 commonEventManager.createSubscriber(subscribeInfo)
@@ -76,7 +76,7 @@ const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
   events: [commonEventManager.Support.COMMON_EVENT_DISTRIBUTED_ACCOUNT_LOGIN,
     commonEventManager.Support.COMMON_EVENT_DISTRIBUTED_ACCOUNT_LOGOUT]
 };
-let subscriber: commonEventManager.CommonEventSubscriber;
+ let subscriber: commonEventManager.CommonEventSubscriber | null = null;
 
 // 创建订阅者
 commonEventManager.createSubscriber(subscribeInfo)

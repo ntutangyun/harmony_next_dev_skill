@@ -366,7 +366,7 @@ try {
 [h2]BLE扫描流程
 
 import { ble } from '@kit.ConnectivityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const TAG: string = 'BleScanManager';
 
@@ -1054,7 +1054,7 @@ try {
 
 ```
 import { ble } from '@kit.ConnectivityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const TAG: string = 'BleScanManager';
 

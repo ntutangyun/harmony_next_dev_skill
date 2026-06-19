@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hwasan_
 
-HWASan（Hardware-Assisted Address Sanitizer）是一款类似于ASan的内存错误检测工具。 与ASan相比，HWASan使用的内存减少很多，因而更适合用于整个系统的检测。关于HWASan的检测原理请参考HWASan检测原理。
+HWASan（Hardware-Assisted Address Sanitizer）是一款类似于ASan的内存错误检测工具。与ASan相比，HWASan使用的内存减少很多，因而更适合用于整个系统的检测。关于HWASan的检测原理请参考HWASan检测原理。
 
 约束条件
 

@@ -20,10 +20,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 
 接口名	描述
 createPort(uuid: string): void	注册端口服务。
-connect(params: ConnectionParams): Promise<void>	连接远端设备，建立端口通道。
-writeData(params: DataParams): Promise<void>	通过设备地址和UUID向远端设备发数据。
-on(type: 'connectionStateChanged', callback: Callback<ConnectionResult>): void	订阅端口通道连接状态变更事件。
-on(type: 'readData', callback: Callback<DataParams>): void	订阅端口通道数据接收事件。
+connect(params: ConnectionParams): Promise<void>	连接远端设备，建立端口通道。使用Promise异步回调。
+writeData(params: DataParams): Promise<void>	通过设备地址和UUID向远端设备发数据。使用Promise异步回调。
+on(type: 'connectionStateChanged', callback: Callback<ConnectionResult>): void	订阅端口通道连接状态变更事件。使用callback异步回调。
+on(type: 'readData', callback: Callback<DataParams>): void	订阅端口通道数据接收事件。使用callback异步回调。
 
 开发步骤
 
@@ -62,7 +62,7 @@ try {
 let onReceiveConnectionStateEvent:(data: dataTransfer.ConnectionResult) => void =
   (data: dataTransfer.ConnectionResult) => {
   console.info('data: ' + JSON.stringify(data));
-}
+};
 try {
   dataTransfer.on('connectionStateChanged', onReceiveConnectionStateEvent);
 } catch (err) {
@@ -73,7 +73,7 @@ try {
 
 let onReceiveReadDataEvent:(data: dataTransfer.DataParams) => void = (data: dataTransfer.DataParams) => {
   console.info('data: ' + JSON.stringify(data));
-}
+};
 try {
   dataTransfer.on('readData', onReceiveReadDataEvent);
 } catch (err) {
@@ -86,7 +86,7 @@ try {
 let connectionParams:dataTransfer.ConnectionParams = {
   address: addr, // 扫描获取到的远端设备地址
   uuid: serviceUuid, // 星闪服务UUID
-  mtu: 1024 // 期望发送数据包的字节大小,可选参数
+  mtu: 1024 // 期望发送数据包的字节大小，可选参数
 };
 try {
   dataTransfer.connect(connectionParams).then(()=>{
@@ -169,7 +169,7 @@ try {
 let onReceiveConnectionStateEvent:(data: dataTransfer.ConnectionResult) => void =
   (data: dataTransfer.ConnectionResult) => {
   console.info('data: ' + JSON.stringify(data));
-}
+};
 try {
   dataTransfer.on('connectionStateChanged', onReceiveConnectionStateEvent);
 } catch (err) {
@@ -182,7 +182,7 @@ try {
 ```
 let onReceiveReadDataEvent:(data: dataTransfer.DataParams) => void = (data: dataTransfer.DataParams) => {
   console.info('data: ' + JSON.stringify(data));
-}
+};
 try {
   dataTransfer.on('readData', onReceiveReadDataEvent);
 } catch (err) {
@@ -197,7 +197,7 @@ try {
 let connectionParams:dataTransfer.ConnectionParams = {
   address: addr, // 扫描获取到的远端设备地址
   uuid: serviceUuid, // 星闪服务UUID
-  mtu: 1024 // 期望发送数据包的字节大小,可选参数
+  mtu: 1024 // 期望发送数据包的字节大小，可选参数
 };
 try {
   dataTransfer.connect(connectionParams).then(()=>{

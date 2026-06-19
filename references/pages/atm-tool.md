@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/atm-tool_
 
-Access Token Manager (程序访问控制管理工具，简称atm工具)，是用于查询应用进程的权限、使用类型等信息的工具，为开发者提供了根据tokenid、包名、进程名等信息进行访问控制管理的能力。
+Access Token Manager (程序访问控制管理工具，简称atm工具)，是用于查询应用进程的权限、使用类型等信息的工具，为开发者提供了根据tokenId、包名、进程名等信息进行访问控制管理的能力。
 
 环境说明
 
@@ -23,16 +23,17 @@ atm help
 
 atm dump [-h] [-d [-p <permission-name>]] [-t [-i <token-id>] [-b <bundle-name>] [-n <process-name>] [-p <permission-name>]]
 
-下表所列命令中，-d、-t为必选参数，-i、-b、-n、-p为可选参数。对atm dump -t命令，-i、-b、-n参数只能单独使用。
+下表所列命令中，-d、-t为必选参数，-i、-b、-n、-p为可选参数。对atm dump -t命令，-i、-b、-n、-p参数只能单独使用。
 
 参数	参数说明
 -h	帮助信息。
 -d	必选参数，查询系统中所有的权限定义。
 -d -p <permission-name>	可选参数，通过权限名，查询权限定义。
--t	必选参数，查询系统中所有应用进程信息。
--t -i <token-id>	可选参数，通过应用进程的tokenid，查询该应用的基本信息以及对应的GrantStatus。
+-t	必选参数，查询系统中所有进程的tokenId。
+-t -i <token-id>	可选参数，通过进程的tokenId，查询该进程的基本信息以及对应的GrantStatus。
 -t -b <bundle-name>	可选参数，通过应用进程的包名bundle-name，查询该应用的基本信息以及对应的GrantStatus。
--t -n <process-name>	可选参数，通过应用进程的进程名process-name，查询该应用的基本信息以及对应的GrantStatus。
+-t -n <process-name>	可选参数，通过进程名process-name，查询该进程的基本信息以及对应的GrantStatus。
+-t -p <permission-name>	可选参数，通过权限名，查询申请该权限的应用进程的tokenId。 说明：从版本26.0.0开始，支持该参数。
 
 示例：
 
@@ -55,14 +56,14 @@ atm dump -d -p *********
 #显示atm dump的帮助信息
 atm dump -h
 
-#查询系统中所有应用进程的tokenid和包名
+#查询系统中所有进程的tokenId
 atm dump -t
 
-#按tokenid查询权限信息
+#按tokenId查询权限信息
 atm dump -t -i *********
 # 执行结果
 # {
-#   "tokenID": 672078897,
+#   "tokenId": 672078897,
 #   "processName": "samgr",
 #   "apl": 2,
 #   "permStateList": [
@@ -78,7 +79,7 @@ atm dump -t -i *********
 atm dump -t -b ohos.telephony.resources
 # 执行结果
 # {
-#   "tokenID": 537280686,
+#   "tokenId": 537280686,
 #   "tokenAttr": 1,
 #   "ver": 1,
 #   "userId": 100,
@@ -95,6 +96,15 @@ atm dump -t -b ohos.telephony.resources
 #     }
 #   ]
 # }
+
+#按权限名查询申请该权限的所有应用进程的tokenId和包名
+atm dump -t -p ohos.permission.CAMERA
+# 执行结果
+# Permission: ohos.permission.CAMERA
+# Total Tokens: 1
+
+# 537538306: com.ohos.camera
+
 
 #按进程名查询权限信息
 atm dump -t -n *********
@@ -136,14 +146,14 @@ atm dump -d -p *********
 #显示atm dump的帮助信息
 atm dump -h
 
-#查询系统中所有应用进程的tokenid和包名
+#查询系统中所有进程的tokenId
 atm dump -t
 
-#按tokenid查询权限信息
+#按tokenId查询权限信息
 atm dump -t -i *********
 # 执行结果
 # {
-#   "tokenID": 672078897,
+#   "tokenId": 672078897,
 #   "processName": "samgr",
 #   "apl": 2,
 #   "permStateList": [
@@ -159,7 +169,7 @@ atm dump -t -i *********
 atm dump -t -b ohos.telephony.resources
 # 执行结果
 # {
-#   "tokenID": 537280686,
+#   "tokenId": 537280686,
 #   "tokenAttr": 1,
 #   "ver": 1,
 #   "userId": 100,
@@ -176,6 +186,15 @@ atm dump -t -b ohos.telephony.resources
 #     }
 #   ]
 # }
+
+#按权限名查询申请该权限的所有应用进程的tokenId和包名
+atm dump -t -p ohos.permission.CAMERA
+# 执行结果
+# Permission: ohos.permission.CAMERA
+# Total Tokens: 1
+
+# 537538306: com.ohos.camera
+
 
 #按进程名查询权限信息
 atm dump -t -n *********

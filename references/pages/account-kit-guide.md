@@ -14,9 +14,13 @@ Account Kit简介
 
 未成年人模式
 
+Account Kit Skill能力开放
+
 订阅和处理用户信息变更
 
 Account Kit常见问题
+
+Account Kit术语
 
 个人数据处理说明
 

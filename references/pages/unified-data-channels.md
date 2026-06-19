@@ -101,13 +101,13 @@ try {
     if (err === undefined) {
       hilog.info(0xFF00, '[Sample_Udmf]', `Succeeded in inserting data. key = ${key}`);
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Succeeded in inserting data. key = ${key})`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to insert data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Insert data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Insert data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 
 更新上一步插入的统一数据对象。
@@ -138,13 +138,13 @@ try {
     if (err === undefined) {
       hilog.info(0xFF00, '[Sample_Udmf]', `Succeeded in updating data.`);
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to update data. code is ${err.code},message is ${err.message}`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to update data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Update data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Update data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 
 删除存储在UDMF公共数据通路中的统一数据对象。
@@ -176,13 +176,13 @@ try {
         }
       }
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to delete data. code is ${err.code},message is ${err.message}`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to delete data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Delete data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Delete data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 
 [h2]数据访问方
@@ -221,13 +221,13 @@ try {
         }
       }
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to query data. code is ${err.code},message is ${err.message}`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to query data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Query data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Query data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 
 ## Code blocks
@@ -290,13 +290,13 @@ try {
     if (err === undefined) {
       hilog.info(0xFF00, '[Sample_Udmf]', `Succeeded in inserting data. key = ${key}`);
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Succeeded in inserting data. key = ${key})`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to insert data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Insert data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Insert data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 ```
 
@@ -329,13 +329,13 @@ try {
     if (err === undefined) {
       hilog.info(0xFF00, '[Sample_Udmf]', `Succeeded in updating data.`);
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to update data. code is ${err.code},message is ${err.message}`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to update data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Update data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Update data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 ```
 
@@ -369,13 +369,13 @@ try {
         }
       }
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to delete data. code is ${err.code},message is ${err.message}`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to delete data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Delete data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Delete data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 ```
 
@@ -416,12 +416,12 @@ try {
         }
       }
     } else {
-      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to query data. code is ${err.code},message is ${err.message}`);
+      hilog.error(0xFF00, '[Sample_Udmf]', `Failed to query data. code is ${err.code}, message is ${err.message}`);
     }
   });
 } catch (e) {
   let error: BusinessError = e as BusinessError;
   hilog.error(0xFF00, '[Sample_Udmf]',
-    `Query data throws an exception. code is ${error.code},message is ${error.message}`);
+    `Query data throws an exception. code is ${error.code}, message is ${error.message}`);
 }
 ```

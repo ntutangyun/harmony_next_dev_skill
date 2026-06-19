@@ -95,9 +95,6 @@ export default class EntryAbility extends UIAbility {
 import { BusinessError } from '@kit.BasicServicesKit';
 import { calendarMgr } from '../entryability/EntryAbility';
 import { calendarManager } from '@kit.CalendarKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const DOMAIN = 0x0000;
 
 let calendar: calendarManager.Calendar | undefined = undefined;
 // 指定日历账户信息
@@ -112,12 +109,12 @@ const calendarAccount: calendarManager.CalendarAccount = {
 
 // 创建日历账户
 calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in creating calendar data->${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in creating calendar data->${JSON.stringify(data)}`);
   calendar = data;
   // 请确保日历账户创建成功后，再进行后续相关操作
   // ...
 }).catch((error: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to create calendar. Code: ${error.code}, message: ${error.message}`);
+  console.error(`Failed to create calendar. Code: ${error.code}, message: ${error.message}`);
 });
 
 日历账户创建之后，日历账户颜色默认为黑色，不指定日历账户颜色可能导致部分版本/设备深色模式下显示效果不佳。开发者需要调用setConfig()接口设置日历配置信息，包括是否打开日历账户下的日程提醒能力、设置日历账户颜色。
@@ -131,7 +128,7 @@ const calendarAccounts: calendarManager.CalendarAccount = {
 calendarMgr?.getCalendar(calendarAccounts, (err, data) => {
   // 获取日历账户
   if (err) {
-    hilog.error(DOMAIN, 'testTag', `Failed to get calendar, Code is ${err.code}, message is ${err.message}`);
+    console.error(`Failed to get calendar, Code is ${err.code}, message is ${err.message}`);
   } else {
     const config: calendarManager.CalendarConfig = {
       // 打开日程提醒
@@ -141,9 +138,9 @@ calendarMgr?.getCalendar(calendarAccounts, (err, data) => {
     };
     // 设置日历配置信息
     data.setConfig(config).then(() => {
-      hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in setting config, data->${JSON.stringify(config)}`);
+      console.info('%{public}s', `Succeeded in setting config, data->${JSON.stringify(config)}`);
     }).catch((err: BusinessError) => {
-      hilog.error(DOMAIN, 'testTag', `Failed to set config. Code: ${err.code}, message: ${err.message}`);
+      console.error(`Failed to set config. Code: ${err.code}, message: ${err.message}`);
     })
   }
 });
@@ -151,17 +148,17 @@ calendarMgr?.getCalendar(calendarAccounts, (err, data) => {
 可以查询指定日历账户。
 
 calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
 });
 
 也可以查询默认日历账户，默认日历账户是日历存储首次运行时创建的，若创建日程时不关注归属哪个账户，则无须单独创建日历账户，可以直接使用默认日历账户。
 
 calendarMgr?.getCalendar().then((data: calendarManager.Calendar) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
 });
 
 获取当前应用所有创建的日历账户及默认日历账户Calendar对象。
@@ -169,25 +166,25 @@ calendarMgr?.getCalendar().then((data: calendarManager.Calendar) => {
 由于涉及数据隐私安全，进行了权限管控的应用无法获取其他应用创建的账户信息。
 
 calendarMgr?.getAllCalendars().then((data: calendarManager.Calendar[]) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in getting all calendars, data -> ${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in getting all calendars, data -> ${JSON.stringify(data)}`);
   data.forEach((calendar) => {
     const account = calendar.getAccount();
-    hilog.info(DOMAIN, 'testTag', '%{public}s', `account -> ${JSON.stringify(account)}`);
+    console.info('%{public}s', `account -> ${JSON.stringify(account)}`);
   })
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to get all calendars. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to get all calendars. Code: ${err.code}, message: ${err.message}`);
 });
 
 删除指定的日历账户，删除账户后，该账户下的所有日程会全部删除。
 
 if (!calendar || calendar === null) {
-  hilog.error(DOMAIN, 'testTag', 'Failed to delete calendar. calendar is null');
+  console.error('Failed to delete calendar. calendar is null');
   return;
 }
 calendarMgr?.deleteCalendar(calendar).then(() => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', 'Succeeded in deleting calendar');
+  console.info('%{public}s', 'Succeeded in deleting calendar');
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to delete calendar. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to delete calendar. Code: ${err.code}, message: ${err.message}`);
 });
 
 ## Code blocks
@@ -264,9 +261,6 @@ export default class EntryAbility extends UIAbility {
 import { BusinessError } from '@kit.BasicServicesKit';
 import { calendarMgr } from '../entryability/EntryAbility';
 import { calendarManager } from '@kit.CalendarKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const DOMAIN = 0x0000;
 
 let calendar: calendarManager.Calendar | undefined = undefined;
 // 指定日历账户信息
@@ -285,12 +279,12 @@ const calendarAccount: calendarManager.CalendarAccount = {
 ```
 // 创建日历账户
 calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in creating calendar data->${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in creating calendar data->${JSON.stringify(data)}`);
   calendar = data;
   // 请确保日历账户创建成功后，再进行后续相关操作
   // ...
 }).catch((error: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to create calendar. Code: ${error.code}, message: ${error.message}`);
+  console.error(`Failed to create calendar. Code: ${error.code}, message: ${error.message}`);
 });
 ```
 
@@ -306,7 +300,7 @@ const calendarAccounts: calendarManager.CalendarAccount = {
 calendarMgr?.getCalendar(calendarAccounts, (err, data) => {
   // 获取日历账户
   if (err) {
-    hilog.error(DOMAIN, 'testTag', `Failed to get calendar, Code is ${err.code}, message is ${err.message}`);
+    console.error(`Failed to get calendar, Code is ${err.code}, message is ${err.message}`);
   } else {
     const config: calendarManager.CalendarConfig = {
       // 打开日程提醒
@@ -316,9 +310,9 @@ calendarMgr?.getCalendar(calendarAccounts, (err, data) => {
     };
     // 设置日历配置信息
     data.setConfig(config).then(() => {
-      hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in setting config, data->${JSON.stringify(config)}`);
+      console.info('%{public}s', `Succeeded in setting config, data->${JSON.stringify(config)}`);
     }).catch((err: BusinessError) => {
-      hilog.error(DOMAIN, 'testTag', `Failed to set config. Code: ${err.code}, message: ${err.message}`);
+      console.error(`Failed to set config. Code: ${err.code}, message: ${err.message}`);
     })
   }
 });
@@ -328,9 +322,9 @@ calendarMgr?.getCalendar(calendarAccounts, (err, data) => {
 
 ```
 calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
 });
 ```
 
@@ -338,9 +332,9 @@ calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) 
 
 ```
 calendarMgr?.getCalendar().then((data: calendarManager.Calendar) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in getting calendar, data -> ${JSON.stringify(data)}`);
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to get calendar. Code: ${err.code}, message: ${err.message}`);
 });
 ```
 
@@ -348,13 +342,13 @@ calendarMgr?.getCalendar().then((data: calendarManager.Calendar) => {
 
 ```
 calendarMgr?.getAllCalendars().then((data: calendarManager.Calendar[]) => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', `Succeeded in getting all calendars, data -> ${JSON.stringify(data)}`);
+  console.info('%{public}s', `Succeeded in getting all calendars, data -> ${JSON.stringify(data)}`);
   data.forEach((calendar) => {
     const account = calendar.getAccount();
-    hilog.info(DOMAIN, 'testTag', '%{public}s', `account -> ${JSON.stringify(account)}`);
+    console.info('%{public}s', `account -> ${JSON.stringify(account)}`);
   })
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to get all calendars. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to get all calendars. Code: ${err.code}, message: ${err.message}`);
 });
 ```
 
@@ -362,12 +356,12 @@ calendarMgr?.getAllCalendars().then((data: calendarManager.Calendar[]) => {
 
 ```
 if (!calendar || calendar === null) {
-  hilog.error(DOMAIN, 'testTag', 'Failed to delete calendar. calendar is null');
+  console.error('Failed to delete calendar. calendar is null');
   return;
 }
 calendarMgr?.deleteCalendar(calendar).then(() => {
-  hilog.info(DOMAIN, 'testTag', '%{public}s', 'Succeeded in deleting calendar');
+  console.info('%{public}s', 'Succeeded in deleting calendar');
 }).catch((err: BusinessError) => {
-  hilog.error(DOMAIN, 'testTag', `Failed to delete calendar. Code: ${err.code}, message: ${err.message}`);
+  console.error(`Failed to delete calendar. Code: ${err.code}, message: ${err.message}`);
 });
 ```

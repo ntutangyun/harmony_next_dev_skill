@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 本功能在API 24之前版本仅支持Phone；API24及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
 
-本功能需应用服务器端完成接口接入，以配合端云协同认证流程。
+本功能需企业开发者应用服务器端完成接口接入，以配合端云协同认证流程。
 
 业务流程
 
@@ -37,8 +37,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const TAG = "TrustedAuthenticationJsTest";
 try {
- const authID: bigint = 1687413472599354502n;//实际填充为从服务器获取到的账号对应的authID值
- const authType = trustedAuthentication.AuthType.AUTH_TYPE_FACE; //实际填充为计划解绑的生物特征类型
+ const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
+ const authType = trustedAuthentication.AuthType.AUTH_TYPE_FACE; // 实际填充为计划解绑的生物特征类型
  const remainTimes = await trustedAuthentication.disableTrustedBioAuthentication(authID, authType);
 } catch (err) {
   let e: BusinessError = err as BusinessError;
@@ -62,8 +62,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 const TAG = "TrustedAuthenticationJsTest";
 try {
- const authID: bigint = 1687413472599354502n;//实际填充为从服务器获取到的账号对应的authID值
- const authType = trustedAuthentication.AuthType.AUTH_TYPE_FACE; //实际填充为计划解绑的生物特征类型
+ const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
+ const authType = trustedAuthentication.AuthType.AUTH_TYPE_FACE; // 实际填充为计划解绑的生物特征类型
  const remainTimes = await trustedAuthentication.disableTrustedBioAuthentication(authID, authType);
 } catch (err) {
   let e: BusinessError = err as BusinessError;

@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/attestati
 
 保存应用公钥
 
-使用应用公钥对业务请求进行验签
+使用应用公钥校验业务请求
 
 应用服务器首先校验挑战值Challenge，然后根据应用公钥ID查找应用公钥。
 
@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/attestati
 
 安全建议：如果应用服务器在保存应用公钥时关联了用户ID，在使用应用公钥对业务请求进行验签时，应该根据应用公钥ID+当前登录的用户ID查找应用公钥。
 
-应用服务器再使用应用公钥对请求中的签名进行验签。
+用服务器再使用应用公钥校验请求中的签名。
 
 示例：
 

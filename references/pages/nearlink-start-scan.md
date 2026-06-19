@@ -9,10 +9,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 接口说明
 
 接口名	描述
-startScan(filters: Array<ScanFilters>, options?: ScanOptions): Promise<void>	启动星闪扫描。
+startScan(filters: Array<ScanFilters>, options?: ScanOptions): Promise<void>	启动星闪扫描。使用Promise异步回调。
 stopScan(): Promise<void>	停止星闪扫描。
-on(type: 'deviceFound', callback: Callback<Array<ScanResults>>): void	订阅扫描结果。
-off(type: 'deviceFound', callback?: Callback<Array<ScanResults>>): void	取消订阅扫描结果。
+on(type: 'deviceFound', callback: Callback<Array<ScanResults>>): void	订阅扫描结果。使用callback异步回调。
+off(type: 'deviceFound', callback?: Callback<Array<ScanResults>>): void	取消订阅扫描结果。使用callback异步回调。
 
 开发步骤
 
@@ -44,7 +44,7 @@ const NEARLINK_MANUFACTURE_ID_LENGTH = 2;
 let onReceiveEvent:(data: Array<scan.ScanResults>) => void = (data: Array<scan.ScanResults>) => {
   console.info('scan result addr:' + data[0].address + 'name:' + data[0].deviceName);
   parseScanResult(data[0].data);
-}
+};
 
 // 按照数据类型解析扫描结果
 function parseScanResult(data: ArrayBuffer) {
@@ -181,7 +181,7 @@ let scanFilter2: scan.ScanFilters = {
 };
 let scanOptions: scan.ScanOptions = {
   scanMode: scan.ScanMode.SCAN_MODE_LOW_POWER
-}
+};
 
 开启星闪扫描，参数配置在步骤4中构造。
 
@@ -252,7 +252,7 @@ const NEARLINK_MANUFACTURE_ID_LENGTH = 2;
 let onReceiveEvent:(data: Array<scan.ScanResults>) => void = (data: Array<scan.ScanResults>) => {
   console.info('scan result addr:' + data[0].address + 'name:' + data[0].deviceName);
   parseScanResult(data[0].data);
-}
+};
 
 // 按照数据类型解析扫描结果
 function parseScanResult(data: ArrayBuffer) {
@@ -385,7 +385,7 @@ let scanFilter2: scan.ScanFilters = {
 };
 let scanOptions: scan.ScanOptions = {
   scanMode: scan.ScanMode.SCAN_MODE_LOW_POWER
-}
+};
 ```
 
 ### Code block 5

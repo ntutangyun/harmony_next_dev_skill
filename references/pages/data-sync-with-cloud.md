@@ -104,12 +104,11 @@ Record（数据记录）：存储在Record Type中的具体数据条目。每个
 
 云侧自定义字段名称及类型需要与本地数据接入云空间的字段名称及类型保持一致。对应关系如下表：
 
-云侧字段类型	本地字段类型	说明
-Encrypted String/String	TEXT	-
-Integer	INTEGER	-
-Double	DOUBLE	-
-Bytes	BLOB	-
-AssetList	ASSETS	搭载云空间6.3.1及以上版本、HarmonyOS 6.1.0.125及以上版本的设备，支持新建此类型字段。
+云侧字段类型	本地字段类型
+Encrypted String/String	TEXT
+Integer	INTEGER
+Double	DOUBLE
+Bytes	BLOB
 
 说明
 

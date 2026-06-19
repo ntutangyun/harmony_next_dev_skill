@@ -11,51 +11,51 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 @Entry
 @Component
 export struct Rule_2_1_3 {
-  title: string = 'Rule 2.1.3'
+  title: string = 'Rule 2.1.3';
 
   build() {
     NavDestination() {
       Column() {
-        Text('Incorrect behavior:') // 播报 "Time Group 12:05 Beijing" + "12:05" + "Beijing".
-          //继续下滑焦点可聚焦至子控件文本重复了两次。这是不正确的。
+        Text('Incorrect behavior:') // 播报 "Time Group 12:05 Beijing" + "12:05" + "Beijing"。
+          // 继续下滑焦点可聚焦至子控件文本重复了两次，这是不正确的。
           .width('100%')
           .fontSize(12)
           .fontColor(Color.Black)
           .margin({bottom: 12})
         Row(){
-          Text("12:05") // time information
+          Text('12:05') // time information.
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({right: 20})
 
-          Text("Beijing") // location information
+          Text('Beijing') // location information.
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
         }
-        .accessibilityText("Time Group") // 时间信息、位置信息和此可访问性文本在获得焦点时被朗读。
-        // 带有时间信息的文本组件可聚焦并朗读
-        // 具有位置信息的文本组件可聚焦并朗读
+        .accessibilityText('Time Group') // 时间信息、位置信息和此可访问性文本在获得焦点时被朗读。
+        // 带有时间信息的文本组件可聚焦并朗读。
+        // 具有位置信息的文本组件可聚焦并朗读。
         .height(50)
         .margin({bottom: 150})
 
-        Text('Correct behavior:') // 只朗读 "07:05 Moscow" ，不重复文本。是正确的。
+        Text('Correct behavior:') // 只朗读 "07:05 Moscow"，不重复文本，是正确的。
           .width('100%')
           .fontSize(12)
           .fontColor(Color.Black)
           .margin({bottom: 12})
         Row(){
-          Text("07:05") // time information
+          Text('07:05') // time information.
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({right: 20})
 
-          Text("Moscow") // location information
+          Text('Moscow') // location information.
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
@@ -63,8 +63,8 @@ export struct Rule_2_1_3 {
         }
         .height(50)
         .accessibilityGroup(true) // 获取焦点时朗读时间和位置信息。
-        // 带有时间信息的文本组件无法聚焦和朗读
-        //具有位置信息的文本组件无法获得焦点并朗读
+        // 带有时间信息的文本组件无法聚焦和朗读。
+        // 具有位置信息的文本组件无法获得焦点并朗读。
       }
       .alignItems(HorizontalAlign.Start)
       .padding(10)
@@ -81,51 +81,51 @@ export struct Rule_2_1_3 {
 @Entry
 @Component
 export struct Rule_2_1_3 {
-  title: string = 'Rule 2.1.3'
+  title: string = 'Rule 2.1.3';
 
   build() {
     NavDestination() {
       Column() {
-        Text('Incorrect behavior:') // 播报 "Time Group 12:05 Beijing" + "12:05" + "Beijing".
-          //继续下滑焦点可聚焦至子控件文本重复了两次。这是不正确的。
+        Text('Incorrect behavior:') // 播报 "Time Group 12:05 Beijing" + "12:05" + "Beijing"。
+          // 继续下滑焦点可聚焦至子控件文本重复了两次，这是不正确的。
           .width('100%')
           .fontSize(12)
           .fontColor(Color.Black)
           .margin({bottom: 12})
         Row(){
-          Text("12:05") // time information
+          Text('12:05') // time information.
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({right: 20})
 
-          Text("Beijing") // location information
+          Text('Beijing') // location information.
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
         }
-        .accessibilityText("Time Group") // 时间信息、位置信息和此可访问性文本在获得焦点时被朗读。
-        // 带有时间信息的文本组件可聚焦并朗读
-        // 具有位置信息的文本组件可聚焦并朗读
+        .accessibilityText('Time Group') // 时间信息、位置信息和此可访问性文本在获得焦点时被朗读。
+        // 带有时间信息的文本组件可聚焦并朗读。
+        // 具有位置信息的文本组件可聚焦并朗读。
         .height(50)
         .margin({bottom: 150})
 
-        Text('Correct behavior:') // 只朗读 "07:05 Moscow" ，不重复文本。是正确的。
+        Text('Correct behavior:') // 只朗读 "07:05 Moscow"，不重复文本，是正确的。
           .width('100%')
           .fontSize(12)
           .fontColor(Color.Black)
           .margin({bottom: 12})
         Row(){
-          Text("07:05") // time information
+          Text('07:05') // time information.
             .fontSize(32)
             .fontColor(Color.Red)
             .fontWeight(FontWeight.Bold)
             .textAlign(TextAlign.Center)
             .margin({right: 20})
 
-          Text("Moscow") // location information
+          Text('Moscow') // location information.
             .fontSize(20)
             .fontColor(Color.Green)
             .fontWeight(FontWeight.Bold)
@@ -133,8 +133,8 @@ export struct Rule_2_1_3 {
         }
         .height(50)
         .accessibilityGroup(true) // 获取焦点时朗读时间和位置信息。
-        // 带有时间信息的文本组件无法聚焦和朗读
-        //具有位置信息的文本组件无法获得焦点并朗读
+        // 带有时间信息的文本组件无法聚焦和朗读。
+        // 具有位置信息的文本组件无法获得焦点并朗读。
       }
       .alignItems(HorizontalAlign.Start)
       .padding(10)

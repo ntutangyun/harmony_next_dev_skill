@@ -153,6 +153,95 @@ HMS_SpatialReconStatus ret = HMS_SpatialRecon_SaveResultToFile(spatialReconSessi
 
 由于保存MP4的过程需要消耗系统的渲染、编解码资源，Spatial Recon Kit仅支持同一时刻只有一个session正在保存MP4。如果同一时刻有多个session同时进行保存MP4，会导致未定义行为。
 
+注册支持额外数据输入的回调函数
+
+从26.0.0开始，Spatial Recon Kit支持HMS_SpatialReconNGCallbackFunc回调函数，支持接收额外数据，供开发者使用。
+
+typedef void (*HMS_SpatialReconNGCallbackFunc)(HMS_SpatialReconStatus, void*); // HMS_SpatialReconNGCallbackFunc 类型定义
+
+从26.0.0开始，本kit提供HMS_SpatialRecon_RegisterNGCallbackFunc函数，供开发者注册新的HMS_SpatialReconNGCallbackFunc回调函数，用于通知开发者重建或保存的结果。关于回调函数生效的时机，有以下注意事项：
+
+开发者应自行保证回调入口地址的正确性：若需要注册回调函数，必须传入有效的、类型匹配的函数指针。若需要取消回调函数，需要传入nullptr。
+
+在调用HMS_SpatialRecon_StartSession函数提交重建任务之前，HMS_SpatialRecon_RegisterNGCallbackFunc函数只影响重建任务结束后的回调行为。开发者可以在调用HMS_SpatialRecon_StartSession函数之前任意注册、修改、取消回调。此时，开发者无法针对重建结束后保存模型的任务进行回调设置。
+
+在调用HMS_SpatialRecon_StartSession函数提交重建任务之后，HMS_SpatialRecon_RegisterNGCallbackFunc函数只影响保存任务结束后的回调行为。开发者可以在调用HMS_SpatialRecon_StartSession函数之前任意注册、修改、取消回调。此时，即使重建仍未结束，开发者也无法影响重建结束后的回调行为。
+
+HMS_SpatialReconStatus HMS_SpatialRecon_RegisterNGCallbackFunc(HMS_SpatialRecon_Session*
+    spatialReconSession, HMS_SpatialReconNGCallbackFunc onSpatialReconFinished, void* data);
+
+注册NGCallback时，Spatial Recon Kit 将保存data指针。在调用NGCallback回调函数时，作为入参传入给NGCallback回调函数。
+
+请注意，除保存指针、作为入参传递以外，Spatial Recon Kit 不会做任何操作，也无法对回调函数中处理data指针的过程做任何保护。开发者需要自行保证data指针得到安全、正确的处理。
+
+#include <map>
+#include <hilog/log.h>
+#ifndef LOGI
+#define LOGI(...) ((void)OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "[SpatialReconKitSample][C]", __VA_ARGS__))
+#endif
+
+#ifndef LOGE
+#define LOGE(...) ((void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, "[SpatialReconKitSample][C]", __VA_ARGS__))
+#endif
+
+// -----------------初始化--------------------
+std::map<HMS_SpatialRecon_Session, HMS_SpatialReconStatus> sessionStatsMap = {};
+
+auto it = sessionStatsMap.find(spatialReconSession);
+if (it == sessionStatsMap.end()) {
+    map[spatialReconSession] = SPATIAL_RECON_STATUS_STAGE_BUILDING;
+}
+
+auto callbackWithData = [](HMS_SpatialReconStatus status, void* data) {
+    // 将状态码写入到data指针指向的位置中
+    auto statusPtr = reinterpret_cast<HMS_SpatialReconStatus*>(data);
+    *statusPtr = status;
+    return;
+};
+
+
+// -------------------重建--------------------
+// 先注册回调函数，再启动重建
+auto& sessionStatus = sessionStatsMap[spatialReconSession];
+HMS_SpatialReconStatus* statusPtr = &sessionStatus;
+
+HMS_SpatialReconStage sessionStage = SPATIAL_RECON_STAGE_BUILDING;
+
+// 检查stage处于INIT状态，则此时注册回调会在重建结束时调用
+float progress = 0.f;
+HMS_SpatialReconStatus ret = HMS_SpatialRecon_GetProgress(spatialReconSession, &progress, &sessionStage);
+
+if (sessionStage != SPATIAL_RECON_STAGE_INIT) {
+    LOGE("Registering finish reconstruction callback when not at initialzied");
+}
+
+ret = HMS_SpatialRecon_RegisterNGCallbackFunc(spatialReconSession, callbackWithData,
+    statusPtr);
+
+ret = HMS_SpatialRecon_StartSession(spatialReconSession,
+   nullptr, nullptr) // 注册了NGCallback以后，旧风格的callback将会被覆盖。因此，在这里无需注册旧风格callback
+
+// ----------------保存--------------------
+// 检查stage处于FINISHED状态，则此时注册回调会在保存结束时调用
+
+HMS_SpatialReconStatus ret = HMS_SpatialRecon_GetProgress(spatialReconSession, &progress, &sessionStage);
+
+if (sessionStage != SPATIAL_RECON_STAGE_FINISHED) {
+    LOGE("Registering finish saving callback when not at finished");
+}
+
+
+ret = HMS_SpatialRecon_RegisterNGCallbackFunc(spatialReconSession, callbackWithData,
+    statusPtr);
+
+
+HMS_SpatialRecon_ModelWriteInfo info;
+// ... 组装对应的保存时需要的配置，开发者可以根据需要保存为PLY（点云）或运镜视频文件（MP4）。
+info.modelFormat = SPATIAL_RECON_OUTPUT_FORMAT_MP4;
+
+HMS_SpatialReconStatus ret = HMS_SpatialRecon_SaveResultToFile(spatialReconSession,
+    &info, NULL); // 已经注册了新的回调，则不必注册旧的回调
+
 ## Code blocks
 
 ### Code block 1
@@ -266,4 +355,89 @@ info.modelFormat = SPATIAL_RECON_OUTPUT_FORMAT_MP4;
 
 HMS_SpatialReconStatus ret = HMS_SpatialRecon_SaveResultToFile(spatialReconSession,
 &info, NULL); // 保存重建结果到文件
+```
+
+### Code block 6
+
+```
+typedef void (*HMS_SpatialReconNGCallbackFunc)(HMS_SpatialReconStatus, void*); // HMS_SpatialReconNGCallbackFunc 类型定义
+```
+
+### Code block 7
+
+```
+HMS_SpatialReconStatus HMS_SpatialRecon_RegisterNGCallbackFunc(HMS_SpatialRecon_Session*
+    spatialReconSession, HMS_SpatialReconNGCallbackFunc onSpatialReconFinished, void* data);
+```
+
+### Code block 8
+
+```
+#include <map>
+#include <hilog/log.h>
+#ifndef LOGI
+#define LOGI(...) ((void)OH_LOG_Print(LOG_APP, LOG_INFO, LOG_DOMAIN, "[SpatialReconKitSample][C]", __VA_ARGS__))
+#endif
+
+#ifndef LOGE
+#define LOGE(...) ((void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_DOMAIN, "[SpatialReconKitSample][C]", __VA_ARGS__))
+#endif
+
+// -----------------初始化--------------------
+std::map<HMS_SpatialRecon_Session, HMS_SpatialReconStatus> sessionStatsMap = {};
+
+auto it = sessionStatsMap.find(spatialReconSession);
+if (it == sessionStatsMap.end()) {
+    map[spatialReconSession] = SPATIAL_RECON_STATUS_STAGE_BUILDING;
+}
+
+auto callbackWithData = [](HMS_SpatialReconStatus status, void* data) {
+    // 将状态码写入到data指针指向的位置中
+    auto statusPtr = reinterpret_cast<HMS_SpatialReconStatus*>(data);
+    *statusPtr = status;
+    return;
+};
+
+
+// -------------------重建--------------------
+// 先注册回调函数，再启动重建
+auto& sessionStatus = sessionStatsMap[spatialReconSession];
+HMS_SpatialReconStatus* statusPtr = &sessionStatus;
+
+HMS_SpatialReconStage sessionStage = SPATIAL_RECON_STAGE_BUILDING;
+
+// 检查stage处于INIT状态，则此时注册回调会在重建结束时调用
+float progress = 0.f;
+HMS_SpatialReconStatus ret = HMS_SpatialRecon_GetProgress(spatialReconSession, &progress, &sessionStage);
+
+if (sessionStage != SPATIAL_RECON_STAGE_INIT) {
+    LOGE("Registering finish reconstruction callback when not at initialzied");
+}
+
+ret = HMS_SpatialRecon_RegisterNGCallbackFunc(spatialReconSession, callbackWithData,
+    statusPtr);
+
+ret = HMS_SpatialRecon_StartSession(spatialReconSession,
+   nullptr, nullptr) // 注册了NGCallback以后，旧风格的callback将会被覆盖。因此，在这里无需注册旧风格callback
+
+// ----------------保存--------------------
+// 检查stage处于FINISHED状态，则此时注册回调会在保存结束时调用
+
+HMS_SpatialReconStatus ret = HMS_SpatialRecon_GetProgress(spatialReconSession, &progress, &sessionStage);
+
+if (sessionStage != SPATIAL_RECON_STAGE_FINISHED) {
+    LOGE("Registering finish saving callback when not at finished");
+}
+
+
+ret = HMS_SpatialRecon_RegisterNGCallbackFunc(spatialReconSession, callbackWithData,
+    statusPtr);
+
+
+HMS_SpatialRecon_ModelWriteInfo info;
+// ... 组装对应的保存时需要的配置，开发者可以根据需要保存为PLY（点云）或运镜视频文件（MP4）。
+info.modelFormat = SPATIAL_RECON_OUTPUT_FORMAT_MP4;
+
+HMS_SpatialReconStatus ret = HMS_SpatialRecon_SaveResultToFile(spatialReconSession,
+    &info, NULL); // 已经注册了新的回调，则不必注册旧的回调
 ```

@@ -11,3 +11,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-lis
 创建网格 (Grid/GridItem)
 
 创建瀑布流（WaterFlow）
+
+创建懒加载布局 (LazyVGridLayout/LazyVWaterFlowLayout)
+
+常见列表流

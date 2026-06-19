@@ -13,6 +13,7 @@ Enterprise Data Guard Kit为应用提供设置KIA文件列表的能力，Harmony
 接口名	描述
 setKiaFilelist(filelist: string, callback: AsyncCallback<void>): void	使用Callback方式设置KIA文件列表。
 setKiaFilelist(filelist: string): Promise<void>	使用Promise方式设置KIA文件列表。
+isKia(path: string): boolean	检查文件或文件夹是否是KIA。
 
 开发步骤
 
@@ -67,6 +68,19 @@ async function setKiaFilelistPromise() {
   }).catch((err: BusinessError) => {
     console.error(`Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
   });
+}
+
+初始化FileGuard对象guard，调用接口isKia，检查该文件或文件夹是否是KIA。
+
+function isKIA() {
+  try {
+    let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
+    let path: string = '/data/service/el2/account_id/hmdfs/account/files/Docs/Documents/1.txt';
+    let isKIA: boolean = guard.isKia(path);
+    console.info(`Succeeded in determining whether the file is a KIA file. isKIA: ${isKIA}`);
+  } catch (e) {
+    console.error(`Failed to determine whether the file is a KIA file. Code: ${e.code}, message: ${e.message}.`);
+  }
 }
 
 ## Code blocks
@@ -125,5 +139,20 @@ async function setKiaFilelistPromise() {
   }).catch((err: BusinessError) => {
     console.error(`Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
   });
+}
+```
+
+### Code block 4
+
+```
+function isKIA() {
+  try {
+    let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
+    let path: string = '/data/service/el2/account_id/hmdfs/account/files/Docs/Documents/1.txt';
+    let isKIA: boolean = guard.isKia(path);
+    console.info(`Succeeded in determining whether the file is a KIA file. isKIA: ${isKIA}`);
+  } catch (e) {
+    console.error(`Failed to determine whether the file is a KIA file. Code: ${e.code}, message: ${e.message}.`);
+  }
 }
 ```

@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 
 用户已通过穿戴应用程序与穿戴设备配对。
 
-用户已在穿戴应用中，通过openSubscriptionSettings接口拉起的半模态弹窗中，开启了“允许获取本机通知”与“已获取的本机通知”的开关。
+用户已在穿戴应用中，通过openSubscriptionSettingsWithResult接口拉起的半模态弹窗中，开启了“允许获取本机通知”与“已获取的本机通知”的开关。
 
 支持HFP连接的设备，需保证HFP连接一直处于连接状态。
 

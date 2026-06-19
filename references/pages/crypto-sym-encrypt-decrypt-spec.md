@@ -38,6 +38,7 @@ OFB	[128|192|256]	[NoPadding|PKCS5|PKCS7]	9+
 CFB	[128|192|256]	[NoPadding|PKCS5|PKCS7]	9+
 GCM	[128|192|256]	[NoPadding|PKCS5|PKCS7]	9+
 CCM	[128|192|256]	[NoPadding|PKCS5|PKCS7]	9+
+XTS	[128|256]	[NoPadding]	26.0.0+
 
 从API version 10开始，支持对称加解密不带密钥长度的规格。加解密参数输入密钥类型时，支持不带长度，加解密运算取决于实际输入的密钥长度。
 
@@ -178,3 +179,74 @@ ChaCha20
 对称算法名	密钥长度（bit）	字符串参数	API版本
 ChaCha20	256	ChaCha20	22+
 ChaCha20	256	ChaCha20|Poly1305	22+
+
+RC2
+
+从API版本26.0.0开始，支持分组密码算法RC2，分组长度为64位，密钥长度支持8位～1024位。
+
+算法库当前提供了RC2加解密常用的分组模式：ECB、CBC、OFB、CFB。不同的加密模式适用的加解密参数不同，具体请参考ParamsSpec。
+
+说明
+
+ECB、CBC加密模式，明文长度不是64位整数倍，必须使用填充方法补足。
+
+当前支持以字符串参数完成RC2加解密，具体的“字符串参数”由“对称密钥类型”、“分组模式”和“填充模式”使用符号“|”拼接而成。字符串参数为RC2。
+
+CBC、OFB、CFB模式需传入IV，IV长度为8字节，对应IvParamsSpec。
+
+分组模式	字符串参数	填充模式	API版本
+ECB	RC2	[NoPadding|PKCS5|PKCS7]	26.0.0+
+CBC	RC2	[NoPadding|PKCS5|PKCS7]	26.0.0+
+OFB	RC2	[NoPadding|PKCS5|PKCS7]	26.0.0+
+CFB	RC2	[NoPadding|PKCS5|PKCS7]	26.0.0+
+
+RC4
+
+从API版本26.0.0开始，支持流密码算法RC4，无需分组与填充。密钥长度支持8位～4096位。
+
+算法库当前提供RC4加解密，RC4为流密码模式，无需分组模式和填充模式。
+
+当前支持以字符串参数完成RC4加解密，字符串参数为RC4：
+
+对称算法名	字符串参数	API版本
+RC4	RC4	26.0.0+
+
+Blowfish（BF）
+
+从API版本26.0.0开始，支持密码算法Blowfish，是一种分组密码算法，分组长度为64位，密钥长度支持32位～448位。
+
+说明
+
+ECB、CBC加密模式，明文长度不是64位整数倍，必须使用填充方法补足。
+
+CBC、OFB、CFB模式需传入IV，IV长度为8字节，对应IvParamsSpec。
+
+当前支持以字符串参数完成Blowfish加解密，字符串参数为Blowfish：
+
+分组模式	字符串参数	填充模式	API版本
+ECB	Blowfish	[NoPadding|PKCS5|PKCS7]	26.0.0+
+CBC	Blowfish	[NoPadding|PKCS5|PKCS7]	26.0.0+
+OFB	Blowfish	[NoPadding|PKCS5|PKCS7]	26.0.0+
+CFB	Blowfish	[NoPadding|PKCS5|PKCS7]	26.0.0+
+
+CAST
+
+从API版本26.0.0开始，支持分组密码算法CAST，分组长度为64位，密钥长度支持40位～128位。
+
+CAST为分组密码算法，分组长度为64位，密钥长度支持40位～128位。
+
+算法库当前提供了CAST加解密常用的分组模式：ECB、CBC、OFB、CFB。不同的加密模式适用的加解密参数不同，具体请参考ParamsSpec。
+
+说明
+
+ECB、CBC加密模式，明文长度不是64位整数倍，必须使用填充方法补足。
+
+当前支持以字符串参数完成CAST加解密，字符串参数为CAST：
+
+CBC、OFB、CFB模式需传入IV，IV长度为8字节，对应IvParamsSpec。
+
+分组模式	字符串参数	填充模式	API版本
+ECB	CAST	[NoPadding|PKCS5|PKCS7]	26.0.0+
+CBC	CAST	[NoPadding|PKCS5|PKCS7]	26.0.0+
+OFB	CAST	[NoPadding|PKCS5|PKCS7]	26.0.0+
+CFB	CAST	[NoPadding|PKCS5|PKCS7]	26.0.0+

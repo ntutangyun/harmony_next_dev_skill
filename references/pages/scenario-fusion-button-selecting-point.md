@@ -56,11 +56,11 @@ struct Index {
             .onChooseLocation((err, data) => {
               if (err) {
                 // 错误日志处理。
-                hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
+                hilog.error(0x0000, 'testTag', 'Failed to choose location, error: %{public}d %{public}s', err.code, err.message);
                 return;
               }
               // 成功日志处理。
-              hilog.info(0x0000, "testTag", "succeeded in choosing location");
+              hilog.info(0x0000, 'testTag', 'succeeded in choosing location');
               let name: string = data.name;
               let address: string = data.address;
               let longitude: number = data.longitude;
@@ -127,11 +127,11 @@ struct Index {
             .onChooseLocation((err, data) => {
               if (err) {
                 // 错误日志处理。
-                hilog.error(0x0000, "testTag", "error: %{public}d %{public}s", err.code, err.message);
+                hilog.error(0x0000, 'testTag', 'Failed to choose location, error: %{public}d %{public}s', err.code, err.message);
                 return;
               }
               // 成功日志处理。
-              hilog.info(0x0000, "testTag", "succeeded in choosing location");
+              hilog.info(0x0000, 'testTag', 'succeeded in choosing location');
               let name: string = data.name;
               let address: string = data.address;
               let longitude: number = data.longitude;

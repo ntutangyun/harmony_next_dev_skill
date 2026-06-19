@@ -28,6 +28,8 @@ int OH_IPCRemoteProxy_AddDeathRecipient(OHIPCRemoteProxy *proxy, OHIPCDeathRecip
 
 先创建服务端Stub对象，通过元能力获取其客户端代理Proxy对象，然后用Proxy对象与服务端Stub对象进行IPC通信，同时再注册远端对象的死亡通知回调，用于Proxy侧感知服务端Stub对象所在进程的死亡状态。
 
+阅读以下示例时，可按照“子进程创建Stub对象、主进程启动子进程并获取Proxy对象、Proxy端发送请求、Stub端处理请求并返回结果”的顺序理解。Proxy端和Stub端需要使用相同的code定义和接口描述符。
+
 动态库文件
 
 CMakeLists.txt中添加以下lib。
@@ -43,6 +45,8 @@ libchild_process.so
 #include <AbilityKit/native_child_process.h>
 
 子进程实现
+
+子进程创建Stub对象，并通过NativeChildProcess_OnConnect返回该对象，用于接收主进程发送的IPC请求。以下代码中的OnRemoteRequest仅展示回调函数的基本形式，具体的请求处理过程参见后文“Stub侧实现”。
 
 #include <IPCKit/ipc_kit.h>
 // ...
@@ -102,6 +106,8 @@ void NativeChildProcessMainProc()
 
 主进程实现
 
+主进程调用OH_Ability_CreateNativeChildProcess启动子进程。子进程启动成功后，通过OnNativeChildProcessStarted回调获取与子进程Stub对象对应的remoteProxy，后续可基于该对象向子进程发送IPC请求。
+
 #include <IPCKit/ipc_kit.h>
 #include <AbilityKit/native_child_process.h>
 // ...
@@ -131,6 +137,8 @@ void CreateNativeChildProcess()
 }
 
 Proxy侧实现
+
+Proxy端用于向远端Stub发送IPC请求。以下示例展示了创建OHIPCParcel对象、写入接口描述符和请求数据、调用OH_IPCRemoteProxy_SendRequest发送请求，以及从回应数据对象中读取处理结果的过程。不同操作通过不同的code值进行区分。
 
 #include "IpcProxy.h"
 #include <IPCKit/ipc_error_code.h>
@@ -246,6 +254,8 @@ bool IpcProxy::WriteInterfaceToken(OHIPCParcel* data)
 }
 
 Stub侧实现
+
+Stub端通过OnRemoteRequest接收Proxy端发送的请求。该回调先读取并校验接口描述符，再根据code调用对应的处理方法。处理方法从请求数据对象data中读取数据，并将处理结果写入回应数据对象reply，返回给Proxy端。
 
 #include "IpcStub.h"
 #include <IPCKit/ipc_error_code.h>

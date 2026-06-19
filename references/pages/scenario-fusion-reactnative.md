@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     padding: 4,
     height: 80,
-    width: 200,
+    width: 160,
   },
   labelContainer: {
     flexDirection: 'row',
@@ -64,9 +64,9 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
     );
   }
 }
-const RNTesterApp = () => {
+const RNTesterApp = () : React.ReactNode=> {
   return (
-    <View style={{width: '100%', height: '100%'}}>
+    <View style={{width: '100%', height: '100%', paddingTop: 40}}>
       <WithLabel label="昵称">
         <TextInput textContentType="nickname" style={styles.default} />
       </WithLabel>
@@ -100,22 +100,27 @@ React Native框架中加载的H5页面效果图
 
 React Native框架加载H5页面场景，通过给form表单的input输入框（form表单的子节点）配置autocomplete属性来支持智能填充，代码如下：
 
-import React from 'react';
+import React,{ useEffect } from 'react';
 import { View } from 'react-native';
 import { WebView } from 'react-native-webview';
+// ...
 
-const RNTesterApp = () => {
+const RNTesterAppH5 = () : React.ReactNode => {
+// ...
+
   return (
-    <View style={{width: '100%', height: '100%'}}>
-      <WebView
-        source={require('./autofill_h5.html')}
-        style={{flex: 1, paddingTop: 50}}
-      />
-    </View>
+// ...
+      <View style={{width: '100%', height: '100%', paddingTop: 40}}>
+        <WebView
+          source={require('./autofill_h5.html')}
+          style={{flex: 1, paddingTop: 50}}
+        />
+      </View>
+// ...
   );
 };
 
-export default RNTesterApp;
+export default RNTesterAppH5;
 
 autofill_h5.html实现参考示例代码二。
 
@@ -135,7 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     padding: 4,
     height: 80,
-    width: 200,
+    width: 160,
   },
   labelContainer: {
     flexDirection: 'row',
@@ -162,9 +167,9 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
     );
   }
 }
-const RNTesterApp = () => {
+const RNTesterApp = () : React.ReactNode=> {
   return (
-    <View style={{width: '100%', height: '100%'}}>
+    <View style={{width: '100%', height: '100%', paddingTop: 40}}>
       <WithLabel label="昵称">
         <TextInput textContentType="nickname" style={styles.default} />
       </WithLabel>
@@ -198,20 +203,25 @@ export default RNTesterApp;
 ### Code block 2
 
 ```
-import React from 'react';
+import React,{ useEffect } from 'react';
 import { View } from 'react-native';
 import { WebView } from 'react-native-webview';
+// ...
 
-const RNTesterApp = () => {
+const RNTesterAppH5 = () : React.ReactNode => {
+// ...
+
   return (
-    <View style={{width: '100%', height: '100%'}}>
-      <WebView
-        source={require('./autofill_h5.html')}
-        style={{flex: 1, paddingTop: 50}}
-      />
-    </View>
+// ...
+      <View style={{width: '100%', height: '100%', paddingTop: 40}}>
+        <WebView
+          source={require('./autofill_h5.html')}
+          style={{flex: 1, paddingTop: 50}}
+        />
+      </View>
+// ...
   );
 };
 
-export default RNTesterApp;
+export default RNTesterAppH5;
 ```

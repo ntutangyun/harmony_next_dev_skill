@@ -10,6 +10,8 @@ Remote Communication Kit简介
 
 提升HTTP传输性能
 
+使用QUIC协议进行网络通信
+
 URPC场景
 
 Remote Communication Kit术语

@@ -32,7 +32,7 @@ AdComponent组件建议宽高
 导入相关模块。
 
 import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
-import { advertising, identifier } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 获取OAID。
@@ -57,7 +57,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 请求广告参数名	类型	必填	说明
 adType	number	否	请求广告类型，原生广告类型为3。不填默认为原生广告类型。
-adId	string	是	广告位ID。 - 如果仅调测广告，可使用测试广告位ID：s7moc0jc6m（原生视频），h8asowxwhq（原生大图），k94abyn2z4（原生小图），o7dj7qsbvy（原生三图）。 - 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
+adId	string	是	广告位ID。 - 如果仅调测广告，可使用测试广告位ID：f5n0u5i3wd（原生视频），h8asowxwhq（原生大图），k94abyn2z4（原生小图），u17l1u6wg1（原生三图）。 - 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
 oaid	string	否	开放匿名设备标识符，用于精准推送广告。不填无法获取到个性化广告。
 
 以请求多广告位广告为例，示例代码如下所示：
@@ -151,7 +151,7 @@ async function requestOAID(context: Context): Promise<string | undefined> {
 
 导入相关模块。
 
-import { AdComponent, advertising } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 展示广告。
@@ -303,8 +303,8 @@ struct Index {
 广告位类型	测试广告位ID	展示形式	比例	推广类型
 原生	h8asowxwhq	大图	16:9	网页推广
 原生	k94abyn2z4	小图	4:3	应用下载
-原生	o7dj7qsbvy	三图	4:3	应用促活
-原生	s7moc0jc6m	视频	16:9	应用下载
+原生	u17l1u6wg1	三图	4:3	应用下载
+原生	f5n0u5i3wd	视频	16:9	网页推广
 
 ## Code blocks
 
@@ -312,7 +312,7 @@ struct Index {
 
 ```
 import { abilityAccessCtrl, common, PermissionRequestResult } from '@kit.AbilityKit';
-import { advertising, identifier } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
@@ -408,7 +408,7 @@ async function requestOAID(context: Context): Promise<string | undefined> {
 ### Code block 3
 
 ```
-import { AdComponent, advertising } from '@kit.AdsKit';
+import { AdComponent, advertising, identifier } from '@kit.AdsKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 

@@ -6,7 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ve
 
 申请验证
 
-登录开发者联盟网站，进入“管理中心”，在应用服务中，单击Health Service Kit卡片。如果无“Health Service Kit”卡片，请单击右上角“自定义桌面”添加卡片。
+登录AppGallery Connect，选择开发与服务。
+
+在项目列表选择项目，并在应用列表下选择需要申请运动健康服务的应用。
+
+进入项目设置 > 开放能力管理页面，点击运动健康服务对应的管理。
 
 单击“申请验证”按钮，选择验证的权限，提交审核材料由专家组进行评审，审批周期约为15个工作日，请耐心等待。
 

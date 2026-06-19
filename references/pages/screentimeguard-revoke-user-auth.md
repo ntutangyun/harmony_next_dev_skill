@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当开发者希望取消应用的Screen Time Guard Kit授权时，可以通过调用取消用户授权的接口进行取消。一旦权限被取消，应用将无法再访问或使用对用户设备的时间管理等功能。如果应用尝试继续调用与屏幕守护时间模块相关的接口，系统会返回用户未授权使用的错误码，以确保功能的安全性和隐私保护。
+当管控应用希望取消用户的授权时，可以调用取消用户授权的接口。一旦权限被取消，管控应用将无法再使用屏幕时间守护功能。如果管控应用尝试继续调用屏幕时间守护模块的相关接口，系统会返回用户未授权使用的错误码，以确保功能的安全性和隐私保护。
 
 业务流程
 
@@ -33,26 +33,26 @@ import { BusinessError } from '@kit.BasicServicesKit';
 调用revokeUserAuth，取消用户授权。
 
 public async revokeUserAuth(): Promise<void> {
-   try {
-      await guardService.revokeUserAuth();
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `revokeUserAuth failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.revokeUserAuth();
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `revokeUserAuth failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 获取用户授权状态。
 
 public async getUserAuthStatus(): Promise<void> {
-   try {
-      const status = await guardService.getUserAuthStatus();
-      hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    const status = await guardService.getUserAuthStatus();
+    hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `getUserAuthStatus failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 ## Code blocks
@@ -69,13 +69,13 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 public async revokeUserAuth(): Promise<void> {
-   try {
-      await guardService.revokeUserAuth();
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `revokeUserAuth failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.revokeUserAuth();
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `revokeUserAuth failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```
 
@@ -83,13 +83,13 @@ public async revokeUserAuth(): Promise<void> {
 
 ```
 public async getUserAuthStatus(): Promise<void> {
-   try {
-      const status = await guardService.getUserAuthStatus();
-      hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `removeGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    const status = await guardService.getUserAuthStatus();
+    hilog.info(0x0000, 'GuardService', `user auth status: ${status}`);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `getUserAuthStatus failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```

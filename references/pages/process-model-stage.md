@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/process-m
 
 ExtensionAbility进程：应用中（同一Bundle名称）的所有同一类型ExtensionAbility均是运行在一个独立进程中，如图1中“FormExtensionAbility Process”、“其他类型ExtensionAbility Process”（其他类型的ExtensionAbility组件）。
 
-特别地，对于继承自UIExtensionAbility的ExtensionAbility，可以为每个实例配置独立进程。例如ShareExtensionAbility可以指定每个ShareExtensionAbility实例分别运行在一个独立进程，详见UIExtensionAbility。
+特别地，对于继承自UIExtensionAbility的ExtensionAbility，可以为每个实例配置独立进程。例如ShareExtensionAbility可以指定每个ShareExtensionAbility实例分别运行在一个独立进程，详见UIExtensionAbility。对于AppServiceExtensionAbility，可以通过配置module.json5文件中的extensionProcessMode字段为type，来指定不同name的AppServiceExtensionAbility组件各自运行在独立进程。
 
 Render进程：应用中的Web组件运行时，系统会为之分配一个Render进程，用于渲染。如图1中的“Render Process”。
 

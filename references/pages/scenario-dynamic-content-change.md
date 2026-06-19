@@ -18,7 +18,7 @@ textAnnouncedForAccessibility	string	主动播报的内容	test123 text
 
 开发实例
 
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
@@ -28,7 +28,7 @@ export struct Rule_2_1_7 {
   longText: string = 'sendAccessibilityEvent';
   eventInfo: accessibility.EventInfo = ({
     type: 'announceForAccessibility',
-    bundleName: 'com.example.pagesrouter',
+    bundleName: 'com.samples.uiextensionandaccessibility',
     triggerAction: 'common',
     textAnnouncedForAccessibility: 'test123 text'
   });
@@ -43,7 +43,7 @@ export struct Rule_2_1_7 {
           .fontSize(20)
           .onClick(() => {
             accessibility.sendAccessibilityEvent(this.eventInfo).then(() => {
-              console.info(`test123 Succeeded in send event, eventInfo is ${JSON.stringify(this.eventInfo)}`);
+              console.info(`test123 Succeeded in send event, eventInfo is: ${JSON.stringify(this.eventInfo)}`);
             });
           })
         Blank()
@@ -60,7 +60,7 @@ export struct Rule_2_1_7 {
 ### Code block 1
 
 ```
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
@@ -70,7 +70,7 @@ export struct Rule_2_1_7 {
   longText: string = 'sendAccessibilityEvent';
   eventInfo: accessibility.EventInfo = ({
     type: 'announceForAccessibility',
-    bundleName: 'com.example.pagesrouter',
+    bundleName: 'com.samples.uiextensionandaccessibility',
     triggerAction: 'common',
     textAnnouncedForAccessibility: 'test123 text'
   });
@@ -85,7 +85,7 @@ export struct Rule_2_1_7 {
           .fontSize(20)
           .onClick(() => {
             accessibility.sendAccessibilityEvent(this.eventInfo).then(() => {
-              console.info(`test123 Succeeded in send event, eventInfo is ${JSON.stringify(this.eventInfo)}`);
+              console.info(`test123 Succeeded in send event, eventInfo is: ${JSON.stringify(this.eventInfo)}`);
             });
           })
         Blank()

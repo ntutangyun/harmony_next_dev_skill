@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 场景介绍
 
-在数字盾激活前，应用需向密钥管理服务提交密钥生成申请，指定所需密钥的技术参数（如算法、长度等），成功生成的密钥将存储于密钥管理服务侧，应用可申请使用对应密钥进行数字盾服务相关业务数据的签名/验签操作。若应用被卸载，密钥管理服务将自动删除对应的密钥数据，导致应用重新安装后，数字盾功能无法继续使用。
+在数字盾激活前，企业开发者应用需向密钥管理服务提交密钥生成申请，指定所需密钥的技术参数（如算法、长度等），成功生成的密钥将存储于密钥管理服务侧，应用可申请使用对应密钥进行数字盾服务相关业务数据的签名/验签操作。若应用被卸载，密钥管理服务将自动删除对应的密钥数据，导致应用重新安装后，数字盾功能无法继续使用。
 
 若您希望当应用在原设备上重新安装后仍能通过历史数据恢复数字盾功能，请在激活数字盾后，执行以下操作：
 
@@ -117,10 +117,10 @@ await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
 从服务器获取当前账号在设置数字盾密码时获取的authID并以authID为索引向数字盾服务发起数据导入请求。
 
   try {
-    const authID: bigint = 11842183505170721246n; //实际填充为从服务器获取到的账号对应的authID值
+    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
     const buffer = new ArrayBuffer(8);
     const bufferArray = new Uint8Array(buffer);
-    bufferArray.set([1, 2, 3, 4, 5, 6, 7, 8]);//实际使用时替换为从密钥管理服务获取的备份密钥信息
+    bufferArray.set([1, 2, 3, 4, 5, 6, 7, 8]); // 实际使用时替换为从密钥管理服务获取的备份密钥信息
     await trustedAuthentication.importData(buffer, authID);
   } catch (err) {
     hilog.error(0x0000, 'testTag', `Failed to importData, code:${err.code}, message:${err.message}`);
@@ -130,10 +130,10 @@ await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
 当应用卸载重新安装后，应用侧可向数字盾服务器发起密钥恢复申请。
 
 try {
-  const authID: bigint = 11842183505170721246n; //实际填充为从服务器获取到的账号对应的authID值
+  const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
   let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-  const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+  const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
   const buffer = fileData.buffer;
   const label:trustedAuthentication.TUILable = {
     image: buffer as ArrayBuffer,
@@ -238,10 +238,10 @@ await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
 
 ```
   try {
-    const authID: bigint = 11842183505170721246n; //实际填充为从服务器获取到的账号对应的authID值
+    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
     const buffer = new ArrayBuffer(8);
     const bufferArray = new Uint8Array(buffer);
-    bufferArray.set([1, 2, 3, 4, 5, 6, 7, 8]);//实际使用时替换为从密钥管理服务获取的备份密钥信息
+    bufferArray.set([1, 2, 3, 4, 5, 6, 7, 8]); // 实际使用时替换为从密钥管理服务获取的备份密钥信息
     await trustedAuthentication.importData(buffer, authID);
   } catch (err) {
     hilog.error(0x0000, 'testTag', `Failed to importData, code:${err.code}, message:${err.message}`);
@@ -253,10 +253,10 @@ await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
 
 ```
 try {
-  const authID: bigint = 11842183505170721246n; //实际填充为从服务器获取到的账号对应的authID值
+  const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
   let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-  const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+  const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
   const buffer = fileData.buffer;
   const label:trustedAuthentication.TUILable = {
     image: buffer as ArrayBuffer,

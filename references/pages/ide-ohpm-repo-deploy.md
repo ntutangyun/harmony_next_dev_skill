@@ -34,19 +34,19 @@ windows系统默认值："~/AppData/Roaming/Huawei/ohpm-repo"
 
 其他系统默认值："~/ohpm-repo"
 
-类型： String
+类型：String
 
 可以在deploy命令后面配置--deploy_root <string>参数，未配置将使用默认值。支持相对和绝对路径配置，当配置为相对路径时，以当前命令行工作路径为根目录。
 
 [h2]logs
 
-类型： String
+类型：String
 
 可以在deploy命令后面配置--logs <string>参数，指定log目录，优先级高于config.yaml中的配置，支持相对和绝对路径配置，当配置为相对路径时，以当前命令行工作路径为根目录。
 
 [h2]uplinkCachePath
 
-类型： String
+类型：String
 
 可以在deploy命令后面配置--uplinkCachePath <string>参数，指定远程包缓存路径，优先级高于config.yaml中的配置，支持相对和绝对路径配置，当配置为相对路径时，以当前命令行工作路径为根目录。
 

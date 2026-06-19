@@ -30,6 +30,8 @@ ohos.permission.SET_FILE_GUARD_POLICY
 
 授权方式：系统授权（system_grant）
 
+支持设备：PC/2in1
+
 起始版本：10
 
 变更信息：API 10-14时，其权限级别为system_core，仅面向MDM应用开放；从API 14开始，权限级别变更为system_basic，开放范围变更为企业普通应用。
@@ -45,6 +47,8 @@ ohos.permission.FILE_GUARD_MANAGER
 权限级别：system_basic
 
 授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
 
 起始版本：10
 
@@ -79,6 +83,22 @@ ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS
 起始版本：7
 
 变更信息：API 7-13该权限仅向系统应用开放；从API 14开始，开放范围从系统应用变更为企业普通应用。
+
+ohos.permission.GET_LOCAL_ACCOUNT_IDENTIFIERS
+
+允许应用查询指定或所有本地账号的身份标识（如名称、ID）。
+
+获取该权限后，应用可查询系统中指定或所有本地账号的身份标识。基于获取的身份标识，应用可进一步访问或管理目标本地账号。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：General
+
+起始版本：26.0.0
 
 ohos.permission.GET_RUNNING_INFO
 
@@ -488,6 +508,8 @@ ohos.permission.SCAN_REMEDIATE_VIRUS
 
 此权限仅面向杀毒软件开放申请。
 
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
 权限级别：system_basic
 
 授权方式：系统授权（system_grant）
@@ -518,6 +540,8 @@ ohos.permission.ENTERPRISE_MANAGE_PRINT
 
 获取该权限后，应用可更新打印状态及打印机信息。
 
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
 权限级别：system_basic
 
 授权方式：系统授权（system_grant）
@@ -525,3 +549,17 @@ ohos.permission.ENTERPRISE_MANAGE_PRINT
 支持设备：PC/2in1
 
 起始版本：24
+
+ohos.permission.ENTERPRISE_GET_INSTALLED_BUNDLE_LIST
+
+允许企业普通应用获取已安装全量应用列表。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0

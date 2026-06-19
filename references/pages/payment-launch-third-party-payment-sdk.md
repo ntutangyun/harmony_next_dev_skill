@@ -8,6 +8,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/payment-l
 
 基于接口拉起三方支付收银台起始版本为：6.0.0(20)。
 
+拉起支付宝支付需要配置服务器域名：https://mobilegw.alipay.com。
+
 商户客户端根据Payment Kit接口返回的支付信息PayResult(混合支付场景）/PickerResult（纯外部支付场景），按照三方支付平台接入要求构建三方支付信息payInfo调用ThirdPayClient.pay接口拉起三方支付收银台。
 
 拉起三方支付收银台示例代码如下：

@@ -20,7 +20,7 @@ ohpm-repo install [options]
 
 <binary_root>：ohpm-repo私仓解压根目录。
 
-类型： String
+类型：String
 
 可以在install命令后面配置--config <string>参数，指定配置文件路径。支持相对路径，以当前命令行工作路径作为根目录。
 

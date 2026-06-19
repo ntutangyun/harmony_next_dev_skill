@@ -30,10 +30,6 @@ TSan不支持静态链接libc或libc++库。
 
 运行或调试当前应用。
 
-说明
-
-当前使用call_once接口会存在TSan误报的现象，开发者可以在调用该接口的函数前添加__attribute__((no_sanitize("thread")))来屏蔽该问题。
-
 ## Code blocks
 
 ### Code block 1

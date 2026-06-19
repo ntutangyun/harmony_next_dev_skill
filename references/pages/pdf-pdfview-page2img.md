@@ -21,7 +21,7 @@ getPagePixelMap(pageIndex: number, isSync?: boolean): Promise<image.PixelMap>	�
 
 import { pdfService, pdfViewManager } from '@kit.PDFKit';
 import { image } from '@kit.ImageKit';
-import { fileIo as fs } from '@kit.CoreFileKit';
+import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -71,10 +71,10 @@ struct PdfPage {
           const imgBuffer = await this.pixelMap2Buffer(pixmap)
           try {
             const file =
-              fs.openSync(this.context.filesDir + `/${Date.now()}.png`, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-            await fs.write(file.fd, imgBuffer);
+                fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+            await fileIo.write(file.fd, imgBuffer);
             // 关闭文件
-            await fs.close(file.fd)
+            await fileIo.close(file.fd)
           } catch (e) {
             let error: BusinessError = e as BusinessError;
             hilog.error(0x0000, 'getPagePixelMap-', `Code: ${error.code}, message: ${error.message} `);
@@ -92,7 +92,7 @@ struct PdfPage {
 ```
 import { pdfService, pdfViewManager } from '@kit.PDFKit';
 import { image } from '@kit.ImageKit';
-import { fileIo as fs } from '@kit.CoreFileKit';
+import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -142,10 +142,10 @@ struct PdfPage {
           const imgBuffer = await this.pixelMap2Buffer(pixmap)
           try {
             const file =
-              fs.openSync(this.context.filesDir + `/${Date.now()}.png`, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-            await fs.write(file.fd, imgBuffer);
+                fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+            await fileIo.write(file.fd, imgBuffer);
             // 关闭文件
-            await fs.close(file.fd)
+            await fileIo.close(file.fd)
           } catch (e) {
             let error: BusinessError = e as BusinessError;
             hilog.error(0x0000, 'getPagePixelMap-', `Code: ${error.code}, message: ${error.message} `);

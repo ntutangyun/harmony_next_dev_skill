@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-co
 
 调用AsyKeyGenerator.convertPemKey，传入二进制密钥数据，生成非对称密钥对象（KeyPair）。
 
-调用AsyKeyGenerator.getEncodedPem，将非对称密钥对象中的公钥转换成PKCS#1或X.509格式，私钥转换成PKCS#1或PKCS#8格式。
+调用AsyKeyGenerator.getEncodedPem，将非对称密钥对象中的公钥转换成PKCS #1或X.509格式，私钥转换成PKCS #1或PKCS #8格式。
 
 以Promise方式生成RSA密钥对为例：
 

@@ -92,7 +92,7 @@ VKAPI_ATTR void VKAPI_CALL HMS_XEG_DestroyTemporalUpscale (XEG_TemporalUpscale t
 
 编写CMakeLists.txt
 
-按需引用XEngine的CMakeLists，如使用OpenGL ES时域AI超分功能，CMakeLists.txt部分示例代码如下。
+按需引用XEngine的CMakeLists，如使用OpenGL ES时域AI超分功能，CMakeLists.txt部分示例代码如下：
 
 find_library(
     # 设置路径变量的名称。
@@ -172,7 +172,7 @@ target_link_libraries(nativerender PUBLIC
 const char* extensions = (const char*)HMS_XEG_GetString(XEG_EXTENSIONS);
 // 检查是否支持时域AI超分
 if (!strstr(extensions, XEG_TEMPORAL_UPSCALE_EXTENSION_NAME)) {
-    exit(1); // return error
+    exit(1); // 异常退出
 }
 
 调用HMS_XEG_TemporalUpscaleParameter接口，对时域AI超分的参数赋值。
@@ -255,8 +255,8 @@ glScissor(0, 0, m_highResWidth, m_highResHeight);
 // m_lowGboDepth为深度纹理。
 // m_motionVectorTexture为运动矢量图像。运动矢量的计算方式为当前渲染像素的NDC坐标的XY值减去上一帧的NDC坐标的XY值。
 // m_dynamicMaskTexture为物体的动态遮罩图像，格式需要是GL_RED或其兼容格式。R通道的合法值为0.0、0.2或1.0，其中0.0表示静态物体，0.2表示运动物体如人物，1.0表示特效或半透明物体。
-// jitterX 相机在X方向上的抖动。
-// jitterY 相机在Y方向上的抖动。
+// jitterX 相机在X方向上的抖动，通常为超分依赖的前序渲染过程中应用的亚像素抖动，包含在相机的投影矩阵中；在ndc坐标系下，其取值范围是 [-1/width, 1/width], width是输入inputTexture纹理的宽度（像素数）。
+// jitterY 相机在Y方向上的抖动，通常为超分依赖的前序渲染过程中应用的亚像素抖动，包含在相机的投影矩阵中；在ndc坐标系下，其取值范围是 [-1/height, 1/height], height是输入inputTexture纹理的高度（像素数）。
 HMS_XEG_RenderTemporalUpscale(m_lowLightColorTexture, m_lowGboDepth, m_motionVectorTexture, m_dynamicMaskTexture,
                               -0.5*jitterX, -0.5*jitterY);
 
@@ -288,7 +288,7 @@ if (pPropertyCount > 0) {
 // 查询是否支持时域AI超分
 if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_TEMPORAL_UPSCALE_EXTENSION_NAME) ==
     supportedExtensions.end()) {
-    exit(1); // return error;
+    exit(1); // 异常退出
 }
 
 声明实例句柄。
@@ -325,7 +325,7 @@ createInfo.jitterNum = jitterNum;
 createInfo.isDepthReversed = true;
 VkResult res = HMS_XEG_CreateTemporalUpscale(device, &createInfo, &xegTemporalUpscale);
 if (res != VK_SUCCESS) {
-    exit(1); // return error;
+    exit(1); // 异常退出
 }
 
 调用HMS_XEG_CmdRenderTemporalUpscale接口下发超分，每帧都需要调用。
@@ -492,7 +492,7 @@ target_link_libraries(nativerender PUBLIC
 const char* extensions = (const char*)HMS_XEG_GetString(XEG_EXTENSIONS);
 // 检查是否支持时域AI超分
 if (!strstr(extensions, XEG_TEMPORAL_UPSCALE_EXTENSION_NAME)) {
-    exit(1); // return error
+    exit(1); // 异常退出
 }
 ```
 
@@ -579,8 +579,8 @@ glScissor(0, 0, m_highResWidth, m_highResHeight);
 // m_lowGboDepth为深度纹理。
 // m_motionVectorTexture为运动矢量图像。运动矢量的计算方式为当前渲染像素的NDC坐标的XY值减去上一帧的NDC坐标的XY值。
 // m_dynamicMaskTexture为物体的动态遮罩图像，格式需要是GL_RED或其兼容格式。R通道的合法值为0.0、0.2或1.0，其中0.0表示静态物体，0.2表示运动物体如人物，1.0表示特效或半透明物体。
-// jitterX 相机在X方向上的抖动。
-// jitterY 相机在Y方向上的抖动。
+// jitterX 相机在X方向上的抖动，通常为超分依赖的前序渲染过程中应用的亚像素抖动，包含在相机的投影矩阵中；在ndc坐标系下，其取值范围是 [-1/width, 1/width], width是输入inputTexture纹理的宽度（像素数）。
+// jitterY 相机在Y方向上的抖动，通常为超分依赖的前序渲染过程中应用的亚像素抖动，包含在相机的投影矩阵中；在ndc坐标系下，其取值范围是 [-1/height, 1/height], height是输入inputTexture纹理的高度（像素数）。
 HMS_XEG_RenderTemporalUpscale(m_lowLightColorTexture, m_lowGboDepth, m_motionVectorTexture, m_dynamicMaskTexture,
                               -0.5*jitterX, -0.5*jitterY);
 ```
@@ -606,7 +606,7 @@ if (pPropertyCount > 0) {
 // 查询是否支持时域AI超分
 if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_TEMPORAL_UPSCALE_EXTENSION_NAME) ==
     supportedExtensions.end()) {
-    exit(1); // return error;
+    exit(1); // 异常退出
 }
 ```
 
@@ -647,7 +647,7 @@ createInfo.jitterNum = jitterNum;
 createInfo.isDepthReversed = true;
 VkResult res = HMS_XEG_CreateTemporalUpscale(device, &createInfo, &xegTemporalUpscale);
 if (res != VK_SUCCESS) {
-    exit(1); // return error;
+    exit(1); // 异常退出
 }
 ```
 

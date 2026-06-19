@@ -18,4 +18,4 @@ NativeVSync开发指导 (C/C++)
 
 图形缓冲区
 
-图形开发术语
+ArkGraphics 2D术语

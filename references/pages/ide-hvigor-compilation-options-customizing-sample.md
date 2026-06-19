@@ -17,7 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
@@ -148,7 +148,7 @@ hvigorw --mode project -p product=default -p buildMode=release assembleApp
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {

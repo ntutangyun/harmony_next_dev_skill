@@ -1,4 +1,4 @@
-# 组件启动规则（Stage模型）
+# 组件启动规则
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/component-startup-rules_
 

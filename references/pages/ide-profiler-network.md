@@ -2,9 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-profiler-network_
 
+功能介绍
+
 DevEco Profiler提供Network模板，帮助用户在应用运行过程中查看http协议栈网络信息和网络流量信息，http协议栈包括请求分段耗时以及请求具体内容，方便对网络问题进行调优。请求耗时按照以下五种阶段进行划分：DNS 解析、TCP连接、TLS连接、请求等待、接收响应，分别展示在各阶段的耗时，可以针对性的优化时延问题。同时，详情信息将展示每个请求中携带的信息，包含request、response侧及其携带的header、body、cookie信息，方便网络问题定位。
 
+Network模板支持的泳道包括：Network Traffic、Network Request、User Trace、ArkTS Callstack、Callstack。本文介绍Network Traffic、Network Request泳道，其他泳道的详细信息请参考对应模板内容。
+
+User Trace、ArkTS Callstack、Callstack泳道的介绍请参考基础耗时：Time分析。
+
 说明
+
+任务分析前，需创建Network分析任务并录制相关数据，操作方法可参考性能问题定位：深度录制，或在会话区选择Open File，导入历史数据。
 
 当前Network模板任务仅支持对Network kit接口中request 类型接口进行录制和调优。
 
@@ -12,13 +20,19 @@ DevEco Profiler提供Network模板，帮助用户在应用运行过程中查看h
 
 查看网络流量消耗信息
 
-点击Network Traffic泳道，可在下方数据区查看录制过程中发生的网络流量消耗情况。Summary区域可以查看按照网络接口(Network Interfaces)维度统计每个类型的流量消耗，展示信息包含平均下行流量、下行总流量、下行数据包数、平均上行流量、上行总流量、上行数据包数。
+点击Network Traffic泳道，可在下方数据区查看录制过程中发生的网络流量消耗情况。
+
+Summary区域可以查看按照网络接口（Network Interfaces）维度统计每个类型的流量消耗，展示信息包含平均下行流量、下行总流量、下行数据包数、平均上行流量、上行总流量、上行数据包数。
 
 Details区域将展示按时间戳排序的周期上报的网络数据，每个网络数据包含上报时间戳、持续时间、下行流量、下行流量包数、网络数据类型、上行流量、上行流量包数。
 
 查看网络请求各阶段耗时
 
-创建Network模板任务并录制相关数据，操作方法可参考性能问题定位：深度录制，或在会话区选择Open File，导入历史数据。
+点击Network Request泳道，可在下方数据区查看录制过程中发生的网络请求数量变化。
+
+选择Details中某条数据，泳道区域将以虚线框选展示其耗时方块，右侧More区域展示该请求的Request Headers、Response Headers、Response Body。
+
+定位到可能造成网络卡顿的网络请求，点选其耗时方块，可以看见该请求各阶段耗时。
 
 分析启动过程网络问题
 

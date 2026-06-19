@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-s
 
 约束与限制
 
-静默登录能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备。
+静默登录能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
 
 业务流程
 
@@ -73,8 +73,8 @@ try {
     }
     hilog.info(0x0000, 'testTag', 'Succeeded in logging in.');
     const loginWithHuaweiIDCredential = loginWithHuaweiIDResponse?.data;
-    const code = loginWithHuaweiIDCredential?.authorizationCode;
-    // 开发者处理code
+    const authorizationCode = loginWithHuaweiIDCredential?.authorizationCode;
+    // 开发者处理authorizationCode
   }).catch((error: BusinessError) => {
     dealAllError(error);
   });
@@ -89,7 +89,7 @@ function dealAllError(error: BusinessError): void {
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试或者尝试使用其他方式登录
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-    // 网络异常，请检查当前网络状态并重试或者尝试使用其他方式登录
+    // 网络错误，请检查当前网络状态并重试
   } else if (error.code === ErrorCode.ERROR_CODE_INTERNAL_ERROR) {
     // 登录失败，请尝试使用其他方式登录
   } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {
@@ -177,8 +177,8 @@ try {
     }
     hilog.info(0x0000, 'testTag', 'Succeeded in logging in.');
     const loginWithHuaweiIDCredential = loginWithHuaweiIDResponse?.data;
-    const code = loginWithHuaweiIDCredential?.authorizationCode;
-    // 开发者处理code
+    const authorizationCode = loginWithHuaweiIDCredential?.authorizationCode;
+    // 开发者处理authorizationCode
   }).catch((error: BusinessError) => {
     dealAllError(error);
   });
@@ -197,7 +197,7 @@ function dealAllError(error: BusinessError): void {
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试或者尝试使用其他方式登录
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
-    // 网络异常，请检查当前网络状态并重试或者尝试使用其他方式登录
+    // 网络错误，请检查当前网络状态并重试
   } else if (error.code === ErrorCode.ERROR_CODE_INTERNAL_ERROR) {
     // 登录失败，请尝试使用其他方式登录
   } else if (error.code === ErrorCode.ERROR_CODE_USER_CANCEL) {

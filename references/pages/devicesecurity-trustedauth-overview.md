@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-trustedauth-overview_
 
-数字盾服务通过可信用户交互（TUI, Trusted User Interface）为金融应用的大额转账交易提供端到端安全防护，其主要利用了TUI以下核心功能：
+数字盾服务通过可信用户交互（TUI, Trusted User Interface）为金融企业开发者应用的大额转账交易提供端到端安全防护，其主要利用了TUI以下核心功能：
 
 数据隔离性：所有密码信息的输入、传输及验证均在TEE安全沙箱内完成，完全隔离于普通执行环境（REE），防止REE侧恶意程序窃取。
 
@@ -26,4 +26,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 数据清除触发条件：当用户关闭数字盾服务时，所有关联密码数据与密钥将会从设备中清除，确保隐私安全。
 
-开发者注意事项：应用集成时需明确向用户说明密码数据的生命周期，确保用户明确密码数据的管理方式，并在应用侧向用户提供对应隐私声明。
+开发者注意事项：企业开发者应用集成时需明确向用户说明密码数据的生命周期，确保用户明确密码数据的管理方式，并在应用侧向用户提供对应隐私声明。

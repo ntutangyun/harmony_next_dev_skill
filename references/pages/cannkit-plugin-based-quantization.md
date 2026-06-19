@@ -158,7 +158,7 @@ quant_flag	是	模型是否走量化通路。
 
 正常训练模型，检查损失函数loss，效果达标后，可停止训练，需保存对应的ckpt数据。
 
-## 保存对应的ckpt数据
+## ckpt save
 saver = tf.train.Saver()
 saver.save(sess, train_ckpt_path)
 
@@ -518,7 +518,7 @@ with tf.Session(config=config) as sess:
 ### Code block 9
 
 ```
-## 保存对应的ckpt数据
+## ckpt save
 saver = tf.train.Saver()
 saver.save(sess, train_ckpt_path)
 ```

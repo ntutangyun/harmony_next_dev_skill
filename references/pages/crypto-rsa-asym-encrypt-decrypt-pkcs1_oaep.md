@@ -1,4 +1,4 @@
-# 使用RSA非对称密钥（PKCS1_OAEP模式）加解密
+# 使用RSA非对称密钥（PKCS1_OAEP模式）加解密(ArkTS)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rsa-asym-encrypt-decrypt-pkcs1_oaep_
 
@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-rs
 
 由于RSA算法的Cipher实例不支持重复init操作，需要调用cryptoFramework.createCipher，重新生成Cipher实例。
 
-调用Cipher.init，设置模式为解密（cryptoFramework.CryptoMode.DECRYPT_MODE），指定解密密钥（KeyPair.PriKey）初始化解密Cipher实例。PKCS1模式无加密参数，直接传入null。
+调用Cipher.init，设置模式为解密（cryptoFramework.CryptoMode.DECRYPT_MODE），指定解密密钥（KeyPair.PriKey）初始化解密Cipher实例。PKCS1_OAEP模式无额外加密参数，直接传入null。
 
 在调用Cipher.doFinal前，调用Cipher.setCipherSpec设置PKCS1_OAEP填充参数pSource，此处需要和加密时设置的保持一致。调用Cipher.getCipherSpec可获得OAEP相关参数。
 

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-scree
 
 本章节将向您介绍如何实现地图截图功能。
 
-地图截图指对当前屏幕显示区域进行截屏，支持对地图、覆盖物、Logo进行屏幕截图。地图截图功能适用于需要将当前地图状态保存为图片的场景，如分享当前位置、生成导航路线图、记录特定视角的地图内容等。该功能可以帮助开发者快速实现地图内容的可视化输出，提升用户体验
+地图截图指对当前屏幕显示区域进行截屏，支持对地图、覆盖物、Logo进行屏幕截图。地图截图功能适用于需要将当前地图状态保存为图片的场景，如分享当前位置、生成导航路线图、记录特定视角的地图内容等。该功能可以帮助开发者快速实现地图内容的可视化输出，提升用户体验。
 
 接口说明
 
@@ -25,10 +25,11 @@ import { image } from '@kit.ImageKit';
 
 @Entry
 @Component
-struct HuaweiMapDemo {
+struct MapScreenshotsDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
-  private callback?: AsyncCallback<map.MapComponentController>;
   private mapController?: map.MapComponentController;
+  private callback?: AsyncCallback<map.MapComponentController>;
   @State image?: image.PixelMap = undefined;
 
   aboutToAppear(): void {
@@ -55,31 +56,34 @@ struct HuaweiMapDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-          .width('100%')
-          .height('50%');
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
+            .width('100%')
+            .height('50%');
 
-        Scroll(new Scroller()) {
-          Column() {
-            Image(this.image)
-              .objectFit(ImageFit.Auto)
-              .border({ width: 1, color: Color.Red }).width("100%")
-            Button("获取截图")
-              .margin({ left: 10 })
-              .fontSize(12)
-              .onClick(async () => {
-                if (this.mapController) {
-                  // 获取截图
-                  let pixelMap = await this.mapController.snapshot();
-                  this.image = pixelMap;
-                }
-              });
-          }
-        }.width('70%').height("50%")
-      }.width('100%')
-    }.height('100%')
+          Scroll(new Scroller()) {
+            Column() {
+              Image(this.image)
+                .objectFit(ImageFit.Auto)
+                .border({ width: 1, color: Color.Red }).width('100%')
+              Button('获取截图')
+                .margin({ left: 10 })
+                .fontSize(12)
+                .onClick(async () => {
+                  if (this.mapController) {
+                    // 获取截图
+                    let pixelMap = await this.mapController.snapshot();
+                    this.image = pixelMap;
+                  }
+                });
+            }
+          }.width('70%').height('50%')
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 
@@ -98,10 +102,11 @@ import { image } from '@kit.ImageKit';
 ```
 @Entry
 @Component
-struct HuaweiMapDemo {
+struct MapScreenshotsDemo {
+  // ...
   private mapOptions?: mapCommon.MapOptions;
-  private callback?: AsyncCallback<map.MapComponentController>;
   private mapController?: map.MapComponentController;
+  private callback?: AsyncCallback<map.MapComponentController>;
   @State image?: image.PixelMap = undefined;
 
   aboutToAppear(): void {
@@ -128,31 +133,34 @@ struct HuaweiMapDemo {
   }
 
   build() {
-    Stack() {
-      Column() {
-        MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
-          .width('100%')
-          .height('50%');
+    // ...
+      Stack() {
+        Column() {
+          MapComponent({ mapOptions: this.mapOptions, mapCallback: this.callback })
+            .width('100%')
+            .height('50%');
 
-        Scroll(new Scroller()) {
-          Column() {
-            Image(this.image)
-              .objectFit(ImageFit.Auto)
-              .border({ width: 1, color: Color.Red }).width("100%")
-            Button("获取截图")
-              .margin({ left: 10 })
-              .fontSize(12)
-              .onClick(async () => {
-                if (this.mapController) {
-                  // 获取截图
-                  let pixelMap = await this.mapController.snapshot();
-                  this.image = pixelMap;
-                }
-              });
-          }
-        }.width('70%').height("50%")
-      }.width('100%')
-    }.height('100%')
+          Scroll(new Scroller()) {
+            Column() {
+              Image(this.image)
+                .objectFit(ImageFit.Auto)
+                .border({ width: 1, color: Color.Red }).width('100%')
+              Button('获取截图')
+                .margin({ left: 10 })
+                .fontSize(12)
+                .onClick(async () => {
+                  if (this.mapController) {
+                    // 获取截图
+                    let pixelMap = await this.mapController.snapshot();
+                    this.image = pixelMap;
+                  }
+                });
+            }
+          }.width('70%').height('50%')
+        }.width('100%')
+      }.height('100%')
+
+      // ...
   }
 }
 ```

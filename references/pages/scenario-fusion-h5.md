@@ -27,7 +27,7 @@ struct Index {
   build() {
     Column() {
       // 在组件创建过程中加载HTML5文件。
-      Web({ src: $rawfile("autofill_h5.html"), controller: this.controller })
+      Web({ src: $rawfile('autofill_h5.html'), controller: this.controller })
     }
   }
 }
@@ -80,7 +80,7 @@ struct Index {
   build() {
     Column() {
       // 在组件创建过程中加载HTML5文件。
-      Web({ src: $rawfile("autofill_h5.html"), controller: this.controller })
+      Web({ src: $rawfile('autofill_h5.html'), controller: this.controller })
     }
   }
 }

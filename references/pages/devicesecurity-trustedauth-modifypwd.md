@@ -21,7 +21,7 @@ modifyTrustedAuthenticationPwd(challenge: Uint8Array, pwdInfo: PasswordInfo, aut
 
 修改数字盾密码界面介绍
 
-如图1、图2为修改数字盾密码时对应的TUI界面示例，用户需使用旧密码认证通过后，方可设置新密码。密码认证失败时，剩余认证次数减1，当剩余认证次数为0时，则锁定数字盾服务。新密码长度、对应TUI应用图标以及当前应用场景说明均由开发者调用接口时传入。
+如图1、图2为修改数字盾密码时对应的TUI界面示例，用户需使用旧密码认证通过后，方可设置新密码。密码认证失败时，剩余认证次数减1，当剩余认证次数为0时，则锁定数字盾服务。新密码长度、对应TUI应用图标以及当前企业开发者应用场景说明均由开发者调用接口时传入。
 
 图1 旧密码认证
 
@@ -54,9 +54,9 @@ async function ModifyPwd(challenge: Uint8Array, context: common.UIAbilityContext
      pwdMinLength: 6,
      maxAuthFailCount: 6,
    };
-   const authID: bigint = 1687413472599354502n;//实际填充为从服务器获取到的账号对应的authID值
+   const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
    const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
    const buffer = fileData.buffer;
    const label:trustedAuthentication.TUILable = {
      image: buffer as ArrayBuffer,
@@ -71,7 +71,7 @@ async function ModifyPwd(challenge: Uint8Array, context: common.UIAbilityContext
 }
 const rand = cryptoFramework.createRandom();
 const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
+const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
 let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 const authToken: trustedAuthentication.AuthToken = await ModifyPwd(challenge, context);
 
@@ -103,9 +103,9 @@ async function ModifyPwd(challenge: Uint8Array, context: common.UIAbilityContext
      pwdMinLength: 6,
      maxAuthFailCount: 6,
    };
-   const authID: bigint = 1687413472599354502n;//实际填充为从服务器获取到的账号对应的authID值
+   const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
    const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); //实际使用时请替换为应用要在TUI界面展示的logo图片名称
+   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
    const buffer = fileData.buffer;
    const label:trustedAuthentication.TUILable = {
      image: buffer as ArrayBuffer,
@@ -120,7 +120,7 @@ async function ModifyPwd(challenge: Uint8Array, context: common.UIAbilityContext
 }
 const rand = cryptoFramework.createRandom();
 const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
+const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
 let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 const authToken: trustedAuthentication.AuthToken = await ModifyPwd(challenge, context);
 ```

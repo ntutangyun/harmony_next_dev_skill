@@ -49,7 +49,7 @@ import { window } from '@kit.ArkUI';
 调用init接口初始化Game Service Kit。
 
 onWindowStageCreate(windowStage: window.WindowStage) {
-  windowStage.loadContent("pages/index", (err, data) => {
+  windowStage.loadContent('pages/index', (err, data) => {
     try {
       gamePlayer.init(this.context,()=>{
         hilog.info(0x0000, 'testTag', `Succeeded in initializing.`);
@@ -125,7 +125,7 @@ import { window } from '@kit.ArkUI';
 
 ```
 onWindowStageCreate(windowStage: window.WindowStage) {
-  windowStage.loadContent("pages/index", (err, data) => {
+  windowStage.loadContent('pages/index', (err, data) => {
     try {
       gamePlayer.init(this.context,()=>{
         hilog.info(0x0000, 'testTag', `Succeeded in initializing.`);

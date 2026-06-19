@@ -12,6 +12,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-run-e
 
 通过命令行使用模拟器
 
+远程控制模拟器
+
 离线部署模拟器
 
 模拟器错误码

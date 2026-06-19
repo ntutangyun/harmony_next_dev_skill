@@ -4,9 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当用户希望创建新的屏幕时间守护规则时，可以调用添加管控策略的接口。根据参数中传入的策略，用户可以添加各种策略，如设置各个应用的停用起止时间。一旦策略被创建并启用，系统将根据规则对用户的屏幕使用行为进行监管。
-
-用户体验设计
+当管控应用希望创建新的屏幕时间守护规则时，可以调用添加管控策略的接口。根据参数中传入的策略设置指定应用的停用时间。一旦策略被创建并启用，系统将根据策略规则对用户的屏幕使用行为进行管控。
 
 业务流程
 
@@ -24,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 管控策略可以设置限制类型，按允许清单做限制表示对传入的应用之外的应用进行管控，按禁止清单做限制表示对传入的应用进行限制。具体可参考RestrictionType 。
 
-管控策略可以设置一周内重复执行时间，支持填写含有1-7数字的number数组，表示在周一到周日的某些天重复执行。具体可参考TimeStrategy 。
+管控策略可以设置一周内重复执行时间，支持填写含有1-7数字的number数组，表示在周一到周日的某些天重复执行。若不设置重复执行时间，则策略只执行一次。具体可参考TimeStrategy 。
 
 接口说明
 
@@ -47,28 +45,28 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 定义屏幕时间管理策略。
 
-guardStrategy: guardService.GuardStrategy = {
-      name: 'GuardStrategy',
-      timeStrategy: {
-      type: guardService.TimeStrategyType.START_END_TIME_TYPE,
-      startTime: '19:00',
-      endTime: '21:00',
-      repeat: [1, 2, 3, 4, 5, 6, 7]
-   },
-   appInfo: { appTokens: [] }, // 可通过startAppPicker接口获取
-   appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE
+private guardStrategy: guardService.GuardStrategy = {
+  name: 'GuardStrategy',
+  timeStrategy: {
+    type: guardService.TimeStrategyType.START_END_TIME_TYPE,
+    startTime: '19:00',
+    endTime: '21:00',
+    repeat: [1, 2, 3, 4, 5, 6, 7]
+  },
+  appInfo: { appTokens: [] }, // 可通过startAppPicker接口获取
+  appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE
 };
 
 调用addGuardStrategy，添加屏幕时间管控策略。
 
 private async addStrategy(guardStrategy: guardService.GuardStrategy): Promise<void> {
-   try {
-   await guardService.addGuardStrategy(guardStrategy);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `addGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.addGuardStrategy(guardStrategy);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `addGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 
 ## Code blocks
@@ -84,16 +82,16 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-guardStrategy: guardService.GuardStrategy = {
-      name: 'GuardStrategy',
-      timeStrategy: {
-      type: guardService.TimeStrategyType.START_END_TIME_TYPE,
-      startTime: '19:00',
-      endTime: '21:00',
-      repeat: [1, 2, 3, 4, 5, 6, 7]
-   },
-   appInfo: { appTokens: [] }, // 可通过startAppPicker接口获取
-   appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE
+private guardStrategy: guardService.GuardStrategy = {
+  name: 'GuardStrategy',
+  timeStrategy: {
+    type: guardService.TimeStrategyType.START_END_TIME_TYPE,
+    startTime: '19:00',
+    endTime: '21:00',
+    repeat: [1, 2, 3, 4, 5, 6, 7]
+  },
+  appInfo: { appTokens: [] }, // 可通过startAppPicker接口获取
+  appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE
 };
 ```
 
@@ -101,12 +99,12 @@ guardStrategy: guardService.GuardStrategy = {
 
 ```
 private async addStrategy(guardStrategy: guardService.GuardStrategy): Promise<void> {
-   try {
-   await guardService.addGuardStrategy(guardStrategy);
-   } catch (error) {
-      let err: BusinessError = error as BusinessError;
-      hilog.error(0x0000, 'GuardService',
-         `addGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
-   }
+  try {
+    await guardService.addGuardStrategy(guardStrategy);
+  } catch (error) {
+    let err: BusinessError = error as BusinessError;
+    hilog.error(0x0000, 'GuardService',
+      `addGuardStrategy failed, errCode is ${err.code}, errMessage is ${err.message}`);
+  }
 }
 ```

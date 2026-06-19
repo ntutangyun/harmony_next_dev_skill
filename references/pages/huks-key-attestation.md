@@ -7,3 +7,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 匿名密钥证明(ArkTS)
 
 匿名密钥证明(C/C++)
+
+离线匿名密钥证明(ArkTS)

@@ -42,7 +42,7 @@ Mac
 
 安装hypium_perf
 
-1）打开DevEco Testing客户端-专项测试-场景化性能测试卡片，点击获取安装包，打开安装包目录，如下图。
+1）打开DevEco Testing客户端-测试服务-性能测试-场景化性能测试卡片，点击获取安装包，打开安装包目录，如下图。
 
 2）由于存在依赖关系，需要依次步骤1目录下的hypium、hypium-perf、perf_analyzer等安装包。
 
@@ -66,7 +66,7 @@ pip install perf_analyzer-6.1.0.12b0-py3-none-any.whl perf_collector-6.1.0.12b0-
 
 1、下载工程模板
 
-1）打开DevEco Testing客户端-专项测试-场景化性能测试卡片，在测试前准备中，点击创建工程模板按钮。
+1）打开DevEco Testing客户端-测试服务-性能测试-场景化性能测试卡片，在测试前准备中，点击创建工程模板按钮。
 
 2）填写工程项目名称，选择工程存放路径，点击开始生成按钮。
 

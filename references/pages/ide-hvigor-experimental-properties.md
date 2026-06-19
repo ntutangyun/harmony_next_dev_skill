@@ -167,6 +167,40 @@ LiteWearable设备对应的工程。
 
 可能影响：build-profile.json5文件会纳入项目版本管理，在该文件中增加-iclang参数后，项目其他开发人员会被动开启该实验特性。因此请在充分验证功能正确性后，再通过配置文件上传到代码仓。
 
+通过enableIncrementalSoCompress提升so文件增量编译效率
+
+使用场景：
+
+从DevEco Studio 6.1.0 Beta1版本开始，如果工程中包含大量so文件并开启了压缩so体积的配置开关（module.json5的compressNativeLibs或hvigor-config.json5的ohos.pack.compressLevel），可开启enableIncrementalSoCompress开关，提升增量编译效率。开启开关后，如果so文件内容未改变，构建HAP/HSP时会复用上一次构建已经压缩好的so，加快打包速度。
+
+开启方式：
+
+工程级build-profile.json5中，在buildOption中将enableIncrementalSoCompress参数配置为true。
+
+"buildOption": {
+  "packOptions": {
+    "enableIncrementalSoCompress": true
+  }
+}
+
+通过syncNative提升sync阶段C++编译效率
+
+使用场景：
+
+从26.0.0 Beta1版本开始，如果工程中有较多Native模块且频繁sync的需求，可开启开关优化sync阶段编译速度。
+
+优化方案：
+
+优化前：sync阶段执行compileNative任务，多个模块之间是串行编译，构建窗口中有多个compileNative的Tab页，分别对应不同模块的编译日志。
+
+优化后：sync阶段执行syncNative任务，多个模块之间是并行编译，构建窗口中只有一个syncNative的Tab页，对应了多个模块的编译日志。
+
+优化结果：提升sync阶段C++编译效率。
+
+开启方式：点击File > Settings（macOS为DevEco Studio > Preferences/Settings） > Build, Execution, Deployment > Build Tools > Hvigor，勾选Enable C++ syncNative compilation。
+
+可能影响：如果在hvigorfile.ts脚本的compileNative任务阶段有自定义插件或任务，开启开关后，由于compileNative任务不会被执行，会导致自定义插件或任务未执行。
+
 ## Code blocks
 
 ### Code block 1
@@ -208,6 +242,16 @@ LiteWearable设备对应的工程。
   "externalNativeOptions": {
     "cppFlags": "-iclang",
     "cFlags": "-iclang",
+  }
+}
+```
+
+### Code block 6
+
+```
+"buildOption": {
+  "packOptions": {
+    "enableIncrementalSoCompress": true
   }
 }
 ```

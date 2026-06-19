@@ -13,3 +13,5 @@ Function Flow Runtime开发样例(C++)
 Function Flow Runtime开发指导
 
 Function Flow Runtime C API
+
+Function Flow Runtime术语

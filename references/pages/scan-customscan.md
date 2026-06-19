@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-cust
 
 自定义界面扫码能力提供扫码相机流控制接口，支持相机流的初始化、开启、暂停、释放、重新扫码功能；支持闪光灯的状态获取、开启、关闭；支持变焦比的获取和设置；支持设置相机焦点和连续自动对焦；支持对条形码、二维码、MULTIFUNCTIONAL CODE进行扫码识别（具体类型参见ScanType），并获得码类型、码值、码位置、相机预览流（YUV）等信息。该能力可用于单码和多码的扫描识别。
 
-开发者集成自定义界面扫码能力可以自行定义扫码的界面样式，请按照业务流程完成扫码接口调用实现实时扫码功能。建议开发者基于Sample Code做个性化修改。
+开发者集成自定义界面扫码能力可以自行定义扫码的界面样式，请按照业务流程完成扫码接口调用实现实时扫码功能。建议开发者基于示例工程做个性化修改。
 
 扫码页面UX设计规范：
 
@@ -23,6 +23,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-cust
 YUV（相机预览流图像数据）适合于扫码和识物的综合识别场景，开发者需要自己控制相机流，普通扫码场景无需关注。
 
 约束与限制
+
+从26.0.0版本开始，支持使用scanCore.isCustomScanSupported接口查询当前设备是否支持自定义界面扫码。
 
 从6.1.0(23)版本开始，自定义界面扫码能力支持带后置相机的Wearable，可以通过cameraManager.getSupportedCameras接口查询是否带后置相机。
 

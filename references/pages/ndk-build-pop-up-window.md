@@ -18,7 +18,7 @@ OH_ArkUI_QueryModuleInterfaceByName用于获取指定类型的Native模块接口
 
 创建弹窗控制器：
 
-ArkUI_NativeDialogHandle表示指向弹窗控制器的指针，可以通过调用ArkUI_NativeDialogAPI_1的create接口创建一个弹窗控制器。
+ArkUI_NativeDialogHandle表示指向弹窗控制器的指针，可以通过调用ArkUI_NativeDialogAPI_x的create接口创建一个弹窗控制器。
 
 该方法返回ArkUI_NativeDialogHandle类型的数据。
 

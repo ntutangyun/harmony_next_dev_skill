@@ -20,6 +20,7 @@ ECC/SHA256 ECC/SHA384 ECC/SHA512	签名是ASN1格式。 ECC算法支持的椭圆
 ED25519/NoDigest	NoDigest需要指定TAG HuksKeyDigest.HUKS_DIGEST_NONE。	8+
 SM2/SM3	签名是ASN1格式。	9+
 SM2/NoDigest	签名是ASN1格式。 NoDigest需要指定TAG HuksKeyDigest.HUKS_DIGEST_NONE。由业务对明文做SM3哈希，再将哈希后的数据传入，哈希后的数据长度必须满足SM2签名验签支持的摘要算法规格。	22+
+ML-DSA	可选参数context可以通过HUKS_TAG_CONTEXT指定，长度最大255字节。	26.0.0+
 
 轻量级智能穿戴规格
 

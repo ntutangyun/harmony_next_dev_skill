@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-realt
 
 当前compileSdkVersion≥10且arkTSVersion≥1.1（默认）时，ArkTS严格类型检查支持实时检查。
 
-对于C/C++代码，可通过内置的Clang-Tidy对代码进行实时检查，实时检查前需完成选项配置，配置操作请参考Clang-Tidy代码检查。
+对于C/C++代码，可通过内置的Clang-Tidy或自定义的Clang-Tidy对代码进行实时检查，实时检查前需完成选项配置，配置操作请参考Clang-Tidy代码检查。
 
 代码快速修复
 

@@ -52,13 +52,13 @@ target_link_libraries(entry PUBLIC libnetwork_boost.so) #链接libnetwork_boost.
 
 配置签名
 
-调试阶段需要在AGC中申请调试证书、注册调试设备、申请调试Profile后，再手动签名，或者通过DevEco Studio自动签名完成申请，在自动签名的过程中，将由DevEco Studio完成向AGC申请受限权限的步骤，开发者可直接使用，具体请参考自动签名-操作步骤。
+调试阶段需要在AGC中申请调试证书、注册设备、申请调试Profile后，再配置签名信息，或者通过DevEco Studio自动签名完成申请，在自动签名的过程中，将由DevEco Studio完成向AGC申请受限权限的步骤，开发者可直接使用，具体请参考自动签名。
 
-发布阶段必须在AGC中重新申请发布证书、发布Profile文件，并完成配置签名信息。
+发布阶段，在API版本26.0.0 Beta1之前，需要申请发布证书、申请发布Profile，并完成配置签名信息。在API版本26.0.0 Beta1及以上，发布时无需上述操作，流程已简化。
 
 受限ACL权限申请
 
-申请调试Profile和发布Profile文件中第4步“申请权限”是必须的，选中“受限ACL权限”后再点击“选择”。
+申请调试Profile和申请发布Profile操作步骤中第4步“申请权限”是必须的，选中“受限ACL权限”后再点击“选择”。
 
 在权限搜索框中输入"ohos.permission.LINKTURBO"找到LINKTURBO的权限并勾选，再提交申请。
 

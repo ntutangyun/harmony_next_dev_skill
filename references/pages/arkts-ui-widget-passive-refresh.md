@@ -95,7 +95,7 @@ export default class UpdateByTimeFormAbility extends FormExtensionAbility {
 
 定时刷新在卡片可见情况下才会触发，在卡片不可见时仅会记录刷新动作和刷新数据，待可见时统一刷新布局。
 
-如果使能了卡片代理刷新，定时刷新和下次刷新不生效。
+在API版本26.0.0之前，使能卡片代理刷新时，定时刷新和下次刷新不生效。从API版本26.0.0开始，卡片代理刷新、定时刷新和下次刷新可以同时生效。
 
 卡片定点刷新
 
@@ -167,6 +167,44 @@ multiScheduledUpdateTime的配置最多可设置24个时间。
 约束限制：
 
 定点刷新在卡片可见情况下才会触发，在卡片不可见时仅会记录刷新动作和刷新数据，待可见时统一刷新布局。
+
+卡片条件刷新
+
+当前卡片框架提供了如下按条件刷新卡片的方式：
+
+网络刷新：API版本26.0.0开始支持在网络变化的场景下调用onUpdateForm的生命周期回调函数自动刷新卡片内容。可以在form_config.json配置文件的conditionUpdate字段中进行设置，设置字段为network。
+
+说明
+
+当从无网络到有网络连接时会触发刷新。而网络间切换（例如：WiFi间切换，WiFi到流量，流量到WiFi），或从有网络连接到无网络连接时不会触发刷新。
+
+为减少卡片在频繁开关网络场景进程启动次数，无网判定需要网络连续断开十分钟后，才会认为无网，下次联网后触发网络刷新。
+
+{
+  "forms": [
+    {
+      "name": "UpdateDuration",
+      "description": "$string:widget_updateduration_desc",
+      "src": "./ets/updateduration/pages/UpdateDurationCard.ets",
+      "uiSyntax": "arkts",
+      "window": {
+        "designWidth": 720,
+        "autoDesignWidth": true
+      },
+      "isDefault": true,
+      "updateEnabled": true,
+      "scheduledUpdateTime": "10:30",
+      "updateDuration": 2,
+      "defaultDimension": "2*2",
+      "supportDimensions": [
+        "2*2"
+      ],
+      "conditionUpdate": [
+        "network"
+      ]
+    }
+  ]
+}
 
 ## Code blocks
 
@@ -296,6 +334,36 @@ export default class UpdateByTimeFormAbility extends FormExtensionAbility {
       "defaultDimension": "2*2",
       "supportDimensions": [
         "2*2"
+      ]
+    }
+  ]
+}
+```
+
+### Code block 5
+
+```
+{
+  "forms": [
+    {
+      "name": "UpdateDuration",
+      "description": "$string:widget_updateduration_desc",
+      "src": "./ets/updateduration/pages/UpdateDurationCard.ets",
+      "uiSyntax": "arkts",
+      "window": {
+        "designWidth": 720,
+        "autoDesignWidth": true
+      },
+      "isDefault": true,
+      "updateEnabled": true,
+      "scheduledUpdateTime": "10:30",
+      "updateDuration": 2,
+      "defaultDimension": "2*2",
+      "supportDimensions": [
+        "2*2"
+      ],
+      "conditionUpdate": [
+        "network"
       ]
     }
   ]

@@ -55,7 +55,7 @@ totalHeap：当前虚拟机的堆总大小，单位：KB。可通过hidebug.getA
 
 资源泄漏日志由LeakDetector模块进行管理，可通过以下方式获取：
 
-方式一：通过DevEco Testing进行探索测试并获取日志。
+方式一：通过DevEco Testing进行稳定性测试并获取日志。
 
 DevEco Testing工具会收集设备/data/log/reliability/resource_leak/路径下的资源泄漏故障日志，根据进程名、故障和时间分类显示。
 

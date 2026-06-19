@@ -8,4 +8,6 @@ Audio Vivid解封装
 
 Audio Vivid解码
 
+Audio Vivid编码
+
 Audio Vivid播放

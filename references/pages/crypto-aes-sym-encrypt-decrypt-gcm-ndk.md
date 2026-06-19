@@ -10,7 +10,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 开发步骤
 
-创建对象
+加密
 
 调用OH_CryptoSymKeyGenerator_Create和OH_CryptoSymKeyGenerator_Generate，生成密钥算法为AES、密钥长度为128位的对称密钥（OH_CryptoSymKey）。
 

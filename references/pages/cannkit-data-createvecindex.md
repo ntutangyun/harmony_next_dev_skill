@@ -72,7 +72,7 @@ public:
     }
     __aicore__ inline void Process()
     {
-        // 无需CopyIn
+        // Do not need CopyIn
         Compute();
         CopyOut();
     }
@@ -159,7 +159,7 @@ public:
     }
     __aicore__ inline void Process()
     {
-        // 无需CopyIn
+        // Do not need CopyIn
         Compute();
         CopyOut();
     }

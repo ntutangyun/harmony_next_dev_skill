@@ -82,25 +82,31 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
     // 查询是否支持系统未成年人模式
     if (minorsProtection.supportMinorsMode()) {
       // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
-      minorsProtection.verifyMinorsProtectionCredential(this.getUIContext().getHostContext())
+      await minorsProtection.verifyMinorsProtectionCredential(this.getUIContext().getHostContext())
         .then((result: boolean) => {
           hilog.info(0x0000, 'testTag', `Succeeded in getting verify result is: ${result.valueOf()}`);
           // 使用结果判断验密是否通过，执行后续流程，验证成功后，关闭应用的未成年人模式，同时记录单独关闭的标记为true，需要缓存该标记
+          // ...
         })
         .catch((error: BusinessError<Object>) => {
           dealVerifyAllError(error);
+          // ...
         });
+      // ...
     } else {
       hilog.info(0x0000, 'testTag',
         'The current device environment does not support the youth mode, please check the current device environment.');
+      // ...
     }
   } catch (error) {
     hilog.error(0x0000, 'testTag',
       `Failed to invoke supportMinorsMode. errCode: ${error.code}, errMessage: ${error.message}`);
+    // ...
   }
 } else {
   hilog.info(0x0000, 'testTag',
     'The current device does not support the invoking of the verifyMinorsProtectionCredential interface.');
+  // ...
 }
 
 function dealVerifyAllError(error: BusinessError<Object>): void {
@@ -125,25 +131,31 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
     // 查询是否支持系统未成年人模式
     if (minorsProtection.supportMinorsMode()) {
       // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
-      minorsProtection.verifyMinorsProtectionCredential(this.getUIContext().getHostContext())
+      await minorsProtection.verifyMinorsProtectionCredential(this.getUIContext().getHostContext())
         .then((result: boolean) => {
           hilog.info(0x0000, 'testTag', `Succeeded in getting verify result is: ${result.valueOf()}`);
           // 使用结果判断验密是否通过，执行后续流程，验证成功后，关闭应用的未成年人模式，同时记录单独关闭的标记为true，需要缓存该标记
+          // ...
         })
         .catch((error: BusinessError<Object>) => {
           dealVerifyAllError(error);
+          // ...
         });
+      // ...
     } else {
       hilog.info(0x0000, 'testTag',
         'The current device environment does not support the youth mode, please check the current device environment.');
+      // ...
     }
   } catch (error) {
     hilog.error(0x0000, 'testTag',
       `Failed to invoke supportMinorsMode. errCode: ${error.code}, errMessage: ${error.message}`);
+    // ...
   }
 } else {
   hilog.info(0x0000, 'testTag',
     'The current device does not support the invoking of the verifyMinorsProtectionCredential interface.');
+  // ...
 }
 ```
 

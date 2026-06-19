@@ -20,16 +20,16 @@ customId	string	自定义页面根节点id。	'abc345'
 
 如下示例实现一个自定义页面切换，通过改变Stack子组件Z序的方式实现切换页面的效果：
 
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
-struct Rule_2_1_16 {
+export struct Rule_2_1_16 {
   title: string = 'Rule 2.1.16';
-  // 定义状态变量，用于控制顶层显示的层数
+  // 定义状态变量，用于控制顶层显示的层数。
   @State topLayer: number = 0;
 
-  // 定义自定义页面
+  // 定义自定义页面。
   @Builder
   Layer(text: string, index: number) {
     Column() {
@@ -41,29 +41,29 @@ struct Rule_2_1_16 {
         Text(`${text} 测试节点1`)
         Text(`${text} 测试节点2`)
         Text(`${text} 测试节点3`)
-        // 创建按钮用于切换页面
+        // 创建按钮用于切换页面。
         Button(`页面切换${index}`)
           .onClick(() => {
-            // 判断当前顶层，在0与1之间切换
+            // 判断当前顶层，在0与1之间切换。
             if (this.topLayer === 0) {
               this.topLayer = 1;
             } else {
               this.topLayer = 0;
             }
-            // 定义事件信息描述，事件类型为pageActive，页面根节点id为`Layer_${this.topLayer}`
+            // 定义事件信息描述，事件类型为pageActive，页面根节点id为`Layer_${this.topLayer}`。
             const eventInfo: accessibility.EventInfo = ({
               type: 'pageActive',
-              bundleName: 'com.example.accessibilityinfo',
+              bundleName: 'com.samples.uiextensionandaccessibility',
               triggerAction: 'common',
               customId: `Layer_${this.topLayer}`
             });
-            // 发送主动通知页面变化的事件
+            // 发送主动通知页面变化的事件。
             accessibility.sendAccessibilityEvent(eventInfo).then(() => {
-              console.info(`pageActive event send Successed, customId=Layer_${this.topLayer}.`); // 发送成功日志
+              console.info(`pageActive event send Successed, customId=Layer_${this.topLayer}.`); // 发送成功日志。
             });
           })
       }
-      // 指定自定义节点id，用于标识页面根节点
+      // 指定自定义节点id，用于标识页面根节点。
       .id('Layer_' + index)
     }
     .height('100%')
@@ -73,9 +73,9 @@ struct Rule_2_1_16 {
     .alignItems(HorizontalAlign.Center)
     .borderRadius(16)
     .padding(20)
-    // 修改页面Z序，用于实现页面切换效果
+    // 修改页面Z序，用于实现页面切换效果。
     .zIndex(this.topLayer === index ? 1 : 0)
-    // 根据当前页面是否顶层显示，指定自定义页面节点是否无障碍可识别，若否，则设置为不可识别
+    // 根据当前页面是否顶层显示，指定自定义页面节点是否无障碍可识别，若否，则设置为不可识别。
     .accessibilityLevel(this.topLayer === index ? 'no' : 'no-hide-descendants')
   }
 
@@ -96,16 +96,16 @@ struct Rule_2_1_16 {
 ### Code block 1
 
 ```
-import accessibility from '@ohos.accessibility';
+import { accessibility } from '@kit.AccessibilityKit'
 
 @Entry
 @Component
-struct Rule_2_1_16 {
+export struct Rule_2_1_16 {
   title: string = 'Rule 2.1.16';
-  // 定义状态变量，用于控制顶层显示的层数
+  // 定义状态变量，用于控制顶层显示的层数。
   @State topLayer: number = 0;
 
-  // 定义自定义页面
+  // 定义自定义页面。
   @Builder
   Layer(text: string, index: number) {
     Column() {
@@ -117,29 +117,29 @@ struct Rule_2_1_16 {
         Text(`${text} 测试节点1`)
         Text(`${text} 测试节点2`)
         Text(`${text} 测试节点3`)
-        // 创建按钮用于切换页面
+        // 创建按钮用于切换页面。
         Button(`页面切换${index}`)
           .onClick(() => {
-            // 判断当前顶层，在0与1之间切换
+            // 判断当前顶层，在0与1之间切换。
             if (this.topLayer === 0) {
               this.topLayer = 1;
             } else {
               this.topLayer = 0;
             }
-            // 定义事件信息描述，事件类型为pageActive，页面根节点id为`Layer_${this.topLayer}`
+            // 定义事件信息描述，事件类型为pageActive，页面根节点id为`Layer_${this.topLayer}`。
             const eventInfo: accessibility.EventInfo = ({
               type: 'pageActive',
-              bundleName: 'com.example.accessibilityinfo',
+              bundleName: 'com.samples.uiextensionandaccessibility',
               triggerAction: 'common',
               customId: `Layer_${this.topLayer}`
             });
-            // 发送主动通知页面变化的事件
+            // 发送主动通知页面变化的事件。
             accessibility.sendAccessibilityEvent(eventInfo).then(() => {
-              console.info(`pageActive event send Successed, customId=Layer_${this.topLayer}.`); // 发送成功日志
+              console.info(`pageActive event send Successed, customId=Layer_${this.topLayer}.`); // 发送成功日志。
             });
           })
       }
-      // 指定自定义节点id，用于标识页面根节点
+      // 指定自定义节点id，用于标识页面根节点。
       .id('Layer_' + index)
     }
     .height('100%')
@@ -149,9 +149,9 @@ struct Rule_2_1_16 {
     .alignItems(HorizontalAlign.Center)
     .borderRadius(16)
     .padding(20)
-    // 修改页面Z序，用于实现页面切换效果
+    // 修改页面Z序，用于实现页面切换效果。
     .zIndex(this.topLayer === index ? 1 : 0)
-    // 根据当前页面是否顶层显示，指定自定义页面节点是否无障碍可识别，若否，则设置为不可识别
+    // 根据当前页面是否顶层显示，指定自定义页面节点是否无障碍可识别，若否，则设置为不可识别。
     .accessibilityLevel(this.topLayer === index ? 'no' : 'no-hide-descendants')
   }
 

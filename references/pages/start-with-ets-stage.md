@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/start-wit
 
 说明
 
-为确保运行效果，本文以使用DevEco Studio 6.1.1 Release版本为例。
+为确保运行效果，本文以使用DevEco Studio 6.1.0 Release版本为例。
 
 创建ArkTS工程
 
@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/start-wit
 
 若开发者需要进行Native相关工程的开发，请选择Native C++ 模板，更多模板的使用和说明请见工程模板介绍。
 
-进入配置工程界面，Compatible SDK表示兼容的最低API Version，此处以选择6.1.1(24) 为例，其他参数保持默认设置即可。
+进入配置工程界面，Compatible SDK表示兼容的最低API Version，此处以选择6.1.0(23) 为例，其他参数保持默认设置即可。
 
 单击Finish，工具会自动生成示例代码和相关资源，等待工程创建完成。
 

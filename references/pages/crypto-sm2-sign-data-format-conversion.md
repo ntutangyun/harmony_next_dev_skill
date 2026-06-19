@@ -35,7 +35,7 @@ function testSm2SignDataRsToDer() {
 
 指定DER格式的SM2密文参数。
 
-调用genEccSignatureSpec，将DER格式数据传入，转换为(r、s)格式的SM2密文。
+调用genEccSignatureSpec，将DER格式数据传入，转换为（r、s）格式的SM2密文。
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 import { BusinessError } from '@kit.BasicServicesKit';
