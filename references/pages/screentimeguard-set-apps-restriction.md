@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当管控应用希望限制访问某些特定应用时，可以调用限制应用访问的接口。根据参数中传入的token以及限制类型（允许/禁用），可以限制用户对禁用名单中应用的访问，或只允许用户访问允许清单中的应用。
+当管控应用希望限制访问某些特定应用时，可通过调用限制应用访问接口实现。Screen Time Guard Kit会根据传入的应用token以及限制类型，限制用户对指定应用的访问。
 
 业务流程
 
@@ -19,7 +19,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 限制应用访问的关键接口如下表所示：
 
 接口名	描述
-setAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	可根据传入的应用token数组，以及限制类型（禁用/允许清单），来决定是对应用数组做限制，还是对应用数组之外的应用做限制
+setAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	可根据传入的应用token数组，以及限制类型（禁用/许可清单），来决定是对应用数组做限制，还是对应用数组之外的应用做限制
 
 说明
 
@@ -27,17 +27,17 @@ setAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<
 
 限制类型为禁用清单时，对应用数组中的应用做限制。
 
-限制类型为允许清单时，对应用数组以外的应用做限制。
+限制类型为许可清单时，对应用数组以外的应用做限制。
 
 边界场景：
 
-1、如果传入的应用数组为空，限制类型为禁用清单，则不对任何应用做限制。该场景相当于没有开启有效管控。
+如果传入的应用数组为空，限制类型为禁用清单，则不对任何应用做限制。该场景相当于没有开启有效管控。
 
-2、如果传入的应用数组为空，限制类型为允许清单，则对系统内置允许清单应用（电话、联系人、设置、未成年人模式）、管控发起应用本身、已授权的管控应用之外的所有应用做限制。
+如果传入的应用数组为空，限制类型为许可清单，则对系统内置许可清单应用（电话、联系人、设置、未成年人模式）、管控发起应用本身、已授权的管控应用之外的所有应用做限制。
 
-3、对同一个管控应用，如果反复调用该接口做限制（不管是允许清单还是禁用清单），均以最新的一次的限制来生效。
+对同一个管控应用，如果反复调用该接口做限制（不管是许可清单还是禁用清单），均以最新的一次的限制来生效。
 
-4、传入的应用数组中如果包含无效token，则为参数错误。
+传入的应用数组中如果包含无效token，则为参数错误。
 
 开发前提
 

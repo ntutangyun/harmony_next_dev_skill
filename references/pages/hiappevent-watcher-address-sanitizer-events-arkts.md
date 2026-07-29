@@ -172,6 +172,7 @@ HiAppEvent eventInfo.uid=20020140
 HiAppEvent eventInfo.type=stack-buffer-overflow
 HiAppEvent eventInfo.external_log=["/data/storage/el2/log/hiappevent/ADDRESS_SANITIZER_1713161197960_12889.log"]
 HiAppEvent eventInfo.log_over_limit=false
+HiAppEvent eventInfo.params.page_switch_log=" ["/data/storage/el2/log/page_switch/snapshot/page_switch-com.example.myapplication-1-1-20260627152631822.log"]"
 
 ## Code blocks
 
@@ -340,4 +341,5 @@ HiAppEvent eventInfo.uid=20020140
 HiAppEvent eventInfo.type=stack-buffer-overflow
 HiAppEvent eventInfo.external_log=["/data/storage/el2/log/hiappevent/ADDRESS_SANITIZER_1713161197960_12889.log"]
 HiAppEvent eventInfo.log_over_limit=false
+HiAppEvent eventInfo.params.page_switch_log=" ["/data/storage/el2/log/page_switch/snapshot/page_switch-com.example.myapplication-1-1-20260627152631822.log"]"
 ```

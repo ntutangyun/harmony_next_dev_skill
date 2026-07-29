@@ -42,15 +42,18 @@ ECStoreManager类：用于管理应用的E类数据库和C类数据库。
 提供数据库数据迁移接口，在锁屏解锁后，若C类数据库中存在数据，使用该接口将数据迁移到E类数据库。
 
 import { distributedKVStore } from '@kit.ArkData';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 export class Mover {
   async move(eStore: distributedKVStore.SingleKVStore, cStore: distributedKVStore.SingleKVStore): Promise<void> {
     if (eStore != null && cStore != null) {
-      let entries: distributedKVStore.Entry[] = await cStore.getEntries('key_test_string');
-      await eStore.putBatch(entries);
-      Logger.info(`ECDB_Encry move success`);
+      try {
+        let entries: distributedKVStore.Entry[] = await cStore.getEntries('key_test_string');
+        await eStore.putBatch(entries);
+        Logger.info(`ECDB_Encry move success`);
+      } catch (e) {
+        Logger.info(`ECDB_Encry move failed,code is ${e.code},message is ${e.message}`);
+      }
     }
   }
 }
@@ -61,7 +64,6 @@ export class Mover {
 
 import { distributedKVStore } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 let kvManager: distributedKVStore.KVManager;
@@ -227,7 +229,6 @@ import { Mover } from './Mover';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { StoreInfo, Store } from './Store';
 import { SecretStatus } from './SecretKeyObserver';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 let store = new Store();
@@ -326,7 +327,6 @@ import { Mover } from './Mover';
 import { SecretKeyObserver } from './SecretKeyObserver';
 import { commonEventManager } from '@kit.BasicServicesKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 export let storeManager = new ECStoreManager();
@@ -362,57 +362,59 @@ let eInfo: StoreInfo | null = null;
 export default class EntryAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
-    let cContext = this.context;
-    cInfo = {
-      'kvManagerConfig': {
-        context: cContext,
-        bundleName: 'com.example.ecstoresamples'
-      },
-      'storeId': 'cstore',
-      'option': {
-        createIfMissing: true,
-        encrypt: false,
-        backup: false,
-        autoSync: false,
-        // kvStoreType不填时，默认创建多设备协同数据库
-        kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
-        // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
-        securityLevel: distributedKVStore.SecurityLevel.S3
-      }
-    }
-    let eContext = await application.createModuleContext(this.context,'entry');
-    eContext.area = contextConstant.AreaMode.EL5;
-    eInfo = {
-      'kvManagerConfig': {
-        context: eContext,
-        bundleName: 'com.example.ecstoresamples'
-      },
-      'storeId': 'estore',
-      'option': {
-        createIfMissing: true,
-        encrypt: false,
-        backup: false,
-        autoSync: false,
-        // kvStoreType不填时，默认创建多设备协同数据库
-        kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
-        // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
-        securityLevel: distributedKVStore.SecurityLevel.S3
-      }
-    }
-    Logger.info(`ECDB_Encry store area : estore:${eContext.area},cstore${cContext.area}`);
-    // 监听COMMON_EVENT_SCREEN_LOCK_FILE_ACCESS_STATE_CHANGED事件 code == 1解锁状态，code==0加锁状态
     try {
+      let cContext = this.context;
+      cInfo = {
+        'kvManagerConfig': {
+          context: cContext,
+          bundleName: 'com.example.ecstoresamples'
+        },
+        'storeId': 'cstore',
+        'option': {
+          createIfMissing: true,
+          encrypt: false,
+          backup: false,
+          autoSync: false,
+          // kvStoreType不填时，默认创建多设备协同数据库
+          kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
+          // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
+          securityLevel: distributedKVStore.SecurityLevel.S3
+        }
+      }
+      let eContext = await application.createModuleContext(this.context,'entry');
+      eContext.area = contextConstant.AreaMode.EL5;
+      eInfo = {
+        'kvManagerConfig': {
+          context: eContext,
+          bundleName: 'com.example.ecstoresamples'
+        },
+        'storeId': 'estore',
+        'option': {
+          createIfMissing: true,
+          encrypt: false,
+          backup: false,
+          autoSync: false,
+          // kvStoreType不填时，默认创建多设备协同数据库
+          kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
+          // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
+          securityLevel: distributedKVStore.SecurityLevel.S3
+        }
+      }
+      Logger.info(`ECDB_Encry store area : estore:${eContext.area},cstore${cContext.area}`);
+      // 监听COMMON_EVENT_SCREEN_LOCK_FILE_ACCESS_STATE_CHANGED事件 code == 1解锁状态，code==0加锁状态
+
       commonEventManager.createSubscriber({
         events: [ 'COMMON_EVENT_SCREEN_LOCK_FILE_ACCESS_STATE_CHANGED' ]
       }, createCB);
       Logger.info(`ECDB_Encry success subscribe`);
+
+      storeManager.config(cInfo, eInfo);
+      storeManager.configDataMover(mover);
+      e_secretKeyObserver.initialize(storeManager);
     } catch (error) {
       const err: BusinessError = error as BusinessError;
       Logger.error(`createSubscriber failed, code is ${err.code}, message is ${err.message}`);
     }
-    storeManager.config(cInfo, eInfo);
-    storeManager.configDataMover(mover);
-    e_secretKeyObserver.initialize(storeManager);
   }
 
   onDestroy(): void {
@@ -568,7 +570,7 @@ export class Store {
       rdbStore = await relationalStore.getRdbStore(storeInfo.context, storeInfo.config);
       if (rdbStore.version == 0) {
         await rdbStore.executeSql(SQL_CREATE_TABLE);
-        console.info(`ECDB_Encry succeeded in getting Store ：${storeInfo.storeId}`);
+        console.info(`ECDB_Encry succeeded in getting Store: ${storeInfo.storeId}`);
         rdbStore.version = 1;
       }
     } catch (e) {
@@ -993,15 +995,18 @@ struct Index {
 
 ```
 import { distributedKVStore } from '@kit.ArkData';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 export class Mover {
   async move(eStore: distributedKVStore.SingleKVStore, cStore: distributedKVStore.SingleKVStore): Promise<void> {
     if (eStore != null && cStore != null) {
-      let entries: distributedKVStore.Entry[] = await cStore.getEntries('key_test_string');
-      await eStore.putBatch(entries);
-      Logger.info(`ECDB_Encry move success`);
+      try {
+        let entries: distributedKVStore.Entry[] = await cStore.getEntries('key_test_string');
+        await eStore.putBatch(entries);
+        Logger.info(`ECDB_Encry move success`);
+      } catch (e) {
+        Logger.info(`ECDB_Encry move failed,code is ${e.code},message is ${e.message}`);
+      }
     }
   }
 }
@@ -1012,7 +1017,6 @@ export class Mover {
 ```
 import { distributedKVStore } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 let kvManager: distributedKVStore.KVManager;
@@ -1178,7 +1182,6 @@ import { Mover } from './Mover';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { StoreInfo, Store } from './Store';
 import { SecretStatus } from './SecretKeyObserver';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 let store = new Store();
@@ -1277,7 +1280,6 @@ import { Mover } from './Mover';
 import { SecretKeyObserver } from './SecretKeyObserver';
 import { commonEventManager } from '@kit.BasicServicesKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-// Logger为hilog封装后实现的打印功能
 import Logger from '../common/Logger';
 
 export let storeManager = new ECStoreManager();
@@ -1313,57 +1315,59 @@ let eInfo: StoreInfo | null = null;
 export default class EntryAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
-    let cContext = this.context;
-    cInfo = {
-      'kvManagerConfig': {
-        context: cContext,
-        bundleName: 'com.example.ecstoresamples'
-      },
-      'storeId': 'cstore',
-      'option': {
-        createIfMissing: true,
-        encrypt: false,
-        backup: false,
-        autoSync: false,
-        // kvStoreType不填时，默认创建多设备协同数据库
-        kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
-        // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
-        securityLevel: distributedKVStore.SecurityLevel.S3
-      }
-    }
-    let eContext = await application.createModuleContext(this.context,'entry');
-    eContext.area = contextConstant.AreaMode.EL5;
-    eInfo = {
-      'kvManagerConfig': {
-        context: eContext,
-        bundleName: 'com.example.ecstoresamples'
-      },
-      'storeId': 'estore',
-      'option': {
-        createIfMissing: true,
-        encrypt: false,
-        backup: false,
-        autoSync: false,
-        // kvStoreType不填时，默认创建多设备协同数据库
-        kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
-        // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
-        securityLevel: distributedKVStore.SecurityLevel.S3
-      }
-    }
-    Logger.info(`ECDB_Encry store area : estore:${eContext.area},cstore${cContext.area}`);
-    // 监听COMMON_EVENT_SCREEN_LOCK_FILE_ACCESS_STATE_CHANGED事件 code == 1解锁状态，code==0加锁状态
     try {
+      let cContext = this.context;
+      cInfo = {
+        'kvManagerConfig': {
+          context: cContext,
+          bundleName: 'com.example.ecstoresamples'
+        },
+        'storeId': 'cstore',
+        'option': {
+          createIfMissing: true,
+          encrypt: false,
+          backup: false,
+          autoSync: false,
+          // kvStoreType不填时，默认创建多设备协同数据库
+          kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
+          // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
+          securityLevel: distributedKVStore.SecurityLevel.S3
+        }
+      }
+      let eContext = await application.createModuleContext(this.context,'entry');
+      eContext.area = contextConstant.AreaMode.EL5;
+      eInfo = {
+        'kvManagerConfig': {
+          context: eContext,
+          bundleName: 'com.example.ecstoresamples'
+        },
+        'storeId': 'estore',
+        'option': {
+          createIfMissing: true,
+          encrypt: false,
+          backup: false,
+          autoSync: false,
+          // kvStoreType不填时，默认创建多设备协同数据库
+          kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
+          // 多设备协同数据库：kvStoreType: distributedKVStore.KVStoreType.DEVICE_COLLABORATION
+          securityLevel: distributedKVStore.SecurityLevel.S3
+        }
+      }
+      Logger.info(`ECDB_Encry store area : estore:${eContext.area},cstore${cContext.area}`);
+      // 监听COMMON_EVENT_SCREEN_LOCK_FILE_ACCESS_STATE_CHANGED事件 code == 1解锁状态，code==0加锁状态
+
       commonEventManager.createSubscriber({
         events: [ 'COMMON_EVENT_SCREEN_LOCK_FILE_ACCESS_STATE_CHANGED' ]
       }, createCB);
       Logger.info(`ECDB_Encry success subscribe`);
+
+      storeManager.config(cInfo, eInfo);
+      storeManager.configDataMover(mover);
+      e_secretKeyObserver.initialize(storeManager);
     } catch (error) {
       const err: BusinessError = error as BusinessError;
       Logger.error(`createSubscriber failed, code is ${err.code}, message is ${err.message}`);
     }
-    storeManager.config(cInfo, eInfo);
-    storeManager.configDataMover(mover);
-    e_secretKeyObserver.initialize(storeManager);
   }
 
   onDestroy(): void {
@@ -1515,7 +1519,7 @@ export class Store {
       rdbStore = await relationalStore.getRdbStore(storeInfo.context, storeInfo.config);
       if (rdbStore.version == 0) {
         await rdbStore.executeSql(SQL_CREATE_TABLE);
-        console.info(`ECDB_Encry succeeded in getting Store ：${storeInfo.storeId}`);
+        console.info(`ECDB_Encry succeeded in getting Store: ${storeInfo.storeId}`);
         rdbStore.version = 1;
       }
     } catch (e) {

@@ -35,7 +35,7 @@ struct Index {
     new HdsSideMenuMainItem(
       {
         symbol: new SymbolGlyphModifier($r('sys.symbol.ohos_folder_badge_plus')).fontSize(14),
-        label: $r('sys.string.TextView_engr_phone')
+        // label: $r('sys.string.TextView_engr_phone')
       }),
     new HdsSideMenuMainItem({
       icon: $r('sys.symbol.person_wave_3'),
@@ -136,7 +136,7 @@ struct Index {
     new HdsSideMenuMainItem(
       {
         symbol: new SymbolGlyphModifier($r('sys.symbol.ohos_folder_badge_plus')).fontSize(14),
-        label: $r('sys.string.TextView_engr_phone')
+        // label: $r('sys.string.TextView_engr_phone')
       }),
     new HdsSideMenuMainItem({
       icon: $r('sys.symbol.person_wave_3'),

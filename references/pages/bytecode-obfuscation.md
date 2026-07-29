@@ -149,7 +149,7 @@ ArkUI组件中的属性名不会被混淆。例如下面例子中的message和da
 
 // example.ets
 @Component struct MyExample {
-  @State message: string = "hello";
+  @State message: string = 'hello';
   data: number[] = [];
 
   build() {
@@ -162,8 +162,9 @@ SDK API列表中的属性名不会被混淆。SDK API列表是构建时从SDK中
 
 字符串字面量属性名不会被混淆。例如下面例子中的firstName和personAge不会被混淆。
 
-let person = {"firstName": "abc"};
-person["personAge"] = 22;
+// 混淆前：
+let person = {'firstName': 'abc'};
+person['personAge'] = 22;
 
 注解成员名不会被混淆。例如下面例子中的authorName和revision不会被混淆。
 
@@ -183,8 +184,9 @@ person["personAge"] = 22;
 
 根据上述配置，下面例子中的"firstName"和"personAge"混淆效果如下：
 
-let person = {"firstName": "abc"};
-person["personAge"] = 22;
+// 混淆前：
+let person = {'firstName': 'abc'};
+person['personAge'] = 22;
 
 // 混淆后：
 let person = {"a": "abc"};
@@ -310,7 +312,7 @@ release模式构建的应用栈信息仅包含代码行号，不包含列号，�
 
 // 混淆前：
 if (flag) {
-  console.info("hello");
+  console.info('hello');
 }
 
 // 混淆后：
@@ -321,7 +323,7 @@ if (flag) {
 
 文件顶层的调用
 
-console.info("in tolevel");
+console.info('in tolevel');
 
 代码块中的调用
 
@@ -342,10 +344,10 @@ switch语句中的调用
 
 switch (value) {
   case 1:
-    console.info("in switch case");
+    console.info('in switch case');
     break;
   default:
-    console.info("default");
+    console.info('default');
 }
 
 [h2]-print-namecache
@@ -431,36 +433,36 @@ lastName
 // example.js
 let obj = {x0: 0, x1: 0, x2: 0};
 for (let i = 0; i <= 2; i++) {
-    console.info(obj['x' + i]); // x0, x1, x2应该被保留。
+    console.info(obj['x' + i]); // x0, x1, x2应该被保留
 }
 
-Object.defineProperty(obj, 'y', {}); // y应该被保留。
-Object.getOwnPropertyDescriptor(obj, 'y'); // y应该被保留。
+Object.defineProperty(obj, 'y', {}); // y应该被保留
+Object.getOwnPropertyDescriptor(obj, 'y'); // y应该被保留
 console.info(obj.y);
 
 obj.s1 = 'a';
 let key = 's1';
-console.info(obj[key]); // key对应的变量值s应该被保留。
+console.info(obj[key]); // key对应的变量值s应该被保留
 
 obj.t1 = 'b';
-console.info(obj['t' + '1']); // t1应该被保留。
+console.info(obj['t' + '1']); // t1应该被保留
 
 对于如下的字符串常量形式的属性调用，可以选择性保留：
 
 // 混淆配置：
 // -enable-property-obfuscation
 // -enable-string-property-obfuscation
-obj2.t = "0";
-console.info(obj2['t']); // 此时，'t'会被正确混淆，t可以选择性保留。
+obj2.t = '0';
+console.info(obj2['t']); // 此时，'t'会被正确混淆，t可以选择性保留
 
-obj2['v'] = "0";
-console.info(obj2['v']); // 此时，'v'会被正确混淆，v可以选择性保留。
+obj2['v'] = '0';
+console.info(obj2['v']); // 此时，'v'会被正确混淆，v可以选择性保留
 
 2.对于间接导出的场景，例如export MyClass和let a = MyClass; export {a};，如果不想混淆它们的属性名，那么需要使用保留选项来保留这些属性名。另外，对于直接导出的类或对象的属性的属性名，例如下面例子中的firstName和personAge，如果不想混淆它们，那么也需要使用保留选项来保留这些属性名。
 
 // myclass.ts
 export class MyClass02 {
-  person = {firstName: "123", personAge: 100};
+  person = {firstName: '123', personAge: 100};
 }
 
 3.在ArkTS/TS/JS文件中使用so库的API（例如示例中的foo）时，需手动保留API名称。
@@ -470,7 +472,7 @@ export const add: (a: number, b: number) => number;
 // test.ets
 import testNapi from 'libentry.so'
 // ...
-testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name foo。
+testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name foo
 
 4.JSON数据解析及对象序列化时，需要保留使用到的字段，例如：
 
@@ -496,10 +498,10 @@ const jsonStr = JSON.stringify(obj); // prop1 和 prop2 会被混淆，应该被
 5.使用到的数据库相关的字段，需要手动保留。例如，数据库键值对类型（ValuesBucket）中的属性：
 
 const valueBucket: ValuesBucket = {
-  ID1: 'ID1', // ID1应该被保留。
-  NAME1: 'jack', // NAME1应该被保留。
-  AGE1: 20, // AGE1应该被保留。
-  SALARY1: 100 // SALARY1应该被保留。
+  ID1: 'ID1', // ID1应该被保留
+  NAME1: 'jack', // NAME1应该被保留
+  AGE1: 20, // AGE1应该被保留
+  SALARY1: 100 // SALARY1应该被保留
 }
 
 6.源码中自定义装饰器修饰了成员变量、成员方法、参数，同时其源码编译的中间产物为js文件时（如编译release源码HAR或者源码包含@ts-ignore、@ts-nocheck），这些装饰器所在的成员变量/成员方法名称需要被保留。这是由于ts高级语法特性转换为js标准语法时，将上述装饰器所在的成员变量/成员方法名称硬编码为字符串常量。
@@ -511,14 +513,14 @@ function MethodDecorator(target: Object, propertyKey: string, descriptor: Proper
 function ParamDecorator(target: Object, propertyKey: string, parameterIndex: number) {}
 
 class A {
-  // 1.成员变量装饰器。
+  // 1.成员变量装饰器
   @CustomDecorator
-  propertyName1: string = ""   // propertyName1 需要被保留。
-  // 2.成员方法装饰器。
+  propertyName1: string = "";   // propertyName1 需要被保留
+  // 2.成员方法装饰器
   @MethodDecorator
-  methodName1() {} // methodName1 需要被保留。
-  // 3.方法参数装饰器。
-  methodName2(@ParamDecorator param: string): void {} // methodName2 需要被保留。
+  methodName1() {} // methodName1 需要被保留
+  // 3.方法参数装饰器
+  methodName2(@ParamDecorator param: string): void {} // methodName2 需要被保留
 }
 
 [h2]-keep-global-name
@@ -533,8 +535,8 @@ namespace中导出的名称也可以通过-keep-global-name选项保留，示例
 
 // example.ts
 export namespace Ns {
-  export const myAge = 18 // -keep-global-name myAge 保留变量myAge。
-  export function myFunc() {} // -keep-global-name myFunc 保留函数myFunc。
+  export const myAge = 18; // -keep-global-name myAge 保留变量myAge
+  export function myFunc() {} // -keep-global-name myFunc 保留函数myFunc
 }
 
 注意
@@ -548,24 +550,24 @@ export namespace Ns {
 示例：
 
 var a = 0;
-console.info(globalThis.a);  // a 应该被保留。
+console.info(globalThis.a);  // a 应该被保留
 function foo2(){}
-globalThis.foo2();           // foo2 应该被保留。
-var c = "0";
-console.info(c);             // c 可以被正确地混淆。
+globalThis.foo2();           // foo2 应该被保留
+var c = '0';
+console.info(c);             // c 可以被正确地混淆
 function bar(){}
-bar();                      // bar 可以被正确地混淆。
+bar();                      // bar 可以被正确地混淆
 class MyClass {}
-let d = new MyClass();      // MyClass 可以被正确地混淆。
+let d = new MyClass();      // MyClass 可以被正确地混淆
 
 2.当以命名导入的方式导入 so 库的 API时，若同时开启-enable-toplevel-obfuscation和-enable-export-obfuscation选项，需要手动保留API的名称。
 
-// src/main/cpp/types/libentry/Index.d.ts。
+// src/main/cpp/types/libentry/Index.d.ts
 declare function testNapi2(): void;
 declare function testNapi3(): void;
 
 // example.ets
-import { testNapi2, testNapi3 as myNapi } from 'libentry.so' // testNapi2 和 testNapi3 应该被保留。
+import { testNapi2, testNapi3 as myNapi } from 'libentry.so' // testNapi2 和 testNapi3 应该被保留
 // ...
 testNapi2();
 myNapi();
@@ -583,7 +585,7 @@ entry
 1.在使用require引入文件路径时，由于ArkTS不支持CommonJS语法，因此这种情况下路径应该被保留。
 
 // example.js
-const module1 = require('./file1'); // file1 应该被保留。
+const module1 = require('./file1'); // file1 应该被保留
 
 2.对于动态导入的路径名，由于无法识别import函数中的参数是否为路径，因此这种情况下路径应该被保留。
 
@@ -591,8 +593,8 @@ const module1 = require('./file1'); // file1 应该被保留。
 export function foo () {}
 
 // main.ts
-const moduleName = './file2'         // moduleName对应的路径名file2应该被保留。
-const module2 = import(moduleName)
+const moduleName = './file2';         // moduleName对应的路径名file2应该被保留
+const module2 = import(moduleName);
 
 3.在使用跨包路由进行路由跳转时，传递给动态路由的路径应该被保留。动态路由提供系统路由表和自定义路由表两种方式。若采用自定义路由表进行跳转，配置白名单的方式与上述第二种动态引用场景一致。而若采用系统路由表进行跳转，则需要将模块下resources/base/profile/route_map.json5文件中pageSourceFile字段对应的路径添加到白名单中。
 
@@ -863,7 +865,7 @@ export class MyClass01 {
 ```
 // example.ets
 @Component struct MyExample {
-  @State message: string = "hello";
+  @State message: string = 'hello';
   data: number[] = [];
 
   build() {
@@ -874,8 +876,9 @@ export class MyClass01 {
 ### Code block 7
 
 ```
-let person = {"firstName": "abc"};
-person["personAge"] = 22;
+// 混淆前：
+let person = {'firstName': 'abc'};
+person['personAge'] = 22;
 ```
 
 ### Code block 8
@@ -897,8 +900,9 @@ person["personAge"] = 22;
 ### Code block 10
 
 ```
-let person = {"firstName": "abc"};
-person["personAge"] = 22;
+// 混淆前：
+let person = {'firstName': 'abc'};
+person['personAge'] = 22;
 ```
 
 ### Code block 11
@@ -994,7 +998,7 @@ class TestA { static prop1: number = 0; } TestA.prop1;
 ```
 // 混淆前：
 if (flag) {
-  console.info("hello");
+  console.info('hello');
 }
 ```
 
@@ -1009,7 +1013,7 @@ if (flag) {
 ### Code block 23
 
 ```
-console.info("in tolevel");
+console.info('in tolevel');
 ```
 
 ### Code block 24
@@ -1034,10 +1038,10 @@ namespace ns {
 ```
 switch (value) {
   case 1:
-    console.info("in switch case");
+    console.info('in switch case');
     break;
   default:
-    console.info("default");
+    console.info('default');
 }
 ```
 
@@ -1070,19 +1074,19 @@ lastName
 // example.js
 let obj = {x0: 0, x1: 0, x2: 0};
 for (let i = 0; i <= 2; i++) {
-    console.info(obj['x' + i]); // x0, x1, x2应该被保留。
+    console.info(obj['x' + i]); // x0, x1, x2应该被保留
 }
 
-Object.defineProperty(obj, 'y', {}); // y应该被保留。
-Object.getOwnPropertyDescriptor(obj, 'y'); // y应该被保留。
+Object.defineProperty(obj, 'y', {}); // y应该被保留
+Object.getOwnPropertyDescriptor(obj, 'y'); // y应该被保留
 console.info(obj.y);
 
 obj.s1 = 'a';
 let key = 's1';
-console.info(obj[key]); // key对应的变量值s应该被保留。
+console.info(obj[key]); // key对应的变量值s应该被保留
 
 obj.t1 = 'b';
-console.info(obj['t' + '1']); // t1应该被保留。
+console.info(obj['t' + '1']); // t1应该被保留
 ```
 
 ### Code block 31
@@ -1091,11 +1095,11 @@ console.info(obj['t' + '1']); // t1应该被保留。
 // 混淆配置：
 // -enable-property-obfuscation
 // -enable-string-property-obfuscation
-obj2.t = "0";
-console.info(obj2['t']); // 此时，'t'会被正确混淆，t可以选择性保留。
+obj2.t = '0';
+console.info(obj2['t']); // 此时，'t'会被正确混淆，t可以选择性保留
 
-obj2['v'] = "0";
-console.info(obj2['v']); // 此时，'v'会被正确混淆，v可以选择性保留。
+obj2['v'] = '0';
+console.info(obj2['v']); // 此时，'v'会被正确混淆，v可以选择性保留
 ```
 
 ### Code block 32
@@ -1103,7 +1107,7 @@ console.info(obj2['v']); // 此时，'v'会被正确混淆，v可以选择性保
 ```
 // myclass.ts
 export class MyClass02 {
-  person = {firstName: "123", personAge: 100};
+  person = {firstName: '123', personAge: 100};
 }
 ```
 
@@ -1119,7 +1123,7 @@ export const add: (a: number, b: number) => number;
 // test.ets
 import testNapi from 'libentry.so'
 // ...
-testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name foo。
+testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name foo
 ```
 
 ### Code block 35
@@ -1149,10 +1153,10 @@ const jsonStr = JSON.stringify(obj); // prop1 和 prop2 会被混淆，应该被
 
 ```
 const valueBucket: ValuesBucket = {
-  ID1: 'ID1', // ID1应该被保留。
-  NAME1: 'jack', // NAME1应该被保留。
-  AGE1: 20, // AGE1应该被保留。
-  SALARY1: 100 // SALARY1应该被保留。
+  ID1: 'ID1', // ID1应该被保留
+  NAME1: 'jack', // NAME1应该被保留
+  AGE1: 20, // AGE1应该被保留
+  SALARY1: 100 // SALARY1应该被保留
 }
 ```
 
@@ -1164,14 +1168,14 @@ function MethodDecorator(target: Object, propertyKey: string, descriptor: Proper
 function ParamDecorator(target: Object, propertyKey: string, parameterIndex: number) {}
 
 class A {
-  // 1.成员变量装饰器。
+  // 1.成员变量装饰器
   @CustomDecorator
-  propertyName1: string = ""   // propertyName1 需要被保留。
-  // 2.成员方法装饰器。
+  propertyName1: string = "";   // propertyName1 需要被保留
+  // 2.成员方法装饰器
   @MethodDecorator
-  methodName1() {} // methodName1 需要被保留。
-  // 3.方法参数装饰器。
-  methodName2(@ParamDecorator param: string): void {} // methodName2 需要被保留。
+  methodName1() {} // methodName1 需要被保留
+  // 3.方法参数装饰器
+  methodName2(@ParamDecorator param: string): void {} // methodName2 需要被保留
 }
 ```
 
@@ -1188,8 +1192,8 @@ printPersonName
 ```
 // example.ts
 export namespace Ns {
-  export const myAge = 18 // -keep-global-name myAge 保留变量myAge。
-  export function myFunc() {} // -keep-global-name myFunc 保留函数myFunc。
+  export const myAge = 18; // -keep-global-name myAge 保留变量myAge
+  export function myFunc() {} // -keep-global-name myFunc 保留函数myFunc
 }
 ```
 
@@ -1197,21 +1201,21 @@ export namespace Ns {
 
 ```
 var a = 0;
-console.info(globalThis.a);  // a 应该被保留。
+console.info(globalThis.a);  // a 应该被保留
 function foo2(){}
-globalThis.foo2();           // foo2 应该被保留。
-var c = "0";
-console.info(c);             // c 可以被正确地混淆。
+globalThis.foo2();           // foo2 应该被保留
+var c = '0';
+console.info(c);             // c 可以被正确地混淆
 function bar(){}
-bar();                      // bar 可以被正确地混淆。
+bar();                      // bar 可以被正确地混淆
 class MyClass {}
-let d = new MyClass();      // MyClass 可以被正确地混淆。
+let d = new MyClass();      // MyClass 可以被正确地混淆
 ```
 
 ### Code block 41
 
 ```
-// src/main/cpp/types/libentry/Index.d.ts。
+// src/main/cpp/types/libentry/Index.d.ts
 declare function testNapi2(): void;
 declare function testNapi3(): void;
 ```
@@ -1220,7 +1224,7 @@ declare function testNapi3(): void;
 
 ```
 // example.ets
-import { testNapi2, testNapi3 as myNapi } from 'libentry.so' // testNapi2 和 testNapi3 应该被保留。
+import { testNapi2, testNapi3 as myNapi } from 'libentry.so' // testNapi2 和 testNapi3 应该被保留
 // ...
 testNapi2();
 myNapi();
@@ -1238,7 +1242,7 @@ entry
 
 ```
 // example.js
-const module1 = require('./file1'); // file1 应该被保留。
+const module1 = require('./file1'); // file1 应该被保留
 ```
 
 ### Code block 45
@@ -1252,8 +1256,8 @@ export function foo () {}
 
 ```
 // main.ts
-const moduleName = './file2'         // moduleName对应的路径名file2应该被保留。
-const module2 = import(moduleName)
+const moduleName = './file2';         // moduleName对应的路径名file2应该被保留
+const module2 = import(moduleName);
 ```
 
 ### Code block 47

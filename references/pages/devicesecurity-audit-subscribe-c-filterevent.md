@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-当前能力仅支持2in1设备。
+当前能力仅支持PC/2in1设备。
 
 一个进程最大只允许创建2个客户端实例，当前设备最多只允许创建16个客户端实例。
 
@@ -56,7 +56,7 @@ int32_t HMS_SecurityAudit_RemoveFilter(const SecurityAudit_Client* client, Secur
 
 在开发准备过程中，需要申请权限：ohos.permission.QUERY_AUDIT_EVENT。
 
-只允许清单内的企业类应用申请该权限，申请方式请参考：申请使用企业类应用可用权限。
+只允许清单内的企业类应用申请该权限，申请方式请参考：企业类应用可用权限。
 
 在CMakeLists.txt中导入安全审计共享库，并链接该库。
 
@@ -65,8 +65,8 @@ target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
 
 导入安全审计的头文件。
 
-#include <DeviceSecurityKit/security_audit.h>
 #include <cstdio>
+#include "DeviceSecurityKit/security_audit.h"
 
 全局范围定义通知类事件的回调函数。
 
@@ -84,20 +84,21 @@ void Notify(const SecurityAudit_Event *events, uint64_t count)
 
 创建审计通知类事件客户端实例。
 
-SecurityAudit_Client *client = NULL;
-SecurityAudit_Handler handler = Notify;
-HMS_SecurityAudit_NewClient(&client, handler);
-if (client == nullptr) {
-    printf("client is null");
-    return 0;
-}
+SecurityAudit_Client *notifyClient = NULL;
+// ...
+    SecurityAudit_Handler handler = Notify;
+    HMS_SecurityAudit_NewClient(&notifyClient, handler);
+    if (notifyClient == nullptr) {
+        printf("client is null");
+        return 0;
+    }
 
 订阅审计通知类事件。
 
-SecurityAudit_Notify_Event event[1] = {};
-event[0] = SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ;
-int ret = HMS_SecurityAudit_Subscribe(client, event, 1);
+SecurityAudit_Notify_Event event[1] = {SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ};
+int32_t ret = HMS_SecurityAudit_Subscribe(notifyClient, event, 1);
 if (ret != 0) {
+    // ...
     printf("subscribe fail");
     return;
 }
@@ -106,38 +107,39 @@ if (ret != 0) {
 
 SecurityAudit_Filter filter = {};
 filter.type = PROCESS_NAME_PREFIX;
-const char* filterStr[1] = {};
-filterStr[0] = "1";
+const char* filterStr[1] = {"1"};
 filter.value = filterStr;
 filter.valueCount = 1;
-ret = HMS_SecurityAudit_AddFilter(client, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
+ret = HMS_SecurityAudit_AddFilter(notifyClient, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
 if (ret != 0) {
+    // ...
     printf("addfilter fail");
     return;
 }
 
 解除审计通知类事件订阅。
 
-ret = HMS_SecurityAudit_Unsubscribe(client, event, 1);
+ret = HMS_SecurityAudit_Unsubscribe(notifyClient, event, 1);
 if (ret != 0) {
+    // ...
     printf("unsubscribe fail");
     return;
 }
 
 解除审计通知类事件过滤条件。
 
-ret = HMS_SecurityAudit_RemoveFilter(client, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
+ret = HMS_SecurityAudit_RemoveFilter(notifyClient, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
 if (ret != 0) {
+    // ...
     printf("removefilter fail");
     return;
 }
 
 删除审计通知类事件客户端实例。
 
-ret = HMS_SecurityAudit_DeleteClient(client);
+ret = HMS_SecurityAudit_DeleteClient(notifyClient);
 if (ret != 0) {
     printf("deleteclient fail");
-    return;
 }
 
 ## Code blocks
@@ -152,8 +154,8 @@ target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
 ### Code block 2
 
 ```
-#include <DeviceSecurityKit/security_audit.h>
 #include <cstdio>
+#include "DeviceSecurityKit/security_audit.h"
 ```
 
 ### Code block 3
@@ -175,22 +177,23 @@ void Notify(const SecurityAudit_Event *events, uint64_t count)
 ### Code block 4
 
 ```
-SecurityAudit_Client *client = NULL;
-SecurityAudit_Handler handler = Notify;
-HMS_SecurityAudit_NewClient(&client, handler);
-if (client == nullptr) {
-    printf("client is null");
-    return 0;
-}
+SecurityAudit_Client *notifyClient = NULL;
+// ...
+    SecurityAudit_Handler handler = Notify;
+    HMS_SecurityAudit_NewClient(&notifyClient, handler);
+    if (notifyClient == nullptr) {
+        printf("client is null");
+        return 0;
+    }
 ```
 
 ### Code block 5
 
 ```
-SecurityAudit_Notify_Event event[1] = {};
-event[0] = SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ;
-int ret = HMS_SecurityAudit_Subscribe(client, event, 1);
+SecurityAudit_Notify_Event event[1] = {SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ};
+int32_t ret = HMS_SecurityAudit_Subscribe(notifyClient, event, 1);
 if (ret != 0) {
+    // ...
     printf("subscribe fail");
     return;
 }
@@ -201,12 +204,12 @@ if (ret != 0) {
 ```
 SecurityAudit_Filter filter = {};
 filter.type = PROCESS_NAME_PREFIX;
-const char* filterStr[1] = {};
-filterStr[0] = "1";
+const char* filterStr[1] = {"1"};
 filter.value = filterStr;
 filter.valueCount = 1;
-ret = HMS_SecurityAudit_AddFilter(client, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
+ret = HMS_SecurityAudit_AddFilter(notifyClient, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
 if (ret != 0) {
+    // ...
     printf("addfilter fail");
     return;
 }
@@ -215,8 +218,9 @@ if (ret != 0) {
 ### Code block 7
 
 ```
-ret = HMS_SecurityAudit_Unsubscribe(client, event, 1);
+ret = HMS_SecurityAudit_Unsubscribe(notifyClient, event, 1);
 if (ret != 0) {
+    // ...
     printf("unsubscribe fail");
     return;
 }
@@ -225,8 +229,9 @@ if (ret != 0) {
 ### Code block 8
 
 ```
-ret = HMS_SecurityAudit_RemoveFilter(client, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
+ret = HMS_SecurityAudit_RemoveFilter(notifyClient, SECURITY_AUDIT_NOTIFY_EVENT_KIA_READ, &filter);
 if (ret != 0) {
+    // ...
     printf("removefilter fail");
     return;
 }
@@ -235,9 +240,8 @@ if (ret != 0) {
 ### Code block 9
 
 ```
-ret = HMS_SecurityAudit_DeleteClient(client);
+ret = HMS_SecurityAudit_DeleteClient(notifyClient);
 if (ret != 0) {
     printf("deleteclient fail");
-    return;
 }
 ```

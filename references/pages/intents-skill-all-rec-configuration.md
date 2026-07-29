@@ -88,7 +88,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
       result: {
         message: 'unknown intent'
       }
-    }
+    };
     return Promise.resolve(data);
   }
 
@@ -110,7 +110,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
             result: {
               message: 'Intent execute succeed'
             }
-          }
+          };
           resolve(data);
         })
         .catch((err: BusinessError) => {
@@ -120,7 +120,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
             result: {
               message: 'Intent execute failed'
             }
-          }
+          };
           reject(data);
         });
     })
@@ -278,7 +278,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
       result: {
         message: 'unknown intent'
       }
-    }
+    };
     return Promise.resolve(data);
   }
 
@@ -300,7 +300,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
             result: {
               message: 'Intent execute succeed'
             }
-          }
+          };
           resolve(data);
         })
         .catch((err: BusinessError) => {
@@ -310,7 +310,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
             result: {
               message: 'Intent execute failed'
             }
-          }
+          };
           reject(data);
         });
     })

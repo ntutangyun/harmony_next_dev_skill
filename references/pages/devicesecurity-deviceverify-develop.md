@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-应用设备状态检测（DeviceVerify）能力不支持模拟器。支持设备：Phone、Tablet、PC/2in1、Wearable，从5.1.1(19)版本开始，新增支持设备：TV。
+应用设备状态检测（DeviceVerify）能力不支持模拟器。支持设备：Phone、Tablet、PC/2in1、Wearable，从5.1.1(19)版本开始，新增支持设备：TV，从7.0.0(26)版本开始，新增支持设备：Car。
 
 业务流程
 
@@ -65,25 +65,32 @@ delDeviceStatus	删除设备标记状态
 
 导入Device Security Kit模块及相关公共模块。
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { deviceCertificate } from '@kit.DeviceSecurityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 
 获取设备deviceToken信息。
 
-const TAG = "DeviceCertificateJsTest";
+const TAG: string = '[DevCertManagerModel]';
 
-// 请求deviceToken，并处理结果
-try {
-  deviceCertificate.getDeviceToken().then((token) => {
-      hilog.info(0x0000, TAG, 'Succeeded in executing getDeviceToken');
-      // 开发者处理deviceToken
-  }).catch((err: BusinessError) => {
-    hilog.error(0x0000, TAG, 'getDeviceToken failed!  %{public}d %{public}s', err.code, err.message);
+function deviceTokenPromise(): Promise<String> {
+  return new Promise((resolve, reject) => {
+    try {
+      deviceCertificate.getDeviceToken().then((token) => {
+        hilog.info(0x0000, TAG, 'Succeeded in executing getDeviceToken success');
+        resolve(token);
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, TAG, '%{public}s', 'getDeviceToken failed! err code: ' + err.code +
+          ' ,err message: ' + err.message);
+        reject(err);
+      });
+    } catch (err) {
+      let error: BusinessError = err as BusinessError;
+      hilog.error(0x0000, TAG, '%{public}s', 'getDeviceToken failed! catch err code: ' + error.code +
+        ' ,err message: ' + error.message);
+      reject(err);
+    }
   });
-} catch(err) {
-  let error: BusinessError = err as BusinessError;
-  hilog.error(0x0000, TAG, 'getDeviceToken failed!  %{public}d %{public}s', error.code, error.message);
 }
 
 说明
@@ -253,27 +260,34 @@ public class DeviceTokenServer {
 ### Code block 1
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { deviceCertificate } from '@kit.DeviceSecurityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "DeviceCertificateJsTest";
+const TAG: string = '[DevCertManagerModel]';
 
-// 请求deviceToken，并处理结果
-try {
-  deviceCertificate.getDeviceToken().then((token) => {
-      hilog.info(0x0000, TAG, 'Succeeded in executing getDeviceToken');
-      // 开发者处理deviceToken
-  }).catch((err: BusinessError) => {
-    hilog.error(0x0000, TAG, 'getDeviceToken failed!  %{public}d %{public}s', err.code, err.message);
+function deviceTokenPromise(): Promise<String> {
+  return new Promise((resolve, reject) => {
+    try {
+      deviceCertificate.getDeviceToken().then((token) => {
+        hilog.info(0x0000, TAG, 'Succeeded in executing getDeviceToken success');
+        resolve(token);
+      }).catch((err: BusinessError) => {
+        hilog.error(0x0000, TAG, '%{public}s', 'getDeviceToken failed! err code: ' + err.code +
+          ' ,err message: ' + err.message);
+        reject(err);
+      });
+    } catch (err) {
+      let error: BusinessError = err as BusinessError;
+      hilog.error(0x0000, TAG, '%{public}s', 'getDeviceToken failed! catch err code: ' + error.code +
+        ' ,err message: ' + error.message);
+      reject(err);
+    }
   });
-} catch(err) {
-  let error: BusinessError = err as BusinessError;
-  hilog.error(0x0000, TAG, 'getDeviceToken failed!  %{public}d %{public}s', error.code, error.message);
 }
 ```
 

@@ -27,4 +27,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-att
 
 应用归因服务接入调试功能接口当前支持ARM版本、X86版本的模拟器。
 
-应用归因服务支持Phone、Tablet设备。并且从6.1.0(23)版本开始，新增支持PC/2in1、TV设备。
+应用归因服务支持Phone、Tablet设备。并且从6.1.0(23)版本开始，新增支持PC/2in1、TV设备；从26.0.0版本开始，新增支持Car设备。

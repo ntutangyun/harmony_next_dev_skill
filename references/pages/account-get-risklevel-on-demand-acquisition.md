@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-g
 
 获取用户风险等级scope仅支持与openid、phone、profile组合使用，接口支持的全量scopes见scope列表。
 
-获取风险等级能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持Car设备。
+获取风险等级能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备。
 
 业务流程
 
@@ -57,7 +57,7 @@ APP ID：1****12
 
 Client ID：1****14
 
-背景介绍 ：（请提供应用简单介绍，便于快速了解）
+背景介绍：（请提供应用简单介绍，便于快速了解）
 
 使用场景：（请提供相关使用场景的文字描述、交互流程图或参考交互视频等，可提供类似应用的使用场景进行说明）
 

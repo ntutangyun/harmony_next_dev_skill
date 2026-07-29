@@ -36,7 +36,7 @@ export struct CashierBindSheetContainer {
         backgroundColor: '#E5FFFFFF',
         blurStyle: BlurStyle.COMPONENT_THICK,
         onWillDismiss: ((action: DismissSheetAction) => {
-          // 退出事件监听
+          // 退出事件监听器处理
         }),
       });
     }.width('100%');
@@ -49,7 +49,7 @@ export struct CashierBindSheetContainer {
 
 示例代码如下：
 
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics } from '@ohos.arkui.node';
 import { getBorderRadius, isNewCardPaymentType } from '../util/PaymentUtil';
 import { PaymentOrderComp } from './PaymentOrderComp';
 import { PaymentItemComp } from './PaymentItemComp';
@@ -61,43 +61,42 @@ import { paymentTypeList, paymentTypes3PayShow } from '../data/TestData';
 @Component
 export struct CashierComponent {
   // 商户名称
-  private mercShortName: string = "华为支付测试商户";
-  // 支付金额（单位为分）
+  private mercShortName: string = '华为支付测试商户';
+  // 付款金额
   private paymentAmount: string = '0.01';
-  // 当前选中的支付方式信息
   @State selectedPaymentType: PaymentType = new PaymentType();
   @State selectedPayTypeSerialNo: string = '';
 
-  // 头部：商户订单信息
+  // 商家订单信息
   @Builder
   orderDetail() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：支付方式列表的标题
+  // 支付方式列表
   @Builder
   displayHeader() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：其他支付方式选项
+  // 其他支付方式
   @Builder
   moreBankFooter() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：选择支付方式事件
-  select(PaymentType: PaymentType) {
-    // 后续展示实现
+  // 支付方式选择事件
+  select(paymentType: PaymentType) {
+    // ...
   }
 
-  // 中部：支付方式列表
+  // 支付方式列表
   @Builder
   paymentListBuilder() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：支付方式列表 容器
+  // 支付方式列表容器
   @Builder
   paymentListContent() {
     Column() {
@@ -108,16 +107,16 @@ export struct CashierComponent {
     })
   }
 
-  // 底部：按钮区域
+  // 按钮区域
   @Builder
   buttonArea() {
-    // 后续展示实现
+    // ...
   }
 
   // 收银台首页
   @Builder
   cashierUI() {
-    // 订单信息+支付方式区域
+    // 订单信息区和付款方式区域
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center }) {
       this.orderDetail();
       this.paymentListContent();
@@ -131,7 +130,6 @@ export struct CashierComponent {
     // 按钮区域
     Column() {
       this.buttonArea();
-      // 底部aiBar的高度
       Row()
         .width('100%')
         .height(28)
@@ -167,7 +165,7 @@ orderDetail() {
       mercShortName: this.mercShortName,
       paymentAmount: this.paymentAmount,
     })
-    .margin({ bottom: 24 });
+      .margin({ bottom: 24 });
   }
   .width('100%')
   .padding({
@@ -177,7 +175,7 @@ orderDetail() {
 
 其中商户订单信息类PaymentOrderComp.ets实现如下：
 
-import { Amount } from "./Amount";
+import { Amount } from './Amount';
 
 @Component
 export struct PaymentOrderComp {
@@ -384,16 +382,16 @@ moreBankFooter() {
 
 其中支付方式组件类PaymentItemComp.ets实现展示可用、不可用的支付方式，添加银行卡以及用户选中支付方式后展示勾选效果。示例代码如下：
 
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics } from '@ohos.arkui.node';
 import { PaymentType } from '../data/PaymentType';
 import { getBorderRadius } from '../util/PaymentUtil';
 
 export enum ButtonOpacity {
   // 默认不透明度
   PRIMARY = 1,
-  // 按钮置灰不透明度
+  // 按钮的透明度设置为灰色
   DISABLED = 0.6,
-  // 支付方式不可用导致的按钮不可用的不透明度
+  // 支付方式的不透明度
   PAYMENT_UNAVAILABLE = 0.38
 }
 
@@ -407,7 +405,7 @@ export struct PaymentItemComp {
 
   build() {
     Row() {
-      Image($r("app.media.payment_logo"))
+      Image($r('app.media.payment_logo'))
         .borderRadius(getBorderRadius(24))
         .width(24)
         .height(24)
@@ -475,9 +473,9 @@ export struct PaymentItemComp {
 
 收银台首页CashierComponent.ets中选择支付方式事件示例代码如下：
 
-select(PaymentType: PaymentType) {
-  this.selectedPaymentType = PaymentType;
-  this.selectedPayTypeSerialNo = PaymentType.payTypeSerialNo || '';
+select(paymentType: PaymentType) {
+  this.selectedPaymentType = paymentType;
+  this.selectedPayTypeSerialNo = paymentType.payTypeSerialNo || '';
 }
 
 运行结果：
@@ -493,9 +491,9 @@ buttonArea() {
   ConfirmButton({
     text: $r('app.string.kit_hwpay_checkout_confirm_pay'),
   })
-  .margin({
-    top: $r('sys.float.ohos_id_elements_margin_vertical_l'),
-  });
+    .margin({
+      top: $r('sys.float.ohos_id_elements_margin_vertical_l'),
+    });
 }
 
 其中确认支付按钮类ConfirmButton.ets示例代码如下：
@@ -563,16 +561,14 @@ export struct ConfirmButton {
 
 支付方式PaymentType.ets类及支付类型枚举CustPayType.ets类定义示例代码如下：
 
-// 支付方式：PaymentType.ets
 export class PaymentType {
-  payTypeSerialNo?: string;
-  payTypeDesc?: string;
-  paymentTypeTip?: string;
-  isAvailable?: boolean;
-  custPayType: string = '';
+  public payTypeSerialNo?: string;
+  public payTypeDesc?: string;
+  public paymentTypeTip?: string;
+  public isAvailable?: boolean;
+  public custPayType: string = '';
 }
 
-// 支付类型枚举：CustPayType.ets
 export enum CustPayType {
   NewBankCard = 'NewBankCard',
 }
@@ -581,7 +577,7 @@ export enum CustPayType {
 
 测试使用的支付方式数据TestData.ets类定义示例代码如下：
 
-import { PaymentType } from "./PaymentType";
+import { PaymentType } from './PaymentType';
 
 export const paymentTypeList: PaymentType[] = [
   {
@@ -617,8 +613,8 @@ export const paymentTypes3PayShow: PaymentType[] = [
 
 支付工具PaymentUtil.ets类定义示例代码如下：
 
-import { CustPayType } from "../data/CustPayType";
-import { PaymentType } from "../data/PaymentType";
+import { CustPayType } from '../data/CustPayType';
+import { PaymentType } from '../data/PaymentType';
 
 /**
  * 支付工具是否是新卡
@@ -638,7 +634,7 @@ export const isNewCardPaymentType = (paymentType: PaymentType): boolean => {
  * @returns 图标圆角值
  */
 export const getBorderRadius = (length: number): number => {
-  // 正方形图标圆角值为：14 / 54 * 图标边长
+  // 根据图标边长计算圆角值
   return 7 / 27 * length;
 }
 
@@ -669,7 +665,7 @@ export struct CashierBindSheetContainer {
         backgroundColor: '#E5FFFFFF',
         blurStyle: BlurStyle.COMPONENT_THICK,
         onWillDismiss: ((action: DismissSheetAction) => {
-          // 退出事件监听
+          // 退出事件监听器处理
         }),
       });
     }.width('100%');
@@ -680,7 +676,7 @@ export struct CashierBindSheetContainer {
 ### Code block 2
 
 ```
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics } from '@ohos.arkui.node';
 import { getBorderRadius, isNewCardPaymentType } from '../util/PaymentUtil';
 import { PaymentOrderComp } from './PaymentOrderComp';
 import { PaymentItemComp } from './PaymentItemComp';
@@ -692,43 +688,42 @@ import { paymentTypeList, paymentTypes3PayShow } from '../data/TestData';
 @Component
 export struct CashierComponent {
   // 商户名称
-  private mercShortName: string = "华为支付测试商户";
-  // 支付金额（单位为分）
+  private mercShortName: string = '华为支付测试商户';
+  // 付款金额
   private paymentAmount: string = '0.01';
-  // 当前选中的支付方式信息
   @State selectedPaymentType: PaymentType = new PaymentType();
   @State selectedPayTypeSerialNo: string = '';
 
-  // 头部：商户订单信息
+  // 商家订单信息
   @Builder
   orderDetail() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：支付方式列表的标题
+  // 支付方式列表
   @Builder
   displayHeader() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：其他支付方式选项
+  // 其他支付方式
   @Builder
   moreBankFooter() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：选择支付方式事件
-  select(PaymentType: PaymentType) {
-    // 后续展示实现
+  // 支付方式选择事件
+  select(paymentType: PaymentType) {
+    // ...
   }
 
-  // 中部：支付方式列表
+  // 支付方式列表
   @Builder
   paymentListBuilder() {
-    // 后续展示实现
+    // ...
   }
 
-  // 中部：支付方式列表 容器
+  // 支付方式列表容器
   @Builder
   paymentListContent() {
     Column() {
@@ -739,16 +734,16 @@ export struct CashierComponent {
     })
   }
 
-  // 底部：按钮区域
+  // 按钮区域
   @Builder
   buttonArea() {
-    // 后续展示实现
+    // ...
   }
 
   // 收银台首页
   @Builder
   cashierUI() {
-    // 订单信息+支付方式区域
+    // 订单信息区和付款方式区域
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center }) {
       this.orderDetail();
       this.paymentListContent();
@@ -762,7 +757,6 @@ export struct CashierComponent {
     // 按钮区域
     Column() {
       this.buttonArea();
-      // 底部aiBar的高度
       Row()
         .width('100%')
         .height(28)
@@ -794,7 +788,7 @@ orderDetail() {
       mercShortName: this.mercShortName,
       paymentAmount: this.paymentAmount,
     })
-    .margin({ bottom: 24 });
+      .margin({ bottom: 24 });
   }
   .width('100%')
   .padding({
@@ -806,7 +800,7 @@ orderDetail() {
 ### Code block 4
 
 ```
-import { Amount } from "./Amount";
+import { Amount } from './Amount';
 
 @Component
 export struct PaymentOrderComp {
@@ -1017,16 +1011,16 @@ moreBankFooter() {
 ### Code block 9
 
 ```
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics } from '@ohos.arkui.node';
 import { PaymentType } from '../data/PaymentType';
 import { getBorderRadius } from '../util/PaymentUtil';
 
 export enum ButtonOpacity {
   // 默认不透明度
   PRIMARY = 1,
-  // 按钮置灰不透明度
+  // 按钮的透明度设置为灰色
   DISABLED = 0.6,
-  // 支付方式不可用导致的按钮不可用的不透明度
+  // 支付方式的不透明度
   PAYMENT_UNAVAILABLE = 0.38
 }
 
@@ -1040,7 +1034,7 @@ export struct PaymentItemComp {
 
   build() {
     Row() {
-      Image($r("app.media.payment_logo"))
+      Image($r('app.media.payment_logo'))
         .borderRadius(getBorderRadius(24))
         .width(24)
         .height(24)
@@ -1110,9 +1104,9 @@ export struct PaymentItemComp {
 ### Code block 10
 
 ```
-select(PaymentType: PaymentType) {
-  this.selectedPaymentType = PaymentType;
-  this.selectedPayTypeSerialNo = PaymentType.payTypeSerialNo || '';
+select(paymentType: PaymentType) {
+  this.selectedPaymentType = paymentType;
+  this.selectedPayTypeSerialNo = paymentType.payTypeSerialNo || '';
 }
 ```
 
@@ -1124,9 +1118,9 @@ buttonArea() {
   ConfirmButton({
     text: $r('app.string.kit_hwpay_checkout_confirm_pay'),
   })
-  .margin({
-    top: $r('sys.float.ohos_id_elements_margin_vertical_l'),
-  });
+    .margin({
+      top: $r('sys.float.ohos_id_elements_margin_vertical_l'),
+    });
 }
 ```
 
@@ -1188,25 +1182,27 @@ export struct ConfirmButton {
 ### Code block 13
 
 ```
-// 支付方式：PaymentType.ets
 export class PaymentType {
-  payTypeSerialNo?: string;
-  payTypeDesc?: string;
-  paymentTypeTip?: string;
-  isAvailable?: boolean;
-  custPayType: string = '';
-}
-
-// 支付类型枚举：CustPayType.ets
-export enum CustPayType {
-  NewBankCard = 'NewBankCard',
+  public payTypeSerialNo?: string;
+  public payTypeDesc?: string;
+  public paymentTypeTip?: string;
+  public isAvailable?: boolean;
+  public custPayType: string = '';
 }
 ```
 
 ### Code block 14
 
 ```
-import { PaymentType } from "./PaymentType";
+export enum CustPayType {
+  NewBankCard = 'NewBankCard',
+}
+```
+
+### Code block 15
+
+```
+import { PaymentType } from './PaymentType';
 
 export const paymentTypeList: PaymentType[] = [
   {
@@ -1239,11 +1235,11 @@ export const paymentTypes3PayShow: PaymentType[] = [
 ]
 ```
 
-### Code block 15
+### Code block 16
 
 ```
-import { CustPayType } from "../data/CustPayType";
-import { PaymentType } from "../data/PaymentType";
+import { CustPayType } from '../data/CustPayType';
+import { PaymentType } from '../data/PaymentType';
 
 /**
  * 支付工具是否是新卡
@@ -1263,7 +1259,7 @@ export const isNewCardPaymentType = (paymentType: PaymentType): boolean => {
  * @returns 图标圆角值
  */
 export const getBorderRadius = (length: number): number => {
-  // 正方形图标圆角值为：14 / 54 * 图标边长
+  // 根据图标边长计算圆角值
   return 7 / 27 * length;
 }
 ```

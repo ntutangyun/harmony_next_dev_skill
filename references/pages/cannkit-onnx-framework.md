@@ -95,7 +95,7 @@ namespace domi {
 
 完整样例请参考AddCustom算子实现和ONNX框架调用示例 。
 
-通过pytorch代码生成该自定义算子。
+通过python代码生成该自定义算子。
 
 import os
 import numpy as np

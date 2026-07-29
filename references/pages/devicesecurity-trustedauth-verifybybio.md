@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-本功能在API 24之前版本仅支持Phone；API24及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
+本功能在6.1.1(24)之前版本仅支持Phone；6.1.1(24)及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
 
 当前仅支持绑定一个指纹或人脸用于支付认证。
 
@@ -49,43 +49,57 @@ import { common } from '@kit.AbilityKit';
 
 调用数字盾交易信息处理接口procContentAuthentication发起生物特征认证前的交易信息确认申请。
 
-async function FaceAuthContent(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
+async FaceAuthContent(indata: string, challenge: Uint8Array,
+  assetName: string): Promise<trustedAuthentication.AuthToken> {
   try {
-    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-    const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
-    const reqParams:trustedAuthentication.AuthReqParams = {
+    let enrolledState = userAuth.getEnrolledState(userAuth.UserAuthType.FACE); // 获取系统人脸录入状态
+    hilog.info(0x0000, 'testTag',
+      `get current enrolled state success enrolledState = ${JSON.stringify(enrolledState)}`);
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray); // 实际填充为从服务器获取到的账号对应的credentialID值
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const reqParams: trustedAuthentication.AuthReqParams = {
       reqType: trustedAuthentication.AuthType.AUTH_TYPE_FACE,
-      authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1000000000"], // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
+      authContent: indata.split('\n') // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
     }
-    const buffer = fileData.buffer;
-    const label:trustedAuthentication.TUILable = {
-      image: buffer as ArrayBuffer,
-      title: "人脸交易认证",
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.FaceVerification').id)
     }
-    const result = await trustedAuthentication.procContentAuthentication(challenge, authID, reqParams, label);
+    const result = await trustedAuthentication.procContentAuthentication(challenge, credentialID, reqParams, label);
+    hilog.info(0x0000, 'testTag', 'Face Verification Success：', result.authToken);
     return result;
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to procContentAuthentication, code:${err.code}, message:${err.message}`);
-    throw new Error('Content verify by face failed:' + (err as BusinessError).message);
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'Face Verification Fail：', error);
+    throw new Error('Face Verification Fail：' + (error as BusinessError).message);
   }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-const authToken: trustedAuthentication.AuthToken = await FaceAuthContent(challenge, context);
 
 通过用户认证服务提供的接口，拉起生物特征认证控件并发起认证。
 
 当订阅的生物认证结果获取到后，将数字盾交易信息确认结果和生物特征认证结果统一整合，发起生物特征认证交易请求。
 
-let tuiAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤5获取的交易信息确认authToken
-let bioAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤6获取的生物特征认证authToken
-let operType = trustedAuthentication.OperateType.OPERATE_TYPE_CONTENT_AUTH;
-trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken).then((newBioAuthToken) => {
-  let authToken = newBioAuthToken.authToken as Uint8Array;
-});
+ try {
+   let session = await TrustedAuth.SignInit();
+   hilog.info(DOMAIN, 'testTag', 'Signature Initialization success');
+   let indata: string =
+     this.resourceManager.getStringSync($r('app.string.Recipient').id) + ':' + this.receiver + '\n' +
+     this.resourceManager.getStringSync($r('app.string.AccountNumber').id) + ':' + this.receiveAccount + '\n' +
+     this.resourceManager.getStringSync($r('app.string.TradingAmount').id) + ':' + this.tradingAmount; // 签名内容与步骤5通过TUI展示的交易信息一致
+   const tuiAuthToken: Uint8Array =
+     await TrustedAuth.GetTUIAuthTokenBeforeBioVerify(indata, session, TUI_CONTENT_FACE_VERIFY, 'pin_label1'); // 步骤5获取的交易信息确认authToken
+   let bioAuthToken: Uint8Array =
+     await TrustedAuth.UserAuthBeforeSign(session, TUI_CONTENT_FACE_VERIFY); // 步骤6获取的生物特征认证authToken
+   let operType = trustedAuthentication.OperateType.OPERATE_TYPE_CONTENT_AUTH;
+   let resignAuthToken =
+     await trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken);
+   await TrustedAuth.HuksSignAndVerify(indata, session, resignAuthToken.authToken) // 调用HUKS签名，实际使用时验签请通过服务器导出的证书完成。
+   // ...
+ } catch (error) {
+   hilog.error(DOMAIN, 'testTag', 'Face Verification Fail:', error);
+   // ...
+ }
 
 参考密钥管理服务提供的签名/验签指导, 对返回的authToken数据和交易信息明文进行签名，并结束签名会话。
 
@@ -109,41 +123,55 @@ import { common } from '@kit.AbilityKit';
 ### Code block 2
 
 ```
-async function FaceAuthContent(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
+async FaceAuthContent(indata: string, challenge: Uint8Array,
+  assetName: string): Promise<trustedAuthentication.AuthToken> {
   try {
-    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-    const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
-    const reqParams:trustedAuthentication.AuthReqParams = {
+    let enrolledState = userAuth.getEnrolledState(userAuth.UserAuthType.FACE); // 获取系统人脸录入状态
+    hilog.info(0x0000, 'testTag',
+      `get current enrolled state success enrolledState = ${JSON.stringify(enrolledState)}`);
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray); // 实际填充为从服务器获取到的账号对应的credentialID值
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const reqParams: trustedAuthentication.AuthReqParams = {
       reqType: trustedAuthentication.AuthType.AUTH_TYPE_FACE,
-      authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1000000000"], // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
+      authContent: indata.split('\n') // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
     }
-    const buffer = fileData.buffer;
-    const label:trustedAuthentication.TUILable = {
-      image: buffer as ArrayBuffer,
-      title: "人脸交易认证",
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.FaceVerification').id)
     }
-    const result = await trustedAuthentication.procContentAuthentication(challenge, authID, reqParams, label);
+    const result = await trustedAuthentication.procContentAuthentication(challenge, credentialID, reqParams, label);
+    hilog.info(0x0000, 'testTag', 'Face Verification Success：', result.authToken);
     return result;
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to procContentAuthentication, code:${err.code}, message:${err.message}`);
-    throw new Error('Content verify by face failed:' + (err as BusinessError).message);
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'Face Verification Fail：', error);
+    throw new Error('Face Verification Fail：' + (error as BusinessError).message);
   }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-const authToken: trustedAuthentication.AuthToken = await FaceAuthContent(challenge, context);
 ```
 
 ### Code block 3
 
 ```
-let tuiAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤5获取的交易信息确认authToken
-let bioAuthToken = new Uint8Array(1024); // 实际使用时请替换为步骤6获取的生物特征认证authToken
-let operType = trustedAuthentication.OperateType.OPERATE_TYPE_CONTENT_AUTH;
-trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken).then((newBioAuthToken) => {
-  let authToken = newBioAuthToken.authToken as Uint8Array;
-});
+ try {
+   let session = await TrustedAuth.SignInit();
+   hilog.info(DOMAIN, 'testTag', 'Signature Initialization success');
+   let indata: string =
+     this.resourceManager.getStringSync($r('app.string.Recipient').id) + ':' + this.receiver + '\n' +
+     this.resourceManager.getStringSync($r('app.string.AccountNumber').id) + ':' + this.receiveAccount + '\n' +
+     this.resourceManager.getStringSync($r('app.string.TradingAmount').id) + ':' + this.tradingAmount; // 签名内容与步骤5通过TUI展示的交易信息一致
+   const tuiAuthToken: Uint8Array =
+     await TrustedAuth.GetTUIAuthTokenBeforeBioVerify(indata, session, TUI_CONTENT_FACE_VERIFY, 'pin_label1'); // 步骤5获取的交易信息确认authToken
+   let bioAuthToken: Uint8Array =
+     await TrustedAuth.UserAuthBeforeSign(session, TUI_CONTENT_FACE_VERIFY); // 步骤6获取的生物特征认证authToken
+   let operType = trustedAuthentication.OperateType.OPERATE_TYPE_CONTENT_AUTH;
+   let resignAuthToken =
+     await trustedAuthentication.getBiometricAuthToken(operType, tuiAuthToken, bioAuthToken);
+   await TrustedAuth.HuksSignAndVerify(indata, session, resignAuthToken.authToken) // 调用HUKS签名，实际使用时验签请通过服务器导出的证书完成。
+   // ...
+ } catch (error) {
+   hilog.error(DOMAIN, 'testTag', 'Face Verification Fail:', error);
+   // ...
+ }
 ```

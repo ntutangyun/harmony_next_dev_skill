@@ -85,7 +85,7 @@ inline std::shared_ptr<ArkUIFlexNode> CreateFlexWrapExample()
 
 如果要将布局方向改为纵向，则可将direction改为ARKUI_FLEX_DIRECTION_COLUMN。此时代码结构保持不变，主轴和交叉轴上的摆放逻辑也保持一致。
 
-使用flexBasis和flexGrow分配剩余空间
+使用flexBasis、flexGrow和flexShrink控制伸缩行为
 
 Flex不仅能够控制子组件排列方向，还能够控制主轴上的剩余空间分配。通过flexBasis、flexGrow和flexShrink三个属性，可以控制子组件的在弹性容器下伸缩行为。
 

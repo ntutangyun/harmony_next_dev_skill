@@ -16,6 +16,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 操作步骤
 
+导入相关模块。
+
+import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
+import { request } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { GlobalContext } from '../common/GlobalContext';
+
+下载文件。
+
 调用StorageBucket.downloadFile接口创建下载任务，监听下载任务的progress、completed、failed等事件。
 
 启动下载任务。
@@ -26,50 +37,32 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 完整示例代码如下：
 
-import { cloudStorage } from '@kit.CloudFoundationKit';
-import { BusinessError, request } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { GlobalContext } from '../common/GlobalContext';
-
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
-
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 下载云侧文件至本地
-  download() {
-    // 获取云存储默认实例中fileName文件，保存至本地
-    storageBucket.downloadFile(GlobalContext.getContext(), {
-      localPath: `screenshot.jpg`, // 文件将会保存在context.cacheDir目录下
-      cloudPath: `screenshot/screenshot_20250115_155321.jpg`  // 云侧文件路径，支持传入“文件目录/文件名”，或仅传入文件名
-    }).then((task: request.agent.Task) => {
-      task.on('progress', (progress) => {
-        hilog.info(0x0000, 'testTag', `on progress ${JSON.stringify(progress)} `);
-      });
-      task.on('completed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on completed ${JSON.stringify(progress)} `);
-      });
-      task.on('failed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on failed ${JSON.stringify(progress)} `);
-      });
-      task.on('response', (response) => {
-        hilog.info(0x0000, 'testTag', `on response ${JSON.stringify(response)} `);
-      });
-      task.start((err: BusinessError) => {
-        if (err) {
-          hilog.error(0x0000, 'testTag',
-            `Failed to start a file download task, code: ${err.code}, message: ${err.message}`);
-        } else {
-          hilog.info(0x0000, 'testTag', `Succeeded in starting a file download task. result: ${task.tid}`);
-        }
-      });
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to download file, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+cloudStorage.bucket().downloadFile(GlobalContext.getContext(), {
+  localPath: `./${Date.now()}_` + UI.uploadFileName,
+  cloudPath: UI.uploadFileName
+})
+  .then((task: request.agent.Task) => {
+    task.on('progress', (progress) => {
+      hilog.info(0x0000, 'Storage', `on progress ${JSON.stringify(progress)} `);
+    });
+    task.on('completed', (progress) => {
+      hilog.info(0x0000, 'Storage', `on completed ${JSON.stringify(progress)} `);
+      UI.listDir(GlobalContext.getContext().cacheDir);
+    });
+    task.on('failed', (progress) => {
+      hilog.info(0x0000, 'Storage', `on failed ${JSON.stringify(progress)} `);
+    });
+    task.start((err: BusinessError) => {
+      if (err) {
+        hilog.error(0x0000, 'Storage',
+          `Failed to start the downloadFileWithTask task, code: ${err.code}, message: ${err.message}`);
+      } else {
+        hilog.info(0x0000, 'Storage', `Succeeded in starting a downloadFileWithTask task. result: ${task.tid}`);
+      }
+    });
+  }).catch((error: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to downloadFile code: ${error.code}, message: ${error.message}`);
+});
 
 说明
 
@@ -81,47 +74,40 @@ export struct testPage {
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
-import { BusinessError, request } from '@kit.BasicServicesKit';
+// ...
+import { request } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+```
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+### Code block 2
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 下载云侧文件至本地
-  download() {
-    // 获取云存储默认实例中fileName文件，保存至本地
-    storageBucket.downloadFile(GlobalContext.getContext(), {
-      localPath: `screenshot.jpg`, // 文件将会保存在context.cacheDir目录下
-      cloudPath: `screenshot/screenshot_20250115_155321.jpg`  // 云侧文件路径，支持传入“文件目录/文件名”，或仅传入文件名
-    }).then((task: request.agent.Task) => {
-      task.on('progress', (progress) => {
-        hilog.info(0x0000, 'testTag', `on progress ${JSON.stringify(progress)} `);
-      });
-      task.on('completed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on completed ${JSON.stringify(progress)} `);
-      });
-      task.on('failed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on failed ${JSON.stringify(progress)} `);
-      });
-      task.on('response', (response) => {
-        hilog.info(0x0000, 'testTag', `on response ${JSON.stringify(response)} `);
-      });
-      task.start((err: BusinessError) => {
-        if (err) {
-          hilog.error(0x0000, 'testTag',
-            `Failed to start a file download task, code: ${err.code}, message: ${err.message}`);
-        } else {
-          hilog.info(0x0000, 'testTag', `Succeeded in starting a file download task. result: ${task.tid}`);
-        }
-      });
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to download file, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+```
+cloudStorage.bucket().downloadFile(GlobalContext.getContext(), {
+  localPath: `./${Date.now()}_` + UI.uploadFileName,
+  cloudPath: UI.uploadFileName
+})
+  .then((task: request.agent.Task) => {
+    task.on('progress', (progress) => {
+      hilog.info(0x0000, 'Storage', `on progress ${JSON.stringify(progress)} `);
+    });
+    task.on('completed', (progress) => {
+      hilog.info(0x0000, 'Storage', `on completed ${JSON.stringify(progress)} `);
+      UI.listDir(GlobalContext.getContext().cacheDir);
+    });
+    task.on('failed', (progress) => {
+      hilog.info(0x0000, 'Storage', `on failed ${JSON.stringify(progress)} `);
+    });
+    task.start((err: BusinessError) => {
+      if (err) {
+        hilog.error(0x0000, 'Storage',
+          `Failed to start the downloadFileWithTask task, code: ${err.code}, message: ${err.message}`);
+      } else {
+        hilog.info(0x0000, 'Storage', `Succeeded in starting a downloadFileWithTask task. result: ${task.tid}`);
+      }
+    });
+  }).catch((error: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to downloadFile code: ${error.code}, message: ${error.message}`);
+});
 ```

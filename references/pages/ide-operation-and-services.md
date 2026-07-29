@@ -1,8 +1,8 @@
-# 运维服务
+# 运维分析
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-operation-and-services_
 
-DevEco Studio支持对应用崩溃、内存溢出、应用冻屏、资源泄漏等问题进行定位，以及对崩溃、卡顿、丢帧、能耗等异常进行数据分析。
+DevEco Studio支持对已发布上架的应用在使用过程中出现的崩溃、应用冻屏、OOM、资源泄漏等问题进行定位分析，以及查看崩溃、卡顿、丢帧、能耗等异常问题的趋势和分布情况。
 
 使用约束
 

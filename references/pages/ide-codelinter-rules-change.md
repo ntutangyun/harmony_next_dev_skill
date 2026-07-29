@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codelinter-rules-change_
 
+26.0.0.621
+
+新增规则
+
+@compatibility/deprecate-api-check
+
 26.0.0.461
 
 新增规则

@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/onlineauthentication-soter_
 
+SOTER旨在提供一套生物认证平台和标准，使得业务可以采用设备上的传感器（如人脸传感器/指纹传感器）进行安全、高效的免密登录、免密支付等操作，当前已广泛应用于微信小程序/公众号、指纹支付等业务场景。
+
 场景介绍
 
 用户可以利用生物特征来代替传统的密码验证，实现免密身份认证。
@@ -11,10 +13,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/onlineaut
 认证：提供移动端采用生物特征（指纹/3D人脸）进行SOTER免密身份认证的能力。
 
 注销：提供移动端注销SOTER生物特征（指纹/3D人脸）免密身份认证的能力。
-
-基本概念
-
-SOTER旨在提供一套生物认证平台和标准，使得业务可以采用设备上的传感器（如人脸传感器/指纹传感器）进行安全、高效的免密登录、免密支付等操作，当前已广泛应用于微信小程序/公众号、指纹支付等业务场景。
 
 相关权限
 
@@ -30,16 +28,19 @@ SOTER旨在提供一套生物认证平台和标准，使得业务可以采用设
 
 移动端设备需要支持生物特征（指纹/3D人脸），查询当前移动端设备是否支持ATL4级别的认证可信等级。
 
-import { BusinessError } from '@kit.BasicServicesKit';
+import { soter } from '@kit.OnlineAuthenticationKit';
 import { userAuth } from '@kit.UserAuthenticationKit';
-
-try {
-  // 示例，查询设备人脸识别是否支持ATL4级别的认证可信等级
-  userAuth.getAvailableStatus(userAuth.UserAuthType.FACE, userAuth.AuthTrustLevel.ATL4);
-  console.info('current auth trust level is supported');
-} catch (error) {
-  const err: BusinessError = error as BusinessError;
-  console.error(`current auth trust level is not supported. Code is ${err?.code}, message is ${err?.message}`);
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+function getAvailableStatus() {
+  try {
+    // 示例，查询设备人脸识别是否支持ATL4级别的认证可信等级
+    userAuth.getAvailableStatus(userAuth.UserAuthType.FACE, userAuth.AuthTrustLevel.ATL4);
+    console.info('current auth trust level is supported');
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`current auth trust level is not supported. Code is ${err?.code}, message is ${err?.message}`);
+  }
 }
 
 移动端设备使用此服务时需要处于联网状态。
@@ -65,6 +66,7 @@ deleteAuthKey(keyAlias: string): Promise<void>	删除认证密钥。
 
 import { soter } from '@kit.OnlineAuthenticationKit';
 import { userAuth } from '@kit.UserAuthenticationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 生成应用密钥和认证密钥用于后续的开通、认证流程。
 
@@ -74,11 +76,13 @@ let keyAlias: string = 'keyAlias'; // 开发者自定义密钥别名
 // 生成应用密钥
 try {
   let appSecureKey: Promise<Uint8Array> = soter.generateAppSecureKey(keyType);
+  // ...
 } catch (error) {
   const err = error as BusinessError;
   console.error(`Failed to generate app secure key. Code is ${err.code}, message is ${err.message}`);
+  // ...
 }
-// 生成AuthKey
+// 生成authKey
 try {
   let authKey: Promise<soter.SignedResult> = soter.generateAuthKey(keyAlias, keyType);
 } catch (error) {
@@ -119,8 +123,10 @@ try {
         let authResult: soter.SignedResult = soter.signWithAuthKeySync(keyAlias, authToken, info);
         console.info('Succeeded in doing authSyn authResult');
         // 开发者处理authResult
+        // ...
       } catch (err) {
         console.error(`Failed to signWithAuthKeySync. Code: ${err.code}, message: ${err.message}`);
+        // ...
       }
     }
   });
@@ -132,13 +138,14 @@ try {
 
 关闭免密认证时，删除认证密钥。
 
-// 删除AuthKey
 let keyAlias: string = 'keyAlias'; // 开发者自定义密钥别名
 try {
   soter.deleteAuthKey(keyAlias);
+  // ...
 } catch (error) {
   const err = error as BusinessError;
   console.error(`Failed to delete auth key. Code is ${err.code}, message is ${err.message}`);
+  // ...
 }
 
 ## Code blocks
@@ -146,16 +153,19 @@ try {
 ### Code block 1
 
 ```
-import { BusinessError } from '@kit.BasicServicesKit';
+import { soter } from '@kit.OnlineAuthenticationKit';
 import { userAuth } from '@kit.UserAuthenticationKit';
-
-try {
-  // 示例，查询设备人脸识别是否支持ATL4级别的认证可信等级
-  userAuth.getAvailableStatus(userAuth.UserAuthType.FACE, userAuth.AuthTrustLevel.ATL4);
-  console.info('current auth trust level is supported');
-} catch (error) {
-  const err: BusinessError = error as BusinessError;
-  console.error(`current auth trust level is not supported. Code is ${err?.code}, message is ${err?.message}`);
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+function getAvailableStatus() {
+  try {
+    // 示例，查询设备人脸识别是否支持ATL4级别的认证可信等级
+    userAuth.getAvailableStatus(userAuth.UserAuthType.FACE, userAuth.AuthTrustLevel.ATL4);
+    console.info('current auth trust level is supported');
+  } catch (error) {
+    const err: BusinessError = error as BusinessError;
+    console.error(`current auth trust level is not supported. Code is ${err?.code}, message is ${err?.message}`);
+  }
 }
 ```
 
@@ -164,6 +174,7 @@ try {
 ```
 import { soter } from '@kit.OnlineAuthenticationKit';
 import { userAuth } from '@kit.UserAuthenticationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 3
@@ -175,11 +186,13 @@ let keyAlias: string = 'keyAlias'; // 开发者自定义密钥别名
 // 生成应用密钥
 try {
   let appSecureKey: Promise<Uint8Array> = soter.generateAppSecureKey(keyType);
+  // ...
 } catch (error) {
   const err = error as BusinessError;
   console.error(`Failed to generate app secure key. Code is ${err.code}, message is ${err.message}`);
+  // ...
 }
-// 生成AuthKey
+// 生成authKey
 try {
   let authKey: Promise<soter.SignedResult> = soter.generateAuthKey(keyAlias, keyType);
 } catch (error) {
@@ -222,8 +235,10 @@ try {
         let authResult: soter.SignedResult = soter.signWithAuthKeySync(keyAlias, authToken, info);
         console.info('Succeeded in doing authSyn authResult');
         // 开发者处理authResult
+        // ...
       } catch (err) {
         console.error(`Failed to signWithAuthKeySync. Code: ${err.code}, message: ${err.message}`);
+        // ...
       }
     }
   });
@@ -237,12 +252,13 @@ try {
 ### Code block 5
 
 ```
-// 删除AuthKey
 let keyAlias: string = 'keyAlias'; // 开发者自定义密钥别名
 try {
   soter.deleteAuthKey(keyAlias);
+  // ...
 } catch (error) {
   const err = error as BusinessError;
   console.error(`Failed to delete auth key. Code is ${err.code}, message is ${err.message}`);
+  // ...
 }
 ```

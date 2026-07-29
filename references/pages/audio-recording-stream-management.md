@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-rec
 
 读取或监听应用内音频流状态变化
 
-参考使用AudioCapturer开发音频录制功能(ArkTs)或audio.createAudioCapturer，先完成AudioCapturer的创建，再通过以下两种方法查看音频流状态的变化。
+参考使用AudioCapturer开发音频录制功能(ArkTS)或audio.createAudioCapturer，先完成AudioCapturer的创建，再通过以下两种方法查看音频流状态的变化。
 
 方法1：直接查看AudioCapturer的属性state：
 
@@ -22,11 +22,29 @@ audioCapturer.on('stateChange', (capturerState: audio.AudioState) => {
   // ...
 });
 
-获取state后可对照AudioState来进行相应的操作，比如显示录制结束的提示等。
+获取state后可根据AudioState来进行相应的操作，比如显示录制结束的提示等。
 
 读取或监听所有录制流的变化
 
-如果部分应用需要查询获取所有音频流的变化信息，可以通过AudioStreamManager读取或监听所有音频流的变化。
+如果部分应用需要查询所有音频流的变化信息，可以通过AudioStreamManager读取或监听所有音频流的变化。
+
+[h2]判断麦克风是否被占用
+
+录音、语音识别、实时语音通话、短语音消息、直播连麦等业务在启动音频采集前，通常需要先判断麦克风是否被占用。若麦克风已被其他录制流占用，新录音流可能无法正常启动；或者在启动成功后，也可能在运行过程中受系统音频焦点或录音并发策略影响而被中断、进入静音录制状态，进而导致录音文件不完整、语音识别结果缺失等问题。
+
+可根据业务场景，任选其中一种方法进行判断：
+
+查询当前采集器和输入设备电平：如果需要主动查询当前是否有输入设备正在采集声音，可联合使用getCurrentAudioCapturerInfoArray和getMaxAmplitudeForInputDevice。先调用getCurrentAudioCapturerInfoArray获取当前音频采集器信息，再遍历每个采集器使用的输入设备并调用getMaxAmplitudeForInputDevice获取音频流最大电平值，取值范围为[0, 1]。当最大电平值大于0时，说明该设备采集到声音，设备正在录音，可判断麦克风正在被占用。
+
+判断指定录制请求是否可启动：如果需要在启动录音前判断指定音源类型的录制请求是否可以启动，可调用isRecordingAvailable，传入业务要使用的AudioCapturerInfo。如果返回true，表明可以使用麦克风进行录制；如果返回false，表明麦克风可能已被占用。示例代码可参考isRecordingAvailable。
+
+说明
+
+isRecordingAvailable用于判断指定录制请求是否可以启动，不返回当前录制流详情。
+
+getMaxAmplitudeForInputDevice需配合getCurrentAudioCapturerInfoArray使用，先获取音频采集器使用的输入设备信息，再查询对应设备的最大电平值。
+
+getCurrentAudioCapturerInfoArray返回的信息可能包含系统内部录制流。开发者可结合capturerInfo.source和业务场景，判断录制流是否属于当前业务需要识别的麦克风占用场景。
 
 如下为音频流管理调用关系图：
 
@@ -44,7 +62,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 let audioManager = audio.getAudioManager();
 let audioStreamManager = audioManager.getStreamManager();
 
-使用on('audioCapturerChange')监听音频录制流更改事件。 如果音频流监听应用需要在音频录制流状态变化、设备变化时获取通知，可以订阅该事件。
+使用on('audioCapturerChange')监听音频录制流变化事件。如果应用需要在音频录制流状态变化、设备变化时获取通知，可以订阅该事件。
 
 audioStreamManager.on('audioCapturerChange', (audioCapturerChangeInfoArray: audio.AudioCapturerChangeInfoArray) =>  {
   // ...
@@ -91,16 +109,14 @@ async function getCurrentAudioCapturerInfoArray(updateCallback?:
   await audioStreamManager.getCurrentAudioCapturerInfoArray()
     .then((audioCapturerChangeInfoArray: audio.AudioCapturerChangeInfoArray) => {
       console.info('getCurrentAudioCapturerInfoArray Get Promise Called');
-      let detailInfo = 'getCurrentAudioCapturerInfoArray Get Promise Called\n';
+      // ...
       if (audioCapturerChangeInfoArray != null) {
         for (let i = 0; i < audioCapturerChangeInfoArray.length; i++) {
           console.info(`StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}`);
           console.info(`Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}`);
           console.info(`Flag  ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}`);
 
-          detailInfo += `StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}\n`;
-          detailInfo += `Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}\n`;
-          detailInfo += `Flag ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}\n`;
+          // ...
 
           for (let j = 0; j < audioCapturerChangeInfoArray[i].deviceDescriptors.length; j++) {
             console.info(`Id: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].id}`);
@@ -115,18 +131,12 @@ async function getCurrentAudioCapturerInfoArray(updateCallback?:
           }
         }
       }
-      if (updateCallback) {
-        updateCallback(detailInfo, false);
-      }
+      // ...
     }).catch((err: BusinessError) => {
       console.error(`Invoke getCurrentAudioCapturerInfoArray failed, code is ${err.code}, message is ${err.message}`);
-      const errorMsg = `Invoke getCurrentAudioCapturerInfoArray failed, code is ${err.code}, message is ${err.message}`;
-      if (updateCallback) {
-        updateCallback(errorMsg, true);
-      }
+      // ...
     });
-  // 获取后取消监听
-  cancelListenAudioStreamManager();
+  // ...
 }
 
 ## Code blocks
@@ -203,16 +213,14 @@ async function getCurrentAudioCapturerInfoArray(updateCallback?:
   await audioStreamManager.getCurrentAudioCapturerInfoArray()
     .then((audioCapturerChangeInfoArray: audio.AudioCapturerChangeInfoArray) => {
       console.info('getCurrentAudioCapturerInfoArray Get Promise Called');
-      let detailInfo = 'getCurrentAudioCapturerInfoArray Get Promise Called\n';
+      // ...
       if (audioCapturerChangeInfoArray != null) {
         for (let i = 0; i < audioCapturerChangeInfoArray.length; i++) {
           console.info(`StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}`);
           console.info(`Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}`);
           console.info(`Flag  ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}`);
 
-          detailInfo += `StreamId for ${i} is: ${audioCapturerChangeInfoArray[i].streamId}\n`;
-          detailInfo += `Source for ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.source}\n`;
-          detailInfo += `Flag ${i} is: ${audioCapturerChangeInfoArray[i].capturerInfo.capturerFlags}\n`;
+          // ...
 
           for (let j = 0; j < audioCapturerChangeInfoArray[i].deviceDescriptors.length; j++) {
             console.info(`Id: ${i} : ${audioCapturerChangeInfoArray[i].deviceDescriptors[j].id}`);
@@ -227,17 +235,11 @@ async function getCurrentAudioCapturerInfoArray(updateCallback?:
           }
         }
       }
-      if (updateCallback) {
-        updateCallback(detailInfo, false);
-      }
+      // ...
     }).catch((err: BusinessError) => {
       console.error(`Invoke getCurrentAudioCapturerInfoArray failed, code is ${err.code}, message is ${err.message}`);
-      const errorMsg = `Invoke getCurrentAudioCapturerInfoArray failed, code is ${err.code}, message is ${err.message}`;
-      if (updateCallback) {
-        updateCallback(errorMsg, true);
-      }
+      // ...
     });
-  // 获取后取消监听
-  cancelListenAudioStreamManager();
+  // ...
 }
 ```

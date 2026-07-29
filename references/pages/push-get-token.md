@@ -69,12 +69,11 @@ export default class EntryAbility extends UIAbility {
     // 获取Push Token
     pushService.getToken().then(token => {
       hilog.info(DOMAIN, 'testTag', 'Succeeded in getting push token.');
+      // 将获取的Push Token上报至服务端
     }).catch((err: BusinessError) => {
       hilog.error(DOMAIN, 'testTag', 'Failed to get push token: %{public}d %{public}s', err.code, err.message);
     });
-    // 将获取的Push Token上报至服务端
   }
-
   // ...
 }
 
@@ -219,12 +218,11 @@ export default class EntryAbility extends UIAbility {
     // 获取Push Token
     pushService.getToken().then(token => {
       hilog.info(DOMAIN, 'testTag', 'Succeeded in getting push token.');
+      // 将获取的Push Token上报至服务端
     }).catch((err: BusinessError) => {
       hilog.error(DOMAIN, 'testTag', 'Failed to get push token: %{public}d %{public}s', err.code, err.message);
     });
-    // 将获取的Push Token上报至服务端
   }
-
   // ...
 }
 ```

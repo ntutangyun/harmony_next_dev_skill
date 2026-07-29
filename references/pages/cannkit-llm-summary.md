@@ -20,7 +20,7 @@ CANN硬件：基于NPU/GPU/CPU加速。
 
 硬件要求
 
-kirinx90平台。
+kirin X90平台。
 
 快速入门
 

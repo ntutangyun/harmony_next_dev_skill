@@ -67,7 +67,7 @@ Web组件支持对前端页面进行深色模式配置，可参考Web组件深�
 
 "自定义节点"适配
 
-自定义节点BuilderNode和ComponentContent需手动传递系统环境变化事件，触发节点的全量更新，详细请参考BuilderNode系统环境变化更新。
+自定义节点BuilderNode和ComponentContent需手动传递系统环境变化事件，触发节点的全量更新，详细请参考BuilderNode系统环境变化更新updateConfiguration。
 
 // 记录创建的自定义节点对象
 const builderNodeMap: BuilderNode<[Params]>[] = [];
@@ -155,7 +155,7 @@ onColorModeChange(): void {
 
 onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
   try {
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
   } catch (err) {
     hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
@@ -176,15 +176,19 @@ onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
 如果应用全部都是由系统组件/系统颜色开发，且想要跟随系统切换深浅色模式时，请参考以下示例修改代码来保证应用体验。
 
 onCreate(): void {
-  this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
-  AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
+  try {
+    this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+  } catch (e) {
+    hilog.error(DOMAIN, 'EntryAbility', `setColorMode failed, error: ${JSON.stringify(e)}`);
+  }
+  // ...
 }
 
 深浅色模式的使用建议与注意事项
 
 建议方法
 
-当应用跟随系统深色或浅色模式时，建议采用AbilityStage的监听回调或Ability的监听回调方式，主动监听系统深浅色模式变化。一旦颜色模式发生变化，应通过绑定状态变量等方法，执行特定的业务逻辑。
+当应用跟随系统深色或浅色模式时，建议采用AbilityStage的监听回调onConfigurationUpdate或Ability的监听回调onConfigurationUpdate方式，主动监听系统深浅色模式变化。一旦颜色模式发生变化，应通过绑定状态变量等方法，执行特定的业务逻辑。
 
 不推荐方法
 
@@ -236,7 +240,7 @@ HdsNavigation、HdsNavDestination、HdsTabs、HdsListItemCard四个高级组件�
 
 根据实时读取的深浅色模式返回不同资源值。
 
-开启深浅色切换优化选项后，可以采用AbilityStage的监听回调或Ability的监听回调方式，主动监听系统深浅色模式变化，更新对应文本的文字颜色，示例代码如下：
+开启深浅色切换优化选项后，可以采用AbilityStage的监听回调onConfigurationUpdate或Ability的监听回调onConfigurationUpdate方式，主动监听系统深浅色模式变化，更新对应文本的文字颜色，示例代码如下：
 
 // EntryAbility.ets
 import { Configuration, UIAbility } from '@kit.AbilityKit';
@@ -348,9 +352,9 @@ struct MainPage {
 
   colorModeChange() {
     if (this.mode % 2 === 0) {
-      return $r("app.color.color_light")
+      this.textColor = $r("app.color.color_light")
     } else {
-      return $r("app.color.color_night")
+      this.textColor = $r("app.color.color_night")
     }
   }
 
@@ -368,7 +372,7 @@ struct MainPage {
 
 利用反色能力快速适配深色模式
 
-从API version 20开始，对于有大量存量代码，之前已经通过资源配置模式或主题方式，实现部分深色模式适配。可使用系统提供的反色能力，快速实现全量深色模式适配。
+从API version 20开始，对于有大量存量代码，之前已经通过资源配置模式或主题WithTheme方式，实现部分深色模式适配。可使用系统提供的反色能力，快速实现全量深色模式适配。
 
 这种方式虽然管理上不如资源配置和主题方式精细可控，但适配工作量更低，应用包也不会因为大量的资源配置而膨胀，同时也能够带来一定程度上可以接受的视觉效果。
 
@@ -398,7 +402,7 @@ OH_ArkUI_SetForceDarkConfig接口仅支持CAPI接口，考虑到反色算法在�
 
 本示例展示OH_ArkUI_SetForceDarkConfig接口的基础使用方式，自定义反色算法根据开发者实际场景进行设置，便于深浅色切换时展示不同的颜色值。
 
-OH_ArkUI_SetForceDarkConfig(nullptr, true, ArkUI_NodeType::ARKUI_NODE_UNDEFINED, nullptr); // 对所有组件使用x系统默认反色算法，即三原色取反。
+OH_ArkUI_SetForceDarkConfig(nullptr, true, ArkUI_NodeType::ARKUI_NODE_UNDEFINED, nullptr); // 对所有组件使用系统默认反色算法，即三原色取反。
 
 // page1 ArkTs侧创建组件使用反色能力。
 // 前置已默认对所有组件使用默认反色算法，深浅色切换时会对文本的文字颜色进行反色，浅色模式下展示为黑色字体，深色模式下展示为白色字体。
@@ -573,7 +577,7 @@ onColorModeChange(): void {
 ```
 onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
   try {
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
   } catch (err) {
     hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
@@ -586,8 +590,12 @@ onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
 
 ```
 onCreate(): void {
-  this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
-  AppStorage.setOrCreate('currentColorMode', this.context.config.colorMode);
+  try {
+    this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+  } catch (e) {
+    hilog.error(DOMAIN, 'EntryAbility', `setColorMode failed, error: ${JSON.stringify(e)}`);
+  }
+  // ...
 }
 ```
 
@@ -742,9 +750,9 @@ struct MainPage {
 
   colorModeChange() {
     if (this.mode % 2 === 0) {
-      return $r("app.color.color_light")
+      this.textColor = $r("app.color.color_light")
     } else {
-      return $r("app.color.color_night")
+      this.textColor = $r("app.color.color_night")
     }
   }
 
@@ -764,7 +772,7 @@ struct MainPage {
 ### Code block 20
 
 ```
-OH_ArkUI_SetForceDarkConfig(nullptr, true, ArkUI_NodeType::ARKUI_NODE_UNDEFINED, nullptr); // 对所有组件使用x系统默认反色算法，即三原色取反。
+OH_ArkUI_SetForceDarkConfig(nullptr, true, ArkUI_NodeType::ARKUI_NODE_UNDEFINED, nullptr); // 对所有组件使用系统默认反色算法，即三原色取反。
 ```
 
 ### Code block 21

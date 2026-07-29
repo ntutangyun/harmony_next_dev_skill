@@ -18,30 +18,30 @@ Swiper作为一个容器组件，如果设置了自身尺寸属性，则在轮�
 
 loop为true
 
-  Swiper() {
-    Text('0')
-      .width('90%')
-      .height('100%')
-      .backgroundColor(Color.Gray)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
+Swiper() {
+  Text('0')
+    .width('90%')
+    .height('100%')
+    .backgroundColor(Color.Gray)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
 
-    Text('1')
-      .width('90%')
-      .height('100%')
-      .backgroundColor(Color.Green)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
+  Text('1')
+    .width('90%')
+    .height('100%')
+    .backgroundColor(Color.Green)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
 
-    Text('2')
-      .width('90%')
-      .height('100%')
-      .backgroundColor(Color.Pink)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-  }
-// ···
-  .loop(true)
+  Text('2')
+    .width('90%')
+    .height('100%')
+    .backgroundColor(Color.Pink)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+}
+// ...
+.loop(true)
 
 loop为false
 
@@ -98,7 +98,7 @@ Swiper() {
 
 自定义导航点样式
 
-选中的导航点，直径设为30vp，且颜色为蓝色；未选中的导航点，直径设为15vp，颜色设为红色。
+选中的导航点，宽度设为30vp且高度设为15vp，且颜色为蓝色；未选中的导航点，直径设为15vp，颜色设为红色。
 
   Swiper() {
     // ···
@@ -263,36 +263,35 @@ Swiper(
 
 Swiper支持在一个页面内同时显示多个子组件，通过displayCount属性设置。
 
-  Swiper() {
-    Text('0')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Gray)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-    Text('1')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Green)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-    Text('2')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Pink)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-    Text('3')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Yellow)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-  }
-// ···
-  .indicator(true)
-  .displayCount(2)
+Swiper() {
+  Text('0')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Gray)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+  Text('1')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Green)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+  Text('2')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Pink)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+  Text('3')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Yellow)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
 }
+// ...
+.indicator(true)
+.displayCount(2)
 
 自定义切换动画
 
@@ -458,7 +457,7 @@ export struct SwiperAndTabsLinkage {
             .width('100%')
 
             Swiper(this.swiperController) {
-              LazyForEach(this.swiperData, (item: string) => {
+              LazyForEach(this.swiperData, (item: number) => {
                 Text(item.toString())
                   .onAppear(()=>{
                     console.info('onAppear ' + item.toString());
@@ -471,7 +470,7 @@ export struct SwiperAndTabsLinkage {
                   .backgroundColor(0xAFEEEE)
                   .textAlign(TextAlign.Center)
                   .fontSize(30)
-              }, (item: string) => item)
+              }, (item: number) => item.toString())
             }
             .loop(false)
             .onSelected((index: number) => {
@@ -585,14 +584,14 @@ export struct SwiperIgnoreComponentSize {
               Swiper(
                 this.swiperController1
               ) {
-                LazyForEach(this.data1, (item: string) => {
+                LazyForEach(this.data1, (item: number) => {
                   Text(item.toString())
                     .width('90%')
                     .height(120)
                     .backgroundColor(0xAFEEEE)
                     .textAlign(TextAlign.Center)
                     .fontSize(30)
-                }, (item: string) => item)
+                }, (item: number) => item.toString())
               }
               .indicator(new DotIndicator()
                 .space(this.space)
@@ -738,30 +737,30 @@ export struct SwiperVisibleContentPosition {
 ### Code block 1
 
 ```
-  Swiper() {
-    Text('0')
-      .width('90%')
-      .height('100%')
-      .backgroundColor(Color.Gray)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
+Swiper() {
+  Text('0')
+    .width('90%')
+    .height('100%')
+    .backgroundColor(Color.Gray)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
 
-    Text('1')
-      .width('90%')
-      .height('100%')
-      .backgroundColor(Color.Green)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
+  Text('1')
+    .width('90%')
+    .height('100%')
+    .backgroundColor(Color.Green)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
 
-    Text('2')
-      .width('90%')
-      .height('100%')
-      .backgroundColor(Color.Pink)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-  }
-// ···
-  .loop(true)
+  Text('2')
+    .width('90%')
+    .height('100%')
+    .backgroundColor(Color.Pink)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+}
+// ...
+.loop(true)
 ```
 
 ### Code block 2
@@ -977,36 +976,35 @@ Swiper(
 ### Code block 11
 
 ```
-  Swiper() {
-    Text('0')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Gray)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-    Text('1')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Green)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-    Text('2')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Pink)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-    Text('3')
-      .width(250)
-      .height(250)
-      .backgroundColor(Color.Yellow)
-      .textAlign(TextAlign.Center)
-      .fontSize(30)
-  }
-// ···
-  .indicator(true)
-  .displayCount(2)
+Swiper() {
+  Text('0')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Gray)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+  Text('1')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Green)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+  Text('2')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Pink)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
+  Text('3')
+    .width(250)
+    .height(250)
+    .backgroundColor(Color.Yellow)
+    .textAlign(TextAlign.Center)
+    .fontSize(30)
 }
+// ...
+.indicator(true)
+.displayCount(2)
 ```
 
 ### Code block 12
@@ -1172,7 +1170,7 @@ export struct SwiperAndTabsLinkage {
             .width('100%')
 
             Swiper(this.swiperController) {
-              LazyForEach(this.swiperData, (item: string) => {
+              LazyForEach(this.swiperData, (item: number) => {
                 Text(item.toString())
                   .onAppear(()=>{
                     console.info('onAppear ' + item.toString());
@@ -1185,7 +1183,7 @@ export struct SwiperAndTabsLinkage {
                   .backgroundColor(0xAFEEEE)
                   .textAlign(TextAlign.Center)
                   .fontSize(30)
-              }, (item: string) => item)
+              }, (item: number) => item.toString())
             }
             .loop(false)
             .onSelected((index: number) => {
@@ -1301,14 +1299,14 @@ export struct SwiperIgnoreComponentSize {
               Swiper(
                 this.swiperController1
               ) {
-                LazyForEach(this.data1, (item: string) => {
+                LazyForEach(this.data1, (item: number) => {
                   Text(item.toString())
                     .width('90%')
                     .height(120)
                     .backgroundColor(0xAFEEEE)
                     .textAlign(TextAlign.Center)
                     .fontSize(30)
-                }, (item: string) => item)
+                }, (item: number) => item.toString())
               }
               .indicator(new DotIndicator()
                 .space(this.space)

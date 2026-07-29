@@ -10,7 +10,7 @@ Intents Kit支持开发者自定义意图，开发者可通过在其代码上添
 
 形式：动词+名词，采用驼峰命名，如CancelAlarm、CheckWeather、CreateReminder等。
 
-逻辑：意图名应直接描述该意图的操作行为，看到意图名称即可推测出意图功能，且避免使用模棱两可的词汇。例如，SwitchRoute本意是切换导航路线，但SwitchRoute也有切换路由的意思，可以改为SwitchNavigationRoute。
+逻辑：意图名应直接描述该意图的操作行为，看到意图名称即可推测出意图功能，且避免使用多义词。例如，SwitchToNavigationRoute明确表示切换导航路线，而SwitchRoute因为"Route"既有"路线"也有"路由"的意思，容易产生歧义，应使用更明确的命名。
 
 意图描述
 

@@ -44,7 +44,7 @@ import { common } from '@kit.AbilityKit';
 @Entry
 @Component
 struct Index{
-  bundleName: string = 'com.example.uidesignkit';
+  bundleName: string = 'com.example.uidesignsample';
   resManager: resourceManager.ResourceManager | undefined = undefined;
   layeredDrawableDescriptor: LayeredDrawableDescriptor | undefined = undefined;
   @State layeredIconsResult: Array<hdsDrawable.ProcessedIcon> = [];
@@ -85,7 +85,7 @@ struct Index{
               .margin(15)
             }
             .width('100%')
-          }, (item: string) => item.toString())
+          }, (item: hdsDrawable.ProcessedIcon) => item.toString())
       }
       .scrollBar(BarState.On)
       .height('60%')
@@ -131,7 +131,7 @@ struct Index{
       parallelNumber: 4
     };
 
-    let layeredIcons: Array<hdsDrawable.LayeredIcon> = [];
+    let layeredIcons: hdsDrawable.LayeredIcon[] = [];
     for (let i = 0; i < 10; i++) {
       layeredIcons.push({
         bundleName: `${this.bundleName}-${i}`,
@@ -188,7 +188,7 @@ import { common } from '@kit.AbilityKit';
 @Entry
 @Component
 struct Index{
-  bundleName: string = 'com.example.uidesignkit';
+  bundleName: string = 'com.example.uidesignsample';
   resManager: resourceManager.ResourceManager | undefined = undefined;
   layeredDrawableDescriptor: LayeredDrawableDescriptor | undefined = undefined;
   @State layeredIconsResult: Array<hdsDrawable.ProcessedIcon> = [];
@@ -229,7 +229,7 @@ struct Index{
               .margin(15)
             }
             .width('100%')
-          }, (item: string) => item.toString())
+          }, (item: hdsDrawable.ProcessedIcon) => item.toString())
       }
       .scrollBar(BarState.On)
       .height('60%')
@@ -275,7 +275,7 @@ struct Index{
       parallelNumber: 4
     };
 
-    let layeredIcons: Array<hdsDrawable.LayeredIcon> = [];
+    let layeredIcons: hdsDrawable.LayeredIcon[] = [];
     for (let i = 0; i < 10; i++) {
       layeredIcons.push({
         bundleName: `${this.bundleName}-${i}`,

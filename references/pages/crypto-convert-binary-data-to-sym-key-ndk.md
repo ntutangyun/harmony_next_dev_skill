@@ -61,7 +61,7 @@ OH_Crypto_ErrCode doTestDataCovertSymKey()
 
 获取HMAC二进制密钥，封装成Crypto_DataBlob。
 
-调用OH_CryptoSymKeyGenerator_Create，指定字符串参数'HMAC'，创建密钥算法为HMAC、密钥长度为[1, 32768]位的对称密钥生成器（OH_CryptoSymKeyGenerator）。
+调用OH_CryptoSymKeyGenerator_Create，指定字符串参数'HMAC'，创建密钥算法为HMAC的对称密钥生成器（OH_CryptoSymKeyGenerator），其支持生成的密钥长度为[1, 4096]字节。
 
 调用OH_CryptoSymKeyGenerator_Convert，根据指定的对称密钥二进制数据生成对称密钥对象（OH_CryptoSymKey）。
 

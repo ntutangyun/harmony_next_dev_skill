@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-c-get-plane-shape_
 
+本章节给出了关键开发步骤，完整代码可以参考示例代码。
+
 约束与限制
 
 从5.0.0(12)开始，识别目标形状能力支持部分Phone、部分Tablet设备。请参考硬件要求判断设备是否支持平面语义及物体语义特性（ARENGINE_FEATURE_TYPE_SEMANTIC）。
@@ -12,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 
 创建AR会话
 
-创建AR会话并配置为目标形状识别模式。
+创建AR会话并配置为物体语义识别模式。
 
 AREngine_ARSession *arSession = nullptr;
 // 创建AR会话。
@@ -20,7 +22,7 @@ HMS_AREngine_ARSession_Create(nullptr, nullptr, &arSession);
 AREngine_ARConfig *arConfig = nullptr;
 // 创建AR会话配置器。
 HMS_AREngine_ARConfig_Create(arSession, &arConfig);
-// 设置语义识别模式为目标形状识别。
+// 设置语义识别模式为物体语义识别。
 HMS_AREngine_ARConfig_SetSemanticMode(arSession, arConfig, ARENGINE_SEMANTIC_MODE_TARGET);
 // 配置器设置给AR会话。
 HMS_AREngine_ARSession_Configure(arSession, arConfig);
@@ -53,7 +55,7 @@ HMS_AREngine_ARTrackableList_GetSize(arSession, targetList, &targetSize);
 
 遍历并识别物体形状
 
-当环境中存在一个或多个可跟踪对象时，依次遍历targetList中所有可跟踪对象进行目标形状识别。
+当环境中存在一个或多个可跟踪对象时，依次遍历targetList中所有可跟踪对象进行物体语义识别。
 
 for (int i = 0; i < targetSize; ++i) {
     // 遍历可跟踪对象，进行形状识别。
@@ -95,7 +97,7 @@ HMS_AREngine_ARSession_Create(nullptr, nullptr, &arSession);
 AREngine_ARConfig *arConfig = nullptr;
 // 创建AR会话配置器。
 HMS_AREngine_ARConfig_Create(arSession, &arConfig);
-// 设置语义识别模式为目标形状识别。
+// 设置语义识别模式为物体语义识别。
 HMS_AREngine_ARConfig_SetSemanticMode(arSession, arConfig, ARENGINE_SEMANTIC_MODE_TARGET);
 // 配置器设置给AR会话。
 HMS_AREngine_ARSession_Configure(arSession, arConfig);

@@ -8,9 +8,7 @@ Allocation分析过程中提供多种数据筛选方式，方便开发者缩小�
 
 从DevEco Studio 6.0.2 Beta1版本开始，支持对Native Allocation泳道、Graphic Memory泳道的内存状态信息进行过滤。
 
-从DevEco Studio 6.1.0 Beta1版本开始，支持对All Heap & Anonymous VM泳道、All Heap泳道、All Anonymous VM泳道、System Resources泳道
-
-Graphic Memory泳道的内存状态信息进行过滤，便于开发者定位内存问题。
+从DevEco Studio 6.1.0 Beta1版本开始，支持对All Heap & Anonymous VM泳道、All Heap泳道、All Anonymous VM泳道、System Resources泳道、Graphic Memory泳道的内存状态信息进行过滤，便于开发者定位内存问题。
 
 在详情区域左下方的下拉框中，可以选择过滤内存状态：
 

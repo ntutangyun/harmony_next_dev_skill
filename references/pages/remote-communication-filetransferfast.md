@@ -19,7 +19,7 @@ import { fileIo } from '@kit.CoreFileKit';
 定义下载路径，并创建相关配置。如还需访问应用文件，可以参考应用文件。
 
 // 下载文件保存的文件夹路径，仅为示例，请按需求进行替换。
-const DOWNLOAD_TO_PATH = `/data/storage/el2/base/haps/entry/files`;
+const DOWNLOAD_TO_PATH = `/data/storage/el2/base/entry/temp/DownloadFilePath`;
 // 创建了一个安全配置对象，其中remoteValidation设置为'skip'，表示将跳过远程验证。
 const securityConfig: rcp.SecurityConfiguration = {
   remoteValidation: 'skip'
@@ -30,14 +30,14 @@ let downloadToFile: rcp.DownloadToFile = {
   kind: 'folder',
   path: DOWNLOAD_TO_PATH
 }
-
-// 创建一个HTTP会话，其中请求配置包括传输超时设置和安全配置（配置可自定义）
-const session = rcp.createSession({
-  requestConfiguration: {
-    transfer: { timeout: { connectMs: 6000, transferMs: 6000, inactivityMs: 6000 } },
-    security: securityConfig
-  }
-})
+// ...
+  // 创建一个HTTP会话，其中请求配置包括传输超时设置和安全配置（配置可自定义）
+  const session = rcp.createSession({
+    requestConfiguration: {
+      transfer: { timeout: { connectMs: 6000, transferMs: 6000, inactivityMs: 6000 } },
+      security: securityConfig
+    }
+  })
 
 检查目标路径是否存在，如果存在，则先删除该路径，以确保下载的文件不会覆盖已存在的文件；最后发起请求，使用创建的会话执行下载操作，将“https://example.com/test.png”这个URL的内容下载到指定的本地路径。如果下载成功，会输出成功信息；如果失败，会输出错误信息。
 
@@ -49,8 +49,10 @@ if (fileIo.accessSync(DOWNLOAD_TO_PATH)) {
 session.downloadToFile('https://example.com/test.png', downloadToFile)
   .then((response: rcp.Response) => {
     console.info(`Successfully received the response, statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
   }).catch((err: BusinessError) => {
   console.error(`Failed, the error code is ${err.code}, error data is ${err.data}`)
+  // ...
 })
 
 上传功能实现
@@ -73,7 +75,7 @@ let SESSION_CONFIG: rcp.SessionConfiguration = {
     security: {
       remoteValidation: 'skip',
       tlsOptions: {
-        tlsVersion: 'TlsV1.3'
+        tlsVersion: 'TlsV1.2'
       }
     }
   }
@@ -82,7 +84,7 @@ let SESSION_CONFIG: rcp.SessionConfiguration = {
 定义FdReadFile类，用于读取文件描述符（File Descriptor）指向的文件。read方法异步读取指定的ArrayBuffer缓冲区，并返回实际读取的字节数。
 
 class FdReadFile {
-  readonly fd: number;
+  public readonly fd: number;
 
   constructor(fd: number) {
     this.fd = fd;
@@ -96,9 +98,9 @@ class FdReadFile {
 创建会话并打开文件，以只读模式打开一个文件。fileIo.openSync方法返回一个文件描述符，如果打开失败，程序会打印错误信息并返回。
 
 const session = rcp.createSession(SESSION_CONFIG);
-const file = fileIo.openSync('/data/storage/el1/bundle/entry_test/resources/resfile/upload_file.txt',
+const file = fileIo.openSync('/data/storage/el1/bundle/entry/resources/resfile/upload_file.txt',
   fileIo.OpenMode.READ_ONLY);
-if (!file) {
+if (file === undefined) {
   console.error('fileIo.openSync failed');
   return;
 }
@@ -111,13 +113,16 @@ await fdReadFile.read(buffer);
 
 上传文件，使用会话的uploadFromFile方法将文件上传到指定的URL。UploadFromFile构造函数接受一个文件描述符读取文件。上传成功或失败时，会分别打印相应的信息。
 
+// 发起请求，执行上传操作，这里的'https://httpbin.org/anything'网址为示例网址
 session.uploadFromFile('https://httpbin.org/anything', new rcp.UploadFromFile(fdReadFile))
   .then((response: rcp.Response) => {
     console.info(`Upload succeeded: ${response}`)
+    // ...
   })
   .catch((err: BusinessError) => {
     console.error(`Upload failed: error code is ${err.code}, error data is ${err.data}`)
-  });
+    // ...
+  })
 
 关闭文件和会话，释放资源。
 
@@ -138,7 +143,7 @@ import { fileIo } from '@kit.CoreFileKit';
 
 ```
 // 下载文件保存的文件夹路径，仅为示例，请按需求进行替换。
-const DOWNLOAD_TO_PATH = `/data/storage/el2/base/haps/entry/files`;
+const DOWNLOAD_TO_PATH = `/data/storage/el2/base/entry/temp/DownloadFilePath`;
 // 创建了一个安全配置对象，其中remoteValidation设置为'skip'，表示将跳过远程验证。
 const securityConfig: rcp.SecurityConfiguration = {
   remoteValidation: 'skip'
@@ -149,14 +154,14 @@ let downloadToFile: rcp.DownloadToFile = {
   kind: 'folder',
   path: DOWNLOAD_TO_PATH
 }
-
-// 创建一个HTTP会话，其中请求配置包括传输超时设置和安全配置（配置可自定义）
-const session = rcp.createSession({
-  requestConfiguration: {
-    transfer: { timeout: { connectMs: 6000, transferMs: 6000, inactivityMs: 6000 } },
-    security: securityConfig
-  }
-})
+// ...
+  // 创建一个HTTP会话，其中请求配置包括传输超时设置和安全配置（配置可自定义）
+  const session = rcp.createSession({
+    requestConfiguration: {
+      transfer: { timeout: { connectMs: 6000, transferMs: 6000, inactivityMs: 6000 } },
+      security: securityConfig
+    }
+  })
 ```
 
 ### Code block 3
@@ -170,8 +175,10 @@ if (fileIo.accessSync(DOWNLOAD_TO_PATH)) {
 session.downloadToFile('https://example.com/test.png', downloadToFile)
   .then((response: rcp.Response) => {
     console.info(`Successfully received the response, statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
   }).catch((err: BusinessError) => {
   console.error(`Failed, the error code is ${err.code}, error data is ${err.data}`)
+  // ...
 })
 ```
 
@@ -196,7 +203,7 @@ let SESSION_CONFIG: rcp.SessionConfiguration = {
     security: {
       remoteValidation: 'skip',
       tlsOptions: {
-        tlsVersion: 'TlsV1.3'
+        tlsVersion: 'TlsV1.2'
       }
     }
   }
@@ -207,7 +214,7 @@ let SESSION_CONFIG: rcp.SessionConfiguration = {
 
 ```
 class FdReadFile {
-  readonly fd: number;
+  public readonly fd: number;
 
   constructor(fd: number) {
     this.fd = fd;
@@ -223,9 +230,9 @@ class FdReadFile {
 
 ```
 const session = rcp.createSession(SESSION_CONFIG);
-const file = fileIo.openSync('/data/storage/el1/bundle/entry_test/resources/resfile/upload_file.txt',
+const file = fileIo.openSync('/data/storage/el1/bundle/entry/resources/resfile/upload_file.txt',
   fileIo.OpenMode.READ_ONLY);
-if (!file) {
+if (file === undefined) {
   console.error('fileIo.openSync failed');
   return;
 }
@@ -242,13 +249,16 @@ await fdReadFile.read(buffer);
 ### Code block 9
 
 ```
+// 发起请求，执行上传操作，这里的'https://httpbin.org/anything'网址为示例网址
 session.uploadFromFile('https://httpbin.org/anything', new rcp.UploadFromFile(fdReadFile))
   .then((response: rcp.Response) => {
     console.info(`Upload succeeded: ${response}`)
+    // ...
   })
   .catch((err: BusinessError) => {
     console.error(`Upload failed: error code is ${err.code}, error data is ${err.data}`)
-  });
+    // ...
+  })
 ```
 
 ### Code block 10

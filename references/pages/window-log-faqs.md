@@ -195,6 +195,176 @@ WindowRect：确认窗口大小和位置
 
 hidumper命令需要在设备或模拟器上执行，开发者可以通过hdc shell连接设备后执行。hidumper输出的是实时窗口状态，可能随窗口操作而变化，建议在问题发生时立即执行查询以获取准确信息。
 
+WINDOW_FROZEN_DETECTION异常检测
+
+可能原因
+
+WINDOW_FROZEN_DETECTION是一个窗口伪冻屏检测事件。搭载HarmonyOS 7.0.0及以上版本的设备支持此检测事件。
+
+当未成功设置UIContent、布局异常等情形时会触发此事件，可为排查伪冻屏问题提供线索，但事件触发并不等同于伪冻屏已实际发生。常见的异常类型包括：SetUIContent timeout（窗口内容加载超时）、RectCheck err（窗口尺寸异常）等。
+
+[h2]定位窗口内容加载超时问题
+
+窗口创建后未在规定时间内（5秒）加载页面内容，导致窗口显示为透明或冻结状态。
+
+典型日志信息
+
+故障日志格式：
+
+MSG = SetUIContent timeout uid: [uid], windowName: [windowName], bundleName: [bundleName], abilityName: [abilityName]
+
+关键信息：
+
+uid：用户ID
+
+windowName：窗口名
+
+bundleName：包名
+
+abilityName：实例名
+
+检测逻辑
+
+系统在窗口创建时启动定时器监控页面加载过程。如果窗口创建后5秒内未调用loadContent()或setUIContent()加载页面内容，系统判定为异常并生成故障日志。
+
+说明
+
+系统的超时检测机制是为了保障用户体验，避免用户长时间看到空白窗口。开发者应重视此警告并及时修复。
+
+分析定位及解决
+
+排查步骤：
+
+是否在窗口创建后立即调用了loadContent()或setUIContent()。
+
+是否在页面加载和窗口显示之间有耗时操作。
+
+是否先调用showWindow()再调用loadContent()。
+
+页面路径是否正确。
+
+正反案例
+
+错误示例
+
+// 错误：创建窗口后未加载内容
+windowStage.createSubWindow('subWindow', (err, windowClass) => {
+    if (err.code) {
+        console.error('Failed to create sub window.');
+        return;
+    }
+    // 未调用loadContent加载页面
+    windowClass.showWindow(); // 直接显示窗口，导致透明窗
+});
+
+正确示例
+
+// 正确：创建窗口后立即加载内容
+windowStage.createSubWindow('subWindow', (err, windowClass) => {
+    if (err.code) {
+        console.error('Failed to create sub window.');
+        return;
+    }
+    // 立即加载页面内容
+    windowClass.loadContent('pages/SubWindowPage', (err) => {
+        if (err.code) {
+            console.error('Failed to load content.');
+            return;
+        }
+        // 内容加载成功后再显示窗口
+        windowClass.showWindow();
+    });
+});
+
+[h2]定位窗口尺寸异常问题
+
+窗口尺寸异常检测用于发现窗口尺寸超出合理范围的问题。当窗口设置的尺寸超过最大尺寸限制，或小于最小尺寸限制且小于屏幕尺寸时，系统会生成故障日志。
+
+典型日志信息
+
+故障日志格式：
+
+RectCheck err size cur persistentId: [persistentId], windowType: [windowType], windowName: [windowName], windowState: [windowState], curWidth: [curWidth], curHeight: [curHeight], minWidth: [minWidth], minHeight: [minHeight], screenWidth: [screenWidth], screenHeight: [screenHeight], maxFloatingWindowSize: [maxFloatingWindowSize], sessionRect: [sessionRect];
+
+字段含义：
+
+字段	含义	说明
+persistentId	窗口持久化ID	窗口的唯一标识，用于定位具体窗口
+windowName	窗口名称	应用设置的窗口名称
+windowType	窗口类型	窗口类型值（如应用主窗口、子窗口等）
+windowState	窗口状态	窗口当前状态（显示、隐藏等）
+curWidth	当前宽度（vp）	窗口当前实际宽度，单位为vp
+curHeight	当前高度（vp）	窗口当前实际高度，单位为vp
+minWidth	最小宽度限制（vp）	系统规定的最小宽度。该值等于未调用setWindowLimits()配置过WindowLimits时，getWindowLimitsVP()返回的最小宽度。
+minHeight	最小高度限制（vp）	系统规定的最小高度。该值等于未调用setWindowLimits()配置过WindowLimits时，getWindowLimitsVP()返回的最小高度。
+maxFloatingWindowSize	最大尺寸限制（vp）	系统规定的最大尺寸阈值。该值等于未调用setWindowLimits()配置过WindowLimits时，getWindowLimitsVP()返回的最大尺寸阈值。
+sessionRect	窗口矩形区域（px）	窗口的位置和尺寸，单位为px，坐标以屏幕左顶点为原点
+
+检测逻辑
+
+当窗口尺寸满足以下任一条件时触发异常：
+
+尺寸超过最大限制：curWidth > maxFloatingWindowSize 或 curHeight > maxFloatingWindowSize。
+
+尺寸小于最小限制且小于屏幕尺寸（非系统窗口类型）：curWidth < minWidth 且 curWidth < screenWidthVp，或 curHeight < minHeight 且 curHeight < screenHeightVp。
+
+说明
+
+screenWidthVp、screenHeightVp为屏幕尺寸的vp值，由系统内部根据故障日志中的screenWidth、screenHeight（px值）除以屏幕密度计算得到。故障日志中不直接输出这两个值，开发者可通过screenWidthVp = screenWidth / density自行计算。
+
+WINDOW_RECT_CHECK异常表示窗口尺寸不在系统规定的范围内。开发者应根据故障日志中的curWidth、curHeight值与系统限制对比，调整resize()调用时的尺寸参数。maxFloatingWindowSize为系统规定的最大尺寸阈值，窗口宽度和高度的最大限制均为此值，即窗口宽度应在[minWidth, maxFloatingWindowSize]范围内，窗口高度应在[minHeight, maxFloatingWindowSize]范围内。
+
+条件2需要同时满足"小于最小限制"和"小于屏幕尺寸"两个条件，原因如下：当窗口尺寸小于最小限制但已达到屏幕尺寸时（如curWidth < minWidth但curWidth >= screenWidthVp），说明屏幕尺寸本身较小，窗口已占满屏幕无法再增大，属于设备限制而非开发者设置问题，系统不会上报RectCheck err；只有当窗口尺寸同时小于最小限制和屏幕尺寸时，才说明开发者设置的窗口尺寸过小，可以设置更大的窗口，需要调整。
+
+分析定位及解决
+
+获取故障日志。通过DevEco Studio的FaultLog或hdc查看故障日志：
+
+hdc shell hilog | grep "RectCheck err"
+
+解析故障日志字段。从故障日志中提取关键信息：
+
+windowName：确认异常窗口名称
+
+curWidth、curHeight：查看当前异常尺寸值（vp）
+
+minWidth、minHeight、maxFloatingWindowSize：对比限制阈值（vp）
+
+screenWidth、screenHeight：对比屏幕尺寸（px，需转换为vp）
+
+判断异常类型。根据curWidth、curHeight与限制值、屏幕尺寸的对比：
+
+如果 curWidth > maxFloatingWindowSize 或 curHeight > maxFloatingWindowSize：窗口尺寸超过最大限制
+
+如果 curWidth < minWidth 且 curWidth < screenWidthVp：窗口宽度过小且小于屏幕宽度
+
+如果 curHeight < minHeight 且 curHeight < screenHeightVp：窗口高度过小且小于屏幕高度
+
+检查代码中resize()调用位置的尺寸参数。
+
+确认窗口模式切换时的尺寸计算逻辑。
+
+使用hidumper验证修复后的窗口状态。
+
+正反案例
+
+错误示例
+
+// 错误：窗口尺寸过小
+let windowClass = await windowStage.createSubWindow('subWindow');
+windowClass.resize(50, 50); // 尺寸小于最小限制，触发WINDOW_RECT_CHECK异常
+windowClass.showWindow();
+
+正确示例
+
+// 正确：先查询系统限制，再设置在规定范围内的尺寸
+let windowClass = await windowStage.createSubWindow('subWindow');
+// 通过getWindowLimits查询窗口尺寸限制范围
+let windowLimits = windowClass.getWindowLimits();
+// 确保设置的尺寸在[windowLimits.minWidth, windowLimits.maxWidth]和[windowLimits.minHeight, windowLimits.maxHeight]范围内
+windowClass.resize(720, 640);
+windowClass.showWindow();
+
 1300002错误码的定位指导
 
 错误码1300002表示窗口状态异常或窗口对象无效。
@@ -367,7 +537,7 @@ if (currWindow) {
     console.error('Window not found');
 }
 
-[h2]销毁未完成导致createSubWindow创建同名子窗失败
+[h2]销毁未完成导致createSubWindow创建同名子窗口失败
 
 开发者在createSubWindow()创建窗口对象后，使用destroyWindow()，在窗口还未销毁的情况下，再次调用createSubWindow()，且使用相同名称，导致窗口创建失败，报错1300002。
 
@@ -481,7 +651,7 @@ onPageHide() {
 
 错误码1300004表示无权限操作，常见于窗口类型与接口不匹配场景。
 
-[h2]子窗调用restore失败
+[h2]子窗口调用restore失败
 
 开发者对子窗口调用restore()接口，导致操作失败，报错1300004。
 
@@ -752,6 +922,80 @@ ParentWindowId: 0
 ### Code block 8
 
 ```
+MSG = SetUIContent timeout uid: [uid], windowName: [windowName], bundleName: [bundleName], abilityName: [abilityName]
+```
+
+### Code block 9
+
+```
+// 错误：创建窗口后未加载内容
+windowStage.createSubWindow('subWindow', (err, windowClass) => {
+    if (err.code) {
+        console.error('Failed to create sub window.');
+        return;
+    }
+    // 未调用loadContent加载页面
+    windowClass.showWindow(); // 直接显示窗口，导致透明窗
+});
+```
+
+### Code block 10
+
+```
+// 正确：创建窗口后立即加载内容
+windowStage.createSubWindow('subWindow', (err, windowClass) => {
+    if (err.code) {
+        console.error('Failed to create sub window.');
+        return;
+    }
+    // 立即加载页面内容
+    windowClass.loadContent('pages/SubWindowPage', (err) => {
+        if (err.code) {
+            console.error('Failed to load content.');
+            return;
+        }
+        // 内容加载成功后再显示窗口
+        windowClass.showWindow();
+    });
+});
+```
+
+### Code block 11
+
+```
+RectCheck err size cur persistentId: [persistentId], windowType: [windowType], windowName: [windowName], windowState: [windowState], curWidth: [curWidth], curHeight: [curHeight], minWidth: [minWidth], minHeight: [minHeight], screenWidth: [screenWidth], screenHeight: [screenHeight], maxFloatingWindowSize: [maxFloatingWindowSize], sessionRect: [sessionRect];
+```
+
+### Code block 12
+
+```
+hdc shell hilog | grep "RectCheck err"
+```
+
+### Code block 13
+
+```
+// 错误：窗口尺寸过小
+let windowClass = await windowStage.createSubWindow('subWindow');
+windowClass.resize(50, 50); // 尺寸小于最小限制，触发WINDOW_RECT_CHECK异常
+windowClass.showWindow();
+```
+
+### Code block 14
+
+```
+// 正确：先查询系统限制，再设置在规定范围内的尺寸
+let windowClass = await windowStage.createSubWindow('subWindow');
+// 通过getWindowLimits查询窗口尺寸限制范围
+let windowLimits = windowClass.getWindowLimits();
+// 确保设置的尺寸在[windowLimits.minWidth, windowLimits.maxWidth]和[windowLimits.minHeight, windowLimits.maxHeight]范围内
+windowClass.resize(720, 640);
+windowClass.showWindow();
+```
+
+### Code block 15
+
+```
 Error Name: Error
 Error Message: [window][getLastWindow]msg: xxx
 Error code: 1300002
@@ -760,7 +1004,7 @@ Stack trace:
   at MyComponent.onWindowStageDestroy (MyAbility.ts:50)
 ```
 
-### Code block 9
+### Code block 16
 
 ```
 // 错误：窗口创建时未加载页面，销毁流程中调用getLastWindow
@@ -776,7 +1020,7 @@ onWindowStageDestroy() {
 }
 ```
 
-### Code block 10
+### Code block 17
 
 ```
 // 正确：窗口创建时立即加载页面，销毁流程只做资源清理
@@ -791,19 +1035,19 @@ onWindowStageDestroy() {
 }
 ```
 
-### Code block 11
+### Code block 18
 
 ```
 hdc shell hilog | grep -i -E "1300002|setResizeByDragEnabled"
 ```
 
-### Code block 12
+### Code block 19
 
 ```
 SetResizeByDragEnabled: This is not main window or decor enabled sub window
 ```
 
-### Code block 13
+### Code block 20
 
 ```
 windowStage.createSubWindowWithOptions('mySubWindow', {
@@ -814,7 +1058,7 @@ windowStage.createSubWindowWithOptions('mySubWindow', {
 });
 ```
 
-### Code block 14
+### Code block 21
 
 ```
 let options: window.SubWindowOptions = {
@@ -831,7 +1075,7 @@ windowStage.createSubWindowWithOptions('mySubWindow', options).then((windowClass
 })
 ```
 
-### Code block 15
+### Code block 22
 
 ```
 Error Name: Error
@@ -842,19 +1086,19 @@ Stack trace:
   at MyComponent.onCreate (MyAbility.ts:50)
 ```
 
-### Code block 16
+### Code block 23
 
 ```
 grep -n "findWindow" src/**/*.ts
 ```
 
-### Code block 17
+### Code block 24
 
 ```
 hdc shell hidumper -s WindowManagerService -a '-a'
 ```
 
-### Code block 18
+### Code block 25
 
 ```
 // 错误：查找窗口时传入错误窗口名称
@@ -863,7 +1107,7 @@ const currWindow = window.findWindow("test_Window");
 currWindow.showWindow();
 ```
 
-### Code block 19
+### Code block 26
 
 ```
 // 正确：findWindow之后对获取到的对象进行空校验
@@ -875,26 +1119,26 @@ if (currWindow) {
 }
 ```
 
-### Code block 20
+### Code block 27
 
 ```
 WindowSessionCreateCheck: WindowName(TestSubWindow) already exists.
 Error code: 1300002
 ```
 
-### Code block 21
+### Code block 28
 
 ```
 grep -n "createSubWindow" src/**/*.ts
 ```
 
-### Code block 22
+### Code block 29
 
 ```
 hdc shell hidumper -s WindowManagerService -a '-a'
 ```
 
-### Code block 23
+### Code block 30
 
 ```
 let windowClass: window.Window | undefined = undefined;
@@ -906,7 +1150,7 @@ windowClass.destroyWindow();
 let newWindow = await windowStage.createSubWindow('mySubWindow'); // 此处可能会返回1300002错误
 ```
 
-### Code block 24
+### Code block 31
 
 ```
 // 正确：等待销毁完成后再创建
@@ -918,7 +1162,7 @@ await windowClass.destroyWindow();
 let newWindow = await windowStage.createSubWindow('mySubWindow');
 ```
 
-### Code block 25
+### Code block 32
 
 ```
 // 使用时间戳作为窗口名称的一部分，避免重名
@@ -926,7 +1170,7 @@ let windowName = 'mySubWindow_' + Date.now();
 let windowClass = await windowStage.createSubWindow(windowName);
 ```
 
-### Code block 26
+### Code block 33
 
 ```
 Error Name: Error
@@ -937,7 +1181,7 @@ Stack trace:
   at MyComponent.onWindowStageDestroy (MyAbility.ts:50)
 ```
 
-### Code block 27
+### Code block 34
 
 ```
 // 错误：在onWindowStageDestroy中调用off
@@ -946,7 +1190,7 @@ onWindowStageDestroy() {
 }
 ```
 
-### Code block 28
+### Code block 35
 
 ```
 // 取消监听时机：页面隐藏或卸载前（非销毁流程）
@@ -959,19 +1203,19 @@ onPageHide() {
 }
 ```
 
-### Code block 29
+### Code block 36
 
 ```
 BusinessError 1300004: Unauthorized operation. Possible cause: Invalid window Type.Only main windows are supported.
 ```
 
-### Code block 30
+### Code block 37
 
 ```
 hdc shell hidumper -s WindowManagerService -a '-a'
 ```
 
-### Code block 31
+### Code block 38
 
 ```
 Error Name: Error
@@ -982,13 +1226,13 @@ Stack trace:
   at MyComponent.onWindowStageCreate (MyAbility.ts:50)
 ```
 
-### Code block 32
+### Code block 39
 
 ```
 hdc shell hidumper -s WindowManagerService -a '-a'
 ```
 
-### Code block 33
+### Code block 40
 
 ```
 windowStage.createSubWindow('mySubWindow', (err: BusinessError, data) => {
@@ -1006,7 +1250,7 @@ windowStage.createSubWindow('mySubWindow', (err: BusinessError, data) => {
 });
 ```
 
-### Code block 34
+### Code block 41
 
 ```
 onWindowStageCreate(windowStage: window.WindowStage) {
@@ -1020,7 +1264,7 @@ onWindowStageCreate(windowStage: window.WindowStage) {
 }
 ```
 
-### Code block 35
+### Code block 42
 
 ```
 Error Name: Error
@@ -1028,7 +1272,7 @@ Error Message: [PiPWindow][stopPiP]msg: The window is not created or destroyed.
 Error code: 1300012
 ```
 
-### Code block 36
+### Code block 43
 
 ```
 // 错误：异步任务在窗口销毁后调用stopPiP()接口
@@ -1039,7 +1283,7 @@ stopPiPTimer() {
 }
 ```
 
-### Code block 37
+### Code block 44
 
 ```
 async stopPiPSafely(pipController: PiPController) {
@@ -1054,7 +1298,7 @@ async stopPiPSafely(pipController: PiPController) {
 }
 ```
 
-### Code block 38
+### Code block 45
 
 ```
 Error Name: Error
@@ -1062,7 +1306,7 @@ Error Message: [PiPWindow][startPiP]msg: The window is already started or is abo
 Error code: 1300012
 ```
 
-### Code block 39
+### Code block 46
 
 ```
 // 错误：异步任务在窗口已创建后调用startPiP()接口
@@ -1073,7 +1317,7 @@ startPiPTimer() {
 }
 ```
 
-### Code block 40
+### Code block 47
 
 ```
 async startPiPSafely(pipController: PiPController) {

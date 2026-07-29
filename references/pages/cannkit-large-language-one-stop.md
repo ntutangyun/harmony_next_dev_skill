@@ -90,7 +90,7 @@ dataset	extra_training_config	fp16	训练数据类型，仅支持fp16
 dataset	cutoff_len	128	激活量化样本序列长度。
 dataset	num_samples	256	激活量化校准样本数
 dataset	quant_param_2	False	- True：Kirin9020 - False：KirinX90
-dataset	embedding_separate	True	- True：单独保存为bin文件 - False: 导出embedding的量化参数到量化文件，合并形态。
+dataset	embedding_separate	True	- True：单独保存为bin文件 - False：导出embedding的量化参数到量化文件。
 dataset	lm_head_size:	-	可指定lmhead长度，硬件对齐。
 
 执行三段式量化
@@ -111,7 +111,7 @@ Quant_act_weight_eco   decode层策略
 Quant_lm_head          lm_head层策略
 Quant_Embed_MinMax     embedding层策略
 
-dopt_config.json文件手动修改量化策略配置后，再次执行该阶段，进行权重量化。
+手动修改dopt_config.json文件中的量化策略配置后，再次执行该阶段，进行权重量化。
 
  bash run.sh stage1
 

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-build
 
 DevEco Studio原先默认开启源码混淆功能，会对API 10及以上的Stage工程，且编译模式是release时，自动进行简单的源码混淆，仅对参数名和局部变量名进行混淆。
 
-从DevEco Studio NEXT Developer Beta3（5.0.3.600）版本开始，新建工程及模块默认关闭源码混淆功能，如果在模块级build-profile.json5配置文件中开启源码混淆，则混淆规则配置文件obfuscation-rules.txt中默认开启推荐的混淆规则，包含-enable-property-obfuscation、-enable-toplevel-obfuscation、-enable-filename-obfuscation、-enable-export-obfuscation四项混淆项，开发者可进一步在obfuscation-rules.txt文件中选择开启的混淆项，关于混淆项的介绍请查看混淆规则。
+从DevEco Studio NEXT Developer Beta3（5.0.3.600）版本开始，新建工程及模块默认关闭源码混淆功能，如果在模块级build-profile.json5配置文件中开启源码混淆，则混淆规则配置文件obfuscation-rules.txt中默认开启推荐的混淆规则，包含-enable-property-obfuscation、-enable-toplevel-obfuscation、-enable-filename-obfuscation、-enable-export-obfuscation四个混淆选项，开发者可进一步在obfuscation-rules.txt文件中选择开启的混淆选项，关于混淆选项的介绍请查看ArkGuard混淆配置选项。
 
 使用约束
 
@@ -21,7 +21,7 @@ DevEco Studio原先默认开启源码混淆功能，会对API 10及以上的Stag
 配置项	类型	是否必填	说明
 ruleOptions	对象	否	混淆规则配置。
 	enable	布尔值	是	是否启用源码混淆： true：启用。false（默认值）：不启用。 说明： 从DevEco Studio NEXT Developer Beta3（5.0.3.600）版本开始，默认值由true改为false。
-files	字符串数组	否	配置混淆规则文件的相对路径，默认使用obfuscation-rules.txt文件。文件中配置的混淆规则仅在本模块编译时生效（包含依赖代码）。 说明： 规则文件中支持配置所有混淆规则。支持配置多个文件，文件名称支持自定义，当存在多个混淆规则文件时，规则合并以及合并后的作用范围可参考混淆规则合并策略。
+files	字符串数组	否	配置混淆规则文件的相对路径，默认使用obfuscation-rules.txt文件。文件中配置的混淆规则仅在本模块编译时生效（包含依赖代码）。 说明： 规则文件中支持配置所有混淆规则，包括混淆选项和保留选项。支持配置多个文件，文件名称支持自定义，当存在多个混淆规则文件时，规则合并以及合并后的作用范围可参考混淆规则合并策略。
 consumerFiles	字符串/字符串数组	否	仅HAR/HSP模块可配置，配置传递给集成方的混淆规则文件的相对路径，支持配置多个文件，文件名称支持自定义。 说明： 为保证HAR/HSP模块可被正确集成使用，若有不希望被集成方混淆的内容，建议在规则文件中配置对应的保留选项，例如HAR/HSP模块中导出的变量或函数。 规则文件中配置的混淆选项会与集成方的混淆规则进行合并，进而影响集成方的编译混淆，因此，建议仅配置保留选项。从DevEco Studio 5.1.0 Release版本开始支持在HSP模块中配置该字段。
 
 使能混淆
@@ -203,7 +203,7 @@ consumerFiles	字符串/字符串数组	否	仅HAR/HSP模块可配置，配置�
 
 [h2]扫描任务
 
-以下是ObfuscationHelper的扫描任务，关于保留选项的原理介绍和排查场景请参考混淆规则。
+以下是ObfuscationHelper的扫描任务。
 
 属性混淆
 

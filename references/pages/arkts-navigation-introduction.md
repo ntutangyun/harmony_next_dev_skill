@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-nav
 
 基于组件属性动效和共享元素动效能力，将页面切换动效转换为组件属性动效实现，提供更加丰富和灵活的切换动效；
 
-开放了页面栈对象，开发者可以继承，能更好的管理页面显示。
+开放了页面栈对象，开发者可以继承，能更好地管理页面显示。
 
 能力对比
 
@@ -51,7 +51,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-nav
 geometryTransition共享元素动画	支持（NavDestination之间共享）。	不支持
 页面生命周期监听	UIObserver.on('navDestinationUpdate')	UIObserver.on('routerPageUpdate')
 获取页面栈对象	支持	不支持
-路由拦截	支持通过setInterception做路由拦截 。	不支持
+路由拦截	支持通过setInterception做路由拦截。	不支持
 路由栈信息查询	支持	getState()
 路由栈move操作	moveToTop & moveIndexToTop	不支持
 沉浸式页面	支持	不支持，需通过window配置。

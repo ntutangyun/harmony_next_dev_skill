@@ -136,6 +136,7 @@ struct ClusterOverlayDemo {
           clusterItem9,
           clusterItem10
         ]
+        // 为了演示大量点聚合的效果，添加了100个clusterItem1和10个clusterItem2
         for(let index = 0; index < 100; index++){
           array.push(clusterItem1)
         }
@@ -149,7 +150,7 @@ struct ClusterOverlayDemo {
         };
         try {
           // 调用addClusterOverlay生成聚合图层
-          await this.mapController.addClusterOverlay(clusterOverlayParams);
+          let clusterOverlay = await this.mapController.addClusterOverlay(clusterOverlayParams);
         } catch (e) {
           console.error(`code:${e.code}, message:${e.message}`);
         }
@@ -286,6 +287,7 @@ struct ClusterOverlayDemo {
           clusterItem9,
           clusterItem10
         ]
+        // 为了演示大量点聚合的效果，添加了100个clusterItem1和10个clusterItem2
         for(let index = 0; index < 100; index++){
           array.push(clusterItem1)
         }
@@ -299,7 +301,7 @@ struct ClusterOverlayDemo {
         };
         try {
           // 调用addClusterOverlay生成聚合图层
-          await this.mapController.addClusterOverlay(clusterOverlayParams);
+          let clusterOverlay = await this.mapController.addClusterOverlay(clusterOverlayParams);
         } catch (e) {
           console.error(`code:${e.code}, message:${e.message}`);
         }

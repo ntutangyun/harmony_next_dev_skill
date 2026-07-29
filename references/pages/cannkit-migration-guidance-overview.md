@@ -19,7 +19,7 @@ Kirin9030	3113
 
 差异点	影响和应对策略
 不支持GM操作使能L2 Cache	只影响性能、不影响功能。
-不支持原子操作	详见不支持开发者在GM完成Atomic操作。开发者需要在NPU片上的Buffer完成计算后，再使用基础API DataCopy将计算结果从NPU片上的Buffer搬到GM。
+不支持原子操作	不支持开发者在GM完成Atomic操作。开发者需要在NPU片上的Buffer完成计算后，再使用基础API DataCopy将计算结果从NPU片上的Buffer搬到GM。
 数据类型差异（不支持bfloat16_t、Cube计算不支持float、Mmad数据格式差异等）	建议替换成其它数据类型（如half），并根据本指南指导做数据转换。
 不支持AI Core核间同步特性	KirinX90/Kirin9030 AI处理器为单核耦合架构，软件兼容，等效为单核内部同步。开发者编程时，要避免对核数进行硬编码。
 不支持通信特性	不支持。

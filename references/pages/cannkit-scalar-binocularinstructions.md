@@ -36,8 +36,8 @@ private:
     {
         AscendC::LocalTensor<int16_t> srcLocal = inQueueSrc.DeQue<int16_t>();
         AscendC::LocalTensor<int16_t> dstLocal = outQueueDst.AllocTensor<int16_t>();
-        int16_t scalar = 2;
-        AscendC::Adds(dstLocal, srcLocal, scalar, 512);
+        **int16_t scalar = 2;**
+        **AscendC::Adds(dstLocal, srcLocal, scalar, 512);**
 
         outQueueDst.EnQue<int16_t>(dstLocal);
         inQueueSrc.FreeTensor(srcLocal);
@@ -94,8 +94,8 @@ private:
     {
         AscendC::LocalTensor<int16_t> srcLocal = inQueueSrc.DeQue<int16_t>();
         AscendC::LocalTensor<int16_t> dstLocal = outQueueDst.AllocTensor<int16_t>();
-        int16_t scalar = 2;
-        AscendC::Adds(dstLocal, srcLocal, scalar, 512);
+        **int16_t scalar = 2;**
+        **AscendC::Adds(dstLocal, srcLocal, scalar, 512);**
 
         outQueueDst.EnQue<int16_t>(dstLocal);
         inQueueSrc.FreeTensor(srcLocal);

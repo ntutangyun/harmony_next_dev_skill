@@ -13,8 +13,8 @@ JSON（JavaScript Object Notation）：是一种常见的数据交换格式，�
 接口说明
 
 接口	功能说明
-OH_JSVM_JsonParse	解析JSON字符串，并将结果存储在JSON对象。
-OH_JSVM_JsonStringify	将对象字符串化，并将结果存储在JSVM字符串对象。
+OH_JSVM_JsonParse	解析JSON字符串，并将结果存储在JSON对象中。
+OH_JSVM_JsonStringify	将对象字符串化，并将结果存储在JSVM字符串对象中。
 
 使用示例
 
@@ -25,9 +25,6 @@ JSVM-API接口开发流程参考使用JSVM-API实现JS与C/C++语言交互开发
 解析JSON对象，并输出有效的解析结果。
 
 cpp部分代码：
-
-// hello.cpp
-#include <string>
 
 // 解析JSON数字
 static JSVM_Value JsonParseNumber(JSVM_Env env, JSVM_CallbackInfo info)
@@ -77,12 +74,12 @@ static JSVM_CallbackStruct param[] = {
 static JSVM_CallbackStruct *method = param;
 
 JSVM_PropertyDescriptor descriptor[] = {
-    {"jsonParseNumber", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
-    {"jsonParseObject", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"jsonParseNumber", nullptr, method, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"jsonParseObject", nullptr, method + 1, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 
 // 待执行的js代码
-static const char *srcCallNative = R"JS(jsonParseNumber();jsonParseObject();)JS";
+static const char *STR_TASK = R"JS(jsonParseNumber();jsonParseObject();)JS";
 
 预期结果：
 
@@ -95,9 +92,6 @@ Test JSVM jsonParseObject: {"first":"one","second":"two","third":"three"}
 ### Code block 1
 
 ```
-// hello.cpp
-#include <string>
-
 // 解析JSON数字
 static JSVM_Value JsonParseNumber(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -146,12 +140,12 @@ static JSVM_CallbackStruct param[] = {
 static JSVM_CallbackStruct *method = param;
 
 JSVM_PropertyDescriptor descriptor[] = {
-    {"jsonParseNumber", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
-    {"jsonParseObject", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"jsonParseNumber", nullptr, method, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"jsonParseObject", nullptr, method + 1, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 
 // 待执行的js代码
-static const char *srcCallNative = R"JS(jsonParseNumber();jsonParseObject();)JS";
+static const char *STR_TASK = R"JS(jsonParseNumber();jsonParseObject();)JS";
 ```
 
 ### Code block 2

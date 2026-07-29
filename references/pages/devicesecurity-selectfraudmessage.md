@@ -27,7 +27,7 @@ Device Security Kit调用回调函数通知开发者应用，开发者应用根�
 以下是获取诈骗消息相关接口，更多接口及使用方法请参见API参考。
 
 接口名	描述
-selectFraudMessage(context: common.Context, options?: AntifraudMessageOptions): Promise<AntifraudMessageResult>	获取诈骗消息信息。
+selectFraudMessage(context: common.Context, options?: AntifraudMessageOptions): Promise<AntifraudCallLogResult>	获取诈骗消息信息。
 
 开发步骤
 
@@ -41,10 +41,10 @@ selectFraudMessage(context: common.Context, options?: AntifraudMessageOptions): 
 
 导入Device Security Kit模块及相关公共模块。
 
-import { antifraudPicker} from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common} from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import antifraudPicker from '@hms.security.antifraudPicker';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
 
 调用selectFraudMessage接口获取诈骗消息信息。
 
@@ -68,10 +68,10 @@ try {
 ### Code block 1
 
 ```
-import { antifraudPicker} from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common} from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import antifraudPicker from '@hms.security.antifraudPicker';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
 ```
 
 ### Code block 2

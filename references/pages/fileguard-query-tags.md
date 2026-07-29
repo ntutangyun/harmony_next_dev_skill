@@ -18,34 +18,51 @@ queryFileTag(path: string): Promise<FileTagInfo>	使用Promise方式获取文件
 
 导入模块。
 
-import { fileGuard } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 初始化FileGuard对象guard，调用接口queryFileTag，获取文件属性标签。
 
 通过回调函数方式，获取文件属性标签。
 
+const TAG: string = 'FileGuard_FileTag';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 获取文件属性标签。使用callback异步回调。
+ */
 function queryFileTagCallback() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/test/test.txt';
+  let path: string = '/data/service/el2/test/test1.txt';
   guard.queryFileTag(path, (err: BusinessError, data: fileGuard.FileTagInfo) => {
     if (err) {
-      console.error(`Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
+      hilog.error(DOMAIN, TAG, `Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
       return;
     }
-    console.info(`Succeeded in querying file tag.`);
+    hilog.info(DOMAIN, TAG,
+      `Succeeded in querying file tag. securityLevel: ${data.securityLevel}, tag: ${data.tag}.`);
   });
 }
 
 通过Promise方式，获取文件属性标签。
 
+const TAG: string = 'FileGuard_FileTag';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 获取文件属性标签。使用Promise异步回调。
+ */
 function queryFileTagPromise() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/test/test.txt';
+  let path: string = '/data/service/el2/test/test2.txt';
   guard.queryFileTag(path).then((data: fileGuard.FileTagInfo) => {
-    console.info(`Succeeded in querying file tag.`);
+    hilog.info(DOMAIN, TAG,
+      `Succeeded in querying file tag. securityLevel: ${data.securityLevel}, tag: ${data.tag}.`);
   }).catch((err: BusinessError) => {
-    console.error(`Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG, `Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
   });
 }
 
@@ -54,22 +71,31 @@ function queryFileTagPromise() {
 ### Code block 1
 
 ```
-import { fileGuard } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
+const TAG: string = 'FileGuard_FileTag';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 获取文件属性标签。使用callback异步回调。
+ */
 function queryFileTagCallback() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/test/test.txt';
+  let path: string = '/data/service/el2/test/test1.txt';
   guard.queryFileTag(path, (err: BusinessError, data: fileGuard.FileTagInfo) => {
     if (err) {
-      console.error(`Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
+      hilog.error(DOMAIN, TAG, `Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
       return;
     }
-    console.info(`Succeeded in querying file tag.`);
+    hilog.info(DOMAIN, TAG,
+      `Succeeded in querying file tag. securityLevel: ${data.securityLevel}, tag: ${data.tag}.`);
   });
 }
 ```
@@ -77,13 +103,21 @@ function queryFileTagCallback() {
 ### Code block 3
 
 ```
+const TAG: string = 'FileGuard_FileTag';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 获取文件属性标签。使用Promise异步回调。
+ */
 function queryFileTagPromise() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/test/test.txt';
+  let path: string = '/data/service/el2/test/test2.txt';
   guard.queryFileTag(path).then((data: fileGuard.FileTagInfo) => {
-    console.info(`Succeeded in querying file tag.`);
+    hilog.info(DOMAIN, TAG,
+      `Succeeded in querying file tag. securityLevel: ${data.securityLevel}, tag: ${data.tag}.`);
   }).catch((err: BusinessError) => {
-    console.error(`Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG, `Failed to query file tag. Code: ${err.code}, message: ${err.message}.`);
   });
 }
 ```

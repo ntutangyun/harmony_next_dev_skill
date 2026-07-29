@@ -267,9 +267,15 @@ struct Parent {
 
       Column({ space: 10 }) {
         // 使用if切换触发复用。
-        if (this.show[0]) CompA({ label: 'A1' })
-        if (this.show[1]) CompA({ label: 'A2' })
-        if (this.show[2]) CompA({ label: 'A3' })
+        if (this.show[0]) {
+          CompA({ label: 'A1' })
+        }
+        if (this.show[1]) {
+          CompA({ label: 'A2' })
+        }
+        if (this.show[2]) {
+          CompA({ label: 'A3' })
+        }
       }
     }
     .width('100%')
@@ -314,8 +320,8 @@ struct CompA {
       ReusableCompA({ value: 1 })
       ReusableCompA({ value: 2 })
     }
-      .border({ width: 1, color: Color.Gray })
-      .padding(5)
+    .border({ width: 1, color: Color.Gray })
+    .padding(5)
   }
 }
 
@@ -639,9 +645,13 @@ struct Index {
 
 启动（GlobalChild可见）：
 
-点击"检查GlobalChild"：count=0, maxCount=100（GlobalChild可见，不在池中）。
+点击"检查GlobalChild"后日志打印GlobalChild的复用池count是0，maxCount是默认值100：
 
-点击"检查LegacyComp"：count=0, maxCount=100（LegacyComp不可见，不在池中）。
+getReusableInfo(GlobalChild): count=0, maxCount=100
+
+点击"检查LegacyComp"后日志打印LegacyComp的复用池count是0，maxCount是默认值100：
+
+getReusableInfo(LegacyComp): count=0, maxCount=100
 
 切换到LegacyComp：
 
@@ -650,9 +660,9 @@ SubChild aboutToRecycle       // 和GlobalChild一起进入复用池
 LegacyComp aboutToAppear      // 全新创建
 ReusableChild aboutToAppear
 
-点击"检查GlobalChild"：count=1, maxCount=100（回收到池中）。
+点击"检查GlobalChild"后日志打印GlobalChild的复用池count是1，maxCount是默认值100，表示GlobalChild被全局复用池回收：
 
-点击"检查LegacyComp"：count=0, maxCount=100（可见，不在池中）。
+getReusableInfo(GlobalChild): count=1, maxCount=100
 
 切换回GlobalChild：
 
@@ -661,14 +671,18 @@ ReusableChild aboutToRecycle
 GlobalChild aboutToReuse      // 从池中复用
 SubChild aboutToReuse         // 和GlobalChild一起被复用
 
-点击"检查LegacyComp"：count=1, maxCount=100（现在回收到池中）。
+点击"检查LegacyComp"后日志打印LegacyComp的复用池count是1，maxCount是默认值100，表示LegacyComp被全局复用池回收：
+
+getReusableInfo(LegacyComp): count=1, maxCount=100
 
 点击设置复用池大小：
 
 LegacyComp aboutToDisappear
 ReusableChild aboutToRecycle
 
-再点击"检查LegacyComp": count=0, maxCount=0（复用池被手动清空了）
+点击"检查LegacyComp"后日志打印LegacyComp的复用池count是0，maxCount是0，表示复用池被手动清空：
+
+getReusableInfo(LegacyComp): count=0, maxCount=0
 
 [h2]使用reuseId控制缓存大小
 
@@ -949,7 +963,7 @@ struct Index {
   aboutToAppear() {
     // 获取池并调度预渲染。
     const pool = UIUtils.getCustomComponentContext(this).getReusePool();
-    pool!.preRender(new WrappedBuilder<[]>(preRenderBuilder.bind(this)), 1)
+    pool!.preRender(new WrappedBuilder<[]>(preRenderBuilder), 1)
       .then(() => {
         console.info('ReusableComponent preRender completes');
       });
@@ -1157,9 +1171,15 @@ struct Parent {
 
       Column({ space: 10 }) {
         // 使用if切换触发复用。
-        if (this.show[0]) CompA({ label: 'A1' })
-        if (this.show[1]) CompA({ label: 'A2' })
-        if (this.show[2]) CompA({ label: 'A3' })
+        if (this.show[0]) {
+          CompA({ label: 'A1' })
+        }
+        if (this.show[1]) {
+          CompA({ label: 'A2' })
+        }
+        if (this.show[2]) {
+          CompA({ label: 'A3' })
+        }
       }
     }
     .width('100%')
@@ -1204,8 +1224,8 @@ struct CompA {
       ReusableCompA({ value: 1 })
       ReusableCompA({ value: 2 })
     }
-      .border({ width: 1, color: Color.Gray })
-      .padding(5)
+    .border({ width: 1, color: Color.Gray })
+    .padding(5)
   }
 }
 ```
@@ -1541,13 +1561,31 @@ struct Index {
 ### Code block 12
 
 ```
+getReusableInfo(GlobalChild): count=0, maxCount=100
+```
+
+### Code block 13
+
+```
+getReusableInfo(LegacyComp): count=0, maxCount=100
+```
+
+### Code block 14
+
+```
 GlobalChild aboutToRecycle    // 进入池
 SubChild aboutToRecycle       // 和GlobalChild一起进入复用池
 LegacyComp aboutToAppear      // 全新创建
 ReusableChild aboutToAppear
 ```
 
-### Code block 13
+### Code block 15
+
+```
+getReusableInfo(GlobalChild): count=1, maxCount=100
+```
+
+### Code block 16
 
 ```
 LegacyComp aboutToRecycle
@@ -1556,14 +1594,26 @@ GlobalChild aboutToReuse      // 从池中复用
 SubChild aboutToReuse         // 和GlobalChild一起被复用
 ```
 
-### Code block 14
+### Code block 17
+
+```
+getReusableInfo(LegacyComp): count=1, maxCount=100
+```
+
+### Code block 18
 
 ```
 LegacyComp aboutToDisappear
 ReusableChild aboutToRecycle
 ```
 
-### Code block 15
+### Code block 19
+
+```
+getReusableInfo(LegacyComp): count=0, maxCount=0
+```
+
+### Code block 20
 
 ```
 import { UIUtils, IReusableInfo } from '@kit.ArkUI';
@@ -1661,7 +1711,7 @@ struct PoolOwner {
 }
 ```
 
-### Code block 16
+### Code block 21
 
 ```
   { count: 0, maxCount: 100, reuseId: undefined }  // 始终包含
@@ -1670,7 +1720,7 @@ struct PoolOwner {
   { count: 1, maxCount: 100, reuseId: 'C' }
 ```
 
-### Code block 17
+### Code block 22
 
 ```
   { count: 0, maxCount: 100, reuseId: undefined }
@@ -1679,7 +1729,7 @@ struct PoolOwner {
   { count: 1, maxCount: 100, reuseId: 'C' }
 ```
 
-### Code block 18
+### Code block 23
 
 ```
 @ReusableV2
@@ -1783,14 +1833,14 @@ struct ParentA {
 }
 ```
 
-### Code block 19
+### Code block 24
 
 ```
 ChildA aboutToRecycle / aboutToReuse         // EntryComp的池
 ReusableLeaf aboutToRecycle / aboutToReuse   // EntryComp的池
 ```
 
-### Code block 20
+### Code block 25
 
 ```
 ParentA aboutToAppear           // 新实例
@@ -1798,7 +1848,7 @@ ChildA aboutToReuse             // 从EntryComp的复用池中取出
 ReusableLeaf aboutToReuse       // 从EntryComp的复用池中取出
 ```
 
-### Code block 21
+### Code block 26
 
 ```
 import { UIUtils, IReusableInfo } from '@kit.ArkUI';
@@ -1835,7 +1885,7 @@ struct Index {
   aboutToAppear() {
     // 获取池并调度预渲染。
     const pool = UIUtils.getCustomComponentContext(this).getReusePool();
-    pool!.preRender(new WrappedBuilder<[]>(preRenderBuilder.bind(this)), 1)
+    pool!.preRender(new WrappedBuilder<[]>(preRenderBuilder), 1)
       .then(() => {
         console.info('ReusableComponent preRender completes');
       });
@@ -1880,25 +1930,25 @@ struct CompA {
 }
 ```
 
-### Code block 22
+### Code block 27
 
 ```
 ReusableComponent preRender completes
 ```
 
-### Code block 23
+### Code block 28
 
 ```
 ReusableComponent reuse pool count=1
 ```
 
-### Code block 24
+### Code block 29
 
 ```
 ReusableComponent aboutToAppear
 ```
 
-### Code block 25
+### Code block 30
 
 ```
 ReusableComponent reuse pool count=0

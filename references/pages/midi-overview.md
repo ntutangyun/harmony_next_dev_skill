@@ -68,7 +68,7 @@ MIDI端口是设备上的数据传输端点，分为输入端口和输出端口�
 
 输出端口（Output Port）：用于向设备发送MIDI数据。通过OH_MIDIDevice_OpenOutputPort接口打开输出端口后，使用OH_MIDIDevice_Send接口发送UMP格式消息。
 
-数据流向说明：应用向MIDI设备发送数据，同时调用OH_MIDIDevice_Send接口发送MIDI消息。
+数据流向说明：应用调用OH_MIDIDevice_Send接口向MIDI设备发送数据。
 
 [应用] <--接收-- [输入端口] <-- [设备]
 [应用] --发送--> [输出端口] --> [设备]
@@ -99,14 +99,21 @@ UMP格式通过消息类型（Message Type）区分不同消息。MT是UMP数据
 
 MT值	名称	大小（bit）	说明
 0x0	Utility Messages	32	实用消息，如JR时间戳。
-0x1	System Common & Real-Time	32	系统公共消息和实时消息。
-0x2	MIDI 1.0 Channel Voice	32	MIDI 1.0通道声音消息，兼容现有设备。
-0x3	Data Messages	64	数据消息，如SysEx（7位有效载荷）。
-0x4	MIDI 2.0 Channel Voice	64	MIDI 2.0高分辨率Channel Voice消息。
-0x5	Extended Data Messages	128	扩展数据消息。
-0x6-0xD	Reserved	-	保留供未来使用。
-0xE	Flex Data	128	Flex Data灵活数据消息，如文本、歌词。
-0xF	Stream Messages	128	UMP流消息，如端点发现、功能块配置。
+0x1	System Real Time and System Common Messages	32	系统实时消息和系统公共消息（不含System Exclusive）。
+0x2	MIDI 1.0 Channel Voice Messages	32	MIDI 1.0通道声音消息，兼容现有设备。
+0x3	Data Messages	64	数据消息，如SysEx（包含System Exclusive）。
+0x4	MIDI 2.0 Channel Voice Messages	64	MIDI 2.0高分辨率Channel Voice消息。
+0x5	Data Messages	128	数据消息。
+0x6	Reserved	32	保留供未来使用。
+0x7	Reserved	32	保留供未来使用。
+0x8	Reserved	64	保留供未来使用。
+0x9	Reserved	64	保留供未来使用。
+0xA	Reserved	64	保留供未来使用。
+0xB	Reserved	96	保留供未来使用。
+0xC	Reserved	96	保留供未来使用。
+0xD	Flex Data Messages	128	Flex Data灵活数据消息，如文本、歌词。
+0xE	Reserved	128	保留供未来使用。
+0xF	UMP Stream Messages	128	UMP流消息，如端点发现、功能块配置。
 
 注意
 
@@ -119,7 +126,7 @@ MT值	名称	大小（bit）	说明
 术语	全称	说明
 UMP	Universal MIDI Packet	通用MIDI数据包，32位对齐的统一容器格式。
 MT	Message Type	消息类型，UMP数据包最高4位，决定消息功能和大小。
-SysEx	System Exclusive	系统专有消息，用于厂商自定义数据传输。
+SysEx	System Exclusive	系统独占消息，用于厂商自定义数据传输。
 JR	Jitter Reduction	抖动消除，网络/蓝牙传输时的时间戳同步机制。
 Channel Voice	通道声音消息	控制音符、力度、控制器等的核心消息类型。
 Flex Data	灵活数据	MIDI 2.0新增，支持文本、歌词等128位长消息。

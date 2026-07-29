@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 
 Hvigor客户端发送Daemon构建信息，如命令行参数、工程目录和环境变量等，以便于运行构建。客户端和守护进程之间的通信通过本地套接字进行连接，正在运行的守护进程最多开启8个，状态为非停止或中断的守护进程最多开启6个。
 
-启用禁用守护进程
+启用或关闭守护进程
 
 Hvigor默认启用守护进程，您也可以通过以下几种方式来控制是否启用守护进程：
 
@@ -19,13 +19,13 @@ hvigorw <task> --daemon
 // 关闭守护进程
 hvigorw <task> --no-daemon
 
-在hvigor-config.json5中配置execution.daemon选项。
+在hvigor-config.json5中配置daemon选项。
 
 设置守护进程内存
 
-守护进程最大的老生代内存默认是8192MB，对绝大多数构建来说已经足够了。如果您想自定义守护进程最大的老生代内存，可以通过以下两种方式修改，建议您参考本地剩余内存进行调整设置。其中命令行方式优先级高于hvigor-config.json5配置文件。
+守护进程最大的老生代内存默认是8192MB，对绝大多数构建来说已经足够了。如果您想自定义守护进程最大的老生代内存，可以通过以下两种方式修改，建议您参考本地剩余内存进行调整设置，其中命令行方式优先级高于hvigor-config.json5配置文件。
 
-修改hvigor-config.json5文件中的nodeOptions.maxOldSpaceSize配置。
+修改hvigor-config.json5文件中的maxOldSpaceSize配置。
 
 hvigorw assembleHap --max-old-space-size=12345
 
@@ -33,9 +33,17 @@ hvigorw assembleHap --max-old-space-size=12345
 
 该功能从DevEco Studio 5.1.0 Release版本开始支持。
 
-修改hvigor-config.json5文件中的nodeOptions.maxSemiSpaceSize配置。
+修改hvigor-config.json5文件中的maxSemiSpaceSize配置。
 
 hvigorw assembleHap --max-semi-space-size=32
+
+设置守护进程最大空闲时长
+
+守护进程最大空闲时长默认是3小时，从最后一次构建任务完成开始计算，超过3小时则守护进程退出。从26.0.0 Beta2版本开始，支持自定义守护进程最大空闲时长，可以通过以下两种方式修改，其中命令行方式优先级高于hvigor-config.json5配置文件。
+
+修改hvigor-config.json5文件中的hvigor.daemon.idleTimeout配置。
+
+hvigorw assembleHap -c properties.hvigor.daemon.idleTimeout=10800000
 
 检查守护进程状态
 
@@ -98,10 +106,16 @@ hvigorw assembleHap --max-semi-space-size=32
 ### Code block 4
 
 ```
-hvigorw --status-daemon
+hvigorw assembleHap -c properties.hvigor.daemon.idleTimeout=10800000
 ```
 
 ### Code block 5
+
+```
+hvigorw --status-daemon
+```
+
+### Code block 6
 
 ```
 > hvigor PID    STATUS  PORT    ROOT_PATH
@@ -109,13 +123,13 @@ hvigorw --status-daemon
 > hvigor 18836  stopped 45000   D:\Demo2
 ```
 
-### Code block 6
+### Code block 7
 
 ```
 hvigorw --stop-daemon
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 hvigorw --stop-daemon-all

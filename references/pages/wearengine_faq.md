@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wearengin
 
 如果工程已有APP ID，是否需要重新申请，填写新的APP ID
 
-使用AppInfo时，如何获取应用身份标识
+如何获取应用指纹
 
 没有弹出用户授权界面
 

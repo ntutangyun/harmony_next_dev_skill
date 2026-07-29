@@ -41,9 +41,9 @@ OH_HiCollie_Init_StuckDetection日志规格，请参考主线程超时事件日�
 
 开发步骤
 
-下文将展示如何在应用内增加一个按钮，并单击该按钮以调用HiCollie Ndk接口。
+下文将展示如何在应用内增加一个按钮，并单击该按钮以调用HiCollie NDK接口。
 
-新建Native C++工程，目录结构如下：
+在DevEco Studio中，新建Native C++工程，目录结构如下：
 
 entry:
   src:
@@ -60,12 +60,12 @@ entry:
         pages:
           - Index.ets
 
-编辑“CMakeLists.txt”文件，添加源文件及动态库：
+编辑工程中的“entry > src > main > cpp > CMakeLists.txt”文件，添加源文件及动态库：
 
 # 新增动态库依赖libhilog_ndk.z.so(日志输出)
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohhicollie.so)
 
-编辑“napi_init.cpp”文件，导入依赖的文件，定义LOG_TAG，下述代码步骤用于模拟卡死卡顿场景，具体使用请结合业务需要。示例代码如下：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，导入依赖的文件，定义LOG_TAG，下述代码步骤用于模拟卡死卡顿场景，具体使用请结合业务需要。示例代码如下：
 
 从API version 12开始，支持应用线程卡顿检测：OH_HiCollie_Init_JankDetection，示例代码如下：
 
@@ -548,31 +548,31 @@ extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
     napi_module_register(&demoModule);
 }
 
-将TestHiCollieNdk注册为ArkTS接口。
+编辑工程中的“entry > src > main > cpp > types > libentry > Index.ets”文件，定义ArkTS接口。
 
-OH_HiCollie_Init_JankDetection示例，编辑“index.d.ts”文件，定义ArkTS接口：
+OH_HiCollie_Init_JankDetection示例：
 
 export const testHiCollieJankNdk: () => void;
 
-OH_HiCollie_Init_StuckDetection示例，编辑“index.d.ts”文件，定义ArkTS接口：
+OH_HiCollie_Init_StuckDetection示例：
 
 export const testHiCollieStuckNdk: () => void;
 
-OH_HiCollie_Init_StuckDetectionWithTimeout示例，编辑“index.d.ts”文件，定义ArkTS接口：
+OH_HiCollie_Init_StuckDetectionWithTimeout示例：
 
 export const testHiCollieStuckWithTimeoutNdk: () => void;
 
-OH_HiCollie_ReportInputBlock示例，编辑“index.d.ts”文件，定义ArkTS接口：
+OH_HiCollie_ReportInputBlock示例：
 
 export const testHiCollieStuckNdk: () => void;
 export const testHiCollieInputBlock: () => void;
 
-OH_HiCollie_SetFreezeCallbac、OH_HiCollie_AssociateProcessReport示例，编辑“index.d.ts”文件，定义ArkTS接口：
+OH_HiCollie_SetFreezeCallback、OH_HiCollie_AssociateProcessReport示例：
 
 export const testHiCollieSetFreezeCallback: () => void;
 export const testHiCollieAssociateProcessReport: () => void;
 
-编辑“Index.ets”文件：
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件：
 
 import testNapi from 'libentry.so'
 

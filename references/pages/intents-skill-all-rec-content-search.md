@@ -60,7 +60,7 @@ struct Index {
           .onClick(() => {
             let playMusicIntent: insightIntent.InsightIntent = {
               intentName: 'PlayMusic',
-              intentVersion: '1.0',
+              intentVersion: '1.0.1',
               identifier: '52dac3b0-6520-4974-81e5-25f0879449b5',
               intentActionInfo: {
                 actionMode: 'EXECUTED',
@@ -249,7 +249,7 @@ struct Index {
           .onClick(() => {
             let playMusicIntent: insightIntent.InsightIntent = {
               intentName: 'PlayMusic',
-              intentVersion: '1.0',
+              intentVersion: '1.0.1',
               identifier: '52dac3b0-6520-4974-81e5-25f0879449b5',
               intentActionInfo: {
                 actionMode: 'EXECUTED',

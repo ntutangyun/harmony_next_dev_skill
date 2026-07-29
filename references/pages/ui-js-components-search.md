@@ -203,7 +203,7 @@ export default {
   },
   change(e) {
     promptAction.showToast({
-      message: '内容:' + e.text,
+      message: '内容:' + e.value,
       duration: 2000
     })
   }
@@ -437,7 +437,7 @@ export default {
   },
   change(e) {
     promptAction.showToast({
-      message: '内容:' + e.text,
+      message: '内容:' + e.value,
       duration: 2000
     })
   }

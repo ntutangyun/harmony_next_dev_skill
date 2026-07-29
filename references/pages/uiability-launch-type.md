@@ -36,7 +36,7 @@ singleton启动模式为单实例模式，也是默认情况下的启动模式�
       {
         "launchType": "singleton",
         // ···
-      }
+      },
     // ···
     ]
   }
@@ -58,7 +58,7 @@ multiton启动模式的开发使用，在module.json5配置文件中的launchTyp
       {
         "launchType": "multiton",
         // ···
-      }
+      },
     // ···
     ]
   }
@@ -91,7 +91,7 @@ EntryAbility调用startAbility()方法，并在Want的parameters字段中设置�
       {
         "launchType": "specified",
         // ···
-      }
+      },
     // ···
     ]
   }
@@ -230,7 +230,7 @@ UIAbility的启动方式
       {
         "launchType": "singleton",
         // ···
-      }
+      },
     // ···
     ]
   }
@@ -248,7 +248,7 @@ UIAbility的启动方式
       {
         "launchType": "multiton",
         // ···
-      }
+      },
     // ···
     ]
   }
@@ -265,7 +265,7 @@ UIAbility的启动方式
       {
         "launchType": "specified",
         // ···
-      }
+      },
     // ···
     ]
   }

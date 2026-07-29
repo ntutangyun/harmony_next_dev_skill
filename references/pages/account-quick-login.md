@@ -10,4 +10,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-q
 
 静默登录
 
-订阅华为账号的登录/登出事件
+扫码授权登录

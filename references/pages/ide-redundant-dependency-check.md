@@ -19,15 +19,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-redun
 
 正例
 
-1. 在 entry 下的oh-package.json5文件中配置了a、b、c三个依赖，entry/src/main/ets中的文件中全部 import 导入。
+1. 在 entry 下的oh-package.json5文件中配置了a、b、c三个依赖，entry/src/main/ets中的文件中全部导入。
 
-2. 在工程级的oh-package.json5文件中配置了a、b、c三个依赖，整个工程全部 import 导入。
+2. 在工程级的oh-package.json5文件中配置了a、b、c三个依赖，整个工程全部导入。
 
 反例
 
-1. 在 entry 下的oh-package.json5文件中配置了a、b、c三个依赖，但entry/src/main/ets中的文件中只 import 导入了a,b两个依赖。
+1. 在 entry 下的oh-package.json5文件中配置了a、b、c三个依赖，但entry/src/main/ets中的文件中只导入了a,b两个依赖。
 
-2. 在工程级的oh-package.json5文件中配置了a、b、c三个依赖，但整个工程只 import 导入了a,b两个依赖。
+2. 在工程级的oh-package.json5文件中配置了a、b、c三个依赖，但整个工程只导入了a,b两个依赖。
 
 规则集
 

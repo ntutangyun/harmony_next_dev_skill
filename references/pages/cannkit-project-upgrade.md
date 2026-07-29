@@ -18,7 +18,7 @@ make: *** [Makefile:100: install] Error 1
 
 命令汇总
 
-执行如下命令，将算子工程升级为当前工具适配的版本。其中${install_path}为ddk工具的安装目录
+执行如下命令，将算子工程升级为当前工具适配的版本。其中${install_path}为DDK tools包的安装目录
 
 chmod +x ${install_path}/ddk/tools/tools_ascendc/upgrade_project.sh
 ${install_path}/ddk/tools/tools_ascendc/upgrade_project.sh <path>

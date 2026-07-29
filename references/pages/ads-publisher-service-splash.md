@@ -79,12 +79,12 @@ struct Index {
   aboutToAppear(): void {
     // 开启全屏模式沉浸页面
     void this.setWindowLayoutFullScreen(true).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowLayoutFullScreen. Code is ${error.code}, message is ${error.message}`);
     });
     // 设置屏幕方向为竖屏
     void this.setWindowPreferredOrientation(window.Orientation.PORTRAIT).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
     });
     // 调用loadAd加载广告
@@ -320,6 +320,8 @@ struct Index {
               hilog.error(0x0000, 'testTag', 'Status is onAdFail');
               this.routeToHome();
               break;
+            default:
+              break;
           }
         }
       }
@@ -356,6 +358,8 @@ struct Index {
             case 'onAdFail':
               hilog.error(0x0000, 'testTag', 'Status is onAdFail');
               this.routeToHome();
+              break;
+            default:
               break;
           }
         }
@@ -419,12 +423,12 @@ struct Index {
   aboutToAppear(): void {
     // 开启全屏模式沉浸页面
     void this.setWindowLayoutFullScreen(true).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowLayoutFullScreen. Code is ${error.code}, message is ${error.message}`);
     });
     // 设置屏幕方向为竖屏
     void this.setWindowPreferredOrientation(window.Orientation.PORTRAIT).catch((error: BusinessError) => {
-      hilog.info(0x0000, 'testTag',
+      hilog.error(0x0000, 'testTag',
         `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
     });
     // 调用loadAd加载广告
@@ -646,6 +650,8 @@ struct Index {
               hilog.error(0x0000, 'testTag', 'Status is onAdFail');
               this.routeToHome();
               break;
+            default:
+              break;
           }
         }
       }
@@ -682,6 +688,8 @@ struct Index {
             case 'onAdFail':
               hilog.error(0x0000, 'testTag', 'Status is onAdFail');
               this.routeToHome();
+              break;
+            default:
               break;
           }
         }

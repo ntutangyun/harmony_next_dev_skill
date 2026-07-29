@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-secu
 
 为降低JSVM受攻击风险，坚盾守护模式将实施以下关键安全限制：
 
-全面禁用即时编译(JIT)功能，包括已获取 ACL 权限的应用程序
+全面禁用即时编译（JIT）功能，包括已获取 ACL 权限的应用程序
 
 暂停 WebAssembly 支持（当前版本中 WebAssembly 依赖 JIT 功能实现）
 

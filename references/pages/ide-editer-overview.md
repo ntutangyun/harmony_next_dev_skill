@@ -190,19 +190,19 @@ Hierarchy窗口按钮功能：
 
 查看ArkUI组件状态变量关系
 
-从26.0.0 Beta1开始，编辑器支持查看状态变量关系。选中或将光标放置于装饰器/变量属性定义处，点击右键选择Show State Variable Binding Relationship，在State Variables弹窗中查看ArkUI组件状态变量关系。
+从26.0.0 Beta1开始，编辑器支持查看状态变量绑定关系。选中或将光标放置于装饰器/变量属性定义处，点击右键选择Show State Variable Binding Relationship，在State Variables弹窗中查看ArkUI组件状态变量绑定关系。
 
-当前支持查看以下状态变量关系：
+当前支持查看以下状态变量绑定关系：
 
-@Provide和@Consume的关系。
+@Provide和@Consume的绑定关系。
 
-LocalStorage、@LocalStorageProp、@LocalStorageLink三者间或任意两者间的关系。
+LocalStorage、@LocalStorageProp、@LocalStorageLink三者间或任意两者间的绑定关系。
 
-AppStorage、@StorageProp、@StorageLink三者间或任意两者间的关系。
+AppStorage、@StorageProp、@StorageLink三者间或任意两者间的绑定关系。
 
-PersistentStorage、@StorageProp、@StorageLink三者间或任意两者间的关系。
+PersistentStorage、@StorageProp、@StorageLink三者间或任意两者间的绑定关系。
 
-@State、@Prop、@Link三者间或任意两者间的关系。
+@State、@Prop、@Link三者间或任意两者间的绑定关系。
 
 State Variables窗口按钮功能：
 

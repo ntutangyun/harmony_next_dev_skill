@@ -24,7 +24,7 @@ verify_func	输入	算子verify函数。
 
 返回值
 
-VerifyFuncRegister构造函数返回VerifyFuncRegister类型的对象。
+无
 
 约束说明
 

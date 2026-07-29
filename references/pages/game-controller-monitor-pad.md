@@ -16,7 +16,7 @@ Game Controller Kit支持的手柄键位参考图如下：
 
 接口说明
 
-接口详细介绍请参考API参考。
+接口详细介绍请参考GameController。
 
 接口名	描述
 OH_GamePad_LeftShoulder_RegisterButtonInputMonitor	注册LeftShoulder按键事件的监听。

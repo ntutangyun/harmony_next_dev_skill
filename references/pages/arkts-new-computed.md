@@ -81,14 +81,24 @@ struct Page {
   build() {
     Column() {
       Text(`${this.fullName}`) // 获取一次fullName
+        .fontSize(20)
+        .margin(10)
       Text(`${this.fullName}`) // 获取一次fullName，累计获取两次fullName，但是fullName不会重新计算，读取缓存值
+        .fontSize(20)
+        .margin(10)
 
       // 点击Button，获取fullNameRequestCount次数
       Text(`count ${this.showFullNameRequestCount}`)
-      Button('get fullName').onClick(() => {
-        this.showFullNameRequestCount = this.fullNameRequestCount;
-      })
+        .fontSize(20)
+        .margin(10)
+      Button('get fullName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.showFullNameRequestCount = this.fullNameRequestCount;
+        })
     }
+    .width('100%')
   }
 }
 
@@ -119,8 +129,13 @@ struct Page {
   build() {
     Column() {
       Text(`${this.fullName1}`)
+        .fontSize(20)
+        .margin(10)
       Text(`${this.fullName2}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -133,6 +148,8 @@ struct Child {
 
   build() {
     Button('ChildChange')
+      .width(300)
+      .margin(10)
       .onClick(() => {
         this.$double(200);
       })
@@ -217,16 +234,28 @@ struct CustomComponentUse {
   build() {
     Column() {
       Text(this.lastName + ' ' + this.firstName)
+        .fontSize(20)
+        .margin(10)
       Text(this.lastName + ' ' + this.firstName)
+        .fontSize(20)
+        .margin(10)
       Divider()
       Text(this.fullName)
+        .fontSize(20)
+        .margin(10)
       Text(this.fullName)
+        .fontSize(20)
+        .margin(10)
       Button('changed lastName')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.lastName += 'a';
         })
 
       Button('changed age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.age++;  // 无法触发Computed
         })
@@ -272,12 +301,20 @@ struct ObservedV2ClassUser {
   build() {
     Column() {
       Text(this.name1.fullName)
+        .fontSize(20)
+        .margin(10)
       Text(this.name1.fullName)
+        .fontSize(20)
+        .margin(10)
       // 点击Button改变lastName，触发fullName重新计算，且只被计算一次
-      Button('changed lastName').onClick(() => {
-        this.name1.lastName += 'a';
-      })
+      Button('changed lastName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.name1.lastName += 'a';
+        })
     }
+    .width('100%')
   }
 }
 
@@ -331,8 +368,12 @@ struct ComputedPropertyResolution {
           })
       }
 
-      Text(`Fahrenheit ${this.fahrenheit.toFixed(2)}`).fontSize(40)
-      Text(`Kelvin ${this.kelvin.toFixed(2)}`).fontSize(40)
+      Text(`Fahrenheit ${this.fahrenheit.toFixed(2)}`)
+        .fontSize(40)
+        .margin(10)
+      Text(`Kelvin ${this.kelvin.toFixed(2)}`)
+        .fontSize(40)
+        .margin(10)
     }
     .width('100%')
   }
@@ -378,9 +419,12 @@ struct ComputingInitParam {
     Column() {
       Text(`Shopping List: `)
         .fontSize(30)
+        .margin(10)
       ForEach(this.shoppingBasket, (item: Article) => {
         Row() {
           Text(`unitPrice: ${item.unitPrice}`)
+            .fontSize(20)
+            .margin(10)
           // 点击Button减少quantity，触发total和qualifiesForDiscount重新计算
           Button('-')
             .onClick(() => {
@@ -389,17 +433,21 @@ struct ComputingInitParam {
               }
             })
           Text(`quantity: ${item.quantity}`)
+            .fontSize(20)
+            .margin(10)
           // 点击Button增加quantity，触发total和qualifiesForDiscount重新计算
           Button('+')
             .onClick(() => {
               item.quantity++;
             })
         }
+        .width('100%')
 
         Divider()
       })
       Child({ total: this.total, qualifiesForDiscount: this.qualifiesForDiscount })
-    }.alignItems(HorizontalAlign.Start)
+    }
+    .alignItems(HorizontalAlign.Start)
   }
 }
 
@@ -412,8 +460,10 @@ struct Child {
     Row() {
       Text(`Total: ${this.total} `)
         .fontSize(30)
+        .margin(10)
       Text(`Discount: ${this.qualifiesForDiscount} `)
         .fontSize(30)
+        .margin(10)
     }
   }
 }
@@ -483,14 +533,24 @@ struct Page {
   build() {
     Column() {
       Text(`${this.fullName}`) // 获取一次fullName
+        .fontSize(20)
+        .margin(10)
       Text(`${this.fullName}`) // 获取一次fullName，累计获取两次fullName，但是fullName不会重新计算，读取缓存值
+        .fontSize(20)
+        .margin(10)
 
       // 点击Button，获取fullNameRequestCount次数
       Text(`count ${this.showFullNameRequestCount}`)
-      Button('get fullName').onClick(() => {
-        this.showFullNameRequestCount = this.fullNameRequestCount;
-      })
+        .fontSize(20)
+        .margin(10)
+      Button('get fullName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.showFullNameRequestCount = this.fullNameRequestCount;
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -521,8 +581,13 @@ struct Page {
   build() {
     Column() {
       Text(`${this.fullName1}`)
+        .fontSize(20)
+        .margin(10)
       Text(`${this.fullName2}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 ```
@@ -537,6 +602,8 @@ struct Child {
 
   build() {
     Button('ChildChange')
+      .width(300)
+      .margin(10)
       .onClick(() => {
         this.$double(200);
       })
@@ -609,16 +676,28 @@ struct CustomComponentUse {
   build() {
     Column() {
       Text(this.lastName + ' ' + this.firstName)
+        .fontSize(20)
+        .margin(10)
       Text(this.lastName + ' ' + this.firstName)
+        .fontSize(20)
+        .margin(10)
       Divider()
       Text(this.fullName)
+        .fontSize(20)
+        .margin(10)
       Text(this.fullName)
+        .fontSize(20)
+        .margin(10)
       Button('changed lastName')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.lastName += 'a';
         })
 
       Button('changed age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.age++;  // 无法触发Computed
         })
@@ -658,12 +737,20 @@ struct ObservedV2ClassUser {
   build() {
     Column() {
       Text(this.name1.fullName)
+        .fontSize(20)
+        .margin(10)
       Text(this.name1.fullName)
+        .fontSize(20)
+        .margin(10)
       // 点击Button改变lastName，触发fullName重新计算，且只被计算一次
-      Button('changed lastName').onClick(() => {
-        this.name1.lastName += 'a';
-      })
+      Button('changed lastName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.name1.lastName += 'a';
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -713,8 +800,12 @@ struct ComputedPropertyResolution {
           })
       }
 
-      Text(`Fahrenheit ${this.fahrenheit.toFixed(2)}`).fontSize(40)
-      Text(`Kelvin ${this.kelvin.toFixed(2)}`).fontSize(40)
+      Text(`Fahrenheit ${this.fahrenheit.toFixed(2)}`)
+        .fontSize(40)
+        .margin(10)
+      Text(`Kelvin ${this.kelvin.toFixed(2)}`)
+        .fontSize(40)
+        .margin(10)
     }
     .width('100%')
   }
@@ -754,9 +845,12 @@ struct ComputingInitParam {
     Column() {
       Text(`Shopping List: `)
         .fontSize(30)
+        .margin(10)
       ForEach(this.shoppingBasket, (item: Article) => {
         Row() {
           Text(`unitPrice: ${item.unitPrice}`)
+            .fontSize(20)
+            .margin(10)
           // 点击Button减少quantity，触发total和qualifiesForDiscount重新计算
           Button('-')
             .onClick(() => {
@@ -765,17 +859,21 @@ struct ComputingInitParam {
               }
             })
           Text(`quantity: ${item.quantity}`)
+            .fontSize(20)
+            .margin(10)
           // 点击Button增加quantity，触发total和qualifiesForDiscount重新计算
           Button('+')
             .onClick(() => {
               item.quantity++;
             })
         }
+        .width('100%')
 
         Divider()
       })
       Child({ total: this.total, qualifiesForDiscount: this.qualifiesForDiscount })
-    }.alignItems(HorizontalAlign.Start)
+    }
+    .alignItems(HorizontalAlign.Start)
   }
 }
 
@@ -788,8 +886,10 @@ struct Child {
     Row() {
       Text(`Total: ${this.total} `)
         .fontSize(30)
+        .margin(10)
       Text(`Discount: ${this.qualifiesForDiscount} `)
         .fontSize(30)
+        .margin(10)
     }
   }
 }

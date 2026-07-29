@@ -37,17 +37,17 @@ showCommentDialog(context: common.UIExtensionContext | common.UIAbilityContext):
 
 导入commentManager模块及相关公共模块。
 
-import { commentManager} from '@kit.AppGalleryKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import type { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common, Want } from '@kit.AbilityKit';
+import { commentManager} from '@kit.AppGalleryKit';
 
 调用showCommentDialog方法拉起评论弹窗。
 
 try {
   const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   commentManager.showCommentDialog(uiContext).then(()=>{
-    hilog.info(0, 'TAG', "succeeded in showing commentDialog.");
+    hilog.info(0, 'TAG', 'succeeded in showing commentDialog.');
   }).catch((error: BusinessError<Object>) => {
     hilog.error(0, 'TAG', `showCommentDialog failed, Code: ${error.code}, message: ${error.message}`);
   });
@@ -61,6 +61,7 @@ try {
 
 构造拼接bundleName和action的Deep Linking链接，其中bundleName为需要拉起写评论页的应用包名，action隐式指定为write-review，表示进入详情页后，下一步将拉起写评论页，其格式为：
 
+// bundleName为需要拉起写评论页的应用包名, action隐式指定为write-review, 表示进入详情页后, 下一步将拉起写评论页。
 uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review',
 
 在应用中调用startAbility方法，拉起应用市场应用的写评论页：
@@ -68,15 +69,18 @@ uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=writ
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import type { common, Want } from '@kit.AbilityKit';
+// ...
 
 // 通过Deep Linking拉起应用市场指定的应用写评论页
 function startAppGalleryDetailAbility(context: common.UIAbilityContext, bundleName: string): void {
   let want: Want = {
-    action: 'ohos.want.action.appdetail', // 隐式指定action为ohos.want.action.appdetail
-    uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review'// bundleName为需要拉起写评论页的应用包名，action隐式指定为write-review，表示进入详情页后，下一步将拉起写评论页。
+    // 隐式指定action为ohos.want.action.appdetail
+    action: 'ohos.want.action.appdetail',
+    // bundleName为需要拉起写评论页的应用包名, action隐式指定为write-review, 表示进入详情页后, 下一步将拉起写评论页。
+    uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review',
   };
   context.startAbility(want).then(() => {
-    hilog.info(0x0001, 'TAG', "Succeeded in starting Ability successfully.")
+    hilog.info(0x0001, 'TAG', 'Succeeded in starting Ability successfully.')
   }).catch((error: BusinessError) => {
     hilog.error(0x0001, 'TAG', `Failed to startAbility. Code: ${error.code}, message is ${error.message}`);
   });
@@ -84,21 +88,23 @@ function startAppGalleryDetailAbility(context: common.UIAbilityContext, bundleNa
 
 @Entry
 @Component
-struct StartAppGalleryDetailAbilityView {
-  @State message: string = '通过Deep Linking拉起应用市场写评论页'
+struct Index {
+  // ...
 
   build() {
     Row() {
       Column() {
-        Button(this.message)
+        // ...
+        Button('DeepLink')
           .fontSize(24)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
             const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-            // 按实际需求获取应用的bundleName，例如bundleName: 'com.huawei.hmsapp.books'
+            // 按实际需求获取应用的bundleName, 例如bundleName: 'com.huawei.hmsapp.books'
             const bundleName = 'xxxx';
             startAppGalleryDetailAbility(context, bundleName);
           })
+        // ...
       }
       .width('100%')
     }
@@ -130,36 +136,41 @@ struct StartAppGalleryDetailAbilityView {
 
 构造拼接bundleName的App Linking链接，其中bundleName为需要拉起写评论页的应用包名，action隐式指定为write-review，表示进入详情页后，下一步将拉起写评论页，其格式为：
 
-let link: string = 'https://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review';
+let link: string = 'https://xxx/app/detail?id=' + bundleName + '&action=write-review';
 
 在应用中调用openLink接口拉起App Linking链接：
 
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import type { common } from '@kit.AbilityKit';
+import type { common, Want } from '@kit.AbilityKit';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start app linking', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-        // 需要拼接不同的应用包名，用以打开不同的应用写评论页,例如：bundleName: 'com.huawei.hmsapp.books'
-        let bundleName: string = 'xxxx';
-        let link: string = 'https://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review';
-        // 以App Linking优先的方式在应用市场打开指定包名的应用写评论页
-        context.openLink(link, { appLinkingOnly: false })
-          .then(() => {
-            hilog.info(0x0001, 'TAG', 'openlink success.');
+    // ...
+        Button('start app linking', { type: ButtonType.Capsule, stateEffect: true })
+          .width('87%')
+          .height('5%')
+          .margin({ bottom: '12vp' })
+          .onClick(() => {
+            let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+            // 需要拼接不同的应用包名，用以打开不同的应用写评论页,例如:bundleName: 'com.huawei.hmsapp.books'
+            let bundleName: string = 'xxxx';
+            let link: string = 'https://xxx/app/detail?id=' + bundleName + '&action=write-review';
+            // 以App Linking优先的方式在应用市场打开指定包名的应用写评论页
+            context.openLink(link, { appLinkingOnly: false })
+              .then(() => {
+                hilog.info(0x0001, 'TAG', 'openlink success.');
+              })
+              .catch((error: BusinessError) => {
+                hilog.error(0x0001, 'TAG', `openlink failed. Code: ${error.code}, message is ${error.message}`);
+              });
           })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0001, 'TAG', `openlink failed. Code: ${error.code}, message is ${error.message}`);
-          });
-      })
+        // ...
   }
 }
 
@@ -180,10 +191,10 @@ struct Index {
 ### Code block 1
 
 ```
-import { commentManager} from '@kit.AppGalleryKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import type { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import type { common, Want } from '@kit.AbilityKit';
+import { commentManager} from '@kit.AppGalleryKit';
 ```
 
 ### Code block 2
@@ -192,7 +203,7 @@ import type { common } from '@kit.AbilityKit';
 try {
   const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   commentManager.showCommentDialog(uiContext).then(()=>{
-    hilog.info(0, 'TAG', "succeeded in showing commentDialog.");
+    hilog.info(0, 'TAG', 'succeeded in showing commentDialog.');
   }).catch((error: BusinessError<Object>) => {
     hilog.error(0, 'TAG', `showCommentDialog failed, Code: ${error.code}, message: ${error.message}`);
   });
@@ -204,6 +215,7 @@ try {
 ### Code block 3
 
 ```
+// bundleName为需要拉起写评论页的应用包名, action隐式指定为write-review, 表示进入详情页后, 下一步将拉起写评论页。
 uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review',
 ```
 
@@ -213,15 +225,18 @@ uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=writ
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import type { common, Want } from '@kit.AbilityKit';
+// ...
 
 // 通过Deep Linking拉起应用市场指定的应用写评论页
 function startAppGalleryDetailAbility(context: common.UIAbilityContext, bundleName: string): void {
   let want: Want = {
-    action: 'ohos.want.action.appdetail', // 隐式指定action为ohos.want.action.appdetail
-    uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review'// bundleName为需要拉起写评论页的应用包名，action隐式指定为write-review，表示进入详情页后，下一步将拉起写评论页。
+    // 隐式指定action为ohos.want.action.appdetail
+    action: 'ohos.want.action.appdetail',
+    // bundleName为需要拉起写评论页的应用包名, action隐式指定为write-review, 表示进入详情页后, 下一步将拉起写评论页。
+    uri: 'store://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review',
   };
   context.startAbility(want).then(() => {
-    hilog.info(0x0001, 'TAG', "Succeeded in starting Ability successfully.")
+    hilog.info(0x0001, 'TAG', 'Succeeded in starting Ability successfully.')
   }).catch((error: BusinessError) => {
     hilog.error(0x0001, 'TAG', `Failed to startAbility. Code: ${error.code}, message is ${error.message}`);
   });
@@ -229,21 +244,23 @@ function startAppGalleryDetailAbility(context: common.UIAbilityContext, bundleNa
 
 @Entry
 @Component
-struct StartAppGalleryDetailAbilityView {
-  @State message: string = '通过Deep Linking拉起应用市场写评论页'
+struct Index {
+  // ...
 
   build() {
     Row() {
       Column() {
-        Button(this.message)
+        // ...
+        Button('DeepLink')
           .fontSize(24)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
             const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-            // 按实际需求获取应用的bundleName，例如bundleName: 'com.huawei.hmsapp.books'
+            // 按实际需求获取应用的bundleName, 例如bundleName: 'com.huawei.hmsapp.books'
             const bundleName = 'xxxx';
             startAppGalleryDetailAbility(context, bundleName);
           })
+        // ...
       }
       .width('100%')
     }
@@ -275,7 +292,7 @@ struct StartAppGalleryDetailAbilityView {
 ### Code block 6
 
 ```
-let link: string = 'https://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review';
+let link: string = 'https://xxx/app/detail?id=' + bundleName + '&action=write-review';
 ```
 
 ### Code block 7
@@ -283,30 +300,35 @@ let link: string = 'https://appgallery.huawei.com/app/detail?id=' + bundleName +
 ```
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import type { common } from '@kit.AbilityKit';
+import type { common, Want } from '@kit.AbilityKit';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start app linking', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-        // 需要拼接不同的应用包名，用以打开不同的应用写评论页,例如：bundleName: 'com.huawei.hmsapp.books'
-        let bundleName: string = 'xxxx';
-        let link: string = 'https://appgallery.huawei.com/app/detail?id=' + bundleName + '&action=write-review';
-        // 以App Linking优先的方式在应用市场打开指定包名的应用写评论页
-        context.openLink(link, { appLinkingOnly: false })
-          .then(() => {
-            hilog.info(0x0001, 'TAG', 'openlink success.');
+    // ...
+        Button('start app linking', { type: ButtonType.Capsule, stateEffect: true })
+          .width('87%')
+          .height('5%')
+          .margin({ bottom: '12vp' })
+          .onClick(() => {
+            let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+            // 需要拼接不同的应用包名，用以打开不同的应用写评论页,例如:bundleName: 'com.huawei.hmsapp.books'
+            let bundleName: string = 'xxxx';
+            let link: string = 'https://xxx/app/detail?id=' + bundleName + '&action=write-review';
+            // 以App Linking优先的方式在应用市场打开指定包名的应用写评论页
+            context.openLink(link, { appLinkingOnly: false })
+              .then(() => {
+                hilog.info(0x0001, 'TAG', 'openlink success.');
+              })
+              .catch((error: BusinessError) => {
+                hilog.error(0x0001, 'TAG', `openlink failed. Code: ${error.code}, message is ${error.message}`);
+              });
           })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0001, 'TAG', `openlink failed. Code: ${error.code}, message is ${error.message}`);
-          });
-      })
+        // ...
   }
 }
 ```

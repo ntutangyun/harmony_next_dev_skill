@@ -50,15 +50,14 @@ chat(info: QuestionInfo, config: Config, callback: AsyncCallback<Answer>): Promi
 
 等待模型下载完成后，调用chat接口，开始进行端侧问答。
 
-完整示例代码
+示例代码
 
-import { BusinessError } from "@kit.BasicServicesKit";
+import { BusinessError } from '@kit.BasicServicesKit';
 import { localChatModel } from '@kit.DataAugmentationKit'
 
-type MessageRole = 'system' | 'user' | 'assistant';
-
+type MessageType = 'tips' | 'request' | 'response';
 interface ChatMessage {
-  role: MessageRole;
+  type: MessageType;
   content: string;
 }
 
@@ -71,100 +70,69 @@ struct Index {
   @State inputText: string = '';
   @State initFlag: boolean = false;
   @State isProcessing: boolean = false;
-  @State assistantContent: string = '';
+  @State responseContent: string = '';
   @State chatCounter: number = 0;
 
   // 页面加载时，拉起模型管理应用
   onPageShow() {
-    console.info('modelChat onPageShow');
     this.initModel();
-  }
-
-  private scroller: Scroller = new Scroller();
-
-  private scrollToBottom() {
-    setTimeout(() => {
-      this.scroller.scrollEdge(Edge.Bottom);
-    }, 50);
-  }
-
-  private addMessage(role: MessageRole, content: string): void {
-    const newMessage: ChatMessage = {
-      role: role,
-      content: content,
-    };
-    this.messages = [...this.messages, newMessage];
   }
 
   private async initModel(): Promise<void> {
     try {
-      await localChatModel.init();
-      this.initFlag = true;
-      this.addMessage('system', '模型初始化完成！');
-    } catch (err) {
-      const error = err as BusinessError;
+      this.initFlag = await localChatModel.init();
+      // ...
+    } catch (error) {
       this.initFlag = false;
-      this.addMessage('system', `模型初始化出错: ${error.message}`);
+      // ...
     }
   }
+
+  private scroller: Scroller = new Scroller();
+  // ...
 
   private async DoChat(questionId: number): Promise<void> {
     if (!this.inputText.trim() || this.isProcessing) {
       return;
     }
-    const userQuestion = this.inputText.trim();
-    if (!userQuestion) {
+    const requestQuestion = this.inputText.trim();
+    if (!requestQuestion) {
       return;
     }
     this.inputText = '';
-    this.addMessage('user', userQuestion);
-    this.assistantContent = "思考中...";
+    // ...
+    this.responseContent = '思考中...';
     this.isProcessing = true;
 
     const questionInfo: localChatModel.QuestionInfo = {
       questionId: questionId,
-      content: userQuestion
+      content: requestQuestion
     };
 
     const localConfig: localChatModel.Config = {
       isStream: this.isStreamMode
     };
-
     const localChatCallback = async (err: BusinessError, ans: localChatModel.Answer): Promise<void> => {
-      this.scrollToBottom();
-      if (err) {
-        if (this.assistantContent == "思考中...") {
-          this.assistantContent = "";
-          this.isProcessing = false;
-        }
-        // 模型运行相关错误码
-        console.error('modelChat Callback failed:', err.message);
-        this.addMessage('system', `localChatCallback: error code is ${err.code},  ${err.message}`);
-        this.scrollToBottom();
-      }
+      // ...
       if (ans.content && ans.content.trim() !== '') {
-        if (this.assistantContent == "思考中...") {
-          this.assistantContent = "";
+        if (this.responseContent == '思考中...') {
+          this.responseContent = '';
         }
-        this.assistantContent += ans.content;
-        this.scrollToBottom();
+        this.responseContent += ans.content;
+        // ...
       }
-      this.scrollToBottom();
+      // ...
+
       if (ans.isFinished) {
-        console.info('modelChat finished');
-        this.addMessage('assistant', this.assistantContent);
+        // ...
         this.isProcessing = false;
       }
-
     };
+
     try {
-      console.info('modelChat Starting chat...');
       localChatModel.chat(questionInfo, localConfig, localChatCallback);
-    } catch (err) {
-      // 入参相关错误码
-      const error = err as BusinessError;
-      console.error('modelChat Chat failed:', error.message);
-      this.addMessage('system', `chat: error code is ${error.code},  ${error.message}`);
+    } catch (error) {
+      // ...
       this.isProcessing = false;
     }
   }
@@ -177,59 +145,38 @@ struct Index {
     Stack({ alignContent: Alignment.Top }) {
       Column() {
         Row() {
-          Text(this.title)
-            .fontSize(20)
-            .fontWeight(FontWeight.Bold)
-            .fontColor('#1a73e8')
-            .margin({ left: 12 })
-
-          Circle()
-            .width(10)
-            .height(10)
-            .margin({ left: 12 })
-            .fill(this.initFlag ? '#0f0' : '#f00')
-            .opacity(0.8)
-
-          Text(this.initFlag ? '已就绪' : '未就绪')
-            .margin({ left: 6 })
-            .fontSize(12)
-            .fontColor('#666')
-
-          Blank()
-
+          // ...
           Row() {
             Button(this.isStreamMode ? '流式' : '非流式')
-              .width(70)
-              .height(25)
-              .fontSize(12)
-              .margin({ right: 20 })
-              .backgroundColor(Color.Gray)
-              .fontColor(Color.White)
-              .borderRadius(12.5)
+              .height(28)
+              .fontSize(16)
+              .fontWeight(500)
+              .backgroundColor('#0c000000')
+              .fontColor('#0A59F7')
+              .borderRadius(8)
               .onClick(() => {
                 this.isStreamMode = !this.isStreamMode;
-                this.addMessage('system', `已切换至 ${this.isStreamMode ? '流式问答' : '非流式问答'} 模式`);
+                // ...
               })
           }
           .margin({ right: 12 })
         }
         .width('100%')
-        .height(50)
+        .height(56)
         .backgroundColor(Color.White)
-        .borderRadius(16)
+        .borderRadius(8)
         .shadow({
           radius: 4,
           color: '#1a73e888',
           offsetX: 0,
           offsetY: 2
         })
-        .margin({ bottom: 12 })
 
         // 聊天区域
         Scroll(this.scroller) {
           Column() {
             ForEach(this.messages, (msg: ChatMessage, index: number) => {
-              if (msg.role === 'system') {
+              if (msg.type === 'tips') {
                 Row() {
                   Text(msg.content)
                     .fontSize(14)
@@ -240,7 +187,7 @@ struct Index {
                 .width('100%')
                 .justifyContent(FlexAlign.Center)
                 .margin({ top: index === 0 ? 0 : 12 })
-              } else if (msg.role === 'user') {
+              } else if (msg.type === 'request') {
                 Row() {
                   Blank()
                   Text(msg.content)
@@ -248,12 +195,12 @@ struct Index {
                     .fontColor(Color.White)
                     .padding(10)
                     .backgroundColor('#1a73e8')
-                    .borderRadius(12)
+                    .borderRadius(8)
                 }
                 .width('100%')
                 .margin({ top: 12 })
                 .justifyContent(FlexAlign.End)
-              } else if (msg.role === 'assistant') {
+              } else if (msg.type === 'response') {
                 Row() {
                   Column() {
                     Text(msg.content)
@@ -262,9 +209,9 @@ struct Index {
                       .lineHeight(20)
                       .padding(10)
                       .backgroundColor(Color.White)
-                      .borderRadius(12)
+                      .borderRadius(8)
                   }
-                  .borderRadius(12)
+                  .borderRadius(8)
                   .margin({ left: 8 })
 
                   Blank()
@@ -279,15 +226,15 @@ struct Index {
             if (this.isProcessing) {
               Row() {
                 Column() {
-                  Text(this.assistantContent)
+                  Text(this.responseContent)
                     .fontSize(16)
                     .fontColor('#333')
                     .lineHeight(20)
                     .padding(10)
                     .backgroundColor(Color.White)
-                    .borderRadius(12)
+                    .borderRadius(8)
                 }
-                .borderRadius(12)
+                .borderRadius(8)
                 .margin({ left: 8 })
 
                 Blank()
@@ -312,7 +259,7 @@ struct Index {
               .fontSize(16)
               .padding(8)
               .backgroundColor(Color.White)
-              .borderRadius(21)
+              .borderRadius(8)
               .width('85%')
               .onChange((value: string) => {
                 this.inputText = value;
@@ -325,29 +272,28 @@ struct Index {
               })
 
             Button('发送')
-              .width(72)
-              .height(42)
+              .height(40)
               .fontSize(16)
-              .margin({ left: 8 })
-              .backgroundColor('#1a73e8')
+              .fontWeight(500)
+              .margin({ right: 12 })
+              .backgroundColor('#0A59F7')
               .fontColor(Color.White)
-              .borderRadius(21)
+              .borderRadius(8)
               .onClick(() => {
                 if (!this.isProcessing && this.inputText.trim() !== '') {
                   const chatId = this.chatCounter++;
                   this.DoChat(chatId);
                 }
               })
-              .opacity(this.isProcessing || this.inputText.trim() === '' ? 0.6 : 1)
+              .opacity(this.isProcessing || this.inputText.trim() === '' ? 0.4 : 1)
 
-            Button("清空")
-              .width(72)
-              .height(42)
+            Button('清空')
+              .height(40)
               .fontSize(16)
-              .margin({ left: 8 })
+              .fontWeight(500)
               .fontColor('#fff')
               .backgroundColor('#ea4335')
-              .borderRadius(18)
+              .borderRadius(8)
               .onClick(() => {
                 this.clearChat();
               })
@@ -359,7 +305,7 @@ struct Index {
         .width('100%')
         .padding(8)
         .backgroundColor(Color.White)
-        .borderRadius(16)
+        .borderRadius(8)
         .shadow({
           radius: 4,
           color: '#1a73e888',
@@ -369,8 +315,8 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .padding(12)
       .backgroundColor('#f0f5ff')
+      .padding(20)
     }
     .width('100%')
     .height('100%')
@@ -382,13 +328,12 @@ struct Index {
 ### Code block 1
 
 ```
-import { BusinessError } from "@kit.BasicServicesKit";
+import { BusinessError } from '@kit.BasicServicesKit';
 import { localChatModel } from '@kit.DataAugmentationKit'
 
-type MessageRole = 'system' | 'user' | 'assistant';
-
+type MessageType = 'tips' | 'request' | 'response';
 interface ChatMessage {
-  role: MessageRole;
+  type: MessageType;
   content: string;
 }
 
@@ -401,100 +346,69 @@ struct Index {
   @State inputText: string = '';
   @State initFlag: boolean = false;
   @State isProcessing: boolean = false;
-  @State assistantContent: string = '';
+  @State responseContent: string = '';
   @State chatCounter: number = 0;
 
   // 页面加载时，拉起模型管理应用
   onPageShow() {
-    console.info('modelChat onPageShow');
     this.initModel();
-  }
-
-  private scroller: Scroller = new Scroller();
-
-  private scrollToBottom() {
-    setTimeout(() => {
-      this.scroller.scrollEdge(Edge.Bottom);
-    }, 50);
-  }
-
-  private addMessage(role: MessageRole, content: string): void {
-    const newMessage: ChatMessage = {
-      role: role,
-      content: content,
-    };
-    this.messages = [...this.messages, newMessage];
   }
 
   private async initModel(): Promise<void> {
     try {
-      await localChatModel.init();
-      this.initFlag = true;
-      this.addMessage('system', '模型初始化完成！');
-    } catch (err) {
-      const error = err as BusinessError;
+      this.initFlag = await localChatModel.init();
+      // ...
+    } catch (error) {
       this.initFlag = false;
-      this.addMessage('system', `模型初始化出错: ${error.message}`);
+      // ...
     }
   }
+
+  private scroller: Scroller = new Scroller();
+  // ...
 
   private async DoChat(questionId: number): Promise<void> {
     if (!this.inputText.trim() || this.isProcessing) {
       return;
     }
-    const userQuestion = this.inputText.trim();
-    if (!userQuestion) {
+    const requestQuestion = this.inputText.trim();
+    if (!requestQuestion) {
       return;
     }
     this.inputText = '';
-    this.addMessage('user', userQuestion);
-    this.assistantContent = "思考中...";
+    // ...
+    this.responseContent = '思考中...';
     this.isProcessing = true;
 
     const questionInfo: localChatModel.QuestionInfo = {
       questionId: questionId,
-      content: userQuestion
+      content: requestQuestion
     };
 
     const localConfig: localChatModel.Config = {
       isStream: this.isStreamMode
     };
-
     const localChatCallback = async (err: BusinessError, ans: localChatModel.Answer): Promise<void> => {
-      this.scrollToBottom();
-      if (err) {
-        if (this.assistantContent == "思考中...") {
-          this.assistantContent = "";
-          this.isProcessing = false;
-        }
-        // 模型运行相关错误码
-        console.error('modelChat Callback failed:', err.message);
-        this.addMessage('system', `localChatCallback: error code is ${err.code},  ${err.message}`);
-        this.scrollToBottom();
-      }
+      // ...
       if (ans.content && ans.content.trim() !== '') {
-        if (this.assistantContent == "思考中...") {
-          this.assistantContent = "";
+        if (this.responseContent == '思考中...') {
+          this.responseContent = '';
         }
-        this.assistantContent += ans.content;
-        this.scrollToBottom();
+        this.responseContent += ans.content;
+        // ...
       }
-      this.scrollToBottom();
+      // ...
+
       if (ans.isFinished) {
-        console.info('modelChat finished');
-        this.addMessage('assistant', this.assistantContent);
+        // ...
         this.isProcessing = false;
       }
-
     };
+
     try {
-      console.info('modelChat Starting chat...');
       localChatModel.chat(questionInfo, localConfig, localChatCallback);
-    } catch (err) {
-      // 入参相关错误码
-      const error = err as BusinessError;
-      console.error('modelChat Chat failed:', error.message);
-      this.addMessage('system', `chat: error code is ${error.code},  ${error.message}`);
+    } catch (error) {
+      // ...
       this.isProcessing = false;
     }
   }
@@ -507,59 +421,38 @@ struct Index {
     Stack({ alignContent: Alignment.Top }) {
       Column() {
         Row() {
-          Text(this.title)
-            .fontSize(20)
-            .fontWeight(FontWeight.Bold)
-            .fontColor('#1a73e8')
-            .margin({ left: 12 })
-
-          Circle()
-            .width(10)
-            .height(10)
-            .margin({ left: 12 })
-            .fill(this.initFlag ? '#0f0' : '#f00')
-            .opacity(0.8)
-
-          Text(this.initFlag ? '已就绪' : '未就绪')
-            .margin({ left: 6 })
-            .fontSize(12)
-            .fontColor('#666')
-
-          Blank()
-
+          // ...
           Row() {
             Button(this.isStreamMode ? '流式' : '非流式')
-              .width(70)
-              .height(25)
-              .fontSize(12)
-              .margin({ right: 20 })
-              .backgroundColor(Color.Gray)
-              .fontColor(Color.White)
-              .borderRadius(12.5)
+              .height(28)
+              .fontSize(16)
+              .fontWeight(500)
+              .backgroundColor('#0c000000')
+              .fontColor('#0A59F7')
+              .borderRadius(8)
               .onClick(() => {
                 this.isStreamMode = !this.isStreamMode;
-                this.addMessage('system', `已切换至 ${this.isStreamMode ? '流式问答' : '非流式问答'} 模式`);
+                // ...
               })
           }
           .margin({ right: 12 })
         }
         .width('100%')
-        .height(50)
+        .height(56)
         .backgroundColor(Color.White)
-        .borderRadius(16)
+        .borderRadius(8)
         .shadow({
           radius: 4,
           color: '#1a73e888',
           offsetX: 0,
           offsetY: 2
         })
-        .margin({ bottom: 12 })
 
         // 聊天区域
         Scroll(this.scroller) {
           Column() {
             ForEach(this.messages, (msg: ChatMessage, index: number) => {
-              if (msg.role === 'system') {
+              if (msg.type === 'tips') {
                 Row() {
                   Text(msg.content)
                     .fontSize(14)
@@ -570,7 +463,7 @@ struct Index {
                 .width('100%')
                 .justifyContent(FlexAlign.Center)
                 .margin({ top: index === 0 ? 0 : 12 })
-              } else if (msg.role === 'user') {
+              } else if (msg.type === 'request') {
                 Row() {
                   Blank()
                   Text(msg.content)
@@ -578,12 +471,12 @@ struct Index {
                     .fontColor(Color.White)
                     .padding(10)
                     .backgroundColor('#1a73e8')
-                    .borderRadius(12)
+                    .borderRadius(8)
                 }
                 .width('100%')
                 .margin({ top: 12 })
                 .justifyContent(FlexAlign.End)
-              } else if (msg.role === 'assistant') {
+              } else if (msg.type === 'response') {
                 Row() {
                   Column() {
                     Text(msg.content)
@@ -592,9 +485,9 @@ struct Index {
                       .lineHeight(20)
                       .padding(10)
                       .backgroundColor(Color.White)
-                      .borderRadius(12)
+                      .borderRadius(8)
                   }
-                  .borderRadius(12)
+                  .borderRadius(8)
                   .margin({ left: 8 })
 
                   Blank()
@@ -609,15 +502,15 @@ struct Index {
             if (this.isProcessing) {
               Row() {
                 Column() {
-                  Text(this.assistantContent)
+                  Text(this.responseContent)
                     .fontSize(16)
                     .fontColor('#333')
                     .lineHeight(20)
                     .padding(10)
                     .backgroundColor(Color.White)
-                    .borderRadius(12)
+                    .borderRadius(8)
                 }
-                .borderRadius(12)
+                .borderRadius(8)
                 .margin({ left: 8 })
 
                 Blank()
@@ -642,7 +535,7 @@ struct Index {
               .fontSize(16)
               .padding(8)
               .backgroundColor(Color.White)
-              .borderRadius(21)
+              .borderRadius(8)
               .width('85%')
               .onChange((value: string) => {
                 this.inputText = value;
@@ -655,29 +548,28 @@ struct Index {
               })
 
             Button('发送')
-              .width(72)
-              .height(42)
+              .height(40)
               .fontSize(16)
-              .margin({ left: 8 })
-              .backgroundColor('#1a73e8')
+              .fontWeight(500)
+              .margin({ right: 12 })
+              .backgroundColor('#0A59F7')
               .fontColor(Color.White)
-              .borderRadius(21)
+              .borderRadius(8)
               .onClick(() => {
                 if (!this.isProcessing && this.inputText.trim() !== '') {
                   const chatId = this.chatCounter++;
                   this.DoChat(chatId);
                 }
               })
-              .opacity(this.isProcessing || this.inputText.trim() === '' ? 0.6 : 1)
+              .opacity(this.isProcessing || this.inputText.trim() === '' ? 0.4 : 1)
 
-            Button("清空")
-              .width(72)
-              .height(42)
+            Button('清空')
+              .height(40)
               .fontSize(16)
-              .margin({ left: 8 })
+              .fontWeight(500)
               .fontColor('#fff')
               .backgroundColor('#ea4335')
-              .borderRadius(18)
+              .borderRadius(8)
               .onClick(() => {
                 this.clearChat();
               })
@@ -689,7 +581,7 @@ struct Index {
         .width('100%')
         .padding(8)
         .backgroundColor(Color.White)
-        .borderRadius(16)
+        .borderRadius(8)
         .shadow({
           radius: 4,
           color: '#1a73e888',
@@ -699,8 +591,8 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .padding(12)
       .backgroundColor('#f0f5ff')
+      .padding(20)
     }
     .width('100%')
     .height('100%')

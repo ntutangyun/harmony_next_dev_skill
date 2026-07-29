@@ -47,9 +47,11 @@ let bundleName: string = '';
 try {
   metadataBinding.on('operationSubmitMetadata', bundleName, callback);
   console.info('on succeeded');
+  // ...
 } catch (err) {
   let error = err as BusinessError;
   console.error('Register event error and err code is ' + error.code);
+  // ...
 }
 
 提供鸿蒙App Linking链接。
@@ -57,9 +59,11 @@ try {
 let metadata: string = '';
 try {
   metadataBinding.submitMetadata(metadata);
+  // ...
 } catch (err) {
   let error = err as BusinessError;
   console.error('Submit metadata error and err code is ' + error.code);
+  // ...
 }
 
 取消订阅记忆服务。
@@ -67,9 +71,11 @@ try {
 try {
   metadataBinding.off('operationSubmitMetadata', bundleName, callback);
   console.info('off succeeded');
+  // ...
 } catch (err) {
   let error = err as BusinessError;
   console.error('Unregister event error and err code is ' + error.code);
+  // ...
 }
 
 ## Code blocks
@@ -95,9 +101,11 @@ let bundleName: string = '';
 try {
   metadataBinding.on('operationSubmitMetadata', bundleName, callback);
   console.info('on succeeded');
+  // ...
 } catch (err) {
   let error = err as BusinessError;
   console.error('Register event error and err code is ' + error.code);
+  // ...
 }
 ```
 
@@ -107,9 +115,11 @@ try {
 let metadata: string = '';
 try {
   metadataBinding.submitMetadata(metadata);
+  // ...
 } catch (err) {
   let error = err as BusinessError;
   console.error('Submit metadata error and err code is ' + error.code);
+  // ...
 }
 ```
 
@@ -119,8 +129,10 @@ try {
 try {
   metadataBinding.off('operationSubmitMetadata', bundleName, callback);
   console.info('off succeeded');
+  // ...
 } catch (err) {
   let error = err as BusinessError;
   console.error('Unregister event error and err code is ' + error.code);
+  // ...
 }
 ```

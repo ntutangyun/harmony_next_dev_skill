@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 应用调用拉起许可应用跳转页的接口，拉起健康使用设备查询开发者是否已申请权限，以及用户是否授权。
 
-若状态为未授权，则抛出对应错误码；若状态为已授权，将根据传入的token获取对应应用信息，同时判断是否展示TrustApp，并拉起应用列表Form。
+若开发者没有权限或用户没有授权，则抛出相应错误码。若开发者有权限且用户已授权，将根据传入的token获取对应应用信息，同时判断是否展示TrustApp，并拉起应用列表Form。
 
 用户点击跳转页中的应用，跳转到相应的应用。
 

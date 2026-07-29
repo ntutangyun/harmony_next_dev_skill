@@ -221,7 +221,30 @@ static void OnNewOutputBuffer(OH_AVCodec *codec, uint32_t index, OH_AVBuffer *bu
     }
 }
 
-（可选）在输出轮转中，使用步骤3获取的时域层级信息，自适应传输或自适应解码。
+从API版本26.0.0开始，可以通过OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_LAYER_ID字段获取时域层级信息，无需根据TGOP参数及出帧信息自行计算所属时域层级信息。时域层号为0时，表示基础层，1及以上时表示增强层。
+
+示例代码如下：
+
+static int32_t GetTemporalLayerID(OH_AVBuffer *buffer)
+{
+    int32_t layerID = -1;
+    OH_AVFormat *format = OH_AVBuffer_GetParameter(buffer);
+    OH_AVFormat_GetIntValue(format, OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_LAYER_ID, &layerID);
+    return layerID;
+}
+
+void SampleCallback::OnNewOutputBuffer(OH_AVCodec *codec, uint32_t index, OH_AVBuffer *buffer, void *userData)
+{
+    if (userData == nullptr) {
+        return;
+    }
+    // ...
+
+    // 从AVBuffer中获取时域层级信息。
+    int32_t layerID = GetTemporalLayerID(buffer);
+}
+
+（可选）在输出过程中，使用步骤4获取的时域层级信息，开发者可根据实际带宽或业务场景实现自适应传输或自适应解码。
 
 根据获取的时域可分层码流和对应的层级信息，开发者可选择需要的层级进行传输，或携带至对端自适应选帧解码。
 
@@ -512,6 +535,29 @@ static void OnNewOutputBuffer(OH_AVCodec *codec, uint32_t index, OH_AVBuffer *bu
 ### Code block 7
 
 ```
+static int32_t GetTemporalLayerID(OH_AVBuffer *buffer)
+{
+    int32_t layerID = -1;
+    OH_AVFormat *format = OH_AVBuffer_GetParameter(buffer);
+    OH_AVFormat_GetIntValue(format, OH_MD_KEY_VIDEO_ENCODER_TEMPORAL_LAYER_ID, &layerID);
+    return layerID;
+}
+
+void SampleCallback::OnNewOutputBuffer(OH_AVCodec *codec, uint32_t index, OH_AVBuffer *buffer, void *userData)
+{
+    if (userData == nullptr) {
+        return;
+    }
+    // ...
+
+    // 从AVBuffer中获取时域层级信息。
+    int32_t layerID = GetTemporalLayerID(buffer);
+}
+```
+
+### Code block 8
+
+```
 constexpr int32_t NEEDED_LTR_COUNT = 5;
 bool isSupported = false;
 int32_t supportedLTRCount = 0;
@@ -531,7 +577,7 @@ if (isSupported) {
 }
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 // 2.1 编码输入回调OH_AVCodecOnNeedInputBuffer实现。
@@ -571,7 +617,7 @@ cb.onNewOutputBuffer = OnNewOutputBuffer;
 OH_VideoEncoder_RegisterCallback(videoEnc, cb, nullptr);
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 // 2.1 编码输入参数回调OH_VideoEncoder_OnNeedInputParameter实现。
@@ -608,7 +654,7 @@ OH_VideoEncoder_OnNeedInputParameter inParaCb = OnNeedInputParameter;
 OH_VideoEncoder_RegisterParameterCallback(videoEnc, inParaCb, nullptr);
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 constexpr int32_t NEEDED_LTR_COUNT = 5;

@@ -14,9 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 开发步骤
 
-将UX设计师提供的Symbol图标资源（TTF文件）与动效参数资源（JSON文件）放入entry/src/main/resources/rawfile下，可新建目录。
-
-说明：Symbol资源设计流程参考
+将Symbol图标资源（TTF文件，设计规范参见图标设计文档）与动效参数资源（JSON文件）放入entry/src/main/resources/rawfile目录下，可在此目录下新建子目录。
 
 多语言场景，在entry/src/main/resources目录中对应语言目录下的string.json文件中配置对应的Symbol图标Unicode值。
 
@@ -31,37 +29,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 导入相关模块。
 
-import { symbolRegister } from '@kit.UIDesignKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-
-在通过SymbolGlyph/SymbolSpan组件展示自定义Symbol图标前，需要注册加载图标资源与动效参数资源。
-
-try {
-  let result = symbolRegister.registerSymbol($rawfile("symbol/symbol_register.ttf"), $rawfile("symbol/symbol_register.json"));
-} catch (error) {
-  let err = error as BusinessError;
-  console.error("errCode: " + err.code)
-  console.error("error: " + err.message);
-}
-
-在需要展示自定义Symbol图标的页面通过SymbolGlyph/SymbolSpan组件展示该图标。
-
-struct test {
-  build() {
-    Column(){
-      SymbolGlyph($r('app.string.symbol_custom_phone_fill_1'))
-    }
-  }
-}
-
-开发实例
-
 import { symbolRegister } from '@kit.UIDesignKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 
+在通过SymbolGlyph/SymbolSpan组件展示自定义Symbol图标前，需要注册加载图标资源与动效参数资源。在需要展示自定义Symbol图标的页面通过SymbolGlyph/SymbolSpan组件展示该图标。
+
 @Entry
 @Component
-struct test {
+struct Index {
   aboutToAppear(): void {
     try {
       let result = symbolRegister.registerSymbol($rawfile("symbol/symbol_register.ttf"), $rawfile("symbol/symbol_register.json"));
@@ -75,6 +50,8 @@ struct test {
     Column(){
       SymbolGlyph($r('app.string.symbol_custom_phone_fill_1'))
     }
+    .width('100%')
+    .height('100%')
   }
 }
 
@@ -96,43 +73,16 @@ struct test {
 ### Code block 2
 
 ```
-import { symbolRegister } from '@kit.UIDesignKit';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { symbolRegister } from '@kit.UIDesignKit'
+import { BusinessError } from '@kit.BasicServicesKit'
 ```
 
 ### Code block 3
 
 ```
-try {
-  let result = symbolRegister.registerSymbol($rawfile("symbol/symbol_register.ttf"), $rawfile("symbol/symbol_register.json"));
-} catch (error) {
-  let err = error as BusinessError;
-  console.error("errCode: " + err.code)
-  console.error("error: " + err.message);
-}
-```
-
-### Code block 4
-
-```
-struct test {
-  build() {
-    Column(){
-      SymbolGlyph($r('app.string.symbol_custom_phone_fill_1'))
-    }
-  }
-}
-```
-
-### Code block 5
-
-```
-import { symbolRegister } from '@kit.UIDesignKit'
-import { BusinessError } from '@kit.BasicServicesKit'
-
 @Entry
 @Component
-struct test {
+struct Index {
   aboutToAppear(): void {
     try {
       let result = symbolRegister.registerSymbol($rawfile("symbol/symbol_register.ttf"), $rawfile("symbol/symbol_register.json"));
@@ -146,6 +96,8 @@ struct test {
     Column(){
       SymbolGlyph($r('app.string.symbol_custom_phone_fill_1'))
     }
+    .width('100%')
+    .height('100%')
   }
 }
 ```

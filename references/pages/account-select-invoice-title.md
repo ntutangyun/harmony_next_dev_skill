@@ -37,45 +37,26 @@ selectInvoiceTitle(context: common.Context): Promise<InvoiceTitle>	调用该方�
 
 导入invoiceAssistant模块及相关公共模块。
 
-import { invoiceAssistant } from '@kit.AccountKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { invoiceAssistant } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 调用selectInvoiceTitle方法选择发票抬头页面。
 
-// 执行请求
-if (canIUse('SystemCapability.HuaweiID.InvoiceAssistant')) {
-  try {
-    // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
-    invoiceAssistant.selectInvoiceTitle(this.getUIContext().getHostContext())
-      .then((data: invoiceAssistant.InvoiceTitle) => {
-        hilog.info(0x0000, 'testTag', 'Succeeded in selecting invoice title');
-        const type: string = data.type;
-        const title: string = data.title;
-        const taxNumber: string = data.taxNumber;
-        const companyAddress: string = data.companyAddress;
-        const telephone: string = data.telephone;
-        const bankName: string = data.bankName;
-        const bankAccount: string = data.bankAccount;
-
-        // 开发者处理type, title, taxNumber, companyAddress, telephone, bankName, bankAccount
-        // ...
-
-      })
-      .catch((error: BusinessError<Object>) => {
-        dealAllError(error);
-      });
-  } catch (error) {
-    dealAllError(error);
+try {
+  if (canIUse('SystemCapability.HuaweiID.InvoiceAssistant')) {
+    invoiceAssistant.selectInvoiceTitle(context).then((data: invoiceAssistant.InvoiceTitle) => {
+      // ...
+    }).catch((error: BusinessError) => {
+      hilog.error(domainId, logTag,
+        `Failed to selectInvoiceTitle. BusinessError errCode: ${error.code}, errMessage: ${error.message}`);
+    });
+  } else {
+    hilog.error(domainId, logTag, 'The API is not supported on this device.');
   }
-} else {
-  hilog.info(0x0000, 'testTag',
-    'The current device does not support the invoking of the selectInvoiceTitle interface.');
-}
-
-// 错误处理
-function dealAllError(error: BusinessError<Object>): void {
-  hilog.error(0x0000, 'testTag', `Failed to selectInvoiceTitle. Code: ${error.code}, message: ${error.message}`);
+} catch (error) {
+  hilog.error(domainId, logTag,
+    `Failed to selectInvoiceTitle. errCode: ${error.code}, errMessage: ${error.message}`);
 }
 
 ## Code blocks
@@ -83,50 +64,27 @@ function dealAllError(error: BusinessError<Object>): void {
 ### Code block 1
 
 ```
-import { invoiceAssistant } from '@kit.AccountKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { invoiceAssistant } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 2
 
 ```
-// 执行请求
-if (canIUse('SystemCapability.HuaweiID.InvoiceAssistant')) {
-  try {
-    // 此示例为代码片段，实际需在自定义组件实例中使用，并传入有效的Context上下文对象
-    invoiceAssistant.selectInvoiceTitle(this.getUIContext().getHostContext())
-      .then((data: invoiceAssistant.InvoiceTitle) => {
-        hilog.info(0x0000, 'testTag', 'Succeeded in selecting invoice title');
-        const type: string = data.type;
-        const title: string = data.title;
-        const taxNumber: string = data.taxNumber;
-        const companyAddress: string = data.companyAddress;
-        const telephone: string = data.telephone;
-        const bankName: string = data.bankName;
-        const bankAccount: string = data.bankAccount;
-
-        // 开发者处理type, title, taxNumber, companyAddress, telephone, bankName, bankAccount
-        // ...
-
-      })
-      .catch((error: BusinessError<Object>) => {
-        dealAllError(error);
-      });
-  } catch (error) {
-    dealAllError(error);
+try {
+  if (canIUse('SystemCapability.HuaweiID.InvoiceAssistant')) {
+    invoiceAssistant.selectInvoiceTitle(context).then((data: invoiceAssistant.InvoiceTitle) => {
+      // ...
+    }).catch((error: BusinessError) => {
+      hilog.error(domainId, logTag,
+        `Failed to selectInvoiceTitle. BusinessError errCode: ${error.code}, errMessage: ${error.message}`);
+    });
+  } else {
+    hilog.error(domainId, logTag, 'The API is not supported on this device.');
   }
-} else {
-  hilog.info(0x0000, 'testTag',
-    'The current device does not support the invoking of the selectInvoiceTitle interface.');
-}
-```
-
-### Code block 3
-
-```
-// 错误处理
-function dealAllError(error: BusinessError<Object>): void {
-  hilog.error(0x0000, 'testTag', `Failed to selectInvoiceTitle. Code: ${error.code}, message: ${error.message}`);
+} catch (error) {
+  hilog.error(domainId, logTag,
+    `Failed to selectInvoiceTitle. errCode: ${error.code}, errMessage: ${error.message}`);
 }
 ```

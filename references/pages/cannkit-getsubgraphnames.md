@@ -18,7 +18,7 @@ graphStatus GetSubgraphNames(std::vector<AscendString> &names) const;
 参数说明
 
 参数名	输入/输出	描述
-names	输出	获取一个算子的子图名称列表。
+names	输出	返回一个子图名称的列表。
 
 返回值
 

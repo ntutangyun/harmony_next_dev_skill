@@ -198,15 +198,15 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestStartVerifyRealNameInfoPromise() {
-    // use your own preVerifyId
+    // 请使用开发者真实的预验证ID（preVerifyId）
     let preVerifyId = '';
     realNameService.startRealNameVerification(this.context, preVerifyId)
       .then((verifyResultId: string) => {
-        // verify success
+        // 实名信息验证成功
         console.info(`succeeded in verifying, verifyResultId: ${verifyResultId}`);
       })
       .catch((error: BusinessError) => {
-        // failed to verify
+        // 实名信息验证失败
         console.error(`failed to verify, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -220,7 +220,7 @@ struct Index {
         .onClick(() => {
           this.requestStartVerifyRealNameInfoPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }
@@ -247,11 +247,11 @@ struct Index {
   requestStartRealNameAuthPromise() {
     realNameService.startRealNameAuth(this.context)
       .then((realNameAuthId: string) => {
-        // authorize success
+        // 授权成功
         console.info(`succeeded in authorizing, realNameAuthId: ${realNameAuthId}`);
       })
       .catch((error: BusinessError) => {
-        // failed to authorise
+        // 授权失败
         console.error(`failed to authorise, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -265,7 +265,7 @@ struct Index {
         .onClick(() => {
           this.requestStartRealNameAuthPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }
@@ -388,15 +388,15 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestStartVerifyRealNameInfoPromise() {
-    // use your own preVerifyId
+    // 请使用开发者真实的预验证ID（preVerifyId）
     let preVerifyId = '';
     realNameService.startRealNameVerification(this.context, preVerifyId)
       .then((verifyResultId: string) => {
-        // verify success
+        // 实名信息验证成功
         console.info(`succeeded in verifying, verifyResultId: ${verifyResultId}`);
       })
       .catch((error: BusinessError) => {
-        // failed to verify
+        // 实名信息验证失败
         console.error(`failed to verify, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -410,7 +410,7 @@ struct Index {
         .onClick(() => {
           this.requestStartVerifyRealNameInfoPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }
@@ -431,11 +431,11 @@ struct Index {
   requestStartRealNameAuthPromise() {
     realNameService.startRealNameAuth(this.context)
       .then((realNameAuthId: string) => {
-        // authorize success
+        // 授权成功
         console.info(`succeeded in authorizing, realNameAuthId: ${realNameAuthId}`);
       })
       .catch((error: BusinessError) => {
-        // failed to authorise
+        // 授权失败
         console.error(`failed to authorise, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -449,7 +449,7 @@ struct Index {
         .onClick(() => {
           this.requestStartRealNameAuthPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }

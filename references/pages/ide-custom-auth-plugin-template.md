@@ -29,7 +29,7 @@ export class CustomAuth implements AuthPlugin {
   async authWithReadOnly(accessToken: string): Promise<{
     id: string;                         // 用户的id，保证唯一性
     name: string;                       // 用户的名字，保证唯一性
-    belongGroupList: Array<string>;     // 用户所在的组织，具有发指定组织包的权限
+    belongGroupList: Array<string>;     // 用户所在的组织，具有发布指定组织包的权限
     groupAdminList: Array<string>;      // 用户所管理的组织，具有删除指定组织内包的权限
   }> {
     let id: string, name: string, belongGroupList: Array<string>, groupAdminList: Array<string>;
@@ -106,7 +106,7 @@ export class CustomAuth implements AuthPlugin {
   async authWithReadOnly(accessToken: string): Promise<{
     id: string;                         // 用户的id，保证唯一性
     name: string;                       // 用户的名字，保证唯一性
-    belongGroupList: Array<string>;     // 用户所在的组织，具有发指定组织包的权限
+    belongGroupList: Array<string>;     // 用户所在的组织，具有发布指定组织包的权限
     groupAdminList: Array<string>;      // 用户所管理的组织，具有删除指定组织内包的权限
   }> {
     let id: string, name: string, belongGroupList: Array<string>, groupAdminList: Array<string>;

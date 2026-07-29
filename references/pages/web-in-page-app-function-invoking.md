@@ -75,6 +75,7 @@ struct WebComponent {
 
 示例1：
 
+// xxx.ets
 import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -110,6 +111,7 @@ struct Index {
           }
         })
       Web({ src: $rawfile('index1.html'), controller: this.webviewController })
+      // 在页面加载前注册，页面加载完成后生效
         .onControllerAttached(()=>{
           try {
             this.webviewController.registerJavaScriptProxy(this.testObj, 'testObjName', ['test', 'toString'],
@@ -132,7 +134,6 @@ struct Index {
 
 示例2：
 
-// xxx.ets
 // xxx.ets
 import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -903,6 +904,7 @@ struct WebComponent {
 ### Code block 2
 
 ```
+// xxx.ets
 import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -938,6 +940,7 @@ struct Index {
           }
         })
       Web({ src: $rawfile('index1.html'), controller: this.webviewController })
+      // 在页面加载前注册，页面加载完成后生效
         .onControllerAttached(()=>{
           try {
             this.webviewController.registerJavaScriptProxy(this.testObj, 'testObjName', ['test', 'toString'],
@@ -962,7 +965,6 @@ struct Index {
 ### Code block 3
 
 ```
-// xxx.ets
 // xxx.ets
 import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';

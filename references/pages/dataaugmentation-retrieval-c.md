@@ -156,7 +156,7 @@ ret = OH_Rdb_SetArea(rdbConfig, RDB_SECURITY_AREA_EL1);
 // 设置数据库配置
 ret = OH_Retrieval_SetDbConfig(dbConfig, rdbConfig);
 // 把数据库配置添加到检索器中
-ret = OH_Retrieval_AddConfig(config, Retrieval_TYPE_VECTOR, dbConfig);
+ret = OH_Retrieval_AddConfig(config, RETRIEVAL_TYPE_VECTOR, dbConfig);
 
 执行检索：使用前一步获取到的检索器，配合检索条件进行检索。
 
@@ -402,7 +402,7 @@ ret = OH_Rdb_SetArea(rdbConfig, RDB_SECURITY_AREA_EL1);
 // 设置数据库配置
 ret = OH_Retrieval_SetDbConfig(dbConfig, rdbConfig);
 // 把数据库配置添加到检索器中
-ret = OH_Retrieval_AddConfig(config, Retrieval_TYPE_VECTOR, dbConfig);
+ret = OH_Retrieval_AddConfig(config, RETRIEVAL_TYPE_VECTOR, dbConfig);
 ```
 
 ### Code block 5

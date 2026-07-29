@@ -55,6 +55,7 @@ public:
     {
         // 释放创建的组件。
         while (!cachedItems_.empty()) {
+            nodeApi_->disposeNode(cachedItems_.top());
             cachedItems_.pop();
         }
         // 释放Adapter相关资源。
@@ -197,6 +198,20 @@ private:
 } // namespace NativeModule
 
 #endif // MYAPPLICATION_FLOWITEMADAPTER_H
+
+[h2]更新和复用FlowItem
+
+通过NodeAdapter复用FlowItem时，建议保持FlowItem及其直属子组件的节点结构稳定，并通过setAttribute更新已有子组件的内容或样式。上述示例在复用FlowItem时，仅更新已有Text组件的文本内容。
+
+说明
+
+对于已经显示且设置固定尺寸的FlowItem，不建议在WaterFlow滚动过程中先调用removeChild移除其直属子组件，再调用addChild挂载新的直属子组件。该写法可能导致新挂载的子组件未及时参与布局，造成显示异常。
+
+需要更新复杂内容时，建议采用以下方式之一：
+
+保持FlowItem的直属容器（例如Stack或Column）不变，仅更新容器内的内容。
+
+创建新的FlowItem及其完整子树，并通过OH_ArkUI_NodeAdapter_ReloadItem通知NodeAdapter更新对应数据项。
 
 创建分组
 
@@ -420,6 +435,7 @@ public:
     {
         // 释放创建的组件。
         while (!cachedItems_.empty()) {
+            nodeApi_->disposeNode(cachedItems_.top());
             cachedItems_.pop();
         }
         // 释放Adapter相关资源。

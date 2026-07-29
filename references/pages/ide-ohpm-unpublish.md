@@ -36,7 +36,7 @@ Options
 
 别名：f
 
-强制下架。
+默认不开启。使用 --force 或者 -f 参数，开启强制下架。
 
 [h2]publish_registry
 

@@ -39,20 +39,26 @@ off(type: 'superPrivacyModeChange', callback?: Callback<SuperPrivacyMode>): void
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
+
+定义超级隐私模式状态改变时触发的回调函数。
+
+const superPrivacyChangedCallback = (mode: superPrivacyMode.SuperPrivacyMode): void => {
+  hilog.info(DOMAIN, TAG, `super privacy mode changed, mode = ${mode}`);
+  // ...
+}
+
 调用on接口订阅超级隐私模式状态改变事件。
 
-const DOMAIN = 0x0000;
-const TAG = "SuperPrivacyModeTest";
-
-const superPrivacyChangedCallback = (superPrivacyMode: superPrivacyMode.SuperPrivacyMode): void => {
-  hilog.info(DOMAIN, TAG, `super privcy mode changed, mode = ${superPrivacyMode}`);
-}
 hilog.info(DOMAIN, TAG, 'start register super privacy mode changed listener');
 try {
   superPrivacyMode.on('superPrivacyModeChange', superPrivacyChangedCallback);
   hilog.info(DOMAIN, TAG, 'register super privacy mode change listener success');
+  // ...
 } catch (err) {
   hilog.error(DOMAIN, TAG, `register super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
 }
 
 调用off接口取消订阅超级隐私模式状态改变事件。
@@ -60,8 +66,11 @@ try {
 hilog.info(DOMAIN, TAG, 'start unregister super privacy mode changed listener');
 try {
   superPrivacyMode.off('superPrivacyModeChange', superPrivacyChangedCallback);
+  subscribeCallback_ = null;
+  // ...
 } catch (err) {
   hilog.error(DOMAIN, TAG, `unregister super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
 }
 
 ## Code blocks
@@ -71,33 +80,44 @@ try {
 ```
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
 ```
 
 ### Code block 2
 
 ```
-const DOMAIN = 0x0000;
-const TAG = "SuperPrivacyModeTest";
-
-const superPrivacyChangedCallback = (superPrivacyMode: superPrivacyMode.SuperPrivacyMode): void => {
-  hilog.info(DOMAIN, TAG, `super privcy mode changed, mode = ${superPrivacyMode}`);
-}
-hilog.info(DOMAIN, TAG, 'start register super privacy mode changed listener');
-try {
-  superPrivacyMode.on('superPrivacyModeChange', superPrivacyChangedCallback);
-  hilog.info(DOMAIN, TAG, 'register super privacy mode change listener success');
-} catch (err) {
-  hilog.error(DOMAIN, TAG, `register super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
+const superPrivacyChangedCallback = (mode: superPrivacyMode.SuperPrivacyMode): void => {
+  hilog.info(DOMAIN, TAG, `super privacy mode changed, mode = ${mode}`);
+  // ...
 }
 ```
 
 ### Code block 3
 
 ```
+hilog.info(DOMAIN, TAG, 'start register super privacy mode changed listener');
+try {
+  superPrivacyMode.on('superPrivacyModeChange', superPrivacyChangedCallback);
+  hilog.info(DOMAIN, TAG, 'register super privacy mode change listener success');
+  // ...
+} catch (err) {
+  hilog.error(DOMAIN, TAG, `register super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
+}
+```
+
+### Code block 4
+
+```
 hilog.info(DOMAIN, TAG, 'start unregister super privacy mode changed listener');
 try {
   superPrivacyMode.off('superPrivacyModeChange', superPrivacyChangedCallback);
+  subscribeCallback_ = null;
+  // ...
 } catch (err) {
   hilog.error(DOMAIN, TAG, `unregister super privacy changed listener failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
 }
 ```

@@ -18,21 +18,28 @@ startFileScanTask(path: string, callback: ScanFileCallback, batchNum?: number): 
 
 导入模块。
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { fileGuard } from '@kit.EnterpriseDataGuardKit';
 
 初始化FileGuard对象guard，并且声明扫描结果回调函数。
 
 按照文件类型扫描公共空间文件，查看打印结果。
 
+const TAG: string = 'FileGuard_Scan';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 启动公共目录文件扫描任务
+ */
 function startFileScanTaskUnderCommonDir() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let onReceiveFileList: (files: string[]) => void = (files: Array<string>) => {
-    files.forEach((value: string, index: number) => {
-      console.info(`Succeeded in getting file: ${value}.`);
+    files.forEach((value: string) => {
+      hilog.info(DOMAIN, TAG, `Succeeded in getting file: ${value}.`);
     })
   };
   let onCompleteScanTask: (count: number) => void = (count: number) => {
-    console.info(`Succeeded in getting count: ${count}.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in getting count: ${count}.`);
   };
   let scanFileCallback: fileGuard.ScanFileCallback = {
     onReceiveFileList: onReceiveFileList,
@@ -43,16 +50,23 @@ function startFileScanTaskUnderCommonDir() {
 
 扫描公共空间指定路径下的文件，查看打印结果。
 
+const TAG: string = 'FileGuard_Scan';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 启动指定目录文件扫描任务
+ */
 function startFileScanTaskUnderSpecifiedDir() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let path: string = '/data/service/el2/test';
   let onReceiveFileList: (files: string[]) => void = (files: Array<string>) => {
-    files.forEach((value: string, index: number) => {
-      console.info(`Succeeded in getting file: ${value}.`);
+    files.forEach((value: string) => {
+      hilog.info(DOMAIN, TAG, `Succeeded in getting file: ${value}.`);
     })
   };
   let onCompleteScanTask: (count: number) => void = (count: number) => {
-    console.info(`Succeeded in getting count: ${count}.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in getting count: ${count}.`);
   };
   let scanFileCallback: fileGuard.ScanFileCallback = {
     onReceiveFileList: onReceiveFileList,
@@ -66,21 +80,28 @@ function startFileScanTaskUnderSpecifiedDir() {
 ### Code block 1
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { fileGuard } from '@kit.EnterpriseDataGuardKit';
 ```
 
 ### Code block 2
 
 ```
+const TAG: string = 'FileGuard_Scan';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 启动公共目录文件扫描任务
+ */
 function startFileScanTaskUnderCommonDir() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let onReceiveFileList: (files: string[]) => void = (files: Array<string>) => {
-    files.forEach((value: string, index: number) => {
-      console.info(`Succeeded in getting file: ${value}.`);
+    files.forEach((value: string) => {
+      hilog.info(DOMAIN, TAG, `Succeeded in getting file: ${value}.`);
     })
   };
   let onCompleteScanTask: (count: number) => void = (count: number) => {
-    console.info(`Succeeded in getting count: ${count}.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in getting count: ${count}.`);
   };
   let scanFileCallback: fileGuard.ScanFileCallback = {
     onReceiveFileList: onReceiveFileList,
@@ -93,16 +114,23 @@ function startFileScanTaskUnderCommonDir() {
 ### Code block 3
 
 ```
+const TAG: string = 'FileGuard_Scan';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 启动指定目录文件扫描任务
+ */
 function startFileScanTaskUnderSpecifiedDir() {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let path: string = '/data/service/el2/test';
   let onReceiveFileList: (files: string[]) => void = (files: Array<string>) => {
-    files.forEach((value: string, index: number) => {
-      console.info(`Succeeded in getting file: ${value}.`);
+    files.forEach((value: string) => {
+      hilog.info(DOMAIN, TAG, `Succeeded in getting file: ${value}.`);
     })
   };
   let onCompleteScanTask: (count: number) => void = (count: number) => {
-    console.info(`Succeeded in getting count: ${count}.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in getting count: ${count}.`);
   };
   let scanFileCallback: fileGuard.ScanFileCallback = {
     onReceiveFileList: onReceiveFileList,

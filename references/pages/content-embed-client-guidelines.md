@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/content-e
 
 OH_ContentEmbed内容嵌入模块提供对象编辑框架与技术，支持应用间文档嵌入与协同编辑。
 
-OE客户端应用指嵌入其它文档的应用，通过调用OE框架层接口实现嵌入外部文档、展示文档快照，以及按需启动OE服务端应用编辑文档的功能。
+OE客户端应用指嵌入其他文档的应用，通过调用OE框架层content_embed_proxy.h提供的接口实现嵌入外部文档、展示文档快照，以及按需启动OE服务端应用编辑文档的功能。
 
 典型应用场景包括：
 
@@ -18,7 +18,7 @@ OE客户端应用指嵌入其它文档的应用，通过调用OE框架层接口�
 
 约束限制
 
-在使用接口前，需先确认设备具备SystemCapability.ContentEmbed.ObjectEditor系统能力，判断方式请参阅查询指定的系统能力是否被支持。并申请ohos.permission.CONNECT_OBJECTEDITOR_EXTENSION权限，配置方式请参阅声明权限。
+在使用接口前，需先确认设备具备SystemCapability.ContentEmbed.ObjectEditor系统能力，判断方式请参阅canIUse()接口查询指定的系统能力是否被支持。并申请ohos.permission.CONNECT_OBJECTEDITOR_EXTENSION权限，配置方式请参阅声明权限。
 
 接口说明
 
@@ -158,6 +158,7 @@ void QueryFormatByOEid(const std::string &oeid, const std::string &locale)
         OH_LOG_ERROR(LOG_APP, "OH_ContentEmbed_GetContentEmbedFormatByOEidAndLocale failed, errCode: %{public}d.", errCode);
         // 查询失败销毁ContentEmbed_Format对象
         OH_ContentEmbed_DestroyContentEmbedFormat(ceFormat);
+        return;
     }
     char name[MAX_NAME_LENGTH];
     char description[MAX_DESCRIPTION_LENGTH];
@@ -528,6 +529,7 @@ void QueryFormatByOEid(const std::string &oeid, const std::string &locale)
         OH_LOG_ERROR(LOG_APP, "OH_ContentEmbed_GetContentEmbedFormatByOEidAndLocale failed, errCode: %{public}d.", errCode);
         // 查询失败销毁ContentEmbed_Format对象
         OH_ContentEmbed_DestroyContentEmbedFormat(ceFormat);
+        return;
     }
     char name[MAX_NAME_LENGTH];
     char description[MAX_DESCRIPTION_LENGTH];

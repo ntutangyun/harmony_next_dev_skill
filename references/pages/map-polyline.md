@@ -221,6 +221,7 @@ let textLine: mapCommon.LineText = {
   fontStyle: 0
 };
 this.mapPolyline.addLineText(textLine);
+// ...
 
 // 删除折线文字
 this.mapPolyline.removeLineText();
@@ -434,6 +435,7 @@ let textLine: mapCommon.LineText = {
   fontStyle: 0
 };
 this.mapPolyline.addLineText(textLine);
+// ...
 
 // 删除折线文字
 this.mapPolyline.removeLineText();

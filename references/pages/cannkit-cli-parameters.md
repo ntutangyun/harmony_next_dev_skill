@@ -26,7 +26,7 @@ tiling	开启Tiling调测的固定参数。	是	无	无。
 --log-level	日志级别。	否	info	支持debug 、info、warning、error级别。
 --log-file	日志文件路径。	否	缺省值为当前目录下的debug_op.log文件（若无则会新建）。	根据设置的--log-level存放程序执行过程中的日志信息。
 --repo-type	算子开发场景类型。	否	customize	根据实际情况设置。 - minimalist：核函数直调工程场景。 - customize：标准自定义算子工程。
---customize-path	自定义算子包的安装目录。	否	无	开发者无需关注，当前固定为${install_path}/ddk/ tools/tools_ascendc/custom_op/${chip-version}。 说明： 仅当--repo-type为customize，该参数生效。
+--customize-path	自定义算子包的安装目录。	否	无	开发者无需关注，当前固定为${install_path}/ddk/tools/tools_ascendc/custom_op/${chip-version}。 说明： 仅当--repo-type为customize，该参数生效。
 --tiling-json	Tiling json文件路径（绝对路径），用于生成自定义Tiling data。	否	无	说明： 预留参数项，开发者无需关注。
 --repo-path	算子源码仓所在路径（绝对路径）。	否	无	说明： 预留参数项，开发者无需关注。
 --recompile-tiling	是否重新编译算子Tiling so，无需配置值。	否	无	说明： 预留参数项，开发者无需关注。

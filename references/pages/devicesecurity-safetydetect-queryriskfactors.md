@@ -56,7 +56,7 @@ queryRiskFactors(req: RiskFactorRequest): Promise<RiskFactorResponse>	查询设�
 导入Device Security Kit模块及相关公共模块。
 
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 通过调用queryRiskFactors接口，获取风控因子检测结果。
@@ -65,24 +65,26 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 由于queryRiskFactors接口涉及多项数据采集及网络请求等耗时操作，请勿在UI线程中调用，以免阻塞UI响应。
 
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求风控因子数据，并处理结果
 const request: safetyDetect.RiskFactorRequest = {
-   nonce: 'a1b2c3d4e5f6g7hfsdfxvsdae8', // 16-66字节的防重放随机数
-   queries: [
-       { factor: safetyDetect.RiskFactorType.HDC_DEBUG_STATE },
-       { factor: safetyDetect.RiskFactorType.IS_DEVELOPER_MODE },
-       { factor: safetyDetect.RiskFactorType.ODID_RESET_CNT }
-   ]
+  nonce: 'a1b2c3d4e5f6g7hfsdfxvsdae8', // 16-66字节的防重放随机数
+  queries: [
+    { factor: safetyDetect.RiskFactorType.HDC_DEBUG_STATE },
+    { factor: safetyDetect.RiskFactorType.IS_DEVELOPER_MODE },
+    { factor: safetyDetect.RiskFactorType.ODID_RESET_CNT }
+  ]
 };
 try {
-   hilog.info(0x0000, TAG, 'QueryRiskFactors begin.');
-   const response: safetyDetect.RiskFactorResponse = await safetyDetect.queryRiskFactors(request);
-   hilog.info(0x0000, TAG, 'Succeeded in QueryRiskFactors: %{public}s', response.result);
+  hilog.info(0x0000, TAG, 'QueryRiskFactors begin.');
+  const response: safetyDetect.RiskFactorResponse = await safetyDetect.queryRiskFactors(request);
+  hilog.info(0x0000, TAG, 'Succeeded in QueryRiskFactors: %{public}s', response.result);
+  // ...
 } catch (err) {
-   let e: BusinessError = err as BusinessError;
-   hilog.error(0x0000, TAG, 'QueryRiskFactors failed: %{public}d %{public}s', e.code, e.message);
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'QueryRiskFactors failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 
 在开发者应用服务器中验证检测结果。
@@ -170,31 +172,33 @@ ON_CALL_STATE	number	通话状态。 0：未通话 1：语音通话中 2：视�
 
 ```
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求风控因子数据，并处理结果
 const request: safetyDetect.RiskFactorRequest = {
-   nonce: 'a1b2c3d4e5f6g7hfsdfxvsdae8', // 16-66字节的防重放随机数
-   queries: [
-       { factor: safetyDetect.RiskFactorType.HDC_DEBUG_STATE },
-       { factor: safetyDetect.RiskFactorType.IS_DEVELOPER_MODE },
-       { factor: safetyDetect.RiskFactorType.ODID_RESET_CNT }
-   ]
+  nonce: 'a1b2c3d4e5f6g7hfsdfxvsdae8', // 16-66字节的防重放随机数
+  queries: [
+    { factor: safetyDetect.RiskFactorType.HDC_DEBUG_STATE },
+    { factor: safetyDetect.RiskFactorType.IS_DEVELOPER_MODE },
+    { factor: safetyDetect.RiskFactorType.ODID_RESET_CNT }
+  ]
 };
 try {
-   hilog.info(0x0000, TAG, 'QueryRiskFactors begin.');
-   const response: safetyDetect.RiskFactorResponse = await safetyDetect.queryRiskFactors(request);
-   hilog.info(0x0000, TAG, 'Succeeded in QueryRiskFactors: %{public}s', response.result);
+  hilog.info(0x0000, TAG, 'QueryRiskFactors begin.');
+  const response: safetyDetect.RiskFactorResponse = await safetyDetect.queryRiskFactors(request);
+  hilog.info(0x0000, TAG, 'Succeeded in QueryRiskFactors: %{public}s', response.result);
+  // ...
 } catch (err) {
-   let e: BusinessError = err as BusinessError;
-   hilog.error(0x0000, TAG, 'QueryRiskFactors failed: %{public}d %{public}s', e.code, e.message);
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'QueryRiskFactors failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 ```
 

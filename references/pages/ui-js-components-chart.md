@@ -220,36 +220,36 @@ chart组件在options属性中设置对x轴、y轴和数据序列参数的设置
 // xxx.js
 export default {
   data: {
-    //线形图数据
+    // 线形图数据
     lineData: [
       {
         strokeColor: '#0081ff',
-        fillColor: '#cce5ff',  //填充色
+        fillColor: '#cce5ff',  // 填充色
         data: [463, 250, 251, 254, 431, 354, 225, 396, 295, 328, 491, 205, 313, 275, 475, 553, 491, 380, 357, 416],
         gradient: true,
       }
     ],
     lineOps: {
-     //x轴参数设置
+     // x轴参数设置
       xAxis: {
         min: 0,
         max: 20,
         display: false,
       },
-     //y轴参数设置
+     // y轴参数设置
       yAxis: {
         min: 0,
         max: 1000,
         display: false,
       },
-     //数据序列参数设置
+     // 数据序列参数设置
       series: {
-        //线样式设置
+        // 线样式设置
         lineStyle: {
           width: "5px",
           smooth: true,
         },
-        //线最前端位置白点的样式和大小
+        // 线最前端位置白点的样式和大小
         headPoint: {
           shape: "circle",
           size: 20,
@@ -258,7 +258,7 @@ export default {
           strokeColor: '#007aff',
           display: true,
         },
-        //设置屏幕显示满时，是否需要重头开始绘制
+        // 设置屏幕显示满时，是否需要重头开始绘制
         loop: {
           margin: 2,
           gradient: true
@@ -381,7 +381,7 @@ export default {
       },
       series: {
         lineStyle: {
-        width: '1px',
+          width: '1px',
       },
         headPoint: {
           shape: 'circle',
@@ -398,7 +398,7 @@ export default {
     barData: [
       {
         fillColor: '#97CF0A2C',
-        data: [20, 20,40, 56]
+        data: [20, 20, 40, 56]
       },
       {
         fillColor: '#6D0A7ACF',
@@ -472,6 +472,11 @@ export default {
   },
   changes(e) {
     console.info("Tab index: " + e.index);
+  },
+  onDestroy() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   },
 }
 
@@ -712,36 +717,36 @@ export default {
 // xxx.js
 export default {
   data: {
-    //线形图数据
+    // 线形图数据
     lineData: [
       {
         strokeColor: '#0081ff',
-        fillColor: '#cce5ff',  //填充色
+        fillColor: '#cce5ff',  // 填充色
         data: [463, 250, 251, 254, 431, 354, 225, 396, 295, 328, 491, 205, 313, 275, 475, 553, 491, 380, 357, 416],
         gradient: true,
       }
     ],
     lineOps: {
-     //x轴参数设置
+     // x轴参数设置
       xAxis: {
         min: 0,
         max: 20,
         display: false,
       },
-     //y轴参数设置
+     // y轴参数设置
       yAxis: {
         min: 0,
         max: 1000,
         display: false,
       },
-     //数据序列参数设置
+     // 数据序列参数设置
       series: {
-        //线样式设置
+        // 线样式设置
         lineStyle: {
           width: "5px",
           smooth: true,
         },
-        //线最前端位置白点的样式和大小
+        // 线最前端位置白点的样式和大小
         headPoint: {
           shape: "circle",
           size: 20,
@@ -750,7 +755,7 @@ export default {
           strokeColor: '#007aff',
           display: true,
         },
-        //设置屏幕显示满时，是否需要重头开始绘制
+        // 设置屏幕显示满时，是否需要重头开始绘制
         loop: {
           margin: 2,
           gradient: true
@@ -873,7 +878,7 @@ export default {
       },
       series: {
         lineStyle: {
-        width: '1px',
+          width: '1px',
       },
         headPoint: {
           shape: 'circle',
@@ -890,7 +895,7 @@ export default {
     barData: [
       {
         fillColor: '#97CF0A2C',
-        data: [20, 20,40, 56]
+        data: [20, 20, 40, 56]
       },
       {
         fillColor: '#6D0A7ACF',
@@ -964,6 +969,11 @@ export default {
   },
   changes(e) {
     console.info("Tab index: " + e.index);
+  },
+  onDestroy() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   },
 }
 ```

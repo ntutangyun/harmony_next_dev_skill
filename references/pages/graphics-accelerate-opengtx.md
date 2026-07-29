@@ -47,7 +47,7 @@ LTPO的主要业务流程如下：
     "name": "GraphicsAccelerateKit_LTPO",
     "value": "true"
   }
-]
+],
 
 [h2]头文件引用
 
@@ -100,80 +100,67 @@ OpenGTX_ErrorCode errorCode = OPENGTX_SUCCESS;
 // OpenGTX属性配置结构体
 OpenGTX_ConfigDescription config;
 // LTPO调度模式
-config.mode = ADAPTIVE_MODE;
+config.mode = SCENE_MODE;
 // 游戏设置目标帧率
-config.targetFPS = 120;
+config.targetFPS = OGBT_TARGET_FPS_90;
 // 游戏包名
-config.packageName = (char*)"OpenGTX";
+config.packageName = OGBT_PACKAGE_NAME.data();
 // 游戏版本
-config.appVersion = (char*)"1.1.0";
+config.appVersion = OGBT_APP_VERSION.data();
 // 引擎类型
-config.engineType = UNREAL;
+config.engineType = OTHERS_ENGINE;
 // 引擎版本
-config.engineVersion = (char*)"4.26.2";
+config.engineVersion = OGBT_ENGINE_VERSION.data();
 // 游戏类别
-config.gameType = RPG;
+config.gameType = MOBA;
 // 游戏最高画质等级
-config.pictureQualityMaxLevel = HD;
+config.pictureQualityMaxLevel = UHD;
 // 游戏设置最大分辨率
-config.resolutionMaxValue = OpenGTX_ResolutionValue { 1280, 720};
+config.resolutionMaxValue = OpenGTX_ResolutionValue { OGBT_RES_HEIGHT, OGBT_RES_WIDTH};
 // 游戏逻辑线程
-config.gameMainThreadId = 11;
+config.gameMainThreadId = OGBT_GAME_MAIN_THREAD_ID;
 // 游戏渲染线程
-config.gameRenderThreadId = 11;
+config.gameRenderThreadId = OGBT_GAME_RENDER_THREAD_ID;
 // 游戏运行其他关键线程
-config.gameKeyThreadIds[0] = 0;
-config.gameKeyThreadIds[1] = 0;
-config.gameKeyThreadIds[2] = 0;
-config.gameKeyThreadIds[3] = 0;
-config.gameKeyThreadIds[4] = 0;
+config.gameKeyThreadIds[0] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[1] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[2] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[3] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[4] = OGBT_GAME_DEFAULT_THREAD_ID;
 // 游戏图形API是否为Vulkan
-config.vulkanSupport = false;
+config.vulkanSupport = true;
 // 初始化OpenGTX实例，配置OpenGTX属性
-errorCode = HMS_OpenGTX_SetConfiguration(context_, &config);
+errorCode = HMS_OpenGTX_SetConfiguration(contextGtx_, &config);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_SetConfiguration execution failed, error code: %d.", errorCode);
     return false;
 }
 
 调用HMS_OpenGTX_Activate接口激活OpenGTX上下文实例。
 
 // 激活OpenGTX上下文实例
-errorCode = HMS_OpenGTX_Activate(context_);
+errorCode = HMS_OpenGTX_Activate(contextGtx_);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_Activate execution failed, error code: %d.", errorCode);
     return false;
 }
 
 调用HMS_OpenGTX_Deactivate接口去激活OpenGTX上下文实例。（在需要关闭OpenGTX功能时调用此接口。去激活后，调用HMS_OpenGTX_DispatchGameSceneInfo等接口将不会生效）。
 
 // 去激活OpenGTX上下文实例
-errorCode = HMS_OpenGTX_Deactivate(context_);
+errorCode = HMS_OpenGTX_Deactivate(contextGtx_);
 if (errorCode != OPENGTX_SUCCESS) {
-    return false;
+    GOLOGE("HMS_OpenGTX_Deactivate execution failed, error code: %d.", errorCode);
 }
 
 [h2]OpenGTX关键信息更新
 
 游戏切换不同游戏场景后调用HMS_OpenGTX_DispatchGameSceneInfo接口发送游戏场景信息，包含场景类型、指定帧率、调度帧率范围、当前分辨率等信息。
 
-// OpenGTX游戏场景信息结构体
-OpenGTX_GameSceneInfo gameSceneInfo;
-// 游戏场景类型ID
-gameSceneInfo.sceneID = OTHERS_SCENE;
-// 游戏场景描述
-gameSceneInfo.description = (char*)"其他场景";
-// 游戏场景推荐帧率
-gameSceneInfo.recommendFPS = 60;
-// 游戏场景最小帧率
-gameSceneInfo.minFPS = 30;
-// 游戏场景最大帧率
-gameSceneInfo.maxFPS = 90;
-// 屏幕分辨率 高度
-gameSceneInfo.resolutionCurValue.height = 360;
-// 屏幕分辨率 宽度
-gameSceneInfo.resolutionCurValue.width = 1920;
-// OpenGTX接收游戏场景信息
-errorCode = HMS_OpenGTX_DispatchGameSceneInfo(context_, &gameSceneInfo);
+// 激活OpenGTX上下文实例
+errorCode = HMS_OpenGTX_Activate(contextGtx_);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_Activate execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -182,34 +169,38 @@ if (errorCode != OPENGTX_SUCCESS) {
 // OpenGTX游戏渲染信息结构体
 OpenGTX_FrameRenderInfo frameRenderInfo;
 // 主相机位置
-frameRenderInfo.mainCameraPosition = { 0.0f, 0.0f, 0.0f };
+frameRenderInfo.mainCameraPosition = {0.0f, 0.0f, 0.0f};
 // 主相机欧拉角
-frameRenderInfo.mainCameraRotate = { 0.0f, 0.0f, 0.0f };
+frameRenderInfo.mainCameraRotate = {0.0f, 0.0f, 0.0f};
 // OpenGTX接收游戏渲染信息
-errorCode = HMS_OpenGTX_DispatchFrameRenderInfo(context_, &frameRenderInfo);
+errorCode = HMS_OpenGTX_DispatchFrameRenderInfo(contextGtx_, &frameRenderInfo);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DispatchFrameRenderInfo execution failed, error code: %d.", errorCode);
     return false;
 }
 
 每帧渲染前如遇到网络时延档位变化，调用HMS_OpenGTX_DispatchNetworkInfo接口发送游戏网络信息。包含服务器IP地址、网络时延等信息。
 
-// OpenGTX游戏网络信息结构体
-OpenGTX_NetworkInfo networkInfo;
-// OpenGTX游戏网络时延结构体
-OpenGTX_NetworkLatency networkLatency;
-// 网络总时延
-networkLatency.total = 50;
-// 网络上行时延
-networkLatency.up = 10;
-// 网络下行时延
-networkLatency.down = 40;
-// 游戏网络时延
-networkInfo.networkLatency = networkLatency;
-// 游戏服务器IP地址
-networkInfo.networkServerIP = (char*)"10.10.10.10";
-// OpenGTX接收游戏网络信息
-errorCode = HMS_OpenGTX_DispatchNetworkInfo(context_, &networkInfo);
+// OpenGTX游戏场景信息结构体
+OpenGTX_GameSceneInfo gameSceneInfo;
+// 游戏场景类型ID
+gameSceneInfo.sceneID = OTHERS_SCENE;
+// 游戏场景描述
+gameSceneInfo.description = OGBT_DESCRIPTION.data();
+// 游戏场景推荐帧率
+gameSceneInfo.recommendFPS = OGBT_RECOMMEND_FPS;
+// 游戏场景最小帧率
+gameSceneInfo.minFPS = OGBT_MIN_FPS;
+// 游戏场景最大帧率
+gameSceneInfo.maxFPS = OGBT_MAX_FPS;
+// 屏幕分辨率 高度
+gameSceneInfo.resolutionCurValue.height = OGBT_RES_HEIGHT;
+// 屏幕分辨率 宽度
+gameSceneInfo.resolutionCurValue.width = OGBT_RES_WIDTH;
+// OpenGTX接收游戏场景信息
+errorCode = HMS_OpenGTX_DispatchGameSceneInfo(contextGtx_, &gameSceneInfo);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DispatchGameSceneInfo execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -220,8 +211,10 @@ if (errorCode != OPENGTX_SUCCESS) {
 调用HMS_OpenGTX_DestroyContext接口销毁OpenGTX实例，释放内存资源。
 
 // 销毁OpenGTX上下文实例并释放内存资源
-errorCode = HMS_OpenGTX_DestroyContext(&context_);
+errorCode = HMS_OpenGTX_DestroyContext(&contextGtx_);
+predictionPaused_ = (errorCode == OPENGTX_SUCCESS);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DestroyContext execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -235,7 +228,7 @@ if (errorCode != OPENGTX_SUCCESS) {
     "name": "GraphicsAccelerateKit_LTPO",
     "value": "true"
   }
-]
+],
 ```
 
 ### Code block 2
@@ -290,38 +283,39 @@ OpenGTX_ErrorCode errorCode = OPENGTX_SUCCESS;
 // OpenGTX属性配置结构体
 OpenGTX_ConfigDescription config;
 // LTPO调度模式
-config.mode = ADAPTIVE_MODE;
+config.mode = SCENE_MODE;
 // 游戏设置目标帧率
-config.targetFPS = 120;
+config.targetFPS = OGBT_TARGET_FPS_90;
 // 游戏包名
-config.packageName = (char*)"OpenGTX";
+config.packageName = OGBT_PACKAGE_NAME.data();
 // 游戏版本
-config.appVersion = (char*)"1.1.0";
+config.appVersion = OGBT_APP_VERSION.data();
 // 引擎类型
-config.engineType = UNREAL;
+config.engineType = OTHERS_ENGINE;
 // 引擎版本
-config.engineVersion = (char*)"4.26.2";
+config.engineVersion = OGBT_ENGINE_VERSION.data();
 // 游戏类别
-config.gameType = RPG;
+config.gameType = MOBA;
 // 游戏最高画质等级
-config.pictureQualityMaxLevel = HD;
+config.pictureQualityMaxLevel = UHD;
 // 游戏设置最大分辨率
-config.resolutionMaxValue = OpenGTX_ResolutionValue { 1280, 720};
+config.resolutionMaxValue = OpenGTX_ResolutionValue { OGBT_RES_HEIGHT, OGBT_RES_WIDTH};
 // 游戏逻辑线程
-config.gameMainThreadId = 11;
+config.gameMainThreadId = OGBT_GAME_MAIN_THREAD_ID;
 // 游戏渲染线程
-config.gameRenderThreadId = 11;
+config.gameRenderThreadId = OGBT_GAME_RENDER_THREAD_ID;
 // 游戏运行其他关键线程
-config.gameKeyThreadIds[0] = 0;
-config.gameKeyThreadIds[1] = 0;
-config.gameKeyThreadIds[2] = 0;
-config.gameKeyThreadIds[3] = 0;
-config.gameKeyThreadIds[4] = 0;
+config.gameKeyThreadIds[0] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[1] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[2] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[3] = OGBT_GAME_DEFAULT_THREAD_ID;
+config.gameKeyThreadIds[4] = OGBT_GAME_DEFAULT_THREAD_ID;
 // 游戏图形API是否为Vulkan
-config.vulkanSupport = false;
+config.vulkanSupport = true;
 // 初始化OpenGTX实例，配置OpenGTX属性
-errorCode = HMS_OpenGTX_SetConfiguration(context_, &config);
+errorCode = HMS_OpenGTX_SetConfiguration(contextGtx_, &config);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_SetConfiguration execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -330,8 +324,9 @@ if (errorCode != OPENGTX_SUCCESS) {
 
 ```
 // 激活OpenGTX上下文实例
-errorCode = HMS_OpenGTX_Activate(context_);
+errorCode = HMS_OpenGTX_Activate(contextGtx_);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_Activate execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -340,34 +335,19 @@ if (errorCode != OPENGTX_SUCCESS) {
 
 ```
 // 去激活OpenGTX上下文实例
-errorCode = HMS_OpenGTX_Deactivate(context_);
+errorCode = HMS_OpenGTX_Deactivate(contextGtx_);
 if (errorCode != OPENGTX_SUCCESS) {
-    return false;
+    GOLOGE("HMS_OpenGTX_Deactivate execution failed, error code: %d.", errorCode);
 }
 ```
 
 ### Code block 8
 
 ```
-// OpenGTX游戏场景信息结构体
-OpenGTX_GameSceneInfo gameSceneInfo;
-// 游戏场景类型ID
-gameSceneInfo.sceneID = OTHERS_SCENE;
-// 游戏场景描述
-gameSceneInfo.description = (char*)"其他场景";
-// 游戏场景推荐帧率
-gameSceneInfo.recommendFPS = 60;
-// 游戏场景最小帧率
-gameSceneInfo.minFPS = 30;
-// 游戏场景最大帧率
-gameSceneInfo.maxFPS = 90;
-// 屏幕分辨率 高度
-gameSceneInfo.resolutionCurValue.height = 360;
-// 屏幕分辨率 宽度
-gameSceneInfo.resolutionCurValue.width = 1920;
-// OpenGTX接收游戏场景信息
-errorCode = HMS_OpenGTX_DispatchGameSceneInfo(context_, &gameSceneInfo);
+// 激活OpenGTX上下文实例
+errorCode = HMS_OpenGTX_Activate(contextGtx_);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_Activate execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -378,12 +358,13 @@ if (errorCode != OPENGTX_SUCCESS) {
 // OpenGTX游戏渲染信息结构体
 OpenGTX_FrameRenderInfo frameRenderInfo;
 // 主相机位置
-frameRenderInfo.mainCameraPosition = { 0.0f, 0.0f, 0.0f };
+frameRenderInfo.mainCameraPosition = {0.0f, 0.0f, 0.0f};
 // 主相机欧拉角
-frameRenderInfo.mainCameraRotate = { 0.0f, 0.0f, 0.0f };
+frameRenderInfo.mainCameraRotate = {0.0f, 0.0f, 0.0f};
 // OpenGTX接收游戏渲染信息
-errorCode = HMS_OpenGTX_DispatchFrameRenderInfo(context_, &frameRenderInfo);
+errorCode = HMS_OpenGTX_DispatchFrameRenderInfo(contextGtx_, &frameRenderInfo);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DispatchFrameRenderInfo execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -391,23 +372,26 @@ if (errorCode != OPENGTX_SUCCESS) {
 ### Code block 10
 
 ```
-// OpenGTX游戏网络信息结构体
-OpenGTX_NetworkInfo networkInfo;
-// OpenGTX游戏网络时延结构体
-OpenGTX_NetworkLatency networkLatency;
-// 网络总时延
-networkLatency.total = 50;
-// 网络上行时延
-networkLatency.up = 10;
-// 网络下行时延
-networkLatency.down = 40;
-// 游戏网络时延
-networkInfo.networkLatency = networkLatency;
-// 游戏服务器IP地址
-networkInfo.networkServerIP = (char*)"10.10.10.10";
-// OpenGTX接收游戏网络信息
-errorCode = HMS_OpenGTX_DispatchNetworkInfo(context_, &networkInfo);
+// OpenGTX游戏场景信息结构体
+OpenGTX_GameSceneInfo gameSceneInfo;
+// 游戏场景类型ID
+gameSceneInfo.sceneID = OTHERS_SCENE;
+// 游戏场景描述
+gameSceneInfo.description = OGBT_DESCRIPTION.data();
+// 游戏场景推荐帧率
+gameSceneInfo.recommendFPS = OGBT_RECOMMEND_FPS;
+// 游戏场景最小帧率
+gameSceneInfo.minFPS = OGBT_MIN_FPS;
+// 游戏场景最大帧率
+gameSceneInfo.maxFPS = OGBT_MAX_FPS;
+// 屏幕分辨率 高度
+gameSceneInfo.resolutionCurValue.height = OGBT_RES_HEIGHT;
+// 屏幕分辨率 宽度
+gameSceneInfo.resolutionCurValue.width = OGBT_RES_WIDTH;
+// OpenGTX接收游戏场景信息
+errorCode = HMS_OpenGTX_DispatchGameSceneInfo(contextGtx_, &gameSceneInfo);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DispatchGameSceneInfo execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -416,8 +400,10 @@ if (errorCode != OPENGTX_SUCCESS) {
 
 ```
 // 销毁OpenGTX上下文实例并释放内存资源
-errorCode = HMS_OpenGTX_DestroyContext(&context_);
+errorCode = HMS_OpenGTX_DestroyContext(&contextGtx_);
+predictionPaused_ = (errorCode == OPENGTX_SUCCESS);
 if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DestroyContext execution failed, error code: %d.", errorCode);
     return false;
 }
 ```

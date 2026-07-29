@@ -16,31 +16,21 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 操作步骤
 
-调用StorageBucket.getDownloadURL接口获取云侧文件的下载地址。
-
-完整示例代码如下：
+导入相关模块。
 
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+调用StorageBucket.getDownloadURL接口获取云侧文件的下载地址。
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 获取云侧文件下载地址
-  getUrl() {
-    // 获取云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的下载地址
-    storageBucket.getDownloadURL('screenshot/screenshot_20250115_155321.jpg').then((downloadURL: string) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in getting download URL: ${downloadURL}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to get download URL, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+bucket.getDownloadURL(UI.uploadFileName).then((downloadURL: string) => {
+  hilog.info(0x0000, 'Storage', `Succeeded in getting dwonLoadURL: ${downloadURL}`);
+}).catch((err: BusinessError) => {
+  hilog.info(0x0000, 'Storage', `Failed to get DownloadURL code: ${err.code}, message: ${err.message}`);
+});
 
 ## Code blocks
 
@@ -48,24 +38,18 @@ export struct testPage {
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+```
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+### Code block 2
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 获取云侧文件下载地址
-  getUrl() {
-    // 获取云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的下载地址
-    storageBucket.getDownloadURL('screenshot/screenshot_20250115_155321.jpg').then((downloadURL: string) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in getting download URL: ${downloadURL}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to get download URL, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+```
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+bucket.getDownloadURL(UI.uploadFileName).then((downloadURL: string) => {
+  hilog.info(0x0000, 'Storage', `Succeeded in getting dwonLoadURL: ${downloadURL}`);
+}).catch((err: BusinessError) => {
+  hilog.info(0x0000, 'Storage', `Failed to get DownloadURL code: ${err.code}, message: ${err.message}`);
+});
 ```

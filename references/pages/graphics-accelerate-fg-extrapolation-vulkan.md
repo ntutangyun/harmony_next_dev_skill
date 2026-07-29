@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 游戏应用调用HMS_FG_CreateContext_VK接口创建超帧上下文实例。如超帧上下文实例创建失败，则无需进入步骤6到步骤9的真实帧、预测帧交替渲染送显的循环流程，只需逐帧对场景进行渲染送显即可。
 
-游戏应用调用接口配置超帧实例属性。包括调用HMS_FG_SetAlgorithmMode_VK（必选）设置超帧算法模式并选择外插模式；调用HMS_FG_SetResolution_VK（必选）设置超帧输入输出图像分辨率；调用HMS_FG_SetCvvZSemantic_VK（可选）设置齐次裁剪空间Z/W范围及深度测试函数；调用HMS_FG_SetImageFormat_VK（可选）设置超帧输入输出图像格式；如果颜色缓冲区相对深度模板缓冲区基于y轴翻转180度，则调用HMS_FG_SetDepthStencilYDirectionInverted_VK（可选）设置翻转状态。
+游戏应用调用接口配置超帧实例属性。包括调用HMS_FG_SetAlgorithmMode_VK设置超帧算法模式并选择外插模式；调用HMS_FG_SetResolution_VK设置超帧输入输出图像分辨率；调用HMS_FG_SetCvvZSemantic_VK设置齐次裁剪空间Z/W范围及深度测试函数，未调用该接口则默认设置为FG_CVV_Z_SEMANTIC_ZERO_TO_ONE_FORWARD_Z；调用HMS_FG_SetImageFormat_VK设置超帧输入输出图像格式未调用该接口则真实帧颜色缓冲区和预测帧缓冲区图像格式默认设置为VK_FORMAT_R8G8B8A8_UNORM，深度模板缓冲区图像格式默认设置为VK_FORMAT_D24_UNORM_S8_UINT；如果颜色缓冲区相对深度模板缓冲区基于y轴翻转180度，则调用HMS_FG_SetDepthStencilYDirectionInverted_VK设置翻转状态，未调用该接口则默认无翻转。
 
 游戏应用调用HMS_FG_Activate_VK接口激活超帧上下文实例。
 
@@ -39,18 +39,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 编写CMakeLists.txt。
 
-find_library(
-    # Sets the name of the path variable.
-    framegeneration-lib
-    # Specifies the name of the NDK library that you want CMake to locate.
-    libframegeneration.so
-)
-find_library(
-    # Sets the name of the path variable.
-    vulkan-lib
-    # Specifies the name of the NDK library that you want CMake to locate.
-    vulkan
-)
+find_library(framegeneration-lib libframegeneration.so REQUIRED)
+find_library(vulkan-lib vulkan REQUIRED)
 
 target_link_libraries(entry PUBLIC
     ${framegeneration-lib} ${vulkan-lib}
@@ -58,12 +48,12 @@ target_link_libraries(entry PUBLIC
 
 调用HMS_FG_CreateContext_VK接口创建超帧上下文实例。如果返回nullptr，则说明超帧上下文实例创建失败，或当前硬件设备不支持开启超帧。
 
-// 变量声明
-VkInstance vkInstance = VK_NULL_HANDLE;
-VkPhysicalDevice vkPhysicalDevice = VK_NULL_HANDLE;
-VkDevice vkDevice = VK_NULL_HANDLE;
+ // 变量声明
+ VkInstance vkInstance = VK_NULL_HANDLE; // vkInstance通过调用vkCreateInstance创建
+ VkPhysicalDevice vkPhysicalDevice = VK_NULL_HANDLE; // vkPhysicalDevice通过调用vkEnumeratePhysicalDevices枚举
+ VkDevice vkDevice = VK_NULL_HANDLE; // vkDevice通过调用vkCreateDevice创建
 
-// 创建超帧上下文实例
+ // 创建超帧上下文实例
 FG_ContextDescription_VK contextDescription{};
 contextDescription.vkInstance = vkInstance;
 contextDescription.vkPhysicalDevice = vkPhysicalDevice;
@@ -72,6 +62,7 @@ contextDescription.framesInFlight = 1;
 contextDescription.fnVulkanLoaderFunction = vkGetInstanceProcAddr;
 FG_Context_VK* m_context = HMS_FG_CreateContext_VK(&contextDescription);
 if (m_context == nullptr) {
+    GOLOGE("HMS_FG_CreateContext_VK execution failed.");
     return false;
 }
 
@@ -84,213 +75,191 @@ FG_ErrorCode errorCode = FG_SUCCESS;
 FG_AlgorithmModeInfo aInfo{};
 aInfo.predictionMode = FG_PREDICTION_MODE_EXTRAPOLATION; // 外插模式
 aInfo.meMode = FG_ME_MODE_BASIC; // 运动估计基础模式
-errorCode = HMS_FG_SetAlgorithmMode_VK(m_context, &aInfo); // [必选] 设置超帧算法模式
+
+errorCode = HMS_FG_SetAlgorithmMode_VK(m_context, &aInfo); // 设置超帧算法模式
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetAlgorithmMode_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
 // 真实帧颜色缓冲区分辨率
 FG_Dimension2D inputColorResolution{};
-inputColorResolution.width = 1280; // 真实帧颜色缓冲区图像宽度
-inputColorResolution.height = 720; // 真实帧颜色缓冲区图像高度
+inputColorResolution.width = m_swapChainExtent.width; // 真实帧颜色缓冲区图像宽度
+inputColorResolution.height = m_swapChainExtent.height; // 真实帧颜色缓冲区图像高度
 // 真实帧深度模板缓冲区分辨率
 FG_Dimension2D inputDepthStencilResolution{};
-inputDepthStencilResolution.width = 1280; // 真实帧深度模板缓冲区图像宽度
-inputDepthStencilResolution.height = 720; // 真实帧深度模板缓冲区图像高度
+inputDepthStencilResolution.width = m_swapChainExtent.width; // 真实帧深度模板缓冲区图像宽度
+inputDepthStencilResolution.height = m_swapChainExtent.height; // 真实帧深度模板缓冲区图像高度
 // 预测帧分辨率
 FG_Dimension2D outputColorResolution{};
-outputColorResolution.width = 1280; // 预测帧图像宽度
-outputColorResolution.height = 720; // 预测帧图像高度
+outputColorResolution.width = m_swapChainExtent.width; // 预测帧图像宽度
+outputColorResolution.height = m_swapChainExtent.height; // 预测帧图像高度
 // 超帧输入输出图像分辨率
 FG_ResolutionInfo rInfo{};
 rInfo.inputColorResolution = inputColorResolution;
 rInfo.inputDepthStencilResolution = inputDepthStencilResolution;
 rInfo.outputColorResolution = outputColorResolution;
-errorCode = HMS_FG_SetResolution_VK(m_context, &rInfo); // [必选] 设置超帧输入输出图像分辨率
+errorCode = HMS_FG_SetResolution_VK(m_context, &rInfo); // 设置超帧输入输出图像分辨率
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetResolution_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 设置齐次裁剪空间Z/W范围及深度测试模式，接口不调用时默认为FG_CVV_Z_SEMANTIC_ZERO_TO_ONE_FORWARD_Z
+// 设置齐次裁剪空间Z/W范围及深度测试模式，接口不调用时默认为FG_CVV_Z_SEMANTIC_ZERO_TO_ONE_FORWARD_Z
 errorCode = HMS_FG_SetCvvZSemantic_VK(m_context, FG_CVV_Z_SEMANTIC_ZERO_TO_ONE_FORWARD_Z);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetCvvZSemantic_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 设置超帧输入输出图像格式
+// 设置超帧输入输出图像格式
 FG_ImageFormat_VK imageFormat{};
-imageFormat.inputColorFormat = VK_FORMAT_R8G8B8A8_UNORM;
-imageFormat.inputDepthStencilFormat = VK_FORMAT_D24_UNORM_S8_UINT;
-imageFormat.outputColorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+imageFormat.inputColorFormat = m_swapChainImageFormat;
+imageFormat.inputDepthStencilFormat = m_sceneDepthStencil.GetFormat();
+imageFormat.outputColorFormat = m_swapChainImageFormat;
 errorCode = HMS_FG_SetImageFormat_VK(m_context, &imageFormat);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetImageFormat_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 当颜色缓冲区相对深度模板缓冲区基于y轴翻转180度时，设置第二个参数为true，接口不调用时默认为false
-errorCode = HMS_FG_SetDepthStencilYDirectionInverted_VK(m_context, true);
+// 当颜色缓冲区相对深度模板缓冲区基于y轴翻转180度时，设置第二个参数为true，接口不调用时默认为false
+errorCode = HMS_FG_SetDepthStencilYDirectionInverted_VK(m_context, false);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetDepthStencilYDirectionInverted_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
 调用HMS_FG_Activate_VK接口激活超帧上下文实例。
 
 // 激活超帧上下文实例
-errorCode = HMS_FG_Activate_VK(m_context);
+FG_ErrorCode errorCode = HMS_FG_Activate_VK(m_context);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_Activate_VK execution failed, error code: %d.", errorCode);
+    // ...
     return false;
 }
 
 调用HMS_FG_CreateImage_VK接口创建真实渲染帧颜色缓冲区图像实例、深度模板缓冲区图像实例、预测帧缓冲区图像实例。
 
 // 变量声明
-VkImage inputColorImage = VK_NULL_HANDLE;
-VkImageView inputColorImageView = VK_NULL_HANDLE;
-VkImage inputDepthStencilImage = VK_NULL_HANDLE;
-VkImageView inputDepthStencilImageView = VK_NULL_HANDLE;
-VkImage outputColorImage = VK_NULL_HANDLE;
-VkImageView outputColorImageView = VK_NULL_HANDLE;
+FG_Image_VK *m_ffSceneColor = nullptr;
+VulkanFG::Image m_sceneColor{};
+FG_Image_VK *m_ffDepthStencil = nullptr;
+VulkanFG::Image m_sceneDepthStencil{};
+FG_Image_VK *m_ffPredictedColor = nullptr;
+VulkanFG::Image m_predictedColor{};
 
 // 创建真实帧颜色缓冲区图像实例
-FG_Image_VK* inputColor = HMS_FG_CreateImage_VK(m_context, inputColorImage, inputColorImageView);
-if (!inputColor) {
+m_ffSceneColor = HMS_FG_CreateImage_VK(m_context, m_sceneColor.GetNativeImage(), m_sceneColor.GetNativeImageView());
+if (!m_ffSceneColor) {
+    GOLOGE("HMS_FG_RegisterImage_VK m_ffSceneColor execution failed.");
     return false;
 }
 // 创建真实帧深度模板缓冲区图像实例
-FG_Image_VK* inputDepthStencil = HMS_FG_CreateImage_VK(m_context, inputDepthStencilImage, inputDepthStencilImageView);
-if (!inputDepthStencil) {
+m_ffDepthStencil = HMS_FG_CreateImage_VK(m_context, m_sceneDepthStencil.GetNativeImage(),
+                                         m_sceneDepthStencil.GetNativeImageView());
+if (!m_ffDepthStencil) {
+    GOLOGE("HMS_FG_RegisterImage_VK m_ffDepthStencil execution failed.");
     return false;
 }
 // 创建预测帧缓冲区图像实例
-FG_Image_VK* outputColor = HMS_FG_CreateImage_VK(m_context, outputColorImage, outputColorImageView);
-if (!outputColor) {
+m_ffPredictedColor = HMS_FG_CreateImage_VK(m_context, m_predictedColor.GetNativeImage(),
+                                           m_predictedColor.GetNativeImageView());
+if (!m_ffPredictedColor) {
+    GOLOGE("HMS_FG_RegisterImage_VK m_ffPredictedColor execution failed.");
     return false;
 }
 
 游戏运行中，真实帧和预测帧交替渲染并送显。渲染真实帧时，缓存颜色信息、深度信息和相机矩阵等属性信息。渲染预测帧时，需调用HMS_FG_Dispatch_VK接口并传入上一帧真实帧属性信息，指定预测帧缓冲区索引，生成预测帧，最终更新预测帧缓冲区内存。
 
-// 帧计数
-uint32_t frameNum = 0;
+// 变量声明
+FG_Mat4x4 m_viewProj{};
+FG_Mat4x4 m_invViewProj{};
+FG_DispatchDescription_VK dispatch{};
 
-// 帧循环
-while (true) {
-    frameNum += 1;
-    if ((frameNum & 1) != 0) { // 真实帧渲染阶段
-        // 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
-        // ...
+// 真实帧渲染阶段
+// ...
+// 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
+// ...
+// 绘制真实帧和UI
+// ...
+// 送显真实帧
+// ...
+bool const runPrediction = m_predictionEnabled & !m_predictionPaused;
+if (runPrediction) { // 预测帧渲染阶段
+    // ...
 
-        // 绘制真实帧
-        // ...
-
-        // 绘制UI
-        // ...
-
-        // 送显真实帧
-        // ...
-    } else { // 预测帧渲染阶段
-        // 设置预测帧生成前真实帧颜色缓冲区同步状态
-        FG_ImageSync_VK inputColorInitImageSync{};
-        inputColorInitImageSync.stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        inputColorInitImageSync.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        inputColorInitImageSync.accessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-        // 设置预测帧生成后真实帧颜色缓冲区同步状态
-        FG_ImageSync_VK inputColorFinalImageSync{};
-        inputColorFinalImageSync.stages = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        inputColorFinalImageSync.layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        inputColorFinalImageSync.accessMask = VK_ACCESS_TRANSFER_READ_BIT;
-
-        // 创建真实帧颜色缓冲区图像属性实例
-        FG_ImageInfo_VK inputColorImageInfo{};
-        inputColorImageInfo.image = inputColor;
-        inputColorImageInfo.initialSync = inputColorInitImageSync;
-        inputColorImageInfo.finalSync = inputColorFinalImageSync;
-
-        // 设置预测帧生成前深度模板缓冲区同步状态
-        FG_ImageSync_VK depthInitImageSync{};
-        depthInitImageSync.stages = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-        depthInitImageSync.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        depthInitImageSync.accessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-        // 设置预测帧生成后深度模板缓冲区同步状态
-        FG_ImageSync_VK depthFinalImageSync{};
-        depthFinalImageSync.stages = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-        depthFinalImageSync.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        depthFinalImageSync.accessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-
-        // 创建真实帧深度模板缓冲区图像属性实例
-        FG_ImageInfo_VK depthImageInfo{};
-        depthImageInfo.image = inputDepthStencil;
-        depthImageInfo.initialSync = depthInitImageSync;
-        depthImageInfo.finalSync = depthFinalImageSync;
-
-        // 设置预测帧生成前预测帧缓冲区同步状态
-        FG_ImageSync_VK outputColorInitImageSync{};
-        outputColorInitImageSync.stages = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
-        outputColorInitImageSync.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        outputColorInitImageSync.accessMask = VK_ACCESS_SHADER_WRITE_BIT;
-
-        // 设置预测帧生成后预测帧缓冲区同步状态
-        FG_ImageSync_VK outputColorFinalImageSync{};
-        outputColorFinalImageSync.stages = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        outputColorFinalImageSync.layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        outputColorFinalImageSync.accessMask = VK_ACCESS_TRANSFER_READ_BIT;
-
-        // 创建预测帧缓冲区图像属性实例
-        FG_ImageInfo_VK outputColorImageInfo{};
-        outputColorImageInfo.image = outputColor;
-        outputColorImageInfo.initialSync = outputColorInitImageSync;
-        outputColorImageInfo.finalSync = outputColorFinalImageSync;
-
-        // 帧生成属性配置结构体
-        FG_DispatchDescription_VK dispatchDescription{};
+    dispatch = {
         // 传入真实渲染帧颜色缓冲区属性信息
-        dispatchDescription.inputColorInfo = inputColorImageInfo;
-        // 传入真实渲染帧深度模板缓冲区属性信息
-        dispatchDescription.inputDepthStencilInfo = depthImageInfo;
-        // 传入预测帧缓冲区属性信息
-        dispatchDescription.outputColorInfo = outputColorImageInfo;
-
-        // 变量声明
-        FG_Mat4x4 preViewProj;
-        FG_Mat4x4 preInvViewProj;
-        VkCommandBuffer vkCommandBuffer = VK_NULL_HANDLE;
-
-        // 传入上一帧真实渲染帧视图投影矩阵
-        dispatchDescription.viewProj = preViewProj;
-        // 传入上一帧真实渲染帧视图投影逆矩阵
-        dispatchDescription.invViewProj = preInvViewProj;
-        // 传入用于录入超帧绘制指令的命令缓冲区句柄
-        dispatchDescription.vkCommandBuffer = vkCommandBuffer;
-        // 传入当前帧序号
-        dispatchDescription.frameIdx = 0;
-
-        // 生成预测帧，更新预测帧缓冲区的内存
-        errorCode = HMS_FG_Dispatch_VK(m_context, &dispatchDescription);
-        if (errorCode != FG_SUCCESS) {
-            return false;
-        }
-
-        switch (errorCode) {
-            case FG_SUCCESS: {
-                // 绘制预测帧
-                // ...
-
-                // 绘制UI
-                // ...
-
-                // 送显预测帧
-                // ...
-                break;
+        .inputColorInfo = {
+            .image = m_ffSceneColor,
+            // 设置预测帧生成前真实帧颜色缓冲区同步状态
+            .initialSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            },
+            // 设置预测帧生成后真实帧颜色缓冲区同步状态
+            .finalSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
             }
-            case FG_COLLECTING_PREVIOUS_FRAMES:
-                // 传入真实帧数量未达到固定阈值，无预测帧生成，外插模式传入真实帧数量<3时返回该状态码，此时不要将预测帧送显
-                break;
-            default:
-                // 预测帧生成失败
-                return false;
-        }
+        },
+        // 传入真实渲染帧深度模板缓冲区属性信息
+        .inputDepthStencilInfo = {
+            .image = m_ffDepthStencil,
+            // 设置预测帧生成前深度模板缓冲区同步状态
+            .initialSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            },
+            // 设置预测帧生成后深度模板缓冲区同步状态
+            .finalSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            }
+        },
+        // 传入预测帧缓冲区属性信息
+        .outputColorInfo = {
+            .image = m_ffPredictedColor,
+            // 设置预测帧生成前预测帧缓冲区同步状态
+            .initialSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            },
+            // 设置预测帧生成后预测帧缓冲区同步状态
+            .finalSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            }
+        },
+        // 传入上一帧真实渲染帧视图投影矩阵
+        .viewProj = m_viewProj,
+        // 传入上一帧真实渲染帧视图投影逆矩阵
+        .invViewProj = m_invViewProj,
+        // 传入用于录入超帧绘制指令的命令缓冲区句柄
+        .vkCommandBuffer = fif->commandBuffer,
+        // 传入当前帧序号
+        .frameIdx = fifIndex
+    };
+    // ...
+    // 生成预测帧，更新预测帧缓冲区的内存
+    FG_ErrorCode const errorCode = HMS_FG_Dispatch_VK(m_context, &dispatch);
+    if (errorCode != FG_SUCCESS) { // 生成预测帧失败
+        GOLOGE("HMS_FG_Dispatch_VK execution failed, error code: %d", errorCode);
+        m_unfinishedCommandBuffer = true;
+        return;
     }
+    // 绘制预测帧和UI
+    // ...
+    // 送显预测帧
+    // ...
 }
 
 调用HMS_FG_DestroyContext_VK接口销毁超帧实例，释放内存资源。
@@ -298,6 +267,7 @@ while (true) {
 // 销毁超帧上下文实例并释放内存资源
 errorCode = HMS_FG_DestroyContext_VK(&m_context);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_DestroyContext_VK execution failed, error code: %d", errorCode);
     return false;
 }
 
@@ -313,18 +283,8 @@ if (errorCode != FG_SUCCESS) {
 ### Code block 2
 
 ```
-find_library(
-    # Sets the name of the path variable.
-    framegeneration-lib
-    # Specifies the name of the NDK library that you want CMake to locate.
-    libframegeneration.so
-)
-find_library(
-    # Sets the name of the path variable.
-    vulkan-lib
-    # Specifies the name of the NDK library that you want CMake to locate.
-    vulkan
-)
+find_library(framegeneration-lib libframegeneration.so REQUIRED)
+find_library(vulkan-lib vulkan REQUIRED)
 
 target_link_libraries(entry PUBLIC
     ${framegeneration-lib} ${vulkan-lib}
@@ -334,12 +294,12 @@ target_link_libraries(entry PUBLIC
 ### Code block 3
 
 ```
-// 变量声明
-VkInstance vkInstance = VK_NULL_HANDLE;
-VkPhysicalDevice vkPhysicalDevice = VK_NULL_HANDLE;
-VkDevice vkDevice = VK_NULL_HANDLE;
+ // 变量声明
+ VkInstance vkInstance = VK_NULL_HANDLE; // vkInstance通过调用vkCreateInstance创建
+ VkPhysicalDevice vkPhysicalDevice = VK_NULL_HANDLE; // vkPhysicalDevice通过调用vkEnumeratePhysicalDevices枚举
+ VkDevice vkDevice = VK_NULL_HANDLE; // vkDevice通过调用vkCreateDevice创建
 
-// 创建超帧上下文实例
+ // 创建超帧上下文实例
 FG_ContextDescription_VK contextDescription{};
 contextDescription.vkInstance = vkInstance;
 contextDescription.vkPhysicalDevice = vkPhysicalDevice;
@@ -348,6 +308,7 @@ contextDescription.framesInFlight = 1;
 contextDescription.fnVulkanLoaderFunction = vkGetInstanceProcAddr;
 FG_Context_VK* m_context = HMS_FG_CreateContext_VK(&contextDescription);
 if (m_context == nullptr) {
+    GOLOGE("HMS_FG_CreateContext_VK execution failed.");
     return false;
 }
 ```
@@ -362,52 +323,58 @@ FG_ErrorCode errorCode = FG_SUCCESS;
 FG_AlgorithmModeInfo aInfo{};
 aInfo.predictionMode = FG_PREDICTION_MODE_EXTRAPOLATION; // 外插模式
 aInfo.meMode = FG_ME_MODE_BASIC; // 运动估计基础模式
-errorCode = HMS_FG_SetAlgorithmMode_VK(m_context, &aInfo); // [必选] 设置超帧算法模式
+
+errorCode = HMS_FG_SetAlgorithmMode_VK(m_context, &aInfo); // 设置超帧算法模式
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetAlgorithmMode_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
 // 真实帧颜色缓冲区分辨率
 FG_Dimension2D inputColorResolution{};
-inputColorResolution.width = 1280; // 真实帧颜色缓冲区图像宽度
-inputColorResolution.height = 720; // 真实帧颜色缓冲区图像高度
+inputColorResolution.width = m_swapChainExtent.width; // 真实帧颜色缓冲区图像宽度
+inputColorResolution.height = m_swapChainExtent.height; // 真实帧颜色缓冲区图像高度
 // 真实帧深度模板缓冲区分辨率
 FG_Dimension2D inputDepthStencilResolution{};
-inputDepthStencilResolution.width = 1280; // 真实帧深度模板缓冲区图像宽度
-inputDepthStencilResolution.height = 720; // 真实帧深度模板缓冲区图像高度
+inputDepthStencilResolution.width = m_swapChainExtent.width; // 真实帧深度模板缓冲区图像宽度
+inputDepthStencilResolution.height = m_swapChainExtent.height; // 真实帧深度模板缓冲区图像高度
 // 预测帧分辨率
 FG_Dimension2D outputColorResolution{};
-outputColorResolution.width = 1280; // 预测帧图像宽度
-outputColorResolution.height = 720; // 预测帧图像高度
+outputColorResolution.width = m_swapChainExtent.width; // 预测帧图像宽度
+outputColorResolution.height = m_swapChainExtent.height; // 预测帧图像高度
 // 超帧输入输出图像分辨率
 FG_ResolutionInfo rInfo{};
 rInfo.inputColorResolution = inputColorResolution;
 rInfo.inputDepthStencilResolution = inputDepthStencilResolution;
 rInfo.outputColorResolution = outputColorResolution;
-errorCode = HMS_FG_SetResolution_VK(m_context, &rInfo); // [必选] 设置超帧输入输出图像分辨率
+errorCode = HMS_FG_SetResolution_VK(m_context, &rInfo); // 设置超帧输入输出图像分辨率
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetResolution_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 设置齐次裁剪空间Z/W范围及深度测试模式，接口不调用时默认为FG_CVV_Z_SEMANTIC_ZERO_TO_ONE_FORWARD_Z
+// 设置齐次裁剪空间Z/W范围及深度测试模式，接口不调用时默认为FG_CVV_Z_SEMANTIC_ZERO_TO_ONE_FORWARD_Z
 errorCode = HMS_FG_SetCvvZSemantic_VK(m_context, FG_CVV_Z_SEMANTIC_ZERO_TO_ONE_FORWARD_Z);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetCvvZSemantic_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 设置超帧输入输出图像格式
+// 设置超帧输入输出图像格式
 FG_ImageFormat_VK imageFormat{};
-imageFormat.inputColorFormat = VK_FORMAT_R8G8B8A8_UNORM;
-imageFormat.inputDepthStencilFormat = VK_FORMAT_D24_UNORM_S8_UINT;
-imageFormat.outputColorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+imageFormat.inputColorFormat = m_swapChainImageFormat;
+imageFormat.inputDepthStencilFormat = m_sceneDepthStencil.GetFormat();
+imageFormat.outputColorFormat = m_swapChainImageFormat;
 errorCode = HMS_FG_SetImageFormat_VK(m_context, &imageFormat);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetImageFormat_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 当颜色缓冲区相对深度模板缓冲区基于y轴翻转180度时，设置第二个参数为true，接口不调用时默认为false
-errorCode = HMS_FG_SetDepthStencilYDirectionInverted_VK(m_context, true);
+// 当颜色缓冲区相对深度模板缓冲区基于y轴翻转180度时，设置第二个参数为true，接口不调用时默认为false
+errorCode = HMS_FG_SetDepthStencilYDirectionInverted_VK(m_context, false);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetDepthStencilYDirectionInverted_VK execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -416,8 +383,10 @@ if (errorCode != FG_SUCCESS) {
 
 ```
 // 激活超帧上下文实例
-errorCode = HMS_FG_Activate_VK(m_context);
+FG_ErrorCode errorCode = HMS_FG_Activate_VK(m_context);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_Activate_VK execution failed, error code: %d.", errorCode);
+    // ...
     return false;
 }
 ```
@@ -426,164 +395,143 @@ if (errorCode != FG_SUCCESS) {
 
 ```
 // 变量声明
-VkImage inputColorImage = VK_NULL_HANDLE;
-VkImageView inputColorImageView = VK_NULL_HANDLE;
-VkImage inputDepthStencilImage = VK_NULL_HANDLE;
-VkImageView inputDepthStencilImageView = VK_NULL_HANDLE;
-VkImage outputColorImage = VK_NULL_HANDLE;
-VkImageView outputColorImageView = VK_NULL_HANDLE;
-
-// 创建真实帧颜色缓冲区图像实例
-FG_Image_VK* inputColor = HMS_FG_CreateImage_VK(m_context, inputColorImage, inputColorImageView);
-if (!inputColor) {
-    return false;
-}
-// 创建真实帧深度模板缓冲区图像实例
-FG_Image_VK* inputDepthStencil = HMS_FG_CreateImage_VK(m_context, inputDepthStencilImage, inputDepthStencilImageView);
-if (!inputDepthStencil) {
-    return false;
-}
-// 创建预测帧缓冲区图像实例
-FG_Image_VK* outputColor = HMS_FG_CreateImage_VK(m_context, outputColorImage, outputColorImageView);
-if (!outputColor) {
-    return false;
-}
+FG_Image_VK *m_ffSceneColor = nullptr;
+VulkanFG::Image m_sceneColor{};
+FG_Image_VK *m_ffDepthStencil = nullptr;
+VulkanFG::Image m_sceneDepthStencil{};
+FG_Image_VK *m_ffPredictedColor = nullptr;
+VulkanFG::Image m_predictedColor{};
 ```
 
 ### Code block 7
 
 ```
-// 帧计数
-uint32_t frameNum = 0;
-
-// 帧循环
-while (true) {
-    frameNum += 1;
-    if ((frameNum & 1) != 0) { // 真实帧渲染阶段
-        // 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
-        // ...
-
-        // 绘制真实帧
-        // ...
-
-        // 绘制UI
-        // ...
-
-        // 送显真实帧
-        // ...
-    } else { // 预测帧渲染阶段
-        // 设置预测帧生成前真实帧颜色缓冲区同步状态
-        FG_ImageSync_VK inputColorInitImageSync{};
-        inputColorInitImageSync.stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        inputColorInitImageSync.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        inputColorInitImageSync.accessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-        // 设置预测帧生成后真实帧颜色缓冲区同步状态
-        FG_ImageSync_VK inputColorFinalImageSync{};
-        inputColorFinalImageSync.stages = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        inputColorFinalImageSync.layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        inputColorFinalImageSync.accessMask = VK_ACCESS_TRANSFER_READ_BIT;
-
-        // 创建真实帧颜色缓冲区图像属性实例
-        FG_ImageInfo_VK inputColorImageInfo{};
-        inputColorImageInfo.image = inputColor;
-        inputColorImageInfo.initialSync = inputColorInitImageSync;
-        inputColorImageInfo.finalSync = inputColorFinalImageSync;
-
-        // 设置预测帧生成前深度模板缓冲区同步状态
-        FG_ImageSync_VK depthInitImageSync{};
-        depthInitImageSync.stages = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-        depthInitImageSync.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        depthInitImageSync.accessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-        // 设置预测帧生成后深度模板缓冲区同步状态
-        FG_ImageSync_VK depthFinalImageSync{};
-        depthFinalImageSync.stages = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-        depthFinalImageSync.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        depthFinalImageSync.accessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-
-        // 创建真实帧深度模板缓冲区图像属性实例
-        FG_ImageInfo_VK depthImageInfo{};
-        depthImageInfo.image = inputDepthStencil;
-        depthImageInfo.initialSync = depthInitImageSync;
-        depthImageInfo.finalSync = depthFinalImageSync;
-
-        // 设置预测帧生成前预测帧缓冲区同步状态
-        FG_ImageSync_VK outputColorInitImageSync{};
-        outputColorInitImageSync.stages = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
-        outputColorInitImageSync.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        outputColorInitImageSync.accessMask = VK_ACCESS_SHADER_WRITE_BIT;
-
-        // 设置预测帧生成后预测帧缓冲区同步状态
-        FG_ImageSync_VK outputColorFinalImageSync{};
-        outputColorFinalImageSync.stages = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        outputColorFinalImageSync.layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        outputColorFinalImageSync.accessMask = VK_ACCESS_TRANSFER_READ_BIT;
-
-        // 创建预测帧缓冲区图像属性实例
-        FG_ImageInfo_VK outputColorImageInfo{};
-        outputColorImageInfo.image = outputColor;
-        outputColorImageInfo.initialSync = outputColorInitImageSync;
-        outputColorImageInfo.finalSync = outputColorFinalImageSync;
-
-        // 帧生成属性配置结构体
-        FG_DispatchDescription_VK dispatchDescription{};
-        // 传入真实渲染帧颜色缓冲区属性信息
-        dispatchDescription.inputColorInfo = inputColorImageInfo;
-        // 传入真实渲染帧深度模板缓冲区属性信息
-        dispatchDescription.inputDepthStencilInfo = depthImageInfo;
-        // 传入预测帧缓冲区属性信息
-        dispatchDescription.outputColorInfo = outputColorImageInfo;
-
-        // 变量声明
-        FG_Mat4x4 preViewProj;
-        FG_Mat4x4 preInvViewProj;
-        VkCommandBuffer vkCommandBuffer = VK_NULL_HANDLE;
-
-        // 传入上一帧真实渲染帧视图投影矩阵
-        dispatchDescription.viewProj = preViewProj;
-        // 传入上一帧真实渲染帧视图投影逆矩阵
-        dispatchDescription.invViewProj = preInvViewProj;
-        // 传入用于录入超帧绘制指令的命令缓冲区句柄
-        dispatchDescription.vkCommandBuffer = vkCommandBuffer;
-        // 传入当前帧序号
-        dispatchDescription.frameIdx = 0;
-
-        // 生成预测帧，更新预测帧缓冲区的内存
-        errorCode = HMS_FG_Dispatch_VK(m_context, &dispatchDescription);
-        if (errorCode != FG_SUCCESS) {
-            return false;
-        }
-
-        switch (errorCode) {
-            case FG_SUCCESS: {
-                // 绘制预测帧
-                // ...
-
-                // 绘制UI
-                // ...
-
-                // 送显预测帧
-                // ...
-                break;
-            }
-            case FG_COLLECTING_PREVIOUS_FRAMES:
-                // 传入真实帧数量未达到固定阈值，无预测帧生成，外插模式传入真实帧数量<3时返回该状态码，此时不要将预测帧送显
-                break;
-            default:
-                // 预测帧生成失败
-                return false;
-        }
-    }
+// 创建真实帧颜色缓冲区图像实例
+m_ffSceneColor = HMS_FG_CreateImage_VK(m_context, m_sceneColor.GetNativeImage(), m_sceneColor.GetNativeImageView());
+if (!m_ffSceneColor) {
+    GOLOGE("HMS_FG_RegisterImage_VK m_ffSceneColor execution failed.");
+    return false;
+}
+// 创建真实帧深度模板缓冲区图像实例
+m_ffDepthStencil = HMS_FG_CreateImage_VK(m_context, m_sceneDepthStencil.GetNativeImage(),
+                                         m_sceneDepthStencil.GetNativeImageView());
+if (!m_ffDepthStencil) {
+    GOLOGE("HMS_FG_RegisterImage_VK m_ffDepthStencil execution failed.");
+    return false;
+}
+// 创建预测帧缓冲区图像实例
+m_ffPredictedColor = HMS_FG_CreateImage_VK(m_context, m_predictedColor.GetNativeImage(),
+                                           m_predictedColor.GetNativeImageView());
+if (!m_ffPredictedColor) {
+    GOLOGE("HMS_FG_RegisterImage_VK m_ffPredictedColor execution failed.");
+    return false;
 }
 ```
 
 ### Code block 8
 
 ```
+// 变量声明
+FG_Mat4x4 m_viewProj{};
+FG_Mat4x4 m_invViewProj{};
+FG_DispatchDescription_VK dispatch{};
+```
+
+### Code block 9
+
+```
+// 真实帧渲染阶段
+// ...
+// 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
+// ...
+// 绘制真实帧和UI
+// ...
+// 送显真实帧
+// ...
+bool const runPrediction = m_predictionEnabled & !m_predictionPaused;
+if (runPrediction) { // 预测帧渲染阶段
+    // ...
+
+    dispatch = {
+        // 传入真实渲染帧颜色缓冲区属性信息
+        .inputColorInfo = {
+            .image = m_ffSceneColor,
+            // 设置预测帧生成前真实帧颜色缓冲区同步状态
+            .initialSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            },
+            // 设置预测帧生成后真实帧颜色缓冲区同步状态
+            .finalSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            }
+        },
+        // 传入真实渲染帧深度模板缓冲区属性信息
+        .inputDepthStencilInfo = {
+            .image = m_ffDepthStencil,
+            // 设置预测帧生成前深度模板缓冲区同步状态
+            .initialSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            },
+            // 设置预测帧生成后深度模板缓冲区同步状态
+            .finalSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            }
+        },
+        // 传入预测帧缓冲区属性信息
+        .outputColorInfo = {
+            .image = m_ffPredictedColor,
+            // 设置预测帧生成前预测帧缓冲区同步状态
+            .initialSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            },
+            // 设置预测帧生成后预测帧缓冲区同步状态
+            .finalSync {
+                .accessMask = VK_ACCESS_SHADER_READ_BIT,
+                .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .stages = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            }
+        },
+        // 传入上一帧真实渲染帧视图投影矩阵
+        .viewProj = m_viewProj,
+        // 传入上一帧真实渲染帧视图投影逆矩阵
+        .invViewProj = m_invViewProj,
+        // 传入用于录入超帧绘制指令的命令缓冲区句柄
+        .vkCommandBuffer = fif->commandBuffer,
+        // 传入当前帧序号
+        .frameIdx = fifIndex
+    };
+    // ...
+    // 生成预测帧，更新预测帧缓冲区的内存
+    FG_ErrorCode const errorCode = HMS_FG_Dispatch_VK(m_context, &dispatch);
+    if (errorCode != FG_SUCCESS) { // 生成预测帧失败
+        GOLOGE("HMS_FG_Dispatch_VK execution failed, error code: %d", errorCode);
+        m_unfinishedCommandBuffer = true;
+        return;
+    }
+    // 绘制预测帧和UI
+    // ...
+    // 送显预测帧
+    // ...
+}
+```
+
+### Code block 10
+
+```
 // 销毁超帧上下文实例并释放内存资源
 errorCode = HMS_FG_DestroyContext_VK(&m_context);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_DestroyContext_VK execution failed, error code: %d", errorCode);
     return false;
 }
 ```

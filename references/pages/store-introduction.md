@@ -30,13 +30,13 @@ AppGallery Kit（应用市场服务）提供应用市场业务的对外开放能
 
 能力	支持设备
 数字商品服务	支持的设备。
-应用市场推荐	支持Phone、PC/2in1、Tablet、TV。
-产品特性按需分发	支持Phone、PC/2in1、Tablet、TV。
-生态查询服务	支持Phone、PC/2in1、Tablet、TV。
-应用市场更新功能	支持Phone、PC/2in1、Tablet、Wearable、TV。
-应用归因服务	支持Phone、PC/2in1、Tablet、TV。
-隐私管理服务	支持Phone、PC/2in1、Tablet、TV。
-图标管理服务	支持Phone、PC/2in1、Tablet、Wearable、TV。
+应用市场推荐	支持Phone、PC/2in1、Tablet、TV、Car。
+产品特性按需分发	支持Phone、PC/2in1、Tablet、TV、Car。
+生态查询服务	支持Phone、PC/2in1、Tablet、TV、Car。
+应用市场更新功能	支持Phone、PC/2in1、Tablet、Wearable、TV、Car。
+应用归因服务	支持Phone、PC/2in1、Tablet、TV、Car。
+隐私管理服务	支持Phone、PC/2in1、Tablet、TV、Car。
+图标管理服务	支持Phone、PC/2in1、Tablet、Wearable、TV、Car。
 应用评论服务	支持Phone、PC/2in1、Tablet。
 
 [h2]支持的国家/地区
@@ -58,7 +58,7 @@ AppGallery Kit（应用市场服务）提供应用市场业务的对外开放能
 
 通用差异：请参见“模拟器与真机的差异”。
 
-不支持数字商品服务、应用市场推荐、生态查询服务、应用市场更新功能、应用评论服务、图标管理服务，不支持端云交互。
+模拟器不支持数字商品服务、应用市场推荐、生态查询服务、应用市场更新功能、应用评论服务、图标管理服务，不支持端云交互。
 
 示例代码
 

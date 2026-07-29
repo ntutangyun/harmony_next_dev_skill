@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappeven
 
 简介
 
-从版本26.0.0开始，应用运行过程中，若仅触发THREAD_BLOCK_3S、LIFECYCLE_HALF_TIMEOUT这类应用冻屏事件中的告警事件，系统将统一判定为应用冻屏告警。针对该类异常场景，系统会提供应用冻屏告警检测、维测日志抓取及日志上报能力，帮助开发者提前预警风险、定位潜在的冻屏卡死问题。
+从API版本26.0.0开始，应用运行过程中，若仅触发THREAD_BLOCK_3S、LIFECYCLE_HALF_TIMEOUT这类应用冻屏事件中的告警事件，系统将统一判定为应用冻屏告警。针对该类异常场景，系统会提供应用冻屏告警检测、维测日志抓取及日志上报能力，帮助开发者提前预警风险、定位潜在的冻屏卡死问题。
 
 本文面向开发者介绍AppFreezeWarning（应用冻屏告警）检测原理，以及各字段的含义和规格。如需了解如何使用HiAppEvent接口订阅应用冻屏告警事件，请参考以下文档。目前提供ArkTS和C/C++两种接口，按需选择。
 

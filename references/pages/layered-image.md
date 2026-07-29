@@ -169,6 +169,162 @@ HAP中不包含UIAbility，系统将返回app.json5中的icon和label。
 
 DevEco Studio NEXT Beta1(5.0.3.814) 及之后的版本，创建应用时默认模板中包含分层图标的资源文件，不同版本生成的资源文件名称可能不同，文件名称支持手动修改。如果分层图标资源文件不存在则需要手动创建，文件名称需要符合资源命名规范，由数字、字母、点和下划线组成。
 
+配置备用图标
+
+从API版本26.0.0开始，配置备用图标可在应用运行时动态切换，适用于用户偏好、节日主题、品牌活动等场景。开发者可以在app.json5配置文件的alternateIcons标签中预先配置多个备用图标，最多可以配置1024个，可参考下方步骤进行动态切换。
+
+备用图标支持单层图标和分层图标，资源文件的准备和配置方式分别参考配置单层图标和应用名称和配置分层图标和应用名称。
+
+说明
+
+alternateIcons标签仅在bundleType为app时生效。
+
+应用最多只能同时启用一个备用图标。
+
+分身应用不支持设置和查询备用图标。
+
+在app.json5配置文件中添加alternateIcons标签，声明备用图标列表。
+
+{
+  "app": {
+    // ...
+    "alternateIcons": [
+      {
+        "name": "summer_theme",
+        "icon": "$media:layered_image"
+      },
+      {
+        "name": "winter_theme",
+        "icon": "$media:winter_icon"
+      }
+    ]
+  }
+}
+
+使用bundleManager.setAlternateIcon接口设置备用图标，传入alternateIcons标签中配置的name字段值即可启用对应备用图标。
+
+import { bundleManager } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+
+  build() {
+    Scroll() {
+      Column() {
+        Text("SetAlternateIcon")
+          .fontSize($r('app.float.page_text_font_size'))
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(() => {
+            // alternateIconName需要替换为app.json5中alternateIcons标签下配置的name字段值
+            let alternateIconName: string = 'summer_theme';
+            try {
+              bundleManager.setAlternateIcon(alternateIconName).then(() => {
+                hilog.info(0x0000, 'testTag', 'setAlternateIcon successfully');
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'testTag', 'setAlternateIcon failed. Cause: %{public}s', err.message);
+              });
+            } catch (err) {
+              let message = (err as BusinessError).message;
+              hilog.error(0x0000, 'testTag', 'setAlternateIcon failed. Cause: %{public}s', message);
+            }
+          })
+        // ...
+        // ...
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+
+调用bundleManager.setAlternateIcon接口传入空字符串可恢复默认图标。
+
+import { bundleManager } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+
+  build() {
+    Scroll() {
+      Column() {
+        // ...
+        Text("RestoreDefaultIcon")
+          .fontSize($r('app.float.page_text_font_size'))
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(() => {
+            try {
+              bundleManager.setAlternateIcon('').then(() => {
+                hilog.info(0x0000, 'testTag', 'restore default icon successfully');
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'testTag', 'restore default icon failed. Cause: %{public}s', err.message);
+              });
+            } catch (err) {
+              let message = (err as BusinessError).message;
+              hilog.error(0x0000, 'testTag', 'restore default icon failed. Cause: %{public}s', message);
+            }
+          })
+        // ...
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+
+使用bundleManager.getAlternateIcons接口查询备用图标信息。返回的AlternateIconInfo数组包含每个备用图标的名称（iconName）、资源ID（iconId）和启用状态（enabled）。
+
+import { bundleManager } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+
+  build() {
+    Scroll() {
+      Column() {
+        // ...
+        Text("GetAlternateIcons")
+          .fontSize($r('app.float.page_text_font_size'))
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(() => {
+            try {
+              bundleManager.getAlternateIcons().then((data) => {
+                hilog.info(0x0000, 'testTag', 'getAlternateIcons successfully. Data: %{public}s', JSON.stringify(data));
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'testTag', 'getAlternateIcons failed. Cause: %{public}s', err.message);
+              });
+            } catch (err) {
+              let message = (err as BusinessError).message;
+              hilog.error(0x0000, 'testTag', 'getAlternateIcons failed. Cause: %{public}s', message);
+            }
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+
 ## Code blocks
 
 ### Code block 1
@@ -274,6 +430,156 @@ DevEco Studio NEXT Beta1(5.0.3.814) 及之后的版本，创建应用时默认�
       }
     ],
     // ...
+  }
+}
+```
+
+### Code block 7
+
+```
+{
+  "app": {
+    // ...
+    "alternateIcons": [
+      {
+        "name": "summer_theme",
+        "icon": "$media:layered_image"
+      },
+      {
+        "name": "winter_theme",
+        "icon": "$media:winter_icon"
+      }
+    ]
+  }
+}
+```
+
+### Code block 8
+
+```
+import { bundleManager } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+
+  build() {
+    Scroll() {
+      Column() {
+        Text("SetAlternateIcon")
+          .fontSize($r('app.float.page_text_font_size'))
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(() => {
+            // alternateIconName需要替换为app.json5中alternateIcons标签下配置的name字段值
+            let alternateIconName: string = 'summer_theme';
+            try {
+              bundleManager.setAlternateIcon(alternateIconName).then(() => {
+                hilog.info(0x0000, 'testTag', 'setAlternateIcon successfully');
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'testTag', 'setAlternateIcon failed. Cause: %{public}s', err.message);
+              });
+            } catch (err) {
+              let message = (err as BusinessError).message;
+              hilog.error(0x0000, 'testTag', 'setAlternateIcon failed. Cause: %{public}s', message);
+            }
+          })
+        // ...
+        // ...
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 9
+
+```
+import { bundleManager } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+
+  build() {
+    Scroll() {
+      Column() {
+        // ...
+        Text("RestoreDefaultIcon")
+          .fontSize($r('app.float.page_text_font_size'))
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(() => {
+            try {
+              bundleManager.setAlternateIcon('').then(() => {
+                hilog.info(0x0000, 'testTag', 'restore default icon successfully');
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'testTag', 'restore default icon failed. Cause: %{public}s', err.message);
+              });
+            } catch (err) {
+              let message = (err as BusinessError).message;
+              hilog.error(0x0000, 'testTag', 'restore default icon failed. Cause: %{public}s', message);
+            }
+          })
+        // ...
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
+}
+```
+
+### Code block 10
+
+```
+import { bundleManager } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+@Entry
+@Component
+struct Index {
+
+  build() {
+    Scroll() {
+      Column() {
+        // ...
+        Text("GetAlternateIcons")
+          .fontSize($r('app.float.page_text_font_size'))
+          .fontWeight(FontWeight.Bold)
+          .alignRules({
+            center: { anchor: '__container__', align: VerticalAlign.Center },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+          .onClick(() => {
+            try {
+              bundleManager.getAlternateIcons().then((data) => {
+                hilog.info(0x0000, 'testTag', 'getAlternateIcons successfully. Data: %{public}s', JSON.stringify(data));
+              }).catch((err: BusinessError) => {
+                hilog.error(0x0000, 'testTag', 'getAlternateIcons failed. Cause: %{public}s', err.message);
+              });
+            } catch (err) {
+              let message = (err as BusinessError).message;
+              hilog.error(0x0000, 'testTag', 'getAlternateIcons failed. Cause: %{public}s', message);
+            }
+          })
+      }
+      .width('100%')
+    }
+    .height('100%')
   }
 }
 ```

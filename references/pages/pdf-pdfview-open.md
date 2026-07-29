@@ -24,10 +24,11 @@ saveDocument(path: string, onProgress?: Callback<number>): Promise<number>	保�
 
 import { pdfService, PdfView, pdfViewManager } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+ // ...
 
 @Entry
 @Component
-struct PdfPage {
+struct PdfOpenDocument {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -41,23 +42,24 @@ struct PdfPage {
   }
 
   build() {
-    Column() {
-      // 保存Pdf文档
-      Button('savePdfDocument').onClick(async () => {
-        if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-          let savePath = this.context.filesDir + '/savePdfDocument.pdf';
-          let result = await this.controller.saveDocument(savePath);
-          hilog.info(0x0000, 'PdfPage', 'savePdfDocument %{public}s!', result ? 'success' : 'fail');
-        }
-      })
-      PdfView({
-        controller: this.controller,
-        pageFit: pdfService.PageFit.FIT_WIDTH,
-        showScroll: true
-      })
-        .id('pdfview_app_view')
-        .layoutWeight(1);
-    }
+   // ...
+      Column() {
+        Button('savePdfDocument').onClick(async () => {
+          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+            let savePath = this.context.filesDir + '/savePdfDocument.pdf';
+            let result = await this.controller.saveDocument(savePath);
+            hilog.info(0x0000, 'PdfPage', 'savePdfDocument %{public}s!', result ? 'success' : 'fail');
+          }
+        })
+        PdfView({
+          controller: this.controller,
+          pageFit: pdfService.PageFit.FIT_WIDTH,
+          showScroll: true
+        })
+          .id('pdfview_app_view')
+          .layoutWeight(1);
+      }
+      // ...
     .width('100%')
     .height('100%')
   }
@@ -70,10 +72,11 @@ struct PdfPage {
 ```
 import { pdfService, PdfView, pdfViewManager } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+ // ...
 
 @Entry
 @Component
-struct PdfPage {
+struct PdfOpenDocument {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -87,23 +90,24 @@ struct PdfPage {
   }
 
   build() {
-    Column() {
-      // 保存Pdf文档
-      Button('savePdfDocument').onClick(async () => {
-        if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-          let savePath = this.context.filesDir + '/savePdfDocument.pdf';
-          let result = await this.controller.saveDocument(savePath);
-          hilog.info(0x0000, 'PdfPage', 'savePdfDocument %{public}s!', result ? 'success' : 'fail');
-        }
-      })
-      PdfView({
-        controller: this.controller,
-        pageFit: pdfService.PageFit.FIT_WIDTH,
-        showScroll: true
-      })
-        .id('pdfview_app_view')
-        .layoutWeight(1);
-    }
+   // ...
+      Column() {
+        Button('savePdfDocument').onClick(async () => {
+          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+            let savePath = this.context.filesDir + '/savePdfDocument.pdf';
+            let result = await this.controller.saveDocument(savePath);
+            hilog.info(0x0000, 'PdfPage', 'savePdfDocument %{public}s!', result ? 'success' : 'fail');
+          }
+        })
+        PdfView({
+          controller: this.controller,
+          pageFit: pdfService.PageFit.FIT_WIDTH,
+          showScroll: true
+        })
+          .id('pdfview_app_view')
+          .layoutWeight(1);
+      }
+      // ...
     .width('100%')
     .height('100%')
   }

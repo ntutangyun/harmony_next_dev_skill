@@ -130,15 +130,15 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestContractPromise() {
-    // use your own contractStr
+    // 请使用开发者真实的入参信息（contractStr）
     const contractStr = '{"appId":"***","preSignNo":"***"}';
     paymentService.requestContract(this.context, contractStr)
       .then(() => {
-        // succeeded in signing
+        // 签约成功
         console.info('succeeded in signing');
       })
       .catch((error: BusinessError) => {
-        // failed to sign
+        // 签约失败
         console.error(`failed to sign, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -152,7 +152,7 @@ struct Index {
         .onClick(() => {
           this.requestContractPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }
@@ -257,15 +257,15 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestContractPromise() {
-    // use your own contractStr
+    // 请使用开发者真实的入参信息（contractStr）
     const contractStr = '{"appId":"***","preSignNo":"***"}';
     paymentService.requestContract(this.context, contractStr)
       .then(() => {
-        // succeeded in signing
+        // 签约成功
         console.info('succeeded in signing');
       })
       .catch((error: BusinessError) => {
-        // failed to sign
+        // 签约失败
         console.error(`failed to sign, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -279,7 +279,7 @@ struct Index {
         .onClick(() => {
           this.requestContractPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }

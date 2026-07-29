@@ -14,21 +14,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-insta
 
 接口说明
 
-类名	接口名	说明
-InstantShapeGenerator	processTouchEvent	传递触摸事件。
-InstantShapeGenerator	getPathFromString	从给定的形状字符串中提取形状信息。
-InstantShapeGenerator	notifyAreaChange	通知组件大小变化。
-InstantShapeGenerator	setPauseTime	设置触发识别的暂停时间，单位：ms。
-InstantShapeGenerator	release	销毁识别工具。
-InstantShapeGenerator	onShapeRecognized	注册识别完成时的回调方法。使用callback异步回调。
+类名	接口名	描述
+InstantShapeGenerator	processTouchEvent(event: TouchEvent): void	传递触摸事件。
+InstantShapeGenerator	getPathFromString(shapeString: string, penSize: number): Path2D	从给定的形状字符串中提取形状信息。
+InstantShapeGenerator	notifyAreaChange(width: number, height: number): void	通知组件大小变化。
+InstantShapeGenerator	setPauseTime(time: number): void	设置触发识别的暂停时间，单位：ms。
+InstantShapeGenerator	release(): void	销毁识别工具。
+InstantShapeGenerator	onShapeRecognized(callback: Callback<ShapeInfo>): InstantShapeGenerator	注册识别完成时的回调方法。使用callback异步回调。
 
 开发步骤
 
-导入相关模块。
+导入相关模块。构造包含一笔成形能力，下面以控件为例：
 
-import { InstantShapeGenerator, ShapeInfo } from '@kit.Penkit';
-
-构造包含一笔成形能力，下面以控件为例：
+import { InstantShapeGenerator, ShapeInfo} from '@kit.Penkit';
 
 @Entry
 @Component
@@ -54,9 +52,9 @@ struct InstantShapeDemo {
     console.info('InstantShapeGenerator aboutToAppear');
     // 设置触发识别的暂停时间
     try {
-        this.instantShapeGenerator?.setPauseTime(280);
+      this.instantShapeGenerator?.setPauseTime(280);
     } catch (error) {
-        console.error('setPauseTime failed: ', error);
+      console.error('setPauseTime failed: ', error);
     }
     // 注册完成时的回调方法
     this.instantShapeGenerator?.onShapeRecognized(this.shapeInfoCallback);
@@ -125,8 +123,8 @@ struct InstantShapeDemo {
 }
 
 export class DrawPathPointModel {
-  x: number = 0;
-  y: number = 0;
+  public x: number = 0;
+  public y: number = 0;
 }
 
 ## Code blocks
@@ -134,12 +132,8 @@ export class DrawPathPointModel {
 ### Code block 1
 
 ```
-import { InstantShapeGenerator, ShapeInfo } from '@kit.Penkit';
-```
+import { InstantShapeGenerator, ShapeInfo} from '@kit.Penkit';
 
-### Code block 2
-
-```
 @Entry
 @Component
 struct InstantShapeDemo {
@@ -164,9 +158,9 @@ struct InstantShapeDemo {
     console.info('InstantShapeGenerator aboutToAppear');
     // 设置触发识别的暂停时间
     try {
-        this.instantShapeGenerator?.setPauseTime(280);
+      this.instantShapeGenerator?.setPauseTime(280);
     } catch (error) {
-        console.error('setPauseTime failed: ', error);
+      console.error('setPauseTime failed: ', error);
     }
     // 注册完成时的回调方法
     this.instantShapeGenerator?.onShapeRecognized(this.shapeInfoCallback);
@@ -235,7 +229,7 @@ struct InstantShapeDemo {
 }
 
 export class DrawPathPointModel {
-  x: number = 0;
-  y: number = 0;
+  public x: number = 0;
+  public y: number = 0;
 }
 ```

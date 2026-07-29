@@ -50,13 +50,15 @@ floating	窗口支持悬浮窗显示。
 
 应用内分屏功能允许声明支持分屏的应用在全屏显示模式下，通过调用startAbility方法启动UIAbility并形成分屏。该功能能够增强应用的多任务处理能力，提升用户的操作体验。
 
+仅在Tablet设备、PC/2in1设备，以及支持横屏桌面且处于展开状态的折叠屏设备上生效。
+
 此处以点击按钮启动分屏为例，主要步骤和示例如下所示：
 
 在应用中获取UIAbilityContext 对象，这是启动分屏所必需的上下文对象，用于后续调用startAbility接口。
 
 this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 
-调用startAbility接口启动UIAbility，形成分屏。调用startAbility接口时，设置StartOptions对象，需要指定窗口模式windowMode（需设置为WINDOW_MODE_SPLIT_PRIMARY或者WINDOW_MODE_SPLIT_SECONDARY），并可根据需要设置其他StartOptions属性或startAbility参数，如Want对象。
+调用startAbility接口启动UIAbility，形成分屏。调用startAbility接口时，设置StartOptions对象，需要指定窗口模式windowMode，需设置为WINDOW_MODE_SPLIT_PRIMARY或者WINDOW_MODE_SPLIT_SECONDARY。并可根据需要设置其他StartOptions属性或startAbility参数，如Want对象。
 
 从API版本26.0.0开始，支持使用分屏比例字段splitRatio（需设置为EQUAL、PRIMARY_DOMINANT或者SECONDARY_DOMINANT，默认为EQUAL）设置应用内分屏比例。
 
@@ -65,11 +67,18 @@ let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_
 let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
 this.hostContext?.startAbility(want, option);
 
-若继续执行上述步骤，可继续启动其他UIAbility窗口，呈现左右分屏或替换一侧的分屏窗口。
+从API版本26.0.0开始，支持指定窗口模式windowMode为WINDOW_MODE_SPLIT，可从全屏窗口拉起应用内分屏，形成二分屏。在支持三分屏的设备上，从二分屏拉起应用内分屏，形成三分屏。
+
+// 创建StartOptions并设置窗口模式为分屏模式WINDOW_MODE_SPLIT，右侧分屏
+let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT };
+let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
+this.hostContext?.startAbility(want, option);
+
+若继续执行上述步骤，可继续启动其他UIAbility窗口。分屏窗口数量未满时，支持拉起新的分屏窗口；分屏窗口数量已满时，支持分屏窗口替换。
 
 完整示例如下：
 
-使用DevEco Studio新建Ability，创建EntryAbility1和EntryAbility2，对应文中组成分屏的两个窗口页面；同时创建EntryAbility3和EntryAbility4，对应文中不同的分屏比例，加载页面为默认页面Index.ets。
+使用DevEco Studio新建Ability，创建EntryAbility，EntryAbility1和EntryAbility2，对应文中组成分屏的三个窗口页面，加载页面都是默认页面Index.ets。
 
 // Index.ets
 import { AbilityConstant, common, StartOptions, Want } from '@kit.AbilityKit';
@@ -77,91 +86,161 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { window } from '@kit.ArkUI';
 
+interface AbilityActionItem {
+  title: string;
+  want: Want;
+  startOption: StartOptions;
+}
+const ICON_BG_COLORS = ['#E8F0FE', '#FFF3E0', '#E8F5E9', '#FCE4EC', '#E0F2F1', '#EDE7F6', '#F9FBE7', '#F1F3F5'];
+const DOMAIN: number = 0x0000;
+const TAG: string = 'Index';
+const ACTION_ITEMS: AbilityActionItem[] = [
+  {
+    title: 'Start EntryAbility1 in left split-screen',
+    // 指定拉起的分屏窗口的应用信息
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' },
+    // 创建StartOptions并设置窗口模式为分屏模式，左侧分屏
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY }
+  },
+  {
+    title: 'Start EntryAbility2 in the right split-screen',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' },
+    // 创建StartOptions并设置窗口模式为分屏模式，右侧分屏
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY }
+  },
+  {
+    title: 'Start EntryAbility1 in the left split screen at a larger aspect ratio.',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' },
+    startOption: {
+      windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY,
+      // 将左分屏以较大比例，右分屏以较小比例启动应用内分屏
+      splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT
+    }
+  },
+  {
+    title: 'Start EntryAbility2 in the right split screen at a larger aspect ratio.',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' },
+    startOption: {
+      windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
+      // 将左分屏以较小比例，右分屏以较大比例启动应用内分屏
+      splitRatio: window.SplitRatioPreference.SECONDARY_DOMINANT
+    }
+  },
+  {
+    title: 'Start EntryAbility1 with the WINDOW_MODE_SPLIT window mode',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' },
+    // 创建StartOptions并设置窗口模式为分屏模式WINDOW_MODE_SPLIT，右侧分屏
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT }
+  },
+  {
+    title: 'Start EntryAbility2 with the WINDOW_MODE_SPLIT window mode',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' },
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT }
+  }
+]
+
 @Entry
 @Component
 struct Index {
   @State name: string = '';
+  @State currentItem: AbilityActionItem | null = null;
+  private items: AbilityActionItem[] = ACTION_ITEMS;
   private hostContext: common.UIAbilityContext | null = null;
 
   aboutToAppear(): void {
     this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
-    this.name = this.hostContext.abilityInfo.name;
+    this.name = this.hostContext?.abilityInfo.name ?? '';
+  }
+
+  onItemClick = (item: AbilityActionItem) => {
+    this.currentItem = item;
+    this.hostContext?.startAbility(item.want, item.startOption).then(() => {
+      hilog.info(DOMAIN, TAG, '启动成功');
+    }).catch((err: BusinessError) => {
+      hilog.error(DOMAIN, TAG, err.message);
+    });
   }
 
   build() {
-    Column({ space: 20 }) {
-      Text(this.name)
-
-      Button() {
-        Text('启动应用内分屏')
+    Column() {
+      Column({ space: 5 }) {
+        Text('Ability Name: ' + this.name).fontSize(20).fontWeight(FontWeight.Medium).fontColor('#1D2129');
+        if (this.currentItem) {
+          Text('Ability Want Info: ' + JSON.stringify(this.currentItem)).fontSize(14).fontColor('#86909C');
+        }
       }
-      .height(40)
-      .onClick(() => {
-        // 指定拉起的分屏窗口的应用信息
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
-        // 创建StartOptions并设置窗口模式为分屏模式，左侧分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
+      .width('100%')
+      .padding(20)
+      .backgroundColor('#F7F8FA')
+      .borderRadius(18)
+      .margin({ bottom: 20 })
 
-      Button() {
-        Text('启动另一分屏窗口')
+      Column({ space: 4 }) {
+        List({ space: 4 }) {
+          ForEach(this.items, (item: AbilityActionItem, index: number) => {
+            if (item.want.abilityName !== this.name) {
+              ListItem() {
+                Row() {
+                  this.iconBuilder(item, index)
+                  this.buttonInfoBuilder(item, index)
+                }
+                .alignItems(VerticalAlign.Center)
+                .justifyContent(FlexAlign.Start)
+                .width('100%')
+                .margin({ left: 16, right: 16, top: 16, bottom: 16 })
+                .onClick(() => this.onItemClick(item))
+              }
+              .borderRadius(14)
+              .backgroundColor(Color.White)
+              .width('100%')
+            }
+          })
+        }
+        .borderRadius(14)
+        .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+        .scrollBar(BarState.Auto)
+        .height('100%')
       }
-      .height(40)
-      .onClick(() => {
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' };
-        // 指定启动EntryAbility2的窗口模式，右侧分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
-
-      Button() {
-        Text('以左分屏占较大比例启动')
-      }
-      .height(40)
-      .onClick(() => {
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility3', moduleName: '' };
-        // 指定启动EntryAbility3的窗口模式，将左分屏以较大比例，右分屏以较小比例启动应用内分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
-          splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
-
-      Button() {
-        Text('以右分屏占较大比例启动')
-      }
-      .height(40)
-      .onClick(() => {
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility4', moduleName: '' };
-        // 指定启动EntryAbility4的窗口模式，将左分屏以较小比例，右分屏以较大比例启动应用内分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
-          splitRatio: window.SplitRatioPreference.SECONDARY_DOMINANT };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
+      .backgroundColor('#60d9e0dc')
+      .borderRadius(18)
+      .padding({ left: 4, right: 4, top: 4, bottom: 4 })
+      .width('100%')
+      .layoutWeight(1);
     }
-    .padding(20)
-    .height('100%')
-    .width('100%')
+    .width('100%').height('100%').padding(24).backgroundColor('#FFFFFF');
+  }
+
+  @Builder
+  buttonInfoBuilder(item: AbilityActionItem, index: number) {
+    Column() {
+      Text(item.title)
+        .fontWeight(FontWeight.Medium).fontSize(14)
+      Text(`${AbilityConstant.WindowMode[item.startOption.windowMode ?? -1]}`)
+        .fontSize(12).fontColor('#86909C');
+      Text(`windowMode:${item.startOption.windowMode}`)
+        .fontSize(12).fontColor('#86909C');
+      if (item.startOption.splitRatio !== undefined) {
+        Text(`splitRatio: ${item.startOption.splitRatio}`)
+          .fontSize(12).fontColor('#86909C');
+      }
+    }
+    .alignItems(HorizontalAlign.Start)
+    .justifyContent(FlexAlign.Center)
+    .constraintSize({ maxWidth: '75%' })
+    .margin({ left: 10 })
+  }
+
+  @Builder
+  iconBuilder(item: AbilityActionItem, index: number) {
+    Button({ type: ButtonType.Circle }) {
+      SymbolGlyph(item.startOption.windowMode === AbilityConstant.WindowMode.WINDOW_MODE_SPLIT ?
+        $r('sys.symbol.rectangle_split_3x1') : $r('sys.symbol.rectangle_split_2x1'))
+        .fontSize(26).fontColor(['#ffa1e6f8']);
+    }
+    .width(52).height(52)
+    .backgroundColor(ICON_BG_COLORS[index % ICON_BG_COLORS.length])
+    .borderRadius(26)
+    .id('icon')
   }
 }
 
@@ -172,6 +251,8 @@ struct Index {
 图3 以左分屏占较大比例启动
 
 图4 以右分屏占较大比例启动
+
+图5 从二分屏拉起应用内分屏，形成三分屏
 
 应用内多窗
 
@@ -199,97 +280,176 @@ this.hostContext?.startAbility(want, option);
 ### Code block 3
 
 ```
+// 创建StartOptions并设置窗口模式为分屏模式WINDOW_MODE_SPLIT，右侧分屏
+let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT };
+let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
+this.hostContext?.startAbility(want, option);
+```
+
+### Code block 4
+
+```
 // Index.ets
 import { AbilityConstant, common, StartOptions, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { window } from '@kit.ArkUI';
 
+interface AbilityActionItem {
+  title: string;
+  want: Want;
+  startOption: StartOptions;
+}
+const ICON_BG_COLORS = ['#E8F0FE', '#FFF3E0', '#E8F5E9', '#FCE4EC', '#E0F2F1', '#EDE7F6', '#F9FBE7', '#F1F3F5'];
+const DOMAIN: number = 0x0000;
+const TAG: string = 'Index';
+const ACTION_ITEMS: AbilityActionItem[] = [
+  {
+    title: 'Start EntryAbility1 in left split-screen',
+    // 指定拉起的分屏窗口的应用信息
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' },
+    // 创建StartOptions并设置窗口模式为分屏模式，左侧分屏
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY }
+  },
+  {
+    title: 'Start EntryAbility2 in the right split-screen',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' },
+    // 创建StartOptions并设置窗口模式为分屏模式，右侧分屏
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY }
+  },
+  {
+    title: 'Start EntryAbility1 in the left split screen at a larger aspect ratio.',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' },
+    startOption: {
+      windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY,
+      // 将左分屏以较大比例，右分屏以较小比例启动应用内分屏
+      splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT
+    }
+  },
+  {
+    title: 'Start EntryAbility2 in the right split screen at a larger aspect ratio.',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' },
+    startOption: {
+      windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
+      // 将左分屏以较小比例，右分屏以较大比例启动应用内分屏
+      splitRatio: window.SplitRatioPreference.SECONDARY_DOMINANT
+    }
+  },
+  {
+    title: 'Start EntryAbility1 with the WINDOW_MODE_SPLIT window mode',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' },
+    // 创建StartOptions并设置窗口模式为分屏模式WINDOW_MODE_SPLIT，右侧分屏
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT }
+  },
+  {
+    title: 'Start EntryAbility2 with the WINDOW_MODE_SPLIT window mode',
+    want: { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' },
+    startOption: { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT }
+  }
+]
+
 @Entry
 @Component
 struct Index {
   @State name: string = '';
+  @State currentItem: AbilityActionItem | null = null;
+  private items: AbilityActionItem[] = ACTION_ITEMS;
   private hostContext: common.UIAbilityContext | null = null;
 
   aboutToAppear(): void {
     this.hostContext = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
-    this.name = this.hostContext.abilityInfo.name;
+    this.name = this.hostContext?.abilityInfo.name ?? '';
+  }
+
+  onItemClick = (item: AbilityActionItem) => {
+    this.currentItem = item;
+    this.hostContext?.startAbility(item.want, item.startOption).then(() => {
+      hilog.info(DOMAIN, TAG, '启动成功');
+    }).catch((err: BusinessError) => {
+      hilog.error(DOMAIN, TAG, err.message);
+    });
   }
 
   build() {
-    Column({ space: 20 }) {
-      Text(this.name)
-
-      Button() {
-        Text('启动应用内分屏')
+    Column() {
+      Column({ space: 5 }) {
+        Text('Ability Name: ' + this.name).fontSize(20).fontWeight(FontWeight.Medium).fontColor('#1D2129');
+        if (this.currentItem) {
+          Text('Ability Want Info: ' + JSON.stringify(this.currentItem)).fontSize(14).fontColor('#86909C');
+        }
       }
-      .height(40)
-      .onClick(() => {
-        // 指定拉起的分屏窗口的应用信息
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility1', moduleName: '' };
-        // 创建StartOptions并设置窗口模式为分屏模式，左侧分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_PRIMARY };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
+      .width('100%')
+      .padding(20)
+      .backgroundColor('#F7F8FA')
+      .borderRadius(18)
+      .margin({ bottom: 20 })
 
-      Button() {
-        Text('启动另一分屏窗口')
+      Column({ space: 4 }) {
+        List({ space: 4 }) {
+          ForEach(this.items, (item: AbilityActionItem, index: number) => {
+            if (item.want.abilityName !== this.name) {
+              ListItem() {
+                Row() {
+                  this.iconBuilder(item, index)
+                  this.buttonInfoBuilder(item, index)
+                }
+                .alignItems(VerticalAlign.Center)
+                .justifyContent(FlexAlign.Start)
+                .width('100%')
+                .margin({ left: 16, right: 16, top: 16, bottom: 16 })
+                .onClick(() => this.onItemClick(item))
+              }
+              .borderRadius(14)
+              .backgroundColor(Color.White)
+              .width('100%')
+            }
+          })
+        }
+        .borderRadius(14)
+        .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+        .scrollBar(BarState.Auto)
+        .height('100%')
       }
-      .height(40)
-      .onClick(() => {
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility2', moduleName: '' };
-        // 指定启动EntryAbility2的窗口模式，右侧分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
-
-      Button() {
-        Text('以左分屏占较大比例启动')
-      }
-      .height(40)
-      .onClick(() => {
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility3', moduleName: '' };
-        // 指定启动EntryAbility3的窗口模式，将左分屏以较大比例，右分屏以较小比例启动应用内分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
-          splitRatio: window.SplitRatioPreference.PRIMARY_DOMINANT };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
-
-      Button() {
-        Text('以右分屏占较大比例启动')
-      }
-      .height(40)
-      .onClick(() => {
-        let want: Want = { bundleName: 'com.example.startsplitdemo', abilityName: 'EntryAbility4', moduleName: '' };
-        // 指定启动EntryAbility4的窗口模式，将左分屏以较小比例，右分屏以较大比例启动应用内分屏
-        let option: StartOptions = { windowMode: AbilityConstant.WindowMode.WINDOW_MODE_SPLIT_SECONDARY,
-          splitRatio: window.SplitRatioPreference.SECONDARY_DOMINANT };
-        this.hostContext?.startAbility(want, option, (error: BusinessError) => {
-          if (error.code) {
-            return;
-          }
-          hilog.info(0x0000, 'testTag', '启动分屏成功');
-        });
-      })
+      .backgroundColor('#60d9e0dc')
+      .borderRadius(18)
+      .padding({ left: 4, right: 4, top: 4, bottom: 4 })
+      .width('100%')
+      .layoutWeight(1);
     }
-    .padding(20)
-    .height('100%')
-    .width('100%')
+    .width('100%').height('100%').padding(24).backgroundColor('#FFFFFF');
+  }
+
+  @Builder
+  buttonInfoBuilder(item: AbilityActionItem, index: number) {
+    Column() {
+      Text(item.title)
+        .fontWeight(FontWeight.Medium).fontSize(14)
+      Text(`${AbilityConstant.WindowMode[item.startOption.windowMode ?? -1]}`)
+        .fontSize(12).fontColor('#86909C');
+      Text(`windowMode:${item.startOption.windowMode}`)
+        .fontSize(12).fontColor('#86909C');
+      if (item.startOption.splitRatio !== undefined) {
+        Text(`splitRatio: ${item.startOption.splitRatio}`)
+          .fontSize(12).fontColor('#86909C');
+      }
+    }
+    .alignItems(HorizontalAlign.Start)
+    .justifyContent(FlexAlign.Center)
+    .constraintSize({ maxWidth: '75%' })
+    .margin({ left: 10 })
+  }
+
+  @Builder
+  iconBuilder(item: AbilityActionItem, index: number) {
+    Button({ type: ButtonType.Circle }) {
+      SymbolGlyph(item.startOption.windowMode === AbilityConstant.WindowMode.WINDOW_MODE_SPLIT ?
+        $r('sys.symbol.rectangle_split_3x1') : $r('sys.symbol.rectangle_split_2x1'))
+        .fontSize(26).fontColor(['#ffa1e6f8']);
+    }
+    .width(52).height(52)
+    .backgroundColor(ICON_BG_COLORS[index % ICON_BG_COLORS.length])
+    .borderRadius(26)
+    .id('icon')
   }
 }
 ```

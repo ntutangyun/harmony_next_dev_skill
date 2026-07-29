@@ -51,7 +51,7 @@ onExtensionWillTerminate(error?: BusinessError<void>): Promise<void>	在资源�
     "srcEntry": "./ets/extensionability/AssetAccelExtAbility.ets", // 游戏资源加速ExtensionAbility组件所对应的代码路径。
     "type": "assetAcceleration"
   }
-]
+],
 
 导入模块信息。
 
@@ -61,9 +61,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { assetDownloadManager, AssetAccelerationExtensionAbility, AssetAccelerationExtensionInfo, ContentRequestType } from '@kit.GraphicsAccelerateKit';
-
-export default class AssetAccelExtAbility extends AssetAccelerationExtensionAbility {
-};
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 实现extension协同下载功能。
 
@@ -74,11 +72,10 @@ export default class AssetAccelExtAbility extends AssetAccelerationExtensionAbil
 若接口需要使用common.Context类型的上下文，可以从this.context中获取类型为common.ExtensionContext的上下文对象。
 
 async onDownloadWithAppControl(requestType: ContentRequestType, manifestUrl: string,
-  assetAccelerationExtensionInfo: AssetAccelerationExtensionInfo): Promise<boolean> {
-  const context = this.context as common.ExtensionContext; // 将当前上下文转换为ExtensionContext类型。
-  console.info('AssetAccelDemo', `application file directory = ${context.filesDir}`);
-  console.info('AssetAccelDemo', `onDownloadWithAppControl enter, requestType: ${requestType}, manifestUrl: ${manifestUrl}.`);
+  aaAppExtensionInfo: AssetAccelerationExtensionInfo): Promise<boolean> {
+  hilog.info(DOMAINID, TAG, `onDownloadWithAppControl enter; requestType = ${requestType}`);
   // 如果有下载任务，则调用应用自身下载器进行资源下载，并返回true，否则返回false。
+  // ...
   // ...
   let hasDownloadTask = true;
   return hasDownloadTask;
@@ -88,21 +85,22 @@ async onDownloadWithAppControl(requestType: ContentRequestType, manifestUrl: str
 
 try {
   let progressInfo: assetDownloadManager.AppDownloadProgress = {
-    totalBytesWritten: 0,
-    totalExpectedBytes: 0,
-    totalFiles: 0,
-    successCount: 0,
-    failureCount: 0,
-    status:assetDownloadManager.AppDownloadStatus.IN_PROGRESS
+    totalBytesWritten: this.progress.totalBytesWritten,
+    totalExpectedBytes: this.progress.totalExpectedBytes,
+    totalFiles: this.progress.totalFiles,
+    successCount: this.progress.successCount,
+    failureCount: this.progress.failureCount,
+    status: this.progress.status == 'inProgress' ? assetDownloadManager.AppDownloadStatus.IN_PROGRESS :
+      assetDownloadManager.AppDownloadStatus.FINISH
   }
   // 判断当前HarmonyOS SDK版本是否为6.1.0(23)及以上版本
   if (deviceInfo.sdkApiVersion >= 23) {
     progressInfo.resourceType = assetDownloadManager.ResourceType.RELEASED
   }
   assetDownloadManager.reportDownloadProgress(progressInfo);
-  console.info('AssetAccelDemo', `Succeeded in reporting downloadProgress`);
+  hilog.info(DOMAINID, TAG, `Succeeded in reporting downloadProgress`);
 } catch (error) {
-  console.error('AssetAccelDemo', `Failed to report downloadProgress, errCode:${error.code}, errMessage:${error.message}`);
+  hilog.error(DOMAINID, TAG, `Failed to report downloadProgress, errCode:${error.code}, errMessage:${error.message}`);
 }
 
 游戏实现onExtensionWillTerminate方法，接收游戏资源加速服务关闭资源包后台下载功能的通知。
@@ -110,11 +108,12 @@ try {
 async onExtensionWillTerminate(error?: BusinessError): Promise<void> {
   // 避免进行耗时处理。
   if (error) {
-    console.error('AssetAccelDemo', `onExtensionWillTerminate enter, TerminateReason:${error?.code}, msg:${error?.message}.`);
+    hilog.error(DOMAINID, TAG, `onExtensionWillTerminate enter, TerminateReason:${error?.code}, msg:${error?.message}.`);
     // 添加异常终止处理逻辑。
     return;
   }
   // 添加资源清理等处理逻辑。
+  // ...
 }
 
 ## Code blocks
@@ -128,7 +127,7 @@ async onExtensionWillTerminate(error?: BusinessError): Promise<void> {
     "srcEntry": "./ets/extensionability/AssetAccelExtAbility.ets", // 游戏资源加速ExtensionAbility组件所对应的代码路径。
     "type": "assetAcceleration"
   }
-]
+],
 ```
 
 ### Code block 2
@@ -138,20 +137,17 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 import { assetDownloadManager, AssetAccelerationExtensionAbility, AssetAccelerationExtensionInfo, ContentRequestType } from '@kit.GraphicsAccelerateKit';
-
-export default class AssetAccelExtAbility extends AssetAccelerationExtensionAbility {
-};
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 3
 
 ```
 async onDownloadWithAppControl(requestType: ContentRequestType, manifestUrl: string,
-  assetAccelerationExtensionInfo: AssetAccelerationExtensionInfo): Promise<boolean> {
-  const context = this.context as common.ExtensionContext; // 将当前上下文转换为ExtensionContext类型。
-  console.info('AssetAccelDemo', `application file directory = ${context.filesDir}`);
-  console.info('AssetAccelDemo', `onDownloadWithAppControl enter, requestType: ${requestType}, manifestUrl: ${manifestUrl}.`);
+  aaAppExtensionInfo: AssetAccelerationExtensionInfo): Promise<boolean> {
+  hilog.info(DOMAINID, TAG, `onDownloadWithAppControl enter; requestType = ${requestType}`);
   // 如果有下载任务，则调用应用自身下载器进行资源下载，并返回true，否则返回false。
+  // ...
   // ...
   let hasDownloadTask = true;
   return hasDownloadTask;
@@ -163,21 +159,22 @@ async onDownloadWithAppControl(requestType: ContentRequestType, manifestUrl: str
 ```
 try {
   let progressInfo: assetDownloadManager.AppDownloadProgress = {
-    totalBytesWritten: 0,
-    totalExpectedBytes: 0,
-    totalFiles: 0,
-    successCount: 0,
-    failureCount: 0,
-    status:assetDownloadManager.AppDownloadStatus.IN_PROGRESS
+    totalBytesWritten: this.progress.totalBytesWritten,
+    totalExpectedBytes: this.progress.totalExpectedBytes,
+    totalFiles: this.progress.totalFiles,
+    successCount: this.progress.successCount,
+    failureCount: this.progress.failureCount,
+    status: this.progress.status == 'inProgress' ? assetDownloadManager.AppDownloadStatus.IN_PROGRESS :
+      assetDownloadManager.AppDownloadStatus.FINISH
   }
   // 判断当前HarmonyOS SDK版本是否为6.1.0(23)及以上版本
   if (deviceInfo.sdkApiVersion >= 23) {
     progressInfo.resourceType = assetDownloadManager.ResourceType.RELEASED
   }
   assetDownloadManager.reportDownloadProgress(progressInfo);
-  console.info('AssetAccelDemo', `Succeeded in reporting downloadProgress`);
+  hilog.info(DOMAINID, TAG, `Succeeded in reporting downloadProgress`);
 } catch (error) {
-  console.error('AssetAccelDemo', `Failed to report downloadProgress, errCode:${error.code}, errMessage:${error.message}`);
+  hilog.error(DOMAINID, TAG, `Failed to report downloadProgress, errCode:${error.code}, errMessage:${error.message}`);
 }
 ```
 
@@ -187,10 +184,11 @@ try {
 async onExtensionWillTerminate(error?: BusinessError): Promise<void> {
   // 避免进行耗时处理。
   if (error) {
-    console.error('AssetAccelDemo', `onExtensionWillTerminate enter, TerminateReason:${error?.code}, msg:${error?.message}.`);
+    hilog.error(DOMAINID, TAG, `onExtensionWillTerminate enter, TerminateReason:${error?.code}, msg:${error?.message}.`);
     // 添加异常终止处理逻辑。
     return;
   }
   // 添加资源清理等处理逻辑。
+  // ...
 }
 ```

@@ -322,7 +322,7 @@ runTests() {
 执行observeProtobuf并发任务返回Sendable对象工程示例如下：
 
 runTestsPb() {
-  taskpool.execute(observeProtobuf).then((res: test_pb) => {
+  taskpool.execute(observeProtobuf).then((res) => {
     this.pb = UIUtils.makeObserved(res)
   })
 }
@@ -674,7 +674,7 @@ runTests() {
 
 ```
 runTestsPb() {
-  taskpool.execute(observeProtobuf).then((res: test_pb) => {
+  taskpool.execute(observeProtobuf).then((res) => {
     this.pb = UIUtils.makeObserved(res)
   })
 }

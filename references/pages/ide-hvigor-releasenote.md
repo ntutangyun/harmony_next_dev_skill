@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-releasenote_
 
+DevEco Studio 26.0.0 Beta2
+
+hvigor-config.json5文件的properties下新增hvigor.daemon.idleTimeout字段，用于设置daemon进程的最大空闲时长，从最后一次构建任务完成时开始计算，超过最大空闲时长则daemon进程退出。具体请参考hvigor-config.json5文件。
+
+工程级build-profile.json5文件的strictMode下新增disableStrictCheckPaths字段，用于指定不需要严格检查的三方库目录名称。具体请参考工程级build-profile.json5文件。
+
+Hvigor新增接口getOhpmDependencyInfoV2和getOhpmRemoteHspDependencyInfoV2接口，用于替代原有接口getOhpmDependencyInfo和getOhpmRemoteHspDependencyInfo。具体请参考插件上下文。
+
 DevEco Studio 26.0.0 Beta1
 
 工程级build-profile.json5文件的strictMode下新增apiCompatibilityCheck字段，用于设置ArkTS API兼容性检测级别。具体请参考工程级build-profile.json5文件。
@@ -13,6 +21,10 @@ HAP/HSP模块级build-profile.json5文件的nativeLib下新增enableSoDirCollect
 DevEco Studio的Settings界面新增一个开关，用于提升sync阶段C++编译效率。具体请参考通过syncNative提升sync阶段C++编译效率。
 
 Hvigor新增getAllDependencyInfo接口，用于获取工程或模块下所有的依赖信息。具体请参考getAllDependencyInfo（工程）和getAllDependencyInfo（模块）。
+
+DevEco Studio 6.1.1 Release (6.1.1.290)
+
+模块级build-profile.json5文件新增widget/transitiveDeps字段，用于指定在卡片依赖字节码HAR的场景下，编译卡片时是否收集字节码HAR的直接和间接依赖。具体请参考模块级build-profile.json5文件。
 
 DevEco Studio 6.1.1 Release
 

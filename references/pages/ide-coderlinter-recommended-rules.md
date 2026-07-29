@@ -29,7 +29,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-coder
 @security/no-unsafe-dsa	该规则禁止使用不安全的DSA签名算法。
 @security/no-unsafe-dsa-key	该规则禁止使用不安全的DSA密钥。
 @security/no-unsafe-ecdsa	该规则禁止在ECDSA签名算法中使用不安全的SHA1摘要算法。
-@security/no-unsafe-hash	该规则使用禁止不安全的哈希算法。
+@security/no-unsafe-hash	该规则禁止使用不安全的哈希算法。
 @security/no-unsafe-mac	该规则禁止在MAC消息认证算法中使用不安全的哈希算法。
 @security/no-unsafe-rsa-encrypt	该规则禁止使用不安全的RSA非对称加密算法。
 @security/no-unsafe-rsa-key	该规则禁止使用不安全的RSA密钥。

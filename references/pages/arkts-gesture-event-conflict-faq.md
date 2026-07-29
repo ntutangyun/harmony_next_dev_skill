@@ -164,7 +164,7 @@ struct GesturesConflictScene3 {
 
 手势事件透传
 
-和触摸事件一样，手势事件也可以通过hitTestBehavior属性来进行透传，例如下面这个示例，上层的Column组件设置hitTestBehavior属性为HitTestMode.none后，可以将滑动手势SwipeGesture透传给被覆盖的Column组件。HitTestMode.none：自身不接收事件，但不会阻塞兄弟组件和子组件继续做触摸测试。
+和触摸事件一样，手势事件也可以通过hitTestBehavior属性来进行透传，例如下面这个示例，上层的Column组件设置hitTestBehavior属性为HitTestMode.None后，可以将滑动手势SwipeGesture透传给被覆盖的Column组件。HitTestMode.None：自身不接收事件，但不会阻塞兄弟组件和子组件继续做触摸测试。
 
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';

@@ -8,7 +8,7 @@ V1装饰器名	V2装饰器名
 @State	无外部初始化：@Local 外部初始化一次：@Param/@Once
 @Prop	@Param
 @Link	@Param/@Event
-@ObjectLink	@Param/@Event
+@ObjectLink	@Param
 @Provide	@Provider
 @Consume	@Consumer
 @Watch	@Monitor
@@ -45,7 +45,12 @@ struct Child {
   @State val: number = INITIAL_VALUE;
 
   build() {
-    Text(this.val.toString())
+    Column() {
+      Text(this.val.toString())
+        .fontSize(20)
+        .margin(10)
+    }
+    .width('100%')
   }
 }
 
@@ -60,9 +65,16 @@ struct Child {
   @Local val: number = INITIAL_VALUE;
 
   build() {
-    Text(this.val.toString())
+    Column() {
+      Text(this.val.toString())
+        .fontSize(20)
+        .margin(10)
+    }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 复杂类型
 
@@ -79,17 +91,22 @@ class Child {
 @Component
 @Entry
 struct Example {
+  // @State可以观察第一层变化
   @State child: Child = new Child();
 
   build() {
     Column() {
       Text(this.child.value.toString())
-      // @State可以观察第一层变化
+        .fontSize(20)
+        .margin(10)
       Button('value+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.child.value++;
+          this.child.value++; // 修改对象属性，触发UI刷新
         })
     }
+    .width('100%')
   }
 }
 
@@ -111,13 +128,20 @@ struct Example {
   build() {
     Column() {
       Text(this.child.value.toString())
+        .fontSize(20)
+        .margin(10)
       Button('value+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.child.value++;
+          this.child.value++; // 修改对象属性，触发UI刷新
         })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 外部初始化状态变量
 
@@ -131,6 +155,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -142,6 +168,7 @@ struct Parent {
       // @State可以从外部初始化
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 
@@ -153,6 +180,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -164,83 +193,11 @@ struct Parent {
       // @Local禁止从外部初始化，可以用@Param和@Once替代实现
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 
-[h2]@Link -> @Param/@Event
-
-迁移规则
-
-在V1中，@Link允许父组件和子组件之间进行双向数据绑定。迁移到V2时，可以用@Param和@Event模拟双向同步。@Param实现父到子的单向传递，子组件再通过@Event回调函数触发父组件的状态更新。
-
-示例
-
-V1实现：
-
-const INITIAL_MYVAL = 10;
-
-@Component
-struct Child {
-  // @Link可以双向同步数据
-  @Link val: number;
-
-  build() {
-    Column() {
-      Text('child: ' + this.val.toString())
-      Button('+1')
-        .onClick(() => {
-          this.val++;
-        })
-    }
-  }
-}
-
-@Entry
-@Component
-struct Parent {
-  @State myVal: number = INITIAL_MYVAL;
-
-  build() {
-    Column() {
-      Text('parent: ' + this.myVal.toString())
-      Child({ val: this.myVal })
-    }
-  }
-}
-
-V2迁移策略：使用@Param和@Event。
-
-const INITIAL_MYVAL = 10;
-
-@ComponentV2
-struct Child {
-  // @Param搭配@Event回调实现数据双向同步
-  @Param val: number = 0;
-  @Event addOne: () => void;
-
-  build() {
-    Column() {
-      Text('child: ' + this.val.toString())
-      Button('+1')
-        .onClick(() => {
-          this.addOne();
-        })
-    }
-  }
-}
-
-@Entry
-@ComponentV2
-struct Parent {
-  @Local myVal: number = INITIAL_MYVAL;
-
-  build() {
-    Column() {
-      Text('parent: ' + this.myVal.toString())
-      Child({ val: this.myVal, addOne: () => this.myVal++ })
-    }
-  }
-}
+示例效果图：
 
 [h2]@Prop -> @Param
 
@@ -269,6 +226,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -279,6 +238,7 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 
@@ -291,6 +251,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -301,8 +263,11 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 复杂类型的单向数据传递
 
@@ -326,16 +291,25 @@ struct Child {
   build() {
     Column() {
       Text('child apple: ' + this.fruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
       Text('child orange: ' + this.fruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Button('apple+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.fruit.apple++;
+          this.fruit.apple++; // 修改子组件@Prop对象，父组件不受影响
         })
       Button('orange+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.fruit.orange++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -347,9 +321,14 @@ struct Parent {
   build() {
     Column() {
       Text('parent apple: ' + this.parentFruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
       Text('parent orange: ' + this.parentFruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Child({ fruit: this.parentFruit })
     }
+    .width('100%')
   }
 }
 
@@ -378,18 +357,26 @@ struct Child {
 
   build() {
     Column() {
-      Text('child')
-      Text(this.fruit.apple.toString())
-      Text(this.fruit.orange.toString())
+      Text('child apple: ' + this.fruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
+      Text('child orange: ' + this.fruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Button('apple+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.fruit.apple++;
+          this.fruit.apple++; // 修改深拷贝对象，父组件不受影响
         })
       Button('orange+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.fruit.orange++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -400,13 +387,19 @@ struct Parent {
 
   build() {
     Column() {
-      Text('parent')
-      Text(this.parentFruit.apple.toString())
-      Text(this.parentFruit.orange.toString())
+      Text('parent apple: ' + this.parentFruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
+      Text('parent orange: ' + this.parentFruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Child({ fruit: this.parentFruit.clone() })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 子组件修改变量
 
@@ -422,11 +415,16 @@ struct Child {
   build() {
     Column() {
       Text(this.value.toString())
+        .fontSize(20)
+        .margin(10)
       Button('+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.value++;
+          this.value++; // 本地修改，不会同步回父组件
         })
     }
+    .width('100%')
   }
 }
 
@@ -437,6 +435,7 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 
@@ -450,11 +449,16 @@ struct Child {
   build() {
     Column() {
       Text(this.value.toString())
+        .fontSize(20)
+        .margin(10)
       Button('+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.value++;
+          this.value++; // 本地修改，不会同步回父组件
         })
     }
+    .width('100%')
   }
 }
 
@@ -465,8 +469,11 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 在V1中，子组件可以修改@Prop的变量，且只会在本地更新，不会同步回父组件。父组件数据源更新时，会通知子组件更新，并覆写子组件本地@Prop的值。
 
@@ -484,13 +491,18 @@ struct Child {
 
   build() {
     Column() {
-      Text(`${this.localValue}`).fontSize(25)
+      Text(`${this.localValue}`)
+        .fontSize(20)
+        .margin(10)
       Button('Child +100')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变localValue不会传递给父组件Parent
           this.localValue += 100;
         })
     }
+    .width('100%')
   }
 }
 
@@ -502,12 +514,15 @@ struct Parent {
   build() {
     Column() {
       Button('Parent +1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变value的值，通知子组件Child value更新
           this.value += 1;
         })
       Child({ localValue: this.value })
     }
+    .width('100%')
   }
 }
 
@@ -528,8 +543,8 @@ const PARENT_INITIAL_LOCAL_VALUE = 10;
 
 @ComponentV2
 struct Child {
-  @Local localValue: number = 0;
   @Param value: number = 0;
+  @Local localValue: number = this.value;
 
   @Monitor('value')
   onValueChange(mon: IMonitor) {
@@ -540,13 +555,18 @@ struct Child {
 
   build() {
     Column() {
-      Text(`${this.localValue}`).fontSize(25)
+      Text(`${this.localValue}`)
+        .fontSize(20)
+        .margin(10)
       Button('Child +100')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变localValue不会传递给父组件Parent
           this.localValue += 100;
         })
     }
+    .width('100%')
   }
 }
 
@@ -558,14 +578,236 @@ struct Parent {
   build() {
     Column() {
       Button('Parent +1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变value的值，通知子组件Child value更新
           this.value += 1;
         })
       Child({ value: this.value })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
+
+[h2]@Link -> @Param/@Event
+
+迁移规则
+
+在V1中，@Link允许父组件和子组件之间进行双向数据绑定。迁移到V2时，可以用@Param和@Event模拟双向同步。@Param实现父到子的单向传递，子组件再通过@Event回调函数触发父组件的状态更新。
+
+示例
+
+V1实现：
+
+const INITIAL_MYVAL = 10;
+
+@Component
+struct Child {
+  // @Link可以双向同步数据
+  @Link val: number;
+
+  build() {
+    Column() {
+      Text('child: ' + this.val.toString())
+        .fontSize(20)
+        .margin(10)
+      Button('+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.val++; // 子组件修改val，父子组件同步刷新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State myVal: number = INITIAL_MYVAL;
+
+  build() {
+    Column() {
+      Text('parent: ' + this.myVal.toString())
+        .fontSize(20)
+        .margin(10)
+      Child({ val: this.myVal }) // 通过@Link建立父子双向同步
+    }
+    .width('100%')
+  }
+}
+
+V2迁移策略：使用@Param和@Event。
+
+const INITIAL_MYVAL = 10;
+
+@ComponentV2
+struct Child {
+  // @Param搭配@Event回调实现数据双向同步
+  @Param val: number = 0;
+  @Event addOne: () => void;
+
+  build() {
+    Column() {
+      Text('child: ' + this.val.toString())
+        .fontSize(20)
+        .margin(10)
+      Button('+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.addOne(); // 通过@Event回调通知父组件更新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local myVal: number = INITIAL_MYVAL;
+
+  build() {
+    Column() {
+      Text('parent: ' + this.myVal.toString())
+        .fontSize(20)
+        .margin(10)
+      Child({ val: this.myVal, addOne: () => this.myVal++ }) // @Param传递数据，@Event传递回调，实现双向同步
+    }
+    .width('100%')
+  }
+}
+
+示例效果图：
+
+[h2]@ObjectLink -> @Param
+
+迁移规则
+
+在V1中，@ObjectLink用于接收父组件传递的@Observed装饰的类对象，实现嵌套对象的同步。父组件整体赋值会单向同步给子组件，子组件不允许整体赋值，但可以修改对象属性，属性变化在父子组件间双向同步。
+
+迁移到V2时，子组件使用@Param接收对象，同步行为与@ObjectLink一致。
+
+示例
+
+V1实现：
+
+@Observed
+class Person {
+  public name: string;
+  public age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+@Component
+struct Child {
+  // @ObjectLink接收@Observed装饰的类对象，属性变化双向同步
+  @ObjectLink person: Person;
+
+  build() {
+    Column() {
+      Text(`Child name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Child age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Button('age+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.person.age++; // 子组件修改对象属性，父子组件同步刷新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State person: Person = new Person('Alice', 20);
+
+  build() {
+    Column() {
+      Text(`Parent name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Parent age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Child({ person: this.person }) // 传递对象给子组件
+    }
+    .width('100%')
+  }
+}
+
+V2迁移策略：使用@Param接收对象。
+
+@ObservedV2
+class Person {
+  @Trace public name: string;
+  @Trace public age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+@ComponentV2
+struct Child {
+  // @Param接收类对象，属性变化双向同步
+  @Param person: Person = new Person('', 0);
+
+  build() {
+    Column() {
+      Text(`Child name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Child age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Button('age+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.person.age++; // 子组件修改对象属性，父子组件同步刷新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local person: Person = new Person('Alice', 20);
+
+  build() {
+    Column() {
+      Text(`Parent name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Parent age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Child({ person: this.person }) // 传递对象给子组件
+    }
+    .width('100%')
+  }
+}
+
+示例效果图：
 
 [h2]@Provide/@Consume -> @Provider/@Consumer
 
@@ -602,8 +844,13 @@ struct Child {
   build() {
     Column() {
       Text(this.childMessage)
-      Text(this.message) // Text是Hello World
+        .fontSize(20)
+        .margin(10)
+      Text(this.message)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -616,6 +863,7 @@ struct Parent {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -623,29 +871,37 @@ V2迁移策略：确保alias一致，没有指定alias的情况下，依赖属�
 
 @ComponentV2
 struct Child {
-  // alias是唯一匹配的key，有alias情况下无法通过属性名匹配
-  @Consumer('text') childMessage: string = 'default';
-  @Consumer() message: string = 'default';
+  @Consumer('text') childMessage: string = 'default'; // 指定alias时，通过alias匹配
+  @Consumer() message: string = 'default'; // 未指定alias时，通过属性名匹配
 
   build() {
     Column() {
       Text(this.childMessage)
-      Text(this.message) // Text是default
+        .fontSize(20)
+        .margin(10)
+      Text(this.message)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
 @Entry
 @ComponentV2
 struct Parent {
-  @Provider('text') message: string = 'Hello World';
+  @Provider('text') parentMessage: string = 'Hello World';
+  @Provider() message: string = 'Hello World';
 
   build() {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 V1的@Consume不支持本地初始化，V2支持
 
@@ -660,6 +916,8 @@ struct Child {
 
   build() {
     Text(this.message)
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -672,6 +930,7 @@ struct Parent {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -684,6 +943,8 @@ struct Child {
 
   build() {
     Text(this.message)
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -694,8 +955,11 @@ struct Parent {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 V1的@Provide可以从父组件初始化，V2不支持
 
@@ -715,6 +979,7 @@ struct Parent {
       // @Provide可以从父组件初始化
       Child({ childValue: this.parentValue })
     }
+    .width('100%')
   }
 }
 
@@ -725,7 +990,10 @@ struct Child {
   build() {
     Column() {
       Text(this.childValue.toString())
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -743,6 +1011,7 @@ struct Parent {
       // @Provider禁止从父组件初始化，替代方案为先用@Param接受，再赋值给@Provider
       Child({ initialValue: this.parentValue })
     }
+    .width('100%')
   }
 }
 
@@ -754,9 +1023,14 @@ struct Child {
   build() {
     Column() {
       Text(this.childValue.toString())
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 V1的@Provide默认不支持重载，V2默认支持
 
@@ -776,12 +1050,13 @@ struct GrandParent {
     Column() {
       Parent()
     }
+    .width('100%')
   }
 }
 
 @Component
 struct Parent {
-  // @Provide默认不支持重载，支持重载需设置allowOverride函数
+  // @Provide默认不支持重载，支持重载需设置allowOverride选项
   @Provide({ allowOverride: 'reviewVotes' }) reviewVotes: number = PARENT_REVIEW_VOTES_INITIAL;
 
   build() {
@@ -794,7 +1069,9 @@ struct Child {
   @Consume('reviewVotes') reviewVotes: number;
 
   build() {
-    Text(this.reviewVotes.toString()) // Text显示20
+    Text(this.reviewVotes.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -812,6 +1089,7 @@ struct GrandParent {
     Column() {
       Parent()
     }
+    .width('100%')
   }
 }
 
@@ -830,9 +1108,13 @@ struct Child {
   @Consumer() reviewVotes: number = 0;
 
   build() {
-    Text(this.reviewVotes.toString()) // Text显示20
+    Text(this.reviewVotes.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
+
+示例效果图：
 
 [h2]@Watch -> @Monitor
 
@@ -869,12 +1151,17 @@ struct WatchExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       // 点击Button累加apple，触发UI刷新
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.apple++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -898,14 +1185,21 @@ struct MonitorExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       // 点击Button累加apple，触发UI刷新
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.apple++;
         })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 多变量监听
 
@@ -924,7 +1218,7 @@ struct WatchExample {
   @State @Watch('onAppleChange') apple: number = 0;
   @State @Watch('onOrangeChange') orange: number = 0;
 
-  // @Watch 回调，只能监听单个变量，不能获取变化前的值
+  // @Watch回调，只能监听单个变量，不能获取变化前的值
   onAppleChange(): void {
     hilog.info(DOMAIN, TAG, 'apple count changed to ' + this.apple);
   }
@@ -936,16 +1230,25 @@ struct WatchExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       Text(`orange count: ${this.orange}`)
+        .fontSize(20)
+        .margin(10)
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.apple++;
+          this.apple++; // 点击触发onAppleChange回调
         })
       Button('add orange')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.orange++;
+          this.orange++; // 点击触发onOrangeChange回调
         })
     }
+    .width('100%')
   }
 }
 
@@ -973,18 +1276,29 @@ struct MonitorExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       Text(`orange count: ${this.orange}`)
+        .fontSize(20)
+        .margin(10)
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.apple++;
+          this.apple++; // 点击触发onFruitChange回调
         })
       Button('add orange')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.orange++;
+          this.orange++; // 点击触发onFruitChange回调
         })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 [h2]重复计算 -> @Computed计算属性
 
@@ -1004,14 +1318,21 @@ struct Index {
 
   build() {
     Column() {
-      Text(this.lastName + ' ' + this.firstName)
-      Text(this.lastName + ' ' + this.firstName)
+      Text(this.firstName + ' ' + this.lastName)
+        .fontSize(20)
+        .margin(10)
+      Text(this.firstName + ' ' + this.lastName)
+        .fontSize(20)
+        .margin(10)
       // 每次改变lastName都会触发Text组件的刷新
-      Button('changed lastName').onClick(() => {
-        this.lastName += 'a';
-      })
-
+      Button('changed lastName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.lastName += 'a';
+        })
     }
+    .width('100%')
   }
 }
 
@@ -1034,13 +1355,23 @@ struct Index {
   build() {
     Column() {
       Text(this.fullName)
+        .fontSize(20)
+        .margin(10)
       Text(this.fullName)
-      Button('changed lastName').onClick(() => {
-        this.lastName += 'a';
-      })
+        .fontSize(20)
+        .margin(10)
+      Button('changed lastName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.lastName += 'a';
+        })
     }
+    .width('100%')
   }
 }
+
+示例效果图：
 
 [h2]双向绑定由$$迁移!!
 
@@ -1065,6 +1396,8 @@ struct TextInputExample {
   build() {
     Column({ space: 20 }) {
       Text(this.text)
+        .fontSize(20)
+        .margin(10)
       // $$运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步
       TextInput({ text: $$this.text, placeholder: 'input your word...', controller: this.controller })
         .placeholderColor(Color.Grey)
@@ -1078,7 +1411,7 @@ struct TextInputExample {
   }
 }
 
-V2迁移策略：装饰器修改为V1的同时，$$直接替换为!!。
+V2迁移策略：装饰器修改为V2的同时，$$直接替换为!!。
 
 @Entry
 @ComponentV2
@@ -1089,6 +1422,8 @@ struct TextInputExampleV2 {
   build() {
     Column({ space: 20 }) {
       Text(this.text)
+        .fontSize(20)
+        .margin(10)
       // V2中直接用!!替换$$
       TextInput({ text: this.text!!, placeholder: 'input your word...', controller: this.controller })
         .placeholderColor(Color.Grey)
@@ -1101,6 +1436,8 @@ struct TextInputExampleV2 {
     .justifyContent(FlexAlign.Center)
   }
 }
+
+示例效果图：
 
 ## Code blocks
 
@@ -1116,7 +1453,12 @@ struct Child {
   @State val: number = INITIAL_VALUE;
 
   build() {
-    Text(this.val.toString())
+    Column() {
+      Text(this.val.toString())
+        .fontSize(20)
+        .margin(10)
+    }
+    .width('100%')
   }
 }
 ```
@@ -1133,7 +1475,12 @@ struct Child {
   @Local val: number = INITIAL_VALUE;
 
   build() {
-    Text(this.val.toString())
+    Column() {
+      Text(this.val.toString())
+        .fontSize(20)
+        .margin(10)
+    }
+    .width('100%')
   }
 }
 ```
@@ -1150,17 +1497,22 @@ class Child {
 @Component
 @Entry
 struct Example {
+  // @State可以观察第一层变化
   @State child: Child = new Child();
 
   build() {
     Column() {
       Text(this.child.value.toString())
-      // @State可以观察第一层变化
+        .fontSize(20)
+        .margin(10)
       Button('value+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.child.value++;
+          this.child.value++; // 修改对象属性，触发UI刷新
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -1184,11 +1536,16 @@ struct Example {
   build() {
     Column() {
       Text(this.child.value.toString())
+        .fontSize(20)
+        .margin(10)
       Button('value+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.child.value++;
+          this.child.value++; // 修改对象属性，触发UI刷新
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -1202,6 +1559,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -1213,6 +1572,7 @@ struct Parent {
       // @State可以从外部初始化
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 ```
@@ -1226,6 +1586,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -1237,82 +1599,12 @@ struct Parent {
       // @Local禁止从外部初始化，可以用@Param和@Once替代实现
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 ```
 
 ### Code block 7
-
-```
-const INITIAL_MYVAL = 10;
-
-@Component
-struct Child {
-  // @Link可以双向同步数据
-  @Link val: number;
-
-  build() {
-    Column() {
-      Text('child: ' + this.val.toString())
-      Button('+1')
-        .onClick(() => {
-          this.val++;
-        })
-    }
-  }
-}
-
-@Entry
-@Component
-struct Parent {
-  @State myVal: number = INITIAL_MYVAL;
-
-  build() {
-    Column() {
-      Text('parent: ' + this.myVal.toString())
-      Child({ val: this.myVal })
-    }
-  }
-}
-```
-
-### Code block 8
-
-```
-const INITIAL_MYVAL = 10;
-
-@ComponentV2
-struct Child {
-  // @Param搭配@Event回调实现数据双向同步
-  @Param val: number = 0;
-  @Event addOne: () => void;
-
-  build() {
-    Column() {
-      Text('child: ' + this.val.toString())
-      Button('+1')
-        .onClick(() => {
-          this.addOne();
-        })
-    }
-  }
-}
-
-@Entry
-@ComponentV2
-struct Parent {
-  @Local myVal: number = INITIAL_MYVAL;
-
-  build() {
-    Column() {
-      Text('parent: ' + this.myVal.toString())
-      Child({ val: this.myVal, addOne: () => this.myVal++ })
-    }
-  }
-}
-```
-
-### Code block 9
 
 ```
 @Component
@@ -1322,6 +1614,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -1332,11 +1626,12 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 10
+### Code block 8
 
 ```
 @ComponentV2
@@ -1346,6 +1641,8 @@ struct Child {
 
   build() {
     Text(this.value.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -1356,11 +1653,12 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 11
+### Code block 9
 
 ```
 const APPLE_INITIAL_COUNT = 5;
@@ -1379,16 +1677,25 @@ struct Child {
   build() {
     Column() {
       Text('child apple: ' + this.fruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
       Text('child orange: ' + this.fruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Button('apple+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.fruit.apple++;
+          this.fruit.apple++; // 修改子组件@Prop对象，父组件不受影响
         })
       Button('orange+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.fruit.orange++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -1400,14 +1707,19 @@ struct Parent {
   build() {
     Column() {
       Text('parent apple: ' + this.parentFruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
       Text('parent orange: ' + this.parentFruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Child({ fruit: this.parentFruit })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 12
+### Code block 10
 
 ```
 const APPLE_INITIAL_COUNT = 5;
@@ -1433,18 +1745,26 @@ struct Child {
 
   build() {
     Column() {
-      Text('child')
-      Text(this.fruit.apple.toString())
-      Text(this.fruit.orange.toString())
+      Text('child apple: ' + this.fruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
+      Text('child orange: ' + this.fruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Button('apple+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.fruit.apple++;
+          this.fruit.apple++; // 修改深拷贝对象，父组件不受影响
         })
       Button('orange+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.fruit.orange++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -1455,16 +1775,20 @@ struct Parent {
 
   build() {
     Column() {
-      Text('parent')
-      Text(this.parentFruit.apple.toString())
-      Text(this.parentFruit.orange.toString())
+      Text('parent apple: ' + this.parentFruit.apple.toString())
+        .fontSize(20)
+        .margin(10)
+      Text('parent orange: ' + this.parentFruit.orange.toString())
+        .fontSize(20)
+        .margin(10)
       Child({ fruit: this.parentFruit.clone() })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 13
+### Code block 11
 
 ```
 @Component
@@ -1475,11 +1799,16 @@ struct Child {
   build() {
     Column() {
       Text(this.value.toString())
+        .fontSize(20)
+        .margin(10)
       Button('+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.value++;
+          this.value++; // 本地修改，不会同步回父组件
         })
     }
+    .width('100%')
   }
 }
 
@@ -1490,11 +1819,12 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 14
+### Code block 12
 
 ```
 @ComponentV2
@@ -1505,11 +1835,16 @@ struct Child {
   build() {
     Column() {
       Text(this.value.toString())
+        .fontSize(20)
+        .margin(10)
       Button('+1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.value++;
+          this.value++; // 本地修改，不会同步回父组件
         })
     }
+    .width('100%')
   }
 }
 
@@ -1520,11 +1855,12 @@ struct Parent {
     Column() {
       Child({ value: 30 })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 15
+### Code block 13
 
 ```
 const PARENT_INITIAL_STATE_VALUE = 10;
@@ -1535,13 +1871,18 @@ struct Child {
 
   build() {
     Column() {
-      Text(`${this.localValue}`).fontSize(25)
+      Text(`${this.localValue}`)
+        .fontSize(20)
+        .margin(10)
       Button('Child +100')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变localValue不会传递给父组件Parent
           this.localValue += 100;
         })
     }
+    .width('100%')
   }
 }
 
@@ -1553,17 +1894,20 @@ struct Parent {
   build() {
     Column() {
       Button('Parent +1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变value的值，通知子组件Child value更新
           this.value += 1;
         })
       Child({ localValue: this.value })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 16
+### Code block 14
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1573,8 +1917,8 @@ const PARENT_INITIAL_LOCAL_VALUE = 10;
 
 @ComponentV2
 struct Child {
-  @Local localValue: number = 0;
   @Param value: number = 0;
+  @Local localValue: number = this.value;
 
   @Monitor('value')
   onValueChange(mon: IMonitor) {
@@ -1585,13 +1929,18 @@ struct Child {
 
   build() {
     Column() {
-      Text(`${this.localValue}`).fontSize(25)
+      Text(`${this.localValue}`)
+        .fontSize(20)
+        .margin(10)
       Button('Child +100')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变localValue不会传递给父组件Parent
           this.localValue += 100;
         })
     }
+    .width('100%')
   }
 }
 
@@ -1603,17 +1952,223 @@ struct Parent {
   build() {
     Column() {
       Button('Parent +1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 改变value的值，通知子组件Child value更新
           this.value += 1;
         })
       Child({ value: this.value })
     }
+    .width('100%')
+  }
+}
+```
+
+### Code block 15
+
+```
+const INITIAL_MYVAL = 10;
+
+@Component
+struct Child {
+  // @Link可以双向同步数据
+  @Link val: number;
+
+  build() {
+    Column() {
+      Text('child: ' + this.val.toString())
+        .fontSize(20)
+        .margin(10)
+      Button('+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.val++; // 子组件修改val，父子组件同步刷新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State myVal: number = INITIAL_MYVAL;
+
+  build() {
+    Column() {
+      Text('parent: ' + this.myVal.toString())
+        .fontSize(20)
+        .margin(10)
+      Child({ val: this.myVal }) // 通过@Link建立父子双向同步
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 16
+
+```
+const INITIAL_MYVAL = 10;
+
+@ComponentV2
+struct Child {
+  // @Param搭配@Event回调实现数据双向同步
+  @Param val: number = 0;
+  @Event addOne: () => void;
+
+  build() {
+    Column() {
+      Text('child: ' + this.val.toString())
+        .fontSize(20)
+        .margin(10)
+      Button('+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.addOne(); // 通过@Event回调通知父组件更新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local myVal: number = INITIAL_MYVAL;
+
+  build() {
+    Column() {
+      Text('parent: ' + this.myVal.toString())
+        .fontSize(20)
+        .margin(10)
+      Child({ val: this.myVal, addOne: () => this.myVal++ }) // @Param传递数据，@Event传递回调，实现双向同步
+    }
+    .width('100%')
   }
 }
 ```
 
 ### Code block 17
+
+```
+@Observed
+class Person {
+  public name: string;
+  public age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+@Component
+struct Child {
+  // @ObjectLink接收@Observed装饰的类对象，属性变化双向同步
+  @ObjectLink person: Person;
+
+  build() {
+    Column() {
+      Text(`Child name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Child age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Button('age+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.person.age++; // 子组件修改对象属性，父子组件同步刷新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@Component
+struct Parent {
+  @State person: Person = new Person('Alice', 20);
+
+  build() {
+    Column() {
+      Text(`Parent name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Parent age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Child({ person: this.person }) // 传递对象给子组件
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 18
+
+```
+@ObservedV2
+class Person {
+  @Trace public name: string;
+  @Trace public age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+@ComponentV2
+struct Child {
+  // @Param接收类对象，属性变化双向同步
+  @Param person: Person = new Person('', 0);
+
+  build() {
+    Column() {
+      Text(`Child name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Child age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Button('age+1')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.person.age++; // 子组件修改对象属性，父子组件同步刷新
+        })
+    }
+    .width('100%')
+  }
+}
+
+@Entry
+@ComponentV2
+struct Parent {
+  @Local person: Person = new Person('Alice', 20);
+
+  build() {
+    Column() {
+      Text(`Parent name: ${this.person.name}`)
+        .fontSize(20)
+        .margin(10)
+      Text(`Parent age: ${this.person.age}`)
+        .fontSize(20)
+        .margin(10)
+      Child({ person: this.person }) // 传递对象给子组件
+    }
+    .width('100%')
+  }
+}
+```
+
+### Code block 19
 
 ```
 @Component
@@ -1625,8 +2180,13 @@ struct Child {
   build() {
     Column() {
       Text(this.childMessage)
-      Text(this.message) // Text是Hello World
+        .fontSize(20)
+        .margin(10)
+      Text(this.message)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -1639,41 +2199,48 @@ struct Parent {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 18
+### Code block 20
 
 ```
 @ComponentV2
 struct Child {
-  // alias是唯一匹配的key，有alias情况下无法通过属性名匹配
-  @Consumer('text') childMessage: string = 'default';
-  @Consumer() message: string = 'default';
+  @Consumer('text') childMessage: string = 'default'; // 指定alias时，通过alias匹配
+  @Consumer() message: string = 'default'; // 未指定alias时，通过属性名匹配
 
   build() {
     Column() {
       Text(this.childMessage)
-      Text(this.message) // Text是default
+        .fontSize(20)
+        .margin(10)
+      Text(this.message)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
 @Entry
 @ComponentV2
 struct Parent {
-  @Provider('text') message: string = 'Hello World';
+  @Provider('text') parentMessage: string = 'Hello World';
+  @Provider() message: string = 'Hello World';
 
   build() {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 19
+### Code block 21
 
 ```
 @Component
@@ -1683,6 +2250,8 @@ struct Child {
 
   build() {
     Text(this.message)
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -1695,11 +2264,12 @@ struct Parent {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 20
+### Code block 22
 
 ```
 @ComponentV2
@@ -1709,6 +2279,8 @@ struct Child {
 
   build() {
     Text(this.message)
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -1719,11 +2291,12 @@ struct Parent {
     Column() {
       Child()
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 21
+### Code block 23
 
 ```
 const STATE_INITIAL_PARENT_VALUE = 42;
@@ -1738,6 +2311,7 @@ struct Parent {
       // @Provide可以从父组件初始化
       Child({ childValue: this.parentValue })
     }
+    .width('100%')
   }
 }
 
@@ -1748,12 +2322,15 @@ struct Child {
   build() {
     Column() {
       Text(this.childValue.toString())
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 22
+### Code block 24
 
 ```
 const LOCAL_INITIAL_PARENT_VALUE = 42;
@@ -1768,6 +2345,7 @@ struct Parent {
       // @Provider禁止从父组件初始化，替代方案为先用@Param接受，再赋值给@Provider
       Child({ initialValue: this.parentValue })
     }
+    .width('100%')
   }
 }
 
@@ -1779,12 +2357,15 @@ struct Child {
   build() {
     Column() {
       Text(this.childValue.toString())
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 23
+### Code block 25
 
 ```
 const GRANDPARENT_REVIEW_VOTES_INITIAL = 40;
@@ -1799,12 +2380,13 @@ struct GrandParent {
     Column() {
       Parent()
     }
+    .width('100%')
   }
 }
 
 @Component
 struct Parent {
-  // @Provide默认不支持重载，支持重载需设置allowOverride函数
+  // @Provide默认不支持重载，支持重载需设置allowOverride选项
   @Provide({ allowOverride: 'reviewVotes' }) reviewVotes: number = PARENT_REVIEW_VOTES_INITIAL;
 
   build() {
@@ -1817,12 +2399,14 @@ struct Child {
   @Consume('reviewVotes') reviewVotes: number;
 
   build() {
-    Text(this.reviewVotes.toString()) // Text显示20
+    Text(this.reviewVotes.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 ```
 
-### Code block 24
+### Code block 26
 
 ```
 const GRANDPARENT_REVIEW_VOTES_INITIAL = 40;
@@ -1837,6 +2421,7 @@ struct GrandParent {
     Column() {
       Parent()
     }
+    .width('100%')
   }
 }
 
@@ -1855,12 +2440,14 @@ struct Child {
   @Consumer() reviewVotes: number = 0;
 
   build() {
-    Text(this.reviewVotes.toString()) // Text显示20
+    Text(this.reviewVotes.toString())
+      .fontSize(20)
+      .margin(10)
   }
 }
 ```
 
-### Code block 25
+### Code block 27
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1880,17 +2467,22 @@ struct WatchExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       // 点击Button累加apple，触发UI刷新
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.apple++;
         })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 26
+### Code block 28
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1911,17 +2503,22 @@ struct MonitorExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       // 点击Button累加apple，触发UI刷新
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.apple++;
         })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 27
+### Code block 29
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1935,7 +2532,7 @@ struct WatchExample {
   @State @Watch('onAppleChange') apple: number = 0;
   @State @Watch('onOrangeChange') orange: number = 0;
 
-  // @Watch 回调，只能监听单个变量，不能获取变化前的值
+  // @Watch回调，只能监听单个变量，不能获取变化前的值
   onAppleChange(): void {
     hilog.info(DOMAIN, TAG, 'apple count changed to ' + this.apple);
   }
@@ -1947,21 +2544,30 @@ struct WatchExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       Text(`orange count: ${this.orange}`)
+        .fontSize(20)
+        .margin(10)
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.apple++;
+          this.apple++; // 点击触发onAppleChange回调
         })
       Button('add orange')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.orange++;
+          this.orange++; // 点击触发onOrangeChange回调
         })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 28
+### Code block 30
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1986,21 +2592,30 @@ struct MonitorExample {
   build() {
     Column() {
       Text(`apple count: ${this.apple}`)
+        .fontSize(20)
+        .margin(10)
       Text(`orange count: ${this.orange}`)
+        .fontSize(20)
+        .margin(10)
       Button('add apple')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.apple++;
+          this.apple++; // 点击触发onFruitChange回调
         })
       Button('add orange')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.orange++;
+          this.orange++; // 点击触发onFruitChange回调
         })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 29
+### Code block 31
 
 ```
 @Entry
@@ -2011,19 +2626,26 @@ struct Index {
 
   build() {
     Column() {
-      Text(this.lastName + ' ' + this.firstName)
-      Text(this.lastName + ' ' + this.firstName)
+      Text(this.firstName + ' ' + this.lastName)
+        .fontSize(20)
+        .margin(10)
+      Text(this.firstName + ' ' + this.lastName)
+        .fontSize(20)
+        .margin(10)
       // 每次改变lastName都会触发Text组件的刷新
-      Button('changed lastName').onClick(() => {
-        this.lastName += 'a';
-      })
-
+      Button('changed lastName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.lastName += 'a';
+        })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 30
+### Code block 32
 
 ```
 @Entry
@@ -2041,16 +2663,24 @@ struct Index {
   build() {
     Column() {
       Text(this.fullName)
+        .fontSize(20)
+        .margin(10)
       Text(this.fullName)
-      Button('changed lastName').onClick(() => {
-        this.lastName += 'a';
-      })
+        .fontSize(20)
+        .margin(10)
+      Button('changed lastName')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.lastName += 'a';
+        })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 31
+### Code block 33
 
 ```
 @Entry
@@ -2062,6 +2692,8 @@ struct TextInputExample {
   build() {
     Column({ space: 20 }) {
       Text(this.text)
+        .fontSize(20)
+        .margin(10)
       // $$运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步
       TextInput({ text: $$this.text, placeholder: 'input your word...', controller: this.controller })
         .placeholderColor(Color.Grey)
@@ -2076,7 +2708,7 @@ struct TextInputExample {
 }
 ```
 
-### Code block 32
+### Code block 34
 
 ```
 @Entry
@@ -2088,6 +2720,8 @@ struct TextInputExampleV2 {
   build() {
     Column({ space: 20 }) {
       Text(this.text)
+        .fontSize(20)
+        .margin(10)
       // V2中直接用!!替换$$
       TextInput({ text: this.text!!, placeholder: 'input your word...', controller: this.controller })
         .placeholderColor(Color.Grey)

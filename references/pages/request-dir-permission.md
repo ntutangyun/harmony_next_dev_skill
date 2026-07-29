@@ -8,17 +8,16 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/request-d
 
 约束限制
 
+使用此方式，需确认设备具有以下系统能力：SystemCapability.FileManagement.File.Environment.FolderObtain，当前支持2in1设备。
+
+从API版本26.0.0开始，支持tablet设备。
+
 if (!canIUse('SystemCapability.FileManagement.File.Environment.FolderObtain')) {
     console.error('this api is not supported on this device');
     return;
 }
 
-公共目录获取接口仅用于获取公共目录路径，不对公共目录访问权限进行校验。若需访问公共目录需申请对应的公共目录访问权限。三方应用需要访问公共目录时，需通过弹窗授权向用户申请授予 Download 目录权限、Documents 目录权限或 Desktop 目录权限，具体参考访问控制-向用户申请授权。
-
-   "requestPermissions" : [
-       "ohos.permission.READ_WRITE_DOWNLOAD_DIRECTORY",
-       "ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY",
-   ]
+公共目录获取接口仅用于获取公共目录路径，不对公共目录访问权限进行校验。若需访问公共目录需申请对应的公共目录访问权限。三方应用需要访问公共目录时，需向用户申请授予Download目录权限、Documents目录权限或Desktop目录权限，具体参考访问控制-向用户申请授权。
 
 [h2]示例
 
@@ -111,9 +110,9 @@ function writeUserDownloadDirExample() {
 接口的详细说明，请参考oh_environment.h。
 
 接口名称	描述
-FileManagement_ErrCode OH_Environment_GetUserDownloadDir (char **result)	获取用户Download目录沙箱路径。只支持2in1设备
-FileManagement_ErrCode OH_Environment_GetUserDesktopDir (char **result)	获取用户Desktop目录沙箱路径。只支持2in1设备
-FileManagement_ErrCode OH_Environment_GetUserDocumentDir (char **result)	获取用户Document目录沙箱路径。只支持2in1设备
+FileManagement_ErrCode OH_Environment_GetUserDownloadDir (char **result)	获取用户Download目录沙箱路径。支持2in1设备。 从API版本26.0.0开始，支持tablet设备
+FileManagement_ErrCode OH_Environment_GetUserDesktopDir (char **result)	获取用户Desktop目录沙箱路径。支持2in1设备。 从API版本26.0.0开始，支持tablet设备
+FileManagement_ErrCode OH_Environment_GetUserDocumentDir (char **result)	获取用户Document目录沙箱路径。支持2in1设备。 从API版本26.0.0开始，支持tablet设备
 
 [h2]开发步骤
 
@@ -224,20 +223,11 @@ if (!canIUse('SystemCapability.FileManagement.File.Environment.FolderObtain')) {
 ### Code block 2
 
 ```
-   "requestPermissions" : [
-       "ohos.permission.READ_WRITE_DOWNLOAD_DIRECTORY",
-       "ohos.permission.READ_WRITE_DOCUMENTS_DIRECTORY",
-   ]
-```
-
-### Code block 3
-
-```
 import { BusinessError } from '@kit.BasicServicesKit';
 import { Environment } from '@kit.CoreFileKit';
 ```
 
-### Code block 4
+### Code block 3
 
 ```
 function getUserDirExample() {
@@ -253,7 +243,7 @@ function getUserDirExample() {
 }
 ```
 
-### Code block 5
+### Code block 4
 
 ```
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -265,7 +255,7 @@ import { common } from '@kit.AbilityKit';
 let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 ```
 
-### Code block 6
+### Code block 5
 
 ```
 function readUserDownloadDirExample(context: common.UIAbilityContext) {
@@ -294,7 +284,7 @@ function readUserDownloadDirExample(context: common.UIAbilityContext) {
 }
 ```
 
-### Code block 7
+### Code block 6
 
 ```
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -302,7 +292,7 @@ import { Environment } from '@kit.CoreFileKit';
 import { fileIo } from '@kit.CoreFileKit';
 ```
 
-### Code block 8
+### Code block 7
 
 ```
 function writeUserDownloadDirExample() {
@@ -322,13 +312,13 @@ function writeUserDownloadDirExample() {
 }
 ```
 
-### Code block 9
+### Code block 8
 
 ```
 target_link_libraries(sample PUBLIC libohenvironment.so libhilog_ndk.z.so)
 ```
 
-### Code block 10
+### Code block 9
 
 ```
 #include <filemanagement/environment/oh_environment.h>
@@ -336,13 +326,13 @@ target_link_libraries(sample PUBLIC libohenvironment.so libhilog_ndk.z.so)
 #include <hilog/log.h>
 ```
 
-### Code block 11
+### Code block 10
 
 ```
 #include <cstdlib>
 ```
 
-### Code block 12
+### Code block 11
 
 ```
 void GetUserDownloadDirExample()
@@ -358,14 +348,14 @@ void GetUserDownloadDirExample()
 }
 ```
 
-### Code block 13
+### Code block 12
 
 ```
 #include <cstdlib>
 #include <dirent.h>
 ```
 
-### Code block 14
+### Code block 13
 
 ```
 void ScanUserDownloadDirPathExample()
@@ -399,13 +389,13 @@ void ScanUserDownloadDirPathExample()
 }
 ```
 
-### Code block 15
+### Code block 14
 
 ```
 #include <fstream>
 ```
 
-### Code block 16
+### Code block 15
 
 ```
 void WriteUserDownloadDirPathExample()

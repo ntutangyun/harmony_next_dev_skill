@@ -17,6 +17,17 @@ bo	藏语
 vi	越南语
 zh-Hans	简体中文
 zh-Hant	繁体中文
+th	泰语
+pt-PT	葡萄牙语
+id	印尼语
+de	德语
+tr	土耳其语
+it	意大利语
+my	缅甸语
+lo	老挝语
+pl	波兰语
+ms	马来语
+en-GB	英国英语
 
 地图Picker支持语言
 

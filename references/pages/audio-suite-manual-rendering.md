@@ -106,13 +106,19 @@ OH_AudioSuiteNodeBuilder_SetRequestDataCallback(nodeBuilder, InputNodeWriteDataC
 // 创建输入节点。
 OH_AudioSuiteEngine_CreateNode(audioSuiteEngine, nodeBuilder, &nodes.inputNode);
 
-// 重置构造器配置并设置为均衡器节点类型。
+// 重置构造器配置，创建效果节点。
 OH_AudioSuiteNodeBuilder_Reset(nodeBuilder);
-OH_AudioSuiteNodeBuilder_SetNodeType(nodeBuilder, OH_AudioNode_Type::EFFECT_NODE_TYPE_EQUALIZER);
+// 可根据需要设置不同的效果节点类型。
+
+设置均衡器效果。
+
+// 设置为均衡器节点类型。
+OH_AudioSuiteNodeBuilder_SetNodeType(builder, OH_AudioNode_Type::EFFECT_NODE_TYPE_EQUALIZER);
 // 创建均衡器节点。
-OH_AudioSuiteEngine_CreateNode(audioSuiteEngine, nodeBuilder, &nodes.eqNode);
-// 设置均衡器节点效果为默认。
-OH_AudioSuiteEngine_SetEqualizerFrequencyBandGains(nodes.eqNode, OH_EQUALIZER_PARAM_DEFAULT);
+OH_AudioSuiteEngine_CreateNode(pipeline, builder, node);
+// ...
+// 设置均衡器节点效果。
+OH_AudioSuiteEngine_SetEqualizerFrequencyBandGains(*node, gains);
 
 // 重置构造器配置并设置为输出节点类型。
 OH_AudioSuiteNodeBuilder_Reset(nodeBuilder);
@@ -611,14 +617,26 @@ OH_AudioSuiteNodeBuilder_SetRequestDataCallback(nodeBuilder, InputNodeWriteDataC
 // 创建输入节点。
 OH_AudioSuiteEngine_CreateNode(audioSuiteEngine, nodeBuilder, &nodes.inputNode);
 
-// 重置构造器配置并设置为均衡器节点类型。
+// 重置构造器配置，创建效果节点。
 OH_AudioSuiteNodeBuilder_Reset(nodeBuilder);
-OH_AudioSuiteNodeBuilder_SetNodeType(nodeBuilder, OH_AudioNode_Type::EFFECT_NODE_TYPE_EQUALIZER);
-// 创建均衡器节点。
-OH_AudioSuiteEngine_CreateNode(audioSuiteEngine, nodeBuilder, &nodes.eqNode);
-// 设置均衡器节点效果为默认。
-OH_AudioSuiteEngine_SetEqualizerFrequencyBandGains(nodes.eqNode, OH_EQUALIZER_PARAM_DEFAULT);
+// 可根据需要设置不同的效果节点类型。
+```
 
+### Code block 7
+
+```
+// 设置为均衡器节点类型。
+OH_AudioSuiteNodeBuilder_SetNodeType(builder, OH_AudioNode_Type::EFFECT_NODE_TYPE_EQUALIZER);
+// 创建均衡器节点。
+OH_AudioSuiteEngine_CreateNode(pipeline, builder, node);
+// ...
+// 设置均衡器节点效果。
+OH_AudioSuiteEngine_SetEqualizerFrequencyBandGains(*node, gains);
+```
+
+### Code block 8
+
+```
 // 重置构造器配置并设置为输出节点类型。
 OH_AudioSuiteNodeBuilder_Reset(nodeBuilder);
 OH_AudioSuiteNodeBuilder_SetNodeType(nodeBuilder, OH_AudioNode_Type::OUTPUT_NODE_TYPE_DEFAULT);
@@ -641,7 +659,7 @@ OH_AudioSuiteEngine_ConnectNodes(nodes.inputNode, nodes.eqNode);
 OH_AudioSuiteEngine_ConnectNodes(nodes.eqNode, nodes.outputNode);
 ```
 
-### Code block 7
+### Code block 9
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -672,7 +690,7 @@ free(audioData);
 audioData = nullptr;
 ```
 
-### Code block 8
+### Code block 10
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -688,7 +706,7 @@ OH_AudioSuiteEngine_DestroyPipeline(audioSuitePipeline);
 OH_AudioSuiteEngine_Destroy(audioSuiteEngine);
 ```
 
-### Code block 9
+### Code block 11
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -702,7 +720,7 @@ OH_AudioSuiteEngine_CreatePipeline(audioSuiteEngine, &audioSuitePipeline,
                                    OH_AudioSuite_PipelineWorkMode::AUDIOSUITE_PIPELINE_EDIT_MODE);
 ```
 
-### Code block 10
+### Code block 12
 
 ```
 struct AudioDataInfo {
@@ -713,7 +731,7 @@ struct AudioDataInfo {
 };
 ```
 
-### Code block 11
+### Code block 13
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -742,7 +760,7 @@ static int32_t InputNodeWriteDataCallBack(OH_AudioNode *audioNode, void *userDat
 }
 ```
 
-### Code block 12
+### Code block 14
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -797,7 +815,7 @@ OH_AudioSuiteEngine_ConnectNodes(nodes.inputNode, nodes.aissNode);
 OH_AudioSuiteEngine_ConnectNodes(nodes.aissNode, nodes.outputNode);
 ```
 
-### Code block 13
+### Code block 15
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -843,7 +861,7 @@ free(audioDataArray.audioDataArray);
 audioDataArray.audioDataArray = nullptr;
 ```
 
-### Code block 14
+### Code block 16
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -859,7 +877,7 @@ OH_AudioSuiteEngine_DestroyPipeline(audioSuitePipeline);
 OH_AudioSuiteEngine_Destroy(audioSuiteEngine);
 ```
 
-### Code block 15
+### Code block 17
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -873,7 +891,7 @@ OH_AudioSuiteEngine_CreatePipeline(audioSuiteEngine, &audioSuitePipeline,
                                    OH_AudioSuite_PipelineWorkMode::AUDIOSUITE_PIPELINE_EDIT_MODE);
 ```
 
-### Code block 16
+### Code block 18
 
 ```
 struct AudioDataInfo {
@@ -884,7 +902,7 @@ struct AudioDataInfo {
 };
 ```
 
-### Code block 17
+### Code block 19
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -913,7 +931,7 @@ static int32_t InputNodeWriteDataCallBack(OH_AudioNode *audioNode, void *userDat
 }
 ```
 
-### Code block 18
+### Code block 20
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -982,7 +1000,7 @@ OH_AudioSuiteEngine_ConnectNodes(nodes.inputNodeForMix, nodes.mixerNode);
 OH_AudioSuiteEngine_ConnectNodes(nodes.mixerNode, nodes.outputNode);
 ```
 
-### Code block 19
+### Code block 21
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -1014,7 +1032,7 @@ free(audioData);
 audioData = nullptr;
 ```
 
-### Code block 20
+### Code block 22
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。

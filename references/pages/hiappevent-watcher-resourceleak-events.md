@@ -36,7 +36,7 @@ js_heap_logtype	string	否	event：应用发生oom时，不传递堆快照。 ev
 
 注意
 
-即使参数js_heap_logtype设置为是event_rawheap，也不能保证生成堆快照文件。这是因为生成堆快照时，应用可能因性能问题触发冻屏而提前退出。
+即使参数js_heap_logtype设置为event_rawheap，也不能保证生成堆快照文件。这是因为生成堆快照时，应用可能因性能问题触发冻屏而提前退出。
 
 参数配置示例：
 
@@ -79,6 +79,7 @@ import { hilog, hiAppEvent } from '@kit.PerformanceAnalysisKit';
 let policy: hiAppEvent.EventPolicy = {
     resourceOverlimitPolicy: {
         pageSwitchLogEnable: true, // 启用页面切换日志。从API version 24开始支持该参数
+        useRefinedLogFileName: true, // 启用事件日志文件名精细化开关。从API版本26.0.0开始支持该参数
         js_heap_logtype: "event", // 仅获取事件。从API版本26.0.0开始支持该参数
         // js_heap_logtype: "event_rawheap", // 同时获取堆快照。从API版本26.0.0开始支持该参数
     }
@@ -112,6 +113,7 @@ page_switch_log	string	页面切换日志路径，日志介绍详见页面切换
 
 取值	说明
 pss_memory	pss内存泄漏。
+rss_memory	rss内存泄漏。 说明：从API版本26.0.0开始，支持该字段。
 ion_memory	ion内存泄漏。 说明：从API version 20开始，支持该字段。
 gpu_memory	gpu内存泄漏。 说明：从API version 20开始，支持该字段。
 js_heap	js内存泄漏。
@@ -131,6 +133,29 @@ sys_avail_mem	number	（resource_type为pss_memory、ion_memory、gpu_memory专�
 sys_total_mem	number	（resource_type为pss_memory、ion_memory、gpu_memory专有）总内存大小，单位：KB。
 limit_size	number	（resource_type为js_heap专有）基线大小，单位：KB。
 live_object_size	number	（resource_type为js_heap专有）实际使用内存大小，单位：KB。
+rss_detail	object	（resource_type为rss_memory）RSS内存详细分布信息，详见detail字段说明。 说明：从API版本26.0.0开始，支持该字段。
+pss_detail	object	（resource_type为pss_memory）PSS内存详细分布信息，详见detail字段说明。 说明：从API版本26.0.0开始，支持该字段。
+
+[h2]detail字段说明
+
+名称	类型	说明
+.db	number	数据库文件占用内存大小，单位：KB。
+.hap	number	HAP文件占用内存大小，单位：KB。
+.so	number	共享库文件占用内存大小，单位：KB。
+.ttf	number	字体文件占用内存大小，单位：KB。
+anon_page_other	number	其他匿名页占用内存大小，单位：KB。
+ark ts heap	number	ArkTS堆占用内存大小，单位：KB。
+arkweb-js heap	number	ArkWeb JS堆占用内存大小，单位：KB。
+arkweb-pa heap	number	ArkWeb PA堆占用内存大小，单位：KB。
+dart heap	number	Dart堆占用内存大小，单位：KB。
+dev	number	/dev开头的各类文件占用内存大小，单位：KB。
+file_page_other	number	其他文件页占用内存大小，单位：KB。
+jsvm heap	number	JSVM堆占用内存大小，单位：KB。
+kotlin heap	number	Kotlin堆占用内存大小，单位：KB。
+native heap	number	Native堆占用内存大小，单位：KB。
+other	number	其他类型占用内存大小，单位：KB。
+rn-hermes heap	number	React Native Hermes堆占用内存大小，单位：KB。
+stack	number	栈空间占用内存大小，单位：KB。
 
 [h2]fd字段说明
 
@@ -175,6 +200,7 @@ import { hilog, hiAppEvent } from '@kit.PerformanceAnalysisKit';
 let policy: hiAppEvent.EventPolicy = {
     resourceOverlimitPolicy: {
         pageSwitchLogEnable: true, // 启用页面切换日志。从API version 24开始支持该参数
+        useRefinedLogFileName: true, // 启用事件日志文件名精细化开关。从API版本26.0.0开始支持该参数
         js_heap_logtype: "event", // 仅获取事件。从API版本26.0.0开始支持该参数
         // js_heap_logtype: "event_rawheap", // 同时获取堆快照。从API版本26.0.0开始支持该参数
     }

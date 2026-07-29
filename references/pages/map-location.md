@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-locat
 
 “我的位置”功能主要由MapComponentController的方法实现，更多接口及使用方法请参见接口文档。
 
-方法名	描述
+接口名	描述
 setMyLocationEnabled(myLocationEnabled: boolean): void	“我的位置”图层功能开关，默认使用系统的连续定位能力显示用户位置。开关打开后，“我的位置”按钮默认显示在地图的右下角。点击“我的位置”按钮，将会在屏幕中心显示当前定位，以蓝色圆点的形式呈现。
 setMyLocationControlsEnabled(enabled: boolean): void	设置是否启用“我的位置”按钮。只显示按钮，在不开启“我的位置”图层功能的情况下，点击按钮没反应。
 setMyLocation(location: geoLocationManager.Location): void	设置“我的位置”坐标。 如果不使用Map Kit提供的默认定位行为，可以通过Location Kit获取用户位置后，传给Map Kit。

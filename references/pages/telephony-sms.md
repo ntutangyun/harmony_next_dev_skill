@@ -36,7 +36,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/telephony
 
 说明
 
-为了保证应用的运行效率，大部分API调用都是异步的，对于异步调用的API均提供了callback和Promise两种方式，以下示例采用callback回调方式，其他调用方式请参考API文档。
+为了保证应用的运行效率，大部分API调用都是异步的，对于异步调用的API均提供了callback和Promise两种方式，以下示例采用callback回调方式，其他调用方式请参考@ohos.telephony.sms (短信服务)文档。
 
 接口名	描述
 sendShortMessage(options: SendMessageOptions, callback: AsyncCallback<void>): void	发送文本或数据SMS消息。需要配置ohos.permission.SEND_MESSAGES权限，该权限仅系统应用可申请。
@@ -45,7 +45,7 @@ getDefaultSmsSlotId(callback: AsyncCallback<number>): void	获取用于发送短
 
 应用内跳转到短信编辑界面
 
-发送短信的接口需要系统权限才可调用，三方应用如果有发送短信需求，需要在应用内实现跳转到短信编辑的功能，并且需要携带编辑内容和收件人号码，可以通过调用元能力startAbility接口指定号码并跳转到发送短信页面的方式实现。
+发送短信的接口需要系统权限才可调用，三方应用如果有发送短信需求，需要在应用内实现跳转到短信编辑的功能，并且需要携带编辑内容和收件人号码，可以通过调用元能力startAbility接口指定号码并跳转到发送短信页面的方式实现。开启混淆后，contactsName和telephone可能被混淆，建议在-keep-property-name保留属性名称。
 
 // 示例代码
 import { common, Want } from '@kit.AbilityKit';
@@ -77,7 +77,7 @@ struct JumpMessage {
             bundleName: "com.ohos.mms",
             abilityName: "com.ohos.mms.MainAbility",
             parameters: {
-                contactObjects: JSON.stringify(params),
+                contactObjects: JSON.stringify(params), // 开启混淆后，contactsName和telephone可能被混淆，建议在-keep-property-name保留属性名称
                 pageFlag: "conversation",
                 // 这里填写短信内容。
                 content: "我是短信具体内容"
@@ -205,7 +205,7 @@ struct JumpMessage {
             bundleName: "com.ohos.mms",
             abilityName: "com.ohos.mms.MainAbility",
             parameters: {
-                contactObjects: JSON.stringify(params),
+                contactObjects: JSON.stringify(params), // 开启混淆后，contactsName和telephone可能被混淆，建议在-keep-property-name保留属性名称
                 pageFlag: "conversation",
                 // 这里填写短信内容。
                 content: "我是短信具体内容"

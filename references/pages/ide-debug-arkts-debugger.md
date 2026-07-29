@@ -60,4 +60,4 @@ Debugger显示两个独立的窗格：
 
 Console窗格
 
-Console窗格用于展示已加载的ets/js。
+Console窗格用于展示已加载的ets、js或so。

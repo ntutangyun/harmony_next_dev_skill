@@ -6,11 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/video-dec
 
 本文档主要介绍异步模式视频解码的实现流程，同步模式视频解码请参考视频解码同步模式。根据解码后数据处理方式的不同，视频解码支持Surface模式和Buffer模式两种输出模式，适用于不同的应用场景。
 
-Surface模式。
+Surface模式
 
 解码后的图像帧通过NativeWindow来传递输出数据，可以与其他模块对接（如显示模块自定义渲染(XComponent)）。适用于视频播放、实时预览等需要将画面渲染到屏幕的解码场景。
 
-Buffer模式。
+Buffer模式
 
 解码后的原始YUV数据通过共享内存输出，开发者可直接访问和处理每一帧图像数据。适用于视频编辑、YUV原始数据保存等需要获取并处理原始数据的解码场景。
 
@@ -37,11 +37,11 @@ Executing状态下，调用OH_VideoDecoder_Stop接口，可返回到Prepared状�
 
 Prepared状态下，调用OH_VideoDecoder_Start接口进入Executing状态。
 
-Running：调用OH_VideoDecoder_Start接口进入Running子状态。
+运行子状态（Running）：调用OH_VideoDecoder_Start接口进入Running子状态。
 
-Flushed：调用OH_VideoDecoder_Flush接口进入Flushed子状态。
+刷新子状态（Flushed）：调用OH_VideoDecoder_Flush接口进入Flushed子状态。
 
-End-of-Stream：解码器接收到输入buffer的flag为OH_AVCodecBufferFlags中的AVCODEC_BUFFER_FLAGS_EOS时，进入End-of-Stream子状态。在此状态下，解码器不再接受新的输入，但是仍然会继续生成输出，直到输出尾帧。
+结束子状态（End-of-Stream）：解码器接收到输入buffer的flag为OH_AVCodecBufferFlags中的AVCODEC_BUFFER_FLAGS_EOS时，进入End-of-Stream子状态。在此状态下，解码器不再接受新的输入，但是仍然会继续生成输出，直到输出尾帧。
 
 极少数情况下，解码器异常时进入Error状态，接口会返回错误码或通过OH_AVCodecOnError回调抛出异常。
 
@@ -1210,7 +1210,7 @@ HardwareDecoding killPercentage, kill com.test:1887
 支持的能力	使用简述
 动态分辨率切换	仅硬件解码器支持输入码流分辨率发生变化，发生变化后会触发OH_VideoDecoder_RegisterCallback接口设置的回调函数OnStreamChanged()。 具体可参考上文中：Surface模式步骤-3或Buffer模式步骤-3。
 动态切换surface	通过调用OH_VideoDecoder_SetSurface可动态切换OHNativeWindow，仅Surface模式支持。 具体可参考上文中：Surface模式步骤-6。
-低时延解码	通过调用OH_VideoDecoder_Configure接口配置低时延键值。 具体可参考上文中：Surface模式的步骤-5或Buffer模式步骤-5。
+低时延解码	通过调用OH_VideoDecoder_Configure接口配置低时键值。 具体可参考上文中：Surface模式的步骤-5或Buffer模式步骤-5。
 
 ## Code blocks
 

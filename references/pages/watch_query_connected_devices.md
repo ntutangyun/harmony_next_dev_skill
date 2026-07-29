@@ -30,12 +30,12 @@ deviceClient.getConnectedDevices().then(devices => {
   // 步骤3：从已连接设备列表中选定需要通信的设备
   if (devices.length > 0) {
     targetDevice = devices[0];
-    console.info(`Succeeded to get target device.`);
+    console.info(`Succeeded in getting target device.`);
     // 步骤4：查询对端设备的操作系统类型
     let osCategory: wearEngine.OsCategory | undefined = targetDevice.osCategory;
     console.info(`The osCategory of target device is ${osCategory}`);
   } else {
-    console.warn(`Failed to get target device. deviceList is empty.`);
+    console.error(`Failed to get target device. deviceList is empty.`);
   }
 }).catch((error: BusinessError) => {
   // 处理调用失败时捕获到的异常
@@ -63,12 +63,12 @@ deviceClient.getConnectedDevices().then(devices => {
   // 步骤3：从已连接设备列表中选定需要通信的设备
   if (devices.length > 0) {
     targetDevice = devices[0];
-    console.info(`Succeeded to get target device.`);
+    console.info(`Succeeded in getting target device.`);
     // 步骤4：查询对端设备的操作系统类型
     let osCategory: wearEngine.OsCategory | undefined = targetDevice.osCategory;
     console.info(`The osCategory of target device is ${osCategory}`);
   } else {
-    console.warn(`Failed to get target device. deviceList is empty.`);
+    console.error(`Failed to get target device. deviceList is empty.`);
   }
 }).catch((error: BusinessError) => {
   // 处理调用失败时捕获到的异常

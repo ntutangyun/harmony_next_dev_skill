@@ -614,7 +614,7 @@ struct ParentPage {
         // 把this.componentBuilder传给子组件ChildPage的@BuilderParam customBuilderParam，
         // this指向的是子组件ChildPage，所以label变量的值为'Child Page'。
         customBuilderParam: this.componentBuilder,
-        // 把():void=>{this.componentBuilder()}传给子组件ChildPage的@BuilderParam customChangeThisBuilderPara
+        // 把():void=>{this.componentBuilder()}传给子组件ChildPage的@BuilderParam customChangeThisBuilderParam，
         // 因为箭头函数的this指向的是宿主对象，所以label变量的值为'Parent Page'。
         customChangeThisBuilderParam: (): void => {
           this.componentBuilder()
@@ -761,7 +761,7 @@ function globalBuilder() {
 struct CustomBuilderDemo {
   build() {
     Column() {
-      // 由于未对@Require装饰的变量ChildBuilder进行赋值，此处无论是编译还是编辑，均会报错。
+      // 由于未对@Require装饰的变量ChildBuilder进行赋值，会出现编译和编辑报错。
       ChildPage()
     }
   }
@@ -1440,7 +1440,7 @@ struct ParentPage {
         // 把this.componentBuilder传给子组件ChildPage的@BuilderParam customBuilderParam，
         // this指向的是子组件ChildPage，所以label变量的值为'Child Page'。
         customBuilderParam: this.componentBuilder,
-        // 把():void=>{this.componentBuilder()}传给子组件ChildPage的@BuilderParam customChangeThisBuilderPara
+        // 把():void=>{this.componentBuilder()}传给子组件ChildPage的@BuilderParam customChangeThisBuilderParam，
         // 因为箭头函数的this指向的是宿主对象，所以label变量的值为'Parent Page'。
         customChangeThisBuilderParam: (): void => {
           this.componentBuilder()
@@ -1579,7 +1579,7 @@ function globalBuilder() {
 struct CustomBuilderDemo {
   build() {
     Column() {
-      // 由于未对@Require装饰的变量ChildBuilder进行赋值，此处无论是编译还是编辑，均会报错。
+      // 由于未对@Require装饰的变量ChildBuilder进行赋值，会出现编译和编辑报错。
       ChildPage()
     }
   }

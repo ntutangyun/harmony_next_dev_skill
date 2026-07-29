@@ -23,20 +23,25 @@ isNearLinkSupported(): boolean	主动查询当前设备是否支持星闪。
 
 导入相关模块。
 
-import { manager } from '@kit.NearLinkKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { manager } from '@kit.NearLinkKit';
 
 发起当前设备是否支持星闪的状态查询。
 
 try {
-  let isSupported: boolean = manager.isNearLinkSupported();
-  if (isSupported) {
-    console.info('NearLink is supported on this device.');
+  let supported: boolean = manager.isNearLinkSupported();
+  // ...
+  if (supported) {
+    hilog.info(this.domainId, this.logTag, `NearLink is supported on this device.`);
+    // ...
   } else {
-    console.info('NearLink is not supported on this device.');
+    hilog.info(this.domainId, this.logTag, `NearLink is not supported on this device.`);
+    // ...
   }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 ## Code blocks
@@ -44,21 +49,26 @@ try {
 ### Code block 1
 
 ```
-import { manager } from '@kit.NearLinkKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { manager } from '@kit.NearLinkKit';
 ```
 
 ### Code block 2
 
 ```
 try {
-  let isSupported: boolean = manager.isNearLinkSupported();
-  if (isSupported) {
-    console.info('NearLink is supported on this device.');
+  let supported: boolean = manager.isNearLinkSupported();
+  // ...
+  if (supported) {
+    hilog.info(this.domainId, this.logTag, `NearLink is supported on this device.`);
+    // ...
   } else {
-    console.info('NearLink is not supported on this device.');
+    hilog.info(this.domainId, this.logTag, `NearLink is not supported on this device.`);
+    // ...
   }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```

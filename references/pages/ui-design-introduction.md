@@ -18,6 +18,7 @@ UI Design Kit（UI设计套件）是华为提供的符合HarmonyOS Design System
 即时操作（HdsSnackBar）与核心操作栏（HdsActionBar）	即时操作：提供非模态通知组件，支持图文展示与快速操作按钮，用于轻量化交互反馈。 核心操作栏：组合多个按钮，支持主按钮展开/收起的联动动效。
 列表（HdsListItem）	封装高端卡片样式，内置横滑删除动效，适配多设备系统风格。
 应用内多窗（MultiWindowEntryInAPP）	单应用多窗口入口，支持自定义图标、背板颜色与大小，实现多窗并行。
+颜色选择器（HdsColorPicker）	提供颜色选择与收藏管理功能的组件，支持网格、光谱和滑块三种颜色选择模式。
 
 [h2]HDS沉浸视效
 
@@ -65,6 +66,7 @@ UI Design Kit提供的能力	支持的设备类型
 HDS视效	Phone、Tablet、PC/2in1
 应用内多窗	Phone、Tablet
 沉浸光感材质	Phone、Tablet
+颜色选择器	Phone、Tablet
 
 [h2]能力限制
 

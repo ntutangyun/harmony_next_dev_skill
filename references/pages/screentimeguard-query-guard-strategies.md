@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 应用调用查询管控策略的接口，拉起健康使用设备查询本应用是否已申请权限，以及用户是否对本应用授权。
 
-若没有权限，则抛出相应错误码；若有权限，则返回对应应用下的所有管控策略。
+若开发者没有权限或用户没有授权，则抛出相应错误码。若开发者有权限且用户已授权，则返回对应应用下的所有管控策略。
 
 接口说明
 
@@ -33,7 +33,7 @@ import { guardService } from '@kit.ScreenTimeGuardKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-调用queryGuardStrategy，查询对应应用下的所有管控策略。
+调用queryGuardStrategies，查询对应应用下的所有管控策略。
 
 private async isStrategyExist(strategyName: string): Promise<boolean> {
   try {

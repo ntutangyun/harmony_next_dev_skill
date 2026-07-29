@@ -1,4 +1,4 @@
-# 实现游戏预启动加速
+# 实现游戏预启动
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-preload-development_
 
@@ -40,18 +40,13 @@ terminateGamePrelaunch(context: common.UIAbilityContext): Promise<void>	通知�
 
 开发者可在UIAbility的onCreate生命周期回调中通过want.parameters获取启动原因，当参数ohos.params.gamePrelaunch为true时，表示当前UIAbility是由游戏预启动运行的。
 
-import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { launchAcceleration } from '@kit.GraphicsAccelerateKit';
-
-let isPrelaunchStart: boolean = false;
-
-export default class EntryAbility extends UIAbility {
-  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    // 判断是否是预启动运行，want中ohos.params.gamePrelaunch可能为undefined，赋值时需设置默认值false
-    isPrelaunchStart = (want.parameters?.["ohos.params.gamePrelaunch"] as boolean) ?? false;
-    console.info(`EntryAbility onCreate, isPrelaunchStart:${isPrelaunchStart}`);
-    // ...
-  }
+onCreate(want: Want, _launchParam: AbilityConstant.LaunchParam): void {
+  // ...
+  // 判断是否是预启动运行，want中ohos.params.gamePrelaunch可能为undefined，赋值时需设置默认值false
+  let isPrelaunchStart = (want.parameters?.["ohos.params.gamePrelaunch"] as boolean) ?? false;
+  console.info(`EntryAbility onCreate, isPrelaunchStart:${isPrelaunchStart}`);
+  // ...
+  // ...
 }
 
 通知启动加速服务当前游戏预启动完成。
@@ -90,23 +85,22 @@ async terminateGamePrelaunch() {
   }
 }
 
+验证方法
+
+具体验证方法请详见游戏预启动开发实践。
+
 ## Code blocks
 
 ### Code block 1
 
 ```
-import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { launchAcceleration } from '@kit.GraphicsAccelerateKit';
-
-let isPrelaunchStart: boolean = false;
-
-export default class EntryAbility extends UIAbility {
-  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    // 判断是否是预启动运行，want中ohos.params.gamePrelaunch可能为undefined，赋值时需设置默认值false
-    isPrelaunchStart = (want.parameters?.["ohos.params.gamePrelaunch"] as boolean) ?? false;
-    console.info(`EntryAbility onCreate, isPrelaunchStart:${isPrelaunchStart}`);
-    // ...
-  }
+onCreate(want: Want, _launchParam: AbilityConstant.LaunchParam): void {
+  // ...
+  // 判断是否是预启动运行，want中ohos.params.gamePrelaunch可能为undefined，赋值时需设置默认值false
+  let isPrelaunchStart = (want.parameters?.["ohos.params.gamePrelaunch"] as boolean) ?? false;
+  console.info(`EntryAbility onCreate, isPrelaunchStart:${isPrelaunchStart}`);
+  // ...
+  // ...
 }
 ```
 

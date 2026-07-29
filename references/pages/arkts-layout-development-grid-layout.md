@@ -63,7 +63,7 @@ breakpoints: {value: ['320vp', '600vp', '840vp', '1440vp']} // 表示xs、sm、m
 @Entry
 @Component
 struct WindowRefGridLayout {
-  @State currentBp: string = "unknown"
+  @State currentBp: string = 'unknown'
   @State bgColors: ResourceColor[] =
     ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
       'rgb(255,192,0)', 'rgb(170,10,33)'];
@@ -136,7 +136,7 @@ API version 20之前布局显示：
 
 API version 20及以后布局显示（以sm设备为例，默认栅格列数为4）：
 
-columns支持number和GridRowColumnOption两种类型, 可按两种方式设置栅格布局的总列数。
+columns支持number和GridRowColumnOption两种类型，可按两种方式设置栅格布局的总列数。
 
 当columns类型为number时，栅格布局在任何尺寸设备下都被分为同一列数。下面分别设置栅格布局列数为4和8，子元素占一列，效果如下：
 
@@ -295,7 +295,7 @@ GridCol({ span: 1 }){}.order(gOrder)
 
 子组件占栅格布局的列数，决定了子组件的宽度。默认值为1。
 
-span支持number和GridColColumnOption两种类型, 可按两种方式设置栅格子组件占栅格容器的列数。
+span支持number和GridColColumnOption两种类型，可按两种方式设置栅格子组件占栅格容器的列数。
 
 当span类型为number时，子组件在所有尺寸设备下占用的列数相同。
 
@@ -328,7 +328,7 @@ struct SpanNumberExample {
 @Entry
 @Component
 struct SpanColumnOptionExample {
-  @State currentBp: string = "unknown"
+  @State currentBp: string = 'unknown'
   @State bgColors: ResourceColor[] =
     ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
       'rgb(255,192,0)', 'rgb(170,10,33)'];
@@ -401,7 +401,7 @@ struct OffsetNumberExample {
 @Entry
 @Component
 struct OffsetColumnOptionExample {
-  @State currentBp: string = "unknown"
+  @State currentBp: string = 'unknown'
   @State bgColors: ResourceColor[] =
     ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
       'rgb(255,192,0)', 'rgb(170,10,33)'];
@@ -439,7 +439,7 @@ struct OffsetColumnOptionExample {
 
 [h2]order
 
-栅格子组件的序号，决定子组件排列次序。当子组件不设置order或者设置相同的order, 子组件按照代码顺序展示。当子组件设置不同的order时，order较小的组件在前，较大的在后。
+栅格子组件的序号，决定子组件排列次序。当子组件不设置order或者设置相同的order，子组件按照代码顺序展示。当子组件设置不同的order时，order较小的组件在前，较大的在后。
 
 当子组件部分设置order，部分不设置order时，未设置order的子组件依次排序靠前，设置了order的子组件按照数值从小到大排列。
 
@@ -574,7 +574,7 @@ breakpoints: {value: ['320vp', '600vp', '840vp', '1440vp']} // 表示xs、sm、m
 @Entry
 @Component
 struct WindowRefGridLayout {
-  @State currentBp: string = "unknown"
+  @State currentBp: string = 'unknown'
   @State bgColors: ResourceColor[] =
     ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
       'rgb(255,192,0)', 'rgb(170,10,33)'];
@@ -843,7 +843,7 @@ struct SpanNumberExample {
 @Entry
 @Component
 struct SpanColumnOptionExample {
-  @State currentBp: string = "unknown"
+  @State currentBp: string = 'unknown'
   @State bgColors: ResourceColor[] =
     ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
       'rgb(255,192,0)', 'rgb(170,10,33)'];
@@ -914,7 +914,7 @@ struct OffsetNumberExample {
 @Entry
 @Component
 struct OffsetColumnOptionExample {
-  @State currentBp: string = "unknown"
+  @State currentBp: string = 'unknown'
   @State bgColors: ResourceColor[] =
     ['rgb(213,213,213)', 'rgb(150,150,150)', 'rgb(0,74,175)', 'rgb(39,135,217)', 'rgb(61,157,180)', 'rgb(23,169,141)',
       'rgb(255,192,0)', 'rgb(170,10,33)'];

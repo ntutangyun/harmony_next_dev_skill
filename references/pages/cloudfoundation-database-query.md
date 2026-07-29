@@ -24,272 +24,670 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 开发者可以在无查询条件时，获取一个对象类型中所有的对象；也可以指定单个查询条件，来获取满足该条件的对象。
 
+导入相关模块。
+
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
 查询对象类型BookInfo的所有数据。
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 
-async queryAll() {
-  try {
-    let resultArray = await databaseZone.query(condition);
-    hilog.info(0x0000, 'testTag', `Succeeded in querying data, result: ${JSON.stringify(resultArray)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to query data, code: ${err.code}, message: ${err.message}`);
-  }
-}
-
-说明
-
-后续hilog都需要从@kit.PerformanceAnalysisKit中引入，将不在示例代码中呈现。
-
-通过异步侦听的方式查询“bookName”参数对应的书籍。
-
-async queryBook(bookName: string): Promise<BookInfo> {
-  try {
-    condition.equalTo('bookName', bookName);
-    let resultArray = await databaseZone.query(condition);
-    let bookInfo = resultArray[0];
-    hilog.info(0x0000, 'testTag', `Succeeded in querying data, result: ${JSON.stringify(resultArray)}`);
-    return Promise.resolve(bookInfo);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to query data, code: ${err.code}, message: ${err.message}`);
-    return Promise.reject(err);
-  }
-}
-
-复合查询
+按条件查询
 
 开发者可以通过多个链式过滤条件，来获取满足条件的对象。多个链式条件之间默认用“与”运算。
 
-构造查询条件，并调用query()方法，查询“bookName”包含“数据库”，“price”大于20.0并且小于50.0的书籍。
+导入相关模块。
 
-condition.contains('bookName', '数据库')
-  .greaterThan('price', 20.0)
-  .and()
-  .lessThan('price', 50.0);
-let resultArray = await databaseZone.query(condition);
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-构造查询条件，并调用query()方法，查询“bookName”包含“数据库”，“price”在小于20.0或者大于50.0区间的书籍。
+按条件查询数据。
 
-condition.contains('bookName', '数据库')
-  .lessThan('price', 20.0)
-  .or()
-  .greaterThan('price', 50.0);
-let resultArray = await databaseZone.query(condition);
+构造查询条件，并调用query()方法，查询书籍名称为“Jane Eyre”的数据。
 
-构造查询条件，并调用query()方法，查询“bookName”包含“史记”，“author”是“司马迁”，“price”大于60.0的书籍。
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
 
-condition.contains('bookName', '史记')
-  .equalTo('author', '司马迁')
-  .greaterThan('price', 60.0);
-let resultArray = await databaseZone.query(condition);
+condition.equalTo('bookName', 'Jane Eyre');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 
-构造查询条件，并调用query()方法，查询“bookName”包含“自传”，并且“author”是“齐白石”，或者“author”是“司马迁”，并且“price”大于60.0的书籍。
+构造查询条件，并调用query()方法，查询书籍名称不为“Jane Eyre”的数据。
 
-condition.contains('bookName', '自传')
-  .beginGroup()
-  .equalTo('author', '齐白石')
-  .or()
-  .equalTo('author', '司马迁')
-  .endGroup()
-  .greaterThan('price', 60.0);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.notEqualTo('bookName', 'Jane Eyre');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 
-构造查询条件，并调用query()方法，查询“bookName”包含“数据库”，并且“borrowerTime”在特定时间段内的书籍。其中，针对Date类型构造greaterThan()、greaterThanOrEqualTo()、lessThan()、lessThanOrEqualTo()、equalTo()、notEqualTo()查询条件时，需要调用getTime()方法将Date类型转换成number类型。
+构造查询条件，并调用query()方法，查询书籍名称以“Jane”开始的数据。
 
-let begin = (new Date("2025-12-29T08:00:00.000+08:00")).getTime();
-let end = (new Date("2025-12-31T08:00:00.000+08:00")).getTime();
-condition.contains('bookName', '数据库')
-  .greaterThan('borrowerTime', begin)
-  .and()
-  .lessThan('borrowerTime', end);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.beginsWith('bookName', 'Jane');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 
-数据排序
+构造查询条件，并调用query()方法，查询书籍名称以“Eyre”结束的数据。
 
-开发者可以通过orderByAsc()或者orderByDesc()实现对查询结果集中的对象按某个字段进行升序或者降序排列，排序谓词需要在其它查询谓词之后且在限定数据查询数量谓词之前。
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.endsWith('bookName', 'Eyre');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 
-condition.lessThan('price', 50.0)
-  .orderByDesc('price');
-let resultArray = await databaseZone.query(condition);
+构造查询条件，并调用query()方法，查询书籍名称中包含“d”的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.contains('bookName', 'd');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格大于82的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.greaterThan('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格小于82的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格大于或等于82的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.greaterThanOrEqualTo('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格小于或等于82的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThanOrEqualTo('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍名称被包含在['demo', 'Jane Eyre']中的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.in('bookName', ['demo', 'Jane Eyre']);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格为空的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.isNull('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格不为空的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.isNotNull('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格小于200并且名称等于“demo”的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.beginGroup()
+  .greaterThan('price', 10.0)
+  .lessThan('price', 50.0)
+  .endGroup();
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询按照价格升序排列的书籍。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.orderByAsc('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询价格不超过50且按照价格降序排列的书籍。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0).orderByDesc('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格小于50或者书籍名称等于“demo”的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0).or().equalTo('bookName', 'demo');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询书籍价格大于40并且书籍名称中包含“j”的数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.greaterThan('price', 40.0).and().contains('bookName', 'j');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+构造查询条件，并调用query()方法，查询价格不超过50且按照价格降序排列的书籍，最多展示两条数据。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0).orderByDesc('price').limit(2, 0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+
+对查询结果进行算术计算
+
+导入相关模块。
+
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+开发者可以通过calculateQuery()对查询结果对象中的某个字段进行算术计算并返回计算的结果。
+
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0);
+databaseZone.calculateQuery(condition, 'price', cloudDatabase.QueryCalculate.AVERAGE).then((num: number) => {
+  hilog.info(0x0000, 'cloudDb', `Succeeded in querying: QueryCalculate.AVERAGE price  = ${num}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 
 随机查询
 
 从6.0.1(21)版本开始，新增支持随机查询功能。
 
+导入相关模块。
+
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
 开发者可以通过orderByRandom()按随机顺序展示查询结果集中的对象。
 
 该方法适用于推荐随机内容、播放随机音视频等场景。
 
-condition.orderByRandom()
-  .limit(10);
-let resultArray = await databaseZone.query(condition);
-
-限定数据查询返回数量
-
-在查询数据时，开发者可以通过limit()限定查询返回数据的起始位置和数量，实现数据的分页。例如与排序查询谓词组合使用，可以实现获取top-N条数据。
-
-对查询结果中的对象限定查询返回数量时，限定数据查询返回数量谓词在所有其他谓词查询之后。
-
-构造查询条件，并调用query()方法，查询所有价格小于50.0的书籍，并且只显示最开始10条记录。
-
-condition.lessThan('price', 50.0)
-  .limit(10);
-let resultArray = await databaseZone.query(condition);
-
-构造查询条件，并调用query()方法，查询所有价格小于50.0的书籍，并将查询结果按照降序排序，只显示价格排序从第6条开始的10条记录。
-
-condition.lessThan('price', 50.0)
-  .orderByDesc('price')
-  .limit(10, 6);
-let resultArray = await databaseZone.query(condition);
-
-对查询结果进行算术计算
-
-在查询数据时，可以通过calculateQuery()对查询结果对象中的某个字段进行算术计算并返回计算的结果。
-
-构造查询条件，并调用calculateQuery()方法，查询所有价格小于50.0的书籍，并且计算所有书籍价格的平均值。
-
-async calculateQuery() {
-  try {
-    condition.lessThan('price', 50.0);
-    let resultNum = await databaseZone.calculateQuery(condition, 'price', cloudDatabase.QueryCalculate.AVERAGE);
-    hilog.info(0x0000, 'testTag', `Succeeded in calculating queried data, result: ${JSON.stringify(resultNum)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to calculate queried data, code: ${err.code}, message: ${err.message}`);
-  }
-}
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.orderByRandom().limit(10);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 
 ## Code blocks
 
 ### Code block 1
 
 ```
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
-async queryAll() {
-  try {
-    let resultArray = await databaseZone.query(condition);
-    hilog.info(0x0000, 'testTag', `Succeeded in querying data, result: ${JSON.stringify(resultArray)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to query data, code: ${err.code}, message: ${err.message}`);
-  }
-}
+import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 2
 
 ```
-async queryBook(bookName: string): Promise<BookInfo> {
-  try {
-    condition.equalTo('bookName', bookName);
-    let resultArray = await databaseZone.query(condition);
-    let bookInfo = resultArray[0];
-    hilog.info(0x0000, 'testTag', `Succeeded in querying data, result: ${JSON.stringify(resultArray)}`);
-    return Promise.resolve(bookInfo);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to query data, code: ${err.code}, message: ${err.message}`);
-    return Promise.reject(err);
-  }
-}
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 3
 
 ```
-condition.contains('bookName', '数据库')
-  .greaterThan('price', 20.0)
-  .and()
-  .lessThan('price', 50.0);
-let resultArray = await databaseZone.query(condition);
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 4
 
 ```
-condition.contains('bookName', '数据库')
-  .lessThan('price', 20.0)
-  .or()
-  .greaterThan('price', 50.0);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+
+condition.equalTo('bookName', 'Jane Eyre');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 5
 
 ```
-condition.contains('bookName', '史记')
-  .equalTo('author', '司马迁')
-  .greaterThan('price', 60.0);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.notEqualTo('bookName', 'Jane Eyre');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 6
 
 ```
-condition.contains('bookName', '自传')
-  .beginGroup()
-  .equalTo('author', '齐白石')
-  .or()
-  .equalTo('author', '司马迁')
-  .endGroup()
-  .greaterThan('price', 60.0);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.beginsWith('bookName', 'Jane');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 7
 
 ```
-let begin = (new Date("2025-12-29T08:00:00.000+08:00")).getTime();
-let end = (new Date("2025-12-31T08:00:00.000+08:00")).getTime();
-condition.contains('bookName', '数据库')
-  .greaterThan('borrowerTime', begin)
-  .and()
-  .lessThan('borrowerTime', end);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.endsWith('bookName', 'Eyre');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 8
 
 ```
-condition.lessThan('price', 50.0)
-  .orderByDesc('price');
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.contains('bookName', 'd');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 9
 
 ```
-condition.orderByRandom()
-  .limit(10);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.greaterThan('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 10
 
 ```
-condition.lessThan('price', 50.0)
-  .limit(10);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 11
 
 ```
-condition.lessThan('price', 50.0)
-  .orderByDesc('price')
-  .limit(10, 6);
-let resultArray = await databaseZone.query(condition);
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.greaterThanOrEqualTo('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 12
 
 ```
-async calculateQuery() {
-  try {
-    condition.lessThan('price', 50.0);
-    let resultNum = await databaseZone.calculateQuery(condition, 'price', cloudDatabase.QueryCalculate.AVERAGE);
-    hilog.info(0x0000, 'testTag', `Succeeded in calculating queried data, result: ${JSON.stringify(resultNum)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to calculate queried data, code: ${err.code}, message: ${err.message}`);
-  }
-}
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThanOrEqualTo('price', 82.0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 13
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.in('bookName', ['demo', 'Jane Eyre']);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 14
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.isNull('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 15
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.isNotNull('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 16
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.beginGroup()
+  .greaterThan('price', 10.0)
+  .lessThan('price', 50.0)
+  .endGroup();
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 17
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.orderByAsc('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 18
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0).orderByDesc('price');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 19
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0).or().equalTo('bookName', 'demo');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 20
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.greaterThan('price', 40.0).and().contains('bookName', 'j');
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 21
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0).orderByDesc('price').limit(2, 0);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 22
+
+```
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 23
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.lessThan('price', 50.0);
+databaseZone.calculateQuery(condition, 'price', cloudDatabase.QueryCalculate.AVERAGE).then((num: number) => {
+  hilog.info(0x0000, 'cloudDb', `Succeeded in querying: QueryCalculate.AVERAGE price  = ${num}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 24
+
+```
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 25
+
+```
+let condition = new cloudDatabase.DatabaseQuery(BookInfo);
+condition.orderByRandom().limit(10);
+databaseZone.query(condition).then((resultArray: BookInfo[]) => {
+  resultArray.forEach((value) => {
+    hilog.info(0x0000, 'cloudDb',
+      `Succeeded in querying: bookName = ${value.bookName}    price: ${value.price?.toString()}`);
+  });
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
+});
 ```

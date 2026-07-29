@@ -35,16 +35,18 @@ const session1 = rcp.createSession({
     }
   }
 });
-
+// 'https://example.com'是示例代码，请根据实际需求更改
 const request1 = new rcp.Request('https://example.com');
 const request2 = new rcp.Request('https://example.com');
 session1.fetch(request1).then((response) => {
   console.info(`Request1 succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err1: error code is ${err.code}, error data is ${err.data}`);
 });
 session1.fetch(request2).then((response) => {
   console.info(`Request2 succeeded, message is ${JSON.stringify(response)}`);
+  // ...
   session1.close();
 }).catch((err: BusinessError) => {
   console.error(`err2: error code is ${err.code}, error data is ${err.data}`);
@@ -58,40 +60,50 @@ DNS阶段
 
 // 定制DNS解析函数
 const session = rcp.createSession();
+// 'https://example.com'是示例网址，请根据实际需求更改
 const request = new rcp.Request('https://example.com');
 request.configuration = {
   dns: {
     dnsRules: (host: string, port: number): rcp.IpAddress[] => {
+      // 'example.com'是示例域名,192.168.1.1'和'192.168.1.2'是示例IP，请根据实际需求更改
       if (host === 'example.com') {
-        return ['7.128.8.45', '7.128.8.46'];
+        return ['192.168.1.1', '192.168.1.2'];
       }
       return [];
     }
   }
 };
+// ...
 session.fetch(request).then((response) => {
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 });
 
 // 定制DNS服务器
 const session = rcp.createSession();
+// 'https://example.com'是示例网址，请根据实际需求更改
 const request = new rcp.Request('https://example.com');
 request.configuration = {
   dns: {
+    // '192.168.1.1'是示例IP，53是示例端口，请根据实际需求更改
     dnsRules: [
       {
-        ip: '7.128.8.45',
+        ip: '192.168.1.1',
         port: 53,
       },
     ]
   }
 };
+// ...
 session.fetch(request).then((response) => {
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 });
 
 连接阶段
@@ -105,10 +117,13 @@ const session = rcp.createSession({
   }
 });
 for (let i = 0; i < 1024; ++i) {
+  // 请求的网址是示例网址，请根据实际需求更改
   session.get('https://example' + i.toString() + '.com/image.png').then((response) => {
     console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+    // ...
   }).catch((err: BusinessError) => {
     console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+    // ...
   });
 }
 
@@ -123,13 +138,16 @@ HTTP请求阶段
 // 使用响应体直接写入文件
 const session = rcp.createSession();
 try {
+  // 'https://example.com/video.mp4'是示例网址，请根据实际需求更改
   const response = await session.get('https://example.com/video.mp4', {
     kind: 'file',
-    file: './video.mp4',
+    file: '/data/storage/el2/base/entry/temp/videoMp4',
   });
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 } catch (err) {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 } finally {
   session.close();
 }
@@ -137,12 +155,15 @@ try {
 // 分段上传数据
 const session = rcp.createSession();
 try {
+  // 'https://example.com/video.mp4'是示例网址，请根据实际需求更改
   const response = await session.post('https://example.com/video.mp4', (maxSize: number) => {
     return new ArrayBuffer(maxSize);
   });
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 } catch (err) {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 } finally {
   session.close();
 }
@@ -152,8 +173,9 @@ HTTP响应阶段
 获取响应各阶段耗时动态判断网络质量，动态调整请求（请求不同质量的资源、降低资源缓存数量）。更详细的示例请移步HTTP请求过程中各时间点详解。
 
 // 获取各个阶段的耗时信息
-const session = rcp.createSession();
+const session = rcp.createSession({requestConfiguration: {tracing: tracingConfig}});
 try {
+  // 'https://example.com'是示例网址，请根据实际需求更改
   const response = await session.get('https://example.com');
   console.info(response.timeInfo?.nameLookupTimeMs.toString());
   console.info(response.timeInfo?.connectTimeMs.toString());
@@ -162,8 +184,10 @@ try {
   console.info(response.timeInfo?.startTransferTimeMs.toString());
   console.info(response.timeInfo?.totalTimeMs.toString());
   console.info(response.timeInfo?.redirectTimeMs.toString());
+  // ...
 } catch (err) {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 } finally {
   session.close();
 }
@@ -190,16 +214,18 @@ const session1 = rcp.createSession({
     }
   }
 });
-
+// 'https://example.com'是示例代码，请根据实际需求更改
 const request1 = new rcp.Request('https://example.com');
 const request2 = new rcp.Request('https://example.com');
 session1.fetch(request1).then((response) => {
   console.info(`Request1 succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err1: error code is ${err.code}, error data is ${err.data}`);
 });
 session1.fetch(request2).then((response) => {
   console.info(`Request2 succeeded, message is ${JSON.stringify(response)}`);
+  // ...
   session1.close();
 }).catch((err: BusinessError) => {
   console.error(`err2: error code is ${err.code}, error data is ${err.data}`);
@@ -213,21 +239,26 @@ session1.cancel(request1); // 取消request1请求
 ```
 // 定制DNS解析函数
 const session = rcp.createSession();
+// 'https://example.com'是示例网址，请根据实际需求更改
 const request = new rcp.Request('https://example.com');
 request.configuration = {
   dns: {
     dnsRules: (host: string, port: number): rcp.IpAddress[] => {
+      // 'example.com'是示例域名,192.168.1.1'和'192.168.1.2'是示例IP，请根据实际需求更改
       if (host === 'example.com') {
-        return ['7.128.8.45', '7.128.8.46'];
+        return ['192.168.1.1', '192.168.1.2'];
       }
       return [];
     }
   }
 };
+// ...
 session.fetch(request).then((response) => {
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 });
 ```
 
@@ -236,21 +267,26 @@ session.fetch(request).then((response) => {
 ```
 // 定制DNS服务器
 const session = rcp.createSession();
+// 'https://example.com'是示例网址，请根据实际需求更改
 const request = new rcp.Request('https://example.com');
 request.configuration = {
   dns: {
+    // '192.168.1.1'是示例IP，53是示例端口，请根据实际需求更改
     dnsRules: [
       {
-        ip: '7.128.8.45',
+        ip: '192.168.1.1',
         port: 53,
       },
     ]
   }
 };
+// ...
 session.fetch(request).then((response) => {
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 });
 ```
 
@@ -264,10 +300,13 @@ const session = rcp.createSession({
   }
 });
 for (let i = 0; i < 1024; ++i) {
+  // 请求的网址是示例网址，请根据实际需求更改
   session.get('https://example' + i.toString() + '.com/image.png').then((response) => {
     console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+    // ...
   }).catch((err: BusinessError) => {
     console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+    // ...
   });
 }
 ```
@@ -278,13 +317,16 @@ for (let i = 0; i < 1024; ++i) {
 // 使用响应体直接写入文件
 const session = rcp.createSession();
 try {
+  // 'https://example.com/video.mp4'是示例网址，请根据实际需求更改
   const response = await session.get('https://example.com/video.mp4', {
     kind: 'file',
-    file: './video.mp4',
+    file: '/data/storage/el2/base/entry/temp/videoMp4',
   });
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 } catch (err) {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 } finally {
   session.close();
 }
@@ -296,12 +338,15 @@ try {
 // 分段上传数据
 const session = rcp.createSession();
 try {
+  // 'https://example.com/video.mp4'是示例网址，请根据实际需求更改
   const response = await session.post('https://example.com/video.mp4', (maxSize: number) => {
     return new ArrayBuffer(maxSize);
   });
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 } catch (err) {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 } finally {
   session.close();
 }
@@ -311,8 +356,9 @@ try {
 
 ```
 // 获取各个阶段的耗时信息
-const session = rcp.createSession();
+const session = rcp.createSession({requestConfiguration: {tracing: tracingConfig}});
 try {
+  // 'https://example.com'是示例网址，请根据实际需求更改
   const response = await session.get('https://example.com');
   console.info(response.timeInfo?.nameLookupTimeMs.toString());
   console.info(response.timeInfo?.connectTimeMs.toString());
@@ -321,8 +367,10 @@ try {
   console.info(response.timeInfo?.startTransferTimeMs.toString());
   console.info(response.timeInfo?.totalTimeMs.toString());
   console.info(response.timeInfo?.redirectTimeMs.toString());
+  // ...
 } catch (err) {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 } finally {
   session.close();
 }

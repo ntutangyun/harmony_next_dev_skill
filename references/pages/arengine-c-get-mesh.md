@@ -42,10 +42,11 @@ HMS_AREngine_ARSceneMesh_Release	释放当前帧的mesh信息。
 
 创建一个UI界面，使用XComponent组件用于显示相机预览画面，并定时触发每一帧绘制。
 
-// 此代码可参考示例代码：ARSample/entry/src/main/ets/pages/ARMesh.ets。
-import { deviceInfo } from '@kit.BasicServicesKit';
+import { display } from '@kit.ArkUI';
+import { systemDateTime } from '@kit.BasicServicesKit';
 import { resourceManager } from '@kit.LocalizationKit';
 import arEngineDemo from 'libentry.so';
+import { logger } from '../utils/Logger';
 
 @Builder
 export function ARMeshBuilder() {
@@ -54,17 +55,18 @@ export function ARMeshBuilder() {
 
 @Component
 struct ARMesh {
-  pageInfo: NavPathStack = new NavPathStack();
+  pageInfos: NavPathStack = new NavPathStack();
+  @State context: Context = this.getUIContext().getHostContext() as Context;
+  @State rotation: number = 0;
   private interval: number = -1;
   private xComponentId: string = 'ARMesh';
-  @State context: Context = this.getUIContext().getHostContext() as Context;
+  private idStr: string = systemDateTime.getTime(false).toString() + this.xComponentId;
   private resMgr: resourceManager.ResourceManager = this.context.resourceManager;
-  @State rotation: number = deviceInfo.deviceType === 'tablet' ? 3 : 0;
-
+  // ...
   build(): void {
     NavDestination() {
       RelativeContainer() {
-        XComponent({ id: this.xComponentId, type: XComponentType.SURFACE, libraryname: 'entry' })
+        XComponent({ id: this.idStr, type: XComponentType.SURFACE, libraryname: 'entry' })
           .width('100%')
           .height('100%')
           .alignRules({
@@ -72,14 +74,14 @@ struct ARMesh {
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
           .onLoad(() => {
-            console.info(`XComponent onLoad ${this.xComponentId}.`);
+            logger.info(`XComponent onLoad ${this.idStr}.`);
             this.interval = setInterval(() => {
-              // 调用更新Native API来更新AR Engine每帧的计算结果
-              arEngineDemo.update(this.xComponentId);
-            }, 33) // 将帧速率设置为30fps（每33ms刷新一次帧）
+              // Call the update Native API to update the calculation result of each frame by AR Engine.
+              arEngineDemo.update(this.idStr);
+            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
           })
           .onDestroy(() => {
-            console.info(`XComponent onDestroy ${this.xComponentId}.`);
+            logger.info(`XComponent onDestroy ${this.idStr}.`);
             clearInterval(this.interval);
           })
       }
@@ -87,19 +89,19 @@ struct ARMesh {
     .onAppear(() => {
       arEngineDemo.init(this.resMgr);
       let config: Int32Array = new Int32Array([1, this.rotation]);
-      arEngineDemo.start(this.xComponentId, config);
+      arEngineDemo.start(this.idStr, config);
     })
     .onWillDisappear(() => {
-      arEngineDemo.stop(this.xComponentId);
+      arEngineDemo.stop(this.idStr);
     })
     .onShown(() => {
-      arEngineDemo.show(this.xComponentId);
+      arEngineDemo.show(this.idStr);
     })
     .onHidden(() => {
-      arEngineDemo.hide(this.xComponentId);
+      arEngineDemo.hide(this.idStr);
     })
     .onReady((context: NavDestinationContext) => {
-      this.pageInfo = context.pathStack;
+      this.pageInfos = context.pathStack;
     })
     .hideTitleBar(true)
     .hideBackButton(true)
@@ -115,73 +117,64 @@ struct ARMesh {
 
 创建AR会话并配置为开启mesh模式。
 
-AREngine_ARSession *arSession = nullptr;
-// 创建AR会话。
-HMS_AREngine_ARSession_Create(nullptr, nullptr, &arSession);
+CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
+
 AREngine_ARConfig *arConfig = nullptr;
-// 创建AR会话配置器。
-HMS_AREngine_ARConfig_Create(arSession, &arConfig);
-// 设置mesh模式为开启状态。
-HMS_AREngine_ARConfig_SetMeshMode(arSession, arConfig, ARENGINE_MESH_MODE_ENABLED);
-// 配置器设置给AR会话。
-HMS_AREngine_ARSession_Configure(arSession, arConfig);
+CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
+// ...
+HMS_AREngine_ARConfig_SetMeshMode(mArSession, arConfig, ARENGINE_MESH_MODE_ENABLED);
+CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 
 [h2]获取当前环境中的mesh信息
 
 调用HMS_AREngine_ARFrame_AcquireSceneMesh函数，获取当前环境中的mesh信息，并将结果存放在sceneMesh中。
 
-AREngine_ARFrame *arFrame = nullptr;
-// 创建AR单帧对象
-HMS_AREngine_ARFrame_Create(arSession, &arFrame);
-AREngine_ARSceneMesh *sceneMesh = nullptr;
-// 获取当前帧的mesh信息
-HMS_AREngine_ARFrame_AcquireSceneMesh(arSession, arFrame, &sceneMesh);
+AREngine_ARSceneMesh *outSceneMesh = nullptr;
+auto ret = HMS_AREngine_ARFrame_AcquireSceneMesh(arSession, arFrame, &outSceneMesh);
 
 [h2]获取当前mesh信息对应的mesh顶点信息
 
 调用HMS_AREngine_ARSceneMesh_AcquireVerticesSize函数，获取mesh顶点信息包含的浮点数数量，每三个浮点数组成一个mesh顶点，将结果存放在meshVerticesSize 中。
 
 int32_t meshVerticesSize = 0;
-// 获取mesh顶点信息包含的浮点数数量
-HMS_AREngine_ARSceneMesh_AcquireVerticesSize(arSession, sceneMesh, &meshVerticesSize);
+HMS_AREngine_ARSceneMesh_AcquireVerticesSize(session, sceneMesh, &meshVerticesSize);
 
 调用HMS_AREngine_ARSceneMesh_AcquireVertexList函数，获取mesh顶点信息，并将结果保存在meshVertices中。
 
 float *meshVertices = new float[meshVerticesSize];
-// 获取mesh顶点信息
-HMS_AREngine_ARSceneMesh_AcquireVertexList(arSession, sceneMesh, meshVertices, meshVerticesSize);
-// 获取mesh顶点个数
-int32_t mPointsNum = meshVerticesSize / 3;
+auto ret = HMS_AREngine_ARSceneMesh_AcquireVertexList(session, sceneMesh, meshVertices, meshVerticesSize);
+LOGD("HMS_AREngine_ARSceneMesh_AcquireVertexList result=%{public}d.", ret);
+mPointsNum = meshVerticesSize / FLOATS_PER_POINT;
 
 [h2]获取当前mesh信息对应的mesh面片信息
 
 调用HMS_AREngine_ARSceneMesh_AcquireIndexListSize函数，获取mesh面片信息对应顶点的索引个数，每三个顶点索引表示一个mesh面片，将结果存放在triangleIndicesSize 中。
 
 int32_t triangleIndicesSize = 0;
-// 获取mesh面片信息对应顶点的索引个数
-HMS_AREngine_ARSceneMesh_AcquireIndexListSize(arSession, sceneMesh, &triangleIndicesSize);
+HMS_AREngine_ARSceneMesh_AcquireIndexListSize(session, sceneMesh, &triangleIndicesSize);
 
 调用HMS_AREngine_ARSceneMesh_AcquireIndexList函数，获取mesh面片信息对应顶点的索引列表，并将结果保存在meshTriangleIndices中。
 
 int32_t *meshTriangleIndices = new int32_t[triangleIndicesSize];
-// 获取mesh面片信息对应顶点的索引列表
-HMS_AREngine_ARSceneMesh_AcquireIndexList(arSession, sceneMesh, meshTriangleIndices, triangleIndicesSize);
-// 获取mesh面片个数
-int32_t mTrianglesNum = triangleIndicesSize / 3;
+ret = HMS_AREngine_ARSceneMesh_AcquireIndexList(session, sceneMesh, meshTriangleIndices, triangleIndicesSize);
+LOGD("HMS_AREngine_ARSceneMesh_AcquireIndexList result=%{public}d.", ret);
+
+mTrianglesNum = triangleIndicesSize / INT_PER_TRIANGLE;
 
 [h2]使用完毕后，销毁mesh信息
 
-void HMS_AREngine_ARSceneMesh_Release(AREngine_ARSceneMesh *sceneMesh);
+HMS_AREngine_ARSceneMesh_Release(outSceneMesh);
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-// 此代码可参考示例代码：ARSample/entry/src/main/ets/pages/ARMesh.ets。
-import { deviceInfo } from '@kit.BasicServicesKit';
+import { display } from '@kit.ArkUI';
+import { systemDateTime } from '@kit.BasicServicesKit';
 import { resourceManager } from '@kit.LocalizationKit';
 import arEngineDemo from 'libentry.so';
+import { logger } from '../utils/Logger';
 
 @Builder
 export function ARMeshBuilder() {
@@ -190,17 +183,18 @@ export function ARMeshBuilder() {
 
 @Component
 struct ARMesh {
-  pageInfo: NavPathStack = new NavPathStack();
+  pageInfos: NavPathStack = new NavPathStack();
+  @State context: Context = this.getUIContext().getHostContext() as Context;
+  @State rotation: number = 0;
   private interval: number = -1;
   private xComponentId: string = 'ARMesh';
-  @State context: Context = this.getUIContext().getHostContext() as Context;
+  private idStr: string = systemDateTime.getTime(false).toString() + this.xComponentId;
   private resMgr: resourceManager.ResourceManager = this.context.resourceManager;
-  @State rotation: number = deviceInfo.deviceType === 'tablet' ? 3 : 0;
-
+  // ...
   build(): void {
     NavDestination() {
       RelativeContainer() {
-        XComponent({ id: this.xComponentId, type: XComponentType.SURFACE, libraryname: 'entry' })
+        XComponent({ id: this.idStr, type: XComponentType.SURFACE, libraryname: 'entry' })
           .width('100%')
           .height('100%')
           .alignRules({
@@ -208,14 +202,14 @@ struct ARMesh {
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
           .onLoad(() => {
-            console.info(`XComponent onLoad ${this.xComponentId}.`);
+            logger.info(`XComponent onLoad ${this.idStr}.`);
             this.interval = setInterval(() => {
-              // 调用更新Native API来更新AR Engine每帧的计算结果
-              arEngineDemo.update(this.xComponentId);
-            }, 33) // 将帧速率设置为30fps（每33ms刷新一次帧）
+              // Call the update Native API to update the calculation result of each frame by AR Engine.
+              arEngineDemo.update(this.idStr);
+            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
           })
           .onDestroy(() => {
-            console.info(`XComponent onDestroy ${this.xComponentId}.`);
+            logger.info(`XComponent onDestroy ${this.idStr}.`);
             clearInterval(this.interval);
           })
       }
@@ -223,19 +217,19 @@ struct ARMesh {
     .onAppear(() => {
       arEngineDemo.init(this.resMgr);
       let config: Int32Array = new Int32Array([1, this.rotation]);
-      arEngineDemo.start(this.xComponentId, config);
+      arEngineDemo.start(this.idStr, config);
     })
     .onWillDisappear(() => {
-      arEngineDemo.stop(this.xComponentId);
+      arEngineDemo.stop(this.idStr);
     })
     .onShown(() => {
-      arEngineDemo.show(this.xComponentId);
+      arEngineDemo.show(this.idStr);
     })
     .onHidden(() => {
-      arEngineDemo.hide(this.xComponentId);
+      arEngineDemo.hide(this.idStr);
     })
     .onReady((context: NavDestinationContext) => {
-      this.pageInfo = context.pathStack;
+      this.pageInfos = context.pathStack;
     })
     .hideTitleBar(true)
     .hideBackButton(true)
@@ -247,67 +241,57 @@ struct ARMesh {
 ### Code block 2
 
 ```
-AREngine_ARSession *arSession = nullptr;
-// 创建AR会话。
-HMS_AREngine_ARSession_Create(nullptr, nullptr, &arSession);
+CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
+
 AREngine_ARConfig *arConfig = nullptr;
-// 创建AR会话配置器。
-HMS_AREngine_ARConfig_Create(arSession, &arConfig);
-// 设置mesh模式为开启状态。
-HMS_AREngine_ARConfig_SetMeshMode(arSession, arConfig, ARENGINE_MESH_MODE_ENABLED);
-// 配置器设置给AR会话。
-HMS_AREngine_ARSession_Configure(arSession, arConfig);
+CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
+// ...
+HMS_AREngine_ARConfig_SetMeshMode(mArSession, arConfig, ARENGINE_MESH_MODE_ENABLED);
+CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 ```
 
 ### Code block 3
 
 ```
-AREngine_ARFrame *arFrame = nullptr;
-// 创建AR单帧对象
-HMS_AREngine_ARFrame_Create(arSession, &arFrame);
-AREngine_ARSceneMesh *sceneMesh = nullptr;
-// 获取当前帧的mesh信息
-HMS_AREngine_ARFrame_AcquireSceneMesh(arSession, arFrame, &sceneMesh);
+AREngine_ARSceneMesh *outSceneMesh = nullptr;
+auto ret = HMS_AREngine_ARFrame_AcquireSceneMesh(arSession, arFrame, &outSceneMesh);
 ```
 
 ### Code block 4
 
 ```
 int32_t meshVerticesSize = 0;
-// 获取mesh顶点信息包含的浮点数数量
-HMS_AREngine_ARSceneMesh_AcquireVerticesSize(arSession, sceneMesh, &meshVerticesSize);
+HMS_AREngine_ARSceneMesh_AcquireVerticesSize(session, sceneMesh, &meshVerticesSize);
 ```
 
 ### Code block 5
 
 ```
 float *meshVertices = new float[meshVerticesSize];
-// 获取mesh顶点信息
-HMS_AREngine_ARSceneMesh_AcquireVertexList(arSession, sceneMesh, meshVertices, meshVerticesSize);
-// 获取mesh顶点个数
-int32_t mPointsNum = meshVerticesSize / 3;
+auto ret = HMS_AREngine_ARSceneMesh_AcquireVertexList(session, sceneMesh, meshVertices, meshVerticesSize);
+LOGD("HMS_AREngine_ARSceneMesh_AcquireVertexList result=%{public}d.", ret);
+mPointsNum = meshVerticesSize / FLOATS_PER_POINT;
 ```
 
 ### Code block 6
 
 ```
 int32_t triangleIndicesSize = 0;
-// 获取mesh面片信息对应顶点的索引个数
-HMS_AREngine_ARSceneMesh_AcquireIndexListSize(arSession, sceneMesh, &triangleIndicesSize);
+HMS_AREngine_ARSceneMesh_AcquireIndexListSize(session, sceneMesh, &triangleIndicesSize);
 ```
 
 ### Code block 7
 
 ```
 int32_t *meshTriangleIndices = new int32_t[triangleIndicesSize];
-// 获取mesh面片信息对应顶点的索引列表
-HMS_AREngine_ARSceneMesh_AcquireIndexList(arSession, sceneMesh, meshTriangleIndices, triangleIndicesSize);
-// 获取mesh面片个数
-int32_t mTrianglesNum = triangleIndicesSize / 3;
+ret = HMS_AREngine_ARSceneMesh_AcquireIndexList(session, sceneMesh, meshTriangleIndices, triangleIndicesSize);
+LOGD("HMS_AREngine_ARSceneMesh_AcquireIndexList result=%{public}d.", ret);
+
+mTrianglesNum = triangleIndicesSize / INT_PER_TRIANGLE;
 ```
 
 ### Code block 8
 
 ```
-void HMS_AREngine_ARSceneMesh_Release(AREngine_ARSceneMesh *sceneMesh);
+HMS_AREngine_ARSceneMesh_Release(outSceneMesh);
 ```

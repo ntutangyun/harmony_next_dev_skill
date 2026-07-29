@@ -53,7 +53,7 @@ nd2nzParams	输入	从VECIN/VECOUT->TSCM进行数据搬运时，可以进行ND�
 参数名称	含义
 blockCount	指定该指令包含的连续传输数据块个数，数据类型为uint16_t，取值范围：blockCount∈[1, 4095]。
 blockLen	指定该指令每个连续传输数据块长度，该指令支持非对齐搬运，每个连续传输数据块长度单位为Byte。数据类型为uint32_t，blockLen不要超出该数据类型的取值范围。
-srcStride	源操作数，相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔），如果源操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32Bytes), 如果源操作数的逻辑位置为GM,则单位为Byte。数据类型为uint32_t，srcStride不要超出该数据类型的取值范围。
+srcStride	源操作数，相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔），如果源操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32Bytes)，如果源操作数的逻辑位置为GM，则单位为Byte。数据类型为uint32_t，srcStride不要超出该数据类型的取值范围。
 dstStride	目的操作数，相邻连续数据块间的间隔（前面一个数据块的尾与后面数据块的头的间隔），如果目的操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32Bytes)，如果目的操作数的逻辑位置为GM，则单位为Byte。数据类型为uint32_t，dstStride不要超出该数据类型的取值范围。
 rsv	保留字段。
 
@@ -62,7 +62,7 @@ rsv	保留字段。
 参数名称	含义
 blockCount	指定该指令包含的连续传输数据块个数，数据类型为uint16_t，取值范围：blockCount∈[1, 4095]。
 blockLen	指定该指令每个连续传输数据块长度，该指令支持非对齐搬运，每个连续传输数据块长度单位为Byte。数据类型为uint16_t，blockLen不要超出该数据类型的取值范围。
-srcStride	源操作数，相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔），如果源操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32Bytes), 如果源操作数的逻辑位置为GM,则单位为Byte。数据类型为uint16_t，srcStride不要超出该数据类型的取值范围。
+srcStride	源操作数，相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔），如果源操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32Bytes)，如果源操作数的逻辑位置为GM，则单位为Byte。数据类型为uint16_t，srcStride不要超出该数据类型的取值范围。
 dstStride	目的操作数，相邻连续数据块间的间隔（前面一个数据块的尾与后面数据块的头的间隔），如果目的操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32Bytes)，如果目的操作数的逻辑位置为GM，则单位为Byte。数据类型为uint16_t，dstStride不要超出该数据类型的取值范围。
 
 表5 DataCopyPadExtParams结构体参数定义
@@ -115,7 +115,7 @@ blockCount为需要搬运的连续传输数据块个数，设置为3。
 
 blockLen为一个连续传输数据块的大小(单位为Byte)，设置为6 * 32 = 192。
 
-srcStride为源操作数相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔），源操作数逻辑位置为VECIN/VECOUT，其单位为datablock, 两个连续传输数据块（A1~A6、B1~B6）中间相隔1个A7，因此srcStride设置为1。
+srcStride为源操作数相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔），源操作数逻辑位置为VECIN/VECOUT，其单位为datablock，两个连续传输数据块（A1~A6、B1~B6）中间相隔1个A7，因此srcStride设置为1。
 
 dstStride为目的操作数，相邻连续数据块间的间隔（前面一个数据块的尾与后面数据块的头的间隔），目的操作数逻辑位置为GM，其单位为Byte，两个连续传输数据块（A1~A6、B1~B6）中间相隔2个空白的datablock，因此dstStride设置为64Byte。
 

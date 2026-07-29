@@ -20,7 +20,7 @@ ohpm version [options] [<newversion> | major | minor | patch]
 
 [h2]newversion
 
-newversion 参数应为一个合法的语义化版本，命令会将当前模块版本改写为 newversion 并打印在标准输出中。
+newversion参数应为一个合法的语义化版本，命令会将当前模块版本改写为newversion并打印在标准输出中。
 
 [h2]major
 

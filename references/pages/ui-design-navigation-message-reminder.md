@@ -33,7 +33,7 @@ struct Index {
               // 第一个菜单项内容设置
               label: 'menu1',
               icon: $r('sys.symbol.AI_search'),
-              isEnabled: true,
+              isEnabled: true
             },
             badge: {
               // 第一个菜单项信息提醒设置
@@ -41,13 +41,13 @@ struct Index {
             }
           }, {
             content: {
-              // 设置第一个菜单项内容，设置为普通文本按钮
+              // 设置第二个菜单项内容，设置为普通文本按钮
               label: 'menu2',
               icon: $r('sys.symbol.wifi'),
               isEnabled: true,
               componentId: 'menu_1',
               action: () => {
-              },
+              }
             },
             badge: {
               // 第二个菜单项信息提醒设置
@@ -91,7 +91,7 @@ struct Index {
               // 第一个菜单项内容设置
               label: 'menu1',
               icon: $r('sys.symbol.AI_search'),
-              isEnabled: true,
+              isEnabled: true
             },
             badge: {
               // 第一个菜单项信息提醒设置
@@ -99,13 +99,13 @@ struct Index {
             }
           }, {
             content: {
-              // 设置第一个菜单项内容，设置为普通文本按钮
+              // 设置第二个菜单项内容，设置为普通文本按钮
               label: 'menu2',
               icon: $r('sys.symbol.wifi'),
               isEnabled: true,
               componentId: 'menu_1',
               action: () => {
-              },
+              }
             },
             badge: {
               // 第二个菜单项信息提醒设置

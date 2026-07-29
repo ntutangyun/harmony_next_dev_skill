@@ -17,10 +17,14 @@ deleteEnterpriseRecoveryKey(userId: number, signature: Uint8Array): Promise<numb
 
 导入模块。
 
-import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError, osAccount } from '@kit.BasicServicesKit';
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 先调用接口getAuthChallenge，获取挑战值并签名，传入需要删除企业恢复密钥的用户ID和挑战值的签名，再调用接口deleteEnterpriseRecoveryKey，删除企业恢复密钥相关数据。
+
+const TAG: string = 'EnterpriseRecoveryKey_Delete';
+const DOMAIN: number = 0x0000;
 
 async function testDeleteEnterpriseRecoveryKey() {
   try {
@@ -29,12 +33,12 @@ async function testDeleteEnterpriseRecoveryKey() {
     // 在实际应用中，signature 应替换为由企业的公钥、私钥和挑战值生成的签名。
     let signature: Uint8Array = new Uint8Array([0]);
     recoveryKey.deleteEnterpriseRecoveryKey(userId, signature).then((ret: number) => {
-      console.info(`Succeeded in deleting enterprise recovery key.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in deleting enterprise recovery key. result is: ${ret}`);
     }).catch((err: BusinessError) => {
-      console.error(`Failed to delete enterprise recovery key. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(DOMAIN, TAG, `Failed to delete enterprise recovery key. Code: ${err.code}, message: ${err.message}`);
     });
   } catch (e) {
-    console.error(`Failed to testDeleteEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
+    hilog.error(DOMAIN, TAG, `Failed to testDeleteEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
   }
 }
 
@@ -43,13 +47,17 @@ async function testDeleteEnterpriseRecoveryKey() {
 ### Code block 1
 
 ```
-import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError, osAccount } from '@kit.BasicServicesKit';
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
+const TAG: string = 'EnterpriseRecoveryKey_Delete';
+const DOMAIN: number = 0x0000;
+
 async function testDeleteEnterpriseRecoveryKey() {
   try {
     let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
@@ -57,12 +65,12 @@ async function testDeleteEnterpriseRecoveryKey() {
     // 在实际应用中，signature 应替换为由企业的公钥、私钥和挑战值生成的签名。
     let signature: Uint8Array = new Uint8Array([0]);
     recoveryKey.deleteEnterpriseRecoveryKey(userId, signature).then((ret: number) => {
-      console.info(`Succeeded in deleting enterprise recovery key.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in deleting enterprise recovery key. result is: ${ret}`);
     }).catch((err: BusinessError) => {
-      console.error(`Failed to delete enterprise recovery key. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(DOMAIN, TAG, `Failed to delete enterprise recovery key. Code: ${err.code}, message: ${err.message}`);
     });
   } catch (e) {
-    console.error(`Failed to testDeleteEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
+    hilog.error(DOMAIN, TAG, `Failed to testDeleteEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
   }
 }
 ```

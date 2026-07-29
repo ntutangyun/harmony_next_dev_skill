@@ -2147,7 +2147,7 @@ buildOptionSet下的XXX配置，copyFrom路径存在循环依赖。
 
 错误信息
 
-SDK component missing. Please verify the integrity of your SDK.
+Missing SDK components. SDK path: XXX, missing components: YYY.
 
 错误描述
 
@@ -2155,11 +2155,11 @@ SDK组件缺失。
 
 可能原因
 
-配置了错误的SDK。
+SDK组件缺失。
 
 处理步骤
 
-确保SDK路径正确：$DevEco Studio安装目录/sdk/default。
+确保SDK路径下组件完整，默认路径：$DevEco Studio安装目录/sdk/default。
 
 重新下载DevEco Studio。
 
@@ -3953,6 +3953,124 @@ executableBinaryPaths-path的值不在libs目录下。
 
 检查文件路径是否正确。
 
+00303289 Agent extensionAbility的metadata.name必须是ohos.extension.agent
+
+错误信息
+
+The value of the name attribute in the metadata of an extensionAbility of the agent type must be 'ohos.extension.agent'. At file: XXX.
+
+错误描述
+
+Agent extensionAbility的metadata下的name属性值必须是ohos.extension.agent。
+
+可能原因
+
+Agent extensionAbility的metadata下的name属性值不是ohos.extension.agent。
+
+处理步骤
+
+确保Agent extensionAbility的metadata下的name属性值是ohos.extension.agent。
+
+00303290 Agent extensionAbility的metadata.resouece配置不合法
+
+错误信息
+
+The value of the metadata.resource configuration 'XXX' for the extensionAbility with the name set to 'YYY' is invalid. At file: ZZZ.
+
+错误描述
+
+name为YYY的extensionAbility的metadata下的resource属性值XXX配置不合法。
+
+可能原因
+
+name为YYY的extensionAbility的metadata下的resource属性值XXX格式错误。
+
+处理步骤
+
+确保extensionAbilty的metadata下的resource属性值格式正确，建议使用推荐的格式，例如：'$profile:agent_config'。
+
+00303291 Agent extensionAbility的metadata.resouece配置文件不存在
+
+错误信息
+
+The agentConfig resource file 'XXX' with the target 'YYY' for the module 'WWW' does not exist!. At file: ZZZ.
+
+错误描述
+
+模块WWW的target YYY配置的Agent extensionAbility配置文件XXX不存在。
+
+可能原因
+
+模块WWW的Agent extensionAbility的metadata下的resouece对应的配置文件XXX不存在。
+
+处理步骤
+
+检查模块WWW的target YYY是否配置了自定义资源路径，具体配置方式请参考定义产物的资源。
+
+确保模块WWW的target YYY配置的Agent extensionAbility配置文件XXX存在。
+
+00303292 Agent extensionAbility的配置文件中的agentId不能重复
+
+错误信息
+
+The agentId value 'XXX' is duplicated in all agentConfig configuration files under the module 'YYY'. At file: ZZZ.
+
+错误描述
+
+模块YYY的Agent extensionAbility的配置文件中值为XXX的agentId有重复。
+
+可能原因
+
+同一个Agent extensionAbility的配置文件中agentId值重复。
+
+模块YYY下的不同Agent extensionAbility的配置文件中agentId值重复。
+
+处理步骤
+
+确保同一个Agent extensionAbility的配置文件中的agentId值唯一。
+
+确保本模块所有的Agent extensionAbility的配置文件中agentId值唯一。
+
+00303293 deviceTypes有交集的Hap不能存在重复的agentId
+
+错误信息
+
+Module ['XXX'] target ['YYY'] and module ['ZZZ'] target ['MMM'] have same deviceTypes, and they share the same agentIds: ['NNN'].
+
+错误描述
+
+模块[XXX]的target [YYY] 和模块[ZZZ]的target [MMM]有相同的deviceTypes，并且他们存在相同的agentId [NNN]。
+
+可能原因
+
+在打包App时，模块[XXX] target [YYY] 的Hap包和模块[ZZZ] target [MMM]的Hap包的deviceTypes存在交集，同时他们的Agent extensionAbility的配置文件中存在相同的agentId [NNN]。
+
+处理步骤
+
+有两种处理方式：
+
+确保模块[XXX] target [YYY] 和模块[ZZZ] target [MMM]的Agent extensionAbility配置文件中不存在相同的agentId。
+
+确保模块[XXX] target [YYY] 和模块[ZZZ] target [MMM]的deviceTypes不存在交集。
+
+00303294 多个Agent extensionAbility不能配置相同的配置文件
+
+错误信息
+
+The resource 'XXX' of extensionAbility 'YYY' has the same configuration value as the resource of extensionAbility 'ZZZ'. At file: MMM.
+
+错误描述
+
+name为YYY的extensionAbility的resoruce配置值XXX和name为ZZZ的extensionAbility的resource配置值相同。
+
+可能原因
+
+name为YYY和ZZZ的extensionAbility的resoruce配置值相同。
+
+处理步骤
+
+确保name为YYY和ZZZ的extensionAbility的resoruce配置值不同。
+
 00303295 HAR模块中extensionAbility的srcEntry不支持配置so文件
 
 错误信息
@@ -4114,6 +4232,126 @@ When bundleType is 'XXX', the skill module is not allowed. Remove module 'YYY' o
 处理步骤
 
 移除类型为skill的模块，或者修改bundleType为skill。
+
+00303310 homePage与relatedPage必须指向不同的页面
+
+错误信息
+
+homePage and relatedPage must refer to different pages.
+
+错误描述
+
+homePage与relatedPage必须指向不同的页面。
+
+可能原因
+
+homePage与relatedPage配置值相同。
+
+处理步骤
+
+homePage与relatedPage配置不同的页面。
+
+00303311 fullScreenPages不能包含homePage或relatedPage
+
+错误信息
+
+fullScreenPages cannot contain homePage or relatedPage.
+
+错误描述
+
+fullScreenPages不能包含homePage或relatedPage。
+
+可能原因
+
+fullScreenPages的配置值包含了homePage或relatedPage。
+
+处理步骤
+
+fullScreenPages的配置值不能包含homePage或relatedPage。
+
+00303312 SDK路径下找不到与当前DevEco Studio配套的SDK
+
+错误信息
+
+The corresponding version cannot be found in the SDK path. SDK path: XXX.
+
+错误描述
+
+SDK路径下找不到对应版本的SDK。
+
+可能原因
+
+idea.properties中配置了SDK路径，但是实际没有SDK，或与当前DevEco Studio版本不配套。
+
+系统中配置了环境变量DEVECO_SDK_HOME，但是路径下实际没有SDK，或与当前DevEco Studio版本不配套。
+
+hvigor-config.json5文件的dependencies配置了@ohos/hvigor-ohos-plugin或@ohos/hvigor依赖，与当前DevEco Studio版本不配套。
+
+处理步骤
+
+点击Help > Edit Custom Properties打开idea.properties，检查是否配置了SDK路径，如果需要配置请确保指向正确的路径，并且与DevEco Studio内置的SDK版本一致，或者删除自定义路径。
+
+确保DEVECO_SDK_HOME环境变量指向的SDK路径正确，并且与DevEco Studio内置的SDK版本一致。
+
+检查hvigor-config.json5的dependencies中是否配置了@ohos/hvigor-ohos-plugin或@ohos/hvigor依赖，如果配置请删除，当前DevEco Studio一体化安装，默认使用内置的hvigor插件，无需额外配置。
+
+00303313 compileSdkVersion的值与当前DevEco Studio版本不配套
+
+错误信息
+
+compileSdkVersion is incompatible with the current DevEco Studio version. configured version: XXX, DevEco Studio version: YYY.
+
+错误描述
+
+compileSdkVersion的值与当前DevEco Studio版本不配套。
+
+可能原因
+
+工程级build-profile.json5中配置了compileSdkVersion，但是与当前DevEco Studio版本不配套。
+
+处理步骤
+
+HarmonyOS工程的compileSdkVersion字段不需要显性配置，编译时默认使用DevEco Studio内置的SDK版本。请移除build-profile.json5中的compileSdkVersion字段，或配置为当前DevEco Studio配套的SDK版本，不允许配置为其他SDK版本。
+
+00303314 SDK版本错误，需要升级SDK
+
+错误信息
+
+Your local SDK version is outdated. Please update the SDK version.
+
+错误描述
+
+SDK版本错误，需要升级SDK。
+
+可能原因
+
+当前是API 23的OpenHarmony工程，并且SDK版本低于6.1.0.32。
+
+处理步骤
+
+在DevEco Studio中，点击错误信息中的open SDK Manager打开OpenHarmony SDK页面，将SDK版本升级到6.1.0.32或以上。
+
+流水线场景，将SDK版本升级到6.1.0.32或以上。
+
+00303318 SDK版本与JDK版本不匹配，需要使用低版本的JDK
+
+错误信息
+
+The current SDK version does not match the Java environment. Please configure JDK 24 or earlier.
+
+错误描述
+
+当前的SDK版本与JDK版本不匹配，需要使用24或更低版本的JDK。
+
+可能原因
+
+当前是API 22的OpenHarmony工程，并且当前环境的JDK版本是25。
+
+处理步骤
+
+在DevEco Studio中，在Terminal执行java -version，如果当前JDK版本是25，需要关闭DevEco Studio内置的JDK环境变量，点击File > Settings（macOS为DevEco Studio > Preferences/Settings ） > Tools > Terminal > Application Settings，将Add deveco's embedded java path to %PATH%选项去勾选，并在系统中配置环境变量JAVA_HOME为24或更低的版本。
+
+流水线场景，使用24或更低版本的JDK。
 
 ## Code blocks
 

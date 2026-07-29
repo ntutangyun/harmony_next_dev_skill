@@ -63,62 +63,78 @@ IAP Kit返回PurchaseData列表。数据类型说明为JWS格式的字符串，�
 JWSUtil为自定义类，可参见示例代码。
 
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-// JWSUtil为自定义类
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
 import { JWSUtil } from '../common/JWSUtil';
-
-@Entry
-@Component
-struct Index {
-
-  queryPurchases(context: common.UIAbilityContext) {
-    const param: iap.QueryPurchasesParameter = {
-      productType: iap.ProductType.NONRENEWABLE,
-      queryType: iap.PurchaseQueryType.UNFINISHED
-    };
-    iap.queryPurchases(context, param).then((res: iap.QueryPurchaseResult) => {
-      console.info('Succeeded in querying purchases.');
-      const purchaseDataList: string[] = res.purchaseDataList;
-      if (purchaseDataList === undefined || purchaseDataList.length <= 0) {
-        return;
-      }
-      for (let i = 0; i < purchaseDataList.length; i++) {
-        const jwsPurchaseOrder: string = JSON.parse(purchaseDataList[i]).jwsPurchaseOrder;
-        if (!jwsPurchaseOrder) {
-          continue;
+import { FinishStatus, PurchaseData, PurchaseOrderPayload } from '../common/IapDataModel';
+// ...
+  async queryPurchases(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const parameter: iap.QueryPurchasesParameter = {
+        productType: iap.ProductType.NONRENEWABLE,
+        queryType: iap.PurchaseQueryType.UNFINISHED,
+      };
+      iap.queryPurchases(this.context, parameter, (err: BusinessError, data: iap.QueryPurchaseResult) => {
+        if (err) {
+          Logger.error(TAG, `Failed to query purchases. Code is ${err.code}, message is ${err.message}`);
+          resolve();
+          return;
         }
-        const purchaseStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
-        // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
-        const purchaseOrderPayload = JSON.parse(purchaseStr) as PurchaseOrderPayload;
-        // 处理发货
-        // ...
-        // 发货成功后向IAP Kit发送finishPurchase请求，确认发货，完成购买
-        this.finishPurchase(context, purchaseOrderPayload);
-      }
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query purchases. Code is ${err.code}, message is ${err.message}`);
+        Logger.info(TAG, 'Succeeded in querying purchases.');
+        const purchaseDataList: string[] = data.purchaseDataList;
+        if (purchaseDataList === undefined || purchaseDataList.length <= 0) {
+          Logger.info(TAG, 'queryPurchases, purchaseDataList empty');
+          resolve();
+          return;
+        }
+        for (let i = 0; i < purchaseDataList.length; i++) {
+          this.dealPurchaseData(purchaseDataList[i]);
+        }
+        resolve();
+      });
     });
   }
 
-  finishPurchase(context: common.UIAbilityContext, purchaseOrder: PurchaseOrderPayload) {
+  dealPurchaseData(purchaseData: string) {
+    try {
+      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      const jwsPurchaseOrder = (JSON.parse(purchaseData) as PurchaseData).jwsPurchaseOrder;
+      if (!jwsPurchaseOrder) {
+        Logger.error(TAG, 'dealPurchaseData, jwsPurchaseOrder invalid');
+        return;
+      }
+      // 解码 jwsPurchaseOrder 并执行签名验证。
+      const purchaseOrderStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
+      // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
+      const purchaseOrderPayload = JSON.parse(purchaseOrderStr) as PurchaseOrderPayload;
+      // 如果验证成功则发货。
+      // ...
+      // 在发货成功后，向IAP Kit发送finishPurchase请求，以确认交付并完成购买。
+      if (purchaseOrderPayload && purchaseOrderPayload.finishStatus !== FinishStatus.FINISHED) {
+        this.finishPurchase(purchaseOrderPayload);
+      }
+    } catch (e) {
+      Logger.error(TAG, 'dealPurchaseData json error');
+    }
+  }
+
+  finishPurchase(purchaseOrder: PurchaseOrderPayload) {
+    if (!purchaseOrder.productType) {
+      Logger.error(TAG, 'finishPurchase but productType is empty');
+      return;
+    }
     const finishPurchaseParam: iap.FinishPurchaseParameter = {
       productType: Number(purchaseOrder.productType),
       purchaseToken: purchaseOrder.purchaseToken,
       purchaseOrderId: purchaseOrder.purchaseOrderId
     };
-    iap.finishPurchase(context, finishPurchaseParam).then(() => {
-      // 请求成功
-      console.info('Succeeded in finishing purchase.');
+    iap.finishPurchase(this.context, finishPurchaseParam).then(() => {
+      Logger.info(TAG, 'Succeeded in finishing purchase.');
     }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
+      Logger.error(TAG, `Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
     });
   }
-
-  build() {}
-}
 
 ## Code blocks
 
@@ -126,60 +142,76 @@ struct Index {
 
 ```
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-// JWSUtil为自定义类
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
 import { JWSUtil } from '../common/JWSUtil';
-
-@Entry
-@Component
-struct Index {
-
-  queryPurchases(context: common.UIAbilityContext) {
-    const param: iap.QueryPurchasesParameter = {
-      productType: iap.ProductType.NONRENEWABLE,
-      queryType: iap.PurchaseQueryType.UNFINISHED
-    };
-    iap.queryPurchases(context, param).then((res: iap.QueryPurchaseResult) => {
-      console.info('Succeeded in querying purchases.');
-      const purchaseDataList: string[] = res.purchaseDataList;
-      if (purchaseDataList === undefined || purchaseDataList.length <= 0) {
-        return;
-      }
-      for (let i = 0; i < purchaseDataList.length; i++) {
-        const jwsPurchaseOrder: string = JSON.parse(purchaseDataList[i]).jwsPurchaseOrder;
-        if (!jwsPurchaseOrder) {
-          continue;
+import { FinishStatus, PurchaseData, PurchaseOrderPayload } from '../common/IapDataModel';
+// ...
+  async queryPurchases(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const parameter: iap.QueryPurchasesParameter = {
+        productType: iap.ProductType.NONRENEWABLE,
+        queryType: iap.PurchaseQueryType.UNFINISHED,
+      };
+      iap.queryPurchases(this.context, parameter, (err: BusinessError, data: iap.QueryPurchaseResult) => {
+        if (err) {
+          Logger.error(TAG, `Failed to query purchases. Code is ${err.code}, message is ${err.message}`);
+          resolve();
+          return;
         }
-        const purchaseStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
-        // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
-        const purchaseOrderPayload = JSON.parse(purchaseStr) as PurchaseOrderPayload;
-        // 处理发货
-        // ...
-        // 发货成功后向IAP Kit发送finishPurchase请求，确认发货，完成购买
-        this.finishPurchase(context, purchaseOrderPayload);
-      }
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query purchases. Code is ${err.code}, message is ${err.message}`);
+        Logger.info(TAG, 'Succeeded in querying purchases.');
+        const purchaseDataList: string[] = data.purchaseDataList;
+        if (purchaseDataList === undefined || purchaseDataList.length <= 0) {
+          Logger.info(TAG, 'queryPurchases, purchaseDataList empty');
+          resolve();
+          return;
+        }
+        for (let i = 0; i < purchaseDataList.length; i++) {
+          this.dealPurchaseData(purchaseDataList[i]);
+        }
+        resolve();
+      });
     });
   }
 
-  finishPurchase(context: common.UIAbilityContext, purchaseOrder: PurchaseOrderPayload) {
+  dealPurchaseData(purchaseData: string) {
+    try {
+      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      const jwsPurchaseOrder = (JSON.parse(purchaseData) as PurchaseData).jwsPurchaseOrder;
+      if (!jwsPurchaseOrder) {
+        Logger.error(TAG, 'dealPurchaseData, jwsPurchaseOrder invalid');
+        return;
+      }
+      // 解码 jwsPurchaseOrder 并执行签名验证。
+      const purchaseOrderStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
+      // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
+      const purchaseOrderPayload = JSON.parse(purchaseOrderStr) as PurchaseOrderPayload;
+      // 如果验证成功则发货。
+      // ...
+      // 在发货成功后，向IAP Kit发送finishPurchase请求，以确认交付并完成购买。
+      if (purchaseOrderPayload && purchaseOrderPayload.finishStatus !== FinishStatus.FINISHED) {
+        this.finishPurchase(purchaseOrderPayload);
+      }
+    } catch (e) {
+      Logger.error(TAG, 'dealPurchaseData json error');
+    }
+  }
+
+  finishPurchase(purchaseOrder: PurchaseOrderPayload) {
+    if (!purchaseOrder.productType) {
+      Logger.error(TAG, 'finishPurchase but productType is empty');
+      return;
+    }
     const finishPurchaseParam: iap.FinishPurchaseParameter = {
       productType: Number(purchaseOrder.productType),
       purchaseToken: purchaseOrder.purchaseToken,
       purchaseOrderId: purchaseOrder.purchaseOrderId
     };
-    iap.finishPurchase(context, finishPurchaseParam).then(() => {
-      // 请求成功
-      console.info('Succeeded in finishing purchase.');
+    iap.finishPurchase(this.context, finishPurchaseParam).then(() => {
+      Logger.info(TAG, 'Succeeded in finishing purchase.');
     }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
+      Logger.error(TAG, `Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
     });
   }
-
-  build() {}
-}
 ```

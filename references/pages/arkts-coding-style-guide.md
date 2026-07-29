@@ -140,16 +140,16 @@ function findUser(userName: string) {
 
 【描述】
 
-常量命名，应该由全大写单词与下划线组成，单词间用下划线分割。常量命名要尽量表达完整的语义。
+常量命名，应该由全大写单词与下划线组成，单词间用下划线分隔。常量命名要尽量表达完整的语义。
 
 【正例】
+
+const MAX_USER_SIZE = 10000;
 
 enum UserType1 {
   TEACHER = 0,
   STUDENT = 1
 };
-
-const MAX_USER_SIZE = 10000;
 
 [h2]避免使用否定的布尔变量名，布尔型的局部变量或方法需加上表达是非意义的前缀
 
@@ -344,21 +344,19 @@ if, for, while, switch等关键字与左括号(之间加空格。
 
 关键字else或catch与其之前的大括号}之间加空格。
 
-任何打开大括号({)之前加空格，有两个例外：
+在作为函数的第一个参数或数组中的第一个元素时，对象之前不用加空格，例如：foo({ name: 'abc' })。
 
-a) 在作为函数的第一个参数或数组中的第一个元素时，对象之前不用加空格，例如：foo({ name: 'abc' })。
+在模板中，不用加空格，例如：abc${name}。
 
-b) 在模板中，不用加空格，例如：abc${name}。
+二元操作符(+ - * = < > <= >= === !== && ||)前后加空格；三元操作符(? :)符号两侧均加空格。
 
-5. 二元操作符(+ - * = < > <= >= === !== && ||)前后加空格；三元操作符(? :)符号两侧均加空格。
+数组初始化中的逗号和函数中多个参数之间的逗号后加空格。
 
-6. 数组初始化中的逗号和函数中多个参数之间的逗号后加空格。
+在逗号(,)或分号(;)之前不加空格。
 
-7. 在逗号(,)或分号(;)之前不加空格。
+数组的中括号([])内侧不要加空格。
 
-8. 数组的中括号([])内侧不要加空格。
-
-9. 不要出现多个连续空格。在某行中，多个空格若不是用来作缩进的，通常是个错误。
+不要出现多个连续空格。在某行中，多个空格若不是用来作缩进的，通常是个错误。
 
 【反例】
 
@@ -405,11 +403,11 @@ if (flag) {
 function foo() { // 函数声明时，左大括号 { 之前加个空格
   // ...
 }
-// ...
-  bar('attr', { // 左大括号前加个空格
-    age: '1 year',
-    sbreed: 'Bernese Mountain Dog',
-  });
+
+bar('attr', { // 左大括号前加个空格
+  age: '1 year',
+  sbreed: 'Bernese Mountain Dog',
+});
 
 【正例】
 
@@ -509,7 +507,7 @@ try {
   doSomething();
 }
 catch (err) {
-  // 处理错误。
+  // 处理错误
 }
 
 【正例】
@@ -517,7 +515,7 @@ catch (err) {
 try {
   doSomething();
 } catch (err) {
-  // 处理错误。
+  // 处理错误
 }
 
 [h2]大括号{和语句在同一行
@@ -730,7 +728,7 @@ export function getObject1(value: number): I {
 // Index.ets
 import { getObject1 } from './lib';
 // ...
-let obj1: I = getObject1(123);
+let obj1: ESObject = getObject1(123);
 
 【正例】
 
@@ -826,12 +824,12 @@ function findUser(userName: string) {
 ### Code block 3
 
 ```
+const MAX_USER_SIZE = 10000;
+
 enum UserType1 {
   TEACHER = 0,
   STUDENT = 1
 };
-
-const MAX_USER_SIZE = 10000;
 ```
 
 ### Code block 4
@@ -1013,11 +1011,11 @@ if (flag) {
 function foo() { // 函数声明时，左大括号 { 之前加个空格
   // ...
 }
-// ...
-  bar('attr', { // 左大括号前加个空格
-    age: '1 year',
-    sbreed: 'Bernese Mountain Dog',
-  });
+
+bar('attr', { // 左大括号前加个空格
+  age: '1 year',
+  sbreed: 'Bernese Mountain Dog',
+});
 ```
 
 ### Code block 18
@@ -1109,7 +1107,7 @@ try {
   doSomething();
 }
 catch (err) {
-  // 处理错误。
+  // 处理错误
 }
 ```
 
@@ -1119,7 +1117,7 @@ catch (err) {
 try {
   doSomething();
 } catch (err) {
-  // 处理错误。
+  // 处理错误
 }
 ```
 
@@ -1294,7 +1292,7 @@ export function getObject1(value: number): I {
 // Index.ets
 import { getObject1 } from './lib';
 // ...
-let obj1: I = getObject1(123);
+let obj1: ESObject = getObject1(123);
 ```
 
 ### Code block 43

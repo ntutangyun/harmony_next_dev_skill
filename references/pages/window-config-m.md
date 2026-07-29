@@ -41,7 +41,7 @@ name取值为ohos.ability.window.top表示主窗口顶部的位置。value表示
 
 使用module.json5的supportWindowMode属性，且只配置fullscreen选项。
 
-使用metadata配置自由多窗下的可支持窗口模式。配置项为：name为ohos.ability.window.supportWindowModeInFreeMultiWindow，value取值为：fullscreen（表示全屏模式）、split（表示分屏模式）、floating（表示自由悬浮窗口模式）。value取值为字符串，可以配置多种模式，每个模式之间用逗号分隔开，不区分顺序，不添加空格，例如：fullscreen,split。仅在支持并处于自由窗口状态的设备上生效；在支持但不处于自由窗口状态的设备及不支持自由窗口状态的设备上配置不生效也不报错。
+使用metadata配置自由窗口下的可支持窗口模式。配置项为：name为ohos.ability.window.supportWindowModeInFreeMultiWindow，value取值为：fullscreen（表示全屏模式）、split（表示分屏模式）、floating（表示自由悬浮窗口模式）。value取值为字符串，可以配置多种模式，每个模式之间用逗号分隔开，不区分顺序，不添加空格，例如：fullscreen,split。仅在支持并处于自由窗口状态的设备上生效；在支持但不处于自由窗口状态的设备及不支持自由窗口状态的设备上配置不生效也不报错。
 
 自由多窗下的可支持窗口模式可以采用多种方法进行配置，配置优先级为：通过SetSupportedWindowModes接口配置 > 通过StartAbility配置StartOption中的SupportWindowMode > 使用metadata配置 > 配置module.json5中abilities标签下的SupportWindowMode属性。
 

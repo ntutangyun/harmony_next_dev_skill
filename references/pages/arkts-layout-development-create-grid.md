@@ -315,6 +315,48 @@ ScrollBar({ scroller: this.gridScroller })
 
 在圆形屏幕设备上，Grid可以与弧形滚动条组件ArcScrollBar配合使用为网格添加弧形外置滚动条，使用方式可参考创建弧形列表 (ArcList)的添加外置滚动条ArcScrollBar章节。
 
+手指滑动多选
+
+从API版本26.0.0开始，Grid支持在编辑模式下实现手指滑动多选能力。进入编辑模式后，用户可以通过手指滑动经过多个GridItem，批量选择或取消选择网格项。应用可以在GridItem上设置是否允许被选择，并根据回调记录已选择的网格项。该能力适用于相册、文件管理、视频列表等需要连续批量选择网格项的场景。
+
+Grid手指滑动多选示例效果图
+
+[h2]设置编辑模式
+
+通过enableEditMode设置是否进入编辑模式。设置为true，Grid进入编辑模式，用户可以单指滑动经过多个GridItem进行批量选择或取消选择；设置为false，Grid退出编辑模式。通过onEditModeChange监听编辑模式变化，将系统返回、侧滑返回或双指滑动触发的编辑模式变化同步到业务状态。
+
+通过editModeOptions配置编辑模式下的多选行为。editModeOptions中有两个滑动多选相关参数，分别是useDefaultMultiSelectStyle和enableTwoFingerMultiSelect，默认值均为true。前者控制是否显示GridItem右下角的系统复选框，后者控制是否允许用户通过双指滑动自动进入编辑模式并进行多选。开发者需要自定义样式时，可将useDefaultMultiSelectStyle设置为false。开发者需要关闭双指滑动自动进入编辑模式时，可将enableTwoFingerMultiSelect设置为false。
+
+Grid() {
+  // ...
+}
+.enableEditMode(this.enableEditMode)
+.onEditModeChange((enabled: boolean) => {
+  this.setEditMode(enabled);
+})
+.editModeOptions({ useDefaultMultiSelectStyle: true, enableTwoFingerMultiSelect: true })
+
+[h2]记录网格项选择结果
+
+在GridItem上配置selectable、selected和onSelect。selectable用于设置网格项是否允许被选择，selected用于设置网格项当前是否被选中。滑动多选过程中，组件会触发onSelect回调，应用可以在回调中记录每个网格项的最新选择结果。
+
+GridItem() {
+  this.GridCard(item, index)
+}
+.selectable(true)
+.selected(this.isSelected(item.id))
+.onSelect((selected: boolean) => {
+  this.updateSelected(item.id, selected);
+})
+
+说明
+
+建议使用网格项数据中不会随位置变化的唯一标识（例如文件ID）记录选择结果，不建议仅使用当前下标，避免动态增删数据后选中项错位。
+
+当业务需要在退出编辑模式后保留选择结果时，可在onEditModeChange回调中保存选择结果。
+
+使用LazyForEach时，数据源发生变化后应通过DataChangeListener通知组件刷新，确保滑动多选过程中网格项状态与数据源一致。
+
 性能优化
 
 与长列表的处理类似，循环渲染适用于数据量较小的布局场景，当构建具有大量网格项的可滚动网格布局时，推荐使用数据懒加载方式实现按需迭代加载数据，从而提升网格性能。
@@ -567,6 +609,32 @@ ScrollBar({ scroller: this.gridScroller })
 ```
 
 ### Code block 13
+
+```
+Grid() {
+  // ...
+}
+.enableEditMode(this.enableEditMode)
+.onEditModeChange((enabled: boolean) => {
+  this.setEditMode(enabled);
+})
+.editModeOptions({ useDefaultMultiSelectStyle: true, enableTwoFingerMultiSelect: true })
+```
+
+### Code block 14
+
+```
+GridItem() {
+  this.GridCard(item, index)
+}
+.selectable(true)
+.selected(this.isSelected(item.id))
+.onSelect((selected: boolean) => {
+  this.updateSelected(item.id, selected);
+})
+```
+
+### Code block 15
 
 ```
 Grid() {

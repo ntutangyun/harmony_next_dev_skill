@@ -40,7 +40,11 @@ CollaborationServiceStateDialog	弹窗组件，用于提示对端业务状态。
 
 导入模块。
 
-import { createCollaborationServiceMenuItems, CollaborationServiceStateDialog, CollaborationServiceFilter } from '@kit.ServiceCollaborationKit';
+import {
+  createCollaborationServiceMenuItems,
+  CollaborationServiceStateDialog,
+  CollaborationServiceFilter
+} from '@kit.ServiceCollaborationKit';
 
 createCollaborationServiceMenuItems是设备列表菜单项模块，传入CollaborationServiceFilter的能力枚举值；CollaborationServiceStateDialog是状态提示框模块。
 
@@ -72,7 +76,8 @@ myTestMenu() {
 回调函数的传入参数stateCode是完成状态，buffer是回传的数据内容，可通过状态和数据内容结合自身的业务逻辑实现onState方法。
 
 CollaborationServiceStateDialog({
-  onState: (stateCode: number, bufferType: string, buffer: ArrayBuffer):void => this.doInsertPicture(stateCode, bufferType, buffer)
+  onState: (stateCode: number, bufferType: string, buffer: ArrayBuffer): void => this.doInsertPicture(stateCode,
+    bufferType, buffer)
 })
 
 跨设备互通完整示例
@@ -89,7 +94,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @Entry
 @Component
-struct Index {
+struct DeviceInterconnectivityComponent {
   @State picture: PixelMap | undefined = undefined;
 
   @Builder
@@ -137,7 +142,7 @@ struct Index {
       imageSource.createPixelMap().then((pixelMap) => {
         this.picture = pixelMap;
       }).catch((error: Error) => {
-        hilog.info(0, 'MEMOMOCK', 'Create pixel map failed: ' + error);
+        hilog.error(0, 'MEMOMOCK', 'Create pixel map failed: ' + error);
       }).finally(() => {
         imageSource.release();
       });
@@ -154,7 +159,11 @@ struct Index {
 ### Code block 1
 
 ```
-import { createCollaborationServiceMenuItems, CollaborationServiceStateDialog, CollaborationServiceFilter } from '@kit.ServiceCollaborationKit';
+import {
+  createCollaborationServiceMenuItems,
+  CollaborationServiceStateDialog,
+  CollaborationServiceFilter
+} from '@kit.ServiceCollaborationKit';
 ```
 
 ### Code block 2
@@ -172,7 +181,8 @@ myTestMenu() {
 
 ```
 CollaborationServiceStateDialog({
-  onState: (stateCode: number, bufferType: string, buffer: ArrayBuffer):void => this.doInsertPicture(stateCode, bufferType, buffer)
+  onState: (stateCode: number, bufferType: string, buffer: ArrayBuffer): void => this.doInsertPicture(stateCode,
+    bufferType, buffer)
 })
 ```
 
@@ -189,7 +199,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @Entry
 @Component
-struct Index {
+struct DeviceInterconnectivityComponent {
   @State picture: PixelMap | undefined = undefined;
 
   @Builder
@@ -237,7 +247,7 @@ struct Index {
       imageSource.createPixelMap().then((pixelMap) => {
         this.picture = pixelMap;
       }).catch((error: Error) => {
-        hilog.info(0, 'MEMOMOCK', 'Create pixel map failed: ' + error);
+        hilog.error(0, 'MEMOMOCK', 'Create pixel map failed: ' + error);
       }).finally(() => {
         imageSource.release();
       });

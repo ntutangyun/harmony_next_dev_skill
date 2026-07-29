@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/savebutton_
 
-保存控件允许用户通过点击按钮临时获取存储权限，无需权限弹框确认。
+保存控件允许用户通过点击按钮临时获取存储权限，无需权限弹窗确认。
 
 集成保存控件后，当用户点击该控件时，应用会在短时间内获取访问媒体库特权接口的授权。在API version 19及之前的版本中，授权持续时间为10秒；在API version 20及之后的版本中，授权持续时间为1分钟。这适用于任何需要将文件保存到媒体库的应用场景，例如保存图片或视频等。
 
@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/savebutto
 
 应用在点击控件触发onClick()回调到调用媒体库特权接口的时间间隔需控制在授权时间内。在API version 19及之前的版本中，授权持续时间为10秒；在API version 20及之后的版本中，授权持续时间为1分钟。
 
-保存控件仅支持在应用主窗口和子窗口中使用，且不支持在UIExtension中使用。
+保存控件仅支持在WindowType中定义的应用主窗口和子窗口中使用，且不支持在UIExtension中使用。
 
 用户点击一次控件，仅获取一次授权调用。
 

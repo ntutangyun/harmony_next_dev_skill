@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 将对象类型中导出的json格式文件命名为schema.json，拷贝到DevEco Studio项目的“AppScope/resources/rawfile”或者“entry/src/main/resources/rawfile”目录下。在编译构建过程中，AppScope目录下的资源文件会合入到模块的资源文件中，详细信息请参见资源分类。
 
-按照AGC控制台上创建的对象类型“BookInfo”在代码工程中创建BookInfo.ets文件，文件内容参考以下代码。
+按照AGC控制台上创建的对象类型“BookInfo”在代码工程“entry/src/main/ets/model”目录下创建BookInfo.ets文件，文件内容参考以下代码。
 
 说明
 
@@ -34,10 +34,11 @@ Date对应Date。
 
 import { cloudDatabase } from '@kit.CloudFoundationKit';
 
-class BookInfo extends cloudDatabase.DatabaseObject{
+class BookInfo extends cloudDatabase.DatabaseObject {
   public naturalbase_ClassName(): string {
-    return "BookInfo";
+    return 'BookInfo';
   }
+
   public id: number | undefined;
   public bookName: string | undefined;
   public author: string | undefined;
@@ -56,10 +57,11 @@ export { BookInfo };
 ```
 import { cloudDatabase } from '@kit.CloudFoundationKit';
 
-class BookInfo extends cloudDatabase.DatabaseObject{
+class BookInfo extends cloudDatabase.DatabaseObject {
   public naturalbase_ClassName(): string {
-    return "BookInfo";
+    return 'BookInfo';
   }
+
   public id: number | undefined;
   public bookName: string | undefined;
   public author: string | undefined;

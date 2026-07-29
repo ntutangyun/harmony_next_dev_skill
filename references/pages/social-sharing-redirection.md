@@ -56,7 +56,7 @@ App Linking基于HTTPS域名校验和云端配置，自动判断目标应用是�
 
 用户B收到并点击链接，系统根据设备环境做出相应处理（跳转目标应用/应用市场/浏览器Web页面）。
 
-若中间跳转市场并安装，首次打开App可自动直达内容页，保证体验闭环。
+若用户B未安装社交应用且已配置直达应用市场，将直接跳转应用市场详情页引导安装；安装后首次打开App可直达内容页，实现体验闭环。
 
 本文将详细介绍社交分享应用使用App Linking实现跳转的开发步骤，可根据业务需求决定是否配置直达应用市场的跳转路径。社交应用主要开发步骤如下：
 
@@ -159,7 +159,7 @@ struct Detail {
         // The type of data shared is a link
         utd: uniformTypeDescriptor.UniformDataType.HYPERLINK,
         // The shared App Linking link is replaced with the real address here
-        content: `https://hello.dra.agchosting.link?aid = ${this.article?.aId}`,
+        content: `https://hello.dra.agchosting.link?aid=${this.article?.aId}`,
         // ...
       });
       // The sharing panel is displayed
@@ -168,7 +168,12 @@ struct Detail {
         previewMode: systemShare.SharePreviewMode.DEFAULT,
         selectionMode: systemShare.SelectionMode.SINGLE
       })
-      // ...
+        .then(() => {
+          Logger.info(TAG, 'ShareController show success.');
+        })
+        .catch((error: BusinessError) => {
+          Logger.error(TAG, `ShareController show error. code: ${error.code}, message: ${error.message}`);
+        });
     } catch (err) {
       let error = err as BusinessError;
       Logger.error(TAG, `share err, code: ${error.code}, mesage: ${error.message}`);
@@ -501,8 +506,6 @@ module.json5配置文件配置错误。
 
 重新更换其他网络。
 
-请对照以下代码检查module.json5配置是否满足要求。
-
 // entry/src/main/module.json5
 {
   "module": {
@@ -613,6 +616,10 @@ Web页面的User-Agent（后续简称为UA）标识未适配HarmonyOS设备或�
 
 适配UA标识。确保Web页面适配了HarmonyOS设备和配套浏览器的UA标识，以正确识别设备并跳转到对应页面或平台。详细请参见User-Agent开发指导。
 
+示例代码
+
+基于App Linking实现社交分享跳转
+
 ## Code blocks
 
 ### Code block 1
@@ -697,7 +704,7 @@ struct Detail {
         // The type of data shared is a link
         utd: uniformTypeDescriptor.UniformDataType.HYPERLINK,
         // The shared App Linking link is replaced with the real address here
-        content: `https://hello.dra.agchosting.link?aid = ${this.article?.aId}`,
+        content: `https://hello.dra.agchosting.link?aid=${this.article?.aId}`,
         // ...
       });
       // The sharing panel is displayed
@@ -706,7 +713,12 @@ struct Detail {
         previewMode: systemShare.SharePreviewMode.DEFAULT,
         selectionMode: systemShare.SelectionMode.SINGLE
       })
-      // ...
+        .then(() => {
+          Logger.info(TAG, 'ShareController show success.');
+        })
+        .catch((error: BusinessError) => {
+          Logger.error(TAG, `ShareController show error. code: ${error.code}, message: ${error.message}`);
+        });
     } catch (err) {
       let error = err as BusinessError;
       Logger.error(TAG, `share err, code: ${error.code}, mesage: ${error.message}`);

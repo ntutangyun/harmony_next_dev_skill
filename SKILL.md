@@ -32,7 +32,7 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Kit overviews (Push, IAP, Payment, Map, Audio, Media, Image, Vision, Speech, Intents, ArkGraphics, NDK) | `references/10-kits-catalog.md` |
 | Quick start — "build my first HarmonyOS app" walkthrough | `references/00-quick-start.md` |
 
-If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5489 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-06-19) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
+If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5684 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-07-29) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
 
 To find a slug:
 - `grep -lir "<keyword>" references/pages/` to search by content
@@ -113,7 +113,7 @@ The HarmonyOS docs evolve fast and the user's project may target a specific API 
 
 ## Reaching beyond this skill
 
-**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5351 pages, ~51 MB, synced 2026-06-11 — re-sync with `python scripts/update_docs.py`). For:
+**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5684 pages, synced 2026-07-29 — re-sync with `python scripts/update_docs.py`). For:
 - Doc URLs to cite: `https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/<slug>`
 - API reference root (not bundled — visit if needed): `https://developer.huawei.com/consumer/cn/doc/harmonyos-references/development-intro-api`
 - Best practices (not bundled): `https://developer.huawei.com/consumer/cn/doc/best-practices/...`

@@ -8,7 +8,7 @@ Attach Debugger和Debug的区别在于，Attach Debugger to Process可以先运�
 
 前提条件
 
-当前设备上被attach的应用代码和本地代码一致，且已提前进行构建生成必要的sourceMap文件。
+当前设备上被attach的应用代码和本地代码一致，且已提前构建生成必要的sourceMap文件。
 
 使用约束
 

@@ -1,8 +1,8 @@
-# 插画/视频/动画的播报场景
+# 插画/视频/动画的播报
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-media-reading_
 
-开发实例1
+插画信息开发流程
 
 如下图，插画信息有一定提示作用，插画和对应的功能介绍应该组合在一起，当焦点落到插画或者包含插画的符合控件时，需要朗读出对应的功能描述。建议插画和功能介绍作为一个组合使用一个焦点朗读。它可以借助“accessibilityGroup(true)”属性来实现。
 
@@ -42,7 +42,7 @@ export struct Rule_2_1_6_1 {
   }
 }
 
-开发实例2
+列表控件开发流程
 
 以下List的每个Item，应该进行组合标注，从而给用户一个完整的提示信息：
 

@@ -40,7 +40,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agent-pow
 
 个数限制：
 
-单个普通应用有效/未过期的提醒数量不超过30个。
+API版本26.0.0及以上，单个普通应用有效/未过期的提醒数量不超过64个。
+
+API version 25及以下，单个普通应用有效/未过期的提醒数量不超过30个。
 
 从API version 10开始，所有应用有效/未过期的提醒数量总和不超过12000个。API version 9及之前的版本，有效/未过期的提醒数量总和不超过2000个。
 
@@ -136,7 +138,7 @@ let calendar: reminderAgentManager.ReminderRequestCalendar = {
   dateTime: {
     // 指明提醒的目标时间
     year: date.getFullYear(),
-    month: date.getUTCMonth() + 1,
+    month: date.getMonth() + 1,
     day: date.getDate(),
     hour: date.getHours(),
     minute: date.getMinutes(),
@@ -243,7 +245,7 @@ let calendar: reminderAgentManager.ReminderRequestCalendar = {
   dateTime: {
     // 指明提醒的目标时间
     year: date.getFullYear(),
-    month: date.getUTCMonth() + 1,
+    month: date.getMonth() + 1,
     day: date.getDate(),
     hour: date.getHours(),
     minute: date.getMinutes(),

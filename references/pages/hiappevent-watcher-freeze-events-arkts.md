@@ -18,7 +18,7 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
 
 以订阅应用冻屏事件为例，说明开发步骤。
 
-新建一个ArkTS应用工程，编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，导入依赖模块，示例代码如下：
+在DevEco Studio中，新建一个ArkTS应用工程，编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，导入依赖模块，示例代码如下：
 
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
@@ -163,14 +163,15 @@ HiAppEvent eventInfo.params.log_over_limit=false
 HiAppEvent eventInfo.params.test_data=100
 HiAppEvent eventInfo.params.process_life_time=18
 HiAppEvent eventInfo.params.external_callback_log=THREAD_BLOCK_3S:log3s THREAD_BLOCK_6S:log6s
+HiAppEvent eventInfo.params.page_switch_log=["/data/storage/el2/log/page_switch/snapshot/page_switch-com.example.myapplication-1-1-20260717101852288.log"]
 
 若应用无法启动或长时间未启动，开发者可以参考使用FaultLogExtensionAbility订阅事件回调重写的函数，进行延迟上报。
 
-从Faultlogger接口迁移应用冻屏事件
+从FaultLogger接口迁移应用冻屏事件
 
-@ohos.faultLogger (故障日志获取)接口从API version 18开始废弃使用, 不再维护。后续版本推荐使用@ohos.hiviewdfx.hiAppEvent订阅应用冻屏事件。该章节指导开发者从Faultlogger接口迁移至hiAppEvent接口，来订阅应用冻屏事件。
+@ohos.faultLogger (故障日志获取)接口从API version 18开始废弃使用，不再维护。后续版本推荐使用@ohos.hiviewdfx.hiAppEvent订阅应用冻屏事件。该章节指导开发者从FaultLogger接口迁移至hiAppEvent接口，来订阅应用冻屏事件。
 
-在Faultlogger的FaultType里定义的APP_FREEZE即为应用冻屏故障类型。
+在FaultLogger的FaultType里定义的APP_FREEZE即为应用冻屏故障类型。
 
 在hiAppEvent的hiAppEvent.addWatcher接口中设置事件名称为hiAppEvent.event.APP_FREEZE、事件领域为hiAppEvent.domain.OS，可以订阅应用冻屏事件。
 
@@ -178,10 +179,10 @@ HiAppEvent eventInfo.params.external_callback_log=THREAD_BLOCK_3S:log3s THREAD_B
 
 FaultLogInfo与hiAppEvent.AppEventInfo.params的字段对应关系如下：
 
-Faultlogger.FaultLogInfo	hiAppEvent.AppEventInfo.params	说明
+FaultLogger.FaultLogInfo	hiAppEvent.AppEventInfo.params	说明
 pid	pid	无。
 uid	uid	无。
-type	exception字段中的name子字段	类型不同，Faultlogger中是故障类型枚举，hiAppEvent中是字符串类型。
+type	exception字段中的name子字段	类型不同，FaultLogger中是故障类型枚举，hiAppEvent中是字符串类型。
 timestamp	time	无。
 module	bundle_name	无。
 fullLog	external_log	fullLog为故障日志全文。external_log为故障日志文件在应用沙箱中的具体路径(/data/storage/el2/log/)，访问该路径的文件，可以得到故障日志全文。
@@ -190,7 +191,7 @@ summary	external_log文件内容中特定段落	APP_FREEZE的summary对应extern
 
 FaultLogger.query(使用callback回调)和FaultLogger.query(使用Promise回调)都可以使用hiAppEvent.addWatcher实现相同功能。
 
-查阅开发步骤和验证观察者是否订阅到应用冻屏事件，了解使用hiAppEvent订阅应用冻屏事件（ArkTS）的具体步骤。
+查阅开发步骤和验证观察者是否订阅到应用冻屏事件，了解使用HiAppEvent订阅应用冻屏事件（ArkTS）的具体步骤。
 
 示例代码
 
@@ -348,4 +349,5 @@ HiAppEvent eventInfo.params.log_over_limit=false
 HiAppEvent eventInfo.params.test_data=100
 HiAppEvent eventInfo.params.process_life_time=18
 HiAppEvent eventInfo.params.external_callback_log=THREAD_BLOCK_3S:log3s THREAD_BLOCK_6S:log6s
+HiAppEvent eventInfo.params.page_switch_log=["/data/storage/el2/log/page_switch/snapshot/page_switch-com.example.myapplication-1-1-20260717101852288.log"]
 ```

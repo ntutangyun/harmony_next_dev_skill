@@ -79,7 +79,7 @@ let contentNode: ComponentContent<Object> =
     new Params(this.message, dialogController));
 this.getUIContext().getPromptAction().openCustomDialogWithController(
   contentNode, dialogController, this.baseDialogOptions).catch((err: BusinessError) => {
-  hilog.error(0x0000, 'dialogController',
+  hilog.error(DOMAIN, 'dialogController',
     'openCustomDialogWithController error: ' + err.code + ' ' + err.message);
 });
 
@@ -115,7 +115,7 @@ let dialogController: promptAction.CommonController = new promptAction.DialogCon
 this.getUIContext().getPromptAction().presentCustomDialog(() => {
   this.customDialogComponent(dialogController);
 }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
-  hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+  hilog.error(DOMAIN, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
 });
 
 创建自定义内容为CustomBuilderWithId的弹出框控制器
@@ -156,7 +156,7 @@ let dialogController: promptAction.CommonController = new promptAction.DialogCon
 this.getUIContext().getPromptAction().presentCustomDialog((dialogId: number) => {
   this.customDialogComponentWithId(dialogId, dialogController);
 }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
-  hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+  hilog.error(DOMAIN, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
 });
 
 在CustomDialogController内容区直接获取弹出框控制器
@@ -178,7 +178,7 @@ struct CustomDialogExample {
         .fontSize(30)
       Button('Close Dialog(Built-in Controller)')
         .onClick(() => {
-          let dialogController: PromptActionDialogController = this.getDialogController();
+          let dialogController: promptAction.DialogController = this.getDialogController();
           if (dialogController !== undefined) {
             dialogController.close();
           }
@@ -208,7 +208,7 @@ customDialogController.open();
 
 详细变量定义请参考完整示例。
 
-初始化一个自定义弹出框内容区，内部包含一个Text组件和一个按钮，该按钮通过调用getState获取当前弹出框状态。
+初始化一个自定义弹出框内容区，内部包含一个Text组件和两个按钮，一个按钮通过调用getState获取当前弹出框状态，另一个按钮通过弹出框控制器关闭弹出框。
 
 @Builder
 customDialogComponentGetState(dialogController: promptAction.DialogController) {
@@ -299,7 +299,7 @@ struct CustomDialogExample {
         .fontSize(30)
       Button('Close Dialog(Built-in Controller)')
         .onClick(() => {
-          let dialogController: PromptActionDialogController = this.getDialogController();
+          let dialogController: promptAction.DialogController = this.getDialogController();
           if (dialogController !== undefined) {
             dialogController.close();
           }
@@ -524,7 +524,7 @@ let contentNode: ComponentContent<Object> =
     new Params(this.message, dialogController));
 this.getUIContext().getPromptAction().openCustomDialogWithController(
   contentNode, dialogController, this.baseDialogOptions).catch((err: BusinessError) => {
-  hilog.error(0x0000, 'dialogController',
+  hilog.error(DOMAIN, 'dialogController',
     'openCustomDialogWithController error: ' + err.code + ' ' + err.message);
 });
 ```
@@ -558,7 +558,7 @@ let dialogController: promptAction.CommonController = new promptAction.DialogCon
 this.getUIContext().getPromptAction().presentCustomDialog(() => {
   this.customDialogComponent(dialogController);
 }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
-  hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+  hilog.error(DOMAIN, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
 });
 ```
 
@@ -597,7 +597,7 @@ let dialogController: promptAction.CommonController = new promptAction.DialogCon
 this.getUIContext().getPromptAction().presentCustomDialog((dialogId: number) => {
   this.customDialogComponentWithId(dialogId, dialogController);
 }, dialogController, this.dialogOptions).catch((err: BusinessError) => {
-  hilog.error(0x0000, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
+  hilog.error(DOMAIN, 'dialogController', 'presentCustomDialog error: ' + err.code + ' ' + err.message);
 });
 ```
 
@@ -615,7 +615,7 @@ struct CustomDialogExample {
         .fontSize(30)
       Button('Close Dialog(Built-in Controller)')
         .onClick(() => {
-          let dialogController: PromptActionDialogController = this.getDialogController();
+          let dialogController: promptAction.DialogController = this.getDialogController();
           if (dialogController !== undefined) {
             dialogController.close();
           }
@@ -732,7 +732,7 @@ struct CustomDialogExample {
         .fontSize(30)
       Button('Close Dialog(Built-in Controller)')
         .onClick(() => {
-          let dialogController: PromptActionDialogController = this.getDialogController();
+          let dialogController: promptAction.DialogController = this.getDialogController();
           if (dialogController !== undefined) {
             dialogController.close();
           }

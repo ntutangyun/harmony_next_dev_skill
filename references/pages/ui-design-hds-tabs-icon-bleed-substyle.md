@@ -41,6 +41,8 @@ struct Index {
       .vertical(false)
       .barPosition(BarPosition.End)
     }
+    .width('100%')
+    .height('100%')
   }
 
   @Builder
@@ -86,6 +88,8 @@ struct Index {
       .vertical(false)
       .barPosition(BarPosition.End)
     }
+    .width('100%')
+    .height('100%')
   }
 
   @Builder

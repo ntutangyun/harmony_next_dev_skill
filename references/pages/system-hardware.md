@@ -15,3 +15,5 @@ Sensor Service Kit（传感器服务）
 Mechanic Kit（机械设备管理服务）
 
 Wear Engine Kit（穿戴服务）
+
+AOD Navigation Kit（熄屏导航服务）

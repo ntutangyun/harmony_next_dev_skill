@@ -63,11 +63,12 @@ button组件使用的icon图标如果来自云端路径，需要添加网络访�
 
 如果需要添加ohos.permission.INTERNET权限，则在resources文件夹下的config.json文件里进行权限配置。
 
-<!-- config.json -->
-"module": {
-  "reqPermissions": [{
-    "name": "ohos.permission.INTERNET"
-  }],
+{
+  "module": {
+    "reqPermissions": [{
+      "name": "ohos.permission.INTERNET"
+    }]
+  }
 }
 
 显示下载进度
@@ -95,7 +96,6 @@ button组件使用的icon图标如果来自云端路径，需要添加网络访�
 }
 
 // xxx.js
-import promptAction from '@ohos.promptAction';
 export default {
   data: {
     percent: 0,
@@ -109,7 +109,7 @@ export default {
         this.percent += 1;
         this.downloadText = this.percent+ "%";
        } else{
-         promptAction.showToast({
+         this.getUIContext().getPromptAction().showToast({
             message: "Download succeeded."
          })
          this.paused()
@@ -125,13 +125,13 @@ export default {
   },
  setProgress(e) {
     if(this.isPaused){
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: "Started Downloading"
       })
       this.start();
       this.isPaused = false;
     }else{
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: "Paused."
       })
       this.paused();
@@ -146,14 +146,14 @@ setProgress方法只支持button的类型为download。
 
 场景示例
 
-在本场景中，开发者可根据输入的文本内容进行button类型切换。
+在本场景中，开发者可根据输入的文本内容进行input类型切换。
 
 <!-- xxx.hml -->
 <div class="container">
   <div class="input-item">
     <input class="input-text" id="change" type="{{mytype}}"  placeholder="{{myholder}}"
       style="background-color:{{mystyle1}};
-      placeholder-color:{{mystyle2}};flex-grow:{{myflex}};"name="{{myname}}" value="{{myvalue}}"></input>
+      placeholder-color:{{mystyle2}};flex-grow:{{myflex}};" name="{{myname}}" value="{{myvalue}}"></input>
   </div>
   <div class="input-item">
     <div class="doc-row">
@@ -305,11 +305,12 @@ export default {
 ### Code block 5
 
 ```
-<!-- config.json -->
-"module": {
-  "reqPermissions": [{
-    "name": "ohos.permission.INTERNET"
-  }],
+{
+  "module": {
+    "reqPermissions": [{
+      "name": "ohos.permission.INTERNET"
+    }]
+  }
 }
 ```
 
@@ -345,7 +346,6 @@ export default {
 
 ```
 // xxx.js
-import promptAction from '@ohos.promptAction';
 export default {
   data: {
     percent: 0,
@@ -359,7 +359,7 @@ export default {
         this.percent += 1;
         this.downloadText = this.percent+ "%";
        } else{
-         promptAction.showToast({
+         this.getUIContext().getPromptAction().showToast({
             message: "Download succeeded."
          })
          this.paused()
@@ -375,13 +375,13 @@ export default {
   },
  setProgress(e) {
     if(this.isPaused){
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: "Started Downloading"
       })
       this.start();
       this.isPaused = false;
     }else{
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: "Paused."
       })
       this.paused();
@@ -399,7 +399,7 @@ export default {
   <div class="input-item">
     <input class="input-text" id="change" type="{{mytype}}"  placeholder="{{myholder}}"
       style="background-color:{{mystyle1}};
-      placeholder-color:{{mystyle2}};flex-grow:{{myflex}};"name="{{myname}}" value="{{myvalue}}"></input>
+      placeholder-color:{{mystyle2}};flex-grow:{{myflex}};" name="{{myname}}" value="{{myvalue}}"></input>
   </div>
   <div class="input-item">
     <div class="doc-row">

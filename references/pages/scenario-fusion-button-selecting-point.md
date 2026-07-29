@@ -49,7 +49,7 @@ struct Index {
               hoverStayTime: 0,
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType设置为CHOOSE_LOCATION时，回调必须为onChooseLocation。
           controller: new functionalButtonComponentManager.FunctionalButtonController()
@@ -120,7 +120,7 @@ struct Index {
               hoverStayTime: 0,
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType设置为CHOOSE_LOCATION时，回调必须为onChooseLocation。
           controller: new functionalButtonComponentManager.FunctionalButtonController()

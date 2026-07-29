@@ -131,7 +131,7 @@ hdc shell "bm dump -n com.example.myapplication | grep appProvisionType"
 参数介绍
 
 参数名字	类型	参数含义	详细介绍
-fp_unwind	bool	true表示使用fp回栈方式进行回栈； false表示使用dwarf回栈方式进行回栈。	fp回栈是利用了x29寄存器保存的fp指针，函数的fp指针始终指向父函数（调用方）的fp指针，调优服务根据这一特点进行回栈，根据ip计算相对PC，然后查找maps对应区间来进行符号化。 由于现在编译期越来越优化，出现寄存器重用或者编译禁用fp，会导致fp方式回不出相应的栈；混合栈情况下，fp不会记录多重混合，于是便需要dwarf回栈方式做更精确的回栈。 dwarf回栈是根据pc寄存器在map表中查找对应的map信息，由于dwarf是逐级解析调用栈，所以其性能会比fp有劣化。 注意：fp回栈暂不支持调优非aarch64架构的设备。
+fp_unwind	bool	true表示使用fp回栈方式进行回栈； false表示使用dwarf回栈方式进行回栈。	FP回栈机制依赖于x29寄存器保存的帧指针（FP），该指针始终指向调用方函数的FP。调优服务正是基于这一特性，通过FP链回溯调用栈，并根据指令指针（IP）计算出相对于程序计数器（PC）的偏移量，随后查找maps文件中的对应内存区间以完成符号化。 随着编译器优化级别的提升，寄存器重用或编译时禁用FP等优化手段，往往导致FP回栈无法准确还原调用栈。此外，在涉及混合栈的场景下，FP机制也无法完整记录多重混合的调用信息。因此，需要引入DWARF回栈方式，以实现更精确的调用栈回溯。 DWARF回栈是根据pc寄存器在map表中查找对应的map信息，由于DWARF是逐级解析调用栈，所以其性能会比FP有劣化。 注意：FP回栈暂不支持调优非aarch64架构的设备。
 statistics_interval	int	统计间隔，表示将一个统计周期内的栈进行汇总，单位：s。	为实现长时间轻量化采集，提供统计模式抓栈。如果更关注调优时的性能，只需要知道每个调用栈出现的次数和总大小，不需要知道每一次具体时间，可以使用统计模式。
 process_name	string	需要进行内存调优的进程名	和/proc/节点下的进程名一致。
 startup_mode	bool	是否抓取进程启动阶段内存。默认不抓取启动阶段内存。	记录进程孵化启动到调优结束这个期间内堆内存分配的信息。
@@ -185,11 +185,168 @@ ARKTS_TASKPOOL	通过ArkTS线程池产生的异步栈。	24
 
 开启fp回栈+跨语言回栈（其中绿色部分为js栈）：
 
+说明
+
+fp_unwind参数需要设置为true。
+
+js_stack_report参数需要设置为1，否则无法回溯出js栈。
+
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: true
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   js_stack_report: 1
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
+
 开启dwarf回栈和跨语言回栈（可以展示出native -> js ->native的栈）：
+
+说明
+
+fp_unwind参数需要设置为false。
+
+js_stack_report参数需要设置为1，否则无法回溯出js栈。
+
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: false
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   js_stack_report: 1
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
 
 开启统计模式，在此模式下，栈数据会周期性展示：
 
+说明
+
+statistics_interval参数必须设置一个大于0的值，表示每隔多少秒进行一次统计。设置为10，表示每10秒进行一次统计。
+
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: true
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   statistics_interval: 10
+   js_stack_report: 1
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
+
 开启非统计模式，在此模式下，栈数据不会周期性展示：
+
+说明
+
+statistics_interval必须设置为0或者不设置。
+
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: false
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   statistics_interval: 0
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
 
 [h2]ftrace plugin插件
 
@@ -613,7 +770,7 @@ plugin_configs {
 }
 CONFIG
 
-此命令示例抓取整机网络数据信息。执行命令后，通过hdc file recv /data/local/tmp/hiprofiler_data.htrace将文件导出到当前模板，然后通过smartperf打开并解析。结果示例如下图：
+此命令示例抓取整机网络数据信息。执行命令后，通过hdc file recv /data/local/tmp/hiprofiler_data.htrace将文件导出到当前目录，然后通过smartperf打开并解析。结果示例如下图：
 
 [h2]network profiler插件
 
@@ -898,6 +1055,48 @@ CONFIG
 
 $ hiprofiler_cmd stop
 
+[h2]使用文件缓存模式
+
+从API version 24开始支持使用文件缓存模式，可通过如下方式对com.example.insight_test_stage进程进行内存录制。
+
+说明
+
+使用文件缓存模式时，use_file_cache_mode必须设置为true。
+
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: false
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   max_js_stack_depth: 20
+   use_file_cache_mode: true
+  }
+ }
+CONFIG
+
 常见问题
 
 [h2]调优出现异常
@@ -1009,6 +1208,159 @@ hdc shell "bm dump -n com.example.myapplication | grep appProvisionType"
 $ hiprofiler_cmd \
   -c - \
   -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: true
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   js_stack_report: 1
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
+```
+
+### Code block 5
+
+```
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: false
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   js_stack_report: 1
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
+```
+
+### Code block 6
+
+```
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: true
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   statistics_interval: 10
+   js_stack_report: 1
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
+```
+
+### Code block 7
+
+```
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: false
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   statistics_interval: 0
+   max_js_stack_depth: 20
+  }
+ }
+CONFIG
+```
+
+### Code block 8
+
+```
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
   -t 10 \
   -s \
   -k \
@@ -1037,7 +1389,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 5
+### Code block 9
 
 ```
 $ hiprofiler_cmd \
@@ -1094,7 +1446,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 6
+### Code block 10
 
 ```
 $ hiprofiler_cmd \
@@ -1120,7 +1472,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 7
+### Code block 11
 
 ```
 $ hiprofiler_cmd \
@@ -1146,7 +1498,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 8
+### Code block 12
 
 ```
 $ hiprofiler_cmd \
@@ -1173,7 +1525,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 9
+### Code block 13
 
 ```
 $ hiprofiler_cmd \
@@ -1198,7 +1550,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 10
+### Code block 14
 
 ```
 $ hiprofiler_cmd \
@@ -1237,7 +1589,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 11
+### Code block 15
 
 ```
 $ hiprofiler_cmd \
@@ -1264,7 +1616,7 @@ $ hiprofiler_cmd \
 CONFIG
 ```
 
-### Code block 12
+### Code block 16
 
 ```
 $ hiprofiler_cmd \
@@ -1308,7 +1660,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 13
+### Code block 17
 
 ```
 $ hiprofiler_cmd \
@@ -1350,7 +1702,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 14
+### Code block 18
 
 ```
 $ hiprofiler_cmd \
@@ -1392,7 +1744,7 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 15
+### Code block 19
 
 ```
 $ hiprofiler_cmd start \
@@ -1430,8 +1782,46 @@ plugin_configs {
 CONFIG
 ```
 
-### Code block 16
+### Code block 20
 
 ```
 $ hiprofiler_cmd stop
+```
+
+### Code block 21
+
+```
+$ hiprofiler_cmd \
+  -c - \
+  -o /data/local/tmp/hiprofiler_data.htrace \
+  -t 60 \
+  -s \
+  -k \
+<<CONFIG
+ request_id: 1
+ session_config {
+  buffers {
+   pages: 16384
+  }
+ }
+ plugin_configs {
+  plugin_name: "nativehook"
+  sample_interval: 5000
+  config_data {
+   save_file: false
+   smb_pages: 16384
+   max_stack_depth: 20
+   process_name: "com.example.insight_test_stage"
+   string_compressed: true
+   fp_unwind: false
+   blocked: true
+   callframe_compress: true
+   record_accurately: true
+   offline_symbolization: true
+   startup_mode: false
+   max_js_stack_depth: 20
+   use_file_cache_mode: true
+  }
+ }
+CONFIG
 ```

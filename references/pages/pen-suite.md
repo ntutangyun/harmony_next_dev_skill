@@ -26,9 +26,9 @@ Pen Kit手写套件仅支持上下滑动，不支持左右滑动。
 
 接口说明
 
-接口	接口描述
-HandwriteComponent	构建画布控件
-HandwriteController	画布的主要功能入口类
+接口名	描述
+HandwriteComponent	构建画布控件。
+HandwriteController	画布的主要功能入口类。
 
 开发步骤
 
@@ -55,11 +55,13 @@ export default class EntryAbility extends UIAbility {
 
 import { common } from '@kit.AbilityKit';
 
+
 declare namespace globalThis {
   let _brushEngineContext: common.UIAbilityContext;
-}
+};
 
 export default class GlobalContext {
+
   static getContext(): common.UIAbilityContext {
     return globalThis._brushEngineContext;
   }
@@ -71,7 +73,7 @@ export default class GlobalContext {
 
 构造包含手写组件的控件/页面，下面以控件为例。
 
-import { HandwriteController, HandwriteComponent, PenType, PenHspInfo} from '@kit.Penkit';
+import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
 
 @Entry
 @Component
@@ -141,7 +143,7 @@ struct HandWriteDemoComp {
           }
         }).margin({ top: 100 }).width(220)
         // 当前画布的偏移量。
-        Text('onDidScroll: ' + this.yOffset)
+        Text('onDidScroll:' + this.yOffset)
           .margin({ top: 150 }).width(220)
       }
       .width('100%')
@@ -180,11 +182,13 @@ export default class EntryAbility extends UIAbility {
 ```
 import { common } from '@kit.AbilityKit';
 
+
 declare namespace globalThis {
   let _brushEngineContext: common.UIAbilityContext;
-}
+};
 
 export default class GlobalContext {
+
   static getContext(): common.UIAbilityContext {
     return globalThis._brushEngineContext;
   }
@@ -198,7 +202,7 @@ export default class GlobalContext {
 ### Code block 3
 
 ```
-import { HandwriteController, HandwriteComponent, PenType, PenHspInfo} from '@kit.Penkit';
+import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
 
 @Entry
 @Component
@@ -268,7 +272,7 @@ struct HandWriteDemoComp {
           }
         }).margin({ top: 100 }).width(220)
         // 当前画布的偏移量。
-        Text('onDidScroll: ' + this.yOffset)
+        Text('onDidScroll:' + this.yOffset)
           .margin({ top: 150 }).width(220)
       }
       .width('100%')

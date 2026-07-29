@@ -18,31 +18,24 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 操作步骤
 
-调用StorageBucket.getMetadata获取指定云侧文件的元数据信息。
-
-完整示例代码如下：
+导入相关模块。
 
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+调用StorageBucket.getMetadata获取指定云侧文件的元数据信息。
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 获取元数据
-  getMetaData() {
-    // 获取云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的元数据信息
-    storageBucket.getMetadata('screenshot/screenshot_20250115_155321.jpg').then((metadata: cloudStorage.Metadata) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in getting metadata: ${JSON.stringify(metadata)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to get metadata, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+bucket.getMetadata(UI.uploadFileName).then((result: cloudStorage.Metadata) => {
+  hilog.info(0x0000, 'Storage', `promise bucket.getMetadata end  ${JSON.stringify(result)}`);
+  let time: Date = result.createTime;
+  hilog.info(0x0000, 'Storage', `printMessage time ${time}`);
+  hilog.info(0x0000, 'Storage', `time ${time.getTime()}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to getMetadata code: ${err.code}, message: ${err.message}`);
+});
 
 ## Code blocks
 
@@ -50,24 +43,21 @@ export struct testPage {
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+```
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+### Code block 2
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 获取元数据
-  getMetaData() {
-    // 获取云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的元数据信息
-    storageBucket.getMetadata('screenshot/screenshot_20250115_155321.jpg').then((metadata: cloudStorage.Metadata) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in getting metadata: ${JSON.stringify(metadata)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to get metadata, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+```
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+bucket.getMetadata(UI.uploadFileName).then((result: cloudStorage.Metadata) => {
+  hilog.info(0x0000, 'Storage', `promise bucket.getMetadata end  ${JSON.stringify(result)}`);
+  let time: Date = result.createTime;
+  hilog.info(0x0000, 'Storage', `printMessage time ${time}`);
+  hilog.info(0x0000, 'Storage', `time ${time.getTime()}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to getMetadata code: ${err.code}, message: ${err.message}`);
+});
 ```

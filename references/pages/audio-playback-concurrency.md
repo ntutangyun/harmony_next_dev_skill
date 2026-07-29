@@ -10,11 +10,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 系统预设了默认的音频焦点策略，根据音频流的类型及启动的先后顺序，对所有播放和录制音频流进行统一管理。
 
-在启动播放或录制功能前，应用需要先申请音频焦点；而在播放或录制结束后，应适时释放音频焦点。在播放或录制的过程中，可能会因其他音频流的介入而失去焦点，此时，应用需依据焦点变化采取相应措施处理音频焦点变化。
+在启动播放或录制功能时，系统会自动为相应的音频流申请音频焦点；而在播放或录制结束后，系统也会自动释放音频焦点。在播放或录制的过程中，可能会因其他音频流的介入而失去焦点，此时，应用需依据焦点变化采取相应措施处理音频焦点变化。
 
 对于应用而言，为了确保为用户提供优质的音频焦点体验，应当注意以下几点：
 
-在启动播放或录制操作前，应根据音频的具体用途，选择并使用合适的音频流类型，即准确设置StreamUsage或SourceType。
+在启动播放操作前，应根据音频的具体用途选择合适的播放流类型，即准确设置StreamUsage。
 
 在播放或录制的过程中，需通过监听音频焦点来处理音频焦点变化事件，并在接收到音频焦点中断事件（InterruptEvent）时，采取相应的处理措施。
 
@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 当应用开始播放或录制音频时，系统将自动为相应的音频流申请音频焦点。
 
-例如，应用使用AudioRenderer开发音频播放功能(ArkTs)，当调用AudioRenderer的start时，系统会自动为应用请求音频焦点。
+例如，应用使用AudioRenderer开发音频播放功能(ArkTS)，当调用AudioRenderer的start时，系统会自动为应用请求音频焦点。
 
 若音频焦点请求成功，音频流将正常启动；反之，若音频焦点请求被拒绝，音频流将无法开始播放或录制。
 
@@ -34,13 +34,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 特殊场景：
 
-短音播放：若应用使用SoundPool播放短音频(ArkTS)，且StreamUsage指定为Music、Movie、AudioBook等类型，播放短音，则其申请焦点时默认为并发模式，不会影响其他音频。
+短音播放：若应用使用SoundPool播放短音频(ArkTS)，且StreamUsage指定为Music、Movie、AudioBook等类型播放短音时，则申请焦点时默认为并发模式，不会影响其他音频。
 
 静音播放：若应用以静音状态开始播放音频（或视频），并且希望静音阶段不影响其他音频，当后续解除静音的时候，再以正常策略申请音频焦点，则可以调用静音并发播放模式的相关接口。具体可参考：
 
 使用AVPlayer播放音频(ArkTS)，可以调用setMediaMuted函数。
 
-使用AudioRenderer开发音频播放功能(ArkTs)，可调用setSilentModeAndMixWithOthers函数。
+使用AudioRenderer开发音频播放功能(ArkTS)，可调用setSilentModeAndMixWithOthers函数。
 
 使用OHAudio开发音频播放功能(C/C++)，可调用OH_AudioRenderer_SetSilentModeAndMixWithOthers函数。
 
@@ -48,7 +48,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 当应用结束播放或录制音频时，系统会自动为相应的音频流释放音频焦点。
 
-例如，应用使用AudioRenderer开发音频播放功能(ArkTs)，当调用AudioRenderer的pause、stop、release等时，系统会为其释放音频焦点。
+例如，应用使用AudioRenderer开发音频播放功能(ArkTS)，当调用AudioRenderer的pause、stop、release等时，系统会为其释放音频焦点。
 
 当音频流释放音频焦点时，若存在受其影响的其他音频流（如音量被调低或被暂停的流），将触发恢复操作。
 
@@ -62,7 +62,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 系统预设的默认音频焦点策略，主要依据音频流类型（即播放流的StreamUsage和录制流的SourceType）及音频流启动的顺序进行决策。
 
-为防止焦点变化不符合预期，应用在启动播放或录制前，应根据音频流的用途，准确设置StreamUsage或SourceType。关于各类型的详细说明，请参考使用合适的音频流类型。
+为防止焦点变化不符合预期，应用在启动播放前，应根据音频流的用途准确设置StreamUsage。关于各类型的详细说明，请参考选择合适的播放流类型。
 
 常见的音频焦点场景示例如下：
 
@@ -72,9 +72,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 Music音频流与Game音频流可并发混音播放，相互之间不会影响音量或播放状态。
 
-VoiceCommunication开始播放时，将暂停正在播放的Music音频流，VoiceCommunication停止后，Music将收到恢复播放的通知。
+开始播放VoiceCommunication音频流时，将暂停正在播放的Music音频流，VoiceCommunication停止后，Music将收到恢复播放的通知。
 
-开始录制VoiceMessage时，Music音频流会被暂停，VoiceMessage录制停止后，Music将收到恢复播放的通知。
+开始录制VoiceMessage音频流时，Music音频流会被暂停，VoiceMessage录制停止后，Music将收到恢复播放的通知。
 
 若默认的音频焦点策略无法满足特定场景的需求，应用程序可利用音频会话管理，调整本应用音频流所采用的音频焦点策略。
 
@@ -96,7 +96,7 @@ VoiceCommunication开始播放时，将暂停正在播放的Music音频流，Voi
 
 若使用AVPlayer播放音频(C/C++)，则可以调用OH_AVPlayer_SetAudioInterruptMode函数进行设置。
 
-若使用AudioRenderer开发音频播放功能(ArkTs)，则可以调用setInterruptMode函数进行设置。
+若使用AudioRenderer开发音频播放功能(ArkTS)，则可以调用setInterruptMode函数进行设置。
 
 若使用OHAudio开发音频播放功能(C/C++)，则可以调用OH_AudioStreamBuilder_SetRendererInterruptMode函数进行设置。
 
@@ -112,11 +112,11 @@ VoiceCommunication开始播放时，将暂停正在播放的Music音频流，Voi
 
 若使用AVPlayer播放音频(C/C++)，可以调用OH_AVPlayer_SetOnInfoCallback()接口，监听音频焦点事件OH_AVPlayerOnInfoCallback。
 
-若使用AudioRenderer开发音频播放功能(ArkTs)，可以调用on('audioInterrupt')接口，监听音频焦点事件InterruptEvent。
+若使用AudioRenderer开发音频播放功能(ArkTS)，可以调用on('audioInterrupt')接口，监听音频焦点事件InterruptEvent。
 
 若使用OHAudio开发音频播放功能(C/C++)，可以调用OH_AudioStreamBuilder_SetRendererCallback接口，监听音频焦点事件OH_AudioRenderer_OnInterruptEvent。
 
-若使用AudioCapturer开发音频录制功能(ArkTs)，可以调用on('audioInterrupt')接口，监听音频焦点事件InterruptEvent。
+若使用AudioCapturer开发音频录制功能(ArkTS)，可以调用on('audioInterrupt')接口，监听音频焦点事件InterruptEvent。
 
 若使用OHAudio开发音频录制功能(C/C++)，可以调用OH_AudioStreamBuilder_SetCapturerCallback接口，监听音频焦点事件OH_AudioCapturer_OnInterruptEvent。
 
@@ -142,7 +142,7 @@ InterruptForceType参数提示应用该焦点变化是否已由系统强制操�
 
 InterruptHint参数用于提示应用音频流的状态：
 
-继续（INTERRUPT_HINT_RESUME）：音频流可恢复播放或录制，仅会接收到PAUSE（暂停提示）之后收到。
+继续（INTERRUPT_HINT_RESUME）：音频流可恢复播放或录制，仅在接收到PAUSE（暂停提示）事件后才会收到。
 
 此操作无法由系统强制执行，其对应的InterruptForceType一定为INTERRUPT_SHARE类型。
 
@@ -167,7 +167,7 @@ InterruptHint参数用于提示应用音频流的状态：
 
 处理音频焦点示例:
 
-为了带给用户更好的音频体验，针对不同的音频焦点事件内容，应用需要做出相应的处理操作。此处以使用AudioRenderer开发音频播放功能(ArkTs)为例，展示推荐应用采取的处理方法，提供伪代码供开发者参考。
+为了带给用户更好的音频体验，针对不同的音频焦点事件内容，应用需要做出相应的处理操作。此处以使用AudioRenderer开发音频播放功能(ArkTS)为例，展示推荐应用采取的处理方法，提供伪代码供开发者参考。
 
 在监听音频播放焦点变化事件之前，需要先获取AudioRenderer实例。若使用其他接口开发音频播放或音频录制功能，处理方法类似，具体的代码实现，开发者可结合实际情况编写，处理方法也可自行调整。
 
@@ -175,7 +175,7 @@ import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // ...
 
-let isPlay: boolean; // 是否正在播放，实际开发中，对应与音频播放状态相关的模块。
+let isPlaying: boolean; // 是否正在播放，实际开发中，对应与音频播放状态相关的模块。
 let isDucked: boolean; // 是否降低音量，实际开发中，对应与音频音量相关的模块。
 let started: boolean; // 标识符，记录“开始播放（start）”操作是否成功。
 
@@ -196,12 +196,12 @@ async function onAudioInterrupt(): Promise<void> {
         case audio.InterruptHint.INTERRUPT_HINT_PAUSE:
           // 此分支表示系统已将音频流暂停（临时失去焦点），为保持状态一致，应用需切换至音频暂停状态。
           // 临时失去焦点：待其他音频流释放音频焦点后，本音频流会收到resume对应的音频焦点事件，到时可自行继续播放。
-          isPlay = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
+          isPlaying = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
           break;
         case audio.InterruptHint.INTERRUPT_HINT_STOP:
           // 此分支表示系统已将音频流停止（永久失去焦点），为保持状态一致，应用需切换至音频暂停状态。
           // 永久失去焦点：后续不会再收到任何音频焦点事件，若想恢复播放，需要用户主动触发。
-          isPlay = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
+          isPlaying = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
           break;
         case audio.InterruptHint.INTERRUPT_HINT_DUCK:
           // 此分支表示系统已将音频音量降低（默认降到正常音量的20%）。
@@ -224,14 +224,17 @@ async function onAudioInterrupt(): Promise<void> {
           if (audioRenderer == undefined) {
             return;
           }
-          await audioRenderer.start().then(() => {
-            started = true; // start()执行成功。
-          }).catch((err: BusinessError) => {
-            started = false; // start()执行失败。
-          });
+          try {
+            await audioRenderer.start();
+            started = true;
+          } catch (err) {
+            let error = err as BusinessError;
+            console.error(`Failed to start audio renderer. Code: ${error.code}, message: ${error.message}`);
+            started = false;
+          }
           // 若start()执行成功，则切换至音频播放状态。
           if (started) {
-            isPlay = true; // 此句为简化处理，代表应用切换至音频播放状态的若干操作。
+            isPlaying = true; // 此句为简化处理，代表应用切换至音频播放状态的若干操作。
           } else {
             // 音频继续播放的操作执行失败。
           }
@@ -252,7 +255,7 @@ import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // ...
 
-let isPlay: boolean; // 是否正在播放，实际开发中，对应与音频播放状态相关的模块。
+let isPlaying: boolean; // 是否正在播放，实际开发中，对应与音频播放状态相关的模块。
 let isDucked: boolean; // 是否降低音量，实际开发中，对应与音频音量相关的模块。
 let started: boolean; // 标识符，记录“开始播放（start）”操作是否成功。
 
@@ -273,12 +276,12 @@ async function onAudioInterrupt(): Promise<void> {
         case audio.InterruptHint.INTERRUPT_HINT_PAUSE:
           // 此分支表示系统已将音频流暂停（临时失去焦点），为保持状态一致，应用需切换至音频暂停状态。
           // 临时失去焦点：待其他音频流释放音频焦点后，本音频流会收到resume对应的音频焦点事件，到时可自行继续播放。
-          isPlay = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
+          isPlaying = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
           break;
         case audio.InterruptHint.INTERRUPT_HINT_STOP:
           // 此分支表示系统已将音频流停止（永久失去焦点），为保持状态一致，应用需切换至音频暂停状态。
           // 永久失去焦点：后续不会再收到任何音频焦点事件，若想恢复播放，需要用户主动触发。
-          isPlay = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
+          isPlaying = false; // 此句为简化处理，代表应用切换至音频暂停状态的若干操作。
           break;
         case audio.InterruptHint.INTERRUPT_HINT_DUCK:
           // 此分支表示系统已将音频音量降低（默认降到正常音量的20%）。
@@ -301,14 +304,17 @@ async function onAudioInterrupt(): Promise<void> {
           if (audioRenderer == undefined) {
             return;
           }
-          await audioRenderer.start().then(() => {
-            started = true; // start()执行成功。
-          }).catch((err: BusinessError) => {
-            started = false; // start()执行失败。
-          });
+          try {
+            await audioRenderer.start();
+            started = true;
+          } catch (err) {
+            let error = err as BusinessError;
+            console.error(`Failed to start audio renderer. Code: ${error.code}, message: ${error.message}`);
+            started = false;
+          }
           // 若start()执行成功，则切换至音频播放状态。
           if (started) {
-            isPlay = true; // 此句为简化处理，代表应用切换至音频播放状态的若干操作。
+            isPlaying = true; // 此句为简化处理，代表应用切换至音频播放状态的若干操作。
           } else {
             // 音频继续播放的操作执行失败。
           }

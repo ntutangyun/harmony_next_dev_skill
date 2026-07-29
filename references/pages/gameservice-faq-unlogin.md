@@ -6,6 +6,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 
 游戏官方账号图标大小是多少
 
-游戏如何实现不展示官方账号登录
+如何设置游戏登录界面不显示官方账号登录
 
 玩家选错登录账号后如何处理

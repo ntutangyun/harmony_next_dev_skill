@@ -5,3 +5,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/harmony-a
 Agent Framework Kit简介
 
 通过Function组件拉起智能体
+
+通过AgentAbilityExtension实现智能体间A2A协议通信

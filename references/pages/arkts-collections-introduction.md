@@ -18,9 +18,9 @@ import { ArkTSUtils, collections, taskpool } from '@kit.ArkTS';
 
 @Concurrent
 async function add(arr: collections.Array<number>, lock: ArkTSUtils.locks.AsyncLock) {
- await lock.lockAsync(() => {  // 如果不添加异步锁，任务会因为数据竞争冲突，导致抛异常失败
-   arr[0]++;
- })
+  await lock.lockAsync(() => { // 如果不添加异步锁，任务会因为数据竞争冲突，导致抛异常失败
+    arr[0]++;
+  })
 }
 
 @Entry
@@ -49,8 +49,10 @@ struct Index {
           }
           taskpool.execute(taskGroup).then(() => {
             console.info(`Return success: ${arr[0]} === ${count}`);
+            this.message = 'success';
           }).catch((e: Error) => {
-            console.error("Return error.");
+            console.error('Return error.');
+            this.message = 'failed';
           })
         })
     }
@@ -71,11 +73,11 @@ ArkTS共享容器采用引用传递方式跨线程传递，与原生容器相比
 
 [h2]Array
 
-支持通过collections.Array.from方法将原生容器Array转换为ArkTS Array容器；支持通过原生容器Array的from方法将 ArkTS Array容器转换为原生容器Array。
+支持通过collections.Array.from方法将原生容器Array转换为ArkTS Array容器；支持通过原生容器Array的from方法将ArkTS Array容器转换为原生容器Array。
 
 原生API方法	ArkTS容器集方法	是否有行为差异	在ArkTS容器中的差异表现
 length: number	readonly length: number	是	为了防止undefined扩散，不允许设置length。
-new(arrayLength ?: number): any[]	static create(arrayLength: number, initialValue: T): Array	是	为了防止undefined扩散，构造函数中必须提供一个初始值。
+new(arrayLength?: number): any[]	static create(arrayLength: number, initialValue: T): Array	是	为了防止undefined扩散，构造函数中必须提供一个初始值。
 new <T>(arrayLength: number): T[]	constructor()	是	构造时传入的数据必须为Sendable类型，否则将导致编译错误。
 new <T>(...items: T[]): T[]	constructor(first: T, ...left: T[])	是	为了防止undefined扩散，构造函数中必须提供一个初始值，继承场景下，无法调用该函数进行对象构造。
 from<T>(arrayLike: ArrayLike<T>): T[]	static from<T>(arrayLike: ArrayLike<T>): Array<T>	否	/
@@ -148,7 +150,7 @@ reduce(callbackfn: (previousValue: number, currentValue: number, currentIndex: n
 reduce(callbackfn: (previousValue: number, currentValue: number, currentIndex: number, array: Int8Array) => number, initialValue: number): number	reduce(callbackFn: TypedArrayReduceCallback<number, number, Int8Array>, initialValue: number): number	否	/
 reduce<U>(callbackfn: (previousValue: U, currentValue: number, currentIndex: number, array: Int8Array) => U, initialValue: U): U	reduce<U>(callbackFn: TypedArrayReduceCallback<U, number, Int8Array>, initialValue: U): U	否	/
 reverse(): Int8Array	reverse(): Int8Array	否	/
-set(array: ArrayLike<number>, offset?: number): void	set(array: ArrayLike<number>, offset?: number): void	是	不允许在遍历、访问过程中进行元素的增、删、改操作否则会抛出异常。
+set(array: ArrayLike<number>, offset?: number): void	set(array: ArrayLike<number>, offset?: number): void	是	不允许在遍历、访问过程中进行元素的增、删、改操作，否则会抛出异常。
 slice(start?: number, end?: number): Int8Array	slice(start?: number, end?: number): Int8Array	否	/
 some(predicate: (value: number, index: number, array: Int8Array) => unknown, thisArg?: any): boolean	some(predicate: TypedArrayPredicateFn<number, Int8Array>): boolean	是	ArkTS不支持this，因此不支持thisArg参数。
 sort(compareFn?: (a: number, b: number) => number): this	sort(compareFn?: TypedArrayCompareFn<number>): Int8Array	是	1. 不允许在遍历、访问过程中进行元素的增、删、改操作，否则会抛出异常。 2. 继承场景下，无法获得实际类型的返回值。
@@ -185,7 +187,7 @@ set(key: K, value: V): this	set(key: K, value: V): Map<K, V>	是	不允许在遍
 entries(): IterableIterator<[K, V]>	entries(): IterableIterator<[K, V]>	否	/
 keys(): IterableIterator<K>	keys(): IterableIterator<K>	否	/
 values(): IterableIterator<V>	values(): IterableIterator<V>	否	/
-new <K, V>(entries?: readonly (readonly [K, V])[] | null): Map<K, V>	constructor(entries?: readonly (readonly [K, V])[] | null)	是	构造时传入的k,v键值不能是非Sendable数据，否则编译会报错。
+new <K, V>(entries?: readonly (readonly [K, V])[] | null): Map<K, V>	constructor(entries?: readonly (readonly [K, V])[] | null)	是	构造时传入的k,v键值必须均为Sendable数据，否则编译会报错。
 
 [h2]Set
 
@@ -210,9 +212,9 @@ import { ArkTSUtils, collections, taskpool } from '@kit.ArkTS';
 
 @Concurrent
 async function add(arr: collections.Array<number>, lock: ArkTSUtils.locks.AsyncLock) {
- await lock.lockAsync(() => {  // 如果不添加异步锁，任务会因为数据竞争冲突，导致抛异常失败
-   arr[0]++;
- })
+  await lock.lockAsync(() => { // 如果不添加异步锁，任务会因为数据竞争冲突，导致抛异常失败
+    arr[0]++;
+  })
 }
 
 @Entry
@@ -241,8 +243,10 @@ struct Index {
           }
           taskpool.execute(taskGroup).then(() => {
             console.info(`Return success: ${arr[0]} === ${count}`);
+            this.message = 'success';
           }).catch((e: Error) => {
-            console.error("Return error.");
+            console.error('Return error.');
+            this.message = 'failed';
           })
         })
     }

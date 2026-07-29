@@ -13,7 +13,7 @@ const char_t *GetFormatName(Format format)
 参数说明
 
 参数	输入/输出	说明
-format	输入	format枚举值。
+format	输入	format枚举值，请参见Format。
 
 返回值
 

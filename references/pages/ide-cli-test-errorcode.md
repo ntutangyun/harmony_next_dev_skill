@@ -295,3 +295,75 @@ Testing on C/C++ methods not supported.
 处理步骤
 
 使用仪器测试。
+
+00507017 includeHar有相同路径
+
+错误信息
+
+The same path defined in includeHar list in coverage-filter.json5.
+
+错误描述
+
+coverage-filter.json5中的includeHar存在相同的路径。
+
+可能原因
+
+coverage-filter.json5中的includeHar存在相同的路径。
+
+处理步骤
+
+删除相同的路径，确保路径唯一。
+
+00507018 extraAbilities有相同路径
+
+错误信息
+
+The same path defined in extraAbilities list in coverage-filter.json5.
+
+错误描述
+
+coverage-filter.json5中的extraAbilities存在相同的路径。
+
+可能原因
+
+coverage-filter.json5中的extraAbilities存在相同的路径。
+
+处理步骤
+
+删除相同的路径，确保路径唯一。
+
+00507019 includeHar和include有相同路径
+
+错误信息
+
+The same path defined in includeHar and include list in coverage-filter.json5.
+
+错误描述
+
+coverage-filter.json5中的includeHar和include存在相同的路径。
+
+可能原因
+
+coverage-filter.json5中的includeHar和include存在相同的路径。
+
+处理步骤
+
+删除相同的路径，确保路径唯一。
+
+00507020 includeHar和exclude有相同路径
+
+错误信息
+
+The same path defined in includeHar and exclude list in coverage-filter.json5.
+
+错误描述
+
+coverage-filter.json5中的includeHar和exclude存在相同的路径。
+
+可能原因
+
+coverage-filter.json5中的includeHar和exclude存在相同的路径。
+
+处理步骤
+
+删除相同的路径，确保路径唯一。

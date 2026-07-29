@@ -24,10 +24,11 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 创建ResponseCache实例。其中，pathToFolder即缓存记录文件路径，'/path/dir'请根据实际情况替换为想要存储HTTP缓存的沙箱路径。
 
+// 创建ResponseCache实例
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/SomeInstance' // 请根据自身业务选择合适的路径
   }
 });
 
@@ -35,17 +36,18 @@ const responseCache = new rcp.ResponseCache({
 
 const sessionA: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 const sessionB: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 
 由SessionA发起第一次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会从网络服务器获取数据，此时可查看缓存状态信息，此时缓存条数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await sessionA.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -53,6 +55,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 
 由SessionB发起第二次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会直接从缓存中获取响应，此时可查看缓存状态信息，此时缓存命中数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await sessionB.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
@@ -68,34 +71,36 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 创建ResponseCacheA和ResponseCacheB实例，两者对应缓存存储路径相同。其中，pathToFolder即HTTP缓存响应记录文件路径，'/path/dir'请根据实际情况替换为想要存储HTTP缓存的沙箱路径。
 
+// 创建ResponseCache实例
 const responseCacheA = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
-  }
+    pathToFolder: '/data/storage/el2/base/entry/temp/SomeCache' // 请根据自身业务选择合适的路径
+  },
 });
 const responseCacheB = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
-  }
+    pathToFolder: '/data/storage/el2/base/entry/temp/SomeCache' // 请根据自身业务选择合适的路径
+  },
 });
 
 创建SessionA和SessionB。配置responseCacheA实例到SessionA，配置responseCacheB实例到SessionB中。
 
 const sessionA: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCacheA
+    cache: responseCacheA,
   }
 });
 const sessionB: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCacheB
+    cache: responseCacheB,
   }
 });
 
 由SessionA发起第一次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会从网络服务器获取数据，此时可查看responseCacheA的缓存状态信息，此时缓存条数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await sessionA.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCacheA.getState();
@@ -103,6 +108,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 
 由SessionB发起第二次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会直接从缓存中获取响应，此时可查看responseCacheB的缓存状态信息，此时缓存条数和缓存命中数均应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await sessionB.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCacheB.getState();
@@ -120,10 +126,11 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 2
 
 ```
+// 创建ResponseCache实例
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/SomeInstance' // 请根据自身业务选择合适的路径
   }
 });
 ```
@@ -133,12 +140,12 @@ const responseCache = new rcp.ResponseCache({
 ```
 const sessionA: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 const sessionB: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 ```
@@ -146,6 +153,7 @@ const sessionB: rcp.Session = rcp.createSession({
 ### Code block 4
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await sessionA.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -155,6 +163,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 ### Code block 5
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await sessionB.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
@@ -170,17 +179,18 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 7
 
 ```
+// 创建ResponseCache实例
 const responseCacheA = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
-  }
+    pathToFolder: '/data/storage/el2/base/entry/temp/SomeCache' // 请根据自身业务选择合适的路径
+  },
 });
 const responseCacheB = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
-  }
+    pathToFolder: '/data/storage/el2/base/entry/temp/SomeCache' // 请根据自身业务选择合适的路径
+  },
 });
 ```
 
@@ -189,12 +199,12 @@ const responseCacheB = new rcp.ResponseCache({
 ```
 const sessionA: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCacheA
+    cache: responseCacheA,
   }
 });
 const sessionB: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCacheB
+    cache: responseCacheB,
   }
 });
 ```
@@ -202,6 +212,7 @@ const sessionB: rcp.Session = rcp.createSession({
 ### Code block 9
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await sessionA.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCacheA.getState();
@@ -211,6 +222,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 ### Code block 10
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await sessionB.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCacheB.getState();

@@ -19,7 +19,7 @@ TensorDesc GetDynamicOutputDesc(const char_t *name, uint32_t index) const;
 
 参数名	输入/输出	描述
 name	输入	算子动态Output的名称。
-index	输入	算子动态Output编号，编号起始值从1开始。
+index	输入	算子动态Output编号，编号起始值从0开始。
 
 返回值
 

@@ -25,3 +25,5 @@ AppGallery Kit简介
 AppGallery Kit常见问题
 
 附录
+
+AppGallery Kit术语

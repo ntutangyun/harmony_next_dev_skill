@@ -22,8 +22,8 @@ isReuseSource	是否允许修改源操作数。该参数预留，传入默认值
 表2 接口参数说明
 
 参数名	输入/输出	描述
-dstTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
-srcTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。
+dstTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。
+srcTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。
 calCount	输入	实际计算数据元素个数。
 
 返回值

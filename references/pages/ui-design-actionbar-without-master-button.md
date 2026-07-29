@@ -18,7 +18,7 @@ import { HdsActionBar, ActionBarButton } from '@kit.UIDesignKit'
 
 @Entry
 @ComponentV2
-struct TestNoPrimaryButton {
+struct Index {
 
   build() {
     Column() {
@@ -54,7 +54,7 @@ import { HdsActionBar, ActionBarButton } from '@kit.UIDesignKit'
 ```
 @Entry
 @ComponentV2
-struct TestNoPrimaryButton {
+struct Index {
 
   build() {
     Column() {

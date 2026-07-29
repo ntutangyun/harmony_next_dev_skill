@@ -4,6 +4,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 开发者可以快速将本地设备上的文件上传至云侧，上传完后，可以前往AppGallery Connect的“云存储”页面，查看上传的文档内容。
 
+说明
+
+上传的单个文件大小不得超过1GB。
+
 约束与限制
 
 支持Phone、Tablet设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从6.1.0(23)版本开始，新增支持PC/2in1设备。
@@ -13,6 +17,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 已初始化存储实例。
 
 操作步骤
+
+导入相关模块。
+
+import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
+import { request } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { GlobalContext } from '../common/GlobalContext';
+import { fileIo } from '@kit.CoreFileKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+上传文件。
 
 选择待上传的文件，下方示例代码中使用photoAccessHelper.PhotoViewPicker指定需要上传的文件。
 
@@ -28,103 +45,68 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 完整的示例代码如下：
 
-import { cloudStorage } from '@kit.CloudFoundationKit';
-import { BusinessError, request } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { photoAccessHelper } from '@kit.MediaLibraryKit';
-import { fileIo } from '@kit.CoreFileKit';
-import { GlobalContext } from '../common/GlobalContext';
+hilog.info(0x0000, 'Storage', `upload file with api`);
+let photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+photoSelectOptions.maxSelectNumber = 1;
+let photoViewPicker = new photoAccessHelper.PhotoViewPicker();
+photoViewPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+  let fileUri = photoSelectResult.photoUris[0];
+  hilog.info(0x0000, 'Storage', `pick file ${fileUri}`);
+  let fileName = fileUri.split('/').pop() as string;
+  UI.uploadFileName = fileName;
+  hilog.info(0x0000, 'Storage', `file name ${fileName}`);
+  let cacheFile = `${Date.now()}_${fileName}`;
+  hilog.info(0x0000, 'Storage', `cacheFile ${cacheFile}`);
+  let cacheFilePath = GlobalContext.getContext().cacheDir + '/' + cacheFile;
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+  try {
+    let srcFile = fileIo.openSync(fileUri);
+    let dstFile = fileIo.openSync(cacheFilePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+    fileIo.copyFileSync(srcFile.fd, dstFile.fd);
+    fileIo.closeSync(srcFile);
+    fileIo.closeSync(dstFile);
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 上传指定文件至云侧
-  upload() {
-    this.selectPhoto().then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
-      let fileUri = photoSelectResult.photoUris[0];
-      hilog.info(0x0000, 'testTag', `pick file ${fileUri}`);
-      let fileName = fileUri.split('/').pop() as string;
-      hilog.info(0x0000, 'testTag', `file name ${fileName}`);
-      let cacheFile = GlobalContext.getContext().cacheDir + '/' + fileName;
-      hilog.info(0x0000, 'testTag', `cacheFile ${cacheFile}`);
-      // 将选中文件copy至cache目录下
-      this.copyFile(fileUri, cacheFile);
-      // 上传至云存储默认实例
-      this.uploadFile(cacheFile, `screenshot/${fileName}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to upload file, code: ${err.code}, message: ${err.message}`);
+    cloudStorage.bucket().uploadFile(GlobalContext.getContext(), {
+      localPath: cacheFile,
+      cloudPath: UI.uploadFileName,
+      mode: request.agent.Mode.BACKGROUND
     })
-  }
-
-  /**
-   * @throws photoViewPicker select throws
-   */
-  selectPhoto(): Promise<photoAccessHelper.PhotoSelectResult> {
-    // 使用photoAccessHelper选择指定的文件
-    let photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
-    photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE; // 过滤选择媒体文件类型为IMAGE
-    photoSelectOptions.maxSelectNumber = 1; // 选择媒体文件的最大数目
-    let photoViewPicker = new photoAccessHelper.PhotoViewPicker();
-    return photoViewPicker.select(photoSelectOptions);
-  }
-
-  copyFile(srcPath: string, dstPath: string) {
-    try {
-      let srcFile = fileIo.openSync(srcPath);
-      let dstFile = fileIo.openSync(dstPath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
-      fileIo.copyFileSync(srcFile.fd, dstFile.fd);
-      fileIo.closeSync(srcFile);
-      fileIo.closeSync(dstFile);
-    } catch (e) {
-      hilog.error(0x0000, 'testTag', `copy file failed ${e.message}`);
-      return;
-    }
-  }
-
-  uploadFile(localPath: string, cloudPath: string) {
-    storageBucket.uploadFile(GlobalContext.getContext(), {
-      localPath: localPath, // 本地文件路径（context.cacheDir目录下的文件路径）
-      cloudPath: cloudPath   // 云侧路径，支持传入“文件目录/文件名”（如“screenshot/demo.jpg”），或仅传入文件名。
-    }).then((task: request.agent.Task) => {
-      task.on('progress', (progress) => {
-        hilog.info(0x0000, 'testTag', `on progress ${JSON.stringify(progress)}`);
-      });
-      task.on('completed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on completed ${JSON.stringify(progress)}`);
-        // 删除cache目录临时文件
-        fileIo.unlink(localPath).catch((err: BusinessError) => {
-          hilog.error(0x0000, 'testTag', `Failed to unlink, code: ${err.code}, message: ${err.message}.`);
+      .then((task: request.agent.Task) => {
+        task.on('progress', (progress) => {
+          hilog.info(0x0000, 'Storage', `on progress ${JSON.stringify(progress)}`);
         });
-      });
-      task.on('failed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on failed ${JSON.stringify(progress)}`);
-        // 删除cache目录临时文件
-        fileIo.unlink(localPath).catch((err: BusinessError) => {
-          hilog.error(0x0000, 'testTag', `Failed to unlink, code: ${err.code}, message: ${err.message}.`);
+        task.on('completed', (progress) => {
+          hilog.info(0x0000, 'Storage', `on completed ${JSON.stringify(progress)}`);
+          fileIo.unlink(cacheFilePath).catch((err: BusinessError) => {
+            hilog.error(0x0000, 'Storage', `Failed to unlink file, code: ${err.code}, message: ${err.message}`);
+          });
+          hilog.info(0x0000, 'Storage', `delete cache file ${cacheFilePath}`);
         });
+        task.on('failed', (progress) => {
+          hilog.info(0x0000, 'Storage', `on failed ${JSON.stringify(progress)}`);
+          fileIo.unlink(cacheFilePath).catch((err: BusinessError) => {
+            hilog.error(0x0000, 'Storage', `Failed to unlink file, code: ${err.code}, message: ${err.message}`);
+          });
+          hilog.info(0x0000, 'Storage', `delete cache file ${cacheFilePath}`);
+        });
+        task.start((err: BusinessError) => {
+          if (err) {
+            hilog.error(0x0000, 'Storage',
+              `Failed to start the uploadFileWithTask task, code: ${err.code}, message: ${err.message}`);
+          } else {
+            hilog.info(0x0000, 'Storage', `Succeeded in starting a uploadFileWithTask task.`);
+          }
+        });
+      })
+      .catch((error: BusinessError) => {
+        hilog.error(0x0000, 'Storage', `Failed to upLoadFile:  code: ${error.code}, message: ${error.message}`);
       });
-      task.on('response', (response) => {
-        hilog.info(0x0000, 'testTag', `on response ${JSON.stringify(response)}`);
-      });
-
-      // start task
-      task.start((err: BusinessError) => {
-        if (err) {
-          hilog.error(0x0000, 'testTag',
-            `Failed to start a file upload task, code: ${err.code}, message: ${err.message}`);
-        } else {
-          hilog.info(0x0000, 'testTag', `Succeeded in starting a file upload task.`);
-        }
-      });
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to upload file, code: ${err.code}, message: ${err.message}`);
-    })
+  } catch (e) {
+    hilog.info(0x0000, 'Storage', `uploadFile failed ${e.message}`);
   }
-}
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to pick photo view, code: ${err.code}, message: ${err.message}`);
+})
 
 说明
 
@@ -136,100 +118,78 @@ export struct testPage {
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
-import { BusinessError, request } from '@kit.BasicServicesKit';
+// ...
+import { request } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { photoAccessHelper } from '@kit.MediaLibraryKit';
-import { fileIo } from '@kit.CoreFileKit';
 import { GlobalContext } from '../common/GlobalContext';
+import { fileIo } from '@kit.CoreFileKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+```
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+### Code block 2
 
-@Component
-export struct testPage {
-  build() {
-  }
+```
+hilog.info(0x0000, 'Storage', `upload file with api`);
+let photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+photoSelectOptions.maxSelectNumber = 1;
+let photoViewPicker = new photoAccessHelper.PhotoViewPicker();
+photoViewPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+  let fileUri = photoSelectResult.photoUris[0];
+  hilog.info(0x0000, 'Storage', `pick file ${fileUri}`);
+  let fileName = fileUri.split('/').pop() as string;
+  UI.uploadFileName = fileName;
+  hilog.info(0x0000, 'Storage', `file name ${fileName}`);
+  let cacheFile = `${Date.now()}_${fileName}`;
+  hilog.info(0x0000, 'Storage', `cacheFile ${cacheFile}`);
+  let cacheFilePath = GlobalContext.getContext().cacheDir + '/' + cacheFile;
 
-  // 上传指定文件至云侧
-  upload() {
-    this.selectPhoto().then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
-      let fileUri = photoSelectResult.photoUris[0];
-      hilog.info(0x0000, 'testTag', `pick file ${fileUri}`);
-      let fileName = fileUri.split('/').pop() as string;
-      hilog.info(0x0000, 'testTag', `file name ${fileName}`);
-      let cacheFile = GlobalContext.getContext().cacheDir + '/' + fileName;
-      hilog.info(0x0000, 'testTag', `cacheFile ${cacheFile}`);
-      // 将选中文件copy至cache目录下
-      this.copyFile(fileUri, cacheFile);
-      // 上传至云存储默认实例
-      this.uploadFile(cacheFile, `screenshot/${fileName}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to upload file, code: ${err.code}, message: ${err.message}`);
+  try {
+    let srcFile = fileIo.openSync(fileUri);
+    let dstFile = fileIo.openSync(cacheFilePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+    fileIo.copyFileSync(srcFile.fd, dstFile.fd);
+    fileIo.closeSync(srcFile);
+    fileIo.closeSync(dstFile);
+
+    cloudStorage.bucket().uploadFile(GlobalContext.getContext(), {
+      localPath: cacheFile,
+      cloudPath: UI.uploadFileName,
+      mode: request.agent.Mode.BACKGROUND
     })
-  }
-
-  /**
-   * @throws photoViewPicker select throws
-   */
-  selectPhoto(): Promise<photoAccessHelper.PhotoSelectResult> {
-    // 使用photoAccessHelper选择指定的文件
-    let photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
-    photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE; // 过滤选择媒体文件类型为IMAGE
-    photoSelectOptions.maxSelectNumber = 1; // 选择媒体文件的最大数目
-    let photoViewPicker = new photoAccessHelper.PhotoViewPicker();
-    return photoViewPicker.select(photoSelectOptions);
-  }
-
-  copyFile(srcPath: string, dstPath: string) {
-    try {
-      let srcFile = fileIo.openSync(srcPath);
-      let dstFile = fileIo.openSync(dstPath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
-      fileIo.copyFileSync(srcFile.fd, dstFile.fd);
-      fileIo.closeSync(srcFile);
-      fileIo.closeSync(dstFile);
-    } catch (e) {
-      hilog.error(0x0000, 'testTag', `copy file failed ${e.message}`);
-      return;
-    }
-  }
-
-  uploadFile(localPath: string, cloudPath: string) {
-    storageBucket.uploadFile(GlobalContext.getContext(), {
-      localPath: localPath, // 本地文件路径（context.cacheDir目录下的文件路径）
-      cloudPath: cloudPath   // 云侧路径，支持传入“文件目录/文件名”（如“screenshot/demo.jpg”），或仅传入文件名。
-    }).then((task: request.agent.Task) => {
-      task.on('progress', (progress) => {
-        hilog.info(0x0000, 'testTag', `on progress ${JSON.stringify(progress)}`);
-      });
-      task.on('completed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on completed ${JSON.stringify(progress)}`);
-        // 删除cache目录临时文件
-        fileIo.unlink(localPath).catch((err: BusinessError) => {
-          hilog.error(0x0000, 'testTag', `Failed to unlink, code: ${err.code}, message: ${err.message}.`);
+      .then((task: request.agent.Task) => {
+        task.on('progress', (progress) => {
+          hilog.info(0x0000, 'Storage', `on progress ${JSON.stringify(progress)}`);
         });
-      });
-      task.on('failed', (progress) => {
-        hilog.info(0x0000, 'testTag', `on failed ${JSON.stringify(progress)}`);
-        // 删除cache目录临时文件
-        fileIo.unlink(localPath).catch((err: BusinessError) => {
-          hilog.error(0x0000, 'testTag', `Failed to unlink, code: ${err.code}, message: ${err.message}.`);
+        task.on('completed', (progress) => {
+          hilog.info(0x0000, 'Storage', `on completed ${JSON.stringify(progress)}`);
+          fileIo.unlink(cacheFilePath).catch((err: BusinessError) => {
+            hilog.error(0x0000, 'Storage', `Failed to unlink file, code: ${err.code}, message: ${err.message}`);
+          });
+          hilog.info(0x0000, 'Storage', `delete cache file ${cacheFilePath}`);
         });
+        task.on('failed', (progress) => {
+          hilog.info(0x0000, 'Storage', `on failed ${JSON.stringify(progress)}`);
+          fileIo.unlink(cacheFilePath).catch((err: BusinessError) => {
+            hilog.error(0x0000, 'Storage', `Failed to unlink file, code: ${err.code}, message: ${err.message}`);
+          });
+          hilog.info(0x0000, 'Storage', `delete cache file ${cacheFilePath}`);
+        });
+        task.start((err: BusinessError) => {
+          if (err) {
+            hilog.error(0x0000, 'Storage',
+              `Failed to start the uploadFileWithTask task, code: ${err.code}, message: ${err.message}`);
+          } else {
+            hilog.info(0x0000, 'Storage', `Succeeded in starting a uploadFileWithTask task.`);
+          }
+        });
+      })
+      .catch((error: BusinessError) => {
+        hilog.error(0x0000, 'Storage', `Failed to upLoadFile:  code: ${error.code}, message: ${error.message}`);
       });
-      task.on('response', (response) => {
-        hilog.info(0x0000, 'testTag', `on response ${JSON.stringify(response)}`);
-      });
-
-      // start task
-      task.start((err: BusinessError) => {
-        if (err) {
-          hilog.error(0x0000, 'testTag',
-            `Failed to start a file upload task, code: ${err.code}, message: ${err.message}`);
-        } else {
-          hilog.info(0x0000, 'testTag', `Succeeded in starting a file upload task.`);
-        }
-      });
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to upload file, code: ${err.code}, message: ${err.message}`);
-    })
+  } catch (e) {
+    hilog.info(0x0000, 'Storage', `uploadFile failed ${e.message}`);
   }
-}
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to pick photo view, code: ${err.code}, message: ${err.message}`);
+})
 ```

@@ -65,7 +65,7 @@ begin_time	number	采集开始时间，单位为ms。
 end_time	number	采集结束时间，单位为ms。
 fault_type	number	故障类型。 从API版本20开始，支持以下参数： - 1：前台CPU高负载异常； - 2：后台CPU高负载异常； - 3：线程CPU高负载异常。 从API版本26.0.0开始，支持以下参数： - 4：后台分档检测-10分钟CPU高负载异常； - 5：后台分档检测-30分钟CPU高负载异常； - 6：后台分档检测-60分钟CPU高负载异常。
 external_log	string[]	记录故障日志文件路径，日志的文件名是：CPU_USAGE_HIGH_时间数字_数字.log，详细见日志规格。为避免目录空间超限，导致新生成的日志文件写入失败，日志文件处理完后请及时删除。
-log_over_limit	boolean	生成的故障日志文件与已存在的日志文件总大小是否超过5M上限。true表示超过上限，日志写入失败；false表示未超过上限
+log_over_limit	boolean	生成的故障日志文件与已存在的日志文件总大小是否超过5MB上限。true表示超过上限，日志写入失败；false表示未超过上限。 启用minidump时，上限调整至35MB；关闭minidump时，上限恢复到5MB。
 threads	object[]	线程信息，具体信息取决于fault_type故障类型，不同类型记录的线程信息存在差异。 - 前台CPU高负载异常：异常进程的TOP5线程信息； - 后台CPU高负载异常：异常进程的TOP5线程信息； - 线程CPU高负载异常：异常线程的信息。
 
 [h2]threads字段说明

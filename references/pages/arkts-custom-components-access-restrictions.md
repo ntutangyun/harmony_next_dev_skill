@@ -22,7 +22,7 @@ ArkTS会对自定义组件的成员变量使用的访问限定符private/public/
 
 由于struct没有继承能力，上述所有的这些变量使用protected修饰时，会有编译告警日志提示。
 
-@Require含义是当前被@Require装饰的变量必须被外部初始化，当@Require和private同时装饰@State/@Prop/@Provide/@BuilderParam/常规成员变量(不涉及更新的普通变量)时，它们的含义是自相矛盾的，会有编译告警日志提示。
+@Require含义是当前被@Require装饰的变量必须被外部初始化，当@Require装饰器和private访问限定符同时修饰@State/@Prop/@Provide/@BuilderParam装饰的变量或常规成员变量(不涉及更新的普通变量)时，它们的含义是自相矛盾的，会有编译告警日志提示。
 
 使用场景
 
@@ -113,6 +113,7 @@ struct LinkAccessRestrictions {
 
 @Component
 struct LinkComponentChild {
+  // 正确用法
   @State stateValue: string = 'Hello';
   @Prop propValue: string = 'Hello';
   @Provide provideValue: string = 'Hello';
@@ -197,6 +198,7 @@ struct PublicCorrectAccessRestrictions {
 
 @Component
 struct PublicCorrectComponentChild {
+  // 正确用法
   @LocalStorageProp('sessionLocalProp') localPropValue: string = 'Hello';
   @LocalStorageLink('sessionLocalLink') localLinkValue: string = 'Hello';
   @StorageProp('sessionProp') storagePropValue: string = 'Hello';
@@ -261,6 +263,7 @@ Property 'objectLinkValue' can not be decorated with both '@ObjectLink' and priv
 @Entry
 @Component
 struct PrivateWithLinkAccessRestrictions {
+  // 正确用法
   @State linkValue: string = 'Hello';
   @State objectLinkValue: PrivateComponentObj = new PrivateComponentObj();
 
@@ -339,6 +342,7 @@ struct ProtectedCorrectAccessRestrictions {
 
 @Component
 struct ProtectedCorrectComponentChild {
+  // 正确用法
   regularValue: string = 'Hello';
 
   build() {
@@ -399,6 +403,7 @@ struct PrivateCorrectAccessRestrictions {
 
 @Component
 struct PrivateCorrectComponentChild {
+  // 正确用法
   @Require @Prop propValue: string = 'Hello';
 
   build() {
@@ -502,6 +507,7 @@ struct LinkAccessRestrictions {
 
 @Component
 struct LinkComponentChild {
+  // 正确用法
   @State stateValue: string = 'Hello';
   @Prop propValue: string = 'Hello';
   @Provide provideValue: string = 'Hello';
@@ -590,6 +596,7 @@ struct PublicCorrectAccessRestrictions {
 
 @Component
 struct PublicCorrectComponentChild {
+  // 正确用法
   @LocalStorageProp('sessionLocalProp') localPropValue: string = 'Hello';
   @LocalStorageLink('sessionLocalLink') localLinkValue: string = 'Hello';
   @StorageProp('sessionProp') storagePropValue: string = 'Hello';
@@ -658,6 +665,7 @@ Property 'objectLinkValue' can not be decorated with both '@ObjectLink' and priv
 @Entry
 @Component
 struct PrivateWithLinkAccessRestrictions {
+  // 正确用法
   @State linkValue: string = 'Hello';
   @State objectLinkValue: PrivateComponentObj = new PrivateComponentObj();
 
@@ -740,6 +748,7 @@ struct ProtectedCorrectAccessRestrictions {
 
 @Component
 struct ProtectedCorrectComponentChild {
+  // 正确用法
   regularValue: string = 'Hello';
 
   build() {
@@ -804,6 +813,7 @@ struct PrivateCorrectAccessRestrictions {
 
 @Component
 struct PrivateCorrectComponentChild {
+  // 正确用法
   @Require @Prop propValue: string = 'Hello';
 
   build() {

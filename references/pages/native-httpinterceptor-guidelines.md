@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-ht
 
 场景介绍
 
-从API version 24开始，通过HTTP全局拦截器（包含只读拦截器和可修改拦截器），开发者可以在只读拦截器中监控HTTP流量，实现日志记录功能，也可以在可修改拦截器中添加自定义逻辑，实现修改请求头、修改响应头、修改响应体等功能。
+从API version 24开始，通过HTTP全局拦截器（全局HTTP拦截器包含只读拦截器和可修改拦截器），开发者可以在只读拦截器中监控HTTP流量，实现日志记录功能，也可以在可修改拦截器中添加自定义逻辑，实现修改请求头、修改响应头、修改响应体等功能。
 
 接口说明
 

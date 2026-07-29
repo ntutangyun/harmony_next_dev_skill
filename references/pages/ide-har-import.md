@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-har-import_
 
-引用三方HAR，包括从ohpm仓库进行安装、从本地文件夹和本地压缩包中进行安装三种方式。
+引用三方HAR/HSP包（以下简称三方包），包括从ohpm仓库进行安装、从本地文件夹和本地压缩包中进行安装三种方式。
 
 ohpm config set registry your_registry1,your_registry2
 

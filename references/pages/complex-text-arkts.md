@@ -106,7 +106,7 @@ let myParagraphStyle: text.ParagraphStyle = {
   wordBreak: text.WordBreak.BREAK_WORD
 };
 
-初始化段落对象，并添加占位符和文本。
+初始化段落对象，并添加文本。
 
 let fontCollection = text.FontCollection.getGlobalInstance();
 let paragraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
@@ -184,7 +184,7 @@ paragraph.paint(canvas, 10, 0);
 
 [h2]字体特征
 
-字体特征（FontFeature）绘制专注于在文本渲染过程中对字体特性（如粗体、斜体、字体变种等）的处理，允许字体在不同的排版场景下表现出不同的效果，可用于增强文本的表现力，使其更符合设计和阅读需求。
+字体特征（FontFeature）绘制专注于在文本渲染过程中对字体特性（如粗体、斜体、字体变体等）的处理，允许字体在不同的排版场景下表现出不同的效果，可用于增强文本的表现力，使其更符合设计和阅读需求。
 
 常见的FontFeature包含有liga、frac、case等，需要对应的ttf文件支持才能正常使能。
 
@@ -350,7 +350,7 @@ class MyRenderNode extends RenderNode {
         },
         // 装饰线样式，支持波浪，虚线，直线等
         decorationStyle:text.TextDecorationStyle.SOLID,
-        // 装饰线的高度
+        // 装饰线粗细缩放比例
         decorationThicknessScale: 1
       };
 
@@ -1738,7 +1738,7 @@ class MyRenderNode extends RenderNode {
         },
         // 装饰线样式，支持波浪，虚线，直线等
         decorationStyle:text.TextDecorationStyle.SOLID,
-        // 装饰线的高度
+        // 装饰线粗细缩放比例
         decorationThicknessScale: 1
       };
 

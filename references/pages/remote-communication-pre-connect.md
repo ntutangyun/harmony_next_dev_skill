@@ -23,7 +23,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 使用预建连接能力（ArkTS）
 
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 
 export async function startConnectionOnlyByRequest() {
   const session = rcp.createSession();
@@ -95,7 +94,6 @@ void dataTransRequest() {
 ArkTS：
 
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 
 export async function startConnectionOnlyByRequest() {
   const defaultSession = rcp.getDefaultSession();
@@ -161,7 +159,6 @@ void dataTransRequest() {
 
 ```
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 
 export async function startConnectionOnlyByRequest() {
   const session = rcp.createSession();
@@ -223,7 +220,6 @@ void dataTransRequest() {
 
 ```
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 
 export async function startConnectionOnlyByRequest() {
   const defaultSession = rcp.getDefaultSession();

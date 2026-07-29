@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-u
 
 约束与限制
 
-自定义按钮登录能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
+自定义按钮登录能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备。
 
 业务流程
 
@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-u
 
 如华为账号已登录，将直接返回Authorization Code等数据给应用。
 
-用户关联应用账号阶段（序号5-16）：
+用户关联应用账号阶段（序号5-14）：
 
 应用服务端通过Authorization Code获取到Access Token，再使用Access Token调用解析凭证接口获取用户相关信息。通过Authorization Code凭证获取用户信息可以有效避免黑客通过数据遍历、身份伪造、重放攻击等手段导致的安全风险。
 

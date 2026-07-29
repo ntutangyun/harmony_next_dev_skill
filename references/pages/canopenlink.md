@@ -16,7 +16,7 @@ canOpenLink接口不支持判断以App Linking方式跳转的目标应用是否�
 
 接口说明
 
-canOpenLink是bundleManager提供的支持判断目标应用是否可访问的接口。
+canOpenLink是@ohos.bundle.bundleManager (应用程序包管理模块)提供的支持判断目标应用是否可访问的接口。
 
 匹配规则请参考显式Want与隐式Want匹配规则。
 

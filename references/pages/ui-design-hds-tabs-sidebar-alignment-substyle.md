@@ -64,6 +64,8 @@ struct Index {
       .width('100%')
       .height('90%')
     }
+    .width('100%')
+    .height('100%')
   }
 }
 
@@ -116,6 +118,8 @@ struct Index {
       .width('100%')
       .height('90%')
     }
+    .width('100%')
+    .height('100%')
   }
 }
 ```

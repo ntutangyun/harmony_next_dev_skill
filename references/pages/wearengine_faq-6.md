@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wearengin
 
 手机和穿戴设备的包名或证书指纹不匹配
 
-轻量级智能穿戴设备侧：需要把手机的包名和指纹信息放到白名单中
+轻量级智能穿戴设备侧：需要把手机的包名和指纹信息放到允许清单中
 
 手机侧：需要把轻量级智能穿戴设备侧应用的包名和指纹信息配置正确
 

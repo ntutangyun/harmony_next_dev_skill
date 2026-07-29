@@ -14,7 +14,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 调用OH_CryptoSymKeyGenerator_Create和OH_CryptoSymKeyGenerator_Generate，生成密钥算法为AES、密钥长度为128位的对称密钥（OH_CryptoSymKey）。
 
-生成AES对称密钥，参考以下示例，并结合对称密钥生成和转换规格：AES和随机生成对称密钥理解。注意，参考文档与示例可能有入参差异
+生成AES对称密钥，参考以下示例，并结合对称密钥生成和转换规格：AES和随机生成对称密钥理解。注意，参考文档与示例可能有入参差异。
 
 调用OH_CryptoSymCipher_Create，指定字符串参数'AES128|GCM|PKCS7'，创建对称密钥类型为AES128、分组模式为GCM、填充模式为PKCS7的Cipher实例，用于完成加密操作。
 
@@ -36,9 +36,9 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 final输出结果可能为null，在访问具体数据前，需要先判断结果是否为null，避免产生异常。
 
-注意
+说明
 
-在GCM模式下，final会返回authTag，作为解密时初始化的认证信息，需要保存。GCM模式下，算法库当前只支持16字节的authTag。示例中authTag为16字节。
+在GCM模式下，一次加密流程中，将每次update和最后final的结果拼接起来，会得到“密文 + authTag”，authTag为末尾的16字节。其余部分均为密文。如果final的data参数传入null，则final的结果就是authTag。
 
 解密
 

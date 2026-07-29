@@ -52,7 +52,7 @@ doFinal失败，表示校验padding失败，doFinal对最后一块密文数据�
 
 key不正确，update得到的明文不正确，doFinal失败，即校验padding失败。
 
-iv不正确，完整的密文长度为16字节，update无输出，doFinal失败，即校验padding失败；完整的密文长度不是16字节（16的倍数），update得到的明文部分正确，doFinal成功。
+iv不正确，完整的密文长度为16字节，update无输出，doFinal失败，即校验padding失败；完整的密文长度是16字节的整数倍（不包含16字节），update得到的明文部分正确，doFinal成功。
 
 ciphertext不正确，倒数第一个或第二个密文块错误，update得到的明文部分正确（或无输出），doFinal失败，即校验padding失败；其他密文块错误，update得到的明文部分正确，doFinal成功。
 

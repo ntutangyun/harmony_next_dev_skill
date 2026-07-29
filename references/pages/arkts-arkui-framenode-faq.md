@@ -18,7 +18,7 @@ FrameNode节点运行时出现jscrash
 
 该示例演示了FrameNode抛出dispose相关异常的场景。运行示例代码后会出现jscrash报错，参考下方的动图，跳转至具体的报错场景，发现报错的原因是调用dispose后不能调用getMeasuredSize，在本示例中，删除dispose相关代码即可正常运行。
 
-import { NodeController, FrameNode, typeNode } from '@kit.ArkUI';
+import { NodeController, FrameNode } from '@kit.ArkUI';
 
 // 继承NodeController实现自定义UI控制器
 class MyNodeController extends NodeController {
@@ -113,7 +113,7 @@ napi_value BindNode(napi_env env, napi_callback_info info)
 ### Code block 1
 
 ```
-import { NodeController, FrameNode, typeNode } from '@kit.ArkUI';
+import { NodeController, FrameNode } from '@kit.ArkUI';
 
 // 继承NodeController实现自定义UI控制器
 class MyNodeController extends NodeController {

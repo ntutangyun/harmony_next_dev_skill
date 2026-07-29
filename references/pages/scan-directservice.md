@@ -34,11 +34,9 @@ HarmonyOS扫码入口调用系统能力解析码值，查询码值对应的应�
 
 处理接收到的码值，完成应用内页面跳转逻辑。
 
-import { router, window } from '@kit.ArkUI';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { UIAbility, Want } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { router, window } from '@kit.ArkUI';
 
 export default class EntryAbility extends UIAbility {
   private page: string = 'pages/Index';
@@ -47,11 +45,10 @@ export default class EntryAbility extends UIAbility {
   // 冷启动场景通过onCreate回调获取码值信息
   onCreate(want: Want): void {
     hilog.info(0x0001, '[Scan Access]', 'Succeeded in getting want in onCreate');
-    // 从want中获取传入的链接信息。
-    // 如传入的url为：https://www.example.com/programs?router=Access
+
+    // 从want中获取传入的链接信息。如传入的url为：https://www.example.com/scan
     this.getRouterUri(want);
   }
-
 
   // 热启动场景通过onNewWant回调获取码值信息
   onNewWant(want: Want): void {
@@ -59,7 +56,6 @@ export default class EntryAbility extends UIAbility {
     // 从want中获取传入的链接信息
     this.getRouterUri(want);
   }
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(0x0001, '[Scan Access]', 'Ability onWindowStageCreate');
@@ -88,14 +84,18 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
-
   // 解析扫码结果，跳转相应页面
-  private getRouterUri(want: Want) {
+  private getRouterUri(want: Want): void {
     const uri: string | undefined = want?.uri;
-    if (uri && this.uiContext) {
-      // 开发者根据解析的uri跳转至相应页面，例如需要跳转页面为"pages/Access"
+    if (!uri) {
+      return;
+    }
+    this.page = 'pages/Access';
+
+    if (this.uiContext) {
+      // 开发者根据解析的uri跳转至相应页面，例如需要跳转页面：pages/Access
       const status: router.RouterState = this.uiContext.getRouter().getState();
-      if (status && status.name !== 'Access' && uri) {
+      if (status && status.name !== 'Access') {
         try {
           // 根据uri参数做业务处理
           this.uiContext.getRouter().pushUrl({
@@ -136,11 +136,9 @@ export default class EntryAbility extends UIAbility {
 ### Code block 1
 
 ```
-import { router, window } from '@kit.ArkUI';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { UIAbility, Want } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { router, window } from '@kit.ArkUI';
 
 export default class EntryAbility extends UIAbility {
   private page: string = 'pages/Index';
@@ -149,11 +147,10 @@ export default class EntryAbility extends UIAbility {
   // 冷启动场景通过onCreate回调获取码值信息
   onCreate(want: Want): void {
     hilog.info(0x0001, '[Scan Access]', 'Succeeded in getting want in onCreate');
-    // 从want中获取传入的链接信息。
-    // 如传入的url为：https://www.example.com/programs?router=Access
+
+    // 从want中获取传入的链接信息。如传入的url为：https://www.example.com/scan
     this.getRouterUri(want);
   }
-
 
   // 热启动场景通过onNewWant回调获取码值信息
   onNewWant(want: Want): void {
@@ -161,7 +158,6 @@ export default class EntryAbility extends UIAbility {
     // 从want中获取传入的链接信息
     this.getRouterUri(want);
   }
-
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(0x0001, '[Scan Access]', 'Ability onWindowStageCreate');
@@ -190,14 +186,18 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
-
   // 解析扫码结果，跳转相应页面
-  private getRouterUri(want: Want) {
+  private getRouterUri(want: Want): void {
     const uri: string | undefined = want?.uri;
-    if (uri && this.uiContext) {
-      // 开发者根据解析的uri跳转至相应页面，例如需要跳转页面为"pages/Access"
+    if (!uri) {
+      return;
+    }
+    this.page = 'pages/Access';
+
+    if (this.uiContext) {
+      // 开发者根据解析的uri跳转至相应页面，例如需要跳转页面：pages/Access
       const status: router.RouterState = this.uiContext.getRouter().getState();
-      if (status && status.name !== 'Access' && uri) {
+      if (status && status.name !== 'Access') {
         try {
           // 根据uri参数做业务处理
           this.uiContext.getRouter().pushUrl({

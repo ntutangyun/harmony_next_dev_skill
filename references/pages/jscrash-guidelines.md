@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jscrash-g
 
 方舟运行时收集故障信息，并将其上报给维测进程Hiview。
 
-维测进程Hiview补充仅其有权限获取的信息(如整机内存状态、应用页面切换轨迹)，生成对应的崩溃日志文件, 存储在“/data/log/faultlog/faultlogger”目录下。
+维测进程Hiview补充仅其有权限获取的信息（如整机内存状态、应用页面切换轨迹），生成对应的崩溃日志文件，存储在“/data/log/faultlog/faultlogger”目录下。
 
 上报崩溃事件，开发者可通过HiAppEvent订阅崩溃事件。如需了解JS Crash问题分析方法，请参见JS Crash类问题分析方法。
 
@@ -59,6 +59,7 @@ IsSystemApp	应用是否为系统应用	23	是	-
 Pid	故障进程号	8	是	-
 Uid	用户ID	8	是	-
 Process name	故障进程名	26	是	-
+App running unique id	应用运行时唯一关联的id。	26.0.0	是	-
 Process life time	故障进程存活时间	22	是	-
 Process Memory(kB)	进程占用内存	20	是	-
 Device Memory(kB)	整机内存信息	20	否	依赖维测服务进程，若发生故障时维测服务进程停止或设备重启则无此字段，详见检测原理。
@@ -89,9 +90,10 @@ IsSystemApp:No <- 应用是否为系统应用
 Pid:579 <- 故障进程号
 Uid:0 <- 用户ID
 Process name:com.example.myapplication <- 进程名
+App running unique id:124500628566978194 <- 应用运行时唯一关联的id
 Process life time:1s  <- 进程存活时间
 Process Memory(kB): 1897(Rss) <- 进程占用内存
-Device Memory(kB): Total 1935820, Free 482136, Available 1204216  <- 整机内存信息
+Device Memory(kB): Total 1935820, Free 482136, Available 1204216  <- 整机内存信息（非必选）
 Page switch history: <- 页面切换轨迹
   14:08:30:327 /ets/pages/Index:JsError
   14:08:28:986 /ets/pages/Index
@@ -386,9 +388,10 @@ IsSystemApp:No <- 应用是否为系统应用
 Pid:579 <- 故障进程号
 Uid:0 <- 用户ID
 Process name:com.example.myapplication <- 进程名
+App running unique id:124500628566978194 <- 应用运行时唯一关联的id
 Process life time:1s  <- 进程存活时间
 Process Memory(kB): 1897(Rss) <- 进程占用内存
-Device Memory(kB): Total 1935820, Free 482136, Available 1204216  <- 整机内存信息
+Device Memory(kB): Total 1935820, Free 482136, Available 1204216  <- 整机内存信息（非必选）
 Page switch history: <- 页面切换轨迹
   14:08:30:327 /ets/pages/Index:JsError
   14:08:28:986 /ets/pages/Index

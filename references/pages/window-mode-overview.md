@@ -78,7 +78,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/window-mo
 
 说明
 
-应用子窗口仅在自由窗口状态下支持FULL_SCREEN与MAXIMIZE模式，且需要在创建子窗时将maximizeSupported参数配置为true。
+应用子窗口仅在自由窗口状态下支持FULL_SCREEN与MAXIMIZE模式，且需要在创建子窗时将maximizeSupported参数配置为true；或者通过setSupportedWindowModes()配置支持。
 
 FULL_SCREEN与MAXIMIZE的主要差异：
 
@@ -223,10 +223,10 @@ on('windowStatusDidChange')	开启窗口模式变化的监听	窗口模式变化
 
 定制窗口模式支持策略
 
-应用可以通过多种方式配置窗口支持的模式，以满足不同设备和场景的需求。针对主窗窗口模式，提供了四种主要的配置方式，按优先级从高到低依次为：
+应用可以通过多种方式配置窗口支持的模式，以满足不同设备和场景的需求。针对主窗、子窗窗口模式，提供了四种主要的配置方式，按优先级从高到低依次为：
 
 优先级排序	配置方式	支持的窗口类型	生效范围
-1	通过setSupportedWindowModes()接口配置	应用主窗口	仅在自由窗口状态下生效
+1	通过setSupportedWindowModes()接口配置	应用主窗口、应用子窗口	仅在自由窗口状态下生效
 2	通过startAbility()接口配置	应用主窗口	仅在自由窗口状态下生效
 3	通过module.json5配置文件中abilities标签下的metadata标签配置	应用主窗口	仅在自由窗口状态下生效
 4	通过module.json5配置文件中abilities标签下的supportWindowMode属性配置	应用主窗口	均生效
@@ -243,13 +243,15 @@ on('windowStatusDidChange')	开启窗口模式变化的监听	窗口模式变化
 
 [h2]通过setSupportedWindowModes()接口配置
 
-通过调用setSupportedWindowModes()传入supportedWindowModes或调用setSupportedWindowModes()接口传入supportedWindowModes和 grayOutMaximizeButton，可以在运行时动态修改当前主窗口支持的窗口模式。
+通过调用WindowStage.setSupportedWindowModes()传入supportedWindowModes或调用WindowStage.setSupportedWindowModes()接口传入supportedWindowModes和grayOutMaximizeButton，可以在运行时动态修改当前主窗口支持的窗口模式。
+
+通过调用Window.setSupportedWindowModes()传入supportedWindowModes，可以在运行时动态修改当前主、子窗口支持的窗口模式。
 
 支持配置的窗口模式如下所示：
 
 配置值	模式	说明
 SupportWindowMode.FULL_SCREEN	全屏模式	窗口支持全屏显示。
-SupportWindowMode.SPLIT	分屏模式	窗口支持分屏显示。需要配合FULL_SCREEN或FLOATING一起使用，不支持仅配置SPLIT。
+SupportWindowMode.SPLIT	分屏模式	主窗不支持仅配置SPLIT，需要配合FULL_SCREEN和FLOATING一起使用，子窗不支持配置SPLIT。
 SupportWindowMode.FLOATING	悬浮模式	窗口支持自由悬浮形式显示。
 
 仅在自由窗口状态下生效。

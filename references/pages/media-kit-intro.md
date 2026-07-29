@@ -236,7 +236,7 @@ AVScreenCapture主要工作是捕获音频信号、视频信号，并通过音�
 
 音频源类型	说明
 MIC	系统麦克风作为音频源输入。
-ALL_PLAYBACK	系统内录使用作为音频源输入。
+ALL_PLAYBACK	系统内录音频作为音频源输入。
 
 支持的视频源如下：
 
@@ -302,7 +302,17 @@ AVTranscoder主要用于将已压缩编码的视频文件按照指定参数转�
 支持的目标视频格式：
 
 封装格式	视频编码类型	音频编码类型
-mp4	AVC（H.264）、HEVC（H.265）	AAC
+mp4	AVC（H.264）、HEVC（H.265）、HEVC（H.265）	AAC、MPEG（MP3）
+
+支持的目标音频格式：
+
+封装格式	音频编码类型
+mp4	AAC、MPEG（MP3）
+m4a	AAC
+mp3	MPEG（MP3）
+amr	AMR（amrnb、amrwb）
+wav	raw（pcm）
+aac	AAC
 
 支持的轨道数：
 

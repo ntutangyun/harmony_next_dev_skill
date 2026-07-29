@@ -44,7 +44,7 @@ struct Index {
               .width(80)
               .height(80)
               .backgroundColor('#E5E5E5')
-          },
+          }
         },
         // 当OpenType设置为CHOOSE_AVATAR时，回调函数必须是onChooseAvatar。
         controller: new functionalButtonComponentManager.FunctionalButtonController().onChooseAvatar((err, data) => {
@@ -112,7 +112,7 @@ struct Index {
               .width(80)
               .height(80)
               .backgroundColor('#E5E5E5')
-          },
+          }
         },
         // 当OpenType设置为CHOOSE_AVATAR时，回调函数必须是onChooseAvatar。
         controller: new functionalButtonComponentManager.FunctionalButtonController().onChooseAvatar((err, data) => {

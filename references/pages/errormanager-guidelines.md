@@ -42,7 +42,7 @@ setDefaultFreezeObserver(defaultObserver?: FreezeObserver) : FreezeObserver	仅�
 
 接口名称	说明
 onUnhandledException(errMsg: string): void	系统回调接口，应用注册后，当应用产生未捕获的异常时的回调。
-onException?(errObject: Error): void	系统回调接口，应用注册后，当应用产生异常上报js层时的回调。
+onException?(errObject: Error): void	系统回调接口，应用注册后，当应用产生异常上报JS层时的回调。
 
 应用主线程监听(LoopObserver)接口功能介绍：
 
@@ -311,6 +311,7 @@ export function setFirstErrorHandler() {
 
 import { errorManager } from '@kit.AbilityKit';
 import { process } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 let secondHandler: errorManager.ErrorHandler;
 const secondErrorHandler: errorManager.ErrorHandler = (reason: Error) => {
@@ -325,7 +326,13 @@ const secondErrorHandler: errorManager.ErrorHandler = (reason: Error) => {
 };
 
 export function setSecondErrorHandler() {
-    secondHandler = errorManager.setDefaultErrorHandler(secondErrorHandler);
+    try {
+        secondHandler = errorManager.setDefaultErrorHandler(secondErrorHandler);
+    } catch (paramError) {
+        let code = (paramError as BusinessError).code;
+        let message = (paramError as BusinessError).message;
+        console.error('setSecondErrorHandler',`error: ${code}, ${message}`);
+    }
     console.info('Registered Second Error Handler');
 }
 
@@ -708,6 +715,7 @@ export function setFirstErrorHandler() {
 ```
 import { errorManager } from '@kit.AbilityKit';
 import { process } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 let secondHandler: errorManager.ErrorHandler;
 const secondErrorHandler: errorManager.ErrorHandler = (reason: Error) => {
@@ -722,7 +730,13 @@ const secondErrorHandler: errorManager.ErrorHandler = (reason: Error) => {
 };
 
 export function setSecondErrorHandler() {
-    secondHandler = errorManager.setDefaultErrorHandler(secondErrorHandler);
+    try {
+        secondHandler = errorManager.setDefaultErrorHandler(secondErrorHandler);
+    } catch (paramError) {
+        let code = (paramError as BusinessError).code;
+        let message = (paramError as BusinessError).message;
+        console.error('setSecondErrorHandler',`error: ${code}, ${message}`);
+    }
     console.info('Registered Second Error Handler');
 }
 ```

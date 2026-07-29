@@ -197,7 +197,7 @@ export class AVTranscoderDemo {
 
 本示例使用的是worker线程的方式来实现异步线程进行转码，worker线程的详细使用方式，可以参见文档:
 
-Worker线程使用说明
+@ohos.worker (启动一个Worker)
 
 Worker简介
 
@@ -308,14 +308,24 @@ async function doSome(context: common.Context) {
     // 转码完成回调函数。
     transcoder.on('complete', async () => {
       console.info(`transcode complete`);
-      fileIo.closeSync(transcoder.fdDst); // 关闭fdDst。
       await transcoder?.release()
+      if (transcoder.fdDst != undefined) {
+        fs.closeSync(transcoder.fdDst);
+      }
+      if (transcoder.fdSrc != undefined) {
+        fs.closeSync(transcoder.fdSrc.fd);
+      }
       workerPort.postMessage('complete');
     })
     // 转码错误回调函数。
     transcoder.on('error', async (err: BusinessError) => {
-      fileIo.closeSync(transcoder.fdDst);
       await transcoder?.release();
+      if (transcoder.fdDst != undefined) {
+        fs.closeSync(transcoder.fdDst);
+      }
+      if (transcoder.fdSrc != undefined) {
+        fs.closeSync(transcoder.fdSrc.fd);
+      }
     })
     // 转码进度更新回调函数。
     transcoder.on('progressUpdate', (progress: number) => {
@@ -350,7 +360,7 @@ async function doSome(context: common.Context) {
   }
 }
 
-监听转码的Complete回调，在转码结束的时候向主线程发送消息。
+监听转码的complete回调，在转码结束的时候向主线程发送消息。
 
 // 转码完成回调函数。
 transcoder.on('complete', async () => {
@@ -616,14 +626,24 @@ async function doSome(context: common.Context) {
     // 转码完成回调函数。
     transcoder.on('complete', async () => {
       console.info(`transcode complete`);
-      fileIo.closeSync(transcoder.fdDst); // 关闭fdDst。
       await transcoder?.release()
+      if (transcoder.fdDst != undefined) {
+        fs.closeSync(transcoder.fdDst);
+      }
+      if (transcoder.fdSrc != undefined) {
+        fs.closeSync(transcoder.fdSrc.fd);
+      }
       workerPort.postMessage('complete');
     })
     // 转码错误回调函数。
     transcoder.on('error', async (err: BusinessError) => {
-      fileIo.closeSync(transcoder.fdDst);
       await transcoder?.release();
+      if (transcoder.fdDst != undefined) {
+        fs.closeSync(transcoder.fdDst);
+      }
+      if (transcoder.fdSrc != undefined) {
+        fs.closeSync(transcoder.fdSrc.fd);
+      }
     })
     // 转码进度更新回调函数。
     transcoder.on('progressUpdate', (progress: number) => {

@@ -37,7 +37,7 @@ struct Index {
             this.uiContext.showAlertDialog({
               title: 'Warning',
               message: event.message,
-              confirm:{
+              confirm: {
                 value: 'confirm',
                 action: () => {
                   console.info('Alert confirmed.');
@@ -67,7 +67,7 @@ struct Index {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -84,7 +84,7 @@ struct Index {
 </body>
 </html>
 
-用CustomDialog-AlertDialog创建弹框。
+用AlertDialog创建弹框。
 
 import { AlertDialog } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -146,7 +146,7 @@ struct AlertDialogPage {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -231,7 +231,7 @@ struct Index {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -251,7 +251,7 @@ result：<label id="confirmLabel" for="confirm"></label><br/>
 </body>
 </html>
 
-用CustomDialog-ConfirmDialog创建弹框。
+用ConfirmDialog创建弹框。
 
 import { webview } from '@kit.ArkWeb';
 import { ConfirmDialog } from '@kit.ArkUI';
@@ -264,7 +264,7 @@ struct DialogConfirmDialog {
   @State result: JsResult | null = null;
   webviewController: webview.WebviewController = new webview.WebviewController();
   isChecked = false;
-  dialogControllerCheckBox: CustomDialogController = new CustomDialogController({
+  dialogControllerConfirmDialog: CustomDialogController = new CustomDialogController({
     builder: ConfirmDialog({
       title: this.title,
       content: this.message,
@@ -293,7 +293,7 @@ struct DialogConfirmDialog {
     }),
     onWillDismiss: () => {
       this.result?.handleCancel();
-      this.dialogControllerCheckBox.close();
+      this.dialogControllerConfirmDialog.close();
     },
     autoCancel: true
   })
@@ -311,7 +311,7 @@ struct DialogConfirmDialog {
               this.title = 'Confirm';
               this.message = event.message;
               this.result = event.result;
-              this.dialogControllerCheckBox.open();
+              this.dialogControllerConfirmDialog.open();
             }
           }
           return true;
@@ -332,7 +332,7 @@ struct DialogConfirmDialog {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -356,7 +356,7 @@ result：<label id="confirmLabel" for="confirm"></label><br/>
 
 window.prompt()用于显示一个对话框，并等待用户提交文本或取消对话框。用户需要输入某个值，然后点击确认或取消按钮。点击确认返回输入的值，点击取消返回null。
 
-可选参数message向用户显示的一串文本。如果在提示窗口中没有什么可显示的，可以省略。
+可选参数message是要向用户显示的一串文本。如果在提示窗口中没有什么可显示的，可以省略。
 
 可选参数defaultValue是一个字符串，包含文本输入字段中显示的默认值。
 
@@ -365,6 +365,8 @@ window.prompt()用于显示一个对话框，并等待用户提交文本或取�
 提示框用于提示用户输入某个值，常用于需要用户输入临时的口令或验证码等场景。
 
 应用可以通过onPrompt事件监听网页prompt方法，并创建合适的弹框。
+
+用CustomContentDialog创建弹框。
 
 import { CustomContentDialog } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -441,6 +443,8 @@ struct PromptDialog {
   }
 }
 
+加载的html。
+
 <!-- prompt.html -->
 <!DOCTYPE html>
 <html lang="en">
@@ -451,7 +455,7 @@ struct PromptDialog {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -524,7 +528,7 @@ struct Index {
             this.uiContext.showAlertDialog({
               title: 'Warning',
               message: event.message,
-              confirm:{
+              confirm: {
                 value: 'confirm',
                 action: () => {
                   console.info('Alert confirmed.');
@@ -556,7 +560,7 @@ struct Index {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -639,7 +643,7 @@ struct AlertDialogPage {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -716,7 +720,7 @@ struct Index {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -751,7 +755,7 @@ struct DialogConfirmDialog {
   @State result: JsResult | null = null;
   webviewController: webview.WebviewController = new webview.WebviewController();
   isChecked = false;
-  dialogControllerCheckBox: CustomDialogController = new CustomDialogController({
+  dialogControllerConfirmDialog: CustomDialogController = new CustomDialogController({
     builder: ConfirmDialog({
       title: this.title,
       content: this.message,
@@ -780,7 +784,7 @@ struct DialogConfirmDialog {
     }),
     onWillDismiss: () => {
       this.result?.handleCancel();
-      this.dialogControllerCheckBox.close();
+      this.dialogControllerConfirmDialog.close();
     },
     autoCancel: true
   })
@@ -798,7 +802,7 @@ struct DialogConfirmDialog {
               this.title = 'Confirm';
               this.message = event.message;
               this.result = event.result;
-              this.dialogControllerCheckBox.open();
+              this.dialogControllerConfirmDialog.open();
             }
           }
           return true;
@@ -821,7 +825,7 @@ struct DialogConfirmDialog {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>
@@ -934,7 +938,7 @@ struct PromptDialog {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        button,label,input {
+        button, label, input {
         margin: 5px 0;
         }
     </style>

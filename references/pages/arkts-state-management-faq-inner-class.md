@@ -16,9 +16,9 @@ UIUtils.getTarget(value) === value
 
 类的构造函数中通过捕获this修改变量无法观察
 
-当在构造函数中初始化修改success的箭头函数时，TestModel实例尚未被代理封装，this指向TestModel实例本身。因此，后续触发query事件时，状态管理无法观测到变化。
+当在构造函数中初始化修改isSuccess的箭头函数时，TestModel实例尚未被代理封装，this指向TestModel实例本身。因此，后续触发query事件时，状态管理无法观测到变化。
 
-当开发者将修改success的箭头函数放在query中时，已完成TestModel对象初始化和代理封装。通过this.viewModel.query()调用query时，query函数中的this指向viewModel代理对象，对代理对象成员属性isSuccess的更改能够被观测到，因此触发query事件可以被状态管理观测到变化。
+当开发者将修改isSuccess的箭头函数放在query中时，已完成TestModel对象初始化和代理封装。通过this.viewModel.query()调用query时，query函数中的this指向viewModel代理对象，对代理对象成员属性isSuccess的更改能够被观测到，因此触发query事件可以被状态管理观测到变化。
 
 【反例】
 
@@ -796,7 +796,7 @@ struct PageChild {
           .backgroundColor('#FF007DFF')
           .fontSize(20)
           .width(312)
-          .onClick(() => { // 在父组件中，仍使用 this.uiStyle.endRenderXxx.xxx 更改属性
+          .onClick(() => { // 在父组件中，仍使用 this.uiStyle.needRenderXxx.xxx 更改属性
             this.uiStyle.needRenderImage.imageWidth = (this.uiStyle.needRenderImage.imageWidth + 30) % 160;
             this.uiStyle.needRenderImage.imageHeight = (this.uiStyle.needRenderImage.imageHeight + 30) % 160;
           })
@@ -2119,7 +2119,7 @@ struct PageChild {
           .backgroundColor('#FF007DFF')
           .fontSize(20)
           .width(312)
-          .onClick(() => { // 在父组件中，仍使用 this.uiStyle.endRenderXxx.xxx 更改属性
+          .onClick(() => { // 在父组件中，仍使用 this.uiStyle.needRenderXxx.xxx 更改属性
             this.uiStyle.needRenderImage.imageWidth = (this.uiStyle.needRenderImage.imageWidth + 30) % 160;
             this.uiStyle.needRenderImage.imageHeight = (this.uiStyle.needRenderImage.imageHeight + 30) % 160;
           })

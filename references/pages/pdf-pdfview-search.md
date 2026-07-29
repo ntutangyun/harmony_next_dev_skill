@@ -30,10 +30,13 @@ getSearchIndex(): number	获取当前命中搜索关键字匹配结果的索引�
 
 import { pdfService, PdfView, pdfViewManager } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
+import { fileIo } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct Index {
+struct SearchPage {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -41,72 +44,88 @@ struct Index {
   private charCount = 0;
 
   aboutToAppear(): void {
+    let dir: string = this.context.resourceDir;
     // 确保在工程目录src/main/resources/resfile里存在input.pdf文档
-    let filePath = this.context.resourceDir + '/input.pdf';
+    let filePath: string = dir + '/input.pdf';
+    try {
+      let res = fileIo.accessSync(filePath);
+      if (!res) {
+        let content: Uint8Array = this.context.resourceManager.getRawFileContentSync('resfile/input.pdf');
+        let fdSand = fileIo.openSync(
+            filePath,
+            fileIo.OpenMode.WRITE_ONLY |
+            fileIo.OpenMode.CREATE |
+            fileIo.OpenMode.TRUNC
+        );
+        fileIo.writeSync(fdSand.fd, content.buffer);
+        fileIo.closeSync(fdSand.fd);
+      }
+    } catch (e) {
+      let error: BusinessError = e as BusinessError;
+      hilog.error(0x0000, 'SearchPage', `Code: ${error.code}, message: ${error.message} `);
+    }
     (async () => {
       this.loadResult = await this.controller.loadDocument(filePath);
     })()
   }
 
   build() {
-    Column() {
-      Scroll() {
-        Row() {
-          // 搜索关键字
+    Stack({ alignContent: Alignment.TopStart }) {
+
+      Column() {
+        Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
           Button('searchKey').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-              this.controller.searchKey('C++', (index: number) => {
+              this.controller.searchKey('PDF', (index: number) => {
                 this.charCount = index;
-                hilog.info(0x0000, 'PdfPage', 'searchKey %{public}s!', index + '');
+                hilog.info(0x0000, 'SearchPage', 'searchKey %{public}s!', index + '');
               })
             }
           })
-            .width(100)
-          // 上一个
+            .flexShrink(0)
           Button('setSearchPrevIndex').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-              if(this.searchIndex > 0) {
+              if (this.searchIndex > 0) {
                 this.controller.setSearchIndex(--this.searchIndex);
               }
             }
           })
-            .width(200)
-          // 下一个
+            .flexShrink(0)
           Button('setSearchNextIndex').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-              if(this.searchIndex < this.charCount) {
+              if (this.searchIndex < this.charCount) {
                 this.controller.setSearchIndex(++this.searchIndex);
               }
             }
           })
-            .width(200)
-          // 获取当前页索引
+            .flexShrink(0)
           Button('getSearchIndex').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
               let curSearchIndex = this.controller.getSearchIndex();
-              hilog.info(0x0000, 'PdfPage', 'curSearchIndex %{public}s!', curSearchIndex + '');
+              hilog.info(0x0000, 'SearchPage', 'curSearchIndex %{public}s!', curSearchIndex + '');
             }
           })
-            .width(150)
-          // 清除搜索文本的高亮
+            .flexShrink(0)
           Button('clearSearch').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
               this.controller.clearSearch();
             }
           })
-            .width(150)
+            .flexShrink(0)
         }
+        .margin({ top: 50, bottom: 10 })
+        .padding({ left: 10, right: 10 })
+        PdfView({
+          controller: this.controller,
+          pageFit: pdfService.PageFit.FIT_WIDTH,
+          showScroll: true
+        })
+          .id('pdfview_app_view')
+          .layoutWeight(1);
       }
-      .scrollable(ScrollDirection.Horizontal)
-
-      PdfView({
-        controller: this.controller,
-        pageFit: pdfService.PageFit.FIT_WIDTH,
-        showScroll: true
-      })
-        .id('pdfview_app_view')
-        .layoutWeight(1);
+      // ...
     }
+    .width('100%').height('100%')
   }
 }
 
@@ -117,10 +136,13 @@ struct Index {
 ```
 import { pdfService, PdfView, pdfViewManager } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
+import { fileIo } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct Index {
+struct SearchPage {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -128,72 +150,88 @@ struct Index {
   private charCount = 0;
 
   aboutToAppear(): void {
+    let dir: string = this.context.resourceDir;
     // 确保在工程目录src/main/resources/resfile里存在input.pdf文档
-    let filePath = this.context.resourceDir + '/input.pdf';
+    let filePath: string = dir + '/input.pdf';
+    try {
+      let res = fileIo.accessSync(filePath);
+      if (!res) {
+        let content: Uint8Array = this.context.resourceManager.getRawFileContentSync('resfile/input.pdf');
+        let fdSand = fileIo.openSync(
+            filePath,
+            fileIo.OpenMode.WRITE_ONLY |
+            fileIo.OpenMode.CREATE |
+            fileIo.OpenMode.TRUNC
+        );
+        fileIo.writeSync(fdSand.fd, content.buffer);
+        fileIo.closeSync(fdSand.fd);
+      }
+    } catch (e) {
+      let error: BusinessError = e as BusinessError;
+      hilog.error(0x0000, 'SearchPage', `Code: ${error.code}, message: ${error.message} `);
+    }
     (async () => {
       this.loadResult = await this.controller.loadDocument(filePath);
     })()
   }
 
   build() {
-    Column() {
-      Scroll() {
-        Row() {
-          // 搜索关键字
+    Stack({ alignContent: Alignment.TopStart }) {
+
+      Column() {
+        Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
           Button('searchKey').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-              this.controller.searchKey('C++', (index: number) => {
+              this.controller.searchKey('PDF', (index: number) => {
                 this.charCount = index;
-                hilog.info(0x0000, 'PdfPage', 'searchKey %{public}s!', index + '');
+                hilog.info(0x0000, 'SearchPage', 'searchKey %{public}s!', index + '');
               })
             }
           })
-            .width(100)
-          // 上一个
+            .flexShrink(0)
           Button('setSearchPrevIndex').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-              if(this.searchIndex > 0) {
+              if (this.searchIndex > 0) {
                 this.controller.setSearchIndex(--this.searchIndex);
               }
             }
           })
-            .width(200)
-          // 下一个
+            .flexShrink(0)
           Button('setSearchNextIndex').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-              if(this.searchIndex < this.charCount) {
+              if (this.searchIndex < this.charCount) {
                 this.controller.setSearchIndex(++this.searchIndex);
               }
             }
           })
-            .width(200)
-          // 获取当前页索引
+            .flexShrink(0)
           Button('getSearchIndex').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
               let curSearchIndex = this.controller.getSearchIndex();
-              hilog.info(0x0000, 'PdfPage', 'curSearchIndex %{public}s!', curSearchIndex + '');
+              hilog.info(0x0000, 'SearchPage', 'curSearchIndex %{public}s!', curSearchIndex + '');
             }
           })
-            .width(150)
-          // 清除搜索文本的高亮
+            .flexShrink(0)
           Button('clearSearch').onClick(async () => {
             if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
               this.controller.clearSearch();
             }
           })
-            .width(150)
+            .flexShrink(0)
         }
+        .margin({ top: 50, bottom: 10 })
+        .padding({ left: 10, right: 10 })
+        PdfView({
+          controller: this.controller,
+          pageFit: pdfService.PageFit.FIT_WIDTH,
+          showScroll: true
+        })
+          .id('pdfview_app_view')
+          .layoutWeight(1);
       }
-      .scrollable(ScrollDirection.Horizontal)
-
-      PdfView({
-        controller: this.controller,
-        pageFit: pdfService.PageFit.FIT_WIDTH,
-        showScroll: true
-      })
-        .id('pdfview_app_view')
-        .layoutWeight(1);
+      // ...
     }
+    .width('100%').height('100%')
   }
 }
 ```

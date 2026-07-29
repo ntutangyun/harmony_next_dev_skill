@@ -203,7 +203,7 @@ struct UIAbilityComponentsUsage {
   }
 }
 
-[h2]获取ExtensionAbilityContext (ExtensionAbility组件的上下文)
+[h2]获取ExtensionAbilityContext （ExtensionAbility组件的上下文）
 
 获取特定场景ExtensionContext。以FormExtensionContext为例，表示卡片服务的上下文环境，继承自ExtensionContext，提供卡片服务相关的接口能力。
 

@@ -20,15 +20,13 @@ ARSemanticDensePointData	参数color为ArrayBuffer类型，可转换为int32。
 
 转换的示例如下：
 
-// ArrayBuffer转float32
-function arrayBufferFloat32ToNumber(buffer: ArrayBuffer): number[] {
+export function arrayBufferFloat32ToNumber(buffer: ArrayBuffer): number[] {
   let view: Float32Array = new Float32Array(buffer);
   let numberArray: number[] = Array.from(view);
   return numberArray;
 }
 
-// ArrayBuffer转int32
-function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
+export function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
   let view: Int32Array = new Int32Array(buffer);
   let numberArray: number[] = Array.from(view);
   return numberArray;
@@ -39,15 +37,13 @@ function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
 ### Code block 1
 
 ```
-// ArrayBuffer转float32
-function arrayBufferFloat32ToNumber(buffer: ArrayBuffer): number[] {
+export function arrayBufferFloat32ToNumber(buffer: ArrayBuffer): number[] {
   let view: Float32Array = new Float32Array(buffer);
   let numberArray: number[] = Array.from(view);
   return numberArray;
 }
 
-// ArrayBuffer转int32
-function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
+export function arrayBufferInt32ToNumber(buffer: ArrayBuffer): number[] {
   let view: Int32Array = new Int32Array(buffer);
   let numberArray: number[] = Array.from(view);
   return numberArray;

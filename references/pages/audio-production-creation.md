@@ -8,4 +8,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pro
 
 实时预览(C/C++)
 
+音频格式转换(C/C++)
+
 空间渲染(C/C++)

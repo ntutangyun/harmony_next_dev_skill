@@ -175,10 +175,10 @@ export default {
     var _this= this;
     // 添加动画逐帧插值回调事件
     this.animation.onframe = function(value) {
-      _this.scaleVal= value/150,
-      _this.DivWidth = value,
-      _this.DivHeight = value,
-      _this.translateVal = value-180
+      _this.scaleVal = value/150;
+      _this.DivWidth = value;
+      _this.DivHeight = value;
+      _this.translateVal = value-180;
     };
     this.animation.play();
   },
@@ -395,10 +395,10 @@ export default {
     var _this= this;
     // 添加动画逐帧插值回调事件
     this.animation.onframe = function(value) {
-      _this.scaleVal= value/150,
-      _this.DivWidth = value,
-      _this.DivHeight = value,
-      _this.translateVal = value-180
+      _this.scaleVal = value/150;
+      _this.DivWidth = value;
+      _this.DivHeight = value;
+      _this.translateVal = value-180;
     };
     this.animation.play();
   },

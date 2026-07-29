@@ -76,45 +76,7 @@ startUserChooseCouponsPopup(context: common.Context, orderContext: OrderContext)
 
 从6.1.1(24)版本开始，客户端可调getOrderAvailableCoupons接口查询用户可用券。示例代码如下：
 
-import { promotionService } from "@kit.PaymentKit";
-
-@Component
-export struct StartUserChooseCouponsPopupDemo {
-  build() {
-    Column() {
-      Button('查询可用券')
-        .type(ButtonType.Capsule)
-        .width('50%')
-        .margin(20)
-        .onClick(() => {
-          let req: promotionService.OrderContext = {
-            // 商户号
-            mercNo: '',
-            // 订单金额，单位为分
-            tradeOrderAmount: 15,
-            // 商品编码
-            goodsCodes: ['', ''],
-            // 商户证书ID
-            authId: '',
-            // 签名内容调云侧接口获取
-            sign: 'MEQCIEIWzdpziRyTi8vhwWHFuDdxf********************CHljer0YAMabeCgTDG77e+2XJItvq/ZkIcCN5/B20pQ=='
-          }
-          console.info(`req ${JSON.stringify(req)}`);
-          promotionService.getOrderAvailableCoupons(this.getUIContext().getHostContext()!, req).then(res => {
-            console.error(`getOrderAvailableCoupons res ${JSON.stringify(res)}.`);
-          }).catch((e: BusinessError) => {
-            console.error(`getOrderAvailableCoupons error ${JSON.stringify(e)}`);
-          })
-        })
-    }
-  }
-}
-
-[h2]拉起选券组件（端侧开发）
-
-针对选券场景，商户服务需要先选券组件引导用户选券。示例代码如下：
-
-import { promotionService } from "@kit.PaymentKit";
+import { promotionService } from '@kit.PaymentKit';
 
 @Component
 export struct StartUserChooseCouponsPopupDemo {
@@ -138,12 +100,64 @@ export struct StartUserChooseCouponsPopupDemo {
             sign: 'MEQCIEIWzdpziRyTi8vhwWHFuDdxf********************CHljer0YAMabeCgTDG77e+2XJItvq/ZkIcCN5/B20pQ=='
           }
           console.error(`req ${JSON.stringify(req)}`);
-          promotionService.startUserChooseCouponsPopup(this.getUIContext().getHostContext()!, req).then(res => {
-            console.error(`startUserChooseCouponsPopup res ${JSON.stringify(res)}.`);
+
+          let hasCoupons: boolean = false;
+          promotionService.getOrderAvailableCoupons(this.getUIContext().getHostContext()!, req).then(res => {
+            console.error(`getOrderAvailableCoupons res ${JSON.stringify(res)}.`);
+            hasCoupons = res.length > 0;
           }).catch((e: BusinessError) => {
-            console.error(`startUserSelectCouponsPopup error ${JSON.stringify(e)}`);
-          })
-        })
+            console.error(`getOrderAvailableCoupons error ${JSON.stringify(e)}`);
+          });
+          // ...
+        });
+    }
+  }
+}
+
+[h2]拉起选券组件（端侧开发）
+
+针对选券场景，商户服务需要先选券组件引导用户选券。示例代码如下：
+
+import { promotionService } from '@kit.PaymentKit';
+
+@Component
+export struct StartUserChooseCouponsPopupDemo {
+  build() {
+    Column() {
+      Button('选券页面')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          let req: promotionService.OrderContext = {
+            // 商户号
+            mercNo: '100000000000',
+            // 订单金额，单位为分
+            tradeOrderAmount: 15,
+            // 商品编码
+            goodsCodes: ['goodsCode0', 'goodsCode1'],
+            // 商户证书ID
+            authId: '123',
+            // 签名内容调云侧接口获取
+            sign: 'MEQCIEIWzdpziRyTi8vhwWHFuDdxf********************CHljer0YAMabeCgTDG77e+2XJItvq/ZkIcCN5/B20pQ=='
+          }
+          console.error(`req ${JSON.stringify(req)}`);
+
+          let hasCoupons: boolean = false;
+          promotionService.getOrderAvailableCoupons(this.getUIContext().getHostContext()!, req).then(res => {
+            console.error(`getOrderAvailableCoupons res ${JSON.stringify(res)}.`);
+            hasCoupons = res.length > 0;
+          }).catch((e: BusinessError) => {
+            console.error(`getOrderAvailableCoupons error ${JSON.stringify(e)}`);
+          });
+          if (hasCoupons) {
+            promotionService.startUserChooseCouponsPopup(this.getUIContext().getHostContext()!, req).then(res => {
+              console.error(`startUserChooseCouponsPopup res ${JSON.stringify(res)}.`);
+            }).catch((e: BusinessError) => {
+              console.error(`startUserSelectCouponsPopup error ${JSON.stringify(e)}`);
+            });
+          }
+        });
     }
   }
 }
@@ -157,45 +171,7 @@ export struct StartUserChooseCouponsPopupDemo {
 ### Code block 1
 
 ```
-import { promotionService } from "@kit.PaymentKit";
-
-@Component
-export struct StartUserChooseCouponsPopupDemo {
-  build() {
-    Column() {
-      Button('查询可用券')
-        .type(ButtonType.Capsule)
-        .width('50%')
-        .margin(20)
-        .onClick(() => {
-          let req: promotionService.OrderContext = {
-            // 商户号
-            mercNo: '',
-            // 订单金额，单位为分
-            tradeOrderAmount: 15,
-            // 商品编码
-            goodsCodes: ['', ''],
-            // 商户证书ID
-            authId: '',
-            // 签名内容调云侧接口获取
-            sign: 'MEQCIEIWzdpziRyTi8vhwWHFuDdxf********************CHljer0YAMabeCgTDG77e+2XJItvq/ZkIcCN5/B20pQ=='
-          }
-          console.info(`req ${JSON.stringify(req)}`);
-          promotionService.getOrderAvailableCoupons(this.getUIContext().getHostContext()!, req).then(res => {
-            console.error(`getOrderAvailableCoupons res ${JSON.stringify(res)}.`);
-          }).catch((e: BusinessError) => {
-            console.error(`getOrderAvailableCoupons error ${JSON.stringify(e)}`);
-          })
-        })
-    }
-  }
-}
-```
-
-### Code block 2
-
-```
-import { promotionService } from "@kit.PaymentKit";
+import { promotionService } from '@kit.PaymentKit';
 
 @Component
 export struct StartUserChooseCouponsPopupDemo {
@@ -219,12 +195,64 @@ export struct StartUserChooseCouponsPopupDemo {
             sign: 'MEQCIEIWzdpziRyTi8vhwWHFuDdxf********************CHljer0YAMabeCgTDG77e+2XJItvq/ZkIcCN5/B20pQ=='
           }
           console.error(`req ${JSON.stringify(req)}`);
-          promotionService.startUserChooseCouponsPopup(this.getUIContext().getHostContext()!, req).then(res => {
-            console.error(`startUserChooseCouponsPopup res ${JSON.stringify(res)}.`);
+
+          let hasCoupons: boolean = false;
+          promotionService.getOrderAvailableCoupons(this.getUIContext().getHostContext()!, req).then(res => {
+            console.error(`getOrderAvailableCoupons res ${JSON.stringify(res)}.`);
+            hasCoupons = res.length > 0;
           }).catch((e: BusinessError) => {
-            console.error(`startUserSelectCouponsPopup error ${JSON.stringify(e)}`);
-          })
-        })
+            console.error(`getOrderAvailableCoupons error ${JSON.stringify(e)}`);
+          });
+          // ...
+        });
+    }
+  }
+}
+```
+
+### Code block 2
+
+```
+import { promotionService } from '@kit.PaymentKit';
+
+@Component
+export struct StartUserChooseCouponsPopupDemo {
+  build() {
+    Column() {
+      Button('选券页面')
+        .type(ButtonType.Capsule)
+        .width('50%')
+        .margin(20)
+        .onClick(() => {
+          let req: promotionService.OrderContext = {
+            // 商户号
+            mercNo: '100000000000',
+            // 订单金额，单位为分
+            tradeOrderAmount: 15,
+            // 商品编码
+            goodsCodes: ['goodsCode0', 'goodsCode1'],
+            // 商户证书ID
+            authId: '123',
+            // 签名内容调云侧接口获取
+            sign: 'MEQCIEIWzdpziRyTi8vhwWHFuDdxf********************CHljer0YAMabeCgTDG77e+2XJItvq/ZkIcCN5/B20pQ=='
+          }
+          console.error(`req ${JSON.stringify(req)}`);
+
+          let hasCoupons: boolean = false;
+          promotionService.getOrderAvailableCoupons(this.getUIContext().getHostContext()!, req).then(res => {
+            console.error(`getOrderAvailableCoupons res ${JSON.stringify(res)}.`);
+            hasCoupons = res.length > 0;
+          }).catch((e: BusinessError) => {
+            console.error(`getOrderAvailableCoupons error ${JSON.stringify(e)}`);
+          });
+          if (hasCoupons) {
+            promotionService.startUserChooseCouponsPopup(this.getUIContext().getHostContext()!, req).then(res => {
+              console.error(`startUserChooseCouponsPopup res ${JSON.stringify(res)}.`);
+            }).catch((e: BusinessError) => {
+              console.error(`startUserSelectCouponsPopup error ${JSON.stringify(e)}`);
+            });
+          }
+        });
     }
   }
 }

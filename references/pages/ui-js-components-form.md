@@ -38,7 +38,7 @@ form是一个表单容器，支持容器内Input组件内容的提交和重置�
 
 设置form样式
 
-通过为form添加background-color和border属性，来设置表单的背景颜色和边框。
+通过为form添加border属性，来设置表单的边框。
 
 /* xxx.css */
 .container {

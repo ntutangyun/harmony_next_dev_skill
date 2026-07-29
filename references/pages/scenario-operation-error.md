@@ -1,4 +1,4 @@
-# 操作错误场景
+# 网络连接中断播报
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-operation-error_
 
@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 比如网络连接错误，或者其他警告信息，不能仅仅以颜色区分，需要实时告诉用户错误提示和改进方法。
 
-开发实例
+开发流程
 
 如下是一个将连接中断播报出来的例子。
 

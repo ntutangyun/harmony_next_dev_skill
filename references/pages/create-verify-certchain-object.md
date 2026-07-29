@@ -10,9 +10,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/create-ve
 
 import { cert } from '@kit.DeviceCertificateKit';
 
-基于已有的证书数据，调用cert.createX509CertChain创建X509证书链对象，并返回结果。
+基于已有的证书数据，调用cert.createX509CertChain创建X.509证书链对象，并返回结果。
 
-调用x509CertChain.getCertList获取证书链中的X509证书列表。
+调用x509CertChain.getCertList获取证书链中的X.509证书列表。
 
 调用x509CertChain.validate使用校验参数校验证书链并返回结果。
 

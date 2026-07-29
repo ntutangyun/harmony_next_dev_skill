@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-enter-exit-transition_
 
-transition是基础的组件转场接口，用于实现一个组件出现或者消失时的动画效果。可以通过TransitionEffect对象的组合使用，定义出各式效果。
+transition是基础的组件转场接口，用于实现一个组件出现或者消失时的动画效果。可以通过TransitionEffect10+对象说明的组合使用，定义出各式效果。
 
 表1 转场效果接口
 
@@ -22,7 +22,7 @@ animation	定义转场效果的动画参数： - 如果不定义会跟随animate
 
 // 出现时会是所有出现转场效果的叠加，消失时会是所有消失转场效果的叠加
 // 说明各个effect跟随的动画参数
-private effect: object =
+private effect: TransitionEffect =
   TransitionEffect.OPACITY // 创建了透明度转场效果，这里没有调用animation接口，会跟随animateTo的动画参数
     // 通过combine方法，添加缩放转场效果，并指定了springMotion(0.6, 1.2)曲线
     .combine(TransitionEffect.scale({ x: 0, y: 0 }).animation({ curve: curves.springMotion(0.6, 1.2) }))
@@ -192,7 +192,7 @@ struct Index1 {
 ```
 // 出现时会是所有出现转场效果的叠加，消失时会是所有消失转场效果的叠加
 // 说明各个effect跟随的动画参数
-private effect: object =
+private effect: TransitionEffect =
   TransitionEffect.OPACITY // 创建了透明度转场效果，这里没有调用animation接口，会跟随animateTo的动画参数
     // 通过combine方法，添加缩放转场效果，并指定了springMotion(0.6, 1.2)曲线
     .combine(TransitionEffect.scale({ x: 0, y: 0 }).animation({ curve: curves.springMotion(0.6, 1.2) }))

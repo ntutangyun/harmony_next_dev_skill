@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-moduleinstall_arkts_
 
+说明
+
+26.0.0版本开始，新增暂停下载任务接口，支持用户暂停下载任务。
+
 场景介绍
 
 随着HarmonyOS应用的持续发展，应用的功能将越来越丰富，实际上80%的用户使用时长都会集中在20%的特性上，其余的功能可能也仅仅是面向部分用户。为了避免用户首次下载应用耗时过长，及过多占用用户空间，应用市场服务提供按需分发的能力，支持用户按需动态下载自己所需的增强特性。
@@ -26,9 +30,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-mod
 
 应用需要上架应用市场。
 
-产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
+产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
 
 产品特性按需分发接入调试功能支持ARM版本、X86版本的模拟器。
+
+使用按需分发前，需先将应用拆分为基础包与增强功能模块，详细操作请参考模块管理。
 
 接口说明
 
@@ -40,6 +46,7 @@ createModuleInstallRequest(context: common.UIAbilityContext | common.ExtensionCo
 addModule(moduleName: string): ReturnCode	添加要按需加载的模块名。
 fetchModules(moduleInstallRequest: ModuleInstallRequest): Promise<ModuleInstallSessionState>	按需加载请求接口，异步返回结果。
 cancelTask(taskId: string): ReturnCode	取消下载任务接口。
+pauseTask(taskId: string): ReturnCode	暂停下载任务接口。
 showCellularDataConfirmation(context: common.UIAbilityContext | common.ExtensionContext, taskId: string): ReturnCode	流量提醒弹窗接口。
 on(type: 'moduleInstallStatus', callback: Callback<ModuleInstallSessionState>, timeout: number): void	监听当前应用下载任务的进度。
 off(type: 'moduleInstallStatus', callback?: Callback<ModuleInstallSessionState>): void	取消监听当前应用下载任务的进度。
@@ -50,24 +57,23 @@ off(type: 'moduleInstallStatus', callback?: Callback<ModuleInstallSessionState>)
 
 导入moduleInstallManager模块及相关公共模块。
 
-// LoadInstallService.ets
 import { moduleInstallManager } from '@kit.AppGalleryKit';
 
 构造参数。
 
 入参为需要查询的模块名称。
 
-const moduleName: string = 'AModule';
+const moduleName: string = 'AModulelib';
 
 调用getInstalledModule方法，将步骤2中构造的参数传入模块中的getInstalledModule方法。
 
-const moduleInfo: moduleInstallManager.InstalledModule = moduleInstallManager.getInstalledModule(moduleName);
+const moduleInfo: moduleInstallManager.InstalledModule =
+  moduleInstallManager.getInstalledModule(moduleName);
 
 [h2]创建按需加载的请求实例
 
 导入moduleInstallManager模块及相关公共模块。
 
-// LoadInstallService.ets
 import { moduleInstallManager } from '@kit.AppGalleryKit';
 import type { common } from '@kit.AbilityKit';
 
@@ -75,52 +81,154 @@ import type { common } from '@kit.AbilityKit';
 
 入参为当前应用的上下文context，只支持UIAbilityContext和ExtensionContext类型的上下文，其中UIAbilityContext类型的上下文是要校验当前应用是否在前台，如果不在前台，则会被拒绝调用。
 
-const context: common.UIAbilityContext | common.ExtensionContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+const context: common.UIAbilityContext | common.ExtensionContext =
+  this.getUIContext().getHostContext() as common.UIAbilityContext;
 
 调用createModuleInstallRequest方法，将步骤2中构造的参数依次传入模块中的createModuleInstallRequest方法。
 
-const myModuleInstallProvider: moduleInstallManager.ModuleInstallProvider = new moduleInstallManager.ModuleInstallProvider();
-const myModuleInstallRequest: moduleInstallManager.ModuleInstallRequest = myModuleInstallProvider.createModuleInstallRequest(context);
+const moduleInstallProvider: moduleInstallManager.ModuleInstallProvider = new moduleInstallManager.ModuleInstallProvider();
+const moduleInstallRequest: moduleInstallManager.ModuleInstallRequest = moduleInstallProvider.createModuleInstallRequest(context);
 
 [h2]请求按需加载模块
 
 导入moduleInstallManager模块及相关公共模块。
 
-// LoadInstallService.ets
+import { moduleInstallManager } from '@kit.AppGalleryKit';
 import type { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { moduleInstallManager } from '@kit.AppGalleryKit';
 
 构造参数。
 
 入参为当前要按需加载的模块名。
 
-const moduleNameA: string = 'AModule';
-const moduleNameB: string = 'BModule';
+const moduleName: string = 'AModulelib';
 
 调用ModuleInstallRequest中的addModule方法，将步骤2中构造的参数依次传入模块中的addModule方法。
 
-let myModuleInstallRequest: moduleInstallManager.ModuleInstallRequest;
+let moduleInstallRequest: moduleInstallManager.ModuleInstallRequest;
 try {
-  const myModuleInstallProvider: moduleInstallManager.ModuleInstallProvider = new moduleInstallManager.ModuleInstallProvider();
-  const context: common.UIAbilityContext | common.ExtensionContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  myModuleInstallRequest = myModuleInstallProvider.createModuleInstallRequest(context);
-  const aResult: moduleInstallManager.ReturnCode = myModuleInstallRequest.addModule(moduleNameA);
-  const bResult: moduleInstallManager.ReturnCode = myModuleInstallRequest.addModule(moduleNameB);
-  hilog.info(0, 'TAG', 'aResult:' + aResult + ' bResult:' + bResult);
+  // ...
+  const context: common.UIAbilityContext | common.ExtensionContext =
+    this.getUIContext().getHostContext() as common.UIAbilityContext;
+  const moduleInstallProvider: moduleInstallManager.ModuleInstallProvider =
+    new moduleInstallManager.ModuleInstallProvider();
+  moduleInstallRequest = moduleInstallProvider.createModuleInstallRequest(context);
+  // ...
+  const retCode: moduleInstallManager.ReturnCode = moduleInstallRequest.addModule(moduleName);
+  hilog.info(0, 'InstantDownload', `addModule result: ${JSON.stringify(retCode)}`);
+
+  // ...
 } catch (error) {
-  hilog.error(0, 'TAG', `addModule onError.code is ${error.code}, message is ${error.message}`);
+  hilog.error(0, 'InstantDownload', `onError.code is ${error.code}, message is ${error.message}`);
 }
 
 调用fetchModules方法，将步骤3中的myModuleInstallRequest传入模块中的fetchModules方法。
 
 try {
-  moduleInstallManager.fetchModules(myModuleInstallRequest)
-    .then(() => {
-      hilog.info(0, 'TAG', 'Succeeded in fetching Modules data.');
+  moduleInstallManager.fetchModules(moduleInstallRequest)
+    .then((data: moduleInstallManager.ModuleInstallSessionState) => {
+      hilog.info(0, 'InstantDownload', `fetchModule result: ${JSON.stringify(data)}`);
+      // ...
     })
+  // ...
 } catch (error) {
-  hilog.error(0, 'TAG', `fetching Modules onError.code is ${error.code}, message is ${error.message}`);
+  hilog.error(0, 'InstantDownload', `fetching Modules onError.code is ${error.code}, message is ${error.message}`);
+}
+
+[h2]暂停下载任务
+
+导入moduleInstallManager模块及相关公共模块。
+
+import { moduleInstallManager } from '@kit.AppGalleryKit';
+// ...
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+构造参数，入参为当前要暂停下载的任务ID。
+
+// taskId是fetchModules返回结果ModuleInstallSessionState中的taskId字段
+let taskId: string = '********';
+
+在网络环境发生变化或设备资源不足时，调用pauseTask方法，实现暂停下载任务。
+
+try {
+  // ...
+  const rtnCode: moduleInstallManager.ReturnCode = moduleInstallManager.pauseTask(taskId);
+  hilog.info(0, 'InstantDownload', `Succeeded in getting result: ${JSON.stringify(rtnCode)}`);
+  // ...
+} catch (error) {
+  hilog.error(0, 'InstantDownload', `pauseTask onError.code is ${error.code}, message is ${error.message}`);
+  // ...
+}
+
+[h2]恢复下载任务
+
+使用pauseTask暂停下载任务后，可通过调用fetchModules接口，实现下载任务从中断处继续下载。
+
+import { moduleInstallManager } from '@kit.AppGalleryKit';
+import type { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
+@Component
+struct ResumeTask {
+  build() {
+    Column() {
+      Button('ResumeTask')
+        .onClick(() => {
+          try {
+            const taskId: string = '********';
+            // 暂停下载任务
+            const rtnCode: moduleInstallManager.ReturnCode = moduleInstallManager.pauseTask(taskId);
+            hilog.info(0, 'InstantDownload', `Succeeded in getting result: ${JSON.stringify(rtnCode)}`);
+            const myModuleInstallProvider: moduleInstallManager.ModuleInstallProvider =
+              new moduleInstallManager.ModuleInstallProvider();
+            const context: common.UIAbilityContext | common.ExtensionContext =
+              this.getUIContext().getHostContext() as common.UIAbilityContext;
+            // 创建按需加载请求对象
+            const myModuleInstallRequest: moduleInstallManager.ModuleInstallRequest =
+              myModuleInstallProvider.createModuleInstallRequest(context);
+            // 添加要按需加载的模块名
+            myModuleInstallRequest.addModule('AModulelib');
+            // 恢复下载任务
+            moduleInstallManager.fetchModules(myModuleInstallRequest)
+              .then(() => {
+                hilog.info(0, 'InstantDownload', 'Succeeded in fetching modules success data.');
+              })
+          } catch (error) {
+            hilog.error(0, 'InstantDownload',
+              `fetching modules onError.code is ${error.code}, message is ${error.message}`);
+          }
+        })
+        .width('100%')
+    }
+    .margin(16)
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+
+[h2]取消下载任务
+
+导入moduleInstallManager模块及相关公共模块。
+
+import { moduleInstallManager } from '@kit.AppGalleryKit';
+import type { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+构造参数，入参为当前要取消下载的任务ID。
+
+// taskId是fetchModules返回结果ModuleInstallSessionState中的taskId字段
+let taskId: string = '********';
+
+调用cancelTask方法，实现取消下载任务。
+
+try {
+  // ...
+  const rtnCode: moduleInstallManager.ReturnCode = moduleInstallManager.cancelTask(taskId);
+  hilog.info(0, 'InstantDownload', `Succeeded in getting result: ${JSON.stringify(rtnCode)}`);
+  // ...
+} catch (error) {
+  hilog.error(0, 'InstantDownload', `cancelTask onError.code is ${error.code}, message is ${error.message}`);
+  // ...
 }
 
 [h2]使用动态模块
@@ -134,6 +242,7 @@ AModulelib中主要实现如下：
 {
   "module": {
     "name": "AModulelib",
+    // ...
     "deliveryWithInstall": false
   }
 }
@@ -143,7 +252,7 @@ AModulelib中主要实现如下：
 Calc.ets定义如下：
 
 export function add(a:number, b:number) {
-  return a + b;
+    return a + b;
 }
 
 DateComponent.ets定义如下：
@@ -153,9 +262,9 @@ struct DateComponent {
   build() {
     Column() {
       Text('我是AModulelib中的组件')
-        .margin(10);
+        .margin(10)
     }
-    .width(300).backgroundColor(Color.Yellow);
+    .width(300).backgroundColor(Color.Yellow)
   }
 }
 
@@ -174,63 +283,77 @@ entry中主要实现如下：
 在entry基础模块中，增加动态依赖配置。entry的oh-package.json5中使用dynamicDependencies来动态依赖AModulelib模块。
 
 {
+  // ...
   "dynamicDependencies": {
-    "AModulelib": "file:../AModulelib"
+    "AModulelib": "file:../AModulelib",
+    // ...
   }
 }
 
 在entry中使用动态模块AModulelib模块里面的方法和组件。在调用AModulelib中的功能前需要判断AModulelib是否已经加载，未加载时请参考请求按需加载的接口完成加载。
 
 import { moduleInstallManager } from '@kit.AppGalleryKit';
+import type { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError, Callback } from '@kit.BasicServicesKit';
-import { common } from '@kit.AbilityKit';
+
+// ...
 
 @Entry
 @Component
-struct Index {
-  @BuilderParam AModulelibComponent: Function;
+export struct Index {
+  // ...
+  @BuilderParam aModuleLibComponent: Function;
   @State countTotal: number = 0;
   @State isShow: boolean = false;
+  // ...
 
   build() {
-    Row() {
-      Column() {
-        Button(`调用增量模块中的add功能:3+6`)
-          .onClick(() => {
-            this.initAModulelib(() => {
-              import('AModulelib').then((ns: ESObject) => {
-                this.countTotal = ns.add(3, 6);
-              }).catch((error: BusinessError) => {
-                hilog.error(0, 'TAG', `add onError.code is ${error.code}, message is ${error.message}`);
-              })
-            })
-          });
-        Text('计算结果：' + this.countTotal)
-          .margin(10);
-        Button(`调用增量模块中的showDateComponent功能`)
-          .onClick(() => {
-            this.initAModulelib(() => {
-              import('AModulelib').then((ns: ESObject) => {
-                this.AModulelibComponent = ns.showDateComponent;
-                this.isShow = true;
-              }).catch((error: BusinessError) => {
-                hilog.error(0, 'TAG', `showDateComponent onError.code is ${error.code}, message is ${error.message}`);
-              })
-            })
-          }).margin({
-          top: 10, bottom: 10
-        });
-        if (this.isShow) {
-          this.AModulelibComponent()
-        }
-      }
-      .width('100%')
+    Column() {
+      // ...
+          Column() {
+            Button($r('app.string.invokeButton'))
+              .onClick(() => {
+                this.initAModulelib(() => {
+                  import('AModulelib').then((ns: ESObject) => {
+                    this.countTotal = ns.add(3, 6);
+                  }).catch((error: BusinessError) => {
+                    hilog.error(0, 'InstantDownload',
+                      `add onError.code is ${error.code}, message is ${error.message}`);
+                  })
+                })
+              });
+            Text('计算结果：' + this.countTotal)
+              .margin(10);
+
+            Button($r('app.string.invokeToast'))
+              .onClick(() => {
+                this.initAModulelib(() => {
+                  import('AModulelib').then((ns: ESObject) => {
+                    this.aModuleLibComponent = ns.showDateComponent;
+                    this.isShow = true;
+                  }).catch((error: BusinessError) => {
+                    hilog.error(0, 'InstantDownload',
+                      `showDateComponent onError.code is ${error.code}, message is ${error.message}`);
+                  })
+                })
+              }).margin({
+              top: 10, bottom: 10
+            });
+            if (this.isShow) {
+              this.aModuleLibComponent()
+            }
+            // ...
+          }
+
+          // ...
     }
+    .width('100%')
     .height('100%')
+    .padding(16)
   }
 
-  private showToastInfo(msg: string) {
+  private showToastInfo(msg: string | Resource) {
     this.getUIContext().getPromptAction().showToast({
       message: msg,
       duration: 2000
@@ -244,17 +367,20 @@ struct Index {
    */
   private initAModulelib(successCallBack: Callback<void>): void {
     try {
-      const result: moduleInstallManager.InstalledModule = moduleInstallManager.getInstalledModule('AModulelib');
-      if (result?.installStatus === moduleInstallManager.InstallStatus.INSTALLED) {
-        hilog.info(0, 'TAG', 'AModulelib installed');
+      const moduleName: string = 'AModulelib';
+      const moduleInfo: moduleInstallManager.InstalledModule =
+        moduleInstallManager.getInstalledModule(moduleName);
+      if (moduleInfo?.installStatus === moduleInstallManager.InstallStatus.INSTALLED) {
+        hilog.info(0, 'InstantDownload', 'AModulelib installed');
         successCallBack && successCallBack();
       } else {
         // AModulelib模块未安装, 需要调用fetchModules下载AModulelib模块
-        hilog.info(0, 'TAG', 'AModulelib not installed');
-        this.fetchModule('AModulelib', successCallBack)
+        hilog.info(0, 'InstantDownload', 'AModulelib not installed');
+        this.fetchModule(moduleName, successCallBack);
       }
     } catch (error) {
-      hilog.error(0, 'TAG', `getInstalledModule onError.code is ${error.code}, message is ${error.message}`);
+      hilog.error(0, 'InstantDownload',
+        `getInstalledModule onError.code is ${error.code}, message is ${error.message}`);
     }
   }
 
@@ -281,34 +407,41 @@ struct Index {
    * @param successCallBack 回调
    */
   private fetchModule(moduleName: string, successCallBack: Callback<void>) {
+    let moduleInstallRequest: moduleInstallManager.ModuleInstallRequest;
     try {
-      hilog.info(0, 'TAG', 'handleFetchModules start');
-      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+      hilog.info(0, 'InstantDownload', 'fetchModule start');
+      const context: common.UIAbilityContext | common.ExtensionContext =
+        this.getUIContext().getHostContext() as common.UIAbilityContext;
       const moduleInstallProvider: moduleInstallManager.ModuleInstallProvider =
         new moduleInstallManager.ModuleInstallProvider();
-      const moduleInstallRequest: moduleInstallManager.ModuleInstallRequest =
-        moduleInstallProvider.createModuleInstallRequest(context);
+      moduleInstallRequest = moduleInstallProvider.createModuleInstallRequest(context);
       if (!moduleInstallRequest) {
-        hilog.warn(0, 'TAG', 'moduleInstallRequest is empty');
+        hilog.warn(0, 'InstantDownload', 'moduleInstallRequest is empty');
         return;
       }
-      moduleInstallRequest.addModule(moduleName);
+      const retCode: moduleInstallManager.ReturnCode = moduleInstallRequest.addModule(moduleName);
+      hilog.info(0, 'InstantDownload', `addModule result: ${JSON.stringify(retCode)}`);
+
       moduleInstallManager.fetchModules(moduleInstallRequest)
         .then((data: moduleInstallManager.ModuleInstallSessionState) => {
-          hilog.info(0, 'TAG', 'Succeeded in fetching Modules result.');
-          if (data.code === moduleInstallManager.RequestErrorCode.SUCCESS) {
-            this.onListenEvents(successCallBack)
+          hilog.info(0, 'InstantDownload', `fetchModule result: ${JSON.stringify(data)}`);
+          if (data?.taskStatus !== undefined &&
+            data?.code === moduleInstallManager.RequestErrorCode.SUCCESS) {
+            this.onListenEvents(successCallBack);
           } else {
-            hilog.info(0, 'TAG', 'fetchModules failure');
+            hilog.info(0, 'InstantDownload', 'fetchModule failure');
           }
         })
         .catch((error: BusinessError) => {
-          hilog.error(0, 'TAG', `fetchModules onError.code is ${error.code}, message is ${error.message}`);
+          hilog.error(0, 'InstantDownload',
+            `fetching Modules onError.code is ${error.code}, message is ${error.message}`);
         })
     } catch (error) {
-      hilog.error(0, 'TAG', `handleFetchModules onError.code is ${error.code}, message is ${error.message}`);
+      hilog.error(0, 'InstantDownload', `onError.code is ${error.code}, message is ${error.message}`);
     }
   }
+
+  // ...
 }
 
 运行结果效果图：
@@ -325,33 +458,32 @@ hdc install entry.hap
 
 访问设备沙箱路径，在应用el2级别加密数据目录下，创建cache/moduleinstall/<ModuleName>目录（这里<ModuleName>是AModulelib），将模块调试包AModulelib.hsp上传至对应模块目录下（请确保模块调试包文件应有读写权限）。
 
-按照创建按需加载的请求实例、请求按需加载的接口或使用动态模块，无需改动参数即可安装好模块调试包。监听到安装成功后，对应模块目录下的文件会被自动删除。
+按照创建按需加载的请求实例、请求按需加载的接口、取消下载任务、恢复下载任务和使用动态模块，无需改动参数即可安装好模块调试包，实现取消及恢复下载任务。监听到安装成功后，对应模块目录下的文件会被自动删除。
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-// LoadInstallService.ets
 import { moduleInstallManager } from '@kit.AppGalleryKit';
 ```
 
 ### Code block 2
 
 ```
-const moduleName: string = 'AModule';
+const moduleName: string = 'AModulelib';
 ```
 
 ### Code block 3
 
 ```
-const moduleInfo: moduleInstallManager.InstalledModule = moduleInstallManager.getInstalledModule(moduleName);
+const moduleInfo: moduleInstallManager.InstalledModule =
+  moduleInstallManager.getInstalledModule(moduleName);
 ```
 
 ### Code block 4
 
 ```
-// LoadInstallService.ets
 import { moduleInstallManager } from '@kit.AppGalleryKit';
 import type { common } from '@kit.AbilityKit';
 ```
@@ -359,45 +491,49 @@ import type { common } from '@kit.AbilityKit';
 ### Code block 5
 
 ```
-const context: common.UIAbilityContext | common.ExtensionContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+const context: common.UIAbilityContext | common.ExtensionContext =
+  this.getUIContext().getHostContext() as common.UIAbilityContext;
 ```
 
 ### Code block 6
 
 ```
-const myModuleInstallProvider: moduleInstallManager.ModuleInstallProvider = new moduleInstallManager.ModuleInstallProvider();
-const myModuleInstallRequest: moduleInstallManager.ModuleInstallRequest = myModuleInstallProvider.createModuleInstallRequest(context);
+const moduleInstallProvider: moduleInstallManager.ModuleInstallProvider = new moduleInstallManager.ModuleInstallProvider();
+const moduleInstallRequest: moduleInstallManager.ModuleInstallRequest = moduleInstallProvider.createModuleInstallRequest(context);
 ```
 
 ### Code block 7
 
 ```
-// LoadInstallService.ets
+import { moduleInstallManager } from '@kit.AppGalleryKit';
 import type { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { moduleInstallManager } from '@kit.AppGalleryKit';
 ```
 
 ### Code block 8
 
 ```
-const moduleNameA: string = 'AModule';
-const moduleNameB: string = 'BModule';
+const moduleName: string = 'AModulelib';
 ```
 
 ### Code block 9
 
 ```
-let myModuleInstallRequest: moduleInstallManager.ModuleInstallRequest;
+let moduleInstallRequest: moduleInstallManager.ModuleInstallRequest;
 try {
-  const myModuleInstallProvider: moduleInstallManager.ModuleInstallProvider = new moduleInstallManager.ModuleInstallProvider();
-  const context: common.UIAbilityContext | common.ExtensionContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  myModuleInstallRequest = myModuleInstallProvider.createModuleInstallRequest(context);
-  const aResult: moduleInstallManager.ReturnCode = myModuleInstallRequest.addModule(moduleNameA);
-  const bResult: moduleInstallManager.ReturnCode = myModuleInstallRequest.addModule(moduleNameB);
-  hilog.info(0, 'TAG', 'aResult:' + aResult + ' bResult:' + bResult);
+  // ...
+  const context: common.UIAbilityContext | common.ExtensionContext =
+    this.getUIContext().getHostContext() as common.UIAbilityContext;
+  const moduleInstallProvider: moduleInstallManager.ModuleInstallProvider =
+    new moduleInstallManager.ModuleInstallProvider();
+  moduleInstallRequest = moduleInstallProvider.createModuleInstallRequest(context);
+  // ...
+  const retCode: moduleInstallManager.ReturnCode = moduleInstallRequest.addModule(moduleName);
+  hilog.info(0, 'InstantDownload', `addModule result: ${JSON.stringify(retCode)}`);
+
+  // ...
 } catch (error) {
-  hilog.error(0, 'TAG', `addModule onError.code is ${error.code}, message is ${error.message}`);
+  hilog.error(0, 'InstantDownload', `onError.code is ${error.code}, message is ${error.message}`);
 }
 ```
 
@@ -405,35 +541,142 @@ try {
 
 ```
 try {
-  moduleInstallManager.fetchModules(myModuleInstallRequest)
-    .then(() => {
-      hilog.info(0, 'TAG', 'Succeeded in fetching Modules data.');
+  moduleInstallManager.fetchModules(moduleInstallRequest)
+    .then((data: moduleInstallManager.ModuleInstallSessionState) => {
+      hilog.info(0, 'InstantDownload', `fetchModule result: ${JSON.stringify(data)}`);
+      // ...
     })
+  // ...
 } catch (error) {
-  hilog.error(0, 'TAG', `fetching Modules onError.code is ${error.code}, message is ${error.message}`);
+  hilog.error(0, 'InstantDownload', `fetching Modules onError.code is ${error.code}, message is ${error.message}`);
 }
 ```
 
 ### Code block 11
 
 ```
-{
-  "module": {
-    "name": "AModulelib",
-    "deliveryWithInstall": false
-  }
-}
+import { moduleInstallManager } from '@kit.AppGalleryKit';
+// ...
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 12
 
 ```
-export function add(a:number, b:number) {
-  return a + b;
-}
+// taskId是fetchModules返回结果ModuleInstallSessionState中的taskId字段
+let taskId: string = '********';
 ```
 
 ### Code block 13
+
+```
+try {
+  // ...
+  const rtnCode: moduleInstallManager.ReturnCode = moduleInstallManager.pauseTask(taskId);
+  hilog.info(0, 'InstantDownload', `Succeeded in getting result: ${JSON.stringify(rtnCode)}`);
+  // ...
+} catch (error) {
+  hilog.error(0, 'InstantDownload', `pauseTask onError.code is ${error.code}, message is ${error.message}`);
+  // ...
+}
+```
+
+### Code block 14
+
+```
+import { moduleInstallManager } from '@kit.AppGalleryKit';
+import type { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
+@Component
+struct ResumeTask {
+  build() {
+    Column() {
+      Button('ResumeTask')
+        .onClick(() => {
+          try {
+            const taskId: string = '********';
+            // 暂停下载任务
+            const rtnCode: moduleInstallManager.ReturnCode = moduleInstallManager.pauseTask(taskId);
+            hilog.info(0, 'InstantDownload', `Succeeded in getting result: ${JSON.stringify(rtnCode)}`);
+            const myModuleInstallProvider: moduleInstallManager.ModuleInstallProvider =
+              new moduleInstallManager.ModuleInstallProvider();
+            const context: common.UIAbilityContext | common.ExtensionContext =
+              this.getUIContext().getHostContext() as common.UIAbilityContext;
+            // 创建按需加载请求对象
+            const myModuleInstallRequest: moduleInstallManager.ModuleInstallRequest =
+              myModuleInstallProvider.createModuleInstallRequest(context);
+            // 添加要按需加载的模块名
+            myModuleInstallRequest.addModule('AModulelib');
+            // 恢复下载任务
+            moduleInstallManager.fetchModules(myModuleInstallRequest)
+              .then(() => {
+                hilog.info(0, 'InstantDownload', 'Succeeded in fetching modules success data.');
+              })
+          } catch (error) {
+            hilog.error(0, 'InstantDownload',
+              `fetching modules onError.code is ${error.code}, message is ${error.message}`);
+          }
+        })
+        .width('100%')
+    }
+    .margin(16)
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+```
+
+### Code block 15
+
+```
+import { moduleInstallManager } from '@kit.AppGalleryKit';
+import type { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 16
+
+```
+// taskId是fetchModules返回结果ModuleInstallSessionState中的taskId字段
+let taskId: string = '********';
+```
+
+### Code block 17
+
+```
+try {
+  // ...
+  const rtnCode: moduleInstallManager.ReturnCode = moduleInstallManager.cancelTask(taskId);
+  hilog.info(0, 'InstantDownload', `Succeeded in getting result: ${JSON.stringify(rtnCode)}`);
+  // ...
+} catch (error) {
+  hilog.error(0, 'InstantDownload', `cancelTask onError.code is ${error.code}, message is ${error.message}`);
+  // ...
+}
+```
+
+### Code block 18
+
+```
+{
+  "module": {
+    "name": "AModulelib",
+    // ...
+    "deliveryWithInstall": false
+  }
+}
+```
+
+### Code block 19
+
+```
+export function add(a:number, b:number) {
+    return a + b;
+}
+```
+
+### Code block 20
 
 ```
 @Component
@@ -441,9 +684,9 @@ struct DateComponent {
   build() {
     Column() {
       Text('我是AModulelib中的组件')
-        .margin(10);
+        .margin(10)
     }
-    .width(300).backgroundColor(Color.Yellow);
+    .width(300).backgroundColor(Color.Yellow)
   }
 }
 
@@ -453,76 +696,90 @@ export function showDateComponent() {
 }
 ```
 
-### Code block 14
+### Code block 21
 
 ```
 export { add } from './src/main/ets/utils/Calc';
 export { showDateComponent } from './src/main/ets/components/DateComponent';
 ```
 
-### Code block 15
+### Code block 22
 
 ```
 {
+  // ...
   "dynamicDependencies": {
-    "AModulelib": "file:../AModulelib"
+    "AModulelib": "file:../AModulelib",
+    // ...
   }
 }
 ```
 
-### Code block 16
+### Code block 23
 
 ```
 import { moduleInstallManager } from '@kit.AppGalleryKit';
+import type { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError, Callback } from '@kit.BasicServicesKit';
-import { common } from '@kit.AbilityKit';
+
+// ...
 
 @Entry
 @Component
-struct Index {
-  @BuilderParam AModulelibComponent: Function;
+export struct Index {
+  // ...
+  @BuilderParam aModuleLibComponent: Function;
   @State countTotal: number = 0;
   @State isShow: boolean = false;
+  // ...
 
   build() {
-    Row() {
-      Column() {
-        Button(`调用增量模块中的add功能:3+6`)
-          .onClick(() => {
-            this.initAModulelib(() => {
-              import('AModulelib').then((ns: ESObject) => {
-                this.countTotal = ns.add(3, 6);
-              }).catch((error: BusinessError) => {
-                hilog.error(0, 'TAG', `add onError.code is ${error.code}, message is ${error.message}`);
-              })
-            })
-          });
-        Text('计算结果：' + this.countTotal)
-          .margin(10);
-        Button(`调用增量模块中的showDateComponent功能`)
-          .onClick(() => {
-            this.initAModulelib(() => {
-              import('AModulelib').then((ns: ESObject) => {
-                this.AModulelibComponent = ns.showDateComponent;
-                this.isShow = true;
-              }).catch((error: BusinessError) => {
-                hilog.error(0, 'TAG', `showDateComponent onError.code is ${error.code}, message is ${error.message}`);
-              })
-            })
-          }).margin({
-          top: 10, bottom: 10
-        });
-        if (this.isShow) {
-          this.AModulelibComponent()
-        }
-      }
-      .width('100%')
+    Column() {
+      // ...
+          Column() {
+            Button($r('app.string.invokeButton'))
+              .onClick(() => {
+                this.initAModulelib(() => {
+                  import('AModulelib').then((ns: ESObject) => {
+                    this.countTotal = ns.add(3, 6);
+                  }).catch((error: BusinessError) => {
+                    hilog.error(0, 'InstantDownload',
+                      `add onError.code is ${error.code}, message is ${error.message}`);
+                  })
+                })
+              });
+            Text('计算结果：' + this.countTotal)
+              .margin(10);
+
+            Button($r('app.string.invokeToast'))
+              .onClick(() => {
+                this.initAModulelib(() => {
+                  import('AModulelib').then((ns: ESObject) => {
+                    this.aModuleLibComponent = ns.showDateComponent;
+                    this.isShow = true;
+                  }).catch((error: BusinessError) => {
+                    hilog.error(0, 'InstantDownload',
+                      `showDateComponent onError.code is ${error.code}, message is ${error.message}`);
+                  })
+                })
+              }).margin({
+              top: 10, bottom: 10
+            });
+            if (this.isShow) {
+              this.aModuleLibComponent()
+            }
+            // ...
+          }
+
+          // ...
     }
+    .width('100%')
     .height('100%')
+    .padding(16)
   }
 
-  private showToastInfo(msg: string) {
+  private showToastInfo(msg: string | Resource) {
     this.getUIContext().getPromptAction().showToast({
       message: msg,
       duration: 2000
@@ -536,17 +793,20 @@ struct Index {
    */
   private initAModulelib(successCallBack: Callback<void>): void {
     try {
-      const result: moduleInstallManager.InstalledModule = moduleInstallManager.getInstalledModule('AModulelib');
-      if (result?.installStatus === moduleInstallManager.InstallStatus.INSTALLED) {
-        hilog.info(0, 'TAG', 'AModulelib installed');
+      const moduleName: string = 'AModulelib';
+      const moduleInfo: moduleInstallManager.InstalledModule =
+        moduleInstallManager.getInstalledModule(moduleName);
+      if (moduleInfo?.installStatus === moduleInstallManager.InstallStatus.INSTALLED) {
+        hilog.info(0, 'InstantDownload', 'AModulelib installed');
         successCallBack && successCallBack();
       } else {
         // AModulelib模块未安装, 需要调用fetchModules下载AModulelib模块
-        hilog.info(0, 'TAG', 'AModulelib not installed');
-        this.fetchModule('AModulelib', successCallBack)
+        hilog.info(0, 'InstantDownload', 'AModulelib not installed');
+        this.fetchModule(moduleName, successCallBack);
       }
     } catch (error) {
-      hilog.error(0, 'TAG', `getInstalledModule onError.code is ${error.code}, message is ${error.message}`);
+      hilog.error(0, 'InstantDownload',
+        `getInstalledModule onError.code is ${error.code}, message is ${error.message}`);
     }
   }
 
@@ -573,38 +833,45 @@ struct Index {
    * @param successCallBack 回调
    */
   private fetchModule(moduleName: string, successCallBack: Callback<void>) {
+    let moduleInstallRequest: moduleInstallManager.ModuleInstallRequest;
     try {
-      hilog.info(0, 'TAG', 'handleFetchModules start');
-      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+      hilog.info(0, 'InstantDownload', 'fetchModule start');
+      const context: common.UIAbilityContext | common.ExtensionContext =
+        this.getUIContext().getHostContext() as common.UIAbilityContext;
       const moduleInstallProvider: moduleInstallManager.ModuleInstallProvider =
         new moduleInstallManager.ModuleInstallProvider();
-      const moduleInstallRequest: moduleInstallManager.ModuleInstallRequest =
-        moduleInstallProvider.createModuleInstallRequest(context);
+      moduleInstallRequest = moduleInstallProvider.createModuleInstallRequest(context);
       if (!moduleInstallRequest) {
-        hilog.warn(0, 'TAG', 'moduleInstallRequest is empty');
+        hilog.warn(0, 'InstantDownload', 'moduleInstallRequest is empty');
         return;
       }
-      moduleInstallRequest.addModule(moduleName);
+      const retCode: moduleInstallManager.ReturnCode = moduleInstallRequest.addModule(moduleName);
+      hilog.info(0, 'InstantDownload', `addModule result: ${JSON.stringify(retCode)}`);
+
       moduleInstallManager.fetchModules(moduleInstallRequest)
         .then((data: moduleInstallManager.ModuleInstallSessionState) => {
-          hilog.info(0, 'TAG', 'Succeeded in fetching Modules result.');
-          if (data.code === moduleInstallManager.RequestErrorCode.SUCCESS) {
-            this.onListenEvents(successCallBack)
+          hilog.info(0, 'InstantDownload', `fetchModule result: ${JSON.stringify(data)}`);
+          if (data?.taskStatus !== undefined &&
+            data?.code === moduleInstallManager.RequestErrorCode.SUCCESS) {
+            this.onListenEvents(successCallBack);
           } else {
-            hilog.info(0, 'TAG', 'fetchModules failure');
+            hilog.info(0, 'InstantDownload', 'fetchModule failure');
           }
         })
         .catch((error: BusinessError) => {
-          hilog.error(0, 'TAG', `fetchModules onError.code is ${error.code}, message is ${error.message}`);
+          hilog.error(0, 'InstantDownload',
+            `fetching Modules onError.code is ${error.code}, message is ${error.message}`);
         })
     } catch (error) {
-      hilog.error(0, 'TAG', `handleFetchModules onError.code is ${error.code}, message is ${error.message}`);
+      hilog.error(0, 'InstantDownload', `onError.code is ${error.code}, message is ${error.message}`);
     }
   }
+
+  // ...
 }
 ```
 
-### Code block 17
+### Code block 24
 
 ```
 hdc install entry.hap

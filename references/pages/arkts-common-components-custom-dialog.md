@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-common-components-custom-dialog_
 
-CustomDialog是自定义弹出框，可用于广告、中奖、警告、软件更新等与用户交互响应操作。开发者可以通过CustomDialogController类显示自定义弹出框。具体用法请参考自定义弹出框。
+CustomDialog是自定义弹出框，可用于广告、中奖、警告、软件更新等与用户交互响应操作。开发者可以通过CustomDialogController类显示自定义弹出框。具体用法请参考自定义弹窗。
 
 说明
 
@@ -216,15 +216,15 @@ export struct DialogInteractionUseButton {
   }
 
   onCancel() {
-    hilog.info(DOMAIN, 'testTag', 'testTag', 'Callback when the first button is clicked');
+    hilog.info(DOMAIN, 'testTag', 'Callback when the first button is clicked');
   }
 
   onAccept() {
-    hilog.info(DOMAIN, 'testTag', 'testTag', 'Callback when the second button is clicked');
+    hilog.info(DOMAIN, 'testTag', 'Callback when the second button is clicked');
   }
 
   exitApp() {
-    hilog.info(DOMAIN, 'testTag', 'testTag', 'Click the callback in the blank area');
+    hilog.info(DOMAIN, 'testTag', 'Click the callback in the blank area');
   }
 
   build() {
@@ -285,7 +285,6 @@ struct CustomDialogExample {
 @Entry
 @Component
 export struct DialogAnimationNew {
-  @State textValue: string = '';
   @State inputValue: string = 'click me';
   dialogController: CustomDialogController | null = new CustomDialogController({
     builder: CustomDialogExample(),
@@ -295,7 +294,7 @@ export struct DialogAnimationNew {
       delay: 500,
       playMode: PlayMode.Alternate,
       onFinish: () => {
-        hilog.info(DOMAIN, 'testTag', 'play end')
+        hilog.info(DOMAIN, 'testTag', 'play end');
       }
     },
     autoCancel: true,
@@ -345,7 +344,6 @@ struct CustomDialogExample {
 @Entry
 @Component
 export struct DialogStyleNew {
-  @State textValue: string = '';
   @State inputValue: string = 'click me';
   dialogController: CustomDialogController | null = new CustomDialogController({
     builder: CustomDialogExample(),
@@ -524,6 +522,9 @@ struct CustomDialogExample {
             if (this.controller !== undefined) {
               this.controller.close();
             }
+            if (this.cancel) {
+              this.cancel();
+            }
           })
           .backgroundColor(0xffffff)
           .fontColor(Color.Black)
@@ -531,6 +532,9 @@ struct CustomDialogExample {
           .onClick(() => {
             if (this.controller !== undefined) {
               this.controller.close();
+            }
+            if (this.confirm) {
+              this.confirm();
             }
           })
           .backgroundColor(0xffffff)
@@ -919,15 +923,15 @@ export struct DialogInteractionUseButton {
   }
 
   onCancel() {
-    hilog.info(DOMAIN, 'testTag', 'testTag', 'Callback when the first button is clicked');
+    hilog.info(DOMAIN, 'testTag', 'Callback when the first button is clicked');
   }
 
   onAccept() {
-    hilog.info(DOMAIN, 'testTag', 'testTag', 'Callback when the second button is clicked');
+    hilog.info(DOMAIN, 'testTag', 'Callback when the second button is clicked');
   }
 
   exitApp() {
-    hilog.info(DOMAIN, 'testTag', 'testTag', 'Click the callback in the blank area');
+    hilog.info(DOMAIN, 'testTag', 'Click the callback in the blank area');
   }
 
   build() {
@@ -992,7 +996,6 @@ struct CustomDialogExample {
 @Entry
 @Component
 export struct DialogAnimationNew {
-  @State textValue: string = '';
   @State inputValue: string = 'click me';
   dialogController: CustomDialogController | null = new CustomDialogController({
     builder: CustomDialogExample(),
@@ -1002,7 +1005,7 @@ export struct DialogAnimationNew {
       delay: 500,
       playMode: PlayMode.Alternate,
       onFinish: () => {
-        hilog.info(DOMAIN, 'testTag', 'play end')
+        hilog.info(DOMAIN, 'testTag', 'play end');
       }
     },
     autoCancel: true,
@@ -1052,7 +1055,6 @@ struct CustomDialogExample {
 @Entry
 @Component
 export struct DialogStyleNew {
-  @State textValue: string = '';
   @State inputValue: string = 'click me';
   dialogController: CustomDialogController | null = new CustomDialogController({
     builder: CustomDialogExample(),
@@ -1229,6 +1231,9 @@ struct CustomDialogExample {
             if (this.controller !== undefined) {
               this.controller.close();
             }
+            if (this.cancel) {
+              this.cancel();
+            }
           })
           .backgroundColor(0xffffff)
           .fontColor(Color.Black)
@@ -1236,6 +1241,9 @@ struct CustomDialogExample {
           .onClick(() => {
             if (this.controller !== undefined) {
               this.controller.close();
+            }
+            if (this.confirm) {
+              this.confirm();
             }
           })
           .backgroundColor(0xffffff)

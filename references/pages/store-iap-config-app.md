@@ -13,7 +13,7 @@ bundleName配置
 {
   "app": {
     // bundleName需要与开发者在AppGallery Connect中创建应用时的包名保持一致
-    "bundleName": "com.huawei.***.***.demo",
+    "bundleName": "com.example.appgallery.kit.demo",
     // ...
   }
 }
@@ -30,20 +30,28 @@ bundleName配置
 
 在工程“entry/src/main/module.json5”的module节点增加如下client_id属性配置，用于数字商品服务接口的应用身份鉴权。
 
-"module":{
-  "type": "***",
-  "name": "***",
-  "description": "***",
-  "mainElement": "***",
-  "deviceTypes": [***],
-  // ...
-  "metadata": [
-  {
-    "name": "client_id",
-    "value": "***"
-  },
-  // ...
-  ]
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "EntryAbility",
+    "deviceTypes": [
+      "phone",
+      "tablet",
+      "2in1",
+      "tv",
+      "car"
+    ],
+    // ...
+    "metadata": [
+      // ...
+      {
+        "name": "client_id",
+        "value": "***"
+      }
+    ]
+  }
 }
 
 ## Code blocks
@@ -54,7 +62,7 @@ bundleName配置
 {
   "app": {
     // bundleName需要与开发者在AppGallery Connect中创建应用时的包名保持一致
-    "bundleName": "com.huawei.***.***.demo",
+    "bundleName": "com.example.appgallery.kit.demo",
     // ...
   }
 }
@@ -63,19 +71,27 @@ bundleName配置
 ### Code block 2
 
 ```
-"module":{
-  "type": "***",
-  "name": "***",
-  "description": "***",
-  "mainElement": "***",
-  "deviceTypes": [***],
-  // ...
-  "metadata": [
-  {
-    "name": "client_id",
-    "value": "***"
-  },
-  // ...
-  ]
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "EntryAbility",
+    "deviceTypes": [
+      "phone",
+      "tablet",
+      "2in1",
+      "tv",
+      "car"
+    ],
+    // ...
+    "metadata": [
+      // ...
+      {
+        "name": "client_id",
+        "value": "***"
+      }
+    ]
+  }
 }
 ```

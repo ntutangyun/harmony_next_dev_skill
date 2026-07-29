@@ -66,56 +66,56 @@ showTextPickerDialog	不支持	不支持	不支持
 
 设置autoCancel为false，取消默认点击蒙层时弹窗消失。
 
-  autoCancelOpt: promptAction.CustomDialogOptions = {
-    builder: () => {
-      this.myBuilder();
-    },
-    autoCancel: false,
-  } as promptAction.CustomDialogOptions;
-  // ···
-  build() {
-    NavDestination() {
-      Column() {
-        Button('openCustomDialog autoCancel:false')
-          .width('100%')
-          .margin({ top: 10 })
-          .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
-          })
+autoCancelOpt: promptAction.CustomDialogOptions = {
+  builder: () => {
+    this.myBuilder();
+  },
+  autoCancel: false,
+} as promptAction.CustomDialogOptions;
+// ...
+build() {
+  NavDestination() {
+    Column() {
+      Button('openCustomDialog autoCancel:false')
+        .width('100%')
+        .margin({ top: 10 })
+        .onClick(() => {
+          this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt);
+        })
 
-        // ···
-      }
-      .width('100%')
-      .height('100%')
+      // ...
     }
+    .width('100%')
+    .height('100%')
   }
+}
 
 设置isModal为false，将默认的模态弹出框变为非模态弹出框。
 
-  modalOpt: promptAction.CustomDialogOptions = {
-    builder: () => {
-      this.myBuilder();
-    },
-    isModal: false,
-  } as promptAction.CustomDialogOptions;
-  // ···
-  build() {
-    NavDestination() {
-      Column() {
-        // ···
-        Button('openCustomDialog isModal:false')
-          .width('100%')
-          .margin({ top: 10 })
-          .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
-          })
+modalOpt: promptAction.CustomDialogOptions = {
+  builder: () => {
+    this.myBuilder();
+  },
+  isModal: false,
+} as promptAction.CustomDialogOptions;
+// ...
+build() {
+  NavDestination() {
+    Column() {
+      // ...
+      Button('openCustomDialog isModal:false')
+        .width('100%')
+        .margin({ top: 10 })
+        .onClick(() => {
+          this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt);
+        })
 
-        // ···
-      }
-      .width('100%')
-      .height('100%')
+      // ...
     }
+    .width('100%')
+    .height('100%')
   }
+}
 
 弹出框蒙层样式控制
 
@@ -123,36 +123,36 @@ showTextPickerDialog	不支持	不支持	不支持
 
 设置maskRect和maskColor，实现蒙层区域和蒙层颜色的设置。
 
-  maskOpt: promptAction.CustomDialogOptions = {
-    builder: () => {
-      this.myBuilder();
-    },
-    maskRect: {
-      x: 0,
-      y: 10,
-      width: '100%',
-      height: '90%'
-    },
-    maskColor: '#33AA0000'
-  } as promptAction.CustomDialogOptions;
-  // ···
-  build() {
-    NavDestination() {
-      Column() {
-        // ···
-        Button('openCustomDialog maskOpt')
-          .width('100%')
-          .margin({ top: 10 })
-          .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
-          })
+maskOpt: promptAction.CustomDialogOptions = {
+  builder: () => {
+    this.myBuilder();
+  },
+  maskRect: {
+    x: 0,
+    y: 10,
+    width: '100%',
+    height: '90%'
+  },
+  maskColor: '#33AA0000'
+} as promptAction.CustomDialogOptions;
+// ...
+build() {
+  NavDestination() {
+    Column() {
+      // ...
+      Button('openCustomDialog maskOpt')
+        .width('100%')
+        .margin({ top: 10 })
+        .onClick(() => {
+          this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt);
+        })
 
-        // ···
-      }
-      .width('100%')
-      .height('100%')
+      // ...
     }
+    .width('100%')
+    .height('100%')
   }
+}
 
 在levelMode为LevelMode.EMBEDDED下，展示不同immersiveMode对蒙层在导航栏和状态栏的延伸效果。
 
@@ -349,21 +349,21 @@ export struct CustomDialogControl {
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
+            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt);
           })
 
         Button('openCustomDialog isModal:false')
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
+            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt);
           })
 
         Button('openCustomDialog maskOpt')
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
+            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt);
           })
 
         Button('openCustomDialog transition')
@@ -412,93 +412,93 @@ export struct CustomDialogControl {
 ### Code block 1
 
 ```
-  autoCancelOpt: promptAction.CustomDialogOptions = {
-    builder: () => {
-      this.myBuilder();
-    },
-    autoCancel: false,
-  } as promptAction.CustomDialogOptions;
-  // ···
-  build() {
-    NavDestination() {
-      Column() {
-        Button('openCustomDialog autoCancel:false')
-          .width('100%')
-          .margin({ top: 10 })
-          .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
-          })
+autoCancelOpt: promptAction.CustomDialogOptions = {
+  builder: () => {
+    this.myBuilder();
+  },
+  autoCancel: false,
+} as promptAction.CustomDialogOptions;
+// ...
+build() {
+  NavDestination() {
+    Column() {
+      Button('openCustomDialog autoCancel:false')
+        .width('100%')
+        .margin({ top: 10 })
+        .onClick(() => {
+          this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt);
+        })
 
-        // ···
-      }
-      .width('100%')
-      .height('100%')
+      // ...
     }
+    .width('100%')
+    .height('100%')
   }
+}
 ```
 
 ### Code block 2
 
 ```
-  modalOpt: promptAction.CustomDialogOptions = {
-    builder: () => {
-      this.myBuilder();
-    },
-    isModal: false,
-  } as promptAction.CustomDialogOptions;
-  // ···
-  build() {
-    NavDestination() {
-      Column() {
-        // ···
-        Button('openCustomDialog isModal:false')
-          .width('100%')
-          .margin({ top: 10 })
-          .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
-          })
+modalOpt: promptAction.CustomDialogOptions = {
+  builder: () => {
+    this.myBuilder();
+  },
+  isModal: false,
+} as promptAction.CustomDialogOptions;
+// ...
+build() {
+  NavDestination() {
+    Column() {
+      // ...
+      Button('openCustomDialog isModal:false')
+        .width('100%')
+        .margin({ top: 10 })
+        .onClick(() => {
+          this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt);
+        })
 
-        // ···
-      }
-      .width('100%')
-      .height('100%')
+      // ...
     }
+    .width('100%')
+    .height('100%')
   }
+}
 ```
 
 ### Code block 3
 
 ```
-  maskOpt: promptAction.CustomDialogOptions = {
-    builder: () => {
-      this.myBuilder();
-    },
-    maskRect: {
-      x: 0,
-      y: 10,
-      width: '100%',
-      height: '90%'
-    },
-    maskColor: '#33AA0000'
-  } as promptAction.CustomDialogOptions;
-  // ···
-  build() {
-    NavDestination() {
-      Column() {
-        // ···
-        Button('openCustomDialog maskOpt')
-          .width('100%')
-          .margin({ top: 10 })
-          .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
-          })
+maskOpt: promptAction.CustomDialogOptions = {
+  builder: () => {
+    this.myBuilder();
+  },
+  maskRect: {
+    x: 0,
+    y: 10,
+    width: '100%',
+    height: '90%'
+  },
+  maskColor: '#33AA0000'
+} as promptAction.CustomDialogOptions;
+// ...
+build() {
+  NavDestination() {
+    Column() {
+      // ...
+      Button('openCustomDialog maskOpt')
+        .width('100%')
+        .margin({ top: 10 })
+        .onClick(() => {
+          this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt);
+        })
 
-        // ···
-      }
-      .width('100%')
-      .height('100%')
+      // ...
     }
+    .width('100%')
+    .height('100%')
   }
+}
 ```
 
 ### Code block 4
@@ -701,21 +701,21 @@ export struct CustomDialogControl {
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt)
+            this.getUIContext().getPromptAction().openCustomDialog(this.autoCancelOpt);
           })
 
         Button('openCustomDialog isModal:false')
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt)
+            this.getUIContext().getPromptAction().openCustomDialog(this.modalOpt);
           })
 
         Button('openCustomDialog maskOpt')
           .width('100%')
           .margin({ top: 10 })
           .onClick(() => {
-            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt)
+            this.getUIContext().getPromptAction().openCustomDialog(this.maskOpt);
           })
 
         Button('openCustomDialog transition')

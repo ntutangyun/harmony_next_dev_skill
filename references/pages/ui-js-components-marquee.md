@@ -25,7 +25,7 @@ marquee为跑马灯组件，用于展示一段单行滚动的文字。具体用�
 
 设置属性和样式
 
-marquee通过color和font-weight属性设置跑马灯中文本的颜色、字体粗细和边框样式。
+marquee通过color和font-weight属性设置跑马灯中文本的颜色和字体粗细，通过border属性设置边框样式。
 
 <!-- xxx.hml -->
 <div class="container">

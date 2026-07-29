@@ -23,7 +23,7 @@ Options
 
 [h2]install_all
 
-默认值：false
+默认值：true
 
 类型：Boolean
 
@@ -97,7 +97,7 @@ Options
 
 [h2]all-modules
 
-默认值：""
+默认值：false
 
 类型：Boolean
 
@@ -161,7 +161,7 @@ Options
 
 [h2]resolve_conflict
 
-默认值：false
+默认值：true
 
 类型：Boolean
 

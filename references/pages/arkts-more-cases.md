@@ -52,8 +52,8 @@ function printObj(obj: string) {
   console.info(obj);
   // ...
 }
-// ...
-          printObj('abc'); // abc
+
+printObj('abc'); // abc
 
 [h2]标注JSON.parse返回值类型
 
@@ -153,7 +153,7 @@ type ControllerConstructor = {
   new (value: string): Controller;
 }
 
-class testMenu {
+class TestMenu {
   controller: ControllerConstructor = Controller
   createController() {
     if (this.controller) {
@@ -163,7 +163,7 @@ class testMenu {
   }
 }
 
-let t = new testMenu();
+let t = new TestMenu();
 console.info(t.createController()!.value);
 
 建议改法
@@ -279,7 +279,7 @@ interface ControllerConstructor {
   new (value: string): Controller;
 }
 
-class testMenu {
+class TestMenu {
   controller: ControllerConstructor = Controller
   createController() {
     if (this.controller) {
@@ -289,7 +289,7 @@ class testMenu {
   }
 }
 
-let t = new testMenu();
+let t = new TestMenu();
 console.info(t.createController()!.value);
 
 建议改法
@@ -655,7 +655,7 @@ export default Test;
 // app.ets
 import test from './test';
 
-let option: test.I = { id: '', type: 0 };
+let option = { id: '', type: 0 };
 test.foo('', option);
 
 原因
@@ -776,7 +776,7 @@ let d = +'string';
 
 建议改法
 
-let a = Number.parseInt('5'); // 使用Number.parseInt显示转换
+let a = Number.parseInt('5'); // 使用Number.parseInt显式转换
 let b = -Number.parseInt('5');
 let c = ~Number.parseInt('5');
 let d = new Number('123');
@@ -800,14 +800,14 @@ let t: typeof c = { value: 123 };
 
 建议改法
 
-// 文件名：module1.ets
+// module1.ets
 class C {
   public value: number = 0
 }
 
 export { C }
 
-// 文件名：module2.ets
+// module2.ets
 import { C } from './module1'
 let t: C = { value: 123 };
 
@@ -977,7 +977,7 @@ foo.apply(obj);
 
 建议改法1
 
-使用类的方法实现,如果该方法被多个类使用,可以考虑采用继承的机制。
+使用类的方法实现，如果该方法被多个类使用，可以考虑采用继承的机制。
 
 class Test {
   public value: string = ''
@@ -1110,7 +1110,7 @@ class Controller {
 
 type ControllerConstructor = new (value: string) => Controller;
 
-class testMenu {
+class TestMenu {
   controller: ControllerConstructor = Controller
   createController() {
     if (this.controller) {
@@ -1120,8 +1120,8 @@ class testMenu {
   }
 }
 
-let t = new testMenu()
-console.info(t.createController()!.value)
+let t = new TestMenu();
+console.info(t.createController()!.value);
 
 建议改法
 
@@ -1381,24 +1381,22 @@ class Test {
 
 建议改法
 
-{
-  interface I {
-    name:string
-  }
+interface I {
+  name:string
+}
 
-  class A {}
+class A {}
 
-  class Test {
-    public a: number;
-    public b: string;
-    public c: boolean;
-    public d: I = { name:'abc' };
-    public e: A | null = null;
-    constructor(a:number, b:string, c:boolean) {
-      this.a = a;
-      this.b = b;
-      this.c = c;
-    }
+class Test {
+  public a: number;
+  public b: string;
+  public c: boolean;
+  public d: I = { name:'abc' };
+  public e: A | null = null;
+  constructor(a:number, b:string, c:boolean) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
   }
 }
 
@@ -1475,11 +1473,11 @@ class Test {
 
 ​ 方式(ii) prop?: A
 
-​ 方式(iii) prop: A | undefined = undefined
+​ 方式三(iii) prop: A | undefined = undefined
 
 从性能角度看，null类型仅用于编译期的类型检查，不会影响虚拟机性能。而undefined | A被视为联合类型，运行时可能产生额外开销。
 
-从代码可读性、简洁性的角度来说，prop?:A是prop： A | undefined = undefined的语法糖，推荐使用可选属性的写法。
+从代码可读性、简洁性的角度来说，prop?:A是prop: A | undefined = undefined的语法糖，推荐使用可选属性的写法。
 
 [h2]严格函数类型检查
 
@@ -2056,8 +2054,8 @@ function printObj(obj: string) {
   console.info(obj);
   // ...
 }
-// ...
-          printObj('abc'); // abc
+
+printObj('abc'); // abc
 ```
 
 ### Code block 5
@@ -2159,7 +2157,7 @@ type ControllerConstructor = {
   new (value: string): Controller;
 }
 
-class testMenu {
+class TestMenu {
   controller: ControllerConstructor = Controller
   createController() {
     if (this.controller) {
@@ -2169,7 +2167,7 @@ class testMenu {
   }
 }
 
-let t = new testMenu();
+let t = new TestMenu();
 console.info(t.createController()!.value);
 ```
 
@@ -2285,7 +2283,7 @@ interface ControllerConstructor {
   new (value: string): Controller;
 }
 
-class testMenu {
+class TestMenu {
   controller: ControllerConstructor = Controller
   createController() {
     if (this.controller) {
@@ -2295,7 +2293,7 @@ class testMenu {
   }
 }
 
-let t = new testMenu();
+let t = new TestMenu();
 console.info(t.createController()!.value);
 ```
 
@@ -2679,7 +2677,7 @@ export default Test;
 // app.ets
 import test from './test';
 
-let option: test.I = { id: '', type: 0 };
+let option = { id: '', type: 0 };
 test.foo('', option);
 ```
 
@@ -2794,7 +2792,7 @@ let d = +'string';
 ### Code block 59
 
 ```
-let a = Number.parseInt('5'); // 使用Number.parseInt显示转换
+let a = Number.parseInt('5'); // 使用Number.parseInt显式转换
 let b = -Number.parseInt('5');
 let c = ~Number.parseInt('5');
 let d = new Number('123');
@@ -2822,7 +2820,7 @@ let t: typeof c = { value: 123 };
 ### Code block 62
 
 ```
-// 文件名：module1.ets
+// module1.ets
 class C {
   public value: number = 0
 }
@@ -2833,7 +2831,7 @@ export { C }
 ### Code block 63
 
 ```
-// 文件名：module2.ets
+// module2.ets
 import { C } from './module1'
 let t: C = { value: 123 };
 ```
@@ -3128,7 +3126,7 @@ class Controller {
 
 type ControllerConstructor = new (value: string) => Controller;
 
-class testMenu {
+class TestMenu {
   controller: ControllerConstructor = Controller
   createController() {
     if (this.controller) {
@@ -3138,8 +3136,8 @@ class testMenu {
   }
 }
 
-let t = new testMenu()
-console.info(t.createController()!.value)
+let t = new TestMenu();
+console.info(t.createController()!.value);
 ```
 
 ### Code block 86
@@ -3411,24 +3409,22 @@ class Test {
 ### Code block 102
 
 ```
-{
-  interface I {
-    name:string
-  }
+interface I {
+  name:string
+}
 
-  class A {}
+class A {}
 
-  class Test {
-    public a: number;
-    public b: string;
-    public c: boolean;
-    public d: I = { name:'abc' };
-    public e: A | null = null;
-    constructor(a:number, b:string, c:boolean) {
-      this.a = a;
-      this.b = b;
-      this.c = c;
-    }
+class Test {
+  public a: number;
+  public b: string;
+  public c: boolean;
+  public d: I = { name:'abc' };
+  public e: A | null = null;
+  constructor(a:number, b:string, c:boolean) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
   }
 }
 ```

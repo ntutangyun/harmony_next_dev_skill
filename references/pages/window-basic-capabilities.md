@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/window-ba
 
 窗口生命周期
 
-窗口旋转
+窗口旋转与实践案例
 
 窗口布局
 

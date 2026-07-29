@@ -62,6 +62,7 @@ properties
 └── ohos.dependencies.types.enable
 └── ohos.defaults.release.cmakebuildtype
 └── ohos.defaults.autoLazyImport
+└── hvigor.daemon.idleTimeout
 parameterFile
 
 配置文件字段说明
@@ -209,6 +210,7 @@ ohos.align.deviceTypes	可选	字符串数组	指定归一的设备类型，构�
 ohos.dependencies.types.enable	可选	布尔值	编译时是否收集依赖的HAR模块/源码HAR包的类型声明文件参与语法校验。如果HAR中配置了类型声明文件，建议开启。 true：收集。 false（缺省默认值）：不收集。 从DevEco Studio 6.0.0 Beta3版本开始支持。
 ohos.defaults.release.cmakebuildtype	可选	字符串	在release模式下构建时，指定cmake构建类型，对所有模块生效。 Debug：不优化代码，附加调试信息。 Release（缺省默认值）：最大化优化代码，但不包含调试信息。 RelWithDebInfo：近似于Release模式，既进行了代码优化，同时保留部分调试信息。 从DevEco Studio 6.0.1 Beta1版本开始支持。 说明： 模块级build-profile.json5文件中也可以通过arguments字段指定cmake构建类型，例如"arguments": "-DCMAKE_BUILD_TYPE=RelWithDebInfo"。arguments字段的优先级比ohos.defaults.release.cmakebuildtype更高。 在debug模式下构建时，该字段配置无效，默认使用Debug构建类型。
 ohos.defaults.autoLazyImport	可选	布尔值	编译时是否自动将符合lazy-import语法规范的import语句添加"lazy"关键字。仅支持在源码中添加"lazy"关键字，不包含依赖的字节码HAR包或HSP。关于lazy-import的介绍及相关影响请参考延迟加载（lazy import）。 true：添加。 false（缺省默认值）：不添加。 从DevEco Studio 6.0.2 Beta1版本开始支持。 说明： 如果配置为true，编译时不会做场景识别，即源码中任何符合语法规范的import语句都会被添加"lazy"。 仅支持Stage模型。 build-profile.json5文件中也可以通过autoLazyImport字段实现该能力，autoLazyImport的优先级比ohos.defaults.autoLazyImport更高。
+hvigor.daemon.idleTimeout	可选	整型数值	设置daemon进程的最大空闲时长，单位为毫秒。默认值为10800000，即3小时。 从最后一次构建任务完成时开始计算，超过最大空闲时长则daemon进程退出。 从26.0.0 Beta2版本开始支持。
 
 properties字段示例：
 
@@ -238,6 +240,7 @@ properties字段示例：
     "ohos.arkCompile.emptyBundleName": true,
     "ohos.align.deviceTypes": ["phone", "tablet"],
     "ohos.defaults.release.cmakebuildtype": "RelWithDebInfo",
+    "hvigor.daemon.idleTimeout": 10800000,
   }
 }
 
@@ -363,6 +366,7 @@ properties
 └── ohos.dependencies.types.enable
 └── ohos.defaults.release.cmakebuildtype
 └── ohos.defaults.autoLazyImport
+└── hvigor.daemon.idleTimeout
 parameterFile
 ```
 
@@ -452,6 +456,7 @@ parameterFile
     "ohos.arkCompile.emptyBundleName": true,
     "ohos.align.deviceTypes": ["phone", "tablet"],
     "ohos.defaults.release.cmakebuildtype": "RelWithDebInfo",
+    "hvigor.daemon.idleTimeout": 10800000,
   }
 }
 ```

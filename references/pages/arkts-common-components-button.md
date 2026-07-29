@@ -105,7 +105,7 @@ Button('background color').backgroundColor(0xF55A42)
 创建删除操作的按钮。
 
 Button({ type: ButtonType.Circle, stateEffect: true }) {
-  // 请将$r('app.media.ic_public_delete_filled3')替换为实际资源文件
+  // 请将$r('app.media.ic_public_delete_filled')替换为实际资源文件
   Image($r('app.media.ic_public_delete_filled')).width(30).height(30)
 }.width(55).height(55).margin({ 'left': 20 }).backgroundColor(0xF55A42)
 
@@ -123,6 +123,8 @@ Button('Ok', { type: ButtonType.Normal, stateEffect: true })
 用于启动操作。
 
 可以用按钮启动任何用户界面元素，按钮会根据用户的操作触发相应的事件。例如，在List容器里通过点击按钮进行页面跳转。
+
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 // xxx.ets
@@ -235,7 +237,7 @@ export struct pageThreeTmp {
     }.title('pageThree')
     .onBackPressed(() => {
       const popDestinationInfo = this.pathStack.pop(); // 弹出路由栈栈顶元素
-      /// 请将$r('app.string.return_value')替换为实际资源文件，在本示例中该资源文件的value值为"返回值"
+      // 请将$r('app.string.return_value')替换为实际资源文件，在本示例中该资源文件的value值为"返回值"
       hilog.info(DOMAIN, 'testTag', 'pop' + $r('app.string.return_value') + JSON.stringify(popDestinationInfo));
       return true;
     })
@@ -417,7 +419,7 @@ Button('background color').backgroundColor(0xF55A42)
 
 ```
 Button({ type: ButtonType.Circle, stateEffect: true }) {
-  // 请将$r('app.media.ic_public_delete_filled3')替换为实际资源文件
+  // 请将$r('app.media.ic_public_delete_filled')替换为实际资源文件
   Image($r('app.media.ic_public_delete_filled')).width(30).height(30)
 }.width(55).height(55).margin({ 'left': 20 }).backgroundColor(0xF55A42)
 ```
@@ -434,6 +436,8 @@ Button('Ok', { type: ButtonType.Normal, stateEffect: true })
 ### Code block 14
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
 const DOMAIN = 0x0000;
 // xxx.ets
 @Entry
@@ -545,7 +549,7 @@ export struct pageThreeTmp {
     }.title('pageThree')
     .onBackPressed(() => {
       const popDestinationInfo = this.pathStack.pop(); // 弹出路由栈栈顶元素
-      /// 请将$r('app.string.return_value')替换为实际资源文件，在本示例中该资源文件的value值为"返回值"
+      // 请将$r('app.string.return_value')替换为实际资源文件，在本示例中该资源文件的value值为"返回值"
       hilog.info(DOMAIN, 'testTag', 'pop' + $r('app.string.return_value') + JSON.stringify(popDestinationInfo));
       return true;
     })

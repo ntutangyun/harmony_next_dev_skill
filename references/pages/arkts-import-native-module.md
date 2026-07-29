@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-imp
 export const add: (a: number, b: number) => number;
 
 // NameImport.ets
-import { add } from 'libentry.so'
+import { add } from 'libentry.so';
 add(2, 3);
 
 [h2]默认导入
@@ -23,7 +23,7 @@ add(2, 3);
 export const add: (a: number, b: number) => number;
 
 // DefaultImport.ets
-import entry from 'libentry.so'
+import entry from 'libentry.so';
 entry.add(2, 3);
 
 [h2]命名空间导入
@@ -32,7 +32,7 @@ entry.add(2, 3);
 export const add: (a: number, b: number) => number;
 
 // NamespaceImport.ets
-import * as entry from 'libentry.so'
+import * as entry from 'libentry.so';
 entry.add(2, 3);
 
 间接导入
@@ -58,10 +58,10 @@ const result = add(2, 3);
 export const add: (a: number, b: number) => number;
 
 // NamespaceExport.ets
-export * from 'libentry.so'
+export * from 'libentry.so';
 
 // NamespaceImportFromExport.ets
-import { add } from './NamespaceExport'
+import { add } from './NamespaceExport';
 add(2, 3);
 
 注意
@@ -71,7 +71,7 @@ add(2, 3);
 反例：
 
 // test1.ets
-export * from 'libentry.so'
+export * from 'libentry.so';
 
 // test2.ets
 import * as add from './test1'
@@ -92,7 +92,7 @@ import('libentry.so').then((entry:ESObject) => {
 [h2]间接导入
 
 // DynamicExport.ets
-import entry from 'libentry.so'
+import entry from 'libentry.so';
 export { entry }
 
 // DynamicImportFromExport.ets
@@ -107,7 +107,7 @@ import('./DynamicExport').then((ns:ESObject) => {
 反例：
 
 // test1.ets
-export * from 'libentry.so'
+export * from 'libentry.so';
 
 // test2.ets
 import('./test1').then((ns:ESObject) => {
@@ -127,7 +127,7 @@ export const add: (a: number, b: number) => number;
 
 ```
 // NameImport.ets
-import { add } from 'libentry.so'
+import { add } from 'libentry.so';
 add(2, 3);
 ```
 
@@ -142,7 +142,7 @@ export const add: (a: number, b: number) => number;
 
 ```
 // DefaultImport.ets
-import entry from 'libentry.so'
+import entry from 'libentry.so';
 entry.add(2, 3);
 ```
 
@@ -157,7 +157,7 @@ export const add: (a: number, b: number) => number;
 
 ```
 // NamespaceImport.ets
-import * as entry from 'libentry.so'
+import * as entry from 'libentry.so';
 entry.add(2, 3);
 ```
 
@@ -197,14 +197,14 @@ export const add: (a: number, b: number) => number;
 
 ```
 // NamespaceExport.ets
-export * from 'libentry.so'
+export * from 'libentry.so';
 ```
 
 ### Code block 12
 
 ```
 // NamespaceImportFromExport.ets
-import { add } from './NamespaceExport'
+import { add } from './NamespaceExport';
 add(2, 3);
 ```
 
@@ -212,7 +212,7 @@ add(2, 3);
 
 ```
 // test1.ets
-export * from 'libentry.so'
+export * from 'libentry.so';
 ```
 
 ### Code block 14
@@ -243,7 +243,7 @@ import('libentry.so').then((entry:ESObject) => {
 
 ```
 // DynamicExport.ets
-import entry from 'libentry.so'
+import entry from 'libentry.so';
 export { entry }
 ```
 
@@ -260,7 +260,7 @@ import('./DynamicExport').then((ns:ESObject) => {
 
 ```
 // test1.ets
-export * from 'libentry.so'
+export * from 'libentry.so';
 ```
 
 ### Code block 20

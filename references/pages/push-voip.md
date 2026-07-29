@@ -35,7 +35,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-voip
 
 调测阶段，每个项目每日全网最多可推送1000条测试消息。发送测试消息需设置testMessage为true。
 
-正式发布阶段，单设备单应用下每日推送消息总条数受设备消息频控限制，系统会根据现网使用场景和流量进行管控，不合理的使用场景系统会进行频控。
+正式发布阶段，单设备单应用下每日推送消息总条数受设备消息频控限制，系统会根据使用场景和流量进行管控，不合理的使用场景系统会进行频控。
 
 开发步骤
 
@@ -58,7 +58,7 @@ export default class VoIPUIAbility extends UIAbility {
 
     try {
       pushService.receiveMessage('VoIP', this, async (data) => {
-        // process message
+        // 处理应用内通话消息数据
         try {
           await VoipCallService.processVoIPMainMsg(data.data, this.context);
         } catch (error) {
@@ -158,6 +158,8 @@ export class VoipCallService {
         if (imageInfo) {
           hilog.info(DOMAIN, 'testTag',
             `User profile imageInfo: ${imageInfo.size.width} * ${imageInfo.size.height}.`);
+        } else {
+          hilog.error(DOMAIN, 'testTag', `Failed to obtain the image information.code is ${err.code}, message is ${err.message}`);
         }
       });
     }
@@ -490,7 +492,7 @@ export default class VoIPUIAbility extends UIAbility {
 
     try {
       pushService.receiveMessage('VoIP', this, async (data) => {
-        // process message
+        // 处理应用内通话消息数据
         try {
           await VoipCallService.processVoIPMainMsg(data.data, this.context);
         } catch (error) {
@@ -592,6 +594,8 @@ export class VoipCallService {
         if (imageInfo) {
           hilog.info(DOMAIN, 'testTag',
             `User profile imageInfo: ${imageInfo.size.width} * ${imageInfo.size.height}.`);
+        } else {
+          hilog.error(DOMAIN, 'testTag', `Failed to obtain the image information.code is ${err.code}, message is ${err.message}`);
         }
       });
     }

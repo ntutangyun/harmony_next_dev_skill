@@ -22,6 +22,8 @@ Stage模型添加Ability
 
 从DevEco Studio 6.1.0 Beta2版本开始，支持在API 23及以上Car设备工程的模块中添加RemoteNotificationAbility。
 
+从26.0.0 Beta2版本开始，支持在API 26.0.0及以上工程的模块中添加Agent、AgentUI。
+
 EmbeddedUIExtensionAbility：用于提供跨进程界面嵌入的能力。
 
 BackupAbility：用于提供备份及恢复应用数据的能力。
@@ -31,6 +33,10 @@ WorkScheduler：用于提供延迟任务的相关能力。
 RemoteNotificationAbility：用于提供获取场景化消息数据和生命周期销毁的回调的通知能力，当前仅支持在Phone、Tablet、2in1、Car设备中使用。
 
 Driver：用于提供驱动相关扩展框架。仅在当前工程的设备类型只含有2in1设备时，支持创建该类型。
+
+Agent：用于提供智能体扩展的能力。
+
+AgentUI：用于提供接入端侧Agent UI界面显示的能力。
 
 EmbeddedUIExtensionAbility：用于提供跨进程界面嵌入的能力。
 

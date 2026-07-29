@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-accessibility-focus-redundancy-check_
 
-在无障碍场景开发中，避免存在控件焦点冗余。
+在无障碍场景开发中，避免控件焦点冗余。
 
 规则配置
 

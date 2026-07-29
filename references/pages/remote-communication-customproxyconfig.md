@@ -48,11 +48,13 @@ request.configuration = configuration;
 session.fetch(request).then((response: rcp.Response) => {
   // 处理请求成功响应
   console.info(`Response success, ${response}`);
+  // ...
   // 关闭会话
   session.close();
 }).catch((err: BusinessError) => {
   // 处理请求失败响应
   console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // ...
   // 关闭会话
   session.close();
 })
@@ -85,11 +87,13 @@ request.configuration = configuration;
 session.fetch(request).then((response: rcp.Response) => {
   // 处理请求成功响应
   console.info(`Response success, ${response}`);
+  // ...
   // 关闭会话
   session.close();
 }).catch((err: BusinessError) => {
   // 处理请求失败响应
   console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // ...
   // 关闭会话
   session.close();
 })
@@ -109,15 +113,11 @@ const requestURL = 'https://example.com';
 
 通过WebProxy自定义代理配置，通过声明式方式。
 
-// 自定义proxy
+// 自定义proxy（请根据实际需求调整）
 const configuration: rcp.Configuration = {
   proxy: {
     url: 'https://www.example.com',
-    createTunnel: 'always',
-    exclusions: [
-      'https://www.example1.com',
-      'https://www.example2.com'
-    ]
+    createTunnel: 'always'
   }
 }
 // 定义request并将请求configuration添加到request中
@@ -129,11 +129,13 @@ request.configuration = configuration;
 session.fetch(request).then((response: rcp.Response) => {
   // 处理请求成功响应
   console.info(`Response success, ${response}`);
+  // ...
   // 关闭会话
   session.close();
 }).catch((err: BusinessError) => {
   // 处理请求失败响应
   console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // ...
   // 关闭会话
   session.close();
 })
@@ -173,11 +175,13 @@ request.configuration = configuration;
 session.fetch(request).then((response: rcp.Response) => {
   // 处理请求成功响应
   console.info(`Response success, ${response}`);
+  // ...
   // 关闭会话
   session.close();
 }).catch((err: BusinessError) => {
   // 处理请求失败响应
   console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // ...
   // 关闭会话
   session.close();
 })
@@ -216,11 +220,13 @@ request.configuration = configuration;
 session.fetch(request).then((response: rcp.Response) => {
   // 处理请求成功响应
   console.info(`Response success, ${response}`);
+  // ...
   // 关闭会话
   session.close();
 }).catch((err: BusinessError) => {
   // 处理请求失败响应
   console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // ...
   // 关闭会话
   session.close();
 })
@@ -244,15 +250,11 @@ const requestURL = 'https://example.com';
 ### Code block 11
 
 ```
-// 自定义proxy
+// 自定义proxy（请根据实际需求调整）
 const configuration: rcp.Configuration = {
   proxy: {
     url: 'https://www.example.com',
-    createTunnel: 'always',
-    exclusions: [
-      'https://www.example1.com',
-      'https://www.example2.com'
-    ]
+    createTunnel: 'always'
   }
 }
 // 定义request并将请求configuration添加到request中
@@ -266,11 +268,13 @@ request.configuration = configuration;
 session.fetch(request).then((response: rcp.Response) => {
   // 处理请求成功响应
   console.info(`Response success, ${response}`);
+  // ...
   // 关闭会话
   session.close();
 }).catch((err: BusinessError) => {
   // 处理请求失败响应
   console.error(`The error code is ${err.code}, error data is ${err.data}`);
+  // ...
   // 关闭会话
   session.close();
 })

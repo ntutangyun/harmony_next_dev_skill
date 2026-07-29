@@ -26,7 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-revo
 
 参考发送语音播报消息章节进行消息推送，确保应用可正常收到语音播报消息。
 
-应用服务端调用REST API撤回通知消息，消息详情可参见消息撤回，请求示例如下：
+应用服务端调用REST API撤回语音播报消息，消息详情可参见消息撤回，请求示例如下：
 
 // Request URL
 POST "https://push-api.cloud.huawei.com/v1/[clientId]/messages:revoke"
@@ -45,6 +45,10 @@ push-type: 2
     "pushToken3"
   ]
 }
+
+说明
+
+撤回消息接口使用v1版本URL，并且路径参数使用clientId。与其他场景化消息推送接口使用的v3版本不同，路径参数使用clientId而非projectId。
 
 [clientId]：请替换为您应用的Client ID，可参见指导获取。
 

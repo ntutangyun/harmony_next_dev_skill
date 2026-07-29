@@ -20,18 +20,21 @@ off(type: 'advertisingStateChange', callback?: Callback<AdvertisingStateChangeIn
 
 import { advertising } from '@kit.NearLinkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 订阅星闪广播状态变化事件。
 
-let onReceiveEvent:(data: advertising.AdvertisingStateChangeInfo) => void =
-   (data:advertising.AdvertisingStateChangeInfo) => {
-   console.info('advertisingId:' + data.advertisingId);
-   console.info('advertisingState:' + data.state);
+let onAdvertisingStateChangeCallback:(data: advertising.AdvertisingStateChangeInfo)
+  => void = (data: advertising.AdvertisingStateChangeInfo) => {
+  hilog.info(this.domainId, this.logTag, `advertisingId: ${data.advertisingId}`);
+  hilog.info(this.domainId, this.logTag, `advertisingState: ${data.state}`);
+  // ...
 };
 try {
-   advertising.on('advertisingStateChange', onReceiveEvent);
+  advertising.on('advertisingStateChange', onAdvertisingStateChangeCallback);
 } catch (err) {
-   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 构造用户需要的广播参数及数据。
@@ -46,24 +49,25 @@ serviceValueBuffer[0] = 4;
 serviceValueBuffer[1] = 6;
 serviceValueBuffer[2] = 7;
 serviceValueBuffer[3] = 8;
-console.info('manufactureValueBuffer = ' + JSON.stringify(manufactureValueBuffer));
-console.info('serviceValueBuffer = ' + JSON.stringify(serviceValueBuffer));
+hilog.info(this.domainId, this.logTag, `manufactureValueBuffer = ${JSON.stringify(manufactureValueBuffer)}`);
+hilog.info(this.domainId, this.logTag, `serviceValueBuffer = ${JSON.stringify(serviceValueBuffer)}`);
 let setting: advertising.AdvertisingSettings = {
-  interval:5000,
-  power:advertising.TxPowerMode.ADV_TX_POWER_LOW
+  interval: 160,
+  power: advertising.TxPowerMode.ADV_TX_POWER_MEDIUM
 };
 let manufactureDataUnit: advertising.ManufacturerData = {
-  manufacturerId:4567,
-  manufacturerData:manufactureValueBuffer.buffer
+  manufacturerId: 4567,
+  manufacturerData: manufactureValueBuffer.buffer
 };
 let serviceDataUnit: advertising.ServiceData = {
-  serviceUuid:'37bea880-fc70-11ea-b720-000000001234',
-  serviceData:serviceValueBuffer.buffer
+  serviceUuid: 'FFFFFFFF-1234-5678-ABCD-000000001234',
+  serviceData: serviceValueBuffer.buffer
 };
 let advData: advertising.AdvertisingData = {
-  serviceUuids:['37bea880-fc70-11ea-b720-000000001234'],
-  manufacturerData:[manufactureDataUnit],
-  serviceData:[serviceDataUnit]
+  serviceUuids: ['FFFFFFFF-1234-5678-ABCD-000000001234'],
+  manufacturerData: [manufactureDataUnit],
+  serviceData: [serviceDataUnit],
+  includeDeviceName : true
 };
 let advertisingParams: advertising.AdvertisingParams = {
   advertisingSettings: setting,
@@ -72,36 +76,39 @@ let advertisingParams: advertising.AdvertisingParams = {
 
 开启星闪广播，返回advertisingId表示当前广播索引。
 
-let advId = -1;
+let advId: number = -1;
 try {
   advertising.startAdvertising(advertisingParams).then((advertisingId:number) => {
     advId = advertisingId;
-    console.info('advertising id:' + JSON.stringify(advId));
+    hilog.info(this.domainId, this.logTag, `advertising id: ${JSON.stringify(advId)}`);
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 停止星闪广播，其中advId是步骤4开启广播后返回的advertisingId。
 
 try {
   advertising.stopAdvertising(advId).then(() => {
-      console.info('stop advertising success');
-    }).catch ((err: BusinessError) => {
-      console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
-    });
+    hilog.info(this.domainId, this.logTag, `Stop advertising success`);
+  }).catch((err: BusinessError) => {
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
+  });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 取消订阅星闪广播状态变化事件。
 
 try {
-  advertising.off('advertisingStateChange', onReceiveEvent);
+  advertising.off('advertisingStateChange');
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 示例代码
@@ -115,20 +122,23 @@ try {
 ```
 import { advertising } from '@kit.NearLinkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-let onReceiveEvent:(data: advertising.AdvertisingStateChangeInfo) => void =
-   (data:advertising.AdvertisingStateChangeInfo) => {
-   console.info('advertisingId:' + data.advertisingId);
-   console.info('advertisingState:' + data.state);
+let onAdvertisingStateChangeCallback:(data: advertising.AdvertisingStateChangeInfo)
+  => void = (data: advertising.AdvertisingStateChangeInfo) => {
+  hilog.info(this.domainId, this.logTag, `advertisingId: ${data.advertisingId}`);
+  hilog.info(this.domainId, this.logTag, `advertisingState: ${data.state}`);
+  // ...
 };
 try {
-   advertising.on('advertisingStateChange', onReceiveEvent);
+  advertising.on('advertisingStateChange', onAdvertisingStateChangeCallback);
 } catch (err) {
-   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -145,24 +155,25 @@ serviceValueBuffer[0] = 4;
 serviceValueBuffer[1] = 6;
 serviceValueBuffer[2] = 7;
 serviceValueBuffer[3] = 8;
-console.info('manufactureValueBuffer = ' + JSON.stringify(manufactureValueBuffer));
-console.info('serviceValueBuffer = ' + JSON.stringify(serviceValueBuffer));
+hilog.info(this.domainId, this.logTag, `manufactureValueBuffer = ${JSON.stringify(manufactureValueBuffer)}`);
+hilog.info(this.domainId, this.logTag, `serviceValueBuffer = ${JSON.stringify(serviceValueBuffer)}`);
 let setting: advertising.AdvertisingSettings = {
-  interval:5000,
-  power:advertising.TxPowerMode.ADV_TX_POWER_LOW
+  interval: 160,
+  power: advertising.TxPowerMode.ADV_TX_POWER_MEDIUM
 };
 let manufactureDataUnit: advertising.ManufacturerData = {
-  manufacturerId:4567,
-  manufacturerData:manufactureValueBuffer.buffer
+  manufacturerId: 4567,
+  manufacturerData: manufactureValueBuffer.buffer
 };
 let serviceDataUnit: advertising.ServiceData = {
-  serviceUuid:'37bea880-fc70-11ea-b720-000000001234',
-  serviceData:serviceValueBuffer.buffer
+  serviceUuid: 'FFFFFFFF-1234-5678-ABCD-000000001234',
+  serviceData: serviceValueBuffer.buffer
 };
 let advData: advertising.AdvertisingData = {
-  serviceUuids:['37bea880-fc70-11ea-b720-000000001234'],
-  manufacturerData:[manufactureDataUnit],
-  serviceData:[serviceDataUnit]
+  serviceUuids: ['FFFFFFFF-1234-5678-ABCD-000000001234'],
+  manufacturerData: [manufactureDataUnit],
+  serviceData: [serviceDataUnit],
+  includeDeviceName : true
 };
 let advertisingParams: advertising.AdvertisingParams = {
   advertisingSettings: setting,
@@ -173,16 +184,17 @@ let advertisingParams: advertising.AdvertisingParams = {
 ### Code block 4
 
 ```
-let advId = -1;
+let advId: number = -1;
 try {
   advertising.startAdvertising(advertisingParams).then((advertisingId:number) => {
     advId = advertisingId;
-    console.info('advertising id:' + JSON.stringify(advId));
+    hilog.info(this.domainId, this.logTag, `advertising id: ${JSON.stringify(advId)}`);
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -191,12 +203,13 @@ try {
 ```
 try {
   advertising.stopAdvertising(advId).then(() => {
-      console.info('stop advertising success');
-    }).catch ((err: BusinessError) => {
-      console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
-    });
+    hilog.info(this.domainId, this.logTag, `Stop advertising success`);
+  }).catch((err: BusinessError) => {
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
+  });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -204,8 +217,9 @@ try {
 
 ```
 try {
-  advertising.off('advertisingStateChange', onReceiveEvent);
+  advertising.off('advertisingStateChange');
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```

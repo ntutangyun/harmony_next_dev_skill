@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ins
 
 inspector用于检查页面布局，通过双向定位功能帮助开发者在DevEco Studio中快速定位组件、修改属性和调试组件，以提高开发效率。
 
-ArkUI获取当前显示页面中所有组件的信息，包括组件树的父子结构、尺寸、位置、样式、属性和状态。获取组件树信息后，生成并展示为Inspector组件树。DevEco Studio的使用具体可以参考Inspector调试能力。
+ArkUI获取当前显示页面中所有组件的信息，包括组件树的父子结构、尺寸、位置、样式、属性和状态。获取组件树信息后，生成并展示为inspector组件树。DevEco Studio的使用具体可以参考Inspector调试能力。
 
 inspector针对UI组件的布局或绘制送显完成，还提供了注册与取消监听函数的C API接口，具体使用可以参考添加事件监听。
 
@@ -67,7 +67,7 @@ struct ComponentPage {
           hilog.info(0x0000,`result2: ${inspectorStr}`, 'result2');
           inspectorStr = uiContext.getFilteredInspectorTreeById('TEXT', 1, ['src']);
           inspectorStr = JSON.stringify(JSON.parse(inspectorStr)['$children'][0]);
-          hilog.info(0x0000,`result3: ${inspectorStr}`, 'result13');
+          hilog.info(0x0000,`result3: ${inspectorStr}`, 'result3');
         } catch (e) {
           hilog.error(0x0000, `getFilteredInspectorTreeById error: ${e}`, 'error');
         }
@@ -149,6 +149,7 @@ sendEventByKey，给指定id的组件发送事件。
 
 下述示例，展示了getInspectorByKey、getInspectorTree和sendEventByKey的基本用法。
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
 @Entry
 @Component
 struct ComponentPage {
@@ -227,7 +228,7 @@ struct ComponentPage {
           hilog.info(0x0000,`result2: ${inspectorStr}`, 'result2');
           inspectorStr = uiContext.getFilteredInspectorTreeById('TEXT', 1, ['src']);
           inspectorStr = JSON.stringify(JSON.parse(inspectorStr)['$children'][0]);
-          hilog.info(0x0000,`result3: ${inspectorStr}`, 'result13');
+          hilog.info(0x0000,`result3: ${inspectorStr}`, 'result3');
         } catch (e) {
           hilog.error(0x0000, `getFilteredInspectorTreeById error: ${e}`, 'error');
         }
@@ -299,6 +300,7 @@ struct ImageExample {
 ### Code block 3
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
 @Entry
 @Component
 struct ComponentPage {

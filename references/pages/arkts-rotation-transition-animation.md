@@ -28,7 +28,9 @@ struct rotation {
 
 需要在项目的module.json5文件中的abilities列表里添加"orientation"，指定为"auto_rotation"。
 
-"orientation": "auto_rotation",
+{
+  "orientation": "auto_rotation"
+}
 
 布局切换的旋转屏动画，会对同步旋转的窗口与应用视图做大小和位置的过渡。
 
@@ -42,14 +44,14 @@ import { display } from '@kit.ArkUI';
 @Component
 struct rotation {
 
-  // 获取通过监听窗口的windowsSizeChange事件得到的屏幕显示方向
+  // 获取通过监听窗口的windowSizeChange事件得到的屏幕显示方向
   @StorageLink('orientation') myOrientation: display.Orientation = display.Orientation.PORTRAIT;
 
   build() {
     Stack() {
 
       // 当屏幕显示方向变化时，切换组件的视图效果
-      if (this.myOrientation == display.Orientation.PORTRAIT || this.myOrientation == display.Orientation.PORTRAIT_INVERTED) {
+      if (this.myOrientation === display.Orientation.PORTRAIT || this.myOrientation === display.Orientation.PORTRAIT_INVERTED) {
         // 请将$r('app.media.sky')替换为实际资源文件
         Image($r('app.media.sky'))
           .size({ width: 100, height: 100 })
@@ -89,7 +91,7 @@ const TAG: string = 'EntryAbility';
       mainWindow = windowStage.getMainWindowSync();
       let displayClass: display.Display = display.getDefaultDisplaySync();
       AppStorage.setOrCreate('orientation', displayClass.orientation);
-      // 监听窗口的windowsSizeChange事件，旋转屏时会触发该事件
+      // 监听窗口的windowSizeChange事件，旋转屏时会触发该事件
       mainWindow.on('windowSizeChange', (data) => {
         hilog.info(DOMAIN, TAG, 'Succeeded in enabling the listener for window size changes. Data: ' + data);
         let displayClass: display.Display | null = null;
@@ -121,7 +123,9 @@ const TAG: string = 'EntryAbility';
 
 需要在项目的module.json5文件中的abilities列表里添加"orientation"，指定为"auto_rotation"。
 
-"orientation": "auto_rotation",
+{
+  "orientation": "auto_rotation"
+}
 
 透明度变化的旋转屏动画，会对窗口做大小和位置的过渡，并同时对应用视图做切换过渡，且为消失隐藏的应用视图做渐隐效果，对新出现的视图做渐显的效果。
 
@@ -150,7 +154,9 @@ struct rotation {
 ### Code block 2
 
 ```
-"orientation": "auto_rotation",
+{
+  "orientation": "auto_rotation"
+}
 ```
 
 ### Code block 3
@@ -162,14 +168,14 @@ import { display } from '@kit.ArkUI';
 @Component
 struct rotation {
 
-  // 获取通过监听窗口的windowsSizeChange事件得到的屏幕显示方向
+  // 获取通过监听窗口的windowSizeChange事件得到的屏幕显示方向
   @StorageLink('orientation') myOrientation: display.Orientation = display.Orientation.PORTRAIT;
 
   build() {
     Stack() {
 
       // 当屏幕显示方向变化时，切换组件的视图效果
-      if (this.myOrientation == display.Orientation.PORTRAIT || this.myOrientation == display.Orientation.PORTRAIT_INVERTED) {
+      if (this.myOrientation === display.Orientation.PORTRAIT || this.myOrientation === display.Orientation.PORTRAIT_INVERTED) {
         // 请将$r('app.media.sky')替换为实际资源文件
         Image($r('app.media.sky'))
           .size({ width: 100, height: 100 })
@@ -211,7 +217,7 @@ const TAG: string = 'EntryAbility';
       mainWindow = windowStage.getMainWindowSync();
       let displayClass: display.Display = display.getDefaultDisplaySync();
       AppStorage.setOrCreate('orientation', displayClass.orientation);
-      // 监听窗口的windowsSizeChange事件，旋转屏时会触发该事件
+      // 监听窗口的windowSizeChange事件，旋转屏时会触发该事件
       mainWindow.on('windowSizeChange', (data) => {
         hilog.info(DOMAIN, TAG, 'Succeeded in enabling the listener for window size changes. Data: ' + data);
         let displayClass: display.Display | null = null;
@@ -245,5 +251,7 @@ const TAG: string = 'EntryAbility';
 ### Code block 5
 
 ```
-"orientation": "auto_rotation",
+{
+  "orientation": "auto_rotation"
+}
 ```

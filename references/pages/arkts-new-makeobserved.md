@@ -90,11 +90,14 @@ struct Page1 {
   build() {
     Column() {
       Text(`${this.message2.person.age}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // UI不会刷新，因为State只能观察到第一层的变化
           this.message2.person.age++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -122,16 +125,26 @@ struct Page2 {
   @Local message: Info = UIUtils.makeObserved(new Info(20));
   build() {
     Column() {
-      Button(`change id`).onClick(() => {
-        this.message.id++;
-      })
-      Button(`change Info ${this.message.id}`).onClick(() => {
-        this.message = new Info(30);
-      })
-      Button(`change Info1 ${this.message.id}`).onClick(() => {
-        this.message = UIUtils.makeObserved(new Info(30));
-      })
+      Button(`change id`)
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.id++;
+        })
+      Button(`change Info ${this.message.id}`)
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Info(30);
+        })
+      Button(`change Info1 ${this.message.id}`)
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = UIUtils.makeObserved(new Info(30));
+        })
     }
+    .width('100%')
   }
 }
 
@@ -217,23 +230,32 @@ struct Page3 {
   build() {
     Column() {
       Text(this.send.name)
-      Button('change name').onClick(() => {
-        // ok 可以观察到属性的改变
-        this.send.name += '0';
-      })
+        .fontSize(20)
+        .margin(10)
+      Button('change name')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // ok 可以观察到属性的改变
+          this.send.name += '0';
+        })
 
-      Button('task').onClick(() => {
-        // 将待执行的函数放入taskpool内部任务队列等待，等待分发到工作线程执行。
-        taskpool.execute(threadGetData, this.send.name)
-          .catch((err: Error) => {
-            hilog.error(DOMAIN, 'testTag', `taskpool execute fail. code is ${err.name}, message is ${err.message}`);
-          })
-          .then(val => {
-            // 和@Local一起使用，可以观察this.send的变化
-            this.send = UIUtils.makeObserved(val as SendableData);
-          });
-      })
+      Button('task')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // 将待执行的函数放入taskpool内部任务队列等待，等待分发到工作线程执行。
+          taskpool.execute(threadGetData, this.send.name)
+            .catch((err: Error) => {
+              hilog.error(DOMAIN, 'testTag', `taskpool execute fail. code is ${err.name}, message is ${err.message}`);
+            })
+            .then(val => {
+              // 和@Local一起使用，可以观察this.send的变化
+              this.send = UIUtils.makeObserved(val as SendableData);
+            });
+        })
     }
+    .width('100%')
   }
 }
 
@@ -251,7 +273,7 @@ collections.Array可以触发UI刷新的API有：
 
 改变数组长度：push、pop、shift、unshift、splice、shrinkTo、extendTo
 
-改变数组项本身：sort、fill
+改变数组项本身：sort、fill、reverse
 
 其他API不会改变原始数组，所以不会触发UI刷新。
 
@@ -692,6 +714,8 @@ struct Page9 {
     RelativeContainer() {
       Text(`${this.message.id}`)
         .id('textNumber')
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.message.id++;
         })
@@ -728,22 +752,25 @@ struct Page10 {
     Column() {
       Text(`${this.observedObj.id}`)
         .id('textobservedObj1')
-        .fontSize(50)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
-          // 通过getTarget获取其原始对象，将this.observedObj赋值为不可观察的数据
-          let rawObj: Info= UIUtils.getTarget(this.observedObj);
+          // 通过getTarget获取this.observedObj的原始对象，原始对象为不可观察的数据
+          let rawObj: Info = UIUtils.getTarget(this.observedObj);
           // 不会触发UI刷新，但数据会正常赋值
           rawObj.id = 20;
         })
 
       Text(`${this.observedObj.id}`)
         .id('textobservedObj2')
-        .fontSize(50)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 触发UI刷新，Text显示21
           this.observedObj.id++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -816,11 +843,14 @@ struct Page1 {
   build() {
     Column() {
       Text(`${this.message2.person.age}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // UI不会刷新，因为State只能观察到第一层的变化
           this.message2.person.age++;
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -842,16 +872,26 @@ struct Page2 {
   @Local message: Info = UIUtils.makeObserved(new Info(20));
   build() {
     Column() {
-      Button(`change id`).onClick(() => {
-        this.message.id++;
-      })
-      Button(`change Info ${this.message.id}`).onClick(() => {
-        this.message = new Info(30);
-      })
-      Button(`change Info1 ${this.message.id}`).onClick(() => {
-        this.message = UIUtils.makeObserved(new Info(30));
-      })
+      Button(`change id`)
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.id++;
+        })
+      Button(`change Info ${this.message.id}`)
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Info(30);
+        })
+      Button(`change Info1 ${this.message.id}`)
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = UIUtils.makeObserved(new Info(30));
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -902,23 +942,32 @@ struct Page3 {
   build() {
     Column() {
       Text(this.send.name)
-      Button('change name').onClick(() => {
-        // ok 可以观察到属性的改变
-        this.send.name += '0';
-      })
+        .fontSize(20)
+        .margin(10)
+      Button('change name')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // ok 可以观察到属性的改变
+          this.send.name += '0';
+        })
 
-      Button('task').onClick(() => {
-        // 将待执行的函数放入taskpool内部任务队列等待，等待分发到工作线程执行。
-        taskpool.execute(threadGetData, this.send.name)
-          .catch((err: Error) => {
-            hilog.error(DOMAIN, 'testTag', `taskpool execute fail. code is ${err.name}, message is ${err.message}`);
-          })
-          .then(val => {
-            // 和@Local一起使用，可以观察this.send的变化
-            this.send = UIUtils.makeObserved(val as SendableData);
-          });
-      })
+      Button('task')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // 将待执行的函数放入taskpool内部任务队列等待，等待分发到工作线程执行。
+          taskpool.execute(threadGetData, this.send.name)
+            .catch((err: Error) => {
+              hilog.error(DOMAIN, 'testTag', `taskpool execute fail. code is ${err.name}, message is ${err.message}`);
+            })
+            .then(val => {
+              // 和@Local一起使用，可以观察this.send的变化
+              this.send = UIUtils.makeObserved(val as SendableData);
+            });
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -1361,6 +1410,8 @@ struct Page9 {
     RelativeContainer() {
       Text(`${this.message.id}`)
         .id('textNumber')
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.message.id++;
         })
@@ -1387,22 +1438,25 @@ struct Page10 {
     Column() {
       Text(`${this.observedObj.id}`)
         .id('textobservedObj1')
-        .fontSize(50)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
-          // 通过getTarget获取其原始对象，将this.observedObj赋值为不可观察的数据
-          let rawObj: Info= UIUtils.getTarget(this.observedObj);
+          // 通过getTarget获取this.observedObj的原始对象，原始对象为不可观察的数据
+          let rawObj: Info = UIUtils.getTarget(this.observedObj);
           // 不会触发UI刷新，但数据会正常赋值
           rawObj.id = 20;
         })
 
       Text(`${this.observedObj.id}`)
         .id('textobservedObj2')
-        .fontSize(50)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 触发UI刷新，Text显示21
           this.observedObj.id++;
         })
     }
+    .width('100%')
   }
 }
 ```

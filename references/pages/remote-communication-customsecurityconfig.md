@@ -24,7 +24,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 在remoteValidation中配置'system'时，将使用系统中默认的CA。
 
-async function TestRcp() {
+async function testSystemRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
@@ -35,9 +35,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -51,7 +53,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 在remoteValidation中配置'skip'跳过证书校验。
 
-async function TestRcp() {
+async function testSkipRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
@@ -62,9 +64,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -78,7 +82,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 在remoteValidation中配置content，可以配置string类型证书内容。
 
-const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
+const PEM_CA_STRING = '-----BEGIN CERTIFICATE-----\n' +
   'MIICPzCCAcWgAwIBAgIQBVVWvPJepDU1w6QP1atFcjAKBggqhkjOPQQDAzBhMQswCQYDVQQGEwJV\n' +
   'UzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSAwHgYD\n' +
   'VQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBHMzAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAw\n' +
@@ -92,22 +96,24 @@ const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
   'VOKa5Vt8sycX\n' +
   '-----END CERTIFICATE-----';
 
-async function TestRcp() {
+async function testStringRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       remoteValidation: {
-        content: PEM_CA,
+        content: PEM_CA_STRING,
       }
     }
   }
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -118,11 +124,10 @@ async function TestRcp() {
 导入需要的模块。
 
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { util } from '@kit.ArkTS';
 
 在remoteValidation中配置content，可以配置ArrayBuffer类型证书内容。
 
-const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
+const PEM_CA_BINARY = '-----BEGIN CERTIFICATE-----\n' +
   'MIICPzCCAcWgAwIBAgIQBVVWvPJepDU1w6QP1atFcjAKBggqhkjOPQQDAzBhMQswCQYDVQQGEwJV\n' +
   'UzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSAwHgYD\n' +
   'VQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBHMzAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAw\n' +
@@ -136,11 +141,11 @@ const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
   'VOKa5Vt8sycX\n' +
   '-----END CERTIFICATE-----';
 
-async function TestRcp() {
+async function testBinaryRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
-  const buffer = new ArrayBuffer(PEM_CA.length);
-  util.TextEncoder.create('utf-8').encodeIntoUint8Array(PEM_CA, new Uint8Array(buffer));
+  const buffer = new ArrayBuffer(PEM_CA_BINARY.length);
+  util.TextEncoder.create('utf-8').encodeIntoUint8Array(PEM_CA_BINARY, new Uint8Array(buffer));
   request.configuration = {
     security: {
       remoteValidation: {
@@ -151,9 +156,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -190,22 +197,24 @@ sycX
 
 在remoteValidation中通过filePath指定证书路径。关于文件路径，请参考应用文件。
 
-async function TestRcp() {
+async function testFileRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       remoteValidation: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/dd8e9d41.0', // 正式使用时，需替换为证书的沙箱路径。
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/dd8e9d41.0', // 将生成证书改名放入/resources/resfile/下
       }
     }
   }
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -219,7 +228,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 在remoteValidation中配置folderPath指定证书所在的沙箱目录。关于文件路径，请参考应用文件。目录中的证书文件格式和内容请参考示例5中的步骤2。
 
-async function TestRcp() {
+async function testDirRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
@@ -232,9 +241,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -245,7 +256,6 @@ async function TestRcp() {
 导入需要的模块。
 
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { networkSecurity } from '@kit.NetworkKit';
 
 校验证书的日期是否符合预期。
 
@@ -268,7 +278,7 @@ function getASNDateString(): string {
 
 自定义证书校验逻辑。
 
-async function ValidationRemoteServer(context: rcp.ValidationContext): Promise<boolean> {
+async function validationRemoteServer(context: rcp.ValidationContext): Promise<boolean> {
   // 服务器未返回证书，校验失败
   let length = context.pemCerts.length;
   if (length <= 0) {
@@ -279,7 +289,7 @@ async function ValidationRemoteServer(context: rcp.ValidationContext): Promise<b
     type: networkSecurity.CertType.CERT_TYPE_PEM,
     data: context.pemCerts[length - 1],
   }
-  // 如果 certVerificationSync 的第二个参数未填写，则使用系统默认的 CA（'/etc/security/certificates'）进行验证
+  // 如果 certVerificationSync 的第二个参数未填写，则使用系统默认的 CA（"/etc/security/certificates"）进行验证
   if (networkSecurity.certVerificationSync(firstCaBlob) !== 0) {
     return Promise.reject();
   }
@@ -292,27 +302,29 @@ async function ValidationRemoteServer(context: rcp.ValidationContext): Promise<b
       return Promise.reject();
     }
   }
-
+  // ...
   // 校验成功
   return Promise.resolve(true);
 }
 
 将定义好的自定义证书校验器配置到configuration中，并利用fetch发起请求。
 
-async function TestRcp() {
+async function testCustomRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
-      remoteValidation: ValidationRemoteServer,
+      remoteValidation: validationRemoteServer,
     }
   }
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -337,15 +349,15 @@ openssl x509 -in cert.crt -out cert.pem -outform PEM
 
 在certificate中通过filePath指定证书路径（也可以通过content指定证书内容），type配置PEM指定证书类型，key和keyPassword指定证书私钥和密码。关于文件路径，请参考应用文件。
 
-async function TestRcp() {
+async function testPemRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificate: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.pem', // 可以使用filePath字段指定证书路径
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.pem', // 将生成证书放入/resources/resfile/下
         type: 'PEM',
-        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，在使用中请替换为实际的证书秘钥路径，可选
+        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，放入/resources/resfile/下，可选
         keyPassword: 'keyPassword', // 证书私钥的密码，在使用中请替换为实际的证书秘钥密码，可选，本例中不生效
       }
     }
@@ -353,9 +365,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -369,15 +383,15 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 在certificate中通过filePath指定证书路径（也可以通过content指定证书内容），type配置DER指定证书类型，key和keyPassword指定证书私钥和密码。使用openssl x509 -in cert.pem -outform der -out cert.der命令将上面例子中的pem文件转为der文件。关于文件路径，请参考应用文件。
 
-async function TestRcp() {
+async function testDerRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificate: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.der', // 可以使用filePath字段指定证书路径
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.der', // 将生成证书放入/resources/resfile/下
         type: 'DER',
-        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，在使用中请替换为实际的证书秘钥路径，可选
+        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，放入/resources/resfile/下，可选
         keyPassword: 'keyPassword', // 证书私钥的密码，在使用中请替换为实际的证书秘钥密码，可选，本例中不生效
       }
     }
@@ -385,9 +399,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -401,13 +417,13 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 在certificate中配置filePath指定证书路径（也可以配置content指定证书内容），type配置P12指定证书类型，keyPassword指定证书私钥的密码。使用openssl pkcs12 -export -out cert.p12 -inkey cert.key -in cert.pem命令将上面例子中的pem文件转为P12证书，设置密码“1234”。关于文件路径，请参考应用文件。
 
-async function TestRcp() {
+async function testPRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificate: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.p12', // 可以使用filePath字段指定证书路径
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.p12', // 将生成证书放入/resources/resfile/下
         type: 'P12', // P12证书已包含私钥，不需要使用key指定私钥
         keyPassword: '1234', // 证书私钥的密码，在使用中请替换为实际的证书秘钥密码，可选
       }
@@ -416,9 +432,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -442,16 +460,15 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 在certificatePinning中配置可信任的证书公钥的SHA256哈希值。
 
-const TEST_URL = 'https://example.com'; // 请替换成需要的URL
-
 const RIGHT_EXAMPLE_PUBLIC_KEY_SHA256_HASH = [
   'iMMpIJdSf5VlClHaxZReyhaLxLsmZMMNAiA2pMR8/M4=', // 请替换成需要的字符串
   'qBRjZmOmkSNJL0p70zek7odSIzqs/muR4Jk9xYyCP+E=', // 请替换成需要的字符串
+  '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=', // 请替换成需要的字符串
 ];
 
-async function TestRcp() {
+async function testPinningRcp() {
   const session = rcp.createSession();
-  const request = new rcp.Request(TEST_URL);
+  const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificatePinning: [
@@ -471,8 +488,10 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info('Test certificate pinning ' + response.statusCode);
+    // ...
   } catch (e) {
     console.error('Test certificate pinning ' + JSON.stringify(e));
+    // ...
   } finally {
     session.close();
   }
@@ -489,7 +508,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 2
 
 ```
-async function TestRcp() {
+async function testSystemRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
@@ -500,9 +519,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -518,7 +539,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 4
 
 ```
-async function TestRcp() {
+async function testSkipRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
@@ -529,9 +550,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -547,7 +570,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 6
 
 ```
-const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
+const PEM_CA_STRING = '-----BEGIN CERTIFICATE-----\n' +
   'MIICPzCCAcWgAwIBAgIQBVVWvPJepDU1w6QP1atFcjAKBggqhkjOPQQDAzBhMQswCQYDVQQGEwJV\n' +
   'UzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSAwHgYD\n' +
   'VQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBHMzAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAw\n' +
@@ -561,22 +584,24 @@ const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
   'VOKa5Vt8sycX\n' +
   '-----END CERTIFICATE-----';
 
-async function TestRcp() {
+async function testStringRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       remoteValidation: {
-        content: PEM_CA,
+        content: PEM_CA_STRING,
       }
     }
   }
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -587,13 +612,12 @@ async function TestRcp() {
 
 ```
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { util } from '@kit.ArkTS';
 ```
 
 ### Code block 8
 
 ```
-const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
+const PEM_CA_BINARY = '-----BEGIN CERTIFICATE-----\n' +
   'MIICPzCCAcWgAwIBAgIQBVVWvPJepDU1w6QP1atFcjAKBggqhkjOPQQDAzBhMQswCQYDVQQGEwJV\n' +
   'UzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSAwHgYD\n' +
   'VQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBHMzAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAw\n' +
@@ -607,11 +631,11 @@ const PEM_CA = '-----BEGIN CERTIFICATE-----\n' +
   'VOKa5Vt8sycX\n' +
   '-----END CERTIFICATE-----';
 
-async function TestRcp() {
+async function testBinaryRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
-  const buffer = new ArrayBuffer(PEM_CA.length);
-  util.TextEncoder.create('utf-8').encodeIntoUint8Array(PEM_CA, new Uint8Array(buffer));
+  const buffer = new ArrayBuffer(PEM_CA_BINARY.length);
+  util.TextEncoder.create('utf-8').encodeIntoUint8Array(PEM_CA_BINARY, new Uint8Array(buffer));
   request.configuration = {
     security: {
       remoteValidation: {
@@ -622,9 +646,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -667,22 +693,24 @@ sycX
 ### Code block 12
 
 ```
-async function TestRcp() {
+async function testFileRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       remoteValidation: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/dd8e9d41.0', // 正式使用时，需替换为证书的沙箱路径。
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/dd8e9d41.0', // 将生成证书改名放入/resources/resfile/下
       }
     }
   }
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -698,7 +726,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 14
 
 ```
-async function TestRcp() {
+async function testDirRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
@@ -711,9 +739,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -724,7 +754,6 @@ async function TestRcp() {
 
 ```
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { networkSecurity } from '@kit.NetworkKit';
 ```
 
 ### Code block 16
@@ -751,7 +780,7 @@ function getASNDateString(): string {
 ### Code block 17
 
 ```
-async function ValidationRemoteServer(context: rcp.ValidationContext): Promise<boolean> {
+async function validationRemoteServer(context: rcp.ValidationContext): Promise<boolean> {
   // 服务器未返回证书，校验失败
   let length = context.pemCerts.length;
   if (length <= 0) {
@@ -762,7 +791,7 @@ async function ValidationRemoteServer(context: rcp.ValidationContext): Promise<b
     type: networkSecurity.CertType.CERT_TYPE_PEM,
     data: context.pemCerts[length - 1],
   }
-  // 如果 certVerificationSync 的第二个参数未填写，则使用系统默认的 CA（'/etc/security/certificates'）进行验证
+  // 如果 certVerificationSync 的第二个参数未填写，则使用系统默认的 CA（"/etc/security/certificates"）进行验证
   if (networkSecurity.certVerificationSync(firstCaBlob) !== 0) {
     return Promise.reject();
   }
@@ -775,7 +804,7 @@ async function ValidationRemoteServer(context: rcp.ValidationContext): Promise<b
       return Promise.reject();
     }
   }
-
+  // ...
   // 校验成功
   return Promise.resolve(true);
 }
@@ -784,20 +813,22 @@ async function ValidationRemoteServer(context: rcp.ValidationContext): Promise<b
 ### Code block 18
 
 ```
-async function TestRcp() {
+async function testCustomRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
-      remoteValidation: ValidationRemoteServer,
+      remoteValidation: validationRemoteServer,
     }
   }
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -822,15 +853,15 @@ openssl x509 -in cert.crt -out cert.pem -outform PEM
 ### Code block 21
 
 ```
-async function TestRcp() {
+async function testPemRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificate: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.pem', // 可以使用filePath字段指定证书路径
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.pem', // 将生成证书放入/resources/resfile/下
         type: 'PEM',
-        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，在使用中请替换为实际的证书秘钥路径，可选
+        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，放入/resources/resfile/下，可选
         keyPassword: 'keyPassword', // 证书私钥的密码，在使用中请替换为实际的证书秘钥密码，可选，本例中不生效
       }
     }
@@ -838,9 +869,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -856,15 +889,15 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 23
 
 ```
-async function TestRcp() {
+async function testDerRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificate: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.der', // 可以使用filePath字段指定证书路径
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.der', // 将生成证书放入/resources/resfile/下
         type: 'DER',
-        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，在使用中请替换为实际的证书秘钥路径，可选
+        key: '/data/storage/el1/bundle/entry/resources/resfile/cert.key', // 这是证书私钥，放入/resources/resfile/下，可选
         keyPassword: 'keyPassword', // 证书私钥的密码，在使用中请替换为实际的证书秘钥密码，可选，本例中不生效
       }
     }
@@ -872,9 +905,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -890,13 +925,13 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 25
 
 ```
-async function TestRcp() {
+async function testPRcp() {
   const session = rcp.createSession();
   const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificate: {
-        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.p12', // 可以使用filePath字段指定证书路径
+        filePath: '/data/storage/el1/bundle/entry/resources/resfile/cert.p12', // 将生成证书放入/resources/resfile/下
         type: 'P12', // P12证书已包含私钥，不需要使用key指定私钥
         keyPassword: '1234', // 证书私钥的密码，在使用中请替换为实际的证书秘钥密码，可选
       }
@@ -905,9 +940,11 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info(`response statusCode: ${JSON.stringify(response.statusCode)}`);
+    // ...
     console.info(`response: ${JSON.stringify(response.toString())}`);
   } catch (err) {
     console.error(`response error code is ${err.code}, error data is ${err.data}`);
+    // ...
   } finally {
     session.close();
   }
@@ -935,16 +972,15 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 29
 
 ```
-const TEST_URL = 'https://example.com'; // 请替换成需要的URL
-
 const RIGHT_EXAMPLE_PUBLIC_KEY_SHA256_HASH = [
   'iMMpIJdSf5VlClHaxZReyhaLxLsmZMMNAiA2pMR8/M4=', // 请替换成需要的字符串
   'qBRjZmOmkSNJL0p70zek7odSIzqs/muR4Jk9xYyCP+E=', // 请替换成需要的字符串
+  '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=', // 请替换成需要的字符串
 ];
 
-async function TestRcp() {
+async function testPinningRcp() {
   const session = rcp.createSession();
-  const request = new rcp.Request(TEST_URL);
+  const request = new rcp.Request('https://example.com'); // 请替换为实际的网址
   request.configuration = {
     security: {
       certificatePinning: [
@@ -964,8 +1000,10 @@ async function TestRcp() {
   try {
     const response = await session.fetch(request);
     console.info('Test certificate pinning ' + response.statusCode);
+    // ...
   } catch (e) {
     console.error('Test certificate pinning ' + JSON.stringify(e));
+    // ...
   } finally {
     session.close();
   }

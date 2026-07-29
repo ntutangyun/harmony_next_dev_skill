@@ -37,7 +37,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 
 在使用定时刷新时，需要在form_config.json配置文件中设置updateEnabled字段为true，以启用周期性刷新功能。
 
-下次刷新：表示指定卡片的下一次刷新时间。可以通过调用setFormNextRefreshTime接口来实现。最短刷新时间为5分钟。例如，可以在接口调用后的5分钟内刷新卡片内容。
+下次刷新：表示指定卡片的下一次刷新时间。可以通过调用setFormNextRefreshTime接口来实现。最短刷新时间为5分钟。例如，可以设置卡片在调用接口5分钟后刷新。
 
 // entry/src/main/ets/updatebytimeformability/UpdateByTimeFormAbility.ts
 import { formBindingData, FormExtensionAbility, formInfo, formProvider } from '@kit.FormKit';
@@ -85,7 +85,7 @@ export default class UpdateByTimeFormAbility extends FormExtensionAbility {
 
 }
 
-在触发定时、下次刷新后，系统会调用FormExtensionAbility的onUpdateForm生命周期回调，在回调中，可以使用updateForm进行提供方刷新卡片。onUpdateForm生命周期回调的使用请参见卡片生命周期管理。
+在触发定时、下次刷新后，系统会调用FormExtensionAbility的onUpdateForm生命周期回调，在回调中，可以使用updateForm接口刷新卡片内容。onUpdateForm生命周期回调的使用请参见卡片生命周期管理。
 
 约束限制：
 
@@ -152,7 +152,7 @@ export default class UpdateByTimeFormAbility extends FormExtensionAbility {
   ]
 }
 
-在触发定点刷新后，系统会调用FormExtensionAbility的onUpdateForm生命周期回调，在回调中，可以使用updateForm进行提供方刷新卡片。onUpdateForm生命周期回调的使用请参见卡片生命周期管理。
+在触发定点刷新后，系统会调用FormExtensionAbility的onUpdateForm生命周期回调，在回调中，可以使用updateForm接口刷新卡片内容。onUpdateForm生命周期回调的使用请参见卡片生命周期管理。
 
 说明
 

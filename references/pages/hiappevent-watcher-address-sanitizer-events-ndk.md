@@ -183,7 +183,7 @@ static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
 
 [h2]步骤三：构造地址越界错误
 
-编辑"napi_init.cpp"文件，定义Test方法, 方法中对一个整数数组进行越界访问：
+编辑"napi_init.cpp"文件，定义Test方法，方法中对一个整数数组进行越界访问：
 
 static napi_value Test(napi_env env, napi_callback_info info)
 {

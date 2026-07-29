@@ -78,7 +78,7 @@ struct Index {
           showType: BottomBuilderShowType.DIRECTLY_SHOW
         }
       },
-      enableComponentSafeArea: true, // 将标题栏设置为组件级安全区，内容区可避让标题栏
+      enableComponentSafeArea: true // 将标题栏设置为组件级安全区，内容区可避让标题栏
     })
     .bindToScrollable([this.scroller]) // 绑定导航组件和可滚动容器组件
     .titleMode(HdsNavigationTitleMode.MINI)
@@ -167,7 +167,7 @@ struct Index {
           showType: BottomBuilderShowType.DIRECTLY_SHOW
         }
       },
-      enableComponentSafeArea: true, // 将标题栏设置为组件级安全区，内容区可避让标题栏
+      enableComponentSafeArea: true // 将标题栏设置为组件级安全区，内容区可避让标题栏
     })
     .bindToScrollable([this.scroller]) // 绑定导航组件和可滚动容器组件
     .titleMode(HdsNavigationTitleMode.MINI)

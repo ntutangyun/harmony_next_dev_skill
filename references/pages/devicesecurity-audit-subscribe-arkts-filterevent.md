@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-当前能力仅支持2in1设备。
+当前能力仅支持PC/2in1设备。
 
 一个进程最大只允许创建2个客户端实例，当前设备最多只允许创建16个客户端实例。
 
@@ -56,19 +56,19 @@ removeFilter(event: NotifyEvent, filter: Filter): void	移除审计通知类事�
 
 在开发准备过程中，需要申请权限：ohos.permission.QUERY_AUDIT_EVENT。
 
-只允许清单内的企业类应用申请该权限，申请方式请参考：申请使用企业类应用可用权限。
+只允许清单内的企业类应用申请该权限，申请方式请参考：企业类应用可用权限。
 
 导入Device Security Kit模块及相关公共模块。
 
 import { securityAudit } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 创建审计通知类事件客户端实例。
 
 let client: securityAudit.Client | undefined = undefined;
-const TAG = "SecurityAuditJsTest";
-const callback = (event: securityAudit.AuditEvent) => {
+const TAG = 'SecurityAuditJsTest';
+const callback = (event: securityAudit.AuditEvent): void => {
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func eventId= ' + event.eventId);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func version= ' + event.version);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func content= ' + event.content);
@@ -99,7 +99,7 @@ try {
 let filter : securityAudit.Filter = {
   type: 0x00000200,
   isInclude: true,
-  values : ["2"]
+  values : ['2']
 };
 try {
   hilog.info(0x0000, TAG, 'addFilter begin.');
@@ -114,7 +114,7 @@ try {
 
 try {
   hilog.info(0x0000, TAG, 'unsubscribe begin.');
-  client?.unsubscribe([0x2E000000]);
+  client?.unsubscribe([0x02D000000]);
   hilog.info(0x0000, TAG, 'Succeeded in unsubscribe.');
 } catch (err) {
   let e: BusinessError = err as BusinessError;
@@ -147,7 +147,7 @@ try {
 
 ```
 import { securityAudit } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
@@ -155,8 +155,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 ```
 let client: securityAudit.Client | undefined = undefined;
-const TAG = "SecurityAuditJsTest";
-const callback = (event: securityAudit.AuditEvent) => {
+const TAG = 'SecurityAuditJsTest';
+const callback = (event: securityAudit.AuditEvent): void => {
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func eventId= ' + event.eventId);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func version= ' + event.version);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_JsApi_Func content= ' + event.content);
@@ -191,7 +191,7 @@ try {
 let filter : securityAudit.Filter = {
   type: 0x00000200,
   isInclude: true,
-  values : ["2"]
+  values : ['2']
 };
 try {
   hilog.info(0x0000, TAG, 'addFilter begin.');
@@ -208,7 +208,7 @@ try {
 ```
 try {
   hilog.info(0x0000, TAG, 'unsubscribe begin.');
-  client?.unsubscribe([0x2E000000]);
+  client?.unsubscribe([0x02D000000]);
   hilog.info(0x0000, TAG, 'Succeeded in unsubscribe.');
 } catch (err) {
   let e: BusinessError = err as BusinessError;

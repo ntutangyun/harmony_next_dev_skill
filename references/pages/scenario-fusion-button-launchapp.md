@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 约束与限制
 
-打开APP Button支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
+打开APP Button支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备。
 
 开发步骤
 
@@ -46,9 +46,9 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
-          // 当OpenType设置为LAUNCH_APP时，回调函数必须是onLaunchAPP。
+          // 当OpenType设置为LAUNCH_APP时，回调函数必须是onLaunchApp。
           controller: new functionalButtonComponentManager.FunctionalButtonController().onLaunchApp((err) => {
             if (err) {
               // 错误日志处理。
@@ -113,9 +113,9 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
-          // 当OpenType设置为LAUNCH_APP时，回调函数必须是onLaunchAPP。
+          // 当OpenType设置为LAUNCH_APP时，回调函数必须是onLaunchApp。
           controller: new functionalButtonComponentManager.FunctionalButtonController().onLaunchApp((err) => {
             if (err) {
               // 错误日志处理。

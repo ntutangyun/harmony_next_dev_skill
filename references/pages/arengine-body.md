@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 
 约束与限制
 
-从6.1.0(23)开始，管理AR会话能力支持部分Phone、部分Tablet、TV设备。请参考硬件要求判断设备是否支持人体骨骼点识别与跟踪特性（ARENGINE_FEATURE_TYPE_BODY）。
+从6.1.0(23)开始，人体骨骼点识别与跟踪能力支持部分Phone、部分Tablet、TV设备。请参考硬件要求判断设备是否支持人体骨骼点识别与跟踪特性（ARENGINE_FEATURE_TYPE_BODY）。
 
 接口说明
 
@@ -25,8 +25,9 @@ ARBody.getLandmarks2D	返回一个人体对象的骨骼关键点数组。
 
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
 import { Node, Scene } from '@kit.ArkGraphics3D';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { display } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
 
 [h2]结构定义
 
@@ -35,7 +36,8 @@ interface BodyInfo {
   landmarks: arEngine.ARBodyLandmark2D[]
 }
 
-function arLandmarksToMap(arLandmarks: arEngine.ARBodyLandmark2D[]): Map<arEngine.ARBodyLandmarkType, arEngine.ARBodyLandmark2D> {
+function arLandmarksToMap(
+  arLandmarks: arEngine.ARBodyLandmark2D[]): Map<arEngine.ARBodyLandmarkType, arEngine.ARBodyLandmark2D> {
   let typeToLandmarks: Map<arEngine.ARBodyLandmarkType, arEngine.ARBodyLandmark2D> = new Map();
   for (let arLandmark of arLandmarks) {
     typeToLandmarks.set(arLandmark.type, arLandmark);
@@ -45,6 +47,8 @@ function arLandmarksToMap(arLandmarks: arEngine.ARBodyLandmark2D[]): Map<arEngin
 
 type OnBodyInfoCallback = (bodyInfo: arEngine.ARBody[]) => void;
 
+const DEFAULT_WIDTH: number = 1440;
+const DEFAULT_HEIGHT: number = 1080;
 const DEFAULT_CONVERT_FACTOR: number = 4 / 3;
 const FULL_SCREEN_SIZE: string = '100%';
 
@@ -63,96 +67,9 @@ export function ARBodyBuilder() {
 struct ARBody {
   @Local arContext?: arViewController.ARViewContext = undefined;
   @Local bodyInfos: BodyInfo[] = [];
-  @Local displayWidth: number = display.getDefaultDisplaySync().width;
-  @Local displayHeight: number = display.getDefaultDisplaySync().height;
-  private params: arEngine.ARConfig = { type: arEngine.ARType.BODY };
+  @Local displayWidth: number = DEFAULT_WIDTH;
+  @Local displayHeight: number = DEFAULT_HEIGHT;
   private uiContext: UIContext = this.getUIContext();
-  private onBodyInfoCb: OnBodyInfoCallback = (bodyInfos: arEngine.ARBody[]) => {
-    if (display.getDefaultDisplaySync().width * 3 < display.getDefaultDisplaySync().height * 4) {
-      this.displayWidth = display.getDefaultDisplaySync().width;
-      this.displayHeight = this.displayWidth * DEFAULT_CONVERT_FACTOR;
-    } else {
-      this.displayHeight = display.getDefaultDisplaySync().height;
-      this.displayWidth = this.displayHeight * DEFAULT_CONVERT_FACTOR;
-    }
-
-    this.bodyInfos = bodyInfos.map((value: arEngine.ARBody) => {
-      let landmarks: arEngine.ARBodyLandmark2D[] = value.getLandmarks2D();
-      landmarks.forEach((value: arEngine.ARBodyLandmark2D) => {
-        value.x = value.x * this.displayWidth;
-        value.y = value.y * this.displayHeight;
-      })
-      let info: BodyInfo = {
-        trackId: value.trackId,
-        landmarks: landmarks
-      }
-      return info;
-    })
-  }
-
-  private async initARView(): Promise<void> {
-    await Scene.load().then(async (scene: Scene) => {
-      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
-      viewContext.scene = scene;
-      let callback = new ARViewCallbackImpl();
-      callback.setCallback(this.onBodyInfoCb);
-      viewContext.callback = callback;
-      viewContext.config = {
-        type: arEngine.ARType.BODY,
-        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
-        powerMode: arEngine.ARPowerMode.NORMAL,
-        semanticMode: arEngine.ARSemanticMode.NONE,
-        poseMode: arEngine.ARPoseMode.GRAVITY,
-        depthMode: arEngine.ARDepthMode.DISABLED,
-        meshMode: arEngine.ARMeshMode.DISABLED,
-        focusMode: arEngine.ARFocusMode.AUTO,
-        maxDetectedBodyNum: this.params?.maxDetectedBodyNum ?? 1,
-        cameraLensFacing: this.params?.cameraLensFacing ?? 0
-      };
-      viewContext.init().then(() => {
-        this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      })
-    })
-  }
-
-  private stopARView(): void {
-    if (!this.arContext) {
-      return;
-    }
-    try {
-      this.arContext.destroy();
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
-    }
-  }
-
-  private pauseARView(): void {
-    if (!this.arContext) {
-      return;
-    }
-    try {
-      this.arContext.pause();
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}.`);
-    }
-  }
-
-  private resumeARView(): void {
-    if (!this.arContext) {
-      return;
-    }
-    try {
-      this.arContext.resume();
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}.`);
-    }
-  }
 
   build() {
     NavDestination() {
@@ -175,7 +92,7 @@ struct ARBody {
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
 
-        this.drawBodyPerception();
+        this.drawBodyPerception()
       }
       .width(FULL_SCREEN_SIZE)
       .height(FULL_SCREEN_SIZE)
@@ -192,10 +109,6 @@ struct ARBody {
     .onHidden(() => {
       this.pauseARView();
     })
-    .onReady(ctx => {
-      this.params = ctx.pathInfo.param as arEngine.ARConfig;
-      this.params['type'] = arEngine.ARType.BODY;
-    })
     .hideTitleBar(true)
     .hideBackButton(true)
     .hideToolBar(true)
@@ -204,7 +117,7 @@ struct ARBody {
   @Builder
   drawBodyPerception() {
     Shape() {
-      ForEach(this.bodyInfos, (bodyInfo: BodyInfo, idx: number) => {
+      ForEach(this.bodyInfos, (bodyInfo: BodyInfo) => {
         this.drawBodyBones(arLandmarksToMap(bodyInfo.landmarks));
         this.drawBodyLandmarks(bodyInfo.landmarks);
       })
@@ -215,7 +128,7 @@ struct ARBody {
 
   @Builder
   drawBodyLandmarks(bodyLandmarks: arEngine.ARBodyLandmark2D[]) {
-    ForEach(bodyLandmarks, (landmark: arEngine.ARBodyLandmark2D, index: number) => {
+    ForEach(bodyLandmarks, (landmark: arEngine.ARBodyLandmark2D) => {
       Circle({ width: 4, height: 4 })
         .position({
           x: this.uiContext.px2vp(landmark.x),
@@ -271,6 +184,107 @@ struct ARBody {
         .endPoint([this.uiContext.px2vp(bodyLandmarks.get(end)?.x), this.uiContext.px2vp(bodyLandmarks.get(end)?.y)])
         .stroke(color)
         .strokeWidth(3)
+    }
+  }
+
+  private onBodyInfoCb: OnBodyInfoCallback = (bodyInfos: arEngine.ARBody[]) => {
+    let preWidth = this.displayWidth;
+    let preHeight = this.displayHeight;
+    try {
+      if (display.getDefaultDisplaySync().availableWidth < display.getDefaultDisplaySync().availableHeight) {
+        this.displayWidth = display.getDefaultDisplaySync().availableWidth;
+        this.displayHeight = this.displayWidth * DEFAULT_CONVERT_FACTOR;
+      } else {
+        this.displayHeight = display.getDefaultDisplaySync().availableHeight;
+        this.displayWidth = this.displayHeight * DEFAULT_CONVERT_FACTOR;
+      }
+    } catch (e) {
+      logger.error(`display.getDefaultDisplaySync failed error.message:${e?.message}, error.code:${e?.code}`);
+      this.displayWidth = preWidth;
+      this.displayHeight = preHeight;
+    }
+
+    this.bodyInfos = bodyInfos.map((value: arEngine.ARBody) => {
+      let landmarks: arEngine.ARBodyLandmark2D[] = [];
+      try {
+        landmarks = value.getLandmarks2D();
+      } catch (error) {
+        const err: BusinessError = error as BusinessError;
+        logger.error(`Failed to get Landmarks2D. Code is ${err.code}, message is ${err.message}`);
+      }
+      landmarks.forEach((value: arEngine.ARBodyLandmark2D) => {
+        value.x = value.x * this.displayWidth;
+        value.y = value.y * this.displayHeight;
+      })
+      let info: BodyInfo = {
+        trackId: value.trackId,
+        landmarks: landmarks
+      }
+      return info;
+    })
+  }
+
+  private async initARView(): Promise<void> {
+    Scene.load().then(async (scene: Scene) => {
+      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
+      viewContext.scene = scene;
+      let callback = new ARViewCallbackImpl();
+      callback.setCallback(this.onBodyInfoCb);
+      viewContext.callback = callback;
+      viewContext.config = {
+        type: arEngine.ARType.BODY,
+        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
+        powerMode: arEngine.ARPowerMode.NORMAL,
+        semanticMode: arEngine.ARSemanticMode.NONE,
+        poseMode: arEngine.ARPoseMode.GRAVITY,
+        depthMode: arEngine.ARDepthMode.DISABLED,
+        meshMode: arEngine.ARMeshMode.DISABLED,
+        focusMode: arEngine.ARFocusMode.AUTO,
+        maxDetectedBodyNum: 1,
+        cameraLensFacing: 0
+      };
+      viewContext.init().then(() => {
+        this.arContext = viewContext;
+        logger.info('Succeeded in initializing ARView.');
+      }).catch((err: BusinessError) => {
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
+      })
+    })
+  }
+
+  private async stopARView(): Promise<void> {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      await this.arContext.destroy();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
+    }
+  }
+
+  private pauseARView(): void {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.pause();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}.`);
+    }
+  }
+
+  private resumeARView(): void {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.resume();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}.`);
     }
   }
 }
@@ -293,26 +307,24 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
   }
 
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
-    console.info('onFrameUpdate enter');
+    logger.info('onFrameUpdate enter');
     const arSession: arEngine.ARSession = ctx.session;
     try {
       const frame: arEngine.ARFrame = arSession.getFrame();
       const bodies: arEngine.ARBody[] = frame.acquireBodySkeleton();
-      this.callback ? this.callback(bodies) : console.error(`callback not set`);
+      this.callback ? this.callback(bodies) : logger.error(`callback not set`);
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
   }
 }
@@ -324,8 +336,9 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 ```
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
 import { Node, Scene } from '@kit.ArkGraphics3D';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { display } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
 ```
 
 ### Code block 2
@@ -336,7 +349,8 @@ interface BodyInfo {
   landmarks: arEngine.ARBodyLandmark2D[]
 }
 
-function arLandmarksToMap(arLandmarks: arEngine.ARBodyLandmark2D[]): Map<arEngine.ARBodyLandmarkType, arEngine.ARBodyLandmark2D> {
+function arLandmarksToMap(
+  arLandmarks: arEngine.ARBodyLandmark2D[]): Map<arEngine.ARBodyLandmarkType, arEngine.ARBodyLandmark2D> {
   let typeToLandmarks: Map<arEngine.ARBodyLandmarkType, arEngine.ARBodyLandmark2D> = new Map();
   for (let arLandmark of arLandmarks) {
     typeToLandmarks.set(arLandmark.type, arLandmark);
@@ -346,6 +360,8 @@ function arLandmarksToMap(arLandmarks: arEngine.ARBodyLandmark2D[]): Map<arEngin
 
 type OnBodyInfoCallback = (bodyInfo: arEngine.ARBody[]) => void;
 
+const DEFAULT_WIDTH: number = 1440;
+const DEFAULT_HEIGHT: number = 1080;
 const DEFAULT_CONVERT_FACTOR: number = 4 / 3;
 const FULL_SCREEN_SIZE: string = '100%';
 ```
@@ -362,96 +378,9 @@ export function ARBodyBuilder() {
 struct ARBody {
   @Local arContext?: arViewController.ARViewContext = undefined;
   @Local bodyInfos: BodyInfo[] = [];
-  @Local displayWidth: number = display.getDefaultDisplaySync().width;
-  @Local displayHeight: number = display.getDefaultDisplaySync().height;
-  private params: arEngine.ARConfig = { type: arEngine.ARType.BODY };
+  @Local displayWidth: number = DEFAULT_WIDTH;
+  @Local displayHeight: number = DEFAULT_HEIGHT;
   private uiContext: UIContext = this.getUIContext();
-  private onBodyInfoCb: OnBodyInfoCallback = (bodyInfos: arEngine.ARBody[]) => {
-    if (display.getDefaultDisplaySync().width * 3 < display.getDefaultDisplaySync().height * 4) {
-      this.displayWidth = display.getDefaultDisplaySync().width;
-      this.displayHeight = this.displayWidth * DEFAULT_CONVERT_FACTOR;
-    } else {
-      this.displayHeight = display.getDefaultDisplaySync().height;
-      this.displayWidth = this.displayHeight * DEFAULT_CONVERT_FACTOR;
-    }
-
-    this.bodyInfos = bodyInfos.map((value: arEngine.ARBody) => {
-      let landmarks: arEngine.ARBodyLandmark2D[] = value.getLandmarks2D();
-      landmarks.forEach((value: arEngine.ARBodyLandmark2D) => {
-        value.x = value.x * this.displayWidth;
-        value.y = value.y * this.displayHeight;
-      })
-      let info: BodyInfo = {
-        trackId: value.trackId,
-        landmarks: landmarks
-      }
-      return info;
-    })
-  }
-
-  private async initARView(): Promise<void> {
-    await Scene.load().then(async (scene: Scene) => {
-      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
-      viewContext.scene = scene;
-      let callback = new ARViewCallbackImpl();
-      callback.setCallback(this.onBodyInfoCb);
-      viewContext.callback = callback;
-      viewContext.config = {
-        type: arEngine.ARType.BODY,
-        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
-        powerMode: arEngine.ARPowerMode.NORMAL,
-        semanticMode: arEngine.ARSemanticMode.NONE,
-        poseMode: arEngine.ARPoseMode.GRAVITY,
-        depthMode: arEngine.ARDepthMode.DISABLED,
-        meshMode: arEngine.ARMeshMode.DISABLED,
-        focusMode: arEngine.ARFocusMode.AUTO,
-        maxDetectedBodyNum: this.params?.maxDetectedBodyNum ?? 1,
-        cameraLensFacing: this.params?.cameraLensFacing ?? 0
-      };
-      viewContext.init().then(() => {
-        this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      })
-    })
-  }
-
-  private stopARView(): void {
-    if (!this.arContext) {
-      return;
-    }
-    try {
-      this.arContext.destroy();
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
-    }
-  }
-
-  private pauseARView(): void {
-    if (!this.arContext) {
-      return;
-    }
-    try {
-      this.arContext.pause();
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}.`);
-    }
-  }
-
-  private resumeARView(): void {
-    if (!this.arContext) {
-      return;
-    }
-    try {
-      this.arContext.resume();
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}.`);
-    }
-  }
 
   build() {
     NavDestination() {
@@ -474,7 +403,7 @@ struct ARBody {
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
 
-        this.drawBodyPerception();
+        this.drawBodyPerception()
       }
       .width(FULL_SCREEN_SIZE)
       .height(FULL_SCREEN_SIZE)
@@ -491,10 +420,6 @@ struct ARBody {
     .onHidden(() => {
       this.pauseARView();
     })
-    .onReady(ctx => {
-      this.params = ctx.pathInfo.param as arEngine.ARConfig;
-      this.params['type'] = arEngine.ARType.BODY;
-    })
     .hideTitleBar(true)
     .hideBackButton(true)
     .hideToolBar(true)
@@ -503,7 +428,7 @@ struct ARBody {
   @Builder
   drawBodyPerception() {
     Shape() {
-      ForEach(this.bodyInfos, (bodyInfo: BodyInfo, idx: number) => {
+      ForEach(this.bodyInfos, (bodyInfo: BodyInfo) => {
         this.drawBodyBones(arLandmarksToMap(bodyInfo.landmarks));
         this.drawBodyLandmarks(bodyInfo.landmarks);
       })
@@ -514,7 +439,7 @@ struct ARBody {
 
   @Builder
   drawBodyLandmarks(bodyLandmarks: arEngine.ARBodyLandmark2D[]) {
-    ForEach(bodyLandmarks, (landmark: arEngine.ARBodyLandmark2D, index: number) => {
+    ForEach(bodyLandmarks, (landmark: arEngine.ARBodyLandmark2D) => {
       Circle({ width: 4, height: 4 })
         .position({
           x: this.uiContext.px2vp(landmark.x),
@@ -572,6 +497,107 @@ struct ARBody {
         .strokeWidth(3)
     }
   }
+
+  private onBodyInfoCb: OnBodyInfoCallback = (bodyInfos: arEngine.ARBody[]) => {
+    let preWidth = this.displayWidth;
+    let preHeight = this.displayHeight;
+    try {
+      if (display.getDefaultDisplaySync().availableWidth < display.getDefaultDisplaySync().availableHeight) {
+        this.displayWidth = display.getDefaultDisplaySync().availableWidth;
+        this.displayHeight = this.displayWidth * DEFAULT_CONVERT_FACTOR;
+      } else {
+        this.displayHeight = display.getDefaultDisplaySync().availableHeight;
+        this.displayWidth = this.displayHeight * DEFAULT_CONVERT_FACTOR;
+      }
+    } catch (e) {
+      logger.error(`display.getDefaultDisplaySync failed error.message:${e?.message}, error.code:${e?.code}`);
+      this.displayWidth = preWidth;
+      this.displayHeight = preHeight;
+    }
+
+    this.bodyInfos = bodyInfos.map((value: arEngine.ARBody) => {
+      let landmarks: arEngine.ARBodyLandmark2D[] = [];
+      try {
+        landmarks = value.getLandmarks2D();
+      } catch (error) {
+        const err: BusinessError = error as BusinessError;
+        logger.error(`Failed to get Landmarks2D. Code is ${err.code}, message is ${err.message}`);
+      }
+      landmarks.forEach((value: arEngine.ARBodyLandmark2D) => {
+        value.x = value.x * this.displayWidth;
+        value.y = value.y * this.displayHeight;
+      })
+      let info: BodyInfo = {
+        trackId: value.trackId,
+        landmarks: landmarks
+      }
+      return info;
+    })
+  }
+
+  private async initARView(): Promise<void> {
+    Scene.load().then(async (scene: Scene) => {
+      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
+      viewContext.scene = scene;
+      let callback = new ARViewCallbackImpl();
+      callback.setCallback(this.onBodyInfoCb);
+      viewContext.callback = callback;
+      viewContext.config = {
+        type: arEngine.ARType.BODY,
+        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
+        powerMode: arEngine.ARPowerMode.NORMAL,
+        semanticMode: arEngine.ARSemanticMode.NONE,
+        poseMode: arEngine.ARPoseMode.GRAVITY,
+        depthMode: arEngine.ARDepthMode.DISABLED,
+        meshMode: arEngine.ARMeshMode.DISABLED,
+        focusMode: arEngine.ARFocusMode.AUTO,
+        maxDetectedBodyNum: 1,
+        cameraLensFacing: 0
+      };
+      viewContext.init().then(() => {
+        this.arContext = viewContext;
+        logger.info('Succeeded in initializing ARView.');
+      }).catch((err: BusinessError) => {
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
+      })
+    })
+  }
+
+  private async stopARView(): Promise<void> {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      await this.arContext.destroy();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
+    }
+  }
+
+  private pauseARView(): void {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.pause();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}.`);
+    }
+  }
+
+  private resumeARView(): void {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.resume();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}.`);
+    }
+  }
 }
 ```
 
@@ -586,26 +612,24 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
   }
 
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
-    console.info('onFrameUpdate enter');
+    logger.info('onFrameUpdate enter');
     const arSession: arEngine.ARSession = ctx.session;
     try {
       const frame: arEngine.ARFrame = arSession.getFrame();
       const bodies: arEngine.ARBody[] = frame.acquireBodySkeleton();
-      this.callback ? this.callback(bodies) : console.error(`callback not set`);
+      this.callback ? this.callback(bodies) : logger.error(`callback not set`);
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
   }
 }

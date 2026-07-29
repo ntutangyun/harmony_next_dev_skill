@@ -46,28 +46,40 @@ import Utils from '../utils/Utils';
 
 export default class EntryAbility extends UIAbility {
 
+  // 当UIAbility实例创建完成时，系统会触发该回调
   onCreate(want: Want): void {
     hilog.info(0x0000, 'GuardService', 'onCreate');
-    if (want.parameters && want.parameters['ohos.aafwk.param.callerBundleName']) {
-      Utils.setCallerBundleName(want.parameters['ohos.aafwk.param.callerBundleName'] as string);
-    }
     let token: string = want.parameters?.['token'] as string;
-    let strategyNames: string[] =  want.parameters?.['strategyNames'] as string[];
+    if (token !== undefined) {
+      hilog.info(0x0000, 'GuardService', `Token: ${token}`);
+    }
+    let strategyNames: string[] = want.parameters?.['strategyNames'] as string[];
+    if (strategyNames !== undefined) {
+      hilog.info(0x0000, 'GuardService', `StrategyNames: ${strategyNames}`);
+    }
     let isSetAppsRestriction: boolean = want.parameters?.['isSetAppsRestriction'] as boolean;
-    Utils.setControlDetails(token, strategyNames, isSetAppsRestriction);
+    if (isSetAppsRestriction !== undefined) {
+      hilog.info(0x0000, 'GuardService', `IsSetAppsRestriction: ${isSetAppsRestriction}`);
+    }
   }
 
   // ...
 
+  // 当已经启动的UIAbility实例再次被拉起时，系统会触发该回调
   onNewWant(want: Want): void {
     hilog.info(0x0000, 'GuardService', 'onNewWant');
-    if (want.parameters && want.parameters['ohos.aafwk.param.callerBundleName']) {
-      Utils.setCallerBundleName(want.parameters['ohos.aafwk.param.callerBundleName'] as string);
-    }
     let token: string = want.parameters?.['token'] as string;
-    let strategyNames: string[] =  want.parameters?.['strategyNames'] as string[];
+    if (token !== undefined) {
+      hilog.info(0x0000, 'GuardService', `Token: ${token}`);
+    }
+    let strategyNames: string[] = want.parameters?.['strategyNames'] as string[];
+    if (strategyNames !== undefined) {
+      hilog.info(0x0000, 'GuardService', `StrategyNames: ${strategyNames}`);
+    }
     let isSetAppsRestriction: boolean = want.parameters?.['isSetAppsRestriction'] as boolean;
-    Utils.setControlDetails(token, strategyNames, isSetAppsRestriction);
+    if (isSetAppsRestriction !== undefined) {
+      hilog.info(0x0000, 'GuardService', `IsSetAppsRestriction: ${isSetAppsRestriction}`);
+    }
   }
 
   // ...
@@ -89,28 +101,40 @@ import Utils from '../utils/Utils';
 ```
 export default class EntryAbility extends UIAbility {
 
+  // 当UIAbility实例创建完成时，系统会触发该回调
   onCreate(want: Want): void {
     hilog.info(0x0000, 'GuardService', 'onCreate');
-    if (want.parameters && want.parameters['ohos.aafwk.param.callerBundleName']) {
-      Utils.setCallerBundleName(want.parameters['ohos.aafwk.param.callerBundleName'] as string);
-    }
     let token: string = want.parameters?.['token'] as string;
-    let strategyNames: string[] =  want.parameters?.['strategyNames'] as string[];
+    if (token !== undefined) {
+      hilog.info(0x0000, 'GuardService', `Token: ${token}`);
+    }
+    let strategyNames: string[] = want.parameters?.['strategyNames'] as string[];
+    if (strategyNames !== undefined) {
+      hilog.info(0x0000, 'GuardService', `StrategyNames: ${strategyNames}`);
+    }
     let isSetAppsRestriction: boolean = want.parameters?.['isSetAppsRestriction'] as boolean;
-    Utils.setControlDetails(token, strategyNames, isSetAppsRestriction);
+    if (isSetAppsRestriction !== undefined) {
+      hilog.info(0x0000, 'GuardService', `IsSetAppsRestriction: ${isSetAppsRestriction}`);
+    }
   }
 
   // ...
 
+  // 当已经启动的UIAbility实例再次被拉起时，系统会触发该回调
   onNewWant(want: Want): void {
     hilog.info(0x0000, 'GuardService', 'onNewWant');
-    if (want.parameters && want.parameters['ohos.aafwk.param.callerBundleName']) {
-      Utils.setCallerBundleName(want.parameters['ohos.aafwk.param.callerBundleName'] as string);
-    }
     let token: string = want.parameters?.['token'] as string;
-    let strategyNames: string[] =  want.parameters?.['strategyNames'] as string[];
+    if (token !== undefined) {
+      hilog.info(0x0000, 'GuardService', `Token: ${token}`);
+    }
+    let strategyNames: string[] = want.parameters?.['strategyNames'] as string[];
+    if (strategyNames !== undefined) {
+      hilog.info(0x0000, 'GuardService', `StrategyNames: ${strategyNames}`);
+    }
     let isSetAppsRestriction: boolean = want.parameters?.['isSetAppsRestriction'] as boolean;
-    Utils.setControlDetails(token, strategyNames, isSetAppsRestriction);
+    if (isSetAppsRestriction !== undefined) {
+      hilog.info(0x0000, 'GuardService', `IsSetAppsRestriction: ${isSetAppsRestriction}`);
+    }
   }
 
   // ...

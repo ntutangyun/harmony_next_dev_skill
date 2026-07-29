@@ -10,6 +10,8 @@ Basic Services Kit简介
 
 USB服务
 
+串口通信服务
+
 升级服务
 
 剪贴板服务

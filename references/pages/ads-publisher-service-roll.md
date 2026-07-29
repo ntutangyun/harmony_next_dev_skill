@@ -166,6 +166,7 @@ onMediaComplete	广告播放完成。	- playTime：类型number，单位ms，广
 onMediaError	广告播放失败。	- playTime：类型number，单位ms，广告播放时长，-1为异常值。 - errorCode：类型number，错误码ID。 - errorMsg：类型string，错误信息。 错误码的详细介绍请参见AVPlayer.on('error')错误码。	-
 onMediaCountdown	广告倒计时。	- countdownTime：类型number，单位s，倒计时时长。	广告倒计时时触发，需要根据扩展信息的倒计时时长绘制倒计时控件。
 onBackClicked	点击返回按钮。	-	用户在非全屏状态下或系统锁定全屏状态下点击返回按钮时触发，需要返回上一页面。
+onAdClick	点击广告。	-	-
 
 在您的页面中使用AdComponent组件展示贴片广告。以前贴广告为例，前贴广告播放完成后进入正片播放。
 
@@ -228,10 +229,10 @@ struct Index {
                 case 'onPortrait':
                   hilog.info(0x0000, 'testTag', 'Status is onPortrait');
                   // 设置屏幕方向为竖屏
-                   void this.setWindowPreferredOrientation(window.Orientation.PORTRAIT).catch((error: BusinessError) => {
-                     hilog.error(0x0000, 'testTag',
-                       `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
-                   });
+                  void this.setWindowPreferredOrientation(window.Orientation.PORTRAIT).catch((error: BusinessError) => {
+                    hilog.error(0x0000, 'testTag',
+                      `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
+                  });
                   // 显示导航栏、状态栏、底部导航条
                   void this.setWindowSystemBar(['status', 'navigation']).catch((error: BusinessError) => {
                     hilog.error(0x0000, 'testTag',
@@ -243,7 +244,8 @@ struct Index {
                 case 'onLandscape':
                   hilog.info(0x0000, 'testTag', 'Status is onLandscape');
                   // 设置屏幕方向为横屏
-                  void this.setWindowPreferredOrientation(window.Orientation.LANDSCAPE).catch((error: BusinessError) => {
+                  void this.setWindowPreferredOrientation(window.Orientation.LANDSCAPE)
+                    .catch((error: BusinessError) => {
                     hilog.error(0x0000, 'testTag',
                       `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
                   });
@@ -286,6 +288,11 @@ struct Index {
                 case 'onBackClicked':
                   hilog.info(0x0000, 'testTag', 'Status is onBackClicked');
                   this.getUIContext().getRouter().back();
+                  break;
+                case 'onAdClick':
+                  hilog.info(0x0000, 'testTag', 'Status is onAdClick');
+                  break;
+                default:
                   break;
               }
             }
@@ -548,10 +555,10 @@ struct Index {
                 case 'onPortrait':
                   hilog.info(0x0000, 'testTag', 'Status is onPortrait');
                   // 设置屏幕方向为竖屏
-                   void this.setWindowPreferredOrientation(window.Orientation.PORTRAIT).catch((error: BusinessError) => {
-                     hilog.error(0x0000, 'testTag',
-                       `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
-                   });
+                  void this.setWindowPreferredOrientation(window.Orientation.PORTRAIT).catch((error: BusinessError) => {
+                    hilog.error(0x0000, 'testTag',
+                      `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
+                  });
                   // 显示导航栏、状态栏、底部导航条
                   void this.setWindowSystemBar(['status', 'navigation']).catch((error: BusinessError) => {
                     hilog.error(0x0000, 'testTag',
@@ -563,7 +570,8 @@ struct Index {
                 case 'onLandscape':
                   hilog.info(0x0000, 'testTag', 'Status is onLandscape');
                   // 设置屏幕方向为横屏
-                  void this.setWindowPreferredOrientation(window.Orientation.LANDSCAPE).catch((error: BusinessError) => {
+                  void this.setWindowPreferredOrientation(window.Orientation.LANDSCAPE)
+                    .catch((error: BusinessError) => {
                     hilog.error(0x0000, 'testTag',
                       `Failed to setWindowPreferredOrientation. Code is ${error.code}, message is ${error.message}`);
                   });
@@ -606,6 +614,11 @@ struct Index {
                 case 'onBackClicked':
                   hilog.info(0x0000, 'testTag', 'Status is onBackClicked');
                   this.getUIContext().getRouter().back();
+                  break;
+                case 'onAdClick':
+                  hilog.info(0x0000, 'testTag', 'Status is onAdClick');
+                  break;
+                default:
                   break;
               }
             }

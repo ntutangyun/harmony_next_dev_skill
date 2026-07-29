@@ -86,23 +86,23 @@ let myParagraphStyle: text.ParagraphStyle = {
   wordBreak: text.WordBreak.NORMAL
 };
 // 获取全局字体集实例
-let fontCollection = text.FontCollection.getGlobalInstance(); //获取Arkui全局FC
+let fontCollection = text.FontCollection.getGlobalInstance();
 // 创建一个段落生成器
-let ParagraphGraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
+let paragraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
 
 先后将textStyle1和textStyle2添加到段落样式中并添加文字。
 
-let str:string = '模块描述\n';
+let str: string = '模块描述\n';
 // 添加第一种文本样式和对应文本内容
-ParagraphGraphBuilder.pushStyle(textStyle1);
-ParagraphGraphBuilder.addText(str);
+paragraphBuilder.pushStyle(textStyle1);
+paragraphBuilder.addText(str);
 // 添加第二种文本样式和对应文本内容
-ParagraphGraphBuilder.pushStyle(textStyle2);
-ParagraphGraphBuilder.addText(str);
+paragraphBuilder.pushStyle(textStyle2);
+paragraphBuilder.addText(str);
 
 生成段落，用于后续绘制使用。
 
-let paragraph = ParagraphGraphBuilder.build();
+let paragraph = paragraphBuilder.build();
 
 效果展示如下：
 
@@ -180,25 +180,25 @@ let myParagraphStyle: text.ParagraphStyle = {
   wordBreak: text.WordBreak.NORMAL
 };
 // 获取全局字体集实例
-let fontCollection = text.FontCollection.getGlobalInstance(); //获取Arkui全局FC
+let fontCollection = text.FontCollection.getGlobalInstance();
 // 创建一个段落生成器
-let ParagraphGraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
+let paragraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
 ```
 
 ### Code block 8
 
 ```
-let str:string = '模块描述\n';
+let str: string = '模块描述\n';
 // 添加第一种文本样式和对应文本内容
-ParagraphGraphBuilder.pushStyle(textStyle1);
-ParagraphGraphBuilder.addText(str);
+paragraphBuilder.pushStyle(textStyle1);
+paragraphBuilder.addText(str);
 // 添加第二种文本样式和对应文本内容
-ParagraphGraphBuilder.pushStyle(textStyle2);
-ParagraphGraphBuilder.addText(str);
+paragraphBuilder.pushStyle(textStyle2);
+paragraphBuilder.addText(str);
 ```
 
 ### Code block 9
 
 ```
-let paragraph = ParagraphGraphBuilder.build();
+let paragraph = paragraphBuilder.build();
 ```

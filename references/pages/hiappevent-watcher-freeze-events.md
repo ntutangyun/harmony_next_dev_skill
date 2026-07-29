@@ -61,7 +61,7 @@ hiAppEvent.configEventPolicy(policy).then(() => {
 名称	类型	说明
 time	number	事件触发时间，单位为ms。
 foreground	boolean	应用是否处于前台状态。true表示应用处于前台；false表示应用处于后台。
-release_type	string	应用的版本类型。release表示应用为release版本应用，debug表示应用为debug版本应用。 说明：从API version 23开始支持
+release_type	string	应用的版本类型。release表示应用为release版本应用，debug表示应用为debug版本应用。 说明：从API version 23开始支持。
 cpu_abi	string	二进制接口类型。 说明：从API version 23开始支持。
 app_running_unique_id	string	应用运行时唯一关联的id。 说明：从API version 24开始支持该参数。
 bundle_version	string	应用版本。
@@ -70,32 +70,32 @@ process_name	string	应用的进程名称。
 pid	number	应用的进程ID。
 uid	number	应用的用户ID。
 uuid	string	根据故障信息生成的故障特征码，用于标识特征相同的崩溃故障。
-exception	object	异常信息，详见exception属性。
+exception	object	异常信息，详见exception字段说明。
 hilog	string[]	日志信息。当生成应用无响应事件日志时，从hilog缓冲区中获取最多100行故障进程日志信息。
 event_handler	string[]	主线程未处理消息。
 event_handler_size_3s	string	THREAD_BLOCK_6S事件（仅在应用无响应事件生效）中3s时任务栈中任务数量。
 event_handler_size_6s	string	THREAD_BLOCK_6S事件（仅在应用无响应事件生效）中6s时任务栈中任务数量。
 peer_binder	string[]	binder调用信息。
-threads	object[]	全量线程调用栈，详见thread属性。
-memory	object	内存信息，详见memory属性。
+threads	object[]	全量线程调用栈，详见thread字段说明。
+memory	object	内存信息，详见memory字段说明。
 external_log12+	string[]	故障日志文件路径。为避免目录空间超限（参考log_over_limit），导致新生成的日志文件写入失败，日志文件处理完后请及时删除。
-log_over_limit12+	boolean	生成的故障日志文件与已存在的日志文件总大小是否超过5M上限。true表示超过上限，日志写入失败；false表示未超过上限。 启用minidump时，上限调整至35MB；关闭minidump时，上限恢复到5MB。
-process_life_time	number	故障进程存活时间。 说明：从API 22开始支持。
+log_over_limit12+	boolean	生成的故障日志文件与已存在的日志文件总大小是否超过5MB上限。true表示超过上限，日志写入失败；false表示未超过上限。 启用minidump时，上限调整至35MB；关闭minidump时，上限恢复到5MB。
+process_life_time	number	故障进程存活时间。 说明：从API version 22开始支持。
 external_callback_log	string	自定义回调日志信息，可通过OH_HiCollie_SetFreezeCallback写入。 说明：从API version 24开始支持。
 page_switch_log	string	页面切换日志路径，日志介绍详见页面切换日志。 说明：从API version 24开始支持。
 
 [h2]exception字段说明
 
 名称	类型	说明
-name	string	异常类型
-message	string	异常原因
+name	string	异常类型。
+message	string	异常原因。
 
 [h2]thread字段说明
 
 名称	类型	说明
 thread_name	string	线程名。
 tid	number	线程id。
-frames	object[]	线程调用栈，详见frame属性。
+frames	object[]	线程调用栈，详见frame字段说明。
 state	string	线程运行状态。读取自/proc/pid/stat的state的值。 说明：从API version 23开始支持。
 utime	number	线程在用户态下消耗的CPU的嘀嗒数。读取自/proc/pid/stat的utime的值。 说明：从API version 23开始支持。
 stime	number	线程在内核态下消耗的CPU的嘀嗒数。读取自/proc/pid/stat的stime的值。 说明：从API version 23开始支持。
@@ -119,11 +119,11 @@ offset	number	程序执行的指令在函数内偏移字节数。
 Js帧frame字段说明
 
 名称	类型	说明
-file	string	文件名
-packageName	string	模块的包名
-symbol	string	函数名称
-line	number	代码行号
-column	number	代码列号
+file	string	文件名。
+packageName	string	模块的包名。
+symbol	string	函数名称。
+line	number	代码行号。
+column	number	代码列号。
 
 详细说明请参见JS混合栈帧内容说明。
 
@@ -136,8 +136,8 @@ pss	number	进程实际使用的物理内存大小，单位KB。
 sys_free_mem	number	空闲内存大小，单位KB。对应Appfreeze日志中Device Memory(kB)字段的Free。
 sys_avail_mem	number	可用内存大小，单位KB。对应Appfreeze日志中Device Memory(kB)字段的Available。
 sys_total_mem	number	总内存大小，单位KB。对应Appfreeze日志中Device Memory(kB)字段的Total。
-vm_heap_total_size	number	主虚拟机总堆内存大小，单位KB。 说明：从API 22开始支持。
-vm_heap_used_size	number	主虚拟机的生命周期过程中，持续统计存活对象的大小，单位KB。 说明：从API 22开始支持。
+vm_heap_total_size	number	主虚拟机总堆内存大小，单位KB。 说明：从API version 22开始支持。
+vm_heap_used_size	number	主虚拟机的生命周期过程中，持续统计存活对象的大小，单位KB。 说明：从API version 22开始支持。
 
 应用冻屏规格自定义参数设置
 

@@ -24,6 +24,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkui-ui-
 
 待机屏保卡片有明确的UX设计规范。具体请参考设计指南中的待机屏保。
 
+待机屏保卡片只支持Phone中的部分机型。
+
 开启方式
 
 待机屏保功能在系统上默认是开启的，功能开关路径“设置>桌面和个性化>待机屏保设置”，开关界面如下图。

@@ -11,3 +11,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-featu
 接入全局取色
 
 接入手写交互
+
+接入手写笔跟手性加速

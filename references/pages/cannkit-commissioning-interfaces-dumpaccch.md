@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-c
 
 在算子kernel侧实现代码中需要打印偏移后Tensor数据的地方调用DumpAccChkPoint接口打印相关内容。样例如下。
 
-AscendC::DumpAccChkPoint(srcLocal,5, 32, dataLen);
+AscendC::DumpAccChkPoint(srcLocal, 5, 32, dataLen);
 
 说明
 
@@ -101,7 +101,7 @@ AscendC::DumpAccChkPoint(srcLocal, 7, 32 , 128);
 ### Code block 1
 
 ```
-AscendC::DumpAccChkPoint(srcLocal,5, 32, dataLen);
+AscendC::DumpAccChkPoint(srcLocal, 5, 32, dataLen);
 ```
 
 ### Code block 2

@@ -92,21 +92,22 @@ struct Index {
   requestEcnyPaymentPromise() {
     // 请开发者使用自己的订单信息（orderInfo）
     const orderInfo: ecnyPaymentService.EcnyOrderInfo = {
-      merchantAppId: "***",
-      merchantNo: "***",
-      acqAgtInstnId: "***",
-      creditorInstitutionId: "***",
-      encryptedKey: "***",
-      encryptedInfo: "***",
-      encryptionSN: "***",
-      extraInfo: "***",
-      lastWalletId: "***"
+      merchantAppId: '***',
+      merchantNo: '***',
+      acqAgtInstnId: '***',
+      creditorInstitutionId: '***',
+      encryptedKey: '***',
+      encryptedInfo: '***',
+      encryptionSN: '***',
+      extraInfo: '***',
+      lastWalletId: '***'
     };
     ecnyPaymentService.requestEcnyPayment(this.context, orderInfo)
       .then((result: ecnyPaymentService.EcnyPayResult) => {
         // 支付成功
         console.info(`succeeded in paying, result.orderNo: ${result.orderNo}, result.extraInfo: ${result.extraInfo}`);
       })
+
       .catch((error: BusinessError) => {
         // 支付失败
         console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
@@ -154,21 +155,22 @@ struct Index {
   requestEcnyPaymentPromise() {
     // 请开发者使用自己的订单信息（orderInfo）
     const orderInfo: ecnyPaymentService.EcnyOrderInfo = {
-      merchantAppId: "***",
-      merchantNo: "***",
-      acqAgtInstnId: "***",
-      creditorInstitutionId: "***",
-      encryptedKey: "***",
-      encryptedInfo: "***",
-      encryptionSN: "***",
-      extraInfo: "***",
-      lastWalletId: "***"
+      merchantAppId: '***',
+      merchantNo: '***',
+      acqAgtInstnId: '***',
+      creditorInstitutionId: '***',
+      encryptedKey: '***',
+      encryptedInfo: '***',
+      encryptionSN: '***',
+      extraInfo: '***',
+      lastWalletId: '***'
     };
     ecnyPaymentService.requestEcnyPayment(this.context, orderInfo)
       .then((result: ecnyPaymentService.EcnyPayResult) => {
         // 支付成功
         console.info(`succeeded in paying, result.orderNo: ${result.orderNo}, result.extraInfo: ${result.extraInfo}`);
       })
+
       .catch((error: BusinessError) => {
         // 支付失败
         console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);

@@ -24,16 +24,17 @@ import { uniformTypeDescriptor } from '@kit.ArkData';
 
 3.获取文件图标。
 
-@Entry
 @Component
-struct Index {
+export struct GetFileIcon {
+  @State inputText: string = ''
   @State fileIcon: string | Resource = '';
 
   private getFileIconByFileExtension(filenameExtension: string): void {
     try {
-      // 1、根据文件的后缀名，获取后缀名对应文件类型的UTD-ID
+      // 根据文件的后缀名，获取后缀名对应文件类型的UTD-ID
+      // filenameExtension为文件后缀，以txt文件为例，filenameExtension可以输入为：“.txt”
       let typeId: string = uniformTypeDescriptor.getUniformDataTypeByFilenameExtension(filenameExtension);
-      // 2、调用getFileIconSync方法，根据UTD-ID获取对应的文件图标
+      // 调用getFileIconSync方法，根据UTD-ID获取对应的文件图标
       this.fileIcon = fileManagerService.getFileIconSync(typeId);
     } catch (error) {
       let err: BusinessError = error as BusinessError;
@@ -42,20 +43,33 @@ struct Index {
   }
 
   build() {
-    RelativeContainer() {
+    NavDestination() {
       Column() {
         Image(this.fileIcon)
           .height(88)
           .border({ width: 1, radius: 6 })
-        Button('Update FileIcon')
+
+        TextInput({ placeholder: '请输入文件后缀名', text: $$this.inputText })
+          .width('85%')
+          .height(50)
+          .borderRadius(8)
+          .padding(12)
+
+        Button('获取文件图标')
+          .width('60%')
+          .height(48)
+          .type(ButtonType.Capsule)
           .onClick(() => {
-            // 以txt格式为例
-            this.getFileIconByFileExtension('.txt');
+            this.getFileIconByFileExtension(this.inputText);
           })
+        Blank()
       }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.White)
     }
-    .height('100%')
     .width('100%')
+    .height('100%')
   }
 }
 
@@ -72,16 +86,17 @@ import { uniformTypeDescriptor } from '@kit.ArkData';
 ### Code block 2
 
 ```
-@Entry
 @Component
-struct Index {
+export struct GetFileIcon {
+  @State inputText: string = ''
   @State fileIcon: string | Resource = '';
 
   private getFileIconByFileExtension(filenameExtension: string): void {
     try {
-      // 1、根据文件的后缀名，获取后缀名对应文件类型的UTD-ID
+      // 根据文件的后缀名，获取后缀名对应文件类型的UTD-ID
+      // filenameExtension为文件后缀，以txt文件为例，filenameExtension可以输入为：“.txt”
       let typeId: string = uniformTypeDescriptor.getUniformDataTypeByFilenameExtension(filenameExtension);
-      // 2、调用getFileIconSync方法，根据UTD-ID获取对应的文件图标
+      // 调用getFileIconSync方法，根据UTD-ID获取对应的文件图标
       this.fileIcon = fileManagerService.getFileIconSync(typeId);
     } catch (error) {
       let err: BusinessError = error as BusinessError;
@@ -90,20 +105,33 @@ struct Index {
   }
 
   build() {
-    RelativeContainer() {
+    NavDestination() {
       Column() {
         Image(this.fileIcon)
           .height(88)
           .border({ width: 1, radius: 6 })
-        Button('Update FileIcon')
+
+        TextInput({ placeholder: '请输入文件后缀名', text: $$this.inputText })
+          .width('85%')
+          .height(50)
+          .borderRadius(8)
+          .padding(12)
+
+        Button('获取文件图标')
+          .width('60%')
+          .height(48)
+          .type(ButtonType.Capsule)
           .onClick(() => {
-            // 以txt格式为例
-            this.getFileIconByFileExtension('.txt');
+            this.getFileIconByFileExtension(this.inputText);
           })
+        Blank()
       }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.White)
     }
-    .height('100%')
     .width('100%')
+    .height('100%')
   }
 }
 ```

@@ -1279,51 +1279,6 @@ useNormalizedOHMUrl 为true的时候ohmurl使用的是新的拼接和解析方�
   }
 ]
 
-如何配置oh-package.json5动态依赖
-
-oh-package.json5文件中：
-
-dependencies（生产依赖）：声明需要在代码中import的三方库（参与编译/运行阶段使用的依赖）。
-
-devDependencies（开发依赖）：参与项目的开发或测试阶段。
-
-dynamicDependencies（动态依赖）：动态依赖的HSP模块。在开发者需要动态加载HSP的时候配置使用。
-
-示例如下，详细内容可参考oh-package.json5文件和添加依赖项。
-
-{
-  "name": "parameter-test",
-  "version": "@param:version",
-  "description": "test desc.",
-  "main": "index.ets",
-  "author": "test author",
-  "license": "ISC",
-  "dependencies": {
-    "libtest1": "@param:dependencies.libtest1"
-  },
-  "devDependencies": {
-    "libtest2": "@param:devDependencies.libtest2"
-  },
-  "dynamicDependencies": {
-    "libtest3": "@param:dynamicDependencies.libtest3"
-  },
-  "parameterFile": '.parameterFile/parameterFile.json5' // 开启参数化并指定参数化配置文件路径
-}
-
-如何解决SDK与镜像不匹配导致abc文件无法正常运行的问题
-
-问题现象
-
-当SDK版本与镜像版本不匹配时，应用将会闪退，出现jscrash，同时hilog出现日志。
-
-解决措施
-
-现象根本原因是SDK工具与镜像版本不匹配。推荐使用匹配的SDK与镜像版本。
-
-查看SDK版本方法：
-
-在DevEco Studio安装路径下的sdk路径中，执行 {sdk.dir}/openharmony/ets/build-tools/ets-loader/bin/ark/build-win/bin/es2abc.exe --bc-version可查看SDK版本号。用于检验SDK与镜像版本是否匹配。
-
 如何解决编译报错“Could not resolve 'xxx' from”，但'xxx'目录存在的问题
 
 问题现象
@@ -1559,33 +1514,6 @@ xattr -d com.apple.quarantine /path/to/es2abc
 初始化时日志写入存在冲突，.hvigor目录中的build-log文件被占用导致了该报错。
 
 解决方案
-
-Mac环境下加载动态库，签名拦截导致未生效
-
-问题现象
-
-Mac环境下，在DevEco项目开发时，build-profile.json5中添加了如下的插桩配置，但是插桩功能未生效。
-
-"transformLib": "<相对模块根路径的动态库路径，以./开头>"
-
-判断与验证
-
-进入sdk中es2abc所在目录：[DevEco-Studio安装目录]/Contents/sdk/default/openharmony/ets/build-tools/ets-loader/bin/ark/build-mac/bin。
-
-./es2abc --merge-abc --transform-lib <动态库路径> <测试js文件路径>
-
-os::library_loader::Load error: dlopen(..., 0x0001):
-tried: '...' (code signature in <...> '...' not valid for use in process: mapped file has no cdhash, completely unsigned? Code has to be at least ad-hoc signed.)
-
-codesign -dv --verbose=1 <es2abc路径>
-codesign -dv --verbose=1 <动态库路径>
-
-解决方案
-
-执行下列命令，将es2abc文件的签名替换成和动态库文件一样的用户签名。
-
-codesign --remove-signature <es2abc路径>
-codesign -s - -v <es2abc路径>
 
 ## Code blocks
 
@@ -2099,34 +2027,11 @@ list(APPEND CMAKE_FIND_ROOT_PATH_MODE_INCLUDE "D:demo")
 ### Code block 43
 
 ```
-{
-  "name": "parameter-test",
-  "version": "@param:version",
-  "description": "test desc.",
-  "main": "index.ets",
-  "author": "test author",
-  "license": "ISC",
-  "dependencies": {
-    "libtest1": "@param:dependencies.libtest1"
-  },
-  "devDependencies": {
-    "libtest2": "@param:devDependencies.libtest2"
-  },
-  "dynamicDependencies": {
-    "libtest3": "@param:dynamicDependencies.libtest3"
-  },
-  "parameterFile": '.parameterFile/parameterFile.json5' // 开启参数化并指定参数化配置文件路径
-}
-```
-
-### Code block 44
-
-```
 registry=https://repo.huaweicloud.com/repository/npm/
 @ohos:registry=https://repo.harmonyos.com/npm/
 ```
 
-### Code block 45
+### Code block 44
 
 ```
 ERROR: Failed :entry:default@CompileResource...
@@ -2137,7 +2042,7 @@ at D:\project\process_profile\default\module.json
 Detail: Please check the message from tools.
 ```
 
-### Code block 46
+### Code block 45
 
 ```
 // Module/src/test.json
@@ -2146,7 +2051,7 @@ Detail: Please check the message from tools.
 let test = require("Module/src/test.json")
 ```
 
-### Code block 47
+### Code block 46
 
 ```
 // Module/src/test.js
@@ -2155,7 +2060,7 @@ module.exports = {a: 1, b: 2}
 let test = require("Module/src/test")
 ```
 
-### Code block 48
+### Code block 47
 
 ```
 // Module/package.json
@@ -2166,7 +2071,7 @@ main: "./src"
 let module = require("Module")
 ```
 
-### Code block 49
+### Code block 48
 
 ```
 // Module/package.json
@@ -2177,13 +2082,13 @@ main: "./src/index.js"
 let module = require("Module")
 ```
 
-### Code block 50
+### Code block 49
 
 ```
 Plugin node-resolve: preferring built-in module 'util' over local alternative at '/Users/~/Documents/fe-module/demo/node_modules/util/util.js', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning
 ```
 
-### Code block 51
+### Code block 50
 
 ```
 plugins: [
@@ -2195,19 +2100,19 @@ plugins: [
 ];
 ```
 
-### Code block 52
+### Code block 51
 
 ```
 import {Buffer} from 'buffer'
 ```
 
-### Code block 53
+### Code block 52
 
 ```
 import {Buffer} from 'buffer/'
 ```
 
-### Code block 54
+### Code block 53
 
 ```
 getValue(breakpoint: string): T {
@@ -2215,41 +2120,8 @@ getValue(breakpoint: string): T {
 }
 ```
 
-### Code block 55
+### Code block 54
 
 ```
 xattr -d com.apple.quarantine /path/to/es2abc
-```
-
-### Code block 56
-
-```
-"transformLib": "<相对模块根路径的动态库路径，以./开头>"
-```
-
-### Code block 57
-
-```
-./es2abc --merge-abc --transform-lib <动态库路径> <测试js文件路径>
-```
-
-### Code block 58
-
-```
-os::library_loader::Load error: dlopen(..., 0x0001):
-tried: '...' (code signature in <...> '...' not valid for use in process: mapped file has no cdhash, completely unsigned? Code has to be at least ad-hoc signed.)
-```
-
-### Code block 59
-
-```
-codesign -dv --verbose=1 <es2abc路径>
-codesign -dv --verbose=1 <动态库路径>
-```
-
-### Code block 60
-
-```
-codesign --remove-signature <es2abc路径>
-codesign -s - -v <es2abc路径>
 ```

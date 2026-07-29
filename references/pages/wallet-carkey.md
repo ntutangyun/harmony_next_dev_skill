@@ -4,8 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-ca
 
 概述
 
-云侧开发准备
+开发准备
 
-钥匙开通
-
-车控
+开发场景

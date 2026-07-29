@@ -15,6 +15,7 @@ AVScreenCapture支持应用完成场景化的自定义配置，具体配置可�
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
 OH_AVScreenCapture_StrategyForKeepCaptureDuringCall(strategy, true);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 
 [h2]设置B帧编码
 
@@ -25,6 +26,7 @@ OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
 OH_AVScreenCapture_StrategyForBFramesEncoding(strategy, true);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 
 [h2]设置屏幕捕获Picker
 
@@ -34,9 +36,18 @@ OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
 
 使用OH_AVScreenCapture_StrategyForPickerPopUp设置是否弹出屏幕捕获Picker。
 
+// 创建CaptureStrategy对象。
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
+
+// 设置是否弹出屏幕捕获Picker。
+// 设置为true，代表录屏启动后统一弹出Picker。
 OH_AVScreenCapture_StrategyForPickerPopUp(strategy, true);
+
+// 设置CaptureStrategy到AVScreenCapture实例。
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+
+// 释放CaptureStrategy对象。
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 
 设置旋转适配
 
@@ -50,6 +61,7 @@ OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureS
 // 设为true，表示跟随屏幕旋转，并在横竖屏旋转后，自动调换虚拟屏尺寸，确保输出画面及时跟随旋转。
 OH_AVScreenCapture_StrategyForCanvasFollowRotation(strategy, true);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 
 设置麦克风开关
 
@@ -64,17 +76,18 @@ OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
 申请长时任务，申请方式请参见申请长时任务。
 
 bool isMic = true;
-OH_AVScreenCapture_SetMicrophoneEnabled(capture, isMic);
+OH_AVScreenCapture_SetMicrophoneEnabled(g_avCapture, isMic);
 
 隐私设置
 
-从API version 20开始，支持使用OH_AVScreenCapture_StrategyForPrivacyMaskMode设置屏幕录制隐私窗口屏蔽模式。
+从API version 20开始，支持使用OH_AVScreenCapture_StrategyForPrivacyMaskMode设置录屏隐私窗口屏蔽模式。
 
-// value值设为0，表示全屏屏蔽模式。value值设为1，表示窗口屏蔽模式。默认为全屏屏蔽模式。
-int value = 0;
+// value值设为0，表示全屏屏蔽模式。value值设为1，表示窗口屏蔽模式。默认为全屏屏蔽模式。开发者可根据实际需求选择合适取值。
+int value = PRIVACY_MASK_MODE_FULL_SCREEN;
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
 OH_AVScreenCapture_StrategyForPrivacyMaskMode(strategy, value);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 
 在API version 12时，支持使用OH_AVScreenCapture_SkipPrivacyMode设置录屏时的豁免隐私窗口。目前设置豁免隐私窗口需要传入所有隐私子窗口和主窗口ID，传空数组取消豁免隐私窗口。
 
@@ -86,15 +99,17 @@ OH_AVScreenCapture_SkipPrivacyMode(capture, windowIdsSkipPrivacy.empty() ? nullp
 
 从API version 20开始支持设置捕获区域。
 
-可以根据需要设置区域坐标和大小，使用OH_AVScreenCapture_SetCaptureArea设置想要捕获的区域，如下方创建了一个从（0，0）为起点的长100px，宽100px的矩形区域。此接口在录屏开始前后都可以设置。
+可以根据需要设置区域坐标和大小，使用OH_AVScreenCapture_SetCaptureArea设置想要捕获的区域，如下方创建了一个从（0，0）为起点的宽100px，高100px的矩形区域。此接口在录屏开始前后都可以设置。
 
 OH_Rect* region = new OH_Rect;
-    region->x = 0;
-    region->y = 0;
-    region->width = 100;
-    region->height = 100;
-uint64_t regionDisplayId = 0; // 传入矩形区域所在的屏幕Id。
+region->x = 0;
+region->y = 0;
+region->width = CAPTURE_REGION_SIZE;
+region->height = CAPTURE_REGION_SIZE;
+uint64_t regionDisplayId = 0; // 传入矩形区域所在的屏幕ID。
 OH_AVScreenCapture_SetCaptureArea(capture, regionDisplayId, region);
+delete region;
+region = nullptr;
 
 设置捕获光标
 
@@ -102,7 +117,7 @@ OH_AVScreenCapture_SetCaptureArea(capture, regionDisplayId, region);
 
 使用OH_AVScreenCapture_ShowCursor设置光标显示开关，开始录屏前后均可调用。
 
-OH_AVScreenCapture_ShowCursor(capture, false);
+OH_AVScreenCapture_ShowCursor(g_avCapture, false);
 
 设置最大帧率
 
@@ -110,13 +125,13 @@ OH_AVScreenCapture_ShowCursor(capture, false);
 
 使用OH_AVScreenCapture_SetMaxVideoFrameRate设置录屏时的最大帧率，需在录屏启动后被调用。
 
-OH_AVScreenCapture_SetMaxVideoFrameRate(capture, 20);
+OH_AVScreenCapture_SetMaxVideoFrameRate(g_avCapture, CAPTURE_VIDEO_FRAME_RATE);
 
 设置屏幕分辨率
 
 使用OH_AVScreenCapture_ResizeCanvas调整录屏分辨率，需在启动后调用。分辨率有范围限制，视频的宽度和高度最大值不能超过OH_AVCapability_GetVideoWidthRange和OH_AVCapability_GetVideoHeightRange接口中定义的范围。
 
-OH_AVScreenCapture_ResizeCanvas(capture, 768, 1280);
+OH_AVScreenCapture_ResizeCanvas(g_avCapture, CANVAS_RESIZE_WIDTH, CANVAS_RESIZE_HEIGHT);
 
 设置内容过滤
 
@@ -126,15 +141,17 @@ OH_AVScreenCapture_ResizeCanvas(capture, 768, 1280);
 
 使用OH_AVScreenCapture_ContentFilter_AddWindowContent设置可过滤的窗口，通过窗口ID来指定。
 
-OH_AVScreenCapture_ContentFilter *contentFilter= OH_AVScreenCapture_CreateContentFilter();
+OH_AVScreenCapture_ContentFilter *contentFilter = OH_AVScreenCapture_CreateContentFilter();
 // 添加过滤通知音。
 OH_AVScreenCapture_ContentFilter_AddAudioContent(contentFilter, OH_SCREEN_CAPTURE_NOTIFICATION_AUDIO);
-// 排除指定窗口id。
+// 如果需要排除指定窗口，先填充窗口ID数组。
 std::vector<int> windowIdsExclude = {};
-OH_AVScreenCapture_ContentFilter_AddWindowContent(contentFilter, &windowIdsExclude[0],
-    static_cast<int32_t>(windowIdsExclude.size()));
+OH_AVScreenCapture_ContentFilter_AddWindowContent(contentFilter, windowIdsExclude.empty() ?
+    nullptr : &windowIdsExclude[0], static_cast<int32_t>(windowIdsExclude.size()));
 
 OH_AVScreenCapture_ExcludeContent(capture, contentFilter);
+OH_AVScreenCapture_ReleaseContentFilter(contentFilter);
+contentFilter = nullptr;
 
 更多资源
 
@@ -150,6 +167,7 @@ API参考：详细的API描述请见native_avscreen_capture.h。
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
 OH_AVScreenCapture_StrategyForKeepCaptureDuringCall(strategy, true);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 ```
 
 ### Code block 2
@@ -158,14 +176,24 @@ OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
 OH_AVScreenCapture_StrategyForBFramesEncoding(strategy, true);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 ```
 
 ### Code block 3
 
 ```
+// 创建CaptureStrategy对象。
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
+
+// 设置是否弹出屏幕捕获Picker。
+// 设置为true，代表录屏启动后统一弹出Picker。
 OH_AVScreenCapture_StrategyForPickerPopUp(strategy, true);
+
+// 设置CaptureStrategy到AVScreenCapture实例。
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+
+// 释放CaptureStrategy对象。
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 ```
 
 ### Code block 4
@@ -175,23 +203,25 @@ OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureS
 // 设为true，表示跟随屏幕旋转，并在横竖屏旋转后，自动调换虚拟屏尺寸，确保输出画面及时跟随旋转。
 OH_AVScreenCapture_StrategyForCanvasFollowRotation(strategy, true);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 ```
 
 ### Code block 5
 
 ```
 bool isMic = true;
-OH_AVScreenCapture_SetMicrophoneEnabled(capture, isMic);
+OH_AVScreenCapture_SetMicrophoneEnabled(g_avCapture, isMic);
 ```
 
 ### Code block 6
 
 ```
-// value值设为0，表示全屏屏蔽模式。value值设为1，表示窗口屏蔽模式。默认为全屏屏蔽模式。
-int value = 0;
+// value值设为0，表示全屏屏蔽模式。value值设为1，表示窗口屏蔽模式。默认为全屏屏蔽模式。开发者可根据实际需求选择合适取值。
+int value = PRIVACY_MASK_MODE_FULL_SCREEN;
 OH_AVScreenCapture_CaptureStrategy* strategy = OH_AVScreenCapture_CreateCaptureStrategy();
 OH_AVScreenCapture_StrategyForPrivacyMaskMode(strategy, value);
 OH_AVScreenCapture_SetCaptureStrategy(capture, strategy);
+OH_AVScreenCapture_ReleaseCaptureStrategy(strategy);
 ```
 
 ### Code block 7
@@ -206,42 +236,46 @@ OH_AVScreenCapture_SkipPrivacyMode(capture, windowIdsSkipPrivacy.empty() ? nullp
 
 ```
 OH_Rect* region = new OH_Rect;
-    region->x = 0;
-    region->y = 0;
-    region->width = 100;
-    region->height = 100;
-uint64_t regionDisplayId = 0; // 传入矩形区域所在的屏幕Id。
+region->x = 0;
+region->y = 0;
+region->width = CAPTURE_REGION_SIZE;
+region->height = CAPTURE_REGION_SIZE;
+uint64_t regionDisplayId = 0; // 传入矩形区域所在的屏幕ID。
 OH_AVScreenCapture_SetCaptureArea(capture, regionDisplayId, region);
+delete region;
+region = nullptr;
 ```
 
 ### Code block 9
 
 ```
-OH_AVScreenCapture_ShowCursor(capture, false);
+OH_AVScreenCapture_ShowCursor(g_avCapture, false);
 ```
 
 ### Code block 10
 
 ```
-OH_AVScreenCapture_SetMaxVideoFrameRate(capture, 20);
+OH_AVScreenCapture_SetMaxVideoFrameRate(g_avCapture, CAPTURE_VIDEO_FRAME_RATE);
 ```
 
 ### Code block 11
 
 ```
-OH_AVScreenCapture_ResizeCanvas(capture, 768, 1280);
+OH_AVScreenCapture_ResizeCanvas(g_avCapture, CANVAS_RESIZE_WIDTH, CANVAS_RESIZE_HEIGHT);
 ```
 
 ### Code block 12
 
 ```
-OH_AVScreenCapture_ContentFilter *contentFilter= OH_AVScreenCapture_CreateContentFilter();
+OH_AVScreenCapture_ContentFilter *contentFilter = OH_AVScreenCapture_CreateContentFilter();
 // 添加过滤通知音。
 OH_AVScreenCapture_ContentFilter_AddAudioContent(contentFilter, OH_SCREEN_CAPTURE_NOTIFICATION_AUDIO);
-// 排除指定窗口id。
+// 如果需要排除指定窗口，先填充窗口ID数组。
 std::vector<int> windowIdsExclude = {};
-OH_AVScreenCapture_ContentFilter_AddWindowContent(contentFilter, &windowIdsExclude[0],
-    static_cast<int32_t>(windowIdsExclude.size()));
+OH_AVScreenCapture_ContentFilter_AddWindowContent(contentFilter, windowIdsExclude.empty() ?
+    nullptr : &windowIdsExclude[0], static_cast<int32_t>(windowIdsExclude.size()));
 
 OH_AVScreenCapture_ExcludeContent(capture, contentFilter);
+OH_AVScreenCapture_ReleaseContentFilter(contentFilter);
+contentFilter = nullptr;
 ```

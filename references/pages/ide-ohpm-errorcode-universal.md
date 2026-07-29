@@ -14,11 +14,29 @@ Fetch Pkg Info Failed.
 
 可能原因
 
-执行ohpm list、ohpm info、ohpm install命令时，包名或版本号不匹配，从中心仓和私仓获取不到相关信息。
+未配置仓库地址。
 
 处理步骤
 
-在中心仓和私仓搜索包名/版本号，确保可以跟仓中匹配。
+在.ohpmrc文件中配置registry字段，或执行命令"ohpm config set registry https://ohpm.openharmony.cn/ohpm/"配置仓库地址。
+
+00617102 检查仓库失败
+
+错误信息
+
+Check Registry Failed.
+
+错误描述
+
+检查仓库失败。
+
+可能原因
+
+执行ohpm info、ohpm install命令时，配置的registry参数错误。
+
+处理步骤
+
+检查和确保仓库地址为中心仓地址或私仓地址。
 
 00608001 oh-package.json5文件不存在
 
@@ -73,6 +91,60 @@ File Read Error.
 处理步骤
 
 查看是否被占用后，重新读取。
+
+00625003 文件不存在
+
+错误信息
+
+File Not Exist.
+
+错误描述
+
+文件不存在。
+
+可能原因
+
+读取文件不存在。
+
+处理步骤
+
+查看文件是否存在，重新读取。
+
+00631002 仓库请求失败
+
+错误信息
+
+Registry Request Error.
+
+错误描述
+
+仓库请求失败。
+
+可能原因
+
+执行ohpm publish、ohpm dist-tags命令时，配置的publish_registry参数错误。
+
+处理步骤
+
+检查和确保仓库地址为中心仓地址或私仓地址。
+
+00640001 系统错误
+
+错误信息
+
+System Error.
+
+错误描述
+
+系统错误。
+
+可能原因
+
+系统错误，例如内存错误等。
+
+处理步骤
+
+检查日志文件，寻找错误信息定位根源。
 
 00670002 路径大小写敏感错误
 

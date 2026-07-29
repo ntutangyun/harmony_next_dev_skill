@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/xengine-k
 
 从6.0.0(20) 版本开始，新增光线追踪全局光照特性。
 
-XEngine Kit提供端侧光线追踪全局光照（Ray-Traced Global Illumination，RTGI）能力，包含动态漫反射全局光照（DDGI）算法和神经网络全局光照（NNGI）算法。
+XEngine Kit提供端侧光线追踪全局光照（Ray-Traced Global Illumination，RTGI）特性，包含动态漫反射全局光照（DDGI）算法和神经网络全局光照（NNGI）算法。
 
 约束与限制
 
@@ -33,20 +33,19 @@ VKAPI_ATTR void VKAPI_CALL HMS_XEG_DestroyRTGI (XEG_RTGI rtGI)	销毁XEG_RTGI对
 
 DDGI开发步骤
 
-本章以Vulkan图像API集成为例，说明XEngine集成操作过程。
+本章以Vulkan图像API集成为例，说明XEngine Kit集成操作过程。
 
 [h2]配置项目
 
-编译HAP时，Native层so编译需要依赖NDK中的libxengine.so。
+编译HAP包时，Native层so编译需要依赖NDK中的libxengine.so。
 
 头文件引用
 
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <xengine/xeg_vulkan_rtgi.h>
 #include <xengine/xeg_vulkan_extension.h>
-#include <xengine/xeg_extension_defs.h>
+// ...
+#include <xengine/xeg_vulkan_rtgi.h>
+
+#include "xengine/xeg_extension_defs.h"
 
 编写CMakeLists.txt
 
@@ -58,8 +57,8 @@ find_library(
     # 指定希望CMake定位的NDK库的名称。
     xengine
 )
+# ...
 target_link_libraries(ohosmain PUBLIC
-    # 其他库文件
     # ...
     ${xengine-lib} RenderBehavior SceneLoader VulkanBase
 )
@@ -68,9 +67,7 @@ target_link_libraries(ohosmain PUBLIC
 
 下面是基于Vulkan图形API平台集成动态漫反射全局光照的主要业务流程
 
-用户在使用动态漫反射全局光照特性前需要查询硬件平台是否支持光线追踪扩展。
-
-用户在进入游戏初始化场景时调用HMS_XEG_EnumerateDeviceExtensionProperties接口查询XEngine支持的特性，当查询接口返回支持的特性列表中包含动态漫反射全局光照特性时代表可以使用此特性。
+用户在进入游戏初始化场景时调用HMS_XEG_EnumerateDeviceExtensionProperties接口查询XEngine Kit支持的特性。检查返回列表中是否包含XEG_RTGI_EXTENSION_NAME。若不包含，则当前设备不支持此特性，流程终止。
 
 创建动态漫反射全局光照使用的创建信息，调用HMS_XEG_CreateRTGI接口创建动态漫反射全局光照实例。
 
@@ -80,9 +77,7 @@ target_link_libraries(ohosmain PUBLIC
 
 调用HMS_XEG_CmdSetSynchronization设置同步信号，等待渲染结果写入指定图像。
 
-游戏使用全局光照纹理，进行其他的渲染任务，如UI等。
-
-当前帧已全部渲染完成，进行送显。
+游戏使用全局光照纹理，进行其他的渲染任务，如UI等。待当前帧的渲染完成后，统一调用送显操作。
 
 当游戏退出时，调用HMS_XEG_DestroyRTGI接口销毁动态漫反射全局光照实例。
 
@@ -96,15 +91,14 @@ target_link_libraries(ohosmain PUBLIC
 
 调用HMS_XEG_EnumerateDeviceExtensionProperties接口，获取XEngine支持的扩展信息，只有在支持XEG_RTGI_EXTENSION_NAME扩展时才可以使用RT DDGI的相关接口。
 
-// physicalDevice为Vulkan物理设备，用户需进行初始化
-VkPhysicalDevice physicalDevice;
 // 查询XEngine支持的Vulkan扩展列表
 std::vector<std::string> supportedExtensions;
 uint32_t propertyCount;
-HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount, nullptr);
+// engineResource.physicalDevice物理设备，用户需进行初始化
+HMS_XEG_EnumerateDeviceExtensionProperties(engineResource.physicalDevice, &propertyCount, nullptr);
 if (propertyCount > 0) {
     std::vector<XEG_ExtensionProperties> properties(propertyCount);
-    if (HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount,
+    if (HMS_XEG_EnumerateDeviceExtensionProperties(engineResource.physicalDevice, &propertyCount,
         &properties.front()) == VK_SUCCESS) {
         for (auto ext : properties) {
             supportedExtensions.push_back(ext.extensionName);
@@ -114,7 +108,8 @@ if (propertyCount > 0) {
 // 查询是否支持RT DDGI
 if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_RTGI_EXTENSION_NAME) ==
     supportedExtensions.end()) {
-    exit(1);
+    // 错误处理
+    // ...
 }
 
 声明实例句柄。
@@ -123,173 +118,153 @@ XEG_RTGI xegRTGI;
 
 调用HMS_XEG_CreateRTGI接口，创建RT DDGI实例。
 
-// 渲染宽高以及缩放倍率可以由用户设定，这里用1280*720为例，缩放倍率为1
+// 渲染宽高renderWidth、renderHeight以及缩放倍率scaled可以由用户设定
 VkExtent2D outputSize;
-outputSize.width = 1280;
-outputSize.height = 720;
+outputSize.width = renderWidth;
+outputSize.height = renderHeight;
 VkExtent2D scaled;
 scaled.width = 1;
 scaled.height = 1;
-// Vulkan逻辑设备，用户需进行初始化
-VkDevice device;
-// XEG_DDGICreateInfo为创建XEG_RTGI对象所需信息
-struct XEG_DDGICreateInfo DDGICreateInfo;
 // 指定当前结构体类型为create info
-DDGICreateInfo.sType = XEG_STRUCTURE_TYPE_DDGI_CREATE_INFO;
+ddgiCreateInfo.sType = XEG_STRUCTURE_TYPE_DDGI_CREATE_INFO;
 // 指定扩展为空
-DDGICreateInfo.pNext = nullptr;
-// 指定质量模式为平衡
-DDGICreateInfo.qualityMode = XEG_RTGI_QUALITY_MODE_BALANCED;
+ddgiCreateInfo.pNext = nullptr;
+// 指定质量模式为质量
+ddgiCreateInfo.qualityMode = XEG_RTGI_QUALITY_MODE_QUALITY;
 // 指定当前场景中需要同时渲染的最大体积数量，范围为[1, 9]
-DDGICreateInfo.numberVolume = 4;
+ddgiCreateInfo.numberVolume = VOLUME_NUMBER;
 // 指定渲染宽高缩小倍率，建议范围为[1, 4]，必须不小于1
-DDGICreateInfo.scaledView = scaled;
+ddgiCreateInfo.scaledView = scaled;
 // 指定输出GI图像的渲染宽高
-DDGICreateInfo.viewSize = outputSize;
+ddgiCreateInfo.viewSize = outputSize;
 // 指定是否开启端云模式，true为开启，false为关闭
-DDGICreateInfo.enableCloud = false;
-VkResult res = HMS_XEG_CreateRTGI(device, &DDGICreateInfo, &xegRTGI);
-if (res != VK_SUCCESS) {
-    exit(1);
-}
+ddgiCreateInfo.enableCloud = false;
+HMS_XEG_CreateRTGI(engineResource.device, &ddgiCreateInfo, &xegRTGI);
 
 调用HMS_XEG_CmdRenderRTGI接口执行渲染命令，每帧都需要调用。
 
-// probeIrradianceSH为用户创建的存储探针光照二阶球谐系数的3D图像的VkImageView
-// 存储当前接口渲染结果，通过对该图像进行三线性插值采样，可以计算GI光照值
-VkImageView probeIrradianceSH = VK_NULL_HANDLE;
-// 定义XEG_DDGIVolumeEntryParameters对象DDGIVolumeEntryParameters
-struct XEG_DDGIVolumeEntryParameters DDGIVolumeEntryParameters;
+// ddgiVolumeEntryParameters为XEG_DDGIVolumeEntryParameters对象
 // 体积索引，范围为[0, 65535]，且唯一
-DDGIVolumeEntryParameters.volumeIndex = 0;
+ddgiVolumeEntryParameters[volumeID].volumeIndex = uint32_t(ddgiVolumePara[volumeID].volumeIndex);
 // 探针发射光线数量，范围为[1, 1024]
-DDGIVolumeEntryParameters.raysPerProbe = 128;
+ddgiVolumeEntryParameters[volumeID].raysPerProbe = uint32_t(ddgiVolumePara[volumeID].raysPerProbe);
 // 光线求交最远距离
-DDGIVolumeEntryParameters.probeMaxRayDistance = 1000.0f;
+ddgiVolumeEntryParameters[volumeID].probeMaxRayDistance = 1000.0f;
 // 体积中心点坐标
-DDGIVolumeEntryParameters.volumePosition[0] = 0.0f;
-DDGIVolumeEntryParameters.volumePosition[1] = 0.0f;
-DDGIVolumeEntryParameters.volumePosition[2] = 0.0f;
+ddgiVolumeEntryParameters[volumeID].volumePosition[0] =
+    ddgiVolumePara[volumeID].probeGridOrigin[0] + offsetX * ddgiVolumePara[volumeID].probeSpacing[0];
+ddgiVolumeEntryParameters[volumeID].volumePosition[1] =
+    ddgiVolumePara[volumeID].probeGridOrigin[1] + offsetY * ddgiVolumePara[volumeID].probeSpacing[1];
+ddgiVolumeEntryParameters[volumeID].volumePosition[NUM_TWO] =
+    ddgiVolumePara[volumeID].probeGridOrigin[NUM_TWO] +
+    offsetZ * ddgiVolumePara[volumeID].probeSpacing[NUM_TWO];
 // 探针放置间距，必须大于0
-DDGIVolumeEntryParameters.probeSpacing[0] = 10.0f;
-DDGIVolumeEntryParameters.probeSpacing[1] = 10.0f;
-DDGIVolumeEntryParameters.probeSpacing[2] = 10.0f;
+ddgiVolumeEntryParameters[volumeID].probeSpacing[0] = ddgiVolumePara[volumeID].probeSpacing[0];
+ddgiVolumeEntryParameters[volumeID].probeSpacing[1] = ddgiVolumePara[volumeID].probeSpacing[1];
+ddgiVolumeEntryParameters[volumeID].probeSpacing[NUM_TWO] =
+    ddgiVolumePara[volumeID].probeSpacing[NUM_TWO];
 // 体积光照通道标记
-DDGIVolumeEntryParameters.volumeLightingChannelMask = 0xFFFFFFFF;
+ddgiVolumeEntryParameters[volumeID].volumeLightingChannelMask = 0xFFFFFFFF;
 // 探针放置数量，必须大于0，范围为[1, 32]
-DDGIVolumeEntryParameters.volumeProbeGridCounts[0] = 6;
-DDGIVolumeEntryParameters.volumeProbeGridCounts[1] = 6;
-DDGIVolumeEntryParameters.volumeProbeGridCounts[2] = 6;
+ddgiVolumeEntryParameters[volumeID].volumeProbeGridCounts[0] =
+    uint32_t(ddgiVolumePara[volumeID].probeCounts[0]);
+ddgiVolumeEntryParameters[volumeID].volumeProbeGridCounts[1] =
+    uint32_t(ddgiVolumePara[volumeID].probeCounts[1]);
+ddgiVolumeEntryParameters[volumeID].volumeProbeGridCounts[NUM_TWO] =
+    uint32_t(ddgiVolumePara[volumeID].probeCounts[NUM_TWO]);
 // 光照的伽马校正系数，必须不为0
-DDGIVolumeEntryParameters.volumeProbeIrradianceEncodingGamma = 5.0f;
+ddgiVolumeEntryParameters[volumeID].volumeProbeIrradianceEncodingGamma =
+    ddgiVolumePara[volumeID].irradianceGamma;
 // 探针光照历史权重，范围为[0.0, 1.0]
-DDGIVolumeEntryParameters.probeHysteresis = 0.95f;
+ddgiVolumeEntryParameters[volumeID].probeHysteresis = ddgiVolumePara[volumeID].historicalWeight;
 // 探针变化阈值
-DDGIVolumeEntryParameters.probeChangeThreshold = 1.0f;
+ddgiVolumeEntryParameters[volumeID].probeChangeThreshold = 1.0;
 // 探针亮度阈值
-DDGIVolumeEntryParameters.probeBrightnessThreshold = 1.0f;
+ddgiVolumeEntryParameters[volumeID].probeBrightnessThreshold = 1.0;
 // 探针法向偏移量
-DDGIVolumeEntryParameters.volumeNormalBias = 0.12f;
+ddgiVolumeEntryParameters[volumeID].volumeNormalBias = ddgiVolumePara[volumeID].biasNormal;
 // 探针视角偏移量
-DDGIVolumeEntryParameters.volumeViewBias = 0.48f;
+ddgiVolumeEntryParameters[volumeID].volumeViewBias = ddgiVolumePara[volumeID].biasDir;
 // 体积光照混合距离
-DDGIVolumeEntryParameters.volumeBlendDistance = 1.0;
+ddgiVolumeEntryParameters[volumeID].volumeBlendDistance = 1.0;
 // 体积边缘光照渐暗范围
-DDGIVolumeEntryParameters.volumeBlendDistanceBlack = 1.0;
+ddgiVolumeEntryParameters[volumeID].volumeBlendDistanceBlack = 1.0;
 // 探针反向判断阈值
-DDGIVolumeEntryParameters.probeBackfaceThreshold = 1.0;
+ddgiVolumeEntryParameters[volumeID].probeBackfaceThreshold = 1.0;
 // 探针正向最小距离
-DDGIVolumeEntryParameters.probeMinFrontfaceDistance = 1.0;
+ddgiVolumeEntryParameters[volumeID].probeMinFrontfaceDistance = 1.0;
 // 体积光照缩放倍率，必须非负
-DDGIVolumeEntryParameters.volumeIrradianceScalar = 1.0;
+ddgiVolumeEntryParameters[volumeID].volumeIrradianceScalar = 1.0;
 // 发射光线强度倍率，必须非负
-DDGIVolumeEntryParameters.emissiveMultiplier = 1.0;
+ddgiVolumeEntryParameters[volumeID].emissiveMultiplier = 1.0;
 // 光照倍率，必须非负
-DDGIVolumeEntryParameters.lightingMultiplier = 1.0;
+ddgiVolumeEntryParameters[volumeID].lightingMultiplier = ddgiVolumePara[volumeID].lightingMultiplier;
 // 是否强制更新所有探针，true为强制全部更新，false为选择部分更新
-DDGIVolumeEntryParameters.bForceUpdate = false;
-DDGIVolumeEntryParameters.probeIrradianceSH = probeIrradianceSH;
+ddgiVolumeEntryParameters[volumeID].bForceUpdate = false;
+// probeSH[volumeID].textureImageView为用户创建的存储探针光照二阶球谐系数的3D图像的VkImageView
+// 存储当前接口渲染结果，通过对该图像进行三线性插值采样，可以计算GI光照值
+ddgiVolumeEntryParameters[volumeID].probeIrradianceSH = probeSH[volumeID].textureImageView;
 
-// 定义XEG_DDGIDescription对象DDGIDescription
-struct XEG_DDGIDescription DDGIDescription;
-// inputNormalImage为用户创建的法线图像的VkImageView
-VkImageView inputNormalImage = VK_NULL_HANDLE;
-// inputDepthImage为用户创建的深度图像的VkImageView
-VkImageView inputDepthImage = VK_NULL_HANDLE;
-// inputBasecolorMetallicImage为用户创建的颜色及金属度图像的VkImageView
-VkImageView inputBasecolorMetallicImage = VK_NULL_HANDLE;
-// inputDirectionImage为用户创建的发射光线方向图像的VkImageView
-VkImageView inputDirectionImage = VK_NULL_HANDLE;
-// inputRayRadianceDistanceImage为用户创建的发射光线交点光照及距离图像的VkImageView
-VkImageView inputRayRadianceDistanceImage = VK_NULL_HANDLE;
-// inputRayHitNormalAndMetallicImage为用户创建的发射光线交点法线及金属度图像的VkImageView
-VkImageView inputRayHitNormalAndMetallicImage = VK_NULL_HANDLE;
-// inputVolumeIndexAndProbeIndex为用户创建的输入probe索引缓冲区VkBuffer
-VkBuffer inputVolumeIndexAndProbeIndex = VK_NULL_HANDLE;
-// outputVolumeIndexAndProbeIndex为用户创建的输出probe索引缓冲区VkBuffer
-VkBuffer outputVolumeIndexAndProbeIndex = VK_NULL_HANDLE;
-// outputProbeCount为用户创建的输出probe数量缓冲区VkBuffer
-VkBuffer outputProbeCount = VK_NULL_HANDLE;
-// outputGIImage为用户创建的全局光照图像的VkImageView
-VkImageView outputGIImage = VK_NULL_HANDLE;
-// commandBuffer为命令缓冲区，用户需进行初始化
-VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
-// 指定当前结构体类型为DDGI description
-DDGIDescription.sType = XEG_STRUCTURE_TYPE_DDGI_DESCRIPTION;
+// ddgiDescription为XEG_DDGIDescription对象
+ddgiDescription.sType = XEG_STRUCTURE_TYPE_DDGI_DESCRIPTION;
 // 指定扩展为空
-DDGIDescription.pNext = nullptr;
-// 设置相机相关矩阵
-for (uint32_t i = 0; i < 16; ++i) {
-    DDGIDescription.viewMatrix[i] = 1.0f;
-    DDGIDescription.projectionMatrix[i] = 1.0f;
-}
-DDGIDescription.inputNormalImage = inputNormalImage;
-DDGIDescription.inputDepthImage = inputDepthImage;
-DDGIDescription.inputBasecolorMetallicImage = inputBasecolorMetallicImage;
-DDGIDescription.inputDirectionImage = inputDirectionImage;
-DDGIDescription.inputRayRadianceDistanceImage = inputRayRadianceDistanceImage;
-DDGIDescription.inputRayHitNormalAndMetallicImage = inputRayHitNormalAndMetallicImage;
-DDGIDescription.inputVolumeIndexAndProbeIndex = inputVolumeIndexAndProbeIndex;
-// 输入probe信息数量
-DDGIDescription.inputProbeCount = 10;
-DDGIDescription.outputVolumeIndexAndProbeIndex = outputVolumeIndexAndProbeIndex;
-DDGIDescription.outputProbeCount = outputProbeCount;
-DDGIDescription.outputGIImage = outputGIImage;
-// 使用的volume数量
-DDGIDescription.enableVolumeNumber = 1;
-DDGIDescription.pVolumeEntryParameters = &DDGIVolumeEntryParameters;
-HMS_XEG_CmdRenderRTGI(commandBuffer, xegRTGI, &DDGIDescription);
+ddgiDescription.pNext = nullptr;
+// gBufferNormal.textureImageView为用户创建的法线图像的VkImageView
+ddgiDescription.inputNormalImage = gBufferNormal.textureImageView;
+// gBufferDepth.textureImageView为用户创建的深度图像的VkImageView
+ddgiDescription.inputDepthImage = gBufferDepth.textureImageView;
+// gBufferAlbedo.textureImageView为用户创建的颜色及金属度图像的VkImageView
+ddgiDescription.inputBasecolorMetallicImage = gBufferAlbedo.textureImageView;
+// rayDirection.textureImageView为用户创建的发射光线方向图像的VkImageView
+ddgiDescription.inputDirectionImage = rayDirection.textureImageView;
+// rayHitRadiance.textureImageView为用户创建的发射光线交点光照及距离图像的VkImageView
+ddgiDescription.inputRayRadianceDistanceImage = rayHitRadiance.textureImageView;
+// rayHitNormal.textureImageView为用户创建的发射光线交点法线及金属度图像的VkImageView
+ddgiDescription.inputRayHitNormalAndMetallicImage = rayHitNormal.textureImageView;
+// probeRenderList.buffer为用户创建的输入probe索引缓冲区VkBuffer
+ddgiDescription.inputVolumeIndexAndProbeIndex = probeRenderList.buffer;
+// inputProbeCount为输入probe信息数量
+ddgiDescription.inputProbeCount = inputProbeCount;
+// outputProbeList.buffer为用户创建的输出probe索引缓冲区VkBuffer
+ddgiDescription.outputVolumeIndexAndProbeIndex = outputProbeList.buffer;
+// outputProbeCount.buffer为用户创建的输出probe数量缓冲区VkBuffer
+ddgiDescription.outputProbeCount = outputProbeCount.buffer;
+// outputGIImage.textureImageView为用户创建的全局光照图像的VkImageView
+ddgiDescription.outputGIImage = outputGIImage.textureImageView;
+// VOLUME_NUMBER为使用的volume数量
+ddgiDescription.enableVolumeNumber = VOLUME_NUMBER;
+ddgiDescription.pVolumeEntryParameters = ddgiVolumeEntryParameters.data();
+// ...
+HMS_XEG_CmdRenderRTGI(commandBuffer, xegRTGI, &ddgiDescription);
 
 若使用延迟渲染管线，则可以在调用HMS_XEG_CmdRenderRTGI接口之后，调用HMS_XEG_CmdSetSynchronization接口，设置同步信号，等待GI渲染结果写入指定图像，HMS_XEG_CmdSetSynchronization接口需要每帧调用。
 
-// GI渲染结果会写入到XEG_DDGIDescription中的outputGIImage图像中
-HMS_XEG_CmdSetSynchronization(commandBuffer, &xegRTGI);
+// 将GI渲染结果写入到指定图像中
+HMS_XEG_CmdSetSynchronization(commandBuffer, xegRTGI);
 
 调用HMS_XEG_DestroyRTGI接口销毁实例。
 
-if (xegRTGI) {
-    HMS_XEG_DestroyRTGI(xegRTGI);
+if (xegRtgi != nullptr) {
+    HMS_XEG_DestroyRTGI(xegRtgi);
 }
 
 NNGI开发步骤
 
-本章以Vulkan图像API集成为例，说明XEngine集成操作过程。
+本章以Vulkan图像API集成为例，说明XEngine Kit集成操作过程。
 
 [h2]配置项目
 
-编译HAP时，Native层so编译需要依赖NDK中的libxengine.so。
+编译HAP包时，Native层so编译需要依赖NDK中的libxengine.so。
 
 头文件引用
 
-#include <algorithm>
-#include <string>
-#include <vector>
-#include "xengine/xeg_vulkan_rtgi.h"
-#include "xengine/xeg_vulkan_extension.h"
+#include <xengine/xeg_vulkan_extension.h>
+// ...
+#include <xengine/xeg_vulkan_rtgi.h>
 
 编写CMakeLists.txt
 
-CMakeLists.txt部分示例代码如下：
+CMakeLists.txt部分示例代码如下。
 
 find_library(
     # 设置路径变量的名称。
@@ -297,18 +272,17 @@ find_library(
     # 指定希望CMake定位的NDK库的名称。
     xengine
 )
+
 target_link_libraries(nativerender PUBLIC
-    # 其他库文件
     # ...
-    ${xengine-lib})
+    ${xengine-lib}
+)
 
 [h2]业务流程
 
 下面是基于Vulkan图形API平台集成神经网络全局光照的主要业务流程
 
-用户在使用神经网络全局光照特性前需要查询硬件平台是否支持光线追踪扩展。
-
-用户在进入游戏初始化场景时调用HMS_XEG_EnumerateDeviceExtensionProperties接口查询XEngine支持的特性，当查询接口返回支持的特性列表中包含神经网络全局光照特性时代表可以使用此特性。
+用户在进入游戏初始化场景时调用HMS_XEG_EnumerateDeviceExtensionProperties接口查询XEngine Kit支持的特性。检查返回列表中是否包含XEG_RTGI_EXTENSION_NAME。若不包含，则当前设备不支持此特性，流程终止。
 
 创建神经网络全局光照使用的创建信息，调用HMS_XEG_CreateRTGI接口创建神经网络全局光照实例。
 
@@ -318,9 +292,7 @@ target_link_libraries(nativerender PUBLIC
 
 调用HMS_XEG_CmdSetSynchronization执行训练任务。
 
-游戏使用全局光照纹理，进行其他的渲染任务，如UI等。
-
-当前帧已全部渲染完成，进行送显。
+游戏使用全局光照纹理，进行其他的渲染任务，如UI等。待当前帧的渲染完成后，统一调用送显操作。
 
 当游戏退出时，调用HMS_XEG_DestroyRTGI接口销毁神经网络全局光照实例。
 
@@ -334,25 +306,26 @@ target_link_libraries(nativerender PUBLIC
 
 调用HMS_XEG_EnumerateDeviceExtensionProperties接口，获取XEngine支持的扩展信息，只有在支持XEG_RTGI_EXTENSION_NAME扩展时才可以使用RT NNGI的相关接口。
 
-// physicalDevice为Vulkan物理设备，用户需进行初始化
-VkPhysicalDevice physicalDevice;
 // 查询XEngine支持的Vulkan扩展列表
 std::vector<std::string> supportedExtensions;
-uint32_t propertyCount;
-HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount, nullptr);
-if (propertyCount> 0) {
-    std::vector<XEG_ExtensionProperties> properties(propertyCount);
-    if (HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount,
-        &properties.front()) == VK_SUCCESS) {
-        for (auto ext : properties) {
+uint32_t pPropertyCount;
+// physicalDevice为Vulkan物理设备，用户需进行初始化
+HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &pPropertyCount, nullptr);
+if (pPropertyCount > 0) {
+    std::vector<XEG_ExtensionProperties> pProperties(pPropertyCount);
+    if (HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &pPropertyCount,
+        &pProperties.front()) == VK_SUCCESS) {
+        for (auto ext : pProperties) {
             supportedExtensions.push_back(ext.extensionName);
         }
     }
 }
+
 // 查询是否支持RT NNGI
 if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_RTGI_EXTENSION_NAME) ==
     supportedExtensions.end()) {
-    exit(1);
+    // 错误处理
+    // ...
 }
 
 声明实例句柄。
@@ -361,91 +334,76 @@ XEG_RTGI xegRTGI;
 
 调用HMS_XEG_CreateRTGI接口，创建RT NNGI实例。
 
-// Vulkan逻辑设备，用户需进行初始化
-VkDevice device;
 // XEG_NNGICreateInfo为创建XEG_NNGI对象所需信息
-XEG_NNGICreateInfo NNGICreateInfo;
+XEG_NNGICreateInfo xegNngiCreateInfo;
 // 指定当前结构体类型为create info
-NNGICreateInfo.sType = XEG_STRUCTURE_TYPE_NNGI_CREATE_INFO;
+xegNngiCreateInfo.sType = XEG_STRUCTURE_TYPE_NNGI_CREATE_INFO;
 // 指定扩展为空
-NNGICreateInfo.pNext = nullptr;
-// 指定质量模式为平衡
-NNGICreateInfo.qualityMode = XEG_RTGI_QUALITY_MODE_BALANCED;
-// 指定推理输入图像的分辨率
-NNGICreateInfo.inferenceInputSize = {1280,720};
-// 指定推理输出图像的分辨率，当前仅支持（640，368）
-NNGICreateInfo.inferenceOutputSize = {640, 368};
-// 指定训练图像的分辨率
-NNGICreateInfo.trainingSize = {64, 32};
-VkResult res = HMS_XEG_CreateRTGI(device, &NNGICreateInfo, &xegRTGI);
-if (res != VK_SUCCESS) {
-    exit(1);
-}
+xegNngiCreateInfo.pNext = nullptr;
+// 指定质量模式为质量
+xegNngiCreateInfo.qualityMode = XEG_RTGIQualityMode::XEG_RTGI_QUALITY_MODE_QUALITY;
+// NNGI_RENDER_WIDTH, NNGI_RENDER_HEIGHT分别表示指定推理输入图像的分辨率宽高
+xegNngiCreateInfo.inferenceInputSize = {NNGI_RENDER_WIDTH, NNGI_RENDER_HEIGHT};
+// NNGI_IL_WIDTH, NNGI_IL_HEIGHT分别表示指定推理输出图像的分辨率宽高
+xegNngiCreateInfo.inferenceOutputSize = {NNGI_IL_WIDTH, NNGI_IL_HEIGHT};
+// nngiPathtracer.width, nngiPathtracer.height分别表示指定训练图像的分辨率宽高
+xegNngiCreateInfo.trainingSize = {nngiPathtracer.width, nngiPathtracer.height};
+// device逻辑设备，用户需进行初始化
+VkResult res = HMS_XEG_CreateRTGI(device, &xegNngiCreateInfo, &xegRtgi);
 
 调用HMS_XEG_CmdRenderRTGI接口执行渲染命令，每帧都需要调用。
 
-// 定义XEG_NNGIDescription对象NNGIDescription
-struct XEG_NNGIDescription NNGIDescription;
-// inferenceInputDepthImage为用户创建的推理输入深度图像的VkImageView
-VkImageView inferenceInputDepthImage = VK_NULL_HANDLE;
-// inferenceInputNormalImage为用户创建的推理输入法向量图像的VkImageView
-VkImageView inferenceInputNormalImage = VK_NULL_HANDLE;
-// inferenceInputBaseColorMetallicImage为用户创建的推理输入基础颜色和金属度图像的VkImageView
-VkImageView inferenceInputBaseColorMetallicImage = VK_NULL_HANDLE;
-// inferenceOutputGIImage为用户创建的推理输出全局光照图像的VkImageView
-VkImageView inferenceOutputGIImage = VK_NULL_HANDLE;
-// trainingInputPositionImage为用户创建的训练输入位置图像的VkImageView
-VkImageView trainingInputPositionImage = VK_NULL_HANDLE;
-// trainingInputNormalImage为用户创建的训练输入法向量图像的VkImageView
-VkImageView trainingInputNormalImage = VK_NULL_HANDLE;
-// trainingInputBaseColorMetallicImage为用户创建的训练输入基础颜色和金属度图像的VkImageView
-VkImageView trainingInputBaseColorMetallicImage = VK_NULL_HANDLE;
-// trainingInputGIImage为用户创建的训练输入全局光照图像的VkImageView
-VkImageView trainingInputGIImage = VK_NULL_HANDLE;
-// sceneAabb为用户创建的渲染包围盒范围VkAabbPositionsKHR
-VkAabbPositionsKHR sceneAabb = {0,0,0,1,1,1};
-// isSceneUnbounded指定渲染场景是否无界，当前只支持false
-bool isSceneUnbounded = false;
-// spatialScaleFactor为场景缩放因子，对于有界场景，无需设置，XEngine根据sceneAabb计算该值
-float spatialScaleFactor = 0;
-// commandBuffer为命令缓冲区，用户需进行初始化
-VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 // 指定当前结构体类型为NNGI description
-NNGIDescription.sType = XEG_STRUCTURE_TYPE_NNGI_DESCRIPTION;
+xegNNGIDescription.sType = XEG_STRUCTURE_TYPE_NNGI_DESCRIPTION;
 // 指定扩展为空
-NNGIDescription.pNext = nullptr;
+xegNNGIDescription.pNext = nullptr;
 // 设置推理图像的相机相关矩阵，此处仅为示例，使用时需要用户进行初始化
-float inferenceCameraViewMatrix[16];
-float inferenceCameraProjectionMatrix[16];
-memcpy(NNGIDescription.inferenceCameraViewMatrix, &inferenceCameraViewMatrix, sizeof(NNGIDescription.inferenceCameraViewMatrix));
-memcpy(NNGIDescription.inferenceCameraProjectionMatrix, &inferenceCameraProjectionMatrix, sizeof(NNGIDescription.inferenceCameraProjectionMatrix));
+memcpy(xegNNGIDescription.inferenceCameraViewMatrix, (float*)glm::value_ptr(camera->matrices.view),
+       sizeof(xegNNGIDescription.inferenceCameraViewMatrix));
+memcpy(xegNNGIDescription.inferenceCameraProjectionMatrix, (float*)glm::value_ptr(camera->matrices.perspective),
+       sizeof(xegNNGIDescription.inferenceCameraProjectionMatrix));
+// inputNormalView为用户创建的推理输入法向量图像的VkImageView
+xegNNGIDescription.inferenceInputNormalImage = inputNormalView;
+// inputDepthView为用户创建的推理输入深度图像的VkImageView
+xegNNGIDescription.inferenceInputDepthImage = inputDepthView;
+// inputAlbedoView为用户创建的推理输入基础颜色和金属度图像的VkImageView
+xegNNGIDescription.inferenceInputBaseColorMetallicImage = inputAlbedoView;
+// outputGIView为用户创建的推理输出全局光照图像的VkImageView
+xegNNGIDescription.inferenceOutputGIImage = outputGIView;
 // 设置训练图像的相机相关矩阵，此处仅为示例，使用时需要用户进行初始化
-float trainingCameraViewMatrix[16];
-float trainingCameraProjectionMatrix[16];
-memcpy(NNGIDescription.trainingCameraViewMatrix, &trainingCameraViewMatrix, sizeof(NNGIDescription.trainingCameraViewMatrix));
-memcpy(NNGIDescription.trainingCameraProjectionMatrix, &trainingCameraProjectionMatrix, sizeof(NNGIDescription.trainingCameraProjectionMatrix));
-NNGIDescription.inferenceInputDepthImage = inferenceInputDepthImage;
-NNGIDescription.inferenceInputNormalImage = inferenceInputNormalImage;
-NNGIDescription.inferenceInputBaseColorMetallicImage = inferenceInputBaseColorMetallicImage;
-NNGIDescription.inferenceOutputGIImage = inferenceOutputGIImage;
-NNGIDescription.trainingInputPositionImage = trainingInputPositionImage;
-NNGIDescription.trainingInputNormalImage = trainingInputNormalImage;
-NNGIDescription.trainingInputBaseColorMetallicImage = trainingInputBaseColorMetallicImage;
-NNGIDescription.trainingInputGIImage = trainingInputGIImage;
-NNGIDescription.sceneAabb = sceneAabb;
-NNGIDescription.isSceneUnbounded = isSceneUnbounded;
-NNGIDescription.spatialScaleFactor = spatialScaleFactor;
-HMS_XEG_CmdRenderRTGI(commandBuffer, xegRTGI, &NNGIDescription);
+memcpy(xegNNGIDescription.trainingCameraViewMatrix, (float*)glm::value_ptr(trainCameraViewMatrix),
+       sizeof(xegNNGIDescription.trainingCameraViewMatrix));
+memcpy(xegNNGIDescription.trainingCameraProjectionMatrix, (float*)glm::value_ptr(trainCameraProjMatrix),
+       sizeof(xegNNGIDescription.trainingCameraProjectionMatrix));
+// inputPositionView为用户创建的训练输入位置图像的VkImageView
+xegNNGIDescription.trainingInputPositionImage = inputPositionView;
+// inputNormalView为用户创建的训练输入法向量图像的VkImageView
+xegNNGIDescription.trainingInputNormalImage = inputUnpacNormalView;
+// inputAlbedoNormalView为用户创建的训练输入基础颜色和金属度图像的VkImageView
+xegNNGIDescription.trainingInputBaseColorMetallicImage = inputAlbedoNormalView;
+// inputTrainGIView为用户创建的训练输入全局光照图像的VkImageView
+xegNNGIDescription.trainingInputGIImage = inputTrainGIView;
+// xegNNGIDescription.isSceneUnbounded表示指定渲染场景是否无界，当前只支持false
+xegNNGIDescription.isSceneUnbounded = false;
+// xegNNGIDescription.sceneAabb表示用户创建的渲染包围盒范围VkAabbPositionsKHR
+xegNNGIDescription.sceneAabb = {sceneAabbMin.x, sceneAabbMin.y, sceneAabbMin.z,
+                                   sceneAabbMax.x, sceneAabbMax.y, sceneAabbMax.z};
+// xegNNGIDescription.spatialScaleFactor表示场景缩放因子，对于有界场景，无需设置，XEngine根据sceneAabb计算该值
+xegNNGIDescription.spatialScaleFactor = 1.0f / glm::length(sceneAabbMax - sceneAabbMin);
+// ...
+if (useDDKNNGI && xegRtgi != nullptr) {
+    VkResult res = HMS_XEG_CmdRenderRTGI(commandBuffer, xegRtgi, &xegNNGIDescription);
+    // ...
+}
 
 在调用HMS_XEG_CmdRenderRTGI接口之后，调用HMS_XEG_CmdSetSynchronization接口，执行训练步骤，HMS_XEG_CmdSetSynchronization接口需要每帧调用。
 
-// GI渲染结果会写入到XEG_NNGIDescription中的inferenceOutputGIImage图像中
-HMS_XEG_CmdSetSynchronization(commandBuffer, &xegRTGI);
+VkResult res = HMS_XEG_CmdSetSynchronization(commandBuffer, xegRtgi);
 
 调用HMS_XEG_DestroyRTGI接口销毁实例。
 
-if (xegRTGI) {
-    HMS_XEG_DestroyRTGI(xegRTGI);
+if (xegRtgi != nullptr) {
+    HMS_XEG_DestroyRTGI(xegRtgi);
 }
 
 ## Code blocks
@@ -453,15 +411,18 @@ if (xegRTGI) {
 ### Code block 1
 
 ```
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <xengine/xeg_vulkan_rtgi.h>
 #include <xengine/xeg_vulkan_extension.h>
-#include <xengine/xeg_extension_defs.h>
+// ...
+#include <xengine/xeg_vulkan_rtgi.h>
 ```
 
 ### Code block 2
+
+```
+#include "xengine/xeg_extension_defs.h"
+```
+
+### Code block 3
 
 ```
 find_library(
@@ -470,25 +431,24 @@ find_library(
     # 指定希望CMake定位的NDK库的名称。
     xengine
 )
+# ...
 target_link_libraries(ohosmain PUBLIC
-    # 其他库文件
     # ...
     ${xengine-lib} RenderBehavior SceneLoader VulkanBase
 )
 ```
 
-### Code block 3
+### Code block 4
 
 ```
-// physicalDevice为Vulkan物理设备，用户需进行初始化
-VkPhysicalDevice physicalDevice;
 // 查询XEngine支持的Vulkan扩展列表
 std::vector<std::string> supportedExtensions;
 uint32_t propertyCount;
-HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount, nullptr);
+// engineResource.physicalDevice物理设备，用户需进行初始化
+HMS_XEG_EnumerateDeviceExtensionProperties(engineResource.physicalDevice, &propertyCount, nullptr);
 if (propertyCount > 0) {
     std::vector<XEG_ExtensionProperties> properties(propertyCount);
-    if (HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount,
+    if (HMS_XEG_EnumerateDeviceExtensionProperties(engineResource.physicalDevice, &propertyCount,
         &properties.front()) == VK_SUCCESS) {
         for (auto ext : properties) {
             supportedExtensions.push_back(ext.extensionName);
@@ -498,185 +458,170 @@ if (propertyCount > 0) {
 // 查询是否支持RT DDGI
 if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_RTGI_EXTENSION_NAME) ==
     supportedExtensions.end()) {
-    exit(1);
+    // 错误处理
+    // ...
 }
-```
-
-### Code block 4
-
-```
-XEG_RTGI xegRTGI;
 ```
 
 ### Code block 5
 
 ```
-// 渲染宽高以及缩放倍率可以由用户设定，这里用1280*720为例，缩放倍率为1
-VkExtent2D outputSize;
-outputSize.width = 1280;
-outputSize.height = 720;
-VkExtent2D scaled;
-scaled.width = 1;
-scaled.height = 1;
-// Vulkan逻辑设备，用户需进行初始化
-VkDevice device;
-// XEG_DDGICreateInfo为创建XEG_RTGI对象所需信息
-struct XEG_DDGICreateInfo DDGICreateInfo;
-// 指定当前结构体类型为create info
-DDGICreateInfo.sType = XEG_STRUCTURE_TYPE_DDGI_CREATE_INFO;
-// 指定扩展为空
-DDGICreateInfo.pNext = nullptr;
-// 指定质量模式为平衡
-DDGICreateInfo.qualityMode = XEG_RTGI_QUALITY_MODE_BALANCED;
-// 指定当前场景中需要同时渲染的最大体积数量，范围为[1, 9]
-DDGICreateInfo.numberVolume = 4;
-// 指定渲染宽高缩小倍率，建议范围为[1, 4]，必须不小于1
-DDGICreateInfo.scaledView = scaled;
-// 指定输出GI图像的渲染宽高
-DDGICreateInfo.viewSize = outputSize;
-// 指定是否开启端云模式，true为开启，false为关闭
-DDGICreateInfo.enableCloud = false;
-VkResult res = HMS_XEG_CreateRTGI(device, &DDGICreateInfo, &xegRTGI);
-if (res != VK_SUCCESS) {
-    exit(1);
-}
+XEG_RTGI xegRTGI;
 ```
 
 ### Code block 6
 
 ```
-// probeIrradianceSH为用户创建的存储探针光照二阶球谐系数的3D图像的VkImageView
-// 存储当前接口渲染结果，通过对该图像进行三线性插值采样，可以计算GI光照值
-VkImageView probeIrradianceSH = VK_NULL_HANDLE;
-// 定义XEG_DDGIVolumeEntryParameters对象DDGIVolumeEntryParameters
-struct XEG_DDGIVolumeEntryParameters DDGIVolumeEntryParameters;
-// 体积索引，范围为[0, 65535]，且唯一
-DDGIVolumeEntryParameters.volumeIndex = 0;
-// 探针发射光线数量，范围为[1, 1024]
-DDGIVolumeEntryParameters.raysPerProbe = 128;
-// 光线求交最远距离
-DDGIVolumeEntryParameters.probeMaxRayDistance = 1000.0f;
-// 体积中心点坐标
-DDGIVolumeEntryParameters.volumePosition[0] = 0.0f;
-DDGIVolumeEntryParameters.volumePosition[1] = 0.0f;
-DDGIVolumeEntryParameters.volumePosition[2] = 0.0f;
-// 探针放置间距，必须大于0
-DDGIVolumeEntryParameters.probeSpacing[0] = 10.0f;
-DDGIVolumeEntryParameters.probeSpacing[1] = 10.0f;
-DDGIVolumeEntryParameters.probeSpacing[2] = 10.0f;
-// 体积光照通道标记
-DDGIVolumeEntryParameters.volumeLightingChannelMask = 0xFFFFFFFF;
-// 探针放置数量，必须大于0，范围为[1, 32]
-DDGIVolumeEntryParameters.volumeProbeGridCounts[0] = 6;
-DDGIVolumeEntryParameters.volumeProbeGridCounts[1] = 6;
-DDGIVolumeEntryParameters.volumeProbeGridCounts[2] = 6;
-// 光照的伽马校正系数，必须不为0
-DDGIVolumeEntryParameters.volumeProbeIrradianceEncodingGamma = 5.0f;
-// 探针光照历史权重，范围为[0.0, 1.0]
-DDGIVolumeEntryParameters.probeHysteresis = 0.95f;
-// 探针变化阈值
-DDGIVolumeEntryParameters.probeChangeThreshold = 1.0f;
-// 探针亮度阈值
-DDGIVolumeEntryParameters.probeBrightnessThreshold = 1.0f;
-// 探针法向偏移量
-DDGIVolumeEntryParameters.volumeNormalBias = 0.12f;
-// 探针视角偏移量
-DDGIVolumeEntryParameters.volumeViewBias = 0.48f;
-// 体积光照混合距离
-DDGIVolumeEntryParameters.volumeBlendDistance = 1.0;
-// 体积边缘光照渐暗范围
-DDGIVolumeEntryParameters.volumeBlendDistanceBlack = 1.0;
-// 探针反向判断阈值
-DDGIVolumeEntryParameters.probeBackfaceThreshold = 1.0;
-// 探针正向最小距离
-DDGIVolumeEntryParameters.probeMinFrontfaceDistance = 1.0;
-// 体积光照缩放倍率，必须非负
-DDGIVolumeEntryParameters.volumeIrradianceScalar = 1.0;
-// 发射光线强度倍率，必须非负
-DDGIVolumeEntryParameters.emissiveMultiplier = 1.0;
-// 光照倍率，必须非负
-DDGIVolumeEntryParameters.lightingMultiplier = 1.0;
-// 是否强制更新所有探针，true为强制全部更新，false为选择部分更新
-DDGIVolumeEntryParameters.bForceUpdate = false;
-DDGIVolumeEntryParameters.probeIrradianceSH = probeIrradianceSH;
-
-// 定义XEG_DDGIDescription对象DDGIDescription
-struct XEG_DDGIDescription DDGIDescription;
-// inputNormalImage为用户创建的法线图像的VkImageView
-VkImageView inputNormalImage = VK_NULL_HANDLE;
-// inputDepthImage为用户创建的深度图像的VkImageView
-VkImageView inputDepthImage = VK_NULL_HANDLE;
-// inputBasecolorMetallicImage为用户创建的颜色及金属度图像的VkImageView
-VkImageView inputBasecolorMetallicImage = VK_NULL_HANDLE;
-// inputDirectionImage为用户创建的发射光线方向图像的VkImageView
-VkImageView inputDirectionImage = VK_NULL_HANDLE;
-// inputRayRadianceDistanceImage为用户创建的发射光线交点光照及距离图像的VkImageView
-VkImageView inputRayRadianceDistanceImage = VK_NULL_HANDLE;
-// inputRayHitNormalAndMetallicImage为用户创建的发射光线交点法线及金属度图像的VkImageView
-VkImageView inputRayHitNormalAndMetallicImage = VK_NULL_HANDLE;
-// inputVolumeIndexAndProbeIndex为用户创建的输入probe索引缓冲区VkBuffer
-VkBuffer inputVolumeIndexAndProbeIndex = VK_NULL_HANDLE;
-// outputVolumeIndexAndProbeIndex为用户创建的输出probe索引缓冲区VkBuffer
-VkBuffer outputVolumeIndexAndProbeIndex = VK_NULL_HANDLE;
-// outputProbeCount为用户创建的输出probe数量缓冲区VkBuffer
-VkBuffer outputProbeCount = VK_NULL_HANDLE;
-// outputGIImage为用户创建的全局光照图像的VkImageView
-VkImageView outputGIImage = VK_NULL_HANDLE;
-// commandBuffer为命令缓冲区，用户需进行初始化
-VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
-// 指定当前结构体类型为DDGI description
-DDGIDescription.sType = XEG_STRUCTURE_TYPE_DDGI_DESCRIPTION;
+// 渲染宽高renderWidth、renderHeight以及缩放倍率scaled可以由用户设定
+VkExtent2D outputSize;
+outputSize.width = renderWidth;
+outputSize.height = renderHeight;
+VkExtent2D scaled;
+scaled.width = 1;
+scaled.height = 1;
+// 指定当前结构体类型为create info
+ddgiCreateInfo.sType = XEG_STRUCTURE_TYPE_DDGI_CREATE_INFO;
 // 指定扩展为空
-DDGIDescription.pNext = nullptr;
-// 设置相机相关矩阵
-for (uint32_t i = 0; i < 16; ++i) {
-    DDGIDescription.viewMatrix[i] = 1.0f;
-    DDGIDescription.projectionMatrix[i] = 1.0f;
-}
-DDGIDescription.inputNormalImage = inputNormalImage;
-DDGIDescription.inputDepthImage = inputDepthImage;
-DDGIDescription.inputBasecolorMetallicImage = inputBasecolorMetallicImage;
-DDGIDescription.inputDirectionImage = inputDirectionImage;
-DDGIDescription.inputRayRadianceDistanceImage = inputRayRadianceDistanceImage;
-DDGIDescription.inputRayHitNormalAndMetallicImage = inputRayHitNormalAndMetallicImage;
-DDGIDescription.inputVolumeIndexAndProbeIndex = inputVolumeIndexAndProbeIndex;
-// 输入probe信息数量
-DDGIDescription.inputProbeCount = 10;
-DDGIDescription.outputVolumeIndexAndProbeIndex = outputVolumeIndexAndProbeIndex;
-DDGIDescription.outputProbeCount = outputProbeCount;
-DDGIDescription.outputGIImage = outputGIImage;
-// 使用的volume数量
-DDGIDescription.enableVolumeNumber = 1;
-DDGIDescription.pVolumeEntryParameters = &DDGIVolumeEntryParameters;
-HMS_XEG_CmdRenderRTGI(commandBuffer, xegRTGI, &DDGIDescription);
+ddgiCreateInfo.pNext = nullptr;
+// 指定质量模式为质量
+ddgiCreateInfo.qualityMode = XEG_RTGI_QUALITY_MODE_QUALITY;
+// 指定当前场景中需要同时渲染的最大体积数量，范围为[1, 9]
+ddgiCreateInfo.numberVolume = VOLUME_NUMBER;
+// 指定渲染宽高缩小倍率，建议范围为[1, 4]，必须不小于1
+ddgiCreateInfo.scaledView = scaled;
+// 指定输出GI图像的渲染宽高
+ddgiCreateInfo.viewSize = outputSize;
+// 指定是否开启端云模式，true为开启，false为关闭
+ddgiCreateInfo.enableCloud = false;
+HMS_XEG_CreateRTGI(engineResource.device, &ddgiCreateInfo, &xegRTGI);
 ```
 
 ### Code block 7
 
 ```
-// GI渲染结果会写入到XEG_DDGIDescription中的outputGIImage图像中
-HMS_XEG_CmdSetSynchronization(commandBuffer, &xegRTGI);
+// ddgiVolumeEntryParameters为XEG_DDGIVolumeEntryParameters对象
+// 体积索引，范围为[0, 65535]，且唯一
+ddgiVolumeEntryParameters[volumeID].volumeIndex = uint32_t(ddgiVolumePara[volumeID].volumeIndex);
+// 探针发射光线数量，范围为[1, 1024]
+ddgiVolumeEntryParameters[volumeID].raysPerProbe = uint32_t(ddgiVolumePara[volumeID].raysPerProbe);
+// 光线求交最远距离
+ddgiVolumeEntryParameters[volumeID].probeMaxRayDistance = 1000.0f;
+// 体积中心点坐标
+ddgiVolumeEntryParameters[volumeID].volumePosition[0] =
+    ddgiVolumePara[volumeID].probeGridOrigin[0] + offsetX * ddgiVolumePara[volumeID].probeSpacing[0];
+ddgiVolumeEntryParameters[volumeID].volumePosition[1] =
+    ddgiVolumePara[volumeID].probeGridOrigin[1] + offsetY * ddgiVolumePara[volumeID].probeSpacing[1];
+ddgiVolumeEntryParameters[volumeID].volumePosition[NUM_TWO] =
+    ddgiVolumePara[volumeID].probeGridOrigin[NUM_TWO] +
+    offsetZ * ddgiVolumePara[volumeID].probeSpacing[NUM_TWO];
+// 探针放置间距，必须大于0
+ddgiVolumeEntryParameters[volumeID].probeSpacing[0] = ddgiVolumePara[volumeID].probeSpacing[0];
+ddgiVolumeEntryParameters[volumeID].probeSpacing[1] = ddgiVolumePara[volumeID].probeSpacing[1];
+ddgiVolumeEntryParameters[volumeID].probeSpacing[NUM_TWO] =
+    ddgiVolumePara[volumeID].probeSpacing[NUM_TWO];
+// 体积光照通道标记
+ddgiVolumeEntryParameters[volumeID].volumeLightingChannelMask = 0xFFFFFFFF;
+// 探针放置数量，必须大于0，范围为[1, 32]
+ddgiVolumeEntryParameters[volumeID].volumeProbeGridCounts[0] =
+    uint32_t(ddgiVolumePara[volumeID].probeCounts[0]);
+ddgiVolumeEntryParameters[volumeID].volumeProbeGridCounts[1] =
+    uint32_t(ddgiVolumePara[volumeID].probeCounts[1]);
+ddgiVolumeEntryParameters[volumeID].volumeProbeGridCounts[NUM_TWO] =
+    uint32_t(ddgiVolumePara[volumeID].probeCounts[NUM_TWO]);
+// 光照的伽马校正系数，必须不为0
+ddgiVolumeEntryParameters[volumeID].volumeProbeIrradianceEncodingGamma =
+    ddgiVolumePara[volumeID].irradianceGamma;
+// 探针光照历史权重，范围为[0.0, 1.0]
+ddgiVolumeEntryParameters[volumeID].probeHysteresis = ddgiVolumePara[volumeID].historicalWeight;
+// 探针变化阈值
+ddgiVolumeEntryParameters[volumeID].probeChangeThreshold = 1.0;
+// 探针亮度阈值
+ddgiVolumeEntryParameters[volumeID].probeBrightnessThreshold = 1.0;
+// 探针法向偏移量
+ddgiVolumeEntryParameters[volumeID].volumeNormalBias = ddgiVolumePara[volumeID].biasNormal;
+// 探针视角偏移量
+ddgiVolumeEntryParameters[volumeID].volumeViewBias = ddgiVolumePara[volumeID].biasDir;
+// 体积光照混合距离
+ddgiVolumeEntryParameters[volumeID].volumeBlendDistance = 1.0;
+// 体积边缘光照渐暗范围
+ddgiVolumeEntryParameters[volumeID].volumeBlendDistanceBlack = 1.0;
+// 探针反向判断阈值
+ddgiVolumeEntryParameters[volumeID].probeBackfaceThreshold = 1.0;
+// 探针正向最小距离
+ddgiVolumeEntryParameters[volumeID].probeMinFrontfaceDistance = 1.0;
+// 体积光照缩放倍率，必须非负
+ddgiVolumeEntryParameters[volumeID].volumeIrradianceScalar = 1.0;
+// 发射光线强度倍率，必须非负
+ddgiVolumeEntryParameters[volumeID].emissiveMultiplier = 1.0;
+// 光照倍率，必须非负
+ddgiVolumeEntryParameters[volumeID].lightingMultiplier = ddgiVolumePara[volumeID].lightingMultiplier;
+// 是否强制更新所有探针，true为强制全部更新，false为选择部分更新
+ddgiVolumeEntryParameters[volumeID].bForceUpdate = false;
+// probeSH[volumeID].textureImageView为用户创建的存储探针光照二阶球谐系数的3D图像的VkImageView
+// 存储当前接口渲染结果，通过对该图像进行三线性插值采样，可以计算GI光照值
+ddgiVolumeEntryParameters[volumeID].probeIrradianceSH = probeSH[volumeID].textureImageView;
 ```
 
 ### Code block 8
 
 ```
-if (xegRTGI) {
-    HMS_XEG_DestroyRTGI(xegRTGI);
-}
+// ddgiDescription为XEG_DDGIDescription对象
+ddgiDescription.sType = XEG_STRUCTURE_TYPE_DDGI_DESCRIPTION;
+// 指定扩展为空
+ddgiDescription.pNext = nullptr;
+// gBufferNormal.textureImageView为用户创建的法线图像的VkImageView
+ddgiDescription.inputNormalImage = gBufferNormal.textureImageView;
+// gBufferDepth.textureImageView为用户创建的深度图像的VkImageView
+ddgiDescription.inputDepthImage = gBufferDepth.textureImageView;
+// gBufferAlbedo.textureImageView为用户创建的颜色及金属度图像的VkImageView
+ddgiDescription.inputBasecolorMetallicImage = gBufferAlbedo.textureImageView;
+// rayDirection.textureImageView为用户创建的发射光线方向图像的VkImageView
+ddgiDescription.inputDirectionImage = rayDirection.textureImageView;
+// rayHitRadiance.textureImageView为用户创建的发射光线交点光照及距离图像的VkImageView
+ddgiDescription.inputRayRadianceDistanceImage = rayHitRadiance.textureImageView;
+// rayHitNormal.textureImageView为用户创建的发射光线交点法线及金属度图像的VkImageView
+ddgiDescription.inputRayHitNormalAndMetallicImage = rayHitNormal.textureImageView;
+// probeRenderList.buffer为用户创建的输入probe索引缓冲区VkBuffer
+ddgiDescription.inputVolumeIndexAndProbeIndex = probeRenderList.buffer;
+// inputProbeCount为输入probe信息数量
+ddgiDescription.inputProbeCount = inputProbeCount;
+// outputProbeList.buffer为用户创建的输出probe索引缓冲区VkBuffer
+ddgiDescription.outputVolumeIndexAndProbeIndex = outputProbeList.buffer;
+// outputProbeCount.buffer为用户创建的输出probe数量缓冲区VkBuffer
+ddgiDescription.outputProbeCount = outputProbeCount.buffer;
+// outputGIImage.textureImageView为用户创建的全局光照图像的VkImageView
+ddgiDescription.outputGIImage = outputGIImage.textureImageView;
+// VOLUME_NUMBER为使用的volume数量
+ddgiDescription.enableVolumeNumber = VOLUME_NUMBER;
+ddgiDescription.pVolumeEntryParameters = ddgiVolumeEntryParameters.data();
+// ...
+HMS_XEG_CmdRenderRTGI(commandBuffer, xegRTGI, &ddgiDescription);
 ```
 
 ### Code block 9
 
 ```
-#include <algorithm>
-#include <string>
-#include <vector>
-#include "xengine/xeg_vulkan_rtgi.h"
-#include "xengine/xeg_vulkan_extension.h"
+// 将GI渲染结果写入到指定图像中
+HMS_XEG_CmdSetSynchronization(commandBuffer, xegRTGI);
 ```
 
 ### Code block 10
+
+```
+if (xegRtgi != nullptr) {
+    HMS_XEG_DestroyRTGI(xegRtgi);
+}
+```
+
+### Code block 11
+
+```
+#include <xengine/xeg_vulkan_extension.h>
+// ...
+#include <xengine/xeg_vulkan_rtgi.h>
+```
+
+### Code block 12
 
 ```
 find_library(
@@ -685,136 +630,123 @@ find_library(
     # 指定希望CMake定位的NDK库的名称。
     xengine
 )
+
 target_link_libraries(nativerender PUBLIC
-    # 其他库文件
     # ...
-    ${xengine-lib})
-```
-
-### Code block 11
-
-```
-// physicalDevice为Vulkan物理设备，用户需进行初始化
-VkPhysicalDevice physicalDevice;
-// 查询XEngine支持的Vulkan扩展列表
-std::vector<std::string> supportedExtensions;
-uint32_t propertyCount;
-HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount, nullptr);
-if (propertyCount> 0) {
-    std::vector<XEG_ExtensionProperties> properties(propertyCount);
-    if (HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &propertyCount,
-        &properties.front()) == VK_SUCCESS) {
-        for (auto ext : properties) {
-            supportedExtensions.push_back(ext.extensionName);
-        }
-    }
-}
-// 查询是否支持RT NNGI
-if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_RTGI_EXTENSION_NAME) ==
-    supportedExtensions.end()) {
-    exit(1);
-}
-```
-
-### Code block 12
-
-```
-XEG_RTGI xegRTGI;
+    ${xengine-lib}
+)
 ```
 
 ### Code block 13
 
 ```
-// Vulkan逻辑设备，用户需进行初始化
-VkDevice device;
-// XEG_NNGICreateInfo为创建XEG_NNGI对象所需信息
-XEG_NNGICreateInfo NNGICreateInfo;
-// 指定当前结构体类型为create info
-NNGICreateInfo.sType = XEG_STRUCTURE_TYPE_NNGI_CREATE_INFO;
-// 指定扩展为空
-NNGICreateInfo.pNext = nullptr;
-// 指定质量模式为平衡
-NNGICreateInfo.qualityMode = XEG_RTGI_QUALITY_MODE_BALANCED;
-// 指定推理输入图像的分辨率
-NNGICreateInfo.inferenceInputSize = {1280,720};
-// 指定推理输出图像的分辨率，当前仅支持（640，368）
-NNGICreateInfo.inferenceOutputSize = {640, 368};
-// 指定训练图像的分辨率
-NNGICreateInfo.trainingSize = {64, 32};
-VkResult res = HMS_XEG_CreateRTGI(device, &NNGICreateInfo, &xegRTGI);
-if (res != VK_SUCCESS) {
-    exit(1);
+// 查询XEngine支持的Vulkan扩展列表
+std::vector<std::string> supportedExtensions;
+uint32_t pPropertyCount;
+// physicalDevice为Vulkan物理设备，用户需进行初始化
+HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &pPropertyCount, nullptr);
+if (pPropertyCount > 0) {
+    std::vector<XEG_ExtensionProperties> pProperties(pPropertyCount);
+    if (HMS_XEG_EnumerateDeviceExtensionProperties(physicalDevice, &pPropertyCount,
+        &pProperties.front()) == VK_SUCCESS) {
+        for (auto ext : pProperties) {
+            supportedExtensions.push_back(ext.extensionName);
+        }
+    }
+}
+
+// 查询是否支持RT NNGI
+if (std::find(supportedExtensions.begin(), supportedExtensions.end(), XEG_RTGI_EXTENSION_NAME) ==
+    supportedExtensions.end()) {
+    // 错误处理
+    // ...
 }
 ```
 
 ### Code block 14
 
 ```
-// 定义XEG_NNGIDescription对象NNGIDescription
-struct XEG_NNGIDescription NNGIDescription;
-// inferenceInputDepthImage为用户创建的推理输入深度图像的VkImageView
-VkImageView inferenceInputDepthImage = VK_NULL_HANDLE;
-// inferenceInputNormalImage为用户创建的推理输入法向量图像的VkImageView
-VkImageView inferenceInputNormalImage = VK_NULL_HANDLE;
-// inferenceInputBaseColorMetallicImage为用户创建的推理输入基础颜色和金属度图像的VkImageView
-VkImageView inferenceInputBaseColorMetallicImage = VK_NULL_HANDLE;
-// inferenceOutputGIImage为用户创建的推理输出全局光照图像的VkImageView
-VkImageView inferenceOutputGIImage = VK_NULL_HANDLE;
-// trainingInputPositionImage为用户创建的训练输入位置图像的VkImageView
-VkImageView trainingInputPositionImage = VK_NULL_HANDLE;
-// trainingInputNormalImage为用户创建的训练输入法向量图像的VkImageView
-VkImageView trainingInputNormalImage = VK_NULL_HANDLE;
-// trainingInputBaseColorMetallicImage为用户创建的训练输入基础颜色和金属度图像的VkImageView
-VkImageView trainingInputBaseColorMetallicImage = VK_NULL_HANDLE;
-// trainingInputGIImage为用户创建的训练输入全局光照图像的VkImageView
-VkImageView trainingInputGIImage = VK_NULL_HANDLE;
-// sceneAabb为用户创建的渲染包围盒范围VkAabbPositionsKHR
-VkAabbPositionsKHR sceneAabb = {0,0,0,1,1,1};
-// isSceneUnbounded指定渲染场景是否无界，当前只支持false
-bool isSceneUnbounded = false;
-// spatialScaleFactor为场景缩放因子，对于有界场景，无需设置，XEngine根据sceneAabb计算该值
-float spatialScaleFactor = 0;
-// commandBuffer为命令缓冲区，用户需进行初始化
-VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
-// 指定当前结构体类型为NNGI description
-NNGIDescription.sType = XEG_STRUCTURE_TYPE_NNGI_DESCRIPTION;
-// 指定扩展为空
-NNGIDescription.pNext = nullptr;
-// 设置推理图像的相机相关矩阵，此处仅为示例，使用时需要用户进行初始化
-float inferenceCameraViewMatrix[16];
-float inferenceCameraProjectionMatrix[16];
-memcpy(NNGIDescription.inferenceCameraViewMatrix, &inferenceCameraViewMatrix, sizeof(NNGIDescription.inferenceCameraViewMatrix));
-memcpy(NNGIDescription.inferenceCameraProjectionMatrix, &inferenceCameraProjectionMatrix, sizeof(NNGIDescription.inferenceCameraProjectionMatrix));
-// 设置训练图像的相机相关矩阵，此处仅为示例，使用时需要用户进行初始化
-float trainingCameraViewMatrix[16];
-float trainingCameraProjectionMatrix[16];
-memcpy(NNGIDescription.trainingCameraViewMatrix, &trainingCameraViewMatrix, sizeof(NNGIDescription.trainingCameraViewMatrix));
-memcpy(NNGIDescription.trainingCameraProjectionMatrix, &trainingCameraProjectionMatrix, sizeof(NNGIDescription.trainingCameraProjectionMatrix));
-NNGIDescription.inferenceInputDepthImage = inferenceInputDepthImage;
-NNGIDescription.inferenceInputNormalImage = inferenceInputNormalImage;
-NNGIDescription.inferenceInputBaseColorMetallicImage = inferenceInputBaseColorMetallicImage;
-NNGIDescription.inferenceOutputGIImage = inferenceOutputGIImage;
-NNGIDescription.trainingInputPositionImage = trainingInputPositionImage;
-NNGIDescription.trainingInputNormalImage = trainingInputNormalImage;
-NNGIDescription.trainingInputBaseColorMetallicImage = trainingInputBaseColorMetallicImage;
-NNGIDescription.trainingInputGIImage = trainingInputGIImage;
-NNGIDescription.sceneAabb = sceneAabb;
-NNGIDescription.isSceneUnbounded = isSceneUnbounded;
-NNGIDescription.spatialScaleFactor = spatialScaleFactor;
-HMS_XEG_CmdRenderRTGI(commandBuffer, xegRTGI, &NNGIDescription);
+XEG_RTGI xegRTGI;
 ```
 
 ### Code block 15
 
 ```
-// GI渲染结果会写入到XEG_NNGIDescription中的inferenceOutputGIImage图像中
-HMS_XEG_CmdSetSynchronization(commandBuffer, &xegRTGI);
+// XEG_NNGICreateInfo为创建XEG_NNGI对象所需信息
+XEG_NNGICreateInfo xegNngiCreateInfo;
+// 指定当前结构体类型为create info
+xegNngiCreateInfo.sType = XEG_STRUCTURE_TYPE_NNGI_CREATE_INFO;
+// 指定扩展为空
+xegNngiCreateInfo.pNext = nullptr;
+// 指定质量模式为质量
+xegNngiCreateInfo.qualityMode = XEG_RTGIQualityMode::XEG_RTGI_QUALITY_MODE_QUALITY;
+// NNGI_RENDER_WIDTH, NNGI_RENDER_HEIGHT分别表示指定推理输入图像的分辨率宽高
+xegNngiCreateInfo.inferenceInputSize = {NNGI_RENDER_WIDTH, NNGI_RENDER_HEIGHT};
+// NNGI_IL_WIDTH, NNGI_IL_HEIGHT分别表示指定推理输出图像的分辨率宽高
+xegNngiCreateInfo.inferenceOutputSize = {NNGI_IL_WIDTH, NNGI_IL_HEIGHT};
+// nngiPathtracer.width, nngiPathtracer.height分别表示指定训练图像的分辨率宽高
+xegNngiCreateInfo.trainingSize = {nngiPathtracer.width, nngiPathtracer.height};
+// device逻辑设备，用户需进行初始化
+VkResult res = HMS_XEG_CreateRTGI(device, &xegNngiCreateInfo, &xegRtgi);
 ```
 
 ### Code block 16
 
 ```
-if (xegRTGI) {
-    HMS_XEG_DestroyRTGI(xegRTGI);
+// 指定当前结构体类型为NNGI description
+xegNNGIDescription.sType = XEG_STRUCTURE_TYPE_NNGI_DESCRIPTION;
+// 指定扩展为空
+xegNNGIDescription.pNext = nullptr;
+// 设置推理图像的相机相关矩阵，此处仅为示例，使用时需要用户进行初始化
+memcpy(xegNNGIDescription.inferenceCameraViewMatrix, (float*)glm::value_ptr(camera->matrices.view),
+       sizeof(xegNNGIDescription.inferenceCameraViewMatrix));
+memcpy(xegNNGIDescription.inferenceCameraProjectionMatrix, (float*)glm::value_ptr(camera->matrices.perspective),
+       sizeof(xegNNGIDescription.inferenceCameraProjectionMatrix));
+// inputNormalView为用户创建的推理输入法向量图像的VkImageView
+xegNNGIDescription.inferenceInputNormalImage = inputNormalView;
+// inputDepthView为用户创建的推理输入深度图像的VkImageView
+xegNNGIDescription.inferenceInputDepthImage = inputDepthView;
+// inputAlbedoView为用户创建的推理输入基础颜色和金属度图像的VkImageView
+xegNNGIDescription.inferenceInputBaseColorMetallicImage = inputAlbedoView;
+// outputGIView为用户创建的推理输出全局光照图像的VkImageView
+xegNNGIDescription.inferenceOutputGIImage = outputGIView;
+// 设置训练图像的相机相关矩阵，此处仅为示例，使用时需要用户进行初始化
+memcpy(xegNNGIDescription.trainingCameraViewMatrix, (float*)glm::value_ptr(trainCameraViewMatrix),
+       sizeof(xegNNGIDescription.trainingCameraViewMatrix));
+memcpy(xegNNGIDescription.trainingCameraProjectionMatrix, (float*)glm::value_ptr(trainCameraProjMatrix),
+       sizeof(xegNNGIDescription.trainingCameraProjectionMatrix));
+// inputPositionView为用户创建的训练输入位置图像的VkImageView
+xegNNGIDescription.trainingInputPositionImage = inputPositionView;
+// inputNormalView为用户创建的训练输入法向量图像的VkImageView
+xegNNGIDescription.trainingInputNormalImage = inputUnpacNormalView;
+// inputAlbedoNormalView为用户创建的训练输入基础颜色和金属度图像的VkImageView
+xegNNGIDescription.trainingInputBaseColorMetallicImage = inputAlbedoNormalView;
+// inputTrainGIView为用户创建的训练输入全局光照图像的VkImageView
+xegNNGIDescription.trainingInputGIImage = inputTrainGIView;
+// xegNNGIDescription.isSceneUnbounded表示指定渲染场景是否无界，当前只支持false
+xegNNGIDescription.isSceneUnbounded = false;
+// xegNNGIDescription.sceneAabb表示用户创建的渲染包围盒范围VkAabbPositionsKHR
+xegNNGIDescription.sceneAabb = {sceneAabbMin.x, sceneAabbMin.y, sceneAabbMin.z,
+                                   sceneAabbMax.x, sceneAabbMax.y, sceneAabbMax.z};
+// xegNNGIDescription.spatialScaleFactor表示场景缩放因子，对于有界场景，无需设置，XEngine根据sceneAabb计算该值
+xegNNGIDescription.spatialScaleFactor = 1.0f / glm::length(sceneAabbMax - sceneAabbMin);
+// ...
+if (useDDKNNGI && xegRtgi != nullptr) {
+    VkResult res = HMS_XEG_CmdRenderRTGI(commandBuffer, xegRtgi, &xegNNGIDescription);
+    // ...
+}
+```
+
+### Code block 17
+
+```
+VkResult res = HMS_XEG_CmdSetSynchronization(commandBuffer, xegRtgi);
+```
+
+### Code block 18
+
+```
+if (xegRtgi != nullptr) {
+    HMS_XEG_DestroyRTGI(xegRtgi);
 }
 ```

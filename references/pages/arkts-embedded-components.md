@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-embedded-components_
 
-EmbeddedComponent组件允许当前页面嵌入同一应用内其他EmbeddedUIExtensionAbility供给的UI内容，这些UI运行在独立进程中，提供更高的安全性和稳定性。
+EmbeddedComponent组件允许当前页面嵌入同一应用内其他EmbeddedUIExtensionAbility提供的UI内容，这些UI运行在独立进程中，提供更高的安全性和稳定性。
 
 EmbeddedComponent组件主要用于实现跨模块、跨进程的嵌入式界面集成，其核心目标是通过模块化设计提升应用的灵活性和用户体验。
 
@@ -16,7 +16,7 @@ EmbeddedComponent组件用于在当前页面嵌入本应用内其他EmbeddedUIEx
 
 EmbeddedUIExtensionAbility组件
 
-提供方应用中定义使用，用于实现跨进程界面嵌入功能，仅能被同应用的UIAbility拉起，并需在多进程权限的场景下使用。
+提供方应用中定义使用，用于实现跨进程界面嵌入功能，默认仅能被同应用的UIAbility拉起（从API版本26.0.0开始，满足特定权限条件时支持跨应用拉起，详见使用约束-应用范围），并需在多进程权限的场景下使用。
 
 使用约束
 
@@ -26,7 +26,7 @@ EmbeddedComponent组件仅可在支持EmbeddedUIExtensionAbility的设备上正�
 
 应用范围
 
-EmbeddedComponent组件只能在UIAbility中使用，且被拉起的EmbeddedUIExtensionAbility需与UIAbility属于同一应用。
+EmbeddedComponent组件只能在UIAbility中使用，且被拉起的EmbeddedUIExtensionAbility需与UIAbility属于同一应用；从API版本26.0.0开始，如果EmbeddedComponent所属应用申请了ohos.permission.SUPPORT_CROSS_APP_EMBED_FOR_OA权限（该权限仅企业普通应用可申请），且该应用的appIdentifier在EmbeddedUIExtensionAbility支持的应用清单（即extensionAbilities标签的appIdentifierAllowList属性）中，则允许EmbeddedComponent跨应用拉起EmbeddedUIExtensionAbility。
 
 属性限制
 
@@ -40,7 +40,7 @@ EmbeddedComponent组件支持通用属性，且宽高默认值和最小值均为
 
 与屏幕坐标相关的事件信息会基于EmbeddedComponent的位置宽高进行坐标转换后传递给被拉起的EmbeddedUIExtensionAbility处理。
 
-EmbeddedComponent组件不支持点击等通用事件，仅支持onTerminated事件和onError事件。
+EmbeddedComponent组件不支持点击等通用事件，仅支持onTerminated事件和onError事件。从API版本26.0.0开始，新增支持onDrawReady事件。
 
 获焦能力说明
 
@@ -83,6 +83,9 @@ export struct Embedded {
               // 失败或异常触发onError回调，文本框显示如下报错内容
               this.message = `Error: code = ${error.code}`;
             })
+            .onDrawReady(() => {
+              // 从API版本26.0.0开始，新增支持被拉起的EmbeddedUIExtensionAbility绘制第一帧时触发onDrawReady回调
+            })
         }
         .width('100%')
       }
@@ -91,7 +94,7 @@ export struct Embedded {
   }
 }
 
-在ArkTS项目中，EmbeddedUIExtensionAbility的实现代码通常位于项目的ets/extensionAbility目录下。例如，ExampleEmbeddedAbility.ets文件位于./ets/extensionAbility/目录中。
+在ArkTS项目中，EmbeddedUIExtensionAbility的实现代码通常位于项目的ets/extensionability目录下。例如，ExampleEmbeddedAbility.ets文件位于./ets/extensionability/目录中。
 
 在实现加载项首页时，开发者需要注意以下几点：
 
@@ -138,17 +141,17 @@ export default class ExampleEmbeddedAbility extends EmbeddedUIExtensionAbility {
   }
 
   onSessionCreate(want: Want, session: UIExtensionContentSession) {
-    hilog.info(0x0000, TAG , '%{public}s', `onSessionCreate, want: ${JSON.stringify(want)}`);
+    hilog.info(0x0000, TAG, '%{public}s', `onSessionCreate, want: ${JSON.stringify(want)}`);
     let param: Record<string, UIExtensionContentSession> = {
       'session': session
     };
     let storage: LocalStorage = new LocalStorage(param);
-    // 加载 Extension.ets 页面内容
+    // 加载Extension.ets页面内容
     session.loadContent('pages/EmbeddedComponent/Extension', storage);
   }
 
   onSessionDestroy(session: UIExtensionContentSession) {
-    hilog.info(0x0000, TAG , '%{public}s',  `onSessionDestroy`);
+    hilog.info(0x0000, TAG, '%{public}s', `onSessionDestroy`);
   }
 }
 
@@ -156,11 +159,11 @@ export default class ExampleEmbeddedAbility extends EmbeddedUIExtensionAbility {
 
 生命周期阶段
 
-onCreate → onForeground：组件初始化到可见的完整流程；
+onCreate → onForeground：EmbeddedUIExtensionAbility初始化到可见的完整流程；
 
 onBackground → onForeground：前后台切换时的状态迁移；
 
-onDestroy：组件被宿主主动销毁时的资源回收点。
+onDestroy：EmbeddedUIExtensionAbility被销毁时的资源回收点。
 
 会话管理
 
@@ -238,7 +241,7 @@ want：目标意图，指定结果的接收方。
   "name": "ExampleEmbeddedAbility",
   "srcEntry": "./ets/extensionability/ExampleEmbeddedAbility.ets",
   "type": "embeddedUI"
-},
+}
 
 预期效果
 
@@ -276,6 +279,9 @@ export struct Embedded {
               // 失败或异常触发onError回调，文本框显示如下报错内容
               this.message = `Error: code = ${error.code}`;
             })
+            .onDrawReady(() => {
+              // 从API版本26.0.0开始，新增支持被拉起的EmbeddedUIExtensionAbility绘制第一帧时触发onDrawReady回调
+            })
         }
         .width('100%')
       }
@@ -311,17 +317,17 @@ export default class ExampleEmbeddedAbility extends EmbeddedUIExtensionAbility {
   }
 
   onSessionCreate(want: Want, session: UIExtensionContentSession) {
-    hilog.info(0x0000, TAG , '%{public}s', `onSessionCreate, want: ${JSON.stringify(want)}`);
+    hilog.info(0x0000, TAG, '%{public}s', `onSessionCreate, want: ${JSON.stringify(want)}`);
     let param: Record<string, UIExtensionContentSession> = {
       'session': session
     };
     let storage: LocalStorage = new LocalStorage(param);
-    // 加载 Extension.ets 页面内容
+    // 加载Extension.ets页面内容
     session.loadContent('pages/EmbeddedComponent/Extension', storage);
   }
 
   onSessionDestroy(session: UIExtensionContentSession) {
-    hilog.info(0x0000, TAG , '%{public}s',  `onSessionDestroy`);
+    hilog.info(0x0000, TAG, '%{public}s', `onSessionDestroy`);
   }
 }
 ```
@@ -365,5 +371,5 @@ struct Extension {
   "name": "ExampleEmbeddedAbility",
   "srcEntry": "./ets/extensionability/ExampleEmbeddedAbility.ets",
   "type": "embeddedUI"
-},
+}
 ```

@@ -125,7 +125,7 @@ InitPreviewRotation();
 OH_LOG_INFO(LOG_APP, "session start");
 ret = OH_CaptureSession_Start(captureSession_);
 
-调用stop()方法停止输出metadata数据，接口调用失败会返回相应错误码。
+调用OH_MetadataOutput_Stop()方法停止输出metadata数据，接口调用失败会返回相应错误码。
 
 Camera_ErrorCode StopMetadataOutput(Camera_MetadataOutput* metadataOutput)
 {

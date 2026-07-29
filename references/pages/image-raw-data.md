@@ -97,40 +97,50 @@ const imageSource: image.ImageSource = image.createImageSource(rawFileDescriptor
 
 获取ImageRawData图片对象并打印像素值。
 
-async  createImageRawData(imageSource: image.ImageSource | undefined) : Promise<image.ImageRawData | undefined> {
+async createImageRawData(imageSource: image.ImageSource | undefined) : Promise<image.ImageRawData | undefined> {
   if (!imageSource) {
     console.error('imageSource is undefined.');
     return undefined;
   }
-  await imageSource.createImageRawData().then((data: image.ImageRawData) => {
-    let array: Uint16Array = new Uint16Array();
+  try {
+    const data = await imageSource.createImageRawData();
     if (data.bitsPerPixel == 16 && data.buffer) {
-      array = new Uint16Array(data.buffer);
+      let array: Uint16Array = new Uint16Array(data.buffer);
+      let length = array.byteLength.valueOf();
+      console.info(`uint16Array length: ${length}`);
+      let value: string = '';
+      for (let i = 0; i < array.length && i < 10; i++) {
+        value += array[i] + ', ';
+      }
+      console.info(`get dng rawdata is:${value}.`);
     }
-    let length = array.byteLength.valueOf();
-    console.info(`uint16Array length: ${length}`);
-    let value: string = '';
-    for (let i = 0; i < array.length && i < 10; i++) {
-      value += array[i] + ', ';
-    }
-    console.info(`get dng rawdata is:${value}.`);
-    return data
-  }).catch((err: BusinessError) => {
+    return data;
+  } catch (err) {
     console.error(`get dng rawdata failed.err: ${JSON.stringify(err)}`);
     return undefined;
-  })
-  return undefined;
+  }
 }
 
 释放imageSource。
 
 确认imageSource的异步方法已经执行完成，不再使用该变量后，可按需手动调用下面方法释放。
 
-async release(pixelMap: image.PixelMap | undefined, imageSource: image.ImageSource | undefined) {
-  await pixelMap?.release();
-  pixelMap = undefined;
-  await imageSource?.release();
-  imageSource = undefined;
+async release() {
+  try {
+    await this.pixelMap?.release();
+  } catch (error) {
+    console.error(`Failed to release PixelMap: ${error}.`);
+  } finally {
+    this.pixelMap = undefined;
+  }
+
+  try {
+    await this.imageSource?.release();
+  } catch (error) {
+    console.error(`Failed to release ImageSource: ${error}.`);
+  } finally {
+    this.imageSource = undefined;
+  }
 }
 
 ## Code blocks
@@ -235,39 +245,49 @@ const imageSource: image.ImageSource = image.createImageSource(rawFileDescriptor
 ### Code block 10
 
 ```
-async  createImageRawData(imageSource: image.ImageSource | undefined) : Promise<image.ImageRawData | undefined> {
+async createImageRawData(imageSource: image.ImageSource | undefined) : Promise<image.ImageRawData | undefined> {
   if (!imageSource) {
     console.error('imageSource is undefined.');
     return undefined;
   }
-  await imageSource.createImageRawData().then((data: image.ImageRawData) => {
-    let array: Uint16Array = new Uint16Array();
+  try {
+    const data = await imageSource.createImageRawData();
     if (data.bitsPerPixel == 16 && data.buffer) {
-      array = new Uint16Array(data.buffer);
+      let array: Uint16Array = new Uint16Array(data.buffer);
+      let length = array.byteLength.valueOf();
+      console.info(`uint16Array length: ${length}`);
+      let value: string = '';
+      for (let i = 0; i < array.length && i < 10; i++) {
+        value += array[i] + ', ';
+      }
+      console.info(`get dng rawdata is:${value}.`);
     }
-    let length = array.byteLength.valueOf();
-    console.info(`uint16Array length: ${length}`);
-    let value: string = '';
-    for (let i = 0; i < array.length && i < 10; i++) {
-      value += array[i] + ', ';
-    }
-    console.info(`get dng rawdata is:${value}.`);
-    return data
-  }).catch((err: BusinessError) => {
+    return data;
+  } catch (err) {
     console.error(`get dng rawdata failed.err: ${JSON.stringify(err)}`);
     return undefined;
-  })
-  return undefined;
+  }
 }
 ```
 
 ### Code block 11
 
 ```
-async release(pixelMap: image.PixelMap | undefined, imageSource: image.ImageSource | undefined) {
-  await pixelMap?.release();
-  pixelMap = undefined;
-  await imageSource?.release();
-  imageSource = undefined;
+async release() {
+  try {
+    await this.pixelMap?.release();
+  } catch (error) {
+    console.error(`Failed to release PixelMap: ${error}.`);
+  } finally {
+    this.pixelMap = undefined;
+  }
+
+  try {
+    await this.imageSource?.release();
+  } catch (error) {
+    console.error(`Failed to release ImageSource: ${error}.`);
+  } finally {
+    this.imageSource = undefined;
+  }
 }
 ```

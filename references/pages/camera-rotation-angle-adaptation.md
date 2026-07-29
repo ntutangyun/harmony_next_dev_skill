@@ -14,6 +14,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-ro
 
 录像开发指导：创建会话 > 计算设备旋转角度 > 录像。
 
+在本开发指导中，提供两种方案来获取预览、拍照、录像的旋转角度：
+
+方案一：需要应用通过display.getDefaultDisplaySync接口获取Display对象并读取其rotation属性值来获取显示设备的屏幕旋转角度，通过重力传感器来计算设备旋转角度。
+
+方案二：从API版本23开始，支持通过getPreviewRotation、getPhotoRotation、getVideoRotation接口不传入参数来获取旋转角度，由系统侧获取显示设备的屏幕旋转角度和计算设备旋转角度。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
 详细的API参考说明，请参考Camera API文档。
 
 创建会话
@@ -53,93 +59,85 @@ createVideoSession(cameraManager: camera.CameraManager): camera.Session | undefi
 
 完成会话创建后，开发者可根据实际需求，配置输出流。
 
-调用PreviewOutput中的getPreviewRotation接口，获取预览旋转角度。
+在会话配置过程中获取并设置预览旋转角度，即：使用commitConfig接口提交相关配置后调用，建议在Start起流前调用。
 
-displayRotation：显示设备的屏幕旋转角度，可通过display.getDefaultDisplaySync获取Display对象并读取其rotation属性值，并将对应角度填入。
+通过调用PreviewOutput中的getPreviewRotation接口，获取预览旋转角度。
 
-例：Display.rotation = 1，表示显示设备屏幕顺时针旋转为90°，此处displayRotation填入90。
+通过调用PreviewOutput中的setPreviewRotation接口，设置预览旋转角度。如果多次调用，以最新调用设置的预览旋转角度为准。
 
-import { display } from '@kit.ArkUI';
+getPreviewRotation、setPreviewRotation接口需要在session调用commitConfig完成配流后调用，如果存在异步执行的情况，previewOutput未添加到session里或者已调用的session.release，导致session与PreviewOutput两者关系未绑定，此时调用会调用失败，并抛出错误码CameraErrorCode.SERVICE_FATAL_ERROR。
 
-let initDisplayRotation = display.getDefaultDisplaySync().rotation;
-let imageRotation = initDisplayRotation * camera.ImageRotation.ROTATION_90;
+方案一：
 
-该接口需要在session调用commitConfig完成配流后调用，如果存在异步执行的情况，previewOutput未添加到session里或者已调用的session.release，导致两者关系未绑定，此时调用getPreviewRotation，则会调用失败，并抛出错误码CameraErrorCode.SERVICE_FATAL_ERROR。
+由应用通过display.getDefaultDisplaySync接口获取Display对象并读取其rotation属性值，来计算displayRotation（显示设备的屏幕旋转角度），将对应角度填入getPreviewRotation接口。
 
-function getPreviewRotation(previewOutput: camera.PreviewOutput, imageRotation : camera.ImageRotation): camera.ImageRotation {
-  let previewRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
-  try {
-    previewRotation = previewOutput.getPreviewRotation(imageRotation);
-    console.info(`Preview rotation is: ${previewRotation}`);
-  } catch (error) {
-    // 失败返回错误码error.code并处理
-    let err = error as BusinessError;
-    console.error(`The previewOutput.getPreviewRotation call failed. error code: ${err.code}`);
-  }
-  return previewRotation;
-}
+例如，Display.rotation = 1，表示显示设备屏幕顺时针旋转为90°，此处displayRotation填入90。
 
-调用PreviewOutput中的setPreviewRotation，设置图像的预览旋转角度。
-
-该接口需要在session调用commitConfig完成配流后调用，如果多次调用，以最新调用设置的图像预览旋转角度为准。
-
-previewRotation：预览旋转角度，取上一步getPreviewRotation的返回值。
-
-isDisplayLocked：可选入参，默认为false。当设置为false，即屏幕方向未锁定，预览旋转角度将根据相机镜头角度+屏幕显示旋转角度的值计算；当设置为true，Surface旋转锁定，不跟随窗口变化，旋转角度仅取相机镜头角度计算。
-
-function setPreviewRotation(previewOutput: camera.PreviewOutput, previewRotation : camera.ImageRotation, isDisplayLocked: boolean): void {
-  try {
-    previewOutput.setPreviewRotation(previewRotation, isDisplayLocked);
-  } catch (error) {
-    // 失败返回错误码error.code并处理
-    let err = error as BusinessError;
-    console.error(`The previewOutput.setPreviewRotation call failed. error code: ${err.code}`);
-  }
-}
-
-预览流旋转接口适配场景及示例：
-
-在会话配置过程中调用预览旋转接口，即：使用commitConfig接口提交相关配置后调用，建议在Start起流前调用。
-
-// previewOutput是创建的预览输出
-try {
-  let initDisplayRotation = display.getDefaultDisplaySync().rotation;
-  let initPreviewRotation = this.output?.getPreviewRotation(initDisplayRotation * camera.ImageRotation.ROTATION_90);
-  let isDisplayLocked: boolean = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
-  this.output?.setPreviewRotation(initPreviewRotation, isDisplayLocked);
-} catch (error) {
-  // 失败返回错误码error.code并处理
-  let err = error as BusinessError;
-  console.error(`initPreviewRotation call failed. error code: ${err.code}`);
-}
-
-应用使用相机时，通过监听Display对象变化，感知窗口当前状态，如当前相机窗口发生旋转时，需对预览流进行角度修正。推荐在会话配置中完成调用预览旋转接口后，直接创建监听。
+isDisplayLocked：可选入参，默认为false。当设置为false，即屏幕方向未锁定，预览旋转角度将根据相机镜头角度和屏幕显示旋转角度的值计算；当设置为true，Surface旋转锁定，不跟随窗口变化，旋转角度仅取相机镜头角度计算。
 
 import { display } from '@kit.ArkUI';
+import { camera } from '@kit.CameraKit';
 
-// previewOutput是创建的预览输出
-display.off('change');
-display.on('change', () => {
+GetAndSetPreviewRotation(previewOutput: camera.PreviewOutput) {
+  // previewOutput是创建的预览输出
   try {
     let displayRotation = display.getDefaultDisplaySync().rotation;
-    let imageRotation = displayRotation * camera.ImageRotation.ROTATION_90;
-    let previewRotation = previewOutput?.getPreviewRotation(imageRotation);
+    let previewRotation = previewOutput.getPreviewRotation(displayRotation * camera.ImageRotation.ROTATION_90);
     let isDisplayLocked: boolean = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
     previewOutput.setPreviewRotation(previewRotation, isDisplayLocked);
   } catch (error) {
     // 失败返回错误码error.code并处理
     let err = error as BusinessError;
-    console.error(`display change PreviewRotation call failed. error code: ${err.code}`);
+    console.error(`GetAndSetPreviewRotation call failed. error code: ${err.code}`);
   }
+}
+
+方案二：
+
+从API版本23开始，入参displayRotation为可选参数，当不传入参数时，由系统获取displayRotation进行预览旋转角度计算。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
+isDisplayLocked：可选入参，默认为false。当设置为false，即屏幕方向未锁定，预览旋转角度将根据相机镜头角度和屏幕显示旋转角度的值计算；当设置为true，Surface旋转锁定，不跟随窗口变化，旋转角度仅取相机镜头角度计算。
+
+import { camera } from '@kit.CameraKit';
+
+GetAndSetPreviewRotationWithoutDisplayRotation(previewOutput: camera.PreviewOutput) {
+  // previewOutput是创建的预览输出
+  try {
+    let previewRotation = previewOutput.getPreviewRotation();
+    let isDisplayLocked: boolean = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    previewOutput.setPreviewRotation(previewRotation, isDisplayLocked);
+  } catch (error) {
+    // 失败返回错误码error.code并处理
+    let err = error as BusinessError;
+    console.error(`GetAndSetPreviewRotationWithoutDisplayRotation call failed. error code: ${err.code}`);
+  }
+}
+
+通过监听Display对象变化，感知窗口当前状态，如当前相机窗口发生旋转时，需对预览流进行角度修正。推荐在会话配置中完成获取并设置预览旋转后，直接创建监听。
+
+方案一：
+
+display.off('change');
+display.on('change', () => {
+  GetAndSetPreviewRotation(previewOutput);
+});
+
+方案二：
+
+从API版本23开始，入参displayRotation为可选参数，当不传入参数时，由系统获取displayRotation进行预览旋转角度计算。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
+display.off('change');
+display.on('change', () => {
+  GetAndSetPreviewRotationWithoutDisplayRotation(previewOutput);
 });
 
 拍照
 
 完成会话创建后，开发者可根据实际需求，配置输出流。
 
-调用PhotoOutput中的getPhotoRotation可以获取到拍照旋转角度。
+调用PhotoOutput中的getPhotoRotation可以获取到拍照旋转角度。该接口需要在session调用commitConfig完成配流后调用。
 
-该接口需要在session调用commitConfig完成配流后调用。
+方案一：
 
 deviceDegree：设备旋转角度。拍照的旋转角度与重力方向（即设备旋转角度）相关，获取方式请见计算设备旋转角度。
 
@@ -156,6 +154,23 @@ getPhotoRotation(photoOutput: camera.PhotoOutput, deviceDegree: number): camera.
   return photoRotation;
 }
 
+方案二：
+
+从API版本23开始，入参deviceDegree为可选参数，当不传入参数时，由系统获取deviceDegree进行拍照旋转角度计算。当重力传感器数据无效，无法计算deviceDegree时，系统将使用最后一次有效的deviceDegree。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
+getPhotoRotationWithoutDeviceDegree(photoOutput: camera.PhotoOutput): camera.ImageRotation {
+  let photoRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
+  try {
+    photoRotation = photoOutput.getPhotoRotation();
+    console.info(`Photo rotation is: ${photoRotation}`);
+  } catch (error) {
+    // 失败返回错误码error.code并处理
+    let err = error as BusinessError;
+    console.error(`The photoOutput.getPhotoRotationWithoutDeviceDegree call failed. error code: ${err.code}`);
+  }
+  return photoRotation;
+}
+
 应用将拍照角度写入PhotoCaptureSetting.rotation。
 
 其余参数的配置及拍照，可参考拍照开发指导。
@@ -164,16 +179,16 @@ getPhotoRotation(photoOutput: camera.PhotoOutput, deviceDegree: number): camera.
 
 完成会话创建后，开发者可根据实际需求，配置输出流。
 
-调用VideoOutput中的getVideoRotation可以获取到录像的旋转角度。
+调用VideoOutput中的getVideoRotation可以获取到录像的旋转角度。该接口需要在session调用commitConfig完成配流后调用。
 
-该接口需要在session调用commitConfig完成配流后调用。
+方案一：
 
 deviceDegree：设备旋转角度。录像的旋转角度与重力方向（即设备旋转角度）相关，获取方式请见计算设备旋转角度。
 
 getVideoRotation(videoOutput: camera.VideoOutput, deviceDegree: number): camera.ImageRotation {
   let videoRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
   try {
-    videoRotation = videoOutput!.getVideoRotation(deviceDegree);
+    videoRotation = videoOutput.getVideoRotation(deviceDegree);
     console.info(`Video rotation is: ${videoRotation}`);
   } catch (error) {
     // 失败返回错误码error.code并处理
@@ -183,26 +198,26 @@ getVideoRotation(videoOutput: camera.VideoOutput, deviceDegree: number): camera.
   return videoRotation;
 }
 
-在AVRecorder.prepare后使用updateRotation设置录像角度。
+方案二：
 
-其余参数的配置及启动录像，可参考录像开发指导。
+从API版本23开始开始，入参deviceDegree为可选参数，当不传入参数时，由系统获取deviceDegree进行录像旋转角度计算。当重力传感器数据无效，无法计算deviceDegree时，系统将使用最后一次有效的deviceDegree。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
 
-录像流旋转接口适配示例代码：
-
-async getVideoRotationAndUpdate(videoOutput: camera.VideoOutput, deviceDegree: number, avRecorder: media.AVRecorder) {
+getVideoRotationWithoutDeviceDegree(videoOutput: camera.VideoOutput): camera.ImageRotation {
   let videoRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
   try {
-    videoRotation = videoOutput.getVideoRotation(deviceDegree);
+    videoRotation = videoOutput.getVideoRotation();
     console.info(`Video rotation is: ${videoRotation}`);
-    if (avRecorder.state === 'prepared') {
-      await avRecorder.updateRotation(videoRotation);
-    }
   } catch (error) {
     // 失败返回错误码error.code并处理
     let err = error as BusinessError;
-    console.error(`getVideoRotationAndUpdate call failed. error code: ${err.code}`);
+    console.error(`The videoOutput.getVideoRotationWithoutDeviceDegree call failed. error code: ${err.code}`);
   }
+  return videoRotation;
 }
+
+在AVRecorder.prepare后使用updateRotation设置录像角度。
+
+其余参数的配置及启动录像，可参考录像开发指导。
 
 计算设备旋转角度
 
@@ -295,13 +310,11 @@ async getCurrentDeviceDegree() : Promise<number> {
 
 示例代码如下：
 
-import { camera } from '@kit.CameraKit';
-
-function enablePhysicalCameraOrientation(cameraInput: camera.CameraInput) {
+enablePhysicalCameraOrientation(cameraInput: camera.CameraInput) {
   // 查询设备的相机镜头安装角度是否可变
-  let isVarialbe: boolean = cameraInput.isPhysicalCameraOrientationVariable();
+  let isVariable: boolean = cameraInput.isPhysicalCameraOrientationVariable();
 
-  if (isVarialbe) {
+  if (isVariable) {
     // 获取设备当前折叠状态下真实的相机镜头安装角度
     let physicalOrientation: number = cameraInput.getPhysicalCameraOrientation();
     console.info(`physical Orientation is ${physicalOrientation}`);
@@ -413,22 +426,22 @@ struct Index {
   updateXComponentSize(): void {
     let angleDiff = (this.mRotate+ cameraDevice?.cameraOrientation) % 360;
     if (this.isIsolateForSpecialType()) { // 如果设备为平板设备，且使用的API版本＜14，应进入此逻辑。
-    if (angleDiff === 90 || angleDiff=== 270) {
-    this.mXComponentWidth = this.mConfigRatio * this.mWindowHeight;
-    this.mXComponentHeight = this.mWindowHeight;
-  } else {
-    this.mXComponentWidth = this.mWindowWidth;
-    this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
-  }
-  } else { // 如果使用API版本≥14，或是API14以下的非平板设备，应进入此逻辑。
-    if (angleDiff === 90 || angleDiff=== 270) {
-      this.mXComponentWidth = this.mWindowWidth;
-      this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
-    } else {
+      if (angleDiff === 90 || angleDiff=== 270) {
       this.mXComponentWidth = this.mConfigRatio * this.mWindowHeight;
       this.mXComponentHeight = this.mWindowHeight;
+    } else {
+      this.mXComponentWidth = this.mWindowWidth;
+      this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
     }
-  }
+    } else { // 如果使用API版本≥14，或是API14以下的非平板设备，应进入此逻辑。
+      if (angleDiff === 90 || angleDiff=== 270) {
+        this.mXComponentWidth = this.mWindowWidth;
+        this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
+      } else {
+        this.mXComponentWidth = this.mConfigRatio * this.mWindowHeight;
+        this.mXComponentHeight = this.mWindowHeight;
+      }
+    }
   }
 
   async aboutToDisAppear(): Promise<void> {
@@ -508,7 +521,7 @@ function  onImageArrival(receiver: image.ImageReceiver): void {
   })
 }
 
-async function  updatePixelMap(pixelMap: image.PixelMap): Promise<void> {
+async function updatePixelMap(pixelMap: image.PixelMap): Promise<void> {
   let rotation : number = 0;
   try {
     rotation = display.getDefaultDisplaySync().rotation * camera.ImageRotation.ROTATION_90;
@@ -665,81 +678,61 @@ createVideoSession(cameraManager: camera.CameraManager): camera.Session | undefi
 
 ```
 import { display } from '@kit.ArkUI';
+import { camera } from '@kit.CameraKit';
 
-let initDisplayRotation = display.getDefaultDisplaySync().rotation;
-let imageRotation = initDisplayRotation * camera.ImageRotation.ROTATION_90;
+GetAndSetPreviewRotation(previewOutput: camera.PreviewOutput) {
+  // previewOutput是创建的预览输出
+  try {
+    let displayRotation = display.getDefaultDisplaySync().rotation;
+    let previewRotation = previewOutput.getPreviewRotation(displayRotation * camera.ImageRotation.ROTATION_90);
+    let isDisplayLocked: boolean = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    previewOutput.setPreviewRotation(previewRotation, isDisplayLocked);
+  } catch (error) {
+    // 失败返回错误码error.code并处理
+    let err = error as BusinessError;
+    console.error(`GetAndSetPreviewRotation call failed. error code: ${err.code}`);
+  }
+}
 ```
 
 ### Code block 4
 
 ```
-function getPreviewRotation(previewOutput: camera.PreviewOutput, imageRotation : camera.ImageRotation): camera.ImageRotation {
-  let previewRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
+import { camera } from '@kit.CameraKit';
+
+GetAndSetPreviewRotationWithoutDisplayRotation(previewOutput: camera.PreviewOutput) {
+  // previewOutput是创建的预览输出
   try {
-    previewRotation = previewOutput.getPreviewRotation(imageRotation);
-    console.info(`Preview rotation is: ${previewRotation}`);
+    let previewRotation = previewOutput.getPreviewRotation();
+    let isDisplayLocked: boolean = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    previewOutput.setPreviewRotation(previewRotation, isDisplayLocked);
   } catch (error) {
     // 失败返回错误码error.code并处理
     let err = error as BusinessError;
-    console.error(`The previewOutput.getPreviewRotation call failed. error code: ${err.code}`);
+    console.error(`GetAndSetPreviewRotationWithoutDisplayRotation call failed. error code: ${err.code}`);
   }
-  return previewRotation;
 }
 ```
 
 ### Code block 5
 
 ```
-function setPreviewRotation(previewOutput: camera.PreviewOutput, previewRotation : camera.ImageRotation, isDisplayLocked: boolean): void {
-  try {
-    previewOutput.setPreviewRotation(previewRotation, isDisplayLocked);
-  } catch (error) {
-    // 失败返回错误码error.code并处理
-    let err = error as BusinessError;
-    console.error(`The previewOutput.setPreviewRotation call failed. error code: ${err.code}`);
-  }
-}
+display.off('change');
+display.on('change', () => {
+  GetAndSetPreviewRotation(previewOutput);
+});
 ```
 
 ### Code block 6
 
 ```
-// previewOutput是创建的预览输出
-try {
-  let initDisplayRotation = display.getDefaultDisplaySync().rotation;
-  let initPreviewRotation = this.output?.getPreviewRotation(initDisplayRotation * camera.ImageRotation.ROTATION_90);
-  let isDisplayLocked: boolean = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
-  this.output?.setPreviewRotation(initPreviewRotation, isDisplayLocked);
-} catch (error) {
-  // 失败返回错误码error.code并处理
-  let err = error as BusinessError;
-  console.error(`initPreviewRotation call failed. error code: ${err.code}`);
-}
-```
-
-### Code block 7
-
-```
-import { display } from '@kit.ArkUI';
-
-// previewOutput是创建的预览输出
 display.off('change');
 display.on('change', () => {
-  try {
-    let displayRotation = display.getDefaultDisplaySync().rotation;
-    let imageRotation = displayRotation * camera.ImageRotation.ROTATION_90;
-    let previewRotation = previewOutput?.getPreviewRotation(imageRotation);
-    let isDisplayLocked: boolean = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
-    previewOutput.setPreviewRotation(previewRotation, isDisplayLocked);
-  } catch (error) {
-    // 失败返回错误码error.code并处理
-    let err = error as BusinessError;
-    console.error(`display change PreviewRotation call failed. error code: ${err.code}`);
-  }
+  GetAndSetPreviewRotationWithoutDisplayRotation(previewOutput);
 });
 ```
 
-### Code block 8
+### Code block 7
 
 ```
 getPhotoRotation(photoOutput: camera.PhotoOutput, deviceDegree: number): camera.ImageRotation {
@@ -756,13 +749,30 @@ getPhotoRotation(photoOutput: camera.PhotoOutput, deviceDegree: number): camera.
 }
 ```
 
+### Code block 8
+
+```
+getPhotoRotationWithoutDeviceDegree(photoOutput: camera.PhotoOutput): camera.ImageRotation {
+  let photoRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
+  try {
+    photoRotation = photoOutput.getPhotoRotation();
+    console.info(`Photo rotation is: ${photoRotation}`);
+  } catch (error) {
+    // 失败返回错误码error.code并处理
+    let err = error as BusinessError;
+    console.error(`The photoOutput.getPhotoRotationWithoutDeviceDegree call failed. error code: ${err.code}`);
+  }
+  return photoRotation;
+}
+```
+
 ### Code block 9
 
 ```
 getVideoRotation(videoOutput: camera.VideoOutput, deviceDegree: number): camera.ImageRotation {
   let videoRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
   try {
-    videoRotation = videoOutput!.getVideoRotation(deviceDegree);
+    videoRotation = videoOutput.getVideoRotation(deviceDegree);
     console.info(`Video rotation is: ${videoRotation}`);
   } catch (error) {
     // 失败返回错误码error.code并处理
@@ -776,19 +786,17 @@ getVideoRotation(videoOutput: camera.VideoOutput, deviceDegree: number): camera.
 ### Code block 10
 
 ```
-async getVideoRotationAndUpdate(videoOutput: camera.VideoOutput, deviceDegree: number, avRecorder: media.AVRecorder) {
+getVideoRotationWithoutDeviceDegree(videoOutput: camera.VideoOutput): camera.ImageRotation {
   let videoRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;
   try {
-    videoRotation = videoOutput.getVideoRotation(deviceDegree);
+    videoRotation = videoOutput.getVideoRotation();
     console.info(`Video rotation is: ${videoRotation}`);
-    if (avRecorder.state === 'prepared') {
-      await avRecorder.updateRotation(videoRotation);
-    }
   } catch (error) {
     // 失败返回错误码error.code并处理
     let err = error as BusinessError;
-    console.error(`getVideoRotationAndUpdate call failed. error code: ${err.code}`);
+    console.error(`The videoOutput.getVideoRotationWithoutDeviceDegree call failed. error code: ${err.code}`);
   }
+  return videoRotation;
 }
 ```
 
@@ -866,13 +874,11 @@ async getCurrentDeviceDegree() : Promise<number> {
 ### Code block 12
 
 ```
-import { camera } from '@kit.CameraKit';
-
-function enablePhysicalCameraOrientation(cameraInput: camera.CameraInput) {
+enablePhysicalCameraOrientation(cameraInput: camera.CameraInput) {
   // 查询设备的相机镜头安装角度是否可变
-  let isVarialbe: boolean = cameraInput.isPhysicalCameraOrientationVariable();
+  let isVariable: boolean = cameraInput.isPhysicalCameraOrientationVariable();
 
-  if (isVarialbe) {
+  if (isVariable) {
     // 获取设备当前折叠状态下真实的相机镜头安装角度
     let physicalOrientation: number = cameraInput.getPhysicalCameraOrientation();
     console.info(`physical Orientation is ${physicalOrientation}`);
@@ -972,22 +978,22 @@ struct Index {
   updateXComponentSize(): void {
     let angleDiff = (this.mRotate+ cameraDevice?.cameraOrientation) % 360;
     if (this.isIsolateForSpecialType()) { // 如果设备为平板设备，且使用的API版本＜14，应进入此逻辑。
-    if (angleDiff === 90 || angleDiff=== 270) {
-    this.mXComponentWidth = this.mConfigRatio * this.mWindowHeight;
-    this.mXComponentHeight = this.mWindowHeight;
-  } else {
-    this.mXComponentWidth = this.mWindowWidth;
-    this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
-  }
-  } else { // 如果使用API版本≥14，或是API14以下的非平板设备，应进入此逻辑。
-    if (angleDiff === 90 || angleDiff=== 270) {
-      this.mXComponentWidth = this.mWindowWidth;
-      this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
-    } else {
+      if (angleDiff === 90 || angleDiff=== 270) {
       this.mXComponentWidth = this.mConfigRatio * this.mWindowHeight;
       this.mXComponentHeight = this.mWindowHeight;
+    } else {
+      this.mXComponentWidth = this.mWindowWidth;
+      this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
     }
-  }
+    } else { // 如果使用API版本≥14，或是API14以下的非平板设备，应进入此逻辑。
+      if (angleDiff === 90 || angleDiff=== 270) {
+        this.mXComponentWidth = this.mWindowWidth;
+        this.mXComponentHeight = this.mConfigRatio * this.mWindowWidth; // 1920 *1080
+      } else {
+        this.mXComponentWidth = this.mConfigRatio * this.mWindowHeight;
+        this.mXComponentHeight = this.mWindowHeight;
+      }
+    }
   }
 
   async aboutToDisAppear(): Promise<void> {
@@ -1067,7 +1073,7 @@ function  onImageArrival(receiver: image.ImageReceiver): void {
 ### Code block 15
 
 ```
-async function  updatePixelMap(pixelMap: image.PixelMap): Promise<void> {
+async function updatePixelMap(pixelMap: image.PixelMap): Promise<void> {
   let rotation : number = 0;
   try {
     rotation = display.getDefaultDisplaySync().rotation * camera.ImageRotation.ROTATION_90;

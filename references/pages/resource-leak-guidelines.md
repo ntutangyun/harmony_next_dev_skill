@@ -19,7 +19,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-
 线程泄漏（THREAD_LEAK）	每隔60s遍历一次进程，获取进程的总线程数，超过阈值（700个） 时抓取详细线程名信息，同步上报泄漏。
 内存泄漏（MEMORY_LEAK） - JS泄漏（JS_LEAK）	虚拟机内部进行插桩，当堆内存的使用率超过85%或者触发OOM时会抓取heapdump，同步上报该故障。
 内存泄漏（MEMORY_LEAK） - native内存泄漏（PSS_MEMORY）	以应用进程平均动态峰值内存作为基线，以200s作为基准，当动态内存峰值超过基线值2倍时，判定泄漏，同时触发管控。
-内存泄漏（MEMORY_LEAK） - ashmem/ion/gpu等内存泄漏（KERNEL_MEMORY）	基于ashmem/ion/gpu的基线值，超过基线值时会判定泄漏，同步抓取维测信息。
+内存泄漏（MEMORY_LEAK） - ASHMEM/DMA（ION）/GPU等内存泄漏（KERNEL_MEMORY）	基于ASHMEM/DMA(ION)/GPU的基线值，超过基线值时会判定泄漏，同步抓取维测信息。
 
 说明
 
@@ -35,13 +35,15 @@ totalHeap：当前虚拟机的堆总大小，单位：KB。可通过hidebug.getA
 
 管控是指当系统判定应用发生泄漏后，主动终止泄漏应用的行为。
 
+在资源泄漏资料中，DMA内存（ION）、dmaheap、dmabuf 可理解为同一种内存类型，不作强区分。
+
 资源泄漏内核管控方式如下：
 
-从HarmonyOS 6.1.0开始，应用资源申请过快或前台泄漏导致整机资源不足，比如单应用快速申请（rss、ion、gpu内存）超过整机内存的1/3，导致整机出现低内存，系统会对应用进行管控，同步提供部分基础的RESOURCE_OVERLIMIT维测信息。
+从HarmonyOS 6.1.0开始，应用资源申请过快或前台泄漏导致整机资源不足，比如单应用快速申请（RSS、DMA（ION）、GPU内存）超过阈值，导致整机出现低内存，系统会对应用进行管控，同步提供部分基础的RESOURCE_OVERLIMIT维测信息。
 
 说明
 
-当前支持内核管控的资源类型有：ion、gpu、rss、ashmem、thread。
+当前支持内核管控的资源类型有：DMA（ION）、GPU、RSS、ASHMEM、THREAD。
 
 内核管控不区分前后台，可能会出现问题应用的前台闪退问题
 
@@ -64,7 +66,7 @@ DevEco Testing工具会收集设备/data/log/reliability/resource_leak/路径下
 线程泄漏（THREAD_LEAK）	[pid]_thread_leak.txt
 内存泄漏（MEMORY_LEAK） - js泄漏（JS_LEAK）	memleak-js-[process_name]-[pid]-[tid]-[timestamp].rawheap
 内存泄漏（MEMORY_LEAK） - native内存泄漏（PSS_MEMORY）	memleak-native-[process_name]-[pid]-sample.txt memleak-native-[process_name]-[pid]-smaps.txt memleak-native-[process_name]-[pid]-[timestamp].txt
-内存泄漏（MEMORY_LEAK） - ashmem/ion/gpu等内存泄漏（KERNEL_MEMORY）	memleak-kernel-[module]-0-sample.txt memleak-kernel-[module]-0-[timestamp].txt
+内存泄漏（MEMORY_LEAK） - ASHMEM/DMA（ION）/GPU等内存泄漏（KERNEL_MEMORY）	memleak-kernel-[module]-0-sample.txt memleak-kernel-[module]-0-[timestamp].txt
 
 注意
 
@@ -99,7 +101,7 @@ leaked fd nums: 5111
 
 [h2]句柄类型详细信息
 
-Leaked fd Top 10： 按照句柄名聚类，获取泄漏句柄中最多的类型。第一列为泄漏数量，第二列为泄漏类型，如下即ashmem类型的句柄存在4796个。
+Leaked fd Top 10： 按照句柄名聚类，获取泄漏句柄中最多的类型。第一列为泄漏数量，第二列为泄漏类型，如下即ASHMEM类型的句柄存在4796个。
 
 FdCount FileDescriptor
 *****************************
@@ -134,21 +136,21 @@ Dir Type Top 10:
 
 如果Leaked fd Top 10的TOP句柄信息属于ashmem/socket/pipe/sync_file/dmabuf这五类特殊类型，且该类型的句柄个数超过1000个，日志中会增加整机详细的维测信息，具体如下：
 
-ashmem类型句柄
+ASHMEM类型句柄
 
-ashmem（共享内存），当TOP 1的句柄类型为ashmem时，抓取整机ashmem内存的详细信息如下。
+ASHMEM（共享内存），当TOP 1的句柄类型为ASHMEM时，抓取整机ASHMEM内存的详细信息如下。
 
 字段	说明
-Process_name	持有该ashmem内存块的应用进程包名。
+Process_name	持有该ASHMEM内存块的应用进程包名。
 Process_ID	发生故障进程的pid，可以用于在流水日志中搜索相关进程信息。
 Fd	该进程持有的句柄。
-Applicant_Pid	申请该ashmem内存块的进程pid，可根据此字段识别该内存块的申请来源。
+Applicant_Pid	申请该ASHMEM内存块的进程pid，可根据此字段识别该内存块的申请来源。
 Ashmem_name	共享内存的名字，开发者可通过提供的API进行设置，用来判断存储的资源类型，指向不同的领域。
-Size	单个ashmem块的大小，单位：B。
+Size	单个ASHMEM块的大小，单位：B。
 
 说明
 
-开发者可通过提供的API接口设置ashmem内存：
+开发者可通过提供的API接口设置ASHMEM内存：
 
 JS层API：setMemoryNameSync。
 
@@ -227,10 +229,10 @@ process1 1309 26 NULL 4186 1 0:online_composer_gfx_primary ukmd_release_fence_29
 
 dmabuf类型句柄
 
-dmabuf（也称ion内存），当TOP 1的句柄类型为dmabuf时，以fd维度抓取了整机dmabuf的详细信息如下 。
+dmabuf（也称DMA内存），当TOP 1的句柄类型为dmabuf时，以fd维度抓取了整机dmabuf的详细信息如下 。
 
 字段	说明
-Process name	持有该ion内存块的应用进程包名。
+Process name	持有该DMA（ION）内存块的应用进程包名。
 Process ID	发生故障进程的pid，可以用于在流水日志中搜索相关进程信息。
 Fd	该进程持有的句柄。
 size	buffer内存大小，单位：B。
@@ -272,7 +274,7 @@ num 3968 bt [/system/lib64/libfdleak_tracker.so+0x1fb58] [/system/lib/ld-musl-aa
 
 通过句柄泄漏日志中的top10的文件句柄数以及top10的文件路径句柄数判定是哪种类型的句柄泄漏，将占比最多的句柄类型作为本次故障的故障特征。
 
-ashmem、ion等特殊类型句柄，可参考ASHMEM_LEAK、ION_LEAK规则进行聚类。
+ASHMEM、DMA（ION）等特殊类型句柄，可参考ASHMEM_LEAK、ION_LEAK规则进行聚类。
 
 线程泄漏日志规格
 
@@ -592,14 +594,14 @@ All Anonymous VM： 选择后记录了当前hook mmap系统调用的堆栈信息
 
 应用程序在同一或不同版本上、不同时间产生的泄漏问题可能为同一原因，开发者可以从故障日志中提取故障特征，根据故障特征将多份故障日志进行聚类，以提高泄漏问题的分析效率。
 
-对于PSS_MEMORY故障，系统会发送两份故障日志给开发者进行分析，故障日志一（内存维测）用于存储进程的部分轻量化信息，如：smaps、ashmem、NMD等；故障日志二（内存栈）中用于存储系统检测到进程pss泄漏后抓取的栈信息。
+对于PSS_MEMORY故障，系统会发送两份故障日志给开发者进行分析，故障日志一（内存维测）用于存储进程的部分轻量化信息，如：smaps、ASHMEM、NMD等；故障日志二（内存栈）中用于存储系统检测到进程pss泄漏后抓取的栈信息。
 
 对故障日志一中的进程“LOGGER_MEMCHECK_SMAPS_INFO”信息进行分析，根据以下表格所列方法计算各类型内存占比，筛选占比最高的内存泄漏类型。
 
 内存泄漏类型	计算方法
 虚拟机对象泄漏	搜索关键字“ArkTS”，计算“Pss”列和“SwapPss”列之和占总内存比例。
 堆内存泄漏	搜索关键字“jemalloc”，计算“Pss”列和“SwapPss”列之和占总内存比例。
-ashmem内存泄漏	搜索关键字“/dev/ashmem”，计算“Pss”列和“SwapPss”列之和占总内存比例。
+ASHMEM内存泄漏	搜索关键字“/dev/ashmem”，计算“Pss”列和“SwapPss”列之和占总内存比例。
 anon类型内存较大	搜索关键字“[anon]”，计算“Pss”列和“SwapPss”列之和占总内存比例。
 
 说明
@@ -635,7 +637,7 @@ Size        Rss         Pss        Clean       Dirty         Clean       Dirty  
 
 如果存在内存调用栈，可以根据NMD维测找到占用最高的内存区间，并结合抓取的调用栈维测聚类到具体代码段或者so作为怀疑点，具体分析方法可参考Native泄漏分析方法。
 
-ashmem内存：参考ashmem聚类规则。
+ASHMEM内存：参考ASHMEM聚类规则。
 
 anon内存：筛选内存申请最大的内存标签作为故障特征，如：从以下日志中提取的故障标签为“[anon]”。
 
@@ -651,12 +653,12 @@ Size        Rss         Pss        Clean       Dirty         Clean       Dirty  
 
 对于nolog版本，默认不开启抓栈，因此推荐开发者根据smaps信息对PSS内存占用的类型进行初步聚类。
 
-ashmem/ion/gpu/gpu_rs内存泄漏日志规格
+ASHMEM/DMA/GPU/GPU_RS内存泄漏日志规格
 
 [h2]内存采样
 
 字段	说明
-memoryName	内核内存类型，如果发现进程存在泄漏（超过系统设定基线），会显示为该泄漏进程的进程名；如果memoryName打印类型为：ashmem/gpu/ion，则说明无进程泄漏。
+memoryName	内核内存类型，如果发现进程存在泄漏（超过系统设定基线），会显示为该泄漏进程的进程名；如果memoryName打印类型为：ASHMEM/GPU/DMA（ION），则说明无进程泄漏。
 softThreshold	系统设定的软门限（超过8个采样周期，即30+分钟超过软门限后判定泄漏），单位：KB。
 hardThreshold	系统设定的硬门限（单次超过硬门限后判定泄漏），单位：KB。
 topMemory	检测到的内核内存峰值，单位：KB。
@@ -674,11 +676,11 @@ time(s) kernelMemory(KB)realtime
 
 字段	说明
 LOGGER_MEMCHECK_MEMINFO	整机内存信息概览。
-LOGGER_MEMCHECK_PROC_INFO	ashmem/ion/gpu对应泄漏内存节点信息打印（泄漏类型不同，落盘内容不同）。
-LOGGER_PROCESS_DMABUF_INFO	ion内存泄漏时获取的特殊节点内容，包含更多的内存块使用信息。
+LOGGER_MEMCHECK_PROC_INFO	ASHMEM/DMA（ION）/GPU对应泄漏内存节点信息打印（泄漏类型不同，落盘内容不同）。
+LOGGER_PROCESS_DMABUF_INFO	DMA（ION）内存泄漏时获取的特殊节点内容，包含更多的内存块使用信息。
 LOGGER_MEMCHECK_RENDER_SERVICE_MEM	Render_service进程的内存使用情况。
 
-检测到ashmem/gpu/ion内存泄漏时，会抓取整机ashmem/gpu/ion内存信息，ashmem/ion与句柄泄漏ashmem/dmabuf日志规格相同，参考ashmem/dmabuf类型句柄。
+检测到ASHMEM/GPU/DMA（ION）内存泄漏时，会抓取整机ASHMEM/GPU/DMA（ION）内存信息，ASHMEM/DMA（ION）与句柄泄漏ASHMEM/DMA（ION）日志规格相同，参考ASHMEM/DMA（ION）类型句柄。
 
 日志抬头：
 
@@ -699,7 +701,7 @@ Buffers:               0 kB
 
 日志文件内“LOGGER_MEMCHECK_PROC_INFO”会根据内存泄漏类型不同，落盘对应的内存信息，具体如下：
 
-ashmem内存泄漏：
+ASHMEM内存泄漏：
 
 LOGGER_MEMCHECK_PROC_INFO
 realtime:       2025/05/30 19:52:42
@@ -725,7 +727,7 @@ get info realtime:      2025/05/30 19:52:42
 ----------------------------------RenderService----------------------------------
 ......
 
-ion内存泄漏：
+DMA（ION）内存泄漏：
 
 *****************************
 LOGGER_MEMCHECK_PROC_INFO
@@ -748,7 +750,7 @@ get info realtime:      2025/05/30 21:17:39
 ----------------------------------RenderService----------------------------------
 ......
 
-从HarmonyOS 6.0.0开始，ion内存维测信息增加buf_name、leak_type等列，变更为以下形式：
+从HarmonyOS 6.0.0开始，DMA（ION）内存维测信息增加buf_name、leak_type等列，变更为以下形式：
 
 *****************************
 LOGGER_MEMCHECK_PROC_INFO
@@ -761,19 +763,19 @@ process1      65141   268 274432      430936       42829      allocator_host  65
 字段说明：
 
 字段	说明
-Process	持有ION内存块的应用进程包名（16个字符截断）。
+Process	持有DMA（ION）内存块的应用进程包名（16个字符截断）。
 pid	发生故障进程pid。
 fd	进程持有的句柄。
-size_bytes	进程持有的ION内存buffer大小，单位：B。
+size_bytes	进程持有的DMA（ION）内存buffer大小，单位：B。
 ino	文件inode号（索引节点号）。
-exp_pid	从内核申请ION内存的进程pid。
-exp_task_comm	从内核申请ION内存的进程名。
-buf_name	ION内存的buffer名字。
-exp_name	ION内存的buffer扩展名。
-buf_type	ION内存的buffer类型。
-leak_type	ION内存泄漏维测的buffer类型。
+exp_pid	从内核申请DMA（ION）内存的进程pid。
+exp_task_comm	从内核申请DMA（ION）内存的进程名。
+buf_name	DMA（ION）内存的buffer名字。
+exp_name	DMA（ION）内存的buffer扩展名。
+buf_type	DMA（ION）内存的buffer类型。
+leak_type	DMA（ION）内存泄漏维测的buffer类型。
 
-gpu/gpu_rs内存泄漏：
+GPU/GPU_RS内存泄漏：
 
 LOGGER_MEMCHECK_PROC_INFO
 GPU_PROCESS_INFO
@@ -807,31 +809,29 @@ get info realtime:      2025/05/30 21:16:01
 
 process1”表示上下文ctx_1是由进程“process1”创建的，这个进程的进程号为“1455”，线程号为“1689”，总使用量为：“3362426880”字节。
 
-“Channel: xx default device (Total memory: 730594)”表示进程申请的“xx default device”类型的gpu内存大小为730594字节。
+“Channel: xx default device (Total memory: 730594)”表示进程申请的“xx default device”类型的GPU内存大小为730594字节。
 
 “15: 4 / 65536” 表示 2^14~2^15大小的内存块申请了4次，总共申请了65536字节的内存。
 
 说明
 
-gpu_rs内存泄漏与gpu泄漏的区别在于：gpu是应用自渲染发生的泄漏，gpu_rs是通过进程render_service进行统一渲染发生的泄漏。
-
-在资源泄漏资料中，ion、dmaheap、dmabuf 可理解为同一种内存类型，不作强区分。
+GPU_RS内存泄漏与GPU泄漏的区别在于：GPU是应用自渲染发生的泄漏，GPU_RS是通过进程render_service进行统一渲染发生的泄漏。
 
 当前日志规格不代表维测的最终形态，后续会根据版本问题以及用户原声增加维测信息，变更形式包括但不限于行、列、段落等。
 
 [h2]内存栈
 
-从HarmonyOS 6.0.0开始，支持抓取gpu内存申请的调用栈以分析进程gpu泄漏问题。检测到泄漏后会收集15分钟内的gpu内存申请trace，开发者可本地搭建Smartperf环境并导入Profiler日志进行解析。
+从HarmonyOS 6.0.0开始，支持抓取GPU内存申请的调用栈以分析进程DMA（ION）泄漏问题。检测到泄漏后会收集15分钟内的GPU内存申请trace，开发者可本地搭建Smartperf环境并导入Profiler日志进行解析。
 
 日志文件名称：memleak-kernel-[module]-[pid]-[timestamp].txt
 
-[h2]ashmem/ion/gpu/gpu_rs聚类规则
+[h2]ASHMEM/DMA/GPU/GPU_RS聚类规则
 
 应用程序在同一或不同版本上、不同时间产生的泄漏问题可能为同一原因，开发者可以从故障日志中提取故障特征，根据故障特征将多份故障日志进行聚类，以提高泄漏问题的分析效率。
 
-ashmem聚类规则
+ASHMEM聚类规则
 
-提取故障日志中的ashmem维测信息进行聚类，如下：
+提取故障日志中的ASHMEM维测信息进行聚类，如下：
 
 Process_name    Process_ID      Fd      Cnode_idx       Applicant_Pid   Ashmem_name                     Virtual_size    Physical_size  magic
 XXXXX           816             22      328234          816             dev/ashmem/PolicyVolumeMap      541             4096            7
@@ -840,11 +840,11 @@ XXXXX           816             22      328234          816             dev/ashm
 XXXXX           816             22      328234          816             dev/ashmem/outputBuffer         541             512             7
 ......
 
-分析ashmem维测中的“Ashmem_name”字段，来确认是否为同一类型的buffer泄漏，并将“Physical_size”列之和占比最高的buffer作为本次故障的故障特征。
+分析ASHMEM维测中的“Ashmem_name”字段，来确认是否为同一类型的buffer泄漏，并将“Physical_size”列之和占比最高的buffer作为本次故障的故障特征。
 
-ion聚类规则
+DMA聚类规则
 
-提取故障日志中的ion维测信息来进行聚类，如下：
+提取故障日志中的DMA（ION）维测信息来进行聚类，如下：
 
 *****************************
 LOGGER_MEMCHECK_PROC_INFO
@@ -865,15 +865,15 @@ process1    65141    250        4493312       432498     42829        allocator_
 process1    65141    252        4493312       430934     42829        allocator_host    srcImageSize-2160x2880-pixelMapSize-2160x2880-streamsize-761322-mimetype-webp   mm_heap_helpers    NULL        NULL
 ************ endl ************
 
-根据“leak_type”和“buf_name”对buffer进行分类，提取出“size_bytes”之和占比最高buffer的“buf_name”作为本次故障的故障特征。分析细节可参考ION泄漏分析方法。
+根据“leak_type”和“buf_name”对buffer进行分类，提取出“size_bytes”之和占比最高buffer的“buf_name”作为本次故障的故障特征。分析细节可参考DMA泄漏分析方法。
 
 说明
 
 如果“leak_type”为NULL，可能存在多种类型的buffer，可以直接通过“buf_name”进行区分。
 
-gpu/gpu_rs聚类规则
+GPU/GPU_RS聚类规则
 
-解析故障日志中提供的gpu维测信息，统计包含“Total memory:”字段的行并解析出对应类型gpu内存的占用，筛选占用最高的gpu内存类型作为故障特征。如以下维测中，“host default memory”类型的gpu内存占用为“1789351”字节，可以作为故障特征进行聚类：
+解析故障日志中提供的GPU维测信息，统计包含“Total memory:”字段的行并解析出对应类型GPU内存的占用，筛选占用最高的GPU内存类型作为故障特征。如以下维测中，“host default memory”类型的GPU内存占用为“1789351”字节，可以作为故障特征进行聚类：
 
 C: cq memory(not in total memory) (Total memory: 4096)
 13:                    1 / 4096
@@ -897,11 +897,11 @@ C: host default memory (Total memory: 1789351)
   17:                    1 / 84184
   19:                    1 / 290312
 
-聚类到gpu内存类型后，筛选出其中占用最大的内存段并进行聚类。
+聚类到GPU内存类型后，筛选出其中占用最大的内存段并进行聚类。
 
 注意
 
-不同的芯片平台中，gpu表现形式会存在差异：
+不同的芯片平台中，GPU表现形式会存在差异：
 
 C: host default memory (Total memory: 1789351)。
 
@@ -917,7 +917,7 @@ Channel: Texture (Total memory: 1789351)。
 pidNumber	泄漏应用pid。
 processName	泄漏应用进程名。
 killTime	应用被查杀时间。
-RssMemory	泄漏应用Rss内存占用，单位：KB。
+RssMemory	泄漏应用RSS内存占用，单位：KB。
 killReason	应用被查杀原因。
 
 Generated by HiviewDFX @HarmonyOS
@@ -930,15 +930,15 @@ LOGGER_MEMCHECK_GERNAL_INFO
 
 说明
 
-“RssMemory”是应用触发rss内核管控后日志中展示的rss总内存大小。同理，“GpuMemory”、“IonMemory”、“AshmemMemory”为各内核管控日志中展示的内存大小。
+“RssMemory”是应用触发RSS内核管控后日志中展示的RSS总内存大小。同理，“GpuMemory”、“IonMemory”、“AshmemMemory”为各内核管控日志中展示的内存大小。
 
-[h2]rss内核管控
+[h2]RSS内核管控
 
-概述：应用rss内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发rss内核管控。
+概述：应用RSS内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发RSS内核管控。
 
 日志文件：memleak-kernel-[module]-0-[timestamp].txt（方式一）或 RESOURCE_OVERLIMIT_[TIMESTAMP]_[PID].log（方式三）。
 
-rss内核管控日志内容如下：
+RSS内核管控日志内容如下：
 
 字段	说明
 LOGGER_MEMCHECK_SAMPLIFY_SMAPS_INFO	记录了该进程的smaps汇总信息。
@@ -966,31 +966,31 @@ LOGGER_MEMCHECK_SAMPLIFY_SMAPS_INFO
 
 说明
 
-开发者可以根据Rss列的内存之和计算出进程的rss内存总占用。
+开发者可以根据"Rss"列的内存之和计算出进程的RSS内存总占用。
 
-[h2]gpu内核管控
+[h2]GPU内核管控
 
-概述：应用gpu内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发gpu内核管控。
-
-日志文件：memleak-kernel-[module]-0-[timestamp].txt（方式一）或 RESOURCE_OVERLIMIT_[TIMESTAMP]_[PID].log（方式三）。
-
-gpu内核管控日志内容与gpu内存泄漏日志规格中的“LOGGER_MEMCHECK_PROC_INFO”字段下的维测内容保持一致。
-
-[h2]ashmem内核管控
-
-概述：应用ashmem内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发ashmem内核管控。
+概述：应用GPU内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发GPU内核管控。
 
 日志文件：memleak-kernel-[module]-0-[timestamp].txt（方式一）或 RESOURCE_OVERLIMIT_[TIMESTAMP]_[PID].log（方式三）。
 
-ashmem内核管控日志内容与ashmem内存泄漏日志规格中的“LOGGER_MEMCHECK_PROC_INFO”字段下的维测内容保持一致。
+GPU内核管控日志内容与GPU内存泄漏日志规格中的“LOGGER_MEMCHECK_PROC_INFO”字段下的维测内容保持一致。
 
-[h2]ion内核管控
+[h2]ASHMEM内核管控
 
-概述：应用ion内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发ion内核管控。
+概述：应用ASHMEM内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发ASHMEM内核管控。
 
 日志文件：memleak-kernel-[module]-0-[timestamp].txt（方式一）或 RESOURCE_OVERLIMIT_[TIMESTAMP]_[PID].log（方式三）。
 
-ion内核管控日志内容与ion内存泄漏日志规格中的“LOGGER_MEMCHECK_PROC_INFO”字段下的维测内容保持一致。
+ASHMEM内核管控日志内容与ASHMEM内存泄漏日志规格中的“LOGGER_MEMCHECK_PROC_INFO”字段下的维测内容保持一致。
+
+[h2]DMA内核管控
+
+概述：应用DMA（ION）内存泄漏超过整机运行内存的1/3，且整机处于低内存状态时，触发DMA（ION）内核管控。
+
+日志文件：memleak-kernel-[module]-0-[timestamp].txt（方式一）或 RESOURCE_OVERLIMIT_[TIMESTAMP]_[PID].log（方式三）。
+
+DMA（ION）内核管控日志内容与DMA内存泄漏日志规格中的“LOGGER_MEMCHECK_PROC_INFO”字段下的维测内容保持一致。
 
 [h2]thread内核管控
 

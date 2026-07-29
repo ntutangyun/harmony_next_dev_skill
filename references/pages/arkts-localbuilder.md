@@ -54,6 +54,7 @@ struct Child {
     Column() {
       this.customBuilderParam()
     }
+    .width('100%')
   }
 }
 
@@ -65,23 +66,28 @@ struct Parent {
   @Builder
   componentBuilder() {
     Text(`${this.label}`) // @Builder内的this指向实际调用点的组件，在这个用例中因为调用点在Child组件内，所以this实际指向Child组件
+      .fontSize(20)
+      .margin(10)
   }
 
   @LocalBuilder
   componentLocalBuilder() {
     Text(`${this.label}`) // @LocalBuilder内的this指向声明@LocalBuilder函数Parent组件
+      .fontSize(20)
+      .margin(10)
   }
 
   build() {
     Column() {
       Child({ customBuilderParam: this.componentBuilder }) // Child组件内调用customBuilderParam显示字符串Child。
-      Child({ customBuilderParam: this.componentLocalBuilder }) // Child组件内调用customBuilderParam显示字符串Parent，传递函数本身写法。
+      Child({ customBuilderParam: this.componentLocalBuilder }) // 传递函数本身写法，Child组件内调用customBuilderParam显示字符串Parent。
       Child({
         customBuilderParam: () => {
           this.componentLocalBuilder()
         }
-      }) // Child组件内调用customBuilderParam显示字符串Parent，() => { 函数调用 }写法。
+      }) // () => { 函数调用 }写法，Child组件内调用customBuilderParam显示字符串Parent。
     }
+    .width('100%')
   }
 }
 
@@ -105,11 +111,11 @@ struct Parent {
 
 @LocalBuilder内的UI语法遵循UI语法规则。
 
-按回调传递和按引用传递时，支持@Builder函数内UI组件刷新。按引用传递只在传入一个参数且该参数直接传入对象字面量时生效，有多个参数时不支持@Builder函数内UI组件刷新。
+按回调传递和按引用传递时，支持@LocalBuilder函数内UI组件刷新。按引用传递只在传入一个参数且该参数直接传入对象字面量时生效，有多个参数时不支持@LocalBuilder函数内UI组件刷新。
 
 [h2]按回调传递参数
 
-从API version 20开始，开发者可以通过使用UIUtils.makeBinding()函数、Binding类和MutableBinding类实现@Builder函数中状态变量的刷新。详情请参考状态管理API文档。
+从API version 20开始，开发者可以通过使用UIUtils.makeBinding()函数、Binding类和MutableBinding类实现@Builder函数中状态变量的刷新。详情请参考makeBinding。
 
 import { UIUtils, Binding } from '@kit.ArkUI';
 
@@ -122,18 +128,23 @@ struct Parent {
   citeLocalBuilder(params: Binding<string>) {
     Row() {
       Text(`UseStateVarByReference: ${params.value}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 
   build() {
     Column() {
-      // 通过UIUtils.makeBinding()方法和Binding类，实现@Builder函数中状态变量的刷新
+      // 通过UIUtils.makeBinding()方法和Binding类，实现@LocalBuilder函数中状态变量的刷新
       this.citeLocalBuilder(UIUtils.makeBinding<string>(() => this.variableValue))
       Button('Click me')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.variableValue = 'Hi World';
         })
     }
+    .width('100%')
   }
 }
 
@@ -160,6 +171,8 @@ struct Parent {
   citeLocalBuilder(params: ReferenceType) {
     Row() {
       Text(`UseStateVarByReference: ${params.paramString}`)
+        .fontSize(20)
+        .margin(10)
     }
   };
 
@@ -167,10 +180,14 @@ struct Parent {
     Column() {
       // 按键值对写法进行传值，传入的参数发生变化，会引起citeLocalBuilder内的UI刷新
       this.citeLocalBuilder({ paramString: this.variableValue })
-      Button('Click me').onClick(() => {
-        this.variableValue = 'Hi World';
-      })
+      Button('Click me')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.variableValue = 'Hi World';
+        })
     }
+    .width('100%')
   }
 }
 
@@ -189,6 +206,8 @@ struct HelloComponent {
   build() {
     Row() {
       Text(`HelloComponent===${this.message}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -203,8 +222,11 @@ struct Parent {
     Row() {
       Column() {
         Text(`citeLocalBuilder===${$$.paramString}`)
+          .fontSize(20)
+          .margin(10)
         HelloComponent({ message: $$.paramString })
       }
+      .width('100%')
     }
   }
 
@@ -212,10 +234,14 @@ struct Parent {
     Column() {
       // 按引用传递参数，传入的参数发生变化，会引起citeLocalBuilder内的UI刷新
       this.citeLocalBuilder({ paramString: this.variableValue })
-      Button('Click me').onClick(() => {
-        this.variableValue = 'Hi World';
-      })
+      Button('Click me')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.variableValue = 'Hi World';
+        })
     }
+    .width('100%')
   }
 }
 
@@ -237,24 +263,42 @@ struct Parent {
   componentBuilder($$: Data) {
     // 点击Button 触发UI刷新
     Text('builder + $$')
+      .fontSize(20)
+      .margin(10)
     Text(`${'this -> ' + this.label}`)
+      .fontSize(20)
+      .margin(10)
     Text(`${'size : ' + $$.size}`)
+      .fontSize(20)
+      .margin(10)
   }
 
   @LocalBuilder
   componentLocalBuilder($$: Data) {
     // 点击Button 不会触发UI刷新
     Text('LocalBuilder + $$ data')
+      .fontSize(20)
+      .margin(10)
     Text(`${'this -> ' + this.label}`)
+      .fontSize(20)
+      .margin(10)
     Text(`${'size : ' + $$.size}`)
+      .fontSize(20)
+      .margin(10)
   }
 
   @LocalBuilder
   contentLocalBuilderNoArgument() {
     // 点击Button 触发UI刷新
     Text('LocalBuilder + local data')
+      .fontSize(20)
+      .margin(10)
     Text(`${'this -> ' + this.label}`)
+      .fontSize(20)
+      .margin(10)
     Text(`${'size : ' + this.data.size}`)
+      .fontSize(20)
+      .margin(10)
   }
 
   build() {
@@ -266,6 +310,7 @@ struct Parent {
         data: this.data
       })
     }
+    .width('100%')
   }
 }
 
@@ -288,10 +333,13 @@ struct Child {
       this.contentLocalBuilder({ size: this.data.size })
       this.contentLocalBuilderNoArgument()
       Button('add child size')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.data.size += 1;
         })
     }
+    .width('100%')
   }
 }
 
@@ -310,7 +358,10 @@ struct Parent {
   citeLocalBuilder(paramA1: string) {
     Row() {
       Text(`UseStateVarByValue: ${paramA1}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .height('100%')
   }
 
   build() {
@@ -319,6 +370,7 @@ struct Parent {
       // 改变@State修饰的label值时，@LocalBuilder函数内的值不会发生改变
       this.citeLocalBuilder(this.label)
     }
+    .width('100%')
   }
 }
 
@@ -347,6 +399,7 @@ struct ChildPage {
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
     }
+    .margin(20)
   }
 }
 
@@ -366,6 +419,7 @@ struct ParentPage {
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
     }
+    .margin(20)
   }
 
   @LocalBuilder
@@ -378,6 +432,7 @@ struct ParentPage {
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
     }
+    .margin(20)
   }
 
   build() {
@@ -385,39 +440,19 @@ struct ParentPage {
       Text(`info1: ${this.info1.name}  ${this.info1.age}`) // Text1
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
-      this.privateBuilder() // 调用局部@Builder
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
+      this.privateBuilder() // 调用局部@LocalBuilder
       Text(`info2: ${this.info2.name}  ${this.info2.age}`) // Text2
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
-      this.privateBuilderSecond() // 调用局部@Builder
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
+      this.privateBuilderSecond() // 调用局部@LocalBuilder
       Text(`info1: ${this.info1.name}  ${this.info1.age}`) // Text1
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
       ChildPage({ childInfo: this.info1 }) // 调用自定义组件
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
       Text(`info2: ${this.info2.name}  ${this.info2.age}`) // Text2
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
       ChildPage({ childInfo: this.info2 }) // 调用自定义组件
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
       Button('change info1&info2')
         .onClick(() => {
           this.info1 = { name: 'Cat', age: 18 }; // Text1不会刷新，原因是info1没被装饰器装饰，无法监听到值的改变。
@@ -624,6 +659,7 @@ struct Child {
     Column() {
       this.customBuilderParam()
     }
+    .width('100%')
   }
 }
 
@@ -635,23 +671,28 @@ struct Parent {
   @Builder
   componentBuilder() {
     Text(`${this.label}`) // @Builder内的this指向实际调用点的组件，在这个用例中因为调用点在Child组件内，所以this实际指向Child组件
+      .fontSize(20)
+      .margin(10)
   }
 
   @LocalBuilder
   componentLocalBuilder() {
     Text(`${this.label}`) // @LocalBuilder内的this指向声明@LocalBuilder函数Parent组件
+      .fontSize(20)
+      .margin(10)
   }
 
   build() {
     Column() {
       Child({ customBuilderParam: this.componentBuilder }) // Child组件内调用customBuilderParam显示字符串Child。
-      Child({ customBuilderParam: this.componentLocalBuilder }) // Child组件内调用customBuilderParam显示字符串Parent，传递函数本身写法。
+      Child({ customBuilderParam: this.componentLocalBuilder }) // 传递函数本身写法，Child组件内调用customBuilderParam显示字符串Parent。
       Child({
         customBuilderParam: () => {
           this.componentLocalBuilder()
         }
-      }) // Child组件内调用customBuilderParam显示字符串Parent，() => { 函数调用 }写法。
+      }) // () => { 函数调用 }写法，Child组件内调用customBuilderParam显示字符串Parent。
     }
+    .width('100%')
   }
 }
 ```
@@ -670,18 +711,23 @@ struct Parent {
   citeLocalBuilder(params: Binding<string>) {
     Row() {
       Text(`UseStateVarByReference: ${params.value}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 
   build() {
     Column() {
-      // 通过UIUtils.makeBinding()方法和Binding类，实现@Builder函数中状态变量的刷新
+      // 通过UIUtils.makeBinding()方法和Binding类，实现@LocalBuilder函数中状态变量的刷新
       this.citeLocalBuilder(UIUtils.makeBinding<string>(() => this.variableValue))
       Button('Click me')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.variableValue = 'Hi World';
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -702,6 +748,8 @@ struct Parent {
   citeLocalBuilder(params: ReferenceType) {
     Row() {
       Text(`UseStateVarByReference: ${params.paramString}`)
+        .fontSize(20)
+        .margin(10)
     }
   };
 
@@ -709,10 +757,14 @@ struct Parent {
     Column() {
       // 按键值对写法进行传值，传入的参数发生变化，会引起citeLocalBuilder内的UI刷新
       this.citeLocalBuilder({ paramString: this.variableValue })
-      Button('Click me').onClick(() => {
-        this.variableValue = 'Hi World';
-      })
+      Button('Click me')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.variableValue = 'Hi World';
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -731,6 +783,8 @@ struct HelloComponent {
   build() {
     Row() {
       Text(`HelloComponent===${this.message}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -745,8 +799,11 @@ struct Parent {
     Row() {
       Column() {
         Text(`citeLocalBuilder===${$$.paramString}`)
+          .fontSize(20)
+          .margin(10)
         HelloComponent({ message: $$.paramString })
       }
+      .width('100%')
     }
   }
 
@@ -754,10 +811,14 @@ struct Parent {
     Column() {
       // 按引用传递参数，传入的参数发生变化，会引起citeLocalBuilder内的UI刷新
       this.citeLocalBuilder({ paramString: this.variableValue })
-      Button('Click me').onClick(() => {
-        this.variableValue = 'Hi World';
-      })
+      Button('Click me')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.variableValue = 'Hi World';
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -779,24 +840,42 @@ struct Parent {
   componentBuilder($$: Data) {
     // 点击Button 触发UI刷新
     Text('builder + $$')
+      .fontSize(20)
+      .margin(10)
     Text(`${'this -> ' + this.label}`)
+      .fontSize(20)
+      .margin(10)
     Text(`${'size : ' + $$.size}`)
+      .fontSize(20)
+      .margin(10)
   }
 
   @LocalBuilder
   componentLocalBuilder($$: Data) {
     // 点击Button 不会触发UI刷新
     Text('LocalBuilder + $$ data')
+      .fontSize(20)
+      .margin(10)
     Text(`${'this -> ' + this.label}`)
+      .fontSize(20)
+      .margin(10)
     Text(`${'size : ' + $$.size}`)
+      .fontSize(20)
+      .margin(10)
   }
 
   @LocalBuilder
   contentLocalBuilderNoArgument() {
     // 点击Button 触发UI刷新
     Text('LocalBuilder + local data')
+      .fontSize(20)
+      .margin(10)
     Text(`${'this -> ' + this.label}`)
+      .fontSize(20)
+      .margin(10)
     Text(`${'size : ' + this.data.size}`)
+      .fontSize(20)
+      .margin(10)
   }
 
   build() {
@@ -808,6 +887,7 @@ struct Parent {
         data: this.data
       })
     }
+    .width('100%')
   }
 }
 
@@ -830,10 +910,13 @@ struct Child {
       this.contentLocalBuilder({ size: this.data.size })
       this.contentLocalBuilderNoArgument()
       Button('add child size')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.data.size += 1;
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -850,7 +933,10 @@ struct Parent {
   citeLocalBuilder(paramA1: string) {
     Row() {
       Text(`UseStateVarByValue: ${paramA1}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .height('100%')
   }
 
   build() {
@@ -859,6 +945,7 @@ struct Parent {
       // 改变@State修饰的label值时，@LocalBuilder函数内的值不会发生改变
       this.citeLocalBuilder(this.label)
     }
+    .width('100%')
   }
 }
 ```
@@ -885,6 +972,7 @@ struct ChildPage {
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
     }
+    .margin(20)
   }
 }
 
@@ -904,6 +992,7 @@ struct ParentPage {
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
     }
+    .margin(20)
   }
 
   @LocalBuilder
@@ -916,6 +1005,7 @@ struct ParentPage {
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
     }
+    .margin(20)
   }
 
   build() {
@@ -923,39 +1013,19 @@ struct ParentPage {
       Text(`info1: ${this.info1.name}  ${this.info1.age}`) // Text1
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
-      this.privateBuilder() // 调用局部@Builder
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
+      this.privateBuilder() // 调用局部@LocalBuilder
       Text(`info2: ${this.info2.name}  ${this.info2.age}`) // Text2
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
-      this.privateBuilderSecond() // 调用局部@Builder
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
+      this.privateBuilderSecond() // 调用局部@LocalBuilder
       Text(`info1: ${this.info1.name}  ${this.info1.age}`) // Text1
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
       ChildPage({ childInfo: this.info1 }) // 调用自定义组件
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
       Text(`info2: ${this.info2.name}  ${this.info2.age}`) // Text2
         .fontSize(30)
         .fontWeight(FontWeight.Bold)
       ChildPage({ childInfo: this.info2 }) // 调用自定义组件
-      Line()
-        .width('100%')
-        .height(10)
-        .backgroundColor('#000000')
-        .margin(10)
       Button('change info1&info2')
         .onClick(() => {
           this.info1 = { name: 'Cat', age: 18 }; // Text1不会刷新，原因是info1没被装饰器装饰，无法监听到值的改变。

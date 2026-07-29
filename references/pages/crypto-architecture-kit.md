@@ -12,6 +12,8 @@ Crypto Architecture Kit简介
 
 密钥协商
 
+密钥封装解封装
+
 消息摘要计算
 
 消息认证码
@@ -20,6 +22,6 @@ Crypto Architecture Kit简介
 
 密钥派生
 
-跨平台数据兼容实践指导
+实现跨平台加解密数据兼容性
 
 Crypto Architecture Kit常见问题

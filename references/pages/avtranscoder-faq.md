@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avtransco
 
 应用发送视频进行转码，音频编码格式为什么变化
 
-在转码过程中，若未指定音频轨道格式，系统默认将其转换为AAC编码格式。
+在转码过程中，若未指定音频编码格式，系统默认将其转换为AAC编码格式。
 
 转码是否支持HDR转SDR？为什么使用其他系统的设备录制HDR视频转码会失败
 

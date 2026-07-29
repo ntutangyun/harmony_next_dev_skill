@@ -24,14 +24,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-ear
 
 [h2]创建音频录制
 
-通过OHAudio提供OH_AudioStreamBuilder接口，遵循构造器设计模式，构建录制音频流。指定对应的OH_AudioStream_Type, 设置为AUDIOSTREAM_TYPE_CAPTURER。
+通过OHAudio提供OH_AudioStreamBuilder接口，遵循构造器设计模式，构建录制音频流。指定对应的OH_AudioStream_Type，设置为AUDIOSTREAM_TYPE_CAPTURER。
 
 OH_AudioStreamBuilder* builder;
 OH_AudioStreamBuilder_Create(&builder, AUDIOSTREAM_TYPE_CAPTURER);
 
 [h2]创建音频播放
 
-通过OHAudio提供OH_AudioStreamBuilder接口，遵循构造器设计模式，构建播放音频流。指定对应的OH_AudioStream_Type, AUDIOSTREAM_TYPE_RENDERER。
+通过OHAudio提供OH_AudioStreamBuilder接口，遵循构造器设计模式，构建播放音频流。指定对应的OH_AudioStream_Type，设置为AUDIOSTREAM_TYPE_RENDERER。
 
 OH_AudioStreamBuilder* builder;
 OH_AudioStreamBuilder_Create(&builder, AUDIOSTREAM_TYPE_RENDERER);
@@ -45,9 +45,9 @@ OH_AudioStreamBuilder_Create(&builder, AUDIOSTREAM_TYPE_RENDERER);
 OH_AudioStream_LatencyMode latencyMode = AUDIOSTREAM_LATENCY_MODE_FAST;
 OH_AudioStreamBuilder_SetLatencyMode(builder, latencyMode);
 
-为实现实时耳返功能，需创建一个公共缓存区用于存储录制的数据，并及时从该缓存区获取数据写入播放构造器。
+为实现实时耳返功能，需创建一个公共缓冲区用于存储录制的数据，并及时从该缓冲区获取数据写入播放构造器。
 
-[h2]定义公共缓存和录制、播放函数
+[h2]定义公共缓冲区和录制、播放函数
 
 int32_t MyOnReadData_Legacy(
     OH_AudioCapturer* capturer,
@@ -65,13 +65,13 @@ int32_t MyOnWriteData(
     void* buffer,
     int32_t length)
 {
-    // 从公共缓存buffer中读取数据，并按length长度写入buffer。
+    // 从公共缓冲区buffer中读取数据，并按length长度写入buffer。
     return 0;
 }
 
 注意
 
-应用的公共缓存大小不应设置过大，以避免增加耳返时延，影响用户体验。开发者应根据时延要求和抗抖动要求，选择合适的缓存大小，确保用户体验。
+应用的公共缓冲区大小不应设置过大，以避免增加耳返时延，影响用户体验。开发者应根据时延要求和抗抖动要求，选择合适的缓冲区大小，确保用户体验。
 
 [h2]设置音频流参数
 
@@ -152,7 +152,7 @@ int32_t MyOnWriteData(
     void* buffer,
     int32_t length)
 {
-    // 从公共缓存BUFFER中读取数据，并按length长度写入buffer。
+    // 从公共缓冲区buffer中读取数据，并按length长度写入buffer。
     return 0;
 }
 int32_t MyOnStreamEvent_Renderer(
@@ -206,7 +206,7 @@ OH_AudioStreamBuilder_GenerateRenderer(builder, &audioRenderer);
 
 [h2]使用音频流
 
-以录制为例，开发者可以使用以下接口控制音频流的开始、暂停、停止和释放。
+以播放为例，开发者可以使用以下接口控制音频流的开始、暂停、停止和释放。
 
 注意
 
@@ -267,7 +267,7 @@ int32_t MyOnWriteData(
     void* buffer,
     int32_t length)
 {
-    // 从公共缓存buffer中读取数据，并按length长度写入buffer。
+    // 从公共缓冲区buffer中读取数据，并按length长度写入buffer。
     return 0;
 }
 ```
@@ -354,7 +354,7 @@ int32_t MyOnWriteData(
     void* buffer,
     int32_t length)
 {
-    // 从公共缓存BUFFER中读取数据，并按length长度写入buffer。
+    // 从公共缓冲区buffer中读取数据，并按length长度写入buffer。
     return 0;
 }
 int32_t MyOnStreamEvent_Renderer(

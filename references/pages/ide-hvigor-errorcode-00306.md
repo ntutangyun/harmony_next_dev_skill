@@ -909,3 +909,21 @@ integratedHsp模块不支持skillProfiles配置。
 删除module.json5中的skillProfiles。
 
 在模块的build-profile.json5中将buildOption.arkOptions.integratedHsp设置为false。
+
+00306060 无法获取依赖的版本号和名称
+
+错误信息
+
+Unable to get dependency 'XXX''s version and name at file: XXX.
+
+错误描述
+
+无法获取依赖的版本号和名称。
+
+可能原因
+
+so依赖不支持通过parameterFile参数化配置版本号。
+
+处理步骤
+
+通过相对路径的方式配置so依赖。

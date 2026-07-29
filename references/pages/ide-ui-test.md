@@ -18,28 +18,67 @@ DevEco Studio 6.0.1 Beta1版本前，仅支持对UIAbility进行覆盖率测试�
 
 配置覆盖率过滤文件
 
-如果开发者希望只针对部分文件进行覆盖率测试，可在工程目录下创建coverage-filter.json5文件，在文件中配置参与或不参与覆盖率统计的文件/文件夹。DevEco Studio编译插桩时将按照coverage-filter.json5文件中的配置进行过滤。
-
-该功能从DevEco Studio 5.1.0 Release版本开始支持。
-
-coverage-filter.json5文件包含以下参数。
-
-参数	是否必填	类型	说明
-include	否	字符串数组	配置参与覆盖率统计的文件或文件夹路径，仅支持模块名开头的绝对路径，暂不支持通配符。include的优先级比exclude高。
-exclude	否	字符串数组	配置不参与覆盖率统计的文件或文件夹路径，仅支持模块名开头的绝对路径，暂不支持通配符。
-
-{
-  "include":[    // 配置参与覆盖率统计的文件或文件夹路径，仅支持模块名开头的绝对路径，暂不支持通配符
-    "entry/src/main/ets/pages/aaa.ets"
-  ],
-  "exclude":[    // 配置不参与覆盖率统计的文件或文件夹路径，仅支持模块名开头的绝对路径，暂不支持通配符
-    "entry/src/main/ets/pages"
-  ]
-}
+从DevEco Studio 5.1.0 Release版本开始，支持自定义参与覆盖率测试的文件。在工程目录下创建coverage-filter.json5文件，在文件中配置相关字段，DevEco Studio编译插桩时将按照coverage-filter.json5文件中的配置进行过滤。
 
 说明
 
 修改配置文件后不会触发增量编译，需要重新编译插桩再测试。
+
+[h2]coverage-filter.json5文件字段说明
+
+coverage-filter.json5文件支持以下字段。
+
+字段名称	可选/必选	类型	适用的覆盖率测试	含义
+include	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置参与覆盖率测试的文件或文件夹路径。 26.0.0 Beta2及以上版本：字段可选，路径配置支持以下通配符。*：匹配文件名中的任意数量字符。**：匹配任意文件夹。?：匹配文件名的单个字符。 26.0.0 Beta2以下版本：字段必选，仅支持模块名开头的路径，不支持通配符。 说明： include的优先级比exclude高。
+exclude	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置不参与覆盖率测试的文件或文件夹路径。 26.0.0 Beta2及以上版本：字段可选，路径配置支持通配符，支持的通配符和include字段相同。26.0.0 Beta2以下版本：字段必选，仅支持模块名开头的路径，不支持通配符。
+includeHar	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置参与覆盖率测试的远程源码har包，不支持远程字节码har包，不支持通配符。 从26.0.0 Beta2版本开始支持。
+extraAbilities	可选	对象数组	黑盒覆盖率测试	如果module.json5中配置的ability是通过import外部的ability类实现，同时在当前文件通过export导出，此ability无法生成黑盒覆盖率数据。可配置extraAbilities>path字段，填写外部的ability路径，生成黑盒覆盖率数据。支持相对路径，不支持通配符。示例如下。 从26.0.0 Beta2版本开始支持。
+
+extraAbilities字段示例：
+
+// xxx.ets
+import EntryAbility  from './EntryAbility';
+export default EntryAbility;
+
+// coverage-filter.json5
+{
+  "extraAbilities": [
+    {
+      "path": "entry/src/main/ets/entryability/EntryAbility.ets",   // import的EntryAbility的相对路径
+    },
+  ],
+}
+
+[h2]coverage-filter.json5文件示例
+
+// 26.0.0 Beta2及以上版本
+{
+  "include":[
+    "entry/src/main/ets/pages"  // 无通配符，包括pages下所有文件
+  ],
+  "exclude":[
+    "**/src/**/HspTest?.ets",   // src目录下的HspTest1.ets、HspTest2.ets等文件
+    "**/src/**/*Test1.*",       // src目录下所有文件名中有Test1.的文件
+    "**/src/**/utils"    	// src目录底下所有utils文件夹里的文件
+  ],
+  "includeHar":[
+    "math"
+  ],
+  "extraAbilities": [
+    {
+      "path": "entry/src/main/ets/entryability/EntryAbility.ets"
+    }
+  ]
+}
+// 26.0.0 Beta2以下版本
+{
+  "include":[
+    "entry/src/main/ets/pages/aaa.ets"
+  ],
+  "exclude":[
+    "entry/src/main/ets/pages"
+  ]
+}
 
 执行覆盖率测试
 
@@ -621,48 +660,85 @@ summary记录了单个文件的覆盖率详情。
 ### Code block 1
 
 ```
+// xxx.ets
+import EntryAbility  from './EntryAbility';
+export default EntryAbility;
+
+// coverage-filter.json5
 {
-  "include":[    // 配置参与覆盖率统计的文件或文件夹路径，仅支持模块名开头的绝对路径，暂不支持通配符
-    "entry/src/main/ets/pages/aaa.ets"
+  "extraAbilities": [
+    {
+      "path": "entry/src/main/ets/entryability/EntryAbility.ets",   // import的EntryAbility的相对路径
+    },
   ],
-  "exclude":[    // 配置不参与覆盖率统计的文件或文件夹路径，仅支持模块名开头的绝对路径，暂不支持通配符
-    "entry/src/main/ets/pages"
-  ]
 }
 ```
 
 ### Code block 2
 
 ```
-hvigorw --mode module -p module={moduleName@targetName} -p product={productName} -p buildMode=test -p ohos-test-coverage=true -p coverage-mode=black assembleHap --parallel --incremental --daemon
+// 26.0.0 Beta2及以上版本
+{
+  "include":[
+    "entry/src/main/ets/pages"  // 无通配符，包括pages下所有文件
+  ],
+  "exclude":[
+    "**/src/**/HspTest?.ets",   // src目录下的HspTest1.ets、HspTest2.ets等文件
+    "**/src/**/*Test1.*",       // src目录下所有文件名中有Test1.的文件
+    "**/src/**/utils"    	// src目录底下所有utils文件夹里的文件
+  ],
+  "includeHar":[
+    "math"
+  ],
+  "extraAbilities": [
+    {
+      "path": "entry/src/main/ets/entryability/EntryAbility.ets"
+    }
+  ]
+}
+// 26.0.0 Beta2以下版本
+{
+  "include":[
+    "entry/src/main/ets/pages/aaa.ets"
+  ],
+  "exclude":[
+    "entry/src/main/ets/pages"
+  ]
+}
 ```
 
 ### Code block 3
 
 ```
-hdc uninstall {bundleName}
+hvigorw --mode module -p module={moduleName@targetName} -p product={productName} -p buildMode=test -p ohos-test-coverage=true -p coverage-mode=black assembleHap --parallel --incremental --daemon
 ```
 
 ### Code block 4
 
 ```
-hdc install {SignedHapPath}
+hdc uninstall {bundleName}
 ```
 
 ### Code block 5
 
 ```
-hdc shell aa dump -c -l
+hdc install {SignedHapPath}
 ```
 
 ### Code block 6
+
+```
+hdc shell aa dump -c -l
+```
+
+### Code block 7
 
 ```
 const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 context.eventHub.emit('coverage');
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 // 如果是应用则执行该命令，其中LocalPath非必填，如果不填写，默认存放在当前执行命令的目录
@@ -671,13 +747,13 @@ hdc file recv data/app/el2/100/base/{bundleName}/haps/{moduleName}/cache {LocalP
 hdc file recv -b {bundleName} ls ./data/storage/el2/base/haps/{moduleName}/cache {LocalPath}
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 hvigorw collectCoverage -p projectPath={projectPath} -p reportPath={reportPath} -p coverageFile={projectPath}/{moduleName}/.test/default/intermediates/ohosTest/init_coverage.json#{LocalPath/bjc_cov_yyyyMMdd_HHmmss_SSS.json}
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 import { window } from '@kit.ArkUI';  // +0  方法外不统计
@@ -729,7 +805,7 @@ function bar():number {              // +1
 foo(1, bar());                       // +0  方法外不统计
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 import {testA} from './Index'
@@ -759,7 +835,7 @@ if (a==1) {
 }
 ```
 
-### Code block 11
+### Code block 12
 
 ```
 {
@@ -783,7 +859,7 @@ if (a==1) {
 }
 ```
 
-### Code block 12
+### Code block 13
 
 ```
 {
@@ -805,7 +881,7 @@ if (a==1) {
 }
 ```
 
-### Code block 13
+### Code block 14
 
 ```
 "functions": [
@@ -821,7 +897,7 @@ if (a==1) {
 ]
 ```
 
-### Code block 14
+### Code block 15
 
 ```
 "regions": [
@@ -840,7 +916,7 @@ if (a==1) {
 ]
 ```
 
-### Code block 15
+### Code block 16
 
 ```
 {
@@ -863,7 +939,7 @@ if (a==1) {
 },
 ```
 
-### Code block 16
+### Code block 17
 
 ```
 {
@@ -898,7 +974,7 @@ if (a==1) {
 }
 ```
 
-### Code block 17
+### Code block 18
 
 ```
 {
@@ -945,7 +1021,7 @@ if (a==1) {
 }
 ```
 
-### Code block 18
+### Code block 19
 
 ```
 "branches": [
@@ -969,7 +1045,7 @@ if (a==1) {
 ]
 ```
 
-### Code block 19
+### Code block 20
 
 ```
 {
@@ -1051,7 +1127,7 @@ if (a==1) {
 }
 ```
 
-### Code block 20
+### Code block 21
 
 ```
 {
@@ -1107,7 +1183,7 @@ if (a==1) {
 }
 ```
 
-### Code block 21
+### Code block 22
 
 ```
 "exeLine": {
@@ -1120,7 +1196,7 @@ if (a==1) {
 }
 ```
 
-### Code block 22
+### Code block 23
 
 ```
 "summary": {

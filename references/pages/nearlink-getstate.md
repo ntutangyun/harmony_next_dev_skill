@@ -23,35 +23,43 @@ off(type: 'stateChange', callback?: Callback<NearlinkState>): void	取消订阅�
 
 导入相关模块。
 
-import { manager } from '@kit.NearLinkKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { manager } from '@kit.NearLinkKit';
 
 发起星闪状态查询。
 
 try {
-  let state : manager.NearlinkState = manager.getState();
-  console.info('state = ' + JSON.stringify(state));
+  let state: manager.NearlinkState = manager.getState();
+  hilog.info(this.domainId, this.logTag, `NearLink state: ${JSON.stringify(state)}`);
+  // ...
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 或者通过注册的方式订阅星闪开关状态变化。
 
-let onReceiveEvent:(data: manager.NearlinkState) => void = (data: manager.NearlinkState) => {
-  console.info('nearlink state = ' + JSON.stringify(data));
+let onReceiveEvent: (data: manager.NearlinkState) => void = (data: manager.NearlinkState) => {
+  hilog.info(this.domainId, this.logTag, `NearLink state changed: ${JSON.stringify(data)}`);
+  // ...
 };
 try {
   manager.on('stateChange', onReceiveEvent);
+  hilog.info(this.domainId, this.logTag, `Subscribed to stateChange`);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 取消订阅星闪开关状态变化，其中onReceiveEvent是步骤3中定义的回调函数。
 
 try {
-  manager.off('stateChange', onReceiveEvent);
+  manager.off('stateChange');
+  hilog.info(this.domainId, this.logTag, `Unsubscribed from stateChange`);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 ## Code blocks
@@ -59,31 +67,37 @@ try {
 ### Code block 1
 
 ```
-import { manager } from '@kit.NearLinkKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { manager } from '@kit.NearLinkKit';
 ```
 
 ### Code block 2
 
 ```
 try {
-  let state : manager.NearlinkState = manager.getState();
-  console.info('state = ' + JSON.stringify(state));
+  let state: manager.NearlinkState = manager.getState();
+  hilog.info(this.domainId, this.logTag, `NearLink state: ${JSON.stringify(state)}`);
+  // ...
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
 ### Code block 3
 
 ```
-let onReceiveEvent:(data: manager.NearlinkState) => void = (data: manager.NearlinkState) => {
-  console.info('nearlink state = ' + JSON.stringify(data));
+let onReceiveEvent: (data: manager.NearlinkState) => void = (data: manager.NearlinkState) => {
+  hilog.info(this.domainId, this.logTag, `NearLink state changed: ${JSON.stringify(data)}`);
+  // ...
 };
 try {
   manager.on('stateChange', onReceiveEvent);
+  hilog.info(this.domainId, this.logTag, `Subscribed to stateChange`);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -91,8 +105,10 @@ try {
 
 ```
 try {
-  manager.off('stateChange', onReceiveEvent);
+  manager.off('stateChange');
+  hilog.info(this.domainId, this.logTag, `Unsubscribed from stateChange`);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```

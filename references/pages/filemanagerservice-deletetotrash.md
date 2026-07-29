@@ -20,17 +20,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 2.删除指定文件到回收站。
 
-async function deleteFile() {
-  // 以内置存储目录为例
-  // 示例代码targetUri表示Download目录下文件
-  // 开发者应根据自己实际获取的uri进行开发，并确保对该文件有读写权限
-  let targetUri: string = "file://docs/storage/Users/currentUser/Download/1.txt";
+private async deleteFile(targetUri: string) {
+// 以内置存储目录的Download目录下的文件为例，targetUri可以输入为："file://docs/storage/Users/currentUser/Download/1.txt"
+// 开发者应根据自己实际获取的uri进行开发，并确保对该文件有读写权限
   try {
     let trashUri: string = await fileManagerService.deleteToTrash(targetUri);
-    console.info("trashUri: " + trashUri);
+    console.info('trashUri: ' + trashUri);
   } catch (err) {
     let error: BusinessError = err as BusinessError;
-    console.error("delete failed, errCode:" + error.code + ", errMessage:" + error.message);
+    console.error('delete failed, errCode:' + error.code + ', errMessage:' + error.message);
   }
 }
 
@@ -46,17 +44,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-async function deleteFile() {
-  // 以内置存储目录为例
-  // 示例代码targetUri表示Download目录下文件
-  // 开发者应根据自己实际获取的uri进行开发，并确保对该文件有读写权限
-  let targetUri: string = "file://docs/storage/Users/currentUser/Download/1.txt";
+private async deleteFile(targetUri: string) {
+// 以内置存储目录的Download目录下的文件为例，targetUri可以输入为："file://docs/storage/Users/currentUser/Download/1.txt"
+// 开发者应根据自己实际获取的uri进行开发，并确保对该文件有读写权限
   try {
     let trashUri: string = await fileManagerService.deleteToTrash(targetUri);
-    console.info("trashUri: " + trashUri);
+    console.info('trashUri: ' + trashUri);
   } catch (err) {
     let error: BusinessError = err as BusinessError;
-    console.error("delete failed, errCode:" + error.code + ", errMessage:" + error.message);
+    console.error('delete failed, errCode:' + error.code + ', errMessage:' + error.message);
   }
 }
 ```

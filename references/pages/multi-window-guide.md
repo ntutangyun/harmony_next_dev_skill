@@ -1,4 +1,4 @@
-# 智慧多窗应用开发指南
+# 智慧多窗应用开发指导
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-window-guide_
 

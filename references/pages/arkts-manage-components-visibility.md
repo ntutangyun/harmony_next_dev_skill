@@ -248,7 +248,7 @@ struct ExposureTrackingPage {
 
 由于存在浮点数比较，系统会在计算结果接近所设置的阈值时触发回调；
 
-为确保可见性变化通知的及时性，系统在每帧进行计算可见比例的变化检测，为了减小系统负载，应尽可能少的使用这个接口。
+为确保可见性变化通知的及时性，系统在每帧进行计算可见比例的变化检测，为了减小系统负载，应尽可能少地使用这个接口。
 
 import { image } from '@kit.ImageKit';
 
@@ -359,7 +359,7 @@ struct Index {
 
     try {
       this.getUIContext().getHostContext()!.resourceManager.getMediaContent($r('app.media.startIcon').id,
-        (error, value: ArrayBuffer) => {
+        (error, value: Uint8Array) => {
           let opts: image.InitializationOptions = {
             editable: true,
             pixelFormat: 3,
@@ -918,7 +918,7 @@ struct Index {
 
     try {
       this.getUIContext().getHostContext()!.resourceManager.getMediaContent($r('app.media.startIcon').id,
-        (error, value: ArrayBuffer) => {
+        (error, value: Uint8Array) => {
           let opts: image.InitializationOptions = {
             editable: true,
             pixelFormat: 3,

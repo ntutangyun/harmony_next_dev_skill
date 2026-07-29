@@ -4,4 +4,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 业务概述
 
-实现游戏启动加速
+实现秒级启动

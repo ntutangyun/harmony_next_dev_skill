@@ -4,6 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 
 网络游戏登录概述
 
-使用华为账号登录（必选）
+接入华为账号登录（必选）
 
-使用游戏官方账号登录
+接入游戏官方账号登录

@@ -1,4 +1,4 @@
-# 内容动态变化场景
+# 内容动态变化
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-dynamic-content-change_
 
@@ -16,7 +16,7 @@ bundleName	string	目标应用名	当前应用包名
 triggerAction	Action	触发事件的Action	click或其他都不会有任何影响
 textAnnouncedForAccessibility	string	主动播报的内容	test123 text
 
-开发实例
+开发流程
 
 import { accessibility } from '@kit.AccessibilityKit'
 

@@ -9,3 +9,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-med
 创建轮播 (Swiper)
 
 创建弧形轮播 (ArcSwiper)（圆形屏幕推荐使用）
+
+基于colorFilter实现图片滤镜效果
+
+基于resizable实现图片拉伸效果

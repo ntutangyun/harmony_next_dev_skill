@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/perf-dete
 
 [h2]实现原理
 
-启动事件统计时间起点为用户点击屏幕，默认结束点为启动动效完成，使用者可调用reportDrawCompleted接口根据实际情况传入定制结束时间。
+启动耗时事件统计时间起点为用户点击屏幕，默认结束点为启动动效完成，使用者可调用reportDrawCompleted接口根据实际情况传入定制结束时间。
 
 icon_input_time：用户点击屏幕时间点。
 
@@ -20,9 +20,9 @@ extend_time：开发者定制的启动耗时，该时间为手指离开屏幕到
 
 [h2]约束与限制
 
-启动事件是指用户操作的应用启动，不包括进程自动重启等情况。
+启动耗时事件是指用户操作的应用启动，不包括进程自动重启等情况。
 
-启动时间为行为类事件，触发后即上报不受阈值限制。
+启动耗时事件为行为类事件，触发后即上报不受阈值限制。
 
 [h2]事件获取方式
 
@@ -44,7 +44,7 @@ extend_time：开发者定制的启动耗时，该时间为手指离开屏幕到
 
 上报阈值：
 
-最大单帧耗时超过50ms则为滑动丢帧，具体规则为max_render_frametime或max_app_frametime超过50ms时 会触发该事件上报。
+最大单帧耗时超过50ms则为滑动丢帧，具体规则为max_render_frametime或max_app_frametime超过50ms时会触发该事件上报。
 
 [h2]约束与限制
 
@@ -66,7 +66,7 @@ extend_time：开发者定制的启动耗时，该时间为手指离开屏幕到
 
 日志老化规格
 
-一般情况，栈文件的大小为7-10KB。应用沙箱内的watchdog目录最大保存10M内容，超出后，需要用户手动清 理文件。目录地址：/data/storage/el2/log/watchdog/。
+一般情况，栈文件的大小为7-10KB。应用沙箱内的watchdog目录最大保存10M内容，超出后，需要用户手动清理文件。目录地址：/data/storage/el2/log/watchdog/。
 
 若用户未主动清理，系统会触发清理。
 

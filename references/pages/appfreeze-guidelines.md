@@ -126,6 +126,7 @@ PreInstalled:No
 Foreground:Yes
 Pid:13680
 Uid:20020177
+App running unique id:124500628566978194
 Process life time:18s
 Process Memory(kB):163819(Rss)
 Device Memory(kB):Total 11679272, Free 3697424, Available 5814272
@@ -148,12 +149,14 @@ PID:13680
 UID:20020177
 PACKAGE_NAME:com.samples.freezedebug
 PROCESS_NAME:com.samples.freezedebug
-NOTE: Current fault may be caused by the system's low memory or thermal throttling, you may ignore it and analysis other faults.
+NOTE: Current fault may be caused by the system's low memory or thermal throttling, you may ignore it and analysis other faults.Current process has encountered fd leak which may lead to appfreeze, you may refer to resource overlimit event from hiAppEvent for further analysis.
 ***
 
 从API version 20开始，当整机资源告警（如整机低内存或热限频）时，系统会输出NOTE行。此时开发者可忽略应用冻屏故障。在之前的API版本中，无论整机资源状态如何，系统都不会输出此NOTE行。
 
-从API version 20开始，发生THREAD_BLOCK_6S故障时，日志中新增HiTraceId信息打印。HitraceId是HiTraceChain提供的唯一跟踪标识，用于跟踪业务流程调用链。可以协助开发者查看故障时间段内，故障流程的hilog日志，分析日志查看应用的执行状态。
+从API version 20开始，发生THREAD_BLOCK_6S故障时，日志中新增HiTraceId信息打印。HiTraceId是HiTraceChain提供的唯一跟踪标识，用于跟踪业务流程调用链。可以协助开发者查看故障时间段内，故障流程的hilog日志，分析日志查看应用的执行状态。
+
+从API版本26.0.0开始，支持AppFreeze日志中关联Resource Leak（资源泄漏）检测事件信息。若当前进程在发生冻屏故障前已存在内存泄漏，故障日志将提示泄漏事件，并指出其可能为导致冻屏的诱因。
 
 AppFreeze事件（THREAD_BLOCK_6S、 APP_INPUT_BLOCK）都包含以下几部分信息：
 
@@ -166,9 +169,10 @@ Reason	应用无响应原因，与应用无响应检测能力点对应。
 PID	发生故障时的pid。
 PACKAGE_NAME	应用进程包名。
 Page switch history	从API version 20开始，维测进程会记录应用切换历史。应用发生故障后，生成的故障文件将包含页面切换历史轨迹。如果维测服务进程崩溃或被终止运行，或者未能成功缓存页面切换轨迹，则不包含此字段。
+App running unique id	应用运行时唯一关联的id。 说明：从API版本26.0.0开始支持。
 Process life time	故障进程存活时间。单位：s。 说明：从API version 22开始支持。
 Process Memory(kB)	故障进程内存占用。 说明：从API version 22开始支持。
-Device Memory(kB)	整机内存状态。 说明：从API version 22开始支持。
+Device Memory(kB)	整机内存信息。 说明：从API version 22开始支持。
 
 [h2]日志主干通用信息
 
@@ -183,6 +187,8 @@ PACKAGE_NAME = com.samples.freezedebug
 PROCESS_NAME = com.samples.freezedebug
 eventLog_action = ffrt,t,GpuStack,cmd:m,hot
 eventLog_interval = 10
+this thread has blocked 3000ms.
+IS_FROZEN = 0
 MSG =
 Fault time:2025/06/28-14:08:34
 App main thread is not response!
@@ -209,7 +215,9 @@ mainHandler dump is:
  Total size of Idle events : 0
  Total event size : 2
 
-AppFreeze事件（THREAD_BLOCK_6S、 APP_INPUT_BLOCK）都包含以下几部分信息：
+AppFreeze事件THREAD_BLOCK_6S、APP_INPUT_BLOCK均包含以下信息：
+
+从API版本26.0.0开始，AppFreeze事件新增支持LIFECYCLE_TIMEOUT。
 
 字段	说明
 EVENTNAME	组成卡死检测事件。
@@ -220,6 +228,8 @@ TID	发生故障时的tid。
 PACKAGE_NAME	应用进程包名。
 PROCESS_NAME	应用进程名。
 MSG	发生故障时间及EventHandler信息。
+IS_FROZEN	发生故障时，进程冻结状态。 - 0表示进程未冻结。 - 1表示进程冻结。 说明：从API版本26.0.0开始支持。
+this thread has blocked 3000ms.	发生线程阻塞故障时，应用线程执行任务超时 3 秒（即 THREAD_BLOCK_3S 阈值）。具体超时时间以日志中实际数值为准（示例中为 3000ms）。 说明：从API版本26.0.0开始支持。
 
 EventHandler信息，具体解释如下：
 
@@ -290,6 +300,12 @@ state=S, utime=0, stime=0, priority=0, nice=-20, clk=100
 #27 pc 000000000000eb90 /system/bin/appspawn(main+728)(25ab88f6e04b1d2c8feb5d3eebfb4664)
 #28 pc 00000000000a9804 /system/lib/ld-musl-aarch64.so.1(libc_start_main_stage2+84)(f1a940981720250b920ee26d2d76af5b)
 
+上述故障进程堆栈信息解析方式：
+
+开发者使用release模式构建的应用，可以使用堆栈解析工具（hstack）工具配合Source Map解析堆栈，或者使用DevEco Studio配合对应版本的Source Map反解到对应代码，详见异常堆栈解析原理。
+
+开发者使用DevEco Studio的debug模式构建的应用，可以使用DevEco Studio故障日志的直接跳转功能定位问题。
+
 大部分情况下，THREAD_BLOCK_6S、LIFECYCLE_TIMEOUT以及APP_INPUT_BLOCK故障的堆栈信息，可以协助开发者定位到异常代码。
 
 其他情况下（比如瞬时栈场景），由于主线程繁忙等问题，导致获取堆栈信息延迟，无法及时捕获到异常代码段，堆栈的栈顶信息并非开发者期望获取的结果。
@@ -299,7 +315,7 @@ state=S, utime=0, stime=0, priority=0, nice=-20, clk=100
 若上述故障进程堆栈内容缺失，可能会出现以下几种日志信息：
 
 日志信息	说明
-has been crashed	目标进程crash。在收到目标进程的crash请求后，10s内收到抓栈请求，请参考故障时间点附近的crash日志。
+has been crashed	目标进程crash。在收到目标进程的crash请求后，10s内收到抓栈请求，请参考故障时间点附近的crash日志。需要检查应用自身的信号处理函数使用是否正确，或者是否使用了非信号安全函数。
 SIGDUMP error	目标进程在收到抓栈请求时已经退出。
 is dumping	目标进程正在dump。 短时间内连续请求，请参考故障时间点附近该进程的其他报错日志。
 State: S	目标进程Sleep。
@@ -313,7 +329,7 @@ errno(2)	目标进程无响应信号。超时1s后没有返回堆栈信息时，
 
 从API version 23开始，在线程号下新增线程状态等信息用于判断系统卡顿问题。其中，state表示线程运行状态，priority和nice表示调度优先级，stime和utime表示运行时间。对比THREAD_BLOCK_3S和THREAD_BLOCK_6S的堆栈运行时间无变化，说明进程未被调度。分析业务代码无阻塞调用后可判断为系统调度问题。线程状态信息获取失败时，以下字段均不显示，线程状态信息在故障日志中格式如下：
 
-state=S, utime=0, priority=0, nice=-20, clk=100
+state=S, utime=0, stime=0, priority=0, nice=-20, clk=100
 
 字段信息解释如下：
 
@@ -354,7 +370,7 @@ xxx:xxx to xxx:xxx	客户端进程号、线程号 to 服务端进程号、线程
 code	客户端和服务端达成一致约束的业务码。
 wait	通信等待时长。
 frz_state	进程冻结状态。 -1 未知； 1 默认； 2 正在向用户态发送binder状态信息； 3 走到了binder接收线程。
-ns	客户端进程号、线程号 to 服务端进程号、线程号（非卓易通内进程显示-1）。
+ns	客户端进程号、线程号 to 服务端进程号、线程号。
 debug	IPC通信双方的信息补充。
 active_code	正在处理的异步消息code。
 active_thread	处理这个异步消息的线程。
@@ -459,53 +475,97 @@ client actions for app:
 
 下面表格用两个完整生命周期切换示例来解释MSG中的信息。
 
+说明
+
+每条记录均带有时间戳，通过相邻记录的时间戳差值可定位耗时步骤。
+
+"失败原因"列说明该步骤可能导致超时的原因。
+
+"是否需要应用处理"列说明是否需要应用开发者处理及处理方式。
+
+标注"（异常场景）"的记录仅在对应异常发生时出现，标注"（InsightIntent场景）"的记录仅在涉及意图框架时出现。
+
 load 阶段事件，以应用进程未创建为例。
 
-server	client	描述
-AbilityRecord::LoadAbility; the LoadAbility lifecycle starts.	-	Ability加载生命周期开始，系统准备加载Ability所需的资源和进程。
-AppMgrServiceInner::LoadAbility	-	在创建应用进程之前，服务端开始处理Ability加载请求，检查进程状态。
-AppMgrService::AttachApplication	-	应用进程创建成功后，进程向服务端发起attach（挂载）请求，建立通信通道。
-ServiceInner::AttachApplication	-	服务端处理进程attach，记录进程信息，准备后续调度。
-ServiceInner::LaunchApplication	-	服务端调度应用执行加载流程，通知应用进程进行初始化。
-AppRunningRecord::LaunchApplication	-	调度应用执行加载流程。
-AppScheduler::ScheduleLaunchApplication	-	调度应用执行加载流程。
--	ScheduleLaunchApplication	应用进程接收到应用加载调度请求，开始准备加载环境。
--	HandleLaunchApplication begin	应用开始执行加载逻辑。
--	HandleLaunchApplication end	应用加载逻辑执行结束。
-AppRunningRecord::LaunchPendingAbilities	-	调度应用中待启动的Ability，触发具体的Ability加载。
--	MainThread::ScheduleLaunchAbility	应用进程收到加载Ability的请求，准备执行Ability的创建流程。
--	MainThread::HandleLaunchAbility	应用主线程处理Ability加载请求。
--	JsAbilityStage::Create	加载AbilityStage。
--	JsAbilityStage::OnCreate begin	AbilityStage onCreate生命周期开始。
--	JsAbilityStage::OnCreate end	AbilityStage的onCreate生命周期结束，AbilityStage初始化完成。
--	AbilityThread::Attach	AbilityStage挂载（Attach）到AMS，load阶段结束。
+server	client	描述	失败原因	是否需要应用处理
+AbilityRecord::LoadAbility; the LoadAbility lifecycle starts.	-	Ability加载生命周期开始，系统准备加载Ability所需的资源和进程。标识load阶段起点。	-	否，系统侧调度。
+AppMgrServiceInner::LoadAbility	-	在创建应用进程之前，服务端开始处理Ability加载请求，检查进程状态。	-	否，系统侧调度。
+AppMgrService::AttachApplication	-	应用进程创建成功后，进程向服务端发起attach（挂载）请求，建立通信通道。	-	否，系统侧调度。
+ServiceInner::AttachApplication	-	服务端处理进程attach，记录进程信息，准备后续调度。	-	否，系统侧调度。
+ServiceInner::LaunchApplication	-	服务端调度应用执行加载流程，通知应用进程进行初始化。	-	否，系统侧调度。
+AppRunningRecord::LaunchApplication	-	调度应用执行加载流程。	-	否，系统侧调度。
+AppRunningRecord::LaunchApplication; null scheduler（异常场景）	-	调度应用加载流程时调度器为空，记录异常信息。	-	否，系统侧调度问题。
+AppScheduler::ScheduleLaunchApplication	-	通过IPC向应用进程发送ScheduleLaunchApplication调度请求。	-	否，系统侧IPC。
+write launchData fail（异常场景）	-	序列化launchData失败。	-	否，系统侧数据问题。
+write config fail（异常场景）	-	序列化config失败。	-	否，系统侧数据问题。
+ScheduleLaunchApplication ipc error *（异常场景）	-	ScheduleLaunchApplication IPC调用失败，记录IPC错误码。	IPC通信异常。	否，系统侧IPC问题。
+-	ScheduleLaunchApplication	应用进程接收到应用加载调度请求，开始准备加载环境。	主线程被阻塞，未及时处理IPC请求。	是，检查主线程是否存在耗时任务或阻塞调用。
+-	HandleLaunchApplication begin	应用开始执行加载逻辑。	Application初始化逻辑耗时。	是，检查应用是否存在异常耗时。
+-	HandleLaunchApplication end	应用加载逻辑执行结束。与begin对比可计算加载耗时。	-	是，检查应用是否存在异常耗时。
+AppRunningRecord::LaunchPendingAbilities	-	调度应用中待启动的Ability，触发具体的Ability加载。	-	否，系统侧调度。
+AppLifeCycleDeal::LaunchAbility	-	服务端通过IPC调度应用加载具体的Ability。	IPC通信失败、序列化Want失败。	否，系统侧IPC问题。
+AppLifeCycleDeal::LaunchAbility; write want fail（异常场景）	-	序列化want数据失败，记录异常信息。	want参数过大或包含不可序列化对象。	是，检查want参数是否包含过大或不可序列化数据。
+AppLifeCycleDeal::LaunchAbility; ipc error *（异常场景）	-	ScheduleLaunchAbility IPC调用失败，记录IPC错误码。	IPC通信异常。	否，系统侧IPC问题。
+-	MainThread::ScheduleLaunchAbility	应用进程收到加载Ability的请求，准备执行Ability的创建流程。	主线程被阻塞。	是，检查主线程是否存在耗时任务。
+-	MainThread::HandleLaunchAbility	应用主线程处理Ability加载请求。	-	否，系统侧加载过程。
+-	JsAbilityStage::Create	加载AbilityStage。	-	否，系统侧加载过程。
+-	JsAbilityStage::OnCreate begin	AbilityStage onCreate生命周期开始。	AbilityStage onCreate中执行耗时操作。	是，避免在AbilityStage onCreate中执行耗时操作。
+-	JsAbilityStage::OnCreate end	AbilityStage的onCreate生命周期结束，AbilityStage初始化完成。与begin对比可计算耗时。	AbilityStage onCreate耗时过长。	是，优化AbilityStage onCreate逻辑。
+-	JsAbilityStage::OnAboutToCreateAbility begin（InsightIntent场景）	AbilityStage即将创建Ability（onAboutToCreateAbility回调）。	onAboutToCreateAbility中执行耗时操作。	是，避免在onAboutToCreateAbility中执行耗时操作。
+-	JsAbilityStage::OnAboutToCreateAbility end（InsightIntent场景）	onAboutToCreateAbility回调结束。与begin对比可计算耗时。	onAboutToCreateAbility耗时过长。	是，优化onAboutToCreateAbility逻辑。
+-	JsAbilityStage::OnAboutToCreateAbilityAsync begin（InsightIntent场景）	异步创建Ability（onAboutToCreateAbilityAsync回调）。	异步Promise未及时resolve。	是，确保onAboutToCreateAbilityAsync返回的Promise及时resolve。
+-	JsAbilityStage::OnAboutToCreateAbilityAsync end（InsightIntent场景）	onAboutToCreateAbilityAsync回调结束。	异步Promise未及时resolve。	是，确保onAboutToCreateAbilityAsync返回的Promise及时resolve。
+-	AbilityThread::CreateObjError（异常场景）	Ability JS对象创建失败，记录异常信息。	Ability类未注册、JS引擎初始化失败。	是，检查Ability类是否正确注册导出。
+-	AbilityThread::Attach	Ability binder挂载（Attach）到服务侧，建立通信。	-	否，系统侧IPC。
+-	AbilityThread::Attach; error *（异常场景）	AttachAbilityThread IPC调用失败，记录错误码。	IPC通信异常。	否，系统侧IPC问题。
+AbilityManagerService::AttachAbilityThread; the end of load lifecycle.	-	服务端确认AbilityThread挂载完成，load生命周期结束。	-	否，系统侧调度。
 
 foreground 阶段事件，应用冷启动。
 
-server	client	描述
-AbilityRecord::ProcessForegroundAbility; the ProcessForegroundAbility lifecycle starts.	-	Ability进入前台生命周期（Foreground Lifecycle）的起始阶段。
-ServiceInner::UpdateAbilityState	-	先调度应用前台，更新Ability的运行状态为“正在前台”。
-AppRunningRecord::ScheduleForegroundRunning	-	调度应用前台，通知应用进程进入前台运行模式。
-AppScheduler::ScheduleForegroundApplication	-	调度应用前台。
--	ScheduleForegroundApplication	应用进程接收调度指令，开始处理应用前台切换。
--	HandleForegroundApplication	主线程执行调度，分发应用前台任务到具体模块。
-AppMgrService::AppForegrounded	-	应用前台完成，服务端记录应用状态已切换至前台。
-ServiceInner::AppForegrounded	-	应用前台完成。
--	AbilityThread::ScheduleAbilityTransaction	应用收到Ability前台调度，准备对具体的Ability进行事务处理。
--	AbilityThread::HandleAbilityTransaction	主线程执行Ability前台调度，触发Ability的生命周期回调。
--	JsUIAbility::OnStart begin	onCreate生命周期开始，Ability执行初始化工作。
--	JsUIAbility::OnStart end	onCreate生命周期结束，Ability的初始资源已准备就绪。
--	JsUIAbility::OnSceneCreated begin	创建窗口scene开始。
--	JsUIAbility::OnSceneCreated end	创建窗口scene结束。
--	JsUIAbility::OnWillForeground begin	-
--	JsUIAbility::OnWillForeground end	-
--	JsUIAbility::WindowScene::GoForeground begin	调用窗口接口执行GoForeground开始。
--	UIAbilityImpl::WindowLifeCycleImpl::AfterForeground	窗口前台后回调。
--	JsUIAbility::IntentForeground execute start begin	执行应用前台相关的意图操作开始，处理由前台切换触发的Intent任务。
--	JsUIAbility::IntentForeground end	应用前台相关的意图操作执行结束，Intent相关逻辑已处理完成。
--	JsUIAbility::OnForeground begin	onForeground生命周期开始，通知开发者Ability已经在前台展示。
--	JsUIAbility::OnForeground end	onForeground生命周期结束，Ability的前台生命周期回调完成。
--	-	当窗口回调和onForeground都完成后，前台生命周期结束。
+server	client	描述	失败原因	是否需要应用处理
+AbilityRecord::ProcessForegroundAbility; the ProcessForegroundAbility lifecycle starts.	-	Ability进入前台生命周期（Foreground Lifecycle）的起始阶段。标识foreground阶段起点。	-	否，系统侧调度。
+ServiceInner::UpdateAbilityState	-	先调度应用前台。	-	否，系统侧调度。
+AppRunningRecord::ScheduleForegroundRunning	-	调度应用前台，通知应用进程进入前台运行模式。	-	否，系统侧调度。
+AppRunningRecord::ScheduleForegroundRunning; null scheduler（异常场景）	-	调度应用前台时调度器为空，记录异常信息。	-	否，系统侧调度问题。
+ScheduleForegroundRunning fail（异常场景）	-	ScheduleForegroundRunning调度失败，记录异常信息。	-	否，系统侧调度问题。
+AppScheduler::ScheduleForegroundApplication	-	通过IPC向应用发送ScheduleForegroundApplication调度请求。	-	否，系统侧IPC。
+ScheduleForegroundApplication ipc error *（异常场景）	-	ScheduleForegroundApplication IPC调用失败，记录IPC错误码。	IPC通信异常。	否，系统侧IPC问题。
+-	ScheduleForegroundApplication	应用进程接收调度指令，开始处理应用前台切换。	主线程被阻塞。	是，检查主线程是否存在耗时任务。
+-	HandleForegroundApplication	主线程执行调度，分发应用前台任务到具体模块。	-	是，检查Application onForeground是否耗时。
+-	HandleForegroundApplication; fail（异常场景）	PerformForeground执行失败，记录异常信息。	-	否，系统侧调度问题。
+AppMgrService::AppForegrounded	-	应用前台完成，服务端记录应用状态已切换至前台。	-	否，系统侧调度。
+ServiceInner::AppForegrounded	-	应用前台完成。	-	否，系统侧调度。
+AppRunningRecord::OnWindowVisibilityChanged	-	窗口可见性变化。	-	否，系统侧窗口调度。
+write want failed（异常场景）	-	服务端通过ScheduleAbilityTransaction调度Ability前台事务时，序列化Want失败。	want参数过大或包含不可序列化对象。	是，检查want参数是否包含过大或不可序列化数据。
+write sessionInfo failed（异常场景）	-	序列化sessionInfo失败。	-	否，系统侧数据问题。
+ScheduleAbilityTransaction ipc error *（异常场景）	-	ScheduleAbilityTransaction IPC调用失败，记录IPC错误码。	IPC通信异常。	否，系统侧IPC问题。
+-	AbilityThread::ScheduleAbilityTransaction	应用收到Ability前台调度，准备对具体的Ability进行事务处理。	主线程被阻塞。	是，检查主线程是否存在耗时任务。
+-	AbilityThread::HandleAbilityTransaction	主线程执行Ability前台调度，触发Ability的生命周期回调。	-	否，系统侧记录。
+-	JsUIAbility::OnStart begin	onCreate生命周期开始，Ability执行初始化工作。	onCreate中执行耗时操作。	是，避免在onCreate中执行耗时操作。
+-	JsUIAbility::OnStart end	onCreate生命周期结束，Ability的初始资源已准备就绪。与begin对比可计算耗时。	onCreate耗时过长。	是，避免在onCreate中执行耗时操作。
+-	JsUIAbility::OnSceneCreated begin	创建窗口scene开始。	onWindowStageCreate中执行耗时操作。	是，避免在onWindowStageCreate中执行耗时操作。
+-	JsUIAbility::OnSceneCreated end	创建窗口scene结束。与begin对比可计算耗时。	onWindowStageCreate耗时过长。	是，避免在onWindowStageCreate中执行耗时操作。
+-	JsUIAbility::OnWillForeground begin	onWillForeground回调开始。	onWillForeground中执行耗时操作。	是，避免在onWillForeground中执行耗时操作。
+-	JsUIAbility::OnWillForeground end	onWillForeground回调结束。与begin对比可计算耗时。	onWillForeground耗时过长。	是，避免在onWillForeground中执行耗时操作。
+-	JsUIAbility::WindowScene::GoForeground begin	调用窗口接口执行GoForeground开始。	窗口scene初始化失败、窗口系统响应慢。	否，窗口系统问题。
+-	JsUIAbility::DoOnForegroundForSceneIsNull; error *（异常场景）	窗口scene初始化失败，记录错误码。	窗口scene创建失败、displayId获取失败。	否，窗口系统问题。
+-	UIAbilityImpl::WindowLifeCycleImpl::AfterForeground	窗口前台后回调。	窗口GoForeground未及时回调。	否，窗口系统问题。
+-	UIAbilityImpl::WindowLifeCycleImpl::ForegroundFailed; GoForeground failed（异常场景）	窗口GoForeground失败，记录异常信息。	-	否，窗口系统问题。
+-	JsUIAbility::IntentForeground execute start begin（InsightIntent场景）	执行应用前台相关的意图操作开始，处理由前台切换触发的Intent任务。	InsightIntent执行器未及时返回。	是，确保Intent执行器及时完成。
+-	JsUIAbility::IntentForeground end（InsightIntent场景）	应用前台相关的意图操作执行结束，Intent相关逻辑已处理完成。与start对比可计算耗时。	InsightIntent执行器耗时过长。	是，确保Intent执行器及时完成。
+-	JsUIAbility::IntentRepeat execute start（InsightIntent场景）	Intent重复执行模式开始。	InsightIntent执行器未及时返回。	是，确保Intent执行器及时完成。
+-	JsUIAbility::IntentRepeat execute end（InsightIntent场景）	Intent重复执行模式结束。与start对比可计算耗时。	InsightIntent执行器耗时过长。	是，确保Intent执行器及时完成。
+-	JsUIAbility::IntentPage execute start（InsightIntent场景）	Intent页面执行模式开始。	InsightIntent执行器未及时返回。	是，确保Intent执行器及时完成。
+-	JsUIAbility::IntentPage execute end（InsightIntent场景）	Intent页面执行模式结束。与start对比可计算耗时。	InsightIntent执行器耗时过长。	是，确保Intent执行器及时完成。
+-	UIAbilityImpl::HandleExecuteInsightIntentForeground（InsightIntent场景）	处理前台意图执行。	InsightIntent参数生成失败。	是，检查InsightIntent参数配置。
+-	JsUIAbility::OnForeground begin	onForeground生命周期开始，通知开发者Ability已经在前台展示。	onForeground中执行耗时操作。	是，避免在onForeground中执行耗时操作。
+-	JsUIAbility::OnForeground end	onForeground生命周期结束，Ability的前台生命周期回调完成。与begin对比可计算耗时。	onForeground耗时过长。	是，避免在onForeground中执行耗时操作。
+-	JsUIAbility::OnDidForeground begin	onDidForeground回调开始。	onDidForeground中执行耗时操作。	是，避免在onDidForeground中执行耗时操作。
+-	JsUIAbility::OnDidForeground end	onDidForeground回调结束。与begin对比可计算耗时。	onDidForeground耗时过长。	是，避免在onDidForeground中执行耗时操作。
+-	AbilityManagerClient::AbilityTransitionDone	客户端通知AMS前台切换完成。	AbilityTransitionDone IPC调用失败。	否，系统侧IPC问题。
+-	AbilityTransitionDone; write saveData failed（异常场景）	客户端序列化saveData失败，记录异常信息。	-	否，系统侧数据问题。
+-	AbilityTransitionDone; ipc error *（异常场景）	AbilityTransitionDone IPC调用失败，记录IPC错误码。	IPC通信异常。	否，系统侧IPC问题。
+AbilityManagerService::AbilityTransitionDone; the end of foreground lifecycle.	-	服务端确认前台切换完成，foreground生命周期结束。	客户端未及时调用AbilityTransitionDone。	否，系统侧调度。
 
 参考日志规格分析其他日志信息。特别说明：生命周期切换时若发生主线程卡死，请结合前后两次日志的堆栈与 BinderCatcher 信息进行对比分析，以定位问题。
 
@@ -528,7 +588,7 @@ DisplayPowerInfo:powerState:AWAKE
 
 在上述示例中，上次分发的事件是430，上次处理的事件是429，上次标记的事件是428，表明430事件已分发完毕，在处理环节，已超时8000毫秒。此日志可以用于APP_INPUT_BLOCK事件的简单定界，帮助问题分析。
 
-AppFreeze（应用冻屏）增强日志信息
+AppFreeze（应用冻屏）增强日志信息（采样栈）
 
 从API version 21开始，支持获取AppFreeze的增强日志。该日志通过采集整机及主线程的运行负载，并抓取多份主线程调用栈，帮助开发者分析问题根源。相比原有日志，AppFreeze的增强日志主要解决了以下两个不足：
 
@@ -546,7 +606,7 @@ AppFreeze（应用冻屏）增强日志信息
 
 说明
 
-由于应用冻屏事件的采样栈会与MAIN_THREAD_JANK冲突，如果应用接入MAIN_THREAD_JANK的setEventConfig接口自定义配置采集堆栈的个数，应用冻屏事件的采集堆栈的会与应用当前配置的采集堆栈的个数一致。
+由于应用冻屏事件的采样栈会与主线程超时检测冲突，如果应用接入MAIN_THREAD_JANK的setEventConfig接口自定义配置采集堆栈的个数，应用冻屏事件的采集堆栈会与应用当前配置的采集堆栈的个数一致。
 
 APP_INPUT_BLOCK故障有增强日志的前提是：先发生THREAD_BLOCK_3S或LIFECYCLE_HALF_TIMEOUT。
 
@@ -753,6 +813,7 @@ PreInstalled:No
 Foreground:Yes
 Pid:13680
 Uid:20020177
+App running unique id:124500628566978194
 Process life time:18s
 Process Memory(kB):163819(Rss)
 Device Memory(kB):Total 11679272, Free 3697424, Available 5814272
@@ -775,7 +836,7 @@ PID:13680
 UID:20020177
 PACKAGE_NAME:com.samples.freezedebug
 PROCESS_NAME:com.samples.freezedebug
-NOTE: Current fault may be caused by the system's low memory or thermal throttling, you may ignore it and analysis other faults.
+NOTE: Current fault may be caused by the system's low memory or thermal throttling, you may ignore it and analysis other faults.Current process has encountered fd leak which may lead to appfreeze, you may refer to resource overlimit event from hiAppEvent for further analysis.
 ***
 ```
 
@@ -793,6 +854,8 @@ PACKAGE_NAME = com.samples.freezedebug
 PROCESS_NAME = com.samples.freezedebug
 eventLog_action = ffrt,t,GpuStack,cmd:m,hot
 eventLog_interval = 10
+this thread has blocked 3000ms.
+IS_FROZEN = 0
 MSG =
 Fault time:2025/06/28-14:08:34
 App main thread is not response!
@@ -859,7 +922,7 @@ state=S, utime=0, stime=0, priority=0, nice=-20, clk=100
 ### Code block 5
 
 ```
-state=S, utime=0, priority=0, nice=-20, clk=100
+state=S, utime=0, stime=0, priority=0, nice=-20, clk=100
 ```
 
 ### Code block 6

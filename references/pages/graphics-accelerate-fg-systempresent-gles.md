@@ -38,16 +38,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 {
     "module": {
-        /*
-          其他的配置项
-          ...
-         */
+        // ...
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_FusionAware",
                 "value": "GLES"
             }
-        ]
+        ],
+        // ...
     }
 }
 
@@ -61,6 +59,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 // 创建超帧上下文实例
 FG_Context_GLES* context_ = HMS_FG_CreateContext_GLES();
 if (context_ == nullptr) {
+    GOLOGE("HMS_FG_CreateContext_GLES execution failed.");
     return false;
 }
 
@@ -73,10 +72,14 @@ FG_ErrorCode errorCode = FG_SUCCESS;
 FG_AlgorithmModeInfo aInfo{};
 aInfo.predictionMode = FG_PREDICTION_MODE_INTERPOLATION; // 内插模式
 aInfo.meMode = FG_ME_MODE_BASIC; // 运动估计基础模式
-errorCode = HMS_FG_SetAlgorithmMode_GLES(context_, &aInfo); // [必选] 设置超帧算法模式
+errorCode = HMS_FG_SetAlgorithmMode_GLES(context_, &aInfo); // 设置超帧算法模式
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetAlgorithmMode_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
+
+// 调用其他插帧相关配置接口
+// ...
 
 // 超帧预测的集成信息
 FG_IntegrationInfo integrationInfo {};
@@ -84,24 +87,24 @@ integrationInfo.presentMode = FG_PRESENT_BY_SYSTEM; // 预测帧送显模式
 integrationInfo.textureCachedByGame = false; // 输入的颜色纹理和深度纹理游戏侧缓存 系统不会复制一份再做预测 默认游戏不会缓存
 integrationInfo.needFlipInputColor = false; // 颜色纹理需要翻转 默认false
 integrationInfo.needFlipOutputColor = false; // 预测帧需要翻转 默认false
-// [可选] 设置超帧预测的集成信息
+// 设置超帧预测的集成信息
 errorCode = HMS_FG_SetIntegrationMode_GLES(context_, &integrationInfo);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetIntegrationMode_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// 调用其他插帧相关配置接口
-// ...
-
-// [可选] 设置是否启用UI预测功能，仅在系统送显模式下有效，在游戏送显模式下无效，接口不调用默认为false，预测帧会复用上一帧的UI进行展示
+// 设置是否启用UI预测功能，仅在系统送显模式下有效，在游戏送显模式下无效，接口不调用默认为false，预测帧会复用上一帧的UI进行展示
 errorCode = HMS_FG_SetUiPredictionEnabled_GLES(context_, false);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetUiPredictionEnabled_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 设置超帧后的目标帧率，仅在系统送显模式下且游戏上架后有效，在游戏送显模式下无效，接口不调用默认不会限制帧率，取决于游戏渲染帧率
+// 设置超帧后的目标帧率，仅在系统送显模式下且游戏上架后有效，在游戏送显模式下无效，接口不调用默认不会限制帧率，取决于游戏渲染帧率
 errorCode = HMS_FG_SetTargetFps_GLES(context_, 60);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetTargetFps_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -110,6 +113,7 @@ if (errorCode != FG_SUCCESS) {
 // 激活超帧上下文实例
 errorCode = HMS_FG_Activate_GLES(context_);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_Activate_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -124,61 +128,61 @@ FG_DispatchDescription_GLES dispatchDescriptionData_ {
     .outputColor = 0U
 };
 
-// 变量声明
-uint32_t inputColor = 0;
-uint32_t inputDepthStencil = 0;
-FG_Mat4x4 preViewProj;
-FG_Mat4x4 preInvViewProj;
+ // 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
+ // ...
 
-// 帧循环
-while (true) {
-    // 真实帧渲染阶段
-    // 绘制真实帧
-    // ...
+ // 绘制真实帧
+ // ...
+ // 绘制UI
+ // ...
+ bool const runPrediction = predictionEnabled_ && !predictionPaused_;
+ if (runPrediction) { // 预测帧渲染阶段
+     // 传入上一帧真实渲染帧颜色缓冲区索引
+     dispatchDescriptionData_.inputColor = scene_.texture_;
+     // 传入上一帧真实渲染帧深度模板缓冲区索引
+     dispatchDescriptionData_.inputDepthStencil = scene_.depthTexture_;
+     // 传入上一帧真实渲染帧视图投影矩阵
+     dispatchDescriptionData_.viewProj = *reinterpret_cast<FG_Mat4x4 const *>(&lastViewProj_);
+     Matrix4x4 invViewProj{};
+     // 传入上一帧真实渲染帧视图投影逆矩阵
+     dispatchDescriptionData_.invViewProj =
+         *reinterpret_cast<FG_Mat4x4 const *>(invViewProj.Invert(lastViewProj_).data_);
+     if (!dispatchDescriptionData_.inputColor || !dispatchDescriptionData_.inputDepthStencil) {
+         GOLOGE("HMS_FG_SetImageFormat_GLES is invalid.");
+     }
+     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, scene_);
+     // 生成预测帧，更新预测帧缓冲区的内存
+     FG_ErrorCode errorCode = HMS_FG_Dispatch_GLES(context_, &dispatchDescriptionData_);
+     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0U);
 
-    // 绘制UI
-    // ...
+     switch (errorCode) {
+         case FG_SUCCESS: {
+             // 生成预测帧成功，绘制UI
+             // ...
+             break;
+         }
 
-    // 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
-    // ...
+         case FG_COLLECTING_PREVIOUS_FRAMES:
+             // 传入真实帧数量未达到固定阈值，无预测帧生成，基础内插模式传入真实帧数量<2时返回该状态码，此时不要将预测帧送显
+             break;
 
-    // 预测帧渲染阶段
-    // 传入上一帧真实渲染帧颜色缓冲区索引
-    dispatchDescriptionData_.inputColor = inputColor;
-    // 传入上一帧真实渲染帧深度模板缓冲区索引
-    dispatchDescriptionData_.inputDepthStencil = inputDepthStencil;
-    // 传入上一帧真实渲染帧视图投影矩阵
-    dispatchDescriptionData_.viewProj = preViewProj;
-    // 传入上一帧真实渲染帧视图投影逆矩阵
-    dispatchDescriptionData_.invViewProj= preInvViewProj;
+         default:
+             // 预测帧生成失败
+             GOLOGE("HMS_FG_Dispatch_GLES execution failed, error code: %d.", errorCode);
+             return false;
+     }
+ }
 
-    // [可选] 当视图投影矩阵的平移分量非常大时，可提供相机扩展属性信息获得更加准确的超帧效果
-    FG_PerFrameExtendedCameraInfo info;
-    errorCode = HMS_FG_SetExtendedCameraInfo_GLES(context_, &info);
-
-    // 生成预测帧，更新预测帧缓冲区的内存
-    errorCode = HMS_FG_Dispatch_GLES(context_, &dispatchDescriptionData_);
-    switch (errorCode) {
-        case FG_SUCCESS:
-            // 生成预测帧成功
-            break;
-        case FG_COLLECTING_PREVIOUS_FRAMES:
-            // 传入真实帧数量未达到固定阈值，无预测帧生成，基础内插模式传入真实帧数量<2时返回该状态码，此时不要将预测帧送显
-            break;
-        default:
-            // 预测帧生成失败
-            break;
-    }
-
-    // 送显真实帧
-    // ...
-}
+ // 送显真实帧
+ // ...
 
 调用HMS_FG_DestroyContext_GLES接口销毁超帧实例，释放内存资源。
 
 // 销毁超帧上下文实例并释放内存资源
-errorCode = HMS_FG_DestroyContext_GLES(&context_);
+FG_ErrorCode errorCode = HMS_FG_DestroyContext_GLES(&context_);
+// ...
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_DestroyContext_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -189,16 +193,14 @@ if (errorCode != FG_SUCCESS) {
 ```
 {
     "module": {
-        /*
-          其他的配置项
-          ...
-         */
+        // ...
         "metadata": [
             {
                 "name": "GraphicsAccelerateKit_FusionAware",
                 "value": "GLES"
             }
-        ]
+        ],
+        // ...
     }
 }
 ```
@@ -216,6 +218,7 @@ if (errorCode != FG_SUCCESS) {
 // 创建超帧上下文实例
 FG_Context_GLES* context_ = HMS_FG_CreateContext_GLES();
 if (context_ == nullptr) {
+    GOLOGE("HMS_FG_CreateContext_GLES execution failed.");
     return false;
 }
 ```
@@ -230,10 +233,14 @@ FG_ErrorCode errorCode = FG_SUCCESS;
 FG_AlgorithmModeInfo aInfo{};
 aInfo.predictionMode = FG_PREDICTION_MODE_INTERPOLATION; // 内插模式
 aInfo.meMode = FG_ME_MODE_BASIC; // 运动估计基础模式
-errorCode = HMS_FG_SetAlgorithmMode_GLES(context_, &aInfo); // [必选] 设置超帧算法模式
+errorCode = HMS_FG_SetAlgorithmMode_GLES(context_, &aInfo); // 设置超帧算法模式
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetAlgorithmMode_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
+
+// 调用其他插帧相关配置接口
+// ...
 
 // 超帧预测的集成信息
 FG_IntegrationInfo integrationInfo {};
@@ -241,24 +248,24 @@ integrationInfo.presentMode = FG_PRESENT_BY_SYSTEM; // 预测帧送显模式
 integrationInfo.textureCachedByGame = false; // 输入的颜色纹理和深度纹理游戏侧缓存 系统不会复制一份再做预测 默认游戏不会缓存
 integrationInfo.needFlipInputColor = false; // 颜色纹理需要翻转 默认false
 integrationInfo.needFlipOutputColor = false; // 预测帧需要翻转 默认false
-// [可选] 设置超帧预测的集成信息
+// 设置超帧预测的集成信息
 errorCode = HMS_FG_SetIntegrationMode_GLES(context_, &integrationInfo);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetIntegrationMode_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// 调用其他插帧相关配置接口
-// ...
-
-// [可选] 设置是否启用UI预测功能，仅在系统送显模式下有效，在游戏送显模式下无效，接口不调用默认为false，预测帧会复用上一帧的UI进行展示
+// 设置是否启用UI预测功能，仅在系统送显模式下有效，在游戏送显模式下无效，接口不调用默认为false，预测帧会复用上一帧的UI进行展示
 errorCode = HMS_FG_SetUiPredictionEnabled_GLES(context_, false);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetUiPredictionEnabled_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 
-// [可选] 设置超帧后的目标帧率，仅在系统送显模式下且游戏上架后有效，在游戏送显模式下无效，接口不调用默认不会限制帧率，取决于游戏渲染帧率
+// 设置超帧后的目标帧率，仅在系统送显模式下且游戏上架后有效，在游戏送显模式下无效，接口不调用默认不会限制帧率，取决于游戏渲染帧率
 errorCode = HMS_FG_SetTargetFps_GLES(context_, 60);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_SetTargetFps_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -269,6 +276,7 @@ if (errorCode != FG_SUCCESS) {
 // 激活超帧上下文实例
 errorCode = HMS_FG_Activate_GLES(context_);
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_Activate_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -284,64 +292,68 @@ FG_DispatchDescription_GLES dispatchDescriptionData_ {
     .invViewProj{},
     .outputColor = 0U
 };
-
-// 变量声明
-uint32_t inputColor = 0;
-uint32_t inputDepthStencil = 0;
-FG_Mat4x4 preViewProj;
-FG_Mat4x4 preInvViewProj;
-
-// 帧循环
-while (true) {
-    // 真实帧渲染阶段
-    // 绘制真实帧
-    // ...
-
-    // 绘制UI
-    // ...
-
-    // 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
-    // ...
-
-    // 预测帧渲染阶段
-    // 传入上一帧真实渲染帧颜色缓冲区索引
-    dispatchDescriptionData_.inputColor = inputColor;
-    // 传入上一帧真实渲染帧深度模板缓冲区索引
-    dispatchDescriptionData_.inputDepthStencil = inputDepthStencil;
-    // 传入上一帧真实渲染帧视图投影矩阵
-    dispatchDescriptionData_.viewProj = preViewProj;
-    // 传入上一帧真实渲染帧视图投影逆矩阵
-    dispatchDescriptionData_.invViewProj= preInvViewProj;
-
-    // [可选] 当视图投影矩阵的平移分量非常大时，可提供相机扩展属性信息获得更加准确的超帧效果
-    FG_PerFrameExtendedCameraInfo info;
-    errorCode = HMS_FG_SetExtendedCameraInfo_GLES(context_, &info);
-
-    // 生成预测帧，更新预测帧缓冲区的内存
-    errorCode = HMS_FG_Dispatch_GLES(context_, &dispatchDescriptionData_);
-    switch (errorCode) {
-        case FG_SUCCESS:
-            // 生成预测帧成功
-            break;
-        case FG_COLLECTING_PREVIOUS_FRAMES:
-            // 传入真实帧数量未达到固定阈值，无预测帧生成，基础内插模式传入真实帧数量<2时返回该状态码，此时不要将预测帧送显
-            break;
-        default:
-            // 预测帧生成失败
-            break;
-    }
-
-    // 送显真实帧
-    // ...
-}
 ```
 
 ### Code block 7
 
 ```
+ // 渲染当前帧渲染画面，缓存颜色、深度、相机矩阵等信息，用于下一帧预测帧生成
+ // ...
+
+ // 绘制真实帧
+ // ...
+ // 绘制UI
+ // ...
+ bool const runPrediction = predictionEnabled_ && !predictionPaused_;
+ if (runPrediction) { // 预测帧渲染阶段
+     // 传入上一帧真实渲染帧颜色缓冲区索引
+     dispatchDescriptionData_.inputColor = scene_.texture_;
+     // 传入上一帧真实渲染帧深度模板缓冲区索引
+     dispatchDescriptionData_.inputDepthStencil = scene_.depthTexture_;
+     // 传入上一帧真实渲染帧视图投影矩阵
+     dispatchDescriptionData_.viewProj = *reinterpret_cast<FG_Mat4x4 const *>(&lastViewProj_);
+     Matrix4x4 invViewProj{};
+     // 传入上一帧真实渲染帧视图投影逆矩阵
+     dispatchDescriptionData_.invViewProj =
+         *reinterpret_cast<FG_Mat4x4 const *>(invViewProj.Invert(lastViewProj_).data_);
+     if (!dispatchDescriptionData_.inputColor || !dispatchDescriptionData_.inputDepthStencil) {
+         GOLOGE("HMS_FG_SetImageFormat_GLES is invalid.");
+     }
+     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, scene_);
+     // 生成预测帧，更新预测帧缓冲区的内存
+     FG_ErrorCode errorCode = HMS_FG_Dispatch_GLES(context_, &dispatchDescriptionData_);
+     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0U);
+
+     switch (errorCode) {
+         case FG_SUCCESS: {
+             // 生成预测帧成功，绘制UI
+             // ...
+             break;
+         }
+
+         case FG_COLLECTING_PREVIOUS_FRAMES:
+             // 传入真实帧数量未达到固定阈值，无预测帧生成，基础内插模式传入真实帧数量<2时返回该状态码，此时不要将预测帧送显
+             break;
+
+         default:
+             // 预测帧生成失败
+             GOLOGE("HMS_FG_Dispatch_GLES execution failed, error code: %d.", errorCode);
+             return false;
+     }
+ }
+
+ // 送显真实帧
+ // ...
+```
+
+### Code block 8
+
+```
 // 销毁超帧上下文实例并释放内存资源
-errorCode = HMS_FG_DestroyContext_GLES(&context_);
+FG_ErrorCode errorCode = HMS_FG_DestroyContext_GLES(&context_);
+// ...
 if (errorCode != FG_SUCCESS) {
+    GOLOGE("HMS_FG_DestroyContext_GLES execution failed, error code: %d.", errorCode);
     return false;
 }
 ```

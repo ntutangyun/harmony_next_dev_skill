@@ -48,26 +48,33 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
     "srcEntry": "./ets/extensionability/AssetAccelExtAbility.ets", // 游戏资源加速ExtensionAbility组件所对应的代码路径。
     "type": "assetAcceleration"
   }
-]
+],
 
 导入模块信息。
 
 新建extensionability文件夹及AssetAccelExtAbility.ets文件，导入assetDownloadManager模块、AssetAccelerationExtensionAbility模块及相关模块，同时新增AssetAccelExtAbility类继承AssetAccelerationExtensionAbility。
 
 import { BusinessError } from '@kit.BasicServicesKit';
-import { assetDownloadManager, AssetAccelerationExtensionAbility, AssetAccelerationExtensionInfo, ContentRequestType } from '@kit.GraphicsAccelerateKit';
-
-export default class AssetAccelExtAbility extends AssetAccelerationExtensionAbility {
-};
+import { common } from '@kit.AbilityKit';
+import {
+  assetDownloadManager,
+  AssetAccelerationExtensionAbility,
+  AssetAccelerationExtensionInfo,
+  ContentRequestType
+} from '@kit.GraphicsAccelerateKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 实现系统后台切应用前台接续下载资源包功能。
 
 游戏实现onDownloadContentRequest方法，收集资源包下载任务列表。
 
-async onDownloadContentRequest(requestType: ContentRequestType, manifestUrl: string,
-  assetAccelerationExtensionInfo: AssetAccelerationExtensionInfo): Promise<assetDownloadManager.AssetDownloadConfig[]> {
-  console.info('AssetAccelDemo', `onDownloadContentRequest enter, requestType: ${requestType}, manifestUrl: ${manifestUrl}.`);
+async onDownloadContentRequest(requestType: ContentRequestType, manifestURL: string,
+  assetAccelerationExtensionInfo: AssetAccelerationExtensionInfo):
+  Promise<assetDownloadManager.AssetDownloadConfig[]> {
+  hilog.info(DOMAINID,
+    TAG, `onDownloadContentRequest enter, requestType: ${requestType}, manifestURL: ${manifestURL}.`);
   // 1.根据manifestUrl获取下载资源包。2.manifestUrl不为空，获取华为CDN侧资源，为空则获取三方CDN侧资源。3.返回资源包下载任务列表。
+  // ...
   let downloadConfigArr: Array<assetDownloadManager.AssetDownloadConfig> = [];
   return downloadConfigArr;
 }
@@ -76,72 +83,85 @@ async onDownloadContentRequest(requestType: ContentRequestType, manifestUrl: str
 
 async onBackgroundDownloadSucceeded(downloadTask: assetDownloadManager.AssetDownloadTask,
   filePath: string): Promise<void> {
-  console.info('AssetAccelDemo', `onBackgroundDownloadSucceeded enter, taskId is ${downloadTask.taskId}, filePath = ${filePath}`);
+  hilog.info(DOMAINID,
+    TAG, `onBackgroundDownloadSucceeded enter, taskId is ${downloadTask.taskId}, filePath = ${filePath}`);
   // 添加已下载资源包转移等处理逻辑。
+  // ...
 }
 
 游戏实现onBackgroundDownloadFailed方法，接收“失败”状态的下载任务，并根据失败原因DownloadFault自行实现处理逻辑。
 
 async onBackgroundDownloadFailed(downloadTask: assetDownloadManager.AssetDownloadTask,
   fault: assetDownloadManager.DownloadFault): Promise<void> {
-  console.info('AssetAccelDemo', `onBackgroundDownloadFailed enter, download url: ${downloadTask.config.url}, err: ${fault}`);
+  hilog.info(DOMAINID,
+    TAG, `onBackgroundDownloadFailed enter, download url: ${downloadTask.config.url}, err: ${fault}`);
   // 添加资源包下载失败处理逻辑。
+  // ...
 }
 
 游戏实现onExtensionWillTerminate方法，接收游戏资源加速服务关闭资源包后台下载功能的通知。
 
 async onExtensionWillTerminate(error?: BusinessError): Promise<void> {
   // 避免进行耗时处理。
-  if (error) {
-    console.error('AssetAccelDemo', `onExtensionWillTerminate enter, TerminateReason：${error?.code}, msg: ${error?.message}.`);
-    // 添加异常终止处理逻辑。
+  if (!error) {
+    hilog.info(DOMAINID, TAG, `onExtensionWillTerminate enter, BusinessError is null`);
+    // 添加资源清理等处理逻辑。
     return;
   }
-  // 添加资源清理等处理逻辑。
+  hilog.error(DOMAINID, TAG, `onExtensionWillTerminate enter, BusinessError：${error?.code}, msg: ${error?.message}`);
+  // 添加异常终止处理逻辑。
 }
 
 游戏调用on('progress')方法，监听资源包下载进度。游戏调用on('pause')方法，监听下载任务是否暂停。游戏调用on('complete')方法，监听资源是否成功下载。游戏调用on('fail')方法，监听下载任务是否失败。
 
 onProgressCallback: (progressArray: assetDownloadManager.DownloadProgressInfo[]) => void = (progressArray) => {
-  console.info('AssetAccelDemo', `onProgressCallback progressArray length: ${progressArray.length}`);
+  hilog.info(DOMAINID, TAG, `onProgressCallback progressArray length: ${progressArray.length}`);
   // 添加资源包下载进度处理逻辑。
+  // ...
 }
 
 onPauseCallback: (downloadTaskInfo: assetDownloadManager.AssetDownloadTask) => void = (downloadTaskInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
   // 添加资源包下载暂停处理逻辑。
+  // ...
 }
 
 onCompleteCallback: (completeInfo: assetDownloadManager.DownloadCompletedInfo) => void = async (completeInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
   // 添加资源包下载完成处理逻辑。
+  // ...
 }
 
 onFailedCallback: (failedInfo: assetDownloadManager.DownloadFailedInfo) => void = async (failedInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
   // 添加资源包下载失败处理逻辑。
+  // ...
 }
-
-// 订阅下载状态和下载进度事件。
-try {
-　assetDownloadManager.on('progress', this.onProgressCallback);
-　assetDownloadManager.on('pause', this.onPauseCallback);
-　assetDownloadManager.on('complete', this.onCompleteCallback);
-　assetDownloadManager.on('fail', this.onFailedCallback);
-} catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.on, errCode: ${error.code}, errMessage: ${error.message}`);
-}
+// ...
+  // 订阅下载状态和下载进度事件。
+  try {
+    assetDownloadManager.on('progress', this.onProgressCallback);
+    assetDownloadManager.on('pause', this.onPauseCallback);
+    assetDownloadManager.on('complete', this.onCompleteCallback);
+    assetDownloadManager.on('fail', this.onFailedCallback);
+  } catch (error) {
+    hilog.error(DOMAINID,
+      TAG, `assetDownloadManager.on failed, errCode: ${error.code}, errMessage: ${error.message}`);
+    return;
+  }
+  // ...
 
 游戏调用off('progress')方法，取消监听资源包下载进度。游戏调用off('pause')方法，取消监听下载任务暂停事件。游戏调用off('complete')方法，取消监听资源包下载成功事件。游戏调用off('fail')方法，取消监听资源包下载失败事件。
 
 // 取消订阅下载状态和下载进度事件。
 try {
-　assetDownloadManager.off('progress', this.onProgressCallback);
-　assetDownloadManager.off('pause', this.onPauseCallback);
-　assetDownloadManager.off('complete', this.onCompleteCallback);
-　assetDownloadManager.off('fail', this.onFailedCallback);
+  assetDownloadManager.off('progress', this.onProgressCallback);
+  assetDownloadManager.off('pause', this.onPauseCallback);
+  assetDownloadManager.off('complete', this.onCompleteCallback);
+  assetDownloadManager.off('fail', this.onFailedCallback);
 } catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.off, errCode: ${error.code}, errMessage: ${error.message}`);
+  hilog.error(DOMAINID,
+    TAG, `assetDownloadManager.off failed, errCode: ${error.code}, errMessage: ${error.message}`);
 }
 
 ## Code blocks
@@ -155,26 +175,33 @@ try {
     "srcEntry": "./ets/extensionability/AssetAccelExtAbility.ets", // 游戏资源加速ExtensionAbility组件所对应的代码路径。
     "type": "assetAcceleration"
   }
-]
+],
 ```
 
 ### Code block 2
 
 ```
 import { BusinessError } from '@kit.BasicServicesKit';
-import { assetDownloadManager, AssetAccelerationExtensionAbility, AssetAccelerationExtensionInfo, ContentRequestType } from '@kit.GraphicsAccelerateKit';
-
-export default class AssetAccelExtAbility extends AssetAccelerationExtensionAbility {
-};
+import { common } from '@kit.AbilityKit';
+import {
+  assetDownloadManager,
+  AssetAccelerationExtensionAbility,
+  AssetAccelerationExtensionInfo,
+  ContentRequestType
+} from '@kit.GraphicsAccelerateKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 3
 
 ```
-async onDownloadContentRequest(requestType: ContentRequestType, manifestUrl: string,
-  assetAccelerationExtensionInfo: AssetAccelerationExtensionInfo): Promise<assetDownloadManager.AssetDownloadConfig[]> {
-  console.info('AssetAccelDemo', `onDownloadContentRequest enter, requestType: ${requestType}, manifestUrl: ${manifestUrl}.`);
+async onDownloadContentRequest(requestType: ContentRequestType, manifestURL: string,
+  assetAccelerationExtensionInfo: AssetAccelerationExtensionInfo):
+  Promise<assetDownloadManager.AssetDownloadConfig[]> {
+  hilog.info(DOMAINID,
+    TAG, `onDownloadContentRequest enter, requestType: ${requestType}, manifestURL: ${manifestURL}.`);
   // 1.根据manifestUrl获取下载资源包。2.manifestUrl不为空，获取华为CDN侧资源，为空则获取三方CDN侧资源。3.返回资源包下载任务列表。
+  // ...
   let downloadConfigArr: Array<assetDownloadManager.AssetDownloadConfig> = [];
   return downloadConfigArr;
 }
@@ -185,8 +212,10 @@ async onDownloadContentRequest(requestType: ContentRequestType, manifestUrl: str
 ```
 async onBackgroundDownloadSucceeded(downloadTask: assetDownloadManager.AssetDownloadTask,
   filePath: string): Promise<void> {
-  console.info('AssetAccelDemo', `onBackgroundDownloadSucceeded enter, taskId is ${downloadTask.taskId}, filePath = ${filePath}`);
+  hilog.info(DOMAINID,
+    TAG, `onBackgroundDownloadSucceeded enter, taskId is ${downloadTask.taskId}, filePath = ${filePath}`);
   // 添加已下载资源包转移等处理逻辑。
+  // ...
 }
 ```
 
@@ -195,8 +224,10 @@ async onBackgroundDownloadSucceeded(downloadTask: assetDownloadManager.AssetDown
 ```
 async onBackgroundDownloadFailed(downloadTask: assetDownloadManager.AssetDownloadTask,
   fault: assetDownloadManager.DownloadFault): Promise<void> {
-  console.info('AssetAccelDemo', `onBackgroundDownloadFailed enter, download url: ${downloadTask.config.url}, err: ${fault}`);
+  hilog.info(DOMAINID,
+    TAG, `onBackgroundDownloadFailed enter, download url: ${downloadTask.config.url}, err: ${fault}`);
   // 添加资源包下载失败处理逻辑。
+  // ...
 }
 ```
 
@@ -205,12 +236,13 @@ async onBackgroundDownloadFailed(downloadTask: assetDownloadManager.AssetDownloa
 ```
 async onExtensionWillTerminate(error?: BusinessError): Promise<void> {
   // 避免进行耗时处理。
-  if (error) {
-    console.error('AssetAccelDemo', `onExtensionWillTerminate enter, TerminateReason：${error?.code}, msg: ${error?.message}.`);
-    // 添加异常终止处理逻辑。
+  if (!error) {
+    hilog.info(DOMAINID, TAG, `onExtensionWillTerminate enter, BusinessError is null`);
+    // 添加资源清理等处理逻辑。
     return;
   }
-  // 添加资源清理等处理逻辑。
+  hilog.error(DOMAINID, TAG, `onExtensionWillTerminate enter, BusinessError：${error?.code}, msg: ${error?.message}`);
+  // 添加异常终止处理逻辑。
 }
 ```
 
@@ -218,34 +250,41 @@ async onExtensionWillTerminate(error?: BusinessError): Promise<void> {
 
 ```
 onProgressCallback: (progressArray: assetDownloadManager.DownloadProgressInfo[]) => void = (progressArray) => {
-  console.info('AssetAccelDemo', `onProgressCallback progressArray length: ${progressArray.length}`);
+  hilog.info(DOMAINID, TAG, `onProgressCallback progressArray length: ${progressArray.length}`);
   // 添加资源包下载进度处理逻辑。
+  // ...
 }
 
 onPauseCallback: (downloadTaskInfo: assetDownloadManager.AssetDownloadTask) => void = (downloadTaskInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
   // 添加资源包下载暂停处理逻辑。
+  // ...
 }
 
 onCompleteCallback: (completeInfo: assetDownloadManager.DownloadCompletedInfo) => void = async (completeInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
   // 添加资源包下载完成处理逻辑。
+  // ...
 }
 
 onFailedCallback: (failedInfo: assetDownloadManager.DownloadFailedInfo) => void = async (failedInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
   // 添加资源包下载失败处理逻辑。
+  // ...
 }
-
-// 订阅下载状态和下载进度事件。
-try {
-　assetDownloadManager.on('progress', this.onProgressCallback);
-　assetDownloadManager.on('pause', this.onPauseCallback);
-　assetDownloadManager.on('complete', this.onCompleteCallback);
-　assetDownloadManager.on('fail', this.onFailedCallback);
-} catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.on, errCode: ${error.code}, errMessage: ${error.message}`);
-}
+// ...
+  // 订阅下载状态和下载进度事件。
+  try {
+    assetDownloadManager.on('progress', this.onProgressCallback);
+    assetDownloadManager.on('pause', this.onPauseCallback);
+    assetDownloadManager.on('complete', this.onCompleteCallback);
+    assetDownloadManager.on('fail', this.onFailedCallback);
+  } catch (error) {
+    hilog.error(DOMAINID,
+      TAG, `assetDownloadManager.on failed, errCode: ${error.code}, errMessage: ${error.message}`);
+    return;
+  }
+  // ...
 ```
 
 ### Code block 8
@@ -253,11 +292,12 @@ try {
 ```
 // 取消订阅下载状态和下载进度事件。
 try {
-　assetDownloadManager.off('progress', this.onProgressCallback);
-　assetDownloadManager.off('pause', this.onPauseCallback);
-　assetDownloadManager.off('complete', this.onCompleteCallback);
-　assetDownloadManager.off('fail', this.onFailedCallback);
+  assetDownloadManager.off('progress', this.onProgressCallback);
+  assetDownloadManager.off('pause', this.onPauseCallback);
+  assetDownloadManager.off('complete', this.onCompleteCallback);
+  assetDownloadManager.off('fail', this.onFailedCallback);
 } catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.off, errCode: ${error.code}, errMessage: ${error.message}`);
+  hilog.error(DOMAINID,
+    TAG, `assetDownloadManager.off failed, errCode: ${error.code}, errMessage: ${error.message}`);
 }
 ```

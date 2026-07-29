@@ -1,4 +1,4 @@
-# 使用仿真器运行轻量级穿戴应用
+# 使用仿真器运行轻量级智能穿戴应用
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-run-simulator_
 

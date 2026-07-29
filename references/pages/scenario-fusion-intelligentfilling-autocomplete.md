@@ -80,7 +80,7 @@ function debounce(func: () => void, wait: number = TIME_OUT): Function {
 @Extend(Text)
 function textStyle() {
   .width(64)
-  .textAlign(TextAlign.End)
+  .textAlign(TextAlign.End);
 }
 
 @Entry
@@ -92,7 +92,7 @@ struct Index {
   private isUserInput: boolean = false;
   private location: Location = {
     latitude: INIT_LAT,
-    longitude: INIT_LON,
+    longitude: INIT_LON
   };
   private currentRequestTag: string = '';
   private handleAddressChange = (request: RequestParam) => {
@@ -114,12 +114,12 @@ struct Index {
             hilog.info(0x0000, 'testTag', `Succeeded in obtaining the current location of the user`);
             this.location.latitude = location.latitude;
             this.location.longitude = location.longitude;
-          })
+          });
         }
       })
       .catch((err: BusinessError) => {
         hilog.error(0x0000, 'testTag', `Failed request permissions, code: ${err?.code}, message: ${err?.message}`);
-      })
+      });
   }
 
   public isUsLanguage(): boolean {
@@ -170,7 +170,7 @@ struct Index {
     // 用户选择行政区域后，仅显示该区域的搜索结果，以防止查询时间过长。
     this.currentRequestTag = util.generateRandomUUID();
     let districtSelectOptions: sceneMap.DistrictSelectOptions = {
-      countryCode: 'CN',
+      countryCode: 'CN'
     };
     sceneMap.selectDistrict(this.getUIContext().getHostContext(), districtSelectOptions).then((data) => {
       hilog.info(0x0000, 'testTag', 'SelectDistrict', 'Succeeded  in selecting district.');
@@ -190,7 +190,7 @@ struct Index {
     let param: RequestParam = {
       requestTag: tag,
       requestText: val
-    }
+    };
     // 用户输入的场景需要加做抖动处理，智能填充回填场景直接查询即可。
     if (this.personInfo.region && this.personInfo.region !== '') {
       return;
@@ -253,7 +253,7 @@ struct Index {
               inputType: functionalInputComponentManager.InputType.SELECT_DISTRICT,
               textInputValue: {
                 text: this.personInfo.region,
-                placeholder: '省、市、区、街道地址',
+                placeholder: '省、市、区、街道地址'
               },
               // 调整TextInput样式。
               inputAttributeModifier: new TextInputModifier()
@@ -405,7 +405,7 @@ function debounce(func: () => void, wait: number = TIME_OUT): Function {
 @Extend(Text)
 function textStyle() {
   .width(64)
-  .textAlign(TextAlign.End)
+  .textAlign(TextAlign.End);
 }
 
 @Entry
@@ -417,7 +417,7 @@ struct Index {
   private isUserInput: boolean = false;
   private location: Location = {
     latitude: INIT_LAT,
-    longitude: INIT_LON,
+    longitude: INIT_LON
   };
   private currentRequestTag: string = '';
   private handleAddressChange = (request: RequestParam) => {
@@ -439,12 +439,12 @@ struct Index {
             hilog.info(0x0000, 'testTag', `Succeeded in obtaining the current location of the user`);
             this.location.latitude = location.latitude;
             this.location.longitude = location.longitude;
-          })
+          });
         }
       })
       .catch((err: BusinessError) => {
         hilog.error(0x0000, 'testTag', `Failed request permissions, code: ${err?.code}, message: ${err?.message}`);
-      })
+      });
   }
 
   public isUsLanguage(): boolean {
@@ -495,7 +495,7 @@ struct Index {
     // 用户选择行政区域后，仅显示该区域的搜索结果，以防止查询时间过长。
     this.currentRequestTag = util.generateRandomUUID();
     let districtSelectOptions: sceneMap.DistrictSelectOptions = {
-      countryCode: 'CN',
+      countryCode: 'CN'
     };
     sceneMap.selectDistrict(this.getUIContext().getHostContext(), districtSelectOptions).then((data) => {
       hilog.info(0x0000, 'testTag', 'SelectDistrict', 'Succeeded  in selecting district.');
@@ -515,7 +515,7 @@ struct Index {
     let param: RequestParam = {
       requestTag: tag,
       requestText: val
-    }
+    };
     // 用户输入的场景需要加做抖动处理，智能填充回填场景直接查询即可。
     if (this.personInfo.region && this.personInfo.region !== '') {
       return;
@@ -578,7 +578,7 @@ struct Index {
               inputType: functionalInputComponentManager.InputType.SELECT_DISTRICT,
               textInputValue: {
                 text: this.personInfo.region,
-                placeholder: '省、市、区、街道地址',
+                placeholder: '省、市、区、街道地址'
               },
               // 调整TextInput样式。
               inputAttributeModifier: new TextInputModifier()

@@ -26,7 +26,7 @@ import { TestA } from './Test';
 
 @Concurrent
 async function test1(arg: TestA) {
-  console.info('TestA name is: ' + arg.name);
+  console.info(`TestA name is: ${arg.name}`);
 }
 
 @Entry
@@ -45,17 +45,18 @@ struct Index {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
         .onClick(() => {
-          // 1. 创建Test实例objA
+          // 1. 创建TestA实例objA
           let objA = new TestA('TestA');
           // 2. 创建任务task，将objA传递给该任务，objA非sendable对象，通过序列化传递给子线程
           let task = new taskpool.Task(test1, objA);
           // 3. 执行任务
           taskpool.execute(task).then(() => {
+            this.message = 'success';
             console.info('taskpool: execute task success!');
-          }).catch((e:BusinessError) => {
+          }).catch((e: BusinessError) => {
+            this.message = 'fail';
             console.error(`taskpool: execute task: Code: ${e.code}, message: ${e.message}`);
           })
-          this.message = 'success';
         })
     }
     .height('100%')
@@ -86,7 +87,7 @@ import { TestA } from './Test';
 
 @Concurrent
 async function test1(arg: TestA) {
-  console.info('TestA name is: ' + arg.name);
+  console.info(`TestA name is: ${arg.name}`);
 }
 
 @Entry
@@ -105,17 +106,18 @@ struct Index {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
         .onClick(() => {
-          // 1. 创建Test实例objA
+          // 1. 创建TestA实例objA
           let objA = new TestA('TestA');
           // 2. 创建任务task，将objA传递给该任务，objA非sendable对象，通过序列化传递给子线程
           let task = new taskpool.Task(test1, objA);
           // 3. 执行任务
           taskpool.execute(task).then(() => {
+            this.message = 'success';
             console.info('taskpool: execute task success!');
-          }).catch((e:BusinessError) => {
+          }).catch((e: BusinessError) => {
+            this.message = 'fail';
             console.error(`taskpool: execute task: Code: ${e.code}, message: ${e.message}`);
           })
-          this.message = 'success';
         })
     }
     .height('100%')

@@ -30,29 +30,34 @@ import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit'
 import { fileIo } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+// ...
 
 @Entry
 @Component
-struct Index {
+struct PreviewPage {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
+  private context = this.getUIContext().getHostContext() as Context;
 
   aboutToAppear(): void {
-    let context = this.getUIContext().getHostContext() as Context;
-    let dir: string = context.resourceDir
+    let dir: string = this.context.resourceDir
     // 确保在工程目录src/main/resources/resfile里存在input.pdf文档
     let filePath: string = dir + '/input.pdf';
     try {
       let res = fileIo.accessSync(filePath);
       if (!res) {
-        let content: Uint8Array = context.resourceManager.getRawFileContentSync('rawfile/input.pdf');
-        let fdSand =
-          fileIo.openSync(filePath, fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
+        let content: Uint8Array = this.context.resourceManager.getRawFileContentSync('resfile/input.pdf');
+        let fdSand = fileIo.openSync(
+            filePath,
+            fileIo.OpenMode.WRITE_ONLY |
+            fileIo.OpenMode.CREATE |
+            fileIo.OpenMode.TRUNC
+        );
         fileIo.writeSync(fdSand.fd, content.buffer);
         fileIo.closeSync(fdSand.fd);
       }
     } catch (e) {
       let error: BusinessError = e as BusinessError;
-      hilog.error(0x0000, 'IndexPage', `Code: ${error.code}, message: ${error.message} `);
+      hilog.error(0x0000, 'PreviewPage', `Code: ${error.code}, message: ${error.message} `);
     }
     (async () => {
       // 该监听方法只能在文档加载前调用一次
@@ -65,17 +70,17 @@ struct Index {
   }
 
   build() {
-    Row() {
+    Stack({ alignContent: Alignment.TopStart }) {
       PdfView({
         controller: this.controller,
         pageFit: pdfService.PageFit.FIT_WIDTH,
         showScroll: true
       })
         .id('pdfview_app_view')
-        .layoutWeight(1);
+
+         // ...
     }
-    .width('100%')
-    .height('100%')
+    .width('100%').height('100%')
   }
 }
 
@@ -88,29 +93,34 @@ import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit'
 import { fileIo } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+// ...
 
 @Entry
 @Component
-struct Index {
+struct PreviewPage {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
+  private context = this.getUIContext().getHostContext() as Context;
 
   aboutToAppear(): void {
-    let context = this.getUIContext().getHostContext() as Context;
-    let dir: string = context.resourceDir
+    let dir: string = this.context.resourceDir
     // 确保在工程目录src/main/resources/resfile里存在input.pdf文档
     let filePath: string = dir + '/input.pdf';
     try {
       let res = fileIo.accessSync(filePath);
       if (!res) {
-        let content: Uint8Array = context.resourceManager.getRawFileContentSync('rawfile/input.pdf');
-        let fdSand =
-          fileIo.openSync(filePath, fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
+        let content: Uint8Array = this.context.resourceManager.getRawFileContentSync('resfile/input.pdf');
+        let fdSand = fileIo.openSync(
+            filePath,
+            fileIo.OpenMode.WRITE_ONLY |
+            fileIo.OpenMode.CREATE |
+            fileIo.OpenMode.TRUNC
+        );
         fileIo.writeSync(fdSand.fd, content.buffer);
         fileIo.closeSync(fdSand.fd);
       }
     } catch (e) {
       let error: BusinessError = e as BusinessError;
-      hilog.error(0x0000, 'IndexPage', `Code: ${error.code}, message: ${error.message} `);
+      hilog.error(0x0000, 'PreviewPage', `Code: ${error.code}, message: ${error.message} `);
     }
     (async () => {
       // 该监听方法只能在文档加载前调用一次
@@ -123,17 +133,17 @@ struct Index {
   }
 
   build() {
-    Row() {
+    Stack({ alignContent: Alignment.TopStart }) {
       PdfView({
         controller: this.controller,
         pageFit: pdfService.PageFit.FIT_WIDTH,
         showScroll: true
       })
         .id('pdfview_app_view')
-        .layoutWeight(1);
+
+         // ...
     }
-    .width('100%')
-    .height('100%')
+    .width('100%').height('100%')
   }
 }
 ```

@@ -28,11 +28,14 @@ struct HelloComponent {
     // HelloComponent自定义组件组合系统组件Row和Text
     Row() {
       Text(this.message)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 状态变量message的改变驱动UI刷新，UI从'Hello, World!'刷新为'Hello, ArkUI!'
           this.message = 'Hello, ArkUI!';
         })
     }
+    .height('100%')
   }
 }
 
@@ -49,10 +52,13 @@ struct ParentComponent {
     Column() {
       // 多次创建HelloComponent，实现自定义组件的重用
       Text('ArkUI message')
+        .fontSize(20)
+        .margin(10)
       HelloComponent({ message: 'Hello World!' })
       Divider()
       HelloComponent({ message: 'Hello ArkTS!' })
     }
+    .width('100%')
   }
 }
 
@@ -103,11 +109,11 @@ EntryOptions10+
 名称	类型	只读	可选	说明
 routeName	string	否	是	表示作为命名路由页面的名字。
 storage	LocalStorage	否	是	页面级的UI状态存储。当未传入时，框架会创建一个新的LocalStorage实例作为默认值。
-useSharedStorage12+	boolean	否	是	是否使用loadContent传入的LocalStorage实例对象。默认值false。true：使用共享的LocalStorage实例对象。false：不使用共享的LocalStorage实例对象。
+useSharedStorage12+	boolean	否	是	是否使用loadContent传入的LocalStorage实例对象。默认值false。值为true时：若loadContent传入了LocalStorage实例，则使用该LocalStorage实例对象，否则会新建一个LocalStorage实例。值为false时：不使用共享的LocalStorage实例对象。
 
 说明
 
-当useSharedStorage设置为true且storage已赋值时，useSharedStorage的值优先级更高。
+当useSharedStorage设置为true且storage已赋值时，useSharedStorage的优先级高于storage参数，此时无论loadContent中是否传入LocalStorage实例，都不会使用传入的storage参数。
 
 @Entry({ routeName: 'myPage' })
 @Component
@@ -197,10 +203,6 @@ struct MyComponent {
 
 @Reusable装饰V1自定义组件，使得该自定义组件具有被复用的能力。详细请参考：@Reusable装饰器：组件复用。
 
-说明
-
-从API version 10开始，该装饰器支持在ArkTS卡片中使用。
-
 @Reusable
 @Component
 struct MyComponent {
@@ -210,10 +212,6 @@ struct MyComponent {
 [h2]@ReusableV2
 
 @ReusableV2装饰V2自定义组件，使得该自定义组件具有被复用的能力。详细请参考：@ReusableV2装饰器：V2组件复用。
-
-说明
-
-从API version 18开始，该装饰器支持在元服务中使用。
 
 @ReusableV2
 @ComponentV2
@@ -235,7 +233,34 @@ struct MyComponent {
 
 自定义组件的参数规定
 
-以下示例展示了如何在build方法里创建自定义组件，并在创建自定义组件的过程中，根据装饰器的规则来初始化自定义组件的参数。
+自定义组件的成员变量根据装饰器不同，初始化规则不同，各装饰器规则如下表所示。
+
+@Component成员变量初始化规则
+
+变量类型	本地初始化	从父组件传入
+普通变量	必选	可选，传入非undefined值时使用传入值，否则使用本地默认值。
+@State	必选	可选，传入非undefined值时使用传入值，否则使用本地默认值。
+@Prop	可选	可选，无本地默认值时必选，传入非undefined值时使用传入值，否则使用本地默认值。
+@Link	不支持	必选，需传入状态变量。
+@ObjectLink	不支持	必选，需传入@Observed装饰的class实例（API version 19起可传入复杂类型）。
+@Provide	必选	可选，传入非undefined值时使用传入值，否则使用本地默认值。
+@Consume	不支持（API version 20起可选）	不支持，通过别名/变量名匹配@Provide初始化。
+@StorageProp	必选	不支持，通过AppStorage对应key初始化。
+@StorageLink	必选	不支持，通过AppStorage对应key初始化。
+@LocalStorageProp	必选	不支持，通过LocalStorage对应key初始化。
+@LocalStorageLink	必选	不支持，通过LocalStorage对应key初始化。
+
+@ComponentV2成员变量初始化规则
+
+变量类型	本地初始化	从父组件传入
+普通变量	必选	不支持。
+@Local	必选	不支持。
+@Param	可选	可选，无本地默认值时必选，有传入值时使用传入值，否则使用本地默认值。
+@Event	可选	可选，无本地默认值且未从父组件传入时，自动生成空函数作为默认回调。
+@Provider	必选	不支持。
+@Consumer	必选	不支持，通过别名/变量名匹配@Provider初始化。
+
+下面以普通变量为例，展示如何在build方法中初始化自定义组件的参数。其余装饰器的使用示例，可参考各文档。
 
 @Component
 struct MyComponent {
@@ -245,8 +270,11 @@ struct MyComponent {
   build() {
     Column() {
       Text(`${this.countDownFrom}`)
+        .fontSize(20)
+        .margin(10)
         .backgroundColor(this.color)
     }
+    .width('100%')
   }
 }
 
@@ -260,6 +288,7 @@ struct ParentComponent {
       // 创建MyComponent实例，并将创建MyComponent成员变量countDownFrom初始化为10，将成员变量color初始化为this.someColor
       MyComponent({ countDownFrom: 10, color: this.someColor })
     }
+    .width('100%')
   }
 }
 
@@ -276,9 +305,12 @@ struct Parent {
   build() {
     Column() {
       Text(`${this.cnt}`)
+        .fontSize(20)
+        .margin(10)
       // 父组件中的函数传递给子组件
       Son({ submitArrow: this.submit })
     }
+    .width('100%')
   }
 }
 
@@ -289,14 +321,15 @@ struct Son {
   build() {
     Row() {
       Button('add')
-        .width(80)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.submitArrow) {
             this.submitArrow()
           }
         })
     }
-    .height(56)
+    .height('100%')
   }
 }
 
@@ -304,9 +337,7 @@ build()函数实现规则
 
 所有在build()函数中声明的语句统称为UI描述，UI描述需要遵循以下规则：
 
-@Entry装饰的自定义组件，其build()函数下的根节点唯一且必要，且必须为容器组件，其中ForEach禁止作为根节点。
-
-@Component装饰的自定义组件，其build()函数下的根节点唯一且必要，可以为非容器组件，其中ForEach禁止作为根节点。
+@Entry装饰的自定义组件，其build()函数下的根节点唯一且必要，且必须为容器组件，其中ForEach禁止作为根节点。@Component装饰的自定义组件，其build()函数下的根节点唯一且必要，可以为非容器组件，其中ForEach禁止作为根节点。
 
 @Entry
 @Component
@@ -316,6 +347,7 @@ struct MyComponent {
     Row() {
       ChildComponent()
     }
+    .height('100%')
   }
 }
 
@@ -374,6 +406,8 @@ struct ParentComponent {
   @Builder
   doSomeRender() {
     Text(`Hello World`)
+      .fontSize(20)
+      .margin(10)
   }
 
   build() {
@@ -382,7 +416,10 @@ struct ParentComponent {
       this.doSomeRender()
       // 正例：参数可以为调用TS方法的返回值
       Text(this.calcTextValue())
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -394,15 +431,20 @@ build() {
     switch (expression) {
       case 1:
         Text('...')
+          .fontSize(20)
+          .margin(10)
         break;
       case 2:
         Image('...')
         break;
       default:
         Text('...')
+          .fontSize(20)
+          .margin(10)
         break;
     }
   }
+  .width('100%')
 }
 
 build() {
@@ -465,19 +507,19 @@ struct MyComponent {
 
 在ArkUI状态管理中，状态驱动UI更新。
 
-所以，不能在自定义组件的build()或@Builder方法里直接改变状态变量，这可能会造成循环渲染的风险。Text('${this.count++}')在全量更新或最小化更新会产生不同的影响：
+所以，不能在自定义组件的build()或@Builder方法里直接改变状态变量，这可能会造成循环渲染的风险。Text(`${this.count++}`)在全量更新或最小化更新会产生不同的影响：
 
-全量更新（API8及以前版本）： ArkUI可能会陷入一个无限的重渲染的循环里，因为Text组件的每一次渲染都会改变应用的状态，就会再引起下一轮渲染的开启。 当 this.columnColor 更改时，都会执行整个build构建函数，因此，Text(${this.count++})绑定的文本也会更改，每次重新渲染Text(${this.count++})，又会使this.count状态变量更新，导致新一轮的build执行，从而陷入无限循环。
+全量更新（API8及以前版本）：ArkUI可能会陷入一个无限的重渲染的循环里，因为Text组件的每一次渲染都会改变应用的状态，就会再引起下一轮渲染的开启。 当this.columnColor更改时，都会执行整个build()构建函数，因此，Text(`${this.count++}`)绑定的文本也会更改，每次重新渲染Text(`${this.count++}`)，又会使this.count状态变量更新，导致新一轮的build()执行，从而陷入无限循环。
 
-最小化更新（API9及以上版本）：当this.columnColor更新时，仅Column组件更新，Text组件不会更新。只有当this.textColor更改时，会去更新整个Text组件，其所有属性函数都会执行，所以会看到Text(${this.count++})自增。因为目前UI以组件为单位进行更新，如果组件上某一个属性发生改变，会更新整个的组件。所以整体的更新链路是：this.textColor = Color.Pink ->Text组件整个更新->this.count++ ->Text组件整个更新。值得注意的是，这种写法在初次渲染时会导致Text组件渲染两次，影响性能。
+最小化更新（API9及以上版本）：当this.columnColor更新时，仅Column组件更新，Text组件不会更新。只有当this.textColor更改时，会去更新整个Text组件，其所有属性函数都会执行，所以会看到Text(`${this.count++}`)自增。因为目前UI以组件为单位进行更新，如果组件上某一个属性发生改变，会更新整个的组件。所以整体的更新链路是：this.textColor = Color.Pink -> Text组件整个更新 -> this.count++ -> Text组件整个更新。值得注意的是，这种写法在初次渲染时会导致Text组件渲染两次，影响性能。
 
-build函数中更改应用状态的行为可能比上面的示例更加隐蔽，例如：
+build()函数中更改应用状态的行为可能比上面的示例更加隐蔽，例如：
 
-在@Builder，@Extend或@Styles方法内改变状态变量 。
+在@Builder，@Extend或@Styles方法内改变状态变量。
 
-在计算参数时调用函数中改变应用状态变量，例如 Text('${this.calcLabel()}')。
+在计算参数时调用函数中改变应用状态变量，例如 Text(`${this.calcLabel()}`)。
 
-对当前数组做出修改，sort()改变了数组this.arr，随后的filter方法会返回一个新的数组。
+对当前数组做出修改，sort()改变了数组this.arr，随后的filter()方法会返回一个新的数组。
 
 // 反例
 @State arr : Array<...> = [ ... ];
@@ -502,6 +544,8 @@ ForEach(this.arr.filter((item, index) => index >= 2).sort(),
 struct ChildComponent {
   build() {
     Button(`Hello World`)
+      .width('90%')
+      .margin(10)
   }
 }
 
@@ -512,16 +556,17 @@ struct MyComponent {
     Row() {
       // 属性设置给ChildComponent而不是ChildComponent中的Button
       ChildComponent()
-        .width(200)
+        .width(300)
         .height(300)
-        .backgroundColor(Color.Red)
+        .backgroundColor(Color.Pink)
     }
+    .height('100%')
   }
 }
 
 说明
 
-ArkUI给自定义组件设置样式时，相当于给ChildComponent套了一个不可见的容器组件，这些样式是设置在容器组件上，而非直接设置给ChildComponent的Button组件。渲染结果显示，背景颜色红色并没有直接设置到Button上，而是设置在Button所在的不可见容器组件上。
+ArkUI给自定义组件设置样式时，相当于给ChildComponent套了一个不可见的容器组件，这些样式是设置在容器组件上，而非直接设置给ChildComponent的Button组件。渲染结果显示，背景颜色粉红色并没有直接设置到Button上，而是设置在Button所在的不可见容器组件上。
 
 自定义组件支持跨Ability迁移
 
@@ -577,7 +622,7 @@ export default class EntryAbility extends UIAbility {
 
 点击自定义组件ComponentUnderBuilderNode内Button('change message')，改变状态变量message的值，触发@Watch('messageUpdate') 回调和UI刷新。
 
-下面的示例包含了创建新的Ability流程，具体示例可参考starAbility。
+下面的示例包含了创建新的Ability流程，具体示例可参考startAbility。
 
 import { MyNodeController } from './MyNodeController';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -784,6 +829,10 @@ struct MyComponent {
 
 在将@Component装饰的自定义组件与@ComponentV2装饰的自定义组件混合使用时，可参考状态管理V1和V2混用场景。
 
+[h2]@Reusable或@ReusableV2混用
+
+当将@Reusable或@ReusableV2装饰的复用组件与其他自定义组件混合使用时，可参考使用限制。
+
 ## Code blocks
 
 ### Code block 1
@@ -797,11 +846,14 @@ struct HelloComponent {
     // HelloComponent自定义组件组合系统组件Row和Text
     Row() {
       Text(this.message)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 状态变量message的改变驱动UI刷新，UI从'Hello, World!'刷新为'Hello, ArkUI!'
           this.message = 'Hello, ArkUI!';
         })
     }
+    .height('100%')
   }
 }
 ```
@@ -816,10 +868,13 @@ struct ParentComponent {
     Column() {
       // 多次创建HelloComponent，实现自定义组件的重用
       Text('ArkUI message')
+        .fontSize(20)
+        .margin(10)
       HelloComponent({ message: 'Hello World!' })
       Divider()
       HelloComponent({ message: 'Hello ArkTS!' })
     }
+    .width('100%')
   }
 }
 ```
@@ -923,8 +978,11 @@ struct MyComponent {
   build() {
     Column() {
       Text(`${this.countDownFrom}`)
+        .fontSize(20)
+        .margin(10)
         .backgroundColor(this.color)
     }
+    .width('100%')
   }
 }
 
@@ -938,6 +996,7 @@ struct ParentComponent {
       // 创建MyComponent实例，并将创建MyComponent成员变量countDownFrom初始化为10，将成员变量color初始化为this.someColor
       MyComponent({ countDownFrom: 10, color: this.someColor })
     }
+    .width('100%')
   }
 }
 ```
@@ -956,9 +1015,12 @@ struct Parent {
   build() {
     Column() {
       Text(`${this.cnt}`)
+        .fontSize(20)
+        .margin(10)
       // 父组件中的函数传递给子组件
       Son({ submitArrow: this.submit })
     }
+    .width('100%')
   }
 }
 
@@ -969,14 +1031,15 @@ struct Son {
   build() {
     Row() {
       Button('add')
-        .width(80)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.submitArrow) {
             this.submitArrow()
           }
         })
     }
-    .height(56)
+    .height('100%')
   }
 }
 ```
@@ -992,6 +1055,7 @@ struct MyComponent {
     Row() {
       ChildComponent()
     }
+    .height('100%')
   }
 }
 
@@ -1062,6 +1126,8 @@ struct ParentComponent {
   @Builder
   doSomeRender() {
     Text(`Hello World`)
+      .fontSize(20)
+      .margin(10)
   }
 
   build() {
@@ -1070,7 +1136,10 @@ struct ParentComponent {
       this.doSomeRender()
       // 正例：参数可以为调用TS方法的返回值
       Text(this.calcTextValue())
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 ```
@@ -1084,15 +1153,20 @@ build() {
     switch (expression) {
       case 1:
         Text('...')
+          .fontSize(20)
+          .margin(10)
         break;
       case 2:
         Image('...')
         break;
       default:
         Text('...')
+          .fontSize(20)
+          .margin(10)
         break;
     }
   }
+  .width('100%')
 }
 ```
 
@@ -1194,6 +1268,8 @@ ForEach(this.arr.filter((item, index) => index >= 2).sort(),
 struct ChildComponent {
   build() {
     Button(`Hello World`)
+      .width('90%')
+      .margin(10)
   }
 }
 
@@ -1204,10 +1280,11 @@ struct MyComponent {
     Row() {
       // 属性设置给ChildComponent而不是ChildComponent中的Button
       ChildComponent()
-        .width(200)
+        .width(300)
         .height(300)
-        .backgroundColor(Color.Red)
+        .backgroundColor(Color.Pink)
     }
+    .height('100%')
   }
 }
 ```

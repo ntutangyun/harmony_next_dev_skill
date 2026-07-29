@@ -82,21 +82,7 @@ Button('开始多目标识别')
 
 多目标识别的方法实现如下：
 
-private async handleMultiObjectDetection() {
-  if (!this.chooseImage) {
-    hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
-    return;
-  }
-  // 调用多目标检测接口
-  let request: visionBase.Request = {
-    inputData: { pixelMap: this.chooseImage }
-  };
-  let detector = await objectDetection.ObjectDetector.create();
-  let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
-  let objectJson = JSON.stringify(data);
-  hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
-  this.dataValues = objectJson;
-}
+typescript private async handleMultiObjectDetection() { try { if (!this.chooseImage) { hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.'); return; } // 调用多目标检测接口 let request: visionBase.Request = { inputData: { pixelMap: this.chooseImage } }; let detector = await objectDetection.ObjectDetector.create(); let data: objectDetection.ObjectDetectionResponse = await detector.process(request); await detector.destroy(); let objectJson = JSON.stringify(data); hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`); this.dataValues = objectJson; } catch (err) { hilog.error(0x0000, 'objectDetectSample', `Object detection error: ${err}`); } }
 
 开发实例
 
@@ -157,19 +143,24 @@ struct Index {
 
   // 封装多目标识别的异步逻辑
   private async handleMultiObjectDetection() {
-    if (!this.chooseImage) {
-      hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
-      return;
+    try {
+      if (!this.chooseImage) {
+        hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
+        return;
+      }
+      // 调用多目标检测接口
+      let request: visionBase.Request = {
+        inputData: { pixelMap: this.chooseImage }
+      };
+      let detector = await objectDetection.ObjectDetector.create();
+      let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
+      await detector.destroy();
+      let objectJson = JSON.stringify(data);
+      hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
+      this.dataValues = objectJson;
+    } catch (err) {
+      hilog.error(0x0000, 'objectDetectSample', `Object detection error: ${err}`);
     }
-    // 调用多目标检测接口
-    let request: visionBase.Request = {
-      inputData: { pixelMap: this.chooseImage }
-    };
-    let detector = await objectDetection.ObjectDetector.create();
-    let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
-    let objectJson = JSON.stringify(data);
-    hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
-    this.dataValues = objectJson;
   }
 
   private async selectImage() {
@@ -289,26 +280,6 @@ Button('开始多目标识别')
 ### Code block 5
 
 ```
-private async handleMultiObjectDetection() {
-  if (!this.chooseImage) {
-    hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
-    return;
-  }
-  // 调用多目标检测接口
-  let request: visionBase.Request = {
-    inputData: { pixelMap: this.chooseImage }
-  };
-  let detector = await objectDetection.ObjectDetector.create();
-  let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
-  let objectJson = JSON.stringify(data);
-  hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
-  this.dataValues = objectJson;
-}
-```
-
-### Code block 6
-
-```
 import { image } from '@kit.ImageKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -364,19 +335,24 @@ struct Index {
 
   // 封装多目标识别的异步逻辑
   private async handleMultiObjectDetection() {
-    if (!this.chooseImage) {
-      hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
-      return;
+    try {
+      if (!this.chooseImage) {
+        hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
+        return;
+      }
+      // 调用多目标检测接口
+      let request: visionBase.Request = {
+        inputData: { pixelMap: this.chooseImage }
+      };
+      let detector = await objectDetection.ObjectDetector.create();
+      let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
+      await detector.destroy();
+      let objectJson = JSON.stringify(data);
+      hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
+      this.dataValues = objectJson;
+    } catch (err) {
+      hilog.error(0x0000, 'objectDetectSample', `Object detection error: ${err}`);
     }
-    // 调用多目标检测接口
-    let request: visionBase.Request = {
-      inputData: { pixelMap: this.chooseImage }
-    };
-    let detector = await objectDetection.ObjectDetector.create();
-    let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
-    let objectJson = JSON.stringify(data);
-    hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
-    this.dataValues = objectJson;
   }
 
   private async selectImage() {

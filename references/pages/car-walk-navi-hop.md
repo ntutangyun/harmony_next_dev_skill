@@ -57,7 +57,7 @@ class Listener implements navigationInfoMgr.SystemNavigationListener {
   // 实现onReceiveNavigationCmd方法
   onReceiveNavigationCmd(command: navigationInfoMgr.CommandType,
     args: Record<string, Object>): Promise<navigationInfoMgr.ResultData> {
-    if (command == navigationInfoMgr.CommandType.START_NAVIGATION) {
+    if (command === navigationInfoMgr.CommandType.START_NAVIGATION) {
       // 地图应用处理下车后自动开启步行导航的逻辑
       if (args !== undefined && args !== null) {
         // 获取导航类型
@@ -92,6 +92,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 注册监听系统导航信息和指令
   navInfoController.registerSystemNavigationListener(new Listener());
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `register system navigation listener, error code: ${e?.code}`);
@@ -106,6 +107,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 取消注册监听系统导航信息和指令
   navInfoController.unregisterSystemNavigationListener();
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister system navigation listener error, error code: ${e?.code}`);
@@ -153,7 +155,7 @@ class Listener implements navigationInfoMgr.SystemNavigationListener {
   // 实现onReceiveNavigationCmd方法
   onReceiveNavigationCmd(command: navigationInfoMgr.CommandType,
     args: Record<string, Object>): Promise<navigationInfoMgr.ResultData> {
-    if (command == navigationInfoMgr.CommandType.START_NAVIGATION) {
+    if (command === navigationInfoMgr.CommandType.START_NAVIGATION) {
       // 地图应用处理下车后自动开启步行导航的逻辑
       if (args !== undefined && args !== null) {
         // 获取导航类型
@@ -188,6 +190,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 注册监听系统导航信息和指令
   navInfoController.registerSystemNavigationListener(new Listener());
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `register system navigation listener, error code: ${e?.code}`);
@@ -202,6 +205,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 取消注册监听系统导航信息和指令
   navInfoController.unregisterSystemNavigationListener();
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister system navigation listener error, error code: ${e?.code}`);

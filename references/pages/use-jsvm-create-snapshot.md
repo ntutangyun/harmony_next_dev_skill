@@ -26,7 +26,7 @@ OH_JSVM_CreateEnvFromSnapshot	基于虚拟机的起始快照，创建一个新�
 
 cpp部分代码：
 
-注意事项: 需要在OH_JSVM_Init的时候，将JSVM对外部的依赖注册到initOptions.externalReferences中。
+注意事项：需要在OH_JSVM_Init的时候，将JSVM对外部的依赖注册到initOptions.externalReferences中。
 
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"

@@ -1,4 +1,4 @@
-# 弹窗类控件走焦的场景
+# 弹窗类控件走焦
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pop-up-controls-focus_
 
@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pop-up-co
 
 支持设置模态类型的弹窗控件包括Popup、Menu、Diaglog、bindSheet。
 
-开发实例
+开发流程
 
 如下示例实现一个模态弹窗和一个非模态弹窗，可以通过点击不同的按钮打开：
 

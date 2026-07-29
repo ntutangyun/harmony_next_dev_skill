@@ -34,6 +34,10 @@ const char *textContent = "this is text 2 this is text 2 this is text 2!!!! ";
 ArkUI_AttributeItem contentItem = {.string = textContent};
 Manager::nodeAPI_->setAttribute(text2, NODE_TEXT_CONTENT, &contentItem);
 
+通过NODE_TEXT_CONTENT_WITH_STYLED_STRING属性设置文本内容。
+
+StyledString提供了更高级的文本排版功能，支持为文本的不同部分设置不同样式，包括字体大小、颜色、占位符等。关于StyledString的详细使用方法，请参考使用属性字符串文档。
+
 设置文本样式
 
 Text组件支持丰富的文本样式设置，包括字体、颜色、对齐方式等。
@@ -129,7 +133,7 @@ Manager::nodeAPI_->setAttribute(text3, NODE_TEXT_WORD_BREAK, &wordBreakItem);
 
 从API version 22开始，Text组件支持使用倍数模式设置行高。
 
-表5 行高属性
+表4 行高属性
 
 属性	说明
 NODE_TEXT_LINE_HEIGHT	设置行高。
@@ -150,7 +154,7 @@ Manager::nodeAPI_->setAttribute(text9, NODE_TEXT_LINE_HEIGHT_MULTIPLE, &item);
 
 通过如下属性设置文本溢出时的省略模式。
 
-表6 文本省略属性
+表5 文本省略属性
 
 属性	说明
 NODE_TEXT_MAX_LINES	设置最大行数。
@@ -176,7 +180,7 @@ Manager::nodeAPI_->setAttribute(text20, NODE_TEXT_ELLIPSIS_MODE, &ellipsisModeIt
 
 通过如下属性设置每行结尾空格是否优化。从API version 20开始，Text组件支持设置每行结尾空格是否优化处理。
 
-表8 每行结尾空格处理属性
+表6 每行结尾空格处理属性
 
 属性	说明
 NODE_TEXT_OPTIMIZE_TRAILING_SPACE	设置每行结尾空格是否优化。从API version 20开始支持。
@@ -204,6 +208,19 @@ Manager::nodeAPI_->setAttribute(text3, NODE_TEXT_INDENT, &indentItem);
 ArkUI_NumberValue value0[] = {{.i32 = true}};
 ArkUI_AttributeItem item0 = {value0, sizeof(value0)/ sizeof(ArkUI_NumberValue)};
 Manager::nodeAPI_->setAttribute(text11, NODE_TEXT_COMPRESS_LEADING_PUNCTUATION, &item0);
+
+[h2]设置文本尾部缩进
+
+通过如下属性设置文本尾部缩进。从API版本26.0.0开始，Text组件支持设置文本尾部缩进。
+
+表8 文本尾部缩进属性
+
+属性	说明
+NODE_TEXT_TAIL_INDENTS	设置文本尾部缩进。
+
+ArkUI_NumberValue multiValues[] = { { .f32 = 0.0f }, { .f32 = 50.0f }, { .f32 = 100.0f } };
+ArkUI_AttributeItem tailIndentItem2 = { .value = multiValues, .size = 3 };
+Manager::nodeAPI_->setAttribute(text2, NODE_TEXT_TAIL_INDENTS, &tailIndentItem2);
 
 添加子组件
 
@@ -233,7 +250,7 @@ if (span != nullptr) {
     // 文本基线的偏移量属性
     ArkUI_NumberValue baselineOffsetVal = {.f32 = VALUE_10};
     ArkUI_AttributeItem baselineOffsetItem = {&baselineOffsetVal, VALUE_1};
-    Manager::nodeAPI_->setAttribute(text, NODE_SPAN_BASELINE_OFFSET, &baselineOffsetItem);
+    Manager::nodeAPI_->setAttribute(span, NODE_SPAN_BASELINE_OFFSET, &baselineOffsetItem);
     // 设置字体粗细
     ArkUI_NumberValue fontWeight = {.i32 = ARKUI_FONT_WEIGHT_W500};
     ArkUI_AttributeItem fontWeightItem = {&fontWeight, VALUE_1};
@@ -279,10 +296,6 @@ void setText6(ArkUI_NodeHandle &text6)
     Manager::nodeAPI_->addChild(text6, imageSpan);
 }
 
-[h2]使用StyledString
-
-StyledString提供了更高级的文本排版功能，支持为文本的不同部分设置不同样式，包括字体大小、颜色、占位符等。关于StyledString的详细使用方法，请参考使用属性字符串文档。
-
 设置高级文本效果
 
 Text组件支持多种高级文本效果，如渐变、跑马灯等。
@@ -309,7 +322,6 @@ ArkUI_NumberValue linearGradient[] = {
 ArkUI_AttributeItem linearGradientItem = {
     linearGradient, sizeof(linearGradient) / sizeof(ArkUI_NumberValue)};
 linearGradientItem.object = reinterpret_cast<void *>(colorStopPtr);
-linearGradientItem.size = sizeof(linearGradientItem) / sizeof(ArkUI_NumberValue);
 Manager::nodeAPI_->setAttribute(text5, NODE_TEXT_LINEAR_GRADIENT, &linearGradientItem);
 
 [h2]设置跑马灯效果
@@ -330,6 +342,7 @@ ArkUI_AttributeItem marqueeOptions_item = {
     .object = marqueeOptions
 };
 Manager::nodeAPI_->setAttribute(text18, NODE_TEXT_MARQUEE_OPTIONS, &marqueeOptions_item);
+OH_ArkUI_TextMarqueeOptions_Dispose(marqueeOptions);
 
 [h2]设置文本方向
 
@@ -497,6 +510,14 @@ Manager::nodeAPI_->setAttribute(text11, NODE_TEXT_COMPRESS_LEADING_PUNCTUATION, 
 ### Code block 15
 
 ```
+ArkUI_NumberValue multiValues[] = { { .f32 = 0.0f }, { .f32 = 50.0f }, { .f32 = 100.0f } };
+ArkUI_AttributeItem tailIndentItem2 = { .value = multiValues, .size = 3 };
+Manager::nodeAPI_->setAttribute(text2, NODE_TEXT_TAIL_INDENTS, &tailIndentItem2);
+```
+
+### Code block 16
+
+```
 // span仅作为text的子组件形式展示
 ArkUI_NodeHandle span = Manager::nodeAPI_->createNode(ARKUI_NODE_SPAN);
 const char *spanContent = "This is a span";
@@ -517,7 +538,7 @@ if (span != nullptr) {
     // 文本基线的偏移量属性
     ArkUI_NumberValue baselineOffsetVal = {.f32 = VALUE_10};
     ArkUI_AttributeItem baselineOffsetItem = {&baselineOffsetVal, VALUE_1};
-    Manager::nodeAPI_->setAttribute(text, NODE_SPAN_BASELINE_OFFSET, &baselineOffsetItem);
+    Manager::nodeAPI_->setAttribute(span, NODE_SPAN_BASELINE_OFFSET, &baselineOffsetItem);
     // 设置字体粗细
     ArkUI_NumberValue fontWeight = {.i32 = ARKUI_FONT_WEIGHT_W500};
     ArkUI_AttributeItem fontWeightItem = {&fontWeight, VALUE_1};
@@ -532,7 +553,7 @@ if (span != nullptr) {
 Manager::nodeAPI_->addChild(text, span);
 ```
 
-### Code block 16
+### Code block 17
 
 ```
 void setText6(ArkUI_NodeHandle &text6)
@@ -564,7 +585,7 @@ void setText6(ArkUI_NodeHandle &text6)
 }
 ```
 
-### Code block 17
+### Code block 18
 
 ```
 // 设置渐变颜色和位置
@@ -579,11 +600,10 @@ ArkUI_NumberValue linearGradient[] = {
 ArkUI_AttributeItem linearGradientItem = {
     linearGradient, sizeof(linearGradient) / sizeof(ArkUI_NumberValue)};
 linearGradientItem.object = reinterpret_cast<void *>(colorStopPtr);
-linearGradientItem.size = sizeof(linearGradientItem) / sizeof(ArkUI_NumberValue);
 Manager::nodeAPI_->setAttribute(text5, NODE_TEXT_LINEAR_GRADIENT, &linearGradientItem);
 ```
 
-### Code block 18
+### Code block 19
 
 ```
 // 创建跑马灯选项
@@ -600,9 +620,10 @@ ArkUI_AttributeItem marqueeOptions_item = {
     .object = marqueeOptions
 };
 Manager::nodeAPI_->setAttribute(text18, NODE_TEXT_MARQUEE_OPTIONS, &marqueeOptions_item);
+OH_ArkUI_TextMarqueeOptions_Dispose(marqueeOptions);
 ```
 
-### Code block 19
+### Code block 20
 
 ```
 // 设置文本方向为从右到左

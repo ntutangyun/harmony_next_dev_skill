@@ -40,16 +40,16 @@ checkUrlThreat(req: UrlCheckRequest): Promise<UrlCheckResponse>	检测URL风险
 导入Device Security Kit模块及相关公共模块。
 
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-调用接口获取URL检测结果。
+调用checkUrlThreat接口获取URL检测结果。
 
 注意
 
 该接口涉及端云协同，需要联网等耗时操作，因此不要在UI线程中执行，避免阻塞UI线程。
 
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求URL检测，并处理结果
 let req : safetyDetect.UrlCheckRequest = {
@@ -59,9 +59,11 @@ try {
   hilog.info(0x0000, TAG, 'CheckUrlThreat begin.');
   const data: safetyDetect.UrlCheckResponse = await safetyDetect.checkUrlThreat(req);
   hilog.info(0x0000, TAG, 'Succeeded in checkUrlThreat: %{public}s %{public}d', data.results[0].url, data.results[0].threat);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckUrlThreat failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 
 ## Code blocks
@@ -70,14 +72,14 @@ try {
 
 ```
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求URL检测，并处理结果
 let req : safetyDetect.UrlCheckRequest = {
@@ -87,8 +89,10 @@ try {
   hilog.info(0x0000, TAG, 'CheckUrlThreat begin.');
   const data: safetyDetect.UrlCheckResponse = await safetyDetect.checkUrlThreat(req);
   hilog.info(0x0000, TAG, 'Succeeded in checkUrlThreat: %{public}s %{public}d', data.results[0].url, data.results[0].threat);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckUrlThreat failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 ```

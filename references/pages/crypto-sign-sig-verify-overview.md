@@ -115,11 +115,11 @@ RSA	PSS	符合长度要求的摘要算法	MGF1_符合长度要求的摘要算法
 当前支持RSA使用PSS填充模式时，获取、设置相关参数，“√”表示支持对获取或设置该参数。
 
 PSS参数	枚举值	获取	设置
-md	PSS_MD_NAME_STR	√	-
-mgf	PSS_MGF_NAME_STR	√	-
-mgf1_md	PSS_MGF1_MD_STR	√	-
+md	PSS_MD_NAME_STR	√	－
+mgf	PSS_MGF_NAME_STR	√	－
+mgf1_md	PSS_MGF1_MD_STR	√	－
 saltLen	PSS_SALT_LEN_NUM	√	√
-trailer_field	PSS_TRAILER_FIELD_NUM	√	-
+trailer_field	PSS_TRAILER_FIELD_NUM	√	－
 
 [h2]PKCS1模式下的OnlySign/OnlyVerify
 
@@ -274,3 +274,12 @@ Ed25519是基于椭圆曲线的签名验签算法。
 
 非对称密钥类型	字符串参数	API版本
 Ed25519	Ed25519	11+
+
+ML-DSA
+
+从API版本26.0.0开始，支持ML-DSA（Module-Lattice-Based Digital Signature Algorithm）算法，该算法是一种基于模块格的数字签名后量子密码算法。
+
+以字符串参数创建ML-DSA签名验签实例。
+
+非对称密钥类型	字符串参数	API版本
+ML-DSA	ML-DSA	26.0.0+

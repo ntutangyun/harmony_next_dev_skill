@@ -6,11 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/video-enc
 
 本文档主要介绍异步模式视频编码的实现流程，同步模式视频编码请参考视频编码同步模式。根据编码前数据输入方式的不同，编码器支持Surface模式和Buffer模式两种输入模式，适用于不同的应用场景。
 
-Surface模式。
+Surface模式
 
 编码器通过NativeWindow来获取输入数据，可以与其他模块对接（如相机模块）。适用于与相机、屏幕录制等数据源直接对接的编码场景。
 
-Buffer模式。
+Buffer模式
 
 编码器通过预分配的共享内存获取输入数据，开发者需将原始视频数据拷贝到预分配的共享内存中。适用于对文件或内存中的原始视频数据进行编码处理的场景。
 
@@ -37,11 +37,11 @@ Configured状态下，调用OH_VideoEncoder_Prepare接口进入Prepared状态。
 
 Prepared状态下，调用OH_VideoEncoder_Start接口进入Executing状态。
 
-Running：调用OH_VideoEncoder_Start接口进入Running子状态。
+运行子状态（Running）：调用OH_VideoEncoder_Start接口进入Running子状态。
 
-Flushed：调用OH_VideoEncoder_Flush接口进入Flushed子状态。
+刷新子状态（Flushed）：调用OH_VideoEncoder_Flush接口进入Flushed子状态。
 
-End-of-Stream：编码器接收到输入buffer的flags为OH_AVCodecBufferFlags中的AVCODEC_BUFFER_FLAGS_EOS，或者调用OH_VideoEncoder_NotifyEndOfStream接口时，进入End-of-Stream子状态。在此状态下，编码器不再接受新的输入，但是仍然会继续生成输出，直到输出到达尾帧。
+结束子状态（End-of-Stream）：编码器接收到输入buffer的flags为OH_AVCodecBufferFlags中的AVCODEC_BUFFER_FLAGS_EOS，或者调用OH_VideoEncoder_NotifyEndOfStream接口时，进入End-of-Stream子状态。在此状态下，编码器不再接受新的输入，但是仍然会继续生成输出，直到输出到达尾帧。
 
 在极少数情况下，编码器异常时进入Error状态。接口会返回错误码或通过OH_AVCodecOnError回调抛出异常。
 
@@ -817,9 +817,9 @@ if (pushInputRet != AV_ERR_OK) {
     // 异常处理。
 }
 
-对跨距进行偏移，以NV12图像为例，示例如下：
+跨距偏移处理用于去除图像内存中填充占位（padding）区域，不同像素格式内存排布逻辑不同，开发者需结合图像格式进行适配。
 
-以NV12图像为例，width、height、wStride、hStride图像排布参考下图：
+以NV12图像为例，结合示意图讲解跨距偏移实现方式，width、height、wStride、hStride图像排布参考下图：
 
 OH_MD_KEY_WIDTH表示width；
 
@@ -828,6 +828,8 @@ OH_MD_KEY_HEIGHT表示height；
 OH_MD_KEY_VIDEO_STRIDE表示wStride；
 
 OH_MD_KEY_VIDEO_SLICE_HEIGHT表示hStride。
+
+图3 NV12图像排布示意图
 
 添加头文件。
 
@@ -893,6 +895,12 @@ src = nullptr;
 一般需要获取数据的宽、高、跨距、像素格式来保证编码输入数据被正确的处理。
 
 具体实现请参考：Buffer模式的步骤3-调用OH_VideoEncoder_RegisterCallback接口设置回调函数来获取数据的宽、高、跨距、像素格式。
+
+常见图像格式排布示意图如下：
+
+图4 YUVI420图像排布示意图
+
+图5 RGBA1010102图像排布示意图
 
 通知编码器结束。
 
@@ -977,14 +985,11 @@ Flush，Reset，Stop，Destroy接口需在非回调线程中调用。接口执�
 
 支持的能力	使用简述
 分层编码、设置LTR帧、参考帧	具体可参考：时域可分层视频编码。
-支持历史帧repeat编码	具体可参考：native_avcodec_base.h[变量]OH_MD_KEY_VIDEO_ENCODER_REPEAT_PREVIOUS_FRAME_AFTER中的OH_MD_KEY_VIDEO_ENCODER_REPEAT_PREVIOUS_FRAME_AFTER和OH_MD_KEY_VIDEO_ENCODER_REPEAT_PREVIOUS_MAX_COUNT。
-支持的能力	使用简述
---------------------------	-------------------------------------------------
-运行时配置编码器参数，包括帧率、码率、QPMin/QPMax	通过调用OH_VideoEncoder_SetParameter()配置， 具体可参考下文中：Surface模式的步骤-9
-随帧设置编码QPMin/QPMax	通过调用OH_VideoEncoder_RegisterParameterCallback()注册随帧参数回调时配置，具体可参考下文中：Surface模式的步骤-4
-分层编码，LTR设置	具体可参考：时域可分层视频编码
-获取编码每帧平均量化参数（QPAverage）、平方误差（mseValue）	在配置回调函数OnNewOutputBuffer()时获取，具体可参考下文中：Surface模式的步骤-3
-变分辨率	编码器支持输入图像分辨率发生变化。目前仅Surface模式支持且图像的宽、高不能超过OH_VideoEncoder_Configure接口配置的宽、高，具体可参考下文中：Surface模式的步骤-5
+支持历史帧重复编码	具体可参考：native_avcodec_base.h[变量]OH_MD_KEY_VIDEO_ENCODER_REPEAT_PREVIOUS_FRAME_AFTER中的OH_MD_KEY_VIDEO_ENCODER_REPEAT_PREVIOUS_FRAME_AFTER和OH_MD_KEY_VIDEO_ENCODER_REPEAT_PREVIOUS_MAX_COUNT。
+运行时配置编码器参数，包括帧率、码率、QPMin/QPMax	通过调用OH_VideoEncoder_SetParameter()配置， 具体可参考上文中：Surface模式的步骤-9
+随帧设置编码QPMin/QPMax	通过调用OH_VideoEncoder_RegisterParameterCallback()注册随帧参数回调时配置，具体可参考上文中：Surface模式的步骤-4
+获取编码每帧平均量化参数（QPAverage）、平方误差（mseValue）	在配置回调函数OnNewOutputBuffer()时获取，具体可参考上文中：Surface模式的步骤-3
+变分辨率	编码器支持输入图像分辨率发生变化。目前仅Surface模式支持且图像的宽、高不能超过OH_VideoEncoder_Configure接口配置的宽、高，具体可参考上文中：Surface模式的步骤-5
 
 ## Code blocks
 

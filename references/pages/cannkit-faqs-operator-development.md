@@ -89,7 +89,7 @@ kernel侧核函数的参数未按照正确顺序填写
 参考如下示例，打印TilingData的数据，确认host侧序列化保存的TilingData是否正确。如果此时打印值有误，说明Tiling的计算逻辑可能不正确，需要进一步检查host侧Tiling实现代码，排查计算逻辑是否有误。
 
 // 按照实际数据类型打印TilingData第一个参数值，如需确认其他值，取值指针向后偏移即可
-std::out<<*reinterpret_cast<uint32_t *>(context->GetRawTilingData()->GetData())<<std::endl;
+std::cout<<*reinterpret_cast<uint32_t *>(context->GetRawTilingData()->GetData())<<std::endl;
 
 如果上一步骤中打印的TilingData正确，需要排查kernel侧核函数的参数是否按照正确顺序填写。
 
@@ -403,7 +403,7 @@ json file: /home/ascendebug_smoking_test/op_contrib/api_opcontrib_case/ForeachSi
 
 [h2]处理方案
 
-先清理系统中残留的日志文。
+先清理系统中残留的日志文件。
 
 请根据实际情况清理上一次生成的调测结果目录（由--work-dir参数指定），包括落盘的日志文件（缺省为当前操作路径的debug_op.log）。
 
@@ -582,7 +582,7 @@ tiling_data.totalLength: 0 tiling_data.tileNum: 0.
 
 ```
 // 按照实际数据类型打印TilingData第一个参数值，如需确认其他值，取值指针向后偏移即可
-std::out<<*reinterpret_cast<uint32_t *>(context->GetRawTilingData()->GetData())<<std::endl;
+std::cout<<*reinterpret_cast<uint32_t *>(context->GetRawTilingData()->GetData())<<std::endl;
 ```
 
 ### Code block 14

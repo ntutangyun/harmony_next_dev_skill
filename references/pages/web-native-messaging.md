@@ -189,7 +189,7 @@ function sendNativeMessage() {
     {message: nativeMessage},
     function(response) {
     // 收到一次应用回复的信息后断开连接
-    console.info("sendNativeMessage收到应用程序响应:", JSON.stringify (response));
+    console.info("sendNativeMessage收到应用程序响应:", JSON.stringify(response));
     }
   )
 }
@@ -248,7 +248,7 @@ export default class MyWebNativeMessageExtAbility extends WebNativeMessagingExte
       let writeLen = await fileIo.write(fdWrite, writeBuffer.buffer);
       hilog.info(DOMAIN_NUMBER, TAG, 'write pipe length %{public}d', writeLen);
     } catch (err) {
-      hilog.error(DOMAIN_NUMBER, TAG, 'fileIo failed, error code: ' + err.code + " message: " + err.code);
+      hilog.error(DOMAIN_NUMBER, TAG, 'fileIo failed, error code: ' + err.code + " message: " + err.message);
     }
   }
 
@@ -314,7 +314,7 @@ export default class MyWebNativeMessageExtAbility extends WebNativeMessagingExte
 
 浏览器负责实现扩展runtime接口，拉起WebNativeMessagingExtensionAbility，建立和管理NativeMessaging连接。需要申请权限：ohos.permission.WEB_NATIVE_MESSAGING。
 
-当接收到创建NativeMessaging连接时，先通过应用间配置共享接口获取目标应用的extension配置。然后读取WebNativeMessagingExtensionAbility名称和允许访问的扩展列表。最后校验是否允许访问。
+当接收到创建NativeMessaging连接时，先通过get20获取目标应用的extension配置。然后读取WebNativeMessagingExtensionAbility名称和允许访问的扩展列表。最后校验是否允许访问。
 
 import { dataShare } from '@kit.ArkData';
 
@@ -380,7 +380,7 @@ class ConnectionCallback implements webNativeMessagingExtensionManager.WebExtens
   }
   onDisconnect(connection:webNativeMessagingExtensionManager.ConnectionNativeInfo) {
     // disconnect
-    console.error(`onDisconnect id ${connection.connectionId} is connected`);
+    console.error(`onDisconnect id ${connection.connectionId} is disconnected`);
   }
   onFailed(code:webNativeMessagingExtensionManager.NmErrorCode, errMsg:string) {
     console.error(`onFailed error code is ${code}, errMsg is ${errMsg}`);
@@ -521,7 +521,7 @@ function sendNativeMessage() {
     {message: nativeMessage},
     function(response) {
     // 收到一次应用回复的信息后断开连接
-    console.info("sendNativeMessage收到应用程序响应:", JSON.stringify (response));
+    console.info("sendNativeMessage收到应用程序响应:", JSON.stringify(response));
     }
   )
 }
@@ -576,7 +576,7 @@ export default class MyWebNativeMessageExtAbility extends WebNativeMessagingExte
       let writeLen = await fileIo.write(fdWrite, writeBuffer.buffer);
       hilog.info(DOMAIN_NUMBER, TAG, 'write pipe length %{public}d', writeLen);
     } catch (err) {
-      hilog.error(DOMAIN_NUMBER, TAG, 'fileIo failed, error code: ' + err.code + " message: " + err.code);
+      hilog.error(DOMAIN_NUMBER, TAG, 'fileIo failed, error code: ' + err.code + " message: " + err.message);
     }
   }
 
@@ -714,7 +714,7 @@ class ConnectionCallback implements webNativeMessagingExtensionManager.WebExtens
   }
   onDisconnect(connection:webNativeMessagingExtensionManager.ConnectionNativeInfo) {
     // disconnect
-    console.error(`onDisconnect id ${connection.connectionId} is connected`);
+    console.error(`onDisconnect id ${connection.connectionId} is disconnected`);
   }
   onFailed(code:webNativeMessagingExtensionManager.NmErrorCode, errMsg:string) {
     console.error(`onFailed error code is ${code}, errMsg is ${errMsg}`);

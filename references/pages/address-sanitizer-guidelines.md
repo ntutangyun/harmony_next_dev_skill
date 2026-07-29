@@ -445,8 +445,7 @@ ld-musl-aarch64.so
 Use After Free
 
 故障特征	来源	提取规则
-故障特征1	使用栈	过滤基础库后，取栈顶的前两帧（so名+相对偏移）
-故障特征2	释放栈	过滤基础库后，取栈顶的前两帧（so名+相对偏移）
+故障特征	释放栈	过滤基础库后，取栈顶的前两帧（so名+相对偏移）
 
 Double Free
 
@@ -457,7 +456,7 @@ Double Free
 其他故障类型
 
 故障特征	来源	提取规则
-故障特征	使用栈	过滤基础库后，取栈顶的前两帧（so名+相对偏移）
+故障特征	报错栈	过滤基础库后，取栈顶的前两帧（so名+相对偏移）
 
 [h2]生成聚类特征
 
@@ -486,15 +485,14 @@ Use After Free at 0x5bab376000 (0 bytes into a 64-byte allocation at 0x5bab37600
 
 从“at”处提取故障类型：Use After Free。
 
-分别对使用栈与释放栈进行标准化。
+对释放栈进行标准化。
 
 过滤基础库栈帧后，取栈顶前两帧作为关键特征。
 
 最终生成的聚类特征如下：
 
 故障特征	聚类特征
-故障特征1-使用栈	/data/storage/el1/bundle/libs/arm64/libsample.so+0x7ba4 /data/storage/el1/bundle/libs/arm64/libsample.so+0x849c
-故障特征2-释放栈	/data/storage/el1/bundle/libs/arm64/libsample.so+0x7b9c /data/storage/el1/bundle/libs/arm64/libsample.so+0x849c
+故障特征-释放栈	/data/storage/el1/bundle/libs/arm64/libsample.so+0x7b9c /data/storage/el1/bundle/libs/arm64/libsample.so+0x849c
 
 开发者可通过比对多份日志的聚类特征来归并AddrSanitizer故障，也可以对故障类型和故障特征内容计算哈希值，用于问题分类统计与自动化分析。
 

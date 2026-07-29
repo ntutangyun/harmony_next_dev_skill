@@ -1,4 +1,4 @@
-# 标注屏幕朗读内容的场景
+# 标注屏幕朗读内容
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-screen-reading_
 
@@ -12,9 +12,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 对于非文本类控件，可采用无障碍文本为视障用户提供朗读信息。
 
-开发实例
+开发流程
 
-以accessibilityText( ) 设置无障碍文本为例，accessibilityText( ) 设置无障碍文本。聚焦button时朗读效果为："Accessibility text，按钮"。
+以accessibilityText()设置无障碍文本为例，accessibilityText设置无障碍文本。聚焦Button时朗读效果为："Accessibility text，按钮"。
 
 @Entry
 @Component

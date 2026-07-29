@@ -12,7 +12,7 @@ int64_t GetShapeSize() const
 
 参数说明
 
-不涉及。
+无。
 
 返回值
 

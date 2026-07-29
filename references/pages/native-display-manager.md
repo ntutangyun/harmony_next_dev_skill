@@ -34,8 +34,8 @@ OH_NativeDisplayManager_UnregisterFoldDisplayModeChangeListener(uint32_t listene
 
 在CMake脚本中链接动态库
 
-target_link_libraries(entry PUBLIC libhilog_ndk.z.so)
-target_link_libraries(entry PUBLIC libnative_display_manager.so )
+target_link_libraries(nativedisplay PUBLIC libhilog_ndk.z.so)
+target_link_libraries(nativedisplay PUBLIC libnative_display_manager.so)
 
 添加头文件
 
@@ -252,21 +252,6 @@ extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
     napi_module_register(&displayModule);
 }
 
-static napi_module displayModule = {
-    .nm_version = 1,
-    .nm_flags = 0,
-    .nm_filename = nullptr,
-    .nm_register_func = Init,
-    .nm_modname = "nativedisplay",
-    .nm_priv = ((void*)0),
-    .reserved = { 0 },
-};
-
-extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
-{
-    napi_module_register(&displayModule);
-}
-
 在Index.ets文件中调用函数
 
 private callGetDisplayRotation(): void {
@@ -318,8 +303,8 @@ private callDealFoldableDevice(): void {
 ### Code block 1
 
 ```
-target_link_libraries(entry PUBLIC libhilog_ndk.z.so)
-target_link_libraries(entry PUBLIC libnative_display_manager.so )
+target_link_libraries(nativedisplay PUBLIC libhilog_ndk.z.so)
+target_link_libraries(nativedisplay PUBLIC libnative_display_manager.so)
 ```
 
 ### Code block 2
@@ -548,25 +533,6 @@ extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
 ```
 
 ### Code block 10
-
-```
-static napi_module displayModule = {
-    .nm_version = 1,
-    .nm_flags = 0,
-    .nm_filename = nullptr,
-    .nm_register_func = Init,
-    .nm_modname = "nativedisplay",
-    .nm_priv = ((void*)0),
-    .reserved = { 0 },
-};
-
-extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
-{
-    napi_module_register(&displayModule);
-}
-```
-
-### Code block 11
 
 ```
 private callGetDisplayRotation(): void {

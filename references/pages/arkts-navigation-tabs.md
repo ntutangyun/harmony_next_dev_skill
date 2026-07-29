@@ -2,13 +2,27 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-navigation-tabs_
 
-当页面信息较多时，为了让用户能够聚焦于当前显示的内容，需要对页面内容进行分类，提高页面空间利用率。Tabs组件可以在一个页面内快速实现视图内容的切换，一方面提升查找信息的效率，另一方面精简用户单次获取到的信息量。
+概述
 
-基本布局
+在日常开发中，开发者经常遇到使用Tabs作为导航的场景，包括多层嵌套的Tabs、自定义Tabs样式、Tabs数据加载和动态变更显示的Tabs等。
+
+当页面信息较多时，为了让用户能够聚焦于当前显示的内容，需要对页面内容进行分类，提高页面空间利用率。Tabs组件可以在一个页面内快速实现视图内容的切换，一方面提升查找信息的效率，另一方面精简用户单次获取到的信息量。为了帮助开发者更直观和全面地理解Tabs组件，本文通过将这些场景整合到一个应用首页的具体实例中，展示Tabs组件的各项功能及其协同效果，以及与其他组件或数据的联动。
+
+本文将从以下几个方面进行介绍。
+
+布局方式
+
+Tabs显示排版
+
+Tabs滑动
+
+Tabs页签加载/更新
+
+Tabs切换动效
+
+布局方式
 
 Tabs组件的页面组成包含两个部分，分别是TabContent和TabBar。TabContent是内容页，TabBar是导航页签栏，页面结构如下图所示，根据不同的导航类型，布局会有区别，可以分为底部导航、顶部导航、侧边导航，其导航栏分别位于底部、顶部和侧边。
-
-图1 Tabs组件布局示意图
 
 说明
 
@@ -16,9 +30,7 @@ TabContent组件不支持设置通用宽度属性，其宽度默认撑满Tabs父
 
 TabContent组件不支持设置通用高度属性，其高度由Tabs父组件高度与TabBar组件高度决定。
 
-Tabs使用花括号包裹TabContent，如图2，其中TabContent显示相应的内容页。
-
-图2 Tabs与TabContent使用
+Tabs使用花括号包裹TabContent，如图，其中TabContent显示相应的内容页。
 
 每一个TabContent对应的内容需要有一个页签，可以通过TabContent的tabBar属性进行配置。在如下TabContent组件上设置tabBar属性，可以设置其对应页签中的内容，tabBar作为内容的页签。
 
@@ -62,11 +74,11 @@ Tabs() {
     Text($r('app.string.mine_content'))
       .fontSize(30)
   }
-  // app.string.mine_content资源文件中的value值为“我的”
+  // app.string.mine资源文件中的value值为“我的”
   .tabBar($r('app.string.mine'))
 }
 
-底部导航
+[h2]底部导航
 
 底部导航是应用中最常见的一种导航方式。底部导航位于应用一级页面的底部，用户打开应用，能够分清整个应用的功能分类，以及页签对应的内容，并且其位于底部更加方便用户单手操作。底部导航一般作为应用的主导航形式存在，其作用是将用户关心的内容按照功能进行分类，迎合用户使用习惯，方便在不同模块间的内容切换。
 
@@ -81,7 +93,7 @@ Tabs({ barPosition: BarPosition.End }) {
 
 底部导航栏可通过设置TabContent的BottomTabBarStyle来实现底部页签样式，详细示例请参考：示例8（设置底部页签使用symbol图标）。
 
-顶部导航
+[h2]顶部导航
 
 当内容分类较多，用户对不同内容的浏览概率相差不大，需要经常快速切换时，一般采用顶部导航模式进行设计，作为对底部导航内容的进一步划分，常见一些资讯类应用对内容的分类为关注、视频、数码，或者主题应用中对主题进行进一步划分为图片、视频、字体等。
 
@@ -92,7 +104,7 @@ Tabs({ barPosition: BarPosition.Start }) {
   // ···
 }
 
-侧边导航
+[h2]侧边导航
 
 侧边导航是应用较为少见的一种导航模式，更多适用于横屏界面，用于对应用进行导航操作，由于用户的视觉习惯是从左到右，侧边导航栏默认为左侧侧边栏。
 
@@ -115,39 +127,252 @@ vertical为false时，tabbar的宽度默认为撑满屏幕的宽度，需要设�
 
 vertical为true时，tabbar的高度默认为实际内容的高度，需要设置barHeight为合适值。
 
-限制导航栏的滑动切换
+Tabs显示排版
 
-默认情况下，导航栏都支持滑动切换，在一些内容信息量需要进行多级分类的页面，如支持底部导航+顶部导航组合的情况下，底部导航栏的滑动效果与顶部导航出现冲突，此时需要限制底部导航的滑动，避免引起不好的用户体验。
+在Tabs组件的应用场景中，开发者通常会自定义Tabs的布局和样式。本章节将介绍Tabs组件提供的几种常用的布局和样式功能。
 
-图6 限制底部导航栏滑动
+[h2]页签对齐方式
 
-控制滑动切换的属性为scrollable，默认值为true，表示可以滑动，若要限制滑动切换页签则需要设置为false。
+当页签数量不足，无法铺满屏幕宽度或高度，或者铺满后影响到UI美观时，Tabs提供了自定义导航条页签对齐方式的API。例如，在应用的二级导航中，如果页签较少，可以考虑将页签居左对齐。
 
-  Tabs({ barPosition: BarPosition.End }) {
-    TabContent() {
-      Column() {
-        Tabs() {
-          // 顶部导航栏内容
-        // ···
-        }
-      }
-      .backgroundColor('#ff08a8f1')
-      .width('100%')
-    }
-    // app.string.homepage资源文件中的value值为“首页”
-    .tabBar($r('app.string.homepage'))
+实现原理
 
-    // 其他TabContent内容：发现、推荐、我的
-    // ···
+通过barModifier属性设置tabBar的align参数，可以实现页签对齐布局效果。类似于文本对齐，开发者可以自行设置居中、居上、居下、居左或者居右对齐。
+
+说明
+
+只有在TabBar的barMode为BarMode.Scrollable时，这些设置才会生效。除此之外，还可以通过barModifier参数设置一系列的通用属性，具体参考：TabsOptions。
+
+居上居下对齐仅在侧边导航栏中生效。若要控制顶部和底部导航栏中页签与顶部的距离，同样可以使用barModifier设置padding属性，以保持页签与TabBar顶部的特定间距。
+
+开发步骤
+
+定义tabBarModifier属性，并将其作为参数构造Tabs，然后通过tabBarModifier设置对齐方式。
+
+@Component
+export default struct InTabsComponent {
+  // ...
+  @State tabBarModifier: CommonModifier = new CommonModifier();
+  // ...
+  async aboutToAppear() {
+    // ...
+    this.tabBarModifier.margin({ right: 56 }).align(Alignment.Start);
+    // ...
   }
-// ···
-  .scrollable(false)
+  // ...
+  build() {
+    // ...
+            Tabs({
+              // ...
+              barModifier: this.tabBarModifier
+            }) {
+              // ...
+            }
+            // ...
+  }
+}
 
-固定导航栏
+[h2]自定义页签
+
+对于底部导航栏，通常用于应用主页面的功能区分。为了更好的用户体验，开发者通常会自定义页签样式。开发者可以使用Tabs组件提供的定制页签样式的API，将页签自定义为图标加文字标题的形式，并且在选中和非选中的状态下，提供不同的样式。
+
+实现原理
+
+Tabs组件的tabBar()方法接受联合类型的参数，可以将由@Builder修饰的UI构建函数作为参数传入，以自定义TabBar的样式。因此，开发者可以定义一个UI构建函数tabBuilder()，作为参数传递给tabBar()方法。由于选中的页签和未选中的页签需要不同的样式，还需定义一个由@State修饰的数值型变量currentIndex，用于在tabBuilder()函数中判断当前页签是否被选中。当currentIndex发生变化时，能够触发tabBar样式的更新。最后，注册Tabs组件的onchange函数，在该函数中更新currentIndex的值。
+
+开发步骤
+
+定义currentIndex属性。
+
+@Component
+export default struct OutTabsComponent {
+  @State currentIndex: number = 0;
+  // ...
+}
+
+定义@Builder装饰器修饰的自定义样式构建方法tabBuilder()。
+
+@Builder
+tabBuilder(index: number, name: string | Resource, icon: Resource) {
+  Column() {
+
+    SymbolGlyph(icon).fontColor([this.currentIndex === index
+      ? $r('app.color.out_tab_bar_font_active_color')
+      : $r('app.color.out_tab_bar_font_inactive_color')])
+      .fontSize(25)
+
+    Text(name)
+      .margin({ top: 4 })
+      .fontSize(10)
+      .fontColor(this.currentIndex === index
+        ? $r('app.color.out_tab_bar_font_active_color')
+        : $r('app.color.out_tab_bar_font_inactive_color'))
+  }
+  .justifyContent(FlexAlign.Center)
+  .height(Constants.FULL_HEIGHT)
+  .width(Constants.FULL_WIDTH)
+  .padding({ bottom: 60 })
+}
+
+将tabBuilder()方法传入Tabs，并在Tabs注册onChange()函数，并在其中更新currentIndex属性。
+
+Tabs({
+  // ...
+}) {
+  TabContent() {
+    InTabsComponent({ switchNext: this.switchNext })
+  }.tabBar(this.tabBuilder(0, $r('app.string.out_bar_text_home'), $r('sys.symbol.house')))
+  // ...
+}
+// ...
+.onChange((index: number) => {
+  this.currentIndex = index;
+})
+
+[h2]Tabs吸顶
+
+在一些二级导航栏页面中，二级页签的内容上方通常会放置一些banner位或其他优先级较高的内容，并且在向上滑动时会退出显示区域。为了提供更好的用户体验，建议在上划的过程中，导航条能够吸附在顶部，便于用户进行内容切换。
+
+实现原理
+
+开发者可以通过设置滑动组件的属性nestedScroll来控制父子组件的滑动顺序，从而实现吸顶效果。具体而言，需确保TabContent内容是可滑动的，并且Tabs的上层父组件也必须是可滑动的。为内容组件添加nestedScroll属性，设置为当向上滑动时父组件先动，而向下滑动时自己先动，从而实现滑动吸顶效果。
+
+开发步骤
+
+在Tabs父组件上嵌套Scroll组件，TabContent中的List组件显示内容，List组件本身是可滑动的，仅需设置其滑动触发行为即可。
+
+Scroll() {
+  Column() {
+    BannerComponent()
+
+    Stack({ alignContent: Alignment.TopEnd }) {
+      // ...
+      Column() {
+        Tabs({
+          // ...
+        }) {
+          ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+            if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+              TabContent() {
+                List({ space: 10 }) {
+                  // ...
+                }
+                // ...
+                .nestedScroll({
+                  scrollForward: NestedScrollMode.PARENT_FIRST,
+                  scrollBackward: NestedScrollMode.SELF_FIRST
+                })
+              }
+              // ...
+            } else {
+              // ...
+            }
+          }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+        }
+        // ...
+      }
+      .width(Constants.FULL_WIDTH)
+      .height(Constants.FULL_HEIGHT)
+      .backgroundColor($r('app.color.out_tab_bar_background_color'))
+    }
+  }
+}
+
+[h2]TabsBar显示效果
+
+在某些UI设计风格中，可能需要为TabBar采用特殊样式，比如首页导航栏的毛玻璃背景效果等。
+
+通过设置Tabs组件的barOverlap属性，可以实现TabBar变模糊并叠加在TabContent之上，并且配合barBackgroundBlurStyle属性实现毛玻璃效果。详情请参见TabBar背景模糊效果。
+
+Tabs({
+  // ...
+}) {
+  // ...
+}
+// ...
+.barOverlap(true)
+.barBackgroundBlurStyle(BlurStyle.Thin)
+
+底部导航栏覆盖在内容上方，并具有毛玻璃效果。
+
+通过barModifier设置tabBar的clip属性，实现页签超出tabBar区域显示效果。详情请参见页签超出TabBar区域显示。
+
+@Component
+export default struct OutTabComponent {
+  // ...
+  private controller: TabsController = new TabsController();
+
+  aboutToAppear(): void {
+    this.tabBarModifier.clip(false);
+  }
+
+  // ...
+
+  build() {
+    Column() {
+      Tabs({
+        // ...
+        barModifier: this.tabBarModifier
+      }) {
+        // ...
+      }
+      // ...
+
+    }
+    .width('100%')
+    .height('calc(100% + 60vp)')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+  }
+}
+
+底层导航栏图标可超出导航条范围。
+
+通过配置fadingEdge(true)实现TabBar边缘渐隐。详情请参见设置TabBar渐隐。
+
+Tabs({controller: this.subController}){
+  // ...
+}
+.fadingEdge(this.isFadingEdge)
+
+顶部导航栏页签靠近两侧会模糊化。
+
+通过TabsController的setTabBarTranslate()、setTabBarOpacity()方法可以设置TabBar偏移量及透明度。详情请参见设置TabBar平移距离和不透明度。
+
+@Component
+export default struct InTabComponent {
+  // ...
+  private subController: TabsController = new TabsController();
+
+  onDidBuild(): void {
+    if (this.isSetTabBarTranslateAndOpacity) {
+      this.subController.setTabBarTranslate({x:-20,y:30});
+      this.subController.setTabBarOpacity(0.5);
+    }
+  }
+  // ...
+
+  build() {
+    Tabs({controller: this.subController}){
+      // ...
+    }
+    // ...
+    .barMode(BarMode.Scrollable)
+  }
+}
+
+顶部导航栏位置向左下偏移，并且呈现半透明效果。
+
+说明
+
+在以下情况下，该设置无法生效：当显示内容过长时，通常会将其置于可滚动容器组件中，并在向上滑动时隐藏TabBar，向下滑动时显示。此时，会使用bindTabsToScrollable或bindTabsToNestedScrollable等接口将Tabs组件与可滚动容器组件绑定。由于TabBar的控制与滚动组件联动，通过setTabBarOpacity接口设置的TabBar偏移量和不透明度将不再生效。
+
+Tabs滑动
+
+Tabs组件在用户交互方面提供了丰富的特性，其中与滑动动作相关的交互尤为常见。下文将介绍几种与Tabs和滑动动作相关的特性。
+
+[h2]固定导航栏
 
 当内容分类较为固定且不具有拓展性时，例如底部导航内容分类一般固定，分类数量一般在3-5个，此时使用固定导航栏。固定导航栏不可滚动，无法被拖拽滚动，内容均分tabBar的宽度。
-
-图7 固定导航栏
 
 Tabs的barMode属性用于控制导航栏是否可以滚动，默认值为BarMode.Fixed。
 
@@ -157,64 +382,202 @@ Tabs({ barPosition: BarPosition.End }) {
 }
 .barMode(BarMode.Fixed)
 
-滚动导航栏
+[h2]双层Tabs嵌套滑动
 
-滚动导航栏可以用于顶部导航栏或者侧边导航栏的设置，内容分类较多，屏幕宽度无法容纳所有分类页签的情况下，需要使用可滚动的导航栏，支持用户点击和滑动来加载隐藏的页签内容。
+在应用开发中，开发者经常遇到多层Tabs嵌套使用的场景。如果父子Tabs组件均需滑动切换时，开发者需要对父子Tabs的滑动切换行为进行约束，以避免冲突。通常做法是，让滑动操作优先切换子Tabs页签，当子Tabs页签切换到最后一个后，再触发父Tabs的页签切换。
 
-图8 可滚动导航栏
+实现原理
 
-滚动导航栏需要设置Tabs组件的barMode属性，默认值为BarMode.Fixed表示为固定导航栏，BarMode.Scrollable表示可滚动导航栏。
+可以通过PanGesture结合TabsController的changeIndex()方法实现双层Tabs的切换。具体操作为：开启子Tabs的滑动切换功能，同时关闭父Tabs的滑动切换。在子Tabs的第一个或者最后一个页面上添加PanGesture事件处理函数，用于判断滑动方向，并根据滑动方向使用TabsController的changeIndex()方法切换到父Tabs的相应页签。这样一来，子Tabs的中间页签滑动时，仅会触发子Tabs页签的切换，而最后一个页签的滑动则会通过changeIndex()方法间接触发父Tabs页签的切换。
 
-Tabs({ barPosition: BarPosition.Start }) {
-  // TabContent的内容：关注、视频、游戏、数码、科技、体育、影视、人文、艺术、自然、军事
-  // ···
-}
-.barMode(BarMode.Scrollable)
+开发步骤
 
-自定义导航栏
+外层Tabs组件中定义TabsController属性，以及内层Tabs双向绑定的状态属性变量switchNext及其监听函数。当监听到需要切换页签时，利用TabsController切换到对应页签。因为本示例外层Tabs和内层Tabs封装到不同的自定义组件中了，所以需要@Link修饰的switchNext变量作为父子组件的交互媒介。
 
-对于底部导航栏，一般作为应用主页面功能区分，为了更好的用户体验，会组合文字以及对应语义图标表示页签内容，这种情况下，需要自定义导航页签的样式。
-
-图9 自定义导航栏
-
-系统默认情况下采用了下划线标识当前活跃的页签，而自定义导航栏需要自行实现相应的样式，用于区分当前活跃页签和未活跃页签。
-
-设置自定义导航栏需要使用tabBar的参数，以其支持的CustomBuilder的方式传入自定义的函数组件样式。例如这里声明tabBuilder的自定义函数组件，传入参数包括页签文字title，对应位置index，以及选中状态和未选中状态的图片资源。通过当前活跃的currentIndex和页签对应的targetIndex匹配与否，决定UI显示的样式。
-
-@State currentIndex: number = 0;
-
-@Builder
-tabBuilder(title: ResourceStr, targetIndex: number, selectedImg: Resource, normalImg: Resource) {
-  Column() {
-    Image(this.currentIndex === targetIndex ? selectedImg : normalImg)
-      .size({ width: 25, height: 25 })
-    Text(title)
-      .fontColor(this.currentIndex === targetIndex ? '#1698CE' : '#6B6B6B')
+@Component
+export default struct OutTabsComponent {
+  // ...
+  @State @Watch('onchangeSwitchNext') switchNext: boolean = false;
+  // ...
+  onchangeSwitchNext() {
+    if (this.switchNext) {
+      this.switchNext = false;
+      this.tabsController.changeIndex(1);
+    }
   }
-  .width('100%')
-  .height(50)
-  .justifyContent(FlexAlign.Center)
-}
-
-在TabContent对应tabBar属性中传入自定义函数组件，并传递相应的参数。
-
-TabContent() {
-  Column() {
-    // app.string.mine_content资源文件中的value值为“我的内容”
-    Text($r('app.string.mine_content'))
+  // ...
+  build() {
+    Tabs({
+      // ...
+      controller: this.tabsController,
+    }) {
+      TabContent() {
+        InTabsComponent({ switchNext: this.switchNext })
+      }.tabBar(this.tabBuilder(0, $r('app.string.out_bar_text_home'), $r('sys.symbol.house')))
+      // ...
+    }
+    // ...
   }
-  .width('100%')
-  .height('100%')
-  .backgroundColor('#007DFF')
 }
-// app.string.mine资源文件中的value值为“我的”
-.tabBar(this.tabBuilder($r('app.string.mine'), 0, $r('app.media.mine_selected'), $r('app.media.mine_normal')))
 
-切换至指定页签
+内层Tabs组件在最后一个TabContent中注册滑动事件处理函数，监听向左滑动作，触发时修改switchNext变量值传递给外层Tabs组件触发切换。
+
+@Component
+export default struct InTabsComponent {
+  // ...
+  @Link switchNext: boolean;
+  // ...
+  build() {
+    // ...
+            Tabs({
+              // ...
+            }) {
+              ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+                if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+                  TabContent() {
+                    // ...
+                  }
+                  .tabBar(this.tabBuilder(index, tab))
+                  .gesture(PanGesture(new PanGestureOptions({ direction: PanDirection.Left })).onActionStart(() => {
+                    this.switchNext = true;
+                  }))
+                  // ...
+                } else {
+                  // ...
+                }
+              }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+            }
+            // ...
+  }
+}
+
+注意滑动切换在自定义切换动画场景下失效，故需要注释掉切换动画函数注册。
+
+Tabs({
+  barPosition: BarPosition.Start,
+  controller: this.subsController,
+  barModifier: this.tabBarModifier
+}) {
+  // ...
+}
+.customContentTransition(this.customContentTransition)
+
+[h2]可滚动Tabs页签栏+更多按钮
+
+可滚动页签栏通常设置在顶部或侧边导航栏，当内容分类较多，屏幕显示区域无法完全展示所有分类页签时，该页签栏允许用户通过滚动来访问隐藏的页签内容。
+
+实现原理
+
+通过将Tabs组件的barMode属性设置为BarMode.Scrollable，可以实现可滚动的页签栏。若要实现添加更多按钮的效果，可以通过Stack布局结合barModifier功能实现。具体做法是在Tabs组件的TabBar位置的末端上层利用Stack布局添加更多按钮，并且点击该按钮时可以弹出窗口，在弹窗中自定义需要显示的页签。
+
+开发步骤
+
+设置barMode属性为BarMode.Scrollable，并利用Stack布局在TabBar右上角添加更多按钮。
+
+Stack({ alignContent: Alignment.TopEnd }) {
+  Row() {
+    Image($r('app.media.more'))
+      // ...
+      .onClick(() => {
+        this.showSelectTabsComponent = !this.showSelectTabsComponent;
+      })
+  }
+  // ...
+  .zIndex(1)
+  .bindSheet($$this.showSelectTabsComponent, this.sheetBuilder(), {
+    detents: [SheetSize.MEDIUM, SheetSize.MEDIUM, 500],
+    preferType: SheetType.BOTTOM,
+    title: { title: $r('app.string.bind_sheet_title') },
+    onWillDismiss: (dismissSheetAction: DismissSheetAction) => {
+      this.selectTabsViewModel.updateSelectedTabs();
+      if (this.selectTabsViewModel.selectedTabs.length > 0) {
+        this.subsController.changeIndex(0);
+      }
+      dismissSheetAction.dismiss();
+    }
+  })
+  Column() {
+    Tabs({
+      // ...
+    }) {
+      // ...
+    }
+    // ...
+    .barMode(BarMode.Scrollable)
+    // ...
+  }
+  .width(Constants.FULL_WIDTH)
+  .height(Constants.FULL_HEIGHT)
+  .backgroundColor($r('app.color.out_tab_bar_background_color'))
+}
+
+[h2]禁用TabContent左右滑动
+
+默认情况下，导航栏支持滑动切换。当存在多级导航栏嵌套或导航栏中的其他组件需要占用滑动动作时，为避免滑动响应冲突，开发者可选择禁用Tabs组件的滑动切换功能。通过将Tabs组件的scrollable属性设置为false，可以禁止通过滑动TabContent来切换页签。同样，若想禁用边缘回弹效果，可将edgeEffect的值设置为EdgeEffect.None。
+
+示例代码：
+
+build() {
+  Tabs({
+    // ...
+  }) {
+    // ...
+  }
+  // ...
+  .scrollable(true)
+  // ...
+}
+
+Tabs页签加载/更新
+
+在使用Tabs组件进行开发时，特别是当Tabs组件作为二级导航使用时，业务需求往往需要对Tabs的标签页进行更精细的控制。下文将介绍几种定制标签页显示逻辑的场景。
+
+[h2]显示指定页签与预加载
+
+Tabs组件的TabContent默认在首次切换到该标签页时加载。如果TabContent中的内容或初始化逻辑较为复杂，加载速度较慢，则会影响标签页切换的流畅性，进而影响用户体验。此时，如果应用能在切换前预加载相应的标签页，将显著提升使用流畅度。
+
+实现原理
+
+通过TabController的preloadItem()方法可以预加载指定子节点。该方法参数为需要预加载的index数组，无参调用此方法时，会一次性加载所有指定的子节点。因此，为了性能考虑，建议分批加载子节点。代码示例这里做法是当切换到某页签时，预加载所选页签左右两侧的页签内容。
+
+开发步骤
+
+定义subsController属性，并在Tabs的onChange函数中调用preloadItem()预加载当前页签两侧页签。
+
+@Component
+export default struct InTabsComponent {
+  // ...
+  private subsController: TabsController = new TabsController();
+  // ...
+  build() {
+    // ...
+            Tabs({
+              // ...
+              controller: this.subsController,
+              // ...
+            }) {
+              // ...
+            }
+            // ...
+            .onChange((index: number) => {
+              this.focusIndex = index;
+              this.tabBarItemScroller.scrollToIndex(index, true, ScrollAlign.CENTER);
+              let preloadItems: number[] = [];
+              if (index - 1 >= 0) {
+                preloadItems.push(index - 1);
+              }
+              if (index + 1 < this.selectTabsViewModel.selectedTabs.length) {
+                preloadItems.push(index + 1);
+              }
+              this.subsController.preloadItems(preloadItems);
+            })
+            // ...
+  }
+}
+
+[h2]切换至指定页签
 
 在不使用自定义导航栏时，默认的Tabs会实现切换逻辑。在使用了自定义导航栏后，默认的Tabs仅实现滑动内容页和点击页签时内容页的切换逻辑，页签切换逻辑需要自行实现。即用户滑动内容页和点击页签时，页签栏需要同步切换至内容页对应的页签。
-
-图10 内容页和页签不联动
 
 从API version 18开始，支持使用Tabs提供的onSelected事件方法，监听索引index的变化，并将选中元素的index值传递给selectIndex，实现页签的切换。
 
@@ -278,8 +641,6 @@ export struct ContentPageNoAndTabLinkage {
   }
 }
 
-图11 内容页和页签联动
-
 若希望不滑动内容页和点击页签也能实现内容页和页签的切换，可以将currentIndex传给Tabs的index参数，通过改变currentIndex来实现跳转至指定索引值对应的TabContent内容。也可以使用TabsController，TabsController是Tabs组件的控制器，用于控制Tabs组件进行内容页切换。通过TabsController的changeIndex方法来实现跳转至指定索引值对应的TabContent内容。
 
 // ...
@@ -326,8 +687,6 @@ export struct ContentPageNoAndTabLinkage {
                   this.controller.changeIndex(index);
                 })
 
-图12 切换指定页签
-
 开发者可以通过Tabs组件的onContentWillChange接口，设置自定义拦截回调函数。拦截回调函数在下一个页面即将展示时被调用，如果回调返回true，新页面可以展示；如果回调返回false，新页面不会展示，仍显示原来页面。
 
 Tabs({ barPosition: BarPosition.End, index: this.currentIndex, controller: this.controllerTwo }) {
@@ -341,7 +700,371 @@ Tabs({ barPosition: BarPosition.End, index: this.currentIndex, controller: this.
   return true;
 })
 
-图13 支持开发者自定义页面切换拦截事件
+[h2]增删Tabs页签
+
+在日常的应用开发中，经常需要实现用户自定义选择频道的功能。通常，这些自定义选择的频道会通过Tabs组件来展示，因此需要动态地更新Tabs的页签。本示例设计了一对父子组件来演示这一功能。父组件负责显示页签及其内容，并在页签栏的最右侧设置一个“更多”按钮。点击此按钮会弹出一个窗口，供用户选择需要显示的页签。该弹窗内容由子组件提供，关闭弹窗后，父组件的页签将被更新。
+
+实现原理
+
+定义selectTabsViewModel对象，其中的数组allTabs表示所有可选择页签，数组selectedTabs表示选中的需要显示的页签，并通过@Link绑定到父组件InTabComponent和子组件SelectTabsComponent中。子组件SelectTabsComponent作为一个弹窗用于选择需要显示的页签。选择完成后，关闭弹窗并更新 selectTabsViewModel对象中的选中页签数组 selectedTabs，以触发父组件InTabComponent的页签更新。
+
+开发步骤
+
+定义SelectTabsViewModel类，包含所有可选择页签数组allTabs属性，和需要显示的页签数组selectedTabs属性，及更新显示页签数组的方法updateSelectedTabs()。
+
+@Observed
+class TabItemArray extends Array<TabItemViewModel> {
+}
+
+@Observed
+export default class SelectTabsViewModel {
+  allTabs: TabItemArray = new TabItemArray();
+  selectedTabs: TabItemArray = new TabItemArray();
+  // ...
+
+  async loadTabs(ctx: Context) {
+    // ...
+  }
+
+  updateSelectedTabs() {
+    let tempTabs: TabItemViewModel[] = [];
+    for (let tab of this.allTabs) {
+      if (tab.isChecked) {
+        tempTabs.push(tab);
+      }
+    }
+    this.selectedTabs = tempTabs;
+  }
+}
+
+在InTabsComponent中定义selectTabsViewModel属性，并且在aboutToAppear()方法中初始化。
+
+@Component
+export default struct InTabsComponent {
+  @State selectTabsViewModel: SelectTabsViewModel = new SelectTabsViewModel();
+  // ...
+  async aboutToAppear() {
+    // ...
+
+    await this.selectTabsViewModel.loadTabs(this.ctx);
+    // ...
+  }
+  // ...
+}
+
+利用ForEach组件将selectTabsViewModel.selectedTabs属性绑定到Tabs的页签上。
+
+Tabs({
+  // ...
+}) {
+  ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+    if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+      TabContent() {
+        // ...
+      }
+      .tabBar(this.tabBuilder(index, tab))
+      // ...
+    } else {
+      // ...
+    }
+  }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+}
+
+在更多按钮的弹窗中初始化SelectTabsComponent，并将selectTabsViewModel属性作为双向绑定属性传入。在关闭弹窗处理函数中调用selectTabsViewModel.updateSelectedTabs()方法，更新需要显示的组件。
+
+@Builder
+sheetBuilder() {
+  SelectTabsComponent({ selectTabsViewModel: this.selectTabsViewModel })
+}
+build() {
+  Scroll() {
+    Column() {
+      BannerComponent()
+
+      Stack({ alignContent: Alignment.TopEnd }) {
+        Row() {
+          Image($r('app.media.more'))
+            // ...
+            .onClick(() => {
+              this.showSelectTabsComponent = !this.showSelectTabsComponent;
+            })
+        }
+        // ...
+        .zIndex(1)
+        .bindSheet($$this.showSelectTabsComponent, this.sheetBuilder(), {
+          detents: [SheetSize.MEDIUM, SheetSize.MEDIUM, 500],
+          preferType: SheetType.BOTTOM,
+          title: { title: $r('app.string.bind_sheet_title') },
+          onWillDismiss: (dismissSheetAction: DismissSheetAction) => {
+            this.selectTabsViewModel.updateSelectedTabs();
+            if (this.selectTabsViewModel.selectedTabs.length > 0) {
+              this.subsController.changeIndex(0);
+            }
+            dismissSheetAction.dismiss();
+          }
+        })
+        // ...
+      }
+    }
+  }
+  // ...
+}
+
+在SelectTabsComponent中将selectTabsViewModel.allTabs属性渲染成toggle组件，并且注册toggle组件的切换处理函数onChange()，在其中修改该页签的选择状态isChecked属性，供更新显示页签方法selectTabsViewModel.updateSelectedTabs()使用。
+
+@Component
+export default struct SelectTabsComponent {
+  @State checkedChange: boolean = false;
+  @Link selectTabsViewModel: SelectTabsViewModel;
+
+  build() {
+    Grid() {
+      ForEach(this.selectTabsViewModel.allTabs, (tab: TabItemViewModel) => {
+        GridItem() {
+          Row() {
+            Toggle({ type: ToggleType.Button, isOn: tab.isChecked }) {
+              // ...
+            }
+            // ...
+            .onChange((isOn: boolean) => {
+              tab.isChecked = isOn;
+              this.checkedChange = !this.checkedChange;
+            })
+          }
+        }
+      }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+    }
+    .columnsTemplate(('1fr 1fr 1fr 1fr') as string)
+    .height(Constants.FULL_HEIGHT)
+  }
+}
+
+[h2]控制页面缓存数
+
+从API version 19开始，开发者可以通过cachedMaxCount接口，设置子组件的最大缓存个数和缓存模式。默认情况下Tabs创建时会一次性预加载所有TabContent，而且已加载的页面不会释放，可能会带来性能内存问题。此时可以设置cachedMaxCount属性控制缓存的页面数量，设置此属性后不会进行页面预加载，使用懒加载机制(仅切换到页面时才加载)，当切换页面时根据所设置的TabsCacheMode决定保留缓存或者释放页面。
+
+说明
+
+TabsCacheMode枚举值为CACHE_BOTH_SIDE时，缓存当前显示的子组件和其两侧的子组件。
+
+TabsCacheMode枚举值为CACHE_LATEST_SWITCHED时，缓存当前显示的子组件和最近切换过的子组件。
+
+存在翻页动画时，从页面1直接切换到页面3，翻页动画会包含页面2，页面2也会被加载，如果此时页面2不在缓存范围内，页面切换完成后会立马释放。
+
+// 如需作为页面入口，请取消@Entry的注释并删除export关键字
+// @Entry
+@Component
+export struct NumberOfCachesTabBar {
+  build() {
+    // ...
+          Tabs({ barPosition: BarPosition.Start }) {
+            TabContent() {
+              MyComponent({ color: '#00CB87' })
+            }.tabBar(SubTabBarStyle.of('green'))
+
+            TabContent() {
+              MyComponent({ color: '#007DFF' })
+            }.tabBar(SubTabBarStyle.of('blue'))
+
+            TabContent() {
+              MyComponent({ color: '#FFBF00' })
+            }.tabBar(SubTabBarStyle.of('yellow'))
+
+            TabContent() {
+              MyComponent({ color: '#E67C92' })
+            }.tabBar(SubTabBarStyle.of('pink'))
+
+            TabContent() {
+              MyComponent({ color: '#FF0000' })
+            }.tabBar(SubTabBarStyle.of('red'))
+          }
+          .width(360)
+          .height(296)
+          .backgroundColor('#F1F3F5')
+          .cachedMaxCount(2, TabsCacheMode.CACHE_BOTH_SIDE)
+          // ...
+  }
+}
+
+@Component
+struct MyComponent {
+  private color: string = '';
+
+  aboutToAppear(): void {
+    console.info('aboutToAppear backgroundColor:' + this.color);
+  }
+
+  aboutToDisappear(): void {
+    console.info('aboutToDisappear backgroundColor:' + this.color);
+  }
+
+  build() {
+    Column()
+      .width('100%')
+      .height('100%')
+      .backgroundColor(this.color)
+  }
+}
+
+基于以上示例代码为例，不同场景下的缓存策略如下：
+
+如图所示，使用默认翻页动画，CACHE_BOTH_SIDE模式，n设置为2，点击TabBar切换到yellow页，TabContent1~3被缓存。再切换到red页，TabContent1、2释放，TabContent3~5被缓存。
+
+如图所示，使用默认翻页动画，CACHE_LATEST_SWITCHED模式，n设置为2，点击TabBar切换到yellow页，TabContent1、3被缓存，TabContent2释放。再切换到red页，TabContent1、3、5被缓存，TabContent4释放。
+
+如图所示，关闭翻页动画，CACHE_BOTH_SIDE模式，n设置为2，点击TabBar切换到yellow页，TabContent1、3被缓存。再切换到red页，TabContent3、5被缓存，TabContent1释放。
+
+如图所示，关闭翻页动画，CACHE_LATEST_SWITCHED模式，n设置为2，点击TabBar切换到yellow页，TabContent1、3被缓存。再切换到red页，TabContent1、3、5被缓存。
+
+Tabs切换动效
+
+[h2]TabContent切换动画
+
+Tabs 自带的页签切换动画为平移动画。若开发者需实现更高级的动画效果，可通过Tabs提供的API实现自定义动画。
+
+实现原理
+
+使用customContentTransition()函数来自定义Tabs页面的切换动画。本场景采用属性动画实现，开发者可以定义由@State修饰的可动画属性，并在build()方法中将这些属性绑定到对应的页签上。这里，淡入淡出动画选用了TabContent的尺寸属性scale和透明度属性opacity作为生成动画属性。然后，在customContentTransition()函数中，设置动画的起始帧和结束帧对应的可动画属性值，系统将自动补全中间帧从而生成动画。关于属性动画详情可参考：实现属性动画。
+
+说明
+
+使用自定义切换动画时，Tabs组件的默认切换动画将被禁用，且页面将无法通过手势滑动切换。
+
+将customContentTransition设置为undefined表示不使用自定义切换动画，继续使用组件自带的默认切换动画。
+
+当前自定义切换动画不支持中途打断。
+
+目前，自定义切换动画仅支持以下两种触发场景：点击页签或通过调用TabsController.changeIndex()方法。
+
+开发步骤
+
+定义动画所需用到的属性数组。
+
+@Component
+export default struct InTabsComponent {
+  // ...
+  @State scaleList: number[] = [];
+  @State opacityList: number[] = [];
+  // ...
+}
+
+将属性数组绑定到对应的页签上。
+
+Tabs({
+  // ...
+}) {
+  ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+    if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+      TabContent() {
+        // ...
+      }
+      // ...
+      .opacity(this.opacityList[index])
+      .scale({
+        x: this.scaleList[index], y: this.scaleList[index]
+      })
+    } else {
+      // ...
+    }
+  }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+}
+
+定义Tabs的自定义转场函数。
+
+@Component
+export default struct InTabsComponent {
+  // ...
+  @State scaleList: number[] = [];
+  @State opacityList: number[] = [];
+  // ...
+  private animateDuration: number = 1000;
+  private animateTimeout: number = 1000;
+  private customContentTransition: (from: number, to: number) => TabContentAnimatedTransition =
+    (from: number, to: number) => {
+      let tabContentAnimatedTransition = {
+        timeout: this.animateTimeout,
+        transition: (proxy: TabContentTransitionProxy) => {
+          this.scaleList[from] = 1.0;
+          this.scaleList[to] = 0.5;
+          this.opacityList[from] = 1.0;
+          this.opacityList[to] = 0.5;
+          this.getUIContext().animateTo({
+            duration: this.animateDuration,
+            onFinish: () => {
+              proxy.finishTransition();
+            }
+          }, () => {
+            this.scaleList[from] = 0.5;
+            this.scaleList[to] = 1.0;
+            this.opacityList[from] = 0.5;
+            this.opacityList[to] = 1.0;
+          });
+        }
+      } as TabContentAnimatedTransition;
+      return tabContentAnimatedTransition;
+    };
+
+  // ...
+}
+
+将转场函数作为参数传递给Tabs的customContentTransition()方法。
+
+Tabs({
+  barPosition: BarPosition.Start,
+  controller: this.subsController,
+  barModifier: this.tabBarModifier
+}) {
+  // ...
+}
+.customContentTransition(this.customContentTransition)
+
+[h2]自定义Tabs页签切换联动
+
+在自定义页签样式中，页签的选中和非选中状态显示样式不同时，页签的样式依赖于Tabs组件的切换动作。这种情况下，需要实现Tabs页签的联动，页签切换时，页签样式自动变更。
+
+实现原理
+
+可以通过onChange事件，在切换页签时自定义TabBar和TabContent的联动效果。具体做法是定义一个由@State修饰的变量currentIndex，用于标识当前显示的页签索引。然后，利用onChange()方法注册处理函数，并在处理函数中更新currentIndex，确保其与当前选择的页签的索引一致。在页签样式的实现中，通过判断currentIndex变量与各页签索引是否相等来决定显示的样式，同时currentIndex属性的变化会触发页签样式的更新。
+
+开发步骤
+
+定义currentIndex属性，tabBuilder方法，并在onChange函数中更新currentIndex属性值。
+
+@Component
+export default struct OutTabsComponent {
+  @State currentIndex: number = 0;
+  // ...
+  @Builder
+  tabBuilder(index: number, name: string | Resource, icon: Resource) {
+    Column() {
+
+      SymbolGlyph(icon).fontColor([this.currentIndex === index
+        ? $r('app.color.out_tab_bar_font_active_color')
+        : $r('app.color.out_tab_bar_font_inactive_color')])
+        .fontSize(25)
+
+      Text(name)
+        .margin({ top: 4 })
+        .fontSize(10)
+        .fontColor(this.currentIndex === index
+          ? $r('app.color.out_tab_bar_font_active_color')
+          : $r('app.color.out_tab_bar_font_inactive_color'))
+    }
+    // ...
+  }
+  build() {
+    Tabs({
+      // ...
+    }) {
+      // ...
+    }
+    // ...
+    .onChange((index: number) => {
+      this.currentIndex = index;
+    })
+    // ...
+  }
+}
 
 支持适老化
 
@@ -350,8 +1073,6 @@ Tabs({ barPosition: BarPosition.End, index: this.currentIndex, controller: this.
 说明
 
 弹窗只适用于底部页签BottomTabBarStyle。
-
-图14 在适老化场景下通过长按底部页签显示适老化弹窗。
 
 // 如需作为页面入口，请取消@Entry的注释并删除export关键字
 // @Entry
@@ -389,92 +1110,13 @@ export struct AgeFriendlyTabs {
   }
 }
 
-控制页面缓存数
+常见问题
 
-从API version 19开始，开发者可以通过cachedMaxCount接口，设置子组件的最大缓存个数和缓存模式。默认情况下Tabs创建时会一次性预加载所有TabContent，而且已加载的页面不会释放，可能会带来性能内存问题。此时可以设置cachedMaxCount属性控制缓存的页面数量，设置此属性后不会进行页面预加载，使用懒加载机制(仅切换到页面时才加载)，当切换页面时根据所设置的TabsCacheMode决定保留缓存或者释放页面。
+[h2]如何实现页面懒加载效果
 
-说明
+Tabs页面不支持懒加载。 若要实现页面懒加载效果，可以通过自定义TabBar与Swiper组件结合LazyForEach来实现页面的懒加载和释放。在使用Tabs组件时，仅保留TabBar，TabContent部分留空，用Swiper组件替代TabContent以显示内容。定义一个数值属性currentIndex，利用TabsController、SwiperController及onchange函数，使其同时绑定Tabs组件和Swiper组件，从而实现联动。这是因为Swiper组件内支持LazyForEach组件，而原生Tabs组件不支持。在Swiper中利用LazyForEach显示内容，以实现Tabs的懒加载效果。
 
-TabsCacheMode枚举值为CACHE_BOTH_SIDE时，缓存当前显示的子组件和其两侧的子组件。
-
-TabsCacheMode枚举值为CACHE_LATEST_SWITCHED时，缓存当前显示的子组件和最近切换过的子组件。
-
-存在翻页动画时，从页面1直接切换到页面3，翻页动画会包含页面2，页面2也会被加载，如果此时页面2不在缓存范围内，页面切换完成后会立马释放。
-
-图15 在页面缓存场景下通过点击yellow按键切换界面。
-
-// 如需作为页面入口，请取消@Entry的注释并删除export关键字
-// @Entry
-@Component
-export struct NumberOfCachesTabBar {
-  build() {
-    // ...
-          Tabs({ barPosition: BarPosition.Start }) {
-            TabContent() {
-              MyComponent({ color: '#00CB87' })
-            }.tabBar(SubTabBarStyle.of('green'))
-
-            TabContent() {
-              MyComponent({ color: '#007DFF' })
-            }.tabBar(SubTabBarStyle.of('blue'))
-
-            TabContent() {
-              MyComponent({ color: '#FFBF00' })
-            }.tabBar(SubTabBarStyle.of('yellow'))
-
-            TabContent() {
-              MyComponent({ color: '#E67C92' })
-            }.tabBar(SubTabBarStyle.of('pink'))
-
-            TabContent() {
-              MyComponent({ color: '#FF0000' })
-            }.tabBar(SubTabBarStyle.of('red'))
-          }
-          .width(360)
-          .height(296)
-          .backgroundColor('#F1F3F5')
-          .cachedMaxCount(1, TabsCacheMode.CACHE_BOTH_SIDE)
-          // ...
-  }
-}
-
-@Component
-struct MyComponent {
-  private color: string = '';
-
-  aboutToAppear(): void {
-    console.info('aboutToAppear backgroundColor:' + this.color);
-  }
-
-  aboutToDisappear(): void {
-    console.info('aboutToDisappear backgroundColor:' + this.color);
-  }
-
-  build() {
-    Column()
-      .width('100%')
-      .height('100%')
-      .backgroundColor(this.color)
-  }
-}
-
-基于以上示例代码为例，不同场景下的缓存策略如下：
-
-如图16所示，使用默认翻页动画，CACHE_BOTH_SIDE模式，n设置为2，点击TabBar切换到yellow页，TabContent1~3被缓存。再切换到red页，TabContent1、2释放，TabContent3~5被缓存。
-
-图16 默认翻页动画，CACHE_BOTH_SIDE模式示意图
-
-如图17所示，使用默认翻页动画，CACHE_LATEST_SWITCHED模式，n设置为2，点击TabBar切换到yellow页，TabContent1、3被缓存，TabContent2释放。再切换到red页，TabContent1、3、5被缓存，TabContent4释放。
-
-图17 默认翻页动画，CACHE_LATEST_SWITCHED模式示意图
-
-如图18所示，关闭翻页动画，CACHE_BOTH_SIDE模式，n设置为2，点击TabBar切换到yellow页，TabContent1、3被缓存。再切换到red页，TabContent3、5被缓存，TabContent1释放。
-
-图18 关闭翻页动画，CACHE_BOTH_SIDE模式示意图
-
-如图19所示，关闭翻页动画，CACHE_LATEST_SWITCHED模式，n设置为2，点击TabBar切换到yellow页，TabContent1、3被缓存。再切换到red页，TabContent1、3、5被缓存。
-
-图19 关闭翻页动画，CACHE_LATEST_SWITCHED模式示意图
+详情请参见页面懒加载和释放。
 
 示例代码
 
@@ -529,7 +1171,7 @@ Tabs() {
     Text($r('app.string.mine_content'))
       .fontSize(30)
   }
-  // app.string.mine_content资源文件中的value值为“我的”
+  // app.string.mine资源文件中的value值为“我的”
   .tabBar($r('app.string.mine'))
 }
 ```
@@ -568,28 +1210,205 @@ Tabs({ barPosition: BarPosition.Start }) {
 ### Code block 6
 
 ```
-  Tabs({ barPosition: BarPosition.End }) {
-    TabContent() {
-      Column() {
-        Tabs() {
-          // 顶部导航栏内容
-        // ···
-        }
-      }
-      .backgroundColor('#ff08a8f1')
-      .width('100%')
-    }
-    // app.string.homepage资源文件中的value值为“首页”
-    .tabBar($r('app.string.homepage'))
-
-    // 其他TabContent内容：发现、推荐、我的
-    // ···
+@Component
+export default struct InTabsComponent {
+  // ...
+  @State tabBarModifier: CommonModifier = new CommonModifier();
+  // ...
+  async aboutToAppear() {
+    // ...
+    this.tabBarModifier.margin({ right: 56 }).align(Alignment.Start);
+    // ...
   }
-// ···
-  .scrollable(false)
+  // ...
+  build() {
+    // ...
+            Tabs({
+              // ...
+              barModifier: this.tabBarModifier
+            }) {
+              // ...
+            }
+            // ...
+  }
+}
 ```
 
 ### Code block 7
+
+```
+@Component
+export default struct OutTabsComponent {
+  @State currentIndex: number = 0;
+  // ...
+}
+```
+
+### Code block 8
+
+```
+@Builder
+tabBuilder(index: number, name: string | Resource, icon: Resource) {
+  Column() {
+
+    SymbolGlyph(icon).fontColor([this.currentIndex === index
+      ? $r('app.color.out_tab_bar_font_active_color')
+      : $r('app.color.out_tab_bar_font_inactive_color')])
+      .fontSize(25)
+
+    Text(name)
+      .margin({ top: 4 })
+      .fontSize(10)
+      .fontColor(this.currentIndex === index
+        ? $r('app.color.out_tab_bar_font_active_color')
+        : $r('app.color.out_tab_bar_font_inactive_color'))
+  }
+  .justifyContent(FlexAlign.Center)
+  .height(Constants.FULL_HEIGHT)
+  .width(Constants.FULL_WIDTH)
+  .padding({ bottom: 60 })
+}
+```
+
+### Code block 9
+
+```
+Tabs({
+  // ...
+}) {
+  TabContent() {
+    InTabsComponent({ switchNext: this.switchNext })
+  }.tabBar(this.tabBuilder(0, $r('app.string.out_bar_text_home'), $r('sys.symbol.house')))
+  // ...
+}
+// ...
+.onChange((index: number) => {
+  this.currentIndex = index;
+})
+```
+
+### Code block 10
+
+```
+Scroll() {
+  Column() {
+    BannerComponent()
+
+    Stack({ alignContent: Alignment.TopEnd }) {
+      // ...
+      Column() {
+        Tabs({
+          // ...
+        }) {
+          ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+            if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+              TabContent() {
+                List({ space: 10 }) {
+                  // ...
+                }
+                // ...
+                .nestedScroll({
+                  scrollForward: NestedScrollMode.PARENT_FIRST,
+                  scrollBackward: NestedScrollMode.SELF_FIRST
+                })
+              }
+              // ...
+            } else {
+              // ...
+            }
+          }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+        }
+        // ...
+      }
+      .width(Constants.FULL_WIDTH)
+      .height(Constants.FULL_HEIGHT)
+      .backgroundColor($r('app.color.out_tab_bar_background_color'))
+    }
+  }
+}
+```
+
+### Code block 11
+
+```
+Tabs({
+  // ...
+}) {
+  // ...
+}
+// ...
+.barOverlap(true)
+.barBackgroundBlurStyle(BlurStyle.Thin)
+```
+
+### Code block 12
+
+```
+@Component
+export default struct OutTabComponent {
+  // ...
+  private controller: TabsController = new TabsController();
+
+  aboutToAppear(): void {
+    this.tabBarModifier.clip(false);
+  }
+
+  // ...
+
+  build() {
+    Column() {
+      Tabs({
+        // ...
+        barModifier: this.tabBarModifier
+      }) {
+        // ...
+      }
+      // ...
+
+    }
+    .width('100%')
+    .height('calc(100% + 60vp)')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+  }
+}
+```
+
+### Code block 13
+
+```
+Tabs({controller: this.subController}){
+  // ...
+}
+.fadingEdge(this.isFadingEdge)
+```
+
+### Code block 14
+
+```
+@Component
+export default struct InTabComponent {
+  // ...
+  private subController: TabsController = new TabsController();
+
+  onDidBuild(): void {
+    if (this.isSetTabBarTranslateAndOpacity) {
+      this.subController.setTabBarTranslate({x:-20,y:30});
+      this.subController.setTabBarOpacity(0.5);
+    }
+  }
+  // ...
+
+  build() {
+    Tabs({controller: this.subController}){
+      // ...
+    }
+    // ...
+    .barMode(BarMode.Scrollable)
+  }
+}
+```
+
+### Code block 15
 
 ```
 Tabs({ barPosition: BarPosition.End }) {
@@ -599,52 +1418,174 @@ Tabs({ barPosition: BarPosition.End }) {
 .barMode(BarMode.Fixed)
 ```
 
-### Code block 8
+### Code block 16
 
 ```
-Tabs({ barPosition: BarPosition.Start }) {
-  // TabContent的内容：关注、视频、游戏、数码、科技、体育、影视、人文、艺术、自然、军事
-  // ···
-}
-.barMode(BarMode.Scrollable)
-```
-
-### Code block 9
-
-```
-@State currentIndex: number = 0;
-
-@Builder
-tabBuilder(title: ResourceStr, targetIndex: number, selectedImg: Resource, normalImg: Resource) {
-  Column() {
-    Image(this.currentIndex === targetIndex ? selectedImg : normalImg)
-      .size({ width: 25, height: 25 })
-    Text(title)
-      .fontColor(this.currentIndex === targetIndex ? '#1698CE' : '#6B6B6B')
+@Component
+export default struct OutTabsComponent {
+  // ...
+  @State @Watch('onchangeSwitchNext') switchNext: boolean = false;
+  // ...
+  onchangeSwitchNext() {
+    if (this.switchNext) {
+      this.switchNext = false;
+      this.tabsController.changeIndex(1);
+    }
   }
-  .width('100%')
-  .height(50)
-  .justifyContent(FlexAlign.Center)
-}
-```
-
-### Code block 10
-
-```
-TabContent() {
-  Column() {
-    // app.string.mine_content资源文件中的value值为“我的内容”
-    Text($r('app.string.mine_content'))
+  // ...
+  build() {
+    Tabs({
+      // ...
+      controller: this.tabsController,
+    }) {
+      TabContent() {
+        InTabsComponent({ switchNext: this.switchNext })
+      }.tabBar(this.tabBuilder(0, $r('app.string.out_bar_text_home'), $r('sys.symbol.house')))
+      // ...
+    }
+    // ...
   }
-  .width('100%')
-  .height('100%')
-  .backgroundColor('#007DFF')
 }
-// app.string.mine资源文件中的value值为“我的”
-.tabBar(this.tabBuilder($r('app.string.mine'), 0, $r('app.media.mine_selected'), $r('app.media.mine_normal')))
 ```
 
-### Code block 11
+### Code block 17
+
+```
+@Component
+export default struct InTabsComponent {
+  // ...
+  @Link switchNext: boolean;
+  // ...
+  build() {
+    // ...
+            Tabs({
+              // ...
+            }) {
+              ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+                if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+                  TabContent() {
+                    // ...
+                  }
+                  .tabBar(this.tabBuilder(index, tab))
+                  .gesture(PanGesture(new PanGestureOptions({ direction: PanDirection.Left })).onActionStart(() => {
+                    this.switchNext = true;
+                  }))
+                  // ...
+                } else {
+                  // ...
+                }
+              }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+            }
+            // ...
+  }
+}
+```
+
+### Code block 18
+
+```
+Tabs({
+  barPosition: BarPosition.Start,
+  controller: this.subsController,
+  barModifier: this.tabBarModifier
+}) {
+  // ...
+}
+.customContentTransition(this.customContentTransition)
+```
+
+### Code block 19
+
+```
+Stack({ alignContent: Alignment.TopEnd }) {
+  Row() {
+    Image($r('app.media.more'))
+      // ...
+      .onClick(() => {
+        this.showSelectTabsComponent = !this.showSelectTabsComponent;
+      })
+  }
+  // ...
+  .zIndex(1)
+  .bindSheet($$this.showSelectTabsComponent, this.sheetBuilder(), {
+    detents: [SheetSize.MEDIUM, SheetSize.MEDIUM, 500],
+    preferType: SheetType.BOTTOM,
+    title: { title: $r('app.string.bind_sheet_title') },
+    onWillDismiss: (dismissSheetAction: DismissSheetAction) => {
+      this.selectTabsViewModel.updateSelectedTabs();
+      if (this.selectTabsViewModel.selectedTabs.length > 0) {
+        this.subsController.changeIndex(0);
+      }
+      dismissSheetAction.dismiss();
+    }
+  })
+  Column() {
+    Tabs({
+      // ...
+    }) {
+      // ...
+    }
+    // ...
+    .barMode(BarMode.Scrollable)
+    // ...
+  }
+  .width(Constants.FULL_WIDTH)
+  .height(Constants.FULL_HEIGHT)
+  .backgroundColor($r('app.color.out_tab_bar_background_color'))
+}
+```
+
+### Code block 20
+
+```
+build() {
+  Tabs({
+    // ...
+  }) {
+    // ...
+  }
+  // ...
+  .scrollable(true)
+  // ...
+}
+```
+
+### Code block 21
+
+```
+@Component
+export default struct InTabsComponent {
+  // ...
+  private subsController: TabsController = new TabsController();
+  // ...
+  build() {
+    // ...
+            Tabs({
+              // ...
+              controller: this.subsController,
+              // ...
+            }) {
+              // ...
+            }
+            // ...
+            .onChange((index: number) => {
+              this.focusIndex = index;
+              this.tabBarItemScroller.scrollToIndex(index, true, ScrollAlign.CENTER);
+              let preloadItems: number[] = [];
+              if (index - 1 >= 0) {
+                preloadItems.push(index - 1);
+              }
+              if (index + 1 < this.selectTabsViewModel.selectedTabs.length) {
+                preloadItems.push(index + 1);
+              }
+              this.subsController.preloadItems(preloadItems);
+            })
+            // ...
+  }
+}
+```
+
+### Code block 22
 
 ```
 // 如需作为页面入口，请取消@Entry的注释并删除export关键字
@@ -708,7 +1649,7 @@ export struct ContentPageNoAndTabLinkage {
 }
 ```
 
-### Code block 12
+### Code block 23
 
 ```
 // ...
@@ -756,7 +1697,7 @@ export struct ContentPageNoAndTabLinkage {
                 })
 ```
 
-### Code block 13
+### Code block 24
 
 ```
 Tabs({ barPosition: BarPosition.End, index: this.currentIndex, controller: this.controllerTwo }) {
@@ -771,7 +1712,333 @@ Tabs({ barPosition: BarPosition.End, index: this.currentIndex, controller: this.
 })
 ```
 
-### Code block 14
+### Code block 25
+
+```
+@Observed
+class TabItemArray extends Array<TabItemViewModel> {
+}
+
+@Observed
+export default class SelectTabsViewModel {
+  allTabs: TabItemArray = new TabItemArray();
+  selectedTabs: TabItemArray = new TabItemArray();
+  // ...
+
+  async loadTabs(ctx: Context) {
+    // ...
+  }
+
+  updateSelectedTabs() {
+    let tempTabs: TabItemViewModel[] = [];
+    for (let tab of this.allTabs) {
+      if (tab.isChecked) {
+        tempTabs.push(tab);
+      }
+    }
+    this.selectedTabs = tempTabs;
+  }
+}
+```
+
+### Code block 26
+
+```
+@Component
+export default struct InTabsComponent {
+  @State selectTabsViewModel: SelectTabsViewModel = new SelectTabsViewModel();
+  // ...
+  async aboutToAppear() {
+    // ...
+
+    await this.selectTabsViewModel.loadTabs(this.ctx);
+    // ...
+  }
+  // ...
+}
+```
+
+### Code block 27
+
+```
+Tabs({
+  // ...
+}) {
+  ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+    if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+      TabContent() {
+        // ...
+      }
+      .tabBar(this.tabBuilder(index, tab))
+      // ...
+    } else {
+      // ...
+    }
+  }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+}
+```
+
+### Code block 28
+
+```
+@Builder
+sheetBuilder() {
+  SelectTabsComponent({ selectTabsViewModel: this.selectTabsViewModel })
+}
+build() {
+  Scroll() {
+    Column() {
+      BannerComponent()
+
+      Stack({ alignContent: Alignment.TopEnd }) {
+        Row() {
+          Image($r('app.media.more'))
+            // ...
+            .onClick(() => {
+              this.showSelectTabsComponent = !this.showSelectTabsComponent;
+            })
+        }
+        // ...
+        .zIndex(1)
+        .bindSheet($$this.showSelectTabsComponent, this.sheetBuilder(), {
+          detents: [SheetSize.MEDIUM, SheetSize.MEDIUM, 500],
+          preferType: SheetType.BOTTOM,
+          title: { title: $r('app.string.bind_sheet_title') },
+          onWillDismiss: (dismissSheetAction: DismissSheetAction) => {
+            this.selectTabsViewModel.updateSelectedTabs();
+            if (this.selectTabsViewModel.selectedTabs.length > 0) {
+              this.subsController.changeIndex(0);
+            }
+            dismissSheetAction.dismiss();
+          }
+        })
+        // ...
+      }
+    }
+  }
+  // ...
+}
+```
+
+### Code block 29
+
+```
+@Component
+export default struct SelectTabsComponent {
+  @State checkedChange: boolean = false;
+  @Link selectTabsViewModel: SelectTabsViewModel;
+
+  build() {
+    Grid() {
+      ForEach(this.selectTabsViewModel.allTabs, (tab: TabItemViewModel) => {
+        GridItem() {
+          Row() {
+            Toggle({ type: ToggleType.Button, isOn: tab.isChecked }) {
+              // ...
+            }
+            // ...
+            .onChange((isOn: boolean) => {
+              tab.isChecked = isOn;
+              this.checkedChange = !this.checkedChange;
+            })
+          }
+        }
+      }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+    }
+    .columnsTemplate(('1fr 1fr 1fr 1fr') as string)
+    .height(Constants.FULL_HEIGHT)
+  }
+}
+```
+
+### Code block 30
+
+```
+// 如需作为页面入口，请取消@Entry的注释并删除export关键字
+// @Entry
+@Component
+export struct NumberOfCachesTabBar {
+  build() {
+    // ...
+          Tabs({ barPosition: BarPosition.Start }) {
+            TabContent() {
+              MyComponent({ color: '#00CB87' })
+            }.tabBar(SubTabBarStyle.of('green'))
+
+            TabContent() {
+              MyComponent({ color: '#007DFF' })
+            }.tabBar(SubTabBarStyle.of('blue'))
+
+            TabContent() {
+              MyComponent({ color: '#FFBF00' })
+            }.tabBar(SubTabBarStyle.of('yellow'))
+
+            TabContent() {
+              MyComponent({ color: '#E67C92' })
+            }.tabBar(SubTabBarStyle.of('pink'))
+
+            TabContent() {
+              MyComponent({ color: '#FF0000' })
+            }.tabBar(SubTabBarStyle.of('red'))
+          }
+          .width(360)
+          .height(296)
+          .backgroundColor('#F1F3F5')
+          .cachedMaxCount(2, TabsCacheMode.CACHE_BOTH_SIDE)
+          // ...
+  }
+}
+
+@Component
+struct MyComponent {
+  private color: string = '';
+
+  aboutToAppear(): void {
+    console.info('aboutToAppear backgroundColor:' + this.color);
+  }
+
+  aboutToDisappear(): void {
+    console.info('aboutToDisappear backgroundColor:' + this.color);
+  }
+
+  build() {
+    Column()
+      .width('100%')
+      .height('100%')
+      .backgroundColor(this.color)
+  }
+}
+```
+
+### Code block 31
+
+```
+@Component
+export default struct InTabsComponent {
+  // ...
+  @State scaleList: number[] = [];
+  @State opacityList: number[] = [];
+  // ...
+}
+```
+
+### Code block 32
+
+```
+Tabs({
+  // ...
+}) {
+  ForEach(this.selectTabsViewModel.selectedTabs, (tab: TabItemViewModel, index: number) => {
+    if (index === this.selectTabsViewModel.selectedTabs.length - 1) {
+      TabContent() {
+        // ...
+      }
+      // ...
+      .opacity(this.opacityList[index])
+      .scale({
+        x: this.scaleList[index], y: this.scaleList[index]
+      })
+    } else {
+      // ...
+    }
+  }, (tab: TabItemViewModel, index: number) => index + '_' + JSON.stringify(tab))
+}
+```
+
+### Code block 33
+
+```
+@Component
+export default struct InTabsComponent {
+  // ...
+  @State scaleList: number[] = [];
+  @State opacityList: number[] = [];
+  // ...
+  private animateDuration: number = 1000;
+  private animateTimeout: number = 1000;
+  private customContentTransition: (from: number, to: number) => TabContentAnimatedTransition =
+    (from: number, to: number) => {
+      let tabContentAnimatedTransition = {
+        timeout: this.animateTimeout,
+        transition: (proxy: TabContentTransitionProxy) => {
+          this.scaleList[from] = 1.0;
+          this.scaleList[to] = 0.5;
+          this.opacityList[from] = 1.0;
+          this.opacityList[to] = 0.5;
+          this.getUIContext().animateTo({
+            duration: this.animateDuration,
+            onFinish: () => {
+              proxy.finishTransition();
+            }
+          }, () => {
+            this.scaleList[from] = 0.5;
+            this.scaleList[to] = 1.0;
+            this.opacityList[from] = 0.5;
+            this.opacityList[to] = 1.0;
+          });
+        }
+      } as TabContentAnimatedTransition;
+      return tabContentAnimatedTransition;
+    };
+
+  // ...
+}
+```
+
+### Code block 34
+
+```
+Tabs({
+  barPosition: BarPosition.Start,
+  controller: this.subsController,
+  barModifier: this.tabBarModifier
+}) {
+  // ...
+}
+.customContentTransition(this.customContentTransition)
+```
+
+### Code block 35
+
+```
+@Component
+export default struct OutTabsComponent {
+  @State currentIndex: number = 0;
+  // ...
+  @Builder
+  tabBuilder(index: number, name: string | Resource, icon: Resource) {
+    Column() {
+
+      SymbolGlyph(icon).fontColor([this.currentIndex === index
+        ? $r('app.color.out_tab_bar_font_active_color')
+        : $r('app.color.out_tab_bar_font_inactive_color')])
+        .fontSize(25)
+
+      Text(name)
+        .margin({ top: 4 })
+        .fontSize(10)
+        .fontColor(this.currentIndex === index
+          ? $r('app.color.out_tab_bar_font_active_color')
+          : $r('app.color.out_tab_bar_font_inactive_color'))
+    }
+    // ...
+  }
+  build() {
+    Tabs({
+      // ...
+    }) {
+      // ...
+    }
+    // ...
+    .onChange((index: number) => {
+      this.currentIndex = index;
+    })
+    // ...
+  }
+}
+```
+
+### Code block 36
 
 ```
 // 如需作为页面入口，请取消@Entry的注释并删除export关键字
@@ -807,65 +2074,6 @@ export struct AgeFriendlyTabs {
       }.width('80%').height(200)
       .margin({ top: 200 })
     }
-  }
-}
-```
-
-### Code block 15
-
-```
-// 如需作为页面入口，请取消@Entry的注释并删除export关键字
-// @Entry
-@Component
-export struct NumberOfCachesTabBar {
-  build() {
-    // ...
-          Tabs({ barPosition: BarPosition.Start }) {
-            TabContent() {
-              MyComponent({ color: '#00CB87' })
-            }.tabBar(SubTabBarStyle.of('green'))
-
-            TabContent() {
-              MyComponent({ color: '#007DFF' })
-            }.tabBar(SubTabBarStyle.of('blue'))
-
-            TabContent() {
-              MyComponent({ color: '#FFBF00' })
-            }.tabBar(SubTabBarStyle.of('yellow'))
-
-            TabContent() {
-              MyComponent({ color: '#E67C92' })
-            }.tabBar(SubTabBarStyle.of('pink'))
-
-            TabContent() {
-              MyComponent({ color: '#FF0000' })
-            }.tabBar(SubTabBarStyle.of('red'))
-          }
-          .width(360)
-          .height(296)
-          .backgroundColor('#F1F3F5')
-          .cachedMaxCount(1, TabsCacheMode.CACHE_BOTH_SIDE)
-          // ...
-  }
-}
-
-@Component
-struct MyComponent {
-  private color: string = '';
-
-  aboutToAppear(): void {
-    console.info('aboutToAppear backgroundColor:' + this.color);
-  }
-
-  aboutToDisappear(): void {
-    console.info('aboutToDisappear backgroundColor:' + this.color);
-  }
-
-  build() {
-    Column()
-      .width('100%')
-      .height('100%')
-      .backgroundColor(this.color)
   }
 }
 ```

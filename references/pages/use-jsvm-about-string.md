@@ -38,11 +38,12 @@ OH_JSVM_GetValueStringUtf8接口可以将JavaScript的字符类型的数据转�
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <cstdlib>
+// ...
+
 // OH_JSVM_GetValueStringUtf8的样例方法
 static JSVM_Value GetValueStringUtf8(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -51,12 +52,11 @@ static JSVM_Value GetValueStringUtf8(JSVM_Env env, JSVM_CallbackInfo info)
     OH_JSVM_GetCbInfo(env, info, &argc, args, nullptr, nullptr);
     size_t length = 0;
     JSVM_Status status = OH_JSVM_GetValueStringUtf8(env, args[0], nullptr, 0, &length);
-    char *buf = (char *)malloc(length + 1);
-    if (buf == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "malloc failed");
+    if (length == 0 || length > MAX_MALLOC_SIZE) {
+        OH_LOG_ERROR(LOG_APP, "Invalid string length: %{public}zu", length);
         return nullptr;
     }
-    memset(buf, 0, length + 1);
+    char *buf = (char *)malloc(length + 1);
     status = OH_JSVM_GetValueStringUtf8(env, args[0], buf, length + 1, &length);
     if (status != JSVM_OK) {
         OH_LOG_ERROR(LOG_APP, "JSVM GetValueStringUtf8 fail");
@@ -81,7 +81,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let data = "aaBC+-$%^你好123";
     let script = getValueStringUtf8(data);
 )JS";
@@ -98,11 +98,12 @@ JSVM GetValueStringUtf8 success: aaBC+-$%^你好123
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <string>
+// ...
+
 // OH_JSVM_CreateStringUtf8的样例方法
 static JSVM_Value CreateStringUtf8(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -129,7 +130,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let script = createStringUtf8();
 )JS";
 
@@ -143,18 +144,19 @@ OH_JSVM_GetValueStringUtf16，将JavaScript的字符类型的数据转换为utf1
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <codecvt>
 #include <locale>
 #include <cstdlib>
+// ...
 
 // OH_JSVM_GetValueStringUtf16的样例方法
 // 定义字符串缓冲区的最大长度
 static const int MAX_BUFFER_SIZE = 128;
-static JSVM_Value GetValueStringUtf16(JSVM_Env env, JSVM_CallbackInfo info) {
+static JSVM_Value GetValueStringUtf16(JSVM_Env env, JSVM_CallbackInfo info)
+{
     size_t argc = 1;
     JSVM_Value args[1] = {nullptr};
     OH_JSVM_GetCbInfo(env, info, &argc, args, nullptr, nullptr);
@@ -189,7 +191,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let data = "ahello。";
     let script = getValueStringUtf16(data);
 )JS";
@@ -206,13 +208,13 @@ JSVM GetValueStringUtf16 success: ahello。
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <codecvt>
 #include <locale>
 #include <cstring>
+// ...
 
 // OH_JSVM_CreateStringUtf16的样例方法
 static JSVM_Value CreateStringUtf16(JSVM_Env env, JSVM_CallbackInfo info)
@@ -228,7 +230,7 @@ static JSVM_Value CreateStringUtf16(JSVM_Env env, JSVM_CallbackInfo info)
     std::string strResult = converter.to_bytes(u16str);
     if (status != JSVM_OK) {
         OH_LOG_ERROR(LOG_APP, "JSVM CreateStringUtf16 fail");
-    }else {
+    } else {
         OH_LOG_INFO(LOG_APP, "JSVM CreateStringUtf16 success: %{public}s", strResult.c_str());
     }
     return result;
@@ -244,7 +246,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let script = createStringUtf16();
 )JS";
 
@@ -258,11 +260,12 @@ OH_JSVM_GetValueStringLatin1接口可以将JavaScript的字符类型的数据转
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <cstdlib>
+// ...
+
 // OH_JSVM_GetValueStringLatin1的样例方法
 // 定义字符串缓冲区的最大长度
 static const int MAX_BUFFER_SIZE = 128;
@@ -294,7 +297,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let data = "中文";
     let script = getValueStringLatin1(data);
 )JS";
@@ -309,11 +312,12 @@ const char *srcCallNative = R"JS(
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <cstring>
+// ...
+
 // CreateStringLatin1注册回调
 // 定义字符串缓冲区的最大长度
 static const int MAX_BUFFER_SIZE = 128;
@@ -328,8 +332,8 @@ static JSVM_Value CreateStringLatin1(JSVM_Env env, JSVM_CallbackInfo info)
         OH_LOG_ERROR(LOG_APP, "JSVM CreateStringLatin1 fail");
     } else {
         char buf[MAX_BUFFER_SIZE];
-        size_t length = 0;
-        OH_JSVM_GetValueStringLatin1(env, result, buf, MAX_BUFFER_SIZE, &length);
+        size_t lengthInner = 0;
+        OH_JSVM_GetValueStringLatin1(env, result, buf, MAX_BUFFER_SIZE, &lengthInner);
         OH_LOG_INFO(LOG_APP, "JSVM CreateStringLatin1 success: %{public}s", buf);
     }
     return result;
@@ -344,7 +348,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let script = createStringLatin1();
 )JS";
 
@@ -357,11 +361,12 @@ JSVM CreateStringLatin1 success: Hello, World! éçñ, succeed in creating Latin
 ### Code block 1
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <cstdlib>
+// ...
+
 // OH_JSVM_GetValueStringUtf8的样例方法
 static JSVM_Value GetValueStringUtf8(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -370,12 +375,11 @@ static JSVM_Value GetValueStringUtf8(JSVM_Env env, JSVM_CallbackInfo info)
     OH_JSVM_GetCbInfo(env, info, &argc, args, nullptr, nullptr);
     size_t length = 0;
     JSVM_Status status = OH_JSVM_GetValueStringUtf8(env, args[0], nullptr, 0, &length);
-    char *buf = (char *)malloc(length + 1);
-    if (buf == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "malloc failed");
+    if (length == 0 || length > MAX_MALLOC_SIZE) {
+        OH_LOG_ERROR(LOG_APP, "Invalid string length: %{public}zu", length);
         return nullptr;
     }
-    memset(buf, 0, length + 1);
+    char *buf = (char *)malloc(length + 1);
     status = OH_JSVM_GetValueStringUtf8(env, args[0], buf, length + 1, &length);
     if (status != JSVM_OK) {
         OH_LOG_ERROR(LOG_APP, "JSVM GetValueStringUtf8 fail");
@@ -400,7 +404,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let data = "aaBC+-$%^你好123";
     let script = getValueStringUtf8(data);
 )JS";
@@ -415,11 +419,12 @@ JSVM GetValueStringUtf8 success: aaBC+-$%^你好123
 ### Code block 3
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <string>
+// ...
+
 // OH_JSVM_CreateStringUtf8的样例方法
 static JSVM_Value CreateStringUtf8(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -446,7 +451,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let script = createStringUtf8();
 )JS";
 ```
@@ -460,18 +465,19 @@ JSVM CreateStringUtf8 success: 你好, World!, succeed in creating UTF-8 string!
 ### Code block 5
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <codecvt>
 #include <locale>
 #include <cstdlib>
+// ...
 
 // OH_JSVM_GetValueStringUtf16的样例方法
 // 定义字符串缓冲区的最大长度
 static const int MAX_BUFFER_SIZE = 128;
-static JSVM_Value GetValueStringUtf16(JSVM_Env env, JSVM_CallbackInfo info) {
+static JSVM_Value GetValueStringUtf16(JSVM_Env env, JSVM_CallbackInfo info)
+{
     size_t argc = 1;
     JSVM_Value args[1] = {nullptr};
     OH_JSVM_GetCbInfo(env, info, &argc, args, nullptr, nullptr);
@@ -506,7 +512,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let data = "ahello。";
     let script = getValueStringUtf16(data);
 )JS";
@@ -521,13 +527,13 @@ JSVM GetValueStringUtf16 success: ahello。
 ### Code block 7
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <codecvt>
 #include <locale>
 #include <cstring>
+// ...
 
 // OH_JSVM_CreateStringUtf16的样例方法
 static JSVM_Value CreateStringUtf16(JSVM_Env env, JSVM_CallbackInfo info)
@@ -543,7 +549,7 @@ static JSVM_Value CreateStringUtf16(JSVM_Env env, JSVM_CallbackInfo info)
     std::string strResult = converter.to_bytes(u16str);
     if (status != JSVM_OK) {
         OH_LOG_ERROR(LOG_APP, "JSVM CreateStringUtf16 fail");
-    }else {
+    } else {
         OH_LOG_INFO(LOG_APP, "JSVM CreateStringUtf16 success: %{public}s", strResult.c_str());
     }
     return result;
@@ -559,7 +565,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let script = createStringUtf16();
 )JS";
 ```
@@ -573,11 +579,12 @@ JSVM CreateStringUtf16 success: 你好, World!, succeed in creating UTF-16 strin
 ### Code block 9
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <cstdlib>
+// ...
+
 // OH_JSVM_GetValueStringLatin1的样例方法
 // 定义字符串缓冲区的最大长度
 static const int MAX_BUFFER_SIZE = 128;
@@ -609,7 +616,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let data = "中文";
     let script = getValueStringLatin1(data);
 )JS";
@@ -618,11 +625,12 @@ const char *srcCallNative = R"JS(
 ### Code block 10
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <cstring>
+// ...
+
 // CreateStringLatin1注册回调
 // 定义字符串缓冲区的最大长度
 static const int MAX_BUFFER_SIZE = 128;
@@ -637,8 +645,8 @@ static JSVM_Value CreateStringLatin1(JSVM_Env env, JSVM_CallbackInfo info)
         OH_LOG_ERROR(LOG_APP, "JSVM CreateStringLatin1 fail");
     } else {
         char buf[MAX_BUFFER_SIZE];
-        size_t length = 0;
-        OH_JSVM_GetValueStringLatin1(env, result, buf, MAX_BUFFER_SIZE, &length);
+        size_t lengthInner = 0;
+        OH_JSVM_GetValueStringLatin1(env, result, buf, MAX_BUFFER_SIZE, &lengthInner);
         OH_LOG_INFO(LOG_APP, "JSVM CreateStringLatin1 success: %{public}s", buf);
     }
     return result;
@@ -653,7 +661,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 };
 
 // 样例测试js
-const char *srcCallNative = R"JS(
+const char *SRC_CALL_NATIVE = R"JS(
     let script = createStringLatin1();
 )JS";
 ```

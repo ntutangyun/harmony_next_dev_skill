@@ -12,15 +12,15 @@ allowWindowOpenMethod()接口设置为true时，前端页面通过JavaScript函�
 
 当在Web页面调用window.open(url, name)打开新窗口时，ArkWeb内核会根据name查找是否存在已绑定的Web组件。若存在，该Web组件将收到onActivateContent()接口通知，以便应用可将其展示至前台；若不存在，ArkWeb内核将通过onWindowNew()接口通知应用创建新窗口。
 
-如果在onWindowNew()接口通知中创建了新窗口，并将[ControllerHandler.setWebController()](../reference/apis-arkweb/arkts-basic-components-web-ControllerHandler.md#setwebcontroller9)接口的参数设置为新Web组件的WebviewController，则ArkWeb内核会完成name与该新Web组件的绑定。
+如果在onWindowNew()接口通知中创建了新窗口，并将ControllerHandler.setWebController()接口的参数设置为新Web组件的WebviewController，则ArkWeb内核会完成name与该新Web组件的绑定。
 
-如果在onWindowNew()接口通知中没有创建新窗口，需要将[ControllerHandler.setWebController()](../reference/apis-arkweb/arkts-basic-components-web-ControllerHandler.md#setwebcontroller9)接口的参数设置为null。
+如果在onWindowNew()接口通知中没有创建新窗口，需要将ControllerHandler.setWebController()接口的参数设置为null。
 
 在下面的本地示例中，当用户点击“新窗口中打开网页”按钮时，应用会在onWindowNew()接口收到Web组件的新窗口事件。
 
 说明
 
-网页要求用户创建新的窗口时触发回调OnWindowNewEvent()，该回调函数中isUserTrigger参数，true代表用户触发，false代表非用户触发。
+网页要求用户创建新的窗口时触发回调OnWindowNewEvent，该回调函数中isUserTrigger参数返回true代表用户触发，false代表非用户触发。
 
 应用侧代码。
 

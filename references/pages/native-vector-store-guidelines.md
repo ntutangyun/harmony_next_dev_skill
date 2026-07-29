@@ -59,6 +59,7 @@ libnative_rdb_ndk.z.so
 #include <database/data/oh_data_values.h>
 #include <database/rdb/oh_cursor.h>
 #include <database/rdb/relational_store.h>
+#include <database/rdb/relational_store_error_code.h>
 
 判断当前系统是否支持向量数据库，若不支持，则表示当前系统不具备向量数据库能力。示例代码如下：
 
@@ -272,7 +273,7 @@ gsdiskann	适用于处理高维稠密向量数据，如文本嵌入、图像特�
 表2 索引距离度量类型(dist_function)
 
 类型	计算符号	备注说明
-L2	<->	欧式距离。
+L2	<->	欧氏距离。
 COSINE	<=>	余弦距离。
 
 表3 扩展语法参数(parameter)
@@ -370,6 +371,7 @@ libnative_rdb_ndk.z.so
 #include <database/data/oh_data_values.h>
 #include <database/rdb/oh_cursor.h>
 #include <database/rdb/relational_store.h>
+#include <database/rdb/relational_store_error_code.h>
 ```
 
 ### Code block 3

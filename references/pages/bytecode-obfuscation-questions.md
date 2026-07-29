@@ -14,7 +14,7 @@ json文件
 
 字节码混淆开关，默认关闭，在开启混淆功能后，需要额外在模块目录下obfuscation-rules.txt文件中配置-enable-bytecode-obfuscation 、-enable-bytecode-obfuscation-debugging。
 
-字节码混淆，不支持以下混淆项-remove-comments。
+字节码混淆，不支持以下混淆选项-remove-comments。
 
 [h2]混淆后文件结构差异
 

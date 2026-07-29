@@ -52,12 +52,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 struct Index {
   // ...
   private windowMaskSub: window.Window | undefined = undefined;
-  // ...
-  private winWidth: number  = 800;
-  private winHeight: number  = 800;
 
   // ...
-  // 设置子窗windowMask
   setWindowMask(window: window.Window) {
     let windowMask: Uint8Array = new Uint8Array(this.winWidth * this.winHeight);
     for (let i = 0; i < this.winHeight; i++) {
@@ -71,21 +67,32 @@ struct Index {
     }
     window.setWindowMaskWithAlpha(windowMask, this.winWidth, this.winHeight);
   }
+
   build() {
-    // ...
-    Button("setWindowMask for Sub Window")
-    .width('90%')
-    .type(ButtonType.Capsule)
-    .margin({
-    top: 10
-    }).fontSize(18)
-    .onClick(() => {
-    if(this.windowMaskSub) {
-      this.setWindowMask(this.windowMaskSub);
+    Row() {
+      Scroll(){
+        Column() {
+          // ...
+          Row() {
+            Button('setWindowMask for Sub Window')
+              .width('90%')
+              .type(ButtonType.Capsule)
+              .margin({
+                top: 10
+              }).fontSize(18)
+              .onClick(() => {
+                if(this.windowMaskSub) {
+                  this.setWindowMask(this.windowMaskSub);
+                }
+              })
+          }
+        }
+        .width('100%')
+      }
     }
-    })
-  // ...
+    .height('100%')
   }
+
 }
 
 窗口阴影
@@ -156,7 +163,7 @@ struct SliderDemo {
 
 说明
 
-未调用setWindowContainerColor()或setWindowContainerModalColor()接口设置窗口内容区域背景色时，内容区域背景色默认跟随系统颜色模式：浅色模式下为'#FFF0F0F0'，深色模式下为'#FF1A1A1A'。
+未调用setWindowContainerColor()或setWindowContainerModalColor()接口设置窗口容器区域背景色时，容器区域背景色默认跟随系统颜色模式：浅色模式下为'#FFF0F0F0'，深色模式下为'#FF1A1A1A'。
 
 需要在loadContent()或setUIContent()调用生效后才能设置背景色。
 
@@ -230,12 +237,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 struct Index {
   // ...
   private windowMaskSub: window.Window | undefined = undefined;
-  // ...
-  private winWidth: number  = 800;
-  private winHeight: number  = 800;
 
   // ...
-  // 设置子窗windowMask
   setWindowMask(window: window.Window) {
     let windowMask: Uint8Array = new Uint8Array(this.winWidth * this.winHeight);
     for (let i = 0; i < this.winHeight; i++) {
@@ -249,21 +252,32 @@ struct Index {
     }
     window.setWindowMaskWithAlpha(windowMask, this.winWidth, this.winHeight);
   }
+
   build() {
-    // ...
-    Button("setWindowMask for Sub Window")
-    .width('90%')
-    .type(ButtonType.Capsule)
-    .margin({
-    top: 10
-    }).fontSize(18)
-    .onClick(() => {
-    if(this.windowMaskSub) {
-      this.setWindowMask(this.windowMaskSub);
+    Row() {
+      Scroll(){
+        Column() {
+          // ...
+          Row() {
+            Button('setWindowMask for Sub Window')
+              .width('90%')
+              .type(ButtonType.Capsule)
+              .margin({
+                top: 10
+              }).fontSize(18)
+              .onClick(() => {
+                if(this.windowMaskSub) {
+                  this.setWindowMask(this.windowMaskSub);
+                }
+              })
+          }
+        }
+        .width('100%')
+      }
     }
-    })
-  // ...
+    .height('100%')
   }
+
 }
 ```
 

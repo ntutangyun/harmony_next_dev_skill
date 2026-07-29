@@ -168,7 +168,7 @@ FlowFieldOverlayParams类的data参数格式为GRIB2规范的json数据。GRIB2�
     "ny": 4,                    // 纵向格子数量，类型为整数
     "numberPoints": 16          // 表示风速的点数量，即单个data中的数据量
   },
-  // 横向速度，数据量需等于numberPoints
+  // 纵向速度，数据量需等于numberPoints
   "data": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -2, -3, -1]
 }]
 
@@ -326,7 +326,7 @@ struct MapFlowFieldOverlayDemo {
     "ny": 4,                    // 纵向格子数量，类型为整数
     "numberPoints": 16          // 表示风速的点数量，即单个data中的数据量
   },
-  // 横向速度，数据量需等于numberPoints
+  // 纵向速度，数据量需等于numberPoints
   "data": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -2, -3, -1]
 }]
 ```

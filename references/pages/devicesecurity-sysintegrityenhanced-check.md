@@ -62,33 +62,35 @@ checkSysIntegrityEnhanced(req: SysIntegrityRequest): Promise<SysIntegrityRespons
 导入Device Security Kit模块及相关公共模块。
 
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-调用接口获取系统完整性检测结果。
+调用checkSysIntegrityEnhanced接口获取系统完整性增强检测结果。
 
 注意
 
 该接口涉及端云协同，需要联网等耗时操作，因此不要在UI线程中执行，避免阻塞UI线程。
 
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求系统完整性增强检测，并处理结果
 let req : safetyDetect.SysIntegrityRequest = {
   nonce : 'imEe1PCRcjGkBCAhOCh6ImADztOZ8ygxlWRs' // 从服务器生成的随机的nonce值
 };
 try {
-  hilog.info(0x0000, TAG, 'CheckSysIntegrity begin.');
+  hilog.info(0x0000, TAG, 'CheckSysIntegrityEnhanced begin.');
   const data: safetyDetect.SysIntegrityResponse = await safetyDetect.checkSysIntegrityEnhanced(req);
   hilog.info(0x0000, TAG, 'Succeeded in checkSysIntegrityEnhanced: %{public}s', data.result);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckSysIntegrityEnhanced failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 
 在您的应用服务器中验证检测结果。
 
-系统完整性检测结果是一个格式为JSON WEB Signature（JWS）的字符串。包括三个部分：
+系统完整性增强检测结果是一个格式为JSON WEB Signature（JWS）的字符串。包括三个部分：
 
 Header（头部）
 
@@ -187,26 +189,28 @@ unlock：设备被解锁。
 
 ```
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求系统完整性增强检测，并处理结果
 let req : safetyDetect.SysIntegrityRequest = {
   nonce : 'imEe1PCRcjGkBCAhOCh6ImADztOZ8ygxlWRs' // 从服务器生成的随机的nonce值
 };
 try {
-  hilog.info(0x0000, TAG, 'CheckSysIntegrity begin.');
+  hilog.info(0x0000, TAG, 'CheckSysIntegrityEnhanced begin.');
   const data: safetyDetect.SysIntegrityResponse = await safetyDetect.checkSysIntegrityEnhanced(req);
   hilog.info(0x0000, TAG, 'Succeeded in checkSysIntegrityEnhanced: %{public}s', data.result);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckSysIntegrityEnhanced failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 ```
 

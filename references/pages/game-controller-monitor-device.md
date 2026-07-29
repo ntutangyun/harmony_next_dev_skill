@@ -26,7 +26,7 @@ Game Controller Kit从终端系统获取所有在线的游戏设备信息。
 
 接口说明
 
-接口详细介绍请参考API参考。
+接口详细介绍请参考GameController。
 
 接口名	描述
 GameController_ErrorCode OH_GameDevice_RegisterDeviceMonitor (GameDevice_DeviceMonitorCallback deviceMonitorCallback)	注册设备状态变化事件的监听回调。

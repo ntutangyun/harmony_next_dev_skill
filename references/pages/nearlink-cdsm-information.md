@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 
 接口说明
 
-提供2种获取星闪开关状态的方式，主动查询和订阅状态变化。
+提供获取合作设备集合信息的方式，主动查询和订阅信息变化。
 
 接口名	描述
 createCdsmClient(address: string): CdsmClient	创建合作设备集合客户端实例。
@@ -24,47 +24,63 @@ offCdsmInfoChange(callback?: Callback<CdsmInfo>): void	取消订阅远端设备�
 
 导入相关模块。
 
-import { cdsm } from '@kit.NearLinkKit';
-import { BusinessError, Callback } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { cdsm, manager, remoteDevice } from '@kit.NearLinkKit';
 
 创建合作设备集合客户端实例，参数addr是通过getPairedDevices获取的设备地址，并且此设备是合作设备集合的成员设备。
 
-let addr: string = '00:11:22:33:AA:FF';
-let client: cdsm.CdsmClient;
+@State deviceAddress: string = '00:11:22:33:AA:FF';
+cdsmClient: cdsm.CdsmClient | null = null;
+// ...
 try {
-  client = cdsm.createCdsmClient(addr);
-  console.info('client: ' + JSON.stringify(client));
+  this.cdsmClient = cdsm.createCdsmClient(this.deviceAddress);
+  hilog.info(this.domainId, this.logTag, `Create CDSM client: ${JSON.stringify(this.cdsmClient)}`);
+  // ...
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 主动查询合作设备集合里所有成员设备的信息。
 
 try {
-  let cdsmInformation: cdsm.CdsmInfo = client.getCdsmInfo();
-  console.info('cdsmInformation:' + JSON.stringify(cdsmInformation));
+  if (this.cdsmClient) {
+    let cdsmInformation: cdsm.CdsmInfo = this.cdsmClient.getCdsmInfo();
+    hilog.info(this.domainId, this.logTag, `CDSM info: ${JSON.stringify(cdsmInformation)}`);
+    // ...
+  }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 通过注册的方式订阅合作设备集合成员设备的信息变化。
 
-let callback: Callback<cdsm.CdsmInfo> = (data: cdsm.CdsmInfo) => {
-  console.info('CdsmInfo:' + JSON.stringify(data));
+let cdsmCallback: (data: cdsm.CdsmInfo) => void = (data: cdsm.CdsmInfo) => {
+  hilog.info(this.domainId, this.logTag, `CDSM info changed: ${JSON.stringify(data)}`);
+  // ...
 };
-
 try {
-  client.onCdsmInfoChange(callback);
+  if (this.cdsmClient) {
+    this.cdsmClient.onCdsmInfoChange(cdsmCallback);
+    // ...
+  }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 取消订阅合作设备集合成员设备的信息变化。
 
 try {
-  client.offCdsmInfoChange(callback);
+  if (this.cdsmClient) {
+    this.cdsmClient.offCdsmInfoChange();
+    // ...
+  }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 ## Code blocks
@@ -72,20 +88,24 @@ try {
 ### Code block 1
 
 ```
-import { cdsm } from '@kit.NearLinkKit';
-import { BusinessError, Callback } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { cdsm, manager, remoteDevice } from '@kit.NearLinkKit';
 ```
 
 ### Code block 2
 
 ```
-let addr: string = '00:11:22:33:AA:FF';
-let client: cdsm.CdsmClient;
+@State deviceAddress: string = '00:11:22:33:AA:FF';
+cdsmClient: cdsm.CdsmClient | null = null;
+// ...
 try {
-  client = cdsm.createCdsmClient(addr);
-  console.info('client: ' + JSON.stringify(client));
+  this.cdsmClient = cdsm.createCdsmClient(this.deviceAddress);
+  hilog.info(this.domainId, this.logTag, `Create CDSM client: ${JSON.stringify(this.cdsmClient)}`);
+  // ...
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -93,24 +113,32 @@ try {
 
 ```
 try {
-  let cdsmInformation: cdsm.CdsmInfo = client.getCdsmInfo();
-  console.info('cdsmInformation:' + JSON.stringify(cdsmInformation));
+  if (this.cdsmClient) {
+    let cdsmInformation: cdsm.CdsmInfo = this.cdsmClient.getCdsmInfo();
+    hilog.info(this.domainId, this.logTag, `CDSM info: ${JSON.stringify(cdsmInformation)}`);
+    // ...
+  }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
 ### Code block 4
 
 ```
-let callback: Callback<cdsm.CdsmInfo> = (data: cdsm.CdsmInfo) => {
-  console.info('CdsmInfo:' + JSON.stringify(data));
+let cdsmCallback: (data: cdsm.CdsmInfo) => void = (data: cdsm.CdsmInfo) => {
+  hilog.info(this.domainId, this.logTag, `CDSM info changed: ${JSON.stringify(data)}`);
+  // ...
 };
-
 try {
-  client.onCdsmInfoChange(callback);
+  if (this.cdsmClient) {
+    this.cdsmClient.onCdsmInfoChange(cdsmCallback);
+    // ...
+  }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -118,8 +146,12 @@ try {
 
 ```
 try {
-  client.offCdsmInfoChange(callback);
+  if (this.cdsmClient) {
+    this.cdsmClient.offCdsmInfoChange();
+    // ...
+  }
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```

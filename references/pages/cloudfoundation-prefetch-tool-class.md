@@ -26,22 +26,22 @@ PreferenceUtil
 
 首选项工具类，提供数据读取和存储功能。参考示例如下：
 
-import dataPreferences from '@ohos.data.preferences';
+import { preferences } from '@kit.ArkData';
 import { Context } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'PreferenceUtil';
-const DEFAULT_STORE_NAME: string = "prefetchDefaultStore";
+const DEFAULT_STORE_NAME: string = 'prefetchDefaultStore';
 
 export class PreferenceUtil {
-  private static cachedPreferences: Map<string, dataPreferences.Preferences> = new Map();
+  private static cachedPreferences: Map<string, preferences.Preferences> = new Map();
 
   private constructor() {
   }
 
   public static async getValue(context: Context, storeName: string,
-    key: string): Promise<dataPreferences.ValueType | null> {
+    key: string): Promise<preferences.ValueType | null> {
     try {
       let store = await PreferenceUtil.getStore(context, storeName);
       PreferenceUtil.updateStoreCache(storeName, store);
@@ -54,7 +54,7 @@ export class PreferenceUtil {
     }
   }
 
-  public static getValueSync(context: Context, storeName: string, key: string): dataPreferences.ValueType | null {
+  public static getValueSync(context: Context, storeName: string, key: string): preferences.ValueType | null {
     try {
       let store = PreferenceUtil.getStoreSync(context, storeName);
       PreferenceUtil.updateStoreCache(storeName, store);
@@ -68,7 +68,7 @@ export class PreferenceUtil {
   }
 
   public static async setValue(context: Context, storeName: string, key: string,
-    value: dataPreferences.ValueType): Promise<void> {
+    value: preferences.ValueType): Promise<void> {
     try {
       let store = await PreferenceUtil.getStore(context, storeName);
       PreferenceUtil.updateStoreCache(storeName, store);
@@ -80,27 +80,37 @@ export class PreferenceUtil {
   }
 
 
-  private static async getStore(context: Context, storeName: string): Promise<dataPreferences.Preferences> {
+  private static async getStore(context: Context, storeName: string): Promise<preferences.Preferences> {
     let actualStoreName = !storeName ? DEFAULT_STORE_NAME : storeName;
     let store = PreferenceUtil.cachedPreferences.get(actualStoreName);
     if (store) {
       return store;
     }
     hilog.info(DOMAIN, TAG, `there is no cached store:${actualStoreName}, begin to get one`);
-    return dataPreferences.getPreferences(context, actualStoreName);
+    try {
+      return preferences.getPreferences(context, actualStoreName);
+    } catch (error) {
+      hilog.error(DOMAIN, TAG, `Failed to get preferences: ${error}`);
+      throw new Error(`Failed to get preferences: ${error}`);
+    }
   }
 
-  private static getStoreSync(context: Context, storeName: string): dataPreferences.Preferences {
+  private static getStoreSync(context: Context, storeName: string): preferences.Preferences {
     let actualStoreName = !storeName ? DEFAULT_STORE_NAME : storeName;
     let store = PreferenceUtil.cachedPreferences.get(actualStoreName);
     if (store) {
       return store;
     }
     hilog.info(DOMAIN, TAG, `getStoreSync there is no cached store:${actualStoreName}, begin to get one`);
-    return dataPreferences.getPreferencesSync(context, { name: actualStoreName });
+    try {
+      return preferences.getPreferencesSync(context, { name: actualStoreName });
+    } catch (error) {
+      hilog.error(DOMAIN, TAG, `Failed to get preferences sync: ${error}`);
+      throw new Error(`Failed to get preferences sync: ${error}`);
+    }
   }
 
-  private static updateStoreCache(storeName: string, store: dataPreferences.Preferences): void {
+  private static updateStoreCache(storeName: string, store: preferences.Preferences): void {
     if (!PreferenceUtil.cachedPreferences.has(storeName)) {
       PreferenceUtil.cachedPreferences.set(storeName, store);
     }
@@ -130,22 +140,22 @@ export class GlobalContext {
 ### Code block 2
 
 ```
-import dataPreferences from '@ohos.data.preferences';
+import { preferences } from '@kit.ArkData';
 import { Context } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'PreferenceUtil';
-const DEFAULT_STORE_NAME: string = "prefetchDefaultStore";
+const DEFAULT_STORE_NAME: string = 'prefetchDefaultStore';
 
 export class PreferenceUtil {
-  private static cachedPreferences: Map<string, dataPreferences.Preferences> = new Map();
+  private static cachedPreferences: Map<string, preferences.Preferences> = new Map();
 
   private constructor() {
   }
 
   public static async getValue(context: Context, storeName: string,
-    key: string): Promise<dataPreferences.ValueType | null> {
+    key: string): Promise<preferences.ValueType | null> {
     try {
       let store = await PreferenceUtil.getStore(context, storeName);
       PreferenceUtil.updateStoreCache(storeName, store);
@@ -158,7 +168,7 @@ export class PreferenceUtil {
     }
   }
 
-  public static getValueSync(context: Context, storeName: string, key: string): dataPreferences.ValueType | null {
+  public static getValueSync(context: Context, storeName: string, key: string): preferences.ValueType | null {
     try {
       let store = PreferenceUtil.getStoreSync(context, storeName);
       PreferenceUtil.updateStoreCache(storeName, store);
@@ -172,7 +182,7 @@ export class PreferenceUtil {
   }
 
   public static async setValue(context: Context, storeName: string, key: string,
-    value: dataPreferences.ValueType): Promise<void> {
+    value: preferences.ValueType): Promise<void> {
     try {
       let store = await PreferenceUtil.getStore(context, storeName);
       PreferenceUtil.updateStoreCache(storeName, store);
@@ -184,27 +194,37 @@ export class PreferenceUtil {
   }
 
 
-  private static async getStore(context: Context, storeName: string): Promise<dataPreferences.Preferences> {
+  private static async getStore(context: Context, storeName: string): Promise<preferences.Preferences> {
     let actualStoreName = !storeName ? DEFAULT_STORE_NAME : storeName;
     let store = PreferenceUtil.cachedPreferences.get(actualStoreName);
     if (store) {
       return store;
     }
     hilog.info(DOMAIN, TAG, `there is no cached store:${actualStoreName}, begin to get one`);
-    return dataPreferences.getPreferences(context, actualStoreName);
+    try {
+      return preferences.getPreferences(context, actualStoreName);
+    } catch (error) {
+      hilog.error(DOMAIN, TAG, `Failed to get preferences: ${error}`);
+      throw new Error(`Failed to get preferences: ${error}`);
+    }
   }
 
-  private static getStoreSync(context: Context, storeName: string): dataPreferences.Preferences {
+  private static getStoreSync(context: Context, storeName: string): preferences.Preferences {
     let actualStoreName = !storeName ? DEFAULT_STORE_NAME : storeName;
     let store = PreferenceUtil.cachedPreferences.get(actualStoreName);
     if (store) {
       return store;
     }
     hilog.info(DOMAIN, TAG, `getStoreSync there is no cached store:${actualStoreName}, begin to get one`);
-    return dataPreferences.getPreferencesSync(context, { name: actualStoreName });
+    try {
+      return preferences.getPreferencesSync(context, { name: actualStoreName });
+    } catch (error) {
+      hilog.error(DOMAIN, TAG, `Failed to get preferences sync: ${error}`);
+      throw new Error(`Failed to get preferences sync: ${error}`);
+    }
   }
 
-  private static updateStoreCache(storeName: string, store: dataPreferences.Preferences): void {
+  private static updateStoreCache(storeName: string, store: preferences.Preferences): void {
     if (!PreferenceUtil.cachedPreferences.has(storeName)) {
       PreferenceUtil.cachedPreferences.set(storeName, store);
     }

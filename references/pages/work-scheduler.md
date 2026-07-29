@@ -36,17 +36,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/work-sche
 
 调度延迟：系统会根据内存、功耗、设备温度、用户使用习惯等统一调度，如当系统内存资源不足或温度达到一定档位时，系统将延迟调度该任务。
 
-WorkSchedulerExtensionAbility接口调用限制：为保障系统安全性和稳定性，防止延迟任务滥用系统资源，对WorkSchedulerExtensionAbility能力进行管控，在WorkSchedulerExtensionAbility中限制以下接口的调用：
-
-@ohos.resourceschedule.backgroundTaskManager (后台任务管理)
-
-@ohos.backgroundTaskManager (后台任务管理)
-
-@ohos.multimedia.camera (相机管理)
-
-@ohos.multimedia.audio (音频管理)
-
-@ohos.multimedia.media (媒体服务)
+针对WorkSchedulerExtensionAbility接口调用限制，详细请参考API中的约束限制。
 
 接口说明
 
@@ -96,6 +86,7 @@ import {workScheduler, WorkSchedulerExtensionAbility} from '@kit.BackgroundTasks
 export default class WorkSchedulerAbility extends WorkSchedulerExtensionAbility {
   // 延迟任务开始回调
   onWorkStart(workInfo: workScheduler.WorkInfo) {
+    // ...
     console.info(`onWorkStart, workInfo = ${JSON.stringify(workInfo)}`);
     // 打印 parameters中的参数，如：参数key1
     console.info(`work info parameters: ${JSON.parse(workInfo.parameters?.toString()).key1}`);
@@ -154,14 +145,14 @@ catch (error) {
 
 取消延迟任务。
 
-// 创建workinfo
+// 创建workInfo
 let workInfo: workScheduler.WorkInfo = {
   workId: 1,
-  networkType: workScheduler.NetworkType.NETWORK_TYPE_WIFI,
+  networkType: workScheduler.NetworkType.NETWORK_TYPE_ANY,
   bundleName: 'ohos.samples.workschedulerextensionability',
   abilityName: 'WorkSchedulerAbility',
+  // ...
 }
-
 try {
   workScheduler.stopWork(workInfo);
   console.info(`stopWork success`);
@@ -196,6 +187,7 @@ import {workScheduler, WorkSchedulerExtensionAbility} from '@kit.BackgroundTasks
 export default class WorkSchedulerAbility extends WorkSchedulerExtensionAbility {
   // 延迟任务开始回调
   onWorkStart(workInfo: workScheduler.WorkInfo) {
+    // ...
     console.info(`onWorkStart, workInfo = ${JSON.stringify(workInfo)}`);
     // 打印 parameters中的参数，如：参数key1
     console.info(`work info parameters: ${JSON.parse(workInfo.parameters?.toString()).key1}`);
@@ -256,14 +248,14 @@ catch (error) {
 ### Code block 6
 
 ```
-// 创建workinfo
+// 创建workInfo
 let workInfo: workScheduler.WorkInfo = {
   workId: 1,
-  networkType: workScheduler.NetworkType.NETWORK_TYPE_WIFI,
+  networkType: workScheduler.NetworkType.NETWORK_TYPE_ANY,
   bundleName: 'ohos.samples.workschedulerextensionability',
   abilityName: 'WorkSchedulerAbility',
+  // ...
 }
-
 try {
   workScheduler.stopWork(workInfo);
   console.info(`stopWork success`);

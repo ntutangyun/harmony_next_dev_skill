@@ -12,4 +12,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/media-rec
 
 使用AVScreenCapture实现窗口级录屏(C/C++)
 
+基于AVScreenCapture实现屏幕录制（C/C++）
+
 屏幕录制支持矩形区域录制

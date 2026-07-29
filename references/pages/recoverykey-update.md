@@ -11,26 +11,30 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/recoveryk
 详细接口说明可参考接口文档。
 
 接口名	描述
-updateEnterpriseCertificate(signature: Uint8Array, cert: Uint8Array): Promise<number>	使用Promise方式更新证书。
+updateEnterpriseCertificate(signature: Uint8Array, cert: Uint8Array): Promise<number>	使用Promise方式更新企业公钥证书。
 
 开发步骤
 
 导入模块。
 
-import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 先调用接口getAuthChallenge，获取挑战值并签名，传入挑战值的签名和企业公钥证书，再调用接口updateEnterpriseCertificate，更新企业公钥证书。
+
+const TAG: string = 'EnterpriseRecoveryKey_Update';
+const DOMAIN: number = 0x0000;
 
 function testUpdateEnterpriseCertificate() {
   // 在实际应用中，signature 应替换为由企业的公钥、私钥和挑战值生成的签名。
   let signature: Uint8Array = new Uint8Array([0]);
-  // 在实际应用中，cert 应需替换为企业证书数据。
+  // 在实际应用中，cert 应替换为企业证书数据。
   let cert: Uint8Array = new Uint8Array([0]);
   recoveryKey.updateEnterpriseCertificate(signature, cert).then((ret: number) => {
-    console.info(`Succeeded in updating certificate.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in updating certificate. result is: ${ret}`);
   }).catch((error: BusinessError) => {
-    console.error(`Failed to update certificate. Code: ${error.code}, message: ${error.message}`);
+    hilog.error(DOMAIN, TAG, `Failed to update certificate. Code: ${error.code}, message: ${error.message}`);
   });
 }
 
@@ -39,22 +43,26 @@ function testUpdateEnterpriseCertificate() {
 ### Code block 1
 
 ```
-import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
+const TAG: string = 'EnterpriseRecoveryKey_Update';
+const DOMAIN: number = 0x0000;
+
 function testUpdateEnterpriseCertificate() {
   // 在实际应用中，signature 应替换为由企业的公钥、私钥和挑战值生成的签名。
   let signature: Uint8Array = new Uint8Array([0]);
-  // 在实际应用中，cert 应需替换为企业证书数据。
+  // 在实际应用中，cert 应替换为企业证书数据。
   let cert: Uint8Array = new Uint8Array([0]);
   recoveryKey.updateEnterpriseCertificate(signature, cert).then((ret: number) => {
-    console.info(`Succeeded in updating certificate.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in updating certificate. result is: ${ret}`);
   }).catch((error: BusinessError) => {
-    console.error(`Failed to update certificate. Code: ${error.code}, message: ${error.message}`);
+    hilog.error(DOMAIN, TAG, `Failed to update certificate. Code: ${error.code}, message: ${error.message}`);
   });
 }
 ```

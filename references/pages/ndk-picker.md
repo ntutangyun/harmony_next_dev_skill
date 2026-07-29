@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ndk-picke
 
 概述
 
-从API version 23开始，ArkUI开发框架在NDK接口提供了Picker容器组件。Picker容器组件用于实现用户自定义选项的选择操作，支持滚动选择、触感反馈、循环滚动等功能。Picker组件通过设置选择指示器样式，可以自定义选中项的显示效果，适用于日期选择、时间选择、文本选择等场景。
+从API version 23开始，ArkUI开发框架在NDK接口提供了Picker容器组件。Picker容器组件用于实现用户自定义选项的选择操作，支持滚动选择、触感反馈、循环滚动等功能。Picker组件通过设置选择指示器样式，可以自定义选中项的显示效果，适用于日期选择、时间选择、文本选择等场景。从API版本26.0.0开始，可通过NODE_PICKER_DISPLAYED_ITEM_COUNT、NODE_PICKER_ITEM_HEIGHT配置可见选项行数与每行行高，语义与ArkTS侧UIPickerComponent的displayedItemCount、itemHeight一致；详细参数格式见信息选择类组件相关属性。
 
 创建Picker后，可以设置Picker属性，并监听Picker事件。
 
@@ -31,6 +31,8 @@ static ArkUI_NodeHandle CreatePicker(ArkUI_NativeNodeAPI_1 *api)
     ArkUI_AttributeItem widthItem = {&widthValue, sizeof(widthValue) / sizeof(ArkUI_NumberValue)};
     api->setAttribute(picker, NODE_WIDTH_PERCENT, &widthItem);
     UpdatePickerSelectedIndex();
+    SetDisplayedItemCount(K_VISIBLE_COUNT);
+    SetItemHeight(K_ITEM_HEIGHT);
     api->registerNodeEvent(picker, NODE_PICKER_EVENT_ON_CHANGE, K_ON_CHANGE_EVENT_ID, nullptr);
     api->registerNodeEvent(picker, NODE_PICKER_EVENT_ON_SCROLL_STOP, K_ON_SCROLL_STOP_EVENT_ID, nullptr);
     if (g_state) {
@@ -199,7 +201,7 @@ picker->SetHapticFeedback(K_HAPTIC_FEEDBACK);
 
 说明
 
-如果子组件的个数小于8个，无论设置为true还是false，都不会循环滚动。
+当子组件个数小于或等于可见选项行数（由NODE_PICKER_DISPLAYED_ITEM_COUNT设置，默认为7）时，无论设置为true还是false，都不会循环滚动。
 
 使用ArkUI_NativeNodeAPI_1时可直接调用setAttribute。
 
@@ -211,11 +213,25 @@ nodeApi_->setAttribute(GetHandle(), NODE_PICKER_CAN_LOOP, &canLoopItem);
 
 picker->SetCanLoop(K_CAN_LOOP);
 
+[h2]设置可见选项数量与选项行高
+
+从API版本26.0.0开始，可通过NODE_PICKER_DISPLAYED_ITEM_COUNT设置可见选项行数，通过NODE_PICKER_ITEM_HEIGHT设置每一行的高度（vp）。未设置时，默认分别为7行与40vp；取值范围、偶数行数规范及越界行为与UIPickerComponent的displayedItemCount、itemHeight一致。立体滚轮样式下可视高度会受旋转影响，若增大行数或行高，请相应增大Picker容器高度。
+
+使用ArkUI_NativeNodeAPI_1时可直接调用setAttribute。
+
+ArkUI_NumberValue itemCountValue = {.i32 = count};
+ArkUI_AttributeItem itemCountItem = {&itemCountValue, sizeof(itemCountValue) / sizeof(ArkUI_NumberValue)};
+g_state->api->setAttribute(g_state->pickerNode, NODE_PICKER_DISPLAYED_ITEM_COUNT, &itemCountItem);
+
+ArkUI_NumberValue itemHeightValue = {.f32 = heightVp};
+ArkUI_AttributeItem itemHeightItem = {&itemHeightValue, sizeof(itemHeightValue) / sizeof(ArkUI_NumberValue)};
+g_state->api->setAttribute(g_state->pickerNode, NODE_PICKER_ITEM_HEIGHT, &itemHeightItem);
+
 [h2]设置选择指示器样式
 
 通过设置NODE_PICKER_SELECTION_INDICATOR属性，可以自定义Picker组件的选择指示器样式。选择指示器包括背景样式和分割线样式两部分。
 
-背景样式指示器通过ArkUI_PickerIndicatorBackground结构体设置，包括背景颜色和圆角半径。
+选择指示器的背景样式通过ArkUI_PickerIndicatorBackground结构体设置，包括背景颜色和圆角半径。
 
 void SetSelectionIndicatorBackground(uint32_t backgroundColor, float cornerRadius = 10.0f)
 {
@@ -237,7 +253,7 @@ void SetSelectionIndicatorBackground(uint32_t backgroundColor, float cornerRadiu
     nodeApi_->setAttribute(GetHandle(), NODE_PICKER_SELECTION_INDICATOR, &selectionIndicatorItem);
 }
 
-分割线样式指示器通过ArkUI_PickerIndicatorDivider结构体设置，包括线宽、颜色和边距。
+选择指示器的分割线样式通过ArkUI_PickerIndicatorDivider结构体设置，包括线宽、颜色和边距。
 
 void SetSelectionIndicatorDivider(uint32_t dividerColor, float strokeWidth = 2.0f, float startMargin = 20.0f,
                                   float endMargin = 20.0f)
@@ -261,7 +277,7 @@ void SetSelectionIndicatorDivider(uint32_t dividerColor, float strokeWidth = 2.0
 
 将背景样式或分割线样式组合到ArkUI_PickerIndicatorStyle结构体中，并设置给Picker组件。
 
-若使用上文封装的ContainerPickerMonthMaker，可调用已封装的接口。
+若使用上文封装的ContainerPickerCanLoopMaker，可调用已封装的接口。
 
 picker->SetSelectionIndicatorDivider(0xFF0000FF, 2.0f, 20.0f, 20.0f);
 
@@ -307,6 +323,8 @@ static ArkUI_NodeHandle CreatePicker(ArkUI_NativeNodeAPI_1 *api)
     ArkUI_AttributeItem widthItem = {&widthValue, sizeof(widthValue) / sizeof(ArkUI_NumberValue)};
     api->setAttribute(picker, NODE_WIDTH_PERCENT, &widthItem);
     UpdatePickerSelectedIndex();
+    SetDisplayedItemCount(K_VISIBLE_COUNT);
+    SetItemHeight(K_ITEM_HEIGHT);
     api->registerNodeEvent(picker, NODE_PICKER_EVENT_ON_CHANGE, K_ON_CHANGE_EVENT_ID, nullptr);
     api->registerNodeEvent(picker, NODE_PICKER_EVENT_ON_SCROLL_STOP, K_ON_SCROLL_STOP_EVENT_ID, nullptr);
     if (g_state) {
@@ -485,6 +503,22 @@ picker->SetCanLoop(K_CAN_LOOP);
 ### Code block 8
 
 ```
+ArkUI_NumberValue itemCountValue = {.i32 = count};
+ArkUI_AttributeItem itemCountItem = {&itemCountValue, sizeof(itemCountValue) / sizeof(ArkUI_NumberValue)};
+g_state->api->setAttribute(g_state->pickerNode, NODE_PICKER_DISPLAYED_ITEM_COUNT, &itemCountItem);
+```
+
+### Code block 9
+
+```
+ArkUI_NumberValue itemHeightValue = {.f32 = heightVp};
+ArkUI_AttributeItem itemHeightItem = {&itemHeightValue, sizeof(itemHeightValue) / sizeof(ArkUI_NumberValue)};
+g_state->api->setAttribute(g_state->pickerNode, NODE_PICKER_ITEM_HEIGHT, &itemHeightItem);
+```
+
+### Code block 10
+
+```
 void SetSelectionIndicatorBackground(uint32_t backgroundColor, float cornerRadius = 10.0f)
 {
     if (!IsNotNull(nodeApi_) || !IsNotNull(GetHandle())) {
@@ -506,7 +540,7 @@ void SetSelectionIndicatorBackground(uint32_t backgroundColor, float cornerRadiu
 }
 ```
 
-### Code block 9
+### Code block 11
 
 ```
 void SetSelectionIndicatorDivider(uint32_t dividerColor, float strokeWidth = 2.0f, float startMargin = 20.0f,
@@ -530,19 +564,19 @@ void SetSelectionIndicatorDivider(uint32_t dividerColor, float strokeWidth = 2.0
 }
 ```
 
-### Code block 10
+### Code block 12
 
 ```
 picker->SetSelectionIndicatorDivider(0xFF0000FF, 2.0f, 20.0f, 20.0f);
 ```
 
-### Code block 11
+### Code block 13
 
 ```
 api->registerNodeEvent(picker, NODE_PICKER_EVENT_ON_CHANGE, K_ON_CHANGE_EVENT_ID, nullptr);
 ```
 
-### Code block 12
+### Code block 14
 
 ```
 api->registerNodeEvent(picker, NODE_PICKER_EVENT_ON_SCROLL_STOP, K_ON_SCROLL_STOP_EVENT_ID, nullptr);

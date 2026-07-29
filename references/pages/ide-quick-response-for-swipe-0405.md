@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-quick
 
 规则详情
 
-应用内滑动操作响应时延应≤ 80ms；时间起点：手指滑动；时间终点：界面发生变化。
+应用内滑动操作响应时延应≤80ms；时间起点：手指滑动；时间终点：界面发生变化。
 
 检测逻辑
 

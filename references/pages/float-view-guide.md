@@ -72,7 +72,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/float-vie
 
 [h2]模板类型
 
-目前支持圆角矩形模板类型FloatViewTemplateType.ROUNDED_RECTANGLE的闪控窗。
+目前支持圆角矩形模板类型FloatViewTemplateType.ROUNDED_RECTANGLE和水平的条状矩形类型FloatViewTemplateType.RHORIZONTAL_BAR的闪控窗。
 
 前提条件
 

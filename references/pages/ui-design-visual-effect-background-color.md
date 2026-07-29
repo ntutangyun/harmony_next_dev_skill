@@ -19,33 +19,33 @@ import { hdsEffect } from '@kit.UIDesignKit';
 @Entry
 @Component
 struct PressShadowExample {
-  @State button_blend_state: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
-  @State button_gradient_state: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
+  @State buttonBlendState: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
+  @State buttonGradientState: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
 
   build() {
     NavDestination() {
       Column({ space: 50 }) {
-        Button("BLEND_WHITE", { buttonStyle: ButtonStyleMode.EMPHASIZED, role: ButtonRole.ERROR, stateEffect: false })
+        Button('BLEND_WHITE', { buttonStyle: ButtonStyleMode.EMPHASIZED, role: ButtonRole.ERROR, stateEffect: false })
           .visualEffect(new hdsEffect.HdsEffectBuilder()
-            .pressShadow(this.button_blend_state)
+            .pressShadow(this.buttonBlendState)
             .buildEffect())
           .onTouch((event: TouchEvent) => {
             if (event.type === TouchType.Down) {
-              this.button_blend_state = hdsEffect.PressShadowType.BLEND_WHITE;
+              this.buttonBlendState = hdsEffect.PressShadowType.BLEND_WHITE;
             } else if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
-              this.button_blend_state = hdsEffect.PressShadowType.NONE;
+              this.buttonBlendState = hdsEffect.PressShadowType.NONE;
             }
           })
 
-        Button("GRADIENT", { buttonStyle: ButtonStyleMode.NORMAL, stateEffect: false })
+        Button('GRADIENT', { buttonStyle: ButtonStyleMode.NORMAL, stateEffect: false })
           .visualEffect(new hdsEffect.HdsEffectBuilder()
-            .pressShadow(this.button_gradient_state)
+            .pressShadow(this.buttonGradientState)
             .buildEffect())
           .onTouch((event: TouchEvent) => {
             if (event.type === TouchType.Down) {
-              this.button_gradient_state = hdsEffect.PressShadowType.BLEND_GRADIENT;
+              this.buttonGradientState = hdsEffect.PressShadowType.BLEND_GRADIENT;
             } else if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
-              this.button_gradient_state = hdsEffect.PressShadowType.NONE;
+              this.buttonGradientState = hdsEffect.PressShadowType.NONE;
             }
           })
       }
@@ -73,33 +73,33 @@ import { hdsEffect } from '@kit.UIDesignKit';
 @Entry
 @Component
 struct PressShadowExample {
-  @State button_blend_state: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
-  @State button_gradient_state: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
+  @State buttonBlendState: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
+  @State buttonGradientState: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
 
   build() {
     NavDestination() {
       Column({ space: 50 }) {
-        Button("BLEND_WHITE", { buttonStyle: ButtonStyleMode.EMPHASIZED, role: ButtonRole.ERROR, stateEffect: false })
+        Button('BLEND_WHITE', { buttonStyle: ButtonStyleMode.EMPHASIZED, role: ButtonRole.ERROR, stateEffect: false })
           .visualEffect(new hdsEffect.HdsEffectBuilder()
-            .pressShadow(this.button_blend_state)
+            .pressShadow(this.buttonBlendState)
             .buildEffect())
           .onTouch((event: TouchEvent) => {
             if (event.type === TouchType.Down) {
-              this.button_blend_state = hdsEffect.PressShadowType.BLEND_WHITE;
+              this.buttonBlendState = hdsEffect.PressShadowType.BLEND_WHITE;
             } else if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
-              this.button_blend_state = hdsEffect.PressShadowType.NONE;
+              this.buttonBlendState = hdsEffect.PressShadowType.NONE;
             }
           })
 
-        Button("GRADIENT", { buttonStyle: ButtonStyleMode.NORMAL, stateEffect: false })
+        Button('GRADIENT', { buttonStyle: ButtonStyleMode.NORMAL, stateEffect: false })
           .visualEffect(new hdsEffect.HdsEffectBuilder()
-            .pressShadow(this.button_gradient_state)
+            .pressShadow(this.buttonGradientState)
             .buildEffect())
           .onTouch((event: TouchEvent) => {
             if (event.type === TouchType.Down) {
-              this.button_gradient_state = hdsEffect.PressShadowType.BLEND_GRADIENT;
+              this.buttonGradientState = hdsEffect.PressShadowType.BLEND_GRADIENT;
             } else if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
-              this.button_gradient_state = hdsEffect.PressShadowType.NONE;
+              this.buttonGradientState = hdsEffect.PressShadowType.NONE;
             }
           })
       }

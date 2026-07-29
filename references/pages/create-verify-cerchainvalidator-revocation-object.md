@@ -14,9 +14,9 @@ import { cert } from '@kit.DeviceCertificateKit';
 
 调用cert.createX509CertChain创建证书链对象。
 
-调用cert.createX509Cert创建X509证书对象。
+调用cert.createX509Cert创建X.509证书对象。
 
-调用cert.createX509CRL创建X509证书吊销列表对象。
+调用cert.createX509CRL创建X.509证书吊销列表对象。
 
 构造cert.CertChainValidationParameters证书链校验参数对象。
 
@@ -119,7 +119,7 @@ import { cert } from '@kit.DeviceCertificateKit';
 
 调用cert.createX509CertChain创建证书链对象。
 
-调用cert.createX509Cert创建X509证书对象。
+调用cert.createX509Cert创建X.509证书对象。
 
 构造cert.CertChainValidationParameters证书链校验参数。
 
@@ -211,7 +211,7 @@ import { cert } from '@kit.DeviceCertificateKit';
 
 调用cert.createX509CertChain创建证书链对象。
 
-调用cert.createX509Cert创建X509证书对象。构造 cert.CertChainValidationParameters 证书链校验参数，配置 revocationCheckParam 为 RevocationCheckOptions.REVOCATION_CHECK_OPTION_IGNORE_NETWORK_ERROR，以忽略网络不可达的情况。
+调用cert.createX509Cert创建X.509证书对象。构造 cert.CertChainValidationParameters 证书链校验参数，配置 revocationCheckParam 为 RevocationCheckOptions.REVOCATION_CHECK_OPTION_IGNORE_NETWORK_ERROR，以忽略网络不可达的情况。
 
 调用cert.validate，传入证书链校验参数，进行证书链校验。
 

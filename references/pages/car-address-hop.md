@@ -40,27 +40,27 @@ index	地址索引，用来标识同一组地址文本的顺序。同一组的�
 定义accessibilityTextHint的value值。
 
 const hintContentValue = JSON.stringify({
-   type: 'location', // 类型，必须是 'location'
-   groupId: 1, // 分组id
-   index: 2 // 索引
- });
+  type: 'location', // 类型，必须是 'location'
+  groupId: 1, // 分组id
+  index: 2 // 索引
+});
 
 给地址文本设置accessibilityTextHint属性。
 
 Text('xxx一路')
-   .fontSize(20)
-   .fontWeight(FontWeight.Bold)
-   .accessibilityTextHint(hintContentValue)
+  .fontSize(20)
+  .fontWeight(FontWeight.Bold)
+  .accessibilityTextHint(hintContentValue)
 
 // 单地址场景
 Text('xxx二路')
-   .accessibilityTextHint(JSON.stringify({ type: 'location' }))
+  .accessibilityTextHint(JSON.stringify({ type: 'location' }))
 
 // 多地址场景
 Text('xxx商场')
-   .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 1, }))
- Text('xxx街')
-   .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 0, }))
+  .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 1, }))
+Text('xxx街')
+  .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 0, }))
 
 ## Code blocks
 
@@ -79,27 +79,27 @@ Text('xxx商场')
 
 ```
 const hintContentValue = JSON.stringify({
-   type: 'location', // 类型，必须是 'location'
-   groupId: 1, // 分组id
-   index: 2 // 索引
- });
+  type: 'location', // 类型，必须是 'location'
+  groupId: 1, // 分组id
+  index: 2 // 索引
+});
 ```
 
 ### Code block 3
 
 ```
 Text('xxx一路')
-   .fontSize(20)
-   .fontWeight(FontWeight.Bold)
-   .accessibilityTextHint(hintContentValue)
+  .fontSize(20)
+  .fontWeight(FontWeight.Bold)
+  .accessibilityTextHint(hintContentValue)
 
 // 单地址场景
 Text('xxx二路')
-   .accessibilityTextHint(JSON.stringify({ type: 'location' }))
+  .accessibilityTextHint(JSON.stringify({ type: 'location' }))
 
 // 多地址场景
 Text('xxx商场')
-   .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 1, }))
- Text('xxx街')
-   .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 0, }))
+  .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 1, }))
+Text('xxx街')
+  .accessibilityTextHint(JSON.stringify({ type: 'location', groupId: 1, index: 0, }))
 ```

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-pag
 
 为了实现更好的转场效果，推荐使用Navigation转场动画和模态转场。
 
-两个页面间发生跳转，一个页面消失，另一个页面出现，这时可以配置各自页面的页面转场参数实现自定义的页面转场效果。页面转场效果写在pageTransition函数中，通过PageTransitionEnter和PageTransitionExit指定页面进入和退出的动画效果。
+两个页面间发生跳转，一个页面消失，另一个页面出现，这时可以配置各自页面的页面转场参数实现自定义的页面转场效果。页面间转场效果写在pageTransition函数中，通过PageTransitionEnter和PageTransitionExit指定页面进入和退出的动画效果。
 
 pageTransition的函数为：
 
@@ -57,7 +57,7 @@ back，从页面B返回到页面A	页面进入，PageTransitionEnter生效，从
 pushUrl，从页面B跳转到新增的页面A	页面进入，PageTransitionEnter生效，从左侧滑入屏幕	页面退出，PageTransitionExit生效，向右侧滑出屏幕
 back，从页面A返回到页面B	页面退出，PageTransitionExit生效，向左侧滑出屏幕	页面进入，PageTransitionEnter生效，从右侧滑入屏幕
 
-如果希望pushUrl进入的页面总是从右侧滑入，back时退出的页面总是从右侧滑出，则上表中的第3、4种情况不满足要求，那么需要完整的定义4个页面转场效果。
+如果希望pushUrl进入的页面总是从右侧滑入，back时退出的页面总是从右侧滑出，则上表中的第3、4种情况不满足要求，那么需要完整地定义4个页面转场效果。
 
 type配置为RouteType.Push或RouteType.Pop
 
@@ -95,7 +95,7 @@ pageTransition() {
     .slide(SlideEffect.Right)
 }
 
-以上代码则完整的定义了所有可能的页面转场样式。假设页面跳转配置为多实例模式，即页面栈中允许存在重复的页面。可能会有4种场景，对应的页面转场效果如下表。
+以上代码则完整地定义了所有可能的页面转场样式。假设页面跳转配置为多实例模式，即页面栈中允许存在重复的页面。可能会有4种场景，对应的页面转场效果如下表。
 
 路由操作	页面A转场效果	页面B转场效果
 pushUrl，从页面A跳转到新增的页面B	页面退出，PageTransitionExit且type为RouteType.Push的转场样式生效，向左侧滑出屏幕	页面进入，PageTransitionEnter且type为RouteType.Push的转场样式生效，从右侧滑入屏幕

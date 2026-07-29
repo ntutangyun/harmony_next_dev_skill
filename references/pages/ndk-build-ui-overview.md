@@ -46,24 +46,22 @@ NDK创建的UI组件需要通过ArkTS层的占位组件进行挂载显示，挂�
 
 任务	简介
 NDK开发导读	介绍NDK的适用场景与必备基础知识。
-NDK对接ArkTS	介绍如何在Native侧嵌入ArkTS组件，以及如何接入ArkTS页面。
-构建布局	介绍了如何在Native侧使用布局组件、设置通用布局属性。
-使用导航类组件	介绍了如何在Native侧查询Navigation和页面路由状态信息。
-使用列表与网格	介绍了如何在Native侧使用列表、使用瀑布流、使用网格。
-使用文本	介绍了如何在Native侧使用Text组件、使用属性字符串、输入框文本事件监听。
-媒体展示	介绍了如何在Native侧显示图片（Image）、使用滑块视图容器 (Swiper)。
-构建表单组件	介绍了如何使用NDK接口创建按钮、滑动条、开关、复选框和单选按钮等表单组件。
+接入ArkTS页面	介绍了如何将NDK接口开发的UI界面挂载到ArkTS主页面上进行渲染显示。
+添加事件响应	介绍了如何在Native侧添加事件监听和事件处理逻辑。
+使用动画	介绍了如何在Native侧添加动画。
+构建布局	介绍了如何在Native侧使用容器组件构建布局。
 构建弹窗	介绍了如何使用弹窗接口构建UI界面进行弹窗显示。
-使用动画	介绍了如何在Native侧通过动画概述了解接口能力，并参考使用动画开发指导添加动画。
-使用选择类组件	介绍了如何在Native侧使用滑动选择器 (Picker)。
-添加事件响应	介绍了如何在Native侧添加事件监听、绑定基础输入事件、绑定手势事件和绑定拖拽事件。
-使用自定义能力	介绍了如何在Native侧构建自定义组件、使用自定义绘制。
-通过自绘制接入无障碍	介绍了自绘制机制接入的第三方UI框架平台，通过获取AccessibilityProvider如何对接系统无障碍。
-通过EmbeddedComponent拉起EmbeddedUIExtensionAbility	介绍了如何在Native侧通过EmbeddedComponent拉起EmbeddedUIExtensionAbility。主要用于有进程隔离需求的模块化开发场景。
-查询和操作NDK节点	介绍了如何对NDK节点进行查询和操作。
-NDK多实例场景开发	介绍了如何在NDK多实例场景中保证接口调用的功能正常。
-NDK多线程创建组件	介绍了如何使用NDK多线程接口创建UI组件。
+构建表单组件	介绍了如何使用NDK接口创建按钮、滑动条、开关、复选框和单选按钮等表单组件。
+构建自定义组件	介绍了如何使用NDK接口能力构建自定义组件，实现差异化UI组件。
+嵌入ArkTS组件	介绍了如何在Native侧构建带有ArkTS组件的界面。
 构建渲染节点	介绍了如何在Native侧构建渲染节点。
+通过自绘制接入无障碍	介绍了自绘制机制接入的第三方UI框架平台，通过获取AccessibilityProvider如何对接系统无障碍。
+自定义绘制	介绍了如何使用自定义绘制能力，实现自定义内容的绘制。
+查询和操作自定义节点	介绍了如何对自定义节点进行查询和操作。
+通过EmbeddedComponent拉起EmbeddedUIExtensionAbility	介绍了如何在Native侧通过EmbeddedComponent拉起EmbeddedUIExtensionAbility。主要用于有进程隔离需求的模块化开发场景。
+使用文本	介绍了Text组件与字体引擎如何配套使用。
+在NDK中保证多实例场景功能正常	介绍了如何在NDK多实例场景中保证接口调用的功能正常。
+使用多线程NDK接口并行化构建UI页面	介绍了如何使用NDK进行多线程UI组件创建。
 
 注意事项
 

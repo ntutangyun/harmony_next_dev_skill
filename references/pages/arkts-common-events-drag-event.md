@@ -43,7 +43,7 @@ onDragMove	当拖拽点在组件范围内移动时，如果该组件监听了onD
 onDragLeave	当拖拽点移出组件范围时，如果该组件监听了onDrop事件，此回调将会被触发。 在以下两种情况下，系统默认不会触发onDragLeave事件： 1. 父组件移动到子组件。 2. 目标组件与当前组件布局有重叠。 API version 12开始可通过UIContext中的setDragEventStrictReportingEnabled方法严格触发onDragLeave事件。
 onDrop	当用户在组件范围内释放拖拽操作时，此回调会被触发。开发者需在此回调中通过DragEvent的setResult方法来设置拖拽结果，否则在拖出方组件的onDragEnd方法中，通过getResult方法获取的将只是默认的处理结果DragResult.DRAG_FAILED。 此回调是开发者干预系统默认拖入处理行为的关键点，系统会优先执行开发者定义的onDrop回调。通过在onDrop回调中调用setResult方法，开发者可以告知系统如何处理被拖拽的数据。 1. 设置 DragResult.DRAG_SUCCESSFUL，数据完全由开发者自己处理，系统不进行处理。 2. 设置DragResult.DRAG_FAILED，数据不再由系统继续处理。 3. 设置DragResult.DRAG_CANCELED，系统也不需要进行数据处理。 4. 设置DragResult.DROP_ENABLED或DragResult.DROP_DISABLED会被忽略，等同于设置DragResult.DRAG_SUCCESSFUL。
 onDragEnd	当用户释放拖拽时，拖拽活动终止，发起拖出动作的组件将触发该回调函数。
-onPreDrag	当触发拖拽事件的不同阶段时，绑定此事件的组件会触发该回调函数。 开发者可利用此方法，在拖拽开始前的不同阶段，根据PreDragStatus枚举准备相应数据。 1. ACTION_DETECTING_STATUS：拖拽手势启动阶段。按下50ms时触发。 2. READY_TO_TRIGGER_DRAG_ACTION：拖拽准备完成，可发起拖拽阶段。按下500ms时触发。 3. PREVIEW_LIFT_STARTED：拖拽浮起动效发起阶段。按下800ms时触发。 4. PREVIEW_LIFT_FINISHED：拖拽浮起动效结束阶段。浮起动效完全结束时触发。 5. PREVIEW_LANDING_STARTED：拖拽落回动效发起阶段。落回动效发起时触发。 6. PREVIEW_LANDING_FINISHED：拖拽落回动效结束阶段。落回动效结束时触发。 7. ACTION_CANCELED_BEFORE_DRAG：拖拽浮起落位动效中断。已满足READY_TO_TRIGGER_DRAG_ACTION状态后，未达到动效阶段，手指抬起时触发。 8. PREPARING_FOR_DRAG_DETECTION18+：拖拽准备完成，可发起拖拽阶段。按下350ms时触发。
+onPreDrag	当触发拖拽事件的不同阶段时，绑定此事件的组件会触发该回调函数。 开发者可利用此方法，在拖拽开始前的不同阶段，根据PreDragStatus枚举准备相应数据。 1. ACTION_DETECTING_STATUS：拖拽手势启动阶段。按下50ms时触发。 2. READY_TO_TRIGGER_DRAG_ACTION：拖拽准备完成，可发起拖拽阶段。按下500ms时触发。 3. PREVIEW_LIFT_STARTED：拖拽浮起动效发起阶段。按下800ms时触发。 4. PREVIEW_LIFT_FINISHED：拖拽浮起动效结束阶段。浮起动效完全结束时触发。 5. PREVIEW_LANDING_STARTED：拖拽落回动效发起阶段。落回动效发起时触发。 6. PREVIEW_LANDING_FINISHED：拖拽落回动效结束阶段。落回动效结束时触发。 7. ACTION_CANCELED_BEFORE_DRAG：拖拽浮起落位动效中断。已满足READY_TO_TRIGGER_DRAG_ACTION状态后，未达到动效阶段，手指抬起时触发。 8. PREPARING_FOR_DRAG_DETECTION18+：拖拽准备阶段，正在为拖拽检测做准备。按下350ms时触发。
 onDragSpringLoading	当拖拽对象悬停在绑定此事件的组件上时，触发回调通知。此时只有一个目标可以成为响应方，并且子组件始终具有更高的响应优先级。 开发者可以通过SpringLoadingContext配置回调的上下文信息，包括当前悬停检测的状态、一次悬停检测中的回调通知次数、拖拽信息和配置信息等。 从API version 20开始，支持调用该接口。
 
 拖拽事件
@@ -209,8 +209,8 @@ export default class EntryAbility extends UIAbility {
 在实现onDrop回调的情况下，还可以在onDragMove中设置DragResult为DROP_ENABLED，并将DragBehavior设置为COPY或MOVE，以此来控制角标中的加号是否显示。当设置为COPY时，角标显示加号；设置为MOVE时，角标不显示加号。
 
 .onDragMove((event) => {
-  event.setResult(DragResult.DROP_ENABLED)
-  event.dragBehavior = DragBehavior.COPY
+  event.setResult(DragResult.DROP_ENABLED);
+  event.dragBehavior = DragBehavior.COPY;
 })
 
 拖拽数据的接收。
@@ -228,7 +228,7 @@ export default class EntryAbility extends UIAbility {
     this.imgState = Visibility.None;
     // 显式设置result为successful，则将该值传递给拖出方的onDragEnd
     event.setResult(DragResult.DRAG_SUCCESSFUL);
-  })
+  });
 })
 
 数据的传递是通过UDMF实现的，在数据较大时可能存在时延，因此在首次获取数据失败时建议加1500ms的延迟重试机制。
@@ -408,7 +408,7 @@ export struct DefaultDrag {
                 .height(this.imageHeight)
                 .draggable(true)
                 .margin({ left: 15 })
-                .border({ color: Color.Black, width: 1 })// 控制角标显示类型为MOVE，即不显示角标
+                .border({ color: Color.Black, width: 1 })// 控制角标显示类型为COPY，即显示加号角标
                 .onDragMove((event) => {
                   event.setResult(DragResult.DROP_ENABLED);
                   event.dragBehavior = DragBehavior.COPY;
@@ -495,6 +495,21 @@ Grid() {
 @State previewData: DragItemInfo[] = [];
 @State isSelectedGrid: boolean[] = [];
 // ...
+build() {
+  NavDestination() {
+    Column({ space: 5 }) {
+      // ...
+      Grid() {
+        // ...
+          GridItem() {
+            Column()
+              .backgroundColor(Color.Blue)
+              .width(50)
+              .height(50)
+              .opacity(1.0)
+              .id('grid' + idx)
+          }
+          // ...
           .onClick(() => {
             this.isSelectedGrid[idx] = !this.isSelectedGrid[idx];
             if (this.isSelectedGrid[idx]) {
@@ -511,6 +526,13 @@ Grid() {
               // ...
             }
           })
+          // ...
+      }
+      // ...
+    }.width('100%').margin({ top: 5 }).height('100%')
+  }
+  // ...
+}
 
 多选显示效果。
 
@@ -527,10 +549,32 @@ selectStyles(): void {
 }
 
 // ...
+build() {
+  NavDestination() {
+    Column({ space: 5 }) {
+      // ...
+      Grid() {
+        // ...
+          GridItem() {
+            Column()
+              .backgroundColor(Color.Blue)
+              .width(50)
+              .height(50)
+              .opacity(1.0)
+              .id('grid' + idx)
+          }
+          // ...
           .stateStyles({
             normal: this.normalStyles,
             selected: this.selectStyles
           })
+          // ...
+      }
+      // ...
+    }.width('100%').margin({ top: 5 }).height('100%')
+  }
+  // ...
+}
 
 适配数量角标。
 
@@ -538,6 +582,21 @@ selectStyles(): void {
 
 @State numberBadge: number = 0;
 // ...
+build() {
+  NavDestination() {
+    Column({ space: 5 }) {
+      // ...
+      Grid() {
+        // ...
+          GridItem() {
+            Column()
+              .backgroundColor(Color.Blue)
+              .width(50)
+              .height(50)
+              .opacity(1.0)
+              .id('grid' + idx)
+          }
+          // ...
           .onClick(() => {
             this.isSelectedGrid[idx] = !this.isSelectedGrid[idx];
             if (this.isSelectedGrid[idx]) {
@@ -551,6 +610,13 @@ selectStyles(): void {
           })
           // 多选场景右上角数量角标需要应用设置numberBadge参数
           .dragPreviewOptions({ numberBadge: this.numberBadge })
+          // ...
+      }
+      // ...
+    }.width('100%').margin({ top: 5 }).height('100%')
+  }
+  // ...
+}
 
 完整示例：
 
@@ -567,12 +633,12 @@ struct GridEts {
 
   @Styles
   normalStyles(): void {
-    .opacity(1.0)
+    .opacity(1.0);
   }
 
   @Styles
   selectStyles(): void {
-    .opacity(0.4)
+    .opacity(0.4);
   }
 
   onPageShow(): void {
@@ -614,7 +680,7 @@ build() {
             selected: this.selectStyles
           })
           .onClick(() => {
-            this.isSelectedGrid[idx] = !this.isSelectedGrid[idx]
+            this.isSelectedGrid[idx] = !this.isSelectedGrid[idx];
             if (this.isSelectedGrid[idx]) {
               this.numberBadge++;
               let gridItemName = 'grid' + idx;
@@ -623,8 +689,8 @@ build() {
                 this.pixmap = pixmap;
                 this.previewData[idx] = {
                   pixelMap: this.pixmap
-                }
-              })
+                };
+              });
             } else {
               this.numberBadge--;
             }
@@ -675,8 +741,8 @@ customDropAnimation =
       this.imageWidth = 200;
       this.imageHeight = 200;
       this.imgState = Visibility.None;
-    })
-  }
+    });
+  };
 
 拖拽落位适配动效。
 
@@ -698,7 +764,7 @@ Column() {
   this.imageHeight = Number(rect.height);
   this.targetImage = (records[0] as unifiedDataChannel.Image).imageUri;
   dragEvent.useCustomDropAnimation = true;
-  dragEvent.executeDropAnimation(this.customDropAnimation)
+  dragEvent.executeDropAnimation(this.customDropAnimation);
 })
 
 完整示例：
@@ -853,8 +919,8 @@ onPageShow(): void {
       this.pixmap = pixmap;
       this.previewData[idx] = {
         pixelMap: this.pixmap
-      }
-    })
+      };
+    });
   } else {
     this.numberBadge--;
     for (let i = 0; i < this.isSelectedGrid.length; i++) {
@@ -913,7 +979,7 @@ struct GridEts {
   unifiedData: UnifiedData | undefined = undefined;
   timeout: number = 1;
   finished: boolean = false;
-  dragEvent: DragEvent | undefined;
+  dragEvent: DragEvent | undefined = undefined;
 
   @Styles
   normalStyles(): void{
@@ -1104,7 +1170,7 @@ CANCEL	悬停进入BEGIN状态后，用户重新移动或其他情况打断了�
 
 在同一个组件内持续保持不动，整个Spring Loading仅会触发一轮，不会重复触发，直到拖离当前组件后再重新进入。
 
-同一个组件上即可以实现Spring Loading，也可以实现onDrop/onDragEnter等拖拽事件。
+同一个组件上既可以实现Spring Loading，也可以实现onDrop/onDragEnter等拖拽事件。
 
 [h2]触发自定义
 
@@ -1112,9 +1178,9 @@ CANCEL	悬停进入BEGIN状态后，用户重新移动或其他情况打断了�
 
 触发参数自定义
 
-onDragSpringLoading接口还提供了一个可选参数configuration供应用自定义静止检测时长以及触发间隔与次数等配置，可以通过此参数来个性化定义Spring Loading触发条件。但绝大数多情况下，不需要进行修改，使用系统默认配置即可。
+onDragSpringLoading接口还提供了一个可选参数configuration供应用自定义静止检测时长以及触发间隔与次数等配置，可以通过此参数来个性化定义Spring Loading触发条件。但绝大多数情况下，不需要进行修改，使用系统默认配置即可。
 
-configuration参数必须在检测开始前准备就绪。系统一旦启动Spring Loading检测过程，将不再从该参数读取配置。然而，可以通过回调中传入的context对象中的updateCon figuration方法动态更新配置。此动态更新仅对当前触发有效，不会影响通过configuration的配置。
+configuration参数必须在检测开始前准备就绪。系统一旦启动Spring Loading检测过程，将不再从该参数读取配置。然而，可以通过回调中传入的context对象中的updateConfiguration方法动态更新配置。此动态更新仅对当前触发有效，不会影响通过configuration的配置。
 
 推荐使用默认配置，或通过onDragSpringLoading接口的configuration配置固定参数。在绝大多数情况下，无需在Spring Loading过程中动态修改这些检测参数。但若需针对不同的拖拽数据类型提供不同的用户提示效果，则可考虑使用此功能。
 
@@ -1225,11 +1291,11 @@ SheetBuilder() {
 
 .onDragEnter(() => {
   // 当用户拖拽进入按钮范围，即提醒用户，此处是可以处理数据的
-  this.buttonBackgroundColor = this.reminderColor
+  this.buttonBackgroundColor = this.reminderColor;
 })
 .onDragLeave(() => {
   // 当用户拖拽离开按钮范围，恢复UI
-  this.buttonBackgroundColor = this.normalColor
+  this.buttonBackgroundColor = this.normalColor;
 })
 
 4.实现Spring Loading响应
@@ -1547,8 +1613,8 @@ export default class EntryAbility extends UIAbility {
 
 ```
 .onDragMove((event) => {
-  event.setResult(DragResult.DROP_ENABLED)
-  event.dragBehavior = DragBehavior.COPY
+  event.setResult(DragResult.DROP_ENABLED);
+  event.dragBehavior = DragBehavior.COPY;
 })
 ```
 
@@ -1566,7 +1632,7 @@ export default class EntryAbility extends UIAbility {
     this.imgState = Visibility.None;
     // 显式设置result为successful，则将该值传递给拖出方的onDragEnd
     event.setResult(DragResult.DRAG_SUCCESSFUL);
-  })
+  });
 })
 ```
 
@@ -1752,7 +1818,7 @@ export struct DefaultDrag {
                 .height(this.imageHeight)
                 .draggable(true)
                 .margin({ left: 15 })
-                .border({ color: Color.Black, width: 1 })// 控制角标显示类型为MOVE，即不显示角标
+                .border({ color: Color.Black, width: 1 })// 控制角标显示类型为COPY，即显示加号角标
                 .onDragMove((event) => {
                   event.setResult(DragResult.DROP_ENABLED);
                   event.dragBehavior = DragBehavior.COPY;
@@ -1839,6 +1905,21 @@ Grid() {
 @State previewData: DragItemInfo[] = [];
 @State isSelectedGrid: boolean[] = [];
 // ...
+build() {
+  NavDestination() {
+    Column({ space: 5 }) {
+      // ...
+      Grid() {
+        // ...
+          GridItem() {
+            Column()
+              .backgroundColor(Color.Blue)
+              .width(50)
+              .height(50)
+              .opacity(1.0)
+              .id('grid' + idx)
+          }
+          // ...
           .onClick(() => {
             this.isSelectedGrid[idx] = !this.isSelectedGrid[idx];
             if (this.isSelectedGrid[idx]) {
@@ -1855,6 +1936,13 @@ Grid() {
               // ...
             }
           })
+          // ...
+      }
+      // ...
+    }.width('100%').margin({ top: 5 }).height('100%')
+  }
+  // ...
+}
 ```
 
 ### Code block 19
@@ -1871,10 +1959,32 @@ selectStyles(): void {
 }
 
 // ...
+build() {
+  NavDestination() {
+    Column({ space: 5 }) {
+      // ...
+      Grid() {
+        // ...
+          GridItem() {
+            Column()
+              .backgroundColor(Color.Blue)
+              .width(50)
+              .height(50)
+              .opacity(1.0)
+              .id('grid' + idx)
+          }
+          // ...
           .stateStyles({
             normal: this.normalStyles,
             selected: this.selectStyles
           })
+          // ...
+      }
+      // ...
+    }.width('100%').margin({ top: 5 }).height('100%')
+  }
+  // ...
+}
 ```
 
 ### Code block 20
@@ -1882,6 +1992,21 @@ selectStyles(): void {
 ```
 @State numberBadge: number = 0;
 // ...
+build() {
+  NavDestination() {
+    Column({ space: 5 }) {
+      // ...
+      Grid() {
+        // ...
+          GridItem() {
+            Column()
+              .backgroundColor(Color.Blue)
+              .width(50)
+              .height(50)
+              .opacity(1.0)
+              .id('grid' + idx)
+          }
+          // ...
           .onClick(() => {
             this.isSelectedGrid[idx] = !this.isSelectedGrid[idx];
             if (this.isSelectedGrid[idx]) {
@@ -1895,6 +2020,13 @@ selectStyles(): void {
           })
           // 多选场景右上角数量角标需要应用设置numberBadge参数
           .dragPreviewOptions({ numberBadge: this.numberBadge })
+          // ...
+      }
+      // ...
+    }.width('100%').margin({ top: 5 }).height('100%')
+  }
+  // ...
+}
 ```
 
 ### Code block 21
@@ -1913,12 +2045,12 @@ struct GridEts {
 
   @Styles
   normalStyles(): void {
-    .opacity(1.0)
+    .opacity(1.0);
   }
 
   @Styles
   selectStyles(): void {
-    .opacity(0.4)
+    .opacity(0.4);
   }
 
   onPageShow(): void {
@@ -1960,7 +2092,7 @@ build() {
             selected: this.selectStyles
           })
           .onClick(() => {
-            this.isSelectedGrid[idx] = !this.isSelectedGrid[idx]
+            this.isSelectedGrid[idx] = !this.isSelectedGrid[idx];
             if (this.isSelectedGrid[idx]) {
               this.numberBadge++;
               let gridItemName = 'grid' + idx;
@@ -1969,8 +2101,8 @@ build() {
                 this.pixmap = pixmap;
                 this.previewData[idx] = {
                   pixelMap: this.pixmap
-                }
-              })
+                };
+              });
             } else {
               this.numberBadge--;
             }
@@ -2017,8 +2149,8 @@ customDropAnimation =
       this.imageWidth = 200;
       this.imageHeight = 200;
       this.imgState = Visibility.None;
-    })
-  }
+    });
+  };
 ```
 
 ### Code block 24
@@ -2040,7 +2172,7 @@ Column() {
   this.imageHeight = Number(rect.height);
   this.targetImage = (records[0] as unifiedDataChannel.Image).imageUri;
   dragEvent.useCustomDropAnimation = true;
-  dragEvent.executeDropAnimation(this.customDropAnimation)
+  dragEvent.executeDropAnimation(this.customDropAnimation);
 })
 ```
 
@@ -2195,8 +2327,8 @@ onPageShow(): void {
       this.pixmap = pixmap;
       this.previewData[idx] = {
         pixelMap: this.pixmap
-      }
-    })
+      };
+    });
   } else {
     this.numberBadge--;
     for (let i = 0; i < this.isSelectedGrid.length; i++) {
@@ -2257,7 +2389,7 @@ struct GridEts {
   unifiedData: UnifiedData | undefined = undefined;
   timeout: number = 1;
   finished: boolean = false;
-  dragEvent: DragEvent | undefined;
+  dragEvent: DragEvent | undefined = undefined;
 
   @Styles
   normalStyles(): void{
@@ -2513,11 +2645,11 @@ SheetBuilder() {
 ```
 .onDragEnter(() => {
   // 当用户拖拽进入按钮范围，即提醒用户，此处是可以处理数据的
-  this.buttonBackgroundColor = this.reminderColor
+  this.buttonBackgroundColor = this.reminderColor;
 })
 .onDragLeave(() => {
   // 当用户拖拽离开按钮范围，恢复UI
-  this.buttonBackgroundColor = this.normalColor
+  this.buttonBackgroundColor = this.normalColor;
 })
 ```
 

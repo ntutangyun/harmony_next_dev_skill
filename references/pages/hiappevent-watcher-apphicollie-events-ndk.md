@@ -20,7 +20,7 @@ int OH_HiAppEvent_RemoveWatcher(HiAppEvent_Watcher *watcher)	移除应用事件�
 
 获取该示例工程依赖的jsoncpp文件，打开链接HiAppEvent示例工程EventSub，点击“下载当前目录”，下载EventSub工程文件。
 
-新建Native C++工程，从解压后的EventSub工程中拷贝jsoncpp库文件（entry/libs和entry/src/main/cpp/thirdparty文件夹）到新建的工程之中，新工程目录结构如下：
+在DevEco Studio中，新建Native C++工程，从解压后的EventSub工程中拷贝jsoncpp库文件（entry/libs和entry/src/main/cpp/thirdparty文件夹）到新建的工程之中，新工程目录结构如下：
 
 entry:
   libs:    //  放置jsoncpp关联三方库的文件夹
@@ -42,7 +42,7 @@ entry:
 
 该示例工程中jsoncpp库文件对应的源码来自三方开源库jsoncpp。
 
-编辑“CMakeLists.txt”文件，添加所需源文件及动态库。
+编辑工程中的“entry > src > main > cpp > CMakeLists.txt”文件，添加所需源文件及动态库。
 
 add_library(entry SHARED napi_init.cpp)
 # 新增动态库依赖libhiappevent_ndk.z.so、libhilog_ndk.z.so（日志输出）及libohhicollie.so（hicollie检测）
@@ -60,12 +60,13 @@ execute_process(COMMAND tar -xzf ${GZ_FILE} -C ${DEST_DIR}
 target_link_libraries(entry PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/jsoncpp/${OHOS_ARCH}/lib/libjsoncpp.so)
 target_include_directories(entry PRIVATE ${DEST_DIR}/jsoncpp-1.9.6/include/json)
 
-编辑“napi_init.cpp”文件，导入依赖的头文件，并定义LOG_TAG。
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，导入依赖的头文件，并定义LOG_TAG。
 
 #include "napi/native_api.h"
 // 根据工程中三方库jsoncpp的位置适配引用json.h的路径
 #include "../../../build/jsoncpp-1.9.6/include/json/json.h"
 #include "hiappevent/hiappevent.h"
+#include "hiappevent/hiappevent_param.h"
 #include "hilog/log.h"
 
 #undef LOG_TAG
@@ -75,7 +76,7 @@ target_include_directories(entry PRIVATE ${DEST_DIR}/jsoncpp-1.9.6/include/json)
 
 onReceive类型观察者
 
-编辑“napi_init.cpp”文件，定义onReceive类型观察者相关函数：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，定义onReceive类型观察者相关函数：
 
 // 定义一变量，用来缓存创建的观察者的指针。
 static HiAppEvent_Watcher *appHicollieWatcherR;
@@ -116,7 +117,8 @@ static void OnReceiveAppHicollie(const struct HiAppEvent_AppEventGroup *appEvent
             OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.memory=%{public}s", memory.c_str());
             OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_log=%{public}s", externalLog.c_str());
             OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.log_over_limit=%{public}d", logOverLimit);
-            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s", externalCallbackLog.c_str());
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s",
+                externalCallbackLog.c_str());
         }
     }
 }
@@ -154,7 +156,7 @@ static napi_value RegisterAppHicollieWatcherR(napi_env env, napi_callback_info i
 
 onTrigger类型观察者
 
-编辑“napi_init.cpp”文件，定义OnTrigger类型观察者相关函数：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，定义OnTrigger类型观察者相关函数：
 
 // 定义一变量，用来缓存创建的观察者的指针。
 static HiAppEvent_Watcher *appHicollieWatcherT;
@@ -187,7 +189,7 @@ static void AppHicollieOnTake(const char *const *events, uint32_t eventLen)
                 auto memory =  writer.write(eventInfo["memory"]);
                 auto externalLog = writer.write(eventInfo["external_log"]);
                 auto logOverLimit = eventInfo["log_over_limit"].asBool();
-                auto externalCallbackLog = params["external_callback_log"].asString();
+                auto externalCallbackLog = eventInfo["external_callback_log"].asString();
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.time=%{public}lld", time);
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.foreground=%{public}d", foreground);
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_version=%{public}s",
@@ -204,7 +206,8 @@ static void AppHicollieOnTake(const char *const *events, uint32_t eventLen)
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_log=%{public}s",
                     externalLog.c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.log_over_limit=%{public}d", logOverLimit);
-                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s", externalCallbackLog.c_str());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s",
+                    externalCallbackLog.c_str());
             }
         }
     }
@@ -236,7 +239,7 @@ static napi_value RegisterAppHicollieWatcherT(napi_env env, napi_callback_info i
 
 新增TestHiCollieTimerNdk函数。
 
-编辑“napi_init.cpp”文件，新增TestHiCollieTimerNdk函数，构造任务执行超时事件：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，新增TestHiCollieTimerNdk函数，构造任务执行超时事件：
 
 #include <unistd.h>
 #include "hicollie/hicollie.h"
@@ -263,7 +266,7 @@ static napi_value TestHiCollieTimerNdk(napi_env env, napi_callback_info info)
 
 将RegisterWatcher及TestHiCollieTimerNdk注册为ArkTS接口。
 
-编辑“napi_init.cpp”文件，在Init函数中的desc[]数组中将TestHiCollieTimerNdk、RegisterAppHicollieWatcherR及RegisterAppHicollieWatcherR方法注册为ArkTS接口。
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，在Init函数中的desc[]数组中将TestHiCollieTimerNdk、RegisterAppHicollieWatcherR及RegisterAppHicollieWatcherT方法注册为ArkTS接口。
 
 // 将TestHiCollieTimerNdk注册为ArkTS接口
 { "TestHiCollieTimerNdk", nullptr, TestHiCollieTimerNdk, nullptr, nullptr, nullptr, napi_default, nullptr },
@@ -274,7 +277,7 @@ static napi_value TestHiCollieTimerNdk(napi_env env, napi_callback_info info)
 { "RegisterAppHicollieWatcherT", nullptr, RegisterAppHicollieWatcherT, nullptr, nullptr, nullptr,
     napi_default, nullptr },
 
-编辑“index.d.ts”文件，定义ArkTS接口：
+编辑工程中的“entry > src > main > cpp > types > libentry > Index.ets”文件，定义ArkTS接口：
 
 export const TestHiCollieTimerNdk: () => void;
 
@@ -282,7 +285,7 @@ export const RegisterAppHicollieWatcherR: () => void;
 
 export const RegisterAppHicollieWatcherT: () => void;
 
-编辑“EntryAbility.ets”文件，在onCreate()函数中新增接口调用。
+编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，在onCreate()函数中新增接口调用。
 
 import testNapi from 'libentry.so';
 
@@ -292,11 +295,11 @@ testNapi.RegisterAppHicollieWatcherR();
 // 在onCreate()函数中新增接口调用，启动时注册系统事件观察者T
 testNapi.RegisterAppHicollieWatcherT();
 
-编辑“Index.ets”文件，新增按钮触发任务执行超时事件。
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，新增按钮触发任务执行超时事件。
 
 import testNapi from 'libentry.so';
 
-在Index页面新增触发TestHiCollieTimerNdk方法的按钮。
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，页面新增触发TestHiCollieTimerNdk方法的按钮。
 
 // 添加点击事件，触发TestHiCollieTimerNdk方法。
 Button('TestHiCollieTimerNdk')
@@ -414,6 +417,7 @@ target_include_directories(entry PRIVATE ${DEST_DIR}/jsoncpp-1.9.6/include/json)
 // 根据工程中三方库jsoncpp的位置适配引用json.h的路径
 #include "../../../build/jsoncpp-1.9.6/include/json/json.h"
 #include "hiappevent/hiappevent.h"
+#include "hiappevent/hiappevent_param.h"
 #include "hilog/log.h"
 
 #undef LOG_TAG
@@ -466,7 +470,8 @@ static void OnReceiveAppHicollie(const struct HiAppEvent_AppEventGroup *appEvent
             OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.memory=%{public}s", memory.c_str());
             OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_log=%{public}s", externalLog.c_str());
             OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.log_over_limit=%{public}d", logOverLimit);
-            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s", externalCallbackLog.c_str());
+            OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s",
+                externalCallbackLog.c_str());
         }
     }
 }
@@ -541,7 +546,7 @@ static void AppHicollieOnTake(const char *const *events, uint32_t eventLen)
                 auto memory =  writer.write(eventInfo["memory"]);
                 auto externalLog = writer.write(eventInfo["external_log"]);
                 auto logOverLimit = eventInfo["log_over_limit"].asBool();
-                auto externalCallbackLog = params["external_callback_log"].asString();
+                auto externalCallbackLog = eventInfo["external_callback_log"].asString();
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.time=%{public}lld", time);
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.foreground=%{public}d", foreground);
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_version=%{public}s",
@@ -558,7 +563,8 @@ static void AppHicollieOnTake(const char *const *events, uint32_t eventLen)
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_log=%{public}s",
                     externalLog.c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.log_over_limit=%{public}d", logOverLimit);
-                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s", externalCallbackLog.c_str());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.external_callback_log=%{public}s",
+                    externalCallbackLog.c_str());
             }
         }
     }

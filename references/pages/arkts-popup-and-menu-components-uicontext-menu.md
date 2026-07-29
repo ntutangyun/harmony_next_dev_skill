@@ -24,14 +24,14 @@ this.getUIContext().getPromptAction()
 通过调用openMenu接口弹出菜单，需要定义ComponentContent，以提供自定义弹出框的内容。详细规格可参考ComponentContent说明。
 
 private contentNode: ComponentContent<Object> =
-  new ComponentContent(this.getUIContext(), wrapBuilder(buildText), this.message);
+  new ComponentContent(this.getUIContext(), wrapBuilder(buildText), this.message, { nestingBuilderSupported: true });
 
 如果在wrapBuilder中包含其他组件（例如：Popup、Chip组件），则应在创建ComponentContent时设置nestingBuilderSupported属性为true。
 
 @Builder
 export function buildText(params: Params) {
   Popup({
-    // 类型设置图标内容
+    // 设置图标内容
     icon: {
       // 请将$r('app.media.app_icon')替换为实际资源文件
       image: $r('app.media.app_icon'),
@@ -47,7 +47,7 @@ export function buildText(params: Params) {
       fontColor: Color.Black,
       fontWeight: FontWeight.Normal
     } as PopupTextOptions,
-    // 设置文字内容
+    // 设置消息内容
     message: {
       text: `This is a Popup message 1`,
       fontSize: 15,
@@ -190,7 +190,7 @@ this.getUIContext().getPromptAction()
 
 ```
 private contentNode: ComponentContent<Object> =
-  new ComponentContent(this.getUIContext(), wrapBuilder(buildText), this.message);
+  new ComponentContent(this.getUIContext(), wrapBuilder(buildText), this.message, { nestingBuilderSupported: true });
 ```
 
 ### Code block 3
@@ -199,7 +199,7 @@ private contentNode: ComponentContent<Object> =
 @Builder
 export function buildText(params: Params) {
   Popup({
-    // 类型设置图标内容
+    // 设置图标内容
     icon: {
       // 请将$r('app.media.app_icon')替换为实际资源文件
       image: $r('app.media.app_icon'),
@@ -215,7 +215,7 @@ export function buildText(params: Params) {
       fontColor: Color.Black,
       fontWeight: FontWeight.Normal
     } as PopupTextOptions,
-    // 设置文字内容
+    // 设置消息内容
     message: {
       text: `This is a Popup message 1`,
       fontSize: 15,

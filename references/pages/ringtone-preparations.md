@@ -5,35 +5,175 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ringtone-
 导入ringtone模块和相关公共模块。
 
 import { common } from '@kit.AbilityKit';
-import { ringtone } from '@kit.RingtoneKit'
-import { uniformTypeDescriptor } from '@kit.ArkData';
-import { JSON } from '@kit.ArkTS';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-const APP_TAG = "Msc_Demo"
-const DOMAIN = 0x0001
+import { ringtone } from '@kit.RingtoneKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileUri, picker } from '@kit.CoreFileKit';
 
 调用ringtone.getSupportedRingtoneTypes接口，查询支持设置的铃声类型。
 
-let ringtoneTypeList: Array<ringtone.RingtoneType> = ringtone.getSupportedRingtoneTypes();
-hilog.info(DOMAIN, APP_TAG,'getSupportedRingtoneTypes : ' + JSON.stringify(ringtoneTypeList));
+import { ringtone } from '@kit.RingtoneKit'
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-调用ringtone.getSupportedDataTypes接口，查询支持的数据类型。当前支持格式：MP3，OGG，FLAC，AAC，MP2，M4A。
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
 
-// 其中 ringtone.RingtoneType.NOTIFICATION 为通知铃声
-let dataTypeList: Array<uniformTypeDescriptor.UniformDataType> = ringtone.getSupportedDataTypes(ringtone.RingtoneType.NOTIFICATION);
-hilog.info(DOMAIN, APP_TAG,'getSupportedDataTypes: ' + JSON.stringify(dataTypeList));
+@Entry
+@Component
+struct GetSupportedRingtoneTypes {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询当前系统支持自定义的铃声类型')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            let typeList: ringtone.RingtoneType[] = ringtone.getSupportedRingtoneTypes()
+            hilog.info(DOMAIN, APP_TAG, `getSupportedRingtoneTypes: ${JSON.stringify(typeList)}`);
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+
+调用ringtone.getSupportedDataTypes接口，查询支持的数据类型。当前支持格式：MP3，OGG，FLAC，AAC，MP2，M4A，MP4。
+
+import { ringtone } from '@kit.RingtoneKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
+
+@Entry
+@Component
+struct GetSupportedDataTypes {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询支持的文件类型')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            try {
+              let typeList: uniformTypeDescriptor.UniformDataType[] =
+                ringtone.getSupportedDataTypes(ringtone.RingtoneType.NOTIFICATION)
+              hilog.info(DOMAIN, APP_TAG, `getSupportedDataType: ${JSON.stringify(typeList)}`);
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              hilog.error(DOMAIN, APP_TAG,
+                `getSupportedDataType error message: ${err.message}, error code: ${err.code}`);
+            }
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
 
 调用ringtone.startRingtoneSetting接口拉起设置弹窗，用户设置铃声后返回设置的铃声类型。
 
 通过promise异步方式：
 
-// 详细代码参考API参考
-let prefixUri: string = '';
-let audioPath: string = prefixUri + '/' + this.buttonText;
-let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
-await ringtone.startRingtoneSetting(this.context, audioPath, fileName).then(res => {
-  hilog.info(DOMAIN, APP_TAG,'setFlag :' + res);
-});
+import { common } from '@kit.AbilityKit';
+import { ringtone } from '@kit.RingtoneKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileUri, picker } from '@kit.CoreFileKit';
+
+@Entry
+@Component
+struct Index {
+  @State isShowUIExtensionCom: boolean = false;
+  private prefixUri: string = '';
+  private buttonText: string = '';
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  aboutToAppear(): void {
+    const documentViewPicker = new picker.DocumentViewPicker(this.context);
+    const documentSaveOptions = new picker.DocumentSaveOptions();
+    documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
+    documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
+      let savePath = documentSaveResult[0];
+      let fileUriObject = new fileUri.FileUri(savePath);
+      this.prefixUri = fileUriObject.path
+      console.info('documentViewPicker.save succeed and prefixUri is:' + this.prefixUri);
+    }).catch((err: BusinessError) => {
+      console.error(`Invoke documentViewPicker.save failed, code is ${err.code}, message is ${err.message}`);
+    })
+  }
+
+  build() {
+    Column() {
+      Column() {
+        Text($r('app.string.setting_ringtone'))
+          .fontSize(30)
+          .fontWeight(FontWeight.Bold)
+          .fontColor($r('sys.color.ohos_id_color_text_primary'))
+          .alignSelf(ItemAlign.Start)
+          .margin({
+            top: 64,
+            left: 12,
+            bottom: 16
+          })
+
+        TextInput({ placeholder: $r('app.string.please_enter_the_file_name') })
+          .width(312)
+          .height(40)
+          .onChange((value: string) => {
+            this.buttonText = value;
+          })
+      }
+
+      Button($r('app.string.setting_ringtone'))
+        .width(312)
+        .height(40)
+        .margin({
+          bottom: 16
+        })
+        .onClick(async () => {
+          if (this.buttonText) {
+            let audioPath: string = this.prefixUri + '/' + this.buttonText;
+            console.info(`audioPath:${audioPath}`);
+            try {
+              let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
+              console.info(`fileName:${fileName}`);
+              ringtone.startRingtoneSetting(this.context, audioPath, fileName).then(res => {
+                console.info(`setFlag : ${res}`);
+              });
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              if (err.code === ringtone.RingtoneErrors.ERROR_FILE_NOT_FOUND) {
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.file_exist'),
+                  duration: 2000
+                });
+              }
+              console.error(`accessSync failed with error. message: ${err.message}, code: ${err.code}`);
+            }
+          } else {
+            this.getUIContext().getPromptAction().showToast({
+              message: $r('app.string.please_enter_the_file_name'),
+              duration: 2000
+            });
+          }
+        })
+    }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width('100%')
+    .height('100%')
+  }
+}
 
 通过callback异步方式：
 
@@ -42,15 +182,90 @@ let prefixUri: string = '';
 let audioPath: string = prefixUri + '/' + this.buttonText;
 let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
 ringtone.startRingtoneSetting(this.context, audioPath, fileName, (err, data) => {
-  hilog.info(DOMAIN, APP_TAG,'setFlag :' + data);
+  hilog.info(DOMAIN, APP_TAG, `返回值：${JSON.stringify(data)}`)
 });
 
 调用ringtone.getSupportedMaxDuration接口，获取当前铃声支持的最大时长。
 
-// 其中 ringtone.RingtoneType.MESSAGE 为短信铃声
-let maxDuration: number =
-  ringtone.getSupportedMaxDuration(ringtone.RingtoneType.MESSAGE, uniformTypeDescriptor.UniformDataType.MP3)
-hilog.info(DOMAIN, APP_TAG,'getSupportedMaxDuration: ' + maxDuration);
+import { ringtone } from '@kit.RingtoneKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
+
+@Entry
+@Component
+struct GetSupportedMaxDuration {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询最大时长')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            try {
+              let maxDuration: number =
+                ringtone.getSupportedMaxDuration(ringtone.RingtoneType.MESSAGE,
+                  uniformTypeDescriptor.UniformDataType.MP3)
+              hilog.info(DOMAIN, APP_TAG, `getSupportedMaxDuration: ${maxDuration}`);
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              hilog.error(DOMAIN, APP_TAG,
+                `getSupportedMaxDuration error message: ${err.message}, error code: ${err.code}`);
+            }
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+
+调用ringtone.getSupportedMaxSize接口，获取当前铃声支持的文件大小。
+
+import { ringtone } from '@kit.RingtoneKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
+
+@Entry
+@Component
+struct GetSupportedMaxSize {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询文件大小限制')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            try {
+              let maxSize: number =
+                ringtone.getSupportedMaxSize(ringtone.RingtoneType.CALL,
+                  uniformTypeDescriptor.UniformDataType.MP3)
+              hilog.info(DOMAIN, APP_TAG, `getSupportedMaxSize: ${maxSize}`);
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              hilog.error(DOMAIN, APP_TAG,
+                `getSupportedMaxSize error message: ${err.message}, error code: ${err.code}`);
+            }
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
 
 ## Code blocks
 
@@ -58,39 +273,179 @@ hilog.info(DOMAIN, APP_TAG,'getSupportedMaxDuration: ' + maxDuration);
 
 ```
 import { common } from '@kit.AbilityKit';
-import { ringtone } from '@kit.RingtoneKit'
-import { uniformTypeDescriptor } from '@kit.ArkData';
-import { JSON } from '@kit.ArkTS';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-const APP_TAG = "Msc_Demo"
-const DOMAIN = 0x0001
+import { ringtone } from '@kit.RingtoneKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileUri, picker } from '@kit.CoreFileKit';
 ```
 
 ### Code block 2
 
 ```
-let ringtoneTypeList: Array<ringtone.RingtoneType> = ringtone.getSupportedRingtoneTypes();
-hilog.info(DOMAIN, APP_TAG,'getSupportedRingtoneTypes : ' + JSON.stringify(ringtoneTypeList));
+import { ringtone } from '@kit.RingtoneKit'
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
+
+@Entry
+@Component
+struct GetSupportedRingtoneTypes {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询当前系统支持自定义的铃声类型')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            let typeList: ringtone.RingtoneType[] = ringtone.getSupportedRingtoneTypes()
+            hilog.info(DOMAIN, APP_TAG, `getSupportedRingtoneTypes: ${JSON.stringify(typeList)}`);
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
 ```
 
 ### Code block 3
 
 ```
-// 其中 ringtone.RingtoneType.NOTIFICATION 为通知铃声
-let dataTypeList: Array<uniformTypeDescriptor.UniformDataType> = ringtone.getSupportedDataTypes(ringtone.RingtoneType.NOTIFICATION);
-hilog.info(DOMAIN, APP_TAG,'getSupportedDataTypes: ' + JSON.stringify(dataTypeList));
+import { ringtone } from '@kit.RingtoneKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
+
+@Entry
+@Component
+struct GetSupportedDataTypes {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询支持的文件类型')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            try {
+              let typeList: uniformTypeDescriptor.UniformDataType[] =
+                ringtone.getSupportedDataTypes(ringtone.RingtoneType.NOTIFICATION)
+              hilog.info(DOMAIN, APP_TAG, `getSupportedDataType: ${JSON.stringify(typeList)}`);
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              hilog.error(DOMAIN, APP_TAG,
+                `getSupportedDataType error message: ${err.message}, error code: ${err.code}`);
+            }
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
 ```
 
 ### Code block 4
 
 ```
-// 详细代码参考API参考
-let prefixUri: string = '';
-let audioPath: string = prefixUri + '/' + this.buttonText;
-let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
-await ringtone.startRingtoneSetting(this.context, audioPath, fileName).then(res => {
-  hilog.info(DOMAIN, APP_TAG,'setFlag :' + res);
-});
+import { common } from '@kit.AbilityKit';
+import { ringtone } from '@kit.RingtoneKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileUri, picker } from '@kit.CoreFileKit';
+
+@Entry
+@Component
+struct Index {
+  @State isShowUIExtensionCom: boolean = false;
+  private prefixUri: string = '';
+  private buttonText: string = '';
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  aboutToAppear(): void {
+    const documentViewPicker = new picker.DocumentViewPicker(this.context);
+    const documentSaveOptions = new picker.DocumentSaveOptions();
+    documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
+    documentViewPicker.save(documentSaveOptions).then((documentSaveResult: Array<string>) => {
+      let savePath = documentSaveResult[0];
+      let fileUriObject = new fileUri.FileUri(savePath);
+      this.prefixUri = fileUriObject.path
+      console.info('documentViewPicker.save succeed and prefixUri is:' + this.prefixUri);
+    }).catch((err: BusinessError) => {
+      console.error(`Invoke documentViewPicker.save failed, code is ${err.code}, message is ${err.message}`);
+    })
+  }
+
+  build() {
+    Column() {
+      Column() {
+        Text($r('app.string.setting_ringtone'))
+          .fontSize(30)
+          .fontWeight(FontWeight.Bold)
+          .fontColor($r('sys.color.ohos_id_color_text_primary'))
+          .alignSelf(ItemAlign.Start)
+          .margin({
+            top: 64,
+            left: 12,
+            bottom: 16
+          })
+
+        TextInput({ placeholder: $r('app.string.please_enter_the_file_name') })
+          .width(312)
+          .height(40)
+          .onChange((value: string) => {
+            this.buttonText = value;
+          })
+      }
+
+      Button($r('app.string.setting_ringtone'))
+        .width(312)
+        .height(40)
+        .margin({
+          bottom: 16
+        })
+        .onClick(async () => {
+          if (this.buttonText) {
+            let audioPath: string = this.prefixUri + '/' + this.buttonText;
+            console.info(`audioPath:${audioPath}`);
+            try {
+              let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
+              console.info(`fileName:${fileName}`);
+              ringtone.startRingtoneSetting(this.context, audioPath, fileName).then(res => {
+                console.info(`setFlag : ${res}`);
+              });
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              if (err.code === ringtone.RingtoneErrors.ERROR_FILE_NOT_FOUND) {
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.file_exist'),
+                  duration: 2000
+                });
+              }
+              console.error(`accessSync failed with error. message: ${err.message}, code: ${err.code}`);
+            }
+          } else {
+            this.getUIContext().getPromptAction().showToast({
+              message: $r('app.string.please_enter_the_file_name'),
+              duration: 2000
+            });
+          }
+        })
+    }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width('100%')
+    .height('100%')
+  }
+}
 ```
 
 ### Code block 5
@@ -101,15 +456,92 @@ let prefixUri: string = '';
 let audioPath: string = prefixUri + '/' + this.buttonText;
 let fileName: string = audioPath.substring(audioPath.lastIndexOf('/') + 1, audioPath.lastIndexOf('.'));
 ringtone.startRingtoneSetting(this.context, audioPath, fileName, (err, data) => {
-  hilog.info(DOMAIN, APP_TAG,'setFlag :' + data);
+  hilog.info(DOMAIN, APP_TAG, `返回值：${JSON.stringify(data)}`)
 });
 ```
 
 ### Code block 6
 
 ```
-// 其中 ringtone.RingtoneType.MESSAGE 为短信铃声
-let maxDuration: number =
-  ringtone.getSupportedMaxDuration(ringtone.RingtoneType.MESSAGE, uniformTypeDescriptor.UniformDataType.MP3)
-hilog.info(DOMAIN, APP_TAG,'getSupportedMaxDuration: ' + maxDuration);
+import { ringtone } from '@kit.RingtoneKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
+
+@Entry
+@Component
+struct GetSupportedMaxDuration {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询最大时长')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            try {
+              let maxDuration: number =
+                ringtone.getSupportedMaxDuration(ringtone.RingtoneType.MESSAGE,
+                  uniformTypeDescriptor.UniformDataType.MP3)
+              hilog.info(DOMAIN, APP_TAG, `getSupportedMaxDuration: ${maxDuration}`);
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              hilog.error(DOMAIN, APP_TAG,
+                `getSupportedMaxDuration error message: ${err.message}, error code: ${err.code}`);
+            }
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+```
+
+### Code block 7
+
+```
+import { ringtone } from '@kit.RingtoneKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { uniformTypeDescriptor } from '@kit.ArkData';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const APP_TAG = 'Msc_Demo'
+const DOMAIN = 0x0001
+
+@Entry
+@Component
+struct GetSupportedMaxSize {
+  build() {
+    Stack() {
+      Column() {
+        Button('查询文件大小限制')
+          .width(200)
+          .height(50)
+          .onClick(() => {
+            try {
+              let maxSize: number =
+                ringtone.getSupportedMaxSize(ringtone.RingtoneType.CALL,
+                  uniformTypeDescriptor.UniformDataType.MP3)
+              hilog.info(DOMAIN, APP_TAG, `getSupportedMaxSize: ${maxSize}`);
+            } catch (error) {
+              let err: BusinessError = error as BusinessError;
+              hilog.error(DOMAIN, APP_TAG,
+                `getSupportedMaxSize error message: ${err.message}, error code: ${err.code}`);
+            }
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Pink)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
 ```

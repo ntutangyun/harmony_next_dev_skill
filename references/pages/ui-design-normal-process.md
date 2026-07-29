@@ -30,7 +30,7 @@ import { common } from '@kit.AbilityKit';
 @Entry
 @Component
 struct Index{
-  bundleName: string = 'com.example.uidesignkit';
+  bundleName: string = 'com.example.uidesignsample';
   resManager: resourceManager.ResourceManager | undefined = undefined;
   layeredDrawableDescriptor: LayeredDrawableDescriptor | undefined = undefined;
   drawableDescriptor: DrawableDescriptor | undefined = undefined;
@@ -72,7 +72,7 @@ struct Index{
               .margin(15)
             }
             .width('100%')
-          }, (item: string) => item.toString())
+          }, (item: hdsDrawable.ProcessedIcon) => item.toString())
       }
       .scrollBar(BarState.On)
       .height('60%')
@@ -129,7 +129,7 @@ struct Index{
       parallelNumber: 4
     };
 
-    let icons: Array<hdsDrawable.Icon> = [];
+    let icons: hdsDrawable.Icon[] = [];
     for (let i = 0; i < 10; i++) {
       icons.push({
         bundleName: `${this.bundleName}-${i}`,
@@ -140,7 +140,7 @@ struct Index{
     try {
       // 调用HDS单层批量接口处理图标
       hdsDrawable.getHdsIcons(icons, this.layeredDrawableDescriptor.getMask().getPixelMap(), options)
-        .then((data: Array<hdsDrawable.ProcessedIcon>) => {
+        .then((data: hdsDrawable.ProcessedIcon[]) => {
           console.info(`getHdsIcons data size: ${data.length}`);
           this.iconsResult = data;
         })
@@ -174,7 +174,7 @@ import { common } from '@kit.AbilityKit';
 @Entry
 @Component
 struct Index{
-  bundleName: string = 'com.example.uidesignkit';
+  bundleName: string = 'com.example.uidesignsample';
   resManager: resourceManager.ResourceManager | undefined = undefined;
   layeredDrawableDescriptor: LayeredDrawableDescriptor | undefined = undefined;
   drawableDescriptor: DrawableDescriptor | undefined = undefined;
@@ -216,7 +216,7 @@ struct Index{
               .margin(15)
             }
             .width('100%')
-          }, (item: string) => item.toString())
+          }, (item: hdsDrawable.ProcessedIcon) => item.toString())
       }
       .scrollBar(BarState.On)
       .height('60%')
@@ -273,7 +273,7 @@ struct Index{
       parallelNumber: 4
     };
 
-    let icons: Array<hdsDrawable.Icon> = [];
+    let icons: hdsDrawable.Icon[] = [];
     for (let i = 0; i < 10; i++) {
       icons.push({
         bundleName: `${this.bundleName}-${i}`,
@@ -284,7 +284,7 @@ struct Index{
     try {
       // 调用HDS单层批量接口处理图标
       hdsDrawable.getHdsIcons(icons, this.layeredDrawableDescriptor.getMask().getPixelMap(), options)
-        .then((data: Array<hdsDrawable.ProcessedIcon>) => {
+        .then((data: hdsDrawable.ProcessedIcon[]) => {
           console.info(`getHdsIcons data size: ${data.length}`);
           this.iconsResult = data;
         })

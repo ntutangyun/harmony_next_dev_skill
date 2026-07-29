@@ -1,10 +1,10 @@
-# 使用AVTranscoder实现视频转码(C/C++)
+# 使用AVTranscoder实现音视频转码(C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-ndk-avtranscoder-for-transcodering_
 
-从API version 20开始支持使用NDK接口（C/C++）实现视频转码。
+从API version 20开始支持使用NDK接口（C/C++）实现音视频转码。
 
-使用AVTranscoder可以实现视频转码功能，从API 12开始，转码功能可在手机、平板、2in1设备上作为系统提供的基础能力使用。可以通过调用canIUse接口来判断当前设备是否支持AVTranscoder。当canIUse("SystemCapability.Multimedia.Media.AVTranscoder")返回值为true时，表示可以使用转码能力。
+使用AVTranscoder可以实现音视频转码功能，从API 12开始，转码功能可在手机、平板、2in1设备上作为系统提供的基础能力使用。可以通过调用canIUse接口来判断当前设备是否支持AVTranscoder。当canIUse("SystemCapability.Multimedia.Media.AVTranscoder")返回值为true时，表示可以使用转码能力。
 
 本开发指导将以“开始转码-暂停转码-恢复转码-完成转码”的一次完整流程为示例，向开发者讲解AVTranscoder视频转码相关功能。
 
@@ -22,7 +22,7 @@ target_link_libraries(entry PUBLIC libavtranscoder.so libace_napi.z.so)
 
 #include <hilog/log.h>
 
-并需要在CMake脚本中链接如下动态库:
+并需要在CMake脚本中链接如下动态库：
 
 target_link_libraries(sample PUBLIC libhilog_ndk.z.so)
 
@@ -68,9 +68,9 @@ void NdkAVTransCoderUser::OnProgressUpdateCb(OH_AVTranscoder *transcoder, int  p
    this->avTranscoderProgress = progress;
 }
 
-void NdkAVTransCoderUser::OnErrorCb(OH_AVTranscoder *transcoder, int32_t  errorCode, const char *errorMsg)
+void NdkAVTransCoderUser::OnErrorCb(OH_AVTranscoder *transcoder, int32_t errorCode, const char *errorMsg)
 {
-   LOG("NdkAVTransCoderUser OnErrorCb errorCode: %{public}d ,errorMsg: %{public} s", errorCode,
+   LOG("NdkAVTransCoderUser OnErrorCb errorCode: %{public}d ,errorMsg: %{public}s", errorCode,
       errorMsg == nullptr ? "unknown" : errorMsg);
    this->errorCode = errorCode;
 }
@@ -128,7 +128,7 @@ static void AvTranscoderStateChangeCbImpl(OH_AVTranscoder *transcoder,  OH_AVTra
    LOG("AvTranscoderStateChangeCbImpl state: %{public}d", state);
    NdkAVTransCoderUser *ndkAVTransCoderUser =  reinterpret_cast<NdkAVTransCoderUser *>(userData);
    if (ndkAVTransCoderUser == nullptr || transcoder == nullptr) {
-      LOGE("AvTranscoderStateChangeCbImpl ndkAVTransCoderUser or transcoder is  nullptr");
+      LOGE("AvTranscoderStateChangeCbImpl ndkAVTransCoderUser or transcoder is nullptr");
       return;
    }
    ndkAVTransCoderUser->OnStateChangeCb(transcoder, state);
@@ -141,7 +141,7 @@ static void AvTranscoderErrorCbImpl(OH_AVTranscoder *transcoder, int32_t  errorC
       errorMsg == nullptr ? "unknown" : errorMsg);
    NdkAVTransCoderUser *ndkAVTransCoderUser =  reinterpret_cast<NdkAVTransCoderUser *>(userData);
    if (ndkAVTransCoderUser == nullptr || transcoder == nullptr) {
-      LOGE("AvTranscoderErrorCbImpl ndkAVTransCoderUser or transcoder is  nullptr");
+      LOGE("AvTranscoderErrorCbImpl ndkAVTransCoderUser or transcoder is nullptr");
       return;
    }
    ndkAVTransCoderUser->OnErrorCb(transcoder, errorCode, errorMsg);
@@ -159,6 +159,8 @@ static void AvTranscoderProgressUpdateCbImpl(OH_AVTranscoder *transcoder, int  p
 }
 static napi_value OHAvTranscoderNdkPlay(napi_env env, napi_callback_info info)
 {
+   OH_AVTranscoder *transcoder = OH_AVTranscoder_Create();
+   NdkAVTransCoderUser *transcoderUser = nullptr;
    OH_AVTranscoder_SetStateCallback(transcoder, AvTranscoderStateChangeCbImpl,  transcoderUser); // 设置状态回调
    OH_AVTranscoder_SetErrorCallback(transcoder, AvTranscoderErrorCbImpl,  transcoderUser); // 设置错误码回调
    OH_AVTranscoder_SetProgressUpdateCallback(transcoder,  AvTranscoderProgressUpdateCbImpl, transcoderUser); // 设置进度值回调
@@ -191,7 +193,7 @@ OH_AVTranscoderConfig_SetDstFileType(config, AV_OUTPUT_FORMAT_MPEG_4); // 封装
 （可选）设置转码输出音频的码率：调用OH_AVTranscoderConfig_SetDstAudioBitrate()设置输出音频的码率。
 
 const std::int32_t AUDIO_BITRATE = 200000;
-OH_AVTranscoderConfig_SetDstAudioBitrate(config, AUDIO_BITRATE); // 音频比特率，可选。
+OH_AVTranscoderConfig_SetDstAudioBitrate(config, AUDIO_BITRATE); // 参考avcodec音频编码器码率设置，具体根据实际需要设置。
 
 （可选）设置转码输出视频的码率：调用OH_AVTranscoderConfig_SetDstVideoBitrate()设置输出视频的码率。
 
@@ -319,9 +321,9 @@ void NdkAVTransCoderUser::OnProgressUpdateCb(OH_AVTranscoder *transcoder, int  p
    this->avTranscoderProgress = progress;
 }
 
-void NdkAVTransCoderUser::OnErrorCb(OH_AVTranscoder *transcoder, int32_t  errorCode, const char *errorMsg)
+void NdkAVTransCoderUser::OnErrorCb(OH_AVTranscoder *transcoder, int32_t errorCode, const char *errorMsg)
 {
-   LOG("NdkAVTransCoderUser OnErrorCb errorCode: %{public}d ,errorMsg: %{public} s", errorCode,
+   LOG("NdkAVTransCoderUser OnErrorCb errorCode: %{public}d ,errorMsg: %{public}s", errorCode,
       errorMsg == nullptr ? "unknown" : errorMsg);
    this->errorCode = errorCode;
 }
@@ -379,7 +381,7 @@ static void AvTranscoderStateChangeCbImpl(OH_AVTranscoder *transcoder,  OH_AVTra
    LOG("AvTranscoderStateChangeCbImpl state: %{public}d", state);
    NdkAVTransCoderUser *ndkAVTransCoderUser =  reinterpret_cast<NdkAVTransCoderUser *>(userData);
    if (ndkAVTransCoderUser == nullptr || transcoder == nullptr) {
-      LOGE("AvTranscoderStateChangeCbImpl ndkAVTransCoderUser or transcoder is  nullptr");
+      LOGE("AvTranscoderStateChangeCbImpl ndkAVTransCoderUser or transcoder is nullptr");
       return;
    }
    ndkAVTransCoderUser->OnStateChangeCb(transcoder, state);
@@ -392,7 +394,7 @@ static void AvTranscoderErrorCbImpl(OH_AVTranscoder *transcoder, int32_t  errorC
       errorMsg == nullptr ? "unknown" : errorMsg);
    NdkAVTransCoderUser *ndkAVTransCoderUser =  reinterpret_cast<NdkAVTransCoderUser *>(userData);
    if (ndkAVTransCoderUser == nullptr || transcoder == nullptr) {
-      LOGE("AvTranscoderErrorCbImpl ndkAVTransCoderUser or transcoder is  nullptr");
+      LOGE("AvTranscoderErrorCbImpl ndkAVTransCoderUser or transcoder is nullptr");
       return;
    }
    ndkAVTransCoderUser->OnErrorCb(transcoder, errorCode, errorMsg);
@@ -410,6 +412,8 @@ static void AvTranscoderProgressUpdateCbImpl(OH_AVTranscoder *transcoder, int  p
 }
 static napi_value OHAvTranscoderNdkPlay(napi_env env, napi_callback_info info)
 {
+   OH_AVTranscoder *transcoder = OH_AVTranscoder_Create();
+   NdkAVTransCoderUser *transcoderUser = nullptr;
    OH_AVTranscoder_SetStateCallback(transcoder, AvTranscoderStateChangeCbImpl,  transcoderUser); // 设置状态回调
    OH_AVTranscoder_SetErrorCallback(transcoder, AvTranscoderErrorCbImpl,  transcoderUser); // 设置错误码回调
    OH_AVTranscoder_SetProgressUpdateCallback(transcoder,  AvTranscoderProgressUpdateCbImpl, transcoderUser); // 设置进度值回调
@@ -456,7 +460,7 @@ OH_AVTranscoderConfig_SetDstFileType(config, AV_OUTPUT_FORMAT_MPEG_4); // 封装
 
 ```
 const std::int32_t AUDIO_BITRATE = 200000;
-OH_AVTranscoderConfig_SetDstAudioBitrate(config, AUDIO_BITRATE); // 音频比特率，可选。
+OH_AVTranscoderConfig_SetDstAudioBitrate(config, AUDIO_BITRATE); // 参考avcodec音频编码器码率设置，具体根据实际需要设置。
 ```
 
 ### Code block 13

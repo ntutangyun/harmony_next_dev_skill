@@ -102,6 +102,8 @@ struct Child {
     Column() {
       // data被@Observed和@ObjectLink装饰，可以被观察到Date整体的赋值以及调用Date接口带来的变化
       Button('child increase the day by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.data.setDate(this.data.getDate() + 1);
         })
@@ -111,6 +113,7 @@ struct Child {
         selected: this.data
       })
     }
+    .width('100%')
   }
 }
 
@@ -124,14 +127,19 @@ struct Parent {
       Child({ label: 'date', data: this.newData.data })
 
       Button('parent update the new date')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.newData.data = new DateClass('2023-07-07');
         })
-      Button(`ViewB: this.newData = new NewDate(new DateClass('2023-08-20'))`)
+      Button(`2023-08-20`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.newData = new NewDate(new DateClass('2023-08-20'));
         })
     }
+    .width('100%')
   }
 }
 
@@ -261,11 +269,14 @@ struct Child {
   build() {
     Column() {
       Text(`num value: ${this.num.count}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 正确写法，可以更改@ObjectLink装饰变量的成员属性
           this.num.count = 20;
         })
     }
+    .width('100%')
   }
 }
 
@@ -277,13 +288,18 @@ struct Parent {
   build() {
     Column() {
       Text(`count value: ${this.num.count}`)
+        .fontSize(20)
+        .margin(10)
       Button('click')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 可以在父组件做整体替换
           this.num = new Info(30);
         })
       Child({ num: this.num })
     }
+    .width('100%')
   }
 }
 
@@ -308,8 +324,9 @@ struct BookCard {
   build() {
     Column() {
       Text(`BookCard: ${this.book.name}`) // 可以观察到name的变化
-        .width(320)
+        .fontSize(20)
         .margin(10)
+        .width(320)
         .textAlign(TextAlign.Center)
 
       Button('change book.name')
@@ -319,6 +336,7 @@ struct BookCard {
           this.book.name = 'C++';
         })
     }
+    .width('100%')
   }
 }
 
@@ -544,7 +562,9 @@ struct Item {
     Row() {
       ForEach(this.itemArr, (item: string, index: number) => {
         Text(`${index}: ${item}`)
-          .width(100)
+          .fontSize(20)
+          .margin(5)
+          .width(120)
           .height(100)
       }, (item: string) => item)
     }
@@ -570,29 +590,34 @@ struct IndexPage {
       Divider()
 
       Button('push two-dimensional array item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr[0].push('strawberry');
         })
 
       Button('push array item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr.push(new ObservedArray<string>('pear'));
         })
 
       Button('change two-dimensional array first item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr[0][0] = 'APPLE';
         })
 
       Button('change array first item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr[0] = new ObservedArray<string>('watermelon');
         })
     }
+    .width('100%')
   }
 }
 
@@ -835,7 +860,7 @@ struct SetSampleNestedChild {
   }
 }
 
-[h2]ObjectLink支持联合类型
+[h2]@ObjectLink支持联合类型
 
 @ObjectLink支持@Observed装饰类和undefined或null组成的联合类型，在下面的示例中，count类型为Source | Data | undefined，点击父组件Parent中的Button改变count的属性或者类型，Child组件中对应的Text组件刷新。
 
@@ -1025,7 +1050,7 @@ struct MyView {
   }
 }
 
-最后一个Text组件Text('child: ${this.cousin.child.childId}')，当点击该组件时UI不会刷新。 因为，@State cousin : Cousin 只能观察到this.cousin属性的变化，比如this.cousin.parentId, this.cousin.cousinId 和this.cousin.child的变化，但是无法观察嵌套在属性中的属性，即this.cousin.child.childId（属性childId是内嵌在cousin中的对象Child的属性）。
+最后一个Text组件Text(childId: ${this.cousin.child.childId})，当点击该组件时UI不会刷新。 因为，@State cousin : Cousin 只能观察到this.cousin属性的变化，比如this.cousin.parentId, this.cousin.cousinId 和this.cousin.child的变化，但是无法观察嵌套在属性中的属性，即this.cousin.child.childId（属性childId是内嵌在cousin中的对象Child的属性）。
 
 为了观察到嵌套于内部的Child的属性，需要做如下改变：
 
@@ -1104,11 +1129,16 @@ struct ViewChild {
   build() {
     Column({ space: 10 }) {
       Text(`childId: ${this.child.getChildId()}`)
+        .fontSize(20)
+        .margin(10)
       Button('Change childId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.child.setChildId(this.child.getChildId() + 1);
         })
     }
+    .width('100%')
   }
 }
 
@@ -1120,23 +1150,34 @@ struct MyView {
   build() {
     Column({ space: 10 }) {
       Text(`parentId: ${this.cousin.parentId}`)
+        .fontSize(20)
+        .margin(10)
       Button('Change Parent.parentId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cousin.parentId += 1;
         })
 
       Text(`cousinId: ${this.cousin.cousinId}`)
+        .fontSize(20)
+        .margin(10)
       Button('Change Cousin.cousinId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cousin.cousinId += 1;
         })
 
       ViewChild({ child: this.cousin.child }) // Text(`childId: ${this.cousin.child.childId}`)的替代写法
       Button('Change Cousin.Child.childId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cousin.child.childId += 1;
         })
     }
+    .width('100%')
   }
 }
 
@@ -1309,6 +1350,8 @@ struct CounterChild {
   @ObjectLink subValue: SubCounter; // @ObjectLink 接收 SubCounter
   build() {
     Text(`${this.subValue.counter}`)
+      .fontSize(20)
+      .margin(10)
       .onClick(() => {
         this.subValue.counter += 1;
       })
@@ -1369,6 +1412,7 @@ struct CounterComp {
       CounterChild({ subValue: this.value.subCounter })
       Divider().height(2)
     }
+    .width('100%')
   }
 }
 
@@ -1378,6 +1422,7 @@ struct CounterChild {
 
   build() {
     Text(`${this.subValue.counter}`)
+      .fontSize(20)
       .onClick(() => {
         this.subValue.counter += 1;
       })
@@ -1405,22 +1450,29 @@ struct ParentComp {
         )
         Divider().height(5)
         Text('Parent: reset entire counter')
-          .fontSize(20).height(50)
+          .fontSize(20)
+          .margin(5)
+          .height(50)
           .onClick(() => {
             this.counter = [new ParentCounter(1), new ParentCounter(2), new ParentCounter(3)];
           })
         Text('Parent: incr counter[0].counter')
-          .fontSize(20).height(50)
+          .fontSize(20)
+          .margin(5)
+          .height(50)
           .onClick(() => {
             this.counter[0].incrCounter();
             this.counter[0].incrSubCounter(10);
           })
         Text('Parent: set.counter to 10')
-          .fontSize(20).height(50)
+          .fontSize(20)
+          .margin(5)
+          .height(50)
           .onClick(() => {
             this.counter[0].setSubCounter(10);
           })
       }
+      .width('100%')
     }
   }
 }
@@ -1455,6 +1507,7 @@ struct Index {
     Column() {
       UserChild({ firstUserByObjectLink: this.users[0], firstUserByProp: this.users[0] })
     }
+    .width('100%')
   }
 }
 
@@ -1467,17 +1520,28 @@ struct UserChild {
     Column() {
       // 比较结果为false说明@Prop经过深拷贝后得到的对象与原对象已不是同一个对象
       Text(`firstUserByObjectLink equals firstUserByProp? : ${this.firstUserByObjectLink === this.firstUserByProp}`)
+        .fontSize(20)
+        .margin(10)
       Text(`UserChild firstUserByObjectLink.id: ${this.firstUserByObjectLink.id}`) // Text1
+        .fontSize(20)
+        .margin(10)
       Text(`UserChild firstUserByProp.id: ${this.firstUserByProp.id}`) // Text2
+        .fontSize(20)
+        .margin(10)
       Button('change @ObjectLink value')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.firstUserByObjectLink.id++;
         })
       Button('change @Prop value')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.firstUserByProp.id++;
         })
     }
+    .width('100%')
   }
 }
 
@@ -1575,7 +1639,7 @@ struct DelayedChangeIndex {
   }
 }
 
-上文的示例代码将定时器修改移入到组件内，此时界面显示时会先显示“The value of renderClass is：false”。待定时器触发时，renderClass的值改变，触发@Watch回调，此时界面刷新显示“The value of renderClass is：true”，日志输出“The value of renderClass is changed to：true”。
+上文的示例代码将定时器修改移入到组件内，此时界面显示时会先显示“The value of renderClass is: false”。待定时器触发时，renderClass的值改变，触发@Watch回调，此时界面刷新显示“The value of renderClass is: true”，日志输出“The value of renderClass is changed to: true”。
 
 因此，更推荐开发者在组件中对@Observed装饰的类成员变量进行修改，以实现刷新。
 
@@ -1620,7 +1684,10 @@ struct Parent {
 
   build() {
     Column() {
-      Text(this.info.person.name).height(40)
+      Text(this.info.person.name)
+        .fontSize(20)
+        .margin(10)
+        .height(40)
       Child({
         per: this.info.person, clickEvent: () => {
           hilog.info(DOMAIN, TAG, `:::clickEvent before ${this.info.person.name}`); // 1
@@ -1629,6 +1696,7 @@ struct Parent {
         }
       })
     }
+    .width('100%')
   }
 }
 
@@ -1644,11 +1712,14 @@ struct Child {
   build() {
     Column() {
       Button(this.per.name)
+        .width(300)
+        .margin(10)
         .height(40)
         .onClick(() => {
           this.onClickType();
         })
     }
+    .width('100%')
   }
 
   private onClickType() {
@@ -1723,15 +1794,20 @@ struct Index {
 @Observed
 class DataDownloader {
   public state: number;
+  private intervalId: number = -1;
 
   constructor() {
     this.state = 0;
   }
 
   startIntervalUpdate() {
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.state += 1;
     }, 2000);
+  }
+
+  stopIntervalUpdate() {
+    clearInterval(this.intervalId);
   }
 }
 
@@ -2069,6 +2145,8 @@ struct Child {
     Column() {
       // data被@Observed和@ObjectLink装饰，可以被观察到Date整体的赋值以及调用Date接口带来的变化
       Button('child increase the day by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.data.setDate(this.data.getDate() + 1);
         })
@@ -2078,6 +2156,7 @@ struct Child {
         selected: this.data
       })
     }
+    .width('100%')
   }
 }
 
@@ -2091,14 +2170,19 @@ struct Parent {
       Child({ label: 'date', data: this.newData.data })
 
       Button('parent update the new date')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.newData.data = new DateClass('2023-07-07');
         })
-      Button(`ViewB: this.newData = new NewDate(new DateClass('2023-08-20'))`)
+      Button(`2023-08-20`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.newData = new NewDate(new DateClass('2023-08-20'));
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2218,11 +2302,14 @@ struct Child {
   build() {
     Column() {
       Text(`num value: ${this.num.count}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 正确写法，可以更改@ObjectLink装饰变量的成员属性
           this.num.count = 20;
         })
     }
+    .width('100%')
   }
 }
 
@@ -2234,13 +2321,18 @@ struct Parent {
   build() {
     Column() {
       Text(`count value: ${this.num.count}`)
+        .fontSize(20)
+        .margin(10)
       Button('click')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 可以在父组件做整体替换
           this.num = new Info(30);
         })
       Child({ num: this.num })
     }
+    .width('100%')
   }
 }
 ```
@@ -2263,8 +2355,9 @@ struct BookCard {
   build() {
     Column() {
       Text(`BookCard: ${this.book.name}`) // 可以观察到name的变化
-        .width(320)
+        .fontSize(20)
         .margin(10)
+        .width(320)
         .textAlign(TextAlign.Center)
 
       Button('change book.name')
@@ -2274,6 +2367,7 @@ struct BookCard {
           this.book.name = 'C++';
         })
     }
+    .width('100%')
   }
 }
 
@@ -2475,7 +2569,9 @@ struct Item {
     Row() {
       ForEach(this.itemArr, (item: string, index: number) => {
         Text(`${index}: ${item}`)
-          .width(100)
+          .fontSize(20)
+          .margin(5)
+          .width(120)
           .height(100)
       }, (item: string) => item)
     }
@@ -2501,29 +2597,34 @@ struct IndexPage {
       Divider()
 
       Button('push two-dimensional array item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr[0].push('strawberry');
         })
 
       Button('push array item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr.push(new ObservedArray<string>('pear'));
         })
 
       Button('change two-dimensional array first item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr[0][0] = 'APPLE';
         })
 
       Button('change array first item')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.arr[0] = new ObservedArray<string>('watermelon');
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3011,11 +3112,16 @@ struct ViewChild {
   build() {
     Column({ space: 10 }) {
       Text(`childId: ${this.child.getChildId()}`)
+        .fontSize(20)
+        .margin(10)
       Button('Change childId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.child.setChildId(this.child.getChildId() + 1);
         })
     }
+    .width('100%')
   }
 }
 
@@ -3027,23 +3133,34 @@ struct MyView {
   build() {
     Column({ space: 10 }) {
       Text(`parentId: ${this.cousin.parentId}`)
+        .fontSize(20)
+        .margin(10)
       Button('Change Parent.parentId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cousin.parentId += 1;
         })
 
       Text(`cousinId: ${this.cousin.cousinId}`)
+        .fontSize(20)
+        .margin(10)
       Button('Change Cousin.cousinId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cousin.cousinId += 1;
         })
 
       ViewChild({ child: this.cousin.child }) // Text(`childId: ${this.cousin.child.childId}`)的替代写法
       Button('Change Cousin.Child.childId')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cousin.child.childId += 1;
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3206,6 +3323,8 @@ struct CounterChild {
   @ObjectLink subValue: SubCounter; // @ObjectLink 接收 SubCounter
   build() {
     Text(`${this.subValue.counter}`)
+      .fontSize(20)
+      .margin(10)
       .onClick(() => {
         this.subValue.counter += 1;
       })
@@ -3266,6 +3385,7 @@ struct CounterComp {
       CounterChild({ subValue: this.value.subCounter })
       Divider().height(2)
     }
+    .width('100%')
   }
 }
 
@@ -3275,6 +3395,7 @@ struct CounterChild {
 
   build() {
     Text(`${this.subValue.counter}`)
+      .fontSize(20)
       .onClick(() => {
         this.subValue.counter += 1;
       })
@@ -3302,22 +3423,29 @@ struct ParentComp {
         )
         Divider().height(5)
         Text('Parent: reset entire counter')
-          .fontSize(20).height(50)
+          .fontSize(20)
+          .margin(5)
+          .height(50)
           .onClick(() => {
             this.counter = [new ParentCounter(1), new ParentCounter(2), new ParentCounter(3)];
           })
         Text('Parent: incr counter[0].counter')
-          .fontSize(20).height(50)
+          .fontSize(20)
+          .margin(5)
+          .height(50)
           .onClick(() => {
             this.counter[0].incrCounter();
             this.counter[0].incrSubCounter(10);
           })
         Text('Parent: set.counter to 10')
-          .fontSize(20).height(50)
+          .fontSize(20)
+          .margin(5)
+          .height(50)
           .onClick(() => {
             this.counter[0].setSubCounter(10);
           })
       }
+      .width('100%')
     }
   }
 }
@@ -3346,6 +3474,7 @@ struct Index {
     Column() {
       UserChild({ firstUserByObjectLink: this.users[0], firstUserByProp: this.users[0] })
     }
+    .width('100%')
   }
 }
 
@@ -3358,17 +3487,28 @@ struct UserChild {
     Column() {
       // 比较结果为false说明@Prop经过深拷贝后得到的对象与原对象已不是同一个对象
       Text(`firstUserByObjectLink equals firstUserByProp? : ${this.firstUserByObjectLink === this.firstUserByProp}`)
+        .fontSize(20)
+        .margin(10)
       Text(`UserChild firstUserByObjectLink.id: ${this.firstUserByObjectLink.id}`) // Text1
+        .fontSize(20)
+        .margin(10)
       Text(`UserChild firstUserByProp.id: ${this.firstUserByProp.id}`) // Text2
+        .fontSize(20)
+        .margin(10)
       Button('change @ObjectLink value')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.firstUserByObjectLink.id++;
         })
       Button('change @Prop value')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.firstUserByProp.id++;
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3503,7 +3643,10 @@ struct Parent {
 
   build() {
     Column() {
-      Text(this.info.person.name).height(40)
+      Text(this.info.person.name)
+        .fontSize(20)
+        .margin(10)
+        .height(40)
       Child({
         per: this.info.person, clickEvent: () => {
           hilog.info(DOMAIN, TAG, `:::clickEvent before ${this.info.person.name}`); // 1
@@ -3512,6 +3655,7 @@ struct Parent {
         }
       })
     }
+    .width('100%')
   }
 }
 
@@ -3527,11 +3671,14 @@ struct Child {
   build() {
     Column() {
       Button(this.per.name)
+        .width(300)
+        .margin(10)
         .height(40)
         .onClick(() => {
           this.onClickType();
         })
     }
+    .width('100%')
   }
 
   private onClickType() {
@@ -3588,15 +3735,20 @@ struct Index {
 @Observed
 class DataDownloader {
   public state: number;
+  private intervalId: number = -1;
 
   constructor() {
     this.state = 0;
   }
 
   startIntervalUpdate() {
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.state += 1;
     }, 2000);
+  }
+
+  stopIntervalUpdate() {
+    clearInterval(this.intervalId);
   }
 }
 

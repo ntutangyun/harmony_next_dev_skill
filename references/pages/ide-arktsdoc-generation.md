@@ -20,8 +20,6 @@ DevEco Studio支持通过Generate ArkTSDoc功能，将代码文件中变量、�
 
 点击Modules后的下拉箭头，会弹出所有模块，可以选择单个或多个模块作为导出范围。当模块数量较多时，可以使用检索功能，快速定位模块。
 
-说明
-
 从DevEco Studio 6.1.0 Release版本开始，Command line arguments填写时支持Ant风格的路径匹配模式。在Ant风格中，使用'?'匹配单字符、'*'匹配单层目录/文件、'**'匹配任意层目录等。
 
 在Output directory中输入导出ArkTSDoc的存储路径后，点击Generate。

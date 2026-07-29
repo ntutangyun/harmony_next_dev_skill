@@ -32,7 +32,7 @@ this.getUIContext().getPromptAction().openCustomDialog({
   // ···
 })
 
-如果希望弹出框显示在某个指定页面内，需通过第二个参数levelUniqueId来实现。此参数接收页面内的节点id，设置后，弹出框显示时会自动查询此id对应的节点所在的Navigation页面，并将其挂载在子页面的NavDestination节点下。
+如果希望弹出框显示在某个指定页面内，需在options入参中设置levelUniqueId属性来实现。此属性接收页面内的节点id，设置后，弹出框显示时会自动查询此id对应的节点所在的Navigation页面，并将其挂载在子页面的NavDestination节点下。
 
 说明
 

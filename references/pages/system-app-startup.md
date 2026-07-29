@@ -99,5 +99,3 @@ Media Library Kit提供了照片Picker（PhotoViewPicker），用于访问、保
 示例代码
 
 拉起系统相机
-
-应用间跳转典型场景

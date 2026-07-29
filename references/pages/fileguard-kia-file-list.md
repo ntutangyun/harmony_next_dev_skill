@@ -19,67 +19,86 @@ isKia(path: string): boolean	检查文件或文件夹是否是KIA。
 
 导入模块。
 
+import { BusinessError } from '@kit.BasicServicesKit';
 import { fileGuard } from '@kit.EnterpriseDataGuardKit';
-import { osAccount, BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 初始化FileGuard对象guard，将KIA文件列表对象转为字符串，调用接口setKiaFilelist，设置KIA文件列表。
 
 通过回调函数方式，设置KIA文件列表。
 
-async function setKiaFilelistCallback() {
-  let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-  let userId: number = await accountManager.getOsAccountLocalId();
+const TAG: string = 'FileGuard_KIAFileList';
+const DOMAIN: number = 0x0000;
 
+/**
+ * 设置KIA文件列表。使用callback异步回调。
+ * @param accountId: 用户ID
+ */
+function setKiaFilelistCallback(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let fileListStr: string =
-    '{"kia_filelist":["/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/1.txt",' +
-      '"/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/2.txt"],' +
-      '"kia_keyword":["key1","key2","key3"],' +
-      '"kia_suffix":[".java", ".html", ".cpp", ".docx"],' +
-      '"compress_suffix":[".rar", ".zip"],' +
-      `"user_id":${userId},` +
-      '"kia_update_type":0}';
+    `{"kia_filelist":["/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/3.txt",` +
+      `"/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/4.txt"],` +
+      `"kia_keyword":["key1","key2","key3"],` +
+      `"kia_suffix":[".java", ".html", ".cpp", ".docx"],` +
+      `"compress_suffix":[".rar", ".zip"],` +
+      `"user_id":${accountId},` +
+      `"kia_update_type":1}`;
   guard.setKiaFilelist(fileListStr, (err: BusinessError) => {
     if (err) {
-      console.error(`Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
+      hilog.error(DOMAIN, TAG, `Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
     } else {
-      console.info(`Succeeded in setting the list of KIA file.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in setting the list of KIA file.`);
     }
   });
 }
 
 通过Promise方式，设置KIA文件列表。
 
-async function setKiaFilelistPromise() {
-  let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-  let userId: number = await accountManager.getOsAccountLocalId();
+const TAG: string = 'FileGuard_KIAFileList';
+const DOMAIN: number = 0x0000;
 
+// ...
+/**
+ * 设置KIA文件列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+function setKiaFilelistPromise(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let fileListStr: string =
-    '{"kia_filelist":["/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/1.txt",' +
-      '"/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/2.txt"],' +
-      '"kia_keyword":["key1","key2","key3"],' +
-      '"kia_suffix":[".java", ".html", ".cpp", ".docx"],' +
-      '"compress_suffix":[".rar", ".zip"],' +
-      `"user_id":${userId},` +
-      '"kia_update_type":0}';
+    `{"kia_filelist":["/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/1.txt",` +
+      `"/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/2.txt"],` +
+      `"kia_keyword":["key1","key2","key3"],` +
+      `"kia_suffix":[".java", ".html"],` +
+      `"compress_suffix":[".rar"],` +
+      `"user_id":${accountId},` +
+      `"kia_update_type":0}`;
   guard.setKiaFilelist(fileListStr).then(() => {
-    console.info(`Succeeded in setting the list of KIA file.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in setting the list of KIA file.`);
   }).catch((err: BusinessError) => {
-    console.error(`Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG, `Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
   });
 }
 
 初始化FileGuard对象guard，调用接口isKia，检查该文件或文件夹是否是KIA。
 
-function isKIA() {
+const TAG: string = 'FileGuard_KIAFileList';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 是否KIA文件
+ * @param accountId: 用户ID
+ */
+function isKia(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let path: string = '/data/service/el2/account_id/hmdfs/account/files/Docs/Documents/1.txt';
-    let isKIA: boolean = guard.isKia(path);
-    console.info(`Succeeded in determining whether the file is a KIA file. isKIA: ${isKIA}`);
+    let path: string = `/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/1.txt`;
+    let isKiaResult: boolean = guard.isKia(path);
+    hilog.info(DOMAIN, TAG, `Succeeded in determining whether the file is a KIA file. isKia: ${isKiaResult}`);
   } catch (e) {
-    console.error(`Failed to determine whether the file is a KIA file. Code: ${e.code}, message: ${e.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to determine whether the file is a KIA file. Code: ${e.code}, message: ${e.message}.`);
   }
 }
 
@@ -88,31 +107,36 @@ function isKIA() {
 ### Code block 1
 
 ```
+import { BusinessError } from '@kit.BasicServicesKit';
 import { fileGuard } from '@kit.EnterpriseDataGuardKit';
-import { osAccount, BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-async function setKiaFilelistCallback() {
-  let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-  let userId: number = await accountManager.getOsAccountLocalId();
+const TAG: string = 'FileGuard_KIAFileList';
+const DOMAIN: number = 0x0000;
 
+/**
+ * 设置KIA文件列表。使用callback异步回调。
+ * @param accountId: 用户ID
+ */
+function setKiaFilelistCallback(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let fileListStr: string =
-    '{"kia_filelist":["/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/1.txt",' +
-      '"/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/2.txt"],' +
-      '"kia_keyword":["key1","key2","key3"],' +
-      '"kia_suffix":[".java", ".html", ".cpp", ".docx"],' +
-      '"compress_suffix":[".rar", ".zip"],' +
-      `"user_id":${userId},` +
-      '"kia_update_type":0}';
+    `{"kia_filelist":["/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/3.txt",` +
+      `"/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/4.txt"],` +
+      `"kia_keyword":["key1","key2","key3"],` +
+      `"kia_suffix":[".java", ".html", ".cpp", ".docx"],` +
+      `"compress_suffix":[".rar", ".zip"],` +
+      `"user_id":${accountId},` +
+      `"kia_update_type":1}`;
   guard.setKiaFilelist(fileListStr, (err: BusinessError) => {
     if (err) {
-      console.error(`Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
+      hilog.error(DOMAIN, TAG, `Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
     } else {
-      console.info(`Succeeded in setting the list of KIA file.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in setting the list of KIA file.`);
     }
   });
 }
@@ -121,23 +145,28 @@ async function setKiaFilelistCallback() {
 ### Code block 3
 
 ```
-async function setKiaFilelistPromise() {
-  let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-  let userId: number = await accountManager.getOsAccountLocalId();
+const TAG: string = 'FileGuard_KIAFileList';
+const DOMAIN: number = 0x0000;
 
+// ...
+/**
+ * 设置KIA文件列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+function setKiaFilelistPromise(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
   let fileListStr: string =
-    '{"kia_filelist":["/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/1.txt",' +
-      '"/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/2.txt"],' +
-      '"kia_keyword":["key1","key2","key3"],' +
-      '"kia_suffix":[".java", ".html", ".cpp", ".docx"],' +
-      '"compress_suffix":[".rar", ".zip"],' +
-      `"user_id":${userId},` +
-      '"kia_update_type":0}';
+    `{"kia_filelist":["/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/1.txt",` +
+      `"/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/2.txt"],` +
+      `"kia_keyword":["key1","key2","key3"],` +
+      `"kia_suffix":[".java", ".html"],` +
+      `"compress_suffix":[".rar"],` +
+      `"user_id":${accountId},` +
+      `"kia_update_type":0}`;
   guard.setKiaFilelist(fileListStr).then(() => {
-    console.info(`Succeeded in setting the list of KIA file.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in setting the list of KIA file.`);
   }).catch((err: BusinessError) => {
-    console.error(`Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG, `Failed to set the list of KIA file. Code: ${err.code}, message: ${err.message}.`);
   });
 }
 ```
@@ -145,14 +174,23 @@ async function setKiaFilelistPromise() {
 ### Code block 4
 
 ```
-function isKIA() {
+const TAG: string = 'FileGuard_KIAFileList';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 是否KIA文件
+ * @param accountId: 用户ID
+ */
+function isKia(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let path: string = '/data/service/el2/account_id/hmdfs/account/files/Docs/Documents/1.txt';
-    let isKIA: boolean = guard.isKia(path);
-    console.info(`Succeeded in determining whether the file is a KIA file. isKIA: ${isKIA}`);
+    let path: string = `/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/1.txt`;
+    let isKiaResult: boolean = guard.isKia(path);
+    hilog.info(DOMAIN, TAG, `Succeeded in determining whether the file is a KIA file. isKia: ${isKiaResult}`);
   } catch (e) {
-    console.error(`Failed to determine whether the file is a KIA file. Code: ${e.code}, message: ${e.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to determine whether the file is a KIA file. Code: ${e.code}, message: ${e.message}.`);
   }
 }
 ```

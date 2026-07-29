@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-faq-9_
 
-应用处于后台时仅有如下两个场景可以在应用内接收消息：
+应用处于后台时仅有如下场景可以在应用内接收消息：
 
 若应用需要实现语音播报等能力时，服务端可发送语音播报消息（即push-type为2）。该场景中客户端应用内消息接收请参考RemoteNotificationExtensionAbility中接口调用示例。
 

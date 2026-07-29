@@ -28,7 +28,7 @@ IAP Kit（应用内支付服务）为开发者提供便捷的应用内支付体�
 自动续期订阅商品	Phone、PC/2in1、Tablet、TV、Car
 非续期订阅商品	Phone、PC/2in1、Tablet、TV、Car
 
-从6.1.0（23）开始，提供了IAP嵌入式收银台组件。
+从6.1.0(23)版本开始，提供了IAP嵌入式收银台组件。
 
 IAP Kit提供的能力	支持设备
 IAP嵌入式收银台组件	TV

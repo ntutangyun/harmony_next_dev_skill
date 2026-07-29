@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-extend_
 
-在前文的示例中，可以使用@Styles用于样式的重用，在@Styles的基础上，我们提供了@Extend，用于扩展组件样式。
+在前文的示例中，可以使用@Styles复用样式，在@Styles的基础上，我们提供了@Extend，用于扩展组件样式。
 
 说明
 
@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ext
 
 [h2]语法
 
-@Extend(UIComponentName) function functionName { ... }
+@Extend(UIComponentName) function functionName() { ... }
 
 [h2]使用规则
 
@@ -73,6 +73,7 @@ struct FancyUse {
 
 @Extend装饰的方法的参数可以为function，作为Event事件的句柄。
 
+// @Extend装饰的方法支持function参数
 @Extend(Text)
 function makeMeClick(onClick: () => void) {
   .backgroundColor(Color.Blue)
@@ -100,6 +101,7 @@ struct FancyUse {
 
 @Extend的参数可以为状态变量，当状态变量改变时，UI可以正常的被刷新渲染。
 
+// 将状态变量作为@Extend参数，状态变化驱动Text样式刷新
 @Extend(Text)
 function fancy(fontSize: number) {
   .fontColor(Color.Blue)
@@ -138,7 +140,7 @@ struct FancyUse {
 @Entry
 @Component
 struct FancyUse {
-  // 错误写法，@Extend仅支持在全局定义，不支持在组件内部定义
+  // 错误写法，@Extend仅支持在全局定义，不支持在组件内部定义。
   @Extend(Text) function fancy (fontSize: number) {
     .fontSize(fontSize)
   }
@@ -174,7 +176,7 @@ struct FancyUse {
 
 【反例】
 
-  // 错误写法 不要在pageTwo当中使用在其他文件比如pageOne中定义的@Extend函数
+  // 错误写法 不要在pageTwo当中使用在其他文件比如pageOne中定义的@Extend函数。
   // pageOne.ets
   @Extend(Button)
   function ButtonUse() {
@@ -203,7 +205,7 @@ struct FancyUse {
         Text('this is TextUse')
 
         Button()
-          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist on type 'ButtonAttribute'.
+          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist  on type 'ButtonAttribute'.
           .height(50)
       }
     }
@@ -211,7 +213,7 @@ struct FancyUse {
 
 【正例】
 
-  // 正确写法 在pageTwo文件当中可以定义与pageOne文件中的@Extend函数不重名的@Extend函数
+  // 正确写法 在pageTwo文件当中可以定义与pageOne文件中的@Extend函数不重名的@Extend函数。
   // pageOne.ets
   @Extend(Button)
   function ButtonUse() {
@@ -263,6 +265,7 @@ struct FancyUse {
 
   build() {
     Row({ space: 10 }) {
+      // Text组件重复设置样式
       Text(`${this.label}`)
         .fontStyle(FontStyle.Italic)
         .fontWeight(500)
@@ -281,6 +284,7 @@ struct FancyUse {
 
 使用@Extend将样式组合复用，示例如下。
 
+// 使用@Extend封装Text样式组合，便于复用
 @Extend(Text)
 function fancyText(weightValue: number, color: Color) {
   .fontStyle(FontStyle.Italic)
@@ -297,6 +301,7 @@ struct FancyUse {
 
   build() {
     Row({ space: 10 }) {
+      // 调用@Extend封装的fancyText复用样式
       Text(`${this.label}`)
         .fancyText(100, Color.Blue)
       Text(`${this.label}`)
@@ -312,7 +317,7 @@ struct FancyUse {
 ### Code block 1
 
 ```
-@Extend(UIComponentName) function functionName { ... }
+@Extend(UIComponentName) function functionName() { ... }
 ```
 
 ### Code block 2
@@ -375,6 +380,7 @@ struct FancyUse {
 ### Code block 5
 
 ```
+// @Extend装饰的方法支持function参数
 @Extend(Text)
 function makeMeClick(onClick: () => void) {
   .backgroundColor(Color.Blue)
@@ -404,6 +410,7 @@ struct FancyUse {
 ### Code block 6
 
 ```
+// 将状态变量作为@Extend参数，状态变化驱动Text样式刷新
 @Extend(Text)
 function fancy(fontSize: number) {
   .fontColor(Color.Blue)
@@ -434,7 +441,7 @@ struct FancyUse {
 @Entry
 @Component
 struct FancyUse {
-  // 错误写法，@Extend仅支持在全局定义，不支持在组件内部定义
+  // 错误写法，@Extend仅支持在全局定义，不支持在组件内部定义。
   @Extend(Text) function fancy (fontSize: number) {
     .fontSize(fontSize)
   }
@@ -472,7 +479,7 @@ struct FancyUse {
 ### Code block 9
 
 ```
-  // 错误写法 不要在pageTwo当中使用在其他文件比如pageOne中定义的@Extend函数
+  // 错误写法 不要在pageTwo当中使用在其他文件比如pageOne中定义的@Extend函数。
   // pageOne.ets
   @Extend(Button)
   function ButtonUse() {
@@ -501,7 +508,7 @@ struct FancyUse {
         Text('this is TextUse')
 
         Button()
-          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist on type 'ButtonAttribute'.
+          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist  on type 'ButtonAttribute'.
           .height(50)
       }
     }
@@ -511,7 +518,7 @@ struct FancyUse {
 ### Code block 10
 
 ```
-  // 正确写法 在pageTwo文件当中可以定义与pageOne文件中的@Extend函数不重名的@Extend函数
+  // 正确写法 在pageTwo文件当中可以定义与pageOne文件中的@Extend函数不重名的@Extend函数。
   // pageOne.ets
   @Extend(Button)
   function ButtonUse() {
@@ -563,6 +570,7 @@ struct FancyUse {
 
   build() {
     Row({ space: 10 }) {
+      // Text组件重复设置样式
       Text(`${this.label}`)
         .fontStyle(FontStyle.Italic)
         .fontWeight(500)
@@ -583,6 +591,7 @@ struct FancyUse {
 ### Code block 12
 
 ```
+// 使用@Extend封装Text样式组合，便于复用
 @Extend(Text)
 function fancyText(weightValue: number, color: Color) {
   .fontStyle(FontStyle.Italic)
@@ -601,6 +610,7 @@ struct FancyUse {
 
   build() {
     Row({ space: 10 }) {
+      // 调用@Extend封装的fancyText复用样式
       Text(`${this.label}`)
         .fancyText(100, Color.Blue)
       Text(`${this.label}`)

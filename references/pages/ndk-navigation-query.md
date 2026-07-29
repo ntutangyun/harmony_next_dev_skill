@@ -62,7 +62,7 @@ if (state == NUM_8) {
 
 查询页面栈信息
 
-使用OH_ArkUI_GetNavDestinationIndex可以查询当前占位组件所属NavDestination在栈中的位置。router页面状态可以通过OH_ArkUI_GetRouterPageIndex接口查询。根据返回的页面栈信息，可在应用开发中实现DFX功能，例如性能监控与用户行为分析等参数的收集，用于数据上报和分析。
+使用OH_ArkUI_GetNavDestinationIndex可以查询当前占位组件所属NavDestination在栈中的位置。router页面索引可以通过OH_ArkUI_GetRouterPageIndex接口查询。根据返回的页面栈信息，可在应用开发中实现DFX功能，例如性能监控与用户行为分析等参数的收集，用于数据上报和分析。
 
 本示例仅展示核心功能代码，完整示例请参考NDK使用页面查询接口示例。
 

@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 约束与限制
 
-获取手机号和风险等级Button支持Phone、Tablet、PC/2in1和TV设备，并且从26.0.0版本开始，新增支持Car设备。
+获取手机号和风险等级Button支持Phone、Tablet、PC/2in1和TV设备。
 
 前提条件
 
@@ -41,7 +41,7 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType为GET_PHONE_NUMBER_AND_RISK_LEVEL时，回调必须为onGetPhoneNumberAndRiskLevel。
           controller: new functionalButtonComponentManager.FunctionalButtonController()
@@ -102,7 +102,7 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType为GET_PHONE_NUMBER_AND_RISK_LEVEL时，回调必须为onGetPhoneNumberAndRiskLevel。
           controller: new functionalButtonComponentManager.FunctionalButtonController()

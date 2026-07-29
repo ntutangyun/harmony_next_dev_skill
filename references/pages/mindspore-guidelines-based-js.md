@@ -1,4 +1,4 @@
-# 使用MindSpore Lite实现图像分类（ArkTS）
+# 使用MindSpore Lite实现图像分类 (ArkTS)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mindspore-guidelines-based-js_
 
@@ -20,10 +20,11 @@ Float16推理模式： Float16又称半精度，它使用16比特表示一个数
 
 接口说明
 
-这里给出MindSpore Lite推理的通用开发流程中涉及的一些接口，具体请见下列表格。更多接口及详细内容，请见@ohos.ai.mindSporeLite (推理能力)。
+这里给出MindSpore Lite推理的通用开发流程中涉及的一些接口，具体请见下列表格。更多接口及详细内容，请见@ohos.ai.mindSporeLite (端侧AI框架)。
 
 接口名	描述
 loadModelFromFile(model: string, context?: Context): Promise<Model>	从路径加载模型。
+loadModelFromBuffer(model: ArrayBuffer, context?: Context): Promise<Model>	从内存加载模型。
 getInputs(): MSTensor[]	获取模型的输入。
 predict(inputs: MSTensor[]): Promise<MSTensor[]>	推理模型。
 getData(): ArrayBuffer	获取张量的数据。
@@ -73,7 +74,6 @@ setData(inputArray: ArrayBuffer): void	设置张量的数据。
 
 执行推理。使用predict接口进行模型推理。
 
-// model.ets
 import { mindSporeLite } from '@kit.MindSporeLiteKit'
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -110,11 +110,10 @@ export default async function modelPredict(
 
 此处以获取相册图片为例，调用@ohos.file.picker 实现相册图片文件的选择。
 
-根据模型的输入尺寸，调用@ohos.multimedia.image （实现图片处理）、@ohos.file.fs （实现基础文件操作） API对选择图片进行裁剪、获取图片buffer数据，并进行标准化处理。
+根据模型的输入尺寸，调用@ohos.multimedia.image（实现图片处理）、@ohos.file.fs（实现基础文件操作）API对选择图片进行裁剪、获取图片buffer数据，并进行标准化处理。
 
 加载模型文件，调用推理函数，对相册选择的图片进行推理，并对推理结果进行处理。
 
-// Index.ets
 import modelPredict from './model';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -137,16 +136,19 @@ struct Index {
   @State maxIndex: number = 0;
   @State maxArray: Array<number> = [];
   @State maxIndexArray: Array<number> = [];
+  // ...
 
   build() {
     Row() {
       Column() {
         Text(this.modelPredict)
+        // ...
         Button() {
           Text('photo')
             .fontSize(30)
             .fontWeight(FontWeight.Bold)
         }
+        // ...
         .onClick(() => {
           let resMgr = this.getUIContext()?.getHostContext()?.getApplicationContext().resourceManager;
           if (resMgr === null || resMgr === undefined){
@@ -327,7 +329,7 @@ $ hdc shell bm install -p data/local/tmp/xxx
 $ hdc shell rm -rf data/local/tmp/xxx
 $ hdc shell aa start -a EntryAbility -b com.samples.mindsporelitearktsdemo
 
-在设备屏幕点击photo按钮，选择图片，点击确定。设备屏幕显示所选图片的分类结果，在日志打印结果中，过滤关键字”MS_LITE“，可得到如下结果：
+在设备屏幕点击photo按钮，选择图片，点击确定。设备屏幕显示所选图片的分类结果，在日志打印结果中，过滤关键字“MS_LITE”，可得到如下结果：
 
 08-06 03:24:33.743   22547-22547  A03d00/JSAPP                   com.sampl...liteark+  I     MS_LITE_LOG: PhotoViewPicker.select successfully, photoSelectResult uri: {"photoUris":["file://media/Photo/13/IMG_1501955351_012/plant.jpg"]}
 08-06 03:24:33.795   22547-22547  A03d00/JSAPP                   com.sampl...liteark+  I     MS_LITE_LOG: readSync data to file succeed and inputBuffer size is:32824
@@ -372,7 +374,6 @@ $ hdc shell aa start -a EntryAbility -b com.samples.mindsporelitearktsdemo
 ### Code block 2
 
 ```
-// model.ets
 import { mindSporeLite } from '@kit.MindSporeLiteKit'
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -409,7 +410,6 @@ export default async function modelPredict(
 ### Code block 3
 
 ```
-// Index.ets
 import modelPredict from './model';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -432,16 +432,19 @@ struct Index {
   @State maxIndex: number = 0;
   @State maxArray: Array<number> = [];
   @State maxIndexArray: Array<number> = [];
+  // ...
 
   build() {
     Row() {
       Column() {
         Text(this.modelPredict)
+        // ...
         Button() {
           Text('photo')
             .fontSize(30)
             .fontWeight(FontWeight.Bold)
         }
+        // ...
         .onClick(() => {
           let resMgr = this.getUIContext()?.getHostContext()?.getApplicationContext().resourceManager;
           if (resMgr === null || resMgr === undefined){

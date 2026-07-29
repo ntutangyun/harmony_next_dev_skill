@@ -7,5 +7,3 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/xengine-k
 超分和自适应VRS特性是否可以同时使用
 
 自适应VRS深度附件使用说明
-
-空域AI超分的输出颜色附件是否需要通过OH_NativeBuffer创建

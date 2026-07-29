@@ -12,4 +12,8 @@ AVSession Kit简介
 
 播控推荐服务
 
+自定义播控中心控制按钮显示布局
+
 音频模板
+
+AVSession Kit术语

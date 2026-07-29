@@ -27,7 +27,7 @@ restartApp(): void	重启当前进程，并启动由setRestartWant指定的UIAbi
 saveAppState(context?: UIAbilityContext): boolean	主动保存由Context指定的UIAbility状态。
 setRestartWant(want: Want): void	设置主动调用restartApp以及RestartFlag不为NO_RESTART时重启的UIAbility（want的abilityName属性可设置为UIAbility的名称）。该UIAbility必须在同一个包名下。
 
-由于上述接口可能在故障处理时使用，所以不会返回异常，需要开发者熟悉使用的场景。具体其各参数定义详见参数说明。
+由于上述接口可能在故障处理时使用，所以不会返回异常，需要开发者熟悉使用的场景。具体其各参数定义详见应用故障恢复。
 
 enableAppRecovery：需要在应用初始化阶段调用，比如AbilityStage的onCreate调用。调用该接口后，应用恢复时将按首个支持恢复的UIAbility进行恢复。
 
@@ -39,7 +39,7 @@ restartApp：调用后框架会杀死当前应用进程，并重新拉起由setR
 
 API 9以及未使用setRestartWant指定UIAbility的场景，会拉起最后一个支持恢复且在前台的UIAbility，如果当前前台的UIAbility不支持恢复，则应用表现闪退。
 
-如果重启的UIAbility存在已经保存的状态，这些状态数据会在UIAbility的OnCreate生命周期回调的want参数中作为wantParam属性传入。两次重启的间隔应大于一分钟，一分钟之内重复调用此接口只会退出应用不会重启应用。自动重启的行为与主动重启一致。
+如果重启的UIAbility存在已经保存的状态，这些状态数据会在UIAbility的onCreate生命周期回调的want参数中作为wantParam属性传入。两次重启的间隔应大于一分钟，一分钟之内重复调用此接口只会退出应用不会重启应用。自动重启的行为与主动重启一致。
 
 [h2]应用恢复状态管理示意
 
@@ -82,7 +82,7 @@ JS_CRASH	支持	支持	支持	支持
 APP_FREEZE	API18及以上支持	支持	支持	支持
 CPP_CRASH	不支持	不支持	API24及以上支持	支持
 
-这里状态保存指的是故障时状态保存，对于应用卡死场景，开发者可以采用定时保存状态或者在UIAbility切入后台后自动保存的方式最大限度的保护用户数据。
+这里状态保存指的是故障时状态保存，对于应用卡死场景，开发者可以采用定时保存状态或者在UIAbility切入后台后自动保存的方式最大限度地保护用户数据。
 
 开发步骤
 

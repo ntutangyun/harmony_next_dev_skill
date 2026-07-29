@@ -15,29 +15,43 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/recoveryk
 详细接口说明可参考接口文档。
 
 接口名	描述
-getEnterpriseRecoveryKey(userId: number): Promise<EnterpriseRecoveryKeyInfo>	使用Promise方式获取恢复密钥。
+getEnterpriseRecoveryKey(userId: number): Promise<EnterpriseRecoveryKeyInfo>	使用Promise方式获取企业恢复密钥。
 
 开发步骤
 
 导入模块。
 
+import { buffer } from '@kit.ArkTS';
+import { osAccount, BusinessError } from '@kit.BasicServicesKit';
 import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
-import { BusinessError, osAccount } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 调用接口getEnterpriseRecoveryKey，传入需要获取企业恢复密钥的用户ID，获取企业恢复密钥。
 
-async function testGetEnterpriseRecoveryKey() {
-  try {
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+const TAG: string = 'EnterpriseRecoveryKey_GetRecoveryKey';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 获取解密硬盘数据的企业恢复密钥。使用Promise异步回调。
+ */
+function getEnterpriseRecoveryKey() {
+  let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
+  accountManager.getOsAccountLocalId().then((userId: number) => {
+    hilog.info(DOMAIN, TAG, `getEnterpriseRecoveryKey userId: ${userId}.`);
     recoveryKey.getEnterpriseRecoveryKey(userId).then((info: recoveryKey.EnterpriseRecoveryKeyInfo) => {
-      console.info(`Succeeded in getting enterprise recovery key.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting enterprise recovery key.`);
+      hilog.info(DOMAIN, TAG,
+        `EnterpriseRecoveryKeyInfo enterpriseRecoveryKey: ${buffer.from(info.enterpriseRecoveryKey)
+          .toString('hex')}`);
+      hilog.info(DOMAIN, TAG,
+        `EnterpriseRecoveryKeyInfo exportPublicKey: ${buffer.from(info.exportPublicKey).toString('hex')}`);
+      hilog.info(DOMAIN, TAG, `EnterpriseRecoveryKeyInfo iv: ${buffer.from(info.iv).toString('hex')}`);
+      hilog.info(DOMAIN, TAG, `EnterpriseRecoveryKeyInfo tag: ${buffer.from(info.tag).toString('hex')}`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to get enterprise recovery key. Code: ${error.code}, message: ${error.message}`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to get enterprise recovery key. Code: ${error.code}, message: ${error.message}`);
     });
-  } catch (e) {
-    console.error(`Failed to testGetEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
-  }
+  });
 }
 
 ## Code blocks
@@ -45,24 +59,38 @@ async function testGetEnterpriseRecoveryKey() {
 ### Code block 1
 
 ```
+import { buffer } from '@kit.ArkTS';
+import { osAccount, BusinessError } from '@kit.BasicServicesKit';
 import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
-import { BusinessError, osAccount } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-async function testGetEnterpriseRecoveryKey() {
-  try {
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+const TAG: string = 'EnterpriseRecoveryKey_GetRecoveryKey';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 获取解密硬盘数据的企业恢复密钥。使用Promise异步回调。
+ */
+function getEnterpriseRecoveryKey() {
+  let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
+  accountManager.getOsAccountLocalId().then((userId: number) => {
+    hilog.info(DOMAIN, TAG, `getEnterpriseRecoveryKey userId: ${userId}.`);
     recoveryKey.getEnterpriseRecoveryKey(userId).then((info: recoveryKey.EnterpriseRecoveryKeyInfo) => {
-      console.info(`Succeeded in getting enterprise recovery key.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting enterprise recovery key.`);
+      hilog.info(DOMAIN, TAG,
+        `EnterpriseRecoveryKeyInfo enterpriseRecoveryKey: ${buffer.from(info.enterpriseRecoveryKey)
+          .toString('hex')}`);
+      hilog.info(DOMAIN, TAG,
+        `EnterpriseRecoveryKeyInfo exportPublicKey: ${buffer.from(info.exportPublicKey).toString('hex')}`);
+      hilog.info(DOMAIN, TAG, `EnterpriseRecoveryKeyInfo iv: ${buffer.from(info.iv).toString('hex')}`);
+      hilog.info(DOMAIN, TAG, `EnterpriseRecoveryKeyInfo tag: ${buffer.from(info.tag).toString('hex')}`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to get enterprise recovery key. Code: ${error.code}, message: ${error.message}`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to get enterprise recovery key. Code: ${error.code}, message: ${error.message}`);
     });
-  } catch (e) {
-    console.error(`Failed to testGetEnterpriseRecoveryKey. Code: ${e.code}, message: ${e.message}`);
-  }
+  });
 }
 ```

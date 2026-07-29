@@ -17,11 +17,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/custom-fo
 注册使用自定义字体的相关接口如下所示，详细接口说明请参考Drawing。
 
 接口名	描述
-OH_Drawing_CreateSharedFontCollection (void)	创建可共享的字体集对象OH_Drawing_FontCollection。
-OH_Drawing_RegisterFont (OH_Drawing_FontCollection* , const char* fontFamily, const char* familySrc )	用于在字体管理器中注册自定义字体，支持的字体文件格式包含：ttf、otf。
+OH_Drawing_CreateSharedFontCollection(void)	创建可共享的字体集对象OH_Drawing_FontCollection。
+OH_Drawing_RegisterFont(OH_Drawing_FontCollection* , const char* fontFamily, const char* familySrc )	用于在字体管理器中注册自定义字体，支持的字体文件格式包含：ttf、otf。
 OH_Drawing_CreateTextStyle(void)	创建指向OH_Drawing_TextStyle对象的指针，用于设置文本样式。
-OH_Drawing_SetTextStyleFontFamilies (OH_Drawing_TextStyle *, int, const char *fontFamilies[])	设置字体类型。
-OH_Drawing_UnregisterFont (OH_Drawing_FontCollection* , const char* fontFamily)	通过字体家族名称取消注册自定义字体。
+OH_Drawing_SetTextStyleFontFamilies(OH_Drawing_TextStyle *, int, const char *fontFamilies[])	设置字体类型。
+OH_Drawing_UnregisterFont(OH_Drawing_FontCollection* , const char* fontFamily)	通过字体家族名称取消注册自定义字体。
 
 开发步骤
 
@@ -62,7 +62,6 @@ OH_Drawing_RegisterFont接口返回结果的几种情况及含义如下所示：
 
 0表示注册成功，1表示文件不存在，2表示打开文件失败，3表示读取文件失败，4表示寻找文件失败，5表示获取大小失败，9表示文件损坏。
 
-// 返回0为成功，1为文件不存在，2为打开文件失败，3为读取文件失败，4为寻找文件失败，5为获取大小失败，9文件损坏
 int errorCode = OH_Drawing_RegisterFont(fontCollection, fontFamily, fontPath);
 
 确保自定义字体注册成功后，使用OH_Drawing_CreateTextStyle()接口创建文本样式对象，并使用OH_Drawing_SetTextStyleFontFamilies()接口加入自定义字体。
@@ -146,7 +145,6 @@ const char* fontPath = "/system/fonts/NotoSerifTamil[wdth,wght].ttf";
 ### Code block 5
 
 ```
-// 返回0为成功，1为文件不存在，2为打开文件失败，3为读取文件失败，4为寻找文件失败，5为获取大小失败，9文件损坏
 int errorCode = OH_Drawing_RegisterFont(fontCollection, fontFamily, fontPath);
 ```
 

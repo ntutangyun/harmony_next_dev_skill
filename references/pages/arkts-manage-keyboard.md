@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-man
 
 人机交互获得焦点，例如：单击、双击、长按输入框。
 
-通过代码设置焦点，例如：使用requestFocus或defaultFocus方法，将焦点转移到输入框。
+通过代码设置焦点，例如：使用requestFocus方法或defaultFocus属性，将焦点转移到输入框。
 
 使用外接键盘的按键走焦，例如：Tab键、Shift+Tab键、方向键，按下后可以转移焦点。外接键盘时输入框获焦，不会弹出系统软键盘，会显示物理键盘悬浮栏。
 
@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-man
 
 [h2]通过代码请求焦点
 
-可以通过代码控制将焦点转移到输入框，包括使用defaultFocus和requestFocus方法。更多细节请参见支持焦点处理。
+可以通过代码控制将焦点转移到输入框，包括使用defaultFocus属性和requestFocus方法。更多细节请参见支持焦点处理。
 
 以下示例展示了点击按钮时，焦点转移到输入框并弹出软键盘的方法。
 
@@ -53,7 +53,7 @@ struct demo {
 
 外接物理键盘时，按下物理键盘的Tab键、Shift+Tab键、方向键可以转移焦点。按键走焦到输入框时，显示物理键盘悬浮栏。更多细节请参见支持焦点处理。
 
-以下示例展示了外接键盘时，多次按下Tab键，焦点转移到TextInput并弹出软键盘的场景。当按下Tab键时，焦点在页面中的三个组件之间转移，可以从Text的蓝色边框或者TextInput中闪烁的光标观察到焦点转移。当TextInput获焦时，显示光标，同时显示物理键盘悬浮栏。
+以下示例展示了外接键盘时，多次按下Tab键，焦点转移到TextInput并显示物理键盘悬浮栏的场景。当按下Tab键时，焦点在页面中的三个组件之间转移，可以从Text的蓝色边框或者TextInput中闪烁的光标观察到焦点转移。当TextInput获焦时，显示光标，同时显示物理键盘悬浮栏。
 
 @Entry
 @Component
@@ -231,7 +231,7 @@ struct demo_text_1 {
   ]
 }
 
-[h2]通过输入框的controller退出编辑态
+[h2]通过输入框的TextInputController退出编辑态
 
 通过输入框的TextInputController调用stopEditing方法后，软键盘会自动收起。
 

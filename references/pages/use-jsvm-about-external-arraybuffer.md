@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/use-jsvm-
 
 ArrayBuffer是JavaScript中的一种数据类型，用于表示通用的、固定长度的原始二进制数据缓冲区。提供了一种在JavaScript中有效地表示和操作原始二进制数据的方式。
 
-在某些场景下，应用已有一块外部内存（如从文件映射、硬件缓冲区、或其他Native模块分配的内存），希望将其包装为JavaScript的ArrayBuffer对象，以便在JS层进行读写操作。从API版本26.0.0开始，JSVM-API提供了OH_JSVM_CreateArrayBufferFromExternalMemory接口来满足这类场景。
+在某些场景下，如应用已有一块外部内存（如从文件映射、硬件缓冲区、或其他Native模块分配的内存），希望将其包装为JavaScript的ArrayBuffer对象，以便在JS层进行读写操作。从API版本26.0.0开始，JSVM-API提供了OH_JSVM_CreateArrayBufferFromExternalMemory接口来满足这类场景。
 
 基本概念
 

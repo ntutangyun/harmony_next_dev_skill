@@ -69,7 +69,7 @@ int OH_Data_Asset_GetSize(Data_Asset *asset, size_t *size)	获取资产类型数
 int OH_Data_Asset_GetStatus(Data_Asset *asset, Data_AssetStatus *status)	获取资产类型数据的状态码。
 Data_Asset *OH_Data_Asset_CreateOne()	创建一个资产类型实例。使用完毕后需要调用OH_Data_Asset_DestroyOne释放内存。
 int OH_Data_Asset_DestroyOne(Data_Asset *asset)	销毁一个资产类型实例并回收内存。
-Data_Asset **OH_Data_Asset_CreateMultiple(uint32_t count)	创造指定数量的资产类型实例。使用完毕后需要调用OH_Data_Asset_DestroyMultiple释放内存。
+Data_Asset **OH_Data_Asset_CreateMultiple(uint32_t count)	创建指定数量的资产类型实例。使用完毕后需要调用OH_Data_Asset_DestroyMultiple释放内存。
 int OH_Data_Asset_DestroyMultiple(Data_Asset **assets, uint32_t count)	销毁指定数量的资产类型实例并回收内存。
 int OH_Rdb_CreateTransaction(OH_Rdb_Store *store, const OH_RDB_TransOptions *options, OH_Rdb_Transaction **trans)	创建一个相关的OH_Rdb_Transaction实例，开启事务。
 int OH_RdbTransOption_SetType(OH_RDB_TransOptions *options, OH_RDB_TransType type)	设置事务对象类型。
@@ -78,7 +78,7 @@ int OH_RdbTrans_InsertWithConflictResolution(OH_Rdb_Transaction *trans, const ch
 int OH_RdbTrans_UpdateWithConflictResolution(OH_Rdb_Transaction *trans, const OH_VBucket *row, const OH_Predicates *predicates, Rdb_ConflictResolution resolution, int64_t *changes)	根据指定条件更新数据库中的数据，并支持冲突解决。
 int OH_RdbTrans_Delete(OH_Rdb_Transaction *trans, const OH_Predicates *predicates, int64_t *changes)	根据OH_Predicates的指定实例对象从数据库中删除数据。
 int OH_Value_Destroy(OH_Data_Value *value)	销毁OH_Data_Value对象。
-int OH_Values_Destroy(OH_Data_Values *values)	销毁OH_Values_Destroy对象。
+int OH_Values_Destroy(OH_Data_Values *values)	销毁OH_Data_Values对象。
 int OH_RdbTrans_Execute(OH_Rdb_Transaction *trans, const char *sql, const OH_Data_Values *args, OH_Data_Value **result)	执行包含指定参数的SQL语句。
 int OH_RdbTrans_Commit(OH_Rdb_Transaction *trans)	提交事务。
 int OH_RdbTrans_Rollback(OH_Rdb_Transaction *trans)	回滚事务。
@@ -301,7 +301,7 @@ likePattern->putText(likePattern, "zh%");
 likePredicates->like(likePredicates, "NAME", likePattern);
 
 char *colName[] = { "NAME", "AGE" };
-auto *likeQueryCursor = OH_Rdb_Query(store_, likePredicates, colName, 2); // the length of columnNamesis 2
+auto *likeQueryCursor = OH_Rdb_Query(store_, likePredicates, colName, 2); // the length of columnNames is 2
 if (likeQueryCursor == NULL) {
     likePredicates->destroy(likePredicates);
     likePattern->destroy(likePattern);
@@ -327,7 +327,7 @@ if (notLikePredicates == NULL) {
 }
 // 配置谓词以NOT LIKE模式匹配
 OH_Predicates_NotLike(notLikePredicates, "NAME", "zh%");
-auto *notLikeQueryCursor = OH_Rdb_Query(store_, notLikePredicates, colName, 2); // the length ofcolumnNames is 2
+auto *notLikeQueryCursor = OH_Rdb_Query(store_, notLikePredicates, colName, 2); // the length of columnNames is 2
 if (notLikeQueryCursor == NULL) {
     notLikePredicates->destroy(notLikePredicates);
     return;
@@ -345,7 +345,7 @@ while (notLikeQueryCursor->goToNextRow(notLikeQueryCursor) == OH_Rdb_ErrCode::RD
 notLikePredicates->destroy(notLikePredicates);
 notLikeQueryCursor->destroy(notLikeQueryCursor);
 
-配置谓词以GLOB模式或NOTGLOB模式匹配进行数据查询。示例代码如下：
+配置谓词以GLOB模式或NOT GLOB模式匹配进行数据查询。示例代码如下：
 
 OH_Predicates *globPredicates = OH_Rdb_CreatePredicates("EMPLOYEE");
 if (globPredicates == NULL) {
@@ -356,7 +356,7 @@ if (globPredicates == NULL) {
 OH_Predicates_Glob(globPredicates, "NAME", "zh*");
 
 char *colName[] = { "NAME", "AGE" };
-auto *globQueryCursor = OH_Rdb_Query(store_, globPredicates, colName, 2); // the length of columnNamesis 2
+auto *globQueryCursor = OH_Rdb_Query(store_, globPredicates, colName, 2); // the length of columnNames is 2
 if (globQueryCursor == NULL) {
     OH_LOG_ERROR(LOG_APP, "Query failed.");
     globPredicates->destroy(globPredicates);
@@ -381,7 +381,7 @@ if (notGlobPredicates == NULL) {
 }
 // 配置谓词以NOT GLOB模式匹配
 OH_Predicates_NotGlob(notGlobPredicates, "NAME", "zh*");
-auto *notGlobQueryCursor = OH_Rdb_Query(store_, notGlobPredicates, colName, 2); // the length ofcolumnNames is 2
+auto *notGlobQueryCursor = OH_Rdb_Query(store_, notGlobPredicates, colName, 2); // the length of columnNames is 2
 if (notGlobQueryCursor == NULL) {
     OH_LOG_ERROR(LOG_APP, "Query failed.");
     notGlobPredicates->destroy(notGlobPredicates);
@@ -441,9 +441,9 @@ int ret = OH_RdbTrans_Execute(trans, transCreateTableSql, nullptr, &execResult);
 // 创建OH_Data_Values实例
 OH_Data_Values *values = OH_Values_Create();
 ret = OH_Values_PutInt(values, 1); // The value of id is 1
-ret = OH_Values_PutInt(values, 2); // The value of datat2 is 2
-ret = OH_Values_PutReal(values, 1.1); // The value of datat3 is 1.1
-ret = OH_Values_PutText(values, "1"); // The value of datat3 is 1
+ret = OH_Values_PutInt(values, 2); // The value of data2 is 2
+ret = OH_Values_PutReal(values, 1.1); // The value of data3 is 1.1
+ret = OH_Values_PutText(values, "1"); // The value of data3 is 1
 unsigned char val[] = {1, 2};
 ret = OH_Values_PutBlob(values, val, sizeof(val) / sizeof(val[0]));
 
@@ -471,10 +471,10 @@ OH_Value_Destroy(outValue);
 OH_Values_Destroy(values);
 
 OH_VBucket *transValueBucket = OH_Rdb_CreateValuesBucket();
-transValueBucket->putInt64(transValueBucket, "data1", 1); // The value of datat1 is 1
-transValueBucket->putInt64(transValueBucket, "data2", 2); // The value of datat2 is 2
-transValueBucket->putReal(transValueBucket, "data3", 1.1); // The value of datat3 is 1.1
-transValueBucket->putText(transValueBucket, "data4", "1"); // The value of datat4 is 1
+transValueBucket->putInt64(transValueBucket, "data1", 1); // The value of data1 is 1
+transValueBucket->putInt64(transValueBucket, "data2", 2); // The value of data2 is 2
+transValueBucket->putReal(transValueBucket, "data3", 1.1); // The value of data3 is 1.1
+transValueBucket->putText(transValueBucket, "data4", "1"); // The value of data4 is 1
 transValueBucket->putBlob(transValueBucket, "data5", val, sizeof(val) / sizeof(val[0]));
 int64_t insertRowId = -1;
 // 通过事务对象执行OH_VBucket数据插入
@@ -483,8 +483,8 @@ transValueBucket->destroy(transValueBucket);
 
 OH_VBucket *transValueBucket2 = OH_Rdb_CreateValuesBucket();
 transValueBucket2->putInt64(transValueBucket2, "id", 1); // The value of id is 1
-transValueBucket2->putInt64(transValueBucket2, "data2", 2); // The value of datat2 is 2
-transValueBucket2->putReal(transValueBucket2, "data3", 1.2); // The value of datat3 is 1.2
+transValueBucket2->putInt64(transValueBucket2, "data2", 2); // The value of data2 is 2
+transValueBucket2->putReal(transValueBucket2, "data3", 1.2); // The value of data3 is 1.2
 
 int64_t transInsertRow = -1;
 // 支持插入数据时配置冲突策略
@@ -622,7 +622,7 @@ if (errCode1 != OH_Rdb_ErrCode::RDB_OK) {
 OH_VBucket *valueBucket = OH_Rdb_CreateValuesBucket();
 valueBucket->putText(valueBucket, "NAME", "Lisa");
 valueBucket->putInt64(valueBucket, "AGE", 18); // The value of AGE is 18
-valueBucket->putReal(valueBucket, "SALARY", 100.5); // The value of AGE is 100.5
+valueBucket->putReal(valueBucket, "SALARY", 100.5); // The value of SALARY is 100.5
 uint8_t arr[] = {1, 2, 3, 4, 5};
 int len = sizeof(arr) / sizeof(arr[0]);
 valueBucket->putBlob(valueBucket, "CODES", arr, len);
@@ -630,7 +630,7 @@ int rowId = OH_Rdb_Insert(attachStore, "EMPLOYEE", valueBucket);
 OH_LOG_INFO(LOG_APP, "Insert data result: %{public}d", rowId);
 valueBucket->destroy(valueBucket);
 OH_Rdb_CloseStore(attachStore);
-
+// ...
 // 附加数据库
 size_t attachedNumber = 0;
 // The maximum waiting time allowed for attaching databases is 10
@@ -1024,7 +1024,7 @@ likePattern->putText(likePattern, "zh%");
 likePredicates->like(likePredicates, "NAME", likePattern);
 
 char *colName[] = { "NAME", "AGE" };
-auto *likeQueryCursor = OH_Rdb_Query(store_, likePredicates, colName, 2); // the length of columnNamesis 2
+auto *likeQueryCursor = OH_Rdb_Query(store_, likePredicates, colName, 2); // the length of columnNames is 2
 if (likeQueryCursor == NULL) {
     likePredicates->destroy(likePredicates);
     likePattern->destroy(likePattern);
@@ -1050,7 +1050,7 @@ if (notLikePredicates == NULL) {
 }
 // 配置谓词以NOT LIKE模式匹配
 OH_Predicates_NotLike(notLikePredicates, "NAME", "zh%");
-auto *notLikeQueryCursor = OH_Rdb_Query(store_, notLikePredicates, colName, 2); // the length ofcolumnNames is 2
+auto *notLikeQueryCursor = OH_Rdb_Query(store_, notLikePredicates, colName, 2); // the length of columnNames is 2
 if (notLikeQueryCursor == NULL) {
     notLikePredicates->destroy(notLikePredicates);
     return;
@@ -1081,7 +1081,7 @@ if (globPredicates == NULL) {
 OH_Predicates_Glob(globPredicates, "NAME", "zh*");
 
 char *colName[] = { "NAME", "AGE" };
-auto *globQueryCursor = OH_Rdb_Query(store_, globPredicates, colName, 2); // the length of columnNamesis 2
+auto *globQueryCursor = OH_Rdb_Query(store_, globPredicates, colName, 2); // the length of columnNames is 2
 if (globQueryCursor == NULL) {
     OH_LOG_ERROR(LOG_APP, "Query failed.");
     globPredicates->destroy(globPredicates);
@@ -1106,7 +1106,7 @@ if (notGlobPredicates == NULL) {
 }
 // 配置谓词以NOT GLOB模式匹配
 OH_Predicates_NotGlob(notGlobPredicates, "NAME", "zh*");
-auto *notGlobQueryCursor = OH_Rdb_Query(store_, notGlobPredicates, colName, 2); // the length ofcolumnNames is 2
+auto *notGlobQueryCursor = OH_Rdb_Query(store_, notGlobPredicates, colName, 2); // the length of columnNames is 2
 if (notGlobQueryCursor == NULL) {
     OH_LOG_ERROR(LOG_APP, "Query failed.");
     notGlobPredicates->destroy(notGlobPredicates);
@@ -1170,9 +1170,9 @@ int ret = OH_RdbTrans_Execute(trans, transCreateTableSql, nullptr, &execResult);
 // 创建OH_Data_Values实例
 OH_Data_Values *values = OH_Values_Create();
 ret = OH_Values_PutInt(values, 1); // The value of id is 1
-ret = OH_Values_PutInt(values, 2); // The value of datat2 is 2
-ret = OH_Values_PutReal(values, 1.1); // The value of datat3 is 1.1
-ret = OH_Values_PutText(values, "1"); // The value of datat3 is 1
+ret = OH_Values_PutInt(values, 2); // The value of data2 is 2
+ret = OH_Values_PutReal(values, 1.1); // The value of data3 is 1.1
+ret = OH_Values_PutText(values, "1"); // The value of data3 is 1
 unsigned char val[] = {1, 2};
 ret = OH_Values_PutBlob(values, val, sizeof(val) / sizeof(val[0]));
 
@@ -1200,10 +1200,10 @@ OH_Value_Destroy(outValue);
 OH_Values_Destroy(values);
 
 OH_VBucket *transValueBucket = OH_Rdb_CreateValuesBucket();
-transValueBucket->putInt64(transValueBucket, "data1", 1); // The value of datat1 is 1
-transValueBucket->putInt64(transValueBucket, "data2", 2); // The value of datat2 is 2
-transValueBucket->putReal(transValueBucket, "data3", 1.1); // The value of datat3 is 1.1
-transValueBucket->putText(transValueBucket, "data4", "1"); // The value of datat4 is 1
+transValueBucket->putInt64(transValueBucket, "data1", 1); // The value of data1 is 1
+transValueBucket->putInt64(transValueBucket, "data2", 2); // The value of data2 is 2
+transValueBucket->putReal(transValueBucket, "data3", 1.1); // The value of data3 is 1.1
+transValueBucket->putText(transValueBucket, "data4", "1"); // The value of data4 is 1
 transValueBucket->putBlob(transValueBucket, "data5", val, sizeof(val) / sizeof(val[0]));
 int64_t insertRowId = -1;
 // 通过事务对象执行OH_VBucket数据插入
@@ -1212,8 +1212,8 @@ transValueBucket->destroy(transValueBucket);
 
 OH_VBucket *transValueBucket2 = OH_Rdb_CreateValuesBucket();
 transValueBucket2->putInt64(transValueBucket2, "id", 1); // The value of id is 1
-transValueBucket2->putInt64(transValueBucket2, "data2", 2); // The value of datat2 is 2
-transValueBucket2->putReal(transValueBucket2, "data3", 1.2); // The value of datat3 is 1.2
+transValueBucket2->putInt64(transValueBucket2, "data2", 2); // The value of data2 is 2
+transValueBucket2->putReal(transValueBucket2, "data3", 1.2); // The value of data3 is 1.2
 
 int64_t transInsertRow = -1;
 // 支持插入数据时配置冲突策略
@@ -1363,7 +1363,7 @@ if (errCode1 != OH_Rdb_ErrCode::RDB_OK) {
 OH_VBucket *valueBucket = OH_Rdb_CreateValuesBucket();
 valueBucket->putText(valueBucket, "NAME", "Lisa");
 valueBucket->putInt64(valueBucket, "AGE", 18); // The value of AGE is 18
-valueBucket->putReal(valueBucket, "SALARY", 100.5); // The value of AGE is 100.5
+valueBucket->putReal(valueBucket, "SALARY", 100.5); // The value of SALARY is 100.5
 uint8_t arr[] = {1, 2, 3, 4, 5};
 int len = sizeof(arr) / sizeof(arr[0]);
 valueBucket->putBlob(valueBucket, "CODES", arr, len);
@@ -1371,7 +1371,7 @@ int rowId = OH_Rdb_Insert(attachStore, "EMPLOYEE", valueBucket);
 OH_LOG_INFO(LOG_APP, "Insert data result: %{public}d", rowId);
 valueBucket->destroy(valueBucket);
 OH_Rdb_CloseStore(attachStore);
-
+// ...
 // 附加数据库
 size_t attachedNumber = 0;
 // The maximum waiting time allowed for attaching databases is 10

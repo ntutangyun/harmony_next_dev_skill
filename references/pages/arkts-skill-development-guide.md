@@ -64,7 +64,8 @@ Application/
         "abilityName": "EntryAbility", // 与该Skill关联的组件名称
         "srcEntries": [  // 实现Skill的代码文件路径列表
           "../../skills/music-assistant/scripts/MusicSkill.ets"
-        ]
+        ],
+        "version": "1.0.0"
       }
     ],
 
@@ -138,6 +139,17 @@ if (!validActions.includes(action)) {
 3.4 调用应用内业务实现。
 
 校验通过后，调用既有业务接口完成实际任务。入口脚本不承载业务逻辑，仅充当“参数适配器”，读取业务返回值与运行时异常，分别映射到SKILL.md声明的不同结果分支。
+
+try {
+  // 直接调用应用内已有业务API
+  const playResult: PlayResult | null = MusicPlayer.searchAndPlay(songName, singer);
+  // 业务返回值 → 映射到"成功"或"未命中"分支（见 3.5）
+      // ...
+} catch (e) {
+  // 业务异常 → 统一映射到 ERR_INTERNAL 分支（见 3.5）
+  const err = e as BusinessError;
+// ...
+}
 
 3.5 按契约构造ExecuteResult并回传。
 
@@ -362,7 +374,8 @@ Application/
         "abilityName": "EntryAbility", // 与该Skill关联的组件名称
         "srcEntries": [  // 实现Skill的代码文件路径列表
           "../../skills/music-assistant/scripts/MusicSkill.ets"
-        ]
+        ],
+        "version": "1.0.0"
       }
     ],
 
@@ -429,6 +442,21 @@ if (!validActions.includes(action)) {
 ### Code block 6
 
 ```
+try {
+  // 直接调用应用内已有业务API
+  const playResult: PlayResult | null = MusicPlayer.searchAndPlay(songName, singer);
+  // 业务返回值 → 映射到"成功"或"未命中"分支（见 3.5）
+      // ...
+} catch (e) {
+  // 业务异常 → 统一映射到 ERR_INTERNAL 分支（见 3.5）
+  const err = e as BusinessError;
+// ...
+}
+```
+
+### Code block 7
+
+```
 // 成功分支示例
 const first: Track = playResult.tracks[0];
 const playingTrack: Record<string, Object> = {
@@ -473,7 +501,7 @@ private async report(info: scriptManager.ArkTSScriptInfo, result: scriptManager.
 }
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 ---
@@ -482,7 +510,7 @@ description: 提供音乐搜索播放与播控能力，响应“放首歌”、�
 ---
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 ## 触发场景
@@ -502,7 +530,7 @@ description: 提供音乐搜索播放与播控能力，响应“放首歌”、�
 - 用户说“调小音量”——意图是系统音量控制，应走系统能力。
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 'scripts/MusicSkill.ets' --functionName 'playMusicByName' --args '{
@@ -512,7 +540,7 @@ exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 's
 )
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 "args": {
@@ -534,7 +562,7 @@ exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 's
 }
 ```
 
-### Code block 11
+### Code block 12
 
 ```
 // 1. 成功播放
@@ -550,7 +578,11 @@ exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 's
         "matchedCount": 1
     }
 }
+```
 
+### Code block 13
+
+```
 // 2. 入参非法
 {
     "type": "result",
@@ -559,7 +591,11 @@ exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 's
     "errMsg": "songName and singer are both empty",
     "suggestion": "我没听清，你想听哪首歌？"
 }
+```
 
+### Code block 14
+
+```
 // 3. 未命中
 {
     "type": "result",
@@ -570,7 +606,11 @@ exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 's
     },
     "suggestion": "没有找到SingerA的《SongA》"
 }
+```
 
+### Code block 15
+
+```
 // 4. 内部错误
 {
     "type": "result",
@@ -581,7 +621,7 @@ exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 's
 }
 ```
 
-### Code block 12
+### Code block 16
 
 ```
 {

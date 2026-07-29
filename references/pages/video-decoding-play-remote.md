@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/video-dec
 
 开发者在开发影视、会议和直播等应用时，通常需要使用视频解码能力实现高性能的播放和视频处理功能。
 
-本文中视频播控功能采用Surface模式解码能力实现，Surface模式是指在视频解码的过程中，用NativeWindow来传递输出数据，直接与XComponent组件对接，实现视频播放。与Buffer模式相比，开发者不需要处理解码后的视频数据与播放组件的对接。具体区别可参考surface输出与buffer输出。
+本文中视频播控功能采用Surface模式解码能力实现，Surface模式是指在视频解码的过程中，用NativeWindow来传递输出数据，直接与XComponent组件对接，实现视频播放。与Buffer模式相比，开发者不需要处理解码后的视频数据与播放组件的对接。具体区别可参考视频解码。
 
 在阅读本文之前，建议开发者先了解音视频编解码相关知识，同时建议IDE环境中的SDK版本不低于6.0.2(22)。
 
@@ -44,7 +44,7 @@ Surface模式视频解码播放是通过调用系统AVCodec模块的能力实现
 
 创建解码输入和输出子线程，启动解码播放流程。
 
-输入子线程通过OH_AVCodecCallback中的OnNeedInputBuffer异步回调函数指针获取可用的AVBuffer后，从解封装器中读取视频数据提交给解码器，实现向解码器输入待解码的视频数据。
+输入子线程通过OH_AVCodecCallback中的OnNeedInputBuffer异步回调函数指针获取可用的AVBuffer后，从解封装器中读取视频数据提交给解码器；实现向解码器输入待解码的视频数据。
 
 解码输出子线程通过OnNeedOutputBuffer拿到解码后的帧数据，进行音画同步处理后，通知解码器在Surface上完成渲染。
 
@@ -87,7 +87,7 @@ int32_t Player::CreateVideoDecoder()
     return MEDIA_ERR_OK;
 }
 
-启动解码器，创建解码输入、输出子线程，开始解码视频进行播放。
+启动解码器，创建解码输入、输出子线程，开始解码视频。
 
 int32_t Player::Start()
 {

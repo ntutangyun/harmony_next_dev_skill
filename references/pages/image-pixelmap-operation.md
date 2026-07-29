@@ -10,20 +10,21 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-pix
 
 开发步骤
 
-位图操作相关API的详细介绍请参见PixelMap。
+位图操作相关API的详细介绍请参见Interface (PixelMap)。
 
 完成图片解码，获取PixelMap位图对象。
 
 从PixelMap位图对象中获取信息。
 
-import { image } from '@kit.ImageKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 // 获取图像像素的总字节数。
-let pixelBytesNumber: number = pixelMap.getPixelBytesNumber();
-// 获取图像像素每行字节数。
-let rowBytes: number = pixelMap.getBytesNumberPerRow();
-// 获取当前图像像素密度。像素密度是指每英寸图片所拥有的像素数量。像素密度越大，图片越精细。
-let density: number = pixelMap.getDensity();
+const totalPixelBytes: number = this.pixelMap.getPixelBytesNumber();
+Logger.info('Total bytes: ', totalPixelBytes.toString());
+// 获取图像像素的每行字节数。
+const rowBytes: number = this.pixelMap.getBytesNumberPerRow();
+Logger.info('Row bytes: ', rowBytes.toString());
+// 获取当前图像的像素密度。像素密度是指每英寸图片所拥有的像素数量，像素密度越大，图片越精细。
+const density: number = this.pixelMap.getDensity();
+Logger.info('Density: ', density.toString());
 
 读取并修改目标区域像素数据，写回原图。
 
@@ -31,42 +32,51 @@ let density: number = pixelMap.getDensity();
 
 建议readPixelsToBuffer和writeBufferToPixels成对使用，readPixels和writePixels成对使用，避免因图像像素格式不一致，造成PixelMap图像出现异常。
 
-import { image } from '@kit.ImageKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-// 场景一：读取并修改整张图片数据。
-// 按照PixelMap的像素格式，读取PixelMap的图像像素数据，并写入缓冲区中。
-const buffer = new ArrayBuffer(pixelBytesNumber);
-pixelMap.readPixelsToBuffer(buffer).then(() => {
-  console.info('Succeeded in reading image pixel data.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to read image pixel data. The error is: ' + error);
-})
-// 按照PixelMap的像素格式，读取缓冲区中的图像像素数据，并写入PixelMap。
-pixelMap.writeBufferToPixels(buffer).then(() => {
-  console.info('Succeeded in writing image pixel data.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to write image pixel data. The error is: ' + error);
-})
+// 场景一：读取并修改整张图像数据。
+// 读取整个PixelMap的像素数据，并按照PixelMap的像素格式写入缓冲区。
+const buffer = new ArrayBuffer(totalPixelBytes);
+await this.pixelMap.readPixelsToBuffer(buffer).then(() => {
+  Logger.info('Succeeded in reading image pixel data.');
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to read image pixel data. The error is: ' + String(error));
+});
+// ...
+// 按照PixelMap的像素格式，读取缓冲区内的图像像素数据，并将其写入整个PixelMap。
+this.pixelMap!.writeBufferToPixels(buffer).then(() => {
+  Logger.info('Succeeded in writing image pixel data.');
+  this.updateImageInfo();
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to write image pixel data. The error is: ' + String(error));
+});
 
-// 场景二：读取并修改指定区域内的图片数据。
-// 固定按照BGRA_8888格式，读取PixelMap指定区域内的图像像素数据，并写入PositionArea.pixels缓冲区中，该区域由PositionArea.region指定。
-const area : image.PositionArea = {
-  pixels: new ArrayBuffer(8),
+// 场景二：读取并修改指定区域内的图像数据。
+// 读取PixelMap指定区域内的像素数据，并按照RGBA_8888像素格式写入PositionArea.pixels缓冲区，该区域由PositionArea.region指定。
+const regionWidth: number = 200;
+const regionHeight: number = 100;
+const area: image.PositionArea = {
+  pixels: new ArrayBuffer(regionWidth * regionHeight * 4), // BGRA_8888格式的每个像素占4字节。
   offset: 0,
-  stride: 8,
-  region: { size: { height: 1, width: 2 }, x: 0, y: 0 }
-}
-pixelMap.readPixels(area).then(() => {
-  console.info('Succeeded in reading the image data in the area.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to read the image data in the area. The error is: ' + error);
-})
-// 固定按照BGRA_8888格式，读取PositionArea.pixels缓冲区中的图像像素数据，并写入PixelMap指定区域内，该区域由PositionArea.region指定。
-pixelMap.writePixels(area).then(() => {
-  console.info('Succeeded in writing the image data in the area.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to write the image data in the area. The error is: ' + error);
-})
+  stride: regionWidth * 4, // 指定区域的行跨距。
+  region: {
+    x: 0,
+    y: 0,
+    size: { width: regionWidth, height: regionHeight }
+  }
+};
+
+await this.pixelMap.readPixels(area).then(() => {
+  Logger.info('Succeeded in reading the image data in the area.');
+  // ...
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to read the image data in the area. The error is: ' + String(error));
+});
+// 读取PositionArea.pixels缓冲区内的图像像素数据，并按照BGRA_8888像素格式将其写入PixelMap的指定区域，该区域由PositionArea.region指定。
+await this.pixelMap.writePixels(area).then(() => {
+  this.updateImageInfo();
+  Logger.info('Succeeded in writing pixelMap into the specified area.');
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to write pixelMap into the specified area. The error is: ' + String(error));
+});
 
 开发示例
 
@@ -122,6 +132,13 @@ async function clonePixelMap(pixelMap: PixelMap, desiredPixelFormat?: image.Pixe
 
 参考以下代码对两张PixelMap进行拼接。
 
+/**
+ * 将两张宽度相同的PixelMap纵向拼接成一张长图。
+ *
+ * @param pixelMap1 - 第一张PixelMap。
+ * @param pixelMap2 - 第二张PixelMap。宽度必须与第一张相同，高度可以不同。
+ * @returns 拼接后的新PixelMap的Promise。
+ */
 async function concatPixelMap(pixelMap1: PixelMap, pixelMap2: PixelMap): Promise<PixelMap> {
   // 将pixelMap1的像素数据读取至area1.pixels中。
   const imageInfo1 = pixelMap1.getImageInfoSync();
@@ -179,58 +196,72 @@ PixelMap深拷贝案例
 ### Code block 1
 
 ```
-import { image } from '@kit.ImageKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 // 获取图像像素的总字节数。
-let pixelBytesNumber: number = pixelMap.getPixelBytesNumber();
-// 获取图像像素每行字节数。
-let rowBytes: number = pixelMap.getBytesNumberPerRow();
-// 获取当前图像像素密度。像素密度是指每英寸图片所拥有的像素数量。像素密度越大，图片越精细。
-let density: number = pixelMap.getDensity();
+const totalPixelBytes: number = this.pixelMap.getPixelBytesNumber();
+Logger.info('Total bytes: ', totalPixelBytes.toString());
+// 获取图像像素的每行字节数。
+const rowBytes: number = this.pixelMap.getBytesNumberPerRow();
+Logger.info('Row bytes: ', rowBytes.toString());
+// 获取当前图像的像素密度。像素密度是指每英寸图片所拥有的像素数量，像素密度越大，图片越精细。
+const density: number = this.pixelMap.getDensity();
+Logger.info('Density: ', density.toString());
 ```
 
 ### Code block 2
 
 ```
-import { image } from '@kit.ImageKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-// 场景一：读取并修改整张图片数据。
-// 按照PixelMap的像素格式，读取PixelMap的图像像素数据，并写入缓冲区中。
-const buffer = new ArrayBuffer(pixelBytesNumber);
-pixelMap.readPixelsToBuffer(buffer).then(() => {
-  console.info('Succeeded in reading image pixel data.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to read image pixel data. The error is: ' + error);
-})
-// 按照PixelMap的像素格式，读取缓冲区中的图像像素数据，并写入PixelMap。
-pixelMap.writeBufferToPixels(buffer).then(() => {
-  console.info('Succeeded in writing image pixel data.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to write image pixel data. The error is: ' + error);
-})
-
-// 场景二：读取并修改指定区域内的图片数据。
-// 固定按照BGRA_8888格式，读取PixelMap指定区域内的图像像素数据，并写入PositionArea.pixels缓冲区中，该区域由PositionArea.region指定。
-const area : image.PositionArea = {
-  pixels: new ArrayBuffer(8),
-  offset: 0,
-  stride: 8,
-  region: { size: { height: 1, width: 2 }, x: 0, y: 0 }
-}
-pixelMap.readPixels(area).then(() => {
-  console.info('Succeeded in reading the image data in the area.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to read the image data in the area. The error is: ' + error);
-})
-// 固定按照BGRA_8888格式，读取PositionArea.pixels缓冲区中的图像像素数据，并写入PixelMap指定区域内，该区域由PositionArea.region指定。
-pixelMap.writePixels(area).then(() => {
-  console.info('Succeeded in writing the image data in the area.');
-}).catch((error : BusinessError) => {
-  console.error('Failed to write the image data in the area. The error is: ' + error);
-})
+// 场景一：读取并修改整张图像数据。
+// 读取整个PixelMap的像素数据，并按照PixelMap的像素格式写入缓冲区。
+const buffer = new ArrayBuffer(totalPixelBytes);
+await this.pixelMap.readPixelsToBuffer(buffer).then(() => {
+  Logger.info('Succeeded in reading image pixel data.');
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to read image pixel data. The error is: ' + String(error));
+});
+// ...
+// 按照PixelMap的像素格式，读取缓冲区内的图像像素数据，并将其写入整个PixelMap。
+this.pixelMap!.writeBufferToPixels(buffer).then(() => {
+  Logger.info('Succeeded in writing image pixel data.');
+  this.updateImageInfo();
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to write image pixel data. The error is: ' + String(error));
+});
 ```
 
 ### Code block 3
+
+```
+// 场景二：读取并修改指定区域内的图像数据。
+// 读取PixelMap指定区域内的像素数据，并按照RGBA_8888像素格式写入PositionArea.pixels缓冲区，该区域由PositionArea.region指定。
+const regionWidth: number = 200;
+const regionHeight: number = 100;
+const area: image.PositionArea = {
+  pixels: new ArrayBuffer(regionWidth * regionHeight * 4), // BGRA_8888格式的每个像素占4字节。
+  offset: 0,
+  stride: regionWidth * 4, // 指定区域的行跨距。
+  region: {
+    x: 0,
+    y: 0,
+    size: { width: regionWidth, height: regionHeight }
+  }
+};
+
+await this.pixelMap.readPixels(area).then(() => {
+  Logger.info('Succeeded in reading the image data in the area.');
+  // ...
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to read the image data in the area. The error is: ' + String(error));
+});
+// 读取PositionArea.pixels缓冲区内的图像像素数据，并按照BGRA_8888像素格式将其写入PixelMap的指定区域，该区域由PositionArea.region指定。
+await this.pixelMap.writePixels(area).then(() => {
+  this.updateImageInfo();
+  Logger.info('Succeeded in writing pixelMap into the specified area.');
+}).catch((error: BusinessError) => {
+  Logger.error('Failed to write pixelMap into the specified area. The error is: ' + String(error));
+});
+```
+
+### Code block 4
 
 ```
 /**
@@ -264,9 +295,16 @@ async function clonePixelMap(pixelMap: PixelMap, desiredPixelFormat?: image.Pixe
 }
 ```
 
-### Code block 4
+### Code block 5
 
 ```
+/**
+ * 将两张宽度相同的PixelMap纵向拼接成一张长图。
+ *
+ * @param pixelMap1 - 第一张PixelMap。
+ * @param pixelMap2 - 第二张PixelMap。宽度必须与第一张相同，高度可以不同。
+ * @returns 拼接后的新PixelMap的Promise。
+ */
 async function concatPixelMap(pixelMap1: PixelMap, pixelMap2: PixelMap): Promise<PixelMap> {
   // 将pixelMap1的像素数据读取至area1.pixels中。
   const imageInfo1 = pixelMap1.getImageInfoSync();

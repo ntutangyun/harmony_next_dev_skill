@@ -10,9 +10,9 @@ release模式编译产物，产物位置：{ProjectPath}/{ModuleName}/build/{pro
 
 [h2]C++调试产物debug so
 
-带debug信息的so数据，产物位置：{ProjectPath}/{ModuleName}/build/{product}/intermediates/libs
+带调试信息的so数据，产物位置：{ProjectPath}/{ModuleName}/build/{product}/intermediates/libs
 
-配置方式请参考release编译带debug信息的so。
+配置方式请参考release编译带调试信息的so。
 
 [h2]代码混淆产物nameCache
 
@@ -28,7 +28,7 @@ Release：最大化优化代码，但不包含调试信息。
 
 RelWithDebInfo：近似于Release模式，既进行了代码优化，同时保留部分调试信息。
 
-[h2]release编译带debug信息的so
+[h2]release编译带调试信息的so
 
 通常release的so中的符号表、调试信息会被移除。
 
@@ -48,7 +48,7 @@ RelWithDebInfo：近似于Release模式，既进行了代码优化，同时保�
 
 编译后会生成2份so产物：
 
-libs：带debug信息的so。
+libs：带调试信息的so。
 
 stripped_native_libs：移除调试信息等冗余数据后的so。
 

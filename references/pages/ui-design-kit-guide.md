@@ -28,4 +28,6 @@ UI Design Kit简介
 
 沉浸光感
 
+颜色选择与收藏管理
+
 UI Design Kit常见问题

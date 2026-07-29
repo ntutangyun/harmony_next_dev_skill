@@ -95,7 +95,7 @@ OH_AudioStreamBuilder_SetRendererInfo(builder, AUDIOSTREAM_USAGE_MUSIC);
 
 回调函数结束后，音频服务会把缓冲中数据放入队列里等待播放，因此请勿在回调外再次更改缓冲中的数据。对于最后一帧，如果数据不够填满缓冲长度，开发者需要使用剩余数据拼接空数据的方式，将缓冲填满，避免缓冲内的历史脏数据对播放效果产生不良的影响。
 
-从API version 12开始可通过OH_AudioStreamBuilder_SetFrameSizeInCallback设置audioDataSize的大小。
+从API version 12开始可通过OH_AudioStreamBuilder_SetFrameSizeInCallback设置audioDataSize。
 
 // 自定义写入数据函数。
 static OH_AudioData_Callback_Result MyOnWriteData_New(
@@ -106,8 +106,8 @@ static OH_AudioData_Callback_Result MyOnWriteData_New(
 {
     // 将待播放的数据，按audioDataSize长度写入audioData。
     // 如果开发者不希望播放某段audioData，返回AUDIO_DATA_CALLBACK_RESULT_INVALID即可。
-    int32_t readCount = fread(audioData, audioDataSize, 1, g_fp);
-    if (readCount < 0) {
+    size_t readCount = fread(audioData, audioDataSize, 1, g_fp);
+    if (readCount == 0) {
         return AUDIO_DATA_CALLBACK_RESULT_INVALID;
     }
     if (feof(g_fp)) {
@@ -180,7 +180,8 @@ OH_AudioStreamBuilder_Destroy(builder);
 
 开发者可使用OH_AudioRenderer_SetVolume接口设置当前音频流音量值。
 
-float volume = 0.5f;
+static float volume = 0.1f;
+volume = volume > 0.5f ? 0.1f : 0.8f;
 
 // 设置当前音频流音量值。
 OH_AudioRenderer_SetVolume(audioRenderer, volume);
@@ -197,7 +198,9 @@ OH_AudioRenderer_SetVolume(audioRenderer, volume);
 
 低时延通路对于数据处理性能要求较高，应用数据生成缓慢时容易导致卡顿。普通音乐、视频播放场景下不建议设置该模式，仅推荐游戏、K歌等对时延敏感的应用设置低时延模式。
 
-OH_AudioStreamBuilder_SetLatencyMode(builder, AUDIOSTREAM_LATENCY_MODE_FAST);
+OH_AudioStream_LatencyMode latencyMode = g_mode == 0 ? AUDIOSTREAM_LATENCY_MODE_NORMAL :
+    AUDIOSTREAM_LATENCY_MODE_FAST;
+OH_AudioStreamBuilder_SetLatencyMode(builder, latencyMode);
 
 [h2]设置音频声道布局
 
@@ -207,7 +210,7 @@ OH_AudioStreamBuilder_SetLatencyMode(builder, AUDIOSTREAM_LATENCY_MODE_FAST);
 
 当声道布局与声道数不匹配时，创建音频流会失败。建议在设置声道布局时，确认下发的声道布局信息是否正确。
 
-如果不知道准确的声道布局信息，或者开发者需要使用默认声道布局，可以不调用设置声道布局接口，或者下发CH_LAYOUT_UNKNOWN，以使用基于声道数的默认声道布局。
+如果不知道准确的声道布局信息，或者开发者需要使用默认声道布局，可以不调用设置声道布局接口，或者设置为CH_LAYOUT_UNKNOWN，以使用基于声道数的默认声道布局。
 
 对于HOA（高阶立体环绕声）格式的音频，想要获得正确的渲染和播放效果，必须指定声道布局信息。
 
@@ -243,7 +246,7 @@ int32_t MyOnWriteDataWithMetadata_New(
 
 注意事项
 
-从API version 12开始不再推荐使用OH_AudioRenderer_Callbacks的方式设置音频回调函数。若必须使用，需要注意在设置音频回调函数时，通过下面两种方式中的任意一种来设置音频回调函数，避免不可预期的行为。
+从API version 12开始不再推荐使用OH_AudioRenderer_Callbacks的方式设置音频回调函数。若必须使用，需注意通过下面两种方式中的任意一种进行配置，避免不可预期的行为。
 
 方式1：请确保OH_AudioRenderer_Callbacks的每一个回调都被自定义的回调方法或空指针初始化。
 
@@ -385,8 +388,8 @@ static OH_AudioData_Callback_Result MyOnWriteData_New(
 {
     // 将待播放的数据，按audioDataSize长度写入audioData。
     // 如果开发者不希望播放某段audioData，返回AUDIO_DATA_CALLBACK_RESULT_INVALID即可。
-    int32_t readCount = fread(audioData, audioDataSize, 1, g_fp);
-    if (readCount < 0) {
+    size_t readCount = fread(audioData, audioDataSize, 1, g_fp);
+    if (readCount == 0) {
         return AUDIO_DATA_CALLBACK_RESULT_INVALID;
     }
     if (feof(g_fp)) {
@@ -444,7 +447,8 @@ OH_AudioStreamBuilder_Destroy(builder);
 ### Code block 10
 
 ```
-float volume = 0.5f;
+static float volume = 0.1f;
+volume = volume > 0.5f ? 0.1f : 0.8f;
 
 // 设置当前音频流音量值。
 OH_AudioRenderer_SetVolume(audioRenderer, volume);
@@ -453,7 +457,9 @@ OH_AudioRenderer_SetVolume(audioRenderer, volume);
 ### Code block 11
 
 ```
-OH_AudioStreamBuilder_SetLatencyMode(builder, AUDIOSTREAM_LATENCY_MODE_FAST);
+OH_AudioStream_LatencyMode latencyMode = g_mode == 0 ? AUDIOSTREAM_LATENCY_MODE_NORMAL :
+    AUDIOSTREAM_LATENCY_MODE_FAST;
+OH_AudioStreamBuilder_SetLatencyMode(builder, latencyMode);
 ```
 
 ### Code block 12

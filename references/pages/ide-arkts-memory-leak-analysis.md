@@ -62,15 +62,15 @@ JSArray
 
 TaggedDict
 
-位于(array)标签中，一般为虚拟机内部创建的字典，ArkTS代码层面不可见。
+位于（array）标签中，一般为虚拟机内部创建的字典，ArkTS代码层面不可见。
 
 TaggedArray
 
-位于(array)标签中，一般为虚拟机内部创建的数组，ArkTS代码层面不可见。
+位于（array）标签中，一般为虚拟机内部创建的数组，ArkTS代码层面不可见。
 
 COWArray
 
-位于(array)标签中，一般为虚拟机内部创建的数组，ArkTS代码层面不可见。
+位于（array）标签中，一般为虚拟机内部创建的数组，ArkTS代码层面不可见。
 
 JSObject
 
@@ -121,7 +121,7 @@ struct HelloWorldPage {
 
 JSFunction
 
-目前所有JSFunction都在(closure)标签中，展开即可看到所有JSFunction：
+目前所有JSFunction都在（closure）标签中，展开即可看到所有JSFunction：
 
 每个函数展开后为函数内的各个属性：
 
@@ -131,7 +131,7 @@ JSFunction
 
 ArkInternalConstantPool
 
-虚拟机创建的常量池，ArkTS代码层面不可见，涉及到的字符串常量会在(array)标签中展示：
+虚拟机创建的常量池，ArkTS代码层面不可见，涉及到的字符串常量会在（array）标签中展示：
 
 LexicalEnv
 
@@ -145,19 +145,29 @@ InternalAccessor
 
 LocalHandleRoot
 
-DevEco Studio 6.1.0 Release版本新增，位于(handle)标签中，用于管理JS对象生命周期的引用句柄（napi_value）。
+DevEco Studio 6.1.0 Release版本新增，位于（handle）标签中，用于管理JS对象生命周期的引用句柄（napi_value）。
 
 GlobalHandleRoot
 
-DevEco Studio 6.1.0 Release版本新增，位于(handle)标签中，允许用户管理ArkTS/JS值的生命周期的引用句柄（napi_ref）。
+DevEco Studio 6.1.0 Release版本新增，位于（handle）标签中，允许用户管理ArkTS/JS值的生命周期的引用句柄（napi_ref），默认情况下不记录napi_ref地址。
+
+GlobalHandleObject
+
+26.0.0 Beta2版本新增，位于（handle）标签中，用于记录napi_ref地址，并建立napi_ref和ArkTS对象的引用关系。该功能需要先调用@util.ArkTSVM.setTrackGlobalRef接口使能 ，使能后会在快照导出过程中记录napi_ref地址和引用关系。开发者可根据快照中napi_ref相关信息，分析跨语言导致的内存泄漏。
+
+如下图，ReferenceAddress:0x5b0b560160是napi_ref地址，子节点是napi_ref关联的ArkTS对象。
+
+说明
+
+GlobalHandleObject中记录了存在napi_ref的ArkTS对象，对象是GlobalHandleRoot对象子集。
 
 VMRoot
 
-26.0.0 Beta1版本新增，位于(handle)标签中，表示虚拟机层面的根节点。
+26.0.0 Beta1版本新增，位于（handle）标签中，表示虚拟机层面的根节点。
 
 FrameRoot
 
-26.0.0 Beta1版本新增，位于(handle)标签中，表示函数调用栈帧在GC遍历过程中的根节点。
+26.0.0 Beta1版本新增，位于（handle）标签中，表示函数调用栈帧在GC遍历过程中的根节点。
 
 SourceTextModule
 

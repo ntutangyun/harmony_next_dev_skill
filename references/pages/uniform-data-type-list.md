@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/uniform-d
 
 基础类型
 
-基础类型表示通用数据类型，进行跨应用、跨设备设置跨平台交互时，能够被绝大多数应用、设备以及平台识别，标识UTD-ID为general.xxx。当前系统中预定义的通用类型列表如下：
+基础类型表示通用数据类型，进行跨应用、跨设备、跨平台交互时，能够被绝大多数应用、设备以及平台识别，标识UTD-ID为general.xxx。当前系统中预定义的通用类型列表如下：
 
 UTD-ID	BelongingTo类型	后缀名	MIMEType类型	说明
 general.entity	-	-	-	所有表示物理存储类型的基类型。

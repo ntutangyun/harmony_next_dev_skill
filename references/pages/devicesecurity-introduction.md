@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-introduction_
 
-Device Security Kit（设备安全服务）提供应用设备状态检测（DeviceVerify）、安全检测（SafetyDetect）、可信应用服务（TrustedAppService）、数字盾服务（TrustedAuthentication）、业务风险检测（BusinessRiskIntelligentDetection）、星盾机密风控引擎（StarShieldConfidentialRiskControlEngine）、安全审计（SecurityAudit）、反诈选择器（AntifraudPicker）、防窥保护（DlpAntiPeep）、病毒防护服务管理（VirusProtectionServiceManager）和超级隐私模式（SuperPrivacyMode），可以保护应用程序免受安全威胁和保证应用的数据安全。
+Device Security Kit（设备安全服务）提供应用设备状态检测（DeviceVerify）、安全检测（SafetyDetect）、可信应用服务（TrustedAppService）、数字盾服务（TrustedAuthentication）、业务风险检测（BusinessRiskIntelligentDetection）、星盾机密风控引擎（RiskControlEngine）、安全审计（SecurityAudit）、反诈选择器（AntifraudPicker）、防窥保护（DlpAntiPeep）、病毒防护服务管理（VirusProtectionServiceManager）和超级隐私模式（SuperPrivacyMode），可以保护应用程序免受安全威胁和保证应用的数据安全。
 
 场景介绍
 
@@ -16,9 +16,9 @@ Device Security Kit（设备安全服务）提供应用设备状态检测（Devi
 
 业务风险检测（BusinessRiskIntelligentDetection）场景：提供基于场景（防作弊、反欺诈）的业务风险决策能力。
 
-星盾机密风控引擎（StarShieldConfidentialRiskControlEngine）场景：提供基于端侧机密计算空间的风控解决方案。
+星盾机密风控引擎（RiskControlEngine）场景：提供基于端侧机密计算空间的风控解决方案。
 
-安全审计（SecurityAudit）场景：为应用提供获取当前设备上的审计数据（窗口截屏、移动存储插拔、剪切板复制粘贴等）能力，支撑审计相关业务。
+安全审计（SecurityAudit）场景：为应用提供获取当前设备上的审计数据（窗口截屏、移动存储插拔、剪贴板复制粘贴等）能力，支撑审计相关业务。
 
 反诈选择器（AntifraudPicker）场景：为反诈应用提供获取诈骗消息、诈骗通话记录和诈骗应用的能力，支撑反诈相关业务。
 
@@ -70,7 +70,7 @@ nonce：由开发者生成，并且在系统完整性检测结果中会包含这
 [h2]支持的设备
 
 场景	支持设备
-应用设备状态检测	Phone、Tablet、PC/2in1、Wearable、TV。
+应用设备状态检测	Phone、Tablet、PC/2in1、Wearable、TV、Car。
 安全检测	Phone、Tablet、PC/2in1、Wearable。
 安全摄像头（可信应用服务）	Phone、PC/2in1。
 安全地理位置（可信应用服务）	Phone、Tablet。

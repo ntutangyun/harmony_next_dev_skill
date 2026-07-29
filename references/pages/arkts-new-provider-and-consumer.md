@@ -158,11 +158,14 @@ struct Parent {
   build() {
     Column() {
       Button(this.str)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str += '0';
         })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -174,10 +177,13 @@ struct Child {
   build() {
     Column() {
       Button(this.str)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str += '0';
         })
     }
+    .width('100%')
   }
 }
 
@@ -203,11 +209,14 @@ struct Parent {
   build() {
     Column() {
       Button(this.str1)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str1 += '0';
         })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -219,10 +228,13 @@ struct Child {
   build() {
     Column() {
       Button(this.str)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str += '0';
         })
     }
+    .width('100%')
   }
 }
 
@@ -239,19 +251,30 @@ struct Parent {
     Row() {
       Column() {
         ForEach(this.count, (item: number) => {
-          Text(`parent: ${item}`).fontSize(30)
+          Text(`parent: ${item}`)
+            .fontSize(30)
+            .margin(10)
           Divider()
         })
         // count被@Provider装饰，可以被观察到Array整体的赋值以及调用Array接口带来的变化
-        Button('push').onClick(() => {
-          this.count.push(111);
-        })
-        Button('reverse').onClick(() => {
-          this.count.reverse();
-        })
-        Button('fill').onClick(() => {
-          this.count.fill(6);
-        })
+        Button('push')
+          .width(300)
+          .margin(10)
+          .onClick(() => {
+            this.count.push(111);
+          })
+        Button('reverse')
+          .width(300)
+          .margin(10)
+          .onClick(() => {
+            this.count.reverse();
+          })
+        Button('fill')
+          .width(300)
+          .margin(10)
+          .onClick(() => {
+            this.count.fill(6);
+          })
         Child()
       }
       .width('100%')
@@ -267,19 +290,30 @@ struct Child {
   build() {
     Column() {
       ForEach(this.count, (item: number) => {
-        Text(`child: ${item}`).fontSize(30)
+        Text(`child: ${item}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // count被@Consumer装饰，可以被观察到Array整体的赋值以及调用Array接口带来的变化
-      Button('push').onClick(() => {
-        this.count.push(222);
-      })
-      Button('reverse').onClick(() => {
-        this.count.reverse();
-      })
-      Button('fill').onClick(() => {
-        this.count.fill(8);
-      })
+      Button('push')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.count.push(222);
+        })
+      Button('reverse')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.count.reverse();
+        })
+      Button('fill')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.count.fill(8);
+        })
     }
     .width('100%')
   }
@@ -297,25 +331,36 @@ struct Parent {
   build() {
     Column() {
       Text(`parent: ${this.selectedDate}`)
+        .fontSize(20)
+        .margin(10)
       // selectedDate被@Provider装饰，可以被观察到Date整体的赋值以及调用Date接口带来的变化
       Button('update the new date')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate = new Date('2023-07-07');
         })
       Button('increase the year by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setFullYear(this.selectedDate.getFullYear() + 1);
         })
       Button('increase the month by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setMonth(this.selectedDate.getMonth() + 1);
         })
       Button('increase the day by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setDate(this.selectedDate.getDate() + 1);
         })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -326,24 +371,35 @@ struct Child {
   build() {
     Column() {
       Text(`child: ${this.selectedDate}`)
+        .fontSize(20)
+        .margin(10)
       // selectedDate被@Consumer装饰，可以被观察到Date整体的赋值以及调用Date接口带来的变化
       Button('update the new date')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate = new Date('2025-01-01');
         })
       Button('increase the year by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setFullYear(this.selectedDate.getFullYear() + 1);
         })
       Button('increase the month by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setMonth(this.selectedDate.getMonth() + 1);
         })
       Button('increase the day by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setDate(this.selectedDate.getDate() + 1);
         })
     }
+    .width('100%')
   }
 }
 
@@ -358,30 +414,50 @@ struct Parent {
 
   build() {
     Column() {
-      Text('Parent').fontSize(30)
+      Text('Parent')
+        .fontSize(20)
+        .margin(5)
       ForEach(Array.from(this.message.entries()), (item: [number, string]) => {
-        Text(`${item[0]}`).fontSize(30)
-        Text(`${item[1]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(20)
+        Text(`${item[1]}`)
+          .fontSize(20)
         Divider()
       })
       // message被@Provider装饰，可以被观察到Map整体的赋值以及调用Map接口带来的变化
-      Button('init map').onClick(() => {
-        this.message = new Map([[0, 'aa'], [1, 'bb'], [3, 'cc']]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.set(4, 'd');
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('replace the first one').onClick(() => {
-        this.message.set(0, 'a~');
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(0);
-      })
+      Button('init map')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message = new Map([[0, 'aa'], [1, 'bb'], [3, 'cc']]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(4, 'd');
+        })
+      Button('clear')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('replace the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(0, 'a~');
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.delete(0);
+        })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -391,29 +467,49 @@ struct Child {
 
   build() {
     Column() {
-      Text('Child').fontSize(30)
+      Text('Child')
+        .fontSize(20)
+        .margin(5)
       ForEach(Array.from(this.message.entries()), (item: [number, string]) => {
-        Text(`${item[0]}`).fontSize(30)
-        Text(`${item[1]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(20)
+        Text(`${item[1]}`)
+          .fontSize(20)
         Divider()
       })
       // message被@Consumer装饰，可以被观察到Map整体的赋值以及调用Map接口带来的变化
-      Button('init map').onClick(() => {
-        this.message = new Map([[0, 'dd'], [1, 'ee'], [3, 'ff']]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.set(4, 'g');
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('replace the first one').onClick(() => {
-        this.message.set(0, 'a*');
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(0);
-      })
+      Button('init map')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message = new Map([[0, 'dd'], [1, 'ee'], [3, 'ff']]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(4, 'g');
+        })
+      Button('clear')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('replace the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(0, 'a*');
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.delete(0);
+        })
     }
+    .width('100%')
   }
 }
 
@@ -428,26 +524,43 @@ struct Parent {
 
   build() {
     Column() {
-      Text('Parent').fontSize(30)
+      Text('Parent')
+        .fontSize(30)
+        .margin(10)
       ForEach(Array.from(this.message.entries()), (item: [number, number]) => {
-        Text(`${item[0]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // message被@Provider装饰，可以被观察到Set整体的赋值以及调用Set接口带来的变化
-      Button('init set').onClick(() => {
-        this.message = new Set([1, 2, 3, 4]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.add(5);
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(1);
-      })
+      Button('init set')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Set([1, 2, 3, 4]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.add(5);
+        })
+      Button('clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.delete(1);
+        })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -457,25 +570,42 @@ struct Child {
 
   build() {
     Column() {
-      Text('Child').fontSize(30)
+      Text('Child')
+        .fontSize(30)
+        .margin(10)
       ForEach(Array.from(this.message.entries()), (item: [number, number]) => {
-        Text(`${item[0]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // message被@Consumer装饰，可以被观察到Set整体的赋值以及调用Set接口带来的变化
-      Button('init set').onClick(() => {
-        this.message = new Set([1, 2, 3, 4, 5, 6]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.add(7);
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(1);
-      })
+      Button('init set')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Set([1, 2, 3, 4, 5, 6]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.add(7);
+        })
+      Button('clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.delete(1);
+        })
     }
+    .width('100%')
   }
 }
 
@@ -499,8 +629,11 @@ struct Parent {
   build() {
     Column() {
       Text(`child position x: ${this.childX}, y: ${this.childY}`)
+        .fontSize(20)
+        .margin(10)
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -510,6 +643,8 @@ struct Child {
 
   build() {
     Button('changed')
+      .width(300)
+      .margin(10)
       .draggable(true)
       .onDragStart((event: DragEvent) => {
         // 当前预览器上不支持通用拖拽事件
@@ -545,18 +680,25 @@ struct Parent {
     Column() {
       Child()
       Button('add new user')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.users.push(new User('Molly', 18));
         })
       Button('age++')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.users[0].age++;
         })
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.users[0].name = 'Shelly';
         })
     }
+    .width('100%')
   }
 }
 
@@ -568,12 +710,18 @@ struct Child {
     Column() {
       ForEach(this.users, (item: User) => {
         Column() {
-          Text(`name: ${item.name}`).fontSize(30)
-          Text(`age: ${item.age}`).fontSize(30)
+          Text(`name: ${item.name}`)
+            .fontSize(30)
+            .margin(10)
+          Text(`age: ${item.age}`)
+            .fontSize(30)
+            .margin(10)
           Divider()
         }
+        .width('100%')
       })
     }
+    .width('100%')
   }
 }
 
@@ -590,6 +738,7 @@ struct Index {
     Column() {
       Parent()
     }
+    .width('100%')
   }
 }
 
@@ -601,8 +750,11 @@ struct Parent {
   build() {
     Column() {
       Text(`${this.val2}`)
+        .fontSize(20)
+        .margin(10)
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -613,7 +765,10 @@ struct Child {
   build() {
     Column() {
       Text(`${this.val}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -634,10 +789,13 @@ struct Index {
 
   build() {
     Column() {
-      Text(`Index @Provider val: ${this.val}`).fontSize(30)
+      Text(`Index @Provider val: ${this.val}`)
+        .fontSize(30)
+        .margin(10)
       // @Provider装饰的变量val可以初始化@Param装饰的变量val2
       Parent({ val2: this.val })
     }
+    .width('100%')
   }
 }
 
@@ -648,14 +806,24 @@ struct Parent {
 
   build() {
     Column() {
-      Text(`Parent @Consumer val: ${this.val}`).fontSize(30)
-      Button('change val').onClick(() => {
-        this.val++;
-      })
-      Text(`Parent @Param val2: ${this.val2}`).fontSize(30)
+      Text(`Parent @Consumer val: ${this.val}`)
+        .fontSize(30)
+        .margin(10)
+      Button('change val')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.val++;
+        })
+      Text(`Parent @Param val2: ${this.val2}`)
+        .fontSize(30)
+        .margin(10)
       // @Consumer装饰的变量val可以初始化@Param装饰的变量val
       Child({ val: this.val })
-    }.border({ width: 2, color: Color.Green })
+    }
+    .width('95%')
+    .border({ width: 2, color: Color.Green })
+    .height('45%')
   }
 }
 
@@ -665,8 +833,12 @@ struct Child {
 
   build() {
     Column() {
-      Text(`Child @Param val ${this.val}`).fontSize(30)
-    }.border({ width: 2, color: Color.Pink })
+      Text(`Child @Param val ${this.val}`)
+        .fontSize(30)
+        .margin(10)
+    }
+    .width('95%')
+    .border({ width: 2, color: Color.Pink })
   }
 }
 
@@ -757,27 +929,37 @@ struct RemoChildDisconnectProvider {
   build() {
     Column({ space: 8 }) {
       Text(`Provider: ${this.content}`)
+        .fontSize(20)
+        .margin(10)
 
       // 添加BuilderNode，@Consumer与@Provider建立双向同步
       Button('add child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.controllerIndex.addBuilderNode();
         })
 
       // 移除BuilderNode，@Consumer与@Provider断开连接，恢复默认值
       Button('remove child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.controllerIndex.removeBuilderNode();
         })
 
       // 释放BuilderNode的子节点TestRemove，随后该子节点销毁，触发子节点的aboutToDisappear回调
       Button('dispose child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.controllerIndex.disposeNode();
         })
 
       // @Provider/@Consumer双向同步更新
       Button('change Provider')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.content += 'Pro';
         })
@@ -803,25 +985,30 @@ struct TestRemove {
   build() {
     Column() {
       Text('Consumer ' + this.content)
+        .fontSize(20)
+        .margin(10)
 
       // @Provider和@Consumer绑定的Text组件刷新，并回调@Provider和@Consumer的@Monitor方法
       Button('change cc')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.content += 'cc';
         })
     }
+    .width('100%')
   }
 }
 
 上面的例子中：
 
-点击add Child，TestRemove中@Consumer向上找到最近的RemoChildDisconnectProvider中的@Provider，将@Consumer从默认值更新为@Provider的值，并回调@Consumer的@Monitor方法。
+点击add child，TestRemove中@Consumer向上找到最近的RemoChildDisconnectProvider中的@Provider，将@Consumer从默认值更新为@Provider的值，并回调@Consumer的@Monitor方法。
 
-@Provider和@Consumer配对后，建立双向同步关系。点击change Provider和Text(change cc)，@Provider和@Consumer绑定的Text组件刷新，并回调@Provider和@Consumer的@Monitor方法。
+@Provider和@Consumer配对后，建立双向同步关系。点击change Provider和change cc，@Provider和@Consumer绑定的Text组件刷新，并回调@Provider和@Consumer的@Monitor方法。
 
-点击remove Child，BuilderNode子节点从组件树卸载，TestRemove中的@Consumer和RemoChildDisconnectProvider中的@Provider断开连接，TestRemove中的@Consumer恢复成默认值，并回调@Consumer的@Monitor方法。
+点击remove child，BuilderNode子节点从组件树卸载，TestRemove中的@Consumer和RemoChildDisconnectProvider中的@Provider断开连接，TestRemove中的@Consumer恢复成默认值，并回调@Consumer的@Monitor方法。
 
-点击dispose Child，释放BuilderNode下的子节点TestRemove，随后该子节点销毁，执行aboutToDisappear回调。
+点击dispose child，释放BuilderNode下的子节点TestRemove，随后该子节点销毁，执行aboutToDisappear回调。
 
 ## Code blocks
 
@@ -886,11 +1073,14 @@ struct Parent {
   build() {
     Column() {
       Button(this.str)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str += '0';
         })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -902,10 +1092,13 @@ struct Child {
   build() {
     Column() {
       Button(this.str)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str += '0';
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -921,11 +1114,14 @@ struct Parent {
   build() {
     Column() {
       Button(this.str1)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str1 += '0';
         })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -937,10 +1133,13 @@ struct Child {
   build() {
     Column() {
       Button(this.str)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.str += '0';
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -957,19 +1156,30 @@ struct Parent {
     Row() {
       Column() {
         ForEach(this.count, (item: number) => {
-          Text(`parent: ${item}`).fontSize(30)
+          Text(`parent: ${item}`)
+            .fontSize(30)
+            .margin(10)
           Divider()
         })
         // count被@Provider装饰，可以被观察到Array整体的赋值以及调用Array接口带来的变化
-        Button('push').onClick(() => {
-          this.count.push(111);
-        })
-        Button('reverse').onClick(() => {
-          this.count.reverse();
-        })
-        Button('fill').onClick(() => {
-          this.count.fill(6);
-        })
+        Button('push')
+          .width(300)
+          .margin(10)
+          .onClick(() => {
+            this.count.push(111);
+          })
+        Button('reverse')
+          .width(300)
+          .margin(10)
+          .onClick(() => {
+            this.count.reverse();
+          })
+        Button('fill')
+          .width(300)
+          .margin(10)
+          .onClick(() => {
+            this.count.fill(6);
+          })
         Child()
       }
       .width('100%')
@@ -985,19 +1195,30 @@ struct Child {
   build() {
     Column() {
       ForEach(this.count, (item: number) => {
-        Text(`child: ${item}`).fontSize(30)
+        Text(`child: ${item}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // count被@Consumer装饰，可以被观察到Array整体的赋值以及调用Array接口带来的变化
-      Button('push').onClick(() => {
-        this.count.push(222);
-      })
-      Button('reverse').onClick(() => {
-        this.count.reverse();
-      })
-      Button('fill').onClick(() => {
-        this.count.fill(8);
-      })
+      Button('push')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.count.push(222);
+        })
+      Button('reverse')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.count.reverse();
+        })
+      Button('fill')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.count.fill(8);
+        })
     }
     .width('100%')
   }
@@ -1015,25 +1236,36 @@ struct Parent {
   build() {
     Column() {
       Text(`parent: ${this.selectedDate}`)
+        .fontSize(20)
+        .margin(10)
       // selectedDate被@Provider装饰，可以被观察到Date整体的赋值以及调用Date接口带来的变化
       Button('update the new date')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate = new Date('2023-07-07');
         })
       Button('increase the year by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setFullYear(this.selectedDate.getFullYear() + 1);
         })
       Button('increase the month by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setMonth(this.selectedDate.getMonth() + 1);
         })
       Button('increase the day by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setDate(this.selectedDate.getDate() + 1);
         })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -1044,24 +1276,35 @@ struct Child {
   build() {
     Column() {
       Text(`child: ${this.selectedDate}`)
+        .fontSize(20)
+        .margin(10)
       // selectedDate被@Consumer装饰，可以被观察到Date整体的赋值以及调用Date接口带来的变化
       Button('update the new date')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate = new Date('2025-01-01');
         })
       Button('increase the year by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setFullYear(this.selectedDate.getFullYear() + 1);
         })
       Button('increase the month by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setMonth(this.selectedDate.getMonth() + 1);
         })
       Button('increase the day by 1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setDate(this.selectedDate.getDate() + 1);
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -1076,30 +1319,50 @@ struct Parent {
 
   build() {
     Column() {
-      Text('Parent').fontSize(30)
+      Text('Parent')
+        .fontSize(20)
+        .margin(5)
       ForEach(Array.from(this.message.entries()), (item: [number, string]) => {
-        Text(`${item[0]}`).fontSize(30)
-        Text(`${item[1]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(20)
+        Text(`${item[1]}`)
+          .fontSize(20)
         Divider()
       })
       // message被@Provider装饰，可以被观察到Map整体的赋值以及调用Map接口带来的变化
-      Button('init map').onClick(() => {
-        this.message = new Map([[0, 'aa'], [1, 'bb'], [3, 'cc']]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.set(4, 'd');
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('replace the first one').onClick(() => {
-        this.message.set(0, 'a~');
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(0);
-      })
+      Button('init map')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message = new Map([[0, 'aa'], [1, 'bb'], [3, 'cc']]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(4, 'd');
+        })
+      Button('clear')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('replace the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(0, 'a~');
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.delete(0);
+        })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -1109,29 +1372,49 @@ struct Child {
 
   build() {
     Column() {
-      Text('Child').fontSize(30)
+      Text('Child')
+        .fontSize(20)
+        .margin(5)
       ForEach(Array.from(this.message.entries()), (item: [number, string]) => {
-        Text(`${item[0]}`).fontSize(30)
-        Text(`${item[1]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(20)
+        Text(`${item[1]}`)
+          .fontSize(20)
         Divider()
       })
       // message被@Consumer装饰，可以被观察到Map整体的赋值以及调用Map接口带来的变化
-      Button('init map').onClick(() => {
-        this.message = new Map([[0, 'dd'], [1, 'ee'], [3, 'ff']]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.set(4, 'g');
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('replace the first one').onClick(() => {
-        this.message.set(0, 'a*');
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(0);
-      })
+      Button('init map')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message = new Map([[0, 'dd'], [1, 'ee'], [3, 'ff']]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(4, 'g');
+        })
+      Button('clear')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('replace the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.set(0, 'a*');
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(5)
+        .onClick(() => {
+          this.message.delete(0);
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -1146,26 +1429,43 @@ struct Parent {
 
   build() {
     Column() {
-      Text('Parent').fontSize(30)
+      Text('Parent')
+        .fontSize(30)
+        .margin(10)
       ForEach(Array.from(this.message.entries()), (item: [number, number]) => {
-        Text(`${item[0]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // message被@Provider装饰，可以被观察到Set整体的赋值以及调用Set接口带来的变化
-      Button('init set').onClick(() => {
-        this.message = new Set([1, 2, 3, 4]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.add(5);
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(1);
-      })
+      Button('init set')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Set([1, 2, 3, 4]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.add(5);
+        })
+      Button('clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.delete(1);
+        })
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -1175,25 +1475,42 @@ struct Child {
 
   build() {
     Column() {
-      Text('Child').fontSize(30)
+      Text('Child')
+        .fontSize(30)
+        .margin(10)
       ForEach(Array.from(this.message.entries()), (item: [number, number]) => {
-        Text(`${item[0]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // message被@Consumer装饰，可以被观察到Set整体的赋值以及调用Set接口带来的变化
-      Button('init set').onClick(() => {
-        this.message = new Set([1, 2, 3, 4, 5, 6]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.add(7);
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(1);
-      })
+      Button('init set')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Set([1, 2, 3, 4, 5, 6]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.add(7);
+        })
+      Button('clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.delete(1);
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -1215,8 +1532,11 @@ struct Parent {
   build() {
     Column() {
       Text(`child position x: ${this.childX}, y: ${this.childY}`)
+        .fontSize(20)
+        .margin(10)
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -1226,6 +1546,8 @@ struct Child {
 
   build() {
     Button('changed')
+      .width(300)
+      .margin(10)
       .draggable(true)
       .onDragStart((event: DragEvent) => {
         // 当前预览器上不支持通用拖拽事件
@@ -1259,18 +1581,25 @@ struct Parent {
     Column() {
       Child()
       Button('add new user')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.users.push(new User('Molly', 18));
         })
       Button('age++')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.users[0].age++;
         })
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.users[0].name = 'Shelly';
         })
     }
+    .width('100%')
   }
 }
 
@@ -1282,12 +1611,18 @@ struct Child {
     Column() {
       ForEach(this.users, (item: User) => {
         Column() {
-          Text(`name: ${item.name}`).fontSize(30)
-          Text(`age: ${item.age}`).fontSize(30)
+          Text(`name: ${item.name}`)
+            .fontSize(30)
+            .margin(10)
+          Text(`age: ${item.age}`)
+            .fontSize(30)
+            .margin(10)
           Divider()
         }
+        .width('100%')
       })
     }
+    .width('100%')
   }
 }
 ```
@@ -1304,6 +1639,7 @@ struct Index {
     Column() {
       Parent()
     }
+    .width('100%')
   }
 }
 
@@ -1315,8 +1651,11 @@ struct Parent {
   build() {
     Column() {
       Text(`${this.val2}`)
+        .fontSize(20)
+        .margin(10)
       Child()
     }
+    .width('100%')
   }
 }
 
@@ -1327,7 +1666,10 @@ struct Child {
   build() {
     Column() {
       Text(`${this.val}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 ```
@@ -1342,10 +1684,13 @@ struct Index {
 
   build() {
     Column() {
-      Text(`Index @Provider val: ${this.val}`).fontSize(30)
+      Text(`Index @Provider val: ${this.val}`)
+        .fontSize(30)
+        .margin(10)
       // @Provider装饰的变量val可以初始化@Param装饰的变量val2
       Parent({ val2: this.val })
     }
+    .width('100%')
   }
 }
 
@@ -1356,14 +1701,24 @@ struct Parent {
 
   build() {
     Column() {
-      Text(`Parent @Consumer val: ${this.val}`).fontSize(30)
-      Button('change val').onClick(() => {
-        this.val++;
-      })
-      Text(`Parent @Param val2: ${this.val2}`).fontSize(30)
+      Text(`Parent @Consumer val: ${this.val}`)
+        .fontSize(30)
+        .margin(10)
+      Button('change val')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.val++;
+        })
+      Text(`Parent @Param val2: ${this.val2}`)
+        .fontSize(30)
+        .margin(10)
       // @Consumer装饰的变量val可以初始化@Param装饰的变量val
       Child({ val: this.val })
-    }.border({ width: 2, color: Color.Green })
+    }
+    .width('95%')
+    .border({ width: 2, color: Color.Green })
+    .height('45%')
   }
 }
 
@@ -1373,8 +1728,12 @@ struct Child {
 
   build() {
     Column() {
-      Text(`Child @Param val ${this.val}`).fontSize(30)
-    }.border({ width: 2, color: Color.Pink })
+      Text(`Child @Param val ${this.val}`)
+        .fontSize(30)
+        .margin(10)
+    }
+    .width('95%')
+    .border({ width: 2, color: Color.Pink })
   }
 }
 ```
@@ -1443,27 +1802,37 @@ struct RemoChildDisconnectProvider {
   build() {
     Column({ space: 8 }) {
       Text(`Provider: ${this.content}`)
+        .fontSize(20)
+        .margin(10)
 
       // 添加BuilderNode，@Consumer与@Provider建立双向同步
       Button('add child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.controllerIndex.addBuilderNode();
         })
 
       // 移除BuilderNode，@Consumer与@Provider断开连接，恢复默认值
       Button('remove child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.controllerIndex.removeBuilderNode();
         })
 
       // 释放BuilderNode的子节点TestRemove，随后该子节点销毁，触发子节点的aboutToDisappear回调
       Button('dispose child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.controllerIndex.disposeNode();
         })
 
       // @Provider/@Consumer双向同步更新
       Button('change Provider')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.content += 'Pro';
         })
@@ -1489,13 +1858,18 @@ struct TestRemove {
   build() {
     Column() {
       Text('Consumer ' + this.content)
+        .fontSize(20)
+        .margin(10)
 
       // @Provider和@Consumer绑定的Text组件刷新，并回调@Provider和@Consumer的@Monitor方法
       Button('change cc')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.content += 'cc';
         })
     }
+    .width('100%')
   }
 }
 ```

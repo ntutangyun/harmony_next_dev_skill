@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-insig
 
 当方舟虚拟机的调优对象的某个程序/进程占用的部分内存空间在后续的操作中不再被该对象访问时，内存回收机制会自动将这部分空间归还给系统，降低程序错误概率，减少不必要的内存损耗。
 
-展开Memory泳道，子泳道展示的是按照内存类型将进程PSS值拆分开的各个维度的内存信息，包含ArkTS Heap、Native Heap、GL、Graph、Guard、AnonPage Other、FilePage Other、Dev/Stack、ArkWeb PA、JS Heap、.hap、.so、.ttf。默认展示其中的五个子泳道，可以点击主泳道的options标签并勾选其他子泳道查看其他子泳道。
+展开Memory泳道，子泳道展示的是按照内存类型将进程PSS值拆分开的各个维度的内存信息，包含ArkTS Heap、Native Heap、GL、Graph、Guard、AnonPage Other、FilePage Other、Dev、Stack、ArkWeb PA、JS Heap、.hap、.so、.ttf。默认展示其中的五个子泳道，可以点击主泳道的options标签并勾选其他子泳道查看其他子泳道。
 
 子泳道	说明
 ArkTS Heap	ArkTS堆的内存占用。
@@ -61,7 +61,9 @@ JS Backtrace Depth	JS回栈深度。可配置范围为1-128，默认10层。
 Native Backtrace Depth	Native回栈深度。可配置范围为5-100，默认10层。
 Backtrace Stack	回栈深度。仅当Backtrace Mode选择为DWARF模式的情况下存在，其层数代表着JS与Native的共同回栈深度。可配置范围为5-100，默认20层。
 Sync Backtrace Depth	DevEco Studio 6.1.1 Beta1版本新增。 同步回栈深度。仅当Record Async Stack开启的情况下存在，其层数代表着JS与Native的共同同步回栈深度。可配置范围为5-100，默认20层。
-Record Async Stack	DevEco Studio 6.1.1 Beta1版本新增。 用于开启异步栈缝合。仅当Backtrace Mode选择为FP模式的情况下可以开启。开启后，在异步回栈时支持多回一层异步栈帧，最大异步回栈深度为16层，且暂不支持设置异步回栈深度。默认关闭。
+Record Async Stack	DevEco Studio 6.1.1 Beta1版本新增。 用于开启异步栈缝合，默认关闭。仅当Backtrace Mode选择为FP模式时，支持开启。 26.0.0 Beta2以下版本，开启后，异步回栈时支持多回一层异步栈帧，最大异步回栈层数为16层。 26.0.0 Beta2及以上版本，支持通过Async Nesting Depth和Async Backtrace Depth设置异步栈嵌套层数和回栈层数。
+Async Nesting Depth	26.0.0 Beta2版本新增。 异步栈嵌套层数，可配置范围为[1,16]，推荐范围为[3,10]，默认为3。 仅当Record Async Stack开启时，支持设置。
+Async Backtrace Depth	26.0.0 Beta2版本新增。 异步回栈层数，指每个异步栈中显示的最大层数，可配置范围为[1,256]，推荐范围为[16,32]，默认16层。 仅当Record Async Stack开启时，支持设置。
 Record Data Range Options	DevEco Studio 6.1.0 Release版本新增。 用于设置采样数据范围，包含Malloc、Local Handle和Global Handle，默认勾选Malloc。 Malloc记录malloc系列函数的内存分配。 Local Handle用于管理JS对象生命周期的引用句柄（napi_value），仅支持Phone和PC设备。 Global Handle允许用户管理ArkTS/JS值的生命周期的引用句柄（napi_ref）。
 
 说明
@@ -148,6 +150,16 @@ Release应用暂不支持跳转到用户侧Native代码。
 
 说明
 
+在任务分析窗口，可以通过“Ctrl+鼠标滚轮”缩放时间轴，通过“Shift+鼠标滚轮”左右移动时间轴。或使用快捷键W/S放大或缩小时间轴，使用A键/D键可以左右移动时间轴。
+
+将鼠标悬停在泳道任意位置，可以通过M键添加单点时间标签。
+
+鼠标框选要关注的时间段，可以通过“Shift+M”添加时间段时间标签。
+
+在任务分析窗口，可以通过“Ctrl+, ”向前选中单点时间标签，通过“Ctrl+. ”向后选中单点时间标签。
+
+在任务分析窗口，可以通过“Ctrl+[ ”向前选中时间段时间标签，通过“Ctrl+]”向后选中时间段时间标签。
+
 Allocation分析支持离线符号解析能力，请参见离线符号解析。
 
 在任务录制过程中，单击分析窗口左上角的可启动内存回收机制。
@@ -162,7 +174,7 @@ USS：进程独占内存。
 
 默认只显示PSS的统计图，如需要查看USS或RSS，需要在Memory泳道的右上角点选相关数据类型。
 
-展开Memory泳道，子泳道展示的是按照内存类型将进程PSS值拆分开的各个维度的内存信息，包含ArkTS Heap、Native Heap、GL、Graph、Guard、AnonPage Other、FilePage Other、Dev/Stack、.hap、.so、.ttf。默认展示其中的五个子泳道，可以点击主泳道的options标签并勾选其他子泳道查看其他子泳道。
+展开Memory泳道，子泳道展示的是按照内存类型将进程PSS值拆分开的各个维度的内存信息，类型包含ArkTS Heap/Native Heap/GL/Graph/Guard/AnonPage Other/FilePage Other/Dev/Stack/.hap/.so/.ttf。默认展示其中的五个子泳道，如要显示其他子泳道，可以点击主泳道的options标签并勾选其他泳道来查看。
 
 子泳道	说明
 ArkTS Heap	ArkTS堆的内存占用。
@@ -180,24 +192,12 @@ Stack	栈内存。
 
 说明
 
-由于较大的性能开销可能导致卡顿/卡死问题，ArkTS Allocation暂不支持和如下泳道同时录制：
-
-All Heap & Anonymous VM泳道
-
-All Heap泳道
-
-All Anonymous VM泳道
-
-System Resources泳道
-
-Graphic Memory泳道
-
-单击工具控制栏中的按钮，可以设置是否为统计模式、统计间隔、最小跟踪内存、回栈模式、JS回栈、JS回栈深度和Native回栈深度。
+由于较大的性能开销可能导致卡顿/卡死问题，暂不支持同时录制ArkTS Allocation和Native Allocation两条泳道，以及ArkTS Allocation和Graphic Memory两条泳道。
 
 配置项	说明
 Statistics Mode	该项配置代表是否开启统计模式采集数据，默认开启。开启后，数据会每隔Sampling Interval中设置的时间从设备端汇总并返回。关闭后，处于非统计模式，每次内存分配后数据会实时从设备端返回。
 Sampling Interval	统计时间间隔。仅在统计模式下需要设置，可设置范围为1s~3600s，默认为10s。
-All Heap & Anonymous VM Filter Size	最小跟踪内存，该参数表示最小抓取的内存大小。可配置范围为0-65535Bytes，默认为1024Bytes。
+Native Allocation Filter Size	最小跟踪内存，该参数表示最小抓取的内存大小。可配置范围为0-65535Bytes，默认为1024Bytes。
 Backtrace Mode	内存分配栈回栈模式。当前提供FP和DWARF两种回栈模式。FP回栈是通过帧指针（FP寄存器）链接栈帧，直接遍历调用链。DWARF回栈是基于编译器生成的DWARF调试信息进行栈回溯。默认FP回栈。FP回栈性能更好，但在某些特定场景下（例如so的编译参数控制），FP回栈可能失效，此时可选择DWARF回栈尝试。
 Record JS Stack	是否开启JS回栈。开启后，系统回栈时会自动从Native向JS层回栈，完成Native到JS的栈缝合，适合ArkTS/JS代码调用Native的场景。
 JS Backtrace Depth	JS回栈深度。可配置范围为1-128，默认10层。
@@ -206,9 +206,9 @@ Backtrace Stack	回栈深度。仅当Backtrace Mode选择为DWARF模式的情况
 
 说明
 
-最小跟踪内存设置的数值越小，回栈深度越大，这可能会导致DevEco Profiler卡顿，请根据应用实际的调测情况进行合理设置。
+设置的最小跟踪内存数值越小、回栈深度越大，可能会导致DevEco Profiler卡顿。请根据应用实际的调测情况进行合理设置。
 
-统计模式适用于不关注单次分配，但关注应用较长时间的内存变化，将指定的采样间隔内的数据做合并统计，以达到降低处理数据量，提高录制效率和时长。Sampling Interval设置为近似值，将尽可能在接近这个时间内做统计汇总，会有不超过1s偏差，不影响内存分配的正确性。
+统计模式用于不关注单次分配、关注应用较长时间的内存变化情况的场景，将指定的采样间隔内的数据做合并统计，以达到降低处理数据量，提高录制效率和时长的目的。设置的Sampling Interval为近似值，即尽可能地在接近这个时间内做统计汇总，存在一定的偏差，偏差不超过1s，偏差不会对内存分配的正确性产生影响。
 
 使用统计模式时，录制的结束时间需要是Sampling Interval即采样周期的整数倍，例如当采样周期是10s时，停止录制时间建议在11s+/21s+，以此类推，留出余量给系统做数据处理与传输。
 
@@ -220,11 +220,9 @@ Graph字段统计方式为：计算/proc/process_dmabuf_info节点下该进程�
 
 “Details”区域中带标识的对象，表示其可以通过窗口访问。每个时段内已经释放的内存标记为灰色，未释放的内存标记为绿色。
 
-在System Resources泳道的Statistics页签中不提供内存大小数据。
-
 点击任意对象上的跳转按钮，可跳转至此类对象的详细占用/分配信息。当前统计模式下不支持跳转。
 
-在System Resources泳道的Call Trees页签中不提供分配大小数据。单击任一行栈帧，“More”区域将显示经过该栈帧的分配内存最大的调用栈。
+Call Trees页签显示线程的内存分配栈情况，包括函数地址或符号、分配大小、占比以及函数栈帧的类别等。单击任一行栈帧，“More”区域将显示经过该栈帧的分配内存最大的调用栈。
 
 说明
 

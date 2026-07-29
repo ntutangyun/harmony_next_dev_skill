@@ -62,7 +62,7 @@ export default class ServiceExtAbility extends InputMethodExtensionAbility {
   }
 }
 
-KeyboardController.ets文件。KeyboardController中除创建输入法窗口，设置输入法事件监听，实现文本插入、删除之外，还可以获取输入法键盘与系统面板的偏移区域，输入法系统面板在不同设备上存在差异，当设备有系统面板时，输入法软键盘相对系统面板的偏移区域如图所示：
+KeyboardController.ets文件。KeyboardController中除创建输入法窗口，设置输入法事件监听，实现文本插入、删除之外，还可以使用getSystemPanelCurrentInsets获取输入法键盘与系统面板的偏移区域，输入法系统面板在不同设备上存在差异，当设备有系统面板时，输入法软键盘相对系统面板的偏移区域如图所示：
 
 class KeyboardController {
   private barPosition: number = 0;
@@ -830,7 +830,7 @@ struct Index {
     // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
     inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {
       console.info('recv editorAttributeChanged, immersiveMode: ', attr.immersiveMode);
-      if (attr.immersiveMode == 1) {
+      if (attr.immersiveMode == inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE) {
         this.panel?.setImmersiveMode(inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE);
         console.info('recv editorAttributeChanged, panel:', this.panel?.getImmersiveMode());
       }
@@ -1755,7 +1755,7 @@ struct Index {
     // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
     inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {
       console.info('recv editorAttributeChanged, immersiveMode: ', attr.immersiveMode);
-      if (attr.immersiveMode == 1) {
+      if (attr.immersiveMode == inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE) {
         this.panel?.setImmersiveMode(inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE);
         console.info('recv editorAttributeChanged, panel:', this.panel?.getImmersiveMode());
       }

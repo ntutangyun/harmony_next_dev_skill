@@ -230,7 +230,7 @@ export default {
   },
   setPos(e) {
     this.pos = e.newValue
-    if (e.newValue === 'Non-research center') {
+    if (e.newValue === 'Company') {
       this.showbuild = false
     } else {
       this.showbuild = true
@@ -502,7 +502,7 @@ export default {
   },
   setPos(e) {
     this.pos = e.newValue
-    if (e.newValue === 'Non-research center') {
+    if (e.newValue === 'Company') {
       this.showbuild = false
     } else {
       this.showbuild = true

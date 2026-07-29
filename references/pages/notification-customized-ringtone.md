@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 
 自定义铃声可通过NotificationRequest携带sound字段来指定，不指定该字段默认为系统铃声。
 
-资源文件：应用预置的音频文件，资源文件必须放在放在resources/rawfile目录下，使用时直接传入文件名。
+资源文件：应用预置的音频文件，资源文件必须放在resources/rawfile目录下，使用时直接传入文件名。
 
 沙箱文件：网络下载或者用户生成的音频文件，必须放在沙箱文件目录EL1区域的files目录或者其子目录下，传入格式为uri::{fileUri}，其中fileUri是通过getUriFromPath获取的路径。
 

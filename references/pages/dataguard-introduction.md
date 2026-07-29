@@ -20,13 +20,13 @@ Enterprise Data Guard Kit（企业数据保护服务）为企业安全管控类M
 
 [h2]访问限制
 
-当前文件分级管控服务仅支持对用户数据进行文件扫描和分级标识。文件扫描仅限于默认路径范围内的子目录，且获取文件URI、删除指定路径下的文件以及以只写模式打开文件的功能仅适用于用户个人数据目录下的绝对路径。
+当前文件分级管控仅支持对用户数据进行文件扫描和分级标识。文件扫描仅限于默认路径范围内的子目录，且获取文件URI、删除指定路径下的文件以及以只写模式打开文件的功能仅适用于用户个人数据目录下的绝对路径。
 
 文件路径	说明
 /data/service/el2/ /data/app/el1/bundle/public/ /mnt/hmdfs/ /data/app/el1/ /data/app/el2/ /data/app/el3/ /data/app/el4/ /data/app/el5/	默认路径范围内的子目录。文件路径与物理路径对应的关系及不同加密分区的差异，请参考应用沙箱路径和真实物理路径的对应关系和获取和修改加密分区。
 /data/service/el2/{account_id}/hmdfs/account/files/	对应用户的个人数据目录。
 
-[h2]支持的国家/地区
+[h2]支持的国家和地区
 
 当前仅支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）提供服务。
 
@@ -36,6 +36,18 @@ Enterprise Data Guard Kit（企业数据保护服务）为企业安全管控类M
 
 设备类型	设备型号
 PC/2in1	华为擎云系列
+
+说明
+
+文件分级管控能力：
+
+从API版本26.0.0开始，支持使用fileGuard.isFileGuardSupported接口查询当前设备是否支持文件分级管控。
+
+从API版本26.0.0开始，支持使用recoveryKey.isRecoveryKeySupported接口查询当前设备是否支持解密数据恢复密钥。
+
+从API版本26.0.0开始，支持使用recoveryKey.isRecoveryKeyForResettingPinSupported接口查询当前设备是否支持重置锁屏密码恢复密钥。
+
+从API版本26.0.0开始，支持使用recoveryKey.isDataVolumeRecoveryKeySupported接口查询当前设备是否支持数据盘恢复密钥。
 
 模拟器支持情况
 

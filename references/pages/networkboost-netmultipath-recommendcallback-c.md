@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkbo
 
 接口名	描述
 int32_t HMS_NetworkBoost_RegisterMultiPathRecommendationCallback(HMS_NetworkBoost_OnMultiPathRecommendationcallback, uint32_t *callbackId)	注册系统多网建议变化事件。
-int32_t HMS_NetworkBoost_UnregisterMultiPathRecommendationCallback(uint32_t callbackId)	去系统多网建议变化事件。
+int32_t HMS_NetworkBoost_UnregisterMultiPathRecommendationCallback(uint32_t callbackId)	取消注册系统多网建议变化事件。
 
 开发步骤
 
@@ -27,7 +27,7 @@ CMakeLists.txt中添加以下lib，具体请见C API开发准备。
 
 libnetwork_boost.so
 
-调用HMS_NetworkBoost_RegisterMultiPathRecommendationCallback接口，获取多网建议变化信息。
+调用HMS_NetworkBoost_RegisterMultiPathRecommendationCallback接口，注册多网建议变化回调。
 
 uint32_t callbackId = 0;
 void onMultiPathRecommendationCallback(NetworkBoost_MultiPathRecommendation* recommendation)
@@ -43,7 +43,7 @@ int32_t RegisterMultiPathRecommendation()
     return ret;
 }
 
-当应用业务流程结束，通过取消注册的方式取消多网状态监听。
+当应用业务流程结束，取消注册多网建议变化回调。
 
 int32_t UnregisterMultiPathRecommendation() {
     // 使用注册时获取的回调Id取消注册

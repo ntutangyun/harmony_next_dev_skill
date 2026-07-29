@@ -33,7 +33,7 @@ V1装饰器名称\场景	V2装饰器名称\API	说明
 @ObjectLink	@ObservedV2、@Trace	直接兼容，@ObjectLink需要被@Observed装饰的class的实例初始化，主要应用于观察嵌套类场景。在状态管理V2中可以使用@ObservedV2@Trace。详情见迁移场景---@ObjectLink/@Observed/@Track -> @ObservedV2/@Trace。
 @Track	@Trace	V1装饰器@Track为精确观察，不使用则无法做到类属性的精准观察。 V2@Trace装饰的属性可以被精确跟踪观察。详情见迁移场景---@ObjectLink/@Observed/@Track -> @ObservedV2/@Trace。
 @Provide、@Consume	@Provider、@Consumer	兼容。详情见@Provide/@Consume迁移场景。
-@Watch	@Monitor	@Watch用于监听V1状态变量的变化，具有监听状态变量本身和其第一层属性变化的能力。状态变量可观察到的变化会触发其@Watch监听事件，详情见迁移场景--@Watch -> @Monitor。 @Monitor用于监听V2状态变量的变化，搭配@Observed和@Trace一起使用，可有深层监听的能力。状态变量在一次事件中多次变化时，仅会以最终的结果判断是否触发@Monitor监听事件。
+@Watch	@Monitor	@Watch用于监听V1状态变量的变化，具有监听状态变量本身和其第一层属性变化的能力。状态变量可观察到的变化会触发其@Watch监听事件，详情见迁移场景--@Watch -> @Monitor。 @Monitor用于监听V2状态变量的变化，搭配@ObservedV2和@Trace一起使用，可有深层监听的能力。状态变量在一次事件中多次变化时，仅会以最终的结果判断是否触发@Monitor监听事件。
 无计算属性能力	@Computed	状态管理V1无计算属性相关能力，状态管理V2可使用@Computed避免重复计算。详情见迁移场景--重复计算->@Computed计算属性。
 LocalStorage	@ObservedV2、@Trace	兼容。详情见迁移场景--LocalStorage->@ObservedV2/@Trace。
 AppStorage	AppStorageV2	兼容。详情见迁移场景--AppStorage->AppStorageV2。

@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 应用调用添加管控策略的接口，拉起健康使用设备查询本应用是否已申请权限，以及用户是否已给本应用授权。
 
-若没有权限，则抛出相应错误码；若有权限，则解析参数中传入的策略，判断策略是否有效、是否重复、数量是否超限。
+若开发者没有权限或用户没有授权，则抛出相应错误码。若开发者有权限且用户已授权，则解析参数中传入的策略，判断策略是否有效、是否重复、数量是否超限。
 
 若策略正常，则记录到本地数据库；否则，抛出相应错误码。
 
@@ -46,15 +46,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 定义屏幕时间管理策略。
 
 private guardStrategy: guardService.GuardStrategy = {
-  name: 'GuardStrategy',
+  name: 'GuardStrategy', // 策略名称，由开发者自定义
   timeStrategy: {
-    type: guardService.TimeStrategyType.START_END_TIME_TYPE,
-    startTime: '19:00',
-    endTime: '21:00',
-    repeat: [1, 2, 3, 4, 5, 6, 7]
+    type: guardService.TimeStrategyType.START_END_TIME_TYPE, // 时间策略类型，此处为起止时间策略
+    startTime: '19:00', // 管控起始时间，此处表示管控于19点开始
+    endTime: '21:00', // 管控结束时间，此处表示管控于21点结束
+    repeat: [1, 2, 3, 4, 5, 6, 7] // 重复执行时间，此处表示管控在周一至周日均生效
   },
-  appInfo: { appTokens: [] }, // 可通过startAppPicker接口获取
-  appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE
+  appInfo: { appTokens: [] }, // 应用token，可通过startAppPicker接口获取
+  appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE // 限制类型，此处为禁用清单类型，表示对appInfo指定的应用进行管控
 };
 
 调用addGuardStrategy，添加屏幕时间管控策略。
@@ -83,15 +83,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 private guardStrategy: guardService.GuardStrategy = {
-  name: 'GuardStrategy',
+  name: 'GuardStrategy', // 策略名称，由开发者自定义
   timeStrategy: {
-    type: guardService.TimeStrategyType.START_END_TIME_TYPE,
-    startTime: '19:00',
-    endTime: '21:00',
-    repeat: [1, 2, 3, 4, 5, 6, 7]
+    type: guardService.TimeStrategyType.START_END_TIME_TYPE, // 时间策略类型，此处为起止时间策略
+    startTime: '19:00', // 管控起始时间，此处表示管控于19点开始
+    endTime: '21:00', // 管控结束时间，此处表示管控于21点结束
+    repeat: [1, 2, 3, 4, 5, 6, 7] // 重复执行时间，此处表示管控在周一至周日均生效
   },
-  appInfo: { appTokens: [] }, // 可通过startAppPicker接口获取
-  appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE
+  appInfo: { appTokens: [] }, // 应用token，可通过startAppPicker接口获取
+  appRestrictionType: guardService.RestrictionType.BLOCKLIST_TYPE // 限制类型，此处为禁用清单类型，表示对appInfo指定的应用进行管控
 };
 ```
 

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-本功能在API 24之前版本仅支持Phone；API24及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
+本功能在6.1.1(24)之前版本仅支持Phone；6.1.1(24)及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
 
 业务流程
 
@@ -37,97 +37,104 @@ import { common } from '@kit.AbilityKit';
 
 确认设备是否具备TUI能力。
 
- async function isSupportTUI():Promise<boolean> {
-   if (canIUse('SystemCapability.Security.TrustedAuthentication')) {
-     let text = 'a'; // 任意短字符串。
-     try {
-       const result = await trustedAuthentication.checkConfirmUITextFormat(text);
-       if (result.result == 0) {
-         return true;
-       }
-     } catch (error) {
-       hilog.error(0x0000, TAG, 'The trusted authentication feature is not enabled.');
-       return false;
-     }
-   }
-   return false;
- }
- let supportFlag:boolean = await isSupportTUI();
+async isSupportTUI():Promise<boolean> {
+  if (canIUse('SystemCapability.Security.TrustedAuthentication')) {
+    let text = 'a'; // 任意短字符串。
+    try {
+      const result = await trustedAuthentication.checkConfirmUITextFormat(text);
+      if (result.result == 0) {
+        return true;
+      }
+    } catch (error) {
+      hilog.error(DOMAIN, 'testTag', 'The trusted authentication feature is not enabled.');
+      return false;
+    }
+  }
+  return false;
+}
 
 参考密钥管理服务提供的密钥生成开发指导，使用指定的会话密钥别名及指定密钥属性集合完成密钥生成。
 
 说明
 
-创建密钥时指定密钥属性集合中身份认证类型tag: huks.HuksTag.HUKS_TAG_USER_AUTH_TYPE时，必须要包括huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_TUI_PIN认证方式，其余认证类型可以根据业务需要进行定制配置。
+1、创建密钥时指定密钥属性集合中身份认证类型tag: huks.HuksTag.HUKS_TAG_USER_AUTH_TYPE时，必须要包括huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_TUI_PIN认证方式，其余认证类型可以根据业务需要进行定制配置。
 
-// 密钥属性集示例
-let properties: Array<huks.HuksParam> = [{
-  tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
-  value: huks.HuksKeyAlg.HUKS_ALG_ECC
-}, {
-  tag: huks.HuksTag.HUKS_TAG_PURPOSE,
-  value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN | huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_VERIFY
-}, {
-  tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
-  value: huks.HuksKeySize.HUKS_ECC_KEY_SIZE_256,
-}, {
-  tag: huks.HuksTag.HUKS_TAG_DIGEST,
-  value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
-},
-{
-  tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_PURPOSE,
-  value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN
-},
-// 指定密钥身份认证的类型：TUI_PIN/指纹/人脸
-{
-  tag: huks.HuksTag.HUKS_TAG_USER_AUTH_TYPE,
-  value: huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_TUI_PIN | huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FINGERPRINT | huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FACE
-},
-// 指定密钥安全授权的类型（失效类型）：新录入生物特征（如指纹）后无效
-{
-  tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_ACCESS_TYPE,
-  value: huks.HuksAuthAccessType.HUKS_AUTH_ACCESS_ALWAYS_VALID
-},
-// 指定挑战值的类型：默认类型
-{
-  tag: huks.HuksTag.HUKS_TAG_CHALLENGE_TYPE,
-  value: huks.HuksChallengeType.HUKS_CHALLENGE_TYPE_NORMAL
-}];
+2、开发者如果需要支持密钥加密导出导入功能，初始化生成密钥属性集时，需要设置HUKS_TAG_IS_ALLOWED_WRAP，指定密钥允许导出。
+
+ async TestGenKeyForTuiPinSign(): Promise<void> {
+   let properties: Array<huks.HuksParam> = [{
+     tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
+     value: huks.HuksKeyAlg.HUKS_ALG_ECC
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_PURPOSE,
+     value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN | huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_VERIFY
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
+     value: huks.HuksKeySize.HUKS_ECC_KEY_SIZE_256
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_DIGEST,
+     value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_PURPOSE,
+     value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN
+   },
+   // 指定密钥身份认证的类型：TUI_PIN/指纹/人脸
+   {
+     tag: huks.HuksTag.HUKS_TAG_USER_AUTH_TYPE,
+     value: huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_TUI_PIN | huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FINGERPRINT |
+     huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FACE
+   },
+   // 指定密钥安全授权的类型（失效类型）：新录入生物特征（如指纹）后无效
+   {
+     tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_ACCESS_TYPE,
+     value: huks.HuksAuthAccessType.HUKS_AUTH_ACCESS_ALWAYS_VALID
+   },
+   // 指定挑战值的类型：默认类型
+   {
+     tag: huks.HuksTag.HUKS_TAG_CHALLENGE_TYPE,
+     value: huks.HuksChallengeType.HUKS_CHALLENGE_TYPE_NORMAL
+   },
+   /* 允许导出密钥，用于后续密钥备份场景 */
+   {
+     tag: huks.HuksTag.HUKS_TAG_IS_ALLOWED_WRAP,
+     value: true
+   }];
+   let huksOptions: huks.HuksOptions = {
+     properties: properties,
+     inData: new Uint8Array(new Array())
+   }
+   await publicGenKeyFunc(KEY_ALIAS, huksOptions);
+ }
 
 参考密钥管理服务提供的签名/验签指导，初始化签名会话。
 
 调用设置密码接口，发起数字盾密码创建申请。
 
-// 设置数字盾密码
-async function SetPwd(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthInfo> {
+async SetPwd(challenge: Uint8Array, assetName: string): Promise<trustedAuthentication.AuthInfo> {
   try {
-   // 数字盾密码定制属性参数
-   const passwordInfo: trustedAuthentication.PasswordInfo = {
-     pwdType: trustedAuthentication.PasswordType.PASSWORD_TYPE_DIGITAL,
-     pwdMaxLength: 10,
-     pwdMinLength: 6,
-     maxAuthFailCount: 6
-   };
-
-   const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png');//实际使用时请替换为应用要在TUI界面展示的logo图片名称
-   const buffer = fileData.buffer;
-   const label:trustedAuthentication.TUILable = {
-     image: buffer as ArrayBuffer,
-     title: "开通数字盾",
-   }
-   const authInfo = await trustedAuthentication.enableTrustedAuthentication(challenge, passwordInfo, label);
-   return authInfo;
-  } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to enableTrustedAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Enable trusted authentication failed:' + (err as BusinessError).message);
+    const passwordInfo: trustedAuthentication.PasswordInfo = {
+      pwdType: trustedAuthentication.PasswordType.PASSWORD_TYPE_DIGITAL,
+      pwdMaxLength: 10,
+      pwdMinLength: 6,
+      maxAuthFailCount: 6
+    };
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.OpenShield').id)
+    }
+    const authInfo = await trustedAuthentication.enableTrustedAuthentication(challenge, passwordInfo, label);
+    let assetLabel = assetName + 'label';
+    AssetUtils.AddDataToAssetStore(CryptoUtils.bigIntToUint8Array(authInfo.authID), assetName, assetLabel);
+    hilog.info(0x0000, 'testTag', 'Open Shield Success：', authInfo.authID, authInfo.authToken.length,
+      authInfo.authToken);
+    return authInfo;
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'Open Shield Fail：', error);
+    throw new Error('Open Shield Fail：' + (error as BusinessError).message);
   }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-let authInfo: trustedAuthentication.AuthInfo = await SetPwd(challenge, context);
 
 参考密钥管理服务提供的签名/验签指导, 对通过密码设置获取到的authToken数据进行签名，并结束会话。
 
@@ -148,93 +155,98 @@ import { common } from '@kit.AbilityKit';
 ### Code block 2
 
 ```
- async function isSupportTUI():Promise<boolean> {
-   if (canIUse('SystemCapability.Security.TrustedAuthentication')) {
-     let text = 'a'; // 任意短字符串。
-     try {
-       const result = await trustedAuthentication.checkConfirmUITextFormat(text);
-       if (result.result == 0) {
-         return true;
-       }
-     } catch (error) {
-       hilog.error(0x0000, TAG, 'The trusted authentication feature is not enabled.');
-       return false;
-     }
-   }
-   return false;
- }
- let supportFlag:boolean = await isSupportTUI();
+async isSupportTUI():Promise<boolean> {
+  if (canIUse('SystemCapability.Security.TrustedAuthentication')) {
+    let text = 'a'; // 任意短字符串。
+    try {
+      const result = await trustedAuthentication.checkConfirmUITextFormat(text);
+      if (result.result == 0) {
+        return true;
+      }
+    } catch (error) {
+      hilog.error(DOMAIN, 'testTag', 'The trusted authentication feature is not enabled.');
+      return false;
+    }
+  }
+  return false;
+}
 ```
 
 ### Code block 3
 
 ```
-// 密钥属性集示例
-let properties: Array<huks.HuksParam> = [{
-  tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
-  value: huks.HuksKeyAlg.HUKS_ALG_ECC
-}, {
-  tag: huks.HuksTag.HUKS_TAG_PURPOSE,
-  value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN | huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_VERIFY
-}, {
-  tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
-  value: huks.HuksKeySize.HUKS_ECC_KEY_SIZE_256,
-}, {
-  tag: huks.HuksTag.HUKS_TAG_DIGEST,
-  value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
-},
-{
-  tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_PURPOSE,
-  value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN
-},
-// 指定密钥身份认证的类型：TUI_PIN/指纹/人脸
-{
-  tag: huks.HuksTag.HUKS_TAG_USER_AUTH_TYPE,
-  value: huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_TUI_PIN | huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FINGERPRINT | huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FACE
-},
-// 指定密钥安全授权的类型（失效类型）：新录入生物特征（如指纹）后无效
-{
-  tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_ACCESS_TYPE,
-  value: huks.HuksAuthAccessType.HUKS_AUTH_ACCESS_ALWAYS_VALID
-},
-// 指定挑战值的类型：默认类型
-{
-  tag: huks.HuksTag.HUKS_TAG_CHALLENGE_TYPE,
-  value: huks.HuksChallengeType.HUKS_CHALLENGE_TYPE_NORMAL
-}];
+ async TestGenKeyForTuiPinSign(): Promise<void> {
+   let properties: Array<huks.HuksParam> = [{
+     tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
+     value: huks.HuksKeyAlg.HUKS_ALG_ECC
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_PURPOSE,
+     value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN | huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_VERIFY
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
+     value: huks.HuksKeySize.HUKS_ECC_KEY_SIZE_256
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_DIGEST,
+     value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
+   }, {
+     tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_PURPOSE,
+     value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_SIGN
+   },
+   // 指定密钥身份认证的类型：TUI_PIN/指纹/人脸
+   {
+     tag: huks.HuksTag.HUKS_TAG_USER_AUTH_TYPE,
+     value: huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_TUI_PIN | huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FINGERPRINT |
+     huks.HuksUserAuthType.HUKS_USER_AUTH_TYPE_FACE
+   },
+   // 指定密钥安全授权的类型（失效类型）：新录入生物特征（如指纹）后无效
+   {
+     tag: huks.HuksTag.HUKS_TAG_KEY_AUTH_ACCESS_TYPE,
+     value: huks.HuksAuthAccessType.HUKS_AUTH_ACCESS_ALWAYS_VALID
+   },
+   // 指定挑战值的类型：默认类型
+   {
+     tag: huks.HuksTag.HUKS_TAG_CHALLENGE_TYPE,
+     value: huks.HuksChallengeType.HUKS_CHALLENGE_TYPE_NORMAL
+   },
+   /* 允许导出密钥，用于后续密钥备份场景 */
+   {
+     tag: huks.HuksTag.HUKS_TAG_IS_ALLOWED_WRAP,
+     value: true
+   }];
+   let huksOptions: huks.HuksOptions = {
+     properties: properties,
+     inData: new Uint8Array(new Array())
+   }
+   await publicGenKeyFunc(KEY_ALIAS, huksOptions);
+ }
 ```
 
 ### Code block 4
 
 ```
-// 设置数字盾密码
-async function SetPwd(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthInfo> {
+async SetPwd(challenge: Uint8Array, assetName: string): Promise<trustedAuthentication.AuthInfo> {
   try {
-   // 数字盾密码定制属性参数
-   const passwordInfo: trustedAuthentication.PasswordInfo = {
-     pwdType: trustedAuthentication.PasswordType.PASSWORD_TYPE_DIGITAL,
-     pwdMaxLength: 10,
-     pwdMinLength: 6,
-     maxAuthFailCount: 6
-   };
-
-   const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png');//实际使用时请替换为应用要在TUI界面展示的logo图片名称
-   const buffer = fileData.buffer;
-   const label:trustedAuthentication.TUILable = {
-     image: buffer as ArrayBuffer,
-     title: "开通数字盾",
-   }
-   const authInfo = await trustedAuthentication.enableTrustedAuthentication(challenge, passwordInfo, label);
-   return authInfo;
-  } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to enableTrustedAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Enable trusted authentication failed:' + (err as BusinessError).message);
+    const passwordInfo: trustedAuthentication.PasswordInfo = {
+      pwdType: trustedAuthentication.PasswordType.PASSWORD_TYPE_DIGITAL,
+      pwdMaxLength: 10,
+      pwdMinLength: 6,
+      maxAuthFailCount: 6
+    };
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.OpenShield').id)
+    }
+    const authInfo = await trustedAuthentication.enableTrustedAuthentication(challenge, passwordInfo, label);
+    let assetLabel = assetName + 'label';
+    AssetUtils.AddDataToAssetStore(CryptoUtils.bigIntToUint8Array(authInfo.authID), assetName, assetLabel);
+    hilog.info(0x0000, 'testTag', 'Open Shield Success：', authInfo.authID, authInfo.authToken.length,
+      authInfo.authToken);
+    return authInfo;
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'Open Shield Fail：', error);
+    throw new Error('Open Shield Fail：' + (error as BusinessError).message);
   }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data;//实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-let authInfo: trustedAuthentication.AuthInfo = await SetPwd(challenge, context);
 ```

@@ -74,7 +74,7 @@ static napi_value NativeWebInit(napi_env env, napi_callback_info info)
 
 [h2]使用Native接口获取API结构体
 
-在ArkWeb Native侧，需要先获取API结构体，才能调用结构体里的Native API。ArkWeb Native侧API通过函数OH_ArkWeb_GetNativeAPI获取，根据入参type不同，可分别获取ArkWeb_ControllerAPI、ArkWeb_ComponentAPI结构体。其中，ArkWeb_ControllerAPI对应ArkTS侧web_webview.WebviewController API，ArkWeb_ComponentAPI对应ArkTS侧ArkWeb组件API。
+在ArkWeb Native侧，需要先获取API结构体，才能调用结构体里的Native API。ArkWeb Native侧API通过函数OH_ArkWeb_GetNativeAPI获取，根据入参type不同，可分别获取ArkWeb_ControllerAPI、ArkWeb_ComponentAPI结构体。其中，ArkWeb_ControllerAPI对应ArkTS侧WebviewController API，ArkWeb_ComponentAPI对应ArkTS侧ArkWeb组件API。
 
 static ArkWeb_ControllerAPI *controller = nullptr;
 static ArkWeb_ComponentAPI *component = nullptr;
@@ -117,15 +117,16 @@ if (!ARKWEB_MEMBER_MISSING(component, onDestroy)) {
 
 // 注册对象
 OH_LOG_Print(
-    LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "ArkWeb", "Native Development Kit RegisterJavaScriptProxy begin");
+    LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "ArkWeb", "Native Development Kit registerJavaScriptProxyEx begin");
 ArkWeb_ProxyMethodWithResult method1 = {
     "method1", ProxyMethod1, static_cast<void *>(jsbridge_object_ptr->GetWeakPtr())};
 ArkWeb_ProxyMethodWithResult method2 = {
     "method2", ProxyMethod2, static_cast<void *>(jsbridge_object_ptr->GetWeakPtr())};
 ArkWeb_ProxyMethodWithResult methodList[2] = {method1, method2};
 // 调用Native Development Kit接口注册对象
-// 如此注册的情况下，在H5页面就可以使用proxy.method1、proxy.method1调用此文件下的ProxyMethod1和ProxyMethod2方法了
+// 如此注册的情况下，在H5页面就可以使用proxy.method1、proxy.method2调用此文件下的ProxyMethod1和ProxyMethod2方法了
 ArkWeb_ProxyObjectWithResult proxyObject = {"ndkProxy", methodList, 2};
+// 参数permission为空，表示不进行权限管控
 controller->registerJavaScriptProxyEx(webTag, &proxyObject, "");
 
 参数permission是一个JSON字符串，示例如下：
@@ -324,6 +325,7 @@ struct Index {
 
 Node-API侧暴露ArkTS接口
 
+// entry4/src/main/cpp/types/libentry4/index.d.ts
 export const nativeWebInit: (webName: string) => void;
 export const runJavaScript: (webName: string, jsCode: string) => void;
 
@@ -761,7 +763,7 @@ static napi_value NativeWebInit(napi_env env, napi_callback_info info) {
 
 [h2]使用Native接口获取API结构体
 
-ArkWeb Native侧需要先获取API结构体，才能调用结构体里的Native API。ArkWeb Native侧API通过函数OH_ArkWeb_GetNativeAPI获取，根据入参type不同，可分别获取ArkWeb_ControllerAPI、ArkWeb_ComponentAPI函数指针结构体。其中，ArkWeb_ControllerAPI对应ArkTS侧web_webview.WebviewController API，ArkWeb_ComponentAPI对应ArkTS侧ArkWeb组件API。
+ArkWeb Native侧需要先获取API结构体，才能调用结构体里的Native API。ArkWeb Native侧API通过函数OH_ArkWeb_GetNativeAPI获取，根据入参type不同，可分别获取ArkWeb_ControllerAPI、ArkWeb_ComponentAPI函数指针结构体。其中，ArkWeb_ControllerAPI对应ArkTS侧WebviewController API，ArkWeb_ComponentAPI对应ArkTS侧ArkWeb组件API。
 
 static ArkWeb_ControllerAPI *controller = nullptr;
 static ArkWeb_ComponentAPI *component = nullptr;
@@ -1410,15 +1412,16 @@ if (!ARKWEB_MEMBER_MISSING(component, onDestroy)) {
 ```
 // 注册对象
 OH_LOG_Print(
-    LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "ArkWeb", "Native Development Kit RegisterJavaScriptProxy begin");
+    LOG_APP, LOG_INFO, LOG_PRINT_DOMAIN, "ArkWeb", "Native Development Kit registerJavaScriptProxyEx begin");
 ArkWeb_ProxyMethodWithResult method1 = {
     "method1", ProxyMethod1, static_cast<void *>(jsbridge_object_ptr->GetWeakPtr())};
 ArkWeb_ProxyMethodWithResult method2 = {
     "method2", ProxyMethod2, static_cast<void *>(jsbridge_object_ptr->GetWeakPtr())};
 ArkWeb_ProxyMethodWithResult methodList[2] = {method1, method2};
 // 调用Native Development Kit接口注册对象
-// 如此注册的情况下，在H5页面就可以使用proxy.method1、proxy.method1调用此文件下的ProxyMethod1和ProxyMethod2方法了
+// 如此注册的情况下，在H5页面就可以使用proxy.method1、proxy.method2调用此文件下的ProxyMethod1和ProxyMethod2方法了
 ArkWeb_ProxyObjectWithResult proxyObject = {"ndkProxy", methodList, 2};
+// 参数permission为空，表示不进行权限管控
 controller->registerJavaScriptProxyEx(webTag, &proxyObject, "");
 ```
 
@@ -1623,6 +1626,7 @@ struct Index {
 ### Code block 10
 
 ```
+// entry4/src/main/cpp/types/libentry4/index.d.ts
 export const nativeWebInit: (webName: string) => void;
 export const runJavaScript: (webName: string, jsCode: string) => void;
 ```

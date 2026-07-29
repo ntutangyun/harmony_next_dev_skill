@@ -158,7 +158,6 @@ let routerOptions: interactiveLiveness.InteractiveLivenessConfig = {
 
 调用interactiveLiveness的startLivenessDetection接口，判断跳转到人脸活体检测控件是否成功。
 
-// 跳转到人脸活体检测控件
 private routerLibrary() {
   if (canIUse('SystemCapability.AI.Component.LivenessDetect')) {
     interactiveLiveness.startLivenessDetection(routerOptions).then((isSuccess) => {
@@ -355,7 +354,7 @@ struct LivenessCollectionIndex{
     this.getDetectionResultInfo();
   }
 
-  // 跳转到人脸活体检测控件
+  // 配置人脸活体检测参数并调用检测接口
   private routerLibrary() {
     let routerOptions: interactiveLiveness.InteractiveLivenessConfig = {
       isSilentMode: this.isSilentMode as interactiveLiveness.DetectionMode,
@@ -555,7 +554,6 @@ let routerOptions: interactiveLiveness.InteractiveLivenessConfig = {
 ### Code block 8
 
 ```
-// 跳转到人脸活体检测控件
 private routerLibrary() {
   if (canIUse('SystemCapability.AI.Component.LivenessDetect')) {
     interactiveLiveness.startLivenessDetection(routerOptions).then((isSuccess) => {
@@ -754,7 +752,7 @@ struct LivenessCollectionIndex{
     this.getDetectionResultInfo();
   }
 
-  // 跳转到人脸活体检测控件
+  // 配置人脸活体检测参数并调用检测接口
   private routerLibrary() {
     let routerOptions: interactiveLiveness.InteractiveLivenessConfig = {
       isSilentMode: this.isSilentMode as interactiveLiveness.DetectionMode,

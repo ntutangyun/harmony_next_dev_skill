@@ -12,6 +12,8 @@ Push Kit简介
 
 端云调试
 
+（可选）接入Skill
+
 获取AAID
 
 Push Kit常见问题

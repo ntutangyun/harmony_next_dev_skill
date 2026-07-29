@@ -24,9 +24,9 @@ DNS策略的配置能力，包括配置禁止/允许解析的域名、解析使�
 
 支持限制特定应用访问网络。
 
-支持限制对特定IP、特定协议、特定端口的网络通信。
+支持限制对特定IP、特定协议、特定端口、特定物理网卡的网络通信。
 
-支持限制特定应用对特定IP、特定协议、特定端口的网络通信。
+支持限制特定应用对特定IP、特定协议、特定端口、特定物理网卡的网络通信。
 
 支持拦截规则下发后立即生效（此点针对TCP协议：需断开已有被拦截的TCP连接）。
 
@@ -131,7 +131,8 @@ let ipRule: netFirewall.NetFirewallRule = {
       startPort: 443,
       endPort: 443
     }] as IpPort[],
-  userId: 100
+  userId: 100,
+  interface:'wlan0' // 从API版本26.0.0开始支持
 };
 // 添加防火墙规则。
 netFirewall.addNetFirewallRule(ipRule).then((result: number) => {
@@ -193,7 +194,8 @@ let domainRule: netFirewall.NetFirewallRule = {
     isWildcard: true,
     domain: '*.HarmonyOS.cn'
   }] as domain[],
-  userId: 100
+  userId: 100,
+  interface:'wlan0' // 从API版本26.0.0开始支持
 };
 
 // 添加防火墙规则。
@@ -299,7 +301,8 @@ let ipRule: netFirewall.NetFirewallRule = {
       startPort: 443,
       endPort: 443
     }] as IpPort[],
-  userId: 100
+  userId: 100,
+  interface:'wlan0' // 从API版本26.0.0开始支持
 };
 // 添加防火墙规则。
 netFirewall.addNetFirewallRule(ipRule).then((result: number) => {
@@ -363,7 +366,8 @@ let domainRule: netFirewall.NetFirewallRule = {
     isWildcard: true,
     domain: '*.HarmonyOS.cn'
   }] as domain[],
-  userId: 100
+  userId: 100,
+  interface:'wlan0' // 从API版本26.0.0开始支持
 };
 
 // 添加防火墙规则。

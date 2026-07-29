@@ -40,7 +40,7 @@ Map Kit提供以下功能，满足绝大多数地图开发的需求：
 
 [h2]支持的设备
 
-本Kit仅适用于Phone、Tablet、PC/2in1、Wearable、TV和Car。
+本Kit仅适用于Phone、Tablet、PC/2in1和Wearable。
 
 [h2]示例代码
 

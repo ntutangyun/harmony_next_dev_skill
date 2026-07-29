@@ -41,7 +41,7 @@ HiDumper命令行工具使用常见问题汇总在常见问题章节。
 --ipc [pid]/-a --start-stat/stat/--stop-stat	统计一段时间进程IPC信息。如果使用-a，则统计所有进程IPC数据。使用--start-stat开始统计，使用--stat获取统计数据，使用--stop-stat结束统计。
 --mem-smaps pid [-v]	获取pid内存统计信息，数据来源于/proc/pid/smaps，使用-v指定更多详细信息。（仅支持导出debug版本应用） 说明：从API version 20开始，支持该参数。
 --mem-jsheap pid [-T tid] [--gc] [--leakobj] [--raw] [--clean] [--single]	必选参数pid。触发ArkTS应用JS线程的gc和堆内存快照导出。文件命名格式为：hidumper-jsheap-进程号-JS线程号-时间戳，文件内容为JSON结构的JS堆快照。 指定线程tid时，仅触发该线程的gc和堆内存快照导出。 指定--gc时，仅触发gc，不导出快照。 指定--leakobj时，应用开启泄漏检测可获取泄漏对象列表。 指定--raw时，堆快照以rawheap格式导出。 指定--clean时，快照导出后触发清理nodeId节点信息。 指定--single时，按进程导出一份快照，只支持rawheap格式，需配合--raw命令使用。 导出快照时，应用应处于亮屏场景。 说明： 从API version 19开始，支持--raw参数。 从API version 24开始，支持--clean参数。 从API版本26.0.0开始，支持--single参数。 从API版本26.0.0开始，release版本应用支持此命令，但需同时满足profileable标签、enterprise类型的appDistributionType且开发者模式打开。
---mem-heap pid ARG [-T tid] [--raw]	导出指定类型的内存快照信息。ARG用于指定快照类型，支持--jsvm、--kotlin、--arkweb-js等类型。 指定线程tid时，仅触发该线程的虚拟机快照导出，仅配合--jsvm参数使用。 指定--raw时，虚拟机快照以rawheap格式导出，仅配合--jsvm、--arkweb-js参数使用。 指定--gc时，触发指定应用的render进程GC，仅配合--arkweb-js参数使用。 说明：从API版本26.0.0开始，支持-T tid、--raw参数。
+--mem-heap pid ARG [--leakobj] [-T tid] [--raw]	导出指定类型的内存快照信息。ARG用于指定快照类型，支持--native、--jsvm、--kotlin、--arkweb-js等类型。 指定--leakobj时，只触发打印可疑内存泄漏点不做快照导出，仅配合--native参数使用。 指定线程tid时，仅触发该线程的虚拟机快照导出，仅配合--jsvm参数使用。 指定--raw时，虚拟机快照以rawheap格式导出，仅配合--jsvm、--arkweb-js参数使用。 指定--gc时，触发指定应用的render进程GC，仅配合--arkweb-js参数使用。 说明：从API版本26.0.0开始，支持--leakobj、-T tid、--raw参数。
 
 查询内存信息
 
@@ -345,11 +345,11 @@ hdc shell "bm dump -n com.example.myapplication | grep appProvisionType"
 
 [h2]查询虚拟机堆内存
 
-使用hidumper --mem-jsheap pid [-T tid] [--gc] [--leakobj] [--raw] [--clean] [--single]命令可以查看ArkTS应用虚拟机堆内存，使用hidumper --mem-heap pid ARG 命令可以查看指定虚拟机堆内存，ARG用于指定快照类型。生成的堆内存文件存放于/data/log/reliability/resource_leak/memory_leak目录。
+使用hidumper --mem-jsheap pid [-T tid] [--gc] [--leakobj] [--raw] [--clean] [--single]命令可以查看ArkTS应用虚拟机堆内存，使用hidumper --mem-heap pid ARG [--leakobj]命令可以查看指定虚拟机堆内存，ARG用于指定快照类型。生成的堆内存文件存放于/data/log/reliability/resource_leak/memory_leak目录。
 
 注意
 
-hidumper --mem-jsheap pid [-T tid] [--gc] [--leakobj] [--raw] [--clean] [--single]，hidumper --mem-heap pid ARG 命令调试的进程应为“使用调试证书签名的应用”，同debug版本应用。
+hidumper --mem-jsheap pid [-T tid] [--gc] [--leakobj] [--raw] [--clean] [--single]，hidumper --mem-heap pid ARG [--leakobj]命令调试的进程应为“使用调试证书签名的应用”，同debug版本应用。
 
 确认命令指定的应用是否为可调试应用：参考上述hidumper --mem-smaps [pid] [-v]命令中的注意事项。
 
@@ -417,6 +417,81 @@ $ hidumper --mem-jsheap 64949 --clean  -> 64949 为目标应用进程号
 使用样例：
 
 $ hidumper --mem-jsheap 64949 --raw --single  -> 64949 为目标应用进程号
+
+可使用hidumper --mem-heap pid --native --leakobj打印指定进程的native堆内存可疑泄漏点，该命令不会生成任何文件。
+
+使用样例：
+
+$ hidumper --mem-heap 65097 --native --leakobj  -> 65097 为目标应用进程号
+192 bytes leak directly at 0x59d4852740
+  first 32 memory:
+    0x59d4852740: 00 7f 80 d4 59 00 00 00 88 39 2f d4 59 00 00 00 ....Y....9/.Y...
+    0x59d4852750: 01 00 00 00 00 00 00 00 00 00 00 00 84 00 00 00 ................
+  last 32 memory:
+    0x59d48527e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+    0x59d48527f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+8 bytes leak directly at 0x59d4809b40
+  referencing 8 bytes leak in 1 allocations
+  memory:
+    0x59d4809b40: 48 9b 80 d4 59 00 00 00                         H...Y...
+8 bytes leak indirectly at 0x59d4809b48
+  referencing 8 bytes leak in 1 allocations
+  memory:
+    0x59d4809b48: 50 9b 80 d4 59 00 00 00                         P...Y...
+8 bytes leak indirectly at 0x59d4809b40
+  memory:
+    0x59d4809b50: 00 00 00 00 00 00 00 00                         ........
+
+解析说明：
+
+192 bytes leak directly at 0x59d4852740，表示从0x59d4852740开始直接泄漏了192字节，当泄漏字节数大于64时，只会打印前32个字节和最后32个字节的内容。
+
+  8 bytes leak directly at 0x59d4809b40
+    referencing 8 bytes leak in 1 allocations
+    memory:
+      0x59d4809b40: 48 9b 80 d4 59 00 00 00                         H...Y...
+
+表示从0x59d4809b40开始直接泄漏了8字节的内容，当泄漏字节数小于64时，会直接全部打印出来。
+
+referencing 表示该地址引用了其他地址，打印内容会指向引用的地址，从后往前看，指向的地址为0x59d4809b48。因此，被指向的0x59d4809b48及下一步指向的0x59d4809b40为 indirectly 间接泄漏。
+
+打印出来的顺序遵循以下规则：
+
+直接泄漏的在前，directly的在前，indirectly在后面；
+
+容量大的在前，192 bytes的在前面，8 bytes的在后面；
+
+引用内存块大的在前，referencing 8 bytes的在前面，没有引用或者引用比8 bytes小的在后面；
+
+地址小的在前。
+
+可使用hidumper --mem-heap pid --native命令导出指定进程的native堆内存快照文件，文件命名为：hidumper-nativeheap-进程号-时间戳
+
+使用样例：
+
+    $ hidumper --mem-heap 65097 --native  -> 65097 为目标应用进程号
+    $ ls | grep nativeheap -> 进入堆内存文件存放目录后执行
+    hidumper-nativeheap-65097-1775640819058
+
+解析说明：
+
+注意
+
+该文件内容格式为二进制，需要使用十六进制编辑器查看。
+
+4E 53 4E 41 50 31 2E 30 64 00 00 00 00 00 00 00
+20 C0 E0 8F 5A 00 00 00 20 00 00 00 00 00 00 00
+C0 B7 E0 8F 5A 00 00 00 40 00 00 00 00 00 00 00
+60 80 E0 8F 5A 00 00 00 30 00 00 00 00 00 00 00
+...
+
+第一行的前8个字节4E 53 4E 41 50 31 2E 30，转成字符形式即为“NSNAP1.0”，代表了本文件的版本号，该字段固定不变。
+
+第一行的后8个字节64 00 00 00 00 00 00 00，代表了泄漏点的数量，即0x0000000000000064，转成10进制为100，本次检测到了100个泄漏点，该值会随着上报的节点数量进行变化。
+
+根据检测到的泄漏点数量，第二行开始会展示相对应数量的信息，每16字节为一组。
+
+以第二行为例，前8字节代表地址：0x0000005A8FE0C020，后8字节代表大小：0x0000000000000020，即32个字节。
 
 可使用hidumper --mem-heap pid --jsvm命令导出指定进程的jsvm堆内存快照文件，文件命名为：hidumper-jsvmheap-进程号-JS线程号-时间戳，如果有多个JS线程,会生成多个文件。
 
@@ -1889,13 +1964,64 @@ $ hidumper --mem-jsheap 64949 --raw --single  -> 64949 为目标应用进程号
 ### Code block 17
 
 ```
+$ hidumper --mem-heap 65097 --native --leakobj  -> 65097 为目标应用进程号
+192 bytes leak directly at 0x59d4852740
+  first 32 memory:
+    0x59d4852740: 00 7f 80 d4 59 00 00 00 88 39 2f d4 59 00 00 00 ....Y....9/.Y...
+    0x59d4852750: 01 00 00 00 00 00 00 00 00 00 00 00 84 00 00 00 ................
+  last 32 memory:
+    0x59d48527e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+    0x59d48527f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+8 bytes leak directly at 0x59d4809b40
+  referencing 8 bytes leak in 1 allocations
+  memory:
+    0x59d4809b40: 48 9b 80 d4 59 00 00 00                         H...Y...
+8 bytes leak indirectly at 0x59d4809b48
+  referencing 8 bytes leak in 1 allocations
+  memory:
+    0x59d4809b48: 50 9b 80 d4 59 00 00 00                         P...Y...
+8 bytes leak indirectly at 0x59d4809b40
+  memory:
+    0x59d4809b50: 00 00 00 00 00 00 00 00                         ........
+```
+
+### Code block 18
+
+```
+  8 bytes leak directly at 0x59d4809b40
+    referencing 8 bytes leak in 1 allocations
+    memory:
+      0x59d4809b40: 48 9b 80 d4 59 00 00 00                         H...Y...
+```
+
+### Code block 19
+
+```
+    $ hidumper --mem-heap 65097 --native  -> 65097 为目标应用进程号
+    $ ls | grep nativeheap -> 进入堆内存文件存放目录后执行
+    hidumper-nativeheap-65097-1775640819058
+```
+
+### Code block 20
+
+```
+4E 53 4E 41 50 31 2E 30 64 00 00 00 00 00 00 00
+20 C0 E0 8F 5A 00 00 00 20 00 00 00 00 00 00 00
+C0 B7 E0 8F 5A 00 00 00 40 00 00 00 00 00 00 00
+60 80 E0 8F 5A 00 00 00 30 00 00 00 00 00 00 00
+...
+```
+
+### Code block 21
+
+```
 $ hidumper --mem-heap 65097 --jsvm  -> 65097 为目标应用进程号
 $ ls | grep jsvmheap -> 进入堆内存文件存放目录后执行
 hidumper-jsvmheap-65097-65134-1775640819058
 hidumper-jsvmheap-65097-65135-1775640819058
 ```
 
-### Code block 18
+### Code block 22
 
 ```
 $ hidumper --mem-heap 65097 --jsvm -T 65134  -> 65097 为目标应用进程号
@@ -1903,7 +2029,7 @@ $ ls | grep jsvmheap -> 进入堆内存文件存放目录后执行
 hidumper-jsvmheap-65097-65134-1775640819058
 ```
 
-### Code block 19
+### Code block 23
 
 ```
 $ hidumper --mem-heap 65097 --jsvm --raw  -> 65097 为目标应用进程号
@@ -1915,7 +2041,7 @@ $ ls | grep jsvmheap -> 进入堆内存文件存放目录后执行
 hidumper-jsvmheap-65097-65134-1775640819058.rawheap
 ```
 
-### Code block 20
+### Code block 24
 
 ```
 $ hidumper --mem-heap 56032 --arkweb-js   -> 56032 为目标应用render进程号
@@ -1924,7 +2050,7 @@ hidumper-arkweb_jsheap-56032-1775640819058
 hidumper-arkweb_jsheap-56032-1775640819058
 ```
 
-### Code block 21
+### Code block 25
 
 ```
 $ hidumper --mem-heap 56032 --arkweb-js --raw  -> 56032 为目标应用render进程号
@@ -1933,13 +2059,13 @@ hidumper-arkweb_jsheap-56032-1775640819058
 hidumper-arkweb_jsheap-56032-1775640819058.rawheap
 ```
 
-### Code block 22
+### Code block 26
 
 ```
 $ hidumper --mem-heap 56032 --arkweb-js --gc  -> 56032 为目标应用render进程号
 ```
 
-### Code block 23
+### Code block 27
 
 ```
   $ hidumper --mem-heap 56032 --kotlin  -> 56032 为目标应用进程号
@@ -1947,7 +2073,7 @@ $ hidumper --mem-heap 56032 --arkweb-js --gc  -> 56032 为目标应用render进�
   hidumper-kotlinheap-56032-1775640819058.kdump
 ```
 
-### Code block 24
+### Code block 28
 
 ```
 $ hidumper --cpuusage
@@ -1964,7 +2090,7 @@ Details of Processes:
 ...
 ```
 
-### Code block 25
+### Code block 29
 
 ```
 $ hidumper --cpuusage 1
@@ -1979,7 +2105,7 @@ Details of Processes:
     1          0.00%           0.00%          0.00%           38368                1394            init
 ```
 
-### Code block 26
+### Code block 30
 
 ```
 $ hidumper --cpufreq
@@ -1997,7 +2123,7 @@ cmd is: cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 ...
 ```
 
-### Code block 27
+### Code block 31
 
 ```
 $ hidumper -ls
@@ -2014,7 +2140,7 @@ NetPolicyManager                 NetStatsManager                  NetTetheringMa
 ...
 ```
 
-### Code block 28
+### Code block 32
 
 ```
 $ hidumper -s
@@ -2035,7 +2161,7 @@ h                             |help text for the tool
 ...
 ```
 
-### Code block 29
+### Code block 33
 
 ```
 $ hidumper -s WindowManagerService
@@ -2076,7 +2202,7 @@ composer fps                   |dump the fps info of composer
 ...
 ```
 
-### Code block 30
+### Code block 34
 
 ```
 $ hidumper -s RenderService -a "h"
@@ -2112,7 +2238,7 @@ flushJankStatsRs              |flush rs jank stats hisysevent
 screen                        |dump all screen information in the system
 ```
 
-### Code block 31
+### Code block 35
 
 ```
 $ hidumper -s RenderService -a "gles"
@@ -2129,7 +2255,7 @@ GL_VERSION: OpenGL ES 3.2 B283
 GL_SHADING_LANGUAGE_VERSION: OpenGL ES GLSL ES 3.20
 ```
 
-### Code block 32
+### Code block 36
 
 ```
 $ hidumper -p 64949
@@ -2157,7 +2283,7 @@ root             2     4     0  127 10:46:59 ?     00:00:00 [call_ebr]
 ...
 ```
 
-### Code block 33
+### Code block 37
 
 ```
 $ hidumper -p 2121 --fd
@@ -2254,14 +2380,14 @@ tid     thread_name     start_time
 ...
 ```
 
-### Code block 34
+### Code block 38
 
 ```
 $ hidumper -p 2121 --fd --thread
 hidumper: invalid arg: --fd and --thread cannot be used together
 ```
 
-### Code block 35
+### Code block 39
 
 ```
 $ hidumper --net
@@ -2277,7 +2403,7 @@ cmd is: netstat -nW  -> 通过netstat -nW命令查询网络连接、路由表、
 ...
 ```
 
-### Code block 36
+### Code block 40
 
 ```
 $ hidumper --net 1
@@ -2288,7 +2414,7 @@ Received Bytes:0
 Sent Bytes:51885
 ```
 
-### Code block 37
+### Code block 41
 
 ```
 $ hidumper --storage
@@ -2300,7 +2426,7 @@ cmd is: storaged -u -p
 ...
 ```
 
-### Code block 38
+### Code block 42
 
 ```
 $ hidumper --storage 1
@@ -2319,7 +2445,7 @@ write_bytes: 10907648
 cancelled_write_bytes: 734003
 ```
 
-### Code block 39
+### Code block 43
 
 ```
 $ hidumper -lc
@@ -2327,7 +2453,7 @@ System cluster list:
 base                             system
 ```
 
-### Code block 40
+### Code block 44
 
 ```
 -------------------------------[base]-------------------------------
@@ -2351,7 +2477,7 @@ cmd is: uptime -p
 up 0 weeks, 0 days, 5 hours, 27 minutes   -> 启动时间
 ```
 
-### Code block 41
+### Code block 45
 
 ```
 $ hidumper -c system
@@ -2449,7 +2575,7 @@ PID        Total Pss(xxx in SwapPss)    Total Vss    Total Rss    Total Uss     
 ...
 ```
 
-### Code block 42
+### Code block 46
 
 ```
 $ hidumper -e
@@ -2463,7 +2589,7 @@ Generated by HiviewDFX@HarmonyOS  -> 故障日志详细内容
 ...
 ```
 
-### Code block 43
+### Code block 47
 
 ```
 $ hidumper -e --list
@@ -2477,7 +2603,7 @@ time                  foreground               reason              record_id    
 ...
 ```
 
-### Code block 44
+### Code block 48
 
 ```
 $ hidumper -e --list sceneboard
@@ -2490,7 +2616,7 @@ time                  foreground               reason              record_id    
 ...
 ```
 
-### Code block 45
+### Code block 49
 
 ```
 $ hidumper -e --list -n 2
@@ -2499,7 +2625,7 @@ time                  foreground               reason              record_id    
 2025-09-26 15:45:03   False                    LowMemoryKill       23123453489239875544   xxx.xxx.sceneboard
 ```
 
-### Code block 46
+### Code block 50
 
 ```
 $ hidumper -e --list sceneboard -n 4 --since '2025-09-26 12:42:05' --until '2025-09-26 15:45:07'
@@ -2512,7 +2638,7 @@ $ hidumper -e --list --since '2025-09-26 12:42:05' --until '2025-09-26 12:42:05'
 no records found.
 ```
 
-### Code block 47
+### Code block 51
 
 ```
 $ hidumper -e --print
@@ -2552,7 +2678,7 @@ Generated by HiviewDFX@HarmonyOS  -> 故障日志详细内容
 The faultlog has been deleted by the system due to expiration.  -> 日志过期被删除提示
 ```
 
-### Code block 48
+### Code block 52
 
 ```
 $ hidumper -e --print systemui
@@ -2565,7 +2691,7 @@ Generated by HiviewDFX@HarmonyOS  -> 故障日志详细内容
 ...
 ```
 
-### Code block 49
+### Code block 53
 
 ```
 $ hidumper -e --print -n 2
@@ -2585,7 +2711,7 @@ Generated by HiviewDFX@HarmonyOS  -> 故障日志详细内容
 ...   -> 故障日志详细内容，大量的文本内容，此处省略
 ```
 
-### Code block 50
+### Code block 54
 
 ```
 $ hidumper -e --print sceneboard -n 2 --since '2025-09-26 12:40:05' --until '2025-09-26 15:45:07'
@@ -2605,7 +2731,7 @@ Generated by HiviewDFX@HarmonyOS  -> 故障日志详细内容
 ...   -> 故障日志详细内容，大量的文本内容，此处省略
 ```
 
-### Code block 51
+### Code block 55
 
 ```
 $ hidumper -e --print 05233453489239878113
@@ -2621,7 +2747,7 @@ $ hidumper -e --print 23123453489239875544
 this type of record does not have faultlog.  -> 查询失败原因
 ```
 
-### Code block 52
+### Code block 56
 
 ```
 $ hidumper --ipc -a --start-stat
@@ -2645,7 +2771,7 @@ StopIpcStatistics pid:1472 success
 ...
 ```
 
-### Code block 53
+### Code block 57
 
 ```
 $ hidumper --ipc 1473 --start-stat
@@ -2671,14 +2797,14 @@ $ hidumper --ipc 1473 --stop-stat
 StopIpcStatistics pid:1473 success
 ```
 
-### Code block 54
+### Code block 58
 
 ```
 $ hidumper --zip
 100%,[-],The result is:/data/log/hidumper/20250622-120444-166.zip
 ```
 
-### Code block 55
+### Code block 59
 
 ```
 $ hidumper -e
@@ -2694,13 +2820,13 @@ $ hidumper -e --zip
 100%,[-],The result is:/data/log/hidumper/20250623-092235-087.zip
 ```
 
-### Code block 56
+### Code block 60
 
 ```
 hdc shell hidumper -s WindowManagerService -a '-a'
 ```
 
-### Code block 57
+### Code block 61
 
 ```
 -------------------------------[ability]-------------------------------
@@ -2724,13 +2850,13 @@ Focus window: 2
 total window num: 10
 ```
 
-### Code block 58
+### Code block 62
 
 ```
 hdc shell "hidumper -s WindowManagerService -a '-w %windowId% -element'"
 ```
 
-### Code block 59
+### Code block 63
 
 ```
 hdc shell "hidumper -s WindowManagerService -a '-w 5 -element'"
@@ -2773,13 +2899,13 @@ TouchHotAreas: [ 0, 1208, 720, 72 ]
 ......
 ```
 
-### Code block 60
+### Code block 64
 
 ```
 hdc shell "hidumper -s WindowManagerService -a '-w %windowId% -element -lastpage %nodeID%'"
 ```
 
-### Code block 61
+### Code block 65
 
 ```
 hdc shell "hidumper -s WindowManagerService -a '-w 5 -element -lastpage 3'"
@@ -2807,19 +2933,19 @@ TouchHotAreas: [ 0, 1208, 720, 72 ]
 ......
 ```
 
-### Code block 62
+### Code block 66
 
 ```
 hdc shell param set persist.ace.testmode.enabled 1
 ```
 
-### Code block 63
+### Code block 67
 
 ```
 hdc shell "hidumper -s WindowManagerService -a '-w %windowId% -inspector'"
 ```
 
-### Code block 64
+### Code block 68
 
 ```
 hdc shell "hidumper -s WindowManagerService -a '-w 5 -inspector'"
@@ -2872,13 +2998,13 @@ hdc shell "hidumper -s WindowManagerService -a '-w 5 -inspector'"
 ......
 ```
 
-### Code block 65
+### Code block 69
 
 ```
 hidumper -s WindowManagerService -a '-w %windowId% -navigation -c'
 ```
 
-### Code block 66
+### Code block 70
 
 ```
 hidumper -s WindowManagerService -a '-w 15 -navigation -c'

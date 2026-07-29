@@ -26,7 +26,7 @@ int OH_HiAppEvent_RemoveWatcher(HiAppEvent_Watcher *watcher)	移除应用事件�
 
 获取该示例工程依赖的jsoncpp文件，打开链接HiAppEvent示例工程EventSub，点击“下载当前目录”，下载EventSub工程文件。
 
-新建Native C++工程，并将上述文件导入到新建工程，目录结构如下。
+在DevEco Studio新建Native C++模板工程，并将上述文件导入到新建工程，目录结构如下。
 
 entry:
   libs:    //  放置jsoncpp关联三方库的文件夹
@@ -209,6 +209,10 @@ static void OnTakeCrash(const char *const *events, uint32_t eventLen)
                     eventInfo["crash_type"].asString().c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.foreground=%{public}d",
                     eventInfo["foreground"].asBool());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.release_type=%{public}s",
+                    eventInfo["release_type"].asString().c_str());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.cpu_abi=%{public}s",
+                    eventInfo["cpu_abi"].asString().c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.app_running_unique_id=%{public}s",
                     eventInfo["app_running_unique_id"].asString().c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_version=%{public}s",
@@ -320,26 +324,26 @@ import { fileIo } from '@kit.CoreFileKit';
 编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，添加按钮并在其onClick函数中构造崩溃场景，以触发崩溃事件。示例代码如下：
 
 Button('MergeLogNativeCrash')
-.type(ButtonType.Capsule)
-.margin({
-  top: 20
-})
-.backgroundColor('#0D9FFB')
-.width('80%')
-.height('5%')
-.onClick(() => {
-  // 模拟创建 applog，假设应用包名为 com.samples.eventsub
-  let filePath : string = "/data/storage/el2/log/com.samples.eventsub_CppCrash_AppMerge.log";
-  let file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
-  let str: string = "only test for merge app log!";
+  .type(ButtonType.Capsule)
+  .margin({
+    top: 20
+  })
+  .backgroundColor('#0D9FFB')
+  .width('80%')
+  .height('5%')
+  .onClick(() => {
+    // 模拟创建 applog，假设应用包名为 com.samples.eventsub
+    let filePath: string = "/data/storage/el2/log/com.samples.eventsub_CppCrash_AppMerge.log";
+    let file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+    let str: string = "only test for merge app log!";
 
-  let writeLen = fileIo.writeSync(file.fd, str);
-  console.info("hiappevent write data to file succeed and size is:" + writeLen);
-  fileIo.closeSync(file);
+    let writeLen = fileIo.writeSync(file.fd, str);
+    console.info("hiappevent write data to file succeed and size is:" + writeLen);
+    fileIo.closeSync(file);
 
-  // 在按钮点击函数中构造一个crash场景，触发应用崩溃事件
-  testNapi.testNullptr();
-})
+    // 在按钮点击函数中构造一个crash场景，触发应用崩溃事件
+    testNapi.testNullptr();
+  })
 
 点击运行按钮启动应用工程。在应用界面中单击“JsError”或“MergeLogNativeCrash”按钮触发崩溃事件。系统生成崩溃日志并回调。
 
@@ -375,6 +379,8 @@ HiAppEvent eventInfo.eventType=1
 HiAppEvent eventInfo.params.time=1503045716054
 HiAppEvent eventInfo.params.crash_type=JsError
 HiAppEvent eventInfo.params.foreground=1
+HiAppEvent eventInfo.params.release_type=debug
+HiAppEvent eventInfo.params.cpu_abi=armeabi-v7a
 HiAppEvent eventInfo.params.app_running_unique_id=365426736245712514
 HiAppEvent eventInfo.params.bundle_version=1.0.0
 HiAppEvent eventInfo.params.bundle_name=com.samples.eventsub
@@ -385,7 +391,7 @@ HiAppEvent eventInfo.params.exception={"message":"Unexpected Text in JSON: Empty
 HiAppEvent eventInfo.params.hilog.size=100
 HiAppEvent eventInfo.params.process_life_time=25
 HiAppEvent eventInfo.params.memory={"rss":181964,"sys_avail_mem":1230456,"sys_free_mem":676940,"sys_total_mem":2001932}
-HiAppEvent eventInfo.params.external_log=["/data/storage/el2/log/hiappevent/APP_CRASH_1503045716408_2610.log","/data/storage/el2/log/hiappevent/APP_CRASH_1503045716409_2610.dmp"]
+HiAppEvent eventInfo.params.external_log=["/data/storage/el2/log/hiappevent/APP_CRASH_1503045716408_2610.log"]
 HiAppEvent eventInfo.params.log_over_limit=0
 
 [h2]移除并销毁事件观察者
@@ -598,6 +604,10 @@ static void OnTakeCrash(const char *const *events, uint32_t eventLen)
                     eventInfo["crash_type"].asString().c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.foreground=%{public}d",
                     eventInfo["foreground"].asBool());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.release_type=%{public}s",
+                    eventInfo["release_type"].asString().c_str());
+                OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.cpu_abi=%{public}s",
+                    eventInfo["cpu_abi"].asString().c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.app_running_unique_id=%{public}s",
                     eventInfo["app_running_unique_id"].asString().c_str());
                 OH_LOG_INFO(LogType::LOG_APP, "HiAppEvent eventInfo.params.bundle_version=%{public}s",
@@ -715,26 +725,26 @@ import { fileIo } from '@kit.CoreFileKit';
 
 ```
 Button('MergeLogNativeCrash')
-.type(ButtonType.Capsule)
-.margin({
-  top: 20
-})
-.backgroundColor('#0D9FFB')
-.width('80%')
-.height('5%')
-.onClick(() => {
-  // 模拟创建 applog，假设应用包名为 com.samples.eventsub
-  let filePath : string = "/data/storage/el2/log/com.samples.eventsub_CppCrash_AppMerge.log";
-  let file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
-  let str: string = "only test for merge app log!";
+  .type(ButtonType.Capsule)
+  .margin({
+    top: 20
+  })
+  .backgroundColor('#0D9FFB')
+  .width('80%')
+  .height('5%')
+  .onClick(() => {
+    // 模拟创建 applog，假设应用包名为 com.samples.eventsub
+    let filePath: string = "/data/storage/el2/log/com.samples.eventsub_CppCrash_AppMerge.log";
+    let file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+    let str: string = "only test for merge app log!";
 
-  let writeLen = fileIo.writeSync(file.fd, str);
-  console.info("hiappevent write data to file succeed and size is:" + writeLen);
-  fileIo.closeSync(file);
+    let writeLen = fileIo.writeSync(file.fd, str);
+    console.info("hiappevent write data to file succeed and size is:" + writeLen);
+    fileIo.closeSync(file);
 
-  // 在按钮点击函数中构造一个crash场景，触发应用崩溃事件
-  testNapi.testNullptr();
-})
+    // 在按钮点击函数中构造一个crash场景，触发应用崩溃事件
+    testNapi.testNullptr();
+  })
 ```
 
 ### Code block 12
@@ -746,6 +756,8 @@ HiAppEvent eventInfo.eventType=1
 HiAppEvent eventInfo.params.time=1503045716054
 HiAppEvent eventInfo.params.crash_type=JsError
 HiAppEvent eventInfo.params.foreground=1
+HiAppEvent eventInfo.params.release_type=debug
+HiAppEvent eventInfo.params.cpu_abi=armeabi-v7a
 HiAppEvent eventInfo.params.app_running_unique_id=365426736245712514
 HiAppEvent eventInfo.params.bundle_version=1.0.0
 HiAppEvent eventInfo.params.bundle_name=com.samples.eventsub
@@ -756,7 +768,7 @@ HiAppEvent eventInfo.params.exception={"message":"Unexpected Text in JSON: Empty
 HiAppEvent eventInfo.params.hilog.size=100
 HiAppEvent eventInfo.params.process_life_time=25
 HiAppEvent eventInfo.params.memory={"rss":181964,"sys_avail_mem":1230456,"sys_free_mem":676940,"sys_total_mem":2001932}
-HiAppEvent eventInfo.params.external_log=["/data/storage/el2/log/hiappevent/APP_CRASH_1503045716408_2610.log","/data/storage/el2/log/hiappevent/APP_CRASH_1503045716409_2610.dmp"]
+HiAppEvent eventInfo.params.external_log=["/data/storage/el2/log/hiappevent/APP_CRASH_1503045716408_2610.log"]
 HiAppEvent eventInfo.params.log_over_limit=0
 ```
 

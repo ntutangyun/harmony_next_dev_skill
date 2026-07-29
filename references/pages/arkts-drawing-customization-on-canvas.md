@@ -172,7 +172,7 @@ Canvas(this.context)
 
 绘制文本边框。
 
-可以通过measureText（文本测量）计算绘制文本的宽度和高度，使用测量的宽度和高度作为边框的尺寸。在示例中，设置textBaseline为'top'，font为30像素的"monospace"字体，通过measureText测量出文本的宽度和高度，然后调用fillText方法在(20, 100)处绘制文本"Hello World!"，并调用strokeRect方法在同一位置使用测量的宽度和高度绘制相应尺寸的边框。接着，设置font为60像素的粗体"sans-serif"字体，再次通过measureText测量文本的宽度和高度，接着调用fillText方法在(20, 150)处绘制文本"Hello World!"，并调用strokeRect方法在同一位置使用测量的宽度和高度绘制对应尺寸的边框。
+可以通过measureText（文本测量）计算绘制文本的宽度和高度，使用测量的宽度和高度作为边框的尺寸。在示例中，设置textBaseline为'top'，font为30像素的"monospace"字体，通过measureText测量出文本的宽度和高度，然后调用fillText方法在(20, 100)处绘制文本"Hello World"，并调用strokeRect方法在同一位置使用测量的宽度和高度绘制相应尺寸的边框。接着，设置font为60像素的粗体"sans-serif"字体，再次通过measureText测量文本的宽度和高度，接着调用fillText方法在(20, 150)处绘制文本"Hello World"，并调用strokeRect方法在同一位置使用测量的宽度和高度绘制对应尺寸的边框。
 
 // xxx.ets
 @Entry
@@ -308,7 +308,7 @@ Canvas(this.context)
 struct CanvasContentUpdate {
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
-  @State @Watch('draw')content: string = 'Hello World';
+  @State @Watch('draw') content: string = 'Hello World';
 
   draw() {
     this.context.clearRect(0, 0, 400, 200); // 清空Canvas的内容
@@ -1016,7 +1016,7 @@ Canvas(this.context)
 struct CanvasContentUpdate {
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
-  @State @Watch('draw')content: string = 'Hello World';
+  @State @Watch('draw') content: string = 'Hello World';
 
   draw() {
     this.context.clearRect(0, 0, 400, 200); // 清空Canvas的内容

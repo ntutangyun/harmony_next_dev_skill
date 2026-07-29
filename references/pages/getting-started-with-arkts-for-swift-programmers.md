@@ -16,23 +16,23 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/getting-s
 
 ArkTS示例：
 
-// 类型注解（类似Swift）。
+// 类型注解（类似Swift）
 let age: number = 20;
 const program: string = 'ArkTS';
 
-// 类型推断（类似Swift的局部变量类型推断）。
+// 类型推断（类似Swift的局部变量类型推断）
 let version = 5.0;
 
 [h2]基础数据类型
 
 Swift类型	ArkTS类型	示例代码	核心差异说明
 Bool	boolean	let isDone: boolean = false;	定义方式相似，均用于逻辑判断。
-Int8	number	let count: number = 10;	Swift的Int8为8位整数。 ArkTS统一用number表示小整数类型。
-Int16	number	let count: number = 10;	Swift的Int16为16位整数。 ArkTS统一用number表示小整数类型。
-Int32	number	let count: number = 10;	Swift的Int32为32位整数。 ArkTS的number是双精度浮点型，可存储整数和浮点数。
-Int64	number	let largeNum: number = 9007199254740991;	Swift需处理大整数。 ArkTS用同一类型表示。
-Float	number	let pi: number = 3.14;	Swift需显式指定Float。 ArkTS直接使用number。
-Double	number	let e: number = 2.71828;	Swift区分Float和Double。 ArkTS统一用number表示所有数值类型。
+Int8	number	let count: number = 10;	Swift的Int8为8位整数。 ArkTS统一用number表示，number为双精度浮点型，可存储整数和浮点数。
+Int16	number	let count: number = 10;	Swift的Int16为16位整数。 ArkTS统一用number表示，number为双精度浮点型，可存储整数和浮点数。
+Int32	number	let count: number = 10;	Swift的Int32为32位整数。 ArkTS统一用number表示，number为双精度浮点型，可存储整数和浮点数。
+Int64	number	let largeNum: number = 9007199254740991;	Swift需处理大整数。 ArkTS统一用number表示，number为双精度浮点型。
+Float	number	let pi: number = 3.14;	Swift需显式指定Float。 ArkTS统一用number表示，number为双精度浮点型。
+Double	number	let e: number = 2.71828;	Swift区分Float和Double。 ArkTS统一用number表示，number为双精度浮点型。
 Character	string	let c: string = 'a';	ArkTS无Character类型，单字符场景使用string。
 String	string	let message: string = 'Hello';	定义方式类似，但ArkTS字符串支持模板字面量和更灵活的操作。
 
@@ -40,10 +40,10 @@ String	string	let message: string = 'Hello';	定义方式类似，但ArkTS字符
 
 Swift类型体系	ArkTS类型体系	ArkTS示例代码	核心差异说明
 数组：var arr: [Int] = [1, 2, 3]	Array：let arr: number[] = [1, 2, 3];	// 动态长度语法糖 let dynamicArr = [4, 5, 6];	Swift数组长度可变。 ArkTS的Array是动态数组，支持push/pop等操作；可直接用[]简化初始化。数组不会越界，当数组下标超过数组长度时会得到undefined。
-集合 - Set：var mySet: Set<String> = ["a", "b"]	Set：let mySet: Set<string> = new Set(["a", "b"]);	mySet.add('c'); // 向集合内添加元素 for (const item of mySet) {...); // 迭代访问	Swift集合通过类型声明。 ArkTS中集合的类型较灵活，适合动态场景。
+集合 - Set：var mySet: Set<String> = ["a", "b"]	Set：let mySet: Set<string> = new Set(["a", "b"]);	mySet.add('c'); // 向集合内添加元素 for (const item of mySet) {...} // 迭代访问	Swift集合通过类型声明。 ArkTS中集合的类型较灵活，适合动态场景。
 字典 - Dictionary：var dict: [String: Int] = ["key": 1]	Map：let map: Map<string, number> = new Map();	map.set('key', 1); // 添加键值对 let value = map.get('key'); // 获取值 map.has('key'); // 检查键是否存在	Swift的Dictionary需显式声明类型。 ArkTS的Map操作更直接，支持链式调用。
-协议：protocol Shape { func area() -> Double }	interface：interface Shapes { area(): number; }	class Rectangles implements Shapes { public width: number = 0; public height: number = 0; area(): number { return this.width * this.height; } }	语法结构相似，但ArkTS接口实现无需显式修饰符，且支持可选属性。
-类：class Circle: Shape { /* 类定义 */ }	class：class Circles implements Shape { /* 类定义 */ }	class Circles { radius: number; constructor(radius: number = 10) { // 支持参数默认值 this.radius = radius; } }	ArkTS类支持属性默认值、可选参数，语法更简洁。
+协议：protocol Shape { func area() -> Double }	interface：interface Shape { area(): number; }	class Rectangle implements Shape { public width: number = 0; public height: number = 0; area(): number { return this.width * this.height; } }	语法结构相似，但ArkTS接口实现无需显式修饰符，且支持可选属性。
+类：class Circle: Shape { /* 类定义 */ }	class：class Circle implements Shape { /* 类定义 */ }	class Circle { radius: number; constructor(radius: number = 10) { // 支持参数默认值 this.radius = radius; } }	ArkTS类支持属性默认值、可选参数，语法更简洁。
 枚举：enum Color { case red, green, blue }	enum：enum Colors { Red, Green, Blue }	enum Colors { Red = 1, Green, Blue }; let color = Colors.Green; // 值为2（自动递增）	基本概念一致，但ArkTS枚举不支持Swift中的自定义构造函数和方法，仅支持简单的数值或字符串枚举。
 
 [h2]函数与闭包
@@ -54,12 +54,12 @@ Swift和ArkTS在函数方面语法趋同，细节上有差别。
 
 ArkTS示例： 函数定义
 
-// 常规函数定义，与Swift类似。
+// 常规函数定义，与Swift类似
 function add(x: number, y: number): number {
   return x + y;
 }
-// ...
-  // 简洁的箭头函数形式，类似Swift的闭包语法。
+  // ...
+  // 简洁的箭头函数形式，类似Swift的闭包语法
   const multiply = (a: number, b: number): number => a * b;
 
 差异点：
@@ -68,20 +68,20 @@ ArkTS提供类型声明层面的多态，仅用于类型检查和文档提示，
 
 ArkTS示例： ArkTS函数重载
 
-function foo(x: number): void;            /*  第一个函数定义。  */
-function foo(x: string): void;            /*  第二个函数定义。  */
-function foo(x: number | string): void {  /*  函数实现。       */
+function foo(x: number): void;            /* 第一个函数定义 */
+function foo(x: string): void;            /* 第二个函数定义 */
+function foo(x: number | string): void {  /* 函数实现 */
 }
-// ...
-  foo(123);     //  OK，使用第一个定义。
-  foo('aa'); // OK，使用第二个定义。
+  // ...
+  foo(123);     // OK，使用第一个定义
+  foo('aa'); // OK，使用第二个定义
 
 ArkTS可选参数使用?，如function foo(name?: string)，而非Swift的默认值语法。
 
-function foo2(name?: string) {}  /*  name为可选参数。  */
-// ...
-  foo2('hello');     //  OK，传入name参数。
-  foo2();     //  OK，不传name参数。
+function foo2(name?: string) {}  /* name为可选参数 */
+  // ...
+  foo2('hello');     // OK，传入name参数
+  foo2();     // OK，不传name参数
 
 [h2]基础类库
 
@@ -101,7 +101,7 @@ ArkTS也有自己的模块和包管理机制，同样通过import语句引入其
 
 ArkTS示例：
 
-// 引入ArkTS标准库中的ArkTS容器集。
+// 引入ArkTS标准库中的ArkTS容器集
 
 import { collections } from '@kit.ArkTS';
 
@@ -114,7 +114,7 @@ ArkTS的类系统在语法层面与Swift相似，但在高阶特性上展现出�
 特性	Swift实现方式	ArkTS实现方式	说明
 命名空间组织	嵌套结构/内部类	namespace关键字或模块文件结构。	支持显式命名空间与模块化组织的混合模式。
 类继承机制	基于类的继承体系	基于原型链的继承机制。	语法相似但底层机制不同。
-类成员可见性	public/private/internal	同Swift，但支持模块级可见性控制。	增加了模块导出控制的维度。
+类成员可见性	public/private/internal	public/private/protected	Swift使用internal控制模块内可见性，ArkTS使用protected控制类及子类可见性，并通过模块导出控制可见范围。
 
 命名空间管理
 
@@ -124,12 +124,12 @@ ArkTS示例：
 
 namespace Models {
   export class User {
-    // 实现细节。
+    // 实现细节
     // ...
   }
 
   export interface Repository {
-    // 接口定义。
+    // 接口定义
   }
 }
 
@@ -157,7 +157,7 @@ Swift示例：
 
 class MyClass {
   func method() {
-    print(self) // 始终指向MyClass的实例。
+    print(self) // 始终指向MyClass的实例
   }
 }
 
@@ -188,8 +188,8 @@ function callFunction(fn: () => void) {
   let a: A = new A();
   let b: B = new B();
 
-  // callFunction(a.foo); // 程序crash。this的上下文发生了变化
-  // b.callFunction(a.foo); // 程序crash。this的上下文发生了变化
+  // callFunction(a.foo); // 程序crash，this的上下文发生了变化
+  // b.callFunction(a.foo); // 程序crash，this的上下文发生了变化
   b.callFunction(a.foo.bind(b)) // 输出'I am B'
 
 类型系统
@@ -204,18 +204,16 @@ ArkTS具有强大的类型推断能力，编译器能够根据上下文自动推
 
 ArkTS示例：
 
-let num = 10; // 编译器自动推断num为number类型。
+let num = 10; // 编译器自动推断num为number类型
 
 interface Person {
   name: string;
-  age?: number;  // age是可选属性。
+  age?: number;  // age是可选属性
 }
 
 const person: Person = {
   name: 'Alice',
 };
-
-ArkTS示例：
 
 [h2]联合类型
 
@@ -225,7 +223,7 @@ ArkTS支持联合类型（|）。联合类型表示一个值可以是多种类�
 
 ArkTS示例：
 
-// 联合类型示例。
+// 联合类型示例
 
 let value: string | number;
 value = 'hello';
@@ -236,51 +234,51 @@ value = 123;
 ### Code block 1
 
 ```
-// 类型注解（类似Swift）。
+// 类型注解（类似Swift）
 let age: number = 20;
 const program: string = 'ArkTS';
 
-// 类型推断（类似Swift的局部变量类型推断）。
+// 类型推断（类似Swift的局部变量类型推断）
 let version = 5.0;
 ```
 
 ### Code block 2
 
 ```
-// 常规函数定义，与Swift类似。
+// 常规函数定义，与Swift类似
 function add(x: number, y: number): number {
   return x + y;
 }
-// ...
-  // 简洁的箭头函数形式，类似Swift的闭包语法。
+  // ...
+  // 简洁的箭头函数形式，类似Swift的闭包语法
   const multiply = (a: number, b: number): number => a * b;
 ```
 
 ### Code block 3
 
 ```
-function foo(x: number): void;            /*  第一个函数定义。  */
-function foo(x: string): void;            /*  第二个函数定义。  */
-function foo(x: number | string): void {  /*  函数实现。       */
+function foo(x: number): void;            /* 第一个函数定义 */
+function foo(x: string): void;            /* 第二个函数定义 */
+function foo(x: number | string): void {  /* 函数实现 */
 }
-// ...
-  foo(123);     //  OK，使用第一个定义。
-  foo('aa'); // OK，使用第二个定义。
+  // ...
+  foo(123);     // OK，使用第一个定义
+  foo('aa'); // OK，使用第二个定义
 ```
 
 ### Code block 4
 
 ```
-function foo2(name?: string) {}  /*  name为可选参数。  */
-// ...
-  foo2('hello');     //  OK，传入name参数。
-  foo2();     //  OK，不传name参数。
+function foo2(name?: string) {}  /* name为可选参数 */
+  // ...
+  foo2('hello');     // OK，传入name参数
+  foo2();     // OK，不传name参数
 ```
 
 ### Code block 5
 
 ```
-// 引入ArkTS标准库中的ArkTS容器集。
+// 引入ArkTS标准库中的ArkTS容器集
 
 import { collections } from '@kit.ArkTS';
 ```
@@ -290,12 +288,12 @@ import { collections } from '@kit.ArkTS';
 ```
 namespace Models {
   export class User {
-    // 实现细节。
+    // 实现细节
     // ...
   }
 
   export interface Repository {
-    // 接口定义。
+    // 接口定义
   }
 }
 ```
@@ -305,7 +303,7 @@ namespace Models {
 ```
 class MyClass {
   func method() {
-    print(self) // 始终指向MyClass的实例。
+    print(self) // 始终指向MyClass的实例
   }
 }
 ```
@@ -336,15 +334,15 @@ function callFunction(fn: () => void) {
   let a: A = new A();
   let b: B = new B();
 
-  // callFunction(a.foo); // 程序crash。this的上下文发生了变化
-  // b.callFunction(a.foo); // 程序crash。this的上下文发生了变化
+  // callFunction(a.foo); // 程序crash，this的上下文发生了变化
+  // b.callFunction(a.foo); // 程序crash，this的上下文发生了变化
   b.callFunction(a.foo.bind(b)) // 输出'I am B'
 ```
 
 ### Code block 9
 
 ```
-let num = 10; // 编译器自动推断num为number类型。
+let num = 10; // 编译器自动推断num为number类型
 ```
 
 ### Code block 10
@@ -352,7 +350,7 @@ let num = 10; // 编译器自动推断num为number类型。
 ```
 interface Person {
   name: string;
-  age?: number;  // age是可选属性。
+  age?: number;  // age是可选属性
 }
 
 const person: Person = {
@@ -363,7 +361,7 @@ const person: Person = {
 ### Code block 11
 
 ```
-// 联合类型示例。
+// 联合类型示例
 
 let value: string | number;
 value = 'hello';

@@ -1,4 +1,4 @@
-# 使用AudioRenderer开发音频播放功能(ArkTs)
+# 使用AudioRenderer开发音频播放功能(ArkTS)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-audiorenderer-for-playback_
 
@@ -22,7 +22,7 @@ paused状态：在running状态可以通过调用pause方法暂停音频数据�
 
 stopped状态：在paused/running状态可以通过stop方法停止音频数据的播放。
 
-released状态：在prepared、paused、stopped等状态，用户均可通过release方法释放掉所有占用的硬件和软件资源，并且不会再进入到其他的任何一种状态了。
+released状态：在prepared、paused、stopped等状态，用户均可通过release方法释放掉所有占用的硬件和软件资源，并且不会再进入其他任何状态。
 
 当音频流处于工作状态（非released状态）时，会占用系统的音频流资源。由于系统对音频流数量有限制，所以当客户端暂时不使用音频流时，调用release()回收音频资源，做好资源利用，避免后续创建音频流失败。
 
@@ -30,7 +30,7 @@ released状态：在prepared、paused、stopped等状态，用户均可通过rel
 
 [h2]开发步骤及注意事项
 
-以下各步骤示例为片段代码，可通过示例代码右下方链接获取完整示例。
+以下各步骤示例为代码片段，可通过示例代码右下方链接获取完整示例。
 
 配置音频渲染参数并创建AudioRenderer实例，音频渲染参数的详细信息可以查看AudioRendererOptions。
 
@@ -63,12 +63,12 @@ let audioRendererOptions: audio.AudioRendererOptions = {
         // ...
       }
     } else {
-      console.info(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
+      console.error(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
       globalLogUpdate(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`, false);
     }
   });
 
-调用on('writeData')方法，订阅监听音频数据写入回调，推荐使用API version 12支持返回回调结果的方式。
+调用on('writeData')方法，订阅音频数据写入回调，推荐使用API version 12支持返回回调结果的方式。
 
 API version 12开始该方法支持返回回调结果，系统可以根据开发者返回的值来决定此次回调中的数据是否播放。
 
@@ -190,15 +190,16 @@ import { BusinessError } from '@kit.BasicServicesKit';
         console.error(`Failed to release audio renderer. Code: ${err.code}, message: ${err.message}`);
         // ...
       } else {
-        // 关闭沙箱文件。
         console.info('Succeeded in releasing audio renderer.');
         // ...
       }
     });
+    // 关闭沙箱文件。
+    await context.resourceManager.closeRawFd('S16LE_2_48000.pcm');
 
 [h2]选择正确的StreamUsage
 
-创建播放器时候，开发者需要根据应用场景指定播放器的StreamUsage，选择正确的StreamUsage可以避免用户遇到不符合预期的行为。
+创建AudioRenderer实例时，开发者需要根据应用场景指定播放器的StreamUsage，选择正确的StreamUsage可以避免用户遇到不符合预期的行为。
 
 在音频API文档StreamUsage介绍中，列举了每一种类型推荐的应用场景。例如音乐场景推荐使用STREAM_USAGE_MUSIC，电影或者视频场景推荐使用STREAM_USAGE_MOVIE，游戏场景推荐使用STREAM_USAGE_GAME，等等。
 
@@ -206,7 +207,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 游戏场景错误使用STREAM_USAGE_MUSIC类型，游戏应用将无法和其他音乐应用并发播放，而游戏场景通常可以与其他音乐应用并发播放。
 
-导航场景错误使用STREAM_USAGE_MUSIC类型，导航应用播报时候会导致正在播放的音乐停止播放，而导航场景我们通常期望正在播放的音乐仅降低音量播放。
+导航场景错误使用STREAM_USAGE_MUSIC类型，导航应用播报时会导致正在播放的音乐停止播放，而导航场景我们通常期望正在播放的音乐仅降低音量播放。
 
 [h2]配置合适的音频采样率
 
@@ -272,7 +273,7 @@ async function initArguments(context: common.UIAbilityContext) {
       if (bufferSize > file.length) {
         let view = new DataView(buffer);
         for (let i = bufferSize - file.length; i < buffer.byteLength; i++) {
-          // 空白区域填充静音数据。当使用音频采样格式为SAMPLE_FORMAT_U8时0x7F为静音数据，使用其他采样格式时0为静音数据。
+          // 空白区域填充静音数据。当使用音频采样格式为SAMPLE_FORMAT_U8时0x80为静音数据，使用其他采样格式时0为静音数据。
           view.setUint8(i, 0);
         }
       }
@@ -300,7 +301,7 @@ async function init() {
         // ...
       }
     } else {
-      console.info(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
+      console.error(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
       // ...
     }
   });
@@ -374,7 +375,7 @@ async function stop() {
 }
 
 // 销毁实例，释放资源。
-async function release() {
+async function release(context: common.UIAbilityContext) {
   if (audioRenderer !== undefined) {
     // 渲染器状态不是released状态，才能release。
     if (audioRenderer.state.valueOf() === audio.AudioState.STATE_RELEASED) {
@@ -391,11 +392,12 @@ async function release() {
         console.error(`Failed to release audio renderer. Code: ${err.code}, message: ${err.message}`);
         // ...
       } else {
-        // 关闭沙箱文件。
         console.info('Succeeded in releasing audio renderer.');
         // ...
       }
     });
+    // 关闭沙箱文件。
+    await context.resourceManager.closeRawFd('S16LE_2_48000.pcm');
   }
 }
 
@@ -435,7 +437,7 @@ let audioRendererOptions: audio.AudioRendererOptions = {
         // ...
       }
     } else {
-      console.info(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
+      console.error(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
       globalLogUpdate(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`, false);
     }
   });
@@ -546,11 +548,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
         console.error(`Failed to release audio renderer. Code: ${err.code}, message: ${err.message}`);
         // ...
       } else {
-        // 关闭沙箱文件。
         console.info('Succeeded in releasing audio renderer.');
         // ...
       }
     });
+    // 关闭沙箱文件。
+    await context.resourceManager.closeRawFd('S16LE_2_48000.pcm');
 ```
 
 ### Code block 7
@@ -604,7 +607,7 @@ async function initArguments(context: common.UIAbilityContext) {
       if (bufferSize > file.length) {
         let view = new DataView(buffer);
         for (let i = bufferSize - file.length; i < buffer.byteLength; i++) {
-          // 空白区域填充静音数据。当使用音频采样格式为SAMPLE_FORMAT_U8时0x7F为静音数据，使用其他采样格式时0为静音数据。
+          // 空白区域填充静音数据。当使用音频采样格式为SAMPLE_FORMAT_U8时0x80为静音数据，使用其他采样格式时0为静音数据。
           view.setUint8(i, 0);
         }
       }
@@ -632,7 +635,7 @@ async function init() {
         // ...
       }
     } else {
-      console.info(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
+      console.error(`Failed to create audio renderer. Code: ${err.code}, message: ${err.message}`);
       // ...
     }
   });
@@ -706,7 +709,7 @@ async function stop() {
 }
 
 // 销毁实例，释放资源。
-async function release() {
+async function release(context: common.UIAbilityContext) {
   if (audioRenderer !== undefined) {
     // 渲染器状态不是released状态，才能release。
     if (audioRenderer.state.valueOf() === audio.AudioState.STATE_RELEASED) {
@@ -723,11 +726,12 @@ async function release() {
         console.error(`Failed to release audio renderer. Code: ${err.code}, message: ${err.message}`);
         // ...
       } else {
-        // 关闭沙箱文件。
         console.info('Succeeded in releasing audio renderer.');
         // ...
       }
     });
+    // 关闭沙箱文件。
+    await context.resourceManager.closeRawFd('S16LE_2_48000.pcm');
   }
 }
 ```

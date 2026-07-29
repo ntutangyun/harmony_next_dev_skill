@@ -94,7 +94,7 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestStartFaceVerificationPromise() {
-    // 请开发者使用自己的预验证ID（preVerifyId）
+    // 请使用开发者真实的预验证ID（preVerifyId）
     let preVerifyId = '后端服务获取有效的预验证ID';
     realNameService.startFaceVerification(this.context, preVerifyId)
       .then((verifyResultId: string ) => {
@@ -140,7 +140,7 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestStartFaceVerificationPromise() {
-    // 请开发者使用自己的预验证ID（preVerifyId）
+    // 请使用开发者真实的预验证ID（preVerifyId）
     let preVerifyId = '后端服务获取有效的预验证ID';
     realNameService.startFaceVerification(this.context, preVerifyId)
       .then((verifyResultId: string ) => {

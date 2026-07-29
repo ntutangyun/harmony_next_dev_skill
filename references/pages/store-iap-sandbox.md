@@ -28,11 +28,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap
 
 接入的应用必须是debug签名的应用。构建debug签名应用步骤如下：
 
-参见手动签名方式调试HarmonyOS应用/元服务，申请应用调试证书->注册调试设备->申请调试Profile。
+手动签名：开发者需要在AppGallery Connect中申请调试证书、注册调试设备、申请调试Profile后，再手动签名。
 
-参见配置签名信息，在DevEco Studio侧配置签名信息。
-
-在AppGallery Connect中配置应用签名证书指纹。
+在AppGallery Connect中配置公钥指纹。
 
 沙盒测试能力未生效自检
 
@@ -73,8 +71,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-iap
 IAP扣费成功后的收据信息PurchaseOrderPayload中，会携带值为"SANDBOX"的environment字段，标识此次购买为沙盒测试的记录。
 
 自动续期处理不需要完成真实扣款，IAP会直接返回成功。
-
-订阅在沙盒场景下会自动续期5次(一共6期)，5次之后需要用户主动发起恢复订阅。
 
 在沙盒测试环境下，订阅首期由用户发起后会自动续期五次（累计共六期），后续需用户手动操作以恢复订阅；若同时涉及促销场景，系统将优先完成优惠周期内的自动续期，再继续进行六次续期，此场景下总续期次数为优惠周期数与六次续期之和。
 

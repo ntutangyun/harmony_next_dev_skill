@@ -25,7 +25,7 @@ bindContentCover接口用于为组件绑定全屏模态页面，在组件出现�
 // 通过@Builder构建模态展示界面
 @Builder MyBuilder() {
   Column() {
-    Text('my model view')
+   Text('my modal view')
   }
   // 通过转场动画实现出现消失转场动画效果，transition需要加在builder下的第一个组件
   .transition(TransitionEffect.translate({ y: 1000 }).animation({ curve: curves.springMotion(0.6, 0.8) }))
@@ -36,7 +36,7 @@ bindContentCover接口用于为组件绑定全屏模态页面，在组件出现�
 // 模态转场控制变量
 @State isPresent: boolean = false;
 
-Button('Click to present model view')
+Button('Click to present modal view')
   // 通过选定的模态接口，绑定模态展示界面，ModalTransition是内置的ContentCover转场动画类型，这里选择None代表系统不加默认动画，通过onDisappear控制状态变量变换
   .bindContentCover(this.isPresent, this.MyBuilder(), {
             modalTransition: ModalTransition.NONE,
@@ -280,7 +280,7 @@ struct BindSheetDemo {
   mySheet() {
     Column() {
       Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap }) {
-        ForEach(this.menuList, (item: string) => {
+        ForEach(this.menuList, (item: Resource) => {
           Text(item)
             .fontSize(16)
             .fontColor(0x333333)
@@ -436,7 +436,7 @@ struct BindContextMenuDemo {
   @Builder
   myMenu() {
     Column() {
-      ForEach(this.menu, (item: string) => {
+      ForEach(this.menu, (item: Resource) => {
         Row() {
           Text(item)
             .fontSize(18)
@@ -756,7 +756,7 @@ struct ModalTransitionWithIf {
 // 通过@Builder构建模态展示界面
 @Builder MyBuilder() {
   Column() {
-    Text('my model view')
+   Text('my modal view')
   }
   // 通过转场动画实现出现消失转场动画效果，transition需要加在builder下的第一个组件
   .transition(TransitionEffect.translate({ y: 1000 }).animation({ curve: curves.springMotion(0.6, 0.8) }))
@@ -769,7 +769,7 @@ struct ModalTransitionWithIf {
 // 模态转场控制变量
 @State isPresent: boolean = false;
 
-Button('Click to present model view')
+Button('Click to present modal view')
   // 通过选定的模态接口，绑定模态展示界面，ModalTransition是内置的ContentCover转场动画类型，这里选择None代表系统不加默认动画，通过onDisappear控制状态变量变换
   .bindContentCover(this.isPresent, this.MyBuilder(), {
             modalTransition: ModalTransition.NONE,
@@ -1013,7 +1013,7 @@ struct BindSheetDemo {
   mySheet() {
     Column() {
       Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap }) {
-        ForEach(this.menuList, (item: string) => {
+        ForEach(this.menuList, (item: Resource) => {
           Text(item)
             .fontSize(16)
             .fontColor(0x333333)
@@ -1167,7 +1167,7 @@ struct BindContextMenuDemo {
   @Builder
   myMenu() {
     Column() {
-      ForEach(this.menu, (item: string) => {
+      ForEach(this.menu, (item: Resource) => {
         Row() {
           Text(item)
             .fontSize(18)

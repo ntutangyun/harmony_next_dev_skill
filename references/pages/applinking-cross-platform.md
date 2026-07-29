@@ -218,23 +218,28 @@ skills标签下默认包含一个skill对象，用于标识应用入口。应用
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { url } from '@kit.ArkTS';
+// ...
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // ...
     // 从want中获取传入的链接信息。
-    // 如传入的url为：https://example.drcn.agconnect.link/AIYx，开发者可根据自己的业务需求进行后续的处理。
+    // 如传入的url为：https://example.drcn.agconnect.link/AIYx?action=showall，开发者可根据自己的业务需求进行后续的处理。
     let uri = want?.uri;
     if (uri) {
+      // ...
       try {
-        let urlObject = url.URL.parseURL(want?.uri);
-        if (urlObject.toString() === "https://example.drcn.agconnect.link/AIYx"){
+        let urlObject = url.URL.parseURL(uri);
+        if (urlObject.toString() === 'https://example.drcn.agconnect.link/AIYx?action=showall'){
           // ...
         }
         // ...
       } catch (error) {
-        hilog.error(0x0000, 'testTag', `Failed to parse url.`);
+        hilog.error(0x0000, 'testTag', 'Failed to parse url.');
       }
     }
   }
+  // ...
 }
 
 若要根据链接参数启动UIAbility的指定页面组件，请参考“启动UIAbility的指定页面”。
@@ -269,31 +274,38 @@ export class GlobalContext {
 
 在“entry/src/main/ets/pages/Index.ets”文件中，使用UIAbilityContext.openLink()接口配置聚合链接。
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        // 如下link请填写开发者实际跳转的url
-        let link: string = "https://example.drcn.agconnect.link/AIYx";
-        context.openLink(link, { appLinkingOnly: false })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+      Button('start link union', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          // 如下link请填写开发者实际跳转的url
+          let link: string = 'https://example.drcn.agconnect.link/AIYx';
+          context.openLink(link, { appLinkingOnly: false })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 
 安装拉起方应用，点击拉起方应用中的跳转按钮。
@@ -373,23 +385,28 @@ ArkWeb深度集成了App Linking的能力，当用户在系统浏览器或者集
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { url } from '@kit.ArkTS';
+// ...
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // ...
     // 从want中获取传入的链接信息。
-    // 如传入的url为：https://example.drcn.agconnect.link/AIYx，开发者可根据自己的业务需求进行后续的处理。
+    // 如传入的url为：https://example.drcn.agconnect.link/AIYx?action=showall，开发者可根据自己的业务需求进行后续的处理。
     let uri = want?.uri;
     if (uri) {
+      // ...
       try {
-        let urlObject = url.URL.parseURL(want?.uri);
-        if (urlObject.toString() === "https://example.drcn.agconnect.link/AIYx"){
+        let urlObject = url.URL.parseURL(uri);
+        if (urlObject.toString() === 'https://example.drcn.agconnect.link/AIYx?action=showall'){
           // ...
         }
         // ...
       } catch (error) {
-        hilog.error(0x0000, 'testTag', `Failed to parse url.`);
+        hilog.error(0x0000, 'testTag', 'Failed to parse url.');
       }
     }
   }
+  // ...
 }
 ```
 
@@ -414,30 +431,37 @@ export class GlobalContext {
 ### Code block 4
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        // 如下link请填写开发者实际跳转的url
-        let link: string = "https://example.drcn.agconnect.link/AIYx";
-        context.openLink(link, { appLinkingOnly: false })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+      Button('start link union', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          // 如下link请填写开发者实际跳转的url
+          let link: string = 'https://example.drcn.agconnect.link/AIYx';
+          context.openLink(link, { appLinkingOnly: false })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 ```

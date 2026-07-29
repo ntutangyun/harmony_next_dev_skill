@@ -60,10 +60,13 @@ const securityConfig: rcp.SecurityConfiguration = {
 
 // 创建通信会话对象，并传入相关配置
 const session = rcp.createSession({ requestConfiguration: { tracing: tracingConfig, security: securityConfig } });
-session.get('http://developer.huawei.com').then((response) => {
+// 'https://www.example.com'是示例网址
+session.get('https://www.example.com').then((response) => {
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 });
 
 HTTP请求过程中各时间点详解
@@ -92,14 +95,12 @@ TLS握手（不包含建连时间）耗时：tlsHandshakeTimeMs - connectTimeMs
 
 [h2]示例代码
 
-这段代码在使用过程中会将上述说明中三个比较关键的时间点打印出来，开发者可以根据获取到的时间对应用性能实现动态调整，获取最佳体验。
-
-import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { rcp } from '@kit.RemoteCommunicationKit';
 
-// 1、创建session、requestURL
+// 1、创建session、requestURL，'https://www.example.com'是示例网址
 const session = rcp.createSession();
-const requestURL = "https://www.example.com";
+const requestURL = 'https://www.example.com';
 
 // 2、在需要跟踪分析请求过程中各个时间段消耗的时间，请将此开关打开
 const configuration: rcp.Configuration = {
@@ -109,25 +110,28 @@ const configuration: rcp.Configuration = {
 }
 
 // 3、创建请求
-const request = new rcp.Request(requestURL, "GET");
+const request = new rcp.Request(requestURL, 'GET');
 request.configuration = configuration;
 
 // 4、使用fetch发起网络请求，request中携带上面配置好的configuration
 session.fetch(request).then((response: rcp.Response) => {
-// 由于timeInfo中各个参数有可能为undefined，所以需要在两个时间段做运算前添加判空操作
+  // 由于timeInfo中各个参数有可能为undefined，所以需要在两个时间段做运算前添加判空操作
   if (!response.timeInfo) {
     console.error(`timeInfo is undefined ${response.timeInfo}`);
     return;
   }
   let remainderDataTime = response.timeInfo?.totalTimeMs - response.timeInfo?.startTransferTimeMs;
   let firstPackageTime = response.timeInfo?.startTransferTimeMs - response.timeInfo?.preTransferTimeMs;
-  let TLSTime = response.timeInfo?.tlsHandshakeTimeMs - response.timeInfo?.connectTimeMs;
+  let tlsTime = response.timeInfo?.tlsHandshakeTimeMs - response.timeInfo?.connectTimeMs;
 
   console.info(`首包耗时${firstPackageTime}`);
-  console.info(`TLS握手（不包含建连时间）耗时${TLSTime}`);
+  console.info(`TLS握手（不包含建连时间）耗时${tlsTime}`);
   console.info(`接收剩余数据的耗时${remainderDataTime}`);
+
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`Response err, the error code is ${err.code}, error data is ${err.data}`);
+  // ...
 })
 
 ## Code blocks
@@ -187,22 +191,29 @@ const securityConfig: rcp.SecurityConfiguration = {
 ```
 // 创建通信会话对象，并传入相关配置
 const session = rcp.createSession({ requestConfiguration: { tracing: tracingConfig, security: securityConfig } });
-session.get('http://developer.huawei.com').then((response) => {
+// 'https://www.example.com'是示例网址
+session.get('https://www.example.com').then((response) => {
   console.info(`Request succeeded, message is ${JSON.stringify(response)}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`err: error code is ${err.code}, error data is ${err.data}`);
+  // ...
 });
 ```
 
 ### Code block 5
 
 ```
-import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { rcp } from '@kit.RemoteCommunicationKit';
+```
 
-// 1、创建session、requestURL
+### Code block 6
+
+```
+// 1、创建session、requestURL，'https://www.example.com'是示例网址
 const session = rcp.createSession();
-const requestURL = "https://www.example.com";
+const requestURL = 'https://www.example.com';
 
 // 2、在需要跟踪分析请求过程中各个时间段消耗的时间，请将此开关打开
 const configuration: rcp.Configuration = {
@@ -212,24 +223,27 @@ const configuration: rcp.Configuration = {
 }
 
 // 3、创建请求
-const request = new rcp.Request(requestURL, "GET");
+const request = new rcp.Request(requestURL, 'GET');
 request.configuration = configuration;
 
 // 4、使用fetch发起网络请求，request中携带上面配置好的configuration
 session.fetch(request).then((response: rcp.Response) => {
-// 由于timeInfo中各个参数有可能为undefined，所以需要在两个时间段做运算前添加判空操作
+  // 由于timeInfo中各个参数有可能为undefined，所以需要在两个时间段做运算前添加判空操作
   if (!response.timeInfo) {
     console.error(`timeInfo is undefined ${response.timeInfo}`);
     return;
   }
   let remainderDataTime = response.timeInfo?.totalTimeMs - response.timeInfo?.startTransferTimeMs;
   let firstPackageTime = response.timeInfo?.startTransferTimeMs - response.timeInfo?.preTransferTimeMs;
-  let TLSTime = response.timeInfo?.tlsHandshakeTimeMs - response.timeInfo?.connectTimeMs;
+  let tlsTime = response.timeInfo?.tlsHandshakeTimeMs - response.timeInfo?.connectTimeMs;
 
   console.info(`首包耗时${firstPackageTime}`);
-  console.info(`TLS握手（不包含建连时间）耗时${TLSTime}`);
+  console.info(`TLS握手（不包含建连时间）耗时${tlsTime}`);
   console.info(`接收剩余数据的耗时${remainderDataTime}`);
+
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`Response err, the error code is ${err.code}, error data is ${err.data}`);
+  // ...
 })
 ```

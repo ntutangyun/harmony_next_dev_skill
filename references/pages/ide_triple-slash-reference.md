@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_tripl
 
 不允许某些三斜杠引用，推荐使用ES6风格的导入声明。
 
-支持以下三种三斜杠引用方式的检查
+支持以下三种三斜杠引用方式的检查。
 
 /// <reference lib="..." />
 /// <reference path="..." />

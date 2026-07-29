@@ -38,8 +38,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/source-ob
 
 若出现预期外的混淆效果，检查是否由于依赖的本地模块或三方库开启了某些混淆选项。
 
-示例：
-
 假设当前模块未配置-compact，但混淆的中间产物中代码都被压缩成一行，可按照以下步骤排查混淆选项：
 
 查看当前模块的oh-package.json5中的dependencies，此字段记录了当前模块的依赖信息。
@@ -101,7 +99,7 @@ let jsonProp = jsonData.i.j;
 
 解决方案
 
-将JSON文件中的字段配置到属性白名单中。示例如下：
+将JSON文件中的字段配置到属性白名单中。
 
 -keep-property-name
 jsonObj
@@ -150,7 +148,7 @@ namespace中的foo属于export元素，当通过NS.foo调用时被视为属性�
 
 方案一：开启-enable-property-obfuscation选项。
 
-方案二：使用-keep-global-name选项将namespace中导出的方法配置到白名单中。示例如下：
+方案二：使用-keep-global-name选项将namespace中导出的方法配置到白名单中。
 
 -keep-global-name
 foo
@@ -196,7 +194,7 @@ export function c1(d1: number, e1: number): number {
 async function i() {
     try {
         const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/utils&");
-        const b1 = a1.addNum(2, 3);
+        const b1 = a1.add(2, 3);
     }
     catch (z) {
         console.error('Failure reason:', z);
@@ -206,16 +204,16 @@ i();
 
 问题原因
 
-函数addNum在定义时位于顶层作用域，但通过.addNum访问时被视为属性。由于未开启-enable-property-obfuscation选项，导致addNum被使用时未进行混淆。
+函数add在定义时位于顶层作用域，但通过.add访问时被视为属性。由于未开启-enable-property-obfuscation选项，导致add被使用时未进行混淆。
 
 解决方案
 
 方案一：开启-enable-property-obfuscation选项。
 
-方案二：使用-keep-global-name选项将add配置到白名单中。示例如下：
+方案二：使用-keep-global-name选项将add配置到白名单中。
 
 -keep-global-name
-addNum
+add
 
 场景三：调用so库的方法后导致crash
 
@@ -249,7 +247,7 @@ testNapi.m();
 
 解决方案
 
-将so库导出的方法配置到属性白名单中。示例如下：
+将so库导出的方法配置到属性白名单中。
 
 -keep-property-name
 addNum
@@ -298,7 +296,7 @@ HAP/HSP	三方库	三方库中导出的名称及其属性会被收集到白名�
 
 解决方案
 
-将HSP模块导出的方法配置到-keep-global-name下，并且需要在HSP的consumer-rules.txt和obfuscation-rules.txt文件中都进行对应配置。示例如下：
+将HSP模块导出的方法配置到-keep-global-name下，并且需要在HSP的consumer-rules.txt和obfuscation-rules.txt文件中都进行对应配置。
 
 // consumer-rules.txt
 -keep-global-name
@@ -346,7 +344,7 @@ let petalMapWant: Want = {
 
 解决方案
 
-将混淆后会出现问题的属性名配置到属性白名单中，示例如下：
+将混淆后会出现问题的属性名配置到属性白名单中。
 
 -keep-property-name
 linkSource
@@ -409,7 +407,7 @@ const person: MyInfo = {
 
 解决方案
 
-方案一：使用interface定义该属性的类型，并使用export进行导出，这样该属性将被自动加入到属性白名单中。示例如下：
+方案一：使用interface定义该属性的类型，并使用export进行导出，这样该属性将被自动加入到属性白名单中。
 
 // FileOutside.ts
 export interface AddressType {
@@ -420,7 +418,7 @@ export interface MyInfo2 {
   address: AddressType;
 }
 
-方案二：使用-keep-property-name选项，将未直接导出的类型内的属性配置到属性白名单中。示例如下：
+方案二：使用-keep-property-name选项，将未直接导出的类型内的属性配置到属性白名单中。
 
 -keep-property-name
 city1
@@ -457,7 +455,26 @@ person["m"] = 20;
 
 问题现象
 
-HiLog日志中报错信息为：table Account has no column named a23 in 'INSERT INTO Account(a23)'。
+HiLog日志中报错信息为：table Account has no column named a1 in 'INSERT INTO Account(a1)'。
+
+import { ValuesBucket } from '@kit.ArkData';
+// ...
+const valueBucket: ValuesBucket = {
+  ID1: 'ID1', // ID1应该被保留
+  NAME1: 'jack', // NAME1应该被保留
+  AGE1: 20, // AGE1应该被保留
+  SALARY1: 100 // SALARY1应该被保留
+}
+
+// 混淆后
+import { ValuesBucket } from '@kit.ArkData';
+// ...
+const valueBucket: ValuesBucket = {
+  a1: 'ID1',
+  b1: 'jack',
+  c1: 20,
+  d1: 100
+};
 
 问题原因
 
@@ -466,6 +483,12 @@ HiLog日志中报错信息为：table Account has no column named a23 in 'INSERT
 解决方案
 
 使用-keep-property-name选项将使用到的数据库字段配置到白名单。
+
+-keep-property-name
+ID1
+NAME1
+AGE1
+SALARY1
 
 ## Code blocks
 
@@ -606,7 +629,7 @@ export function c1(d1: number, e1: number): number {
 async function i() {
     try {
         const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/utils&");
-        const b1 = a1.addNum(2, 3);
+        const b1 = a1.add(2, 3);
     }
     catch (z) {
         console.error('Failure reason:', z);
@@ -619,7 +642,7 @@ i();
 
 ```
 -keep-global-name
-addNum
+add
 ```
 
 ### Code block 15
@@ -847,4 +870,41 @@ const person = {
   myAge: 18
 }
 person["m"] = 20;
+```
+
+### Code block 36
+
+```
+import { ValuesBucket } from '@kit.ArkData';
+// ...
+const valueBucket: ValuesBucket = {
+  ID1: 'ID1', // ID1应该被保留
+  NAME1: 'jack', // NAME1应该被保留
+  AGE1: 20, // AGE1应该被保留
+  SALARY1: 100 // SALARY1应该被保留
+}
+```
+
+### Code block 37
+
+```
+// 混淆后
+import { ValuesBucket } from '@kit.ArkData';
+// ...
+const valueBucket: ValuesBucket = {
+  a1: 'ID1',
+  b1: 'jack',
+  c1: 20,
+  d1: 100
+};
+```
+
+### Code block 38
+
+```
+-keep-property-name
+ID1
+NAME1
+AGE1
+SALARY1
 ```

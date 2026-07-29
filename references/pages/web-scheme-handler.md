@@ -84,6 +84,9 @@ export default class EntryAbility extends UIAbility {
     testNapi.setSchemeHandler();
   }
 
+// ...
+};
+
 testNapi.registerCustomSchemes的C++实现：
 
 // 注册“custom“ scheme到Web组件，并指定该scheme需要遵循标准的scheme规则，允许该scheme发出跨域请求。
@@ -192,9 +195,9 @@ this.schemeHandler.onRequestStart((request: webview.WebSchemeHandlerRequest, res
 
 错误码定义：
 
-NDK：网络错误码(arkweb_net_error_list.h)。
+NDK：arkweb_net_error_list.h。
 
-ArkTS：网络错误码(@ohos.web.netErrorList.d.ts)。
+ArkTS：@ohos.web.netErrorList (ArkWeb网络协议栈错误列表)。
 
 注意
 
@@ -326,6 +329,9 @@ export default class EntryAbility extends UIAbility {
     // 设置SchemeHandler。
     testNapi.setSchemeHandler();
   }
+
+// ...
+};
 ```
 
 ### Code block 4

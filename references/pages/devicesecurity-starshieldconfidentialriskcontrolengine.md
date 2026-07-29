@@ -76,52 +76,54 @@ import { util } from '@kit.ArkTS';
 
 调用importRiskFactors接口导入应用风险因子数据。
 
-const TAG = "riskControlEngineJsTest";
+const TAG: string = '[RiskControlEngineGetModel]';
 
-let rand = cryptoFramework.createRandom();
-let len = 32;
-let randData = rand.generateRandomSync(len);
-let base64 = new util.Base64Helper();
-// 导入应用风险因子数据
-let data: riskControlEngine.ImportData = {
-  appFactorData: [
-    { factorName: "factor_1", factorValue: 3600 },
-    { factorName: "factor_2", factorValue: false }
-  ],
-  nonce: base64.encodeToStringSync(randData.data) // 16-66字节随机数
-};
-try {
-  hilog.info(0x0000, TAG, 'ImportRiskFactors begin.');
-  await riskControlEngine.importRiskFactors(data);
-  hilog.info(0x0000, TAG, 'Succeeded in importRiskFactors.');
-} catch (err) {
-  let e: BusinessError = err as BusinessError;
-  hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}s', e.code, e.message);
+async function importRiskFactors(): Promise<void> {
+  let rand = cryptoFramework.createRandom();
+  let len = 32;
+  let randData = rand.generateRandomSync(len);
+  let base64 = new util.Base64Helper();
+  // import risk factors
+  let data: riskControlEngine.ImportData = {
+    appFactorData: [
+      // need to change factorName by your registered.
+      { factorName: 'isFirstTransfer', factorValue: true }
+    ],
+    nonce: base64.encodeToStringSync(randData.data)
+  };
+  try {
+    await riskControlEngine.importRiskFactors(data);
+  } catch (error) {
+    let e: BusinessError = error as BusinessError;
+    hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}d', e.code, e.message);
+  }
 }
 
 调用getRiskControlResult接口获取风控评分结果。
 
-const TAG = "riskControlEngineJsTest";
+const TAG: string = '[RiskControlEngineGetModel]';
+// ...
 
-let rand = cryptoFramework.createRandom();
-let len = 32;
-let randData = rand.generateRandomSync(len);
-let base64 = new util.Base64Helper();
-// 准备风控检测请求
-const request: riskControlEngine.RiskControlDetectionRequest = {
-  policyName: "Policy_1001", // 风险策略
-  nonce: base64.encodeToStringSync(randData.data) // 16-66字节随机数
-};
-
-try {
-  hilog.info(0x0000, TAG, 'Getting risk control score begin.');
-  const response: riskControlEngine.RiskControlDetectionResponse =
- await riskControlEngine.getRiskControlResult(request);
-  // 结果格式为JSON Web Signature (JWS)，需按规范解析验证
-  hilog.info(0x0000, TAG, 'Risk control score result: %{public}s', response.result);
-} catch (err) {
-  const e: BusinessError = err as BusinessError;
-  hilog.error(0x0000, TAG, 'GetRiskControlScore failed: %{public}d %{public}s', e.code, e.message);
+async function getRiskControlResult(): Promise<string> {
+  let rand = cryptoFramework.createRandom();
+  let len = 32;
+  let randData = rand.generateRandomSync(len);
+  let base64 = new util.Base64Helper();
+  // prepare risk control detection request
+  const request: riskControlEngine.RiskControlDetectionRequest = {
+    // need to change policyName by your registered.
+    policyName: 'antiFraudRiskEvaluation',
+    nonce: base64.encodeToStringSync(randData.data)
+  };
+  try {
+    // get risk control result
+    let res:riskControlEngine.RiskControlDetectionResponse = await riskControlEngine.getRiskControlResult(request);
+    return res.result;
+  } catch (error) {
+    let e: BusinessError = error as BusinessError;
+    hilog.error(0x0000, TAG, 'GetRiskControlResult failed: %{public}d %{public}d', e.code, e.message);
+    return '';
+  }
 }
 
 在开发者应用服务器中验证检测结果。
@@ -143,7 +145,7 @@ JWS的Payload字段如下：
 {
   "nonce": "xxxxxxxxx",    // 调用getRiskControlResult接口时传入的nonce值Base64编码
   "RiskDetectionOutput": {
-    "status": 0,        // 状态
+    "status": 0,        // 状态码
     "result": "1"      // 风控评分结果
   }
 }
@@ -171,54 +173,56 @@ import { util } from '@kit.ArkTS';
 ### Code block 2
 
 ```
-const TAG = "riskControlEngineJsTest";
+const TAG: string = '[RiskControlEngineGetModel]';
 
-let rand = cryptoFramework.createRandom();
-let len = 32;
-let randData = rand.generateRandomSync(len);
-let base64 = new util.Base64Helper();
-// 导入应用风险因子数据
-let data: riskControlEngine.ImportData = {
-  appFactorData: [
-    { factorName: "factor_1", factorValue: 3600 },
-    { factorName: "factor_2", factorValue: false }
-  ],
-  nonce: base64.encodeToStringSync(randData.data) // 16-66字节随机数
-};
-try {
-  hilog.info(0x0000, TAG, 'ImportRiskFactors begin.');
-  await riskControlEngine.importRiskFactors(data);
-  hilog.info(0x0000, TAG, 'Succeeded in importRiskFactors.');
-} catch (err) {
-  let e: BusinessError = err as BusinessError;
-  hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}s', e.code, e.message);
+async function importRiskFactors(): Promise<void> {
+  let rand = cryptoFramework.createRandom();
+  let len = 32;
+  let randData = rand.generateRandomSync(len);
+  let base64 = new util.Base64Helper();
+  // import risk factors
+  let data: riskControlEngine.ImportData = {
+    appFactorData: [
+      // need to change factorName by your registered.
+      { factorName: 'isFirstTransfer', factorValue: true }
+    ],
+    nonce: base64.encodeToStringSync(randData.data)
+  };
+  try {
+    await riskControlEngine.importRiskFactors(data);
+  } catch (error) {
+    let e: BusinessError = error as BusinessError;
+    hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}d', e.code, e.message);
+  }
 }
 ```
 
 ### Code block 3
 
 ```
-const TAG = "riskControlEngineJsTest";
+const TAG: string = '[RiskControlEngineGetModel]';
+// ...
 
-let rand = cryptoFramework.createRandom();
-let len = 32;
-let randData = rand.generateRandomSync(len);
-let base64 = new util.Base64Helper();
-// 准备风控检测请求
-const request: riskControlEngine.RiskControlDetectionRequest = {
-  policyName: "Policy_1001", // 风险策略
-  nonce: base64.encodeToStringSync(randData.data) // 16-66字节随机数
-};
-
-try {
-  hilog.info(0x0000, TAG, 'Getting risk control score begin.');
-  const response: riskControlEngine.RiskControlDetectionResponse =
- await riskControlEngine.getRiskControlResult(request);
-  // 结果格式为JSON Web Signature (JWS)，需按规范解析验证
-  hilog.info(0x0000, TAG, 'Risk control score result: %{public}s', response.result);
-} catch (err) {
-  const e: BusinessError = err as BusinessError;
-  hilog.error(0x0000, TAG, 'GetRiskControlScore failed: %{public}d %{public}s', e.code, e.message);
+async function getRiskControlResult(): Promise<string> {
+  let rand = cryptoFramework.createRandom();
+  let len = 32;
+  let randData = rand.generateRandomSync(len);
+  let base64 = new util.Base64Helper();
+  // prepare risk control detection request
+  const request: riskControlEngine.RiskControlDetectionRequest = {
+    // need to change policyName by your registered.
+    policyName: 'antiFraudRiskEvaluation',
+    nonce: base64.encodeToStringSync(randData.data)
+  };
+  try {
+    // get risk control result
+    let res:riskControlEngine.RiskControlDetectionResponse = await riskControlEngine.getRiskControlResult(request);
+    return res.result;
+  } catch (error) {
+    let e: BusinessError = error as BusinessError;
+    hilog.error(0x0000, TAG, 'GetRiskControlResult failed: %{public}d %{public}d', e.code, e.message);
+    return '';
+  }
 }
 ```
 
@@ -238,7 +242,7 @@ try {
 {
   "nonce": "xxxxxxxxx",    // 调用getRiskControlResult接口时传入的nonce值Base64编码
   "RiskDetectionOutput": {
-    "status": 0,        // 状态
+    "status": 0,        // 状态码
     "result": "1"      // 风控评分结果
   }
 }

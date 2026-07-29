@@ -24,7 +24,7 @@ AppStartup提供了一种简单高效的应用启动方式，可以支持任务�
 
 HAP：entry类型的HAP支持以自动和手动模式启动。从API version 20开始，feature类型的HAP支持以自动和手动模式启动。
 
-HSP/HAR: 从API version 18开始，支持在HSP和HAR中配置启动任务。HSP和HAR的启动任务、so预加载任务无法主动配置为自动模式，但可以被HAP中自动模式的启动任务、so预加载任务拉起。
+HSP/HAR：从API version 18开始，支持在HSP和HAR中配置启动任务。HSP和HAR的启动任务、so预加载任务无法主动配置为自动模式，但可以被HAP中自动模式的启动任务、so预加载任务拉起。
 
 启动框架从API version 18开始支持配置应用级so预加载任务，so文件开发可以参考Node-API创建Native C++工程。不支持配置系统级so预加载任务。
 
@@ -107,7 +107,7 @@ startup_config.json文件示例如下：
 属性名称	含义	数据类型	是否可缺省
 startupTasks	启动任务配置信息，详见定义启动任务配置。	对象数组	该标签可缺省，缺省值为空。
 appPreloadHintStartupTasks	预加载so任务配置信息，详见定义预加载so任务配置。	对象数组	该标签可缺省，缺省值为空。
-configEntry	启动参数配置文件所在路径。详见设置启动参数。 说明： - HSP、HAR中不允许配置configEntry字段。 - 如果应用开启了文件名混淆，则需要将文件路径添加到保留白名单中。具体操作详见ArkGuard混淆原理及功能的-keep-file-name部分。	字符串	该标签不可缺省。
+configEntry	启动参数配置文件所在路径。详见设置启动参数。 说明： - HSP、HAR中不允许配置configEntry字段。 - 如果应用开启了文件名混淆，则需要将文件路径添加到保留白名单中。具体操作详见ArkGuard混淆保留选项的-keep-file-name部分。	字符串	该标签不可缺省。
 
 [h2]定义启动任务配置
 
@@ -186,7 +186,7 @@ startup_config.json文件示例如下：
 
 属性名称	含义	数据类型	是否可缺省
 name	启动任务名称，可自定义，推荐与类名保持一致。	字符串	该标签不可缺省。
-srcEntry	启动任务对应的文件路径。 说明： 如果应用开启了文件名混淆，则需要将文件路径添加到保留白名单中。具体操作详见ArkGuard混淆原理及功能的-keep-file-name部分。	字符串	该标签不可缺省。
+srcEntry	启动任务对应的文件路径。 说明： 如果应用开启了文件名混淆，则需要将文件路径添加到保留白名单中。具体操作详见ArkGuard混淆保留选项的-keep-file-name部分。	字符串	该标签不可缺省。
 dependencies	启动任务依赖的其他启动任务的类名数组。	对象数组	该标签可缺省，缺省值为空。
 excludeFromAutoStart	是否排除自动模式，详细介绍可以查看修改启动模式。 - true：手动模式。 - false：自动模式。 说明： HSP、HAR中startupTask里的excludeFromAutoStart标签必须配置为true。	布尔值	该标签可缺省，缺省值为false。
 runOnThread	执行初始化所在的线程。 - mainThread：在主线程中执行。 - taskPool：在异步线程中执行。	字符串	该标签可缺省，缺省值为mainThread。
@@ -279,7 +279,7 @@ StartupConfig：用于设置任务超时时间和启动框架的监听器。
 
 StartupListener：用于监听启动任务是否执行成功。
 
-import { StartupConfig, StartupConfigEntry, StartupListener } from '@kit.AbilityKit';
+import { StartupConfig, StartupConfigEntry, StartupListener, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -304,7 +304,7 @@ export default class MyStartupConfigEntry extends StartupConfigEntry {
     };
     return config;
   }
-// ···
+  // ...
 }
 
 为每个待初始化功能组件添加启动任务
@@ -423,8 +423,8 @@ hsp1、hsp2以及har1的module.json5示例代码如下。
   "module": {
     "name": "har1",
     "type": "har",
-    // ···
-    "appStartup": "$profile:startup_config", // 启动框架的配置文件
+    // ...
+    "appStartup": "$profile:startup_config" // 启动框架的配置文件
   }
 }
 
@@ -575,18 +575,17 @@ uris、insightIntents、actions、customization任一属性匹配成功即为任
 
 对设置启动参数步骤中的MyStartupConfigEntry.ets文件进行修改，新增onRequestCustomMatchRule方法。
 
-import { StartupConfigEntry, Want } from '@kit.AbilityKit';
-// ···
+import { StartupConfig, StartupConfigEntry, StartupListener, Want } from '@kit.AbilityKit';
+// ...
 
 export default class MyStartupConfigEntry extends StartupConfigEntry {
-// ···
+  // ...
   onRequestCustomMatchRule(want: Want): string {
     if (want?.parameters?.fromType == 'card') {
       return 'ruleCard';
     }
     return '';
   }
-
 }
 
 对定义启动任务配置步骤中的startup_config.json文件进行修改，增加StartupTask_006任务的matchRules配置。预加载so任务不支持customization字段，按任务原有的excludeFromAutoStart配置处理。
@@ -795,7 +794,7 @@ export default class MyStartupConfigEntry extends StartupConfigEntry {
 ### Code block 5
 
 ```
-import { StartupConfig, StartupConfigEntry, StartupListener } from '@kit.AbilityKit';
+import { StartupConfig, StartupConfigEntry, StartupListener, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -820,7 +819,7 @@ export default class MyStartupConfigEntry extends StartupConfigEntry {
     };
     return config;
   }
-// ···
+  // ...
 }
 ```
 
@@ -915,8 +914,8 @@ export default class StartupTask_001 extends StartupTask {
   "module": {
     "name": "har1",
     "type": "har",
-    // ···
-    "appStartup": "$profile:startup_config", // 启动框架的配置文件
+    // ...
+    "appStartup": "$profile:startup_config" // 启动框架的配置文件
   }
 }
 ```
@@ -1027,18 +1026,17 @@ struct Index {
 ### Code block 14
 
 ```
-import { StartupConfigEntry, Want } from '@kit.AbilityKit';
-// ···
+import { StartupConfig, StartupConfigEntry, StartupListener, Want } from '@kit.AbilityKit';
+// ...
 
 export default class MyStartupConfigEntry extends StartupConfigEntry {
-// ···
+  // ...
   onRequestCustomMatchRule(want: Want): string {
     if (want?.parameters?.fromType == 'card') {
       return 'ruleCard';
     }
     return '';
   }
-
 }
 ```
 

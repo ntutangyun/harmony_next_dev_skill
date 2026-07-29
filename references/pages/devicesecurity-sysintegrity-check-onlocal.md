@@ -54,49 +54,26 @@ checkSysIntegrityOnLocal(): Promise<string>	检测系统完整性
 导入Device Security Kit模块及相关公共模块。
 
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-调用接口获取系统完整性检测结果。
+调用checkSysIntegrityOnLocal接口获取本地系统完整性检测结果。
 
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求本地系统完整性检测，并处理结果
 try {
   hilog.info(0x0000, TAG, 'CheckSysIntegrityOnLocal begin.');
   const result: string = await safetyDetect.checkSysIntegrityOnLocal();
   hilog.info(0x0000, TAG, 'Succeeded in checkSysIntegrityOnLocal: %{public}s', result);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckSysIntegrityOnLocal failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 
 开发者应用可以根据检测结果进行业务处理，当本地系统完整性检测结果为false时，您可以根据自身功能对安全的要求决定是否提醒用户。
-
-本地系统完整性检测结果是一个格式为JSON格式的字符串，内容示例如下：
-
-{
-  "basicIntegrity": false,
-  "detail": [
-    "attack",
-    "jailbreak",
-    "emulator"
-  ]
-}
-
-说明
-
-basicIntegrity：系统完整性检测的结果，true表示检测结果完整，false表示存在风险。
-
-detail：可选字段，当basicIntegrity结果为false时，该字段将提供存在风险的原因，App开发者可以根据不同风险做出不同的决策，详情如下：
-
-jailbreak：设备被越狱。
-
-emulator：非真实设备。
-
-attack：设备被攻击。
-
-unlock：设备被解锁。
 
 ## Code blocks
 
@@ -104,35 +81,24 @@ unlock：设备被解锁。
 
 ```
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求本地系统完整性检测，并处理结果
 try {
   hilog.info(0x0000, TAG, 'CheckSysIntegrityOnLocal begin.');
   const result: string = await safetyDetect.checkSysIntegrityOnLocal();
   hilog.info(0x0000, TAG, 'Succeeded in checkSysIntegrityOnLocal: %{public}s', result);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckSysIntegrityOnLocal failed: %{public}d %{public}s', e.code, e.message);
-}
-```
-
-### Code block 3
-
-```
-{
-  "basicIntegrity": false,
-  "detail": [
-    "attack",
-    "jailbreak",
-    "emulator"
-  ]
+  // ...
 }
 ```

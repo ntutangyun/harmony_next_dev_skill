@@ -28,13 +28,15 @@ import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.
 
 创建Hds一级容器组件，设置的Button可以切换分割线展示效果，分别是常显、常隐和跟手滑动效果。
 
-初始化list滑动控制器和HdsTabs控制器，将list滑动控制器绑定在HdsTabs控制器上，确保联动，否则跟手滑动没有渐变效果。
-
+@Entry
+@Component
+struct Index {
+  // 初始化HdsTabs控制器
   private controller: HdsTabsController = new HdsTabsController();
   listScroller0: ListScroller = new ListScroller();
   listScroller1: ListScroller = new ListScroller();
 
- aboutToAppear(): void {
+  aboutToAppear(): void {
     this.controller.bindScroller(0, this.listScroller0);
     this.controller.bindScroller(1, this.listScroller1);
   }
@@ -44,32 +46,57 @@ import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.
     this.controller.unbindScroller(this.listScroller1);
   }
 
-设置页签栏置于容器的底部且支持模糊，否则跟手滑动没有渐变效果。
-
- .barOverlap(true)
- .barPosition(BarPosition.End)
- .vertical(false)
- .divider({
-   mode: DividerMode.FOLLOW_SCROLL,
-   style: {
-     color: Color.Black,
-     strokeWidth: 1,
-     startMargin: 0,
-     endMargin: 0
-   }
- })
-
-跟手滑动效果仅限支持滚动的通用接口的组件，如List，Scroll等。
-
-HdsTabs({ controller: this.controller }) {
+  build() {
+    Column() {
+      HdsTabs({ controller: this.controller }) {
         TabContent() {
-          List({ scroller: this.listScroller0 }) {} // listScroller是开发者设置的滑动控制器，list子组件可以自定义添加。
+          List({ scroller: this.listScroller0 }) {
+            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
+              ListItem() {
+                Text('list_' + item)
+                  .width('100%')
+                  .height(72)
+                  .fontSize(16)
+                  .fontWeight(500)
+              }
+              .height(56)
+            })
+          }
         }
         .tabBar({ icon: $r('app.media.startIcon'), text: '页签1' })
         TabContent() {
-          List({ scroller: this.listScroller1 }) {}
+          List({ scroller: this.listScroller1 }) {
+            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
+              ListItem() {
+                Text('list_' + item)
+                  .width('100%')
+                  .height(72)
+                  .fontSize(16)
+                  .fontWeight(500)
+              }
+              .height(56)
+            })
+          }
         }
         .tabBar({ icon: $r('app.media.startIcon'), text: '页签2' })
+      }
+      // 设置页签栏置于容器的底部且支持模糊
+      .barOverlap(true)
+      .barPosition(BarPosition.End)
+      .vertical(false)
+      .divider({
+        mode: DividerMode.FOLLOW_SCROLL,
+        style: {
+          color: Color.Black,
+          strokeWidth: 1,
+          startMargin: 0,
+          endMargin: 0
+        }
+      })
+    }
+    .width('100%')
+    .height('100%')
+  }
 }
 
 ## Code blocks
@@ -84,11 +111,15 @@ import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.
 ### Code block 2
 
 ```
+@Entry
+@Component
+struct Index {
+  // 初始化HdsTabs控制器
   private controller: HdsTabsController = new HdsTabsController();
   listScroller0: ListScroller = new ListScroller();
   listScroller1: ListScroller = new ListScroller();
 
- aboutToAppear(): void {
+  aboutToAppear(): void {
     this.controller.bindScroller(0, this.listScroller0);
     this.controller.bindScroller(1, this.listScroller1);
   }
@@ -97,36 +128,57 @@ import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.
     this.controller.unbindScroller(this.listScroller0);
     this.controller.unbindScroller(this.listScroller1);
   }
-```
 
-### Code block 3
-
-```
- .barOverlap(true)
- .barPosition(BarPosition.End)
- .vertical(false)
- .divider({
-   mode: DividerMode.FOLLOW_SCROLL,
-   style: {
-     color: Color.Black,
-     strokeWidth: 1,
-     startMargin: 0,
-     endMargin: 0
-   }
- })
-```
-
-### Code block 4
-
-```
-HdsTabs({ controller: this.controller }) {
+  build() {
+    Column() {
+      HdsTabs({ controller: this.controller }) {
         TabContent() {
-          List({ scroller: this.listScroller0 }) {} // listScroller是开发者设置的滑动控制器，list子组件可以自定义添加。
+          List({ scroller: this.listScroller0 }) {
+            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
+              ListItem() {
+                Text('list_' + item)
+                  .width('100%')
+                  .height(72)
+                  .fontSize(16)
+                  .fontWeight(500)
+              }
+              .height(56)
+            })
+          }
         }
         .tabBar({ icon: $r('app.media.startIcon'), text: '页签1' })
         TabContent() {
-          List({ scroller: this.listScroller1 }) {}
+          List({ scroller: this.listScroller1 }) {
+            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
+              ListItem() {
+                Text('list_' + item)
+                  .width('100%')
+                  .height(72)
+                  .fontSize(16)
+                  .fontWeight(500)
+              }
+              .height(56)
+            })
+          }
         }
         .tabBar({ icon: $r('app.media.startIcon'), text: '页签2' })
+      }
+      // 设置页签栏置于容器的底部且支持模糊
+      .barOverlap(true)
+      .barPosition(BarPosition.End)
+      .vertical(false)
+      .divider({
+        mode: DividerMode.FOLLOW_SCROLL,
+        style: {
+          color: Color.Black,
+          strokeWidth: 1,
+          startMargin: 0,
+          endMargin: 0
+        }
+      })
+    }
+    .width('100%')
+    .height('100%')
+  }
 }
 ```

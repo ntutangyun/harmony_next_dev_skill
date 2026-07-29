@@ -394,14 +394,14 @@ NDKCamera::NDKCamera(char *previewId, char *photoId) {
     if (ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "Delete Cameras failed.");
     } else {
-        OH_LOG_ERROR(LOG_APP, "OH_CameraManager_DeleteSupportedCameras. ok");
+        OH_LOG_INFO(LOG_APP, "OH_CameraManager_DeleteSupportedCameras. ok");
     }
 
     ret = OH_Camera_DeleteCameraManager(cameraManager);
     if (ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "Delete Cameras failed.");
     } else {
-        OH_LOG_ERROR(LOG_APP, "OH_Camera_DeleteCameraManager. ok");
+        OH_LOG_INFO(LOG_APP, "OH_Camera_DeleteCameraManager. ok");
     }
 }
 
@@ -744,14 +744,14 @@ NDKCamera::NDKCamera(char *previewId, char *photoId) {
     if (ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "Delete Cameras failed.");
     } else {
-        OH_LOG_ERROR(LOG_APP, "OH_CameraManager_DeleteSupportedCameras. ok");
+        OH_LOG_INFO(LOG_APP, "OH_CameraManager_DeleteSupportedCameras. ok");
     }
 
     ret = OH_Camera_DeleteCameraManager(cameraManager);
     if (ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "Delete Cameras failed.");
     } else {
-        OH_LOG_ERROR(LOG_APP, "OH_Camera_DeleteCameraManager. ok");
+        OH_LOG_INFO(LOG_APP, "OH_Camera_DeleteCameraManager. ok");
     }
 }
 ```

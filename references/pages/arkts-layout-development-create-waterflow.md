@@ -51,7 +51,7 @@ build() {
             .width('100%')
             .aspectRatio(this.itemHeightArray[item % 100] / this.itemWidthArray[item%100])
             .backgroundColor(this.colors[item % 5])
-          }, (item: string) => item)
+          }, (item: number) => item.toString())
         }
         .columnsTemplate('1fr '.repeat(this.columns))
         .backgroundColor(0xFAEEE0)
@@ -94,7 +94,7 @@ build() {
             .width('100%')
             .aspectRatio(this.itemHeightArray[item % 100] / this.itemWidthArray[item%100])
             .backgroundColor(this.colors[item % 5])
-          }, (item: string) => item)
+          }, (item: number) => item.toString())
         }
         .columnsTemplate('1fr '.repeat(this.columns))
         .backgroundColor(0xFAEEE0)
@@ -173,7 +173,7 @@ export struct WaterFlowDynamicSwitchover {
                 .width('100%')
                 .aspectRatio(this.columns === 2 ? this.itemHeightArray[item % 100] / this.itemWidthArray[item % 100] : 0)
                 .backgroundColor(this.colors[item % 5])
-              }, (item: string) => item)
+              }, (item: number) => item.toString())
             }
             .columnsTemplate('1fr '.repeat(this.columns))
             .backgroundColor(0xFAEEE0)
@@ -291,7 +291,7 @@ export struct WaterFlowGroupingMixing {
             .width('100%')
             .aspectRatio(item != 0 ? this.itemHeightArray[item % 100] / this.itemWidthArray[item % 100] : 0)
             .backgroundColor(item != 0 ? this.colors[item % 5] : Color.White)
-          }, (item: string) => item)
+          }, (item: number) => item.toString())
         }
         .backgroundColor(0xFAEEE0)
         .height('100%')
@@ -356,7 +356,7 @@ build() {
             .width('100%')
             .aspectRatio(this.itemHeightArray[item % 100] / this.itemWidthArray[item%100])
             .backgroundColor(this.colors[item % 5])
-          }, (item: string) => item)
+          }, (item: number) => item.toString())
         }
         .columnsTemplate('1fr '.repeat(this.columns))
         .backgroundColor(0xFAEEE0)
@@ -393,7 +393,7 @@ build() {
             .width('100%')
             .aspectRatio(this.itemHeightArray[item % 100] / this.itemWidthArray[item%100])
             .backgroundColor(this.colors[item % 5])
-          }, (item: string) => item)
+          }, (item: number) => item.toString())
         }
         .columnsTemplate('1fr '.repeat(this.columns))
         .backgroundColor(0xFAEEE0)
@@ -472,7 +472,7 @@ export struct WaterFlowDynamicSwitchover {
                 .width('100%')
                 .aspectRatio(this.columns === 2 ? this.itemHeightArray[item % 100] / this.itemWidthArray[item % 100] : 0)
                 .backgroundColor(this.colors[item % 5])
-              }, (item: string) => item)
+              }, (item: number) => item.toString())
             }
             .columnsTemplate('1fr '.repeat(this.columns))
             .backgroundColor(0xFAEEE0)
@@ -586,7 +586,7 @@ export struct WaterFlowGroupingMixing {
             .width('100%')
             .aspectRatio(item != 0 ? this.itemHeightArray[item % 100] / this.itemWidthArray[item % 100] : 0)
             .backgroundColor(item != 0 ? this.colors[item % 5] : Color.White)
-          }, (item: string) => item)
+          }, (item: number) => item.toString())
         }
         .backgroundColor(0xFAEEE0)
         .height('100%')

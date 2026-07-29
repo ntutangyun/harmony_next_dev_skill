@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
 
 新建工程并创建一个har模块
 
-在工程级别的build-profile.json5使用以下配置，目的是为了实现在所有模块中都可以使用到productMessage自定义参数。
+在工程级build-profile.json5使用以下配置，是为了实现在所有模块中都可以使用到productMessage自定义参数。
 
 通过切换不同的product从而使用到对应的productMessage值。
 
@@ -192,11 +192,11 @@ struct Index {
 
 执行预览或签名后推包到设备调试
 
-点击har模块执行以下按钮。
+选中har模块后点击以下按钮。
 
 default模式下初始化的message为defaultMessage。
 
-通过切换不同的product可以使用不同的自定义参数用来初始化message。
+通过切换不同的product，可以使用不同的自定义参数来初始化message。
 
 切换product为mirror。
 

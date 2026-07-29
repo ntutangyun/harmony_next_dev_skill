@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/outgoing-
 
 约束与限制
 
-去电场景支持Phone、Tablet设备，并从6.0(20)版本开始支持Wearable设备，6.1.1(24)版本开始支持PC/2in1设备。
+去电场景支持Phone、Tablet设备，并从6.0.0(20)版本开始支持Wearable设备，6.1.1(24)版本开始支持PC/2in1设备。
 
 业务流程
 

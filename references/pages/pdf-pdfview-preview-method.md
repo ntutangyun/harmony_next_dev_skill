@@ -15,7 +15,7 @@ pdfViewManager为PDF文档提供了丰富的预览特性。
 接口说明
 
 接口名	描述
-setPageLayout(columnCount: pdfService.PageLayout): void	设置页面布局模式。其中“columnCount”取值如下： - 1：单页面 - 2：双页面
+setPageLayout(columnCount: pdfService.PageLayout): void	设置页面布局模式。其中“columnCount”取值如下： 1：单页面。 2：双页面。
 setPageContinuous(isContinuous: boolean): void	设置页面滚动是否连续排列。
 setPageFit(pageFit: pdfService.PageFit): void	设置页面的适配模式。
 goToPage(pageIndex: number): void	跳转到指定页。
@@ -34,10 +34,11 @@ setPageZoom(zoom: number): void	设置视图的缩放比例。
 在按钮【zoomPage2】里，调用setPageZoom方法，将页面放大2倍。
 
 import { pdfService, PdfView, pdfViewManager } from '@kit.PDFKit';
+// ...
 
 @Entry
 @Component
-struct PdfPage {
+struct PdfViewPreviewMethod {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -52,41 +53,54 @@ struct PdfPage {
   }
 
   build() {
-    Column() {
-      Row() {
-        // 设置预览方式
-        Button('setPreviewMode').onClick(() => {
-          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-            // 单页布局
-            this.controller.setPageLayout(pdfService.PageLayout.LAYOUT_SINGLE);
-            // 是否连续滚动预览
-            this.controller.setPageContinuous(true);
-            // 适配页的预览方式
-            this.controller.setPageFit(pdfService.PageFit.FIT_PAGE);
-          }
-        })
-        // 跳转到第11页
-        Button('goTopage').onClick(() => {
-          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-            this.controller.goToPage(10);
-          }
-        })
-        // 页面放大2倍
-        Button('zoomPage2').onClick(() => {
-          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-            this.controller.setPageZoom(2);
-          }
-        })
-      }
-
+    Stack({ alignContent: Alignment.TopStart }) {
       PdfView({
         controller: this.controller,
         pageFit: pdfService.PageFit.FIT_WIDTH,
         showScroll: true
       })
         .id('pdfview_app_view')
-        .layoutWeight(1);
+        .width('100%')
+        .height('100%')
+        .margin({ top: 150 })
+
+      Column({ space: 10 }) {
+        // ...
+        Row({ space: 10 }) {
+          // 设置预览方式
+          Button('setPreviewMode')
+            .onClick(() => {
+              if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+                // 单页布局
+                this.controller.setPageLayout(pdfService.PageLayout.LAYOUT_SINGLE);
+                // 是否连续滚动预览
+                this.controller.setPageContinuous(true);
+                // 适配页的预览方式
+                this.controller.setPageFit(pdfService.PageFit.FIT_PAGE);
+              }
+            })
+          // 跳转到第11页
+          Button('goTopage')
+            .onClick(() => {
+              if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+                this.controller.goToPage(10);
+              }
+            })
+        }
+        Row({ space: 10 }) {
+          // 页面放大2倍
+          Button('zoomPage2')
+            .onClick(() => {
+              if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+                this.controller.setPageZoom(2);
+              }
+            })
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .padding(10)
     }
+    .width('100%').height('100%')
   }
 }
 
@@ -96,10 +110,11 @@ struct PdfPage {
 
 ```
 import { pdfService, PdfView, pdfViewManager } from '@kit.PDFKit';
+// ...
 
 @Entry
 @Component
-struct PdfPage {
+struct PdfViewPreviewMethod {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -114,41 +129,54 @@ struct PdfPage {
   }
 
   build() {
-    Column() {
-      Row() {
-        // 设置预览方式
-        Button('setPreviewMode').onClick(() => {
-          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-            // 单页布局
-            this.controller.setPageLayout(pdfService.PageLayout.LAYOUT_SINGLE);
-            // 是否连续滚动预览
-            this.controller.setPageContinuous(true);
-            // 适配页的预览方式
-            this.controller.setPageFit(pdfService.PageFit.FIT_PAGE);
-          }
-        })
-        // 跳转到第11页
-        Button('goTopage').onClick(() => {
-          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-            this.controller.goToPage(10);
-          }
-        })
-        // 页面放大2倍
-        Button('zoomPage2').onClick(() => {
-          if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-            this.controller.setPageZoom(2);
-          }
-        })
-      }
-
+    Stack({ alignContent: Alignment.TopStart }) {
       PdfView({
         controller: this.controller,
         pageFit: pdfService.PageFit.FIT_WIDTH,
         showScroll: true
       })
         .id('pdfview_app_view')
-        .layoutWeight(1);
+        .width('100%')
+        .height('100%')
+        .margin({ top: 150 })
+
+      Column({ space: 10 }) {
+        // ...
+        Row({ space: 10 }) {
+          // 设置预览方式
+          Button('setPreviewMode')
+            .onClick(() => {
+              if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+                // 单页布局
+                this.controller.setPageLayout(pdfService.PageLayout.LAYOUT_SINGLE);
+                // 是否连续滚动预览
+                this.controller.setPageContinuous(true);
+                // 适配页的预览方式
+                this.controller.setPageFit(pdfService.PageFit.FIT_PAGE);
+              }
+            })
+          // 跳转到第11页
+          Button('goTopage')
+            .onClick(() => {
+              if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+                this.controller.goToPage(10);
+              }
+            })
+        }
+        Row({ space: 10 }) {
+          // 页面放大2倍
+          Button('zoomPage2')
+            .onClick(() => {
+              if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+                this.controller.setPageZoom(2);
+              }
+            })
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .padding(10)
     }
+    .width('100%').height('100%')
   }
 }
 ```

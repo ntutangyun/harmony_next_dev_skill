@@ -121,9 +121,9 @@ this.title.name.value = 'ArkUI';
 // 正确写法
 @State count: number = 10;
 
-@State不支持装饰Function类型的变量，API version 23之前，框架会抛出运行时错误。
+@State不支持装饰Function类型的变量，API version 23之前，应用在运行时会出现错误。
 
-从API version 23开始，添加对@State装饰Function类型变量的校验，编译期会报错。
+从API version 23开始，在应用编译时添加了相关校验，@State装饰Function类型变量会提示ERROR，应在代码中删除Function类型变量的@State装饰器。
 
 父组件传入undefined时，@State装饰的变量仍使用本地默认值进行初始化。
 
@@ -205,9 +205,10 @@ class Model {
 struct EntryComponent {
   build() {
     Column() {
-      // 此处指定的参数都将在初始渲染时覆盖本地定义的默认值，并不是所有的参数都需要从父组件初始化
+      // count、increaseBy使用传入值1、2初始化；title未传入，使用本地默认值new Model('Hello World')初始化
       MyComponent({ count: 1, increaseBy: 2 })
         .width(300)
+      // title、count使用传入值new Model('Hello World 2')、7初始化；increaseBy未传入，使用本地默认值1初始化
       MyComponent({ title: new Model('Hello World 2'), count: 7 })
     }
   }
@@ -241,22 +242,6 @@ struct MyComponent {
     }
   }
 }
-
-从上述示例中，我们可以了解到@State变量的初始化机制：
-
-上述示例中，在没有外部传入的情况下，使用默认的值进行本地初始化：
-
-// title没有外部传入，使用本地的值new Model('Hello World')进行初始化
-MyComponent({ count: 1, increaseBy: 2 })
-// increaseBy没有外部传入，使用本地的值1进行初始化
-MyComponent({ title: new Model('Hello World 2'), count: 7 })
-
-上述示例中，在有外部传入的情况下，使用外部传入的值进行初始化：
-
-// count和increaseBy均有外部传入，分别使用传入的1和2进行初始化
-MyComponent({ count: 1, increaseBy: 2 })
-// title和count均有外部传入，分别使用传入的new Model('Hello World 2')和7进行初始化
-MyComponent({ title: new Model('Hello World 2'), count: 7 })
 
 [h2]装饰Array类型变量
 
@@ -496,7 +481,7 @@ struct DatePickerExample {
   }
 }
 
-[h2]State支持联合类型实例
+[h2]@State支持联合类型实例
 
 @State支持联合类型和undefined和null，在下面的示例中，count类型为number | undefined，点击Button改变count的值，视图会随之刷新。
 
@@ -676,9 +661,10 @@ class Model {
 struct EntryComponent {
   build() {
     Column() {
-      // 此处指定的参数都将在初始渲染时覆盖本地定义的默认值，并不是所有的参数都需要从父组件初始化
+      // count、increaseBy使用传入值1、2初始化；title未传入，使用本地默认值new Model('Hello World')初始化
       MyComponent({ count: 1, increaseBy: 2 })
         .width(300)
+      // title、count使用传入值new Model('Hello World 2')、7初始化；increaseBy未传入，使用本地默认值1初始化
       MyComponent({ title: new Model('Hello World 2'), count: 7 })
     }
   }
@@ -715,24 +701,6 @@ struct MyComponent {
 ```
 
 ### Code block 11
-
-```
-// title没有外部传入，使用本地的值new Model('Hello World')进行初始化
-MyComponent({ count: 1, increaseBy: 2 })
-// increaseBy没有外部传入，使用本地的值1进行初始化
-MyComponent({ title: new Model('Hello World 2'), count: 7 })
-```
-
-### Code block 12
-
-```
-// count和increaseBy均有外部传入，分别使用传入的1和2进行初始化
-MyComponent({ count: 1, increaseBy: 2 })
-// title和count均有外部传入，分别使用传入的new Model('Hello World 2')和7进行初始化
-MyComponent({ title: new Model('Hello World 2'), count: 7 })
-```
-
-### Code block 13
 
 ```
 class Fruit {
@@ -799,7 +767,7 @@ struct ArraySample {
 }
 ```
 
-### Code block 14
+### Code block 12
 
 ```
 @Entry
@@ -858,7 +826,7 @@ struct MapSample {
 }
 ```
 
-### Code block 15
+### Code block 13
 
 ```
 @Entry
@@ -910,7 +878,7 @@ struct SetSample {
 }
 ```
 
-### Code block 16
+### Code block 14
 
 ```
 @Entry
@@ -962,7 +930,7 @@ struct DatePickerExample {
 }
 ```
 
-### Code block 17
+### Code block 15
 
 ```
 @Entry

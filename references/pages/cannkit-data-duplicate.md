@@ -18,7 +18,7 @@ void Duplicate(const LocalTensor<T>& dstLocal, const T& scalarValue, const int32
 表1 参数说明
 
 参数名称	输入/输出	含义
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为：uint8/int8/uint16_t/int16_t/half/uint32_t/int32_t/float16/float KirinX90系列处理器，支持的数据类型为：uint8/int8/uint16_t/int16_t/half/uint32_t/int32_t/float16/float
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为：uint8、int8、uint16_t、int16_t、half、uint32_t、int32_t、float16、float KirinX90系列处理器，支持的数据类型为：uint8、int8、uint16_t、int16_t、half、uint32_t、int32_t、float16、float
 scalarValue	输入	被复制的源操作数，支持输入变量和立即数，数据类型需与dstLocal中元素的数据类型保持一致。
 calCount	输入	输入数据元素个数。
 
@@ -82,8 +82,8 @@ AscendC::Duplicate<half>(dstLocal, inputVal, srcDataSize);
      {
          AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
          AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
-         half inputVal(18.0);
-         AscendC::Duplicate<half>(dstLocal, inputVal, srcDataSize);
+         **half inputVal(18.0);**
+         **AscendC::Duplicate<half>(dstLocal, inputVal, srcDataSize);**
          outQueueDst.EnQue<half>(dstLocal);
          inQueueSrc.FreeTensor(srcLocal);
      }
@@ -162,8 +162,8 @@ AscendC::Duplicate<half>(dstLocal, inputVal, srcDataSize);
      {
          AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
          AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
-         half inputVal(18.0);
-         AscendC::Duplicate<half>(dstLocal, inputVal, srcDataSize);
+         **half inputVal(18.0);**
+         **AscendC::Duplicate<half>(dstLocal, inputVal, srcDataSize);**
          outQueueDst.EnQue<half>(dstLocal);
          inQueueSrc.FreeTensor(srcLocal);
      }

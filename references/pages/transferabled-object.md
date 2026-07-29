@@ -8,9 +8,7 @@ Transferable对象，也称为NativeBinding对象，是指绑定C++对象的JS�
 
 如果C++实现能够确保线程安全性，则NativeBinding对象的C++部分支持跨线程共享。NativeBinding对象跨线程传输后，只需重新创建JS壳即可桥接到同一个C++对象上，实现C++对象的共享。通信过程如下图所示：
 
-常见的共享模式NativeBinding对象包括：应用上下文（ApplicationContext）、窗口上下文（WindowContext）、组件上下文（AbilityContext或ComponentContext）等Context类型对象。这些上下文对象封装了应用程序组件的上下文信息，提供了访问系统服务和资源的能力，使得应用程序组件可以与系统进行交互。获取Context信息的方法可以参考获取上下文信息。
-
-示例可参考使用TaskPool进行频繁数据库操作。
+常见的共享模式NativeBinding对象包括：应用上下文（ApplicationContext）、窗口上下文（WindowContext）、组件上下文（AbilityContext或ComponentContext）等Context类型对象。这些上下文对象封装了应用程序组件的上下文信息，提供了访问系统服务和资源的能力，使得应用程序组件可以与系统进行交互。获取Context信息的方法可以参考获取上下文信息。跨线程共享使用上下文的示例可参考使用TaskPool进行频繁数据库操作。
 
 转移模式
 
@@ -31,23 +29,28 @@ struct Index {
   @State message: string = 'Hello World';
   @State pixelMap: PixelMap | undefined = undefined;
 
-  private loadImageFromThread(): void {
+  private async loadImageFromThread(): Promise<void> {
     const resourceMgr = this.uiContext?.getHostContext()?.resourceManager;
-    // 此处‘startIcon.png’为media下复制到rawfile文件夹中，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-    resourceMgr?.getRawFd('startIcon.png').then(rawFileDescriptor => {
-      taskpool.execute(loadPixelMap, rawFileDescriptor).then(pixelMap => {
+    // 此处‘startIcon.png’为media下复制到工程中的resources/rawfile文件夹中，请开发者自行替换，
+    // 否则imageSource创建失败会导致后续无法正常执行（日志中会打印Failed to get RawFd）。
+    await resourceMgr?.getRawFd('startIcon.png').then(async rawFileDescriptor => {
+      await taskpool.execute(loadPixelMap, rawFileDescriptor).then(pixelMap => {
         if (pixelMap) {
           this.pixelMap = pixelMap as PixelMap;
+          this.message = 'success';
           console.info('Succeeded in creating pixelMap.');
           // 主线程释放pixelMap。由于子线程返回pixelMap时已调用setTransferDetached，所以此处能够立即释放pixelMap。
           this.pixelMap.release();
         } else {
+          this.message = 'failed';
           console.error('Failed to create pixelMap.');
         }
       }).catch((e: BusinessError) => {
-        console.error('taskpool execute loadPixelMap failed. Code: ' + e.code + ', message: ' + e.message);
+        this.message = 'failed';
+           console.error(`taskpool execute loadPixelMap failed. Code: ${e.code}, message: ${e.message}`);
       });
     }).catch(() => {
+      this.message = 'failed';
       console.error(`Failed to get RawFd`);
     });
   }
@@ -64,7 +67,6 @@ struct Index {
         })
         .onClick(() => {
           this.loadImageFromThread();
-          this.message = 'success';
         })
     }
     .height('100%')
@@ -74,6 +76,7 @@ struct Index {
 
 import { image } from '@kit.ImageKit';
 import { resourceManager } from '@kit.LocalizationKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @Concurrent
 export async function loadPixelMap(rawFileDescriptor: resourceManager.RawFileDescriptor): Promise<PixelMap> {
@@ -84,7 +87,11 @@ export async function loadPixelMap(rawFileDescriptor: resourceManager.RawFileDes
   // 释放imageSource。
   imageSource.release();
   // 使pixelMap在跨线程传输完成后，脱离原线程的引用。
-  pixelMap.setTransferDetached(true);
+  try {
+       pixelMap.setTransferDetached(true);
+     } catch (err) {
+       hilog.error(0x0000, 'testTag', 'Failed to set transferDetached. Cause: %{public}s', JSON.stringify(err));
+     }
   // 返回pixelMap给主线程。
   return pixelMap;
 }
@@ -105,23 +112,28 @@ struct Index {
   @State message: string = 'Hello World';
   @State pixelMap: PixelMap | undefined = undefined;
 
-  private loadImageFromThread(): void {
+  private async loadImageFromThread(): Promise<void> {
     const resourceMgr = this.uiContext?.getHostContext()?.resourceManager;
-    // 此处‘startIcon.png’为media下复制到rawfile文件夹中，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-    resourceMgr?.getRawFd('startIcon.png').then(rawFileDescriptor => {
-      taskpool.execute(loadPixelMap, rawFileDescriptor).then(pixelMap => {
+    // 此处‘startIcon.png’为media下复制到工程中的resources/rawfile文件夹中，请开发者自行替换，
+    // 否则imageSource创建失败会导致后续无法正常执行（日志中会打印Failed to get RawFd）。
+    await resourceMgr?.getRawFd('startIcon.png').then(async rawFileDescriptor => {
+      await taskpool.execute(loadPixelMap, rawFileDescriptor).then(pixelMap => {
         if (pixelMap) {
           this.pixelMap = pixelMap as PixelMap;
+          this.message = 'success';
           console.info('Succeeded in creating pixelMap.');
           // 主线程释放pixelMap。由于子线程返回pixelMap时已调用setTransferDetached，所以此处能够立即释放pixelMap。
           this.pixelMap.release();
         } else {
+          this.message = 'failed';
           console.error('Failed to create pixelMap.');
         }
       }).catch((e: BusinessError) => {
-        console.error('taskpool execute loadPixelMap failed. Code: ' + e.code + ', message: ' + e.message);
+        this.message = 'failed';
+           console.error(`taskpool execute loadPixelMap failed. Code: ${e.code}, message: ${e.message}`);
       });
     }).catch(() => {
+      this.message = 'failed';
       console.error(`Failed to get RawFd`);
     });
   }
@@ -138,7 +150,6 @@ struct Index {
         })
         .onClick(() => {
           this.loadImageFromThread();
-          this.message = 'success';
         })
     }
     .height('100%')
@@ -152,6 +163,7 @@ struct Index {
 ```
 import { image } from '@kit.ImageKit';
 import { resourceManager } from '@kit.LocalizationKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @Concurrent
 export async function loadPixelMap(rawFileDescriptor: resourceManager.RawFileDescriptor): Promise<PixelMap> {
@@ -162,7 +174,11 @@ export async function loadPixelMap(rawFileDescriptor: resourceManager.RawFileDes
   // 释放imageSource。
   imageSource.release();
   // 使pixelMap在跨线程传输完成后，脱离原线程的引用。
-  pixelMap.setTransferDetached(true);
+  try {
+       pixelMap.setTransferDetached(true);
+     } catch (err) {
+       hilog.error(0x0000, 'testTag', 'Failed to set transferDetached. Cause: %{public}s', JSON.stringify(err));
+     }
   // 返回pixelMap给主线程。
   return pixelMap;
 }

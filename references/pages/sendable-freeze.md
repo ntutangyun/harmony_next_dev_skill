@@ -46,10 +46,10 @@ struct Index {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
         .onClick(() => {
-          let gConifg = new GlobalConfig();
-          gConifg.init();
+          let gConfig = new GlobalConfig();
+          gConfig.init();
           const workerInstance = new worker.ThreadWorker('entry/ets/workers/Worker.ets', { name: 'Worker1' });
-          workerInstance.postMessage(gConifg);
+          workerInstance.postMessage(gConfig);
           this.message = 'success';
         })
     }
@@ -61,7 +61,6 @@ struct Index {
 子线程直接操作对象，不加锁。
 
 import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
-// import { GlobalConfig } from '../pages/Index';
 import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
@@ -111,10 +110,10 @@ struct Index {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
         .onClick(() => {
-          let gConifg = new GlobalConfig();
-          gConifg.init();
+          let gConfig = new GlobalConfig();
+          gConfig.init();
           const workerInstance = new worker.ThreadWorker('entry/ets/workers/Worker.ets', { name: 'Worker1' });
-          workerInstance.postMessage(gConifg);
+          workerInstance.postMessage(gConfig);
           this.message = 'success';
         })
     }
@@ -128,7 +127,6 @@ struct Index {
 
 ```
 import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
-// import { GlobalConfig } from '../pages/Index';
 import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;

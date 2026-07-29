@@ -16,7 +16,7 @@ Account Kit简介
 
 Account Kit Skill能力开放
 
-订阅和处理用户信息变更
+Account Kit通知事件
 
 Account Kit常见问题
 

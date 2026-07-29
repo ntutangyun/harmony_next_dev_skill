@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-open
 
 打开资源
 
-从API 22开始，huksExternalCrypto提供打开/关闭资源功能接口。应用在密钥操作之前（密钥操作、通用操作、PIN码认证等），需要先调用OH_Huks_OpenResource打开资源。打开资源需要获取resourceId，resourceId通过调用证书管理系统能力提供的证书选择接口获取。
+从API 22开始，huksExternalCrypto提供打开/关闭资源功能接口。应用在密钥操作之前（密钥操作、通用操作、PIN码认证等），需要先调用OH_Huks_OpenResource打开资源。打开资源需要获取resourceId，resourceId通过调用证书管理系统能力提供的openAuthorizeDialog获取。
 
 [h2]在CMake脚本中链接相关动态库
 
@@ -12,7 +12,7 @@ target_link_libraries(entry PUBLIC libhuks_ndk.z.so libhuks_external_crypto.z.so
 
 [h2]开发步骤
 
-通过证书管理系统能力提供的证书选择接口获取keyUri，并将其作为resourceId。
+通过证书管理系统能力提供的openAuthorizeDialog获取keyUri，并将其作为resourceId。
 
 初始化参数集：通过OH_Huks_InitExternalCryptoParamSet、OH_Huks_AddExternalCryptoParams、OH_Huks_BuildExternalCryptoParamSet构造参数集paramSet。
 
@@ -87,7 +87,7 @@ target_link_libraries(entry PUBLIC libhuks_ndk.z.so libhuks_external_crypto.z.so
 
 [h2]开发步骤
 
-通过证书管理系统能力提供的证书选择接口获取resourceId。
+通过证书管理系统能力提供的openAuthorizeDialog获取resourceId。
 
 初始化参数集：通过OH_Huks_InitExternalCryptoParamSet、OH_Huks_AddExternalCryptoParams、OH_Huks_BuildExternalCryptoParamSet构造参数集paramSet。
 

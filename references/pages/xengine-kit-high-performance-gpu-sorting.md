@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/xengine-k
 
 从6.0.0(20) 版本开始，新增高性能GPU排序特性。
 
-XEngine Kit HPS(High Performance Sorting)特性提供高性能GPU排序能力。相比于其它排序能力，该能力依托于华为Maleoon GPU的软硬结合优化，效率更高。
+XEngine Kit高性能着色器(High Performance Shaders，HPS)特性提供GPU排序能力。相比于其它排序能力，该能力依托于华为Maleoon GPU的软硬结合优化，效率更高。
 
 约束与限制
 
@@ -23,19 +23,17 @@ VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CmdRadixSortHPS (VkCommandBuffer commandB
 
 业务流程
 
-下面是以Vulkan应用程序渲染为例，说明使用高性能GPU排序的的主要业务流程
+下面是以Vulkan应用程序渲染为例，说明使用高性能GPU排序的主要业务流程
 
-应用调用HMS_XEG_EnumerateDeviceExtensionProperties接口获取扩展属性列表。如果在列表中未找到XEG_HPS_RADIX_SORT_EXTENSION_NAME，说明当前设备不支持高性能GPU排序。
+应用调用HMS_XEG_EnumerateDeviceExtensionProperties接口获取XEngine Kit支持的扩展属性列表。检查返回列表中是否包含XEG_HPS_RADIX_SORT_EXTENSION_NAME。若不包含，则当前设备不支持此特性，流程终止。
 
-应用调用HMS_XEG_CmdRadixSortHPS录制排序命令。
+应用准备HPS相关资源（keyBuffer、indexBuffer等）。
 
-XEngine Kit返回一个command buffer。
+应用调用HMS_XEG_CreateHPS接口创建HPS实例。
 
-应用调用vkQueueSubmit接口将排序命令提交到GPU队列执行，GPU并行完成高性能排序。
+应用调用HMS_XEG_CmdRadixSortHPS录制排序命令，并提交到GPU队列执行。
 
-XEngine Kit返回排序结果。
-
-应用调用HMS_XEG_DestroyHPS接口销毁HPS实例，释放全部GPU资源。销毁后HPS句柄失效，不可再使用。
+当不再需要排序时，应用调用HMS_XEG_DestroyHPS接口销毁HPS实例，释放全部GPU资源。销毁后HPS句柄失效，不可再使用。
 
 开发步骤
 
@@ -43,7 +41,7 @@ XEngine Kit返回排序结果。
 
 [h2]配置项目
 
-编译HAP时，Native层so需要依赖NDK中的XEngine相关库和头文件。
+编译HAP包时，Native层so需要依赖NDK中的XEngine相关库和头文件。
 
 头文件引用
 
@@ -65,8 +63,8 @@ find_library(
     xengine
 )
 target_link_libraries(nativerender PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib})
 
 [h2]集成高性能GPU排序（Vulkan）
@@ -114,14 +112,14 @@ XEG_HPS xegHPS { VK_NULL_HANDLE };
 调用HMS_XEG_CreateHPS接口，实例化句柄。
 
 // 构造输入描述符
-XEG_HPSRadixSort sorInfo{
+XEG_HPSRadixSort sortInfo{
     XEG_STRUCTURE_TYPE_HPS_RADIX_SORT,
     nullptr
 };
 
 XEG_HPSCreateInfo info {
     XEG_STRUCTURE_TYPE_HPS_CREATE_INFO,
-    &sorInfo
+    &sortInfo
 };
 // 实例化句柄
 HMS_XEG_CreateHPS(device, &info, &xegHPS);
@@ -190,8 +188,8 @@ find_library(
     xengine
 )
 target_link_libraries(nativerender PUBLIC
-    // 其他库文件
-    // ...
+    # 其他库文件
+    # ...
     ${xengine-lib})
 ```
 
@@ -241,14 +239,14 @@ XEG_HPS xegHPS { VK_NULL_HANDLE };
 
 ```
 // 构造输入描述符
-XEG_HPSRadixSort sorInfo{
+XEG_HPSRadixSort sortInfo{
     XEG_STRUCTURE_TYPE_HPS_RADIX_SORT,
     nullptr
 };
 
 XEG_HPSCreateInfo info {
     XEG_STRUCTURE_TYPE_HPS_CREATE_INFO,
-    &sorInfo
+    &sortInfo
 };
 // 实例化句柄
 HMS_XEG_CreateHPS(device, &info, &xegHPS);

@@ -36,17 +36,19 @@ getSuperPrivacyPolicies() : Promise<SuperPrivacyPolicyInfo>	查询当前超级�
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-调用getSuperPrivacyPolicies接口查询超级隐私模式状态及控制策略信息。
-
 const DOMAIN = 0x0000;
-const TAG = "SuperPrivacyModeTest";
+const TAG = 'SuperPrivacyModeTest';
+
+调用getSuperPrivacyPolicies接口查询超级隐私模式状态及控制策略信息。
 
 try {
   const policyInfo = await superPrivacyMode.getSuperPrivacyPolicies();
   hilog.info(DOMAIN, TAG, `Super privacy mode = ${policyInfo.superPrivacyMode}`);
   hilog.info(DOMAIN, TAG, `Super privacy policies = ${JSON.stringify(policyInfo.superPrivacyPolicies)}`);
+  // ...
 } catch (err) {
   hilog.error(DOMAIN, TAG, `call getSuperPrivacyPolicies interface failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
 }
 
 ## Code blocks
@@ -56,19 +58,21 @@ try {
 ```
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
 ```
 
 ### Code block 2
 
 ```
-const DOMAIN = 0x0000;
-const TAG = "SuperPrivacyModeTest";
-
 try {
   const policyInfo = await superPrivacyMode.getSuperPrivacyPolicies();
   hilog.info(DOMAIN, TAG, `Super privacy mode = ${policyInfo.superPrivacyMode}`);
   hilog.info(DOMAIN, TAG, `Super privacy policies = ${JSON.stringify(policyInfo.superPrivacyPolicies)}`);
+  // ...
 } catch (err) {
   hilog.error(DOMAIN, TAG, `call getSuperPrivacyPolicies interface failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
 }
 ```

@@ -41,9 +41,8 @@ ListItem	selected	10
 
 使用示例
 
-以TextInput方法的text参数为例：
+以TextInput组件的text参数为例：
 
-// xxx.ets
 @Entry
 @Component
 struct TextInputExample {
@@ -53,6 +52,9 @@ struct TextInputExample {
   build() {
     Column({ space: 20 }) {
       Text(this.text)
+        .fontSize(20)
+        .margin(10)
+      // $$运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步
       TextInput({ text: $$this.text, placeholder: 'input your word...', controller: this.controller })
         .placeholderColor(Color.Grey)
         .placeholderFont({ size: 14, weight: 400 })
@@ -70,7 +72,6 @@ struct TextInputExample {
 ### Code block 1
 
 ```
-// xxx.ets
 @Entry
 @Component
 struct TextInputExample {
@@ -80,6 +81,9 @@ struct TextInputExample {
   build() {
     Column({ space: 20 }) {
       Text(this.text)
+        .fontSize(20)
+        .margin(10)
+      // $$运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步
       TextInput({ text: $$this.text, placeholder: 'input your word...', controller: this.controller })
         .placeholderColor(Color.Grey)
         .placeholderFont({ size: 14, weight: 400 })

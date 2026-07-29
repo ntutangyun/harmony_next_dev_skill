@@ -58,11 +58,11 @@ private filesDir = this.getUIContext().getHostContext()?.filesDir;
 拼接文件路径并获取文件信息。
 
 public updateFileFd(filesDir: string) {
-  // 获取文件fd
   this.fileName = systemDateTime.getTime(true).toString() + '.mp4';
   this.path = filesDir + '/' + this.fileName;
   try {
     this.file = fileIo.openSync(this.path, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+    this.captureConfig.fd = this.file.fd;
   } catch (error) {
     let err = error as BusinessError;
     hilog.error(0x0000, 'testTag', `openSync fail. code = ${err.code}, message = ${err.message}`);
@@ -73,75 +73,74 @@ public updateFileFd(filesDir: string) {
 
 通过MediaKit提供的createAVScreenCaptureRecorder()接口构建实例对象，然后使用.on接口为其绑定可选的监听回调函数。在以下示例中，订阅了两个回调事件：stateChange（状态切换事件回调）和error（错误事件回调）。对于同一个回调事件，用户只能订阅一次，若重复订阅，则以最后一次订阅的回调接口为准。已订阅的回调事件还可以通过off接口取消订阅。
 
-// 获取fd
-this.updateFileFd(filesDir);
-// 实例化对象
-try {
-  this.screenCapture = await media.createAVScreenCaptureRecorder();
-} catch (error) {
-  let err = error as BusinessError;
-  hilog.error(0x0000, 'testTag',
-    `createAVScreenCaptureRecorder fail. code = ${err.code}, message = ${err.message}`);
-}
-if (this.screenCapture != undefined) {
-  hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture has been created successfully.');
-} else {
-  hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture creation failed.');
-  return;
-}
+public async startRecording(filesDir: string) {
+  this.updateFileFd(filesDir);
 
-// 监听屏幕捕获的状态更改
-this.screenCapture?.on('stateChange', async (infoType: media.AVScreenCaptureStateCode) => {
-  switch (infoType) {
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STARTED:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏成功开始后会收到的回调.');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_CANCELED:
-      this.screenCapture?.release();
-      this.screenCapture = undefined;
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '不允许使用录屏功能.');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER:
-      this.screenCapture?.release();
-      this.screenCapture = undefined;
-      AppStorage.setOrCreate('isRecordOne', false);
-      AppStorage.setOrCreate('fileNameOne', this.fileName);
-      hilog.info(0xFF00, CommonConstants.LOG_TAG,
-        '通过屏幕录制胶囊结束屏幕录制，底层录制停止');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_INTERRUPTED_BY_OTHER:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '屏幕录制因其他中断而停止');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_CALL:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '屏幕录制被电话打断');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNAVAILABLE:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏麦克风不可用');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_MUTED_BY_USER:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏麦克风被用户静音');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNMUTED_BY_USER:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏麦克风被用户取消静音');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_ENTER_PRIVATE_SCENE:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏进入隐私场景');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_EXIT_PRIVATE_SCENE:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏退出隐私场景');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER_SWITCHES:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '用户账号切换，底层录制会停止');
-      break;
-    default:
-      break;
+  try {
+    this.screenCapture = await media.createAVScreenCaptureRecorder();
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'testTag', `createAVScreenCaptureRecorder fail. code = ${err.code}, message = ${err.message}`);
   }
-})
 
-// 监听异常
-this.screenCapture?.on('error', (err) => {
-  hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Handle exception cases.');
-})
+  if (this.screenCapture != undefined) {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture has been created successfully.');
+  } else {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture creation failed.');
+    return;
+  }
+
+  this.screenCapture?.on('stateChange', async (infoType: media.AVScreenCaptureStateCode) => {
+    switch (infoType) {
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STARTED:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Callback received after screen recording starts successfully.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_CANCELED:
+        this.screenCapture?.release();
+        this.screenCapture = undefined;
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording function is not allowed.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER:
+        this.screenCapture?.release();
+        this.screenCapture = undefined;
+        AppStorage.setOrCreate('isRecordOne', false);
+        AppStorage.setOrCreate('fileNameOne', this.fileName);
+        hilog.info(0xFF00, CommonConstants.LOG_TAG,
+          'End screen recording via the screen recording capsule, and the underlying recording stops.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_INTERRUPTED_BY_OTHER:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording stopped due to other interruptions.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_CALL:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording was interrupted by a call.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNAVAILABLE:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording microphone is unavailable.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_MUTED_BY_USER:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording microphone has been muted by the user.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNMUTED_BY_USER:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording microphone has been unmuted by the user.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_ENTER_PRIVATE_SCENE:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording enters a privacy scenario.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_EXIT_PRIVATE_SCENE:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording exits the privacy scenario.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER_SWITCHES:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG,
+          'The user account is switched, and the underlying recording stops.');
+        break;
+      default:
+        break;
+    }
+  })
+
+  this.screenCapture?.on('error', (err) => {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Handle exception cases.');
+  })
 
 配置录制参数并初始化AVScreenCaptureRecorder对象。
 
@@ -151,14 +150,10 @@ let displayInfo = display.getDefaultDisplaySync();
 
 以下配置了屏幕录制参数，除了fd配置外，其余配置均为可选。未配置时，将采用默认值。默认值可参考：AVScreenCaptureRecordConfig。
 
-// 配置屏幕录制参数
-let captureConfig: media.AVScreenCaptureRecordConfig = {
-  // 开发者可以根据自己的需要设置宽度和高度
+private captureConfig: media.AVScreenCaptureRecordConfig = {
   frameWidth: this.displayInfo.width,
   frameHeight: this.displayInfo.height,
-  // 用于写入文件的文件描述符（fd）
-  fd: (this.file as fileIo.File).fd,
-  // 可选参数及其默认值
+  fd: 0,
   videoBitrate: 10000000,
   audioSampleRate: 48000,
   audioChannelCount: 2,
@@ -168,7 +163,7 @@ let captureConfig: media.AVScreenCaptureRecordConfig = {
 
 基于上述配置信息初始化screenCapture实例对象。
 
-await this.screenCapture?.init(captureConfig);
+await this.screenCapture?.init(this.captureConfig);
 
 通过startRecording()接口开启录制。
 
@@ -180,7 +175,6 @@ await this.screenCapture?.startRecording();
 
 同样的，stopRecording()接口也是异步接口，示例中首先通过stopRecording()接口停止录制，然后调用release()方法销毁实例，释放资源。
 
-// 停止录屏
 public async stopRecording() {
   if (this.screenCapture == undefined) {
     hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture exception.');
@@ -190,10 +184,8 @@ public async stopRecording() {
   try {
     await this.screenCapture?.stopRecording();
 
-    // 调用release()方法来销毁实例并释放资源
     await this.screenCapture?.release();
 
-    // 关闭文件
     fileIo.close((this.file as fileIo.File).fd);
   } catch (error) {
     let err = error as BusinessError;
@@ -221,11 +213,11 @@ private filesDir = this.getUIContext().getHostContext()?.filesDir;
 
 ```
 public updateFileFd(filesDir: string) {
-  // 获取文件fd
   this.fileName = systemDateTime.getTime(true).toString() + '.mp4';
   this.path = filesDir + '/' + this.fileName;
   try {
     this.file = fileIo.openSync(this.path, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+    this.captureConfig.fd = this.file.fd;
   } catch (error) {
     let err = error as BusinessError;
     hilog.error(0x0000, 'testTag', `openSync fail. code = ${err.code}, message = ${err.message}`);
@@ -236,75 +228,74 @@ public updateFileFd(filesDir: string) {
 ### Code block 3
 
 ```
-// 获取fd
-this.updateFileFd(filesDir);
-// 实例化对象
-try {
-  this.screenCapture = await media.createAVScreenCaptureRecorder();
-} catch (error) {
-  let err = error as BusinessError;
-  hilog.error(0x0000, 'testTag',
-    `createAVScreenCaptureRecorder fail. code = ${err.code}, message = ${err.message}`);
-}
-if (this.screenCapture != undefined) {
-  hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture has been created successfully.');
-} else {
-  hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture creation failed.');
-  return;
-}
+public async startRecording(filesDir: string) {
+  this.updateFileFd(filesDir);
 
-// 监听屏幕捕获的状态更改
-this.screenCapture?.on('stateChange', async (infoType: media.AVScreenCaptureStateCode) => {
-  switch (infoType) {
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STARTED:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏成功开始后会收到的回调.');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_CANCELED:
-      this.screenCapture?.release();
-      this.screenCapture = undefined;
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '不允许使用录屏功能.');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER:
-      this.screenCapture?.release();
-      this.screenCapture = undefined;
-      AppStorage.setOrCreate('isRecordOne', false);
-      AppStorage.setOrCreate('fileNameOne', this.fileName);
-      hilog.info(0xFF00, CommonConstants.LOG_TAG,
-        '通过屏幕录制胶囊结束屏幕录制，底层录制停止');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_INTERRUPTED_BY_OTHER:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '屏幕录制因其他中断而停止');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_CALL:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '屏幕录制被电话打断');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNAVAILABLE:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏麦克风不可用');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_MUTED_BY_USER:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏麦克风被用户静音');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNMUTED_BY_USER:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏麦克风被用户取消静音');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_ENTER_PRIVATE_SCENE:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏进入隐私场景');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_EXIT_PRIVATE_SCENE:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '录屏退出隐私场景');
-      break;
-    case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER_SWITCHES:
-      hilog.info(0xFF00, CommonConstants.LOG_TAG, '用户账号切换，底层录制会停止');
-      break;
-    default:
-      break;
+  try {
+    this.screenCapture = await media.createAVScreenCaptureRecorder();
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'testTag', `createAVScreenCaptureRecorder fail. code = ${err.code}, message = ${err.message}`);
   }
-})
 
-// 监听异常
-this.screenCapture?.on('error', (err) => {
-  hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Handle exception cases.');
-})
+  if (this.screenCapture != undefined) {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture has been created successfully.');
+  } else {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture creation failed.');
+    return;
+  }
+
+  this.screenCapture?.on('stateChange', async (infoType: media.AVScreenCaptureStateCode) => {
+    switch (infoType) {
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STARTED:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Callback received after screen recording starts successfully.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_CANCELED:
+        this.screenCapture?.release();
+        this.screenCapture = undefined;
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording function is not allowed.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER:
+        this.screenCapture?.release();
+        this.screenCapture = undefined;
+        AppStorage.setOrCreate('isRecordOne', false);
+        AppStorage.setOrCreate('fileNameOne', this.fileName);
+        hilog.info(0xFF00, CommonConstants.LOG_TAG,
+          'End screen recording via the screen recording capsule, and the underlying recording stops.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_INTERRUPTED_BY_OTHER:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording stopped due to other interruptions.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_CALL:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording was interrupted by a call.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNAVAILABLE:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording microphone is unavailable.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_MUTED_BY_USER:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording microphone has been muted by the user.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_MIC_UNMUTED_BY_USER:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'The screen recording microphone has been unmuted by the user.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_ENTER_PRIVATE_SCENE:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording enters a privacy scenario.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_EXIT_PRIVATE_SCENE:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Screen recording exits the privacy scenario.');
+        break;
+      case media.AVScreenCaptureStateCode.SCREENCAPTURE_STATE_STOPPED_BY_USER_SWITCHES:
+        hilog.info(0xFF00, CommonConstants.LOG_TAG,
+          'The user account is switched, and the underlying recording stops.');
+        break;
+      default:
+        break;
+    }
+  })
+
+  this.screenCapture?.on('error', (err) => {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG, 'Handle exception cases.');
+  })
 ```
 
 ### Code block 4
@@ -316,14 +307,10 @@ let displayInfo = display.getDefaultDisplaySync();
 ### Code block 5
 
 ```
-// 配置屏幕录制参数
-let captureConfig: media.AVScreenCaptureRecordConfig = {
-  // 开发者可以根据自己的需要设置宽度和高度
+private captureConfig: media.AVScreenCaptureRecordConfig = {
   frameWidth: this.displayInfo.width,
   frameHeight: this.displayInfo.height,
-  // 用于写入文件的文件描述符（fd）
-  fd: (this.file as fileIo.File).fd,
-  // 可选参数及其默认值
+  fd: 0,
   videoBitrate: 10000000,
   audioSampleRate: 48000,
   audioChannelCount: 2,
@@ -335,7 +322,7 @@ let captureConfig: media.AVScreenCaptureRecordConfig = {
 ### Code block 6
 
 ```
-await this.screenCapture?.init(captureConfig);
+await this.screenCapture?.init(this.captureConfig);
 ```
 
 ### Code block 7
@@ -347,7 +334,6 @@ await this.screenCapture?.startRecording();
 ### Code block 8
 
 ```
-// 停止录屏
 public async stopRecording() {
   if (this.screenCapture == undefined) {
     hilog.info(0xFF00, CommonConstants.LOG_TAG, 'ScreenCapture exception.');
@@ -357,10 +343,8 @@ public async stopRecording() {
   try {
     await this.screenCapture?.stopRecording();
 
-    // 调用release()方法来销毁实例并释放资源
     await this.screenCapture?.release();
 
-    // 关闭文件
     fileIo.close((this.file as fileIo.File).fd);
   } catch (error) {
     let err = error as BusinessError;

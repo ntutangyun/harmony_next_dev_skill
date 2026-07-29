@@ -16,6 +16,7 @@ Access to script at 'xxx' from origin 'xxx' has been blocked by CORS policy: Cro
 
 以下结合示例说明如何使用http或者https等协议解决本地资源跨域访问失败的问题。其中，index.html和js/script.js置于工程中的rawfile目录下。当使用resource协议访问index.html时，js/script.js将因跨域而被拦截，无法加载。在示例中，使用https://www.example.com/域名替换了原本的resource协议，同时利用onInterceptRequest接口替换资源，使得js/script.js可以成功加载，从而解决了跨域拦截的问题。
 
+// main/ets/pages/LocCrossOriginResAccSol_one.ets
 import { webview } from '@kit.ArkWeb';
 
 @Entry
@@ -78,13 +79,14 @@ struct Index {
 <!-- main/resources/rawfile/index.html -->
 <html>
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
 <script crossorigin src="./js/script.js"></script>
 </body>
 </html>
 
+// main/resources/rawfile/js/script.js
 const body = document.body;
 const element = document.createElement('div');
 element.textContent = 'success';
@@ -124,6 +126,7 @@ setPathAllowingUniversalAccess放开目录的跨域访问限制是一个高风�
 
 当路径列表中的任一路径不满足上述条件时，系统将抛出异常码401，并判定路径列表设置失败。如果路径列表设置为空，file协议的可访问范围将遵循fileAccess规则，具体示例如下。
 
+// main/ets/pages/LocCrossOriginResAccSol_two.ets
 import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -165,28 +168,28 @@ struct WebComponent {
     <title>Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no,   viewport-fit=cover">
     <script>
-        function getFile() {
-            var file = "file:///data/storage/el1/bundle/entry/resources/resfile/js/script.js";
+    function getFile() {
+      var file = "file:///data/storage/el1/bundle/entry/resources/resfile/js/script.js";
       // 使用file协议通过XMLHttpRequest跨域访问本地js文件。
-            var xmlHttpReq = new XMLHttpRequest();
-            xmlHttpReq.onreadystatechange = function(){
-                console.info("readyState:" + xmlHttpReq.readyState);
-                console.info("status:" + xmlHttpReq.status);
-                if(xmlHttpReq.readyState == 4){
-                    if (xmlHttpReq.status == 200) {
+      var xmlHttpReq = new XMLHttpRequest();
+      xmlHttpReq.onreadystatechange = function(){
+          console.info("readyState:" + xmlHttpReq.readyState);
+          console.info("status:" + xmlHttpReq.status);
+        if(xmlHttpReq.readyState == 4){
+            if (xmlHttpReq.status == 200) {
                 // 如果ets侧正确设置路径列表，则此处能正常获取资源
-                        const element = document.getElementById('text');
+                const element = document.getElementById('text');
                         element.textContent = "load " + file + " success";
-                    } else {
+            } else {
                 // 如果ets侧不设置路径列表，则此处会触发CORS跨域检查错误
-                        const element = document.getElementById('text');
+                const element = document.getElementById('text');
                         element.textContent = "load " + file + " failed";
-                    }
-                }
             }
-            xmlHttpReq.open("GET", file);
-            xmlHttpReq.send(null);
         }
+      }
+      xmlHttpReq.open("GET", file);
+      xmlHttpReq.send(null);
+    }
     </script>
 </head>
 
@@ -199,6 +202,7 @@ struct WebComponent {
 
 </html>
 
+// main/resources/resfile/js/script.js
 const body = document.body;
 const element = document.createElement('div');
 element.textContent = 'success';
@@ -215,6 +219,7 @@ Access to script at 'xxx' from origin 'xxx' has been blocked by CORS policy: Cro
 ### Code block 2
 
 ```
+// main/ets/pages/LocCrossOriginResAccSol_one.ets
 import { webview } from '@kit.ArkWeb';
 
 @Entry
@@ -281,7 +286,7 @@ struct Index {
 <!-- main/resources/rawfile/index.html -->
 <html>
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
 <script crossorigin src="./js/script.js"></script>
@@ -292,6 +297,7 @@ struct Index {
 ### Code block 4
 
 ```
+// main/resources/rawfile/js/script.js
 const body = document.body;
 const element = document.createElement('div');
 element.textContent = 'success';
@@ -301,6 +307,7 @@ body.appendChild(element);
 ### Code block 5
 
 ```
+// main/ets/pages/LocCrossOriginResAccSol_two.ets
 import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -346,28 +353,28 @@ struct WebComponent {
     <title>Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no,   viewport-fit=cover">
     <script>
-        function getFile() {
-            var file = "file:///data/storage/el1/bundle/entry/resources/resfile/js/script.js";
+    function getFile() {
+      var file = "file:///data/storage/el1/bundle/entry/resources/resfile/js/script.js";
       // 使用file协议通过XMLHttpRequest跨域访问本地js文件。
-            var xmlHttpReq = new XMLHttpRequest();
-            xmlHttpReq.onreadystatechange = function(){
-                console.info("readyState:" + xmlHttpReq.readyState);
-                console.info("status:" + xmlHttpReq.status);
-                if(xmlHttpReq.readyState == 4){
-                    if (xmlHttpReq.status == 200) {
+      var xmlHttpReq = new XMLHttpRequest();
+      xmlHttpReq.onreadystatechange = function(){
+          console.info("readyState:" + xmlHttpReq.readyState);
+          console.info("status:" + xmlHttpReq.status);
+        if(xmlHttpReq.readyState == 4){
+            if (xmlHttpReq.status == 200) {
                 // 如果ets侧正确设置路径列表，则此处能正常获取资源
-                        const element = document.getElementById('text');
+                const element = document.getElementById('text');
                         element.textContent = "load " + file + " success";
-                    } else {
+            } else {
                 // 如果ets侧不设置路径列表，则此处会触发CORS跨域检查错误
-                        const element = document.getElementById('text');
+                const element = document.getElementById('text');
                         element.textContent = "load " + file + " failed";
-                    }
-                }
             }
-            xmlHttpReq.open("GET", file);
-            xmlHttpReq.send(null);
         }
+      }
+      xmlHttpReq.open("GET", file);
+      xmlHttpReq.send(null);
+    }
     </script>
 </head>
 
@@ -384,6 +391,7 @@ struct WebComponent {
 ### Code block 7
 
 ```
+// main/resources/resfile/js/script.js
 const body = document.body;
 const element = document.createElement('div');
 element.textContent = 'success';

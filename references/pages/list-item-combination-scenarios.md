@@ -1,4 +1,4 @@
-# 列表项组合场景
+# 列表项组件整体聚焦
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/list-item-combination-scenarios_
 
@@ -18,7 +18,7 @@ actionControllerRoleType：指定特定类型的子组件用于控制容器组�
 
 actionControllerId：指定特定唯一标识ID的子组件用于控制容器组件的操作执行。配置accessibilityGroup的容器组件进行无障碍聚合后，如果触发无障碍的控制操作时，会将操作转发给该ID对应的子组件，避免需要对子组件单独进行聚焦。当前只支持无障碍点击操作。如果聚合组件内有多个相同类型的子组件，则以组件树上该聚合组件下的第一个查找到的子组件为控制组件。如果与actionControllerRoleType同时配置，则优先匹配ID一致的组件。默认值为空，表示不指定任何子组件。
 
-开发实例
+开发流程
 
 如下示例将开关、单选框、复选框和标签文本组合为一个整体进行聚焦和播报：
 

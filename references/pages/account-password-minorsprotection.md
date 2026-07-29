@@ -6,15 +6,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-p
 
 系统的未成年人模式已开启，应用已随系统切换至未成年人模式。用户打开应用，希望在应用内调整内容偏好、使用时长等设置，需要验证家长身份。
 
-应用可调用家长身份验证接口verifyMinorsProtectionCredential，拉起验证未成年人模式密码页面。
+应用可调用家长身份验证接口verifyMinorsProtectionCredential，拉起验证系统未成年人模式密码页面。
 
 业务流程
 
 流程说明：
 
-用户打开应用时，应用通过系统未成年人模式公共事件感知未成年人模式的状态变化。可以调用getMinorsProtectionInfoSync或getMinorsProtectionInfo获取系统未成年人模式信息。
+用户打开应用时，应用通过系统未成年人模式开启/关闭事件感知系统未成年人模式的状态变化。可以调用getMinorsProtectionInfoSync或getMinorsProtectionInfo获取系统未成年人模式信息。
 
-当系统未成年人模式已开启，且用户修改应用内设置时，应用可调用verifyMinorsProtectionCredential验证未成年人模式密码，当校验通过后，才可修改当前应用的未成年人模式设置。
+当系统未成年人模式已开启，且用户修改应用内设置时，应用可调用verifyMinorsProtectionCredential验证系统未成年人模式密码，当校验通过后，才可修改当前应用的未成年人模式设置。
 
 接口说明
 
@@ -23,33 +23,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-p
 接口名	描述
 getMinorsProtectionInfoSync(): MinorsProtectionInfo	同步接口，获取系统未成年人模式的开启状态，以及年龄段信息。
 getMinorsProtectionInfo(): Promise<MinorsProtectionInfo>	异步接口，获取系统未成年人模式的开启状态，以及年龄段信息。
-verifyMinorsProtectionCredential(context: common.Context): Promise<boolean>	调用该方法拉起验证未成年人模式密码页面。
+verifyMinorsProtectionCredential(context: common.Context): Promise<boolean>	调用该方法拉起验证系统未成年人模式密码页面。
 
 注意
 
-verifyMinorsProtectionCredential接口需在页面或自定义组件生命周期内调用。接口调用前提是未成年人模式已开启，如果在未开启未成年人模式下调用此接口会返回错误码1009900002。
+verifyMinorsProtectionCredential接口需在页面或自定义组件生命周期内调用，否则会返回错误码401。接口调用前提是系统未成年人模式已开启，如果在未开启系统未成年人模式下调用此接口会返回错误码1009900002。
 
-当未成年人模式开启时，当前设备的开发者调试模式会被禁用，开发者可以进入设置-系统-开发者选项，点击USB调试开关，会校验健康使用设备密码，校验成功后可解除开发者调试模式限制。
+在开启系统未成年人模式时如果选择关闭USB调试，导致开发者调试模式被禁用，开发者可以进入设置-系统-开发者选项，点击USB调试开关，会校验健康使用设备密码，校验成功后可解除开发者调试模式限制。
 
 如开发者重新开启USB调试开关后，发现DevEco Studio工具上hilog日志未恢复到断连之前，请执行“hdc shell hilog -G 16M”来扩大hilog日志缓存区，若hilog日志仍无法完全展示，可取出hilog日志本地查看。更多命令请参见hilog。
 
-如开发者需要频繁使用未成年人模式开启状态或者年龄段信息，建议在获取结果后进行缓存，并通过订阅系统未成年人模式公共事件来刷新未成年人模式开启状态或者年龄段信息，避免重复调用接口带来的性能损耗。
+如开发者需要频繁使用系统未成年人模式开启状态或者年龄段信息，建议在获取结果后进行缓存，并通过订阅系统未成年人模式开启/关闭事件来刷新系统未成年人模式开启状态或者年龄段信息，避免重复调用接口带来的性能损耗。
 
 当设备处于开机未解锁状态下，开发者调用getMinorsProtectionInfoSync接口时，其返回的minorsProtectionMode字段为false。
-
-事件说明
-
-以下是系统未成年人模式开启或关闭发送的广播事件。
-
-事件名称	值	描述
-COMMON_EVENT_MINORSMODE_ON	usual.event.MINORSMODE_ON	表示系统未成年人模式开启事件。
-COMMON_EVENT_MINORSMODE_OFF	usual.event.MINORSMODE_OFF	表示系统未成年人模式关闭事件。
-
-说明
-
-未成年人模式开启事件触发时机：
-
-主动开启系统未成年人模式（PC/2in1设备暂不支持从控制中心开启未成年人模式），当前设备会发送未成年人模式开启事件。
 
 开发前提
 
@@ -63,10 +49,11 @@ import { minorsProtection } from '@kit.AccountKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-订阅系统未成年人模式开启或关闭事件、获取未成年人模式的开启状态，以及年龄段信息请参考应用与系统联动切换未成年人模式章节的开发步骤。
+订阅系统未成年人模式开启或关闭事件、获取系统未成年人模式的开启状态，以及年龄段信息请参考应用与系统联动切换未成年人模式章节的开发步骤。
 
-当未成年人模式已开启，用户需要调整应用内未成年人模式设置时调用verifyMinorsProtectionCredential方法拉起验证未成年人模式密码页面。验证成功后才允许修改。
+当系统未成年人模式已开启，用户需要调整应用内未成年人模式设置时调用verifyMinorsProtectionCredential方法拉起验证系统未成年人模式密码页面。验证成功后才允许修改。
 
+// 查询当前设备是否支持此系统能力
 if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
   try {
     // 查询是否支持系统未成年人模式
@@ -117,6 +104,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
+// 查询当前设备是否支持此系统能力
 if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
   try {
     // 查询是否支持系统未成年人模式

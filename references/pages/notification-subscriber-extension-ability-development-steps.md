@@ -64,6 +64,7 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
 
 在应用的string.json文件中添加
 
+[
   {
     "name": "NotificationSubscriberExtAbility_desc",
     "value": "description"
@@ -72,14 +73,15 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
     "name": "NotificationSubscriberExtAbility_label",
     "value": "ThirdPartyWearableApp"
   }
+]
 
 示例仅为传统蓝牙连接示例，开发者也可选用低功耗蓝牙连接方式。
 
-用户收到消息后，假如蓝牙连接是无效的，则建立蓝牙连接。
+用户收到消息后，如果蓝牙连接是无效的，则需建立蓝牙连接。
 
-假如蓝牙连接已经存在，则直接使用这个连接发送消息。
+假如蓝牙连接已经存在，则直接使用此连接发送消息。
 
-如果使用该连接发送消息失败，则重新建立连接，如果连接能建立成功则发送消息。
+如果使用该蓝牙连接发送消息失败，则需要重新建立蓝牙连接，连接成功后即可发送消息。
 
 需要申请权限ohos.permission.ACCESS_BLUETOOTH。如何配置和申请权限，具体操作请参考声明权限和向用户申请授权。
 
@@ -139,8 +141,12 @@ class SppClientManager {
     const uint8Array: Uint8Array = textEncoder.encodeInto(jsonStr);
     const arrayBuffer = uint8Array.buffer;
 
-    socket.sppWrite(this.clientNumber, arrayBuffer);
-    hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
+    try {
+      socket.sppWrite(this.clientNumber, arrayBuffer);
+      hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
+    } catch (err) {
+      hilog.info(DOMAIN, 'testTag', `sending fail, err is ${JSON.stringify(err)}`);
+    }
   }
 
   public sendNotificationData(notificationInfo: notificationExtensionSubscription.NotificationInfo) {
@@ -335,6 +341,7 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
 ### Code block 3
 
 ```
+[
   {
     "name": "NotificationSubscriberExtAbility_desc",
     "value": "description"
@@ -343,6 +350,7 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
     "name": "NotificationSubscriberExtAbility_label",
     "value": "ThirdPartyWearableApp"
   }
+]
 ```
 
 ### Code block 4
@@ -404,8 +412,12 @@ class SppClientManager {
     const uint8Array: Uint8Array = textEncoder.encodeInto(jsonStr);
     const arrayBuffer = uint8Array.buffer;
 
-    socket.sppWrite(this.clientNumber, arrayBuffer);
-    hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
+    try {
+      socket.sppWrite(this.clientNumber, arrayBuffer);
+      hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
+    } catch (err) {
+      hilog.info(DOMAIN, 'testTag', `sending fail, err is ${JSON.stringify(err)}`);
+    }
   }
 
   public sendNotificationData(notificationInfo: notificationExtensionSubscription.NotificationInfo) {

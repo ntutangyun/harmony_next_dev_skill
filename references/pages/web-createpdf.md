@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-creat
 
 从API version 14开始，支持使用Web组件的createPdf方法，为应用提供了保存前端页面为PDF的功能。
 
-使用createPdf生成实例后，调用pdfArrayBuffer方法获取二进制数据流，再使用fileIo方法将二进制数据流保存为PDF文件。用户可以将前端页面内容保存为PDF以便分享或保存。例如，生成报告、发票等，方便用户保存和传输。
+使用createPdf生成实例后，调用pdfArrayBuffer方法获取二进制数据流，再使用基础文件IO接口（ohos.file.fs）将二进制数据流保存为PDF文件。用户可以将前端页面内容保存为PDF以便分享或保存。例如，生成报告、发票等，方便用户保存和传输。
 
 说明
 
@@ -67,7 +67,7 @@ struct Index {
                 });
               } catch (resError) {
                 console.error(
-                  `ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
+                  `ErrorCode: ${(resError as BusinessError).code},  Message: ${(resError as BusinessError).message}`);
               }
             });
         })
@@ -189,7 +189,7 @@ struct Index {
                 });
               } catch (resError) {
                 console.error(
-                  `ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
+                  `ErrorCode: ${(resError as BusinessError).code},  Message: ${(resError as BusinessError).message}`);
               }
             });
         })

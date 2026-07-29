@@ -35,7 +35,7 @@ export let gAppTheme: CustomTheme = new AppTheme();
 import { Theme, ThemeControl } from '@kit.ArkUI';
 import { gAppTheme } from './AppTheme';
 
-//在页面build前执行ThemeControl
+// 在页面build前执行ThemeControl
 ThemeControl.setDefaultTheme(gAppTheme);
 
 @Entry
@@ -202,13 +202,13 @@ setDefaultTheme需要在ArkUI初始化后即windowStage.loadContent的完成时�
 
 说明
 
-在自定义节点BuilderNode中使用WithTheme，为了确保显示效果正确，需手动传递系统环境变化事件，触发节点的全量更新，详细请参考BuilderNode系统环境变化更新。
+在自定义节点BuilderNode中使用WithTheme，为了确保显示效果正确，需手动传递系统环境变化事件，触发节点的全量更新，详细请参考BuilderNode系统环境变化更新updateConfiguration。
 
-如示例所示，使用WithTheme({ theme: this.CustomTheme })可将作用域内组件的配色设置为自定义主题风格。后续可以通过更新this.CustomTheme来更换主题风格。onWillApplyTheme回调函数用于使自定义组件能够获取当前生效的Theme对象。
+如示例所示，使用WithTheme({ theme: this.customTheme })可将作用域内组件的配色设置为自定义主题风格。后续可以通过更新this.customTheme来更换主题风格。onWillApplyTheme回调函数用于使自定义组件能够获取当前生效的Theme对象。
 
 import { CustomColors, CustomTheme, Theme } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
-//请将$r('app.color.xxx')替换为实际资源文件
+// 请将$r('app.color.xxx')替换为实际资源文件
 class AppColors implements CustomColors {
   public fontPrimary: ResourceColor = $r('app.color.brand_purple');
   public backgroundEmphasize: ResourceColor = $r('app.color.brand_purple');
@@ -411,7 +411,7 @@ export let gAppTheme: CustomTheme = new AppTheme();
 import { Theme, ThemeControl } from '@kit.ArkUI';
 import { gAppTheme } from './AppTheme';
 
-//在页面build前执行ThemeControl
+// 在页面build前执行ThemeControl
 ThemeControl.setDefaultTheme(gAppTheme);
 
 @Entry
@@ -574,7 +574,7 @@ export default class EntryAbility extends UIAbility {
 ```
 import { CustomColors, CustomTheme, Theme } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
-//请将$r('app.color.xxx')替换为实际资源文件
+// 请将$r('app.color.xxx')替换为实际资源文件
 class AppColors implements CustomColors {
   public fontPrimary: ResourceColor = $r('app.color.brand_purple');
   public backgroundEmphasize: ResourceColor = $r('app.color.brand_purple');

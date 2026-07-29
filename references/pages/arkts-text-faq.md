@@ -27,7 +27,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-tex
 import { common } from '@kit.AbilityKit';
 @Entry
 @Component
-export struct WordBreakd {
+struct WordBreakd {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -61,7 +61,7 @@ export struct WordBreakd {
 
 自行测算截断字符，并在行末添加...展开或者...图标作为组件内容。实现方式请参考getParagraphs的示例、文本展开折叠。
 
-[h2]Text组件如何实现内容超长时自动显示省略样式吗？
+[h2]Text组件如何实现内容超长时自动显示省略样式
 
 问题现象
 
@@ -77,7 +77,7 @@ import { common } from '@kit.AbilityKit';
 
 @Entry
 @Component
-export struct HeightAdaptivePolicy {
+struct HeightAdaptivePolicy {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -151,23 +151,21 @@ import { common } from '@kit.AbilityKit';
 
 @Entry
 @Component
-export struct LengthMetric {
+struct LengthMetric {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
   // 'Text_Add_Tags_Front_and_Post'资源文件中的value值为'这是一段长文本，超长部分折行，前后添加标签'
   @State message: string = this.manager.getStringByNameSync('Text_Add_Tags_Front_and_Post');
-  // 'Text_Add_Tags_Front'前标签'
+  // 'Text_Add_Tags_Front'资源文件中的value值为'前标签'
   @State frontTag: string = this.manager.getStringByNameSync('Text_Add_Tags_Front');
   // 'Text_Add_Tags_Post'资源文件中的value值为'后标签'
   @State backTag: string = this.manager.getStringByNameSync('Text_Add_Tags_Post');
   @State frontPaddingVp: number = 20;
   @State backPaddingVp: number = 10;
   @State fontTagWidthVp: Length = 0;
-  @State backTagWidthVp: Length = 0;
   @State backOffsetVpX: Length = 0;
   @State backOffsetVpY: Length = 0;
-  @State messageLines: number = 0;
   @State stackWidthVp: number = 300;
 
   // 显示之前，测算前后标签的位置，中间文本的缩进距离
@@ -253,7 +251,7 @@ emoji表情有时以表情符号的形式表示，如何将表情符号转换为
 import { common } from '@kit.AbilityKit';
 @Entry
 @Component
-export struct DisplayedTogether {
+struct DisplayedTogether {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -360,9 +358,11 @@ Text文本是自动折行的，当没有限制Text高度height时，Text高度�
 
 以下示例展示了限制Text组件不超过三行的场景。
 
+import { common } from '@kit.AbilityKit';
+
 @Entry
 @Component
-export struct TextLong {
+struct TextLong {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -390,9 +390,11 @@ export struct TextLong {
 
 上述方法会导致部分文本被裁剪掉，如果需要保留全部文本，可以把Text组件放在滚动容器Scroll内，再通过手势滑动来浏览全部文本，具体示例如下：
 
+import { common } from '@kit.AbilityKit';
+
 @Entry
 @Component
-export struct TextLongTow {
+struct TextLongTow {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -427,52 +429,53 @@ export struct TextLongTow {
 
 若希望由selection触发自定义菜单，可将TextResponseType设置为DEFAULT。同时，在Menu组件上通过配置font属性，即可自定义菜单的字体大小，灵活适配界面设计需求。
 
-// xxx.ets
 @Entry
 @Component
-struct TextExample8 {
-  controller: TextController = new TextController();
-  options: TextOptions = { controller: this.controller };
+export struct HowToSetCustomSelectionMenuExample {
   @State selectStart: number = 0;
   @State selectEnd: number = 0;
 
   build() {
-    Column() {
+    NavDestination() {
       Column() {
-        Text("TextTextTextText")
-          .fontSize(14)
-          .selection(this.selectStart, this.selectEnd)
-          .copyOption(CopyOptions.InApp)
-          .bindSelectionMenu(TextSpanType.TEXT, this.CustomMenu, TextResponseType.DEFAULT, {
-            onDisappear: () => {
-              this.selectStart = -1;
-              this.selectEnd = -1;
-            },
-          })
-          .textAlign(TextAlign.Center)
-          .borderWidth(1)
-          .borderColor(Color.Red)
-        Button("Set selection")
-          .onClick(() => {
-            this.selectStart = 0;
-            this.selectEnd = 10;
-          })
-          .fontSize(14)
-          .margin({ top: 20 })
+        Column() {
+          // 请将$r('app.string.Set_Custom_Selection_Menu_Example_String')替换为实际资源文件，在本示例中该资源文件的value值为"TextTextTextText"
+          Text($r('app.string.Set_Custom_Selection_Menu_Example_String'))
+            .fontSize(14)
+            .selection(this.selectStart, this.selectEnd)
+            .copyOption(CopyOptions.InApp)
+            .bindSelectionMenu(TextSpanType.TEXT, this.CustomMenu, TextResponseType.DEFAULT, {
+              onDisappear: () => {
+                this.selectStart = -1;
+                this.selectEnd = -1;
+              },
+            })
+            .textAlign(TextAlign.Center)
+            .borderWidth(1)
+            .borderColor(Color.Red)
+          Button('Set selection')
+            .onClick(() => {
+              this.selectStart = 0;
+              this.selectEnd = 10;
+            })
+            .fontSize(14)
+            .margin({ top: 20 })
+        }
+        .width('100%')
+        .padding({ top: 300 })
       }
-      .width('100%')
-      .padding({ top: 300 })
+      .height('100%')
     }
-    .height('100%')
   }
 
   @Builder
   CustomMenu() {
     Column() {
       Menu() {
-        MenuItem({ content: "Item Content" })
-        MenuItem({ content: "Item Content" })
-        MenuItem({ content: "Item Content" })
+        // 请将$r('app.string.Menu_Item_String')替换为实际资源文件，在本示例中该资源文件的value值为"Item Content"
+        MenuItem({ content: $r('app.string.Menu_Item_String') })
+        MenuItem({ content: $r('app.string.Menu_Item_String') })
+        MenuItem({ content: $r('app.string.Menu_Item_String') })
       }
       .font({ size: 14 })
       .radius($r('sys.float.ohos_id_corner_radius_card'))
@@ -534,7 +537,7 @@ Text组件调用fontWeight接口，FontSettingOptions类型的入参options设�
 
 以下内容介绍了使用TextInput、TextArea和Search组件输入文本时可能遇到的问题。
 
-[h2]TextInput被遮挡时光标仍然不消失
+[h2]TextInput被遮挡时操作手柄仍然不消失
 
 问题现象
 
@@ -601,7 +604,7 @@ export struct CursorPersistsWhenTextInputIsCoveredExample {
 import { common } from '@kit.AbilityKit';
 @Entry
 @Component
-export struct WordBreakd {
+struct WordBreakd {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -637,7 +640,7 @@ import { common } from '@kit.AbilityKit';
 
 @Entry
 @Component
-export struct HeightAdaptivePolicy {
+struct HeightAdaptivePolicy {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -681,23 +684,21 @@ import { common } from '@kit.AbilityKit';
 
 @Entry
 @Component
-export struct LengthMetric {
+struct LengthMetric {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
   // 'Text_Add_Tags_Front_and_Post'资源文件中的value值为'这是一段长文本，超长部分折行，前后添加标签'
   @State message: string = this.manager.getStringByNameSync('Text_Add_Tags_Front_and_Post');
-  // 'Text_Add_Tags_Front'前标签'
+  // 'Text_Add_Tags_Front'资源文件中的value值为'前标签'
   @State frontTag: string = this.manager.getStringByNameSync('Text_Add_Tags_Front');
   // 'Text_Add_Tags_Post'资源文件中的value值为'后标签'
   @State backTag: string = this.manager.getStringByNameSync('Text_Add_Tags_Post');
   @State frontPaddingVp: number = 20;
   @State backPaddingVp: number = 10;
   @State fontTagWidthVp: Length = 0;
-  @State backTagWidthVp: Length = 0;
   @State backOffsetVpX: Length = 0;
   @State backOffsetVpY: Length = 0;
-  @State messageLines: number = 0;
   @State stackWidthVp: number = 300;
 
   // 显示之前，测算前后标签的位置，中间文本的缩进距离
@@ -777,7 +778,7 @@ export struct LengthMetric {
 import { common } from '@kit.AbilityKit';
 @Entry
 @Component
-export struct DisplayedTogether {
+struct DisplayedTogether {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -876,9 +877,11 @@ export struct DisplayedTogether {
 ### Code block 5
 
 ```
+import { common } from '@kit.AbilityKit';
+
 @Entry
 @Component
-export struct TextLong {
+struct TextLong {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -906,9 +909,11 @@ export struct TextLong {
 ### Code block 6
 
 ```
+import { common } from '@kit.AbilityKit';
+
 @Entry
 @Component
-export struct TextLongTow {
+struct TextLongTow {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private manager = this.context.resourceManager;
 
@@ -937,52 +942,53 @@ export struct TextLongTow {
 ### Code block 7
 
 ```
-// xxx.ets
 @Entry
 @Component
-struct TextExample8 {
-  controller: TextController = new TextController();
-  options: TextOptions = { controller: this.controller };
+export struct HowToSetCustomSelectionMenuExample {
   @State selectStart: number = 0;
   @State selectEnd: number = 0;
 
   build() {
-    Column() {
+    NavDestination() {
       Column() {
-        Text("TextTextTextText")
-          .fontSize(14)
-          .selection(this.selectStart, this.selectEnd)
-          .copyOption(CopyOptions.InApp)
-          .bindSelectionMenu(TextSpanType.TEXT, this.CustomMenu, TextResponseType.DEFAULT, {
-            onDisappear: () => {
-              this.selectStart = -1;
-              this.selectEnd = -1;
-            },
-          })
-          .textAlign(TextAlign.Center)
-          .borderWidth(1)
-          .borderColor(Color.Red)
-        Button("Set selection")
-          .onClick(() => {
-            this.selectStart = 0;
-            this.selectEnd = 10;
-          })
-          .fontSize(14)
-          .margin({ top: 20 })
+        Column() {
+          // 请将$r('app.string.Set_Custom_Selection_Menu_Example_String')替换为实际资源文件，在本示例中该资源文件的value值为"TextTextTextText"
+          Text($r('app.string.Set_Custom_Selection_Menu_Example_String'))
+            .fontSize(14)
+            .selection(this.selectStart, this.selectEnd)
+            .copyOption(CopyOptions.InApp)
+            .bindSelectionMenu(TextSpanType.TEXT, this.CustomMenu, TextResponseType.DEFAULT, {
+              onDisappear: () => {
+                this.selectStart = -1;
+                this.selectEnd = -1;
+              },
+            })
+            .textAlign(TextAlign.Center)
+            .borderWidth(1)
+            .borderColor(Color.Red)
+          Button('Set selection')
+            .onClick(() => {
+              this.selectStart = 0;
+              this.selectEnd = 10;
+            })
+            .fontSize(14)
+            .margin({ top: 20 })
+        }
+        .width('100%')
+        .padding({ top: 300 })
       }
-      .width('100%')
-      .padding({ top: 300 })
+      .height('100%')
     }
-    .height('100%')
   }
 
   @Builder
   CustomMenu() {
     Column() {
       Menu() {
-        MenuItem({ content: "Item Content" })
-        MenuItem({ content: "Item Content" })
-        MenuItem({ content: "Item Content" })
+        // 请将$r('app.string.Menu_Item_String')替换为实际资源文件，在本示例中该资源文件的value值为"Item Content"
+        MenuItem({ content: $r('app.string.Menu_Item_String') })
+        MenuItem({ content: $r('app.string.Menu_Item_String') })
+        MenuItem({ content: $r('app.string.Menu_Item_String') })
       }
       .font({ size: 14 })
       .radius($r('sys.float.ohos_id_corner_radius_card'))

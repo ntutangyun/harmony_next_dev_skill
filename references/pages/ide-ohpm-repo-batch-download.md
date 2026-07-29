@@ -14,9 +14,11 @@ ohpm-repo batch_download <pkg_list>
 
 功能描述
 
-根据提供的包名列表用于批量下载ohpm-repo或OpenHarmony三方库中心仓的包文件，并导出zip文件。
+根据提供的包名列表批量下载ohpm-repo或OpenHarmony三方库中心仓的包文件，并导出zip文件。
 
-说明：执行export_pkginfo 命令生成的pkgInfo_xxx.json文件中记录着ohpm-repo或OpenHarmony三方库中心仓中所有已上架的包，若仅需要批量下载部分包文件，可以手动修改pkgInfo_xxx.json文件，命令只会批量下载pkgInfo_xxx.json文件中指定的包，包如果有其他依赖，所依赖的包也会一并下载。
+说明
+
+执行export_pkginfo 命令生成的pkgInfo_xxx.json文件中记录着ohpm-repo或OpenHarmony三方库中心仓中所有已上架的包，若仅需要批量下载部分包文件，可以修改pkgInfo_xxx.json文件，命令只会批量下载pkgInfo_xxx.json文件中指定的包，包如果有其他依赖，所依赖的包也会一并下载。
 
 参数
 

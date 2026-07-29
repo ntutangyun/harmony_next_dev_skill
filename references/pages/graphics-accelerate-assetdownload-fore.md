@@ -57,9 +57,9 @@ async fetchManifestUrl() {
   let manifestUrl : string = '';
   try {
     manifestUrl = await assetDownloadManager.fetchManifestUrl();
-    console.info('AssetAccelDemo', `Succeeded in fetching manifestUrl, manifestUrl = ${manifestUrl}`);
+    hilog.info(DOMAINID, TAG, `Succeeded in fetching manifestUrl, manifestUrl = ${manifestUrl}`);
   } catch (error) {
-    console.error('AssetAccelDemo', `Failed to fetch manifestUrl, errCode: ${error.code}, errMessage: ${error.message}`);
+    hilog.error(DOMAINID, TAG, `Failed to fetch manifestUrl, errCode: ${error.code}, errMessage: ${error.message}`);
     return;
   }
   // 根据获取到的manifestUrl不为空，获取华为CDN侧资源。若获取到的manifestUrl为空，则获取三方CDN侧资源。
@@ -68,34 +68,41 @@ async fetchManifestUrl() {
 游戏调用on('progress')方法，监听资源包下载进度。游戏调用on('pause')方法，监听下载任务是否暂停。游戏调用on('complete')方法，监听资源是否成功下载。游戏调用on('fail')方法，监听下载任务是否失败。
 
 onProgressCallback: (progressArray: assetDownloadManager.DownloadProgressInfo[]) => void = (progressArray) => {
-  console.info('AssetAccelDemo', `onProgressCallback progressArray length: ${progressArray.length}`);
+  hilog.info(DOMAINID, TAG, `onProgressCallback progressArray length: ${progressArray.length}`);
   // 添加资源包下载进度处理逻辑。
+  // ...
 }
 
 onPauseCallback: (downloadTaskInfo: assetDownloadManager.AssetDownloadTask) => void = (downloadTaskInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
   // 添加资源包下载暂停处理逻辑。
+  // ...
 }
 
 onCompleteCallback: (completeInfo: assetDownloadManager.DownloadCompletedInfo) => void = async (completeInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
   // 添加资源包下载完成处理逻辑。
+  // ...
 }
 
 onFailedCallback: (failedInfo: assetDownloadManager.DownloadFailedInfo) => void = async (failedInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
   // 添加资源包下载失败处理逻辑。
+  // ...
 }
-
-// 订阅下载状态和下载进度事件。
-try {
-　assetDownloadManager.on('progress', this.onProgressCallback);
-　assetDownloadManager.on('pause', this.onPauseCallback);
-　assetDownloadManager.on('complete', this.onCompleteCallback);
-　assetDownloadManager.on('fail', this.onFailedCallback);
-} catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.on, errCode: ${error.code}, errMessage: ${error.message}`);
-}
+// ...
+  // 订阅下载状态和下载进度事件。
+  try {
+    assetDownloadManager.on('progress', this.onProgressCallback);
+    assetDownloadManager.on('pause', this.onPauseCallback);
+    assetDownloadManager.on('complete', this.onCompleteCallback);
+    assetDownloadManager.on('fail', this.onFailedCallback);
+  } catch (error) {
+    hilog.error(DOMAINID,
+      TAG, `assetDownloadManager.on failed, errCode: ${error.code}, errMessage: ${error.message}`);
+    return;
+  }
+  // ...
 
 游戏调用addAssetDownloadTask方法，新增资源包下载任务。
 
@@ -111,10 +118,10 @@ async addAssetDownloadTask() {
   try {
     // 添加资源包下载任务。
     // 根据实际代码上下文自行传入合适的context。
-    const taskId: string = await assetDownloadManager.addAssetDownloadTask(this.getUIContext().getHostContext() as common.Context, assetDownload);
-    console.info('AssetAccelDemo', `Succeeded in adding assetDownloadTask`);
+    const taskId: string = await assetDownloadManager.addAssetDownloadTask(this.context_, assetDownload);
+    hilog.info(DOMAINID, TAG, `Succeeded in adding assetDownloadTask`);
   } catch (error) {
-    console.error('AssetAccelDemo', `Failed to add assetDownloadTask, errCode:${error.code}, errMessage:${error.message}`);
+    hilog.error(DOMAINID, TAG, `Failed to add assetDownloadTask, errCode:${error.code}, errMessage:${error.message}`);
   }
 }
 
@@ -122,12 +129,13 @@ async addAssetDownloadTask() {
 
 // 取消订阅下载状态和下载进度事件。
 try {
-　assetDownloadManager.off('progress', this.onProgressCallback);
-　assetDownloadManager.off('pause', this.onPauseCallback);
-　assetDownloadManager.off('complete', this.onCompleteCallback);
-　assetDownloadManager.off('fail', this.onFailedCallback);
+  assetDownloadManager.off('progress', this.onProgressCallback);
+  assetDownloadManager.off('pause', this.onPauseCallback);
+  assetDownloadManager.off('complete', this.onCompleteCallback);
+  assetDownloadManager.off('fail', this.onFailedCallback);
 } catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.off, errCode: ${error.code}, errMessage: ${error.message}`);
+  hilog.error(DOMAINID,
+    TAG, `assetDownloadManager.off failed, errCode: ${error.code}, errMessage: ${error.message}`);
 }
 
 ## Code blocks
@@ -146,9 +154,9 @@ async fetchManifestUrl() {
   let manifestUrl : string = '';
   try {
     manifestUrl = await assetDownloadManager.fetchManifestUrl();
-    console.info('AssetAccelDemo', `Succeeded in fetching manifestUrl, manifestUrl = ${manifestUrl}`);
+    hilog.info(DOMAINID, TAG, `Succeeded in fetching manifestUrl, manifestUrl = ${manifestUrl}`);
   } catch (error) {
-    console.error('AssetAccelDemo', `Failed to fetch manifestUrl, errCode: ${error.code}, errMessage: ${error.message}`);
+    hilog.error(DOMAINID, TAG, `Failed to fetch manifestUrl, errCode: ${error.code}, errMessage: ${error.message}`);
     return;
   }
   // 根据获取到的manifestUrl不为空，获取华为CDN侧资源。若获取到的manifestUrl为空，则获取三方CDN侧资源。
@@ -159,34 +167,41 @@ async fetchManifestUrl() {
 
 ```
 onProgressCallback: (progressArray: assetDownloadManager.DownloadProgressInfo[]) => void = (progressArray) => {
-  console.info('AssetAccelDemo', `onProgressCallback progressArray length: ${progressArray.length}`);
+  hilog.info(DOMAINID, TAG, `onProgressCallback progressArray length: ${progressArray.length}`);
   // 添加资源包下载进度处理逻辑。
+  // ...
 }
 
 onPauseCallback: (downloadTaskInfo: assetDownloadManager.AssetDownloadTask) => void = (downloadTaskInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${downloadTaskInfo.config.identifier} has paused.`);
   // 添加资源包下载暂停处理逻辑。
+  // ...
 }
 
 onCompleteCallback: (completeInfo: assetDownloadManager.DownloadCompletedInfo) => void = async (completeInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${completeInfo.downloadTask.config.identifier} has completed.`);
   // 添加资源包下载完成处理逻辑。
+  // ...
 }
 
 onFailedCallback: (failedInfo: assetDownloadManager.DownloadFailedInfo) => void = async (failedInfo) => {
-  console.info('AssetAccelDemo', `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
+  hilog.info(DOMAINID, TAG, `task identifier = ${failedInfo.downloadTask.config.identifier} has failed.`);
   // 添加资源包下载失败处理逻辑。
+  // ...
 }
-
-// 订阅下载状态和下载进度事件。
-try {
-　assetDownloadManager.on('progress', this.onProgressCallback);
-　assetDownloadManager.on('pause', this.onPauseCallback);
-　assetDownloadManager.on('complete', this.onCompleteCallback);
-　assetDownloadManager.on('fail', this.onFailedCallback);
-} catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.on, errCode: ${error.code}, errMessage: ${error.message}`);
-}
+// ...
+  // 订阅下载状态和下载进度事件。
+  try {
+    assetDownloadManager.on('progress', this.onProgressCallback);
+    assetDownloadManager.on('pause', this.onPauseCallback);
+    assetDownloadManager.on('complete', this.onCompleteCallback);
+    assetDownloadManager.on('fail', this.onFailedCallback);
+  } catch (error) {
+    hilog.error(DOMAINID,
+      TAG, `assetDownloadManager.on failed, errCode: ${error.code}, errMessage: ${error.message}`);
+    return;
+  }
+  // ...
 ```
 
 ### Code block 4
@@ -204,10 +219,10 @@ async addAssetDownloadTask() {
   try {
     // 添加资源包下载任务。
     // 根据实际代码上下文自行传入合适的context。
-    const taskId: string = await assetDownloadManager.addAssetDownloadTask(this.getUIContext().getHostContext() as common.Context, assetDownload);
-    console.info('AssetAccelDemo', `Succeeded in adding assetDownloadTask`);
+    const taskId: string = await assetDownloadManager.addAssetDownloadTask(this.context_, assetDownload);
+    hilog.info(DOMAINID, TAG, `Succeeded in adding assetDownloadTask`);
   } catch (error) {
-    console.error('AssetAccelDemo', `Failed to add assetDownloadTask, errCode:${error.code}, errMessage:${error.message}`);
+    hilog.error(DOMAINID, TAG, `Failed to add assetDownloadTask, errCode:${error.code}, errMessage:${error.message}`);
   }
 }
 ```
@@ -217,11 +232,12 @@ async addAssetDownloadTask() {
 ```
 // 取消订阅下载状态和下载进度事件。
 try {
-　assetDownloadManager.off('progress', this.onProgressCallback);
-　assetDownloadManager.off('pause', this.onPauseCallback);
-　assetDownloadManager.off('complete', this.onCompleteCallback);
-　assetDownloadManager.off('fail', this.onFailedCallback);
+  assetDownloadManager.off('progress', this.onProgressCallback);
+  assetDownloadManager.off('pause', this.onPauseCallback);
+  assetDownloadManager.off('complete', this.onCompleteCallback);
+  assetDownloadManager.off('fail', this.onFailedCallback);
 } catch (error) {
-  console.error('AssetAccelDemo', `Failed to do assetDownloadManager.off, errCode: ${error.code}, errMessage: ${error.message}`);
+  hilog.error(DOMAINID,
+    TAG, `assetDownloadManager.off failed, errCode: ${error.code}, errMessage: ${error.message}`);
 }
 ```

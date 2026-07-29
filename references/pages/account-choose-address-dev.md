@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-c
 
 收货地址中的手机号信息仅支持输入中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）手机号、地址信息只支持填写中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-获取收货地址的能力支持Phone、Tablet、PC/2in1设备。并且从26.0.0版本开始，新增支持TV、Car设备。
+获取收货地址的能力支持Phone、Tablet、PC/2in1设备。并且从26.0.0版本开始，新增支持TV设备。
 
 业务流程
 

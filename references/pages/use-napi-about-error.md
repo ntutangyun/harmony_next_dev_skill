@@ -32,7 +32,7 @@ napi_is_error	检查一个napi_value是否代表一个错误对象时，可以�
 napi_get_and_clear_last_exception	当你需要获取最近一次出现的异常，并将异常队列清空时，可以使用这个函数。
 napi_is_exception_pending	当你需要判断是否有未处理的异常时，可以使用这个函数。
 napi_fatal_error	当遇到严重错误或不可恢复的情况时，可以使用这个函数引发致命错误来立即终止进程。
-napi_fatal_exception	抛出一个致命异常并终止进程, 同时产生相应的crash日志。
+napi_fatal_exception	抛出一个致命异常并终止进程，同时产生相应的crash日志。
 
 使用示例
 
@@ -44,8 +44,7 @@ Node-API接口开发流程参考使用Node-API实现跨语言交互开发流程�
 
 cpp部分代码
 
-#include "napi/native_api.h"
-#include "hilog/log.h"
+// napi_get_last_error_info
 static napi_value GetLastErrorInfo(napi_env env, napi_callback_info info)
 {
     // 获取输入参数（这里以字符串message作为参数传入）
@@ -57,17 +56,15 @@ static napi_value GetLastErrorInfo(napi_env env, napi_callback_info info)
     napi_status status = napi_get_value_int32(env, args[0], &value);
     // 接口使用错误，故返回值不为napi_ok
     if (status != napi_ok) {
-        OH_LOG_INFO(LOG_APP, "Test Node-API napi_get_value_int32 return status, status is not equal to napi_ok.");
+        OH_LOG_INFO(LOG_APP, "napi_get_value_int32 return status, status is not equal to napi_ok.");
     }
-
     // 调用接口napi_get_last_error_info获取最后一次错误信息
     const napi_extended_error_info *errorInfo;
     napi_get_last_error_info(env, &errorInfo);
     // 取出错误码与接口调用错误后其返回值作比较
     if (errorInfo->error_code == status) {
-        OH_LOG_INFO(LOG_APP, "Test Node-API napi_get_last_error_info return errorInfo, error_code equal to status.");
+        OH_LOG_INFO(LOG_APP, "napi_get_last_error_info return errorInfo, error_code equal to status.");
     }
-
     // 取出错误消息作为返回值带出去打印
     napi_value result = nullptr;
     napi_create_string_utf8(env, errorInfo->error_message, NAPI_AUTO_LENGTH, &result);
@@ -76,18 +73,18 @@ static napi_value GetLastErrorInfo(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const getLastErrorInfo: (str: string) => string;
+export const getLastErrorInfo: (str: string) => string; // napi_get_last_error_info
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_get_last_error_info
 try {
-  hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_last_error_info: %{public}s', testNapi.getLastErrorInfo('message'));
+  hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_last_error_info: %{public}s',
+    testNapi.getLastErrorInfo('message'));
+  // ...
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Test Node-API napi_get_last_error_info error: %{public}s', error);
+  // ...
 }
 
 [h2]napi_create_type_error
@@ -96,8 +93,7 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_create_type_error
 static napi_value CreateTypeError(napi_env env, napi_callback_info info)
 {
     // 构造errorCode和errorMessage
@@ -113,18 +109,18 @@ static napi_value CreateTypeError(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const createTypeError: () => Error;
+export const createTypeError: () => Error; // napi_create_type_error
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
 try {
+  // ...
   throw testNapi.createTypeError();
-} catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_create_type_error errorCode: %{public}s, errorMessage %{public}s', error.code, error.message);
+} catch (error) { // napi_create_type_error
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_create_type_error errorCode: %{public}s, errorMessage %{public}s', error.code,
+    error.message);
+  // ...
 }
 
 [h2]napi_create_range_error
@@ -133,8 +129,7 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_create_range_error
 static napi_value CreateRangeError(napi_env env, napi_callback_info info)
 {
     // 构造errorCode和errorMessage
@@ -150,18 +145,20 @@ static napi_value CreateRangeError(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const createRangeError: () => Error;
+export const createRangeError: () => Error; // napi_create_range_error
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_create_range_error
 try {
+  // ...
   throw testNapi.createRangeError();
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_create_range_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_create_range_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 
 [h2]napi_create_error
@@ -174,8 +171,7 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_create_error and napi_throw
 static napi_value NapiThrow(napi_env env, napi_callback_info info)
 {
     // 代码中发生某些错误后，可执行以下操作抛出异常
@@ -195,18 +191,19 @@ static napi_value NapiThrow(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const napiThrow: () => void;
+export const napiThrow: () => void; // napi_create_error and napi_throw
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_create_error and napi_throw
 try {
   testNapi.napiThrow();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw errorCode: %{public}s, errorMessage: %{public}s',
+    error.code, error.message);
+  // ...
 }
 
 [h2]napi_throw_error
@@ -215,14 +212,14 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_throw_error
 // 这里直接抛出一个带有errorMessage的错误
 static napi_value NapiThrowErrorMessage(napi_env env, napi_callback_info info)
 {
     napi_throw_error(env, nullptr, "napi_throw_error throwing an error");
     return nullptr;
 }
+
 // 传入两个参数，在第二个参数，也就是除数为0的时候抛出一个错误
 static napi_value NapiThrowError(napi_env env, napi_callback_info info)
 {
@@ -231,7 +228,8 @@ static napi_value NapiThrowError(napi_env env, napi_callback_info info)
     napi_value argv[2] = {nullptr};
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     // 将其转换为double类型的值作为被除数和除数
-    double dividend, divisor;
+    double dividend;
+    double divisor;
     napi_get_value_double(env, argv[0], &dividend);
     napi_get_value_double(env, argv[1], &divisor);
     // 在这里判断除数如果为0则直接抛出一个错误，errorCode为：DIVIDE_BY_ZERO，errorMessage为：Cannot divide by zero
@@ -243,29 +241,35 @@ static napi_value NapiThrowError(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const napiThrowErrorMessage: () => void;
-export const napiThrowError: (dividend: number, divisor: number) => void;
+export const napiThrowErrorMessage: () => void; // napi_throw_error
+
+export const napiThrowError: (dividend: number, divisor: number) => void; // napi_throw_error
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_throw_error
 try {
   testNapi.napiThrowErrorMessage();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_error error code: %{public}s , message: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_error error code: %{public}s , message: %{public}s', error.code,
+    error.message);
+  // ...
 }
 try {
   testNapi.napiThrowError(5, 0);
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_error errorCode: %{public}s , errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_error errorCode: %{public}s , errorMessage: %{public}s', error.code,
+    error.message);
+  // ...
 }
 
 [h2]napi_throw_business_error
 
-用于抛出一个带文本信息的ArkTS Error，其错误对象的code属性类型为number。该接口抛出的是一个原生的Error对象，并不是ArkTS的SDK中声明的BusinessError对象。
+napi_throw_business_error用于抛出一个带文本信息的ArkTS Error，其错误对象的code属性类型为number。该接口抛出的是一个原生的Error对象，并不是ArkTS的SDK中声明的BusinessError对象。
 
 cpp部分代码
 
@@ -307,14 +311,14 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_throw_type_error
 // 这里直接抛出一个带有errorMessage的TypeError
 static napi_value ThrowTypeErrorMessage(napi_env env, napi_callback_info info)
 {
     napi_throw_type_error(env, nullptr, "napi_throw_type_error throwing an error");
     return nullptr;
 }
+
 // 传入一个类型不匹配的参数，判断类型不匹配之后抛出typeError
 static napi_value ThrowTypeError(napi_env env, napi_callback_info info)
 {
@@ -335,24 +339,32 @@ static napi_value ThrowTypeError(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const throwTypeErrorMessage: () => void;
-export const throwTypeError: (message: string) => void;
+export const throwTypeErrorMessage: () => void; // napi_throw_type_error
+
+export const throwTypeError: (message: string) => void; // napi_throw_type_error
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_throw_type_error
 try {
   testNapi.throwTypeErrorMessage();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 try {
   testNapi.throwTypeError('str');
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 
 [h2]napi_throw_range_error
@@ -361,14 +373,14 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_throw_range_error
 // 这里直接抛出一个带有errorMessage的RangeError
 static napi_value ThrowRangeErrorMessage(napi_env env, napi_callback_info info)
 {
     napi_throw_range_error(env, nullptr, "napi_throw_range_error one");
     return nullptr;
 }
+
 // 传入不匹配的参数个数，判断不匹配之后抛出rangeError
 static napi_value ThrowRangeError(napi_env env, napi_callback_info info)
 {
@@ -395,25 +407,33 @@ static napi_value ThrowRangeError(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const throwRangeErrorMessage: () => void;
-export const throwRangeError: (num: number) => number | undefined;
+export const throwRangeErrorMessage: () => void; // napi_throw_range_error
+
+export const throwRangeError: (num: number) => number | undefined; // napi_throw_range_error
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_throw_range_error
 try {
   testNapi.throwRangeErrorMessage();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 
 try {
   testNapi.throwRangeError(1);
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 
 [h2]napi_is_error
@@ -422,8 +442,7 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_is_error
 static napi_value NapiIsError(napi_env env, napi_callback_info info)
 {
     // 接收一个入参
@@ -442,21 +461,22 @@ static napi_value NapiIsError(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const napiIsError: <T>(obj: T) => boolean;
+export const napiIsError: <T>(obj: T) => boolean; // napi_is_error
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_is_error
 try {
+  // ...
   throw new Error("throwing an error");
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s', testNapi.napiIsError(error)
-    .toString());
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s', testNapi.napiIsError(1)
-    .toString());
+  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s',
+    testNapi.napiIsError(error)
+      .toString());
+  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s',
+    testNapi.napiIsError(1)
+      .toString());
+  // ...
 }
 
 [h2]napi_get_and_clear_last_exception
@@ -465,8 +485,7 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_get_and_clear_last_exception
 static napi_value GetAndClearLastException(napi_env env, napi_callback_info info)
 {
     // 抛出异常，创造异常情况
@@ -482,17 +501,15 @@ static napi_value GetAndClearLastException(napi_env env, napi_callback_info info
 
 接口声明
 
-// index.d.ts
-export const getAndClearLastException: () => Error | undefined;
+export const getAndClearLastException: () => Error | undefined; // napi_get_and_clear_last_exception
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_get_and_clear_last_exception
 // 这里获取到最后一个未处理的异常
-hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_and_clear_last_exception, error.message: %{public}s',
-           testNapi.getAndClearLastException());
+hilog.info(0x0000, 'testTag',
+  'Test Node-API napi_get_and_clear_last_exception, error.message: %{public}s',
+  testNapi.getAndClearLastException());
 
 [h2]napi_is_exception_pending
 
@@ -500,8 +517,7 @@ hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_and_clear_last_exception, 
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_is_exception_pending
 static napi_value IsExceptionPending(napi_env env, napi_callback_info info)
 {
     napi_status status;
@@ -528,24 +544,25 @@ static napi_value IsExceptionPending(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const isExceptionPending: () => Object | undefined;
+export const isExceptionPending: () => Object | undefined; // napi_is_exception_pending
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_is_exception_pending
 interface MyObject {
   code: string;
   message: string;
 }
+
 try {
   let result = testNapi.isExceptionPending() as MyObject;
-  hilog.info(0x0000, 'testTag', 'Test Node-API napi_is_exception_pending, error.Code: %{public}s, error.message: %{public}s',
+  hilog.info(0x0000, 'testTag',
+    'Test Node-API napi_is_exception_pending, error.Code: %{public}s, error.message: %{public}s',
     result.code, result.message);
+  // ...
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_exception_pending error');
+  // ...
 }
 
 [h2]napi_fatal_error
@@ -554,8 +571,7 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_fatal_error
 static napi_value FatalError(napi_env env, napi_callback_info info)
 {
     // 请注意，使用napi_fatal_error函数会导致应用进程直接终止，因此应该谨慎使用，仅在遇到无法恢复的严重错误时才应该调用该函数
@@ -570,18 +586,18 @@ static napi_value FatalError(napi_env env, napi_callback_info info)
 
 接口声明
 
-// index.d.ts
-export const fatalError: () => void;
+export const fatalError: () => void; // napi_fatal_error
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_fatal_error 请注意，使用napi_fatal_error函数会导致应用进程直接终止，因此应该谨慎使用，仅在遇到无法恢复的严重错误时才应该调用该函数
+// 模拟一个致命错误条件
 try {
   testNapi.fatalError();
+  // ...
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Test Node-API napi_fatal_error error');
+  // ...
 }
 
 [h2]napi_fatal_exception
@@ -590,8 +606,7 @@ try {
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
+// napi_fatal_exception
 static napi_value FatalException(napi_env env, napi_callback_info info)
 {
     size_t argc = 1;
@@ -599,25 +614,22 @@ static napi_value FatalException(napi_env env, napi_callback_info info)
 
     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
     if (status != napi_ok) {
-      return nullptr;
+        return nullptr;
     }
     // 请注意，使用napi_fatal_exception函数会导致应用进程直接终止，因此应该谨慎使用，仅在主线程遇到无法恢复的严重错误时才应该调用该函数
     // 模拟一个致命错误条件
     status = napi_fatal_exception(env, args[0]);
     if (status != napi_ok) {
-      return nullptr;
+        return nullptr;
     }
     return nullptr;
 }
 
 接口声明
 
-// index.d.ts
-export const fatalException: (err: Error) => void;
+export const fatalException: (err: Error) => void; // napi_fatal_exception
 
 ArkTS侧示例代码
-
-import testNapi from 'libentry.so';
 
 const err = new Error("a fatal exception occurred");
 testNapi.fatalException(err);
@@ -634,8 +646,7 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
 ### Code block 1
 
 ```
-#include "napi/native_api.h"
-#include "hilog/log.h"
+// napi_get_last_error_info
 static napi_value GetLastErrorInfo(napi_env env, napi_callback_info info)
 {
     // 获取输入参数（这里以字符串message作为参数传入）
@@ -647,17 +658,15 @@ static napi_value GetLastErrorInfo(napi_env env, napi_callback_info info)
     napi_status status = napi_get_value_int32(env, args[0], &value);
     // 接口使用错误，故返回值不为napi_ok
     if (status != napi_ok) {
-        OH_LOG_INFO(LOG_APP, "Test Node-API napi_get_value_int32 return status, status is not equal to napi_ok.");
+        OH_LOG_INFO(LOG_APP, "napi_get_value_int32 return status, status is not equal to napi_ok.");
     }
-
     // 调用接口napi_get_last_error_info获取最后一次错误信息
     const napi_extended_error_info *errorInfo;
     napi_get_last_error_info(env, &errorInfo);
     // 取出错误码与接口调用错误后其返回值作比较
     if (errorInfo->error_code == status) {
-        OH_LOG_INFO(LOG_APP, "Test Node-API napi_get_last_error_info return errorInfo, error_code equal to status.");
+        OH_LOG_INFO(LOG_APP, "napi_get_last_error_info return errorInfo, error_code equal to status.");
     }
-
     // 取出错误消息作为返回值带出去打印
     napi_value result = nullptr;
     napi_create_string_utf8(env, errorInfo->error_message, NAPI_AUTO_LENGTH, &result);
@@ -668,28 +677,27 @@ static napi_value GetLastErrorInfo(napi_env env, napi_callback_info info)
 ### Code block 2
 
 ```
-// index.d.ts
-export const getLastErrorInfo: (str: string) => string;
+export const getLastErrorInfo: (str: string) => string; // napi_get_last_error_info
 ```
 
 ### Code block 3
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_get_last_error_info
 try {
-  hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_last_error_info: %{public}s', testNapi.getLastErrorInfo('message'));
+  hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_last_error_info: %{public}s',
+    testNapi.getLastErrorInfo('message'));
+  // ...
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Test Node-API napi_get_last_error_info error: %{public}s', error);
+  // ...
 }
 ```
 
 ### Code block 4
 
 ```
-#include "napi/native_api.h"
-
+// napi_create_type_error
 static napi_value CreateTypeError(napi_env env, napi_callback_info info)
 {
     // 构造errorCode和errorMessage
@@ -707,28 +715,27 @@ static napi_value CreateTypeError(napi_env env, napi_callback_info info)
 ### Code block 5
 
 ```
-// index.d.ts
-export const createTypeError: () => Error;
+export const createTypeError: () => Error; // napi_create_type_error
 ```
 
 ### Code block 6
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
 try {
+  // ...
   throw testNapi.createTypeError();
-} catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_create_type_error errorCode: %{public}s, errorMessage %{public}s', error.code, error.message);
+} catch (error) { // napi_create_type_error
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_create_type_error errorCode: %{public}s, errorMessage %{public}s', error.code,
+    error.message);
+  // ...
 }
 ```
 
 ### Code block 7
 
 ```
-#include "napi/native_api.h"
-
+// napi_create_range_error
 static napi_value CreateRangeError(napi_env env, napi_callback_info info)
 {
     // 构造errorCode和errorMessage
@@ -746,28 +753,29 @@ static napi_value CreateRangeError(napi_env env, napi_callback_info info)
 ### Code block 8
 
 ```
-// index.d.ts
-export const createRangeError: () => Error;
+export const createRangeError: () => Error; // napi_create_range_error
 ```
 
 ### Code block 9
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_create_range_error
 try {
+  // ...
   throw testNapi.createRangeError();
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_create_range_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_create_range_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 ```
 
 ### Code block 10
 
 ```
-#include "napi/native_api.h"
-
+// napi_create_error and napi_throw
 static napi_value NapiThrow(napi_env env, napi_callback_info info)
 {
     // 代码中发生某些错误后，可执行以下操作抛出异常
@@ -789,34 +797,35 @@ static napi_value NapiThrow(napi_env env, napi_callback_info info)
 ### Code block 11
 
 ```
-// index.d.ts
-export const napiThrow: () => void;
+export const napiThrow: () => void; // napi_create_error and napi_throw
 ```
 
 ### Code block 12
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_create_error and napi_throw
 try {
   testNapi.napiThrow();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw errorCode: %{public}s, errorMessage: %{public}s',
+    error.code, error.message);
+  // ...
 }
 ```
 
 ### Code block 13
 
 ```
-#include "napi/native_api.h"
-
+// napi_throw_error
 // 这里直接抛出一个带有errorMessage的错误
 static napi_value NapiThrowErrorMessage(napi_env env, napi_callback_info info)
 {
     napi_throw_error(env, nullptr, "napi_throw_error throwing an error");
     return nullptr;
 }
+
 // 传入两个参数，在第二个参数，也就是除数为0的时候抛出一个错误
 static napi_value NapiThrowError(napi_env env, napi_callback_info info)
 {
@@ -825,7 +834,8 @@ static napi_value NapiThrowError(napi_env env, napi_callback_info info)
     napi_value argv[2] = {nullptr};
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     // 将其转换为double类型的值作为被除数和除数
-    double dividend, divisor;
+    double dividend;
+    double divisor;
     napi_get_value_double(env, argv[0], &dividend);
     napi_get_value_double(env, argv[1], &divisor);
     // 在这里判断除数如果为0则直接抛出一个错误，errorCode为：DIVIDE_BY_ZERO，errorMessage为：Cannot divide by zero
@@ -839,26 +849,32 @@ static napi_value NapiThrowError(napi_env env, napi_callback_info info)
 ### Code block 14
 
 ```
-// index.d.ts
-export const napiThrowErrorMessage: () => void;
-export const napiThrowError: (dividend: number, divisor: number) => void;
+export const napiThrowErrorMessage: () => void; // napi_throw_error
+
+export const napiThrowError: (dividend: number, divisor: number) => void; // napi_throw_error
 ```
 
 ### Code block 15
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_throw_error
 try {
   testNapi.napiThrowErrorMessage();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_error error code: %{public}s , message: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_error error code: %{public}s , message: %{public}s', error.code,
+    error.message);
+  // ...
 }
 try {
   testNapi.napiThrowError(5, 0);
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_error errorCode: %{public}s , errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_error errorCode: %{public}s , errorMessage: %{public}s', error.code,
+    error.message);
+  // ...
 }
 ```
 
@@ -905,14 +921,14 @@ try {
 ### Code block 19
 
 ```
-#include "napi/native_api.h"
-
+// napi_throw_type_error
 // 这里直接抛出一个带有errorMessage的TypeError
 static napi_value ThrowTypeErrorMessage(napi_env env, napi_callback_info info)
 {
     napi_throw_type_error(env, nullptr, "napi_throw_type_error throwing an error");
     return nullptr;
 }
+
 // 传入一个类型不匹配的参数，判断类型不匹配之后抛出typeError
 static napi_value ThrowTypeError(napi_env env, napi_callback_info info)
 {
@@ -935,40 +951,48 @@ static napi_value ThrowTypeError(napi_env env, napi_callback_info info)
 ### Code block 20
 
 ```
-// index.d.ts
-export const throwTypeErrorMessage: () => void;
-export const throwTypeError: (message: string) => void;
+export const throwTypeErrorMessage: () => void; // napi_throw_type_error
+
+export const throwTypeError: (message: string) => void; // napi_throw_type_error
 ```
 
 ### Code block 21
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_throw_type_error
 try {
   testNapi.throwTypeErrorMessage();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 try {
   testNapi.throwTypeError('str');
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_type_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 ```
 
 ### Code block 22
 
 ```
-#include "napi/native_api.h"
-
+// napi_throw_range_error
 // 这里直接抛出一个带有errorMessage的RangeError
 static napi_value ThrowRangeErrorMessage(napi_env env, napi_callback_info info)
 {
     napi_throw_range_error(env, nullptr, "napi_throw_range_error one");
     return nullptr;
 }
+
 // 传入不匹配的参数个数，判断不匹配之后抛出rangeError
 static napi_value ThrowRangeError(napi_env env, napi_callback_info info)
 {
@@ -997,35 +1021,42 @@ static napi_value ThrowRangeError(napi_env env, napi_callback_info info)
 ### Code block 23
 
 ```
-// index.d.ts
-export const throwRangeErrorMessage: () => void;
-export const throwRangeError: (num: number) => number | undefined;
+export const throwRangeErrorMessage: () => void; // napi_throw_range_error
+
+export const throwRangeError: (num: number) => number | undefined; // napi_throw_range_error
 ```
 
 ### Code block 24
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_throw_range_error
 try {
   testNapi.throwRangeErrorMessage();
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 
 try {
   testNapi.throwRangeError(1);
+  // ...
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'testTag',
+    'Test Node-API napi_throw_range_error errorCode: %{public}s, errorMessage: %{public}s',
+    error.code,
+    error.message);
+  // ...
 }
 ```
 
 ### Code block 25
 
 ```
-#include "napi/native_api.h"
-
+// napi_is_error
 static napi_value NapiIsError(napi_env env, napi_callback_info info)
 {
     // 接收一个入参
@@ -1046,31 +1077,31 @@ static napi_value NapiIsError(napi_env env, napi_callback_info info)
 ### Code block 26
 
 ```
-// index.d.ts
-export const napiIsError: <T>(obj: T) => boolean;
+export const napiIsError: <T>(obj: T) => boolean; // napi_is_error
 ```
 
 ### Code block 27
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_is_error
 try {
+  // ...
   throw new Error("throwing an error");
 } catch (error) {
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s', testNapi.napiIsError(error)
-    .toString());
-  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s', testNapi.napiIsError(1)
-    .toString());
+  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s',
+    testNapi.napiIsError(error)
+      .toString());
+  hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_error error: %{public}s',
+    testNapi.napiIsError(1)
+      .toString());
+  // ...
 }
 ```
 
 ### Code block 28
 
 ```
-#include "napi/native_api.h"
-
+// napi_get_and_clear_last_exception
 static napi_value GetAndClearLastException(napi_env env, napi_callback_info info)
 {
     // 抛出异常，创造异常情况
@@ -1088,26 +1119,23 @@ static napi_value GetAndClearLastException(napi_env env, napi_callback_info info
 ### Code block 29
 
 ```
-// index.d.ts
-export const getAndClearLastException: () => Error | undefined;
+export const getAndClearLastException: () => Error | undefined; // napi_get_and_clear_last_exception
 ```
 
 ### Code block 30
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_get_and_clear_last_exception
 // 这里获取到最后一个未处理的异常
-hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_and_clear_last_exception, error.message: %{public}s',
-           testNapi.getAndClearLastException());
+hilog.info(0x0000, 'testTag',
+  'Test Node-API napi_get_and_clear_last_exception, error.message: %{public}s',
+  testNapi.getAndClearLastException());
 ```
 
 ### Code block 31
 
 ```
-#include "napi/native_api.h"
-
+// napi_is_exception_pending
 static napi_value IsExceptionPending(napi_env env, napi_callback_info info)
 {
     napi_status status;
@@ -1136,34 +1164,34 @@ static napi_value IsExceptionPending(napi_env env, napi_callback_info info)
 ### Code block 32
 
 ```
-// index.d.ts
-export const isExceptionPending: () => Object | undefined;
+export const isExceptionPending: () => Object | undefined; // napi_is_exception_pending
 ```
 
 ### Code block 33
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_is_exception_pending
 interface MyObject {
   code: string;
   message: string;
 }
+
 try {
   let result = testNapi.isExceptionPending() as MyObject;
-  hilog.info(0x0000, 'testTag', 'Test Node-API napi_is_exception_pending, error.Code: %{public}s, error.message: %{public}s',
+  hilog.info(0x0000, 'testTag',
+    'Test Node-API napi_is_exception_pending, error.Code: %{public}s, error.message: %{public}s',
     result.code, result.message);
+  // ...
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Test Node-API napi_is_exception_pending error');
+  // ...
 }
 ```
 
 ### Code block 34
 
 ```
-#include "napi/native_api.h"
-
+// napi_fatal_error
 static napi_value FatalError(napi_env env, napi_callback_info info)
 {
     // 请注意，使用napi_fatal_error函数会导致应用进程直接终止，因此应该谨慎使用，仅在遇到无法恢复的严重错误时才应该调用该函数
@@ -1180,28 +1208,27 @@ static napi_value FatalError(napi_env env, napi_callback_info info)
 ### Code block 35
 
 ```
-// index.d.ts
-export const fatalError: () => void;
+export const fatalError: () => void; // napi_fatal_error
 ```
 
 ### Code block 36
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// napi_fatal_error 请注意，使用napi_fatal_error函数会导致应用进程直接终止，因此应该谨慎使用，仅在遇到无法恢复的严重错误时才应该调用该函数
+// 模拟一个致命错误条件
 try {
   testNapi.fatalError();
+  // ...
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Test Node-API napi_fatal_error error');
+  // ...
 }
 ```
 
 ### Code block 37
 
 ```
-#include "napi/native_api.h"
-
+// napi_fatal_exception
 static napi_value FatalException(napi_env env, napi_callback_info info)
 {
     size_t argc = 1;
@@ -1209,13 +1236,13 @@ static napi_value FatalException(napi_env env, napi_callback_info info)
 
     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
     if (status != napi_ok) {
-      return nullptr;
+        return nullptr;
     }
     // 请注意，使用napi_fatal_exception函数会导致应用进程直接终止，因此应该谨慎使用，仅在主线程遇到无法恢复的严重错误时才应该调用该函数
     // 模拟一个致命错误条件
     status = napi_fatal_exception(env, args[0]);
     if (status != napi_ok) {
-      return nullptr;
+        return nullptr;
     }
     return nullptr;
 }
@@ -1224,15 +1251,12 @@ static napi_value FatalException(napi_env env, napi_callback_info info)
 ### Code block 38
 
 ```
-// index.d.ts
-export const fatalException: (err: Error) => void;
+export const fatalException: (err: Error) => void; // napi_fatal_exception
 ```
 
 ### Code block 39
 
 ```
-import testNapi from 'libentry.so';
-
 const err = new Error("a fatal exception occurred");
 testNapi.fatalException(err);
 ```

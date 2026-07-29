@@ -41,51 +41,56 @@ mmpIdStr = mmpId1 + '\u2063' + mmpId2
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // 具体引用方法参考本示例代码底部说明
-import {AegRsaSign} from "@hw-agconnect/petal-aegis";
-
+import { AegRsaSign } from '@hw-agconnect/petal-aegis';
 
 const TAG: string = 'SignUtil';
 const SEPARATOR: string = '\u2063';
 
 export class SignUtil {
-  public static genSignContent(adTechId: string, campaignId: string, destinationId: string, mmpIds: string[], serviceTag: string, nonce: string, timestamp: number) {
-    // mmpIdStr = mmpId1 + '\u2063' + mmpId2
-    // signContent:string= adTechId+ '\u2063' + campaignId+ '\u2063'  + destinationId+ '\u2063' + serviceTag+ '\u2063' + mmpIdStr + '\u2063' + nonce + '\u2063' + timestamp
-    let content = SignUtil.addSeparator(adTechId)
-      + SignUtil.addSeparator(campaignId)
-      + SignUtil.addSeparator(destinationId)
-      + SignUtil.addSeparator(serviceTag)
-      + SignUtil.genMmpIds(mmpIds)
-      + SignUtil.addSeparator(nonce)
-      + timestamp;
-    hilog.info(0,TAG,`content = ${JSON.stringify(content)}`);
-    return content;
-  }
-
-  private static addSeparator(value: string | undefined): string {
-    return value ? value + SEPARATOR : '';
-  }
-
-  private static genMmpIds(mmpIds: string[]) {
-    let result: string = '';
-    for (let mmpId of mmpIds) {
-      if (mmpId) {
-        result += SignUtil.addSeparator(mmpId);
-      }
+    public static genSignContent(adTechId: string, campaignId: string, destinationId: string, mmpIds: string[],
+        serviceTag: string, nonce: string, timestamp: number) {
+        let content = SignUtil.addSeparator(adTechId) +
+            SignUtil.addSeparator(campaignId) +
+            SignUtil.addSeparator(destinationId) +
+            SignUtil.addSeparator(serviceTag) +
+            SignUtil.genMmpIds(mmpIds) +
+            SignUtil.addSeparator(nonce) +
+            timestamp;
+        hilog.info(0, TAG, `content = ${JSON.stringify(content)}`);
+        return content;
     }
-    return result;
-  }
 
-  public static getSign(content: string, privateKey: string): Promise<string> {
-    return new Promise<string>((resolve) => {
-      AegRsaSign.ohAegSignRSAWithPSSTextBase64(content, privateKey).then(async (sign: string) => {
-        hilog.info(0, TAG, "getSign success.");
-        resolve(sign);
-      }).catch((error: BusinessError) => {
-        hilog.error(0, TAG, `getSign failed. code is ${error.code}, message is ${error.message}`);
-      });
-    })
-  }
+    private static addSeparator(value: string | undefined): string {
+        return value ? value + SEPARATOR : '';
+    }
+
+    private static genMmpIds(mmpIds: string[]) {
+        let result: string = '';
+        for (let mmpId of mmpIds) {
+            if (mmpId) {
+                result += SignUtil.addSeparator(mmpId);
+            }
+        }
+        return result;
+    }
+
+    public static getSign(context: UIContext, content: string, privateKey: string): Promise<string> {
+        return new Promise<string>((resolve) => {
+            AegRsaSign.ohAegSignRSAWithPSSTextBase64(content, privateKey).then(async (sign: string) => {
+                hilog.info(0, TAG, 'getSign success.');
+                resolve(sign);
+            }).catch((error: BusinessError) => {
+                hilog.error(0, TAG, `getSign failed. code is ${error.code}, message is ${error.message}`);
+                let msg: string | undefined =
+                    context.getHostContext()?.resourceManager.getStringSync($r('app.string.gen_sign_failed').id);
+                if (msg) {
+                    context.getPromptAction().showToast({
+                        message: msg
+                    })
+                }
+            });
+        })
+    }
 }
 
 说明
@@ -116,50 +121,55 @@ mmpIdStr = mmpId1 + '\u2063' + mmpId2
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // 具体引用方法参考本示例代码底部说明
-import {AegRsaSign} from "@hw-agconnect/petal-aegis";
-
+import { AegRsaSign } from '@hw-agconnect/petal-aegis';
 
 const TAG: string = 'SignUtil';
 const SEPARATOR: string = '\u2063';
 
 export class SignUtil {
-  public static genSignContent(adTechId: string, campaignId: string, destinationId: string, mmpIds: string[], serviceTag: string, nonce: string, timestamp: number) {
-    // mmpIdStr = mmpId1 + '\u2063' + mmpId2
-    // signContent:string= adTechId+ '\u2063' + campaignId+ '\u2063'  + destinationId+ '\u2063' + serviceTag+ '\u2063' + mmpIdStr + '\u2063' + nonce + '\u2063' + timestamp
-    let content = SignUtil.addSeparator(adTechId)
-      + SignUtil.addSeparator(campaignId)
-      + SignUtil.addSeparator(destinationId)
-      + SignUtil.addSeparator(serviceTag)
-      + SignUtil.genMmpIds(mmpIds)
-      + SignUtil.addSeparator(nonce)
-      + timestamp;
-    hilog.info(0,TAG,`content = ${JSON.stringify(content)}`);
-    return content;
-  }
-
-  private static addSeparator(value: string | undefined): string {
-    return value ? value + SEPARATOR : '';
-  }
-
-  private static genMmpIds(mmpIds: string[]) {
-    let result: string = '';
-    for (let mmpId of mmpIds) {
-      if (mmpId) {
-        result += SignUtil.addSeparator(mmpId);
-      }
+    public static genSignContent(adTechId: string, campaignId: string, destinationId: string, mmpIds: string[],
+        serviceTag: string, nonce: string, timestamp: number) {
+        let content = SignUtil.addSeparator(adTechId) +
+            SignUtil.addSeparator(campaignId) +
+            SignUtil.addSeparator(destinationId) +
+            SignUtil.addSeparator(serviceTag) +
+            SignUtil.genMmpIds(mmpIds) +
+            SignUtil.addSeparator(nonce) +
+            timestamp;
+        hilog.info(0, TAG, `content = ${JSON.stringify(content)}`);
+        return content;
     }
-    return result;
-  }
 
-  public static getSign(content: string, privateKey: string): Promise<string> {
-    return new Promise<string>((resolve) => {
-      AegRsaSign.ohAegSignRSAWithPSSTextBase64(content, privateKey).then(async (sign: string) => {
-        hilog.info(0, TAG, "getSign success.");
-        resolve(sign);
-      }).catch((error: BusinessError) => {
-        hilog.error(0, TAG, `getSign failed. code is ${error.code}, message is ${error.message}`);
-      });
-    })
-  }
+    private static addSeparator(value: string | undefined): string {
+        return value ? value + SEPARATOR : '';
+    }
+
+    private static genMmpIds(mmpIds: string[]) {
+        let result: string = '';
+        for (let mmpId of mmpIds) {
+            if (mmpId) {
+                result += SignUtil.addSeparator(mmpId);
+            }
+        }
+        return result;
+    }
+
+    public static getSign(context: UIContext, content: string, privateKey: string): Promise<string> {
+        return new Promise<string>((resolve) => {
+            AegRsaSign.ohAegSignRSAWithPSSTextBase64(content, privateKey).then(async (sign: string) => {
+                hilog.info(0, TAG, 'getSign success.');
+                resolve(sign);
+            }).catch((error: BusinessError) => {
+                hilog.error(0, TAG, `getSign failed. code is ${error.code}, message is ${error.message}`);
+                let msg: string | undefined =
+                    context.getHostContext()?.resourceManager.getStringSync($r('app.string.gen_sign_failed').id);
+                if (msg) {
+                    context.getPromptAction().showToast({
+                        message: msg
+                    })
+                }
+            });
+        })
+    }
 }
 ```

@@ -71,8 +71,7 @@ OH_Drawing_TypographyCreate *handler = OH_Drawing_CreateTypographyHandler(typoSt
 
 // 设置文本内容，并将文本添加到 handler 中
 OH_Drawing_TypographyHandlerPushTextStyle(handler, txtStyle);
-const char *text = "Hello World";
-OH_Drawing_TypographyHandlerAddText(handler, text);
+OH_Drawing_TypographyHandlerAddText(handler, "Hello World");
 
 创建行对象。获取行中所有文字的塑形结果。
 
@@ -118,8 +117,7 @@ for (int i = 0; i < runsLength; i++) {
         float pos = 0;
         OH_Drawing_PointGetX(advance, &pos);
         x += pos + 10; // 每个字形间水平间隔10px
-        OH_Drawing_PointGetY(advance, &pos);
-        y += pos + 30; // 每个字形间垂直间隔30px
+        y += 30; // 每个字形间垂直间隔30px
     }
 
     // 自定义绘制一串具有相同属性的一系列连续字形
@@ -132,6 +130,8 @@ for (int i = 0; i < runsLength; i++) {
     OH_Drawing_FontDestroy(font);
     OH_Drawing_DestroyRunGlyphAdvances(advances);
     OH_Drawing_DestroyRunGlyphs(glyphs);
+    OH_Drawing_TextBlobBuilderDestroy(builder);
+    OH_Drawing_RectDestroy(rect);
 }
 
 释放内存
@@ -188,8 +188,7 @@ OH_Drawing_TypographyCreate *handler = OH_Drawing_CreateTypographyHandler(typoSt
 ```
 // 设置文本内容，并将文本添加到 handler 中
 OH_Drawing_TypographyHandlerPushTextStyle(handler, txtStyle);
-const char *text = "Hello World";
-OH_Drawing_TypographyHandlerAddText(handler, text);
+OH_Drawing_TypographyHandlerAddText(handler, "Hello World");
 ```
 
 ### Code block 5
@@ -235,8 +234,7 @@ for (int i = 0; i < runsLength; i++) {
         float pos = 0;
         OH_Drawing_PointGetX(advance, &pos);
         x += pos + 10; // 每个字形间水平间隔10px
-        OH_Drawing_PointGetY(advance, &pos);
-        y += pos + 30; // 每个字形间垂直间隔30px
+        y += 30; // 每个字形间垂直间隔30px
     }
 
     // 自定义绘制一串具有相同属性的一系列连续字形
@@ -249,6 +247,8 @@ for (int i = 0; i < runsLength; i++) {
     OH_Drawing_FontDestroy(font);
     OH_Drawing_DestroyRunGlyphAdvances(advances);
     OH_Drawing_DestroyRunGlyphs(glyphs);
+    OH_Drawing_TextBlobBuilderDestroy(builder);
+    OH_Drawing_RectDestroy(rect);
 }
 ```
 

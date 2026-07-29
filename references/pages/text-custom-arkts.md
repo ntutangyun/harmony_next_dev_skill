@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-cust
 
 [h2]接口说明
 
-文本塑形中常用接口如下表所示，详细接口说明参考@ohos.graphics.text (文本模块)和@ohos.graphics.drawing (drawing TextBlob)。
+文本塑形中常用接口如下表所示，详细接口说明参考@ohos.graphics.text (文本模块)和TextBlob。
 
 接口名	描述
 buildLineTypeset(): LineTypeset	构建行排版器。
@@ -31,7 +31,6 @@ getGlyphRuns(): Array<Run>	获取文本行的排版单元数组。
 getGlyphs(): Array<number>	获取该排版单元中每个字符的字形序号。
 getFont(): drawing.Font	获取排版单元的字体属性对象。
 getAdvances(range: Range): Array<common2D.Point>	获取该排版单元指定范围内每个字形的字形宽度数组。
-static makeFromRunBuffer(pos: Array<TextBlobRunBuffer>, font: Font, bounds?: common2D.Rect): TextBlob	基于RunBuffer信息创建TextBlob对象。
 static makeFromRunBuffer(pos: Array<TextBlobRunBuffer>, font: Font, bounds?: common2D.Rect): TextBlob	基于RunBuffer信息创建TextBlob对象。
 drawTextBlob(blob: TextBlob, x: number, y: number): void	绘制一段文字。若构造blob的字体不支持待绘制字符，则该部分字符无法绘制。
 
@@ -61,9 +60,7 @@ let paragraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollectio
 
 paragraphBuilder.addText('Hello World');
 
-创建行对象。获取行中所有文字的塑形结果。
-
-使用createLine()方法创建一个单行对象，通过行对象getGlyphRuns()方法获取相同样式的文字单元。
+创建行对象。获取行中所有文字的塑形结果。使用createLine()方法创建一个单行对象，通过行对象getGlyphRuns()方法获取相同样式的文字单元。
 
 // 生成行
 let lineTypeSet: text.LineTypeset = paragraphBuilder.buildLineTypeset()
@@ -72,9 +69,7 @@ let textLine: text.TextLine = lineTypeSet.createLine(0, 11);
 // 获取塑形结果
 let runs: text.Run[] = textLine.getGlyphRuns();
 
-该步骤是文本塑形流程中的自定义绘制环节。通过调用getGlyphs()方法获取文本中每个字符对应的字形序号，再结合getFont()方法获取的字体对象，即可唯一确定每个字形的具体图形信息。
-
-从 API version 20 开始，新增的getAdvances()方法能够返回一个数组，其中包含了每个字形在绘制时建议占用的宽度和高度。依赖这些精确的测量数据，开发者可以自由地计算并定义每个字形的绘制位置，从而实现复杂的文本布局效果，如自定义字符间距、垂直偏移或特殊排版。
+该步骤是文本塑形流程中的自定义绘制环节。通过调用getGlyphs()方法获取文本中每个字符对应的字形序号，再结合getFont()方法获取的字体对象，即可唯一确定每个字形的具体图形信息。从 API version 20 开始，新增的getAdvances()方法能够返回一个数组，其中包含了每个字形在绘制时建议占用的宽度和高度。依赖这些精确的测量数据，开发者可以自由地计算并定义每个字形的绘制位置，从而实现复杂的文本布局效果，如自定义字符间距、垂直偏移或特殊排版。
 
 let x: number = 0;
 let y: number = 0;

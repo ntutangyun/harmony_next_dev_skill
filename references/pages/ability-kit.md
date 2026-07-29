@@ -12,6 +12,8 @@ Ability Kit简介
 
 方舟智能开发框架开发指导
 
+基于ModularObjectExtensionAbility的模块化对象开发指导 (C/C++)
+
 Native子进程开发指导
 
 Ability Kit术语

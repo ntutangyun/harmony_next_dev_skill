@@ -171,7 +171,7 @@ class U {
 
 let u: U = new T(); // 是否允许？
 
-类型为T的值是否能传递给接受类型为U的参数的函数。
+类型为T的值是否能传递给接收类型为U的参数的函数。
 
 function greeter(u: U) {
   console.info('To ' + u.name);

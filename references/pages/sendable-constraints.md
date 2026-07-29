@@ -10,9 +10,11 @@ Sendable对象的布局和原型链不可变，而非Sendable对象可以通过�
 
 正例：
 
+// 正例：
 @Sendable
 class A {
   constructor() {
+    console.info('hello world');
   }
 }
 
@@ -43,13 +45,16 @@ Sendable对象的布局和原型链不可变，而非Sendable对象可以通过�
 
 正例：
 
+// 正例：
 class A {
   constructor() {
+    console.info('hello world');
   }
 }
 
 class B extends A {
   constructor() {
+    console.info('HELLO WORLD');
     super()
   }
 }
@@ -76,9 +81,14 @@ class B extends A { // A是sendable class，B不能继承它，编译报错
 
 正例：
 
-interface I {};
+// 正例：
+interface I {
+  a: string;
+};
 
-class B implements I {};
+class B implements I {
+  a: string = 'hello world';
+};
 
 反例：
 
@@ -98,6 +108,7 @@ Sendable数据不得持有非Sendable数据，因此Sendable类或接口的成�
 
 正例：
 
+// 正例：
 @Sendable
 class A {
   constructor() {
@@ -120,6 +131,7 @@ Sendable对象的成员属性必须赋初值，而“!”修饰的变量可以�
 
 正例：
 
+// 正例：
 @Sendable
 class A {
   constructor() {
@@ -142,23 +154,25 @@ Sendable对象的布局不可更改，因为计算属性无法静态确定对象
 
 正例：
 
+// 正例：
 @Sendable
 class A {
-    num1: number = 1;
-    num2: number = 2;
-    add(): number {
-      return this.num1 + this.num2;
-    }
+  num1: number = 1;
+  num2: number = 2;
+
+  add(): number {
+    return this.num1 + this.num2;
+  }
 }
 
 反例：
 
 enum B {
-    b1 = "bbb"
+    b1 = 'bbb'
 }
 @Sendable
 class A {
-    ["aaa"]: number = 1; // 编译报错，不支持["aaa"]
+    ['aaa']: number = 1; // 编译报错，不支持['aaa']
     [B.b1]: number = 2; // 编译报错，不支持[B.b1]
 }
 
@@ -192,20 +206,20 @@ class B {
 
 泛型规则
 
-[h2]泛型类中的Sendable类、SendableLruCache、collections.Array、collections.Map和collections.Set的模板类型必须是Sendable类型
+[h2]泛型类中的Sendable类、SendableLruCache、collections.Array、collections.ConcatArray、collections.Map和collections.Set的模板类型必须是Sendable类型
 
-Sendable数据不能持有非Sendable数据，因此泛型类中的Sendable数据的模版类型必须是Sendable类型。
+Sendable数据不能持有非Sendable数据，因此泛型类中的Sendable数据的模板类型必须是Sendable类型。
 
 正例：
 
 import { collections } from '@kit.ArkTS';
 
 try {
-  let arr1: collections.Array<number> = new collections.Array<number>();
+  let arr: collections.Array<number> = new collections.Array<number>();
   let num: number = 1;
-  arr1.push(num);
+  arr.push(num);
 } catch (e) {
-  console.error(`taskpool execute: Code: ${e.code}, message: ${e.message}`);
+  console.error(`create collections error: Code: ${e.code}, message: ${e.message}`);
 }
 
 反例：
@@ -218,7 +232,7 @@ try {
   arr2.push(1);
   arr1.push(arr2);
 } catch (e) {
-  console.error(`taskpool execute: Code: ${e.code}, message: ${e.message}`);
+  console.error(`create collections error: Code: ${e.code}, message: ${e.message}`);
 }
 
 上下文访问规则
@@ -233,6 +247,7 @@ try {
 
 正例：
 
+// 正例：
 import { lang } from '@kit.ArkTS';
 
 type ISendable = lang.ISendable;
@@ -242,6 +257,7 @@ interface I extends ISendable {}
 @Sendable
 class B implements I {
   static o: number = 1;
+
   static bar(): B {
     return new B();
   }
@@ -280,7 +296,7 @@ let b = new B();
 
   @Sendable
   class C {
-    u: I = bar(); // bar不是sendable class对象，编译报错
+    u: I = bar(); // bar不是sendable function对象，编译报错
     v: I = new A(); // A不是定义在top level中，编译报错
 
     foo() {
@@ -297,21 +313,17 @@ let b = new B();
 
 正例：
 
+// 正例：
 @Sendable
 type SendableFuncType = () => void;
-
-@Sendable
-class C {}
-
-@Sendable
-function SendableFunc() {
-  console.info("Sendable func");
-}
 
 反例：
 
 @Sendable
 type A = number; // 编译报错
+
+@Sendable
+class C {}
 
 @Sendable
 type D = C; // 编译报错
@@ -322,6 +334,7 @@ type D = C; // 编译报错
 
 正例：
 
+// 正例：
 @Sendable
 class A {
   num: number = 1;
@@ -371,6 +384,7 @@ class C {
 
 正例：
 
+// 正例：
 import { collections } from '@kit.ArkTS';
 
 let arr1: collections.Array<number> = new collections.Array<number>(1, 2, 3); // 是Sendable类型
@@ -391,6 +405,7 @@ let arr4: number[] = new collections.Array<number>(1, 2, 3); // 编译报错
 
 正例：
 
+// 正例：
 class A {
   state: number = 0;
 }
@@ -418,28 +433,6 @@ let a2: SendableA = new A() as SendableA; // 编译报错
 函数规则
 
 [h2]箭头函数不可标记为Sendable
-
-箭头函数不支持@Sendable装饰器，因此它是非Sendable函数，不支持共享。
-
-正例：
-
-@Sendable
-type SendableFuncType = () => void;
-
-@Sendable
-function SendableFunc() {
-  console.info("Sendable func");
-}
-
-@Sendable
-class SendableClass {
-  constructor(f: SendableFuncType) {
-    this.func = f;
-  }
-  func: SendableFuncType;
-}
-
-let sendableClass = new SendableClass(SendableFunc);
 
 反例：
 
@@ -505,9 +498,11 @@ Sendable可在HAR包中使用。当在字节码HAR中使用Sendable时，无需�
 ### Code block 1
 
 ```
+// 正例：
 @Sendable
 class A {
   constructor() {
+    console.info('hello world');
   }
 }
 
@@ -538,13 +533,16 @@ class B extends A { // A不是sendable class，B不能继承它，编译报错
 ### Code block 3
 
 ```
+// 正例：
 class A {
   constructor() {
+    console.info('hello world');
   }
 }
 
 class B extends A {
   constructor() {
+    console.info('HELLO WORLD');
     super()
   }
 }
@@ -569,9 +567,14 @@ class B extends A { // A是sendable class，B不能继承它，编译报错
 ### Code block 5
 
 ```
-interface I {};
+// 正例：
+interface I {
+  a: string;
+};
 
-class B implements I {};
+class B implements I {
+  a: string = 'hello world';
+};
 ```
 
 ### Code block 6
@@ -589,6 +592,7 @@ class B implements I {};  // I是sendable interface，B不能实现，编译报�
 ### Code block 7
 
 ```
+// 正例：
 @Sendable
 class A {
   constructor() {
@@ -611,6 +615,7 @@ class A {
 ### Code block 9
 
 ```
+// 正例：
 @Sendable
 class A {
   constructor() {
@@ -633,13 +638,15 @@ class A {
 ### Code block 11
 
 ```
+// 正例：
 @Sendable
 class A {
-    num1: number = 1;
-    num2: number = 2;
-    add(): number {
-      return this.num1 + this.num2;
-    }
+  num1: number = 1;
+  num2: number = 2;
+
+  add(): number {
+    return this.num1 + this.num2;
+  }
 }
 ```
 
@@ -647,11 +654,11 @@ class A {
 
 ```
 enum B {
-    b1 = "bbb"
+    b1 = 'bbb'
 }
 @Sendable
 class A {
-    ["aaa"]: number = 1; // 编译报错，不支持["aaa"]
+    ['aaa']: number = 1; // 编译报错，不支持['aaa']
     [B.b1]: number = 2; // 编译报错，不支持[B.b1]
 }
 ```
@@ -690,11 +697,11 @@ class B {
 import { collections } from '@kit.ArkTS';
 
 try {
-  let arr1: collections.Array<number> = new collections.Array<number>();
+  let arr: collections.Array<number> = new collections.Array<number>();
   let num: number = 1;
-  arr1.push(num);
+  arr.push(num);
 } catch (e) {
-  console.error(`taskpool execute: Code: ${e.code}, message: ${e.message}`);
+  console.error(`create collections error: Code: ${e.code}, message: ${e.message}`);
 }
 ```
 
@@ -709,13 +716,14 @@ try {
   arr2.push(1);
   arr1.push(arr2);
 } catch (e) {
-  console.error(`taskpool execute: Code: ${e.code}, message: ${e.message}`);
+  console.error(`create collections error: Code: ${e.code}, message: ${e.message}`);
 }
 ```
 
 ### Code block 17
 
 ```
+// 正例：
 import { lang } from '@kit.ArkTS';
 
 type ISendable = lang.ISendable;
@@ -725,6 +733,7 @@ interface I extends ISendable {}
 @Sendable
 class B implements I {
   static o: number = 1;
+
   static bar(): B {
     return new B();
   }
@@ -765,7 +774,7 @@ let b = new B();
 
   @Sendable
   class C {
-    u: I = bar(); // bar不是sendable class对象，编译报错
+    u: I = bar(); // bar不是sendable function对象，编译报错
     v: I = new A(); // A不是定义在top level中，编译报错
 
     foo() {
@@ -778,16 +787,9 @@ let b = new B();
 ### Code block 19
 
 ```
+// 正例：
 @Sendable
 type SendableFuncType = () => void;
-
-@Sendable
-class C {}
-
-@Sendable
-function SendableFunc() {
-  console.info("Sendable func");
-}
 ```
 
 ### Code block 20
@@ -797,12 +799,16 @@ function SendableFunc() {
 type A = number; // 编译报错
 
 @Sendable
+class C {}
+
+@Sendable
 type D = C; // 编译报错
 ```
 
 ### Code block 21
 
 ```
+// 正例：
 @Sendable
 class A {
   num: number = 1;
@@ -834,6 +840,7 @@ class C {
 ### Code block 24
 
 ```
+// 正例：
 import { collections } from '@kit.ArkTS';
 
 let arr1: collections.Array<number> = new collections.Array<number>(1, 2, 3); // 是Sendable类型
@@ -852,6 +859,7 @@ let arr4: number[] = new collections.Array<number>(1, 2, 3); // 编译报错
 ### Code block 26
 
 ```
+// 正例：
 class A {
   state: number = 0;
 }
@@ -884,28 +892,6 @@ let a2: SendableA = new A() as SendableA; // 编译报错
 ```
 @Sendable
 type SendableFuncType = () => void;
-
-@Sendable
-function SendableFunc() {
-  console.info("Sendable func");
-}
-
-@Sendable
-class SendableClass {
-  constructor(f: SendableFuncType) {
-    this.func = f;
-  }
-  func: SendableFuncType;
-}
-
-let sendableClass = new SendableClass(SendableFunc);
-```
-
-### Code block 29
-
-```
-@Sendable
-type SendableFuncType = () => void;
 let func: SendableFuncType = () => {}; // 编译报错
 
 @Sendable
@@ -914,7 +900,7 @@ class SendableClass {
 }
 ```
 
-### Code block 30
+### Code block 29
 
 ```
 {

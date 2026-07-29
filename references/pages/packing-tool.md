@@ -59,7 +59,7 @@ HAP打包时合法性校验
 
 Stage模型示例：
 
-java -jar app_packing_tool.jar --mode hap --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--hnp-path <path>] [--pkg-sdk-info-path <path>]
+java -jar app_packing_tool.jar --mode hap --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--hnp-path <path>] [--pkg-sdk-info-path <path>] [--skills-path <path>]
 
 FA模型示例：
 
@@ -92,6 +92,7 @@ java -jar app_packing_tool.jar --mode hap --json-path <path> [--maple-so-path <p
 --exist-src-path	否	NA	指定增量打包时的源HAP包路径，该路径必须指向一个已存在的、有效的.hap文件。当--lib-path-retain配置为true时，打包工具会直接拷贝源HAP包中的libs目录，不再打包--lib-path指定的libs目录，该特性称为增量打包。当--lib-path-retain配置为false时，正常打包--lib-path指定的libs目录，该参数无效。当libs目录中so文件压缩耗时比较久时，使用增量打包可以提升打包速度。 从API version 22开始支持该参数。	仅Stage模型生效。
 --lib-path-retain	否	boolean	是否对libs目录做增量打包。为true时表示对libs目录做增量打包，直接拷贝--exist-src-path指向的源HAP中的libs目录，不再打包--lib-path指定的libs目录；为false时表示不做增量打包，打包--lib-path指向的目录。默认值为false。此参数必须与--exist-src-path配套使用，单独设置不生效。 从API version 22开始支持该参数。	仅Stage模型生效。
 --pkg-sdk-info-path	否	NA	pkgSdkInfo.json（构建产物中依赖的HAR的基本信息，包括模块名和版本）文件路径，文件名必须为pkgSdkInfo.json。 从API version 23开始支持该参数。	仅Stage模型生效。
+--skills-path	否	NA	存放skill目录的路径。打包时，根据module.json5文件中的skillProfiles配置项，将--skills-path目录下对应的skill内容打入HAP包内。 当bundleType为app或atomicService时，允许传入该参数。当bundleType为shared、appService或appPlugin时，不允许传入该参数，否则打包失败。 从API版本26.0.0开始支持该参数。	仅Stage模型生效。
 
 HSP打包指令
 
@@ -105,7 +106,7 @@ HSP包实现了多个HAP对文件的共享，开发者可以使用打包工具�
 
 示例：
 
-java -jar app_packing_tool.jar --mode hsp --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--pkg-sdk-info-path <path>]
+java -jar app_packing_tool.jar --mode hsp --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--pkg-sdk-info-path <path>] [--skills-path <path>]
 
 表3 HSP打包指令参数说明
 
@@ -127,6 +128,7 @@ java -jar app_packing_tool.jar --mode hsp --json-path <path> [--resources-path <
 --exist-src-path	否	NA	指定增量打包时的源HSP包路径，该路径必须指向一个已存在的、有效的.hsp文件。当--lib-path-retain配置为true时，打包工具会直接拷贝源HSP包中的libs目录，不再打包--lib-path指定的libs目录，该特性称为增量打包。当--lib-path-retain配置为false时，正常打包--lib-path指定的libs目录，该参数无效。当libs目录中so文件压缩耗时比较久时，使用增量打包可以提升打包速度。 从API version 22开始支持该参数。
 --lib-path-retain	否	boolean	是否对libs目录做增量打包。为true时表示对libs目录做增量打包，直接拷贝--exist-src-path指向的源HSP中的libs目录，不再打包--lib-path指定的libs目录；为false时表示不做增量打包，打包--lib-path指向的目录。默认值为false。此参数必须与--exist-src-path配套使用，单独设置不生效。 从API version 22开始支持该参数。
 --pkg-sdk-info-path	否	NA	pkgSdkInfo.json（构建产物中依赖的HAR的基本信息，包括模块名和版本）文件路径，文件名必须为pkgSdkInfo.json。 从API version 23开始支持该参数。
+--skills-path	否	NA	存放skill目录的路径。打包时，根据module.json5文件中的skillProfiles配置项，将--skills-path目录下对应的skill内容打入HSP包内。 当bundleType为app、atomicService或skill时，允许传入该参数。当bundleType为shared、appService或appPlugin时，不允许传入该参数，否则打包失败。 从API版本26.0.0开始支持该参数。
 
 App打包指令
 
@@ -893,11 +895,15 @@ Verify stage hap info failed.
 
 可能原因
 
-module.json5中atomicService或continueBundleName存在配置错误，或app.json5中asanEnabled或hwasanEnabled存在配置错误。
+module.json5中atomicService或continueBundleName存在配置错误；或app.json5中asanEnabled或hwasanEnabled存在配置错误。
+
+module.json5中moduleType为skill并且bundleType不为skill；或bundleType为skill并且moduleType不为skill。独立skill模块的bundleType和moduleType必须同为skill。
 
 处理步骤
 
 参考asanEnabled配置错误码、hwasanEnabled配置错误码、atomicService配置错误码、continueBundleName配置错误码，更改配置项。
+
+如果是独立skill模块，确保app.json5中bundleType和module.json5中type均配置为skill。
 
 [h2]10012004 检查参数asanEnabled失败
 
@@ -1307,11 +1313,15 @@ module.json5中的atomicService、continueBundleName存在配置错误，或app.
 
 overlay配置出错。
 
+module.json5中的type既不是shared也不是skill。独立skill模块的type必须为skill。
+
 处理步骤
 
 参考asanEnabled配置错误码、hwasanEnabled配置错误码、atomicService配置错误码、continueBundleName配置错误码，更改配置项。
 
 参考检查overlay失败，更改配置项。
+
+检查module.json5，确保type配置为shared或skill。
 
 [h2]10012023 json文件格式化失败
 
@@ -1859,6 +1869,8 @@ Failed to parse module.json and bundleType.
 
 模块的app.json5配置文件中bundleType为shared，但module.json5中的type属性值不是shared。
 
+bundleType为skill，但module.json5中的type属性值不为skill；或type为skill但bundleType不为skill。独立skill模块的bundleType和moduleType必须同为skill。
+
 处理步骤
 
 确保app.json5配置文件中bundleType为app时，module.json5中的installationFree属性值为false。
@@ -1866,6 +1878,8 @@ Failed to parse module.json and bundleType.
 确保app.json5配置文件中bundleType为atomicService时，module.json5中的installationFree属性值为true。
 
 确保app.json5配置文件中bundleType为shared时，module.json5中的type属性值也是shared。
+
+确保独立skill模块时，app.json5配置文件中bundleType和module.json5中的type均配置为skill。
 
 当有多条报错信息时，优先根据第一条报错信息进行排查。
 
@@ -3156,7 +3170,7 @@ Incremental pack hsp exception.
 ### Code block 1
 
 ```
-java -jar app_packing_tool.jar --mode hap --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--hnp-path <path>] [--pkg-sdk-info-path <path>]
+java -jar app_packing_tool.jar --mode hap --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--hnp-path <path>] [--pkg-sdk-info-path <path>] [--skills-path <path>]
 ```
 
 ### Code block 2
@@ -3168,7 +3182,7 @@ java -jar app_packing_tool.jar --mode hap --json-path <path> [--maple-so-path <p
 ### Code block 3
 
 ```
-java -jar app_packing_tool.jar --mode hsp --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--pkg-sdk-info-path <path>]
+java -jar app_packing_tool.jar --mode hsp --json-path <path> [--resources-path <path>] [--ets-path <path>] [--index-path <path>] [--pack-info-path <path>] [--lib-path <path>] --out-path <path> [--force true] [--compress-level 5] [--pkg-context-path <path>] [--pkg-sdk-info-path <path>] [--skills-path <path>]
 ```
 
 ### Code block 4

@@ -150,6 +150,8 @@ buildOptionSet
     └── expandImportPath
         └── enable
         └── exclude
+    └── widget
+        └── transitiveDeps
     └── apPath
     └── hostPGO
 └── packingOptions
@@ -532,12 +534,13 @@ transformLib	字符串	可选	字节码插桩插件配置，允许开发者在�
 branchElimination	布尔值	可选	是否启用代码分支裁剪，减少编译产物大小，开启后，在release编译模式下，不会被执行到的代码分支会被裁剪掉，示例请参考branchElimination示例。 true：启用（将导致使用"ApplyChanges"功能时，对const声明的常量的值进行的修改可能不生效）。 false（缺省默认值）：不启用。 说明： 仅支持API 11及以上的Stage模型。 HAR模块仅字节码HAR配置生效，非字节码HAR配置不生效。 仅支持const声明的bool类型常量和const声明的string/number类型常量的判断表达式。 不支持间接导入，例如A文件中定义const变量A1，B文件导入A1，导出B1，ets导入B1进行判断，无法进行裁剪。
 byteCodeHar	布尔值	可选	是否构建字节码HAR，仅在HAR模块中配置后生效。详情请参考构建字节码HAR。 true：支持。 false：不支持。 说明： 从API 12开始支持。 从DevEco Studio NEXT Beta1（5.0.3.800）版本开始，当工程级build-profile.json5中useNormalizedOHMUrl配置为true时，byteCodeHar缺省默认值为true；当useNormalizedOHMUrl配置为false时，byteCodeHar缺省默认值为false。
 bundledDependencies	布尔值	可选	是否支持将多个源码HAR（本地+远程）打包成一个字节码HAR。字节码HAR、HSP、npm不会被打包进去，仅会合并源码HAR。 true：支持。 false（缺省默认值）：不支持。 说明： 仅支持字节码HAR配置该字段。 从API 12开始支持。 仅支持Stage模型。
-packSourceMap	布尔值	可选	编译字节码HAR时，是否将sourceMap文件打包到产物中。仅HAR模块支持配置，并且只对字节码HAR生效。 true：打包。 false：不打包。 该字段从DevEco Studio 5.1.0 Release版本开始支持。 说明： 如果不配置，debug模式默认值为true，release模式默认值为false。 将sourceMap打包到release的HAR包中，可能会导致HAR中的代码资产泄漏。
+packSourceMap	布尔值	可选	编译字节码HAR时，是否将sourceMap文件打包到产物中。仅HAR模块支持配置，并且只对字节码HAR生效。 true：打包。 false：不打包。 该字段从DevEco Studio 5.1.0 Release版本开始支持。 说明： 如果不配置，debug模式默认值为true，release模式默认值为false。 将sourceMap打包到release的HAR包中，可能会导致HAR中的代码资产泄露。
 autoLazyImport	布尔值	可选	编译时是否自动将符合lazy-import语法规范的import语句添加"lazy"关键字。仅支持在源码中添加"lazy"关键字，不包含依赖的字节码HAR包或HSP。关于lazy-import的介绍及相关影响请参考延迟加载（lazy import）。 true：添加。 false（缺省默认值）：不添加。 说明： 如果配置为true，编译时不会做场景识别，即源码中任何符合语法规范的import语句都会被添加"lazy"。 仅支持Stage模型。
 autoLazyFilter	对象	可选	自定义添加"lazy"关键字的模块，仅当autoLazyImport为true时生效。 从DevEco Studio 6.0.1 Beta1版本开始支持。
 reExportCheckMode	字符串	可选	针对以下场景，编译时是否进行拦截报错：使用lazy import导入的变量，在同文件中被再次导出。 noCheck（缺省默认值）：不检查，不报错。 compatible：兼容模式，报Warning。 strict：严格模式，报Error。 该字段从DevEco Studio 5.0.5 Release版本开始支持。
 skipOhModulesLint	布尔值	可选	是否跳过工程中oh_modules目录的ArkTS规则检查。从DevEco Studio 6.0.0 Beta1版本开始支持。 true：跳过。 false（缺省默认值）：不跳过。
 expandImportPath	对象	可选	import路径展开相关配置选项。 从DevEco Studio 6.0.0 Beta3版本开始支持。 说明： HAR模块不支持配置。
+widget	对象	可选	卡片编译相关配置。
 apPath	字符串	可选	说明： API 11及以上版本不再支持，即该字段配置后不再生效。 应用热点信息文件路径。
 hostPGO	布尔值	可选	是否启用配置文件引导优化功能： true：启用。 false（缺省默认值）：不启用。 从API 10开始废弃。
 
@@ -566,6 +569,9 @@ exclude	字符串数组	可选	当autoLazyImport为true时，指定不添加"laz
 字段名称	类型	可选/必选	含义
 enable	布尔值	可选	是否启用import路径展开，启用后可以提升应用的运行时性能。关于import路径展开的原理及开启后的副作用请参考通过import路径展开优化性能。 true：启用。 false（缺省默认值）：不启用。 说明： import XXX from 'A'，A必须为本地HAR模块，并且仅当A为包名时支持进行展开，A为相对路径或包名+路径都不支持展开。
 exclude	字符串数组	可选	配置oh-package.json5中的依赖别名，用于指定不展开import语句的依赖，仅支持本地HAR模块。
+
+字段名称	类型	可选/必选	含义
+transitiveDeps	布尔值	可选	卡片依赖字节码HAR，编译卡片时是否收集字节码HAR的直接和间接依赖。 true：收集。 false（缺省默认值）：不收集。 从DevEco Studio 6.1.1 Release (6.1.1.290)版本开始支持。
 
 arkOptions字段示例：
 
@@ -901,6 +907,8 @@ buildOptionSet
     └── expandImportPath
         └── enable
         └── exclude
+    └── widget
+        └── transitiveDeps
     └── apPath
     └── hostPGO
 └── packingOptions

@@ -56,9 +56,9 @@ toml	加载和转储TOML文件的功能。	pip3 install toml
 jinja2	CPU调测模板使用。	pip3 install jinja2
 numpy	精度比对时使用。	pip3 install numpy
 torch	输入、输出数据格式转换使用。	pip3 install torch
-sympy	用于进行符号计算	pip3 install sympy
-paramiko	与远程linux环境连接	pip3 install paramiko
-protobuf	模型解析	pip3 install protobuf
+sympy	用于进行符号计算。	pip3 install sympy
+paramiko	与远程linux环境连接。	pip3 install paramiko
+protobuf	模型解析。	pip3 install protobuf
 
 ## Code blocks
 

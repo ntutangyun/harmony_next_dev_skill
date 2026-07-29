@@ -22,11 +22,11 @@ AppServiceExtensionAbility组件当前仅支持2in1设备。
 
 应用集成AppServiceExtensionAbility组件需要申请ACL权限（ohos.permission.SUPPORT_APP_SERVICE_EXTENSION）。该ACL权限当前只对企业普通应用开放申请。
 
-AppServiceExtensionAbility组件内不支持调用window相关API。
+针对AppServiceExtensionAbility接口调用限制，详情请参考 @ohos.app.ability.AppServiceExtensionAbility (应用后台服务扩展组件) 的约束限制。
 
 运作机制
 
-开发者可以在UIAbility中以启动或连接的方式来拉起AppServiceExtensionAbility组件。
+开发者可以在UIAbility中以启动（startAppServiceExtensionAbility()）或连接（connectAppServiceExtensionAbility()）的方式来拉起AppServiceExtensionAbility组件。
 
 启动： 客户端必须为AppServiceExtensionAbility所属应用或者在AppServiceExtensionAbility支持的应用清单（即extensionAbilities标签的appIdentifierAllowList属性）中的应用才能调用startAppServiceExtensionAbility()接口。
 
@@ -116,9 +116,9 @@ export default class MyAppServiceExtAbility extends AppServiceExtensionAbility {
 
 {
   "module": {
-    // ···
+    // ...
     "extensionAbilities": [
-    // ···
+      // ...
       {
         "name": "MyAppServiceExtAbility",
         "description": "appService",
@@ -127,7 +127,7 @@ export default class MyAppServiceExtAbility extends AppServiceExtensionAbility {
         "srcEntry": "./ets/myappserviceextability/MyAppServiceExtAbility.ets",
         "appIdentifierAllowList": [
           // 此处填写允许启动该后台服务的客户端应用的appIdentifier列表
-        ],
+        ]
       }
     ]
   }
@@ -419,9 +419,15 @@ let options: common.ConnectOptions = {
     let data = new rpc.MessageSequence();
     let reply = new rpc.MessageSequence();
 
-    // 写入请求数据
-    data.writeInt(1);
-    data.writeInt(2);
+    try {
+         // 写入请求数据
+         data.writeInt(1);
+         data.writeInt(2);
+       } catch (error) {
+         let e: BusinessError = error as BusinessError;
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorCode ' + e.code);
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorMessage ' + e.message);
+       }
 
     remote.sendMessageRequest(REQUEST_CODE, data, reply, option).then((ret: rpc.RequestResult) => {
       if (ret.errCode === 0) {
@@ -450,13 +456,13 @@ let options: common.ConnectOptions = {
 struct ClientServerExt {
   build() {
     Column() {
-    // ···
+      // ...
       List({ initialIndex: 0 }) {
         ListItem() {
           Row() {
-            // ···
+            // ...
           }
-        // ···
+          // ...
           .onClick(() => {
             let context = this.getUIContext().getHostContext() as common.UIAbilityContext; // UIAbilityContext
             connectionId = context.connectAppServiceExtensionAbility(want, options);
@@ -464,7 +470,7 @@ struct ClientServerExt {
           })
         }
       }
-    // ···
+      // ...
     }
   }
 }
@@ -474,6 +480,7 @@ struct ClientServerExt {
 import { AppServiceExtensionAbility, Want } from '@kit.AbilityKit';
 import { rpc } from '@kit.IPCKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const TAG: string = '[MyAppServiceExtAbility]';
 const DOMAIN_NUMBER: number = 0xFF00;
@@ -484,9 +491,15 @@ class Stub extends rpc.RemoteObject {
     data: rpc.MessageSequence,
     reply: rpc.MessageSequence,
     options: rpc.MessageOption): boolean | Promise<boolean> {
-    hilog.info(DOMAIN_NUMBER, TAG, 'onRemoteMessageRequest');
-    let sum = data.readInt() + data.readInt();
-    reply.writeInt(sum);
+    try {
+         hilog.info(DOMAIN_NUMBER, TAG, 'onRemoteMessageRequest');
+         let sum = data.readInt() + data.readInt();
+         reply.writeInt(sum);
+       } catch (error) {
+         let e: BusinessError = error as BusinessError;
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorCode ' + e.code);
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorMessage ' + e.message);
+       }
     return true;
   }
 }
@@ -638,9 +651,9 @@ export default class MyAppServiceExtAbility extends AppServiceExtensionAbility {
 ```
 {
   "module": {
-    // ···
+    // ...
     "extensionAbilities": [
-    // ···
+      // ...
       {
         "name": "MyAppServiceExtAbility",
         "description": "appService",
@@ -649,7 +662,7 @@ export default class MyAppServiceExtAbility extends AppServiceExtensionAbility {
         "srcEntry": "./ets/myappserviceextability/MyAppServiceExtAbility.ets",
         "appIdentifierAllowList": [
           // 此处填写允许启动该后台服务的客户端应用的appIdentifier列表
-        ],
+        ]
       }
     ]
   }
@@ -933,9 +946,15 @@ let options: common.ConnectOptions = {
     let data = new rpc.MessageSequence();
     let reply = new rpc.MessageSequence();
 
-    // 写入请求数据
-    data.writeInt(1);
-    data.writeInt(2);
+    try {
+         // 写入请求数据
+         data.writeInt(1);
+         data.writeInt(2);
+       } catch (error) {
+         let e: BusinessError = error as BusinessError;
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorCode ' + e.code);
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorMessage ' + e.message);
+       }
 
     remote.sendMessageRequest(REQUEST_CODE, data, reply, option).then((ret: rpc.RequestResult) => {
       if (ret.errCode === 0) {
@@ -964,13 +983,13 @@ let options: common.ConnectOptions = {
 struct ClientServerExt {
   build() {
     Column() {
-    // ···
+      // ...
       List({ initialIndex: 0 }) {
         ListItem() {
           Row() {
-            // ···
+            // ...
           }
-        // ···
+          // ...
           .onClick(() => {
             let context = this.getUIContext().getHostContext() as common.UIAbilityContext; // UIAbilityContext
             connectionId = context.connectAppServiceExtensionAbility(want, options);
@@ -978,7 +997,7 @@ struct ClientServerExt {
           })
         }
       }
-    // ···
+      // ...
     }
   }
 }
@@ -990,6 +1009,7 @@ struct ClientServerExt {
 import { AppServiceExtensionAbility, Want } from '@kit.AbilityKit';
 import { rpc } from '@kit.IPCKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const TAG: string = '[MyAppServiceExtAbility]';
 const DOMAIN_NUMBER: number = 0xFF00;
@@ -1000,9 +1020,15 @@ class Stub extends rpc.RemoteObject {
     data: rpc.MessageSequence,
     reply: rpc.MessageSequence,
     options: rpc.MessageOption): boolean | Promise<boolean> {
-    hilog.info(DOMAIN_NUMBER, TAG, 'onRemoteMessageRequest');
-    let sum = data.readInt() + data.readInt();
-    reply.writeInt(sum);
+    try {
+         hilog.info(DOMAIN_NUMBER, TAG, 'onRemoteMessageRequest');
+         let sum = data.readInt() + data.readInt();
+         reply.writeInt(sum);
+       } catch (error) {
+         let e: BusinessError = error as BusinessError;
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorCode ' + e.code);
+         hilog.error(DOMAIN_NUMBER, TAG, 'errorMessage ' + e.message);
+       }
     return true;
   }
 }

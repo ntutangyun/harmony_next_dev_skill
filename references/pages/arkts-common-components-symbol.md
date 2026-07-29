@@ -204,7 +204,7 @@ SymbolSpan不支持通用事件。
 
 关于effectStrategy属性与symbolEffect属性的多种动态属性使用及生效原则，详情请参阅SymbolGlyph.symbolEffect属性的说明。
 
-通过设置SymbolEffect属性，可以同时配置SymbolGlyph的动效策略和播放状态。
+通过设置symbolEffect属性，可以同时配置SymbolGlyph的动效策略和播放状态。
 
 @State isActive: boolean = true;
 
@@ -221,7 +221,7 @@ Column() {
   })
 }
 
-通过设置SymbolEffect属性，可以同时指定SymbolGlyph的动画效果策略及其播放触发条件。
+通过设置symbolEffect属性，可以同时指定SymbolGlyph的动画效果策略及其播放触发条件。
 
 @State triggerValueReplace: number = 0;
 
@@ -238,7 +238,7 @@ Column() {
   })
 }
 
-从API version 20开始，支持通过设置SymbolEffect属性为ReplaceSymbolEffect，设置ReplaceEffectType为ReplaceEffectType.SLASH_OVERLAY，可以指定SymbolGlyph的禁用动画效果及其播放触发条件。
+从API version 20开始，支持通过设置symbolEffect属性为ReplaceSymbolEffect，设置ReplaceEffectType为ReplaceEffectType.SLASH_OVERLAY，可以指定SymbolGlyph的禁用动画效果及其播放触发条件。
 
 @State triggerValueReplace: number = 0;
 replaceFlag: boolean = true;
@@ -258,7 +258,7 @@ Column() {
   })
 }
 
-从API version 20开始，支持通过设置SymbolEffect属性为ReplaceSymbolEffect，设置ReplaceEffectType为ReplaceEffectType.CROSS_FADE，可以指定SymbolGlyph的快速替换动画效果及其播放触发条件。
+从API version 20开始，支持通过设置symbolEffect属性为ReplaceSymbolEffect，设置ReplaceEffectType为ReplaceEffectType.CROSS_FADE，可以指定SymbolGlyph的快速替换动画效果及其播放触发条件。
 
 @State triggerValueReplace: number = 0;
 replaceFlag: boolean = true;
@@ -278,7 +278,7 @@ Column() {
 
 设置阴影和渐变色
 
-从API version 20开始，支持通过symbolShadow接口实现了symbolGlyph组件显示阴影效果。
+从API version 20开始，支持通过symbolShadow接口实现了SymbolGlyph组件显示阴影效果。
 
 @State isActive: boolean = true;
 
@@ -303,7 +303,7 @@ Column() {
   })
 }
 
-从API version 20开始，支持通过shaderStyle接口实现了symbolGlyph组件显示渐变色效果。
+从API version 20开始，支持通过shaderStyle接口实现了SymbolGlyph组件显示渐变色效果。
 
 radialGradientOptions: RadialGradientOptions = {
   center: ['50%', '50%'],
@@ -352,14 +352,11 @@ struct SymbolMusicDemo {
   @State symbolSourcesIndex: number = 0;
   @State symbolText: string[] = [
     // 请将$r('app.string.play_in_order')替换为实际资源文件，在本示例中该资源文件的value值为"顺序播放"
-    this.getUIContext()
-      .getHostContext()!.resourceManager.getStringSync($r('app.string.play_in_order').id),
+    resourceGetString.resourceToString($r('app.string.play_in_order')),
     // 请将$r('app.string.play_in_single_repeat')替换为实际资源文件，在本示例中该资源文件的value值为"单曲循环"
-    this.getUIContext()
-      .getHostContext()!.resourceManager.getStringSync($r('app.string.play_in_single_repeat').id),
+    resourceGetString.resourceToString($r('app.string.play_in_single_repeat')),
     // 请将$r('app.string.shuffle_play')替换为实际资源文件，在本示例中该资源文件的value值为"随机播放"
-    this.getUIContext()
-      .getHostContext()!.resourceManager.getStringSync($r('app.string.shuffle_play').id),
+    resourceGetString.resourceToString($r('app.string.shuffle_play')),
   ];
   @State symbolTextIndex: number = 0;
   @State fontColorValue: ResourceColor = Color.Grey;
@@ -370,8 +367,7 @@ struct SymbolMusicDemo {
       Row() {
         Text() {
           // 请将$r('app.string.current_playlist')替换为实际资源文件，在本示例中该资源文件的value值为"当前播放列表"
-          Span(this.getUIContext()
-            .getHostContext()!.resourceManager.getStringSync($r('app.string.current_playlist').id))
+          Span(resourceGetString.resourceToString($r('app.string.current_playlist')))
             .fontSize(20)
             .fontWeight(FontWeight.Bolder)
           Span('（101）')
@@ -423,7 +419,7 @@ struct SymbolMusicDemo {
         .width('25%')
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲一"
@@ -943,14 +939,11 @@ struct SymbolMusicDemo {
   @State symbolSourcesIndex: number = 0;
   @State symbolText: string[] = [
     // 请将$r('app.string.play_in_order')替换为实际资源文件，在本示例中该资源文件的value值为"顺序播放"
-    this.getUIContext()
-      .getHostContext()!.resourceManager.getStringSync($r('app.string.play_in_order').id),
+    resourceGetString.resourceToString($r('app.string.play_in_order')),
     // 请将$r('app.string.play_in_single_repeat')替换为实际资源文件，在本示例中该资源文件的value值为"单曲循环"
-    this.getUIContext()
-      .getHostContext()!.resourceManager.getStringSync($r('app.string.play_in_single_repeat').id),
+    resourceGetString.resourceToString($r('app.string.play_in_single_repeat')),
     // 请将$r('app.string.shuffle_play')替换为实际资源文件，在本示例中该资源文件的value值为"随机播放"
-    this.getUIContext()
-      .getHostContext()!.resourceManager.getStringSync($r('app.string.shuffle_play').id),
+    resourceGetString.resourceToString($r('app.string.shuffle_play')),
   ];
   @State symbolTextIndex: number = 0;
   @State fontColorValue: ResourceColor = Color.Grey;
@@ -961,8 +954,7 @@ struct SymbolMusicDemo {
       Row() {
         Text() {
           // 请将$r('app.string.current_playlist')替换为实际资源文件，在本示例中该资源文件的value值为"当前播放列表"
-          Span(this.getUIContext()
-            .getHostContext()!.resourceManager.getStringSync($r('app.string.current_playlist').id))
+          Span(resourceGetString.resourceToString($r('app.string.current_playlist')))
             .fontSize(20)
             .fontWeight(FontWeight.Bolder)
           Span('（101）')
@@ -1014,7 +1006,7 @@ struct SymbolMusicDemo {
         .width('25%')
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲一"

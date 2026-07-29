@@ -73,18 +73,26 @@ struct Index {
       Column() {
         // 对象、数组中某一单个属性或数组项变化，不会触发UI刷新
         Button('change info name')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.info.name = 'Jack';
           })
         Button('change info age')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.info.age = 30;
           })
         Button('change numArr[2]')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.numArr[2] = 5;
           })
         Button('change numArr[3]')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.numArr[3] = 6;
           })
@@ -138,7 +146,7 @@ onValueChange3(monitor: IMonitor) {
 
 接口说明
 
-IMonitor类型、IMonitorValue<T>类型以及MonitorDecoratorOptions的接口说明参考API文档：状态变量变化监听。
+IMonitor类型、IMonitorValue<T>类型以及MonitorDecoratorOptions的接口说明参考API文档：@Monitor：状态变量修改监听。
 
 监听变化
 
@@ -169,11 +177,14 @@ struct Index {
     Column() {
       // 点击Button更新message和name，触发onStrChange回调
       Button('change string')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.message += '!';
           this.name = 'Jack';
         })
     }
+    .width('100%')
   }
 }
 
@@ -209,15 +220,22 @@ struct Index {
   build() {
     Column() {
       Text(`name: ${this.info.name}, age: ${this.info.age}`)
+        .fontSize(20)
+        .margin(10)
       Button('change info')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info = new Info('Lucy', 18); // 能够监听到
         })
       Button('change info.name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 监听不到
         })
     }
+    .width('100%')
   }
 }
 
@@ -268,22 +286,31 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 能够触发onNameChange方法
         })
       Button('change age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.age = 26; // 不能够触发onAgeChange方法
         })
       Button('change region')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.region = 'South'; // 能够触发onChange方法
         })
       Button('change job')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.job = 'Driver'; // 能够触发onChange方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -315,10 +342,13 @@ struct Index {
   build() {
     Column() {
       Button('change num')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.outer.inner.num = 100; // 能够触发onChange方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -362,10 +392,13 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.derived.name = 'BBB'; // 能够先后触发onBaseNameChange、onDerivedNameChange方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -442,34 +475,45 @@ struct Index {
   build() {
     Column() {
       Button('Change dimensionTwo')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onDimensionTwoChange方法
           this.arrMonitor.dimensionTwo[0][0]++;
           this.arrMonitor.dimensionTwo[1][1]++;
         })
       Button('Change dimensionThree')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onDimensionThreeChange方法
           this.arrMonitor.dimensionThree[0][0][0]++;
           this.arrMonitor.dimensionThree[1][1][0]++;
         })
       Button('Change info property')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onInfoArrPropertyChange方法
           this.arrMonitor.infoArr[0].name = 'Tom';
           this.arrMonitor.infoArr[1].age = 19;
         })
       Button('Change whole infoArr')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onInfoArrChange、onInfoArrPropertyChange、onInfoArrLengthChange方法
           this.arrMonitor.infoArr = [new Info('Cindy', 8)];
         })
       Button('Push new info to infoArr')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onInfoArrPropertyChange、onInfoArrLengthChange方法
           this.arrMonitor.infoArr.push(new Info('David', 50));
         })
     }
+    .width('100%')
   }
 }
 
@@ -521,18 +565,25 @@ struct Index {
   build() {
     Column() {
       Button('Step1: Only change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.person = new Person('Jack', 25); // 能够触发onNameChange方法，不触发onAgeChange方法
         })
       Button('Step2: Only change age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.person = new Person('Jack', 18); // 能够触发onAgeChange方法，不触发onNameChange方法
         })
       Button('Step3: Change name and age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.person = new Person('Lucy', 19); // 能够触发onNameChange、onAgeChange方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -559,12 +610,16 @@ struct Index {
   build() {
     Column() {
       Button('change count to 1000')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           for (let i = 1; i <= 1000; i++) {
             this.frequency.count = i;
           }
         })
       Button('change count to 0 then to 1000')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           for (let i = 999; i >= 0; i--) {
             this.frequency.count = i;
@@ -572,6 +627,7 @@ struct Index {
           this.frequency.count = 1000; // 最终不触发onCountChange方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -632,18 +688,25 @@ struct MonitorWildcardObject {
   build() {
     Column() {
       Button(`Change propA: ${this.cls.propA}`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cls.propA += 1; // 触发onClsChanged
         })
       Button(`Change propB: ${this.cls.propB}`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cls.propB += 1; // 触发onClsChanged
         })
       Button('Assign new object')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cls = new ClassA(-200, -200); // 触发onClsChanged
         })
     }
+    .width('100%')
   }
 }
 
@@ -683,12 +746,16 @@ struct MonitorWildcardNestedObject {
   build() {
     Column({ space: 5 }) {
       Button('1. Class0 = new Class')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // @Monitor回调触发
           // 原因：class0, class1, person变更为新对象
           this.class0 = new Class0();
         })
       Button('2. Class0 = new Class, keep Class1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调不触发
           // 原因：即使class0变化了，路径'class0.class1.person.*'中通配符前最后一个确定值person也没有改变
@@ -699,6 +766,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('3. Class0.class1 = new Class1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调触发
           // 原因：class1、person变更为新对象
@@ -707,6 +776,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('4. Class0.class1.person = new Person')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调触发
           // 原因：person变更为新对象
@@ -715,6 +786,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('5. Class0....person.last update')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调触发
           // 原因：person的属性发生变化
@@ -723,6 +796,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('6. Class0 toggle number <=> new Class0')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // @Monitor回调触发
           // 原因：person在可访问与不可访问之间切换
@@ -792,12 +867,16 @@ struct MonitorWildcardArray {
     Column() {
       // topArrayMonitor1Star与topArrayMonitorStar回调均触发
       Button('topArray = new TopArray')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.topArray = this.makeNewTopArray();
         })
 
       // 当topArray[1][0]存在时，topArrayMonitor1Star回调触发，topArrayMonitorStar回调不触发
       Button('topArray[1][0] = new Person')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 1 && this.topArray[1].length > 0) {
             this.topArray[1][0] = new Person();
@@ -806,6 +885,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[0][1]存在时，topArrayMonitor1Star与topArrayMonitorStar回调均不触发
       Button('topArray[0][1] = new Person')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 0 && this.topArray[0].length > 1) {
             this.topArray[0][1] = new Person();
@@ -814,6 +895,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[1]存在时，topArrayMonitor1Star回调触发，topArrayMonitorStar回调不触发
       Button('topArray[1].push')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 1 && this.topArray[1] instanceof ArrayOfPerson) {
             this.topArray[1].push(new Person());
@@ -822,6 +905,8 @@ struct MonitorWildcardArray {
 
       // 当topArray的length大于2时，topArrayMonitor1Star与topArrayMonitorStar回调均触发
       Button('topArray.shift (length>2)')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 2) {
             this.topArray.shift();
@@ -830,6 +915,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[0]存在时，topArrayMonitor1Star回调不触发，topArrayMonitorStar回调触发
       Button('topArray[0] = new ArrayOfPerson')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 0) {
             this.topArray[0] = new ArrayOfPerson(new Person(), new Person());
@@ -838,6 +925,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[1][0]存在时，topArrayMonitor1Star与topArrayMonitorStar回调均不触发
       Button('topArray[1][0].last update')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 1 && this.topArray[1].length > 0 && this.topArray[1][0] instanceof Person) {
             this.topArray[1][0].lastName += '~';
@@ -846,6 +935,8 @@ struct MonitorWildcardArray {
 
       // topArrayMonitor1Star回调不触发，topArrayMonitorStar回调触发
       Button('topArray = new TopArray, keep [1]')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let newTop = this.makeNewTopArray();
           newTop[1] = this.topArray[1]; // topArray.1未改变，路径'topArray.1.*'中通配符前最后一个确定值未改变
@@ -854,10 +945,13 @@ struct MonitorWildcardArray {
 
       // topArrayMonitor1Star回调不触发，topArrayMonitorStar回调触发
       Button('topArray.push')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.topArray.push(new ArrayOfPerson(new Person(), new Person()));
         })
     }
+    .width('100%')
   }
 }
 
@@ -894,21 +988,29 @@ struct MonitorWildcardDate {
     Column({ space: 5 }) {
       // API调用触发onDateChanged
       Button(`date.setMilliseconds(1000)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.date.setMilliseconds(1000);
         })
       // API调用触发onDateChanged
       Button(`date.setTime(1000)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.date.setTime(1000000);
         })
       // API调用触发onDateChanged
       Button(`Assign new Date`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.date = new Date();
         })
       // 整体赋相同值，不触发onDateChanged
       Button(`Re-assign the same Date`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let sameDate = this.date;
           this.date = sameDate;
@@ -957,15 +1059,23 @@ struct MonitorWildcardMap {
   build() {
     Column({ space: 5 }) {
       Text(`map.size: ${this.map.size}`)
+        .fontSize(20)
+        .margin(10)
       Text(`map.get('one'): ${this.map.get('one')}`)
+        .fontSize(20)
+        .margin(10)
       // 在首次点击时，onMapSizeChanged、onMapChanged回调都触发
       Button(`Init, map.set('one', 'A'), map.set('two', 'B')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.set('one', 'A');
           this.map.set('two', 'B');
         })
       // onMapSizeChanged、onMapChanged回调都触发
       Button(`Add new, map.set('three' + this.cnt, 'C')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cnt++;
           this.map.set('three' + this.cnt, 'C')
@@ -973,24 +1083,32 @@ struct MonitorWildcardMap {
       // 当'one'不存在时，onMapSizeChanged、onMapChanged回调都不触发
       // 当'one'存在时，onMapSizeChanged、onMapChanged回调都触发
       Button(`Delete from map: map.delete('one')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.delete('one')
         })
       // 当map不为空时，onMapSizeChanged、onMapChanged回调都触发
       // 当map为空时，onMapSizeChanged、onMapChanged回调都不触发
       Button(`Clear map`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.clear();
         })
       // 在首次点击且假设存在（'one' -> 'A'）时，仅onMapChanged回调触发
       // 若已经设置过（'one' -> 'TWO'），则onMapSizeChanged、onMapChanged回调都不触发
       Button(`Update one to 'TWO' - map.set('one', 'TWO')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.set('one', 'TWO');
         })
       // 当Map不存在'one'时，onMapSizeChanged、onMapChanged回调都触发
       // 当Map存在'one'时，onMapSizeChanged、onMapChanged回调都不会触发
       Button(`Update one to the same - map.set('one', sameval)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           const sameval = this.map.get('one') ?? 'one';
           this.map.set('one', sameval);
@@ -998,6 +1116,8 @@ struct MonitorWildcardMap {
       // 当Map不存在'one'时，onMapSizeChanged、onMapChanged回调都触发
       // 当Map存在'one'时，仅onMapChanged回调触发
       Button(`Update one to new value - map.set('one', newval)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let newval = 'x' + (++this.cnt);
           this.map.set('one', newval);
@@ -1005,11 +1125,12 @@ struct MonitorWildcardMap {
       // 当map为空时，仅onMapChanged回调触发
       // 当map不为空时，onMapChanged、onMapSizeChanged回调都触发
       Button(`new map`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map = new Map();
         })
     }
-    .border({ style: BorderStyle.Solid, width: 2, color: Color.Green })
   }
 }
 
@@ -1059,6 +1180,8 @@ struct MonitorWildcardSet {
     Column({ space: 5 }) {
       // onSetChanged、onSetSizeChanged回调都触发
       Button(`Add three<Num> to the set`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cnt++;
           this.set.add('three' + this.cnt);
@@ -1066,24 +1189,32 @@ struct MonitorWildcardSet {
       // 当元素不存在时，onSetChanged、onSetSizeChanged回调都不触发
       // 当元素存在时，onSetChanged、onSetSizeChanged回调都触发
       Button(`Delete 'three<Num>' from the set - set.delete(...)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set.delete('three' + this.cnt);
         })
       // 当set不为空时，onSetChanged、onSetSizeChanged回调都触发
       // 当set为空时，onSetChanged、onSetSizeChanged回调都不触发
       Button(`Clear the set - set.clear()`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set.clear();
         })
       // 当set不为空时，onSetChanged、onSetSizeChanged回调都触发
       // 当set为空时，仅onSetChanged回调触发
       Button(`Assign new set`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set = new Set();
         })
       // 当set不包含'one'时，onSetChanged、onSetSizeChanged回调都触发
       // 当set包含'one'时，onSetChanged、onSetSizeChanged回调都不触发
       Button(`Add 'one' to the set`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set.add('one');
         })
@@ -1122,10 +1253,13 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 仅会触发onNameChangeDuplicate方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -1173,10 +1307,13 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 同时触发onNameAgeChange与onNamePositionChangeDuplicate方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -1229,34 +1366,49 @@ struct Index {
   build() {
     Column() {
       Button('Change t1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t1++; // 能够触发onT1Change方法
         })
       Button('Change t2')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t2++; // 能够触发onT2Change方法
         })
       Button('Change t3')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t3++; // 能够触发onT3Change方法
         })
       Button('Change t4')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t4++; // 能够触发onT4Change方法
         })
       Button('Change var t4 to t5')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           t4 = 't5'; // 更改变量值为't5'
         })
       Button('Change t5')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t5++; // onT4Change仍监听t4，不会触发
         })
       Button('Change t4 again')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t4++; // 能够触发onT4Change方法
         })
     }
+    .width('100%')
   }
 }
 
@@ -1333,11 +1485,15 @@ struct Index {
       Text(`Important Value: ${this.textStyle.info.value}`)
         .fontColor(this.textStyle.color)
         .fontSize(this.textStyle.fontSize)
+        .margin(10)
       Button('change!')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.textStyle.info.value = Math.floor(Math.random() * 100) + 1;
         })
     }
+    .width('100%')
   }
 }
 
@@ -1382,11 +1538,16 @@ struct Child {
   build() {
     Column() {
       Text('Child')
+        .fontSize(20)
+        .margin(10)
       Button('change message in Child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.message = 'Child click to change Message';
         })
     }
+    .width('95%')
     .borderColor(Color.Red)
     .borderWidth(2)
 
@@ -1408,10 +1569,14 @@ struct Index {
   build() {
     Column() {
       Button('show/hide Child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.flag = !this.flag
         })
       Button('change message in Index')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.message = 'Index click to change Message';
         })
@@ -1472,6 +1637,8 @@ struct Index {
   build() {
     Column() {
       Button('change message')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.message = 'Index click to change message';
         })
@@ -1517,12 +1684,14 @@ struct Child {
   @Param @Require infoWrapper: InfoWrapper;
 
   aboutToDisappear(): void {
-    hilog.info(0xFF00, 'testTag', '%{public}s', 'Child aboutToDisappear', this.infoWrapper.info?.age);
+    hilog.info(0xFF00, 'testTag', '%{public}s', `Child aboutToDisappear, age: ${this.infoWrapper.info?.age}`);
   }
 
   build() {
     Column() {
       Text(`${this.infoWrapper.info?.age}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -1543,10 +1712,14 @@ struct Index {
     Column() {
       // 点击Button切换showFlag，触发Child组件的创建/销毁
       Button('change showFlag')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.showFlag = !this.showFlag;
         })
       Button('change number')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           hilog.info(0xFF00, 'testTag', '%{public}s', 'click to change age');
           this.dataArray.forEach((info: Info) => {
@@ -1556,6 +1729,8 @@ struct Index {
       if (this.showFlag) {
         Column() {
           Text('Children')
+            .fontSize(20)
+            .margin(10)
           ForEach(this.dataArray, (info: Info) => {
             Child({ infoWrapper: new InfoWrapper(info) })
           })
@@ -1604,12 +1779,14 @@ struct Child {
   }
 
   aboutToDisappear(): void {
-    hilog.info(0xFF00, 'testTag', '%{public}s', 'Child aboutToDisappear', this.infoWrapper.info?.age);
+    hilog.info(0xFF00, 'testTag', '%{public}s', `Child aboutToDisappear, age: ${this.infoWrapper.info?.age}`);
   }
 
   build() {
     Column() {
       Text(`${this.infoWrapper.info?.age}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -1633,6 +1810,7 @@ struct Index {
         .onClick(() => {
           this.showFlag = !this.showFlag;
         })
+        .margin(10)
       Button('change number')
         .onClick(() => {
           hilog.info(0xFF00, 'testTag', '%{public}s', 'click to change age');
@@ -1640,9 +1818,12 @@ struct Index {
             info.age += 100;
           })
         })
+        .margin(10)
       if (this.showFlag) {
         Column() {
           Text('Children')
+            .fontSize(20)
+            .margin(10)
           ForEach(this.dataArray, (info: Info) => {
             Child({ infoWrapper: new InfoWrapper(info) })
           })
@@ -1651,6 +1832,7 @@ struct Index {
         .borderWidth(2)
       }
     }
+    .width('100%')
   }
 }
 
@@ -1687,13 +1869,15 @@ struct Child {
   @Param @Require infoWrapper: InfoWrapper;
 
   aboutToDisappear(): void {
-    hilog.info(0xFF00, 'testTag', '%{public}s', 'Child aboutToDisappear', this.infoWrapper.info?.age);
+    hilog.info(0xFF00, 'testTag', '%{public}s', `Child aboutToDisappear, age: ${this.infoWrapper.info?.age}`);
     this.infoWrapper.info = undefined; // 使InfoWrapper对info.age的监听失效
   }
 
   build() {
     Column() {
       Text(`${this.infoWrapper.info?.age}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -1716,6 +1900,7 @@ struct Index {
         .onClick(() => {
           this.showFlag = !this.showFlag;
         })
+        .margin(10)
       Button('change number')
         .onClick(() => {
           hilog.info(0xFF00, 'testTag', '%{public}s', 'click to change age');
@@ -1723,9 +1908,12 @@ struct Index {
             info.age += 100;
           })
         })
+        .margin(10)
       if (this.showFlag) {
         Column() {
           Text('Children')
+            .fontSize(20)
+            .margin(10)
           ForEach(this.dataArray, (info: Info) => {
             Child({ infoWrapper: new InfoWrapper(info) })
           })
@@ -1734,6 +1922,7 @@ struct Index {
         .borderWidth(2)
       }
     }
+    .width('100%')
   }
 }
 
@@ -1774,6 +1963,7 @@ struct Index {
           this.info.name = 'Johny';
         })
     }
+    .width('100%')
   }
 }
 
@@ -1782,7 +1972,13 @@ struct Index {
 property path:age change from 24 to 25
 property path:name change from John to Johny
 
-实际上name属性本身并不是可被观测的变量，不应被加入到@Monitor的入参当中。建议开发者去除对name属性的监听或者给name加上@Trace装饰成为状态变量。
+实际上name属性本身并不是可被观测的变量，不应被加入到@Monitor的入参当中。
+
+从API版本26.0.0开始，使用配置项的@Monitor对路径的监听变为互相独立的监听，各路径互不影响。若改为使用配置项的@Monitor（如@Monitor({}, 'age', 'name')），非状态变量name将被忽略，不参与监听。仅当状态变量age变化时才会触发回调，且dirty中仅包含age；当仅修改name时不会触发回调。在这种情况下，点击按钮同时修改age和name时，会输出以下日志：
+
+property path:age change from 24 to 25
+
+建议开发者去除对name属性的监听，或给name加上@Trace装饰使其成为状态变量；也可改为使用配置项的@Monitor。
 
 【正例1】
 
@@ -1816,6 +2012,7 @@ struct Index {
           this.info.name = 'Johny';
         })
     }
+    .width('100%')
   }
 }
 
@@ -1854,7 +2051,9 @@ struct Index {
   }
 }
 
-上面的代码中，@Monitor的入参为一个getter访问器的名字，但该getter访问器本身并未被@Computed装饰，不是一个可被监听的变量。但由于使用了状态变量参与了计算，在状态变量变化后，myAge也被认为发生了变化，因此触发了@Monitor回调。建议开发者给myAge添加@Computed装饰器或当getter访问器直接返回状态变量时，不监听getter访问器而是直接监听状态变量本身。
+上面的代码中，@Monitor的入参为一个getter访问器的名字，但该getter访问器本身并未被@Computed装饰，不是一个可被监听的变量。但由于使用了状态变量参与了计算，在状态变量变化后，myAge也被认为发生了变化，因此触发了@Monitor回调。从API版本26.0.0开始，若改为使用配置项的@Monitor（如@Monitor({}, 'myAge')），由于读取myAge时仍会读取状态变量age，因此行为不变，依然会触发回调。
+
+建议开发者给myAge添加@Computed装饰器使其成为状态变量，或直接监听状态变量本身。
 
 【正例2】
 
@@ -1892,6 +2091,7 @@ struct Index {
           this.info.age = 25; // 状态变量age改变
         })
     }
+    .width('100%')
   }
 }
 
@@ -1923,6 +2123,7 @@ struct Index {
           this.info.age = 25; // 状态变量age改变
         })
     }
+    .width('100%')
   }
 }
 
@@ -1931,6 +2132,8 @@ struct Index {
 @Monitor仅会保存变量可访问时的值，当状态变量变为不可访问的状态时，并不会记录其值的变化。在下面的例子中，点击三个Button，均不会触发onChange的回调。
 
 从API version 20开始，如果需要监听可访问到不可访问和不可访问到可访问的状态变化，可以使用addMonitor。
+
+从API版本26.0.0开始，使用配置项的@Monitor能够正常处理变量在可访问与不可访问之间的切换。在下面的例子中，若将@Monitor('user.age')改写为使用配置项的形式@Monitor({}, 'user.age')，则点击三个Button均会触发onChange回调，dirty中将包含路径user.age，其对应的IMonitorValue的before值与now值会分别反映可访问性切换前后的状态（变量可访问时为实际值，变量不可访问时为undefined）。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -1954,19 +2157,30 @@ struct Page {
 
   build() {
     Column() {
-      Text(`User age ${this.user?.age}`).fontSize(20)
-      Button('set user to undefined').onClick(() => {
-        // age：可访问 -> 不可访问
-        this.user = undefined;
-      })
-      Button('set user to User').onClick(() => {
-        // age：不可访问 ->可访问
-        this.user = new User();
-      })
-      Button('set user to null').onClick(() => {
-        // age：可访问->不可访问
-        this.user = null;
-      })
+      Text(`User age ${this.user?.age}`)
+        .fontSize(20)
+        .margin(10)
+      Button('set user to undefined')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // age：可访问 -> 不可访问
+          this.user = undefined;
+        })
+      Button('set user to User')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // age：不可访问 ->可访问
+          this.user = new User();
+        })
+      Button('set user to null')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // age：可访问->不可访问
+          this.user = null;
+        })
     }
   }
 }
@@ -2003,18 +2217,26 @@ struct Index {
       Column() {
         // 对象、数组中某一单个属性或数组项变化，不会触发UI刷新
         Button('change info name')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.info.name = 'Jack';
           })
         Button('change info age')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.info.age = 30;
           })
         Button('change numArr[2]')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.numArr[2] = 5;
           })
         Button('change numArr[3]')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.numArr[3] = 6;
           })
@@ -2072,11 +2294,14 @@ struct Index {
     Column() {
       // 点击Button更新message和name，触发onStrChange回调
       Button('change string')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.message += '!';
           this.name = 'Jack';
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2114,15 +2339,22 @@ struct Index {
   build() {
     Column() {
       Text(`name: ${this.info.name}, age: ${this.info.age}`)
+        .fontSize(20)
+        .margin(10)
       Button('change info')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info = new Info('Lucy', 18); // 能够监听到
         })
       Button('change info.name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 监听不到
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2171,22 +2403,31 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 能够触发onNameChange方法
         })
       Button('change age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.age = 26; // 不能够触发onAgeChange方法
         })
       Button('change region')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.region = 'South'; // 能够触发onChange方法
         })
       Button('change job')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.job = 'Driver'; // 能够触发onChange方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2220,10 +2461,13 @@ struct Index {
   build() {
     Column() {
       Button('change num')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.outer.inner.num = 100; // 能够触发onChange方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2269,10 +2513,13 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.derived.name = 'BBB'; // 能够先后触发onBaseNameChange、onDerivedNameChange方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2347,34 +2594,45 @@ struct Index {
   build() {
     Column() {
       Button('Change dimensionTwo')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onDimensionTwoChange方法
           this.arrMonitor.dimensionTwo[0][0]++;
           this.arrMonitor.dimensionTwo[1][1]++;
         })
       Button('Change dimensionThree')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onDimensionThreeChange方法
           this.arrMonitor.dimensionThree[0][0][0]++;
           this.arrMonitor.dimensionThree[1][1][0]++;
         })
       Button('Change info property')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onInfoArrPropertyChange方法
           this.arrMonitor.infoArr[0].name = 'Tom';
           this.arrMonitor.infoArr[1].age = 19;
         })
       Button('Change whole infoArr')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onInfoArrChange、onInfoArrPropertyChange、onInfoArrLengthChange方法
           this.arrMonitor.infoArr = [new Info('Cindy', 8)];
         })
       Button('Push new info to infoArr')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 能够触发onInfoArrPropertyChange、onInfoArrLengthChange方法
           this.arrMonitor.infoArr.push(new Info('David', 50));
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2424,18 +2682,25 @@ struct Index {
   build() {
     Column() {
       Button('Step1: Only change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.person = new Person('Jack', 25); // 能够触发onNameChange方法，不触发onAgeChange方法
         })
       Button('Step2: Only change age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.person = new Person('Jack', 18); // 能够触发onAgeChange方法，不触发onNameChange方法
         })
       Button('Step3: Change name and age')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.person = new Person('Lucy', 19); // 能够触发onNameChange、onAgeChange方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2464,12 +2729,16 @@ struct Index {
   build() {
     Column() {
       Button('change count to 1000')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           for (let i = 1; i <= 1000; i++) {
             this.frequency.count = i;
           }
         })
       Button('change count to 0 then to 1000')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           for (let i = 999; i >= 0; i--) {
             this.frequency.count = i;
@@ -2477,6 +2746,7 @@ struct Index {
           this.frequency.count = 1000; // 最终不触发onCountChange方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2511,18 +2781,25 @@ struct MonitorWildcardObject {
   build() {
     Column() {
       Button(`Change propA: ${this.cls.propA}`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cls.propA += 1; // 触发onClsChanged
         })
       Button(`Change propB: ${this.cls.propB}`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cls.propB += 1; // 触发onClsChanged
         })
       Button('Assign new object')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cls = new ClassA(-200, -200); // 触发onClsChanged
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2562,12 +2839,16 @@ struct MonitorWildcardNestedObject {
   build() {
     Column({ space: 5 }) {
       Button('1. Class0 = new Class')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // @Monitor回调触发
           // 原因：class0, class1, person变更为新对象
           this.class0 = new Class0();
         })
       Button('2. Class0 = new Class, keep Class1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调不触发
           // 原因：即使class0变化了，路径'class0.class1.person.*'中通配符前最后一个确定值person也没有改变
@@ -2578,6 +2859,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('3. Class0.class1 = new Class1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调触发
           // 原因：class1、person变更为新对象
@@ -2586,6 +2869,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('4. Class0.class1.person = new Person')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调触发
           // 原因：person变更为新对象
@@ -2594,6 +2879,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('5. Class0....person.last update')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 当class0为Class0类型时，@Monitor回调触发
           // 原因：person的属性发生变化
@@ -2602,6 +2889,8 @@ struct MonitorWildcardNestedObject {
           }
         })
       Button('6. Class0 toggle number <=> new Class0')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // @Monitor回调触发
           // 原因：person在可访问与不可访问之间切换
@@ -2669,12 +2958,16 @@ struct MonitorWildcardArray {
     Column() {
       // topArrayMonitor1Star与topArrayMonitorStar回调均触发
       Button('topArray = new TopArray')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.topArray = this.makeNewTopArray();
         })
 
       // 当topArray[1][0]存在时，topArrayMonitor1Star回调触发，topArrayMonitorStar回调不触发
       Button('topArray[1][0] = new Person')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 1 && this.topArray[1].length > 0) {
             this.topArray[1][0] = new Person();
@@ -2683,6 +2976,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[0][1]存在时，topArrayMonitor1Star与topArrayMonitorStar回调均不触发
       Button('topArray[0][1] = new Person')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 0 && this.topArray[0].length > 1) {
             this.topArray[0][1] = new Person();
@@ -2691,6 +2986,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[1]存在时，topArrayMonitor1Star回调触发，topArrayMonitorStar回调不触发
       Button('topArray[1].push')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 1 && this.topArray[1] instanceof ArrayOfPerson) {
             this.topArray[1].push(new Person());
@@ -2699,6 +2996,8 @@ struct MonitorWildcardArray {
 
       // 当topArray的length大于2时，topArrayMonitor1Star与topArrayMonitorStar回调均触发
       Button('topArray.shift (length>2)')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 2) {
             this.topArray.shift();
@@ -2707,6 +3006,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[0]存在时，topArrayMonitor1Star回调不触发，topArrayMonitorStar回调触发
       Button('topArray[0] = new ArrayOfPerson')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 0) {
             this.topArray[0] = new ArrayOfPerson(new Person(), new Person());
@@ -2715,6 +3016,8 @@ struct MonitorWildcardArray {
 
       // 当topArray[1][0]存在时，topArrayMonitor1Star与topArrayMonitorStar回调均不触发
       Button('topArray[1][0].last update')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           if (this.topArray.length > 1 && this.topArray[1].length > 0 && this.topArray[1][0] instanceof Person) {
             this.topArray[1][0].lastName += '~';
@@ -2723,6 +3026,8 @@ struct MonitorWildcardArray {
 
       // topArrayMonitor1Star回调不触发，topArrayMonitorStar回调触发
       Button('topArray = new TopArray, keep [1]')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let newTop = this.makeNewTopArray();
           newTop[1] = this.topArray[1]; // topArray.1未改变，路径'topArray.1.*'中通配符前最后一个确定值未改变
@@ -2731,10 +3036,13 @@ struct MonitorWildcardArray {
 
       // topArrayMonitor1Star回调不触发，topArrayMonitorStar回调触发
       Button('topArray.push')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.topArray.push(new ArrayOfPerson(new Person(), new Person()));
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -2767,21 +3075,29 @@ struct MonitorWildcardDate {
     Column({ space: 5 }) {
       // API调用触发onDateChanged
       Button(`date.setMilliseconds(1000)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.date.setMilliseconds(1000);
         })
       // API调用触发onDateChanged
       Button(`date.setTime(1000)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.date.setTime(1000000);
         })
       // API调用触发onDateChanged
       Button(`Assign new Date`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.date = new Date();
         })
       // 整体赋相同值，不触发onDateChanged
       Button(`Re-assign the same Date`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let sameDate = this.date;
           this.date = sameDate;
@@ -2824,15 +3140,23 @@ struct MonitorWildcardMap {
   build() {
     Column({ space: 5 }) {
       Text(`map.size: ${this.map.size}`)
+        .fontSize(20)
+        .margin(10)
       Text(`map.get('one'): ${this.map.get('one')}`)
+        .fontSize(20)
+        .margin(10)
       // 在首次点击时，onMapSizeChanged、onMapChanged回调都触发
       Button(`Init, map.set('one', 'A'), map.set('two', 'B')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.set('one', 'A');
           this.map.set('two', 'B');
         })
       // onMapSizeChanged、onMapChanged回调都触发
       Button(`Add new, map.set('three' + this.cnt, 'C')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cnt++;
           this.map.set('three' + this.cnt, 'C')
@@ -2840,24 +3164,32 @@ struct MonitorWildcardMap {
       // 当'one'不存在时，onMapSizeChanged、onMapChanged回调都不触发
       // 当'one'存在时，onMapSizeChanged、onMapChanged回调都触发
       Button(`Delete from map: map.delete('one')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.delete('one')
         })
       // 当map不为空时，onMapSizeChanged、onMapChanged回调都触发
       // 当map为空时，onMapSizeChanged、onMapChanged回调都不触发
       Button(`Clear map`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.clear();
         })
       // 在首次点击且假设存在（'one' -> 'A'）时，仅onMapChanged回调触发
       // 若已经设置过（'one' -> 'TWO'），则onMapSizeChanged、onMapChanged回调都不触发
       Button(`Update one to 'TWO' - map.set('one', 'TWO')`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map.set('one', 'TWO');
         })
       // 当Map不存在'one'时，onMapSizeChanged、onMapChanged回调都触发
       // 当Map存在'one'时，onMapSizeChanged、onMapChanged回调都不会触发
       Button(`Update one to the same - map.set('one', sameval)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           const sameval = this.map.get('one') ?? 'one';
           this.map.set('one', sameval);
@@ -2865,6 +3197,8 @@ struct MonitorWildcardMap {
       // 当Map不存在'one'时，onMapSizeChanged、onMapChanged回调都触发
       // 当Map存在'one'时，仅onMapChanged回调触发
       Button(`Update one to new value - map.set('one', newval)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let newval = 'x' + (++this.cnt);
           this.map.set('one', newval);
@@ -2872,11 +3206,12 @@ struct MonitorWildcardMap {
       // 当map为空时，仅onMapChanged回调触发
       // 当map不为空时，onMapChanged、onMapSizeChanged回调都触发
       Button(`new map`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.map = new Map();
         })
     }
-    .border({ style: BorderStyle.Solid, width: 2, color: Color.Green })
   }
 }
 ```
@@ -2920,6 +3255,8 @@ struct MonitorWildcardSet {
     Column({ space: 5 }) {
       // onSetChanged、onSetSizeChanged回调都触发
       Button(`Add three<Num> to the set`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.cnt++;
           this.set.add('three' + this.cnt);
@@ -2927,24 +3264,32 @@ struct MonitorWildcardSet {
       // 当元素不存在时，onSetChanged、onSetSizeChanged回调都不触发
       // 当元素存在时，onSetChanged、onSetSizeChanged回调都触发
       Button(`Delete 'three<Num>' from the set - set.delete(...)`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set.delete('three' + this.cnt);
         })
       // 当set不为空时，onSetChanged、onSetSizeChanged回调都触发
       // 当set为空时，onSetChanged、onSetSizeChanged回调都不触发
       Button(`Clear the set - set.clear()`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set.clear();
         })
       // 当set不为空时，onSetChanged、onSetSizeChanged回调都触发
       // 当set为空时，仅onSetChanged回调触发
       Button(`Assign new set`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set = new Set();
         })
       // 当set不包含'one'时，onSetChanged、onSetSizeChanged回调都触发
       // 当set包含'one'时，onSetChanged、onSetSizeChanged回调都不触发
       Button(`Add 'one' to the set`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.set.add('one');
         })
@@ -2981,10 +3326,13 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 仅会触发onNameChangeDuplicate方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3034,10 +3382,13 @@ struct Index {
   build() {
     Column() {
       Button('change name')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.name = 'Jack'; // 同时触发onNameAgeChange与onNamePositionChangeDuplicate方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3092,34 +3443,49 @@ struct Index {
   build() {
     Column() {
       Button('Change t1')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t1++; // 能够触发onT1Change方法
         })
       Button('Change t2')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t2++; // 能够触发onT2Change方法
         })
       Button('Change t3')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t3++; // 能够触发onT3Change方法
         })
       Button('Change t4')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t4++; // 能够触发onT4Change方法
         })
       Button('Change var t4 to t5')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           t4 = 't5'; // 更改变量值为't5'
         })
       Button('Change t5')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t5++; // onT4Change仍监听t4，不会触发
         })
       Button('Change t4 again')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.t4++; // 能够触发onT4Change方法
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3182,11 +3548,15 @@ struct Index {
       Text(`Important Value: ${this.textStyle.info.value}`)
         .fontColor(this.textStyle.color)
         .fontSize(this.textStyle.fontSize)
+        .margin(10)
       Button('change!')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.textStyle.info.value = Math.floor(Math.random() * 100) + 1;
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3229,11 +3599,16 @@ struct Child {
   build() {
     Column() {
       Text('Child')
+        .fontSize(20)
+        .margin(10)
       Button('change message in Child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.message = 'Child click to change Message';
         })
     }
+    .width('95%')
     .borderColor(Color.Red)
     .borderWidth(2)
 
@@ -3255,10 +3630,14 @@ struct Index {
   build() {
     Column() {
       Button('show/hide Child')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.flag = !this.flag
         })
       Button('change message in Index')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.message = 'Index click to change Message';
         })
@@ -3303,6 +3682,8 @@ struct Index {
   build() {
     Column() {
       Button('change message')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.info.message = 'Index click to change message';
         })
@@ -3352,12 +3733,14 @@ struct Child {
   @Param @Require infoWrapper: InfoWrapper;
 
   aboutToDisappear(): void {
-    hilog.info(0xFF00, 'testTag', '%{public}s', 'Child aboutToDisappear', this.infoWrapper.info?.age);
+    hilog.info(0xFF00, 'testTag', '%{public}s', `Child aboutToDisappear, age: ${this.infoWrapper.info?.age}`);
   }
 
   build() {
     Column() {
       Text(`${this.infoWrapper.info?.age}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -3378,10 +3761,14 @@ struct Index {
     Column() {
       // 点击Button切换showFlag，触发Child组件的创建/销毁
       Button('change showFlag')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.showFlag = !this.showFlag;
         })
       Button('change number')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           hilog.info(0xFF00, 'testTag', '%{public}s', 'click to change age');
           this.dataArray.forEach((info: Info) => {
@@ -3391,6 +3778,8 @@ struct Index {
       if (this.showFlag) {
         Column() {
           Text('Children')
+            .fontSize(20)
+            .margin(10)
           ForEach(this.dataArray, (info: Info) => {
             Child({ infoWrapper: new InfoWrapper(info) })
           })
@@ -3437,12 +3826,14 @@ struct Child {
   }
 
   aboutToDisappear(): void {
-    hilog.info(0xFF00, 'testTag', '%{public}s', 'Child aboutToDisappear', this.infoWrapper.info?.age);
+    hilog.info(0xFF00, 'testTag', '%{public}s', `Child aboutToDisappear, age: ${this.infoWrapper.info?.age}`);
   }
 
   build() {
     Column() {
       Text(`${this.infoWrapper.info?.age}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -3466,6 +3857,7 @@ struct Index {
         .onClick(() => {
           this.showFlag = !this.showFlag;
         })
+        .margin(10)
       Button('change number')
         .onClick(() => {
           hilog.info(0xFF00, 'testTag', '%{public}s', 'click to change age');
@@ -3473,9 +3865,12 @@ struct Index {
             info.age += 100;
           })
         })
+        .margin(10)
       if (this.showFlag) {
         Column() {
           Text('Children')
+            .fontSize(20)
+            .margin(10)
           ForEach(this.dataArray, (info: Info) => {
             Child({ infoWrapper: new InfoWrapper(info) })
           })
@@ -3484,6 +3879,7 @@ struct Index {
         .borderWidth(2)
       }
     }
+    .width('100%')
   }
 }
 ```
@@ -3522,13 +3918,15 @@ struct Child {
   @Param @Require infoWrapper: InfoWrapper;
 
   aboutToDisappear(): void {
-    hilog.info(0xFF00, 'testTag', '%{public}s', 'Child aboutToDisappear', this.infoWrapper.info?.age);
+    hilog.info(0xFF00, 'testTag', '%{public}s', `Child aboutToDisappear, age: ${this.infoWrapper.info?.age}`);
     this.infoWrapper.info = undefined; // 使InfoWrapper对info.age的监听失效
   }
 
   build() {
     Column() {
       Text(`${this.infoWrapper.info?.age}`)
+        .fontSize(20)
+        .margin(10)
     }
   }
 }
@@ -3551,6 +3949,7 @@ struct Index {
         .onClick(() => {
           this.showFlag = !this.showFlag;
         })
+        .margin(10)
       Button('change number')
         .onClick(() => {
           hilog.info(0xFF00, 'testTag', '%{public}s', 'click to change age');
@@ -3558,9 +3957,12 @@ struct Index {
             info.age += 100;
           })
         })
+        .margin(10)
       if (this.showFlag) {
         Column() {
           Text('Children')
+            .fontSize(20)
+            .margin(10)
           ForEach(this.dataArray, (info: Info) => {
             Child({ infoWrapper: new InfoWrapper(info) })
           })
@@ -3569,6 +3971,7 @@ struct Index {
         .borderWidth(2)
       }
     }
+    .width('100%')
   }
 }
 ```
@@ -3607,6 +4010,7 @@ struct Index {
           this.info.name = 'Johny';
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -3619,6 +4023,12 @@ property path:name change from John to Johny
 ```
 
 ### Code block 34
+
+```
+property path:age change from 24 to 25
+```
+
+### Code block 35
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -3651,11 +4061,12 @@ struct Index {
           this.info.name = 'Johny';
         })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 35
+### Code block 36
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -3692,7 +4103,7 @@ struct Index {
 }
 ```
 
-### Code block 36
+### Code block 37
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -3727,11 +4138,12 @@ struct Index {
           this.info.age = 25; // 状态变量age改变
         })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 37
+### Code block 38
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -3760,11 +4172,12 @@ struct Index {
           this.info.age = 25; // 状态变量age改变
         })
     }
+    .width('100%')
   }
 }
 ```
 
-### Code block 38
+### Code block 39
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -3789,19 +4202,30 @@ struct Page {
 
   build() {
     Column() {
-      Text(`User age ${this.user?.age}`).fontSize(20)
-      Button('set user to undefined').onClick(() => {
-        // age：可访问 -> 不可访问
-        this.user = undefined;
-      })
-      Button('set user to User').onClick(() => {
-        // age：不可访问 ->可访问
-        this.user = new User();
-      })
-      Button('set user to null').onClick(() => {
-        // age：可访问->不可访问
-        this.user = null;
-      })
+      Text(`User age ${this.user?.age}`)
+        .fontSize(20)
+        .margin(10)
+      Button('set user to undefined')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // age：可访问 -> 不可访问
+          this.user = undefined;
+        })
+      Button('set user to User')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // age：不可访问 ->可访问
+          this.user = new User();
+        })
+      Button('set user to null')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // age：可访问->不可访问
+          this.user = null;
+        })
     }
   }
 }

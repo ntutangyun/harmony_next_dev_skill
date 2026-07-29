@@ -113,7 +113,7 @@ extRuleSet：配置需要检查的自定义规则，具体请参考：自定义�
 
 [h2]操作方法
 
-在已打开的代码编辑器窗口单击右键点击Code Linter，或在工程管理窗口中鼠标选中单个或多个工程文件/目录，右键选择Code Linter > Full Linter执行代码全量检查。
+在已打开的代码编辑器窗口右键点击Code Linter，或在工程管理窗口中鼠标选中单个或多个工程文件/目录，右键选择Code Linter > Full Linter执行代码全量检查。
 
 如只需对Git工程中增量文件（包含新增/修改/重命名）进行检查，可在commit界面右下角点击齿轮图标，选择Incremental Linter执行增量检查。
 

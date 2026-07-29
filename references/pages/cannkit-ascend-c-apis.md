@@ -6,13 +6,13 @@ AscendC提供一组类库API，开发者使用标准C++语法和类库API进行�
 
 Kernel API：用于实现算子核函数的API接口。包括：
 
-基本数据结构： Kernel API中使用到的基本数据结构，比如GlobalTensor和LocalTensor。
+基本数据结构：Kernel API中使用到的基本数据结构，比如GlobalTensor和LocalTensor。
 
-基础API： 实现对硬件能力的抽象，开放芯片的能力，保证完备性和兼容性。标注为ISASI（Instruction Set Architecture Special Interface，硬件体系结构相关的接口）类别的API，不能保证跨硬件版本兼容。
+基础API：实现对硬件能力的抽象，开放芯片的能力，保证完备性和兼容性。标注为ISASI（Instruction Set Architecture Special Interface，硬件体系结构相关的接口）类别的API，不能保证跨硬件版本兼容。
 
-高阶API： 实现一些常用的计算算法，用于提高编程开发效率，通常会调用多种基础API实现。高阶API包括数学库、Matmul、Softmax等API。高阶API可以保证兼容性。
+高阶API：实现一些常用的计算算法，用于提高编程开发效率，通常会调用多种基础API实现。高阶API包括数学库、Matmul、Softmax等API。高阶API可以保证兼容性。
 
-Host API：
+Host API：用于自定义算子的注册、Tiling数据管理及硬件平台信息获取。
 
 高阶API配套的Tiling API：kernel侧高阶API配套的Tiling API，方便开发者获取kernel计算时所需的Tiling参数。
 
@@ -84,7 +84,7 @@ TPipe	TPipe是用来管理全局内存等资源的框架。通过TPipe类提供�
 GetTPipePtr	获取框架当前管理全局内存的TPipe指针，开发者获取指针后，可进行TPipe相关的操作。
 TBufPool	TPipe可以管理全局内存资源，而TBufPool可以手动管理或复用Unified Buffer/L1 Buffer物理内存，主要用于多个stage计算中Unified Buffer/L1 Buffer物理内存不足的场景。
 TQue	提供入队出队等接口，通过队列（Queue）完成任务间通信和同步。
-TQueBind	TQueBind绑定源逻辑位置和目的逻辑位置，根据源位置和目的位置，来确定内存分配的位置 、插入对应的同步事件，帮助开发者解决内存分配和管理、同步等问题。
+TQueBind	TQueBind绑定源逻辑位置和目的逻辑位置，根据源位置和目的位置，来确定内存分配的位置、插入对应的同步事件，帮助开发者解决内存分配和管理、同步等问题。
 TBuf	使用AscendC编程的过程中，可能会用到一些临时变量。这些临时变量占用的内存可以使用TBuf数据结构来管理。
 GetUserWorkspace	获取开发者使用的workspace指针。
 SetSysWorkSpace	在进行融合算子编程时，由于框架通信机制需要使用到workspace，也就是系统workspace，所以在该场景下，开发者要调用该接口，设置系统workspace的指针。

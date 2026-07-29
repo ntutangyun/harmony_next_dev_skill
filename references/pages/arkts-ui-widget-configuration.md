@@ -79,7 +79,7 @@ uiSyntax	表示该卡片的类型，当前支持如下两种类型： - arkts：
 window	用于定义与显示窗口相关的配置。 说明： 该字段仅对JS卡片生效。	对象	可缺省，缺省值参考window标签表格。
 isDefault	表示该卡片是否为默认卡片(在卡片中心内希望优先展示的卡片)，每个应用有且只有一个默认卡片。 - true：默认卡片。 - false：非默认卡片。 说明： 应用上架时每个应用只允许配置一张默认卡片。	布尔值	否
 colorMode(deprecated)	表示卡片的主题样式，取值范围如下： - auto：跟随系统的颜色模式值选取主题。 - dark：深色主题。 - light：浅色主题。 说明： 1. 从API version 12开始支持该配置项，从API version 20开始废弃该配置项，卡片主题样式统一跟随系统的颜色模式。 2. 该字段仅对JS卡片生效。	字符串	可缺省，缺省值为“auto”。
-supportDimensions	表示卡片支持的外观规格，取值范围： - 1 * 1：表示1行1列的一宫格。 - 1 * 2：表示1行2列的二宫格。 - 2 * 2：表示2行2列的四宫格。 - 2 * 4：表示2行4列的八宫格。 - 2 * 3：表示2行3列的六宫格。 - 3 * 3：表示3行3列的九宫格。 - 4 * 4：表示4行4列的十六宫格。 - 6 * 4：表示6行4列的二十四宫格。 说明： 2 * 3和 3 * 3仅支持手表设备， 1 * 1只支持在锁屏上使用。	字符串数组	否
+supportDimensions	表示卡片支持的外观规格，取值范围： - 1 * 1：表示1行1列的一宫格。 - 1 * 2：表示1行2列的二宫格。 - 2 * 2：表示2行2列的四宫格。 - 2 * 4：表示2行4列的八宫格。 - 2 * 3：表示2行3列的六宫格。 - 3 * 3：表示3行3列的九宫格。 - 4 * 4：表示4行4列的十六宫格。 - 6 * 4：表示6行4列的二十四宫格。 说明：具体设备支持情况参考supportDimensions字段与设备支持关系表。	字符串数组	否
 defaultDimension	表示卡片的默认尺寸，取值必须在该卡片supportDimensions配置的列表中。	字符串	否
 updateEnabled	表示卡片是否支持周期性刷新（包含定时刷新和定点刷新），取值范围： - true：表示支持周期性刷新，可以在定时刷新（updateDuration）和定点刷新（scheduledUpdateTime）两种方式任选其一，当两者同时配置时，定时刷新优先生效。 - false：表示不支持周期性刷新。	布尔类型	否
 scheduledUpdateTime	表示卡片的定点刷新的时刻，采用24小时制，精确到分钟，例如："10:30"。 说明： updateDuration参数优先级高于scheduledUpdateTime，两者同时配置时，以updateDuration配置的刷新时间为准。	字符串	可缺省，缺省值为“0:0”，缺省时不进行定点刷新。
@@ -99,7 +99,7 @@ conditionUpdate	表示卡片支持的条件刷新。取值范围如下： - netw
 funInteractionParams	趣味交互类型互动卡片扩展字段。从API version 20开始，支持该字段。	对象	可缺省，缺省为空。funInteractionParams 和 sceneAnimationParams 同时配置时识别为趣味交互类型互动卡片。
 sceneAnimationParams	场景动效类型互动卡片扩展字段。从API version 20开始，支持该字段。	对象	可缺省，缺省为空。funInteractionParams 和 sceneAnimationParams 同时配置时识别为趣味交互类型互动卡片。
 resizable	表示是否可以拖拽卡片调整大小。调整值必须在该卡片或者同groupId卡片的supportDimensions配置列表中。 - true：可以调整大小。 - false：不可以调整大小。 说明： 从API version 20开始，支持该字段。	布尔类型	可缺省，缺省值为false。
-groupId	表示一组卡片的共同id。多张卡片的groupId相同且resizable为true时，多张卡片的supportDimensions配置共享，推荐多张卡片功能相同且需要调整卡片尺寸时配置。 示例一：卡片A的groupId配置为'1'，resizeable配置为true，supportDimension为2*2。卡片B的groupId配置为'1'，resizeable配置为true，supportDimension为2*4。那么支持卡片A、B之间调整大小。 示例二：当supportDimension存在多个，resizable设置为true时，优先在同一张卡片之间调整大小。卡片A的resizeable配置为true，supportDimension为2*2、2*4，支持卡片A的两个尺寸之间调整大小。 示例三：卡片A的groupId配置为'1'，resizeable配置为true，supportDimension为1*2。卡片B的groupId配置为'1'，resizeable配置为true，supportDimension为2*2、2*4、4*4。卡片A可以调整到卡片B的默认尺寸，卡片B只支持在B卡片支持的三个尺寸之间调整大小，无法调整为卡片A。 说明： 从API version 20开始，支持该字段。	字符串	可缺省，空字符串。
+groupId	表示一组卡片的共同id。多张卡片的groupId相同且resizable为true时，多张卡片的supportDimensions配置共享，推荐多张卡片功能相同且需要调整卡片尺寸时配置。 示例一：卡片A的groupId配置为'1'，resizable配置为true，supportDimension为2*2。卡片B的groupId配置为'1'，resizable配置为true，supportDimension为2*4。那么支持卡片A、B之间调整大小。 示例二：当supportDimension存在多个，resizable设置为true时，优先在同一张卡片之间调整大小。卡片A的resizable配置为true，supportDimension为2*2、2*4，支持卡片A的两个尺寸之间调整大小。 示例三：卡片A的groupId配置为'1'，resizable配置为true，supportDimension为1*2。卡片B的groupId配置为'1'，resizable配置为true，supportDimension为2*2、2*4、4*4。卡片A可以调整到卡片B的默认尺寸，卡片B只支持在B卡片支持的三个尺寸之间调整大小，无法调整为卡片A。 说明： 从API version 20开始，支持该字段。	字符串	可缺省，空字符串。
 supportDeviceTypes	表示特定卡片支持的设备类型。例如，卡片的supportDeviceTypes字段配置了“phone”、“tablet”、“tv”，那么该卡片就支持在手机、平板、大屏上面显示。 说明： 从API version 22开始，支持该字段。	字符串数组	可缺省，缺省值：["phone", "tablet", "tv", "wearable", "car", "2in1"]。
 supportDevicePerformanceClasses	表示特定卡片支持的设备性能等级信息。例如，卡片的supportDevicePerformanceClasses字段配置了“high”、“medium”、“low”，那么该卡片就支持在性能等级为“high”、“medium”、“low”设备上面显示。 说明： 从API version 22开始，支持该字段。	字符串数组	可缺省，缺省值：["high", "medium", "low"]。
 standby	待机屏保显示页面卡片扩展字段。 说明： 从API version 23开始，支持该字段。依赖系统实现待机屏保显示应用后展示	对象	可缺省，属性缺省值见standby标签。
@@ -141,7 +141,7 @@ autoDesignWidth	标识页面设计基准宽度是否自动计算。当配置为t
 abilityName	字符串	否	趣味交互场景LiveFormExtensionAbility名称，默认为空。
 targetBundleName	字符串	是	趣味交互场景主包包名。
 subBundleName	字符串	否	趣味交互场景独立分包名，默认为空。
-keepStateDuration	数值	否	趣味交互场景无交互时，激活态保持时长。默认值为10000，单位ms。取值为[0,60000]的整数，超过取值范围则取最大值60000。 说明： 在API版本26.0.0之前该字段为[0,10000]的整数，超过取值范围则取默认值10000。
+keepStateDuration	数值	否	趣味交互场景无交互时，激活态保持时长。默认值为10000，单位ms。取值为(0,60000]的整数，超过取值范围则取最大值60000。 说明： 在API版本26.0.0之前该字段为(0,10000]的整数，超过取值范围则取默认值10000。
 
 {
   "forms": [
@@ -162,7 +162,7 @@ keepStateDuration	数值	否	趣味交互场景无交互时，激活态保持时
 名称	类型	必填	说明
 abilityName	字符串	是	场景动效LiveFormExtensionAbility名称。
 disabledDesktopBehaviors	字符串数组	否	支持的取值包括SWIPE_DESKTOP（滑动桌面）、PULL_DOWN_SEARCH（下拉全搜）、LONG_CLICK（长按）、DRAG（拖动）。可以取值一个或多个，缺省表示不禁用任何行为。 说明： 从API version 20开始支持该字段配置，功能仅对系统应用生效。
-triggerTypes	字符串数组	否	场景动效触发类型，支持的取值包括shake（摇一摇）。 说明： 从API version 26.0.0开始，支持该字段。
+triggerTypes	字符串数组	否	场景动效触发类型，支持的取值包括shake（摇一摇）。 说明： 从API版本26.0.0开始，支持该字段。
 
    {
      "forms": [
@@ -183,7 +183,7 @@ triggerTypes	字符串数组	否	场景动效触发类型，支持的取值包�
 
 属性名称	含义	数据类型	是否可缺省
 isSupported	标识卡片是否支持在待机屏保显示界面展示。 - true：表示卡片支持在待机屏保显示界面展示。 - false：表示卡片不支持在待机屏保显示界面展示。	布尔值	可缺省，缺省值为true。
-isAdapted	标识卡片是否针对待机屏保显示界面做过适配，配置成true，会把卡片布局组件中backgroudimage移除。 - true：表示卡片适配过待机屏保显示界面。 - false：表示卡片没有适配过待机屏保显示界面。	布尔值	可缺省，缺省值为false。
+isAdapted	标识卡片是否针对待机屏保显示界面做过适配，配置成true，会把卡片布局组件中backgroundImage移除。 - true：表示卡片适配过待机屏保显示界面。 - false：表示卡片没有适配过待机屏保显示界面。	布尔值	可缺省，缺省值为false。
 isPrivacySensitive	标识卡片是否是隐私敏感卡片，隐私敏感卡片在待机屏保显示界面展示会用蒙层覆盖。 - true：表示卡片是隐私敏感卡片。 - false：表示卡片不是隐私敏感卡片。	布尔值	可缺省，缺省值为false。
 
 {
@@ -228,6 +228,20 @@ isPrivacySensitive	标识卡片是否是隐私敏感卡片，隐私敏感卡片�
     }
   ]
 }
+
+[h2]supportDimensions字段与设备支持关系表
+
+各类型设备支持的卡片尺寸规格。其中"仅锁屏"表示该尺寸仅适用于锁屏场景；"部分机型"表示具体支持情况需根据设备桌面宫格配置判断。
+
+卡片尺寸信息	Phone	PC	2in1	Tablet	TV	Car	Wearable
+"1*2"	是	是	是	是	是	是	是
+"2*2"	是	是	是	是	是	是	是
+"2*4"	是	是	是	是	是	是	否
+"4*4"	是	是	是	是	是	是	否
+"1*1"	是（仅锁屏）	否	否	是（仅锁屏）	否	否	是
+"6*4"	是（部分机型）	是	是	是（部分机型）	否	否	否
+"2*3"	否	否	否	否	否	否	是
+"3*3"	否	否	否	否	否	否	是
 
 ## Code blocks
 

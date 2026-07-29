@@ -78,7 +78,7 @@ struct Index {
             }
           }],
           maxCount: 3 // 最大菜单显示个数配置
-        },
+        }
       }
     })
     .titleMode(HdsNavigationTitleMode.MINI)
@@ -153,7 +153,7 @@ struct Index {
             }
           }],
           maxCount: 3 // 最大菜单显示个数配置
-        },
+        }
       }
     })
     .titleMode(HdsNavigationTitleMode.MINI)

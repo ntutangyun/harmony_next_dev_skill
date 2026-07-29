@@ -523,11 +523,11 @@ hvigorfile.ts文件YYY的代码执行报错。
 
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
 
-00302038 getAllDependencyInfo接口必须在所有node完成初始化后调用
+00302038 getAllDependencyInfo接口必须在依赖收集完成后调用
 
 错误信息
 
-'getAllDependencyInfo()' must be called after all nodes have been evaluated.
+'getAllDependencyInfo()' must be called after dependencies are collected.
 
 错误描述
 
@@ -566,6 +566,42 @@ hvigorfile.ts脚本执行失败，依赖导入失败。
 在Terminal中进入“用户目录/.hvigor/wrapper/tools”目录，执行命令"npm install"。
 
 删除“用户目录/.hvigor/project_caches”缓存目录。
+
+00302041 getOhpmDependencyInfoV2接口必须在依赖收集完成后调用
+
+错误信息
+
+'getOhpmDependencyInfoV2()' must be called after dependencies are collected.
+
+错误描述
+
+依赖信息在taskGraphResolved阶段完成更新，因此getOhpmDependencyInfoV2接口需要在taskGraphResolved及之后的生命周期hook中调用。
+
+可能原因
+
+getOhpmDependencyInfoV2接口在taskGraphResolved之前的阶段调用。
+
+处理步骤
+
+参考API示例代码，在taskGraphResolved及之后的生命周期hook中调用该接口。
+
+00302042 getOhpmRemoteHspDependencyInfoV2接口必须在依赖收集完成后调用
+
+错误信息
+
+'getOhpmRemoteHspDependencyInfoV2()' must be called after dependencies are collected.
+
+错误描述
+
+依赖信息在taskGraphResolved阶段完成更新，因此getOhpmRemoteHspDependencyInfoV2接口需要在taskGraphResolved及之后的生命周期hook中调用。
+
+可能原因
+
+getOhpmRemoteHspDependencyInfoV2接口在taskGraphResolved之前的阶段调用。
+
+处理步骤
+
+参考API示例代码，在taskGraphResolved及之后的生命周期hook中调用该接口。
 
 ## Code blocks
 

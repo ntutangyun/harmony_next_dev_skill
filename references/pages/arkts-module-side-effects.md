@@ -333,41 +333,43 @@ data is  data from module
 
 下文将通过示例说明import路径展开优化性能的原理。
 
-// main.ets
-import * as har from "har"
-console.info("har.One is ", har.One); // 这里的One变量是har/src/main/ets/NumberString.ets导出的
+// src/main/ets/pages/Index.ets
+import * as har from 'expandPathHar';
 
-// har/Index.ets
-export * from "./src/main/ets/OtherModule1"
-export * from "./src/main/ets/OtherModule2"
-export * from "./src/main/ets/Utils"
-console.info("har Index.ets execute.");
+console.info('har.One is ', har.One); // 这里的One变量是expandPathHar/src/main/ets/NumberString.ets导出的
 
-// har/src/main/ets/Utils.ets
-export * from "./OtherModule3"
-export * from "./OtherModule4"
-export * from "./NumberString"
-console.info("har Utils.ets execute.");
+// expandPath/expandPathHar/Index.ets
+export * from './src/main/ets/OtherModule1'
+export * from './src/main/ets/OtherModule2'
+export * from './src/main/ets/Utils'
+console.info('expandPathHar Index.ets execute.');
 
-// staticLibrary/src/main/ets/NumberString.ets
+// expandPathHar/src/main/ets/Utils.ets
+export * from './OtherModule3'
+export * from './OtherModule4'
+export * from './NumberString'
+console.info('expandPathHar Utils.ets execute.');
+
+// expandPathHar/src/main/ets/NumberString.ets
 export const One: string = '1';
-console.info('har NumberString.ets execute.');
+console.info('expandPathHar NumberString.ets execute.');
 
-如果main.ets只需要依赖har中的NumberString模块，import xxx from "har"的写法会导致har整条链路上的模块被解析、执行，导致模块解析及执行耗时增加。上述例子中的har/Index、OtherModule1、OtherModule2、Utils、OtherModule3、OtherModule4、NumberString模块均会被解析、执行。
+如果Index.ets只需要依赖expandPathHar中的NumberString模块，import xxx from "expandPathHar"的写法会导致expandPathHar整条链路上的模块被解析、执行，导致模块解析及执行耗时增加。上述例子中的expandPathHar/Index、OtherModule1、OtherModule2、Utils、OtherModule3、OtherModule4、NumberString模块均会被解析、执行。
 
-在模块解析阶段会通过深度优先遍历的方式建立变量的绑定关系，main.ets中使用的har.One变量是由har/src/main/ets/NumberString.ets导出的，由于使用了export 的写法，建立变量的绑定关系时需要递归去进行变量名的匹配，从而*导致模块解析耗时增加。
+在模块解析阶段会通过深度优先遍历的方式建立变量的绑定关系，Index.ets中使用的har.One变量是由expandPathHar/src/main/ets/NumberString.ets导出的，由于使用了export 的写法，建立变量的绑定关系时需要递归去进行变量名的匹配，从而*导致模块解析耗时增加。
 
-在上述例子中，会先查找 har/Index.ets 文件。该文件中有多个 export * 语句，因此会依次检查 OtherModule1 和 OtherModule2 是否导出 One 变量。接着，找到 Utils 模块，该模块也有 export * 语句，因此会继续检查 OtherModule3 和 OtherModule4，最终确定 One 变量是从 NumberString 模块导出的。
+在上述例子中，会先查找 expandPathHar/Index.ets 文件。该文件中有多个 export * 语句，因此会依次检查 OtherModule1 和 OtherModule2 是否导出 One 变量。接着，找到 Utils 模块，该模块也有 export * 语句，因此会继续检查 OtherModule3 和 OtherModule4，最终确定 One 变量是从 NumberString 模块导出的。
 
 优化方式：改为如下的代码写法，跳过中间的依赖路径，直接依赖变量对应的模块。
 
-// PageEleven.ets
-import { One } from 'staticlibrary/src/main/ets/components/NumberString';
+// src/main/ets/pages/Index2.ets
+import { One } from 'expandPathHar/src/main/ets/NumberString';
+
 console.info('One is ', One);
 
-// staticLibrary/src/main/ets/NumberString.ets
+// expandPathHar/src/main/ets/NumberString.ets
 export const One: string = '1';
-console.info('har NumberString.ets execute.');
+console.info('expandPathHar NumberString.ets execute.');
 
 [h2]副作用
 
@@ -375,17 +377,18 @@ console.info('har NumberString.ets execute.');
 
 由于import路径展开会跳过中间模块的执行，若业务依赖模块的执行顺序，修改后可能会导致业务异常。
 
-// PageTwelve.ets
-import { serviceManager } from 'staticlibrary';
+// src/main/ets/pages/opIndex.ets
+import { serviceManager } from 'servicemanagerhar'
 
 serviceManager.print();
 
-import { serviceManager } from './src/main/ets/ServiceManagerPartOne';
+// serviceManagerHar/Index.ets
+import { serviceManager } from './src/main/ets/ServiceManager';
 
 serviceManager.init();
 export { serviceManager }
 
-// staticLibrary/src/main/ets/ServiceManagerPartOne.ets
+// serviceManagerHar/src/main/ets/ServiceManager.ets
 class ServiceManager {
   public inited: boolean = false;
 
@@ -408,12 +411,12 @@ ServiceManager is inited.
 
 如果进行import路径展开，展开后的代码为：
 
-// PageThirteen.ets
-import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartTwo';
+// src/main/ets/pages/Index.ets
+import { serviceManager } from 'servicemanagerhar/src/main/ets/OpServiceManager'
 
 serviceManager.print();
 
-// staticLibrary/src/main/ets/ServiceManagerPartTwo.ets
+// serviceManagerHar/src/main/ets/ServiceManager.ets
 class ServiceManager {
   public inited: boolean = false;
 
@@ -436,7 +439,7 @@ ServiceManager is not inited.
 
 产生的副作用
 
-由于har/Index模块中存在顶层代码进行ServiceManager的初始化，如果在main模块中进行import路径展开，将不会执行har/Index模块，从而导致ServiceManager未初始化，可能引起业务异常。
+由于serviceManagerHar/Index模块中存在顶层代码进行ServiceManager的初始化，如果在Index模块中进行import路径展开，将不会执行serviceManagerHar/Index模块，从而导致ServiceManager未初始化，可能引起业务异常。
 
 优化方式
 
@@ -444,12 +447,12 @@ ServiceManager is not inited.
 
 对于上文的示例，可以进行如下修改：
 
-// PageFourteen.ets
-import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartThree';
+// src/main/ets/pages/Index.ets
+import { serviceManager } from 'servicemanagerhar/src/main/ets/OpServiceManager'
 
 serviceManager.print();
 
-// staticLibrary/src/main/ets/ServiceManagerPartThree.ets
+// serviceManagerHar/src/main/ets/OpServiceManager.ets
 class ServiceManager {
   public inited: boolean = false;
 
@@ -826,105 +829,80 @@ data is  data from module
 ### Code block 37
 
 ```
-// main.ets
-import * as har from "har"
-console.info("har.One is ", har.One); // 这里的One变量是har/src/main/ets/NumberString.ets导出的
+// src/main/ets/pages/Index.ets
+import * as har from 'expandPathHar';
 
-// har/Index.ets
-export * from "./src/main/ets/OtherModule1"
-export * from "./src/main/ets/OtherModule2"
-export * from "./src/main/ets/Utils"
-console.info("har Index.ets execute.");
-
-// har/src/main/ets/Utils.ets
-export * from "./OtherModule3"
-export * from "./OtherModule4"
-export * from "./NumberString"
-console.info("har Utils.ets execute.");
+console.info('har.One is ', har.One); // 这里的One变量是expandPathHar/src/main/ets/NumberString.ets导出的
 ```
 
 ### Code block 38
 
 ```
-// staticLibrary/src/main/ets/NumberString.ets
-export const One: string = '1';
-console.info('har NumberString.ets execute.');
+// expandPath/expandPathHar/Index.ets
+export * from './src/main/ets/OtherModule1'
+export * from './src/main/ets/OtherModule2'
+export * from './src/main/ets/Utils'
+console.info('expandPathHar Index.ets execute.');
 ```
 
 ### Code block 39
 
 ```
-// PageEleven.ets
-import { One } from 'staticlibrary/src/main/ets/components/NumberString';
-console.info('One is ', One);
+// expandPathHar/src/main/ets/Utils.ets
+export * from './OtherModule3'
+export * from './OtherModule4'
+export * from './NumberString'
+console.info('expandPathHar Utils.ets execute.');
 ```
 
 ### Code block 40
 
 ```
-// staticLibrary/src/main/ets/NumberString.ets
+// expandPathHar/src/main/ets/NumberString.ets
 export const One: string = '1';
-console.info('har NumberString.ets execute.');
+console.info('expandPathHar NumberString.ets execute.');
 ```
 
 ### Code block 41
 
 ```
-// PageTwelve.ets
-import { serviceManager } from 'staticlibrary';
+// src/main/ets/pages/Index2.ets
+import { One } from 'expandPathHar/src/main/ets/NumberString';
 
-serviceManager.print();
+console.info('One is ', One);
 ```
 
 ### Code block 42
 
 ```
-import { serviceManager } from './src/main/ets/ServiceManagerPartOne';
-
-serviceManager.init();
-export { serviceManager }
+// expandPathHar/src/main/ets/NumberString.ets
+export const One: string = '1';
+console.info('expandPathHar NumberString.ets execute.');
 ```
 
 ### Code block 43
 
 ```
-// staticLibrary/src/main/ets/ServiceManagerPartOne.ets
-class ServiceManager {
-  public inited: boolean = false;
+// src/main/ets/pages/opIndex.ets
+import { serviceManager } from 'servicemanagerhar'
 
-  public init() {
-    this.inited = true;
-  }
-  public print() {
-    if (this.inited) {
-      console.info('ServiceManager is inited.');
-    } else {
-      console.error('ServiceManager is not inited.');
-    }
-  }
-}
-export let serviceManager: ServiceManager = new ServiceManager();
+serviceManager.print();
 ```
 
 ### Code block 44
 
 ```
-ServiceManager is inited.
+// serviceManagerHar/Index.ets
+import { serviceManager } from './src/main/ets/ServiceManager';
+
+serviceManager.init();
+export { serviceManager }
 ```
 
 ### Code block 45
 
 ```
-// PageThirteen.ets
-import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartTwo';
-
-serviceManager.print();
-```
-
-### Code block 46
-
-```
-// staticLibrary/src/main/ets/ServiceManagerPartTwo.ets
+// serviceManagerHar/src/main/ets/ServiceManager.ets
 class ServiceManager {
   public inited: boolean = false;
 
@@ -942,25 +920,61 @@ class ServiceManager {
 export let serviceManager: ServiceManager = new ServiceManager();
 ```
 
+### Code block 46
+
+```
+ServiceManager is inited.
+```
+
 ### Code block 47
 
 ```
-ServiceManager is not inited.
+// src/main/ets/pages/Index.ets
+import { serviceManager } from 'servicemanagerhar/src/main/ets/OpServiceManager'
+
+serviceManager.print();
 ```
 
 ### Code block 48
 
 ```
-// PageFourteen.ets
-import { serviceManager } from 'staticlibrary/src/main/ets/ServiceManagerPartThree';
+// serviceManagerHar/src/main/ets/ServiceManager.ets
+class ServiceManager {
+  public inited: boolean = false;
 
-serviceManager.print();
+  public init() {
+    this.inited = true;
+  }
+  public print() {
+    if (this.inited) {
+      console.info('ServiceManager is inited.');
+    } else {
+      console.error('ServiceManager is not inited.');
+    }
+  }
+}
+export let serviceManager: ServiceManager = new ServiceManager();
 ```
 
 ### Code block 49
 
 ```
-// staticLibrary/src/main/ets/ServiceManagerPartThree.ets
+ServiceManager is not inited.
+```
+
+### Code block 50
+
+```
+// src/main/ets/pages/Index.ets
+import { serviceManager } from 'servicemanagerhar/src/main/ets/OpServiceManager'
+
+serviceManager.print();
+```
+
+### Code block 51
+
+```
+// serviceManagerHar/src/main/ets/OpServiceManager.ets
 class ServiceManager {
   public inited: boolean = false;
 

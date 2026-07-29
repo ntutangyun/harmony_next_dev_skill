@@ -28,13 +28,18 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 调用init()方法进行初始化时，传入获取的凭据。
 
-在业务代码中，使用AGC开发平台上创建的存储区“QuickStartDemo”类初始化DatabaseZone。
+导入相关模块。
 
 import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+
+在业务代码中，使用AGC开发平台上创建的存储区“QuickStartDemo”初始化DatabaseZone。
 
 let databaseZone = cloudDatabase.zone('QuickStartDemo');
 
 说明
+
+后续“databaseZone”都需要在每个查询中独立使用，可以参考此章节创建，下文代码中不再重复创建的操作。
 
 cloudDatabase.zone方法接收的入参为“存储区名称”，即cloudDBZoneName，请参见新增存储区章节。
 
@@ -42,13 +47,7 @@ cloudDatabase.zone方法接收的入参为“存储区名称”，即cloudDBZone
 
 如果需要使用数据库查询方法，可以使用类（此处以BookInfo为例）初始化DatabaseQuery。
 
-import { BookInfo } from 'xx/BookInfo'; // xx是BookInfo文件的相对路径
-
 let condition = new cloudDatabase.DatabaseQuery(BookInfo);
-
-说明
-
-后续“databaseZone”、“condition”都需要在每个查询中独立使用，可以参考此章节创建，下文代码中不再重复创建的操作。
 
 ## Code blocks
 
@@ -66,14 +65,17 @@ let condition = new cloudDatabase.DatabaseQuery(BookInfo);
 
 ```
 import { cloudDatabase } from '@kit.CloudFoundationKit';
-
-let databaseZone = cloudDatabase.zone('QuickStartDemo');
+import { BookInfo } from '../model/BookInfo';
 ```
 
 ### Code block 3
 
 ```
-import { BookInfo } from 'xx/BookInfo'; // xx是BookInfo文件的相对路径
+let databaseZone = cloudDatabase.zone('QuickStartDemo');
+```
 
+### Code block 4
+
+```
 let condition = new cloudDatabase.DatabaseQuery(BookInfo);
 ```

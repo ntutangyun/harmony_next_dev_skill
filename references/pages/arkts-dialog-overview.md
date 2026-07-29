@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-dia
 
 从ArkUI组件树层级上来看，Overlay浮层、弹窗、模态、带Order的Overlay浮层都挂载在Root节点下。弹窗、模态、带Order的Overlay浮层根据设置的层级（数字大小）进行逐层显示，并且全部显示在Overlay浮层上面。如图所示：
 
-对于一个多页面应用，基本树结构如下所示。多个Page页面之间使用Router的接口进行跳转。NavBar和Navdestination组成的页面可以通过Navigation接口进行跳转。
+对于一个多页面应用，基本树结构如下所示。多个Page页面之间使用Router的接口进行跳转。NavBar和NavDestination组成的页面可以通过Navigation接口进行跳转。
 
 而Dialog、Popup、Menu、OverlayManager、Toast、bindSheet以及bindContentCover的组件在结合路由、导航使用时存在如下几种显示模式。
 
@@ -26,7 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-dia
 
 弹窗显示在独立窗口内，窗口层级高于应用所在窗口。
 
-在PC/2in1等设备上，开发者常期望弹窗的显示在应用窗口之外，此时需要借助子窗的能力。例如自定义弹窗可以通过CustomDialogControllerOptions中的showInSubwindow属性控制是否使用子窗功能。基于子窗显示的弹窗效果如下图所示。
+在PC/2in1等设备上，开发者常期望弹窗的显示在应用窗口之外，此时需要借助子窗的能力。例如自定义弹窗可以通过CustomDialogControllerOptions中的showInSubWindow属性控制是否使用子窗功能。基于子窗显示的弹窗效果如下图所示。
 
 此时弹窗组件的显示层级受窗口的层级管理控制，会高于当前应用所在的窗口，低于系统窗口（如系统输入法、系统弹窗等）。
 

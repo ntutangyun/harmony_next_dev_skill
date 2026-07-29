@@ -73,6 +73,12 @@ AppGallery Connect会自动生成证书对应的公钥信息，并计算出对�
 
 [h2]配置APP ID映射关系
 
+为了实现HarmonyOS 5.0及以上系统与HarmonyOS 4及以下系统间的游戏资产互通，开发者在上架游戏前，需要配置APP ID映射关系。
+
+开发者需在配置映射关系时确保HarmonyOS 4及以下游戏的玩家标识类型（playerld/openld）准确无误，以保障数据继承的准确性。
+
+若APP ID映射关系缺失或配置错误，可能导致账号资产无法互通。
+
 登录AppGallery Connect，在“开发与服务”下选择项目及项目下的游戏，左侧菜单选择“构建 > 游戏服务”，在右侧点击“新增配置”。
 
 在弹出的“新增配置信息”窗口中选择HAP游戏和APK游戏，完成后点击“下一步”。
@@ -101,11 +107,11 @@ APP ID映射关系生效后如需重新配置，请先提交映射关系的删�
 
 玩家启动游戏。
 
-游戏调用init接口初始化Game Service Kit。初始化后，弹出华为隐私协议窗口，玩家确认同意后，则继续往下执行。
+游戏调用init接口初始化Game Service Kit。初始化后，弹出华为游戏服务与隐私的声明窗口，玩家确认同意后，则继续往下执行。
 
 游戏调用unionLogin接口，要求showLoginDialog参数为false，thirdAccountInfos参数传空数组。
 
-游戏顶部弹出欢迎横幅，并向游戏返回accountName（使用华为账号登录返回值为hw_account）、accountIdentifier（选择华为账号登录返回值为hw_account）、gamePlayerId等信息。
+游戏顶部弹出欢迎横幅，并向游戏返回accountName（选择华为账号登录返回值为hw_account）、accountIdentifier（选择华为账号登录返回值为hw_account）、gamePlayerId等信息。
 
 调用verifyLocalPlayer接口，对用户设备登录的华为账号进行如下合规校验。合规校验通过后，玩家进入游戏。
 
@@ -118,7 +124,7 @@ APP ID映射关系生效后如需重新配置，请先提交映射关系的删�
 具体API说明请详见接口文档。
 
 接口名	描述
-init(context: common.UIAbilityContext, callback: AsyncCallback<void>): void	游戏初始化接口，使用默认的上下文信息，使用callback回调。
+init(context: common.UIAbilityContext, callback: AsyncCallback<void>): void	游戏启动时，需要对Game Service Kit进行初始化。在调用其他API接口前，必须先调用此API接口。使用callback异步回调。
 unionLogin(context: common.UIAbilityContext, loginParam: UnionLoginParam): Promise<UnionLoginResult>	登录接口，通过Promise对象获取返回值。
 verifyLocalPlayer(context: common.UIAbilityContext, thirdUserInfo: ThirdUserInfo): Promise<void>	合规校验接口，校验当前设备登录的华为账号的实名认证、游戏防沉迷信息，通过Promise对象获取返回值。
 
@@ -157,9 +163,9 @@ onWindowStageCreate(windowStage: window.WindowStage) {
   });
 }
 
-初始化后，游戏弹出华为隐私协议窗口，用户同意签署协议，则继续往下执行。
+初始化后，游戏弹出华为游戏服务与隐私的声明窗口，用户同意签署，则继续往下执行。
 
-若当前华为账号同意过游戏服务隐私协议，后续使用该华为账号登录的游戏将不会再弹出隐私协议窗口。
+若当前华为账号同意过华为游戏服务与隐私的声明，后续使用该华为账号登录的游戏将不再弹出该窗口。
 
 [h2]登录游戏
 

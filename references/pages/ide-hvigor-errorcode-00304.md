@@ -1003,3 +1003,23 @@ skillProfiles的srcEntries中的XXX文件不在skills/YYY/scripts目录下。
 处理步骤
 
 将skillProfiles的srcEntries中的XXX文件放在skills/YYY/scripts目录下。
+
+00304074 找不到远程包
+
+错误信息
+
+Remote package not found. At file: XXX.
+
+错误描述
+
+找不到远程包。
+
+可能原因
+
+hvigorfile.ts或hvigorconfig.ts中，在taskGraphResolved之前的阶段调用了getOhpmDependencyInfo或getOhpmRemoteHspDependencyInfo。
+
+hvigorfile.ts或hvigorconfig.ts中，直接或间接依赖的插件在taskGraphResolved之前的阶段调用了getOhpmDependencyInfo或getOhpmRemoteHspDependencyInfo。
+
+处理步骤
+
+使用getOhpmDependencyInfoV2、getOhpmRemoteHspDependencyInfoV2替换getOhpmDependencyInfo、getOhpmRemoteHspDependencyInfo。

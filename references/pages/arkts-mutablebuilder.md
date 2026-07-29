@@ -146,7 +146,7 @@ Button(`MutableBuilder`).onClick(() => {
 @State switchingBuilder: MutableBuilder<[MutableBinding]> = mutableBuilder(textBuilder);
 
 Button(`MutableBuilder`).onClick(() => {
-  // 赋值会将wrapBuilder中textBuilder中动态切换成buttonBuilder
+   // 赋值会将textBuilder动态切换成buttonBuilder
   this.switchingBuilder = mutableBuilder(buttonBuilder); // 推荐用法
 })
 
@@ -290,7 +290,7 @@ struct MyApp {
 
 点击Click to change按钮，可将textBuilder动态切换为buttonBuilder，this.message将自动加B，界面会显示initB按钮。点击initB按钮，buttonBuilder中的p.value将自动加b，如下图所示：
 
-点击Click to change按钮将textBuilder动态切换为buttonBuilder时，@Monitor将监听到全局@Builder的变化，并打印日志@Builder changed. is buttonBuilder: true。
+点击Click to change按钮将textBuilder动态切换为buttonBuilder时，@Monitor将监听到全局@Builder的变化，并打印日志Builder changed. is buttonBuilder: true。
 
 ## Code blocks
 
@@ -429,7 +429,7 @@ Button(`MutableBuilder`).onClick(() => {
 @State switchingBuilder: MutableBuilder<[MutableBinding]> = mutableBuilder(textBuilder);
 
 Button(`MutableBuilder`).onClick(() => {
-  // 赋值会将wrapBuilder中textBuilder中动态切换成buttonBuilder
+   // 赋值会将textBuilder动态切换成buttonBuilder
   this.switchingBuilder = mutableBuilder(buttonBuilder); // 推荐用法
 })
 ```

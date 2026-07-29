@@ -16,9 +16,11 @@ HarmonyOS为开发者提供了用于创建VPN的API解决方案。当前提供�
 
 使用该功能需要ohos.permission.INTERNET权限。
 
+针对VpnExtensionAbility接口调用限制，详细请参考API中的约束限制。
+
 VPN应用的显示体验
 
-借助系统提供的VPN Extension接口开发者可以构建支持不同协议的VPN服务。HarmonyOS系统提供了界面 (UI) 使用户可以了解当前VPN应用服务的启动和连接：
+开发者可以借助系统提供的@ohos.net.vpnExtension (VPN增强管理)接口构建支持不同协议的VPN服务。HarmonyOS系统提供了界面 (UI) 使用户可以了解当前VPN应用服务的启动和连接：
 
 在VPN应用首次启动连接之前，系统会显示VPN连接授权对话框。该对话框会提示用户是否信任该VPN应用并接受VPN连接请求。
 
@@ -252,7 +254,7 @@ VPN Config参数说明
 
 名称	类型	只读	可选	说明
 addresses	Array<LinkAddress>	否	否	VPN虚拟网卡的IP地址。
-routes	Array<RouteInfo>	否	是	VPN虚拟网卡的路由信息(目前最多可配置1024条路由)。
+routes	Array<RouteInfo>	否	是	VPN虚拟网卡的路由信息（API version 23前最多可配置1024条路由；从API version 23开始最多可配置10000条路由）。
 dnsAddresses	Array<string>	否	是	DNS服务器地址信息。配置DNS服务器地址后，VPN启动状态下，被代理的应用上网时，使用配置的DNS服务器进行DNS查询。
 searchDomains	Array<string>	否	是	DNS的搜索域列表。
 mtu	number	否	是	最大传输单元MTU值(单位：字节)。

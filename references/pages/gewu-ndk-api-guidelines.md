@@ -1,4 +1,4 @@
-# 格物开发指导
+# 格物服务开发指导
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gewu-ndk-api-guidelines_
 
@@ -14,7 +14,7 @@ OH_QoS_GewuErrorCode枚举型作为格物的错误码类型，各函数接口返
 
 [h2]会话句柄
 
-会话句柄用于会话的管理。通过OH_QoS_GewuSession成功创建会话时可获得会话句柄，可用于提交/中止请求和销毁会话。
+会话句柄用于会话的管理。通过OH_QoS_GewuCreateSession成功创建会话时可获得会话句柄，可用于提交/中止请求和销毁会话。
 
 typedef unsigned int OH_QoS_GewuSession;
 
@@ -55,7 +55,7 @@ OH_QoS_GewuCreateSessionResult OH_QoS_GewuCreateSession(const char* attributes);
 
 "model": string 表示会话使用的模型的路径。
 
-attributes json字符串例子：
+attributes JSON字符串例子：
 
 {
     "model": "/data/storage/el2/base/files/qwen2/"
@@ -63,7 +63,7 @@ attributes json字符串例子：
 
 返回值
 
-如果创建会话成功，返回值OH_QoS_GewuCreateSessionResult里的error为OH_QOS_GEWU_OK，而session为创建出来的会话句柄。
+如果创建会话成功，返回值OH_QoS_GewuCreateSessionResult里的error为OH_QOS_GEWU_OK，而session为创建的会话句柄。
 
 如果创建会话失败，返回值OH_QoS_GewuCreateSessionResult里的error为错误原因，其中OH_QOS_GEWU_NOMEM表示没有足够的内存创建会话。
 
@@ -113,15 +113,11 @@ OH_QoS_GewuSubmitRequest函数的各参数如下：
 
 OH_QoS_GewuSession session参数是会话句柄，表示请求要提交到哪个会话。
 
-const char* request参数为请求的json字符串，支持以下字段：
+"role": string，消息的角色类型。其中"developer"表示开发者或系统提供的指示，"user"表示用户输入，"assistant"表示模型生成结果。
 
-* "messages": array. 表示消息的数组，其中每个元素支持以下字段：
+"content": string，消息内容。
 
-* "role": string. 消息的角色类型。其中"developer"表示开发者或系统提供的指示，"user"表示用户输入，"assistant"表示模型生成结果。
-
-* "content": string. 消息内容。
-
-"stream": boolean or null. 是否使能流式推理，默认为非流式。
+"stream": boolean or null，是否使能流式推理。true表示流式推理，false或null表示非流式。
 
 OH_QoS_GewuOnResponse callback参数为请求的回调函数。
 
@@ -131,9 +127,9 @@ void* context参数为用户提供的上下文指针，用于传递给回调函�
 
 void* context参数是调用OH_QoS_GewuSubmitRequest时传进来的context指针。
 
-"role": string. 消息的角色类型，应为"assistant"。
+"role": string，消息的角色类型，应为"assistant"。
 
-"content": string. 消息内容。
+"content": string，消息内容。
 
 null: 表示没有停止。流式推理中会有多次回复，只有最后一次回复有非空的"finish_reason"。而非流式推理只有一次回复，且"finish_reason"非空。
 
@@ -179,7 +175,7 @@ OH_QoS_GewuRequest request参数为要中止的请求的句柄。
 
 示例
 
-示例如下:
+示例如下：
 
 #include <future>
 #define LOG_TAG "DEMO"
@@ -276,6 +272,7 @@ int Demo(void)
                                                                            OnChatResponse, &context);
     if (submitResult.error != OH_QOS_GEWU_OK) {
         DEMO_LOGE("failed to submit request, error=%d", (int)submitResult.error);
+        OH_QoS_GewuDestroySession(session);
         return -1;
     }
     OH_QoS_GewuRequest request = submitResult.request;
@@ -286,6 +283,7 @@ int Demo(void)
         OH_QoS_GewuErrorCode error = OH_QoS_GewuAbortRequest(session, request);
         if (error != OH_QOS_GEWU_OK) {
             DEMO_LOGE("failed to abort request, error=%d", (int)error);
+            OH_QoS_GewuDestroySession(session);
             return -1;
         }
     }
@@ -304,7 +302,7 @@ int Demo(void)
 
 说明
 
-在demo代码中，使用了第三方库nlohmann/json来简化JSON数据的解析与构造。nlohmann/json是一个现代C++的JSON库，提供了直观、简洁的方式来处理JSON数据。
+在Demo代码中，使用了第三方库nlohmann/json来简化JSON数据的解析与构造。nlohmann/json是一个现代C++的JSON库，提供了直观、简洁的方式来处理JSON数据。
 
 它的设计理念是让JSON操作像使用STL容器一样自然。
 
@@ -467,6 +465,7 @@ int Demo(void)
                                                                            OnChatResponse, &context);
     if (submitResult.error != OH_QOS_GEWU_OK) {
         DEMO_LOGE("failed to submit request, error=%d", (int)submitResult.error);
+        OH_QoS_GewuDestroySession(session);
         return -1;
     }
     OH_QoS_GewuRequest request = submitResult.request;
@@ -477,6 +476,7 @@ int Demo(void)
         OH_QoS_GewuErrorCode error = OH_QoS_GewuAbortRequest(session, request);
         if (error != OH_QOS_GEWU_OK) {
             DEMO_LOGE("failed to abort request, error=%d", (int)error);
+            OH_QoS_GewuDestroySession(session);
             return -1;
         }
     }

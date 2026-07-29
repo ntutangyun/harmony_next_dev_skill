@@ -76,7 +76,7 @@ MindSpore Lite模型转换工具提供了多种参数设置，用户可根据需
 --inputDataFormat	否	设定导出模型的输入format，只对四维输入有效。 默认值为NHWC。	NHWC、NCHW
 --inputDataType	否	设定量化模型输入tensor的数据类型。仅当模型输入tensor的量化参数（scale和zero point）配置时有效。默认与原始模型输入tensor的数据类型保持一致。 默认值为DEFAULT。	FLOAT32、INT8、UINT8、DEFAULT
 --outputDataType	否	设定量化模型输出tensor的数据类型。仅当模型输出tensor的量化参数（scale和zero point）配置时有效。默认与原始模型输出tensor的数据类型保持一致。 默认值为DEFAULT。	FLOAT32、INT8、UINT8、DEFAULT
---outputDataFormat	否	设定导出模型的输出format，只对四维输出有效。	NHWC、NCHW
+--outputDataFormat	否	设定导出模型的输出format，只对四维输出有效。 默认值为NHWC。	NHWC、NCHW
 
 说明
 

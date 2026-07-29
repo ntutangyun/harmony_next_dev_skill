@@ -1,8 +1,6 @@
-# 添加、删除和获取放通应用列表
+# 添加、删除、获取放通应用列表
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fileguard-unrestricted-app-list_
-
-说明
 
 从6.1.1(24)版本开始，新增添加、删除和获取放通应用列表的接口，支持用户维护放通应用列表。
 
@@ -23,17 +21,24 @@ getUnrestrictedApplicationList(userId?: number): Promise<Array<string>>	使用Pr
 
 导入模块。
 
-import { fileGuard } from '@kit.EnterpriseDataGuardKit';
-import { osAccount, BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { bundleManager } from '@kit.AbilityKit';
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 初始化FileGuard对象guard，调用接口addUnrestrictedApplicationList，添加放通应用列表。
 
-async function testAddUnrestrictedApplicationList() {
+const TAG: string = 'FileGuard_UnrestrictedApplicationList';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 添加放通应用列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+async function testAddUnrestrictedApplicationList(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+    let userId: number = accountId;
     let bundleFlags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION |
       bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_SIGNATURE_INFO;
     let bundleInfo: bundleManager.BundleInfo = await bundleManager.getBundleInfoForSelf(bundleFlags);
@@ -41,40 +46,59 @@ async function testAddUnrestrictedApplicationList() {
     let appIds: string[] = [appId];
 
     guard.addUnrestrictedApplicationList(appIds, userId).then(() => {
-      console.info(`Succeeded in adding the application to the unrestricted list.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in adding the application from the unrestricted list.`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to add the application to the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to add the application from the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
     })
   } catch (err) {
-    console.error(`Failed to test addUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to test addUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
   }
 }
 
 初始化FileGuard对象guard，调用接口getUnrestrictedApplicationList，可以查看放通应用列表。
 
-async function testGetUnrestrictedApplicationList() {
+const TAG: string = 'FileGuard_UnrestrictedApplicationList';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 获取放通应用列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+async function testGetUnrestrictedApplicationList(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+    let userId: number = accountId;
 
     guard.getUnrestrictedApplicationList(userId).then((appIds: string[]) => {
-      console.info(`Succeeded in getting the application to the unrestricted list. appIds: ${appIds.toString()}`);
+      hilog.info(DOMAIN, TAG,
+        `Succeeded in getting the application from the unrestricted list. appIds: ${appIds.toString()}`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to get the application to the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to get the application from the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
     })
   } catch (err) {
-    console.error(`Failed to test getUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to test getUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
   }
 }
 
 初始化FileGuard对象guard，调用接口removeUnrestrictedApplicationList，可以删除放通应用列表。
 
-async function testRemoveUnrestrictedApplicationList() {
+const TAG: string = 'FileGuard_UnrestrictedApplicationList';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 删除放通应用列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+async function testRemoveUnrestrictedApplicationList(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+    let userId: number = accountId;
 
     let bundleFlags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION |
       bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_SIGNATURE_INFO;
@@ -83,12 +107,14 @@ async function testRemoveUnrestrictedApplicationList() {
     let appIds: string[] = [appId];
 
     guard.removeUnrestrictedApplicationList(appIds, userId).then(() => {
-      console.info(`Succeeded in removing the application to the unrestricted list.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in removing the application from the unrestricted list.`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to remove the application to the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to remove the application from the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
     })
   } catch (err) {
-    console.error(`Failed to test removeUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to test removeUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
   }
 }
 
@@ -97,19 +123,26 @@ async function testRemoveUnrestrictedApplicationList() {
 ### Code block 1
 
 ```
-import { fileGuard } from '@kit.EnterpriseDataGuardKit';
-import { osAccount, BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { bundleManager } from '@kit.AbilityKit';
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-async function testAddUnrestrictedApplicationList() {
+const TAG: string = 'FileGuard_UnrestrictedApplicationList';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 添加放通应用列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+async function testAddUnrestrictedApplicationList(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+    let userId: number = accountId;
     let bundleFlags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION |
       bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_SIGNATURE_INFO;
     let bundleInfo: bundleManager.BundleInfo = await bundleManager.getBundleInfoForSelf(bundleFlags);
@@ -117,12 +150,14 @@ async function testAddUnrestrictedApplicationList() {
     let appIds: string[] = [appId];
 
     guard.addUnrestrictedApplicationList(appIds, userId).then(() => {
-      console.info(`Succeeded in adding the application to the unrestricted list.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in adding the application from the unrestricted list.`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to add the application to the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to add the application from the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
     })
   } catch (err) {
-    console.error(`Failed to test addUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to test addUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
   }
 }
 ```
@@ -130,19 +165,29 @@ async function testAddUnrestrictedApplicationList() {
 ### Code block 3
 
 ```
-async function testGetUnrestrictedApplicationList() {
+const TAG: string = 'FileGuard_UnrestrictedApplicationList';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 获取放通应用列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+async function testGetUnrestrictedApplicationList(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+    let userId: number = accountId;
 
     guard.getUnrestrictedApplicationList(userId).then((appIds: string[]) => {
-      console.info(`Succeeded in getting the application to the unrestricted list. appIds: ${appIds.toString()}`);
+      hilog.info(DOMAIN, TAG,
+        `Succeeded in getting the application from the unrestricted list. appIds: ${appIds.toString()}`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to get the application to the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to get the application from the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
     })
   } catch (err) {
-    console.error(`Failed to test getUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to test getUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
   }
 }
 ```
@@ -150,11 +195,18 @@ async function testGetUnrestrictedApplicationList() {
 ### Code block 4
 
 ```
-async function testRemoveUnrestrictedApplicationList() {
+const TAG: string = 'FileGuard_UnrestrictedApplicationList';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 删除放通应用列表。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+async function testRemoveUnrestrictedApplicationList(accountId: number) {
   try {
     let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-    let accountManager: osAccount.AccountManager = osAccount.getAccountManager();
-    let userId: number = await accountManager.getOsAccountLocalId();
+    let userId: number = accountId;
 
     let bundleFlags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION |
       bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_SIGNATURE_INFO;
@@ -163,12 +215,14 @@ async function testRemoveUnrestrictedApplicationList() {
     let appIds: string[] = [appId];
 
     guard.removeUnrestrictedApplicationList(appIds, userId).then(() => {
-      console.info(`Succeeded in removing the application to the unrestricted list.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in removing the application from the unrestricted list.`);
     }).catch((error: BusinessError) => {
-      console.error(`Failed to remove the application to the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to remove the application from the unrestricted list. Code: ${error.code}, message: ${error.message}.`);
     })
   } catch (err) {
-    console.error(`Failed to test removeUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG,
+      `Failed to test removeUnrestrictedApplicationList. Code: ${err.code}, message: ${err.message}.`);
   }
 }
 ```

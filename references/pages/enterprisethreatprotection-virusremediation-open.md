@@ -21,9 +21,9 @@ openFile(path: string): Promise<number>	获取指定路径文件的文件描述�
 
 导入模块。
 
-// 导入企业威胁防护能力模块，用于调用openFile接口
-import { virusRemediation } from '@kit.EnterpriseThreatProtectionKit';
-import { fileIo } from '@kit.CoreFileKit';
+ // 导入企业威胁防护能力模块和文件IO模块
+ import { virusRemediation } from '@kit.EnterpriseThreatProtectionKit';
+ import { fileIo } from '@kit.CoreFileKit';
 
 通过调用接口openFile，获取目标文件的文件描述符（fd）。path参数为目标文件的绝对路径。使用完fd后应记得关闭。
 
@@ -52,9 +52,9 @@ function openFilePromise() {
 ### Code block 1
 
 ```
-// 导入企业威胁防护能力模块，用于调用openFile接口
-import { virusRemediation } from '@kit.EnterpriseThreatProtectionKit';
-import { fileIo } from '@kit.CoreFileKit';
+ // 导入企业威胁防护能力模块和文件IO模块
+ import { virusRemediation } from '@kit.EnterpriseThreatProtectionKit';
+ import { fileIo } from '@kit.CoreFileKit';
 ```
 
 ### Code block 2

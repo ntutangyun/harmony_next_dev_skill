@@ -40,10 +40,11 @@ export const testNetworkInputQueue = () => {
     // 创建session
     const session = rcp.createSession();
     console.info(`Post start.`);
-    // 发起请求，相关数据在写入队列 networkInputQueue 的同时会同步进行上传
+    // 发起请求，'https://httpbin.org/anything'是示例网址，相关数据在写入队列 networkInputQueue 的同时会同步进行上传
     session.post('https://httpbin.org/anything', networkInputQueue).then((response) => {
       // 结果状态码
       console.info(`Response status code is: ${response.statusCode}`);
+      // ...
       if (response && response.statusCode === 200) {
         console.info(`Post succeeded! response: ${response.toString()}`);
       } else {
@@ -52,10 +53,12 @@ export const testNetworkInputQueue = () => {
       session.close();
     }).catch((err: BusinessError) => {
       console.error(`Post error code is ${err.code}, error data is ${err.data}`);
+      // ...
       session.close();
     });
   } catch (err) {
     console.error(`create session error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 
@@ -71,8 +74,9 @@ export const testNetworkOutputQueue = () => {
     const numOfChunks = 10;
     const chunkLength = 1000;
     const totalBytes = numOfChunks * chunkLength;
-    // 发起请求，响应数据会暂存在同步读队列networkOutputQueue中
+    // 发起请求，'https://httpbin.org/bytes/'是示例网址，响应数据会暂存在同步读队列networkOutputQueue中
     session.get('https://httpbin.org/bytes/' + totalBytes.toString(), networkOutputQueue).then((response) => {
+      // ...
       if (response && response.statusCode === 200) {
         console.info(`get bytes succeeded.`);
       } else {
@@ -81,6 +85,7 @@ export const testNetworkOutputQueue = () => {
       session.close();
     }).catch((err: BusinessError) => {
       console.error(`get bytes error code is ${err.code}, error data is ${err.data}`);
+      // ...
       session.close();
     });
     // 在需要使用响应数据时，可按需从 `networkOutputQueue` 队列中循环读取，例如每隔 1000 毫秒读取一次，每次读取 1000 个字节的数据
@@ -98,6 +103,7 @@ export const testNetworkOutputQueue = () => {
     }, 1000);
   } catch (err) {
     console.error(`create session error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 
@@ -122,7 +128,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 定义FdReadStream实现rcp.ReadStream接口，从流中读取数据。
 
 class FdReadStream implements rcp.ReadStream {
-  readonly fd: number;
+  public readonly fd: number;
 
   constructor(fd: number) {
     this.fd = fd;
@@ -143,31 +149,35 @@ export function testUploadFromStream(uploadFilePath: string) {
     const file = fileIo.openSync(uploadFilePath, fileIo.OpenMode.READ_ONLY);
     // 文件读取流
     const fileStream = new rcp.UploadFromStream(new FdReadStream(file.fd));
-    // 以流的形式上传数据
+    // 以流的形式上传数据,'https://httpbin.org/anything'是示例网址
     session.uploadFromStream('https://httpbin.org/anything', fileStream).then((resp) => {
-      console.info(`testUploadFromStream response: ${JSON.stringify(resp)}`);
+      console.info(`testUploadFromStream response: ${JSON.stringify(resp.statusCode)}`);
+      // ...
       if (resp && resp.statusCode === 200) {
         console.info(`testUploadFromStream succeeded.`);
       } else {
         console.error(`testUploadFromStream failed.`);
       }
-      // 完成后关闭文件和session
-      fileIo.closeSync(file.fd);
-      session.close();
     }).catch((err: BusinessError) => {
       console.error(`testUploadFromStream error code is ${err.code}, error data is ${err.data}`);
+      // ...
+      fileIo.closeSync(file.fd);
+      session.close();
+    }).finally(() => {
+      // 完成后关闭文件和session
       fileIo.closeSync(file.fd);
       session.close();
     });
   } catch (err) {
     console.error(`testUploadFromStream error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 
 定义FdWriteStream实现WriteStream接口，将数据写入流中。
 
 class FdWriteStream implements rcp.WriteStream {
-  readonly fd: number;
+  public readonly fd: number;
 
   constructor(fd: number) {
     this.fd = fd;
@@ -187,27 +197,32 @@ export function testDownloadToStream(downloadToPath: string) {
     // 根据传入的下载文件保存路径打开文件
     const file = fileIo.openSync(downloadToPath, fileIo.OpenMode.CREATE | fileIo.OpenMode.WRITE_ONLY);
     // 文件写入流
-    const fileStream = { kind: 'stream', stream: new FdWriteStream(file.fd) } as rcp.DownloadToStream
-    // 以流的形式下载数据
+    const fileStream = { kind: 'stream', stream: new FdWriteStream(file.fd) } as rcp.DownloadToStream;
+    // 以流的形式下载数据,'https://httpbin.org/bytes/10000'是示例网址
     session.downloadToStream('https://httpbin.org/bytes/10000', fileStream)
       .then((resp) => {
-        console.info(`testDownloadToStream response: ${JSON.stringify(resp)}`);
+        console.info(`testDownloadToStream response: ${JSON.stringify(resp.statusCode)}`);
+        // ...
         if (resp && resp.statusCode === 200) {
           console.info(`testDownloadToStream succeeded.`);
         } else {
           console.error(`testDownloadToStream failed.`);
         }
-        // 完成后关闭文件和session
-        fileIo.close(file.fd);
-        session.close();
       })
       .catch((err: BusinessError) => {
         console.error(`testDownloadToStream error code is ${err.code}, error data is ${err.data}`);
+        // ...
         fileIo.close(file.fd);
         session.close();
       })
+      .finally(() => {
+        // 完成后关闭文件和session
+        fileIo.closeSync(file.fd);
+        session.close();
+      });
   } catch (err) {
     console.error(`testDownloadToStream error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 
@@ -242,10 +257,11 @@ export const testNetworkInputQueue = () => {
     // 创建session
     const session = rcp.createSession();
     console.info(`Post start.`);
-    // 发起请求，相关数据在写入队列 networkInputQueue 的同时会同步进行上传
+    // 发起请求，'https://httpbin.org/anything'是示例网址，相关数据在写入队列 networkInputQueue 的同时会同步进行上传
     session.post('https://httpbin.org/anything', networkInputQueue).then((response) => {
       // 结果状态码
       console.info(`Response status code is: ${response.statusCode}`);
+      // ...
       if (response && response.statusCode === 200) {
         console.info(`Post succeeded! response: ${response.toString()}`);
       } else {
@@ -254,10 +270,12 @@ export const testNetworkInputQueue = () => {
       session.close();
     }).catch((err: BusinessError) => {
       console.error(`Post error code is ${err.code}, error data is ${err.data}`);
+      // ...
       session.close();
     });
   } catch (err) {
     console.error(`create session error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 ```
@@ -275,8 +293,9 @@ export const testNetworkOutputQueue = () => {
     const numOfChunks = 10;
     const chunkLength = 1000;
     const totalBytes = numOfChunks * chunkLength;
-    // 发起请求，响应数据会暂存在同步读队列networkOutputQueue中
+    // 发起请求，'https://httpbin.org/bytes/'是示例网址，响应数据会暂存在同步读队列networkOutputQueue中
     session.get('https://httpbin.org/bytes/' + totalBytes.toString(), networkOutputQueue).then((response) => {
+      // ...
       if (response && response.statusCode === 200) {
         console.info(`get bytes succeeded.`);
       } else {
@@ -285,6 +304,7 @@ export const testNetworkOutputQueue = () => {
       session.close();
     }).catch((err: BusinessError) => {
       console.error(`get bytes error code is ${err.code}, error data is ${err.data}`);
+      // ...
       session.close();
     });
     // 在需要使用响应数据时，可按需从 `networkOutputQueue` 队列中循环读取，例如每隔 1000 毫秒读取一次，每次读取 1000 个字节的数据
@@ -302,6 +322,7 @@ export const testNetworkOutputQueue = () => {
     }, 1000);
   } catch (err) {
     console.error(`create session error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 ```
@@ -318,7 +339,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 class FdReadStream implements rcp.ReadStream {
-  readonly fd: number;
+  public readonly fd: number;
 
   constructor(fd: number) {
     this.fd = fd;
@@ -341,24 +362,28 @@ export function testUploadFromStream(uploadFilePath: string) {
     const file = fileIo.openSync(uploadFilePath, fileIo.OpenMode.READ_ONLY);
     // 文件读取流
     const fileStream = new rcp.UploadFromStream(new FdReadStream(file.fd));
-    // 以流的形式上传数据
+    // 以流的形式上传数据,'https://httpbin.org/anything'是示例网址
     session.uploadFromStream('https://httpbin.org/anything', fileStream).then((resp) => {
-      console.info(`testUploadFromStream response: ${JSON.stringify(resp)}`);
+      console.info(`testUploadFromStream response: ${JSON.stringify(resp.statusCode)}`);
+      // ...
       if (resp && resp.statusCode === 200) {
         console.info(`testUploadFromStream succeeded.`);
       } else {
         console.error(`testUploadFromStream failed.`);
       }
-      // 完成后关闭文件和session
-      fileIo.closeSync(file.fd);
-      session.close();
     }).catch((err: BusinessError) => {
       console.error(`testUploadFromStream error code is ${err.code}, error data is ${err.data}`);
+      // ...
+      fileIo.closeSync(file.fd);
+      session.close();
+    }).finally(() => {
+      // 完成后关闭文件和session
       fileIo.closeSync(file.fd);
       session.close();
     });
   } catch (err) {
     console.error(`testUploadFromStream error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 ```
@@ -367,7 +392,7 @@ export function testUploadFromStream(uploadFilePath: string) {
 
 ```
 class FdWriteStream implements rcp.WriteStream {
-  readonly fd: number;
+  public readonly fd: number;
 
   constructor(fd: number) {
     this.fd = fd;
@@ -389,27 +414,32 @@ export function testDownloadToStream(downloadToPath: string) {
     // 根据传入的下载文件保存路径打开文件
     const file = fileIo.openSync(downloadToPath, fileIo.OpenMode.CREATE | fileIo.OpenMode.WRITE_ONLY);
     // 文件写入流
-    const fileStream = { kind: 'stream', stream: new FdWriteStream(file.fd) } as rcp.DownloadToStream
-    // 以流的形式下载数据
+    const fileStream = { kind: 'stream', stream: new FdWriteStream(file.fd) } as rcp.DownloadToStream;
+    // 以流的形式下载数据,'https://httpbin.org/bytes/10000'是示例网址
     session.downloadToStream('https://httpbin.org/bytes/10000', fileStream)
       .then((resp) => {
-        console.info(`testDownloadToStream response: ${JSON.stringify(resp)}`);
+        console.info(`testDownloadToStream response: ${JSON.stringify(resp.statusCode)}`);
+        // ...
         if (resp && resp.statusCode === 200) {
           console.info(`testDownloadToStream succeeded.`);
         } else {
           console.error(`testDownloadToStream failed.`);
         }
-        // 完成后关闭文件和session
-        fileIo.close(file.fd);
-        session.close();
       })
       .catch((err: BusinessError) => {
         console.error(`testDownloadToStream error code is ${err.code}, error data is ${err.data}`);
+        // ...
         fileIo.close(file.fd);
         session.close();
       })
+      .finally(() => {
+        // 完成后关闭文件和session
+        fileIo.closeSync(file.fd);
+        session.close();
+      });
   } catch (err) {
     console.error(`testDownloadToStream error code is ${err.code}, error data is ${err.data}`);
+    // ...
   }
 }
 ```

@@ -91,11 +91,22 @@ async readImageMetadataByType(imageSource: image.ImageSource | undefined) : Prom
 
 确认imageSource的异步方法已经执行完成，不再使用该变量后，可按需手动调用下面方法释放。
 
-async release(pixelMap: image.PixelMap | undefined, imageSource: image.ImageSource | undefined) {
-  await pixelMap?.release();
-  pixelMap = undefined;
-  await imageSource?.release();
-  imageSource = undefined;
+async release() {
+  try {
+    await this.pixelMap?.release();
+  } catch (error) {
+    console.error(`Failed to release PixelMap: ${error}.`);
+  } finally {
+    this.pixelMap = undefined;
+  }
+
+  try {
+    await this.imageSource?.release();
+  } catch (error) {
+    console.error(`Failed to release ImageSource: ${error}.`);
+  } finally {
+    this.imageSource = undefined;
+  }
 }
 
 注意事项
@@ -170,10 +181,21 @@ async readImageMetadataByType(imageSource: image.ImageSource | undefined) : Prom
 ### Code block 4
 
 ```
-async release(pixelMap: image.PixelMap | undefined, imageSource: image.ImageSource | undefined) {
-  await pixelMap?.release();
-  pixelMap = undefined;
-  await imageSource?.release();
-  imageSource = undefined;
+async release() {
+  try {
+    await this.pixelMap?.release();
+  } catch (error) {
+    console.error(`Failed to release PixelMap: ${error}.`);
+  } finally {
+    this.pixelMap = undefined;
+  }
+
+  try {
+    await this.imageSource?.release();
+  } catch (error) {
+    console.error(`Failed to release ImageSource: ${error}.`);
+  } finally {
+    this.imageSource = undefined;
+  }
 }
 ```

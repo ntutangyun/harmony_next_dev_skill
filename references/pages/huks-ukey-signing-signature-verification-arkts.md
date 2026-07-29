@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-ukey
 
 签名
 
-通过证书管理系统能力提供的证书选择接口获取keyUri作为resourceId，并作为密钥别名，打开资源后完成PIN码认证。
+通过证书管理系统能力提供的openAuthorizeDialog获取keyUri作为resourceId，并作为密钥别名，打开资源后完成PIN码认证。
 
 指定待签名的明文数据。
 
@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-ukey
 
 验签
 
-通过证书管理系统能力提供的证书选择接口获取keyUri作为resourceId，并作为密钥别名，然后打开资源。
+通过证书管理系统能力提供的openAuthorizeDialog获取keyUri作为resourceId，并作为密钥别名，然后打开资源。
 
 获取待验证的签名。
 
@@ -113,22 +113,22 @@ function GetRsaVerifyProperties() {
 }
 
 async function initSession(keyAlias: string, huksOptions: huks.HuksOptions) {
-  console.info(`promise: enter initSession`);
+  console.info('promise: enter initSession.');
   try {
     await huks.initSession(keyAlias, huksOptions)
       .then((data) => {
         handle = data.handle;
-        console.info(`promise: initSession success`);
+        console.info('promise: initSession success.');
       }).catch((error: BusinessError) => {
         console.error(`promise: initSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
       })
   } catch (error) {
-    console.error(`promise: initSession input arg invalid`);
+    console.error('promise: initSession input arg invalid.');
   }
 }
 
 async function updateSession(handle: number, huksOptions: huks.HuksOptions) {
-  console.info(`promise: enter updateSession`);
+  console.info('promise: enter updateSession.');
   try {
     await huks.updateSession(handle, huksOptions)
       .then((data) => {
@@ -138,12 +138,12 @@ async function updateSession(handle: number, huksOptions: huks.HuksOptions) {
         console.error(`promise: updateSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
       })
   } catch (error) {
-    console.error(`promise: updateSession input arg invalid`);
+    console.error('promise: updateSession input arg invalid.');
   }
 }
 
 async function finishSession(handle: number, huksOptions: huks.HuksOptions) {
-  console.info(`promise: enter finishSession`);
+  console.info('promise: enter finishSession.');
   try {
     await huks.finishSession(handle, huksOptions)
       .then((data) => {
@@ -153,12 +153,12 @@ async function finishSession(handle: number, huksOptions: huks.HuksOptions) {
         console.error(`promise: finishSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
       })
   } catch (error) {
-    console.error(`promise: finishSession input arg invalid`);
+    console.error('promise: finishSession input arg invalid.');
   }
 }
 
 async function Sign(keyAlias: string, plaintext: string) {
-  console.info(`enter Sign`);
+  console.info('enter Sign.');
   let signProperties = GetRsaSignProperties();
   let options: huks.HuksOptions = {
     properties: signProperties,
@@ -172,7 +172,7 @@ async function Sign(keyAlias: string, plaintext: string) {
 }
 
 async function Verify(keyAlias: string, plaintext: string, signature: Uint8Array) {
-  console.info(`enter Verify`);
+  console.info('enter Verify.');
   let verifyProperties = GetRsaVerifyProperties();
   let options: huks.HuksOptions = {
     properties: verifyProperties,
@@ -280,22 +280,22 @@ function GetRsaVerifyProperties() {
 }
 
 async function initSession(keyAlias: string, huksOptions: huks.HuksOptions) {
-  console.info(`promise: enter initSession`);
+  console.info('promise: enter initSession.');
   try {
     await huks.initSession(keyAlias, huksOptions)
       .then((data) => {
         handle = data.handle;
-        console.info(`promise: initSession success`);
+        console.info('promise: initSession success.');
       }).catch((error: BusinessError) => {
         console.error(`promise: initSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
       })
   } catch (error) {
-    console.error(`promise: initSession input arg invalid`);
+    console.error('promise: initSession input arg invalid.');
   }
 }
 
 async function updateSession(handle: number, huksOptions: huks.HuksOptions) {
-  console.info(`promise: enter updateSession`);
+  console.info('promise: enter updateSession.');
   try {
     await huks.updateSession(handle, huksOptions)
       .then((data) => {
@@ -305,12 +305,12 @@ async function updateSession(handle: number, huksOptions: huks.HuksOptions) {
         console.error(`promise: updateSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
       })
   } catch (error) {
-    console.error(`promise: updateSession input arg invalid`);
+    console.error('promise: updateSession input arg invalid.');
   }
 }
 
 async function finishSession(handle: number, huksOptions: huks.HuksOptions) {
-  console.info(`promise: enter finishSession`);
+  console.info('promise: enter finishSession.');
   try {
     await huks.finishSession(handle, huksOptions)
       .then((data) => {
@@ -320,12 +320,12 @@ async function finishSession(handle: number, huksOptions: huks.HuksOptions) {
         console.error(`promise: finishSession failed, errCode : ${error.code}, errMsg : ${error.message}`);
       })
   } catch (error) {
-    console.error(`promise: finishSession input arg invalid`);
+    console.error('promise: finishSession input arg invalid.');
   }
 }
 
 async function Sign(keyAlias: string, plaintext: string) {
-  console.info(`enter Sign`);
+  console.info('enter Sign.');
   let signProperties = GetRsaSignProperties();
   let options: huks.HuksOptions = {
     properties: signProperties,
@@ -339,7 +339,7 @@ async function Sign(keyAlias: string, plaintext: string) {
 }
 
 async function Verify(keyAlias: string, plaintext: string, signature: Uint8Array) {
-  console.info(`enter Verify`);
+  console.info('enter Verify.');
   let verifyProperties = GetRsaVerifyProperties();
   let options: huks.HuksOptions = {
     properties: verifyProperties,

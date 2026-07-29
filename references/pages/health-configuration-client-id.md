@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-co
   "deviceTypes": [],
   "pages": "xxxx",
   "abilities": [],
-  "metadata": [ // 配置如下信息
+  "metadata": [
     {
       "name": "client_id",
       "value": "xxxxxx"
@@ -35,7 +35,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-co
   "deviceTypes": [],
   "pages": "xxxx",
   "abilities": [],
-  "metadata": [ // 配置如下信息
+  "metadata": [
     {
       "name": "client_id",
       "value": "xxxxxx"

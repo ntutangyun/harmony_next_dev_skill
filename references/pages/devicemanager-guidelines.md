@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/deviceman
 
 发现
 
-发现周围终端设备并上报。周围设备需要连接同局域网或者同时打开蓝牙，可以根据设备类型、距离、设备是否可信等进行筛选。
+发现周围终端设备并上报。周围设备需要连接同局域网或者同时打开蓝牙。
 
 绑定
 
@@ -177,16 +177,16 @@ startDeviceDiscovery(): void {
 stopDeviceDiscovery(): void {
   if (typeof (this.deviceManager) == 'undefined') {
     logger.error('[DeviceManager.RemoteDeviceModel] deviceManager has not initialized');
+    this.showErrMsg('deviceManager has not initialized');
     return;
   }
-
+  logger.info('[DeviceManager.RemoteDeviceModel] stopDeviceDiscovery');
   try {
     this.deviceManager.stopDiscovering();
     this.deviceManager.off('discoverSuccess');
     this.deviceManager.off('discoverFailure');
-  } catch (err) {
-    let error: BusinessError = err as BusinessError;
-    logger.error('[DeviceManager.RemoteDeviceModel] stopDeviceDiscovery failed err: ' + error.toString());
+  } catch (e) {
+    logger.error('[DeviceManager.RemoteDeviceModel] stopDeviceDiscovery failed err: ' + e.toString());
   }
 }
 
@@ -467,16 +467,16 @@ startDeviceDiscovery(): void {
 stopDeviceDiscovery(): void {
   if (typeof (this.deviceManager) == 'undefined') {
     logger.error('[DeviceManager.RemoteDeviceModel] deviceManager has not initialized');
+    this.showErrMsg('deviceManager has not initialized');
     return;
   }
-
+  logger.info('[DeviceManager.RemoteDeviceModel] stopDeviceDiscovery');
   try {
     this.deviceManager.stopDiscovering();
     this.deviceManager.off('discoverSuccess');
     this.deviceManager.off('discoverFailure');
-  } catch (err) {
-    let error: BusinessError = err as BusinessError;
-    logger.error('[DeviceManager.RemoteDeviceModel] stopDeviceDiscovery failed err: ' + error.toString());
+  } catch (e) {
+    logger.error('[DeviceManager.RemoteDeviceModel] stopDeviceDiscovery failed err: ' + e.toString());
   }
 }
 ```

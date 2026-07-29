@@ -36,7 +36,7 @@ Web组件大小自适应页面内容布局：
 
 keyboardAvoidMode（键盘避让）属性配置为RESIZE_CONTENT时，该避让模式不生效。
 
-不支持对页面进行缩放。
+不支持对页面进行手势缩放。
 
 不支持通过Web组件的height属性修改组件高度。
 
@@ -154,7 +154,7 @@ fit_content.html页面代码如下：
 
 核心内容DOM节点高度为0。
 
-CSS样式height：<number> vh和Web组件大小自适应页面布局存在计算冲突，请检查height：<number> vh是否是由body节点以内的第一个高度CSS样式。如以下结构，id为2的DOM节点高度将为0。
+CSS样式height: <number> vh和Web组件大小自适应页面布局存在计算冲突，请检查height: <number> vh是否是由body节点以内的第一个高度CSS样式。如以下结构，id为2的DOM节点高度将为0。
 
 <body>
   <div id = "1">

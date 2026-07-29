@@ -22,7 +22,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
  * @param {number} backgroundColor - CreateOptions设置的十六进制背景色。
  * @returns {Promise<image.PixelMap | undefined>} 成功返回新的PixelMap对象，失败则返回undefined。
  */
-async function convertBackgroundColorToTransparent(originalPixelMap: image.PixelMap,
+export async function convertBackgroundColorToTransparent(originalPixelMap: image.PixelMap,
   backgroundColor: number): Promise<image.PixelMap | undefined> {
   try {
     // 获取图像信息
@@ -68,16 +68,15 @@ async function convertBackgroundColorToTransparent(originalPixelMap: image.Pixel
       const green: number = originalPixelMapUint8Array[i + 1];
       const blue: number = originalPixelMapUint8Array[i + 2];
 
+      // 直接复制红绿蓝通道
+      areaUint8Array[i] = red;
+      areaUint8Array[i + 1] = green;
+      areaUint8Array[i + 2] = blue;
+
       // 检查像素是否为背景色
       if (red === redBg && green === greenBg && blue === blueBg) {
-        areaUint8Array[i] = blue;
-        areaUint8Array[i + 1] = green;
-        areaUint8Array[i + 2] = red;
         areaUint8Array[i + 3] = 0; // 设置透明色
       } else {
-        areaUint8Array[i] = blue;
-        areaUint8Array[i + 1] = green;
-        areaUint8Array[i + 2] = red;
         areaUint8Array[i + 3] = originalPixelMapUint8Array[i + 3]; // 保留原透明度
       }
     }
@@ -108,7 +107,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
  * @param {number} backgroundColor - CreateOptions设置的十六进制背景色。
  * @returns {Promise<image.PixelMap | undefined>} 成功返回新的PixelMap对象，失败则返回undefined。
  */
-async function convertBackgroundColorToTransparent(originalPixelMap: image.PixelMap,
+export async function convertBackgroundColorToTransparent(originalPixelMap: image.PixelMap,
   backgroundColor: number): Promise<image.PixelMap | undefined> {
   try {
     // 获取图像信息
@@ -154,16 +153,15 @@ async function convertBackgroundColorToTransparent(originalPixelMap: image.Pixel
       const green: number = originalPixelMapUint8Array[i + 1];
       const blue: number = originalPixelMapUint8Array[i + 2];
 
+      // 直接复制红绿蓝通道
+      areaUint8Array[i] = red;
+      areaUint8Array[i + 1] = green;
+      areaUint8Array[i + 2] = blue;
+
       // 检查像素是否为背景色
       if (red === redBg && green === greenBg && blue === blueBg) {
-        areaUint8Array[i] = blue;
-        areaUint8Array[i + 1] = green;
-        areaUint8Array[i + 2] = red;
         areaUint8Array[i + 3] = 0; // 设置透明色
       } else {
-        areaUint8Array[i] = blue;
-        areaUint8Array[i + 1] = green;
-        areaUint8Array[i + 2] = red;
         areaUint8Array[i + 3] = originalPixelMapUint8Array[i + 3]; // 保留原透明度
       }
     }

@@ -25,7 +25,7 @@ slider为滑动条组件，用来快速调节音量、亮度等。具体用法�
 
 设置样式和属性
 
-slider组件通过color、selected-color、block-color样式分别为滑动条设置背景颜色、已选择颜色和滑块颜色。
+slider组件通过color、scrollbar-color、background-color样式分别为滑动条设置背景颜色、滚动条颜色和背景颜色。
 
 <!-- xxx.hml -->
 <div class="container">
@@ -123,7 +123,7 @@ export default {
 <!-- xxx.hml -->
 <div class="container">
   <image src="common/landscape3.jpg" style=" width: {{WidthVal}}px;height:{{HeightVal}}px;margin-top: -150px;"></image>
-  <div class="txt">
+  <div class="text">
     <slider min="0" max="100" value="{{value}}" onchange="setValue"></slider>
     <text>The width of this picture is {{WidthVal}}</text>
     <text>The height of this picture is {{HeightVal}}</text>
@@ -159,7 +159,7 @@ export default{
   },
   setValue(e) {
     this.WidthVal = 200 + e.value;
-    this.HeightVal = 200 + e.value
+    this.HeightVal = 200 + e.value;
   }
 }
 
@@ -297,7 +297,7 @@ export default {
 <!-- xxx.hml -->
 <div class="container">
   <image src="common/landscape3.jpg" style=" width: {{WidthVal}}px;height:{{HeightVal}}px;margin-top: -150px;"></image>
-  <div class="txt">
+  <div class="text">
     <slider min="0" max="100" value="{{value}}" onchange="setValue"></slider>
     <text>The width of this picture is {{WidthVal}}</text>
     <text>The height of this picture is {{HeightVal}}</text>
@@ -341,7 +341,7 @@ export default{
   },
   setValue(e) {
     this.WidthVal = 200 + e.value;
-    this.HeightVal = 200 + e.value
+    this.HeightVal = 200 + e.value;
   }
 }
 ```

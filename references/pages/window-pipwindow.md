@@ -1,4 +1,4 @@
-# 在应用程序中使用画中画功能
+# 画中画开发指导
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/window-pipwindow_
 

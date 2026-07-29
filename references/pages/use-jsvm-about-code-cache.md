@@ -31,10 +31,12 @@ JSVM提供了生成并使用code cache加速编译过程的方法，其获取和
 
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <string>
+// ...
 
-JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info) {
+JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info)
+{
     // 编译参数准备
     JSVM_Value jsSrc;
     JSVM_Script script;
@@ -48,12 +50,12 @@ JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info) {
         c = a + b;
     )JS";
 
-    // 生成code cache
+    // 生成 code cache
     {
         JSVM_HandleScope handleScope;
         OH_JSVM_OpenHandleScope(env, &handleScope);
 
-        // 源码字符串转换为js字符串
+        // 源码字符串转换为 js 字符串
         OH_JSVM_CreateStringUtf8(env, src.c_str(), src.size(), &jsSrc);
 
         // 编译js代码
@@ -66,22 +68,22 @@ JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info) {
         OH_LOG_INFO(LOG_APP, "first run result: %{public}d\n", value);
 
         if (dataPtr == nullptr) {
-            // 将js源码编译出的脚本保存到cache, 可以避免重复编译, 带来性能提升
+            // 将js源码编译出的脚本保存到 cache, 可以避免重复编译, 带来性能提升
             OH_JSVM_CreateCodeCache(env, script, &dataPtr, &length);
         }
 
         OH_JSVM_CloseHandleScope(env, handleScope);
     }
 
-    // 使用code cache
+    // 使用 code cache
     {
         JSVM_HandleScope handleScope;
         OH_JSVM_OpenHandleScope(env, &handleScope);
 
-        // 源码字符串转换为js字符串
+        // 源码字符串转换为 js 字符串
         OH_JSVM_CreateStringUtf8(env, src.c_str(), src.size(), &jsSrc);
 
-        // 使用code cache编译js代码
+        // 使用 code cache 编译js代码
         OH_JSVM_CompileScript(env, jsSrc, dataPtr, length, true, &cacheRejected, &script);
 
         // 执行js代码
@@ -106,8 +108,8 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"UseCodeCache", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 
-// 样例测试js
-const char* srcCallNative = R"JS(globalThis.UseCodeCache())JS";
+// 样例测试JS
+const char *SRC_CALL_NATIVE = R"JS(UseCodeCache();)JS";
 
 预期的输出结果如下：
 
@@ -136,10 +138,12 @@ cache rejected: 0
 ```
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
 #include <string>
+// ...
 
-JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info) {
+JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info)
+{
     // 编译参数准备
     JSVM_Value jsSrc;
     JSVM_Script script;
@@ -153,12 +157,12 @@ JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info) {
         c = a + b;
     )JS";
 
-    // 生成code cache
+    // 生成 code cache
     {
         JSVM_HandleScope handleScope;
         OH_JSVM_OpenHandleScope(env, &handleScope);
 
-        // 源码字符串转换为js字符串
+        // 源码字符串转换为 js 字符串
         OH_JSVM_CreateStringUtf8(env, src.c_str(), src.size(), &jsSrc);
 
         // 编译js代码
@@ -171,22 +175,22 @@ JSVM_Value UseCodeCache(JSVM_Env env, JSVM_CallbackInfo info) {
         OH_LOG_INFO(LOG_APP, "first run result: %{public}d\n", value);
 
         if (dataPtr == nullptr) {
-            // 将js源码编译出的脚本保存到cache, 可以避免重复编译, 带来性能提升
+            // 将js源码编译出的脚本保存到 cache, 可以避免重复编译, 带来性能提升
             OH_JSVM_CreateCodeCache(env, script, &dataPtr, &length);
         }
 
         OH_JSVM_CloseHandleScope(env, handleScope);
     }
 
-    // 使用code cache
+    // 使用 code cache
     {
         JSVM_HandleScope handleScope;
         OH_JSVM_OpenHandleScope(env, &handleScope);
 
-        // 源码字符串转换为js字符串
+        // 源码字符串转换为 js 字符串
         OH_JSVM_CreateStringUtf8(env, src.c_str(), src.size(), &jsSrc);
 
-        // 使用code cache编译js代码
+        // 使用 code cache 编译js代码
         OH_JSVM_CompileScript(env, jsSrc, dataPtr, length, true, &cacheRejected, &script);
 
         // 执行js代码
@@ -211,8 +215,8 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"UseCodeCache", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 
-// 样例测试js
-const char* srcCallNative = R"JS(globalThis.UseCodeCache())JS";
+// 样例测试JS
+const char *SRC_CALL_NATIVE = R"JS(UseCodeCache();)JS";
 ```
 
 ### Code block 2

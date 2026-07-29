@@ -15,6 +15,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/preview-o
 表1 文件预加载接口介绍（C API）
 
 接口名	描述
+bool HMS_Preview_FileBoost_IsSupported (void)	查询当前设备是否支持文件打开加速功能。建议开发者在使用文件打开加速功能之前，先调用本接口检查当前设备是否支持文件打开加速功能。确认支持后再使用其他文件打开加速接口如HMS_OpenFileBoost_RegisterFilePreload、HMS_Preview_FileScanBoost_RegisterFileScan等。
 OpenFileBoost_ErrCode HMS_OpenFileBoost_RegisterFilePreload( HMS_OpenFileBoost_QueryAppState queryAppState, HMS_OpenFileBoost_OnFilePreload filePreload, HMS_OpenFileBoost_OnFilePreload cancelFilePreload);	向系统注册文件预加载回调。
 typedef OpenFileBoost_AppState (*HMS_OpenFileBoost_QueryAppState)(void);	系统查询APP状态的回调函数定义。
 typedef OpenFileBoost_CbErrCode (*HMS_OpenFileBoost_OnFilePreload)(void* fileInfo);	系统向应用推荐或取消推荐预加载文件的回调函数定义。
@@ -36,7 +37,7 @@ FileScanBoost_ErrCode HMS_Preview_FileScanBoost_ReportScanResult (const char *pa
 OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_SupportFileCreate (const char *suffix, uint32_t suffixLen, uint64_t lowerLimitKb, uint64_t upperLimitKb, OpenFileBoost_SupportFile **outSupportFile)	创建OpenFileBoost_SupportFile。
 OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_SupportFileDestroy (OpenFileBoost_SupportFile *supportFile)	销毁OpenFileBoost_SupportFile。
 OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_OptionsCreate (OpenFileBoost_Options **outOptions)	创建一个空的OpenFileBoost_Options。 使用HMS_Preview_OpenFileBoost_OptionsAddSupportFile添加文件。
-OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_OptionsAddSupportFile (OpenFileBoost_Options *options, const OpenFileBoost_SupportFile *supportFile)	向OpenFileBoost_Options添加支持预加载的文件类型。
+OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_OptionsAddSupportFile (OpenFileBoost_Options *options, const OpenFileBoost_SupportFile *supportFile)	向OpenFileBoost_Options添加支持预加载的文件类型列表。
 OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_OptionsDestroy (OpenFileBoost_Options *options)	销毁OpenFileBoost_Options。
 OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_RegisterFilePreloadWithOption (HMS_OpenFileBoost_QueryAppState queryAppState, HMS_OpenFileBoost_OnFilePreload filePreload, HMS_OpenFileBoost_OnFilePreload cancelFilePreload, OpenFileBoost_Options *options)	注册预加载回调，允许应用传入支持预加载的文件信息。
 bool HMS_Preview_OpenFileBoost_IsEnabled (void)	查询应用加速特性是否使能。
@@ -44,19 +45,19 @@ OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_FileOperationInfoCreate (const c
 OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_FileOperationInfoDestroy (OpenFileBoost_FileOperationInfo *fileOperationInfo)	销毁OpenFileBoost_FileOperationInfo。
 OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_NotifyFileOperation (OpenFileBoost_FileOperationInfo *fileOperationInfo)	当用户对文件进行操作时，app调用该接口通知系统文件操作类型，这将有助于提高预加载文件预测的准确性。
 
-开发准备
+约束限制
 
-需要先通过Syscap查询您的目标设备是否支持SystemCapability.PCService.OpenFileBoost系统能力，当前仅在PC/2in1设备上支持该能力。
+当前仅在PC/2in1和tablet设备上支持。
 
 开发步骤
 
-申请文件打开加速服务的对应权限，在module.json5文件中添加文件预加载权限。注意ohos.permission.PRELOAD_FILE为受限权限，具体可参考申请使用受限权限 。
+申请文件打开加速服务的对应权限，在module.json5文件中添加文件预加载权限，注意ohos.permission.PRELOAD_FILE为受限权限，具体可参考申请使用受限权限 。
 
-"requestPermissions":[
+"requestPermissions": [
   {
     "name": "ohos.permission.PRELOAD_FILE"
   }
-]
+],
 
 添加对应的头文件。
 
@@ -64,251 +65,401 @@ OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_NotifyFileOperation (OpenFileBoo
 
 编写CMakeLists.txt，新增对文件打开加速功能的依赖。
 
-target_link_libraries(entry PUBLIC
-    libopen_file_boost.so
+find_library(
+    OPEN_FILE_BOOST_LIBRARY
+    NAMES libopen_file_boost.so
+    PATHS ${CMAKE_FIND_ROOT_PATH}/lib/aarch64-linux-ohos
 )
-
-注册文件预加载回调，注册后系统在条件符合时调用回调向应用推荐文件。
-
-OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_RegisterFilePreload(AppQueryAppStateCb,
-    AppOnFilePreload, AppCancelFilePreload);
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 注册失败，用户可自定义错误处理
-}
+# ...
+target_link_libraries(entry PUBLIC ${OPEN_FILE_BOOST_LIBRARY})
 
 注册文件预加载回调，应用可传入支持预加载的文件信息，注册后系统在条件符合时调用回调向应用推荐文件。
 
-OpenFileBoost_SupportFile* supportFiles[2] = {nullptr};
+static napi_value RegisterPreload(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
+    OH_LOG_INFO(LOG_APP, "Register file preload start.");
+    // 创建选项
+    OpenFileBoost_Options *options = nullptr;
+    auto createCode = HMS_Preview_OpenFileBoost_OptionsCreate(&options);
+    if (createCode != OPEN_FILE_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create Options, code: %{public}d", createCode);
+        napi_create_int32(env, -1, &resp);
+        return resp;
+    }
+    // 创建文件类型
+    OpenFileBoost_SupportFile *supportFile = nullptr;
+    auto supportCode = HMS_Preview_OpenFileBoost_SupportFileCreate("xlsx", 4, 0, 100 * 1024 * 1024, &supportFile);
+    if (supportCode != OPEN_FILE_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create SupportFile, code: %{public}d", supportCode);
+        // 销毁之前的创建
+        HMS_Preview_OpenFileBoost_OptionsDestroy(options);
+        napi_create_int32(env, -2, &resp);
+        return resp;
+    }
+    // 添加文件类型到选项
+    auto addCode = HMS_Preview_OpenFileBoost_OptionsAddSupportFile(options, supportFile);
+    HMS_Preview_OpenFileBoost_SupportFileDestroy(supportFile);
 
-// 创建文件类型
-OpenFileBoost_ErrCode ret = HMS_Preview_OpenFileBoost_SupportFileCreate(".pptx", 5, 20 * 1024,
-    2 * 1024 * 1024, &supportFiles[0]);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-// 应用可自定义错误处理
-}
+    if (addCode != OPEN_FILE_BOOST_SUCCESS) {
+        // 添加失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to add support file, code: %{public}d", addCode);
+        HMS_Preview_OpenFileBoost_OptionsDestroy(options);
+        napi_create_int32(env, -3, &resp);
+        return resp;
+    }
+    // 注册文件预加载回调，同时应用传递自己支持的文件后缀类型和文件大小上下限
+    auto code = HMS_Preview_OpenFileBoost_RegisterFilePreloadWithOption(AppQueryAppStateCb, AppOnFilePreload,
+                                                                        AppCancelFilePreload, options);
+    HMS_Preview_OpenFileBoost_OptionsDestroy(options);
 
-ret = HMS_Preview_OpenFileBoost_SupportFileCreate(".docx", 5, 5 * 1024, 2 * 1024 * 1024, &supportFiles[1]);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-// 销毁之前的创建
-    HMS_Preview_OpenFileBoost_SupportFileDestroy(supportFiles[0]);
-}
+    if (code != OPEN_FILE_BOOST_SUCCESS) {
+        // 注册失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Register failed, ret :%{public}d", code);
+        napi_create_int32(env, code, &resp);
+        return resp;
+    }
 
-// 创建选项
-OpenFileBoost_Options* options = nullptr;
-ret = HMS_Preview_OpenFileBoost_OptionsCreate(&options);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-
-}
-
-// 添加文件类型到选项
-ret = HMS_Preview_OpenFileBoost_OptionsAddSupportFile(options, supportFiles[0]);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-
-}
-
-// 注册文件预加载回调，同时应用传递自己支持的文件后缀类型和文件大小上下限
-ret = HMS_Preview_OpenFileBoost_RegisterFilePreloadWithOption(AppQueryAppStateCb,
-        AppOnFilePreload, AppCancelFilePreload, options);
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 注册失败，应用可自定义错误处理
+    OH_LOG_INFO(LOG_APP, "Register file preload successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 
 应用在当前回调上下文中同步解析预加载文件，或同步阻塞等待解析完毕后再返回，以便系统评估本次预加载文件的资源消耗。
 
 // 查询应用当前状态的回调函数，系统在向应用推荐文件前会先调用状态查询回调函数向应用查询当前是否适合推荐
-OpenFileBoost_AppState AppQueryAppStateCb(void)
-{
-    // 如果当前状态允许进行文件预加载则返回OPEN_FILE_BOOST_APP_STATE_ALLOW_PRELOAD，这里的CanPreload函数为代码示例，表示应用根据实际业务判断是否允许预加载
-    if (CanPreload()) {
-        return OPEN_FILE_BOOST_APP_STATE_ALLOW_PRELOAD;
-    } else {
-        return OPEN_FILE_BOOST_APP_STATE_REJECT_PRELOAD;
-    }
+OpenFileBoost_AppState AppQueryAppStateCb(void) {
+    // 如果当前状态允许进行文件预加载则返回OPEN_FILE_BOOST_APP_STATE_ALLOW_PRELOAD，这里的state为代码示例，表示应用根据实际业务设置是否允许预加载
+    int state = ConfigManager::getInstance().getAppState();
+    OH_LOG_INFO(LOG_APP, "AppQueryAppStateCb, return state: %{public}d", state);
+    return static_cast<OpenFileBoost_AppState>(state);
 }
 
 // 文件预加载回调
-OpenFileBoost_CbErrCode AppOnFilePreload(void* fileInfo)
-{
+OpenFileBoost_CbErrCode AppOnFilePreload(void *fileInfo) {
+    OH_LOG_INFO(LOG_APP, "AppOnFilePreload called");
+
     int32_t fileDescriptor = 0;
     // 指针fileInfo仅在当前回调上下文有效，在回调中调用HMS_OpenFileBoost_GetFdFromPreloadFileInfo获取文件描述符
     OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_GetFdFromPreloadFileInfo(fileInfo, &fileDescriptor);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
+
     char sandboxPath[MAX_BUFFER_LENGTH] = {0};
     // 指针fileInfo仅在当前回调上下文有效，在回调中调用HMS_OpenFileBoost_GetSandboxPathFromPreloadFileInfo获取文件路径
     ret = HMS_OpenFileBoost_GetSandboxPathFromPreloadFileInfo(fileInfo, sandboxPath, MAX_BUFFER_LENGTH);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
+
+    OH_LOG_INFO(LOG_APP, "Preload file: fd=%{public}d, path=%{public}s", fileDescriptor, sandboxPath);
     // 用户可保存文件描述符和文件路径，方便后续通知取消预加载时对文件取消预加载
     // 用户自定义具体的文件预加载逻辑
-    return OPEN_FILE_BOOST_CALLBACK_SUCCESS;
+    {
+        std::lock_guard<std::mutex> lock(g_preloadMutex);
+        g_preloadTasks[std::string(sandboxPath)] = fileDescriptor;
+    }
+    ConfigManager::getInstance().addFileProcessTask(std::string(sandboxPath), fileDescriptor);
+
+    int callbackResult = ConfigManager::getInstance().getPreloadCallbackResult();
+    OH_LOG_INFO(LOG_APP, "AppOnFilePreload returning: %{public}d", callbackResult);
+    return static_cast<OpenFileBoost_CbErrCode>(callbackResult);
 }
 
 // 取消预加载回调
-OpenFileBoost_CbErrCode AppCancelFilePreload(void* fileInfo)
-{
+OpenFileBoost_CbErrCode AppCancelFilePreload(void *fileInfo) {
+    OH_LOG_INFO(LOG_APP, "AppCancelFilePreload called");
     // 同样的方法获取文件描述符和沙箱路径
     int32_t fileDescriptor = 0;
     OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_GetFdFromPreloadFileInfo(fileInfo, &fileDescriptor);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
+
     char sandboxPath[MAX_BUFFER_LENGTH] = {0};
     ret = HMS_OpenFileBoost_GetSandboxPathFromPreloadFileInfo(fileInfo, sandboxPath, MAX_BUFFER_LENGTH);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
     // 用户自定义具体的取消文件预加载逻辑
+    OH_LOG_INFO(LOG_APP, "Cancel preload: fd=%{public}d, path=%{public}s", fileDescriptor, sandboxPath);
+
+    std::string path(sandboxPath);
+    std::lock_guard<std::mutex> lock(g_preloadMutex);
+    auto it = g_preloadTasks.find(path);
+    if (it != g_preloadTasks.end()) {
+        g_preloadTasks.erase(it);
+    }
+
     return OPEN_FILE_BOOST_CALLBACK_SUCCESS;
 }
 
 如果用户打开了已经预加载的文件，应用需要调用HMS_OpenFileBoost_NotifyPreloadHit通知系统，系统会更改文件的预加载状态。
 
-// 传入用户打开的已经预加载的文件描述符、文件路径和长度
-OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_NotifyPreloadHit(fileDescriptor, sandboxPath, pathLen);
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 通知失败，用户可自定义错误处理
-}
+static napi_value NotifyPreloadHit(napi_env env, napi_callback_info info) {
+    napi_value resp;
 
-应用不再需要收到回调，或者在退出流程中时，调用取消预加载接口。
+    std::lock_guard<std::mutex> lock(g_preloadMutex);
+    if (g_preloadTasks.empty()) {
+        OH_LOG_INFO(LOG_APP, "No preload tasks to notify");
+        napi_create_int32(env, 0, &resp);
+        return resp;
+    }
 
-OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_UnregisterFilePreload();
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 取消注册失败，用户可自定义错误处理
+    int notifyCount = 0;
+    for (auto it = g_preloadTasks.begin(); it != g_preloadTasks.end(); ++it) {
+        std::string notifyPath = it->first;
+        std::vector<char> pathBuffer(notifyPath.size() + 1);
+        std::copy(notifyPath.begin(), notifyPath.end(), pathBuffer.begin());
+        pathBuffer[notifyPath.size()] = '\0';
+        int fd = it->second;
+        // 传入用户打开的已经预加载的文件描述符、文件路径和长度
+        OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_NotifyPreloadHit(
+            fd, pathBuffer.data(),static_cast<int32_t>(notifyPath.size()));
+        if (ret == OPEN_FILE_BOOST_SUCCESS) {
+            OH_LOG_INFO(LOG_APP, "Notify file(%{public}s) hit successfully.", notifyPath.c_str());
+            notifyCount++;
+        } else {
+            // 通知失败，用户可自定义错误处理
+            OH_LOG_ERROR(LOG_APP, "Notify file(%{public}s) failed, ret :%{public}d", notifyPath.c_str(), ret);
+        }
+    }
+
+    g_preloadTasks.clear();
+    OH_LOG_INFO(LOG_APP, "Notify %{public}d files hit successfully.", notifyCount);
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 
 应用向系统查询加速开关特性是否可用。
 
-bool switchInfo = HMS_Preview_OpenFileBoost_IsEnabled();
-if (switchInfo) {
-    // 加速特性可用，应用可处理加速相关业务逻辑
-} else {
-    // 加速特性不可用，应用可处理自身相关业务逻辑
+static napi_value IsAccelerateEnabled(napi_env env, napi_callback_info info) {
+    napi_value resp;
+
+    bool isEnabled = HMS_Preview_OpenFileBoost_IsEnabled();
+    if (isEnabled) {
+        // 加速特性可用，应用可处理加速相关业务逻辑
+        OH_LOG_INFO(LOG_APP, "Accelerate Enabled ");
+    } else {
+        // 加速特性不可用，应用可处理自身相关业务逻辑
+        OH_LOG_INFO(LOG_APP, "Accelerate not Enabled");
+    }
+
+    napi_get_boolean(env, isEnabled, &resp);
+    return resp;
 }
 
 应用向系统传递用户对文件的操作信息。
 
-const char* filePath = "/data/storage/el2/base/files/text.docx";
-const char* operationType = "open";
-// 创建文件操作信息
-OpenFileBoost_FileOperationInfo* fileOpInfo = nullptr;
+static napi_value NotifyFileOperation(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
 
-OpenFileBoost_ErrCode ret = HMS_Preview_OpenFileBoost_FileOperationInfoCreate(
-    filePath, static_cast<uint32_t>(strlen(filePath)),
-    operationType, static_cast<uint32_t>(strlen(operationType)),
-    &fileOpInfo);
+    size_t argc = 2;
+    napi_value args[2] = {nullptr};
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-    // 创建失败，应用可自定义错误处理
-}
+    char filePath[MAX_BUFFER_LENGTH] = {0};
+    char operationType[MAX_BUFFER_LENGTH] = {0};
 
-ret = HMS_Preview_OpenFileBoost_NotifyFileOperation(fileOpInfo);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-    // 传递失败，应用可自定义错误处理
+    GetCharString(env, args[0], filePath);
+    GetCharString(env, args[1], operationType);
+
+    OH_LOG_INFO(LOG_APP, "NotifyFileOperation: path=%{public}s, operation=%{public}s", filePath, operationType);
+    // 创建文件操作信息
+    OpenFileBoost_FileOperationInfo *fileOpInfo = nullptr;
+    OpenFileBoost_ErrCode ret = HMS_Preview_OpenFileBoost_FileOperationInfoCreate(
+        filePath, static_cast<uint32_t>(strlen(filePath)), operationType, static_cast<uint32_t>(strlen(operationType)),
+        &fileOpInfo);
+
+    if (ret != OPEN_FILE_BOOST_SUCCESS) {
+        // 创建失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create FileOperationInfo, code: %{public}d", ret);
+        napi_create_int32(env, ret, &resp);
+        return resp;
+    }
+
+    ret = HMS_Preview_OpenFileBoost_NotifyFileOperation(fileOpInfo);
+    if (ret != OPEN_FILE_BOOST_SUCCESS) {
+        // 传递失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "NotifyFileOperation failed, ret :%{public}d", ret);
+        HMS_Preview_OpenFileBoost_FileOperationInfoDestroy(fileOpInfo);
+        napi_create_int32(env, ret, &resp);
+        return resp;
+    }
+
+    HMS_Preview_OpenFileBoost_FileOperationInfoDestroy(fileOpInfo);
+    OH_LOG_INFO(LOG_APP, "NotifyFileOperation successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 
 注册文件扫描回调，确保系统在扫描文件时可以调用回调向应用通知扫描任务。
 
-// 创建扫描选项，添加应用支持的文件类型
-FileScanBoost_ScanOption* scanOption = nullptr;
-FileScanBoost_ErrCode res = HMS_Preview_FileScanBoost_ScanOptionCreate(&scanOption);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
+static napi_value RegisterFileScan(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
+    OH_LOG_INFO(LOG_APP, "Register file scan start.");
+    // 创建扫描选项，添加应用支持的文件类型
+    FileScanBoost_ScanOption *scanOption = nullptr;
+    FileScanBoost_ErrCode res = HMS_Preview_FileScanBoost_ScanOptionCreate(&scanOption);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create ScanOption, code: %{public}d", res);
+        napi_create_int32(env, -1, &resp);
+        return resp;
+    }
 
-res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xlsx", 4);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
+    res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xlsx", 4);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to add .xlsx support, code: %{public}d", res);
+        HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
+        napi_create_int32(env, -2, &resp);
+        return resp;
+    }
 
-res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xls", 3);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
+    res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xls", 3);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to add .xls support, code: %{public}d", res);
+        HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
+        napi_create_int32(env, -3, &resp);
+        return resp;
+    }
+    // 注册文件扫描回调
+    res = HMS_Preview_FileScanBoost_RegisterFileScan(AppOnFileScan, scanOption);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 注册失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Register file scan failed, ret :%{public}d", res);
+        napi_create_int32(env, res, &resp);
+        return resp;
+    }
+    // 扫描完成需销毁扫描选项
+    HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
+    OH_LOG_INFO(LOG_APP, "Register file scan successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
-
-// 注册文件扫描回调
-res = HMS_Preview_FileScanBoost_RegisterFileScan(AppOnFileScan, scanOption);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 注册失败，应用可自定义错误处理
-}
-
-// 扫描完成需销毁扫描选项
-HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
 
 // 文件扫描回调函数，系统调用此回调发送扫描任务
 // 应用应在当前回调上下文中同步完成文件解析或同步阻塞等待解析完毕后再返回
-FileScanBoost_CbErrCode AppOnFileScan(int32_t fd, const char* path, uint32_t pathLen)
-{
+FileScanBoost_CbErrCode AppOnFileScan(int32_t fd, const char *path, uint32_t pathLen) {
     // 应用可在回调中实现具体文件解析逻辑
     // 返回FILE_SCAN_BOOST_CALLBACK_SUCCESS表示接受扫描任务
     // 返回其他值表示拒绝
-    return FILE_SCAN_BOOST_CALLBACK_SUCCESS;
+    OH_LOG_INFO(LOG_APP, "AppOnFileScan called, fd=%{public}d, path=%{public}s", fd, path);
+
+    {
+        std::lock_guard<std::mutex> lock(g_scanMutex);
+        g_scanTasks[std::string(path)] = fd;
+    }
+    ConfigManager::getInstance().addScanTask(std::string(path), fd);
+
+    int callbackResult = ConfigManager::getInstance().getScanCallbackResult();
+    OH_LOG_INFO(LOG_APP, "AppOnFileScan returning: %{public}d", callbackResult);
+    return static_cast<FileScanBoost_CbErrCode>(callbackResult);
 }
 
 应用向系统传递扫描结果，确保文件扫描完成后，系统能收到文件扫描结果。
 
-const char* filePath = "/data/storage/el2/base/files/text.xlsx";
-// 创建扫描结果
-FileScanBoost_ScanResult* scanResult = nullptr;
-res = HMS_Preview_FileScanBoost_ScanResultCreate(&scanResult);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
+static napi_value ReportScanResult(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
 
-// 设置扫描状态为成功
-res = HMS_Preview_FileScanBoost_ScanResultSetState(scanResult, FILE_SCAN_BOOST_SCAN_STATE_SUCCESS);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 设置最大原子耗时（单位：ms）
-res = HMS_Preview_FileScanBoost_ScanResultSetMaxAtomicTime(scanResult, 1500);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 设置内存占用（单位：MB）
-res = HMS_Preview_FileScanBoost_ScanResultSetMemSize(scanResult, 3);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 向系统报告扫描结果
-res = HMS_Preview_FileScanBoost_ReportScanResult(
-    filePath, static_cast<uint32_t>(strlen(filePath)), scanResult);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 报告失败，应用可自定义错误处理
-}
-
-// 扫描完成需销毁扫描结果
-HMS_Preview_FileScanBoost_ScanResultDestroy(scanResult);
-
-// 报告扫描失败的示例
-FileScanBoost_ScanResult* errorResult = nullptr;
-res = HMS_Preview_FileScanBoost_ScanResultCreate(&errorResult);
-if (res == FILE_SCAN_BOOST_SUCCESS) {
-    // 设置扫描状态为处理错误
-    HMS_Preview_FileScanBoost_ScanResultSetState(errorResult, FILE_SCAN_BOOST_SCAN_STATE_PROCESS_ERROR);
-    HMS_Preview_FileScanBoost_ScanResultSetMaxAtomicTime(errorResult, 0);
-    HMS_Preview_FileScanBoost_ScanResultSetMemSize(errorResult, 0);
-
-    // 报告扫描错误结果
-    res = HMS_Preview_FileScanBoost_ReportScanResult(
-        filePath, static_cast<uint32_t>(strlen(filePath)), errorResult);
-    if (ret == FILE_SCAN_BOOST_SUCCESS) {
-        // 报告成功
+    std::lock_guard<std::mutex> lock(g_scanMutex);
+    if (g_scanTasks.empty()) {
+        OH_LOG_INFO(LOG_APP, "No scan tasks to report");
+        napi_create_int32(env, 0, &resp);
+        return resp;
     }
 
-    HMS_Preview_FileScanBoost_ScanResultDestroy(errorResult);
+    int reportCount = 0;
+    for (auto it = g_scanTasks.begin(); it != g_scanTasks.end();) {
+        std::string reportPath = it->first;
+        // 创建扫描结果
+        FileScanBoost_ScanResult *scanResult = nullptr;
+        FileScanBoost_ErrCode res = HMS_Preview_FileScanBoost_ScanResultCreate(&scanResult);
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_ERROR(LOG_APP, "Failed to create ScanResult, code: %{public}d", res);
+            ++it;
+            continue;
+        }
+        // 设置扫描状态
+        int state = ConfigManager::getInstance().getScanResultState();
+        res = HMS_Preview_FileScanBoost_ScanResultSetState(scanResult, static_cast<FileScanBoost_ScanState>(state));
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ScanResultSetState error");
+        }
+
+        // 设置最大原子耗时（单位：ms）
+        int64_t maxAtomicTime = ConfigManager::getInstance().getScanResultMaxAtomicTime();
+        res = HMS_Preview_FileScanBoost_ScanResultSetMaxAtomicTime(scanResult, maxAtomicTime);
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ScanResultSetMaxAtomicTime error");
+        }
+
+        // 设置内存占用（单位：MB）
+        int64_t memSize = ConfigManager::getInstance().getScanResultMemSize();
+        res = HMS_Preview_FileScanBoost_ScanResultSetMemSize(scanResult, memSize);
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ScanResultSetMemSize error");
+        }
+
+        // 向系统报告扫描结果
+        res = HMS_Preview_FileScanBoost_ReportScanResult(reportPath.c_str(),
+                                                         static_cast<uint32_t>(strlen(reportPath.c_str())), scanResult);
+
+        if (res == FILE_SCAN_BOOST_SUCCESS) {
+            // 报告失败，应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ReportScanResult successfully for: %{public}s", reportPath.c_str());
+            reportCount++;
+        } else {
+            OH_LOG_ERROR(LOG_APP, "ReportScanResult failed for %{public}s, ret :%{public}d", reportPath.c_str(), res);
+        }
+
+        // 扫描完成需销毁扫描结果
+        HMS_Preview_FileScanBoost_ScanResultDestroy(scanResult);
+
+        it = g_scanTasks.erase(it);
+        ConfigManager::getInstance().removeScanTaskByPath(reportPath);
+    }
+
+    OH_LOG_INFO(LOG_APP, "Report %{public}d scan results successfully.", reportCount);
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 
 应用注销文件扫描回调，确保应用将不再接收扫描任务通知。
 
-res = HMS_Preview_FileScanBoost_UnregisterFileScan();
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 注销失败，应用可自定义错误处理
+static napi_value UnregisterFileScan(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
+    OH_LOG_INFO(LOG_APP, "UnRegister file scan start.");
+
+    auto res = HMS_Preview_FileScanBoost_UnregisterFileScan();
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 注销失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "UnRegister file scan failed, ret :%{public}d", res);
+        napi_create_int32(env, res, &resp);
+        return resp;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(g_scanMutex);
+        g_scanTasks.clear();
+    }
+
+    OH_LOG_INFO(LOG_APP, "UnRegister file scan successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 
 ## Code blocks
@@ -316,11 +467,11 @@ if (res != FILE_SCAN_BOOST_SUCCESS) {
 ### Code block 1
 
 ```
-"requestPermissions":[
+"requestPermissions": [
   {
     "name": "ohos.permission.PRELOAD_FILE"
   }
-]
+],
 ```
 
 ### Code block 2
@@ -332,270 +483,416 @@ if (res != FILE_SCAN_BOOST_SUCCESS) {
 ### Code block 3
 
 ```
-target_link_libraries(entry PUBLIC
-    libopen_file_boost.so
+find_library(
+    OPEN_FILE_BOOST_LIBRARY
+    NAMES libopen_file_boost.so
+    PATHS ${CMAKE_FIND_ROOT_PATH}/lib/aarch64-linux-ohos
 )
+# ...
+target_link_libraries(entry PUBLIC ${OPEN_FILE_BOOST_LIBRARY})
 ```
 
 ### Code block 4
 
 ```
-OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_RegisterFilePreload(AppQueryAppStateCb,
-    AppOnFilePreload, AppCancelFilePreload);
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 注册失败，用户可自定义错误处理
+static napi_value RegisterPreload(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
+    OH_LOG_INFO(LOG_APP, "Register file preload start.");
+    // 创建选项
+    OpenFileBoost_Options *options = nullptr;
+    auto createCode = HMS_Preview_OpenFileBoost_OptionsCreate(&options);
+    if (createCode != OPEN_FILE_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create Options, code: %{public}d", createCode);
+        napi_create_int32(env, -1, &resp);
+        return resp;
+    }
+    // 创建文件类型
+    OpenFileBoost_SupportFile *supportFile = nullptr;
+    auto supportCode = HMS_Preview_OpenFileBoost_SupportFileCreate("xlsx", 4, 0, 100 * 1024 * 1024, &supportFile);
+    if (supportCode != OPEN_FILE_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create SupportFile, code: %{public}d", supportCode);
+        // 销毁之前的创建
+        HMS_Preview_OpenFileBoost_OptionsDestroy(options);
+        napi_create_int32(env, -2, &resp);
+        return resp;
+    }
+    // 添加文件类型到选项
+    auto addCode = HMS_Preview_OpenFileBoost_OptionsAddSupportFile(options, supportFile);
+    HMS_Preview_OpenFileBoost_SupportFileDestroy(supportFile);
+
+    if (addCode != OPEN_FILE_BOOST_SUCCESS) {
+        // 添加失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to add support file, code: %{public}d", addCode);
+        HMS_Preview_OpenFileBoost_OptionsDestroy(options);
+        napi_create_int32(env, -3, &resp);
+        return resp;
+    }
+    // 注册文件预加载回调，同时应用传递自己支持的文件后缀类型和文件大小上下限
+    auto code = HMS_Preview_OpenFileBoost_RegisterFilePreloadWithOption(AppQueryAppStateCb, AppOnFilePreload,
+                                                                        AppCancelFilePreload, options);
+    HMS_Preview_OpenFileBoost_OptionsDestroy(options);
+
+    if (code != OPEN_FILE_BOOST_SUCCESS) {
+        // 注册失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Register failed, ret :%{public}d", code);
+        napi_create_int32(env, code, &resp);
+        return resp;
+    }
+
+    OH_LOG_INFO(LOG_APP, "Register file preload successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 ```
 
 ### Code block 5
 
 ```
-OpenFileBoost_SupportFile* supportFiles[2] = {nullptr};
-
-// 创建文件类型
-OpenFileBoost_ErrCode ret = HMS_Preview_OpenFileBoost_SupportFileCreate(".pptx", 5, 20 * 1024,
-    2 * 1024 * 1024, &supportFiles[0]);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-// 应用可自定义错误处理
-}
-
-ret = HMS_Preview_OpenFileBoost_SupportFileCreate(".docx", 5, 5 * 1024, 2 * 1024 * 1024, &supportFiles[1]);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-// 销毁之前的创建
-    HMS_Preview_OpenFileBoost_SupportFileDestroy(supportFiles[0]);
-}
-
-// 创建选项
-OpenFileBoost_Options* options = nullptr;
-ret = HMS_Preview_OpenFileBoost_OptionsCreate(&options);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-
-}
-
-// 添加文件类型到选项
-ret = HMS_Preview_OpenFileBoost_OptionsAddSupportFile(options, supportFiles[0]);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-
-}
-
-// 注册文件预加载回调，同时应用传递自己支持的文件后缀类型和文件大小上下限
-ret = HMS_Preview_OpenFileBoost_RegisterFilePreloadWithOption(AppQueryAppStateCb,
-        AppOnFilePreload, AppCancelFilePreload, options);
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 注册失败，应用可自定义错误处理
-}
-```
-
-### Code block 6
-
-```
 // 查询应用当前状态的回调函数，系统在向应用推荐文件前会先调用状态查询回调函数向应用查询当前是否适合推荐
-OpenFileBoost_AppState AppQueryAppStateCb(void)
-{
-    // 如果当前状态允许进行文件预加载则返回OPEN_FILE_BOOST_APP_STATE_ALLOW_PRELOAD，这里的CanPreload函数为代码示例，表示应用根据实际业务判断是否允许预加载
-    if (CanPreload()) {
-        return OPEN_FILE_BOOST_APP_STATE_ALLOW_PRELOAD;
-    } else {
-        return OPEN_FILE_BOOST_APP_STATE_REJECT_PRELOAD;
-    }
+OpenFileBoost_AppState AppQueryAppStateCb(void) {
+    // 如果当前状态允许进行文件预加载则返回OPEN_FILE_BOOST_APP_STATE_ALLOW_PRELOAD，这里的state为代码示例，表示应用根据实际业务设置是否允许预加载
+    int state = ConfigManager::getInstance().getAppState();
+    OH_LOG_INFO(LOG_APP, "AppQueryAppStateCb, return state: %{public}d", state);
+    return static_cast<OpenFileBoost_AppState>(state);
 }
 
 // 文件预加载回调
-OpenFileBoost_CbErrCode AppOnFilePreload(void* fileInfo)
-{
+OpenFileBoost_CbErrCode AppOnFilePreload(void *fileInfo) {
+    OH_LOG_INFO(LOG_APP, "AppOnFilePreload called");
+
     int32_t fileDescriptor = 0;
     // 指针fileInfo仅在当前回调上下文有效，在回调中调用HMS_OpenFileBoost_GetFdFromPreloadFileInfo获取文件描述符
     OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_GetFdFromPreloadFileInfo(fileInfo, &fileDescriptor);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
+
     char sandboxPath[MAX_BUFFER_LENGTH] = {0};
     // 指针fileInfo仅在当前回调上下文有效，在回调中调用HMS_OpenFileBoost_GetSandboxPathFromPreloadFileInfo获取文件路径
     ret = HMS_OpenFileBoost_GetSandboxPathFromPreloadFileInfo(fileInfo, sandboxPath, MAX_BUFFER_LENGTH);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
+
+    OH_LOG_INFO(LOG_APP, "Preload file: fd=%{public}d, path=%{public}s", fileDescriptor, sandboxPath);
     // 用户可保存文件描述符和文件路径，方便后续通知取消预加载时对文件取消预加载
     // 用户自定义具体的文件预加载逻辑
-    return OPEN_FILE_BOOST_CALLBACK_SUCCESS;
+    {
+        std::lock_guard<std::mutex> lock(g_preloadMutex);
+        g_preloadTasks[std::string(sandboxPath)] = fileDescriptor;
+    }
+    ConfigManager::getInstance().addFileProcessTask(std::string(sandboxPath), fileDescriptor);
+
+    int callbackResult = ConfigManager::getInstance().getPreloadCallbackResult();
+    OH_LOG_INFO(LOG_APP, "AppOnFilePreload returning: %{public}d", callbackResult);
+    return static_cast<OpenFileBoost_CbErrCode>(callbackResult);
 }
 
 // 取消预加载回调
-OpenFileBoost_CbErrCode AppCancelFilePreload(void* fileInfo)
-{
+OpenFileBoost_CbErrCode AppCancelFilePreload(void *fileInfo) {
+    OH_LOG_INFO(LOG_APP, "AppCancelFilePreload called");
     // 同样的方法获取文件描述符和沙箱路径
     int32_t fileDescriptor = 0;
     OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_GetFdFromPreloadFileInfo(fileInfo, &fileDescriptor);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
+
     char sandboxPath[MAX_BUFFER_LENGTH] = {0};
     ret = HMS_OpenFileBoost_GetSandboxPathFromPreloadFileInfo(fileInfo, sandboxPath, MAX_BUFFER_LENGTH);
     if (ret != OPEN_FILE_BOOST_SUCCESS) {
         return OPEN_FILE_BOOST_CALLBACK_FAILURE;
     }
     // 用户自定义具体的取消文件预加载逻辑
+    OH_LOG_INFO(LOG_APP, "Cancel preload: fd=%{public}d, path=%{public}s", fileDescriptor, sandboxPath);
+
+    std::string path(sandboxPath);
+    std::lock_guard<std::mutex> lock(g_preloadMutex);
+    auto it = g_preloadTasks.find(path);
+    if (it != g_preloadTasks.end()) {
+        g_preloadTasks.erase(it);
+    }
+
     return OPEN_FILE_BOOST_CALLBACK_SUCCESS;
+}
+```
+
+### Code block 6
+
+```
+static napi_value NotifyPreloadHit(napi_env env, napi_callback_info info) {
+    napi_value resp;
+
+    std::lock_guard<std::mutex> lock(g_preloadMutex);
+    if (g_preloadTasks.empty()) {
+        OH_LOG_INFO(LOG_APP, "No preload tasks to notify");
+        napi_create_int32(env, 0, &resp);
+        return resp;
+    }
+
+    int notifyCount = 0;
+    for (auto it = g_preloadTasks.begin(); it != g_preloadTasks.end(); ++it) {
+        std::string notifyPath = it->first;
+        std::vector<char> pathBuffer(notifyPath.size() + 1);
+        std::copy(notifyPath.begin(), notifyPath.end(), pathBuffer.begin());
+        pathBuffer[notifyPath.size()] = '\0';
+        int fd = it->second;
+        // 传入用户打开的已经预加载的文件描述符、文件路径和长度
+        OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_NotifyPreloadHit(
+            fd, pathBuffer.data(),static_cast<int32_t>(notifyPath.size()));
+        if (ret == OPEN_FILE_BOOST_SUCCESS) {
+            OH_LOG_INFO(LOG_APP, "Notify file(%{public}s) hit successfully.", notifyPath.c_str());
+            notifyCount++;
+        } else {
+            // 通知失败，用户可自定义错误处理
+            OH_LOG_ERROR(LOG_APP, "Notify file(%{public}s) failed, ret :%{public}d", notifyPath.c_str(), ret);
+        }
+    }
+
+    g_preloadTasks.clear();
+    OH_LOG_INFO(LOG_APP, "Notify %{public}d files hit successfully.", notifyCount);
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 ```
 
 ### Code block 7
 
 ```
-// 传入用户打开的已经预加载的文件描述符、文件路径和长度
-OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_NotifyPreloadHit(fileDescriptor, sandboxPath, pathLen);
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 通知失败，用户可自定义错误处理
+static napi_value IsAccelerateEnabled(napi_env env, napi_callback_info info) {
+    napi_value resp;
+
+    bool isEnabled = HMS_Preview_OpenFileBoost_IsEnabled();
+    if (isEnabled) {
+        // 加速特性可用，应用可处理加速相关业务逻辑
+        OH_LOG_INFO(LOG_APP, "Accelerate Enabled ");
+    } else {
+        // 加速特性不可用，应用可处理自身相关业务逻辑
+        OH_LOG_INFO(LOG_APP, "Accelerate not Enabled");
+    }
+
+    napi_get_boolean(env, isEnabled, &resp);
+    return resp;
 }
 ```
 
 ### Code block 8
 
 ```
-OpenFileBoost_ErrCode ret = HMS_OpenFileBoost_UnregisterFilePreload();
-if (ret != OPEN_FILE_BOOST_SUCCESS){
-    // 取消注册失败，用户可自定义错误处理
+static napi_value NotifyFileOperation(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
+
+    size_t argc = 2;
+    napi_value args[2] = {nullptr};
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+
+    char filePath[MAX_BUFFER_LENGTH] = {0};
+    char operationType[MAX_BUFFER_LENGTH] = {0};
+
+    GetCharString(env, args[0], filePath);
+    GetCharString(env, args[1], operationType);
+
+    OH_LOG_INFO(LOG_APP, "NotifyFileOperation: path=%{public}s, operation=%{public}s", filePath, operationType);
+    // 创建文件操作信息
+    OpenFileBoost_FileOperationInfo *fileOpInfo = nullptr;
+    OpenFileBoost_ErrCode ret = HMS_Preview_OpenFileBoost_FileOperationInfoCreate(
+        filePath, static_cast<uint32_t>(strlen(filePath)), operationType, static_cast<uint32_t>(strlen(operationType)),
+        &fileOpInfo);
+
+    if (ret != OPEN_FILE_BOOST_SUCCESS) {
+        // 创建失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create FileOperationInfo, code: %{public}d", ret);
+        napi_create_int32(env, ret, &resp);
+        return resp;
+    }
+
+    ret = HMS_Preview_OpenFileBoost_NotifyFileOperation(fileOpInfo);
+    if (ret != OPEN_FILE_BOOST_SUCCESS) {
+        // 传递失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "NotifyFileOperation failed, ret :%{public}d", ret);
+        HMS_Preview_OpenFileBoost_FileOperationInfoDestroy(fileOpInfo);
+        napi_create_int32(env, ret, &resp);
+        return resp;
+    }
+
+    HMS_Preview_OpenFileBoost_FileOperationInfoDestroy(fileOpInfo);
+    OH_LOG_INFO(LOG_APP, "NotifyFileOperation successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 ```
 
 ### Code block 9
 
 ```
-bool switchInfo = HMS_Preview_OpenFileBoost_IsEnabled();
-if (switchInfo) {
-    // 加速特性可用，应用可处理加速相关业务逻辑
-} else {
-    // 加速特性不可用，应用可处理自身相关业务逻辑
+static napi_value RegisterFileScan(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
+    OH_LOG_INFO(LOG_APP, "Register file scan start.");
+    // 创建扫描选项，添加应用支持的文件类型
+    FileScanBoost_ScanOption *scanOption = nullptr;
+    FileScanBoost_ErrCode res = HMS_Preview_FileScanBoost_ScanOptionCreate(&scanOption);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to create ScanOption, code: %{public}d", res);
+        napi_create_int32(env, -1, &resp);
+        return resp;
+    }
+
+    res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xlsx", 4);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to add .xlsx support, code: %{public}d", res);
+        HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
+        napi_create_int32(env, -2, &resp);
+        return resp;
+    }
+
+    res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xls", 3);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Failed to add .xls support, code: %{public}d", res);
+        HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
+        napi_create_int32(env, -3, &resp);
+        return resp;
+    }
+    // 注册文件扫描回调
+    res = HMS_Preview_FileScanBoost_RegisterFileScan(AppOnFileScan, scanOption);
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 注册失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "Register file scan failed, ret :%{public}d", res);
+        napi_create_int32(env, res, &resp);
+        return resp;
+    }
+    // 扫描完成需销毁扫描选项
+    HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
+    OH_LOG_INFO(LOG_APP, "Register file scan successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
+}
+
+// 文件扫描回调函数，系统调用此回调发送扫描任务
+// 应用应在当前回调上下文中同步完成文件解析或同步阻塞等待解析完毕后再返回
+FileScanBoost_CbErrCode AppOnFileScan(int32_t fd, const char *path, uint32_t pathLen) {
+    // 应用可在回调中实现具体文件解析逻辑
+    // 返回FILE_SCAN_BOOST_CALLBACK_SUCCESS表示接受扫描任务
+    // 返回其他值表示拒绝
+    OH_LOG_INFO(LOG_APP, "AppOnFileScan called, fd=%{public}d, path=%{public}s", fd, path);
+
+    {
+        std::lock_guard<std::mutex> lock(g_scanMutex);
+        g_scanTasks[std::string(path)] = fd;
+    }
+    ConfigManager::getInstance().addScanTask(std::string(path), fd);
+
+    int callbackResult = ConfigManager::getInstance().getScanCallbackResult();
+    OH_LOG_INFO(LOG_APP, "AppOnFileScan returning: %{public}d", callbackResult);
+    return static_cast<FileScanBoost_CbErrCode>(callbackResult);
 }
 ```
 
 ### Code block 10
 
 ```
-const char* filePath = "/data/storage/el2/base/files/text.docx";
-const char* operationType = "open";
-// 创建文件操作信息
-OpenFileBoost_FileOperationInfo* fileOpInfo = nullptr;
+static napi_value ReportScanResult(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
 
-OpenFileBoost_ErrCode ret = HMS_Preview_OpenFileBoost_FileOperationInfoCreate(
-    filePath, static_cast<uint32_t>(strlen(filePath)),
-    operationType, static_cast<uint32_t>(strlen(operationType)),
-    &fileOpInfo);
+    std::lock_guard<std::mutex> lock(g_scanMutex);
+    if (g_scanTasks.empty()) {
+        OH_LOG_INFO(LOG_APP, "No scan tasks to report");
+        napi_create_int32(env, 0, &resp);
+        return resp;
+    }
 
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-    // 创建失败，应用可自定义错误处理
-}
+    int reportCount = 0;
+    for (auto it = g_scanTasks.begin(); it != g_scanTasks.end();) {
+        std::string reportPath = it->first;
+        // 创建扫描结果
+        FileScanBoost_ScanResult *scanResult = nullptr;
+        FileScanBoost_ErrCode res = HMS_Preview_FileScanBoost_ScanResultCreate(&scanResult);
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_ERROR(LOG_APP, "Failed to create ScanResult, code: %{public}d", res);
+            ++it;
+            continue;
+        }
+        // 设置扫描状态
+        int state = ConfigManager::getInstance().getScanResultState();
+        res = HMS_Preview_FileScanBoost_ScanResultSetState(scanResult, static_cast<FileScanBoost_ScanState>(state));
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ScanResultSetState error");
+        }
 
-ret = HMS_Preview_OpenFileBoost_NotifyFileOperation(fileOpInfo);
-if (ret != OPEN_FILE_BOOST_SUCCESS) {
-    // 传递失败，应用可自定义错误处理
+        // 设置最大原子耗时（单位：ms）
+        int64_t maxAtomicTime = ConfigManager::getInstance().getScanResultMaxAtomicTime();
+        res = HMS_Preview_FileScanBoost_ScanResultSetMaxAtomicTime(scanResult, maxAtomicTime);
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ScanResultSetMaxAtomicTime error");
+        }
+
+        // 设置内存占用（单位：MB）
+        int64_t memSize = ConfigManager::getInstance().getScanResultMemSize();
+        res = HMS_Preview_FileScanBoost_ScanResultSetMemSize(scanResult, memSize);
+        if (res != FILE_SCAN_BOOST_SUCCESS) {
+            // 应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ScanResultSetMemSize error");
+        }
+
+        // 向系统报告扫描结果
+        res = HMS_Preview_FileScanBoost_ReportScanResult(reportPath.c_str(),
+                                                         static_cast<uint32_t>(strlen(reportPath.c_str())), scanResult);
+
+        if (res == FILE_SCAN_BOOST_SUCCESS) {
+            // 报告失败，应用可自定义错误处理
+            OH_LOG_INFO(LOG_APP, "ReportScanResult successfully for: %{public}s", reportPath.c_str());
+            reportCount++;
+        } else {
+            OH_LOG_ERROR(LOG_APP, "ReportScanResult failed for %{public}s, ret :%{public}d", reportPath.c_str(), res);
+        }
+
+        // 扫描完成需销毁扫描结果
+        HMS_Preview_FileScanBoost_ScanResultDestroy(scanResult);
+
+        it = g_scanTasks.erase(it);
+        ConfigManager::getInstance().removeScanTaskByPath(reportPath);
+    }
+
+    OH_LOG_INFO(LOG_APP, "Report %{public}d scan results successfully.", reportCount);
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 ```
 
 ### Code block 11
 
 ```
-// 创建扫描选项，添加应用支持的文件类型
-FileScanBoost_ScanOption* scanOption = nullptr;
-FileScanBoost_ErrCode res = HMS_Preview_FileScanBoost_ScanOptionCreate(&scanOption);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
+static napi_value UnregisterFileScan(napi_env env, napi_callback_info info) {
+    napi_value resp;
+    napi_create_int32(env, 0, &resp);
+    OH_LOG_INFO(LOG_APP, "UnRegister file scan start.");
 
-res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xlsx", 4);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-res = HMS_Preview_FileScanBoost_ScanOptionAddSupportFile(scanOption, "xls", 3);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 注册文件扫描回调
-res = HMS_Preview_FileScanBoost_RegisterFileScan(AppOnFileScan, scanOption);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 注册失败，应用可自定义错误处理
-}
-
-// 扫描完成需销毁扫描选项
-HMS_Preview_FileScanBoost_ScanOptionDestroy(scanOption);
-
-// 文件扫描回调函数，系统调用此回调发送扫描任务
-// 应用应在当前回调上下文中同步完成文件解析或同步阻塞等待解析完毕后再返回
-FileScanBoost_CbErrCode AppOnFileScan(int32_t fd, const char* path, uint32_t pathLen)
-{
-    // 应用可在回调中实现具体文件解析逻辑
-    // 返回FILE_SCAN_BOOST_CALLBACK_SUCCESS表示接受扫描任务
-    // 返回其他值表示拒绝
-    return FILE_SCAN_BOOST_CALLBACK_SUCCESS;
-}
-```
-
-### Code block 12
-
-```
-const char* filePath = "/data/storage/el2/base/files/text.xlsx";
-// 创建扫描结果
-FileScanBoost_ScanResult* scanResult = nullptr;
-res = HMS_Preview_FileScanBoost_ScanResultCreate(&scanResult);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 设置扫描状态为成功
-res = HMS_Preview_FileScanBoost_ScanResultSetState(scanResult, FILE_SCAN_BOOST_SCAN_STATE_SUCCESS);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 设置最大原子耗时（单位：ms）
-res = HMS_Preview_FileScanBoost_ScanResultSetMaxAtomicTime(scanResult, 1500);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 设置内存占用（单位：MB）
-res = HMS_Preview_FileScanBoost_ScanResultSetMemSize(scanResult, 3);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 应用可自定义错误处理
-}
-
-// 向系统报告扫描结果
-res = HMS_Preview_FileScanBoost_ReportScanResult(
-    filePath, static_cast<uint32_t>(strlen(filePath)), scanResult);
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 报告失败，应用可自定义错误处理
-}
-
-// 扫描完成需销毁扫描结果
-HMS_Preview_FileScanBoost_ScanResultDestroy(scanResult);
-
-// 报告扫描失败的示例
-FileScanBoost_ScanResult* errorResult = nullptr;
-res = HMS_Preview_FileScanBoost_ScanResultCreate(&errorResult);
-if (res == FILE_SCAN_BOOST_SUCCESS) {
-    // 设置扫描状态为处理错误
-    HMS_Preview_FileScanBoost_ScanResultSetState(errorResult, FILE_SCAN_BOOST_SCAN_STATE_PROCESS_ERROR);
-    HMS_Preview_FileScanBoost_ScanResultSetMaxAtomicTime(errorResult, 0);
-    HMS_Preview_FileScanBoost_ScanResultSetMemSize(errorResult, 0);
-
-    // 报告扫描错误结果
-    res = HMS_Preview_FileScanBoost_ReportScanResult(
-        filePath, static_cast<uint32_t>(strlen(filePath)), errorResult);
-    if (ret == FILE_SCAN_BOOST_SUCCESS) {
-        // 报告成功
+    auto res = HMS_Preview_FileScanBoost_UnregisterFileScan();
+    if (res != FILE_SCAN_BOOST_SUCCESS) {
+        // 注销失败，应用可自定义错误处理
+        OH_LOG_ERROR(LOG_APP, "UnRegister file scan failed, ret :%{public}d", res);
+        napi_create_int32(env, res, &resp);
+        return resp;
     }
 
-    HMS_Preview_FileScanBoost_ScanResultDestroy(errorResult);
-}
-```
+    {
+        std::lock_guard<std::mutex> lock(g_scanMutex);
+        g_scanTasks.clear();
+    }
 
-### Code block 13
-
-```
-res = HMS_Preview_FileScanBoost_UnregisterFileScan();
-if (res != FILE_SCAN_BOOST_SUCCESS) {
-    // 注销失败，应用可自定义错误处理
+    OH_LOG_INFO(LOG_APP, "UnRegister file scan successfully.");
+    napi_create_int32(env, 0, &resp);
+    return resp;
 }
 ```

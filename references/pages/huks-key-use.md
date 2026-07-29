@@ -10,6 +10,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 
 密钥协商
 
+密钥封装
+
 密钥派生
 
 访问控制

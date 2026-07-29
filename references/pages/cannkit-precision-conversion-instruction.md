@@ -24,7 +24,7 @@ half共16bit，包括1bit符号位（S），5bit指数位（E）和10bit尾数�
 
 当E全为1时，若M全为0，表示的结果为±inf（取决于符号位）；若M不全为0，表示的结果为nan。
 
-上图中S=0，E=15，M = 2-1 + 2-2，表示的结果为1.75。
+上图中S = 0，E = 15，M = 2-1 + 2-2，表示的结果为1.75。
 
 float共32bit，包括1bit符号位（S），8bit指数位（E）和23bit尾数位（M）。
 
@@ -116,8 +116,8 @@ T2	源操作数数据类型。 - Kirin9020支持的数据类型见表4。 - Kiri
 表3 参数说明
 
 参数名	输入/输出	描述
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。
-srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。
 round_mode	输入	精度转换处理模式，类型是RoundMode。 RoundMode为枚举类型，用以控制精度转换处理模式，具体取值为：CAST_NONE、CAST_RINT、CAST_FLOOR、CAST_CEIL、CAST_ROUND、CAST_TRUNC、CAST_ODD。 CAST_ROUND表示反向0取整，远离0，对正数x.y变成(x + 1)，对负数-x.y，变成-(x + 1)。
 calCount	输入	输入数据元素个数。
 
@@ -292,7 +292,7 @@ private:
         AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
         AscendC::LocalTensor<int32_t> dstLocal = outQueueDst.AllocTensor<int32_t>();
 
-        AscendC::Cast(dstLocal, srcLocal, AscendC::RoundMode::CAST_CEIL, 512);
+        **AscendC::Cast(dstLocal, srcLocal, AscendC::RoundMode::CAST_CEIL, 512);**
 
         outQueueDst.EnQue<int32_t>(dstLocal);
         inQueueSrc.FreeTensor(srcLocal);
@@ -457,7 +457,7 @@ private:
         AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
         AscendC::LocalTensor<int32_t> dstLocal = outQueueDst.AllocTensor<int32_t>();
 
-        AscendC::Cast(dstLocal, srcLocal, AscendC::RoundMode::CAST_CEIL, 512);
+        **AscendC::Cast(dstLocal, srcLocal, AscendC::RoundMode::CAST_CEIL, 512);**
 
         outQueueDst.EnQue<int32_t>(dstLocal);
         inQueueSrc.FreeTensor(srcLocal);

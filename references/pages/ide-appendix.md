@@ -6,8 +6,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-appen
 
 Terminal环境变量说明
 
-运维服务
-
 DevEco Studio配置参数列表
 
 关闭数据采集

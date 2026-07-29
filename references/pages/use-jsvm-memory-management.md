@@ -26,10 +26,11 @@ JSVM-API接口开发流程请参考使用JSVM-API实现JS与C/C++语言交互开
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_AdjustExternalMemory的样例方法
 static JSVM_Value AdjustExternalMemory(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -56,6 +57,8 @@ static JSVM_CallbackStruct *method = param;
 static JSVM_PropertyDescriptor descriptor[] = {
     {"adjustExternalMemory", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+const char *SRC_CALL_NATIVE = R"JS(adjustExternalMemory())JS";
 
 样例测试JS
 
@@ -74,10 +77,11 @@ JSVM Allocate memory size: 1048576
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_MemoryPressureNotification的样例方法
 static JSVM_Value MemoryPressureNotification(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -87,7 +91,8 @@ static JSVM_Value MemoryPressureNotification(JSVM_Env env, JSVM_CallbackInfo inf
         OH_LOG_ERROR(LOG_APP, "JSVM OH_JSVM_MemoryPressureNotification: failed");
     } else {
         OH_LOG_INFO(LOG_APP, "JSVM OH_JSVM_MemoryPressureNotification: success");
-        OH_LOG_INFO(LOG_APP, "JSVM Current JSVM memory pressure level: %{public}d", JSVM_MEMORY_PRESSURE_LEVEL_CRITICAL);
+        OH_LOG_INFO(LOG_APP, "JSVM Current JSVM memory pressure level: %{public}d",
+                    JSVM_MEMORY_PRESSURE_LEVEL_CRITICAL);
     }
     return nullptr;
 }
@@ -100,6 +105,8 @@ static JSVM_CallbackStruct *method = param;
 static JSVM_PropertyDescriptor descriptor[] = {
     {"memoryPressureNotification", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+const char *SRC_CALL_NATIVE = R"JS(memoryPressureNotification())JS";
 
 样例测试JS
 
@@ -117,10 +124,11 @@ JSVM Current JSVM memory pressure level: 2
 ### Code block 1
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_AdjustExternalMemory的样例方法
 static JSVM_Value AdjustExternalMemory(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -147,6 +155,8 @@ static JSVM_CallbackStruct *method = param;
 static JSVM_PropertyDescriptor descriptor[] = {
     {"adjustExternalMemory", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+const char *SRC_CALL_NATIVE = R"JS(adjustExternalMemory())JS";
 ```
 
 ### Code block 2
@@ -165,10 +175,11 @@ JSVM Allocate memory size: 1048576
 ### Code block 4
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_MemoryPressureNotification的样例方法
 static JSVM_Value MemoryPressureNotification(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -178,7 +189,8 @@ static JSVM_Value MemoryPressureNotification(JSVM_Env env, JSVM_CallbackInfo inf
         OH_LOG_ERROR(LOG_APP, "JSVM OH_JSVM_MemoryPressureNotification: failed");
     } else {
         OH_LOG_INFO(LOG_APP, "JSVM OH_JSVM_MemoryPressureNotification: success");
-        OH_LOG_INFO(LOG_APP, "JSVM Current JSVM memory pressure level: %{public}d", JSVM_MEMORY_PRESSURE_LEVEL_CRITICAL);
+        OH_LOG_INFO(LOG_APP, "JSVM Current JSVM memory pressure level: %{public}d",
+                    JSVM_MEMORY_PRESSURE_LEVEL_CRITICAL);
     }
     return nullptr;
 }
@@ -191,6 +203,8 @@ static JSVM_CallbackStruct *method = param;
 static JSVM_PropertyDescriptor descriptor[] = {
     {"memoryPressureNotification", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+const char *SRC_CALL_NATIVE = R"JS(memoryPressureNotification())JS";
 ```
 
 ### Code block 5

@@ -18,7 +18,7 @@ __aicore__ inline void CreateVecIndex(LocalTensor<T> dstLocal, const T &firstVal
 表1 参数说明
 
 参数名称	输入/输出	含义
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为：int8/int16/int32/float16/float KirinX90系列处理器，支持的数据类型为：int8/int16/int32/float16/float
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为：int8、int16、int32、float16、float KirinX90系列处理器，支持的数据类型为：int8、int16、int32、float16、float
 firstValue	输入	索引的第一个数值，数据类型需与dstLocal中元素的数据类型保持一致。
 calCount	输入	输入数据元素个数。
 
@@ -72,7 +72,7 @@ public:
     }
     __aicore__ inline void Process()
     {
-        // Do not need CopyIn
+        // 无需CopyIn
         Compute();
         CopyOut();
     }
@@ -159,7 +159,7 @@ public:
     }
     __aicore__ inline void Process()
     {
-        // Do not need CopyIn
+        // 无需CopyIn
         Compute();
         CopyOut();
     }

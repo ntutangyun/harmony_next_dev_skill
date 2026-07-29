@@ -42,8 +42,8 @@ Buffer渲染处理。
   {
     "name": "GraphicsAccelerateKit_ABR",
     "value": "true"
-  }
-]
+  },
+],
 
 [h2]头文件引用
 
@@ -51,7 +51,6 @@ Buffer渲染处理。
 
 // 引用ABR头文件 abr_gles.h
 #include <graphics_game_sdk/abr_gles.h>
-#include <GLES3/gl32.h>
 
 [h2]编写CMakeLists.txt
 
@@ -92,12 +91,10 @@ if (context_ == nullptr) {
 
 调用HMS_ABR_SetTargetFps接口初始化ABR实例，根据游戏的目标帧率配置ABR的目标帧率属性。
 
-// 初始化ABR接口调用错误码
-ABR_ErrorCode errorCode = ABR_SUCCESS;
-
 // 初始化ABR实例，配置ABR的目标帧率属性。例如游戏目标帧率为120fps，则配置ABR的目标帧率属性为120fps
-errorCode = HMS_ABR_SetTargetFps(context_, 120);
+ABR_ErrorCode errorCode = HMS_ABR_SetTargetFps(context_, 120);
 if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_SetTargetFps execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -107,6 +104,7 @@ if (errorCode != ABR_SUCCESS) {
 // 例如设置ABR对Buffer分辨率进行0.5~1.0倍的自适应调整
 errorCode = HMS_ABR_SetScaleRange(context_, 0.5f, 1.0f);
 if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_SetScaleRange execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -115,6 +113,7 @@ if (errorCode != ABR_SUCCESS) {
 // 激活ABR上下文实例
 errorCode = HMS_ABR_Activate(context_);
 if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_Activate execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -127,16 +126,14 @@ if (errorCode != ABR_SUCCESS) {
 // 相机运动数据结构体，设置每帧实时相机运动数据
 ABR_CameraData cameraData;
 // 每帧位置
-ABR_Vector3 position_;
+cameraData.position = static_cast<ABR_Vector3>(camera_.GetPosition());
 // 每帧的相机旋转角，范围是[0, 360]
-ABR_Vector3 rotation_;
-cameraData.position = position_;
-cameraData.rotation = rotation_;
-
+cameraData.rotation = static_cast<ABR_Vector3>(camera_.GetRotation());
 // 每帧相机运动数据更新
 errorCode = HMS_ABR_UpdateCameraData(context_, &cameraData);
 if (errorCode != ABR_SUCCESS) {
-    return false;
+    GOLOGE("HMS_ABR_UpdateCameraData execution failed, error code: %d.", errorCode);
+    return;
 }
 
 [h2]自适应渲染
@@ -146,17 +143,20 @@ if (errorCode != ABR_SUCCESS) {
 选择着色器处理耗时较高的Buffer，并在Buffer渲染前绑定帧缓冲。
 
 // 创建帧缓冲对象
-GLuint fbo;
-glGenFramebuffers(1, &fbo);
+glGenFramebuffers(1, &fbo.fbo_);
+CheckOpenGLError();
+
 // 绑定帧缓冲
-glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+glBindFramebuffer(GL_FRAMEBUFFER, fbo.fbo_);
+CheckOpenGLError();
 
 调用HMS_ABR_MarkFrameBuffer_GLES接口对Buffer进行标记。
 
 // 在Buffer渲染前调用，执行失败不影响Buffer正常渲染
 errorCode = HMS_ABR_MarkFrameBuffer_GLES(context_);
 if (errorCode != ABR_SUCCESS) {
-    return false;
+    GOLOGE("HMS_ABR_MarkFrameBuffer_GLES execution failed, error code: %d.", errorCode);
+    return;
 }
 
 执行Buffer原有渲染流程。
@@ -169,8 +169,10 @@ if (errorCode != ABR_SUCCESS) {
 
 // 销毁ABR上下文实例并释放内存资源
 ABR_ErrorCode errorCode = HMS_ABR_DestroyContext(&context_);
+predictionPaused_ = (errorCode == ABR_SUCCESS);
 if (errorCode != ABR_SUCCESS) {
-     return false;
+    GOLOGE("HMS_ABR_ContextDestroy execution failed, error code: %d.", errorCode);
+    return false;
 }
 
 ## Code blocks
@@ -182,8 +184,8 @@ if (errorCode != ABR_SUCCESS) {
   {
     "name": "GraphicsAccelerateKit_ABR",
     "value": "true"
-  }
-]
+  },
+],
 ```
 
 ### Code block 2
@@ -191,7 +193,6 @@ if (errorCode != ABR_SUCCESS) {
 ```
 // 引用ABR头文件 abr_gles.h
 #include <graphics_game_sdk/abr_gles.h>
-#include <GLES3/gl32.h>
 ```
 
 ### Code block 3
@@ -234,12 +235,10 @@ if (context_ == nullptr) {
 ### Code block 5
 
 ```
-// 初始化ABR接口调用错误码
-ABR_ErrorCode errorCode = ABR_SUCCESS;
-
 // 初始化ABR实例，配置ABR的目标帧率属性。例如游戏目标帧率为120fps，则配置ABR的目标帧率属性为120fps
-errorCode = HMS_ABR_SetTargetFps(context_, 120);
+ABR_ErrorCode errorCode = HMS_ABR_SetTargetFps(context_, 120);
 if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_SetTargetFps execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -251,6 +250,7 @@ if (errorCode != ABR_SUCCESS) {
 // 例如设置ABR对Buffer分辨率进行0.5~1.0倍的自适应调整
 errorCode = HMS_ABR_SetScaleRange(context_, 0.5f, 1.0f);
 if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_SetScaleRange execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -261,6 +261,7 @@ if (errorCode != ABR_SUCCESS) {
 // 激活ABR上下文实例
 errorCode = HMS_ABR_Activate(context_);
 if (errorCode != ABR_SUCCESS) {
+    GOLOGE("HMS_ABR_Activate execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -271,16 +272,14 @@ if (errorCode != ABR_SUCCESS) {
 // 相机运动数据结构体，设置每帧实时相机运动数据
 ABR_CameraData cameraData;
 // 每帧位置
-ABR_Vector3 position_;
+cameraData.position = static_cast<ABR_Vector3>(camera_.GetPosition());
 // 每帧的相机旋转角，范围是[0, 360]
-ABR_Vector3 rotation_;
-cameraData.position = position_;
-cameraData.rotation = rotation_;
-
+cameraData.rotation = static_cast<ABR_Vector3>(camera_.GetRotation());
 // 每帧相机运动数据更新
 errorCode = HMS_ABR_UpdateCameraData(context_, &cameraData);
 if (errorCode != ABR_SUCCESS) {
-    return false;
+    GOLOGE("HMS_ABR_UpdateCameraData execution failed, error code: %d.", errorCode);
+    return;
 }
 ```
 
@@ -288,10 +287,12 @@ if (errorCode != ABR_SUCCESS) {
 
 ```
 // 创建帧缓冲对象
-GLuint fbo;
-glGenFramebuffers(1, &fbo);
+glGenFramebuffers(1, &fbo.fbo_);
+CheckOpenGLError();
+
 // 绑定帧缓冲
-glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+glBindFramebuffer(GL_FRAMEBUFFER, fbo.fbo_);
+CheckOpenGLError();
 ```
 
 ### Code block 10
@@ -300,7 +301,8 @@ glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 // 在Buffer渲染前调用，执行失败不影响Buffer正常渲染
 errorCode = HMS_ABR_MarkFrameBuffer_GLES(context_);
 if (errorCode != ABR_SUCCESS) {
-    return false;
+    GOLOGE("HMS_ABR_MarkFrameBuffer_GLES execution failed, error code: %d.", errorCode);
+    return;
 }
 ```
 
@@ -309,7 +311,9 @@ if (errorCode != ABR_SUCCESS) {
 ```
 // 销毁ABR上下文实例并释放内存资源
 ABR_ErrorCode errorCode = HMS_ABR_DestroyContext(&context_);
+predictionPaused_ = (errorCode == ABR_SUCCESS);
 if (errorCode != ABR_SUCCESS) {
-     return false;
+    GOLOGE("HMS_ABR_ContextDestroy execution failed, error code: %d.", errorCode);
+    return false;
 }
 ```

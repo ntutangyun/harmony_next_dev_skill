@@ -6,6 +6,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/core-visi
 
 从26.0.0版本开始，新增支持对输入的低分辨率图像进行超分辨率重建，使图像更加清晰。适用于提升图片质量、修复老照片等场景。
 
+效果如下图所示：
+
 开发步骤
 
 在使用图像超分时，将实现图像超分相关的类添加至工程。

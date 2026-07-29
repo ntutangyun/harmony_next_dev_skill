@@ -56,6 +56,12 @@ DevEco Studio 6.0.0 Beta3及之前版本，自动签名未关联注册的应用�
 
 Push Kit（推送服务）开放能力接入后不可取消。
 
+26.0.0 Beta2及以上版本
+
+26.0.0 Beta1版本
+
+从26.0.0 Beta1版本开始，支持通过Enable ACL Permissions提交ACL权限申请，仅适用于Stage模型。
+
 {
   "module": {
     ...
@@ -66,13 +72,19 @@ Push Kit（推送服务）开放能力接入后不可取消。
   }
 }
 
-26.0.0 Beta1及以上版本
-
-Enable ACL Permissions +下会显示配置文件中添加的ACL权限，点击Enable ACL Permissions +，在ACL Permission Configuration窗口会显示未申请的ACL权限，填写申请理由（Request reason）和附件（Attachment）等，点击OK。在AGC中查看权限申请进度，具体请参考申请ACL权限。
+点击Enable ACL Permissions进入ACL权限配置界面，界面显示所有已配置的ACL权限。填写所有ACL权限的申请原因(必填)（Request reason）和上传附件（Attachment）后，点击OK提交申请，提交后可在AGC的互动中心页面查看ACL权限申请进度。
 
 26.0.0 Beta1以下版本
 
-修改配置文件后，在签名界面点击OK，若应用已在AGC申请该权限则签名成功；若应用未申请该权限，会导致签名失败，点击Notice弹窗中"submit a permission request in AppGallery Connect"或"Submit"，跳转至AGC申请权限，然后再返回DevEco Studio界面重新签名。
+{
+  "module": {
+    ...
+    "requestPermissions": [{
+      "name": "ohos.permission.ACCESS_DDK_USB",
+    }],
+    ...
+  }
+}
 
 说明
 
@@ -495,6 +507,20 @@ Safety Detect（安全检测服务）
 ```
 
 ### Code block 3
+
+```
+{
+  "module": {
+    ...
+    "requestPermissions": [{
+      "name": "ohos.permission.ACCESS_DDK_USB",
+    }],
+    ...
+  }
+}
+```
+
+### Code block 4
 
 ```
 {

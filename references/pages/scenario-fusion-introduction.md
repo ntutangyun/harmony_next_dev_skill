@@ -32,26 +32,26 @@ Button组件与华为账号、系统设置等部件协同，规范组件单击�
 [h2]支持的设备
 
 场景	支持设备
-快速验证手机号Button	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
+快速验证手机号Button	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备。
 选择头像Button	Phone、Tablet、PC/2in1
-打开APP Button	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
-选择收货地址Button	Phone、Tablet、PC/2in1
+打开APP Button	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备。
+选择收货地址Button	支持Phone、Tablet和PC/2in1设备，并且从API版本26.0.0开始，新增支持TV设备。
 选择发票抬头Button	Phone、Tablet、PC/2in1
 地图选点Button	支持Phone和Tablet设备，并且从5.0.1(13)版本开始，新增支持PC/2in1设备。
-权限设置Button	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
-获取手机号和风险等级Button	支持Phone、Tablet、PC/2in1和TV设备，并且从26.0.0版本开始，新增支持Car设备。
+权限设置Button	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备。
+获取手机号和风险等级Button	支持Phone、Tablet、PC/2in1和TV设备。
 服务动态授权码Button	支持Phone、Tablet设备，并且从6.1.0(23)版本开始，新增支持PC/2in1设备。
 元服务分享Button	支持Phone、Tablet设备，并且从6.1.0(23)版本开始，新增支持PC/2in1设备。
 反馈与投诉Button	支持Phone、Tablet设备，并且从6.1.0(23)版本开始，新增支持PC/2in1设备。
 省市区选择器Input	Phone、Tablet、PC/2in1
-通过API获取系统信息属性	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备，从26.0.0版本开始，新增支持Car设备。
-通过API异步获取系统信息属性	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备，从26.0.0版本开始，新增支持Car设备。
-通过API获取系统设置属性	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备，从26.0.0版本开始，新增支持Car设备。
+通过API获取系统信息属性	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备。
+通过API异步获取系统信息属性	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备。
+通过API获取系统设置属性	支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备。
 通过API展示关注组件	Phone、Tablet
 文件路径转换API	Phone、Tablet
 智能填充服务	支持Phone、Tablet设备，并且从5.1.0(18)版本开始，新增支持PC/2in1设备。
 
-模拟器支持情況
+模拟器支持情况
 
 本Kit支持模拟器开发，通用差异可参考模拟器与真机的差异。
 

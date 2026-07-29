@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-arkts-breakpoint_
 
-DevEco Studio ArkTS支持行断点、日志断点等多种不同类型的断点，这些断点可以触发不同的操作。
+DevEco Studio ArkTS代码调试支持行断点、日志断点等多种类型的断点，这些断点可以触发不同的操作。
 
 行断点
 
@@ -14,7 +14,7 @@ DevEco Studio ArkTS支持行断点、日志断点等多种不同类型的断点�
 
 当您设置断点时，相应的代码行旁边会出现一个红点，如图。
 
-在设置的断点红点处，单击鼠标右键，在Condition中可以设置条件断点，此类断点仅会在满足特定条件时才会暂停应用。
+在设置的断点红点处，单击鼠标右键，在Condition中可以设置条件断点，此类断点仅在满足特定条件时暂停应用。
 
 当应用运行到代码处，会在代码处停住，并高亮显示。
 

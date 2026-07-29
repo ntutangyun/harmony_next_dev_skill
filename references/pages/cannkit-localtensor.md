@@ -66,20 +66,20 @@ public:
 表1 函数说明
 
 函数名称	入参说明	含义
-GetValue	offset：偏移量，单位为'element'	获取LocalTensor中的某个值，返回PrimType类型的数值。 该接口仅在LocalTensor的TPosition为VECIN/VECCALC/VECOUT时支持。
-SetValue	offset：偏移值，单位为'element' value：设置值，单位为任意类型	设置LocalTensor中的某个值。 该接口仅在LocalTensor的TPosition为VECIN/VECCALC/VECOUT时支持。
+GetValue	offset：偏移量，单位为'element'	获取LocalTensor中的某个值，返回PrimType类型的数值。 该接口仅在LocalTensor的TPosition为VECIN、VECCALC、VECOUT时支持。
+SetValue	offset：偏移值，单位为'element' value：设置值，单位为任意类型	设置LocalTensor中的某个值。 该接口仅在LocalTensor的TPosition为VECIN、VECCALC、VECOUT时支持。
 operator[]	offset：偏移量	获取距原LocalTensor起始地址偏移量为offset的新LocalTensor，注意offset不能超过原有LocalTensor的size大小。
-operator()	offset: 下标索引	获取本LocalTensor的第offset个变量的引用。用于左值，相当于SetValue接口，用于右值，相当于GetValue接口。
+operator()	offset： 下标索引	获取本LocalTensor的第offset个变量的引用。用于左值，相当于SetValue接口，用于右值，相当于GetValue接口。
 GetSize	无	获取当前LocalTensor size大小。单位为元素。
 SetSize	size：元素个数，单位为'element'	设置当前LocalTensor size大小。单位为元素。当开发者重用local tensor变量且使用长度发生变化的时候，需要使用此接口重新设置Size。
 SetUserTag	tag：设置的Tag信息，类型TTagType对应为int32_t	为Tensor添加开发者自定义信息，开发者可以根据需要设置对应的Tag。后续可通过GetUserTag获取指定Tensor的Tag信息，并根据Tag信息对Tensor进行相应操作。
 GetUserTag	N/A	获取指定Tensor块的Tag信息，开发者可以根据Tag信息对Tensor进行不同操作。
-ReinterpretCast	N/A	将当前Tensor重解释为开发者指定的新类型，转换后的Tensor与原Tensor地址及内容完全相同，Tensor的大小(字节数)保持不变。
+ReinterpretCast	N/A	将当前Tensor重解释为开发者指定的新类型，转换后的Tensor与原Tensor地址及内容完全相同，Tensor的大小（字节数）保持不变。
 GetPhyAddr	N/A	返回LocalTensor的地址，如果传入offset，则表示偏移offset个元素。
 GetPosition	N/A	获取QuePosition抽象的逻辑位置，支持QuePosition为VECIN、VECOUT、VECCALC、A1、A2、B1、B2、CO1、CO2。
 GetLength	N/A	获取LocalTensor数据长度，单位为Byte。
 SetShapeInfo	shapeInfo：ShapeInfo结构体	设置LocalTensor的shapeInfo。
-GetShapeInfo	N/A	获取LocalTensor的shapeInfo。 说明： Shape信息没有默认值，只有通过SetShapeInfo设置过Shape信息后，才可以调用该接口获取正确的ShapeInfo。
+GetShapeInfo	N/A	获取LocalTensor的shapeInfo。 **说明：**Shape信息没有默认值，只有通过SetShapeInfo设置过Shape信息后，才可以调用该接口获取正确的ShapeInfo。
 SetAddrWithOffset	src：基础地址的Tensor，将该Tensor的地址作为基础地址，设置偏移后的Tensor地址 offset：偏移的长度	设置带有偏移的Tensor地址。用于快速获取定义一个Tensor，同时指定新Tensor相对于旧Tensor首地址的偏移。偏移的长度为旧Tensor的元素个数。
 SetBufferLen	dataLen：buffer长度	设置buffer长度。单位为字节。
 ToFile	fileName：文件名称	只限于CPU调试，将LocalTensor数据Dump到文件中，用于精度调试，文件保存在执行目录。
@@ -91,7 +91,7 @@ Print	dataLen：打印元素个数	只限于CPU调试，在调试窗口中打印
 
 调用示例
 
-// srcLen = 256, num = 100, M=50
+// srcLen = 256, num = 100, M = 50
 // 示例1
 for (int32_t i = 0; i < srcLen; ++i) {
     inputLocal.SetValue(i, num); // 对inputLocal中第i个位置进行赋值为num
@@ -104,7 +104,7 @@ for (int32_t i = 0; i < srcLen; ++i) {
     auto element = inputLocal.GetValue(i); // 获取inputLocal中第i个位置的数值
 }
 // 示例2结果如下：
-// element 为100
+// element为100
 
 // 示例3
 for (int32_t i = 0; i < srcLen; ++i) {
@@ -286,7 +286,7 @@ public:
 ### Code block 2
 
 ```
-// srcLen = 256, num = 100, M=50
+// srcLen = 256, num = 100, M = 50
 // 示例1
 for (int32_t i = 0; i < srcLen; ++i) {
     inputLocal.SetValue(i, num); // 对inputLocal中第i个位置进行赋值为num
@@ -299,7 +299,7 @@ for (int32_t i = 0; i < srcLen; ++i) {
     auto element = inputLocal.GetValue(i); // 获取inputLocal中第i个位置的数值
 }
 // 示例2结果如下：
-// element 为100
+// element为100
 
 // 示例3
 for (int32_t i = 0; i < srcLen; ++i) {

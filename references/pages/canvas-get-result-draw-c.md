@@ -216,7 +216,7 @@ libEGL.so
 
 初始化EGL上下文。
 
-初始化上下文相关参数:
+初始化上下文相关参数：
 
 EGLDisplay EGLDisplay_ = EGL_NO_DISPLAY;
 EGLConfig EGLConfig_ = nullptr;

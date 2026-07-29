@@ -89,45 +89,52 @@ path，手动输入精确匹配的路径（不允许以“/”开头，不允许
 import { common } from '@kit.AbilityKit';
 
 export class GlobalContext {
-private static context: common.UIAbilityContext;
+  private static context: common.UIAbilityContext;
 
-public static initContext(context: common.UIAbilityContext): void {
-GlobalContext.context = context;
-}
+  public static initContext(context: common.UIAbilityContext): void {
+    GlobalContext.context = context;
+  }
 
-public static getContext(): common.UIAbilityContext {
-return GlobalContext.context;
-}
+  public static getContext(): common.UIAbilityContext {
+    return GlobalContext.context;
+  }
 }
 
 在“entry/src/main/ets/entryability/EntryAbility.ets”文件中导入GlobalContext，在onCreate方法中使用GlobalContext.initContext(this.context)初始化全局应用上下文。
 
 在“entry/src/main/ets/pages/Index.ets”文件中，使用UIAbilityContext.openLink()接口配置跳转链接。
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        let link: string = "https://www.example.com/product?pageName=productDetail";
-        context.openLink(link, { appLinkingOnly: false })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+      Button('start link market', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          let link: string = 'https://www.example.com/product?pageName=productDetail';
+          context.openLink(link, { appLinkingOnly: false })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 
 安装拉起方应用，点击拉起方应用中的跳转按钮。
@@ -164,44 +171,51 @@ FAQ
 import { common } from '@kit.AbilityKit';
 
 export class GlobalContext {
-private static context: common.UIAbilityContext;
+  private static context: common.UIAbilityContext;
 
-public static initContext(context: common.UIAbilityContext): void {
-GlobalContext.context = context;
-}
+  public static initContext(context: common.UIAbilityContext): void {
+    GlobalContext.context = context;
+  }
 
-public static getContext(): common.UIAbilityContext {
-return GlobalContext.context;
-}
+  public static getContext(): common.UIAbilityContext {
+    return GlobalContext.context;
+  }
 }
 ```
 
 ### Code block 2
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        let link: string = "https://www.example.com/product?pageName=productDetail";
-        context.openLink(link, { appLinkingOnly: false })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+      Button('start link market', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          let link: string = 'https://www.example.com/product?pageName=productDetail';
+          context.openLink(link, { appLinkingOnly: false })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 ```

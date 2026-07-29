@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/uiability
 
 应用中的UIAbility在启动过程中，需要指定启动页面，否则应用启动后会因为没有默认加载页面而导致白屏。可以在UIAbility的onWindowStageCreate()生命周期回调中，通过WindowStage对象的loadContent()方法设置启动页面。
 
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 // ···
 
@@ -146,7 +146,7 @@ struct BasicUsage {
 
 获取UIAbility拉起方的信息
 
-拉起方（UIAbilityA）通过startAbility启动目标方（UIAbilityB）时，UIAbilityB可以通过parameters参数获取UIAbilityA的Pid、BundleName和AbilityName等信息。
+拉起方（UIAbilityA）通过startAbility启动目标方（UIAbilityB）时，UIAbilityB可以通过@ohos.app.ability.Want中parameters参数获取UIAbilityA的Pid、BundleName和AbilityName等信息。
 
 通过点击UIAbilityA中的"拉起UIAbilityB"按钮，拉起UIAbilityB。
 
@@ -230,7 +230,7 @@ export default class UIAbilityB extends UIAbility {
 ### Code block 1
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 // ···
 

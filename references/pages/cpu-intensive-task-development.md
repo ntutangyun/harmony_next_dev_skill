@@ -29,7 +29,7 @@ function imageProcessing(dataSlice: ArrayBuffer): ArrayBuffer {
   return dataSlice;
 }
 
-function histogramStatistic(pixelBuffer: ArrayBuffer): void {
+async function histogramStatistic(pixelBuffer: ArrayBuffer): Promise<void> {
   // 步骤2: 分成三段并发调度
   let number: number = pixelBuffer.byteLength / 3;
   let buffer1: ArrayBuffer = pixelBuffer.slice(0, number);
@@ -41,7 +41,7 @@ function histogramStatistic(pixelBuffer: ArrayBuffer): void {
   group.addTask(imageProcessing, buffer2);
   group.addTask(imageProcessing, buffer3);
 
-  taskpool.execute(group, taskpool.Priority.HIGH).then((ret: Object) => {
+  await taskpool.execute(group, taskpool.Priority.HIGH).then((ret: Object) => {
     // 步骤3: 结果数组汇总处理
   })
 }
@@ -59,9 +59,14 @@ struct Index {
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
             let buffer: ArrayBuffer = new ArrayBuffer(24);
-            histogramStatistic(buffer);
-            this.message = 'success';
-// ...
+            histogramStatistic(buffer).then(() => {
+              this.message = 'success';
+            }).catch((e: BusinessError) => {
+              this.message = 'failed';
+              console.error('histogramStatistic is failed.');
+            });
+
+            // ...
           })
       }
       .width('100%')
@@ -81,6 +86,7 @@ DevEco Studio提供了Worker创建的模板，创建一个Worker线程，例如�
 例如，向Worker线程发送训练和预测的消息，并接收Worker线程发送回来的消息。
 
 import { worker } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const workerInstance: worker.ThreadWorker = new worker.ThreadWorker('entry/ets/workers/MyWorker1.ts');
 
@@ -102,7 +108,7 @@ workerInstance.onerror = (() => {
 // 向Worker子线程发送训练消息
 workerInstance.postMessage({ 'type': 0 });
 
-在MyWorker.ets文件中绑定Worker对象，当前线程即为Worker线程。在Worker线程中通过注册onmessage()回调接收宿主线程发送的消息，并通过调用postMessage()方法向宿主线程发送消息。
+在MyWorker1.ets文件中绑定Worker对象，当前线程即为Worker线程。在Worker线程中通过注册onmessage()回调接收宿主线程发送的消息，并通过调用postMessage()方法向宿主线程发送消息。
 
 例如，在Worker线程中定义预测模型及其训练过程，并与宿主线程进行信息交互。
 
@@ -180,7 +186,7 @@ function imageProcessing(dataSlice: ArrayBuffer): ArrayBuffer {
   return dataSlice;
 }
 
-function histogramStatistic(pixelBuffer: ArrayBuffer): void {
+async function histogramStatistic(pixelBuffer: ArrayBuffer): Promise<void> {
   // 步骤2: 分成三段并发调度
   let number: number = pixelBuffer.byteLength / 3;
   let buffer1: ArrayBuffer = pixelBuffer.slice(0, number);
@@ -192,7 +198,7 @@ function histogramStatistic(pixelBuffer: ArrayBuffer): void {
   group.addTask(imageProcessing, buffer2);
   group.addTask(imageProcessing, buffer3);
 
-  taskpool.execute(group, taskpool.Priority.HIGH).then((ret: Object) => {
+  await taskpool.execute(group, taskpool.Priority.HIGH).then((ret: Object) => {
     // 步骤3: 结果数组汇总处理
   })
 }
@@ -210,9 +216,14 @@ struct Index {
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
             let buffer: ArrayBuffer = new ArrayBuffer(24);
-            histogramStatistic(buffer);
-            this.message = 'success';
-// ...
+            histogramStatistic(buffer).then(() => {
+              this.message = 'success';
+            }).catch((e: BusinessError) => {
+              this.message = 'failed';
+              console.error('histogramStatistic is failed.');
+            });
+
+            // ...
           })
       }
       .width('100%')
@@ -226,6 +237,7 @@ struct Index {
 
 ```
 import { worker } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const workerInstance: worker.ThreadWorker = new worker.ThreadWorker('entry/ets/workers/MyWorker1.ts');
 

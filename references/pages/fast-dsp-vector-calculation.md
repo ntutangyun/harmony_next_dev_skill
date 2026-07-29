@@ -2,47 +2,151 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fast-dsp-vector-calculation_
 
-数字信号处理（DSP）中的向量计算功能，用于对实数向量和复数数据进行高效的统计运算、数学运算和格式转换。当开发者需要对传感器数据、音频信号或其他数值序列进行最大值查找、求和、点积、复数格式转换等计算时，可以使用向量计算接口。
+数字信号处理（DSP）中的向量计算功能，提供涵盖向量基本算术运算、初始化与统计归约、复数运算以及信号处理与线性代数等领域的接口。当开发者需要对传感器数据、音频信号或其他数值序列进行算术运算、统计计算、复数分析、卷积、矩阵乘法或窗函数生成等操作时，可以使用向量计算接口。
 
-向量计算支持单精度（float）和双精度（double）两种数据类型，并针对ARM NEON指令集进行了优化，在步长为 1 的连续存储场景下可获得显著性能提升。需要注意的是，为了提升性能，部分接口对浮点数的计算顺序进行了调整，可能影响结果精度。
+向量计算支持单精度（float）和双精度（double）两种数据类型，并针对ARM NEON指令集进行了优化，在步长为1的连续存储场景下可获得显著性能提升。需要注意的是，为了提升性能，部分接口对浮点数的计算顺序进行了调整，可能影响结果精度。
 
 接口说明
 
 具体API说明详见接口文档。
 
-[h2]最大值与索引计算
+[h2]向量基本算术运算
+
+涵盖所有逐元素的基础数值运算，包括标量与向量的组合运算、向量之间的四则运算、绝对值、平方、阈值以及幂运算等。
+
+标量与向量的运算
+
+名称	描述
+void HMS_FAST_DSP_Vsmul (const float* input, size_t strideInput, const float scalar, float* output, size_t strideOutput, size_t length)	将向量的每个元素乘以标量（单精度）。
+void HMS_FAST_DSP_VsmulD (const double* input, size_t strideInput, const double scalar, double* output, size_t strideOutput, size_t length)	将向量的每个元素乘以标量（双精度）。
+void HMS_FAST_DSP_Vsdiv (const float* input, size_t strideInput, const float scalar, float* output, size_t strideOutput, size_t length)	将向量的每个元素除以标量（单精度）。
+void HMS_FAST_DSP_VsdivD (const double* input, size_t strideInput, const double scalar, double* output, size_t strideOutput, size_t length)	将向量的每个元素除以标量（双精度）。
+void HMS_FAST_DSP_Svdiv (const float scalar, const float* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	将标量除以向量的每个元素（单精度）。
+void HMS_FAST_DSP_SvdivD (const double scalar, const double* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	将标量除以向量的每个元素（双精度）。
+void HMS_FAST_DSP_Vsadd (const float* input, size_t strideInput, const float scalar, float* output, size_t strideOutput, size_t length)	将标量加到向量的每个元素（单精度）。
+void HMS_FAST_DSP_VsaddD (const double* input, size_t strideInput, const double scalar, double* output, size_t strideOutput, size_t length)	将标量加到向量的每个元素（双精度）。
+
+向量之间的运算
+
+名称	描述
+void HMS_FAST_DSP_Vadd (const float* inputA, size_t strideA, const float* inputB, size_t strideB, float* outputC, size_t strideC, size_t length)	执行向量逐元素加法（单精度）。
+void HMS_FAST_DSP_VaddD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, double* outputC, size_t strideC, size_t length)	执行向量逐元素加法（双精度）。
+void HMS_FAST_DSP_Vsub (const float* inputA, size_t strideA, const float* inputB, size_t strideB, float* outputC, size_t strideC, size_t length)	执行向量逐元素减法（单精度）。
+void HMS_FAST_DSP_VsubD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, double* outputC, size_t strideC, size_t length)	执行向量逐元素减法（双精度）。
+void HMS_FAST_DSP_Vmul (const float* inputA, size_t strideA, const float* inputB, size_t strideB, float* outputC, size_t strideC, size_t length)	执行向量逐元素乘法（单精度）。
+void HMS_FAST_DSP_VmulD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, double* outputC, size_t strideC, size_t length)	执行向量逐元素乘法（双精度）。
+void HMS_FAST_DSP_Vdiv (const float* inputA, size_t strideA, const float* inputB, size_t strideB, float* outputC, size_t strideC, size_t length)	执行向量逐元素除法（单精度）。
+void HMS_FAST_DSP_VdivD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, double* outputC, size_t strideC, size_t length)	执行向量逐元素除法（双精度）。
+void HMS_FAST_DSP_Vsbsm (const float* inputA, size_t strideA, const float* inputB, size_t strideB, float scalar, float* outputC, size_t strideC, size_t length)	执行向量减法并缩放（单精度）。
+void HMS_FAST_DSP_VsbsmD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, double scalar, double* outputC, size_t strideC, size_t length)	执行向量减法并缩放（双精度）。
+void HMS_FAST_DSP_Vdist (const float* inputA, size_t strideA, const float* inputB, size_t strideB, float* outputC, size_t strideC, size_t length)	计算两个向量对应元素的欧几里得范数：C[i]等于A[i]与B[i]的平方和的算术开方根（单精度）。
+void HMS_FAST_DSP_VdistD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, double* outputC, size_t strideC, size_t length)	计算两个向量对应元素的欧几里得范数：C[i]等于A[i]与B[i]的平方和的算术开方根（双精度）。
+
+向量变换
+
+名称	描述
+void HMS_FAST_DSP_Vsq (const float* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	计算向量每个元素的平方（单精度）。
+void HMS_FAST_DSP_VsqD (const double* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	计算向量每个元素的平方（双精度）。
+void HMS_FAST_DSP_Vabs (const float* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	计算向量每个元素的绝对值（单精度）。
+void HMS_FAST_DSP_VabsD (const double* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	计算向量每个元素的绝对值（双精度）。
+void HMS_FAST_DSP_Vthr (const float* input, size_t strideInput, const float threshold, float* output, size_t strideOutput, size_t length)	对向量应用阈值：若input[i] < threshold则取threshold，否则取原值（单精度）。
+void HMS_FAST_DSP_VthrD (const double* input, size_t strideInput, const double threshold, double* output, size_t strideOutput, size_t length)	对向量应用阈值：若input[i] < threshold则取threshold，否则取原值（双精度）。
+
+幂运算
+
+名称	描述
+void HMS_FAST_DSP_Vvpow (const float* inputA, const float* inputB, float* outputC, size_t length)	执行向量逐元素幂运算：C[i]等于A[i]的B[i]次方（单精度）。
+void HMS_FAST_DSP_VvpowD (const double* inputA, const double* inputB, double* outputC, size_t length)	执行向量逐元素幂运算：C[i]等于A[i]的B[i]次方（双精度）。
+
+[h2]初始化、归约与统计
+
+包含将向量数据归纳为标量的操作、数据生成与填充、类型转换以及元素顺序调整。
+
+初始化/填充
+
+名称	描述
+void HMS_FAST_DSP_Vfill (float* vector, size_t stride, size_t length, const float scalar)	使用指定标量值填充向量（单精度）。
+void HMS_FAST_DSP_VfillD (double* vector, size_t stride, size_t length, const double scalar)	使用指定标量值填充向量（双精度）。
+void HMS_FAST_DSP_Vclr (float* vector, size_t stride, size_t length)	将向量所有元素清零（单精度）。
+void HMS_FAST_DSP_VclrD (double* vector, size_t stride, size_t length)	将向量所有元素清零（双精度）。
+
+类型转换
+
+名称	描述
+void HMS_FAST_DSP_Vspdp (const float* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	将单精度向量转换为双精度向量。
+void HMS_FAST_DSP_Vdpsp (const double* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	将双精度向量转换为单精度向量。
+
+归约运算
 
 名称	描述
 float HMS_FAST_DSP_Maxmgv (const float* input, size_t stride, size_t length)	计算步长实数向量中的最大幅值（单精度）。
 double HMS_FAST_DSP_MaxmgvD (const double* input, size_t stride, size_t length)	计算步长实数向量中的最大幅值（双精度）。
 void HMS_FAST_DSP_Maxvi (const float* input, size_t stride, size_t length, float* value, size_t* index)	查找步长实数向量中的最大值及其索引（单精度）。
 void HMS_FAST_DSP_MaxviD (const double* input, size_t stride, size_t length, double* value, size_t* index)	查找步长实数向量中的最大值及其索引（双精度）。
-
-[h2]统计计算
-
-名称	描述
+void HMS_FAST_DSP_Minvi (const float* input, size_t stride, size_t length, float* value, size_t* index)	查找步长实数向量中的最小值及其索引（单精度）。
+void HMS_FAST_DSP_MinviD (const double* input, size_t stride, size_t length, double* value, size_t* index)	查找步长实数向量中的最小值及其索引（双精度）。
 float HMS_FAST_DSP_Sve (const float* input, size_t stride, size_t length)	计算步长实数向量的和（单精度）。
 double HMS_FAST_DSP_SveD (const double* input, size_t stride, size_t length)	计算步长实数向量的和（双精度）。
 float HMS_FAST_DSP_Svemg (const float* input, size_t stride, size_t length)	计算步长向量的绝对值之和（L1范数）（单精度）。
 double HMS_FAST_DSP_SvemgD (const double* input, size_t stride, size_t length)	计算步长向量的绝对值之和（L1范数）（双精度）。
 float HMS_FAST_DSP_Meamgv (const float* input, size_t stride, size_t length)	计算步长实数向量绝对值的均值（单精度）。
 double HMS_FAST_DSP_MeamgvD (const double* input, size_t stride, size_t length)	计算步长实数向量绝对值的均值（双精度）。
-
-[h2]向量运算
-
-名称	描述
+float HMS_FAST_DSP_Svesq (const float* input, size_t stride, size_t length)	计算向量元素的平方和（单精度）。
+double HMS_FAST_DSP_SvesqD (const double* input, size_t stride, size_t length)	计算向量元素的平方和（双精度）。
 float HMS_FAST_DSP_Dotpr (const float* inputA, size_t strideA, const float* inputB, size_t strideB, size_t length)	计算两个步长实数向量的点积（单精度）。
 double HMS_FAST_DSP_DotprD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, size_t length)	计算两个步长实数向量的点积（双精度）。
-void HMS_FAST_DSP_Vsbsm (const float* inputA, size_t strideA, const float* inputB, size_t strideB, float scalar, float* outputC, size_t strideC, size_t length)	执行向量减法：outputC[i] = (inputA[i] - inputB[i]) * scalar（单精度）。
-void HMS_FAST_DSP_VsbsmD (const double* inputA, size_t strideA, const double* inputB, size_t strideB, double scalar, double* outputC, size_t strideC, size_t length)	执行向量减法：outputC[i] = (inputA[i] - inputB[i]) * scalar（双精度）。
 
-[h2]复数格式转换
+向量元素操作
+
+名称	描述
+void HMS_FAST_DSP_Vrvrs (float* vector, size_t stride, size_t length)	原地反转向量中元素的顺序（单精度）。
+void HMS_FAST_DSP_VrvrsD (double* vector, size_t stride, size_t length)	原地反转向量中元素的顺序（双精度）。
+void HMS_FAST_DSP_Vsort (float* vector, size_t length, int order)	对向量进行原地排序（单精度）。
+void HMS_FAST_DSP_VsortD (double* vector, size_t length, int order)	对向量进行原地排序（双精度）。
+
+[h2]复数运算
+
+包含复数向量的幅度、相位计算以及复数格式转换。
+
+复数基础运算
+
+名称	描述
+void HMS_FAST_DSP_Zvabs (const FAST_SplitComplex* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	计算复数向量的幅值（单精度）。
+void HMS_FAST_DSP_ZvabsD (const FAST_SplitComplexD* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	计算复数向量的幅值（双精度）。
+void HMS_FAST_DSP_Zvmags (const FAST_SplitComplex* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	计算复数向量的幅值平方（单精度）。
+void HMS_FAST_DSP_ZvmagsD (const FAST_SplitComplexD* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	计算复数向量的幅值平方（双精度）。
+void HMS_FAST_DSP_Zvphas (const FAST_SplitComplex* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	计算复数向量的相位角（弧度制）（单精度）。
+void HMS_FAST_DSP_ZvphasD (const FAST_SplitComplexD* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	计算复数向量的相位角（弧度制）（双精度）。
+
+复数格式转换
 
 名称	描述
 void HMS_FAST_DSP_Ctoz (const float* input, size_t strideInput, FAST_SplitComplex* output, size_t strideOutput, size_t length)	将交错复数数组转换为分离格式（单精度）。
 void HMS_FAST_DSP_CtozD (const double* input, size_t strideInput, FAST_SplitComplexD* output, size_t strideOutput, size_t length)	将交错复数数组转换为分离格式（双精度）。
 void HMS_FAST_DSP_Ztoc (const FAST_SplitComplex* input, size_t strideInput, float* output, size_t strideOutput, size_t length)	将分离复数数组转换为交错格式（单精度）。
 void HMS_FAST_DSP_ZtocD (const FAST_SplitComplexD* input, size_t strideInput, double* output, size_t strideOutput, size_t length)	将分离复数数组转换为交错格式（双精度）。
+
+[h2]信号处理与线性代数
+
+包含卷积、窗口生成和矩阵运算。
+
+卷积
+
+名称	描述
+void HMS_FAST_DSP_Conv (const float* input, size_t strideInput, const float* filter, size_t strideFilter, float* output, size_t strideOutput, size_t outputLength, size_t filterLength)	执行两个向量的卷积运算（单精度）。
+void HMS_FAST_DSP_ConvD (const double* input, size_t strideInput, const double* filter, size_t strideFilter, double* output, size_t strideOutput, size_t outputLength, size_t filterLength)	执行两个向量的卷积运算（双精度）。
+
+窗口生成
+
+名称	描述
+void HMS_FAST_DSP_HannWindow (float* output, size_t length, HMS_FAST_HannWindowType type)	生成汉宁窗序列（单精度）。
+void HMS_FAST_DSP_HannWindowD (double* output, size_t length, HMS_FAST_HannWindowType type)	生成汉宁窗序列（双精度）。
+
+矩阵运算
+
+名称	描述
+void HMS_FAST_DSP_Mmul (const float* matrixA, size_t strideA, const float* matrixB, size_t strideB, float* matrixC, size_t strideC, size_t rowsM, size_t colsN, size_t colsP)	执行矩阵乘法（单精度）。
+void HMS_FAST_DSP_MmulD (const double* matrixA, size_t strideA, const double* matrixB, size_t strideB, double* matrixC, size_t strideC, size_t rowsM, size_t colsN, size_t colsP)	执行矩阵乘法（双精度）。
 
 开发步骤
 

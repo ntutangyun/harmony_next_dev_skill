@@ -36,7 +36,7 @@ AppGallery Kit返回加桌结果给应用。
 
 应用市场推荐服务不支持模拟器，请使用真机调试。在模拟器中使用该服务将会提示：无法获取内容，请点击屏幕重试。
 
-应用市场推荐服务支持Phone、Tablet、PC/2in1设备。并且从6.0.2(22)版本开始，新增支持TV设备。
+应用市场推荐服务支持Phone、Tablet、PC/2in1设备。并且从6.0.2(22)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
 
 接口说明
 
@@ -53,24 +53,28 @@ requestNewPinShortcut(context: common.UIAbilityContext, tid: string): Promise<vo
 
 导入productViewManager模块及相关公共模块。
 
-import { productViewManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import type { common, Want } from '@kit.AbilityKit';
+import { productViewManager } from '@kit.AppGalleryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { common, Want } from '@kit.AbilityKit';
 
 构造调用checkPinShortcutPermitted接口校验桌面快捷方式的参数。
 
-const uiContext =this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
-const shortcutId = "id_test1"; // 对应shortcuts标签中配置的shortcutId, 例如: "shortcutId": "id_test1"
-const labelResName = "shortcut"; // 对应shortcuts标签中配置的label资源索引名称, 例如: "label": "$string:shortcut"
-const iconResName = "aa_icon"; // 对应shortcuts标签中配置的icon资源索引名称, 例如: "icon": "$media:aa_icon"
-const want: Want = {            // 对应shortcuts标签中配置的want
-  bundleName: "com.example.appgallery.kit.demo",
-  moduleName: "entry",
-  abilityName: "EntryAbility",
-  parameters: {
-    testKey: "testValue"
-  }
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// 对应shortcuts标签中配置的shortcutId, 例如: 'shortcutId': 'id_test1'
+const shortcutId = 'id_test1';
+// 对应shortcuts标签中配置的label资源索引名称, 例如: 'label': '$string:shortcut'
+const labelResName = 'shortcut';
+// 对应shortcuts标签中配置的icon资源索引名称, 例如: 'icon': '$media:aa_icon'
+const iconResName = 'aa_icon';
+// 对应shortcuts标签中配置的want
+const want: Want = {
+    bundleName: 'com.example.appgallery.kit.demo',
+    moduleName: 'entry',
+    abilityName: 'EntryAbility',
+    parameters: {
+        testKey: 'testValue'
+    }
 };
 
 说明
@@ -82,35 +86,46 @@ const want: Want = {            // 对应shortcuts标签中配置的want
 调用checkPinShortcutPermitted接口，将步骤2中的全部参数依次传入接口中，并保存异步返回的结果CheckShortcutResult。
 
 try {
-  let checkShortcutResult: productViewManager.CheckShortcutResult;
-  productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, labelResName, iconResName)
-    .then((result: productViewManager.CheckShortcutResult) => {
-      hilog.info(0x0001, 'TAG', `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`);
-      checkShortcutResult = result;
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG',
-      `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, labelResName,
+        iconResName)
+        .then((checkShortcutResult: productViewManager.CheckShortcutResult) => {
+            hilog.info(0x0001, TAG,
+                `checkPinShortcutPermitted success result is ${JSON.stringify(checkShortcutResult)}`);
+            this.tid = checkShortcutResult.tid ?? '';
+            // ...
+        }).catch((error: BusinessError) => {
+        hilog.error(0x0001, TAG,
+            `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
+        // ...
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `checkPinShortcutPermitted failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `checkPinShortcutPermitted error: ${JSON.stringify(err)}`);
 }
 
 构造调用requestNewPinShortcut接口创建桌面快捷方式的参数。
 
-const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
-const tid = checkShortcutResult.tid;
+// 获取当前Page页面的上下文信息
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// checkPinShortcutPermitted接口返回的属性tid值
+const tid = this.tid;
 
 将步骤4中的uiContext、tid参数依次传入requestNewPinShortcut接口中。
 
 try {
-  productViewManager.requestNewPinShortcut(uiContext, tid)
-    .then(() => {
-      hilog.info(0x0001, 'TAG', `requestNewPinShortcut success.`);
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG', `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.requestNewPinShortcut(uiContext, tid)
+        .then(() => {
+            hilog.info(0x0001, TAG, `requestNewPinShortcut success.`);
+            // ...
+        }).catch((error: BusinessError) => {
+            hilog.error(0x0001, TAG,
+                `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
+            // ...
+
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `requestNewPinShortcut error: ${JSON.stringify(err)}`);
 }
 
 说明
@@ -125,28 +140,30 @@ try {
 
 导入productViewManager模块及相关公共模块。
 
-import { productViewManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import type { common, Want } from '@kit.AbilityKit';
+import { productViewManager } from '@kit.AppGalleryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { common, Want } from '@kit.AbilityKit';
 
 构造调用checkPinShortcutPermitted接口构造校验桌面快捷方式的参数。
 
-const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 当前Page页面的上下文信息
-const shortcutId = `${Date.now()}`; // 快捷方式ID
-  // 点击快捷方式后被拉起的目标应用的bundleName、moduleName、abilityName
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// 快捷方式ID
+const shortcutId = `${Date.now()}`;
+// 点击快捷方式后被拉起的目标应用的bundleName、moduleName、abilityName
 const want: Want = {
-  bundleName: "com.example.appgallery.kit.demo",
-  moduleName: "entry",
-  abilityName: "EntryAbility",
-  parameters: {
-    testKey: "testValue"
-  }
- }
- const label = "shortcut"; // 显示在桌面名称的文本内容
- // 显示在桌面图标的应用沙箱地址，图标最大不超过100KB，格式为png和webp
- const foregroundIcon = uiContext.filesDir + "/icon.png";
- const backgroundIcon = "";
+    bundleName: 'com.example.appgallery.kit.demo',
+    moduleName: 'entry',
+    abilityName: 'EntryAbility',
+    parameters: {
+        testKey: 'testValue'
+    }
+}
+// 显示在桌面名称的文本内容
+const label = 'shortcut';
+// 显示在桌面图标的应用沙箱地址，图标最大不超过100KB，格式为png和webp
+const foregroundIcon = uiContext.filesDir + '/icon.png';
+const backgroundIcon = '';
 
 说明
 
@@ -157,36 +174,46 @@ const want: Want = {
 调用checkPinShortcutPermitted接口，将步骤2中的全部参数依次传入接口中，并保存异步返回的结果CheckShortcutResult。
 
 try {
-  let checkShortcutResult: productViewManager.CheckShortcutResult;
-  productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, label, foregroundIcon, backgroundIcon)
-    .then((result: productViewManager.CheckShortcutResult) => {
-      hilog.info(0x0001, 'TAG', `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`)
-      checkShortcutResult = result;
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG',
-      `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, label, foregroundIcon,
+        backgroundIcon)
+        .then(result => {
+            hilog.info(0x0001, TAG,
+                `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`);
+            this.tid = result.tid ?? '';
+            // ...
+        }).catch((error: BusinessError) => {
+            hilog.error(0x0001, TAG,
+                `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
+            // ...
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `checkPinShortcutPermitted failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `checkPinShortcutPermitted error: ${JSON.stringify(err)}`);
 }
 
 构造调用requestNewPinShortcut接口创建桌面快捷方式的参数。
 
-const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
-// checkPinShortcutPermitted接口返回的属性tid值。
-const tid = checkShortcutResult.tid;
+// 获取当前Page页面的上下文信息
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// checkPinShortcutPermitted接口返回的属性tid值
+const tid = this.tid;
 
 调用requestNewPinShortcut接口，将步骤4中的参数依次传入接口中。
 
 try {
-  productViewManager.requestNewPinShortcut(uiContext, tid)
-    .then(() => {
-      hilog.info(0x0001, 'TAG', `requestNewPinShortcut success.`);
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG', `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.requestNewPinShortcut(uiContext, tid)
+        .then(() => {
+            hilog.info(0x0001, TAG, `requestNewPinShortcut success.`);
+            // ...
+        }).catch((error: BusinessError) => {
+            hilog.error(0x0001, TAG,
+                `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
+            // ...
+
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `requestNewPinShortcut error: ${JSON.stringify(err)}`);
 }
 
 说明
@@ -202,26 +229,30 @@ try {
 ### Code block 1
 
 ```
-import { productViewManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import type { common, Want } from '@kit.AbilityKit';
+import { productViewManager } from '@kit.AppGalleryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { common, Want } from '@kit.AbilityKit';
 ```
 
 ### Code block 2
 
 ```
-const uiContext =this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
-const shortcutId = "id_test1"; // 对应shortcuts标签中配置的shortcutId, 例如: "shortcutId": "id_test1"
-const labelResName = "shortcut"; // 对应shortcuts标签中配置的label资源索引名称, 例如: "label": "$string:shortcut"
-const iconResName = "aa_icon"; // 对应shortcuts标签中配置的icon资源索引名称, 例如: "icon": "$media:aa_icon"
-const want: Want = {            // 对应shortcuts标签中配置的want
-  bundleName: "com.example.appgallery.kit.demo",
-  moduleName: "entry",
-  abilityName: "EntryAbility",
-  parameters: {
-    testKey: "testValue"
-  }
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// 对应shortcuts标签中配置的shortcutId, 例如: 'shortcutId': 'id_test1'
+const shortcutId = 'id_test1';
+// 对应shortcuts标签中配置的label资源索引名称, 例如: 'label': '$string:shortcut'
+const labelResName = 'shortcut';
+// 对应shortcuts标签中配置的icon资源索引名称, 例如: 'icon': '$media:aa_icon'
+const iconResName = 'aa_icon';
+// 对应shortcuts标签中配置的want
+const want: Want = {
+    bundleName: 'com.example.appgallery.kit.demo',
+    moduleName: 'entry',
+    abilityName: 'EntryAbility',
+    parameters: {
+        testKey: 'testValue'
+    }
 };
 ```
 
@@ -229,108 +260,131 @@ const want: Want = {            // 对应shortcuts标签中配置的want
 
 ```
 try {
-  let checkShortcutResult: productViewManager.CheckShortcutResult;
-  productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, labelResName, iconResName)
-    .then((result: productViewManager.CheckShortcutResult) => {
-      hilog.info(0x0001, 'TAG', `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`);
-      checkShortcutResult = result;
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG',
-      `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, labelResName,
+        iconResName)
+        .then((checkShortcutResult: productViewManager.CheckShortcutResult) => {
+            hilog.info(0x0001, TAG,
+                `checkPinShortcutPermitted success result is ${JSON.stringify(checkShortcutResult)}`);
+            this.tid = checkShortcutResult.tid ?? '';
+            // ...
+        }).catch((error: BusinessError) => {
+        hilog.error(0x0001, TAG,
+            `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
+        // ...
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `checkPinShortcutPermitted failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `checkPinShortcutPermitted error: ${JSON.stringify(err)}`);
 }
 ```
 
 ### Code block 4
 
 ```
-const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
-const tid = checkShortcutResult.tid;
+// 获取当前Page页面的上下文信息
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// checkPinShortcutPermitted接口返回的属性tid值
+const tid = this.tid;
 ```
 
 ### Code block 5
 
 ```
 try {
-  productViewManager.requestNewPinShortcut(uiContext, tid)
-    .then(() => {
-      hilog.info(0x0001, 'TAG', `requestNewPinShortcut success.`);
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG', `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.requestNewPinShortcut(uiContext, tid)
+        .then(() => {
+            hilog.info(0x0001, TAG, `requestNewPinShortcut success.`);
+            // ...
+        }).catch((error: BusinessError) => {
+            hilog.error(0x0001, TAG,
+                `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
+            // ...
+
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `requestNewPinShortcut error: ${JSON.stringify(err)}`);
 }
 ```
 
 ### Code block 6
 
 ```
-import { productViewManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import type { common, Want } from '@kit.AbilityKit';
+import { productViewManager } from '@kit.AppGalleryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { common, Want } from '@kit.AbilityKit';
 ```
 
 ### Code block 7
 
 ```
-const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 当前Page页面的上下文信息
-const shortcutId = `${Date.now()}`; // 快捷方式ID
-  // 点击快捷方式后被拉起的目标应用的bundleName、moduleName、abilityName
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// 快捷方式ID
+const shortcutId = `${Date.now()}`;
+// 点击快捷方式后被拉起的目标应用的bundleName、moduleName、abilityName
 const want: Want = {
-  bundleName: "com.example.appgallery.kit.demo",
-  moduleName: "entry",
-  abilityName: "EntryAbility",
-  parameters: {
-    testKey: "testValue"
-  }
- }
- const label = "shortcut"; // 显示在桌面名称的文本内容
- // 显示在桌面图标的应用沙箱地址，图标最大不超过100KB，格式为png和webp
- const foregroundIcon = uiContext.filesDir + "/icon.png";
- const backgroundIcon = "";
+    bundleName: 'com.example.appgallery.kit.demo',
+    moduleName: 'entry',
+    abilityName: 'EntryAbility',
+    parameters: {
+        testKey: 'testValue'
+    }
+}
+// 显示在桌面名称的文本内容
+const label = 'shortcut';
+// 显示在桌面图标的应用沙箱地址，图标最大不超过100KB，格式为png和webp
+const foregroundIcon = uiContext.filesDir + '/icon.png';
+const backgroundIcon = '';
 ```
 
 ### Code block 8
 
 ```
 try {
-  let checkShortcutResult: productViewManager.CheckShortcutResult;
-  productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, label, foregroundIcon, backgroundIcon)
-    .then((result: productViewManager.CheckShortcutResult) => {
-      hilog.info(0x0001, 'TAG', `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`)
-      checkShortcutResult = result;
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG',
-      `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.checkPinShortcutPermitted(uiContext, shortcutId, want, label, foregroundIcon,
+        backgroundIcon)
+        .then(result => {
+            hilog.info(0x0001, TAG,
+                `checkPinShortcutPermitted success result is ${JSON.stringify(result)}`);
+            this.tid = result.tid ?? '';
+            // ...
+        }).catch((error: BusinessError) => {
+            hilog.error(0x0001, TAG,
+                `checkPinShortcutPermitted error. code is ${error.code}, message is ${error.message}`);
+            // ...
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `checkPinShortcutPermitted failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `checkPinShortcutPermitted error: ${JSON.stringify(err)}`);
 }
 ```
 
 ### Code block 9
 
 ```
-const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext; // 获取当前Page页面的上下文信息
-// checkPinShortcutPermitted接口返回的属性tid值。
-const tid = checkShortcutResult.tid;
+// 获取当前Page页面的上下文信息
+const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+// checkPinShortcutPermitted接口返回的属性tid值
+const tid = this.tid;
 ```
 
 ### Code block 10
 
 ```
 try {
-  productViewManager.requestNewPinShortcut(uiContext, tid)
-    .then(() => {
-      hilog.info(0x0001, 'TAG', `requestNewPinShortcut success.`);
-    }).catch((error: BusinessError) => {
-    hilog.error(0x0001, 'TAG', `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    productViewManager.requestNewPinShortcut(uiContext, tid)
+        .then(() => {
+            hilog.info(0x0001, TAG, `requestNewPinShortcut success.`);
+            // ...
+        }).catch((error: BusinessError) => {
+            hilog.error(0x0001, TAG,
+                `requestNewPinShortcut error. code is ${error.code}, message is ${error.message}`);
+            // ...
+
+    })
 } catch (err) {
-  hilog.error(0x0001, 'TAG', `requestNewPinShortcut failed, code is ${err.code}, message is ${err.message}`);
+    hilog.error(0x0001, TAG, `requestNewPinShortcut error: ${JSON.stringify(err)}`);
 }
 ```

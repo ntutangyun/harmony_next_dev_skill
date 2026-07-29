@@ -24,27 +24,21 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 （可选）自定义初始化参数。
 
-如开发者需要自定义云存储接口使用的网络类型或任务模式等初始化参数，可参考如下配置。
+如开发者需要自定义云存储接口使用的网络类型或任务模式等初始化参数，可参考如下配置：
+
+导入相关模块。
 
 import { cloudCommon } from '@kit.CloudFoundationKit';
 import { request } from '@kit.BasicServicesKit';
 
-// 设置云存储只使用wifi网络
+通过StorageOptions.network配置云存储接口使用的网络类型，不配置则使用默认值request.agent.Network.ANY；通过StorageOptions.mode配置云存储上传下载任务的工作模式，不配置则使用默认值request.agent.Mode.BACKGROUND。
+
 cloudCommon.init({
   storageOptions: {
-    network: request.agent.Network.WIFI
-  }
-})
-
-import { cloudCommon } from '@kit.CloudFoundationKit';
-import { request } from '@kit.BasicServicesKit';
-
-// 设置云存储上传下载任务为前台模式
-cloudCommon.init({
-  storageOptions: {
+    network: request.agent.Network.WIFI,
     mode: request.agent.Mode.FOREGROUND
   }
-})
+});
 
 ## Code blocks
 
@@ -63,25 +57,15 @@ cloudCommon.init({
 ```
 import { cloudCommon } from '@kit.CloudFoundationKit';
 import { request } from '@kit.BasicServicesKit';
-
-// 设置云存储只使用wifi网络
-cloudCommon.init({
-  storageOptions: {
-    network: request.agent.Network.WIFI
-  }
-})
 ```
 
 ### Code block 3
 
 ```
-import { cloudCommon } from '@kit.CloudFoundationKit';
-import { request } from '@kit.BasicServicesKit';
-
-// 设置云存储上传下载任务为前台模式
 cloudCommon.init({
   storageOptions: {
+    network: request.agent.Network.WIFI,
     mode: request.agent.Mode.FOREGROUND
   }
-})
+});
 ```

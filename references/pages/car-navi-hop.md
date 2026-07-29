@@ -46,7 +46,8 @@ hopSucceeded	流转成功事件。
 
 导入相关模块。
 
-import { navigationInfoMgr, smartMobilityCommon } from '@kit.CarKit';
+import { smartMobilityCommon } from '@kit.CarKit';
+import { navigationInfoMgr } from '@kit.CarKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 监听系统导航信息和指令。
@@ -91,6 +92,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 注册监听系统导航信息和指令
   navInfoController.registerSystemNavigationListener(new Listener());
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `register system navigation listener error, error code: ${e?.code}`);
@@ -102,11 +104,12 @@ try {
 
 // 智慧出行业务的事件回调函数
 const callBack = (event: smartMobilityCommon.SmartMobilityEvent) => {
-  hilog.info(0x0000, 'testTag', 'Received smart mobility event: ', JSON.stringify(event));
+  hilog.info(0x0000, 'testTag', `Received smart mobility event: ${event}`);
   if (event.eventName === 'hopSucceeded' && event.type === smartMobilityCommon.SmartMobilityType.CAR_HOP) {
     // 地图应用处理流转成功事件（如退出导航等）
     // ...
   }
+  // ...
 };
 
 try {
@@ -116,6 +119,7 @@ try {
   let awareness: smartMobilityCommon.SmartMobilityAwareness = smartMobilityCommon.getSmartMobilityAwareness();
   // 注册智慧出行业务的事件监听
   awareness.on('smartMobilityEvent', types, callBack);
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `register smart mobility event listener error, error code: ${e?.code}`);
@@ -167,6 +171,7 @@ try {
   // 获取 NavigationController
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   navInfoController.updateNavigationStatus(navigationStatus);
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `update navigation status error, error code: ${e?.code}`);
@@ -183,6 +188,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 取消注册监听系统导航信息和指令
   navInfoController.unregisterSystemNavigationListener();
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister system navigation listener error, error code: ${e?.code}`);
@@ -201,6 +207,7 @@ try {
   let awareness: smartMobilityCommon.SmartMobilityAwareness = smartMobilityCommon.getSmartMobilityAwareness();
   // 解注册智慧出行业务的事件监听
   awareness.off('smartMobilityEvent', types);
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister smart mobility event listener error, error code: ${e?.code}`);
@@ -227,7 +234,8 @@ try {
 ### Code block 1
 
 ```
-import { navigationInfoMgr, smartMobilityCommon } from '@kit.CarKit';
+import { smartMobilityCommon } from '@kit.CarKit';
+import { navigationInfoMgr } from '@kit.CarKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
@@ -270,6 +278,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 注册监听系统导航信息和指令
   navInfoController.registerSystemNavigationListener(new Listener());
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `register system navigation listener error, error code: ${e?.code}`);
@@ -281,11 +290,12 @@ try {
 ```
 // 智慧出行业务的事件回调函数
 const callBack = (event: smartMobilityCommon.SmartMobilityEvent) => {
-  hilog.info(0x0000, 'testTag', 'Received smart mobility event: ', JSON.stringify(event));
+  hilog.info(0x0000, 'testTag', `Received smart mobility event: ${event}`);
   if (event.eventName === 'hopSucceeded' && event.type === smartMobilityCommon.SmartMobilityType.CAR_HOP) {
     // 地图应用处理流转成功事件（如退出导航等）
     // ...
   }
+  // ...
 };
 
 try {
@@ -295,6 +305,7 @@ try {
   let awareness: smartMobilityCommon.SmartMobilityAwareness = smartMobilityCommon.getSmartMobilityAwareness();
   // 注册智慧出行业务的事件监听
   awareness.on('smartMobilityEvent', types, callBack);
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `register smart mobility event listener error, error code: ${e?.code}`);
@@ -346,6 +357,7 @@ try {
   // 获取 NavigationController
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   navInfoController.updateNavigationStatus(navigationStatus);
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `update navigation status error, error code: ${e?.code}`);
@@ -360,6 +372,7 @@ try {
   let navInfoController: navigationInfoMgr.NavigationController = navigationInfoMgr.getNavigationController();
   // 取消注册监听系统导航信息和指令
   navInfoController.unregisterSystemNavigationListener();
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister system navigation listener error, error code: ${e?.code}`);
@@ -376,6 +389,7 @@ try {
   let awareness: smartMobilityCommon.SmartMobilityAwareness = smartMobilityCommon.getSmartMobilityAwareness();
   // 解注册智慧出行业务的事件监听
   awareness.off('smartMobilityEvent', types);
+  // ...
 } catch (e) {
   // 捕获接口调用异常时的错误码并做相应处理
   hilog.error(0x0000, 'testTag', `unregister smart mobility event listener error, error code: ${e?.code}`);

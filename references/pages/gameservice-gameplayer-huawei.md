@@ -1,10 +1,10 @@
-# 使用华为账号登录（必选）
+# 接入华为账号登录（必选）
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-gameplayer-huawei_
 
 接入后，华为平台会将HarmonyOS 4及以下游戏的玩家标识playerId/openId赋值给HarmonyOS 5.0及以上游戏的玩家标识gamePlayerId，为新老系统游戏的账号资产（角色、区服信息、游戏进度等）实现互通。互通前后，华为账号ID不会发生变化，也不涉及开发者服务器和数据库层面的变动。
 
-使用华为账号登录的网络游戏，华为账号的实名认证、未成年人防沉迷由基础游戏服务实现，华为账号的支付合规控制（例如未成年人支付限额）由IAP Kit（应用内支付服务）实现。
+华为账号的实名认证、未成年人防沉迷由基础游戏服务实现，华为账号的支付合规控制（例如未成年人支付限额）由IAP Kit（应用内支付服务）实现。
 
 接入策略
 
@@ -85,7 +85,11 @@ AppGallery Connect会自动生成证书对应的公钥信息，并计算出对�
 
 [h2]配置APP ID映射关系
 
-由于要求实现HarmonyOS 5.0及以上系统和HarmonyOS 4及以下系统上游戏内资产互通，用户登录新系统游戏时需要找到对应的老系统游戏，以及用户在该游戏下的账号ID，所以要求开发者在上架游戏时配置游戏在新老系统下的APP ID映射关系，并配置游戏在老系统游戏上接入的账号ID类型（playerId/openId）。
+为了实现HarmonyOS 5.0及以上系统与HarmonyOS 4及以下系统间的游戏资产互通，开发者在上架游戏前，需要配置APP ID映射关系。
+
+开发者需在配置映射关系时确保HarmonyOS 4及以下游戏的玩家标识类型（playerld/openld）准确无误，以保障数据继承的准确性。
+
+若APP ID映射关系缺失或配置错误，可能导致账号资产无法互通。
 
 登录AppGallery Connect，在“开发与服务”下选择项目及项目下的游戏，左侧菜单选择“构建 > 游戏服务”，在右侧点击“新增配置”。
 
@@ -102,7 +106,7 @@ HarmonyOS 4及以下游戏	请选择已上架或待上架的APK游戏。 若无�
 在弹出的窗口中继续填写信息，完成后点击“下一步”。
 
 信息项	说明
-支持数据继承的玩家标识类型	请选择HarmonyOS 4及以下游戏的玩家标识类型： - playerId：老系统游戏确认使用playerId作为玩家标识，请选择“playerId”。选择后，新系统游戏的玩家标识gamePlayerId=playerId。 - openId：如下情况请选择“openId” - 情况一：老系统游戏确认使用openId作为玩家标识。 - 情况二：老系统游戏确认使用unionId作为玩家标识。此时，请同时勾选“使用了unionId”，并通过转换ID用gamePlayerId（openId）换取unionId，若unionId未在游戏侧找到玩家记录，则当前玩家为新系统游戏的新用户。 - 情况三：部分游戏由于处于playerId替换为openId方案的过渡期，导致老系统游戏的玩家标识存在playerId与openId混用的情况，例如A玩家使用openId，B玩家使用playerId。此时，若无法通过gamePlayerId在游戏侧找到玩家记录，可通过转换ID接口用gamePlayerId（openId）换取playerId，若playerId能在游戏侧找到玩家记录，表明该玩家是使用playerId作为玩家标识的老用户，否则该玩家为新系统游戏的新用户。 - 情况四：HarmonyOS 4及以下游戏未上架时。
+支持数据继承的玩家标识类型	请选择HarmonyOS 4及以下游戏的玩家标识类型： - playerId：老系统游戏确认使用playerId作为玩家标识，请选择“playerId”。选择后，新系统游戏的玩家标识gamePlayerId=playerId。 - openId：如下情况请选择“openId” - 情况一：老系统游戏确认使用openId作为玩家标识。 - 情况二：老系统游戏确认使用unionId作为玩家标识。此时，请同时勾选“使用了unionId”，并通过通过gamePlayerId获取playerId/openId/unionId用gamePlayerId（openId）换取unionId，若unionId未在游戏侧找到玩家记录，则当前玩家为新系统游戏的新用户。 - 情况三：部分游戏由于处于playerId替换为openId方案的过渡期，导致老系统游戏的玩家标识存在playerId与openId混用的情况，例如A玩家使用openId，B玩家使用playerId。此时，若无法通过gamePlayerId在游戏侧找到玩家记录，可通过通过gamePlayerId获取playerId/openId/unionId接口用gamePlayerId（openId）换取playerId，若playerId能在游戏侧找到玩家记录，表明该玩家是使用playerId作为玩家标识的老用户，否则该玩家为新系统游戏的新用户。 - 情况四：HarmonyOS 4及以下游戏未上架时。
 接入unionId的HarmonyOS 4及以下游戏实现数据继承需要进行转换处理	若老系统的游戏确认使用unionId作为玩家标识，请勾选“使用了unionId”。
 
 说明
@@ -123,7 +127,7 @@ HarmonyOS 4及以下游戏	请选择已上架或待上架的APK游戏。 若无�
 
 玩家启动游戏。
 
-游戏调用init接口初始化Game Service Kit。初始化后，弹出华为隐私协议窗口，玩家确认同意后，则继续往下执行。
+游戏调用init接口初始化Game Service Kit。初始化后，弹出华为游戏服务与隐私的声明窗口，玩家确认同意后，则继续往下执行。
 
 游戏调用on接口注册事件监听。若监听到PlayerChangedEvent事件，先清除本地缓存信息，再重新调用unionLogin登录逻辑，showLoginDialog设置为true，重新拉起联合登录面板。
 
@@ -166,8 +170,8 @@ Authorization Code只有5分钟有效期，且仅能使用一次，不可复用�
 具体API说明请详见接口文档。
 
 接口名	描述
-init(context: common.UIAbilityContext, callback: AsyncCallback<void>): void	游戏初始化接口，使用默认的上下文信息，使用callback回调。
-on(type: 'playerChanged', callback: Callback<PlayerChangedResult>): void	玩家变化事件监听接口，通过Callback回调获取玩家变化结果信息。
+init(context: common.UIAbilityContext, callback: AsyncCallback<void>): void	游戏启动时，需要对Game Service Kit进行初始化。在调用其他API接口前，必须先调用此API接口。使用callback异步回调。
+on(type: 'playerChanged', callback: Callback<PlayerChangedResult>): void	玩家变化事件监听接口，通过callback异步回调获取玩家变化结果信息。
 unionLogin(context: common.UIAbilityContext, loginParam: UnionLoginParam): Promise<UnionLoginResult>	华为账号和游戏官方账号联合登录接口，通过Promise对象获取返回值。
 verifyLocalPlayer(context: common.UIAbilityContext, thirdUserInfo: ThirdUserInfo): Promise<void>	合规校验接口，校验当前设备登录的华为账号的实名认证、游戏防沉迷信息，通过Promise对象获取返回值。
 savePlayerRole(context: common.UIAbilityContext, request: GSKPlayerRole): Promise<void>	保存角色信息到华为游戏服务器，使用默认的上下文信息，通过Promise对象获取返回值。
@@ -213,9 +217,9 @@ onWindowStageCreate(windowStage: window.WindowStage) {
   });
 }
 
-初始化后，游戏弹出华为隐私协议窗口，用户同意签署协议，则继续往下执行。
+初始化后，游戏弹出华为游戏服务与隐私的声明窗口，用户同意签署，则继续往下执行。
 
-若当前华为账号同意过游戏服务隐私协议，后续使用该华为账号登录的游戏将不会再弹出隐私协议窗口。
+若当前华为账号同意过华为游戏服务与隐私的声明，后续使用该华为账号登录的游戏将不再弹出该窗口。
 
 [h2]注册事件监听
 
@@ -249,7 +253,7 @@ try {
 
 let context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 let thirdAccountInfo1: gamePlayer.ThirdAccountInfo = {
-  'accountName': 'testName1', // 游戏官方账号在联合登录面板上的显示名称。建议传入具体的“xx游账号登录”、“xx通行证登录”等，例如“游友账号登录”，不建议使用“官方账号登录”等容易有歧义的账号名称。若游戏存在多语言版本，需要开发者自行判断语种并传入当前语种对应的账号名称
+  'accountName': 'testName1', // 游戏官方账号在联合登录面板上的显示名称。建议传入具体的“xx账号登录”、“xx通行证登录”等，例如“游友账号登录”，不建议使用“官方账号登录”等容易有歧义的账号名称。若游戏存在多语言版本，需要开发者自行判断语种并传入当前语种对应的账号名称
   'accountIcon': $r('app.media.icon'), // 游戏官方账号图标资源信息，图标大小总和不能超过35KB
   'accountIdentifier': 'testIdentifier1', // 当前账号的唯一标识符，此标识符用来标识账号并在登录结果处理中用于判断识别玩家选择的账号
   'isOnTop': true // 当前账号是否置顶显示，且仅会置顶第一个传入true的账号
@@ -354,7 +358,7 @@ try {
   hilog.error(0x0000, 'testTag', `Failed to verify. Code: ${err.code}, message: ${err.message}`);
 }
 
-使用华为账号登录的网络游戏，华为账号的实名认证、未成年人防沉迷由基础游戏服务实现，华为账号的支付合规控制（例如未成年人支付限额）由IAP Kit（应用内支付服务）实现。
+华为账号的实名认证、未成年人防沉迷由基础游戏服务实现，华为账号的支付合规控制（例如未成年人支付限额）由IAP Kit（应用内支付服务）实现。
 
 合规校验	校验项	国家政策	解决方案
 华为账号实名认证	校验用户设备登录的华为账号是否已实名认证。	根据相关法律法规要求，所有网络游戏玩家必须使用真实有效身份信息注册并登录网络游戏。	若玩家使用未实名认证的华为账号登录游戏时，基础游戏服务向玩家弹出实名认证窗口，要求玩家进行实名认证。若玩家取消实名认证，则返回1002000004错误码。
@@ -375,8 +379,8 @@ try {
 
 let context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 let request: gamePlayer.GSKPlayerRole = {
-  roleId: '123', // 玩家角色ID，如游戏没有角色系统，请传入“0”，务必不要传""和null
-  roleName: 'Jason', // 玩家角色名，如游戏没有角色系统，请传入“default”，务必不要传""和null
+  roleId: '123', // 玩家角色ID，如游戏没有角色系统，请传入'0'，不可以传入""和null
+  roleName: 'Jason', // 玩家角色名，如游戏没有角色系统，请传入'default'，不可以传入""和null
   serverId: '456',
   serverName: 'Zhangshan',
   gamePlayerId: '789', // 请根据实际获取到的gamePlayerId传值
@@ -488,7 +492,7 @@ try {
 ```
 let context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 let thirdAccountInfo1: gamePlayer.ThirdAccountInfo = {
-  'accountName': 'testName1', // 游戏官方账号在联合登录面板上的显示名称。建议传入具体的“xx游账号登录”、“xx通行证登录”等，例如“游友账号登录”，不建议使用“官方账号登录”等容易有歧义的账号名称。若游戏存在多语言版本，需要开发者自行判断语种并传入当前语种对应的账号名称
+  'accountName': 'testName1', // 游戏官方账号在联合登录面板上的显示名称。建议传入具体的“xx账号登录”、“xx通行证登录”等，例如“游友账号登录”，不建议使用“官方账号登录”等容易有歧义的账号名称。若游戏存在多语言版本，需要开发者自行判断语种并传入当前语种对应的账号名称
   'accountIcon': $r('app.media.icon'), // 游戏官方账号图标资源信息，图标大小总和不能超过35KB
   'accountIdentifier': 'testIdentifier1', // 当前账号的唯一标识符，此标识符用来标识账号并在登录结果处理中用于判断识别玩家选择的账号
   'isOnTop': true // 当前账号是否置顶显示，且仅会置顶第一个传入true的账号
@@ -573,8 +577,8 @@ try {
 ```
 let context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 let request: gamePlayer.GSKPlayerRole = {
-  roleId: '123', // 玩家角色ID，如游戏没有角色系统，请传入“0”，务必不要传""和null
-  roleName: 'Jason', // 玩家角色名，如游戏没有角色系统，请传入“default”，务必不要传""和null
+  roleId: '123', // 玩家角色ID，如游戏没有角色系统，请传入'0'，不可以传入""和null
+  roleName: 'Jason', // 玩家角色名，如游戏没有角色系统，请传入'default'，不可以传入""和null
   serverId: '456',
   serverName: 'Zhangshan',
   gamePlayerId: '789', // 请根据实际获取到的gamePlayerId传值

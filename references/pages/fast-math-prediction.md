@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fast-math
 
 从API版本26.0.0版本开始，FAST Kit提供mathPrediction数理预测模块，基于历史采样数据对序列数据进行建模和预测，适用于手势跟踪、动画曲线预测、运动轨迹预估等实时预测场景。
 
-mathPrediction数理预测模块提供智能序列预测（predictIndex）能力：接收一组包含索引和时间戳的采样点数组，基于FAST Kit内置算法预测下一个时刻的索引值。
+mathPrediction数理预测模块提供智能序列预测（predictIndex）能力：接收一组包含索引和时间戳的采样点数组，基于FAST Kit内置算法预测下一个时刻的索引值。其核心原理是利用时间序列分析技术，对输入的采样点进行趋势拟合与外推，从而实现对未来状态的预测。
 
 场景介绍
 
@@ -20,6 +20,8 @@ mathPrediction数理预测模块适用于以下场景：
 
 开发步骤
 
+在调用predictIndex函数之前，必须确保mathPrediction模块已被正确导入，并且传入的IndexSample数组至少包含两个有效的采样点。
+
 导入mathPrediction模块。
 
 构造IndexSample接口数组，添加至少2个采样点。
@@ -28,21 +30,31 @@ mathPrediction数理预测模块适用于以下场景：
 
 获取返回的预测结果。
 
+处理异常情况，例如当采样点少于2个时应抛出异常并记录日志。
+
+注意采样点的时间戳应为单调递增，否则可能导致预测结果不准确。
+
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { mathPrediction } from '@kit.FASTKit';
 
 const DOMAIN = 0x0000;
 
 function mathPredictionTest(): void {
+  // 构造至少包含两个采样点的数组，用于预测下一个索引值
   let samples: mathPrediction.IndexSample[] = [
+    // 第一个采样点：初始索引为0，时间戳为0
     { index: 0, timestamp: 0 },
+    // 第二个采样点：索引为10，时间戳为100
     { index: 10, timestamp: 100 },
+    // 第三个采样点：索引为20，时间戳为200
     { index: 20, timestamp: 200 }
   ];
   try {
+    // 调用预测函数获取下一个索引值
     const predicted = mathPrediction.predictIndex(samples);
     hilog.info(DOMAIN, 'testTag', 'PredictionFunction predicted=%{public}d', predicted);
   } catch (err) {
+    // 捕获并记录预测失败时的错误码和错误信息
     let code = (err as BusinessError).code;
     let message = (err as BusinessError).message;
     hilog.error(DOMAIN, 'testTag', 'PredictionFunction failed, code: %{public}d, message: %{public}s', code, message);
@@ -60,15 +72,21 @@ import { mathPrediction } from '@kit.FASTKit';
 const DOMAIN = 0x0000;
 
 function mathPredictionTest(): void {
+  // 构造至少包含两个采样点的数组，用于预测下一个索引值
   let samples: mathPrediction.IndexSample[] = [
+    // 第一个采样点：初始索引为0，时间戳为0
     { index: 0, timestamp: 0 },
+    // 第二个采样点：索引为10，时间戳为100
     { index: 10, timestamp: 100 },
+    // 第三个采样点：索引为20，时间戳为200
     { index: 20, timestamp: 200 }
   ];
   try {
+    // 调用预测函数获取下一个索引值
     const predicted = mathPrediction.predictIndex(samples);
     hilog.info(DOMAIN, 'testTag', 'PredictionFunction predicted=%{public}d', predicted);
   } catch (err) {
+    // 捕获并记录预测失败时的错误码和错误信息
     let code = (err as BusinessError).code;
     let message = (err as BusinessError).message;
     hilog.error(DOMAIN, 'testTag', 'PredictionFunction failed, code: %{public}d, message: %{public}s', code, message);

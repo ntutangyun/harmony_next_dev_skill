@@ -46,6 +46,7 @@ struct FancyUse {
 
   build() {
     Column() {
+      // 通过fancy给Button提供样式设置
       Button('change height')
         .fancy()
     }
@@ -150,6 +151,7 @@ struct FancyUse {
 
   build() {
     Column() {
+      // 通过fancy给Button提供样式设置
       Button('change height')
         .fancy()
     }

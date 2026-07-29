@@ -12,17 +12,19 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 操作步骤
 
-调用cloudStorage.bucket初始化一个存储实例。支持使用两种方式初始化实例：
+调用cloudStorage.bucket初始化一个存储实例。
+
+导入相关模块。
+
+import { cloudStorage } from '@kit.CloudFoundationKit';
+
+使用以下任意一种方式初始化实例。
 
 使用默认实例
 
-import { cloudStorage } from '@kit.CloudFoundationKit';
-
-let bucket: cloudStorage.StorageBucket = cloudStorage.bucket(); // 将启动异步任务查询云侧默认实例
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
 
 使用指定的实例
-
-import { cloudStorage } from '@kit.CloudFoundationKit';
 
 let bucket: cloudStorage.StorageBucket = cloudStorage.bucket('bucket001-2wezr'); // 指定bucket001-2wezr实例
 
@@ -36,14 +38,16 @@ let bucket: cloudStorage.StorageBucket = cloudStorage.bucket('bucket001-2wezr');
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
-
-let bucket: cloudStorage.StorageBucket = cloudStorage.bucket(); // 将启动异步任务查询云侧默认实例
 ```
 
 ### Code block 2
 
 ```
-import { cloudStorage } from '@kit.CloudFoundationKit';
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+```
 
+### Code block 3
+
+```
 let bucket: cloudStorage.StorageBucket = cloudStorage.bucket('bucket001-2wezr'); // 指定bucket001-2wezr实例
 ```

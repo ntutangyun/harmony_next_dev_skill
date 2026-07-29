@@ -92,7 +92,7 @@ export class ProgressLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
             weatherInfo : {
               weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
-              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             progress: 40,
             color: '#FF317AF7',
@@ -217,7 +217,7 @@ export class ProgressLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
             weatherInfo : {
               weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
-              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             progress: 40,
             color: '#FF317AF7',
@@ -334,7 +334,7 @@ export class PickupLiveViewController {
           content: [
             { text: '请前往' },
             { text: ' XXX店 ', textColor: '#FF0A59F7' },
-            { text: '取餐' },
+            { text: '取餐' }
           ],
           keepTime: 0,
           clickAction: await ContextUtil.buildWantAgent('GuideCode'),
@@ -342,7 +342,7 @@ export class PickupLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
             weatherInfo: {
               weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
-              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             title: '取餐码',
             content: '72988',
@@ -454,7 +454,7 @@ export class PickupLiveViewController {
           content: [
             { text: '请前往' },
             { text: ' XXX店 ', textColor: '#FF0A59F7' },
-            { text: '取餐' },
+            { text: '取餐' }
           ],
           keepTime: 0,
           clickAction: await ContextUtil.buildWantAgent('GuideCode'),
@@ -462,7 +462,7 @@ export class PickupLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
             weatherInfo: {
               weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
-              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             title: '取餐码',
             content: '72988',
@@ -2293,7 +2293,7 @@ export class ProgressLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
             weatherInfo : {
               weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
-              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             progress: 40,
             color: '#FF317AF7',
@@ -2420,7 +2420,7 @@ export class ProgressLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PROGRESS,
             weatherInfo : {
               weatherType : liveViewManager.WeatherType.WEATHER_TYPE_LIGHT_RAIN,
-              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType : liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             progress: 40,
             color: '#FF317AF7',
@@ -2537,7 +2537,7 @@ export class PickupLiveViewController {
           content: [
             { text: '请前往' },
             { text: ' XXX店 ', textColor: '#FF0A59F7' },
-            { text: '取餐' },
+            { text: '取餐' }
           ],
           keepTime: 0,
           clickAction: await ContextUtil.buildWantAgent('GuideCode'),
@@ -2545,7 +2545,7 @@ export class PickupLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
             weatherInfo: {
               weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
-              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             title: '取餐码',
             content: '72988',
@@ -2659,7 +2659,7 @@ export class PickupLiveViewController {
           content: [
             { text: '请前往' },
             { text: ' XXX店 ', textColor: '#FF0A59F7' },
-            { text: '取餐' },
+            { text: '取餐' }
           ],
           keepTime: 0,
           clickAction: await ContextUtil.buildWantAgent('GuideCode'),
@@ -2667,7 +2667,7 @@ export class PickupLiveViewController {
             layoutType: liveViewManager.LayoutType.LAYOUT_TYPE_PICKUP,
             weatherInfo: {
               weatherType:liveViewManager.WeatherType.WEATHER_TYPE_HAZY,
-              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL,
+              locationType:liveViewManager.WeatherLocationType.LOCATION_TYPE_LOCAL
             },
             title: '取餐码',
             content: '72988',

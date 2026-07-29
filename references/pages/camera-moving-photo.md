@@ -32,18 +32,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 通过CameraOutputCapability中的photoProfiles属性，可获取当前设备支持的拍照输出流，通过createPhotoOutput方法创建拍照输出流。
 
-function getPhotoOutput(cameraManager: camera.CameraManager,
+getPhotoOutput(cameraManager: camera.CameraManager,
   cameraOutputCapability: camera.CameraOutputCapability): camera.PhotoOutput | undefined {
-  if (!cameraOutputCapability || !cameraOutputCapability.photoProfiles) {
-    return;
-  }
-  let photoProfilesArray: Array<camera.Profile> = cameraOutputCapability.photoProfiles;
+  let photoProfilesArray: camera.Profile[] = cameraOutputCapability.photoProfiles;
   if (!photoProfilesArray || photoProfilesArray.length === 0) {
-    console.error("photoProfilesArray is null or []");
-    return;
+    console.error('photoProfilesArray is null or []');
   }
   let photoOutput: camera.PhotoOutput | undefined = undefined;
   try {
+    this.photoProfileObj = photoProfilesArray[0]
     photoOutput = cameraManager.createPhotoOutput(photoProfilesArray[0]);
   } catch (error) {
     let err = error as BusinessError;
@@ -58,10 +55,14 @@ function getPhotoOutput(cameraManager: camera.CameraManager,
 
 查询是否支持动态照片前需要先完成相机会话配置、提交和启动会话，详细开发步骤请参考会话管理。
 
-function isMovingPhotoSupported(photoOutput: camera.PhotoOutput): boolean {
+isMovingPhotoSupported(): boolean {
   let isSupported: boolean = false;
   try {
-    isSupported = photoOutput.isMovingPhotoSupported();
+    if (this.photoOutput == undefined) {
+      console.error(`photoOutput is nullptr.`);
+      return false;
+    }
+    isSupported = this.photoOutput.isMovingPhotoSupported();
   } catch (error) {
     // 失败返回错误码error.code并处理。
     let err = error as BusinessError;
@@ -76,13 +77,16 @@ function isMovingPhotoSupported(photoOutput: camera.PhotoOutput): boolean {
 
 使能动态照片前需要使能分段式拍照能力。
 
-function enableMovingPhoto(photoOutput: camera.PhotoOutput): void {
+enableMovingPhoto(enable: boolean): void {
   try {
-    photoOutput.enableMovingPhoto(true);
+    if (this.photoOutput != undefined) {
+      console.info(TAG, `enableMovingPhoto: ${enable}`);
+      this.photoOutput.enableMovingPhoto(enable);
+    }
   } catch (error) {
     // 失败返回错误码error.code并处理。
     let err = error as BusinessError;
-   console.error(`The enableMovingPhoto call failed. error code: ${err.code}`);
+    console.error(`The enableMovingPhoto call failed. error code: ${err.code}`);
   }
 }
 
@@ -92,33 +96,64 @@ function enableMovingPhoto(photoOutput: camera.PhotoOutput): void {
 
 在相机应用开发过程中，可以随时监听动态照片拍照输出流状态。通过注册photoAsset的回调函数获取监听结果，photoOutput创建成功时即可监听。
 
-function getPhotoAccessHelper(context: Context): photoAccessHelper.PhotoAccessHelper {
-  let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-  return phAccessHelper;
-}
-
-async function mediaLibSavePhoto(photoAsset: photoAccessHelper.PhotoAsset,
-  phAccessHelper: photoAccessHelper.PhotoAccessHelper): Promise<void> {
-  try {
-    let assetChangeRequest: photoAccessHelper.MediaAssetChangeRequest = new photoAccessHelper.MediaAssetChangeRequest(photoAsset);
-    assetChangeRequest.saveCameraPhoto();
-    await phAccessHelper.applyChanges(assetChangeRequest);
-    console.info('apply saveCameraPhoto successfully');
-  } catch (err) {
-    console.error(`apply saveCameraPhoto failed with error: ${err.code}, ${err.message}`);
-  }
-}
-
-function onPhotoOutputPhotoAssetAvailable(photoOutput: camera.PhotoOutput, context: Context): void {
-  photoOutput.on('photoAssetAvailable', (err: BusinessError, photoAsset: photoAccessHelper.PhotoAsset): void => {
+onPhotoOutputPhotoAssetAvailable(photoOutput: camera.PhotoOutput, context: Context): void {
+  photoOutput.on('photoAssetAvailable', (err: BusinessError, photoAsset: photoAccessHelper.PhotoAsset) => {
     if (err) {
       console.error(`photoAssetAvailable error: ${err}.`);
       return;
     }
-    console.info('photoOutPutCallBack photoAssetAvailable');
-    // 调用媒体库落盘接口保存一阶段图和动态照片视频。
-    mediaLibSavePhoto(photoAsset, getPhotoAccessHelper(context));
+    console.info('photoOutputCallBack photoAssetAvailable');
+    // 开发者可通过photoAsset调用媒体库相关接口，自定义处理图片。
+    // 处理方式一：调用媒体库落盘接口保存一阶段图，二阶段图就绪后媒体库会主动帮应用替换落盘图片。
+    let accessHelper: photoAccessHelper.PhotoAccessHelper =
+      photoAccessHelper.getPhotoAccessHelper(this.context);
+    this.mediaLibSavePhoto(photoAsset, accessHelper);
+    // 处理方式二：调用媒体库接口请求图片并注册一阶段图或二阶段图buffer回调，自定义使用。
+    this.mediaLibRequestBuffer(photoAsset, context, this.callback);
   });
+}
+
+async mediaLibSavePhoto(photoAsset: photoAccessHelper.PhotoAsset,
+  phAccessHelper: photoAccessHelper.PhotoAccessHelper): Promise<void> {
+  try {
+    let assetChangeRequest: photoAccessHelper.MediaAssetChangeRequest =
+      new photoAccessHelper.MediaAssetChangeRequest(photoAsset);
+    assetChangeRequest.saveCameraPhoto();
+    await phAccessHelper.applyChanges(assetChangeRequest);
+    phAccessHelper.release().catch(() => {
+      console.error(`release failed.`);
+    });
+  } catch (error) {
+    Logger.error(`apply saveCameraPhoto failed with error: ${error.code}, ${error.message}`);
+  }
+}
+
+async mediaLibRequestBuffer(photoAsset: photoAccessHelper.PhotoAsset, context: Context,
+  callback: (pixelMap: image.PixelMap, url: string) => void) {
+  class MediaDataHandler implements photoAccessHelper.MediaAssetDataHandler<ArrayBuffer> {
+    onDataPrepared(data: ArrayBuffer) {
+      if (data === undefined) {
+        Logger.error('Error occurred when preparing data');
+        return;
+      }
+      let imageSource = image.createImageSource(data);
+      imageSource.createPixelMap().then((pixelMap: image.PixelMap) => {
+        callback(pixelMap, photoAsset.uri);
+      }).catch((err: BusinessError) => {
+        Logger.error(`createPixelMap err:${err.code}`);
+      })
+    }
+  }
+
+  let requestOptions: photoAccessHelper.RequestOptions = {
+    deliveryMode: photoAccessHelper.DeliveryMode.FAST_MODE,
+  }
+  const handler = new MediaDataHandler();
+  try {
+    await photoAccessHelper.MediaAssetManager.requestImageData(context, photoAsset, requestOptions, handler);
+  } catch (error) {
+    console.error(`requestImageData failed, err: ${error.code}`);
+  }
 }
 
 HDR动态照片
@@ -151,18 +186,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-function getPhotoOutput(cameraManager: camera.CameraManager,
+getPhotoOutput(cameraManager: camera.CameraManager,
   cameraOutputCapability: camera.CameraOutputCapability): camera.PhotoOutput | undefined {
-  if (!cameraOutputCapability || !cameraOutputCapability.photoProfiles) {
-    return;
-  }
-  let photoProfilesArray: Array<camera.Profile> = cameraOutputCapability.photoProfiles;
+  let photoProfilesArray: camera.Profile[] = cameraOutputCapability.photoProfiles;
   if (!photoProfilesArray || photoProfilesArray.length === 0) {
-    console.error("photoProfilesArray is null or []");
-    return;
+    console.error('photoProfilesArray is null or []');
   }
   let photoOutput: camera.PhotoOutput | undefined = undefined;
   try {
+    this.photoProfileObj = photoProfilesArray[0]
     photoOutput = cameraManager.createPhotoOutput(photoProfilesArray[0]);
   } catch (error) {
     let err = error as BusinessError;
@@ -175,10 +207,14 @@ function getPhotoOutput(cameraManager: camera.CameraManager,
 ### Code block 3
 
 ```
-function isMovingPhotoSupported(photoOutput: camera.PhotoOutput): boolean {
+isMovingPhotoSupported(): boolean {
   let isSupported: boolean = false;
   try {
-    isSupported = photoOutput.isMovingPhotoSupported();
+    if (this.photoOutput == undefined) {
+      console.error(`photoOutput is nullptr.`);
+      return false;
+    }
+    isSupported = this.photoOutput.isMovingPhotoSupported();
   } catch (error) {
     // 失败返回错误码error.code并处理。
     let err = error as BusinessError;
@@ -191,13 +227,16 @@ function isMovingPhotoSupported(photoOutput: camera.PhotoOutput): boolean {
 ### Code block 4
 
 ```
-function enableMovingPhoto(photoOutput: camera.PhotoOutput): void {
+enableMovingPhoto(enable: boolean): void {
   try {
-    photoOutput.enableMovingPhoto(true);
+    if (this.photoOutput != undefined) {
+      console.info(TAG, `enableMovingPhoto: ${enable}`);
+      this.photoOutput.enableMovingPhoto(enable);
+    }
   } catch (error) {
     // 失败返回错误码error.code并处理。
     let err = error as BusinessError;
-   console.error(`The enableMovingPhoto call failed. error code: ${err.code}`);
+    console.error(`The enableMovingPhoto call failed. error code: ${err.code}`);
   }
 }
 ```
@@ -205,32 +244,63 @@ function enableMovingPhoto(photoOutput: camera.PhotoOutput): void {
 ### Code block 5
 
 ```
-function getPhotoAccessHelper(context: Context): photoAccessHelper.PhotoAccessHelper {
-  let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-  return phAccessHelper;
-}
-
-async function mediaLibSavePhoto(photoAsset: photoAccessHelper.PhotoAsset,
-  phAccessHelper: photoAccessHelper.PhotoAccessHelper): Promise<void> {
-  try {
-    let assetChangeRequest: photoAccessHelper.MediaAssetChangeRequest = new photoAccessHelper.MediaAssetChangeRequest(photoAsset);
-    assetChangeRequest.saveCameraPhoto();
-    await phAccessHelper.applyChanges(assetChangeRequest);
-    console.info('apply saveCameraPhoto successfully');
-  } catch (err) {
-    console.error(`apply saveCameraPhoto failed with error: ${err.code}, ${err.message}`);
-  }
-}
-
-function onPhotoOutputPhotoAssetAvailable(photoOutput: camera.PhotoOutput, context: Context): void {
-  photoOutput.on('photoAssetAvailable', (err: BusinessError, photoAsset: photoAccessHelper.PhotoAsset): void => {
+onPhotoOutputPhotoAssetAvailable(photoOutput: camera.PhotoOutput, context: Context): void {
+  photoOutput.on('photoAssetAvailable', (err: BusinessError, photoAsset: photoAccessHelper.PhotoAsset) => {
     if (err) {
       console.error(`photoAssetAvailable error: ${err}.`);
       return;
     }
-    console.info('photoOutPutCallBack photoAssetAvailable');
-    // 调用媒体库落盘接口保存一阶段图和动态照片视频。
-    mediaLibSavePhoto(photoAsset, getPhotoAccessHelper(context));
+    console.info('photoOutputCallBack photoAssetAvailable');
+    // 开发者可通过photoAsset调用媒体库相关接口，自定义处理图片。
+    // 处理方式一：调用媒体库落盘接口保存一阶段图，二阶段图就绪后媒体库会主动帮应用替换落盘图片。
+    let accessHelper: photoAccessHelper.PhotoAccessHelper =
+      photoAccessHelper.getPhotoAccessHelper(this.context);
+    this.mediaLibSavePhoto(photoAsset, accessHelper);
+    // 处理方式二：调用媒体库接口请求图片并注册一阶段图或二阶段图buffer回调，自定义使用。
+    this.mediaLibRequestBuffer(photoAsset, context, this.callback);
   });
+}
+
+async mediaLibSavePhoto(photoAsset: photoAccessHelper.PhotoAsset,
+  phAccessHelper: photoAccessHelper.PhotoAccessHelper): Promise<void> {
+  try {
+    let assetChangeRequest: photoAccessHelper.MediaAssetChangeRequest =
+      new photoAccessHelper.MediaAssetChangeRequest(photoAsset);
+    assetChangeRequest.saveCameraPhoto();
+    await phAccessHelper.applyChanges(assetChangeRequest);
+    phAccessHelper.release().catch(() => {
+      console.error(`release failed.`);
+    });
+  } catch (error) {
+    Logger.error(`apply saveCameraPhoto failed with error: ${error.code}, ${error.message}`);
+  }
+}
+
+async mediaLibRequestBuffer(photoAsset: photoAccessHelper.PhotoAsset, context: Context,
+  callback: (pixelMap: image.PixelMap, url: string) => void) {
+  class MediaDataHandler implements photoAccessHelper.MediaAssetDataHandler<ArrayBuffer> {
+    onDataPrepared(data: ArrayBuffer) {
+      if (data === undefined) {
+        Logger.error('Error occurred when preparing data');
+        return;
+      }
+      let imageSource = image.createImageSource(data);
+      imageSource.createPixelMap().then((pixelMap: image.PixelMap) => {
+        callback(pixelMap, photoAsset.uri);
+      }).catch((err: BusinessError) => {
+        Logger.error(`createPixelMap err:${err.code}`);
+      })
+    }
+  }
+
+  let requestOptions: photoAccessHelper.RequestOptions = {
+    deliveryMode: photoAccessHelper.DeliveryMode.FAST_MODE,
+  }
+  const handler = new MediaDataHandler();
+  try {
+    await photoAccessHelper.MediaAssetManager.requestImageData(context, photoAsset, requestOptions, handler);
+  } catch (error) {
+    console.error(`requestImageData failed, err: ${error.code}`);
+  }
 }
 ```

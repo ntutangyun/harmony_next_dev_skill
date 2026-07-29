@@ -68,7 +68,7 @@ Options
 
 [h2]all-modules
 
-默认值：true
+默认值：false
 
 类型：Boolean
 
@@ -88,7 +88,7 @@ Options
 
 [h2]project
 
-默认值：true
+默认值：false
 
 类型：Boolean
 
@@ -98,7 +98,7 @@ Options
 
 [h2]dev
 
-默认值：true
+默认值：false
 
 类型：Boolean
 
@@ -108,7 +108,7 @@ Options
 
 [h2]json
 
-默认值：true
+默认值：false
 
 类型：Boolean
 
@@ -118,7 +118,7 @@ Options
 
 [h2]long
 
-默认值：true
+默认值：false
 
 类型：Boolean
 
@@ -128,7 +128,7 @@ Options
 
 [h2]console
 
-默认值：true
+默认值：false
 
 类型：Boolean
 

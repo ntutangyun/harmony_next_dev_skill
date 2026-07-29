@@ -18,21 +18,24 @@ void SetWidth(float width)
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_WIDTH, &item);
 }
-
 void SetPercentWidth(float percent)
 {
     ArkUI_NumberValue value[] = {{.f32 = percent}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_WIDTH_PERCENT, &item);
 }
-
 void SetHeight(float height)
 {
     ArkUI_NumberValue value[] = {{.f32 = height}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_HEIGHT, &item);
 }
-
+void SetPercentHeight(float percent)
+{
+    ArkUI_NumberValue value[] = {{.f32 = percent}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_HEIGHT_PERCENT, &item);
+}
 void SetSize(float width, float height)
 {
     ArkUI_NumberValue value[] = {{.f32 = width}, {.f32 = height}};
@@ -78,31 +81,52 @@ SetSize()同时写入宽和高，适合固定尺寸组件；SetPercentWidth()通
 
 通常，还需要通过padding和margin控制内外边距、调节组件尺寸，以实现良好的间距效果。
 
+void SetPadding(float padding)
+{
+  ArkUI_NumberValue value[] = {{.f32 = padding}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_PADDING, &item);
+}
 void SetPadding(float top, float right, float bottom, float left)
 {
     ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
     ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_PADDING, &item);
 }
-
+void SetPercentPadding(float percent)
+{
+    ArkUI_NumberValue value[] = {{.f32 = percent}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_PADDING_PERCENT, &item);
+}
 void SetPercentPadding(float top, float right, float bottom, float left)
 {
     ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
     ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_PADDING_PERCENT, &item);
 }
-
+void SetMargin(float margin)
+{
+    ArkUI_NumberValue value[] = {{.f32 = margin}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_MARGIN, &item);
+}
 void SetMargin(float top, float right, float bottom, float left)
 {
     ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
     ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_MARGIN, &item);
 }
-
 void SetPercentMargin(float percent)
 {
     ArkUI_NumberValue value[] = {{.f32 = percent}};
     ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_MARGIN_PERCENT, &item);
+}
+void SetPercentMargin(float top, float right, float bottom, float left)
+{
+    ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_MARGIN_PERCENT, &item);
 }
 
@@ -184,26 +208,48 @@ void SetBorderWidth(float width)
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_BORDER_WIDTH, &item);
 }
-
+void SetBorderWidth(float top, float right, float bottom, float left)
+{
+    ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_WIDTH, &item);
+}
+void SetBorderRadius(float radius)
+{
+    ArkUI_NumberValue value[] = {{.f32 = radius}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
+}
+void SetBorderRadius(float topLeft, float topRight, float bottomLeft, float bottomRight)
+{
+    ArkUI_NumberValue value[] = {{.f32 = topLeft}, {.f32 = topRight}, {.f32 = bottomLeft}, {.f32 = bottomRight}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
+}
 void SetBorderColor(uint32_t color)
 {
     ArkUI_NumberValue value[] = {{.u32 = color}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_BORDER_COLOR, &item);
 }
-
+void SetBorderColor(uint32_t top, uint32_t right, uint32_t bottom, uint32_t left)
+{
+    ArkUI_NumberValue value[] = {{.u32 = top}, {.u32 = right}, {.u32 = bottom}, {.u32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_COLOR, &item);
+}
 void SetBorderStyle(ArkUI_BorderStyle style)
 {
     ArkUI_NumberValue value[] = {{.i32 = style}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_BORDER_STYLE, &item);
 }
-
-void SetBorderRadius(float radius)
+void SetBorderStyle(
+  ArkUI_BorderStyle top, ArkUI_BorderStyle right, ArkUI_BorderStyle bottom, ArkUI_BorderStyle left)
 {
-    ArkUI_NumberValue value[] = {{.f32 = radius}};
-    ArkUI_AttributeItem item = {value, 1};
-    nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
+    ArkUI_NumberValue value[] = {{.i32 = top}, {.i32 = right}, {.i32 = bottom}, {.i32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_STYLE, &item);
 }
 
 当组件已经具备尺寸和间距后，可以继续叠加这些边框属性，构建轮廓和视觉分隔的效果。
@@ -219,21 +265,24 @@ void SetWidth(float width)
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_WIDTH, &item);
 }
-
 void SetPercentWidth(float percent)
 {
     ArkUI_NumberValue value[] = {{.f32 = percent}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_WIDTH_PERCENT, &item);
 }
-
 void SetHeight(float height)
 {
     ArkUI_NumberValue value[] = {{.f32 = height}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_HEIGHT, &item);
 }
-
+void SetPercentHeight(float percent)
+{
+    ArkUI_NumberValue value[] = {{.f32 = percent}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_HEIGHT_PERCENT, &item);
+}
 void SetSize(float width, float height)
 {
     ArkUI_NumberValue value[] = {{.f32 = width}, {.f32 = height}};
@@ -285,31 +334,52 @@ inline std::shared_ptr<ArkUITextNode> CreatePercentWidthItem()
 ### Code block 4
 
 ```
+void SetPadding(float padding)
+{
+  ArkUI_NumberValue value[] = {{.f32 = padding}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_PADDING, &item);
+}
 void SetPadding(float top, float right, float bottom, float left)
 {
     ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
     ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_PADDING, &item);
 }
-
+void SetPercentPadding(float percent)
+{
+    ArkUI_NumberValue value[] = {{.f32 = percent}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_PADDING_PERCENT, &item);
+}
 void SetPercentPadding(float top, float right, float bottom, float left)
 {
     ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
     ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_PADDING_PERCENT, &item);
 }
-
+void SetMargin(float margin)
+{
+    ArkUI_NumberValue value[] = {{.f32 = margin}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_MARGIN, &item);
+}
 void SetMargin(float top, float right, float bottom, float left)
 {
     ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
     ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_MARGIN, &item);
 }
-
 void SetPercentMargin(float percent)
 {
     ArkUI_NumberValue value[] = {{.f32 = percent}};
     ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_MARGIN_PERCENT, &item);
+}
+void SetPercentMargin(float top, float right, float bottom, float left)
+{
+    ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
     nativeModule_->setAttribute(handle_, NODE_MARGIN_PERCENT, &item);
 }
 ```
@@ -393,25 +463,47 @@ void SetBorderWidth(float width)
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_BORDER_WIDTH, &item);
 }
-
+void SetBorderWidth(float top, float right, float bottom, float left)
+{
+    ArkUI_NumberValue value[] = {{.f32 = top}, {.f32 = right}, {.f32 = bottom}, {.f32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_WIDTH, &item);
+}
+void SetBorderRadius(float radius)
+{
+    ArkUI_NumberValue value[] = {{.f32 = radius}};
+    ArkUI_AttributeItem item = {value, 1};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
+}
+void SetBorderRadius(float topLeft, float topRight, float bottomLeft, float bottomRight)
+{
+    ArkUI_NumberValue value[] = {{.f32 = topLeft}, {.f32 = topRight}, {.f32 = bottomLeft}, {.f32 = bottomRight}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
+}
 void SetBorderColor(uint32_t color)
 {
     ArkUI_NumberValue value[] = {{.u32 = color}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_BORDER_COLOR, &item);
 }
-
+void SetBorderColor(uint32_t top, uint32_t right, uint32_t bottom, uint32_t left)
+{
+    ArkUI_NumberValue value[] = {{.u32 = top}, {.u32 = right}, {.u32 = bottom}, {.u32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_COLOR, &item);
+}
 void SetBorderStyle(ArkUI_BorderStyle style)
 {
     ArkUI_NumberValue value[] = {{.i32 = style}};
     ArkUI_AttributeItem item = {value, 1};
     nativeModule_->setAttribute(handle_, NODE_BORDER_STYLE, &item);
 }
-
-void SetBorderRadius(float radius)
+void SetBorderStyle(
+  ArkUI_BorderStyle top, ArkUI_BorderStyle right, ArkUI_BorderStyle bottom, ArkUI_BorderStyle left)
 {
-    ArkUI_NumberValue value[] = {{.f32 = radius}};
-    ArkUI_AttributeItem item = {value, 1};
-    nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
+    ArkUI_NumberValue value[] = {{.i32 = top}, {.i32 = right}, {.i32 = bottom}, {.i32 = left}};
+    ArkUI_AttributeItem item = {value, 4};
+    nativeModule_->setAttribute(handle_, NODE_BORDER_STYLE, &item);
 }
 ```

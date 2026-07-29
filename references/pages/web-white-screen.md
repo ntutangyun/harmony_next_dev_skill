@@ -33,8 +33,8 @@ Web页面出现白屏的原因众多，本文列举了若干常见白屏问题�
 开启相关权限：
 
 名称	说明
-domStorageAccess	DOM Storage API权限，若不开启，无法使用localStorage存储数据，任何调用localStorage的代码都将失效，依赖本地存储的功能会异常。
-fileAccess	‌若不开启，文件读写功能完全被阻断，依赖文件的模块会崩溃。
+domStorageAccess	设置是否开启文档对象模型存储接口（DOM Storage API）权限。若不开启，无法使用localStorage存储数据，任何调用localStorage的代码都将失效，依赖本地存储的功能会异常。
+fileAccess	设置是否开启应用中文件系统的访问。‌若不开启，文件读写功能完全被阻断，依赖文件的模块会崩溃。
 imageAccess	设置是否允许自动加载图片资源。
 onlineImageAccess	设置是否允许从网络加载图片资源（通过HTTP和HTTPS访问的资源）。
 javaScriptAccess	设置是否允许执行JavaScript脚本。
@@ -329,7 +329,7 @@ Web组件提供了自适应页面布局的能力，详情见 Web组件大小自�
 
 避免在FIT_CONTENT模式下启用键盘避让属性RESIZE_CONTENT，以免导致布局失效。
 
-css样式height：<number> vh和Web组件大小自适应页面布局存在计算冲突，请检查height：<number> vh是否是由body节点而内的第一个高度css样式。如以下结构，id为2的dom节点高度将为0，导致白屏。
+css样式height: <number> vh和Web组件大小自适应页面布局存在计算冲突，请检查height: <number> vh是否是由body节点以内的第一个高度css样式。如以下结构，id为2的dom节点高度将为0，导致白屏。
 
 <body>
   <div id = "1">
@@ -404,7 +404,7 @@ event_message: page load finished、 NWebHandlerDelegate::OnLoadEnd、 NWebHandl
 
 问题：
 
-用WebView加载H5在Phone上表现正常，但是在Table/PC/2in1上白屏。
+用WebView加载H5在Phone上表现正常，但是在Tablet/PC/2in1上白屏。
 
 原因：
 

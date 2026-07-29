@@ -12,6 +12,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 通知类客户端信息查询场景
 
+阻断类客户端信息查询场景
+
 多客户端订阅场景（C/C++）
 
 进程信息查询场景（C/C++）
@@ -19,3 +21,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 代码签名信息查询场景（C/C++）
 
 通知类客户端信息查询场景（C/C++）
+
+阻断类客户端信息查询场景（C/C++）

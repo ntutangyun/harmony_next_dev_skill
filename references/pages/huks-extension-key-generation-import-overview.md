@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-exte
 
 密钥安全导入指将加密封装的密钥对导入到扩展设备中。加密封装的密钥对通常由安全协商密钥加密，确保密钥在传输过程中不被泄露。
 
-应用通过调用HUKS的importWrappedKeyItem接口发起密钥导入请求，请求被转发到CryptoExtensionAbility的onImportWrappedKeyItem接口完成密钥导入。
+应用通过调用HUKS的importWrappedKeyItem接口发起密钥安全导入请求，请求被转发到CryptoExtensionAbility的onImportWrappedKeyItem接口完成密钥安全导入。
 
 [h2]公钥导出
 

@@ -16,7 +16,7 @@ Debugger页签中还支持自定义以下配置：
 
 查看静态/全局变量：勾选Show static/global variables in the Variables Pane，调试过程中变量列表会展示静态/全局变量。
 
-符号表路径：在Symbol Directories页签，点击+，可以添加符号表路径，即带有调试信息的so库。例如，您可以先编译带有调试信息的so库，然后将其调试信息裁减掉，在设备侧运行无调试信息的so库，调试时将带有调试信息的so库路径添加在这里，可以实现对该so库的调试。
+符号表路径：在Symbol Directories页签，点击+，可以添加符号表路径，即带有调试信息的so库。例如，您可以先编译带有调试信息的so库，然后将其调试信息裁剪掉，在设备侧运行无调试信息的so库，调试时将带有调试信息的so库路径添加在这里，可以实现对该so库的调试。
 
 预设调试器命令：在LLDB Startup Commands页签和LLDB Post Attach Commands页签中预设lldb命令。在LLDB Startup Commands页签中的命令会在LLDB调试器启动之后立即执行，在LLDB Post Attach Commands页签中的命令会在LLDB调试器成功attach到进程之后执行。
 

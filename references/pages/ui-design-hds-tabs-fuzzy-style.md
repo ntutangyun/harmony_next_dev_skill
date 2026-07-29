@@ -63,6 +63,8 @@ struct Index {
         maskHeight: 80
       })
     }
+    .width('100%')
+    .height('100%')
   }
 }
 
@@ -104,6 +106,8 @@ struct Index {
         maskHeight: 80
       })
     }
+    .width('100%')
+    .height('100%')
   }
 }
 ```

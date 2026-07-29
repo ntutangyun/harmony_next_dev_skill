@@ -77,6 +77,9 @@ OH_Drawing_PenSetWidth(pen, SIZE_10); // SIZE_10 = 10
 OH_Drawing_PenSetColor(pen, OH_Drawing_ColorSetArgb(0xFF, 0x00, 0x4A, 0x4F));
 OH_Drawing_CanvasAttachPen(canvas, pen);
 OH_Drawing_CanvasDrawPath(canvas, path);
+// 释放资源。
+OH_Drawing_PenDestroy(pen);
+OH_Drawing_PathDestroy(path);
 
 [h2]多层级绘制示例
 
@@ -276,6 +279,80 @@ napi_value CreateNativeRoot(napi_env env, napi_callback_info info)
     g_env = env;
     return nullptr;
 }
+napi_value CreateNativeMessageRoot(napi_env env, napi_callback_info info)
+{
+    constexpr int32_t messageMaskWidth = 400;
+    constexpr int32_t messageMaskHeight = 200;
+
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+
+    // 避免重复创建导致的重复挂载
+    NativeEntry::GetInstance()->DisposeRootNode();
+
+    // 获取NodeContent
+    ArkUI_NodeContentHandle contentHandle;
+    OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
+    NativeEntry::GetInstance()->SetContentHandle(contentHandle);
+
+    auto nodeAPI = NativeModuleInstance::GetInstance()->GetNativeNodeAPI();
+    auto rootColumn = std::make_shared<ArkUIColumnNode>();
+    auto rootColumnHandle = rootColumn->GetHandle();
+
+    // 设置根容器样式
+    ArkUI_NumberValue paddingValue[] = {{.f32 = 20.0f}};
+    ArkUI_AttributeItem paddingItem = {paddingValue, 1};
+    nodeAPI->setAttribute(rootColumnHandle, NODE_PADDING, &paddingItem);
+
+    ArkUI_NumberValue bgColorValue[] = {{.u32 = 0xFFFFFFFF}};
+    ArkUI_AttributeItem bgColorItem = {bgColorValue, 1};
+    nodeAPI->setAttribute(rootColumnHandle, NODE_BACKGROUND_COLOR, &bgColorItem);
+
+    // 创建消息气泡组件
+    auto maskNode = std::make_shared<ArkUIMessageMaskNode>();
+    maskNode->SetWidth(messageMaskWidth);
+    maskNode->SetHeight(messageMaskHeight);
+    maskNode->SetMessage("您有一条新消息");
+    maskNode->SetMaskVisible(false);  // 初始不显示蒙层
+
+    // 创建按钮用于切换蒙层效果
+    auto buttonNode = std::make_shared<ArkUINode>(nodeAPI->createNode(ARKUI_NODE_BUTTON));
+    auto buttonHandle = buttonNode->GetHandle();
+
+    // 设置按钮文本
+    ArkUI_AttributeItem labelItem;
+    const char* buttonLabel = "切换蒙层效果";
+    labelItem.string = buttonLabel;
+    nodeAPI->setAttribute(buttonHandle, NODE_BUTTON_LABEL, &labelItem);
+
+    // 设置按钮样式
+    ArkUI_NumberValue marginValue[] = {{.f32 = 20.0f}};
+    ArkUI_AttributeItem marginItem = {marginValue, 1};
+    nodeAPI->setAttribute(buttonHandle, NODE_MARGIN, &marginItem);
+
+    ArkUI_NumberValue btnBgColorValue[] = {{.u32 = 0xFF2787D9}};
+    ArkUI_AttributeItem btnBgColorItem = {btnBgColorValue, 1};
+    nodeAPI->setAttribute(buttonHandle, NODE_BACKGROUND_COLOR, &btnBgColorItem);
+
+    // 设置按钮点击事件
+    auto onClick = [](ArkUI_NodeEvent *event) {
+        auto maskNode = (ArkUIMessageMaskNode *)OH_ArkUI_NodeEvent_GetUserData(event);
+        static bool highlighted = false;
+        highlighted = !highlighted;
+        maskNode->SetMaskVisible(highlighted);
+    };
+    buttonNode->RegisterOnClick(onClick, maskNode.get());
+
+    // 将组件添加到根容器
+    rootColumn->AddChild(buttonNode);
+    rootColumn->AddChild(maskNode);
+
+    // 保持Native侧对象到管理类中，维护生命周期
+    NativeEntry::GetInstance()->SetRootNode(rootColumn);
+    return nullptr;
+}
 
 napi_value DestroyNativeRoot(napi_env env, napi_callback_info info)
 {
@@ -386,7 +463,7 @@ private:
         }
     }
 
-    // 自定义内容背景层：绘制聊天界面背景
+    // 自定义内容层背景：绘制聊天界面背景
     void OnDrawBehind(ArkUI_NodeCustomEvent* event)
     {
         auto drawContext = OH_ArkUI_NodeCustomEvent_GetDrawContextInDraw(event);
@@ -520,45 +597,76 @@ private:
     // 绘制消息文本
     void DrawMessageText(OH_Drawing_Canvas* canvas, float x, float y, float maxWidth)
     {
+        // 局部资源对象离开作用域时，析构函数会自动释放已经成功创建的资源
+        struct DrawingTextResources {
+            OH_Drawing_FontCollection* fontCollection = nullptr;
+            OH_Drawing_TypographyStyle* typographyStyle = nullptr;
+            OH_Drawing_TypographyCreate* typographyHandler = nullptr;
+            OH_Drawing_TextStyle* textStyle = nullptr;
+            OH_Drawing_Brush* textBrush = nullptr;
+            OH_Drawing_Typography* typography = nullptr;
+
+            ~DrawingTextResources()
+            {
+                OH_Drawing_DestroyTypography(typography);
+                OH_Drawing_DestroyTextStyle(textStyle);
+                OH_Drawing_BrushDestroy(textBrush);
+                OH_Drawing_DestroyTypographyHandler(typographyHandler);
+                OH_Drawing_DestroyTypographyStyle(typographyStyle);
+                OH_Drawing_DestroyFontCollection(fontCollection);
+            }
+        } resources;
+
         // 创建字体集合
-        auto* fontCollection = OH_Drawing_CreateFontCollection();
+        resources.fontCollection = OH_Drawing_CreateFontCollection();
+        if (resources.fontCollection == nullptr) {
+            return;
+        }
 
         // 创建排版样式
-        auto* typographyStyle = OH_Drawing_CreateTypographyStyle();
-        OH_Drawing_SetTypographyTextAlign(typographyStyle, TEXT_ALIGN_LEFT);
+        resources.typographyStyle = OH_Drawing_CreateTypographyStyle();
+        if (resources.typographyStyle == nullptr) {
+            return;
+        }
+        OH_Drawing_SetTypographyTextAlign(resources.typographyStyle, TEXT_ALIGN_LEFT);
 
         // 创建排版处理器
-        auto* typographyHandler = OH_Drawing_CreateTypographyHandler(typographyStyle, fontCollection);
+        resources.typographyHandler =
+            OH_Drawing_CreateTypographyHandler(resources.typographyStyle, resources.fontCollection);
+        if (resources.typographyHandler == nullptr) {
+            return;
+        }
 
         // 创建文本样式
-        auto* textStyle = OH_Drawing_CreateTextStyle();
-        OH_Drawing_SetTextStyleColor(textStyle, 0xFF000000); // 纯黑
-        OH_Drawing_SetTextStyleFontSize(textStyle, messageTextFontSize);
-        OH_Drawing_SetTextStyleFontWeight(textStyle, FONT_WEIGHT_400);
-        auto textBrush = OH_Drawing_BrushCreate();
-        OH_Drawing_BrushSetColor(textBrush, 0xFF000000);
-        OH_Drawing_SetTextStyleForegroundBrush(textStyle, textBrush);
+        resources.textStyle = OH_Drawing_CreateTextStyle();
+        if (resources.textStyle == nullptr) {
+            return;
+        }
+        OH_Drawing_SetTextStyleColor(resources.textStyle, 0xFF000000); // 纯黑
+        OH_Drawing_SetTextStyleFontSize(resources.textStyle, messageTextFontSize);
+        OH_Drawing_SetTextStyleFontWeight(resources.textStyle, FONT_WEIGHT_400);
+        resources.textBrush = OH_Drawing_BrushCreate();
+        if (resources.textBrush == nullptr) {
+            return;
+        }
+        OH_Drawing_BrushSetColor(resources.textBrush, 0xFF000000);
+        OH_Drawing_SetTextStyleForegroundBrush(resources.textStyle, resources.textBrush);
 
         // 添加文本
-        OH_Drawing_TypographyHandlerPushTextStyle(typographyHandler, textStyle);
-        OH_Drawing_TypographyHandlerAddText(typographyHandler, message_.c_str());
-        OH_Drawing_TypographyHandlerPopTextStyle(typographyHandler);
+        OH_Drawing_TypographyHandlerPushTextStyle(resources.typographyHandler, resources.textStyle);
+        OH_Drawing_TypographyHandlerAddText(resources.typographyHandler, message_.c_str());
+        OH_Drawing_TypographyHandlerPopTextStyle(resources.typographyHandler);
 
         // 创建排版对象并绘制
-        auto* typography = OH_Drawing_CreateTypography(typographyHandler);
-        OH_Drawing_TypographyLayout(typography, maxWidth);
-        OH_Drawing_TypographyPaint(typography, canvas, x, y);
-
-        // 释放资源
-        OH_Drawing_DestroyTextStyle(textStyle);
-        OH_Drawing_DestroyTypography(typography);
-        OH_Drawing_DestroyTypographyHandler(typographyHandler);
-        OH_Drawing_DestroyTypographyStyle(typographyStyle);
-        OH_Drawing_DestroyFontCollection(fontCollection);
-        OH_Drawing_BrushDestroy(textBrush);
+        resources.typography = OH_Drawing_CreateTypography(resources.typographyHandler);
+        if (resources.typography == nullptr) {
+            return;
+        }
+        OH_Drawing_TypographyLayout(resources.typography, maxWidth);
+        OH_Drawing_TypographyPaint(resources.typography, canvas, x, y);
     }
 
-    std::string message_ = "";
+    std::string message_ = "这是一条消息提示";
     bool maskVisible_ = false;
 };
 } // namespace NativeModule
@@ -721,6 +829,9 @@ OH_Drawing_PenSetWidth(pen, SIZE_10); // SIZE_10 = 10
 OH_Drawing_PenSetColor(pen, OH_Drawing_ColorSetArgb(0xFF, 0x00, 0x4A, 0x4F));
 OH_Drawing_CanvasAttachPen(canvas, pen);
 OH_Drawing_CanvasDrawPath(canvas, path);
+// 释放资源。
+OH_Drawing_PenDestroy(pen);
+OH_Drawing_PathDestroy(path);
 ```
 
 ### Code block 5
@@ -916,6 +1027,80 @@ napi_value CreateNativeRoot(napi_env env, napi_callback_info info)
     g_env = env;
     return nullptr;
 }
+napi_value CreateNativeMessageRoot(napi_env env, napi_callback_info info)
+{
+    constexpr int32_t messageMaskWidth = 400;
+    constexpr int32_t messageMaskHeight = 200;
+
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+
+    // 避免重复创建导致的重复挂载
+    NativeEntry::GetInstance()->DisposeRootNode();
+
+    // 获取NodeContent
+    ArkUI_NodeContentHandle contentHandle;
+    OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
+    NativeEntry::GetInstance()->SetContentHandle(contentHandle);
+
+    auto nodeAPI = NativeModuleInstance::GetInstance()->GetNativeNodeAPI();
+    auto rootColumn = std::make_shared<ArkUIColumnNode>();
+    auto rootColumnHandle = rootColumn->GetHandle();
+
+    // 设置根容器样式
+    ArkUI_NumberValue paddingValue[] = {{.f32 = 20.0f}};
+    ArkUI_AttributeItem paddingItem = {paddingValue, 1};
+    nodeAPI->setAttribute(rootColumnHandle, NODE_PADDING, &paddingItem);
+
+    ArkUI_NumberValue bgColorValue[] = {{.u32 = 0xFFFFFFFF}};
+    ArkUI_AttributeItem bgColorItem = {bgColorValue, 1};
+    nodeAPI->setAttribute(rootColumnHandle, NODE_BACKGROUND_COLOR, &bgColorItem);
+
+    // 创建消息气泡组件
+    auto maskNode = std::make_shared<ArkUIMessageMaskNode>();
+    maskNode->SetWidth(messageMaskWidth);
+    maskNode->SetHeight(messageMaskHeight);
+    maskNode->SetMessage("您有一条新消息");
+    maskNode->SetMaskVisible(false);  // 初始不显示蒙层
+
+    // 创建按钮用于切换蒙层效果
+    auto buttonNode = std::make_shared<ArkUINode>(nodeAPI->createNode(ARKUI_NODE_BUTTON));
+    auto buttonHandle = buttonNode->GetHandle();
+
+    // 设置按钮文本
+    ArkUI_AttributeItem labelItem;
+    const char* buttonLabel = "切换蒙层效果";
+    labelItem.string = buttonLabel;
+    nodeAPI->setAttribute(buttonHandle, NODE_BUTTON_LABEL, &labelItem);
+
+    // 设置按钮样式
+    ArkUI_NumberValue marginValue[] = {{.f32 = 20.0f}};
+    ArkUI_AttributeItem marginItem = {marginValue, 1};
+    nodeAPI->setAttribute(buttonHandle, NODE_MARGIN, &marginItem);
+
+    ArkUI_NumberValue btnBgColorValue[] = {{.u32 = 0xFF2787D9}};
+    ArkUI_AttributeItem btnBgColorItem = {btnBgColorValue, 1};
+    nodeAPI->setAttribute(buttonHandle, NODE_BACKGROUND_COLOR, &btnBgColorItem);
+
+    // 设置按钮点击事件
+    auto onClick = [](ArkUI_NodeEvent *event) {
+        auto maskNode = (ArkUIMessageMaskNode *)OH_ArkUI_NodeEvent_GetUserData(event);
+        static bool highlighted = false;
+        highlighted = !highlighted;
+        maskNode->SetMaskVisible(highlighted);
+    };
+    buttonNode->RegisterOnClick(onClick, maskNode.get());
+
+    // 将组件添加到根容器
+    rootColumn->AddChild(buttonNode);
+    rootColumn->AddChild(maskNode);
+
+    // 保持Native侧对象到管理类中，维护生命周期
+    NativeEntry::GetInstance()->SetRootNode(rootColumn);
+    return nullptr;
+}
 
 napi_value DestroyNativeRoot(napi_env env, napi_callback_info info)
 {
@@ -1018,7 +1203,7 @@ private:
         }
     }
 
-    // 自定义内容背景层：绘制聊天界面背景
+    // 自定义内容层背景：绘制聊天界面背景
     void OnDrawBehind(ArkUI_NodeCustomEvent* event)
     {
         auto drawContext = OH_ArkUI_NodeCustomEvent_GetDrawContextInDraw(event);
@@ -1152,45 +1337,76 @@ private:
     // 绘制消息文本
     void DrawMessageText(OH_Drawing_Canvas* canvas, float x, float y, float maxWidth)
     {
+        // 局部资源对象离开作用域时，析构函数会自动释放已经成功创建的资源
+        struct DrawingTextResources {
+            OH_Drawing_FontCollection* fontCollection = nullptr;
+            OH_Drawing_TypographyStyle* typographyStyle = nullptr;
+            OH_Drawing_TypographyCreate* typographyHandler = nullptr;
+            OH_Drawing_TextStyle* textStyle = nullptr;
+            OH_Drawing_Brush* textBrush = nullptr;
+            OH_Drawing_Typography* typography = nullptr;
+
+            ~DrawingTextResources()
+            {
+                OH_Drawing_DestroyTypography(typography);
+                OH_Drawing_DestroyTextStyle(textStyle);
+                OH_Drawing_BrushDestroy(textBrush);
+                OH_Drawing_DestroyTypographyHandler(typographyHandler);
+                OH_Drawing_DestroyTypographyStyle(typographyStyle);
+                OH_Drawing_DestroyFontCollection(fontCollection);
+            }
+        } resources;
+
         // 创建字体集合
-        auto* fontCollection = OH_Drawing_CreateFontCollection();
+        resources.fontCollection = OH_Drawing_CreateFontCollection();
+        if (resources.fontCollection == nullptr) {
+            return;
+        }
 
         // 创建排版样式
-        auto* typographyStyle = OH_Drawing_CreateTypographyStyle();
-        OH_Drawing_SetTypographyTextAlign(typographyStyle, TEXT_ALIGN_LEFT);
+        resources.typographyStyle = OH_Drawing_CreateTypographyStyle();
+        if (resources.typographyStyle == nullptr) {
+            return;
+        }
+        OH_Drawing_SetTypographyTextAlign(resources.typographyStyle, TEXT_ALIGN_LEFT);
 
         // 创建排版处理器
-        auto* typographyHandler = OH_Drawing_CreateTypographyHandler(typographyStyle, fontCollection);
+        resources.typographyHandler =
+            OH_Drawing_CreateTypographyHandler(resources.typographyStyle, resources.fontCollection);
+        if (resources.typographyHandler == nullptr) {
+            return;
+        }
 
         // 创建文本样式
-        auto* textStyle = OH_Drawing_CreateTextStyle();
-        OH_Drawing_SetTextStyleColor(textStyle, 0xFF000000); // 纯黑
-        OH_Drawing_SetTextStyleFontSize(textStyle, messageTextFontSize);
-        OH_Drawing_SetTextStyleFontWeight(textStyle, FONT_WEIGHT_400);
-        auto textBrush = OH_Drawing_BrushCreate();
-        OH_Drawing_BrushSetColor(textBrush, 0xFF000000);
-        OH_Drawing_SetTextStyleForegroundBrush(textStyle, textBrush);
+        resources.textStyle = OH_Drawing_CreateTextStyle();
+        if (resources.textStyle == nullptr) {
+            return;
+        }
+        OH_Drawing_SetTextStyleColor(resources.textStyle, 0xFF000000); // 纯黑
+        OH_Drawing_SetTextStyleFontSize(resources.textStyle, messageTextFontSize);
+        OH_Drawing_SetTextStyleFontWeight(resources.textStyle, FONT_WEIGHT_400);
+        resources.textBrush = OH_Drawing_BrushCreate();
+        if (resources.textBrush == nullptr) {
+            return;
+        }
+        OH_Drawing_BrushSetColor(resources.textBrush, 0xFF000000);
+        OH_Drawing_SetTextStyleForegroundBrush(resources.textStyle, resources.textBrush);
 
         // 添加文本
-        OH_Drawing_TypographyHandlerPushTextStyle(typographyHandler, textStyle);
-        OH_Drawing_TypographyHandlerAddText(typographyHandler, message_.c_str());
-        OH_Drawing_TypographyHandlerPopTextStyle(typographyHandler);
+        OH_Drawing_TypographyHandlerPushTextStyle(resources.typographyHandler, resources.textStyle);
+        OH_Drawing_TypographyHandlerAddText(resources.typographyHandler, message_.c_str());
+        OH_Drawing_TypographyHandlerPopTextStyle(resources.typographyHandler);
 
         // 创建排版对象并绘制
-        auto* typography = OH_Drawing_CreateTypography(typographyHandler);
-        OH_Drawing_TypographyLayout(typography, maxWidth);
-        OH_Drawing_TypographyPaint(typography, canvas, x, y);
-
-        // 释放资源
-        OH_Drawing_DestroyTextStyle(textStyle);
-        OH_Drawing_DestroyTypography(typography);
-        OH_Drawing_DestroyTypographyHandler(typographyHandler);
-        OH_Drawing_DestroyTypographyStyle(typographyStyle);
-        OH_Drawing_DestroyFontCollection(fontCollection);
-        OH_Drawing_BrushDestroy(textBrush);
+        resources.typography = OH_Drawing_CreateTypography(resources.typographyHandler);
+        if (resources.typography == nullptr) {
+            return;
+        }
+        OH_Drawing_TypographyLayout(resources.typography, maxWidth);
+        OH_Drawing_TypographyPaint(resources.typography, canvas, x, y);
     }
 
-    std::string message_ = "";
+    std::string message_ = "这是一条消息提示";
     bool maskVisible_ = false;
 };
 } // namespace NativeModule

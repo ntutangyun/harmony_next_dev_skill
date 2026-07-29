@@ -77,6 +77,7 @@ struct Index {
         }
       })
     }
+    .width('100%')
   }
 }
 
@@ -90,16 +91,23 @@ struct Child {
     Column() {
       Text(`${this.title}`)
         .fontColor(this.fontColor)
-      // 使用changeFactory更改父组件中的变量type
+        .fontSize(20)
+        .margin(10)
+      // 使用changeFactory更改父组件中的变量
       Button('change to Title Two')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.changeFactory(2);
         })
       Button('change to Title One')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.changeFactory(1);
         })
     }
+    .width('100%')
   }
 }
 
@@ -116,12 +124,15 @@ struct Child2 {
   build() {
     Column() {
       Text(`Child index: ${this.index}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.changeIndex(20);
           // 输出子组件this.index，验证调用@Event后值不会立即同步回子组件
           hilog.info(DOMAIN, TAG, `after changeIndex ${this.index}`);
         })
     }
+    .width('100%')
   }
 }
 @Entry
@@ -140,6 +151,7 @@ struct Index2 {
         }
       })
     }
+    .width('100%')
   }
 }
 
@@ -191,6 +203,7 @@ struct Index {
         }
       })
     }
+    .width('100%')
   }
 }
 
@@ -204,16 +217,23 @@ struct Child {
     Column() {
       Text(`${this.title}`)
         .fontColor(this.fontColor)
-      // 使用changeFactory更改父组件中的变量type
+        .fontSize(20)
+        .margin(10)
+      // 使用changeFactory更改父组件中的变量
       Button('change to Title Two')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.changeFactory(2);
         })
       Button('change to Title One')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.changeFactory(1);
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -232,12 +252,15 @@ struct Child2 {
   build() {
     Column() {
       Text(`Child index: ${this.index}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.changeIndex(20);
           // 输出子组件this.index，验证调用@Event后值不会立即同步回子组件
           hilog.info(DOMAIN, TAG, `after changeIndex ${this.index}`);
         })
     }
+    .width('100%')
   }
 }
 @Entry
@@ -256,6 +279,7 @@ struct Index2 {
         }
       })
     }
+    .width('100%')
   }
 }
 ```

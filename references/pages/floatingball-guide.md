@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/floatingb
 
 同一个应用只能启动一个闪控球，同一个设备最多同时存在两个闪控球，在超出闪控球最大个数限制时，打开新的闪控球会替换最早启动的闪控球。
 
-仅支持手机和平板设备。
+支持在Phone、Tablet、PC/2in1设备上使用。
 
 接口说明
 

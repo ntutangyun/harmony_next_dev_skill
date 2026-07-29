@@ -19,7 +19,7 @@ import { HdsListItem } from '@kit.UIDesignKit';
 
 @Entry
 @Component
-struct HdsListItemExample {
+struct Index {
   @State dataSource: LazyDataSource<Item> = new LazyDataSource();
   @State dataArr: Array<Item> = [];
   @State EndOffset: number = 0;
@@ -182,7 +182,7 @@ import { HdsListItem } from '@kit.UIDesignKit';
 ```
 @Entry
 @Component
-struct HdsListItemExample {
+struct Index {
   @State dataSource: LazyDataSource<Item> = new LazyDataSource();
   @State dataArr: Array<Item> = [];
   @State EndOffset: number = 0;

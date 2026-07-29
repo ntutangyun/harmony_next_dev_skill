@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-erm
 
 约束与限制
 
-生态查询服务支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
+生态查询服务支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
 
 如果应用或者元服务没有产生场景值，调用getSelfSceneCode接口返回的场景值为空。
 
@@ -45,7 +45,7 @@ import { sceneManager } from '@kit.AppGalleryKit';
 
 try {
   const sceneCode: string = sceneManager.getSelfSceneCode();
-  hilog.info(0, 'TAG', "Succeeded in getting SelfSceneCode res = " + sceneCode);
+  hilog.info(0, 'TAG', 'Succeeded in getting SelfSceneCode res = ' + sceneCode);
 } catch (error) {
   hilog.error(0, 'TAG', `getSelfSceneCode failed. code is ${error.code}, message is ${error.message}`);
 }
@@ -61,7 +61,7 @@ import { sceneManager } from '@kit.AppGalleryKit';
 
 try {
   const version: number = sceneManager.getAdsVerificationVersion();
-  hilog.info(0, 'TAG', "Succeeded in getting AdsVerificationVersion res = " + version);
+  hilog.info(0, 'TAG', 'Succeeded in getting AdsVerificationVersion res = ' + version);
 } catch (error) {
   hilog.error(0, 'TAG', `getAdsVerificationVersion failed. code is ${error.code}, message is ${error.message}`);
 }
@@ -80,7 +80,7 @@ import { sceneManager } from '@kit.AppGalleryKit';
 ```
 try {
   const sceneCode: string = sceneManager.getSelfSceneCode();
-  hilog.info(0, 'TAG', "Succeeded in getting SelfSceneCode res = " + sceneCode);
+  hilog.info(0, 'TAG', 'Succeeded in getting SelfSceneCode res = ' + sceneCode);
 } catch (error) {
   hilog.error(0, 'TAG', `getSelfSceneCode failed. code is ${error.code}, message is ${error.message}`);
 }
@@ -98,7 +98,7 @@ import { sceneManager } from '@kit.AppGalleryKit';
 ```
 try {
   const version: number = sceneManager.getAdsVerificationVersion();
-  hilog.info(0, 'TAG', "Succeeded in getting AdsVerificationVersion res = " + version);
+  hilog.info(0, 'TAG', 'Succeeded in getting AdsVerificationVersion res = ' + version);
 } catch (error) {
   hilog.error(0, 'TAG', `getAdsVerificationVersion failed. code is ${error.code}, message is ${error.message}`);
 }

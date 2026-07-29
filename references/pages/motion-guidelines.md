@@ -70,31 +70,37 @@ let callback:Callback<motion.OperatingHandStatus> = (data:motion.OperatingHandSt
 订阅操作手感知
 
 try {
-   motion.on('operatingHandChanged', callback);
-   console.info("on succeeded");
+  motion.on('operatingHandChanged', callback);
+  console.info('on succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed on and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed on and err code is ' + error.code);
+  // ...
 }
 
 取消订阅操作手感知
 
 try {
-   motion.off('operatingHandChanged');
-   console.info("off succeeded");
+  motion.off('operatingHandChanged');
+  console.info('off succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed off and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed off and err code is ' + error.code);
+  // ...
 }
 
 获取最新操作手状态
 
 try {
-   let data:motion.OperatingHandStatus = motion.getRecentOperatingHandStatus();
-   console.info('get succeeded' + data);
+  let data:motion.OperatingHandStatus = motion.getRecentOperatingHandStatus();
+  console.info('get succeeded' + data);
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed get and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed get and err code is ' + error.code);
+  // ...
 }
 
 获取握持手状态开发指导
@@ -155,21 +161,25 @@ let callback:Callback<motion.HoldingHandStatus> = (data:motion.HoldingHandStatus
 订阅握持手感知
 
 try {
-   motion.on('holdingHandChanged', callback);
-   console.info("on succeeded");
+  motion.on('holdingHandChanged', callback);
+  console.info('on succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed on and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed on and err code is ' + error.code);
+  // ...
 }
 
 取消订阅握持手感知
 
 try {
-   motion.off('holdingHandChanged');
-   console.info("off succeeded");
+  motion.off('holdingHandChanged');
+  console.info('off succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed off and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed off and err code is ' + error.code);
+  // ...
 }
 
 ## Code blocks
@@ -214,11 +224,13 @@ let callback:Callback<motion.OperatingHandStatus> = (data:motion.OperatingHandSt
 
 ```
 try {
-   motion.on('operatingHandChanged', callback);
-   console.info("on succeeded");
+  motion.on('operatingHandChanged', callback);
+  console.info('on succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed on and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed on and err code is ' + error.code);
+  // ...
 }
 ```
 
@@ -226,11 +238,13 @@ try {
 
 ```
 try {
-   motion.off('operatingHandChanged');
-   console.info("off succeeded");
+  motion.off('operatingHandChanged');
+  console.info('off succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed off and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed off and err code is ' + error.code);
+  // ...
 }
 ```
 
@@ -238,11 +252,13 @@ try {
 
 ```
 try {
-   let data:motion.OperatingHandStatus = motion.getRecentOperatingHandStatus();
-   console.info('get succeeded' + data);
+  let data:motion.OperatingHandStatus = motion.getRecentOperatingHandStatus();
+  console.info('get succeeded' + data);
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed get and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed get and err code is ' + error.code);
+  // ...
 }
 ```
 
@@ -275,11 +291,13 @@ let callback:Callback<motion.HoldingHandStatus> = (data:motion.HoldingHandStatus
 
 ```
 try {
-   motion.on('holdingHandChanged', callback);
-   console.info("on succeeded");
+  motion.on('holdingHandChanged', callback);
+  console.info('on succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed on and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed on and err code is ' + error.code);
+  // ...
 }
 ```
 
@@ -287,10 +305,12 @@ try {
 
 ```
 try {
-   motion.off('holdingHandChanged');
-   console.info("off succeeded");
+  motion.off('holdingHandChanged');
+  console.info('off succeeded');
+  // ...
 } catch (err) {
-   let error = err as BusinessError;
-   console.error("Failed off and err code is " + error.code);
+  let error = err as BusinessError;
+  console.error('Failed off and err code is ' + error.code);
+  // ...
 }
 ```

@@ -1,8 +1,14 @@
-# 实现游戏启动加速
+# 实现秒级启动
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-accelerate-launch-development_
 
 业务流程
+
+说明
+
+如果开发者使用的是团结引擎1.8.1及以上版本，启动加速能力已内置到引擎中，无需按本章流程手动调用ArkTS接口。请参考团结引擎启动加速能力文档完成集成。
+
+注意：团结引擎1.8.1～1.9.0版本在Tablet设备上存在未捕获异常的问题，详细信息请参见本文FAQ。
 
 用户启动游戏。
 
@@ -61,15 +67,13 @@ import { launchAcceleration } from '@kit.GraphicsAccelerateKit';
 
 游戏启动时，在onCreate生命周期中调用setSupportedProcessCache接口，设置游戏支持缓存后快速启动。
 
-onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-  if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
-    try {
-      this.context.getApplicationContext().setSupportedProcessCache(true);
-    } catch (error) {
-      let code = (error as BusinessError).code;
-      let message = (error as BusinessError).message;
-      console.error(`setSupportedProcessCache fail, code: ${code}, msg: ${message}`);
-    }
+if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
+  try {
+    this.context.getApplicationContext().setSupportedProcessCache(true);
+  } catch (error) {
+    let code = (error as BusinessError).code;
+    let message = (error as BusinessError).message;
+    console.error(`setSupportedProcessCache fail, code: ${code}, msg: ${message}`);
   }
 }
 
@@ -88,9 +92,11 @@ onWindowStageWillDestroy(): void {
     let enable = launchAcceleration.isLaunchMirrorEnabled()
     if (enable) {
       // 切换场景的代码逻辑
+      // ...
     }
   }
 }
+
 onDestroy(): void {
   if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
     let enable = launchAcceleration.isLaunchMirrorEnabled()
@@ -98,6 +104,7 @@ onDestroy(): void {
       // 若未使能，才进行游戏引擎的销毁
     }
   }
+  // ...
 }
 
 ## Code blocks
@@ -111,15 +118,13 @@ import { launchAcceleration } from '@kit.GraphicsAccelerateKit';
 ### Code block 2
 
 ```
-onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-  if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
-    try {
-      this.context.getApplicationContext().setSupportedProcessCache(true);
-    } catch (error) {
-      let code = (error as BusinessError).code;
-      let message = (error as BusinessError).message;
-      console.error(`setSupportedProcessCache fail, code: ${code}, msg: ${message}`);
-    }
+if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
+  try {
+    this.context.getApplicationContext().setSupportedProcessCache(true);
+  } catch (error) {
+    let code = (error as BusinessError).code;
+    let message = (error as BusinessError).message;
+    console.error(`setSupportedProcessCache fail, code: ${code}, msg: ${message}`);
   }
 }
 ```
@@ -132,9 +137,11 @@ onWindowStageWillDestroy(): void {
     let enable = launchAcceleration.isLaunchMirrorEnabled()
     if (enable) {
       // 切换场景的代码逻辑
+      // ...
     }
   }
 }
+
 onDestroy(): void {
   if (canIUse("SystemCapability.GraphicsGame.LaunchAcceleration")) { // 兼容性：通过canIUse()校验设备是否支持启动加速服务
     let enable = launchAcceleration.isLaunchMirrorEnabled()
@@ -142,5 +149,6 @@ onDestroy(): void {
       // 若未使能，才进行游戏引擎的销毁
     }
   }
+  // ...
 }
 ```

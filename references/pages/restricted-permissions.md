@@ -364,7 +364,7 @@ ohos.permission.SHORT_TERM_WRITE_IMAGEVIDEO
 
 权限级别：system_basic
 
-授权方式：用户授权（user_grant）
+授权方式：系统授权（system_grant）
 
 起始版本：12
 
@@ -474,7 +474,7 @@ ohos.permission.kernel.ALLOW_EXECUTABLE_FORT_MEMORY
 
 允许系统JS引擎申请带MAP_FORT标识的匿名可执行内存。
 
-应用申请此权限后，系统引擎可申请带MAP_FORT的匿名可执行内存，做即时编译，提高与形式执行效率。
+应用申请此权限后，系统引擎可申请带MAP_FORT的匿名可执行内存，做即时编译，提高运行时执行效率。
 
 可申请此权限的特殊场景与功能：
 
@@ -592,6 +592,8 @@ ohos.permission.PERSONAL_MANAGE_RESTRICTIONS
 
 授权方式：系统授权（system_grant）
 
+支持设备：Phone | PC/2in1 | Tablet
+
 起始版本：15
 
 ohos.permission.START_PROVISIONING_MESSAGE
@@ -607,6 +609,8 @@ ohos.permission.START_PROVISIONING_MESSAGE
 权限级别：system_basic
 
 授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
 
 起始版本：15
 
@@ -826,6 +830,26 @@ ohos.permission.ACCESS_DDK_SCSI_PERIPHERAL
 
 起始版本：18
 
+ohos.permission.ACCESS_DDK_USB_SERIAL
+
+允许扩展外设驱动访问USBSerial DDK接口开发USB Serial扩展外设驱动。
+
+USB串口DDK API可用于开发以下类型的外设扩展驱动：
+
+外设以USB总线接入主机，且满足：
+
+外设InterfaceClass为通信设备控制类 (0x02)、InterfaceSubClass遵循ACMSubClass模型(0x02)。
+
+外设支持通过USB接口模拟传统的串行通信。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备： PC/2in1 | Tablet
+
+起始版本：18
+
 ohos.permission.kernel.SUPPORT_PLUGIN
 
 允许主体应用安装插件。
@@ -855,6 +879,28 @@ ohos.permission.CUSTOM_SANDBOX
 授权方式：系统授权（system_grant）
 
 起始版本：18
+
+ohos.permission.atomicService.MANAGE_STORAGE
+
+允许元服务小游戏进行存储空间大小的管理。
+
+可申请此权限的特殊场景与功能：
+
+当元服务小游戏需要调整存储空间大小时可申请。
+
+说明
+
+仅元服务小游戏可申请，申请方式请参考：存储空间管理服务。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
+
+起始版本：20
 
 ohos.permission.MANAGE_SCREEN_TIME_GUARD
 
@@ -966,9 +1012,11 @@ ohos.permission.USE_FLOAT_BALL
 
 授权方式：系统授权（system_grant）
 
-支持设备：Phone | Tablet
+支持设备：Phone | PC/2in1 | Tablet
 
 起始版本：20
+
+变更信息：从API版本26.0.0开始，增加支持在PC/2in1上申请。
 
 ohos.permission.AUTO_RESTORE_MAIN_WINDOW
 
@@ -1130,7 +1178,7 @@ ohos.permission.SET_SYSTEMSHARE_APPLAUNCHTRUSTLIST
 
 授权方式：系统授权（system_grant）
 
-支持设备：Phone | PC/2in1 | Tablet
+支持设备：Phone | PC/2in1 | Tablet | TV
 
 起始版本：21
 
@@ -1218,9 +1266,11 @@ ohos.permission.CUSTOM_SCREEN_RECORDING
 
 授权方式：手动设置授权（manual_settings）
 
-支持设备：PC/2in1
+支持设备：PC/2in1 | TV
 
 起始版本：22
+
+变更信息：从API版本26.0.0开始，增加支持在TV上申请。
 
 ohos.permission.ALLOW_EXTERNAL_NATIVE_CODE
 
@@ -1544,6 +1594,32 @@ ohos.permission.CHECK_CALL_LOG
 
 起始版本：24
 
+ohos.permission.GET_NETWORK_STATS
+
+允许应用查询其他应用的流量数据。
+
+可申请此权限的场景与功能：
+
+VPN类应用，用于查询相关流量消耗。
+
+流量管理类应用，用于统计流量。
+
+MDM应用。
+
+系统应用。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：General
+
+起始版本：10
+
+变更信息：API 10-11，ACL使能为false；从API 12开始，变更为true。对于API版本10-24，权限的开放范围为系统应用；从API版本26.0.0开始，开放范围变更为普通应用。
+
 ohos.permission.ACCESS_DLP_SERVICE
 
 允许应用或服务使用DLP提供的注册、解注册连云插件功能。
@@ -1558,7 +1634,7 @@ ohos.permission.ACCESS_DLP_SERVICE
 
 授权方式：系统授权（system_grant）
 
-支持设备：Phone | PC/2in1 | Tablet | Car
+支持设备：Phone | PC/2in1 | Tablet | TV
 
 起始版本：26.0.0
 
@@ -1608,15 +1684,15 @@ ohos.permission.KEEP_BACKGROUND_RUNNING_SPECIAL_SCENARIO
 
 ohos.permission.FLOAT_VIEW
 
-允许应用使用应用浮窗。
+允许应用使用闪控窗。
 
 可申请此权限的场景与功能：
 
 应用需支持跨应用悬浮显示关键信息，目前仅对直播类应用的游戏直播和金融类应用的实时盯盘场景开放。 例如：
 
-游戏直播：主播在直播应用中启用应用浮窗后，当应用退至后台时，可通过应用浮窗展示直播间互动内容，便于主播实时查看直播间动态并快速调整直播间设置。
+游戏直播：主播在直播应用中启用闪控窗后，当应用退至后台时，可通过闪控窗展示直播间互动内容，便于主播实时查看直播间动态并快速调整直播间设置。
 
-金融盯盘：用户在金融类应用中开启盯盘应用浮窗后，当应用退至后台时，可通过应用浮窗实时更新盯盘信息，便于用户随时掌握市场动态。
+金融盯盘：用户在金融类应用中开启盯盘闪控窗后，当应用退至后台时，可通过闪控窗实时更新盯盘信息，便于用户随时掌握市场动态。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -1741,3 +1817,129 @@ ohos.permission.PRINTER_DRIVER
 支持设备：PC/2in1 | Phone | Tablet
 
 起始版本：24
+
+ohos.permission.kernel.SUPPORT_LOCAL_PLUGIN
+
+允许应用安装与加载自分发插件。
+
+自分发插件，即该插件不上架应用市场，由应用自行分发。该权限允许加载未经审核的代码，请开发者谨慎使用。
+
+可申请此权限的场景与功能：
+
+应用有涉及ArkTS代码调用的扩展插件。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.ALLOW_USE_BM
+
+允许应用在开发者模式下调用BM工具。
+
+可申请此权限的场景与功能：
+
+仅PC/2in1设备上的shell应用、IDE（集成开发环境）类应用可申请。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.ACCESS_DIGITAL_IDENTITY
+
+允许应用使用数字身份服务导入数字凭证。
+
+获取该权限后，应用可以将用户的数字身份凭证导入设备，进行安全存储以及后续便捷出示。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | Tablet
+
+起始版本：26.0.0
+
+ohos.permission.CAPTURE_PLAYBACK_DOWNLINK
+
+允许应用录制蜂窝通话下行数据。
+
+可申请此权限的特殊场景与功能：
+
+涉及司机、外卖员、快递员工作的应用，面向残障工作人员等特殊场景时可申请。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | Tablet
+
+起始版本：26.0.0
+
+ohos.permission.MANAGE_SANDBOX_BUNDLE
+
+允许应用管理沙箱应用。
+
+可申请此权限的场景与功能：
+
+仅AI智能体应用可申请。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.DETECT_DEVICE
+
+允许应用调用智能检测服务获取数据。
+
+可申请此权限的特殊场景与功能：
+
+应用需持有二手电子设备回收资质并已签署DSA协议。当涉及二手电子设备回收业务时，可申请此权限。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
+
+起始版本：26.0.0
+
+ohos.permission.ACCESS_SE_KEY
+
+允许应用生成、使用、删除安全芯片密钥。
+
+可申请此权限的特殊场景与功能：
+
+该权限仅面向数字盾相关场景，如金融类、企业类应用中的基于数字盾的转账支付或数字签章的等高安场景使用，应用需具备数字盾服务开放能力。
+
+该权限涉及安全芯片密钥管理能力，依赖硬件支持，请先确保使用设备支持相应能力。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | Wearable | TV | PC/2in1 | Tablet | Car
+
+起始版本：26.0.0

@@ -26,6 +26,7 @@ import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit'
 import { fileIo } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@ohos.base';
+// ...
 
 const DOMAIN: number = 0x0000;
 const TAG: string = 'SwitchDocumentDemo';
@@ -38,6 +39,7 @@ struct Index {
   private filePath2: string = '';
   private switchFlag: boolean = true; // true，加载pdf1；false，加载pdf2
   @State isLoading: boolean = false;
+  @State isSwitching: boolean = false;
 
   private makeSureFileExist(filePath: string): void {
     let fileName: string = filePath.split('/').pop() || '';
@@ -59,8 +61,10 @@ struct Index {
 
   aboutToAppear(): void {
     let context = this.getUIContext().getHostContext() as Context;
-    let dir: string = context.filesDir
-    // 确保沙箱目录内有pdf1.pdf、pdf2.pdf文档
+    let dir: string = context.resourceDir
+    hilog.error(DOMAIN, TAG, `local change: Controller load PDF failed, dir:${dir}`);
+    // dir:/data/storage/el2/base/haps/entry/files
+    // 确保工程目录src/main/resources/resfile内有pdf1.pdf、pdf2.pdf文档
     this.filePath1 = dir + '/pdf1.pdf';
     this.filePath2 = dir + '/pdf2.pdf';
     this.makeSureFileExist(this.filePath1);
@@ -91,22 +95,27 @@ struct Index {
       } else {
         // 此处可自定义loading界面
       }
-      Row() {
-        Button('SwitchDocument')
-          .onClick(async () => {
-            this.switchFlag = !this.switchFlag;
-            let filePath: string = this.switchFlag ? this.filePath1 : this.filePath2;
-            this.controller.releaseDocument();
-            this.isLoading = true;
-            let loadResult: pdfService.ParseResult = await this.controller.loadDocument(filePath);
-            this.isLoading = false;
-            if (loadResult !== pdfService.ParseResult.PARSE_SUCCESS) {
-              hilog.error(DOMAIN, TAG, 'Controller load PDF failed');
-              return;
-            }
-            this.controller.setPageFit(pdfService.PageFit.FIT_WIDTH);
-          })
-      }
+      // ...
+      Button('SwitchDocument')
+        .position({ x: 10, y: 60 })
+        .onClick(async () => {
+          if (this.isSwitching) {
+            return;
+          }
+          this.isSwitching = true;
+          this.switchFlag = !this.switchFlag;
+          let filePath: string = this.switchFlag ? this.filePath1 : this.filePath2;
+          this.controller.releaseDocument();
+          this.isLoading = true;
+          let loadResult: pdfService.ParseResult = await this.controller.loadDocument(filePath);
+          this.isLoading = false;
+          this.isSwitching = false;
+          if (loadResult !== pdfService.ParseResult.PARSE_SUCCESS) {
+            hilog.error(DOMAIN, TAG, 'Controller load PDF failed');
+            return;
+          }
+          this.controller.setPageFit(pdfService.PageFit.FIT_WIDTH);
+        })
     }
     .height('100%')
     .width('100%')
@@ -122,6 +131,7 @@ import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit'
 import { fileIo } from '@kit.CoreFileKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@ohos.base';
+// ...
 
 const DOMAIN: number = 0x0000;
 const TAG: string = 'SwitchDocumentDemo';
@@ -134,6 +144,7 @@ struct Index {
   private filePath2: string = '';
   private switchFlag: boolean = true; // true，加载pdf1；false，加载pdf2
   @State isLoading: boolean = false;
+  @State isSwitching: boolean = false;
 
   private makeSureFileExist(filePath: string): void {
     let fileName: string = filePath.split('/').pop() || '';
@@ -155,8 +166,10 @@ struct Index {
 
   aboutToAppear(): void {
     let context = this.getUIContext().getHostContext() as Context;
-    let dir: string = context.filesDir
-    // 确保沙箱目录内有pdf1.pdf、pdf2.pdf文档
+    let dir: string = context.resourceDir
+    hilog.error(DOMAIN, TAG, `local change: Controller load PDF failed, dir:${dir}`);
+    // dir:/data/storage/el2/base/haps/entry/files
+    // 确保工程目录src/main/resources/resfile内有pdf1.pdf、pdf2.pdf文档
     this.filePath1 = dir + '/pdf1.pdf';
     this.filePath2 = dir + '/pdf2.pdf';
     this.makeSureFileExist(this.filePath1);
@@ -187,22 +200,27 @@ struct Index {
       } else {
         // 此处可自定义loading界面
       }
-      Row() {
-        Button('SwitchDocument')
-          .onClick(async () => {
-            this.switchFlag = !this.switchFlag;
-            let filePath: string = this.switchFlag ? this.filePath1 : this.filePath2;
-            this.controller.releaseDocument();
-            this.isLoading = true;
-            let loadResult: pdfService.ParseResult = await this.controller.loadDocument(filePath);
-            this.isLoading = false;
-            if (loadResult !== pdfService.ParseResult.PARSE_SUCCESS) {
-              hilog.error(DOMAIN, TAG, 'Controller load PDF failed');
-              return;
-            }
-            this.controller.setPageFit(pdfService.PageFit.FIT_WIDTH);
-          })
-      }
+      // ...
+      Button('SwitchDocument')
+        .position({ x: 10, y: 60 })
+        .onClick(async () => {
+          if (this.isSwitching) {
+            return;
+          }
+          this.isSwitching = true;
+          this.switchFlag = !this.switchFlag;
+          let filePath: string = this.switchFlag ? this.filePath1 : this.filePath2;
+          this.controller.releaseDocument();
+          this.isLoading = true;
+          let loadResult: pdfService.ParseResult = await this.controller.loadDocument(filePath);
+          this.isLoading = false;
+          this.isSwitching = false;
+          if (loadResult !== pdfService.ParseResult.PARSE_SUCCESS) {
+            hilog.error(DOMAIN, TAG, 'Controller load PDF failed');
+            return;
+          }
+          this.controller.setPageFit(pdfService.PageFit.FIT_WIDTH);
+        })
     }
     .height('100%')
     .width('100%')

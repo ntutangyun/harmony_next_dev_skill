@@ -14,11 +14,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cppcrash-
 
 信号处理函数
 
-定义了进程在接收到信号之后进行一系列处理操作的函数，信号处理函数需要明确处理哪些信号。
+定义了进程在接收到信号之后进行一系列处理操作的函数，信号处理函数明确需要处理的信号。
 
 pc
 
-全称Program Counter（程序计数器），储存当前程序正在执行指令的地址。
+全称Program Counter（程序计数器），存储当前程序正在执行指令的地址。
 
 lr
 
@@ -50,7 +50,7 @@ CPU中高速存储单元用于存储计算机程序执行过程中所需的数�
 
 ProcessDump进程将崩溃日志数据写入到临时目录下进行存储。
 
-ProcessDump进程收集完崩溃日志后，上报给维测进程Hiview，并补充仅Hiview有权限获取的部分信息(如整机内存状态、应用页面切换轨迹)，然后将崩溃日志存储到“/data/log/faultlog/faultlogger”目录下并生成故障事件。
+ProcessDump进程收集完崩溃日志后，上报给维测进程Hiview，并补充仅Hiview有权限获取的部分信息（如整机内存状态、应用页面切换轨迹），然后将崩溃日志存储到“/data/log/faultlog/faultlogger”目录下并生成故障事件。
 
 [h2]系统处理的崩溃信号
 
@@ -62,8 +62,8 @@ ProcessDump进程收集完崩溃日志后，上报给维测进程Hiview，并补
 6	SIGABRT	进程终止	进程异常终止，通常为进程自身调用标准函数库的abort()函数。
 7	SIGBUS	非法内存访问	进程访问了未对齐或者不存在的物理地址。
 8	SIGFPE	浮点异常	进程执行了错误的算术运算，如除数为0、浮点溢出、整数溢出等。
-11	SIGSEGV	无效内存访问	进程访问了无效内存引用。
-16	SIGSTKFLT	栈错误	处理器执行了错误的栈操作，如栈空时弹出、栈满时压入。
+11	SIGSEGV	无效内存访问	进程访问了无效内存。
+16	SIGSTKFLT	栈错误	处理器执行了错误的栈操作，如栈空时弹出、栈满时压入。 SIGSTKFLT信号不支持生成minidump。
 31	SIGSYS	错误系统调用	系统调用时使用了错误或非法参数。
 
 以上系统处理的崩溃信号，根据错误码（code）还有二级分类，二级分类如下：
@@ -179,8 +179,8 @@ Enabled app log configs	使能的配置参数列表	20	否	仅用户配置时打
 Module name	模块名	8	是	-
 ReleaseType	应用的版本类型	23	否	仅在应用进程提供，release表示应用为release版本应用，debug表示应用为debug版本应用。
 CpuAbi	二进制接口类型	23	否	仅在应用进程提供。
-Version	应用版本号(点分格式)	8	否	仅在应用进程提供。
-VersionCode	应用版本号(整数格式)	8	否	仅在应用进程提供。
+Version	应用版本号（点分格式）	8	否	仅在应用进程提供。
+VersionCode	应用版本号（整数格式）	8	否	仅在应用进程提供。
 IsSystemApp	应用是否为系统应用	23	否	仅在应用进程提供。
 PreInstalled	是否预置应用	8	否	仅在应用进程提供。
 Foreground	前后台状态	8	否	仅在应用进程提供。
@@ -190,9 +190,10 @@ Pid	进程号	8	是	-
 Uid	用户ID	8	是	-
 HiTraceId	HiTraceChain唯一跟踪标识	20	否	仅故障线程开启HiTraceChain功能时提供，详见HiTraceChain介绍。
 Process name	故障进程名	8	是	-
+App running unique id	应用运行时唯一关联的id。	26.0.0	是	-
 Process life time	故障进程存活时间	8	是	-
 Process Memory(kB)	故障进程内存占用	20	是	-
-Device Memory(kB)	整机内存状态	20	否	依赖维测服务进程，若发生故障时维测服务进程停止或设备重启则无此字段，详见实现原理。
+Device Memory(kB)	整机内存信息	20	否	依赖维测服务进程，若发生故障时维测服务进程停止或设备重启则无此字段，详见实现原理。
 Reason	故障原因	8	是	-
 LastFatalMessage	Fatal消息	8	否	以下几种情况共用此字段： 解析到不可靠的栈帧地址时输出的提示信息。 因ABORT信号崩溃退出时保存最后一条FATAL级Hilog日志。 系统内部的维测信息。 应用通过OH_HiDebug_SetCrashObj设置的字符串信息。 从API版本26.0.0开始，应用若开启模块加载链路调试开关，则此字段包含模块加载链路。
 Fault thread info	故障线程信息	8	是	-
@@ -705,7 +706,7 @@ OpenFiles:
 
 [h2]有页面切换轨迹的故障场景日志规格
 
-针对包含页面切换的应用，自API 20起，维测进程会记录应用切换历史。应用发生故障后，生成的故障文件将包含页面切换历史轨迹。
+针对包含页面切换的应用，自API version 20起，维测进程会记录应用切换历史。应用发生故障后，生成的故障文件将包含页面切换历史轨迹。
 
 故障日志文件最多记录最新的10条历史轨迹。
 
@@ -794,7 +795,7 @@ b. 去除PC偏移和BuildID；
 
 c. 保留文件路径（如 /system/lib/platformsdk/libace_napi.z.so）；
 
-d. 保留函数完整签名（如 panda::JSValueRef ArkNativeFunctionCallBack<true>(panda::JsiRuntimeCallInfo*)+272)，括号内的内容，含类名、函数名、参数，包括 const、参数类型等，若日志中已解析）。
+d. 保留函数完整签名（如 panda::JSValueRef ArkNativeFunctionCallBack<true>(panda::JsiRuntimeCallInfo*)+272)，括号内的内容，含类名、函数名、参数，包括 const、参数类型等）。
 
 若Native栈帧存在仅有二进制文件名而没有函数名时，可选择保留PC的偏移值与文件路径：
 
@@ -853,7 +854,7 @@ libarkjs_runtime.z.so
 
 JS栈帧默认为业务栈帧：
 
-onPageShow (sample|sample|1.0.0|src/main/ets/pages/Index.ts:381:36)
+at onPageShow (sample|sample|1.0.0|src/main/ets/pages/Index.ts:381:36)
 
 应用的Native栈帧：
 
@@ -1553,7 +1554,7 @@ libarkjs_runtime.z.so
 ### Code block 15
 
 ```
-onPageShow (sample|sample|1.0.0|src/main/ets/pages/Index.ts:381:36)
+at onPageShow (sample|sample|1.0.0|src/main/ets/pages/Index.ts:381:36)
 ```
 
 ### Code block 16

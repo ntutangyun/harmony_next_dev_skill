@@ -20,6 +20,7 @@ ohos.permission.GET_NETWORK_INFO：用于获取设备网络信息。
 
 {
   "module": {
+    // ...
     "requestPermissions": [
       {
         "name": "ohos.permission.INTERNET"
@@ -27,7 +28,8 @@ ohos.permission.GET_NETWORK_INFO：用于获取设备网络信息。
       {
         "name": "ohos.permission.GET_NETWORK_INFO"
       }
-    ]
+    ],
+    "routerMap": "$profile:route_map"
   }
 }
 
@@ -77,6 +79,7 @@ HTTP是明文传输协议，为保障数据安全，通常需禁用HTTP，仅允
 ```
 {
   "module": {
+    // ...
     "requestPermissions": [
       {
         "name": "ohos.permission.INTERNET"
@@ -84,7 +87,8 @@ HTTP是明文传输协议，为保障数据安全，通常需禁用HTTP，仅允
       {
         "name": "ohos.permission.GET_NETWORK_INFO"
       }
-    ]
+    ],
+    "routerMap": "$profile:route_map"
   }
 }
 ```

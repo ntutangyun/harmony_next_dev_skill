@@ -20,7 +20,7 @@ function transferAtomics(arg1: Int32Array) {
 
 @Entry
 @Component
-struct sharedArrayBuffer {
+struct CSharedArrayBuffer {
   @State message: string = 'Hello World';
 
   build() {
@@ -39,12 +39,15 @@ struct sharedArrayBuffer {
           let int32 = new Int32Array(sab);
           let task: taskpool.Task = new taskpool.Task(transferAtomics, int32);
           taskpool.execute(task).then((res) => {
-            console.info('this res is: ' + res);
+            this.message = 'success';
+            console.info(`this res is: ${res}`);
+          }).catch((e: BusinessError) => {
+              this.message = 'fail';
+              console.error(`taskpool: execute task: code: ${e.code}, message: ${e.message}`);
           });
           setTimeout(() => {
             Atomics.notify(int32, 0, 1);
           }, 1000);
-          this.message = 'success';
         })
     }
     .height('100%')
@@ -69,7 +72,7 @@ function transferAtomics(arg1: Int32Array) {
 
 @Entry
 @Component
-struct sharedArrayBuffer {
+struct CSharedArrayBuffer {
   @State message: string = 'Hello World';
 
   build() {
@@ -88,12 +91,15 @@ struct sharedArrayBuffer {
           let int32 = new Int32Array(sab);
           let task: taskpool.Task = new taskpool.Task(transferAtomics, int32);
           taskpool.execute(task).then((res) => {
-            console.info('this res is: ' + res);
+            this.message = 'success';
+            console.info(`this res is: ${res}`);
+          }).catch((e: BusinessError) => {
+              this.message = 'fail';
+              console.error(`taskpool: execute task: code: ${e.code}, message: ${e.message}`);
           });
           setTimeout(() => {
             Atomics.notify(int32, 0, 1);
           }, 1000);
-          this.message = 'success';
         })
     }
     .height('100%')

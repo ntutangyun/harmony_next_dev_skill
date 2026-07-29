@@ -74,12 +74,12 @@ AIPP支持两种类型的通道交换：RB/UV通道交换和AX通道交换。
 RB/UV通道交换丰富了输入图片的格式，开启RB/UV通道交换后，AIPP支持的图片输入格式比可配置的输入类型丰富了一倍。
 
 配置类型	可接受图片类型
-YUV420SP_U8	YUV420，YVU420 + rbuv_swap_switch
-XRGB8888_U8	XRGB，XBGR + rbuv_swap_switch
-ARGB8888_U8	ARGB，ABGR + rbuv_swap_switch
+YUV420SP_U8	YUV420, YVU420 + rbuv_swap_switch
+XRGB8888_U8	XRGB, XBGR + rbuv_swap_switch
+ARGB8888_U8	ARGB, ABGR + rbuv_swap_switch
 RGB888_U8	BGR + rbuv_swap_switch
-YUYV_U8	YUYV，YVYU + rbuv_swap_switch
-YUV422SP_U8	YUV422，YVU422 + rbuv_swap_switch
+YUYV_U8	YUYV, YVYU + rbuv_swap_switch
+YUV422SP_U8	YUV422, YVU422 + rbuv_swap_switch
 AYUV444_U8	AYUV + rbuv_swap_switch
 
 当配置的图片输入格式为XRGB、ARGB或AYUV时，支持开启AX通道交换。开启通道交换后，图片第一个通道的输入被搬移到第四个通道上，即当XRGB、ARGB和AYUV开启AX通道交换后，转变为RGBX、RGBA和YUVA。

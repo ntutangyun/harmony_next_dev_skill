@@ -159,9 +159,34 @@ OH_AudioStreamBuilder_Destroy(builder);
 OH_AudioStream_LatencyMode latencyMode = AUDIOSTREAM_LATENCY_MODE_FAST;
 OH_AudioStreamBuilder_SetLatencyMode(builder, latencyMode);
 
+[h2]采集回环音效数据
+
+从API版本26.0.0开始，当应用已在同一进程中通过硬件返听模式开启耳返并配置混响等耳返音效时，可以在创建录制流时调用OH_AudioStreamBuilder_SetCapturerLoopbackEffectEnabled接口，设置录制流采集受耳返音效影响后的音频数据。该能力适用于需要录制耳返音效处理结果的K歌、直播等场景。
+
+需要在调用OH_AudioStreamBuilder_GenerateCapturer生成录制流前设置该接口，且目标录制流需配置为AUDIOSTREAM_LATENCY_MODE_FAST低时延模式。
+
+OH_AudioStream_Result result = OH_AudioStreamBuilder_SetCapturerLoopbackEffectEnabled != nullptr ?
+    OH_AudioStreamBuilder_SetCapturerLoopbackEffectEnabled(builder, true) :
+    AUDIOSTREAM_ERROR_ILLEGAL_STATE;
+
 [h2]设置静音打断模式
 
 静音打断模式提供将打断策略从停止录音切换为静音录制的功能，可以实现录音全程不被系统基于焦点并发规则打断的效果，并且录音过程中也不影响其他应用启动录音。开发者在创建音频录制构造器时，调用OH_AudioStreamBuilder_SetCapturerWillMuteWhenInterrupted接口设置是否开启静音打断模式。默认不开启，此时由音频焦点策略管理并发音频流的执行顺序。开启后，被其他应用打断导致停止或暂停录制时会进入静音录制状态，在此状态下录制的音频没有声音。
+
+[h2]设置录音流静音提示
+
+从API version 24开始，当应用已在业务侧将某条录音流静音时，可以调用OH_AudioCapturer_SetMuteHint接口将该状态上报给系统音频模块，系统音频模块会基于上报的状态调整策略以降低功耗。注意，此功能当前仅在部分PC/2in1设备上生效。该接口不会实际触发静音，也不会对录音数据做静音处理。它只是告知系统音频模块，应用已将当前录音流进行过静音。应用仍需自行处理录音数据，例如不发送采集数据或发送静音数据。
+
+该接口仅允许在录音流处于运行态时调用，否则会返回AUDIOSTREAM_ERROR_ILLEGAL_STATE。如果同一录音流同时设置了流级静音提示和会话级静音提示OH_AudioSessionManager_SetCaptureMuteHint，流级静音提示优先级更高，以流级设置值为准。当前未提供系统查询接口，如需在界面展示静音提示状态，应用需要自行维护最近一次设置成功的状态。
+
+bool mute = true;
+OH_AudioStream_Result setResult = OH_AudioCapturer_SetMuteHint(audioCapturer, mute);
+if (setResult != AUDIOSTREAM_SUCCESS) {
+    // 根据返回值处理异常，如AUDIOSTREAM_ERROR_ILLEGAL_STATE。
+}
+
+mute = false;
+OH_AudioStream_Result unsetResult = OH_AudioCapturer_SetMuteHint(audioCapturer, mute);
 
 [h2]回声消除功能
 
@@ -350,6 +375,27 @@ OH_AudioStreamBuilder_SetLatencyMode(builder, latencyMode);
 ### Code block 11
 
 ```
+OH_AudioStream_Result result = OH_AudioStreamBuilder_SetCapturerLoopbackEffectEnabled != nullptr ?
+    OH_AudioStreamBuilder_SetCapturerLoopbackEffectEnabled(builder, true) :
+    AUDIOSTREAM_ERROR_ILLEGAL_STATE;
+```
+
+### Code block 12
+
+```
+bool mute = true;
+OH_AudioStream_Result setResult = OH_AudioCapturer_SetMuteHint(audioCapturer, mute);
+if (setResult != AUDIOSTREAM_SUCCESS) {
+    // 根据返回值处理异常，如AUDIOSTREAM_ERROR_ILLEGAL_STATE。
+}
+
+mute = false;
+OH_AudioStream_Result unsetResult = OH_AudioCapturer_SetMuteHint(audioCapturer, mute);
+```
+
+### Code block 13
+
+```
 int32_t MyOnReadData_Legacy(
     OH_AudioCapturer* capturer,
     void* userData,
@@ -378,7 +424,7 @@ int32_t MyOnInterruptEvent_Legacy(
     callbacks.OH_AudioCapturer_OnError = nullptr;
 ```
 
-### Code block 12
+### Code block 14
 
 ```
 int32_t MyOnReadData_Legacy(

@@ -30,6 +30,29 @@ abilityStageCreated：AbilityStage创建完成阶段。开发者配置此阶段�
 
 windowStageCreated：WindowStage创建完成阶段。开发者配置此阶段后，预加载机制会创建空进程并初始化Application，随后触发entry模块AbilityStage的onCreate回调。接着会拉起entry模块的入口UIAbility，并触发其onCreate回调和onWindowStageCreate回调。开发者可以在UIAbility的onCreate回调中，通过launchParam.launchReason的枚举值获取启动原因。枚举值为PRELOAD表示当前UIAbility是由预加载机制启动的。
 
+应用预加载状态识别与判断
+
+从API version 22开始，应用可以在启动过程中识别并判断当前进程的预加载状态。
+
+当应用被预加载后，开发者可以在AbilityStage的onCreate生命周期回调中，通过调用application.getAppPreloadType()获取当前进程的预加载类型（返回值为AppPreloadType）。从而判断本次启动是否由预加载触发，并明确应用当前正处于哪一个预加载阶段。
+
+说明
+
+只有在进程首次执行AbilityStage的onCreate完成之前调用application.getAppPreloadType()接口，才可以返回真实的预加载类型。
+
+AbilityStage创建完成后，应用的预加载数据将被清除，此时调用application.getAppPreloadType()将返回UNSPECIFIED，无法获取到真实的预加载类型。
+
+import { AbilityStage, application } from '@kit.AbilityKit';
+
+export default class MyAbilityStage extends AbilityStage {
+  onCreate() {
+    // 根据appPreloadType的值判断当前进程的预加载类型
+    let appPreloadType = application.getAppPreloadType();
+  }
+}
+
+除了在AbilityStage中判断进程级别的预加载类型外，若应用配置的预加载阶段为windowStageCreated，开发者还可以在UIAbility的onCreate生命周期回调中进行判断。通过校验launchParam.launchReason是否等于PRELOAD，即可识别当前UIAbility实例是否由预加载机制启动。具体实现请参考开发步骤中的步骤3。
+
 开发步骤
 
 声明应用支持预加载到的阶段。
@@ -101,6 +124,19 @@ export default class EntryAbility extends UIAbility {
 ### Code block 1
 
 ```
+import { AbilityStage, application } from '@kit.AbilityKit';
+
+export default class MyAbilityStage extends AbilityStage {
+  onCreate() {
+    // 根据appPreloadType的值判断当前进程的预加载类型
+    let appPreloadType = application.getAppPreloadType();
+  }
+}
+```
+
+### Code block 2
+
+```
 {
   "app": {
     "bundleName": "com.demo.preloadtest",
@@ -114,7 +150,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-### Code block 2
+### Code block 3
 
 ```
 {
@@ -145,7 +181,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-### Code block 3
+### Code block 4
 
 ```
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';

@@ -16,35 +16,25 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 操作步骤
 
+导入相关模块。
+
+import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
 调用StorageBucket.deleteFile删除云侧的文件。
 
 注意
 
 删除操作不可逆，一旦执行，文件会被物理删除，不可找回。
 
-完整示例代码如下：
-
-import { cloudStorage } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
-
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 删除云侧文件
-  deleteFile() {
-    // 删除云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件
-    storageBucket.deleteFile('screenshot/screenshot_20250115_155321.jpg').then(() => {
-      hilog.info(0x0000, 'testTag', `Succeeded in deleting file.`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to delete file, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+bucket.deleteFile(UI.uploadFileName).then(() => {
+  hilog.info(0x0000, 'Storage', `Succeeded in deleting File`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to delete file  code: ${err.code}, message: ${err.message}`);
+});
 
 说明
 
@@ -56,24 +46,18 @@ export struct testPage {
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+```
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+### Code block 2
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 删除云侧文件
-  deleteFile() {
-    // 删除云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件
-    storageBucket.deleteFile('screenshot/screenshot_20250115_155321.jpg').then(() => {
-      hilog.info(0x0000, 'testTag', `Succeeded in deleting file.`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to delete file, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+```
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+bucket.deleteFile(UI.uploadFileName).then(() => {
+  hilog.info(0x0000, 'Storage', `Succeeded in deleting File`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to delete file  code: ${err.code}, message: ${err.message}`);
+});
 ```

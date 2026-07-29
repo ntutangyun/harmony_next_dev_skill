@@ -23,8 +23,8 @@ T	操作数数据类型。
 表2 参数说明
 
 参数名	输入/输出	描述
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020训练系列产品，支持的数据类型为：uint16_t/int16_t。不支持浮点位运算，lv0 逐bit不支持uint8_t/int8_t。 KirinX90训练系列产品，支持的数据类型为：uint16_t/int16_t。不支持浮点位运算，lv0 逐bit不支持uint8_t/int8_t。
-src0Local、src1Local	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 两个源操作数的数据类型需要与目的操作数保持一致。 Kirin9020训练系列产品，支持的数据类型为：uint16_t/int16_t。不支持浮点位运算，lv0 逐bit不支持uint8_t/int8_t KirinX90训练系列产品，支持的数据类型为：uint16_t/int16_t。不支持浮点位运算，lv0 逐bit不支持uint8_t/int8_t
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020训练系列产品，支持的数据类型为：uint16_t、int16_t。不支持浮点位运算，逐bit不支持uint8_t、int8_t。 KirinX90训练系列产品，支持的数据类型为：uint16_t、int16_t。不支持浮点位运算，逐bit不支持uint8_t、int8_t。
+src0Local、src1Local	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 两个源操作数的数据类型需要与目的操作数保持一致。 Kirin9020训练系列产品，支持的数据类型为：uint16_t、int16_t。不支持浮点位运算，逐bit不支持uint8_t、int8_t KirinX90训练系列产品，支持的数据类型为：uint16_t、int16_t。不支持浮点位运算，逐bit不支持uint8_t、int8_t
 calCount	输入	输入数据元素个数。
 
 返回值

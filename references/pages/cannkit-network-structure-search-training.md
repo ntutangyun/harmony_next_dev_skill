@@ -78,7 +78,7 @@ TensorFlow版本中函数名为build_dataset_search，PyTorch版本中函数名�
 
 开发者可配置合适的搜索参数，以达到较优的搜索结果。开发者需自行完成配置文件（可参考"tools_dopt/dopt_tf_py3/demo/nas_ea/ea_cls_imagenet/scen.yaml"），如下示例：
 
-## Network architecture search scenario
+## 网络架构搜索场景
 scenario:
   strategy:
     name:                NASEA
@@ -337,7 +337,7 @@ horovodrun -np 4 -H localhost:4 python3 tensorflow_mnist.py
 ### Code block 4
 
 ```
-## Network architecture search scenario
+## 网络架构搜索场景
 scenario:
   strategy:
     name:                NASEA

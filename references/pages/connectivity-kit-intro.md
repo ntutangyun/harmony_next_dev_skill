@@ -98,6 +98,10 @@ PartnerAgent服务模块
 
 提供了伙伴设备与HarmonyOS设备互通服务，在模块内可以实现互通业务比如媒体控制，电话反控，健康检测等。详情请参考@ohos.FusionConnectivity.partnerAgent文档。
 
+融合测距模块
+
+融合测距模块，提供了星闪HADM测距服务，在模块内可以使用星闪HADM测距的能力。详情请参考@ohos.FusionConnectivity.ranging文档。
+
 [h2]运作机制
 
 Connectivity能力作为系统为应用提供的一种基础通信服务，需要在应用使用场景中打开相应开关/连接等处理，在业务结束时主动结束连接等。

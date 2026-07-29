@@ -27,7 +27,7 @@ import {
 
 @Entry
 @ComponentV2
-struct TestSnackBar {
+struct Index {
   uiContext: UIContext = this.getUIContext();
   hdsSnackBar: HdsSnackBar = new HdsSnackBar(this.uiContext);
   icon: SnackBarIconOptions = {
@@ -89,7 +89,7 @@ import {
 ```
 @Entry
 @ComponentV2
-struct TestSnackBar {
+struct Index {
   uiContext: UIContext = this.getUIContext();
   hdsSnackBar: HdsSnackBar = new HdsSnackBar(this.uiContext);
   icon: SnackBarIconOptions = {

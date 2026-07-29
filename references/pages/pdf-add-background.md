@@ -36,52 +36,54 @@ addBackground方法属于耗时业务，需要遍历每一页去添加背景，�
 
 import { pdfService } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
+ // ...
 @Entry
 @Component
-struct PdfPage {
+struct BackgroundPage {
   private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
   private context = this.getUIContext().getHostContext() as Context;
 
   build() {
     Column() {
-      Button('addBackground').onClick(async () => {
-          // 确保在工程目录src/main/resources/resfile里有input.pdf文档
-        let filePath = this.context.resourceDir + '/input.pdf';
-        let res = this.pdfDocument.loadDocument(filePath);
-        if (res === pdfService.ParseResult.PARSE_SUCCESS) {
-          let bginfo: pdfService.BackgroundInfo = new pdfService.BackgroundInfo();
-          // 确保在工程目录src/main/resources/resfile里有img.jpg文件
-          bginfo.imagePath = this.context.resourceDir + '/img.jpg';
-          bginfo.backgroundColor = 50;
-          bginfo.isOnTop = true;
-          bginfo.rotation = 45;
-          bginfo.scale = 0.5;
-          bginfo.opacity = 0.3;
-          bginfo.verticalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_TOP;
-          bginfo.horizontalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_LEFT;
-          bginfo.horizontalSpace = 1.0;
-          bginfo.verticalSpace = 1.0;
-          this.pdfDocument.addBackground(bginfo, 0, 2, true, true);
-          let outPdfPath = this.context.filesDir + '/testAddBackground.pdf';
-          let result = this.pdfDocument.saveDocument(outPdfPath);
-          hilog.info(0x0000, 'PdfPage', 'addBackground %{public}s!', result ? 'success' : 'fail');
-        }
-        this.pdfDocument.releaseDocument();
-      })
-      Button('removeBackground').onClick(async () => {
-        let filePath = this.context.filesDir + '/testAddBackground.pdf';
-        let res = this.pdfDocument.loadDocument(filePath);
-        if (res === pdfService.ParseResult.PARSE_SUCCESS && this.pdfDocument.hasBackground()) {
-          let removeResult = this.pdfDocument.removeBackground();
-          if (removeResult) {
-            let outPdfPath = this.context.filesDir + '/removeBackground.pdf';
+     // ...
+        Button('addBackground').onClick(async () => {
+            // 确保在工程目录src/main/resources/resfile里有input.pdf文档
+          let filePath = this.context.resourceDir + '/input.pdf';
+          let res = this.pdfDocument.loadDocument(filePath);
+          if (res === pdfService.ParseResult.PARSE_SUCCESS) {
+            let bginfo: pdfService.BackgroundInfo = new pdfService.BackgroundInfo();
+            // 确保在工程目录src/main/resources/resfile里有img.jpg文件
+            bginfo.imagePath = this.context.resourceDir + '/img.jpg';
+            bginfo.backgroundColor = 50;
+            bginfo.isOnTop = true;
+            bginfo.rotation = 45;
+            bginfo.scale = 0.5;
+            bginfo.opacity = 0.3;
+            bginfo.verticalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_TOP;
+            bginfo.horizontalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_LEFT;
+            bginfo.horizontalSpace = 1.0;
+            bginfo.verticalSpace = 1.0;
+            this.pdfDocument.addBackground(bginfo, 0, 2, true, true);
+            let outPdfPath = this.context.filesDir + '/testAddBackground.pdf';
             let result = this.pdfDocument.saveDocument(outPdfPath);
-            hilog.info(0x0000, 'PdfPage', 'removeBackground %{public}s!', result ? 'success' : 'fail');
+            hilog.info(0x0000, 'BackgroundPage', 'addBackground %{public}s!', result ? 'success' : 'fail');
           }
-        }
-        this.pdfDocument.releaseDocument();
-      })
+          this.pdfDocument.releaseDocument();
+        })
+        Button('removeBackground').onClick(async () => {
+          let filePath = this.context.filesDir + '/testAddBackground.pdf';
+          let res = this.pdfDocument.loadDocument(filePath);
+          if (res === pdfService.ParseResult.PARSE_SUCCESS && this.pdfDocument.hasBackground()) {
+            let removeResult = this.pdfDocument.removeBackground();
+            if (removeResult) {
+              let outPdfPath = this.context.filesDir + '/removeBackground.pdf';
+              let result = this.pdfDocument.saveDocument(outPdfPath);
+              hilog.info(0x0000, 'BackgroundPage', 'removeBackground %{public}s!', result ? 'success' : 'fail');
+            }
+          }
+          this.pdfDocument.releaseDocument();
+        })
+           // ...
     }
   }
 }
@@ -93,52 +95,54 @@ struct PdfPage {
 ```
 import { pdfService } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
+ // ...
 @Entry
 @Component
-struct PdfPage {
+struct BackgroundPage {
   private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
   private context = this.getUIContext().getHostContext() as Context;
 
   build() {
     Column() {
-      Button('addBackground').onClick(async () => {
-          // 确保在工程目录src/main/resources/resfile里有input.pdf文档
-        let filePath = this.context.resourceDir + '/input.pdf';
-        let res = this.pdfDocument.loadDocument(filePath);
-        if (res === pdfService.ParseResult.PARSE_SUCCESS) {
-          let bginfo: pdfService.BackgroundInfo = new pdfService.BackgroundInfo();
-          // 确保在工程目录src/main/resources/resfile里有img.jpg文件
-          bginfo.imagePath = this.context.resourceDir + '/img.jpg';
-          bginfo.backgroundColor = 50;
-          bginfo.isOnTop = true;
-          bginfo.rotation = 45;
-          bginfo.scale = 0.5;
-          bginfo.opacity = 0.3;
-          bginfo.verticalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_TOP;
-          bginfo.horizontalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_LEFT;
-          bginfo.horizontalSpace = 1.0;
-          bginfo.verticalSpace = 1.0;
-          this.pdfDocument.addBackground(bginfo, 0, 2, true, true);
-          let outPdfPath = this.context.filesDir + '/testAddBackground.pdf';
-          let result = this.pdfDocument.saveDocument(outPdfPath);
-          hilog.info(0x0000, 'PdfPage', 'addBackground %{public}s!', result ? 'success' : 'fail');
-        }
-        this.pdfDocument.releaseDocument();
-      })
-      Button('removeBackground').onClick(async () => {
-        let filePath = this.context.filesDir + '/testAddBackground.pdf';
-        let res = this.pdfDocument.loadDocument(filePath);
-        if (res === pdfService.ParseResult.PARSE_SUCCESS && this.pdfDocument.hasBackground()) {
-          let removeResult = this.pdfDocument.removeBackground();
-          if (removeResult) {
-            let outPdfPath = this.context.filesDir + '/removeBackground.pdf';
+     // ...
+        Button('addBackground').onClick(async () => {
+            // 确保在工程目录src/main/resources/resfile里有input.pdf文档
+          let filePath = this.context.resourceDir + '/input.pdf';
+          let res = this.pdfDocument.loadDocument(filePath);
+          if (res === pdfService.ParseResult.PARSE_SUCCESS) {
+            let bginfo: pdfService.BackgroundInfo = new pdfService.BackgroundInfo();
+            // 确保在工程目录src/main/resources/resfile里有img.jpg文件
+            bginfo.imagePath = this.context.resourceDir + '/img.jpg';
+            bginfo.backgroundColor = 50;
+            bginfo.isOnTop = true;
+            bginfo.rotation = 45;
+            bginfo.scale = 0.5;
+            bginfo.opacity = 0.3;
+            bginfo.verticalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_TOP;
+            bginfo.horizontalAlignment = pdfService.BackgroundAlignment.BACKGROUND_ALIGNMENT_LEFT;
+            bginfo.horizontalSpace = 1.0;
+            bginfo.verticalSpace = 1.0;
+            this.pdfDocument.addBackground(bginfo, 0, 2, true, true);
+            let outPdfPath = this.context.filesDir + '/testAddBackground.pdf';
             let result = this.pdfDocument.saveDocument(outPdfPath);
-            hilog.info(0x0000, 'PdfPage', 'removeBackground %{public}s!', result ? 'success' : 'fail');
+            hilog.info(0x0000, 'BackgroundPage', 'addBackground %{public}s!', result ? 'success' : 'fail');
           }
-        }
-        this.pdfDocument.releaseDocument();
-      })
+          this.pdfDocument.releaseDocument();
+        })
+        Button('removeBackground').onClick(async () => {
+          let filePath = this.context.filesDir + '/testAddBackground.pdf';
+          let res = this.pdfDocument.loadDocument(filePath);
+          if (res === pdfService.ParseResult.PARSE_SUCCESS && this.pdfDocument.hasBackground()) {
+            let removeResult = this.pdfDocument.removeBackground();
+            if (removeResult) {
+              let outPdfPath = this.context.filesDir + '/removeBackground.pdf';
+              let result = this.pdfDocument.saveDocument(outPdfPath);
+              hilog.info(0x0000, 'BackgroundPage', 'removeBackground %{public}s!', result ? 'success' : 'fail');
+            }
+          }
+          this.pdfDocument.releaseDocument();
+        })
+           // ...
     }
   }
 }

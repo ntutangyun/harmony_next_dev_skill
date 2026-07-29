@@ -39,15 +39,15 @@ template <typename T>
 表1 模板参数说明
 
 参数名	描述
-T	操作数数据类型。 Kirin9020系列处理器 KirinX90系列处理器
+T	操作数数据类型。
 
 表2 参数列表
 
 参数名称	输入/输出	含义
-dstLocalList/dstList	输出	目的操作数地址序列。 类型为LocalTensor或者LocalTensor的地址值，LocalTensor支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32B对齐。支持的数据类型参考表1。
-srcLocalList/srcList	输入	源操作数地址序列。 类型为LocalTensor或者LocalTensor的地址值，LocalTensor支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32B对齐。支持的数据类型参考表1。 数据类型需要与dstLocalList/dstList保持一致。
-dstLocal	输出	目的操作数。 类型为LocalTensor，连续存储对应LocalTensor的地址值。LocalTensor支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32B对齐。
-srcLocal	输入	源操作数。 类型为LocalTensor，连续存储对应LocalTensor的地址值。LocalTensor支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32B对齐。
+dstLocalList/dstList	输出	目的操作数地址序列。 类型为LocalTensor或者LocalTensor的地址值，LocalTensor支持的TPosition为VECIN、VECCALC、VECOUT。LocalTensor的起始地址需要32B对齐。支持的数据类型参考表1。
+srcLocalList/srcList	输入	源操作数地址序列。 类型为LocalTensor或者LocalTensor的地址值，LocalTensor支持的TPosition为VECIN、VECCALC、VECOUT。LocalTensor的起始地址需要32B对齐。支持的数据类型参考表1。 数据类型需要与dstLocalList/dstList保持一致。
+dstLocal	输出	目的操作数。 类型为LocalTensor，连续存储对应LocalTensor的地址值。LocalTensor支持的TPosition为VECIN、VECCALC、VECOUT。LocalTensor的起始地址需要32B对齐。
+srcLocal	输入	源操作数。 类型为LocalTensor，连续存储对应LocalTensor的地址值。LocalTensor支持的TPosition为VECIN、VECCALC、VECOUT。LocalTensor的起始地址需要32B对齐。
 nchwconvParams	输入	控制TransDataTo5HD的数据结构。结构体内包含：读取和写入位置的控制参数，迭代次数，相邻迭代间的地址步长等参数。该数据结构的定义请参考表3。
 
 表3 TransDataTo5HDParams结构体内参数说明

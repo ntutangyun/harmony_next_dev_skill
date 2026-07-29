@@ -20,36 +20,42 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 删除数据
 
-代码示例：
+导入相关模块。
 
-将对象删除，如果删除成功，返回删除对象的个数；执行失败，抛出异常。
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-// 假设图书遗失，图书管理员需要将遗失的书籍从BookInfo表中删除
-async delete() {
-  try {
-    let book = new BookInfo();
-    book.id = 3;
-    let deleteNum = await databaseZone.delete(book);
-    hilog.info(0x0000, 'testTag', `Succeeded in deleting data, result: ${JSON.stringify(deleteNum)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to delete data, code: ${err.code}, message: ${err.message}`);
-  }
-}
+将对象删除，如果删除成功，返回删除对象的个数；如果执行失败，抛出异常。
+
+let book = new BookInfo();
+book.id = 11;
+databaseZone.delete(book).then((deleteNum: number) => {
+  hilog.info(0x0000, 'cloudDb', `Succeeded in deleting: ${deleteNum}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to delete, code: ${err.code}, message: ${err.message}`);
+});
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-// 假设图书遗失，图书管理员需要将遗失的书籍从BookInfo表中删除
-async delete() {
-  try {
-    let book = new BookInfo();
-    book.id = 3;
-    let deleteNum = await databaseZone.delete(book);
-    hilog.info(0x0000, 'testTag', `Succeeded in deleting data, result: ${JSON.stringify(deleteNum)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to delete data, code: ${err.code}, message: ${err.message}`);
-  }
-}
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+let book = new BookInfo();
+book.id = 11;
+databaseZone.delete(book).then((deleteNum: number) => {
+  hilog.info(0x0000, 'cloudDb', `Succeeded in deleting: ${deleteNum}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to delete, code: ${err.code}, message: ${err.message}`);
+});
 ```

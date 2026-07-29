@@ -10,6 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 
 一级事件类型	二级事件类型	三级事件类型
 用户管理	新增用户	-
+	
 删除用户	-
 修改用户角色	-
 重置用户密码	-
@@ -17,6 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 删除仓库
 更新代码仓
 上架资源包
+
 下架资源包
 批量下架资源包
 uplink	更新Uplink代理

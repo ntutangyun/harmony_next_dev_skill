@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sen
 
 约束限制
 
-"use shared"需要与"use strict"一样写在ArkTS文件顶层，写在import语句之后其他语句之前。
+"use shared"需要写在ArkTS文件顶层，即写在import语句之后其他语句之前。
 
 共享属性不具备传递性。非共享模块A即使引入了共享模块B，也不会因此变成共享模块。
 
@@ -44,7 +44,7 @@ export let str = 'aaa';
 // 共享模块
 'use shared'
 export * from './test'; // 编译报错
-export {num, str} from './test'; // 产生运行时报错
+export {num, str} from './test'; // 可能导致运行时的未知异常
 
 共享模块可以引用其他共享模块或非共享模块，引用和被引用场景没有限制。
 
@@ -203,7 +203,7 @@ export let str = 'aaa';
 // 共享模块
 'use shared'
 export * from './test'; // 编译报错
-export {num, str} from './test'; // 产生运行时报错
+export {num, str} from './test'; // 可能导致运行时的未知异常
 ```
 
 ### Code block 5

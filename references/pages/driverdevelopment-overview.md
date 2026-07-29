@@ -75,6 +75,8 @@ C-API	ScsiPeripheralDDK	ohos.permission.ACCESS_DDK_SCSI_PERIPHERAL
 
 本Kit不支持模拟器。
 
+针对 DriverExtensionAbility接口调用限制，详细请参考 API 中的约束限制。
+
 关联模块
 
 在扩展外设驱动开发过程中，需要使用到其他关联模块的部分能力，来协助驱动开发。
@@ -111,9 +113,9 @@ ExtensionAbility是基于场景服务的扩展能力的统称，简称为扩展�
 
 系统支持基于ExtensionAbility构建场景化扩展Ability，DriverExtensionAbility为支持开发用户态扩展驱动的一类Ability。
 
-在DriverExtensionAbility中仅支持访问DDK（docs/zh-cn/application-dev/reference/apis-driverdevelopment-kit · HarmonyOS/docs - AtomGit | GitCode）API，实现对非标外设进行访问控制和数据通信。
+在DriverExtensionAbility中仅支持访问DDK（Driver Development Kit）API，实现对非标外设进行访问控制和数据通信。
 
-基于驱动开发安全约束及驱动开发业务场景，在DriverExtensionAbility中不支持访问其它ArkTS API，以防止恶意行为和数据泄漏。
+基于驱动开发安全约束及驱动开发业务场景，在DriverExtensionAbility中不支持访问其它ArkTS API，以防止恶意行为和数据泄露。
 
 ArkTS API受限原理：在初始化和创建Extension进程时，会根据Extension配置的受限访问ArkTS API名单加载系统模块。在运行时，如果在DriverExtensionAbility中调用受限ArkTS API，由于初始化和创建阶段未加载相应系统模块，API会调用失败。
 

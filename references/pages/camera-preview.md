@@ -2,356 +2,1106 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-preview_
 
-在开发相机应用时，需要先申请相关权限。
+概述
 
-预览是启动相机后看见的画面，通常在拍照和录像前执行。
+在移动设备普及的今天，相机已成为人们生活中不可或缺的工具。在移动端开发中，自定义相机具有极高的实用价值，开发者能够根据不同的应用场景和用户需求，定制独特的拍摄功能与交互体验。
 
-开发步骤
+如果开发者仅需调用系统相机拍摄照片或录制视频，可直接使用CameraPicker。但构建高度自定义的相机应用或实现对相机数据流进行实时分析等复杂功能时，则需要使用Camera Kit（相机服务）访问和操作相机硬件来实现。
 
-详细的API说明请参考@ohos.multimedia.camera (相机管理)。
+相机预览是相机镜头采集画面的实时展示，为后续的拍照、录像等操作提供基础。本文将对实现基础预览、预览画面的调整（如镜头切换、设置闪光灯、调焦、对焦等）、预览进阶功能（网格线、水平仪等）、获取预览帧数据四个章节进行讲解，提供自定义相机预览部分由基础到进阶的开发实践。
 
-导入camera接口，接口中提供了相机相关的属性和方法，导入方法如下。
+实现基础预览
 
-import { camera } from '@kit.CameraKit';
-import { BusinessError } from '@kit.BasicServicesKit';
+[h2]场景描述
+
+基础预览是自定义相机核心的功能，用户打开相机应用后，首先看到的就是实时的预览画面，该功能为画面调整、拍摄等操作提供基础。
+
+[h2]实现原理
+
+关键技术
+
+Surface：图像数据缓冲区的抽象概念。
+
+XComponent：用于满足开发者较为复杂的自定义渲染需求的渲染组件。为相机提供Surface，相机将预览流数据写入Surface，XComponent从Surface读取数据并显示。
+
+Camera Kit：用于相机设备管理，相机输出流管理以及相机会话管理。相机会话用于配置输入流和输出流，以及设置闪光灯、焦距等参数。
+
+开发流程
+
+申请权限。
+
+获取相机设备，创建并启动相机输入流。
+
+使用XComponent创建Surface，并获取surfaceId。
+
+创建预览输出流。
+
+配置相机会话Session并启动。
+
+[h2]开发步骤
+
+在使用相机相关功能前，需要申请ohos.permission.CAMERA相机权限。申请权限分为以下两步。
+
+在module.json5中配置该权限，更多相机权限参考相机开发准备。
+
+"requestPermissions": [
+  {
+    "name": "ohos.permission.CAMERA",
+    "reason": "$string:permission_CAMERA",
+    "usedScene": {
+      "abilities": [
+        "EntryAbility"
+      ]
+    }
+  },
+  // ...
+]
+
+使用AtManager.requestPermissionsFromUser()方法拉起弹窗请求用户授权，若用户拒绝则使用requestPermissionOnSetting()方法拉起权限设置弹窗，二次向用户申请授权。具体授权逻辑可根据业务自行调整，可参考应用权限申请。
+
+class PermissionManager {
+  private static atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+
+  static async request(permissions: Permissions[], context: Context): Promise<void> {
+    try {
+      const data = await PermissionManager.atManager.requestPermissionsFromUser(context, permissions);
+      const grantStatus: number[] = data.authResults;
+      const deniedPermissions = permissions.filter((_, i) => grantStatus[i] !== 0);
+      for (const permission of deniedPermissions) {
+        const secondGrantStatus = await PermissionManager.atManager.requestPermissionOnSetting(context, [permission]);
+        if (secondGrantStatus[0] !== 0) {
+          Logger.error(TAG, 'permission denied');
+          throw new Error('permission denied');
+        }
+      }
+    } catch (exception) {
+      Logger.error(TAG, `request failed, code is ${exception.code}, message is ${exception.message}`);
+      throw new Error('permission failed');
+    }
+  }
+}
+
+获取相机设备，创建并启动相机输入流。
+
+使用camera.getCameraManager()方法获取cameraManager实例。
+
+this.cameraManager = camera.getCameraManager(context);
+
+使用camera.getSupportedCameras()方法获取相机设备列表。通过camera.CameraPosition类型获取对应的相机设备。CAMERA_POSITION_BACK表示后置镜头，CAMERA_POSITION_FRONT表示前置镜头。
+
+getCameraDevice(cameraPosition: camera.CameraPosition): camera.CameraDevice | undefined {
+  const cameraDevices = this.cameraManager?.getSupportedCameras();
+  if (!cameraDevices) {
+    Logger.error(TAG, `Failed to get camera device. cameraPosition: ${cameraPosition}}`);
+    return undefined;
+  }
+  const device = cameraDevices?.find(device => device.cameraPosition === cameraPosition) || cameraDevices[0];
+  if (!device) {
+    Logger.error(TAG, `Failed to get camera device. cameraPosition: ${cameraPosition}}`);
+  }
+  return device;
+}
+
+使用camera.createCameraInput()方法创建该相机设备的输入流并打开相机。
+
+this.cameraInput = this.cameraManager?.createCameraInput(device);
+await this.cameraInput?.open();
 
 创建Surface。
 
-相机开发模型为Surface模型，该模型主要通过Surface实现数据交互。在开发相机应用界面时，首先需要通过创建XComponent组件为预览流提供Surface，再通过获取XComponent组件对应Surface的ID创建预览流，预览流画面即可直接在XComponent组件内渲染，详细获取surfaceId请参考getXComponentSurfaceId方法。而XComponent的能力由UI提供，相关介绍可参考XComponent组件参考。
+使用XComponent组件渲染预览画面。指定其type属性为SURFACE。
+
+使用getXComponentSurfaceId()方法获取surfaceId。
+
+使用setXComponentSurfaceRect()方法设置surface的宽高属性为预览画面显示区域的宽高。
+
+使用setXComponentSurfaceRotation()方法锁定surface在屏幕旋转时的方向。
 
 说明
 
-预览流与录像输出流的分辨率的宽高比要保持一致，如果设置XComponent组件中的Surface显示区域宽高比为1920:1080 = 16:9，则需要预览流中的分辨率的宽高比也为16:9，如分辨率选择640:360，或960:540，或1920:1080，以此类推。
+未设置surface宽高时其取值为XComponent组件宽高。建议显式设置surface宽高而不是依赖XComponent宽高，防止surface宽高不对导致画面畸变。
 
-@Entry
-@Component
-struct example {
-  xComponentCtl: XComponentController = new XComponentController();
-  surfaceId:string = '';
-  imageWidth: number = 1920;
-  imageHeight: number = 1080;
-  private uiContext: UIContext = this.getUIContext();
-  private mXComponentOptions: XComponentOptions = {
-    type: XComponentType.SURFACE,
-    controller: this.xComponentCtl
+XComponent({
+  type: XComponentType.SURFACE,
+  controller: this.previewVM.xComponentController
+})
+  .onLoad(async () => {
+    // ...
+    this.previewVM.surfaceId = this.previewVM.xComponentController.getXComponentSurfaceId();
+    this.previewVM.setPreviewSize();
+    this.previewVM.xComponentController.setXComponentSurfaceRotation({ lock: true });
+    // ...
+  })
+
+setPreviewSize(): void {
+  const displaySize: Size = WindowUtil.getMaxDisplaySize(this.getPreviewRatio());
+  this.previewSize = displaySize;
+  this.xComponentController.setXComponentSurfaceRect({
+    surfaceWidth: displaySize.width,
+    surfaceHeight: displaySize.height
+  });
+}
+
+创建预览输出流。
+
+选择对应的camera.SceneMode。拍照模式下的预览选择SceneMode.NORMAL_PHOTO，录像模式下的预览选择SceneMode.NORMAL_VIDEO。
+
+根据camera.SceneMode获取相机设备的输出能力。
+
+在输出能力CameraOutputCapability类的previewProfiles属性中查找所需规格的预览输出能力previewProfile。在profile的选择上需要注意以下两点：
+
+分辨率选择。所选择分辨率要保证宽高比与surface的宽高比一致，避免画面产生畸变。同时根据业务需求和设备性能选择合适的分辨率大小，过小可能导致画面模糊，过大可能导致资源浪费，功耗和内存过高等风险。
+
+format格式选择。开发者在选择format格式时需要与后续处理相机buffer数据的像素格式保持一致，避免画面产生异常。
+
+使用CameraManager.createPreviewOutput()方法创建预览输出流。
+
+async createOutput(config: CreateOutputConfig): Promise<camera.PreviewOutput | undefined> {
+  const cameraOutputCap = config.cameraManager?.getSupportedOutputCapability(config.device, config.sceneMode);
+  const displayRatio = config.profile.size.width / config.profile.size.height;
+  const profileWidth = config.profile.size.width;
+  const previewProfile = cameraOutputCap?.previewProfiles
+    .sort((a, b) => Math.abs(a.size.width - profileWidth) - Math.abs(b.size.width - profileWidth))
+    .find(pf => {
+      const pfDisplayRatio = pf.size.width / pf.size.height;
+      return pf.format === config.profile.format &&
+        Math.abs(pfDisplayRatio - displayRatio) <= CameraConstant.PROFILE_DIFFERENCE;
+    });
+  if (!previewProfile) {
+    Logger.error(TAG_LOG, 'Failed to get preview profile');
+    return undefined;
   }
+  try {
+    this.output = config.cameraManager?.createPreviewOutput(previewProfile, config.surfaceId);
+    if (this.output) {
+      this.addOutputListener(this.output);
+    }
+  } catch (exception) {
+    Logger.error(TAG_LOG, `createPreviewOutput failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  return this.output;
+}
 
-  build() {
-    XComponent(this.mXComponentOptions)
-      .onLoad(async () => {
-        console.info('onLoad is called');
-        this.surfaceId = this.xComponentCtl.getXComponentSurfaceId(); // 获取组件surfaceId。
-        // 使用surfaceId创建预览流，开启相机，组件实时渲染每帧预览流数据。
+说明
+
+以直板机后置相机为例，在设备自然方向下，相机的后置镜头安装角度为90度（不同设备的相机安装角度可通过CameraDevice.cameraOrientation获取），屏幕旋转角度为0度。所以输出能力profile中的宽高与预览显示区域或surface的宽高比例是倒置的。例如在显示区域宽高为1080*1920，所需查找profile的宽高为1920*1080。横屏显示方向下，profile宽高与预览显示区域或surface的宽高比例保持一致。
+
+public getProfile: (cameraOrientation: number) => camera.Profile = cameraOrientation => {
+  const displaySize: Size = WindowUtil.getMaxDisplaySize(this.getPreviewRatio());
+  let displayDefault: display.Display | null = null;
+  try {
+    displayDefault = display.getDefaultDisplaySync();
+  } catch (exception) {
+    Logger.error(TAG, `getDefaultDisplaySync failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  const displayRotation = (displayDefault?.rotation ?? 0) * 90;
+  const isRevert = (cameraOrientation + displayRotation) % 180 !== 0;
+  return {
+    format: camera.CameraFormat.CAMERA_FORMAT_YUV_420_SP,
+    size: {
+      height: isRevert ? displaySize.width : displaySize.height,
+      width: isRevert ? displaySize.height : displaySize.width
+    }
+  };
+};
+
+配置并启动相机会话。
+
+使用CameraManager.createSession()方法创建相机会话Session。
+
+使用Session.beginConfig()方法开始相机会话配置。
+
+使用Session.addInput()方法和Session.addOutput()方法分别将相机的输入流和预览输出流配置到相机会话中。
+
+使用Session.commitConfig()方法提交相机会话配置信息。
+
+使用Session.start()方法启动相机会话。
+
+const session = this.cameraManager?.createSession(sceneMode);
+session?.beginConfig();
+session?.addInput(this.cameraInput);
+// ...
+for (const outputManager of this.outputManagers) {
+  if (outputManager.isActive) {
+    const output = await outputManager.createOutput(config);
+    session?.addOutput(output);
+  }
+}
+await session?.commitConfig();
+if (sceneMode === camera.SceneMode.NORMAL_VIDEO && session) {
+  this.setVideoStabilizationMode(isStabilizationEnabled, session as camera.VideoSession);
+}
+await session?.start();
+
+export interface OutputManager {
+  output?: camera.CameraOutput;
+  isActive: boolean;
+  createOutput: (config: CreateOutputConfig) => Promise<camera.CameraOutput | undefined>;
+  release: () => Promise<void>;
+}
+
+释放资源，注意释放的顺序。
+
+使用CameraOutput.release()方法释放预览输出流。
+
+async release(): Promise<void> {
+  try {
+    await this.output?.release();
+  } catch (exception) {
+    Logger.error(TAG_LOG, `release failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  this.output = undefined;
+}
+
+使用CameraInput.close()方法关闭相机，使用Session.release()方法释放相机会话资源。
+
+async release(): Promise<void> {
+  try {
+    await this.session?.stop();
+    for (const outputManager of this.outputManagers) {
+      if (outputManager.isActive) {
+        await outputManager.release();
+      }
+    }
+    await this.cameraInput?.close();
+    await this.session?.release();
+  } catch (exception) {
+    Logger.error(TAG, `release failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+}
+
+监听预览流状态。
+
+注册frameStart预览帧启动和frameEnd预览帧结束的事件，在事件回调中做对应的业务处理。
+
+addFrameStartEventListener(output: camera.PreviewOutput): void {
+  output.on('frameStart', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      Logger.error(TAG_LOG, `FrameStart callback Error, errorMessage: ${err.message}`);
+      return;
+    }
+    Logger.info(TAG_LOG, 'Preview frame started');
+    this.onPreviewStart();
+  });
+}
+
+addFrameEndEventListener(output: camera.PreviewOutput): void {
+  output.on('frameEnd', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      Logger.error(TAG_LOG, `frameEnd callback Error, errorMessage: ${err.message}`);
+      return;
+    }
+    Logger.info(TAG_LOG, 'Preview frame end');
+  });
+}
+
+预览画面调整
+
+在基础预览功能之上，自定义相机通常需要具备调整预览画面的能力，包括前后置镜头的切换、调焦、对焦、切换闪光灯模式等核心功能。
+
+[h2]切换前后置镜头
+
+预览页面中用isFront属性标识前置还是后置镜头，根据isFront获取camera.CameraPosition的值。关于折叠屏CameraPosition的选择可参考相机硬件差异。
+
+public isFront: boolean = false;
+// ...
+getCameraPosition(): camera.CameraPosition {
+  return this.isFront
+    ? camera.CameraPosition.CAMERA_POSITION_FRONT
+    : camera.CameraPosition.CAMERA_POSITION_BACK;
+}
+
+给切换镜头按钮绑定点击事件，在回调函数中先切换isFront属性的状态，获取新的CameraPosition，释放掉输入输出流等相机资源，再重新创建新镜头的输入输出流，并启动相机。参考实现基础预览开发步骤中的2、4、5步骤。
+
+说明
+
+在本示例中，相机和基础预览的启动流程封装在自定义的CameraManager类的start()方法中，相机资源及输入输出流的释放封装在release()方法中。
+
+@Builder
+toggleCameraPositionButton() {
+  Image($r('app.media.toggle_position'))
+    .width(48)
+    .height(48)
+    .onClick(async () => {
+      // ...
+      this.previewVM.isFront = !this.previewVM.isFront;
+      await this.previewVM.cameraManagerRelease();
+      await this.previewVM.cameraManagerStart();
+      // ...
+    })
+}
+
+实现前后置切换转场动效可参考相机基础动效。
+
+[h2]设置相机焦距
+
+使用getZoomRatioRange()方法获取当前相机设备支持设置的焦距范围，根据业务需求在页面上生成相应焦距的按钮。
+
+getZoomRange(): number[] {
+  try {
+    return this.session!.getZoomRatioRange();
+  } catch (exception) {
+    Logger.error(TAG, `getZoomRange failed, code is ${exception.code}, message is ${exception.message}`);
+    return [];
+  }
+}
+
+在点击焦距按钮事件的回调函数中使用setSmoothZoom()方法平滑变焦到按钮对应的焦距。
+
+setSmoothZoom(zoom: number): void {
+  try {
+    this.session?.setSmoothZoom(zoom);
+  } catch (e) {
+    Logger.error(TAG, 'setSmoothZoom error ' + JSON.stringify(e));
+  }
+}
+
+[h2]设置闪光灯
+
+使用setFlashMode()方法设置闪光灯模式，在设置前需使用isFlashModeSupported()方法检测设备是否支持设置所选闪光灯模式。
+
+setFlashMode(flashMode: camera.FlashMode): void {
+  try {
+    const isSupported = this.session?.isFlashModeSupported(flashMode);
+    if (!isSupported) {
+      Logger.error(TAG, `setFlashMode error: flash mode ${flashMode} is not supported`);
+      return;
+    }
+    this.session?.setFlashMode(flashMode);
+  } catch (e) {
+    Logger.error(TAG, 'setFlashMode error ' + JSON.stringify(e));
+  }
+}
+
+[h2]实现点击对焦
+
+点击预览区域，以点击处为焦点进行对焦，并显示对焦框。
+
+设置焦点camera.Point的坐标是以充电口在右侧时横向设备方向为基准，该坐标系左上角为{ 0，0 }，右下角为{ 1，1 }。
+
+设备自然方向上，触碰获取的坐标是以充电口在下方时的竖向方向为基准，因此需要进行坐标系的转换。
+
+设触碰点为{ x, y }，预览区域宽高为{ w, h }。
+
+屏幕旋转角度为0：由下图可知，在焦点所处相机画面坐标系中，触碰点距原点在x轴方向的距离为y，在y轴方向的距离为w - x。由于该坐标系为0-1坐标系，所以实际焦点坐标为{ y / h, (w - x) / w }，即{ y / h, 1 - x / w }。
+
+同理，其他屏幕旋转方向上焦点坐标同可以计算出：
+
+屏幕旋转角度为90：焦点坐标为{ 1 - x / w, 1 - y / h }。
+
+屏幕旋转角度为180：焦点坐标为{ 1 - y / h, x / w }。
+
+屏幕旋转角度为270：焦点坐标为{ x / w, y / h }。
+
+export function calCameraPoint(eventX: number, eventY: number, width: number, height: number): camera.Point {
+  let displayDefault: display.Display | null = null;
+  try {
+    displayDefault = display.getDefaultDisplaySync();
+  } catch (exception) {
+    Logger.error('calCameraPoint', `calCameraPoint failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  const displayRotation = (displayDefault?.rotation ?? 0) * 90;
+  if (displayRotation === 0) {
+    return { x: eventY / height, y: 1 - eventX / width };
+  }
+  if (displayRotation === 90) {
+    return { x: 1 - eventX / width, y: 1 - eventY / height };
+  }
+  if (displayRotation === 180) {
+    return { x: 1 - eventY / height, y: eventX / width };
+  }
+  return { x: eventX / width, y: eventY / height };
+}
+
+在相机会话启动后，使用setFocusMode()方法设置对焦模式为FOCUS_MODE_CONTINUOUS_AUTO，当点击预览画面对焦时，设置对焦模式为FOCUS_MODE_AUTO，以支持对焦点设置。在设置前需检测相机是否支持该对焦模式。手动对焦结束后将对焦模式切换为FOCUS_MODE_CONTINUOUS_AUTO，以获得更好的对焦体验。
+
+setFocusMode(focusMode: camera.FocusMode): void {
+  try {
+    const isSupported = this.session?.isFocusModeSupported(focusMode);
+    if (!isSupported) {
+      Logger.error(TAG, `setFocusMode error: focus mode ${focusMode} is not supported`);
+      return;
+    }
+    this.session?.setFocusMode(focusMode);
+  } catch (e) {
+    Logger.error(TAG, 'setFocusMode error ' + JSON.stringify(e));
+  }
+}
+
+使用setFoucusPoint()方法实现点击对焦。
+
+setFocusPoint(point: camera.Point): void {
+  try {
+    this.session?.setFocusPoint(point);
+  } catch (e) {
+    Logger.error(TAG, 'setFocusPoint error ' + JSON.stringify(e));
+  }
+}
+
+根据预览区域宽高、对焦框宽高以及触碰点的坐标计算对焦框相对预览区域的位置，注意不要超出预览区域的边界。
+
+export function getClampedChildPosition(childSize: Size, parentSize: Size, point: Point): Edges {
+  let left = point.x - childSize.width / 2;
+  let top = point.y - childSize.height / 2;
+  if (left < 0) {
+    left = 0;
+  }
+  if (left + childSize.width > parentSize.width) {
+    left = parentSize.width - childSize.width;
+  }
+  if (top < 0) {
+    top = 0;
+  }
+  if (top + childSize.height > parentSize.height) {
+    top = parentSize.height - childSize.height;
+  }
+  return { left, top };
+}
+
+[h2]设置曝光区域中心点
+
+点击预览区域，设置点击处为曝光中心点。
+
+在相机会话启动后，使用setExposureMode()方法设置曝光模式为EXPOSURE_MODE_CONTINUOUS_AUTO，当点击预览画面时，设置曝光模式为EXPOSURE_MODE_AUTO，以支持曝光区域中心点设置。在设置前需检测相机是否支持该曝光模式。手动设置结束后将曝光模式切换为EXPOSURE_MODE_CONTINUOUS_AUTO，以获得更好的曝光体验。
+
+setExposureMode(exposureMode: camera.ExposureMode): void {
+  try {
+    const isSupported = this.session?.isExposureModeSupported(exposureMode);
+    if (!isSupported) {
+      Logger.error(TAG, `setExposureMode error: focus mode ${exposureMode} is not supported`);
+      return;
+    }
+    this.session?.setExposureMode(exposureMode);
+  } catch (e) {
+    Logger.error(TAG, 'setExposureMode error ' + JSON.stringify(e));
+  }
+}
+
+点击屏幕预览区域，使用setMeteringPoint()方法设置曝光区域中心点。屏幕布局坐标和相机坐标之间的转换逻辑详见实现点击对焦小节。
+
+setMeteringPoint(point: camera.Point): void {
+  try {
+    this.session?.setMeteringPoint(point);
+  } catch (e) {
+    Logger.error(TAG, 'setMeteringPoint error ' + JSON.stringify(e));
+  }
+}
+
+[h2]设置预览帧率
+
+使用PreviewOutput.getSupportedFrameRates()方法获取预览流支持的帧率范围。
+
+getSupportedFrameRates(): camera.FrameRateRange[] | undefined {
+  return this.output?.getSupportedFrameRates();
+}
+
+在帧率切换按钮点击事件的回调函数中，使用PreviewOutput.setFrameRate()方法对预览帧率进行动态调整。
+
+setFrameRate(minFps: number, maxFps: number): void {
+  try {
+    this.output?.setFrameRate(minFps, maxFps);
+  } catch (e) {
+    Logger.error(TAG_LOG, 'setFrameRate error ' + JSON.stringify(e));
+  }
+}
+
+[h2]设置白平衡
+
+白平衡是相机为了消除不同光源下的偏色，通过调整颜色的增益，从而使整体色彩看起来更加自然真实。通过白平衡，可以调整拍照、录像的图像颜色。关于白平衡的实现，具体可以参考白平衡设置(ArkTS)。
+
+[h2]设置相机控制器
+
+相机控制器仅支持在前置镜头的录像模式场景下开启，提供美颜、背景虚化等功能，具体效果因机型差异而异。在直播、视频通话等场景下，开发者可以使用enableControlCenter()接口启动相机控制器，快速实现美颜、背景虚化等功能，具体实现可以参考相机控制器(ArkTS)。
+
+实现预览进阶功能
+
+[h2]实现手势缩放
+
+在预览画面进行手势捏合操作，预览画面焦距会随捏合手势进行对应缩放调整。
+
+使用PinchGesture()接口给预览区域元素绑定捏合事件。
+
+在捏合手势识别成功onActionStart()事件的回调函数中，记录此次捏合前的焦距。在手势移动过程中onActionUpdate()事件的回调函数中，根据捏合前的焦距以及缩放比例计算出当前的焦距，注意限制在当前相机设备的焦距范围内。
+
+XComponent({
+  type: XComponentType.SURFACE,
+  controller: this.previewVM.xComponentController
+})
+// ...
+  .gesture(
+    PinchGesture({ fingers: 2 })
+      .onActionStart(() => {
+        this.originZoomBeforePinch = this.previewVM.currentZoom;
+        this.isZoomPinching = true;
+        this.previewVM.sleepTimer?.refresh();
       })
-      // surface的宽、高设置与XComponent组件的宽、高设置相反，或使用.renderFit(RenderFit.RESIZE_CONTAIN)自动填充显示无需设置宽、高。
-      .width(this.uiContext.px2vp(this.imageHeight))
-      .height(this.uiContext.px2vp(this.imageWidth))
-  }
-}
-
-通过CameraOutputCapability中的previewProfiles属性获取当前设备支持的预览能力，返回previewProfilesArray数组 。通过createPreviewOutput方法创建预览输出流，其中，createPreviewOutput方法中的两个参数分别是当前设备支持的预览配置信息previewProfile和步骤二中获取的surfaceId。
-
-function getPreviewOutput(cameraManager: camera.CameraManager, cameraOutputCapability: camera.CameraOutputCapability, surfaceId: string): camera.PreviewOutput | undefined {
-  if (!cameraOutputCapability || !cameraOutputCapability.previewProfiles) {
-    return;
-  }
-  let previewProfilesArray: Array<camera.Profile> = cameraOutputCapability.previewProfiles;
-  if (!previewProfilesArray || previewProfilesArray.length === 0) {
-    console.error("previewProfilesArray is null or []");
-    return;
-  }
-  let previewOutput: camera.PreviewOutput | undefined = undefined;
-  try {
-    // previewProfilesArray要选择与步骤二设置宽高比一致的previewProfile配置信息，此处选择数组第一项仅供接口使用示例参考。
-    previewOutput = cameraManager.createPreviewOutput(previewProfilesArray[0], surfaceId);
-  } catch (error) {
-    let err = error as BusinessError;
-    console.error("Failed to create the PreviewOutput instance. error code: " + err.code);
-  }
-  return previewOutput;
-}
-
-使能。通过Session.start方法输出预览流，接口调用失败会返回相应错误码，错误码类型参见CameraErrorCode。
-
-async function startPreviewOutput(cameraManager: camera.CameraManager, previewOutput: camera.PreviewOutput): Promise<void> {
-  try {
-    let cameraArray: Array<camera.CameraDevice> = [];
-    cameraArray = cameraManager.getSupportedCameras();
-    if (cameraArray.length == 0) {
-      console.error('no camera.');
-      return;
-    }
-    // 获取支持的模式类型。
-    let sceneModes: Array<camera.SceneMode> = cameraManager.getSupportedSceneModes(cameraArray[0]);
-    let isSupportPhotoMode: boolean = sceneModes.indexOf(camera.SceneMode.NORMAL_PHOTO) >= 0;
-    if (!isSupportPhotoMode) {
-      console.error('photo mode not support');
-      return;
-    }
-    let cameraInput: camera.CameraInput | undefined;
-    cameraInput = cameraManager.createCameraInput(cameraArray[0]);
-    if (cameraInput === undefined) {
-      console.error('cameraInput is undefined');
-      return;
-    }
-    // 打开相机。
-    await cameraInput.open();
-    let session = cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO);
-    if (!session) {
-      console.error('session is null');
-      return;
-    }
-    let photoSession: camera.PhotoSession = session as camera.PhotoSession;
-    photoSession.beginConfig();
-    photoSession.addInput(cameraInput);
-    photoSession.addOutput(previewOutput);
-    await photoSession.commitConfig();
-    await photoSession.start();
-  } catch (error) {
-    console.error(`startPreviewOutput call failed, error: ${error}`);
-  }
-}
-
-状态监听
-
-在相机应用开发过程中，可以随时监听预览输出流状态，包括预览流启动、预览流结束、预览流输出错误。
-
-通过注册固定的on('frameStart')回调函数获取监听预览启动结果，previewOutput创建成功时即可监听，预览第一次曝光时触发，有该事件返回结果则认为预览流已启动。
-
-function onPreviewOutputFrameStart(previewOutput: camera.PreviewOutput): void {
-  previewOutput.on('frameStart', (err: BusinessError) => {
-    if (err !== undefined && err.code !== 0) {
-      return;
-    }
-    console.info('Preview frame started');
-  });
-}
-
-通过注册固定的on('frameEnd')回调函数获取监听预览结束结果，previewOutput创建成功时即可监听，预览完成最后一帧时触发，有该事件返回结果则认为预览流已结束。
-
-function onPreviewOutputFrameEnd(previewOutput: camera.PreviewOutput): void {
-  previewOutput.on('frameEnd', (err: BusinessError) => {
-    if (err !== undefined && err.code !== 0) {
-      return;
-    }
-    console.info('Preview frame ended');
-  });
-}
-
-通过注册固定的error回调函数获取监听预览输出错误结果，回调返回预览输出接口使用错误时对应的错误码，错误码类型参见CameraErrorCode。
-
-function onPreviewOutputError(previewOutput: camera.PreviewOutput): void {
-  previewOutput.on('error', (previewOutputError: BusinessError) => {
-    console.error(`Preview output error code: ${previewOutputError.code}`);
-  });
-}
-
-完整示例
-
-import { camera } from '@kit.CameraKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { abilityAccessCtrl, Permissions } from '@kit.AbilityKit';
-
-
-@Entry
-@Component
-struct Index {
-  private xComponentCtl: XComponentController = new XComponentController();
-  private xComponentSurfaceId: string = '';
-  @State imageWidth: number = 1920;
-  @State imageHeight: number = 1080;
-  private cameraManager: camera.CameraManager | undefined = undefined;
-  private cameras: Array<camera.CameraDevice> | undefined = [];
-  private cameraInput: camera.CameraInput | undefined = undefined;
-  private previewOutput: camera.PreviewOutput | undefined = undefined;
-  private session: camera.VideoSession | undefined = undefined;
-  private uiContext: UIContext = this.getUIContext();
-  private context: Context | undefined = this.uiContext.getHostContext();
-  private cameraPermission: Permissions = 'ohos.permission.CAMERA'; // 申请权限相关问题可参考本篇开头的申请相关权限文档
-  @State isShow: boolean = false;
-  private mXComponentOptions: XComponentOptions = {
-    type: XComponentType.SURFACE,
-    controller: this.xComponentCtl
-  }
-
-  async requestPermissionsFn(): Promise<void> {
-    let atManager = abilityAccessCtrl.createAtManager();
-    if (this.context) {
-      let res = await atManager.requestPermissionsFromUser(this.context, [this.cameraPermission]);
-      for (let i = 0; i < res.permissions.length; i++) {
-        if (this.cameraPermission.toString() === res.permissions[i] && res.authResults[i] === 0) {
-          this.isShow = true;
+      .onActionUpdate((event: GestureEvent) => {
+        if (this.previewVM.isVideoMode() && this.previewVM.isStabilizationEnabled) {
+          return;
         }
-      }
+        const targetZoom = this.originZoomBeforePinch * event.scale;
+        this.previewVM.currentZoom = limitNumberInRange(targetZoom, this.previewVM.zoomRange);
+        this.previewVM.setCameraZoomRatio();
+      })
+      .onActionEnd(() => {
+        this.isZoomPinching = false;
+      })
+  )
+
+[h2]网格线
+
+将相机预览画面划分为9个等比例区域（3×3宫格），为用户提供精准的构图参考框架。
+
+获取预览区域的宽高，通过行数和列数计算出每条网格线的起始坐标，在Canvas上进行绘制。注意设置hitTestBehavior属性为HitTestMode.Transparent，不影响下方预览区域的正常交互。
+
+draw(): void {
+  const ctx = this.context;
+  ctx.strokeStyle = this.strokeStyle;
+  ctx.lineWidth = this.lineWidth;
+  const height = this.context.height;
+  const width = this.context.width;
+  for (let i = 1; i < this.cols; i++) {
+    const x = (width / this.cols) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+  for (let i = 1; i < this.rows; i++) {
+    const y = (height / this.rows) * i;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+}
+
+build() {
+  Canvas(this.context)
+    .width('100%')
+    .height('100%')
+    .hitTestBehavior(HitTestMode.Transparent)
+    .onReady(() => this.draw())
+}
+
+用Stack组件将网格线组件堆叠在预览区域上层。
+
+Stack({
+  alignContent: Alignment.Center
+}) {
+  XComponent({
+    type: XComponentType.SURFACE,
+    controller: this.previewVM.xComponentController
+  })
+  // ...
+  if (this.previewVM.isGridLineVisible) {
+    GridLine();
+  }
+  // ...
+
+  if (this.isShowBlack) {
+    Column()
+      .id('black')
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Black)
+      .opacity(this.flashBlackOpacity)
+  }
+}
+
+[h2]水平仪
+
+设备旋转过程中，水平仪指示线始终垂直于重力方向，当设备水平时（x轴或y轴垂直于重力方向），水平仪指示线由虚线变为实线。
+
+水平仪的实现需要用到重力加速度传感器。通过sensor模块获取重力加速度在x, y, z轴方向上的分量。以充电口在下的竖屏方向为基准，x, y, z轴的方向如下。
+
+x轴：水平向右。
+
+y轴：垂直向上。
+
+z轴：垂直于屏幕向外。
+
+由下图可知，水平仪指示线与x轴的夹角用θ表示，若要指示线始终垂直重力方向，则tanθ = g(x) / -g(y)。
+
+在module.json5中配置加速度传感器权限。
+
+"requestPermissions": [
+  // ...
+  {
+    "name": "ohos.permission.ACCELEROMETER",
+    "reason": "$string:permission_SENSOR",
+    "usedScene": {
+      "abilities": [
+        "EntryAbility"
+      ]
     }
   }
+]
 
-  aboutToAppear(): void {
-    this.requestPermissionsFn();
+使用sensor.on()方法订阅重力加速度传感器数据。
+
+addGravityEventListener(): void {
+  try {
+    sensor.on(sensor.SensorId.GRAVITY, (data) => {
+      this.previewVM.acc = data;
+    }, { interval: 100 * 1000 * 1000 });
+  } catch (exception) {
+    Logger.error(TAG, `addGravityEventListener failed, code is ${exception.code}, message is ${exception.message}`);
   }
+}
 
-  onPageShow(): void {
-    console.info('onPageShow');
-    if (this.xComponentSurfaceId !== '') {
-      this.initCamera();
+计算指示线的旋转角度，以及设备是否水平。设置hitTestBehavior属性为HitTestMode.Transparent，不影响下层预览区域的正常交互。
+
+@Component
+export struct LevelIndicator {
+  @Prop acc: sensor.AccelerometerResponse;
+
+  getRotate(): number {
+    let displayDefault: display.Display | null = null;
+    try {
+      displayDefault = display.getDefaultDisplaySync();
+    } catch (exception) {
+      Logger.error(TAG, `getDefaultDisplaySync failed, code is ${exception.code}, message is ${exception.message}`);
     }
+    const rotation = (displayDefault?.rotation ?? 0) * 90;
+    if (rotation === 90 || rotation === 270) {
+      return -Math.atan2(-this.acc.y, this.acc.x) * (180 / Math.PI);
+    }
+    return -Math.atan2(-this.acc.x, this.acc.y) * (180 / Math.PI);
   }
 
-  onPageHide(): void {
-    console.info('onPageHide');
-    this.releaseCamera();
+  isAlign(): boolean {
+    return Math.abs(this.getRotate()) - 0 <= ANGLE_DIFFERENCE ||
+      Math.abs(Math.abs(this.getRotate()) - 90) <= ANGLE_DIFFERENCE;
   }
 
   build() {
-    Column() {
-      if (this.isShow) {
-        XComponent(this.mXComponentOptions)
-          .onLoad(async () => {
-            console.info('onLoad is called');
-            this.xComponentSurfaceId = this.xComponentCtl.getXComponentSurfaceId(); // 获取组件surfaceId。
-            // 初始化相机，组件实时渲染每帧预览流数据。
-            this.initCamera()
-          })
-          .width(this.uiContext.px2vp(this.imageHeight))
-          .height(this.uiContext.px2vp(this.imageWidth))
-      }
+    Stack({ alignContent: Alignment.Center }) {
+      Line({
+        width: 200,
+        height: 1
+      })
+      // ...
+        .strokeDashArray([3, this.isAlign() ? 0 : 3])
+        .opacity(this.isAlign() ? 1 : 0.5)
+        .rotate({ angle: this.getRotate(), centerX: '50%', centerY: '50%' })
+        .animation({
+          curve: curves.springMotion(0.6, 0.8),
+          iterations: 1,
+          playMode: PlayMode.Normal
+        })
+      Circle()
+      // ...
+        .opacity(this.isAlign() ? 1 : 0.5)
     }
-    .justifyContent(FlexAlign.Center)
-    .height('100%')
-    .width('100%')
-  }
-
-
-  // 初始化相机。
-  async initCamera(): Promise<void> {
-    console.info(`initCamera previewOutput xComponentSurfaceId:${this.xComponentSurfaceId}`);
-    try {
-      // 获取相机管理器实例。
-      this.cameraManager = camera.getCameraManager(this.context);
-      if (!this.cameraManager) {
-        console.error('initCamera getCameraManager');
-        return;
-      }
-      // 获取当前设备支持的相机device列表。
-      this.cameras = this.cameraManager.getSupportedCameras();
-      if (!this.cameras) {
-        console.error('initCamera getSupportedCameras');
-      }
-      // 选择一个相机device，创建cameraInput输出对象。
-      this.cameraInput = this.cameraManager.createCameraInput(this.cameras[0]);
-      if (!this.cameraInput) {
-        console.error('initCamera createCameraInput');
-        return;
-      }
-      // 打开相机。
-      await this.cameraInput.open();
-      // 获取相机device支持的profile。
-      let capability: camera.CameraOutputCapability =
-        this.cameraManager.getSupportedOutputCapability(this.cameras[0], camera.SceneMode.NORMAL_VIDEO);
-      if (!capability || capability.previewProfiles.length === 0) {
-        console.error('capability is null || []');
-        this.releaseCamera();
-        return;
-      }
-      let minRatioDiff : number = 0.1;
-      let surfaceRatio : number = this.imageWidth / this.imageHeight; // 最接近16:9宽高比。
-      let previewProfile: camera.Profile = capability.previewProfiles[0];
-      // 应用开发者根据实际业务需求选择一个支持的预览流previewProfile。
-      // 此处以选择CAMERA_FORMAT_YUV_420_SP（NV21）格式、满足限定条件分辨率的预览流previewProfile为例。
-      for (let index = 0; index < capability.previewProfiles.length; index++) {
-        const tempProfile = capability.previewProfiles[index];
-        let tempRatio = tempProfile.size.width >= tempProfile.size.height ?
-          tempProfile.size.width / tempProfile.size.height : tempProfile.size.height / tempProfile.size.width;
-        let currentRatio = Math.abs(tempRatio - surfaceRatio);
-        if (currentRatio <= minRatioDiff && tempProfile.format == camera.CameraFormat.CAMERA_FORMAT_YUV_420_SP) {
-          previewProfile = tempProfile;
-          break;
-        }
-      }
-      this.imageWidth = previewProfile.size.width; // 更新xComponent组件的宽。
-      this.imageHeight = previewProfile.size.height; // 更新xComponent组件的高。
-      console.info(`initCamera imageWidth:${this.imageWidth} imageHeight:${this.imageHeight}`);
-
-      // 使用xComponentSurfaceId创建预览。
-      this.previewOutput = this.cameraManager.createPreviewOutput(previewProfile, this.xComponentSurfaceId);
-      if (!this.previewOutput) {
-        console.error('initCamera createPreviewOutput');
-        this.releaseCamera();
-        return;
-      }
-      // 创建录像模式相机会话。
-      let session = this.cameraManager.createSession(camera.SceneMode.NORMAL_VIDEO);
-      if (!session) {
-        console.error('session is null');
-        this.releaseCamera();
-        return;
-      }
-      this.session = session as camera.VideoSession;
-      // 开始配置会话。
-      this.session.beginConfig();
-      // 添加相机设备输入。
-      this.session.addInput(this.cameraInput);
-      // 添加预览流输出。
-      this.session.addOutput(this.previewOutput);
-      // 提交会话配置。
-      await this.session.commitConfig();
-      // 开始启动已配置的输入输出流。
-      await this.session.start();
-    } catch (error) {
-      console.error(`initCamera fail: ${JSON.stringify(error)}`);
-      this.releaseCamera();
-    }
-  }
-
-  // 释放相机。
-  async releaseCamera(): Promise<void> {
-    console.info('releaseCamera');
-    // 停止当前会话。
-    await this.session?.stop().catch((e: BusinessError) => {console.error('Failed to stop session: ', e)});
-    // 释放相机输入流。
-    await this.cameraInput?.close().catch((e: BusinessError) => {console.error('Failed to close the camera: ', e)});
-    // 释放预览输出流。
-    await this.previewOutput?.release().catch((e: BusinessError) => {console.error('Failed to stop the preview stream: ', e)});
-    // 释放会话。
-    await this.session?.release().catch((e: BusinessError) => {console.error('Failed to release session: ', e)});
+    // ...
+    .hitTestBehavior(HitTestMode.Transparent)
   }
 }
+
+[h2]超时暂停预览
+
+若相机在超过特定时间内未进行任何操作，则会暂停预览并显示遮罩。点击遮罩可重新启动预览，避免相机资源长时间浪费，从而降低功耗。
+
+实现带刷新方法的定时器类，初始化时传入计时结束的回调函数。需要重置计时时间，调用refresh()方法实现。
+
+class RefreshableTimer {
+  private timerId?: number;
+  private readonly timeout: number;
+  private callback: () => void;
+  private isActive: boolean = false;
+
+  constructor(callback: () => void, timeout: number) {
+    this.callback = callback;
+    this.timeout = timeout;
+  }
+
+  start(): void {
+    clearTimeout(this.timerId);
+    this.timerId = setTimeout(() => {
+      this.callback();
+      this.isActive = false;
+    }, this.timeout);
+    this.isActive = true;
+  }
+
+  clear(): void {
+    clearTimeout(this.timerId);
+    this.timerId = undefined;
+    this.isActive = false;
+  }
+
+  refresh(): void {
+    this.clear();
+    this.start();
+  }
+
+  isRunning(): boolean {
+    return this.isActive;
+  }
+}
+
+预览页面初始化时，启动定时器。使用UIObserver监听willClick()事件，30s内如果有操作，则重置定时器，直到30s内无任何操作，设置控制遮罩显隐的状态变量isSleeping为true，并释放相机资源。
+
+initSleepTimer(): void {
+  this.previewVM.sleepTimer = new RefreshableTimer(() => {
+    this.previewVM.openPreviewBlur();
+    this.previewVM.isSleeping = true;
+    this.previewVM.cameraManagerRelease();
+  }, 30 * 1000);
+  this.previewVM.sleepTimer.start();
+  const observer = this.getUIContext().getUIObserver();
+  observer.on('willClick', () => {
+    this.previewVM.sleepTimer?.refresh();
+  });
+}
+
+点击遮罩，设置状态变量isSleeping为false并重新启动相机预览。
+
+@Builder
+wakeupMask() {
+  Column() {
+    Text($r('app.string.wakeup_text'))
+      .fontColor(Color.White)
+      .opacity(0.6)
+  }
+  // ...
+  .onClick(async () => {
+    this.previewVM.isSleeping = false;
+    this.previewVM.sleepTimer?.refresh();
+    await this.previewVM.cameraManagerStart();
+    this.previewVM.syncButtonSettings();
+  })
+}
+
+[h2]前后台切换
+
+当相机应用在退后台之后由于安全策略会被强制断流。当从后台切换至前台时，需要重启相机设备的预览流、拍照流以及相机会话。
+
+使用ApplicationContext.on('applicationStateChange')方法注册对当前应用前后台状态变化的监听。在切换至后台触发的onApplicationBackground()回调函数中释放相机相关资源。在切换至前台触发的onApplicationForeground()回调函数中重新启动相机及预览。
+
+registerApplicationStateChange(): void {
+  this.applicationContext.on('applicationStateChange', {
+    onApplicationForeground: async () => {
+      await this.previewVM.cameraManagerStart();
+      // ...
+    },
+    onApplicationBackground: () => {
+      // ...
+      this.previewVM.cameraManagerRelease();
+    }
+  });
+}
+
+[h2]预览人脸检测
+
+相机拍摄人像时，在预览画面上添加人脸检测框可以辅助对焦和构图。
+
+相机的元数据输出流携带了人脸检测信息，应用可配置元数据输出流并读取检测信息绘制检测框。相较于基于Core Vision Kit的人脸检测能力，元数据输出流在相机预览时返回数据更快，性能更好，具体对比如下：
+
+能力	人脸检测能力	支持的检测数据来源	相机预览场景性能
+基于相机元数据输出流的人脸检测	人脸位置坐标	相机预览画面	检测结果返回快
+基于Core Vision Kit的人脸检测	人脸位置坐标、人脸五官位置、人脸朝向、人脸置信度	图像pixelmap	检测结果返回慢
+
+使用元数据输出流实现人脸检测开发步骤如下：
+
+创建相机元数据输出流。
+
+async createOutput(config: CreateOutputConfig): Promise<camera.CameraOutput | undefined> {
+  const cameraOutputCap = config.cameraManager?.getSupportedOutputCapability(config.device, config.sceneMode);
+  if (!cameraOutputCap) {
+    Logger.error(TAG_LOG, 'Failed to get supported output capability.');
+    return undefined;
+  }
+  let metadataObjectTypes: camera.MetadataObjectType[] = cameraOutputCap!.supportedMetadataObjectTypes;
+  try {
+    this.output = config.cameraManager?.createMetadataOutput(metadataObjectTypes);
+    if (this.output) {
+      this.addOutputListener(this.output);
+    }
+  } catch (error) {
+    Logger.error(TAG_LOG, `Failed to createMetadataOutput, error code: ${error.code}`);
+  }
+  return this.output;
+}
+
+将元数据输出流添加到会话中。
+
+for (const outputManager of this.outputManagers) {
+  if (outputManager.isActive) {
+    const output = await outputManager.createOutput(config);
+    session?.addOutput(output);
+  }
+}
+await session?.commitConfig();
+await session?.start();
+
+注册on('metadataObjectsAvailable')回调，监听元数据流中的人脸信息。
+
+addMetadataObjectsAvailableListener(metadataOutput: camera.MetadataOutput): void {
+  metadataOutput.on('metadataObjectsAvailable',
+    (err: BusinessError, metadataObjectArr: Array<camera.MetadataObject>) => {
+    if (err && err.code !== 0) {
+      Logger.error(TAG_LOG, `Metadata output on metadataObjectsAvailable error code: ${err.code}`);
+      return;
+    }
+    let boxRectArr: camera.Rect[] = [];
+    metadataObjectArr.forEach((obj: camera.MetadataObject)=>{
+      boxRectArr.push(obj.boundingBox);
+    });
+    this.onMetadataObjectsAvailable(boxRectArr);
+  });
+}
+
+通过回调接口返回的归一化数据，计算检测框实际坐标。
+
+说明
+
+接口返回的坐标数据以预览画面左上角为原点，具体可参考实现点击对焦章节中的页面布局坐标系。
+
+元数据输出流最多返回10个人脸检测框信息。
+
+onMetadataObjectsAvailable(faceBoxArr: camera.Rect[]) {
+  faceBoxArr.forEach((value) => {
+    value.topLeftX *= this.previewVM.getPreviewWidth();
+    value.topLeftY *= this.previewVM.getPreviewHeight();
+    value.width *= this.previewVM.getPreviewWidth();
+    value.height *= this.previewVM.getPreviewHeight();
+  })
+  this.previewVM.faceBoundingBoxArr = faceBoxArr;
+}
+
+计算检测框各边的起点和终点位置坐标。
+
+export function calFaceBoxLinePoint(faceBoxRect: camera.Rect): LinePoint[] {
+  let lineLength: number = Math.min(faceBoxRect.width, faceBoxRect.height) * FACE_BOX_LINE_RATIO;
+  let linePoints: LinePoint[] = [];
+
+  let startPoints: camera.Point[] = [
+    { x: faceBoxRect.topLeftX, y: faceBoxRect.topLeftY },
+    { x: faceBoxRect.topLeftX + faceBoxRect.width, y: faceBoxRect.topLeftY },
+    { x: faceBoxRect.topLeftX, y: faceBoxRect.topLeftY + faceBoxRect.height },
+    { x: faceBoxRect.topLeftX + faceBoxRect.width, y: faceBoxRect.topLeftY + faceBoxRect.height }];
+
+  startPoints.forEach((startPoint: camera.Point) => {
+    let horizontalLine: LinePoint = {
+      start: startPoint,
+      increment: { x: startPoint.x > faceBoxRect.topLeftX ? -lineLength : lineLength, y: 0 }
+    };
+
+    let verticalLine: LinePoint = {
+      start: startPoint,
+      increment: { x: 0, y: startPoint.y > faceBoxRect.topLeftY ? -lineLength : lineLength }
+    };
+
+    linePoints.push(horizontalLine, verticalLine);
+  });
+  return linePoints;
+}
+
+使用Line组件，将人脸检测框绘制到预览画面中。
+
+@Builder
+faceBox(faceBoxRect: camera.Rect) {
+  ForEach(calFaceBoxLinePoint(faceBoxRect), (linePoint: LinePoint) => {
+    Line()
+      .startPoint([0, 0])
+      .endPoint([linePoint.increment.x, linePoint.increment.y])
+      .stroke(Color.White)
+      .position({ x: linePoint.start.x, y: linePoint.start.y })
+  }, (linePoint: LinePoint) => JSON.stringify(linePoint));
+}
+
+获取预览帧数据
+
+[h2]场景描述
+
+在开发相机应用时，如果预览流仅用于展示，通常使用XComponent组件实现。若需要获取每帧的图像做二次处理（例如二维码识别或人脸识别等场景），则需要通过ImageReceiver监听预览流每帧数据，并创建第二路预览流，也称为双路预览。
+
+[h2]实现原理
+
+关键技术
+
+ImageReceiver用于创建Surface接收每帧的图像数据。
+
+通过ImageReceiver中的imageArrival事件监听预览流每帧数据，解析图像内容。
+
+判断图像宽度width与stride是否一致，不一致则进行裁剪（stride指图像的一行数据在内存中实际占用的字节数，为了内存对齐和提高读取效率的要求，通常大于图像的宽度）。可参考相机预览花屏解决方案。
+
+屏幕处于不同的显示方向时，原始图像数据需旋转不同的角度，以确保图像在合适的方向显示。需考虑屏幕旋转角度、相机镜头安装角度，框架具体的实现机制可参考屏幕旋转角度。在实际开发中，推荐通过PreviewOutput.getPreviewRotation()方法直接获取旋转角度。
+
+对于前置镜头，还需要根据业务需求将数据进行水平镜像翻转，以模拟镜像效果。
+
+开发流程
+
+创建ImageReceiver。
+
+获取SurfaceId。
+
+创建第二路预览输出流PreviewOutput。
+
+添加到Session。
+
+监听帧到达事件。
+
+处理并释放帧数据。
+
+[h2]开发步骤
+
+创建ImageReceiver组件并获取surfaceId。
+
+async init(size: Size, format = image.ImageFormat.JPEG, capacity = 8): Promise<string> {
+  const receiver = image.createImageReceiver(size, format, capacity);
+  const surfaceId = await receiver.getReceivingSurfaceId();
+  this.onImageArrival(receiver);
+  return surfaceId;
+}
+
+创建预览流并配置到相机会话Session中与实现基础预览一致。参考实现基础预览中的第4步骤。
+
+使用ImageReceiver.on()方法，注册imageArrival事件接收图像数据。使用ImageReceiver.read()方法和image.getComponent()方法解析获取图像的Buffer。
+
+onImageArrival(receiver: image.ImageReceiver): void {
+  receiver.on('imageArrival', () => {
+    Logger.info(TAG, 'image arrival');
+    receiver.readNextImage((err: BusinessError, nextImage: image.Image) => {
+      if (err || nextImage === undefined) {
+        nextImage?.release();
+        Logger.error(TAG, 'readNextImage failed');
+        return;
+      }
+      nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError, imgComponent: image.Component) => {
+        if (err || imgComponent === undefined) {
+          Logger.error(TAG, 'getComponent failed');
+        }
+        if (imgComponent.byteBuffer) {
+          // ...
+        } else {
+          Logger.error(TAG, 'byteBuffer is null');
+        }
+        // ...
+      });
+    });
+  });
+}
+
+根据stride和图像宽高对Buffer数据进行裁剪。使用image.createPixelMap()方法创建pixelMap数据。
+
+说明
+
+注意在使用createPixelMap()方法处理Buffer数据时，传入的Buffer数据的像素格式(srcPixelFormat: PixelMapFormat)要与获取预览输出流能力Profile中的(format: CameraFormat)输出格式保持一致，防止出现图像数据显示异常。format格式之间的映射关系可参考双路预览。
+
+async getPixelMap(imgComponent: image.Component, width: number, height: number,
+  stride: number): Promise<image.PixelMap> {
+  if (stride === width) {
+    return await image.createPixelMap(imgComponent.byteBuffer, {
+      size: { height: height, width: width },
+      srcPixelFormat: image.PixelMapFormat.NV21,
+    });
+  }
+  const dstBufferSize = width * height * 1.5;
+  const dstArr = new Uint8Array(dstBufferSize);
+  for (let j = 0; j < height * 1.5; j++) {
+    const srcBuf = new Uint8Array(imgComponent.byteBuffer, j * stride, width);
+    dstArr.set(srcBuf, j * width);
+  }
+  return await image.createPixelMap(dstArr.buffer, {
+    size: { height: height, width: width },
+    srcPixelFormat: image.PixelMapFormat.NV21,
+  });
+}
+
+使用PreviewOutput.getPreviewRotation()获取图像旋转角度，使用PixelMap.rotate()方法对图像数据进行旋转。在使用前置镜头时，存在水平镜像和垂直镜像的差异，为了统一翻转逻辑，在屏幕旋转角度为90度或270度时，需额外旋转180度将图像转正，使用PixelMap.flip()方法将图像数据进行水平翻转，以达到镜像效果。参考应用自绘制预览角度处理。
+
+nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError, imgComponent: image.Component) => {
+  if (err || imgComponent === undefined) {
+    Logger.error(TAG, 'getComponent failed');
+  }
+  if (imgComponent.byteBuffer) {
+    const width = nextImage.size.width;
+    const height = nextImage.size.height;
+    const stride = imgComponent.rowStride;
+    Logger.info(TAG, `getComponent with width:${width} height:${height} stride:${stride}`);
+    const pixelMap = await this.getPixelMap(imgComponent, width, height, stride);
+    let displayDefault: display.Display | null = null;
+    try {
+      displayDefault = display.getDefaultDisplaySync();
+      const displayRotation = (displayDefault?.rotation ?? 0) * camera.ImageRotation.ROTATION_90;
+      const rotation = this.output?.getPreviewRotation(displayRotation) || 0;
+      if (this.position === camera.CameraPosition.CAMERA_POSITION_FRONT) {
+        if (displayRotation === 90 || displayRotation === 270) {
+          await pixelMap.rotate((rotation + 180) % 360);
+        } else {
+          await pixelMap.rotate(rotation);
+        }
+        await pixelMap.flip(true, false);
+      } else {
+        await pixelMap.rotate(rotation);
+      }
+      this.callback(pixelMap);
+    } catch (exception) {
+      Logger.error(TAG,
+        `getDefaultDisplaySync failed, code is ${exception.code}, message is ${exception.message}`);
+    }
+  } else {
+    Logger.error(TAG, 'byteBuffer is null');
+  }
+  // ...
+});
+
+对ImageReceiver组件获取到的图像数据处理后，需要将对应的图像Buffer释放，以确保Surface的BufferQueue正常轮转，防止出现缓冲区溢出等问题。如果对Buffer进行异步操作，则需要在异步操作结束后，确保当前Buffer没有使用的情况下再释放该资源。
+
+nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError, imgComponent: image.Component) => {
+  // ...
+  nextImage.release();
+  Logger.info(TAG, 'image process done');
+});
+
+示例代码
+
+实现自定义相机功能
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-import { camera } from '@kit.CameraKit';
-import { BusinessError } from '@kit.BasicServicesKit';
+"requestPermissions": [
+  {
+    "name": "ohos.permission.CAMERA",
+    "reason": "$string:permission_CAMERA",
+    "usedScene": {
+      "abilities": [
+        "EntryAbility"
+      ]
+    }
+  },
+  // ...
+]
 ```
 
 ### Code block 2
 
 ```
-@Entry
-@Component
-struct example {
-  xComponentCtl: XComponentController = new XComponentController();
-  surfaceId:string = '';
-  imageWidth: number = 1920;
-  imageHeight: number = 1080;
-  private uiContext: UIContext = this.getUIContext();
-  private mXComponentOptions: XComponentOptions = {
-    type: XComponentType.SURFACE,
-    controller: this.xComponentCtl
-  }
+class PermissionManager {
+  private static atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
 
-  build() {
-    XComponent(this.mXComponentOptions)
-      .onLoad(async () => {
-        console.info('onLoad is called');
-        this.surfaceId = this.xComponentCtl.getXComponentSurfaceId(); // 获取组件surfaceId。
-        // 使用surfaceId创建预览流，开启相机，组件实时渲染每帧预览流数据。
-      })
-      // surface的宽、高设置与XComponent组件的宽、高设置相反，或使用.renderFit(RenderFit.RESIZE_CONTAIN)自动填充显示无需设置宽、高。
-      .width(this.uiContext.px2vp(this.imageHeight))
-      .height(this.uiContext.px2vp(this.imageWidth))
+  static async request(permissions: Permissions[], context: Context): Promise<void> {
+    try {
+      const data = await PermissionManager.atManager.requestPermissionsFromUser(context, permissions);
+      const grantStatus: number[] = data.authResults;
+      const deniedPermissions = permissions.filter((_, i) => grantStatus[i] !== 0);
+      for (const permission of deniedPermissions) {
+        const secondGrantStatus = await PermissionManager.atManager.requestPermissionOnSetting(context, [permission]);
+        if (secondGrantStatus[0] !== 0) {
+          Logger.error(TAG, 'permission denied');
+          throw new Error('permission denied');
+        }
+      }
+    } catch (exception) {
+      Logger.error(TAG, `request failed, code is ${exception.code}, message is ${exception.message}`);
+      throw new Error('permission failed');
+    }
   }
 }
 ```
@@ -359,102 +1109,58 @@ struct example {
 ### Code block 3
 
 ```
-function getPreviewOutput(cameraManager: camera.CameraManager, cameraOutputCapability: camera.CameraOutputCapability, surfaceId: string): camera.PreviewOutput | undefined {
-  if (!cameraOutputCapability || !cameraOutputCapability.previewProfiles) {
-    return;
-  }
-  let previewProfilesArray: Array<camera.Profile> = cameraOutputCapability.previewProfiles;
-  if (!previewProfilesArray || previewProfilesArray.length === 0) {
-    console.error("previewProfilesArray is null or []");
-    return;
-  }
-  let previewOutput: camera.PreviewOutput | undefined = undefined;
-  try {
-    // previewProfilesArray要选择与步骤二设置宽高比一致的previewProfile配置信息，此处选择数组第一项仅供接口使用示例参考。
-    previewOutput = cameraManager.createPreviewOutput(previewProfilesArray[0], surfaceId);
-  } catch (error) {
-    let err = error as BusinessError;
-    console.error("Failed to create the PreviewOutput instance. error code: " + err.code);
-  }
-  return previewOutput;
-}
+this.cameraManager = camera.getCameraManager(context);
 ```
 
 ### Code block 4
 
 ```
-async function startPreviewOutput(cameraManager: camera.CameraManager, previewOutput: camera.PreviewOutput): Promise<void> {
-  try {
-    let cameraArray: Array<camera.CameraDevice> = [];
-    cameraArray = cameraManager.getSupportedCameras();
-    if (cameraArray.length == 0) {
-      console.error('no camera.');
-      return;
-    }
-    // 获取支持的模式类型。
-    let sceneModes: Array<camera.SceneMode> = cameraManager.getSupportedSceneModes(cameraArray[0]);
-    let isSupportPhotoMode: boolean = sceneModes.indexOf(camera.SceneMode.NORMAL_PHOTO) >= 0;
-    if (!isSupportPhotoMode) {
-      console.error('photo mode not support');
-      return;
-    }
-    let cameraInput: camera.CameraInput | undefined;
-    cameraInput = cameraManager.createCameraInput(cameraArray[0]);
-    if (cameraInput === undefined) {
-      console.error('cameraInput is undefined');
-      return;
-    }
-    // 打开相机。
-    await cameraInput.open();
-    let session = cameraManager.createSession(camera.SceneMode.NORMAL_PHOTO);
-    if (!session) {
-      console.error('session is null');
-      return;
-    }
-    let photoSession: camera.PhotoSession = session as camera.PhotoSession;
-    photoSession.beginConfig();
-    photoSession.addInput(cameraInput);
-    photoSession.addOutput(previewOutput);
-    await photoSession.commitConfig();
-    await photoSession.start();
-  } catch (error) {
-    console.error(`startPreviewOutput call failed, error: ${error}`);
+getCameraDevice(cameraPosition: camera.CameraPosition): camera.CameraDevice | undefined {
+  const cameraDevices = this.cameraManager?.getSupportedCameras();
+  if (!cameraDevices) {
+    Logger.error(TAG, `Failed to get camera device. cameraPosition: ${cameraPosition}}`);
+    return undefined;
   }
+  const device = cameraDevices?.find(device => device.cameraPosition === cameraPosition) || cameraDevices[0];
+  if (!device) {
+    Logger.error(TAG, `Failed to get camera device. cameraPosition: ${cameraPosition}}`);
+  }
+  return device;
 }
 ```
 
 ### Code block 5
 
 ```
-function onPreviewOutputFrameStart(previewOutput: camera.PreviewOutput): void {
-  previewOutput.on('frameStart', (err: BusinessError) => {
-    if (err !== undefined && err.code !== 0) {
-      return;
-    }
-    console.info('Preview frame started');
-  });
-}
+this.cameraInput = this.cameraManager?.createCameraInput(device);
+await this.cameraInput?.open();
 ```
 
 ### Code block 6
 
 ```
-function onPreviewOutputFrameEnd(previewOutput: camera.PreviewOutput): void {
-  previewOutput.on('frameEnd', (err: BusinessError) => {
-    if (err !== undefined && err.code !== 0) {
-      return;
-    }
-    console.info('Preview frame ended');
-  });
-}
+XComponent({
+  type: XComponentType.SURFACE,
+  controller: this.previewVM.xComponentController
+})
+  .onLoad(async () => {
+    // ...
+    this.previewVM.surfaceId = this.previewVM.xComponentController.getXComponentSurfaceId();
+    this.previewVM.setPreviewSize();
+    this.previewVM.xComponentController.setXComponentSurfaceRotation({ lock: true });
+    // ...
+  })
 ```
 
 ### Code block 7
 
 ```
-function onPreviewOutputError(previewOutput: camera.PreviewOutput): void {
-  previewOutput.on('error', (previewOutputError: BusinessError) => {
-    console.error(`Preview output error code: ${previewOutputError.code}`);
+setPreviewSize(): void {
+  const displaySize: Size = WindowUtil.getMaxDisplaySize(this.getPreviewRatio());
+  this.previewSize = displaySize;
+  this.xComponentController.setXComponentSurfaceRect({
+    surfaceWidth: displaySize.width,
+    surfaceHeight: displaySize.height
   });
 }
 ```
@@ -462,172 +1168,828 @@ function onPreviewOutputError(previewOutput: camera.PreviewOutput): void {
 ### Code block 8
 
 ```
-import { camera } from '@kit.CameraKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { abilityAccessCtrl, Permissions } from '@kit.AbilityKit';
-
-
-@Entry
-@Component
-struct Index {
-  private xComponentCtl: XComponentController = new XComponentController();
-  private xComponentSurfaceId: string = '';
-  @State imageWidth: number = 1920;
-  @State imageHeight: number = 1080;
-  private cameraManager: camera.CameraManager | undefined = undefined;
-  private cameras: Array<camera.CameraDevice> | undefined = [];
-  private cameraInput: camera.CameraInput | undefined = undefined;
-  private previewOutput: camera.PreviewOutput | undefined = undefined;
-  private session: camera.VideoSession | undefined = undefined;
-  private uiContext: UIContext = this.getUIContext();
-  private context: Context | undefined = this.uiContext.getHostContext();
-  private cameraPermission: Permissions = 'ohos.permission.CAMERA'; // 申请权限相关问题可参考本篇开头的申请相关权限文档
-  @State isShow: boolean = false;
-  private mXComponentOptions: XComponentOptions = {
-    type: XComponentType.SURFACE,
-    controller: this.xComponentCtl
+async createOutput(config: CreateOutputConfig): Promise<camera.PreviewOutput | undefined> {
+  const cameraOutputCap = config.cameraManager?.getSupportedOutputCapability(config.device, config.sceneMode);
+  const displayRatio = config.profile.size.width / config.profile.size.height;
+  const profileWidth = config.profile.size.width;
+  const previewProfile = cameraOutputCap?.previewProfiles
+    .sort((a, b) => Math.abs(a.size.width - profileWidth) - Math.abs(b.size.width - profileWidth))
+    .find(pf => {
+      const pfDisplayRatio = pf.size.width / pf.size.height;
+      return pf.format === config.profile.format &&
+        Math.abs(pfDisplayRatio - displayRatio) <= CameraConstant.PROFILE_DIFFERENCE;
+    });
+  if (!previewProfile) {
+    Logger.error(TAG_LOG, 'Failed to get preview profile');
+    return undefined;
   }
+  try {
+    this.output = config.cameraManager?.createPreviewOutput(previewProfile, config.surfaceId);
+    if (this.output) {
+      this.addOutputListener(this.output);
+    }
+  } catch (exception) {
+    Logger.error(TAG_LOG, `createPreviewOutput failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  return this.output;
+}
+```
 
-  async requestPermissionsFn(): Promise<void> {
-    let atManager = abilityAccessCtrl.createAtManager();
-    if (this.context) {
-      let res = await atManager.requestPermissionsFromUser(this.context, [this.cameraPermission]);
-      for (let i = 0; i < res.permissions.length; i++) {
-        if (this.cameraPermission.toString() === res.permissions[i] && res.authResults[i] === 0) {
-          this.isShow = true;
-        }
+### Code block 9
+
+```
+public getProfile: (cameraOrientation: number) => camera.Profile = cameraOrientation => {
+  const displaySize: Size = WindowUtil.getMaxDisplaySize(this.getPreviewRatio());
+  let displayDefault: display.Display | null = null;
+  try {
+    displayDefault = display.getDefaultDisplaySync();
+  } catch (exception) {
+    Logger.error(TAG, `getDefaultDisplaySync failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  const displayRotation = (displayDefault?.rotation ?? 0) * 90;
+  const isRevert = (cameraOrientation + displayRotation) % 180 !== 0;
+  return {
+    format: camera.CameraFormat.CAMERA_FORMAT_YUV_420_SP,
+    size: {
+      height: isRevert ? displaySize.width : displaySize.height,
+      width: isRevert ? displaySize.height : displaySize.width
+    }
+  };
+};
+```
+
+### Code block 10
+
+```
+const session = this.cameraManager?.createSession(sceneMode);
+session?.beginConfig();
+session?.addInput(this.cameraInput);
+// ...
+for (const outputManager of this.outputManagers) {
+  if (outputManager.isActive) {
+    const output = await outputManager.createOutput(config);
+    session?.addOutput(output);
+  }
+}
+await session?.commitConfig();
+if (sceneMode === camera.SceneMode.NORMAL_VIDEO && session) {
+  this.setVideoStabilizationMode(isStabilizationEnabled, session as camera.VideoSession);
+}
+await session?.start();
+```
+
+### Code block 11
+
+```
+export interface OutputManager {
+  output?: camera.CameraOutput;
+  isActive: boolean;
+  createOutput: (config: CreateOutputConfig) => Promise<camera.CameraOutput | undefined>;
+  release: () => Promise<void>;
+}
+```
+
+### Code block 12
+
+```
+async release(): Promise<void> {
+  try {
+    await this.output?.release();
+  } catch (exception) {
+    Logger.error(TAG_LOG, `release failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  this.output = undefined;
+}
+```
+
+### Code block 13
+
+```
+async release(): Promise<void> {
+  try {
+    await this.session?.stop();
+    for (const outputManager of this.outputManagers) {
+      if (outputManager.isActive) {
+        await outputManager.release();
       }
     }
+    await this.cameraInput?.close();
+    await this.session?.release();
+  } catch (exception) {
+    Logger.error(TAG, `release failed, code is ${exception.code}, message is ${exception.message}`);
   }
+}
+```
 
-  aboutToAppear(): void {
-    this.requestPermissionsFn();
+### Code block 14
+
+```
+addFrameStartEventListener(output: camera.PreviewOutput): void {
+  output.on('frameStart', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      Logger.error(TAG_LOG, `FrameStart callback Error, errorMessage: ${err.message}`);
+      return;
+    }
+    Logger.info(TAG_LOG, 'Preview frame started');
+    this.onPreviewStart();
+  });
+}
+
+addFrameEndEventListener(output: camera.PreviewOutput): void {
+  output.on('frameEnd', (err: BusinessError) => {
+    if (err !== undefined && err.code !== 0) {
+      Logger.error(TAG_LOG, `frameEnd callback Error, errorMessage: ${err.message}`);
+      return;
+    }
+    Logger.info(TAG_LOG, 'Preview frame end');
+  });
+}
+```
+
+### Code block 15
+
+```
+public isFront: boolean = false;
+// ...
+getCameraPosition(): camera.CameraPosition {
+  return this.isFront
+    ? camera.CameraPosition.CAMERA_POSITION_FRONT
+    : camera.CameraPosition.CAMERA_POSITION_BACK;
+}
+```
+
+### Code block 16
+
+```
+@Builder
+toggleCameraPositionButton() {
+  Image($r('app.media.toggle_position'))
+    .width(48)
+    .height(48)
+    .onClick(async () => {
+      // ...
+      this.previewVM.isFront = !this.previewVM.isFront;
+      await this.previewVM.cameraManagerRelease();
+      await this.previewVM.cameraManagerStart();
+      // ...
+    })
+}
+```
+
+### Code block 17
+
+```
+getZoomRange(): number[] {
+  try {
+    return this.session!.getZoomRatioRange();
+  } catch (exception) {
+    Logger.error(TAG, `getZoomRange failed, code is ${exception.code}, message is ${exception.message}`);
+    return [];
   }
+}
+```
 
-  onPageShow(): void {
-    console.info('onPageShow');
-    if (this.xComponentSurfaceId !== '') {
-      this.initCamera();
+### Code block 18
+
+```
+setSmoothZoom(zoom: number): void {
+  try {
+    this.session?.setSmoothZoom(zoom);
+  } catch (e) {
+    Logger.error(TAG, 'setSmoothZoom error ' + JSON.stringify(e));
+  }
+}
+```
+
+### Code block 19
+
+```
+setFlashMode(flashMode: camera.FlashMode): void {
+  try {
+    const isSupported = this.session?.isFlashModeSupported(flashMode);
+    if (!isSupported) {
+      Logger.error(TAG, `setFlashMode error: flash mode ${flashMode} is not supported`);
+      return;
+    }
+    this.session?.setFlashMode(flashMode);
+  } catch (e) {
+    Logger.error(TAG, 'setFlashMode error ' + JSON.stringify(e));
+  }
+}
+```
+
+### Code block 20
+
+```
+export function calCameraPoint(eventX: number, eventY: number, width: number, height: number): camera.Point {
+  let displayDefault: display.Display | null = null;
+  try {
+    displayDefault = display.getDefaultDisplaySync();
+  } catch (exception) {
+    Logger.error('calCameraPoint', `calCameraPoint failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+  const displayRotation = (displayDefault?.rotation ?? 0) * 90;
+  if (displayRotation === 0) {
+    return { x: eventY / height, y: 1 - eventX / width };
+  }
+  if (displayRotation === 90) {
+    return { x: 1 - eventX / width, y: 1 - eventY / height };
+  }
+  if (displayRotation === 180) {
+    return { x: 1 - eventY / height, y: eventX / width };
+  }
+  return { x: eventX / width, y: eventY / height };
+}
+```
+
+### Code block 21
+
+```
+setFocusMode(focusMode: camera.FocusMode): void {
+  try {
+    const isSupported = this.session?.isFocusModeSupported(focusMode);
+    if (!isSupported) {
+      Logger.error(TAG, `setFocusMode error: focus mode ${focusMode} is not supported`);
+      return;
+    }
+    this.session?.setFocusMode(focusMode);
+  } catch (e) {
+    Logger.error(TAG, 'setFocusMode error ' + JSON.stringify(e));
+  }
+}
+```
+
+### Code block 22
+
+```
+setFocusPoint(point: camera.Point): void {
+  try {
+    this.session?.setFocusPoint(point);
+  } catch (e) {
+    Logger.error(TAG, 'setFocusPoint error ' + JSON.stringify(e));
+  }
+}
+```
+
+### Code block 23
+
+```
+export function getClampedChildPosition(childSize: Size, parentSize: Size, point: Point): Edges {
+  let left = point.x - childSize.width / 2;
+  let top = point.y - childSize.height / 2;
+  if (left < 0) {
+    left = 0;
+  }
+  if (left + childSize.width > parentSize.width) {
+    left = parentSize.width - childSize.width;
+  }
+  if (top < 0) {
+    top = 0;
+  }
+  if (top + childSize.height > parentSize.height) {
+    top = parentSize.height - childSize.height;
+  }
+  return { left, top };
+}
+```
+
+### Code block 24
+
+```
+setExposureMode(exposureMode: camera.ExposureMode): void {
+  try {
+    const isSupported = this.session?.isExposureModeSupported(exposureMode);
+    if (!isSupported) {
+      Logger.error(TAG, `setExposureMode error: focus mode ${exposureMode} is not supported`);
+      return;
+    }
+    this.session?.setExposureMode(exposureMode);
+  } catch (e) {
+    Logger.error(TAG, 'setExposureMode error ' + JSON.stringify(e));
+  }
+}
+```
+
+### Code block 25
+
+```
+setMeteringPoint(point: camera.Point): void {
+  try {
+    this.session?.setMeteringPoint(point);
+  } catch (e) {
+    Logger.error(TAG, 'setMeteringPoint error ' + JSON.stringify(e));
+  }
+}
+```
+
+### Code block 26
+
+```
+getSupportedFrameRates(): camera.FrameRateRange[] | undefined {
+  return this.output?.getSupportedFrameRates();
+}
+```
+
+### Code block 27
+
+```
+setFrameRate(minFps: number, maxFps: number): void {
+  try {
+    this.output?.setFrameRate(minFps, maxFps);
+  } catch (e) {
+    Logger.error(TAG_LOG, 'setFrameRate error ' + JSON.stringify(e));
+  }
+}
+```
+
+### Code block 28
+
+```
+XComponent({
+  type: XComponentType.SURFACE,
+  controller: this.previewVM.xComponentController
+})
+// ...
+  .gesture(
+    PinchGesture({ fingers: 2 })
+      .onActionStart(() => {
+        this.originZoomBeforePinch = this.previewVM.currentZoom;
+        this.isZoomPinching = true;
+        this.previewVM.sleepTimer?.refresh();
+      })
+      .onActionUpdate((event: GestureEvent) => {
+        if (this.previewVM.isVideoMode() && this.previewVM.isStabilizationEnabled) {
+          return;
+        }
+        const targetZoom = this.originZoomBeforePinch * event.scale;
+        this.previewVM.currentZoom = limitNumberInRange(targetZoom, this.previewVM.zoomRange);
+        this.previewVM.setCameraZoomRatio();
+      })
+      .onActionEnd(() => {
+        this.isZoomPinching = false;
+      })
+  )
+```
+
+### Code block 29
+
+```
+draw(): void {
+  const ctx = this.context;
+  ctx.strokeStyle = this.strokeStyle;
+  ctx.lineWidth = this.lineWidth;
+  const height = this.context.height;
+  const width = this.context.width;
+  for (let i = 1; i < this.cols; i++) {
+    const x = (width / this.cols) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+  for (let i = 1; i < this.rows; i++) {
+    const y = (height / this.rows) * i;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+}
+
+build() {
+  Canvas(this.context)
+    .width('100%')
+    .height('100%')
+    .hitTestBehavior(HitTestMode.Transparent)
+    .onReady(() => this.draw())
+}
+```
+
+### Code block 30
+
+```
+Stack({
+  alignContent: Alignment.Center
+}) {
+  XComponent({
+    type: XComponentType.SURFACE,
+    controller: this.previewVM.xComponentController
+  })
+  // ...
+  if (this.previewVM.isGridLineVisible) {
+    GridLine();
+  }
+  // ...
+
+  if (this.isShowBlack) {
+    Column()
+      .id('black')
+      .width('100%')
+      .height('100%')
+      .backgroundColor(Color.Black)
+      .opacity(this.flashBlackOpacity)
+  }
+}
+```
+
+### Code block 31
+
+```
+"requestPermissions": [
+  // ...
+  {
+    "name": "ohos.permission.ACCELEROMETER",
+    "reason": "$string:permission_SENSOR",
+    "usedScene": {
+      "abilities": [
+        "EntryAbility"
+      ]
     }
   }
+]
+```
 
-  onPageHide(): void {
-    console.info('onPageHide');
-    this.releaseCamera();
+### Code block 32
+
+```
+addGravityEventListener(): void {
+  try {
+    sensor.on(sensor.SensorId.GRAVITY, (data) => {
+      this.previewVM.acc = data;
+    }, { interval: 100 * 1000 * 1000 });
+  } catch (exception) {
+    Logger.error(TAG, `addGravityEventListener failed, code is ${exception.code}, message is ${exception.message}`);
+  }
+}
+```
+
+### Code block 33
+
+```
+@Component
+export struct LevelIndicator {
+  @Prop acc: sensor.AccelerometerResponse;
+
+  getRotate(): number {
+    let displayDefault: display.Display | null = null;
+    try {
+      displayDefault = display.getDefaultDisplaySync();
+    } catch (exception) {
+      Logger.error(TAG, `getDefaultDisplaySync failed, code is ${exception.code}, message is ${exception.message}`);
+    }
+    const rotation = (displayDefault?.rotation ?? 0) * 90;
+    if (rotation === 90 || rotation === 270) {
+      return -Math.atan2(-this.acc.y, this.acc.x) * (180 / Math.PI);
+    }
+    return -Math.atan2(-this.acc.x, this.acc.y) * (180 / Math.PI);
+  }
+
+  isAlign(): boolean {
+    return Math.abs(this.getRotate()) - 0 <= ANGLE_DIFFERENCE ||
+      Math.abs(Math.abs(this.getRotate()) - 90) <= ANGLE_DIFFERENCE;
   }
 
   build() {
-    Column() {
-      if (this.isShow) {
-        XComponent(this.mXComponentOptions)
-          .onLoad(async () => {
-            console.info('onLoad is called');
-            this.xComponentSurfaceId = this.xComponentCtl.getXComponentSurfaceId(); // 获取组件surfaceId。
-            // 初始化相机，组件实时渲染每帧预览流数据。
-            this.initCamera()
-          })
-          .width(this.uiContext.px2vp(this.imageHeight))
-          .height(this.uiContext.px2vp(this.imageWidth))
-      }
+    Stack({ alignContent: Alignment.Center }) {
+      Line({
+        width: 200,
+        height: 1
+      })
+      // ...
+        .strokeDashArray([3, this.isAlign() ? 0 : 3])
+        .opacity(this.isAlign() ? 1 : 0.5)
+        .rotate({ angle: this.getRotate(), centerX: '50%', centerY: '50%' })
+        .animation({
+          curve: curves.springMotion(0.6, 0.8),
+          iterations: 1,
+          playMode: PlayMode.Normal
+        })
+      Circle()
+      // ...
+        .opacity(this.isAlign() ? 1 : 0.5)
     }
-    .justifyContent(FlexAlign.Center)
-    .height('100%')
-    .width('100%')
-  }
-
-
-  // 初始化相机。
-  async initCamera(): Promise<void> {
-    console.info(`initCamera previewOutput xComponentSurfaceId:${this.xComponentSurfaceId}`);
-    try {
-      // 获取相机管理器实例。
-      this.cameraManager = camera.getCameraManager(this.context);
-      if (!this.cameraManager) {
-        console.error('initCamera getCameraManager');
-        return;
-      }
-      // 获取当前设备支持的相机device列表。
-      this.cameras = this.cameraManager.getSupportedCameras();
-      if (!this.cameras) {
-        console.error('initCamera getSupportedCameras');
-      }
-      // 选择一个相机device，创建cameraInput输出对象。
-      this.cameraInput = this.cameraManager.createCameraInput(this.cameras[0]);
-      if (!this.cameraInput) {
-        console.error('initCamera createCameraInput');
-        return;
-      }
-      // 打开相机。
-      await this.cameraInput.open();
-      // 获取相机device支持的profile。
-      let capability: camera.CameraOutputCapability =
-        this.cameraManager.getSupportedOutputCapability(this.cameras[0], camera.SceneMode.NORMAL_VIDEO);
-      if (!capability || capability.previewProfiles.length === 0) {
-        console.error('capability is null || []');
-        this.releaseCamera();
-        return;
-      }
-      let minRatioDiff : number = 0.1;
-      let surfaceRatio : number = this.imageWidth / this.imageHeight; // 最接近16:9宽高比。
-      let previewProfile: camera.Profile = capability.previewProfiles[0];
-      // 应用开发者根据实际业务需求选择一个支持的预览流previewProfile。
-      // 此处以选择CAMERA_FORMAT_YUV_420_SP（NV21）格式、满足限定条件分辨率的预览流previewProfile为例。
-      for (let index = 0; index < capability.previewProfiles.length; index++) {
-        const tempProfile = capability.previewProfiles[index];
-        let tempRatio = tempProfile.size.width >= tempProfile.size.height ?
-          tempProfile.size.width / tempProfile.size.height : tempProfile.size.height / tempProfile.size.width;
-        let currentRatio = Math.abs(tempRatio - surfaceRatio);
-        if (currentRatio <= minRatioDiff && tempProfile.format == camera.CameraFormat.CAMERA_FORMAT_YUV_420_SP) {
-          previewProfile = tempProfile;
-          break;
-        }
-      }
-      this.imageWidth = previewProfile.size.width; // 更新xComponent组件的宽。
-      this.imageHeight = previewProfile.size.height; // 更新xComponent组件的高。
-      console.info(`initCamera imageWidth:${this.imageWidth} imageHeight:${this.imageHeight}`);
-
-      // 使用xComponentSurfaceId创建预览。
-      this.previewOutput = this.cameraManager.createPreviewOutput(previewProfile, this.xComponentSurfaceId);
-      if (!this.previewOutput) {
-        console.error('initCamera createPreviewOutput');
-        this.releaseCamera();
-        return;
-      }
-      // 创建录像模式相机会话。
-      let session = this.cameraManager.createSession(camera.SceneMode.NORMAL_VIDEO);
-      if (!session) {
-        console.error('session is null');
-        this.releaseCamera();
-        return;
-      }
-      this.session = session as camera.VideoSession;
-      // 开始配置会话。
-      this.session.beginConfig();
-      // 添加相机设备输入。
-      this.session.addInput(this.cameraInput);
-      // 添加预览流输出。
-      this.session.addOutput(this.previewOutput);
-      // 提交会话配置。
-      await this.session.commitConfig();
-      // 开始启动已配置的输入输出流。
-      await this.session.start();
-    } catch (error) {
-      console.error(`initCamera fail: ${JSON.stringify(error)}`);
-      this.releaseCamera();
-    }
-  }
-
-  // 释放相机。
-  async releaseCamera(): Promise<void> {
-    console.info('releaseCamera');
-    // 停止当前会话。
-    await this.session?.stop().catch((e: BusinessError) => {console.error('Failed to stop session: ', e)});
-    // 释放相机输入流。
-    await this.cameraInput?.close().catch((e: BusinessError) => {console.error('Failed to close the camera: ', e)});
-    // 释放预览输出流。
-    await this.previewOutput?.release().catch((e: BusinessError) => {console.error('Failed to stop the preview stream: ', e)});
-    // 释放会话。
-    await this.session?.release().catch((e: BusinessError) => {console.error('Failed to release session: ', e)});
+    // ...
+    .hitTestBehavior(HitTestMode.Transparent)
   }
 }
+```
+
+### Code block 34
+
+```
+class RefreshableTimer {
+  private timerId?: number;
+  private readonly timeout: number;
+  private callback: () => void;
+  private isActive: boolean = false;
+
+  constructor(callback: () => void, timeout: number) {
+    this.callback = callback;
+    this.timeout = timeout;
+  }
+
+  start(): void {
+    clearTimeout(this.timerId);
+    this.timerId = setTimeout(() => {
+      this.callback();
+      this.isActive = false;
+    }, this.timeout);
+    this.isActive = true;
+  }
+
+  clear(): void {
+    clearTimeout(this.timerId);
+    this.timerId = undefined;
+    this.isActive = false;
+  }
+
+  refresh(): void {
+    this.clear();
+    this.start();
+  }
+
+  isRunning(): boolean {
+    return this.isActive;
+  }
+}
+```
+
+### Code block 35
+
+```
+initSleepTimer(): void {
+  this.previewVM.sleepTimer = new RefreshableTimer(() => {
+    this.previewVM.openPreviewBlur();
+    this.previewVM.isSleeping = true;
+    this.previewVM.cameraManagerRelease();
+  }, 30 * 1000);
+  this.previewVM.sleepTimer.start();
+  const observer = this.getUIContext().getUIObserver();
+  observer.on('willClick', () => {
+    this.previewVM.sleepTimer?.refresh();
+  });
+}
+```
+
+### Code block 36
+
+```
+@Builder
+wakeupMask() {
+  Column() {
+    Text($r('app.string.wakeup_text'))
+      .fontColor(Color.White)
+      .opacity(0.6)
+  }
+  // ...
+  .onClick(async () => {
+    this.previewVM.isSleeping = false;
+    this.previewVM.sleepTimer?.refresh();
+    await this.previewVM.cameraManagerStart();
+    this.previewVM.syncButtonSettings();
+  })
+}
+```
+
+### Code block 37
+
+```
+registerApplicationStateChange(): void {
+  this.applicationContext.on('applicationStateChange', {
+    onApplicationForeground: async () => {
+      await this.previewVM.cameraManagerStart();
+      // ...
+    },
+    onApplicationBackground: () => {
+      // ...
+      this.previewVM.cameraManagerRelease();
+    }
+  });
+}
+```
+
+### Code block 38
+
+```
+async createOutput(config: CreateOutputConfig): Promise<camera.CameraOutput | undefined> {
+  const cameraOutputCap = config.cameraManager?.getSupportedOutputCapability(config.device, config.sceneMode);
+  if (!cameraOutputCap) {
+    Logger.error(TAG_LOG, 'Failed to get supported output capability.');
+    return undefined;
+  }
+  let metadataObjectTypes: camera.MetadataObjectType[] = cameraOutputCap!.supportedMetadataObjectTypes;
+  try {
+    this.output = config.cameraManager?.createMetadataOutput(metadataObjectTypes);
+    if (this.output) {
+      this.addOutputListener(this.output);
+    }
+  } catch (error) {
+    Logger.error(TAG_LOG, `Failed to createMetadataOutput, error code: ${error.code}`);
+  }
+  return this.output;
+}
+```
+
+### Code block 39
+
+```
+for (const outputManager of this.outputManagers) {
+  if (outputManager.isActive) {
+    const output = await outputManager.createOutput(config);
+    session?.addOutput(output);
+  }
+}
+await session?.commitConfig();
+await session?.start();
+```
+
+### Code block 40
+
+```
+addMetadataObjectsAvailableListener(metadataOutput: camera.MetadataOutput): void {
+  metadataOutput.on('metadataObjectsAvailable',
+    (err: BusinessError, metadataObjectArr: Array<camera.MetadataObject>) => {
+    if (err && err.code !== 0) {
+      Logger.error(TAG_LOG, `Metadata output on metadataObjectsAvailable error code: ${err.code}`);
+      return;
+    }
+    let boxRectArr: camera.Rect[] = [];
+    metadataObjectArr.forEach((obj: camera.MetadataObject)=>{
+      boxRectArr.push(obj.boundingBox);
+    });
+    this.onMetadataObjectsAvailable(boxRectArr);
+  });
+}
+```
+
+### Code block 41
+
+```
+onMetadataObjectsAvailable(faceBoxArr: camera.Rect[]) {
+  faceBoxArr.forEach((value) => {
+    value.topLeftX *= this.previewVM.getPreviewWidth();
+    value.topLeftY *= this.previewVM.getPreviewHeight();
+    value.width *= this.previewVM.getPreviewWidth();
+    value.height *= this.previewVM.getPreviewHeight();
+  })
+  this.previewVM.faceBoundingBoxArr = faceBoxArr;
+}
+```
+
+### Code block 42
+
+```
+export function calFaceBoxLinePoint(faceBoxRect: camera.Rect): LinePoint[] {
+  let lineLength: number = Math.min(faceBoxRect.width, faceBoxRect.height) * FACE_BOX_LINE_RATIO;
+  let linePoints: LinePoint[] = [];
+
+  let startPoints: camera.Point[] = [
+    { x: faceBoxRect.topLeftX, y: faceBoxRect.topLeftY },
+    { x: faceBoxRect.topLeftX + faceBoxRect.width, y: faceBoxRect.topLeftY },
+    { x: faceBoxRect.topLeftX, y: faceBoxRect.topLeftY + faceBoxRect.height },
+    { x: faceBoxRect.topLeftX + faceBoxRect.width, y: faceBoxRect.topLeftY + faceBoxRect.height }];
+
+  startPoints.forEach((startPoint: camera.Point) => {
+    let horizontalLine: LinePoint = {
+      start: startPoint,
+      increment: { x: startPoint.x > faceBoxRect.topLeftX ? -lineLength : lineLength, y: 0 }
+    };
+
+    let verticalLine: LinePoint = {
+      start: startPoint,
+      increment: { x: 0, y: startPoint.y > faceBoxRect.topLeftY ? -lineLength : lineLength }
+    };
+
+    linePoints.push(horizontalLine, verticalLine);
+  });
+  return linePoints;
+}
+```
+
+### Code block 43
+
+```
+@Builder
+faceBox(faceBoxRect: camera.Rect) {
+  ForEach(calFaceBoxLinePoint(faceBoxRect), (linePoint: LinePoint) => {
+    Line()
+      .startPoint([0, 0])
+      .endPoint([linePoint.increment.x, linePoint.increment.y])
+      .stroke(Color.White)
+      .position({ x: linePoint.start.x, y: linePoint.start.y })
+  }, (linePoint: LinePoint) => JSON.stringify(linePoint));
+}
+```
+
+### Code block 44
+
+```
+async init(size: Size, format = image.ImageFormat.JPEG, capacity = 8): Promise<string> {
+  const receiver = image.createImageReceiver(size, format, capacity);
+  const surfaceId = await receiver.getReceivingSurfaceId();
+  this.onImageArrival(receiver);
+  return surfaceId;
+}
+```
+
+### Code block 45
+
+```
+onImageArrival(receiver: image.ImageReceiver): void {
+  receiver.on('imageArrival', () => {
+    Logger.info(TAG, 'image arrival');
+    receiver.readNextImage((err: BusinessError, nextImage: image.Image) => {
+      if (err || nextImage === undefined) {
+        nextImage?.release();
+        Logger.error(TAG, 'readNextImage failed');
+        return;
+      }
+      nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError, imgComponent: image.Component) => {
+        if (err || imgComponent === undefined) {
+          Logger.error(TAG, 'getComponent failed');
+        }
+        if (imgComponent.byteBuffer) {
+          // ...
+        } else {
+          Logger.error(TAG, 'byteBuffer is null');
+        }
+        // ...
+      });
+    });
+  });
+}
+```
+
+### Code block 46
+
+```
+async getPixelMap(imgComponent: image.Component, width: number, height: number,
+  stride: number): Promise<image.PixelMap> {
+  if (stride === width) {
+    return await image.createPixelMap(imgComponent.byteBuffer, {
+      size: { height: height, width: width },
+      srcPixelFormat: image.PixelMapFormat.NV21,
+    });
+  }
+  const dstBufferSize = width * height * 1.5;
+  const dstArr = new Uint8Array(dstBufferSize);
+  for (let j = 0; j < height * 1.5; j++) {
+    const srcBuf = new Uint8Array(imgComponent.byteBuffer, j * stride, width);
+    dstArr.set(srcBuf, j * width);
+  }
+  return await image.createPixelMap(dstArr.buffer, {
+    size: { height: height, width: width },
+    srcPixelFormat: image.PixelMapFormat.NV21,
+  });
+}
+```
+
+### Code block 47
+
+```
+nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError, imgComponent: image.Component) => {
+  if (err || imgComponent === undefined) {
+    Logger.error(TAG, 'getComponent failed');
+  }
+  if (imgComponent.byteBuffer) {
+    const width = nextImage.size.width;
+    const height = nextImage.size.height;
+    const stride = imgComponent.rowStride;
+    Logger.info(TAG, `getComponent with width:${width} height:${height} stride:${stride}`);
+    const pixelMap = await this.getPixelMap(imgComponent, width, height, stride);
+    let displayDefault: display.Display | null = null;
+    try {
+      displayDefault = display.getDefaultDisplaySync();
+      const displayRotation = (displayDefault?.rotation ?? 0) * camera.ImageRotation.ROTATION_90;
+      const rotation = this.output?.getPreviewRotation(displayRotation) || 0;
+      if (this.position === camera.CameraPosition.CAMERA_POSITION_FRONT) {
+        if (displayRotation === 90 || displayRotation === 270) {
+          await pixelMap.rotate((rotation + 180) % 360);
+        } else {
+          await pixelMap.rotate(rotation);
+        }
+        await pixelMap.flip(true, false);
+      } else {
+        await pixelMap.rotate(rotation);
+      }
+      this.callback(pixelMap);
+    } catch (exception) {
+      Logger.error(TAG,
+        `getDefaultDisplaySync failed, code is ${exception.code}, message is ${exception.message}`);
+    }
+  } else {
+    Logger.error(TAG, 'byteBuffer is null');
+  }
+  // ...
+});
+```
+
+### Code block 48
+
+```
+nextImage.getComponent(image.ComponentType.JPEG, async (err: BusinessError, imgComponent: image.Component) => {
+  // ...
+  nextImage.release();
+  Logger.info(TAG, 'image process done');
+});
 ```

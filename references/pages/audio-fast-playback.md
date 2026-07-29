@@ -51,7 +51,7 @@ OHAudio录制和播放。
 
 从API version 20开始，支持低时延相关查询接口。
 
-开发者通过调用OH_AudioRenderer_GetFastStatus()来获取音频播放流是否正在低时延状态下工作。
+可通过OH_AudioRenderer_GetFastStatus()来获取音频播放流是否正在低时延状态下工作。
 
 在部分特殊场景（如：存在更高优先级流、当前连接设备不支持等）下，开发者可以通过调用OH_AudioRenderer_OnFastStatusChange()来获取低时延状态改变事件。
 
@@ -61,9 +61,9 @@ OHAudio录制和播放。
 
 [h2]使用低时延流的场景
 
-游戏、k歌、直播等对时延要求较高的场景，建议使用低时延模式。
+游戏、K歌、直播等对时延要求较高的场景，建议使用低时延模式。
 
-视频播放、音乐播放等没有实时要求的场景，不建议使用低时延模式。
+视频播放、音乐播放等对时延要求不敏感的场景，不建议使用低时延模式。
 
 [h2]确保数据及时提供
 
@@ -86,8 +86,8 @@ static OH_AudioData_Callback_Result MyOnWriteData_New(
 {
     // 将待播放的数据，按audioDataSize长度写入audioData。
     // 如果开发者不希望播放某段audioData，返回AUDIO_DATA_CALLBACK_RESULT_INVALID即可。
-    int32_t readCount = fread(audioData, audioDataSize, 1, g_fp);
-    if (readCount < 0) {
+    size_t readCount = fread(audioData, audioDataSize, 1, g_fp);
+    if (readCount == 0) {
         return AUDIO_DATA_CALLBACK_RESULT_INVALID;
     }
     if (feof(g_fp)) {
@@ -100,9 +100,9 @@ static OH_AudioData_Callback_Result MyOnWriteData_New(
     OH_AudioRenderer_OnWriteDataCallback writeDataCb = MyOnWriteData_New;
     OH_AudioStreamBuilder_SetRendererWriteDataCallback(builder, writeDataCb, nullptr);
 
-为避免音频卡顿，禁止在回调方法OH_AudioRenderer_OnWriteData中执行耗时操作。
+为避免音频卡顿，禁止在回调函数OH_AudioRenderer_OnWriteDataCallback中执行耗时操作。
 
-为保证OH_AudioRenderer_OnWriteData与流状态控制逻辑独立正常运行，禁止在OH_AudioRenderer_OnWriteData回调方法中调用音频流控制接口。
+为保证OH_AudioRenderer_OnWriteDataCallback与流状态控制逻辑独立正常运行，禁止在OH_AudioRenderer_OnWriteDataCallback回调函数中调用音频流控制接口。
 
 音频流控制接口	说明
 OH_AudioStream_Result OH_AudioRenderer_Start(OH_AudioRenderer* renderer)	开始播放。
@@ -113,7 +113,7 @@ OH_AudioStream_Result OH_AudioRenderer_Release(OH_AudioRenderer* renderer)	释�
 
 注意
 
-音频流控制接口执行会有耗时（例如OH_AudioRenderer_Stop接口需要播完缓存，单次执行普遍超过50ms），应避免在主线程中直接调用，以免造成界面显示卡顿。
+音频流控制接口执行存在耗时（例如OH_AudioRenderer_Stop接口需要播完缓存，单次执行普遍超过50ms），应避免在主线程中直接调用，以免造成界面显示卡顿。
 
 ## Code blocks
 
@@ -136,8 +136,8 @@ static OH_AudioData_Callback_Result MyOnWriteData_New(
 {
     // 将待播放的数据，按audioDataSize长度写入audioData。
     // 如果开发者不希望播放某段audioData，返回AUDIO_DATA_CALLBACK_RESULT_INVALID即可。
-    int32_t readCount = fread(audioData, audioDataSize, 1, g_fp);
-    if (readCount < 0) {
+    size_t readCount = fread(audioData, audioDataSize, 1, g_fp);
+    if (readCount == 0) {
         return AUDIO_DATA_CALLBACK_RESULT_INVALID;
     }
     if (feof(g_fp)) {

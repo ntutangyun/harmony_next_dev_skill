@@ -41,14 +41,14 @@ selectFraudApp(context: common.Context, options?: AntifraudAppOptions): Promise<
 
 导入Device Security Kit模块及相关公共模块。
 
-import { securityAudit } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common} from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import antifraudPicker from '@hms.security.antifraudPicker';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
 
 调用selectFraudApp接口获取诈骗应用信息。
 
-const TAG = "AntifraudPickerJsTest";
+const TAG = 'AntifraudPickerJsTest';
 
 // 请求获取诈骗应用信息，并进行业务处理
 let options: antifraudPicker.AntifraudAppOptions = {
@@ -68,16 +68,16 @@ try {
 ### Code block 1
 
 ```
-import { securityAudit } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common} from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import antifraudPicker from '@hms.security.antifraudPicker';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "AntifraudPickerJsTest";
+const TAG = 'AntifraudPickerJsTest';
 
 // 请求获取诈骗应用信息，并进行业务处理
 let options: antifraudPicker.AntifraudAppOptions = {

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-ukey
 
 获取属性
 
-通过证书管理系统能力提供的证书选择接口获取keyUri作为resourceId，并打开资源。
+通过证书管理系统能力提供的openAuthorizeDialog获取keyUri作为resourceId，并打开资源。
 
 构造输入参数propertyId和可选输入参数param。
 
@@ -35,7 +35,7 @@ async function getProperty(): Promise<Array<huksExternalCrypto.HuksExternalCrypt
   const extProperties: Array<huksExternalCrypto.HuksExternalCryptoParam> = [];
 
   // 3. 调用getProperty获取属性信息
-  console.info(`promise: await huksExternalCrypto getProperty`);
+  console.info('promise: await huksExternalCrypto getProperty.');
   try {
     await huksExternalCrypto.getProperty(testResourceId, propertyId, extProperties)
       .then((data) => {
@@ -73,7 +73,7 @@ async function getProperty(): Promise<Array<huksExternalCrypto.HuksExternalCrypt
   const extProperties: Array<huksExternalCrypto.HuksExternalCryptoParam> = [];
 
   // 3. 调用getProperty获取属性信息
-  console.info(`promise: await huksExternalCrypto getProperty`);
+  console.info('promise: await huksExternalCrypto getProperty.');
   try {
     await huksExternalCrypto.getProperty(testResourceId, propertyId, extProperties)
       .then((data) => {

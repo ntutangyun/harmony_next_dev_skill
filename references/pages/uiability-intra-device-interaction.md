@@ -437,7 +437,7 @@ export default class ColdStartAbility extends UIAbility {
 冷启动短信应用的UIAbility实例时，在onWindowStageCreate()生命周期回调中，通过调用getUIContext()接口获取UI上下文实例UIContext对象。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Want, UIAbility } from '@kit.AbilityKit';
+import { Want, UIAbility, AbilityConstant } from '@kit.AbilityKit';
 import { window, UIContext } from '@kit.ArkUI';
 const DOMAIN_NUMBER: number = 0xFF00;
 const TAG: string = '[HotStartAbility]';
@@ -975,7 +975,7 @@ export default class ColdStartAbility extends UIAbility {
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Want, UIAbility } from '@kit.AbilityKit';
+import { Want, UIAbility, AbilityConstant } from '@kit.AbilityKit';
 import { window, UIContext } from '@kit.ArkUI';
 const DOMAIN_NUMBER: number = 0xFF00;
 const TAG: string = '[HotStartAbility]';

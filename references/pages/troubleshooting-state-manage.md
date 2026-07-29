@@ -32,9 +32,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/troublesh
 
 在给状态变量赋值时，状态管理框架会检查当前被赋值的状态变量的值是否有变化，如果没有变化，则会直接返回，不做任何操作。最简单的排查手段是分别打印修改状态变量前后的值，检查是否有变化。如以下示例。
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
+
 @Entry
 @Component
-struct Index {
+struct StateValueChangePage {
   @State message: string = 'Hello World';
 
   build() {
@@ -42,9 +47,9 @@ struct Index {
       Text(this.message)
         .onClick(() => {
           // 日志打印：输出赋值前后this.message
-          console.info(`message set before ${this.message}`);
+          hilog.info(DOMAIN, TAG, '%{public}s', `message set before ${this.message}`);
           this.message = 'Welcome';
-          console.info(`message set after ${this.message}`);
+          hilog.info(DOMAIN, TAG, '%{public}s', `message set after ${this.message}`);
         })
     }
   }
@@ -72,12 +77,12 @@ message set after Welcome
 import { UIUtils } from '@kit.ArkUI';
 
 class Outer {
-  value: string = 'outer';
-  inner: Inner = new Inner();
+  public value: string = 'outer';
+  public inner: Inner = new Inner();
 }
 
 class Inner {
-  value: string = 'inner';
+  public value: string = 'inner';
 }
 
 @Entry
@@ -136,42 +141,46 @@ ArkUI State泳道没有状态变量变化的上报信息。
 正确示例：
 
 import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
 
 class Outer {
-  value: string = 'outer';
-  inner: Inner = new Inner();
+  public value: string = 'outer';
+  public inner: Inner = new Inner();
 }
 
 @Observed
 class Inner {
-  value: string = 'inner';
+  public value: string = 'inner';
 }
 
 @Entry
 @Component
-struct Index {
+struct ObservabilityPage {
   @State outer: Outer = new Outer();
 
   build() {
     Column() {
       Text(`Index: outer value: ${this.outer.value}`)
-      Child({ inner: this.outer.inner })
+      InnerDisplay({ inner: this.outer.inner })
     }
   }
 }
 
 @Component
-struct Child {
+struct InnerDisplay {
   @ObjectLink @Watch('onChange') inner: Inner;
 
   aboutToAppear(): void {
     // 日志输出：inner is observed object
-    console.info(`inner is ${UIUtils.getTarget(this.inner) === this.inner ? 'not observed object' :
+    hilog.info(DOMAIN, TAG, '%{public}s', `inner is ${UIUtils.getTarget(this.inner) === this.inner ? 'not observed object' :
       'observed object'}`);
   }
 
   onChange() {
-    console.info(`inner property has been changed ${this.inner.value}`)
+    hilog.info(DOMAIN, TAG, '%{public}s', `inner property has been changed ${this.inner.value}`)
   }
 
   build() {
@@ -211,12 +220,16 @@ ArkUI State泳道有状态变量变化的上报信息。
 具体示例如下：
 
 import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
 
 @ObservedV2
 class Info {
-  @Trace value: string = 'info';
-  @Trace numberArr: number[] = [];
-  count: number = 0;
+  @Trace public value: string = 'info';
+  @Trace public numberArr: number[] = [];
+  public count: number = 0;
 
   constructor(val: string) {
     this.value = val;
@@ -226,12 +239,12 @@ class Info {
 
 @Entry
 @ComponentV2
-struct Index {
+struct ObservabilityV2Page {
   info: Info = new Info('info');
 
   aboutToAppear(): void {
     // 日志输出：this.info.numberArr is observed array
-    console.info(`this.info.numberArr is ${UIUtils.getTarget(this.info.numberArr) === this.info.numberArr ?
+    hilog.info(DOMAIN, TAG, '%{public}s', `this.info.numberArr is ${UIUtils.getTarget(this.info.numberArr) === this.info.numberArr ?
       'not observed array' :
       'observed array'}`);
   }
@@ -242,7 +255,8 @@ struct Index {
       Text(`Index: info numberArr length: ${this.info.numberArr.length}`)
       Text(`Index: info count: ${this.info.count}`)
 
-      Button('change info property').onClick(() => {
+      Button('change info property')
+        .onClick(() => {
         this.info.value = 'new info';
         this.info.numberArr.push(3);
         this.info.count++;
@@ -263,7 +277,7 @@ struct Index {
 
 同步对象(sync peer)：如@State和@Link、@Provide和@Consume。开发者可以通过DevEco Studio的ArkUI Inspector来查看数据源和同步对象之间是否存在同步关系，具体见状态管理Inspector调试能力。
 
-依赖其所属组件的更新函数：如@State通知@Prop变化、@State通知@ObjectLink变化。开发者可以使用断点调试工具，或者getHash接口来判断数据源和同步对象是否为同一个对象的引用(hashcode并不固定，以开发者自己打印的为准)。
+依赖其所属组件的更新函数：如@State通知@Prop变化、@State通知@ObjectLink变化。开发者可以使用断点调试工具，或者getHash来判断数据源和同步对象是否为同一个对象的引用(hashcode并不固定，以开发者自己打印的为准)。
 
 状态管理V2
 
@@ -276,7 +290,7 @@ import { util } from '@kit.ArkTS';
 
 @Observed
 class Info {
-  value: string = 'info';
+  public value: string = 'info';
 }
 
 @Entry
@@ -337,34 +351,40 @@ struct Child {
 
 import { UIUtils } from '@kit.ArkUI';
 import { util } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
 
 @Observed
 class Info {
-  value: string = 'info';
+  public value: string = 'info';
 }
 
 @Entry
 @Component
-struct Index {
+struct ForEachSyncPage {
   @State infos: Info[] = [new Info()];
 
   build() {
     Column() {
       // 第一步：点击该Button
       // 触发ForEach的刷新，ForEach对比前后key值改变，触发Child的重建，@ObjectLink info指向新的Info的实例
-      Button('change first item value').onClick(() => {
+      Button('change first item value')
+        .onClick(() => {
         this.infos[0] = new Info();
       })
 
       // 第二步：点击该Button，@ObjectLink info的@Watch的函数被触发
       // 日志打印：this.infos[0] hashcode: 358024053
-      Button('change first item value').onClick(() => {
+      Button('change first item value')
+        .onClick(() => {
         this.infos[0].value += '1';
-        console.info(`this.infos[0] hashcode: ${util.getHash(this.infos[0])}`);
+        hilog.info(DOMAIN, TAG, '%{public}s', `this.infos[0] hashcode: ${util.getHash(this.infos[0])}`);
       })
 
       ForEach(this.infos, (item: Info) => {
-        Child({ info: item })
+        InfoItemDisplay({ info: item })
       }, (item: Info) => {
         // 随机数key值
         return item.value + Math.random().toString();
@@ -374,19 +394,19 @@ struct Index {
 }
 
 @Component
-struct Child {
+struct InfoItemDisplay {
   @ObjectLink @Watch('onChange') info: Info;
 
   aboutToAppear(): void {
     // 日志输出:
     // 首次创建： info is observed object, hashcode: 2026693567
     // 点击Button('change first item value')，触发Child重建：info is observed object, hashcode: 358024053
-    console.info(`info is ${UIUtils.getTarget(this.info) === this.info ? 'not observed object' :
+    hilog.info(DOMAIN, TAG, '%{public}s', `info is ${UIUtils.getTarget(this.info) === this.info ? 'not observed object' :
       'observed object'}, hashcode: ${util.getHash(this.info)}`);
   }
 
   onChange() {
-    console.info(`info property has been changed ${this.info.value}`);
+    hilog.info(DOMAIN, TAG, '%{public}s', `info property has been changed ${this.info.value}`);
   }
 
   build() {
@@ -462,41 +482,51 @@ Image onComplete 200 load status: 1
 
 可以将组件的同步回调中对状态变量的赋值通过setTimeout转换为异步执行，示例如下。
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
+const INIT_WIDTH: number = 100; // Image initial width value
+const CHANGED_WIDTH: number = 200; // Image width value after change
+const IMAGE_HEIGHT: number = 500; // Image fixed height value
+
 @Entry
 @Component
-struct Page {
-  @State widthValue: number = 100;
-  @State flag: boolean = true;
+struct RenderUpdatePage {
+  @State widthValue: number = INIT_WIDTH;
+  @State resourceFlag: boolean = true;
 
   getHeightValue(): number {
-    console.info('Image render');
-    return 500;
+    hilog.info(DOMAIN, TAG, '%{public}s', 'Image render');
+    return IMAGE_HEIGHT;
   }
 
   build() {
     Column() {
-      Image(this.flag ? $r('app.media.startIcon') : $r('app.media.background'))
+      Image(this.resourceFlag ? $r('app.media.startIcon') : $r('app.media.background'))
         .width(this.widthValue)
         .height(this.getHeightValue())
         .backgroundColor(Color.Pink)
         .onComplete((event) => {
           setTimeout(() =>{
-            this.widthValue = 200;
-            console.info(`Image onComplete ${this.widthValue} load status: ${event?.loadingStatus}`);
+            this.widthValue = CHANGED_WIDTH;
+            hilog.info(DOMAIN, TAG, '%{public}s', `Image onComplete ${this.widthValue} load status: ${event?.loadingStatus}`);
           });
         })
 
-      Button('change resource').onClick(() => {
-        // 第一步：改变flag，使得两个Resource变量都进入Image组件的缓存
+      Button('change resource')
+        .onClick(() => {
+        // 第一步：改变resourceFlag，使得两个Resource变量都进入Image组件的缓存
         // 第三步：再次改变Image的Resource，此时onComplete为同步回调
         // onComplete的回调中异步修改widthValue为200
         // Image宽度刷新为200
-        this.flag = !this.flag;
+        this.resourceFlag = !this.resourceFlag;
       })
 
-      Button('change widthValue').onClick(() => {
+      Button('change widthValue')
+        .onClick(() => {
         // 第二步：改变image宽度为100
-        this.widthValue = 100;
+        this.widthValue = INIT_WIDTH;
       })
     }
     .height('100%')
@@ -530,9 +560,14 @@ Image render
 ### Code block 1
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
+
 @Entry
 @Component
-struct Index {
+struct StateValueChangePage {
   @State message: string = 'Hello World';
 
   build() {
@@ -540,9 +575,9 @@ struct Index {
       Text(this.message)
         .onClick(() => {
           // 日志打印：输出赋值前后this.message
-          console.info(`message set before ${this.message}`);
+          hilog.info(DOMAIN, TAG, '%{public}s', `message set before ${this.message}`);
           this.message = 'Welcome';
-          console.info(`message set after ${this.message}`);
+          hilog.info(DOMAIN, TAG, '%{public}s', `message set after ${this.message}`);
         })
     }
   }
@@ -562,12 +597,12 @@ message set after Welcome
 import { UIUtils } from '@kit.ArkUI';
 
 class Outer {
-  value: string = 'outer';
-  inner: Inner = new Inner();
+  public value: string = 'outer';
+  public inner: Inner = new Inner();
 }
 
 class Inner {
-  value: string = 'inner';
+  public value: string = 'inner';
 }
 
 @Entry
@@ -618,42 +653,46 @@ struct Child {
 
 ```
 import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
 
 class Outer {
-  value: string = 'outer';
-  inner: Inner = new Inner();
+  public value: string = 'outer';
+  public inner: Inner = new Inner();
 }
 
 @Observed
 class Inner {
-  value: string = 'inner';
+  public value: string = 'inner';
 }
 
 @Entry
 @Component
-struct Index {
+struct ObservabilityPage {
   @State outer: Outer = new Outer();
 
   build() {
     Column() {
       Text(`Index: outer value: ${this.outer.value}`)
-      Child({ inner: this.outer.inner })
+      InnerDisplay({ inner: this.outer.inner })
     }
   }
 }
 
 @Component
-struct Child {
+struct InnerDisplay {
   @ObjectLink @Watch('onChange') inner: Inner;
 
   aboutToAppear(): void {
     // 日志输出：inner is observed object
-    console.info(`inner is ${UIUtils.getTarget(this.inner) === this.inner ? 'not observed object' :
+    hilog.info(DOMAIN, TAG, '%{public}s', `inner is ${UIUtils.getTarget(this.inner) === this.inner ? 'not observed object' :
       'observed object'}`);
   }
 
   onChange() {
-    console.info(`inner property has been changed ${this.inner.value}`)
+    hilog.info(DOMAIN, TAG, '%{public}s', `inner property has been changed ${this.inner.value}`)
   }
 
   build() {
@@ -671,12 +710,16 @@ struct Child {
 
 ```
 import { UIUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
 
 @ObservedV2
 class Info {
-  @Trace value: string = 'info';
-  @Trace numberArr: number[] = [];
-  count: number = 0;
+  @Trace public value: string = 'info';
+  @Trace public numberArr: number[] = [];
+  public count: number = 0;
 
   constructor(val: string) {
     this.value = val;
@@ -686,12 +729,12 @@ class Info {
 
 @Entry
 @ComponentV2
-struct Index {
+struct ObservabilityV2Page {
   info: Info = new Info('info');
 
   aboutToAppear(): void {
     // 日志输出：this.info.numberArr is observed array
-    console.info(`this.info.numberArr is ${UIUtils.getTarget(this.info.numberArr) === this.info.numberArr ?
+    hilog.info(DOMAIN, TAG, '%{public}s', `this.info.numberArr is ${UIUtils.getTarget(this.info.numberArr) === this.info.numberArr ?
       'not observed array' :
       'observed array'}`);
   }
@@ -702,7 +745,8 @@ struct Index {
       Text(`Index: info numberArr length: ${this.info.numberArr.length}`)
       Text(`Index: info count: ${this.info.count}`)
 
-      Button('change info property').onClick(() => {
+      Button('change info property')
+        .onClick(() => {
         this.info.value = 'new info';
         this.info.numberArr.push(3);
         this.info.count++;
@@ -720,7 +764,7 @@ import { util } from '@kit.ArkTS';
 
 @Observed
 class Info {
-  value: string = 'info';
+  public value: string = 'info';
 }
 
 @Entry
@@ -783,34 +827,40 @@ struct Child {
 ```
 import { UIUtils } from '@kit.ArkUI';
 import { util } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
 
 @Observed
 class Info {
-  value: string = 'info';
+  public value: string = 'info';
 }
 
 @Entry
 @Component
-struct Index {
+struct ForEachSyncPage {
   @State infos: Info[] = [new Info()];
 
   build() {
     Column() {
       // 第一步：点击该Button
       // 触发ForEach的刷新，ForEach对比前后key值改变，触发Child的重建，@ObjectLink info指向新的Info的实例
-      Button('change first item value').onClick(() => {
+      Button('change first item value')
+        .onClick(() => {
         this.infos[0] = new Info();
       })
 
       // 第二步：点击该Button，@ObjectLink info的@Watch的函数被触发
       // 日志打印：this.infos[0] hashcode: 358024053
-      Button('change first item value').onClick(() => {
+      Button('change first item value')
+        .onClick(() => {
         this.infos[0].value += '1';
-        console.info(`this.infos[0] hashcode: ${util.getHash(this.infos[0])}`);
+        hilog.info(DOMAIN, TAG, '%{public}s', `this.infos[0] hashcode: ${util.getHash(this.infos[0])}`);
       })
 
       ForEach(this.infos, (item: Info) => {
-        Child({ info: item })
+        InfoItemDisplay({ info: item })
       }, (item: Info) => {
         // 随机数key值
         return item.value + Math.random().toString();
@@ -820,19 +870,19 @@ struct Index {
 }
 
 @Component
-struct Child {
+struct InfoItemDisplay {
   @ObjectLink @Watch('onChange') info: Info;
 
   aboutToAppear(): void {
     // 日志输出:
     // 首次创建： info is observed object, hashcode: 2026693567
     // 点击Button('change first item value')，触发Child重建：info is observed object, hashcode: 358024053
-    console.info(`info is ${UIUtils.getTarget(this.info) === this.info ? 'not observed object' :
+    hilog.info(DOMAIN, TAG, '%{public}s', `info is ${UIUtils.getTarget(this.info) === this.info ? 'not observed object' :
       'observed object'}, hashcode: ${util.getHash(this.info)}`);
   }
 
   onChange() {
-    console.info(`info property has been changed ${this.info.value}`);
+    hilog.info(DOMAIN, TAG, '%{public}s', `info property has been changed ${this.info.value}`);
   }
 
   build() {
@@ -904,41 +954,51 @@ Image onComplete 200 load status: 1
 ### Code block 10
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0x0000;
+const TAG: string = '[Sample_TroubleshootingStateManage]';
+const INIT_WIDTH: number = 100; // Image initial width value
+const CHANGED_WIDTH: number = 200; // Image width value after change
+const IMAGE_HEIGHT: number = 500; // Image fixed height value
+
 @Entry
 @Component
-struct Page {
-  @State widthValue: number = 100;
-  @State flag: boolean = true;
+struct RenderUpdatePage {
+  @State widthValue: number = INIT_WIDTH;
+  @State resourceFlag: boolean = true;
 
   getHeightValue(): number {
-    console.info('Image render');
-    return 500;
+    hilog.info(DOMAIN, TAG, '%{public}s', 'Image render');
+    return IMAGE_HEIGHT;
   }
 
   build() {
     Column() {
-      Image(this.flag ? $r('app.media.startIcon') : $r('app.media.background'))
+      Image(this.resourceFlag ? $r('app.media.startIcon') : $r('app.media.background'))
         .width(this.widthValue)
         .height(this.getHeightValue())
         .backgroundColor(Color.Pink)
         .onComplete((event) => {
           setTimeout(() =>{
-            this.widthValue = 200;
-            console.info(`Image onComplete ${this.widthValue} load status: ${event?.loadingStatus}`);
+            this.widthValue = CHANGED_WIDTH;
+            hilog.info(DOMAIN, TAG, '%{public}s', `Image onComplete ${this.widthValue} load status: ${event?.loadingStatus}`);
           });
         })
 
-      Button('change resource').onClick(() => {
-        // 第一步：改变flag，使得两个Resource变量都进入Image组件的缓存
+      Button('change resource')
+        .onClick(() => {
+        // 第一步：改变resourceFlag，使得两个Resource变量都进入Image组件的缓存
         // 第三步：再次改变Image的Resource，此时onComplete为同步回调
         // onComplete的回调中异步修改widthValue为200
         // Image宽度刷新为200
-        this.flag = !this.flag;
+        this.resourceFlag = !this.resourceFlag;
       })
 
-      Button('change widthValue').onClick(() => {
+      Button('change widthValue')
+        .onClick(() => {
         // 第二步：改变image宽度为100
-        this.widthValue = 100;
+        this.widthValue = INIT_WIDTH;
       })
     }
     .height('100%')

@@ -26,10 +26,11 @@ import { pdfService } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+// ...
 
 @Entry
 @Component
-struct PdfPage {
+struct OpenDocument {
   private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
   private context = this.getUIContext().getHostContext() as Context;
   private filePath = '';
@@ -50,39 +51,39 @@ struct PdfPage {
       this.pdfDocument.loadDocument(this.filePath);
     } catch (e) {
       let error: BusinessError = e as BusinessError;
-      hilog.error(0x0000, 'PdfPage', `Failed to loadDocument. Code: ${error.code}, message: ${error.message} `);
+      hilog.error(0x0000, 'OpenDocument', `Failed to loadDocument. Code: ${error.code}, message: ${error.message} `);
     }
   }
 
   build() {
     Column() {
-      // 另存为一份PDF文档
-      Button('Save As').onClick(() => {
-        // 可以对PDF文档添加页眉页脚，水印，背景等一些内容，然后另存文档
-        let outPdfPath = this.context.filesDir + '/testSaveAsPdf.pdf';
-        let result = this.pdfDocument.saveDocument(outPdfPath);
-        this.saveEnable = true;
-        hilog.info(0x0000, 'PdfPage', 'saveAsPdf %{public}s!', result ? 'success' : 'fail');
-      })
-      // 保存覆盖源PDF文档
-      Button('Save').enabled(this.saveEnable).onClick(() => {
-        // 这里可以对PDF文档添加内容、页眉页脚、水印、背景等一些内容，然后保存文档
-        let tempDir = this.context.tempDir;
-        let tempFilePath = tempDir + `/temp${Math.random()}.pdf`;
-        try {
-          fileIo.copyFileSync(this.filePath, tempFilePath);
-        } catch (e) {
-          let error: BusinessError = e as BusinessError;
-          hilog.error(0x0000, 'PdfPage', `Failed to copyFileSync. Code: ${error.code}, message: ${error.message} `);
-        }
-        let pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
-        // 加载临时文档
-        let loadResult = pdfDocument.loadDocument(tempFilePath, '');
-        if (loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-          let result = pdfDocument.saveDocument(this.filePath);
-          hilog.info(0x0000, 'PdfPage', 'savePdf %{public}s!', result ? 'success' : 'fail');
-        }
-      })
+      Row() {
+      // ...
+        Button('Save As').onClick(() => {
+          let outPdfPath = this.context.filesDir + '/testSaveAsPdf.pdf';
+          let result = this.pdfDocument.saveDocument(outPdfPath);
+          this.saveEnable = true;
+          hilog.info(0x0000, 'OpenSavePage', 'saveAsPdf %{public}s!', result ? 'success' : 'fail');
+        })
+        Button('Save').enabled(this.saveEnable).onClick(() => {
+          // 这里可以对PDF文档添加内容、页眉页脚、水印、背景等一些内容，然后保存文档
+          let tempDir = this.context.tempDir;
+          let tempFilePath = tempDir + `/temp${Math.random()}.pdf`;
+          try {
+            fileIo.copyFileSync(this.filePath, tempFilePath);
+          } catch (e) {
+            let error: BusinessError = e as BusinessError;
+            hilog.error(0x0000, 'OpenSavePage', `Failed to copyFileSync. Code: ${error.code}, message: ${error.message} `);
+          }
+          let pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
+          // 加载临时文档
+          let loadResult = pdfDocument.loadDocument(tempFilePath, '');
+          if (loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+            let result = pdfDocument.saveDocument(this.filePath);
+            hilog.info(0x0000, 'OpenSavePage', 'savePdf %{public}s!', result ? 'success' : 'fail');
+          }
+        })
+      }
     }
   }
 }
@@ -96,10 +97,11 @@ import { pdfService } from '@kit.PDFKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+// ...
 
 @Entry
 @Component
-struct PdfPage {
+struct OpenDocument {
   private pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
   private context = this.getUIContext().getHostContext() as Context;
   private filePath = '';
@@ -120,39 +122,39 @@ struct PdfPage {
       this.pdfDocument.loadDocument(this.filePath);
     } catch (e) {
       let error: BusinessError = e as BusinessError;
-      hilog.error(0x0000, 'PdfPage', `Failed to loadDocument. Code: ${error.code}, message: ${error.message} `);
+      hilog.error(0x0000, 'OpenDocument', `Failed to loadDocument. Code: ${error.code}, message: ${error.message} `);
     }
   }
 
   build() {
     Column() {
-      // 另存为一份PDF文档
-      Button('Save As').onClick(() => {
-        // 可以对PDF文档添加页眉页脚，水印，背景等一些内容，然后另存文档
-        let outPdfPath = this.context.filesDir + '/testSaveAsPdf.pdf';
-        let result = this.pdfDocument.saveDocument(outPdfPath);
-        this.saveEnable = true;
-        hilog.info(0x0000, 'PdfPage', 'saveAsPdf %{public}s!', result ? 'success' : 'fail');
-      })
-      // 保存覆盖源PDF文档
-      Button('Save').enabled(this.saveEnable).onClick(() => {
-        // 这里可以对PDF文档添加内容、页眉页脚、水印、背景等一些内容，然后保存文档
-        let tempDir = this.context.tempDir;
-        let tempFilePath = tempDir + `/temp${Math.random()}.pdf`;
-        try {
-          fileIo.copyFileSync(this.filePath, tempFilePath);
-        } catch (e) {
-          let error: BusinessError = e as BusinessError;
-          hilog.error(0x0000, 'PdfPage', `Failed to copyFileSync. Code: ${error.code}, message: ${error.message} `);
-        }
-        let pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
-        // 加载临时文档
-        let loadResult = pdfDocument.loadDocument(tempFilePath, '');
-        if (loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-          let result = pdfDocument.saveDocument(this.filePath);
-          hilog.info(0x0000, 'PdfPage', 'savePdf %{public}s!', result ? 'success' : 'fail');
-        }
-      })
+      Row() {
+      // ...
+        Button('Save As').onClick(() => {
+          let outPdfPath = this.context.filesDir + '/testSaveAsPdf.pdf';
+          let result = this.pdfDocument.saveDocument(outPdfPath);
+          this.saveEnable = true;
+          hilog.info(0x0000, 'OpenSavePage', 'saveAsPdf %{public}s!', result ? 'success' : 'fail');
+        })
+        Button('Save').enabled(this.saveEnable).onClick(() => {
+          // 这里可以对PDF文档添加内容、页眉页脚、水印、背景等一些内容，然后保存文档
+          let tempDir = this.context.tempDir;
+          let tempFilePath = tempDir + `/temp${Math.random()}.pdf`;
+          try {
+            fileIo.copyFileSync(this.filePath, tempFilePath);
+          } catch (e) {
+            let error: BusinessError = e as BusinessError;
+            hilog.error(0x0000, 'OpenSavePage', `Failed to copyFileSync. Code: ${error.code}, message: ${error.message} `);
+          }
+          let pdfDocument: pdfService.PdfDocument = new pdfService.PdfDocument();
+          // 加载临时文档
+          let loadResult = pdfDocument.loadDocument(tempFilePath, '');
+          if (loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+            let result = pdfDocument.saveDocument(this.filePath);
+            hilog.info(0x0000, 'OpenSavePage', 'savePdf %{public}s!', result ? 'success' : 'fail');
+          }
+        })
+      }
     }
   }
 }

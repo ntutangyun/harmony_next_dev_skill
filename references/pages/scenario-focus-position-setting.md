@@ -1,4 +1,4 @@
-# 重新设置新焦点位置的场景
+# 重新设置新焦点位置
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-focus-position-setting_
 
@@ -16,7 +16,7 @@ bundleName	string	目标应用名	当前应用包名
 triggerAction	Action	触发事件的Action	click或其他都不会有任何影响
 customId	string	组件id	abc345
 
-开发实例
+开发流程
 
 import { accessibility } from '@kit.AccessibilityKit'
 

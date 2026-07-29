@@ -26,9 +26,9 @@ LOCATION	定位导航。 说明： 从API版本26.0.0开始，支持在元服务
 BLUETOOTH_INTERACTION	蓝牙相关业务。	bluetoothInteraction	通过蓝牙传输文件时退后台。
 MULTI_DEVICE_CONNECTION	多设备互联。 说明： 从API version 12开始，支持在元服务中使用。	multiDeviceConnection	分布式业务连接、投播。
 VOIP	音视频通话。 说明： 从API version 13开始支持。	voip	某些聊天类应用（具有音视频业务）音频、视频通话时退后台。
-TASK_KEEPING	计算任务。 说明： 从API version 21开始，对PC/2in1设备、非PC/2in1设备但申请了ACL权限为ohos.permission.KEEP_BACKGROUND_RUNNING_SYSTEM的应用开放。 API version 20及之前版本，仅对PC/2in1设备开放。	taskKeeping	如杀毒软件。
+TASK_KEEPING	计算任务。 说明： 从API version 21开始，对非PC/2in1设备但申请了ACL权限为ohos.permission.KEEP_BACKGROUND_RUNNING_SYSTEM的应用开放；对PC/2in1设备，应用不需要申请ACL权限。API version 20及之前版本，仅对PC/2in1设备开放。	taskKeeping	如杀毒软件。
 MODE_AV_PLAYBACK_AND_RECORD	多媒体相关业务。 说明： 从API version 22开始支持。 从API版本26.0.0开始，支持在元服务中使用。	avPlaybackAndRecord	音视频播放，录制，音视频通话时退后台。在上述三种场景下，选择本类型或对应类型的长时任务均可。例如：音视频播放场景下，选择AUDIO_PLAYBACK或者MODE_AV_PLAYBACK_AND_RECORD任意一个即可。
-MODE_SPECIAL_SCENARIO_PROCESSING	特殊场景类型（仅对Phone、Tablet、PC/2in1设备开放）。 说明： 从API version 22开始支持。	specialScenarioProcessing	在后台进行导出媒体文件，使用三方投播组件在后台进行投播。
+MODE_SPECIAL_SCENARIO_PROCESSING	特殊场景类型（仅对Phone、Tablet、PC/2in1设备开放）。 说明： 从API version 22开始支持。	specialScenarioProcessing	在后台进行导出媒体文件，使用三方投播组件在后台进行投播，应用在后台有室内运动场景。
 MODE_NEARLINK	星闪业务。 起始版本： 26.0.0	nearlink	通过星闪传输文件时退后台。
 
 关于DATA_TRANSFER（数据传输）说明：

@@ -32,7 +32,8 @@ AR Engine仅输出识别到的平面数据。为便于用户观察，可使用AG
 平面检测能力所需的模块导入如下：
 
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene, Vec3 } from '@kit.ArkGraphics3D';
+import {CubeGeometry, CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node,
+  PrimitiveTopology, Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { Matrix4 } from '@kit.ArkUI';
 
@@ -41,30 +42,72 @@ import { Matrix4 } from '@kit.ArkUI';
 首先初始化AR会话和AR场景，可以参考初始化AR会话和AR场景章节。
 
 @Builder
-export function ARPlaneBuilder(): void {
-  ARPlane();
+export function ARWorldBuilder(): void {
+  ARWorld();
 }
-
+// ...
 @Component
-struct ARPlane {
+struct ARWorld {
   @State arContext?: arViewController.ARViewContext = undefined;
-
+  @State context: Context = this.getUIContext().getHostContext() as Context;
+  @State statusBarHeight: number = 0;
+  // ...
   build(): void {
-    // ...
+    NavDestination() {
+      RelativeContainer() {
+        if (this.arContext) {
+          ARView({ context: this.arContext })
+            .height('100%')
+            .width('100%')
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+            // ...
+        }
+      }
+    }
+    .onAppear(async () => {
+      this.initARView();
+    })
+    .onWillDisappear(async () => {
+      await this.stopARView();
+    })
+    .onShown(() => {
+      this.resumeARView();
+    })
+    .onHidden(() => {
+      this.pauseARView();
+    })
+    .hideTitleBar(true)
+    .hideBackButton(true)
+    .hideToolBar(true)
   }
-
+  // ...
   private initARView(): void {
-    // ...
+    Scene.load().then(async (scene: Scene) => {
+      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
+      viewContext.scene = scene;
+      viewContext.callback = new ARViewCallbackImpl();
+      viewContext.config = {
+        type: arEngine.ARType.WORLD,
+        planeFindingMode: arEngine.ARPlaneFindingMode.HORIZONTAL_AND_VERTICAL,
+        powerMode: arEngine.ARPowerMode.NORMAL,
+        semanticMode: arEngine.ARSemanticMode.NONE,
+        poseMode: arEngine.ARPoseMode.GRAVITY,
+        depthMode: arEngine.ARDepthMode.AUTOMATIC,
+        meshMode: arEngine.ARMeshMode.DISABLED,
+        focusMode: arEngine.ARFocusMode.AUTO
+      }
+      viewContext.init().then(() => {
+        this.arContext = viewContext;
+        logger.info('Succeeded in initting ARView.');
+      }).catch((err: BusinessError) => {
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
+      })
+    })
   }
-  private stopARView(): void {
-    // ...
-  }
-  private resumeARView(): void {
-    // ...
-  }
-  private pauseARView(): void {
-    // ...
-  }
+  // ...
 }
 
 [h2]检测环境平面
@@ -72,34 +115,34 @@ struct ARPlane {
 调用ARViewCallback，使用其中的onFrameUpdate方法进行帧数据更新，通过ARSession.getAllTrackables方法获取所有识别到的平面。
 
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
+  // ...
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
 
-    let arSession: arEngine.ARSession = ctx.session;
-
+    let session: arEngine.ARSession = ctx.session;
     try {
-      let frame: arEngine.ARFrame = arSession.getFrame();
+      let frame = session.getFrame();
       let camera: arEngine.ARCamera = frame.getCamera();
-      let trackable: arEngine.ARTrackable[] = [];
+      let trackables: arEngine.ARTrackable[] = [];
 
       if (camera.state === arEngine.ARTrackingState.TRACKING) {
-        trackable = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
-        console.info(`Succeeded in getting tracking plane, length is: ${trackable.length}`); // 打印当前识别到的平面数量
+        trackables = session.getAllTrackables(arEngine.ARTrackableType.PLANE);
+        isDisplayCube = true;
+      } else {
+        isDisplayCube = false;
       }
-
+      // ...
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
   }
 }
@@ -108,36 +151,37 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 
 自定义方法获取顶点数据getVertices、创建索引generateMeshIndex、创建mesh数据generateMeshInput。
 
-// 获取三维空间顶点坐标，第一个入参的位姿矩阵按垂直列排列，第二个坐标点为(x, 0, z, 1)，对应x-z平面。
 export function getVertices(mat: Matrix4, point: number[]): Vec3[] {
   let result: Vec3[] = [];
   for (let i = 0; i < point.length; i += 2) {
     let single: Vec3 = {
-      x: (mat[2] * point[i] + mat[6] * 0
-        + mat[10] * point[i + 1] + mat[14] * 1.0),
-      y: mat[1] * point[i] + mat[5] * 0
-        + mat[9] * point[i + 1] + mat[13] * 1.0,
-      z: -(mat[0] * point[i] + mat[4] * 0
-        + mat[8] * point[i + 1] + mat[12] * 1.0),
+      x: (mat[2] * point[i] + mat[6] * 0 + mat[10] * point[i + 1] + mat[14] * 1.0),
+      y: mat[1] * point[i] + mat[5] * 0 + mat[9] * point[i + 1] + mat[13] * 1.0,
+      z: -(mat[0] * point[i] + mat[4] * 0 + mat[8] * point[i + 1] + mat[12] * 1.0)
     }
     result.push(single);
   }
   return result;
 }
-// 创建 ARWorld 的 mesh索引。由于平面是由三角形拼接而成的，因此每个平面上的每个三角形的首个顶点索引都是相同的。
+
+/*
+Create the meshIndex of ARWorld
+Since the plane is made of triangles spliced together
+Therefore, the first vertex index of each triangle on each plane is the same
+ */
 export function generateMeshIndex(input: Vec3[][]): number[] {
   let result: number[] = [];
   let start: number = 0;
 
   for (let i = 0; i < input.length; i++) {
-    let length: number = input[i].length;
+    let len: number = input[i].length;
 
-    for (let j = start + 1; j < start + length - 1; j++) {
+    for (let j = start + 1; j < start + len - 1; j++) {
       result.push(start);
       result.push(j);
       result.push(j + 1);
     }
-    start += length;
+    start += len;
   }
   return result;
 }
@@ -159,7 +203,8 @@ export function generateMeshInput(vex: Vec3[][]): Vec3[] {
 
 ```
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene, Vec3 } from '@kit.ArkGraphics3D';
+import {CubeGeometry, CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node,
+  PrimitiveTopology, Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { Matrix4 } from '@kit.ArkUI';
 ```
@@ -168,30 +213,72 @@ import { Matrix4 } from '@kit.ArkUI';
 
 ```
 @Builder
-export function ARPlaneBuilder(): void {
-  ARPlane();
+export function ARWorldBuilder(): void {
+  ARWorld();
 }
-
+// ...
 @Component
-struct ARPlane {
+struct ARWorld {
   @State arContext?: arViewController.ARViewContext = undefined;
-
+  @State context: Context = this.getUIContext().getHostContext() as Context;
+  @State statusBarHeight: number = 0;
+  // ...
   build(): void {
-    // ...
+    NavDestination() {
+      RelativeContainer() {
+        if (this.arContext) {
+          ARView({ context: this.arContext })
+            .height('100%')
+            .width('100%')
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+            // ...
+        }
+      }
+    }
+    .onAppear(async () => {
+      this.initARView();
+    })
+    .onWillDisappear(async () => {
+      await this.stopARView();
+    })
+    .onShown(() => {
+      this.resumeARView();
+    })
+    .onHidden(() => {
+      this.pauseARView();
+    })
+    .hideTitleBar(true)
+    .hideBackButton(true)
+    .hideToolBar(true)
   }
-
+  // ...
   private initARView(): void {
-    // ...
+    Scene.load().then(async (scene: Scene) => {
+      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
+      viewContext.scene = scene;
+      viewContext.callback = new ARViewCallbackImpl();
+      viewContext.config = {
+        type: arEngine.ARType.WORLD,
+        planeFindingMode: arEngine.ARPlaneFindingMode.HORIZONTAL_AND_VERTICAL,
+        powerMode: arEngine.ARPowerMode.NORMAL,
+        semanticMode: arEngine.ARSemanticMode.NONE,
+        poseMode: arEngine.ARPoseMode.GRAVITY,
+        depthMode: arEngine.ARDepthMode.AUTOMATIC,
+        meshMode: arEngine.ARMeshMode.DISABLED,
+        focusMode: arEngine.ARFocusMode.AUTO
+      }
+      viewContext.init().then(() => {
+        this.arContext = viewContext;
+        logger.info('Succeeded in initting ARView.');
+      }).catch((err: BusinessError) => {
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
+      })
+    })
   }
-  private stopARView(): void {
-    // ...
-  }
-  private resumeARView(): void {
-    // ...
-  }
-  private pauseARView(): void {
-    // ...
-  }
+  // ...
 }
 ```
 
@@ -199,34 +286,34 @@ struct ARPlane {
 
 ```
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
+  // ...
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
 
-    let arSession: arEngine.ARSession = ctx.session;
-
+    let session: arEngine.ARSession = ctx.session;
     try {
-      let frame: arEngine.ARFrame = arSession.getFrame();
+      let frame = session.getFrame();
       let camera: arEngine.ARCamera = frame.getCamera();
-      let trackable: arEngine.ARTrackable[] = [];
+      let trackables: arEngine.ARTrackable[] = [];
 
       if (camera.state === arEngine.ARTrackingState.TRACKING) {
-        trackable = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
-        console.info(`Succeeded in getting tracking plane, length is: ${trackable.length}`); // 打印当前识别到的平面数量
+        trackables = session.getAllTrackables(arEngine.ARTrackableType.PLANE);
+        isDisplayCube = true;
+      } else {
+        isDisplayCube = false;
       }
-
+      // ...
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
   }
 }
@@ -235,36 +322,37 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 ### Code block 4
 
 ```
-// 获取三维空间顶点坐标，第一个入参的位姿矩阵按垂直列排列，第二个坐标点为(x, 0, z, 1)，对应x-z平面。
 export function getVertices(mat: Matrix4, point: number[]): Vec3[] {
   let result: Vec3[] = [];
   for (let i = 0; i < point.length; i += 2) {
     let single: Vec3 = {
-      x: (mat[2] * point[i] + mat[6] * 0
-        + mat[10] * point[i + 1] + mat[14] * 1.0),
-      y: mat[1] * point[i] + mat[5] * 0
-        + mat[9] * point[i + 1] + mat[13] * 1.0,
-      z: -(mat[0] * point[i] + mat[4] * 0
-        + mat[8] * point[i + 1] + mat[12] * 1.0),
+      x: (mat[2] * point[i] + mat[6] * 0 + mat[10] * point[i + 1] + mat[14] * 1.0),
+      y: mat[1] * point[i] + mat[5] * 0 + mat[9] * point[i + 1] + mat[13] * 1.0,
+      z: -(mat[0] * point[i] + mat[4] * 0 + mat[8] * point[i + 1] + mat[12] * 1.0)
     }
     result.push(single);
   }
   return result;
 }
-// 创建 ARWorld 的 mesh索引。由于平面是由三角形拼接而成的，因此每个平面上的每个三角形的首个顶点索引都是相同的。
+
+/*
+Create the meshIndex of ARWorld
+Since the plane is made of triangles spliced together
+Therefore, the first vertex index of each triangle on each plane is the same
+ */
 export function generateMeshIndex(input: Vec3[][]): number[] {
   let result: number[] = [];
   let start: number = 0;
 
   for (let i = 0; i < input.length; i++) {
-    let length: number = input[i].length;
+    let len: number = input[i].length;
 
-    for (let j = start + 1; j < start + length - 1; j++) {
+    for (let j = start + 1; j < start + len - 1; j++) {
       result.push(start);
       result.push(j);
       result.push(j + 1);
     }
-    start += length;
+    start += len;
   }
   return result;
 }

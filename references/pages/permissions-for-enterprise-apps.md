@@ -4,15 +4,43 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/permissio
 
 以下权限面向企业类应用开放。
 
-企业类应用包括企业普通应用和MDM（Mobile Device Management）设备管理应用。
+企业类应用包括企业应用和企业MDM应用。
 
-企业类应用有以下特征：
+企业应用：
 
-仅在企业定制设备上运行，不会在普通消费者设备上运行。
+企业应用定义：
 
-分发类型分别为enterprise_normal（企业普通应用）和enterprise_mdm（MDM应用）。
+指企业内部自研应用或者采购的三方应用，由于信息安全、网络保护等原因，无法上架华为应用市场，只能在企业内部通过企业私有应用商店或者本地离线安装等方式进行分发安装。
 
-不会上架华为应用市场。
+企业应用发布开发指导：
+
+申请企业应用发布证书、申请企业应用发布Profile
+
+企业应用支持格式：
+
+支持.hap，.app，需要为单个应用包体。
+
+如果包含多个hap、hsp文件，需打包为.app格式，且需要在工程级build-profile.json5文件中，将packOptions的appWithSignedPkg属性配置为true，保证APP里的HAP/HSP包均被签名。
+
+企业应用安装方式：
+
+通过上架企业私有应用商店（企业MDM应用）在企业内部进行统一分发安装。
+
+在搭载鸿蒙电脑专业版、企业版的PC/2in1设备上，开启离线应用安装开关后本地直接安装。
+
+设备注册纳管到华为HEM平台，在首次开机时通过HEM平台批量部署。
+
+企业应用无法上架华为应用市场进行公开或非公开发布。
+
+注意
+
+企业应用仅支持在搭载了鸿蒙电脑专业版、企业版的“擎云”系列设备上分发安装。
+
+HarmonyOS系统以应用包名作为应用的唯一标识，不同的发布证书代表不同的应用版本，需创建不同的应用包名。
+
+企业MDM应用：
+
+介绍请参考仅MDM应用可用权限中的MDM应用介绍。
 
 企业类应用可参考声明权限，申请以下权限。
 
@@ -160,7 +188,7 @@ ohos.permission.GET_WIFI_CONFIG
 
 授权方式：系统授权（system_grant）
 
-支持设备：PC/2in1
+支持设备：Phone | PC/2in1 | Tablet | TV | Wearable | Car
 
 起始版本：8
 
@@ -177,6 +205,8 @@ ohos.permission.SET_WIFI_CONFIG
 权限级别：system_basic
 
 授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet | TV | Wearable | Car
 
 起始版本：8
 
@@ -550,9 +580,103 @@ ohos.permission.ENTERPRISE_MANAGE_PRINT
 
 起始版本：24
 
+ohos.permission.DLP_POLICY_MANAGER
+
+允许企业普通应用通过数据防泄漏能力管理透明加解密策略。
+
+获取该权限后，应用可管理透明加解密策略，如指定其他应用的文件操作需透明加解密、指定对应的加解密算法等。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.SUPPORT_CROSS_APP_EMBED_FOR_OA
+
+允许应用跨应用拉起EmbeddedUIExtension。
+
+**可申请此权限的特殊场景与功能： **
+
+应用为浏览器类应用，且具有NPAPI插件功能。
+
+应用为流版签应用，且需要跨应用界面嵌入办公软件中的文档、表格、演示文件。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.SUPPORT_NP_PLUGIN_FOR_WEB
+
+允许应用释放插件库。
+
+**可申请此权限的特殊场景与功能： **
+
+应用为具有浏览器NPAPI插件的应用。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.kernel.LOAD_CERTSIGN_LIBRARY_FOR_WEB
+
+允许应用加载二进制证书签名的插件库。
+
+**可申请此权限的特殊场景与功能： **
+
+应用为具有NPAPI插件功能的浏览器类应用，且需要加载文档类NPAPI插件。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
 ohos.permission.ENTERPRISE_GET_INSTALLED_BUNDLE_LIST
 
 允许企业普通应用获取已安装全量应用列表。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
+
+起始版本：26.0.0
+
+ohos.permission.kernel.TRAFFIC_FILTER
+
+允许应用在网络流量路径内检查数据包并决定是否放行，以及将网络流量重定向到本地端口。
+
+获取该权限后，应用可以：
+
+以内联方式接入网络流量处理路径，对经过设备或系统的网络数据包进行实时检查、分析和策略判断。应用可以基于数据包的源地址、目标地址、端口、协议类型等，决定是否允许该流量继续传输、阻断连接、丢弃数据包、修改数据包，或执行告警、记录日志等安全处置操作。
+
+将特定网络流量重定向到本地指定端口，由本地安全代理、代理服务、检测引擎或策略执行组件进行进一步处理。例如，可用于恶意流量检测、入侵防护、数据防泄漏、访问控制、威胁分析、内容过滤、企业合规审计等场景。
+
+**可申请此权限的特殊场景与功能： **
+
+应用需要为企业安全应用，提供企业数据防泄漏、企业网络管控等能力。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 

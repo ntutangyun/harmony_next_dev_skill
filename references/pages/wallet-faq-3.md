@@ -1,5 +1,7 @@
-# 如果用户没有登录华为账号，添加卡券时如何处理？
+# Wallet Kit接口调用注意事项？
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-faq-3_
 
-如果用户没有登录华为账号，Wallet Kit会先拉起华为账号注册登录页面，用户注册或登录华为账号后才能保存卡券到华为钱包。
+请确保创建WalletPassClient时传入的context类型是否为UIAbilityContext，且为有效状态。Wallet Kit会使用调用方的context进行通信，如果context失效，则调用会失败。
+
+请确保调用Wallet Kit接口时应用处于前台，后台调用会被系统管控拦截，可能导致调用失败。

@@ -60,6 +60,10 @@ Generic Attribute Profile，即通用属性协议。是BLE的核心协议，定�
 
 H
 
+[h2]HADM
+
+High Accuracy Distance Measurement，即高精度距离测量。基于星闪无线信号进行设备间测距的技术，通过测量信号往返时间或相位差计算设备间距离，可实现厘米级测量精度。
+
 [h2]HF
 
 Hands-Free unit，即HFP协议中的免提设备。是蓝牙通话音频中的远程控制端‌，提供物理交互界面（如按钮）及音频输入/输出（如麦克风、扬声器）。典型设备如：蓝牙耳机、车载蓝牙等。

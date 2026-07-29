@@ -6,9 +6,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从5.1.0(18)版本开始， 导航组件新增支持标题栏通用模糊（适用于列表型非沉浸式场景）样式。
 
-从6.0.0(20)版本开始，新增支持过渡模糊（适用于沉浸式图文类）与渐变模糊（适用于增强页面沉浸感的场景）样式。
+从6.0.0(20)版本开始，新增支持过渡模糊（适用于沉浸式图文类场景）与渐变模糊（适用于增强页面沉浸感场景）样式。
 
-当应用开发者需要使用标题栏样式随内容区滚动而动态改变样式的导航组件时，可以通过设置titleBar属性中的style配置，自定义标题栏样式随滚动距离线性变化。通常需配合滚动容器组件使用，推荐使用bindToScrollable、bindToNestedScrollable属性绑定导航组件和可滚动容器组件。
+当开发者需要使用标题栏样式随内容区滚动而动态改变样式的导航组件时，可以通过设置titleBar属性中的style，自定义标题栏样式根据滚动距离线性变化。通常需配合滚动容器组件使用，推荐使用bindToScrollable或bindToNestedScrollable属性绑定导航组件和可滚动容器组件。
 
 [h2]通用模糊样式
 
@@ -54,10 +54,10 @@ struct Index {
                 .height(35)
 
                 Text('list_' + item)
-                .width('100%')
-                .height(72)
-                .fontSize(16)
-                .fontWeight(500)
+                  .width('100%')
+                  .height(72)
+                  .fontSize(16)
+                  .fontWeight(500)
               }
 
               Divider().margin({ left: 40 })
@@ -74,7 +74,8 @@ struct Index {
     }
     .titleBar({
       enableComponentSafeArea: true, // 将标题栏设置为组件级安全区，内容区可避让标题栏
-      style: { // 设置导航组件标题栏样式，推荐使用默认样式
+      style: {
+        // 设置导航组件标题栏样式，推荐使用默认样式
         // 标题栏动态模糊样式，包括是否使能滚动动态模糊，动态模糊类型，动态模糊生效的滚动距离等
         scrollEffectOpts: {
           enableScrollEffect: true,
@@ -82,11 +83,14 @@ struct Index {
           blurEffectiveStartOffset: LengthMetrics.vp(0),
           blurEffectiveEndOffset: LengthMetrics.vp(20)
         },
-        originalStyle: { // 内容区滚动前初始样式设置
-          backgroundStyle: { // 标题栏背板样式设置
-            backgroundColor: $r('sys.color.ohos_id_color_background'),
+        originalStyle: {
+          // 内容区滚动前初始样式设置
+          backgroundStyle: {
+            // 标题栏背板样式设置
+            backgroundColor: $r('sys.color.ohos_id_color_background')
           },
-          contentStyle: { // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
+          contentStyle: {
+            // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
             titleStyle: {
               mainTitleColor: $r('sys.color.font_primary'),
               subTitleColor: $r('sys.color.font_secondary')
@@ -101,7 +105,8 @@ struct Index {
             }
           }
         },
-        scrollEffectStyle: { // 内容区滚动超过blurEffectiveEndOffset后样式设置
+        scrollEffectStyle: {
+          // 内容区滚动超过blurEffectiveEndOffset后样式设置
           backgroundStyle: {
             backgroundColor: $r('sys.color.ohos_id_color_background_transparent')
           },
@@ -121,7 +126,8 @@ struct Index {
           }
         }
       },
-      content: { // 标题栏内容设置
+      content: {
+        // 标题栏内容设置
         title: { mainTitle: 'MainTitle' },
       }
     })
@@ -166,10 +172,10 @@ struct Index {
                 .height(35)
 
                 Text('list_' + item)
-                .width('100%')
-                .height(72)
-                .fontSize(16)
-                .fontWeight(500)
+                  .width('100%')
+                  .height(72)
+                  .fontSize(16)
+                  .fontWeight(500)
               }
 
               Divider().margin({ left: 40 })
@@ -186,7 +192,8 @@ struct Index {
     }
     .titleBar({
       enableComponentSafeArea: true, // 将标题栏设置为组件级安全区，内容区可避让标题栏
-      style: { // 设置导航组件标题栏样式，推荐使用默认样式
+      style: {
+        // 设置导航组件标题栏样式，推荐使用默认样式
         // 标题栏动态模糊样式，包括是否使能滚动动态模糊，动态模糊类型，动态模糊生效的滚动距离等
         scrollEffectOpts: {
           enableScrollEffect: true,
@@ -194,11 +201,14 @@ struct Index {
           blurEffectiveStartOffset: LengthMetrics.vp(0),
           blurEffectiveEndOffset: LengthMetrics.vp(20)
         },
-        originalStyle: { // 内容区滚动前初始样式设置
-          backgroundStyle: { // 标题栏背板样式设置
-            backgroundColor: $r('sys.color.ohos_id_color_background'),
+        originalStyle: {
+          // 内容区滚动前初始样式设置
+          backgroundStyle: {
+            // 标题栏背板样式设置
+            backgroundColor: $r('sys.color.ohos_id_color_background')
           },
-          contentStyle: { // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
+          contentStyle: {
+            // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
             titleStyle: {
               mainTitleColor: $r('sys.color.font_primary'),
               subTitleColor: $r('sys.color.font_secondary')
@@ -213,7 +223,8 @@ struct Index {
             }
           }
         },
-        scrollEffectStyle: { // 内容区滚动超过blurEffectiveEndOffset后样式设置
+        scrollEffectStyle: {
+          // 内容区滚动超过blurEffectiveEndOffset后样式设置
           backgroundStyle: {
             backgroundColor: $r('sys.color.ohos_id_color_background_transparent')
           },
@@ -233,7 +244,8 @@ struct Index {
           }
         }
       },
-      content: { // 标题栏内容设置
+      content: {
+        // 标题栏内容设置
         title: { mainTitle: 'MainTitle' },
       }
     })

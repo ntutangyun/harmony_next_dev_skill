@@ -1,4 +1,4 @@
-# 使用AVTranscoder实现视频转码(ArkTS)
+# 使用AVTranscoder实现音视频转码(ArkTS)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-avtranscoder-for-transcodering_
 
@@ -67,9 +67,17 @@ async releaseTranscoderingProcess() {
     if (this.avTranscoder != undefined) {
       // 1.释放转码实例。
       await this.avTranscoder.release();
+      let lastFdDst = this.avTranscoder.fdDst;
+      let lastFdSrc = this.avTranscoder.fdSrc;
       this.avTranscoder = undefined;
       // 2.关闭转码目标文件fd。
-      fileIo.closeSync(this.avTranscoder!.fdDst);
+      if (lastFdDst != undefined) {
+        fs.closeSync(lastFdDst);
+      }
+      // 3.关闭转码源文件fd。
+      if (lastFdSrc != undefined) {
+        fs.closeSync(lastFdSrc.fd);
+      }
     }
   }
 }
@@ -84,7 +92,7 @@ async releaseTranscoderingProcess() {
 
 应通过Context属性获取应用文件路径，建议使用getUIContext获取UIContext实例，并使用getHostContext调用绑定实例的getContext，请参考getHostContext。
 
-如果使用ResourceManager.getRawFd()打开HAP资源文件描述符，使用方法可参考ResourceManager API参考。
+如果使用ResourceManager.getRawFd()打开HAP资源文件描述符，使用方法可参考ResourceManager中的getRawFd。
 
 // 导入来自于ets/transcoder/AVTranscoderManager.ets文件。
 import {AVTranscoderDemo} from '../transcoder/AVTranscoderManager'
@@ -170,7 +178,7 @@ async test() {
   }
 }
 
-配置视频转码参数，调用prepare()接口。
+配置音视频转码参数，调用prepare()接口。
 
 说明
 
@@ -260,7 +268,7 @@ async releaseTranscoderingProcess() {
   }
 }
 
-完整的【开始转码-暂停转码-恢复转码-转码完成】流程
+完整的【开始转码-暂停转码-恢复转码-转码完成】流程。
 
 async avTranscoderDemo() {
   await this.startTranscoderingProcess(); // 开始转码。
@@ -346,9 +354,17 @@ async releaseTranscoderingProcess() {
     if (this.avTranscoder != undefined) {
       // 1.释放转码实例。
       await this.avTranscoder.release();
+      let lastFdDst = this.avTranscoder.fdDst;
+      let lastFdSrc = this.avTranscoder.fdSrc;
       this.avTranscoder = undefined;
       // 2.关闭转码目标文件fd。
-      fileIo.closeSync(this.avTranscoder!.fdDst);
+      if (lastFdDst != undefined) {
+        fs.closeSync(lastFdDst);
+      }
+      // 3.关闭转码源文件fd。
+      if (lastFdSrc != undefined) {
+        fs.closeSync(lastFdSrc.fd);
+      }
     }
   }
 }

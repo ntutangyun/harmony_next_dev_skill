@@ -4,13 +4,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 场景介绍
 
-快速验证手机号Button功能用于帮助开发者向用户发起手机号申请，应用在满足《常见类型移动互联网应用程序必要个人信息范围规定》（对第三方网站的内容，华为公司不承担任何责任）中使用手机号的必要业务场景，经用户同意后，应用可获取手机号，为用户提供相应服务（详见快速验证场景介绍）。
+快速验证手机号Button功能用于帮助开发者向用户发起手机号申请，应用在满足《常见类型移动互联网应用程序必要个人信息范围规定》（对第三方网站的内容，华为公司不承担任何责任）中使用手机号的必要业务场景，经用户同意后，应用可获取手机号，为用户提供相应服务（详见获取手机号场景介绍）。
 
-运行示例代码单击“快速验证手机号”按钮，拉起验证页面（完整场景可参考快速验证）。
+运行示例代码单击“快速验证手机号”按钮，拉起验证页面（完整场景可参考获取手机号）。
 
 约束与限制
 
-快速验证手机号Button支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
+快速验证手机号Button支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备。
 
 说明
 
@@ -45,7 +45,7 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType为GET_PHONE_NUMBER时，回调必须为onGetPhoneNumber。
           controller: new functionalButtonComponentManager.FunctionalButtonController()
@@ -108,7 +108,7 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType为GET_PHONE_NUMBER时，回调必须为onGetPhoneNumber。
           controller: new functionalButtonComponentManager.FunctionalButtonController()

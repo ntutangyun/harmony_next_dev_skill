@@ -114,25 +114,24 @@ CopyIn，Compute任务间通过VECIN队列inQueueX，inQueueY进行通信和同�
 class KernelAdd {
 public:
     __aicore__ inline KernelAdd() {}
-    // Initialization function, which initializes the memory
+    // 初始化函数，用于初始化内存
     __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z){}
-    // Core processing function, which implements the operator logic and calls the private member functions
-    // CopyIn, Compute, and CopyOut to complete the three-stage pipelined execution of the vector operator
+    // 核心处理函数，实现算子逻辑，调用私有成员函数CopyIn、Compute和CopyOut，完成矢量算子的三阶段流水线执行
     __aicore__ inline void Process(){}
 
 private:
-    // CopyIn function, which completes the processing in the CopyIn phase and is called by the Process function
+    // CopyIn函数，完成CopyIn阶段的处理，由Process函数调用
     __aicore__ inline void CopyIn(int32_t progress){}
-    // Compute function, which completes the processing in the Compute phase and is called by Process function
+    // Compute函数，完成Compute阶段的处理，由Process函数调用
     __aicore__ inline void Compute(int32_t progress){}
-    // CopyOut function, which completes the processing in the CopyOut phase and is called by the Process function
+    // CopyOut函数，完成CopyOut阶段的处理，由Process函数调用
     __aicore__ inline void CopyOut(int32_t progress){}
 
 private:
-    AscendC::TPipe pipe; // Pipe memory management object.
-    AscendC::TQue<AscendC::QuePosition::VECIN, 1> inQueueX, inQueueY; // Input data queue management object. QuePosition is VECIN.
-    AscendC::TQue<AscendC::QuePosition::VECOUT, 1> outQueueZ; // Output data queue management object. QuePosition is VECOUT.
-    AscendC::GlobalTensor<half> xGm; // Object for managing the input and output global memory addresses. xGm and yGm are inputs, and zGm is the output.
+    AscendC::TPipe pipe; // 管道内存管理对象
+    AscendC::TQue<AscendC::QuePosition::VECIN, 1> inQueueX, inQueueY; // 输入数据队列管理对象，队列位置为VECIN
+    AscendC::TQue<AscendC::QuePosition::VECOUT, 1> outQueueZ; // 输出数据队列管理对象，队列位置为VECOUT
+    AscendC::GlobalTensor<half> xGm; // 输入输出全局内存地址管理对象，xGm和yGm为输入，zGm为输出
     AscendC::GlobalTensor<half> yGm;
     AscendC::GlobalTensor<half> zGm;
 };
@@ -298,25 +297,24 @@ extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z
 class KernelAdd {
 public:
     __aicore__ inline KernelAdd() {}
-    // Initialization function, which initializes the memory
+    // 初始化函数，用于初始化内存
     __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z){}
-    // Core processing function, which implements the operator logic and calls the private member functions
-    // CopyIn, Compute, and CopyOut to complete the three-stage pipelined execution of the vector operator
+    // 核心处理函数，实现算子逻辑，调用私有成员函数CopyIn、Compute和CopyOut，完成矢量算子的三阶段流水线执行
     __aicore__ inline void Process(){}
 
 private:
-    // CopyIn function, which completes the processing in the CopyIn phase and is called by the Process function
+    // CopyIn函数，完成CopyIn阶段的处理，由Process函数调用
     __aicore__ inline void CopyIn(int32_t progress){}
-    // Compute function, which completes the processing in the Compute phase and is called by Process function
+    // Compute函数，完成Compute阶段的处理，由Process函数调用
     __aicore__ inline void Compute(int32_t progress){}
-    // CopyOut function, which completes the processing in the CopyOut phase and is called by the Process function
+    // CopyOut函数，完成CopyOut阶段的处理，由Process函数调用
     __aicore__ inline void CopyOut(int32_t progress){}
 
 private:
-    AscendC::TPipe pipe; // Pipe memory management object.
-    AscendC::TQue<AscendC::QuePosition::VECIN, 1> inQueueX, inQueueY; // Input data queue management object. QuePosition is VECIN.
-    AscendC::TQue<AscendC::QuePosition::VECOUT, 1> outQueueZ; // Output data queue management object. QuePosition is VECOUT.
-    AscendC::GlobalTensor<half> xGm; // Object for managing the input and output global memory addresses. xGm and yGm are inputs, and zGm is the output.
+    AscendC::TPipe pipe; // 管道内存管理对象
+    AscendC::TQue<AscendC::QuePosition::VECIN, 1> inQueueX, inQueueY; // 输入数据队列管理对象，队列位置为VECIN
+    AscendC::TQue<AscendC::QuePosition::VECOUT, 1> outQueueZ; // 输出数据队列管理对象，队列位置为VECOUT
+    AscendC::GlobalTensor<half> xGm; // 输入输出全局内存地址管理对象，xGm和yGm为输入，zGm为输出
     AscendC::GlobalTensor<half> yGm;
     AscendC::GlobalTensor<half> zGm;
 };

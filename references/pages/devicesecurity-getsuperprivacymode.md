@@ -36,17 +36,19 @@ getSuperPrivacyMode() : Promise<SuperPrivacyMode>	查询当前超级隐私模式
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-调用getSuperPrivacyMode接口查询超级隐私模式的状态。
-
 const DOMAIN = 0x0000;
-const TAG = "SuperPrivacyModeTest";
+const TAG = 'SuperPrivacyModeTest';
+
+调用getSuperPrivacyMode接口查询超级隐私模式的状态。
 
 let mode: superPrivacyMode.SuperPrivacyMode = superPrivacyMode.SuperPrivacyMode.OFF;
 try {
   mode = await superPrivacyMode.getSuperPrivacyMode();
   hilog.info(DOMAIN, TAG, `Super privacy mode = ${mode}`);
+  // ...
 } catch (err) {
   hilog.error(DOMAIN, TAG, `call getSuperPrivacyMode interface failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
 }
 
 ## Code blocks
@@ -56,19 +58,21 @@ try {
 ```
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
 ```
 
 ### Code block 2
 
 ```
-const DOMAIN = 0x0000;
-const TAG = "SuperPrivacyModeTest";
-
 let mode: superPrivacyMode.SuperPrivacyMode = superPrivacyMode.SuperPrivacyMode.OFF;
 try {
   mode = await superPrivacyMode.getSuperPrivacyMode();
   hilog.info(DOMAIN, TAG, `Super privacy mode = ${mode}`);
+  // ...
 } catch (err) {
   hilog.error(DOMAIN, TAG, `call getSuperPrivacyMode interface failed, errCode:${err?.code}, errMessage:${err?.message}`);
+  // ...
 }
 ```

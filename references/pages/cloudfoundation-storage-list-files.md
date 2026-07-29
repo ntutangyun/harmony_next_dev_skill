@@ -16,31 +16,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 操作步骤
 
-调用StorageBucket.list可以获取云侧指定目录的文件列表。
-
-完整示例代码如下：
+导入相关模块。
 
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+调用StorageBucket.list获取云侧指定目录的文件列表。
 
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 获取文件列表
-  getList() {
-    // 获取云存储默认实例中根路径下的文件列表
-    storageBucket.list('').then((result: cloudStorage.ListResults) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in listing files, result: ${JSON.stringify(result)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to list files, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+bucket.list('', {
+  maxResults: 1,
+}).then((result: Object) => {
+  hilog.info(0x0000, 'Storage', `Succeeded in listing file  ${JSON.stringify(result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to list file  code: ${err.code}, message: ${err.message}`);
+});
 
 获取文件列表信息结构如下：
 
@@ -55,29 +46,24 @@ export struct testPage {
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
-
-@Component
-export struct testPage {
-  build() {
-  }
-
-  // 获取文件列表
-  getList() {
-    // 获取云存储默认实例中根路径下的文件列表
-    storageBucket.list('').then((result: cloudStorage.ListResults) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in listing files, result: ${JSON.stringify(result)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to list files, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
 ```
 
 ### Code block 2
+
+```
+bucket.list('', {
+  maxResults: 1,
+}).then((result: Object) => {
+  hilog.info(0x0000, 'Storage', `Succeeded in listing file  ${JSON.stringify(result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to list file  code: ${err.code}, message: ${err.message}`);
+});
+```
+
+### Code block 3
 
 ```
 {

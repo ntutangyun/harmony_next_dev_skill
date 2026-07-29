@@ -58,7 +58,7 @@ M
 
 P
 
-[h2]Pagination Query；分页查询
+[h2]Paginated Query；分页查询
 
 使用云数据库limit限定查询数据，返回数据的起始位置和数量，实现数据分页展示。
 

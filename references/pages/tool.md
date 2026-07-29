@@ -18,7 +18,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/tool_
 
 从现有图谱文件：复用已有的图谱文件。
 
-在用户的DevEco Testing数据路径（DevEco Testing客户端->设置中可查看数据路径）中找到“graphTool”文件夹，找到相应图谱文件夹后；将其中所有打包成zip文件（注意：打包后文件需要直接是图谱文件，不能多加一层目录，如下图所示）。
+在用户的DevEco Testing数据路径（DevEco Testing客户端->设置中可查看数据路径）中找到“graphTool”文件夹，找到相应图谱文件夹后；将其中所有打包成zip文件。
+
+注意
+
+打包后zip文件，需要打开后直接是图谱文件，不能多一层目录。
 
 空白图谱：选择对应的应用创建空白图谱。
 
@@ -70,11 +74,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/tool_
 
 （2）从已有图谱事件选择添加
 
-如下图所示：
-
-①：展示当前页面。
-
-②③：展示对应选框点击前后的页面。
+如下图所示：展示对应选框点击前后的页面。
 
 点击“➕”号之后，选择“从已有图谱事件选择添加”，将出现图谱中记录的事件，选择图谱事件创建路径。
 

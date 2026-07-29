@@ -699,7 +699,7 @@ napi_call_threadsafe_function_with_priority	将指定优先级和入队方式的
 
 napi_call_threadsafe_function_with_priority
 
-使用Node-API接口从异步线程向ArkTS线程投递指定优先级和入队方式的的任务
+使用Node-API接口从异步线程向ArkTS线程投递指定优先级和入队方式的任务
 
 Sendable相关
 
@@ -716,7 +716,7 @@ napi_create_sendable_typedarray	创建一个sendable TypedArray。
 napi_wrap_sendable	包裹一个native实例到ArkTS对象中。
 napi_wrap_sendable_with_size	包裹一个native实例到ArkTS对象中并指定大小。
 napi_unwrap_sendable	获取ArkTS对象包裹的native实例。
-napi_remove_wrap_sendable	移除并获取ArkTS对象包裹的native实例，移除后回调将不再触发，需手动delete释放内存。
+napi_remove_wrap_sendable	移除并获取ArkTS对象包裹的native实例，移除后回调后续会被自动触发，需注意避免出现重复释放问题。
 
 [h2]使用示例
 
@@ -1088,7 +1088,7 @@ testNapi.unwrapSendable();
 
 napi_remove_wrap_sendable
 
-移除并获取ArkTS对象包裹的native实例，移除后回调将不再触发，需手动delete释放内存。
+移除并获取ArkTS对象包裹的native实例，移除后回调后续会被自动触发，需注意避免出现重复释放问题。
 
 cpp部分代码
 

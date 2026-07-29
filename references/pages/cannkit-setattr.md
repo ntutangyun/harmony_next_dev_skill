@@ -117,8 +117,6 @@ attr_value	输入	需设置的字符串列表类型的属性值。
 attr_value	输入	需设置的Tensor类型的属性值。
 attr_value	输入	需设置的Tensor列表类型的属性值。
 attr_value	输入	需设置的Bytes，即字节数组类型的属性值，OpBytes即vector<uint8_t>。
-data	输入	需设置的Bytes，即字节数组类型的属性值，指定了字节流的首地址。
-size	输入	需设置的Bytes，即字节数组类型的属性值，指定了字节流的长度。
 attr_value	输入	需设置的量化数据的属性值。
 attr_value	输入	需设置的vector<vector<int64_t>>表示的整型二维列表类型属性值。
 attr_value	输入	需设置的vector<ge::DataType>表示的DataType列表类型属性值。

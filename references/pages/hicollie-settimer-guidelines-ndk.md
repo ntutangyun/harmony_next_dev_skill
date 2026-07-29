@@ -22,9 +22,9 @@ API接口的具体使用说明（参数使用限制、具体取值范围等）�
 
 开发步骤
 
-下文将展示如何在应用内增加一个按钮，并单击该按钮以调用HiCollie Ndk接口。
+下文将展示如何在应用内增加一个按钮，并单击该按钮以调用HiCollie NDK接口。
 
-新建Native C++工程，目录结构如下：
+在DevEco Studio中，新建Native C++工程，目录结构如下：
 
 entry:
   src:
@@ -41,12 +41,12 @@ entry:
         pages:
           - Index.ets
 
-编辑“CMakeLists.txt”文件，添加源文件及动态库。
+编辑工程中的“entry > src > main > cpp > CMakeLists.txt”文件，添加源文件及动态库。
 
 # 依赖动态库libhilog_ndk.z.so（日志输出），libohhicollie.so（HiCollie对外检测接口）
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohhicollie.so)
 
-编辑“napi_init.cpp”文件，导入依赖头文件、定义LOG_TAG与测试方法以及注册TestHiCollieTimerNdk为ArkTS接口。
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，导入依赖头文件、定义LOG_TAG与测试方法以及注册TestHiCollieTimerNdk为ArkTS接口。
 
 引入头文件及定义LOG_TAG。
 
@@ -87,11 +87,11 @@ static napi_value TestHiCollieTimerNdk(napi_env env, napi_callback_info info)
 // 将TestHiCollieTimerNdk注册为ArkTS接口
 { "TestHiCollieTimerNdk", nullptr, TestHiCollieTimerNdk, nullptr, nullptr, nullptr, napi_default, nullptr },
 
-编辑“index.d.ts”文件，定义ArkTS接口。
+编辑工程中的“entry > src > main > cpp > types > libentry > Index.ets”文件，定义ArkTS接口。
 
 export const TestHiCollieTimerNdk: () => void;
 
-编辑“Index.ets”文件。
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件。
 
 引入调用C接口的头文件。
 

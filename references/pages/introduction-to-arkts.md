@@ -72,7 +72,7 @@ ArkTS提供number类型，任何整数和浮点数都可以被赋给此类型的
 
 浮点数字面量包括以下部分：
 
-十进制整数，支持正负号前缀（前缀为"+"或"-"），默认为正。
+十进制整数，可为有符号数（前缀为“+”或“-”）。
 
 小数点（“.”）。
 
@@ -99,7 +99,7 @@ function factorial(n: number): number {
   factorial(n3) // 1
   factorial(n4) // 9900
 
-number类型在表示大整数（即超过-9007199254740991~9007199254740991）时会造成精度丢失。在开发时可以按需使用bigint类型来确保精度：
+number类型在表示大整数（即超过Number.MIN_SAFE_INTEGER（-9007199254740991）~`Number.MAX_SAFE_INTEGER（9007199254740991））时会造成精度丢失。在开发时可以按需使用bigint`类型来确保精度：
 
 let bigInt: bigint = 999999999999999999999999999999999999999999999999999999999999n;
 console.info('bigInt:' + bigInt.toString());
@@ -133,7 +133,7 @@ void类型
 
 void类型用于指定函数没有返回值。
 
-此类型只有一个值，同样是void。由于void是引用类型，因此它可以用于泛型类型参数。
+此类型只有一个值，同样是void。void可用于泛型类型参数。
 
 class Class<T> {
   // ...
@@ -175,9 +175,9 @@ let c: ColorSet = ColorSet.Red;
 enum ColorSet { White = 0xFF, Grey = 0x7F, Black = 0x00 }
 let c: ColorSet = ColorSet.Black;
 
-Union类型
+联合类型（Union）
 
-Union类型，即联合类型，是由多个类型组合成的引用类型。联合类型包含了变量可能的所有类型。
+联合类型（Union）是由多个类型组合成的类型。联合类型包含了变量可能的所有类型。
 
 class Cat {
   public name: string = 'cat';
@@ -221,9 +221,9 @@ function foo(animal: Animal) {
   animal.sleep(); // Animal具有sleep方法
 }
 
-Aliases类型
+类型别名（Aliases）
 
-Aliases类型为匿名类型（如数组、函数、对象字面量或联合类型）提供名称，或为已定义的类型提供替代名称。
+类型别名（Aliases）为匿名类型（如数组、函数、对象字面量或联合类型）提供名称，或为已定义的类型提供替代名称。
 
 // 二维数组类型
 type Matrix = number[][];
@@ -269,8 +269,8 @@ let emptyData: NullableObject = null;
 运算符	说明
 ===	如果两个操作数严格相等（对于不同类型的操作数认为是不相等的），则返回true。
 !==	如果两个操作数严格不相等（对于不同类型的操作数认为是不相等的），则返回true。
-==	如果两个操作数相等，则返回true。
-!=	如果两个操作数不相等，则返回true。
+==	如果两个操作数相等，则返回true。建议使用===替代。
+!=	如果两个操作数不相等，则返回true。建议使用!==替代。
 >	如果左操作数大于右操作数，则返回true。
 >=	如果左操作数大于或等于右操作数，则返回true。
 <	如果左操作数小于右操作数，则返回true。
@@ -363,12 +363,12 @@ if (condition1) {
 
 let s1 = 'Hello';
 if (s1) {
-  console.info(s1); // 打印"Hello"
+  console.info(s1); // 打印“Hello”
 }
 
 let s2 = 'World';
 if (s2.length != 0) {
-  console.info(s2); // 打印"World"
+  console.info(s2); // 打印“World”
 }
 
 switch语句
@@ -378,13 +378,13 @@ switch语句
 switch语句如下所示：
 
 switch (expression) {
-  case label1: // 如果label1匹配,则执行
+  case label1: // 如果label1匹配，则执行
     // ...
     // 语句1
     // ...
     break; // 可省略
   case label2:
-  case label3: // 如果label2或label3匹配,则执行
+  case label3: // 如果label2或label3匹配，则执行
     // ...
     // 语句23
     // ...
@@ -552,6 +552,7 @@ throw new Error('this error')
 try语句用于捕获和处理异常或错误：
 
 try {
+  // 可能发生异常的语句块
   // ...
 } catch (e) {
   // 异常处理
@@ -853,8 +854,8 @@ class Person {
   }
 
   getName(): string {
-    // 开发者使用"string"作为返回类型，这隐藏了name可能为"undefined"的事实。
-    // 更合适的做法是将返回类型标注为"string | undefined"，以告诉开发者这个API所有可能的返回值。
+    // 开发者使用"string"作为返回类型，这隐藏了name可能为"undefined"的事实
+    // 更合适的做法是将返回类型标注为"string | undefined"，以告诉开发者这个API所有可能的返回值
     return this.name;
   }
 }
@@ -881,7 +882,7 @@ class Person3 {
 
 let jack = new Person3();
 // 假设代码中没有对name赋值，即没有调用"jack.setName('Jack')"
-jack.getName().length; // 0, 没有运行时异常
+jack.getName().length; // 0，没有运行时异常
 
 接下来的代码示例展示了当name的值可能为undefined时，如何正确编写代码。
 
@@ -1271,7 +1272,7 @@ let x = new Derived(666);
 只有抽象类内才能有抽象方法，如果非抽象类具有抽象方法，则会发生编译时错误：
 
 class Y {
-  abstract method(p: string)  // 编译时错误：抽象方法只能在抽象类内。
+  abstract method(p: string)  // 编译时错误：抽象方法只能在抽象类内
 }
 
 接口
@@ -1463,7 +1464,7 @@ function last(x: number[]): number {
 
 如果需要为任何数组定义相同的函数，使用类型参数将该函数定义为泛型：
 
-function last1<T>(x: T[]): T {
+function last<T>(x: T[]): T {
   return x[x.length - 1];
 }
 
@@ -1639,21 +1640,21 @@ export default new Demo();
 
 导入绑定* as A表示绑定名称“A”，通过A.name可访问从导入路径指定的模块导出的所有实体：
 
-import * as Utils from './utils';
+import * as Utils from './Utils';
 // ...
 Utils.X // 表示来自Utils的X
 Utils.Y // 表示来自Utils的Y
 
 导入绑定{ ident1, ..., identN }表示将导出的实体与指定名称绑定，该名称可以用作简单名称：
 
-import { X, Y } from './utils';
+import { X, Y } from './Utils';
 // ...
-X // 表示来自utils的X
-Y // 表示来自utils的Y
+X // 表示来自Utils的X
+Y // 表示来自Utils的Y
 
 如果标识符列表定义了ident as alias，则实体ident将绑定在名称alias下：
 
-import { X as Z, Y } from './utils';
+import { X as Z, Y } from './Utils';
 Z // 表示来自Utils的X
 Y // 表示来自Utils的Y
 X // 编译时错误：'X'不可见
@@ -1694,7 +1695,7 @@ export function bye() {
 那么，可以像下面这样进行动态导入：
 
 async function test() {
-  let ns = await import('./say');
+  let ns = await import('./Say');
   let hi = ns.hi;
   let bye = ns.bye;
   hi();
@@ -1786,7 +1787,7 @@ function foo(arg1: number) {
 
 // 注解的声明：
 @interface ClassAuthor {
-  authorName: string
+  authorName: string;
 }
 
 // 注解的使用：
@@ -1803,10 +1804,9 @@ class MyClass {
 
 注解可以包含上述示例中所示的参数。
 
-对于要使用的注解，其名称必须以符号@（例如：@MyAnno）为前缀。符号@和名称之间不允许有空格和行分隔符。
+对于要使用的注解，其名称必须以符号@（例如：@MyAnno）为前缀。
 
 ClassAuthor({authorName: "Bob"}) // 编译错误：注解需要'@'为前缀
-@ ClassAuthor({authorName: "Bob"}) // 编译错误：符号`@`和名称之间不允许有空格和行分隔符
 
 如果在使用位置无法访问注解名称，则会发生编译错误。
 
@@ -2191,7 +2191,7 @@ class C {
 同一个实体不能重复使用同一注解，否则会导致编译错误。
 
 @MyAnno({name: "123", value: 456})
-@MyAnno({name: "321", value: 654}) // 编译错误：不允许重复注释
+@MyAnno({name: "321", value: 654}) // 编译错误：不允许重复注解
 class C {
   // ...
 }
@@ -2525,12 +2525,12 @@ if (condition1) {
 ```
 let s1 = 'Hello';
 if (s1) {
-  console.info(s1); // 打印"Hello"
+  console.info(s1); // 打印“Hello”
 }
 
 let s2 = 'World';
 if (s2.length != 0) {
-  console.info(s2); // 打印"World"
+  console.info(s2); // 打印“World”
 }
 ```
 
@@ -2538,13 +2538,13 @@ if (s2.length != 0) {
 
 ```
 switch (expression) {
-  case label1: // 如果label1匹配,则执行
+  case label1: // 如果label1匹配，则执行
     // ...
     // 语句1
     // ...
     break; // 可省略
   case label2:
-  case label3: // 如果label2或label3匹配,则执行
+  case label3: // 如果label2或label3匹配，则执行
     // ...
     // 语句23
     // ...
@@ -2694,6 +2694,7 @@ throw new Error('this error')
 
 ```
 try {
+  // 可能发生异常的语句块
   // ...
 } catch (e) {
   // 异常处理
@@ -2975,8 +2976,8 @@ class Person {
   }
 
   getName(): string {
-    // 开发者使用"string"作为返回类型，这隐藏了name可能为"undefined"的事实。
-    // 更合适的做法是将返回类型标注为"string | undefined"，以告诉开发者这个API所有可能的返回值。
+    // 开发者使用"string"作为返回类型，这隐藏了name可能为"undefined"的事实
+    // 更合适的做法是将返回类型标注为"string | undefined"，以告诉开发者这个API所有可能的返回值
     return this.name;
   }
 }
@@ -3005,7 +3006,7 @@ class Person3 {
 
 let jack = new Person3();
 // 假设代码中没有对name赋值，即没有调用"jack.setName('Jack')"
-jack.getName().length; // 0, 没有运行时异常
+jack.getName().length; // 0，没有运行时异常
 ```
 
 ### Code block 61
@@ -3371,7 +3372,7 @@ let x = new Derived(666);
 
 ```
 class Y {
-  abstract method(p: string)  // 编译时错误：抽象方法只能在抽象类内。
+  abstract method(p: string)  // 编译时错误：抽象方法只能在抽象类内
 }
 ```
 
@@ -3569,7 +3570,7 @@ function last(x: number[]): number {
 ### Code block 102
 
 ```
-function last1<T>(x: T[]): T {
+function last<T>(x: T[]): T {
   return x[x.length - 1];
 }
 ```
@@ -3715,7 +3716,7 @@ export default new Demo();
 ### Code block 113
 
 ```
-import * as Utils from './utils';
+import * as Utils from './Utils';
 // ...
 Utils.X // 表示来自Utils的X
 Utils.Y // 表示来自Utils的Y
@@ -3724,16 +3725,16 @@ Utils.Y // 表示来自Utils的Y
 ### Code block 114
 
 ```
-import { X, Y } from './utils';
+import { X, Y } from './Utils';
 // ...
-X // 表示来自utils的X
-Y // 表示来自utils的Y
+X // 表示来自Utils的X
+Y // 表示来自Utils的Y
 ```
 
 ### Code block 115
 
 ```
-import { X as Z, Y } from './utils';
+import { X as Z, Y } from './Utils';
 Z // 表示来自Utils的X
 Y // 表示来自Utils的Y
 X // 编译时错误：'X'不可见
@@ -3778,7 +3779,7 @@ export function bye() {
 
 ```
 async function test() {
-  let ns = await import('./say');
+  let ns = await import('./Say');
   let hi = ns.hi;
   let bye = ns.bye;
   hi();
@@ -3842,7 +3843,7 @@ function foo(arg1: number) {
 ```
 // 注解的声明：
 @interface ClassAuthor {
-  authorName: string
+  authorName: string;
 }
 
 // 注解的使用：
@@ -3856,7 +3857,6 @@ class MyClass {
 
 ```
 ClassAuthor({authorName: "Bob"}) // 编译错误：注解需要'@'为前缀
-@ ClassAuthor({authorName: "Bob"}) // 编译错误：符号`@`和名称之间不允许有空格和行分隔符
 ```
 
 ### Code block 128
@@ -4217,7 +4217,7 @@ class C {
 
 ```
 @MyAnno({name: "123", value: 456})
-@MyAnno({name: "321", value: 654}) // 编译错误：不允许重复注释
+@MyAnno({name: "321", value: 654}) // 编译错误：不允许重复注解
 class C {
   // ...
 }

@@ -16,6 +16,8 @@ DID数字身份服务
 
 通行密钥
 
+Online Authentication Kit术语
+
 个人数据处理说明
 
 网站链接免责声明

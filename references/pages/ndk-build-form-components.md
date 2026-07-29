@@ -32,7 +32,7 @@ std::shared_ptr<NativeModule::ArkUIBaseNode> CreateButtonExample()
     circleBtn->SetMargin(PARAM_20, false);
     column->AddChild(button);
     column->AddChild(circleBtn);
-    // 将Column添加到Content中
+    // 返回Column，由调用方添加到Content中
     return column;
 }
 
@@ -215,7 +215,7 @@ std::shared_ptr<NativeModule::ArkUIBaseNode> CreateCheckboxExample()
     column->AddChild(checkbox2);
     column->AddChild(checkbox3);
 
-    // 将Column添加到Content中
+    // 返回Column，由调用方添加到Content中
     return column;
 }
 
@@ -342,7 +342,7 @@ std::shared_ptr<NativeModule::ArkUIBaseNode> CreateButtonExample()
     circleBtn->SetMargin(PARAM_20, false);
     column->AddChild(button);
     column->AddChild(circleBtn);
-    // 将Column添加到Content中
+    // 返回Column，由调用方添加到Content中
     return column;
 }
 ```
@@ -468,7 +468,7 @@ std::shared_ptr<NativeModule::ArkUIBaseNode> CreateCheckboxExample()
     column->AddChild(checkbox2);
     column->AddChild(checkbox3);
 
-    // 将Column添加到Content中
+    // 返回Column，由调用方添加到Content中
     return column;
 }
 ```

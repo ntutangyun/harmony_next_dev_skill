@@ -167,7 +167,6 @@ class Contact {
 @Entry
 @Component
 export struct ArcListContents {
-  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   @State private contacts: Array<object> = [
     // 请将$r('app.string.xxx')替换为实际资源文件
     new Contact($r('app.string.name_xiaohong'), $r('app.media.ic_contact')),
@@ -325,7 +324,7 @@ ArcScrollBar({ scroller: this.arcListScroller })
 
 如图8所示，当列表从联系人A滚动到联系人B时，外侧索引条也需要同步从选中A状态变成选中B状态，此场景可以通过监听ArcList组件的onScrollIndex事件来实现；当点击索引项C时，列表也需要跳转到联系人C，此场景可以通过监听ArcAlphabetIndexer的onSelect事件来实现。
 
-在列表滚动时，根据列表此时所在的索引值位置firstIndex，重新计算字母索引条对应字母的位置selectedIndex。由于ArcAlphabetIndexer组件通过selected属性设置了选中项索引值，当selectedIndex变化时会触发ArcAlphabetIndexer组件重新渲染，从而显示为选中对应字母的状态。
+在列表滚动时，根据列表此时所在的索引值位置centerIndex，重新计算字母索引条对应字母的位置indexerIndex。由于ArcAlphabetIndexer组件通过selected属性设置了选中项索引值，当indexerIndex变化时会触发ArcAlphabetIndexer组件重新渲染，从而显示为选中对应字母的状态。
 
 在选中索引项时，根据此时选中项的索引值index，重新计算列表联系人对应的位置，然后通过列表绑定的滚动控制器arcListScroller的scrollToIndex方法控制列表跳转到对应的联系人位置。弧形列表ArcList可通过scroller参数绑定Scroller（滚动控制器）。
 
@@ -334,7 +333,7 @@ import { common } from '@kit.AbilityKit';
 
 // ...
 const alphabets: string[] = [
-  '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N',
+  '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 ];
 
@@ -358,8 +357,10 @@ export struct ArcListArcIndexerBar {
             }
             // ...
             .onScrollIndex((firstIndex: number, lastIndex: number, centerIndex: number) => {
-              // 根据列表滚动到的索引值，重新计算对应索引条的位置this.selectedIndex
-              this.indexerIndex = centerIndex + 1;
+              // 根据列表滚动到的索引值，重新计算对应索引条的位置this.indexerIndex
+              let contact = this.contacts[centerIndex] as Contact;
+              let firstChar = contact.firstChar;
+              this.indexerIndex = alphabets.indexOf(firstChar);
             })
             // ...
             // 弧形索引条组件
@@ -367,8 +368,19 @@ export struct ArcListArcIndexerBar {
               .selected(this.indexerIndex!!)
               .onSelect((index: number) => {
                 // 选中索引项后，列表跳转到相应位置
-                this.indexerIndex = index
-                this.arcListScroller.scrollToIndex(this.indexerIndex - 1)
+                this.indexerIndex = index;
+                const selectedLetter = alphabets[index];
+                let targetIndex = -1;
+                for (let i = 0; i < this.contacts.length; i++) {
+                  const contact = this.contacts[i] as Contact;
+                  if (contact.firstChar === selectedLetter) {
+                    targetIndex = i;
+                    break;
+                  }
+                }
+                if (targetIndex >= 0) {
+                  this.arcListScroller.scrollToIndex(targetIndex);
+                }
               })
               // ...
           }
@@ -382,7 +394,7 @@ export struct ArcListArcIndexerBar {
 
 ArcListItem的swipeAction属性可用于实现列表项的左右滑动功能。swipeAction属性方法初始化时存在必填SwipeActionOptions参数start和end。其中，start表示设置列表项右滑时起始端滑出的组件，end表示设置列表项左滑时尾端滑出的组件。
 
-在联系人列表中，end参数表示设置ArcListItem左滑时尾端划出自定义组件，即删除按钮。在初始化end方法时，将滑动列表项的索引传入删除按钮组件，当用户点击删除按钮时，可以根据数据索引来删除列表项对应的数据，从而实现侧滑删除功能。
+在联系人列表中，end参数表示设置ArcListItem左滑时尾端滑出自定义组件，即删除按钮。在初始化end方法时，将滑动列表项的索引传入删除按钮组件，当用户点击删除按钮时，可以根据数据索引来删除列表项对应的数据，从而实现侧滑删除功能。
 
 首先，实现尾端滑出组件的构建。
 
@@ -625,7 +637,6 @@ class Contact {
 @Entry
 @Component
 export struct ArcListContents {
-  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   @State private contacts: Array<object> = [
     // 请将$r('app.string.xxx')替换为实际资源文件
     new Contact($r('app.string.name_xiaohong'), $r('app.media.ic_contact')),
@@ -770,7 +781,7 @@ import { common } from '@kit.AbilityKit';
 
 // ...
 const alphabets: string[] = [
-  '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N',
+  '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 ];
 
@@ -794,8 +805,10 @@ export struct ArcListArcIndexerBar {
             }
             // ...
             .onScrollIndex((firstIndex: number, lastIndex: number, centerIndex: number) => {
-              // 根据列表滚动到的索引值，重新计算对应索引条的位置this.selectedIndex
-              this.indexerIndex = centerIndex + 1;
+              // 根据列表滚动到的索引值，重新计算对应索引条的位置this.indexerIndex
+              let contact = this.contacts[centerIndex] as Contact;
+              let firstChar = contact.firstChar;
+              this.indexerIndex = alphabets.indexOf(firstChar);
             })
             // ...
             // 弧形索引条组件
@@ -803,8 +816,19 @@ export struct ArcListArcIndexerBar {
               .selected(this.indexerIndex!!)
               .onSelect((index: number) => {
                 // 选中索引项后，列表跳转到相应位置
-                this.indexerIndex = index
-                this.arcListScroller.scrollToIndex(this.indexerIndex - 1)
+                this.indexerIndex = index;
+                const selectedLetter = alphabets[index];
+                let targetIndex = -1;
+                for (let i = 0; i < this.contacts.length; i++) {
+                  const contact = this.contacts[i] as Contact;
+                  if (contact.firstChar === selectedLetter) {
+                    targetIndex = i;
+                    break;
+                  }
+                }
+                if (targetIndex >= 0) {
+                  this.arcListScroller.scrollToIndex(targetIndex);
+                }
               })
               // ...
           }

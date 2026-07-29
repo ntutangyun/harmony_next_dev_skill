@@ -38,11 +38,11 @@ Health Service Kit（运动健康服务）是为华为生态应用打造的基�
 
 [h2]支持的设备
 
-本Kit仅适用于Phone、Tablet、Wearable。
+本Kit仅适用于Phone、Tablet、Wearable、Lite Wearable。
 
 [h2]支持的国家/地区
 
-仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+Phone、Tablet仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
 模拟器支持情况
 

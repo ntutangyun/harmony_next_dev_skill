@@ -2,7 +2,9 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/onlineauthentication-passkey-intro_
 
-从HarmonyOS 6.0.0(20)开始，Online Authentication Kit（在线认证服务）新增通行密钥特性。通行密钥主要提供了以下能力：
+通行密钥（Passkey）是基于FIDO2标准协议（见网站链接免责声明）实现的一种简单又安全的登录方式。借用通行密钥，用户可使用指纹、人脸或手机解锁PIN码登录应用或网页。相较于传统密码，通行密钥具有更便捷、安全的优势。更多关于FIDO的背景知识，可以参见FIDO规范介绍（见网站链接免责声明）。
+
+从6.0.0(20)版本开始，Online Authentication Kit（在线认证服务）新增通行密钥特性。通行密钥主要提供了以下能力：
 
 通行密钥注册：支持使用用户身份认证特征（如人脸、指纹、PIN码）作为平台认证器，在本设备上创建应用或网页的通行密钥。
 
@@ -29,10 +31,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/onlineaut
 说明
 
 以上使用场景均需要开发者部署符合FIDO2标准协议的FIDO服务器。
-
-基本概念
-
-通行密钥（Passkey）是基于FIDO2标准协议（见网站链接免责声明）实现的一种简单又安全的登录方式。借用通行密钥，用户可使用指纹、人脸或手机解锁PIN码登录应用或网页。相较于传统密码，通行密钥具有更便捷、安全的优势。更多关于FIDO的背景知识，可以参见FIDO规范介绍（见网站链接免责声明）。
 
 约束与限制
 

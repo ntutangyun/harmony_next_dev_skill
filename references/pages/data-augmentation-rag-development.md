@@ -33,8 +33,6 @@ streamRun(question: string, config: RunConfig, callback: AsyncCallback<Stream>):
 
 申请网络权限。streamChat中需要开发者实现与LLM交互的功能，因此需要为应用申请网络权限。
 
-// module.json5中配置"requestPermissions"字段
-// src/main/module.json5
 "requestPermissions": [
   {
     "name": "ohos.permission.INTERNET"
@@ -59,210 +57,283 @@ import { rag } from '@kit.DataAugmentationKit';
 
 初始化大模型以及向大模型发送请求。
 
-import { BusinessError } from '@kit.BasicServicesKit';
-import { http } from '@kit.NetworkKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { http } from '@kit.NetworkKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-const TAG = 'HttpUtils';
+class LLMHttpUtils {
 
-class HttpUtils {
-  httpRequest?: http.HttpRequest;
-  url: string = 'https://api.modelarts-maas.com/v1/chat/completions'; // 开发者需要根据选择的大模型对应修改url以及下面的model
-  isFinished: boolean = false;
+  public httpRequest: http.HttpRequest | null = null;
+  // url网址：https://api.modelarts-maas.com/v2/chat/completions
+  public url: string = 'xxxxxxxxxxxxxx';
+  public isFinished: boolean = false;
 
   initOption(question: string) {
     let option: http.HttpRequestOptions = {
-      // 请求方式
       method: http.RequestMethod.POST,
-      // 请求头
       header: {
         'Content-Type': 'application/json',
-        // API-KEY from Model
-        'Authorization': `Bearer ****replace your API key in here****`
+        // 模型API-KEY
+        'Authorization': 'Bearer xxxxxxxxx'
       },
-      // 请求体
       extraData: {
         'stream': true,
         'temperature': 0.1,
-        'max_tokens': 1000,
+        'max_tokens': 10000,
         'frequency_penalty': 1,
-        'model': 'qwen3-32b',
+        'model': 'qwen3-235b-a22b',
         'top_p': 0.1,
         'presence_penalty': -1,
-        'messages': JSON.parse(question),
-        "chat_template_kwargs": {
-          // 关闭思考中数据
-          "enable_thinking": false
-        }
+        'messages': JSON.parse(question)
       }
     };
     return option;
   }
 
-  async requestInStream(question: string) { // 拼装流式请求的option并发起流式请求
-    if (!this.httpRequest) {
+
+
+  async requestInStream(question: string) {
+    if (this.httpRequest === null) {
       this.httpRequest = http.createHttp();
     }
-    this.httpRequest?.requestInStream(this.url, this.initOption(question)).catch((err: BusinessError) => {
-      hilog.error(0, TAG, 'Failed to request. Cause: %{public}s', JSON.stringify(err));
+    this.httpRequest.requestInStream(this.url, this.initOption(question)).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'LLMHttpUtils', `requestInStream failed, error code=${err.code}, message=${err.message}`);
     });
     this.isFinished = false;
   }
 
-  on(callback: Callback<ArrayBuffer>) { // 注册数据接受、数据结束的监听
-    if (!this.httpRequest) {
+
+
+  on(callback: Callback<ArrayBuffer>, endCallback: Callback<void>) {
+    if (this.httpRequest === null) {
       this.httpRequest = http.createHttp();
     }
     this.httpRequest.on('dataReceive', callback);
+    this.httpRequest.on('dataEnd', endCallback);
+  }
+
+
+  end() {
+    this.httpRequest?.off('dataReceive');
+    this.httpRequest?.off('dataEnd');
+    this.httpRequest?.destroy();
+    this.httpRequest = null;
   }
 
   cancel() {
     this.httpRequest?.off('dataReceive');
+    this.httpRequest?.off('dataEnd');
     this.httpRequest?.destroy();
-    this.httpRequest = undefined;
+    this.httpRequest = null;
   }
 }
 
-export default new HttpUtils;
+export default new LLMHttpUtils;
 
 继承实现ChatLLM类，在此函数中与大模型进行交互，并将大模型返回结果通过callback函数返回给RagSession。
 
-import { rag } from '@kit.DataAugmentationKit';
+import rag from '@hms.data.rag'
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { JSON, util } from '@kit.ArkTS';
-import HttpUtils from './HttpUtils'; // HttpUtils为上一步骤中，在文件HttpUtils.ets文件中实现的HTTP访问工具类
+import { util, JSON } from '@kit.ArkTS';
 
-const TAG = "MyChatLLM";
+import LLMHttpUtils from '../common/utils/LLMHttpUtils'
 
-export default class MyChatLLM extends rag.ChatLLM {
+
+export default class MyChatLlm extends rag.ChatLLM {
+  public temp: string = '';
+
+  cancel(): void {
+    LLMHttpUtils.cancel();
+  }
+
   async streamChat(query: string, callback: Callback<rag.LLMStreamAnswer>): Promise<rag.LLMRequestInfo> {
-    let ret: rag.LLMRequestStatus = rag.LLMRequestStatus.LLM_SUCCESS;
+    let ret = rag.LLMRequestStatus.LLM_SUCCESS;
     try {
-      let dataCallback = async (data: ArrayBuffer) => { // 收到数据时的回调函数，解析数据并组装LLMStreamAnswer，通过callback回调
-        hilog.debug(0, TAG, 'on callback enter. data length: %{public}d', data.byteLength);
-        // 解析大模型返回报文，逻辑因选择模型而异，此处省略具体解析代码，示例参见完整示例代码
-        const answer = parseLLMResponse(data);
-        if (!answer) {
-          return;
+      LLMHttpUtils.on(
+        (data) => {
+          try {
+            if (LLMHttpUtils.isFinished) {
+              return;
+            }
+            let decoder = util.TextDecoder.create(`"utf-8"`);
+            let str = decoder.decodeToString(new Uint8Array(data));
+            let resultStr: string = str.split('\n')[0];
+            if(resultStr.startsWith('{"error_code"')){
+              hilog.error(0, 'MyChatLlm', 'str =' + resultStr);
+              let answer: rag.LLMStreamAnswer = {
+                isFinished: true,
+                chunk: `LLM catch other exception. msg:${resultStr}`,
+                err:{
+                  code: 1021011000,
+                  name: `LLM catch other exception`,
+                  message: `LLM catch other exception. msg:${resultStr}`
+                }
+              }
+              try{
+                let obj = JSON.parse(resultStr) as object;
+                if(obj && obj['error_msg'] && obj['error_code'] && obj['error_msg'] === 'Invalid authorization header.'){
+                  answer.chunk = `LLM catch other exception. msg:${obj['error_msg']}`;
+                  answer.err!.message = 'Invalid ChatLLM authorization API key';
+                }
+              } catch(err){
+                hilog.error(0, 'MyChatLlm', 'Parse json failed. String: ' + resultStr);
+              }
+              hilog.error(0, 'MyChatLlm', 'LLM catch other exception');
+              LLMHttpUtils.isFinished = true;
+              callback(answer);
+              return;
+            }
+            let obj = JSON.parse(resultStr.slice(5))
+            let chunk = ''
+            if ((obj as object)?.['choices'].length === 0) {
+              return;
+            }
+            if ((obj as object)?.['choices'][0]['delta']['reasoning_content']) {
+              chunk = (obj as object)?.['choices'][0]['delta']['reasoning_content'];
+            } else {
+              chunk = (obj as object)?.['choices'][0]['delta']['content'];
+            }
+            this.temp += chunk;
+            let isFinished: boolean = (str.length < 20);
+            let answer: rag.LLMStreamAnswer = {
+              isFinished: isFinished,
+              chunk: chunk
+            }
+            LLMHttpUtils.isFinished = isFinished;
+            callback(answer);
+          } catch (err) {
+            hilog.error(0, 'MyChatLlm', `BusinessError, error code: ${err.code}, error message: ${err.message}`);
+          }
+        },
+        () => {
+          if (LLMHttpUtils.isFinished) {
+            return;
+          }
+          let answer: rag.LLMStreamAnswer = {
+            isFinished: true,
+            chunk: ''
+          }
+          LLMHttpUtils.isFinished = true;
+          callback(answer);
+          LLMHttpUtils.end();
+          hilog.warn(0, 'MyChatLlm', 'Recv dataEnd callback.');
         }
-        HttpUtils.isFinished = answer.isFinished;
-        callback(answer);
-        hilog.debug(0, 'MyChatLLM', 'Request LLM success. isFinished: %{public}s, data: %{public}s',
-          Number(answer.isFinished).toString(), answer.chunk);
-      };
-
-      HttpUtils.on(dataCallback);
-      HttpUtils.requestInStream(query);
+      );
+      LLMHttpUtils.requestInStream(query);
     } catch (err) {
-      hilog.error(0, TAG, `Request LLM failed, error code: ${err.code}, error message: ${err.message}`);
-      ret = rag.LLMRequestStatus.LLM_REQUEST_ERROR; // 开发者可判断错误码从而返回其他LLM错误码
+      hilog.error(0, 'MyChatLlm', `Request HuaweiYun failed, error code: ${err.code}, error message: ${err.message}`);
+      if (err.code ===2300028) {
+        ret = rag.LLMRequestStatus.LLM_TIMEOUT;
+      } else if (err.code === 2300007) {
+        ret = rag.LLMRequestStatus.LLM_LOAD_FAILED;
+      } else if (err.code === 9999999) {
+        ret = rag.LLMRequestStatus.LLM_BUSY;
+      } else {
+        ret = rag.LLMRequestStatus.LLM_REQUEST_ERROR;
+      }
     }
     return {
       chatId: 0,
       status: ret,
     };
   }
-  cancel(chatId: number): void {
-    hilog.info(0, TAG, `The request for the large model has been canceled. chatId: ${chatId}`);
-    HttpUtils.cancel();
-  }
-}
-function parseLLMResponse(data: ArrayBuffer): rag.LLMStreamAnswer {
-  throw new Error('Function not implemented.'); // 待实现大模型报文解析流程
 }
 
 创建Config配置中的属性。下面简要介绍几个主要属性，有关全量配置字段的详细含义，请参见智慧化数据检索中的说明。开发者可以根据自身需求进行选择性配置。
 
-import { common, UIAbility } from '@kit.AbilityKit';
-import { rag, retrieval } from '@kit.DataAugmentationKit';
-import { relationalStore } from '@kit.ArkData';
+RetrievalConfig主要配置知识库的数据库配置。知识加工将会生成向量及倒排两种知识库表。
 
-let storeConfigVector: relationalStore.StoreConfig = {
-  name: 'testmail_store_vector.db', // 知识加工后向量数据库文件名，在原数据库名基础上加_vector后缀
-  securityLevel: relationalStore.SecurityLevel.S3,
-  vector: true  // 向量数据库应设置该项为true
-};
-let storeConfigInvIdx: relationalStore.StoreConfig = {
-  name: 'testmail_store.db', // 知识加工后，倒排数据库即原数据库
-  securityLevel: relationalStore.SecurityLevel.S3,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-let context = AppStorage.get<common.UIAbilityContext>('Context') as common.UIAbilityContext;
-let channelConfigVector: retrieval.ChannelConfig = {
-  channelType: retrieval.ChannelType.VECTOR_DATABASE,
-  context: context,
-  dbConfig: storeConfigVector
-};
-let channelConfigInvIdx: retrieval.ChannelConfig = {
-  channelType: retrieval.ChannelType.INVERTED_INDEX_DATABASE,
-  context: context,
-  dbConfig: storeConfigInvIdx
-};
-// 最终创建成功的RetrievalConfig数据
-let retrievalConfig: retrieval.RetrievalConfig = {
-  channelConfigs: [channelConfigInvIdx, channelConfigVector]
-};
+getRetrievalConfig(): retrieval.RetrievalConfig {
+  let storeConfigVector: relationalStore.StoreConfig = {
+    name: 'testmail_store_vector.db', // VectorBase
+    securityLevel: relationalStore.SecurityLevel.S3,
+    vector: true
+  };
 
-import { retrieval } from '@kit.DataAugmentationKit';
+  let storeConfigInvIdx: relationalStore.StoreConfig = {
+    name: 'testmail_store.db', // 原始数据库即为倒排索引数据库。
+    securityLevel: relationalStore.SecurityLevel.S3,
+    tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
+  };
 
-let recallConditionInvIdx: retrieval.InvertedIndexRecallCondition = {
-  ftsTableName: 'email_inverted',
-  fromClause: 'email_inverted',
-  primaryKey: ['chunk_id'],
-  // 配置范围为fromClause配置的数据库表中的列，超出范围会导致检索失败。
-  responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'chunk_text'],
-  deepSize: 500,
-  recallName: 'invertedvectorRecall',
-};
-let floatArray = new Float32Array(128).fill(0.1);
-let vectorQuery: retrieval.VectorQuery = {
-  column: 'repr',
-  value: floatArray,
-  similarityThreshold: 0.1
-};
-let recallConditionVector: retrieval.VectorRecallCondition = {
-  vectorQuery: vectorQuery,
-  // 只配置知识库的向量表作为查询目标
-  fromClause: 'email_vector',
-  primaryKey: ['id'],
-  // 配置知识库的向量表中的列作为召回列
-  responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'repr'],
-  recallName: 'vectorRecall',
-  deepSize: 500
-};
-let rerankMethod: retrieval.RerankMethod = {
-  rerankType: retrieval.RerankType.RRF,
-  isSoftmaxNormalized: true,
-};
-// 最终创建成功的RetrievalCondition数据
-let retrievalCondition: retrieval.RetrievalCondition = {
-  rerankMethod: rerankMethod,
-  recallConditions: [recallConditionInvIdx, recallConditionVector],
-  resultCount: 5
-};
+  let context = AppStorage.get<common.UIAbilityContext>('Context') as common.UIAbilityContext;
+  let channelConfigVector: retrieval.ChannelConfig = {
+    channelType: retrieval.ChannelType.VECTOR_DATABASE,
+    context: context,
+    dbConfig: storeConfigVector
+  }
+  let channelConfigInvIdx: retrieval.ChannelConfig = {
+    channelType: retrieval.ChannelType.INVERTED_INDEX_DATABASE,
+    context: context,
+    dbConfig: storeConfigInvIdx
+  }
+  let retrievalConfig: retrieval.RetrievalConfig = {
+    channelConfigs: [channelConfigInvIdx, channelConfigVector]
+  }
+  return retrievalConfig;
+}
 
-import { rag } from "@kit.DataAugmentationKit";
-import MyChatLLM from "./MyChatLlm"; // 来源参考步骤3示例代码
+RetrievalCondition主要配置检索条件及多路召回之后的排序配置。其中fromClause为查询目标索引名，可按照如下示例代码配置为业务数据库表及知识加工产生的数据库表联合形成的虚拟表；responseColumns为召回的字段集合，范围为fromClause配置的数据库表中的列。关于知识库的数据库表结构可参见：知识加工。
 
-let config: rag.Config = {
-  llm: new MyChatLLM(), // 来源参考步骤3示例代码
-  retrievalConfig: retrievalConfig, // 来源参考当前步骤RetrievalConfig代码示例
-  retrievalCondition: retrievalCondition  // 来源参考当前步骤RetrievalCondition代码示例
+getRetrivalCondition(): retrieval.RetrievalCondition {
+  let recallConditionInvIdx: retrieval.InvertedIndexRecallCondition = {
+    ftsTableName: 'email_inverted',
+    fromClause: 'email_inverted',
+    primaryKey: ['chunk_id'],
+    responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'chunk_text'],
+    deepSize: 500,
+    recallName: 'invertedvectorRecall',
+  }
+  let floatArray = new Float32Array(128).fill(0.1);
+  let vectorQuery: retrieval.VectorQuery = {
+    column: 'repr',
+    value: floatArray,
+    similarityThreshold: 0.1
+  }
+  let recallConditionVector: retrieval.VectorRecallCondition = {
+    vectorQuery: vectorQuery,
+    fromClause: 'email_vector',
+    primaryKey: ['id'],
+    responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'repr'],
+    recallName: 'vectorRecall',
+    deepSize: 500
+  }
+  let rerankMethod: retrieval.RerankMethod = {
+    rerankType: retrieval.RerankType.RRF,
+    isSoftmaxNormalized: true,
+  }
+  let retrievalCondition: retrieval.RetrievalCondition = {
+    rerankMethod: rerankMethod,
+    recallConditions: [recallConditionInvIdx, recallConditionVector],
+    resultCount: 5
+  }
+  return retrievalCondition;
+}
+
+完成Config数据的构造。ChatLLM参数则使用步骤3继承实现的ChatLLM的自定义的类的实例。
+
+getRAGConfig(): rag.Config {
+  let retrievalConfig: retrieval.RetrievalConfig = this.getRetrievalConfig();
+  let retrievalCondition: retrieval.RetrievalCondition = this.getRetrivalCondition();
+  let config: rag.Config = {
+    llm: new MyChatLlm(),
+    retrievalConfig: retrievalConfig,
+    retrievalCondition: retrievalCondition,
+  }
+  return config;
 }
 
 创建RagSession。
 
-import { UIAbility } from '@kit.AbilityKit';
-import { rag } from '@kit.DataAugmentationKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-
-// 创建RagSession并存入APP上下文中
-rag.createRagSession(this.context, config).then((data) => {  // config来源参考步骤4代码示例
+let config: Config = new GetConfig();
+let sessionCfg: rag.Config = config.getRAGConfig();
+AppStorage.setOrCreate<rag.Config>('config', sessionCfg);
+// 创建 RAG 会话
+rag.createRagSession(this.context, sessionCfg).then((data: rag.RagSession) => {
   AppStorage.setOrCreate<rag.RagSession>('RagSessionObject', data);
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `createRagSession failed, code is ${err.code},message is ${err.message}.`);
-});
+})
 
 使用步骤5创建的RagSession的streamRun()函数进行问答。
 
@@ -270,41 +341,14 @@ answerTypes属性用来指定流式输出的数据类型（StreamType），当�
 
 streamRun()函数以增量流式的方式输出数据，所以需要开发者自行对结果进行拼接。
 
-import { BusinessError } from '@kit.BasicServicesKit';
-import { rag } from '@kit.DataAugmentationKit';
-import hilog from '@ohos.hilog';
-
-// 获取创建的RagSession
-let session: rag.RagSession = AppStorage.get<rag.RagSession>('RagSessionObject') as rag.RagSession;
-let config: rag.RunConfig = {
-  // 指定流式输出的输出类型
-  answerTypes: [rag.StreamType.THOUGHT, rag.StreamType.ANSWER]
-};
-let thoughtStr = '';
-let answerStr = '';
-let inputStr = '';
-// 发起提问
-session.streamRun(inputStr, config, ((err: BusinessError, stream: rag.Stream) => {
-  // 接收答案的callback回调，处理答案信息
-  if (err) {
-    answerStr = `streamRun inner failed. code is ${err.code}, message is ${err.message}`;
-  } else {
-    // 根据不同的数据类型，选择不同的处理方式
-    switch (stream.type) {
-      case rag.StreamType.THOUGHT:
-        thoughtStr += stream.answer.chunk;
-        break;
-      case rag.StreamType.ANSWER:
-        answerStr += stream.answer.chunk;
-        break;
-      case rag.StreamType.REFERENCE:
-      default:
-        hilog.info(0, 'Index', `streamRun msg: ${JSON.stringify(stream)}`);
-    }
-  }
-})).catch((e: BusinessError) => {
-  answerStr = `streamRun failed. code is ${e.code}, message is ${e.message}`;
-})
+const answerTypes: rag.StreamType[] =
+  [rag.StreamType.THOUGHT, rag.StreamType.REFERENCE, rag.StreamType.ANSWER];
+let option: rag.RunConfig = { answerTypes }
+this.streamRunStartTime = new Date();
+hilog.info(0, TAG, `Before streamRun, time: ${this.streamRunStartTime.getTime()}`);
+let ragSession: rag.RagSession = AppStorage.get<rag.RagSession>('RagSessionObject') as rag.RagSession;
+await ragSession.streamRun(text, option, this.onReceived);
+hilog.info(0, TAG, 'after streamRun, before responseInStream');
 
 流式问答调用流程图
 
@@ -313,8 +357,6 @@ session.streamRun(inputStr, config, ((err: BusinessError, stream: rag.Stream) =>
 ### Code block 1
 
 ```
-// module.json5中配置"requestPermissions"字段
-// src/main/module.json5
 "requestPermissions": [
   {
     "name": "ohos.permission.INTERNET"
@@ -331,262 +373,302 @@ import { rag } from '@kit.DataAugmentationKit';
 ### Code block 3
 
 ```
-import { BusinessError } from '@kit.BasicServicesKit';
-import { http } from '@kit.NetworkKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { http } from '@kit.NetworkKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-const TAG = 'HttpUtils';
+class LLMHttpUtils {
 
-class HttpUtils {
-  httpRequest?: http.HttpRequest;
-  url: string = 'https://api.modelarts-maas.com/v1/chat/completions'; // 开发者需要根据选择的大模型对应修改url以及下面的model
-  isFinished: boolean = false;
+  public httpRequest: http.HttpRequest | null = null;
+  // url网址：https://api.modelarts-maas.com/v2/chat/completions
+  public url: string = 'xxxxxxxxxxxxxx';
+  public isFinished: boolean = false;
 
   initOption(question: string) {
     let option: http.HttpRequestOptions = {
-      // 请求方式
       method: http.RequestMethod.POST,
-      // 请求头
       header: {
         'Content-Type': 'application/json',
-        // API-KEY from Model
-        'Authorization': `Bearer ****replace your API key in here****`
+        // 模型API-KEY
+        'Authorization': 'Bearer xxxxxxxxx'
       },
-      // 请求体
       extraData: {
         'stream': true,
         'temperature': 0.1,
-        'max_tokens': 1000,
+        'max_tokens': 10000,
         'frequency_penalty': 1,
-        'model': 'qwen3-32b',
+        'model': 'qwen3-235b-a22b',
         'top_p': 0.1,
         'presence_penalty': -1,
-        'messages': JSON.parse(question),
-        "chat_template_kwargs": {
-          // 关闭思考中数据
-          "enable_thinking": false
-        }
+        'messages': JSON.parse(question)
       }
     };
     return option;
   }
 
-  async requestInStream(question: string) { // 拼装流式请求的option并发起流式请求
-    if (!this.httpRequest) {
+
+
+  async requestInStream(question: string) {
+    if (this.httpRequest === null) {
       this.httpRequest = http.createHttp();
     }
-    this.httpRequest?.requestInStream(this.url, this.initOption(question)).catch((err: BusinessError) => {
-      hilog.error(0, TAG, 'Failed to request. Cause: %{public}s', JSON.stringify(err));
+    this.httpRequest.requestInStream(this.url, this.initOption(question)).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'LLMHttpUtils', `requestInStream failed, error code=${err.code}, message=${err.message}`);
     });
     this.isFinished = false;
   }
 
-  on(callback: Callback<ArrayBuffer>) { // 注册数据接受、数据结束的监听
-    if (!this.httpRequest) {
+
+
+  on(callback: Callback<ArrayBuffer>, endCallback: Callback<void>) {
+    if (this.httpRequest === null) {
       this.httpRequest = http.createHttp();
     }
     this.httpRequest.on('dataReceive', callback);
+    this.httpRequest.on('dataEnd', endCallback);
+  }
+
+
+  end() {
+    this.httpRequest?.off('dataReceive');
+    this.httpRequest?.off('dataEnd');
+    this.httpRequest?.destroy();
+    this.httpRequest = null;
   }
 
   cancel() {
     this.httpRequest?.off('dataReceive');
+    this.httpRequest?.off('dataEnd');
     this.httpRequest?.destroy();
-    this.httpRequest = undefined;
+    this.httpRequest = null;
   }
 }
 
-export default new HttpUtils;
+export default new LLMHttpUtils;
 ```
 
 ### Code block 4
 
 ```
-import { rag } from '@kit.DataAugmentationKit';
+import rag from '@hms.data.rag'
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { JSON, util } from '@kit.ArkTS';
-import HttpUtils from './HttpUtils'; // HttpUtils为上一步骤中，在文件HttpUtils.ets文件中实现的HTTP访问工具类
+import { util, JSON } from '@kit.ArkTS';
 
-const TAG = "MyChatLLM";
+import LLMHttpUtils from '../common/utils/LLMHttpUtils'
 
-export default class MyChatLLM extends rag.ChatLLM {
+
+export default class MyChatLlm extends rag.ChatLLM {
+  public temp: string = '';
+
+  cancel(): void {
+    LLMHttpUtils.cancel();
+  }
+
   async streamChat(query: string, callback: Callback<rag.LLMStreamAnswer>): Promise<rag.LLMRequestInfo> {
-    let ret: rag.LLMRequestStatus = rag.LLMRequestStatus.LLM_SUCCESS;
+    let ret = rag.LLMRequestStatus.LLM_SUCCESS;
     try {
-      let dataCallback = async (data: ArrayBuffer) => { // 收到数据时的回调函数，解析数据并组装LLMStreamAnswer，通过callback回调
-        hilog.debug(0, TAG, 'on callback enter. data length: %{public}d', data.byteLength);
-        // 解析大模型返回报文，逻辑因选择模型而异，此处省略具体解析代码，示例参见完整示例代码
-        const answer = parseLLMResponse(data);
-        if (!answer) {
-          return;
+      LLMHttpUtils.on(
+        (data) => {
+          try {
+            if (LLMHttpUtils.isFinished) {
+              return;
+            }
+            let decoder = util.TextDecoder.create(`"utf-8"`);
+            let str = decoder.decodeToString(new Uint8Array(data));
+            let resultStr: string = str.split('\n')[0];
+            if(resultStr.startsWith('{"error_code"')){
+              hilog.error(0, 'MyChatLlm', 'str =' + resultStr);
+              let answer: rag.LLMStreamAnswer = {
+                isFinished: true,
+                chunk: `LLM catch other exception. msg:${resultStr}`,
+                err:{
+                  code: 1021011000,
+                  name: `LLM catch other exception`,
+                  message: `LLM catch other exception. msg:${resultStr}`
+                }
+              }
+              try{
+                let obj = JSON.parse(resultStr) as object;
+                if(obj && obj['error_msg'] && obj['error_code'] && obj['error_msg'] === 'Invalid authorization header.'){
+                  answer.chunk = `LLM catch other exception. msg:${obj['error_msg']}`;
+                  answer.err!.message = 'Invalid ChatLLM authorization API key';
+                }
+              } catch(err){
+                hilog.error(0, 'MyChatLlm', 'Parse json failed. String: ' + resultStr);
+              }
+              hilog.error(0, 'MyChatLlm', 'LLM catch other exception');
+              LLMHttpUtils.isFinished = true;
+              callback(answer);
+              return;
+            }
+            let obj = JSON.parse(resultStr.slice(5))
+            let chunk = ''
+            if ((obj as object)?.['choices'].length === 0) {
+              return;
+            }
+            if ((obj as object)?.['choices'][0]['delta']['reasoning_content']) {
+              chunk = (obj as object)?.['choices'][0]['delta']['reasoning_content'];
+            } else {
+              chunk = (obj as object)?.['choices'][0]['delta']['content'];
+            }
+            this.temp += chunk;
+            let isFinished: boolean = (str.length < 20);
+            let answer: rag.LLMStreamAnswer = {
+              isFinished: isFinished,
+              chunk: chunk
+            }
+            LLMHttpUtils.isFinished = isFinished;
+            callback(answer);
+          } catch (err) {
+            hilog.error(0, 'MyChatLlm', `BusinessError, error code: ${err.code}, error message: ${err.message}`);
+          }
+        },
+        () => {
+          if (LLMHttpUtils.isFinished) {
+            return;
+          }
+          let answer: rag.LLMStreamAnswer = {
+            isFinished: true,
+            chunk: ''
+          }
+          LLMHttpUtils.isFinished = true;
+          callback(answer);
+          LLMHttpUtils.end();
+          hilog.warn(0, 'MyChatLlm', 'Recv dataEnd callback.');
         }
-        HttpUtils.isFinished = answer.isFinished;
-        callback(answer);
-        hilog.debug(0, 'MyChatLLM', 'Request LLM success. isFinished: %{public}s, data: %{public}s',
-          Number(answer.isFinished).toString(), answer.chunk);
-      };
-
-      HttpUtils.on(dataCallback);
-      HttpUtils.requestInStream(query);
+      );
+      LLMHttpUtils.requestInStream(query);
     } catch (err) {
-      hilog.error(0, TAG, `Request LLM failed, error code: ${err.code}, error message: ${err.message}`);
-      ret = rag.LLMRequestStatus.LLM_REQUEST_ERROR; // 开发者可判断错误码从而返回其他LLM错误码
+      hilog.error(0, 'MyChatLlm', `Request HuaweiYun failed, error code: ${err.code}, error message: ${err.message}`);
+      if (err.code ===2300028) {
+        ret = rag.LLMRequestStatus.LLM_TIMEOUT;
+      } else if (err.code === 2300007) {
+        ret = rag.LLMRequestStatus.LLM_LOAD_FAILED;
+      } else if (err.code === 9999999) {
+        ret = rag.LLMRequestStatus.LLM_BUSY;
+      } else {
+        ret = rag.LLMRequestStatus.LLM_REQUEST_ERROR;
+      }
     }
     return {
       chatId: 0,
       status: ret,
     };
   }
-  cancel(chatId: number): void {
-    hilog.info(0, TAG, `The request for the large model has been canceled. chatId: ${chatId}`);
-    HttpUtils.cancel();
-  }
-}
-function parseLLMResponse(data: ArrayBuffer): rag.LLMStreamAnswer {
-  throw new Error('Function not implemented.'); // 待实现大模型报文解析流程
 }
 ```
 
 ### Code block 5
 
 ```
-import { common, UIAbility } from '@kit.AbilityKit';
-import { rag, retrieval } from '@kit.DataAugmentationKit';
-import { relationalStore } from '@kit.ArkData';
+getRetrievalConfig(): retrieval.RetrievalConfig {
+  let storeConfigVector: relationalStore.StoreConfig = {
+    name: 'testmail_store_vector.db', // VectorBase
+    securityLevel: relationalStore.SecurityLevel.S3,
+    vector: true
+  };
 
-let storeConfigVector: relationalStore.StoreConfig = {
-  name: 'testmail_store_vector.db', // 知识加工后向量数据库文件名，在原数据库名基础上加_vector后缀
-  securityLevel: relationalStore.SecurityLevel.S3,
-  vector: true  // 向量数据库应设置该项为true
-};
-let storeConfigInvIdx: relationalStore.StoreConfig = {
-  name: 'testmail_store.db', // 知识加工后，倒排数据库即原数据库
-  securityLevel: relationalStore.SecurityLevel.S3,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-let context = AppStorage.get<common.UIAbilityContext>('Context') as common.UIAbilityContext;
-let channelConfigVector: retrieval.ChannelConfig = {
-  channelType: retrieval.ChannelType.VECTOR_DATABASE,
-  context: context,
-  dbConfig: storeConfigVector
-};
-let channelConfigInvIdx: retrieval.ChannelConfig = {
-  channelType: retrieval.ChannelType.INVERTED_INDEX_DATABASE,
-  context: context,
-  dbConfig: storeConfigInvIdx
-};
-// 最终创建成功的RetrievalConfig数据
-let retrievalConfig: retrieval.RetrievalConfig = {
-  channelConfigs: [channelConfigInvIdx, channelConfigVector]
-};
+  let storeConfigInvIdx: relationalStore.StoreConfig = {
+    name: 'testmail_store.db', // 原始数据库即为倒排索引数据库。
+    securityLevel: relationalStore.SecurityLevel.S3,
+    tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
+  };
+
+  let context = AppStorage.get<common.UIAbilityContext>('Context') as common.UIAbilityContext;
+  let channelConfigVector: retrieval.ChannelConfig = {
+    channelType: retrieval.ChannelType.VECTOR_DATABASE,
+    context: context,
+    dbConfig: storeConfigVector
+  }
+  let channelConfigInvIdx: retrieval.ChannelConfig = {
+    channelType: retrieval.ChannelType.INVERTED_INDEX_DATABASE,
+    context: context,
+    dbConfig: storeConfigInvIdx
+  }
+  let retrievalConfig: retrieval.RetrievalConfig = {
+    channelConfigs: [channelConfigInvIdx, channelConfigVector]
+  }
+  return retrievalConfig;
+}
 ```
 
 ### Code block 6
 
 ```
-import { retrieval } from '@kit.DataAugmentationKit';
-
-let recallConditionInvIdx: retrieval.InvertedIndexRecallCondition = {
-  ftsTableName: 'email_inverted',
-  fromClause: 'email_inverted',
-  primaryKey: ['chunk_id'],
-  // 配置范围为fromClause配置的数据库表中的列，超出范围会导致检索失败。
-  responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'chunk_text'],
-  deepSize: 500,
-  recallName: 'invertedvectorRecall',
-};
-let floatArray = new Float32Array(128).fill(0.1);
-let vectorQuery: retrieval.VectorQuery = {
-  column: 'repr',
-  value: floatArray,
-  similarityThreshold: 0.1
-};
-let recallConditionVector: retrieval.VectorRecallCondition = {
-  vectorQuery: vectorQuery,
-  // 只配置知识库的向量表作为查询目标
-  fromClause: 'email_vector',
-  primaryKey: ['id'],
-  // 配置知识库的向量表中的列作为召回列
-  responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'repr'],
-  recallName: 'vectorRecall',
-  deepSize: 500
-};
-let rerankMethod: retrieval.RerankMethod = {
-  rerankType: retrieval.RerankType.RRF,
-  isSoftmaxNormalized: true,
-};
-// 最终创建成功的RetrievalCondition数据
-let retrievalCondition: retrieval.RetrievalCondition = {
-  rerankMethod: rerankMethod,
-  recallConditions: [recallConditionInvIdx, recallConditionVector],
-  resultCount: 5
-};
+getRetrivalCondition(): retrieval.RetrievalCondition {
+  let recallConditionInvIdx: retrieval.InvertedIndexRecallCondition = {
+    ftsTableName: 'email_inverted',
+    fromClause: 'email_inverted',
+    primaryKey: ['chunk_id'],
+    responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'chunk_text'],
+    deepSize: 500,
+    recallName: 'invertedvectorRecall',
+  }
+  let floatArray = new Float32Array(128).fill(0.1);
+  let vectorQuery: retrieval.VectorQuery = {
+    column: 'repr',
+    value: floatArray,
+    similarityThreshold: 0.1
+  }
+  let recallConditionVector: retrieval.VectorRecallCondition = {
+    vectorQuery: vectorQuery,
+    fromClause: 'email_vector',
+    primaryKey: ['id'],
+    responseColumns: ['reference_id', 'chunk_id', 'chunk_source', 'repr'],
+    recallName: 'vectorRecall',
+    deepSize: 500
+  }
+  let rerankMethod: retrieval.RerankMethod = {
+    rerankType: retrieval.RerankType.RRF,
+    isSoftmaxNormalized: true,
+  }
+  let retrievalCondition: retrieval.RetrievalCondition = {
+    rerankMethod: rerankMethod,
+    recallConditions: [recallConditionInvIdx, recallConditionVector],
+    resultCount: 5
+  }
+  return retrievalCondition;
+}
 ```
 
 ### Code block 7
 
 ```
-import { rag } from "@kit.DataAugmentationKit";
-import MyChatLLM from "./MyChatLlm"; // 来源参考步骤3示例代码
-
-let config: rag.Config = {
-  llm: new MyChatLLM(), // 来源参考步骤3示例代码
-  retrievalConfig: retrievalConfig, // 来源参考当前步骤RetrievalConfig代码示例
-  retrievalCondition: retrievalCondition  // 来源参考当前步骤RetrievalCondition代码示例
+getRAGConfig(): rag.Config {
+  let retrievalConfig: retrieval.RetrievalConfig = this.getRetrievalConfig();
+  let retrievalCondition: retrieval.RetrievalCondition = this.getRetrivalCondition();
+  let config: rag.Config = {
+    llm: new MyChatLlm(),
+    retrievalConfig: retrievalConfig,
+    retrievalCondition: retrievalCondition,
+  }
+  return config;
 }
 ```
 
 ### Code block 8
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
-import { rag } from '@kit.DataAugmentationKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-
-// 创建RagSession并存入APP上下文中
-rag.createRagSession(this.context, config).then((data) => {  // config来源参考步骤4代码示例
+let config: Config = new GetConfig();
+let sessionCfg: rag.Config = config.getRAGConfig();
+AppStorage.setOrCreate<rag.Config>('config', sessionCfg);
+// 创建 RAG 会话
+rag.createRagSession(this.context, sessionCfg).then((data: rag.RagSession) => {
   AppStorage.setOrCreate<rag.RagSession>('RagSessionObject', data);
 }).catch((err: BusinessError) => {
   hilog.error(DOMAIN, 'testTag', `createRagSession failed, code is ${err.code},message is ${err.message}.`);
-});
+})
 ```
 
 ### Code block 9
 
 ```
-import { BusinessError } from '@kit.BasicServicesKit';
-import { rag } from '@kit.DataAugmentationKit';
-import hilog from '@ohos.hilog';
-
-// 获取创建的RagSession
-let session: rag.RagSession = AppStorage.get<rag.RagSession>('RagSessionObject') as rag.RagSession;
-let config: rag.RunConfig = {
-  // 指定流式输出的输出类型
-  answerTypes: [rag.StreamType.THOUGHT, rag.StreamType.ANSWER]
-};
-let thoughtStr = '';
-let answerStr = '';
-let inputStr = '';
-// 发起提问
-session.streamRun(inputStr, config, ((err: BusinessError, stream: rag.Stream) => {
-  // 接收答案的callback回调，处理答案信息
-  if (err) {
-    answerStr = `streamRun inner failed. code is ${err.code}, message is ${err.message}`;
-  } else {
-    // 根据不同的数据类型，选择不同的处理方式
-    switch (stream.type) {
-      case rag.StreamType.THOUGHT:
-        thoughtStr += stream.answer.chunk;
-        break;
-      case rag.StreamType.ANSWER:
-        answerStr += stream.answer.chunk;
-        break;
-      case rag.StreamType.REFERENCE:
-      default:
-        hilog.info(0, 'Index', `streamRun msg: ${JSON.stringify(stream)}`);
-    }
-  }
-})).catch((e: BusinessError) => {
-  answerStr = `streamRun failed. code is ${e.code}, message is ${e.message}`;
-})
+const answerTypes: rag.StreamType[] =
+  [rag.StreamType.THOUGHT, rag.StreamType.REFERENCE, rag.StreamType.ANSWER];
+let option: rag.RunConfig = { answerTypes }
+this.streamRunStartTime = new Date();
+hilog.info(0, TAG, `Before streamRun, time: ${this.streamRunStartTime.getTime()}`);
+let ragSession: rag.RagSession = AppStorage.get<rag.RagSession>('RagSessionObject') as rag.RagSession;
+await ragSession.streamRun(text, option, this.onReceived);
+hilog.info(0, TAG, 'after streamRun, before responseInStream');
 ```

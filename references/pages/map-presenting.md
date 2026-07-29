@@ -344,11 +344,13 @@ let result: boolean = this.mapController.isSphereEnabled();
 
 显示效果如下：
 
-开启城市灯光效果
+[h2]开启城市灯光效果
 
 调用MapComponentController对象的setSphereEnabled(enabled: boolean, animateDuration: number, cityLight: boolean)方法开启城市灯光效果。
 
-3D地球背景替换
+[h2]3D地球背景替换
+
+3D地球背景替换可用于展示真实地球视角的全球航线、跨境路线、可视化国际物流路径等。
 
 let mSphereOptions: mapCommon.SphereParams =
   {

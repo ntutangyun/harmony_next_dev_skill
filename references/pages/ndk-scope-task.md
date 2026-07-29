@@ -17,7 +17,6 @@ API version 20开始，ArkUI开发框架新增了OH_ArkUI_RunTaskInScope接口�
 本示例展示OH_ArkUI_RunTaskInScope接口的基础使用方式，OH_ArkUI_NodeUtils_GetAttachedNodeHandleById用于获取前置实例页面内的组件，相关使用请参考OH_ArkUI_NodeUtils_GetAttachedNodeHandleById，此处userData传入的数据类型为最终要设置的组件指针，便于设置对应组件属性。
 
 const uint32_t VALUE_2 = 250;
-const uint32_t VALUE_3 = 480;
 
 //page1
 ArkUI_NodeHandle button = nodeAPI->createNode(ARKUI_NODE_BUTTON);
@@ -45,7 +44,7 @@ OH_ArkUI_RunTaskInScope(uiContext, pageOneButton, [](void *userData) {
     auto *nodeAPI = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
         OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
     auto pageOneButton = (ArkUI_NodeHandle)userData;
-    ArkUI_NumberValue value[] = {VALUE_3};
+    ArkUI_NumberValue value[1] = {};
     ArkUI_AttributeItem LABEL_Item = {.string = "success"};
     value[0].f32 = VALUE_2;
     ArkUI_AttributeItem button_Item = {value, sizeof(value) / sizeof(ArkUI_NumberValue)};
@@ -59,7 +58,6 @@ OH_ArkUI_RunTaskInScope(uiContext, pageOneButton, [](void *userData) {
 
 ```
 const uint32_t VALUE_2 = 250;
-const uint32_t VALUE_3 = 480;
 ```
 
 ### Code block 2
@@ -95,7 +93,7 @@ OH_ArkUI_RunTaskInScope(uiContext, pageOneButton, [](void *userData) {
     auto *nodeAPI = reinterpret_cast<ArkUI_NativeNodeAPI_1 *>(
         OH_ArkUI_QueryModuleInterfaceByName(ARKUI_NATIVE_NODE, "ArkUI_NativeNodeAPI_1"));
     auto pageOneButton = (ArkUI_NodeHandle)userData;
-    ArkUI_NumberValue value[] = {VALUE_3};
+    ArkUI_NumberValue value[1] = {};
     ArkUI_AttributeItem LABEL_Item = {.string = "success"};
     value[0].f32 = VALUE_2;
     ArkUI_AttributeItem button_Item = {value, sizeof(value) / sizeof(ArkUI_NumberValue)};

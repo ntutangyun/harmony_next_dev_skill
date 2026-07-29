@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-b
 
 矩阵乘法概述
 
-MatMul的计算公式为：C = A * B + bias，其示意图如下。
+Matmul的计算公式为：C = A * B + bias，其示意图如下。
 
 A、B为源操作数，A为左矩阵，形状为[M, K]；B为右矩阵，形状为[K, N]。
 

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 
 从5.1.0(18)开始支持星闪数据传输，包括端口注册、建立连接、读写数据等能力。
 
-星闪设备间已建立起逻辑链路基础上，支持应用基于Nearlink技术进行设备间的数据传输。
+星闪设备间已建立起逻辑链路基础上，支持应用基于NearLink技术进行设备间的数据传输。
 
 说明
 
@@ -29,96 +29,105 @@ on(type: 'readData', callback: Callback<DataParams>): void	订阅端口通道数
 
 导入相关模块。
 
-import { dataTransfer, remoteDevice } from '@kit.NearLinkKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { scan, ssap, dataTransfer, constant, remoteDevice } from '@kit.NearLinkKit';
 
 与远端设备配对加密（可选，如需加密数传，则需执行此步骤）。该步骤执行后，将依据本端与远端设备的输入输出能力标识弹出不同类型的弹窗，需使用者进一步确认。目前支持免输入配对弹窗、数字比较弹窗与通行码鉴权弹窗。
 
-let addr: string = '00:11:22:33:AA:FF'; // 扫描获取到的远端设备地址
+@State chosenDeviceAddr: string = '00:11:22:33:AA:FF';
+// ...
 let device: remoteDevice.RemoteDevice;
 try {
-  device = remoteDevice.createRemoteDevice(addr);
+  device = remoteDevice.createRemoteDevice(this.chosenDeviceAddr);
   device.startPairing().then(()=>{
-    console.info('start pairing success');
+    hilog.info(this.domainId, this.logTag, `start pairing success`);
+    // ...
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 注册端口通道，发送端和接收端均需注册，并需保证发送端和接收端UUID相同。
 
-let serviceUuid: string = 'FFFFFFFF-FC70-11EA-B720-000078951234'; // 星闪服务UUID，此处举例为自定义服务UUID
+const SERVICE_UUID: string = 'FFFFFFFF-1234-5678-ABCD-000000001234';
 try {
-  dataTransfer.createPort(serviceUuid);
-  console.info('create port success');
+  dataTransfer.createPort(SERVICE_UUID);
+  hilog.info(this.domainId, this.logTag, `Create port finished`);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 订阅端口通道连接状态变更事件。
 
 let onReceiveConnectionStateEvent:(data: dataTransfer.ConnectionResult) => void =
   (data: dataTransfer.ConnectionResult) => {
-  console.info('data: ' + JSON.stringify(data));
+  hilog.info(this.domainId, this.logTag, `Port connection state: ${JSON.stringify(data)}`);
+  // ...
 };
 try {
   dataTransfer.on('connectionStateChanged', onReceiveConnectionStateEvent);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 订阅端口通道数据接收事件。
 
 let onReceiveReadDataEvent:(data: dataTransfer.DataParams) => void = (data: dataTransfer.DataParams) => {
-  console.info('data: ' + JSON.stringify(data));
+  hilog.info(this.domainId, this.logTag, `Port read data: ${JSON.stringify(data)}`);
 };
 try {
   dataTransfer.on('readData', onReceiveReadDataEvent);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 连接远端设备，建立端口通道。其中UUID要与步骤3中注册的UUID相同。
 
-// 构造端口通道建立的参数
-let connectionParams:dataTransfer.ConnectionParams = {
-  address: addr, // 扫描获取到的远端设备地址
-  uuid: serviceUuid, // 星闪服务UUID
-  mtu: 1024 // 期望发送数据包的字节大小，可选参数
+let connectionParams: dataTransfer.ConnectionParams = {
+  address: this.chosenDeviceAddr,
+  uuid: SERVICE_UUID,
+  mtu: 1024
 };
 try {
-  dataTransfer.connect(connectionParams).then(()=>{
-    console.info('connect success');
-  }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+  dataTransfer.connect(connectionParams).then(() => {
+    hilog.info(this.domainId, this.logTag, `Connect port finished`);
+  }).catch((err: BusinessError) => {
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 通过设备地址和UUID向远端设备发数据。其中UUID要与步骤3中注册的UUID相同。
 
-// 构造发送数据参数
 let transferValueBuffer: Uint8Array = new Uint8Array(4);
 transferValueBuffer[0] = 1;
 transferValueBuffer[1] = 2;
 transferValueBuffer[2] = 3;
 transferValueBuffer[3] = 4;
 let dataParams: dataTransfer.DataParams = {
-  address: addr, // 星闪远端设备地址
-  uuid: serviceUuid, // 星闪服务UUID
-  data: transferValueBuffer.buffer // 星闪设备间传输的数据
+  address: this.chosenDeviceAddr,
+  uuid: SERVICE_UUID,
+  data: transferValueBuffer.buffer
 };
 try {
   dataTransfer.writeData(dataParams).then(() => {
-    console.info('writeData success');
-  }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.info(this.domainId, this.logTag, `Port data write: ${JSON.stringify(dataParams)}`);
+    // ...
+  }).catch((err: BusinessError) => {
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 示例代码
@@ -130,36 +139,41 @@ try {
 ### Code block 1
 
 ```
-import { dataTransfer, remoteDevice } from '@kit.NearLinkKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { scan, ssap, dataTransfer, constant, remoteDevice } from '@kit.NearLinkKit';
 ```
 
 ### Code block 2
 
 ```
-let addr: string = '00:11:22:33:AA:FF'; // 扫描获取到的远端设备地址
+@State chosenDeviceAddr: string = '00:11:22:33:AA:FF';
+// ...
 let device: remoteDevice.RemoteDevice;
 try {
-  device = remoteDevice.createRemoteDevice(addr);
+  device = remoteDevice.createRemoteDevice(this.chosenDeviceAddr);
   device.startPairing().then(()=>{
-    console.info('start pairing success');
+    hilog.info(this.domainId, this.logTag, `start pairing success`);
+    // ...
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
 ### Code block 3
 
 ```
-let serviceUuid: string = 'FFFFFFFF-FC70-11EA-B720-000078951234'; // 星闪服务UUID，此处举例为自定义服务UUID
+const SERVICE_UUID: string = 'FFFFFFFF-1234-5678-ABCD-000000001234';
 try {
-  dataTransfer.createPort(serviceUuid);
-  console.info('create port success');
+  dataTransfer.createPort(SERVICE_UUID);
+  hilog.info(this.domainId, this.logTag, `Create port finished`);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -168,12 +182,14 @@ try {
 ```
 let onReceiveConnectionStateEvent:(data: dataTransfer.ConnectionResult) => void =
   (data: dataTransfer.ConnectionResult) => {
-  console.info('data: ' + JSON.stringify(data));
+  hilog.info(this.domainId, this.logTag, `Port connection state: ${JSON.stringify(data)}`);
+  // ...
 };
 try {
   dataTransfer.on('connectionStateChanged', onReceiveConnectionStateEvent);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -181,56 +197,58 @@ try {
 
 ```
 let onReceiveReadDataEvent:(data: dataTransfer.DataParams) => void = (data: dataTransfer.DataParams) => {
-  console.info('data: ' + JSON.stringify(data));
+  hilog.info(this.domainId, this.logTag, `Port read data: ${JSON.stringify(data)}`);
 };
 try {
   dataTransfer.on('readData', onReceiveReadDataEvent);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
 ### Code block 6
 
 ```
-// 构造端口通道建立的参数
-let connectionParams:dataTransfer.ConnectionParams = {
-  address: addr, // 扫描获取到的远端设备地址
-  uuid: serviceUuid, // 星闪服务UUID
-  mtu: 1024 // 期望发送数据包的字节大小，可选参数
+let connectionParams: dataTransfer.ConnectionParams = {
+  address: this.chosenDeviceAddr,
+  uuid: SERVICE_UUID,
+  mtu: 1024
 };
 try {
-  dataTransfer.connect(connectionParams).then(()=>{
-    console.info('connect success');
-  }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+  dataTransfer.connect(connectionParams).then(() => {
+    hilog.info(this.domainId, this.logTag, `Connect port finished`);
+  }).catch((err: BusinessError) => {
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
 ### Code block 7
 
 ```
-// 构造发送数据参数
 let transferValueBuffer: Uint8Array = new Uint8Array(4);
 transferValueBuffer[0] = 1;
 transferValueBuffer[1] = 2;
 transferValueBuffer[2] = 3;
 transferValueBuffer[3] = 4;
 let dataParams: dataTransfer.DataParams = {
-  address: addr, // 星闪远端设备地址
-  uuid: serviceUuid, // 星闪服务UUID
-  data: transferValueBuffer.buffer // 星闪设备间传输的数据
+  address: this.chosenDeviceAddr,
+  uuid: SERVICE_UUID,
+  data: transferValueBuffer.buffer
 };
 try {
   dataTransfer.writeData(dataParams).then(() => {
-    console.info('writeData success');
-  }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.info(this.domainId, this.logTag, `Port data write: ${JSON.stringify(dataParams)}`);
+    // ...
+  }).catch((err: BusinessError) => {
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```

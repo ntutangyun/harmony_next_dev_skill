@@ -134,15 +134,15 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestPaymentPromise() {
-    // use your own orderStr
+    // 请开发者使用自己的orderStr
     const orderStr = '{"app_id":"***","merc_no":"***","prepay_id":"xxx","timestamp":"1680259863114","noncestr":"1487b8a60ed9f9ecc0ba759fbec23f4f","sign":"****","auth_id":"***"}';
     paymentService.requestPayment(this.context, orderStr)
       .then(() => {
-        // pay success
+        // 支付成功
         console.info('succeeded in paying');
       })
       .catch((error: BusinessError) => {
-        // failed to pay
+        // 支付失败
         console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -156,7 +156,7 @@ struct Index {
         .onClick(() => {
           this.requestPaymentPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }
@@ -265,15 +265,15 @@ import { common } from '@kit.AbilityKit';
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   requestPaymentPromise() {
-    // use your own orderStr
+    // 请开发者使用自己的orderStr
     const orderStr = '{"app_id":"***","merc_no":"***","prepay_id":"xxx","timestamp":"1680259863114","noncestr":"1487b8a60ed9f9ecc0ba759fbec23f4f","sign":"****","auth_id":"***"}';
     paymentService.requestPayment(this.context, orderStr)
       .then(() => {
-        // pay success
+        // 支付成功
         console.info('succeeded in paying');
       })
       .catch((error: BusinessError) => {
-        // failed to pay
+        // 支付失败
         console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
       });
   }
@@ -287,7 +287,7 @@ struct Index {
         .onClick(() => {
           this.requestPaymentPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }

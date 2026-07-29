@@ -15,3 +15,7 @@ Input Kit（多模输入服务）
 MDM Kit（企业设备管理服务）
 
 Kernel Enhance Kit（内核增强能力）
+
+Linx Kit（灵犀加速库）
+
+Service Support Kit（服务与支持）

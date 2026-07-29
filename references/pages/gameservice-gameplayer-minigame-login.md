@@ -88,7 +88,11 @@ let request: gamePlayer.MiniGameLoginParam = {
 };
 try {
   gamePlayer.miniGameLogin(context, request).then((result: gamePlayer.MiniGamePlayer) => {
-    hilog.info(0x0000, 'testTag', `Succeeded in logging in`);
+    if (result?.playerId) {
+      hilog.info(0x0000, 'testTag', `Succeeded in logging in`);
+    } else {
+      hilog.error(0x0000, 'testTag', `Failed to login.`);
+    }
   }).catch((error: BusinessError) => {
     hilog.error(0x0000, 'testTag', `Failed to login. Code: ${error.code}, message: ${error.message}`);
   });
@@ -164,7 +168,11 @@ let request: gamePlayer.MiniGameLoginParam = {
 };
 try {
   gamePlayer.miniGameLogin(context, request).then((result: gamePlayer.MiniGamePlayer) => {
-    hilog.info(0x0000, 'testTag', `Succeeded in logging in`);
+    if (result?.playerId) {
+      hilog.info(0x0000, 'testTag', `Succeeded in logging in`);
+    } else {
+      hilog.error(0x0000, 'testTag', `Failed to login.`);
+    }
   }).catch((error: BusinessError) => {
     hilog.error(0x0000, 'testTag', `Failed to login. Code: ${error.code}, message: ${error.message}`);
   });

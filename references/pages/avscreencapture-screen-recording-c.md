@@ -66,27 +66,25 @@ AVScreenCapture是系统提供的用于实现屏幕录制功能的核心模块�
 
 与上述方案类似，通过时间戳和应用沙箱目录拼接生成文件路径，然后利用文件管理模块提供的openSync()接口获取文件信息。该文件的fd将传递到Native侧，用于配置录屏数据的最终存储位置。在以下示例中，可以看到通过调用Native方法startScreenCaptureToFile()，将文件fd和屏幕的宽度及高度三个参数传递到Native侧。
 
-// 获取保存文件信息并调用Native方法
 async createVideoFd(): Promise<void> {
-  // 拼接文件路径
   this.tmpFileNameTwo = systemDateTime.getTime(true) + '.mp4';
-  // ...
+  AppStorage.setOrCreate('tmpFileNameTwo', this.tmpFileNameTwo);
   this.filepath = this.getUIContext().getHostContext()?.filesDir + '/' + this.tmpFileNameTwo;
   hilog.info(0xFF00, CommonConstants.LOG_TAG, 'filepath uri: %{public}s', this.filepath);
 
-  try {
-    // 获取文件信息
-    this.file = fileIo.openSync(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
-    // ...
+  await fileIo.open(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE).then((file) => {
+    this.fileFd = file.fd;
 
-    // 调用native方法开启录制并传递fd、宽高
-    avScreenCapture.startScreenCaptureToFile(this.file.fd, this.displayInfo.width, this.displayInfo.height);
+  }).catch((err: BusinessError) => {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG,
+      'open file failed with error message: %{public}s, error code: %{public}d',
+      err.message, err.code);
+  })
 
-    // ...
-  } catch (error) {
-    let err = error as BusinessError;
-    hilog.error(0x0000, 'testTag', `startScreenCaptureToFile fail. code = ${err.code}, message = ${err.message}`);
-  }
+  avScreenCapture.setStopCallbackToFile(this.StopCallback);
+  avScreenCapture.startScreenCaptureToFile(this.fileFd, this.displayInfo.width, this.displayInfo.height)
+  this.videoSrc = 'file://' + this.filepath;
+  AppStorage.setOrCreate('videoSrcTwo', this.videoSrc);
 }
 
 这里获取屏幕宽高的实现代码与上述内容一致，都是通过ArkTS接口获取的。开发者也可以选择在Native侧获取，参考：oh_display_manager.h。
@@ -105,13 +103,12 @@ napi_value CAVScreenCaptureToFile::StartScreenCaptureToFile(napi_env env, napi_c
     napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
     int32_t outputFd, videoWidth, videoHeight;
-    // 获取参数：文件fd和宽高
     napi_get_value_int32(env, args[0], &outputFd);
     napi_get_value_int32(env, args[1], &videoWidth);
     napi_get_value_int32(env, args[2], &videoHeight);
-    OH_LOG_INFO(LOG_APP, "文件FD为 %{public}d", outputFd);
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile FD %{public}d", outputFd);
     if (outputFd <= 0) {
-        OH_LOG_ERROR(LOG_APP, "FD ERROR: %{public}d", outputFd);
+        OH_LOG_ERROR(LOG_APP, "CAVScreenCaptureToFile FD ERROR  %{public}d", outputFd);
         napi_value res;
         napi_create_int32(env, -1, &res);
         return res;
@@ -121,13 +118,46 @@ napi_value CAVScreenCaptureToFile::StartScreenCaptureToFile(napi_env env, napi_c
         StopScreenCaptureRecording(g_avCapture_);
         OH_AVScreenCapture_Release(g_avCapture_);
     }
-    // 创建实例化对象
     g_avCapture_ = OH_AVScreenCapture_Create();
     if (g_avCapture_ == nullptr) {
         OH_LOG_ERROR(LOG_APP, "CAVScreenCaptureToFile create screen capture failed");
     }
 
-    // ...
+    OH_AVScreenCaptureConfig config_;
+    OH_RecorderInfo recorderInfo;
+
+    std::string fileUrl = "fd://" + std::to_string(outputFd);
+    recorderInfo.url = const_cast<char *>(fileUrl.c_str());
+    recorderInfo.fileFormat = OH_ContainerFormatType::CFT_MPEG_4;
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture fileUrl %{public}s", fileUrl.c_str());
+
+    SetConfigAsFile(config_, videoWidth, videoHeight);
+    config_.captureMode = OH_CAPTURE_HOME_SCREEN;
+    config_.dataType = OH_CAPTURE_FILE;
+    config_.recorderInfo = recorderInfo;
+
+    bool isMicrophone = true;
+    OH_AVScreenCapture_SetMicrophoneEnabled(g_avCapture_, isMicrophone);
+    OH_AVScreenCapture_SetErrorCallback(g_avCapture_, OnErrorSaveFile, nullptr);
+    OH_AVScreenCapture_SetStateCallback(g_avCapture_, OnStateChangeSaveFile, nullptr);
+    OH_AVScreenCapture_SetCanvasRotation(g_avCapture_, true);
+
+    OH_AVSCREEN_CAPTURE_ErrCode result = OH_AVScreenCapture_Init(g_avCapture_, config_);
+
+    if (result != AV_SCREEN_CAPTURE_ERR_OK) {
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OH_AVScreenCapture_Init failed %{public}d", result);
+    }
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OH_AVScreenCapture_Init succ %{public}d", result);
+    result = OH_AVScreenCapture_StartScreenRecording(g_avCapture_);
+    if (result != AV_SCREEN_CAPTURE_ERR_OK) {
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture Started failed %{public}d", result);
+        OH_AVScreenCapture_Release(g_avCapture_);
+    }
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture Started succ %{public}d", result);
+    m_IsRunning = true;
+    napi_value res;
+    napi_create_int32(env, result, &res);
+    return res;
 }
 
 录屏模式，录屏流数据类型以及录屏文件参数配置。
@@ -137,23 +167,20 @@ napi_value CAVScreenCaptureToFile::StartScreenCaptureToFile(napi_env env, napi_c
 OH_AVScreenCaptureConfig config_;
 OH_RecorderInfo recorderInfo;
 
-// 转文件fd为url
 std::string fileUrl = "fd://" + std::to_string(outputFd);
 recorderInfo.url = const_cast<char *>(fileUrl.c_str());
-// 文件格式MP4
 recorderInfo.fileFormat = OH_ContainerFormatType::CFT_MPEG_4;
 OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture fileUrl %{public}s", fileUrl.c_str());
 
-// 调用音视频录制参数配置函数
 SetConfigAsFile(config_, videoWidth, videoHeight);
 config_.captureMode = OH_CAPTURE_HOME_SCREEN;
 config_.dataType = OH_CAPTURE_FILE;
 config_.recorderInfo = recorderInfo;
 
-// 设置麦克风开关
 bool isMicrophone = true;
 OH_AVScreenCapture_SetMicrophoneEnabled(g_avCapture_, isMicrophone);
-
+OH_AVScreenCapture_SetErrorCallback(g_avCapture_, OnErrorSaveFile, nullptr);
+OH_AVScreenCapture_SetStateCallback(g_avCapture_, OnStateChangeSaveFile, nullptr);
 OH_AVScreenCapture_SetCanvasRotation(g_avCapture_, true);
 
 音视频录制参数配置。
@@ -162,13 +189,11 @@ OH_AVScreenCapture_SetCanvasRotation(g_avCapture_, true);
 
 void CAVScreenCaptureToFile::SetConfigAsFile(OH_AVScreenCaptureConfig &config, int32_t videoWidth,
                                              int32_t videoHeight) {
-    // 音频配置
     OH_AudioCaptureInfo micCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_SOURCE_DEFAULT};
     OH_AudioCaptureInfo innerCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_ALL_PLAYBACK};
     OH_AudioEncInfo audioEncInfo = {.audioBitrate = 96000, .audioCodecformat = OH_AudioCodecFormat::OH_AAC_LC};
     OH_AudioInfo audioInfo = {.micCapInfo = micCapInfo, .innerCapInfo = innerCapInfo, .audioEncInfo = audioEncInfo};
 
-    // 视频配置
     OH_VideoCaptureInfo videoCapInfo = {
         .videoFrameWidth = videoWidth, .videoFrameHeight = videoHeight, .videoSource = OH_VIDEO_SOURCE_SURFACE_RGBA};
     OH_VideoEncInfo videoEncInfo = {
@@ -192,7 +217,6 @@ OH_AVSCREEN_CAPTURE_ErrCode result = OH_AVScreenCapture_Init(g_avCapture_, confi
 
 这里设置了 stateChange（状态切换事件回调）和 error（错误事件回调）。
 
-// 设置回调
 OH_AVScreenCapture_SetErrorCallback(g_avCapture_, OnErrorSaveFile, nullptr);
 OH_AVScreenCapture_SetStateCallback(g_avCapture_, OnStateChangeSaveFile, nullptr);
 
@@ -205,45 +229,45 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
     (void)capture;
     switch (stateCode) {
     case OH_SCREEN_CAPTURE_STATE_STARTED: {
-        OH_LOG_INFO(LOG_APP, "录屏开始状态变更");
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_STARTED");
         break;
     }
 
     case OH_SCREEN_CAPTURE_STATE_CANCELED: {
-        OH_LOG_INFO(LOG_APP, "录屏取消状态变更 ");
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_CANCELED ");
         StopScreenCaptureRecording(capture);
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_STOPPED_BY_CALL: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏被电话打断状态处理");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_STOPPED_BY_CALL");
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_MIC_UNAVAILABLE: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏中途麦克风无法获取状态");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_MIC_UNAVAILABLE");
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_INTERRUPTED_BY_OTHER: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏状态被打断");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_INTERRUPTED_BY_OTHER");
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_MIC_MUTED_BY_USER: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏中途用户将麦克风禁音");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_MIC_MUTED_BY_USER");
         break;
     }
 
     case OH_SCREEN_CAPTURE_STATE_MIC_UNMUTED_BY_USER: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏中途用户将麦克风解除禁音");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_MIC_MUTED_BY_USER");
         break;
     }
 
     case OH_SCREEN_CAPTURE_STATE_ENTER_PRIVATE_SCENE: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏进入隐私状态");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_ENTER_PRIVATE_SCENE");
         std::thread releaseSCInstanceThread(ReleaseSCWorker, capture);
         releaseSCInstanceThread.detach();
         break;
@@ -251,7 +275,7 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
 
     case OH_SCREEN_CAPTURE_STATE_EXIT_PRIVATE_SCENE: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏退出隐私模式状态");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_EXIT_PRIVATE_SCENE");
         break;
     }
 
@@ -261,7 +285,7 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
         napi_release_threadsafe_function(tsFn, napi_tsfn_release);
         tsFn = nullptr;
         OH_LOG_INFO(LOG_APP,
-                    "录屏被用户切换打断");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_STOPPED_BY_USER");
         std::thread releaseSCInstanceThread(ReleaseSCWorker, capture);
         releaseSCInstanceThread.detach();
         break;
@@ -278,7 +302,7 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
 
 void CAVScreenCaptureToFile::OnErrorSaveFile(OH_AVScreenCapture *capture, int32_t errorCode, void *userData) {
     (void)capture;
-    OH_LOG_INFO(LOG_APP, "录屏发生错误，错误码为 %{public}d", errorCode);
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OnError errorCode is %{public}d", errorCode);
     (void)userData;
 }
 
@@ -289,35 +313,41 @@ result = OH_AVScreenCapture_StartScreenRecording(g_avCapture_);
 通过调用OH_AVScreenCapture_StopScreenRecording()停止录制，然后释放ScreenCapture实例。
 
 napi_value CAVScreenCaptureToFile::StopScreenCaptureToFile(napi_env env, napi_callback_info info) {
-    // ...
+    (void)info;
+    OH_AVSCREEN_CAPTURE_ErrCode result = AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT;
+    napi_value res;
 
-        OH_LOG_INFO(LOG_APP, "停止屏幕录制");
+    if (m_IsRunning && g_avCapture_ != nullptr) {
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture File Stop");
         result = OH_AVScreenCapture_StopScreenRecording(g_avCapture_);
         if (result != AV_SCREEN_CAPTURE_ERR_BASE) {
             OH_LOG_ERROR(
                 LOG_APP,
-                "停止屏幕录制错误，结果为：%{public}d",
+                "CAVScreenCaptureToFile StopScreenCapture OH_AVScreenCapture_StopScreenRecording Result: %{public}d",
                 result);
         } else {
-            OH_LOG_INFO(LOG_APP, "停止屏幕录制成功");
+            OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile StopScreenCapture OH_AVScreenCapture_StopScreenRecording");
         }
         result = OH_AVScreenCapture_Release(g_avCapture_);
         if (result != AV_SCREEN_CAPTURE_ERR_BASE) {
-            OH_LOG_ERROR(LOG_APP, "释放实例化对象异常，错误为: %{public}d",
+            OH_LOG_ERROR(LOG_APP, "CAVScreenCaptureToFile StopScreenCapture OH_AVScreenCapture_Release: %{public}d",
                          result);
         } else {
-            OH_LOG_INFO(LOG_APP, "释放实例化对象成功");
+            OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile OH_AVScreenCapture_Release success");
         }
-        // ...
+        m_IsRunning = false;
+        g_avCapture_ = nullptr;
+    }
+    napi_create_int32(env, result, &res);
+    return res;
 }
 
 然后在ArkTS侧关闭文件。
 
 async releaseFD() {
-  if (this.file?.fd != undefined && this.file.fd?.valueOf() > 0) {
-    // 关闭文件
+  if (this.fileFd != undefined && this.fileFd?.valueOf() > 0) {
     try {
-      fileIo.close(this.file.fd);
+      fileIo.close(this.fileFd);
     } catch (error) {
       let err = error as BusinessError;
       hilog.error(0x0000, 'testTag', `close fail. code = ${err.code}, message = ${err.message}`);
@@ -363,27 +393,24 @@ Native侧首先会创建音频编码器、视频编码器以及封装器对应�
 
 这一步与C/C++侧录屏存文件的方法一致。通过时间戳和应用沙箱目录拼接出文件路径，然后获取文件信息。接着调用Native方法startScreenCaptureToStream()并传递参数。
 
-// 获取保存文件信息并调用Native方法
 async createVideoFd(): Promise<void> {
-  // 拼接文件路径
   this.tmpFileNameThree = systemDateTime.getTime(true) + '.mp4';
-  // ...
+  AppStorage.setOrCreate('tmpFileNameThree', this.tmpFileNameThree);
   this.filepath = this.getUIContext().getHostContext()?.filesDir + '/' + this.tmpFileNameThree;
   hilog.info(0xFF00, CommonConstants.LOG_TAG, 'filepath uri: %{public}s', this.filepath);
-  try {
-    // 获取文件信息
-    this.file = fileIo.openSync(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
 
-    // ...
+  await fileIo.open(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE).then((file) => {
+    this.fileFd = file.fd;
+  }).catch((err: BusinessError) => {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG,
+      'open file failed with error message: %{public}s, error code: %{public}d',
+      err.message, err.code);
+  })
 
-    // 调用native方法开启录制并传递fd、宽高
-    avScreenCapture.startScreenCaptureToStream(this.file.fd, this.displayInfo.width, this.displayInfo.height)
-
-    // ...
-  } catch (error) {
-    let err = error as BusinessError;
-    hilog.error(0x0000, 'testTag', `startScreenCaptureToStream fail. code = ${err.code}, message = ${err.message}`);
-  }
+  avScreenCapture.setStopCallbackToStream(this.StopCallback);
+  avScreenCapture.startScreenCaptureToStream(this.fileFd, this.displayInfo.width, this.displayInfo.height)
+  this.videoSrc = 'file://' + this.filepath;
+  AppStorage.setOrCreate('videoSrcThree', this.videoSrc);
 }
 
 通过ArkTS侧接口获取屏幕宽高，Native侧获取方法参考：oh_display_manager.h。
@@ -396,17 +423,15 @@ let displayInfo = display.getDefaultDisplaySync();
 
 音视频编码器的相关配置中，sampleInfo用于存储参数配置信息，这些信息将在后续配置音频编码器、视频编码器及封装器配置项时使用。
 
-void CAVScreenCaptureToStream::InitConfig(int32_t outputFd, int32_t videoWidth, int32_t videoHeight) {
+void CAVScreenCaptureToStream::InitMuxerAndEncoder(int32_t outputFd, int32_t videoWidth, int32_t videoHeight) {
     sampleInfo_.outputFd = outputFd;
 
-    // 视频编码器配置
     sampleInfo_.videoWidth = videoWidth;
     sampleInfo_.videoHeight = videoHeight;
     sampleInfo_.frameRate = 30;
     sampleInfo_.bitrate = 10000000;
     sampleInfo_.videoCodecMime = "video/avc";
 
-    // 音频编码器配置
     sampleInfo_.audioCodecMime = OH_AVCODEC_MIMETYPE_AUDIO_AAC;
     sampleInfo_.audioSampleFormat = OH_BitsPerSample::SAMPLE_S16LE;
     sampleInfo_.audioSampleRate = 48000;
@@ -417,23 +442,19 @@ void CAVScreenCaptureToStream::InitConfig(int32_t outputFd, int32_t videoWidth, 
 
     std::lock_guard<std::mutex> lock(mutex_);
 
-    // 声明音视频编码器、音频采集器及封装器类对象
     audioEncoder_ = std::make_unique<AudioEncoder>();
     audioCapturer_ = std::make_unique<AudioCapturer>();
     videoEncoder_ = std::make_unique<VideoEncoder>();
     muxer_ = std::make_unique<Muxer>();
 
-    // 根据文件fd创建封装器并初始化
     muxer_->Create(sampleInfo_.outputFd);
     muxer_->Config(sampleInfo_);
 
-    // 创建音视频编码器
     CreateEncoder();
 
-    // 初始化音频采集器对象
     audioCapturer_->AudioCapturerInit(sampleInfo_, audioEncContext_);
 
-    // ...
+    releaseThread_ = nullptr;
 }
 
 创建封装器对象。
@@ -442,6 +463,9 @@ void CAVScreenCaptureToStream::InitConfig(int32_t outputFd, int32_t videoWidth, 
 
 int32_t Muxer::Create(int32_t fd) {
     muxer_ = OH_AVMuxer_Create(fd, AV_OUTPUT_FORMAT_MPEG_4);
+    if (muxer_ == nullptr) {
+        return -1;
+    }
     return 0;
 }
 
@@ -452,20 +476,17 @@ int32_t Muxer::Create(int32_t fd) {
 配置完成后，即可调用OH_AVMuxer_Start()开始封装音视频数据。
 
 int32_t Muxer::Config(SampleInfo &sampleInfo) {
-    // 创建并添加音频轨
     OH_AVFormat *formatAudio = OH_AVFormat_CreateAudioFormat(sampleInfo.audioCodecMime.data(),
                                                              sampleInfo.audioSampleRate, sampleInfo.audioChannelCount);
-    // 设置相关参数
+
     OH_AVFormat_SetIntValue(formatAudio, OH_MD_KEY_PROFILE, AAC_PROFILE_LC);
 
     int32_t ret = OH_AVMuxer_AddTrack(muxer_, &audioTrackId_, formatAudio);
     OH_AVFormat_Destroy(formatAudio);
 
-    // 创建并添加视频轨
     OH_AVFormat *formatVideo =
         OH_AVFormat_CreateVideoFormat(sampleInfo.videoCodecMime.data(), sampleInfo.videoWidth, sampleInfo.videoHeight);
 
-    // 设置相关参数
     OH_AVFormat_SetDoubleValue(formatVideo, OH_MD_KEY_FRAME_RATE, sampleInfo.frameRate);
     OH_AVFormat_SetIntValue(formatVideo, OH_MD_KEY_WIDTH, sampleInfo.videoWidth);
     OH_AVFormat_SetIntValue(formatVideo, OH_MD_KEY_HEIGHT, sampleInfo.videoHeight);
@@ -484,7 +505,6 @@ int32_t Muxer::Config(SampleInfo &sampleInfo) {
 
 从mime类型创建音频编码器实例。
 
-// 创建音频编码器
 int32_t AudioEncoder::Create(const std::string &codecMime) {
     encoder_ = OH_AudioCodec_CreateByMime(codecMime.c_str(), true);
     return 0;
@@ -500,13 +520,13 @@ int32_t AudioEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
         OH_LOG_ERROR(LOG_APP, "AVFormat create failed");
     }
 
-    // 配置相关参数
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_AUDIO_SAMPLE_FORMAT, sampleInfo.audioSampleFormat);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_AUD_CHANNEL_COUNT, sampleInfo.audioChannelCount);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_AUD_SAMPLE_RATE, sampleInfo.audioSampleRate);
     OH_AVFormat_SetLongValue(format, OH_MD_KEY_BITRATE, sampleInfo.audioBitRate);
     OH_AVFormat_SetLongValue(format, OH_MD_KEY_CHANNEL_LAYOUT, sampleInfo.audioChannelLayout);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_MAX_INPUT_SIZE, sampleInfo.audioMaxInputSize);
+
     int ret = OH_AudioCodec_Configure(encoder_, format);
     if (ret != AV_ERR_OK) {
         OH_LOG_ERROR(LOG_APP, "Config failed, ret: %{public}d", ret);
@@ -514,12 +534,15 @@ int32_t AudioEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
     OH_AVFormat_Destroy(format);
     format = nullptr;
 
-    // 设置音频编码器处理回调
+    OHNativeWindow *nativeWindow;
+    OH_VideoEncoder_GetSurface(encoder_, &nativeWindow);
+    sampleInfo.window = nativeWindow;
+
     OH_AudioCodec_RegisterCallback(encoder_,
                                    {AudioEncoder::OnCodecError, AudioEncoder::OnCodecFormatChange,
                                     AudioEncoder::OnNeedInputBuffer, AudioEncoder::OnNewOutputBuffer},
                                    codecUserData);
-    // 准备编码器内部资源，必须在调用此接口之前调用配置接口
+
     ret = OH_AudioCodec_Prepare(encoder_);
     if (ret != AV_ERR_OK) {
         OH_LOG_ERROR(LOG_APP, "Prepare failed, ret: %{public}d", ret);
@@ -531,8 +554,12 @@ int32_t AudioEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
 
 同样从mime类型创建视频编码器实例。
 
-void VideoEncoder::Create(const std::string &videoCodecMime) {
+int32_t VideoEncoder::Create(const std::string &videoCodecMime) {
     encoder_ = OH_VideoEncoder_CreateByMime(videoCodecMime.c_str());
+    if (encoder_ == nullptr) {
+        return -1;
+    }
+    return 0;
 }
 
 配置视频编码器。
@@ -542,7 +569,6 @@ void VideoEncoder::Create(const std::string &videoCodecMime) {
 int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserData) {
     OH_AVFormat *format = OH_AVFormat_Create();
 
-    // 配置相关参数
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, sampleInfo.videoWidth);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, sampleInfo.videoHeight);
     OH_AVFormat_SetDoubleValue(format, OH_MD_KEY_FRAME_RATE, sampleInfo.frameRate);
@@ -558,15 +584,12 @@ int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
     OH_AVFormat_Destroy(format);
     format = nullptr;
 
-    // 根据视频编码器获取Surface
     OH_VideoEncoder_GetSurface(encoder_, &sampleInfo.window);
 
-    // 设置视频编码器处理回调
     OH_VideoEncoder_RegisterCallback(encoder_,
                                      {VideoEncoder::OnCodecError, VideoEncoder::OnCodecFormatChange,
                                       VideoEncoder::OnNeedInputBuffer, VideoEncoder::OnNewOutputBuffer},
                                      codecUserData);
-    // 准备编码器内部资源，必须在调用此接口之前调用配置接口
     OH_VideoEncoder_Prepare(encoder_);
 
     return 0;
@@ -576,15 +599,12 @@ int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
 
 首先，创建一个音频流构造器，然后设置其相关属性值，并设置输入音频流的回调。OnReadData回调用于读取音频数据。接着，通过OH_AudioStreamBuilder_GenerateCapturer()方法，根据音频流构造器创建音频流实例。
 
-// 初始化音频采集器
 void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *audioEncContext)
 {
     AudioCapturerRelease();
 
-    // 创建builder
     OH_AudioStream_Type type = AUDIOSTREAM_TYPE_CAPTURER;
     OH_AudioStreamBuilder_Create(&builder_, type);
-    // 设置参数和回调
     OH_AudioStreamBuilder_SetSamplingRate(builder_, sampleInfo.audioSampleRate);
     OH_AudioStreamBuilder_SetChannelCount(builder_, sampleInfo.audioChannelCount);
     OH_AudioStreamBuilder_SetSampleFormat(builder_, AUDIOSTREAM_SAMPLE_S16LE);
@@ -593,7 +613,6 @@ void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *aud
     OH_AudioCapturer_Callbacks callbacks;
     callbacks.OH_AudioCapturer_OnReadData = AudioCapturerOnReadData;
     OH_AudioStreamBuilder_SetCapturerCallback(builder_, callbacks, audioEncContext);
-    // 创建 OH_AudioCapturer对象
     OH_AudioStreamBuilder_GenerateCapturer(builder_, &audioCapturer_);
 }
 
@@ -602,42 +621,27 @@ void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *aud
 类似于上述C/C+文件存储方法，首先创建实例化对象，接着配置相关回调函数及参数。随后，调用OH_AVScreenCapture_Init()方法初始化视频采集器。
 
 void CAVScreenCaptureToStream::StartScreenCapture(int32_t outputFd, int32_t videoWidth, int32_t videoHeight) {
-    // ...
+    InitMuxerAndEncoder(outputFd, videoWidth, videoHeight);
 
-    if (g_avCapture != nullptr) {
-        StopScreenCaptureRecording(g_avCapture);
-    }
+    InitAVScreenCapture(videoWidth, videoHeight);
 
-    // 创建实例化对象
-    g_avCapture = OH_AVScreenCapture_Create();
-    if (g_avCapture == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "create screen capture failed");
-    }
-    OH_LOG_INFO(LOG_APP, "ScreenCapture after create sc");
+    m_IsRunning = true;
 
-    // 设置回调
-    OH_AVScreenCapture_SetErrorCallback(g_avCapture, OnErrorToStream, nullptr);
-    OH_AVScreenCapture_SetStateCallback(g_avCapture, OnSurfaceStateChangeToStream, nullptr);
+    StartMuxerAndEncoder();
 
-    OH_AVScreenCapture_SetCanvasRotation(g_avCapture, true);
-
-    // 初始化配置
-    OH_AVScreenCaptureConfig config_;
-    SetConfigToStream(config_, videoWidth, videoHeight);
-    int result = OH_AVScreenCapture_Init(g_avCapture, config_);
+    int result = OH_AVScreenCapture_StartScreenCaptureWithSurface(g_avCapture, sampleInfo_.window);
+    OH_LOG_INFO(LOG_APP, "OH_VideoEncoder_Start Started 2 %{public}d", result);
     if (result != AV_SCREEN_CAPTURE_ERR_OK) {
-        OH_LOG_INFO(LOG_APP, "ScreenCapture OH_AVScreenCapture_Init failed %{public}d", result);
+        OH_LOG_INFO(LOG_APP, "ScreenCapture Started failed %{public}d", result);
+        OH_AVScreenCapture_Release(g_avCapture);
     }
-    OH_LOG_INFO(LOG_APP, "ScreenCapture OH_AVScreenCapture_Init %{public}d", result);
-
-    // ...
 }
 
 通过OH_AVScreenCapture_StartScreenCaptureWithSurface()接口开启屏幕录制。
 
 这里使用Surface模式启动录屏。通过OH_AVScreenCapture_StartScreenCaptureWithSurface()方法指定Surface并启动录屏。同时启动封装器。
 
-result = OH_AVScreenCapture_StartScreenCaptureWithSurface(g_avCapture, sampleInfo_.window);
+int result = OH_AVScreenCapture_StartScreenCaptureWithSurface(g_avCapture, sampleInfo_.window);
 OH_LOG_INFO(LOG_APP, "OH_VideoEncoder_Start Started 2 %{public}d", result);
 if (result != AV_SCREEN_CAPTURE_ERR_OK) {
     OH_LOG_INFO(LOG_APP, "ScreenCapture Started failed %{public}d", result);
@@ -648,40 +652,34 @@ if (result != AV_SCREEN_CAPTURE_ERR_OK) {
 
 启动音视频编码器和封装器，并将音视频编码器及封装器的数据处理子线程分离以进行数据处理。详细处理逻辑请参见示例代码。
 
-// 开启封装器
-int32_t ret = muxer_->Start();
-// 开启视频编码器
-ret = videoEncoder_->Start();
+void CAVScreenCaptureToStream::StartMuxerAndEncoder() {
+    int32_t ret = muxer_->Start();
+    ret = videoEncoder_->Start();
 
-// ...
-
-// 启动视频输出线程
-encOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::EncOutputThread, this);
-if (encOutputThread_ == nullptr) {
-    StartRelease();
-    return;
-}
-
-if (audioEncContext_) {
-    // 开启音频采集器
-    audioCapturer_->AudioCapturerStart();
-
-    // 开启音频编码器
-    audioEncoder_->Start();
-
-    // ...
-
-    // 启动音频输入输出线程
-    audioEncInputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncInputThread, this);
-    audioEncOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncOutputThread, this);
-    if (audioEncInputThread_ == nullptr || audioEncOutputThread_ == nullptr) {
+    isStarted_ = true;
+    lastFrameTimestampPts_ = 0;
+    lastFrameEncodePts_ = 0;
+    encOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::EncOutputThread, this);
+    if (encOutputThread_ == nullptr) {
         StartRelease();
         return;
     }
 
-    // 清空播放缓存队列
-    if (audioEncContext_ != nullptr) {
-        audioEncContext_->ClearCache();
+    if (audioEncContext_) {
+        audioCapturer_->AudioCapturerStart();
+
+        audioEncoder_->Start();
+        isStarted_ = true;
+        audioEncInputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncInputThread, this);
+        audioEncOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncOutputThread, this);
+        if (audioEncInputThread_ == nullptr || audioEncOutputThread_ == nullptr) {
+            StartRelease();
+            return;
+        }
+
+        if (audioEncContext_ != nullptr) {
+            audioEncContext_->ClearCache();
+        }
     }
 }
 
@@ -689,70 +687,58 @@ if (audioEncContext_) {
 
 首先，等待数据写入完成，然后启动子线程以释放音视频编码器及封装器的相关资源。在资源完全释放后，调用OH_AVScreenCapture_StopScreenRecording()方法停止屏幕录制，最后释放ScreenCapture实例。
 
-// 停止屏幕录制
 void CAVScreenCaptureToStream::StopScreenCapture() {
     int32_t ret = videoEncoder_->NotifyEndOfStream();
 
-    // 等待数据写入
     std::unique_lock<std::mutex> lock(mutex_);
     doneCond_.wait(lock);
-    // 等待资源释放
     if (releaseThread_ && releaseThread_->joinable()) {
         releaseThread_->join();
         releaseThread_.reset();
     }
 
-    // ...
-
-        // 停止录屏
+    if (m_IsRunning) {
         ret = OH_AVScreenCapture_StopScreenCapture(g_avCapture);
         if (ret != AV_SCREEN_CAPTURE_ERR_BASE) {
             OH_LOG_ERROR(LOG_APP, "StopScreenCapture OH_AVScreenCapture_StopScreenCapture Result: %{public}d", ret);
         } else {
             OH_LOG_INFO(LOG_APP, "StopScreenCapture OH_AVScreenCapture_StopScreenCapture");
         }
-        // 释放实例对象
         ret = OH_AVScreenCapture_Release(g_avCapture);
         if (ret != AV_SCREEN_CAPTURE_ERR_BASE) {
             OH_LOG_ERROR(LOG_APP, "StopScreenCapture OH_AVScreenCapture_Release: %{public}d", ret);
         } else {
             OH_LOG_INFO(LOG_APP, "OH_AVScreenCapture_Release success");
         }
-
-        // ...
+        m_IsRunning = false;
+        g_avCapture = nullptr;
+    }
 }
 
 音视频编码器及封装器资源释放。
 
-// 释放线程
 void CAVScreenCaptureToStream::Release() {
     std::lock_guard<std::mutex> lock(mutex_);
     isStarted_ = false;
-    // 视频输出线程
     if (encOutputThread_ && encOutputThread_->joinable()) {
         encOutputThread_->join();
         encOutputThread_.reset();
     }
-    // 音频输入线程
     if (audioEncInputThread_ && audioEncInputThread_->joinable()) {
         audioEncContext_->inputCond.notify_all();
         audioEncInputThread_->join();
         audioEncInputThread_.reset();
     }
-    // 音频输出线程
     if (audioEncOutputThread_ && audioEncOutputThread_->joinable()) {
         audioEncContext_->outputCond.notify_all();
         audioEncOutputThread_->join();
         audioEncOutputThread_.reset();
     }
-
-    // 释放封装器
     if (muxer_ != nullptr) {
         muxer_->Release();
         muxer_.reset();
         OH_LOG_INFO(LOG_APP, "Muxer release successful");
     }
-    // 释放编码器
     if (videoEncoder_ != nullptr) {
         videoEncoder_->Stop();
         if (sampleInfo_.window != nullptr) {
@@ -769,8 +755,6 @@ void CAVScreenCaptureToStream::Release() {
         audioEncoder_.reset();
         OH_LOG_INFO(LOG_APP, "Audio encoder release successful");
     }
-
-    // 释放资源
     if (audioCapturer_ != nullptr) {
         audioCapturer_->AudioCapturerRelease();
         audioCapturer_.reset();
@@ -791,10 +775,9 @@ void CAVScreenCaptureToStream::Release() {
 最后在ArkTS侧关闭文件。
 
 async releaseFD() {
-  if (this.file?.fd != undefined && this.file.fd?.valueOf() > 0) {
-    // 关闭文件
+  if (this.fileFd != undefined && this.fileFd?.valueOf() > 0) {
     try {
-      fileIo.close(this.file.fd);
+      fileIo.close(this.fileFd);
     } catch (error) {
       let err = error as BusinessError;
       hilog.error(0x0000, 'testTag', `close fail. code = ${err.code}, message = ${err.message}`);
@@ -818,13 +801,11 @@ AVScreenCapture在屏幕录制过程中无法动态调整参数。 若要实现�
 
 void CAVScreenCaptureToFile::SetConfigAsFile(OH_AVScreenCaptureConfig &config, int32_t videoWidth,
                                              int32_t videoHeight) {
-    // 音频配置
     OH_AudioCaptureInfo micCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_SOURCE_DEFAULT};
     OH_AudioCaptureInfo innerCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_ALL_PLAYBACK};
     OH_AudioEncInfo audioEncInfo = {.audioBitrate = 96000, .audioCodecformat = OH_AudioCodecFormat::OH_AAC_LC};
     OH_AudioInfo audioInfo = {.micCapInfo = micCapInfo, .innerCapInfo = innerCapInfo, .audioEncInfo = audioEncInfo};
 
-    // 视频配置
     OH_VideoCaptureInfo videoCapInfo = {
         .videoFrameWidth = videoWidth, .videoFrameHeight = videoHeight, .videoSource = OH_VIDEO_SOURCE_SURFACE_RGBA};
     OH_VideoEncInfo videoEncInfo = {
@@ -865,27 +846,25 @@ void CAVScreenCaptureToFile::SetConfigAsFile(OH_AVScreenCaptureConfig &config, i
 ### Code block 1
 
 ```
-// 获取保存文件信息并调用Native方法
 async createVideoFd(): Promise<void> {
-  // 拼接文件路径
   this.tmpFileNameTwo = systemDateTime.getTime(true) + '.mp4';
-  // ...
+  AppStorage.setOrCreate('tmpFileNameTwo', this.tmpFileNameTwo);
   this.filepath = this.getUIContext().getHostContext()?.filesDir + '/' + this.tmpFileNameTwo;
   hilog.info(0xFF00, CommonConstants.LOG_TAG, 'filepath uri: %{public}s', this.filepath);
 
-  try {
-    // 获取文件信息
-    this.file = fileIo.openSync(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
-    // ...
+  await fileIo.open(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE).then((file) => {
+    this.fileFd = file.fd;
 
-    // 调用native方法开启录制并传递fd、宽高
-    avScreenCapture.startScreenCaptureToFile(this.file.fd, this.displayInfo.width, this.displayInfo.height);
+  }).catch((err: BusinessError) => {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG,
+      'open file failed with error message: %{public}s, error code: %{public}d',
+      err.message, err.code);
+  })
 
-    // ...
-  } catch (error) {
-    let err = error as BusinessError;
-    hilog.error(0x0000, 'testTag', `startScreenCaptureToFile fail. code = ${err.code}, message = ${err.message}`);
-  }
+  avScreenCapture.setStopCallbackToFile(this.StopCallback);
+  avScreenCapture.startScreenCaptureToFile(this.fileFd, this.displayInfo.width, this.displayInfo.height)
+  this.videoSrc = 'file://' + this.filepath;
+  AppStorage.setOrCreate('videoSrcTwo', this.videoSrc);
 }
 ```
 
@@ -904,13 +883,12 @@ napi_value CAVScreenCaptureToFile::StartScreenCaptureToFile(napi_env env, napi_c
     napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
     int32_t outputFd, videoWidth, videoHeight;
-    // 获取参数：文件fd和宽高
     napi_get_value_int32(env, args[0], &outputFd);
     napi_get_value_int32(env, args[1], &videoWidth);
     napi_get_value_int32(env, args[2], &videoHeight);
-    OH_LOG_INFO(LOG_APP, "文件FD为 %{public}d", outputFd);
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile FD %{public}d", outputFd);
     if (outputFd <= 0) {
-        OH_LOG_ERROR(LOG_APP, "FD ERROR: %{public}d", outputFd);
+        OH_LOG_ERROR(LOG_APP, "CAVScreenCaptureToFile FD ERROR  %{public}d", outputFd);
         napi_value res;
         napi_create_int32(env, -1, &res);
         return res;
@@ -920,13 +898,46 @@ napi_value CAVScreenCaptureToFile::StartScreenCaptureToFile(napi_env env, napi_c
         StopScreenCaptureRecording(g_avCapture_);
         OH_AVScreenCapture_Release(g_avCapture_);
     }
-    // 创建实例化对象
     g_avCapture_ = OH_AVScreenCapture_Create();
     if (g_avCapture_ == nullptr) {
         OH_LOG_ERROR(LOG_APP, "CAVScreenCaptureToFile create screen capture failed");
     }
 
-    // ...
+    OH_AVScreenCaptureConfig config_;
+    OH_RecorderInfo recorderInfo;
+
+    std::string fileUrl = "fd://" + std::to_string(outputFd);
+    recorderInfo.url = const_cast<char *>(fileUrl.c_str());
+    recorderInfo.fileFormat = OH_ContainerFormatType::CFT_MPEG_4;
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture fileUrl %{public}s", fileUrl.c_str());
+
+    SetConfigAsFile(config_, videoWidth, videoHeight);
+    config_.captureMode = OH_CAPTURE_HOME_SCREEN;
+    config_.dataType = OH_CAPTURE_FILE;
+    config_.recorderInfo = recorderInfo;
+
+    bool isMicrophone = true;
+    OH_AVScreenCapture_SetMicrophoneEnabled(g_avCapture_, isMicrophone);
+    OH_AVScreenCapture_SetErrorCallback(g_avCapture_, OnErrorSaveFile, nullptr);
+    OH_AVScreenCapture_SetStateCallback(g_avCapture_, OnStateChangeSaveFile, nullptr);
+    OH_AVScreenCapture_SetCanvasRotation(g_avCapture_, true);
+
+    OH_AVSCREEN_CAPTURE_ErrCode result = OH_AVScreenCapture_Init(g_avCapture_, config_);
+
+    if (result != AV_SCREEN_CAPTURE_ERR_OK) {
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OH_AVScreenCapture_Init failed %{public}d", result);
+    }
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OH_AVScreenCapture_Init succ %{public}d", result);
+    result = OH_AVScreenCapture_StartScreenRecording(g_avCapture_);
+    if (result != AV_SCREEN_CAPTURE_ERR_OK) {
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture Started failed %{public}d", result);
+        OH_AVScreenCapture_Release(g_avCapture_);
+    }
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture Started succ %{public}d", result);
+    m_IsRunning = true;
+    napi_value res;
+    napi_create_int32(env, result, &res);
+    return res;
 }
 ```
 
@@ -936,23 +947,20 @@ napi_value CAVScreenCaptureToFile::StartScreenCaptureToFile(napi_env env, napi_c
 OH_AVScreenCaptureConfig config_;
 OH_RecorderInfo recorderInfo;
 
-// 转文件fd为url
 std::string fileUrl = "fd://" + std::to_string(outputFd);
 recorderInfo.url = const_cast<char *>(fileUrl.c_str());
-// 文件格式MP4
 recorderInfo.fileFormat = OH_ContainerFormatType::CFT_MPEG_4;
 OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture fileUrl %{public}s", fileUrl.c_str());
 
-// 调用音视频录制参数配置函数
 SetConfigAsFile(config_, videoWidth, videoHeight);
 config_.captureMode = OH_CAPTURE_HOME_SCREEN;
 config_.dataType = OH_CAPTURE_FILE;
 config_.recorderInfo = recorderInfo;
 
-// 设置麦克风开关
 bool isMicrophone = true;
 OH_AVScreenCapture_SetMicrophoneEnabled(g_avCapture_, isMicrophone);
-
+OH_AVScreenCapture_SetErrorCallback(g_avCapture_, OnErrorSaveFile, nullptr);
+OH_AVScreenCapture_SetStateCallback(g_avCapture_, OnStateChangeSaveFile, nullptr);
 OH_AVScreenCapture_SetCanvasRotation(g_avCapture_, true);
 ```
 
@@ -961,13 +969,11 @@ OH_AVScreenCapture_SetCanvasRotation(g_avCapture_, true);
 ```
 void CAVScreenCaptureToFile::SetConfigAsFile(OH_AVScreenCaptureConfig &config, int32_t videoWidth,
                                              int32_t videoHeight) {
-    // 音频配置
     OH_AudioCaptureInfo micCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_SOURCE_DEFAULT};
     OH_AudioCaptureInfo innerCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_ALL_PLAYBACK};
     OH_AudioEncInfo audioEncInfo = {.audioBitrate = 96000, .audioCodecformat = OH_AudioCodecFormat::OH_AAC_LC};
     OH_AudioInfo audioInfo = {.micCapInfo = micCapInfo, .innerCapInfo = innerCapInfo, .audioEncInfo = audioEncInfo};
 
-    // 视频配置
     OH_VideoCaptureInfo videoCapInfo = {
         .videoFrameWidth = videoWidth, .videoFrameHeight = videoHeight, .videoSource = OH_VIDEO_SOURCE_SURFACE_RGBA};
     OH_VideoEncInfo videoEncInfo = {
@@ -993,7 +999,6 @@ OH_AVSCREEN_CAPTURE_ErrCode result = OH_AVScreenCapture_Init(g_avCapture_, confi
 ### Code block 7
 
 ```
-// 设置回调
 OH_AVScreenCapture_SetErrorCallback(g_avCapture_, OnErrorSaveFile, nullptr);
 OH_AVScreenCapture_SetStateCallback(g_avCapture_, OnStateChangeSaveFile, nullptr);
 ```
@@ -1006,45 +1011,45 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
     (void)capture;
     switch (stateCode) {
     case OH_SCREEN_CAPTURE_STATE_STARTED: {
-        OH_LOG_INFO(LOG_APP, "录屏开始状态变更");
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_STARTED");
         break;
     }
 
     case OH_SCREEN_CAPTURE_STATE_CANCELED: {
-        OH_LOG_INFO(LOG_APP, "录屏取消状态变更 ");
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_CANCELED ");
         StopScreenCaptureRecording(capture);
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_STOPPED_BY_CALL: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏被电话打断状态处理");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_STOPPED_BY_CALL");
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_MIC_UNAVAILABLE: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏中途麦克风无法获取状态");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_MIC_UNAVAILABLE");
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_INTERRUPTED_BY_OTHER: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏状态被打断");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_INTERRUPTED_BY_OTHER");
         break;
     }
     case OH_SCREEN_CAPTURE_STATE_MIC_MUTED_BY_USER: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏中途用户将麦克风禁音");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_MIC_MUTED_BY_USER");
         break;
     }
 
     case OH_SCREEN_CAPTURE_STATE_MIC_UNMUTED_BY_USER: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏中途用户将麦克风解除禁音");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_MIC_MUTED_BY_USER");
         break;
     }
 
     case OH_SCREEN_CAPTURE_STATE_ENTER_PRIVATE_SCENE: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏进入隐私状态");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_ENTER_PRIVATE_SCENE");
         std::thread releaseSCInstanceThread(ReleaseSCWorker, capture);
         releaseSCInstanceThread.detach();
         break;
@@ -1052,7 +1057,7 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
 
     case OH_SCREEN_CAPTURE_STATE_EXIT_PRIVATE_SCENE: {
         OH_LOG_INFO(LOG_APP,
-                    "录屏退出隐私模式状态");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_EXIT_PRIVATE_SCENE");
         break;
     }
 
@@ -1062,7 +1067,7 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
         napi_release_threadsafe_function(tsFn, napi_tsfn_release);
         tsFn = nullptr;
         OH_LOG_INFO(LOG_APP,
-                    "录屏被用户切换打断");
+                    "CAVScreenCaptureToFile ScreenCapture OnStateChange OH_SCREEN_CAPTURE_STATE_STOPPED_BY_USER");
         std::thread releaseSCInstanceThread(ReleaseSCWorker, capture);
         releaseSCInstanceThread.detach();
         break;
@@ -1081,7 +1086,7 @@ void CAVScreenCaptureToFile::OnStateChangeSaveFile(struct OH_AVScreenCapture *ca
 ```
 void CAVScreenCaptureToFile::OnErrorSaveFile(OH_AVScreenCapture *capture, int32_t errorCode, void *userData) {
     (void)capture;
-    OH_LOG_INFO(LOG_APP, "录屏发生错误，错误码为 %{public}d", errorCode);
+    OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture OnError errorCode is %{public}d", errorCode);
     (void)userData;
 }
 ```
@@ -1096,26 +1101,33 @@ result = OH_AVScreenCapture_StartScreenRecording(g_avCapture_);
 
 ```
 napi_value CAVScreenCaptureToFile::StopScreenCaptureToFile(napi_env env, napi_callback_info info) {
-    // ...
+    (void)info;
+    OH_AVSCREEN_CAPTURE_ErrCode result = AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT;
+    napi_value res;
 
-        OH_LOG_INFO(LOG_APP, "停止屏幕录制");
+    if (m_IsRunning && g_avCapture_ != nullptr) {
+        OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile ScreenCapture File Stop");
         result = OH_AVScreenCapture_StopScreenRecording(g_avCapture_);
         if (result != AV_SCREEN_CAPTURE_ERR_BASE) {
             OH_LOG_ERROR(
                 LOG_APP,
-                "停止屏幕录制错误，结果为：%{public}d",
+                "CAVScreenCaptureToFile StopScreenCapture OH_AVScreenCapture_StopScreenRecording Result: %{public}d",
                 result);
         } else {
-            OH_LOG_INFO(LOG_APP, "停止屏幕录制成功");
+            OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile StopScreenCapture OH_AVScreenCapture_StopScreenRecording");
         }
         result = OH_AVScreenCapture_Release(g_avCapture_);
         if (result != AV_SCREEN_CAPTURE_ERR_BASE) {
-            OH_LOG_ERROR(LOG_APP, "释放实例化对象异常，错误为: %{public}d",
+            OH_LOG_ERROR(LOG_APP, "CAVScreenCaptureToFile StopScreenCapture OH_AVScreenCapture_Release: %{public}d",
                          result);
         } else {
-            OH_LOG_INFO(LOG_APP, "释放实例化对象成功");
+            OH_LOG_INFO(LOG_APP, "CAVScreenCaptureToFile OH_AVScreenCapture_Release success");
         }
-        // ...
+        m_IsRunning = false;
+        g_avCapture_ = nullptr;
+    }
+    napi_create_int32(env, result, &res);
+    return res;
 }
 ```
 
@@ -1123,10 +1135,9 @@ napi_value CAVScreenCaptureToFile::StopScreenCaptureToFile(napi_env env, napi_ca
 
 ```
 async releaseFD() {
-  if (this.file?.fd != undefined && this.file.fd?.valueOf() > 0) {
-    // 关闭文件
+  if (this.fileFd != undefined && this.fileFd?.valueOf() > 0) {
     try {
-      fileIo.close(this.file.fd);
+      fileIo.close(this.fileFd);
     } catch (error) {
       let err = error as BusinessError;
       hilog.error(0x0000, 'testTag', `close fail. code = ${err.code}, message = ${err.message}`);
@@ -1138,27 +1149,24 @@ async releaseFD() {
 ### Code block 13
 
 ```
-// 获取保存文件信息并调用Native方法
 async createVideoFd(): Promise<void> {
-  // 拼接文件路径
   this.tmpFileNameThree = systemDateTime.getTime(true) + '.mp4';
-  // ...
+  AppStorage.setOrCreate('tmpFileNameThree', this.tmpFileNameThree);
   this.filepath = this.getUIContext().getHostContext()?.filesDir + '/' + this.tmpFileNameThree;
   hilog.info(0xFF00, CommonConstants.LOG_TAG, 'filepath uri: %{public}s', this.filepath);
-  try {
-    // 获取文件信息
-    this.file = fileIo.openSync(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
 
-    // ...
+  await fileIo.open(this.filepath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE).then((file) => {
+    this.fileFd = file.fd;
+  }).catch((err: BusinessError) => {
+    hilog.info(0xFF00, CommonConstants.LOG_TAG,
+      'open file failed with error message: %{public}s, error code: %{public}d',
+      err.message, err.code);
+  })
 
-    // 调用native方法开启录制并传递fd、宽高
-    avScreenCapture.startScreenCaptureToStream(this.file.fd, this.displayInfo.width, this.displayInfo.height)
-
-    // ...
-  } catch (error) {
-    let err = error as BusinessError;
-    hilog.error(0x0000, 'testTag', `startScreenCaptureToStream fail. code = ${err.code}, message = ${err.message}`);
-  }
+  avScreenCapture.setStopCallbackToStream(this.StopCallback);
+  avScreenCapture.startScreenCaptureToStream(this.fileFd, this.displayInfo.width, this.displayInfo.height)
+  this.videoSrc = 'file://' + this.filepath;
+  AppStorage.setOrCreate('videoSrcThree', this.videoSrc);
 }
 ```
 
@@ -1171,17 +1179,15 @@ let displayInfo = display.getDefaultDisplaySync();
 ### Code block 15
 
 ```
-void CAVScreenCaptureToStream::InitConfig(int32_t outputFd, int32_t videoWidth, int32_t videoHeight) {
+void CAVScreenCaptureToStream::InitMuxerAndEncoder(int32_t outputFd, int32_t videoWidth, int32_t videoHeight) {
     sampleInfo_.outputFd = outputFd;
 
-    // 视频编码器配置
     sampleInfo_.videoWidth = videoWidth;
     sampleInfo_.videoHeight = videoHeight;
     sampleInfo_.frameRate = 30;
     sampleInfo_.bitrate = 10000000;
     sampleInfo_.videoCodecMime = "video/avc";
 
-    // 音频编码器配置
     sampleInfo_.audioCodecMime = OH_AVCODEC_MIMETYPE_AUDIO_AAC;
     sampleInfo_.audioSampleFormat = OH_BitsPerSample::SAMPLE_S16LE;
     sampleInfo_.audioSampleRate = 48000;
@@ -1192,23 +1198,19 @@ void CAVScreenCaptureToStream::InitConfig(int32_t outputFd, int32_t videoWidth, 
 
     std::lock_guard<std::mutex> lock(mutex_);
 
-    // 声明音视频编码器、音频采集器及封装器类对象
     audioEncoder_ = std::make_unique<AudioEncoder>();
     audioCapturer_ = std::make_unique<AudioCapturer>();
     videoEncoder_ = std::make_unique<VideoEncoder>();
     muxer_ = std::make_unique<Muxer>();
 
-    // 根据文件fd创建封装器并初始化
     muxer_->Create(sampleInfo_.outputFd);
     muxer_->Config(sampleInfo_);
 
-    // 创建音视频编码器
     CreateEncoder();
 
-    // 初始化音频采集器对象
     audioCapturer_->AudioCapturerInit(sampleInfo_, audioEncContext_);
 
-    // ...
+    releaseThread_ = nullptr;
 }
 ```
 
@@ -1217,6 +1219,9 @@ void CAVScreenCaptureToStream::InitConfig(int32_t outputFd, int32_t videoWidth, 
 ```
 int32_t Muxer::Create(int32_t fd) {
     muxer_ = OH_AVMuxer_Create(fd, AV_OUTPUT_FORMAT_MPEG_4);
+    if (muxer_ == nullptr) {
+        return -1;
+    }
     return 0;
 }
 ```
@@ -1225,20 +1230,17 @@ int32_t Muxer::Create(int32_t fd) {
 
 ```
 int32_t Muxer::Config(SampleInfo &sampleInfo) {
-    // 创建并添加音频轨
     OH_AVFormat *formatAudio = OH_AVFormat_CreateAudioFormat(sampleInfo.audioCodecMime.data(),
                                                              sampleInfo.audioSampleRate, sampleInfo.audioChannelCount);
-    // 设置相关参数
+
     OH_AVFormat_SetIntValue(formatAudio, OH_MD_KEY_PROFILE, AAC_PROFILE_LC);
 
     int32_t ret = OH_AVMuxer_AddTrack(muxer_, &audioTrackId_, formatAudio);
     OH_AVFormat_Destroy(formatAudio);
 
-    // 创建并添加视频轨
     OH_AVFormat *formatVideo =
         OH_AVFormat_CreateVideoFormat(sampleInfo.videoCodecMime.data(), sampleInfo.videoWidth, sampleInfo.videoHeight);
 
-    // 设置相关参数
     OH_AVFormat_SetDoubleValue(formatVideo, OH_MD_KEY_FRAME_RATE, sampleInfo.frameRate);
     OH_AVFormat_SetIntValue(formatVideo, OH_MD_KEY_WIDTH, sampleInfo.videoWidth);
     OH_AVFormat_SetIntValue(formatVideo, OH_MD_KEY_HEIGHT, sampleInfo.videoHeight);
@@ -1257,7 +1259,6 @@ int32_t Muxer::Config(SampleInfo &sampleInfo) {
 ### Code block 18
 
 ```
-// 创建音频编码器
 int32_t AudioEncoder::Create(const std::string &codecMime) {
     encoder_ = OH_AudioCodec_CreateByMime(codecMime.c_str(), true);
     return 0;
@@ -1273,13 +1274,13 @@ int32_t AudioEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
         OH_LOG_ERROR(LOG_APP, "AVFormat create failed");
     }
 
-    // 配置相关参数
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_AUDIO_SAMPLE_FORMAT, sampleInfo.audioSampleFormat);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_AUD_CHANNEL_COUNT, sampleInfo.audioChannelCount);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_AUD_SAMPLE_RATE, sampleInfo.audioSampleRate);
     OH_AVFormat_SetLongValue(format, OH_MD_KEY_BITRATE, sampleInfo.audioBitRate);
     OH_AVFormat_SetLongValue(format, OH_MD_KEY_CHANNEL_LAYOUT, sampleInfo.audioChannelLayout);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_MAX_INPUT_SIZE, sampleInfo.audioMaxInputSize);
+
     int ret = OH_AudioCodec_Configure(encoder_, format);
     if (ret != AV_ERR_OK) {
         OH_LOG_ERROR(LOG_APP, "Config failed, ret: %{public}d", ret);
@@ -1287,12 +1288,15 @@ int32_t AudioEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
     OH_AVFormat_Destroy(format);
     format = nullptr;
 
-    // 设置音频编码器处理回调
+    OHNativeWindow *nativeWindow;
+    OH_VideoEncoder_GetSurface(encoder_, &nativeWindow);
+    sampleInfo.window = nativeWindow;
+
     OH_AudioCodec_RegisterCallback(encoder_,
                                    {AudioEncoder::OnCodecError, AudioEncoder::OnCodecFormatChange,
                                     AudioEncoder::OnNeedInputBuffer, AudioEncoder::OnNewOutputBuffer},
                                    codecUserData);
-    // 准备编码器内部资源，必须在调用此接口之前调用配置接口
+
     ret = OH_AudioCodec_Prepare(encoder_);
     if (ret != AV_ERR_OK) {
         OH_LOG_ERROR(LOG_APP, "Prepare failed, ret: %{public}d", ret);
@@ -1304,8 +1308,12 @@ int32_t AudioEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
 ### Code block 20
 
 ```
-void VideoEncoder::Create(const std::string &videoCodecMime) {
+int32_t VideoEncoder::Create(const std::string &videoCodecMime) {
     encoder_ = OH_VideoEncoder_CreateByMime(videoCodecMime.c_str());
+    if (encoder_ == nullptr) {
+        return -1;
+    }
+    return 0;
 }
 ```
 
@@ -1315,7 +1323,6 @@ void VideoEncoder::Create(const std::string &videoCodecMime) {
 int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserData) {
     OH_AVFormat *format = OH_AVFormat_Create();
 
-    // 配置相关参数
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, sampleInfo.videoWidth);
     OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, sampleInfo.videoHeight);
     OH_AVFormat_SetDoubleValue(format, OH_MD_KEY_FRAME_RATE, sampleInfo.frameRate);
@@ -1331,15 +1338,12 @@ int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
     OH_AVFormat_Destroy(format);
     format = nullptr;
 
-    // 根据视频编码器获取Surface
     OH_VideoEncoder_GetSurface(encoder_, &sampleInfo.window);
 
-    // 设置视频编码器处理回调
     OH_VideoEncoder_RegisterCallback(encoder_,
                                      {VideoEncoder::OnCodecError, VideoEncoder::OnCodecFormatChange,
                                       VideoEncoder::OnNeedInputBuffer, VideoEncoder::OnNewOutputBuffer},
                                      codecUserData);
-    // 准备编码器内部资源，必须在调用此接口之前调用配置接口
     OH_VideoEncoder_Prepare(encoder_);
 
     return 0;
@@ -1349,15 +1353,12 @@ int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
 ### Code block 22
 
 ```
-// 初始化音频采集器
 void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *audioEncContext)
 {
     AudioCapturerRelease();
 
-    // 创建builder
     OH_AudioStream_Type type = AUDIOSTREAM_TYPE_CAPTURER;
     OH_AudioStreamBuilder_Create(&builder_, type);
-    // 设置参数和回调
     OH_AudioStreamBuilder_SetSamplingRate(builder_, sampleInfo.audioSampleRate);
     OH_AudioStreamBuilder_SetChannelCount(builder_, sampleInfo.audioChannelCount);
     OH_AudioStreamBuilder_SetSampleFormat(builder_, AUDIOSTREAM_SAMPLE_S16LE);
@@ -1366,7 +1367,6 @@ void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *aud
     OH_AudioCapturer_Callbacks callbacks;
     callbacks.OH_AudioCapturer_OnReadData = AudioCapturerOnReadData;
     OH_AudioStreamBuilder_SetCapturerCallback(builder_, callbacks, audioEncContext);
-    // 创建 OH_AudioCapturer对象
     OH_AudioStreamBuilder_GenerateCapturer(builder_, &audioCapturer_);
 }
 ```
@@ -1375,42 +1375,27 @@ void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *aud
 
 ```
 void CAVScreenCaptureToStream::StartScreenCapture(int32_t outputFd, int32_t videoWidth, int32_t videoHeight) {
-    // ...
+    InitMuxerAndEncoder(outputFd, videoWidth, videoHeight);
 
-    if (g_avCapture != nullptr) {
-        StopScreenCaptureRecording(g_avCapture);
-    }
+    InitAVScreenCapture(videoWidth, videoHeight);
 
-    // 创建实例化对象
-    g_avCapture = OH_AVScreenCapture_Create();
-    if (g_avCapture == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "create screen capture failed");
-    }
-    OH_LOG_INFO(LOG_APP, "ScreenCapture after create sc");
+    m_IsRunning = true;
 
-    // 设置回调
-    OH_AVScreenCapture_SetErrorCallback(g_avCapture, OnErrorToStream, nullptr);
-    OH_AVScreenCapture_SetStateCallback(g_avCapture, OnSurfaceStateChangeToStream, nullptr);
+    StartMuxerAndEncoder();
 
-    OH_AVScreenCapture_SetCanvasRotation(g_avCapture, true);
-
-    // 初始化配置
-    OH_AVScreenCaptureConfig config_;
-    SetConfigToStream(config_, videoWidth, videoHeight);
-    int result = OH_AVScreenCapture_Init(g_avCapture, config_);
+    int result = OH_AVScreenCapture_StartScreenCaptureWithSurface(g_avCapture, sampleInfo_.window);
+    OH_LOG_INFO(LOG_APP, "OH_VideoEncoder_Start Started 2 %{public}d", result);
     if (result != AV_SCREEN_CAPTURE_ERR_OK) {
-        OH_LOG_INFO(LOG_APP, "ScreenCapture OH_AVScreenCapture_Init failed %{public}d", result);
+        OH_LOG_INFO(LOG_APP, "ScreenCapture Started failed %{public}d", result);
+        OH_AVScreenCapture_Release(g_avCapture);
     }
-    OH_LOG_INFO(LOG_APP, "ScreenCapture OH_AVScreenCapture_Init %{public}d", result);
-
-    // ...
 }
 ```
 
 ### Code block 24
 
 ```
-result = OH_AVScreenCapture_StartScreenCaptureWithSurface(g_avCapture, sampleInfo_.window);
+int result = OH_AVScreenCapture_StartScreenCaptureWithSurface(g_avCapture, sampleInfo_.window);
 OH_LOG_INFO(LOG_APP, "OH_VideoEncoder_Start Started 2 %{public}d", result);
 if (result != AV_SCREEN_CAPTURE_ERR_OK) {
     OH_LOG_INFO(LOG_APP, "ScreenCapture Started failed %{public}d", result);
@@ -1421,40 +1406,34 @@ if (result != AV_SCREEN_CAPTURE_ERR_OK) {
 ### Code block 25
 
 ```
-// 开启封装器
-int32_t ret = muxer_->Start();
-// 开启视频编码器
-ret = videoEncoder_->Start();
+void CAVScreenCaptureToStream::StartMuxerAndEncoder() {
+    int32_t ret = muxer_->Start();
+    ret = videoEncoder_->Start();
 
-// ...
-
-// 启动视频输出线程
-encOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::EncOutputThread, this);
-if (encOutputThread_ == nullptr) {
-    StartRelease();
-    return;
-}
-
-if (audioEncContext_) {
-    // 开启音频采集器
-    audioCapturer_->AudioCapturerStart();
-
-    // 开启音频编码器
-    audioEncoder_->Start();
-
-    // ...
-
-    // 启动音频输入输出线程
-    audioEncInputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncInputThread, this);
-    audioEncOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncOutputThread, this);
-    if (audioEncInputThread_ == nullptr || audioEncOutputThread_ == nullptr) {
+    isStarted_ = true;
+    lastFrameTimestampPts_ = 0;
+    lastFrameEncodePts_ = 0;
+    encOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::EncOutputThread, this);
+    if (encOutputThread_ == nullptr) {
         StartRelease();
         return;
     }
 
-    // 清空播放缓存队列
-    if (audioEncContext_ != nullptr) {
-        audioEncContext_->ClearCache();
+    if (audioEncContext_) {
+        audioCapturer_->AudioCapturerStart();
+
+        audioEncoder_->Start();
+        isStarted_ = true;
+        audioEncInputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncInputThread, this);
+        audioEncOutputThread_ = std::make_unique<std::thread>(&CAVScreenCaptureToStream::AudioEncOutputThread, this);
+        if (audioEncInputThread_ == nullptr || audioEncOutputThread_ == nullptr) {
+            StartRelease();
+            return;
+        }
+
+        if (audioEncContext_ != nullptr) {
+            audioEncContext_->ClearCache();
+        }
     }
 }
 ```
@@ -1462,72 +1441,60 @@ if (audioEncContext_) {
 ### Code block 26
 
 ```
-// 停止屏幕录制
 void CAVScreenCaptureToStream::StopScreenCapture() {
     int32_t ret = videoEncoder_->NotifyEndOfStream();
 
-    // 等待数据写入
     std::unique_lock<std::mutex> lock(mutex_);
     doneCond_.wait(lock);
-    // 等待资源释放
     if (releaseThread_ && releaseThread_->joinable()) {
         releaseThread_->join();
         releaseThread_.reset();
     }
 
-    // ...
-
-        // 停止录屏
+    if (m_IsRunning) {
         ret = OH_AVScreenCapture_StopScreenCapture(g_avCapture);
         if (ret != AV_SCREEN_CAPTURE_ERR_BASE) {
             OH_LOG_ERROR(LOG_APP, "StopScreenCapture OH_AVScreenCapture_StopScreenCapture Result: %{public}d", ret);
         } else {
             OH_LOG_INFO(LOG_APP, "StopScreenCapture OH_AVScreenCapture_StopScreenCapture");
         }
-        // 释放实例对象
         ret = OH_AVScreenCapture_Release(g_avCapture);
         if (ret != AV_SCREEN_CAPTURE_ERR_BASE) {
             OH_LOG_ERROR(LOG_APP, "StopScreenCapture OH_AVScreenCapture_Release: %{public}d", ret);
         } else {
             OH_LOG_INFO(LOG_APP, "OH_AVScreenCapture_Release success");
         }
-
-        // ...
+        m_IsRunning = false;
+        g_avCapture = nullptr;
+    }
 }
 ```
 
 ### Code block 27
 
 ```
-// 释放线程
 void CAVScreenCaptureToStream::Release() {
     std::lock_guard<std::mutex> lock(mutex_);
     isStarted_ = false;
-    // 视频输出线程
     if (encOutputThread_ && encOutputThread_->joinable()) {
         encOutputThread_->join();
         encOutputThread_.reset();
     }
-    // 音频输入线程
     if (audioEncInputThread_ && audioEncInputThread_->joinable()) {
         audioEncContext_->inputCond.notify_all();
         audioEncInputThread_->join();
         audioEncInputThread_.reset();
     }
-    // 音频输出线程
     if (audioEncOutputThread_ && audioEncOutputThread_->joinable()) {
         audioEncContext_->outputCond.notify_all();
         audioEncOutputThread_->join();
         audioEncOutputThread_.reset();
     }
-
-    // 释放封装器
     if (muxer_ != nullptr) {
         muxer_->Release();
         muxer_.reset();
         OH_LOG_INFO(LOG_APP, "Muxer release successful");
     }
-    // 释放编码器
     if (videoEncoder_ != nullptr) {
         videoEncoder_->Stop();
         if (sampleInfo_.window != nullptr) {
@@ -1544,8 +1511,6 @@ void CAVScreenCaptureToStream::Release() {
         audioEncoder_.reset();
         OH_LOG_INFO(LOG_APP, "Audio encoder release successful");
     }
-
-    // 释放资源
     if (audioCapturer_ != nullptr) {
         audioCapturer_->AudioCapturerRelease();
         audioCapturer_.reset();
@@ -1568,10 +1533,9 @@ void CAVScreenCaptureToStream::Release() {
 
 ```
 async releaseFD() {
-  if (this.file?.fd != undefined && this.file.fd?.valueOf() > 0) {
-    // 关闭文件
+  if (this.fileFd != undefined && this.fileFd?.valueOf() > 0) {
     try {
-      fileIo.close(this.file.fd);
+      fileIo.close(this.fileFd);
     } catch (error) {
       let err = error as BusinessError;
       hilog.error(0x0000, 'testTag', `close fail. code = ${err.code}, message = ${err.message}`);
@@ -1585,13 +1549,11 @@ async releaseFD() {
 ```
 void CAVScreenCaptureToFile::SetConfigAsFile(OH_AVScreenCaptureConfig &config, int32_t videoWidth,
                                              int32_t videoHeight) {
-    // 音频配置
     OH_AudioCaptureInfo micCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_SOURCE_DEFAULT};
     OH_AudioCaptureInfo innerCapInfo = {.audioSampleRate = 48000, .audioChannels = 2, .audioSource = OH_ALL_PLAYBACK};
     OH_AudioEncInfo audioEncInfo = {.audioBitrate = 96000, .audioCodecformat = OH_AudioCodecFormat::OH_AAC_LC};
     OH_AudioInfo audioInfo = {.micCapInfo = micCapInfo, .innerCapInfo = innerCapInfo, .audioEncInfo = audioEncInfo};
 
-    // 视频配置
     OH_VideoCaptureInfo videoCapInfo = {
         .videoFrameWidth = videoWidth, .videoFrameHeight = videoHeight, .videoSource = OH_VIDEO_SOURCE_SURFACE_RGBA};
     OH_VideoEncInfo videoEncInfo = {

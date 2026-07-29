@@ -31,7 +31,7 @@ gen	用于生成算子开发交付件。	是
 
 表2 json文件配置参数说明
 
-配置字段	配置字段	类型	含义	是否必选
+参数名	配置字段	类型	含义	是否必选
 op	-	string	算子的Operator Type。	是
 input_desc	-	list	输入参数描述。	否
 input_desc	name	string	算子输入参数的名称。	否

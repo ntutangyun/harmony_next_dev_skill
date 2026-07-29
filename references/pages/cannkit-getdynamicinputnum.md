@@ -23,7 +23,7 @@ name	输入	算子的动态Input名。
 返回值
 
 类型	描述
-int	实际动态Input的个数。 当name非法，或者算子无动态Input时，返回-1。
+int	实际动态Input的个数。 当name非法，或者算子无动态Input时，返回0。
 
 约束说明
 

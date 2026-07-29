@@ -44,7 +44,7 @@ import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 
-根据实际业务需求配置文件保存选项。以下代码仅例举各选项的配置参考。
+根据实际业务需求配置文件保存选项DocumentSaveOptions。以下代码仅列举各选项的配置参考。
 
 // 创建文件管理器选项实例。
 const documentSaveOptions = new picker.DocumentSaveOptions();

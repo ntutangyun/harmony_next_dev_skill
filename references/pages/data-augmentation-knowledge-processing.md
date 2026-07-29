@@ -89,6 +89,12 @@ getRdbStore(context: Context, config: StoreConfig): Promise<RdbStore>	创建或�
 
 从26.0.0版本开始，知识加工新增支持邮件智能分析能力。
 
+导入模块。
+
+import { knowledgeProcessor } from '@kit.DataAugmentationKit';
+import { relationalStore } from '@kit.ArkData';
+import { UIContext } from '@kit.ArkUI';
+
 配置知识加工schema文件knowledge_schema.json，下文是配置示例，实际文件内容请根据业务需要进行配置。知识加工产物命名规则如下：
 
 倒排库与数据源库是同一个数据库。
@@ -218,163 +224,110 @@ relationalStore开库参数配置中的name字段需要与schema文件中"dbName
 
 建表语句中的表名需要与schema文件中"tableName"字段保持一致，列名与"columnName"字段保持一致。
 
-import { relationalStore } from '@kit.ArkData';
+let context = UIContext.getCallingScopeUIContext()?.getHostContext();
 
 // relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,  // 注意该项设为true才会触发知识加工
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
+let knowledgeConfig: relationalStore.StoreConfig = {
+  name: 'test.db',// 已触发知识加工的数据库名
+  securityLevel: relationalStore.SecurityLevel.S1,
+  vector: false,
+  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER,
+  enableSemanticIndex: true,
 };
 
-// 建表语句，注意表名应与步骤1中"tableName"字段保持一致，列名与"columnName"字段保持一致
-const createTableSql = "CREATE TABLE IF NOT EXISTS email(id integer primary key, subject text, " +
-  "content text, image_text text, attachment_names text, inline_files text, sender text, " +
-  "receivers text, received_date text);";
+let sourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
+  rdbSource: knowledgeConfig
+};
 
-// 插入数据语句，请按实际业务需要实现，下文仅作参考
-const sql = `insert or replace into email VALUES(0, 'Subject of an email', 'Content of an email', 'Convert image to text through OCR',
-  'attachment_name_1.txt, attachment_name_2.txt', '[{"uri":"/data/storage/el2/base/haps/entry/files/capture_1.png"},{"uri":"/data/storage/el2/base/haps/entry/files/capture_2.jpeg"}]',
-  'test1(test1@example.com)', 'test2(test2@example.com), test3(test3@example.com)', 'Convert time to timestamp');`;
+let config: knowledgeProcessor.KnowledgeProcessorConfig = {
+  sourceConfig: sourceConfig,
+};
+
+let sourceDbStore: relationalStore.RdbStore;
+
+async initDBData() {
+  try {
+    await relationalStore.getRdbStore(context, knowledgeConfig)
+      .then((retriever:relationalStore.RdbStore) => {
+        sourceDbStore = retriever;
+      });
+    let createSourceTable = 'CREATE TABLE IF NOT EXISTS mail (' +
+      'id INTEGER PRIMARY KEY,' +
+      'subject TEXT,' +
+      'content TEXT' +
+      ');';
+    await sourceDbStore.executeSql(createSourceTable);
+    let sqlInsert =
+      'INSERT INTO mail (subject, content) VALUES ("运动直播场景", "content");';
+    await sourceDbStore.execute(sqlInsert);
+    console.info('InitModel success');
+  } catch (err) {
+    console.error('InitModel failed msg: ' + err.message + ' code: ' + err.code);
+  }
+}
 
 可根据业务需要，调用getStatus()接口，查询当前的知识加工状态。
 
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
-
-// 获取知识加工状态的异步函数，业务自行按需调用
-async function getStatus() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
+async getStatus() {
   try {
     // 获取知识加工对象
-    const processor = await knowledgeProcessor.getKnowledgeProcessor(context, knowledgeProcessorConfig);
-    // 获取知识加工状态
-    const status: knowledgeProcessor.ProcessorStatus = await processor.getStatus();
-    return status;
+    let processor = await knowledgeProcessor.getKnowledgeProcessor(context, config);
+    console.info('GetStatus getKnowledgeProcessor success');
+    if (processor) {
+      await processor.getStatus();
+      console.info('GetStatus success');
+    }
   } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
-    return undefined;
+    console.error('GetStatus failed msg: ' + err.message + ' code: ' + err.code);
   }
 }
 
 可根据业务需要，调用startProcess(option: KnowledgeProcessConfig)接口，启动知识加工。
 
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
-
-// 启动知识加工的异步函数，业务自行按需调用
-async function startProcess() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
+async startProcess() {
   try {
     // 获取知识加工对象
-    const processor = await knowledgeProcessor.getKnowledgeProcessor(context, knowledgeProcessorConfig);
+    let processor = await knowledgeProcessor.getKnowledgeProcessor(context, config);
+    console.info('StartProcess getKnowledgeProcessor success');
     // 启动知识加工
     let processMode: knowledgeProcessor.KnowledgeProcessMode = knowledgeProcessor.KnowledgeProcessMode.INVERTED_INDEX;
-    let config: knowledgeProcessor.KnowledgeProcessConfig = {
+    let processconfig: knowledgeProcessor.KnowledgeProcessConfig = {
       mode: processMode,
+    };
+    if (processor) {
+      await processor.startProcess(processconfig);
+      console.info('StartProcess success');
     }
-    await processor.startProcess(config);
   } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
+    console.error('StartProcess failed msg: ' + err.message + ' code: ' + err.code);
   }
 }
 
 可根据业务需要，调用stopProcess()接口，停止知识加工。
 
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
-
-// 停止知识加工的异步函数，业务自行按需调用
-async function stopProcess() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
+async stopProcess() {
   try {
     // 获取知识加工对象
-    const processor = await knowledgeProcessor.getKnowledgeProcessor(context, knowledgeProcessorConfig);
-    // 停止知识加工
-    await processor.stopProcess();
+    let processor = await knowledgeProcessor.getKnowledgeProcessor(context, config);
+    console.info('StopProcess getKnowledgeProcessor success');
+    if (processor) {
+      await processor.stopProcess();
+      console.info('StopProcess success');
+    }
   } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
+    console.error('StopProcess failed msg: ' + err.message + ' code: ' + err.code);
   }
 }
 
 可根据业务需要，调用cleanKnowledgeData(context: common.BaseContext, config: KnowledgeProcessorConfig)接口，将知识库进行清理。注意：看约束和限制说明使用。
 
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
-
-// 清理知识库的异步函数，业务自行按需调用
-async function cleanKnowledgeData() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
+async cleanKnowledgeData() {
   try {
     // 清理知识库
-    await knowledgeProcessor.cleanKnowledgeData(context, knowledgeProcessorConfig);
+    await knowledgeProcessor.cleanKnowledgeData(context, config);
+    console.info('CleanKnowledgeData success');
   } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
+    console.error('CleanKnowledgeData failed msg: ' + err.message + ' code: ' + err.code);
   }
 }
 
@@ -451,6 +404,14 @@ async function getStatus() {
 ## Code blocks
 
 ### Code block 1
+
+```
+import { knowledgeProcessor } from '@kit.DataAugmentationKit';
+import { relationalStore } from '@kit.ArkData';
+import { UIContext } from '@kit.ArkUI';
+```
+
+### Code block 2
 
 ```
    // 文件路径：src/main/resources/rawfile/arkdata/knowledge/knowledge_schema.json
@@ -549,140 +510,56 @@ async function getStatus() {
    }
 ```
 
-### Code block 2
-
-```
-import { relationalStore } from '@kit.ArkData';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,  // 注意该项设为true才会触发知识加工
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-// 建表语句，注意表名应与步骤1中"tableName"字段保持一致，列名与"columnName"字段保持一致
-const createTableSql = "CREATE TABLE IF NOT EXISTS email(id integer primary key, subject text, " +
-  "content text, image_text text, attachment_names text, inline_files text, sender text, " +
-  "receivers text, received_date text);";
-
-// 插入数据语句，请按实际业务需要实现，下文仅作参考
-const sql = `insert or replace into email VALUES(0, 'Subject of an email', 'Content of an email', 'Convert image to text through OCR',
-  'attachment_name_1.txt, attachment_name_2.txt', '[{"uri":"/data/storage/el2/base/haps/entry/files/capture_1.png"},{"uri":"/data/storage/el2/base/haps/entry/files/capture_2.jpeg"}]',
-  'test1(test1@example.com)', 'test2(test2@example.com), test3(test3@example.com)', 'Convert time to timestamp');`;
-```
-
 ### Code block 3
 
 ```
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
+let context = UIContext.getCallingScopeUIContext()?.getHostContext();
 
 // relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
+let knowledgeConfig: relationalStore.StoreConfig = {
+  name: 'test.db',// 已触发知识加工的数据库名
+  securityLevel: relationalStore.SecurityLevel.S1,
+  vector: false,
+  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER,
   enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
 };
 
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
+let sourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
+  rdbSource: knowledgeConfig
+};
 
-// 获取知识加工状态的异步函数，业务自行按需调用
-async function getStatus() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
-  try {
-    // 获取知识加工对象
-    const processor = await knowledgeProcessor.getKnowledgeProcessor(context, knowledgeProcessorConfig);
-    // 获取知识加工状态
-    const status: knowledgeProcessor.ProcessorStatus = await processor.getStatus();
-    return status;
-  } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
-    return undefined;
-  }
-}
+let config: knowledgeProcessor.KnowledgeProcessorConfig = {
+  sourceConfig: sourceConfig,
+};
 ```
 
 ### Code block 4
 
 ```
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
-
-// 启动知识加工的异步函数，业务自行按需调用
-async function startProcess() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
-  try {
-    // 获取知识加工对象
-    const processor = await knowledgeProcessor.getKnowledgeProcessor(context, knowledgeProcessorConfig);
-    // 启动知识加工
-    let processMode: knowledgeProcessor.KnowledgeProcessMode = knowledgeProcessor.KnowledgeProcessMode.INVERTED_INDEX;
-    let config: knowledgeProcessor.KnowledgeProcessConfig = {
-      mode: processMode,
-    }
-    await processor.startProcess(config);
-  } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
-  }
-}
+let sourceDbStore: relationalStore.RdbStore;
 ```
 
 ### Code block 5
 
 ```
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
-
-// 停止知识加工的异步函数，业务自行按需调用
-async function stopProcess() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
+async initDBData() {
   try {
-    // 获取知识加工对象
-    const processor = await knowledgeProcessor.getKnowledgeProcessor(context, knowledgeProcessorConfig);
-    // 停止知识加工
-    await processor.stopProcess();
+    await relationalStore.getRdbStore(context, knowledgeConfig)
+      .then((retriever:relationalStore.RdbStore) => {
+        sourceDbStore = retriever;
+      });
+    let createSourceTable = 'CREATE TABLE IF NOT EXISTS mail (' +
+      'id INTEGER PRIMARY KEY,' +
+      'subject TEXT,' +
+      'content TEXT' +
+      ');';
+    await sourceDbStore.executeSql(createSourceTable);
+    let sqlInsert =
+      'INSERT INTO mail (subject, content) VALUES ("运动直播场景", "content");';
+    await sourceDbStore.execute(sqlInsert);
+    console.info('InitModel success');
   } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
+    console.error('InitModel failed msg: ' + err.message + ' code: ' + err.code);
   }
 }
 ```
@@ -690,38 +567,77 @@ async function stopProcess() {
 ### Code block 6
 
 ```
-import { relationalStore } from '@kit.ArkData';
-import { knowledgeProcessor } from '@kit.DataAugmentationKit';
-import { UIAbility, common } from '@kit.AbilityKit';
-
-// relationalStore开库参数配置
-const storeConfig: relationalStore.StoreConfig = {
-  name: 'testmail_store.db',  // 注意与步骤1中"dbName"字段保持一致
-  securityLevel: relationalStore.SecurityLevel.S3,
-  enableSemanticIndex: true,
-  tokenizer: relationalStore.Tokenizer.CUSTOM_TOKENIZER
-};
-
-let knowledgeSourceConfig: knowledgeProcessor.KnowledgeSourceConfig = {
-  rdbSource: storeConfig,
-}
-let knowledgeProcessorConfig: knowledgeProcessor.KnowledgeProcessorConfig = {
-  sourceConfig: knowledgeSourceConfig,
-}
-
-// 清理知识库的异步函数，业务自行按需调用
-async function cleanKnowledgeData() {
-  const context = AppStorage.get<common.UIAbilityContext>("Context") as common.UIAbilityContext;
+async getStatus() {
   try {
-    // 清理知识库
-    await knowledgeProcessor.cleanKnowledgeData(context, knowledgeProcessorConfig);
+    // 获取知识加工对象
+    let processor = await knowledgeProcessor.getKnowledgeProcessor(context, config);
+    console.info('GetStatus getKnowledgeProcessor success');
+    if (processor) {
+      await processor.getStatus();
+      console.info('GetStatus success');
+    }
   } catch (err) {
-    console.error("Error: " + err.message + " code: " + err.code);
+    console.error('GetStatus failed msg: ' + err.message + ' code: ' + err.code);
   }
 }
 ```
 
 ### Code block 7
+
+```
+async startProcess() {
+  try {
+    // 获取知识加工对象
+    let processor = await knowledgeProcessor.getKnowledgeProcessor(context, config);
+    console.info('StartProcess getKnowledgeProcessor success');
+    // 启动知识加工
+    let processMode: knowledgeProcessor.KnowledgeProcessMode = knowledgeProcessor.KnowledgeProcessMode.INVERTED_INDEX;
+    let processconfig: knowledgeProcessor.KnowledgeProcessConfig = {
+      mode: processMode,
+    };
+    if (processor) {
+      await processor.startProcess(processconfig);
+      console.info('StartProcess success');
+    }
+  } catch (err) {
+    console.error('StartProcess failed msg: ' + err.message + ' code: ' + err.code);
+  }
+}
+```
+
+### Code block 8
+
+```
+async stopProcess() {
+  try {
+    // 获取知识加工对象
+    let processor = await knowledgeProcessor.getKnowledgeProcessor(context, config);
+    console.info('StopProcess getKnowledgeProcessor success');
+    if (processor) {
+      await processor.stopProcess();
+      console.info('StopProcess success');
+    }
+  } catch (err) {
+    console.error('StopProcess failed msg: ' + err.message + ' code: ' + err.code);
+  }
+}
+```
+
+### Code block 9
+
+```
+async cleanKnowledgeData() {
+  try {
+    // 清理知识库
+    await knowledgeProcessor.cleanKnowledgeData(context, config);
+    console.info('CleanKnowledgeData success');
+  } catch (err) {
+    console.error('CleanKnowledgeData failed msg: ' + err.message + ' code: ' + err.code);
+  }
+}
+```
+
+### Code block 10
 
 ```
 import { BusinessError } from '@kit.BasicServicesKit';

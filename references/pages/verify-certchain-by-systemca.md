@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/verify-ce
 
 import { cert } from '@kit.DeviceCertificateKit';
 
-基于已有的证书数据，调用cert.createX509CertChain创建X509证书链对象，并返回结果。
+基于已有的证书数据，调用cert.createX509CertChain创建X.509证书链对象，并返回结果。
 
 调用x509CertChain.validate设置校验参数trustSystemCa为true，使用系统预置CA证书校验证书链并返回结果。
 

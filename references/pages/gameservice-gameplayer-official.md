@@ -1,4 +1,4 @@
-# 使用游戏官方账号登录
+# 接入游戏官方账号登录
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-gameplayer-official_
 
@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 
 玩家启动游戏。
 
-游戏调用init接口初始化Game Service Kit。初始化后，弹出华为隐私协议窗口，玩家确认同意后，则继续往下执行。
+游戏调用init接口初始化Game Service Kit。初始化后，弹出华为游戏服务与隐私的声明窗口，玩家确认同意后，则继续往下执行。
 
 游戏调用on接口注册事件监听。若监听到playerChanged事件，先清除本地缓存信息，再重新执行unionLogin登录逻辑。
 
@@ -43,8 +43,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 具体API说明请详见接口文档。
 
 接口名	描述
-init(context: common.UIAbilityContext, callback: AsyncCallback<void>): void	游戏初始化接口，使用默认的上下文信息，使用callback回调。
-on(type: 'playerChanged', callback: Callback<PlayerChangedResult>): void	玩家变化事件监听接口，通过Callback回调获取玩家变化结果信息。
+init(context: common.UIAbilityContext, callback: AsyncCallback<void>): void	游戏启动时，需要对Game Service Kit进行初始化。在调用其他API接口前，必须先调用此API接口。使用callback异步回调。
+on(type: 'playerChanged', callback: Callback<PlayerChangedResult>): void	玩家变化事件监听接口，通过callback异步回调获取玩家变化结果信息。
 unionLogin(context: common.UIAbilityContext, loginParam: UnionLoginParam): Promise<UnionLoginResult>	华为账号和游戏官方账号联合登录接口，通过Promise对象获取返回值。
 verifyLocalPlayer(context: common.UIAbilityContext, thirdUserInfo: ThirdUserInfo): Promise<void>	合规校验接口，校验当前设备登录的华为账号的实名认证、游戏防沉迷信息，通过Promise对象获取返回值。
 savePlayerRole(context: common.UIAbilityContext, request: GSKPlayerRole): Promise<void>	保存角色信息到华为游戏服务器，使用默认的上下文信息，通过Promise对象获取返回值。
@@ -63,7 +63,7 @@ savePlayerRole(context: common.UIAbilityContext, request: GSKPlayerRole): Promis
 
 说明
 
-用户使用游戏官方账号登录游戏时，设备上基础游戏服务也会基于设备上登录的华为账号实现实名认证、未成年人防沉迷，这属于HarmonyOS 5.0及以上设备的额外要求。使用游戏官方账号登录游戏时，开发者仍需要基于游戏官方账号实现实名认证、未成年人防沉迷、支付合规控制（例如基于官方账号年龄判断未成年人支付限额等）。
+用户使用游戏官方账号登录游戏时，设备上基础游戏服务也会基于设备上登录的华为账号实现实名认证、未成年人防沉迷，这属于HarmonyOS 5.0及以上设备的额外要求。游戏接入游戏官方账号登录时，开发者仍需要基于游戏官方账号实现实名认证、未成年人防沉迷、支付合规控制（例如基于官方账号年龄判断未成年人支付限额等）。
 
 华为账号与游戏官方账号均通过合规校验，玩家才能进入游戏。若有一方未通过校验，不允许玩家进入游戏或成功完成支付。
 

@@ -8,30 +8,34 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 在“src/main/module.json5”的requestPermissions层级中添加网络权限。
 
-{
-  "module": {
-    // ...
-    "requestPermissions": [
-      {
-        "name": "ohos.permission.INTERNET"
-      }
-    ]
-  }
-}
+"requestPermissions": [
+  {
+    "name": "ohos.permission.INTERNET",
+    "usedScene": {
+      "abilities": [
+        "EntryAbility"
+      ],
+      "when": "inuse"
+    }
+  },
+  // ...
+]
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-{
-  "module": {
-    // ...
-    "requestPermissions": [
-      {
-        "name": "ohos.permission.INTERNET"
-      }
-    ]
-  }
-}
+"requestPermissions": [
+  {
+    "name": "ohos.permission.INTERNET",
+    "usedScene": {
+      "abilities": [
+        "EntryAbility"
+      ],
+      "when": "inuse"
+    }
+  },
+  // ...
+]
 ```

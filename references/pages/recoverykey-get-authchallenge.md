@@ -17,16 +17,24 @@ getAuthChallenge(): Promise<Uint8Array>	使用Promise方式获取挑战值。
 
 导入模块。
 
-import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { buffer } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 调用接口getAuthChallenge，获取挑战值。
 
-function testGetAuthChallenge() {
+const TAG: string = 'EnterpriseRecoveryKey_GetChallenge';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 获取挑战值。使用Promise异步回调。
+ */
+function getAuthChallenge() {
   recoveryKey.getAuthChallenge().then((challenge: Uint8Array) => {
-    console.info(`Succeeded in getting challenge.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in getting challenge. challenge is: ${buffer.from(challenge).toString('hex')}`);
   }).catch((error: BusinessError) => {
-    console.error(`Failed to get challenge. Code: ${error.code}, message: ${error.message}`);
+    hilog.error(DOMAIN, TAG, `Failed to get challenge. Code: ${error.code}, message: ${error.message}`);
   });
 }
 
@@ -35,18 +43,26 @@ function testGetAuthChallenge() {
 ### Code block 1
 
 ```
-import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { buffer } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { recoveryKey } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-function testGetAuthChallenge() {
+const TAG: string = 'EnterpriseRecoveryKey_GetChallenge';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 获取挑战值。使用Promise异步回调。
+ */
+function getAuthChallenge() {
   recoveryKey.getAuthChallenge().then((challenge: Uint8Array) => {
-    console.info(`Succeeded in getting challenge.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in getting challenge. challenge is: ${buffer.from(challenge).toString('hex')}`);
   }).catch((error: BusinessError) => {
-    console.error(`Failed to get challenge. Code: ${error.code}, message: ${error.message}`);
+    hilog.error(DOMAIN, TAG, `Failed to get challenge. Code: ${error.code}, message: ${error.message}`);
   });
 }
 ```

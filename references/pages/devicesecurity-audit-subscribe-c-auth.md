@@ -13,10 +13,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 0x1C801103	文件删除阻断事件。
 0x1C801104	文件设置扩展属性的阻断事件。
 0x1C801105	文件删除扩展属性的阻断事件。
+0x1C801106	文件读结束阻断事件。 起始版本： 26.0.0
+0x1C801400	进程执行的阻断事件。 起始版本： 26.0.0
 
 约束与限制
 
-当前能力仅支持2in1设备。
+当前能力仅支持PC/2in1设备。
 
 一个进程最大只允许创建2个客户端实例，当前设备最多只允许创建16个客户端实例。
 
@@ -53,13 +55,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 更多接口及使用方法请参见API参考。
 
 接口名	描述
-int32_t HMS_SecurityAudit_NewAuthClient(SecurityAudit_AuthClient** client, SecurityAudit_Handler handler);	创建审计阻断类事件管理对象AuthClient，AuthClient提供订阅、解订阅、增加事件过滤、移除事件过滤、阻断功能
-int32_t HMS_SecurityAudit_DeleteAuthClient(SecurityAudit_AuthClient* client);	删除审计阻断类事件管理对象
-int32_t HMS_SecurityAudit_SubscribeAuthEvent(const SecurityAudit_AuthClient* client, const SecurityAudit_Auth_Event *events, uint64_t count);	订阅审计阻断类事件
-int32_t HMS_SecurityAudit_UnsubscribeAuthEvent(const SecurityAudit_AuthClient* client, const SecurityAudit_Auth_Event *events, uint64_t count);	解订阅审计阻断类事件
-int32_t HMS_SecurityAudit_AddAuthEventFilter(const SecurityAudit_AuthClient* client, SecurityAudit_Auth_Event event, const SecurityAudit_Filter *filter);	添加审计阻断类事件过滤条件
-int32_t HMS_SecurityAudit_RemoveAuthEventFilter(const SecurityAudit_AuthClient* client, SecurityAudit_Auth_Event event, const SecurityAudit_Filter *filter);	移除审计阻断类事件过滤条件
-int32_t HMS_SecurityAudit_Auth(const SecurityAudit_AuthClient* client, const SecurityAudit_Event *event, SecurityAudit_AuthResult authResult);	设置审计阻断类事件的阻断结果
+int32_t HMS_SecurityAudit_NewAuthClient(SecurityAudit_AuthClient** client, SecurityAudit_Handler handler);	创建审计阻断类事件管理对象AuthClient，AuthClient提供订阅、解订阅、增加事件过滤、移除事件过滤、阻断功能。超时默认放行。
+int32_t HMS_SecurityAudit_NewAuthClientWithConfiguration(SecurityAudit_AuthClient** outOwnedClient, SecurityAudit_Handler handler, SecurityAudit_AuthClientConfiguration* configuration);	创建一个新的阻断类事件客户端，可配置超时默认阻断策略。 起始版本： 26.0.0
+int32_t HMS_SecurityAudit_DeleteAuthClient(SecurityAudit_AuthClient* client);	删除审计阻断类事件管理对象。
+int32_t HMS_SecurityAudit_SubscribeAuthEvent(const SecurityAudit_AuthClient* client, const SecurityAudit_Auth_Event *events, uint64_t count);	订阅审计阻断类事件。
+int32_t HMS_SecurityAudit_UnsubscribeAuthEvent(const SecurityAudit_AuthClient* client, const SecurityAudit_Auth_Event *events, uint64_t count);	解订阅审计阻断类事件。
+int32_t HMS_SecurityAudit_AddAuthEventFilter(const SecurityAudit_AuthClient* client, SecurityAudit_Auth_Event event, const SecurityAudit_Filter *filter);	添加审计阻断类事件过滤条件。
+int32_t HMS_SecurityAudit_RemoveAuthEventFilter(const SecurityAudit_AuthClient* client, SecurityAudit_Auth_Event event, const SecurityAudit_Filter *filter);	移除审计阻断类事件过滤条件。
+int32_t HMS_SecurityAudit_Auth(const SecurityAudit_AuthClient* client, const SecurityAudit_Event *event, SecurityAudit_AuthResult authResult);	设置审计阻断类事件的阻断结果。
+int32_t HMS_SecurityAudit_CreateAuthClientConfiguration(SecurityAudit_AuthClientConfiguration** outOwnedConfiguration);	创建阻断类事件客户端配置对象。 起始版本： 26.0.0
+int32_t HMS_SecurityAudit_DestroyAuthClientConfiguration(SecurityAudit_AuthClientConfiguration* configuration);	销毁阻断类事件客户端配置对象。 起始版本： 26.0.0
+int32_t HMS_SecurityAudit_AuthClientConfiguration_SetTimeoutAuthResult(SecurityAudit_AuthClientConfiguration* configuration, SecurityAudit_AuthResult authResult);	设置超时默认授权结果。 起始版本： 26.0.0
 
 开发步骤
 
@@ -67,7 +73,7 @@ int32_t HMS_SecurityAudit_Auth(const SecurityAudit_AuthClient* client, const Sec
 
 在开发准备过程中，需要申请权限：ohos.permission.kernel.AUTH_AUDIT_EVENT。
 
-只允许清单内的企业类应用申请该权限，申请方式请参考：申请使用企业类应用可用权限。
+只允许清单内的企业类应用申请该权限，申请方式请参考：企业类应用可用权限。
 
 在CMakeLists.txt中导入安全审计共享库，并链接该库。
 
@@ -76,8 +82,8 @@ target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
 
 导入安全审计的头文件。
 
-#include <DeviceSecurityKit/security_audit.h>
 #include <cstdio>
+#include "DeviceSecurityKit/security_audit.h"
 
 全局范围定义阻断类事件客户端以及携带阻断策略的回调函数。
 
@@ -101,7 +107,39 @@ void AuthAllowCb(const SecurityAudit_Event *events, uint64_t count)
     }
 }
 
+（可选）创建并配置阻断类事件客户端配置对象，用于设置超时默认阻断策略（从API版本26.0.0开始支持）。
+
+如果不配置，默认超时放行。使用HMS_SecurityAudit_NewAuthClientWithConfiguration创建客户端时，需配合此配置对象使用。
+
+SecurityAudit_AuthClientConfiguration *configuration = nullptr;
+int32_t retConfig = HMS_SecurityAudit_CreateAuthClientConfiguration(&configuration);
+if (retConfig != 0 || configuration == nullptr) {
+    printf("create configuration fail");
+    return nullptr;
+}
+// 设置超时默认阻断结果为拒绝
+retConfig = HMS_SecurityAudit_AuthClientConfiguration_SetTimeoutAuthResult(configuration,
+    SECURITY_AUDIT_AUTH_RESULT_DENY);
+if (retConfig != 0) {
+    printf("set timeout auth result fail");
+    HMS_SecurityAudit_DestroyAuthClientConfiguration(configuration);
+    return nullptr;
+}
+
 创建审计阻断类事件客户端实例。
+
+如果已创建配置对象，使用HMS_SecurityAudit_NewAuthClientWithConfiguration创建客户端。
+
+SecurityAudit_Handler handler = AuthAllowCb;
+client = nullptr;
+HMS_SecurityAudit_NewAuthClientWithConfiguration(&client, handler, configuration);
+if (client == nullptr) {
+    printf("client is null");
+    HMS_SecurityAudit_DestroyAuthClientConfiguration(configuration);
+    return;
+}
+
+如果不需自定义超时默认阻断策略，也可使用HMS_SecurityAudit_NewAuthClient创建客户端（默认超时放行）。
 
 SecurityAudit_Handler handler = AuthAllowCb;
 HMS_SecurityAudit_NewAuthClient(&client, handler);
@@ -110,12 +148,16 @@ if (client == nullptr) {
     return;
 }
 
+说明
+
+配置对象在传入HMS_SecurityAudit_NewAuthClientWithConfiguration后，客户端会接管该对象的所有权，开发者无需再调用HMS_SecurityAudit_DestroyAuthClientConfiguration销毁配置对象。
+
 订阅审计阻断类事件。
 
-SecurityAudit_Auth_Event event[1] = {};
-event[0] = SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE;
-int ret = HMS_SecurityAudit_SubscribeAuthEvent(client, event, 1);
+SecurityAudit_Auth_Event event[1] = {SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE};
+int32_t ret = HMS_SecurityAudit_SubscribeAuthEvent(client, event, 1);
 if (ret != 0) {
+    // ...
     printf("subscribe fail");
     return;
 }
@@ -124,12 +166,13 @@ if (ret != 0) {
 
 SecurityAudit_Filter filter = {};
 filter.type = PROCESS_NAME_PREFIX;
-const char* filterStr[1] = {};
-filterStr[0] = "1";
+const char* filterStr[1] = {"1"};
 filter.value = filterStr;
 filter.valueCount = 1;
+
 ret = HMS_SecurityAudit_AddAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
 if (ret != 0) {
+    // ...
     printf("addfilter fail");
     return;
 }
@@ -138,6 +181,7 @@ if (ret != 0) {
 
 ret = HMS_SecurityAudit_UnsubscribeAuthEvent(client, event, 1);
 if (ret != 0) {
+    // ...
     printf("unsubscribe fail");
     return;
 }
@@ -146,6 +190,7 @@ if (ret != 0) {
 
 ret = HMS_SecurityAudit_RemoveAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
 if (ret != 0) {
+    // ...
     printf("removefilter fail");
     return;
 }
@@ -155,7 +200,6 @@ if (ret != 0) {
 ret = HMS_SecurityAudit_DeleteAuthClient(client);
 if (ret != 0) {
     printf("deleteclient fail");
-    return;
 }
 
 ## Code blocks
@@ -170,8 +214,8 @@ target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
 ### Code block 2
 
 ```
-#include <DeviceSecurityKit/security_audit.h>
 #include <cstdio>
+#include "DeviceSecurityKit/security_audit.h"
 ```
 
 ### Code block 3
@@ -201,6 +245,38 @@ void AuthAllowCb(const SecurityAudit_Event *events, uint64_t count)
 ### Code block 4
 
 ```
+SecurityAudit_AuthClientConfiguration *configuration = nullptr;
+int32_t retConfig = HMS_SecurityAudit_CreateAuthClientConfiguration(&configuration);
+if (retConfig != 0 || configuration == nullptr) {
+    printf("create configuration fail");
+    return nullptr;
+}
+// 设置超时默认阻断结果为拒绝
+retConfig = HMS_SecurityAudit_AuthClientConfiguration_SetTimeoutAuthResult(configuration,
+    SECURITY_AUDIT_AUTH_RESULT_DENY);
+if (retConfig != 0) {
+    printf("set timeout auth result fail");
+    HMS_SecurityAudit_DestroyAuthClientConfiguration(configuration);
+    return nullptr;
+}
+```
+
+### Code block 5
+
+```
+SecurityAudit_Handler handler = AuthAllowCb;
+client = nullptr;
+HMS_SecurityAudit_NewAuthClientWithConfiguration(&client, handler, configuration);
+if (client == nullptr) {
+    printf("client is null");
+    HMS_SecurityAudit_DestroyAuthClientConfiguration(configuration);
+    return;
+}
+```
+
+### Code block 6
+
+```
 SecurityAudit_Handler handler = AuthAllowCb;
 HMS_SecurityAudit_NewAuthClient(&client, handler);
 if (client == nullptr) {
@@ -209,40 +285,14 @@ if (client == nullptr) {
 }
 ```
 
-### Code block 5
-
-```
-SecurityAudit_Auth_Event event[1] = {};
-event[0] = SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE;
-int ret = HMS_SecurityAudit_SubscribeAuthEvent(client, event, 1);
-if (ret != 0) {
-    printf("subscribe fail");
-    return;
-}
-```
-
-### Code block 6
-
-```
-SecurityAudit_Filter filter = {};
-filter.type = PROCESS_NAME_PREFIX;
-const char* filterStr[1] = {};
-filterStr[0] = "1";
-filter.value = filterStr;
-filter.valueCount = 1;
-ret = HMS_SecurityAudit_AddAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
-if (ret != 0) {
-    printf("addfilter fail");
-    return;
-}
-```
-
 ### Code block 7
 
 ```
-ret = HMS_SecurityAudit_UnsubscribeAuthEvent(client, event, 1);
+SecurityAudit_Auth_Event event[1] = {SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE};
+int32_t ret = HMS_SecurityAudit_SubscribeAuthEvent(client, event, 1);
 if (ret != 0) {
-    printf("unsubscribe fail");
+    // ...
+    printf("subscribe fail");
     return;
 }
 ```
@@ -250,9 +300,16 @@ if (ret != 0) {
 ### Code block 8
 
 ```
-ret = HMS_SecurityAudit_RemoveAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
+SecurityAudit_Filter filter = {};
+filter.type = PROCESS_NAME_PREFIX;
+const char* filterStr[1] = {"1"};
+filter.value = filterStr;
+filter.valueCount = 1;
+
+ret = HMS_SecurityAudit_AddAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
 if (ret != 0) {
-    printf("removefilter fail");
+    // ...
+    printf("addfilter fail");
     return;
 }
 ```
@@ -260,9 +317,30 @@ if (ret != 0) {
 ### Code block 9
 
 ```
+ret = HMS_SecurityAudit_UnsubscribeAuthEvent(client, event, 1);
+if (ret != 0) {
+    // ...
+    printf("unsubscribe fail");
+    return;
+}
+```
+
+### Code block 10
+
+```
+ret = HMS_SecurityAudit_RemoveAuthEventFilter(client, SECURITY_AUDIT_AUTH_EVENT_FILE_CREATE, &filter);
+if (ret != 0) {
+    // ...
+    printf("removefilter fail");
+    return;
+}
+```
+
+### Code block 11
+
+```
 ret = HMS_SecurityAudit_DeleteAuthClient(client);
 if (ret != 0) {
     printf("deleteclient fail");
-    return;
 }
 ```

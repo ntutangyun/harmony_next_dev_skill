@@ -1,0 +1,87 @@
+# 启用热点加速
+
+_Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hotspot-accelerate-development_
+
+Linx Kit提供实现热点加速优化的API接口，通过对线程执行过程中的热点代码模式进行针对性优化，提升线程执行效率。该功能主要用于优化特定线程的性能表现，适用于需要提升线程执行效率的场景。
+
+热点加速模块介绍
+
+以某场景为例，可以看到其CPU上的负载重点线程（逻辑线程和渲染线程），均具有帧粒度的周期性：
+
+开发者确定对应源码位置后，在具有周期性的热点流程入口和出口位置分别调用本接口，本热点加速模块便可记录程序运行行为，例如分支跳转等关键信息，将其保存，并在下一帧进行重放，达到提升线程执行效率的效果。
+
+开发步骤
+
+在需要优化线程性能的场景下，开发者可以通过调用Linx Kit提供的热点加速API来提升线程执行效率。下面是热点加速优化模块的主要开发步骤：
+
+在正式调用前，开发者应使用性能分析工具，定位进程中的热点函数/流程，以便后续进行优化。
+
+确定热点流程的源码位置后，需在该流程的入口和出口分别调用Begin和End接口，以记录并重放关键行为。
+
+可将热点函数/流程划分为多个context，仅对最重要的context实施加速策略，从而降低主存访问开销。
+
+以下是启用热点加速的完整代码步骤：
+
+引入头文件。
+
+#include "LinxKit/linx_hotspot.h"
+
+在应用进程创建时调用HMS_LINX_HotspotAccelerateInit，初始化热点加速模块。
+
+int32_t ret = HMS_LINX_HotspotAccelerateInit();
+if (ret != 0) {
+    (void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_ID, "linxkit_test", "LinxKit init error: %{public}d", ret);
+}
+
+调用HMS_LINX_HotspotAccelerateBegin开始热点加速。ctx初始化为0，后续由热点加速API自动分配一个有效ctx。
+
+uint32_t ctx = g_ctx;
+int32_t ret = HMS_LINX_HotspotAccelerateBegin(&ctx);
+g_ctx = ctx;
+if (ret != 0) {
+    (void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_ID, "linxkit_test", "LinxKit acc begin error: %{public}d", ret);
+}
+
+确保在不需要加速时调用HMS_LINX_HotspotAccelerateEnd停止热点加速，释放资源。
+
+ret = HMS_LINX_HotspotAccelerateEnd(ctx);
+if (ret != 0) {
+    (void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_ID, "linxkit_test", "LinxKit acc end error: %{public}d", ret);
+}
+
+## Code blocks
+
+### Code block 1
+
+```
+#include "LinxKit/linx_hotspot.h"
+```
+
+### Code block 2
+
+```
+int32_t ret = HMS_LINX_HotspotAccelerateInit();
+if (ret != 0) {
+    (void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_ID, "linxkit_test", "LinxKit init error: %{public}d", ret);
+}
+```
+
+### Code block 3
+
+```
+uint32_t ctx = g_ctx;
+int32_t ret = HMS_LINX_HotspotAccelerateBegin(&ctx);
+g_ctx = ctx;
+if (ret != 0) {
+    (void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_ID, "linxkit_test", "LinxKit acc begin error: %{public}d", ret);
+}
+```
+
+### Code block 4
+
+```
+ret = HMS_LINX_HotspotAccelerateEnd(ctx);
+if (ret != 0) {
+    (void)OH_LOG_Print(LOG_APP, LOG_ERROR, LOG_ID, "linxkit_test", "LinxKit acc end error: %{public}d", ret);
+}
+```

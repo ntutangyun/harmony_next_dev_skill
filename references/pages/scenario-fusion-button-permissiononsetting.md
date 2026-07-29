@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 约束与限制
 
-权限设置Button支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
+权限设置Button支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持TV设备。
 
 说明
 
@@ -60,7 +60,7 @@ struct Index {
                     hilog.info(0x0000, 'testTag', 'data authResults: %{public}s', data.authResults?.join(','));
                     hilog.info(0x0000, 'testTag', 'data dialogShownResults: %{public}s', data.dialogShownResults?.join(','));
                   }
-                })
+                });
             } catch (err) {
               hilog.error(0x0000, 'testTag', 'error: %{public}d %{public}s', err.code, err.message);
             }
@@ -77,7 +77,7 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType设置为PERMISSION_SETTING时，回调必须为onPermissionSetting。
           controller: new functionalButtonComponentManager.FunctionalButtonController().onPermissionSetting((err,
@@ -92,7 +92,7 @@ struct Index {
             let result = data.permissionResult;
             result.forEach(res => {
               hilog.info(0x0000, 'testTag', 'data: %{public}s', String(res));
-            })
+            });
           })
         })
       }
@@ -151,7 +151,7 @@ struct Index {
                     hilog.info(0x0000, 'testTag', 'data authResults: %{public}s', data.authResults?.join(','));
                     hilog.info(0x0000, 'testTag', 'data dialogShownResults: %{public}s', data.dialogShownResults?.join(','));
                   }
-                })
+                });
             } catch (err) {
               hilog.error(0x0000, 'testTag', 'error: %{public}d %{public}s', err.code, err.message);
             }
@@ -168,7 +168,7 @@ struct Index {
             styleOption: {
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType设置为PERMISSION_SETTING时，回调必须为onPermissionSetting。
           controller: new functionalButtonComponentManager.FunctionalButtonController().onPermissionSetting((err,
@@ -183,7 +183,7 @@ struct Index {
             let result = data.permissionResult;
             result.forEach(res => {
               hilog.info(0x0000, 'testTag', 'data: %{public}s', String(res));
-            })
+            });
           })
         })
       }

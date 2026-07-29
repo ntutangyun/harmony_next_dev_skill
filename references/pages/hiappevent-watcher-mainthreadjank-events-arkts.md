@@ -18,7 +18,7 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
 
 以主线程超时事件订阅为例，说明开发步骤。
 
-新建一个ArkTS应用工程，编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，导入依赖模块，示例代码如下：
+在DevEco Studio中，新建一个ArkTS应用工程，编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，导入依赖模块，示例代码如下：
 
  import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
  import { buffer, util } from '@kit.ArkTS'

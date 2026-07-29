@@ -108,7 +108,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
       result: {
         message: 'unknown intent'
       }
-    }
+    };
     return Promise.resolve(data);
   }
 
@@ -150,7 +150,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
               message: 'Intent execute failed'
             }
           }
-          reject(data)
+          reject(data);
         });
     })
   }
@@ -244,7 +244,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
       result: {
         message: 'unknown intent'
       }
-    }
+    };
     return Promise.resolve(data);
   }
 
@@ -286,7 +286,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
               message: 'Intent execute failed'
             }
           }
-          reject(data)
+          reject(data);
         });
     })
   }

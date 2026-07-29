@@ -23,7 +23,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 创建一个平面对象列表planeList，用于存放AR Engine运行过程中检测到的所有平面。
 
 AREngine_ARTrackableList *planeList = nullptr;
-HMS_AREngine_ARTrackableList_Create(arSession, &planeList);
+// Create a list of trackable objects.
+CHECK(HMS_AREngine_ARTrackableList_Create(arSession, &planeList));
 
 设置可跟踪对象类型为ARENGINE_TRACKABLE_PLANE。
 
@@ -33,14 +34,15 @@ AREngine_ARTrackableType planeTrackedType = ARENGINE_TRACKABLE_PLANE;
 
 调用HMS_AREngine_ARSession_GetAllTrackables函数，检测当前环境中的所有平面，并将结果存放在planeList中。
 
-HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, planeList);
+CHECK(HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, planeList));
 
 获取平面数量
 
 调用HMS_AREngine_ARTrackableList_GetSize函数获取平面数量，结果存放在planeListSize中。
 
 int32_t planeListSize = 0;
-HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize);
+// Obtain the number of trackable objects in the list.
+CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize));
 
 在应用环境中，可能存在0个、1个或多个平面。
 
@@ -61,8 +63,9 @@ for (int i = 0; i < planeListSize; ++i) {
 对于第i个平面，创建并获取可跟踪对象，并将其转化为平面对象AREngine_ARPlane。
 
 AREngine_ARTrackable *arTrackable = nullptr;
-HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable);
-AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane*>(arTrackable);
+// Obtain the object at a specified index from the trackable object list.
+CHECK(HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable));
+AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
 
 说明
 
@@ -78,7 +81,8 @@ HMS_AREngine_ARTrackableList_Destroy(planeList);
 
 ```
 AREngine_ARTrackableList *planeList = nullptr;
-HMS_AREngine_ARTrackableList_Create(arSession, &planeList);
+// Create a list of trackable objects.
+CHECK(HMS_AREngine_ARTrackableList_Create(arSession, &planeList));
 ```
 
 ### Code block 2
@@ -90,14 +94,15 @@ AREngine_ARTrackableType planeTrackedType = ARENGINE_TRACKABLE_PLANE;
 ### Code block 3
 
 ```
-HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, planeList);
+CHECK(HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, planeList));
 ```
 
 ### Code block 4
 
 ```
 int32_t planeListSize = 0;
-HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize);
+// Obtain the number of trackable objects in the list.
+CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize));
 ```
 
 ### Code block 5
@@ -112,8 +117,9 @@ for (int i = 0; i < planeListSize; ++i) {
 
 ```
 AREngine_ARTrackable *arTrackable = nullptr;
-HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable);
-AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane*>(arTrackable);
+// Obtain the object at a specified index from the trackable object list.
+CHECK(HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable));
+AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
 ```
 
 ### Code block 7

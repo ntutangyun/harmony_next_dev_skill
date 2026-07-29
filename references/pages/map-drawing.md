@@ -6,6 +6,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-drawi
 
 折线
 
+信号路线
+
 弧线
 
 多边形

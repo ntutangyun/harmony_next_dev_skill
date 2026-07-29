@@ -17,22 +17,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 操作方法名(event)： 当在ohpm-repo管理界面执行一系列操作时，会在operate.log文件生成一条条操作数据，操作方法名即表示当前操作涉及到的方法名字，例如login即表示登录操作，analyzePackage即表示上传包时对包的解析操作。
 
 序号	Event描述	说明
-1	generateAccessToken / deleteAccessToken	生成 / 删除AccessToken
-2	login / logout	登入 / 登出
-3	publish / unPublish/batchUnPublish	上架资源包/ 下架资源包/批量下架资源包
-4	addGroup / deleteGroup	添加/删除组织
+1	generateAccessToken/deleteAccessToken	生成/删除AccessToken
+2	login/logout	登入/ 登出
+3	publish/unPublish/batchUnPublish	上架资源包/下架资源包/批量下架资源包
+4	addGroup/deleteGroup	添加/删除组织
 5	updateGroup	更新组织
-6	addMember/deleteMember	添加 / 删除组织成员
+6	addMember/deleteMember	添加/删除组织成员
 7	addAdminMember/deleteAdminMember	添加/删除组织管理员
-8	addPublicKey / delPublicKeyById	添加 / 删除发布公钥
+8	addPublicKey/delPublicKeyById	添加/删除发布公钥
 9	addRepo/updateRepo/deleteRepo	新增仓库/更新仓库/删除仓库
 10	analyzePackage	解析上传的包文件
 11	uploadPackage	上传包文件
 12	getPackageSizeLimit	获取包的大小限制
-13	addUplink / deleteUplink	添加 / 删除uplink
+13	addUplink/deleteUplink	添加/删除uplink
 14	updateUplink	更新uplink
 15	updateUplinkProxy	更新Uplink代理
-16	addUser / delUserByUserId	添加/删除用户
+16	addUser/delUserByUserId	添加/删除用户
 17	changePassWord	改变用户账户密码
 18	resetPassWord	重置用户账户密码
 19	changeRole	修改用户角色(管理员和非管理员)

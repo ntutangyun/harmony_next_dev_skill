@@ -17,7 +17,7 @@ OH_AI_ContextHandle OH_AI_ContextCreate()	创建一个上下文的对象。注�
 OH_AI_DeviceInfoHandle OH_AI_DeviceInfoCreate(OH_AI_DeviceType device_type)	创建一个运行时设备信息对象。
 void OH_AI_ContextDestroy(OH_AI_ContextHandle *context)	释放上下文对象。
 void OH_AI_ContextAddDeviceInfo(OH_AI_ContextHandle context, OH_AI_DeviceInfoHandle device_info)	添加运行时设备信息。
-OH_AI_TrainCfgHandle OH_AI_TrainCfgCreate()	创建训练配置对象指针。
+OH_AI_TrainCfgHandle OH_AI_TrainCfgCreate()	创建训练配置对象。
 void OH_AI_TrainCfgDestroy(OH_AI_TrainCfgHandle *train_cfg)	销毁训练配置对象指针。
 OH_AI_ModelHandle OH_AI_ModelCreate()	创建一个模型对象。
 OH_AI_Status OH_AI_TrainModelBuildFromFile(OH_AI_ModelHandle model, const char *model_path, OH_AI_ModelType model_type, const OH_AI_ContextHandle model_context, const OH_AI_TrainCfgHandle train_cfg)	通过模型文件加载并编译MindSpore Lite训练模型。
@@ -183,7 +183,7 @@ printf("Export Inference Model Success.\n");
 
 释放模型。
 
-不再使用MindSpore Lite推理框架时，需要释放已经创建的模型。
+不再使用MindSpore Lite框架时，需要释放已经创建的模型。
 
 // Delete model and context.
 OH_AI_ModelDestroy(&model);

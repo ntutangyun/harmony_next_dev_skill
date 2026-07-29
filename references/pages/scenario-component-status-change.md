@@ -1,8 +1,8 @@
-# 控件状态变化场景
+# 控件状态变化
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-component-status-change_
 
-开发实例
+开发流程
 
 例如下图，播放暂停按钮对应着两种状态，在状态切换时需要实时变化对应的标注信息。
 

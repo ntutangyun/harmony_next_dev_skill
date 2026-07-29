@@ -14,7 +14,7 @@ ohos.permission.GET_NETWORK_INFO：用户获取设备网络信息。
 
 ohos.permission.INTERNET：允许使用因特网访问网络。
 
-ohos.permission.LINKTURBO: 允许应用使用多网并发等网络加速能力，连接迁移能力部分接口需要该权限，如果不使用该能力，不需要申请该权限。
+ohos.permission.LINKTURBO：允许应用使用多网并发等网络加速能力，连接迁移能力部分接口需要该权限，如果不使用该能力，不需要申请该权限。
 
 必须手动配置上述权限后才能使用，详细配置参见申请权限步骤。
 

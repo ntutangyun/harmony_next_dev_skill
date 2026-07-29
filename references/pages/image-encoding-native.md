@@ -102,7 +102,8 @@ int32_t packImageToData(napi_env env, napi_callback_info info)
     // 配置编码格式（必须）。
     opts.format = "image/jpeg";
     // 配置编码质量（必须）。
-    opts.quality = 95;
+    // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+    opts.quality = 90;
     // 配置输出的缓存区大小为4k（缓存区大小视应用场景定）。
     size_t bufferSize = 4*1024;
     // 申请图片编码缓存区。
@@ -153,7 +154,8 @@ int32_t packImageToFile(napi_env env, napi_callback_info info)
     // 配置编码格式（必须）。
     opts.format = "image/jpeg";
     // 配置编码质量（必须）。
-    opts.quality = 100;
+    // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+    opts.quality = 90;
     // 打开需要输出的文件（请确保应用有权限访问这个路径）。
     int fd = open("/data/test.jpg", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     int result;
@@ -227,7 +229,8 @@ int32_t packImageToData(napi_env env, napi_callback_info info)
     // 配置编码格式（必须）。
     opts.format = "image/jpeg";
     // 配置编码质量（必须）。
-    opts.quality = 95;
+    // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+    opts.quality = 90;
     // 配置输出的缓存区大小为4k（缓存区大小视应用场景定）。
     size_t bufferSize = 4*1024;
     // 申请图片编码缓存区。
@@ -280,7 +283,8 @@ int32_t packImageToFile(napi_env env, napi_callback_info info)
     // 配置编码格式（必须）。
     opts.format = "image/jpeg";
     // 配置编码质量（必须）。
-    opts.quality = 100;
+    // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+    opts.quality = 90;
     // 打开需要输出的文件（请确保应用有权限访问这个路径）。
     int fd = open("/data/test.jpg", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     int result;

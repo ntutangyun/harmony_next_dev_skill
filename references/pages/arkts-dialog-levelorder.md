@@ -8,7 +8,7 @@ ArkUI的弹出框节点默认直接挂载在根节点上，会根据层级从小
 
 使用约束
 
-目前openCustomDialog、CustomDialog、AlertDialog、ActionSheet、showDialog支持通过levelOrder参数来管理弹出框的层次。
+目前openCustomDialog、CustomDialog、AlertDialog、ActionSheet、showDialog支持通过levelOrder参数来管理弹出框的层级。
 
 说明
 
@@ -49,7 +49,7 @@ topCustomDialog() {
             levelOrder: LevelOrder.clamp(0),
           })
             .catch((err: BusinessError) => {
-              hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + '' + err.message);
+              hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + ' ' + err.message);
             });
           this.dialogIndex++;
         })
@@ -108,7 +108,7 @@ export struct DialogBoxLayer {
               levelOrder: LevelOrder.clamp(0),
             })
               .catch((err: BusinessError) => {
-                hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + '' + err.message);
+                hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + ' ' + err.message);
               });
             this.dialogIndex++;
           })
@@ -174,7 +174,7 @@ topCustomDialog() {
             levelOrder: LevelOrder.clamp(0),
           })
             .catch((err: BusinessError) => {
-              hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + '' + err.message);
+              hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + ' ' + err.message);
             });
           this.dialogIndex++;
         })
@@ -237,7 +237,7 @@ export struct DialogBoxLayer {
               levelOrder: LevelOrder.clamp(0),
             })
               .catch((err: BusinessError) => {
-                hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + '' + err.message);
+                hilog.error(DOMAIN, 'dialogBoxLayer', 'openCustomDialog error: ' + err.code + ' ' + err.message);
               });
             this.dialogIndex++;
           })

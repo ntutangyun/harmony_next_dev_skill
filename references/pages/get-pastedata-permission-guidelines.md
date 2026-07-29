@@ -20,7 +20,7 @@ OH_UdmfData* OH_Pasteboard_GetDataWithProgress(OH_Pasteboard* pasteboard, Pasteb
 
 说明
 
-申请访问剪贴板权限前，需提前判断剪贴板上的内容是否包含应用所需数据，包括不限于hasData检查是否有数据、hasDataType/getMimeTypes检查是否有应用所需类型、getChangeCount检查数据是否改变，详见剪贴板弹窗适配优化。
+申请访问剪贴板权限前，需提前判断剪贴板上的内容是否包含应用所需数据，包括但不限于hasData检查是否有数据、hasDataType/getMimeTypes检查是否有应用所需类型、getChangeCount检查数据是否改变，详见剪贴板弹窗适配优化。
 
 访问剪贴板内容
 
@@ -79,7 +79,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
     }
     // 获取剪贴板的内容变化次数
     let result: number = systemPasteboard.getChangeCount();
-    hilog.info(0xFF00, '[Sample_pasteboard]', 'Succeeded in getting the ChangeCount. Result: ${result}');
+    hilog.info(0xFF00, '[Sample_pasteboard]', `Succeeded in getting the ChangeCount. Result: ${result}`);
     // 从 Preferences 中读取上次保存的 changeCount
     let storedChangeCount: number = dataPreferences ? Number(dataPreferences.getSync('pasteboardChangeCount', 0)) : 0;
     if (result === storedChangeCount) {
@@ -87,7 +87,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
       return false;
     }
   } catch (err) {
-    hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to get the ChangeCount. Cause: ${err.message}');
+    hilog.error(0xFF00, '[Sample_pasteboard]', `Failed to get the ChangeCount. Cause: ${err.message}`);
     return false;
   };
 
@@ -95,7 +95,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
   try {
     // (可选)判断是否有应用需要的数据类型
     let result: boolean = systemPasteboard.hasDataType(pasteboard.MIMETYPE_TEXT_PLAIN);
-    hilog.info(0xFF00, '[Sample_pasteboard]', 'Succeeded in checking the DataType. Result: ${result}');
+    hilog.info(0xFF00, '[Sample_pasteboard]', `Succeeded in checking the DataType. Result: ${result}`);
     if (!result) {
       // 剪贴板不存在应用所需数据类型，无需申请权限
       return false;
@@ -107,7 +107,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
       return false;
     }
   } catch (err) {
-    hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to check the DataType. Cause:' + err.message);
+    hilog.error(0xFF00, '[Sample_pasteboard]', `Failed to check the DataType. Cause: ${err.message}`);
     return false;
   };
   return true;
@@ -124,34 +124,36 @@ struct Index {
         // ...
         Button('粘贴')
           // ...
-          .onClick(() => {
+          .onClick(async () => {
             const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-            if (!isNeedGetPermissionFromUser()) {
+            if (!(await isNeedGetPermissionFromUser())) {
               hilog.info(0xFF00, '[Sample_pasteboard]', 'No need to bring up the permission pop-up window');
               return;
             }
             let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
             // requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗。
-            atManager.requestPermissionsFromUser(context, permissions).then((data) => {
+            try {
+              let data = await atManager.requestPermissionsFromUser(context, permissions);
               let grantStatus: number[] = data.authResults;
               for (const status of grantStatus) {
                 if (status === 0) {
                   // 用户授权，使用get操作读取剪贴板内容。
                   // ...
                   // 执行判断口令逻辑，如果是本应用口令，建议获取完数据后使用cleardata清除剪贴板口令内容
-                  systemPasteboard.clearData().then((data: void) => {
+                  try {
+                    await systemPasteboard.clearData();
                     hilog.info(0xFF00, '[Sample_pasteboard]', 'Succeeded in clearing the pasteboard.');
-                  }).catch((err: BusinessError) => {
-                    hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to clear the pasteboard. Cause: ${err.message}');
-                  });
+                  } catch (err) {
+                    hilog.error(0xFF00, '[Sample_pasteboard]', `Failed to clear the pasteboard. Cause: ${err.message}`);
+                  }
                   // 获取当前 ChangeCount
                   let currentChangeCount: number = systemPasteboard.getChangeCount();
-                  hilog.info(0xFF00, '[Sample_pasteboard]', 'Current ChangeCount: ' + currentChangeCount);
+                  hilog.info(0xFF00, '[Sample_pasteboard]', `Current ChangeCount: ${currentChangeCount}`);
                   // 更新 Preferences 中的 ChangeCount
                   if (dataPreferences) {
                     dataPreferences.putSync('pasteboardChangeCount', currentChangeCount);
                     dataPreferences.flushSync(); // 确保数据写入持久化存储
-                    hilog.info(0xFF00, '[Sample_pasteboard]', 'ChangeCount has been updated to: ' + currentChangeCount);
+                    hilog.info(0xFF00, '[Sample_pasteboard]', `ChangeCount has been updated to: ${currentChangeCount}`);
                   }
                 } else {
                   // 用户拒绝授权，提示用户必须授权才能访问当前页面的功能，并引导用户到系统设置中打开相应的权限。
@@ -159,9 +161,9 @@ struct Index {
                 }
               }
               // 授权成功。
-            }).catch((err: BusinessError) => {
-              hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to request permissions from user. ');
-            })
+            } catch (err) {
+              hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to request permissions from user.');
+            }
           })
         // ...
       }
@@ -195,7 +197,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
     }
     // 获取剪贴板的内容变化次数
     let result: number = systemPasteboard.getChangeCount();
-    hilog.info(0xFF00, '[Sample_pasteboard]', 'Succeeded in getting the ChangeCount. Result: ${result}');
+    hilog.info(0xFF00, '[Sample_pasteboard]', `Succeeded in getting the ChangeCount. Result: ${result}`);
     // 从 Preferences 中读取上次保存的 changeCount
     let storedChangeCount: number = dataPreferences ? Number(dataPreferences.getSync('pasteboardChangeCount', 0)) : 0;
     if (result === storedChangeCount) {
@@ -203,7 +205,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
       return false;
     }
   } catch (err) {
-    hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to get the ChangeCount. Cause: ${err.message}');
+    hilog.error(0xFF00, '[Sample_pasteboard]', `Failed to get the ChangeCount. Cause: ${err.message}`);
     return false;
   };
 
@@ -211,7 +213,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
   try {
     // (可选)判断是否有应用需要的数据类型
     let result: boolean = systemPasteboard.hasDataType(pasteboard.MIMETYPE_TEXT_PLAIN);
-    hilog.info(0xFF00, '[Sample_pasteboard]', 'Succeeded in checking the DataType. Result: ${result}');
+    hilog.info(0xFF00, '[Sample_pasteboard]', `Succeeded in checking the DataType. Result: ${result}`);
     if (!result) {
       // 剪贴板不存在应用所需数据类型，无需申请权限
       return false;
@@ -223,7 +225,7 @@ async function isNeedGetPermissionFromUser(): Promise<boolean> {
       return false;
     }
   } catch (err) {
-    hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to check the DataType. Cause:' + err.message);
+    hilog.error(0xFF00, '[Sample_pasteboard]', `Failed to check the DataType. Cause: ${err.message}`);
     return false;
   };
   return true;
@@ -240,34 +242,36 @@ struct Index {
         // ...
         Button('粘贴')
           // ...
-          .onClick(() => {
+          .onClick(async () => {
             const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-            if (!isNeedGetPermissionFromUser()) {
+            if (!(await isNeedGetPermissionFromUser())) {
               hilog.info(0xFF00, '[Sample_pasteboard]', 'No need to bring up the permission pop-up window');
               return;
             }
             let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
             // requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗。
-            atManager.requestPermissionsFromUser(context, permissions).then((data) => {
+            try {
+              let data = await atManager.requestPermissionsFromUser(context, permissions);
               let grantStatus: number[] = data.authResults;
               for (const status of grantStatus) {
                 if (status === 0) {
                   // 用户授权，使用get操作读取剪贴板内容。
                   // ...
                   // 执行判断口令逻辑，如果是本应用口令，建议获取完数据后使用cleardata清除剪贴板口令内容
-                  systemPasteboard.clearData().then((data: void) => {
+                  try {
+                    await systemPasteboard.clearData();
                     hilog.info(0xFF00, '[Sample_pasteboard]', 'Succeeded in clearing the pasteboard.');
-                  }).catch((err: BusinessError) => {
-                    hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to clear the pasteboard. Cause: ${err.message}');
-                  });
+                  } catch (err) {
+                    hilog.error(0xFF00, '[Sample_pasteboard]', `Failed to clear the pasteboard. Cause: ${err.message}`);
+                  }
                   // 获取当前 ChangeCount
                   let currentChangeCount: number = systemPasteboard.getChangeCount();
-                  hilog.info(0xFF00, '[Sample_pasteboard]', 'Current ChangeCount: ' + currentChangeCount);
+                  hilog.info(0xFF00, '[Sample_pasteboard]', `Current ChangeCount: ${currentChangeCount}`);
                   // 更新 Preferences 中的 ChangeCount
                   if (dataPreferences) {
                     dataPreferences.putSync('pasteboardChangeCount', currentChangeCount);
                     dataPreferences.flushSync(); // 确保数据写入持久化存储
-                    hilog.info(0xFF00, '[Sample_pasteboard]', 'ChangeCount has been updated to: ' + currentChangeCount);
+                    hilog.info(0xFF00, '[Sample_pasteboard]', `ChangeCount has been updated to: ${currentChangeCount}`);
                   }
                 } else {
                   // 用户拒绝授权，提示用户必须授权才能访问当前页面的功能，并引导用户到系统设置中打开相应的权限。
@@ -275,9 +279,9 @@ struct Index {
                 }
               }
               // 授权成功。
-            }).catch((err: BusinessError) => {
-              hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to request permissions from user. ');
-            })
+            } catch (err) {
+              hilog.error(0xFF00, '[Sample_pasteboard]', 'Failed to request permissions from user.');
+            }
           })
         // ...
       }

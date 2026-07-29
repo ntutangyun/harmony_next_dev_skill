@@ -46,7 +46,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 请求广告参数名	类型	必填	说明
 adType	number	否	请求广告类型，激励广告类型为7。不填默认为原生广告类型。
-adId	string	是	广告位ID。 - 如果仅调测广告，可使用测试广告位ID：j14rx3xtac。 - 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
+adId	string	是	广告位ID。 - 如果仅调测广告，可使用测试广告位ID：j2mh81xmqs。 - 如果要接入正式广告，则需要申请正式的广告位ID。可在应用发布前进入流量变现官网，点击“开始变现”，登录鲸鸿动能媒体服务平台进行申请，具体操作详情请参见展示位创建。
 oaid	string	否	开放匿名设备标识符，用于精准推送广告。不填无法获取到个性化广告。
 
 示例代码如下所示：
@@ -379,7 +379,6 @@ byte[] paramContentData = sha256Value.getBytes(Charset.forName("UTF-8"));
 
 可参考以下工具类计算散列值：
 
-import { advertising } from '@kit.AdsKit';
 public static String digest(String message) {
   if (TextUtils.isEmpty(message)) {
     return "";
@@ -805,7 +804,6 @@ byte[] paramContentData = sha256Value.getBytes(Charset.forName("UTF-8"));
 ### Code block 10
 
 ```
-import { advertising } from '@kit.AdsKit';
 public static String digest(String message) {
   if (TextUtils.isEmpty(message)) {
     return "";

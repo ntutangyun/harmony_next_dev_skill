@@ -118,7 +118,6 @@ let model: Model = new Model();
 @Component
 struct Test {
   @State count: number = 10;
-  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
   aboutToAppear(): void {
     model.add(() => {
@@ -501,7 +500,7 @@ struct DeepReParent {
   }
 }
 
-在以上示例中，DeepRePropChild组件没有改变@Prop testClass: MyClass的值，因此使用@ObjectLink更为合适。因为@Prop会深拷贝数据带来性能开销，所以@ObjectLink是比@Prop更优的选择。
+在以上示例中，DeepRePropChild组件没有改变@Prop testClass: DeepReMyClass的值，因此使用@ObjectLink更为合适。因为@Prop会深拷贝数据带来性能开销，所以@ObjectLink是比@Prop更优的选择。
 
 【正例】
 
@@ -1322,7 +1321,6 @@ let model: Model = new Model();
 @Component
 struct Test {
   @State count: number = 10;
-  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
   aboutToAppear(): void {
     model.add(() => {

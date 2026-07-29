@@ -20,6 +20,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 
 因为背板透明卡片仅使用于符合UI规范以及声明使用的场景，不允许对用户隐藏卡片显示或者功能按钮的恶意设计，所以需要开发者申请上架开放能力。
 
+因此在应用调试或发布时，必须使用手动签名，并在手动签名申请Profile过程中创建HarmonyOS应用，创建应用时参考如下指导为应用接入开放能力。
+
 登录AppGallery Connect，选择“开发与服务”。
 
 在项目列表中找到您的项目，并点击选择需开启开放能力的应用/元服务。

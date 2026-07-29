@@ -38,7 +38,7 @@ private:
         AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
         AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
 
-        AscendC::Axpy(dstLocal, srcLocal, (half)2.0, 512);
+        **AscendC::Axpy(dstLocal, srcLocal, (half)2.0, 512);**
 
         outQueueDst.EnQue<half>(dstLocal);
         inQueueSrc.FreeTensor(srcLocal);
@@ -160,7 +160,7 @@ private:
         AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
         AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
 
-        AscendC::Axpy(dstLocal, srcLocal, (half)2.0, 512);
+        **AscendC::Axpy(dstLocal, srcLocal, (half)2.0, 512);**
 
         outQueueDst.EnQue<half>(dstLocal);
         inQueueSrc.FreeTensor(srcLocal);

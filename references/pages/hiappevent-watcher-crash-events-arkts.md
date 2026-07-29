@@ -24,7 +24,7 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以移除对
 
 以订阅用户点击按钮触发崩溃生成的崩溃事件为例，说明开发步骤。
 
-DevEco Studio新建Native C++模板工程，编辑“entry > src > main > ets > entryability > EntryAbility.ets”文件，导入依赖模块。示例代码如下：
+在DevEco Studio新建Native C++模板工程，编辑“entry > src > main > ets > entryability > EntryAbility.ets”文件，导入依赖模块。示例代码如下：
 
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -58,14 +58,14 @@ if (deviceInfo.sdkApiVersion >= 20) {  // API Version 20及以后版本，支持
 }
 
 if (deviceInfo.sdkApiVersion >= 24) {  // API Version 24及以后版本，支持设置页面切换日志
-  // 配置页面切换日志
-  let switchLogPolicy : hiAppEvent.EventPolicy = {
-    "appCrashPolicy": {
-      "pageSwitchLogEnable": true
+  let crashEventPolicy : hiAppEvent.EventPolicy = {
+    "appCrashPolicy": { // 崩溃事件配置策略
+      "pageSwitchLogEnable": true, // 使能页面切换日志
+      "collectMinidump": true // native崩溃场景，使能minidump
     }
   };
-  // 开发者可以设置崩溃日志配置参数
-  hiAppEvent.configEventPolicy(switchLogPolicy).then(() => {
+  // 开发者可以设置崩溃事件配置策略
+  hiAppEvent.configEventPolicy(crashEventPolicy).then(() => {
     hilog.info(0x0000, 'testTag', `HiAppEvent success to config event policy.`);
   }).catch((err: BusinessError) => {
     hilog.error(0x0000, 'testTag', `HiAppEvent code: ${err.code}, message: ${err.message}`);
@@ -161,7 +161,7 @@ static napi_value Init(napi_env env, napi_value exports)
     return exports;
 }
 
-在"index.d.ts"文件中，定义ArkTS接口：
+在"entry > src > main > cpp > types > libentry > Index.d.ts"文件中，定义ArkTS接口：
 
 export const testNullptr: () => void;
 
@@ -252,7 +252,7 @@ HiAppEvent eventInfo.params.test_data=100
 
 从Faultlogger接口迁移崩溃事件
 
-@ohos.faultLogger (故障日志获取)接口从API version 18开始废弃使用, 不再维护。后续版本推荐使用@ohos.hiviewdfx.hiAppEvent订阅崩溃事件。该章节指导开发者从Faultlogger接口迁移至hiAppEvent接口，来订阅崩溃事件。
+@ohos.faultLogger (故障日志获取)接口从API version 18开始废弃使用，不再维护。后续版本推荐使用@ohos.hiviewdfx.hiAppEvent订阅崩溃事件。该章节指导开发者从Faultlogger接口迁移至hiAppEvent接口，来订阅崩溃事件。
 
 在Faultlogger的FaultType里定义的CPP_CRASH和JS_CRASH都属于崩溃故障类型。
 
@@ -278,7 +278,7 @@ fullLog	external_log	fullLog为故障日志全文。external_log为故障日志�
 reason	external_log文件内容中的Reason字段	无
 summary	external_log文件内容中的一部分	CPP_CRASH的summary对应external_log文件内容中的Fault thread info字段；JS_CRASH的summary对应external_log文件内容中的Error name、Error message、 Stacktrace、HybridStack字段。
 
-FaultLogger.query(使用callback回调)和FaultLogger.query(使用Promise回调)都可以使用hiAppEvent.addWatcher实现相同功能。
+使用callback回调的FaultLogger.query和使用Promise回调的FaultLogger.query都可以使用hiAppEvent.addWatcher实现相同功能。
 
 查阅开发步骤和验证观察者是否订阅到崩溃事件，了解使用hiAppEvent订阅崩溃事件（ArkTS）的具体步骤。
 
@@ -321,14 +321,14 @@ if (deviceInfo.sdkApiVersion >= 20) {  // API Version 20及以后版本，支持
 }
 
 if (deviceInfo.sdkApiVersion >= 24) {  // API Version 24及以后版本，支持设置页面切换日志
-  // 配置页面切换日志
-  let switchLogPolicy : hiAppEvent.EventPolicy = {
-    "appCrashPolicy": {
-      "pageSwitchLogEnable": true
+  let crashEventPolicy : hiAppEvent.EventPolicy = {
+    "appCrashPolicy": { // 崩溃事件配置策略
+      "pageSwitchLogEnable": true, // 使能页面切换日志
+      "collectMinidump": true // native崩溃场景，使能minidump
     }
   };
-  // 开发者可以设置崩溃日志配置参数
-  hiAppEvent.configEventPolicy(switchLogPolicy).then(() => {
+  // 开发者可以设置崩溃事件配置策略
+  hiAppEvent.configEventPolicy(crashEventPolicy).then(() => {
     hilog.info(0x0000, 'testTag', `HiAppEvent success to config event policy.`);
   }).catch((err: BusinessError) => {
     hilog.error(0x0000, 'testTag', `HiAppEvent code: ${err.code}, message: ${err.message}`);

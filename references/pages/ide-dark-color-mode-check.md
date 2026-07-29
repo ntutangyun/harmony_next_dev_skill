@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-dark-color-mode-check_
 
-通过启用深色模式，可以进一步实现能耗的降低。应用需要根据当前设备状态来适配深色模式。
+通过启用深色模式，可以进一步降低能耗。应用需要根据当前设备状态来适配深色模式。
 
 说明
 

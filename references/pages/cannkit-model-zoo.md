@@ -20,9 +20,9 @@ Model Zoo中模型的名称、性能、模型下载信息如下表所示。
 图片分类	VGG16	16.56	8.55	TF&OM	2d13fb620ffac15a45966a62128d659257b0872824a8de319fc1e86049643fa4	论文&实现
 图片分类	VGG19	18.34	8.73	TF&OM	4306f34da7d12e4347037b9cf303ff9b6b73a5981bd11a0e9e389393e2f9c0b2	论文&实现
 图片分类	Resnet50	5.15	3.54	TF&OM	a099a6fbfb961f895ee20a33ba15331687c9c56c4ca9dc4e7edd186d288f0e1f	论文&实现
-图片分类	Inception_v3	6.56	3.76	TF&OM	d06c88a79acd19b10d5f7eddaae6aba3c02372cfdb036296b845aa3a9ccf46be	论文&实现
-图片分类	Inception_v4	11.90	7.29	TF&OM	e042f489e6915eb6de5daa4b3200462e76f1bedca7147e2a19e8311a4b05afde	论文&实现
-图片分类	Inception_Resnet_v2	15.91	5.59	TF&OM	229164e49753126357f4a587694ca925afa60d1bfec184dba00085d69b5fc47b	论文&实现
+图片分类	Inception_v3	6.56	3.76	TF&OM	c87b0af87eb890b3dc88bf3100911f205ef0f4a89444f76828f0f26ff3fe4c74	论文&实现
+图片分类	Inception_v4	11.90	7.29	TF&OM	7e07ac3d437a4b77f6126edce8aaad9161f4966b8a7ccf4ab45c201c7822f103	论文&实现
+图片分类	Inception_Resnet_v2	15.91	5.59	TF&OM	7aa61159af9d249a1005bd90ac9b73d12e783d2d1f47d2e04e3ec4d769bf2946	论文&实现
 图片分类	Mobilenet_v1	2.16	0.52	TF&OM	28c5f9eb98a4d73a7f84dd6e1bef0509fa69cc604da0957d802e6f88bc146379	论文&实现
 图片分类	Mobilenet_v2	2.49	1.18	TF&OM	b1bca0efb898c1d3d1afda50803f172724c7b02e1b7abb07581656cf7401d622	论文&实现
 图片分类	Mobilenet_v2_1.4	3.16	1.67	TF&OM	d78e276b5cec8c311ac4ac582a11efcaa7704fba798b0639809bdd7f6944256b	论文&实现

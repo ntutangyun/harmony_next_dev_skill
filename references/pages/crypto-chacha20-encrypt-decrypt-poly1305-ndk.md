@@ -34,7 +34,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 由于已使用update传入数据，此处data传入null。
 
-doFinal输出结果可能为null，在访问具体数据前，需要先判断结果是否为null，避免产生异常。
+final输出结果可能为null，在访问具体数据前，需要先判断结果是否为null，避免产生异常。
 
 使用OH_CryptoSymCipherParams_Create创建Params，使用OH_CryptoSymCipherParams_SetParam设置authTag，作为解密的认证信息。在Poly1305模式下，需要从加密后的数据中取出末尾16字节，作为解密时初始化的认证信息。
 

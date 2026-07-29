@@ -74,15 +74,15 @@ nValue = 2，nd矩阵的行数，也就是矩阵的高度为2。
 
 dValue = 24，nd矩阵的列数，也就是矩阵的宽度为24个元素。
 
-srcNdMatrixStride = 144，表达相邻nd矩阵起始地址间的偏移，即为A1~C1的距离，即为9个datablock，9 * 16 = 144个元素。
+srcNdMatrixStride = 144，表示相邻nd矩阵起始地址间的偏移，即为A1~C1的距离，即为9个datablock，9 * 16 = 144个元素。
 
 srcDValue = 48，表示一行的所含元素个数，即为A1到B1的距离，即为3个datablock，3 * 16 = 48个元素
 
 dstNzC0Stride = 11。ND转换到NZ格式后，源操作数中的一行会转换为目的操作数的多行，例如src中A1和A2为1行，dst中A1和A2被分为2行。多行数据起始地址之间的偏移就是A1和A2在dst中的偏移，偏移为11个datablock。
 
-dstNzNStride = 2，表达dst中一个ndMatrix, src的第x行和第x+1行之间的偏移，即A1和B1之间的距离，即为2个datablock。
+dstNzNStride = 2，表示dst中一个ndMatrix, src的第x行和第x+1行之间的偏移，即A1和B1之间的距离，即为2个datablock。
 
-dstNzMatrixStride = 96，表达dst中第x个ndMatrix的起点和第x+1个ndMatrix的起点的偏移，即A1和C1之间的距离，即为6个datablock，6 * 16 = 96个元素。
+dstNzMatrixStride = 96，表示dst中第x个ndMatrix的起点和第x+1个ndMatrix的起点的偏移，即A1和C1之间的距离，即为6个datablock，6 * 16 = 96个元素。
 
 图1 Nd2Nz转换示意图
 

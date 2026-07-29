@@ -76,8 +76,12 @@ registry=https://repo.huaweicloud.com/repository/npm/
 打开package.json添加devDependencies配置。
 
 "devDependencies": {
-    "@ohos/hvigor": "5.2.2"
+    "@ohos/hvigor": "6.26.2"  // 可从扩展构建API中查看对应的版本号
 }
+
+说明
+
+如果依赖配置在dependencies中，会导致使用插件时报错。
 
 npm install
 
@@ -214,7 +218,7 @@ registry=https://repo.huaweicloud.com/repository/npm/
 
 ```
 "devDependencies": {
-    "@ohos/hvigor": "5.2.2"
+    "@ohos/hvigor": "6.26.2"  // 可从扩展构建API中查看对应的版本号
 }
 ```
 

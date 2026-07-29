@@ -7,3 +7,5 @@ Desktop Extension Kit简介
 应用接入状态栏
 
 应用接入快捷栏
+
+Desktop Extension Kit 术语

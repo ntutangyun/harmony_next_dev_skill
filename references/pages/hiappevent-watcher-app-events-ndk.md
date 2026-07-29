@@ -77,6 +77,7 @@ target_include_directories(entry PRIVATE ${DEST_DIR}/jsoncpp-1.9.6/include/json)
 // 根据工程中三方库jsoncpp的位置适配引用json.h的路径
 #include "../../../build/jsoncpp-1.9.6/include/json/json.h"
 #include "hiappevent/hiappevent.h"
+#include "hiappevent/hiappevent_param.h"
 #include "hilog/log.h"
 
 #undef LOG_TAG
@@ -204,8 +205,6 @@ static napi_value WriteAppEvent(napi_env env, napi_callback_info info)
 }
 
 编辑“napi_init.cpp”文件，注册RegisterWatcherCrash()(订阅崩溃事件)、RegisterWatcherClick()（订阅按钮点击事件）、WriteAppEvent()(按钮点击事件打点接口)为ArkTS接口：
-
-// ...
 
 static napi_value Init(napi_env env, napi_value exports)
 {
@@ -369,6 +368,7 @@ target_include_directories(entry PRIVATE ${DEST_DIR}/jsoncpp-1.9.6/include/json)
 // 根据工程中三方库jsoncpp的位置适配引用json.h的路径
 #include "../../../build/jsoncpp-1.9.6/include/json/json.h"
 #include "hiappevent/hiappevent.h"
+#include "hiappevent/hiappevent_param.h"
 #include "hilog/log.h"
 
 #undef LOG_TAG
@@ -501,8 +501,6 @@ static napi_value WriteAppEvent(napi_env env, napi_callback_info info)
 ### Code block 7
 
 ```
-// ...
-
 static napi_value Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor desc[] = {

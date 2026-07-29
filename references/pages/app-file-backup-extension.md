@@ -8,7 +8,7 @@ BackupExtensionAbility是Stage模型中扩展组件ExtensionAbility的派生类�
 
 接口说明
 
-备份恢复扩展能力关键接口如下表所示。API的接口使用指导请参见BackupExtensionAbility API参考和BackupExtensionContext API参考。
+备份恢复扩展能力关键接口如下表所示。API的接口使用指导请参见@ohos.application.BackupExtensionAbility (备份恢复扩展能力)和@ohos.file.BackupExtensionContext (备份恢复扩展能力)。
 
 接口名	描述
 onBackup(): void	数据备份准备阶段，迁移备份数据前回调。
@@ -27,11 +27,13 @@ onRelease(scenario: number): Promise<void>	备份或恢复完成时的特殊处�
 
 当备份恢复时，所有待备份恢复的文件及目录不支持相对路径(../)和软链接。
 
+针对BackupExtensionAbility接口调用限制，详情请参考API中的约束限制。
+
 开发步骤
 
 在应用配置文件module.json5中注册extensionAbilities相关配置
 
-新增"extensionAbilities"字段，其中注册类型"type"设置为"backup"，元数据信息"metadata"新增一个"name"为"ohos. extension. backup"的条目。
+新增"extensionAbilities"字段，其中注册类型"type"设置为"backup"，元数据信息"metadata"新增一个"name"为"ohos.extension.backup"的条目。
 
 BackupExtensionAbility配置文件示例：
 
@@ -187,7 +189,7 @@ extraInfo	json串	否	额外信息可通过该字段传递。
 
 当fullBackupOnly为false时，恢复数据会以 / 为根目录解压数据，同路径下的同名文件会被覆盖。
 
-当fullBackupOnly为true时，恢复数据会以临时目录为根目录解压数据，开发者需要在OnRestore/OnRestoreEx内自行实现恢复数据的逻辑，进行最终的恢复。
+当fullBackupOnly为true时，恢复数据会以临时目录为根目录解压数据，开发者需要在onRestore/onRestoreEx内自行实现恢复数据的逻辑，进行最终的恢复。
 
 开发者可根据自身的业务场景，选择对应的恢复数据方式。
 

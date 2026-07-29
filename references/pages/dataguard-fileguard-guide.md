@@ -22,8 +22,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/dataguard
 
 设置KIA文件水印图片
 
-添加、删除和获取放通应用列表
+添加、删除、获取放通应用列表
 
-设置HDC鉴权密钥
+设置HDC认证密钥
 
 订阅或取消订阅打印服务启动事件
+
+进程管控时长管理

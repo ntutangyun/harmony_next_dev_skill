@@ -26,7 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-本功能在API 24之前版本仅支持Phone；API24及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
+本功能在6.1.1(24)之前版本仅支持Phone；6.1.1(24)及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
 
 业务流程
 
@@ -42,240 +42,196 @@ exportData(authID: bigint, label: TUILable): Promise<ArrayBuffer>	导出数据�
 
 导入huks trustedAuthentication 和相关依赖模块。
 
-import { resourceManager } from '@kit.LocalizationKit'
-import { huks } from '@kit.UniversalKeystoreKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { trustedAuthentication } from '@kit.DeviceSecurityKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common } from '@kit.AbilityKit';
+ import { resourceManager } from '@kit.LocalizationKit'
+ import { huks } from '@kit.UniversalKeystoreKit';
+ import { BusinessError } from '@kit.BasicServicesKit';
+ import { trustedAuthentication } from '@kit.DeviceSecurityKit';
+ import { hilog } from '@kit.PerformanceAnalysisKit';
+ import { common } from '@kit.AbilityKit';
 
 参考密钥管理服务提供的wrapKeyItem方法，完成密钥导出。
 
-// 密钥别名
-let keyAlias = "testWrapKey";
-// 密钥属性集合
-let properties: Array<huks.HuksParam> = [
-  {
-    tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
-    value: huks.HuksKeyAlg.HUKS_ALG_AES
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
-    value: huks.HuksKeySize.HUKS_AES_KEY_SIZE_256
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_PURPOSE,
-    value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_ENCRYPT | huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_DECRYPT
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_PADDING,
-    value: huks.HuksKeyPadding.HUKS_PADDING_PKCS7
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_BLOCK_MODE,
-    value: huks.HuksCipherMode.HUKS_MODE_GCM
-  },
-  /* 生成密钥时指定允许加密导出 */
-  {
-    tag: huks.HuksTag.HUKS_TAG_IS_ALLOWED_WRAP,
-    value: true
+private async exportKeyFromHuks(): Promise<Uint8Array> {
+  let wrapKeyProperties: Array<huks.HuksParam> = [
+    {
+      tag: huks.HuksTag.HUKS_TAG_KEY_WRAP_TYPE,
+      value: huks.HuksKeyWrapType.HUKS_KEY_WRAP_TYPE_HUK_BASED
+    }
+  ];
+
+  let wrapKeyOptions: huks.HuksOptions = {
+    properties: wrapKeyProperties
+  };
+
+  try {
+    // 从密钥管理服务导出生成密钥的密文数据
+    let data = await huks.wrapKeyItem(KEY_ALIAS, wrapKeyOptions);
+    let wrappedKey: Uint8Array = data.outData as Uint8Array;
+    hilog.info(0x0000, 'testTag', 'exportKeyFromHuks success, size=' + wrappedKey.length);
+    return wrappedKey;
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'exportKeyFromHuks failed', JSON.stringify(error));
+    throw new Error('Export key from HUKS failed:' + (error as BusinessError).message);
   }
-];
-
-let options: huks.HuksOptions = {
-  properties: properties,
-};
-
-let wrapKeyProperties: Array<huks.HuksParam> = [
-  {
-    tag: huks.HuksTag.HUKS_TAG_KEY_WRAP_TYPE,
-    value: huks.HuksKeyWrapType.HUKS_KEY_WRAP_TYPE_HUK_BASED
-  }
-];
-
-let wrapKeyOptions: huks.HuksOptions = {
-  properties: wrapKeyProperties,
-};
-
-let wrappedKey: Uint8Array | undefined = undefined;
-
-// 调用生成密钥接口
-await huks.generateKeyItem(keyAlias, options).then(() => {
-  console.info(`promise: generateKeyItem success`);
-}).catch((error: Error) => {
-  console.error(`promise: generateKeyItem failed`);
-});
-
-// 从密钥管理服务导出生成密钥的密文数据
-await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
-  wrappedKey = data.outData as Uint8Array;
-  console.info(`promise: wrapKeyItem success, data = ${JSON.stringify(data)}`);
-}).catch((error: Error) => {
-  console.error(`promise: wrapKeyItem failed`);
-});
+}
 
 从服务器获取当前账号在设置数字盾密码时获取的authID并以authID为索引向数字盾服务发起数据导入请求。
 
+private async importDataToDigitalShield(wrappedKey: Uint8Array, authID: bigint): Promise<void> {
   try {
-    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-    const buffer = new ArrayBuffer(8);
-    const bufferArray = new Uint8Array(buffer);
-    bufferArray.set([1, 2, 3, 4, 5, 6, 7, 8]); // 实际使用时替换为从密钥管理服务获取的备份密钥信息
+    let buffer: ArrayBuffer = wrappedKey.buffer.slice(
+      wrappedKey.byteOffset, wrappedKey.byteOffset + wrappedKey.byteLength
+    );
     await trustedAuthentication.importData(buffer, authID);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to importData, code:${err.code}, message:${err.message}`);
-    throw new Error('Import data failed:' + (err as BusinessError).message);
+    hilog.info(DOMAIN, 'testTag', 'importDataToDigitalShield success');
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'importDataToDigitalShield failed', JSON.stringify(error));
+    throw new Error('Import data to Digital Shield failed:' + (error as BusinessError).message);
   }
+}
 
 当应用卸载重新安装后，应用侧可向数字盾服务器发起密钥恢复申请。
 
-try {
-  const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-  let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-  const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
-  const buffer = fileData.buffer;
-  const label:trustedAuthentication.TUILable = {
-    image: buffer as ArrayBuffer,
-    title: "导出密钥信息",
+private async exportDataFromDigitalShield(authID: bigint): Promise<ArrayBuffer> {
+  try {
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.ExportKeyInfoLabel').id)
+    };
+    let data: ArrayBuffer = await trustedAuthentication.exportData(authID, label);
+    hilog.info(0x0000, 'testTag', 'exportDataFromDigitalShield success, size=' + data.byteLength);
+    return data;
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'exportDataFromDigitalShield failed', JSON.stringify(error));
+    throw new Error('Export data from Digital Shield failed:' + (error as BusinessError).message);
   }
-  const data = await trustedAuthentication.exportData(authID, label);
-} catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to exportData, code:${err.code}, message:${err.message}`);
-    throw new Error('Export data failed:' + (err as BusinessError).message);
 }
 
 将从数字盾服务获取的密钥数据，发送至密钥管理服务进行密钥导入恢复。
 
-// 在密钥管理服务侧进行密钥导入恢复，其中keyAlias、wrapKeyOptions、wrappedKey为步骤二定义参数
-await huks.unwrapKeyItem(keyAlias, wrapKeyOptions, wrappedKey).then((data) => {
-  console.info(`promise: unwrapKeyItem success`);
-}).catch((error: Error) => {
-  console.error(`promise: unwrapKeyItem failed`);
-});
+private async importKeyToHuks(wrappedKey: Uint8Array): Promise<void> {
+  let wrapKeyProperties: Array<huks.HuksParam> = [
+    {
+      tag: huks.HuksTag.HUKS_TAG_KEY_WRAP_TYPE,
+      value: huks.HuksKeyWrapType.HUKS_KEY_WRAP_TYPE_HUK_BASED
+    }
+  ];
+
+  let wrapKeyOptions: huks.HuksOptions = {
+    properties: wrapKeyProperties
+  };
+
+  try {
+    await huks.unwrapKeyItem(KEY_ALIAS, wrapKeyOptions, wrappedKey);
+    hilog.info(DOMAIN, 'testTag', 'importKeyToHuks success');
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'importKeyToHuks failed', JSON.stringify(error));
+    throw new Error('Import key to HUKS failed:' + (error as BusinessError).message);
+  }
+}
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-import { resourceManager } from '@kit.LocalizationKit'
-import { huks } from '@kit.UniversalKeystoreKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { trustedAuthentication } from '@kit.DeviceSecurityKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common } from '@kit.AbilityKit';
+ import { resourceManager } from '@kit.LocalizationKit'
+ import { huks } from '@kit.UniversalKeystoreKit';
+ import { BusinessError } from '@kit.BasicServicesKit';
+ import { trustedAuthentication } from '@kit.DeviceSecurityKit';
+ import { hilog } from '@kit.PerformanceAnalysisKit';
+ import { common } from '@kit.AbilityKit';
 ```
 
 ### Code block 2
 
 ```
-// 密钥别名
-let keyAlias = "testWrapKey";
-// 密钥属性集合
-let properties: Array<huks.HuksParam> = [
-  {
-    tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
-    value: huks.HuksKeyAlg.HUKS_ALG_AES
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_KEY_SIZE,
-    value: huks.HuksKeySize.HUKS_AES_KEY_SIZE_256
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_PURPOSE,
-    value: huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_ENCRYPT | huks.HuksKeyPurpose.HUKS_KEY_PURPOSE_DECRYPT
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_PADDING,
-    value: huks.HuksKeyPadding.HUKS_PADDING_PKCS7
-  },
-  {
-    tag: huks.HuksTag.HUKS_TAG_BLOCK_MODE,
-    value: huks.HuksCipherMode.HUKS_MODE_GCM
-  },
-  /* 生成密钥时指定允许加密导出 */
-  {
-    tag: huks.HuksTag.HUKS_TAG_IS_ALLOWED_WRAP,
-    value: true
+private async exportKeyFromHuks(): Promise<Uint8Array> {
+  let wrapKeyProperties: Array<huks.HuksParam> = [
+    {
+      tag: huks.HuksTag.HUKS_TAG_KEY_WRAP_TYPE,
+      value: huks.HuksKeyWrapType.HUKS_KEY_WRAP_TYPE_HUK_BASED
+    }
+  ];
+
+  let wrapKeyOptions: huks.HuksOptions = {
+    properties: wrapKeyProperties
+  };
+
+  try {
+    // 从密钥管理服务导出生成密钥的密文数据
+    let data = await huks.wrapKeyItem(KEY_ALIAS, wrapKeyOptions);
+    let wrappedKey: Uint8Array = data.outData as Uint8Array;
+    hilog.info(0x0000, 'testTag', 'exportKeyFromHuks success, size=' + wrappedKey.length);
+    return wrappedKey;
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'exportKeyFromHuks failed', JSON.stringify(error));
+    throw new Error('Export key from HUKS failed:' + (error as BusinessError).message);
   }
-];
-
-let options: huks.HuksOptions = {
-  properties: properties,
-};
-
-let wrapKeyProperties: Array<huks.HuksParam> = [
-  {
-    tag: huks.HuksTag.HUKS_TAG_KEY_WRAP_TYPE,
-    value: huks.HuksKeyWrapType.HUKS_KEY_WRAP_TYPE_HUK_BASED
-  }
-];
-
-let wrapKeyOptions: huks.HuksOptions = {
-  properties: wrapKeyProperties,
-};
-
-let wrappedKey: Uint8Array | undefined = undefined;
-
-// 调用生成密钥接口
-await huks.generateKeyItem(keyAlias, options).then(() => {
-  console.info(`promise: generateKeyItem success`);
-}).catch((error: Error) => {
-  console.error(`promise: generateKeyItem failed`);
-});
-
-// 从密钥管理服务导出生成密钥的密文数据
-await huks.wrapKeyItem(keyAlias, wrapKeyOptions).then((data) => {
-  wrappedKey = data.outData as Uint8Array;
-  console.info(`promise: wrapKeyItem success, data = ${JSON.stringify(data)}`);
-}).catch((error: Error) => {
-  console.error(`promise: wrapKeyItem failed`);
-});
+}
 ```
 
 ### Code block 3
 
 ```
+private async importDataToDigitalShield(wrappedKey: Uint8Array, authID: bigint): Promise<void> {
   try {
-    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-    const buffer = new ArrayBuffer(8);
-    const bufferArray = new Uint8Array(buffer);
-    bufferArray.set([1, 2, 3, 4, 5, 6, 7, 8]); // 实际使用时替换为从密钥管理服务获取的备份密钥信息
+    let buffer: ArrayBuffer = wrappedKey.buffer.slice(
+      wrappedKey.byteOffset, wrappedKey.byteOffset + wrappedKey.byteLength
+    );
     await trustedAuthentication.importData(buffer, authID);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to importData, code:${err.code}, message:${err.message}`);
-    throw new Error('Import data failed:' + (err as BusinessError).message);
+    hilog.info(DOMAIN, 'testTag', 'importDataToDigitalShield success');
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'importDataToDigitalShield failed', JSON.stringify(error));
+    throw new Error('Import data to Digital Shield failed:' + (error as BusinessError).message);
   }
+}
 ```
 
 ### Code block 4
 
 ```
-try {
-  const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-  let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-  const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为应用要在TUI界面展示的logo图片名称
-  const buffer = fileData.buffer;
-  const label:trustedAuthentication.TUILable = {
-    image: buffer as ArrayBuffer,
-    title: "导出密钥信息",
+private async exportDataFromDigitalShield(authID: bigint): Promise<ArrayBuffer> {
+  try {
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.ExportKeyInfoLabel').id)
+    };
+    let data: ArrayBuffer = await trustedAuthentication.exportData(authID, label);
+    hilog.info(0x0000, 'testTag', 'exportDataFromDigitalShield success, size=' + data.byteLength);
+    return data;
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'exportDataFromDigitalShield failed', JSON.stringify(error));
+    throw new Error('Export data from Digital Shield failed:' + (error as BusinessError).message);
   }
-  const data = await trustedAuthentication.exportData(authID, label);
-} catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to exportData, code:${err.code}, message:${err.message}`);
-    throw new Error('Export data failed:' + (err as BusinessError).message);
 }
 ```
 
 ### Code block 5
 
 ```
-// 在密钥管理服务侧进行密钥导入恢复，其中keyAlias、wrapKeyOptions、wrappedKey为步骤二定义参数
-await huks.unwrapKeyItem(keyAlias, wrapKeyOptions, wrappedKey).then((data) => {
-  console.info(`promise: unwrapKeyItem success`);
-}).catch((error: Error) => {
-  console.error(`promise: unwrapKeyItem failed`);
-});
+private async importKeyToHuks(wrappedKey: Uint8Array): Promise<void> {
+  let wrapKeyProperties: Array<huks.HuksParam> = [
+    {
+      tag: huks.HuksTag.HUKS_TAG_KEY_WRAP_TYPE,
+      value: huks.HuksKeyWrapType.HUKS_KEY_WRAP_TYPE_HUK_BASED
+    }
+  ];
+
+  let wrapKeyOptions: huks.HuksOptions = {
+    properties: wrapKeyProperties
+  };
+
+  try {
+    await huks.unwrapKeyItem(KEY_ALIAS, wrapKeyOptions, wrappedKey);
+    hilog.info(DOMAIN, 'testTag', 'importKeyToHuks success');
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'importKeyToHuks failed', JSON.stringify(error));
+    throw new Error('Import key to HUKS failed:' + (error as BusinessError).message);
+  }
+}
 ```

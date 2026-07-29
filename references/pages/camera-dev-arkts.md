@@ -61,3 +61,5 @@ YUV拍照(ArkTS)
 HDR Vivid相机拍照(ArkTS)
 
 HDR Vivid相机录像(ArkTS)
+
+相机预览花屏解决方案

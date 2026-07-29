@@ -10,6 +10,8 @@ Graphics Accelerate Kit简介
 
 游戏启动加速服务
 
+游戏伴随服务
+
 Graphics Accelerate Kit常见问题
 
 Graphics Accelerate Kit术语

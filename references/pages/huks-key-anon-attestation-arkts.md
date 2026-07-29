@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 
 初始化参数集。
 
-HuksOptions中的properties字段中的参数必须包含HUKS_TAG_ATTESTATION_CHALLENGE属性,可选参数包含HUKS_TAG_ATTESTATION_ID_VERSION_INFO，HUKS_TAG_ATTESTATION_ID_ALIAS属性。
+HuksOptions中的properties字段中的参数必须包含HUKS_TAG_ATTESTATION_CHALLENGE属性，可选参数包含HUKS_TAG_ATTESTATION_ID_VERSION_INFO，HUKS_TAG_ATTESTATION_ID_ALIAS属性。
 
 生成非对称密钥，具体请参考密钥生成。
 

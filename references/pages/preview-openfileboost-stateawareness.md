@@ -19,9 +19,9 @@ addFile(file: string): void	监听一个文件的预加载状态，传入文件�
 removeFile(file: string): void	取消监听一个文件的预加载状态，取消后文件的预加载状态变化不会通过回调再通知业务。
 queryFilePreloadStatusInfo(file: string): FilePreloadStatusInfo	查询文件预加载状态，传入文件路径，通过返回值返回该文件当前的预加载状态。
 
-开发准备
+约束限制
 
-需要先通过Syscap查询您的目标设备是否支持SystemCapability.PCService.OpenFileBoost系统能力，当前仅在PC/2in1设备上支持该能力。
+当前仅在PC/2in1和tablet设备上支持。
 
 开发步骤
 
@@ -29,7 +29,6 @@ queryFilePreloadStatusInfo(file: string): FilePreloadStatusInfo	查询文件预�
 
 import { openFileBoost } from '@kit.PreviewKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 
 注册文件预加载状态感知回调函数。
 
@@ -37,52 +36,30 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 function callback(filePreloadStatusInfo: openFileBoost.FilePreloadStatusInfo): void {
   if (filePreloadStatusInfo.state === openFileBoost.FilePreloadState.PRELOADING) {
     // 预加载过程中，应用可以根据自己设计对应UX
-    hilog.info(0x0000, 'testTag', `file is PRELOADING, suggest to show loading animation`);
+    console.info(`file is PRELOADING, suggest to show loading animation`);
   }
   if (filePreloadStatusInfo.state === openFileBoost.FilePreloadState.PRELOADED) {
     // 预加载完成，应用可以通过UX显示提示用户加速完成
-    hilog.info(0x0000, 'testTag', `file is PRELOADED, suggest to show loaded animation`);
+    console.info(`file is PRELOADED, suggest to show loaded animation`);
   }
   if (filePreloadStatusInfo.state === openFileBoost.FilePreloadState.NOT_PRELOADED) {
     // 没有预加载，应用可以不显示任何额外UX
-    hilog.info(0x0000, 'testTag', `file is UNPRELOADED, suggest do not show animation `);
+    console.info(`file is UNPRELOADED, suggest do not show animation `);
   }
 }
-// 调用register函数可以注册预加载状态感知回调
-function register(): void {
-  try {
-    openFileBoost.on('filePreloadStateChanged', callback);
-  } catch(error) {
-    let code = (error as BusinessError).code;
-    let message = (error as BusinessError).message;
-    hilog.error(0x0000, 'testTag', `register filePreloadStateChanged failed, error code: ${code}, message: ${message}.`);
-  }
-}
+// 注册预加载状态感知回调
+openFileBoost.on('filePreloadStateChanged', callback);
 
 调用addFile接口传入想要监听的文件的沙箱路径。典型场景比如应用下载某个文件完成，可将该文件路径注册进来，若文件后续状态变更，系统会通过2中的回调函数通知应用。
 
 // 为10MB_file.docx文件添加文件预加载状态监听
-function testAddFile(): void {
-  try {
-    const file:string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
-    openFileBoost.addFile(file);
-  } catch(error) {
-    let code = (error as BusinessError).code;
-    let message = (error as BusinessError).message;
-    hilog.error(0x0000, 'testTag', `addFile failed, error code: ${code}, message: ${message}.`);
-  }
-}
+const file: string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
+openFileBoost.addFile(file);
 
 通过addFile接口监听的文件个数有上限（50个文件），不再需要监听的文件可以通过removeFile接口取消监听。
 
-const file:string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
-try {
-  openFileBoost.removeFile(file);
-} catch(error) {
-  let code = (error as BusinessError).code;
-  let message = (error as BusinessError).message;
-  hilog.error(0x0000, 'testTag', `removeFile failed, error code: ${code}, message: ${message}.`);
-}
+const file: string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
+openFileBoost.removeFile(file);
 
 如果不需要再监听任何文件的预加载状态变更，可注销预加载状态感知回调函数。如果传入具体的回调函数，则只取消该函数； 如果不传入具体的回调函数，则取消该进程的所有回调。
 
@@ -91,33 +68,17 @@ openFileBoost.on('filePreloadStateChanged', callback1);
 openFileBoost.on('filePreloadStateChanged', callback2);
 openFileBoost.on('filePreloadStateChanged', callback3);
 
-function testUnregister(): void {
-  try {
-    // 单独取消callback1的监听，传入callback1作为参数，后续不会再调用callback1的回调做通知
-    openFileBoost.off('filePreloadStateChanged', callback1);
-    // 取消所有callback的监听，不传第二个可选参数，后续不会再调用callback2和callback3做通知
-    openFileBoost.off('filePreloadStateChanged');
-  } catch(error) {
-    let code = (error as BusinessError).code;
-    let message = (error as BusinessError).message;
-    hilog.error(0x0000, 'testTag', `off filePreloadStateChanged failed, error code: ${code}, message: ${message}.`);
-  }
-}
+// 单独取消callback1的监听，传入callback1作为参数，后续不会再调用callback1的回调做通知
+openFileBoost.off('filePreloadStateChanged', callback1);
+// 取消所有callback的监听，不传第二个可选参数，后续不会再调用callback2和callback3做通知
+openFileBoost.off('filePreloadStateChanged');
 
 应用还可通过查询接口查询某个文件的实时的预加载状态，一般在应用刚启动时可以查询一遍相关文件的预加载状态。每次调用接口传入一个文件的沙箱路径。
 
-function testQuery(): void {
-try {
-  const file:string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
-  let statusInfo : openFileBoost.FilePreloadStatusInfo = openFileBoost.queryFilePreloadStatusInfo(file);
-  hilog.info(0x0000, 'testTag', 'file, %{public}s, progress:%{public}d  preloadState:%{public}d',
-    statusInfo.sandboxPath, statusInfo.progress, statusInfo.state);
-} catch(error) {
-  let code = (error as BusinessError).code;
-  let message = (error as BusinessError).message;
-  hilog.error(0x0000, 'testTag', `query failed, error code: ${code}, message: ${message}.`);
-}
-}
+const file: string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
+let statusInfo: openFileBoost.FilePreloadStatusInfo = openFileBoost.queryFilePreloadStatusInfo(file);
+console.info('file, %{public}s, progress:%{public}d  preloadState:%{public}d',
+  statusInfo.sandboxPath, statusInfo.progress, statusInfo.state);
 
 ## Code blocks
 
@@ -126,7 +87,6 @@ try {
 ```
 import { openFileBoost } from '@kit.PreviewKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
@@ -136,56 +96,34 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 function callback(filePreloadStatusInfo: openFileBoost.FilePreloadStatusInfo): void {
   if (filePreloadStatusInfo.state === openFileBoost.FilePreloadState.PRELOADING) {
     // 预加载过程中，应用可以根据自己设计对应UX
-    hilog.info(0x0000, 'testTag', `file is PRELOADING, suggest to show loading animation`);
+    console.info(`file is PRELOADING, suggest to show loading animation`);
   }
   if (filePreloadStatusInfo.state === openFileBoost.FilePreloadState.PRELOADED) {
     // 预加载完成，应用可以通过UX显示提示用户加速完成
-    hilog.info(0x0000, 'testTag', `file is PRELOADED, suggest to show loaded animation`);
+    console.info(`file is PRELOADED, suggest to show loaded animation`);
   }
   if (filePreloadStatusInfo.state === openFileBoost.FilePreloadState.NOT_PRELOADED) {
     // 没有预加载，应用可以不显示任何额外UX
-    hilog.info(0x0000, 'testTag', `file is UNPRELOADED, suggest do not show animation `);
+    console.info(`file is UNPRELOADED, suggest do not show animation `);
   }
 }
-// 调用register函数可以注册预加载状态感知回调
-function register(): void {
-  try {
-    openFileBoost.on('filePreloadStateChanged', callback);
-  } catch(error) {
-    let code = (error as BusinessError).code;
-    let message = (error as BusinessError).message;
-    hilog.error(0x0000, 'testTag', `register filePreloadStateChanged failed, error code: ${code}, message: ${message}.`);
-  }
-}
+// 注册预加载状态感知回调
+openFileBoost.on('filePreloadStateChanged', callback);
 ```
 
 ### Code block 3
 
 ```
 // 为10MB_file.docx文件添加文件预加载状态监听
-function testAddFile(): void {
-  try {
-    const file:string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
-    openFileBoost.addFile(file);
-  } catch(error) {
-    let code = (error as BusinessError).code;
-    let message = (error as BusinessError).message;
-    hilog.error(0x0000, 'testTag', `addFile failed, error code: ${code}, message: ${message}.`);
-  }
-}
+const file: string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
+openFileBoost.addFile(file);
 ```
 
 ### Code block 4
 
 ```
-const file:string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
-try {
-  openFileBoost.removeFile(file);
-} catch(error) {
-  let code = (error as BusinessError).code;
-  let message = (error as BusinessError).message;
-  hilog.error(0x0000, 'testTag', `removeFile failed, error code: ${code}, message: ${message}.`);
-}
+const file: string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
+openFileBoost.removeFile(file);
 ```
 
 ### Code block 5
@@ -196,33 +134,17 @@ openFileBoost.on('filePreloadStateChanged', callback1);
 openFileBoost.on('filePreloadStateChanged', callback2);
 openFileBoost.on('filePreloadStateChanged', callback3);
 
-function testUnregister(): void {
-  try {
-    // 单独取消callback1的监听，传入callback1作为参数，后续不会再调用callback1的回调做通知
-    openFileBoost.off('filePreloadStateChanged', callback1);
-    // 取消所有callback的监听，不传第二个可选参数，后续不会再调用callback2和callback3做通知
-    openFileBoost.off('filePreloadStateChanged');
-  } catch(error) {
-    let code = (error as BusinessError).code;
-    let message = (error as BusinessError).message;
-    hilog.error(0x0000, 'testTag', `off filePreloadStateChanged failed, error code: ${code}, message: ${message}.`);
-  }
-}
+// 单独取消callback1的监听，传入callback1作为参数，后续不会再调用callback1的回调做通知
+openFileBoost.off('filePreloadStateChanged', callback1);
+// 取消所有callback的监听，不传第二个可选参数，后续不会再调用callback2和callback3做通知
+openFileBoost.off('filePreloadStateChanged');
 ```
 
 ### Code block 6
 
 ```
-function testQuery(): void {
-try {
-  const file:string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
-  let statusInfo : openFileBoost.FilePreloadStatusInfo = openFileBoost.queryFilePreloadStatusInfo(file);
-  hilog.info(0x0000, 'testTag', 'file, %{public}s, progress:%{public}d  preloadState:%{public}d',
-    statusInfo.sandboxPath, statusInfo.progress, statusInfo.state);
-} catch(error) {
-  let code = (error as BusinessError).code;
-  let message = (error as BusinessError).message;
-  hilog.error(0x0000, 'testTag', `query failed, error code: ${code}, message: ${message}.`);
-}
-}
+const file: string = "/storage/Users/currentUser/Desktop/10MB_file.docx";
+let statusInfo: openFileBoost.FilePreloadStatusInfo = openFileBoost.queryFilePreloadStatusInfo(file);
+console.info('file, %{public}s, progress:%{public}d  preloadState:%{public}d',
+  statusInfo.sandboxPath, statusInfo.progress, statusInfo.state);
 ```

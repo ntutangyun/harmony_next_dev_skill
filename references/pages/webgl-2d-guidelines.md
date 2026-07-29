@@ -65,7 +65,7 @@ canvas.getContext	获取canvas对象上下文。
 webgl.createBuffer(): WebGLBuffer | null	创建与初始化WebGL数据缓冲区。
 webgl.bindBuffer(target: GLenum, buffer: WebGLBuffer | null): void	将WebGL数据缓冲区与目标进行绑定。
 webgl.bufferData(target: GLenum, srcData: ArrayBufferView, usage: GLenum, srcOffset: GLuint, length?: GLuint): void	创建并初始化WebGL的数据存储区。
-webgl.getAttribLocation(program: WebGLProgram, name: string): GLint	从给定WebGL着色程序中获取着色器中attribute变量的地址。
+webgl.getAttribLocation(program: WebGLProgram, name: string): GLint	从给定WebGL着色器程序中获取着色器中attribute变量的地址。
 webgl.vertexAttribPointer(index GLuint, size: GLint, type: GLenum, normalized: GLboolean, stride: GLsizei, offset: GLintptr): void	将缓冲区对象分配给变量。
 webgl.enableVertexAttribArray(index: GLuint): void	连接变量与分配给它的缓冲区对象。
 webgl.clearColor(red: GLclampf, green: GLclampf, blue: GLclampf, alpha: GLclampf): void	清空canvas指定的颜色。
@@ -204,7 +204,7 @@ const programInfo = {
 
 首先调用gl的成员函数createBuffer()得到缓冲对象并存储在顶点缓冲器。然后调用 bindBuffer() 函数绑定上下文。
 
-创建一个Javascript数组去记录每一个正方体的每一个顶点。然后将其转化为WebGL浮点型类型的数组，并将其传到gl对象的bufferData()方法来建立对象的顶点。
+创建一个Javascript数组去记录每一个正方形的每一个顶点。然后将其转化为WebGL浮点型类型的数组，并将其传到gl对象的bufferData()方法来建立对象的顶点。
 
 function initBuffers(gl) {
   const positionBuffer = initPositionBuffer(gl);
@@ -219,7 +219,7 @@ function initPositionBuffer(gl) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   // 创建一个正方形的位置数组。
   const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
-  //将位置列表传递给WebGL以构建形状。
+  // 将位置列表传递给WebGL以构建形状。
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
   return positionBuffer;
 }
@@ -237,7 +237,7 @@ function drawScene(gl, programInfo, buffers) {
   gl.depthFunc(gl.LEQUAL);
   // 清除画布。
    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  //创建透视矩阵用于模拟相机中的透视变形。
+  // 创建透视矩阵用于模拟相机中的透视变形。
   const fieldOfView = (45 * Math.PI) / 180;
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
   const zNear = 0.1;
@@ -436,7 +436,7 @@ function initPositionBuffer(gl) {
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   // 创建一个正方形的位置数组。
   const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
-  //将位置列表传递给WebGL以构建形状。
+  // 将位置列表传递给WebGL以构建形状。
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
   return positionBuffer;
 }
@@ -452,7 +452,7 @@ function drawScene(gl, programInfo, buffers) {
   gl.depthFunc(gl.LEQUAL);
   // 清除画布。
    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  //创建透视矩阵用于模拟相机中的透视变形。
+  // 创建透视矩阵用于模拟相机中的透视变形。
   const fieldOfView = (45 * Math.PI) / 180;
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
   const zNear = 0.1;

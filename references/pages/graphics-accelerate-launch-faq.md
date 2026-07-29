@@ -21,3 +21,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 游戏秒级启动场景中闪屏播放与游戏音频恢复不同步，应该如何解决
 
 游戏接入秒级启动后无法热更应该如何处理
+
+团结引擎1.8.1～1.9.0版本在Tablet设备上调用秒启接口异常应该如何解决

@@ -4,8 +4,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multithre
 
 多线程并发概述
 
+TaskPool使用规范
+
 TaskPool简介
 
 Worker简介
 
-TaskPool和Worker的对比 (TaskPool和Worker)
+TaskPool和Worker的对比

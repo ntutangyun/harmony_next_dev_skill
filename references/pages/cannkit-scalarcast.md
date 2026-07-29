@@ -16,10 +16,10 @@ __aicore__ inline dstT ScalarCast(srcT valueIn)
 表1 参数说明
 
 参数名	输入/输出	描述
-valueIn	输入	被转换数据类型的scalar。
+valueIn	输入	被转换的scalar。
 srcT	输入	valueIn的数据类型，支持float。
 dstT	输入	转换后的数据类型，支持half、int32_t。
-roundMode	输入	精度转换处理模式，类型是RoundMode。 RoundMode为枚举类型，用以控制精度转换处理模式，具体取值为：CAST_NONE、CAST_RINT、CAST_FLOOR、CAST_ROUND、CAST_TRUNC、CAST_ODD。 对于ScalarCast，转换类型仅支持float转half(f32tof16)与float转int32_t(f32tos32)，相应支持的RoundMode如下。 - f32tof16：CAST_ODD - f32tos32：CAST_ROUND、CAST_CEIL、CAST_FLOOR、CAST_RINT ScalarCast的精度转换规则与Cast保持一致，具体可参考Cast函数功能下的表1。
+roundMode	输入	精度转换处理模式，类型是RoundMode。 RoundMode为枚举类型，用以控制精度转换处理模式，具体取值为：CAST_NONE、CAST_RINT、CAST_FLOOR、CAST_ROUND、CAST_TRUNC、CAST_ODD。 对于ScalarCast，转换类型仅支持float转half(f32 tof16)与float转int32_t(f32 tos32)，相应支持的RoundMode如下。 - f32 tof16：CAST_ODD - f32 tos32：CAST_ROUND、CAST_CEIL、CAST_FLOOR、CAST_RINT ScalarCast的精度转换规则与Cast保持一致，具体可参考Cast函数功能下的表1。
 
 返回值
 

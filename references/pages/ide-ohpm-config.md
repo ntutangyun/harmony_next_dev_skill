@@ -130,7 +130,7 @@ ohpm config encrypt [options]
 
 ohpm config encrypt --crypto_path D:\path\to\empty_dir
 
-ohpm INFO: Attempted to create an crypto component at the "D:\path\to\empty_dir" path...
+ohpm INFO: Attempted to create a crypto component at the "D:\path\to\empty_dir" path...
 ohpm INFO: The crypto component has been created successfully.
 Please enter the password to be encrypted:
 ohpm INFO: encrypted result:
@@ -378,7 +378,7 @@ ohpm config encrypt --crypto_path D:\path\to\empty_dir
 ### Code block 20
 
 ```
-ohpm INFO: Attempted to create an crypto component at the "D:\path\to\empty_dir" path...
+ohpm INFO: Attempted to create a crypto component at the "D:\path\to\empty_dir" path...
 ohpm INFO: The crypto component has been created successfully.
 Please enter the password to be encrypted:
 ohpm INFO: encrypted result:

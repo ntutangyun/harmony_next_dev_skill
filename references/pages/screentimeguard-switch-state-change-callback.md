@@ -4,11 +4,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当通过健康使用设备授权列表页中的授权开关开启或者关闭应用授权时（设置-健康使用设备-右上角四点设置-可访问健康使用设备的应用），会执行TimeGuardExtensionAbility中的onUserAuthSwitchOn/onUserAuthSwitchOff回调方法，支持开发者在用户授予授权和撤销授权时执行特定逻辑。若之前已设置过健康使用设备的密码，则在此页面取消应用授权时需要输入健康使用设备的密码。
+当用户通过健康使用设备的授权列表页开启或关闭应用的授权开关时，系统会执行TimeGuardExtensionAbility中的回调方法，以此支持管控应用感知用户授权状态的变化。
 
-注意
+说明
 
-应用调用Screen Time Guard Kit接口获取授权或者取消授权时，不会触发onUserAuthSwitchOn/onUserAuthSwitchOff回调方法。只有在健康使用设备授权列表页操作授权开关时才会触发。
+健康使用设备授权列表页（访问入口为：设置-健康使用设备-右上角四点设置-可访问健康使用设备的应用），用于统一管理所有管控应用的用户授权。
+
+若用户已设置健康使用设备的密码，则在此页面取消应用授权时需要输入相应的密码。
+
+管控应用调用Screen Time Guard Kit接口获取授权或者取消授权时，不会触发onUserAuthSwitchOn/onUserAuthSwitchOff回调方法。只有在健康使用设备授权列表页操作授权开关时才会触发。
 
 业务流程
 

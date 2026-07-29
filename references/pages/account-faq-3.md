@@ -11,13 +11,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-f
 -keep-property-name
 quickLoginAnonymousPhone
 
-Wearable设备无法获取到手机号，会报1001500003 不支持该scopes或permissions。
+Wearable设备无法获取到手机号，会返回错误码1001500003 不支持该scopes或permissions。
 
 华为账号未绑定手机号，该异常场景应用需要展示其他登录方式。
 
-使用华为账号一键登录服务的账号必须是中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）华为账号。
+使用华为账号一键登录服务的账号必须是中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）华为账号，否则会返回错误码1001500003 不支持该scopes或permissions。
 
-确认是否在AGC的开发与服务中申请华为账号一键登录权限。图示为未申请状态，未申请将报错1001502014 应用未申请scopes或permissions权限。
+确认是否在AGC的开发与服务中申请华为账号一键登录权限。图示为未申请状态，未申请将返回错误码1001502014 应用未申请scopes或permissions权限。
 
 申请的华为账号一键登录权限待审批或待生效，权限申请后需要24小时后生效或将调试设备的系统时间向后调整24小时后重试。
 

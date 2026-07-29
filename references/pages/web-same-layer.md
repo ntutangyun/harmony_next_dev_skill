@@ -42,7 +42,7 @@ ArkWeb同层渲染特性主要提供两种能力：同层标签生命周期和�
 
 基础组件：AlphabetIndexer, Blank, Button, CalendarPicker, Checkbox, CheckboxGroup, ContainerSpan, DataPanel, DatePicker, Divider, Gauge, Hyperlink, Image, ImageAnimator, ImageSpan, LoadingProgress, Marquee, PatternLock, Progress, QRCode, Radio, Rating, Refresh, ScrollBar, Search, Span, Select, Slider, Text, TextArea, TextClock, TextInput, TextPicker, TextTimer, TimePicker, Toggle
 
-容器类组件：Badge, Column, ColumnSplit, Counter, Flex, GridCol, GridRow, Grid, GridItem，List, ListItem, ListItemGroup, RelativeContainer, Row, RowSplit, Scroll, Stack, Swiper, Tabs, TabContent, NodeContainer, SideBarContainer, Stepper, StepperItem, WaterFlow, FlowItem
+容器类组件：Badge, Column, ColumnSplit, Counter, Flex, GridCol, GridRow, Grid, GridItem, List, ListItem, ListItemGroup, RelativeContainer, Row, RowSplit, Scroll, Stack, Swiper, Tabs, TabContent, NodeContainer, SideBarContainer, Stepper, StepperItem, WaterFlow, FlowItem
 
 自绘制类组件：XComponent, Canvas, Video, Web
 
@@ -259,7 +259,7 @@ class MyNodeController extends NodeController {
     this.type_ = params.type;
   }
 
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -480,7 +480,7 @@ class MyNodeController extends NodeController {
     this.type_ = params.type;
   }
 
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -576,7 +576,7 @@ struct Page{
           }, (embedId: string) => embedId)
           // Web组件加载本地test2.html页面。
           Web({src: $rawfile('test2.html'), controller: this.browserTabController})
-          // 注册同层标签为'object'，类型为'test'前缀
+            // 注册同层标签为'object'，类型为'test'前缀
             .registerNativeEmbedRule('object', 'test')
             // 配置同层渲染开关开启。
             .enableNativeEmbedMode(true)
@@ -601,7 +601,7 @@ struct Page{
                   top: `${embed.info?.position?.y as number}px`
                 };
                 nodeController.setDestroy(false);
-                //根据Web传入的embed的id属性作为key，将nodeController存入Map。
+                // 根据Web传入的embed的id属性作为key，将nodeController存入Map。
                 this.nodeControllerMap.set(componentId, nodeController);
                 this.widthMap.set(componentId, this.uiContext.px2vp(embed.info?.width));
                 this.heightMap.set(componentId, this.uiContext.px2vp(embed.info?.height));
@@ -729,7 +729,7 @@ class MyNodeController extends NodeController {
     this.height_ = params.height;
     this.type_ = params.type;
   }
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null{
     if (this.isDestroy_) { // rootNode为null。
@@ -741,7 +741,7 @@ class MyNodeController extends NodeController {
         this.rootNode.build(
           wrapBuilder(videoBuilder), {textOne: 'myButton', width : this.width_, height : this.height_});
       } else {
-        // other
+        return null;
       }
     }
     // 返回FrameNode节点。
@@ -833,7 +833,7 @@ struct WebIndex {
               .width(this.widthMap.get(componentId))
               .height(this.heightMap.get(componentId))
           }, (embedId: string) => embedId)
-          // Web组件加载本地test.html页面。
+          // Web组件加载本地test3.html页面。
           Web({ src: $rawfile('test3.html'), controller: this.browserTabController })
             // 配置同层渲染开关开启。
             .enableNativeEmbedMode(true)
@@ -853,12 +853,12 @@ struct WebIndex {
                   width : this.uiContext.px2vp(embed.info?.width), height : this.uiContext.px2vp(embed.info?.height)});
                 this.edges = {left: `${embed.info?.position?.x as number}px`, top: `${embed.info?.position?.y as number}px`};
                 nodeController.setDestroy(false);
-                // 根据Web传入的embed的id属性作为key，将nodeController存入Map。
+                // 根据Web传入的embed的id属性作为key，将nodeController存入map。
                 this.nodeControllerMap.set(componentId, nodeController);
                 this.widthMap.set(componentId,  this.uiContext.px2vp(embed.info?.width));
                 this.heightMap.set(componentId,  this.uiContext.px2vp(embed.info?.height));
                 this.positionMap.set(componentId, this.edges);
-                // 将Web传入的embed的id属性存入@State状态数组变量中，用于动态创建nodeContainer节点容器，需要将push动作放在set之后。
+                // 将Web传入的embed的id属性存入@State状态数组变量中，用于动态创建NodeContainer节点容器，需要将push动作放在set之后。
                 this.componentIdArr.push(componentId);
               } else if (embed.status === NativeEmbedStatus.UPDATE) {
                 let nodeController = this.nodeControllerMap.get(componentId);
@@ -936,7 +936,7 @@ struct WebIndex {
 应用侧代码示例，视频播放，使用时需替换为正确的视频链接地址。
 
 import { media } from '@kit.MediaKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 export class AVPlayerDemo {
   private count: number = 0;
@@ -995,13 +995,13 @@ export class AVPlayerDemo {
           break;
         case 'completed': // 播放接口后触发该状态机上报。
           console.info('AVPlayer state completed called.');
-          avPlayer.stop(); // 调用播放接口。
+          avPlayer.stop(); // 调用停止播放接口。
           break;
         case 'stopped': // stop接口后触发该状态机上报。
           console.info('AVPlayer state stopped called.');
           avPlayer.reset(); // 调用reset接口初始化avplayer状态。
           break;
-        case 'released': // 播放接口后触发该状态机上报。
+        case 'released': // 退出后触发该状态机上报。
           console.info('AVPlayer state released called.');
           break;
         default:
@@ -1098,7 +1098,7 @@ class MyNodeController extends NodeController {
     this.type_ = params.type;
   }
 
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -1389,7 +1389,7 @@ class MyNodeController extends NodeController {
     this.height_ = params.height;
     this.type_ = params.type;
   }
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -1487,7 +1487,7 @@ struct Page{
                   height : this.uiContext.px2vp(embed.info?.height)})
                 this.edges = {left: `${embed.info?.position?.x as number}px`, top: `${embed.info?.position?.y as number}px`}
                 nodeController.setDestroy(false);
-                //根据Web传入的embed的id属性作为key，将nodeController存入Map。
+                // 根据Web传入的embed的id属性作为key，将nodeController存入Map。
                 this.nodeControllerMap.set(componentId, nodeController);
                 this.widthMap.set(componentId, this.uiContext.px2vp(embed.info?.width));
                 this.heightMap.set(componentId, this.uiContext.px2vp(embed.info?.height));
@@ -1729,7 +1729,7 @@ class MyNodeController extends NodeController {
     this.type_ = params.type;
   }
 
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -1942,7 +1942,7 @@ class MyNodeController extends NodeController {
     this.type_ = params.type;
   }
 
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -2038,7 +2038,7 @@ struct Page{
           }, (embedId: string) => embedId)
           // Web组件加载本地test2.html页面。
           Web({src: $rawfile('test2.html'), controller: this.browserTabController})
-          // 注册同层标签为'object'，类型为'test'前缀
+            // 注册同层标签为'object'，类型为'test'前缀
             .registerNativeEmbedRule('object', 'test')
             // 配置同层渲染开关开启。
             .enableNativeEmbedMode(true)
@@ -2063,7 +2063,7 @@ struct Page{
                   top: `${embed.info?.position?.y as number}px`
                 };
                 nodeController.setDestroy(false);
-                //根据Web传入的embed的id属性作为key，将nodeController存入Map。
+                // 根据Web传入的embed的id属性作为key，将nodeController存入Map。
                 this.nodeControllerMap.set(componentId, nodeController);
                 this.widthMap.set(componentId, this.uiContext.px2vp(embed.info?.width));
                 this.heightMap.set(componentId, this.uiContext.px2vp(embed.info?.height));
@@ -2191,7 +2191,7 @@ class MyNodeController extends NodeController {
     this.height_ = params.height;
     this.type_ = params.type;
   }
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null{
     if (this.isDestroy_) { // rootNode为null。
@@ -2203,7 +2203,7 @@ class MyNodeController extends NodeController {
         this.rootNode.build(
           wrapBuilder(videoBuilder), {textOne: 'myButton', width : this.width_, height : this.height_});
       } else {
-        // other
+        return null;
       }
     }
     // 返回FrameNode节点。
@@ -2295,7 +2295,7 @@ struct WebIndex {
               .width(this.widthMap.get(componentId))
               .height(this.heightMap.get(componentId))
           }, (embedId: string) => embedId)
-          // Web组件加载本地test.html页面。
+          // Web组件加载本地test3.html页面。
           Web({ src: $rawfile('test3.html'), controller: this.browserTabController })
             // 配置同层渲染开关开启。
             .enableNativeEmbedMode(true)
@@ -2315,12 +2315,12 @@ struct WebIndex {
                   width : this.uiContext.px2vp(embed.info?.width), height : this.uiContext.px2vp(embed.info?.height)});
                 this.edges = {left: `${embed.info?.position?.x as number}px`, top: `${embed.info?.position?.y as number}px`};
                 nodeController.setDestroy(false);
-                // 根据Web传入的embed的id属性作为key，将nodeController存入Map。
+                // 根据Web传入的embed的id属性作为key，将nodeController存入map。
                 this.nodeControllerMap.set(componentId, nodeController);
                 this.widthMap.set(componentId,  this.uiContext.px2vp(embed.info?.width));
                 this.heightMap.set(componentId,  this.uiContext.px2vp(embed.info?.height));
                 this.positionMap.set(componentId, this.edges);
-                // 将Web传入的embed的id属性存入@State状态数组变量中，用于动态创建nodeContainer节点容器，需要将push动作放在set之后。
+                // 将Web传入的embed的id属性存入@State状态数组变量中，用于动态创建NodeContainer节点容器，需要将push动作放在set之后。
                 this.componentIdArr.push(componentId);
               } else if (embed.status === NativeEmbedStatus.UPDATE) {
                 let nodeController = this.nodeControllerMap.get(componentId);
@@ -2400,7 +2400,7 @@ struct WebIndex {
 
 ```
 import { media } from '@kit.MediaKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 export class AVPlayerDemo {
   private count: number = 0;
@@ -2459,13 +2459,13 @@ export class AVPlayerDemo {
           break;
         case 'completed': // 播放接口后触发该状态机上报。
           console.info('AVPlayer state completed called.');
-          avPlayer.stop(); // 调用播放接口。
+          avPlayer.stop(); // 调用停止播放接口。
           break;
         case 'stopped': // stop接口后触发该状态机上报。
           console.info('AVPlayer state stopped called.');
           avPlayer.reset(); // 调用reset接口初始化avplayer状态。
           break;
-        case 'released': // 播放接口后触发该状态机上报。
+        case 'released': // 退出后触发该状态机上报。
           console.info('AVPlayer state released called.');
           break;
         default:
@@ -2556,7 +2556,7 @@ class MyNodeController extends NodeController {
     this.type_ = params.type;
   }
 
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -2833,7 +2833,7 @@ class MyNodeController extends NodeController {
     this.height_ = params.height;
     this.type_ = params.type;
   }
-  // 必须要重写的方法，用于构建节点数、返回节点数挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点树挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     if (this.isDestroy_) { // rootNode为null。
@@ -2931,7 +2931,7 @@ struct Page{
                   height : this.uiContext.px2vp(embed.info?.height)})
                 this.edges = {left: `${embed.info?.position?.x as number}px`, top: `${embed.info?.position?.y as number}px`}
                 nodeController.setDestroy(false);
-                //根据Web传入的embed的id属性作为key，将nodeController存入Map。
+                // 根据Web传入的embed的id属性作为key，将nodeController存入Map。
                 this.nodeControllerMap.set(componentId, nodeController);
                 this.widthMap.set(componentId, this.uiContext.px2vp(embed.info?.width));
                 this.heightMap.set(componentId, this.uiContext.px2vp(embed.info?.height));

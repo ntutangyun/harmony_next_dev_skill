@@ -14,13 +14,13 @@ onCastToNormalForm(formId: string): void	卡片提供方接收临时卡片转常
 onUpdateForm(formId: string, wantParams?: Record<string, Object>): void	卡片提供方接收更新卡片的通知接口。
 onChangeFormVisibility(newStatus: Record<string, number>): void	卡片提供方接收修改可见性的通知接口。
 onFormEvent(formId: string, message: string): void	卡片提供方接收处理卡片事件的通知接口。
-onRemoveForm(formId: string): void	卡片提供方接收销毁卡片的通知接口。
+onRemoveForm(formId: string): void	卡片提供方接收删除卡片的通知接口。
 onConfigurationUpdate(newConfig: Configuration): void	当系统配置更新时调用。
 
 formProvider类部分API接口如下，具体的API介绍详见@ohos.app.form.formProvider (formProvider)。
 
 接口名	描述
-setFormNextRefreshTime(formId: string, minute: number, callback: AsyncCallback<void>): void	设置指定卡片的下一次更新时间，使用callback异步回调。
+setFormNextRefreshTime(formId: string, minute: number, callback: AsyncCallback<void>): void	设置指定卡片的下一次刷新时间，使用callback异步回调。
 setFormNextRefreshTime(formId: string, minute: number): Promise<void>	设置指定卡片的下一次更新时间，使用Promise异步回调。
 updateForm(formId: string, formBindingData: formBindingData.FormBindingData, callback: AsyncCallback<void>): void	更新指定的卡片，使用callback异步回调。
 updateForm(formId: string, formBindingData: formBindingData.FormBindingData): Promise<void>	更新指定的卡片，使用Promise异步回调。
@@ -192,7 +192,7 @@ description	表示卡片的描述。取值可以是描述性内容，也可以�
 src	表示卡片对应的UI代码的完整路径。	字符串	否
 window	用于定义与显示窗口相关的配置。	对象	可缺省，缺省值参考window标签表格。
 isDefault	表示该卡片是否为默认卡片，每个UIAbility有且只有一个默认卡片。 - true：默认卡片。 - false：非默认卡片。	布尔值	否
-colorMode(deprecated)	表示卡片的主题样式，取值范围如下： - auto：跟随系统的颜色模式值选取主题。 - dark：深色主题。 - light：浅色主题。 说明： 1. 从API version 12开始支持该配置项，从API version 20开始废弃该配置项，卡片主题样式统一跟随系统的颜色模式。	字符串	可缺省，缺省值为“auto”。
+colorMode(deprecated)	表示卡片的颜色模式，取值范围如下： - auto：跟随系统的颜色模式值选取主题。 - dark：深色主题。 - light：浅色主题。 说明： 1. 从API version 12开始支持该配置项，从API version 20开始废弃该配置项，卡片主题样式统一跟随系统的颜色模式。	字符串	可缺省，缺省值为“auto”。
 supportDimensions	表示卡片支持的外观规格，取值范围： - 1 * 1：表示1行1列的一宫格。 - 1 * 2：表示1行2列的二宫格。 - 2 * 2：表示2行2列的四宫格。 - 2 * 4：表示2行4列的八宫格。 - 2 * 3：表示2行3列的六宫格。 - 3 * 3：表示3行3列的九宫格。 - 4 * 4：表示4行4列的十六宫格。 - 6 * 4：表示6行4列的二十四宫格。 说明： 2 * 3和 3 * 3仅支持手表设备， 1 * 1只支持在锁屏上使用。	字符串数组	否
 defaultDimension	表示卡片的默认外观规格，取值必须在该卡片supportDimensions配置的列表中。	字符串	否
 updateEnabled	表示卡片是否支持周期性刷新，取值范围： - true：表示支持周期性刷新，可以在定时刷新（updateDuration）和定点刷新（scheduledUpdateTime）两种方式任选其一，优先选择定时刷新。 - false：表示不支持周期性刷新。	布尔类型	否

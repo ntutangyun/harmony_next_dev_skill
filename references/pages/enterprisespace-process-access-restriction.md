@@ -21,38 +21,153 @@ deleteRestrictedAccessBackgroundUserdataProcessList(userData: UserDataEnum, proc
 
 开发步骤
 
-1.导入Enterprise Space Kit模块。
+1.导入进程访问限制API模块相关依赖。
 
 import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { ErrCode } from '../../common/ErrCode';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-2.设置和查询系统服务进程不可访问后台用户数据的功能。
+2.进程访问限制API接口封装。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class RestrictedAccessProcessApi {
+  static async setRestrictedAccessBackgroundUserdata(
+    userData: spaceManager.UserDataEnum, enable: boolean): Promise<number> {
+    try {
+      await spaceManager.setRestrictedAccessBackgroundUserdata(userData, enable)
+      hilog.info(DOMAIN, TAG,
+        `Succeeded in setting restricted access background user data. userData:${userData},enable:${enable}`);
+      return ErrCode.OK;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,
+        `Failed to set restricted access background user data. Code:${err.code},message:${err.message}`);
+      return ErrCode.ERR;
+    }
+  }
+
+  static async getRestrictedAccessBackgroundUserdataStatus(
+    userData: spaceManager.UserDataEnum): Promise<boolean | undefined> {
+    try {
+      const status: boolean = await spaceManager.getRestrictedAccessBackgroundUserdataStatus(userData);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting restricted access background user data status. status:${status}`);
+      return status;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,
+        `Failed to get restricted access background user data status. Code:${err.code},message:${err.message}`);
+      return undefined;
+    }
+  }
+
+  static async getRestrictedAccessBackgroundUserdataProcessList(
+    userData: spaceManager.UserDataEnum): Promise<spaceManager.ProcessConfigInfo[]> {
+    try {
+      let processConfigInfo: spaceManager.ProcessConfigInfo[] =
+        await spaceManager.getRestrictedAccessBackgroundUserdataProcessList(userData);
+      hilog.info(DOMAIN, TAG, 'Succeeded in getting restricted access background user data process list.');
+      return processConfigInfo;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to get restricted access background user data process list.
+        Code:${err.code},message:${err.message}`);
+      return [];
+    }
+  }
+
+  static async addRestrictedAccessBackgroundUserdataProcessList(
+    userData: spaceManager.UserDataEnum, processName: string, disallowPaths: string[]): Promise<number> {
+    try {
+      await spaceManager.addRestrictedAccessBackgroundUserdataProcessList(userData, processName, disallowPaths);
+      hilog.info(DOMAIN, TAG, `Succeeded in adding restricted access background user data process list`);
+      return ErrCode.OK;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,
+        `Failed to add restricted access background user data process list.Code:${err.code},message:${err.message}`);
+      return ErrCode.ERR;
+    }
+  }
+
+  static async deleteRestrictedAccessBackgroundUserdataProcessList(
+    userData: spaceManager.UserDataEnum, processName: string): Promise<number> {
+    try {
+      await spaceManager.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName);
+      hilog.info(DOMAIN, TAG, `Succeeded in deleting restricted access background user data process list`);
+      return ErrCode.OK;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,
+        `Failed to delete restricted access background user data process list.Code:${err.code},message:${err.message}`);
+      return ErrCode.ERR;
+    }
+  }
+}
+
+3.导入进程访问限制业务实现相关依赖。
+
+import { router } from '@kit.ArkUI';
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { ErrCode } from '../../common/ErrCode';
+import { RestrictedAccessProcessApi } from '../api/RestrictedAccessprocessApi'
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+4.进程访问限制业务相关实现。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
 
 @Entry
 @Component
-struct Index {
-  // 设置系统服务进程不可访问后台用户数据。
+struct RestrictedAccessProcessPage {
   async setRestrictedAccessBackgroundUserdata() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
     const enable: boolean = false;
-    try {
-      await spaceManager.setRestrictedAccessBackgroundUserdata(userData, enable)
-      console.info(
-        `Succeeded in setting restricted access background user data. userData:${userData},enable:${enable}`);
-    } catch (err) {
-      console.error(`Failed to set restricted access background user data. Code:${err.code},message:${err.message}`);
+    if (await RestrictedAccessProcessApi.setRestrictedAccessBackgroundUserdata(userData, enable) !== ErrCode.OK) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to set restricted access background user data!');
+      return;
     }
     // 处理后置逻辑
   }
 
-  // 获取系统服务进程管控不可访问后台用户数据的状态。
   async getRestrictedAccessBackgroundUserdataStatus() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    try {
-      const status: boolean = await spaceManager.getRestrictedAccessBackgroundUserdataStatus(userData);
-      console.info(`Succeeded in getting restricted access background user data status. status:${status}`);
-    } catch (err) {
-      console.error(
-        `Failed to get restricted access background user data status. Code:${err.code},message:${err.message}`);
+    let enable: boolean | undefined =
+      await RestrictedAccessProcessApi.getRestrictedAccessBackgroundUserdataStatus(userData);
+    if (enable === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to get restricted access background user data status!');
+      return;
+    }
+    // 处理后置逻辑
+  }
+
+  async addRestrictedAccessBackgroundUserdataProcessList() {
+    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
+    const processName: string = 'testSa';
+    const disallowPaths: string[] = ['path'];
+    if (await RestrictedAccessProcessApi.addRestrictedAccessBackgroundUserdataProcessList(
+        userData, processName, disallowPaths) !== ErrCode.OK) {
+      // 处理异常逻辑
+      hilog.error(DOMAIN, TAG, 'Failed to add restricted access background user data process list!');
+      return;
+    }
+    // 处理后置逻辑
+  }
+
+  async getRestrictedAccessBackgroundUserdataProcessList() {
+    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
+    let processConfigInfo: spaceManager.ProcessConfigInfo[] =
+      await RestrictedAccessProcessApi.getRestrictedAccessBackgroundUserdataProcessList(userData);
+    // 处理后置逻辑
+  }
+
+  async deleteRestrictedAccessBackgroundUserdataProcessList() {
+    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
+    const processName: string = 'testSa';
+    if (await RestrictedAccessProcessApi.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName) !==
+        ErrCode.OK) {
+      // 处理异常逻辑
+      hilog.error(DOMAIN, TAG, 'Failed to delete restricted access background user data process list!');
+      return;
     }
     // 处理后置逻辑
   }
@@ -60,125 +175,64 @@ struct Index {
   build() {
     Column() {
       Row() {
-        Button('使能系统服务进程不可访问后台用户数据')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.setRestrictedAccessBackgroundUserdata'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.setRestrictedAccessBackgroundUserdata();
           })
       }
 
       Row() {
-        Button('获取不可访问后台用户数据的系统服务状态')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.getRestrictedAccessBackgroundUserdataStatus'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.getRestrictedAccessBackgroundUserdataStatus();
           })
       }
-    }
-  }
-}
 
-3.获取、新增和删除不可访问后台用户数据的系统服务进程列表。
-
-@Entry
-@Component
-struct Index {
-  // 新增系统服务进程不可访问后台用户数据路径列表。
-  async addRestrictedAccessBackgroundUserdataProcessList() {
-    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa'; // 系统实际服务进程的名称。
-    const disallowPaths: string[] = ['path'];
-    try {
-      await spaceManager.addRestrictedAccessBackgroundUserdataProcessList(userData, processName, disallowPaths);
-      console.info(`Succeeded in adding restricted access background user data process list`);
-    } catch (err) {
-      console.error(
-        `Failed to add restricted access background user data process list.Code:${err.code},message:${err.message}`);
-    }
-    // 处理后置逻辑
-  }
-
-  // 获取不可访问后台用户数据的系统服务进程列表。
-  async getRestrictedAccessBackgroundUserdataProcessList() {
-    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    try {
-      let processConfigInfo: spaceManager.ProcessConfigInfo[] =
-        await spaceManager.getRestrictedAccessBackgroundUserdataProcessList(userData);
-      console.info(`Succeeded in getting restricted access background user data process list.`);
-      return processConfigInfo;
-    } catch (err) {
-      console.error(`Failed to get restricted access background user data process list.`);
-      return [];
-    }
-    // 处理后置逻辑
-  }
-
-  // 删除系统服务进程不可访问后台用户数据路径列表。
-  async deleteRestrictedAccessBackgroundUserdataProcessList() {
-    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa'; // 系统实际服务进程的名称。
-    try {
-      await spaceManager.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName);
-      console.info(`Succeeded in deleting restricted access background user data process list`);
-    } catch (err) {
-      console.error(
-        `Failed to delete restricted access background user data process list.Code:${err.code},message:${err.message}`);
-    }
-    // 处理后置逻辑
-  }
-
-  build() {
-    Column() {
       Row() {
-        Button('获取不可访问后台用户数据的系统服务进程列表')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.getRestrictedAccessBackgroundUserdataProcessList'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.getRestrictedAccessBackgroundUserdataProcessList();
           })
       }
 
       Row() {
-        Button('新增系统服务进程不可访问后台用户数据路径列表')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.addRestrictedAccessBackgroundUserdataProcessList'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.addRestrictedAccessBackgroundUserdataProcessList();
           })
       }
 
       Row() {
-        Button('删除系统服务进程不可访问后台用户数据路径列表')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.deleteRestrictedAccessBackgroundUserdataProcessList'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.deleteRestrictedAccessBackgroundUserdataProcessList();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(400)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 
 ## Code blocks
@@ -187,68 +241,81 @@ struct Index {
 
 ```
 import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { ErrCode } from '../../common/ErrCode';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-@Entry
-@Component
-struct Index {
-  // 设置系统服务进程不可访问后台用户数据。
-  async setRestrictedAccessBackgroundUserdata() {
-    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const enable: boolean = false;
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class RestrictedAccessProcessApi {
+  static async setRestrictedAccessBackgroundUserdata(
+    userData: spaceManager.UserDataEnum, enable: boolean): Promise<number> {
     try {
       await spaceManager.setRestrictedAccessBackgroundUserdata(userData, enable)
-      console.info(
+      hilog.info(DOMAIN, TAG,
         `Succeeded in setting restricted access background user data. userData:${userData},enable:${enable}`);
+      return ErrCode.OK;
     } catch (err) {
-      console.error(`Failed to set restricted access background user data. Code:${err.code},message:${err.message}`);
+      hilog.error(DOMAIN, TAG,
+        `Failed to set restricted access background user data. Code:${err.code},message:${err.message}`);
+      return ErrCode.ERR;
     }
-    // 处理后置逻辑
   }
 
-  // 获取系统服务进程管控不可访问后台用户数据的状态。
-  async getRestrictedAccessBackgroundUserdataStatus() {
-    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
+  static async getRestrictedAccessBackgroundUserdataStatus(
+    userData: spaceManager.UserDataEnum): Promise<boolean | undefined> {
     try {
       const status: boolean = await spaceManager.getRestrictedAccessBackgroundUserdataStatus(userData);
-      console.info(`Succeeded in getting restricted access background user data status. status:${status}`);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting restricted access background user data status. status:${status}`);
+      return status;
     } catch (err) {
-      console.error(
+      hilog.error(DOMAIN, TAG,
         `Failed to get restricted access background user data status. Code:${err.code},message:${err.message}`);
+      return undefined;
     }
-    // 处理后置逻辑
   }
 
-  build() {
-    Column() {
-      Row() {
-        Button('使能系统服务进程不可访问后台用户数据')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
-          .onClick(() => {
-            this.setRestrictedAccessBackgroundUserdata();
-          })
-      }
+  static async getRestrictedAccessBackgroundUserdataProcessList(
+    userData: spaceManager.UserDataEnum): Promise<spaceManager.ProcessConfigInfo[]> {
+    try {
+      let processConfigInfo: spaceManager.ProcessConfigInfo[] =
+        await spaceManager.getRestrictedAccessBackgroundUserdataProcessList(userData);
+      hilog.info(DOMAIN, TAG, 'Succeeded in getting restricted access background user data process list.');
+      return processConfigInfo;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to get restricted access background user data process list.
+        Code:${err.code},message:${err.message}`);
+      return [];
+    }
+  }
 
-      Row() {
-        Button('获取不可访问后台用户数据的系统服务状态')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
-          .onClick(() => {
-            this.getRestrictedAccessBackgroundUserdataStatus();
-          })
-      }
+  static async addRestrictedAccessBackgroundUserdataProcessList(
+    userData: spaceManager.UserDataEnum, processName: string, disallowPaths: string[]): Promise<number> {
+    try {
+      await spaceManager.addRestrictedAccessBackgroundUserdataProcessList(userData, processName, disallowPaths);
+      hilog.info(DOMAIN, TAG, `Succeeded in adding restricted access background user data process list`);
+      return ErrCode.OK;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,
+        `Failed to add restricted access background user data process list.Code:${err.code},message:${err.message}`);
+      return ErrCode.ERR;
+    }
+  }
+
+  static async deleteRestrictedAccessBackgroundUserdataProcessList(
+    userData: spaceManager.UserDataEnum, processName: string): Promise<number> {
+    try {
+      await spaceManager.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName);
+      hilog.info(DOMAIN, TAG, `Succeeded in deleting restricted access background user data process list`);
+      return ErrCode.OK;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,
+        `Failed to delete restricted access background user data process list.Code:${err.code},message:${err.message}`);
+      return ErrCode.ERR;
     }
   }
 }
@@ -257,49 +324,73 @@ struct Index {
 ### Code block 3
 
 ```
+import { router } from '@kit.ArkUI';
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { ErrCode } from '../../common/ErrCode';
+import { RestrictedAccessProcessApi } from '../api/RestrictedAccessprocessApi'
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 4
+
+```
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
 @Entry
 @Component
-struct Index {
-  // 新增系统服务进程不可访问后台用户数据路径列表。
+struct RestrictedAccessProcessPage {
+  async setRestrictedAccessBackgroundUserdata() {
+    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
+    const enable: boolean = false;
+    if (await RestrictedAccessProcessApi.setRestrictedAccessBackgroundUserdata(userData, enable) !== ErrCode.OK) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to set restricted access background user data!');
+      return;
+    }
+    // 处理后置逻辑
+  }
+
+  async getRestrictedAccessBackgroundUserdataStatus() {
+    const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
+    let enable: boolean | undefined =
+      await RestrictedAccessProcessApi.getRestrictedAccessBackgroundUserdataStatus(userData);
+    if (enable === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to get restricted access background user data status!');
+      return;
+    }
+    // 处理后置逻辑
+  }
+
   async addRestrictedAccessBackgroundUserdataProcessList() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa'; // 系统实际服务进程的名称。
+    const processName: string = 'testSa';
     const disallowPaths: string[] = ['path'];
-    try {
-      await spaceManager.addRestrictedAccessBackgroundUserdataProcessList(userData, processName, disallowPaths);
-      console.info(`Succeeded in adding restricted access background user data process list`);
-    } catch (err) {
-      console.error(
-        `Failed to add restricted access background user data process list.Code:${err.code},message:${err.message}`);
+    if (await RestrictedAccessProcessApi.addRestrictedAccessBackgroundUserdataProcessList(
+        userData, processName, disallowPaths) !== ErrCode.OK) {
+      // 处理异常逻辑
+      hilog.error(DOMAIN, TAG, 'Failed to add restricted access background user data process list!');
+      return;
     }
     // 处理后置逻辑
   }
 
-  // 获取不可访问后台用户数据的系统服务进程列表。
   async getRestrictedAccessBackgroundUserdataProcessList() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    try {
-      let processConfigInfo: spaceManager.ProcessConfigInfo[] =
-        await spaceManager.getRestrictedAccessBackgroundUserdataProcessList(userData);
-      console.info(`Succeeded in getting restricted access background user data process list.`);
-      return processConfigInfo;
-    } catch (err) {
-      console.error(`Failed to get restricted access background user data process list.`);
-      return [];
-    }
+    let processConfigInfo: spaceManager.ProcessConfigInfo[] =
+      await RestrictedAccessProcessApi.getRestrictedAccessBackgroundUserdataProcessList(userData);
     // 处理后置逻辑
   }
 
-  // 删除系统服务进程不可访问后台用户数据路径列表。
   async deleteRestrictedAccessBackgroundUserdataProcessList() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa'; // 系统实际服务进程的名称。
-    try {
-      await spaceManager.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName);
-      console.info(`Succeeded in deleting restricted access background user data process list`);
-    } catch (err) {
-      console.error(
-        `Failed to delete restricted access background user data process list.Code:${err.code},message:${err.message}`);
+    const processName: string = 'testSa';
+    if (await RestrictedAccessProcessApi.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName) !==
+        ErrCode.OK) {
+      // 处理异常逻辑
+      hilog.error(DOMAIN, TAG, 'Failed to delete restricted access background user data process list!');
+      return;
     }
     // 处理后置逻辑
   }
@@ -307,44 +398,63 @@ struct Index {
   build() {
     Column() {
       Row() {
-        Button('获取不可访问后台用户数据的系统服务进程列表')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.setRestrictedAccessBackgroundUserdata'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            this.setRestrictedAccessBackgroundUserdata();
+          })
+      }
+
+      Row() {
+        Button($r('app.string.getRestrictedAccessBackgroundUserdataStatus'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            this.getRestrictedAccessBackgroundUserdataStatus();
+          })
+      }
+
+      Row() {
+        Button($r('app.string.getRestrictedAccessBackgroundUserdataProcessList'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.getRestrictedAccessBackgroundUserdataProcessList();
           })
       }
 
       Row() {
-        Button('新增系统服务进程不可访问后台用户数据路径列表')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.addRestrictedAccessBackgroundUserdataProcessList'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.addRestrictedAccessBackgroundUserdataProcessList();
           })
       }
 
       Row() {
-        Button('删除系统服务进程不可访问后台用户数据路径列表')
-          .width(400)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.deleteRestrictedAccessBackgroundUserdataProcessList'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.deleteRestrictedAccessBackgroundUserdataProcessList();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(400)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 ```

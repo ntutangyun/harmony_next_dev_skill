@@ -44,9 +44,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 struct Index {
   aboutToAppear(): void {
     // 一键关注组件。
-    // pubId: 服务号id，此处以官方小助手服务号id为例。
+    // pubId: 服务号ID，此处以官方小助手服务号ID为例。
     const pubId: string = '0cca1c645526449fb89d4a83e3bc25df';
-    // channelId：渠道id，长度限制32，只能是数字或字母组成; offset：设置关注组件的位置坐标。
+    // channelId：渠道ID，长度限制32，只能是数字或字母组成; offset：设置关注组件的位置坐标。
     const params: atomicService.FollowComponentParams =
       { pubId: pubId, channelId: '', offset: { x: 0, y: 300 } };
     // 点击关注按钮的关注结果回调。
@@ -64,15 +64,16 @@ struct Index {
           hilog.info(0x0000, 'testTag', 'follow failed handle');
         }
       }
-    }
+    };
     // 展示关注组件。
     atomicService.showFollowComponent(this.getUIContext(), params, callbacks).catch((error: BusinessError<void>) => {
-      hilog.error(0x0000, 'testTag', 'Failed to show the Follow Component, failReason: %{public}d %{public}s:', error.code,
+      hilog.error(0x0000, 'testTag', 'Failed to show the Follow Component, failReason: %{public}d %{public}s', error.code,
         error.message);
-    })
+    });
   }
 
   build() {
+    // 开发者自行实现逻辑处理
   }
 }
 
@@ -94,9 +95,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 struct Index {
   aboutToAppear(): void {
     // 一键关注组件。
-    // pubId: 服务号id，此处以官方小助手服务号id为例。
+    // pubId: 服务号ID，此处以官方小助手服务号ID为例。
     const pubId: string = '0cca1c645526449fb89d4a83e3bc25df';
-    // channelId：渠道id，长度限制32，只能是数字或字母组成; offset：设置关注组件的位置坐标。
+    // channelId：渠道ID，长度限制32，只能是数字或字母组成; offset：设置关注组件的位置坐标。
     const params: atomicService.FollowComponentParams =
       { pubId: pubId, channelId: '', offset: { x: 0, y: 300 } };
     // 点击关注按钮的关注结果回调。
@@ -114,15 +115,16 @@ struct Index {
           hilog.info(0x0000, 'testTag', 'follow failed handle');
         }
       }
-    }
+    };
     // 展示关注组件。
     atomicService.showFollowComponent(this.getUIContext(), params, callbacks).catch((error: BusinessError<void>) => {
-      hilog.error(0x0000, 'testTag', 'Failed to show the Follow Component, failReason: %{public}d %{public}s:', error.code,
+      hilog.error(0x0000, 'testTag', 'Failed to show the Follow Component, failReason: %{public}d %{public}s', error.code,
         error.message);
-    })
+    });
   }
 
   build() {
+    // 开发者自行实现逻辑处理
   }
 }
 ```

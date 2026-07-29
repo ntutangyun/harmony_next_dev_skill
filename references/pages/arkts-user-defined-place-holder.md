@@ -8,7 +8,7 @@ NodeContainer作为容器节点存在，具备通用属性，是UI节点。Conte
 
 NodeContainer是用来占位的系统组件，主要用于自定义节点以及自定义节点树的显示，支持组件的通用属性，对通用属性的处理请参考默认左上角对齐的Stack组件。
 
-NodeController提供了一系列生命周期回调，通过makeNode回调返回一个FrameNode节点树的根节点。将FrameNode节点树挂载到对应的NodeContainer下。同时提供了aboutToAppear、aboutToDisappear、aboutToResize、onTouchEvent、rebuild五个回调方法用于监听对应的NodeContainer的状态。
+NodeController提供了一系列生命周期回调，通过makeNode回调返回一个FrameNode节点树的根节点。将FrameNode节点树挂载到对应的NodeContainer下。同时提供了aboutToAppear、aboutToDisappear、aboutToResize、onTouchEvent四个回调方法用于监听对应的NodeContainer的状态，以及rebuild方法用于主动触发NodeContainer重新回调makeNode以更新子节点。
 
 每个生命周期的回调的具体含义参考NodeController的接口文档说明。
 
@@ -222,7 +222,6 @@ class MyNodeController extends NodeController {
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
   controller = new NodeContentCtrl(this.getUIContext());
   myNodeController = new MyNodeController();
 
@@ -467,7 +466,6 @@ class MyNodeController extends NodeController {
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
   controller = new NodeContentCtrl(this.getUIContext());
   myNodeController = new MyNodeController();
 

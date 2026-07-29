@@ -70,7 +70,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-pri
 
 应用/元服务需要接入隐私声明托管服务。
 
-隐私管理服务支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
+隐私管理服务支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
 
 隐私管理服务暂不支持模拟器，请使用真机调试。
 
@@ -90,56 +90,56 @@ requestAppPrivacyConsent(context:common.UIAbilityContext):Promise<ConsentResult>
 
 导入privacyManager模块及相关公共模块。
 
-import { privacyManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { privacyManager } from '@kit.AppGalleryKit';
 
 调用getAppPrivacyMgmtInfo方法查询隐私链接信息。
 
 try {
   let appPrivacyManageInfo: privacyManager.AppPrivacyMgmtInfo = privacyManager.getAppPrivacyMgmtInfo();
-  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo type: " + appPrivacyManageInfo["type"]);
+  hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyManageInfo type: ' + appPrivacyManageInfo['type']);
   let privacyLinkInfoArray : privacyManager.AppPrivacyLink[] = appPrivacyManageInfo.privacyInfo;
-  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo size = " + privacyLinkInfoArray.length);
+  hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyManageInfo size = ' + privacyLinkInfoArray.length);
   for (let i = 0; i < privacyLinkInfoArray.length; i++) {
-    hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo type = " + privacyLinkInfoArray[i]["type"] + ", version = " + privacyLinkInfoArray[i]["versionCode"] + ", url = " + privacyLinkInfoArray[i]["url"]);
+    hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyManageInfo type = ' + privacyLinkInfoArray[i]['type'] + ', version = ' + privacyLinkInfoArray[i]['versionCode'] + ', url = ' + privacyLinkInfoArray[i]['url']);
   }
 } catch (error) {
-  hilog.error(0, 'TAG', "GetAppPrivacyManageInfoPublic exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'GetAppPrivacyManageInfoPublic exception code: ' + error.code + ', exception message: ' + error.message);
 }
 
 [h2]查询隐私签署状态
 
 导入privacyManager模块及相关公共模块。
 
-import { privacyManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { privacyManager } from '@kit.AppGalleryKit';
 
 调用getAppPrivacyResult方法查询隐私签署状态。
 
 try {
   let appPrivacyResults: privacyManager.AppPrivacyResult[] = privacyManager.getAppPrivacyResult();
-  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyResult size = " + appPrivacyResults.length);
+  hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyResult size = ' + appPrivacyResults.length);
   for (let i = 0; i < appPrivacyResults.length; i++) {
-    hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyResult type = " + appPrivacyResults[i]["type"] + ", version = " + appPrivacyResults[i]["versionCode"] + ", result = "+appPrivacyResults[i]["result"]);
+    hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyResult type = ' + appPrivacyResults[i]['type'] + ', version = ' + appPrivacyResults[i]['versionCode'] + ', result = '+appPrivacyResults[i]['result']);
   }
 } catch (error) {
-  hilog.error(0, 'TAG', "GetAppPrivacyResultPublic exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'GetAppPrivacyResultPublic exception code: ' + error.code + ', exception message: ' + error.message);
 }
 
 [h2]撤销同意记录
 
 导入privacyManager模块及相关公共模块。
 
-import { privacyManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { privacyManager } from '@kit.AppGalleryKit';
 
 调用disableService方法撤销同意记录。
 
 try {
   privacyManager.disableService();
-  hilog.info(0, 'TAG', "Succeeded in disabling Service success.");
+  hilog.info(0, 'TAG', 'Succeeded in disabling Service success.');
 } catch (error) {
-  hilog.error(0, 'TAG', "DisableService exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'DisableService exception code: ' + error.code + ', exception message: ' + error.message);
 }
 
 [h2]请求用户同意
@@ -156,20 +156,22 @@ import { BusinessError } from '@kit.BasicServicesKit';
 try {
   const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   privacyManager.requestAppPrivacyConsent(uiContext).then((consentResult : privacyManager.ConsentResult) => {
-    let appPrivacyResults: privacyManager.AppPrivacyResult[] = consentResult["results"];
+    let appPrivacyResults: privacyManager.AppPrivacyResult[] = consentResult['results'];
     for (let i = 0; i < appPrivacyResults.length; i++) {
-      hilog.info(0, 'TAG', "GetAppPrivacyResult type = " + appPrivacyResults[i]["type"] + ", version = " + appPrivacyResults[i]["versionCode"] + ", result = " + appPrivacyResults[i]["result"] + ", signingTimestamp = " + appPrivacyResults[i]["signingTimestamp"]);
+      hilog.info(0, 'TAG', 'GetAppPrivacyResult type = ' + appPrivacyResults[i]['type'] + ', version = ' + appPrivacyResults[i]['versionCode'] + ', result = ' + appPrivacyResults[i]['result'] + ', signingTimestamp = ' + appPrivacyResults[i]['signingTimestamp']);
     }
   }).catch((error: BusinessError<Object>) => {
     hilog.error(0, 'TAG', `requestAppPrivacyConsent failed, Code: ${error.code}, message: ${error.message}`);
   });
 } catch (error) {
-  hilog.error(0, 'TAG', "requestAppPrivacyConsent exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'requestAppPrivacyConsent exception code: ' + error.code + ', exception message: ' + error.message);
 }
 
 隐私弹框签署结果公共事件
 
-在接入标准化隐私声明托管服务之后，用户未签署隐私声明前，打开应用/元服务会弹出标准化隐私弹框，弹框样式如下：
+在接入标准化隐私声明托管服务之后，用户未签署隐私声明前，打开应用/元服务会弹出标准化隐私弹框。
+
+弹框样式如下：
 
 用户点击同意隐私弹框，应用市场会发送隐私弹框签署结果公共事件。应用可通过监听该事件，感知用户隐私签署结果。
 
@@ -182,9 +184,13 @@ COMMON_EVENT_PRIVACY_STATE_CHANGED	usual.event.PRIVACY_STATE_CHANGED	隐私弹�
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { commonEventManager } from '@kit.BasicServicesKit';
+// ...
+
 const TAG = 'PrivacySubscribe';
 
+// ...
 class PrivacySubscribeSample {
+  // ...
   private readonly eventId = 'usual.event.PRIVACY_STATE_CHANGED';
   // 订阅者信息, 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
   private subscriber: commonEventManager.CommonEventSubscriber | undefined = undefined;
@@ -192,12 +198,13 @@ class PrivacySubscribeSample {
   private subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
     events: [this.eventId]
   };
+  // ...
 
   public subscribe(): void {
-    hilog.info(0, TAG, "subscribe");
+    hilog.info(0, TAG, 'subscribe');
     // 创建订阅者
     commonEventManager.createSubscriber(this.subscribeInfo).then((commonEventSubscriber) => {
-      hilog.info(0, TAG, "createSubscriber");
+      hilog.info(0, TAG, 'createSubscriber');
       this.subscriber = commonEventSubscriber;
 
       // 订阅公共事件
@@ -209,12 +216,14 @@ class PrivacySubscribeSample {
           }
 
           let result = JSON.parse(data?.data ?? '{}')?.resultType as number;
-          if (result === 1) {
-            // 隐私同意处理
-          }
+          // ...
+            if (result === 1) {
+              // 隐私同意处理
+            }
+          // ...
         });
       } catch (error) {
-        hilog.error(0, TAG, "init createSubscriber failed, exception code: " + error.code + ", exception message: " + error.message);
+        hilog.error(0, TAG, 'init createSubscriber failed, exception code: ' + error.code + ', exception message: ' + error.message);
       }
     });
   }
@@ -256,10 +265,10 @@ class PrivacyEventSubscriber {
   }
 
   public subscribe(): void {
-    hilog.info(0, TAG, "subscribe");
+    hilog.info(0, TAG, 'subscribe');
     // 创建订阅者
     commonEventManager.createSubscriber(this.subscribeInfo).then((commonEventSubscriber) => {
-      hilog.info(0, TAG, "createSubscriber");
+      hilog.info(0, TAG, 'createSubscriber');
       this.subscriber = commonEventSubscriber;
 
       // 订阅公共事件
@@ -280,7 +289,7 @@ class PrivacyEventSubscriber {
           }
         });
       } catch (error) {
-        hilog.error(0, TAG, "init createSubscriber failed, exception code: " + error.code + ", exception message: " + error.message);
+        hilog.error(0, TAG, 'init createSubscriber failed, exception code: ' + error.code + ', exception message: ' + error.message);
       }
     });
   }
@@ -306,12 +315,12 @@ appgallery_privacy_link_user_agreements	多个用户协议url（https），在�
 
 示例配置：
 
-// module.json5
 {
   "module": {
     "name": "entry",
     "type": "entry",
     "description": "$string:module_desc",
+    // ...
     "metadata": [
       {
         "name": "appgallery_privacy_hosted",
@@ -327,10 +336,10 @@ appgallery_privacy_link_user_agreements	多个用户协议url（https），在�
       },
       {
         "name": "appgallery_privacy_link_user_agreements",
-        "value": "link_user_agreements.json" // 配置json文件名称，示例配置见下文
-      }
-    ],
-    // 其他内容
+        "value": "../ets/resources/privacyLinkUserAgreements/link_user_agreements.json" // 配置json文件名称，示例配置见下文
+      },
+      // ...
+    ]
   }
 }
 
@@ -354,8 +363,8 @@ link_user_agreements.json示例配置：
 ### Code block 1
 
 ```
-import { privacyManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { privacyManager } from '@kit.AppGalleryKit';
 ```
 
 ### Code block 2
@@ -363,22 +372,22 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 try {
   let appPrivacyManageInfo: privacyManager.AppPrivacyMgmtInfo = privacyManager.getAppPrivacyMgmtInfo();
-  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo type: " + appPrivacyManageInfo["type"]);
+  hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyManageInfo type: ' + appPrivacyManageInfo['type']);
   let privacyLinkInfoArray : privacyManager.AppPrivacyLink[] = appPrivacyManageInfo.privacyInfo;
-  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo size = " + privacyLinkInfoArray.length);
+  hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyManageInfo size = ' + privacyLinkInfoArray.length);
   for (let i = 0; i < privacyLinkInfoArray.length; i++) {
-    hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyManageInfo type = " + privacyLinkInfoArray[i]["type"] + ", version = " + privacyLinkInfoArray[i]["versionCode"] + ", url = " + privacyLinkInfoArray[i]["url"]);
+    hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyManageInfo type = ' + privacyLinkInfoArray[i]['type'] + ', version = ' + privacyLinkInfoArray[i]['versionCode'] + ', url = ' + privacyLinkInfoArray[i]['url']);
   }
 } catch (error) {
-  hilog.error(0, 'TAG', "GetAppPrivacyManageInfoPublic exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'GetAppPrivacyManageInfoPublic exception code: ' + error.code + ', exception message: ' + error.message);
 }
 ```
 
 ### Code block 3
 
 ```
-import { privacyManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { privacyManager } from '@kit.AppGalleryKit';
 ```
 
 ### Code block 4
@@ -386,20 +395,20 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 try {
   let appPrivacyResults: privacyManager.AppPrivacyResult[] = privacyManager.getAppPrivacyResult();
-  hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyResult size = " + appPrivacyResults.length);
+  hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyResult size = ' + appPrivacyResults.length);
   for (let i = 0; i < appPrivacyResults.length; i++) {
-    hilog.info(0, 'TAG', "Succeeded in getting AppPrivacyResult type = " + appPrivacyResults[i]["type"] + ", version = " + appPrivacyResults[i]["versionCode"] + ", result = "+appPrivacyResults[i]["result"]);
+    hilog.info(0, 'TAG', 'Succeeded in getting AppPrivacyResult type = ' + appPrivacyResults[i]['type'] + ', version = ' + appPrivacyResults[i]['versionCode'] + ', result = '+appPrivacyResults[i]['result']);
   }
 } catch (error) {
-  hilog.error(0, 'TAG', "GetAppPrivacyResultPublic exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'GetAppPrivacyResultPublic exception code: ' + error.code + ', exception message: ' + error.message);
 }
 ```
 
 ### Code block 5
 
 ```
-import { privacyManager } from '@kit.AppGalleryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { privacyManager } from '@kit.AppGalleryKit';
 ```
 
 ### Code block 6
@@ -407,9 +416,9 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 try {
   privacyManager.disableService();
-  hilog.info(0, 'TAG', "Succeeded in disabling Service success.");
+  hilog.info(0, 'TAG', 'Succeeded in disabling Service success.');
 } catch (error) {
-  hilog.error(0, 'TAG', "DisableService exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'DisableService exception code: ' + error.code + ', exception message: ' + error.message);
 }
 ```
 
@@ -428,15 +437,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 try {
   const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   privacyManager.requestAppPrivacyConsent(uiContext).then((consentResult : privacyManager.ConsentResult) => {
-    let appPrivacyResults: privacyManager.AppPrivacyResult[] = consentResult["results"];
+    let appPrivacyResults: privacyManager.AppPrivacyResult[] = consentResult['results'];
     for (let i = 0; i < appPrivacyResults.length; i++) {
-      hilog.info(0, 'TAG', "GetAppPrivacyResult type = " + appPrivacyResults[i]["type"] + ", version = " + appPrivacyResults[i]["versionCode"] + ", result = " + appPrivacyResults[i]["result"] + ", signingTimestamp = " + appPrivacyResults[i]["signingTimestamp"]);
+      hilog.info(0, 'TAG', 'GetAppPrivacyResult type = ' + appPrivacyResults[i]['type'] + ', version = ' + appPrivacyResults[i]['versionCode'] + ', result = ' + appPrivacyResults[i]['result'] + ', signingTimestamp = ' + appPrivacyResults[i]['signingTimestamp']);
     }
   }).catch((error: BusinessError<Object>) => {
     hilog.error(0, 'TAG', `requestAppPrivacyConsent failed, Code: ${error.code}, message: ${error.message}`);
   });
 } catch (error) {
-  hilog.error(0, 'TAG', "requestAppPrivacyConsent exception code: " + error.code + ", exception message: " + error.message);
+  hilog.error(0, 'TAG', 'requestAppPrivacyConsent exception code: ' + error.code + ', exception message: ' + error.message);
 }
 ```
 
@@ -445,9 +454,13 @@ try {
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { commonEventManager } from '@kit.BasicServicesKit';
+// ...
+
 const TAG = 'PrivacySubscribe';
 
+// ...
 class PrivacySubscribeSample {
+  // ...
   private readonly eventId = 'usual.event.PRIVACY_STATE_CHANGED';
   // 订阅者信息, 用于保存创建成功的订阅者对象，后续使用其完成订阅及退订的动作
   private subscriber: commonEventManager.CommonEventSubscriber | undefined = undefined;
@@ -455,12 +468,13 @@ class PrivacySubscribeSample {
   private subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
     events: [this.eventId]
   };
+  // ...
 
   public subscribe(): void {
-    hilog.info(0, TAG, "subscribe");
+    hilog.info(0, TAG, 'subscribe');
     // 创建订阅者
     commonEventManager.createSubscriber(this.subscribeInfo).then((commonEventSubscriber) => {
-      hilog.info(0, TAG, "createSubscriber");
+      hilog.info(0, TAG, 'createSubscriber');
       this.subscriber = commonEventSubscriber;
 
       // 订阅公共事件
@@ -472,12 +486,14 @@ class PrivacySubscribeSample {
           }
 
           let result = JSON.parse(data?.data ?? '{}')?.resultType as number;
-          if (result === 1) {
-            // 隐私同意处理
-          }
+          // ...
+            if (result === 1) {
+              // 隐私同意处理
+            }
+          // ...
         });
       } catch (error) {
-        hilog.error(0, TAG, "init createSubscriber failed, exception code: " + error.code + ", exception message: " + error.message);
+        hilog.error(0, TAG, 'init createSubscriber failed, exception code: ' + error.code + ', exception message: ' + error.message);
       }
     });
   }
@@ -521,10 +537,10 @@ class PrivacyEventSubscriber {
   }
 
   public subscribe(): void {
-    hilog.info(0, TAG, "subscribe");
+    hilog.info(0, TAG, 'subscribe');
     // 创建订阅者
     commonEventManager.createSubscriber(this.subscribeInfo).then((commonEventSubscriber) => {
-      hilog.info(0, TAG, "createSubscriber");
+      hilog.info(0, TAG, 'createSubscriber');
       this.subscriber = commonEventSubscriber;
 
       // 订阅公共事件
@@ -545,7 +561,7 @@ class PrivacyEventSubscriber {
           }
         });
       } catch (error) {
-        hilog.error(0, TAG, "init createSubscriber failed, exception code: " + error.code + ", exception message: " + error.message);
+        hilog.error(0, TAG, 'init createSubscriber failed, exception code: ' + error.code + ', exception message: ' + error.message);
       }
     });
   }
@@ -555,12 +571,12 @@ class PrivacyEventSubscriber {
 ### Code block 11
 
 ```
-// module.json5
 {
   "module": {
     "name": "entry",
     "type": "entry",
     "description": "$string:module_desc",
+    // ...
     "metadata": [
       {
         "name": "appgallery_privacy_hosted",
@@ -576,10 +592,10 @@ class PrivacyEventSubscriber {
       },
       {
         "name": "appgallery_privacy_link_user_agreements",
-        "value": "link_user_agreements.json" // 配置json文件名称，示例配置见下文
-      }
-    ],
-    // 其他内容
+        "value": "../ets/resources/privacyLinkUserAgreements/link_user_agreements.json" // 配置json文件名称，示例配置见下文
+      },
+      // ...
+    ]
   }
 }
 ```

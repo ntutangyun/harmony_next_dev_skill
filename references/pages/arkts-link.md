@@ -147,6 +147,8 @@ struct LinkChild {
 
   build() {
     Text(this.test.value)
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -160,54 +162,44 @@ struct LinkExample {
       // 在父组件中，使用@State装饰的info变量初始化LinkChild组件的test变量
       LinkChild({test: this.info})
     }
+    .width('100%')
   }
 }
 
-@Link装饰的变量仅能被状态变量初始化，不能使用常规变量初始化，否则编译期会给出告警，并在运行时崩溃。
+@Link装饰的变量仅能被状态变量初始化，不能使用常规变量初始化，否则会编译报错。
 
 【反例】
 
-class Info {
-  info: string = 'Hello';
-}
-
 @Component
 struct Child {
-  @Link msg: string;
-  @Link info: string;
+  @Link message: string;
 
   build() {
-    Text(this.msg + this.info)
+    Text(`${this.message}`).margin('20%')
   }
 }
 
 @Entry
 @Component
 struct LinkExample {
-  @State message: string = 'Hello';
-  @State info: Info = new Info();
+  message: string = 'Hello';
 
   build() {
     Column() {
       // 错误写法，常规变量不能初始化@Link
-      Child({msg: 'World', info: this.info.info})
+      Child({ message: this.message })
     }
   }
 }
 
 【正例】
 
-class LinkInfo2 {
-  public info: string = 'Hello';
-}
-
 @Component
 struct LinkChild2 {
-  @Link msg: string;
-  @Link info: LinkInfo2;
+  @Link message: string;
 
   build() {
-    Text(this.msg + this.info.info)
+    Text(`${this.message}`).margin('20%')
   }
 }
 
@@ -215,19 +207,18 @@ struct LinkChild2 {
 @Component
 struct LinkExample2 {
   @State message: string = 'Hello';
-  @State info: LinkInfo2 = new LinkInfo2();
 
   build() {
     Column() {
       // 正确写法
-      LinkChild2({msg: this.message, info: this.info})
+      LinkChild2({ message: this.message })
     }
   }
 }
 
-@Link不支持装饰Function类型的变量，API version 23之前，框架会抛出运行时错误。
+@Link不支持装饰Function类型的变量，API version 23之前，应用在运行时会出现错误。
 
-从API version 23开始，添加对@Link装饰Function类型变量的校验，编译期会报错。
+从API version 23开始，在应用编译时添加了相关校验，@Link装饰Function类型变量会提示ERROR，应在代码中删除Function类型变量的@Link装饰器。
 
 使用场景
 
@@ -369,7 +360,7 @@ struct ArrayTypes {
             .backgroundColor('#11a2a2a2')
             .fontColor('#e6000000')
         },
-        (item: ForEachInterface) => item.toString()
+        (item: number) => item.toString()
       )
     }
   }
@@ -392,27 +383,47 @@ struct MapSampleChild {
   build() {
     Column() {
       ForEach(Array.from(this.value.entries()), (item: [number, string]) => {
-        Text(`${item[0]}`).fontSize(30)
-        Text(`${item[1]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
+        Text(`${item[1]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // 子组件的Map类型可以同步回父组件
-      Button('child init map').onClick(() => {
-        this.value = new Map([[0, 'a'], [1, 'b'], [3, 'c']]);
-      })
-      Button('child set new one').onClick(() => {
-        this.value.set(4, 'd');
-      })
-      Button('child clear').onClick(() => {
-        this.value.clear();
-      })
-      Button('child replace the first one').onClick(() => {
-        this.value.set(0, 'aa');
-      })
-      Button('child delete the first one').onClick(() => {
-        this.value.delete(0);
-      })
+      Button('child init map')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value = new Map([[0, 'a'], [1, 'b'], [3, 'c']]);
+        })
+      Button('child set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.set(4, 'd');
+        })
+      Button('child clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.clear();
+        })
+      Button('child replace the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.set(0, 'aa');
+        })
+      Button('child delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.delete(0);
+        })
     }
+    .width('100%')
   }
 }
 
@@ -448,22 +459,36 @@ struct SetSampleChild {
   build() {
     Column() {
       ForEach(Array.from(this.message.entries()), (item: [number, number]) => {
-        Text(`${item[0]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // 子组件的Set类型可以同步回父组件
-      Button('init set').onClick(() => {
-        this.message = new Set([0, 1, 2, 3, 4]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.add(5);
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(0);
-      })
+      Button('init set')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Set([0, 1, 2, 3, 4]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.add(5);
+        })
+      Button('clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.delete(0);
+        })
     }
     .width('100%')
   }
@@ -498,10 +523,13 @@ struct DateComponent {
     Column() {
       // 子组件的Date类型可以同步回父组件
       Button(`child increase the year by 1`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setFullYear(this.selectedDate.getFullYear() + 1);
         })
       Button('child update the new date')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.selectedDate = new Date('2023-09-09');
@@ -512,6 +540,7 @@ struct DateComponent {
         selected: this.selectedDate
       })
     }
+    .width('100%')
   }
 }
 
@@ -523,11 +552,13 @@ struct ParentComponent {
   build() {
     Column() {
       Button('parent increase the month by 1')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.parentSelectedDate.setMonth(this.parentSelectedDate.getMonth() + 1);
         })
       Button('parent update the new date')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.parentSelectedDate = new Date('2023-07-07');
@@ -540,6 +571,7 @@ struct ParentComponent {
 
       DateComponent({ selectedDate:this.parentSelectedDate })
     }
+    .width('100%')
   }
 }
 
@@ -547,7 +579,7 @@ struct ParentComponent {
 
 通过@Watch可以在双向同步时更改本地变量。
 
-以下示例中，在@Link的@Watch里面修改了一个@State装饰的变量memberMessage，实现父子组件间的变量同步。但是@State装饰的变量memberMessage在本地修改不会影响到父组件中的变量改变。
+以下示例中，在@Link的@Watch里面修改了一个@State装饰的变量memberMessage，实现父子组件间的变量同步，但是@State装饰的变量memberMessage在本地修改不会影响到父组件中的变量改变。
 
 @Entry
 @Component
@@ -557,9 +589,12 @@ struct ChangeVariables {
   build() {
     Column() {
       Text(`sourceNumber of the parent component:` + this.sourceNumber)
+        .fontSize(20)
+        .margin(10)
       ChangeVariablesChild({ sourceNumber: this.sourceNumber })
-      // sourceNumber的修改不会影响到父组件中的变量改变
       Button('Change sourceNumber in Parent Component')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.sourceNumber++;
         })
@@ -575,18 +610,26 @@ struct ChangeVariablesChild {
   @Link @Watch('onSourceChange') sourceNumber: number;
 
   onSourceChange() {
+    // memberMessage在子组件中本地修改不会影响到父组件中的变量改变
     this.memberMessage = this.sourceNumber.toString();
   }
 
   build() {
     Column() {
       Text(this.memberMessage)
+        .fontSize(20)
+        .margin(10)
       Text(`sourceNumber of the child component:` + this.sourceNumber.toString())
+        .fontSize(20)
+        .margin(10)
       Button('Change memberMessage in Child Component')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.memberMessage = 'Hello memberMessage';
         })
     }
+    .width('100%')
   }
 }
 
@@ -601,18 +644,22 @@ struct UnionChild {
 
   build() {
     Column() {
-
       Button('Child change name to Bob')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = 'Bob';
         })
 
       Button('Child change name to undefined')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = undefined;
         })
 
-    }.width('100%')
+    }
+    .width('100%')
   }
 }
 
@@ -623,20 +670,27 @@ struct UnionTypes {
 
   build() {
     Column() {
-      Text(`The name is  ${this.name}`).fontSize(30)
+      Text(`The name is  ${this.name}`)
+        .fontSize(20)
+        .margin(10)
 
       UnionChild({ name: this.name })
 
       Button('Parents change name to Peter')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = 'Peter';
         })
 
       Button('Parents change name to undefined')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = undefined;
         })
     }
+    .width('100%')
   }
 }
 
@@ -710,6 +764,8 @@ struct LinkChild {
 
   build() {
     Text(this.test.value)
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -723,6 +779,7 @@ struct LinkExample {
       // 在父组件中，使用@State装饰的info变量初始化LinkChild组件的test变量
       LinkChild({test: this.info})
     }
+    .width('100%')
   }
 }
 ```
@@ -730,30 +787,24 @@ struct LinkExample {
 ### Code block 4
 
 ```
-class Info {
-  info: string = 'Hello';
-}
-
 @Component
 struct Child {
-  @Link msg: string;
-  @Link info: string;
+  @Link message: string;
 
   build() {
-    Text(this.msg + this.info)
+    Text(`${this.message}`).margin('20%')
   }
 }
 
 @Entry
 @Component
 struct LinkExample {
-  @State message: string = 'Hello';
-  @State info: Info = new Info();
+  message: string = 'Hello';
 
   build() {
     Column() {
       // 错误写法，常规变量不能初始化@Link
-      Child({msg: 'World', info: this.info.info})
+      Child({ message: this.message })
     }
   }
 }
@@ -762,17 +813,12 @@ struct LinkExample {
 ### Code block 5
 
 ```
-class LinkInfo2 {
-  public info: string = 'Hello';
-}
-
 @Component
 struct LinkChild2 {
-  @Link msg: string;
-  @Link info: LinkInfo2;
+  @Link message: string;
 
   build() {
-    Text(this.msg + this.info.info)
+    Text(`${this.message}`).margin('20%')
   }
 }
 
@@ -780,12 +826,11 @@ struct LinkChild2 {
 @Component
 struct LinkExample2 {
   @State message: string = 'Hello';
-  @State info: LinkInfo2 = new LinkInfo2();
 
   build() {
     Column() {
       // 正确写法
-      LinkChild2({msg: this.message, info: this.info})
+      LinkChild2({ message: this.message })
     }
   }
 }
@@ -926,7 +971,7 @@ struct ArrayTypes {
             .backgroundColor('#11a2a2a2')
             .fontColor('#e6000000')
         },
-        (item: ForEachInterface) => item.toString()
+        (item: number) => item.toString()
       )
     }
   }
@@ -943,27 +988,47 @@ struct MapSampleChild {
   build() {
     Column() {
       ForEach(Array.from(this.value.entries()), (item: [number, string]) => {
-        Text(`${item[0]}`).fontSize(30)
-        Text(`${item[1]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
+        Text(`${item[1]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // 子组件的Map类型可以同步回父组件
-      Button('child init map').onClick(() => {
-        this.value = new Map([[0, 'a'], [1, 'b'], [3, 'c']]);
-      })
-      Button('child set new one').onClick(() => {
-        this.value.set(4, 'd');
-      })
-      Button('child clear').onClick(() => {
-        this.value.clear();
-      })
-      Button('child replace the first one').onClick(() => {
-        this.value.set(0, 'aa');
-      })
-      Button('child delete the first one').onClick(() => {
-        this.value.delete(0);
-      })
+      Button('child init map')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value = new Map([[0, 'a'], [1, 'b'], [3, 'c']]);
+        })
+      Button('child set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.set(4, 'd');
+        })
+      Button('child clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.clear();
+        })
+      Button('child replace the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.set(0, 'aa');
+        })
+      Button('child delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.value.delete(0);
+        })
     }
+    .width('100%')
   }
 }
 
@@ -995,22 +1060,36 @@ struct SetSampleChild {
   build() {
     Column() {
       ForEach(Array.from(this.message.entries()), (item: [number, number]) => {
-        Text(`${item[0]}`).fontSize(30)
+        Text(`${item[0]}`)
+          .fontSize(30)
+          .margin(10)
         Divider()
       })
       // 子组件的Set类型可以同步回父组件
-      Button('init set').onClick(() => {
-        this.message = new Set([0, 1, 2, 3, 4]);
-      })
-      Button('set new one').onClick(() => {
-        this.message.add(5);
-      })
-      Button('clear').onClick(() => {
-        this.message.clear();
-      })
-      Button('delete the first one').onClick(() => {
-        this.message.delete(0);
-      })
+      Button('init set')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message = new Set([0, 1, 2, 3, 4]);
+        })
+      Button('set new one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.add(5);
+        })
+      Button('clear')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.clear();
+        })
+      Button('delete the first one')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.message.delete(0);
+        })
     }
     .width('100%')
   }
@@ -1045,10 +1124,13 @@ struct DateComponent {
     Column() {
       // 子组件的Date类型可以同步回父组件
       Button(`child increase the year by 1`)
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.selectedDate.setFullYear(this.selectedDate.getFullYear() + 1);
         })
       Button('child update the new date')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.selectedDate = new Date('2023-09-09');
@@ -1059,6 +1141,7 @@ struct DateComponent {
         selected: this.selectedDate
       })
     }
+    .width('100%')
   }
 }
 
@@ -1070,11 +1153,13 @@ struct ParentComponent {
   build() {
     Column() {
       Button('parent increase the month by 1')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.parentSelectedDate.setMonth(this.parentSelectedDate.getMonth() + 1);
         })
       Button('parent update the new date')
+        .width(300)
         .margin(10)
         .onClick(() => {
           this.parentSelectedDate = new Date('2023-07-07');
@@ -1087,6 +1172,7 @@ struct ParentComponent {
 
       DateComponent({ selectedDate:this.parentSelectedDate })
     }
+    .width('100%')
   }
 }
 ```
@@ -1102,9 +1188,12 @@ struct ChangeVariables {
   build() {
     Column() {
       Text(`sourceNumber of the parent component:` + this.sourceNumber)
+        .fontSize(20)
+        .margin(10)
       ChangeVariablesChild({ sourceNumber: this.sourceNumber })
-      // sourceNumber的修改不会影响到父组件中的变量改变
       Button('Change sourceNumber in Parent Component')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.sourceNumber++;
         })
@@ -1120,18 +1209,26 @@ struct ChangeVariablesChild {
   @Link @Watch('onSourceChange') sourceNumber: number;
 
   onSourceChange() {
+    // memberMessage在子组件中本地修改不会影响到父组件中的变量改变
     this.memberMessage = this.sourceNumber.toString();
   }
 
   build() {
     Column() {
       Text(this.memberMessage)
+        .fontSize(20)
+        .margin(10)
       Text(`sourceNumber of the child component:` + this.sourceNumber.toString())
+        .fontSize(20)
+        .margin(10)
       Button('Change memberMessage in Child Component')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.memberMessage = 'Hello memberMessage';
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -1146,18 +1243,22 @@ struct UnionChild {
 
   build() {
     Column() {
-
       Button('Child change name to Bob')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = 'Bob';
         })
 
       Button('Child change name to undefined')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = undefined;
         })
 
-    }.width('100%')
+    }
+    .width('100%')
   }
 }
 
@@ -1168,20 +1269,27 @@ struct UnionTypes {
 
   build() {
     Column() {
-      Text(`The name is  ${this.name}`).fontSize(30)
+      Text(`The name is  ${this.name}`)
+        .fontSize(20)
+        .margin(10)
 
       UnionChild({ name: this.name })
 
       Button('Parents change name to Peter')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = 'Peter';
         })
 
       Button('Parents change name to undefined')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.name = undefined;
         })
     }
+    .width('100%')
   }
 }
 ```

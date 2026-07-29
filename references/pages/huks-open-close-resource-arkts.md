@@ -6,11 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-open
 
 打开资源
 
-应用在密钥操作之前（密钥操作、通用操作、PIN码认证等），需要先调用openResource打开资源。打开资源需要获取resourceId，resourceId可通过证书选择接口获取，或通过getResourceId获取外部密钥管理扩展的资源ID。
+应用在密钥操作之前（密钥操作、通用操作、PIN码认证等），需要先调用openResource打开资源。打开资源需要获取resourceId，resourceId可通过openAuthorizeDialog获取，或通过getResourceId获取外部密钥管理扩展的资源ID。
 
 [h2]开发步骤
 
-通过证书选择接口获取keyUri作为resourceId，或通过getResourceId获取外部密钥管理扩展的资源ID。
+通过openAuthorizeDialog获取keyUri作为resourceId，或通过getResourceId获取外部密钥管理扩展的资源ID。
 
 调用openResource打开资源。
 
@@ -49,7 +49,7 @@ async function openResource(): Promise<void> {
 
 [h2]开发步骤
 
-通过证书选择接口获取resourceId，或通过getResourceId获取外部密钥管理扩展的资源ID。
+通过openAuthorizeDialog获取resourceId，或通过getResourceId获取外部密钥管理扩展的资源ID。
 
 调用closeResource关闭资源。
 

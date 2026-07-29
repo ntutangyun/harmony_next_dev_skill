@@ -168,7 +168,7 @@ Monitor - sum changed from 0 to 6
 
 接口说明
 
-IMonitor类型和IMonitorValue<T>类型的接口说明参考API文档：状态变量变化监听。
+IMonitor类型和IMonitorValue<T>类型的接口说明参考API文档：@Monitor：状态变量修改监听。
 
 监听变化
 
@@ -647,7 +647,7 @@ struct DocSampleArrayMultiPath {
           // changes arr from [ 0, 1, 2, 3, 4, 5 ] to [ 0, 100, 101, 102, 5]
           this.arr.splice(1, 4, 100, 101, 102);
           hilog.info(0xFF00, 'testTag', 'shift execute ...');
-          // changes arr from [ 1, 100, 101, 102, 5] to [ 100, 101, 102, 5]
+          // changes arr from [ 0, 100, 101, 102, 5] to [ 100, 101, 102, 5]
           this.arr.shift();
           hilog.info(0xFF00, 'testTag', '.. done');
         })
@@ -1603,7 +1603,8 @@ class Info {
   public name: string = 'John';
   @Trace public age: number = 24;
 
-  // 只允许监听状态变量age，监听非状态变量name，会编译告警，提示`Cannot observe non-existent variables or non-state variables, except in wildcard-based monitoring scenarios.`
+  // 只允许监听状态变量age。监听非状态变量name，会编译告警，
+  // 提示：`Cannot observe non-existent variables or non-state variables, except in wildcard-based monitoring scenarios.`
   @SyncMonitor('age', 'name')
   onPropertyChange(monitor: IMonitor) {
     monitor.dirty.forEach((path: string) => {
@@ -2391,7 +2392,7 @@ struct DocSampleArrayMultiPath {
           // changes arr from [ 0, 1, 2, 3, 4, 5 ] to [ 0, 100, 101, 102, 5]
           this.arr.splice(1, 4, 100, 101, 102);
           hilog.info(0xFF00, 'testTag', 'shift execute ...');
-          // changes arr from [ 1, 100, 101, 102, 5] to [ 100, 101, 102, 5]
+          // changes arr from [ 0, 100, 101, 102, 5] to [ 100, 101, 102, 5]
           this.arr.shift();
           hilog.info(0xFF00, 'testTag', '.. done');
         })
@@ -3295,7 +3296,8 @@ class Info {
   public name: string = 'John';
   @Trace public age: number = 24;
 
-  // 只允许监听状态变量age，监听非状态变量name，会编译告警，提示`Cannot observe non-existent variables or non-state variables, except in wildcard-based monitoring scenarios.`
+  // 只允许监听状态变量age。监听非状态变量name，会编译告警，
+  // 提示：`Cannot observe non-existent variables or non-state variables, except in wildcard-based monitoring scenarios.`
   @SyncMonitor('age', 'name')
   onPropertyChange(monitor: IMonitor) {
     monitor.dirty.forEach((path: string) => {

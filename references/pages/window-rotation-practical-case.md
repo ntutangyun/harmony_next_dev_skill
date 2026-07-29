@@ -1,4 +1,4 @@
-# 窗口旋转场景实例
+# 窗口旋转实践案例
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/window-rotation-practical-case_
 
@@ -26,19 +26,22 @@ import { display } from '@kit.ArkUI';
 struct Index {
   @State currentOrientation: string = 'UNSPECIFIED';
   private stage: window.WindowStage = (this.getUIContext().getHostContext() as common.UIAbilityContext).windowStage;
+  private foldDisplayModeCallback: Callback<display.FoldDisplayMode> = (data: display.FoldDisplayMode) => {
+    console.info(`Listening enabled. Data: ${data}`);
+    this.getBreakPointAndSetOrientation();
+  };
 
   aboutToAppear() {
-    let ret: boolean = false;
-    ret = display.isFoldable();
+    const ret = display.isFoldable();
     if (ret) {
-      let callback: Callback<display.FoldDisplayMode> = (data: display.FoldDisplayMode) => {
-        console.info(`Listening enabled. Data: ${data}`);
-        this.getBreakPointAndSetOrientation();
-      };
-      display.on('foldDisplayModeChange', callback);
+      display.on('foldDisplayModeChange', this.foldDisplayModeCallback);
     } else {
       this.getBreakPointAndSetOrientation();
     }
+  }
+
+  aboutToDisappear() {
+    display.off('foldDisplayModeChange', this.foldDisplayModeCallback);
   }
 
   private getBreakPointAndSetOrientation(): void {
@@ -46,7 +49,7 @@ struct Index {
     let displayWidth = displayInfo.width;
     let displayHeight = displayInfo.height;
     let heightBp = displayHeight / displayWidth;
-    if(displayWidth > displayHeight) {
+    if (displayWidth > displayHeight) {
       let temp = displayWidth;
       displayWidth = displayHeight;
       displayHeight = temp;
@@ -62,13 +65,14 @@ struct Index {
       this.currentOrientation = 'PORTRAIT';
     }
   }
+
   build() {
     RelativeContainer() {
       Text(this.currentOrientation)
         .fontWeight(600)
         .fontSize(30)
         .textAlign(TextAlign.Center)
-        .position({y: 300})
+        .position({ y: 300 })
         .width('100%')
     }
     .height('100%')
@@ -112,7 +116,7 @@ struct Index {
 
 若开发者想准确知道当前窗口方向从而选择旋转策略（比如视频播放页面锁定当前方向），推荐获取到display.rotation或display.orientation后，再使用convertOrientationAndRotation()将屏幕方向转化为窗口方向，具体示例如下：
 
-获取目标屏幕方向。调用getDefaultDisplaySync()获取屏幕方向。
+获取目标屏幕方向。调用getDefaultDisplaySync()获取目标屏幕的Display对象，再通过其display.orientation属性获取屏幕方向。
 
 将屏幕方向转换为窗口方向。调用convertOrientationAndRotation()可以把屏幕方向display.orientation转换为窗口方向orientation。
 
@@ -202,19 +206,22 @@ import { display } from '@kit.ArkUI';
 struct Index {
   @State currentOrientation: string = 'UNSPECIFIED';
   private stage: window.WindowStage = (this.getUIContext().getHostContext() as common.UIAbilityContext).windowStage;
+  private foldDisplayModeCallback: Callback<display.FoldDisplayMode> = (data: display.FoldDisplayMode) => {
+    console.info(`Listening enabled. Data: ${data}`);
+    this.getBreakPointAndSetOrientation();
+  };
 
   aboutToAppear() {
-    let ret: boolean = false;
-    ret = display.isFoldable();
+    const ret = display.isFoldable();
     if (ret) {
-      let callback: Callback<display.FoldDisplayMode> = (data: display.FoldDisplayMode) => {
-        console.info(`Listening enabled. Data: ${data}`);
-        this.getBreakPointAndSetOrientation();
-      };
-      display.on('foldDisplayModeChange', callback);
+      display.on('foldDisplayModeChange', this.foldDisplayModeCallback);
     } else {
       this.getBreakPointAndSetOrientation();
     }
+  }
+
+  aboutToDisappear() {
+    display.off('foldDisplayModeChange', this.foldDisplayModeCallback);
   }
 
   private getBreakPointAndSetOrientation(): void {
@@ -222,7 +229,7 @@ struct Index {
     let displayWidth = displayInfo.width;
     let displayHeight = displayInfo.height;
     let heightBp = displayHeight / displayWidth;
-    if(displayWidth > displayHeight) {
+    if (displayWidth > displayHeight) {
       let temp = displayWidth;
       displayWidth = displayHeight;
       displayHeight = temp;
@@ -238,13 +245,14 @@ struct Index {
       this.currentOrientation = 'PORTRAIT';
     }
   }
+
   build() {
     RelativeContainer() {
       Text(this.currentOrientation)
         .fontWeight(600)
         .fontSize(30)
         .textAlign(TextAlign.Center)
-        .position({y: 300})
+        .position({ y: 300 })
         .width('100%')
     }
     .height('100%')

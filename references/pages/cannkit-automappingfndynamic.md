@@ -17,7 +17,7 @@ op_src	输入	转换前原始模型中的算子，包含原始模型中算子的
 op	输入	适配AI处理器的算子。
 dynamic_name_attr_value	输入	描述动态输入输出实际个数，key表示动态端口是输入还是输出，key的取值： - in：代表算子的输入。 - out：代表算子的输出。
 in_pos	输入	动态输入的端口id。
-out_pos	输入	动态输出的端口id。
+out_pos	输出	动态输出的端口id。
 
 约束说明
 

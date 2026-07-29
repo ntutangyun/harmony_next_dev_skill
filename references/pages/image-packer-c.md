@@ -158,7 +158,7 @@ Image_ErrorCode packToFileFromImageSourceTest(int fd, OH_ImageSourceNative* imag
     OH_PackingOptions_SetMimeType(option, &image_MimeType);
     // 当设备支持HDR编码，资源本身为HDR图且图片资源的格式为jpeg时，编码产物才能为HDR内容。
     OH_PackingOptions_SetDesiredDynamicRange(option, IMAGE_PACKER_DYNAMIC_RANGE_AUTO);
-    // 设置编码质量，quality默认为0，建议quality的值不低于80
+    // 设置编码质量。quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
     uint32_t quality = 90;
     OH_PackingOptions_SetQuality(option, quality);
     errCode = OH_ImagePackerNative_PackToFileFromImageSource(testPacker, option, imageSource, fd);
@@ -198,7 +198,7 @@ Image_ErrorCode packToFileFromPixelmapTest(int fd, OH_PixelmapNative *pixelmap)
         OH_ImagePackerNative_Release(testPacker);
         return errCode;
     }
-    // 设置编码质量，quality默认为0，建议quality的值不低于80
+    // 设置编码质量。quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
     uint32_t quality = 90;
     OH_PackingOptions_SetQuality(option, quality);
     errCode = OH_ImagePackerNative_PackToFileFromPixelmap(testPacker, option, pixelmap, fd);
@@ -427,7 +427,7 @@ Image_ErrorCode packToFileFromImageSourceTest(int fd, OH_ImageSourceNative* imag
     OH_PackingOptions_SetMimeType(option, &image_MimeType);
     // 当设备支持HDR编码，资源本身为HDR图且图片资源的格式为jpeg时，编码产物才能为HDR内容。
     OH_PackingOptions_SetDesiredDynamicRange(option, IMAGE_PACKER_DYNAMIC_RANGE_AUTO);
-    // 设置编码质量，quality默认为0，建议quality的值不低于80
+    // 设置编码质量。quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
     uint32_t quality = 90;
     OH_PackingOptions_SetQuality(option, quality);
     errCode = OH_ImagePackerNative_PackToFileFromImageSource(testPacker, option, imageSource, fd);
@@ -467,7 +467,7 @@ Image_ErrorCode packToFileFromPixelmapTest(int fd, OH_PixelmapNative *pixelmap)
         OH_ImagePackerNative_Release(testPacker);
         return errCode;
     }
-    // 设置编码质量，quality默认为0，建议quality的值不低于80
+    // 设置编码质量。quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
     uint32_t quality = 90;
     OH_PackingOptions_SetQuality(option, quality);
     errCode = OH_ImagePackerNative_PackToFileFromPixelmap(testPacker, option, pixelmap, fd);

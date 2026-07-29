@@ -18,34 +18,27 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 操作步骤
 
-调用StorageBucket.setMetadata可以设置云侧文档的元数据信息。
+导入相关模块。
 
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+调用StorageBucket.setMetadata设置云侧文档的元数据信息。
 
-@Component
-export struct testPage {
-  build() {
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+hilog.info(0x0000, 'Storage', `promise setMetadata  cloudPath: ${UI.uploadFileName}`);
+bucket.setMetadata(UI.uploadFileName, {
+  customMetadata: {
+    key1: 'value1',
+    key2: 'value2'
   }
-
-  // 设置元数据
-  setMetaData() {
-    // 设置云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的元数据信息
-    storageBucket.setMetadata('screenshot/screenshot_20250115_155321.jpg', {
-      customMetadata: {
-        key1: "value1",
-        key2: "value2"
-      }
-    }).then((metadata: cloudStorage.Metadata) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in setting metadata: ${JSON.stringify(metadata)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to set metadata, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+}).then((result: Object) => {
+  hilog.info(0x0000, 'Storage', `Succeeded in setting Metadata  ${JSON.stringify(result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to set Metadata code: ${err.code}, message: ${err.message}`);
+});
 
 ## Code blocks
 
@@ -53,29 +46,24 @@ export struct testPage {
 
 ```
 import { cloudStorage } from '@kit.CloudFoundationKit';
+// ...
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+```
 
-let storageBucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+### Code block 2
 
-@Component
-export struct testPage {
-  build() {
+```
+let bucket: cloudStorage.StorageBucket = cloudStorage.bucket();
+hilog.info(0x0000, 'Storage', `promise setMetadata  cloudPath: ${UI.uploadFileName}`);
+bucket.setMetadata(UI.uploadFileName, {
+  customMetadata: {
+    key1: 'value1',
+    key2: 'value2'
   }
-
-  // 设置元数据
-  setMetaData() {
-    // 设置云存储默认实例中screenshot/screenshot_20250115_155321.jpg文件的元数据信息
-    storageBucket.setMetadata('screenshot/screenshot_20250115_155321.jpg', {
-      customMetadata: {
-        key1: "value1",
-        key2: "value2"
-      }
-    }).then((metadata: cloudStorage.Metadata) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in setting metadata: ${JSON.stringify(metadata)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to set metadata, code: ${err.code}, message: ${err.message}`);
-    })
-  }
-}
+}).then((result: Object) => {
+  hilog.info(0x0000, 'Storage', `Succeeded in setting Metadata  ${JSON.stringify(result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'Storage', `Failed to set Metadata code: ${err.code}, message: ${err.message}`);
+});
 ```

@@ -8,13 +8,13 @@ ArkGraphics 3D以自定义场景模式为核心能力，支持开发者自行构
 
 功能介绍
 
-提供加载并解析标准glTF（GL Transmission Format）模型（.gltf文件和.glb文件）的能力，支持开发者将glTF模型文件置于应用文件沙盒中，并通过ArkGraphics 3D提供的异步接口完成模型的加载以及渲染。具体可见Scene (场景管理)，glTF相关介绍请参见glTF-Specification。
+提供加载并解析标准glTF（GL Transmission Format）模型（.gltf文件和.glb文件）的能力，同时支持使用MeshOpt压缩，输入带有EXT_meshopt_compression扩展描述的glTF模型。支持开发者将glTF模型文件置于应用文件沙盒中，并通过ArkGraphics 3D提供的异步接口完成模型的加载以及渲染。具体可见Scene。
 
-提供自定义灯光（Light）、相机（Camera）节点以及通用节点（Node）的能力，可支撑开发者自定义场景灯光、渲染视角等信息，同时支撑用户动态地调整场景树结构以及节点属性进而调整3D场景。具体可见Scene (场景管理)以及SceneNode (节点管理)。
+提供自定义灯光（Light）、相机（Camera）节点以及通用节点（Node）的能力，可支撑开发者自定义场景灯光、渲染视角等信息，同时支撑用户动态地调整场景树结构以及节点属性进而调整3D场景。具体可见Scene以及SceneNode (节点管理)。
 
-提供创建图片（Image）、材质（Material）、环境（Environment）以及自定义着色器（Shader）的能力，支撑开发者通过调用ArkGraphics 3D提供的能力来创建3D场景中使用的各种资源，支撑开发者自定义着色器，完成自定义3D材质渲染。具体可以参见Scene (场景管理)以及SceneResource (资源管理)。
+提供创建图片（Image）、材质（Material）、环境（Environment）以及自定义着色器（Shader）的能力，支撑开发者通过调用ArkGraphics 3D提供的能力来创建3D场景中使用的各种资源，支撑开发者自定义着色器，完成自定义3D材质渲染。具体可以参见Scene以及SceneResources。
 
-提供控制3D场景动画状态的能力，支撑开发者控制动画的开始、暂停、结束、播放到指定位置等操作，同时提供动画开始、结束时的回调函数支持开发者进行逻辑控制。具体可见SceneResource (资源管理)。
+提供控制3D场景动画状态的能力，支撑开发者控制动画的开始、暂停、结束、播放到指定位置等操作，同时提供动画开始、结束时的回调函数支持开发者进行逻辑控制。具体可见SceneResources。
 
 提供基础的3D渲染后处理能力，提供接口支撑开发者进行ToneMapping后处理相关控制。具体可见ScenePostProcessSettings (后处理管理)。
 

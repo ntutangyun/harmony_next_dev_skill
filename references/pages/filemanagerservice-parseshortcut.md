@@ -22,17 +22,19 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 2.根据指定快捷方式文件的URI解析出对应原文件的URI。
 
-public static async getTargetUriByLinkUri() {
+private async getTargetUriByLinkUri(linkUri: string): Promise<string> {
   // 示例代码linkUri表示快捷方式文件的URI，快捷方式文件的后缀为“.hlink”
+  // 例如，linkUri可以输入为: ”file://docs/storage/Users/currentUser/Documents/1.jpg.hlink“
   // 开发者应根据自己实际的URI进行开发，并确保对该文件有读写权限
-  let linkUri: string = "file://docs/storage/Users/currentUser/Documents/1.jpg.hlink";
   try {
     let targetUri: string = await fileManagerService.parseShortcut(linkUri);
-    console.info("targetUri is: " + targetUri);
+    console.info('targetUri is: ' + targetUri);
+    return targetUri;
   } catch (err) {
     let error: BusinessError = err as BusinessError;
-    console.error("parse shortcut failed, errCode:" + error.code + ", errMessage:" + error.message);
+    console.error('parse shortcut failed, errCode:' + error.code + ', errMessage:' + error.message);
   }
+  return '';
 }
 
 ## Code blocks
@@ -47,16 +49,18 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-public static async getTargetUriByLinkUri() {
+private async getTargetUriByLinkUri(linkUri: string): Promise<string> {
   // 示例代码linkUri表示快捷方式文件的URI，快捷方式文件的后缀为“.hlink”
+  // 例如，linkUri可以输入为: ”file://docs/storage/Users/currentUser/Documents/1.jpg.hlink“
   // 开发者应根据自己实际的URI进行开发，并确保对该文件有读写权限
-  let linkUri: string = "file://docs/storage/Users/currentUser/Documents/1.jpg.hlink";
   try {
     let targetUri: string = await fileManagerService.parseShortcut(linkUri);
-    console.info("targetUri is: " + targetUri);
+    console.info('targetUri is: ' + targetUri);
+    return targetUri;
   } catch (err) {
     let error: BusinessError = err as BusinessError;
-    console.error("parse shortcut failed, errCode:" + error.code + ", errMessage:" + error.message);
+    console.error('parse shortcut failed, errCode:' + error.code + ', errMessage:' + error.message);
   }
+  return '';
 }
 ```

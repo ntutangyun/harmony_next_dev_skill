@@ -258,7 +258,11 @@ ContainerReader({
   size: this.containerSize!!,
   widthBreakpoint: this.widthBp!!
 }) {
-  // 子组件内容
+  Column() {
+    Text('Adaptive Content')
+  }
+  .width('100%')
+  .height('100%')
 }
 
 确定容器尺寸。
@@ -377,7 +381,6 @@ struct MultiContainerExample {
 
 使用ContainerReader需要同时导入ContainerReaderAttribute，否则会导致编译报错。
 
-// xxx.ets
 import {ContainerReader, ContainerReaderAttribute, Size} from '@kit.ArkUI';
 @Entry
 @Component
@@ -455,7 +458,6 @@ struct GridBreakpointExample {
 
 使用ContainerReader需要同时导入ContainerReaderAttribute，否则会导致编译报错。
 
-// xxx.ets
 import {ContainerReader, ContainerReaderAttribute, Size} from '@kit.ArkUI';
 
 // 自适应卡片组件，内部使用ContainerReader感知容器尺寸
@@ -527,7 +529,6 @@ struct AdaptiveCardExample {
 
 使用ContainerReader需要同时导入ContainerReaderAttribute，否则会导致编译报错。
 
-// xxx.ets
 import { ContainerReader, ContainerReaderAttribute, Size } from '@kit.ArkUI';
 
 @Entry
@@ -831,7 +832,11 @@ ContainerReader({
   size: this.containerSize!!,
   widthBreakpoint: this.widthBp!!
 }) {
-  // 子组件内容
+  Column() {
+    Text('Adaptive Content')
+  }
+  .width('100%')
+  .height('100%')
 }
 ```
 
@@ -928,7 +933,6 @@ struct MultiContainerExample {
 ### Code block 10
 
 ```
-// xxx.ets
 import {ContainerReader, ContainerReaderAttribute, Size} from '@kit.ArkUI';
 @Entry
 @Component
@@ -1002,7 +1006,6 @@ struct GridBreakpointExample {
 ### Code block 11
 
 ```
-// xxx.ets
 import {ContainerReader, ContainerReaderAttribute, Size} from '@kit.ArkUI';
 
 // 自适应卡片组件，内部使用ContainerReader感知容器尺寸
@@ -1070,7 +1073,6 @@ struct AdaptiveCardExample {
 ### Code block 12
 
 ```
-// xxx.ets
 import { ContainerReader, ContainerReaderAttribute, Size } from '@kit.ArkUI';
 
 @Entry

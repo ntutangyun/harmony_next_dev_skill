@@ -27,36 +27,37 @@ bool HMS_XEG_SetControlDisplaySeparationActive(bool flag)	设置控显分离特�
 
 环境配置：游戏应用需首先在module.json5配置文件中声明控显分离特性，以启用系统级的适配能力。
 
-启动加载：用户启动游戏，触发应用初始化流程。
+设置特性的监听回调函数：用户点击启动游戏后，应用调用HMS_XEG_SetControlDisplaySeparationStatusListener设置控显分离特性监听函数，返回值为true时，展示特性开关；否则不展示特性开关。
 
-能力监测：应用调用HMS_XEG_SetControlDisplaySeparationStatusListener注册状态监听回调。根据接口本身的返回值确认当前硬件系统是否支持控显分离。若支持，XEngine Kit 将实时监测设备屏幕的物理形态，并通过注册的回调函数返回当前状态是否允许启用该特性（例如：折叠屏展开态允许，折叠态不允许），状态记录至status。
+用户配置识别：用户可以选择打开或关闭特性开关，当用户打开特性开关时，游戏应用将用户配置开关设置（isFeatureOn）为true；当用户关闭特性开关时，游戏应用将用户配置开关设置为false。
 
-特性开关设置：在设备支持的前提下，游戏侧可以向用户提供功能开关，并将用户的开启状态记录至isFeatureOn。
+特性场景识别：游戏应用识别当前游戏场景，根据识别结果，开发者可自行配置场景配置开关（isActive）为true或false。
 
-特性场景识别：当设备状态允许且用户已开启功能时，游戏应用需识别当前业务场景（如对局中）是否需触发该特性，状态记录至isActive。
+调用监听回调函数：用户可以选择打开或折叠设备，当用户选择折叠或打开设备，XEngine Kit调用监听回调函数通知游戏应用。
 
-控显分离状态刷新：当status（设备态）、isFeatureOn（用户态）或isActive（场景态）中任意变量发生变化时，需即时刷新控显分离特性状态，并调用HMS_XEG_SetControlDisplaySeparationActive设置特性使能开关，详见开发步骤。
+设备状态识别：游戏应用根据回调函数的入参设置设备状态（status）。
 
-关键UI标识（可选）：系统默认将主画面布局在上半屏，其余UI布局在下半屏。若需将特定UI置于上半屏显示，需对其进行关键标记，详见开发步骤。
+游戏分辨率修正：当用户配置开关（isFeatureOn）为true、场景配置开关（isActive）为true并且设备状态（status）为AVAILABLE时，控显分离特性使能，游戏应用将游戏分辨率的高度修改为原来的一半，否则游戏分辨率的高度和折叠屏展开态的高度保持一致。
 
-资讯副屏（可选）：游戏应用如果想在控显分离生效时候，在下半屏额外渲染其他内容，则直接在当前场景下，渲染即可。
+（可选）关键UI标识：当控显分离特性使能时，XEngine Kit默认将游戏主画面布局在上半屏，其余UI布局（例如：操作按键）在下半屏。若需将特定UI置于上半屏显示，需对其进行关键标记，详见开发步骤7。
 
-当用户退出应用或不再使用该功能时，调用HMS_XEG_RemoveControlDisplaySeparationStatusListener注销监听，释放相关资源。
+（可选）渲染资讯副屏：游戏应用如果想在控显分离特性使能时，在下半屏额外渲染其他内容，则直接在当前场景下渲染即可。
+
+触发控显分离特性：当用户配置开关（isFeatureOn）为true、场景配置开关（isActive）为true并且设备状态（status）为AVAILABLE时，游戏应用调用HMS_XEG_SetControlDisplaySeparationActive(true)设置开启控显分离；否则游戏应用调用HMS_XEG_SetControlDisplaySeparationActive(false)设置关闭控显分离。
+
+销毁特性的监听回调函数：当用户退出应用或不再使用该功能时，调用HMS_XEG_RemoveControlDisplaySeparationStatusListener注销监听，释放相关资源。
 
 开发步骤
 
-本章以在Vulkan应用程序中集成为例，说明XEngine集成操作过程。
+本章以在Vulkan应用程序中集成为例，说明XEngine Kit集成操作过程。
 
 [h2]配置项目
 
-编译HAP时，Native层so编译需要依赖NDK中的libxengine.so。
+编译HAP包时，Native层so编译需要依赖NDK中的libxengine.so。
 
 头文件引用
 
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <xengine/xeg_control_display_separation.h>
+#include "xengine/xeg_control_display_separation.h"
 
 编写CMakeLists.txt
 
@@ -68,84 +69,97 @@ find_library(
     # 指定希望CMake定位的NDK库的名称。
     xengine
 )
+
 target_link_libraries(nativerender PUBLIC
-    # 其他库文件
     # ...
-    ${xengine-lib})
+    ${xengine-lib}
+)
 
 [h2]集成XEngine控显分离特性（Vulkan）
 
 使用Vulkan图形API搭建图像渲染管线，并集成控显分离代码需要在Native层实现，渲染结果通过XComponent组件显示到屏幕。
 
-// 增加以下字段
-// ...
+在调用XEngine Kit的控显分离能力前，开发者须首先在游戏应用的module.json5配置文件中声明该特性。详细配置方案参考module.json5配置metadata字段。
+
 "metadata": [
-    {
-        "name": "XEngineKit_ControlDisplaySeparation",
-        "value": "true"
-    },
+  {
+    "name": "XEngineKit_ControlDisplaySeparation",
+    "value": "true"
+  }
 ],
-// ...
+
+初始化控显分离所需的控制变量。
 
 // 当前硬件系统是否支持该特性
-bool isSystemSupport = false;
-
-// 设备状态，用于描述当前状态是否允许启用该特性（例如折叠屏展开态允许，折叠态不允许）
-XEG_ControlDisplaySeparationStatus status = XEG_ControlDisplaySeparationStatus::UNAVAILABLE;
-
-// 用户配置开关，用于描述用户或者游戏本身是否打开该特性
-bool isFeatureOn = false;
-
+static bool isSystemSupport = false;
+// 设备状态，用于描述当前状态是否允许启用该特性（例如折叠机展开态允许，折叠态不允许）
+static XEG_ControlDisplaySeparationStatus status = XEG_ControlDisplaySeparationStatus::UNAVAILABLE;
+// 用户配置开关，用于描述用户或者游戏本身是否打开该特性（目前默认打开，实际使用根据用户）
+static bool isFeatureOn = false;
 // 特性使能开关，用于描述当前场景是否使能控显分离（例如：游戏大厅场景不使能，游戏对局内使能）
-bool isActive = false;
+static bool isActive = false;
+
+在游戏启动后，调用HMS_XEG_SetControlDisplaySeparationStatusListener注册状态监听回调。根据接口本身的返回值（状态记录至isSystemSupport）确认当前硬件系统是否支持控显分离。若支持，XEngine Kit将实时监测设备屏幕的物理形态，并通过注册的回调函数返回当前状态是否允许启用该特性（例如：折叠屏展开态允许，折叠态不允许），状态记录至status。
 
 // 状态回调函数
-void ControlDisplaySeparationHandler(XEG_ControlDisplaySeparationStatus controlDisplaySeparationStatus) {
+void ControlDisplaySeparationHandler(XEG_ControlDisplaySeparationStatus controlDisplaySeparationStatus)
+{
     status = controlDisplaySeparationStatus;
-    UpdateControlDisplaySeparation(); // 刷新控显分离特性状态
+    // 刷新控显分离特性状态
+    UpdateControlDisplaySeparation();
 }
-// 注册控显分离状态监听，注册成功表示当前设备支持控显分离特性，否则不支持
-bool isSystemSupport = HMS_XEG_SetControlDisplaySeparationStatusListener(ControlDisplaySeparationHandler);
+
+void setCallBack()
+{
+    // 注册控显分离状态监听，注册成功表示当前设备支持控显分离特性，否则不支持
+    isSystemSupport = HMS_XEG_SetControlDisplaySeparationStatusListener(ControlDisplaySeparationHandler);
+}
 
 特性开关设置：游戏应用可以在用户点击设置页面时，如果设备支持该特性，则可以提供特性开关选项。并将特性开关结果赋值给isFeatureOn。
 
 特性场景识别：当设备状态允许且用户已开启功能时，游戏应用需识别当前业务场景（如对局中）是否需触发该特性，状态记录至isActive。
 
-void UpdateControlDisplaySeparation() {
-    if(isFeatureOn == true && status == XEG_ControlDisplaySeparationStatus::AVAILABLE && isActive == true){ // 需要开启控显分离
-        if(HMS_XEG_SetControlDisplaySeparationActive(true)) { // 开启成功
+刷新控显分离特性状态：当status、isFeatureOn或isActive中任一状态发生变化时，需触发状态刷新逻辑。仅当status为AVAILABLE且isFeatureOn与isActive均为true时，应用需调用HMS_XEG_SetControlDisplaySeparationActive以开启特性，此时系统将执行画面与UI的上下分离。开启后，游戏侧须将渲染分辨率设置为全屏高度的一半以确保画面正常显示。若需在上半屏保留特定UI或在下半屏渲染额外资讯，请分别参考步骤7与步骤8。
+
+void UpdateControlDisplaySeparation()
+{
+    // 需要开启控显分离
+    if (isFeatureOn == true && status == XEG_ControlDisplaySeparationStatus::AVAILABLE && isActive == true) {
+        if (HMS_XEG_SetControlDisplaySeparationActive(true)) {
+            // 开启成功
             // 调用游戏引擎分辨率设置接口，将渲染分辨率的高度设为原来的一半
             // 关键UI标识（可选），标识后关键UI可以渲染到上半屏
             // 渲染额外的资讯副屏（可选）， 和其他UI在同一个render pass渲染即可
-        } else { // 开启失败
+            updateResolution();
+        } else {
+            // 开启失败
             isActive = false;
         }
-    } else { // 需要关闭控显分离
-        if(HMS_XEG_SetControlDisplaySeparationActive(false)) {
+    } else {
+        // 需要关闭控显分离
+        if (HMS_XEG_SetControlDisplaySeparationActive(false)) {
             // 调用游戏引擎分辨率设置接口，将渲染分辨率的高度设为全屏高度
+            updateResolution();
         } else {
             // 关闭失败，需要进一步定位原因。
         }
     }
 }
 
-关键UI标识（可选）：控显分离特性默认将主画面渲染至上半屏，其余UI渲染至下半屏。若需将血条、角色名等特定UI保留在上半屏，须在特性开启时对其进行标识。开发者可采用模板值标记方案，通过预先为目标UI设置统一的标签，并在特性生效时，将这些UI对应的模板值统一设置为200，系统底层即可识别并将其渲染至上半屏。
+关键UI标识（可选）：控显分离特性默认将主画面渲染至上半屏，其余UI渲染至下半屏。若需将血条、角色名等特定UI保留在上半屏，须在特性开启时对其进行标识。开发者可采用模板值标记方案，通过预先为目标UI设置统一的标签，并在特性生效时，将这些UI对应的模板值设置为大于等于128，系统底层即可识别并将其渲染至上半屏。
 
 资讯副屏（可选）：在控显分离模式下，原本为避开中心画面而设计在屏幕两侧的UI布局，会导致下半屏中心区域出现大量空白。应用可利用该空间展示游戏计分板、实时战报等额外资讯内容以丰富交互体验。新增资讯内容的实现方式与常规UI一致，直接在当前场景下执行渲染即可。
 
-if(exit) {
-    HMS_XEG_RemoveControlDisplaySeparationStatusListener();
-}
+用户退出控显分离适用的游戏场景，则调用HMS_XEG_RemoveControlDisplaySeparationStatusListener，取消控显分离注册监听。
+
+HMS_XEG_RemoveControlDisplaySeparationStatusListener();
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <xengine/xeg_control_display_separation.h>
+#include "xengine/xeg_control_display_separation.h"
 ```
 
 ### Code block 2
@@ -157,69 +171,77 @@ find_library(
     # 指定希望CMake定位的NDK库的名称。
     xengine
 )
+
 target_link_libraries(nativerender PUBLIC
-    # 其他库文件
     # ...
-    ${xengine-lib})
+    ${xengine-lib}
+)
 ```
 
 ### Code block 3
 
 ```
-// 增加以下字段
-// ...
 "metadata": [
-    {
-        "name": "XEngineKit_ControlDisplaySeparation",
-        "value": "true"
-    },
+  {
+    "name": "XEngineKit_ControlDisplaySeparation",
+    "value": "true"
+  }
 ],
-// ...
 ```
 
 ### Code block 4
 
 ```
 // 当前硬件系统是否支持该特性
-bool isSystemSupport = false;
-
-// 设备状态，用于描述当前状态是否允许启用该特性（例如折叠屏展开态允许，折叠态不允许）
-XEG_ControlDisplaySeparationStatus status = XEG_ControlDisplaySeparationStatus::UNAVAILABLE;
-
-// 用户配置开关，用于描述用户或者游戏本身是否打开该特性
-bool isFeatureOn = false;
-
+static bool isSystemSupport = false;
+// 设备状态，用于描述当前状态是否允许启用该特性（例如折叠机展开态允许，折叠态不允许）
+static XEG_ControlDisplaySeparationStatus status = XEG_ControlDisplaySeparationStatus::UNAVAILABLE;
+// 用户配置开关，用于描述用户或者游戏本身是否打开该特性（目前默认打开，实际使用根据用户）
+static bool isFeatureOn = false;
 // 特性使能开关，用于描述当前场景是否使能控显分离（例如：游戏大厅场景不使能，游戏对局内使能）
-bool isActive = false;
+static bool isActive = false;
 ```
 
 ### Code block 5
 
 ```
 // 状态回调函数
-void ControlDisplaySeparationHandler(XEG_ControlDisplaySeparationStatus controlDisplaySeparationStatus) {
+void ControlDisplaySeparationHandler(XEG_ControlDisplaySeparationStatus controlDisplaySeparationStatus)
+{
     status = controlDisplaySeparationStatus;
-    UpdateControlDisplaySeparation(); // 刷新控显分离特性状态
+    // 刷新控显分离特性状态
+    UpdateControlDisplaySeparation();
 }
-// 注册控显分离状态监听，注册成功表示当前设备支持控显分离特性，否则不支持
-bool isSystemSupport = HMS_XEG_SetControlDisplaySeparationStatusListener(ControlDisplaySeparationHandler);
+
+void setCallBack()
+{
+    // 注册控显分离状态监听，注册成功表示当前设备支持控显分离特性，否则不支持
+    isSystemSupport = HMS_XEG_SetControlDisplaySeparationStatusListener(ControlDisplaySeparationHandler);
+}
 ```
 
 ### Code block 6
 
 ```
-void UpdateControlDisplaySeparation() {
-    if(isFeatureOn == true && status == XEG_ControlDisplaySeparationStatus::AVAILABLE && isActive == true){ // 需要开启控显分离
-        if(HMS_XEG_SetControlDisplaySeparationActive(true)) { // 开启成功
+void UpdateControlDisplaySeparation()
+{
+    // 需要开启控显分离
+    if (isFeatureOn == true && status == XEG_ControlDisplaySeparationStatus::AVAILABLE && isActive == true) {
+        if (HMS_XEG_SetControlDisplaySeparationActive(true)) {
+            // 开启成功
             // 调用游戏引擎分辨率设置接口，将渲染分辨率的高度设为原来的一半
             // 关键UI标识（可选），标识后关键UI可以渲染到上半屏
             // 渲染额外的资讯副屏（可选）， 和其他UI在同一个render pass渲染即可
-        } else { // 开启失败
+            updateResolution();
+        } else {
+            // 开启失败
             isActive = false;
         }
-    } else { // 需要关闭控显分离
-        if(HMS_XEG_SetControlDisplaySeparationActive(false)) {
+    } else {
+        // 需要关闭控显分离
+        if (HMS_XEG_SetControlDisplaySeparationActive(false)) {
             // 调用游戏引擎分辨率设置接口，将渲染分辨率的高度设为全屏高度
+            updateResolution();
         } else {
             // 关闭失败，需要进一步定位原因。
         }
@@ -230,7 +252,5 @@ void UpdateControlDisplaySeparation() {
 ### Code block 7
 
 ```
-if(exit) {
-    HMS_XEG_RemoveControlDisplaySeparationStatusListener();
-}
+HMS_XEG_RemoveControlDisplaySeparationStatusListener();
 ```

@@ -18,6 +18,7 @@ off(type: 'deviceFound', callback?: Callback<Array<ScanResults>>): void	取消�
 
 导入相关模块。
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { scan } from '@kit.NearLinkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { util } from '@kit.ArkTS';
@@ -39,21 +40,14 @@ const NEARLINK_UUID_16_BIT_LENGTH = 2;
 const NEARLINK_UUID_128_BIT_LENGTH = 16;
 
 const NEARLINK_MANUFACTURE_ID_LENGTH = 2;
-
-// 定义扫描结果回调
-let onReceiveEvent:(data: Array<scan.ScanResults>) => void = (data: Array<scan.ScanResults>) => {
-  console.info('scan result addr:' + data[0].address + 'name:' + data[0].deviceName);
-  parseScanResult(data[0].data);
-};
-
-// 按照数据类型解析扫描结果
-function parseScanResult(data: ArrayBuffer) {
+// ...
+parseScanResult(data: ArrayBuffer) {
   let advData = new Uint8Array(data);
   if (advData.byteLength == 0) {
-    console.info('nothing, adv data length is 0');
+    hilog.info(this.domainId, this.logTag, `Nothing, adv data length is 0`);
     return;
   }
-  console.info('advData: ' + JSON.stringify(advData));
+  hilog.info(this.domainId, this.logTag, `advData: ${JSON.stringify(advData)}`);
 
   let discoveryLevel: number = -1;
   let serviceData: Record<string, Uint8Array> = {};
@@ -62,7 +56,7 @@ function parseScanResult(data: ArrayBuffer) {
   let localName: string = '';
   let manufactureSpecificData: Record<number, Uint8Array> = {};
 
-  let curPos: number = 0;
+  let curPos: number= 0;
   while (curPos < advData.byteLength) {
     let advDataType: number = advData[curPos++];
     let advDataLength: number = advData[curPos++];
@@ -70,69 +64,68 @@ function parseScanResult(data: ArrayBuffer) {
       break;
     }
     switch (advDataType) {
-      case SLE_ADV_DATA_TYPE_DISCOVERY_LEVEL: // 发现等级
+      case SLE_ADV_DATA_TYPE_DISCOVERY_LEVEL: // Discovery level
         discoveryLevel = advData[curPos];
         break;
-      case SLE_ADV_DATA_TYPE_SERVICE_DATA_16BIT_UUID: // 标准服务数据信息
-        parseServiceData(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
+      case SLE_ADV_DATA_TYPE_SERVICE_DATA_16BIT_UUID: // Standard service data information
+        this.parseServiceData(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
         break;
-      case SLE_ADV_DATA_TYPE_SERVICE_DATA_128BIT_UUID: // 自定义服务数据信息
-        parseServiceData(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
+      case SLE_ADV_DATA_TYPE_SERVICE_DATA_128BIT_UUID: // Customized service data information
+        this.parseServiceData(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
         break;
-      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // 完整标准服务标识列表
-      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // 部分标准服务标识列表
-        parseServiceUuid(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, standardUuids);
+      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // Complete standard service list
+      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // Incomplete standard service list
+        this.parseServiceUuid(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, standardUuids);
         break;
-      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // 完整自定义服务标识列表
-      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // 部分自定义服务标识列表
-        parseServiceUuid(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, specificUuids);
+      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // Complete customized service list
+      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // Incomplete customized service list
+        this.parseServiceUuid(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, specificUuids);
         break;
-      case SLE_ADV_DATA_TYPE_SHORTENED_LOCAL_NAME: // 设备缩写本地名称
-      case SLE_ADV_DATA_TYPE_COMPLETE_LOCAL_NAME: // 设备完整本地名称
+      case SLE_ADV_DATA_TYPE_SHORTENED_LOCAL_NAME: // Incomplete device local name
+      case SLE_ADV_DATA_TYPE_COMPLETE_LOCAL_NAME: // Complete device local name
         let tmpName: Uint8Array = advData.slice(curPos, curPos + advDataLength);
         let decoder = util.TextDecoder.create('utf-8');
         localName = decoder.decodeToString(new Uint8Array(tmpName));
         break;
-      case SLE_ADV_DATA_TYPE_MANUFACTURER_SPECIFIC_DATA: // 厂商自定义信息
-        parseManufactureData(curPos, advDataLength, advData, manufactureSpecificData);
+      case SLE_ADV_DATA_TYPE_MANUFACTURER_SPECIFIC_DATA: // Manufacturer specific data
+        this.parseManufactureData(curPos, advDataLength, advData, manufactureSpecificData);
         break;
       default:
         break;
     }
+    hilog.info(this.domainId, this.logTag, `discoveryLevel: ${discoveryLevel},
+      serviceData: ${JSON.stringify(serviceData)}, standardUuids: ${serviceData}, specificUuids: ${specificUuids},
+      localName: ${localName}, manufactureSpecificData: ${JSON.stringify(manufactureSpecificData)}`);
     curPos += advDataLength;
   }
 }
 
-// 解析服务数据信息
-function parseServiceData(uuidLength: number, curPos: number, advDataLength: number,
+parseServiceData (uuidLength: number, curPos: number, advDataLength: number,
   advData: Uint8Array, serviceData: Record<string, Uint8Array>) {
   let tmpUuid: Uint8Array = advData.slice(curPos, curPos + uuidLength);
-  getUuidFromUint8Array(uuidLength, tmpUuid);
+  let uuidStr: string = this.getUuidFromUint8Array(uuidLength, tmpUuid);
   let tmpValue: Uint8Array = advData.slice(curPos + uuidLength, curPos + advDataLength);
-  serviceData[tmpUuid.toString()] = tmpValue;
+  serviceData[uuidStr] = tmpValue;
 }
 
-// 解析服务标识列表
-function parseServiceUuid(uuidLength: number, curPos: number, advDataLength: number,
+parseServiceUuid (uuidLength: number, curPos: number, advDataLength: number,
   advData: Uint8Array, serviceUuids: string[]) {
   while (advDataLength > 0) {
     let tmpData: Uint8Array = advData.slice(curPos, curPos + uuidLength);
-    serviceUuids.push(getUuidFromUint8Array(uuidLength, tmpData));
+    serviceUuids.push(this.getUuidFromUint8Array(uuidLength, tmpData));
     advDataLength -= uuidLength;
     curPos += uuidLength;
   }
 }
 
-// 解析厂商自定义信息
-function parseManufactureData(curPos: number, advDataLength: number,
+parseManufactureData(curPos: number, advDataLength: number,
   advData: Uint8Array, manufactureSpecificData: Record<number, Uint8Array>) {
-    let manufactureId: number = (advData[curPos + 1] << 8) + advData[curPos];
-    let tmpValue: Uint8Array = advData.slice(curPos + NEARLINK_MANUFACTURE_ID_LENGTH, curPos + advDataLength);
-    manufactureSpecificData[manufactureId] = tmpValue;
+  let manufactureId: number = (advData[curPos + 1] << 8) + advData[curPos];
+  let tmpValue: Uint8Array = advData.slice(curPos + NEARLINK_MANUFACTURE_ID_LENGTH, curPos + advDataLength);
+  manufactureSpecificData[manufactureId] = tmpValue;
 }
 
-// 解析UUID
-function getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string {
+getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string {
   let uuid: string = '';
   let temp: string = '';
   for (let i = uuidLength - 1; i > -1; i--) {
@@ -140,11 +133,11 @@ function getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string
   }
   switch (uuidLength) {
     case NEARLINK_UUID_16_BIT_LENGTH:
-      uuid = `37BEA880-FC70-11EA-B720-00000000${temp}`;
+      uuid = `FFFFFFFF-1234-5678-ABCD-00000000${temp}`;
       break;
     case NEARLINK_UUID_128_BIT_LENGTH:
       uuid = `${temp.substring(0, 8)}-${temp.substring(8, 12)}-${temp.substring(12, 16)}-${temp.substring(16,
-          20)}-${temp.substring(20, 32)}`;
+        20)}-${temp.substring(20, 32)}`;
       break;
     default:
       break;
@@ -154,11 +147,19 @@ function getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string
 
 订阅扫描结果。
 
+let onScanResultsCallback:(data: Array<scan.ScanResults>) => void = (data: Array<scan.ScanResults>) => {
+  for (let index = 0; index < data.length; index++) {
+    hilog.info(this.domainId, this.logTag,
+      `Scan result addr: ${data[index].address} name: ${data[index].deviceName}`);
+    this.parseScanResult(data[index].data);
+  }
+  AppStorage.setOrCreate('scanResults', data);
+};
 try {
-  scan.on('deviceFound', onReceiveEvent);
-  // 订阅星闪扫描结果。返回的扫描结果中携带的地址为远端设备随机地址。
+  scan.on('deviceFound', onScanResultsCallback);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 配置扫描参数，扫描过滤器配置期望的设备名称、地址等信息。
@@ -171,13 +172,13 @@ try {
 
 一组过滤器内的条件是与的关系，如下示例：address和deviceName同时满足才会上报。
 
+@State remoteDeviceName: string = 'deviceName1';
+@State address: string = '11:22:33:44:AA:BB';
 let scanFilter1: scan.ScanFilters = {
-  address:'11:22:33:44:AA:BB', // 期望扫描到的外围设备1的地址
-  deviceName:'deviceName1' // 期望扫描到的外围设备1的名称
+  deviceName: this.remoteDeviceName
 };
 let scanFilter2: scan.ScanFilters = {
-  address:'22:33:44:AB:CD:EF', // 期望扫描到的外围设备2的地址
-  deviceName:'deviceName2' // 期望扫描到的外围设备2的名称
+  address: this.address
 };
 let scanOptions: scan.ScanOptions = {
   scanMode: scan.ScanMode.SCAN_MODE_LOW_POWER
@@ -187,32 +188,35 @@ let scanOptions: scan.ScanOptions = {
 
 try {
   scan.startScan([scanFilter1, scanFilter2], scanOptions).then(() => {
-    console.info('start scan success');
+    hilog.info(this.domainId, this.logTag, `Start scan success`);
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 停止星闪扫描。
 
 try {
   scan.stopScan().then(() => {
-    console.info('stop scan success');
+    hilog.info(this.domainId, this.logTag, `Stop scan success`);
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 取消订阅扫描结果，其中onReceiveEvent是在步骤3中注册的回调函数。
 
 try {
-  scan.off('deviceFound', onReceiveEvent);
+  scan.off('deviceFound');
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
 示例代码
@@ -224,6 +228,7 @@ try {
 ### Code block 1
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { scan } from '@kit.NearLinkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { util } from '@kit.ArkTS';
@@ -247,21 +252,14 @@ const NEARLINK_UUID_16_BIT_LENGTH = 2;
 const NEARLINK_UUID_128_BIT_LENGTH = 16;
 
 const NEARLINK_MANUFACTURE_ID_LENGTH = 2;
-
-// 定义扫描结果回调
-let onReceiveEvent:(data: Array<scan.ScanResults>) => void = (data: Array<scan.ScanResults>) => {
-  console.info('scan result addr:' + data[0].address + 'name:' + data[0].deviceName);
-  parseScanResult(data[0].data);
-};
-
-// 按照数据类型解析扫描结果
-function parseScanResult(data: ArrayBuffer) {
+// ...
+parseScanResult(data: ArrayBuffer) {
   let advData = new Uint8Array(data);
   if (advData.byteLength == 0) {
-    console.info('nothing, adv data length is 0');
+    hilog.info(this.domainId, this.logTag, `Nothing, adv data length is 0`);
     return;
   }
-  console.info('advData: ' + JSON.stringify(advData));
+  hilog.info(this.domainId, this.logTag, `advData: ${JSON.stringify(advData)}`);
 
   let discoveryLevel: number = -1;
   let serviceData: Record<string, Uint8Array> = {};
@@ -270,7 +268,7 @@ function parseScanResult(data: ArrayBuffer) {
   let localName: string = '';
   let manufactureSpecificData: Record<number, Uint8Array> = {};
 
-  let curPos: number = 0;
+  let curPos: number= 0;
   while (curPos < advData.byteLength) {
     let advDataType: number = advData[curPos++];
     let advDataLength: number = advData[curPos++];
@@ -278,69 +276,68 @@ function parseScanResult(data: ArrayBuffer) {
       break;
     }
     switch (advDataType) {
-      case SLE_ADV_DATA_TYPE_DISCOVERY_LEVEL: // 发现等级
+      case SLE_ADV_DATA_TYPE_DISCOVERY_LEVEL: // Discovery level
         discoveryLevel = advData[curPos];
         break;
-      case SLE_ADV_DATA_TYPE_SERVICE_DATA_16BIT_UUID: // 标准服务数据信息
-        parseServiceData(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
+      case SLE_ADV_DATA_TYPE_SERVICE_DATA_16BIT_UUID: // Standard service data information
+        this.parseServiceData(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
         break;
-      case SLE_ADV_DATA_TYPE_SERVICE_DATA_128BIT_UUID: // 自定义服务数据信息
-        parseServiceData(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
+      case SLE_ADV_DATA_TYPE_SERVICE_DATA_128BIT_UUID: // Customized service data information
+        this.parseServiceData(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, serviceData);
         break;
-      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // 完整标准服务标识列表
-      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // 部分标准服务标识列表
-        parseServiceUuid(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, standardUuids);
+      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // Complete standard service list
+      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_16BIT_SERVICE_UUIDS: // Incomplete standard service list
+        this.parseServiceUuid(NEARLINK_UUID_16_BIT_LENGTH, curPos, advDataLength, advData, standardUuids);
         break;
-      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // 完整自定义服务标识列表
-      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // 部分自定义服务标识列表
-        parseServiceUuid(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, specificUuids);
+      case SLE_ADV_DATA_TYPE_COMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // Complete customized service list
+      case SLE_ADV_DATA_TYPE_INCOMPLETE_LIST_OF_128BIT_SERVICE_UUIDS: // Incomplete customized service list
+        this.parseServiceUuid(NEARLINK_UUID_128_BIT_LENGTH, curPos, advDataLength, advData, specificUuids);
         break;
-      case SLE_ADV_DATA_TYPE_SHORTENED_LOCAL_NAME: // 设备缩写本地名称
-      case SLE_ADV_DATA_TYPE_COMPLETE_LOCAL_NAME: // 设备完整本地名称
+      case SLE_ADV_DATA_TYPE_SHORTENED_LOCAL_NAME: // Incomplete device local name
+      case SLE_ADV_DATA_TYPE_COMPLETE_LOCAL_NAME: // Complete device local name
         let tmpName: Uint8Array = advData.slice(curPos, curPos + advDataLength);
         let decoder = util.TextDecoder.create('utf-8');
         localName = decoder.decodeToString(new Uint8Array(tmpName));
         break;
-      case SLE_ADV_DATA_TYPE_MANUFACTURER_SPECIFIC_DATA: // 厂商自定义信息
-        parseManufactureData(curPos, advDataLength, advData, manufactureSpecificData);
+      case SLE_ADV_DATA_TYPE_MANUFACTURER_SPECIFIC_DATA: // Manufacturer specific data
+        this.parseManufactureData(curPos, advDataLength, advData, manufactureSpecificData);
         break;
       default:
         break;
     }
+    hilog.info(this.domainId, this.logTag, `discoveryLevel: ${discoveryLevel},
+      serviceData: ${JSON.stringify(serviceData)}, standardUuids: ${serviceData}, specificUuids: ${specificUuids},
+      localName: ${localName}, manufactureSpecificData: ${JSON.stringify(manufactureSpecificData)}`);
     curPos += advDataLength;
   }
 }
 
-// 解析服务数据信息
-function parseServiceData(uuidLength: number, curPos: number, advDataLength: number,
+parseServiceData (uuidLength: number, curPos: number, advDataLength: number,
   advData: Uint8Array, serviceData: Record<string, Uint8Array>) {
   let tmpUuid: Uint8Array = advData.slice(curPos, curPos + uuidLength);
-  getUuidFromUint8Array(uuidLength, tmpUuid);
+  let uuidStr: string = this.getUuidFromUint8Array(uuidLength, tmpUuid);
   let tmpValue: Uint8Array = advData.slice(curPos + uuidLength, curPos + advDataLength);
-  serviceData[tmpUuid.toString()] = tmpValue;
+  serviceData[uuidStr] = tmpValue;
 }
 
-// 解析服务标识列表
-function parseServiceUuid(uuidLength: number, curPos: number, advDataLength: number,
+parseServiceUuid (uuidLength: number, curPos: number, advDataLength: number,
   advData: Uint8Array, serviceUuids: string[]) {
   while (advDataLength > 0) {
     let tmpData: Uint8Array = advData.slice(curPos, curPos + uuidLength);
-    serviceUuids.push(getUuidFromUint8Array(uuidLength, tmpData));
+    serviceUuids.push(this.getUuidFromUint8Array(uuidLength, tmpData));
     advDataLength -= uuidLength;
     curPos += uuidLength;
   }
 }
 
-// 解析厂商自定义信息
-function parseManufactureData(curPos: number, advDataLength: number,
+parseManufactureData(curPos: number, advDataLength: number,
   advData: Uint8Array, manufactureSpecificData: Record<number, Uint8Array>) {
-    let manufactureId: number = (advData[curPos + 1] << 8) + advData[curPos];
-    let tmpValue: Uint8Array = advData.slice(curPos + NEARLINK_MANUFACTURE_ID_LENGTH, curPos + advDataLength);
-    manufactureSpecificData[manufactureId] = tmpValue;
+  let manufactureId: number = (advData[curPos + 1] << 8) + advData[curPos];
+  let tmpValue: Uint8Array = advData.slice(curPos + NEARLINK_MANUFACTURE_ID_LENGTH, curPos + advDataLength);
+  manufactureSpecificData[manufactureId] = tmpValue;
 }
 
-// 解析UUID
-function getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string {
+getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string {
   let uuid: string = '';
   let temp: string = '';
   for (let i = uuidLength - 1; i > -1; i--) {
@@ -348,11 +345,11 @@ function getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string
   }
   switch (uuidLength) {
     case NEARLINK_UUID_16_BIT_LENGTH:
-      uuid = `37BEA880-FC70-11EA-B720-00000000${temp}`;
+      uuid = `FFFFFFFF-1234-5678-ABCD-00000000${temp}`;
       break;
     case NEARLINK_UUID_128_BIT_LENGTH:
       uuid = `${temp.substring(0, 8)}-${temp.substring(8, 12)}-${temp.substring(12, 16)}-${temp.substring(16,
-          20)}-${temp.substring(20, 32)}`;
+        20)}-${temp.substring(20, 32)}`;
       break;
     default:
       break;
@@ -364,24 +361,32 @@ function getUuidFromUint8Array(uuidLength: number, uuidData: Uint8Array): string
 ### Code block 3
 
 ```
+let onScanResultsCallback:(data: Array<scan.ScanResults>) => void = (data: Array<scan.ScanResults>) => {
+  for (let index = 0; index < data.length; index++) {
+    hilog.info(this.domainId, this.logTag,
+      `Scan result addr: ${data[index].address} name: ${data[index].deviceName}`);
+    this.parseScanResult(data[index].data);
+  }
+  AppStorage.setOrCreate('scanResults', data);
+};
 try {
-  scan.on('deviceFound', onReceiveEvent);
-  // 订阅星闪扫描结果。返回的扫描结果中携带的地址为远端设备随机地址。
+  scan.on('deviceFound', onScanResultsCallback);
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
 ### Code block 4
 
 ```
+@State remoteDeviceName: string = 'deviceName1';
+@State address: string = '11:22:33:44:AA:BB';
 let scanFilter1: scan.ScanFilters = {
-  address:'11:22:33:44:AA:BB', // 期望扫描到的外围设备1的地址
-  deviceName:'deviceName1' // 期望扫描到的外围设备1的名称
+  deviceName: this.remoteDeviceName
 };
 let scanFilter2: scan.ScanFilters = {
-  address:'22:33:44:AB:CD:EF', // 期望扫描到的外围设备2的地址
-  deviceName:'deviceName2' // 期望扫描到的外围设备2的名称
+  address: this.address
 };
 let scanOptions: scan.ScanOptions = {
   scanMode: scan.ScanMode.SCAN_MODE_LOW_POWER
@@ -393,12 +398,13 @@ let scanOptions: scan.ScanOptions = {
 ```
 try {
   scan.startScan([scanFilter1, scanFilter2], scanOptions).then(() => {
-    console.info('start scan success');
+    hilog.info(this.domainId, this.logTag, `Start scan success`);
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -407,12 +413,13 @@ try {
 ```
 try {
   scan.stopScan().then(() => {
-    console.info('stop scan success');
+    hilog.info(this.domainId, this.logTag, `Stop scan success`);
   }).catch ((err: BusinessError) => {
-    console.error('errCode: ' + err.code + ', errMessage: ' + err.message);
+    hilog.error(this.domainId, this.logTag, `errCode: ${err.code}, errMessage: ${err.message}`);
   });
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```
 
@@ -420,8 +427,9 @@ try {
 
 ```
 try {
-  scan.off('deviceFound', onReceiveEvent);
+  scan.off('deviceFound');
 } catch (err) {
-  console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+  hilog.error(this.domainId, this.logTag,
+    `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 ```

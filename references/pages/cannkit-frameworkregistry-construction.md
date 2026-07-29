@@ -15,7 +15,7 @@ static FrameworkRegistry& Instance();
 
 参数说明
 
-NA
+无
 
 返回值
 

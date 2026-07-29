@@ -1,4 +1,4 @@
-# HiDebug接口使用示例(ArkTS)
+# HiDebug接口使用示例（ArkTS）
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hidebug-guidelines-arkts_
 

@@ -6,9 +6,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-new-u
 
 开启或关闭新UI
 
-启动DevEco Studio时，将有弹窗提示是否启用新用户界面。点击Enable and Restart，将重启DevEco Studio开始体验新UI。
+从DevEco Studio 26.0.0 Beta2版本开始，启动DevEco Studio时，默认开启新用户界面。DevEco Studio 26.0.0 Beta1及以下版本，启动DevEco Studio时，将有弹窗提示是否启用新用户界面。点击Enable and Restart，将重启DevEco Studio开始体验新UI。
 
-此外，可以在菜单栏进入File > Settings...（macOS系统为DevEco Studio > Preferences/Settings...）> Appearance & Behavior > New UI，勾选Enable new UI，点击Apply，在弹窗中点击Restart重启完成后体验新UI。
+此外，也可以在菜单栏进入File > Settings...（macOS系统为DevEco Studio > Preferences/Settings...）> Appearance & Behavior > New UI，勾选Enable new UI，点击Apply，在弹窗中点击Restart重启完成后体验新UI。
 
 如需切换回原有的经典UI，在界面左上角点击图标，进入File > Settings... （macOS系统为DevEco Studio > Preferences/Settings...）> Appearance & Behavior > New UI，取消勾选Enable new UI，点击Apply，在弹窗中点击Restart重启即可完成切换。
 
@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-new-u
 
 原有固定于界面上方的菜单栏，在新UI中收起到页面左上角工具栏中Main Menu主菜单图标内。点击图标即可展开菜单，继续选择需要执行的功能或操作。
 
-如需将菜单栏展开并固定在主界面，可以在菜单栏进入File > Settings... > Appearance & Behavior > Appearance > UI Options中，勾选Show main menu in a separate toolbar，点击Apply在主界面固定显示菜单栏。
+如需将菜单栏展开并固定在主界面。从DevEco Studio 26.0.0 Beta2版本开始，在菜单栏进入File > Settings... > Appearance & Behavior > Appearance > UI Options，在Main menu下拉选项中选择Show above Main Toolbar，点击Apply；26.0.0 Beta1及以下版本，在菜单栏进入File > Settings... > Appearance & Behavior > Appearance > UI Options，勾选Show main menu in a separate toolbar，点击Apply。
 
 工具窗口优化
 

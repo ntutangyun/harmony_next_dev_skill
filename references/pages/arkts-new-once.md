@@ -41,13 +41,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new
 @ComponentV2
 struct MyComponent {
   @Param @Once onceParam: string = 'onceParam'; // 正确用法
-  @Once onceStr: string = 'Once'; // 错误用法，@Once无法单独使用
-  @Local @Once onceLocal: string = 'onceLocal'; // 错误用法，@Once不能与@Local一起使用
-// ···
-}
-@Component
-struct Index {
-  @Once @Param onceParam: string = 'onceParam'; // 错误用法
+  // ...
 }
 
 @Once与@Param的先后顺序无关，可以写成@Param @Once也可以写成@Once @Param。
@@ -74,7 +68,10 @@ struct ChildComponent {
   build() {
     Column() {
       Text(`onceParam: ${this.onceParam}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -87,12 +84,17 @@ struct MyComponent {
   build() {
     Column() {
       Text(`Parent message: ${this.message}`)
+        .fontSize(20)
+        .margin(10)
       Button('change message')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.message = 'Hello Tomorrow';
         })
       ChildComponent({ onceParam: this.message })
     }
+    .width('100%')
   }
 }
 
@@ -116,16 +118,25 @@ struct Child {
   build() {
     Column() {
       Text(`Child onceParamNum: ${this.onceParamNum}`)
+        .fontSize(20)
+        .margin(10)
       Text(`Child onceParamInfo: ${this.onceParamInfo.name}`)
+        .fontSize(20)
+        .margin(10)
       Button('changeOnceParamNum')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.onceParamNum++;
         })
       Button('changeParamInfo')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.onceParamInfo = new Info('Cindy');
         })
     }
+    .width('100%')
   }
 }
 @Entry
@@ -137,12 +148,20 @@ struct Index {
   build() {
     Column() {
       Text(`Parent localNum: ${this.localNum}`)
+        .fontSize(20)
+        .margin(10)
       Text(`Parent localInfo: ${this.localInfo.name}`)
+        .fontSize(20)
+        .margin(10)
       Button('changeLocalNum')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.localNum++;
         })
       Button('changeLocalInfo')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.localInfo = new Info('Cindy');
         })
@@ -151,6 +170,7 @@ struct Index {
         onceParamInfo: this.localInfo
       })
     }
+    .width('100%')
   }
 }
 
@@ -162,13 +182,7 @@ struct Index {
 @ComponentV2
 struct MyComponent {
   @Param @Once onceParam: string = 'onceParam'; // 正确用法
-  @Once onceStr: string = 'Once'; // 错误用法，@Once无法单独使用
-  @Local @Once onceLocal: string = 'onceLocal'; // 错误用法，@Once不能与@Local一起使用
-// ···
-}
-@Component
-struct Index {
-  @Once @Param onceParam: string = 'onceParam'; // 错误用法
+  // ...
 }
 ```
 
@@ -195,7 +209,10 @@ struct ChildComponent {
   build() {
     Column() {
       Text(`onceParam: ${this.onceParam}`)
+        .fontSize(20)
+        .margin(10)
     }
+    .width('100%')
   }
 }
 
@@ -208,12 +225,17 @@ struct MyComponent {
   build() {
     Column() {
       Text(`Parent message: ${this.message}`)
+        .fontSize(20)
+        .margin(10)
       Button('change message')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.message = 'Hello Tomorrow';
         })
       ChildComponent({ onceParam: this.message })
     }
+    .width('100%')
   }
 }
 ```
@@ -237,16 +259,25 @@ struct Child {
   build() {
     Column() {
       Text(`Child onceParamNum: ${this.onceParamNum}`)
+        .fontSize(20)
+        .margin(10)
       Text(`Child onceParamInfo: ${this.onceParamInfo.name}`)
+        .fontSize(20)
+        .margin(10)
       Button('changeOnceParamNum')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.onceParamNum++;
         })
       Button('changeParamInfo')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.onceParamInfo = new Info('Cindy');
         })
     }
+    .width('100%')
   }
 }
 @Entry
@@ -258,12 +289,20 @@ struct Index {
   build() {
     Column() {
       Text(`Parent localNum: ${this.localNum}`)
+        .fontSize(20)
+        .margin(10)
       Text(`Parent localInfo: ${this.localInfo.name}`)
+        .fontSize(20)
+        .margin(10)
       Button('changeLocalNum')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.localNum++;
         })
       Button('changeLocalInfo')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.localInfo = new Info('Cindy');
         })
@@ -272,6 +311,7 @@ struct Index {
         onceParamInfo: this.localInfo
       })
     }
+    .width('100%')
   }
 }
 ```

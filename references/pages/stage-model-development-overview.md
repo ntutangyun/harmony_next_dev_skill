@@ -14,7 +14,7 @@ Stage模型支持多个应用组件共享同一个ArkTS引擎实例，以及应�
 
 随着应用模型的演进发展，从API 7开始支持的FA模型已经不再主推。当前FA模型主要用于Lite Wearable设备，相关指导详见应用模型开发概述。
 
-除非另有说明，文档中提及的"应用模型"均指"Stage模型"。
+除非另有说明，文档中提及的"应用模型"均指"Stage 模型"。
 
 基本概念
 
@@ -42,7 +42,7 @@ WindowStage
 
 Context
 
-在Stage模型上，Context及其派生类向开发者提供在运行期可以调用的各种资源和能力。UIAbility组件和各种ExtensionAbility组件的派生类都有各自不同的Context类，他们都继承自基类Context，但是各自又根据所属组件，提供不同的能力。
+在Stage模型上，Context及其派生类向开发者提供在运行期可以调用的各种资源和能力。UIAbility组件和各种ExtensionAbility组件的派生类都有各自不同的Context类，它们都继承自基类Context，但是各自又根据所属组件，提供不同的能力。
 
 ArkUI页面
 

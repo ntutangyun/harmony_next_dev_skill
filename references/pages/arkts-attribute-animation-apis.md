@@ -6,11 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-att
 
 说明
 
-本章节讨论的属性动画不是狭义的属性动画接口，而是通过给定新的可动画属性终值，对属性产生动画的方式。
+本章节讨论的属性动画不是狭义的属性动画 (animation)，而是通过给定新的可动画属性终值，对属性产生动画的方式。
 
 动画接口	作用域	原理	使用场景
-animateTo	闭包内改变属性引起的界面变化。	通用函数，对闭包前界面和闭包中的状态变量引起的界面之间的差异做动画。 支持多次调用，支持嵌套。	适用对多个可动画属性配置相同动画参数的动画。 需要嵌套使用动画的场景。 如果需要实现多段动画循环的效果，建议通过设置AnimateParam的playMode和iterations属性实现，或使用keyframeAnimateTo实现。
-animation	组件通过属性接口绑定的属性变化引起的界面变化。	识别组件的可动画属性变化，自动添加动画。 组件的接口调用是从下往上执行，animation只会作用于在其之上的属性调用。 组件可以根据调用顺序对多个属性设置不同的animation。	适用于对多个可动画属性配置不同参数动画的场景。
+animateTo	闭包内改变属性引起的界面变化。	通用函数，对闭包前界面和闭包中的状态变量引起的界面之间的差异做动画。 支持多次调用，支持嵌套。	适用于多个可动画属性配置相同动画参数的场景，或命令式显式触发动画的场景。 需要嵌套使用动画的场景。 如果需要实现多段动画循环的效果，建议通过设置AnimateParam的playMode和iterations属性实现，或使用keyframeAnimateTo实现。
+animation	组件通过属性接口绑定的属性变化引起的界面变化。	声明式属性动画，识别组件的可动画属性变化并自动添加动画。 组件接口调用从下往上执行，animation仅作用于在其之上调用的属性。 组件可根据调用顺序对多个属性设置不同的animation参数。	适用于对不同可动画属性配置不同动画参数的场景，以及希望属性改变时隐式触发动画的声明式写法。
 keyframeAnimateTo	多个闭包内改变属性引起的分段属性动画。	通用函数，每一段闭包中的状态变量与前一次的差异做动画。 支持多次调用，不推荐嵌套。	适用于同一属性需要做连续多个动画的场景。
 
 使用animateTo产生属性动画
@@ -88,7 +88,7 @@ struct attrAnimationDemo3 {
   // 第一步: 声明相关状态变量
   @State rotateValue: number = 0; // 组件一旋转角度
   @State translateX: number = 0; // 组件二偏移量
-  @State opacityValue: number = 1; // 组件二透明度
+  @State opacityValue: number = 1; // 组件一、组件二透明度
 
   // 第二步：将状态变量设置到相关可动画属性接口
   build() {
@@ -113,7 +113,7 @@ struct attrAnimationDemo3 {
         this.rotateValue = this.animate ? 90 : 0;
         // 组件二的translate属性发生变化，所以会给组件二添加translate偏移动画
         this.translateX = this.animate ? 50 : 0;
-        // 父组件column的opacity属性有变化，会导致其子节点的透明度也变化，所以这里会给column和其子节点的透明度属性都添加动画
+        // 组件一、组件二的opacity属性发生变化，所以会给组件一、组件二添加透明度动画
         this.opacityValue = this.animate ? 0.6 : 1;
       })
 
@@ -292,7 +292,7 @@ struct attrAnimationDemo3 {
   // 第一步: 声明相关状态变量
   @State rotateValue: number = 0; // 组件一旋转角度
   @State translateX: number = 0; // 组件二偏移量
-  @State opacityValue: number = 1; // 组件二透明度
+  @State opacityValue: number = 1; // 组件一、组件二透明度
 
   // 第二步：将状态变量设置到相关可动画属性接口
   build() {
@@ -317,7 +317,7 @@ struct attrAnimationDemo3 {
         this.rotateValue = this.animate ? 90 : 0;
         // 组件二的translate属性发生变化，所以会给组件二添加translate偏移动画
         this.translateX = this.animate ? 50 : 0;
-        // 父组件column的opacity属性有变化，会导致其子节点的透明度也变化，所以这里会给column和其子节点的透明度属性都添加动画
+        // 组件一、组件二的opacity属性发生变化，所以会给组件一、组件二添加透明度动画
         this.opacityValue = this.animate ? 0.6 : 1;
       })
 

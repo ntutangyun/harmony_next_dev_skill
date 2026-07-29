@@ -10,10 +10,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-inp
 
 在使用AudioRoutingManager管理音频设备前，需要先导入模块并创建实例。
 
-import { audio } from '@kit.AudioKit'; // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+// ...
 
-let audioManager = audio.getAudioManager(); // 需要先创建AudioManager实例。
-let audioRoutingManager = audioManager.getRoutingManager(); // 再调用AudioManager的方法创建AudioRoutingManager实例。
+let audioManager = audio.getAudioManager();
+let audioRoutingManager = audioManager.getRoutingManager();
 
 支持的音频输入设备类型
 
@@ -30,11 +31,16 @@ NEARLINK	31	星闪设备。
 
 使用getDevices方法可以获取当前所有输入设备的信息。
 
-import { audio } from '@kit.AudioKit'; // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  audioRoutingManager.getDevices(audio.DeviceFlag.INPUT_DEVICES_FLAG).then((data: audio.AudioDeviceDescriptors) => {
-    console.info('Promise returned to indicate that the device list is obtained.');
 
+  audioRoutingManager.getDevices(audio.DeviceFlag.INPUT_DEVICES_FLAG).then((audioDeviceDescriptors: audio.
+    AudioDeviceDescriptors) => {
+    console.info(`Succeeded in getting devices. AudioDeviceDescriptors: ${JSON.stringify(audioDeviceDescriptors)}`);
+    // ...
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to get devices. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
 
@@ -42,43 +48,50 @@ import { audio } from '@kit.AudioKit'; // 导入audio模块。
 
 可以设置监听事件来监听设备连接状态的变化，当有设备连接或断开时触发回调：
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  // 监听音频设备状态变化。
-  audioRoutingManager.on('deviceChange', audio.DeviceFlag.INPUT_DEVICES_FLAG,
-    (deviceChanged: audio.DeviceChangeAction) => {
-    console.info('device change type : ' + deviceChanged.type);  // 设备连接状态变化,0为连接,1为断开连接。
-    console.info('device descriptor size : ' + deviceChanged.deviceDescriptors.length);
-    console.info('device change descriptor : ' + deviceChanged.deviceDescriptors[0].deviceRole);  // 设备角色。
-    console.info('device change descriptor : ' + deviceChanged.deviceDescriptors[0].deviceType);  // 设备类型。
 
-    // ...
-  });
+let deviceChangeCallback = (deviceChanged: audio.DeviceChangeAction) => {
+  console.info(`Succeeded in using on function. DeviceChangeAction: ${JSON.stringify(deviceChanged)}`);
   // ...
-  // 取消监听音频设备状态变化。
-  audioRoutingManager.off('deviceChange', (deviceChanged: audio.DeviceChangeAction) => {
-    console.info('Should be no callback.');
-  });
+}
+// ...
+
+  try {
+    // 监听音频设备状态变化。
+    audioRoutingManager.on('deviceChange', audio.DeviceFlag.INPUT_DEVICES_FLAG, deviceChangeCallback);
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
+    // ...
+  }
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-import { audio } from '@kit.AudioKit'; // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+// ...
 
-let audioManager = audio.getAudioManager(); // 需要先创建AudioManager实例。
-let audioRoutingManager = audioManager.getRoutingManager(); // 再调用AudioManager的方法创建AudioRoutingManager实例。
+let audioManager = audio.getAudioManager();
+let audioRoutingManager = audioManager.getRoutingManager();
 ```
 
 ### Code block 2
 
 ```
-import { audio } from '@kit.AudioKit'; // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  audioRoutingManager.getDevices(audio.DeviceFlag.INPUT_DEVICES_FLAG).then((data: audio.AudioDeviceDescriptors) => {
-    console.info('Promise returned to indicate that the device list is obtained.');
 
+  audioRoutingManager.getDevices(audio.DeviceFlag.INPUT_DEVICES_FLAG).then((audioDeviceDescriptors: audio.
+    AudioDeviceDescriptors) => {
+    console.info(`Succeeded in getting devices. AudioDeviceDescriptors: ${JSON.stringify(audioDeviceDescriptors)}`);
+    // ...
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to get devices. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
 ```
@@ -86,21 +99,22 @@ import { audio } from '@kit.AudioKit'; // 导入audio模块。
 ### Code block 3
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  // 监听音频设备状态变化。
-  audioRoutingManager.on('deviceChange', audio.DeviceFlag.INPUT_DEVICES_FLAG,
-    (deviceChanged: audio.DeviceChangeAction) => {
-    console.info('device change type : ' + deviceChanged.type);  // 设备连接状态变化,0为连接,1为断开连接。
-    console.info('device descriptor size : ' + deviceChanged.deviceDescriptors.length);
-    console.info('device change descriptor : ' + deviceChanged.deviceDescriptors[0].deviceRole);  // 设备角色。
-    console.info('device change descriptor : ' + deviceChanged.deviceDescriptors[0].deviceType);  // 设备类型。
 
-    // ...
-  });
+let deviceChangeCallback = (deviceChanged: audio.DeviceChangeAction) => {
+  console.info(`Succeeded in using on function. DeviceChangeAction: ${JSON.stringify(deviceChanged)}`);
   // ...
-  // 取消监听音频设备状态变化。
-  audioRoutingManager.off('deviceChange', (deviceChanged: audio.DeviceChangeAction) => {
-    console.info('Should be no callback.');
-  });
+}
+// ...
+
+  try {
+    // 监听音频设备状态变化。
+    audioRoutingManager.on('deviceChange', audio.DeviceFlag.INPUT_DEVICES_FLAG, deviceChangeCallback);
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
+    // ...
+  }
 ```

@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-e
 
 说明
 
-在"param_type"："optional"时，"ignore"：true，表示不需要该输入；"ignore"：false，表示需要该输入。
+在"param_type"："optional"时，"ignore"为true，表示不需要该输入；"ignore"为false，表示需要该输入。
 
 在"param_type"："required"时，"ignore"不能配置为true。
 

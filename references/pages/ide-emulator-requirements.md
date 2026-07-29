@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-requirements_
 
-模拟器在本地计算机上创建和运行，在运行和调试应用/元服务时可以保持良好的流畅性和稳定性，但是需要耗费一定的计算机资源，具体的运行环境要求如下。
+模拟器在本地计算机上创建和运行，能够在运行和调试应用/元服务时保持良好的流畅性和稳定性，但会占用一定的计算机资源，请确保预留充足的系统CPU和内存资源，具体的运行环境要求如下。
 
 Windows运行环境：
 

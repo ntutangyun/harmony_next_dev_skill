@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-soundplayer-for-playback_
 
-从API version 23开始，支持系统音效播放。
+从API版本23开始，支持系统音效播放。
 
 SoundPlayer提供系统音效播放功能，适用于拍照或录像提示音，比如在开始拍照、开始录像或结束录像时播放提示音。
 

@@ -25,17 +25,17 @@ void Transpose(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, c
 表1 模板参数说明
 
 参数名	描述
-T	操作数的数据类型。 普通转置接口： Kirin9020系列处理器，支持的数据类型为：half/int16/uint16 KirinX90系列处理器，支持的数据类型为：half/int16/uint16 增强转置接口： 参考表4。
+T	操作数的数据类型。 普通转置接口： Kirin9020系列处理器，支持的数据类型为：half、int16_t、uint16_t KirinX90系列处理器，支持的数据类型为：half、int16_t、uint16_t 增强转置接口： 参考表4。
 
 表2 接口参数说明
 
 参数名称	输入/输出	含义
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。
-srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型需要与dstLocal保持一致。
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型需要与dstLocal保持一致。
 sharedTmpBuffer	输入	共享的临时Buffer Tensor，sharedTmpBuffer的大小参考表5。
 transposeParams	输入	控制Transpose的数据结构。结构体内包含：输入的shape信息和transposeType参数。该数据结构的定义请参考表3。
 
-表3 VtransposeParams结构体内参数说明
+表3 transposeParams结构体内参数说明
 
 参数名称	含义
 nSize	n轴长度，取值范围：m∈[0, 65535]。默认值为0。
@@ -47,16 +47,16 @@ transposeType	数据排布及reshape的类型，类型为TransposeType枚举类�
 表4 增强转置接口支持的数据类型
 
 transposeType	支持的数据类型
-TRANSPOSE_ND2ND_B16	Kirin9020系列处理器 KirinX90系列处理器 说明： 如果要实现int16_t/half类型，shape为[16, 16]二维矩阵的转置，可使用普通转置接口。
-TRANSPOSE_NCHW2NHWC	Kirin9020系列处理器 KirinX90系列处理器
-TRANSPOSE_NHWC2NCHW	Kirin9020系列处理器 KirinX90系列处理器
+TRANSPOSE_ND2ND_B16	无
+TRANSPOSE_NCHW2NHWC	Kirin X90系列处理器，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。 Kirin 9020系列处理器，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。
+TRANSPOSE_NHWC2NCHW	Kirin X90系列处理器，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。 Kirin 9020系列处理器，操作数支持的数据类型为：int8_t、uint8_t、int16_t、uint16_t、half、int32_t、uint32_t、float。
 
 表5 增强转置接口sharedTmpBuffer所需的大小
 
-transposeType	支持的数据类型
-TRANSPOSE_ND2ND_B16	Kirin9020系列处理器 KirinX90系列处理器
-TRANSPOSE_NCHW2NHWC	Kirin9020系列处理器 KirinX90系列处理器
-TRANSPOSE_NHWC2NCHW	Kirin9020系列处理器 KirinX90系列处理器
+transposeType	sharedTmpBuffer所需的大小
+TRANSPOSE_ND2ND_B16	不需要临时Buffer。
+TRANSPOSE_NCHW2NHWC	临时Buffer的大小按照下述计算规则（伪代码）进行计算。 auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16 auto w0 = 32 / sizeof(type); // type代表数据类型 auto tmpBufferSize = (cSize + 2) * h0 * w0 * sizeof(type);
+TRANSPOSE_NHWC2NCHW	临时Buffer的大小按照下述计算规则（伪代码）进行计算。 auto h0 = 16; // 当数据类型的位宽为8时，h0 = 32；其他情况下，h0 = 16 auto w0 = 32 / sizeof(type); // type代表数据类型 auto tmpBufferSize = (cSize * 2 + 1) * h0 * w0 * sizeof(type);
 
 支持的型号
 
@@ -142,6 +142,7 @@ KirinX90系列处理器
      op.Init(src, dstGm);
      op.Process();
  }
+
 输入数据(src_gm):
  [[  0.   1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.
     14.  15.]
@@ -364,6 +365,11 @@ void Transpose(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, c
      op.Init(src, dstGm);
      op.Process();
  }
+```
+
+### Code block 4
+
+```
 输入数据(src_gm):
  [[  0.   1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.
     14.  15.]
@@ -433,7 +439,7 @@ void Transpose(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, c
    239. 255.]]
 ```
 
-### Code block 4
+### Code block 5
 
 ```
 #include "kernel_operator.h"

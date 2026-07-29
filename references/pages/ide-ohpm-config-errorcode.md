@@ -68,11 +68,11 @@ get命令参数错误。
 
 可能原因
 
-输入ohpm config get <value>命令，不可直接获取value，需要通过key获取。
+执行ohpm config get <key>命令时，同时获取多个key，如ohpm config get registry log_level --log_level info。
 
 处理步骤
 
-确保命令输入格式为"ohpm config get <key>"。
+命令只允许输入一个key，确保命令输入格式为"ohpm config get <key>"，如ohpm config get registry。
 
 00602005 delete命令参数错误
 
@@ -122,7 +122,7 @@ Protected Key.
 
 可能原因
 
-获取以下划线开头的键名。
+输入ohpm config get _auth命令，获取以下划线开头的键名。
 
 处理步骤
 
@@ -140,7 +140,7 @@ Key Not Exist.
 
 可能原因
 
-删除用户级目录下ohpmrc文件中指定的键值时，key不存在。
+输入ohpm config delete <key>命令，删除用户级目录下ohpmrc文件中指定的键值时，key不存在。
 
 处理步骤
 
@@ -212,7 +212,7 @@ Encrypt命令参数配置错误。
 
 可能原因
 
-执行ohpm config encrypt命令，未配置加密组件路径。
+执行ohpm config encrypt <string>命令，未配置加密组件路径参数--crypto_path。
 
 处理步骤
 
@@ -230,11 +230,13 @@ Crypto Path Is Empty.
 
 可能原因
 
-执行ohpm config encrypt --crypto_path命令。
+执行ohpm config encrypt命令，且.ohpmrc文件未配置crypto_path路径。
 
 处理步骤
 
-检查和确保命令格式为"ohpm config encrypt --crypto_path <string>"。
+方式一：在.ohpmrc文件中配置crypto_path路径后，再执行ohpm config encrypt命令。
+
+方式二：在执行命令时指定加密路径"ohpm config encrypt --crypto_path <string>"。
 
 00602014 加密组件路径错误
 
@@ -248,11 +250,11 @@ Crypto Component Not Directory.
 
 可能原因
 
-执行ohpm config encrypt --crypto_path <string>，string为实际存在的文件，不是目标路径。
+执行ohpm config encrypt --crypto_path <string>，string为实际存在的文件路径，不是文件夹路径。
 
 处理步骤
 
-检查当前加密路径是否为目标路径。
+检查和确保当前加密路径是文件夹路径。
 
 00602015 无效的加密组件
 
@@ -266,11 +268,11 @@ Invalid Crypto Component.
 
 可能原因
 
-生成的加密组件的key无效。
+加密组件文件夹不为空，其中的加密文件被损坏，或存在不是加密组件的文件。
 
 处理步骤
 
-运行命令ohpm config encrypt --crypto_path <string>生成有效的加密组件目录，确保指定的路径符合加密组件的要求。
+运行命令ohpm config encrypt --crypto_path <string>生成有效的加密组件目录，string需符合加密组件的要求，具体请参考crypto_path。
 
 00602016 加密路径未配置
 
@@ -284,8 +286,8 @@ Crypto Path Not Configured.
 
 可能原因
 
-crypto_path内容格式不正确。
+当用户在.ohpmrc文件中配置了敏感配置项（如http_proxy=http://security:01:XXXXXX@proxy:port），但未配置crypto_path加密组件路径。
 
 处理步骤
 
-检查.ohpmrc文件中crypto_path确保正确配置，确保crypto_path的格式正确。
+检查.ohpmrc文件，确保正确配置crypto_path，具体请参考crypto_path。

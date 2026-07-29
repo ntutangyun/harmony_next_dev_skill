@@ -70,7 +70,7 @@ pnpm view ${xxx} versions
 
 打开hvigor/hvigor-config.json5，找到dependencies中@ohos/hvigor-ohos-arkui-x-plugin对应的版本号。
 
-将上一步取到的版本号替换至报错工程的@ohos/hvigor-ohos-arkui-x-plugin的版本号。
+将上一步获取的版本号替换至报错工程的@ohos/hvigor-ohos-arkui-x-plugin的版本号。
 
 请确保仓库地址可以访问，查看npm配置的仓库地址是否正确、是否有防火墙或代理限制等。
 
@@ -190,7 +190,7 @@ Failed to operate file as XXX.
 
 错误信息
 
-Failed to write File：XXX.
+Failed to write File: XXX.
 
 错误描述
 
@@ -212,7 +212,7 @@ Failed to write File：XXX.
 
 错误信息
 
-Failed to write File：please check File Path：XXX.
+Failed to write File: please check File Path：XXX.
 
 错误描述
 
@@ -318,7 +318,7 @@ Cache material error. Please ensure that no cache materials have been added or m
 
 错误描述
 
-缓存材料错误，请确保meta/ac、ce、fd目录下的缓存材料未进行增加或修改。
+缓存材料错误，请确保meta/ac、ce、fd目录下的缓存材料未增加或修改。
 
 可能原因
 
@@ -326,7 +326,7 @@ Cache material error. Please ensure that no cache materials have been added or m
 
 处理步骤
 
-排查Users/用户名目录下的.hvigor/meta下的缓存材料数量是否正确，ac、ce、fd目录下分别有1、1、3个文件或文件夹，请勿对文件夹下的内容进行增加或修改。
+排查Users/用户名目录下的.hvigor/meta下的缓存材料数量是否正确，ac、ce、fd目录下分别有1、1、3个文件或文件夹，请勿对目录内容进行增加或修改。
 
 删除.hvigor下的meta目录，重新编译。
 
@@ -412,7 +412,7 @@ pnpm view ${yyy} versions
 
 打开hvigor/hvigor-config.json5，找到dependencies中@ohos/hvigor-ohos-arkui-x-plugin对应的版本号。
 
-将上一步取到的版本号替换至报错工程的@ohos/hvigor-ohos-arkui-x-plugin的版本号。
+将上一步获取的版本号替换至报错工程的@ohos/hvigor-ohos-arkui-x-plugin的版本号。
 
 00308021 npm仓库中无法获取包的元数据
 

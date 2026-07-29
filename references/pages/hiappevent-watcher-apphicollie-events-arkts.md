@@ -18,7 +18,7 @@ removeWatcher(watcher: Watcher): void	移除应用事件观察者，以取消对
 
 为确保开发阶段顺利接收事件回调，建议采取以下方案：创建新的Native C++工程，在ArkTS代码中实现订阅，并通过C++代码构造故障注入以触发任务执行超时事件。
 
-新建Native C++工程，目录结构如下：
+在DevEco Studio中，新建Native C++工程，目录结构如下：
 
 entry:
   src:
@@ -35,16 +35,16 @@ entry:
         pages:
           - Index.ets
 
-编辑“CMakeLists.txt”文件，添加源文件及动态库。
+编辑工程中的“entry > src > main > cpp > CMakeLists.txt”文件，添加源文件及动态库。
 
 # 新增动态库依赖libhilog_ndk.z.so（日志输出）及libohhicollie.so（HiCollie检测）
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libohhicollie.so)
 
-编辑“EntryAbility.ets”文件，导入依赖模块，示例代码如下：
+编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，导入依赖模块，示例代码如下：
 
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
 
-订阅系统事件，编辑“EntryAbility.ets”文件，在onCreate函数中添加订阅代码，示例代码如下：
+订阅系统事件，编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，在onCreate函数中添加订阅代码，示例代码如下：
 
 let watcher: hiAppEvent.Watcher = {
   // 开发者可以自定义观察者名称，系统会使用名称来标识不同的观察者
@@ -71,7 +71,7 @@ let watcher: hiAppEvent.Watcher = {
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.process_name=${eventInfo.params['process_name']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.pid=${eventInfo.params['pid']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.uid=${eventInfo.params['uid']}`);
-        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.uid=${eventInfo.params['uuid']}`);
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.uuid=${eventInfo.params['uuid']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.exception=${eventInfo.params['exception']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.hilog.size=${eventInfo.params['hilog'].length}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.peer_binder.size=${JSON.stringify(eventInfo.params['peer_binder'].length)}`);
@@ -87,7 +87,7 @@ hiAppEvent.addWatcher(watcher);
 
 新增TestHiCollieTimerNdk函数。
 
-编辑“napi_init.cpp”文件，新增TestHiCollieTimerNdk函数，构造任务执行超时事件：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，新增TestHiCollieTimerNdk函数，构造任务执行超时事件：
 
 // 引入hicollie.h头文件
 #include "napi/native_api.h"
@@ -116,7 +116,7 @@ static napi_value TestHiCollieTimerNdk(napi_env env, napi_callback_info exports)
 
 将TestHiCollieTimerNdk注册为ArkTS接口。
 
-编辑“napi_init.cpp”文件，TestHiCollieTimerNdk注册为ArkTS接口：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，TestHiCollieTimerNdk注册为ArkTS接口：
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
@@ -142,11 +142,11 @@ extern "C" __attribute__((constructor)) void RegisterEntryModule(void)
     napi_module_register(&demoModule);
 }
 
-编辑“index.d.ts”文件，定义ArkTS接口：
+编辑工程中的“entry > src > main > cpp > types > libentry > Index.ets”文件，定义ArkTS接口：
 
 export const TestHiCollieTimerNdk: () => void;
 
-编辑“Index.ets”文件，新增按钮触发任务执行超时事件。
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，新增按钮触发任务执行超时事件。
 
 import testNapi from 'libentry.so';
 
@@ -260,7 +260,7 @@ let watcher: hiAppEvent.Watcher = {
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.process_name=${eventInfo.params['process_name']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.pid=${eventInfo.params['pid']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.uid=${eventInfo.params['uid']}`);
-        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.uid=${eventInfo.params['uuid']}`);
+        hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.uuid=${eventInfo.params['uuid']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.exception=${eventInfo.params['exception']}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.hilog.size=${eventInfo.params['hilog'].length}`);
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.peer_binder.size=${JSON.stringify(eventInfo.params['peer_binder'].length)}`);

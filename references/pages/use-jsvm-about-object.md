@@ -40,13 +40,11 @@ JSVM-API接口开发流程参考使用JSVM-API实现JS与C/C++语言交互开发
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#include <fstream>
-#include <string>
-// GetPrototype注册回调
+// ...
+
 // OH_JSVM_GetPrototype的样例方法
 static JSVM_Value GetPrototype(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -62,6 +60,7 @@ static JSVM_Value GetPrototype(JSVM_Env env, JSVM_CallbackInfo info)
     }
     return result;
 }
+// GetPrototype注册回调
 static JSVM_CallbackStruct param[] = {
     {.data = nullptr, .callback = GetPrototype},
 };
@@ -71,7 +70,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"getPrototype", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(const myObject = {};
+const char* SRC_CALL_NATIVE = R"JS(const myObject = {};
     const proto = getPrototype(myObject);
     console.info(proto === Object.prototype);)JS";
 
@@ -85,11 +84,11 @@ JSVM GetPrototype success
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#include <fstream>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_CreateObject的样例方法
 static JSVM_Value CreateObject(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -122,7 +121,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"createObject", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(createObject())JS";
+const char* SRC_CALL_NATIVE = R"JS(createObject())JS";
 
 预期的输出结果：
 
@@ -134,11 +133,13 @@ JSVM CreateObject success
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_ObjectFreeze的样例方法
+const int FREEZE_TEST_VALUE = 111111;
 static JSVM_Value ObjectFreeze(JSVM_Env env, JSVM_CallbackInfo info)
 {
     // 接受一个JavaScript侧传入的object
@@ -152,7 +153,7 @@ static JSVM_Value ObjectFreeze(JSVM_Env env, JSVM_CallbackInfo info)
     }
     // 测试冻结后的对象中属性能否修改
     JSVM_Value value = nullptr;
-    OH_JSVM_CreateInt32(env, 111111, &value);
+    OH_JSVM_CreateInt32(env, FREEZE_TEST_VALUE, &value);
     OH_JSVM_SetNamedProperty(env, argv[0], "data", value);
     // 将冻结后修改过的属性返回JavaScript侧
     return argv[0];
@@ -167,7 +168,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"objectFreeze", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(let obj = { data: 55, message: "hello world"};
+const char* SRC_CALL_NATIVE = R"JS(let obj = { data: 55, message: "hello world"};
   objectFreeze(obj))JS";
 
 预期的输出结果：
@@ -180,11 +181,13 @@ Test JSVM OH_JSVM_ObjectFreeze success
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_ObjectSeal的样例方法
+const int TEST_VALUE = 111111;
 static JSVM_Value ObjectSeal(JSVM_Env env, JSVM_CallbackInfo info)
 {
     // 接受一个JavaScript侧传入的object
@@ -199,7 +202,7 @@ static JSVM_Value ObjectSeal(JSVM_Env env, JSVM_CallbackInfo info)
     // 检查封闭后的对象中属性能否修改、删除、新增
     // 封闭后对象修改
     JSVM_Value changeValue = nullptr;
-    OH_JSVM_CreateInt32(env, 111111, &changeValue);
+    OH_JSVM_CreateInt32(env, TEST_VALUE, &changeValue);
     OH_JSVM_SetNamedProperty(env, argv[0], "data", changeValue);
     // 封闭后对象删除
     JSVM_Value deleteProperty = nullptr;
@@ -226,7 +229,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"objectSeal", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS( let obj = { data: 55, message: "hello world"};
+const char* SRC_CALL_NATIVE = R"JS( let obj = { data: 55, message: "hello world"};
   objectSeal(obj))JS";
 
 预期的输出结果：
@@ -239,10 +242,11 @@ Test JSVM OH_JSVM_ObjectSeal success
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_Typeof的样例方法
 static JSVM_Value GetTypeof(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -310,7 +314,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"getTypeof", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(getTypeof(true);)JS";
+const char* SRC_CALL_NATIVE = R"JS(getTypeof(true);)JS";
 
 预期的输出结果：
 
@@ -322,10 +326,11 @@ JSVM Input type is boolean
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_Instanceof的样例方法
 static JSVM_Value InstanceOf(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -354,7 +359,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"instanceOf", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(class Person {
+const char* SRC_CALL_NATIVE = R"JS(class Person {
         name;
         age;
         constructor(name, age) {
@@ -379,11 +384,11 @@ JSVM InstanceOf：1
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#define NUMBERINT_FOUR 4
+#define NUMBERINT_FOUR
+// ...
 // 定义一个静态常量JSVM_TypeTag数组存储类型标签
 static const JSVM_TypeTag TagsData[NUMBERINT_FOUR] = {
     {0x9e4b2449547061b3, 0x33999f8a6516c499},
@@ -428,9 +433,9 @@ static JSVM_Value CheckObjectTypeTag(JSVM_Env env, JSVM_CallbackInfo info)
     bool checkResult = false;
     JSVM_Status status = OH_JSVM_CheckObjectTypeTag(env, args[0], &TagsData[index], &checkResult);
     if (status != JSVM_OK) {
-        OH_LOG_ERROR(LOG_APP, "JSVM CheckObjectTypeTag fail");
+        OH_LOG_ERROR(LOG_APP, "JSVM SetTypeTagToObject fail");
     } else {
-        OH_LOG_INFO(LOG_APP, "JSVM CheckObjectTypeTag:%{public}d", checkResult);
+        OH_LOG_INFO(LOG_APP, "JSVM SetTypeTagToObject:%{public}d", checkResult);
     }
     // 将bool结果转换为JSVM_Value并返回
     JSVM_Value checked = nullptr;
@@ -445,18 +450,18 @@ static JSVM_CallbackStruct param[] = {
 static JSVM_CallbackStruct *method = param;
 // SetTypeTagToObject，CheckObjectTypeTag方法别名，TS侧调用
 static JSVM_PropertyDescriptor descriptor[] = {
-    {"setTypeTagToObject", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
-    {"checkObjectTypeTag", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"setTypeTagToObject", nullptr, method, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"checkObjectTypeTag", nullptr, method+1, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(
+const char* SRC_CALL_NATIVE = R"JS(
          class Obj {
            data;
            message;
          }
          let obj= { data: 0, message: "hello world"};
          setTypeTagToObject(obj, 0);
-         checkObjectTypeTag(obj,0);)JS";
+         checkObjectTypeTag(obj, 0);)JS";
 
 预期的输出结果：
 
@@ -473,11 +478,13 @@ JavaScript对象被垃圾回收时，包装的外部指针指向的内容不被G
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#include <fstream>
+#include <cstdlib>
+#include <cstring>
+// ...
+
 // OH_JSVM_CreateExternal的样例方法
 static JSVM_Value CreateExternal(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -512,7 +519,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"createExternal", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(createExternal())JS";
+const char* SRC_CALL_NATIVE = R"JS(createExternal())JS";
 
 预期的输出结果：
 
@@ -524,10 +531,11 @@ OH_JSVM_CreateExternal可以创建并包装自定义的C/C++对象，并将其�
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_GetValueExternal的样例方法
 static JSVM_Value GetValueExternal(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -539,8 +547,8 @@ static JSVM_Value GetValueExternal(JSVM_Env env, JSVM_CallbackInfo info)
     } else {
         OH_LOG_INFO(LOG_APP, "JSVM OH_JSVM_CreateExternal success");
     }
-    void *data_value;
-    status = OH_JSVM_GetValueExternal(env, externalValue, &data_value);
+    void *dataValue;
+    status = OH_JSVM_GetValueExternal(env, externalValue, &dataValue);
     if (status != JSVM_OK) {
         OH_LOG_ERROR(LOG_APP, "JSVM GetValueExternal fail");
     } else {
@@ -548,7 +556,7 @@ static JSVM_Value GetValueExternal(JSVM_Env env, JSVM_CallbackInfo info)
     }
     // 将符号位转化为int类型传出去
     JSVM_Value returnValue = nullptr;
-    int retData = *static_cast<int *>(data_value);
+    int retData = *static_cast<int *>(dataValue);
     OH_JSVM_CreateInt32(env, retData, &returnValue);
     return returnValue;
 }
@@ -562,7 +570,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"getValueExternal", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(getValueExternal())JS";
+const char* SRC_CALL_NATIVE = R"JS(getValueExternal())JS";
 
 预期的输出结果：
 
@@ -575,10 +583,11 @@ JSVM GetValueExternal success
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+// ...
+
 // OH_JSVM_CreateSymbol的样例方法
 static JSVM_Value CreateSymbol(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -606,7 +615,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"createSymbol", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(createSymbol())JS";
+const char* SRC_CALL_NATIVE = R"JS(createSymbol())JS";
 
 预期的输出结果：
 
@@ -618,17 +627,19 @@ JSVM CreateSymbol Success
 
 cpp部分代码：
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
+static const size_t TESTMO_LENGTH = 9;
 // 定义一个常量，用于存储最大字符串长度
 static const int MAX_BUFFER_SIZE = 128;
 // OH_JSVM_SymbolFor的样例方法
 static JSVM_Value SymbolFor(JSVM_Env env, JSVM_CallbackInfo info)
 {
     JSVM_Value description = nullptr;
-    OH_JSVM_CreateStringUtf8(env, "test_demo", 9, &description);
+    OH_JSVM_CreateStringUtf8(env, "test_demo", TESTMO_LENGTH, &description);
     char buffer[MAX_BUFFER_SIZE];
     size_t bufferSize = MAX_BUFFER_SIZE;
     size_t copied = 0;
@@ -655,7 +666,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"symbolFor", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(symbolFor())JS";
+const char* SRC_CALL_NATIVE = R"JS(symbolFor())JS";
 
 预期的输出结果：
 
@@ -666,13 +677,11 @@ JSVM OH_JSVM_SymbolFor success
 ### Code block 1
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#include <fstream>
-#include <string>
-// GetPrototype注册回调
+// ...
+
 // OH_JSVM_GetPrototype的样例方法
 static JSVM_Value GetPrototype(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -688,6 +697,7 @@ static JSVM_Value GetPrototype(JSVM_Env env, JSVM_CallbackInfo info)
     }
     return result;
 }
+// GetPrototype注册回调
 static JSVM_CallbackStruct param[] = {
     {.data = nullptr, .callback = GetPrototype},
 };
@@ -697,7 +707,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"getPrototype", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(const myObject = {};
+const char* SRC_CALL_NATIVE = R"JS(const myObject = {};
     const proto = getPrototype(myObject);
     console.info(proto === Object.prototype);)JS";
 ```
@@ -711,11 +721,11 @@ JSVM GetPrototype success
 ### Code block 3
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#include <fstream>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_CreateObject的样例方法
 static JSVM_Value CreateObject(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -748,7 +758,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"createObject", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(createObject())JS";
+const char* SRC_CALL_NATIVE = R"JS(createObject())JS";
 ```
 
 ### Code block 4
@@ -760,11 +770,13 @@ JSVM CreateObject success
 ### Code block 5
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_ObjectFreeze的样例方法
+const int FREEZE_TEST_VALUE = 111111;
 static JSVM_Value ObjectFreeze(JSVM_Env env, JSVM_CallbackInfo info)
 {
     // 接受一个JavaScript侧传入的object
@@ -778,7 +790,7 @@ static JSVM_Value ObjectFreeze(JSVM_Env env, JSVM_CallbackInfo info)
     }
     // 测试冻结后的对象中属性能否修改
     JSVM_Value value = nullptr;
-    OH_JSVM_CreateInt32(env, 111111, &value);
+    OH_JSVM_CreateInt32(env, FREEZE_TEST_VALUE, &value);
     OH_JSVM_SetNamedProperty(env, argv[0], "data", value);
     // 将冻结后修改过的属性返回JavaScript侧
     return argv[0];
@@ -793,7 +805,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"objectFreeze", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(let obj = { data: 55, message: "hello world"};
+const char* SRC_CALL_NATIVE = R"JS(let obj = { data: 55, message: "hello world"};
   objectFreeze(obj))JS";
 ```
 
@@ -806,11 +818,13 @@ Test JSVM OH_JSVM_ObjectFreeze success
 ### Code block 7
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_ObjectSeal的样例方法
+const int TEST_VALUE = 111111;
 static JSVM_Value ObjectSeal(JSVM_Env env, JSVM_CallbackInfo info)
 {
     // 接受一个JavaScript侧传入的object
@@ -825,7 +839,7 @@ static JSVM_Value ObjectSeal(JSVM_Env env, JSVM_CallbackInfo info)
     // 检查封闭后的对象中属性能否修改、删除、新增
     // 封闭后对象修改
     JSVM_Value changeValue = nullptr;
-    OH_JSVM_CreateInt32(env, 111111, &changeValue);
+    OH_JSVM_CreateInt32(env, TEST_VALUE, &changeValue);
     OH_JSVM_SetNamedProperty(env, argv[0], "data", changeValue);
     // 封闭后对象删除
     JSVM_Value deleteProperty = nullptr;
@@ -852,7 +866,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"objectSeal", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS( let obj = { data: 55, message: "hello world"};
+const char* SRC_CALL_NATIVE = R"JS( let obj = { data: 55, message: "hello world"};
   objectSeal(obj))JS";
 ```
 
@@ -865,10 +879,11 @@ Test JSVM OH_JSVM_ObjectSeal success
 ### Code block 9
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_Typeof的样例方法
 static JSVM_Value GetTypeof(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -936,7 +951,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"getTypeof", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(getTypeof(true);)JS";
+const char* SRC_CALL_NATIVE = R"JS(getTypeof(true);)JS";
 ```
 
 ### Code block 10
@@ -948,10 +963,11 @@ JSVM Input type is boolean
 ### Code block 11
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_Instanceof的样例方法
 static JSVM_Value InstanceOf(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -980,7 +996,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"instanceOf", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(class Person {
+const char* SRC_CALL_NATIVE = R"JS(class Person {
         name;
         age;
         constructor(name, age) {
@@ -1001,11 +1017,11 @@ JSVM InstanceOf：1
 ### Code block 13
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#define NUMBERINT_FOUR 4
+#define NUMBERINT_FOUR
+// ...
 // 定义一个静态常量JSVM_TypeTag数组存储类型标签
 static const JSVM_TypeTag TagsData[NUMBERINT_FOUR] = {
     {0x9e4b2449547061b3, 0x33999f8a6516c499},
@@ -1050,9 +1066,9 @@ static JSVM_Value CheckObjectTypeTag(JSVM_Env env, JSVM_CallbackInfo info)
     bool checkResult = false;
     JSVM_Status status = OH_JSVM_CheckObjectTypeTag(env, args[0], &TagsData[index], &checkResult);
     if (status != JSVM_OK) {
-        OH_LOG_ERROR(LOG_APP, "JSVM CheckObjectTypeTag fail");
+        OH_LOG_ERROR(LOG_APP, "JSVM SetTypeTagToObject fail");
     } else {
-        OH_LOG_INFO(LOG_APP, "JSVM CheckObjectTypeTag:%{public}d", checkResult);
+        OH_LOG_INFO(LOG_APP, "JSVM SetTypeTagToObject:%{public}d", checkResult);
     }
     // 将bool结果转换为JSVM_Value并返回
     JSVM_Value checked = nullptr;
@@ -1067,18 +1083,18 @@ static JSVM_CallbackStruct param[] = {
 static JSVM_CallbackStruct *method = param;
 // SetTypeTagToObject，CheckObjectTypeTag方法别名，TS侧调用
 static JSVM_PropertyDescriptor descriptor[] = {
-    {"setTypeTagToObject", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
-    {"checkObjectTypeTag", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"setTypeTagToObject", nullptr, method, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"checkObjectTypeTag", nullptr, method+1, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(
+const char* SRC_CALL_NATIVE = R"JS(
          class Obj {
            data;
            message;
          }
          let obj= { data: 0, message: "hello world"};
          setTypeTagToObject(obj, 0);
-         checkObjectTypeTag(obj,0);)JS";
+         checkObjectTypeTag(obj, 0);)JS";
 ```
 
 ### Code block 14
@@ -1091,11 +1107,13 @@ JSVM CheckObjectTypeTag:1
 ### Code block 15
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
-#include <fstream>
+#include <cstdlib>
+#include <cstring>
+// ...
+
 // OH_JSVM_CreateExternal的样例方法
 static JSVM_Value CreateExternal(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -1130,7 +1148,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"createExternal", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(createExternal())JS";
+const char* SRC_CALL_NATIVE = R"JS(createExternal())JS";
 ```
 
 ### Code block 16
@@ -1142,10 +1160,11 @@ JSVM CreateExternal success
 ### Code block 17
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
 // OH_JSVM_GetValueExternal的样例方法
 static JSVM_Value GetValueExternal(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -1157,8 +1176,8 @@ static JSVM_Value GetValueExternal(JSVM_Env env, JSVM_CallbackInfo info)
     } else {
         OH_LOG_INFO(LOG_APP, "JSVM OH_JSVM_CreateExternal success");
     }
-    void *data_value;
-    status = OH_JSVM_GetValueExternal(env, externalValue, &data_value);
+    void *dataValue;
+    status = OH_JSVM_GetValueExternal(env, externalValue, &dataValue);
     if (status != JSVM_OK) {
         OH_LOG_ERROR(LOG_APP, "JSVM GetValueExternal fail");
     } else {
@@ -1166,7 +1185,7 @@ static JSVM_Value GetValueExternal(JSVM_Env env, JSVM_CallbackInfo info)
     }
     // 将符号位转化为int类型传出去
     JSVM_Value returnValue = nullptr;
-    int retData = *static_cast<int *>(data_value);
+    int retData = *static_cast<int *>(dataValue);
     OH_JSVM_CreateInt32(env, retData, &returnValue);
     return returnValue;
 }
@@ -1180,7 +1199,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"getValueExternal", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(getValueExternal())JS";
+const char* SRC_CALL_NATIVE = R"JS(getValueExternal())JS";
 ```
 
 ### Code block 18
@@ -1193,10 +1212,11 @@ JSVM GetValueExternal success
 ### Code block 19
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+// ...
+
 // OH_JSVM_CreateSymbol的样例方法
 static JSVM_Value CreateSymbol(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -1224,7 +1244,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"createSymbol", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(createSymbol())JS";
+const char* SRC_CALL_NATIVE = R"JS(createSymbol())JS";
 ```
 
 ### Code block 20
@@ -1236,17 +1256,19 @@ JSVM CreateSymbol Success
 ### Code block 21
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
+
+static const size_t TESTMO_LENGTH = 9;
 // 定义一个常量，用于存储最大字符串长度
 static const int MAX_BUFFER_SIZE = 128;
 // OH_JSVM_SymbolFor的样例方法
 static JSVM_Value SymbolFor(JSVM_Env env, JSVM_CallbackInfo info)
 {
     JSVM_Value description = nullptr;
-    OH_JSVM_CreateStringUtf8(env, "test_demo", 9, &description);
+    OH_JSVM_CreateStringUtf8(env, "test_demo", TESTMO_LENGTH, &description);
     char buffer[MAX_BUFFER_SIZE];
     size_t bufferSize = MAX_BUFFER_SIZE;
     size_t copied = 0;
@@ -1273,7 +1295,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"symbolFor", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 // 样例测试js
-const char* srcCallNative = R"JS(symbolFor())JS";
+const char* SRC_CALL_NATIVE = R"JS(symbolFor())JS";
 ```
 
 ### Code block 22

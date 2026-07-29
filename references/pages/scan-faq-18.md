@@ -10,4 +10,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-
 
 自定义界面扫码接口和识别本地图片接口不支持并发执行。
 
-点击图库按钮的时候，需要先暂停并释放相机流（customScan.stop、customScan.release），再进行本地图片识码。
+点击图库按钮的时候，需要先暂停并释放相机流（stop、release），再进行本地图片识码。

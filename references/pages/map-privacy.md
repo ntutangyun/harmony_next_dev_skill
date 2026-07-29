@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/map-priva
 
 TomTom Data
 
-© 2006-2025 TomTom. All rights reserved. This material is proprietary and the subject of copyright protection, database right protection and other Intellectual Property Rights owned by TomTom or its suppliers. The use of this material is subject to the terms of a license agreement. Any unauthorized copying or disclosure of this material will lead to criminal and civil liabilities.
+© 2006-2026 TomTom. All rights reserved. This material is proprietary and the subject of copyright protection, database right protection and other Intellectual Property Rights owned by TomTom or its suppliers. The use of this material is subject to the terms of a license agreement. Any unauthorized copying or disclosure of this material will lead to criminal and civil liabilities.
 
 OSM Data
 
@@ -24,11 +24,7 @@ Belarus
 
 Canada
 
-© 1992 – 2025 TomTom. All rights reserved. This material is proprietary and the subject of copyright protection and other intellectual property rights owned or licensed to TomTom. The product includes information copied with permission from Canadian authorities, including © Canada Post Corporation. All rights reserved. The use of this material is subject to the terms of a License Agreement. You will be held liable for any unauthorized copying or disclosure of this material.
-
-Canada and United States
-
-© 1992 – 2023 TomTom. All rights reserved. Portions of the POI database contained in Points of Interest North America have been provided by Neustar Localeze
+© 1992 – 2026 TomTom. All rights reserved. This material is proprietary and the subject of copyright protection and other intellectual property rights owned or licensed to TomTom. The product includes information copied with permission from Canadian authorities, including © Canada Post Corporation. All rights reserved. The use of this material is subject to the terms of a License Agreement. You will be held liable for any unauthorized copying or disclosure of this material.
 
 Denmark
 
@@ -40,7 +36,7 @@ Source: Direction générale des Finances Publiques – Cadastre; Updated 2019
 
 Germany
 
-© GeoBasis-DE / LDBV 2021
+© GeoBasis-DE / LDBV 2025
 
 Indonesia
 
@@ -48,7 +44,7 @@ Indonesia
 
 Ireland
 
-© 2019 GeoDirectory
+© GeoDirectory
 
 Jordan
 
@@ -76,4 +72,4 @@ Switzerland
 
 United States
 
-© United States Postal Service 2025
+© United States Postal Service 2026

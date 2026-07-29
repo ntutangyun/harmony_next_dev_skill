@@ -18,10 +18,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-out
 
 在使用AudioRoutingManager管理音频设备前，需要先导入模块并创建实例。
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
 // ...
-let audioManager = audio.getAudioManager();  // 需要先创建AudioManager实例。
-let audioRoutingManager = audioManager.getRoutingManager();  // 再调用AudioManager的方法创建AudioRoutingManager实例。
+
+let audioManager = audio.getAudioManager();
+let audioRoutingManager = audioManager.getRoutingManager();
 
 [h2]支持的音频输出设备类型
 
@@ -41,10 +42,16 @@ NEARLINK	31	星闪设备。
 
 使用getDevices方法可以获取当前所有输出设备的信息。
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  audioRoutingManager.getDevices(audio.DeviceFlag.OUTPUT_DEVICES_FLAG).then((data: audio.AudioDeviceDescriptors) => {
-    console.info('Promise returned to indicate that the device list is obtained.');
+
+  audioRoutingManager.getDevices(audio.DeviceFlag.OUTPUT_DEVICES_FLAG).then((audioDeviceDescriptors: audio.
+    AudioDeviceDescriptors) => {
+    console.info(`Succeeded in getting devices. AudioDeviceDescriptors: ${JSON.stringify(audioDeviceDescriptors)}`);
+    // ...
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to get devices. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
 
@@ -56,20 +63,21 @@ import { audio } from '@kit.AudioKit';  // 导入audio模块。
 
 监听设备连接状态变化可以监听到全部的设备连接状态变化，不建议作为应用处理自动暂停的依据。应用如需处理自动暂停相关业务，可参考音频流输出设备变更原因。
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  // 监听音频设备状态变化。
-  audioRoutingManager.on('deviceChange', audio.DeviceFlag.OUTPUT_DEVICES_FLAG, (deviceChanged: audio.DeviceChangeAction) => {
-    console.info(`device change type : ${deviceChanged.type}`);  // 设备连接状态变化,0为连接,1为断开连接。
-    console.info(`device descriptor size : ${deviceChanged.deviceDescriptors.length}`);
-    console.info(`device change descriptor : ${deviceChanged.deviceDescriptors[0].deviceRole}`);  // 设备角色。
-    console.info(`device change descriptor : ${deviceChanged.deviceDescriptors[0].deviceType}`);  // 设备类型。
 
+  try {
+    // 监听音频输出设备状态变化。
+    audioRoutingManager.on('deviceChange', audio.DeviceFlag.OUTPUT_DEVICES_FLAG, (deviceChanged: audio.DeviceChangeAction) => {
+      console.info(`Succeeded in using on function. DeviceChangeAction: ${JSON.stringify(deviceChanged)}`);
+      // ...
+    });
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
     // ...
-  });
-  // ...
-  // 取消监听音频设备状态变化。
-  audioRoutingManager.off('deviceChange');
+  }
 
 [h2]获取最高优先级输出设备信息
 
@@ -79,46 +87,47 @@ import { audio } from '@kit.AudioKit';  // 导入audio模块。
 
 最高优先级输出设备表示声音将在此设备输出的设备。
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-let rendererInfo: audio.AudioRendererInfo = {
-  usage: audio.StreamUsage.STREAM_USAGE_MUSIC,// 音频流使用类型:音乐。根据业务场景配置,参考StreamUsage。
+
+let audioRendererInfo: audio.AudioRendererInfo = {
+  usage: audio.StreamUsage.STREAM_USAGE_VOICE_COMMUNICATION, // 音频流使用类型：语音通话。根据业务场景配置，参考StreamUsage。
   rendererFlags: 0 // 音频渲染器标志。
 };
 // ...
-async function getPreferOutputDeviceForRendererInfo() {
-  // ...
-  audioRoutingManager.getPreferOutputDeviceForRendererInfo(rendererInfo).then((desc: audio.AudioDeviceDescriptors) => {
-    console.info(`device descriptor: ${desc}`);
 
+  audioRoutingManager.getPreferOutputDeviceForRendererInfo(audioRendererInfo).
+    then((audioDeviceDescriptors: audio.AudioDeviceDescriptors) => {
+    console.info(`Succeeded in getting prefer output device for renderer info. AudioDeviceDescriptors: ${JSON.stringify(audioDeviceDescriptors)}`);
     // ...
   }).catch((err: BusinessError) => {
-    console.error(`Result ERROR: ${err}`);
+    console.error(`Failed to get prefer output device for renderer info. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
-  // ...
-}
 
 [h2]监听最高优先级输出设备变化
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-let rendererInfo: audio.AudioRendererInfo = {
-  usage: audio.StreamUsage.STREAM_USAGE_MUSIC,// 音频流使用类型:音乐。根据业务场景配置,参考StreamUsage。
+
+let audioRendererInfo: audio.AudioRendererInfo = {
+  usage: audio.StreamUsage.STREAM_USAGE_VOICE_COMMUNICATION, // 音频流使用类型：语音通话。根据业务场景配置，参考StreamUsage。
   rendererFlags: 0 // 音频渲染器标志。
 };
 // ...
-  // 监听最高优先级输出设备变化。
-  audioRoutingManager.on('preferOutputDeviceChangeForRendererInfo', rendererInfo, (desc: audio.AudioDeviceDescriptors) => {
-    console.info(`device change descriptor : ${desc[0].deviceRole}`);  // 设备角色。
-    console.info(`device change descriptor : ${desc[0].deviceType}`);  // 设备类型。
 
+  try {
+    audioRoutingManager.on('preferOutputDeviceChangeForRendererInfo', audioRendererInfo, (audioDeviceDescriptors: audio.AudioDeviceDescriptors) => {
+      console.info(`Succeeded in using on function. DeviceChangeAction: ${JSON.stringify(audioDeviceDescriptors)}`);
+      // ...
+    });
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
     // ...
-  });
-  // ...
-  // 取消监听最高优先级输出设备变化。
-  audioRoutingManager.off('preferOutputDeviceChangeForRendererInfo');
+  }
 
 通过AudioSession查询和监听音频输出设备
 
@@ -132,10 +141,12 @@ C API：native_audio_session_manager.h
 
 在使用AudioSessionManager管理音频设备前，需要先导入模块并创建实例。
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
-let audioManager = audio.getAudioManager();  // 需要先创建AudioManager实例。
+import { audio } from '@kit.AudioKit';
+// ...
 
-let audioSessionManager = audioManager.getSessionManager();  // 再调用AudioManager的方法创建AudioSessionManager实例。
+let audioManager = audio.getAudioManager();
+// ...
+let audioSessionManager = audioManager.getSessionManager();
 
 [h2]设置本机默认音频输出设备
 
@@ -147,25 +158,43 @@ setDefaultOutputDevice可以用于设置本机默认输出设备。
 
 调用setDefaultOutputDevice设置音频输出设备后，如需取消，可将参数设为audio.DeviceType.DEFAULT，将音频设备选择权交还给系统。否则，每次调用activateAudioSession时，应用选择的默认输出设备将生效。
 
+import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  // 设置默认输出设备为本机扬声器。
-  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.SPEAKER).then(() => {
-    console.info('setDefaultOutputDevice Success!');
+
+  // 应用根据业务场景设置适合自己的音频会话场景，激活AudioSession时，系统会根据应用选择的音频会话场景申请对应的音频焦点。
+  audioSessionManager.setAudioSessionScene(audio.AudioSessionScene.AUDIO_SESSION_SCENE_VOICE_COMMUNICATION);
+
+  // 设置音频会话策略。
+  let strategy: audio.AudioSessionStrategy = {
+    concurrencyMode: audio.AudioConcurrencyMode.CONCURRENCY_MIX_WITH_OTHERS
+  };
+
+  // 激活AudioSession。
+  audioSessionManager.activateAudioSession(strategy).then(() => {
+    console.info('Succeeded in activating audio session.');
     // ...
   }).catch((err: BusinessError) => {
-    console.error(`setDefaultOutputDevice Fail: ${err}`);
+    console.error(`Failed to activate audio session. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
   // ...
-  // 设置默认输出设备为默认设备,即取消应用设置的默认设备,交由系统选择设备。
-  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.DEFAULT).then(() => {
-    console.info('setDefaultOutputDevice Success!');
+
+  // 设置默认输出设备为扬声器。
+  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.SPEAKER).then(() => {
+    console.info('Succeeded in setting default output device.');
     // ...
   }).catch((err: BusinessError) => {
-    console.error(`setDefaultOutputDevice Fail: ${err}`);
-    // [Exclude setting_DefaultOutputDevice]
+    console.error(`Failed to set default output device. Code: ${err.code}, message: ${err.message}`);
+    // ...
+  });
+  // ...
 
+  // 设置默认输出设备为听筒。
+  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.EARPIECE).then(() => {
+    console.info('Succeeded in setting default output device.');
+    // ...
+  }).catch((err: BusinessError) => {
     console.error(`Failed to set default output device. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
@@ -178,8 +207,19 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 本接口用于查询通过setDefaultOutputDevice接口设置的输出设备。
 
-let deviceType = audioSessionManager.getDefaultOutputDevice();
-console.info(`getDefaultOutputDevice Success, deviceType: ${deviceType}`);
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+
+  try {
+    let deviceType = audioSessionManager.getDefaultOutputDevice();
+    console.info(`Succeeded in getting default output device. DeviceType: ${deviceType}`);
+    // ...
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to get default output device. Code: ${error.code}, message: ${error.message}`);
+    // ...
+  }
 
 [h2]监听输出设备变化
 
@@ -189,21 +229,17 @@ console.info(`getDefaultOutputDevice Success, deviceType: ${deviceType}`);
 
 currentOutputDeviceChangedCallback包含设备变更的原因及推荐的后续操作。应用应根据不同的变更原因进行处理，并按系统推荐的操作继续或停止当前播放。
 
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-// 同一监听事件中,on方法和off方法传入callback参数一致,off方法取消对应on方法订阅的监听。
-let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio.CurrentOutputDeviceChangedEvent) => {
-  console.info(`reason of audioSessionStateChanged: ${currentOutputDeviceChangedEvent.changeReason} `);
 
-  // 为UI收集信息
-  let callbackMsg = `reason of audioSessionStateChanged: ${currentOutputDeviceChangedEvent.changeReason} `;
-  if (globalCallbackUpdate) {
-    globalCallbackUpdate(callbackMsg);
-  }
+let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio.CurrentOutputDeviceChangedEvent) => {
+  console.info(`Succeeded in using on or off function. CurrentOutputDeviceChangedEvent: ${JSON.stringify(currentOutputDeviceChangedEvent)}`);
+  // ...
 
   switch (currentOutputDeviceChangedEvent.changeReason) {
     case audio.AudioStreamDeviceChangeReason.REASON_OLD_DEVICE_UNAVAILABLE:
-      // 响应设备不可用事件,如果应用处于播放状态,应暂停播放,更新UX界面。
+      // 响应设备不可用事件，如果应用处于播放状态，应暂停播放，更新UX界面。
       break;
     case audio.AudioStreamDeviceChangeReason.REASON_NEW_DEVICE_AVAILABLE:
       // 应用根据业务情况响应设备可用事件。
@@ -212,7 +248,7 @@ let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio
       // 应用根据业务情况响应设备强选事件。
       break;
     case audio.AudioStreamDeviceChangeReason.REASON_SESSION_ACTIVATED:
-      // 应用根据业务情况响应audio session激活时的输出设备信息。
+      // 应用根据业务情况响应audioSession激活时的输出设备信息。
       break;
     case audio.AudioStreamDeviceChangeReason.REASON_STREAM_PRIORITY_CHANGED:
       // 应用根据业务情况响应其它更高优先级的音频流触发的设备变更事件。
@@ -223,31 +259,40 @@ let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio
   }
 };
 // ...
-  audioSessionManager.on('currentOutputDeviceChanged', currentOutputDeviceChangedCallback);
-  // ...
-  audioSessionManager.off('currentOutputDeviceChanged', currentOutputDeviceChangedCallback);
-  // ...
-  // 取消该事件的所有监听。
-  audioSessionManager.off('currentOutputDeviceChanged');
+
+  try {
+    audioSessionManager.on('currentOutputDeviceChanged', currentOutputDeviceChangedCallback);
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
+    // ...
+  }
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
 // ...
-let audioManager = audio.getAudioManager();  // 需要先创建AudioManager实例。
-let audioRoutingManager = audioManager.getRoutingManager();  // 再调用AudioManager的方法创建AudioRoutingManager实例。
+
+let audioManager = audio.getAudioManager();
+let audioRoutingManager = audioManager.getRoutingManager();
 ```
 
 ### Code block 2
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  audioRoutingManager.getDevices(audio.DeviceFlag.OUTPUT_DEVICES_FLAG).then((data: audio.AudioDeviceDescriptors) => {
-    console.info('Promise returned to indicate that the device list is obtained.');
+
+  audioRoutingManager.getDevices(audio.DeviceFlag.OUTPUT_DEVICES_FLAG).then((audioDeviceDescriptors: audio.
+    AudioDeviceDescriptors) => {
+    console.info(`Succeeded in getting devices. AudioDeviceDescriptors: ${JSON.stringify(audioDeviceDescriptors)}`);
+    // ...
+  }).catch((err: BusinessError) => {
+    console.error(`Failed to get devices. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
 ```
@@ -255,100 +300,122 @@ import { audio } from '@kit.AudioKit';  // 导入audio模块。
 ### Code block 3
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  // 监听音频设备状态变化。
-  audioRoutingManager.on('deviceChange', audio.DeviceFlag.OUTPUT_DEVICES_FLAG, (deviceChanged: audio.DeviceChangeAction) => {
-    console.info(`device change type : ${deviceChanged.type}`);  // 设备连接状态变化,0为连接,1为断开连接。
-    console.info(`device descriptor size : ${deviceChanged.deviceDescriptors.length}`);
-    console.info(`device change descriptor : ${deviceChanged.deviceDescriptors[0].deviceRole}`);  // 设备角色。
-    console.info(`device change descriptor : ${deviceChanged.deviceDescriptors[0].deviceType}`);  // 设备类型。
 
+  try {
+    // 监听音频输出设备状态变化。
+    audioRoutingManager.on('deviceChange', audio.DeviceFlag.OUTPUT_DEVICES_FLAG, (deviceChanged: audio.DeviceChangeAction) => {
+      console.info(`Succeeded in using on function. DeviceChangeAction: ${JSON.stringify(deviceChanged)}`);
+      // ...
+    });
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
     // ...
-  });
-  // ...
-  // 取消监听音频设备状态变化。
-  audioRoutingManager.off('deviceChange');
+  }
 ```
 
 ### Code block 4
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-let rendererInfo: audio.AudioRendererInfo = {
-  usage: audio.StreamUsage.STREAM_USAGE_MUSIC,// 音频流使用类型:音乐。根据业务场景配置,参考StreamUsage。
+
+let audioRendererInfo: audio.AudioRendererInfo = {
+  usage: audio.StreamUsage.STREAM_USAGE_VOICE_COMMUNICATION, // 音频流使用类型：语音通话。根据业务场景配置，参考StreamUsage。
   rendererFlags: 0 // 音频渲染器标志。
 };
 // ...
-async function getPreferOutputDeviceForRendererInfo() {
-  // ...
-  audioRoutingManager.getPreferOutputDeviceForRendererInfo(rendererInfo).then((desc: audio.AudioDeviceDescriptors) => {
-    console.info(`device descriptor: ${desc}`);
 
+  audioRoutingManager.getPreferOutputDeviceForRendererInfo(audioRendererInfo).
+    then((audioDeviceDescriptors: audio.AudioDeviceDescriptors) => {
+    console.info(`Succeeded in getting prefer output device for renderer info. AudioDeviceDescriptors: ${JSON.stringify(audioDeviceDescriptors)}`);
     // ...
   }).catch((err: BusinessError) => {
-    console.error(`Result ERROR: ${err}`);
+    console.error(`Failed to get prefer output device for renderer info. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
-  // ...
-}
 ```
 
 ### Code block 5
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-let rendererInfo: audio.AudioRendererInfo = {
-  usage: audio.StreamUsage.STREAM_USAGE_MUSIC,// 音频流使用类型:音乐。根据业务场景配置,参考StreamUsage。
+
+let audioRendererInfo: audio.AudioRendererInfo = {
+  usage: audio.StreamUsage.STREAM_USAGE_VOICE_COMMUNICATION, // 音频流使用类型：语音通话。根据业务场景配置，参考StreamUsage。
   rendererFlags: 0 // 音频渲染器标志。
 };
 // ...
-  // 监听最高优先级输出设备变化。
-  audioRoutingManager.on('preferOutputDeviceChangeForRendererInfo', rendererInfo, (desc: audio.AudioDeviceDescriptors) => {
-    console.info(`device change descriptor : ${desc[0].deviceRole}`);  // 设备角色。
-    console.info(`device change descriptor : ${desc[0].deviceType}`);  // 设备类型。
 
+  try {
+    audioRoutingManager.on('preferOutputDeviceChangeForRendererInfo', audioRendererInfo, (audioDeviceDescriptors: audio.AudioDeviceDescriptors) => {
+      console.info(`Succeeded in using on function. DeviceChangeAction: ${JSON.stringify(audioDeviceDescriptors)}`);
+      // ...
+    });
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
     // ...
-  });
-  // ...
-  // 取消监听最高优先级输出设备变化。
-  audioRoutingManager.off('preferOutputDeviceChangeForRendererInfo');
+  }
 ```
 
 ### Code block 6
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
-let audioManager = audio.getAudioManager();  // 需要先创建AudioManager实例。
+import { audio } from '@kit.AudioKit';
+// ...
 
-let audioSessionManager = audioManager.getSessionManager();  // 再调用AudioManager的方法创建AudioSessionManager实例。
+let audioManager = audio.getAudioManager();
+// ...
+let audioSessionManager = audioManager.getSessionManager();
 ```
 
 ### Code block 7
 
 ```
+import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-  // 设置默认输出设备为本机扬声器。
-  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.SPEAKER).then(() => {
-    console.info('setDefaultOutputDevice Success!');
+
+  // 应用根据业务场景设置适合自己的音频会话场景，激活AudioSession时，系统会根据应用选择的音频会话场景申请对应的音频焦点。
+  audioSessionManager.setAudioSessionScene(audio.AudioSessionScene.AUDIO_SESSION_SCENE_VOICE_COMMUNICATION);
+
+  // 设置音频会话策略。
+  let strategy: audio.AudioSessionStrategy = {
+    concurrencyMode: audio.AudioConcurrencyMode.CONCURRENCY_MIX_WITH_OTHERS
+  };
+
+  // 激活AudioSession。
+  audioSessionManager.activateAudioSession(strategy).then(() => {
+    console.info('Succeeded in activating audio session.');
     // ...
   }).catch((err: BusinessError) => {
-    console.error(`setDefaultOutputDevice Fail: ${err}`);
+    console.error(`Failed to activate audio session. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
   // ...
-  // 设置默认输出设备为默认设备,即取消应用设置的默认设备,交由系统选择设备。
-  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.DEFAULT).then(() => {
-    console.info('setDefaultOutputDevice Success!');
+
+  // 设置默认输出设备为扬声器。
+  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.SPEAKER).then(() => {
+    console.info('Succeeded in setting default output device.');
     // ...
   }).catch((err: BusinessError) => {
-    console.error(`setDefaultOutputDevice Fail: ${err}`);
-    // [Exclude setting_DefaultOutputDevice]
+    console.error(`Failed to set default output device. Code: ${err.code}, message: ${err.message}`);
+    // ...
+  });
+  // ...
 
+  // 设置默认输出设备为听筒。
+  audioSessionManager.setDefaultOutputDevice(audio.DeviceType.EARPIECE).then(() => {
+    console.info('Succeeded in setting default output device.');
+    // ...
+  }).catch((err: BusinessError) => {
     console.error(`Failed to set default output device. Code: ${err.code}, message: ${err.message}`);
     // ...
   });
@@ -357,28 +424,35 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 8
 
 ```
-let deviceType = audioSessionManager.getDefaultOutputDevice();
-console.info(`getDefaultOutputDevice Success, deviceType: ${deviceType}`);
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+
+  try {
+    let deviceType = audioSessionManager.getDefaultOutputDevice();
+    console.info(`Succeeded in getting default output device. DeviceType: ${deviceType}`);
+    // ...
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to get default output device. Code: ${error.code}, message: ${error.message}`);
+    // ...
+  }
 ```
 
 ### Code block 9
 
 ```
-import { audio } from '@kit.AudioKit';  // 导入audio模块。
+import { audio } from '@kit.AudioKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 // ...
-// 同一监听事件中,on方法和off方法传入callback参数一致,off方法取消对应on方法订阅的监听。
-let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio.CurrentOutputDeviceChangedEvent) => {
-  console.info(`reason of audioSessionStateChanged: ${currentOutputDeviceChangedEvent.changeReason} `);
 
-  // 为UI收集信息
-  let callbackMsg = `reason of audioSessionStateChanged: ${currentOutputDeviceChangedEvent.changeReason} `;
-  if (globalCallbackUpdate) {
-    globalCallbackUpdate(callbackMsg);
-  }
+let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio.CurrentOutputDeviceChangedEvent) => {
+  console.info(`Succeeded in using on or off function. CurrentOutputDeviceChangedEvent: ${JSON.stringify(currentOutputDeviceChangedEvent)}`);
+  // ...
 
   switch (currentOutputDeviceChangedEvent.changeReason) {
     case audio.AudioStreamDeviceChangeReason.REASON_OLD_DEVICE_UNAVAILABLE:
-      // 响应设备不可用事件,如果应用处于播放状态,应暂停播放,更新UX界面。
+      // 响应设备不可用事件，如果应用处于播放状态，应暂停播放，更新UX界面。
       break;
     case audio.AudioStreamDeviceChangeReason.REASON_NEW_DEVICE_AVAILABLE:
       // 应用根据业务情况响应设备可用事件。
@@ -387,7 +461,7 @@ let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio
       // 应用根据业务情况响应设备强选事件。
       break;
     case audio.AudioStreamDeviceChangeReason.REASON_SESSION_ACTIVATED:
-      // 应用根据业务情况响应audio session激活时的输出设备信息。
+      // 应用根据业务情况响应audioSession激活时的输出设备信息。
       break;
     case audio.AudioStreamDeviceChangeReason.REASON_STREAM_PRIORITY_CHANGED:
       // 应用根据业务情况响应其它更高优先级的音频流触发的设备变更事件。
@@ -398,10 +472,12 @@ let currentOutputDeviceChangedCallback = (currentOutputDeviceChangedEvent: audio
   }
 };
 // ...
-  audioSessionManager.on('currentOutputDeviceChanged', currentOutputDeviceChangedCallback);
-  // ...
-  audioSessionManager.off('currentOutputDeviceChanged', currentOutputDeviceChangedCallback);
-  // ...
-  // 取消该事件的所有监听。
-  audioSessionManager.off('currentOutputDeviceChanged');
+
+  try {
+    audioSessionManager.on('currentOutputDeviceChanged', currentOutputDeviceChangedCallback);
+  } catch (err) {
+    let error = err as BusinessError;
+    console.error(`Failed to use on function. Code: ${error.code}, message: ${error.message}`);
+    // ...
+  }
 ```

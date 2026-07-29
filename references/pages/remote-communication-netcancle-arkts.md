@@ -24,11 +24,13 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 创建会话并创建两个Request，分别发起请求，在请求完成后进行cancel操作。
 
+单独取消某个请求
+
 // 创建会话
 const session = rcp.createSession();
-// 创建request1、request2
-let request1 = new rcp.Request("https://www.example.com");
-let request2 = new rcp.Request("https://www.example.com");
+// 创建request1、request2, 请求的网址是示例网址，请根据实际需求更改
+let request1 = new rcp.Request('https://www.example.com');
+let request2 = new rcp.Request('https://www.example.com');
 
 // 分别发起请求
 session.fetch(request1).then((response: rcp.Response) => {
@@ -47,11 +49,13 @@ session.fetch(request2).then((response: rcp.Response) => {
 session.cancel(request1);
 session.cancel(request2);
 
+取消全部请求
+
 // 创建会话
 const session = rcp.createSession();
-// 创建request1、request2
-let request1 = new rcp.Request("https://www.example.com");
-let request2 = new rcp.Request("https://www.example.com");
+// 创建request1、request2, 请求的网址是示例网址，请根据实际需求更改
+let request1 = new rcp.Request('https://www.example.com');
+let request2 = new rcp.Request('https://www.example.com');
 
 // 分别发起请求
 session.fetch(request1).then((response: rcp.Response) => {
@@ -82,9 +86,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ```
 // 创建会话
 const session = rcp.createSession();
-// 创建request1、request2
-let request1 = new rcp.Request("https://www.example.com");
-let request2 = new rcp.Request("https://www.example.com");
+// 创建request1、request2, 请求的网址是示例网址，请根据实际需求更改
+let request1 = new rcp.Request('https://www.example.com');
+let request2 = new rcp.Request('https://www.example.com');
 
 // 分别发起请求
 session.fetch(request1).then((response: rcp.Response) => {
@@ -109,9 +113,9 @@ session.cancel(request2);
 ```
 // 创建会话
 const session = rcp.createSession();
-// 创建request1、request2
-let request1 = new rcp.Request("https://www.example.com");
-let request2 = new rcp.Request("https://www.example.com");
+// 创建request1、request2, 请求的网址是示例网址，请根据实际需求更改
+let request1 = new rcp.Request('https://www.example.com');
+let request2 = new rcp.Request('https://www.example.com');
 
 // 分别发起请求
 session.fetch(request1).then((response: rcp.Response) => {

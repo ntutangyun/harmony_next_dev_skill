@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 说明
 
-目前仅支持已适配HarmonyOS的三方框架应用使用。
+目前仅支持在已适配HarmonyOS的三方框架应用中的H5页面使用。
 
 HarmonyOS版Flutter环境搭建请参考官方文档Flutter环境搭建指导。
 

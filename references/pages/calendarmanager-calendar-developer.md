@@ -34,7 +34,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 申请权限。使用Calendar Kit时，需要在module.json5中声明申请读写日历日程所需的权限：ohos.permission.READ_CALENDAR和ohos.permission.WRITE_CALENDAR。具体指导可见声明权限。
 
-根据上下文获取日程管理器对象calendarMgr，用于对日历账户进行相关管理操作。推荐在EntryAbility.ets文件中进行操作。
+根据上下文获取日历管理器对象calendarMgr，用于对日历账户进行相关管理操作。推荐在EntryAbility.ets文件中进行操作。
 
 const DOMAIN = 0x0000;
 

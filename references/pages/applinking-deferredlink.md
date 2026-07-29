@@ -38,68 +38,83 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/applinkin
 
 获取延迟链接。
 
-import { deferredLink } from '@kit.AppLinkingKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
+在entry/src/main/ets/constants目录下的常量文件Constants.ets中设置目标方应用的详情页面链接，用于入口类文件页面引用。
 
-@Entry
-@Component
-struct Index {
-pageStack: NavPathStack = new NavPathStack();
-   build() {
-      Column() {
-         Navigation(this.pageStack) {
-            Button("获取延迟链接").onClick(() => {
-               // 应用首次启动时，获取用户此前点击的该应用相关链接
-               deferredLink.popDeferredLink().then((link: string) => {
-                  hilog.info(0x0000, 'testTag', `Succeeded in getting deferred link, result: ${link}`);
-               }).catch(() => {
-                 // 发生未知错误
-                  hilog.error(0x0000, 'testTag', `Failed to get deferred link.`);
-               })
-            })
-            // ...
-         }
-         // ...
-      }
-   }
+export class Constants {
+  /**
+   * 将其替换为您自己的应用链接地址。
+   **/
+  static readonly APP_LINK_PAGE: string = 'https://linking.xiaobingtang.cn/path1?dst=DetailPage';
 }
 
+在entry/src/main/ets/pages目录下的Page1.ets文件中展示具体信息，当拉起方应用打开链接时，设备会跳转到本应用的详情页面。
+
+import { Constants } from '../constants/Constants';
+
+@Component
+export struct Page1 {
+  @Consume('pageInfos') pageInfos: NavPathStack;
+  private desc: string = '';
+
+  aboutToAppear(): void {
+    this.desc = this.pageInfos.getParamByIndex(0) as string;
+  }
+
+  build() {
+    NavDestination() {
+      Column() {
+        Column() {
+          Text(`This is detail Page\n\n AppLinking is ${Constants.APP_LINK_PAGE}\n\n${this.desc}.`)
+            .fontColor($r('sys.color.font_primary'))
+            .fontSize(24)
+            .fontWeight(FontWeight.Bold)
+            .padding(16)
+        }
+        .alignItems(HorizontalAlign.Start)
+        .width('100%')
+        .margin({ top: 12 })
+        .foregroundColor($r('sys.color.ohos_id_color_component_normal_dark'))
+      }
+      .width('100%')
+      .height('100%')
+      .foregroundColor($r('sys.color.comp_background_secondary'))
+    }.title('Page1')
+  }
+}
+
+在入口类文件页面Index.ets中添加如下代码。当应用首次启动时，调用deferredLink.popDeferredLink()接口，获取用户此前点击的该应用相关链接。
+
 import { deferredLink } from '@kit.AppLinkingKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { url } from '@kit.ArkTS';
+import { Constants } from '../constants/Constants';
+import { Page1 } from './Page1';
+// ...
 
 @Entry
 @Component
 struct Index {
-  pageStack: NavPathStack = new NavPathStack();
+  @State message: string = 'App Link target APP';
+  @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack();
+  async aboutToAppear(): Promise<void> {
+    // ...
+    let curDeferredLink: string = await deferredLink.popDeferredLink();
+    if (curDeferredLink === Constants.APP_LINK_PAGE) {
+      this.pageInfos.pushPath({
+        name: 'Page1',
+        param: 'Pull up the Page1 through deferred link when the app has not be installed'
+      });
+    }
+  }
+
   build() {
-    Column() {
-      Navigation(this.pageStack) {
-        Button("获取延迟链接").onClick(() => {
-          // 应用首次启动时，获取用户此前点击的该应用相关链接
-          deferredLink.popDeferredLink().then((link: string) => {
-            hilog.info(0x0000, 'testTag', `Succeeded in getting deferred link, result: ${link}`);
-            // 若延迟链接不为空，开发者可根据自身业务逻辑配置链接，跳转至详情页面
-            if (link) {
-              // 根据业务逻辑配置链接，自行跳转至详情页面
-              // 如传入的url为：<https://www.example.com/product?pageName=productDetail>
-              // 从链接中解析query参数，拿到参数后，开发者可根据自己的业务需求进行后续的处理，示例如下：
-              try {
-                let urlObject = url.URL.parseURL(link);
-                let pageName = urlObject.params.get('pageName');
-                this.pageStack.pushPath({ name: pageName });
-              } catch (error) {
-                hilog.error(0x0000, 'testTag', `Failed to parse url.`);
-              }
-            }
-          }).catch(() => {
-            // 发生未知错误
-            hilog.error(0x0000, 'testTag', `Failed to get deferred link.`);
-          })
-        })
-        // ...
-      }
-      // ...
+    // ...
+  }
+
+  // ...
+
+  @Builder
+  pageMap(name: string) {
+    if (name === 'Page1') {
+      Page1()
     }
   }
 }
@@ -124,6 +139,8 @@ openLink接口提供了两种拉起目标应用的方式，开发者可根据业
 
 本文为了方便验证App Linking的配置是否正确，选择方式一，示例如下。
 
+在“entry/src/main/ets/common”目录下添加GlobalContext.ets文件，开发初始化和获取应用上下文的接口。
+
 import { common } from '@kit.AbilityKit';
 
 export class GlobalContext {
@@ -140,31 +157,40 @@ export class GlobalContext {
 
 在“entry/src/main/ets/entryability/EntryAbility.ets”文件中导入GlobalContext，在onCreate方法中使用GlobalContext.initContext(this.context)初始化全局应用上下文。
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
+在“entry/src/main/ets/pages/Index.ets”文件中，使用UIAbilityContext.openLink()接口打开应用。
+
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        let link: string = "https://www.example.com/product?pageName=productDetail";
-        // 仅以App Linking的方式打开应用
-        context.openLink(link, { appLinkingOnly: true })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+      Button('start link deferred', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          let link: string = 'https://www.example.com/product?pageName=productDetail';
+          // 仅以App Linking的方式打开应用
+          context.openLink(link, { appLinkingOnly: true })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 
 安装拉起方应用，点击拉起方应用中的跳转按钮。
@@ -178,78 +204,91 @@ struct Index {
 ### Code block 1
 
 ```
-import { deferredLink } from '@kit.AppLinkingKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-@Entry
-@Component
-struct Index {
-pageStack: NavPathStack = new NavPathStack();
-   build() {
-      Column() {
-         Navigation(this.pageStack) {
-            Button("获取延迟链接").onClick(() => {
-               // 应用首次启动时，获取用户此前点击的该应用相关链接
-               deferredLink.popDeferredLink().then((link: string) => {
-                  hilog.info(0x0000, 'testTag', `Succeeded in getting deferred link, result: ${link}`);
-               }).catch(() => {
-                 // 发生未知错误
-                  hilog.error(0x0000, 'testTag', `Failed to get deferred link.`);
-               })
-            })
-            // ...
-         }
-         // ...
-      }
-   }
+export class Constants {
+  /**
+   * 将其替换为您自己的应用链接地址。
+   **/
+  static readonly APP_LINK_PAGE: string = 'https://linking.xiaobingtang.cn/path1?dst=DetailPage';
 }
 ```
 
 ### Code block 2
 
 ```
-import { deferredLink } from '@kit.AppLinkingKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { url } from '@kit.ArkTS';
+import { Constants } from '../constants/Constants';
 
-@Entry
 @Component
-struct Index {
-  pageStack: NavPathStack = new NavPathStack();
+export struct Page1 {
+  @Consume('pageInfos') pageInfos: NavPathStack;
+  private desc: string = '';
+
+  aboutToAppear(): void {
+    this.desc = this.pageInfos.getParamByIndex(0) as string;
+  }
+
   build() {
-    Column() {
-      Navigation(this.pageStack) {
-        Button("获取延迟链接").onClick(() => {
-          // 应用首次启动时，获取用户此前点击的该应用相关链接
-          deferredLink.popDeferredLink().then((link: string) => {
-            hilog.info(0x0000, 'testTag', `Succeeded in getting deferred link, result: ${link}`);
-            // 若延迟链接不为空，开发者可根据自身业务逻辑配置链接，跳转至详情页面
-            if (link) {
-              // 根据业务逻辑配置链接，自行跳转至详情页面
-              // 如传入的url为：<https://www.example.com/product?pageName=productDetail>
-              // 从链接中解析query参数，拿到参数后，开发者可根据自己的业务需求进行后续的处理，示例如下：
-              try {
-                let urlObject = url.URL.parseURL(link);
-                let pageName = urlObject.params.get('pageName');
-                this.pageStack.pushPath({ name: pageName });
-              } catch (error) {
-                hilog.error(0x0000, 'testTag', `Failed to parse url.`);
-              }
-            }
-          }).catch(() => {
-            // 发生未知错误
-            hilog.error(0x0000, 'testTag', `Failed to get deferred link.`);
-          })
-        })
-        // ...
+    NavDestination() {
+      Column() {
+        Column() {
+          Text(`This is detail Page\n\n AppLinking is ${Constants.APP_LINK_PAGE}\n\n${this.desc}.`)
+            .fontColor($r('sys.color.font_primary'))
+            .fontSize(24)
+            .fontWeight(FontWeight.Bold)
+            .padding(16)
+        }
+        .alignItems(HorizontalAlign.Start)
+        .width('100%')
+        .margin({ top: 12 })
+        .foregroundColor($r('sys.color.ohos_id_color_component_normal_dark'))
       }
-      // ...
-    }
+      .width('100%')
+      .height('100%')
+      .foregroundColor($r('sys.color.comp_background_secondary'))
+    }.title('Page1')
   }
 }
 ```
 
 ### Code block 3
+
+```
+import { deferredLink } from '@kit.AppLinkingKit';
+import { Constants } from '../constants/Constants';
+import { Page1 } from './Page1';
+// ...
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'App Link target APP';
+  @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack();
+  async aboutToAppear(): Promise<void> {
+    // ...
+    let curDeferredLink: string = await deferredLink.popDeferredLink();
+    if (curDeferredLink === Constants.APP_LINK_PAGE) {
+      this.pageInfos.pushPath({
+        name: 'Page1',
+        param: 'Pull up the Page1 through deferred link when the app has not be installed'
+      });
+    }
+  }
+
+  build() {
+    // ...
+  }
+
+  // ...
+
+  @Builder
+  pageMap(name: string) {
+    if (name === 'Page1') {
+      Page1()
+    }
+  }
+}
+```
+
+### Code block 4
 
 ```
 import { common } from '@kit.AbilityKit';
@@ -267,33 +306,40 @@ export class GlobalContext {
 }
 ```
 
-### Code block 4
+### Code block 5
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        let link: string = "https://www.example.com/product?pageName=productDetail";
-        // 仅以App Linking的方式打开应用
-        context.openLink(link, { appLinkingOnly: true })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+      Button('start link deferred', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          let link: string = 'https://www.example.com/product?pageName=productDetail';
+          // 仅以App Linking的方式打开应用
+          context.openLink(link, { appLinkingOnly: true })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 ```

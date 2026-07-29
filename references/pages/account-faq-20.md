@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-f
 
 client_id配置错误。
 
-未使用手动签名。
+应用运行的HarmonyOS系统版本为HarmonyOS 6.0.0(20)以下时，使用自动签名方式配置签名，未使用手动签名。
 
 解决措施
 
@@ -30,4 +30,4 @@ client_id配置错误。
 
 检查module type为entry的模块下module.json5中的client_id配置的值是否正确，请参考配置Client ID。
 
-请使用手动签名方式配置签名，请参考配置签名和指纹。
+应用运行的HarmonyOS系统版本为HarmonyOS 6.0.0(20)以下时，请使用手动签名方式配置签名。详情请参考配置签名和指纹。

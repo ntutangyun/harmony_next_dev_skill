@@ -20,7 +20,7 @@ pkgContextInfo.json：构建产物中的语境信息表文件，用于运行时�
 
 注意
 
-resources.index文件中可以看到明文信息，为防止泄漏，请勿将敏感信息直接明文配置在如string.json等资源文件中。
+resources.index文件中可以看到明文信息，为防止泄露，请勿将敏感信息直接明文配置在如string.json等资源文件中。
 
 模块的src/main/ets目录，编译时仅处理.ets/.ts/.js文件，其他文件会被当作资源文件打包进产物中，不会进行混淆或加密，因此请勿将敏感信息存放在该目录下。
 

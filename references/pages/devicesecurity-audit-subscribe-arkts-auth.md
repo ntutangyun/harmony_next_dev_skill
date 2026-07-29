@@ -13,10 +13,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 0x1C801103	文件删除阻断事件。
 0x1C801104	文件设置扩展属性的阻断事件。
 0x1C801105	文件删除扩展属性的阻断事件。
+0x1C801106	文件读结束阻断事件。 起始版本： 26.0.0
+0x1C801400	进程执行的阻断事件。 起始版本： 26.0.0
 
 约束与限制
 
-当前能力仅支持2in1设备。
+当前能力仅支持PC/2in1设备。
 
 一个进程最大只允许创建2个客户端实例，当前设备最多只允许创建16个客户端实例。
 
@@ -53,13 +55,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 更多接口及使用方法请参见API参考。
 
 接口名	描述
-newAuthClient(callback: Callback<AuditEvent>): AuthClient;	创建审计阻断类事件管理对象AuthClient，AuthClient提供订阅、解订阅、增加事件过滤、移除事件过滤、阻断功能
-deleteAuthClient(client: AuthClient): void;	删除审计阻断类事件管理对象
-interface AuthClient { subscribe(events: AuthEvent[]): void; }	订阅审计阻断类事件
-interface AuthClient { unsubscribe(events: AuthEvent[]): void; }	解订阅审计阻断类事件
-interface AuthClient { addFilter(event: AuthEvent, filter: Filter): void； }	添加审计阻断类事件过滤条件
-interface AuthClient { removeFilter(event: AuthEvent, filter: Filter): void; }	移除审计阻断类事件过滤条件
-interface AuthClient { auth(auditEvent: AuditEvent, authResult: AuthResult): void; }	设置审计阻断类事件的阻断结果
+newAuthClient(callback: Callback<AuditEvent>): AuthClient;	创建审计阻断类事件管理对象AuthClient，AuthClient提供订阅、解订阅、增加事件过滤、移除事件过滤、阻断功能（超时默认放行）。
+newAuthClient(callback: Callback<AuditEvent>, configuration: AuthClientConfiguration): AuthClient;	创建审计阻断类事件管理对象AuthClient（可配置超时默认阻断策略），AuthClient提供订阅、解订阅、增加事件过滤、移除事件过滤、阻断功能。
+deleteAuthClient(client: AuthClient): void;	删除审计阻断类事件管理对象。
+interface AuthClient { subscribe(events: AuthEvent[]): void; }	订阅审计阻断类事件。
+interface AuthClient { unsubscribe(events: AuthEvent[]): void; }	解订阅审计阻断类事件。
+interface AuthClient { addFilter(event: AuthEvent, filter: Filter): void； }	添加审计阻断类事件过滤条件。
+interface AuthClient { removeFilter(event: AuthEvent, filter: Filter): void; }	移除审计阻断类事件过滤条件。
+interface AuthClient { auth(auditEvent: AuditEvent, authResult: AuthResult): void; }	设置审计阻断类事件的阻断结果。
 
 开发步骤
 
@@ -67,7 +70,7 @@ interface AuthClient { auth(auditEvent: AuditEvent, authResult: AuthResult): voi
 
 在开发准备过程中，需要申请权限：ohos.permission.kernel.AUTH_AUDIT_EVENT。
 
-只允许清单内的企业类应用申请该权限，申请方式请参考：申请使用企业类应用可用权限。
+只允许清单内的企业类应用申请该权限，申请方式请参考：企业类应用可用权限。
 
 导入Device Security Kit模块及相关公共模块。
 
@@ -75,11 +78,11 @@ import { securityAudit } from '@kit.DeviceSecurityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-使用携带阻断策略的回调函数创建审计阻断类事件客户端实例。
+定义携带阻断策略的回调函数。
 
-const TAG = "SecurityAuditAuthJsTest";
+const TAG = 'SecurityAuditAuthJsTest';
 let authClient: securityAudit.AuthClient | undefined = undefined;
-const allowEventCallback = (event: securityAudit.AuditEvent) => {
+const allowEventCallback = (event: securityAudit.AuditEvent):void => {
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func eventId= ' + event.eventId);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func content= ' + event.content);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func metadata= ' + event.metadata);
@@ -90,12 +93,32 @@ const allowEventCallback = (event: securityAudit.AuditEvent) => {
     hilog.error(0x0000, TAG, 'allowEventCallback', 'auth error:' + e.code);
   }
 };
+
+使用携带阻断策略的回调函数创建审计阻断类事件客户端实例。
+
 try {
   authClient = securityAudit.newAuthClient(allowEventCallback);
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'newAuthClient failed: %{public}d %{public}s', e.code, e.message);
 }
+
+（可选）使用配置项创建可配置超时默认阻断策略的审计阻断类事件客户端实例。
+
+// 配置超时后阻断
+let config: securityAudit.AuthClientConfiguration = {
+  timeoutAuthResult: securityAudit.AuthResult.DENY
+};
+try {
+  authClient = securityAudit.newAuthClient(allowEventCallback, config);
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'newAuthClient failed: %{public}d %{public}s', e.code, e.message);
+}
+
+说明
+
+此方式为创建客户端的另一种方式，与步骤2二选一执行。配置项可指定事件响应超时后的默认授权结果，若不配置默认超时放行。起始版本：26.0.0。
 
 订阅审计阻断类事件。
 
@@ -113,7 +136,7 @@ try {
 let filter : securityAudit.Filter = {
   type: securityAudit.FilterType.PROCESS_PID_EQUAL,
   isInclude: true,
-  values : ["2"]
+  values : ['2']
 };
 try {
   hilog.info(0x0000, TAG, 'addFilter begin.');
@@ -168,9 +191,9 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ### Code block 2
 
 ```
-const TAG = "SecurityAuditAuthJsTest";
+const TAG = 'SecurityAuditAuthJsTest';
 let authClient: securityAudit.AuthClient | undefined = undefined;
-const allowEventCallback = (event: securityAudit.AuditEvent) => {
+const allowEventCallback = (event: securityAudit.AuditEvent):void => {
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func eventId= ' + event.eventId);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func content= ' + event.content);
   hilog.info(0x0000, TAG, '%{public}s', 'Security_SecurityAudit_Auth_JsApi_Func metadata= ' + event.metadata);
@@ -181,6 +204,11 @@ const allowEventCallback = (event: securityAudit.AuditEvent) => {
     hilog.error(0x0000, TAG, 'allowEventCallback', 'auth error:' + e.code);
   }
 };
+```
+
+### Code block 3
+
+```
 try {
   authClient = securityAudit.newAuthClient(allowEventCallback);
 } catch (err) {
@@ -189,7 +217,22 @@ try {
 }
 ```
 
-### Code block 3
+### Code block 4
+
+```
+// 配置超时后阻断
+let config: securityAudit.AuthClientConfiguration = {
+  timeoutAuthResult: securityAudit.AuthResult.DENY
+};
+try {
+  authClient = securityAudit.newAuthClient(allowEventCallback, config);
+} catch (err) {
+  let e: BusinessError = err as BusinessError;
+  hilog.error(0x0000, TAG, 'newAuthClient failed: %{public}d %{public}s', e.code, e.message);
+}
+```
+
+### Code block 5
 
 ```
 try {
@@ -202,13 +245,13 @@ try {
 }
 ```
 
-### Code block 4
+### Code block 6
 
 ```
 let filter : securityAudit.Filter = {
   type: securityAudit.FilterType.PROCESS_PID_EQUAL,
   isInclude: true,
-  values : ["2"]
+  values : ['2']
 };
 try {
   hilog.info(0x0000, TAG, 'addFilter begin.');
@@ -220,7 +263,7 @@ try {
 }
 ```
 
-### Code block 5
+### Code block 7
 
 ```
 try {
@@ -233,7 +276,7 @@ try {
 }
 ```
 
-### Code block 6
+### Code block 8
 
 ```
 try {
@@ -246,7 +289,7 @@ try {
 }
 ```
 
-### Code block 7
+### Code block 9
 
 ```
 try {

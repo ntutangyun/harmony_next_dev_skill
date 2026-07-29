@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-ses
 
 对于涉及多个音频流并发的场景，系统已预设了默认的音频焦点策略，该策略将对所有音频流（包括播放和录制）实施统一的焦点管理。
 
-当系统提供的默认焦点策略不能满足应用需求时，应用可利用音频会话管理提供的接口，管理应用内音频流的焦点，自定义音频流的焦点策略，调整音频流释放焦点的时机，以满足特定需求。该篇文章的示例代码均为ArkTS，如果需要使用OHAudio开发请参考使用OHAudio开发音频会话功能(C/C++)。
+当系统提供的默认焦点策略不能满足应用需求时，应用可利用音频会话管理提供的接口，管理应用内音频流的焦点，自定义音频流的焦点策略，调整音频流释放焦点的时机，以满足特定需求。本文档的示例代码均为ArkTS，如果需要使用OHAudio开发请参考使用OHAudio开发音频会话功能(C/C++)。
 
 使用音频会话相关接口，可以实现以下功能：
 
@@ -34,6 +34,22 @@ import { audio } from '@kit.AudioKit';
 let audioManager = audio.getAudioManager();
 // 创建音频会话管理器。
 let audioSessionManager: audio.AudioSessionManager = audioManager.getSessionManager();
+
+设置会话级录音流静音提示
+
+从API version 24开始，当应用已在业务侧将当前音频会话内的录音流静音时，可以调用setCapturerMuteHint接口将该状态上报给系统音频模块，系统音频模块会基于上报的状态调整策略以降低功耗。注意，此功能当前仅在部分PC/2in1设备上生效。该接口不会实际触发静音，也不会对录音数据做静音处理。它只是告知系统音频模块，应用已将当前音频会话内的录音流静音。应用仍需自行处理录音数据，例如不发送采集数据或发送静音数据。
+
+该接口仅允许在当前音频会话存在运行中的录音流时调用，否则会返回错误码6800103。若某条录音流同时调用了流级静音提示接口AudioCapturer.setMuteHint和会话级静音提示接口，流级设置优先级更高，以流级设置值为准。因此，当应用内多条录音流的静音状态一致时，可以使用会话级接口统一上报；当不同录音流静音状态不一致时，建议对具体录音流使用流级接口。若为了调用会话级接口而创建Mic音频源录音流，需要申请麦克风权限ohos.permission.MICROPHONE。当前未提供系统查询接口，如需在界面展示静音提示状态，应用需要自行维护最近一次设置成功的状态。以下示例中，muteHint为true表示上报静音提示，false表示解除静音提示。
+
+try {
+  await audioSessionManager.setCapturerMuteHint(muteHint);
+  console.info(`setCapturerMuteHint ${muteHint} success.`);
+  // ...
+} catch (err) {
+  let error = err as BusinessError;
+  console.error(`setCapturerMuteHint ${muteHint} failed. Code: ${error.code}, message: ${error.message}`);
+  // ...
+}
 
 音频会话策略
 
@@ -354,6 +370,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
       case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE_SUGGESTION:
         // 此分支表示其他应用的非混音音频播放结束，系统可自行决定是否取消静音。
         break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_MUTE:
+        // 此分支表示系统已将应用所有播放音频流静音。
+        break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE:
+        // 此分支表示系统已将应用所有播放音频流解除静音。
+        break;
       default:
         break;
     }
@@ -439,6 +461,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
       case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE_SUGGESTION:
         // 此分支表示其他应用的非混音音频播放结束，系统可自行决定是否取消静音。
         break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_MUTE:
+        // 此分支表示系统已将应用所有播放音频流静音。
+        break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE:
+        // 此分支表示系统已将应用所有播放音频流解除静音。
+        break;
       default:
         break;
     }
@@ -475,7 +503,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 启用静音建议通知后，本应用播放音频的同时，其他应用播放了不可与本应用并发播放的音频，本应用会收到静音建议通知，此时本应用可以选择不做处理，让本应用和其他应用进行并发播放；也可以选择将自身静音播放，让其他应用单独播放音频。
 
-启用混音播放下静音建议通知，需要先调用接口setAudioSessionScene设置场景参数并订阅音频会话状态更改事件AudioSessionStateChangedEvent，启用后再调用activateAudioSession接口激活AudioSession。启用静音建议通知的前提是AudioConcurrencyMode模式必须为CONCURRENCY_MIX_WITH_OTHERS。
+启用混音播放下静音建议通知，需要先调用接口setAudioSessionScene设置场景参数，并调用enableMuteSuggestionWhenMixWithOthers开启功能，同时订阅音频会话状态更改事件AudioSessionStateChangedEvent，最后调用activateAudioSession接口激活AudioSession。启用静音建议通知的前提是AudioConcurrencyMode模式必须为CONCURRENCY_MIX_WITH_OTHERS。
 
 import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -549,6 +577,20 @@ let audioSessionManager: audio.AudioSessionManager = audioManager.getSessionMana
 ### Code block 2
 
 ```
+try {
+  await audioSessionManager.setCapturerMuteHint(muteHint);
+  console.info(`setCapturerMuteHint ${muteHint} success.`);
+  // ...
+} catch (err) {
+  let error = err as BusinessError;
+  console.error(`setCapturerMuteHint ${muteHint} failed. Code: ${error.code}, message: ${error.message}`);
+  // ...
+}
+```
+
+### Code block 3
+
+```
 import { audio } from '@kit.AudioKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 // ...
@@ -568,14 +610,14 @@ import { BusinessError } from '@kit.BasicServicesKit';
   });
 ```
 
-### Code block 3
+### Code block 4
 
 ```
 // 查询音频会话是否已激活。
 let isActivated = audioSessionManager.isAudioSessionActivated();
 ```
 
-### Code block 4
+### Code block 5
 
 ```
 import { audio } from '@kit.AudioKit';
@@ -588,7 +630,7 @@ import { audio } from '@kit.AudioKit';
   });
 ```
 
-### Code block 5
+### Code block 6
 
 ```
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -605,7 +647,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   });
 ```
 
-### Code block 6
+### Code block 7
 
 ```
 import { audio } from '@kit.AudioKit';
@@ -659,7 +701,7 @@ let audioSessionManager: audio.AudioSessionManager = audioManager.getSessionMana
   });
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 import { audio } from '@kit.AudioKit';
@@ -685,14 +727,14 @@ import { BusinessError } from '@kit.BasicServicesKit';
   });
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 // 查询音频会话是否已激活。
 let isActivated = audioSessionManager.isAudioSessionActivated();
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 import { audio } from '@kit.AudioKit';
@@ -731,6 +773,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
       case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE_SUGGESTION:
         // 此分支表示其他应用的非混音音频播放结束，系统可自行决定是否取消静音。
         break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_MUTE:
+        // 此分支表示系统已将应用所有播放音频流静音。
+        break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE:
+        // 此分支表示系统已将应用所有播放音频流解除静音。
+        break;
       default:
         break;
     }
@@ -739,7 +787,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   audioSessionManager.on('audioSessionStateChanged', audioSessionStateChangedCallback);
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -755,7 +803,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   });
 ```
 
-### Code block 11
+### Code block 12
 
 ```
 import { audio } from '@kit.AudioKit';
@@ -811,6 +859,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
         break;
       case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE_SUGGESTION:
         // 此分支表示其他应用的非混音音频播放结束，系统可自行决定是否取消静音。
+        break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_MUTE:
+        // 此分支表示系统已将应用所有播放音频流静音。
+        break;
+      case audio.AudioSessionStateChangeHint.AUDIO_SESSION_STATE_CHANGE_HINT_UNMUTE:
+        // 此分支表示系统已将应用所有播放音频流解除静音。
         break;
       default:
         break;
@@ -843,7 +897,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   });
 ```
 
-### Code block 12
+### Code block 13
 
 ```
 import { audio } from '@kit.AudioKit';
@@ -871,7 +925,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   });
 ```
 
-### Code block 13
+### Code block 14
 
 ```
 import { audio } from '@kit.AudioKit';

@@ -19,8 +19,8 @@ async switchCurrentInputMethodSubtype(item: InputMethodSubtype) {
     await inputMethod.switchCurrentInputMethodSubtype(item);
     this.currentInputMethodSubtype = inputMethod.getCurrentInputMethodSubtype().id;
   } catch (err) {
-    console.error(`SwitchCurrentInputMethodSubtype error: ${err.code} ${err.message}`);
     let error: BusinessError = err as BusinessError;
+    console.error(`SwitchCurrentInputMethodSubtype error: ${error.code} ${error.message}`);
   }
 }
 
@@ -93,8 +93,8 @@ async switchCurrentInputMethodSubtype(item: InputMethodSubtype) {
     await inputMethod.switchCurrentInputMethodSubtype(item);
     this.currentInputMethodSubtype = inputMethod.getCurrentInputMethodSubtype().id;
   } catch (err) {
-    console.error(`SwitchCurrentInputMethodSubtype error: ${err.code} ${err.message}`);
     let error: BusinessError = err as BusinessError;
+    console.error(`SwitchCurrentInputMethodSubtype error: ${error.code} ${error.message}`);
   }
 }
 ```

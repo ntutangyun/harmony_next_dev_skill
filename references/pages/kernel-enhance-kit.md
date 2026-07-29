@@ -6,6 +6,8 @@ Kernel Enhance Kit 简介
 
 QoS 开发指导
 
-格物开发指导
+格物服务开发指导
 
-内存管理Purgeable内存开发指导
+内存管理 Purgeable Memory 开发指导
+
+术语

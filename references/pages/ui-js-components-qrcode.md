@@ -119,7 +119,7 @@ qrcode{
 }
 
 // index.js
-export default{
+export default {
   data: {
     textVal: ''
   },
@@ -258,7 +258,7 @@ qrcode{
 
 ```
 // index.js
-export default{
+export default {
   data: {
     textVal: ''
   },

@@ -22,7 +22,7 @@ let canvas = context.canvas;
 
 初始化文本样式，此处设置字体颜色为红色，字体大小为100px。
 
-// 获取文本样式
+// 初始化文本样式
 let myTextStyle: text.TextStyle = {
   // 文本颜色
   color: {
@@ -44,16 +44,16 @@ let myParagraphStyle: text.ParagraphStyle = {
 初始化段落对象，并添加文本。
 
 let fontCollection = text.FontCollection.getGlobalInstance();
-let ParagraphGraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
+let paragraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
 // 更新文本样式
-ParagraphGraphBuilder.pushStyle(myTextStyle);
+paragraphBuilder.pushStyle(myTextStyle);
 // 添加文本
-ParagraphGraphBuilder.addText("Hello World");
+paragraphBuilder.addText("Hello World");
 
 排版段落并进行文本绘制。
 
 // 生成段落
-let paragraph = ParagraphGraphBuilder.build();
+let paragraph = paragraphBuilder.build();
 // 布局
 paragraph.layoutSync(1250);
 // 绘制文本
@@ -72,7 +72,7 @@ let canvas = context.canvas;
 ### Code block 2
 
 ```
-// 获取文本样式
+// 初始化文本样式
 let myTextStyle: text.TextStyle = {
   // 文本颜色
   color: {
@@ -98,18 +98,18 @@ let myParagraphStyle: text.ParagraphStyle = {
 
 ```
 let fontCollection = text.FontCollection.getGlobalInstance();
-let ParagraphGraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
+let paragraphBuilder = new text.ParagraphBuilder(myParagraphStyle, fontCollection);
 // 更新文本样式
-ParagraphGraphBuilder.pushStyle(myTextStyle);
+paragraphBuilder.pushStyle(myTextStyle);
 // 添加文本
-ParagraphGraphBuilder.addText("Hello World");
+paragraphBuilder.addText("Hello World");
 ```
 
 ### Code block 5
 
 ```
 // 生成段落
-let paragraph = ParagraphGraphBuilder.build();
+let paragraph = paragraphBuilder.build();
 // 布局
 paragraph.layoutSync(1250);
 // 绘制文本

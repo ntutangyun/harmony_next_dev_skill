@@ -109,7 +109,7 @@ Transaction records	交易记录
 Package delivery information	快递信息
 Other transaction information	其他交易信息
 Contact list	联系人列表	Contact information
-Social media accounts	社交帐号
+Social media accounts	社交账号
 Other contact information	其他联系人信息
 Facial recognition features	面部识别特征	Special category data
 Voiceprint information	声纹

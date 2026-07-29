@@ -4,9 +4,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-enc
 
 图片编码指将PixelMap压缩成不同格式的图片文件，用于保存和传输。
 
-支持使用PackToData和PackToFile将PixelMap编码为JPEG、WebP、PNG和HEIC格式。
+支持使用PackToData和PackToFile将PixelMap编码为JPEG、WebP、PNG、HEIC和TIFF格式。
 
 从API version 18开始，支持使用PackToDataFromPixelmapSequence和PackToFileFromPixelmapSequence将多个PixelMap编码为GIF格式。
+
+从API版本26.0.0开始，支持使用PackBinaryImageToTiffFile和PackBinaryImageToTiffData将二值图像数据编码为TIFF格式。
 
 开发步骤
 
@@ -27,7 +29,8 @@ import { resourceManager } from '@kit.LocalizationKit';
 
 2.1 这里以编码成jpeg图片为例。编码的目标格式format遵循MIME标准定义，因此PackingOption.format应设置为image/jpeg，编码后的文件扩展名可设为.jpg或.jpeg。
 
-let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+// quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
 
 2.2 当图片源是HDR，且希望编码为HDR图片文件时，需要额外配置desiredDynamicRange。
 
@@ -48,7 +51,8 @@ pixelMap编码到ArrayBuffer。
 
 async function packToDataFromPixelMap(pixelMap : image.PixelMap) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   // 资源本身为hdr且设备支持HDR编码则会编码为hdr内容(需要资源本身为hdr且设备支持HDR编码，支持jpeg格式)。
   packOpts.desiredDynamicRange = image.PackingDynamicRange.AUTO;
   try{
@@ -65,7 +69,8 @@ imageSource编码到ArrayBuffer。
 
 async function packToDataFromImageSource(imageSource : image.ImageSource) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   try {
     let data = await imagePackerApi.packToData(imageSource, packOpts);
     // data 为编码获取到的文件流，写入文件保存即可得到一张图片。
@@ -80,7 +85,8 @@ pixelMap编码到文件。
 
 async function packToFileFromPixelMap(context : Context, pixelMap : image.PixelMap) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   const path : string = context.cacheDir + '/pixel_map.jpg';
   let file: fileIo.File | undefined = undefined;
   try {
@@ -99,7 +105,8 @@ imageSource编码到文件。
 
 async function packToFileFromImageSource(context : Context, imageSource : image.ImageSource) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   const filePath : string = context.cacheDir + '/image_source.jpg';
   let file: fileIo.File | undefined = undefined;
   try {
@@ -138,7 +145,8 @@ import { resourceManager } from '@kit.LocalizationKit';
 ### Code block 2
 
 ```
-let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+// quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
 ```
 
 ### Code block 3
@@ -159,7 +167,8 @@ let copyData: ArrayBuffer = new ArrayBuffer(0);
 ```
 async function packToDataFromPixelMap(pixelMap : image.PixelMap) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   // 资源本身为hdr且设备支持HDR编码则会编码为hdr内容(需要资源本身为hdr且设备支持HDR编码，支持jpeg格式)。
   packOpts.desiredDynamicRange = image.PackingDynamicRange.AUTO;
   try{
@@ -178,7 +187,8 @@ async function packToDataFromPixelMap(pixelMap : image.PixelMap) {
 ```
 async function packToDataFromImageSource(imageSource : image.ImageSource) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   try {
     let data = await imagePackerApi.packToData(imageSource, packOpts);
     // data 为编码获取到的文件流，写入文件保存即可得到一张图片。
@@ -195,7 +205,8 @@ async function packToDataFromImageSource(imageSource : image.ImageSource) {
 ```
 async function packToFileFromPixelMap(context : Context, pixelMap : image.PixelMap) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   const path : string = context.cacheDir + '/pixel_map.jpg';
   let file: fileIo.File | undefined = undefined;
   try {
@@ -216,7 +227,8 @@ async function packToFileFromPixelMap(context : Context, pixelMap : image.PixelM
 ```
 async function packToFileFromImageSource(context : Context, imageSource : image.ImageSource) {
   const imagePackerApi = image.createImagePacker();
-  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 95 };
+  // quality默认值为0，建议不低于80；本示例统一设置为90，兼顾图片质量和文件体积。
+  let packOpts : image.PackingOption = { format: 'image/jpeg', quality: 90 };
   const filePath : string = context.cacheDir + '/image_source.jpg';
   let file: fileIo.File | undefined = undefined;
   try {

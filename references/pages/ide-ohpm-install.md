@@ -89,7 +89,7 @@ Options
 
 [h2]no-save
 
-默认值：false
+默认值：true
 
 类型：Boolean
 
@@ -235,7 +235,7 @@ Options
 
 [h2]resolve_conflict
 
-默认值：false
+默认值：true
 
 类型：Boolean
 

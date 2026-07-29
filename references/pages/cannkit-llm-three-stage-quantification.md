@@ -91,7 +91,7 @@ fake_quant_weight.pth是在导出ONNX模型时需要替换模型权重为该文�
 
 quant_params_file是模型的量化系数，用于后续omc转换。
 
-embedding_weigths+embedding_quant_scale文件是权重与量化系数，用于模型推理。
+embedding_weights+embedding_quant_scale文件是权重与量化系数，用于模型推理。
 
 ## Code blocks
 

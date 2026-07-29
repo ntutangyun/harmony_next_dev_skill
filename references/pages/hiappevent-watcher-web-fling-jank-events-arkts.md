@@ -48,7 +48,7 @@ hiAppEvent.addWatcher({
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.start_time=${eventInfo.params['start_time']}`);
         // 开发者可以获取到抛滑动效持续的时间长度
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.duration=${eventInfo.params['duration']}`);
-        // 开发者可以获取到发生卡顿的的web页面对应的Id
+        // 开发者可以获取到发生卡顿的web页面对应的Id
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.web_id=${eventInfo.params['web_id']}`);
         // 开发者可以获取抛滑阶段发生丢帧的最大时长
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.max_app_frame_time=${eventInfo.params['max_app_frame_time']}`);
@@ -69,33 +69,39 @@ import web_webview from '@ohos.web.webview';
 // 用于存储web_id到url的映射
 export const webIdToUrlMap = new Map<number, string>();
 
-@Entry
 @Component
-struct ArkWebPage {
+export struct ArkWebPage {
   controller = new web_webview.WebviewController();
 
   build() {
-    Column() {
-      Web({ src: 'https://baidu.com',
-        controller: this.controller
-      })
-        .height('100%')
-        .onPageBegin((event) => {
-          // 每次跳转到新页面都更新webId到url的映射关系，便于后续通过系统侧提供的web_id查询到发生丢帧的网页
-          if (event) {
-            const newUrl = event.url;
-            const webId = this.controller.getWebId();
-            webIdToUrlMap.set(webId, newUrl);
-          }
+    NavDestination() {
+      Column() {
+        Web({
+          src: 'https://baidu.com',
+          controller: this.controller
         })
-        .onPageEnd(() => {
-          // 每2s阻塞应用主线程200ms
-          setInterval(() => {
-            const endTime = Date.now() + 200;
-            while (Date.now() < endTime) {}
-          }, 2000);
-        })
+          .height('100%')
+          .onPageBegin((event) => {
+            // 每次跳转到新页面都更新webId到url的映射关系，便于后续通过系统侧提供的web_id查询到发生丢帧的网页
+            if (event) {
+              const newUrl = event.url;
+              const webId = this.controller.getWebId();
+              webIdToUrlMap.set(webId, newUrl);
+            }
+          })
+          .onPageEnd(() => {
+            // 每2s阻塞应用主线程200ms
+            setInterval(() => {
+              const endTime = Date.now() + 200;
+              while (Date.now() < endTime) {
+              }
+            }, 2000);
+          })
+      }
+      .height('100%')
     }
+    .height('100%')
+    .title('ArkWeb Fling Jank')
   }
 }
 
@@ -103,7 +109,17 @@ struct ArkWebPage {
 
 如果一个页面需包含多个Web网页，需创建多个webview组件，每个webview组件加载一个网页。
 
-编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，添加按钮并在其onClick函数中跳转到Web页面。示例代码如下：
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，添加导航路由栈 navPathStack 和页面路由映射 PageMap，用于管理页面跳转并声明目标 Web 页面（ArkWebPage）。示例代码如下：
+
+@Provide('navPathStack') navPathStack: NavPathStack = new NavPathStack();
+@Builder
+PageMap(name: string) {
+  if (name === 'ArkWebPage') {
+    ArkWebPage();
+  }
+}
+
+添加按钮并在其onClick函数中跳转到Web页面。示例代码如下：
 
 // 按钮跳转到易出现滑动丢帧的web场景，触发ArkWeb抛滑丢帧事件。
 Button('ArkWebFlingJank ArkTs')
@@ -115,17 +131,8 @@ Button('ArkWebFlingJank ArkTs')
   .width('80%')
   .height('5%')
   .onClick(() => {
-    router.pushUrl({url: 'pages/ArkWebPage'});
+    this.navPathStack.pushPath({ name: 'ArkWebPage' });
   })
-
-编辑工程中的“entry > src > main > resources > base > profile > main_pages.json”文件，配置ArkWebPage路由页面。
-
-{
-  "src": [
-    "pages/Index",
-    "pages/ArkWebPage"
-  ]
-}
 
 编辑工程中的“entry > src > main > module.json5”文件，添加网络访问权限。
 
@@ -188,7 +195,7 @@ hiAppEvent.addWatcher({
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.start_time=${eventInfo.params['start_time']}`);
         // 开发者可以获取到抛滑动效持续的时间长度
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.duration=${eventInfo.params['duration']}`);
-        // 开发者可以获取到发生卡顿的的web页面对应的Id
+        // 开发者可以获取到发生卡顿的web页面对应的Id
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.web_id=${eventInfo.params['web_id']}`);
         // 开发者可以获取抛滑阶段发生丢帧的最大时长
         hilog.info(0x0000, 'testTag', `HiAppEvent eventInfo.params.max_app_frame_time=${eventInfo.params['max_app_frame_time']}`);
@@ -211,38 +218,56 @@ import web_webview from '@ohos.web.webview';
 // 用于存储web_id到url的映射
 export const webIdToUrlMap = new Map<number, string>();
 
-@Entry
 @Component
-struct ArkWebPage {
+export struct ArkWebPage {
   controller = new web_webview.WebviewController();
 
   build() {
-    Column() {
-      Web({ src: 'https://baidu.com',
-        controller: this.controller
-      })
-        .height('100%')
-        .onPageBegin((event) => {
-          // 每次跳转到新页面都更新webId到url的映射关系，便于后续通过系统侧提供的web_id查询到发生丢帧的网页
-          if (event) {
-            const newUrl = event.url;
-            const webId = this.controller.getWebId();
-            webIdToUrlMap.set(webId, newUrl);
-          }
+    NavDestination() {
+      Column() {
+        Web({
+          src: 'https://baidu.com',
+          controller: this.controller
         })
-        .onPageEnd(() => {
-          // 每2s阻塞应用主线程200ms
-          setInterval(() => {
-            const endTime = Date.now() + 200;
-            while (Date.now() < endTime) {}
-          }, 2000);
-        })
+          .height('100%')
+          .onPageBegin((event) => {
+            // 每次跳转到新页面都更新webId到url的映射关系，便于后续通过系统侧提供的web_id查询到发生丢帧的网页
+            if (event) {
+              const newUrl = event.url;
+              const webId = this.controller.getWebId();
+              webIdToUrlMap.set(webId, newUrl);
+            }
+          })
+          .onPageEnd(() => {
+            // 每2s阻塞应用主线程200ms
+            setInterval(() => {
+              const endTime = Date.now() + 200;
+              while (Date.now() < endTime) {
+              }
+            }, 2000);
+          })
+      }
+      .height('100%')
     }
+    .height('100%')
+    .title('ArkWeb Fling Jank')
   }
 }
 ```
 
 ### Code block 4
+
+```
+@Provide('navPathStack') navPathStack: NavPathStack = new NavPathStack();
+@Builder
+PageMap(name: string) {
+  if (name === 'ArkWebPage') {
+    ArkWebPage();
+  }
+}
+```
+
+### Code block 5
 
 ```
 // 按钮跳转到易出现滑动丢帧的web场景，触发ArkWeb抛滑丢帧事件。
@@ -255,19 +280,8 @@ Button('ArkWebFlingJank ArkTs')
   .width('80%')
   .height('5%')
   .onClick(() => {
-    router.pushUrl({url: 'pages/ArkWebPage'});
+    this.navPathStack.pushPath({ name: 'ArkWebPage' });
   })
-```
-
-### Code block 5
-
-```
-{
-  "src": [
-    "pages/Index",
-    "pages/ArkWebPage"
-  ]
-}
 ```
 
 ### Code block 6

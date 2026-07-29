@@ -73,7 +73,7 @@ KirinX90系列处理器
 
 无Tensor shape的打印
 
-AscendC::DumpTensor(srcLocal,5, dataLen);
+AscendC::DumpTensor(srcLocal, 5, dataLen);
 
 带Tensor shape的打印
 
@@ -130,7 +130,7 @@ void DumpTensor(const GlobalTensor<T> &tensor, uint32_t desc, uint32_t dumpNum, 
 ### Code block 5
 
 ```
-AscendC::DumpTensor(srcLocal,5, dataLen);
+AscendC::DumpTensor(srcLocal, 5, dataLen);
 ```
 
 ### Code block 6

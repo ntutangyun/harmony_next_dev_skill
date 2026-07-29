@@ -15,3 +15,5 @@ Background Tasks Kit简介
 代理提醒(ArkTS)
 
 Background Tasks Kit接入规范
+
+Background Tasks Kit术语

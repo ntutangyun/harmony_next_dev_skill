@@ -17,7 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterpris
 详细接口说明可参考接口文档。
 
 接口	描述
-terminateProcess(pid: number): void	三方杀软应用调用接口终止威胁进程。
+terminateProcess(pid: number): Promise<void>	三方杀软应用调用接口终止威胁进程。
 
 开发步骤
 

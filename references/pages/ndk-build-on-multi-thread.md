@@ -64,7 +64,7 @@ auto node = multiThreadNodeAPI->createNode(ARKUI_NODE_COLUMN);
 
 禁止多线程同时操作同一个处于Free状态的组件或组件树，处于Free状态的组件内部是无锁的，多线程同时访问会出现稳定性问题。
 
-禁止使用多线程NDK接口集合外的其他NDK接口操作处于Free状态的组件，需先将组件转换为Attach状态后才可以在UI线程使用其他NDK接口，否则接口功能会出现异常。
+禁止使用多线程NDK接口集合外的其他NDK接口操作处于Free状态的组件，需先将组件转换为Attached状态后才可以在UI线程使用其他NDK接口，否则接口功能会出现异常。
 
 为兼顾性能，上述约束框架侧无运行时校验，需要开发者自行保证。
 
@@ -135,7 +135,7 @@ int32_t(* insertChildAfter )(ArkUI_NodeHandle parent, ArkUI_NodeHandle child, Ar
 int32_t(* insertChildBefore )(ArkUI_NodeHandle parent, ArkUI_NodeHandle child, ArkUI_NodeHandle sibling)	将child节点挂载到parent节点的子节点列表中，挂载位置在sibling节点之前。	支持	在非UI线程调用函数操作Attached节点时，接口返回错误码ARKUI_ERROR_CODE_NODE_ON_INVALID_THREAD。
 int32_t(* insertChildAt )(ArkUI_NodeHandle parent, ArkUI_NodeHandle child, int32_t position)	将child节点挂载到parent节点的子节点列表中，挂载位置由position指定。	支持	在非UI线程调用函数操作Attached节点时，接口返回错误码ARKUI_ERROR_CODE_NODE_ON_INVALID_THREAD。
 ArkUI_NodeHandle(* getParent )(ArkUI_NodeHandle node)	获取node节点的父节点。	支持	在非UI线程调用函数操作Attached节点时，接口返回错误码ARKUI_ERROR_CODE_NODE_ON_INVALID_THREAD。
-int32_t(* removeAllChildren )(ArkUI_NodeHandle parent)	移除node节点的所有子节点。	支持	在非UI线程调用函数操作Attached节点节点时，接口返回错误码ARKUI_ERROR_CODE_NODE_ON_INVALID_THREAD。
+int32_t(* removeAllChildren )(ArkUI_NodeHandle parent)	移除parent节点的所有子节点。	支持	在非UI线程调用函数操作Attached节点时，接口返回错误码ARKUI_ERROR_CODE_NODE_ON_INVALID_THREAD。
 uint32_t(* getTotalChildCount )(ArkUI_NodeHandle node)	获取node节点的子节点个数。	支持	在非UI线程调用函数操作Attached节点时，接口返回0。
 ArkUI_NodeHandle(* getChildAt )(ArkUI_NodeHandle node, int32_t position)	获取node节点的子节点指针，位置由position指定。	支持	在非UI线程调用函数操作Attached节点时，接口返回空指针。
 ArkUI_NodeHandle(* getFirstChild )(ArkUI_NodeHandle node)	获取node节点的第一个子节点指针。	支持	在非UI线程调用函数操作Attached节点时，接口返回空指针。
@@ -356,7 +356,6 @@ namespace NativeModule {
 #define FRAMEWORK_NODE_TREE_NUMBER 4 // 在框架线程创建组件树的数量。
 #define USER_NODE_TREE_NUMBER 3 // 在开发者线程创建组件树的数量。
 struct AsyncData {
-    napi_env env;
     std::shared_ptr<ArkUINode> parent = nullptr;
     std::shared_ptr<ArkUINode> child = nullptr;
     std::string label = "";
@@ -405,7 +404,7 @@ void CreateNodeTree(void *asyncUITaskData) {
     ArkUI_NumberValue value2[] = {{.f32 = 5}, {.f32 = 5}, {.f32 = 5}, {.f32 = 5}};
     ArkUI_AttributeItem item2 = {value2, 4};
     // 设置button组件的margin属性。
-    result = buttonNode1->SetMargin(item2);
+    result = buttonNode2->SetMargin(item2);
     if (result != ARKUI_ERROR_CODE_NO_ERROR) {
         OH_LOG_ERROR(LOG_APP, "Button SetMargin Failed %{public}d", result);
     }
@@ -831,7 +830,6 @@ namespace NativeModule {
 #define FRAMEWORK_NODE_TREE_NUMBER 4 // 在框架线程创建组件树的数量。
 #define USER_NODE_TREE_NUMBER 3 // 在开发者线程创建组件树的数量。
 struct AsyncData {
-    napi_env env;
     std::shared_ptr<ArkUINode> parent = nullptr;
     std::shared_ptr<ArkUINode> child = nullptr;
     std::string label = "";
@@ -880,7 +878,7 @@ void CreateNodeTree(void *asyncUITaskData) {
     ArkUI_NumberValue value2[] = {{.f32 = 5}, {.f32 = 5}, {.f32 = 5}, {.f32 = 5}};
     ArkUI_AttributeItem item2 = {value2, 4};
     // 设置button组件的margin属性。
-    result = buttonNode1->SetMargin(item2);
+    result = buttonNode2->SetMargin(item2);
     if (result != ARKUI_ERROR_CODE_NO_ERROR) {
         OH_LOG_ERROR(LOG_APP, "Button SetMargin Failed %{public}d", result);
     }

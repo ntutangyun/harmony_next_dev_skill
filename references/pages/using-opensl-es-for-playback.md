@@ -2,17 +2,17 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-opensl-es-for-playback_
 
-OpenSL ES全称为Open Sound Library for Embedded Systems，是一个嵌入式、跨平台、免费的音频处理库。为嵌入式移动多媒体设备上的应用开发者提供标准化、高性能、低延迟的API。HarmonyOS的Native API基于Khronos Group开发的OpenSL ES 1.0.1 API 规范实现，开发者可以通过<OpenSLES.h>和<OpenSLES_OpenHarmony.h>在HarmonyOS上使用相关API。
+OpenSL ES全称为Open Sound Library for Embedded Systems，是一个嵌入式、跨平台、免费的音频处理库。为嵌入式移动多媒体设备上的应用开发者提供标准化、高性能、低延迟的API。HarmonyOS的Native API基于Khronos Group开发的OpenSL ES 1.0.1 API 规范实现，开发者可以通过<SLES/OpenSLES.h>和<SLES/OpenSLES_OpenHarmony.h>在HarmonyOS上使用相关API。
 
 使用OHAudio替代OpenSL ES
 
 HarmonyOS上的OpenSL ES接口，是早期SDK8版本开始提供，用于支持应用Native层音频开发的接口。但随着版本演进，接口定义的可扩展性不足，不再能满足音频系统的能力拓展，因此当前已不再推荐应用开发者继续使用此接口进行音频功能开发，可能存在一些接口能力不足的缺陷。
 
-在SDK10版本，HarmonyOS推出了OHAudio接口，并将系统具备的所有音频功能都通过此接口开放。OHAudio接口已能够覆盖OpenSL ES在HarmonyOS中已提供的所有能力，并拓展支持音频焦点事件，低时延等新版本特性。
+在SDK10版本，HarmonyOS推出了OHAudio接口，并将系统具备的所有音频功能都通过此接口开放。OHAudio接口已能够覆盖OpenSL ES在HarmonyOS中已提供的所有能力，并拓展支持音频焦点事件、低时延等新版本特性。
 
 OHAudio的开发指南请参考：推荐使用OHAudio开发音频播放功能(C/C++)。
 
-考虑到一些接入HarmonyOS较早的应用开发者，这里提供了一份OpenSL ES接口切换到OHAudio的对照参考：从OpenSL ES切换到OHAudio(C/C++)，便于开发者能够更快的在新版本切换到使用新接口。
+考虑到一些接入HarmonyOS较早的应用开发者，这里提供了一份OpenSL ES接口切换到OHAudio的对照参考：从OpenSL ES切换到OHAudio(C/C++)，便于开发者能够更快地在新版本切换到使用新接口。
 
 HarmonyOS上的OpenSL ES
 
@@ -155,7 +155,7 @@ static void BufferQueueCallback (SLOHBufferQueueItf bufferQueueItf, void *pConte
     // 将待播放音频数据写入buffer。
     (*bufferQueueItf)->Enqueue(bufferQueueItf, buffer, size);
 }
-void *pContext; // 可传入自定义的上下文信息，会在Callback内收到。
+void *pContext = nullptr; // 可传入自定义的上下文信息，会在Callback内收到。
 (*bufferQueueItf)->RegisterCallback(bufferQueueItf, BufferQueueCallback, pContext);
 
 获取接口SL_IID_PLAY的playItf实例，开始播放。
@@ -263,7 +263,7 @@ static void BufferQueueCallback (SLOHBufferQueueItf bufferQueueItf, void *pConte
     // 将待播放音频数据写入buffer。
     (*bufferQueueItf)->Enqueue(bufferQueueItf, buffer, size);
 }
-void *pContext; // 可传入自定义的上下文信息，会在Callback内收到。
+void *pContext = nullptr; // 可传入自定义的上下文信息，会在Callback内收到。
 (*bufferQueueItf)->RegisterCallback(bufferQueueItf, BufferQueueCallback, pContext);
 ```
 

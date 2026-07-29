@@ -15,3 +15,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-proce
 使用Web组件与系统剪贴板交互处理网页内容
 
 使用Web组件的智能分词能力
+
+Web组件长截图

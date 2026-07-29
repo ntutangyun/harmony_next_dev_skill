@@ -11,3 +11,5 @@ Enterprise Data Guard Kit简介
 企业恢复密钥
 
 Enterprise Data Guard Kit常见问题
+
+Enterprise Data Guard Kit术语

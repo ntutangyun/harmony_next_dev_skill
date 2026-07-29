@@ -92,7 +92,7 @@ export default class MyFenceExtensionAbility extends FenceExtensionAbility {
           text: `poiId:${poiId},policyType:${policyType},policyResult:${policyResult}`,
         }
       },
-      notificationSlotType: notificationManager.SlotType.SOCIAL_COMMUNICATION,
+      notificationSlotType: notificationManager.SlotType.CONTENT_INFORMATION,
       wantAgent: wantAgentMy
     };
     notificationManager.publish(notificationRequest);
@@ -163,7 +163,7 @@ export default class MyFenceExtensionAbility extends FenceExtensionAbility {
           text: `poiId:${poiId},policyType:${policyType},policyResult:${policyResult}`,
         }
       },
-      notificationSlotType: notificationManager.SlotType.SOCIAL_COMMUNICATION,
+      notificationSlotType: notificationManager.SlotType.CONTENT_INFORMATION,
       wantAgent: wantAgentMy
     };
     notificationManager.publish(notificationRequest);

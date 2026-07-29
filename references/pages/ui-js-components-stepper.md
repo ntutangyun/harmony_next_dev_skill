@@ -35,7 +35,7 @@ text{
   text-align: center;
 }
 
-设置index属性
+设置index和label属性
 
 页面默认显示索引值为index的步骤。
 
@@ -186,7 +186,7 @@ stepper分别添加finish，change，next，back，skip事件。
 </div>
 
 /* xxx.css */
-.doc-page {
+.container {
   width:100%;
   height:100%;
   flex-direction: column;
@@ -456,7 +456,7 @@ text{
 
 ```
 /* xxx.css */
-.doc-page {
+.container {
   width:100%;
   height:100%;
   flex-direction: column;

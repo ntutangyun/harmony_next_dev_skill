@@ -2,6 +2,12 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-gameplayer-terminology_
 
+B
+
+[h2]Binding；绑定
+
+绑定是指在HarmonyOS 5.0及以上系统中，支持玩家使用华为账号绑定游戏官方账号快速登录游戏官包，并且与使用游戏官方账号直接登录游戏官包时账号资产保持一致。
+
 M
 
 [h2]Multi-provider sign-in；联合登录

@@ -4,11 +4,23 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-ki
 
 Wallet Kit简介
 
-创建Wallet Kit服务
+Wallet Kit接入Skill说明
 
 数字车钥匙
 
-接入交通卡
+交通卡
+
+园区卡
+
+会员卡
+
+酒店房卡
+
+出行凭证
+
+活动/景点门票
+
+通用凭证
 
 Wallet Kit常见问题
 

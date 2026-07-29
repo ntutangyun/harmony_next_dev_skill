@@ -115,7 +115,7 @@ try {
       return;
     }
   }).catch((err: BusinessError) => {
-    hilog.error(0x0000, 'nearby', '%{public}s', `Failed to request permissions from user, code: ${err.code}, message: ${err.message}`);
+    hilog.error(0x0000, 'nearby', `Failed to request permissions from user, code: ${err.code}, message: ${err.message}`);
   })
 } catch (error) {
   let err = error as BusinessError;
@@ -242,6 +242,8 @@ try {
 
 方式二：选择绑定
 
+发送端调用on('discovery')接口注册“发现设备”结果事件监听。
+
 try {
   // 订阅发现结果
   gameNearbyTransfer.on('discovery', discoveryCallBack);
@@ -255,8 +257,11 @@ function discoveryCallBack(callback: gameNearbyTransfer.DiscoveryResult) {
   // 获取到发现的设备 展示设备列表
   callback.nearbyGameDevices.forEach((device: gameNearbyTransfer.NearbyGameDevice, index: number) => {
     hilog.info(0x0000, 'nearby', `device info. name: ${device.deviceName}, index: ${index}`);
+    // 开发者可在此处添加展示设备列表的逻辑
   });
 }
+
+发送端调用discoveryNearbyGame发现附近设备。
 
 try {
   gameNearbyTransfer.discoveryNearbyGame().then(() => {
@@ -268,6 +273,8 @@ try {
   let err = error as BusinessError;
   hilog.error(0x0000, 'nearby', `discoveryNearbyGame exception. Code: ${err.code}, message: ${err.message}`);
 }
+
+“发现设备”操作完成后将收到discovery事件回调，获得发现的设备列表供玩家选择，调用bindNearbyGame接口绑定玩家选定的接收端设备。
 
 public bindNearbyGame(deviceInfo: gameNearbyTransfer.NearbyGameDevice) {
   let bindInfo: gameNearbyTransfer.BindParameters = {
@@ -291,7 +298,7 @@ public bindNearbyGame(deviceInfo: gameNearbyTransfer.NearbyGameDevice) {
 收到建链成功回调后，接收端调用sendPackageInfo接口发送自身文件，如版本信息、包信息。
 
 function connectNotifyCallBack(callback: gameNearbyTransfer.ConnectNotification) {
-  if (callback.connectState == gameNearbyTransfer.ConnectState.CONNECTED) {
+  if (callback.connectState === gameNearbyTransfer.ConnectState.CONNECTED) {
     // 连接成功回调，判断当前是否为接收端。若当前设备为接收端，请设置为true，否则请设置为false。
     let isReceive = true;
     if (!isReceive) {
@@ -369,20 +376,22 @@ function receivePackageInfoCallBack(callback: gameNearbyTransfer.PackageInfo) {
 发送端和接收端在传输回调中处理传输进度信息。
 
 function transferNotifyCallBack(callback: gameNearbyTransfer.TransferNotification) {
-  if (callback.transferState == gameNearbyTransfer.TransferState.SEND_PROCESS) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.SEND_PROCESS) {
     // 处理发送进度，如显示进度条和速率
   }
-  if (callback.transferState == gameNearbyTransfer.TransferState.SEND_FINISH) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.SEND_FINISH) {
     // 发送完成
   }
-  if (callback.transferState == gameNearbyTransfer.TransferState.RECEIVE_PROCESS) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.RECEIVE_PROCESS) {
     // 处理接收进度，如显示进度条和速率
   }
-  if (callback.transferState == gameNearbyTransfer.TransferState.RECEIVE_FINISH) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.RECEIVE_FINISH) {
     // 接收完成，获取到资源包存储的沙箱路径
     let fileStoragePath = callback.fileStoragePath;
-    hilog.info(0x0000, 'nearby', `get transfer path: ${fileStoragePath}`);
-    // 对fileStoragePath下的文件做处理
+    if (fileStoragePath) {
+      hilog.info(0x0000, 'nearby', `get transfer path: ${fileStoragePath}`);
+      // 对fileStoragePath下的文件做处理
+    }
   }
 }
 
@@ -444,6 +453,7 @@ function discoveryCallBack(callback: gameNearbyTransfer.DiscoveryResult) {
   // 获取到发现的设备 展示设备列表
   callback.nearbyGameDevices.forEach((device: gameNearbyTransfer.NearbyGameDevice, index: number) => {
     hilog.info(0x0000, 'nearby', `device info. name: ${device.deviceName}, index: ${index}`);
+    // 开发者可在此处添加展示设备列表的逻辑
   });
 }
 
@@ -473,7 +483,7 @@ try {
       return;
     }
   }).catch((err: BusinessError) => {
-    hilog.error(0x0000, 'nearby', '%{public}s', `Failed to request permissions from user, code: ${err.code}, message: ${err.message}`);
+    hilog.error(0x0000, 'nearby', `Failed to request permissions from user, code: ${err.code}, message: ${err.message}`);
   })
 } catch (error) {
   let err = error as BusinessError;
@@ -607,6 +617,7 @@ function discoveryCallBack(callback: gameNearbyTransfer.DiscoveryResult) {
   // 获取到发现的设备 展示设备列表
   callback.nearbyGameDevices.forEach((device: gameNearbyTransfer.NearbyGameDevice, index: number) => {
     hilog.info(0x0000, 'nearby', `device info. name: ${device.deviceName}, index: ${index}`);
+    // 开发者可在此处添加展示设备列表的逻辑
   });
 }
 ```
@@ -651,7 +662,7 @@ public bindNearbyGame(deviceInfo: gameNearbyTransfer.NearbyGameDevice) {
 
 ```
 function connectNotifyCallBack(callback: gameNearbyTransfer.ConnectNotification) {
-  if (callback.connectState == gameNearbyTransfer.ConnectState.CONNECTED) {
+  if (callback.connectState === gameNearbyTransfer.ConnectState.CONNECTED) {
     // 连接成功回调，判断当前是否为接收端。若当前设备为接收端，请设置为true，否则请设置为false。
     let isReceive = true;
     if (!isReceive) {
@@ -729,20 +740,22 @@ function receivePackageInfoCallBack(callback: gameNearbyTransfer.PackageInfo) {
 
 ```
 function transferNotifyCallBack(callback: gameNearbyTransfer.TransferNotification) {
-  if (callback.transferState == gameNearbyTransfer.TransferState.SEND_PROCESS) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.SEND_PROCESS) {
     // 处理发送进度，如显示进度条和速率
   }
-  if (callback.transferState == gameNearbyTransfer.TransferState.SEND_FINISH) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.SEND_FINISH) {
     // 发送完成
   }
-  if (callback.transferState == gameNearbyTransfer.TransferState.RECEIVE_PROCESS) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.RECEIVE_PROCESS) {
     // 处理接收进度，如显示进度条和速率
   }
-  if (callback.transferState == gameNearbyTransfer.TransferState.RECEIVE_FINISH) {
+  if (callback.transferState === gameNearbyTransfer.TransferState.RECEIVE_FINISH) {
     // 接收完成，获取到资源包存储的沙箱路径
     let fileStoragePath = callback.fileStoragePath;
-    hilog.info(0x0000, 'nearby', `get transfer path: ${fileStoragePath}`);
-    // 对fileStoragePath下的文件做处理
+    if (fileStoragePath) {
+      hilog.info(0x0000, 'nearby', `get transfer path: ${fileStoragePath}`);
+      // 对fileStoragePath下的文件做处理
+    }
   }
 }
 ```
@@ -804,6 +817,7 @@ function discoveryCallBack(callback: gameNearbyTransfer.DiscoveryResult) {
   // 获取到发现的设备 展示设备列表
   callback.nearbyGameDevices.forEach((device: gameNearbyTransfer.NearbyGameDevice, index: number) => {
     hilog.info(0x0000, 'nearby', `device info. name: ${device.deviceName}, index: ${index}`);
+    // 开发者可在此处添加展示设备列表的逻辑
   });
 }
 ```

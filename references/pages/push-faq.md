@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-faq_
 
 应用内通话消息在设备重启后的首次锁屏状态问题
 
-应用内通话消息来电横幅问题
+如何处理应用内通话消息的来电横幅问题
 
 场景化消息中的请求URL版本问题
 

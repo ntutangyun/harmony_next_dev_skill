@@ -280,7 +280,7 @@ Web嵌套滚动	在嵌套滚动场景下，建议不要使用Web软键盘避让�
        */
       @Builder
       customKeyboardBuilder() {
-          // 这里实现自定义键盘组件，对接WebKeyboardController实现输入、删除、关闭等操作。
+      // 这里实现自定义键盘组件，对接WebKeyboardController实现输入、删除、关闭等操作。
         Row() {
           Text("完成")
             .fontSize(20)
@@ -597,7 +597,7 @@ struct WebComponent {
        */
       @Builder
       customKeyboardBuilder() {
-          // 这里实现自定义键盘组件，对接WebKeyboardController实现输入、删除、关闭等操作。
+      // 这里实现自定义键盘组件，对接WebKeyboardController实现输入、删除、关闭等操作。
         Row() {
           Text("完成")
             .fontSize(20)

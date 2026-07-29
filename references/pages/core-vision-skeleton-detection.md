@@ -84,21 +84,7 @@ Button('开始骨骼点识别')
 
 骨骼点识别的方法实现如下：
 
-private async handleSkeletonDetection() {
-  if (!this.chooseImage) {
-    hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
-    return;
-  }
-  // 调用骨骼点识别接口
-  let request: visionBase.Request = {
-    inputData: { pixelMap: this.chooseImage }
-  };
-  let detector = await skeletonDetection.SkeletonDetector.create();
-  let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
-  let poseJson = JSON.stringify(data);
-  hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
-  this.dataValues = poseJson;
-}
+typescript private async handleSkeletonDetection() { try { if (!this.chooseImage) { hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.'); return; } // 调用骨骼点识别接口 let request: visionBase.Request = { inputData: { pixelMap: this.chooseImage } }; let detector = await skeletonDetection.SkeletonDetector.create(); let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request); await detector.destroy(); let poseJson = JSON.stringify(data); hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`); this.dataValues = poseJson; } catch (err) { hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error: ${err}`); } }
 
 开发实例
 
@@ -159,19 +145,24 @@ struct Index {
 
   // 封装骨骼点识别的异步逻辑
   private async handleSkeletonDetection() {
-    if (!this.chooseImage) {
-      hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
-      return;
+    try {
+      if (!this.chooseImage) {
+        hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
+        return;
+      }
+      // 调用骨骼点识别接口
+      let request: visionBase.Request = {
+        inputData: { pixelMap: this.chooseImage }
+      };
+      let detector = await skeletonDetection.SkeletonDetector.create();
+      let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
+      await detector.destroy();
+      let poseJson = JSON.stringify(data);
+      hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
+      this.dataValues = poseJson;
+    } catch (err) {
+      hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error: ${err}`);
     }
-    // 调用骨骼点识别接口
-    let request: visionBase.Request = {
-      inputData: { pixelMap: this.chooseImage }
-    };
-    let detector = await skeletonDetection.SkeletonDetector.create();
-    let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
-    let poseJson = JSON.stringify(data);
-    hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
-    this.dataValues = poseJson;
   }
 
   private async selectImage() {
@@ -291,26 +282,6 @@ Button('开始骨骼点识别')
 ### Code block 5
 
 ```
-private async handleSkeletonDetection() {
-  if (!this.chooseImage) {
-    hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
-    return;
-  }
-  // 调用骨骼点识别接口
-  let request: visionBase.Request = {
-    inputData: { pixelMap: this.chooseImage }
-  };
-  let detector = await skeletonDetection.SkeletonDetector.create();
-  let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
-  let poseJson = JSON.stringify(data);
-  hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
-  this.dataValues = poseJson;
-}
-```
-
-### Code block 6
-
-```
 import { image } from '@kit.ImageKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -366,19 +337,24 @@ struct Index {
 
   // 封装骨骼点识别的异步逻辑
   private async handleSkeletonDetection() {
-    if (!this.chooseImage) {
-      hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
-      return;
+    try {
+      if (!this.chooseImage) {
+        hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
+        return;
+      }
+      // 调用骨骼点识别接口
+      let request: visionBase.Request = {
+        inputData: { pixelMap: this.chooseImage }
+      };
+      let detector = await skeletonDetection.SkeletonDetector.create();
+      let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
+      await detector.destroy();
+      let poseJson = JSON.stringify(data);
+      hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
+      this.dataValues = poseJson;
+    } catch (err) {
+      hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error: ${err}`);
     }
-    // 调用骨骼点识别接口
-    let request: visionBase.Request = {
-      inputData: { pixelMap: this.chooseImage }
-    };
-    let detector = await skeletonDetection.SkeletonDetector.create();
-    let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
-    let poseJson = JSON.stringify(data);
-    hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
-    this.dataValues = poseJson;
   }
 
   private async selectImage() {

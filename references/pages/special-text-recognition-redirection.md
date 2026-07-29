@@ -119,6 +119,10 @@ Text(this.text)
 
 分别传入包含标准HTTP/HTTPS链接、App Linking链接、日期、电话号码、地址、邮箱等文字内容到TextLink组件中，均以可交互形式显示。
 
+示例代码
+
+基于enableDataDetector属性实现特殊文本识别的能力
+
 ## Code blocks
 
 ### Code block 1

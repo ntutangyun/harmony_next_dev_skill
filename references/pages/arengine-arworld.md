@@ -21,7 +21,7 @@ ARViewContext.scene	设置ARView的AR场景。
 ARViewContext.scene	获得的AR呈现场景，用于管理空间节点。
 ARViewContext.session	获取AR会话，用于获取相关AR环境跟踪、相机跟踪、命中检测等能力，如相机位姿、平面信息、创建锚点等。
 ARViewContext.config	设置AR会话的配置文件，如北向坐标、性能模式等。
-ARViewContext.callback	设置回调函数，以根据回调功能实现对应业务逻辑。
+ARViewContext.callback	设置回调函数，可根据回调功能实现对应业务逻辑。
 ARFrame.getCamera	获取当前帧的摄像机参数对象。
 ARFrame.getUpdatedTrackables	获取更新后的指定类型的可追踪对象。
 ARFrame.hitTest	根据相机投射光线，获取预览区域中的像素坐标（pixelX和pixelY）来确定射线方向，然后检测这个射线在平面或点云中是否有交点。
@@ -41,20 +41,17 @@ AR Engine仅输出识别到的平面数据。为便于用户观察，可使用AG
 AR物体摆放所需要导入的模块如下。
 
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene, Vec3 } from '@kit.ArkGraphics3D';
-import { window } from '@kit.ArkUI';
+import {CubeGeometry, CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node,
+  PrimitiveTopology, Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 [h2]定义变量
 
 定义变量hitAnchorList存储放置物体处的锚点信息、hitPoseList存储放置物体处的位姿信息和statusBarHeight设备状态栏高度。
 
-用户点击设备的坐标和显示预览流的坐标不一致，预览流的窗口略小于设备屏幕，因此需要减去设备状态栏高度以获取准确的点击坐标。
-
 let frame: arEngine.ARFrame;
-let hitAnchorList: arEngine.ARAnchor[] = [];
 let hitPoseList: Vec3[] = [];
-let statusBarHeight: number = 0;
+let hitAnchorList: arEngine.ARAnchor[] = [];
 
 [h2]显示预览流
 
@@ -64,12 +61,13 @@ let statusBarHeight: number = 0;
 export function ARWorldBuilder(): void {
   ARWorld();
 }
-
+// ...
 @Component
 struct ARWorld {
   @State arContext?: arViewController.ARViewContext = undefined;
   @State context: Context = this.getUIContext().getHostContext() as Context;
-
+  @State statusBarHeight: number = 0;
+  // ...
   build(): void {
     NavDestination() {
       RelativeContainer() {
@@ -87,12 +85,11 @@ struct ARWorld {
         }
       }
     }
-    .onAppear(() => {
+    .onAppear(async () => {
       this.initARView();
-      this.getAvoidArea();
     })
-    .onWillDisappear(() => {
-      this.stopARView();
+    .onWillDisappear(async () => {
+      await this.stopARView();
     })
     .onShown(() => {
       this.resumeARView();
@@ -104,16 +101,14 @@ struct ARWorld {
     .hideBackButton(true)
     .hideToolBar(true)
   }
-
-  // 获取用户点击坐标，获取碰撞检测结果
   private objectCollisionDetection(event: ClickEvent): void {
     let x: number = this.getUIContext().vp2px(event.windowX);
-    let y: number = this.getUIContext().vp2px(event.windowY) - statusBarHeight;
-    console.info(`Get onclick position, x: ${x} y: ${y}.`);
+    let y: number = this.getUIContext().vp2px(event.windowY) - this.statusBarHeight;
+    logger.info(`Get onclick position, x: ${x} y: ${y}.`);
 
     try {
       let result: arEngine.ARHitResult[] = frame.hitTest(x, y);
-      console.info(`The hitResult size is: ${result.length}.`);
+      logger.info(`The hitresult size is: ${result.length}.`);
       if (!result) {
         return;
       }
@@ -130,7 +125,7 @@ struct ARWorld {
         let hitPose: arEngine.ARPose = hitResult.getHitPose();
         let inPolygon: boolean = hitPlane.isPoseInPolygon(hitPose);
         let distance: number = hitResult.distance;
-        console.info(`The hitResult inPolygon is: ${inPolygon}, distance is: ${distance}.`);
+        logger.info(`The hitresult inPolygon is: ${inPolygon}, distance is: ${distance}.`);
 
         if (!inPolygon || distance <= 0) {
           continue;
@@ -142,16 +137,19 @@ struct ARWorld {
         hitPoseList.push(pos);
         hitAnchorList.push(hitAnchor);
 
+        if (hitPoseList.length > 10) {
+          hitPoseList.splice(0, 1);
+          hitAnchorList.splice(0, 1);
+        }
       }
-      console.info('Succeeded in getting hit result.');
+      logger.info('Succeeded in getting hit result.');
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to get hitResults. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to get hitResults. Code is ${err.code}, message is ${err.message}.`);
     }
   }
-
   private initARView(): void {
-    Scene.load().then((scene: Scene) => {
+    Scene.load().then(async (scene: Scene) => {
       let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
       viewContext.scene = scene;
       viewContext.callback = new ARViewCallbackImpl();
@@ -164,37 +162,49 @@ struct ARWorld {
         depthMode: arEngine.ARDepthMode.AUTOMATIC,
         meshMode: arEngine.ARMeshMode.DISABLED,
         focusMode: arEngine.ARFocusMode.AUTO
-      };
+      }
       viewContext.init().then(() => {
         this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
+        logger.info('Succeeded in initting ARView.');
       }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      });
-    });
-  }
-
- // 获取屏幕上减去状态栏的真实高度（预览流高度）
-  private getAvoidArea(): void {
-    let avoidAreaType: window.AvoidAreaType = window.AvoidAreaType.TYPE_SYSTEM;
-    window.getLastWindow(this.context).then((data) => {
-      // 获取顶部状态栏高度
-      let avoidArea: window.AvoidArea = data.getWindowAvoidArea(avoidAreaType);
-      statusBarHeight = avoidArea.topRect.height;
-      console.info(`The statusBarHeight is ${statusBarHeight}.`);
-    }).catch((err: BusinessError) => {
-      console.error(`Failed to obtain the window. Code is ${err.code}, message is ${err.message}.`);
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
+      })
     })
   }
-
-  private stopARView(): void {
-    // ...
+  private async stopARView(): Promise<void> {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      await this.arContext.destroy();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
+    }
   }
   private resumeARView(): void {
-    // ...
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.resume();
+      isStopFrameUpdate = false;
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}.`);
+    }
   }
   private pauseARView(): void {
-    // ...
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.pause();
+      isStopFrameUpdate = true;
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}.`);
+    }
   }
 }
 
@@ -203,34 +213,34 @@ struct ARWorld {
 调用ARViewCallback，使用其中的onFrameUpdate方法进行帧数据更新，获取平面信息。
 
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
+  // ...
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
 
-    let arSession: arEngine.ARSession = ctx.session;
-
+    let session: arEngine.ARSession = ctx.session;
     try {
-      frame = arSession.getFrame();
+      frame = session.getFrame();
       let camera: arEngine.ARCamera = frame.getCamera();
-      let trackable: arEngine.ARTrackable[] = [];
+      let trackables: arEngine.ARTrackable[] = [];
 
       if (camera.state === arEngine.ARTrackingState.TRACKING) {
-        trackable = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
-        console.info(`Succeeded in getting tracking plane，length is: ${trackable.length}.`); // 输出识别到的平面数量
+        trackables = session.getAllTrackables(arEngine.ARTrackableType.PLANE);
+        isDisplayCube = true;
+      } else {
+        isDisplayCube = false;
       }
-
+      // ...
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
   }
 }
@@ -241,8 +251,8 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 
 ```
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene, Vec3 } from '@kit.ArkGraphics3D';
-import { window } from '@kit.ArkUI';
+import {CubeGeometry, CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node,
+  PrimitiveTopology, Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
@@ -250,9 +260,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 let frame: arEngine.ARFrame;
-let hitAnchorList: arEngine.ARAnchor[] = [];
 let hitPoseList: Vec3[] = [];
-let statusBarHeight: number = 0;
+let hitAnchorList: arEngine.ARAnchor[] = [];
 ```
 
 ### Code block 3
@@ -262,12 +271,13 @@ let statusBarHeight: number = 0;
 export function ARWorldBuilder(): void {
   ARWorld();
 }
-
+// ...
 @Component
 struct ARWorld {
   @State arContext?: arViewController.ARViewContext = undefined;
   @State context: Context = this.getUIContext().getHostContext() as Context;
-
+  @State statusBarHeight: number = 0;
+  // ...
   build(): void {
     NavDestination() {
       RelativeContainer() {
@@ -285,12 +295,11 @@ struct ARWorld {
         }
       }
     }
-    .onAppear(() => {
+    .onAppear(async () => {
       this.initARView();
-      this.getAvoidArea();
     })
-    .onWillDisappear(() => {
-      this.stopARView();
+    .onWillDisappear(async () => {
+      await this.stopARView();
     })
     .onShown(() => {
       this.resumeARView();
@@ -302,16 +311,14 @@ struct ARWorld {
     .hideBackButton(true)
     .hideToolBar(true)
   }
-
-  // 获取用户点击坐标，获取碰撞检测结果
   private objectCollisionDetection(event: ClickEvent): void {
     let x: number = this.getUIContext().vp2px(event.windowX);
-    let y: number = this.getUIContext().vp2px(event.windowY) - statusBarHeight;
-    console.info(`Get onclick position, x: ${x} y: ${y}.`);
+    let y: number = this.getUIContext().vp2px(event.windowY) - this.statusBarHeight;
+    logger.info(`Get onclick position, x: ${x} y: ${y}.`);
 
     try {
       let result: arEngine.ARHitResult[] = frame.hitTest(x, y);
-      console.info(`The hitResult size is: ${result.length}.`);
+      logger.info(`The hitresult size is: ${result.length}.`);
       if (!result) {
         return;
       }
@@ -328,7 +335,7 @@ struct ARWorld {
         let hitPose: arEngine.ARPose = hitResult.getHitPose();
         let inPolygon: boolean = hitPlane.isPoseInPolygon(hitPose);
         let distance: number = hitResult.distance;
-        console.info(`The hitResult inPolygon is: ${inPolygon}, distance is: ${distance}.`);
+        logger.info(`The hitresult inPolygon is: ${inPolygon}, distance is: ${distance}.`);
 
         if (!inPolygon || distance <= 0) {
           continue;
@@ -340,16 +347,19 @@ struct ARWorld {
         hitPoseList.push(pos);
         hitAnchorList.push(hitAnchor);
 
+        if (hitPoseList.length > 10) {
+          hitPoseList.splice(0, 1);
+          hitAnchorList.splice(0, 1);
+        }
       }
-      console.info('Succeeded in getting hit result.');
+      logger.info('Succeeded in getting hit result.');
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to get hitResults. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to get hitResults. Code is ${err.code}, message is ${err.message}.`);
     }
   }
-
   private initARView(): void {
-    Scene.load().then((scene: Scene) => {
+    Scene.load().then(async (scene: Scene) => {
       let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
       viewContext.scene = scene;
       viewContext.callback = new ARViewCallbackImpl();
@@ -362,37 +372,49 @@ struct ARWorld {
         depthMode: arEngine.ARDepthMode.AUTOMATIC,
         meshMode: arEngine.ARMeshMode.DISABLED,
         focusMode: arEngine.ARFocusMode.AUTO
-      };
+      }
       viewContext.init().then(() => {
         this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
+        logger.info('Succeeded in initting ARView.');
       }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      });
-    });
-  }
-
- // 获取屏幕上减去状态栏的真实高度（预览流高度）
-  private getAvoidArea(): void {
-    let avoidAreaType: window.AvoidAreaType = window.AvoidAreaType.TYPE_SYSTEM;
-    window.getLastWindow(this.context).then((data) => {
-      // 获取顶部状态栏高度
-      let avoidArea: window.AvoidArea = data.getWindowAvoidArea(avoidAreaType);
-      statusBarHeight = avoidArea.topRect.height;
-      console.info(`The statusBarHeight is ${statusBarHeight}.`);
-    }).catch((err: BusinessError) => {
-      console.error(`Failed to obtain the window. Code is ${err.code}, message is ${err.message}.`);
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
+      })
     })
   }
-
-  private stopARView(): void {
-    // ...
+  private async stopARView(): Promise<void> {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      await this.arContext.destroy();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
+    }
   }
   private resumeARView(): void {
-    // ...
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.resume();
+      isStopFrameUpdate = false;
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}.`);
+    }
   }
   private pauseARView(): void {
-    // ...
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.pause();
+      isStopFrameUpdate = true;
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}.`);
+    }
   }
 }
 ```
@@ -401,34 +423,34 @@ struct ARWorld {
 
 ```
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
+  // ...
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
 
-    let arSession: arEngine.ARSession = ctx.session;
-
+    let session: arEngine.ARSession = ctx.session;
     try {
-      frame = arSession.getFrame();
+      frame = session.getFrame();
       let camera: arEngine.ARCamera = frame.getCamera();
-      let trackable: arEngine.ARTrackable[] = [];
+      let trackables: arEngine.ARTrackable[] = [];
 
       if (camera.state === arEngine.ARTrackingState.TRACKING) {
-        trackable = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
-        console.info(`Succeeded in getting tracking plane，length is: ${trackable.length}.`); // 输出识别到的平面数量
+        trackables = session.getAllTrackables(arEngine.ARTrackableType.PLANE);
+        isDisplayCube = true;
+      } else {
+        isDisplayCube = false;
       }
-
+      // ...
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
   }
 }

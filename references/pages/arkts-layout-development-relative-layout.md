@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-lay
 
 概述
 
-在应用的开发过程中，经常需要设计复杂界面，此时涉及到多个相同或不同组件之间的嵌套。如果布局组件嵌套深度过深，或者嵌套组件数过多，会带来额外的开销。如果在布局的方式上进行优化，就可以有效的提升性能，减少时间开销。
+在应用的开发过程中，经常需要设计复杂界面，此时涉及到多个相同或不同组件之间的嵌套。如果布局组件嵌套深度过深，或者嵌套组件数过多，会带来额外的开销。如果在布局的方式上进行优化，就可以有效地提升性能，减少时间开销。
 
 RelativeContainer是一种采用相对布局的容器，支持容器内部的子元素设置相对位置关系，适用于处理界面复杂的场景，对多个子元素进行对齐和排列。子元素可以指定兄弟元素或父容器作为锚点，基于锚点进行相对位置布局。在使用锚点时，需注意子元素的相对位置关系，以避免出现错位或遮挡的情况。下图展示了一个 RelativeContainer的概念图，图中的虚线表示位置的依赖关系。
 
@@ -59,7 +59,7 @@ let alignRue: Record<string, Record<string, string | VerticalAlign | HorizontalA
   'right': { 'anchor': '__container__', 'align': HorizontalAlign.End }
 }
 let marginLeft: Record<string, number> = { 'left': 20 }
-let bwc: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
+let borderWidth: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
 
 @Entry
 @Component
@@ -87,7 +87,7 @@ struct ParentRefRelativeContainer {
       .id('row2')
     }.width(300).height(300)
     .margin(marginLeft)
-    .border(bwc)
+    .border(borderWidth)
   }
 }
 
@@ -102,7 +102,7 @@ let relConB: Record<string, Record<string, string | VerticalAlign | HorizontalAl
   'left': { 'anchor': 'row1', 'align': HorizontalAlign.Start }
 }
 let marginLeft001: Record<string, number> = { 'left': 20 }
-let bwc001: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
+let borderWidth001: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
 
 @Entry
 @Component
@@ -130,7 +130,7 @@ struct SiblingRefRelativeContainer {
       .id('row2')
     }.width(300).height(300)
     .margin(marginLeft001)
-    .border(bwc001)
+    .border(borderWidth001)
   }
 }
 
@@ -832,7 +832,7 @@ let alignRue: Record<string, Record<string, string | VerticalAlign | HorizontalA
   'right': { 'anchor': '__container__', 'align': HorizontalAlign.End }
 }
 let marginLeft: Record<string, number> = { 'left': 20 }
-let bwc: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
+let borderWidth: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
 
 @Entry
 @Component
@@ -860,7 +860,7 @@ struct ParentRefRelativeContainer {
       .id('row2')
     }.width(300).height(300)
     .margin(marginLeft)
-    .border(bwc)
+    .border(borderWidth)
   }
 }
 ```
@@ -877,7 +877,7 @@ let relConB: Record<string, Record<string, string | VerticalAlign | HorizontalAl
   'left': { 'anchor': 'row1', 'align': HorizontalAlign.Start }
 }
 let marginLeft001: Record<string, number> = { 'left': 20 }
-let bwc001: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
+let borderWidth001: Record<string, number | string> = { 'width': 2, 'color': '#6699FF' }
 
 @Entry
 @Component
@@ -905,7 +905,7 @@ struct SiblingRefRelativeContainer {
       .id('row2')
     }.width(300).height(300)
     .margin(marginLeft001)
-    .border(bwc001)
+    .border(borderWidth001)
   }
 }
 ```

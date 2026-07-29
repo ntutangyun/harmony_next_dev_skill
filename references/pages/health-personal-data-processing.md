@@ -2,8 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-personal-data-processing_
 
-最后修改时间： 2024/5/16
-
 华为是数据处理者，不是数据控制者，数据使用目的和方式由用户自己决定。
 
 此文档针对华为作为最终用户数据处理者，开发者作为最终用户数据控制者的数据处理进行说明，包括：

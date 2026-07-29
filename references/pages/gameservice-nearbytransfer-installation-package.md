@@ -121,7 +121,7 @@ private immersiveCallback = async (sharableTarget: harmonyShare.SharableTarget) 
     sharableTarget?.share(shareData);
   } catch (err) {
     sharableTarget?.reject(harmonyShare.SharableErrorCode.NO_CONTENT_ERROR);
-    hilog.error(0x0000, '[nearby]', '%{public}s', `Failed to share the installation package ${err}`);
+    hilog.error(0x0000, '[nearby]', `Failed to share the installation package ${err}`);
   }
 };
 
@@ -241,7 +241,7 @@ private immersiveCallback = async (sharableTarget: harmonyShare.SharableTarget) 
     sharableTarget?.share(shareData);
   } catch (err) {
     sharableTarget?.reject(harmonyShare.SharableErrorCode.NO_CONTENT_ERROR);
-    hilog.error(0x0000, '[nearby]', '%{public}s', `Failed to share the installation package ${err}`);
+    hilog.error(0x0000, '[nearby]', `Failed to share the installation package ${err}`);
   }
 };
 ```

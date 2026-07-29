@@ -4,6 +4,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-manag
 
 使用Web组件加载页面
 
+Web组件拦截能力的使用
+
 管理页面跳转及浏览记录导航
 
 拦截Web组件发起的网络请求

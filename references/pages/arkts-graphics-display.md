@@ -54,7 +54,7 @@ Image('images/view.jpg')
 
 网络图片必须支持RFC 9113标准，否则会导致加载失败。如果下载的网络图片大于10MB或一次下载的网络图片数量较多，建议使用HTTP工具提前下载，提高图片加载性能，方便应用侧管理数据。
 
-在显示网络图片时，Image组件在机制上会依赖缓存下载模块，开发者可参考示例3（下载与显示网络gif图片）了解具体用法。
+在显示网络图片时，Image组件在机制上会依赖@ohos.request.cacheDownload (缓存下载)，开发者可参考示例3（下载与显示网络gif图片）了解具体用法。
 
 缓存下载模块提供独立的预下载接口，允许应用开发者在创建Image组件前预下载所需图片。组件创建后，Image组件可直接从缓存下载模块中获取已下载的图片数据，从而加快图片的显示速度，优化加载体验，并有效避免网络图片加载延迟。网络缓存的位置位于应用根目录下的cache目录中。
 
@@ -174,7 +174,7 @@ struct HttpExample {
           return;
         };
         this.outData = data;
-        // 将网络地址成功返回的数据，编码转码成pixelMap的图片格式
+        // 将网络地址成功返回的数据，解码成PixelMap格式
         if (http.ResponseCode.OK === this.outData.responseCode) {
           let imageData: ArrayBuffer = this.outData.result as ArrayBuffer;
           let imageSource: image.ImageSource = image.createImageSource(imageData);
@@ -183,6 +183,7 @@ struct HttpExample {
           };
           imageSource.createPixelMap(options).then((pixelMap: PixelMap) => {
             this.image = pixelMap;
+            imageSource.release();
           });
         };
       });
@@ -635,7 +636,7 @@ struct SetImageDecodingSize {
 
 [h2]为图片添加滤镜效果
 
-通过colorFilter调整图片的像素颜色，为图片添加滤镜。
+通过colorFilter调整图片的像素颜色，为图片添加滤镜。完整的示例及开发指导请参考基于colorFilter实现图片滤镜效果。
 
 @Entry
 @Component
@@ -670,6 +671,12 @@ struct AddFilterEffectsToImages {
 // 请将$r('app.media.icon')替换为实际资源文件
 Image($r('app.media.icon'))
   .syncLoad(true)
+
+[h2]设置图片拉伸
+
+通过Image组件的resizable属性实现精准图片拉伸，其核心原理是：使用特定规则划分图片的固定区域与可拉伸区域，当图片拉伸时，仅对可拉伸区域进行拉伸，固定区域保持原始尺寸与形态不变。
+
+resizable属性参数类型为ResizableOptions，支持使用slice(slice: { left, right, top, bottom })和lattice(lattice: DrawingLattice)两种图片拉伸方案。完整示例及开发指导请参考基于resizable实现图片拉伸效果
 
 事件调用
 
@@ -846,7 +853,7 @@ struct HttpExample {
           return;
         };
         this.outData = data;
-        // 将网络地址成功返回的数据，编码转码成pixelMap的图片格式
+        // 将网络地址成功返回的数据，解码成PixelMap格式
         if (http.ResponseCode.OK === this.outData.responseCode) {
           let imageData: ArrayBuffer = this.outData.result as ArrayBuffer;
           let imageSource: image.ImageSource = image.createImageSource(imageData);
@@ -855,6 +862,7 @@ struct HttpExample {
           };
           imageSource.createPixelMap(options).then((pixelMap: PixelMap) => {
             this.image = pixelMap;
+            imageSource.release();
           });
         };
       });

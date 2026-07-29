@@ -62,16 +62,16 @@ checkSysIntegrity(req: SysIntegrityRequest): Promise<SysIntegrityResponse>	检�
 导入Device Security Kit模块及相关公共模块。
 
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-调用接口获取系统完整性检测结果。
+调用checkSysIntegrity接口获取系统完整性检测结果。
 
 注意
 
 该接口涉及端云协同，需要联网等耗时操作，因此不要在UI线程中执行，避免阻塞UI线程。
 
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求系统完整性检测，并处理结果
 let req : safetyDetect.SysIntegrityRequest = {
@@ -81,9 +81,11 @@ try {
   hilog.info(0x0000, TAG, 'CheckSysIntegrity begin.');
   const data: safetyDetect.SysIntegrityResponse = await safetyDetect.checkSysIntegrity(req);
   hilog.info(0x0000, TAG, 'Succeeded in checkSysIntegrity: %{public}s', data.result);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckSysIntegrity failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 
 在您的应用服务器中验证检测结果。
@@ -183,14 +185,14 @@ attack：设备被攻击。
 
 ```
 import { safetyDetect } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@ohos.base';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "SafetyDetectJsTest";
+const TAG = 'SafetyDetectJsTest';
 
 // 请求系统完整性检测，并处理结果
 let req : safetyDetect.SysIntegrityRequest = {
@@ -200,9 +202,11 @@ try {
   hilog.info(0x0000, TAG, 'CheckSysIntegrity begin.');
   const data: safetyDetect.SysIntegrityResponse = await safetyDetect.checkSysIntegrity(req);
   hilog.info(0x0000, TAG, 'Succeeded in checkSysIntegrity: %{public}s', data.result);
+  // ...
 } catch (err) {
   let e: BusinessError = err as BusinessError;
   hilog.error(0x0000, TAG, 'CheckSysIntegrity failed: %{public}d %{public}s', e.code, e.message);
+  // ...
 }
 ```
 

@@ -105,7 +105,7 @@ const TAG = '[Sample_ArkTSRouter]';
 
 @Entry
 @Component
-struct Login {
+struct Setting {
   // 在Setting页面中
   onJumpClick(): void {
     this.getUIContext().getRouter().pushUrl({
@@ -143,7 +143,7 @@ struct SearchResult {
         hilog.error(DOMAIN, TAG, `Invoke replaceUrl failed, code is ${err.code}, message is ${err.message}`);
         return;
       }
-      hilog.error(DOMAIN, TAG, 'Invoke replaceUrl succeeded.');
+      hilog.info(DOMAIN, TAG, 'Invoke replaceUrl succeeded.');
     });
   }
 
@@ -332,6 +332,9 @@ struct MyComponent {
   }
 }
 
+ import { hilog } from '@kit.PerformanceAnalysisKit';
+ const DOMAIN = 0xF811;
+ const TAG = '[Sample_ArkTSRouter]';
 // Page.ets
 @Entry
 @Component
@@ -341,18 +344,18 @@ struct Page {
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onPageShow() {
-    console.info('Page onPageShow');
+    hilog.info(DOMAIN, TAG, 'Page onPageShow');
     this.num = 5;
   }
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onPageHide() {
-    console.info('Page onPageHide');
+    hilog.info(DOMAIN, TAG, 'Page onPageHide');
   }
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onBackPress() { // 不设置返回值按照false处理
-    console.info('Page onBackPress');
+    hilog.info(DOMAIN, TAG, 'Page onBackPress');
     this.textColor = Color.Grey;
     this.num = 0;
   }
@@ -435,7 +438,7 @@ message：string类型，表示询问框的内容。
 
 在事件回调中，调用弹窗的showDialog方法：
 
-import { promptAction} from '@kit.ArkUI';
+import { promptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;
@@ -484,7 +487,7 @@ onBackClick() {
 
 图4 命名路由跳转
 
-在想要跳转到的共享包HAR或者HSP页面里，给@Entry修饰的自定义组件EntryOptions命名：
+在想要跳转到的共享包HAR或者HSP页面里，给@Entry装饰的自定义组件EntryOptions命名：
 
 // library/src/main/ets/pages/Index.ets
 // library为新建共享包自定义的名字
@@ -626,7 +629,7 @@ const TAG = '[Sample_ArkTSRouter]';
 
 @Entry
 @Component
-struct Login {
+struct Setting {
   // 在Setting页面中
   onJumpClick(): void {
     this.getUIContext().getRouter().pushUrl({
@@ -666,7 +669,7 @@ struct SearchResult {
         hilog.error(DOMAIN, TAG, `Invoke replaceUrl failed, code is ${err.code}, message is ${err.message}`);
         return;
       }
-      hilog.error(DOMAIN, TAG, 'Invoke replaceUrl succeeded.');
+      hilog.info(DOMAIN, TAG, 'Invoke replaceUrl succeeded.');
     });
   }
 
@@ -845,6 +848,9 @@ struct MyComponent {
 ### Code block 16
 
 ```
+ import { hilog } from '@kit.PerformanceAnalysisKit';
+ const DOMAIN = 0xF811;
+ const TAG = '[Sample_ArkTSRouter]';
 // Page.ets
 @Entry
 @Component
@@ -854,18 +860,18 @@ struct Page {
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onPageShow() {
-    console.info('Page onPageShow');
+    hilog.info(DOMAIN, TAG, 'Page onPageShow');
     this.num = 5;
   }
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onPageHide() {
-    console.info('Page onPageHide');
+    hilog.info(DOMAIN, TAG, 'Page onPageHide');
   }
 
   // 只有被@Entry装饰的组件才可以调用页面的生命周期
   onBackPress() { // 不设置返回值按照false处理
-    console.info('Page onBackPress');
+    hilog.info(DOMAIN, TAG, 'Page onBackPress');
     this.textColor = Color.Grey;
     this.num = 0;
   }
@@ -924,7 +930,7 @@ onBackClick(): void {
 ### Code block 19
 
 ```
-import { promptAction} from '@kit.ArkUI';
+import { promptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const DOMAIN = 0xF811;

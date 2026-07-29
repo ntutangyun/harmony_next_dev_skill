@@ -10,7 +10,7 @@ A [Claude Code](https://claude.com/claude-code) **skill** that lets Claude devel
 
 - **`SKILL.md`** — triggering description + routing table that fires whenever the user mentions HarmonyOS, ArkTS, ArkUI, `.ets`, `module.json5`, UIAbility, DevEco, `@kit.*` imports, etc.
 - **`references/00-quick-start.md` → `11-xiaoyi-agent-dev.md`** — 12 hand-written reference files that distill the most important areas (project structure, ArkTS language, ArkUI, abilities & lifecycle, services, data & network, cards, tooling, testing, kits, Xiaoyi agent development).
-- **`references/pages/`** — **all 5489 pages** from the official HarmonyOS application-dev guide (synced 2026-06-19), fetched from `developer.huawei.com`'s docs API, cleaned, and stored per-slug. Code blocks preserved. Plus 3 hand-distilled Xiaoyi agent pages (`service-agent-*.md`).
+- **`references/pages/`** — **all 5684 pages** from the official HarmonyOS application-dev guide (synced 2026-07-29), fetched from `developer.huawei.com`'s docs API, cleaned, and stored per-slug. Code blocks preserved. Plus 3 hand-distilled Xiaoyi agent pages (`service-agent-*.md`).
 - **`references/manifest.json`** — the full slug index (title + depth) so Claude can find a page by keyword without internet.
 - **`scripts/`** — the Python scripts that sync the bundled docs from Huawei's docs API (`update_docs.py`, `fetch_xiaoyi.py`, `convert.py`).
 

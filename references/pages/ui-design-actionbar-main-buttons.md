@@ -18,7 +18,7 @@ import { HdsActionBar, ActionBarButton, ActionBarStyle } from '@kit.UIDesignKit'
 
 @Entry
 @ComponentV2
-struct TestActionBar {
+struct Index {
   @Local isExpand: boolean = true;
 
   @Local isPrimaryIconChanged: boolean = false;
@@ -51,7 +51,7 @@ struct TestActionBar {
         actionBarStyle: new ActionBarStyle({
           isPrimaryIconChanged: this.isPrimaryIconChanged
         }),
-        isExpand: this.isExpand!!
+        isExpand: this.isExpand
       })
     }
     .width('100%')
@@ -75,7 +75,7 @@ import { HdsActionBar, ActionBarButton, ActionBarStyle } from '@kit.UIDesignKit'
 ```
 @Entry
 @ComponentV2
-struct TestActionBar {
+struct Index {
   @Local isExpand: boolean = true;
 
   @Local isPrimaryIconChanged: boolean = false;
@@ -108,7 +108,7 @@ struct TestActionBar {
         actionBarStyle: new ActionBarStyle({
           isPrimaryIconChanged: this.isPrimaryIconChanged
         }),
-        isExpand: this.isExpand!!
+        isExpand: this.isExpand
       })
     }
     .width('100%')

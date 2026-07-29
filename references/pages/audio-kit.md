@@ -4,8 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-kit
 
 Audio Kit简介
 
-使用合适的音频流类型
-
 音频焦点和音频会话管理
 
 音频播放
@@ -23,3 +21,7 @@ Audio Kit简介
 MIDI设备通信
 
 OpenSL ES开发指导(不再推荐)
+
+Audio Kit常见问题
+
+Audio Kit术语

@@ -26,80 +26,109 @@ registerTrigger(adTriggerInfo: AdTriggerInfo): Promise<void>	登记归因转化�
 
 导入相关模块。
 
-import { attributionManager } from '@kit.AppGalleryKit';
+import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { BusinessError,deviceInfo } from '@kit.BasicServicesKit';
+import { SignUtil } from '../common/utils/SignUtil';
+import { util } from '@kit.ArkTS';
+import { attributionManager } from '@kit.AppGalleryKit';
 
 构造参数AdSourceInfo。
 
-const adSourceInfo: attributionManager.AdSourceInfo = {
-  // 在应用归因云侧注册应用生态伙伴角色时，由应用归因服务分配
-  adTechId: '20****e8',
-  campaignId: '',
-  // 开发者应用上架华为应用市场的appId，不带C
-  destinationId: '10******',
-  sourceType: attributionManager.SourceType.IMPRESSION,
-  // 归因监测平台id
-  mmpIds: ['2f****5','2f7***5'],
-  // 分发平台关注的业务信息
-  serviceTag: '123***2',
-  // 用于计算签名的随机数，不带'-'
-  nonce: '123***2',
-  timestamp: Date.now(),
-  // 签名值
-  signature: 'MEQCIEQlmZ****zKBSE8QnhLTIHZZZ****ZpRqRxHss65Ko****JgJKjdrWdkL****juEx2RmFS7da****ZRVZ8RyMyUXg=='
-};
+// 私钥，由开发者生成，用于生成签名值使用
+let privateKey: string = '********u2rMtFw==';
+// 分发平台对应的归因角色ID，在应用归因云侧注册应用生态伙伴角色时，由应用归因服务分配
+let adTechId: string = '2******';
+// 广告平台创建的广告任务ID。
+// 自API 12起，campaignId长度小于等于6个字符
+// 自API 22起，campaignId长度小于等于9个字符
+let campaignId: string = '';
 let osApiVersion: number = deviceInfo.sdkApiVersion;
 if (osApiVersion >= 22) {
-  adSourceInfo.campaignId = '1*******9';
+    campaignId = '1*******9';
 } else {
-  adSourceInfo.campaignId = '1****6';
+    campaignId = '1****6';
 }
+// 开发者应用上架华为应用市场的appId，不带C
+let destinationId: string = '6*********4';
+// 归因监测平台id
+let mmpIds: string[] = ['2f*****15'];
+// 分发平台关注的业务信息
+let serviceTag: string = 'testServiceTag';
+// 用于计算签名的随机数，不带'-'
+let nonce: string = util.generateRandomUUID().replace(/-/g, '');
+// 时间戳.
+let timestamp: number = Date.now()
+
+let adSourceInfo: attributionManager.AdSourceInfo = {
+    adTechId: adTechId,
+    campaignId: campaignId,
+    destinationId: destinationId,
+    // 曝光.
+    sourceType: attributionManager.SourceType.IMPRESSION,
+    mmpIds: mmpIds,
+    serviceTag: serviceTag,
+    nonce: nonce,
+    timestamp: timestamp,
+    // 签名值.
+    signature: await SignUtil.getSign(this.getUIContext(),
+        SignUtil.genSignContent(adTechId, campaignId, destinationId, mmpIds, serviceTag, nonce, timestamp),
+        privateKey)
+};
 
 调用attributionManager.registerSource方法登记归因来源信息。
 
 try {
-  attributionManager.registerSource(adSourceInfo).then(() => {
-    hilog.info(0, 'TAG', 'Succeeded in registering source.');
-  }).catch((error: BusinessError) => {
-    hilog.error(0, 'TAG', `registerSource error.code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    attributionManager.registerSource(adSourceInfo).then(() => {
+        hilog.info(0, TAG, 'registerSource success.');
+        // ...
+    }).catch((error: BusinessError) => {
+        hilog.error(0, TAG, `registerSource error. code is ${error.code}, message is ${error.message}`);
+        // ...
+    })
 } catch (error) {
-  hilog.error(0, 'TAG', `registerSource error.code is ${error.code}, message is ${error.message}`);
+    hilog.error(0, TAG, `registerSource error. code is ${error.code}, message is ${error.message}`);
+    // ...
 }
 
 [h2]登记归因转化
 
 导入相关模块。
 
-import { attributionManager } from '@kit.AppGalleryKit';
+import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { BusinessError,deviceInfo } from '@kit.BasicServicesKit';
+// ...
+import { attributionManager } from '@kit.AppGalleryKit';
 
 构造参数AdTriggerInfo。
 
-const adTriggerInfo: attributionManager.AdTriggerInfo = {
-  businessScene: 5,
-  // 转化事件编码，从应用归因云端管理平台获取
-  triggerData: 123
+let adTriggerInfo: attributionManager.AdTriggerInfo = {
+    // 转化事件编码，从应用归因云端管理平台获取
+    triggerData: 123,
+    businessScene: 5
 };
 let osApiVersion: number = deviceInfo.sdkApiVersion;
 if (osApiVersion >= 22) {
-  // Since API 22, added the actual occurrence time parameter.
-  adTriggerInfo.timestamp = Date.now();
-  adTriggerInfo.serviceTag = 'testServiceTag';
+    // 自API 22起，增加了实际发生时间参数。
+    adTriggerInfo.timestamp = Date.now();
+    // 自API 22起，增加了广告平台关注的业务信息。
+    adTriggerInfo.serviceTag = 'testServiceTag';
 }
 
 调用attributionManager.registerTrigger方法登记转化信息。
 
 try {
-  attributionManager.registerTrigger(adTriggerInfo).then(() => {
-    hilog.info(0, 'TAG', 'Succeeded in registering triggerdata.');
-  }).catch((error: BusinessError) => {
-    hilog.error(0, 'TAG', `registerTrigger error.code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    attributionManager.registerTrigger(adTriggerInfo).then(() => {
+        hilog.info(0, TAG, 'registerTrigger success');
+        // ...
+    }).catch((error: BusinessError) => {
+        hilog.error(0, TAG, `registerTrigger error. code is ${error.code}, message is ${error.message}`);
+        // ...
+    })
 } catch (error) {
-  hilog.error(0, 'TAG', `registerTrigger error.code is ${error.code}, message is ${error.message}`);
+    hilog.error(0, TAG, `registerTrigger error. code is ${error.code}, message is ${error.message}`);
+    // ...
 }
 
 ## Code blocks
@@ -107,74 +136,99 @@ try {
 ### Code block 1
 
 ```
-import { attributionManager } from '@kit.AppGalleryKit';
+import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { BusinessError,deviceInfo } from '@kit.BasicServicesKit';
+import { SignUtil } from '../common/utils/SignUtil';
+import { util } from '@kit.ArkTS';
+import { attributionManager } from '@kit.AppGalleryKit';
 ```
 
 ### Code block 2
 
 ```
-const adSourceInfo: attributionManager.AdSourceInfo = {
-  // 在应用归因云侧注册应用生态伙伴角色时，由应用归因服务分配
-  adTechId: '20****e8',
-  campaignId: '',
-  // 开发者应用上架华为应用市场的appId，不带C
-  destinationId: '10******',
-  sourceType: attributionManager.SourceType.IMPRESSION,
-  // 归因监测平台id
-  mmpIds: ['2f****5','2f7***5'],
-  // 分发平台关注的业务信息
-  serviceTag: '123***2',
-  // 用于计算签名的随机数，不带'-'
-  nonce: '123***2',
-  timestamp: Date.now(),
-  // 签名值
-  signature: 'MEQCIEQlmZ****zKBSE8QnhLTIHZZZ****ZpRqRxHss65Ko****JgJKjdrWdkL****juEx2RmFS7da****ZRVZ8RyMyUXg=='
-};
+// 私钥，由开发者生成，用于生成签名值使用
+let privateKey: string = '********u2rMtFw==';
+// 分发平台对应的归因角色ID，在应用归因云侧注册应用生态伙伴角色时，由应用归因服务分配
+let adTechId: string = '2******';
+// 广告平台创建的广告任务ID。
+// 自API 12起，campaignId长度小于等于6个字符
+// 自API 22起，campaignId长度小于等于9个字符
+let campaignId: string = '';
 let osApiVersion: number = deviceInfo.sdkApiVersion;
 if (osApiVersion >= 22) {
-  adSourceInfo.campaignId = '1*******9';
+    campaignId = '1*******9';
 } else {
-  adSourceInfo.campaignId = '1****6';
+    campaignId = '1****6';
 }
+// 开发者应用上架华为应用市场的appId，不带C
+let destinationId: string = '6*********4';
+// 归因监测平台id
+let mmpIds: string[] = ['2f*****15'];
+// 分发平台关注的业务信息
+let serviceTag: string = 'testServiceTag';
+// 用于计算签名的随机数，不带'-'
+let nonce: string = util.generateRandomUUID().replace(/-/g, '');
+// 时间戳.
+let timestamp: number = Date.now()
+
+let adSourceInfo: attributionManager.AdSourceInfo = {
+    adTechId: adTechId,
+    campaignId: campaignId,
+    destinationId: destinationId,
+    // 曝光.
+    sourceType: attributionManager.SourceType.IMPRESSION,
+    mmpIds: mmpIds,
+    serviceTag: serviceTag,
+    nonce: nonce,
+    timestamp: timestamp,
+    // 签名值.
+    signature: await SignUtil.getSign(this.getUIContext(),
+        SignUtil.genSignContent(adTechId, campaignId, destinationId, mmpIds, serviceTag, nonce, timestamp),
+        privateKey)
+};
 ```
 
 ### Code block 3
 
 ```
 try {
-  attributionManager.registerSource(adSourceInfo).then(() => {
-    hilog.info(0, 'TAG', 'Succeeded in registering source.');
-  }).catch((error: BusinessError) => {
-    hilog.error(0, 'TAG', `registerSource error.code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    attributionManager.registerSource(adSourceInfo).then(() => {
+        hilog.info(0, TAG, 'registerSource success.');
+        // ...
+    }).catch((error: BusinessError) => {
+        hilog.error(0, TAG, `registerSource error. code is ${error.code}, message is ${error.message}`);
+        // ...
+    })
 } catch (error) {
-  hilog.error(0, 'TAG', `registerSource error.code is ${error.code}, message is ${error.message}`);
+    hilog.error(0, TAG, `registerSource error. code is ${error.code}, message is ${error.message}`);
+    // ...
 }
 ```
 
 ### Code block 4
 
 ```
-import { attributionManager } from '@kit.AppGalleryKit';
+import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { BusinessError,deviceInfo } from '@kit.BasicServicesKit';
+// ...
+import { attributionManager } from '@kit.AppGalleryKit';
 ```
 
 ### Code block 5
 
 ```
-const adTriggerInfo: attributionManager.AdTriggerInfo = {
-  businessScene: 5,
-  // 转化事件编码，从应用归因云端管理平台获取
-  triggerData: 123
+let adTriggerInfo: attributionManager.AdTriggerInfo = {
+    // 转化事件编码，从应用归因云端管理平台获取
+    triggerData: 123,
+    businessScene: 5
 };
 let osApiVersion: number = deviceInfo.sdkApiVersion;
 if (osApiVersion >= 22) {
-  // Since API 22, added the actual occurrence time parameter.
-  adTriggerInfo.timestamp = Date.now();
-  adTriggerInfo.serviceTag = 'testServiceTag';
+    // 自API 22起，增加了实际发生时间参数。
+    adTriggerInfo.timestamp = Date.now();
+    // 自API 22起，增加了广告平台关注的业务信息。
+    adTriggerInfo.serviceTag = 'testServiceTag';
 }
 ```
 
@@ -182,12 +236,16 @@ if (osApiVersion >= 22) {
 
 ```
 try {
-  attributionManager.registerTrigger(adTriggerInfo).then(() => {
-    hilog.info(0, 'TAG', 'Succeeded in registering triggerdata.');
-  }).catch((error: BusinessError) => {
-    hilog.error(0, 'TAG', `registerTrigger error.code is ${error.code}, message is ${error.message}`);
-  })
+    // ...
+    attributionManager.registerTrigger(adTriggerInfo).then(() => {
+        hilog.info(0, TAG, 'registerTrigger success');
+        // ...
+    }).catch((error: BusinessError) => {
+        hilog.error(0, TAG, `registerTrigger error. code is ${error.code}, message is ${error.message}`);
+        // ...
+    })
 } catch (error) {
-  hilog.error(0, 'TAG', `registerTrigger error.code is ${error.code}, message is ${error.message}`);
+    hilog.error(0, TAG, `registerTrigger error. code is ${error.code}, message is ${error.message}`);
+    // ...
 }
 ```

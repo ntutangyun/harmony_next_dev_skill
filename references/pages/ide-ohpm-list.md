@@ -69,7 +69,9 @@ Options
 
 [h2]recursive
 
-默认值：无
+默认值：false
+
+类型：Boolean
 
 别名：r
 

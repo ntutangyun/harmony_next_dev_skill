@@ -213,6 +213,8 @@ struct Index {
                 hilog.error(0x0000, 'testTag', 'Status is onAdFail');
                 this.visibilityState = Visibility.None;
                 break;
+              default:
+                break;
             }
           }
         }
@@ -278,6 +280,8 @@ struct Index {
               case 'onAdFail':
                 hilog.error(0x0000, 'testTag', 'Status is onAdFail');
                 this.visibilityState = Visibility.None;
+                break;
+              default:
                 break;
             }
           }
@@ -460,6 +464,8 @@ struct Index {
                 hilog.error(0x0000, 'testTag', 'Status is onAdFail');
                 this.visibilityState = Visibility.None;
                 break;
+              default:
+                break;
             }
           }
         }
@@ -525,6 +531,8 @@ struct Index {
               case 'onAdFail':
                 hilog.error(0x0000, 'testTag', 'Status is onAdFail');
                 this.visibilityState = Visibility.None;
+                break;
+              default:
                 break;
             }
           }

@@ -2,8 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-detectbarcode_
 
-基本概念
-
 图片识码能力支持对图库中的码图进行扫描识别，并获取信息。
 
 场景介绍
@@ -35,7 +33,7 @@ decode(inputImage: InputImage, callback: AsyncCallback<Array<scanBarcode.ScanRes
 
 为了方便开发者接入，我们提供了详细的样例工程供参考，推荐参考示例工程接入。
 
-以下示例为调用图片识码的detectBarcode.decode接口获取码图信息。
+以下示例为调用图片识码的decode接口获取码图信息。
 
 导入图片识码接口和相关接口模块，该接口提供了图片识码参数和方法，导入方法如下。
 
@@ -45,7 +43,7 @@ import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-调用detectBarcode.decode接口解析码图。
+调用decode接口解析码图。
 
 @Entry
 @Component
@@ -53,29 +51,30 @@ struct DetectPage {
   build() {
     Column() {
       Button('Promise with options')
-        .backgroundColor('#0D9FFB')
-        .fontSize(20)
-        .fontColor($r('sys.color.comp_background_list_card'))
-        .fontWeight(FontWeight.Normal)
+        .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+        .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
         .align(Alignment.Center)
         .type(ButtonType.Capsule)
         .width('90%')
-        .height(40)
-        .margin({ top: 5, bottom: 5 })
+        .margin({ bottom: 12 })
         .onClick(() => {
           // 定义识码参数options
-          let options: scanBarcode.ScanOptions = {
+          const options: scanBarcode.ScanOptions = {
             scanTypes: [scanCore.ScanType.ALL],
             enableMultiMode: true
           };
-          // 通过picker拉起图库的图片
-          let photoOption = new photoAccessHelper.PhotoSelectOptions();
+          // 通过picker拉起图库并选择图片
+          const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
-          let photoPicker = new photoAccessHelper.PhotoViewPicker();
+          const photoPicker = new photoAccessHelper.PhotoViewPicker();
           photoPicker.select(photoOption).then((data) => {
+            if (!data.photoUris || data.photoUris.length === 0) {
+              hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
+              return;
+            }
             // 定义识码参数inputImage，其中uri为picker选择图片
-            let inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
+            const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
               detectBarcode.decode(inputImage, options).then((data: Array<scanBarcode.ScanResult>) => {
@@ -108,30 +107,31 @@ struct DetectPage {
   build() {
     Column() {
       Button('Callback with options')
-        .backgroundColor('#0D9FFB')
-        .fontSize(20)
-        .fontColor($r('sys.color.comp_background_list_card'))
-        .fontWeight(FontWeight.Normal)
+        .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+        .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
         .align(Alignment.Center)
         .type(ButtonType.Capsule)
         .width('90%')
-        .height(40)
-        .margin({ top: 5, bottom: 5 })
+        .margin({ bottom: 12 })
         .onClick(() => {
           // 定义识码参数options
-          let options: scanBarcode.ScanOptions = {
+          const options: scanBarcode.ScanOptions = {
             scanTypes: [scanCore.ScanType.ALL],
             enableMultiMode: true,
             enableAlbum: true
           };
-          // 通过选择模式拉起photoPicker界面，用户可以选择一个图片
-          let photoOption = new photoAccessHelper.PhotoSelectOptions();
+          // 通过picker拉起图库并选择图片
+          const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
-          let photoPicker = new photoAccessHelper.PhotoViewPicker();
+          const photoPicker = new photoAccessHelper.PhotoViewPicker();
           photoPicker.select(photoOption).then((data) => {
+            if (!data.photoUris || data.photoUris.length === 0) {
+              hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
+              return;
+            }
             // 定义识码参数inputImage，其中uri为picker选择图片
-            let inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
+            const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
               detectBarcode.decode(inputImage, options,
@@ -186,29 +186,30 @@ struct DetectPage {
   build() {
     Column() {
       Button('Promise with options')
-        .backgroundColor('#0D9FFB')
-        .fontSize(20)
-        .fontColor($r('sys.color.comp_background_list_card'))
-        .fontWeight(FontWeight.Normal)
+        .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+        .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
         .align(Alignment.Center)
         .type(ButtonType.Capsule)
         .width('90%')
-        .height(40)
-        .margin({ top: 5, bottom: 5 })
+        .margin({ bottom: 12 })
         .onClick(() => {
           // 定义识码参数options
-          let options: scanBarcode.ScanOptions = {
+          const options: scanBarcode.ScanOptions = {
             scanTypes: [scanCore.ScanType.ALL],
             enableMultiMode: true
           };
-          // 通过picker拉起图库的图片
-          let photoOption = new photoAccessHelper.PhotoSelectOptions();
+          // 通过picker拉起图库并选择图片
+          const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
-          let photoPicker = new photoAccessHelper.PhotoViewPicker();
+          const photoPicker = new photoAccessHelper.PhotoViewPicker();
           photoPicker.select(photoOption).then((data) => {
+            if (!data.photoUris || data.photoUris.length === 0) {
+              hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
+              return;
+            }
             // 定义识码参数inputImage，其中uri为picker选择图片
-            let inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
+            const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
               detectBarcode.decode(inputImage, options).then((data: Array<scanBarcode.ScanResult>) => {
@@ -245,30 +246,31 @@ struct DetectPage {
   build() {
     Column() {
       Button('Callback with options')
-        .backgroundColor('#0D9FFB')
-        .fontSize(20)
-        .fontColor($r('sys.color.comp_background_list_card'))
-        .fontWeight(FontWeight.Normal)
+        .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+        .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
         .align(Alignment.Center)
         .type(ButtonType.Capsule)
         .width('90%')
-        .height(40)
-        .margin({ top: 5, bottom: 5 })
+        .margin({ bottom: 12 })
         .onClick(() => {
           // 定义识码参数options
-          let options: scanBarcode.ScanOptions = {
+          const options: scanBarcode.ScanOptions = {
             scanTypes: [scanCore.ScanType.ALL],
             enableMultiMode: true,
             enableAlbum: true
           };
-          // 通过选择模式拉起photoPicker界面，用户可以选择一个图片
-          let photoOption = new photoAccessHelper.PhotoSelectOptions();
+          // 通过picker拉起图库并选择图片
+          const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
-          let photoPicker = new photoAccessHelper.PhotoViewPicker();
+          const photoPicker = new photoAccessHelper.PhotoViewPicker();
           photoPicker.select(photoOption).then((data) => {
+            if (!data.photoUris || data.photoUris.length === 0) {
+              hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
+              return;
+            }
             // 定义识码参数inputImage，其中uri为picker选择图片
-            let inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
+            const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
               detectBarcode.decode(inputImage, options,

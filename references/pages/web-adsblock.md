@@ -38,7 +38,7 @@ allowedlist和disallowedlist数据共同使用时，allowedlist的优先级高�
 
 如果应用未启用广告过滤特性，那么Web组件不会向服务器请求默认的内置easylist规则。
 
-disallowedlist和allowedlist数据采用后缀匹配，例如应用的设置的域名"xxyy.com"，可以匹配上url为"wwsstt.xxyy.com"的网站。
+disallowedlist和allowedlist数据采用后缀匹配，例如应用设置的域名"xxyy.com"，可以匹配上url为"wwsstt.xxyy.com"的网站。
 
 使用场景
 
@@ -170,7 +170,7 @@ struct WebComponent {
       Row() {
         Flex() {
           TextInput({ text: this.input_text, placeholder: this.main_url, controller: this.text_input_controller})
-            .id('input_url')
+            .id('urlInput')
             .height(40)
             .margin(5)
             .borderColor(Color.Blue)
@@ -359,7 +359,7 @@ struct WebComponent {
       Row() {
         Flex() {
           TextInput({ text: this.input_text, placeholder: this.main_url, controller: this.text_input_controller})
-            .id('input_url')
+            .id('urlInput')
             .height(40)
             .margin(5)
             .borderColor(Color.Blue)

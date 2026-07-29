@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 读取或监听应用内音频流状态变化
 
-参考使用AudioRenderer开发音频播放功能(ArkTs)或audio.createAudioRenderer，先完成AudioRenderer的创建，再通过以下两种方法查看音频流状态的变化。
+参考使用AudioRenderer开发音频播放功能(ArkTS)或audio.createAudioRenderer，先完成AudioRenderer的创建，再通过以下两种方法查看音频流状态的变化。
 
 方法1：直接查看AudioRenderer的属性state：
 
@@ -60,13 +60,13 @@ import { audio } from '@kit.AudioKit';
 （可选）使用off('audioRendererChange')取消监听音频播放流变化。
 
 audioStreamManager.off('audioRendererChange');
-console.info('RendererChange Off is called ');
+console.info('Succeeded in using off function.');
 
 （可选）使用getCurrentAudioRendererInfoArray获取所有音频播放流的信息。该接口可获取音频播放流唯一ID、音频渲染器信息以及音频播放设备信息。
 
 说明
 
-对所有音频流状态进行监听的应用需要声明权限ohos.permission.USE_BLUETOOTH，否则无法获得实际的设备名称和设备地址信息，查询到的设备名称和设备地址（蓝牙设备的相关属性）将为空字符串。
+对所有音频流状态进行监听的应用需要声明权限 ohos.permission.USE_BLUETOOTH，否则无法获得实际的设备名称和设备地址信息，查询到的设备名称和设备地址（蓝牙设备的相关属性）将为空字符串。
 
 import { audio } from '@kit.AudioKit';
 // ...
@@ -130,7 +130,7 @@ import { audio } from '@kit.AudioKit';
 
 ```
 audioStreamManager.off('audioRendererChange');
-console.info('RendererChange Off is called ');
+console.info('Succeeded in using off function.');
 ```
 
 ### Code block 6

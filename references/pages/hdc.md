@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hdc_
 
-hdc（HarmonyOS Device Connector）是提供给开发人员的命令行调试工具，用于与设备进行交互调试、数据传输、日志查看以及应用安装等操作。该工具支持在Windows/Linux/MacOS系统上运行，为开发者提供高效，便捷的设备调试能力。
+hdc（HarmonyOS Device Connector）是提供给开发人员的命令行调试工具，用于与设备进行交互调试、数据传输、日志查看以及应用安装等操作。该工具支持在Windows/Linux/MacOS系统上运行，为开发者提供高效、便捷的设备调试能力。
 
 hdc包含三部分：
 
@@ -126,6 +126,7 @@ rport	设置反向端口转发任务：监听“设备端口”，接收请求�
 fport rm	删除指定的端口转发任务。
 start	启动hdc服务进程。
 kill	终止hdc服务进程。
+reconnect	对已连接的USB设备重置会话并触发USB重新枚举。 说明：从API版本26.0.0开始，支持该命令。
 hilog	打印设备端的日志信息。
 jpid	显示设备上已打开应用的进程pid。
 track-jpid	实时显示设备上已打开应用的进程pid和应用名。
@@ -133,7 +134,9 @@ target boot	重启目标设备。
 keygen	生成一个新的密钥对。
 version	打印hdc版本信息，也可使用hdc -v打印版本信息。
 checkserver	获取客户进程与服务进程版本信息。
-bugreport	导出系统信息
+bugreport	导出系统信息。
+spawn-sub	启动子服务器。 说明：从API版本26.0.0开始，支持该命令。
+killall-sub	终止子服务器。 说明：从API版本26.0.0开始，支持该命令。
 
 基本使用方法
 
@@ -864,6 +867,7 @@ Remove forward ruler success, ruler:tcp:1234 tcp:1080
 命令	说明
 start [-r]	启动hdc服务进程，使用-r参数触发服务进程重新启动。
 kill [-r]	终止hdc服务进程，使用-r参数触发服务进程重新启动。
+reconnect connect-key	对已通过USB连接且由本机服务进程管理的目标设备重置会话并触发USB重新枚举。 connect-key为设备USB标识符，可通过hdc list targets查询。
 -p	绕过对服务进程的查询步骤，用于快速执行客户端命令。
 -m	使用前台启动模式启动服务进程。 前台启动模式（添加-m参数）：实时打印服务日志到客户端窗口。 后台启动模式（不添加-m参数）：客户端不打印服务日志，日志内容写入本地磁盘文件，具体文件存放路径可参考服务器进程日志。
 -e	指定在TCP端口转发时，本地监听的IP地址，默认是127.0.0.1。该参数必须和-m一起使用。
@@ -906,6 +910,35 @@ Kill server finish
 
 $ hdc kill # 终止服务进程。
 Kill server finish
+
+[h2]重连USB设备
+
+对已连接且由本机hdc服务进程管理的USB目标设备，重置会话并触发USB重新枚举。
+
+命令格式如下：
+
+hdc reconnect connect-key
+
+参数：
+
+参数	说明
+connect-key	目标设备的USB连接标识符，可通过hdc list targets查询。
+
+返回信息：
+
+返回信息	说明
+Reconnecting connect-key ...	已开始重连指定设备。
+Usage: reconnect <target-key>	未指定connect-key。
+Target device connect-key not available	目标不存在或未处于已连接状态。
+Reconnect only supports USB devices	当前目标非USB连接，不支持重连。
+
+使用方法：
+
+$ hdc list targets
+connect-key
+
+$ hdc reconnect connect-key
+Reconnecting connect-key ...
 
 [h2]快速执行命令
 
@@ -1253,6 +1286,65 @@ hdc shell hilog -w stop                               # 关闭hilog日志落盘(
 hdc shell ls /data/log/hilog                          # 查看已落盘hilog日志。
 hdc file recv /data/log/hilog {local_path}            # 获取hilog已落盘日志（包含内核日志，local_path为本地路径，不同系统有所区别，这里未列举实际示例）。
 
+子服务器管理
+
+命令	说明
+spawn-sub	启动子服务器。
+killall-sub	终止子服务器。
+
+说明
+
+从API版本26.0.0开始，支持此功能。
+
+[h2]启动子服务器
+
+将指定USB设备与当前电脑端服务器连接断开，然后启动一个新的子服务器进程，并将USB设备连接到子服务器进程。命令格式如下：
+
+hdc spawn-sub -i connect-key -o [IP:]port
+
+创建子服务进程后，可以使用-s参数访问子服务进程，参见远程连接场景。
+
+参数：
+
+参数	说明
+connect-key	指定子服务器连接的USB设备标识符。
+IP	可选参数，指定监听的IP地址，支持IPv4和IPv6。不指定IP默认监听本机127.0.0.1。
+port	指定监听的端口，范围为1~65535。
+
+返回信息：
+
+返回信息	说明
+Subserver connected successfully	子服务进程已连接USB设备。
+Port binding failed	端口监听失败导致子服务进程退出。
+USB connection timeout	子服务进程连接USB设备超时退出。
+Device not found	主服务进程找不到设备。
+Invalid parameters	命令入参有误。
+USB device disconnected	子服务进程USB连接已断开。
+Only main server can spawn subserver	不能通过子服务进程创建新的子服务进程。
+Subprocess launch failed	拉起子进程失败。
+Subserver process exited	子服务器进程已退出。
+
+使用方法：
+
+$ hdc spawn-sub -i connect-key -o [IP:]port
+Subserver connected successfully
+
+[h2]终止子服务器
+
+将拉起的所有子服务器进程终止，命令格式如下：
+
+hdc killall-sub
+
+返回信息：
+
+返回信息	说明
+Kill subservers finish	已终止所有的子服务器进程。
+
+使用方法：
+
+$ hdc killall-sub
+Kill subservers finish
+
 可选配置项
 
 [h2]OHOS_HDC_SERVER_PORT
@@ -1313,6 +1405,20 @@ MacOS	$TMPDIR/hdc_cmd/	-
 说明
 
 服务器进程运行时默认监听电脑端的8710端口，可通过设置系统环境变量OHOS_HDC_SERVER_PORT自定义监听的端口号。
+
+[h2]OHOS_HDC_SUBSERVER_LOG_FILE
+
+默认：不开启电脑端子服务进程的日志落盘。
+
+用于设置电脑端子服务进程可落盘日志文件的数量，取值范围为[1, 20]的整数；超过20则自动截断为20；0或负数表示不允许日志落盘。
+
+子服务器进程的日志落盘在TEMP目录下的.hdc_subserver目录内。不同平台TEMP目录位置存在差异，可参考服务器进程日志下“日志获取”中的表格说明。
+
+从API版本26.0.0开始，支持该参数。
+
+说明
+
+由于日志文件的创建和老化存在时序关系，实际日志数量可能比配置数量多一个。
 
 [h2]环境变量配置方法
 
@@ -1551,7 +1657,7 @@ hdc文件传输命令执行出现乱码，如使用file recv从设备端发送�
 
 首次连接未授权：连接设备后解锁设备，屏幕显示“是否信任此设备？”窗口，点击“始终信任”或“信任”完成授权。
 
-授权窗口关闭或拒绝授权：设备端授权窗口会在超时后关闭，或开发者在授权窗口点击“不信任”拒绝授权。需要再次授权可在设备端 设置>系统>开发者选项>USB调试/无线调试 中，关闭已开启的调试开关后再开启，或执行hdc kill -r重启服务进程。屏幕会再次显示“是否信任此设备？”窗口，点击“始终信任”或“信任”完成授权。
+授权窗口关闭或拒绝授权：设备端授权窗口会在超时后关闭，或开发者在授权窗口点击“不信任”拒绝授权。需要再次授权可在设备端 设置>系统>开发者选项>USB调试/无线调试 中，关闭已开启的调试开关后再开启，或执行hdc kill -r重启服务进程（如果使用过spawn-sub命令需执行hdc killall-sub）。屏幕会再次显示“是否信任此设备？”窗口，点击“始终信任”或“信任”完成授权。
 
 [h2]执行任意hdc命令报错：CryptAcquireContext second failed
 
@@ -1685,7 +1791,7 @@ Otherwise try 'hdc kill' if that seems wrong.
 
 场景一：设备端弹出授权窗口，点击授权。具体操作为：连接设备后，系统会自动弹出授权弹窗。
 
-场景二：进入设备端 设置>系统>开发者选项，关闭调试开关后重新打开，重新连接设备进行授权；或者执行命令hdc kill -r后重新启动hdc，再次触发授权弹窗，点击“始终信任”。
+场景二：进入设备端 设置>系统>开发者选项，关闭调试开关后重新打开，重新连接设备进行授权；或者执行命令hdc kill -r（如果使用过spawn-sub命令需执行hdc killall-sub）后重新启动hdc，再次触发授权弹窗，点击“始终信任”。
 
 [h2]E000003 设备端用户未授权
 
@@ -1711,7 +1817,7 @@ then check for a confirmation dialog on your device.
 
 处理步骤
 
-进入设备端 设置 > 系统 > 开发者选项，关闭调试开关后重新打开，重新连接设备进行授权；或执行命令hdc kill -r后重新启动hdc，再次触发授权弹窗，点击“始终信任”。
+进入设备端 设置 > 系统 > 开发者选项，关闭调试开关后重新打开，重新连接设备进行授权；或执行命令hdc kill -r（如果使用过spawn-sub命令需执行hdc killall-sub）后重新启动hdc，再次触发授权弹窗，点击“始终信任”。
 
 [h2]E000004 通信连接不稳定
 
@@ -2714,10 +2820,26 @@ Kill server finish
 ### Code block 53
 
 ```
-hdc -p [command]
+hdc reconnect connect-key
 ```
 
 ### Code block 54
+
+```
+$ hdc list targets
+connect-key
+
+$ hdc reconnect connect-key
+Reconnecting connect-key ...
+```
+
+### Code block 55
+
+```
+hdc -p [command]
+```
+
+### Code block 56
 
 ```
 $ hdc start # 启动后台服务进程。
@@ -2728,13 +2850,13 @@ connect-key2
 ...
 ```
 
-### Code block 55
+### Code block 57
 
 ```
 hdc -m
 ```
 
-### Code block 56
+### Code block 58
 
 ```
 $ hdc -s 127.0.0.1:8710 -m # 指定当前服务进程的网络监听参数并启动服务进程。
@@ -2745,13 +2867,13 @@ $ hdc -e 0.0.0.0 -m # 指定端口转发本地监听IP地址为0.0.0.0并启动�
 ...
 ```
 
-### Code block 57
+### Code block 59
 
 ```
 hdc hilog [-h]
 ```
 
-### Code block 58
+### Code block 60
 
 ```
 $ hdc hilog -h
@@ -2762,13 +2884,13 @@ Usage:
 ...
 ```
 
-### Code block 59
+### Code block 61
 
 ```
 hdc jpid
 ```
 
-### Code block 60
+### Code block 62
 
 ```
 $ hdc jpid
@@ -2777,13 +2899,13 @@ $ hdc jpid
 ...
 ```
 
-### Code block 61
+### Code block 63
 
 ```
 hdc track-jpid [-a|-p]
 ```
 
-### Code block 62
+### Code block 64
 
 ```
 $ hdc track-jpid -a
@@ -2795,14 +2917,14 @@ $ hdc track-jpid -p
 ...
 ```
 
-### Code block 63
+### Code block 65
 
 ```
 hdc target boot [-bootloader|-recovery]
 hdc target boot [MODE]
 ```
 
-### Code block 64
+### Code block 66
 
 ```
 hdc target boot -bootloader  # 重启后进入fastboot模式。
@@ -2810,65 +2932,65 @@ hdc target boot -recovery    # 重启后进入recovery模式。
 hdc target boot shutdown     # 关机。
 ```
 
-### Code block 65
+### Code block 67
 
 ```
 hdc keygen FILE
 ```
 
-### Code block 66
+### Code block 68
 
 ```
 # 在当前目录下生成key和key.pub文件。
 $ hdc keygen key
 ```
 
-### Code block 67
+### Code block 69
 
 ```
 hdc -v
 ```
 
-### Code block 68
+### Code block 70
 
 ```
 $ hdc -v
 Ver: 3.1.0e
 ```
 
-### Code block 69
+### Code block 71
 
 ```
 hdc version
 ```
 
-### Code block 70
+### Code block 72
 
 ```
 $ hdc version
 Ver: 3.1.0e
 ```
 
-### Code block 71
+### Code block 73
 
 ```
 hdc checkserver
 ```
 
-### Code block 72
+### Code block 74
 
 ```
 $ hdc checkserver
 Client version: Ver: 3.1.0e, Server version: Ver: 3.1.0e
 ```
 
-### Code block 73
+### Code block 75
 
 ```
 hdc bugreport [FILE]
 ```
 
-### Code block 74
+### Code block 76
 
 ```
 $ hdc bugreport
@@ -2882,13 +3004,13 @@ Manufacture: default
 -----
 ```
 
-### Code block 75
+### Code block 77
 
 ```
 hdc -l [level] [command]
 ```
 
-### Code block 76
+### Code block 78
 
 ```
 # 客户端打印LOG_DEBUG及以下级别日志，以执行shell ls为例。
@@ -2909,14 +3031,14 @@ Kill server finish
 ...
 ```
 
-### Code block 77
+### Code block 79
 
 ```
 hdc kill
 hdc -l 5 start
 ```
 
-### Code block 78
+### Code block 80
 
 ```
 hdc shell hilog -w start                              # 开启hilog日志落盘(已开启hilog日志工具再次执行会报错)。
@@ -2925,93 +3047,119 @@ hdc shell ls /data/log/hilog                          # 查看已落盘hilog日�
 hdc file recv /data/log/hilog {local_path}            # 获取hilog已落盘日志（包含内核日志，local_path为本地路径，不同系统有所区别，这里未列举实际示例）。
 ```
 
-### Code block 79
+### Code block 81
+
+```
+hdc spawn-sub -i connect-key -o [IP:]port
+```
+
+### Code block 82
+
+```
+$ hdc spawn-sub -i connect-key -o [IP:]port
+Subserver connected successfully
+```
+
+### Code block 83
+
+```
+hdc killall-sub
+```
+
+### Code block 84
+
+```
+$ hdc killall-sub
+Kill subservers finish
+```
+
+### Code block 85
 
 ```
 netstat -an |grep 8710
 ```
 
-### Code block 80
+### Code block 86
 
 ```
 netstat -an |findstr 8710
 ```
 
-### Code block 81
+### Code block 87
 
 ```
 计算机\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{88bae032-5a81-49f0-bc3d-a4ff138216d6}
 ```
 
-### Code block 82
+### Code block 88
 
 ```
 sudo hdc kill
 sudo hdc start
 ```
 
-### Code block 83
+### Code block 89
 
 ```
 sudo chmod -R 777 /dev/bus/usb/
 ```
 
-### Code block 84
+### Code block 90
 
 ```
 $ sudo vim /etc/udev/rules.d/90-myusb.rules
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", GROUP="users", MODE="0666"
 ```
 
-### Code block 85
+### Code block 91
 
 ```
 sudo udevadm control --reload
 ```
 
-### Code block 86
+### Code block 92
 
 ```
 netstat -an |grep 8710
 ```
 
-### Code block 87
+### Code block 93
 
 ```
 netstat -an |findstr 8710
 ```
 
-### Code block 88
+### Code block 94
 
 ```
 hdc shell "bm dump -a | grep com.example.myapplication"
 ```
 
-### Code block 89
+### Code block 95
 
 ```
 com.example.myapplication
 ```
 
-### Code block 90
+### Code block 96
 
 ```
 hdc shell "bm dump -n com.example.myapplication | grep appProvisionType"
 ```
 
-### Code block 91
+### Code block 97
 
 ```
 "appProvisionType": "debug",
 ```
 
-### Code block 92
+### Code block 98
 
 ```
 hdc shell "mount |grep com.example.myapplication"
 ```
 
-### Code block 93
+### Code block 99
 
 ```
 hdc shell aa start -b com.example.myapplication -a EntryAbility

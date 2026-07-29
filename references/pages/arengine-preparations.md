@@ -26,7 +26,7 @@ auto ret = HMS_AREngine_CheckSupported(ARENGINE_FEATURE_TYPE_FACE);
 
 申请权限
 
-在开发AR应用时，需要先申请相机相关权限，确保应用拥有访问相机硬件及其他功能的权限，需要的权限如下表。在申请权限前，请保证符合权限使用的基本原则。
+在开发AR应用时，需要先申请相机相关权限，确保应用拥有访问相机硬件及其他功能的权限，需要的权限如下。在申请权限前，请保证符合权限使用的基本原则。
 
 使用相机拍摄前，需要申请ohos.permission.CAMERA相机权限。
 
@@ -44,38 +44,38 @@ auto ret = HMS_AREngine_CheckSupported(ARENGINE_FEATURE_TYPE_FACE);
 
 import { abilityAccessCtrl, PermissionRequestResult } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
+import { requestPermissionOnSetting } from '../utils/Utils';
 
 创建一个基础的页面，具体可参考组件导航(Navigation) (推荐)。
 
 @Entry
 @Component
 struct Selector {
-  pageInfo: NavPathStack = new NavPathStack();
-
+  pageInfos: NavPathStack = new NavPathStack();
+  @State context: Context = this.getUIContext().getHostContext() as Context;
+  private hasPermission: boolean = false;
   build(): void {
-    Navigation(this.pageInfo) {
-
+    // ...
     }
+    // ...
     .mode(NavigationMode.Stack)
     .hideTitleBar(true)
     .hideBackButton(true)
     .hideToolBar(true)
   }
-}
 
 创建sampleButton，封装Button及权限校验功能，使用@Builder装饰，并配置routerMap进行页面跳转。
 
 @Entry
 @Component
 struct Selector {
-  pageInfo: NavPathStack = new NavPathStack();
-  private hasPermission: boolean = false;
+  pageInfos: NavPathStack = new NavPathStack();
   @State context: Context = this.getUIContext().getHostContext() as Context;
-
+  private hasPermission: boolean = false;
   build(): void {
     // ...
   }
-
   @Builder
   sampleButton(sampleName: string): void {
     Button(sampleName, { type: ButtonType.Normal, stateEffect: true })
@@ -89,32 +89,27 @@ struct Selector {
             return;
           }
         }
-        this.pageInfo.clear();
-        this.pageInfo.pushDestinationByName(sampleName, null).catch((error: BusinessError) => {
-          console.error(`[pushDestinationByName]failed. Code: ${error.code}.`);
+        this.pageInfos.clear();
+        this.pageInfos.pushDestinationByName(sampleName, null).catch((err: BusinessError) => {
+          logger.error(`Failed to pushDestinationByName. Code is ${err.code}, message is ${err.message}.`);
         });
       })
   }
-}
 
 创建requestPermissionOnSetting方法用于校验在进入AR场景时是否已经获取相机权限。
 
-struct Selector {
-  // ...
-}
-
-async function requestPermissionOnSetting(context: Context): Promise<boolean> {
+export async function requestPermissionOnSetting(context: Context): Promise<boolean> {
   let requestResult: boolean = false;
   let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
   await atManager.requestPermissionOnSetting(context, ['ohos.permission.CAMERA'])
     .then((data: abilityAccessCtrl.GrantStatus[]) => {
-      console.info('data:' + JSON.stringify(data));
+      logger.info('data:' + JSON.stringify(data));
       if (data[0] === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED) {
         requestResult = true;
       }
     })
     .catch((err: BusinessError) => {
-      console.error('data:' + JSON.stringify(err));
+      logger.error('data:' + JSON.stringify(err));
     })
   return requestResult;
 }
@@ -122,14 +117,16 @@ async function requestPermissionOnSetting(context: Context): Promise<boolean> {
 在页面上创建按钮，用于进入AR场景。
 
 build(): void {
-  Navigation(this.pageInfo) {
+  Navigation(this.pageInfos) {
     Column() {
-      this.sampleButton('ARWorld'); // 进入ARWorld场景
+      this.sampleButton('ARWorld');
+      // ...
     }
     .justifyContent(FlexAlign.SpaceEvenly)
     .width('100%')
     .height('100%')
   }
+  // ...
   .mode(NavigationMode.Stack)
   .hideTitleBar(true)
   .hideBackButton(true)
@@ -138,12 +135,15 @@ build(): void {
 
 在onAppear中配置应用首次启动时的权限校验方法requestPermissionOnFirstStartup。
 
+@Entry
+@Component
 struct Selector {
   // ...
   build(): void {
-    Navigation(this.pageInfo) {
+    Navigation(this.pageInfos) {
       Column() {
         this.sampleButton('ARWorld');
+        // ...
       }
       .justifyContent(FlexAlign.SpaceEvenly)
       .width('100%')
@@ -157,12 +157,10 @@ struct Selector {
     .hideBackButton(true)
     .hideToolBar(true)
   }
-
   @Builder
   sampleButton(sampleName: string): void {
     // ...
   }
-
   private requestPermissionOnFirstStartup(): void {
     abilityAccessCtrl.createAtManager()
       .requestPermissionsFromUser(this.context, ['ohos.permission.CAMERA'])
@@ -170,17 +168,16 @@ struct Selector {
         let grantStatus: number[] = data.authResults;
         if (grantStatus[0] === 0) {
           this.hasPermission = true;
-          console.info('Succeeded in getting requestPermission.');
+          logger.info('Succeeded in getting requestPermission.');
         } else {
           this.hasPermission = false;
-          console.error('Failed to get requestPermission, user rejected.');
+          logger.error('Failed to get requestPermission, user rejected.');
         }
       })
       .catch((err: BusinessError) => {
-        console.error(`Failed to request permissions from user. Code is ${err.code}, message is ${err.message}.`);
+        logger.error(`Failed to request permissions from user. Code is ${err.code}, message is ${err.message}.`);
       })
   }
-}
 
 ## Code blocks
 
@@ -205,6 +202,8 @@ auto ret = HMS_AREngine_CheckSupported(ARENGINE_FEATURE_TYPE_FACE);
 ```
 import { abilityAccessCtrl, PermissionRequestResult } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
+import { requestPermissionOnSetting } from '../utils/Utils';
 ```
 
 ### Code block 4
@@ -213,18 +212,18 @@ import { BusinessError } from '@kit.BasicServicesKit';
 @Entry
 @Component
 struct Selector {
-  pageInfo: NavPathStack = new NavPathStack();
-
+  pageInfos: NavPathStack = new NavPathStack();
+  @State context: Context = this.getUIContext().getHostContext() as Context;
+  private hasPermission: boolean = false;
   build(): void {
-    Navigation(this.pageInfo) {
-
+    // ...
     }
+    // ...
     .mode(NavigationMode.Stack)
     .hideTitleBar(true)
     .hideBackButton(true)
     .hideToolBar(true)
   }
-}
 ```
 
 ### Code block 5
@@ -233,14 +232,12 @@ struct Selector {
 @Entry
 @Component
 struct Selector {
-  pageInfo: NavPathStack = new NavPathStack();
-  private hasPermission: boolean = false;
+  pageInfos: NavPathStack = new NavPathStack();
   @State context: Context = this.getUIContext().getHostContext() as Context;
-
+  private hasPermission: boolean = false;
   build(): void {
     // ...
   }
-
   @Builder
   sampleButton(sampleName: string): void {
     Button(sampleName, { type: ButtonType.Normal, stateEffect: true })
@@ -254,34 +251,29 @@ struct Selector {
             return;
           }
         }
-        this.pageInfo.clear();
-        this.pageInfo.pushDestinationByName(sampleName, null).catch((error: BusinessError) => {
-          console.error(`[pushDestinationByName]failed. Code: ${error.code}.`);
+        this.pageInfos.clear();
+        this.pageInfos.pushDestinationByName(sampleName, null).catch((err: BusinessError) => {
+          logger.error(`Failed to pushDestinationByName. Code is ${err.code}, message is ${err.message}.`);
         });
       })
   }
-}
 ```
 
 ### Code block 6
 
 ```
-struct Selector {
-  // ...
-}
-
-async function requestPermissionOnSetting(context: Context): Promise<boolean> {
+export async function requestPermissionOnSetting(context: Context): Promise<boolean> {
   let requestResult: boolean = false;
   let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
   await atManager.requestPermissionOnSetting(context, ['ohos.permission.CAMERA'])
     .then((data: abilityAccessCtrl.GrantStatus[]) => {
-      console.info('data:' + JSON.stringify(data));
+      logger.info('data:' + JSON.stringify(data));
       if (data[0] === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED) {
         requestResult = true;
       }
     })
     .catch((err: BusinessError) => {
-      console.error('data:' + JSON.stringify(err));
+      logger.error('data:' + JSON.stringify(err));
     })
   return requestResult;
 }
@@ -291,14 +283,16 @@ async function requestPermissionOnSetting(context: Context): Promise<boolean> {
 
 ```
 build(): void {
-  Navigation(this.pageInfo) {
+  Navigation(this.pageInfos) {
     Column() {
-      this.sampleButton('ARWorld'); // 进入ARWorld场景
+      this.sampleButton('ARWorld');
+      // ...
     }
     .justifyContent(FlexAlign.SpaceEvenly)
     .width('100%')
     .height('100%')
   }
+  // ...
   .mode(NavigationMode.Stack)
   .hideTitleBar(true)
   .hideBackButton(true)
@@ -309,12 +303,15 @@ build(): void {
 ### Code block 8
 
 ```
+@Entry
+@Component
 struct Selector {
   // ...
   build(): void {
-    Navigation(this.pageInfo) {
+    Navigation(this.pageInfos) {
       Column() {
         this.sampleButton('ARWorld');
+        // ...
       }
       .justifyContent(FlexAlign.SpaceEvenly)
       .width('100%')
@@ -328,12 +325,10 @@ struct Selector {
     .hideBackButton(true)
     .hideToolBar(true)
   }
-
   @Builder
   sampleButton(sampleName: string): void {
     // ...
   }
-
   private requestPermissionOnFirstStartup(): void {
     abilityAccessCtrl.createAtManager()
       .requestPermissionsFromUser(this.context, ['ohos.permission.CAMERA'])
@@ -341,15 +336,14 @@ struct Selector {
         let grantStatus: number[] = data.authResults;
         if (grantStatus[0] === 0) {
           this.hasPermission = true;
-          console.info('Succeeded in getting requestPermission.');
+          logger.info('Succeeded in getting requestPermission.');
         } else {
           this.hasPermission = false;
-          console.error('Failed to get requestPermission, user rejected.');
+          logger.error('Failed to get requestPermission, user rejected.');
         }
       })
       .catch((err: BusinessError) => {
-        console.error(`Failed to request permissions from user. Code is ${err.code}, message is ${err.message}.`);
+        logger.error(`Failed to request permissions from user. Code is ${err.code}, message is ${err.message}.`);
       })
   }
-}
 ```

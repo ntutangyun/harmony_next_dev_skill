@@ -28,7 +28,7 @@ struct Index {
   @State bloomValue: number = 0;
   @State index: number = 0;
   @State illuminatedType: hdsEffect.PointLightIlluminatedType = hdsEffect.PointLightIlluminatedType.NONE;
-  @State button_gradient_state: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
+  @State buttonGradientState: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
   @State lightIntensity: number = 10;
   @State types: hdsEffect.PointLightIlluminatedType[] =
     [hdsEffect.PointLightIlluminatedType.NONE, hdsEffect.PointLightIlluminatedType.BORDER,
@@ -65,7 +65,7 @@ struct Index {
 
       Flex({
         direction: FlexDirection.Row,
-        justifyContent: FlexAlign.Center, // 使用 SpaceBetween 来均匀分布间距
+        justifyContent: FlexAlign.Center,
         alignItems: ItemAlign.Center,
       }) {
         Flex()
@@ -82,7 +82,7 @@ struct Index {
           .backgroundColor(0x808080)
           .fontColor(0xADD8E6)
           .visualEffect(new hdsEffect.HdsEffectBuilder()
-            .pressShadow(this.button_gradient_state)
+            .pressShadow(this.buttonGradientState)
             .pointLight({
               options: {
                 color: Color.White,
@@ -90,13 +90,12 @@ struct Index {
                 height: 150
               }
             })
-            .pressShadow(this.button_gradient_state)
             .buildEffect())
           .onClick(() => {
             if (this.index <= 3) {
               this.index++;
               this.illuminatedType = this.types[this.index];
-              this.button_gradient_state = hdsEffect.PressShadowType.BLEND_GRADIENT;
+              this.buttonGradientState = hdsEffect.PressShadowType.BLEND_GRADIENT;
             }
             let message = 'NONE';
             if (this.illuminatedType == 1) {
@@ -169,7 +168,7 @@ struct Index {
   @State bloomValue: number = 0;
   @State index: number = 0;
   @State illuminatedType: hdsEffect.PointLightIlluminatedType = hdsEffect.PointLightIlluminatedType.NONE;
-  @State button_gradient_state: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
+  @State buttonGradientState: hdsEffect.PressShadowType = hdsEffect.PressShadowType.NONE;
   @State lightIntensity: number = 10;
   @State types: hdsEffect.PointLightIlluminatedType[] =
     [hdsEffect.PointLightIlluminatedType.NONE, hdsEffect.PointLightIlluminatedType.BORDER,
@@ -206,7 +205,7 @@ struct Index {
 
       Flex({
         direction: FlexDirection.Row,
-        justifyContent: FlexAlign.Center, // 使用 SpaceBetween 来均匀分布间距
+        justifyContent: FlexAlign.Center,
         alignItems: ItemAlign.Center,
       }) {
         Flex()
@@ -223,7 +222,7 @@ struct Index {
           .backgroundColor(0x808080)
           .fontColor(0xADD8E6)
           .visualEffect(new hdsEffect.HdsEffectBuilder()
-            .pressShadow(this.button_gradient_state)
+            .pressShadow(this.buttonGradientState)
             .pointLight({
               options: {
                 color: Color.White,
@@ -231,13 +230,12 @@ struct Index {
                 height: 150
               }
             })
-            .pressShadow(this.button_gradient_state)
             .buildEffect())
           .onClick(() => {
             if (this.index <= 3) {
               this.index++;
               this.illuminatedType = this.types[this.index];
-              this.button_gradient_state = hdsEffect.PressShadowType.BLEND_GRADIENT;
+              this.buttonGradientState = hdsEffect.PressShadowType.BLEND_GRADIENT;
             }
             let message = 'NONE';
             if (this.illuminatedType == 1) {

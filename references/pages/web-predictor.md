@@ -13,7 +13,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-predi
 在下面的示例中，在Web组件的onAppear中对要加载的页面进行预连接。
 
 import { webview } from '@kit.ArkWeb';
-// ...
 
 @Entry
 @Component
@@ -22,12 +21,6 @@ struct WebComponent {
 
   build() {
     Column() {
-      Button('loadData')
-        .onClick(() => {
-          if (this.webviewController.accessBackward()) {
-            this.webviewController.backward();
-          }
-        })
       Web({ src: 'https://www.example.com/', controller: this.webviewController })
         .onAppear(() => {
           // 指定第二个参数为true，代表要进行预连接，如果为false该接口只会对网址进行dns预解析
@@ -66,7 +59,7 @@ export default class EntryAbility extends UIAbility {
 在下面的示例中，在onPageEnd的时候触发下一个要访问的页面的预加载。
 
 import { webview } from '@kit.ArkWeb';
-// ...
+
 @Entry
 @Component
 struct WebComponent {
@@ -90,7 +83,7 @@ struct WebComponent {
 以下示例，在Web组件onAppear中，对要加载页面中的POST请求进行预获取。在onPageEnd中，可以清除预获取的POST请求缓存。
 
 import { webview } from '@kit.ArkWeb';
-// ...
+
 @Entry
 @Component
 struct WebComponent {
@@ -126,7 +119,7 @@ struct WebComponent {
 以下示例，在onPageEnd中，触发预获取一个要访问页面的POST请求。
 
 import { webview } from '@kit.ArkWeb';
-// ...
+
 @Entry
 @Component
 struct WebComponent {
@@ -212,6 +205,7 @@ export default class EntryAbility extends UIAbility {
 
 编写动态组件所需基础代码。
 
+// main/ets/pages/DynamicComponent.ets
 import { NodeController, BuilderNode, FrameNode, UIContext } from '@kit.ArkUI';
 
 export interface BuilderData {
@@ -261,6 +255,7 @@ export const createNode = (wrappedBuilder: WrappedBuilder<BuilderData[]>, data: 
 
 编写用于生成字节码缓存的组件，本例中的本地JavaScript资源内容通过文件读取接口读取rawfile目录下的本地文件。
 
+// main/ets/pages/PrecompileWebview.ets
 import { BuilderData } from './DynamicComponent';
 import { Config, configs } from './PrecompileConfig';
 
@@ -282,7 +277,7 @@ export const precompile = async (controller: WebviewController, configs: Array<C
     try {
       controller.precompileJavaScript(config.url, content, config.options)
         .then(errCode => {
-          console.error('precompile successfully! ' + errCode);
+          console.info('precompile successfully! ' + errCode);
         }).catch((errCode: number) => {
           console.error('precompile failed. ' + errCode);
       });
@@ -300,10 +295,11 @@ async function readRawFile(path: string, context: UIContext) {
   }
 }
 
-JavaScript资源的获取方式也可通过网络请求的方式获取，但此方法获取到的HTTP响应头非标准HTTP响应头格式，需额外将响应头转换成标准HTTP响应头格式后使用。如通过网络请求获取到的响应头是e-tag，则需要将其转换成E-Tag后使用。
+JavaScript资源的获取方式也可通过数据请求的方式获取，但此方法获取到的HTTP响应头非标准HTTP响应头格式，需额外将响应头转换成标准HTTP响应头格式后使用。如通过网络请求获取到的响应头是e-tag，则需要将其转换成E-Tag后使用。
 
 编写业务用组件代码。
 
+// main/ets/pages/BusinessWebview.ets
 import { BuilderData } from './DynamicComponent';
 
 @Builder
@@ -317,6 +313,7 @@ export const businessWebview = wrapBuilder<BuilderData[]>(webBuilder);
 
 编写资源配置信息。
 
+// main/ets/pages/PrecompileConfig.ets
 import { webview } from '@kit.ArkWeb'
 
 export interface Config {
@@ -340,6 +337,7 @@ export let configs: Config[] = [
 
 在页面中使用。
 
+// main/ets/pages/Index.ets
 import { webview } from '@kit.ArkWeb';
 import { NodeController } from '@kit.ArkUI';
 import { createNode } from './DynamicComponent';
@@ -410,6 +408,7 @@ export default class EntryAbility extends UIAbility {
 
 编写动态组件所需基础代码。
 
+// main/ets/pages/DynamicComponent.ets
 import { NodeController, BuilderNode, FrameNode, UIContext } from '@kit.ArkUI';
 
 export interface BuilderData {
@@ -424,7 +423,7 @@ export class NodeControllerImpl extends NodeController {
   private rootNode: BuilderNode<BuilderData[]> | null = null;
   private wrappedBuilder: WrappedBuilder<BuilderData[]> | null = null;
 
-  constructor(wrappedBuilder: WrappedBuilder<BuilderData[]>,  context: UIContext) {
+  constructor(wrappedBuilder: WrappedBuilder<BuilderData[]>, context: UIContext) {
   storage = context.getSharedLocalStorage();
     super();
     this.wrappedBuilder = wrappedBuilder;
@@ -459,6 +458,7 @@ export const createNode = (wrappedBuilder: WrappedBuilder<BuilderData[]>, data: 
 
 编写用于注入资源的组件代码，本例中的本地资源内容通过文件读取接口读取rawfile目录下的本地文件。
 
+// main/ets/pages/InjectWebview.ets
 import { webview } from '@kit.ArkWeb';
 import { resourceConfigs } from './Resource';
 import { BuilderData } from './DynamicComponent';
@@ -509,6 +509,7 @@ export async function readRawFile(url: string, context: UIContext) {
 
 编写业务用组件代码。
 
+// main/ets/pages/BusinessWebview.ets
 import { BuilderData } from './DynamicComponent';
 
 @Builder
@@ -522,6 +523,7 @@ export const businessWebview = wrapBuilder<BuilderData[]>(webBuilder);
 
 编写资源配置信息。
 
+// main/ets/pages/Resource.ets
 import { webview } from '@kit.ArkWeb';
 
 export interface ResourceConfig {
@@ -560,6 +562,7 @@ export const resourceConfigs: ResourceConfig[] = [
 
 在页面中使用。
 
+// main/ets/pages/Index.ets
 import { webview } from '@kit.ArkWeb';
 import { NodeController } from '@kit.ArkUI';
 import { createNode } from './DynamicComponent';
@@ -616,7 +619,6 @@ struct Index {
 
 ```
 import { webview } from '@kit.ArkWeb';
-// ...
 
 @Entry
 @Component
@@ -625,12 +627,6 @@ struct WebComponent {
 
   build() {
     Column() {
-      Button('loadData')
-        .onClick(() => {
-          if (this.webviewController.accessBackward()) {
-            this.webviewController.backward();
-          }
-        })
       Web({ src: 'https://www.example.com/', controller: this.webviewController })
         .onAppear(() => {
           // 指定第二个参数为true，代表要进行预连接，如果为false该接口只会对网址进行dns预解析
@@ -665,7 +661,7 @@ export default class EntryAbility extends UIAbility {
 
 ```
 import { webview } from '@kit.ArkWeb';
-// ...
+
 @Entry
 @Component
 struct WebComponent {
@@ -687,7 +683,7 @@ struct WebComponent {
 
 ```
 import { webview } from '@kit.ArkWeb';
-// ...
+
 @Entry
 @Component
 struct WebComponent {
@@ -723,7 +719,7 @@ struct WebComponent {
 
 ```
 import { webview } from '@kit.ArkWeb';
-// ...
+
 @Entry
 @Component
 struct WebComponent {
@@ -807,6 +803,7 @@ export default class EntryAbility extends UIAbility {
 ### Code block 8
 
 ```
+// main/ets/pages/DynamicComponent.ets
 import { NodeController, BuilderNode, FrameNode, UIContext } from '@kit.ArkUI';
 
 export interface BuilderData {
@@ -858,6 +855,7 @@ export const createNode = (wrappedBuilder: WrappedBuilder<BuilderData[]>, data: 
 ### Code block 9
 
 ```
+// main/ets/pages/PrecompileWebview.ets
 import { BuilderData } from './DynamicComponent';
 import { Config, configs } from './PrecompileConfig';
 
@@ -879,7 +877,7 @@ export const precompile = async (controller: WebviewController, configs: Array<C
     try {
       controller.precompileJavaScript(config.url, content, config.options)
         .then(errCode => {
-          console.error('precompile successfully! ' + errCode);
+          console.info('precompile successfully! ' + errCode);
         }).catch((errCode: number) => {
           console.error('precompile failed. ' + errCode);
       });
@@ -901,6 +899,7 @@ async function readRawFile(path: string, context: UIContext) {
 ### Code block 10
 
 ```
+// main/ets/pages/BusinessWebview.ets
 import { BuilderData } from './DynamicComponent';
 
 @Builder
@@ -916,6 +915,7 @@ export const businessWebview = wrapBuilder<BuilderData[]>(webBuilder);
 ### Code block 11
 
 ```
+// main/ets/pages/PrecompileConfig.ets
 import { webview } from '@kit.ArkWeb'
 
 export interface Config {
@@ -941,6 +941,7 @@ export let configs: Config[] = [
 ### Code block 12
 
 ```
+// main/ets/pages/Index.ets
 import { webview } from '@kit.ArkWeb';
 import { NodeController } from '@kit.ArkUI';
 import { createNode } from './DynamicComponent';
@@ -1007,6 +1008,7 @@ export default class EntryAbility extends UIAbility {
 ### Code block 14
 
 ```
+// main/ets/pages/DynamicComponent.ets
 import { NodeController, BuilderNode, FrameNode, UIContext } from '@kit.ArkUI';
 
 export interface BuilderData {
@@ -1021,7 +1023,7 @@ export class NodeControllerImpl extends NodeController {
   private rootNode: BuilderNode<BuilderData[]> | null = null;
   private wrappedBuilder: WrappedBuilder<BuilderData[]> | null = null;
 
-  constructor(wrappedBuilder: WrappedBuilder<BuilderData[]>,  context: UIContext) {
+  constructor(wrappedBuilder: WrappedBuilder<BuilderData[]>, context: UIContext) {
   storage = context.getSharedLocalStorage();
     super();
     this.wrappedBuilder = wrappedBuilder;
@@ -1058,6 +1060,7 @@ export const createNode = (wrappedBuilder: WrappedBuilder<BuilderData[]>, data: 
 ### Code block 15
 
 ```
+// main/ets/pages/InjectWebview.ets
 import { webview } from '@kit.ArkWeb';
 import { resourceConfigs } from './Resource';
 import { BuilderData } from './DynamicComponent';
@@ -1110,6 +1113,7 @@ export async function readRawFile(url: string, context: UIContext) {
 ### Code block 16
 
 ```
+// main/ets/pages/BusinessWebview.ets
 import { BuilderData } from './DynamicComponent';
 
 @Builder
@@ -1125,6 +1129,7 @@ export const businessWebview = wrapBuilder<BuilderData[]>(webBuilder);
 ### Code block 17
 
 ```
+// main/ets/pages/Resource.ets
 import { webview } from '@kit.ArkWeb';
 
 export interface ResourceConfig {
@@ -1165,6 +1170,7 @@ export const resourceConfigs: ResourceConfig[] = [
 ### Code block 18
 
 ```
+// main/ets/pages/Index.ets
 import { webview } from '@kit.ArkWeb';
 import { NodeController } from '@kit.ArkUI';
 import { createNode } from './DynamicComponent';

@@ -19,3 +19,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-use
 动画效果
 
 帧动画（ohos.animator）
+
+优化动画性能

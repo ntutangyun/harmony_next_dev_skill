@@ -2,7 +2,18 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-call-periodicprefetch_
 
-在项目的EntryAbility.ets文件中导入预加载实现类PrefetchWrapper，并在onCreate中调用PrefetchWrapper的doPeriodicPrefetch方法。方法内部会先调用registerPrefetchTask方法注册周期性预加载任务，12h后将调用getPrefetchResult获取周期性预加载数据。
+导入相关模块。
+
+import { GlobalContext } from '../common/GlobalContext';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { PrefetchWrapper } from '../PrefetchUtil/PrefetchWrapper';
+
+初始化全局上下文。
+
+// 初始化全局上下文
+GlobalContext.initContext(this.context);
+
+在EntryAbility.ets文件的onCreate中调用预加载实现类PrefetchWrapper的doPeriodicPrefetch方法。方法内部会先调用registerPrefetchTask方法注册周期性预加载任务，12h后将调用getPrefetchResult获取周期性预加载数据。
 
 说明
 
@@ -12,13 +23,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 由于系统每隔12h才会拉取一次周期性预加载数据，不方便调试周期性预加载功能，为此，系统提供了命令行工具，可以实时拉取周期性预加载数据。
 
-import { GlobalContext } from '../common/GlobalContext';
-import { PrefetchWrapper } from '../prefetchUtil/PrefetchWrapper';
-
-onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-  GlobalContext.initContext(this.context); // 初始化全局上下文
-  PrefetchWrapper.getInstance().doPeriodicPrefetch();
-}
+PrefetchWrapper.getInstance().doPeriodicPrefetch();
 
 ## Code blocks
 
@@ -26,10 +31,19 @@ onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
 
 ```
 import { GlobalContext } from '../common/GlobalContext';
-import { PrefetchWrapper } from '../prefetchUtil/PrefetchWrapper';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { PrefetchWrapper } from '../PrefetchUtil/PrefetchWrapper';
+```
 
-onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-  GlobalContext.initContext(this.context); // 初始化全局上下文
-  PrefetchWrapper.getInstance().doPeriodicPrefetch();
-}
+### Code block 2
+
+```
+// 初始化全局上下文
+GlobalContext.initContext(this.context);
+```
+
+### Code block 3
+
+```
+PrefetchWrapper.getInstance().doPeriodicPrefetch();
 ```

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/core-visi
 
 适用场景
 
-主体分割，可以检测出图片中区别于背景的前景物体或区域（即"显著主体"），并将其从背景中分离出来，适用于需要识别和提取图像主要信息的场景，广泛使用于前景目标检测和前景主体分离的场景。例如：
+主体分割，可以检测出图片中区别于背景的前景物体或区域（即“显著主体”），并将其从背景中分离出来，适用于需要识别和提取图像主要信息的场景，广泛使用于前景目标检测和前景主体分离的场景。例如：
 
 主体贴纸，从图片中提取显著性的主体，去掉背景。
 
@@ -132,7 +132,7 @@ Button('Image Segmentation')
         if (data.fullSubject && data.fullSubject.foregroundImage) {
           this.segmentedImage = data.fullSubject.foregroundImage;
         } else {
-          hilog.warn(0x0000, TAG, 'No foreground image in segmentation result');
+          hilog.error(0x0000, TAG, 'No foreground image in segmentation result');
         }
       })
       .catch((error: BusinessError) => {
@@ -262,7 +262,7 @@ struct Index {
               if (data.fullSubject && data.fullSubject.foregroundImage) {
                 this.segmentedImage = data.fullSubject.foregroundImage;
               } else {
-                hilog.warn(0x0000, TAG, 'No foreground image in segmentation result');
+                hilog.error(0x0000, TAG, 'No foreground image in segmentation result');
               }
             })
             .catch((error: BusinessError) => {
@@ -438,7 +438,7 @@ Button('Image Segmentation')
         if (data.fullSubject && data.fullSubject.foregroundImage) {
           this.segmentedImage = data.fullSubject.foregroundImage;
         } else {
-          hilog.warn(0x0000, TAG, 'No foreground image in segmentation result');
+          hilog.error(0x0000, TAG, 'No foreground image in segmentation result');
         }
       })
       .catch((error: BusinessError) => {
@@ -568,7 +568,7 @@ struct Index {
               if (data.fullSubject && data.fullSubject.foregroundImage) {
                 this.segmentedImage = data.fullSubject.foregroundImage;
               } else {
-                hilog.warn(0x0000, TAG, 'No foreground image in segmentation result');
+                hilog.error(0x0000, TAG, 'No foreground image in segmentation result');
               }
             })
             .catch((error: BusinessError) => {

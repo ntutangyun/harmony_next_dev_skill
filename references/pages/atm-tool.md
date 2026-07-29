@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/atm-tool_
 
-Access Token Manager (程序访问控制管理工具，简称atm工具)，是用于查询应用进程的权限、使用类型等信息的工具，为开发者提供了根据tokenId、包名、进程名等信息进行访问控制管理的能力。
+Access Token Manager (程序访问控制管理工具，简称atm工具)，是用于查询或设置应用进程的权限、使用类型等信息的工具，为开发者提供了根据tokenId、包名、进程名等信息进行访问控制管理的能力。
 
 环境说明
 
@@ -12,12 +12,45 @@ atm工具命令列表
 
 命令	描述
 help	帮助命令，显示atm支持的命令信息。
+perm	权限命令，为应用进程授予、取消权限或重置user_grant权限状态。从API版本26.0.0开始，支持对debug签名应用执行上述操作。
 dump	查询命令，用于查询访问控制相关数据信息。
 
 帮助命令
 
 # 显示帮助信息
 atm help
+
+权限命令
+
+atm perm [-h] [-g -i <token-id> -p <permission-name>] [-c -i <token-id> -p <permission-name>] [-r -i <token-id>] [-r -b <bundle-name>]
+
+下表所列命令中，-g、-c、-r为必选参数，且只能单独使用。对atm perm -g和atm perm -c命令，-i和-p为必选参数；对atm perm -r命令，-i和-b参数只能单独使用，且不支持-p参数；-b参数仅支持和-r参数组合使用。
+
+权限命令参数列表
+
+参数	参数说明
+-h	帮助信息。atm perm支持的命令集合。
+-g -i <token-id> -p <permission-name>	-g、-i、-p均为必选参数，通过应用进程的tokenId授予指定权限。返回是否成功。
+-c -i <token-id> -p <permission-name>	-c、-i、-p均为必选参数，通过应用进程的tokenId取消指定权限。返回是否成功。
+-r -i <token-id>	-r、-i均为必选参数，通过应用进程的tokenId重置user_grant权限状态。返回是否成功。 说明：从API版本26.0.0开始，支持该参数。
+-r -b <bundle-name>	-r、-b均为必选参数，通过应用进程的包名重置同包名应用的user_grant权限状态。返回是否成功。 说明：从API版本26.0.0开始，支持该参数。
+
+示例：
+
+# 显示atm perm的帮助信息
+atm perm -h
+
+# 为应用进程授予相机权限
+atm perm -g -i ********* -p ohos.permission.CAMERA
+
+# 为应用进程取消相机权限
+atm perm -c -i ********* -p ohos.permission.CAMERA
+
+# 重置指定应用进程的user_grant权限状态
+atm perm -r -i *********
+
+# 重置指定包名下应用进程的user_grant权限状态
+atm perm -r -b com.ohos.bundlename
 
 查询命令
 
@@ -33,7 +66,7 @@ atm dump [-h] [-d [-p <permission-name>]] [-t [-i <token-id>] [-b <bundle-name>]
 -t -i <token-id>	可选参数，通过进程的tokenId，查询该进程的基本信息以及对应的GrantStatus。
 -t -b <bundle-name>	可选参数，通过应用进程的包名bundle-name，查询该应用的基本信息以及对应的GrantStatus。
 -t -n <process-name>	可选参数，通过进程名process-name，查询该进程的基本信息以及对应的GrantStatus。
--t -p <permission-name>	可选参数，通过权限名，查询申请该权限的应用进程的tokenId。 说明：从版本26.0.0开始，支持该参数。
+-t -p <permission-name>	可选参数，通过权限名，查询申请该权限的应用进程的tokenId。 说明：从API版本26.0.0开始，支持该参数。
 
 示例：
 
@@ -121,10 +154,35 @@ atm help
 ### Code block 2
 
 ```
-atm dump [-h] [-d [-p <permission-name>]] [-t [-i <token-id>] [-b <bundle-name>] [-n <process-name>] [-p <permission-name>]]
+atm perm [-h] [-g -i <token-id> -p <permission-name>] [-c -i <token-id> -p <permission-name>] [-r -i <token-id>] [-r -b <bundle-name>]
 ```
 
 ### Code block 3
+
+```
+# 显示atm perm的帮助信息
+atm perm -h
+
+# 为应用进程授予相机权限
+atm perm -g -i ********* -p ohos.permission.CAMERA
+
+# 为应用进程取消相机权限
+atm perm -c -i ********* -p ohos.permission.CAMERA
+
+# 重置指定应用进程的user_grant权限状态
+atm perm -r -i *********
+
+# 重置指定包名下应用进程的user_grant权限状态
+atm perm -r -b com.ohos.bundlename
+```
+
+### Code block 4
+
+```
+atm dump [-h] [-d [-p <permission-name>]] [-t [-i <token-id>] [-b <bundle-name>] [-n <process-name>] [-p <permission-name>]]
+```
+
+### Code block 5
 
 ```
 #查询系统中所有的权限定义

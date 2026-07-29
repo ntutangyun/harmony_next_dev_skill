@@ -34,7 +34,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 由于已使用update传入数据，此处data传入null。
 
-doFinal输出结果可能为null，在访问具体数据前，需要先判断结果是否为null，避免产生异常。
+final输出结果可能为null，在访问具体数据前，需要先判断结果是否为null，避免产生异常。
 
 调用OH_CryptoSymKeyGenerator_Destroy、OH_CryptoSymCipher_Destroy、OH_CryptoSymCipherParams_Destroy销毁各对象。
 

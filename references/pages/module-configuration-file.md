@@ -96,6 +96,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/module-co
       {
         "name": "my-skill",
         "abilityName": "EntryAbility",
+        "version": "1.0.0",
+        "visibility": "public",
         "srcEntries": [
           "../../my-skill/scripts/Test.ets"
         ],
@@ -436,14 +438,14 @@ icon	标识当前ExtensionAbility组件的图标，取值为资源文件的索�
 label	标识当前ExtensionAbility组件对用户显示的名称，取值为该名称的资源索引，以支持多语言，字符串长度不超过255字节。	字符串	该标签可缺省，缺省值为空。
 type	标识当前ExtensionAbility组件的类型，详情请参考type标签介绍。	字符串	该标签不可缺省。
 permissions	标识当前ExtensionAbility组件的权限信息。当其他应用访问该ExtensionAbility时，需要申请相应的权限。 一个数组元素为一个权限名称。不超过255字节，取值请参考应用权限列表。	字符串数组	该标签可缺省，缺省值为空。
-appIdentifierAllowList	标识允许启动此ExtensionAbility的应用程序列表。 一个数组元素为一个应用程序的appIdentifier，appIdentifier信息可参考什么是appIdentifier。 说明： 仅当ExtensionAbility组件的type为appService时支持配置该标签。 从API version 20开始，支持该标签。	字符串数组	该标签可缺省，缺省值为空。
+appIdentifierAllowList	标识允许启动此ExtensionAbility的应用程序列表。 一个数组元素为一个应用程序的appIdentifier，appIdentifier信息可参考什么是appIdentifier。 说明： 仅当ExtensionAbility组件的type为appService和embeddedUI时支持配置该标签。 从API version 20开始，支持该标签。 从API版本26.0.0开始，embeddedUI支持配置该标签且可配置allow_all（允许任意应用启动此ExtensionAbility）。	字符串数组	该标签可缺省，缺省值为空。
 readPermission	标识读取当前ExtensionAbility组件数据所需的权限，取值为长度不超过255字节的字符串。仅当预置的系统应用ExtensionAbility的type配置为dataShare时，该标签生效。dataShare类型仅支持系统应用支持配置，三方应用配置不生效。	字符串	该标签可缺省，缺省值为空。
 writePermission	标识向当前ExtensionAbility组件写数据所需的权限，取值为长度不超过255字节的字符串。仅当预置的系统应用ExtensionAbility的type配置为dataShare时，该标签生效。dataShare类型仅支持系统应用支持配置，三方应用配置不生效。	字符串	该标签可缺省，缺省值为空。
 uri	标识当前ExtensionAbility组件提供的数据URI，取值为长度不超过255字节的字符数组，用反向域名的格式表示。 说明： 该标签在type为dataShare类型的ExtensionAbility时，不可缺省。	字符串	该标签可缺省，缺省值为空。
 skills	标识当前ExtensionAbility组件能够接收的Want的特征集。 配置规则：entry包可以配置多个具有入口能力的skills标签（配置了ohos.want.action.home和entity.system.home）的ExtensionAbility，其中第一个配置了skills标签的ExtensionAbility中的label和icon作为服务或应用的label和icon。 说明： 服务的Feature包不支持配置具有入口能力的skills标签。 应用的Feature包支持配置具有入口能力的skills标签。	数组	该标签可缺省，缺省值为空。
 metadata	标识当前ExtensionAbility组件的元信息。 说明： 该标签在type为form时，不可缺省，且必须存在一个name为ohos.extension.form的对象值，其对应的resource值不能缺省，为服务卡片的二级资源引用。	对象数组	该标签可缺省，缺省值为空。
 exported	标识当前ExtensionAbility组件是否可以被其他应用调用。 - true：表示可以被其他应用调用。 - false：表示不可以被其他应用调用，包括无法被aa工具命令拉起应用。	布尔值	该标签可缺省，缺省值为false。
-extensionProcessMode	标识当前ExtensionAbility组件的进程模型，根据ExtensionAbility的类型不同，支持的配置项有所区别。支持的取值范围如下，默认值为bundle。 - instance：表示该ExtensionAbility每个实例都各自运行在单独进程。 - type：表示该ExtensionAbility的所有实例都运行在同一独立进程，与其他name的ExtensionAbility组件实例运行在不同进程。 - bundle：表示该ExtensionAbility的实例与同包名下相同extensionType的ExtensionAbility实例运行在同一进程。 对于UIExtensionAbility及其子类，支持以上三种进程模型。 对于类型为appService的ExtensionAbility，支持type和bundle两种进程模型。 - runWithMainProcess：表示该ExtensionAbility和应用主进程共进程，只有状态栏开放服务的ExtensionAbility可以配置runWithMainProcess。	字符串	该标签可缺省，缺省值为bundle。
+extensionProcessMode	标识当前ExtensionAbility组件的进程模型，根据ExtensionAbility的类型不同，支持的配置项有所区别。支持的取值范围如下，默认值为bundle。 - instance：表示该ExtensionAbility每个实例都各自运行在单独进程。 - type：表示该ExtensionAbility的所有实例都运行在同一独立进程，与其他name的ExtensionAbility组件实例运行在不同进程。 - bundle：表示该ExtensionAbility的实例与同包名下相同extensionType的ExtensionAbility实例运行在同一进程。 对于UIExtensionAbility及其子类，支持instance、type、bundle三种进程模型。 对于类型为appService的ExtensionAbility，支持type和bundle两种进程模型。 - runWithMainProcess：表示该ExtensionAbility和应用主进程共进程，只有状态栏开放服务的ExtensionAbility可以配置runWithMainProcess。	字符串	该标签可缺省，缺省值为bundle。
 dataGroupIds	标识当前ExtensionAbility组件的dataGroupId集合。如果当前ExtensionAbility组件所在的应用在应用市场申请的证书里groupIds也申请了某个dataGroupId，那么当前ExtensionAbility组件可以和应用共享这一个dataGroupId生成的目录，所以ExtensionAbility组件的dataGroupId需要是应用的签名证书中groupIds标签里配置的才能生效。 且该标签仅在当前ExtensionAbility组件存在独立的沙箱目录时生效。详见共享沙箱介绍第3点共享沙箱的配置流程中的步骤a申请data-group-id。	字符串数组	该标签可缺省，缺省值为空。
 process	标识组件的进程名称，只有type为embeddedUI时可以配置该标签。具体使用方式参考进程模型定义中的"静态指定进程"。 说明： 1. 仅在PC/2in1和Tablet设备上生效。 2. UIAbility组件和ExtensionAbility组件标签一致时运行在同一个进程中。 3. 从API version 14开始，支持该标签。	字符串	该标签可缺省，缺省值为空。
 isolationProcess	标识ExtensionAbility组件能否运行在独立的进程中。 - true：表示能运行在独立的进程中。 - false：表示不能运行在独立的进程中。 说明： 仅当ExtensionAbility组件的type为"sys/commonUI"时该标签配置生效，且仅支持由系统应用配置type为"sys/commonUI"。 从API version 20开始，支持该标签。	布尔值	该标签可缺省，缺省值为false。
@@ -561,10 +563,9 @@ selection	划词扩展的ExtensionAbility。从API version 20开始，仅支持�
 awc/webpage	通用网页浏览的ExtensionAbility。
 awc/newsfeed	信息流资讯业务的ExtensionAbility。
 assetCache24+	提供通用应用数据缓存能力的ExtensionAbility。三方应用配置不生效，当前配置仅在系统应用中有效。
-标签取值	含义
----	--------
 statusBarView	状态栏开放服务的ExtensionAbility。
 liveViewLockScreen	实况窗锁屏沉浸态的ExtensionAbility。
+liveViewCard	实况窗卡片自定义扩展区的ExtensionAbility，从API版本26.0.0开始，支持该标签。
 accountLogout	华为账号登出能力的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
 sysPicker/navigation	拉起系统导航类应用面板的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
 sysPicker/appSelector	拉起系统应用选择弹框的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
@@ -1279,10 +1280,12 @@ skillProfiles标签
 表32 skillProfiles标签说明
 
 属性名称	含义	数据类型	是否可缺省
-name	标识技能的名称，确保该名称在当前模块中唯一。命名规则如下： - 仅允许使用小写字母、数字和连字符-。 - 必须以小写字母或数字开头。 - 必须以小写字母或数字结尾。 - 不能以连字符开头或结尾。 - 最大长度为64字节。	字符串	该标签不可缺省。
+name	标识技能的名称，确保该名称在当前模块中唯一。命名规则如下： - 仅允许使用小写字母、数字和连字符-。 - 必须以小写字母或数字开头。 - 必须以小写字母或数字结尾。 - 不能以连字符开头或结尾，且不得出现连续的连字符。 - 最大长度为64字节。	字符串	该标签不可缺省。
 abilityName	标识与该技能关联的组件名称，必须配置为abilities标签下的UIAbility或extensionAbilities标签下type为service的ServiceExtension组件名称。取值为长度不超过127字节的字符串，以字母开头，可包含字母、数字、下划线（_）或点号（.）。 说明： 该字段仅适用于entry、feature、shared类型的模块。对于skill类型的模块，不支持该字段。	字符串	该标签可缺省，缺省值为入口Ability名称。如果没有入口Ability，则取值为空字符串。
 srcEntries	标识实现技能的代码文件路径列表，指向技能实现逻辑的.ets文件。数组中的每个元素都是相对于当前模块的skills目录的文件路径。 说明： srcEntries指定的.ets文件应放置在skills/{skill-name}/scripts目录下，其中{skill-name}为skillProfiles中配置的技能名称。例如，若技能名称为"my-skill"，则.ets文件应放置在模块根目录下的skills/my-skill/scripts/目录中。最多支持100个文件路径。	字符串数组	该标签可缺省，缺省值为空。
 permissions	标识调用该技能所需要的权限列表。当其他应用调用该技能时，需要申请相应的权限。一个数组元素为一个权限名称，不超过255字节，取值请参考应用权限列表。	字符串数组	该标签可缺省，缺省值为空。
+version	标识技能的版本号，格式为主版本号.次版本号.补丁版本号，其中各版本号均为非负整数，且不能以0开头（除非本身为0）。 示例： "1.0.1"、"0.1.1"	字符串	该标签不可缺省。
+visibility	标识技能的可见性，用于控制技能的可见范围。支持的取值如下： - "private"：私有，仅当前应用可见。 - "system"：系统级，系统应用和当前应用可见。 - "public"：公开，所有应用都可见。 说明： 该标签缺省值为"system"。	字符串	该标签可缺省，缺省值为"system"。
 
 skillProfiles标签示例：
 
@@ -1293,6 +1296,8 @@ skillProfiles标签示例：
       {
         "name": "my-skill",
         "abilityName": "EntryAbility",
+        "version": "1.0.0",
+        "visibility": "public",
         "srcEntries": [
           "../../my-skill/scripts/Test.ets"
         ],
@@ -1390,6 +1395,8 @@ skillProfiles标签示例：
       {
         "name": "my-skill",
         "abilityName": "EntryAbility",
+        "version": "1.0.0",
+        "visibility": "public",
         "srcEntries": [
           "../../my-skill/scripts/Test.ets"
         ],
@@ -2084,6 +2091,8 @@ skillProfiles标签示例：
       {
         "name": "my-skill",
         "abilityName": "EntryAbility",
+        "version": "1.0.0",
+        "visibility": "public",
         "srcEntries": [
           "../../my-skill/scripts/Test.ets"
         ],

@@ -62,9 +62,7 @@ function getSupportedOutputCapabilityFn(cameraManager: camera.CameraManager, cur
   if (sceneModes === undefined) {
     return;
   }
-  let isSupported = sceneModes.findIndex((sceneMode: camera.SceneMode) => {
-    return sceneMode === camera.SceneMode.NORMAL_PHOTO;
-  });
+  let isSupported: boolean = sceneModes.includes(camera.SceneMode.NORMAL_PHOTO);
   if (!isSupported) {
     return;
   }
@@ -395,6 +393,7 @@ async function startVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVR
   try {
     await videoOutput?.start();
     await avRecorder?.start();
+    isRecording = true;
   } catch (error) {
     console.error(`startVideo err`);
   }
@@ -402,7 +401,7 @@ async function startVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVR
 
 // 停止录制。
 async function stopVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVRecorder): Promise<void> {
-  if (isRecording) {
+  if (!isRecording) {
     return;
   }
   try {
@@ -533,9 +532,7 @@ function getSupportedOutputCapabilityFn(cameraManager: camera.CameraManager, cur
   if (sceneModes === undefined) {
     return;
   }
-  let isSupported = sceneModes.findIndex((sceneMode: camera.SceneMode) => {
-    return sceneMode === camera.SceneMode.NORMAL_PHOTO;
-  });
+  let isSupported: boolean = sceneModes.includes(camera.SceneMode.NORMAL_PHOTO);
   if (!isSupported) {
     return;
   }
@@ -880,6 +877,7 @@ async function startVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVR
   try {
     await videoOutput?.start();
     await avRecorder?.start();
+    isRecording = true;
   } catch (error) {
     console.error(`startVideo err`);
   }
@@ -887,7 +885,7 @@ async function startVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVR
 
 // 停止录制。
 async function stopVideo(videoOutput: camera.VideoOutput, avRecorder: media.AVRecorder): Promise<void> {
-  if (isRecording) {
+  if (!isRecording) {
     return;
   }
   try {

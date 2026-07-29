@@ -18,7 +18,7 @@ parameterFile配置问题。
 
 处理步骤
 
-检查和确保parameterFile配置正确，具体修改可参考parameterFile。
+确保parameterFile配置正确，具体修改可参考parameterFile。
 
 00608001 包未找到
 

@@ -111,21 +111,21 @@ run.sh
 # script description: run_develop script
 # Copyright Huawei Technologies Co,Ltd.2010-2025.All rights reserved
 
-#修改点1 填写DDK_tools工具包中tools_dopt/dopt_pytorch_py3的真实路径
+# 修改点1 填写DDK_tools工具包中tools_dopt/dopt_pytorch_py3的真实路径
 qlibs='path/to/dopt_pytorch_py3'
 export WANDB_DISABLED=true
 export HF_DATASETS_OFFLINE=0
 export PYTHONPATH=${qlibs}:$PYTHONPATH
 
-#修改点2 设置为cuda或npu模式 二选一
-#cuda模式，如果有多个设备，CUDA_VISIBLE_DEVICES可写0,1,2,3....
+# 修改点2 设置为cuda或npu模式 二选一
+# cuda模式，如果有多个设备，CUDA_VISIBLE_DEVICES可写0,1,2,3....
 export DEVICE=cuda
 export CUDA_VISIBLE_DEVICES=0
 # npu模式
 # export DEVICE=npu
 # export ASCEND_RT_VISIBLE_DEVICES=0
 
-#修改点3 选择创建工程的路径，以testcase创建同名文件夹，存放生成的量化文件
+# 修改点3 选择创建工程的路径，以testcase创建同名文件夹，存放生成的量化文件
 ROOT=.
 testcase='output_dir'
 RUN_FILE=${qlibs}/dopt/dopt_lm/opt_main.py
@@ -217,21 +217,21 @@ lm_head_size: // 指定lmhead长度
 # script description: run_develop script
 # Copyright Huawei Technologies Co,Ltd.2010-2025.All rights reserved
 
-#修改点1 填写DDK_tools工具包中tools_dopt/dopt_pytorch_py3的真实路径
+# 修改点1 填写DDK_tools工具包中tools_dopt/dopt_pytorch_py3的真实路径
 qlibs='path/to/dopt_pytorch_py3'
 export WANDB_DISABLED=true
 export HF_DATASETS_OFFLINE=0
 export PYTHONPATH=${qlibs}:$PYTHONPATH
 
-#修改点2 设置为cuda或npu模式 二选一
-#cuda模式，如果有多个设备，CUDA_VISIBLE_DEVICES可写0,1,2,3....
+# 修改点2 设置为cuda或npu模式 二选一
+# cuda模式，如果有多个设备，CUDA_VISIBLE_DEVICES可写0,1,2,3....
 export DEVICE=cuda
 export CUDA_VISIBLE_DEVICES=0
 # npu模式
 # export DEVICE=npu
 # export ASCEND_RT_VISIBLE_DEVICES=0
 
-#修改点3 选择创建工程的路径，以testcase创建同名文件夹，存放生成的量化文件
+# 修改点3 选择创建工程的路径，以testcase创建同名文件夹，存放生成的量化文件
 ROOT=.
 testcase='output_dir'
 RUN_FILE=${qlibs}/dopt/dopt_lm/opt_main.py

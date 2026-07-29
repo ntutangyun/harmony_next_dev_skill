@@ -18,12 +18,53 @@ getAccessToken(businessParams: Record<string, string>): Promise<Uint8Array>	获�
 
 开发步骤
 
-1.导入Enterprise Space Kit模块和相关依赖模块。
+1.导入企业账号认证API模块相关依赖。
 
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+2.企业账号认证API接口封装。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class WorkspaceCertificationApi {
+  static async authenticate(enterpriseAuthInfo: spaceManager.WorkspaceDomainInfo,
+    credential: Uint8Array): Promise<spaceManager.AuthResult | undefined> {
+    try {
+      const authResult: spaceManager.AuthResult = await spaceManager.authenticate(enterpriseAuthInfo, credential);
+      hilog.info(DOMAIN, TAG, `Succeeded in authenticating. Auth result is: ` + JSON.stringify(authResult));
+      return authResult;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to authenticate. Code: ${err.code}, message: ${err.message}`);
+      return undefined;
+    }
+  }
+
+  static async getAccessToken(params: Record<string, string>): Promise<Uint8Array | undefined> {
+    try {
+      const result: Uint8Array = await spaceManager.getAccessToken(params);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting access token. Result is: ` + JSON.stringify(result));
+      return result;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,`Failed to get access token. Code: ${err.code}, message: ${err.message}`);
+      return undefined;
+    }
+  }
+}
+
+3.导入企业账号认证业务实现相关依赖。
+
+import { router } from '@kit.ArkUI';
 import { osAccount } from '@kit.BasicServicesKit';
 import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { WorkspaceCertificationApi } from '../api/WorkspaceCertificationApi'
 
-2.企业账号认证和获取企业应用令牌并返回结果。
+4.企业账号认证业务相关实现。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
 
 enum AuthModeType {
   SASL = 'SASL',
@@ -56,7 +97,7 @@ type ServerConfig = Record<string, string | ServerConfigParams>;
 
 @Entry
 @Component
-struct Index {
+struct WorkspaceCertificationPage {
   /**
    * 获取IDaaS协议服务器配置
    * @returns
@@ -77,7 +118,7 @@ struct Index {
       },
     };
     const parameters: ServerConfigParams = {
-      'serverType': 'IDaas',
+      'serverType': ServerType.IDaaS,
       'idaasConfig': idaasConfigData,
     };
     const serverConfig: ServerConfig = {
@@ -147,45 +188,55 @@ struct Index {
     return serverConfig;
   }
 
-  // 企业账号认证
   async authenticate() {
-    // 绑定域服务器
     let serverType = ServerType.AD;
     let serverConfig: ServerConfig = this.getServiceConfig(serverType);
-    await osAccount.DomainServerConfigManager.addServerConfig(serverConfig);
-    // 获取域服务器ID
-    let servers: osAccount.DomainServerConfig[] = await osAccount.DomainServerConfigManager.getAllServerConfigs();
     let serverConfigId: string = 'serverConfigId';
-    servers.forEach((server) => {
-      // 过滤非目标服务器
-      serverConfigId = server.id;
-    });
+
+    try {
+      // 绑定域服务器
+      await osAccount.DomainServerConfigManager.addServerConfig(serverConfig);
+      // 获取域服务器ID
+      let servers: osAccount.DomainServerConfig[] = await osAccount.DomainServerConfigManager.getAllServerConfigs();
+      servers.forEach((server) => {
+
+        // 过滤非目标服务器
+
+        serverConfigId = server.id;
+      });
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to config domain server. Code: ${err.code}, message: ${err.message}`);
+    }
+
+
     const enterpriseAuthInfo: spaceManager.WorkspaceDomainInfo = {
       domain: 'testDomain', // 域名
       workspaceName: 'testAccountName', // 工作空间域账号名称
       serverConfigId: serverConfigId // 工作空间所属域的服务器配置标识符，绑定域服务器后本地生成
     };
-    const credential = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]); // 员工密码的ASCII码
-    try {
-      const authResult: spaceManager.AuthResult = await spaceManager.authenticate(enterpriseAuthInfo, credential);
-      console.info(`Succeeded in authenticating. Auth result is: ` + JSON.stringify(authResult));
-    } catch (err) {
-      console.error(`Failed to authenticate. Code: ${err.code}, message: ${err.message}`);
+    const credential = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]); // 示例：员工密码的ASCII码
+    const authResult: spaceManager.AuthResult | undefined =
+      await WorkspaceCertificationApi.authenticate(enterpriseAuthInfo, credential);
+    if (authResult === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to authenticate!');
+      return;
     }
     // 处理后置逻辑
   }
 
-  // 获取企业应用令牌
   async getAccessToken() {
     const params: Record<string, string> = {
       'clientId': 'test1' // 业务参数，由业务方根据请求协议自定义，企业应用在域服务器的唯一标识
     };
 
-    try {
-      const result: Uint8Array = await spaceManager.getAccessToken(params); // 从域服务器获取的一次性授权码，可使用授权码与域服务器直接交互。
-      console.info(`Succeeded in getting access token. Result is: ` + JSON.stringify(result));
-    } catch (err) {
-      console.error(`Failed to get access token. Code: ${err.code}, message: ${err.message}`);
+
+    const result: Uint8Array | undefined =
+      await WorkspaceCertificationApi.getAccessToken(params); // 从域服务器获取的一次性授权码，可使用授权码与域服务器直接交互。
+    if (result === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to get access token!');
+      return;
     }
     // 处理后置逻辑
   }
@@ -193,32 +244,40 @@ struct Index {
   build() {
     Column() {
       Row() {
-        Button('企业账号认证')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.authenticate'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.authenticate();
           })
       }
 
       Row() {
-        Button('获取企业应用访问令牌')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.getAccessToken'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.getAccessToken();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(200)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 
 ## Code blocks
@@ -226,13 +285,58 @@ struct Index {
 ### Code block 1
 
 ```
-import { osAccount } from '@kit.BasicServicesKit';
 import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class WorkspaceCertificationApi {
+  static async authenticate(enterpriseAuthInfo: spaceManager.WorkspaceDomainInfo,
+    credential: Uint8Array): Promise<spaceManager.AuthResult | undefined> {
+    try {
+      const authResult: spaceManager.AuthResult = await spaceManager.authenticate(enterpriseAuthInfo, credential);
+      hilog.info(DOMAIN, TAG, `Succeeded in authenticating. Auth result is: ` + JSON.stringify(authResult));
+      return authResult;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to authenticate. Code: ${err.code}, message: ${err.message}`);
+      return undefined;
+    }
+  }
+
+  static async getAccessToken(params: Record<string, string>): Promise<Uint8Array | undefined> {
+    try {
+      const result: Uint8Array = await spaceManager.getAccessToken(params);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting access token. Result is: ` + JSON.stringify(result));
+      return result;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG,`Failed to get access token. Code: ${err.code}, message: ${err.message}`);
+      return undefined;
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+import { router } from '@kit.ArkUI';
+import { osAccount } from '@kit.BasicServicesKit';
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { WorkspaceCertificationApi } from '../api/WorkspaceCertificationApi'
+```
+
+### Code block 4
+
+```
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
 enum AuthModeType {
   SASL = 'SASL',
 }
@@ -264,7 +368,7 @@ type ServerConfig = Record<string, string | ServerConfigParams>;
 
 @Entry
 @Component
-struct Index {
+struct WorkspaceCertificationPage {
   /**
    * 获取IDaaS协议服务器配置
    * @returns
@@ -285,7 +389,7 @@ struct Index {
       },
     };
     const parameters: ServerConfigParams = {
-      'serverType': 'IDaas',
+      'serverType': ServerType.IDaaS,
       'idaasConfig': idaasConfigData,
     };
     const serverConfig: ServerConfig = {
@@ -355,45 +459,55 @@ struct Index {
     return serverConfig;
   }
 
-  // 企业账号认证
   async authenticate() {
-    // 绑定域服务器
     let serverType = ServerType.AD;
     let serverConfig: ServerConfig = this.getServiceConfig(serverType);
-    await osAccount.DomainServerConfigManager.addServerConfig(serverConfig);
-    // 获取域服务器ID
-    let servers: osAccount.DomainServerConfig[] = await osAccount.DomainServerConfigManager.getAllServerConfigs();
     let serverConfigId: string = 'serverConfigId';
-    servers.forEach((server) => {
-      // 过滤非目标服务器
-      serverConfigId = server.id;
-    });
+
+    try {
+      // 绑定域服务器
+      await osAccount.DomainServerConfigManager.addServerConfig(serverConfig);
+      // 获取域服务器ID
+      let servers: osAccount.DomainServerConfig[] = await osAccount.DomainServerConfigManager.getAllServerConfigs();
+      servers.forEach((server) => {
+
+        // 过滤非目标服务器
+
+        serverConfigId = server.id;
+      });
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to config domain server. Code: ${err.code}, message: ${err.message}`);
+    }
+
+
     const enterpriseAuthInfo: spaceManager.WorkspaceDomainInfo = {
       domain: 'testDomain', // 域名
       workspaceName: 'testAccountName', // 工作空间域账号名称
       serverConfigId: serverConfigId // 工作空间所属域的服务器配置标识符，绑定域服务器后本地生成
     };
-    const credential = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]); // 员工密码的ASCII码
-    try {
-      const authResult: spaceManager.AuthResult = await spaceManager.authenticate(enterpriseAuthInfo, credential);
-      console.info(`Succeeded in authenticating. Auth result is: ` + JSON.stringify(authResult));
-    } catch (err) {
-      console.error(`Failed to authenticate. Code: ${err.code}, message: ${err.message}`);
+    const credential = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]); // 示例：员工密码的ASCII码
+    const authResult: spaceManager.AuthResult | undefined =
+      await WorkspaceCertificationApi.authenticate(enterpriseAuthInfo, credential);
+    if (authResult === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to authenticate!');
+      return;
     }
     // 处理后置逻辑
   }
 
-  // 获取企业应用令牌
   async getAccessToken() {
     const params: Record<string, string> = {
       'clientId': 'test1' // 业务参数，由业务方根据请求协议自定义，企业应用在域服务器的唯一标识
     };
 
-    try {
-      const result: Uint8Array = await spaceManager.getAccessToken(params); // 从域服务器获取的一次性授权码，可使用授权码与域服务器直接交互。
-      console.info(`Succeeded in getting access token. Result is: ` + JSON.stringify(result));
-    } catch (err) {
-      console.error(`Failed to get access token. Code: ${err.code}, message: ${err.message}`);
+
+    const result: Uint8Array | undefined =
+      await WorkspaceCertificationApi.getAccessToken(params); // 从域服务器获取的一次性授权码，可使用授权码与域服务器直接交互。
+    if (result === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to get access token!');
+      return;
     }
     // 处理后置逻辑
   }
@@ -401,31 +515,39 @@ struct Index {
   build() {
     Column() {
       Row() {
-        Button('企业账号认证')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.authenticate'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.authenticate();
           })
       }
 
       Row() {
-        Button('获取企业应用访问令牌')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.getAccessToken'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.getAccessToken();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(200)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 ```

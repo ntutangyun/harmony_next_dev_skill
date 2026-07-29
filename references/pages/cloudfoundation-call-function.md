@@ -22,10 +22,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 在应用中调用函数
 
-在项目中导入cloudFunction组件。
+导入相关模块。
 
 import { cloudFunction } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 调用call()方法设置函数，在方法中传入函数名称，返回调用结果。
 
@@ -37,55 +38,88 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 使用Promise异步回调：
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { cloudFunction } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-function callFunction() {
-  cloudFunction.call({
-    name: 'functionName', // functionName需替换为实际的函数名
-    version: '$latest',   // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,   // 单位为ms，默认为70*1000ms。
-    data: {               // data为函数请求体
-      param1: 'val1',
-      param2: 'val2'
-    }
-  }).then((value: cloudFunction.FunctionResult) => {
-    hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-  }).catch((err: BusinessError) => {
-    hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-  })
+// 定义一个接口接收函数返回值
+interface Res {
+  value: string
+}
+
+@Entry
+@Component
+struct FunctionPage {
+  @State sort: string = '';
+
+  build() {
+    // ...
+  }
+
+  callFunctionWithPromise() {
+    cloudFunction.call({
+      name: 'sort', // sort需替换为实际的函数名
+      version: '$latest', // 如果不传入版本号，默认为“$latest”。
+      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+      data: {
+        // data为函数请求体
+        param1: 'val1',
+        param2: 'val2'
+      }
+    }).then((res: cloudFunction.FunctionResult) => {
+      let currentRes = res.result as Res;
+      this.sort = currentRes.value;
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+    });
+  }
+
+  // ...
 }
 
 或者，使用callback异步回调：
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { cloudFunction } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-function callFunction() {
-  cloudFunction.call({
-    name: 'functionName', // functionName需替换成实际的函数名
-    version: '$latest',  // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,  // 单位为ms，默认为70*1000ms。
-    data: {              // data为函数请求体
-      param1: 'val1',
-      param2: 'val2'
-    }
-  }, (err: BusinessError, value: cloudFunction.FunctionResult) => {
-    if (err) {
-      hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-      return;
-    }
-    hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-  })
+// 定义一个接口接收函数返回值
+interface Res {
+  value: string
 }
 
-如果需要关注函数的返回值，可调用result属性获取。
+@Entry
+@Component
+struct FunctionPage {
+  @State sort: string = '';
 
-let returnValue = value.result;
+  build() {
+    // ...
+  }
 
-value为步骤2中调用call()方法返回的cloudFunction.FunctionResult对象，返回值为云函数body返回的值，以测试函数时返回的结果为例，value.result = {"simple":"example"}。
+  // ...
+  callFunctionWithCallBack() {
+    cloudFunction.call({
+      name: 'sort-id', // sort-id需替换为实际的函数名
+      version: '$latest', // 如果不传入版本号，默认为“$latest”。
+      timeout: 10 * 1000, // 单位为毫秒，默认为70*1000毫秒。
+      data: {
+        // data为函数请求体
+        param1: 'val1',
+        param2: 'val2'
+      }
+    }, (err: BusinessError, data: cloudFunction.FunctionResult) => {
+      if (err) {
+        hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+        return;
+      }
+      let currentRes = data.result as Res;
+      this.sort = currentRes.value;
+    });
+  }
+
+  // ...
+}
 
 ## Code blocks
 
@@ -104,60 +138,94 @@ value为步骤2中调用call()方法返回的cloudFunction.FunctionResult对象�
 ```
 import { cloudFunction } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 3
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { cloudFunction } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-function callFunction() {
-  cloudFunction.call({
-    name: 'functionName', // functionName需替换为实际的函数名
-    version: '$latest',   // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,   // 单位为ms，默认为70*1000ms。
-    data: {               // data为函数请求体
-      param1: 'val1',
-      param2: 'val2'
-    }
-  }).then((value: cloudFunction.FunctionResult) => {
-    hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-  }).catch((err: BusinessError) => {
-    hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-  })
+// 定义一个接口接收函数返回值
+interface Res {
+  value: string
+}
+
+@Entry
+@Component
+struct FunctionPage {
+  @State sort: string = '';
+
+  build() {
+    // ...
+  }
+
+  callFunctionWithPromise() {
+    cloudFunction.call({
+      name: 'sort', // sort需替换为实际的函数名
+      version: '$latest', // 如果不传入版本号，默认为“$latest”。
+      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+      data: {
+        // data为函数请求体
+        param1: 'val1',
+        param2: 'val2'
+      }
+    }).then((res: cloudFunction.FunctionResult) => {
+      let currentRes = res.result as Res;
+      this.sort = currentRes.value;
+    }).catch((err: BusinessError) => {
+      hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+    });
+  }
+
+  // ...
 }
 ```
 
 ### Code block 4
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { cloudFunction } from '@kit.CloudFoundationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-function callFunction() {
-  cloudFunction.call({
-    name: 'functionName', // functionName需替换成实际的函数名
-    version: '$latest',  // 如果不传入版本号，默认为“$latest”。
-    timeout: 10 * 1000,  // 单位为ms，默认为70*1000ms。
-    data: {              // data为函数请求体
-      param1: 'val1',
-      param2: 'val2'
-    }
-  }, (err: BusinessError, value: cloudFunction.FunctionResult) => {
-    if (err) {
-      hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-      return;
-    }
-    hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-  })
+// 定义一个接口接收函数返回值
+interface Res {
+  value: string
 }
-```
 
-### Code block 5
+@Entry
+@Component
+struct FunctionPage {
+  @State sort: string = '';
 
-```
-let returnValue = value.result;
+  build() {
+    // ...
+  }
+
+  // ...
+  callFunctionWithCallBack() {
+    cloudFunction.call({
+      name: 'sort-id', // sort-id需替换为实际的函数名
+      version: '$latest', // 如果不传入版本号，默认为“$latest”。
+      timeout: 10 * 1000, // 单位为毫秒，默认为70*1000毫秒。
+      data: {
+        // data为函数请求体
+        param1: 'val1',
+        param2: 'val2'
+      }
+    }, (err: BusinessError, data: cloudFunction.FunctionResult) => {
+      if (err) {
+        hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+        return;
+      }
+      let currentRes = data.result as Res;
+      this.sort = currentRes.value;
+    });
+  }
+
+  // ...
+}
 ```

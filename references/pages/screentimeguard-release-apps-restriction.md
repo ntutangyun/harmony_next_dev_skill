@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 
 场景介绍
 
-当管控应用希望解除被管控应用的限制时，可以调用解除应用访问限制的接口。Screen Time Guard Kit根据参数中传入的token以及限制类型（允许/禁用），解除对应应用的限制。
+当管控应用希望解除被管控应用的访问限制时，可以通过调用解除应用访问限制接口实现。Screen Time Guard Kit会根据传入的应用token以及限制类型，解除对应应用的访问限制。
 
 业务流程
 
@@ -23,7 +23,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/screentim
 解除应用访问限制的关键接口如下表所示：
 
 接口名	描述
-releaseAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	可根据传入应用token数组，以及限制类型（允许/禁用清单），来解除对应应用的访问限制
+releaseAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Promise<void>	可根据传入应用token数组，以及限制类型（许可/禁用清单），来解除对应应用的访问限制
 
 说明
 
@@ -31,19 +31,19 @@ releaseAppsRestriction(appInfo: AppInfo, restrictionType: RestrictionType): Prom
 
 限制类型为禁用清单时，对应用数组中的应用做解除限制。
 
-限制类型为允许清单时，对应用数组以外的应用做解除限制。
+限制类型为许可清单时，对应用数组以外的应用做解除限制。
 
 边界场景：
 
-1、如果传入的应用数组为空，限制类型为禁用清单，则不对任何应用做解除限制。
+如果传入的应用数组为空，限制类型为禁用清单，则不对任何应用做解除限制。
 
-2、如果传入的应用数组为空，限制类型为允许清单，则对除了系统内置允许清单应用（电话、联系人、设置、未成年人模式）、管控发起应用本身、已授权的管控应用之外的所有应用做解除限制。
+如果传入的应用数组为空，限制类型为许可清单，则对除了系统内置许可清单应用（电话、联系人、设置、未成年人模式）、管控发起应用本身、已授权的管控应用之外的所有应用做解除限制。
 
-3、同一个管控应用的限制和解除限制需对称使用，即解除限制必须和其限制的类型匹配上，如不匹配，则为参数错误；如果之前没有做过setAppsRestriction管控，也为参数错误。
+同一个管控应用的限制和解除限制需对称使用，即解除限制必须和其限制的类型匹配上，如不匹配，则为参数错误；如果之前没有做过setAppsRestriction管控，也为参数错误。
 
-4、如果要对之前用禁用清单方式做限制的应用做解除限制，则传入的应用数组需包含所有的禁用清单应用，才可全部解除。
+如果要对之前用禁用清单方式做限制的应用做解除限制，则传入的应用数组需包含所有的禁用清单应用，才可全部解除。
 
-5、传入的应用数组中如果包含了限制时传入的应用数组以外的应用（或包含无效token），则为参数错误。
+传入的应用数组中如果包含了限制时传入的应用数组以外的应用（或包含无效token），则为参数错误。
 
 开发前提
 

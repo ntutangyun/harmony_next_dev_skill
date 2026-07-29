@@ -2,8 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-customscan_
 
-基本概念
-
 自定义界面扫码能力提供了相机流控制接口，可根据自身需求自定义扫码界面，适用于对扫码界面有定制化需求的应用开发。
 
 说明
@@ -24,9 +22,9 @@ YUV（相机预览流图像数据）适合于扫码和识物的综合识别场�
 
 约束与限制
 
-从26.0.0版本开始，支持使用scanCore.isCustomScanSupported接口查询当前设备是否支持自定义界面扫码。
+从API版本26.0.0开始，支持使用isCustomScanSupported接口查询当前设备是否支持自定义界面扫码。
 
-从6.1.0(23)版本开始，自定义界面扫码能力支持带后置相机的Wearable，可以通过cameraManager.getSupportedCameras接口查询是否带后置相机。
+从API版本6.1.0(23)开始，自定义界面扫码能力支持带后置相机的Wearable，可以通过getSupportedCameras接口查询是否带后置相机。
 
 需要请求相机的使用权限。
 
@@ -63,19 +61,19 @@ init(options?: scanBarcode.ScanOptions): void	初始化自定义界面扫码，�
 start(viewControl: ViewControl): Promise<Array<scanBarcode.ScanResult>>	启动扫码相机流获取扫码结果。使用Promise异步回调。
 stop(): Promise<void>	暂停扫码相机流。使用Promise异步回调。
 release(): Promise<void>	释放扫码相机流。使用Promise异步回调。
-start(viewControl: ViewControl, callback: AsyncCallback<Array<scanBarcode.ScanResult>>, frameCallback?: AsyncCallback<ScanFrame>): void	启动扫码相机流获取扫码结果以及YUV图像数据。使用callback异步回调。
-getFlashLightStatus(): boolean	获取闪光灯状态。返回结果为布尔值，true为打开状态，false为关闭状态。
-openFlashLight(): void	开启闪光灯。无返回结果。
-closeFlashLight(): void	关闭闪光灯。无返回结果。
-setZoom(zoomValue : number): void	设置变焦比。无返回结果。
+start(viewControl: ViewControl, callback: AsyncCallback<Array<scanBarcode.ScanResult>>, frameCallback?: AsyncCallback<ScanFrame>): void	启动扫码相机流获取扫码结果、相机预览流（YUV-图像格式NV21基于4:2:0采样）。使用callback异步回调。
+getFlashLightStatus(): boolean	获取当前相机闪光灯状态。返回结果为布尔值，true为打开状态，false为关闭状态。
+openFlashLight(): void	开启相机闪光灯。无返回结果。
+closeFlashLight(): void	关闭相机闪光灯。无返回结果。
+setZoom(zoomValue : number): void	设置变焦比。变焦精度最高为小数点后两位，如果设置超过支持的精度范围，则只保留精度范围内数值。无返回结果。
 getZoom(): number	获取当前的变焦比。
 setFocusPoint(point: scanBarcode.Point): void	设置相机焦点。
 resetFocus(): void	设置连续自动对焦模式。
 rescan(): void	触发一次重新扫码。仅对start接口callback异步回调有效，Promise异步回调无效。
 stop(callback: AsyncCallback<void>): void	暂停扫码相机流。使用callback异步回调。
 release(callback: AsyncCallback<void>): void	释放扫码相机流。使用callback异步回调。
-on(type: 'lightingFlash', callback: AsyncCallback<boolean>): void	订阅闪光灯状态监听事件，当环境暗、亮状态变化时返回闪光灯开启或关闭时机。使用callback异步回调。
-off(type: 'lightingFlash', callback?: AsyncCallback<boolean>): void	注销闪光灯状态监听事件。使用callback异步回调。
+on(type: 'lightingFlash', callback: AsyncCallback<boolean>): void	订阅环境亮度变化事件，当环境暗、亮状态变化时返回闪光灯开启或关闭提示。使用callback异步回调。
+off(type: 'lightingFlash', callback?: AsyncCallback<boolean>): void	注销环境亮度变化事件。使用callback异步回调。
 
 开发步骤
 
@@ -127,8 +125,8 @@ struct CustomScanPage {
   @State cameraWidth: number = 360; // 设置预览流宽度，默认单位：vp
   @State offsetX: number = 0; // 设置预览流x轴方向偏移量，默认单位：vp
   @State offsetY: number = 0; // 设置预览流y轴方向偏移量，默认单位：vp
-  @State zoomValue: number = 1; // 预览流的变焦比
-  @State setZoomValue: number = 1; // 已设置的预览流变焦比
+  @State zoomValue: number = 1; // 预览流缩放比例
+  @State setZoomValue: number = 1; // 已设置的预览流缩放比例
   @State scaleValue: number = 1; // 屏幕缩放比
   @State pinchValue: number = 1; // 双指缩放比例
   @State displayHeight: number = 0; // 屏幕高度，单位vp
@@ -140,7 +138,7 @@ struct CustomScanPage {
     // 自定义启动第一步，用户申请权限
     await this.requestCameraPermission();
     // 多码扫码识别，enableMultiMode: true 单码扫码识别enableMultiMode: false
-    let options: scanBarcode.ScanOptions = {
+    const options: scanBarcode.ScanOptions = {
       scanTypes: [scanCore.ScanType.ALL],
       enableMultiMode: true,
       enableAlbum: true
@@ -180,8 +178,8 @@ struct CustomScanPage {
   // 用户申请权限
   async reqPermissionsFromUser(): Promise<number[]> {
     hilog.info(0x0001, TAG, 'reqPermissionsFromUser start');
-    let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-    let atManager = abilityAccessCtrl.createAtManager();
+    const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const atManager = abilityAccessCtrl.createAtManager();
     try {
       const grantStatus: PermissionRequestResult =
         await atManager.requestPermissionsFromUser(context, ['ohos.permission.CAMERA']);
@@ -194,7 +192,7 @@ struct CustomScanPage {
 
   // 用户申请相机权限
   async requestCameraPermission() {
-    let grantStatus = await this.reqPermissionsFromUser();
+    const grantStatus = await this.reqPermissionsFromUser();
     for (let i = 0; i < grantStatus.length; i++) {
       if (grantStatus[i] === 0) {
         // 用户授权，可以继续访问目标操作
@@ -209,11 +207,11 @@ struct CustomScanPage {
   setDisplay() {
     try {
       // 默认竖屏
-      let displayClass = display.getDefaultDisplaySync();
+      const displayClass: display.Display = display.getDefaultDisplaySync();
       this.displayHeight = this.getUIContext().px2vp(displayClass.height);
       this.displayWidth = this.getUIContext().px2vp(displayClass.width);
-      let maxLen: number = Math.max(this.displayWidth, this.displayHeight);
-      let minLen: number = Math.min(this.displayWidth, this.displayHeight);
+      const maxLen: number = Math.max(this.displayWidth, this.displayHeight);
+      const minLen: number = Math.min(this.displayWidth, this.displayHeight);
       const RATIO: number = 16 / 9;
       this.cameraHeight = maxLen;
       this.cameraWidth = maxLen / RATIO;
@@ -239,7 +237,7 @@ struct CustomScanPage {
   initCamera() {
     this.isShowBack = false;
     this.scanResult = [];
-    let viewControl: customScan.ViewControl = {
+    const viewControl: customScan.ViewControl = {
       width: this.cameraWidth,
       height: this.cameraHeight,
       surfaceId: this.surfaceId
@@ -274,7 +272,7 @@ struct CustomScanPage {
     }
   }
 
-  // 自定义扫码界面的顶部返回按钮和扫码提示
+  // 自定义界面扫码的顶部返回按钮和扫码提示
   @Builder
   topTool() {
     Column() {
@@ -284,7 +282,6 @@ struct CustomScanPage {
             this.getUIContext().getRouter().back();
           })
       }.padding({ left: 24, right: 24, top: 40 })
-
 
       Column() {
         Text('扫描二维码/条形码')
@@ -340,14 +337,12 @@ struct CustomScanPage {
         .width('100%')
       }
 
-
       Column() {
         this.topTool();
         Column() {
         }
         .layoutWeight(1)
         .width('100%')
-
 
         Column() {
           Row() {
@@ -361,7 +356,6 @@ struct CustomScanPage {
                   hilog.error(0x0001, TAG,
                     `Failed to get flashLightStatus. Code: ${err.code}, message: ${err.message}`);
                 }
-
 
                 // 根据当前闪光灯状态，选择打开或关闭闪光灯
                 if (lightStatus) {
@@ -385,7 +379,6 @@ struct CustomScanPage {
               })
               .visibility((this.userGrant && this.isFlashLightEnable) ? Visibility.Visible : Visibility.None)
 
-
             // 扫码成功后，点击按钮后重新扫码
             Button('Scan')
               .onClick(() => {
@@ -395,17 +388,14 @@ struct CustomScanPage {
               .visibility(this.isShowBack ? Visibility.Visible : Visibility.None)
           }
 
-
           Row() {
             // 预览流设置缩放比例
-            Button('缩放比例,当前比例:' + this.setZoomValue)
+            Button('缩放比例，当前比例：' + this.setZoomValue)
               .onClick(() => {
-                // 设置相机缩放比例
                 if (!this.isShowBack) {
                   if (!this.zoomValue || this.zoomValue === this.setZoomValue) {
                     this.setZoomValue = this.customGetZoom();
                   } else {
-                    this.zoomValue = this.zoomValue;
                     this.customSetZoom(this.zoomValue);
                     setTimeout(() => {
                       if (!this.isShowBack) {
@@ -418,9 +408,8 @@ struct CustomScanPage {
           }
           .margin({ top: 10, bottom: 10 })
 
-
           Row() {
-            // 输入要设置的预览流变焦比
+            // 输入要设置的预览流缩放比例
             TextInput({ placeholder: '输入缩放倍数' })
               .type(InputType.Number)
               .borderWidth(1)
@@ -433,7 +422,6 @@ struct CustomScanPage {
         .width('50%')
         .height(180)
       }
-
 
       // 单码、多码扫描后，显示码图蓝点位置。点击toast码图信息
       ForEach(this.scanResult, (item: scanBarcode.ScanResult) => {
@@ -462,15 +450,14 @@ struct CustomScanPage {
         return;
       }
       // 点击屏幕位置，获取点击位置(x,y)，设置相机焦点
-      let x1 = event.displayY / (this.displayHeight + 0.0);
-      let y1 = 1.0 - event.displayX / (this.displayWidth + 0.0);
+      const x1: number = event.displayY / (this.displayHeight + 0.0);
+      const y1: number = 1.0 - event.displayX / (this.displayWidth + 0.0);
       try {
         customScan.setFocusPoint({ x: x1, y: y1 });
         hilog.info(0x0001, TAG, `Succeeded in setting focusPoint x1: ${x1}, y1: ${y1}`);
       } catch (err) {
         hilog.error(0x0001, TAG, `Failed to set focusPoint. Code: ${err.code}, message: ${err.message}`);
       }
-      hilog.info(0x0001, TAG, `Succeeded in setting focusPoint x1: ${x1}, y1: ${y1}`);
       // 设置连续自动对焦模式
       setTimeout(() => {
         try {
@@ -495,7 +482,7 @@ struct CustomScanPage {
         }
         // 获取双指缩放比例，设置变焦比
         try {
-          let zoom = this.customGetZoom();
+          const zoom: number = this.customGetZoom();
           this.pinchValue = this.scaleValue * zoom;
           this.customSetZoom(this.pinchValue);
           hilog.info(0x0001, TAG, 'Pinch end');
@@ -506,12 +493,12 @@ struct CustomScanPage {
   }
 
   public customGetZoom(): number {
-    let zoom = 1;
+    let zoom: number = 1;
     try {
       zoom = customScan.getZoom();
       hilog.info(0x0001, TAG, `Succeeded in getting zoom, zoom: ${zoom}`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err.message}`);
     }
     return zoom;
   }
@@ -521,7 +508,7 @@ struct CustomScanPage {
       customScan.setZoom(pinchValue);
       hilog.info(0x0001, TAG, `Succeeded in setting zoom.`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err.message}`);
     }
   }
 }
@@ -542,8 +529,8 @@ struct CustomScanPage {
   @State cameraWidth: number = 360; // 设置预览流宽度，默认单位：vp
   @State offsetX: number = 0; // 设置预览流x轴方向偏移量，默认单位：vp
   @State offsetY: number = 0; // 设置预览流y轴方向偏移量，默认单位：vp
-  @State zoomValue: number = 1; // 预览流的变焦比
-  @State setZoomValue: number = 1; // 已设置的预览流变焦比
+  @State zoomValue: number = 1; // 预览流缩放比例
+  @State setZoomValue: number = 1; // 已设置的预览流缩放比例
   @State scaleValue: number = 1; // 屏幕缩放比
   @State pinchValue: number = 1; // 双指缩放比例
   @State displayHeight: number = 0; // 屏幕高度，单位vp
@@ -697,7 +684,6 @@ struct CustomScanPage {
     } catch (err) {
       hilog.error(0x0001, TAG, `Failed to start customScan. Code: ${err.code}, message: ${err.message}`);
     }
-
   }
 
   // 暂停相机流
@@ -711,7 +697,7 @@ struct CustomScanPage {
     }
   }
 
-  // 自定义扫码界面的顶部返回按钮和扫码提示
+  // 自定义界面扫码的顶部返回按钮和扫码提示
   @Builder
   topTool() {
     Column() {
@@ -721,7 +707,6 @@ struct CustomScanPage {
             this.getUIContext().getRouter().back();
           })
       }.padding({ left: 24, right: 24, top: 40 })
-
 
       Column() {
         Text('扫描二维码/条形码')
@@ -777,14 +762,12 @@ struct CustomScanPage {
         .width('100%')
       }
 
-
       Column() {
         this.topTool();
         Column() {
         }
         .layoutWeight(1)
         .width('100%')
-
 
         Column() {
           Row() {
@@ -798,7 +781,6 @@ struct CustomScanPage {
                   hilog.error(0x0001, TAG,
                     `Failed to get flashLightStatus. Code: ${err.code}, message: ${err.message}`);
                 }
-
 
                 // 根据当前闪光灯状态，选择打开或关闭闪光灯
                 if (lightStatus) {
@@ -822,7 +804,6 @@ struct CustomScanPage {
               })
               .visibility((this.userGrant && this.isFlashLightEnable) ? Visibility.Visible : Visibility.None)
 
-
             // 扫码成功后，点击按钮后重新扫码
             Button('Scan')
               .onClick(() => {
@@ -832,17 +813,14 @@ struct CustomScanPage {
               .visibility(this.isShowBack ? Visibility.Visible : Visibility.None)
           }
 
-
           Row() {
             // 预览流设置缩放比例
-            Button('缩放比例,当前比例:' + this.setZoomValue)
+            Button('缩放比例，当前比例：' + this.setZoomValue)
               .onClick(() => {
-                // 设置相机缩放比例
                 if (!this.isShowBack) {
                   if (!this.zoomValue || this.zoomValue === this.setZoomValue) {
                     this.setZoomValue = this.customGetZoom();
                   } else {
-                    this.zoomValue = this.zoomValue;
                     this.customSetZoom(this.zoomValue);
                     setTimeout(() => {
                       if (!this.isShowBack) {
@@ -855,9 +833,8 @@ struct CustomScanPage {
           }
           .margin({ top: 10, bottom: 10 })
 
-
           Row() {
-            // 输入要设置的预览流变焦比
+            // 输入要设置的预览流缩放比例
             TextInput({ placeholder: '输入缩放倍数' })
               .type(InputType.Number)
               .borderWidth(1)
@@ -870,7 +847,6 @@ struct CustomScanPage {
         .width('50%')
         .height(180)
       }
-
 
       // 单码、多码扫描后，显示码图蓝点位置。点击toast码图信息
       ForEach(this.scanResult, (item: scanBarcode.ScanResult) => {
@@ -907,7 +883,6 @@ struct CustomScanPage {
       } catch (err) {
         hilog.error(0x0001, TAG, `Failed to set focusPoint. Code: ${err.code}, message: ${err.message}`);
       }
-      hilog.info(0x0001, TAG, `Succeeded in setting focusPoint x1: ${x1}, y1: ${y1}`);
       // 设置连续自动对焦模式
       setTimeout(() => {
         try {
@@ -948,7 +923,7 @@ struct CustomScanPage {
       zoom = customScan.getZoom();
       hilog.info(0x0001, TAG, `Succeeded in getting zoom, zoom: ${zoom}`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err.message}`);
     }
     return zoom;
   }
@@ -958,7 +933,7 @@ struct CustomScanPage {
       customScan.setZoom(pinchValue);
       hilog.info(0x0001, TAG, `Succeeded in setting zoom.`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err.message}`);
     }
   }
 }
@@ -979,7 +954,7 @@ x = (left + right) / 2 + offsetX
 
 y = (top + bottom) / 2 + offsetY
 
-如果设备涉及旋转，码图中心点位置需要根据屏幕旋转角度(Display.rotation)进行变换，以保证在各旋转角度下码图中心位置正确。推荐参考示例工程。
+如果设备涉及旋转，码图中心点位置需要根据屏幕旋转角度（Display.rotation）进行变换，以保证在各旋转角度下码图中心位置正确。推荐参考示例工程。
 
 例如：XComponent宽度为width，高度为height，x轴偏移量为offsetX，y轴偏移量为offsetY：
 
@@ -1001,17 +976,17 @@ y = height - (left + right) / 2+ offsetY
 
 说明
 
-从5.0.2(14)开始，由于屏幕Display对象rotation和orientation属性变更，设备旋转不同角度后码图的位置需要重新适配。
+从API版本5.0.2(14)开始，由于屏幕Display对象rotation和orientation属性变更，设备旋转不同角度后码图的位置需要重新适配。
 
-对于5.0.2(14)之前版本，可以使用Display对象中的rotation或者orientation属性处理设备旋转不同角度后的码图位置，且需要针对设备类型做特殊适配。
+在API版本5.0.2(14)之前，可以使用Display对象中的rotation或者orientation属性处理设备旋转不同角度后的码图位置，且需要针对设备类型做特殊适配。
 
-对于5.0.2(14)及之后版本，需要统一使用Display对象的rotation属性处理设备旋转不同角度后的码图位置，无需针对设备类型做特殊适配。
+在API版本5.0.2(14)及之后，需要统一使用Display对象的rotation属性处理设备旋转不同角度后的码图位置，无需针对设备类型做特殊适配。
 
 模拟器开发
 
 部分接口支持模拟器开发，模拟器使用指导请参见使用模拟器运行应用。
 
-从6.0.0(20)版本开始，模拟器支持部分自定义界面扫码接口开发（支持的接口包括init、start、stop、release、rescan），可实现自定义界面扫码能力的基本功能验证。
+从API版本6.0.0(20)开始，模拟器支持部分自定义界面扫码接口开发（支持的接口包括init、start、stop、release、rescan），可实现自定义界面扫码能力的基本功能验证。
 
 模拟器自定义界面扫码能力仅支持1280*720分辨率，开发者传入其他分辨率会统一转换成1280*720。
 
@@ -1045,8 +1020,8 @@ struct CustomScanPage {
   @State cameraWidth: number = 360; // 设置预览流宽度，默认单位：vp
   @State offsetX: number = 0; // 设置预览流x轴方向偏移量，默认单位：vp
   @State offsetY: number = 0; // 设置预览流y轴方向偏移量，默认单位：vp
-  @State zoomValue: number = 1; // 预览流的变焦比
-  @State setZoomValue: number = 1; // 已设置的预览流变焦比
+  @State zoomValue: number = 1; // 预览流缩放比例
+  @State setZoomValue: number = 1; // 已设置的预览流缩放比例
   @State scaleValue: number = 1; // 屏幕缩放比
   @State pinchValue: number = 1; // 双指缩放比例
   @State displayHeight: number = 0; // 屏幕高度，单位vp
@@ -1058,7 +1033,7 @@ struct CustomScanPage {
     // 自定义启动第一步，用户申请权限
     await this.requestCameraPermission();
     // 多码扫码识别，enableMultiMode: true 单码扫码识别enableMultiMode: false
-    let options: scanBarcode.ScanOptions = {
+    const options: scanBarcode.ScanOptions = {
       scanTypes: [scanCore.ScanType.ALL],
       enableMultiMode: true,
       enableAlbum: true
@@ -1098,8 +1073,8 @@ struct CustomScanPage {
   // 用户申请权限
   async reqPermissionsFromUser(): Promise<number[]> {
     hilog.info(0x0001, TAG, 'reqPermissionsFromUser start');
-    let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-    let atManager = abilityAccessCtrl.createAtManager();
+    const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const atManager = abilityAccessCtrl.createAtManager();
     try {
       const grantStatus: PermissionRequestResult =
         await atManager.requestPermissionsFromUser(context, ['ohos.permission.CAMERA']);
@@ -1112,7 +1087,7 @@ struct CustomScanPage {
 
   // 用户申请相机权限
   async requestCameraPermission() {
-    let grantStatus = await this.reqPermissionsFromUser();
+    const grantStatus = await this.reqPermissionsFromUser();
     for (let i = 0; i < grantStatus.length; i++) {
       if (grantStatus[i] === 0) {
         // 用户授权，可以继续访问目标操作
@@ -1127,11 +1102,11 @@ struct CustomScanPage {
   setDisplay() {
     try {
       // 默认竖屏
-      let displayClass = display.getDefaultDisplaySync();
+      const displayClass: display.Display = display.getDefaultDisplaySync();
       this.displayHeight = this.getUIContext().px2vp(displayClass.height);
       this.displayWidth = this.getUIContext().px2vp(displayClass.width);
-      let maxLen: number = Math.max(this.displayWidth, this.displayHeight);
-      let minLen: number = Math.min(this.displayWidth, this.displayHeight);
+      const maxLen: number = Math.max(this.displayWidth, this.displayHeight);
+      const minLen: number = Math.min(this.displayWidth, this.displayHeight);
       const RATIO: number = 16 / 9;
       this.cameraHeight = maxLen;
       this.cameraWidth = maxLen / RATIO;
@@ -1157,7 +1132,7 @@ struct CustomScanPage {
   initCamera() {
     this.isShowBack = false;
     this.scanResult = [];
-    let viewControl: customScan.ViewControl = {
+    const viewControl: customScan.ViewControl = {
       width: this.cameraWidth,
       height: this.cameraHeight,
       surfaceId: this.surfaceId
@@ -1192,7 +1167,7 @@ struct CustomScanPage {
     }
   }
 
-  // 自定义扫码界面的顶部返回按钮和扫码提示
+  // 自定义界面扫码的顶部返回按钮和扫码提示
   @Builder
   topTool() {
     Column() {
@@ -1202,7 +1177,6 @@ struct CustomScanPage {
             this.getUIContext().getRouter().back();
           })
       }.padding({ left: 24, right: 24, top: 40 })
-
 
       Column() {
         Text('扫描二维码/条形码')
@@ -1258,14 +1232,12 @@ struct CustomScanPage {
         .width('100%')
       }
 
-
       Column() {
         this.topTool();
         Column() {
         }
         .layoutWeight(1)
         .width('100%')
-
 
         Column() {
           Row() {
@@ -1279,7 +1251,6 @@ struct CustomScanPage {
                   hilog.error(0x0001, TAG,
                     `Failed to get flashLightStatus. Code: ${err.code}, message: ${err.message}`);
                 }
-
 
                 // 根据当前闪光灯状态，选择打开或关闭闪光灯
                 if (lightStatus) {
@@ -1303,7 +1274,6 @@ struct CustomScanPage {
               })
               .visibility((this.userGrant && this.isFlashLightEnable) ? Visibility.Visible : Visibility.None)
 
-
             // 扫码成功后，点击按钮后重新扫码
             Button('Scan')
               .onClick(() => {
@@ -1313,17 +1283,14 @@ struct CustomScanPage {
               .visibility(this.isShowBack ? Visibility.Visible : Visibility.None)
           }
 
-
           Row() {
             // 预览流设置缩放比例
-            Button('缩放比例,当前比例:' + this.setZoomValue)
+            Button('缩放比例，当前比例：' + this.setZoomValue)
               .onClick(() => {
-                // 设置相机缩放比例
                 if (!this.isShowBack) {
                   if (!this.zoomValue || this.zoomValue === this.setZoomValue) {
                     this.setZoomValue = this.customGetZoom();
                   } else {
-                    this.zoomValue = this.zoomValue;
                     this.customSetZoom(this.zoomValue);
                     setTimeout(() => {
                       if (!this.isShowBack) {
@@ -1336,9 +1303,8 @@ struct CustomScanPage {
           }
           .margin({ top: 10, bottom: 10 })
 
-
           Row() {
-            // 输入要设置的预览流变焦比
+            // 输入要设置的预览流缩放比例
             TextInput({ placeholder: '输入缩放倍数' })
               .type(InputType.Number)
               .borderWidth(1)
@@ -1351,7 +1317,6 @@ struct CustomScanPage {
         .width('50%')
         .height(180)
       }
-
 
       // 单码、多码扫描后，显示码图蓝点位置。点击toast码图信息
       ForEach(this.scanResult, (item: scanBarcode.ScanResult) => {
@@ -1380,15 +1345,14 @@ struct CustomScanPage {
         return;
       }
       // 点击屏幕位置，获取点击位置(x,y)，设置相机焦点
-      let x1 = event.displayY / (this.displayHeight + 0.0);
-      let y1 = 1.0 - event.displayX / (this.displayWidth + 0.0);
+      const x1: number = event.displayY / (this.displayHeight + 0.0);
+      const y1: number = 1.0 - event.displayX / (this.displayWidth + 0.0);
       try {
         customScan.setFocusPoint({ x: x1, y: y1 });
         hilog.info(0x0001, TAG, `Succeeded in setting focusPoint x1: ${x1}, y1: ${y1}`);
       } catch (err) {
         hilog.error(0x0001, TAG, `Failed to set focusPoint. Code: ${err.code}, message: ${err.message}`);
       }
-      hilog.info(0x0001, TAG, `Succeeded in setting focusPoint x1: ${x1}, y1: ${y1}`);
       // 设置连续自动对焦模式
       setTimeout(() => {
         try {
@@ -1413,7 +1377,7 @@ struct CustomScanPage {
         }
         // 获取双指缩放比例，设置变焦比
         try {
-          let zoom = this.customGetZoom();
+          const zoom: number = this.customGetZoom();
           this.pinchValue = this.scaleValue * zoom;
           this.customSetZoom(this.pinchValue);
           hilog.info(0x0001, TAG, 'Pinch end');
@@ -1424,12 +1388,12 @@ struct CustomScanPage {
   }
 
   public customGetZoom(): number {
-    let zoom = 1;
+    let zoom: number = 1;
     try {
       zoom = customScan.getZoom();
       hilog.info(0x0001, TAG, `Succeeded in getting zoom, zoom: ${zoom}`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err.message}`);
     }
     return zoom;
   }
@@ -1439,7 +1403,7 @@ struct CustomScanPage {
       customScan.setZoom(pinchValue);
       hilog.info(0x0001, TAG, `Succeeded in setting zoom.`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err.message}`);
     }
   }
 }
@@ -1462,8 +1426,8 @@ struct CustomScanPage {
   @State cameraWidth: number = 360; // 设置预览流宽度，默认单位：vp
   @State offsetX: number = 0; // 设置预览流x轴方向偏移量，默认单位：vp
   @State offsetY: number = 0; // 设置预览流y轴方向偏移量，默认单位：vp
-  @State zoomValue: number = 1; // 预览流的变焦比
-  @State setZoomValue: number = 1; // 已设置的预览流变焦比
+  @State zoomValue: number = 1; // 预览流缩放比例
+  @State setZoomValue: number = 1; // 已设置的预览流缩放比例
   @State scaleValue: number = 1; // 屏幕缩放比
   @State pinchValue: number = 1; // 双指缩放比例
   @State displayHeight: number = 0; // 屏幕高度，单位vp
@@ -1617,7 +1581,6 @@ struct CustomScanPage {
     } catch (err) {
       hilog.error(0x0001, TAG, `Failed to start customScan. Code: ${err.code}, message: ${err.message}`);
     }
-
   }
 
   // 暂停相机流
@@ -1631,7 +1594,7 @@ struct CustomScanPage {
     }
   }
 
-  // 自定义扫码界面的顶部返回按钮和扫码提示
+  // 自定义界面扫码的顶部返回按钮和扫码提示
   @Builder
   topTool() {
     Column() {
@@ -1641,7 +1604,6 @@ struct CustomScanPage {
             this.getUIContext().getRouter().back();
           })
       }.padding({ left: 24, right: 24, top: 40 })
-
 
       Column() {
         Text('扫描二维码/条形码')
@@ -1697,14 +1659,12 @@ struct CustomScanPage {
         .width('100%')
       }
 
-
       Column() {
         this.topTool();
         Column() {
         }
         .layoutWeight(1)
         .width('100%')
-
 
         Column() {
           Row() {
@@ -1718,7 +1678,6 @@ struct CustomScanPage {
                   hilog.error(0x0001, TAG,
                     `Failed to get flashLightStatus. Code: ${err.code}, message: ${err.message}`);
                 }
-
 
                 // 根据当前闪光灯状态，选择打开或关闭闪光灯
                 if (lightStatus) {
@@ -1742,7 +1701,6 @@ struct CustomScanPage {
               })
               .visibility((this.userGrant && this.isFlashLightEnable) ? Visibility.Visible : Visibility.None)
 
-
             // 扫码成功后，点击按钮后重新扫码
             Button('Scan')
               .onClick(() => {
@@ -1752,17 +1710,14 @@ struct CustomScanPage {
               .visibility(this.isShowBack ? Visibility.Visible : Visibility.None)
           }
 
-
           Row() {
             // 预览流设置缩放比例
-            Button('缩放比例,当前比例:' + this.setZoomValue)
+            Button('缩放比例，当前比例：' + this.setZoomValue)
               .onClick(() => {
-                // 设置相机缩放比例
                 if (!this.isShowBack) {
                   if (!this.zoomValue || this.zoomValue === this.setZoomValue) {
                     this.setZoomValue = this.customGetZoom();
                   } else {
-                    this.zoomValue = this.zoomValue;
                     this.customSetZoom(this.zoomValue);
                     setTimeout(() => {
                       if (!this.isShowBack) {
@@ -1775,9 +1730,8 @@ struct CustomScanPage {
           }
           .margin({ top: 10, bottom: 10 })
 
-
           Row() {
-            // 输入要设置的预览流变焦比
+            // 输入要设置的预览流缩放比例
             TextInput({ placeholder: '输入缩放倍数' })
               .type(InputType.Number)
               .borderWidth(1)
@@ -1790,7 +1744,6 @@ struct CustomScanPage {
         .width('50%')
         .height(180)
       }
-
 
       // 单码、多码扫描后，显示码图蓝点位置。点击toast码图信息
       ForEach(this.scanResult, (item: scanBarcode.ScanResult) => {
@@ -1827,7 +1780,6 @@ struct CustomScanPage {
       } catch (err) {
         hilog.error(0x0001, TAG, `Failed to set focusPoint. Code: ${err.code}, message: ${err.message}`);
       }
-      hilog.info(0x0001, TAG, `Succeeded in setting focusPoint x1: ${x1}, y1: ${y1}`);
       // 设置连续自动对焦模式
       setTimeout(() => {
         try {
@@ -1868,7 +1820,7 @@ struct CustomScanPage {
       zoom = customScan.getZoom();
       hilog.info(0x0001, TAG, `Succeeded in getting zoom, zoom: ${zoom}`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to get zoom. Code: ${err.code}, message: ${err.message}`);
     }
     return zoom;
   }
@@ -1878,7 +1830,7 @@ struct CustomScanPage {
       customScan.setZoom(pinchValue);
       hilog.info(0x0001, TAG, `Succeeded in setting zoom.`);
     } catch (err) {
-      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err?.message}`);
+      hilog.error(0x0001, TAG, `Failed to set zoom. Code: ${err.code}, message: ${err.message}`);
     }
   }
 }

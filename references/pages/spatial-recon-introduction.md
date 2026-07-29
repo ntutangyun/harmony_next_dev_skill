@@ -26,6 +26,6 @@ Spatial Recon Kit提供了和空间重建有关的能力，帮助开发者实现
 
 本Kit暂不支持模拟器。
 
-与ArkGraphics 3D 模块的关系
+与ArkGraphics 3D模块的关系
 
-Spatial Recon Kit是ArkGraphics 3D 模块的扩展，需与ArkGraphics 3D 模块联合使用。
+Spatial Recon Kit是ArkGraphics 3D模块的扩展，需与ArkGraphics 3D模块联合使用。

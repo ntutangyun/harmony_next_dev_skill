@@ -583,11 +583,11 @@ classPassingTs2Napi()：负责将class从ArkTS传递至Napi，之后返回一个
 
 napi_get_cb_info()：负责从ArkTS侧获取输入参数。
 
-napi_get_named_property()：第一次调用，负责将方法名为"add"的方法存入变量add中。
+napi_get_named_property()：第一次调用，负责将方法add()存入变量add中。
 
 napi_create_int32()：负责将入参解析为int32，并存入数组arr中。
 
-napi_call_function()：负责在C++工程中调用从ArkTS传入的class的方法，需要使用上两步获得的入参数组arr和方法add。
+napi_call_function()：负责在C++工程中调用从ArkTS传入的class的方法，需要使用上两步获得的入参数组arr和方法add()。
 
 napi_get_named_property()：第二次调用，负责将名为"result"的属性存入param_result中。
 

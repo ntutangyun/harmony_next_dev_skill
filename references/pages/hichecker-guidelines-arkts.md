@@ -91,7 +91,7 @@ export default class EntryAbility extends UIAbility {
   }
 };
 
-安装hap后运行，通过DevEco Studio Log插件过滤 HICHECKER 关键字日志或者通过 hdc shell "hilog | grep HICHECKER" 命令查询，有如下调用栈信息说明检测成功（调用栈为触发检测规则时的调用栈）。
+安装hap后运行，通过DevEco Studio Log插件过滤 HICHECKER 关键字日志或者通过 hdc shell "hilog | grep HICHECKER" 命令查询，有如下调用栈信息说明检测成功（调用栈为触发检测时的调用栈）。
 
 08-05 23:11:07.206  1799  1799 I C02d0b/HICHECKER: StackTrace:
 08-05 23:11:07.206  1799  1799 I C02d0b/HICHECKER: #00 pc 00003d33 /system/lib/chipset-pub-sdk/libbacktrace_local.so(OHOS::HiviewDFX::GetBacktrace(std::__h::basic_string<char, std::__h::char_traits<char>, std::__h::allocator<char>>&, bool, unsigned int)+90)(7c7c81050ce2a86bf0a22943c25773db)

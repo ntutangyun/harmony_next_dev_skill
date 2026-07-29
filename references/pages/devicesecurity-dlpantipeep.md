@@ -66,88 +66,270 @@ publishAntiPeepInformation(): Promise<void>	发布防窥保护提示信息。
 
 开发者需向用户说明数据使用的目的、方式和范围。
 
-导入防窥保护模块及相关公共模块。
+防窥保护接口封装导入防窥保护模块及相关公共模块。
 
 import { dlpAntiPeep } from '@kit.DeviceSecurityKit';
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+
+防窥保护接口封装。
+
+/**
+ * 防窥状态变化回调，status即防窥状态
+ * */
+export interface AntiPeepCallback {
+  onStatusChanged: (status: dlpAntiPeep.DlpAntiPeepStatus) => Promise<void>;
+}
+
+/**
+ * 当前设备是否支持使用防窥保护接口
+ * */
+export function canUseAntiPeep(): boolean {
+  return canIUse('SystemCapability.Security.DlpAntiPeep');
+}
+
+/**
+ * 检查当前应用防窥保护开关
+ * */
+export async function isAntiPeepOn(): Promise<boolean> {
+  try {
+    let result: boolean = await dlpAntiPeep.isDlpAntiPeepSwitchOn();
+    hilog.info(0x0000, 'AntiPeepUtils', `[isAntiPeepOn] isDlpAntiPeepSwitchOn success. ${result}`);
+    return result;
+  } catch (err) {
+    hilog.error(0x0000, 'AntiPeepUtils', `[isAntiPeepOn] isDlpAntiPeepSwitchOn failed.${JSON.stringify(err)}`);
+    return false;
+  }
+}
+
+/**
+ * get current screen privacy status
+ * */
+export function getAntiPeepInfo(): dlpAntiPeep.DlpAntiPeepStatus {
+  try {
+    // 获取防窥状态
+    let dlpAntiPeepStatus = dlpAntiPeep.getDlpAntiPeepInfo();
+    hilog.info(0x0000, 'AntiPeepUtils', `getDlpHideInfo success. ${JSON.stringify(dlpAntiPeepStatus)}`);
+    return dlpAntiPeepStatus;
+  } catch (err) {
+    hilog.info(0x0000, 'AntiPeepUtils', `getDlpHideInfo failed. ${JSON.stringify(err)}`);
+    return -1;
+  }
+}
+
+/**
+ * 订阅防窥保护通知
+ * */
+export function listenOnAntiPeepStatus(antiPeepCB: AntiPeepCallback): boolean {
+  try {
+    hilog.info(0x0000, 'AntiPeepUtils', `start on('dlpAntiPeep')`);
+    dlpAntiPeep.on('dlpAntiPeep', (dlpAntiPeepStatus: dlpAntiPeep.DlpAntiPeepStatus) => {
+      hilog.info(0x0000, 'AntiPeepUtils', `dlpAntiPeep callback: ${JSON.stringify(dlpAntiPeepStatus)}`);
+      if (antiPeepCB) {
+        antiPeepCB.onStatusChanged(dlpAntiPeepStatus);
+      } else {
+        hilog.warn(0x0000, 'AntiPeepUtils', `antiPeepCB is empty`);
+      }
+    });
+    hilog.info(0x0000, 'AntiPeepUtils', `on('dlpAntiPeep') ok`);
+    return true;
+  } catch (err) {
+    hilog.error(0x0000, 'AntiPeepUtils', `dlpAntiPeep.on failed. ${JSON.stringify(err)}`);
+    return false;
+  }
+}
+
+/**
+ * 取消订阅防窥保护通知
+ * */
+export function listenOffAntiPeepStatus() {
+  try {
+    hilog.info(0x0000, 'AntiPeepUtils', `start off('dlpAntiPeep')`);
+    dlpAntiPeep.off('dlpAntiPeep');
+    hilog.info(0x0000, 'AntiPeepUtils', `off('dlpAntiPeep') ok`);
+  } catch (err) {
+    hilog.error(0x0000, 'AntiPeepUtils', `dlpAntiPeep.off failed. ${JSON.stringify(err)}`);
+  }
+}
+
+/**
+ * 拉起系统蒙层
+ * */
+export function showSystemMaskLayer(windowId: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    try {
+      dlpAntiPeep.setAntiPeepMaskLayer(windowId).catch((err: BusinessError) => {
+        hilog.error(0x0000, 'AntiPeepUtils', `Execute setAntiPeepMaskLayer failed. error code:${err.code},
+      error message:${err.message}`);
+        resolve(false);
+      }).then(() => {
+        hilog.info(0x0000, 'AntiPeepUtils', `setAntiPeepMaskLayer success`);
+        resolve(true);
+      })
+    } catch (err) {
+      hilog.error(0x0000, 'AntiPeepUtils', `Call setAntiPeepMaskLayer failed. ${JSON.stringify(err)}`);
+      resolve(false);
+    }
+  });
+}
+
+/**
+ * 引导用户打开当前应用防窥开关
+ * */
+export async function requestAntiPeepOptions(
+  context: common.UIAbilityContext): Promise<dlpAntiPeep.AntiPeepOptionsResult> {
+  try {
+    const result = await dlpAntiPeep.requestAntiPeepOptions(context);
+    hilog.info(0x0000, 'AntiPeepUtils', `[requestAntiPeepOptions] requestAntiPeepOptions success. ${result}`);
+    return result;
+  } catch (err) {
+    hilog.error(0x0000,
+      'AntiPeepUtils', `[requestAntiPeepOptions] requestAntiPeepOptions failed.${JSON.stringify(err)}`);
+    return dlpAntiPeep.AntiPeepOptionsResult.FAIL;
+  }
+}
+
+导入防窥保护封装模块及相关公共模块。
+
+import { dlpAntiPeep } from '@kit.DeviceSecurityKit';
+// ...
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
+import { JSON } from '@kit.ArkTS';
 import { window } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
+// ...
+import {
+  AntiPeepCallback,
+  canUseAntiPeep,
+  getAntiPeepInfo,
+  isAntiPeepOn,
+  listenOffAntiPeepStatus,
+  listenOnAntiPeepStatus,
+  showSystemMaskLayer,
+  requestAntiPeepOptions,
+} from '../common/utils/AntiPeepUtils';
 
 调用检查接口确认当前应用是否开启防窥保护，开启防窥保护时调用防窥保护订阅接口获取窥视状态信息。
 
 @Entry
 @Component
 struct Index {
-  @State message: string = 'DlpAntiPeep';
-  private hasShownMask: boolean = false;
+  // ...
+  private isSystemLayerTriggered: boolean = false;
+  // ...
+  private isListenOn: boolean = false;
+  private antiPeepCB: AntiPeepCallback = {
+    onStatusChanged: async (status: dlpAntiPeep.DlpAntiPeepStatus): Promise<void> => {
+      await this.handleAntiPeepStatus(status);
+    }
+  };
 
-  // 防窥状态变化回调
-  private onStatusChange = async (status: dlpAntiPeep.DlpAntiPeepStatus): Promise<void> => {
-    if (status === dlpAntiPeep.DlpAntiPeepStatus.PASS) { // 表示当前状态为无人窥视
-      console.info('DlpAntiPeepStatus is PASS.');
-    } else if (status === dlpAntiPeep.DlpAntiPeepStatus.HIDE) { // 表示有人在窥屏，应用可以进行隐私保护操作。
-      console.info('DlpAntiPeepStatus is HIDE.');
-      if (!this.hasShownMask) {
-        await this.setMaskLayer(); // 拉起系统蒙层
+  // ...
+
+  /**
+   * 处理防窥保护状态
+   * */
+  private async handleAntiPeepStatus(status: dlpAntiPeep.DlpAntiPeepStatus) {
+    hilog.info(0x0000, 'IndexPage', `[handleAntiPeepStatus] ${status}`);
+    switch (status) {
+      // 表示当前状态为无人窥视
+      case dlpAntiPeep.DlpAntiPeepStatus.PASS:
+        // ...
+        break;
+      // 表示有人在窥屏，应用可以进行隐私保护操作。
+      case dlpAntiPeep.DlpAntiPeepStatus.HIDE:
+        // ...
+              const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+              const windowClass = await window.getLastWindow(context);
+              const windowId = windowClass.getWindowProperties().id;
+              // 拉起系统蒙层
+              this.isSystemLayerTriggered = await showSystemMaskLayer(windowId);
+              // ...
+        break;
+      default:
+        // ...
+        break;
+    }
+  }
+
+  // 检查当前应用是否开启防窥保护，未开启时引导用户开启防窥，开启后获取防窥状态并订阅防窥监听。
+  private initAntiPeepStatus() {
+    if (canUseAntiPeep()) {
+      isAntiPeepOn().then((opened) => {
+        if (opened) {
+          let info = getAntiPeepInfo();
+          this.handleAntiPeepStatus(info);
+          // 订阅防窥状态监听
+          this.isListenOn = listenOnAntiPeepStatus(this.antiPeepCB);
+        } else {
+          // 开关未开启，引导用户设置
+          const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+          requestAntiPeepOptions(context).then((result) => {
+            if (result === dlpAntiPeep.AntiPeepOptionsResult.SUCCESS ||
+              result === dlpAntiPeep.AntiPeepOptionsResult.ALREADY_ON) { // 表示防窥保护开关开启成功或已开启
+              let info = getAntiPeepInfo();
+              this.handleAntiPeepStatus(info);
+              this.isListenOn = listenOnAntiPeepStatus(this.antiPeepCB);
+            } else {
+              try {
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.anti_peep_not_enable')
+                });
+              } catch (error) {
+                hilog.info(0x0000, 'IndexPage', `show toast error:${JSON.parse(error)}}`);
+              }
+            }
+          })
+        }
+      })
+    } else {
+      try {
+        this.getUIContext().getPromptAction().showToast({
+          message: $r('app.string.device_not_supported')
+        });
+      } catch (error) {
+        hilog.info(0x0000, 'IndexPage', `show toast error:${JSON.parse(error)}}`);
       }
     }
   }
 
-  // 检查防窥保护开关并订阅通知
-  async aboutToAppear() {
-    try {
-      const isOpen = await dlpAntiPeep.isDlpAntiPeepSwitchOn();
-      if (isOpen) {
-        dlpAntiPeep.on('dlpAntiPeep', this.onStatusChange);
-      } else {
-        // 开关未开启，引导用户设置
-        const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-        const result = await dlpAntiPeep.requestAntiPeepOptions(context);
-        if (result === dlpAntiPeep.AntiPeepOptionsResult.SUCCESS ||
-            result === dlpAntiPeep.AntiPeepOptionsResult.ALREADY_ON) { // 表示防窥保护开关开启成功或已开启
-          dlpAntiPeep.on('dlpAntiPeep', this.onStatusChange);
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to init DlpAntiPeep. Code: ${error.code}, message: ${error.message}`);
-    }
+  // ...
+
+  // 初始化防窥状态
+  private initData() {
+    // ...
+    this.initAntiPeepStatus();
+    // ...
+  }
+
+  onPageShow(): void {
+    this.initData();
+  }
+
+  onPageHide(): void {
+    this.isSystemLayerTriggered = false;
+    // ...
   }
 
   // 取消订阅防窥保护通知
-  aboutToDisappear() {
-    try {
-      dlpAntiPeep.off('dlpAntiPeep', this.onStatusChange);
-    } catch (error) {
-      console.error(`Failed to off DlpAntiPeep. Code: ${error.code}, message: ${error.message}`);
-    }
-  }
-
-  onPageShow() {
-    console.info('Page shown, reset mask flag');
-    this.hasShownMask = false;
-  }
-
-  // 拉起系统蒙层
-  private async setMaskLayer(): Promise<void> {
-    try {
-      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-      const windowClass = await window.getLastWindow(context);
-      const windowId = windowClass.getWindowProperties().id;
-      await dlpAntiPeep.setAntiPeepMaskLayer(windowId);
-      this.hasShownMask = true; // 避免窥视状态时频繁拉起蒙层
-    } catch (error) {
-      console.error(`Failed to set AntiPeep MaskLayer. Code: ${error.code}, message: ${error.message}`);
+  aboutToDisappear(): void {
+    if (this.isListenOn) {
+      listenOffAntiPeepStatus();
+      this.isListenOn = false;
     }
   }
 
   build() {
-    Column() {
-      Text(this.message)
-        .fontSize(20)
-        .margin(20)
+    Scroll() {
+    // ...
     }
-    .width('100%')
     .height('100%')
-    .justifyContent(FlexAlign.Center)
+    .width('100%')
+    .backgroundColor($r('app.color.bg_main'))
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }
 
@@ -157,87 +339,273 @@ struct Index {
 
 ```
 import { dlpAntiPeep } from '@kit.DeviceSecurityKit';
-import { window } from '@kit.ArkUI';
+import { JSON } from '@kit.ArkTS';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 ```
 
 ### Code block 2
 
 ```
+/**
+ * 防窥状态变化回调，status即防窥状态
+ * */
+export interface AntiPeepCallback {
+  onStatusChanged: (status: dlpAntiPeep.DlpAntiPeepStatus) => Promise<void>;
+}
+
+/**
+ * 当前设备是否支持使用防窥保护接口
+ * */
+export function canUseAntiPeep(): boolean {
+  return canIUse('SystemCapability.Security.DlpAntiPeep');
+}
+
+/**
+ * 检查当前应用防窥保护开关
+ * */
+export async function isAntiPeepOn(): Promise<boolean> {
+  try {
+    let result: boolean = await dlpAntiPeep.isDlpAntiPeepSwitchOn();
+    hilog.info(0x0000, 'AntiPeepUtils', `[isAntiPeepOn] isDlpAntiPeepSwitchOn success. ${result}`);
+    return result;
+  } catch (err) {
+    hilog.error(0x0000, 'AntiPeepUtils', `[isAntiPeepOn] isDlpAntiPeepSwitchOn failed.${JSON.stringify(err)}`);
+    return false;
+  }
+}
+
+/**
+ * get current screen privacy status
+ * */
+export function getAntiPeepInfo(): dlpAntiPeep.DlpAntiPeepStatus {
+  try {
+    // 获取防窥状态
+    let dlpAntiPeepStatus = dlpAntiPeep.getDlpAntiPeepInfo();
+    hilog.info(0x0000, 'AntiPeepUtils', `getDlpHideInfo success. ${JSON.stringify(dlpAntiPeepStatus)}`);
+    return dlpAntiPeepStatus;
+  } catch (err) {
+    hilog.info(0x0000, 'AntiPeepUtils', `getDlpHideInfo failed. ${JSON.stringify(err)}`);
+    return -1;
+  }
+}
+
+/**
+ * 订阅防窥保护通知
+ * */
+export function listenOnAntiPeepStatus(antiPeepCB: AntiPeepCallback): boolean {
+  try {
+    hilog.info(0x0000, 'AntiPeepUtils', `start on('dlpAntiPeep')`);
+    dlpAntiPeep.on('dlpAntiPeep', (dlpAntiPeepStatus: dlpAntiPeep.DlpAntiPeepStatus) => {
+      hilog.info(0x0000, 'AntiPeepUtils', `dlpAntiPeep callback: ${JSON.stringify(dlpAntiPeepStatus)}`);
+      if (antiPeepCB) {
+        antiPeepCB.onStatusChanged(dlpAntiPeepStatus);
+      } else {
+        hilog.warn(0x0000, 'AntiPeepUtils', `antiPeepCB is empty`);
+      }
+    });
+    hilog.info(0x0000, 'AntiPeepUtils', `on('dlpAntiPeep') ok`);
+    return true;
+  } catch (err) {
+    hilog.error(0x0000, 'AntiPeepUtils', `dlpAntiPeep.on failed. ${JSON.stringify(err)}`);
+    return false;
+  }
+}
+
+/**
+ * 取消订阅防窥保护通知
+ * */
+export function listenOffAntiPeepStatus() {
+  try {
+    hilog.info(0x0000, 'AntiPeepUtils', `start off('dlpAntiPeep')`);
+    dlpAntiPeep.off('dlpAntiPeep');
+    hilog.info(0x0000, 'AntiPeepUtils', `off('dlpAntiPeep') ok`);
+  } catch (err) {
+    hilog.error(0x0000, 'AntiPeepUtils', `dlpAntiPeep.off failed. ${JSON.stringify(err)}`);
+  }
+}
+
+/**
+ * 拉起系统蒙层
+ * */
+export function showSystemMaskLayer(windowId: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    try {
+      dlpAntiPeep.setAntiPeepMaskLayer(windowId).catch((err: BusinessError) => {
+        hilog.error(0x0000, 'AntiPeepUtils', `Execute setAntiPeepMaskLayer failed. error code:${err.code},
+      error message:${err.message}`);
+        resolve(false);
+      }).then(() => {
+        hilog.info(0x0000, 'AntiPeepUtils', `setAntiPeepMaskLayer success`);
+        resolve(true);
+      })
+    } catch (err) {
+      hilog.error(0x0000, 'AntiPeepUtils', `Call setAntiPeepMaskLayer failed. ${JSON.stringify(err)}`);
+      resolve(false);
+    }
+  });
+}
+
+/**
+ * 引导用户打开当前应用防窥开关
+ * */
+export async function requestAntiPeepOptions(
+  context: common.UIAbilityContext): Promise<dlpAntiPeep.AntiPeepOptionsResult> {
+  try {
+    const result = await dlpAntiPeep.requestAntiPeepOptions(context);
+    hilog.info(0x0000, 'AntiPeepUtils', `[requestAntiPeepOptions] requestAntiPeepOptions success. ${result}`);
+    return result;
+  } catch (err) {
+    hilog.error(0x0000,
+      'AntiPeepUtils', `[requestAntiPeepOptions] requestAntiPeepOptions failed.${JSON.stringify(err)}`);
+    return dlpAntiPeep.AntiPeepOptionsResult.FAIL;
+  }
+}
+```
+
+### Code block 3
+
+```
+import { dlpAntiPeep } from '@kit.DeviceSecurityKit';
+// ...
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// ...
+import { JSON } from '@kit.ArkTS';
+import { window } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
+// ...
+import {
+  AntiPeepCallback,
+  canUseAntiPeep,
+  getAntiPeepInfo,
+  isAntiPeepOn,
+  listenOffAntiPeepStatus,
+  listenOnAntiPeepStatus,
+  showSystemMaskLayer,
+  requestAntiPeepOptions,
+} from '../common/utils/AntiPeepUtils';
+```
+
+### Code block 4
+
+```
 @Entry
 @Component
 struct Index {
-  @State message: string = 'DlpAntiPeep';
-  private hasShownMask: boolean = false;
+  // ...
+  private isSystemLayerTriggered: boolean = false;
+  // ...
+  private isListenOn: boolean = false;
+  private antiPeepCB: AntiPeepCallback = {
+    onStatusChanged: async (status: dlpAntiPeep.DlpAntiPeepStatus): Promise<void> => {
+      await this.handleAntiPeepStatus(status);
+    }
+  };
 
-  // 防窥状态变化回调
-  private onStatusChange = async (status: dlpAntiPeep.DlpAntiPeepStatus): Promise<void> => {
-    if (status === dlpAntiPeep.DlpAntiPeepStatus.PASS) { // 表示当前状态为无人窥视
-      console.info('DlpAntiPeepStatus is PASS.');
-    } else if (status === dlpAntiPeep.DlpAntiPeepStatus.HIDE) { // 表示有人在窥屏，应用可以进行隐私保护操作。
-      console.info('DlpAntiPeepStatus is HIDE.');
-      if (!this.hasShownMask) {
-        await this.setMaskLayer(); // 拉起系统蒙层
+  // ...
+
+  /**
+   * 处理防窥保护状态
+   * */
+  private async handleAntiPeepStatus(status: dlpAntiPeep.DlpAntiPeepStatus) {
+    hilog.info(0x0000, 'IndexPage', `[handleAntiPeepStatus] ${status}`);
+    switch (status) {
+      // 表示当前状态为无人窥视
+      case dlpAntiPeep.DlpAntiPeepStatus.PASS:
+        // ...
+        break;
+      // 表示有人在窥屏，应用可以进行隐私保护操作。
+      case dlpAntiPeep.DlpAntiPeepStatus.HIDE:
+        // ...
+              const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+              const windowClass = await window.getLastWindow(context);
+              const windowId = windowClass.getWindowProperties().id;
+              // 拉起系统蒙层
+              this.isSystemLayerTriggered = await showSystemMaskLayer(windowId);
+              // ...
+        break;
+      default:
+        // ...
+        break;
+    }
+  }
+
+  // 检查当前应用是否开启防窥保护，未开启时引导用户开启防窥，开启后获取防窥状态并订阅防窥监听。
+  private initAntiPeepStatus() {
+    if (canUseAntiPeep()) {
+      isAntiPeepOn().then((opened) => {
+        if (opened) {
+          let info = getAntiPeepInfo();
+          this.handleAntiPeepStatus(info);
+          // 订阅防窥状态监听
+          this.isListenOn = listenOnAntiPeepStatus(this.antiPeepCB);
+        } else {
+          // 开关未开启，引导用户设置
+          const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+          requestAntiPeepOptions(context).then((result) => {
+            if (result === dlpAntiPeep.AntiPeepOptionsResult.SUCCESS ||
+              result === dlpAntiPeep.AntiPeepOptionsResult.ALREADY_ON) { // 表示防窥保护开关开启成功或已开启
+              let info = getAntiPeepInfo();
+              this.handleAntiPeepStatus(info);
+              this.isListenOn = listenOnAntiPeepStatus(this.antiPeepCB);
+            } else {
+              try {
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.anti_peep_not_enable')
+                });
+              } catch (error) {
+                hilog.info(0x0000, 'IndexPage', `show toast error:${JSON.parse(error)}}`);
+              }
+            }
+          })
+        }
+      })
+    } else {
+      try {
+        this.getUIContext().getPromptAction().showToast({
+          message: $r('app.string.device_not_supported')
+        });
+      } catch (error) {
+        hilog.info(0x0000, 'IndexPage', `show toast error:${JSON.parse(error)}}`);
       }
     }
   }
 
-  // 检查防窥保护开关并订阅通知
-  async aboutToAppear() {
-    try {
-      const isOpen = await dlpAntiPeep.isDlpAntiPeepSwitchOn();
-      if (isOpen) {
-        dlpAntiPeep.on('dlpAntiPeep', this.onStatusChange);
-      } else {
-        // 开关未开启，引导用户设置
-        const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-        const result = await dlpAntiPeep.requestAntiPeepOptions(context);
-        if (result === dlpAntiPeep.AntiPeepOptionsResult.SUCCESS ||
-            result === dlpAntiPeep.AntiPeepOptionsResult.ALREADY_ON) { // 表示防窥保护开关开启成功或已开启
-          dlpAntiPeep.on('dlpAntiPeep', this.onStatusChange);
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to init DlpAntiPeep. Code: ${error.code}, message: ${error.message}`);
-    }
+  // ...
+
+  // 初始化防窥状态
+  private initData() {
+    // ...
+    this.initAntiPeepStatus();
+    // ...
+  }
+
+  onPageShow(): void {
+    this.initData();
+  }
+
+  onPageHide(): void {
+    this.isSystemLayerTriggered = false;
+    // ...
   }
 
   // 取消订阅防窥保护通知
-  aboutToDisappear() {
-    try {
-      dlpAntiPeep.off('dlpAntiPeep', this.onStatusChange);
-    } catch (error) {
-      console.error(`Failed to off DlpAntiPeep. Code: ${error.code}, message: ${error.message}`);
-    }
-  }
-
-  onPageShow() {
-    console.info('Page shown, reset mask flag');
-    this.hasShownMask = false;
-  }
-
-  // 拉起系统蒙层
-  private async setMaskLayer(): Promise<void> {
-    try {
-      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-      const windowClass = await window.getLastWindow(context);
-      const windowId = windowClass.getWindowProperties().id;
-      await dlpAntiPeep.setAntiPeepMaskLayer(windowId);
-      this.hasShownMask = true; // 避免窥视状态时频繁拉起蒙层
-    } catch (error) {
-      console.error(`Failed to set AntiPeep MaskLayer. Code: ${error.code}, message: ${error.message}`);
+  aboutToDisappear(): void {
+    if (this.isListenOn) {
+      listenOffAntiPeepStatus();
+      this.isListenOn = false;
     }
   }
 
   build() {
-    Column() {
-      Text(this.message)
-        .fontSize(20)
-        .margin(20)
+    Scroll() {
+    // ...
     }
-    .width('100%')
     .height('100%')
-    .justifyContent(FlexAlign.Center)
+    .width('100%')
+    .backgroundColor($r('app.color.bg_main'))
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }
 ```

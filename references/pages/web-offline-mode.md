@@ -24,17 +24,26 @@ Web组件能够实现在不同窗口的组件树上进行挂载或移除操作�
 
 创建Web组件将占用内存（每个Web组件大约200MB）和计算资源，建议避免一次性创建大量离线Web组件，以减少资源消耗。
 
-onWindowStageCreate(windowStage: window.WindowStage): void {
-  windowStage.loadContent('pages/Index', (err, data) => {
-    // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
-    createNWeb('www.example.com', windowStage.getMainWindowSync().getUIContext());
-    if (err.code) {
-      return;
-    }
-  });
-}
+import { createNWeb } from "../pages/Common";
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+// ...
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err && err.code) {
+        console.info('loadContent failed. errorCode: ' + err.code);
+        return;
+      }
+      let windowClass: window.Window = windowStage.getMainWindowSync(); // Obtain the main window of the application.
+      if (!windowClass) {
+        console.info('windowClass is null');
+        return;
+      }
+      // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
+      createNWeb('www.example.com', windowClass.getUIContext());
+    });
+  }
 
-// 创建NodeController
 // Common.ets
 import { UIContext, NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -61,10 +70,10 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController extends NodeController {
   private rootNode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新
   makeNode(uiContext: UIContext): FrameNode | null {
-    console.info('uicontext is undefined : ' + (uiContext === undefined));
+    console.info('uiContext is undefined : ' + (uiContext === undefined));
     if (this.rootNode !== null) {
       // 返回FrameNode节点
       return this.rootNode.getFrameNode();
@@ -103,7 +112,7 @@ export class MyNodeController extends NodeController {
 
 // 创建Map保存所需要的NodeController
 let nodeMap: Map<ResourceStr, MyNodeController | undefined> = new Map();
-// 创建Map保存所需要的WebViewController
+// 创建Map保存所需要的WebviewController
 let controllerMap: Map<ResourceStr, WebviewController | undefined> = new Map();
 
 // 初始化需要UIContext 需在Ability获取
@@ -174,7 +183,6 @@ import { createNWeb } from '../pages/Common';
     });
   }
 
-// 创建NodeController
 // Common.ets
 import { UIContext, NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -201,10 +209,10 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController extends NodeController {
   private rootNode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新
   makeNode(uiContext: UIContext): FrameNode | null {
-    console.info('uicontext is undefined : ' + (uiContext === undefined));
+    console.info('uiContext is undefined : ' + (uiContext === undefined));
     if (this.rootNode !== null) {
       // 返回FrameNode节点
       return this.rootNode.getFrameNode();
@@ -243,7 +251,7 @@ export class MyNodeController extends NodeController {
 
 // 创建Map保存所需要的NodeController
 let nodeMap: Map<ResourceStr, MyNodeController | undefined> = new Map();
-// 创建Map保存所需要的WebViewController
+// 创建Map保存所需要的WebviewController
 let controllerMap: Map<ResourceStr, WebviewController | undefined> = new Map();
 
 // 初始化需要UIContext 需在Ability获取
@@ -317,17 +325,26 @@ struct Index2 {
 
 预渲染的网页会在后台不断进行渲染，建议在预渲染完成后立即停止渲染，以防止发热和功耗问题。可以参考以下示例，使用 onFirstMeaningfulPaint 来确定停止时机，该接口适用于http和https网页。
 
-onWindowStageCreate(windowStage: window.WindowStage): void {
-  windowStage.loadContent('pages/Index', (err, data) => {
-    // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
-    createNWeb('www.example.com', windowStage.getMainWindowSync().getUIContext());
-    if (err.code) {
-      return;
-    }
-  });
-}
+import { createNWeb } from "../pages/Common";
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+// ...
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err && err.code) {
+        console.info('loadContent failed. errorCode: ' + err.code);
+        return;
+      }
+      let windowClass: window.Window = windowStage.getMainWindowSync(); // Obtain the main window of the application.
+      if (!windowClass) {
+        console.info('windowClass is null');
+        return;
+      }
+      // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
+      createNWeb('www.example.com', windowClass.getUIContext());
+    });
+  }
 
-// 创建NodeController
 // Common.ets
 import { UIContext } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -370,7 +387,7 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController extends NodeController {
   private rootNode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新
   makeNode(uiContext: UIContext): FrameNode | null {
     console.info('uiContext is undefined : ' + (uiContext === undefined));
@@ -414,7 +431,7 @@ export class MyNodeController extends NodeController {
 
 // 创建Map保存所需要的NodeController
 let nodeMap: Map<string, MyNodeController | undefined> = new Map();
-// 创建Map保存所需要的WebViewController
+// 创建Map保存所需要的WebviewController
 let controllerMap: Map<string, WebviewController | undefined> = new Map();
 
 // 初始化需要UIContext 需在Ability获取
@@ -424,7 +441,7 @@ export const createNWeb = (url: string, uiContext: UIContext) => {
   let controller = new webview.WebviewController();
   // 初始化自定义Web组件
   baseNode.initWeb(url, uiContext, controller);
-  controllerMap.set(url, controller)
+  controllerMap.set(url, controller);
   nodeMap.set(url, baseNode);
 }
 
@@ -497,7 +514,6 @@ let recycledNWebs: Set<ResourceStr> = new Set()
 
 // 初始化需要UIContext 需在Ability获取
 export const createNWeb = (url: ResourceStr, uiContext: UIContext) => {
-  // 创建NodeController
   console.info('createNWeb, url = ' + url);
   if (!globalUiContext) {
     globalUiContext = uiContext;
@@ -507,6 +523,7 @@ export const createNWeb = (url: ResourceStr, uiContext: UIContext) => {
     return;
   }
 
+  // 创建NodeController
   let baseNode = new MyNodeController();
   // 初始化自定义Web组件
   baseNode.initWeb(url, uiContext);
@@ -655,21 +672,30 @@ function WebBuilder(data:Data) {
 ### Code block 1
 
 ```
-onWindowStageCreate(windowStage: window.WindowStage): void {
-  windowStage.loadContent('pages/Index', (err, data) => {
-    // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
-    createNWeb('www.example.com', windowStage.getMainWindowSync().getUIContext());
-    if (err.code) {
-      return;
-    }
-  });
-}
+import { createNWeb } from "../pages/Common";
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+// ...
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err && err.code) {
+        console.info('loadContent failed. errorCode: ' + err.code);
+        return;
+      }
+      let windowClass: window.Window = windowStage.getMainWindowSync(); // Obtain the main window of the application.
+      if (!windowClass) {
+        console.info('windowClass is null');
+        return;
+      }
+      // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
+      createNWeb('www.example.com', windowClass.getUIContext());
+    });
+  }
 ```
 
 ### Code block 2
 
 ```
-// 创建NodeController
 // Common.ets
 import { UIContext, NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -696,10 +722,10 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController extends NodeController {
   private rootNode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新
   makeNode(uiContext: UIContext): FrameNode | null {
-    console.info('uicontext is undefined : ' + (uiContext === undefined));
+    console.info('uiContext is undefined : ' + (uiContext === undefined));
     if (this.rootNode !== null) {
       // 返回FrameNode节点
       return this.rootNode.getFrameNode();
@@ -738,7 +764,7 @@ export class MyNodeController extends NodeController {
 
 // 创建Map保存所需要的NodeController
 let nodeMap: Map<ResourceStr, MyNodeController | undefined> = new Map();
-// 创建Map保存所需要的WebViewController
+// 创建Map保存所需要的WebviewController
 let controllerMap: Map<ResourceStr, WebviewController | undefined> = new Map();
 
 // 初始化需要UIContext 需在Ability获取
@@ -809,7 +835,6 @@ import { createNWeb } from '../pages/Common';
 ### Code block 5
 
 ```
-// 创建NodeController
 // Common.ets
 import { UIContext, NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -836,10 +861,10 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController extends NodeController {
   private rootNode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新
   makeNode(uiContext: UIContext): FrameNode | null {
-    console.info('uicontext is undefined : ' + (uiContext === undefined));
+    console.info('uiContext is undefined : ' + (uiContext === undefined));
     if (this.rootNode !== null) {
       // 返回FrameNode节点
       return this.rootNode.getFrameNode();
@@ -878,7 +903,7 @@ export class MyNodeController extends NodeController {
 
 // 创建Map保存所需要的NodeController
 let nodeMap: Map<ResourceStr, MyNodeController | undefined> = new Map();
-// 创建Map保存所需要的WebViewController
+// 创建Map保存所需要的WebviewController
 let controllerMap: Map<ResourceStr, WebviewController | undefined> = new Map();
 
 // 初始化需要UIContext 需在Ability获取
@@ -950,21 +975,30 @@ struct Index2 {
 ### Code block 8
 
 ```
-onWindowStageCreate(windowStage: window.WindowStage): void {
-  windowStage.loadContent('pages/Index', (err, data) => {
-    // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
-    createNWeb('www.example.com', windowStage.getMainWindowSync().getUIContext());
-    if (err.code) {
-      return;
-    }
-  });
-}
+import { createNWeb } from "../pages/Common";
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
+// ...
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    windowStage.loadContent('pages/Index', (err, data) => {
+      if (err && err.code) {
+        console.info('loadContent failed. errorCode: ' + err.code);
+        return;
+      }
+      let windowClass: window.Window = windowStage.getMainWindowSync(); // Obtain the main window of the application.
+      if (!windowClass) {
+        console.info('windowClass is null');
+        return;
+      }
+      // 创建Web动态组件（需传入UIContext），loadContent之后的任意时机均可创建
+      createNWeb('www.example.com', windowClass.getUIContext());
+    });
+  }
 ```
 
 ### Code block 9
 
 ```
-// 创建NodeController
 // Common.ets
 import { UIContext } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
@@ -1007,7 +1041,7 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController extends NodeController {
   private rootNode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新
   makeNode(uiContext: UIContext): FrameNode | null {
     console.info('uiContext is undefined : ' + (uiContext === undefined));
@@ -1051,7 +1085,7 @@ export class MyNodeController extends NodeController {
 
 // 创建Map保存所需要的NodeController
 let nodeMap: Map<string, MyNodeController | undefined> = new Map();
-// 创建Map保存所需要的WebViewController
+// 创建Map保存所需要的WebviewController
 let controllerMap: Map<string, WebviewController | undefined> = new Map();
 
 // 初始化需要UIContext 需在Ability获取
@@ -1061,7 +1095,7 @@ export const createNWeb = (url: string, uiContext: UIContext) => {
   let controller = new webview.WebviewController();
   // 初始化自定义Web组件
   baseNode.initWeb(url, uiContext, controller);
-  controllerMap.set(url, controller)
+  controllerMap.set(url, controller);
   nodeMap.set(url, baseNode);
 }
 
@@ -1108,7 +1142,6 @@ let recycledNWebs: Set<ResourceStr> = new Set()
 
 // 初始化需要UIContext 需在Ability获取
 export const createNWeb = (url: ResourceStr, uiContext: UIContext) => {
-  // 创建NodeController
   console.info('createNWeb, url = ' + url);
   if (!globalUiContext) {
     globalUiContext = uiContext;
@@ -1118,6 +1151,7 @@ export const createNWeb = (url: ResourceStr, uiContext: UIContext) => {
     return;
   }
 
+  // 创建NodeController
   let baseNode = new MyNodeController();
   // 初始化自定义Web组件
   baseNode.initWeb(url, uiContext);

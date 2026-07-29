@@ -2,8 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-scanbarcode_
 
-基本概念
-
 默认界面扫码能力提供系统级体验一致的扫码界面，包含相机预览流，相册扫码入口，暗光环境闪光灯开启提示。Scan Kit默认界面扫码对系统相机权限进行了预授权且调用期间处于安全访问状态，无需开发者再次申请相机权限。适用于不同扫码场景的应用开发。
 
 说明
@@ -12,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-scan
 
 场景介绍
 
-默认界面扫码能力提供了系统级体验一致的扫码界面以及相册扫码入口，支持单码和多码识别，支持多种识码类型，请参见ScanType。无需使用三方库就可帮助开发者的应用快速处理各种扫码场景。
+默认界面扫码能力提供了系统级体验一致的扫码界面以及相册扫码入口，支持单码和多码识别，支持多种码类型，请参见ScanType。无需使用三方库就可帮助开发者的应用快速处理各种扫码场景。
 
 默认界面扫码UX：
 
@@ -22,9 +20,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-scan
 
 用户可以点击“进一步了解”查看安全访问相机说明，也可以关闭隐私横幅，关闭后重新打开应用的扫码界面将不再显示隐私横幅提醒，显示安全访问提示，3s后消失。
 
-从6.1.0(23)版本开始，默认界面扫码的标题支持根据ScanOptions的scanTypes进行动态显示。
+从API版本6.1.0(23)开始，默认界面扫码的标题支持根据ScanOptions的scanTypes进行动态显示。
 
-对于6.1.0(23)之前版本，标题统一显示为“扫描二维码/条形码”。
+在API版本6.1.0(23)之前，标题统一显示为“扫描二维码/条形码”。
 
 scanTypes为ALL、FORMAT_UNKNOWN，或同时包含条形码和二维码类型，标题显示为“扫描二维码/条形码”。
 
@@ -36,13 +34,13 @@ scanTypes仅包含二维码类型，标题显示为“扫描二维码”。
 
 约束与限制
 
-从26.0.0版本开始，支持使用scanCore.isDefaultScanSupported接口查询当前设备是否支持默认界面扫码。
+从API版本26.0.0开始，支持使用isDefaultScanSupported接口查询当前设备是否支持默认界面扫码。
 
-从6.1.0(23)版本开始，默认界面扫码的标题支持根据ScanOptions的scanTypes进行动态显示。
+从API版本6.1.0(23)开始，默认界面扫码的标题支持根据ScanOptions的scanTypes进行动态显示。
 
-从6.1.0(23)版本开始，默认界面扫码能力支持带后置相机的Wearable，可以通过cameraManager.getSupportedCameras接口查询是否带后置相机。
+从API版本6.1.0(23)开始，默认界面扫码能力支持带后置相机的Wearable，可以通过getSupportedCameras接口查询是否带后置相机。
 
-从6.0.0(20)版本开始，默认界面扫码能力支持悬浮屏、分屏场景。
+从API版本6.0.0(20)开始，默认界面扫码能力支持悬浮屏、分屏场景。
 
 相册扫码只支持单码识别。
 
@@ -103,18 +101,15 @@ struct ScanBarCodePage {
     Column() {
       Row() {
         Button('Promise with options')
-          .backgroundColor('#0D9FFB')
-          .fontSize(20)
-          .fontColor($r('sys.color.comp_background_list_card'))
-          .fontWeight(FontWeight.Normal)
+          .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+          .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
           .align(Alignment.Center)
           .type(ButtonType.Capsule)
           .width('90%')
-          .height(40)
-          .margin({ top: 5, bottom: 5 })
+          .margin({ bottom: 12 })
           .onClick(() => {
             // 定义扫码参数options
-            let options: scanBarcode.ScanOptions = {
+            const options: scanBarcode.ScanOptions = {
               scanTypes: [scanCore.ScanType.ALL],
               enableMultiMode: true,
               enableAlbum: true
@@ -124,15 +119,14 @@ struct ScanBarCodePage {
               scanBarcode.startScanForResult(this.getUIContext().getHostContext(), options)
                 .then((data: scanBarcode.ScanResult) => {
                   // 解析码值结果跳转应用服务页
-                  hilog.info(0x0001, '[Scan CPSample]',
+                  hilog.info(0x0001, '[Scan Sample]',
                     `Succeeded in getting ScanResult by promise with options, result is ${JSON.stringify(data)}`);
-                })
-                .catch((err: BusinessError) => {
-                  hilog.error(0x0001, '[Scan CPSample]',
-                    `Failed to get ScanResult by promise with options. Code:${err.code}, message: ${err.message}`);
-                });
+                }).catch((err: BusinessError) => {
+                hilog.error(0x0001, '[Scan Sample]',
+                  `Failed to get ScanResult by promise with options. Code:${err.code}, message: ${err.message}`);
+              });
             } catch (err) {
-              hilog.error(0x0001, '[Scan CPSample]',
+              hilog.error(0x0001, '[Scan Sample]',
                 `Failed to start the scanning service. Code:${err.code}, message: ${err.message}`);
             }
           })
@@ -150,18 +144,15 @@ struct ScanBarCodePage {
     Column() {
       Row() {
         Button('Callback with options')
-          .backgroundColor('#0D9FFB')
-          .fontSize(20)
-          .fontColor($r('sys.color.comp_background_list_card'))
-          .fontWeight(FontWeight.Normal)
+          .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+          .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
           .align(Alignment.Center)
           .type(ButtonType.Capsule)
           .width('90%')
-          .height(40)
-          .margin({ top: 5, bottom: 5 })
+          .margin({ bottom: 12 })
           .onClick(() => {
             // 定义扫码参数options
-            let options: scanBarcode.ScanOptions = {
+            const options: scanBarcode.ScanOptions = {
               scanTypes: [scanCore.ScanType.ALL],
               enableMultiMode: true,
               enableAlbum: true
@@ -171,16 +162,16 @@ struct ScanBarCodePage {
               scanBarcode.startScanForResult(this.getUIContext().getHostContext(), options,
                 (err: BusinessError, data: scanBarcode.ScanResult) => {
                   if (err) {
-                    hilog.error(0x0001, '[Scan CPSample]',
+                    hilog.error(0x0001, '[Scan Sample]',
                       `Failed to get ScanResult by callback with options. Code: ${err.code}, message: ${err.message}`);
                     return;
                   }
                   // 解析码值结果跳转应用服务页
-                  hilog.info(0x0001, '[Scan CPSample]',
+                  hilog.info(0x0001, '[Scan Sample]',
                     `Succeeded in getting ScanResult by callback with options, result is ${JSON.stringify(data)}`);
                 });
             } catch (err) {
-              hilog.error(0x0001, '[Scan CPSample]',
+              hilog.error(0x0001, '[Scan Sample]',
                 `Failed to start the scanning service. Code:${err.code}, message: ${err.message}`);
             }
           })
@@ -193,7 +184,7 @@ struct ScanBarCodePage {
 
 模拟器开发
 
-从6.0.0(20)版本开始，模拟器支持默认界面扫码能力开发，模拟器使用指导请参见使用模拟器运行应用。
+从API版本6.0.0(20)开始，模拟器支持默认界面扫码能力开发，模拟器使用指导请参见使用模拟器运行应用。
 
 模拟器中默认界面扫码的相机流存在镜像问题，且由于仅支持固定分辨率比例，画面会出现上下黑边。
 
@@ -218,18 +209,15 @@ struct ScanBarCodePage {
     Column() {
       Row() {
         Button('Promise with options')
-          .backgroundColor('#0D9FFB')
-          .fontSize(20)
-          .fontColor($r('sys.color.comp_background_list_card'))
-          .fontWeight(FontWeight.Normal)
+          .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+          .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
           .align(Alignment.Center)
           .type(ButtonType.Capsule)
           .width('90%')
-          .height(40)
-          .margin({ top: 5, bottom: 5 })
+          .margin({ bottom: 12 })
           .onClick(() => {
             // 定义扫码参数options
-            let options: scanBarcode.ScanOptions = {
+            const options: scanBarcode.ScanOptions = {
               scanTypes: [scanCore.ScanType.ALL],
               enableMultiMode: true,
               enableAlbum: true
@@ -239,15 +227,14 @@ struct ScanBarCodePage {
               scanBarcode.startScanForResult(this.getUIContext().getHostContext(), options)
                 .then((data: scanBarcode.ScanResult) => {
                   // 解析码值结果跳转应用服务页
-                  hilog.info(0x0001, '[Scan CPSample]',
+                  hilog.info(0x0001, '[Scan Sample]',
                     `Succeeded in getting ScanResult by promise with options, result is ${JSON.stringify(data)}`);
-                })
-                .catch((err: BusinessError) => {
-                  hilog.error(0x0001, '[Scan CPSample]',
-                    `Failed to get ScanResult by promise with options. Code:${err.code}, message: ${err.message}`);
-                });
+                }).catch((err: BusinessError) => {
+                hilog.error(0x0001, '[Scan Sample]',
+                  `Failed to get ScanResult by promise with options. Code:${err.code}, message: ${err.message}`);
+              });
             } catch (err) {
-              hilog.error(0x0001, '[Scan CPSample]',
+              hilog.error(0x0001, '[Scan Sample]',
                 `Failed to start the scanning service. Code:${err.code}, message: ${err.message}`);
             }
           })
@@ -269,18 +256,15 @@ struct ScanBarCodePage {
     Column() {
       Row() {
         Button('Callback with options')
-          .backgroundColor('#0D9FFB')
-          .fontSize(20)
-          .fontColor($r('sys.color.comp_background_list_card'))
-          .fontWeight(FontWeight.Normal)
+          .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+          .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
           .align(Alignment.Center)
           .type(ButtonType.Capsule)
           .width('90%')
-          .height(40)
-          .margin({ top: 5, bottom: 5 })
+          .margin({ bottom: 12 })
           .onClick(() => {
             // 定义扫码参数options
-            let options: scanBarcode.ScanOptions = {
+            const options: scanBarcode.ScanOptions = {
               scanTypes: [scanCore.ScanType.ALL],
               enableMultiMode: true,
               enableAlbum: true
@@ -290,16 +274,16 @@ struct ScanBarCodePage {
               scanBarcode.startScanForResult(this.getUIContext().getHostContext(), options,
                 (err: BusinessError, data: scanBarcode.ScanResult) => {
                   if (err) {
-                    hilog.error(0x0001, '[Scan CPSample]',
+                    hilog.error(0x0001, '[Scan Sample]',
                       `Failed to get ScanResult by callback with options. Code: ${err.code}, message: ${err.message}`);
                     return;
                   }
                   // 解析码值结果跳转应用服务页
-                  hilog.info(0x0001, '[Scan CPSample]',
+                  hilog.info(0x0001, '[Scan Sample]',
                     `Succeeded in getting ScanResult by callback with options, result is ${JSON.stringify(data)}`);
                 });
             } catch (err) {
-              hilog.error(0x0001, '[Scan CPSample]',
+              hilog.error(0x0001, '[Scan Sample]',
                 `Failed to start the scanning service. Code:${err.code}, message: ${err.message}`);
             }
           })

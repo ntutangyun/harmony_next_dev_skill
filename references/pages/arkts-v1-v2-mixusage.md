@@ -105,7 +105,7 @@ UIUtils.enableV2Compatibility(UIUtils.makeV1Observed())不会改变V1和V2本身
 
 当数据已使用V2观察能力，即调用UIUtils.enableV2Compatibility后，会将新的数据默认使用V2观察能力，但需要开发者确保新增数据是@Observed装饰的class，或者是makeV1Observed的返回值。完整例子可见传递嵌套类型（V1->V2）、传递嵌套类型（V2->V1）。
 
-let arr: Array<ArrayItem> = UIUtils.enableV2Compatibility(UIUtils.makeV1Observed(new ArrayItem()));
+let arr: Array<ArrayItem> = UIUtils.enableV2Compatibility(UIUtils.makeV1Observed(new Array<ArrayItem>()));
 
 arr.push(new ArrayItem()); // 新增数据不是V1状态变量，所以不会具有V2观察能力
 arr.push(UIUtils.makeV1Observed(new ArrayItem())); // 新增数据是V1的状态变量，默认在V2中可观察
@@ -138,12 +138,15 @@ struct CompV1 {
   build() {
     Column() {
       Text(`@State observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += '!'; // 刷新
         })
       // 调用UIUtils.enableV2Compatibility使V1的状态变量可在@ComponentV2中有观察能力。
       CompV2({ observedClass: UIUtils.enableV2Compatibility(this.observedClass) })
     }
+    .width('100%')
   }
 }
 
@@ -154,6 +157,8 @@ struct CompV2 {
   build() {
     // V1状态变量在使能V2观察能力后，可以在V2观察第一层的变化
     Text(`@Param observedClass: ${this.observedClass.name}`)
+      .fontSize(20)
+      .margin(10)
       .onClick(() => {
         this.observedClass.name += '!'; // 刷新
       })
@@ -190,12 +195,15 @@ struct CompV1 {
   build() {
     Column() {
       Text(`@State observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += 'a'; // 触发刷新
         })
       // 调用UIUtils.enableV2Compatibility使V1的状态变量可在@ComponentV2中有观察能力。
       CompV2({ observedClass: UIUtils.enableV2Compatibility(this.observedClass) })
     }
+    .width('100%')
   }
 }
 
@@ -207,15 +215,21 @@ struct CompV2 {
     Column() {
       // V1状态变量在使能V2观察能力后，可以在V2观察第一层的变化
       Text(`@Param observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += '!'; // 刷新
         })
 
       // 使用非@Track的变量在V2中不会崩溃，但不会响应更新
-      Text(`count: ${this.observedClass.count}`).onClick(() => {
-        this.observedClass.count++; // 不触发刷新
-      })
+      Text(`count: ${this.observedClass.count}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          this.observedClass.count++; // 不触发刷新
+        })
     }
+    .width('100%')
   }
 }
 
@@ -232,10 +246,13 @@ struct ArrayCompV1 {
 
   build() {
     Column() {
-      Text(`V1 ${this.arr[0]}`).onClick(() => {
-        // 点击触发ArrayCompV1和ArrayCompV2变化
-        this.arr[0]++;
-      })
+      Text(`V1 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发ArrayCompV1和ArrayCompV2变化
+          this.arr[0]++;
+        })
       // 传递给V2时，发现当前代理是makeV1Observed包装的，且使能V2观察能力
       // 在ArrayCompV2中Param不会再次包装代理，避免双重代理的问题
       ArrayCompV2({ arr: UIUtils.enableV2Compatibility(this.arr) })
@@ -251,11 +268,15 @@ struct ArrayCompV2 {
 
   build() {
     Column() {
-      Text(`V2 ${this.arr[0]}`).onClick(() => {
-        // 点击触发ArrayCompV1和ArrayCompV2变化
-        this.arr[0]++;
-      })
+      Text(`V2 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发ArrayCompV1和ArrayCompV2变化
+          this.arr[0]++;
+        })
     }
+    .width('100%')
   }
 }
 
@@ -277,13 +298,17 @@ struct Item {
     Row() {
       ForEach(this.itemArr, (item: string, index: number) => {
         Text(`${index}: ${item}`)
+          .width('30%')
+          .fontSize(20)
       }, (item: string) => item + Math.random())
       // 新增数组元素
       Button('@Param push')
+        .width('30%')
         .onClick(() => {
           this.itemArr.push('Param');
         })
     }
+    .margin(5)
   }
 }
 
@@ -301,25 +326,34 @@ struct IndexPage {
       Divider()
       // 数组arr[0]新增元素
       Button('@State push two-dimensional array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0].push('strawberry');
         })
       // 数组arr新增元素
       Button('@State push array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.push(UIUtils.makeV1Observed(['pear']));
         })
       // 修改数组项arr[0][0]的值
       Button('@State change two-dimensional array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0][0] = 'APPLE';
         })
       // 修改数组arr的第一个元素
       Button('@State change array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0] = UIUtils.makeV1Observed(['watermelon']);
         })
     }
+    .width('100%')
   }
 }
 
@@ -373,6 +407,7 @@ struct NestedClassV1 {
     Column() {
       Text(`@State outer.outerValue can update ${this.outer.outerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // @State可以观察第一层的变化
           // 变化会通知@ObjectLink和@Param刷新
@@ -381,6 +416,7 @@ struct NestedClassV1 {
 
       Text(`@State outer.inner.innerValue cannot update ${this.outer.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // @State无法观察第二层的变化
           // 但该变化会被@ObjectLink和@Param观察
@@ -403,6 +439,7 @@ struct NestedClassV1ObjectLink {
   build() {
     Text(`@ObjectLink inner.innerValue can update ${this.inner.innerValue}`)
       .fontSize(20)
+      .margin(10)
       .onClick(() => {
         // 可以触发刷新，和@Param是同一个对象的引用，@Param也会进行刷新
         this.inner.innerValue += '!';
@@ -418,12 +455,14 @@ struct NestedClassV2 {
     Column() {
       Text(`@Param outer.outerValue can update ${this.outer.outerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可以观察第一层的变化
           this.outer.outerValue += '!';
         })
       Text(`@Param outer.inner.innerValue can update ${this.outer.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可以观察第二层的变化，和@ObjectLink是同一个对象的引用，也会触发刷新
           this.outer.inner.innerValue += '!';
@@ -432,18 +471,27 @@ struct NestedClassV2 {
       Repeat(this.outer.inner.arr)
         .each((item: RepeatItem<ArrayItem>) => {
           Text(`@Param outer.inner.arr index: ${item.index} item: ${item.item.value}`)
+            .fontSize(20)
+            .margin(10)
         })
 
-      Button('@Param push').onClick(() => {
-        // outer已经使能了V2观察能力，对于新增加的数据，则默认开启V2观察能力
-        this.outer.inner.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
-      })
+      Button('@Param push')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // outer已经使能了V2观察能力，对于新增加的数据，则默认开启V2观察能力
+          this.outer.inner.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
+        })
 
-      Button('@Param change the last Item').onClick(() => {
-        // 可以观察最后一个数组项的属性变化
-        this.outer.inner.arr[this.outer.inner.arr.length - 1].value++;
-      })
+      Button('@Param change the last Item')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // 可以观察最后一个数组项的属性变化
+          this.outer.inner.arr[this.outer.inner.arr.length - 1].value++;
+        })
     }
+    .width('100%')
   }
 }
 
@@ -481,12 +529,15 @@ struct CompV2 {
       // 又调用UIUtils.enableV2Compatibility使其在V2中可观察
       // 所以当前可观察第一层属性的变化
       Text(`@Local observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += '!'; // 刷新
         })
       // @ObjectLink可接收@Observed装饰class的实例或者makeV1Observed的返回值
       CompV1({ observedClass: this.observedClass })
     }
+    .width('100%')
   }
 }
 
@@ -497,6 +548,8 @@ struct CompV1 {
   build() {
     // 在CompV1中可观察第一层的变化
     Text(`@ObjectLink observedClass: ${this.observedClass.name}`)
+      .fontSize(20)
+      .margin(10)
       .onClick(() => {
         this.observedClass.name += '!'; // 刷新
       })
@@ -521,36 +574,47 @@ class ObservedClass {
 
 @Entry
 @ComponentV2
-struct CompV1 {
+struct CompV2 {
   @Local observedClass: ObservedClass = UIUtils.enableV2Compatibility(new ObservedClass());
 
   build() {
     Column() {
-      Text(`name: ${this.observedClass.name}`).onClick(() => {
-        // 触发刷新
-        this.observedClass.name += 'a';
-      })
+      Text(`name: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 触发刷新
+          this.observedClass.name += 'a';
+        })
       // 使用非@Track的变量在V2中不会崩溃，但不响应更新
-      Text(`count: ${this.observedClass.count}`).onClick(() => {
-        this.observedClass.count++;
-      })
+      Text(`count: ${this.observedClass.count}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          this.observedClass.count++;
+        })
 
-      CompV2({ observedClass: this.observedClass })
+      CompV1({ observedClass: this.observedClass })
     }
+    .width('100%')
   }
 }
 
 @Component
-struct CompV2 {
+struct CompV1 {
   @ObjectLink observedClass: ObservedClass;
 
   build() {
     Column() {
-      Text(`count: ${this.observedClass.name}`).onClick(() => {
-        // 触发刷新
-        this.observedClass.name += 'a';
-      })
+      Text(`name: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 触发刷新
+          this.observedClass.name += 'a';
+        })
     }
+    .width('100%')
   }
 }
 
@@ -567,10 +631,13 @@ struct ArrayCompV2 {
 
   build() {
     Column() {
-      Text(`V2 ${this.arr[0]}`).fontSize(20).onClick(() => {
-        // 点击触发V2变化，且同步给V1 @ObjectLink
-        this.arr[0]++;
-      })
+      Text(`V2 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发V2变化，且同步给V1 @ObjectLink
+          this.arr[0]++;
+        })
       ArrayCompV1({ arr: this.arr })
     }
     .height('100%')
@@ -584,11 +651,15 @@ struct ArrayCompV1 {
 
   build() {
     Column() {
-      Text(`V1 ${this.arr[0]}`).fontSize(20).onClick(() => {
-        // 点击触发V1变化，且双向同步回给V2
-        this.arr[0]++;
-      })
+      Text(`V1 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发V1变化，且双向同步回给V2
+          this.arr[0]++;
+        })
     }
+    .width('100%')
   }
 }
 
@@ -610,13 +681,17 @@ struct Item {
     Row() {
       ForEach(this.itemArr, (item: string, index: number) => {
         Text(`${index}: ${item}`)
+          .fontSize(20)
+          .margin(5)
       }, (item: string) => item + Math.random())
       // 新增数组元素
       Button('@ObjectLink push')
+        .width('40%')
         .onClick(() => {
           this.itemArr.push('ObjectLink');
         })
     }
+    .height('100%')
   }
 }
 
@@ -635,25 +710,34 @@ struct IndexPage {
       Divider()
       // 数组arr[0]新增元素
       Button('@Local push two-dimensional array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0].push('strawberry');
         })
       // 数组arr新增元素
       Button('@Local push array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.push(UIUtils.makeV1Observed(['pear']));
         })
       // 修改数组项arr[0][0]的值
       Button('@Local change two-dimensional array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0][0] = 'APPLE';
         })
       // 修改数组arr的第一个元素
       Button('@Local change array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0] = UIUtils.makeV1Observed(['watermelon']);
         })
     }
+    .width('100%')
   }
 }
 
@@ -709,6 +793,7 @@ struct NestedClassV2 {
     Column() {
       Text(`@Local outer.outerValue can update ${this.outer.outerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可观察第一层的变化
           this.outer.outerValue += '!';
@@ -716,6 +801,7 @@ struct NestedClassV2 {
 
       Text(`@Local outer.inner.innerValue can update ${this.outer.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可观察第二层的变化
           this.outer.inner.innerValue += '!';
@@ -736,12 +822,14 @@ struct NestedClassV1ObjectLink {
     Column() {
       Text(`@ObjectLink inner.innerValue can update ${this.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可以触发刷新
           this.inner.innerValue += '!';
         })
       NestedClassV1ObjectLinkArray({ arr: this.inner.arr })
     }
+    .width('100%')
   }
 }
 
@@ -757,15 +845,22 @@ struct NestedClassV1ObjectLinkArray {
         return item.value.toString() + index.toString();
       })
 
-      Button('@ObjectLink push').onClick(() => {
-        this.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
-      })
+      Button('@ObjectLink push')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
+        })
 
-      Button('@ObjectLink change the last Item').onClick(() => {
-        // 在NestedClassV1ObjectLinkArrayItem中可以观察最后一个数组项的属性变化
-        this.arr[this.arr.length - 1].value++;
-      })
+      Button('@ObjectLink change the last Item')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // 在NestedClassV1ObjectLinkArrayItem中可以观察最后一个数组项的属性变化
+          this.arr[this.arr.length - 1].value++;
+        })
     }
+    .width('100%')
   }
 }
 
@@ -775,6 +870,8 @@ struct NestedClassV1ObjectLinkArrayItem {
 
   build() {
     Text(`@ObjectLink outer.inner.arr item: ${this.item.value}`)
+      .fontSize(20)
+      .margin(10)
   }
 }
 
@@ -806,7 +903,7 @@ SubComponentV2({param: this.state})
 ### Code block 3
 
 ```
-let arr: Array<ArrayItem> = UIUtils.enableV2Compatibility(UIUtils.makeV1Observed(new ArrayItem()));
+let arr: Array<ArrayItem> = UIUtils.enableV2Compatibility(UIUtils.makeV1Observed(new Array<ArrayItem>()));
 
 arr.push(new ArrayItem()); // 新增数据不是V1状态变量，所以不会具有V2观察能力
 arr.push(UIUtils.makeV1Observed(new ArrayItem())); // 新增数据是V1的状态变量，默认在V2中可观察
@@ -829,12 +926,15 @@ struct CompV1 {
   build() {
     Column() {
       Text(`@State observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += '!'; // 刷新
         })
       // 调用UIUtils.enableV2Compatibility使V1的状态变量可在@ComponentV2中有观察能力。
       CompV2({ observedClass: UIUtils.enableV2Compatibility(this.observedClass) })
     }
+    .width('100%')
   }
 }
 
@@ -845,6 +945,8 @@ struct CompV2 {
   build() {
     // V1状态变量在使能V2观察能力后，可以在V2观察第一层的变化
     Text(`@Param observedClass: ${this.observedClass.name}`)
+      .fontSize(20)
+      .margin(10)
       .onClick(() => {
         this.observedClass.name += '!'; // 刷新
       })
@@ -871,12 +973,15 @@ struct CompV1 {
   build() {
     Column() {
       Text(`@State observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += 'a'; // 触发刷新
         })
       // 调用UIUtils.enableV2Compatibility使V1的状态变量可在@ComponentV2中有观察能力。
       CompV2({ observedClass: UIUtils.enableV2Compatibility(this.observedClass) })
     }
+    .width('100%')
   }
 }
 
@@ -888,15 +993,21 @@ struct CompV2 {
     Column() {
       // V1状态变量在使能V2观察能力后，可以在V2观察第一层的变化
       Text(`@Param observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += '!'; // 刷新
         })
 
       // 使用非@Track的变量在V2中不会崩溃，但不会响应更新
-      Text(`count: ${this.observedClass.count}`).onClick(() => {
-        this.observedClass.count++; // 不触发刷新
-      })
+      Text(`count: ${this.observedClass.count}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          this.observedClass.count++; // 不触发刷新
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -913,10 +1024,13 @@ struct ArrayCompV1 {
 
   build() {
     Column() {
-      Text(`V1 ${this.arr[0]}`).onClick(() => {
-        // 点击触发ArrayCompV1和ArrayCompV2变化
-        this.arr[0]++;
-      })
+      Text(`V1 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发ArrayCompV1和ArrayCompV2变化
+          this.arr[0]++;
+        })
       // 传递给V2时，发现当前代理是makeV1Observed包装的，且使能V2观察能力
       // 在ArrayCompV2中Param不会再次包装代理，避免双重代理的问题
       ArrayCompV2({ arr: UIUtils.enableV2Compatibility(this.arr) })
@@ -932,11 +1046,15 @@ struct ArrayCompV2 {
 
   build() {
     Column() {
-      Text(`V2 ${this.arr[0]}`).onClick(() => {
-        // 点击触发ArrayCompV1和ArrayCompV2变化
-        this.arr[0]++;
-      })
+      Text(`V2 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发ArrayCompV1和ArrayCompV2变化
+          this.arr[0]++;
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -954,13 +1072,17 @@ struct Item {
     Row() {
       ForEach(this.itemArr, (item: string, index: number) => {
         Text(`${index}: ${item}`)
+          .width('30%')
+          .fontSize(20)
       }, (item: string) => item + Math.random())
       // 新增数组元素
       Button('@Param push')
+        .width('30%')
         .onClick(() => {
           this.itemArr.push('Param');
         })
     }
+    .margin(5)
   }
 }
 
@@ -978,25 +1100,34 @@ struct IndexPage {
       Divider()
       // 数组arr[0]新增元素
       Button('@State push two-dimensional array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0].push('strawberry');
         })
       // 数组arr新增元素
       Button('@State push array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.push(UIUtils.makeV1Observed(['pear']));
         })
       // 修改数组项arr[0][0]的值
       Button('@State change two-dimensional array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0][0] = 'APPLE';
         })
       // 修改数组arr的第一个元素
       Button('@State change array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0] = UIUtils.makeV1Observed(['watermelon']);
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -1048,6 +1179,7 @@ struct NestedClassV1 {
     Column() {
       Text(`@State outer.outerValue can update ${this.outer.outerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // @State可以观察第一层的变化
           // 变化会通知@ObjectLink和@Param刷新
@@ -1056,6 +1188,7 @@ struct NestedClassV1 {
 
       Text(`@State outer.inner.innerValue cannot update ${this.outer.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // @State无法观察第二层的变化
           // 但该变化会被@ObjectLink和@Param观察
@@ -1078,6 +1211,7 @@ struct NestedClassV1ObjectLink {
   build() {
     Text(`@ObjectLink inner.innerValue can update ${this.inner.innerValue}`)
       .fontSize(20)
+      .margin(10)
       .onClick(() => {
         // 可以触发刷新，和@Param是同一个对象的引用，@Param也会进行刷新
         this.inner.innerValue += '!';
@@ -1093,12 +1227,14 @@ struct NestedClassV2 {
     Column() {
       Text(`@Param outer.outerValue can update ${this.outer.outerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可以观察第一层的变化
           this.outer.outerValue += '!';
         })
       Text(`@Param outer.inner.innerValue can update ${this.outer.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可以观察第二层的变化，和@ObjectLink是同一个对象的引用，也会触发刷新
           this.outer.inner.innerValue += '!';
@@ -1107,18 +1243,27 @@ struct NestedClassV2 {
       Repeat(this.outer.inner.arr)
         .each((item: RepeatItem<ArrayItem>) => {
           Text(`@Param outer.inner.arr index: ${item.index} item: ${item.item.value}`)
+            .fontSize(20)
+            .margin(10)
         })
 
-      Button('@Param push').onClick(() => {
-        // outer已经使能了V2观察能力，对于新增加的数据，则默认开启V2观察能力
-        this.outer.inner.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
-      })
+      Button('@Param push')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // outer已经使能了V2观察能力，对于新增加的数据，则默认开启V2观察能力
+          this.outer.inner.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
+        })
 
-      Button('@Param change the last Item').onClick(() => {
-        // 可以观察最后一个数组项的属性变化
-        this.outer.inner.arr[this.outer.inner.arr.length - 1].value++;
-      })
+      Button('@Param change the last Item')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // 可以观察最后一个数组项的属性变化
+          this.outer.inner.arr[this.outer.inner.arr.length - 1].value++;
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -1144,12 +1289,15 @@ struct CompV2 {
       // 又调用UIUtils.enableV2Compatibility使其在V2中可观察
       // 所以当前可观察第一层属性的变化
       Text(`@Local observedClass: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
         .onClick(() => {
           this.observedClass.name += '!'; // 刷新
         })
       // @ObjectLink可接收@Observed装饰class的实例或者makeV1Observed的返回值
       CompV1({ observedClass: this.observedClass })
     }
+    .width('100%')
   }
 }
 
@@ -1160,6 +1308,8 @@ struct CompV1 {
   build() {
     // 在CompV1中可观察第一层的变化
     Text(`@ObjectLink observedClass: ${this.observedClass.name}`)
+      .fontSize(20)
+      .margin(10)
       .onClick(() => {
         this.observedClass.name += '!'; // 刷新
       })
@@ -1180,36 +1330,47 @@ class ObservedClass {
 
 @Entry
 @ComponentV2
-struct CompV1 {
+struct CompV2 {
   @Local observedClass: ObservedClass = UIUtils.enableV2Compatibility(new ObservedClass());
 
   build() {
     Column() {
-      Text(`name: ${this.observedClass.name}`).onClick(() => {
-        // 触发刷新
-        this.observedClass.name += 'a';
-      })
+      Text(`name: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 触发刷新
+          this.observedClass.name += 'a';
+        })
       // 使用非@Track的变量在V2中不会崩溃，但不响应更新
-      Text(`count: ${this.observedClass.count}`).onClick(() => {
-        this.observedClass.count++;
-      })
+      Text(`count: ${this.observedClass.count}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          this.observedClass.count++;
+        })
 
-      CompV2({ observedClass: this.observedClass })
+      CompV1({ observedClass: this.observedClass })
     }
+    .width('100%')
   }
 }
 
 @Component
-struct CompV2 {
+struct CompV1 {
   @ObjectLink observedClass: ObservedClass;
 
   build() {
     Column() {
-      Text(`count: ${this.observedClass.name}`).onClick(() => {
-        // 触发刷新
-        this.observedClass.name += 'a';
-      })
+      Text(`name: ${this.observedClass.name}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 触发刷新
+          this.observedClass.name += 'a';
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -1226,10 +1387,13 @@ struct ArrayCompV2 {
 
   build() {
     Column() {
-      Text(`V2 ${this.arr[0]}`).fontSize(20).onClick(() => {
-        // 点击触发V2变化，且同步给V1 @ObjectLink
-        this.arr[0]++;
-      })
+      Text(`V2 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发V2变化，且同步给V1 @ObjectLink
+          this.arr[0]++;
+        })
       ArrayCompV1({ arr: this.arr })
     }
     .height('100%')
@@ -1243,11 +1407,15 @@ struct ArrayCompV1 {
 
   build() {
     Column() {
-      Text(`V1 ${this.arr[0]}`).fontSize(20).onClick(() => {
-        // 点击触发V1变化，且双向同步回给V2
-        this.arr[0]++;
-      })
+      Text(`V1 ${this.arr[0]}`)
+        .fontSize(20)
+        .margin(10)
+        .onClick(() => {
+          // 点击触发V1变化，且双向同步回给V2
+          this.arr[0]++;
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -1265,13 +1433,17 @@ struct Item {
     Row() {
       ForEach(this.itemArr, (item: string, index: number) => {
         Text(`${index}: ${item}`)
+          .fontSize(20)
+          .margin(5)
       }, (item: string) => item + Math.random())
       // 新增数组元素
       Button('@ObjectLink push')
+        .width('40%')
         .onClick(() => {
           this.itemArr.push('ObjectLink');
         })
     }
+    .height('100%')
   }
 }
 
@@ -1290,25 +1462,34 @@ struct IndexPage {
       Divider()
       // 数组arr[0]新增元素
       Button('@Local push two-dimensional array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0].push('strawberry');
         })
       // 数组arr新增元素
       Button('@Local push array item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.push(UIUtils.makeV1Observed(['pear']));
         })
       // 修改数组项arr[0][0]的值
       Button('@Local change two-dimensional array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0][0] = 'APPLE';
         })
       // 修改数组arr的第一个元素
       Button('@Local change array first item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr[0] = UIUtils.makeV1Observed(['watermelon']);
         })
     }
+    .width('100%')
   }
 }
 ```
@@ -1360,6 +1541,7 @@ struct NestedClassV2 {
     Column() {
       Text(`@Local outer.outerValue can update ${this.outer.outerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可观察第一层的变化
           this.outer.outerValue += '!';
@@ -1367,6 +1549,7 @@ struct NestedClassV2 {
 
       Text(`@Local outer.inner.innerValue can update ${this.outer.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可观察第二层的变化
           this.outer.inner.innerValue += '!';
@@ -1387,12 +1570,14 @@ struct NestedClassV1ObjectLink {
     Column() {
       Text(`@ObjectLink inner.innerValue can update ${this.inner.innerValue}`)
         .fontSize(20)
+        .margin(10)
         .onClick(() => {
           // 可以触发刷新
           this.inner.innerValue += '!';
         })
       NestedClassV1ObjectLinkArray({ arr: this.inner.arr })
     }
+    .width('100%')
   }
 }
 
@@ -1408,15 +1593,22 @@ struct NestedClassV1ObjectLinkArray {
         return item.value.toString() + index.toString();
       })
 
-      Button('@ObjectLink push').onClick(() => {
-        this.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
-      })
+      Button('@ObjectLink push')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.arr.push(UIUtils.makeV1Observed(new ArrayItem(20)));
+        })
 
-      Button('@ObjectLink change the last Item').onClick(() => {
-        // 在NestedClassV1ObjectLinkArrayItem中可以观察最后一个数组项的属性变化
-        this.arr[this.arr.length - 1].value++;
-      })
+      Button('@ObjectLink change the last Item')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          // 在NestedClassV1ObjectLinkArrayItem中可以观察最后一个数组项的属性变化
+          this.arr[this.arr.length - 1].value++;
+        })
     }
+    .width('100%')
   }
 }
 
@@ -1426,6 +1618,8 @@ struct NestedClassV1ObjectLinkArrayItem {
 
   build() {
     Text(`@ObjectLink outer.inner.arr item: ${this.item.value}`)
+      .fontSize(20)
+      .margin(10)
   }
 }
 ```

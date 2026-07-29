@@ -29,7 +29,7 @@ import { url } from '@kit.ArkTS';
 
 // 模拟网络质量不佳的情况
 export class NetworkQualityProvider {
-  isNetworkFast: boolean = true
+  public isNetworkFast: boolean = true
 
   public constructor(isNetworkFast: boolean) {
     this.isNetworkFast = isNetworkFast
@@ -52,13 +52,14 @@ export class RequestUrlChangeInterceptor implements rcp.Interceptor {
       if (parts.length === 2) {
         const changed = url.URL.parseURL(context.request.url.href);
         changed.pathname = parts[0] + '_small.' + parts[1];
-        console.info(`[RequestUrlChangeInterceptor]: Replace URL from '${context.request.url.href}' to '${changed}'`);
+        console.info(`[RequestUrlChangeInterceptor]: Replace URL from "${context.request.url.href}" to "${changed}"`);
         AppStorage.setOrCreate('ReplacedInfo',
           `[RequestUrlChangeInterceptor]: Replace URL from '${context.request.url.href}' to '${changed}'`);
         context.request.url = changed;
       }
     } else {
       console.info('[RequestUrlChangeInterceptor]: Network is fast');
+      AppStorage.setOrCreate('ReplacedInfo', '');
     }
     return next.handle(context);
   }
@@ -81,13 +82,15 @@ export class ResponseHeaderRemoveInterceptor implements rcp.Interceptor {
       toJSON: () => null
     };
     console.info('[ResponseHeaderRemoveInterceptor]: Response was modified');
+    AppStorage.setOrCreate('ReplacedResponseData',
+      `[ResponseHeaderRemoveInterceptor]: Response was modified '${context.request.url.href}'`);
     return toReturn;
   }
 }
 
 使用拦截器，通过Remote Communication Kit模块中的SessionConfiguration对象来设置interceptors，即可在请求/响应中添加拦截器。
 
-function httpRequest(networkStateSimulator: NetworkQualityProvider) {
+function httpRequest(networkStateSimulator: NetworkQualityProvider): rcp.Session {
   const sessionConfig: rcp.SessionConfiguration = {
     interceptors: [
       new RequestUrlChangeInterceptor(networkStateSimulator),
@@ -102,6 +105,7 @@ function httpRequest(networkStateSimulator: NetworkQualityProvider) {
     }
   };
   const session = rcp.createSession(sessionConfig);
+  return session;
 }
 
 ## Code blocks
@@ -118,7 +122,7 @@ import { url } from '@kit.ArkTS';
 ```
 // 模拟网络质量不佳的情况
 export class NetworkQualityProvider {
-  isNetworkFast: boolean = true
+  public isNetworkFast: boolean = true
 
   public constructor(isNetworkFast: boolean) {
     this.isNetworkFast = isNetworkFast
@@ -141,13 +145,14 @@ export class RequestUrlChangeInterceptor implements rcp.Interceptor {
       if (parts.length === 2) {
         const changed = url.URL.parseURL(context.request.url.href);
         changed.pathname = parts[0] + '_small.' + parts[1];
-        console.info(`[RequestUrlChangeInterceptor]: Replace URL from '${context.request.url.href}' to '${changed}'`);
+        console.info(`[RequestUrlChangeInterceptor]: Replace URL from "${context.request.url.href}" to "${changed}"`);
         AppStorage.setOrCreate('ReplacedInfo',
           `[RequestUrlChangeInterceptor]: Replace URL from '${context.request.url.href}' to '${changed}'`);
         context.request.url = changed;
       }
     } else {
       console.info('[RequestUrlChangeInterceptor]: Network is fast');
+      AppStorage.setOrCreate('ReplacedInfo', '');
     }
     return next.handle(context);
   }
@@ -170,6 +175,8 @@ export class ResponseHeaderRemoveInterceptor implements rcp.Interceptor {
       toJSON: () => null
     };
     console.info('[ResponseHeaderRemoveInterceptor]: Response was modified');
+    AppStorage.setOrCreate('ReplacedResponseData',
+      `[ResponseHeaderRemoveInterceptor]: Response was modified '${context.request.url.href}'`);
     return toReturn;
   }
 }
@@ -178,7 +185,7 @@ export class ResponseHeaderRemoveInterceptor implements rcp.Interceptor {
 ### Code block 3
 
 ```
-function httpRequest(networkStateSimulator: NetworkQualityProvider) {
+function httpRequest(networkStateSimulator: NetworkQualityProvider): rcp.Session {
   const sessionConfig: rcp.SessionConfiguration = {
     interceptors: [
       new RequestUrlChangeInterceptor(networkStateSimulator),
@@ -193,5 +200,6 @@ function httpRequest(networkStateSimulator: NetworkQualityProvider) {
     }
   };
   const session = rcp.createSession(sessionConfig);
+  return session;
 }
 ```

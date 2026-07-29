@@ -78,6 +78,7 @@ GWP-ASAN	由GWP-ASan触发的错误类型。
 UBSAN	由UBSan触发的错误类型。
 TSAN	由TSan触发的错误类型。
 FDSAN	从API version 20开始，可以支持订阅由fdsan触发的错误类型。
+ARKTS_ENVSAN	从API版本26.0.0开始，支持订阅方舟多线程检测。
 stack tag-mismatch	HWASan检测堆栈标记不匹配，可能是因为堆栈返回后使用、堆栈范围外使用或出界。
 alloc-dealloc-mismatch	内存分配和释放方式不匹配。
 allocation-size-too-big	分配过大的堆内存。

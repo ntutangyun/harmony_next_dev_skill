@@ -8,6 +8,8 @@ FAST Kit简介
 
 使用RectPartition求解矩形划分
 
+使用PolyRoot求解多项式根
+
 使用ConcurrentHashmap在多线程下完成键值信息的查找维护
 
 使用DSP进行向量计算
@@ -18,6 +20,10 @@ FAST Kit简介
 
 使用Hashmap完成键值数据的维护
 
+使用Sort进行通用和自然语言排序
+
 使用mathPrediction进行数理预测
+
+perfHint系统性能优化
 
 FAST Kit术语

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ux-testin
 
 多设备布局对比测试
 
-环境准备
+[h2]环境准备
 
 远程模拟器预置
 
@@ -54,7 +54,7 @@ Mac需要在hdc安装目录下打开命令行，运行命令 ./hdc kill && ./hdc
 
 服务启动后，在本机执行 hdc list targets 命令会查询不到已启动的设备；可在其他PC通过 hdc -s IP:8710 list targets查询设备。
 
-DevEco Testing连接远程模拟器
+[h2]DevEco Testing连接远程模拟器
 
 步骤 1：安装DevEco Testing后，左边菜单栏选择“设置”，开启支持模拟器。
 
@@ -71,6 +71,8 @@ DevEco Testing连接远程模拟器
 说明
 
 在尝试通过DevEco Testing与远程设备建立连接之前，必须先在目标IP 地址的远程设备上，成功启动需要连接的模拟器实例并启动远程hdc服务。
+
+[h2]开始使用多设备布局对比测试
 
 创建任务
 

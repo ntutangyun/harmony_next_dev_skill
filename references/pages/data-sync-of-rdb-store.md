@@ -105,7 +105,6 @@ const DOMAIN = 0x0000;
 
 创建关系型数据库，创建数据表，并将需要进行跨设备同步的数据表设置为分布式表，默认采用多设备协同表模式进行数据存储和管理。
 
-const context = new UIContext().getHostContext() as common.UIAbilityContext;
 let store: relationalStore.RdbStore | undefined = undefined;
 // ...
   const STORE_CONFIG: relationalStore.StoreConfig = {
@@ -113,6 +112,7 @@ let store: relationalStore.RdbStore | undefined = undefined;
     securityLevel: relationalStore.SecurityLevel.S3 // 数据库安全级别
   };
   // 打开数据库并设置分布式表
+  const context = new UIContext().getHostContext() as common.UIAbilityContext;
   relationalStore.getRdbStore(context, STORE_CONFIG).then(async (rdbStore: relationalStore.RdbStore) => {
     store = rdbStore;
     await store.executeSql('CREATE TABLE IF NOT EXISTS EMPLOYEE (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL, AGE INTEGER, SALARY REAL, CODES BLOB)');
@@ -289,7 +289,6 @@ if (store) {
 
 使用单版本表模式进行数据同步，基本开发步骤与使用多设备协同表模式进行数据同步相似。不过在创建数据表时（即使用多设备协同表模式进行数据同步中的步骤3），需要将进行跨设备同步的数据表设置为SINGLE_VERSION单版本类型。示例如下：
 
-const context = new UIContext().getHostContext() as common.UIAbilityContext;
 let store: relationalStore.RdbStore | undefined = undefined;
 // ...
   const STORE_CONFIG: relationalStore.StoreConfig = {
@@ -303,6 +302,7 @@ let store: relationalStore.RdbStore | undefined = undefined;
     enableCloud: false,
     tableType: relationalStore.DistributedTableType.SINGLE_VERSION
   }
+  const context = new UIContext().getHostContext() as common.UIAbilityContext;
   relationalStore.getRdbStore(context, STORE_CONFIG).then(async (rdbStore: relationalStore.RdbStore) => {
     store = rdbStore;
     await store.executeSql('CREATE TABLE IF NOT EXISTS EMPLOYEE (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL UNIQUE, AGE INTEGER, SALARY REAL, CODES BLOB)');
@@ -359,7 +359,7 @@ type：字段类型，string类型，必填字段，可选参数范围为：["Te
 
 primaryKey：该字段表示是否为指定解冲突列，与表中是否为主键无关，bool类型。若是自增表，该字段为必填字段。其中：true表示为解冲突列，false表示非解冲突列，默认为false。
 
-autoIncrement：是否自增属性，必须与表结构中对应，bool类型。关系型数据库跨设备数据同步不支持同步自增主键。其中：true表示自增主键，false表示非自增主，键默认为false。
+autoIncrement：是否自增属性，必须与表结构中对应，bool类型。关系型数据库跨设备数据同步不支持同步自增主键。其中：true表示自增主键，false表示非自增主键，默认为false。
 
 notNull：是否非空，bool类型，非必填字段。其中：true表示非空字段，false表示可以为空字段，默认为false。
 
@@ -417,6 +417,7 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
         {
           "tableName": "EMPLOYEE2",
           "deviceSyncFields": ["NAME", "AGE", "SALARY", "CODES"],
+          "cloudType": ["Local"],
           "fields": [
             {
               "columnName": "NAME",
@@ -461,102 +462,104 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": true,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 
 {
   "dbSchema": [
-  {
-    "version": 1,
-  "bundleName": "com.example.rdbDataSync",
-  "dbName": "RdbTest",
-  "tables": [
     {
-      "tableName": "EMPLOYEE",
-    "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": false,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-      "type": "Integer",
-      "primaryKey": true,
-      "notNull": false,
-      "autoIncrement": false
-      }
+      "version": 1,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+解冲突列只能有一个。
 
 错误示例：schema中指定字段"NAME"和"AGE"两个解冲突列。schema示例如下：
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": true,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 
@@ -568,110 +571,110 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAMe", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAMe", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 
 同步列变化时，存量数据会重新同步。若schema中有新增指定同步列，已有指定同步列以及新增指定列数据会重新触发同步。
 
+schema有变化时，version需要增加。
+
 错误示例：schema中新增同步字段"AGE"，但是version未增加。
 
-旧版本schema：
-
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 
-升级版本schema：
-
 {
   "dbSchema": [
-  {
-    "version": 0,
-  "bundleName": "com.example.rdbDataSync",
-  "dbName": "RdbTest",
-  "tables": [
     {
-      "tableName": "EMPLOYEE",
-    "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": true,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-      "type": "Integer",
-      "primaryKey": false,
-      "notNull": false,
-      "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+单版本表模式下，表中所有UNIQUE列必须同步。
 
 错误示例："AGE"为UNIQUE列，但是未指定该字段同步
 
@@ -679,36 +682,38 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+自增表下，不支持指定非主键列解冲突又同步主键。
 
 错误示例：自增表下，指定"NAME"为解冲突列，但是又同步字段"ID"。
 
@@ -716,140 +721,140 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["ID", "NAME" ],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "ID",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": true
-      },
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["ID", "NAME" ],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "ID",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": true
+            },
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+schema版本升级时，指定同步列只能新增不能减少。
 
 错误示例：schema版本由0升级为1，指定同步列"AGE"被删除。
 
-旧版本schema：
-
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 
-升级版本schema：
-
 {
   "dbSchema": [
-  {
-    "version": 1,
-  "bundleName": "com.example.rdbDataSync",
-  "dbName": "RdbTest",
-  "tables": [
     {
-      "tableName": "EMPLOYEE",
-    "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": true,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-      "type": "Integer",
-      "primaryKey": false,
-      "notNull": false,
-      "autoIncrement": false
-      }
+      "version": 1,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+同步列不能为空，deviceSyncFields长度至少为1，若schema中未配置字段deviceSyncFields，默认为空。
 
 错误示例：schema中没有配置deviceSyncFields，设置单版本模式分布式表失败。schema示例如下：
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 
@@ -861,36 +866,38 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+无主键表不支持指定列同步，不支持配置单版本表模式。
 
 错误示例："EMPLOYEE"是无主键表，设置单版本模式分布式表时会失败。
 
@@ -898,36 +905,38 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+主键为非自增，主键必须同步，且解冲突列必须为主键。
 
 错误示例："NAME"为非自增主键，但是指定"AGE"为解冲突列。
 
@@ -935,36 +944,38 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": false,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": true,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+配置解冲突列必须为UNIQUE属性，且为类似uuid等全局唯一字段。
 
 错误示例：指定解冲突列"NAME"没有UNIQUE属性。
 
@@ -972,36 +983,38 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+deviceSyncFields中字段必须在fields中，否则该字段将不会同步。
 
 错误示例：字段"AGE"未出现在fields中，该字段将不会同步。
 
@@ -1009,29 +1022,31 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+必须同步uuid等全局唯一的主键，自增主键不允许同步，若主键为自增，必须配置一个非主键列解冲突。
 
 错误示例：schema中指定了"ID"同步，该字段为自增主键。
 
@@ -1039,36 +1054,38 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["ID", "NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "ID",
-        "type": "Integer",
-        "primaryKey": true,
-        "notNull": false,
-        "autoIncrement": true
-      },
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": false,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["ID", "NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "ID",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": true
+            },
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
+
+指定解冲突列中的值不能出现null值。若指定解冲突列存量数据有null值，设置分布式表会失败；若指定解冲突列增量数据为null值，写入会失败。
 
 错误示例：若先执行写入语句，执行设置分布式表语句会失败；若先执行设置分布式表语句，执行写入语句会失败。
 
@@ -1079,7 +1096,8 @@ valueBucket["NAME"] = null;
 valueBucket["AGE"] = 25;
 valueBucket["SALARY"] = 23456.7;
 let value = new Uint8Array([1, 2, 3, 4, 5]);
-valueBucket["CODES"] = value;      await rdbstore.insert("EMPLOYEE", valueBucket);
+valueBucket["CODES"] = value;
+await rdbstore.insert("EMPLOYEE", valueBucket);
 
 const DISTRIBUTED_CONFIG: relationalStore.DistributedConfig = {
   autoSync: false,
@@ -1091,27 +1109,27 @@ await store.setDistributedTables(['EMPLOYEE'], relationalStore.DistributedType.D
 
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
-     }
-    ]
-  }
+    }
   ]
 }
 
@@ -1132,7 +1150,6 @@ const DOMAIN = 0x0000;
 ### Code block 2
 
 ```
-const context = new UIContext().getHostContext() as common.UIAbilityContext;
 let store: relationalStore.RdbStore | undefined = undefined;
 // ...
   const STORE_CONFIG: relationalStore.StoreConfig = {
@@ -1140,6 +1157,7 @@ let store: relationalStore.RdbStore | undefined = undefined;
     securityLevel: relationalStore.SecurityLevel.S3 // 数据库安全级别
   };
   // 打开数据库并设置分布式表
+  const context = new UIContext().getHostContext() as common.UIAbilityContext;
   relationalStore.getRdbStore(context, STORE_CONFIG).then(async (rdbStore: relationalStore.RdbStore) => {
     store = rdbStore;
     await store.executeSql('CREATE TABLE IF NOT EXISTS EMPLOYEE (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL, AGE INTEGER, SALARY REAL, CODES BLOB)');
@@ -1312,7 +1330,6 @@ if (store) {
 ### Code block 7
 
 ```
-const context = new UIContext().getHostContext() as common.UIAbilityContext;
 let store: relationalStore.RdbStore | undefined = undefined;
 // ...
   const STORE_CONFIG: relationalStore.StoreConfig = {
@@ -1326,6 +1343,7 @@ let store: relationalStore.RdbStore | undefined = undefined;
     enableCloud: false,
     tableType: relationalStore.DistributedTableType.SINGLE_VERSION
   }
+  const context = new UIContext().getHostContext() as common.UIAbilityContext;
   relationalStore.getRdbStore(context, STORE_CONFIG).then(async (rdbStore: relationalStore.RdbStore) => {
     store = rdbStore;
     await store.executeSql('CREATE TABLE IF NOT EXISTS EMPLOYEE (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL UNIQUE, AGE INTEGER, SALARY REAL, CODES BLOB)');
@@ -1392,6 +1410,7 @@ let store: relationalStore.RdbStore | undefined = undefined;
         {
           "tableName": "EMPLOYEE2",
           "deviceSyncFields": ["NAME", "AGE", "SALARY", "CODES"],
+          "cloudType": ["Local"],
           "fields": [
             {
               "columnName": "NAME",
@@ -1434,34 +1453,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": true,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1471,34 +1490,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 1,
-  "bundleName": "com.example.rdbDataSync",
-  "dbName": "RdbTest",
-  "tables": [
     {
-      "tableName": "EMPLOYEE",
-    "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": false,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-      "type": "Integer",
-      "primaryKey": true,
-      "notNull": false,
-      "autoIncrement": false
-      }
+      "version": 1,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1508,34 +1527,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": true,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1545,34 +1564,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAMe", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAMe", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1582,34 +1601,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1619,34 +1638,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-  "bundleName": "com.example.rdbDataSync",
-  "dbName": "RdbTest",
-  "tables": [
     {
-      "tableName": "EMPLOYEE",
-    "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": true,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-      "type": "Integer",
-      "primaryKey": false,
-      "notNull": false,
-      "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1656,34 +1675,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1693,34 +1712,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["ID", "NAME" ],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "ID",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": true
-      },
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["ID", "NAME" ],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "ID",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": true
+            },
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1730,34 +1749,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1767,34 +1786,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 1,
-  "bundleName": "com.example.rdbDataSync",
-  "dbName": "RdbTest",
-  "tables": [
     {
-      "tableName": "EMPLOYEE",
-    "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-      "type": "Text",
-      "primaryKey": true,
-      "notNull": true,
-      "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-      "type": "Integer",
-      "primaryKey": false,
-      "notNull": false,
-      "autoIncrement": false
-      }
+      "version": 1,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1804,33 +1823,33 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1840,34 +1859,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1877,34 +1896,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1914,34 +1933,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": false,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": true,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1951,34 +1970,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      },
-      {
-        "columnName": "AGE",
-        "type": "Integer",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            },
+            {
+              "columnName": "AGE",
+              "type": "Integer",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -1988,27 +2007,27 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME", "AGE"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": true,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME", "AGE"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": true,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -2018,34 +2037,34 @@ let store: relationalStore.RdbStore | undefined = undefined;
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["ID", "NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "ID",
-        "type": "Integer",
-        "primaryKey": true,
-        "notNull": false,
-        "autoIncrement": true
-      },
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": false,
-        "notNull": true,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["ID", "NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "ID",
+              "type": "Integer",
+              "primaryKey": true,
+              "notNull": false,
+              "autoIncrement": true
+            },
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": true,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
     }
-    ]
-  }
   ]
 }
 ```
@@ -2058,7 +2077,8 @@ valueBucket["NAME"] = null;
 valueBucket["AGE"] = 25;
 valueBucket["SALARY"] = 23456.7;
 let value = new Uint8Array([1, 2, 3, 4, 5]);
-valueBucket["CODES"] = value;      await rdbstore.insert("EMPLOYEE", valueBucket);
+valueBucket["CODES"] = value;
+await rdbstore.insert("EMPLOYEE", valueBucket);
 ```
 
 ### Code block 27
@@ -2078,27 +2098,27 @@ await store.setDistributedTables(['EMPLOYEE'], relationalStore.DistributedType.D
 ```
 {
   "dbSchema": [
-  {
-    "version": 0,
-    "bundleName": "com.example.rdbDataSync",
-    "dbName": "RdbTest",
-    "tables": [
     {
-      "tableName": "EMPLOYEE",
-      "deviceSyncFields": ["NAME"],
-      "cloudType": ["Local"],
-      "fields": [
-      {
-        "columnName": "NAME",
-        "type": "Text",
-        "primaryKey": false,
-        "notNull": false,
-        "autoIncrement": false
-      }
+      "version": 0,
+      "bundleName": "com.example.rdbDataSync",
+      "dbName": "RdbTest",
+      "tables": [
+        {
+          "tableName": "EMPLOYEE",
+          "deviceSyncFields": ["NAME"],
+          "cloudType": ["Local"],
+          "fields": [
+            {
+              "columnName": "NAME",
+              "type": "Text",
+              "primaryKey": false,
+              "notNull": false,
+              "autoIncrement": false
+            }
+          ]
+        }
       ]
-     }
-    ]
-  }
+    }
   ]
 }
 ```

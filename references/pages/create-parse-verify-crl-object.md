@@ -11,7 +11,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/create-pa
 import { cert } from '@kit.DeviceCertificateKit';
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 
-基于已有的CRL数据，调用cert.createX509CRL创建X509证书吊销列表的对象。
+基于已有的CRL数据，调用cert.createX509CRL创建X.509证书吊销列表的对象。
 
 解析证书吊销列表信息。
 

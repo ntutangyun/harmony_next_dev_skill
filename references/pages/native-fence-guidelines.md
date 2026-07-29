@@ -4,7 +4,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/native-fe
 
 场景介绍
 
-NativeFence是管理fenceFd同步状态的模块。开发者可通过其接口实现以下功能：设置阻塞时间、永久阻塞、关闭fenceFd以及检查其有效性。
+NativeFence是管理fenceFd同步状态的模块。fenceFd是一种文件描述符，用于实现GPU和CPU之间的内存访问同步。当GPU或CPU需要访问共享内存时，通过fenceFd进行同步：一方创建fenceFd并设置为阻塞状态，另一方在完成操作后发送同步信号解除阻塞。
+
+开发者可通过其接口实现以下功能：设置阻塞时间、永久阻塞、关闭fenceFd以及检查其有效性。
 
 接口说明
 

@@ -25,16 +25,16 @@ export let thirdPayClient: thirdPaymentService.ThirdPayClient | undefined = unde
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   thirdPaymentServicePayPromise() {
-    thirdPayClient = new thirdPaymentService.ThirdPayClient(this.context, thirdPaymentService.PayMethod.WECHAT_PAY, "appid_123456");
+    thirdPayClient = new thirdPaymentService.ThirdPayClient(this.context, thirdPaymentService.PayMethod.WECHAT_PAY, 'appid_123456');
     // 请使用开发者自己的三方支付信息（payInfo）
     const payInfo = '{"xxx1":"***", "xxx2":"***", "token":"***"}';
     thirdPayClient.pay(payInfo).then(() => {
-        // 支付成功
-        console.info('succeeded in paying.');
-      }).catch((error: BusinessError) => {
-        // 支付失败
-        console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
-      });
+      // 支付成功
+      console.info('succeeded in paying.');
+    }).catch((error: BusinessError) => {
+      // 支付失败
+      console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+    });
   }
 
   build() {
@@ -46,7 +46,7 @@ struct Index {
         .onClick(() => {
           this.thirdPaymentServicePayPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }
@@ -64,9 +64,9 @@ export default class EntryAbility extends UIAbility {
   onNewWant(want: Want): void {
     // 需要和拉起支付收银台的三方支付客户端对象为同一个
     if (thirdPayClient) {
-      console.info('clientForThirdPayment handlePayCallback');
+      hilog.info(0x0000, 'testTag', '%{public}s','clientForThirdPayment handlePayCallback');
       let handlePayCallback = thirdPayClient.handlePayCallback(want);
-      console.info(`clientForThirdPayment handlePayCallback result: ${handlePayCallback}`);
+      hilog.info(0x0000, 'testTag', 'clientForThirdPayment handlePayCallback result: %{public}s', handlePayCallback);
     }
   }
 }
@@ -89,16 +89,16 @@ export let thirdPayClient: thirdPaymentService.ThirdPayClient | undefined = unde
 struct Index {
   context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
   thirdPaymentServicePayPromise() {
-    thirdPayClient = new thirdPaymentService.ThirdPayClient(this.context, thirdPaymentService.PayMethod.WECHAT_PAY, "appid_123456");
+    thirdPayClient = new thirdPaymentService.ThirdPayClient(this.context, thirdPaymentService.PayMethod.WECHAT_PAY, 'appid_123456');
     // 请使用开发者自己的三方支付信息（payInfo）
     const payInfo = '{"xxx1":"***", "xxx2":"***", "token":"***"}';
     thirdPayClient.pay(payInfo).then(() => {
-        // 支付成功
-        console.info('succeeded in paying.');
-      }).catch((error: BusinessError) => {
-        // 支付失败
-        console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
-      });
+      // 支付成功
+      console.info('succeeded in paying.');
+    }).catch((error: BusinessError) => {
+      // 支付失败
+      console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+    });
   }
 
   build() {
@@ -110,7 +110,7 @@ struct Index {
         .onClick(() => {
           this.thirdPaymentServicePayPromise();
         })
-      }
+    }
     .width('100%')
     .height('100%')
   }
@@ -130,9 +130,9 @@ export default class EntryAbility extends UIAbility {
   onNewWant(want: Want): void {
     // 需要和拉起支付收银台的三方支付客户端对象为同一个
     if (thirdPayClient) {
-      console.info('clientForThirdPayment handlePayCallback');
+      hilog.info(0x0000, 'testTag', '%{public}s','clientForThirdPayment handlePayCallback');
       let handlePayCallback = thirdPayClient.handlePayCallback(want);
-      console.info(`clientForThirdPayment handlePayCallback result: ${handlePayCallback}`);
+      hilog.info(0x0000, 'testTag', 'clientForThirdPayment handlePayCallback result: %{public}s', handlePayCallback);
     }
   }
 }

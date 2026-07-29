@@ -53,7 +53,7 @@ ge::graphStatus TilingFunc(gert::TilingContext* context)
 {
     // 其他代码逻辑
     // ...
-    if (context->GetInputShape(0) > 10) {
+    if (context->GetInputShape(0) != nullptr && context->GetInputShape(0)->GetDims().size() > 10) {
         context->SetTilingKey(1);
     } else if (some condition) {
         context->SetTilingKey(2);
@@ -101,7 +101,7 @@ ge::graphStatus TilingFunc(gert::TilingContext* context)
 {
     // 其他代码逻辑
     // ...
-    if (context->GetInputShape(0) > 10) {
+    if (context->GetInputShape(0) != nullptr && context->GetInputShape(0)->GetDims().size() > 10) {
         context->SetTilingKey(1);
     } else if (some condition) {
         context->SetTilingKey(2);

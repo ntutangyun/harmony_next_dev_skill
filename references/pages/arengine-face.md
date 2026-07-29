@@ -25,33 +25,41 @@ ARFace.getBlendShapes	返回一个人脸微表情对象。
 人脸跟踪能力所需要导入的模块如下：
 
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene } from '@kit.ArkGraphics3D';
+import {CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node, PrimitiveTopology,
+  Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
+import {arrayBufferFloat32ToNumber, arrayBufferInt32ToNumber, generateFaceMeshIndex,
+  generateMeshInput, getFaceFrontVertices} from '../utils/Utils';
 
 [h2]定义变量
 
 定义变量face接收人脸对象，定义变量faceGeometry接收人脸几何对象，定义变量faceBlendShapes接收人脸微表情对象。
 
-let face: arEngine.ARFace;
-let faceGeometry: arEngine.ARGeometry;
-let faceBlendShapes: arEngine.ARBlendShapes;
+let face: arEngine.ARFace = trackables[i] as arEngine.ARFace;
+// ...
+// Data Process
+let faceGeometry: arEngine.ARGeometry = face.getGeometry();
+let faceBlendShapes: arEngine.ARBlendShapes = face.getBlendShapes();
 
 [h2]显示预览流
 
 首先初始化AR会话和AR场景，可以参考初始化AR会话和AR场景章节。
 
-更改type为ARType.FACE，更改cameraLensFacing为ARCameraLensFacing.FRONT，更改multiFaceMode为ARMultiFaceMode.MULTIFACE_DISABLE，启用前置相机的人脸跟踪能力。
+更改type为ARType.FACE，更改cameraLensFacing为ARCameraLensFacing.FRONT，更改multiFaceMode为ARMultiFaceMode.MULTIFACE_ENABLE，启用前置相机的人脸跟踪能力。
 
 @Builder
-export function ARFaceBuilder(): void {
+export function ARFaceBuilder() {
   ARFace();
 }
-
+// ...
 @Component
-struct ARFace {
+export struct ARFace {
+  pageInfos: NavPathStack = new NavPathStack();
+  @State context: Context = this.getUIContext().getHostContext() as Context;
   @State arContext?: arViewController.ARViewContext = undefined;
 
-  build(): void {
+  build() {
     NavDestination() {
       RelativeContainer() {
         if (this.arContext) {
@@ -65,11 +73,12 @@ struct ARFace {
         }
       }
     }
-    .onAppear(() => {
+    .onAppear(async () => {
       this.initARView();
     })
-    .onWillDisappear(() => {
-      this.stopARView();
+    .onWillDisappear(async () => {
+      await this.stopARView();
+      this.clearGlobalVariables();
     })
     .onShown(() => {
       this.resumeARView();
@@ -82,38 +91,72 @@ struct ARFace {
     .hideToolBar(true)
   }
 
-  private initARView(): void {
-    Scene.load().then((scene: Scene) => {
-      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
-      viewContext.scene = scene;
-      viewContext.callback = new ARViewCallbackImpl();
-      viewContext.config = {
-        type: arEngine.ARType.FACE,
-        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
-        semanticMode: arEngine.ARSemanticMode.NONE,
-        meshMode: arEngine.ARMeshMode.DISABLED,
-        focusMode: arEngine.ARFocusMode.AUTO,
-        cameraLensFacing: arEngine.ARCameraLensFacing.FRONT,
-        multiFaceMode: arEngine.ARMultiFaceMode.MULTIFACE_DISABLE
-      }
-      viewContext.init().then(() => {
-        this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      })
-    })
+  private async stopARView(): Promise<void> {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      await this.arContext.destroy();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}`);
+    }
   }
 
-  private stopARView(): void {
-    // ...
-  }
-  private resumeARView(): void {
-    // ...
-  }
   private pauseARView(): void {
-    // ...
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.pause();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}`);
+    }
   }
+
+  private resumeARView(): void {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.resume();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}`);
+    }
+  }
+
+  private initARView(): void {
+    Scene.load().then(async (result: Scene) => {
+      try {
+        let ret: boolean = arViewController.isARTypeSupported(arEngine.ARFeatureType.ARENGINE_FEATURE_TYPE_FACE);
+        logger.info(`ARFace isARTypeSupported is ${ret}`);
+      } catch (error) {
+        const err: BusinessError = error as BusinessError;
+        logger.error(
+          `Failed to get whether the device is support ARFace. Code is ${err.code}, message is ${err.message}`);
+      }
+
+      let context = new arViewController.ARViewContext();
+      context.scene = result;
+      context.callback = new ARViewCallbackImpl();
+      context.config = {
+        type: arEngine.ARType.FACE,
+        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
+        powerMode: arEngine.ARPowerMode.NORMAL,
+        focusMode: arEngine.ARFocusMode.AUTO,
+        cameraLensFacing: arEngine.ARCameraLensFacing.FRONT,
+        multiFaceMode: arEngine.ARMultiFaceMode.MULTIFACE_ENABLE,
+      };
+      context.init().then(() => {
+        this.arContext = context;
+      }).catch((err: BusinessError) => {
+        logger.error(`Failed to init context. Code is ${err.code}, message is ${err.message}`);
+      });
+    })
+  }
+  // ...
 }
 
 [h2]获取人脸几何数据和微表情数据
@@ -122,48 +165,61 @@ struct ARFace {
 
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
+      logger.error('arSession is undefined');
       return;
     }
 
-    let arSession: arEngine.ARSession = ctx.session;
-
+    let session: arEngine.ARSession = ctx.session;
+    // ...
     try {
-      let frame: arEngine.ARFrame = arSession.getFrame();
-      if (frame) {
-        // 获取face信息
-        let trackables: Array<arEngine.ARTrackable> = arSession.getAllTrackables(arEngine.ARTrackableType.FACE);
-        for (let i = 0; i < trackables.length; ++i) {
-          if (trackables[i].state !== arEngine.ARTrackingState.TRACKING) {
-            console.error('Face not in tracking state');
-            continue;
-          }
-          face = trackables[i] as arEngine.ARFace;
-          faceGeometry = face.getGeometry();
-          faceBlendShapes = face.getBlendShapes();
-          if(faceGeometry){
-            let tmpVert = faceGeometry.getVertices();
-            let tmpIndices = faceGeometry.getIndices();
-          }
-          if(faceBlendShapes){
-            let tmpData = faceBlendShapes.getData();
-            let tmpTypes = faceBlendShapes.getTypes();
-          }
-          faceGeometry.release();
-          faceBlendShapes.release();
-        }
+      let mesh = new CustomGeometry();
+      let geometry: Geometry | null = null;
+      if (session == null) {
+        logger.error('session is null');
       }
+
+      let vertexArray: Vec3[][] = [];
+      let indexArray: Map<number, number[]> = new Map;
+
+      // Acquire face data
+      let trackables: arEngine.ARTrackable[] = session.getAllTrackables(arEngine.ARTrackableType.FACE);
+      logger.debug(`the faceList length is ${trackables.length}`);
+      for (let i = 0; i < trackables.length; ++i) {
+        let face: arEngine.ARFace = trackables[i] as arEngine.ARFace;
+        let centerPose = face.getPose();
+        let viewMatrix = centerPose.getMatrix();
+
+        if (trackables[i].state !== arEngine.ARTrackingState.TRACKING) {
+          logger.error(`Face not in tracking state`);
+          continue;
+        }
+        // Data Process
+        let faceGeometry: arEngine.ARGeometry = face.getGeometry();
+        let faceBlendShapes: arEngine.ARBlendShapes = face.getBlendShapes();
+        let tmpVert = faceGeometry.getVertices();
+        let tmpIndices = faceGeometry.getIndices();
+        faceVertices = arrayBufferFloat32ToNumber(tmpVert);
+        let faceIndices: number[] = arrayBufferInt32ToNumber(tmpIndices);
+        vertexArray.push(getFaceFrontVertices(viewMatrix, faceVertices));
+        indexArray.set(i, faceIndices);
+
+        // BlendShapes Print
+        logger.info('the count of blendShapes is' + faceBlendShapes.count);
+        logger.info('the data of blendShapes is' + arrayBufferFloat32ToNumber(faceBlendShapes.getData()));
+        logger.info('the types of blendShapes is' + faceBlendShapes.getTypes());
+      }
+
+      // ...
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to acquire face information. Code is ${err.code}, message is ${err.message}`)
     }
   }
 }
@@ -174,31 +230,39 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 
 ```
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene } from '@kit.ArkGraphics3D';
+import {CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node, PrimitiveTopology,
+  Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
+import {arrayBufferFloat32ToNumber, arrayBufferInt32ToNumber, generateFaceMeshIndex,
+  generateMeshInput, getFaceFrontVertices} from '../utils/Utils';
 ```
 
 ### Code block 2
 
 ```
-let face: arEngine.ARFace;
-let faceGeometry: arEngine.ARGeometry;
-let faceBlendShapes: arEngine.ARBlendShapes;
+let face: arEngine.ARFace = trackables[i] as arEngine.ARFace;
+// ...
+// Data Process
+let faceGeometry: arEngine.ARGeometry = face.getGeometry();
+let faceBlendShapes: arEngine.ARBlendShapes = face.getBlendShapes();
 ```
 
 ### Code block 3
 
 ```
 @Builder
-export function ARFaceBuilder(): void {
+export function ARFaceBuilder() {
   ARFace();
 }
-
+// ...
 @Component
-struct ARFace {
+export struct ARFace {
+  pageInfos: NavPathStack = new NavPathStack();
+  @State context: Context = this.getUIContext().getHostContext() as Context;
   @State arContext?: arViewController.ARViewContext = undefined;
 
-  build(): void {
+  build() {
     NavDestination() {
       RelativeContainer() {
         if (this.arContext) {
@@ -212,11 +276,12 @@ struct ARFace {
         }
       }
     }
-    .onAppear(() => {
+    .onAppear(async () => {
       this.initARView();
     })
-    .onWillDisappear(() => {
-      this.stopARView();
+    .onWillDisappear(async () => {
+      await this.stopARView();
+      this.clearGlobalVariables();
     })
     .onShown(() => {
       this.resumeARView();
@@ -229,38 +294,72 @@ struct ARFace {
     .hideToolBar(true)
   }
 
-  private initARView(): void {
-    Scene.load().then((scene: Scene) => {
-      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
-      viewContext.scene = scene;
-      viewContext.callback = new ARViewCallbackImpl();
-      viewContext.config = {
-        type: arEngine.ARType.FACE,
-        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
-        semanticMode: arEngine.ARSemanticMode.NONE,
-        meshMode: arEngine.ARMeshMode.DISABLED,
-        focusMode: arEngine.ARFocusMode.AUTO,
-        cameraLensFacing: arEngine.ARCameraLensFacing.FRONT,
-        multiFaceMode: arEngine.ARMultiFaceMode.MULTIFACE_DISABLE
-      }
-      viewContext.init().then(() => {
-        this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      })
-    })
+  private async stopARView(): Promise<void> {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      await this.arContext.destroy();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}`);
+    }
   }
 
-  private stopARView(): void {
-    // ...
-  }
-  private resumeARView(): void {
-    // ...
-  }
   private pauseARView(): void {
-    // ...
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.pause();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to pause context. Code is ${err.code}, message is ${err.message}`);
+    }
   }
+
+  private resumeARView(): void {
+    if (!this.arContext) {
+      return;
+    }
+    try {
+      this.arContext.resume();
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to resume context. Code is ${err.code}, message is ${err.message}`);
+    }
+  }
+
+  private initARView(): void {
+    Scene.load().then(async (result: Scene) => {
+      try {
+        let ret: boolean = arViewController.isARTypeSupported(arEngine.ARFeatureType.ARENGINE_FEATURE_TYPE_FACE);
+        logger.info(`ARFace isARTypeSupported is ${ret}`);
+      } catch (error) {
+        const err: BusinessError = error as BusinessError;
+        logger.error(
+          `Failed to get whether the device is support ARFace. Code is ${err.code}, message is ${err.message}`);
+      }
+
+      let context = new arViewController.ARViewContext();
+      context.scene = result;
+      context.callback = new ARViewCallbackImpl();
+      context.config = {
+        type: arEngine.ARType.FACE,
+        planeFindingMode: arEngine.ARPlaneFindingMode.DISABLED,
+        powerMode: arEngine.ARPowerMode.NORMAL,
+        focusMode: arEngine.ARFocusMode.AUTO,
+        cameraLensFacing: arEngine.ARCameraLensFacing.FRONT,
+        multiFaceMode: arEngine.ARMultiFaceMode.MULTIFACE_ENABLE,
+      };
+      context.init().then(() => {
+        this.arContext = context;
+      }).catch((err: BusinessError) => {
+        logger.error(`Failed to init context. Code is ${err.code}, message is ${err.message}`);
+      });
+    })
+  }
+  // ...
 }
 ```
 
@@ -269,48 +368,61 @@ struct ARFace {
 ```
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
+      logger.error('arSession is undefined');
       return;
     }
 
-    let arSession: arEngine.ARSession = ctx.session;
-
+    let session: arEngine.ARSession = ctx.session;
+    // ...
     try {
-      let frame: arEngine.ARFrame = arSession.getFrame();
-      if (frame) {
-        // 获取face信息
-        let trackables: Array<arEngine.ARTrackable> = arSession.getAllTrackables(arEngine.ARTrackableType.FACE);
-        for (let i = 0; i < trackables.length; ++i) {
-          if (trackables[i].state !== arEngine.ARTrackingState.TRACKING) {
-            console.error('Face not in tracking state');
-            continue;
-          }
-          face = trackables[i] as arEngine.ARFace;
-          faceGeometry = face.getGeometry();
-          faceBlendShapes = face.getBlendShapes();
-          if(faceGeometry){
-            let tmpVert = faceGeometry.getVertices();
-            let tmpIndices = faceGeometry.getIndices();
-          }
-          if(faceBlendShapes){
-            let tmpData = faceBlendShapes.getData();
-            let tmpTypes = faceBlendShapes.getTypes();
-          }
-          faceGeometry.release();
-          faceBlendShapes.release();
-        }
+      let mesh = new CustomGeometry();
+      let geometry: Geometry | null = null;
+      if (session == null) {
+        logger.error('session is null');
       }
+
+      let vertexArray: Vec3[][] = [];
+      let indexArray: Map<number, number[]> = new Map;
+
+      // Acquire face data
+      let trackables: arEngine.ARTrackable[] = session.getAllTrackables(arEngine.ARTrackableType.FACE);
+      logger.debug(`the faceList length is ${trackables.length}`);
+      for (let i = 0; i < trackables.length; ++i) {
+        let face: arEngine.ARFace = trackables[i] as arEngine.ARFace;
+        let centerPose = face.getPose();
+        let viewMatrix = centerPose.getMatrix();
+
+        if (trackables[i].state !== arEngine.ARTrackingState.TRACKING) {
+          logger.error(`Face not in tracking state`);
+          continue;
+        }
+        // Data Process
+        let faceGeometry: arEngine.ARGeometry = face.getGeometry();
+        let faceBlendShapes: arEngine.ARBlendShapes = face.getBlendShapes();
+        let tmpVert = faceGeometry.getVertices();
+        let tmpIndices = faceGeometry.getIndices();
+        faceVertices = arrayBufferFloat32ToNumber(tmpVert);
+        let faceIndices: number[] = arrayBufferInt32ToNumber(tmpIndices);
+        vertexArray.push(getFaceFrontVertices(viewMatrix, faceVertices));
+        indexArray.set(i, faceIndices);
+
+        // BlendShapes Print
+        logger.info('the count of blendShapes is' + faceBlendShapes.count);
+        logger.info('the data of blendShapes is' + arrayBufferFloat32ToNumber(faceBlendShapes.getData()));
+        logger.info('the types of blendShapes is' + faceBlendShapes.getTypes());
+      }
+
+      // ...
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
+      logger.error(`Failed to acquire face information. Code is ${err.code}, message is ${err.message}`)
     }
   }
 }

@@ -44,7 +44,7 @@ parameters	{[key: string]: Object}	是	否	应用自定义数据将直接传递�
 
 系统将调用方传入的want参数（包含action、entities、uri、type和parameters属性）与已安装待匹配应用组件的skills配置（包含actions、entities、uris和type属性）进行匹配。当want参数五个属性匹配均未配置，隐式匹配失败。
 
-如果linkFeature匹配成功，并且want中配置了uri或type，则继续匹配uri和type属性，均匹配成功则隐式匹配成功；否则，匹配失败。如果want中未配置uri和type, 则隐式匹配成功。
+如果linkFeature匹配成功，并且want中配置了uri或type，则继续匹配uri和type属性，均匹配成功则隐式匹配成功；否则，匹配失败。如果want中未配置uri和type，则隐式匹配成功。
 
 如果linkFeature匹配失败，则不进行后续属性匹配，匹配失败。
 
@@ -162,7 +162,9 @@ scheme://host:port
 
 正则表达式：scheme://host:port/pathRegex
 
-系统应用预留uri的scheme统一以ohos开头，例如ohosclock://。三方应用组件配置的uri不能与系统应用重复，否则会导致无法通过该uri拉起三方应用组件。
+以ohos为前缀的scheme为系统预留，如ohosclock://。建议第三方应用组件在配置scheme时避免以ohos开头，否则可能导致无法通过该uri拉起目标组件。
+
+此外，store、filemanager、hww等scheme已被系统应用占用，系统会优先匹配系统应用导致三方应用的scheme无效，请避免使用。datashare为系统后台数据服务专用，不建议使用。
 
 图5 want参数中uri的匹配规则示例
 
@@ -188,10 +190,10 @@ scheme://host:port
 
 本章节所述的linkFeature匹配规则适用于want参数中的parameters包含linkFeature键，且对应取值不为空的场景。
 
-将调用方传入的want参数的parameters与待匹配应用组件的skills配置中的uris进行匹配。为了简化描述, 称调用方传入的want参数中的linkFeature参数为w_linkFeature, 具体的匹配规则如下：
+将调用方传入的want参数的parameters与待匹配应用组件的skills配置中的uris进行匹配。为了简化描述，称调用方传入的want参数中的linkFeature参数为w_linkFeature，具体的匹配规则如下：
 
-want参数的uri和type均为空, 只匹配linkFeature，当w_linkFeature和s_uri的linkFeature相同时匹配成功，否则匹配失败。
+want参数的uri和type均为空，只匹配linkFeature，当w_linkFeature和s_uri的linkFeature相同时匹配成功，否则匹配失败。
 
-want参数的uri或type不为空, 依次匹配linkFeature、uri、type (参见want参数的uri和type匹配规则)，当三个字段均匹配成功时，则匹配成功，否则匹配失败。
+want参数的uri或type不为空，依次匹配linkFeature、uri、type (参见want参数的uri和type匹配规则)，当三个字段均匹配成功时，则匹配成功，否则匹配失败。
 
 图6 want参数中linkFeature具体匹配规则

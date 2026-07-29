@@ -64,7 +64,7 @@ export class PurchaseMovie {
   }
 }
 
-函数返回结果必须为insightIntent.ExecuteResult结构，且该结构result对象中需增加resultDesc字段对结果进行描述，模型依据此描述生成该意图执行结果的小艺回复话术。请参考上述示例代码。
+函数返回结果必须为insightIntent.ExecuteResult结构，且该结构result对象中需增加resultDesc字段对结果进行描述，字段类型为string，用于存放结果描述信息。模型依据此描述生成该意图执行结果的小艺回复话术。详情请参考上述示例代码。
 
 装饰器的字段说明以及示例：@InsightIntentFunction不涉及参数，@InsightIntentFunctionMethod字段以及具体说明如下。
 

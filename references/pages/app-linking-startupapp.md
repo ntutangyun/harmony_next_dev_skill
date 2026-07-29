@@ -181,26 +181,31 @@ skills标签下默认包含一个skill对象，用于标识应用入口。应用
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { url } from '@kit.ArkTS';
+// ...
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // ...
     // 从want中获取传入的链接信息。
-    // 如传入的url为：https://www.example.com/programs?action=showall
+    // 如传入的url为：https://example.drcn.agconnect.link/AIYx?action=showall，开发者可根据自己的业务需求进行后续的处理。
     let uri = want?.uri;
     if (uri) {
       // 从链接中解析query参数，拿到参数后，开发者可根据自己的业务需求进行后续的处理。
       try {
-        let urlObject = url.URL.parseURL(want?.uri);
+        let urlObject = url.URL.parseURL(uri);
         let action = urlObject.params.get('action');
         // 例如，当action为showall时，展示所有的节目。
-        if (action === "showall"){
+        if (action === 'showall') {
           // ...
         }
         // ...
       } catch (error) {
-        hilog.error(0x0000, 'testTag', `Failed to parse url.`);
+        hilog.error(0x0000, 'testTag', 'Failed to parse url.');
       }
+      // ...
     }
   }
+  // ...
 }
 
 若要根据链接参数启动UIAbility的指定页面组件，请参考“启动UIAbility的指定页面”。
@@ -267,31 +272,39 @@ export class GlobalContext {
 
 在“entry/src/main/ets/pages/Index.ets”文件中，使用UIAbilityContext.openLink()接口打开应用。
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        let link: string = "https://www.example.com/programs?action=showall";
-        // 仅以App Linking的方式打开应用
-        context.openLink(link, { appLinkingOnly: true })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+
+      Button('start link', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          let link: string = 'https://www.example.com/programs?action=showall';
+          // 仅以App Linking的方式打开应用
+          context.openLink(link, { appLinkingOnly: true })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 
 [h2]通过系统浏览器或ArkWeb拉起
@@ -460,26 +473,31 @@ https://www.example.com/.well-known/applinking.json
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { url } from '@kit.ArkTS';
+// ...
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // ...
     // 从want中获取传入的链接信息。
-    // 如传入的url为：https://www.example.com/programs?action=showall
+    // 如传入的url为：https://example.drcn.agconnect.link/AIYx?action=showall，开发者可根据自己的业务需求进行后续的处理。
     let uri = want?.uri;
     if (uri) {
       // 从链接中解析query参数，拿到参数后，开发者可根据自己的业务需求进行后续的处理。
       try {
-        let urlObject = url.URL.parseURL(want?.uri);
+        let urlObject = url.URL.parseURL(uri);
         let action = urlObject.params.get('action');
         // 例如，当action为showall时，展示所有的节目。
-        if (action === "showall"){
+        if (action === 'showall') {
           // ...
         }
         // ...
       } catch (error) {
-        hilog.error(0x0000, 'testTag', `Failed to parse url.`);
+        hilog.error(0x0000, 'testTag', 'Failed to parse url.');
       }
+      // ...
     }
   }
+  // ...
 }
 ```
 
@@ -504,31 +522,39 @@ export class GlobalContext {
 ### Code block 5
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { GlobalContext } from '../common/GlobalContext';
+// ...
 
 @Entry
 @Component
 struct Index {
+  // ...
+
   build() {
-    Button('start link', { type: ButtonType.Capsule, stateEffect: true })
-      .width('87%')
-      .height('5%')
-      .margin({ bottom: '12vp' })
-      .onClick(() => {
-        let context = GlobalContext.getContext();
-        let link: string = "https://www.example.com/programs?action=showall";
-        // 仅以App Linking的方式打开应用
-        context.openLink(link, { appLinkingOnly: true })
-          .then(() => {
-            hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
-          })
-          .catch((error: BusinessError) => {
-            hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
-          })
-      })
+    // ...
+
+      Button('start link', { type: ButtonType.Capsule, stateEffect: true })
+        .width('100%')
+        .height(40)
+        .margin({ top: '20vp' })
+        .onClick(() => {
+          let context = GlobalContext.getContext();
+          let link: string = 'https://www.example.com/programs?action=showall';
+          // 仅以App Linking的方式打开应用
+          context.openLink(link, { appLinkingOnly: true })
+            .then(() => {
+              hilog.info(0x0000, 'testTag', `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              hilog.error(0x0000, 'testTag', `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
+        })
+      // ...
   }
+
+  // ...
 }
 ```
 

@@ -13,34 +13,34 @@ import { common } from '@kit.AbilityKit';
 @Entry
 @Component
 struct Index {
-  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  requestPaymentPromise() {
-    // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
-    const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
-    paymentService.requestPayment(this.context, orderStr, "AP")
-      .then((payResult: paymentService.PayResult) => {
-        // 支付成功
-        console.info('succeeded in paying, pay result: ', payResult);
-      })
-      .catch((error: BusinessError) => {
-        // 支付失败
-        console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
-      });
-  }
+ context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+ requestPaymentPromise() {
+   // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
+   const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
+   paymentService.requestPayment(this.context, orderStr, 'AP')
+     .then((payResult: paymentService.PayResult) => {
+       // 支付成功
+       console.info('succeeded in paying, pay result: ', payResult);
+     })
+     .catch((error: BusinessError) => {
+       // 支付失败
+       console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+     });
+ }
 
-  build() {
-    Column() {
-      Button('requestPaymentPromise')
-        .type(ButtonType.Capsule)
-        .width('50%')
-        .margin(20)
-        .onClick(() => {
-          this.requestPaymentPromise();
-        })
-      }
-    .width('100%')
-    .height('100%')
-  }
+ build() {
+   Column() {
+     Button('requestPaymentPromise')
+       .type(ButtonType.Capsule)
+       .width('50%')
+       .margin(20)
+       .onClick(() => {
+         this.requestPaymentPromise();
+       })
+     }
+   .width('100%')
+   .height('100%')
+ }
 }
 
 开发者按照三方支付平台要求完成订单支付后的下一步业务处理，如对返回的支付结果信息验签等。
@@ -57,33 +57,33 @@ import { common } from '@kit.AbilityKit';
 @Entry
 @Component
 struct Index {
-  context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  requestPaymentPromise() {
-    // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
-    const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
-    paymentService.requestPayment(this.context, orderStr, "AP")
-      .then((payResult: paymentService.PayResult) => {
-        // 支付成功
-        console.info('succeeded in paying, pay result: ', payResult);
-      })
-      .catch((error: BusinessError) => {
-        // 支付失败
-        console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
-      });
-  }
+ context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+ requestPaymentPromise() {
+   // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
+   const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
+   paymentService.requestPayment(this.context, orderStr, 'AP')
+     .then((payResult: paymentService.PayResult) => {
+       // 支付成功
+       console.info('succeeded in paying, pay result: ', payResult);
+     })
+     .catch((error: BusinessError) => {
+       // 支付失败
+       console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+     });
+ }
 
-  build() {
-    Column() {
-      Button('requestPaymentPromise')
-        .type(ButtonType.Capsule)
-        .width('50%')
-        .margin(20)
-        .onClick(() => {
-          this.requestPaymentPromise();
-        })
-      }
-    .width('100%')
-    .height('100%')
-  }
+ build() {
+   Column() {
+     Button('requestPaymentPromise')
+       .type(ButtonType.Capsule)
+       .width('50%')
+       .margin(20)
+       .onClick(() => {
+         this.requestPaymentPromise();
+       })
+     }
+   .width('100%')
+   .height('100%')
+ }
 }
 ```

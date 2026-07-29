@@ -36,7 +36,7 @@ ArkTS侧支持的基本数据类型：number、string、二进制类型数据、
 
 类型	描述	是否支持
 NULL	空值	是
-INTEGER	整形	是
+INTEGER	整型	是
 DOUBLE	浮点类型	是
 TEXT	字符串类型	是
 BLOB	二进制类型	是
@@ -249,7 +249,7 @@ try {
   // 创建第二张表
   let CREATE_SQL = 'CREATE TABLE IF NOT EXISTS test1(id text PRIMARY KEY, location text, people text, age int, repr floatvector(2));';
   await store!.execute(CREATE_SQL);
-  let resultSet = await store!.querySql('select *, (1000 * (location='local') + 500 * (people like 'Mike') + 100 * (age > 18)) as score from test1 where repr <-> '[6.2, 7.3]' < 0.8 order by score limit 5;');
+  let resultSet = await store!.querySql("select *, (1000 * (location='local') + 500 * (people like 'Mike') + 100 * (age > 18)) as score from test1 where repr <-> '[6.2, 7.3]' < 0.8 order by score limit 5;");
   resultSet!.close();
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);
@@ -320,7 +320,7 @@ gsdiskann	适用于处理高维稠密向量数据，如文本嵌入、图像特�
 表2 索引距离度量类型(dist_function)
 
 类型	计算符号	备注说明
-L2	<->	欧式距离。
+L2	<->	欧氏距离。
 COSINE	<=>	余弦距离。
 
 表3 扩展语法参数(parameter)
@@ -561,7 +561,7 @@ try {
   // 创建第二张表
   let CREATE_SQL = 'CREATE TABLE IF NOT EXISTS test1(id text PRIMARY KEY, location text, people text, age int, repr floatvector(2));';
   await store!.execute(CREATE_SQL);
-  let resultSet = await store!.querySql('select *, (1000 * (location='local') + 500 * (people like 'Mike') + 100 * (age > 18)) as score from test1 where repr <-> '[6.2, 7.3]' < 0.8 order by score limit 5;');
+  let resultSet = await store!.querySql("select *, (1000 * (location='local') + 500 * (people like 'Mike') + 100 * (age > 18)) as score from test1 where repr <-> '[6.2, 7.3]' < 0.8 order by score limit 5;");
   resultSet!.close();
 } catch (err) {
   console.error(`query failed, code is ${err.code}, message is ${err.message}`);

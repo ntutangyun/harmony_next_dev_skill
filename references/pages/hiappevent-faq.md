@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hiappeven
 
 问题现象
 
-Hilog中出现如下日志：
+HiLog中出现如下日志：
 
 eventInfo.params.external_log=[]
 

@@ -125,7 +125,7 @@ OpExecuteContext类
 
 表9 OpExecuteContext类成员函数
 
-函数名称含义	含义
+函数名称	含义
 GetInputTensor	获取指定索引输入的Tensor。
 GetOptionalInputTensor	获取指定索引的可选输入的Tensor。
 GetDynamicInputTensor	获取指定索引的动态个数输入的Tensor。

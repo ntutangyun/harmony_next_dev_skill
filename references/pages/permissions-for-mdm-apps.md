@@ -2,11 +2,39 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/permissions-for-mdm-apps_
 
-以下权限仅对MDM（Mobile Device Management）设备管理应用开放。MDM应用的详细介绍，请参考MDM Kit简介。
+以下权限仅对MDM（Mobile Device Management）设备管理应用开放。
 
-注意
+企业MDM应用：
 
-以下权限不支持自动签名，因此在调试和发布阶段，均需参照手动签名的步骤，完成手动签名。
+企业MDM应用定义：
+
+企业MDM（Mobile Device Management）应用从移动端设备管控应用延伸而来，在HarmonyOS中表示对1+8设备提供高级管控能力的应用，包括对设备、应用、外设等的管理，如设置禁止连接WiFi、禁止使用USB设备等限制。
+
+企业MDM应用仅支持在企业场景下使用，设备需在华为HEM平台进行注册管理或者为搭载鸿蒙电脑专业版、企业版的PC设备。
+
+企业MDM应用发布开发指导：
+
+申请企业MDM应用发布证书、申请企业MDM应用发布Profile。
+
+企业MDM应用支持格式：
+
+支持.hap，.app，需要为单个应用包体。
+
+如果包含多个hap、hsp文件，需打包为.app格式，且需要在工程级build-profile.json5文件中，将packOptions的appWithSignedPkg属性配置为true，保证APP里的HAP/HSP包均被签名。
+
+企业MDM应用安装方式：
+
+设备注册纳管到华为HEM平台，在首次开机时通过HEM平台批量部署。
+
+在搭载鸿蒙电脑专业版、企业版的PC设备上，开启离线应用安装开关后本地直接安装。
+
+通过上架企业私有应用商店（企业MDM应用）在企业内部进行统一分发安装。
+
+企业MDM应用无法上架华为应用市场进行公开、非公开发布。
+
+说明
+
+HarmonyOS系统以应用包名作为应用的唯一标识，不同的发布证书代表不同的应用版本，需创建不同的应用包名。
 
 ohos.permission.ENTERPRISE_GET_DEVICE_INFO
 
@@ -146,7 +174,7 @@ ohos.permission.ENTERPRISE_SUBSCRIBE_MANAGED_EVENT
 
 允许设备管理应用订阅管理事件。
 
-比如应用安装事件、应用卸载事件和系统更新事件等。订阅成功后，事件触发时会通知MDM应用。
+比如应用安装事件、应用卸载事件和系统更新事件等。订阅成功后，事件触发时会通知设备管理应用。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -398,13 +426,13 @@ ohos.permission.ENTERPRISE_ADMIN_MANAGE
 
 授权方式：系统授权（system_grant）
 
-支持设备：PC/2in1
+支持设备：Phone | PC/2in1 | Tablet
 
 起始版本：12
 
 ohos.permission.ENTERPRISE_RECOVERY_KEY
 
-允许应用管理企业级恢复密钥。
+允许设备管理应用管理企业级恢复密钥。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -423,6 +451,8 @@ ohos.permission.ENTERPRISE_MANAGE_DELEGATED_POLICY
 权限级别：system_basic
 
 授权方式：系统授权（system_grant）
+
+支持设备：Phone | PC/2in1 | Tablet
 
 起始版本：14
 
@@ -514,7 +544,7 @@ ohos.permission.ENTERPRISE_MANAGE_LOCAL_PUBLICSPACES
 
 ohos.permission.ENTERPRISE_FILE_TRANSFER_AUDIT_POLICY_MANAGEMENT
 
-允许MDM应用管理文件传输的策略和审计信息。
+允许设备管理应用管理文件传输的策略和审计信息。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -542,7 +572,7 @@ ohos.permission.ENTERPRISE_SET_WALLPAPER
 
 ohos.permission.MANAGE_PREINSTALLED_ANTIVIRUS
 
-允许MDM应用管理系统预装的防病毒软件。
+允许设备管理应用管理系统预装的防病毒软件。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -556,9 +586,9 @@ ohos.permission.MANAGE_PREINSTALLED_ANTIVIRUS
 
 ohos.permission.ENTERPRISE_MANAGE_USER_GRANT_PERMISSION
 
-允许设备管理应用（MDM）设置user_grant类权限策略。
+允许设备管理应用设置user_grant类权限策略。
 
-获取该权限后，MDM应用可设置被管理应用user_grant类权限策略，策略支持静默授予，拒绝授予以及默认（即不影响应用申请）。
+获取该权限后，设备管理应用可设置被管理应用user_grant类权限策略，策略支持静默授予、拒绝授予以及默认（即不影响应用申请）。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -572,7 +602,7 @@ ohos.permission.ENTERPRISE_MANAGE_USER_GRANT_PERMISSION
 
 ohos.permission.ENTERPRISE_DATA_IDENTIFY_FILE
 
-允许MDM应用识别文件敏感内容。
+允许设备管理应用识别文件敏感内容。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -586,7 +616,7 @@ ohos.permission.ENTERPRISE_DATA_IDENTIFY_FILE
 
 ohos.permission.ENTERPRISE_ACCESS_DLP_FILE
 
-允许设备管理应用（MDM）生成、解密DLP文件，查询DLP文件策略。
+允许设备管理应用生成、解密DLP文件，查询DLP文件策略。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -632,7 +662,7 @@ ohos.permission.ENTERPRISE_START_ABILITIES
 
 ohos.permission.ENTERPRISE_READ_LOG
 
-允许MDM应用收集系统日志。
+允许设备管理应用收集系统日志。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -646,7 +676,7 @@ ohos.permission.ENTERPRISE_READ_LOG
 
 ohos.permission.ENTERPRISE_DEACTIVATE_DEVICE_ADMIN
 
-允许已激活的MDM应用解除自身的激活状态。
+允许已激活的设备管理应用解除自身的激活状态。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -660,7 +690,7 @@ ohos.permission.ENTERPRISE_DEACTIVATE_DEVICE_ADMIN
 
 ohos.permission.ENTERPRISE_ACTIVATE_DEVICE_ADMIN
 
-允许企业MDM应用自行完成激活操作。
+允许企业设备管理应用自行完成激活操作。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
@@ -669,5 +699,49 @@ ohos.permission.ENTERPRISE_ACTIVATE_DEVICE_ADMIN
 授权方式：系统授权（system_grant）
 
 支持设备：Phone | PC/2in1 | Tablet
+
+起始版本：24
+
+ohos.permission.ENTERPRISE_MANAGE_LOCAL_ACCOUNTS
+
+允许企业设备管理应用管理本地账号。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | Tablet
+
+起始版本：26.0.0
+
+ohos.permission.ENTERPRISE_INTERACT_ACROSS_LOCAL_ACCOUNTS
+
+允许企业设备管理应用进行多用户操作。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_core
+
+授权方式：系统授权（system_grant）
+
+支持设备：Phone | Tablet
+
+起始版本：26.0.0
+
+ohos.permission.ENTERPRISE_VPN
+
+允许设备管理应用默认拥有VPN接入权限。
+
+获取此权限后，应用无需经过用户确认，默认可接入VPN。
+
+申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
+
+权限级别：system_basic
+
+授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1
 
 起始版本：26.0.0

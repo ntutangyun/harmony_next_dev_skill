@@ -8,14 +8,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 如何使用FETCH发起网络请求
 
-发送一个HTTP请求，也可以设置请求头和请求体等参数，并返回来自服务器的HTTP响应。使用Promise异步回调。常用于获取资源，支持流处理和通过拦截器来处理请求和响应。
+发送HTTP请求，可设置请求头和请求体等参数，并返回来自服务器的HTTP响应。使用Promise异步回调。常用于获取资源，支持流处理和通过拦截器来处理请求和响应。
 
 [h2]接口说明
 
 具体API说明详见接口文档。
 
 接口名	描述
-fetch(request: Request): Promise<Response>	发送一个HTTP请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
+fetch(request: Request): Promise<Response>	发送HTTP请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
 
 [h2]使用示例
 
@@ -26,6 +26,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 创建Request对象。'https://www.example.com'请根据实际情况替换为需要请求的URL地址。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const kHttpServerAddress = 'https://www.example.com/fetch';
 const request = new rcp.Request(kHttpServerAddress, 'GET');
 
@@ -37,6 +38,7 @@ const session = rcp.createSession();
 
 session.fetch(request).then((rep: rcp.Response) => {
   console.info(`Response succeeded: ${rep}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 错误处理，通过catch块，捕获error，并对error进行处理，本示例中会将错误信息展现到打印台上。
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -51,7 +53,7 @@ HTTP GET请求是常用的通信方式之一。为了有效地实现这一目标
 具体API说明详见接口文档。
 
 接口名	描述
-get(url: URLOrString, destination?: ResponseBodyDestination): Promise<Response>	发送一个带有默认HTTP参数的HTTP GET请求，参数为开发者需要请求的地址及响应的目标，并返回来自服务器的HTTP响应。使用Promise异步回调。
+get(url: URLOrString, destination?: ResponseBodyDestination): Promise<Response>	发送带有默认HTTP参数的HTTP GET请求，参数为开发者需要请求的地址及响应的目标，并返回来自服务器的HTTP响应。使用Promise异步回调。
 
 [h2]使用示例
 
@@ -71,6 +73,7 @@ const session = rcp.createSession();
 // 3、使用session.get发起请求，以getURL为入参，使用Promise进行异步回调。
 session.get(getURL).then((response) => {
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 4、错误处理，通过catch块，捕获error，并对error进行处理，本示例中会将错误信息展现到打印台上。
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -78,14 +81,14 @@ session.get(getURL).then((response) => {
 
 如何发起POST网络请求
 
-发送一个带有默认HTTP参数的HTTP POST请求，并返回来自服务器的HTTP响应。使用Promise异步回调。常用于向服务器提交数据。与GET请求不同，POST请求将参数包含在请求主体中，适用于创建新资源、提交表单数据或执行某些操作。
+发送带有默认HTTP参数的HTTP POST请求，并返回来自服务器的HTTP响应。使用Promise异步回调。常用于向服务器提交数据。与GET请求不同，POST请求将参数包含在请求主体中，适用于创建新资源、提交表单数据或执行某些操作。
 
 [h2]接口说明
 
 具体API说明详见接口文档。
 
 接口名	描述
-post(url: URLOrString, content?: RequestContent, destination?: ResponseBodyDestination): Promise<Response>	发送一个带有默认HTTP参数的HTTP POST请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
+post(url: URLOrString, content?: RequestContent, destination?: ResponseBodyDestination): Promise<Response>	发送带有默认HTTP参数的HTTP POST请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
 
 [h2]使用示例
 
@@ -114,6 +117,7 @@ session.post(postURL, postContent)
     console.info(`Response succeeded: ${JSON.stringify(response.headers)}`);
     console.info(`Response succeeded: ${JSON.stringify(response.statusCode)}`);
     console.info(`Response succeeded: ${JSON.stringify(postContent)}`);
+    // ...
   })
   .catch((err: BusinessError) => {
     console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -128,7 +132,7 @@ session.post(postURL, postContent)
 具体API说明详见接口文档。
 
 接口名	描述
-put(url: URLOrString, content?: RequestContent, destination?: ResponseBodyDestination): Promise<Response>	发送一个带有默认HTTP参数的HTTP PUT请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
+put(url: URLOrString, content?: RequestContent, destination?: ResponseBodyDestination): Promise<Response>	发送带有默认HTTP参数的HTTP PUT请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
 
 [h2]使用示例
 
@@ -151,10 +155,11 @@ const postContent: rcp.RequestContent = {
   }
 }
 
-// 会话发起PUT请求，'http://www.example.com'请根据实际情况替换为需要请求的URL地址。
+// 会话发起PUT请求，"http://www.example.com/put"请根据实际情况替换为想要请求的URL地址。
 session.put('http://www.example.com/put', postContent).then((response) => {
   // 对响应的处理，此处为示例，只做打印处理
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 请求错误处理
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -169,7 +174,7 @@ HTTP HEAD请求可高效访问服务器资源头信息。它与GET请求类似�
 具体API说明详见接口文档。
 
 接口名	描述
-head(url: URLOrString): Promise<Response>	发送一个带有默认HTTP参数的HTTP HEAD请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
+head(url: URLOrString): Promise<Response>	发送带有默认HTTP参数的HTTP HEAD请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
 
 [h2]使用示例
 
@@ -183,10 +188,11 @@ import { BusinessError } from '@kit.BasicServicesKit';
 // 1、创建会话
 const session = rcp.createSession();
 
-// 2、会话发起HEAD请求，'http://www.example.com'请根据实际情况替换为需要请求的URL地址。
+// 2、会话发起HEAD请求，"http://www.example.com/head"请根据实际情况替换为想要请求的URL地址。
 session.head('http://www.example.com/head').then((response) => {
   // 3、对响应的处理，此处为示例，只做打印处理
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 4、请求错误处理
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -194,14 +200,14 @@ session.head('http://www.example.com/head').then((response) => {
 
 如何发起DELETE网络请求
 
-在远场通信服务的框架中，Remote Communication Kit采用了一种结合发起 HTTP DELETE 请求与 Promise 异步处理的方法。具体操作如下：通过向预定义的 URL 发送一个包含默认 HTTP 参数的 HTTP DELETE 请求，即可实现对目标 URL 上相关资源的有效删除。这种机制不仅简化了请求的发送过程，还增强了异步处理的效率，确保了资源管理的灵活性和响应速度。
+在远场通信服务的框架中，Remote Communication Kit采用了一种结合发起HTTP DELETE请求与Promise异步处理的方法。具体操作如下：通过向预定义的URL发送包含默认HTTP参数的HTTP DELETE请求，即可实现对目标URL上相关资源的有效删除。这种机制不仅简化了请求的发送过程，还增强了异步处理的效率，确保了资源管理的灵活性和响应速度。
 
 [h2]接口说明
 
 具体API说明详见接口文档。
 
 接口名	描述
-delete(url: URLOrString): Promise<Response>	发送一个带有默认HTTP参数的HTTP DELETE请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
+delete(url: URLOrString): Promise<Response>	发送带有默认HTTP参数的HTTP DELETE请求，并返回来自服务器的HTTP响应。使用Promise异步回调。
 
 [h2]使用示例
 
@@ -210,11 +216,11 @@ delete(url: URLOrString): Promise<Response>	发送一个带有默认HTTP参数�
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-创建会话，会话发起delete请求。'http://www.example.com'请根据实际情况替换为需要请求的URL地址。
-
 const session = rcp.createSession();
+// 请求的网址是示例网址，请根据实际需求更改
 session.delete('http://www.example.com/delete').then((response) => {
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
 });
@@ -242,7 +248,7 @@ const simpleForm = new rcp.Form({
 // 指定表单中key的发送顺序。指定后，将按照keys列表中的顺序发送（不在列表中的key将不被发送）；若不指定，则默认按各个key的hash顺序发送。
 simpleForm.keys = ['key2', 'key1'];
 // 创建request请求。请将URL地址替换为实际访问的地址。
-let req = new rcp.Request('http://example.com');
+let req = new rcp.Request('https://example.com');
 req.content = simpleForm;
 
 创建会话，并发起fetch请求。
@@ -252,7 +258,8 @@ try {
   const session = rcp.createSession();
   // 会话发起请求。
   session.fetch(req).then((resp: rcp.Response) => {
-    console.info(`Response succeeded: ${JSON.stringify(resp)}`);
+    console.info(`Response succeeded: ${JSON.stringify(resp.statusCode)}`);
+    // ...
     session.close();
   }).catch((err: BusinessError) => {
     // 请求错误处理。
@@ -288,7 +295,7 @@ const multiForm = new rcp.MultipartForm({
 // 定义多部分表单中的键的顺序。指定后，将按keys列表中的顺序发送（不在列表中的key不会被发送）；如果不指定，则默认按照各个key的hash顺序发送。
 multiForm.keys = ['key3', 'key1', 'key2'];
 // 创建request请求。请将URL地址替换为实际访问的地址。
-let req = new rcp.Request('http://example.com');
+let req = new rcp.Request('https://example.com');
 req.content = multiForm;
 
 创建会话，并发起fetch请求。
@@ -298,7 +305,8 @@ try {
   const session = rcp.createSession();
   // 会话发起请求。
   session.fetch(req).then((resp: rcp.Response) => {
-    console.info(`Response succeeded: ${JSON.stringify(resp)}`);
+    console.info(`Response succeeded: ${JSON.stringify(resp.statusCode)}`);
+    this.textArea = JSON.stringify(resp.statusCode, null, 2);
     session.close();
   }).catch((err: BusinessError) => {
     // 请求错误处理。
@@ -322,6 +330,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const kHttpServerAddress = 'https://www.example.com/fetch';
 const request = new rcp.Request(kHttpServerAddress, 'GET');
 ```
@@ -337,6 +346,7 @@ const session = rcp.createSession();
 ```
 session.fetch(request).then((rep: rcp.Response) => {
   console.info(`Response succeeded: ${rep}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 错误处理，通过catch块，捕获error，并对error进行处理，本示例中会将错误信息展现到打印台上。
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -362,6 +372,7 @@ const session = rcp.createSession();
 // 3、使用session.get发起请求，以getURL为入参，使用Promise进行异步回调。
 session.get(getURL).then((response) => {
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 4、错误处理，通过catch块，捕获error，并对error进行处理，本示例中会将错误信息展现到打印台上。
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -396,6 +407,7 @@ session.post(postURL, postContent)
     console.info(`Response succeeded: ${JSON.stringify(response.headers)}`);
     console.info(`Response succeeded: ${JSON.stringify(response.statusCode)}`);
     console.info(`Response succeeded: ${JSON.stringify(postContent)}`);
+    // ...
   })
   .catch((err: BusinessError) => {
     console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -424,10 +436,11 @@ const postContent: rcp.RequestContent = {
   }
 }
 
-// 会话发起PUT请求，'http://www.example.com'请根据实际情况替换为需要请求的URL地址。
+// 会话发起PUT请求，"http://www.example.com/put"请根据实际情况替换为想要请求的URL地址。
 session.put('http://www.example.com/put', postContent).then((response) => {
   // 对响应的处理，此处为示例，只做打印处理
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 请求错误处理
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -447,10 +460,11 @@ import { BusinessError } from '@kit.BasicServicesKit';
 // 1、创建会话
 const session = rcp.createSession();
 
-// 2、会话发起HEAD请求，'http://www.example.com'请根据实际情况替换为需要请求的URL地址。
+// 2、会话发起HEAD请求，"http://www.example.com/head"请根据实际情况替换为想要请求的URL地址。
 session.head('http://www.example.com/head').then((response) => {
   // 3、对响应的处理，此处为示例，只做打印处理
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   // 4、请求错误处理
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
@@ -468,8 +482,10 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 ```
 const session = rcp.createSession();
+// 请求的网址是示例网址，请根据实际需求更改
 session.delete('http://www.example.com/delete').then((response) => {
   console.info(`Response succeeded: ${response}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`Response error code is ${err.code}, error data is ${err.data}`);
 });
@@ -493,7 +509,7 @@ const simpleForm = new rcp.Form({
 // 指定表单中key的发送顺序。指定后，将按照keys列表中的顺序发送（不在列表中的key将不被发送）；若不指定，则默认按各个key的hash顺序发送。
 simpleForm.keys = ['key2', 'key1'];
 // 创建request请求。请将URL地址替换为实际访问的地址。
-let req = new rcp.Request('http://example.com');
+let req = new rcp.Request('https://example.com');
 req.content = simpleForm;
 ```
 
@@ -505,7 +521,8 @@ try {
   const session = rcp.createSession();
   // 会话发起请求。
   session.fetch(req).then((resp: rcp.Response) => {
-    console.info(`Response succeeded: ${JSON.stringify(resp)}`);
+    console.info(`Response succeeded: ${JSON.stringify(resp.statusCode)}`);
+    // ...
     session.close();
   }).catch((err: BusinessError) => {
     // 请求错误处理。
@@ -537,7 +554,7 @@ const multiForm = new rcp.MultipartForm({
 // 定义多部分表单中的键的顺序。指定后，将按keys列表中的顺序发送（不在列表中的key不会被发送）；如果不指定，则默认按照各个key的hash顺序发送。
 multiForm.keys = ['key3', 'key1', 'key2'];
 // 创建request请求。请将URL地址替换为实际访问的地址。
-let req = new rcp.Request('http://example.com');
+let req = new rcp.Request('https://example.com');
 req.content = multiForm;
 ```
 
@@ -549,7 +566,8 @@ try {
   const session = rcp.createSession();
   // 会话发起请求。
   session.fetch(req).then((resp: rcp.Response) => {
-    console.info(`Response succeeded: ${JSON.stringify(resp)}`);
+    console.info(`Response succeeded: ${JSON.stringify(resp.statusCode)}`);
+    this.textArea = JSON.stringify(resp.statusCode, null, 2);
     session.close();
   }).catch((err: BusinessError) => {
     // 请求错误处理。

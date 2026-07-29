@@ -14,13 +14,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/distribut
 
 设备限制
 
-本端设备：HarmonyOS 5.0.0及以上版本的手机、平板设备
+本端设备：HarmonyOS 5.0.0及以上版本的手机或平板设备、HarmonyOS 6.0.0及以上版本的PC/2in1设备
 
-远端设备：HarmonyOS 5.0.0及以上版本的2in1设备、HarmonyOS 3.1及以上版本的华为智慧屏、支持标准DLNA协议的设备
+远端设备：HarmonyOS 5.0.0及以上版本的PC/2in1设备、HarmonyOS 3.1及以上版本的华为智慧屏、支持标准DLNA协议的设备
 
 使用限制
 
-双端设备打开蓝牙和WIFI，并可访问网络。
+在进行投播前，双端设备均需要在设置中打开蓝牙和WIFI，并确保设备可访问网络。
+
+PC/2in1设备不支持发现PC/2in1设备。
 
 接口说明
 
@@ -56,20 +58,29 @@ AVCastController	on(type: 'mediaItemChange', callback: Callback<AVQueueItem>): v
 
 示例中的context的获取方式请参见获取UIAbility的上下文信息。
 
-import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块
+import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块。
 
-// 声明全局的session对象，此写法是加在class类外的声明，如果需要在class类内申明全局变量，需要去掉 export let
+// 声明全局的session对象，此写法是加在class类外的声明，如果需要在class类内申明全局变量，需要去掉 export let。
 export let session: avSession.AVSession;
-// 创建session
-async createSession(context: Context) {
-  // 创建的AVSession在基础播控与投播场景可以共用
-  session = await avSession.createAVSession(context, 'video_test', 'video'); // 'audio'代表音频应用，'video'代表视频应用
-  await session.activate();
-  // 请按照如下参数设置，告知系统应用当前支持投播，才能成功投播。
-  session.setExtras({
-    requireAbilityList: ['url-cast'],
-  });
-  console.info(`Session created. sessionId: ${session.sessionId}`);
+// ...
+@Entry
+@Component
+struct Index {
+  // ...
+  // 创建session
+  async createSession(context: common.UIAbilityContext) {
+    // 创建的AVSession在基础播控与投播场景可以共用。
+    session = await avSession.createAVSession(context, 'video_test', 'video'); // 'audio'代表音频应用，'video'代表视频应用
+    // ...
+    await session.activate();
+    // 请按照如下参数设置，告知系统应用当前支持投播，才能成功投播。
+    session.setExtras({
+      requireAbilityList: ['url-cast'],
+    });
+    console.info(`Session created. sessionId: ${session.sessionId}`);
+  }
+
+  // ...
 }
 
 设置媒体资源信息，注册基础播控回调，接入系统播控中心的基础播控。
@@ -84,36 +95,40 @@ async createSession(context: Context) {
 
 需要在AVCastPicker中仅显示支持DRM资源投播的设备时，应在AVMetadata设置明确的drmSchemes。
 
-// 与session声明不在同一文件时，需要import
-import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块
+// 与session声明不在同一文件时，需要import。
+import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块。
+
+// 声明全局的session对象，此写法是加在class类外的声明，如果需要在class类内申明全局变量，需要去掉 export let。
 export let session: avSession.AVSession;
+// ...
 @Entry
 @Component
-struct Index{
+struct Index {
+  // ...
   public setAVMetadata(playInfo: avSession.AVMediaDescription): Promise<void> {
     const metadata: avSession.AVMetadata = {
-        assetId: playInfo.assetId, // 需要配置实际id
-        title: playInfo.title, // 播放媒体资源的标题
-        subtitle: playInfo.subtitle,// 播放媒体资源的副标题
-        // 发现Cast+ Stream 和 DLNA协议设备，TYPE_CAST_PLUS_STREAM为默认必选。
-        filter: avSession.ProtocolType.TYPE_CAST_PLUS_STREAM|avSession.ProtocolType.TYPE_DLNA,
-        mediaImage: playInfo.mediaImage,
-        artist: playInfo.artist,
-        // 如果是DRM资源，配置支持的DRM uuid 用于设备过滤。非DRM资源不配置。
-        drmSchemes: ['3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c']
-      };
+      assetId: playInfo.assetId, // 需要配置实际id。
+      title: playInfo.title, // 播放媒体资源的标题。
+      subtitle: playInfo.subtitle, // 播放媒体资源的副标题。
+      // 发现Cast+ Stream 和 DLNA协议设备，TYPE_CAST_PLUS_STREAM为默认必选。
+      filter: avSession.ProtocolType.TYPE_CAST_PLUS_STREAM | avSession.ProtocolType.TYPE_DLNA,
+      mediaImage: playInfo.mediaImage,
+      artist: playInfo.artist,
+      // 如果是DRM资源，配置支持的DRM uuid 用于设备过滤。非DRM资源不配置。
+      drmSchemes: ['3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c']
+    };
     return session.setAVMetadata(metadata);
   }
+
   public setSessionListener() {
-   // 请按照自检接入表按需注册并实现基础播控的控制指令，以下为举例
+    // 请按照自检接入表按需注册并实现基础播控的控制指令，以下为举例。
     session?.on('play', () => {
     });
     session?.on('pause', () => {
     });
   }
-  build(){
-    Column()
-  }
+
+  // ...
 }
 
 在需要投播的播放界面创建投播组件AVCastPicker。
@@ -126,30 +141,35 @@ struct Index{
 
 使用投播组件AVCastPicker期间需要保证avsession对象不被后台销毁，否则可能会导致切换设备失败。
 
-import { AVCastPicker, AVCastPickerState } from '@kit.AVSessionKit';
+import { AVCastPickerState, AVCastPicker } from '@kit.AVSessionKit';
 
-// 应用可以通过onStateChange接口监听组件拉起的面板的显示/消失状态，当面板显示时建议不要销毁AVCastPicker组件；当面板消失时，再根据业务需要隐藏AVCastPicker。
-private onStateChange(state: AVCastPickerState) {
-  if (state == AVCastPickerState.STATE_APPEARING) {
-    console.info('The picker starts showing.');
-  } else if (state == AVCastPickerState.STATE_DISAPPEARING) {
-    console.info('The picker finishes presenting.');
+@Entry
+@Component
+export struct AVCastPickerComponent {
+  // 应用可以通过onStateChange接口监听组件显示/消失状态，
+  // 当组件显示时建议不要销毁AVCastPicker的显示；当组件消失时，再根据业务隐藏AVCastPicker。
+  private onStateChange(state: AVCastPickerState) {
+    if (state == AVCastPickerState.STATE_APPEARING) {
+      console.info('The picker starts showing.');
+    } else if (state == AVCastPickerState.STATE_DISAPPEARING) {
+      console.info('The picker finishes presenting.');
+    }
   }
-}
 
-// 创建组件，并设置大小
-build() {
-  Row() {
-    Column() {
-      AVCastPicker({
-        normalColor: Color.Red,
-        onStateChange: this.onStateChange
-      })
-        .width('40vp')
-        .height('40vp')
-        .border({ width: 1, color: Color.Red })
-    }.height('50%')
-  }.width('50%')
+  // 创建组件，并设置大小。
+  build() {
+    Row() {
+      Column() {
+        AVCastPicker({
+          normalColor: Color.Red,
+          onStateChange: this.onStateChange
+        })
+          .width('40vp')
+          .height('40vp')
+          .border({ width: 1, color: Color.Red })
+      }.height('50%')
+    }.width('50%')
+  }
 }
 
 注册AVSession投播控制回调。用于感知投播设备连接。
@@ -170,36 +190,37 @@ on('outputDeviceChange')回调具体取值来自ProtocolType，可以是protocol
 
 推送DRM资源后，应注册监听许可证请求事件，从服务器端获取许可证后，通过处理许可证响应函数提供给远端。
 
-import { BusinessError } from '@kit.BasicServicesKit';
 import { avSession } from '@kit.AVSessionKit';
-import { session } from './xxx'; // session声明的文件
-
-  castController: avSession.AVCastController | undefined = undefined;
-  getAVCastController() {
-    // 如支持投播，可使用下面接口监听设备连接状态的变化
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+  /**
+   * Register the AVSession playback control callback.
+   * Used to detect the connection of playback devices.
+   * @param session: The AVSession to configure for casting.
+   */
+  getAVCastController(session: avSession.AVSession) {
+    // 如支持投播，可使用下面接口监听设备连接状态的变化。
     session.on('outputDeviceChange', async (connectState: avSession.ConnectionState,
-                                                 device: avSession.OutputDeviceInfo) => {
-      // 可以通过当前设备及设备连接状态来更新应用内播放界面的显示
+      device: avSession.OutputDeviceInfo) => {
+      // 可以通过当前设备及设备连接状态来更新应用内播放界面的显示。
       let currentDevice: avSession.DeviceInfo = device?.devices?.[0];
-      if (currentDevice.castCategory === avSession.AVCastCategory.CATEGORY_REMOTE && connectState === avSession.ConnectionState.STATE_CONNECTED) { // 设备连接成功
+      if (currentDevice.castCategory === avSession.AVCastCategory.CATEGORY_REMOTE &&
+          connectState === avSession.ConnectionState.STATE_CONNECTED) { // 设备连接成功。
         console.info(`Device connected: ${device}`);
         this.castController = await session.getAVCastController();
         console.info('Succeeded in getting a cast controller');
-        // 查询当前播放的状态
+        // 查询当前播放的状态。
         let avPlaybackState = await this.castController?.getAVPlaybackState();
         console.info(`Succeeded in AVPlaybackState resource obtained: ${avPlaybackState}`);
-        // 监听播放状态的变化
+        // 监听播放状态的变化。
         this.castController?.on('playbackStateChange', 'all', (state: avSession.AVPlaybackState) => {
           console.info(`Succeeded in Playback state changed: ${state}`);
         });
         // 根据currentDevice.supportedProtocols可以判断设备支持的协议类型，设备支持单个或多个协议类型
-        if (currentDevice.supportedProtocols) {
-          if ((currentDevice.supportedProtocols &
-            avSession.ProtocolType.TYPE_CAST_PLUS_STREAM) === avSession.ProtocolType.TYPE_CAST_PLUS_STREAM) {
-            // 此设备支持cast+投播协议
-          } else if ((currentDevice.supportedProtocols & avSession.ProtocolType.TYPE_DLNA) === avSession.ProtocolType.TYPE_DLNA) {
-            // 此设备支持DLNA投播协议
-          }
+        if (currentDevice.supportedProtocols === avSession.ProtocolType.TYPE_CAST_PLUS_STREAM) {
+          // 此设备支持cast+投播协议。
+        } else if (currentDevice.supportedProtocols === avSession.ProtocolType.TYPE_DLNA) {
+          // 此设备支持DLNA投播协议。
         }
         // 此设备支持chinaDRM，监听许可证请求事件，也可在发起DRM资源投播前监听。
         if (currentDevice.supportedDrmCapabilities?.includes('3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c')) {
@@ -209,14 +230,14 @@ import { session } from './xxx'; // session声明的文件
     })
   }
 
-  // 处理DRM许可证请求事件
+  // 处理DRM许可证请求事件。
   private keyRequestCallback: avSession.KeyRequestCallback = async (assetId: string, requestData: Uint8Array) => {
-    // 根据assetId获取对应的DRM url
-    let drmUrl: string = 'http://license.xxx.xxx.com:8080/drmproxy/getLicense';
+    // 根据assetId获取对应的DRM url。
+    let drmUrl: string = 'https://www.examples.com';
     // 从服务器获取许可证，具体实现可参考附录。
-    let licenseResponseData = await this.getLicense(drmUrl, requestData);
+    let licenseResponseData = await this.getLicense.getLicense(drmUrl, requestData);
     try {
-      // 处理DRM许可证响应
+      // 处理DRM许可证响应。
       await this.castController?.processMediaKeyResponse(assetId, licenseResponseData);
     } catch (error) {
       console.error(`Failed to process the response corresponding to the media key. Error: ${error}`);
@@ -238,38 +259,38 @@ import { session } from './xxx'; // session声明的文件
 如果是DRM资源，需配置drmSchemes字段。
 
 playItem() {
-    // 设置播放参数，开始播放
-    let playItem : avSession.AVQueueItem = {
-      itemId: 0,
-      description: {
-        assetId: 'VIDEO-1',
-        title: 'ExampleTitle',
-        artist: 'ExampleArtist',
-        // 网络资源投播，设置mediaUri; 本地资源投播，将本地文件打开后，相关的文件描述符设置到fdSrc
-        mediaUri: 'https://xxx.xxx.com/example.mp4',
-        // 该字段大写，音频'AUDIO'，视频'VIDEO'
-        mediaType: 'VIDEO',
-        mediaSize: 1000,
-        // startPosition为投播当前进度，设置该字段可将本机播放进度同步到远端
-        startPosition: 0,
-        // 投播资源播放时长，设置该字段可将本机播放时长同步到远端显示
-        duration: 100000,
-        albumCoverUri: 'https://www.example.jpeg',
-        albumTitle: '《ExampleAlbum》',
-        appName: 'ExampleApp',
-        // DRM资源，需要配置支持的DRM类型, 以chinaDRM为例。
-        drmScheme: '3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c',
-      }
-    };
-    // 准备播放，这个不会触发真正的播放，会进行加载和缓冲
-    this.castController?.prepare(playItem, () => {
-      console.info('Preparation done');
-      // 启动播放，真正触发对端播放。请在Prepare成功后再调用start。
-      this.castController?.start(playItem, () => {
-        console.info('Playback started');
-      });
+  // 设置播放参数，开始播放。
+  let playItem : avSession.AVQueueItem = {
+    itemId: 0,
+    description: {
+      assetId: 'VIDEO-1',
+      title: 'ExampleTitle',
+      artist: 'ExampleArtist',
+      // 网络资源投播，设置mediaUri; 本地资源投播，将本地文件打开后，相关的文件描述符设置到fdSrc。
+      mediaUri: 'https://xxx.xxx.com/example.mp4',
+      // 该字段大写，音频'AUDIO'，视频'VIDEO'。
+      mediaType: 'VIDEO',
+      mediaSize: 1000,
+      // startPosition为投播当前进度，设置该字段可将本机播放进度同步到远端。
+      startPosition: 0,
+      // 投播资源播放时长，设置该字段可将本机播放时长同步到远端显示。
+      duration: 100000,
+      albumCoverUri: 'https://www.examples.com',
+      albumTitle: '《ExampleAlbum》',
+      appName: 'ExampleApp',
+      // DRM资源，需要配置支持的DRM类型, 以chinaDRM为例。
+      drmScheme: '3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c',
+    }
+  };
+  // 准备播放，这个不会触发真正的播放，会进行加载和缓冲。
+  this.avCastController?.prepare(playItem, () => {
+    console.info('Preparation done');
+    // 启动播放，真正触发对端播放。请在Prepare成功后再调用start。
+    this.avCastController?.start(playItem, () => {
+      console.info('Playback started');
     });
-  }
+  });
+}
 
 使用AVCastController，监听控制命令和进行播放控制。
 
@@ -282,65 +303,65 @@ playItem() {
 当前系统暂不支持清晰度调节，应用如需向用户提供清晰度调节入口，需要在用户选定不同清晰度时按照新的清晰度重新下发资源。
 
 playControl() {
-  // 记录从avsession获取的远端控制器this.castController
-  // 应用向对端设备下发播放命令
+  // 记录从avsession获取的远端控制器this.castController。
+  // 应用向对端设备下发播放命令。
   let avCommand: avSession.AVCastControlCommand = {command:'play'};
-  this.castController?.sendControlCommand(avCommand);
+  this.avCastController?.sendControlCommand(avCommand);
 
-  // 应用向对端设备下发暂停命令
+  // 应用向对端设备下发暂停命令。
   avCommand = {command:'pause'};
-  this.castController?.sendControlCommand(avCommand);
+  this.avCastController?.sendControlCommand(avCommand);
 
-  // 应用调节对端设备音量
+  // 应用调节对端设备音量。
   avCommand = {
     command: 'setVolume',
     parameter: 1
   };
-  this.castController?.sendControlCommand(avCommand);
+  this.avCastController?.sendControlCommand(avCommand);
 
-  // 应用调节对端设备进度
+  // 应用调节对端设备进度。
   avCommand = {
     command: 'seek',
     parameter: 1
   };
-  this.castController?.sendControlCommand(avCommand);
- // 更多控制指令请参考AVCastControlCommand
+  this.avCastController?.sendControlCommand(avCommand);
+  // 更多控制指令请参考AVCastControlCommand。
 }
 controlListener() {
-  // 应用监听对端或播控中心上下一首/上下一集切换
-  this.castController?.on('playPrevious', () => {
+  // 应用监听对端或播控中心上下一首/上下一集切换。
+  this.avCastController?.on('playPrevious', () => {
     console.info('PlayPrevious done');
   });
-  this.castController?.on('playNext', () => {
+  this.avCastController?.on('playNext', () => {
     console.info('PlayNext done');
   });
 
-  // 应用监听对端或播控中心播放状态、实时进度和音量变化事件
-  this.castController?.on('playbackStateChange', 'all', (playbackState: avSession.AVPlaybackState) => {
+  // 应用监听对端或播控中心播放状态、实时进度和音量变化事件。
+  this.avCastController?.on('playbackStateChange', 'all', (playbackState: avSession.AVPlaybackState)=>{
     if (playbackState?.state) {
-      // 播放状态变化
+      // 播放状态变化。
     }
     if (playbackState?.position) {
-      // 进度变化，可以根据position来获取对端播放的进度
+      // 进度变化，可以根据position来获取对端播放的进度。
     }
     if (playbackState?.volume) {
-      // 音量变化
+      // 音量变化。
     }
   });
 
   // 应用监听对端投播内容播放完毕事件。应用监听到此回调，可以按照业务在以下三种选其一实现，否则无内容播放，对端出现黑屏。
-  // 1. 有下一集时，自动切换下一集投播，此时需要调用Prepare和start重新设置新的url，参考步骤5
-  // 2. 无下一集时，建议循环播放同一集，重新调用prepare和start来设置当前新的url，参考步骤5
+  // 1. 有下一集时，自动切换下一集投播，此时需要调用Prepare和start重新设置新的url，参考步骤5。
+  // 2. 无下一集时，建议循环播放同一集，重新调用prepare和start来设置当前新的url，参考步骤5。
   // 3. 业务不再支持投播，可以主动断开投播，参考步骤9。
-  this.castController?.on('endOfStream', () => {
-    // 按业务处理
+  this.avCastController?.on('endOfStream', () => {
+    // 按业务处理。
   });
 
-  // 应用监听对端或播控中心的进度调节完成事件，包括快进、快退、进度条拖拽完毕
-  this.castController?.on('seekDone', (position: number) => {
-    // seekDone表示用户在对端或是播控内进度调节完毕，可以在收到该回调后，根据'playbackStateChange'回调的position刷新绘制应用内进度条
-    // 应用主动调用seek调节对端进度后，也请等待seekDone回调再根据'playbackStateChange'中的position来刷新，更精准
-   });
+  // 应用监听对端或播控中心的进度调节完成事件，包括快进、快退、进度条拖拽完毕。
+  this.avCastController?.on('seekDone', (position: number) => {
+    // seekDone表示用户在对端或是播控内进度调节完毕，可以在收到该回调后，根据'playbackStateChange'回调的position刷新绘制应用内进度条。
+    // 应用主动调用seek调节对端进度后，也请等待seekDone回调再根据'playbackStateChange'中的position来刷新，更精准。
+  });
 }
 
 申请投播长时任务，避免应用在投播时进入后台时被系统冻结，导致无法持续投播。
@@ -354,64 +375,62 @@ controlListener() {
 为需要使用长时任务的UIAbility声明相应的后台模式类型：AUDIO_PLAYBACK。选其一申请即可，都可保证音频在应用后台、锁屏、熄屏投播时不会被中断。
 
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
-import { wantAgent } from '@kit.AbilityKit';
+import { WantAgent, wantAgent } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+// ...
 
-let context: Context = getContext(this);
+async function startContinuousTask(context: Context) {
+  let wantAgentInfo: wantAgent.WantAgentInfo = {
+    // 点击通知后，将要执行的动作列表。
+    wants: [
+      {
+        bundleName: "com.example.myapplication",
+        abilityName: "EntryAbility",
+      }
+    ],
+    // 点击通知后，动作类型。
+    actionType: wantAgent.OperationType.START_ABILITY,
+    // 使用者自定义的一个私有值。
+    requestCode: 0,
+    // 点击通知后，动作执行属性。
+    wantAgentFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+  };
 
-function startContinuousTask() {
-    let wantAgentInfo: wantAgent.WantAgentInfo = {
-        // 点击通知后，将要执行的动作列表
-        wants: [
-          {
-            bundleName: "com.example.myapplication",
-            abilityName: "EntryAbility",
-          }
-        ],
-        // 点击通知后，动作类型
-        actionType: wantAgent.OperationType.START_ABILITY,
-        // 使用者自定义的一个私有值
-        requestCode: 0,
-        // 点击通知后，动作执行属性
-        wantAgentFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-
-    // 通过wantAgent模块的getWantAgent方法获取WantAgent对象
-    try {
-        wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj) => {
-            try {
-                backgroundTaskManager.startBackgroundRunning(context,
-                    backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(() => {
-                    console.info('Succeeded in requesting to start running in background');
-                }).catch((error: BusinessError) => {
-                    console.error(`Failed to request to start running in background. Code: ${error.code}, message: ${error.message}`);
-                });
-            } catch (error) {
-                console.error(`Failed to request to start running in background. Error: ${error}`);
-            }
-        });
-    } catch (error) {
-        console.error(`Failed to get WantAgent. Error: ${error}`);
-    }
+  // 通过wantAgent模块的getWantAgent方法获取WantAgent对象。
+  try {
+      wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj) => {
+        try {
+            backgroundTaskManager.startBackgroundRunning(context,
+                backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(() => {
+                console.info('Succeeded in requesting to start running in background');
+            }).catch((error: BusinessError) => {
+                console.error(`Failed to request to start running in background. Code: ${error.code}, message: ${error.message}`);
+            });
+        } catch (error) {
+            console.error(`Failed to request to start running in background. Error: ${error}`);
+        }
+    });
+  } catch (error) {
+      console.error(`Failed to get WantAgent. Error: ${error}`);
+  }
 }
 
 投播后资源切换。
 
 应用已开始投播，再次进入播放详情页时可以通过getOutputDevice()接口获取当前播放设备，来判断此时是否正在投播中。
 
-import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块
-// 与session声明不在同一文件时，需要import
-import { session } from './xxx'; // session声明的文件
-session?.getOutputDevice().then((outputDeviceInfo: avSession.OutputDeviceInfo) => {
-  // 当前设备的castCategory为Remote，则表示正在投播中
-  let isCasting = outputDeviceInfo.devices[0].castCategory === avSession.AVCastCategory.CATEGORY_REMOTE;
-}).catch((err: BusinessError) => {
-  console.error(`GetOutputDevice BusinessError: code: ${err.code}, message: ${err.message}`);
-});
+import { avSession } from '@kit.AVSessionKit'; // 导入AVSession模块。
+// ...
+  getOutputDevice() {
+    session?.getOutputDevice().then((outputDeviceInfo: avSession.OutputDeviceInfo) => {
+      // 当前设备的castCategory为Remote，则表示正在投播中。
+      let isCasting = outputDeviceInfo.devices[0].castCategory === avSession.AVCastCategory.CATEGORY_REMOTE;
+    }).catch((err: BusinessError) => {
+      console.error(`GetOutputDevice BusinessError: code: ${err.code}, message: ${err.message}`);
+    });
+  }
 
 应用已开始投播，从播放详情页退出到应用首页时，建议不要断开投播即调用stopCasting，可以给用户留一个回到“投播的界面”的入口。
-
-投播时用户在应用侧退出详情页，如果点击了其他视频播放，应用识别新的资源是否可以投播，可以根据以下两种情况处理：
 
 情况一：如新的视频资源可以投播，有以下两种方式可处理：
 
@@ -431,9 +450,10 @@ session?.getOutputDevice().then((outputDeviceInfo: avSession.OutputDeviceInfo) =
 
 应用也可以使用断开投播的接口，主动进行投播连接的断开。
 
-async release() {
-  // 一般来说，应用退出时，而不希望继续投播，可以主动结束
-  await session.stopCasting();
+async stopCasting() {
+  try {
+    await session.stopCasting();
+  // ...
 }
 
 建议应用监听并保存AVCastController.on('playbackStateChange')回调中的position，当投播断开时，可以刷新为“本地播放详情页”在本端继续播放，并根据这个position来调整本地播放的进度。
@@ -456,7 +476,8 @@ async release() {
 
 import { http } from '@kit.NetworkKit';
 
- // 获取DRM许可证, 仅做参考，需要结合实际资源和服务地址进行获取。
+export class GetLicense {
+  // 获取DRM许可证, 仅做参考，需要结合实际资源和服务地址进行获取。
   async getLicense(drmUrl: string, requestData: Uint8Array): Promise<Uint8Array | undefined> {
     let licenseRequestStr: string = this.byteToString(requestData);
     let licenseResponseStr: string = 'defaultStr';
@@ -485,16 +506,16 @@ import { http } from '@kit.NetworkKit';
   }
 
   /**
-   * Uint8Array to string
-   * @param arr Uint8Array
-   * @returns string
+   * Uint8Array to string.
+   * @param arr Uint8Array.
+   * @returns string.
    */
   byteToString(arr: Uint8Array): string {
     let str: string = ''
     let _arr: Uint8Array = arr
 
     for (let i = 0; i < _arr.length; i++) {
-      // 将数值转为二进制字符串
+      // 将数值转为二进制字符串。
       let binaryStr: string = _arr[i].toString(2)
       let matchArray = binaryStr.match(new RegExp('/^1+?(?=0)/'))
       if (matchArray && binaryStr.length == 8) {
@@ -514,12 +535,12 @@ import { http } from '@kit.NetworkKit';
   }
 
   /**
-   * string 转 Uint8Array
-   * @param str string
-   * @returns Uint8Array
+   * string 转 Uint8Array。
+   * @param str string.
+   * @returns Uint8Array.
    */
   stringToByte(str: string): Uint8Array {
-    let bytes: number[] = new Array()
+    let bytes: number[] = new Array();
     let unicode: number
 
     for (let i = 0; i < str.length; i++) {
@@ -542,6 +563,7 @@ import { http } from '@kit.NetworkKit';
     }
     return new Uint8Array(bytes);
   }
+}
 
 音视频投播示例代码
 
@@ -560,122 +582,141 @@ import { http } from '@kit.NetworkKit';
 ### Code block 1
 
 ```
-import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块
+import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块。
 
-// 声明全局的session对象，此写法是加在class类外的声明，如果需要在class类内申明全局变量，需要去掉 export let
+// 声明全局的session对象，此写法是加在class类外的声明，如果需要在class类内申明全局变量，需要去掉 export let。
 export let session: avSession.AVSession;
-// 创建session
-async createSession(context: Context) {
-  // 创建的AVSession在基础播控与投播场景可以共用
-  session = await avSession.createAVSession(context, 'video_test', 'video'); // 'audio'代表音频应用，'video'代表视频应用
-  await session.activate();
-  // 请按照如下参数设置，告知系统应用当前支持投播，才能成功投播。
-  session.setExtras({
-    requireAbilityList: ['url-cast'],
-  });
-  console.info(`Session created. sessionId: ${session.sessionId}`);
+// ...
+@Entry
+@Component
+struct Index {
+  // ...
+  // 创建session
+  async createSession(context: common.UIAbilityContext) {
+    // 创建的AVSession在基础播控与投播场景可以共用。
+    session = await avSession.createAVSession(context, 'video_test', 'video'); // 'audio'代表音频应用，'video'代表视频应用
+    // ...
+    await session.activate();
+    // 请按照如下参数设置，告知系统应用当前支持投播，才能成功投播。
+    session.setExtras({
+      requireAbilityList: ['url-cast'],
+    });
+    console.info(`Session created. sessionId: ${session.sessionId}`);
+  }
+
+  // ...
 }
 ```
 
 ### Code block 2
 
 ```
-// 与session声明不在同一文件时，需要import
-import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块
+// 与session声明不在同一文件时，需要import。
+import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块。
+
+// 声明全局的session对象，此写法是加在class类外的声明，如果需要在class类内申明全局变量，需要去掉 export let。
 export let session: avSession.AVSession;
+// ...
 @Entry
 @Component
-struct Index{
+struct Index {
+  // ...
   public setAVMetadata(playInfo: avSession.AVMediaDescription): Promise<void> {
     const metadata: avSession.AVMetadata = {
-        assetId: playInfo.assetId, // 需要配置实际id
-        title: playInfo.title, // 播放媒体资源的标题
-        subtitle: playInfo.subtitle,// 播放媒体资源的副标题
-        // 发现Cast+ Stream 和 DLNA协议设备，TYPE_CAST_PLUS_STREAM为默认必选。
-        filter: avSession.ProtocolType.TYPE_CAST_PLUS_STREAM|avSession.ProtocolType.TYPE_DLNA,
-        mediaImage: playInfo.mediaImage,
-        artist: playInfo.artist,
-        // 如果是DRM资源，配置支持的DRM uuid 用于设备过滤。非DRM资源不配置。
-        drmSchemes: ['3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c']
-      };
+      assetId: playInfo.assetId, // 需要配置实际id。
+      title: playInfo.title, // 播放媒体资源的标题。
+      subtitle: playInfo.subtitle, // 播放媒体资源的副标题。
+      // 发现Cast+ Stream 和 DLNA协议设备，TYPE_CAST_PLUS_STREAM为默认必选。
+      filter: avSession.ProtocolType.TYPE_CAST_PLUS_STREAM | avSession.ProtocolType.TYPE_DLNA,
+      mediaImage: playInfo.mediaImage,
+      artist: playInfo.artist,
+      // 如果是DRM资源，配置支持的DRM uuid 用于设备过滤。非DRM资源不配置。
+      drmSchemes: ['3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c']
+    };
     return session.setAVMetadata(metadata);
   }
+
   public setSessionListener() {
-   // 请按照自检接入表按需注册并实现基础播控的控制指令，以下为举例
+    // 请按照自检接入表按需注册并实现基础播控的控制指令，以下为举例。
     session?.on('play', () => {
     });
     session?.on('pause', () => {
     });
   }
-  build(){
-    Column()
-  }
+
+  // ...
 }
 ```
 
 ### Code block 3
 
 ```
-import { AVCastPicker, AVCastPickerState } from '@kit.AVSessionKit';
+import { AVCastPickerState, AVCastPicker } from '@kit.AVSessionKit';
 
-// 应用可以通过onStateChange接口监听组件拉起的面板的显示/消失状态，当面板显示时建议不要销毁AVCastPicker组件；当面板消失时，再根据业务需要隐藏AVCastPicker。
-private onStateChange(state: AVCastPickerState) {
-  if (state == AVCastPickerState.STATE_APPEARING) {
-    console.info('The picker starts showing.');
-  } else if (state == AVCastPickerState.STATE_DISAPPEARING) {
-    console.info('The picker finishes presenting.');
+@Entry
+@Component
+export struct AVCastPickerComponent {
+  // 应用可以通过onStateChange接口监听组件显示/消失状态，
+  // 当组件显示时建议不要销毁AVCastPicker的显示；当组件消失时，再根据业务隐藏AVCastPicker。
+  private onStateChange(state: AVCastPickerState) {
+    if (state == AVCastPickerState.STATE_APPEARING) {
+      console.info('The picker starts showing.');
+    } else if (state == AVCastPickerState.STATE_DISAPPEARING) {
+      console.info('The picker finishes presenting.');
+    }
   }
-}
 
-// 创建组件，并设置大小
-build() {
-  Row() {
-    Column() {
-      AVCastPicker({
-        normalColor: Color.Red,
-        onStateChange: this.onStateChange
-      })
-        .width('40vp')
-        .height('40vp')
-        .border({ width: 1, color: Color.Red })
-    }.height('50%')
-  }.width('50%')
+  // 创建组件，并设置大小。
+  build() {
+    Row() {
+      Column() {
+        AVCastPicker({
+          normalColor: Color.Red,
+          onStateChange: this.onStateChange
+        })
+          .width('40vp')
+          .height('40vp')
+          .border({ width: 1, color: Color.Red })
+      }.height('50%')
+    }.width('50%')
+  }
 }
 ```
 
 ### Code block 4
 
 ```
-import { BusinessError } from '@kit.BasicServicesKit';
 import { avSession } from '@kit.AVSessionKit';
-import { session } from './xxx'; // session声明的文件
-
-  castController: avSession.AVCastController | undefined = undefined;
-  getAVCastController() {
-    // 如支持投播，可使用下面接口监听设备连接状态的变化
+import { BusinessError } from '@kit.BasicServicesKit';
+// ...
+  /**
+   * Register the AVSession playback control callback.
+   * Used to detect the connection of playback devices.
+   * @param session: The AVSession to configure for casting.
+   */
+  getAVCastController(session: avSession.AVSession) {
+    // 如支持投播，可使用下面接口监听设备连接状态的变化。
     session.on('outputDeviceChange', async (connectState: avSession.ConnectionState,
-                                                 device: avSession.OutputDeviceInfo) => {
-      // 可以通过当前设备及设备连接状态来更新应用内播放界面的显示
+      device: avSession.OutputDeviceInfo) => {
+      // 可以通过当前设备及设备连接状态来更新应用内播放界面的显示。
       let currentDevice: avSession.DeviceInfo = device?.devices?.[0];
-      if (currentDevice.castCategory === avSession.AVCastCategory.CATEGORY_REMOTE && connectState === avSession.ConnectionState.STATE_CONNECTED) { // 设备连接成功
+      if (currentDevice.castCategory === avSession.AVCastCategory.CATEGORY_REMOTE &&
+          connectState === avSession.ConnectionState.STATE_CONNECTED) { // 设备连接成功。
         console.info(`Device connected: ${device}`);
         this.castController = await session.getAVCastController();
         console.info('Succeeded in getting a cast controller');
-        // 查询当前播放的状态
+        // 查询当前播放的状态。
         let avPlaybackState = await this.castController?.getAVPlaybackState();
         console.info(`Succeeded in AVPlaybackState resource obtained: ${avPlaybackState}`);
-        // 监听播放状态的变化
+        // 监听播放状态的变化。
         this.castController?.on('playbackStateChange', 'all', (state: avSession.AVPlaybackState) => {
           console.info(`Succeeded in Playback state changed: ${state}`);
         });
         // 根据currentDevice.supportedProtocols可以判断设备支持的协议类型，设备支持单个或多个协议类型
-        if (currentDevice.supportedProtocols) {
-          if ((currentDevice.supportedProtocols &
-            avSession.ProtocolType.TYPE_CAST_PLUS_STREAM) === avSession.ProtocolType.TYPE_CAST_PLUS_STREAM) {
-            // 此设备支持cast+投播协议
-          } else if ((currentDevice.supportedProtocols & avSession.ProtocolType.TYPE_DLNA) === avSession.ProtocolType.TYPE_DLNA) {
-            // 此设备支持DLNA投播协议
-          }
+        if (currentDevice.supportedProtocols === avSession.ProtocolType.TYPE_CAST_PLUS_STREAM) {
+          // 此设备支持cast+投播协议。
+        } else if (currentDevice.supportedProtocols === avSession.ProtocolType.TYPE_DLNA) {
+          // 此设备支持DLNA投播协议。
         }
         // 此设备支持chinaDRM，监听许可证请求事件，也可在发起DRM资源投播前监听。
         if (currentDevice.supportedDrmCapabilities?.includes('3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c')) {
@@ -685,14 +726,14 @@ import { session } from './xxx'; // session声明的文件
     })
   }
 
-  // 处理DRM许可证请求事件
+  // 处理DRM许可证请求事件。
   private keyRequestCallback: avSession.KeyRequestCallback = async (assetId: string, requestData: Uint8Array) => {
-    // 根据assetId获取对应的DRM url
-    let drmUrl: string = 'http://license.xxx.xxx.com:8080/drmproxy/getLicense';
+    // 根据assetId获取对应的DRM url。
+    let drmUrl: string = 'https://www.examples.com';
     // 从服务器获取许可证，具体实现可参考附录。
-    let licenseResponseData = await this.getLicense(drmUrl, requestData);
+    let licenseResponseData = await this.getLicense.getLicense(drmUrl, requestData);
     try {
-      // 处理DRM许可证响应
+      // 处理DRM许可证响应。
       await this.castController?.processMediaKeyResponse(assetId, licenseResponseData);
     } catch (error) {
       console.error(`Failed to process the response corresponding to the media key. Error: ${error}`);
@@ -704,103 +745,103 @@ import { session } from './xxx'; // session声明的文件
 
 ```
 playItem() {
-    // 设置播放参数，开始播放
-    let playItem : avSession.AVQueueItem = {
-      itemId: 0,
-      description: {
-        assetId: 'VIDEO-1',
-        title: 'ExampleTitle',
-        artist: 'ExampleArtist',
-        // 网络资源投播，设置mediaUri; 本地资源投播，将本地文件打开后，相关的文件描述符设置到fdSrc
-        mediaUri: 'https://xxx.xxx.com/example.mp4',
-        // 该字段大写，音频'AUDIO'，视频'VIDEO'
-        mediaType: 'VIDEO',
-        mediaSize: 1000,
-        // startPosition为投播当前进度，设置该字段可将本机播放进度同步到远端
-        startPosition: 0,
-        // 投播资源播放时长，设置该字段可将本机播放时长同步到远端显示
-        duration: 100000,
-        albumCoverUri: 'https://www.example.jpeg',
-        albumTitle: '《ExampleAlbum》',
-        appName: 'ExampleApp',
-        // DRM资源，需要配置支持的DRM类型, 以chinaDRM为例。
-        drmScheme: '3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c',
-      }
-    };
-    // 准备播放，这个不会触发真正的播放，会进行加载和缓冲
-    this.castController?.prepare(playItem, () => {
-      console.info('Preparation done');
-      // 启动播放，真正触发对端播放。请在Prepare成功后再调用start。
-      this.castController?.start(playItem, () => {
-        console.info('Playback started');
-      });
+  // 设置播放参数，开始播放。
+  let playItem : avSession.AVQueueItem = {
+    itemId: 0,
+    description: {
+      assetId: 'VIDEO-1',
+      title: 'ExampleTitle',
+      artist: 'ExampleArtist',
+      // 网络资源投播，设置mediaUri; 本地资源投播，将本地文件打开后，相关的文件描述符设置到fdSrc。
+      mediaUri: 'https://xxx.xxx.com/example.mp4',
+      // 该字段大写，音频'AUDIO'，视频'VIDEO'。
+      mediaType: 'VIDEO',
+      mediaSize: 1000,
+      // startPosition为投播当前进度，设置该字段可将本机播放进度同步到远端。
+      startPosition: 0,
+      // 投播资源播放时长，设置该字段可将本机播放时长同步到远端显示。
+      duration: 100000,
+      albumCoverUri: 'https://www.examples.com',
+      albumTitle: '《ExampleAlbum》',
+      appName: 'ExampleApp',
+      // DRM资源，需要配置支持的DRM类型, 以chinaDRM为例。
+      drmScheme: '3d5e6d35-9b9a-41e8-b843-dd3c6e72c42c',
+    }
+  };
+  // 准备播放，这个不会触发真正的播放，会进行加载和缓冲。
+  this.avCastController?.prepare(playItem, () => {
+    console.info('Preparation done');
+    // 启动播放，真正触发对端播放。请在Prepare成功后再调用start。
+    this.avCastController?.start(playItem, () => {
+      console.info('Playback started');
     });
-  }
+  });
+}
 ```
 
 ### Code block 6
 
 ```
 playControl() {
-  // 记录从avsession获取的远端控制器this.castController
-  // 应用向对端设备下发播放命令
+  // 记录从avsession获取的远端控制器this.castController。
+  // 应用向对端设备下发播放命令。
   let avCommand: avSession.AVCastControlCommand = {command:'play'};
-  this.castController?.sendControlCommand(avCommand);
+  this.avCastController?.sendControlCommand(avCommand);
 
-  // 应用向对端设备下发暂停命令
+  // 应用向对端设备下发暂停命令。
   avCommand = {command:'pause'};
-  this.castController?.sendControlCommand(avCommand);
+  this.avCastController?.sendControlCommand(avCommand);
 
-  // 应用调节对端设备音量
+  // 应用调节对端设备音量。
   avCommand = {
     command: 'setVolume',
     parameter: 1
   };
-  this.castController?.sendControlCommand(avCommand);
+  this.avCastController?.sendControlCommand(avCommand);
 
-  // 应用调节对端设备进度
+  // 应用调节对端设备进度。
   avCommand = {
     command: 'seek',
     parameter: 1
   };
-  this.castController?.sendControlCommand(avCommand);
- // 更多控制指令请参考AVCastControlCommand
+  this.avCastController?.sendControlCommand(avCommand);
+  // 更多控制指令请参考AVCastControlCommand。
 }
 controlListener() {
-  // 应用监听对端或播控中心上下一首/上下一集切换
-  this.castController?.on('playPrevious', () => {
+  // 应用监听对端或播控中心上下一首/上下一集切换。
+  this.avCastController?.on('playPrevious', () => {
     console.info('PlayPrevious done');
   });
-  this.castController?.on('playNext', () => {
+  this.avCastController?.on('playNext', () => {
     console.info('PlayNext done');
   });
 
-  // 应用监听对端或播控中心播放状态、实时进度和音量变化事件
-  this.castController?.on('playbackStateChange', 'all', (playbackState: avSession.AVPlaybackState) => {
+  // 应用监听对端或播控中心播放状态、实时进度和音量变化事件。
+  this.avCastController?.on('playbackStateChange', 'all', (playbackState: avSession.AVPlaybackState)=>{
     if (playbackState?.state) {
-      // 播放状态变化
+      // 播放状态变化。
     }
     if (playbackState?.position) {
-      // 进度变化，可以根据position来获取对端播放的进度
+      // 进度变化，可以根据position来获取对端播放的进度。
     }
     if (playbackState?.volume) {
-      // 音量变化
+      // 音量变化。
     }
   });
 
   // 应用监听对端投播内容播放完毕事件。应用监听到此回调，可以按照业务在以下三种选其一实现，否则无内容播放，对端出现黑屏。
-  // 1. 有下一集时，自动切换下一集投播，此时需要调用Prepare和start重新设置新的url，参考步骤5
-  // 2. 无下一集时，建议循环播放同一集，重新调用prepare和start来设置当前新的url，参考步骤5
+  // 1. 有下一集时，自动切换下一集投播，此时需要调用Prepare和start重新设置新的url，参考步骤5。
+  // 2. 无下一集时，建议循环播放同一集，重新调用prepare和start来设置当前新的url，参考步骤5。
   // 3. 业务不再支持投播，可以主动断开投播，参考步骤9。
-  this.castController?.on('endOfStream', () => {
-    // 按业务处理
+  this.avCastController?.on('endOfStream', () => {
+    // 按业务处理。
   });
 
-  // 应用监听对端或播控中心的进度调节完成事件，包括快进、快退、进度条拖拽完毕
-  this.castController?.on('seekDone', (position: number) => {
-    // seekDone表示用户在对端或是播控内进度调节完毕，可以在收到该回调后，根据'playbackStateChange'回调的position刷新绘制应用内进度条
-    // 应用主动调用seek调节对端进度后，也请等待seekDone回调再根据'playbackStateChange'中的position来刷新，更精准
-   });
+  // 应用监听对端或播控中心的进度调节完成事件，包括快进、快退、进度条拖拽完毕。
+  this.avCastController?.on('seekDone', (position: number) => {
+    // seekDone表示用户在对端或是播控内进度调节完毕，可以在收到该回调后，根据'playbackStateChange'回调的position刷新绘制应用内进度条。
+    // 应用主动调用seek调节对端进度后，也请等待seekDone回调再根据'playbackStateChange'中的position来刷新，更精准。
+  });
 }
 ```
 
@@ -808,68 +849,69 @@ controlListener() {
 
 ```
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
-import { wantAgent } from '@kit.AbilityKit';
+import { WantAgent, wantAgent } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+// ...
 
-let context: Context = getContext(this);
+async function startContinuousTask(context: Context) {
+  let wantAgentInfo: wantAgent.WantAgentInfo = {
+    // 点击通知后，将要执行的动作列表。
+    wants: [
+      {
+        bundleName: "com.example.myapplication",
+        abilityName: "EntryAbility",
+      }
+    ],
+    // 点击通知后，动作类型。
+    actionType: wantAgent.OperationType.START_ABILITY,
+    // 使用者自定义的一个私有值。
+    requestCode: 0,
+    // 点击通知后，动作执行属性。
+    wantAgentFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+  };
 
-function startContinuousTask() {
-    let wantAgentInfo: wantAgent.WantAgentInfo = {
-        // 点击通知后，将要执行的动作列表
-        wants: [
-          {
-            bundleName: "com.example.myapplication",
-            abilityName: "EntryAbility",
-          }
-        ],
-        // 点击通知后，动作类型
-        actionType: wantAgent.OperationType.START_ABILITY,
-        // 使用者自定义的一个私有值
-        requestCode: 0,
-        // 点击通知后，动作执行属性
-        wantAgentFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    };
-
-    // 通过wantAgent模块的getWantAgent方法获取WantAgent对象
-    try {
-        wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj) => {
-            try {
-                backgroundTaskManager.startBackgroundRunning(context,
-                    backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(() => {
-                    console.info('Succeeded in requesting to start running in background');
-                }).catch((error: BusinessError) => {
-                    console.error(`Failed to request to start running in background. Code: ${error.code}, message: ${error.message}`);
-                });
-            } catch (error) {
-                console.error(`Failed to request to start running in background. Error: ${error}`);
-            }
-        });
-    } catch (error) {
-        console.error(`Failed to get WantAgent. Error: ${error}`);
-    }
+  // 通过wantAgent模块的getWantAgent方法获取WantAgent对象。
+  try {
+      wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj) => {
+        try {
+            backgroundTaskManager.startBackgroundRunning(context,
+                backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(() => {
+                console.info('Succeeded in requesting to start running in background');
+            }).catch((error: BusinessError) => {
+                console.error(`Failed to request to start running in background. Code: ${error.code}, message: ${error.message}`);
+            });
+        } catch (error) {
+            console.error(`Failed to request to start running in background. Error: ${error}`);
+        }
+    });
+  } catch (error) {
+      console.error(`Failed to get WantAgent. Error: ${error}`);
+  }
 }
 ```
 
 ### Code block 8
 
 ```
-import  { avSession }  from '@kit.AVSessionKit'; // 导入AVSession模块
-// 与session声明不在同一文件时，需要import
-import { session } from './xxx'; // session声明的文件
-session?.getOutputDevice().then((outputDeviceInfo: avSession.OutputDeviceInfo) => {
-  // 当前设备的castCategory为Remote，则表示正在投播中
-  let isCasting = outputDeviceInfo.devices[0].castCategory === avSession.AVCastCategory.CATEGORY_REMOTE;
-}).catch((err: BusinessError) => {
-  console.error(`GetOutputDevice BusinessError: code: ${err.code}, message: ${err.message}`);
-});
+import { avSession } from '@kit.AVSessionKit'; // 导入AVSession模块。
+// ...
+  getOutputDevice() {
+    session?.getOutputDevice().then((outputDeviceInfo: avSession.OutputDeviceInfo) => {
+      // 当前设备的castCategory为Remote，则表示正在投播中。
+      let isCasting = outputDeviceInfo.devices[0].castCategory === avSession.AVCastCategory.CATEGORY_REMOTE;
+    }).catch((err: BusinessError) => {
+      console.error(`GetOutputDevice BusinessError: code: ${err.code}, message: ${err.message}`);
+    });
+  }
 ```
 
 ### Code block 9
 
 ```
-async release() {
-  // 一般来说，应用退出时，而不希望继续投播，可以主动结束
-  await session.stopCasting();
+async stopCasting() {
+  try {
+    await session.stopCasting();
+  // ...
 }
 ```
 
@@ -878,7 +920,8 @@ async release() {
 ```
 import { http } from '@kit.NetworkKit';
 
- // 获取DRM许可证, 仅做参考，需要结合实际资源和服务地址进行获取。
+export class GetLicense {
+  // 获取DRM许可证, 仅做参考，需要结合实际资源和服务地址进行获取。
   async getLicense(drmUrl: string, requestData: Uint8Array): Promise<Uint8Array | undefined> {
     let licenseRequestStr: string = this.byteToString(requestData);
     let licenseResponseStr: string = 'defaultStr';
@@ -907,16 +950,16 @@ import { http } from '@kit.NetworkKit';
   }
 
   /**
-   * Uint8Array to string
-   * @param arr Uint8Array
-   * @returns string
+   * Uint8Array to string.
+   * @param arr Uint8Array.
+   * @returns string.
    */
   byteToString(arr: Uint8Array): string {
     let str: string = ''
     let _arr: Uint8Array = arr
 
     for (let i = 0; i < _arr.length; i++) {
-      // 将数值转为二进制字符串
+      // 将数值转为二进制字符串。
       let binaryStr: string = _arr[i].toString(2)
       let matchArray = binaryStr.match(new RegExp('/^1+?(?=0)/'))
       if (matchArray && binaryStr.length == 8) {
@@ -936,12 +979,12 @@ import { http } from '@kit.NetworkKit';
   }
 
   /**
-   * string 转 Uint8Array
-   * @param str string
-   * @returns Uint8Array
+   * string 转 Uint8Array。
+   * @param str string.
+   * @returns Uint8Array.
    */
   stringToByte(str: string): Uint8Array {
-    let bytes: number[] = new Array()
+    let bytes: number[] = new Array();
     let unicode: number
 
     for (let i = 0; i < str.length; i++) {
@@ -964,4 +1007,5 @@ import { http } from '@kit.NetworkKit';
     }
     return new Uint8Array(bytes);
   }
+}
 ```

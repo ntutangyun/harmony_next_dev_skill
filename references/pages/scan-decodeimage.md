@@ -2,13 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-decodeimage_
 
-基本概念
-
-图像数据识码能力支持对相机预览流数据中的码图进行扫描识别，并获取信息。
+图像数据识码能力支持对NV21像素格式图像中的码图进行扫描识别，并获取信息。
 
 场景介绍
 
-图像数据识码能力支持对相机预览流数据中的条形码、二维码、MULTIFUNCTIONAL CODE进行识别，并获得码类型、码值、码位置、期望图像放大倍数等信息。该能力可用于一图单码和一图多码的识别，比如条形码、付款码等。
+图像数据识码能力支持对NV21像素格式图像中的条形码、二维码、MULTIFUNCTIONAL CODE进行识别，并获得码类型、码值、码位置、期望图像放大倍数等信息。该能力可用于一图单码和一图多码的识别，比如条形码、付款码等。
 
 业务流程
 
@@ -31,11 +29,11 @@ decodeImage(image: ByteImage, options?: scanBarcode.ScanOptions): Promise<Detect
 
 开发步骤
 
-图像数据识码能力支持对相机预览流数据中的条形码、二维码、MULTIFUNCTIONAL CODE进行识别，并返回码类型、码值、码位置（码图最小外接矩形左上角和右下角的坐标，QR码支持返回四个点坐标）、期望图像放大倍数等信息。
+图像数据识码能力支持对NV21像素格式图像中的条形码、二维码、MULTIFUNCTIONAL CODE进行识别，并返回码类型、码值、码位置（码图最小外接矩形左上角和右下角的坐标，QR码支持返回四个点坐标）、期望图像放大倍数等信息。
 
 为了方便开发者接入，我们提供了详细的样例工程供参考，推荐参考示例工程接入。
 
-以下示例为调用detectBarcode.decodeImage接口获取码图信息。
+以下示例为调用decodeImage接口获取码图信息。
 
 导入图像识码接口和相关接口模块，该模块提供了图像识码参数和方法，导入方法如下。
 
@@ -47,18 +45,32 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 使用Camera Kit启动相机能力，实现双路预览功能，具体实现详见双路预览。
 
-通过ImageReceiver实时获取预览图像数据，详见双路预览，调用detectBarcode.decodeImage接口解析图像数据。请在识别完成后再释放图像数据。
+通过ImageReceiver实时获取预览图像数据，详见双路预览，调用decodeImage接口解析图像数据。请在识别完成后再释放图像数据。
 
-// 从ImageReceiver获取imgComponent: image.Component，预览流设置的宽高: width, height
-function decodeImageBuffer(imgComponent: image.Component, width: number, height: number) {
-  let byteImg: detectBarcode.ByteImage = {
-    byteBuffer: imgComponent.byteBuffer,
-    // 相机预览流数据旋转90°
-    width: height,
-    height: width,
+// 从ImageReceiver获取imgComponent，预览流图像数据的宽高：width、height
+export function decodeImageBuffer(imgComponent: image.Component, width: number, height: number) {
+  const stride: number = imgComponent.rowStride;
+  let imgByteBuffer: ArrayBuffer = imgComponent.byteBuffer;
+
+  // 图像数据的宽width与行距stride不一致
+  if (stride !== width) {
+    // 去除imgComponent.byteBuffer中stride数据，拷贝得到新的buffer
+    const dstBufferSize: number = width * height * 1.5;
+    const dstArr = new Uint8Array(dstBufferSize);
+    for (let j = 0; j < height * 1.5; j++) {
+      const srcBuf = new Uint8Array(imgByteBuffer, j * stride, width);
+      dstArr.set(srcBuf, j * width);
+    }
+    imgByteBuffer = dstArr.buffer as ArrayBuffer;
+  }
+
+  const byteImg: detectBarcode.ByteImage = {
+    byteBuffer: imgByteBuffer,
+    width: width,
+    height: height,
     format: detectBarcode.ImageFormat.NV21
   };
-  let options: scanBarcode.ScanOptions = {
+  const options: scanBarcode.ScanOptions = {
     scanTypes: [scanCore.ScanType.ALL],
     enableMultiMode: true,
     enableAlbum: false
@@ -76,23 +88,23 @@ function decodeImageBuffer(imgComponent: image.Component, width: number, height:
   }
 }
 
-detectBarcode.DetectResult中返回的cornerPoints可参考以下说明使用。
+DetectResult中返回的cornerPoints可参考以下说明使用。
 
 因为屏幕自然方向和摄像头传感器方向不同，所以cornerPoints四个点的坐标需按屏幕自然方向对应的坐标系转换。四个点的对应转换逻辑如下（假设创建的相机预览流宽高为1080 * 1920）。
 
-右下角(x, y)：(1080 - cornerPoints[0].y, cornerPoints[0].x）
+右下角(x, y)：(1080 - cornerPoints[0].y, cornerPoints[0].x)
 
-左下角(x, y)：(1080 - cornerPoints[1].y, cornerPoints[1].x）
+左下角(x, y)：(1080 - cornerPoints[1].y, cornerPoints[1].x)
 
-左上角(x, y)：(1080 - cornerPoints[2].y, cornerPoints[2].x）
+左上角(x, y)：(1080 - cornerPoints[2].y, cornerPoints[2].x)
 
-右上角(x, y)：(1080 - cornerPoints[3].y, cornerPoints[3].x）
+右上角(x, y)：(1080 - cornerPoints[3].y, cornerPoints[3].x)
 
-当创建的相机预览流宽高和实际预览组件XComponent的宽高不一致时，cornerPoints四个点的坐标需按缩放比例转换。例如相机预览流宽高为1080 * 1920，XComponent的宽高为width * height，则坐标缩放比例ratio为：width / 1080, 最终转换后的坐标为(x * ratio, y * ratio)。
+当创建的相机预览流宽高和实际预览组件XComponent的宽高不一致时，cornerPoints四个点的坐标需按缩放比例转换。例如相机预览流宽高为1080 * 1920，XComponent的宽高为width * height，则坐标缩放比例ratio为：width / 1080，最终转换后的坐标为(x * ratio, y * ratio)。
 
 模拟器开发
 
-暂不支持模拟器开发，调用接口会返回错误信息“Emulator is not supported.”
+暂不支持模拟器开发，调用接口会返回错误信息“The capability is not supported on the emulator at this time.”
 
 ## Code blocks
 
@@ -109,16 +121,30 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ### Code block 2
 
 ```
-// 从ImageReceiver获取imgComponent: image.Component，预览流设置的宽高: width, height
-function decodeImageBuffer(imgComponent: image.Component, width: number, height: number) {
-  let byteImg: detectBarcode.ByteImage = {
-    byteBuffer: imgComponent.byteBuffer,
-    // 相机预览流数据旋转90°
-    width: height,
-    height: width,
+// 从ImageReceiver获取imgComponent，预览流图像数据的宽高：width、height
+export function decodeImageBuffer(imgComponent: image.Component, width: number, height: number) {
+  const stride: number = imgComponent.rowStride;
+  let imgByteBuffer: ArrayBuffer = imgComponent.byteBuffer;
+
+  // 图像数据的宽width与行距stride不一致
+  if (stride !== width) {
+    // 去除imgComponent.byteBuffer中stride数据，拷贝得到新的buffer
+    const dstBufferSize: number = width * height * 1.5;
+    const dstArr = new Uint8Array(dstBufferSize);
+    for (let j = 0; j < height * 1.5; j++) {
+      const srcBuf = new Uint8Array(imgByteBuffer, j * stride, width);
+      dstArr.set(srcBuf, j * width);
+    }
+    imgByteBuffer = dstArr.buffer as ArrayBuffer;
+  }
+
+  const byteImg: detectBarcode.ByteImage = {
+    byteBuffer: imgByteBuffer,
+    width: width,
+    height: height,
     format: detectBarcode.ImageFormat.NV21
   };
-  let options: scanBarcode.ScanOptions = {
+  const options: scanBarcode.ScanOptions = {
     scanTypes: [scanCore.ScanType.ALL],
     enableMultiMode: true,
     enableAlbum: false

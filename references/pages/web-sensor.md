@@ -195,7 +195,7 @@ struct WebComponent {
             }
         }
 
-        // 监听设备方向的变化，并执行相应的处理逻辑。
+        // 监听设备的绝对定位方向事件，并执行相应的处理逻辑。
         function listenDeviceOrientationEvent2() {
             removeDeviceOrientationEvent2();
             if ('DeviceOrientationEvent' in window) {
@@ -205,7 +205,7 @@ struct WebComponent {
             }
         }
 
-        // 移除之前添加的设备方向事件监听器。
+        // 移除之前添加的绝对定位方向事件监听器。
         function removeDeviceOrientationEvent2() {
             if ('DeviceOrientationEvent' in window) {
               window.removeEventListener('deviceorientationabsolute', handleOrientationEvent, false);
@@ -413,7 +413,7 @@ struct WebComponent {
             }
         }
 
-        // 监听设备方向的变化，并执行相应的处理逻辑。
+        // 监听设备的绝对定位方向事件，并执行相应的处理逻辑。
         function listenDeviceOrientationEvent2() {
             removeDeviceOrientationEvent2();
             if ('DeviceOrientationEvent' in window) {
@@ -423,7 +423,7 @@ struct WebComponent {
             }
         }
 
-        // 移除之前添加的设备方向事件监听器。
+        // 移除之前添加的绝对定位方向事件监听器。
         function removeDeviceOrientationEvent2() {
             if ('DeviceOrientationEvent' in window) {
               window.removeEventListener('deviceorientationabsolute', handleOrientationEvent, false);

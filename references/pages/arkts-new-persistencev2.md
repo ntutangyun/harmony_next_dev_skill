@@ -87,7 +87,11 @@ struct Page1 {
           .each(ri => {
             Row() {
               Text(`Item: `)
+                .fontSize(20)
+                .margin(10)
               Text(`${ri.item}`)
+                .fontSize(20)
+                .margin(10)
             }
           })
           .key((item: number, index: number) => `${index} - ${item}`)
@@ -98,44 +102,51 @@ struct Page1 {
         .onClick(() => {
           this.array.push(Math.round(0));
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.pop()'，重启应用，Repeat数组项是：1, 2
       Button('array.pop()')
         .onClick(() => {
           this.array.pop();
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.splice(0)'，重启应用，Repeat数组项为空
       Button('array.splice(0)')
         .onClick(() => {
           this.array.splice(0);
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'splice(1, 0, random)'，重启应用：Repeat组件再次显示相同的数组项
       Button('array.splice(1, 0, random)')
         .onClick(() => {
           this.array.splice(1, 0, Math.round(100*Math.random()));
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.splice(0, 2, random, random)'，前两个数组项目被替换，记录下来
       // 重启应用：Repeat组件再次显示数组项
       Button('array.splice(0, 2, random, random)')
         .onClick(() => {
-          this.array.splice(2, 2, Math.round(100*Math.random()), Math.round(100*Math.random()));
+          this.array.splice(0, 2, Math.round(100*Math.random()), Math.round(100*Math.random()));
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.sort', 对数组项升序排列，重启应用，Repeat组件展示升序数组
       Button('array.sort')
         .onClick(() => {
           this.array.sort((a, b) => a -b);
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.reverse', 对数组项降序排列，重启应用，Repeat组件展示降序数组
       Button('array.reverse')
         .onClick(() => {
           this.array.reverse();
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
     }
     .width('100%')
   }
@@ -205,12 +216,20 @@ struct Comp {
         .each(ri => {
           Row() {
             Text(`propA '${ri.item.propA}'`)
+              .fontSize(20)
+              .margin(10)
             Text(`propB '${ri.item.propB}'`)
+              .fontSize(20)
+              .margin(10)
             Text(`report?.() '${ri.item.report?.()}'`)
+              .fontSize(20)
+              .margin(10)
           }
         })
-      // 点击'add item',显示`propA 'a' propB 'b'report?.'a' - 'b'`, 杀掉应用，再次进入，会显示上次的结果
+      // 点击'add item',显示`propA 'a' propB 'b'report?.()'a - b'`, 杀掉应用，再次进入，会显示上次的结果
       Button('add item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let temp: ClassA = new ClassA();
           temp.propA = 'a';
@@ -238,8 +257,10 @@ struct Page1 {
     Column({ space: 40 }) {
       Text(`date: ${this.date.toISOString()}`)
         .fontSize(24)
+        .margin(10)
       // 点击'date.setTime( Date.now() )', 杀掉应用，进入应用后，显示日期
       Button('date.setTime( Date.now() )')
+        .margin(10)
         .onClick(() => {
           this.date.setTime(Date.now());
         })
@@ -342,8 +363,11 @@ struct Page1 {
         // 第一次打开应用，界面显示'a, b'
         // 第二次打开应用，界面显示'aa, bb'
         Text(this.output.join('\n\n'))
-          .fontSize(24)
+          .fontSize(20)
+          .width(300)
+          .margin(10)
       }
+      .height('100%')
     }
     .width('100%')
   }
@@ -457,7 +481,7 @@ class PersistClass {
 
 集合类型是指Array<V>、Map<K, V>、Set<V>、collections.Array<V>、collections.Map<K, V>、collections.Set<V>。
 
-其中，Map<K, V>和collections.Map<k, V>中的key值类型（K）是指string或number类型。
+其中，Map<K, V>和collections.Map<K, V>中的key值类型（K）是指string或number类型。
 
 Array<V>、Map<K, V>和 Set<V>中，V的类型包括：boolean、number、string、Date、Number、Boolean、String、interface类型和class类型。
 
@@ -465,12 +489,12 @@ collections.Array<V>、collections.Map<K, V>、collections.Set<V>要求V的类�
 
 如下展示globalConnect持久化Array<ClassA>的示例：
 
-import { PersistenceV2,  UIUtils } from '@kit.ArkUI';
+import { PersistenceV2, UIUtils } from '@kit.ArkUI';
 
 class ClassA {
   public propA: number = 0;
   public classAToString() : string {
-    return this.propA.toString()
+    return this.propA?.toString()
   }
 }
 
@@ -492,15 +516,22 @@ struct Page1 {
           .each(ri => {
             Row() {
               Text(`Item: `)
-              Text(ri.item.classAToString ? ri.item.classAToString(): `classAToString() missing from object, propA: ${ri.item.propA}`)
+                .fontSize(20)
+                .margin(10)
+              Text(ri.item?.classAToString ? ri.item?.classAToString(): `classAToString() missing from object, propA: ${ri.item?.propA}`)
+                .fontSize(20)
+                .margin(10)
             }
           })
-          .key((item: ClassA, index: number) => `${index} - ${item.propA}`)
+          .key((item: ClassA, index: number) => `${index} - ${item?.propA}`)
       }
+      .width('100%')
 
       Divider().width('100%')
       // 点击'array.push(0)'，重启应用，Repeat数组项是：1, 2, 0
       Button('array.push(0)')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let temp = new ClassA();
           temp.propA = 0;
@@ -509,18 +540,23 @@ struct Page1 {
         .fontSize(24)
       // 点击'array.pop()'，重启应用，Repeat数组项是：1, 2
       Button('array.pop()')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.pop();
         })
         .fontSize(24)
       // 点击'array.splice(0)'，重启应用，Repeat数组项为空
       Button('array.splice(0)')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.splice(0);
         })
         .fontSize(24)
       // 点击'splice(1, 0, random)'，重启应用：Repeat组件再次显示相同的数组项
       Button('array.splice(1, 0, random)')
+        .margin(10)
         .onClick(() => {
           let temp = new ClassA();
           temp.propA = Math.round(100 * Math.random());
@@ -530,22 +566,27 @@ struct Page1 {
       // 点击'array.splice(0, 2, random, random)'，前两个数组项目被替换，记录下来
       // 重启应用：Repeat组件再次显示数组项
       Button('array.splice(0, 2, random, random)')
+        .margin(10)
         .onClick(() => {
           let tempA = new ClassA();
           tempA.propA = Math.round(100 * Math.random());
-          this.arr.splice(2, 2,
+          this.arr.splice(0, 2,
             UIUtils.makeObserved(tempA),
             UIUtils.makeObserved(tempA));
         })
-        .fontSize(24)
+        .fontSize(18)
       // 点击'array.sort', 对数组项升序排列，重启应用，Repeat组件展示升序数组
       Button('array.sort')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.arr.sort((tempA, tempB)=> tempA.propA - tempB.propA);
+          this.arr.sort((tempA, tempB)=> tempA?.propA - tempB?.propA);
         })
         .fontSize(24)
       // 点击'array.reverse', 对数组项降序排列，重启应用，Repeat组件展示降序数组
       Button('array.reverse')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.reverse();
         })
@@ -604,11 +645,15 @@ struct Page1 {
     Navigation(this.pageStack) {
       Column() {
         Button('Go to page2')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.pageStack.pushPathByName('Page2', null);
           })
 
         Button('Page1 connect the key Sample')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 在PersistenceV2中创建一个key为Sample的键值对（如果存在，则返回PersistenceV2中的数据），并且和prop关联
             // 不建议对prop属性换connect的对象
@@ -616,12 +661,16 @@ struct Page1 {
           })
 
         Button('Page1 remove the key Sample')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 从PersistenceV2中删除后，prop将不会再与key为Sample的值关联
             PersistenceV2.remove(Sample);
           })
 
         Button('Page1 save the key Sample')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 如果处于connect状态，持久化key为Sample的键值对
             PersistenceV2.save(Sample);
@@ -629,12 +678,14 @@ struct Page1 {
 
         Text(`Page1 add 1 to prop.p1: ${this.prop.f.p1}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             this.prop.f.p1++;
           })
 
         Text(`Page1 add 1 to prop.p2: ${this.prop.f.p2}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             // 页面不刷新，但是p2的值改变了
             this.prop.f.p2++;
@@ -643,7 +694,9 @@ struct Page1 {
         // 获取当前PersistenceV2里面的所有key
         Text(`all keys in PersistenceV2: ${PersistenceV2.keys()}`)
           .fontSize(30)
+          .margin(10)
       }
+        .width('100%')
     }
   }
 }
@@ -670,6 +723,8 @@ struct Page2 {
     NavDestination() {
       Column() {
         Button('Page2 connect the key Sample1')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 在PersistenceV2中创建一个key为Sample1的键值对（如果存在，则返回PersistenceV2中的数据），并且和prop关联
             // 不建议对prop属性换connect的对象
@@ -678,12 +733,14 @@ struct Page2 {
 
         Text(`Page2 add 1 to prop.p1: ${this.prop.f.p1}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             this.prop.f.p1++;
           })
 
         Text(`Page2 add 1 to prop.p2: ${this.prop.f.p2}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             // 页面不刷新，但是p2的值改变了；只有重新初始化才会改变
             this.prop.f.p2++;
@@ -692,7 +749,9 @@ struct Page2 {
         // 获取当前PersistenceV2里面的所有key
         Text(`all keys in PersistenceV2: ${PersistenceV2.keys()}`)
           .fontSize(30)
+          .margin(10)
       }
+      .width('100%')
     }
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
@@ -775,24 +834,28 @@ struct Page1 {
           this.p.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       Text('Key global1: ' + this.p1.father.childId.toString())
         .onClick(() => {
           this.p1.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       Text('Key global2: ' + this.p2.father.childId.toString())
         .onClick(() => {
           this.p2.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       Text('Key global3: ' + this.p3.father.childId.toString())
         .onClick(() => {
           this.p3.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       // keys接口
       // keys本身不会刷新，需要借助状态变量刷新
@@ -801,6 +864,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
 
       // remove接口
       Text('Remove key SampleGlobalConnect: ' + 'refresh: ' + this.refresh)
@@ -810,6 +874,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('Remove key global1: ' + 'refresh: ' + this.refresh)
         .onClick(() => {
           // 删除这个key，会导致和p1失去联系，之后即使reconnect，p1也无法存储
@@ -817,6 +882,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('Remove key global2: ' + 'refresh: ' + this.refresh)
         .onClick(() => {
           // 删除这个key，会导致和p2失去联系，之后即使reconnect，p2也无法存储
@@ -824,6 +890,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('Remove key global3: ' + 'refresh: ' + this.refresh)
         .onClick(() => {
           // 删除这个key，会导致和p3失去联系，之后即使reconnect，p3也无法存储
@@ -831,6 +898,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       // reConnect
       // 重新连接也无法和之前的状态变量建立联系，因此无法保存数据
       Text('ReConnect key global2: ' + 'refresh: ' + this.refresh)
@@ -840,6 +908,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
 
       // save接口
       Text('not save key SampleGlobalConnect: ' + this.p.father.groupId.toString() + ' refresh: ' + this.refresh)
@@ -849,6 +918,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('save key SampleGlobalConnect: ' + this.p.father.groupId.toString() + ' refresh: ' + this.refresh)
         .onClick(() => {
           // 未被@Trace保存的对象无法自动存储，需要调用save存储
@@ -857,6 +927,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
     }
     .width('100%')
   }
@@ -926,16 +997,20 @@ struct Page1 {
           this.p1.father.childId += 1;
         })
         .fontSize(25)
-        .fontColor(Color.Red)
+        .margin(10)
+        .fontColor(Color.Pink)
       Text('Key connect2: ' + this.p2.father.childId.toString())
         .onClick(() => {
           this.p2.father.childId += 1;
         })
         .fontSize(25)
-        .fontColor(Color.Red)
+        .margin(10)
+        .fontColor(Color.Pink)
 
       // 跳转
       Button('Jump to newModule')
+        .width(300)
+        .margin(10)
         .onClick(() => { // 不同module之间使用，建议使用globalConnect
           let want: Want = {
             deviceId: '', // deviceId为空代表本设备
@@ -1002,12 +1077,14 @@ struct Page1 {
           this.p1.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
       Text('Key connect2: ' + this.p2.father.childId.toString())
         .onClick(() => {
           this.p2.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
     }
     .width('100%')
@@ -1066,7 +1143,8 @@ struct Index {
   @Local refresh: number = 0;
   // 调用connect或globalConnect存储
   @Local p: Sample = PersistenceV2.connect(Sample, 'connectSample', () => new Sample())!;
-  // @Local p: Sample = PersistenceV2.globalConnect({ type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
+  // @Local p: Sample = PersistenceV2.globalConnect(
+  //   { type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
 
   build() {
     Column({ space: 5 }) {
@@ -1076,6 +1154,7 @@ struct Index {
           this.p.father.groupId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
 
       // save接口
@@ -1088,6 +1167,7 @@ struct Index {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(10)
     }
     .width('100%')
   }
@@ -1142,6 +1222,7 @@ struct Page1 {
           this.p.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
 
       // save接口
@@ -1154,6 +1235,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(10)
     }
     .width('100%')
   }
@@ -1220,6 +1302,7 @@ struct Page1 {
           this.p.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
 
       // save接口
@@ -1232,6 +1315,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(10)
     }
     .width('100%')
   }
@@ -1276,7 +1360,11 @@ struct Index {
   build() {
     Column({ space: 5 }) {
       Text(JSON.stringify(this.sample)) // 序列化sample变量并显示
+        .fontSize(20)
+        .margin(10)
       Button('Change Info')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 通过将类型转换为ESObject，再转为SampleChild，绕过了类型校验，故点击后不会触发notifyOnError。
           // 点击并重新运行后，由于此处存储的info为Array类型，但SampleChild中的info仍是string类型，故会触发notifyOnError。
@@ -1355,7 +1443,11 @@ struct Page1 {
           .each(ri => {
             Row() {
               Text(`Item: `)
+                .fontSize(20)
+                .margin(10)
               Text(`${ri.item}`)
+                .fontSize(20)
+                .margin(10)
             }
           })
           .key((item: number, index: number) => `${index} - ${item}`)
@@ -1366,44 +1458,51 @@ struct Page1 {
         .onClick(() => {
           this.array.push(Math.round(0));
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.pop()'，重启应用，Repeat数组项是：1, 2
       Button('array.pop()')
         .onClick(() => {
           this.array.pop();
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.splice(0)'，重启应用，Repeat数组项为空
       Button('array.splice(0)')
         .onClick(() => {
           this.array.splice(0);
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'splice(1, 0, random)'，重启应用：Repeat组件再次显示相同的数组项
       Button('array.splice(1, 0, random)')
         .onClick(() => {
           this.array.splice(1, 0, Math.round(100*Math.random()));
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.splice(0, 2, random, random)'，前两个数组项目被替换，记录下来
       // 重启应用：Repeat组件再次显示数组项
       Button('array.splice(0, 2, random, random)')
         .onClick(() => {
-          this.array.splice(2, 2, Math.round(100*Math.random()), Math.round(100*Math.random()));
+          this.array.splice(0, 2, Math.round(100*Math.random()), Math.round(100*Math.random()));
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.sort', 对数组项升序排列，重启应用，Repeat组件展示升序数组
       Button('array.sort')
         .onClick(() => {
           this.array.sort((a, b) => a -b);
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
       // 点击'array.reverse', 对数组项降序排列，重启应用，Repeat组件展示降序数组
       Button('array.reverse')
         .onClick(() => {
           this.array.reverse();
         })
-        .fontSize(24)
+        .width(300)
+        .margin(10)
     }
     .width('100%')
   }
@@ -1465,12 +1564,20 @@ struct Comp {
         .each(ri => {
           Row() {
             Text(`propA '${ri.item.propA}'`)
+              .fontSize(20)
+              .margin(10)
             Text(`propB '${ri.item.propB}'`)
+              .fontSize(20)
+              .margin(10)
             Text(`report?.() '${ri.item.report?.()}'`)
+              .fontSize(20)
+              .margin(10)
           }
         })
-      // 点击'add item',显示`propA 'a' propB 'b'report?.'a' - 'b'`, 杀掉应用，再次进入，会显示上次的结果
+      // 点击'add item',显示`propA 'a' propB 'b'report?.()'a - b'`, 杀掉应用，再次进入，会显示上次的结果
       Button('add item')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let temp: ClassA = new ClassA();
           temp.propA = 'a';
@@ -1500,8 +1607,10 @@ struct Page1 {
     Column({ space: 40 }) {
       Text(`date: ${this.date.toISOString()}`)
         .fontSize(24)
+        .margin(10)
       // 点击'date.setTime( Date.now() )', 杀掉应用，进入应用后，显示日期
       Button('date.setTime( Date.now() )')
+        .margin(10)
         .onClick(() => {
           this.date.setTime(Date.now());
         })
@@ -1604,8 +1713,11 @@ struct Page1 {
         // 第一次打开应用，界面显示'a, b'
         // 第二次打开应用，界面显示'aa, bb'
         Text(this.output.join('\n\n'))
-          .fontSize(24)
+          .fontSize(20)
+          .width(300)
+          .margin(10)
       }
+      .height('100%')
     }
     .width('100%')
   }
@@ -1703,12 +1815,12 @@ class PersistClass {
 ### Code block 11
 
 ```
-import { PersistenceV2,  UIUtils } from '@kit.ArkUI';
+import { PersistenceV2, UIUtils } from '@kit.ArkUI';
 
 class ClassA {
   public propA: number = 0;
   public classAToString() : string {
-    return this.propA.toString()
+    return this.propA?.toString()
   }
 }
 
@@ -1730,15 +1842,22 @@ struct Page1 {
           .each(ri => {
             Row() {
               Text(`Item: `)
-              Text(ri.item.classAToString ? ri.item.classAToString(): `classAToString() missing from object, propA: ${ri.item.propA}`)
+                .fontSize(20)
+                .margin(10)
+              Text(ri.item?.classAToString ? ri.item?.classAToString(): `classAToString() missing from object, propA: ${ri.item?.propA}`)
+                .fontSize(20)
+                .margin(10)
             }
           })
-          .key((item: ClassA, index: number) => `${index} - ${item.propA}`)
+          .key((item: ClassA, index: number) => `${index} - ${item?.propA}`)
       }
+      .width('100%')
 
       Divider().width('100%')
       // 点击'array.push(0)'，重启应用，Repeat数组项是：1, 2, 0
       Button('array.push(0)')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           let temp = new ClassA();
           temp.propA = 0;
@@ -1747,18 +1866,23 @@ struct Page1 {
         .fontSize(24)
       // 点击'array.pop()'，重启应用，Repeat数组项是：1, 2
       Button('array.pop()')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.pop();
         })
         .fontSize(24)
       // 点击'array.splice(0)'，重启应用，Repeat数组项为空
       Button('array.splice(0)')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.splice(0);
         })
         .fontSize(24)
       // 点击'splice(1, 0, random)'，重启应用：Repeat组件再次显示相同的数组项
       Button('array.splice(1, 0, random)')
+        .margin(10)
         .onClick(() => {
           let temp = new ClassA();
           temp.propA = Math.round(100 * Math.random());
@@ -1768,22 +1892,27 @@ struct Page1 {
       // 点击'array.splice(0, 2, random, random)'，前两个数组项目被替换，记录下来
       // 重启应用：Repeat组件再次显示数组项
       Button('array.splice(0, 2, random, random)')
+        .margin(10)
         .onClick(() => {
           let tempA = new ClassA();
           tempA.propA = Math.round(100 * Math.random());
-          this.arr.splice(2, 2,
+          this.arr.splice(0, 2,
             UIUtils.makeObserved(tempA),
             UIUtils.makeObserved(tempA));
         })
-        .fontSize(24)
+        .fontSize(18)
       // 点击'array.sort', 对数组项升序排列，重启应用，Repeat组件展示升序数组
       Button('array.sort')
+        .width(300)
+        .margin(10)
         .onClick(() => {
-          this.arr.sort((tempA, tempB)=> tempA.propA - tempB.propA);
+          this.arr.sort((tempA, tempB)=> tempA?.propA - tempB?.propA);
         })
         .fontSize(24)
       // 点击'array.reverse', 对数组项降序排列，重启应用，Repeat组件展示降序数组
       Button('array.reverse')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           this.arr.reverse();
         })
@@ -1842,11 +1971,15 @@ struct Page1 {
     Navigation(this.pageStack) {
       Column() {
         Button('Go to page2')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             this.pageStack.pushPathByName('Page2', null);
           })
 
         Button('Page1 connect the key Sample')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 在PersistenceV2中创建一个key为Sample的键值对（如果存在，则返回PersistenceV2中的数据），并且和prop关联
             // 不建议对prop属性换connect的对象
@@ -1854,12 +1987,16 @@ struct Page1 {
           })
 
         Button('Page1 remove the key Sample')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 从PersistenceV2中删除后，prop将不会再与key为Sample的值关联
             PersistenceV2.remove(Sample);
           })
 
         Button('Page1 save the key Sample')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 如果处于connect状态，持久化key为Sample的键值对
             PersistenceV2.save(Sample);
@@ -1867,12 +2004,14 @@ struct Page1 {
 
         Text(`Page1 add 1 to prop.p1: ${this.prop.f.p1}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             this.prop.f.p1++;
           })
 
         Text(`Page1 add 1 to prop.p2: ${this.prop.f.p2}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             // 页面不刷新，但是p2的值改变了
             this.prop.f.p2++;
@@ -1881,7 +2020,9 @@ struct Page1 {
         // 获取当前PersistenceV2里面的所有key
         Text(`all keys in PersistenceV2: ${PersistenceV2.keys()}`)
           .fontSize(30)
+          .margin(10)
       }
+        .width('100%')
     }
   }
 }
@@ -1910,6 +2051,8 @@ struct Page2 {
     NavDestination() {
       Column() {
         Button('Page2 connect the key Sample1')
+          .width(300)
+          .margin(10)
           .onClick(() => {
             // 在PersistenceV2中创建一个key为Sample1的键值对（如果存在，则返回PersistenceV2中的数据），并且和prop关联
             // 不建议对prop属性换connect的对象
@@ -1918,12 +2061,14 @@ struct Page2 {
 
         Text(`Page2 add 1 to prop.p1: ${this.prop.f.p1}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             this.prop.f.p1++;
           })
 
         Text(`Page2 add 1 to prop.p2: ${this.prop.f.p2}`)
           .fontSize(30)
+          .margin(10)
           .onClick(() => {
             // 页面不刷新，但是p2的值改变了；只有重新初始化才会改变
             this.prop.f.p2++;
@@ -1932,7 +2077,9 @@ struct Page2 {
         // 获取当前PersistenceV2里面的所有key
         Text(`all keys in PersistenceV2: ${PersistenceV2.keys()}`)
           .fontSize(30)
+          .margin(10)
       }
+      .width('100%')
     }
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
@@ -2019,24 +2166,28 @@ struct Page1 {
           this.p.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       Text('Key global1: ' + this.p1.father.childId.toString())
         .onClick(() => {
           this.p1.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       Text('Key global2: ' + this.p2.father.childId.toString())
         .onClick(() => {
           this.p2.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       Text('Key global3: ' + this.p3.father.childId.toString())
         .onClick(() => {
           this.p3.father.childId += 1;
         })
         .fontSize(25)
+        .margin(5)
         .fontColor(Color.Red)
       // keys接口
       // keys本身不会刷新，需要借助状态变量刷新
@@ -2045,6 +2196,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
 
       // remove接口
       Text('Remove key SampleGlobalConnect: ' + 'refresh: ' + this.refresh)
@@ -2054,6 +2206,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('Remove key global1: ' + 'refresh: ' + this.refresh)
         .onClick(() => {
           // 删除这个key，会导致和p1失去联系，之后即使reconnect，p1也无法存储
@@ -2061,6 +2214,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('Remove key global2: ' + 'refresh: ' + this.refresh)
         .onClick(() => {
           // 删除这个key，会导致和p2失去联系，之后即使reconnect，p2也无法存储
@@ -2068,6 +2222,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('Remove key global3: ' + 'refresh: ' + this.refresh)
         .onClick(() => {
           // 删除这个key，会导致和p3失去联系，之后即使reconnect，p3也无法存储
@@ -2075,6 +2230,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       // reConnect
       // 重新连接也无法和之前的状态变量建立联系，因此无法保存数据
       Text('ReConnect key global2: ' + 'refresh: ' + this.refresh)
@@ -2084,6 +2240,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
 
       // save接口
       Text('not save key SampleGlobalConnect: ' + this.p.father.groupId.toString() + ' refresh: ' + this.refresh)
@@ -2093,6 +2250,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
       Text('save key SampleGlobalConnect: ' + this.p.father.groupId.toString() + ' refresh: ' + this.refresh)
         .onClick(() => {
           // 未被@Trace保存的对象无法自动存储，需要调用save存储
@@ -2101,6 +2259,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(5)
     }
     .width('100%')
   }
@@ -2160,16 +2319,20 @@ struct Page1 {
           this.p1.father.childId += 1;
         })
         .fontSize(25)
-        .fontColor(Color.Red)
+        .margin(10)
+        .fontColor(Color.Pink)
       Text('Key connect2: ' + this.p2.father.childId.toString())
         .onClick(() => {
           this.p2.father.childId += 1;
         })
         .fontSize(25)
-        .fontColor(Color.Red)
+        .margin(10)
+        .fontColor(Color.Pink)
 
       // 跳转
       Button('Jump to newModule')
+        .width(300)
+        .margin(10)
         .onClick(() => { // 不同module之间使用，建议使用globalConnect
           let want: Want = {
             deviceId: '', // deviceId为空代表本设备
@@ -2240,12 +2403,14 @@ struct Page1 {
           this.p1.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
       Text('Key connect2: ' + this.p2.father.childId.toString())
         .onClick(() => {
           this.p2.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
     }
     .width('100%')
@@ -2296,7 +2461,8 @@ struct Index {
   @Local refresh: number = 0;
   // 调用connect或globalConnect存储
   @Local p: Sample = PersistenceV2.connect(Sample, 'connectSample', () => new Sample())!;
-  // @Local p: Sample = PersistenceV2.globalConnect({ type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
+  // @Local p: Sample = PersistenceV2.globalConnect(
+  //   { type: Sample, key: 'connectSample', defaultCreator: () => new Sample() })!;
 
   build() {
     Column({ space: 5 }) {
@@ -2306,6 +2472,7 @@ struct Index {
           this.p.father.groupId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
 
       // save接口
@@ -2318,6 +2485,7 @@ struct Index {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(10)
     }
     .width('100%')
   }
@@ -2372,6 +2540,7 @@ struct Page1 {
           this.p.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
 
       // save接口
@@ -2384,6 +2553,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(10)
     }
     .width('100%')
   }
@@ -2454,6 +2624,7 @@ struct Page1 {
           this.p.father.childId += 1;
         })
         .fontSize(25)
+        .margin(10)
         .fontColor(Color.Red)
 
       // save接口
@@ -2466,6 +2637,7 @@ struct Page1 {
           this.refresh += 1;
         })
         .fontSize(25)
+        .margin(10)
     }
     .width('100%')
   }
@@ -2508,7 +2680,11 @@ struct Index {
   build() {
     Column({ space: 5 }) {
       Text(JSON.stringify(this.sample)) // 序列化sample变量并显示
+        .fontSize(20)
+        .margin(10)
       Button('Change Info')
+        .width(300)
+        .margin(10)
         .onClick(() => {
           // 通过将类型转换为ESObject，再转为SampleChild，绕过了类型校验，故点击后不会触发notifyOnError。
           // 点击并重新运行后，由于此处存储的info为Array类型，但SampleChild中的info仍是string类型，故会触发notifyOnError。

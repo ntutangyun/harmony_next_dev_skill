@@ -2,8 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-generatearray_
 
-基本概念
-
 码图生成能力支持将字节数组转换为自定义格式的码图。
 
 场景介绍
@@ -14,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-gene
 
 约束与限制
 
-码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从5.1.0(18)版本开始支持Wearable、从5.1.1(19)版本开始支持PC/2in1、TV）。
+码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从API版本5.1.0(18)开始支持Wearable、从API版本5.1.1(19)开始支持PC/2in1、TV）。
 
 若Scan Kit识别某码图内容显示内容为乱码，则该码图的字节数组需要通过专门的解码器解析，例如地铁闸机。
 
@@ -63,29 +61,35 @@ struct Index {
 
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
-      Button('generateBarcode Promise').onClick(() => {
-        this.pixelMap = undefined;
-        let content: string =
-          '0177C10DD10F7768600202312110000063458FD14112345678FFFFD381012610b746365409210201b66636540ad0200020000000000110e617003201000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006645fbec664358ECF657CB40693c92da';
-        let contentBuffer: ArrayBuffer = buffer.from(content, 'hex').buffer; // 将包含十六进制字符的字符串转换成ArrayBuffer
-        let options: generateBarcode.CreateOptions = {
-          scanType: scanCore.ScanType.QR_CODE,
-          height: 400,
-          width: 400
-        };
-        try {
-          // 码图生成接口，成功返回PixelMap格式图片
-          generateBarcode.createBarcode(contentBuffer, options).then((pixelMap: image.PixelMap) => {
-            this.pixelMap = pixelMap;
-            hilog.info(0x0001, TAG, 'Succeeded in creating barCode.');
-          }).catch((err: BusinessError) => {
-            hilog.error(0x0001, TAG, `Failed to createBarCode. Code: ${err.code}, message: ${err.message}`);
-          });
-        } catch (err) {
-          hilog.error(0x0001, TAG,
-            `Failed to createBarcode by Promise with options. Code: ${err.code}, message: ${err.message}`);
-        }
-      })
+      Button('generateBarcode')
+        .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+        .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
+        .align(Alignment.Center)
+        .type(ButtonType.Capsule)
+        .width('90%')
+        .margin({ bottom: 12 })
+        .onClick(() => {
+          const content: string =
+            '0177C10DD10F7768600202312110000063458FD14112345678FFFFD381012610b746365409210201b66636540ad0200020000000000110e617003201000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006645fbec664358ECF657CB40693c92da';
+          const contentBuffer: ArrayBuffer = buffer.from(content, 'hex').buffer; // 将包含十六进制字符的字符串转换成ArrayBuffer
+          const options: generateBarcode.CreateOptions = {
+            scanType: scanCore.ScanType.QR_CODE,
+            height: 400,
+            width: 400
+          };
+          try {
+            // 码图生成接口，成功返回PixelMap格式图片
+            generateBarcode.createBarcode(contentBuffer, options).then((pixelMap: image.PixelMap) => {
+              this.pixelMap = pixelMap;
+              hilog.info(0x0001, TAG, 'Succeeded in creating barCode.');
+            }).catch((err: BusinessError) => {
+              hilog.error(0x0001, TAG, `Failed to createBarCode. Code: ${err.code}, message: ${err.message}`);
+            });
+          } catch (err) {
+            hilog.error(0x0001, TAG,
+              `Failed to createBarcode by Promise with options. Code: ${err.code}, message: ${err.message}`);
+          }
+        })
       // 获取生成码图后显示
       if (this.pixelMap) {
         Image(this.pixelMap).width(300).height(300).objectFit(ImageFit.Contain)
@@ -98,7 +102,7 @@ struct Index {
 
 模拟器开发
 
-暂不支持模拟器开发，调用接口会返回错误信息“Emulator is not supported.”
+暂不支持模拟器开发，调用接口会返回错误信息“The capability is not supported on the emulator at this time.”
 
 ## Code blocks
 
@@ -125,29 +129,35 @@ struct Index {
 
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
-      Button('generateBarcode Promise').onClick(() => {
-        this.pixelMap = undefined;
-        let content: string =
-          '0177C10DD10F7768600202312110000063458FD14112345678FFFFD381012610b746365409210201b66636540ad0200020000000000110e617003201000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006645fbec664358ECF657CB40693c92da';
-        let contentBuffer: ArrayBuffer = buffer.from(content, 'hex').buffer; // 将包含十六进制字符的字符串转换成ArrayBuffer
-        let options: generateBarcode.CreateOptions = {
-          scanType: scanCore.ScanType.QR_CODE,
-          height: 400,
-          width: 400
-        };
-        try {
-          // 码图生成接口，成功返回PixelMap格式图片
-          generateBarcode.createBarcode(contentBuffer, options).then((pixelMap: image.PixelMap) => {
-            this.pixelMap = pixelMap;
-            hilog.info(0x0001, TAG, 'Succeeded in creating barCode.');
-          }).catch((err: BusinessError) => {
-            hilog.error(0x0001, TAG, `Failed to createBarCode. Code: ${err.code}, message: ${err.message}`);
-          });
-        } catch (err) {
-          hilog.error(0x0001, TAG,
-            `Failed to createBarcode by Promise with options. Code: ${err.code}, message: ${err.message}`);
-        }
-      })
+      Button('generateBarcode')
+        .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+        .fontColor($r('sys.color.ohos_id_color_text_primary_activated'))
+        .align(Alignment.Center)
+        .type(ButtonType.Capsule)
+        .width('90%')
+        .margin({ bottom: 12 })
+        .onClick(() => {
+          const content: string =
+            '0177C10DD10F7768600202312110000063458FD14112345678FFFFD381012610b746365409210201b66636540ad0200020000000000110e617003201000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006645fbec664358ECF657CB40693c92da';
+          const contentBuffer: ArrayBuffer = buffer.from(content, 'hex').buffer; // 将包含十六进制字符的字符串转换成ArrayBuffer
+          const options: generateBarcode.CreateOptions = {
+            scanType: scanCore.ScanType.QR_CODE,
+            height: 400,
+            width: 400
+          };
+          try {
+            // 码图生成接口，成功返回PixelMap格式图片
+            generateBarcode.createBarcode(contentBuffer, options).then((pixelMap: image.PixelMap) => {
+              this.pixelMap = pixelMap;
+              hilog.info(0x0001, TAG, 'Succeeded in creating barCode.');
+            }).catch((err: BusinessError) => {
+              hilog.error(0x0001, TAG, `Failed to createBarCode. Code: ${err.code}, message: ${err.message}`);
+            });
+          } catch (err) {
+            hilog.error(0x0001, TAG,
+              `Failed to createBarcode by Promise with options. Code: ${err.code}, message: ${err.message}`);
+          }
+        })
       // 获取生成码图后显示
       if (this.pixelMap) {
         Image(this.pixelMap).width(300).height(300).objectFit(ImageFit.Contain)

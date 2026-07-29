@@ -56,19 +56,25 @@ target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
 #include <cstdlib>
 #include "DeviceSecurityKit/security_antivirus.h"
 
-EDR应用执行接口调用，分别向HarmonyOS安全防护服务中同步注册、卸载、更新信息，需要ohos.permission.REGISTER_ANTIVIRUS权限。
+EDR应用执行接口调用，分别向HarmonyOS安全防护服务中注册、更新、注销应用的信息，需要ohos.permission.REGISTER_ANTIVIRUS权限。
 
-const char *regisBundleName = GetStringFromJS(env, args[0]); // 构造注册接口入参
-int ret = HMS_SecurityAntivirus_RegisterAntivirus(regisBundleName);
+注册应用信息。
+
+std::string regisBundleName  = GetStringFromJS(env, args[0]);
+int ret = HMS_SecurityAntivirus_RegisterAntivirus(regisBundleName .c_str());
 printf("HMS_SecurityAntivirus_RegisterAntivirus ret = %d \n", ret);
 
-const char *unRegisBundleName = GetStringFromJS(env, args[0]); // 构造卸载接口入参
-ret = HMS_SecurityAntivirus_UnregisterAntivirus(unRegisBundleName);
-printf("HMS_SecurityAntivirus_UnregisterAntivirus ret = %d \n", ret);
+更新应用信息。
 
-SecurityAntivirus_Antivirus updateAntivirus; // 构造更新接口入参
-ret = HMS_SecurityAntivirus_UpdateAntivirus(&updateAntivirus);
+SecurityAntivirus_Antivirus *updateAntivirus = GetAntivirusFromJS(env, args[0]);
+int ret = HMS_SecurityAntivirus_UpdateAntivirus(updateAntivirus);
 printf("HMS_SecurityAntivirus_UpdateAntivirus ret = %d \n", ret);
+
+注销应用信息。
+
+std::string unRegisBundleName  = GetStringFromJS(env, args[0]);
+int ret = HMS_SecurityAntivirus_UnregisterAntivirus(unRegisBundleName .c_str());
+printf("HMS_SecurityAntivirus_UnregisterAntivirus ret = %d \n", ret);
 
 零信任应用执行接口调用，查询当前所有在HarmonyOS安全防护服务中注册的三方EDR应用信息，需要ohos.permission.MANAGE_ANTIVIRUS权限。
 
@@ -80,11 +86,6 @@ SecurityAntivirus_Antivirus *list = nullptr; // 构造查询接口出参1
 uint32_t length = 0; // 构造查询接口出参2
 int ret = HMS_SecurityAntivirus_QueryAntivirus(&list, &length);
 printf("HMS_SecurityAntivirus_QueryAntivirus ret = %d \n", ret);
-for (uint32_t i = 0; i < length; ++i) {
-    free((char*)(list[i].bundleName)); // 释放出参内部字符串
-    free((char*)(list[i].metadata));
-}
-free(list); // 释放出参数组本身
 
 MDM应用执行接口调用，实现HarmonyOS安全防护服务的启停，需要ohos.permission.MANAGE_PREINSTALLED_ANTIVIRUS权限。
 
@@ -92,27 +93,35 @@ MDM应用执行接口调用，实现HarmonyOS安全防护服务的启停，需�
 
 MDM应用在根据应用进程信息进行业务处理后，需要释放查询接口出入参的内存。
 
-SecurityAntivirus_Antivirus *list = nullptr; // 构造查询接口出参1
-uint32_t length = 0; // 构造查询接口出参2
+查询内置杀毒注册信息。
+
+SecurityAntivirus_Antivirus *list = nullptr;
+uint32_t length = 0;
 int ret = HMS_SecurityAntivirus_QueryPreinstalledAntivirus(&list, &length);
 printf("HMS_SecurityAntivirus_QueryPreinstalledAntivirus ret = %d \n", ret);
-for (uint32_t i = 0; i < length; ++i) {
-    free((char*)(list[i].bundleName)); // 释放出参内部字符串
-    free((char*)(list[i].metadata));
-}
-free(list); // 释放出参数组本身
 
-ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirus();
+全局启用内置杀毒。
+
+int ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirus();
 printf("HMS_SecurityAntivirus_EnablePreinstalledAntivirus ret = %d \n", ret);
 
-ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirus();
+全局禁用内置杀毒。
+
+int ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirus();
 printf("HMS_SecurityAntivirus_DisablePreinstalledAntivirus ret = %d \n", ret);
 
-int32_t accountId = 0; // 构造合法的用户ID
-ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirusByAccount(accountId);
+启用指定用户的内置杀毒。
+
+int32_t accountId = 0;
+// ...
+int ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirusByAccount(accountId);
 printf("HMS_SecurityAntivirus_EnablePreinstalledAntivirusByAccount ret = %d \n", ret);
 
-ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirusByAccount(accountId );
+禁用指定用户的内置杀毒。
+
+int32_t accountId = 0;
+// ...
+int ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirusByAccount(accountId);
 printf("HMS_SecurityAntivirus_DisablePreinstalledAntivirusByAccount ret = %d \n", ret);
 
 ## Code blocks
@@ -135,56 +144,73 @@ target_link_libraries(entry PUBLIC libace_napi.z.so ${dsm-lib})
 ### Code block 3
 
 ```
-const char *regisBundleName = GetStringFromJS(env, args[0]); // 构造注册接口入参
-int ret = HMS_SecurityAntivirus_RegisterAntivirus(regisBundleName);
+std::string regisBundleName  = GetStringFromJS(env, args[0]);
+int ret = HMS_SecurityAntivirus_RegisterAntivirus(regisBundleName .c_str());
 printf("HMS_SecurityAntivirus_RegisterAntivirus ret = %d \n", ret);
-
-const char *unRegisBundleName = GetStringFromJS(env, args[0]); // 构造卸载接口入参
-ret = HMS_SecurityAntivirus_UnregisterAntivirus(unRegisBundleName);
-printf("HMS_SecurityAntivirus_UnregisterAntivirus ret = %d \n", ret);
-
-SecurityAntivirus_Antivirus updateAntivirus; // 构造更新接口入参
-ret = HMS_SecurityAntivirus_UpdateAntivirus(&updateAntivirus);
-printf("HMS_SecurityAntivirus_UpdateAntivirus ret = %d \n", ret);
 ```
 
 ### Code block 4
+
+```
+SecurityAntivirus_Antivirus *updateAntivirus = GetAntivirusFromJS(env, args[0]);
+int ret = HMS_SecurityAntivirus_UpdateAntivirus(updateAntivirus);
+printf("HMS_SecurityAntivirus_UpdateAntivirus ret = %d \n", ret);
+```
+
+### Code block 5
+
+```
+std::string unRegisBundleName  = GetStringFromJS(env, args[0]);
+int ret = HMS_SecurityAntivirus_UnregisterAntivirus(unRegisBundleName .c_str());
+printf("HMS_SecurityAntivirus_UnregisterAntivirus ret = %d \n", ret);
+```
+
+### Code block 6
 
 ```
 SecurityAntivirus_Antivirus *list = nullptr; // 构造查询接口出参1
 uint32_t length = 0; // 构造查询接口出参2
 int ret = HMS_SecurityAntivirus_QueryAntivirus(&list, &length);
 printf("HMS_SecurityAntivirus_QueryAntivirus ret = %d \n", ret);
-for (uint32_t i = 0; i < length; ++i) {
-    free((char*)(list[i].bundleName)); // 释放出参内部字符串
-    free((char*)(list[i].metadata));
-}
-free(list); // 释放出参数组本身
 ```
 
-### Code block 5
+### Code block 7
 
 ```
-SecurityAntivirus_Antivirus *list = nullptr; // 构造查询接口出参1
-uint32_t length = 0; // 构造查询接口出参2
+SecurityAntivirus_Antivirus *list = nullptr;
+uint32_t length = 0;
 int ret = HMS_SecurityAntivirus_QueryPreinstalledAntivirus(&list, &length);
 printf("HMS_SecurityAntivirus_QueryPreinstalledAntivirus ret = %d \n", ret);
-for (uint32_t i = 0; i < length; ++i) {
-    free((char*)(list[i].bundleName)); // 释放出参内部字符串
-    free((char*)(list[i].metadata));
-}
-free(list); // 释放出参数组本身
+```
 
-ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirus();
+### Code block 8
+
+```
+int ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirus();
 printf("HMS_SecurityAntivirus_EnablePreinstalledAntivirus ret = %d \n", ret);
+```
 
-ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirus();
+### Code block 9
+
+```
+int ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirus();
 printf("HMS_SecurityAntivirus_DisablePreinstalledAntivirus ret = %d \n", ret);
+```
 
-int32_t accountId = 0; // 构造合法的用户ID
-ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirusByAccount(accountId);
+### Code block 10
+
+```
+int32_t accountId = 0;
+// ...
+int ret = HMS_SecurityAntivirus_EnablePreinstalledAntivirusByAccount(accountId);
 printf("HMS_SecurityAntivirus_EnablePreinstalledAntivirusByAccount ret = %d \n", ret);
+```
 
-ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirusByAccount(accountId );
+### Code block 11
+
+```
+int32_t accountId = 0;
+// ...
+int ret = HMS_SecurityAntivirus_DisablePreinstalledAntivirusByAccount(accountId);
 printf("HMS_SecurityAntivirus_DisablePreinstalledAntivirusByAccount ret = %d \n", ret);
 ```

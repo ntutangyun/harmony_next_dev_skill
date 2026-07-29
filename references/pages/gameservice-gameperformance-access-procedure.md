@@ -64,7 +64,7 @@ init接口是调用其他接口的前提，如果未初始化或初始化失败�
 
 let gamePackageInfo: gamePerformance.GamePackageInfo = {
   messageType: 0,
-  bundleName: 'com.example.demo', // 仅示例，请替换为实际的游戏包名
+  bundleName: 'com.example.demo', // 请替换为实际的游戏包名
   appVersion: '1.0'
 };
 try {
@@ -220,7 +220,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ```
 let gamePackageInfo: gamePerformance.GamePackageInfo = {
   messageType: 0,
-  bundleName: 'com.example.demo', // 仅示例，请替换为实际的游戏包名
+  bundleName: 'com.example.demo', // 请替换为实际的游戏包名
   appVersion: '1.0'
 };
 try {

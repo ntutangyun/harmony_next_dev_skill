@@ -8,4 +8,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-start
 
 应用预加载
 
-应用快启启动
+应用快启

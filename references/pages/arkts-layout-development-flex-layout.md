@@ -98,7 +98,7 @@ Flex({ wrap: FlexWrap.Wrap }) {
 
 FlexWrap.WrapReverse：换行，每一行子元素按照主轴反方向排列。
 
-Flex({ wrap: FlexWrap.WrapReverse}) {
+Flex({ wrap: FlexWrap.WrapReverse }) {
   Text('1').width('50%').height(50).backgroundColor('#F5DEB3')
   Text('2').width('50%').height(50).backgroundColor('#D2B48C')
   Text('3').width('50%').height(50).backgroundColor('#F5DEB3')
@@ -345,7 +345,7 @@ Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent
 .height(100)
 .backgroundColor('#AFEEEE')
 
-FlexAlign.SpaceEvenly: 子元素各行间距，子元素首尾行与交叉轴两端距离都相等。
+FlexAlign.SpaceEvenly：子元素各行间距，子元素首尾行与交叉轴两端距离都相等。
 
 Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
   Text('1').width('30%').height(20).backgroundColor('#F5DEB3')
@@ -411,7 +411,7 @@ Flex() {
 
 第一个元素以及第二个元素以1:4分配剩下的40vp。第一个元素为100vp+40vp * 1/5=108vp，第二个元素为100vp+40vp * 4/5=132vp。
 
-flexShrink: 当父容器空间不足时，子元素的压缩比例。
+flexShrink：当父容器空间不足时，子元素的压缩比例。
 
 Flex({ direction: FlexDirection.Row }) {
   Text('flexShrink(3)')
@@ -421,6 +421,7 @@ Flex({ direction: FlexDirection.Row }) {
     .backgroundColor('#F5DEB3')
 
   Text('no flexShrink')
+    .flexShrink(0)
     .width(200)
     .height(100)
     .backgroundColor('#D2B48C')
@@ -551,7 +552,7 @@ Flex({ wrap: FlexWrap.Wrap }) {
 ### Code block 7
 
 ```
-Flex({ wrap: FlexWrap.WrapReverse}) {
+Flex({ wrap: FlexWrap.WrapReverse }) {
   Text('1').width('50%').height(50).backgroundColor('#F5DEB3')
   Text('2').width('50%').height(50).backgroundColor('#D2B48C')
   Text('3').width('50%').height(50).backgroundColor('#F5DEB3')
@@ -890,6 +891,7 @@ Flex({ direction: FlexDirection.Row }) {
     .backgroundColor('#F5DEB3')
 
   Text('no flexShrink')
+    .flexShrink(0)
     .width(200)
     .height(100)
     .backgroundColor('#D2B48C')

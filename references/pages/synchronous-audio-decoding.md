@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/synchrono
 
 通常推荐使用异步模式，详细内容请参考音频解码。若需要主动请求buffer去送帧，则可以使用同步模式。
 
-将音视频文件解码为PCM码流，通常需要以下步骤：媒体数据解析 -> 音频解码。
+将音视频文件解码为PCM码流，通常需要以下步骤：媒体数据解封装 -> 音频解码。
 
 本指南描述音频解码过程：输入音频帧和解码出PCM码流。
 
@@ -185,7 +185,7 @@ if (ret != AV_ERR_OK) {
 
 （可选）调用OH_AVCencInfo_SetAVBuffer()，设置cencInfo。
 
-如果当前播放的节目是DRM加密节目，并且由上层应用进行媒体数据解析，则需要调用OH_AVCencInfo_SetAVBuffer()将cencInfo设置给AVBuffer，以实现媒体数据的解密。
+如果当前播放的节目是DRM加密节目，并且由上层应用进行媒体数据解封装，则需要调用OH_AVCencInfo_SetAVBuffer()将cencInfo设置给AVBuffer，以实现媒体数据的解密。
 
 添加头文件：
 

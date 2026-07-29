@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-本功能在API 24之前版本仅支持Phone；API24及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
+本功能在6.1.1(24)之前版本仅支持Phone；6.1.1(24)及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
 
 业务流程
 
@@ -104,6 +104,7 @@ import { util } from '@kit.ArkTS';
 
 设置签名密钥时密钥属性集合中需要指定tag: huks.HuksTag.HUKS_TAG_KEY_SECURE_SIGN_TYPE值为huks.HuksSecureSignType.HUKS_SECURE_SIGN_WITH_AUTHINFO，即可对附加的交易信息做签名认证。
 
+function GetEccSignProperties(): Array<huks.HuksParam> {
   // 设置签名密钥属性示例
   let properties: Array<huks.HuksParam> = [{
     tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
@@ -118,40 +119,39 @@ import { util } from '@kit.ArkTS';
     tag: huks.HuksTag.HUKS_TAG_DIGEST,
     value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
   },
-  // 表示对附加的交易信息做签名认证
-  {
-    tag: huks.HuksTag.HUKS_TAG_KEY_SECURE_SIGN_TYPE,
-    value: huks.HuksSecureSignType.HUKS_SECURE_SIGN_WITH_AUTHINFO
-  }];
+    // 表示对附加的交易信息做签名认证
+    {
+      tag: huks.HuksTag.HUKS_TAG_KEY_SECURE_SIGN_TYPE,
+      value: huks.HuksSecureSignType.HUKS_SECURE_SIGN_WITH_AUTHINFO
+    }];
+  return properties;
+}
 
 调用交易认证接口，发起密码认证交易申请，当用户密码认证通过后，即可获得携带交易信息hash的authToken。
 
-async function ContentVerifyByPwd(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
+async ContentVerifyByPwd(indata: string, challenge: Uint8Array,
+  assetName: string): Promise<trustedAuthentication.AuthToken> {
   try {
-    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-    const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
-    const reqParams:trustedAuthentication.AuthReqParams = {
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray); // 实际填充为从服务器获取到的账号对应的credentialID值
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const reqParams: trustedAuthentication.AuthReqParams = {
       reqType: trustedAuthentication.AuthType.AUTH_TYPE_TUI_PIN,
-      authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1000000000"], // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
+      authContent: indata.split('\n') // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
     }
-    const buffer = fileData.buffer;
-    const label:trustedAuthentication.TUILable = {
-      image: buffer as ArrayBuffer,
-      title: "密码交易认证",
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.PINVerification').id)
     }
-    const result = await trustedAuthentication.procContentAuthentication(challenge, authID, reqParams, label);
+    const result = await trustedAuthentication.procContentAuthentication(challenge, credentialID, reqParams, label);
+    hilog.info(0x0000, 'testTag', 'Pin Verification Success：', result.authToken);
     return result;
-  } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to procContentAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Content verify by password failed:' + (err as BusinessError).message);
- }
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'Pin Verification Fail：', error);
+    throw new Error('Pin Verification Fail：' + (error as BusinessError).message);
+  }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-const authToken: trustedAuthentication.AuthToken = await ContentVerifyByPwd(challenge, context);
 
 参考密钥管理服务提供的针对携带认证信息的签名/验签指导, 对交易信息authToken数据进行签名验证，并结束会话。
 
@@ -166,15 +166,11 @@ authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1
 
 function encodeUtf8(s: string): number[] {
   const encoder = new util.TextEncoder();
-
   const dest = new Uint8Array(s.length * 4);
   const result = encoder.encodeIntoUint8Array(s, dest);
   const encodedBytes = dest.subarray(0, result.written);
   return Array.from(encodedBytes);
-};
-// 实际为企业开发者应用向密钥管理服务传入的验签数据
-let str = "用户：王xx\n账号：95588180804408xxxx\n交易金额：1000000000";
-const utf8Bytes = new Uint8Array(encodeUtf8(str));
+}
 
 参考密钥管理服务提供的签名/验签指导, 对签名数据进行验签操作，验签通过后可完成对应账户的转账扣款。
 
@@ -196,6 +192,7 @@ import { util } from '@kit.ArkTS';
 ### Code block 2
 
 ```
+function GetEccSignProperties(): Array<huks.HuksParam> {
   // 设置签名密钥属性示例
   let properties: Array<huks.HuksParam> = [{
     tag: huks.HuksTag.HUKS_TAG_ALGORITHM,
@@ -210,42 +207,41 @@ import { util } from '@kit.ArkTS';
     tag: huks.HuksTag.HUKS_TAG_DIGEST,
     value: huks.HuksKeyDigest.HUKS_DIGEST_SHA256
   },
-  // 表示对附加的交易信息做签名认证
-  {
-    tag: huks.HuksTag.HUKS_TAG_KEY_SECURE_SIGN_TYPE,
-    value: huks.HuksSecureSignType.HUKS_SECURE_SIGN_WITH_AUTHINFO
-  }];
+    // 表示对附加的交易信息做签名认证
+    {
+      tag: huks.HuksTag.HUKS_TAG_KEY_SECURE_SIGN_TYPE,
+      value: huks.HuksSecureSignType.HUKS_SECURE_SIGN_WITH_AUTHINFO
+    }];
+  return properties;
+}
 ```
 
 ### Code block 3
 
 ```
-async function ContentVerifyByPwd(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
+async ContentVerifyByPwd(indata: string, challenge: Uint8Array,
+  assetName: string): Promise<trustedAuthentication.AuthToken> {
   try {
-    const authID: bigint = 11842183505170721246n; // 实际填充为从服务器获取到的账号对应的authID值
-    const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
-    const reqParams:trustedAuthentication.AuthReqParams = {
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray); // 实际填充为从服务器获取到的账号对应的credentialID值
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage(); // 获取应用要在TUI界面展示的logo图片
+    const reqParams: trustedAuthentication.AuthReqParams = {
       reqType: trustedAuthentication.AuthType.AUTH_TYPE_TUI_PIN,
-      authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1000000000"], // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
+      authContent: indata.split('\n') // 实际使用时填充为交易信息，每一行交易信息为其中的一个字符串成员
     }
-    const buffer = fileData.buffer;
-    const label:trustedAuthentication.TUILable = {
-      image: buffer as ArrayBuffer,
-      title: "密码交易认证",
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.PINVerification').id)
     }
-    const result = await trustedAuthentication.procContentAuthentication(challenge, authID, reqParams, label);
+    const result = await trustedAuthentication.procContentAuthentication(challenge, credentialID, reqParams, label);
+    hilog.info(0x0000, 'testTag', 'Pin Verification Success：', result.authToken);
     return result;
-  } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to procContentAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Content verify by password failed:' + (err as BusinessError).message);
- }
+  } catch (error) {
+    hilog.error(0x0000, 'testTag', 'Pin Verification Fail：', error);
+    throw new Error('Pin Verification Fail：' + (error as BusinessError).message);
+  }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-const authToken: trustedAuthentication.AuthToken = await ContentVerifyByPwd(challenge, context);
 ```
 
 ### Code block 4
@@ -260,13 +256,9 @@ authContent: ["用户：王xx", "账号：95588180804408xxxx", "交易金额：1
 ```
 function encodeUtf8(s: string): number[] {
   const encoder = new util.TextEncoder();
-
   const dest = new Uint8Array(s.length * 4);
   const result = encoder.encodeIntoUint8Array(s, dest);
   const encodedBytes = dest.subarray(0, result.written);
   return Array.from(encodedBytes);
-};
-// 实际为企业开发者应用向密钥管理服务传入的验签数据
-let str = "用户：王xx\n账号：95588180804408xxxx\n交易金额：1000000000";
-const utf8Bytes = new Uint8Array(encodeUtf8(str));
+}
 ```

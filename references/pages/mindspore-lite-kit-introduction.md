@@ -16,7 +16,7 @@ MindSpore Lite是HarmonyOS内置的轻量化AI引擎，面向全场景构建支�
 
 约束与限制
 
-本Kit适用于Phone、Tablet、PC/2in1、TV设备。
+本Kit适用于Phone、Tablet、PC/2in1、TV和Wearable设备。其中，在Wearable设备上，仅支持CPU推理。
 
 亮点/优势
 
@@ -28,7 +28,7 @@ MindSpore Lite提供面向不同硬件设备的AI模型推理能力，使用Mind
 
 全场景支持：支持多种操作系统以及嵌入式系统，适配多种软硬件智能设备上的AI应用。
 
-高效部署：支持MindSpore/TensorFlow Lite/Caffe/Onnx模型，提供模型压缩、数据处理等能力，统一训练和推理IR，方便用户快速部署。
+高效部署：支持MindSpore/TensorFlow Lite/Caffe/ONNX模型，提供模型压缩、数据处理等能力，统一训练和推理IR，方便用户快速部署。
 
 开发流程
 

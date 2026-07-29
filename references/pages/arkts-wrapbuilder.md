@@ -69,6 +69,7 @@ WrappedBuilder对象的builder属性方法仅限在struct内部使用。
 function myBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
+    .margin(10)
 }
 
 // 使用wrapBuilder封装myBuilder，并赋值给globalBuilder变量
@@ -99,6 +100,7 @@ function myBuilder0(value: string, size: number) {
   Text(value)
     .fontSize(size)
     .fontColor(Color.Blue)
+    .margin(10)
 }
 
 @Builder
@@ -106,6 +108,7 @@ function yourBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
     .fontColor(Color.Pink)
+    .margin(10)
 }
 
 const builderArr: WrappedBuilder<[string, number]>[] = [wrapBuilder(myBuilder0), wrapBuilder(yourBuilder)];
@@ -140,6 +143,7 @@ struct IndexItem {
 function MyBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
+    .margin(10)
 }
 
 interface ChildOptions {
@@ -184,7 +188,10 @@ class Tmp {
 function overBuilder(param: Tmp) {
   Column() {
     Text(`wrapBuildervalue:${param.paramA2}`)
+      .fontSize(20)
+      .margin(10)
   }
+  .width('100%')
 }
 
 const wBuilder: WrappedBuilder<[Tmp]> = wrapBuilder(overBuilder);
@@ -198,10 +205,14 @@ struct Parent {
     Column() {
       // 引用传递参数，label.paramA2的改变会引起overBuilder内的UI刷新
       wBuilder.builder({ paramA2: this.label.paramA2 });
-      Button('Click me').onClick(() => {
-        this.label.paramA2 = 'ArkUI';
-      })
+      Button('Click me')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.label.paramA2 = 'ArkUI';
+        })
     }
+    .width('100%')
   }
 }
 
@@ -209,18 +220,20 @@ struct Parent {
 
 [h2]重复定义wrapBuilder失效
 
-在同一个自定义组件内，同一个wrapBuilder只能初始化一次。例如，builderObj通过wrapBuilder(MyBuilderFirst)初始化后，再次对builderObj赋值wrapBuilder(MyBuilderSecond)将不会生效。
+在同一个自定义组件内，同一个wrapBuilder只能初始化一次。例如，builderObj通过wrapBuilder(myBuilderFirst)初始化后，再次对builderObj赋值wrapBuilder(myBuilderSecond)将不会生效。
 
 @Builder
 function myBuilderFirst(value: string, size: number) {
   Text('MyBuilderFirst：' + value)
     .fontSize(size)
+    .margin(10)
 }
 
 @Builder
 function myBuilderSecond(value: string, size: number) {
   Text('MyBuilderSecond：' + value)
     .fontSize(size)
+    .margin(10)
 }
 
 interface BuilderModel {
@@ -243,7 +256,7 @@ struct TestBuilderIndex {
   build() {
     Row() {
       Column() {
-        this.builderObj.globalBuilder.builder(this.message, 20)
+        this.builderObj.globalBuilder.builder(this.message, 20);
       }
       .width('100%')
     }
@@ -299,6 +312,7 @@ let builderArr: WrappedBuilder<[string, number]>[] = [wrapBuilder(MyBuilder)]; /
 function myBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
+    .margin(10)
 }
 
 // 使用wrapBuilder封装myBuilder，并赋值给globalBuilder变量
@@ -329,6 +343,7 @@ function myBuilder0(value: string, size: number) {
   Text(value)
     .fontSize(size)
     .fontColor(Color.Blue)
+    .margin(10)
 }
 
 @Builder
@@ -336,6 +351,7 @@ function yourBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
     .fontColor(Color.Pink)
+    .margin(10)
 }
 
 const builderArr: WrappedBuilder<[string, number]>[] = [wrapBuilder(myBuilder0), wrapBuilder(yourBuilder)];
@@ -370,6 +386,7 @@ struct IndexItem {
 function MyBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
+    .margin(10)
 }
 
 interface ChildOptions {
@@ -414,7 +431,10 @@ class Tmp {
 function overBuilder(param: Tmp) {
   Column() {
     Text(`wrapBuildervalue:${param.paramA2}`)
+      .fontSize(20)
+      .margin(10)
   }
+  .width('100%')
 }
 
 const wBuilder: WrappedBuilder<[Tmp]> = wrapBuilder(overBuilder);
@@ -428,10 +448,14 @@ struct Parent {
     Column() {
       // 引用传递参数，label.paramA2的改变会引起overBuilder内的UI刷新
       wBuilder.builder({ paramA2: this.label.paramA2 });
-      Button('Click me').onClick(() => {
-        this.label.paramA2 = 'ArkUI';
-      })
+      Button('Click me')
+        .width(300)
+        .margin(10)
+        .onClick(() => {
+          this.label.paramA2 = 'ArkUI';
+        })
     }
+    .width('100%')
   }
 }
 ```
@@ -443,12 +467,14 @@ struct Parent {
 function myBuilderFirst(value: string, size: number) {
   Text('MyBuilderFirst：' + value)
     .fontSize(size)
+    .margin(10)
 }
 
 @Builder
 function myBuilderSecond(value: string, size: number) {
   Text('MyBuilderSecond：' + value)
     .fontSize(size)
+    .margin(10)
 }
 
 interface BuilderModel {
@@ -471,7 +497,7 @@ struct TestBuilderIndex {
   build() {
     Row() {
       Column() {
-        this.builderObj.globalBuilder.builder(this.message, 20)
+        this.builderObj.globalBuilder.builder(this.message, 20);
       }
       .width('100%')
     }

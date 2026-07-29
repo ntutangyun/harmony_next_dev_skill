@@ -117,10 +117,9 @@ star-background、star-secondary、star-foreground属性只支持本地路径图
 }
 
 // xxx.js
-import promptAction from '@ohos.promptAction';
 export default {
   showrating(e) {
-    promptAction.showToast({
+    this.getUIContext().getPromptAction().showToast({
       message: '当前评分' + e.rating
     })
   }
@@ -164,7 +163,6 @@ export default {
 }
 
 // xxx.js
-import promptAction from '@ohos.promptAction';
 export default {
     data: {
         backstar: '',
@@ -180,7 +178,7 @@ export default {
     },
     setstar(e) {
         if (e.checked == true) {
-            this.backstar = '/common/love.png'
+            this.backstar = 'common/love.png'
             this.secstar = 'common/love.png'
             this.forestar = 'common/love1.png'
         } else {
@@ -193,15 +191,12 @@ export default {
         this.stars = e.progress
         this.ratewidth = 60 * parseInt(this.stars) + 'px'
     },
-    setstep(e) {
-        this.step = e.progress
-    },
     setrating(e){
         this.rate = e.progress
     },
     showrating(e) {
         this.rate = e.rating
-        promptAction.showToast({
+        this.getUIContext().getPromptAction().showToast({
             message: '当前评分' + e.rating
         })
     }
@@ -339,10 +334,9 @@ export default {
 
 ```
 // xxx.js
-import promptAction from '@ohos.promptAction';
 export default {
   showrating(e) {
-    promptAction.showToast({
+    this.getUIContext().getPromptAction().showToast({
       message: '当前评分' + e.rating
     })
   }
@@ -394,7 +388,6 @@ export default {
 
 ```
 // xxx.js
-import promptAction from '@ohos.promptAction';
 export default {
     data: {
         backstar: '',
@@ -410,7 +403,7 @@ export default {
     },
     setstar(e) {
         if (e.checked == true) {
-            this.backstar = '/common/love.png'
+            this.backstar = 'common/love.png'
             this.secstar = 'common/love.png'
             this.forestar = 'common/love1.png'
         } else {
@@ -423,15 +416,12 @@ export default {
         this.stars = e.progress
         this.ratewidth = 60 * parseInt(this.stars) + 'px'
     },
-    setstep(e) {
-        this.step = e.progress
-    },
     setrating(e){
         this.rate = e.progress
     },
     showrating(e) {
         this.rate = e.rating
-        promptAction.showToast({
+        this.getUIContext().getPromptAction().showToast({
             message: '当前评分' + e.rating
         })
     }

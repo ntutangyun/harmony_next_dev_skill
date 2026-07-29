@@ -8,7 +8,7 @@ Scenario Fusion Kit提供获取系统信息属性API，调用该接口可以获�
 
 约束与限制
 
-场景化API支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备，从26.0.0版本开始，新增支持Car设备。
+场景化API支持Phone、Tablet和PC/2in1设备，并且从5.1.0(18)版本开始，新增支持Wearable和TV设备。
 
 接口说明
 
@@ -55,7 +55,7 @@ try {
     let windowHeight: number | undefined = data.windowHeight;
   }).catch((error: BusinessError) => {
     hilog.error(0x0000, 'testTag', 'Promise error: %{public}d %{public}s', error.code, error.message);
-  })
+  });
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Failed to get system info asynchronously, failReason: %{public}d %{public}s', error.code, error.message);
 }
@@ -101,7 +101,7 @@ try {
     let windowHeight: number | undefined = data.windowHeight;
   }).catch((error: BusinessError) => {
     hilog.error(0x0000, 'testTag', 'Promise error: %{public}d %{public}s', error.code, error.message);
-  })
+  });
 } catch (error) {
   hilog.error(0x0000, 'testTag', 'Failed to get system info asynchronously, failReason: %{public}d %{public}s', error.code, error.message);
 }

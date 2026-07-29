@@ -519,7 +519,7 @@ void abnormal_case_2()
         ffrt::create_function_wrapper(std::function<void()>([](){ printf("Test task running...\n"); })),
         NULL, NULL, NULL);
     // ...
-    // 内存泄露
+    // 内存泄漏
 }
 
 建议示例，仅调用一次销毁函数，如有必要可进行置空：
@@ -954,7 +954,7 @@ void abnormal_case_2()
         ffrt::create_function_wrapper(std::function<void()>([](){ printf("Test task running...\n"); })),
         NULL, NULL, NULL);
     // ...
-    // 内存泄露
+    // 内存泄漏
 }
 ```
 

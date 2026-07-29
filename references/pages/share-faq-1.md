@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/share-faq
 
 处理步骤：
 
-首先排查是否是分享API使用不当导致抛出异常，具体参考分享服务API和错误码，找到问题后修改代码。
+首先排查是否是分享服务API使用不当导致抛出异常，具体参考分享服务API和错误码，找到问题后修改代码。
 
 如果是其他模块出现异常，查看是否有faultlog，有的话可以根据faultlog中的模块排查问题。如果没有，请通过在线提单提交问题。
 

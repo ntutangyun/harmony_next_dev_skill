@@ -141,7 +141,7 @@ Button('writeEvent ArkTS')
   .height('5%')
   .onClick(() => {
     // 在按钮点击函数中进行事件打点，以记录按钮点击事件
-    let eventParams: Record<string, number> = {'clickTime': 100};
+    let eventParams: Record<string, number> = { 'clickTime': 100 };
     let eventInfo: hiAppEvent.AppEventInfo = {
       // 事件领域定义
       domain: 'button',
@@ -155,7 +155,8 @@ Button('writeEvent ArkTS')
     hiAppEvent.write(eventInfo).then(() => {
       hilog.info(0x0000, 'testTag', `AppEvents writeEvent ArkTS success`);
     }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `AppEvents HiAppEvent err.code: ${err.code}, err.message: ${err.message}`);
+      hilog.error(0x0000, 'testTag',
+        `AppEvents HiAppEvent err.code: ${err.code}, err.message: ${err.message}`);
     });
   })
 
@@ -296,7 +297,7 @@ Button('writeEvent ArkTS')
   .height('5%')
   .onClick(() => {
     // 在按钮点击函数中进行事件打点，以记录按钮点击事件
-    let eventParams: Record<string, number> = {'clickTime': 100};
+    let eventParams: Record<string, number> = { 'clickTime': 100 };
     let eventInfo: hiAppEvent.AppEventInfo = {
       // 事件领域定义
       domain: 'button',
@@ -310,7 +311,8 @@ Button('writeEvent ArkTS')
     hiAppEvent.write(eventInfo).then(() => {
       hilog.info(0x0000, 'testTag', `AppEvents writeEvent ArkTS success`);
     }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `AppEvents HiAppEvent err.code: ${err.code}, err.message: ${err.message}`);
+      hilog.error(0x0000, 'testTag',
+        `AppEvents HiAppEvent err.code: ${err.code}, err.message: ${err.message}`);
     });
   })
 ```

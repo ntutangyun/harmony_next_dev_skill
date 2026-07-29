@@ -6,9 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-scree
 
 使用约束
 
-仅支持HarmonyOS设备，并且已通过USB或Wi-Fi连接设备。
-
-仅支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。
+仅支持HarmonyOS设备（穿戴设备除外），并且已通过USB或Wi-Fi连接设备。
 
 操作步骤
 

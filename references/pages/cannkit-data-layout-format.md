@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-data-layout-format_
 
-Format为数据的物理排布格式，定义了解读数据的维度，比如1D，2D，3D，4D，5D等。
+Format为数据的物理排布格式，决定了如何解读数据的维度，比如1D，2D，3D，4D，5D等。
 
 NCHW和NHWC
 

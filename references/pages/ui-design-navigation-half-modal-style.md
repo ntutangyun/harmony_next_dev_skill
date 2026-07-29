@@ -40,22 +40,22 @@ struct SheetTransitionExample {
         title: {
           mainTitle: '壁纸'
         },
-      // 设置HdsNavigation关闭按钮，与半模态按钮规格一致
-      menu: {
-        value: [{
-          content: {
-            icon: $r('sys.symbol.xmark'),
-            type: IconStyleMode.SMALL,
-            action: () => {
-              this.isShow = false;
-            },
-          }
-        }]
-      },
-    },
-  })
-  .titleMode(HdsNavigationTitleMode.MODAL) // 设置导航标题栏模式为半模态
-  .bindToScrollable([this.scroller]) // 绑定导航组件和可滚动容器组件
+        // 设置HdsNavigation关闭按钮，与半模态按钮规格一致
+        menu: {
+          value: [{
+            content: {
+              icon: $r('sys.symbol.xmark'),
+              type: IconStyleMode.SMALL,
+              action: () => {
+                this.isShow = false;
+              }
+            }
+          }]
+        }
+      }
+    })
+    .titleMode(HdsNavigationTitleMode.MODAL) // 设置导航标题栏模式为半模态
+    .bindToScrollable([this.scroller]) // 绑定导航组件和可滚动容器组件
   }
 
   build() {
@@ -69,7 +69,7 @@ struct SheetTransitionExample {
         .bindSheet($$this.isShow, this.HdsNavigationBuilder(), {
           detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
           showClose: false, // 取消半模态的关闭按钮，推荐使用HdsNavigation的menu配置关闭按钮
-          enableFloatingDragBar: true,
+          enableFloatingDragBar: true
         })
     }
     .width('100%')
@@ -112,22 +112,22 @@ struct SheetTransitionExample {
         title: {
           mainTitle: '壁纸'
         },
-      // 设置HdsNavigation关闭按钮，与半模态按钮规格一致
-      menu: {
-        value: [{
-          content: {
-            icon: $r('sys.symbol.xmark'),
-            type: IconStyleMode.SMALL,
-            action: () => {
-              this.isShow = false;
-            },
-          }
-        }]
-      },
-    },
-  })
-  .titleMode(HdsNavigationTitleMode.MODAL) // 设置导航标题栏模式为半模态
-  .bindToScrollable([this.scroller]) // 绑定导航组件和可滚动容器组件
+        // 设置HdsNavigation关闭按钮，与半模态按钮规格一致
+        menu: {
+          value: [{
+            content: {
+              icon: $r('sys.symbol.xmark'),
+              type: IconStyleMode.SMALL,
+              action: () => {
+                this.isShow = false;
+              }
+            }
+          }]
+        }
+      }
+    })
+    .titleMode(HdsNavigationTitleMode.MODAL) // 设置导航标题栏模式为半模态
+    .bindToScrollable([this.scroller]) // 绑定导航组件和可滚动容器组件
   }
 
   build() {
@@ -141,7 +141,7 @@ struct SheetTransitionExample {
         .bindSheet($$this.isShow, this.HdsNavigationBuilder(), {
           detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
           showClose: false, // 取消半模态的关闭按钮，推荐使用HdsNavigation的menu配置关闭按钮
-          enableFloatingDragBar: true,
+          enableFloatingDragBar: true
         })
     }
     .width('100%')

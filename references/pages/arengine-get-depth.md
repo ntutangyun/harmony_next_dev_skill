@@ -28,6 +28,8 @@ ARFrame.acquireDepthConfidenceImage	获取当前帧的深度置信度图像。
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
 import { Node, Scene } from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
+import { arrayBufferInt32ToNumber } from '../utils/Utils';
 
 [h2]定义变量
 
@@ -46,14 +48,15 @@ let centerConfidence: number;
 export function ARDepthBuilder(): void {
   ARDepth();
 }
-
+let centerDistance: number;
+let centerConfidence: number;
 @Component
 struct ARDepth {
-  private delayInterval: number = 33;
-  private intervalId: number = -1;
   @State arContext?: arViewController.ARViewContext = undefined;
   @State depthConfidence: number = 0;
   @State depthDistance: string = '0';
+  private delayInterval: number = 33;
+  private intervalId: number = -1;
 
   build(): void {
     NavDestination() {
@@ -66,8 +69,6 @@ struct ARDepth {
               center: { anchor: '__container__', align: VerticalAlign.Center },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             })
-
-          // 在屏幕上显示中心点、深度估计值及置信度
           Text('●')
             .fontSize(8)
             .fontColor(Color.Red)
@@ -100,7 +101,7 @@ struct ARDepth {
       this.initARView();
       this.renderDepthMsg();
     })
-    .onWillAppear(() => {
+    .onWillDisappear(() => {
       this.stopARView();
     })
     .onShown(() => {
@@ -115,7 +116,7 @@ struct ARDepth {
   }
 
   private initARView(): void {
-    Scene.load().then((scene: Scene) => {
+    Scene.load().then(async (scene: Scene) => {
       let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
       viewContext.scene = scene;
       viewContext.callback = new ARViewCallbackImpl();
@@ -128,14 +129,14 @@ struct ARDepth {
         depthMode: arEngine.ARDepthMode.AUTOMATIC,
         meshMode: arEngine.ARMeshMode.DISABLED,
         focusMode: arEngine.ARFocusMode.AUTO
-      };
+      }
       viewContext.init().then(() => {
         this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
+        logger.info('Succeeded in initting ARView.');
       }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}`);
-      });
-    });
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}`);
+      })
+    })
   }
 
   private renderDepthMsg(): void {
@@ -145,27 +146,29 @@ struct ARDepth {
       }
       this.depthDistance = centerDistance.toFixed(4);
       this.depthConfidence = centerConfidence;
-    }, this.delayInterval);
+    }, this.delayInterval)
   }
 
-  private stopARView(): void {
+  private async stopARView(): Promise<void> {
     if (!this.arContext) {
       return;
     }
+    clearInterval(this.intervalId);
     try {
-      clearInterval(this.intervalId);
-      this.arContext.destroy();
-      centerDistance = 0;
-      centerConfidence = 0;
+      await this.arContext.destroy();
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
+      logger.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
     }
+
+    centerDistance = 0;
+    centerConfidence = 0;
   }
 
   private resumeARView(): void {
     // ...
   }
+
   private pauseARView(): void {
     // ...
   }
@@ -177,19 +180,17 @@ struct ARDepth {
 
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
 
-    let session: arEngine.ARSession | undefined = ctx.session;
+    let session: arEngine.ARSession = ctx.session;
 
     try {
       let frame: arEngine.ARFrame = session.getFrame();
@@ -203,7 +204,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
       centerConfidence = confidencePlane[index];
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to acquire depth information. Code is ${err.code}, message is ${err.message}`);
+      logger.error(`Failed to acquire depth information. Code is ${err.code}, message is ${err.message}`);
     }
   }
 }
@@ -220,6 +221,8 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
 import { Node, Scene } from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { logger } from '../utils/Logger';
+import { arrayBufferInt32ToNumber } from '../utils/Utils';
 ```
 
 ### Code block 2
@@ -236,14 +239,15 @@ let centerConfidence: number;
 export function ARDepthBuilder(): void {
   ARDepth();
 }
-
+let centerDistance: number;
+let centerConfidence: number;
 @Component
 struct ARDepth {
-  private delayInterval: number = 33;
-  private intervalId: number = -1;
   @State arContext?: arViewController.ARViewContext = undefined;
   @State depthConfidence: number = 0;
   @State depthDistance: string = '0';
+  private delayInterval: number = 33;
+  private intervalId: number = -1;
 
   build(): void {
     NavDestination() {
@@ -256,8 +260,6 @@ struct ARDepth {
               center: { anchor: '__container__', align: VerticalAlign.Center },
               middle: { anchor: '__container__', align: HorizontalAlign.Center }
             })
-
-          // 在屏幕上显示中心点、深度估计值及置信度
           Text('●')
             .fontSize(8)
             .fontColor(Color.Red)
@@ -290,7 +292,7 @@ struct ARDepth {
       this.initARView();
       this.renderDepthMsg();
     })
-    .onWillAppear(() => {
+    .onWillDisappear(() => {
       this.stopARView();
     })
     .onShown(() => {
@@ -305,7 +307,7 @@ struct ARDepth {
   }
 
   private initARView(): void {
-    Scene.load().then((scene: Scene) => {
+    Scene.load().then(async (scene: Scene) => {
       let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
       viewContext.scene = scene;
       viewContext.callback = new ARViewCallbackImpl();
@@ -318,14 +320,14 @@ struct ARDepth {
         depthMode: arEngine.ARDepthMode.AUTOMATIC,
         meshMode: arEngine.ARMeshMode.DISABLED,
         focusMode: arEngine.ARFocusMode.AUTO
-      };
+      }
       viewContext.init().then(() => {
         this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
+        logger.info('Succeeded in initting ARView.');
       }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}`);
-      });
-    });
+        logger.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}`);
+      })
+    })
   }
 
   private renderDepthMsg(): void {
@@ -335,27 +337,29 @@ struct ARDepth {
       }
       this.depthDistance = centerDistance.toFixed(4);
       this.depthConfidence = centerConfidence;
-    }, this.delayInterval);
+    }, this.delayInterval)
   }
 
-  private stopARView(): void {
+  private async stopARView(): Promise<void> {
     if (!this.arContext) {
       return;
     }
+    clearInterval(this.intervalId);
     try {
-      clearInterval(this.intervalId);
-      this.arContext.destroy();
-      centerDistance = 0;
-      centerConfidence = 0;
+      await this.arContext.destroy();
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
+      logger.error(`Failed to stop context. Code is ${err.code}, message is ${err.message}`);
     }
+
+    centerDistance = 0;
+    centerConfidence = 0;
   }
 
   private resumeARView(): void {
     // ...
   }
+
   private pauseARView(): void {
     // ...
   }
@@ -367,19 +371,17 @@ struct ARDepth {
 ```
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
       return;
     }
 
-    let session: arEngine.ARSession | undefined = ctx.session;
+    let session: arEngine.ARSession = ctx.session;
 
     try {
       let frame: arEngine.ARFrame = session.getFrame();
@@ -393,7 +395,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
       centerConfidence = confidencePlane[index];
     } catch (error) {
       const err: BusinessError = error as BusinessError;
-      console.error(`Failed to acquire depth information. Code is ${err.code}, message is ${err.message}`);
+      logger.error(`Failed to acquire depth information. Code is ${err.code}, message is ${err.message}`);
     }
   }
 }

@@ -30,30 +30,30 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 import axios from 'axios';
 
 let myHandler = async function (event, context, callback, logger) {
-  logger.info("event:" + JSON.stringify(event));
-  let env1 = context.env.env1; // 环境变量
-  logger.info("env1: " + env1)
-  try {
-    let body = event.body ? JSON.parse(event.body) : event;
-    let appId = body.appId;
+    logger.info("event:" + JSON.stringify(event));
+    let env1 = context.env.env1; // 获取环境变量env1
+    logger.info("env1: " + env1)
+    try {
+        let body = event.body ? JSON.parse(event.body) : event;
+        let appId = body.appId;
 
-    logger.info("appId: " + appId);
+        logger.info("appId: " + appId);
 
-    // http请求示例，请按照实际业务修改
-    let url = 'https://example.com/prefetchApi';  // 页面资源数据的请求url
-    let headers = { 'k1': 'v1' };  // 请求header
-    let res;  // 返回数据
-    await axios.post(url, {}, { headers })  // http post请求
-      .then(response => {
-        res = response.data;
-      })
-    logger.info("--------Finished-------");
-    callback(res);
-  } catch (error) {
-    logger.error("--------Error-------");
-    logger.error("error: " + error);
-    callback(error);
-  }
+        // http请求示例，请按照实际业务修改
+        let url = 'https://example.com/prefetchApi';  // 页面资源数据的请求url
+        let headers = { 'k1': 'v1' };  // 请求header
+        let res;  // 返回数据
+        await axios.post(url, {}, { headers })  // http post请求
+            .then(response => {
+                res = response.data;
+            })
+        logger.info("--------Finished-------");
+        callback(res);
+    } catch (error) {
+        logger.error("--------Error-------");
+        logger.error("error: " + error);
+        callback(error);
+    }
 };
 
 export { myHandler };
@@ -63,32 +63,32 @@ export { myHandler };
 import axios from 'axios';
 
 let myHandler = async function (event, context, callback, logger) {
-  logger.info("event:" + JSON.stringify(event));
-  let env1 = context.env.env1; // 环境变量
-  logger.info("env1: " + env1)
-  try {
-    let body = event.body ? JSON.parse(event.body) : event;
-    let appId = body.appId;
-    let token = body.token;
-    let paramsStr = body.params; // 如果需要解析json结构paramsStr中的参数，需要使用 let params = JSON.parse(paramsStr);
+    logger.info("event:" + JSON.stringify(event));
+    let env1 = context.env.env1; // 获取环境变量env1
+    logger.info("env1: " + env1)
+    try {
+        let body = event.body ? JSON.parse(event.body) : event;
+        let appId = body.appId;
+        let token = body.token;
+        let paramsStr = body.params; // 如果需要解析json结构paramsStr中的参数，需要使用 let params = JSON.parse(paramsStr);
 
-    logger.info("appId: " + appId + ",token:" + token + ",params:" + paramsStr);
+        logger.info("appId: " + appId + ",token:" + token + ",params:" + paramsStr);
 
-    // http请求示例，请按照实际业务修改
-    let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
-    let headers = { 'k1': 'v1' }; // 请求header
-    let res; // 返回数据
-    await axios.post(url, {}, { headers }) // http post请求
-      .then(response => {
-        res = response.data;
-      })
-    logger.info("--------Finished-------");
-    callback(res);
-  } catch (error) {
-    logger.error("--------Error-------");
-    logger.error("error: " + error);
-    callback(error);
-  }
+        // http请求示例，请按照实际业务修改
+        let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
+        let headers = { 'k1': 'v1' }; // 请求header
+        let res; // 返回数据
+        await axios.post(url, {}, { headers }) // http post请求
+            .then(response => {
+                res = response.data;
+            })
+        logger.info("--------Finished-------");
+        callback(res);
+    } catch (error) {
+        logger.error("--------Error-------");
+        logger.error("error: " + error);
+        callback(error);
+    }
 };
 
 export { myHandler };
@@ -98,31 +98,31 @@ export { myHandler };
 import axios from 'axios';
 
 let myHandler = async function (event, context, callback, logger) {
-  logger.info("event:" + JSON.stringify(event));
-  let env1 = context.env.env1; // 环境变量
-  logger.info("env1: " + env1)
-  try {
-    let body = event.body ? JSON.parse(event.body) : event;
-    let appId = body.appId;
-    let link = body.link; // 跳链安装预加载link信息
+    logger.info("event:" + JSON.stringify(event));
+    let env1 = context.env.env1; // 获取环境变量env1
+    logger.info("env1: " + env1)
+    try {
+        let body = event.body ? JSON.parse(event.body) : event;
+        let appId = body.appId;
+        let link = body.link; // 跳链安装预加载link信息
 
-    logger.info("appId: " + appId + ",link:" + link);
+        logger.info("appId: " + appId + ",link:" + link);
 
-    // http请求示例，请按照实际业务修改
-    let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
-    let headers = { 'k1': 'v1' }; // 请求header
-    let res; // 返回数据
-    await axios.post(url, {}, { headers }) // http post请求
-      .then(response => {
-        res = response.data;
-      })
-    logger.info("--------Finished-------");
-    callback(res);
-  } catch (error) {
-    logger.error("--------Error-------");
-    logger.error("error: " + error);
-    callback(error);
-  }
+        // http请求示例，请按照实际业务修改
+        let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
+        let headers = { 'k1': 'v1' }; // 请求header
+        let res; // 返回数据
+        await axios.post(url, {}, { headers }) // http post请求
+            .then(response => {
+                res = response.data;
+            })
+        logger.info("--------Finished-------");
+        callback(res);
+    } catch (error) {
+        logger.error("--------Error-------");
+        logger.error("error: " + error);
+        callback(error);
+    }
 };
 
 export { myHandler };
@@ -152,30 +152,30 @@ https://www.example.com/prefetchData?appId=1234&token=xxxx&params=yyyy
 import axios from 'axios';
 
 let myHandler = async function (event, context, callback, logger) {
-  logger.info("event:" + JSON.stringify(event));
-  let env1 = context.env.env1; // 环境变量
-  logger.info("env1: " + env1)
-  try {
-    let body = event.body ? JSON.parse(event.body) : event;
-    let appId = body.appId;
+    logger.info("event:" + JSON.stringify(event));
+    let env1 = context.env.env1; // 获取环境变量env1
+    logger.info("env1: " + env1)
+    try {
+        let body = event.body ? JSON.parse(event.body) : event;
+        let appId = body.appId;
 
-    logger.info("appId: " + appId);
+        logger.info("appId: " + appId);
 
-    // http请求示例，请按照实际业务修改
-    let url = 'https://example.com/prefetchApi';  // 页面资源数据的请求url
-    let headers = { 'k1': 'v1' };  // 请求header
-    let res;  // 返回数据
-    await axios.post(url, {}, { headers })  // http post请求
-      .then(response => {
-        res = response.data;
-      })
-    logger.info("--------Finished-------");
-    callback(res);
-  } catch (error) {
-    logger.error("--------Error-------");
-    logger.error("error: " + error);
-    callback(error);
-  }
+        // http请求示例，请按照实际业务修改
+        let url = 'https://example.com/prefetchApi';  // 页面资源数据的请求url
+        let headers = { 'k1': 'v1' };  // 请求header
+        let res;  // 返回数据
+        await axios.post(url, {}, { headers })  // http post请求
+            .then(response => {
+                res = response.data;
+            })
+        logger.info("--------Finished-------");
+        callback(res);
+    } catch (error) {
+        logger.error("--------Error-------");
+        logger.error("error: " + error);
+        callback(error);
+    }
 };
 
 export { myHandler };
@@ -187,32 +187,32 @@ export { myHandler };
 import axios from 'axios';
 
 let myHandler = async function (event, context, callback, logger) {
-  logger.info("event:" + JSON.stringify(event));
-  let env1 = context.env.env1; // 环境变量
-  logger.info("env1: " + env1)
-  try {
-    let body = event.body ? JSON.parse(event.body) : event;
-    let appId = body.appId;
-    let token = body.token;
-    let paramsStr = body.params; // 如果需要解析json结构paramsStr中的参数，需要使用 let params = JSON.parse(paramsStr);
+    logger.info("event:" + JSON.stringify(event));
+    let env1 = context.env.env1; // 获取环境变量env1
+    logger.info("env1: " + env1)
+    try {
+        let body = event.body ? JSON.parse(event.body) : event;
+        let appId = body.appId;
+        let token = body.token;
+        let paramsStr = body.params; // 如果需要解析json结构paramsStr中的参数，需要使用 let params = JSON.parse(paramsStr);
 
-    logger.info("appId: " + appId + ",token:" + token + ",params:" + paramsStr);
+        logger.info("appId: " + appId + ",token:" + token + ",params:" + paramsStr);
 
-    // http请求示例，请按照实际业务修改
-    let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
-    let headers = { 'k1': 'v1' }; // 请求header
-    let res; // 返回数据
-    await axios.post(url, {}, { headers }) // http post请求
-      .then(response => {
-        res = response.data;
-      })
-    logger.info("--------Finished-------");
-    callback(res);
-  } catch (error) {
-    logger.error("--------Error-------");
-    logger.error("error: " + error);
-    callback(error);
-  }
+        // http请求示例，请按照实际业务修改
+        let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
+        let headers = { 'k1': 'v1' }; // 请求header
+        let res; // 返回数据
+        await axios.post(url, {}, { headers }) // http post请求
+            .then(response => {
+                res = response.data;
+            })
+        logger.info("--------Finished-------");
+        callback(res);
+    } catch (error) {
+        logger.error("--------Error-------");
+        logger.error("error: " + error);
+        callback(error);
+    }
 };
 
 export { myHandler };
@@ -224,31 +224,31 @@ export { myHandler };
 import axios from 'axios';
 
 let myHandler = async function (event, context, callback, logger) {
-  logger.info("event:" + JSON.stringify(event));
-  let env1 = context.env.env1; // 环境变量
-  logger.info("env1: " + env1)
-  try {
-    let body = event.body ? JSON.parse(event.body) : event;
-    let appId = body.appId;
-    let link = body.link; // 跳链安装预加载link信息
+    logger.info("event:" + JSON.stringify(event));
+    let env1 = context.env.env1; // 获取环境变量env1
+    logger.info("env1: " + env1)
+    try {
+        let body = event.body ? JSON.parse(event.body) : event;
+        let appId = body.appId;
+        let link = body.link; // 跳链安装预加载link信息
 
-    logger.info("appId: " + appId + ",link:" + link);
+        logger.info("appId: " + appId + ",link:" + link);
 
-    // http请求示例，请按照实际业务修改
-    let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
-    let headers = { 'k1': 'v1' }; // 请求header
-    let res; // 返回数据
-    await axios.post(url, {}, { headers }) // http post请求
-      .then(response => {
-        res = response.data;
-      })
-    logger.info("--------Finished-------");
-    callback(res);
-  } catch (error) {
-    logger.error("--------Error-------");
-    logger.error("error: " + error);
-    callback(error);
-  }
+        // http请求示例，请按照实际业务修改
+        let url = 'https://example.com/prefetchApi'; // 页面资源数据的请求url
+        let headers = { 'k1': 'v1' }; // 请求header
+        let res; // 返回数据
+        await axios.post(url, {}, { headers }) // http post请求
+            .then(response => {
+                res = response.data;
+            })
+        logger.info("--------Finished-------");
+        callback(res);
+    } catch (error) {
+        logger.error("--------Error-------");
+        logger.error("error: " + error);
+        callback(error);
+    }
 };
 
 export { myHandler };

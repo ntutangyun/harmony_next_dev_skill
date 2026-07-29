@@ -12,17 +12,17 @@ TaskPool支持在宿主线程提交任务到任务队列，系统选择合适的
 
 TaskPool注意事项
 
+使用TaskPool时还需同时注意并发注意事项。
+
 实现任务的函数需要使用@Concurrent装饰器标注，且仅支持在.ets文件中使用。
 
-从API version 11开始，跨并发实例传递带方法的实例对象时，该类必须使用装饰器@Sendable装饰器标注，且仅支持在.ets文件中使用。如果不考虑使用@Sendable装饰器标注，可以考虑worker方法，请参考Worker同步调用宿主线程的接口。
+从API version 11开始，跨并发实例传递带方法的实例对象时，该类必须使用@Sendable装饰器标注，且仅支持在.ets文件中使用。如果不考虑使用@Sendable装饰器标注，可以考虑worker方法，请参见Worker同步调用宿主线程的接口。
 
 任务函数（LongTask除外）的CPU执行时长不能超过3分钟（通过Task的cpuDuration属性获取）。异步I/O等待时间不计入此限制，可通过ioDuration属性获取。否则，若因任务逻辑导致阻塞，使任务无法完成，将导致该线程后续无法调度其他任务。当所有线程均被超时占用时，后续提交的任务将无法正常调度执行。需要注意的是，这里的3分钟限制仅统计TaskPool线程的​​同步执行时长​​，不包含异步操作（如Promise或async/await）的等待时长。例如，数据库的插入、删除、更新等操作，如果是异步操作，仅计入CPU实际处理时长（如SQL解析），网络传输或磁盘I/O等待时长不计入；如果是同步操作，整个操作时长（含I/O阻塞时间）均计入限制。开发者可通过Task的属性ioDuration、cpuDuration获取执行当前任务的异步IO耗时和CPU耗时。
 
 实现任务的函数入参需满足序列化支持的类型。详情请参见线程间通信对象概述。目前不支持使用@State装饰器、@Prop装饰器、@Link装饰器等装饰器修饰的复杂类型。
 
 ArrayBuffer参数在TaskPool中默认转移，需要设置转移列表的话可通过接口setTransferList()设置。如果需要多次调用使用ArrayBuffer作为参数的task，则需要通过接口setCloneList()把ArrayBuffer在线程中的传输行为改成拷贝传递，避免对原有对象产生影响。
-
-除上述注意事项外，使用TaskPool时还需注意并发注意事项。
 
 import { taskpool } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -100,7 +100,7 @@ TaskPool不支持指定任务所运行的线程，任务会被分配到空闲的
 使用场景	仅支持在Stage模型的工程中使用。仅支持在.ets文件中使用。
 装饰的函数类型	允许标注为async函数或普通函数。禁止标注为generator、箭头函数、类方法。不支持类成员函数或者匿名函数。
 装饰的函数内的变量类型	允许使用局部变量、入参和通过import引入的变量，禁止使用闭包变量。
-装饰的函数内的返回值类型	支持的类型请查线程间通信对象概述。
+装饰的函数的入参及返回值类型	支持的类型请参见线程间通信对象概述。
 
 由于@Concurrent标记的函数不能访问闭包，因此函数内部不能调用当前文件的其他函数，例如：
 
@@ -148,8 +148,12 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            concurrentFunc();
-            this.message = 'success';
+            concurrentFunc().then(() => {
+              this.message = 'success';
+            }).catch((e: object) => {
+              this.message = 'failed';
+              console.error(`taskpool execute concurrentFunc error is: ${e}`);
+            })
           })
       }
       .width('100%')
@@ -258,8 +262,12 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            testConcurrentFunc();
-            this.message = 'success';
+            testConcurrentFunc().then(() => {
+              this.message = 'success';
+            }).catch((e: object) => {
+              this.message = 'failed';
+              console.error(`testConcurrentFunc catch e: ${e}`);
+            })
           })
       }
       .width('100%')
@@ -337,11 +345,12 @@ struct Index {
         .onClick(() => {
           const task = new taskpool.Task(testFunc);
           taskpool.execute(task).then(() => {
+            this.message = 'success';
             console.info('taskpool: execute task success!');
           }).catch((e:BusinessError) => {
+            this.message = 'failed';
             console.error(`taskpool: execute: Code: ${e.code}, message: ${e.message}`);
           })
-          this.message = 'success';
         })
     }
     .height('100%')
@@ -450,7 +459,7 @@ TaskPool扩缩容机制
 
 扩容后，TaskPool创建多个工作线程，但当任务数减少后，这些线程就会处于空闲状态，造成资源浪费，因此，TaskPool提供了缩容机制。TaskPool使用定时器，每30秒检测一次当前负载，并尝试释放空闲的工作线程。释放的线程需满足以下条件：
 
-该线程空闲时长达到30s。
+该线程空闲时长达到30秒。
 
 该线程上未执行长时任务（LongTask）。
 
@@ -558,8 +567,12 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            concurrentFunc();
-            this.message = 'success';
+            concurrentFunc().then(() => {
+              this.message = 'success';
+            }).catch((e: object) => {
+              this.message = 'failed';
+              console.error(`taskpool execute concurrentFunc error is: ${e}`);
+            })
           })
       }
       .width('100%')
@@ -666,8 +679,12 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            testConcurrentFunc();
-            this.message = 'success';
+            testConcurrentFunc().then(() => {
+              this.message = 'success';
+            }).catch((e: object) => {
+              this.message = 'failed';
+              console.error(`testConcurrentFunc catch e: ${e}`);
+            })
           })
       }
       .width('100%')
@@ -743,11 +760,12 @@ struct Index {
         .onClick(() => {
           const task = new taskpool.Task(testFunc);
           taskpool.execute(task).then(() => {
+            this.message = 'success';
             console.info('taskpool: execute task success!');
           }).catch((e:BusinessError) => {
+            this.message = 'failed';
             console.error(`taskpool: execute: Code: ${e.code}, message: ${e.message}`);
           })
-          this.message = 'success';
         })
     }
     .height('100%')

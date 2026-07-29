@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-s
 
 功能说明
 
-源操作数矢量内每个元素与标量相比，如果比标量大，则取标量值，比标量的值小，则取源操作数。
+源操作数矢量内每个元素与标量相比，如果大于标量，则取标量值；小于标量，则取源操作数；等于标量，则取源操作数值或标量值。
 
 函数原型
 
@@ -25,8 +25,8 @@ isSetMask	是否在接口内部设置mask模式和mask值。 - true，表示在�
 表2 参数说明
 
 参数名称	类型	说明
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t KirinX90系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t
-srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型需要与目的操作数保持一致。 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t KirinX90系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t KirinX90系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型需要与目的操作数保持一致。 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t KirinX90系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t
 scalarValue	输入	源操作数，数据类型需要与目的操作数Tensor中元素的数据类型保持一致 Kirin9020系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t KirinX90系列处理器，支持的数据类型为： 前n个tensor：int16_t、int32_t、half、float32_t
 calCount	输入	输入数据元素个数。
 

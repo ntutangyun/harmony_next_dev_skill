@@ -71,11 +71,12 @@ startPromotionEntryDialog(mercNo: string, offset?: number): Promise<UserAction>;
 
 针对领券场景，商户服务需要先拉起活动入口组件引导用户领券。示例代码如下：
 
-import { promotionService } from "@kit.PaymentKit";
+import { promotionService } from '@kit.PaymentKit';
 
 @Component
 struct StartPromotionEntryDialogDemo {
-  controller: promotionService.PromotionComponentController = new promotionService.PromotionComponentController(this.getUIContext());
+  controller: promotionService.PromotionComponentController =
+    new promotionService.PromotionComponentController(this.getUIContext());
   build() {
     Column() {
       Button('拉起活动入口组件')
@@ -101,11 +102,12 @@ struct StartPromotionEntryDialogDemo {
 ### Code block 1
 
 ```
-import { promotionService } from "@kit.PaymentKit";
+import { promotionService } from '@kit.PaymentKit';
 
 @Component
 struct StartPromotionEntryDialogDemo {
-  controller: promotionService.PromotionComponentController = new promotionService.PromotionComponentController(this.getUIContext());
+  controller: promotionService.PromotionComponentController =
+    new promotionService.PromotionComponentController(this.getUIContext());
   build() {
     Column() {
       Button('拉起活动入口组件')

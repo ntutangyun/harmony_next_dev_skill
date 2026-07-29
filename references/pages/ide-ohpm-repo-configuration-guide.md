@@ -2,11 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-repo-configuration-guide_
 
-为了保障用户在使用ohpm-repo过程中更加安全可靠，我们收集如下推荐安全配置项，用户可以根据自己的需要采纳配置。
+为了保障用户在使用ohpm-repo过程中更加安全可靠，我们推荐如下安全配置项，用户可以根据自己的需要采纳配置。
 
 最小权限启动
 
-为降低风险，提高系统的稳定性和可维护性，ohpm-repo必须使用非root权限进行启动部署。
+为降低风险，提高系统的稳定性和可维护性，ohpm-repo必须使用非root权限启动部署。
 
 加密连接和监听具体地址
 
@@ -14,7 +14,7 @@ listen: https://<ohpm-repo部署机器ip>:8088
 
 多实例部署
 
-ohpm-repo用于存储私有仓库三方包数据，为了避免数据丢失，且保证ohpm-repo的高可用性，推荐元数据存储使用mysql，包数据存储使用自定义存储插件，通过使用负载均衡，部署ohpm-repo多个实例。
+ohpm-repo用于存储私有仓库三方包数据，为了避免数据丢失，且保证ohpm-repo的高可用性，推荐元数据存储使用mysql，包数据存储使用自定义存储插件，通过负载均衡，部署ohpm-repo多个实例。
 
 mysql存储
 
@@ -47,7 +47,7 @@ db:
 
 type: 插件名称，为custom，是自定义存储插件类型。
 
-export_name：待书写插件export的类名。
+export_name：插件export的类名。
 
 plugin_path：插件的绝对路径或者相对于ohpm-repo软件包的路径，建议将插件放在软件包的plugins目录下。
 

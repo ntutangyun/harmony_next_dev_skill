@@ -14,4 +14,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sta
 
 内置对象的迁移
 
+卡片状态变量迁移
+
 AnimateTo使用迁移

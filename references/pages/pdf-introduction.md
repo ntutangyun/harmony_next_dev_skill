@@ -4,9 +4,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pdf-intro
 
 PDF Kit（PDF服务）包含pdfService和PdfView组件。
 
-pdfService提供了加载和保存PDF文档、在PDF页面中添加文本内容、图片、批注、页眉页脚、水印、背景图片、书签、判断PDF文档是否加密及删除文档加密等相关的功能，对PDF文档的操作有更多的应用场景。
+pdfService提供了加载和保存PDF文档、在PDF页面中添加文本内容、图片、批注、页眉页脚、水印、背景图片、书签、判断PDF文档是否加密及删除文档加密等相关功能，适用于更多PDF文档操作场景。
 
-PdfView组件提供了文档预览功能，如：PDF文档预览、高亮显示、搜索关键字，批注等场景。
+PdfView组件提供了文档预览功能，如PDF文档预览、高亮显示、搜索关键字和批注等场景。
 
 PDF Kit更多的示例代码请参考CodeLab和SampleCode。
 

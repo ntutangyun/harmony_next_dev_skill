@@ -13,7 +13,7 @@ public:
     using PrimType = PrimT<T>;
     __aicore__ inline GlobalTensor<T>() {}
     __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer, uint64_t bufferSize); // 传入全局数据的指针，并手动设置一个buffer size，初始化GlobalTensor
-    __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer); // 传入全局数据的指针，初始化GlobalTensor,可以不传入buffer size,但此时使用GetSize获取的长度是随机值
+    __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer); // 传入全局数据的指针，初始化GlobalTensor，可以不传入buffer size，但此时使用GetSize获取的长度是随机值
     __aicore__ inline const __gm__ PrimType* GetPhyAddr() const; // 返回全局数据的地址
     __aicore__ inline __gm__ PrimType* GetPhyAddr(const uint64_t offset) const; // 返回全局数据(指定偏移offset个元素)的地址
     __aicore__ inline __inout_pipe__(S) PrimType GetValue(const uint64_t offset) const; // 获取Tensor的相应偏移位置的值
@@ -42,7 +42,7 @@ GetSize	-	返回GlobalTensor的element个数。
 operator[]	offset：开发者指定的偏移位置	根据输入的offset偏移返回新的Tensor，offset的单位为element的个数。
 operator()	index: 下标索引	获取本GlobalTensor的第index个变量的引用。与LocalTensor的operator()类似。
 SetShapeInfo	shapeInfo：ShapeInfo结构体	设置GlobalTensor的shapeInfo。
-GetShapeInfo	无	获取GlobalTensor的shapeInfo。 说明： Shape信息没有默认值，只有通过SetShapeInfo设置过Shape信息后，才可以调用该接口获取正确的ShapeInfo。
+GetShapeInfo	-	获取GlobalTensor的shapeInfo。 说明： Shape信息没有默认值，只有通过SetShapeInfo设置过Shape信息后，才可以调用该接口获取正确的ShapeInfo。
 
 调用示例
 
@@ -68,7 +68,7 @@ public:
     using PrimType = PrimT<T>;
     __aicore__ inline GlobalTensor<T>() {}
     __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer, uint64_t bufferSize); // 传入全局数据的指针，并手动设置一个buffer size，初始化GlobalTensor
-    __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer); // 传入全局数据的指针，初始化GlobalTensor,可以不传入buffer size,但此时使用GetSize获取的长度是随机值
+    __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer); // 传入全局数据的指针，初始化GlobalTensor，可以不传入buffer size，但此时使用GetSize获取的长度是随机值
     __aicore__ inline const __gm__ PrimType* GetPhyAddr() const; // 返回全局数据的地址
     __aicore__ inline __gm__ PrimType* GetPhyAddr(const uint64_t offset) const; // 返回全局数据(指定偏移offset个元素)的地址
     __aicore__ inline __inout_pipe__(S) PrimType GetValue(const uint64_t offset) const; // 获取Tensor的相应偏移位置的值

@@ -25,7 +25,7 @@ DataType	TensorDesc所描述的Tensor的数据类型。
 
 约束说明
 
-由于返回的DataType信息为值拷贝，因此修改返回的DataType信息，不影响TensorDesc中已有的DataType信息。
+无
 
 ## Code blocks
 

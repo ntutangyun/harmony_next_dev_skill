@@ -1,4 +1,4 @@
-# 使用MindSpore Lite实现图像分类（C/C++）
+# 使用MindSpore Lite实现图像分类 (C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mindspore-guidelines-based-native_
 
@@ -307,11 +307,10 @@ export const runDemo: (a: number[], b:Object) => Array<number>;
 
 此处以获取相册图片为例，调用@ohos.file.picker 实现相册图片文件的选择。
 
-根据模型的输入尺寸，调用@ohos.multimedia.image （实现图片处理）、@ohos.file.fs （实现基础文件操作） API对选择图片进行裁剪、获取图片buffer数据，并进行标准化处理。
+根据模型的输入尺寸，调用@ohos.multimedia.image（实现图片处理）、@ohos.file.fs（实现基础文件操作）API对选择图片进行裁剪、获取图片buffer数据，并进行标准化处理。
 
 在 entry/src/main/ets/pages/Index.ets 中，调用封装的ArkTS模块，最后对推理结果进行处理。
 
-// Index.ets
 import msliteNapi from 'libentry.so';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -335,16 +334,19 @@ struct Index {
   @State maxIndex: number = 0;
   @State maxArray: Array<number> = [];
   @State maxIndexArray: Array<number> = [];
+  // ...
 
   build() {
     Row() {
       Column() {
         Text(this.message)
+        // ...
         Button() {
           Text('photo')
             .fontSize(30)
             .fontWeight(FontWeight.Bold)
         }
+        // ...
         .onClick(() => {
           let resMgr = this.getUIContext()?.getHostContext()?.getApplicationContext().resourceManager;
           if (resMgr === null || resMgr === undefined){
@@ -479,9 +481,9 @@ struct Index {
 
                         hilog.info(0xFF00, TAG, '%{public}s',
                           `MS_LITE_LOG: *** Finished MSLite Demo ***`);
-                      }).catch((error: BusinessError) => {
-                        hilog.error(0xFF00, TAG, '%{public}s',
-                          `MS_LITE_ERR: getRawFileContent promise error is: ${error}`);
+                        }).catch((error: BusinessError) => {
+                          hilog.error(0xFF00, TAG, '%{public}s',
+                            `MS_LITE_ERR: getRawFileContent promise error is: ${error}`);
                       })
                     })
                     // 5.关闭文件
@@ -502,7 +504,7 @@ struct Index {
 
 [h2]调测验证
 
-在DevEco Studio中连接设备，点击Run entry，编译Hap，有如下显示：
+在DevEco Studio中连接设备，点击Run entry，编译HAP，有如下显示：
 
 Launching com.samples.mindsporelitecdemo
 $ hdc shell aa force-stop com.samples.mindsporelitecdemo
@@ -842,7 +844,6 @@ export const runDemo: (a: number[], b:Object) => Array<number>;
 ### Code block 12
 
 ```
-// Index.ets
 import msliteNapi from 'libentry.so';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -866,16 +867,19 @@ struct Index {
   @State maxIndex: number = 0;
   @State maxArray: Array<number> = [];
   @State maxIndexArray: Array<number> = [];
+  // ...
 
   build() {
     Row() {
       Column() {
         Text(this.message)
+        // ...
         Button() {
           Text('photo')
             .fontSize(30)
             .fontWeight(FontWeight.Bold)
         }
+        // ...
         .onClick(() => {
           let resMgr = this.getUIContext()?.getHostContext()?.getApplicationContext().resourceManager;
           if (resMgr === null || resMgr === undefined){
@@ -1010,9 +1014,9 @@ struct Index {
 
                         hilog.info(0xFF00, TAG, '%{public}s',
                           `MS_LITE_LOG: *** Finished MSLite Demo ***`);
-                      }).catch((error: BusinessError) => {
-                        hilog.error(0xFF00, TAG, '%{public}s',
-                          `MS_LITE_ERR: getRawFileContent promise error is: ${error}`);
+                        }).catch((error: BusinessError) => {
+                          hilog.error(0xFF00, TAG, '%{public}s',
+                            `MS_LITE_ERR: getRawFileContent promise error is: ${error}`);
                       })
                     })
                     // 5.关闭文件

@@ -66,11 +66,11 @@ OH_ArkUI_NodeContent_RemoveNode(handle_, myNativeNode);
 
 NDK组件模块
 
-NDK提供的UI组件能力如组件创建、树操作、属性设置、事件注册等是通过函数指针结构体（如ArkUI_NativeNodeAPI_1）进行暴露，该函数指针结构体可以通过模块查询接口获取。
+NDK提供的UI组件能力如组件创建、树操作、属性设置、事件注册等是通过函数指针结构体（如ArkUI_NativeNodeAPI_1）进行暴露，该函数指针结构体可以通过OH_ArkUI_GetModuleInterface获取。
 
 说明
 
-模块查询接口带有初始化NDK的逻辑，建议先调用该接口进行全局初始化，再使用NDK进行UI构造。
+OH_ArkUI_GetModuleInterface带有初始化NDK的逻辑，建议先调用该接口进行全局初始化，再使用NDK进行UI构造。
 
 ArkUI_NativeNodeAPI_1* arkUINativeNodeApi = nullptr;
 OH_ArkUI_GetModuleInterface(ARKUI_NATIVE_NODE, ArkUI_NativeNodeAPI_1, arkUINativeNodeApi);
@@ -99,7 +99,7 @@ ArkUI_AttributeItem item = {value, 1};
 arkUINativeNodeApi->setAttribute(stack, NODE_WIDTH, &item);
 ArkUI_NumberValue value_color[] = {{.u32 = 0xff112233}};
 ArkUI_AttributeItem item_color = {value_color, 1};
-arkUINativeNodeApi->setAttribute(stack, NODE_BACKGROUND_COLOR, &item);
+arkUINativeNodeApi->setAttribute(stack, NODE_BACKGROUND_COLOR, &item_color);
 
 获取NDK接口支持的属性范围可以通过查询ArkUI_NodeAttributeType枚举值。
 
@@ -284,7 +284,7 @@ private:
 #include <arkui/native_node_napi.h>
 #include <js_native_api.h>
 #include "NativeEntry.h"
-#include "NormalNodeExample.h"
+#include "NormalTextListExample.h"
 
 namespace NativeModule {
 
@@ -300,11 +300,11 @@ napi_value CreateNativeRoot(napi_env env, napi_callback_info info)
     OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
     NativeEntry::GetInstance()->SetContentHandle(contentHandle);
 
-    // 创建组件节点
-    auto node = CreateExample();
+    // 创建文本列表
+    auto list = CreateTextListExample();
 
     // 保持Native侧对象到管理类中，维护生命周期。
-    NativeEntry::GetInstance()->SetRootNode(node);
+    NativeEntry::GetInstance()->SetRootNode(list);
     return nullptr;
 }
 
@@ -483,48 +483,6 @@ public:
         ArkUI_AttributeItem item = {value, 1};
         nativeModule_->setAttribute(handle_, NODE_BACKGROUND_COLOR, &item);
     }
-    void SetMargin(float top, float right, float bottom, float left)
-    {
-        ArkUI_NumberValue value[] = {{top}, {right}, {bottom}, {left}};
-        ArkUI_AttributeItem item = {value, 4};
-        nativeModule_->setAttribute(handle_, NODE_MARGIN, &item);
-    }
-    void SetPadding(float top, float right, float bottom, float left)
-    {
-        ArkUI_NumberValue value[] = {{top}, {right}, {bottom}, {left}};
-        ArkUI_AttributeItem item = {value, 4};
-        nativeModule_->setAttribute(handle_, NODE_PADDING, &item);
-    }
-    void SetBorderWidth(float width)
-    {
-        ArkUI_NumberValue value[] = {{.f32 = width}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_BORDER_WIDTH, &item);
-    }
-    void SetBorderColor(uint32_t color)
-    {
-        ArkUI_NumberValue value[] = {{.u32 = color}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_BORDER_COLOR, &item);
-    }
-    void SetBorderRadius(float radius)
-    {
-        ArkUI_NumberValue value[] = {{.f32 = radius}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
-    }
-    void SetOpacity(float opacity)
-    {
-        ArkUI_NumberValue value[] = {{.f32 = opacity}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_OPACITY, &item);
-    }
-    void SetScale(float x, float y)
-    {
-        ArkUI_NumberValue value[] = {{x}, {y}};
-        ArkUI_AttributeItem item = {value, 2};
-        nativeModule_->setAttribute(handle_, NODE_SCALE, &item);
-    }
 
 protected:
     // 组件树操作的实现类对接。
@@ -579,8 +537,8 @@ public:
 
 // ArkUIListItemNode.h
 // 提供列表项的封装类。
-#ifndef MYAPPLICATION_ARKUISTACKNODE_H
-#define MYAPPLICATION_ARKUISTACKNODE_H
+#ifndef MYAPPLICATION_ARKUILISTITEMNODE_H
+#define MYAPPLICATION_ARKUILISTITEMNODE_H
 
 #include "ArkUINode.h"
 
@@ -592,7 +550,7 @@ public:
 };
 } // namespace NativeModule
 
-#endif // MYAPPLICATION_ARKUISTACKNODE_H
+#endif // MYAPPLICATION_ARKUILISTITEMNODE_H
 
 5）实现文本组件。
 
@@ -672,7 +630,6 @@ std::shared_ptr<ArkUIBaseNode> CreateTextListExample()
         textNode->SetTextContent(std::to_string(i));
         textNode->SetFontSize(fontSizes);
         textNode->SetFontColor(0xFF000000);
-        textNode->SetPercentWidth(1);
         textNode->SetPercentWidth(screenWidth);
         textNode->SetHeight(defaultHeight);
         textNode->SetBackgroundColor(0xFFfffacd);
@@ -786,7 +743,7 @@ ArkUI_AttributeItem item = {value, 1};
 arkUINativeNodeApi->setAttribute(stack, NODE_WIDTH, &item);
 ArkUI_NumberValue value_color[] = {{.u32 = 0xff112233}};
 ArkUI_AttributeItem item_color = {value_color, 1};
-arkUINativeNodeApi->setAttribute(stack, NODE_BACKGROUND_COLOR, &item);
+arkUINativeNodeApi->setAttribute(stack, NODE_BACKGROUND_COLOR, &item_color);
 ```
 
 ### Code block 9
@@ -973,7 +930,7 @@ private:
 #include <arkui/native_node_napi.h>
 #include <js_native_api.h>
 #include "NativeEntry.h"
-#include "NormalNodeExample.h"
+#include "NormalTextListExample.h"
 
 namespace NativeModule {
 
@@ -989,11 +946,11 @@ napi_value CreateNativeRoot(napi_env env, napi_callback_info info)
     OH_ArkUI_GetNodeContentFromNapiValue(env, args[0], &contentHandle);
     NativeEntry::GetInstance()->SetContentHandle(contentHandle);
 
-    // 创建组件节点
-    auto node = CreateExample();
+    // 创建文本列表
+    auto list = CreateTextListExample();
 
     // 保持Native侧对象到管理类中，维护生命周期。
-    NativeEntry::GetInstance()->SetRootNode(node);
+    NativeEntry::GetInstance()->SetRootNode(list);
     return nullptr;
 }
 
@@ -1180,48 +1137,6 @@ public:
         ArkUI_AttributeItem item = {value, 1};
         nativeModule_->setAttribute(handle_, NODE_BACKGROUND_COLOR, &item);
     }
-    void SetMargin(float top, float right, float bottom, float left)
-    {
-        ArkUI_NumberValue value[] = {{top}, {right}, {bottom}, {left}};
-        ArkUI_AttributeItem item = {value, 4};
-        nativeModule_->setAttribute(handle_, NODE_MARGIN, &item);
-    }
-    void SetPadding(float top, float right, float bottom, float left)
-    {
-        ArkUI_NumberValue value[] = {{top}, {right}, {bottom}, {left}};
-        ArkUI_AttributeItem item = {value, 4};
-        nativeModule_->setAttribute(handle_, NODE_PADDING, &item);
-    }
-    void SetBorderWidth(float width)
-    {
-        ArkUI_NumberValue value[] = {{.f32 = width}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_BORDER_WIDTH, &item);
-    }
-    void SetBorderColor(uint32_t color)
-    {
-        ArkUI_NumberValue value[] = {{.u32 = color}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_BORDER_COLOR, &item);
-    }
-    void SetBorderRadius(float radius)
-    {
-        ArkUI_NumberValue value[] = {{.f32 = radius}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_BORDER_RADIUS, &item);
-    }
-    void SetOpacity(float opacity)
-    {
-        ArkUI_NumberValue value[] = {{.f32 = opacity}};
-        ArkUI_AttributeItem item = {value, 1};
-        nativeModule_->setAttribute(handle_, NODE_OPACITY, &item);
-    }
-    void SetScale(float x, float y)
-    {
-        ArkUI_NumberValue value[] = {{x}, {y}};
-        ArkUI_AttributeItem item = {value, 2};
-        nativeModule_->setAttribute(handle_, NODE_SCALE, &item);
-    }
 
 protected:
     // 组件树操作的实现类对接。
@@ -1280,8 +1195,8 @@ public:
 ```
 // ArkUIListItemNode.h
 // 提供列表项的封装类。
-#ifndef MYAPPLICATION_ARKUISTACKNODE_H
-#define MYAPPLICATION_ARKUISTACKNODE_H
+#ifndef MYAPPLICATION_ARKUILISTITEMNODE_H
+#define MYAPPLICATION_ARKUILISTITEMNODE_H
 
 #include "ArkUINode.h"
 
@@ -1293,7 +1208,7 @@ public:
 };
 } // namespace NativeModule
 
-#endif // MYAPPLICATION_ARKUISTACKNODE_H
+#endif // MYAPPLICATION_ARKUILISTITEMNODE_H
 ```
 
 ### Code block 22
@@ -1377,7 +1292,6 @@ std::shared_ptr<ArkUIBaseNode> CreateTextListExample()
         textNode->SetTextContent(std::to_string(i));
         textNode->SetFontSize(fontSizes);
         textNode->SetFontColor(0xFF000000);
-        textNode->SetPercentWidth(1);
         textNode->SetPercentWidth(screenWidth);
         textNode->SetHeight(defaultHeight);
         textNode->SetBackgroundColor(0xFFfffacd);

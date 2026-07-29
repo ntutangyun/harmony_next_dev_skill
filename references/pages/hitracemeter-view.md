@@ -197,7 +197,7 @@ S|[进程号]|H:[分布式跟踪链路ID]#[内容]|[异步任务ID]|[级别与�
 
 [h2]HiTraceMeter Tag
 
-以下为HitraceMeter用户态Tag集合，其中Tag值为实际代码层面基于数字1的左移值。用户态Tag释义可通过hitrace命令行工具查看，其中always和commercial分别为系统侧默认常开Tag和商用版本场景定制Tag。
+以下为HiTraceMeter用户态Tag集合，其中Tag值为实际代码层面基于数字1的左移值。用户态Tag释义可通过hitrace命令行工具查看，其中always和commercial分别为系统侧默认常开Tag和商用版本场景定制Tag。
 
 Tag名称	代码层常量值	Tag值
 always	1ULL << 0	00

@@ -129,7 +129,7 @@ try {
          if (p2pResult.code === wearEngine.P2pResultCode.COMMUNICATION_SUCCESS) {
             console.info(`Succeeded in transferring file, the result is ${p2pResult.code}.`);
          } else {
-            console.info(`Failed to transfer file, the error code is ${p2pResult.code}.`);
+            console.error(`Failed to transfer file, the error code is ${p2pResult.code}.`);
             return;
          }
       }
@@ -249,9 +249,9 @@ p2pClient.unregisterFileReceiver(targetDevice.randomId, appParam, callback).then
 创建名为HiWearMainAbility.ets的文件，需继承UIAbility，重写onWindowStageCreate函数，配置要跳转的界面。
 
 // 必须继承UIAbility
-import hilog from '@ohos.hilog';
-import UIAbility from '@ohos.app.ability.UIAbility';
-import window from '@ohos.window';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { UIAbility } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
 
 /**
  * 对端应用通过startRemoteApp方法拉起穿戴侧应用的HiWearMainAbility
@@ -485,7 +485,7 @@ try {
          if (p2pResult.code === wearEngine.P2pResultCode.COMMUNICATION_SUCCESS) {
             console.info(`Succeeded in transferring file, the result is ${p2pResult.code}.`);
          } else {
-            console.info(`Failed to transfer file, the error code is ${p2pResult.code}.`);
+            console.error(`Failed to transfer file, the error code is ${p2pResult.code}.`);
             return;
          }
       }
@@ -591,9 +591,9 @@ p2pClient.unregisterFileReceiver(targetDevice.randomId, appParam, callback).then
 
 ```
 // 必须继承UIAbility
-import hilog from '@ohos.hilog';
-import UIAbility from '@ohos.app.ability.UIAbility';
-import window from '@ohos.window';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { UIAbility } from '@kit.AbilityKit';
+import { window } from '@kit.ArkUI';
 
 /**
  * 对端应用通过startRemoteApp方法拉起穿戴侧应用的HiWearMainAbility

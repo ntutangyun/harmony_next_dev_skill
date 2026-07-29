@@ -52,7 +52,7 @@ class Spring {
 // 弹簧组件
 @Component
 struct Motion {
-  @Prop dRotate: number = 0;
+  @Prop dTranslate: number = 0;
   private title: string = '';
   private subTitle: ResourceStr = '';
   private iCurve: ICurve | undefined = undefined;
@@ -60,7 +60,7 @@ struct Motion {
   build() {
     Column() {
       Circle()
-        .translate({ y: this.dRotate })
+        .translate({ y: this.dTranslate })
         .animation({ curve: this.iCurve, iterations: -1 })
         .foregroundColor('#317AF7')
         .width(30)
@@ -91,7 +91,7 @@ struct Motion {
 @Component
 export struct SpringCurve {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  @State dRotate: number = 0;
+  @State dTranslate: number = 0;
   private springs: Spring[] = [
     // 请将$r('app.string.springCurve_text1')替换为实际资源文件，在本示例中该资源文件的value值为"周期1, 阻尼0.25"
     new Spring('springMotion', $r('app.string.springCurve_text1'), curves.springMotion(1, 0.25)),
@@ -113,7 +113,7 @@ export struct SpringCurve {
           title: item.title,
           subTitle: item.subTitle,
           iCurve: item.iCurve,
-          dRotate: this.dRotate
+          dTranslate: this.dTranslate
         })
       })
     }
@@ -123,7 +123,7 @@ export struct SpringCurve {
     .height(437)
     .margin({ top: 20 })
     .onClick(() => {
-      this.dRotate = -50;
+      this.dTranslate = -50;
     })
   }
 }
@@ -175,7 +175,7 @@ class Spring {
 // 弹簧组件
 @Component
 struct Motion {
-  @Prop dRotate: number = 0;
+  @Prop dTranslate: number = 0;
   private title: string = '';
   private subTitle: ResourceStr = '';
   private iCurve: ICurve | undefined = undefined;
@@ -183,7 +183,7 @@ struct Motion {
   build() {
     Column() {
       Circle()
-        .translate({ y: this.dRotate })
+        .translate({ y: this.dTranslate })
         .animation({ curve: this.iCurve, iterations: -1 })
         .foregroundColor('#317AF7')
         .width(30)
@@ -214,7 +214,7 @@ struct Motion {
 @Component
 export struct SpringCurve {
   private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  @State dRotate: number = 0;
+  @State dTranslate: number = 0;
   private springs: Spring[] = [
     // 请将$r('app.string.springCurve_text1')替换为实际资源文件，在本示例中该资源文件的value值为"周期1, 阻尼0.25"
     new Spring('springMotion', $r('app.string.springCurve_text1'), curves.springMotion(1, 0.25)),
@@ -236,7 +236,7 @@ export struct SpringCurve {
           title: item.title,
           subTitle: item.subTitle,
           iCurve: item.iCurve,
-          dRotate: this.dRotate
+          dTranslate: this.dTranslate
         })
       })
     }
@@ -246,7 +246,7 @@ export struct SpringCurve {
     .height(437)
     .margin({ top: 20 })
     .onClick(() => {
-      this.dRotate = -50;
+      this.dTranslate = -50;
     })
   }
 }

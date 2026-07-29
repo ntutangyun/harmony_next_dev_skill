@@ -4,11 +4,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-con
 
 ArkTS引入了异步任务的等待和唤醒能力，以解决多线程任务时序控制问题。异步任务通过ConditionVariable对象实现等待和唤醒机制，该对象支持跨线程引用传递。
 
-ArkTS语言支持异步操作，现已增加异步任务的等待和唤醒功能。当异步任务收到唤醒通知或等待超时后，将继续执行。
+ArkTS语言支持异步操作，API18版本开始支持异步任务的等待和唤醒功能。当异步任务收到唤醒通知或等待超时后，将继续执行。
 
 说明
 
-使用异步方法需标记为async，调用时需用await修饰，确保时序正确。
+使用异步方法需标记为async，调用时可用await修饰，确保时序正确。
 
 使用示例
 
@@ -45,7 +45,7 @@ async function waitFor(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
 @Entry
 @Component
 struct Index {
-  @State message: string | ResourceStr = $r('app.string.AsyncButton');
+  @State message: string | ResourceStr = $r('app.string.AsyncButton'); // 加载资源，可根据项目实际资源自定义
 
   build() {
     Row() {
@@ -120,7 +120,7 @@ async function waitFor(conditionVariable: ArkTSUtils.locks.ConditionVariable) {
 @Entry
 @Component
 struct Index {
-  @State message: string | ResourceStr = $r('app.string.AsyncButton');
+  @State message: string | ResourceStr = $r('app.string.AsyncButton'); // 加载资源，可根据项目实际资源自定义
 
   build() {
     Row() {

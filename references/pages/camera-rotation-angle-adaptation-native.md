@@ -14,6 +14,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-ro
 
 录像开发指导：创建会话 > 计算设备旋转角度 > 录像。
 
+在本开发指导中，提供两种方案来获取预览、拍照、录像的旋转角度：
+
+方案一：需要应用通过OH_NativeDisplayManager_GetDefaultDisplayRotation接口获取显示设备的屏幕旋转角度，通过重力传感器来计算设备旋转角度。
+
+方案二：从API版本23开始，支持通过OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation、OH_PhotoOutput_GetPhotoRotationWithoutDeviceDegree、OH_VideoOutput_GetVideoRotationWithoutDeviceDegree接口来获取旋转角度，由系统侧获取显示设备的屏幕旋转角度和计算设备旋转角度。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
 详细的API参考说明，请参考Camera API文档。
 
 创建会话
@@ -34,11 +40,11 @@ void createPhotosession(Camera_Manager *cameraManager) {
     Camera_SceneMode sceneMode = NORMAL_PHOTO;
     Camera_ErrorCode ret = OH_CameraManager_CreateCaptureSession(cameraManager, &captureSession);
     if (captureSession == nullptr || ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "Create captureSession failed.");
+        OH_LOG_ERROR(LOG_APP, "Create captureSession failed.");
     }
     ret = OH_CaptureSession_SetSessionMode(captureSession, sceneMode);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
     }
 }
 
@@ -47,11 +53,11 @@ void createVideosession(Camera_Manager *cameraManager) {
     Camera_SceneMode sceneMode = NORMAL_VIDEO;
     Camera_ErrorCode ret = OH_CameraManager_CreateCaptureSession(cameraManager, &captureSession);
     if (captureSession == nullptr || ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "Create captureSession failed.");
+        OH_LOG_ERROR(LOG_APP, "Create captureSession failed.");
     }
     ret = OH_CaptureSession_SetSessionMode(captureSession, sceneMode);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
     }
 }
 
@@ -59,123 +65,114 @@ void createVideosession(Camera_Manager *cameraManager) {
 
 完成会话创建后，开发者可根据实际需求，配置输出流。
 
-调用preview_output.h中的OH_PreviewOutput_GetPreviewRotation接口，获取预览旋转角度。
+在会话管理过程中获取并设置预览旋转角度，即：使用OH_CaptureSession_CommitConfig接口提交相关配置后调用，建议在OH_CaptureSession_Start起流前调用。
 
-displayRotation：显示设备的屏幕旋转角度，可通过OH_NativeDisplayManager_GetDefaultDisplayRotation获取默认屏幕的顺时针旋转角度，并将对应角度填入。
+通过调用preview_output.h中的OH_PreviewOutput_GetPreviewRotation接口或OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation接口，获取预览旋转角度。
 
-例：OH_NativeDisplayManager_GetDefaultDisplayRotation获取结果为1，表示显示设备屏幕顺时针旋转为90°，此处imageRotation填入90。
+通过调用preview_output.h中的OH_PreviewOutput_SetPreviewRotation，设置预览旋转角度。如果多次调用，以最新调用设置的预览旋转角度为准。
 
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/preview_output.h"
-#include <window_manager/oh_display_info.h>
-#include <window_manager/oh_display_manager.h>
+上述三个接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用，如果存在异步执行的情况，previewOutput未添加到session里或者已调用OH_CaptureSession_Release，导致session与PreviewOutput两者关系未绑定，此时调用接口会调用失败，并抛出错误码CAMERA_SERVICE_FATAL_ERROR。
 
-int32_t GetDefaultDisplayRotation() {
+方案一：
+
+由应用通过OH_NativeDisplayManager_GetDefaultDisplayRotation接口获取displayRotation（显示设备的屏幕旋转角度），并将对应角度填入OH_PreviewOutput_GetPreviewRotation接口。
+
+例如，OH_NativeDisplayManager_GetDefaultDisplayRotation获取结果为1，表示显示设备屏幕顺时针旋转为90°，此处displayRotation填入90。
+
+isDisplayLocked：Surface在屏幕旋转时是否锁定方向。当设置为false，即屏幕方向未锁定，预览旋转角度将根据相机镜头角度和屏幕显示旋转角度的值计算；当设置为true，Surface旋转锁定，不跟随窗口变化，旋转角度仅取相机镜头角度计算。
+
+int32_t NDKCamera::GetDefaultDisplayRotation()
+{
     int32_t imageRotation = 0;
     NativeDisplayManager_Rotation displayRotation = DISPLAY_MANAGER_ROTATION_0;
     int32_t ret = OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation);
     if (ret != DISPLAY_MANAGER_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
     }
     imageRotation = displayRotation * IAMGE_ROTATION_90;
     return imageRotation;
 }
 
-该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用，如果存在异步执行的情况，previewOutput未添加到session里或者已调用OH_CaptureSession_Release，导致两者关系未绑定，此时调用OH_PreviewOutput_GetPreviewRotation，则会调用失败，并抛出错误码CAMERA_SERVICE_FATAL_ERROR。
-
-Camera_ImageRotation GetPreviewRotation(Camera_PreviewOutput* previewOutput, int32_t imageRotation) {
-    Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
-    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput, imageRotation, &previewRotation);
-    if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
-    }
-    return previewRotation;
-}
-
-调用preview_output.h中的OH_PreviewOutput_SetPreviewRotation，设置图像的预览旋转角度。
-
-该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用，如果多次调用，以最新调用设置的图像预览旋转角度为准。
-
-previewRotation：预览旋转角度，取上一步OH_PreviewOutput_GetPreviewRotation的返回值。
-
-isDisplayLocked：Surface在屏幕旋转时是否锁定方向。当设置为false，即屏幕方向未锁定，预览旋转角度将根据相机镜头角度+屏幕显示旋转角度的值计算；当设置为true，Surface旋转锁定，不跟随窗口变化，旋转角度仅取相机镜头角度计算。
-
-void SetPreviewRotation(Camera_PreviewOutput* previewOutput, Camera_ImageRotation previewRotation, bool isDisplayLocked) {
-    Camera_ErrorCode ret = OH_PreviewOutput_SetPreviewRotation(previewOutput, previewRotation, isDisplayLocked);
-    if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
-    }
-}
-
-预览流旋转接口适配场景及示例：
-
-在会话管理过程中调用预览旋转接口，即：使用OH_CaptureSession_CommitConfig接口提交相关配置后调用，建议在OH_CaptureSession_Start起流前调用。
-
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/preview_output.h"
-#include <window_manager/oh_display_info.h>
-#include <window_manager/oh_display_manager.h>
-
-int32_t GetDefaultDisplayRotation() {
-    int32_t imageRotation = 0;
-    NativeDisplayManager_Rotation displayRotation = DISPLAY_MANAGER_ROTATION_0;
-    int32_t ret = OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation);
-    if (ret != DISPLAY_MANAGER_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
-    }
-    imageRotation = displayRotation * IAMGE_ROTATION_90;
-    return imageRotation;
-}
-
-void InitPreviewRotation(Camera_PreviewOutput* previewOutput) {
-    // previewOutput是创建的预览输出
+void NDKCamera::GetAndSetPreviewRotation()
+{
+    // previewOutput_是创建的预览输出
     Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
     int32_t imageRotation = GetDefaultDisplayRotation();
-    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput, imageRotation, &previewRotation);
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput_, imageRotation, &previewRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
     }
-    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput, previewRotation, false);
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
     }
 }
 
-应用使用相机时，通过监听监听屏幕状态变化，感知窗口当前状态，如当前相机窗口发生旋转时，需对预览流进行角度修正。推荐在会话管理中完成调用预览旋转接口后，直接创建监听。
+方案二：
 
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/preview_output.h"
-#include <window_manager/oh_display_info.h>
-#include <window_manager/oh_display_manager.h>
+从API版本23开始，可通过OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation接口，获取预览旋转角度。该方案由系统获取displayRotation，并进行预览旋转角度计算。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
 
-int32_t GetDefaultDisplayRotation() {
-    int32_t imageRotation = 0;
-    NativeDisplayManager_Rotation displayRotation = DISPLAY_MANAGER_ROTATION_0;
-    int32_t ret = OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation);
-    if (ret != DISPLAY_MANAGER_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
+isDisplayLocked：Surface在屏幕旋转时是否锁定方向。当设置为false，即屏幕方向未锁定，预览旋转角度将根据相机镜头角度和屏幕显示旋转角度的值计算；当设置为true，Surface旋转锁定，不跟随窗口变化，旋转角度仅取相机镜头角度计算。
+
+void NDKCamera::GetAndSetPreviewRotationWithoutDisplayRotation()
+{
+    // previewOutput_是创建的预览输出
+    Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation(previewOutput_, &previewRotation);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation failed.");
     }
-    imageRotation = displayRotation * IAMGE_ROTATION_90;
-    return imageRotation;
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+    }
 }
+
+通过监听屏幕状态变化，感知窗口当前状态，如当前相机窗口发生旋转时，需对预览流进行角度修正。推荐在会话管理中完成调用预览旋转接口后，直接创建监听。
+
+方案一：
+
+由应用获取displayRotation（显示设备的屏幕旋转角度）并将对应角度填入OH_PreviewOutput_GetPreviewRotation接口。
 
 // 应用需监听屏幕状态变化，使用如下回调函数对预览流进行角度修正
-void DisplayChangeCallback(uint64_t displayId)
+void NDKCamera::DisplayChangeCallback(uint64_t displayId)
 {
     // previewOutput是创建的预览输出
     OH_LOG_INFO(LOG_APP, "DisplayChangeCallback displayId=%{public}lu.", displayId);
     Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
     int32_t imageRotation = GetDefaultDisplayRotation();
-    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput, imageRotation, &previewRotation);
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput_, imageRotation, &previewRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
     }
-    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput, previewRotation, false);
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+    }
+}
+
+方案二：
+
+从API版本23开始，可通过OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation接口，获取预览旋转角度。该方案由系统获取displayRotation，并进行预览旋转角度计算。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
+// 应用需监听屏幕状态变化，使用如下回调函数对预览流进行角度修正
+void NDKCamera::DisplayChangeCallback(uint64_t displayId)
+{
+    // previewOutput是创建的预览输出
+    OH_LOG_INFO(LOG_APP, "DisplayChangeCallback displayId=%{public}lu.", displayId);
+    Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
+    int32_t imageRotation = GetDefaultDisplayRotation();
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput_, imageRotation, &previewRotation);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+    }
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
     }
 }
 
@@ -183,21 +180,36 @@ void DisplayChangeCallback(uint64_t displayId)
 
 完成会话创建后，开发者可根据实际需求，配置输出流。
 
-调用photo_output.h中的OH_PhotoOutput_GetPhotoRotation可以获取到拍照旋转角度。
+获取拍照旋转角度。
 
-该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用。
+方案一：
+
+调用photo_output.h中的OH_PhotoOutput_GetPhotoRotation可以获取到拍照旋转角度。该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用。
 
 deviceDegree：设备旋转角度。拍照的旋转角度与重力方向（即设备旋转角度）相关，获取方式请见计算设备旋转角度。
 
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/photo_output.h"
-
-Camera_ImageRotation GetPhotoRotation(Camera_PhotoOutput* photoOutput, int32_t deviceDegree) {
+Camera_ImageRotation NDKCamera::GetPhotoRotation(Camera_PhotoOutput* photoOutput, int32_t deviceDegree)
+{
     Camera_ImageRotation photoRotation = IAMGE_ROTATION_0;
     Camera_ErrorCode ret = OH_PhotoOutput_GetPhotoRotation(photoOutput, deviceDegree, &photoRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
+    }
+    return photoRotation;
+}
+
+方案二：
+
+从API版本23开始，可调用photo_output.h中的OH_PhotoOutput_GetPhotoRotationWithoutDeviceDegree可以获取到拍照旋转角度。由系统获取deviceDegree进行拍照旋转角度计算。当重力传感器数据无效，无法计算deviceDegree时，系统将使用最后一次有效的deviceDegree。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
+该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用。
+
+Camera_ImageRotation NDKCamera::GetPhotoRotationWithoutDeviceDegree(Camera_PhotoOutput* photoOutput)
+{
+    Camera_ImageRotation photoRotation = IAMGE_ROTATION_0;
+    Camera_ErrorCode ret = OH_PhotoOutput_GetPhotoRotationWithoutDeviceDegree(photoOutput, &photoRotation);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PhotoOutput_GetPhotoRotationWithoutDeviceDegree failed.");
     }
     return photoRotation;
 }
@@ -210,21 +222,36 @@ Camera_ImageRotation GetPhotoRotation(Camera_PhotoOutput* photoOutput, int32_t d
 
 完成会话创建后，开发者可根据实际需求，配置输出流。
 
-调用video_output.h中的OH_VideoOutput_GetVideoRotation可以获取到录像的旋转角度。
+获取录像旋转角度。
 
-该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用。
+方案一：
+
+调用video_output.h中的OH_VideoOutput_GetVideoRotation可以获取到录像的旋转角度。该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用。
 
 deviceDegree：设备旋转角度。录像的旋转角度与重力方向（即设备旋转角度）相关，获取方式请见计算设备旋转角度。
 
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/video_output.h"
-
-Camera_ImageRotation GetVideoRotation(Camera_VideoOutput* videoOutput, int32_t deviceDegree) {
+Camera_ImageRotation NDKCamera::GetVideoRotation(int32_t deviceDegree)
+{
     Camera_ImageRotation videoRotation = IAMGE_ROTATION_0;
-    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotation(videoOutput, deviceDegree, &videoRotation);
+    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotation(videoOutput_, deviceDegree, &videoRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_VideoOutput_GetVideoRotation failed.");
+    }
+    return videoRotation;
+}
+
+方案二：
+
+从API版本23开始，可调用video_output.h中的OH_VideoOutput_GetVideoRotationWithoutDeviceDegree可以获取到录像的旋转角度。由系统获取deviceDegree进行录像旋转角度计算。当重力传感器数据无效，无法计算deviceDegree时，系统将使用最后一次有效的deviceDegree。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+
+该接口需要在session调用OH_CaptureSession_CommitConfig完成配流后调用。
+
+Camera_ImageRotation NDKCamera::GetVideoRotationWithoutDeviceDegree()
+{
+    Camera_ImageRotation videoRotation = IAMGE_ROTATION_0;
+    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotationWithoutDeviceDegree(videoOutput_, &videoRotation);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_VideoOutput_GetVideoRotationWithoutDeviceDegree failed.");
     }
     return videoRotation;
 }
@@ -233,38 +260,11 @@ Camera_ImageRotation GetVideoRotation(Camera_VideoOutput* videoOutput, int32_t d
 
 其余参数的配置及启动录像，可参考录像开发指导。
 
-录像流旋转接口适配示例代码：
-
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/video_output.h"
-#include <multimedia/player_framework/avrecorder.h>
-#include <multimedia/player_framework/avrecorder_base.h>
-
-void GetVideoRotationAndUpdate(Camera_VideoOutput* videoOutput, int32_t deviceDegree, OH_AVRecorder* recorder, OH_AVRecorder_State state) {
-    Camera_ImageRotation videoRotation = IAMGE_ROTATION_0;
-    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotation(videoOutput, deviceDegree, &videoRotation);
-    if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
-    }
-    if (state == OH_AVRecorder_State::AVRECORDER_PREPARED) {
-        OH_AVErrCode retCode = OH_AVRecorder_UpdateRotation(recorder, videoRotation);
-        if (retCode != AV_ERR_OK) {
-            OH_LOG_INFO(LOG_APP, "OH_AVRecorder_UpdateRotation failed.");
-        }
-    }
-}
-
 计算设备旋转角度
 
 当前可通过监听OH_Sensor_Subscribe获取重力传感器在x、y、z三个方向上的数据，计算得出设备旋转角度deviceDegree，示例如下所示。
 
 如果无法获得重力传感器数据，需要申请重力传感器权限ohos.permission.ACCELEROMETER。权限申请请参考声明权限，如何获取传感器数据请参考传感器开发指导。
-
-#include "hilog/log.h"
-#include <sensors/oh_sensor.h>
-#include <cmath>
-#include <thread>
 
 Sensor_SubscriptionId *id;
 Sensor_Subscriber *subscriber;
@@ -331,29 +331,30 @@ void GetCurGravity()
     Sensor_Type SENSOR_ID{ SENSOR_TYPE_GRAVITY };
     id = OH_Sensor_CreateSubscriptionId(); // 创建一个Sensor_SubscriptionId实例。
     if (id == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "sensor error0");
+        OH_LOG_ERROR(LOG_APP, "OH_Sensor_CreateSubscriptionId error");
     }
     int32_t res = OH_SensorSubscriptionId_SetType(id, SENSOR_ID); // 设置传感器类型为重力。
     if (res != 0) {
-        OH_LOG_ERROR(LOG_APP, "sensor error1");
+        OH_LOG_ERROR(LOG_APP, "OH_SensorSubscriptionId_SetType error");
     }
     attr = OH_Sensor_CreateSubscriptionAttribute(); // 创建Sensor_SubscriptionAttribute实例。
     if (attr == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "sensor error2");
+        OH_LOG_ERROR(LOG_APP, "OH_Sensor_CreateSubscriptionAttribute error");
     }
     int64_t sensorSamplePeriod = 15000000;
     res = OH_SensorSubscriptionAttribute_SetSamplingInterval(attr, sensorSamplePeriod); // 设置传感器数据报告间隔。
     if (res != 0) {
-        OH_LOG_ERROR(LOG_APP, "sensor error3");
+        OH_LOG_ERROR(LOG_APP, "OH_SensorSubscriptionAttribute_SetSamplingInterval error");
     }
     subscriber = OH_Sensor_CreateSubscriber();
     if (subscriber == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "sensor error2");
+        OH_LOG_ERROR(LOG_APP, "OH_Sensor_CreateSubscriber error");
     }
+
     OH_SensorSubscriber_SetCallback(subscriber, SensorDataCallback);
     Sensor_Result sensorRes = OH_Sensor_Subscribe(id, attr, subscriber); // 订阅传感器数据。
     if (sensorRes != SENSOR_SUCCESS) {
-        OH_LOG_INFO(LOG_APP, "sensor error:%{public}d", sensorRes);
+        OH_LOG_INFO(LOG_APP, "OH_Sensor_Subscribe error");
     }
 }
 
@@ -362,7 +363,7 @@ int32_t CalDeviceDegree()
     float deviceDegree = 0.0f;
     GetCurGravity();
     while (!g_isDegreeReady) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(NUM_TEN));
     }
     deviceDegree = g_deviceDegree;
     g_isDegreeReady = false;
@@ -381,15 +382,13 @@ int32_t CalDeviceDegree()
 
 当相机镜头安装角度不可变时，不同折叠状态下的相机出图均为无损出图。
 
+当相机镜头安装角度可变时：
+
 如应用需要实现相机无损出图，由于相机镜头安装角度与相机旋转相关，需要应用完成相机旋转的适配后，通过OH_CameraInput_GetPhysicalCameraOrientation接口获取设备当前折叠状态下真实的相机镜头安装角度，并通过OH_CameraInput_UsePhysicalCameraOrientation接口实现相机无损出图（相机镜头安装角度不可变时使用OH_CameraInput_UsePhysicalCameraOrientation将会返回7400102错误码，未适配相机旋转时使用相机无损出图会导致预览、拍照、录像旋转异常），推荐在OH_CameraManager_CreateCameraInput后直接使用OH_CameraInput_UsePhysicalCameraOrientation接口实现相机无损出图。
 
 示例代码如下：
 
-#include "ohcamera/camera.h"
-#include "ohcamera/camera_input.h"
-#include "hilog/log.h"
-
-Camera_ErrorCode EnablePhysicalCameraOrientation(Camera_Input* cameraInput)
+Camera_ErrorCode NDKCamera::EnablePhysicalCameraOrientation(Camera_Input* cameraInput)
 {
     bool isVariable = false;
     // 查询设备的相机镜头安装角度是否可变
@@ -412,10 +411,11 @@ Camera_ErrorCode EnablePhysicalCameraOrientation(Camera_Input* cameraInput)
     // 选择是否使用真实的相机镜头安装角度, 以实现无损出图
     bool isUsed = true;
     ret = OH_CameraInput_UsePhysicalCameraOrientation(cameraInput, isUsed);
-        if (ret != CAMERA_OK) {
+    if (ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "OH_CameraInput_UsePhysicalCameraOrientation failed.");
         return ret;
     }
+    return ret;
 }
 
 ## Code blocks
@@ -437,11 +437,11 @@ void createPhotosession(Camera_Manager *cameraManager) {
     Camera_SceneMode sceneMode = NORMAL_PHOTO;
     Camera_ErrorCode ret = OH_CameraManager_CreateCaptureSession(cameraManager, &captureSession);
     if (captureSession == nullptr || ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "Create captureSession failed.");
+        OH_LOG_ERROR(LOG_APP, "Create captureSession failed.");
     }
     ret = OH_CaptureSession_SetSessionMode(captureSession, sceneMode);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
     }
 }
 
@@ -450,11 +450,11 @@ void createVideosession(Camera_Manager *cameraManager) {
     Camera_SceneMode sceneMode = NORMAL_VIDEO;
     Camera_ErrorCode ret = OH_CameraManager_CreateCaptureSession(cameraManager, &captureSession);
     if (captureSession == nullptr || ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "Create captureSession failed.");
+        OH_LOG_ERROR(LOG_APP, "Create captureSession failed.");
     }
     ret = OH_CaptureSession_SetSessionMode(captureSession, sceneMode);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_CaptureSession_SetSessionMode failed.");
     }
 }
 ```
@@ -462,44 +462,72 @@ void createVideosession(Camera_Manager *cameraManager) {
 ### Code block 3
 
 ```
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/preview_output.h"
-#include <window_manager/oh_display_info.h>
-#include <window_manager/oh_display_manager.h>
-
-int32_t GetDefaultDisplayRotation() {
+int32_t NDKCamera::GetDefaultDisplayRotation()
+{
     int32_t imageRotation = 0;
     NativeDisplayManager_Rotation displayRotation = DISPLAY_MANAGER_ROTATION_0;
     int32_t ret = OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation);
     if (ret != DISPLAY_MANAGER_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
     }
     imageRotation = displayRotation * IAMGE_ROTATION_90;
     return imageRotation;
+}
+
+void NDKCamera::GetAndSetPreviewRotation()
+{
+    // previewOutput_是创建的预览输出
+    Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
+    int32_t imageRotation = GetDefaultDisplayRotation();
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput_, imageRotation, &previewRotation);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+    }
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+    }
 }
 ```
 
 ### Code block 4
 
 ```
-Camera_ImageRotation GetPreviewRotation(Camera_PreviewOutput* previewOutput, int32_t imageRotation) {
+void NDKCamera::GetAndSetPreviewRotationWithoutDisplayRotation()
+{
+    // previewOutput_是创建的预览输出
     Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
-    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput, imageRotation, &previewRotation);
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation(previewOutput_, &previewRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotationWithoutDisplayRotation failed.");
     }
-    return previewRotation;
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+    }
 }
 ```
 
 ### Code block 5
 
 ```
-void SetPreviewRotation(Camera_PreviewOutput* previewOutput, Camera_ImageRotation previewRotation, bool isDisplayLocked) {
-    Camera_ErrorCode ret = OH_PreviewOutput_SetPreviewRotation(previewOutput, previewRotation, isDisplayLocked);
+// 应用需监听屏幕状态变化，使用如下回调函数对预览流进行角度修正
+void NDKCamera::DisplayChangeCallback(uint64_t displayId)
+{
+    // previewOutput是创建的预览输出
+    OH_LOG_INFO(LOG_APP, "DisplayChangeCallback displayId=%{public}lu.", displayId);
+    Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
+    int32_t imageRotation = GetDefaultDisplayRotation();
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput_, imageRotation, &previewRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+    }
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
+    if (ret != CAMERA_OK) {
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
     }
 }
 ```
@@ -507,34 +535,21 @@ void SetPreviewRotation(Camera_PreviewOutput* previewOutput, Camera_ImageRotatio
 ### Code block 6
 
 ```
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/preview_output.h"
-#include <window_manager/oh_display_info.h>
-#include <window_manager/oh_display_manager.h>
-
-int32_t GetDefaultDisplayRotation() {
-    int32_t imageRotation = 0;
-    NativeDisplayManager_Rotation displayRotation = DISPLAY_MANAGER_ROTATION_0;
-    int32_t ret = OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation);
-    if (ret != DISPLAY_MANAGER_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
-    }
-    imageRotation = displayRotation * IAMGE_ROTATION_90;
-    return imageRotation;
-}
-
-void InitPreviewRotation(Camera_PreviewOutput* previewOutput) {
+// 应用需监听屏幕状态变化，使用如下回调函数对预览流进行角度修正
+void NDKCamera::DisplayChangeCallback(uint64_t displayId)
+{
     // previewOutput是创建的预览输出
+    OH_LOG_INFO(LOG_APP, "DisplayChangeCallback displayId=%{public}lu.", displayId);
     Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
     int32_t imageRotation = GetDefaultDisplayRotation();
-    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput, imageRotation, &previewRotation);
+    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput_, imageRotation, &previewRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
     }
-    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput, previewRotation, false);
+    bool isDisplayLocked = false; // 建议与setXComponentSurfaceRotation入参的lock属性保持一致
+    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput_, previewRotation, isDisplayLocked);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
     }
 }
 ```
@@ -542,53 +557,26 @@ void InitPreviewRotation(Camera_PreviewOutput* previewOutput) {
 ### Code block 7
 
 ```
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/preview_output.h"
-#include <window_manager/oh_display_info.h>
-#include <window_manager/oh_display_manager.h>
-
-int32_t GetDefaultDisplayRotation() {
-    int32_t imageRotation = 0;
-    NativeDisplayManager_Rotation displayRotation = DISPLAY_MANAGER_ROTATION_0;
-    int32_t ret = OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation);
-    if (ret != DISPLAY_MANAGER_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_NativeDisplayManager_GetDefaultDisplayRotation failed.");
-    }
-    imageRotation = displayRotation * IAMGE_ROTATION_90;
-    return imageRotation;
-}
-
-// 应用需监听屏幕状态变化，使用如下回调函数对预览流进行角度修正
-void DisplayChangeCallback(uint64_t displayId)
+Camera_ImageRotation NDKCamera::GetPhotoRotation(Camera_PhotoOutput* photoOutput, int32_t deviceDegree)
 {
-    // previewOutput是创建的预览输出
-    OH_LOG_INFO(LOG_APP, "DisplayChangeCallback displayId=%{public}lu.", displayId);
-    Camera_ImageRotation previewRotation = IAMGE_ROTATION_0;
-    int32_t imageRotation = GetDefaultDisplayRotation();
-    Camera_ErrorCode ret = OH_PreviewOutput_GetPreviewRotation(previewOutput, imageRotation, &previewRotation);
+    Camera_ImageRotation photoRotation = IAMGE_ROTATION_0;
+    Camera_ErrorCode ret = OH_PhotoOutput_GetPhotoRotation(photoOutput, deviceDegree, &photoRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_GetPreviewRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
     }
-    ret = OH_PreviewOutput_SetPreviewRotation(previewOutput, previewRotation, false);
-    if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PreviewOutput_SetPreviewRotation failed.");
-    }
+    return photoRotation;
 }
 ```
 
 ### Code block 8
 
 ```
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/photo_output.h"
-
-Camera_ImageRotation GetPhotoRotation(Camera_PhotoOutput* photoOutput, int32_t deviceDegree) {
+Camera_ImageRotation NDKCamera::GetPhotoRotationWithoutDeviceDegree(Camera_PhotoOutput* photoOutput)
+{
     Camera_ImageRotation photoRotation = IAMGE_ROTATION_0;
-    Camera_ErrorCode ret = OH_PhotoOutput_GetPhotoRotation(photoOutput, deviceDegree, &photoRotation);
+    Camera_ErrorCode ret = OH_PhotoOutput_GetPhotoRotationWithoutDeviceDegree(photoOutput, &photoRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_PhotoOutput_GetPhotoRotationWithoutDeviceDegree failed.");
     }
     return photoRotation;
 }
@@ -597,15 +585,12 @@ Camera_ImageRotation GetPhotoRotation(Camera_PhotoOutput* photoOutput, int32_t d
 ### Code block 9
 
 ```
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/video_output.h"
-
-Camera_ImageRotation GetVideoRotation(Camera_VideoOutput* videoOutput, int32_t deviceDegree) {
+Camera_ImageRotation NDKCamera::GetVideoRotation(int32_t deviceDegree)
+{
     Camera_ImageRotation videoRotation = IAMGE_ROTATION_0;
-    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotation(videoOutput, deviceDegree, &videoRotation);
+    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotation(videoOutput_, deviceDegree, &videoRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_VideoOutput_GetVideoRotation failed.");
     }
     return videoRotation;
 }
@@ -614,35 +599,20 @@ Camera_ImageRotation GetVideoRotation(Camera_VideoOutput* videoOutput, int32_t d
 ### Code block 10
 
 ```
-#include "hilog/log.h"
-#include "ohcamera/camera.h"
-#include "ohcamera/video_output.h"
-#include <multimedia/player_framework/avrecorder.h>
-#include <multimedia/player_framework/avrecorder_base.h>
-
-void GetVideoRotationAndUpdate(Camera_VideoOutput* videoOutput, int32_t deviceDegree, OH_AVRecorder* recorder, OH_AVRecorder_State state) {
+Camera_ImageRotation NDKCamera::GetVideoRotationWithoutDeviceDegree()
+{
     Camera_ImageRotation videoRotation = IAMGE_ROTATION_0;
-    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotation(videoOutput, deviceDegree, &videoRotation);
+    Camera_ErrorCode ret = OH_VideoOutput_GetVideoRotationWithoutDeviceDegree(videoOutput_, &videoRotation);
     if (ret != CAMERA_OK) {
-        OH_LOG_INFO(LOG_APP, "OH_PhotoOutput_GetPhotoRotation failed.");
+        OH_LOG_ERROR(LOG_APP, "OH_VideoOutput_GetVideoRotationWithoutDeviceDegree failed.");
     }
-    if (state == OH_AVRecorder_State::AVRECORDER_PREPARED) {
-        OH_AVErrCode retCode = OH_AVRecorder_UpdateRotation(recorder, videoRotation);
-        if (retCode != AV_ERR_OK) {
-            OH_LOG_INFO(LOG_APP, "OH_AVRecorder_UpdateRotation failed.");
-        }
-    }
+    return videoRotation;
 }
 ```
 
 ### Code block 11
 
 ```
-#include "hilog/log.h"
-#include <sensors/oh_sensor.h>
-#include <cmath>
-#include <thread>
-
 Sensor_SubscriptionId *id;
 Sensor_Subscriber *subscriber;
 Sensor_SubscriptionAttribute *attr;
@@ -708,29 +678,30 @@ void GetCurGravity()
     Sensor_Type SENSOR_ID{ SENSOR_TYPE_GRAVITY };
     id = OH_Sensor_CreateSubscriptionId(); // 创建一个Sensor_SubscriptionId实例。
     if (id == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "sensor error0");
+        OH_LOG_ERROR(LOG_APP, "OH_Sensor_CreateSubscriptionId error");
     }
     int32_t res = OH_SensorSubscriptionId_SetType(id, SENSOR_ID); // 设置传感器类型为重力。
     if (res != 0) {
-        OH_LOG_ERROR(LOG_APP, "sensor error1");
+        OH_LOG_ERROR(LOG_APP, "OH_SensorSubscriptionId_SetType error");
     }
     attr = OH_Sensor_CreateSubscriptionAttribute(); // 创建Sensor_SubscriptionAttribute实例。
     if (attr == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "sensor error2");
+        OH_LOG_ERROR(LOG_APP, "OH_Sensor_CreateSubscriptionAttribute error");
     }
     int64_t sensorSamplePeriod = 15000000;
     res = OH_SensorSubscriptionAttribute_SetSamplingInterval(attr, sensorSamplePeriod); // 设置传感器数据报告间隔。
     if (res != 0) {
-        OH_LOG_ERROR(LOG_APP, "sensor error3");
+        OH_LOG_ERROR(LOG_APP, "OH_SensorSubscriptionAttribute_SetSamplingInterval error");
     }
     subscriber = OH_Sensor_CreateSubscriber();
     if (subscriber == nullptr) {
-        OH_LOG_ERROR(LOG_APP, "sensor error2");
+        OH_LOG_ERROR(LOG_APP, "OH_Sensor_CreateSubscriber error");
     }
+
     OH_SensorSubscriber_SetCallback(subscriber, SensorDataCallback);
     Sensor_Result sensorRes = OH_Sensor_Subscribe(id, attr, subscriber); // 订阅传感器数据。
     if (sensorRes != SENSOR_SUCCESS) {
-        OH_LOG_INFO(LOG_APP, "sensor error:%{public}d", sensorRes);
+        OH_LOG_INFO(LOG_APP, "OH_Sensor_Subscribe error");
     }
 }
 
@@ -739,7 +710,7 @@ int32_t CalDeviceDegree()
     float deviceDegree = 0.0f;
     GetCurGravity();
     while (!g_isDegreeReady) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(NUM_TEN));
     }
     deviceDegree = g_deviceDegree;
     g_isDegreeReady = false;
@@ -750,11 +721,7 @@ int32_t CalDeviceDegree()
 ### Code block 12
 
 ```
-#include "ohcamera/camera.h"
-#include "ohcamera/camera_input.h"
-#include "hilog/log.h"
-
-Camera_ErrorCode EnablePhysicalCameraOrientation(Camera_Input* cameraInput)
+Camera_ErrorCode NDKCamera::EnablePhysicalCameraOrientation(Camera_Input* cameraInput)
 {
     bool isVariable = false;
     // 查询设备的相机镜头安装角度是否可变
@@ -777,9 +744,10 @@ Camera_ErrorCode EnablePhysicalCameraOrientation(Camera_Input* cameraInput)
     // 选择是否使用真实的相机镜头安装角度, 以实现无损出图
     bool isUsed = true;
     ret = OH_CameraInput_UsePhysicalCameraOrientation(cameraInput, isUsed);
-        if (ret != CAMERA_OK) {
+    if (ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "OH_CameraInput_UsePhysicalCameraOrientation failed.");
         return ret;
     }
+    return ret;
 }
 ```

@@ -24,10 +24,10 @@ import { image } from '@kit.ImageKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
+// ...
 @Entry
 @Component
-struct PdfPage {
+struct PdfViewPageImage {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -60,28 +60,34 @@ struct PdfPage {
   }
 
   build() {
-    Column() {
-      // 转换为图片并保存到应用沙箱
-      Button('getPagePixelMap').onClick(async () => {
-        if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-          let pixmap: image.PixelMap = await this.controller.getPagePixelMap(0, true);
-          if (!pixmap) {
-            return
-          }
-          const imgBuffer = await this.pixelMap2Buffer(pixmap)
-          try {
-            const file =
-                fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
-            await fileIo.write(file.fd, imgBuffer);
-            // 关闭文件
-            await fileIo.close(file.fd)
-          } catch (e) {
-            let error: BusinessError = e as BusinessError;
-            hilog.error(0x0000, 'getPagePixelMap-', `Code: ${error.code}, message: ${error.message} `);
-          }
-        }
-      })
+    Stack({ alignContent: Alignment.TopStart }) {
+      Column() {
+       // ...
+        // 转换为图片并保存到应用沙箱
+        Button('getPagePixelMap')
+          .position({ x: 10, y: 60 })
+          .onClick(async () => {
+            if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+              let pixmap: image.PixelMap = await this.controller.getPagePixelMap(0, true);
+              if (!pixmap) {
+                return
+              }
+              const imgBuffer = await this.pixelMap2Buffer(pixmap)
+              try {
+                const file =
+                    fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+                await fileIo.write(file.fd, imgBuffer);
+                // 关闭文件
+                await fileIo.close(file.fd)
+              } catch (e) {
+                let error: BusinessError = e as BusinessError;
+                hilog.error(0x0000, 'getPagePixelMap-', `Code: ${error.code}, message: ${error.message} `);
+              }
+            }
+          })
+      }
     }
+    .width('100%').height('100%')
   }
 }
 
@@ -95,10 +101,10 @@ import { image } from '@kit.ImageKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
+// ...
 @Entry
 @Component
-struct PdfPage {
+struct PdfViewPageImage {
   private controller: pdfViewManager.PdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
   private loadResult: pdfService.ParseResult = pdfService.ParseResult.PARSE_ERROR_FORMAT;
@@ -131,28 +137,34 @@ struct PdfPage {
   }
 
   build() {
-    Column() {
-      // 转换为图片并保存到应用沙箱
-      Button('getPagePixelMap').onClick(async () => {
-        if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
-          let pixmap: image.PixelMap = await this.controller.getPagePixelMap(0, true);
-          if (!pixmap) {
-            return
-          }
-          const imgBuffer = await this.pixelMap2Buffer(pixmap)
-          try {
-            const file =
-                fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
-            await fileIo.write(file.fd, imgBuffer);
-            // 关闭文件
-            await fileIo.close(file.fd)
-          } catch (e) {
-            let error: BusinessError = e as BusinessError;
-            hilog.error(0x0000, 'getPagePixelMap-', `Code: ${error.code}, message: ${error.message} `);
-          }
-        }
-      })
+    Stack({ alignContent: Alignment.TopStart }) {
+      Column() {
+       // ...
+        // 转换为图片并保存到应用沙箱
+        Button('getPagePixelMap')
+          .position({ x: 10, y: 60 })
+          .onClick(async () => {
+            if (this.loadResult === pdfService.ParseResult.PARSE_SUCCESS) {
+              let pixmap: image.PixelMap = await this.controller.getPagePixelMap(0, true);
+              if (!pixmap) {
+                return
+              }
+              const imgBuffer = await this.pixelMap2Buffer(pixmap)
+              try {
+                const file =
+                    fileIo.openSync(this.context.filesDir + `/${Date.now()}.png`, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+                await fileIo.write(file.fd, imgBuffer);
+                // 关闭文件
+                await fileIo.close(file.fd)
+              } catch (e) {
+                let error: BusinessError = e as BusinessError;
+                hilog.error(0x0000, 'getPagePixelMap-', `Code: ${error.code}, message: ${error.message} `);
+              }
+            }
+          })
+      }
     }
+    .width('100%').height('100%')
   }
 }
 ```

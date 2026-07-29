@@ -82,8 +82,7 @@ export struct BuilderCustomMenuExample {
           .selected(this.select)
           .onChange((selected) => {
             hilog.info(0xFF00, 'DialogProject', 'menuItem select' + selected);
-            let str: Tmp = new Tmp();
-            str.set($r('app.media.icon'));
+            this.iconStr2 = $r('app.media.icon');
           })
         // 请将$r('app.string.menu_selection')替换为实际资源文件，在本示例中该资源文件的value值为"菜单选项"
         // 请将$r('app.media.view_list_filled')替换为实际资源文件
@@ -143,7 +142,7 @@ Button('Right-click for Menu')
 
 Button('click for Menu')
   .id('click for Menu')
-  .bindMenu(this.MyMenu, { hapticFeedbackMode: HapticFeedbackMode.ENABLED})
+  .bindMenu(this.MyMenu, { hapticFeedbackMode: HapticFeedbackMode.ENABLED })
 
 菜单支持避让中轴
 
@@ -158,8 +157,8 @@ Button('click for Menu')
 @Entry
 @Component
 export struct SupportAvoidCentralAxisMenuExample {
-  @State message: string = 'Hello World';
-  // 请在resources\base\element\string.json文件中配置name为'xxx'，value为非空字符串的资源
+  // 请在resources\base\element\string.json文件中配置name为'Upper_half_screen'、'Middle_axle'、'Lower_half_screen'、'zone'、
+  // 'hoverMode_start'，value为非空字符串的资源
   @State upScreen: string =
     this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Upper_half_screen') as string;
   @State middleAxle: string =
@@ -187,8 +186,6 @@ export struct SupportAvoidCentralAxisMenuExample {
       MenuItem({ startIcon: this.iconStr, content: $r('app.string.menu_selection') })
     }
   }
-
-  @State isShow: boolean = false;
 
   build() {
     NavDestination() {
@@ -251,15 +248,6 @@ export struct EventTransSubWindowMenuExample {
       .height('100%')
     }
     // ...
-  }
-
-  @Builder
-  bindMenuBuilder() {
-    Menu() {
-      MenuItem({ content: 'bindMenu item' }) {
-
-      }
-    }
   }
 
   @Builder
@@ -402,8 +390,7 @@ export struct BuilderCustomMenuExample {
           .selected(this.select)
           .onChange((selected) => {
             hilog.info(0xFF00, 'DialogProject', 'menuItem select' + selected);
-            let str: Tmp = new Tmp();
-            str.set($r('app.media.icon'));
+            this.iconStr2 = $r('app.media.icon');
           })
         // 请将$r('app.string.menu_selection')替换为实际资源文件，在本示例中该资源文件的value值为"菜单选项"
         // 请将$r('app.media.view_list_filled')替换为实际资源文件
@@ -461,7 +448,7 @@ Button('Right-click for Menu')
 ```
 Button('click for Menu')
   .id('click for Menu')
-  .bindMenu(this.MyMenu, { hapticFeedbackMode: HapticFeedbackMode.ENABLED})
+  .bindMenu(this.MyMenu, { hapticFeedbackMode: HapticFeedbackMode.ENABLED })
 ```
 
 ### Code block 7
@@ -470,8 +457,8 @@ Button('click for Menu')
 @Entry
 @Component
 export struct SupportAvoidCentralAxisMenuExample {
-  @State message: string = 'Hello World';
-  // 请在resources\base\element\string.json文件中配置name为'xxx'，value为非空字符串的资源
+  // 请在resources\base\element\string.json文件中配置name为'Upper_half_screen'、'Middle_axle'、'Lower_half_screen'、'zone'、
+  // 'hoverMode_start'，value为非空字符串的资源
   @State upScreen: string =
     this.getUIContext().getHostContext()?.resourceManager.getStringByNameSync('Upper_half_screen') as string;
   @State middleAxle: string =
@@ -499,8 +486,6 @@ export struct SupportAvoidCentralAxisMenuExample {
       MenuItem({ startIcon: this.iconStr, content: $r('app.string.menu_selection') })
     }
   }
-
-  @State isShow: boolean = false;
 
   build() {
     NavDestination() {
@@ -563,15 +548,6 @@ export struct EventTransSubWindowMenuExample {
       .height('100%')
     }
     // ...
-  }
-
-  @Builder
-  bindMenuBuilder() {
-    Menu() {
-      MenuItem({ content: 'bindMenu item' }) {
-
-      }
-    }
   }
 
   @Builder

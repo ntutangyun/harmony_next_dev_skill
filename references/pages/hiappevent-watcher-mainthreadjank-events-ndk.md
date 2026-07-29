@@ -18,7 +18,7 @@ int OH_HiAppEvent_RemoveWatcher(HiAppEvent_Watcher *watcher)	移除应用事件�
 
 获取该示例工程依赖的jsoncpp文件，从三方开源库jsoncpp代码仓下载源码的压缩包，并按照README的Amalgamated source中介绍的操作步骤得到jsoncpp.cpp、json.h和json-forwards.h三个文件。
 
-新建Native C++工程，并将上述文件导入到新建工程内，目录结构如下。
+在DevEco Studio中，新建Native C++工程，并将上述文件导入到新建工程内，目录结构如下。
 
 entry:
   src:
@@ -39,14 +39,14 @@ entry:
         pages:
           - Index.ets
 
-编辑“CMakeLists.txt”文件，添加源文件及动态库。
+编辑工程中的“entry > src > main > cpp > CMakeLists.txt”文件，添加源文件及动态库。
 
-# 新增jsoncpp.cpp(解析订阅事件中的json字符串)源文件
+# 新增jsoncpp.cpp（解析订阅事件中的json字符串）源文件
 add_library(entry SHARED napi_init.cpp jsoncpp.cpp)
-# 新增动态库依赖libhiappevent_ndk.z.so和libhilog_ndk.z.so(日志输出)
+# 新增动态库依赖libhiappevent_ndk.z.so和libhilog_ndk.z.so（日志输出）
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libhiappevent_ndk.z.so)
 
-编辑“napi_init.cpp”文件，导入依赖的文件，并定义LOG_TAG。
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，导入依赖的文件，并定义LOG_TAG。
 
 #include "napi/native_api.h"
 #include "json/json.h"
@@ -60,7 +60,7 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libhiappev
 
 onReceive类型观察者
 
-编辑“napi_init.cpp”文件，定义onReceive类型观察者相关方法：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，定义onReceive类型观察者相关方法：
 
 // 定义一个变量，用来缓存创建的观察者的指针。
 static HiAppEvent_Watcher *systemEventWatcher;
@@ -124,7 +124,7 @@ static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
 
 将RegisterWatcher注册为ArkTS接口。
 
-编辑“napi_init.cpp”文件，将RegisterWatcher注册为ArkTS接口：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，将RegisterWatcher注册为ArkTS接口：
 
 static napi_value Init(napi_env env, napi_value exports)
 {
@@ -135,20 +135,20 @@ static napi_value Init(napi_env env, napi_value exports)
     return exports;
 }
 
-编辑“index.d.ts”文件，定义ArkTS接口：
+编辑工程中的“entry > src > main > cpp > types > libentry > Index.ets”文件，定义ArkTS接口：
 
 export const registerWatcher: () => void;
 
 编辑工程中的“entry > src > main > ets > entryability> EntryAbility.ets”文件，在onCreate()函数中新增接口调用。
 
-// 导入依赖模块
+// 导入依赖模块。
 import testNapi from 'libentry.so';
 
-// 在onCreate()函数中新增接口调用
-// 启动时，注册系统事件观察者
+// 在onCreate()函数中新增接口调用。
+// 启动时，注册系统事件观察者。
 testNapi.registerWatcher();
 
-编辑工程中的“entry > src > main > ets > pages> Index.ets”文件，添加一个Button按钮，并在其onClick函数中模拟触发主线程超时场景，示例代码如下：
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，添加一个Button按钮，并在其onClick函数中模拟触发主线程超时场景，示例代码如下：
 
    Button("timeOut350")
    .fontSize(50)
@@ -186,7 +186,7 @@ testNapi.registerWatcher();
 移除事件观察者：
 
 static napi_value RemoveWatcher(napi_env env, napi_callback_info info) {
-    // 使观察者停止监听事件
+    // 使观察者停止监听事件。
     OH_HiAppEvent_RemoveWatcher(systemEventWatcher);
     return {};
 }
@@ -228,9 +228,9 @@ entry:
 ### Code block 2
 
 ```
-# 新增jsoncpp.cpp(解析订阅事件中的json字符串)源文件
+# 新增jsoncpp.cpp（解析订阅事件中的json字符串）源文件
 add_library(entry SHARED napi_init.cpp jsoncpp.cpp)
-# 新增动态库依赖libhiappevent_ndk.z.so和libhilog_ndk.z.so(日志输出)
+# 新增动态库依赖libhiappevent_ndk.z.so和libhilog_ndk.z.so（日志输出）
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libhiappevent_ndk.z.so)
 ```
 
@@ -332,11 +332,11 @@ export const registerWatcher: () => void;
 ### Code block 7
 
 ```
-// 导入依赖模块
+// 导入依赖模块。
 import testNapi from 'libentry.so';
 
-// 在onCreate()函数中新增接口调用
-// 启动时，注册系统事件观察者
+// 在onCreate()函数中新增接口调用。
+// 启动时，注册系统事件观察者。
 testNapi.registerWatcher();
 ```
 
@@ -373,7 +373,7 @@ testNapi.registerWatcher();
 
 ```
 static napi_value RemoveWatcher(napi_env env, napi_callback_info info) {
-    // 使观察者停止监听事件
+    // 使观察者停止监听事件。
     OH_HiAppEvent_RemoveWatcher(systemEventWatcher);
     return {};
 }

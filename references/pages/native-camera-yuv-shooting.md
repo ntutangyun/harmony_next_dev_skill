@@ -227,36 +227,6 @@ void OnPhotoAssetAvailable(Camera_PhotoOutput* photoOutput, OH_MediaAsset* media
     if (displayName == nullptr || result != MEDIA_LIBRARY_OK) {
         OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get displayName.");
     }
-    // 尝试获取mediaAsset中的size信息。
-    uint32_t mediaAssetSize = 0;
-    result = OH_MediaAsset_GetSize(mediaAsset, &mediaAssetSize);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get size.");
-    }
-    // 尝试获取mediaAsset中的修改时间信息。
-    uint32_t modifiedMs = 0;
-    result = OH_MediaAsset_GetDateModifiedMs(mediaAsset, &modifiedMs);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get modifiedMs.");
-    }
-    // 尝试获取mediaAsset中的图片宽度信息。
-    uint32_t width = 0;
-    result = OH_MediaAsset_GetWidth(mediaAsset, &width);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get width.");
-    }
-    // 尝试获取mediaAsset中的图片高度信息。
-    uint32_t height = 0;
-    result = OH_MediaAsset_GetHeight(mediaAsset, &height);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get height.");
-    }
-    // 尝试获取mediaAsset中的图片方向信息。
-    uint32_t orientation = 0;
-    result = OH_MediaAsset_GetOrientation(mediaAsset, &orientation);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get orientation.");
-    }
     // 创建媒体资产管理对象。
     OH_MediaAssetManager* mediaAssetManager = OH_MediaAssetManager_Create();
     if (mediaAssetManager == nullptr) {
@@ -585,36 +555,6 @@ void OnPhotoAssetAvailable(Camera_PhotoOutput* photoOutput, OH_MediaAsset* media
     result = OH_MediaAsset_GetDisplayName(mediaAsset, &displayName);
     if (displayName == nullptr || result != MEDIA_LIBRARY_OK) {
         OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get displayName.");
-    }
-    // 尝试获取mediaAsset中的size信息。
-    uint32_t mediaAssetSize = 0;
-    result = OH_MediaAsset_GetSize(mediaAsset, &mediaAssetSize);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get size.");
-    }
-    // 尝试获取mediaAsset中的修改时间信息。
-    uint32_t modifiedMs = 0;
-    result = OH_MediaAsset_GetDateModifiedMs(mediaAsset, &modifiedMs);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get modifiedMs.");
-    }
-    // 尝试获取mediaAsset中的图片宽度信息。
-    uint32_t width = 0;
-    result = OH_MediaAsset_GetWidth(mediaAsset, &width);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get width.");
-    }
-    // 尝试获取mediaAsset中的图片高度信息。
-    uint32_t height = 0;
-    result = OH_MediaAsset_GetHeight(mediaAsset, &height);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get height.");
-    }
-    // 尝试获取mediaAsset中的图片方向信息。
-    uint32_t orientation = 0;
-    result = OH_MediaAsset_GetOrientation(mediaAsset, &orientation);
-    if (result != MEDIA_LIBRARY_OK) {
-        OH_LOG_ERROR(LOG_APP, "OnPhotoAssetAvailable failed to get orientation.");
     }
     // 创建媒体资产管理对象。
     OH_MediaAssetManager* mediaAssetManager = OH_MediaAssetManager_Create();

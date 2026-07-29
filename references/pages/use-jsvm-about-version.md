@@ -22,9 +22,6 @@ JSVM-API接口开发流程参考使用JSVM-API实现JS与C/C++语言交互开发
 
 cpp部分代码
 
-// hello.cpp
-#include <string.h>
-
 // OH_JSVM_GetVersion的样例方法
 static JSVM_Value GetVersion(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -38,7 +35,8 @@ static JSVM_Value GetVersion(JSVM_Env env, JSVM_CallbackInfo info)
 
 // OH_JSVM_GetVMInfo的样例方法
 // 打印JSVM（JavaScript虚拟机）的各项信息
-void PrintVmInfo(JSVM_VMInfo vmInfo) {
+void PrintVmInfo(JSVM_VMInfo vmInfo)
+{
     OH_LOG_INFO(LOG_APP, "JSVM API apiVersion: %{public}d", vmInfo.apiVersion);
     OH_LOG_INFO(LOG_APP, "JSVM API engine: %{public}s", vmInfo.engine);
     OH_LOG_INFO(LOG_APP, "JSVM API version: %{public}s", vmInfo.version);
@@ -55,20 +53,20 @@ static JSVM_Value GetVMInfo(JSVM_Env env, JSVM_CallbackInfo info)
     return nullptr;
 }
 
-// 待执行的js代码
-static const char *srcCallNative = R"JS(getVersion();getVMInfo();)JS";
-
-// GetVersion, GetVMInfo注册回调
+// GetVersion和GetVMInfo注册回调
 static JSVM_CallbackStruct param[] = {
     {.data = nullptr, .callback = GetVersion},
     {.data = nullptr, .callback = GetVMInfo},
 };
 static JSVM_CallbackStruct *method = param;
-// GetVersion, GetVMInfo方法别名，供JS调用
+// GetVersion和GetVMInfo方法别名，供JS调用
 static JSVM_PropertyDescriptor descriptor[] = {
-    {"getVersion", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
-    {"getVMInfo", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"getVersion", nullptr, method, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"getVMInfo", nullptr, method + 1, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+// 样例测试js
+static const char *STR_TASK = R"JS(getVersion();getVMInfo();)JS";
 
 预期结果：
 
@@ -83,9 +81,6 @@ JSVM API cachedDataVersionTag: 0x81ff9402
 ### Code block 1
 
 ```
-// hello.cpp
-#include <string.h>
-
 // OH_JSVM_GetVersion的样例方法
 static JSVM_Value GetVersion(JSVM_Env env, JSVM_CallbackInfo info)
 {
@@ -99,7 +94,8 @@ static JSVM_Value GetVersion(JSVM_Env env, JSVM_CallbackInfo info)
 
 // OH_JSVM_GetVMInfo的样例方法
 // 打印JSVM（JavaScript虚拟机）的各项信息
-void PrintVmInfo(JSVM_VMInfo vmInfo) {
+void PrintVmInfo(JSVM_VMInfo vmInfo)
+{
     OH_LOG_INFO(LOG_APP, "JSVM API apiVersion: %{public}d", vmInfo.apiVersion);
     OH_LOG_INFO(LOG_APP, "JSVM API engine: %{public}s", vmInfo.engine);
     OH_LOG_INFO(LOG_APP, "JSVM API version: %{public}s", vmInfo.version);
@@ -116,20 +112,20 @@ static JSVM_Value GetVMInfo(JSVM_Env env, JSVM_CallbackInfo info)
     return nullptr;
 }
 
-// 待执行的js代码
-static const char *srcCallNative = R"JS(getVersion();getVMInfo();)JS";
-
-// GetVersion, GetVMInfo注册回调
+// GetVersion和GetVMInfo注册回调
 static JSVM_CallbackStruct param[] = {
     {.data = nullptr, .callback = GetVersion},
     {.data = nullptr, .callback = GetVMInfo},
 };
 static JSVM_CallbackStruct *method = param;
-// GetVersion, GetVMInfo方法别名，供JS调用
+// GetVersion和GetVMInfo方法别名，供JS调用
 static JSVM_PropertyDescriptor descriptor[] = {
-    {"getVersion", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
-    {"getVMInfo", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"getVersion", nullptr, method, nullptr, nullptr, nullptr, JSVM_DEFAULT},
+    {"getVMInfo", nullptr, method + 1, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+// 样例测试js
+static const char *STR_TASK = R"JS(getVersion();getVMInfo();)JS";
 ```
 
 ### Code block 2

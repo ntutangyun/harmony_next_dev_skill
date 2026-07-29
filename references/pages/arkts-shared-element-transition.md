@@ -1337,7 +1337,7 @@ export const getMyNode = (): MyNodeController | undefined => {
 │     └──WindowUtils.ets              // 窗口信息
 └──entry/src/main/resources           // 资源文件
 
-// index.ets
+// Index.ets
 import { MyNodeController, createMyNode, getMyNode } from '../NodeContainer/CustomComponent';
 import { ComponentAttrUtils, RectInfoInPx } from '../utils/ComponentAttrUtils';
 import { WindowUtils } from '../utils/WindowUtils';
@@ -1405,8 +1405,8 @@ struct Index {
           this.clipHeight = this.targetInfo.clipHeight;
           // 修正因半模态高度和缩放导致的高度差
           this.translateY = this.targetInfo.translateY +
-            (this.getUIContext().px2vp(WindowUtils.windowHeight_px) - this.bindSheetHeight
-              - this.getUIContext().px2vp(WindowUtils.navigationIndicatorHeight_px) - this.getUIContext().px2vp(WindowUtils.topAvoidAreaHeight_px));
+            (this.getUIContext().px2vp(WindowUtils.windowHeightPx) - this.bindSheetHeight
+              - this.getUIContext().px2vp(WindowUtils.navigationIndicatorHeightPx) - this.getUIContext().px2vp(WindowUtils.topAvoidAreaHeightPx));
           // 修正因缩放导致的圆角差异
           this.radius = this.sheetRadius / this.scaleValue
         })
@@ -1428,8 +1428,8 @@ struct Index {
     let itemInfo: RectInfoInPx =
       ComponentAttrUtils.getRectInfoById(WindowUtils.window.getUIContext(), id);
     // 首先计算图片的宽高与窗口宽高的比例
-    let widthScaleRatio = itemInfo.width / WindowUtils.windowWidth_px;
-    let heightScaleRatio = itemInfo.height / WindowUtils.windowHeight_px;
+    let widthScaleRatio = itemInfo.width / WindowUtils.windowWidthPx;
+    let heightScaleRatio = itemInfo.height / WindowUtils.windowHeightPx;
     let isUseWidthScale = widthScaleRatio > heightScaleRatio;
     let itemScale: number = isUseWidthScale ? widthScaleRatio : heightScaleRatio;
     let itemTranslateX: number = 0;
@@ -1438,15 +1438,15 @@ struct Index {
     let itemTranslateY: number = 0;
 
     if (isUseWidthScale) {
-      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidth_px - itemInfo.width) / 2);
+      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidthPx - itemInfo.width) / 2);
       itemClipWidth = '100%';
       itemClipHeight = this.getUIContext().px2vp((itemInfo.height) / itemScale);
       itemTranslateY = this.getUIContext().px2vp(itemInfo.top - ((this.getUIContext().vp2px(itemClipHeight) - this.getUIContext().vp2px(itemClipHeight) * itemScale) / 2));
     } else {
-      itemTranslateY = this.getUIContext().px2vp(itemInfo.top - (WindowUtils.windowHeight_px - itemInfo.height) / 2);
+      itemTranslateY = this.getUIContext().px2vp(itemInfo.top - (WindowUtils.windowHeightPx - itemInfo.height) / 2);
       itemClipHeight = '100%';
       itemClipWidth = this.getUIContext().px2vp((itemInfo.width) / itemScale);
-      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidth_px / 2 - itemInfo.width / 2));
+      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidthPx / 2 - itemInfo.width / 2));
     }
 
     return {
@@ -2093,9 +2093,777 @@ export default struct Post {
 
 效果为点击主页的头像后，弹出模态页面显示个人信息，并且两个页面之间的头像做一镜到底动效：
 
-示例代码
+元素转场案例
 
-转场动效合集
+[h2]图片展开一镜到底
+
+双指放大转场
+
+图片使用双指放大转场显示图片详情页。
+
+通过NodeContainer组件实现跨节点迁移，通过手势捏合来控制节点的上下树，达成一镜到底动效。
+
+小图模式和大图模式分别为两个页面，通过监听expand值来进行页面切换。
+
+@StorageProp('expand') @Watch('goToPageTwo') num1: number = 0;
+// ...
+
+aboutToAppear(): void {
+  if (!getMyNode()) {
+    createMyNode(this.getUIContext(), false);
+  }
+  this.imageGalleryNodeController = getMyNode();
+}
+
+创建NodeContainer节点类。
+
+export class ImageGalleryNodeController extends NodeController {
+  private rootNode: BuilderNode<[Params]> | null = null;
+  private wrapBuilder: WrappedBuilder<[Params]> = wrapBuilder(ImageGalleryBuilder);
+  private isExpand: boolean = false;
+
+  constructor(isExpand: boolean) {
+    super();
+    this.isExpand = isExpand;
+  }
+
+  makeNode(uiContext: UIContext): FrameNode | null {
+    if (this.rootNode === null) {
+      this.rootNode = new BuilderNode(uiContext);
+      this.rootNode.build(this.wrapBuilder, { isExpand: this.isExpand });
+    }
+    return this.rootNode.getFrameNode();
+  }
+
+  init(uiContext: UIContext) {
+    this.rootNode = new BuilderNode(uiContext);
+    this.rootNode.build(this.wrapBuilder, { isExpand: this.isExpand });
+  }
+
+  update(isExpand: boolean) {
+    if (this.rootNode !== null) {
+      this.rootNode.update({ isExpand });
+    }
+  }
+}
+
+在小图界面当对图片进行双指捏合操作时，改变isExpand值。
+
+PinchGesture()
+  .onActionStart((event: GestureEvent) => {
+    this.offsetY = getTranslateToFullScreen(this.getUIContext(), 'swiper')?.offsetY || 0
+    this.imageHeight = this.getUIContext().vp2px(Number(event.target.area.height))
+    this.imageWidth = this.getUIContext().vp2px(Number(event.target.area.width))
+    this.status = Status.PINCHING;
+    this.updateCenter([this.getUIContext().vp2px(event.pinchCenterX),
+      this.getUIContext().vp2px(event.pinchCenterY)])
+    this.updateTranslateAccordingToCenter();
+    this.startGestureScale = this.imageScale;
+    this.gestureCount++;
+  })
+  .onActionUpdate((event: GestureEvent) => {
+    this.imageScale = this.startGestureScale * event.scale;
+    if (!this.isExpand && this.imageScale >= 1) {
+      this.onExpand();
+    }
+    this.updateExtremeOffset();
+  })
+
+当expand值更改时，页面进行切换到大图页面，完成一镜到底页面切换。
+
+NavDestination() {
+  NodeContainer(this.imageGalleryNodeController)
+}
+.mode(NavDestinationMode.DIALOG)
+.height('100%')
+.width('100%')
+.hideTitleBar(true)
+.onReady((context: NavDestinationContext) => {
+  this.pageInfo = context.pathStack;
+  const param = context.pathInfo?.param as Record<string, Object>;
+  this.onBack = param['onBack'] as () => void;
+})
+.onBackPressed(() => {
+  AppStorage.setOrCreate('reset', new Date());
+  this.getUIContext().animateTo({ duration: 300, curve: Curve.EaseIn }, () => {
+    this.backToPageOne();
+  })
+  return true;
+})
+
+查看大图转场
+
+比如图片在九宫格中显示，点击查看大图，同时还支持手势下拉返回到九宫格。
+
+设置geometryTransition属性将图片首页和大图页面的图片绑定同一id值，结合属性动画效果实现一镜到底效果。核心代码如下：
+
+首页通过网格布局实现三行三列图片布局，并给每个图片设置geometryTransition属性，绑定唯一id值，绑定共享的两个图片组件。
+
+NavDestination() {
+  Column() {
+    Grid(this.scroller) {
+      ForEach(this.data, (item: number) => {
+        GridItem() {
+          if (this.clickedIndex !== item || (this.isFirstPageShow)) {
+            Image($r(`app.media.img_${item % 9}`))
+              .width('100%')
+              .height('100%')
+              .objectFit(ImageFit.Cover)
+              .id('item2_' + item)
+              .onClick(() => {
+                this.onItemClick(item);
+              })
+              .geometryTransition(this.clickedIndex === item ? 'app.media.img_' + item.toString() : '')
+              .transition(TransitionEffect.opacity(0.99))
+          }
+        }
+        .width(this.getUIContext().px2vp(381))
+        .height(this.getUIContext().px2vp(381))
+      }, (item: number) => item + '')
+    }
+    .rowsTemplate('1fr 1fr 1fr')
+    .columnsTemplate('1fr 1fr 1fr')
+    .columnsGap(2)
+    .rowsGap(2)
+    .size({
+      width: this.getUIContext().px2vp(1169),
+      height: this.getUIContext().px2vp(1169)
+    })
+    .margin({ top: 16 })
+  }
+}
+.title('View larger picture')
+.height('100%')
+.width('100%')
+.onReady((context: NavDestinationContext) => {
+  this.pageInfo = context.pathStack;
+})
+
+通过属性动画来进行小图和大图页面的切换，同时为了避免触发Navigation的转场动画，在pushPath()的时候把动画选项设置成了false。
+
+onItemClick(index: number): void {
+  let param: Record<string, Object> = {};
+  this.needFollow = false;
+  this.clickedIndex = index;
+  param['selectedIndex'] = this.clickedIndex;
+  param['onIndexChange'] = (index: number) => {
+    this.onIndexChange(index);
+  };
+  param['onBackToFirstPage'] = () => {
+    this.onBack();
+  }
+
+  this.getUIContext().animateTo({
+    duration: 250,
+    curve: Curve.EaseIn,
+  }, () => {
+    this.pageInfo.pushPath({ name: 'ShowLargeImageWithGesturePageTwo', param: param }, false);
+    this.isFirstPageShow = false;
+  })
+}
+
+半模态转场
+
+图片从页面向半模态弹窗中转场显示。
+
+利用NodeContainer组件实现跨节点迁移，将半模态SheetOptions()中的mode设置为SheetMode.EMBEDDED，该模式下新起的页面可以覆盖在半模态弹窗上，页面返回后该半模态依旧存在，半模态面板内容不丢失。通过属性动画，展示组件从初始界面至半模态页面的一镜到底动效，并在动画结束时关闭页面，并将该组件迁移至半模态页面。
+
+创建NodeContainer节点类。
+
+export class MyNodeController extends NodeController {
+  // ...
+}
+
+首页图片绑定半模态弹窗，并通过bindContentCover设置模态转场动画。
+
+NavDestination() {
+  Column() {
+    Image($r('app.media.flower'))
+      .opacity(this.opacityDegree)
+      .width('90%')
+      .id('origin')
+      .enabled(this.isEnabled)
+      .onClick(() => {
+        this.originInfo = this.calculateData('origin');
+        this.scaleValue = this.originInfo.scale;
+        this.translateX = this.originInfo.translateX;
+        this.translateY = this.originInfo.translateY;
+        this.clipWidth = this.originInfo.clipWidth;
+        this.clipHeight = this.originInfo.clipHeight;
+        this.radius = 0;
+        this.opacityDegree = 0;
+        this.isShowSheet = true;
+        this.isShowOverlay = true;
+        this.isEnabled = false;
+      })
+  }
+  .width('100%')
+  .height('100%')
+  .padding({ top: 16 })
+  .alignItems(HorizontalAlign.Center)
+  .bindSheet(this.isShowSheet, this.mySheet(), {
+    mode: SheetMode.EMBEDDED,
+    height: this.bindSheetHeight,
+    onDisappear: () => {
+      this.isShowImage = false;
+      this.isShowSheet = false;
+      this.isAnimating = false;
+      this.isEnabled = true;
+    }
+  })
+  .bindContentCover(this.isShowOverlay, this.overlayNode(), {
+    transition: TransitionEffect.IDENTITY
+  })
+}
+.backgroundColor('#F1F3F5')
+.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+.title('half mode')
+
+点击首页图片后将图片节点迁移至半模态，当半模态完成布局之后，触发onLayoutComplete()函数，获取到图片初始位置和半模态位置，通过自定义显示动画完成一镜到底的效果。
+
+aboutToAppear(): void {
+  let onLayoutComplete: () => void = (): void => {
+    this.targetInfo = this.calculateData('target');
+    if (this.targetInfo.scale !== 0 && this.targetInfo.clipWidth !== 0 && this.targetInfo.clipHeight !== 0 &&
+      !this.isAnimating) {
+      this.isAnimating = true;
+      this.getUIContext().animateTo({
+        duration: 1000,
+        curve: Curve.Friction,
+        onFinish: () => {
+          this.isShowOverlay = false;
+          this.isShowImage = true;
+        }
+      }, () => {
+        this.scaleValue = AppStorage.get('currentBreakpoint') === 'md' ? 0.382 : this.targetInfo.scale;
+        this.translateX = AppStorage.get('currentBreakpoint') === 'md' ? 93.5 : this.targetInfo.translateX;
+        this.clipWidth = AppStorage.get('currentBreakpoint') === 'md' ? 525 : this.targetInfo.clipWidth;
+        this.clipHeight = AppStorage.get('currentBreakpoint') === 'md' ? 785 : this.targetInfo.clipHeight;
+        this.translateY = this.targetInfo.translateY +
+          (this.getUIContext().px2vp(WindowUtils.windowHeight_px) - this.bindSheetHeight -
+          this.getUIContext().px2vp(WindowUtils.navigationIndicatorHeight_px) -
+          this.getUIContext().px2vp(WindowUtils.topAvoidAreaHeight_px)) -
+          (AppStorage.get('currentBreakpoint') === 'md' ? 134.3 : 0);
+        this.radius = this.sheetRadius / this.scaleValue;
+      })
+      this.getUIContext().animateTo({
+        duration: 2000,
+        curve: Curve.Friction,
+      }, () => {
+        this.opacityDegree = 1;
+      })
+    }
+  };
+  this.listener.on('layout', onLayoutComplete);
+}
+
+[h2]图标（搜索框、头像等）展开一镜到底
+
+搜索框点击后，转场到搜索结果页面。
+
+将搜索框首页与搜索框页面的Search组件同时设置geometryTransition属性，并绑定同一id值。设置显式动画和transition属性的转场效果，实现搜索框的一镜到底效果。
+
+搜索框首页在Search组件添加geometryTransition属性，并绑定id值，禁用掉Navigation本身转场的动画。
+
+private showSearchPage(): void {
+  this.transitionEffect = TransitionEffect.OPACITY;
+  this.getUIContext().animateTo({
+    curve: curves.interpolatingSpring(0, 1, 342, 38)
+  }, () => {
+    this.pageInfos.pushPath({ name: 'SearchLongTakeTransitionPageTwo' }, false);
+  })
+}
+
+搜索页面中的Search组件添加geometryTransition()，并添加与搜索框首页中的同一id值。
+
+Search({ placeholder: 'Search' })
+  .height(40)
+  .placeholderColor($r('sys.color.mask_secondary'))
+  .width('100%')
+  .geometryTransition('SEARCH_ONE_SHOT_DEMO_TRANSITION_ID', { follow: true })
+  .backgroundColor('#0D000000')
+  .defaultFocus(false)
+  .focusOnTouch(false)
+  .focusable(false)
+
+容器转场案例
+
+[h2]卡片、列表展开一镜到底
+
+在瀑布流或列表流布局中，当用户点击其中一个卡片或列表项时，应用将执行平滑的转场动画，引导用户从概览页面切换到详情页面。
+
+使用WaterFlow()和LazyForEach()实现卡片列表瀑布流。利用Navigation的自定义导航转场动画能力，通过customNavContentTransition()配置列表页与详情页的自定义导航转场动画，结合componentSnapshot()将卡片进行截图避免跳转页面白屏。
+
+卡片列表页使用WaterFlow和LazyForEach实现页面布局。
+
+private onColumnClicked(indexValue: string): void {
+  let param: Record<string, Object> = {};
+  let clickedIndex = parseInt(indexValue);
+  param['indexValue'] = clickedIndex;
+  this.clickedIndex = clickedIndex;
+  this.getUIContext()
+    .getComponentSnapshot()
+    .get('FlowItem_' + indexValue, (error: BusinessError, pixelMap: image.PixelMap) => {
+      if (error) {
+        hilog.error(0x0000, 'CardLongTakePageOne',
+          `componentSnapshot.get error, reason: Code is ${error.code}, message is ${error.message}`);
+        this.pageInfos.pushPath({ name: 'CardLongTakeTransitionPageTwo', param: param });
+        return;
+      } else {
+        hilog.info(0x0000, 'CardLongTakePageOne', 'componentSnapshot.get success!');
+        param['clickedComponentId'] = CardUtil.getFlowItemIdByIndex(indexValue);
+        param['doDefaultTransition'] = () => {
+          this.doFinishTransition();
+        };
+        SnapShotImage.pixelMap = pixelMap;
+        this.pageInfos.pushPath({ name: 'CardLongTakeTransitionPageTwo', param: param });
+        this.dataSource.getData(this.clickedIndex).isVisible = Visibility.Hidden;
+      }
+    })
+}
+
+卡片详情页通过Navigation自定义动画实现一镜到底。这里套了两层Stack()，因为要放截图，以及把原来的详情页内容转移过来。缩放、translate属性设置在Stack()这层上实现边界动画，透明度属性设置在截图上实现内容过渡。在onReady()里面注册自定义动画，通过id对动画属性进行初始化。
+
+tryRegisterCustomTransition(clickedCardId: string): void {
+  try {
+    this.longTakeAnimationProperties.init(clickedCardId, this.prePageDoFinishTransition);
+    CustomTransition.getInstance().registerNavParam(this.pageId, 2000,
+      (transitionProxy: NavigationTransitionProxy) => {
+        this.longTakeAnimationProperties.doAnimation(transitionProxy);
+      });
+    hilog.info(0x0000, 'CardLongTakePageTwo', 'register successes');
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'CardLongTakePageTwo', `this is error:code=${err.code}, message=${err.message}`);
+    this.longTakeAnimationProperties.setFinalStatus();
+  }
+}
+
+// ...
+
+build() {
+  NavDestination() {
+    Stack({ alignContent: Alignment.TopStart }) {
+      Stack({ alignContent: Alignment.TopStart }) {
+        Image(this.snapShotImage)
+          .size(this.longTakeAnimationProperties.snapShotSize)
+          .objectFit(ImageFit.Auto)
+          .opacity(this.longTakeAnimationProperties.snapShotOpacity)
+          .syncLoad(true)
+          .position({
+            x: this.longTakeAnimationProperties.snapShotPositionX,
+            y: this.longTakeAnimationProperties.snapShotPositionY
+          })
+
+        DetailPageContent({
+          indexValue: this.indexValue,
+          pageInfos: this.pageInfos,
+          onBackPressed: () => {
+            this.onBackPressed()
+          },
+          SharedComponentId: CardUtil.getPostPageImageId(this.clickedCardId)
+        })
+          .size({
+            width: '100%',
+            height: '100%'
+          })
+          .opacity(this.longTakeAnimationProperties.postPageOpacity)
+      }
+      .width('100%')
+      .position({
+        x: this.longTakeAnimationProperties.positionXValue,
+        y: this.longTakeAnimationProperties.positionYValue
+      })
+    }
+    .scale({
+      x: this.longTakeAnimationProperties.scaleValue,
+      y: this.longTakeAnimationProperties.scaleValue
+    })
+    .translate({
+      x: this.longTakeAnimationProperties.translateX,
+      y: this.longTakeAnimationProperties.translateY
+    })
+    .width(this.longTakeAnimationProperties.clipWidth)
+    .height(this.longTakeAnimationProperties.clipHeight)
+    .borderRadius(this.longTakeAnimationProperties.radius)
+    .expandSafeArea([SafeAreaType.SYSTEM])
+    .backgroundColor($r('app.color.water_flow_background_color'))
+    .clip(true)
+  }
+  .backgroundColor(this.longTakeAnimationProperties.navDestinationBgColor)
+  .GestureStyles()
+  .hideTitleBar(true)
+  .onReady((context: NavDestinationContext) => {
+    this.pageInfos = context.pathStack;
+    let param = context.pathInfo?.param as Record<string, Object>;
+    let clickedCardId = param['clickedComponentId'] as string;
+    this.indexValue = param['indexValue'] as number;
+    this.prePageDoFinishTransition = param['doDefaultTransition'] as () => void;
+    if (context.navDestinationId && clickedCardId) {
+      this.pageId = context.navDestinationId;
+      this.clickedCardId = clickedCardId;
+      this.tryRegisterCustomTransition(clickedCardId);
+    }
+  })
+  .onBackPressed(() => {
+    return this.onBackPressed();
+  })
+  .onDisAppear(() => {
+    CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+  })
+}
+
+// ...
+
+列表一镜到底效果图。
+
+将列表项与详情页面同时设置geometryTransition属性，并绑定同一id值。每个列表项设置显式动画和transition属性的转场效果，实现列表展开的一镜到底效果。
+
+列表页面中每一个列表项设置geometryTransition属性，并绑定当前列表的id值。
+
+@Component
+export struct MyButton {
+  @Prop listContent: ListContent;
+  @Prop indexValue: string;
+  @State scaleValue: number = 1;
+
+  build() {
+    Column({ space: 10 }) {
+      Row({ space: 5 }) {
+        Line()
+          .startPoint([0, 0])
+          .endPoint([0, 20])
+          .strokeWidth(5)
+          .stroke(Color.Yellow)
+          .strokeLineCap(LineCapStyle.Round)
+        Text(this.listContent.title)
+          .fontWeight(FontWeight.Medium)
+          .fontSize(16)
+      }
+
+      Text(this.listContent.content)
+        .fontColor(Color.Grey)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .fontSize(14)
+    }
+    .alignItems(HorizontalAlign.Start)
+    .padding({
+      left: 20,
+      right: 20,
+      top: 20,
+      bottom: 20
+    })
+    .width('91%')
+    .backgroundColor(Color.White)
+    .clip(true)
+    .borderRadius(20)
+    .scale({
+      x: this.scaleValue,
+      y: this.scaleValue
+    })
+    .geometryTransition(this.indexValue, { follow: true })
+    .onTouch((event?: TouchEvent) => {
+      this.onTouchProcess(event);
+    })
+    .onClick(() => {
+      this.onButtonClicked?.(this.indexValue);
+    })
+  }
+
+  onButtonClicked: (index: string) => void = (_index: string) => {
+  };
+
+  private onTouchProcess(event?: TouchEvent): void {
+    if (!event) {
+      return;
+    }
+    if (event.type === TouchType.Down) {
+      this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 350, 35) }, () => {
+        this.scaleValue = 0.95;
+      })
+    } else if (event.type === TouchType.Up) {
+      this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 350, 35) }, () => {
+        this.scaleValue = 1;
+      })
+    } else if (event.type === TouchType.Cancel) {
+      this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 350, 35) }, () => {
+        this.scaleValue = 1;
+      })
+    }
+  }
+}
+
+列表详情页中的容器组件Column组件设置geometryTransition属性，并绑定对应列表项的id值，完成一镜到底效果。
+
+NavDestination() {
+  Column({ space: 20 }) {
+    Text(this.param.title)
+      .fontSize(30)
+      .fontWeight(FontWeight.Medium)
+    Text(this.param.content)
+      .fontColor($r('sys.color.password_icon_focus_color'))
+      .lineHeight(28)
+      .fontSize(16)
+  }
+  .alignItems(HorizontalAlign.Start)
+  .clip(true)
+  .size({
+    width: '100%',
+    height: '100%'
+  })
+  .geometryTransition(this.param.geometryId)
+}
+.padding({
+  top: 46,
+  left: 16,
+  right: 16
+})
+.backgroundColor(Constants.DEFAULT_BG_COLOR)
+.transition(TransitionEffect.OPACITY)
+.hideTitleBar(true)
+.backgroundColor(Color.Transparent)
+.onReady((context: NavDestinationContext) => {
+  this.pageInfos = context.pathStack;
+  this.param = (context.pathInfo.param as ListDetailPageExtraInfo);
+})
+.onBackPressed(() => {
+  this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 342, 38) }, () => {
+    this.pageInfos.pop(false);
+  })
+  return true;
+})
+
+[h2]“图书”翻页展开一镜到底
+
+阅读类应用中，点击一本“图书”的图标后，模拟图书翻页展开的效果，转场到书本内容页面，同时支持手势返回。
+
+利用Navigation的自定义导航转场动画能力，通过customNavContentTransition()配置书籍页与详情页的自定义导航转场动画实现图书翻页一镜到底效果。使用rotate属性实现书籍翻页的旋转效果。
+
+书架页面通过Grid组件实现书架第一行书籍布局，使用Swiper()组件实现书架第一行书籍布局。
+
+build() {
+  NavDestination() {
+    Scroll() {
+      Column({ space: 12 }) {
+        Grid() {
+          ForEach(this.dataSource, (item: BookItem, index: number) => {
+            GridItem() {
+              Image($r(item.coverImageUrl))
+                .id(item.id)
+                .width('100%')
+                .onClick(() => {
+                  this.onColumnClicked(item.id, item.coverImageUrl, this.dataSource[0].id, () => {
+                    this.dataSource.sort((a, b) => b.timestamp - a.timestamp);
+                  })
+                  this.dataSource[index].timestamp = Number(new Date());
+                })
+            }
+            .width(this.columnWidth)
+          }, (item: BookItem) => JSON.stringify(item))
+        }
+        .padding({
+          left: 12,
+          right: 12,
+          top: 12
+        })
+        .columnsTemplate(this.columnType)
+        .columnsGap(10)
+        .rowsGap(10)
+
+        Column({ space: 12 }) {
+          Text('Recently read')
+            .fontSize(16)
+            .fontWeight(FontWeight.Medium)
+            .fontColor(Color.Gray)
+          Swiper(this.swiperController) {
+            ForEach(this.recentData, (item: BookItem) => {
+              GridItem() {
+                Image($r(item.coverImageUrl))
+                  .id(item.id)
+                  .onClick(() => {
+                    this.onColumnClicked(item.id, item.coverImageUrl);
+                  })
+              }
+            }, (item: BookItem) => JSON.stringify(item))
+          }
+          .indicator(false)
+          .displayCount(3)
+          .loop(false)
+          .itemSpace(10)
+        }
+        .padding({
+          left: 12,
+          right: 12
+        })
+        .alignItems(HorizontalAlign.Start)
+      }
+    }
+  }
+  // ...
+}
+
+// ...
+
+private onColumnClicked(bookId: string, bookCoverUrl: string, toBookId?: string, prePageCallback?: () => void): void {
+  try {
+    CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+    const fromCardItemInfo: RectInfoInPx =
+      ComponentAttrUtils.getRectInfoById(WindowUtils.window.getUIContext(), bookId);
+    let param: Record<string, Object> = {};
+    param['fromCardItemInfo'] = fromCardItemInfo;
+    param['bookCoverUrl'] = bookCoverUrl;
+    if (toBookId) {
+      const toCardItemInfo: RectInfoInPx =
+        ComponentAttrUtils.getRectInfoById(WindowUtils.window.getUIContext(), toBookId);
+      param['toCardItemInfo'] = toCardItemInfo;
+    }
+    if (prePageCallback) {
+      param['prePageCallback'] = prePageCallback;
+    }
+    this.pageInfos.pushPath({ name: 'BookFlipLongTakeTransitionPageTwo', param: param });
+  } catch (err) {
+    let error = err as BusinessError;
+    hilog.error(0x0000, 'BookFlipLongTakeTransitionPageOne',
+      `onColumnClicked failed. error code=${error.code}, message=${error.message}`);
+  }
+}
+
+书籍详情页通过Navigation自定义动画实现一镜到底。
+
+NavDestination() {
+  Stack() {
+    Column() {
+      Text($r('app.string.DetailPage_text'))
+        .fontColor($r('sys.color.password_icon_focus_color'))
+        .lineHeight(28)
+        .fontSize(16)
+    }
+    .width(AppStorage.get('currentBreakpoint') === 'md' ? '75%' : '100%')
+    .height('100%')
+    .alignItems(HorizontalAlign.Start)
+    .padding({
+      left: 16,
+      right: 16,
+      top: 46
+    })
+
+    if (!this.doDefaultTransition) {
+      Image($r(this.bookCoverUrl))
+        .objectFit(ImageFit.Cover)
+        .syncLoad(true)
+        .rotate({
+          x: 0,
+          y: 1,
+          z: 0,
+          angle: this.bookFlipLongTakeTransitionProperties.coverRotateAngle,
+          centerX: 0,
+          centerY: '50%'
+        })
+        .scale({
+          x: this.bookFlipLongTakeTransitionProperties.coverScale,
+          centerX: 0,
+          centerY: '50%'
+        })
+    }
+  }
+  .scale({
+    x: this.bookFlipLongTakeTransitionProperties.scaleValue,
+    y: this.bookFlipLongTakeTransitionProperties.scaleValue
+  })
+  .translate({
+    x: this.bookFlipLongTakeTransitionProperties.translateX,
+    y: this.bookFlipLongTakeTransitionProperties.translateY
+  })
+  .width(this.bookFlipLongTakeTransitionProperties.clipWidth)
+  .height(this.bookFlipLongTakeTransitionProperties.clipHeight)
+  .backgroundColor('#DEDFDF')
+}
+.backgroundColor(this.bookFlipLongTakeTransitionProperties.navDestinationBgColor)
+.GestureStyles()
+.hideTitleBar(true)
+.onReady((context: NavDestinationContext) => {
+  this.pageInfos = context.pathStack;
+  let param = context.pathInfo?.param as Record<string, Object>;
+  this.bookCoverUrl = param['bookCoverUrl'] as string;
+  this.fromCardItemInfo = param['fromCardItemInfo'] as RectInfoInPx;
+  this.toCardItemInfo = (param['toCardItemInfo'] || param['fromCardItemInfo']) as RectInfoInPx;
+  this.prePageCallback = param['prePageCallback'] as () => void;
+  if (context.navDestinationId) {
+    this.pageId = context.navDestinationId;
+  }
+  CustomTransition.getInstance()
+    .registerNavParam(this.pageId, 500, (transitionProxy: NavigationTransitionProxy) => {
+      this.bookFlipLongTakeTransitionProperties.doAnimation(transitionProxy, this.fromCardItemInfo,
+        this.toCardItemInfo);
+    }, () => {
+      this.bookFlipLongTakeTransitionProperties.onInteractiveFinish();
+    }, () => {
+      this.bookFlipLongTakeTransitionProperties.onInteractive(
+        this.fromCardItemInfo, this.toCardItemInfo);
+    });
+})
+.onBackPressed(() => {
+  return this.onBackPressed();
+})
+.onDisAppear(() => {
+  CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+})
+
+[h2]视频展开一镜到底
+
+视频组件从一个页面向目标页面的转场，在一镜到底的过程中，视频需要持续播放。
+
+使用WaterFlow()和LazyForEach()实现卡片列表瀑布流。利用NodeController实现组件的跨节点迁移，通过customNavContentTransition配置概览页与视频详情的自定义导航转场动画，给节点的迁移过程赋予一镜到底效果。
+
+创建NodeController节点类。
+
+export class MyNodeController extends NodeController {
+  // ...
+}
+
+视频首页使用WaterFlow()和LazyForEach()实现页面布局，点击视频后将视频节点迁移至视频播放页面，通过Navigation自定义动画完成一镜到底的效果。
+
+NavDestination() {
+  WaterFlow() {
+    LazyForEach(this.dataSource, (_: CardAttr, index: number) => {
+      FlowItem() {
+        VideoCardComponent({
+          isPlaying: false,
+          index,
+          onColumnClicked: (prePageCallback) => {
+            this.onColumnClicked(`xComponent_${index}`, prePageCallback)
+          }
+        })
+      }
+      .width('100%')
+      .borderRadius(10)
+      .clip(true)
+      .id('FlowItem_' + index.toString())
+    }, (item: string) => item)
+  }
+  .edgeEffect(EdgeEffect.Spring)
+  .onScrollIndex((first: number) => {
+    this.scrollFirstIndex = first;
+  })
+  .padding(12)
+  .columnsTemplate(this.columnType)
+  .columnsGap(12)
+  .rowsGap(10)
+  .width('100%')
+  .height('100%')
+}
+.backgroundColor(Constants.DEFAULT_BG_COLOR)
+.title(getResourceString(this.getUIContext(), $r('app.string.video_title'), this))
+.onReady((context: NavDestinationContext) => {
+  this.pageInfos = context.pathStack;
+  if (context.navDestinationId) {
+    this.pageId = context.navDestinationId;
+  }
+})
+.onDisAppear(() => {
+  CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+})
 
 ## Code blocks
 
@@ -3423,7 +4191,7 @@ export const getMyNode = (): MyNodeController | undefined => {
 ### Code block 16
 
 ```
-// index.ets
+// Index.ets
 import { MyNodeController, createMyNode, getMyNode } from '../NodeContainer/CustomComponent';
 import { ComponentAttrUtils, RectInfoInPx } from '../utils/ComponentAttrUtils';
 import { WindowUtils } from '../utils/WindowUtils';
@@ -3491,8 +4259,8 @@ struct Index {
           this.clipHeight = this.targetInfo.clipHeight;
           // 修正因半模态高度和缩放导致的高度差
           this.translateY = this.targetInfo.translateY +
-            (this.getUIContext().px2vp(WindowUtils.windowHeight_px) - this.bindSheetHeight
-              - this.getUIContext().px2vp(WindowUtils.navigationIndicatorHeight_px) - this.getUIContext().px2vp(WindowUtils.topAvoidAreaHeight_px));
+            (this.getUIContext().px2vp(WindowUtils.windowHeightPx) - this.bindSheetHeight
+              - this.getUIContext().px2vp(WindowUtils.navigationIndicatorHeightPx) - this.getUIContext().px2vp(WindowUtils.topAvoidAreaHeightPx));
           // 修正因缩放导致的圆角差异
           this.radius = this.sheetRadius / this.scaleValue
         })
@@ -3514,8 +4282,8 @@ struct Index {
     let itemInfo: RectInfoInPx =
       ComponentAttrUtils.getRectInfoById(WindowUtils.window.getUIContext(), id);
     // 首先计算图片的宽高与窗口宽高的比例
-    let widthScaleRatio = itemInfo.width / WindowUtils.windowWidth_px;
-    let heightScaleRatio = itemInfo.height / WindowUtils.windowHeight_px;
+    let widthScaleRatio = itemInfo.width / WindowUtils.windowWidthPx;
+    let heightScaleRatio = itemInfo.height / WindowUtils.windowHeightPx;
     let isUseWidthScale = widthScaleRatio > heightScaleRatio;
     let itemScale: number = isUseWidthScale ? widthScaleRatio : heightScaleRatio;
     let itemTranslateX: number = 0;
@@ -3524,15 +4292,15 @@ struct Index {
     let itemTranslateY: number = 0;
 
     if (isUseWidthScale) {
-      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidth_px - itemInfo.width) / 2);
+      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidthPx - itemInfo.width) / 2);
       itemClipWidth = '100%';
       itemClipHeight = this.getUIContext().px2vp((itemInfo.height) / itemScale);
       itemTranslateY = this.getUIContext().px2vp(itemInfo.top - ((this.getUIContext().vp2px(itemClipHeight) - this.getUIContext().vp2px(itemClipHeight) * itemScale) / 2));
     } else {
-      itemTranslateY = this.getUIContext().px2vp(itemInfo.top - (WindowUtils.windowHeight_px - itemInfo.height) / 2);
+      itemTranslateY = this.getUIContext().px2vp(itemInfo.top - (WindowUtils.windowHeightPx - itemInfo.height) / 2);
       itemClipHeight = '100%';
       itemClipWidth = this.getUIContext().px2vp((itemInfo.width) / itemScale);
-      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidth_px / 2 - itemInfo.width / 2));
+      itemTranslateX = this.getUIContext().px2vp(itemInfo.left - (WindowUtils.windowWidthPx / 2 - itemInfo.width / 2));
     }
 
     return {
@@ -4184,4 +4952,762 @@ export default struct Post {
     .padding({ left: 10, top: 10 })
   }
 }
+```
+
+### Code block 23
+
+```
+@StorageProp('expand') @Watch('goToPageTwo') num1: number = 0;
+// ...
+
+aboutToAppear(): void {
+  if (!getMyNode()) {
+    createMyNode(this.getUIContext(), false);
+  }
+  this.imageGalleryNodeController = getMyNode();
+}
+```
+
+### Code block 24
+
+```
+export class ImageGalleryNodeController extends NodeController {
+  private rootNode: BuilderNode<[Params]> | null = null;
+  private wrapBuilder: WrappedBuilder<[Params]> = wrapBuilder(ImageGalleryBuilder);
+  private isExpand: boolean = false;
+
+  constructor(isExpand: boolean) {
+    super();
+    this.isExpand = isExpand;
+  }
+
+  makeNode(uiContext: UIContext): FrameNode | null {
+    if (this.rootNode === null) {
+      this.rootNode = new BuilderNode(uiContext);
+      this.rootNode.build(this.wrapBuilder, { isExpand: this.isExpand });
+    }
+    return this.rootNode.getFrameNode();
+  }
+
+  init(uiContext: UIContext) {
+    this.rootNode = new BuilderNode(uiContext);
+    this.rootNode.build(this.wrapBuilder, { isExpand: this.isExpand });
+  }
+
+  update(isExpand: boolean) {
+    if (this.rootNode !== null) {
+      this.rootNode.update({ isExpand });
+    }
+  }
+}
+```
+
+### Code block 25
+
+```
+PinchGesture()
+  .onActionStart((event: GestureEvent) => {
+    this.offsetY = getTranslateToFullScreen(this.getUIContext(), 'swiper')?.offsetY || 0
+    this.imageHeight = this.getUIContext().vp2px(Number(event.target.area.height))
+    this.imageWidth = this.getUIContext().vp2px(Number(event.target.area.width))
+    this.status = Status.PINCHING;
+    this.updateCenter([this.getUIContext().vp2px(event.pinchCenterX),
+      this.getUIContext().vp2px(event.pinchCenterY)])
+    this.updateTranslateAccordingToCenter();
+    this.startGestureScale = this.imageScale;
+    this.gestureCount++;
+  })
+  .onActionUpdate((event: GestureEvent) => {
+    this.imageScale = this.startGestureScale * event.scale;
+    if (!this.isExpand && this.imageScale >= 1) {
+      this.onExpand();
+    }
+    this.updateExtremeOffset();
+  })
+```
+
+### Code block 26
+
+```
+NavDestination() {
+  NodeContainer(this.imageGalleryNodeController)
+}
+.mode(NavDestinationMode.DIALOG)
+.height('100%')
+.width('100%')
+.hideTitleBar(true)
+.onReady((context: NavDestinationContext) => {
+  this.pageInfo = context.pathStack;
+  const param = context.pathInfo?.param as Record<string, Object>;
+  this.onBack = param['onBack'] as () => void;
+})
+.onBackPressed(() => {
+  AppStorage.setOrCreate('reset', new Date());
+  this.getUIContext().animateTo({ duration: 300, curve: Curve.EaseIn }, () => {
+    this.backToPageOne();
+  })
+  return true;
+})
+```
+
+### Code block 27
+
+```
+NavDestination() {
+  Column() {
+    Grid(this.scroller) {
+      ForEach(this.data, (item: number) => {
+        GridItem() {
+          if (this.clickedIndex !== item || (this.isFirstPageShow)) {
+            Image($r(`app.media.img_${item % 9}`))
+              .width('100%')
+              .height('100%')
+              .objectFit(ImageFit.Cover)
+              .id('item2_' + item)
+              .onClick(() => {
+                this.onItemClick(item);
+              })
+              .geometryTransition(this.clickedIndex === item ? 'app.media.img_' + item.toString() : '')
+              .transition(TransitionEffect.opacity(0.99))
+          }
+        }
+        .width(this.getUIContext().px2vp(381))
+        .height(this.getUIContext().px2vp(381))
+      }, (item: number) => item + '')
+    }
+    .rowsTemplate('1fr 1fr 1fr')
+    .columnsTemplate('1fr 1fr 1fr')
+    .columnsGap(2)
+    .rowsGap(2)
+    .size({
+      width: this.getUIContext().px2vp(1169),
+      height: this.getUIContext().px2vp(1169)
+    })
+    .margin({ top: 16 })
+  }
+}
+.title('View larger picture')
+.height('100%')
+.width('100%')
+.onReady((context: NavDestinationContext) => {
+  this.pageInfo = context.pathStack;
+})
+```
+
+### Code block 28
+
+```
+onItemClick(index: number): void {
+  let param: Record<string, Object> = {};
+  this.needFollow = false;
+  this.clickedIndex = index;
+  param['selectedIndex'] = this.clickedIndex;
+  param['onIndexChange'] = (index: number) => {
+    this.onIndexChange(index);
+  };
+  param['onBackToFirstPage'] = () => {
+    this.onBack();
+  }
+
+  this.getUIContext().animateTo({
+    duration: 250,
+    curve: Curve.EaseIn,
+  }, () => {
+    this.pageInfo.pushPath({ name: 'ShowLargeImageWithGesturePageTwo', param: param }, false);
+    this.isFirstPageShow = false;
+  })
+}
+```
+
+### Code block 29
+
+```
+export class MyNodeController extends NodeController {
+  // ...
+}
+```
+
+### Code block 30
+
+```
+NavDestination() {
+  Column() {
+    Image($r('app.media.flower'))
+      .opacity(this.opacityDegree)
+      .width('90%')
+      .id('origin')
+      .enabled(this.isEnabled)
+      .onClick(() => {
+        this.originInfo = this.calculateData('origin');
+        this.scaleValue = this.originInfo.scale;
+        this.translateX = this.originInfo.translateX;
+        this.translateY = this.originInfo.translateY;
+        this.clipWidth = this.originInfo.clipWidth;
+        this.clipHeight = this.originInfo.clipHeight;
+        this.radius = 0;
+        this.opacityDegree = 0;
+        this.isShowSheet = true;
+        this.isShowOverlay = true;
+        this.isEnabled = false;
+      })
+  }
+  .width('100%')
+  .height('100%')
+  .padding({ top: 16 })
+  .alignItems(HorizontalAlign.Center)
+  .bindSheet(this.isShowSheet, this.mySheet(), {
+    mode: SheetMode.EMBEDDED,
+    height: this.bindSheetHeight,
+    onDisappear: () => {
+      this.isShowImage = false;
+      this.isShowSheet = false;
+      this.isAnimating = false;
+      this.isEnabled = true;
+    }
+  })
+  .bindContentCover(this.isShowOverlay, this.overlayNode(), {
+    transition: TransitionEffect.IDENTITY
+  })
+}
+.backgroundColor('#F1F3F5')
+.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+.title('half mode')
+```
+
+### Code block 31
+
+```
+aboutToAppear(): void {
+  let onLayoutComplete: () => void = (): void => {
+    this.targetInfo = this.calculateData('target');
+    if (this.targetInfo.scale !== 0 && this.targetInfo.clipWidth !== 0 && this.targetInfo.clipHeight !== 0 &&
+      !this.isAnimating) {
+      this.isAnimating = true;
+      this.getUIContext().animateTo({
+        duration: 1000,
+        curve: Curve.Friction,
+        onFinish: () => {
+          this.isShowOverlay = false;
+          this.isShowImage = true;
+        }
+      }, () => {
+        this.scaleValue = AppStorage.get('currentBreakpoint') === 'md' ? 0.382 : this.targetInfo.scale;
+        this.translateX = AppStorage.get('currentBreakpoint') === 'md' ? 93.5 : this.targetInfo.translateX;
+        this.clipWidth = AppStorage.get('currentBreakpoint') === 'md' ? 525 : this.targetInfo.clipWidth;
+        this.clipHeight = AppStorage.get('currentBreakpoint') === 'md' ? 785 : this.targetInfo.clipHeight;
+        this.translateY = this.targetInfo.translateY +
+          (this.getUIContext().px2vp(WindowUtils.windowHeight_px) - this.bindSheetHeight -
+          this.getUIContext().px2vp(WindowUtils.navigationIndicatorHeight_px) -
+          this.getUIContext().px2vp(WindowUtils.topAvoidAreaHeight_px)) -
+          (AppStorage.get('currentBreakpoint') === 'md' ? 134.3 : 0);
+        this.radius = this.sheetRadius / this.scaleValue;
+      })
+      this.getUIContext().animateTo({
+        duration: 2000,
+        curve: Curve.Friction,
+      }, () => {
+        this.opacityDegree = 1;
+      })
+    }
+  };
+  this.listener.on('layout', onLayoutComplete);
+}
+```
+
+### Code block 32
+
+```
+private showSearchPage(): void {
+  this.transitionEffect = TransitionEffect.OPACITY;
+  this.getUIContext().animateTo({
+    curve: curves.interpolatingSpring(0, 1, 342, 38)
+  }, () => {
+    this.pageInfos.pushPath({ name: 'SearchLongTakeTransitionPageTwo' }, false);
+  })
+}
+```
+
+### Code block 33
+
+```
+Search({ placeholder: 'Search' })
+  .height(40)
+  .placeholderColor($r('sys.color.mask_secondary'))
+  .width('100%')
+  .geometryTransition('SEARCH_ONE_SHOT_DEMO_TRANSITION_ID', { follow: true })
+  .backgroundColor('#0D000000')
+  .defaultFocus(false)
+  .focusOnTouch(false)
+  .focusable(false)
+```
+
+### Code block 34
+
+```
+private onColumnClicked(indexValue: string): void {
+  let param: Record<string, Object> = {};
+  let clickedIndex = parseInt(indexValue);
+  param['indexValue'] = clickedIndex;
+  this.clickedIndex = clickedIndex;
+  this.getUIContext()
+    .getComponentSnapshot()
+    .get('FlowItem_' + indexValue, (error: BusinessError, pixelMap: image.PixelMap) => {
+      if (error) {
+        hilog.error(0x0000, 'CardLongTakePageOne',
+          `componentSnapshot.get error, reason: Code is ${error.code}, message is ${error.message}`);
+        this.pageInfos.pushPath({ name: 'CardLongTakeTransitionPageTwo', param: param });
+        return;
+      } else {
+        hilog.info(0x0000, 'CardLongTakePageOne', 'componentSnapshot.get success!');
+        param['clickedComponentId'] = CardUtil.getFlowItemIdByIndex(indexValue);
+        param['doDefaultTransition'] = () => {
+          this.doFinishTransition();
+        };
+        SnapShotImage.pixelMap = pixelMap;
+        this.pageInfos.pushPath({ name: 'CardLongTakeTransitionPageTwo', param: param });
+        this.dataSource.getData(this.clickedIndex).isVisible = Visibility.Hidden;
+      }
+    })
+}
+```
+
+### Code block 35
+
+```
+tryRegisterCustomTransition(clickedCardId: string): void {
+  try {
+    this.longTakeAnimationProperties.init(clickedCardId, this.prePageDoFinishTransition);
+    CustomTransition.getInstance().registerNavParam(this.pageId, 2000,
+      (transitionProxy: NavigationTransitionProxy) => {
+        this.longTakeAnimationProperties.doAnimation(transitionProxy);
+      });
+    hilog.info(0x0000, 'CardLongTakePageTwo', 'register successes');
+  } catch (error) {
+    let err = error as BusinessError;
+    hilog.error(0x0000, 'CardLongTakePageTwo', `this is error:code=${err.code}, message=${err.message}`);
+    this.longTakeAnimationProperties.setFinalStatus();
+  }
+}
+
+// ...
+
+build() {
+  NavDestination() {
+    Stack({ alignContent: Alignment.TopStart }) {
+      Stack({ alignContent: Alignment.TopStart }) {
+        Image(this.snapShotImage)
+          .size(this.longTakeAnimationProperties.snapShotSize)
+          .objectFit(ImageFit.Auto)
+          .opacity(this.longTakeAnimationProperties.snapShotOpacity)
+          .syncLoad(true)
+          .position({
+            x: this.longTakeAnimationProperties.snapShotPositionX,
+            y: this.longTakeAnimationProperties.snapShotPositionY
+          })
+
+        DetailPageContent({
+          indexValue: this.indexValue,
+          pageInfos: this.pageInfos,
+          onBackPressed: () => {
+            this.onBackPressed()
+          },
+          SharedComponentId: CardUtil.getPostPageImageId(this.clickedCardId)
+        })
+          .size({
+            width: '100%',
+            height: '100%'
+          })
+          .opacity(this.longTakeAnimationProperties.postPageOpacity)
+      }
+      .width('100%')
+      .position({
+        x: this.longTakeAnimationProperties.positionXValue,
+        y: this.longTakeAnimationProperties.positionYValue
+      })
+    }
+    .scale({
+      x: this.longTakeAnimationProperties.scaleValue,
+      y: this.longTakeAnimationProperties.scaleValue
+    })
+    .translate({
+      x: this.longTakeAnimationProperties.translateX,
+      y: this.longTakeAnimationProperties.translateY
+    })
+    .width(this.longTakeAnimationProperties.clipWidth)
+    .height(this.longTakeAnimationProperties.clipHeight)
+    .borderRadius(this.longTakeAnimationProperties.radius)
+    .expandSafeArea([SafeAreaType.SYSTEM])
+    .backgroundColor($r('app.color.water_flow_background_color'))
+    .clip(true)
+  }
+  .backgroundColor(this.longTakeAnimationProperties.navDestinationBgColor)
+  .GestureStyles()
+  .hideTitleBar(true)
+  .onReady((context: NavDestinationContext) => {
+    this.pageInfos = context.pathStack;
+    let param = context.pathInfo?.param as Record<string, Object>;
+    let clickedCardId = param['clickedComponentId'] as string;
+    this.indexValue = param['indexValue'] as number;
+    this.prePageDoFinishTransition = param['doDefaultTransition'] as () => void;
+    if (context.navDestinationId && clickedCardId) {
+      this.pageId = context.navDestinationId;
+      this.clickedCardId = clickedCardId;
+      this.tryRegisterCustomTransition(clickedCardId);
+    }
+  })
+  .onBackPressed(() => {
+    return this.onBackPressed();
+  })
+  .onDisAppear(() => {
+    CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+  })
+}
+
+// ...
+```
+
+### Code block 36
+
+```
+@Component
+export struct MyButton {
+  @Prop listContent: ListContent;
+  @Prop indexValue: string;
+  @State scaleValue: number = 1;
+
+  build() {
+    Column({ space: 10 }) {
+      Row({ space: 5 }) {
+        Line()
+          .startPoint([0, 0])
+          .endPoint([0, 20])
+          .strokeWidth(5)
+          .stroke(Color.Yellow)
+          .strokeLineCap(LineCapStyle.Round)
+        Text(this.listContent.title)
+          .fontWeight(FontWeight.Medium)
+          .fontSize(16)
+      }
+
+      Text(this.listContent.content)
+        .fontColor(Color.Grey)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .fontSize(14)
+    }
+    .alignItems(HorizontalAlign.Start)
+    .padding({
+      left: 20,
+      right: 20,
+      top: 20,
+      bottom: 20
+    })
+    .width('91%')
+    .backgroundColor(Color.White)
+    .clip(true)
+    .borderRadius(20)
+    .scale({
+      x: this.scaleValue,
+      y: this.scaleValue
+    })
+    .geometryTransition(this.indexValue, { follow: true })
+    .onTouch((event?: TouchEvent) => {
+      this.onTouchProcess(event);
+    })
+    .onClick(() => {
+      this.onButtonClicked?.(this.indexValue);
+    })
+  }
+
+  onButtonClicked: (index: string) => void = (_index: string) => {
+  };
+
+  private onTouchProcess(event?: TouchEvent): void {
+    if (!event) {
+      return;
+    }
+    if (event.type === TouchType.Down) {
+      this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 350, 35) }, () => {
+        this.scaleValue = 0.95;
+      })
+    } else if (event.type === TouchType.Up) {
+      this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 350, 35) }, () => {
+        this.scaleValue = 1;
+      })
+    } else if (event.type === TouchType.Cancel) {
+      this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 350, 35) }, () => {
+        this.scaleValue = 1;
+      })
+    }
+  }
+}
+```
+
+### Code block 37
+
+```
+NavDestination() {
+  Column({ space: 20 }) {
+    Text(this.param.title)
+      .fontSize(30)
+      .fontWeight(FontWeight.Medium)
+    Text(this.param.content)
+      .fontColor($r('sys.color.password_icon_focus_color'))
+      .lineHeight(28)
+      .fontSize(16)
+  }
+  .alignItems(HorizontalAlign.Start)
+  .clip(true)
+  .size({
+    width: '100%',
+    height: '100%'
+  })
+  .geometryTransition(this.param.geometryId)
+}
+.padding({
+  top: 46,
+  left: 16,
+  right: 16
+})
+.backgroundColor(Constants.DEFAULT_BG_COLOR)
+.transition(TransitionEffect.OPACITY)
+.hideTitleBar(true)
+.backgroundColor(Color.Transparent)
+.onReady((context: NavDestinationContext) => {
+  this.pageInfos = context.pathStack;
+  this.param = (context.pathInfo.param as ListDetailPageExtraInfo);
+})
+.onBackPressed(() => {
+  this.getUIContext().animateTo({ curve: curves.interpolatingSpring(0, 1, 342, 38) }, () => {
+    this.pageInfos.pop(false);
+  })
+  return true;
+})
+```
+
+### Code block 38
+
+```
+build() {
+  NavDestination() {
+    Scroll() {
+      Column({ space: 12 }) {
+        Grid() {
+          ForEach(this.dataSource, (item: BookItem, index: number) => {
+            GridItem() {
+              Image($r(item.coverImageUrl))
+                .id(item.id)
+                .width('100%')
+                .onClick(() => {
+                  this.onColumnClicked(item.id, item.coverImageUrl, this.dataSource[0].id, () => {
+                    this.dataSource.sort((a, b) => b.timestamp - a.timestamp);
+                  })
+                  this.dataSource[index].timestamp = Number(new Date());
+                })
+            }
+            .width(this.columnWidth)
+          }, (item: BookItem) => JSON.stringify(item))
+        }
+        .padding({
+          left: 12,
+          right: 12,
+          top: 12
+        })
+        .columnsTemplate(this.columnType)
+        .columnsGap(10)
+        .rowsGap(10)
+
+        Column({ space: 12 }) {
+          Text('Recently read')
+            .fontSize(16)
+            .fontWeight(FontWeight.Medium)
+            .fontColor(Color.Gray)
+          Swiper(this.swiperController) {
+            ForEach(this.recentData, (item: BookItem) => {
+              GridItem() {
+                Image($r(item.coverImageUrl))
+                  .id(item.id)
+                  .onClick(() => {
+                    this.onColumnClicked(item.id, item.coverImageUrl);
+                  })
+              }
+            }, (item: BookItem) => JSON.stringify(item))
+          }
+          .indicator(false)
+          .displayCount(3)
+          .loop(false)
+          .itemSpace(10)
+        }
+        .padding({
+          left: 12,
+          right: 12
+        })
+        .alignItems(HorizontalAlign.Start)
+      }
+    }
+  }
+  // ...
+}
+
+// ...
+
+private onColumnClicked(bookId: string, bookCoverUrl: string, toBookId?: string, prePageCallback?: () => void): void {
+  try {
+    CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+    const fromCardItemInfo: RectInfoInPx =
+      ComponentAttrUtils.getRectInfoById(WindowUtils.window.getUIContext(), bookId);
+    let param: Record<string, Object> = {};
+    param['fromCardItemInfo'] = fromCardItemInfo;
+    param['bookCoverUrl'] = bookCoverUrl;
+    if (toBookId) {
+      const toCardItemInfo: RectInfoInPx =
+        ComponentAttrUtils.getRectInfoById(WindowUtils.window.getUIContext(), toBookId);
+      param['toCardItemInfo'] = toCardItemInfo;
+    }
+    if (prePageCallback) {
+      param['prePageCallback'] = prePageCallback;
+    }
+    this.pageInfos.pushPath({ name: 'BookFlipLongTakeTransitionPageTwo', param: param });
+  } catch (err) {
+    let error = err as BusinessError;
+    hilog.error(0x0000, 'BookFlipLongTakeTransitionPageOne',
+      `onColumnClicked failed. error code=${error.code}, message=${error.message}`);
+  }
+}
+```
+
+### Code block 39
+
+```
+NavDestination() {
+  Stack() {
+    Column() {
+      Text($r('app.string.DetailPage_text'))
+        .fontColor($r('sys.color.password_icon_focus_color'))
+        .lineHeight(28)
+        .fontSize(16)
+    }
+    .width(AppStorage.get('currentBreakpoint') === 'md' ? '75%' : '100%')
+    .height('100%')
+    .alignItems(HorizontalAlign.Start)
+    .padding({
+      left: 16,
+      right: 16,
+      top: 46
+    })
+
+    if (!this.doDefaultTransition) {
+      Image($r(this.bookCoverUrl))
+        .objectFit(ImageFit.Cover)
+        .syncLoad(true)
+        .rotate({
+          x: 0,
+          y: 1,
+          z: 0,
+          angle: this.bookFlipLongTakeTransitionProperties.coverRotateAngle,
+          centerX: 0,
+          centerY: '50%'
+        })
+        .scale({
+          x: this.bookFlipLongTakeTransitionProperties.coverScale,
+          centerX: 0,
+          centerY: '50%'
+        })
+    }
+  }
+  .scale({
+    x: this.bookFlipLongTakeTransitionProperties.scaleValue,
+    y: this.bookFlipLongTakeTransitionProperties.scaleValue
+  })
+  .translate({
+    x: this.bookFlipLongTakeTransitionProperties.translateX,
+    y: this.bookFlipLongTakeTransitionProperties.translateY
+  })
+  .width(this.bookFlipLongTakeTransitionProperties.clipWidth)
+  .height(this.bookFlipLongTakeTransitionProperties.clipHeight)
+  .backgroundColor('#DEDFDF')
+}
+.backgroundColor(this.bookFlipLongTakeTransitionProperties.navDestinationBgColor)
+.GestureStyles()
+.hideTitleBar(true)
+.onReady((context: NavDestinationContext) => {
+  this.pageInfos = context.pathStack;
+  let param = context.pathInfo?.param as Record<string, Object>;
+  this.bookCoverUrl = param['bookCoverUrl'] as string;
+  this.fromCardItemInfo = param['fromCardItemInfo'] as RectInfoInPx;
+  this.toCardItemInfo = (param['toCardItemInfo'] || param['fromCardItemInfo']) as RectInfoInPx;
+  this.prePageCallback = param['prePageCallback'] as () => void;
+  if (context.navDestinationId) {
+    this.pageId = context.navDestinationId;
+  }
+  CustomTransition.getInstance()
+    .registerNavParam(this.pageId, 500, (transitionProxy: NavigationTransitionProxy) => {
+      this.bookFlipLongTakeTransitionProperties.doAnimation(transitionProxy, this.fromCardItemInfo,
+        this.toCardItemInfo);
+    }, () => {
+      this.bookFlipLongTakeTransitionProperties.onInteractiveFinish();
+    }, () => {
+      this.bookFlipLongTakeTransitionProperties.onInteractive(
+        this.fromCardItemInfo, this.toCardItemInfo);
+    });
+})
+.onBackPressed(() => {
+  return this.onBackPressed();
+})
+.onDisAppear(() => {
+  CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+})
+```
+
+### Code block 40
+
+```
+export class MyNodeController extends NodeController {
+  // ...
+}
+```
+
+### Code block 41
+
+```
+NavDestination() {
+  WaterFlow() {
+    LazyForEach(this.dataSource, (_: CardAttr, index: number) => {
+      FlowItem() {
+        VideoCardComponent({
+          isPlaying: false,
+          index,
+          onColumnClicked: (prePageCallback) => {
+            this.onColumnClicked(`xComponent_${index}`, prePageCallback)
+          }
+        })
+      }
+      .width('100%')
+      .borderRadius(10)
+      .clip(true)
+      .id('FlowItem_' + index.toString())
+    }, (item: string) => item)
+  }
+  .edgeEffect(EdgeEffect.Spring)
+  .onScrollIndex((first: number) => {
+    this.scrollFirstIndex = first;
+  })
+  .padding(12)
+  .columnsTemplate(this.columnType)
+  .columnsGap(12)
+  .rowsGap(10)
+  .width('100%')
+  .height('100%')
+}
+.backgroundColor(Constants.DEFAULT_BG_COLOR)
+.title(getResourceString(this.getUIContext(), $r('app.string.video_title'), this))
+.onReady((context: NavDestinationContext) => {
+  this.pageInfos = context.pathStack;
+  if (context.navDestinationId) {
+    this.pageId = context.navDestinationId;
+  }
+})
+.onDisAppear(() => {
+  CustomTransition.getInstance().unRegisterNavParam(this.pageId);
+})
 ```

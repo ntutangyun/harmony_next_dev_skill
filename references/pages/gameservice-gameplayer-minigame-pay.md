@@ -67,14 +67,18 @@ onWindowStageCreate(windowStage: window.WindowStage) {
 
 let context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 let request: gamePlayer.PurchaseParameter = {
-  productId: 'xxx', // 待支付的商品ID
+  productId: 'testProduct01', // 待支付的商品ID
   productType: 0, // 待查询的商品类型
-  developerPayload: 'xxx', // 商户侧保留信息，该参数长度限制为[0, 256]。若该字段有值，在支付成功后的回调结果中会原样返回给应用
-  reservedInfo: 'xxx' // 要求JSON String格式，商户可以将额外需要传入的字段以key-value的形式设置在JSON String中，并通过该参数传入
+  developerPayload: 'test developer payload string.', // 商户侧保留信息，该参数长度限制为[0, 256]。若该字段有值，在支付成功后的回调结果中会原样返回给应用
+  reservedInfo: '{"key1":"value1","key2":"value2"}' // 要求JSON String格式，商户可以将额外需要传入的字段以key-value的形式设置在JSON String中，并通过该参数传入
 };
 try {
   gamePlayer.miniGamePay(context, request).then((result: gamePlayer.CreatePurchaseResult) => {
-    hilog.info(0x0000, 'testTag', `Succeeded in paying`);
+    if (JSON.parse(result?.purchaseData).resultCode == 0) {
+      hilog.info(0x0000, 'testTag', `Succeeded in paying`);
+    } else {
+      hilog.error(0x0000, 'testTag', `Failed to pay. resultCode: ${JSON.parse(result?.purchaseData).resultCode}`);
+    }
   }).catch((error: BusinessError) => {
     hilog.error(0x0000, 'testTag', `Failed to pay. Code: ${error.code}, message: ${error.message}`);
   });
@@ -117,14 +121,18 @@ onWindowStageCreate(windowStage: window.WindowStage) {
 ```
 let context = this.getUIContext()?.getHostContext() as common.UIAbilityContext;
 let request: gamePlayer.PurchaseParameter = {
-  productId: 'xxx', // 待支付的商品ID
+  productId: 'testProduct01', // 待支付的商品ID
   productType: 0, // 待查询的商品类型
-  developerPayload: 'xxx', // 商户侧保留信息，该参数长度限制为[0, 256]。若该字段有值，在支付成功后的回调结果中会原样返回给应用
-  reservedInfo: 'xxx' // 要求JSON String格式，商户可以将额外需要传入的字段以key-value的形式设置在JSON String中，并通过该参数传入
+  developerPayload: 'test developer payload string.', // 商户侧保留信息，该参数长度限制为[0, 256]。若该字段有值，在支付成功后的回调结果中会原样返回给应用
+  reservedInfo: '{"key1":"value1","key2":"value2"}' // 要求JSON String格式，商户可以将额外需要传入的字段以key-value的形式设置在JSON String中，并通过该参数传入
 };
 try {
   gamePlayer.miniGamePay(context, request).then((result: gamePlayer.CreatePurchaseResult) => {
-    hilog.info(0x0000, 'testTag', `Succeeded in paying`);
+    if (JSON.parse(result?.purchaseData).resultCode == 0) {
+      hilog.info(0x0000, 'testTag', `Succeeded in paying`);
+    } else {
+      hilog.error(0x0000, 'testTag', `Failed to pay. resultCode: ${JSON.parse(result?.purchaseData).resultCode}`);
+    }
   }).catch((error: BusinessError) => {
     hilog.error(0x0000, 'testTag', `Failed to pay. Code: ${error.code}, message: ${error.message}`);
   });

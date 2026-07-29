@@ -74,7 +74,7 @@ export struct DialogPage {
 
 页面生命周期
 
-页面生命周期承载在NavDestination组件上，可分为三类：自定义组件生命周期、通用组件生命周期和NavDestination生命周期。其中，aboutToAppear和aboutToDisappear是自定义组件的生命周期（NavDestination外层包含的自定义组件），onAppear和onDisAppear是组件的通用生命周期。剩下的生命周期为NavDestination独有。
+页面生命周期承载在NavDestination组件上，可分为三类：自定义组件生命周期、通用组件生命周期和NavDestination生命周期事件。其中，aboutToAppear和aboutToDisappear是自定义组件的生命周期（NavDestination外层包含的自定义组件），onAppear和onDisAppear是组件的通用生命周期。剩下的生命周期为NavDestination独有。
 
 生命周期时序如下图所示：
 

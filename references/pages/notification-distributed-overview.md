@@ -10,10 +10,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 
 跨设备协同支持的设备：从API version 18开始，支持Phone与Wearable之间通知消息的协同；从API version 20开始，支持Phone与Tablet、PC/2in1设备之间通知消息的协同。
 
-Wearable：带快捷回复的社交通信类通知（社交通信）、实况窗。
+Wearable：带快捷回复的社交通讯类通知（社交通讯）、实况窗。
 
-Tablet：社交通信、服务提醒、实况窗、客服消息。
+Tablet：社交通讯、服务提醒、实况窗、客服消息。
 
-PC/2in1：社交通信、服务提醒、客服消息。
+PC/2in1：社交通讯、服务提醒、客服消息。
 
 运作机制

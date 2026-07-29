@@ -35,10 +35,10 @@ JSVM-API接口开发流程参考使用JSVM-API实现JS与C/C++语言交互开发
 
 cpp部分代码
 
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
 
 // OH_JSVM_GetVM的样例方法
 static JSVM_Value GetVM(JSVM_Env env, JSVM_CallbackInfo info)
@@ -66,6 +66,8 @@ static JSVM_PropertyDescriptor descriptor[] = {
     {"getVM", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
 
+const char *SRC_CALL_NATIVE = R"JS(getVM())JS";
+
 样例测试JS
 
 const char *srcCallNative = R"JS(getVM())JS";
@@ -80,10 +82,10 @@ JSVM OH_JSVM_GetVM: success
 
 cpp部分代码
 
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+// ...
 
 // OH_JSVM_GetHeapStatistics的样例方法
 void PrintHeapStatistics(JSVM_HeapStatistics result)
@@ -127,6 +129,8 @@ static JSVM_CallbackStruct *method = param;
 static JSVM_PropertyDescriptor descriptor[] = {
     {"getHeapStatistics", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+const char *SRC_CALL_NATIVE = R"JS(getHeapStatistics())JS";
 
 样例测试JS
 
@@ -166,7 +170,7 @@ JSVM-API调试&定位
 
 [h2]OH_JSVM_OpenInspector
 
-在指定的主机和端口上激活inspector，用于调试JS码。
+在指定的主机和端口上激活inspector，用于调试JS代码。
 
 [h2]OH_JSVM_CloseInspector
 
@@ -181,10 +185,10 @@ JSVM-API调试&定位
 ### Code block 1
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+#include "hilog/log.h"
+// ...
 
 // OH_JSVM_GetVM的样例方法
 static JSVM_Value GetVM(JSVM_Env env, JSVM_CallbackInfo info)
@@ -211,6 +215,8 @@ static JSVM_CallbackStruct *method = param;
 static JSVM_PropertyDescriptor descriptor[] = {
     {"getVM", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+const char *SRC_CALL_NATIVE = R"JS(getVM())JS";
 ```
 
 ### Code block 2
@@ -228,10 +234,10 @@ JSVM OH_JSVM_GetVM: success
 ### Code block 4
 
 ```
-// hello.cpp
 #include "napi/native_api.h"
+#include "hilog/log.h"
 #include "ark_runtime/jsvm.h"
-#include <hilog/log.h>
+// ...
 
 // OH_JSVM_GetHeapStatistics的样例方法
 void PrintHeapStatistics(JSVM_HeapStatistics result)
@@ -275,6 +281,8 @@ static JSVM_CallbackStruct *method = param;
 static JSVM_PropertyDescriptor descriptor[] = {
     {"getHeapStatistics", nullptr, method++, nullptr, nullptr, nullptr, JSVM_DEFAULT},
 };
+
+const char *SRC_CALL_NATIVE = R"JS(getHeapStatistics())JS";
 ```
 
 ### Code block 5

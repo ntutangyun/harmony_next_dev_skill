@@ -22,6 +22,6 @@ AllocTensor：从Queue中分配Tensor，Tensor所占大小为InitBuffer时设置
 
 FreeTensor：释放Queue中的指定Tensor，供Queue后续使用。
 
-EnQue：将Tensor push到队列Queue。
+EnQue：将Tensor添加到队列Queue。
 
 DeQue：将Tensor从队列Queue中取出，用于后续处理。

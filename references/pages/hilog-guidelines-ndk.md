@@ -21,13 +21,13 @@ int OH_LOG_VPrint(LogType type, LogLevel level, unsigned int domain, const char 
 #define OH_LOG_WARN(type, ...) ((void)OH_LOG_Print((type), LOG_WARN, LOG_DOMAIN, LOG_TAG, VA_ARGS))	WARN级别写日志，宏封装接口。
 #define OH_LOG_ERROR(type, ...) ((void)OH_LOG_Print((type), LOG_ERROR, LOG_DOMAIN, LOG_TAG, VA_ARGS))	ERROR级别写日志，宏封装接口。
 #define OH_LOG_FATAL(type, ...) ((void)OH_LOG_Print((type), LOG_FATAL, LOG_DOMAIN, LOG_TAG, VA_ARGS))	FATAL级别写日志，宏封装接口。
-void OH_LOG_SetCallback(LogCallback callback)	注册函数，注册后可通过LogCallback回调获取本进程的hilog日志。若OH_LOG_IsLoggable接口返回true，则回调函数可获取到该条日志。
+void OH_LOG_SetCallback(LogCallback callback)	注册函数，注册后可通过LogCallback回调获取本进程的HiLog日志。若OH_LOG_IsLoggable接口返回true，则回调函数可获取到该条日志。
 void OH_LOG_SetMinLogLevel(LogLevel level)	设置应用日志打印的最低日志级别，用于拦截低级别日志打印。 说明：从API version 15开始，支持该接口。
 void OH_LOG_SetLogLevel(LogLevel level, PreferStrategy prefer)	设置当前应用程序进程的最低日志级别。可以配置不同的偏好策略。 说明：从API version 21开始，支持该接口。
 
 注意
 
-hilog日志接口是非信号安全函数，禁止在信号处理函数中调用非信号安全的hilog日志接口。
+hilog日志接口是非信号安全函数，禁止在信号处理函数中调用非信号安全的HiLog日志接口。
 
 如果设置的日志级别低于全局日志级别，OH_LOG_SetMinLogLevel()设置不生效。
 
@@ -114,7 +114,7 @@ OH_LOG_ERROR(LOG_APP, "this is an another error level log");
 
 注意
 
-1.在回调函数中禁止递归调用hilog接口，否则会导致循环调用问题。
+1.在回调函数中禁止递归调用HiLog接口，否则会导致循环调用问题。
 
 2.一个进程只需注册一次回调函数，若多次注册，以最后一次注册的回调函数为准。
 
@@ -124,7 +124,7 @@ OH_LOG_ERROR(LOG_APP, "this is an another error level log");
 void MyHiLog(const LogType type, const LogLevel level, const unsigned int domain, const char *tag, const char *msg)
 {
     // user-defined to handle your log, such as redirect/filter
-    // 注意: 在回调函数中禁止递归调用hilog接口，否则会导致循环调用问题。
+    // 注意: 在回调函数中禁止递归调用HiLog接口，否则会导致循环调用问题。
 }
 
 static void Test(void)
@@ -132,7 +132,7 @@ static void Test(void)
    // 1.注册回调接口
    OH_LOG_SetCallback(MyHiLog);
 
-   // 2.调用hilog接口打印日志，日志内容会输出到hilog，同时通过回调返回给MyHiLog，开发者可以在MyHiLog中自行处理日志
+   // 2.调用HiLog接口打印日志，日志内容会输出到HiLog，同时通过回调返回给MyHiLog，开发者可以在MyHiLog中自行处理日志
    OH_LOG_INFO(LOG_APP, "hello world");
 }
 
@@ -191,7 +191,7 @@ OH_LOG_ERROR(LOG_APP, "this is an another error level log");
 void MyHiLog(const LogType type, const LogLevel level, const unsigned int domain, const char *tag, const char *msg)
 {
     // user-defined to handle your log, such as redirect/filter
-    // 注意: 在回调函数中禁止递归调用hilog接口，否则会导致循环调用问题。
+    // 注意: 在回调函数中禁止递归调用HiLog接口，否则会导致循环调用问题。
 }
 
 static void Test(void)
@@ -199,7 +199,7 @@ static void Test(void)
    // 1.注册回调接口
    OH_LOG_SetCallback(MyHiLog);
 
-   // 2.调用hilog接口打印日志，日志内容会输出到hilog，同时通过回调返回给MyHiLog，开发者可以在MyHiLog中自行处理日志
+   // 2.调用HiLog接口打印日志，日志内容会输出到HiLog，同时通过回调返回给MyHiLog，开发者可以在MyHiLog中自行处理日志
    OH_LOG_INFO(LOG_APP, "hello world");
 }
 ```

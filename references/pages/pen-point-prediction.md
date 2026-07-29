@@ -15,11 +15,7 @@ PointPredictor	getPredictionPoint(event: TouchEvent): TouchPoint	获取预测点
 
 开发步骤
 
-导入相关模块。
-
-import { PointPredictor } from '@kit.Penkit';
-
-获取当前界面的触摸事件信息，调用接口计算预测点信息。
+导入相关模块。获取当前界面的触摸事件信息，调用接口计算预测点信息。
 
 @Entry
 @Component
@@ -80,12 +76,6 @@ struct PointPredictorDemo {
 ## Code blocks
 
 ### Code block 1
-
-```
-import { PointPredictor } from '@kit.Penkit';
-```
-
-### Code block 2
 
 ```
 @Entry

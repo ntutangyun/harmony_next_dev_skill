@@ -14,6 +14,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 写入一组对象时，数据总条数不能超过1000条，否则会导致写入失败。
 
+写入一组对象时，“String”类型的数据最大长度为200个字符，“Text”类型的数据最大长度为100000000个字符。
+
 调用写入数据方法，有两种返回方式，返回一个Promise对象或者在参数中传入一个callback对象返回，下面以Promise为例详细说明。
 
 约束与限制
@@ -28,40 +30,48 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 Promise对象中封装了写入操作执行的结果，通过该Promise对象可以异步侦听执行结果：如果执行成功，可以获取写入的对象数量；如果执行失败，可以获取错误信息。
 
-代码示例：
+导入相关模块。
+
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 将BookInfo对象写入至存储区中，写入成功后，返回写入的数量；写入失败，抛出异常。
 
-// 更新“西游记”的借阅者信息
-async upsert() {
-  try {
-    let book = await this.queryBook('西游记'); // 查询出“西游记”的书籍信息
-    book.borrowerId = 1;
-    book.borrowerName = '小明';
-    book.borrowerTime = new Date();
-    let record = await databaseZone.upsert(book);
-    hilog.info(0x0000, 'testTag', `Succeeded in upserting a book, result: ${JSON.stringify(record)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to upsert a book, code: ${err.code}, message: ${err.message}`);
-  }
-}
+let book = new BookInfo();
+book.id = 11;
+book.bookName = 'Jane Eyre'
+book.price = 100.0;
+book.borrowerTime = new Date();
+databaseZone.upsert(book).then((record: number) => {
+  hilog.info(0x0000, 'cloudDb', `Succeeded in upserting: ${record}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to upsert, code: ${err.code}, message: ${err.message}`);
+});
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-// 更新“西游记”的借阅者信息
-async upsert() {
-  try {
-    let book = await this.queryBook('西游记'); // 查询出“西游记”的书籍信息
-    book.borrowerId = 1;
-    book.borrowerName = '小明';
-    book.borrowerTime = new Date();
-    let record = await databaseZone.upsert(book);
-    hilog.info(0x0000, 'testTag', `Succeeded in upserting a book, result: ${JSON.stringify(record)}`);
-  } catch (err) {
-    hilog.error(0x0000, 'testTag', `Failed to upsert a book, code: ${err.code}, message: ${err.message}`);
-  }
-}
+import { cloudDatabase } from '@kit.CloudFoundationKit';
+import { BookInfo } from '../model/BookInfo';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+```
+
+### Code block 2
+
+```
+let book = new BookInfo();
+book.id = 11;
+book.bookName = 'Jane Eyre'
+book.price = 100.0;
+book.borrowerTime = new Date();
+databaseZone.upsert(book).then((record: number) => {
+  hilog.info(0x0000, 'cloudDb', `Succeeded in upserting: ${record}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'cloudDb', `Failed to upsert, code: ${err.code}, message: ${err.message}`);
+});
 ```

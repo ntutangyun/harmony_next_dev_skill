@@ -7,3 +7,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/network-k
 管理网络连接(C/C++)
 
 连接VPN
+
+连接网络开发实践

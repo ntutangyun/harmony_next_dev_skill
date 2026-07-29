@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-integ
 
 约束与限制
 
-非续期订阅商品购买能力支持Phone、Tablet、PC/2in1设备，并且从5.1.1(19）版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
+非续期订阅商品购买能力支持Phone、Tablet、PC/2in1设备，并且从5.1.1(19)版本开始，新增支持TV设备，从26.0.0版本开始，新增支持Car设备。
 
 业务流程
 
@@ -99,26 +99,33 @@ IAP服务器返回订单信息jwsPurchaseOrder。
 当前IAP Kit支持结算的国家/地区仅有中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
+    const queryEnvCode = await this.queryEnv();
+    if (queryEnvCode !== 0) {
+      let queryEnvFailedText = 'This app does not support iap';
+      if (queryEnvCode === iap.IAPErrorCode.ACCOUNT_NOT_LOGGED_IN) {
+        // 如果接口返回错误码“1001860054 用户账号所在服务地不在IAP Kit支持结算的国家/地区中”，应用需隐藏相关IAP功能入口
+        queryEnvFailedText = 'Go to Settings and log in to your Huawei ID and try again.';
+      }
+      this.showFailedPage(queryEnvFailedText);
+      return;
+    }
+    // ...
 
-@Entry
-@Component
-struct Index {
-
-  queryEnvironmentStatus(context: common.UIAbilityContext) {
-    iap.queryEnvironmentStatus(context).then(() => {
-      // 请求成功
-      console.info('Succeeded in querying environment status.');
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      // 如果接口返回错误码“1001860054 用户账号所在服务地不在IAP Kit支持结算的国家/地区中”，应用需隐藏相关IAP功能入口
-      console.error(`Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+  async queryEnv(): Promise<number> {
+    return new Promise<number>((resolve) => {
+      iap.queryEnvironmentStatus(this.context).then(() => {
+        Logger.info(TAG, 'Succeeded in querying environment status.');
+        resolve(0);
+      }).catch((err: BusinessError) => {
+        Logger.error(TAG, `Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+        resolve(err.code);
+      })
     });
   }
-
-  build() {}
-}
 
 展示商品列表。
 
@@ -131,33 +138,26 @@ struct Index {
 queryProducts每次只能查询一种商品类型的商品，每次最多查询200个商品，否则请求将报错。
 
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
-@Entry
-@Component
-struct Index {
-
-  queryProducts(context: common.UIAbilityContext) {
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
+  async queryProducts() {
     const queryProductParam: iap.QueryProductsParameter = {
-      // iap.ProductType.NONRENEWABLE：非续期订阅商品
       productType: iap.ProductType.NONRENEWABLE,
-      // productIds中的商品需要替换成开发者在AppGallery Connect网站配置的商品
-      productIds: ['ohos_nonrenewable_001']
+      productIds: ['NA0001']
     };
-    iap.queryProducts(context, queryProductParam).then((result) => {
-      // 请求成功
-      console.info('Succeeded in querying products.');
-      // 展示商品信息
-      // ...
+    await iap.queryProducts(this.context, queryProductParam).then((result) => {
+      Logger.info(TAG, 'Succeeded in querying products.');
+      // 展示产品详情
+      this.productInfoArray = result;
+      this.showNormalPage();
     }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query products. Code is ${err.code}, message is ${err.message}`);
+      // 查询商品报错
+      Logger.error(TAG, `Failed to query products. Code is ${err.code}, message is ${err.message}`);
+      this.showFailedPage();
     });
   }
-
-  build() {}
-}
 
 [h2]发起购买
 
@@ -170,35 +170,37 @@ struct Index {
 开发过程中易出现频繁调用接口的现象，建议控制接口调用频度，具体可参见1001860004 接口访问过频。
 
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
-@Entry
-@Component
-struct Index {
-
-  createPurchase(context: common.UIAbilityContext) {
-    const createPurchaseParam: iap.PurchaseParameter = {
-      // iap.ProductType.NONRENEWABLE：非续期订阅商品
-      productType: iap.ProductType.NONRENEWABLE,
-      // productId需要替换成开发者在AppGallery Connect网站配置商品信息时设置的“商品ID”
-      productId: 'ohos_nonrenewable_001'
-    };
-    iap.createPurchase(context, createPurchaseParam).then((result) => {
-      console.info('Succeeded in creating purchase.');
-      // 购买成功，处理购买结果
-      // dealPurchaseResult实现请参见下一步
-      this.dealPurchaseResult(result);
-    }).catch((err: BusinessError) => {
-      // 购买失败
-      console.error(`Failed to create purchase. Code is ${err.code}, message is ${err.message}`);
-      // dealPurchaseError实现请参见下一步
-      this.dealPurchaseError(err);
-    })
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
+  createPurchase(id: string, type: iap.ProductType) {
+    try {
+      const createPurchaseParam: iap.PurchaseParameter = {
+        productId: id,
+        productType: type,
+      }
+      iap.createPurchase(this.context, createPurchaseParam).then((result) => {
+        const msg: string = 'Succeeded in creating purchase.';
+        Logger.info(TAG, msg);
+        // 购买成功，处理购买结果
+        this.dealPurchaseData(result.purchaseData);
+      }).catch((err: BusinessError) => {
+        const msg: string = `Failed to create purchase. Code is ${err.code}, message is ${err.message}`;
+        Logger.error(TAG, msg);
+        // 购买失败
+        if (err.code === iap.IAPErrorCode.PRODUCT_OWNED || err.code === iap.IAPErrorCode.SYSTEM_ERROR) {
+          // 参见权益发放检查是否需要补发货，确保权益发放
+          // ...
+          this.queryPurchases();
+        }
+      })
+    } catch (err) {
+      const e: BusinessError = err as BusinessError;
+      const msg: string = `Failed to create purchase. Code is ${e.code}, message is ${e.message}`;
+      Logger.error(TAG, msg);
+    }
   }
-
-  build() {}
-}
 
 [h2]购买结果处理
 
@@ -231,68 +233,60 @@ struct Index {
 JWSUtil为自定义类，可参见示例代码。
 
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-// JWSUtil为自定义类
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
 import { JWSUtil } from '../common/JWSUtil';
-
-@Entry
-@Component
-struct Index {
-
-  /**
-   * 购买结果处理
-   *
-   * @param result 商品购买结果
-   */
-  dealPurchaseResult(context: common.UIAbilityContext, result: iap.CreatePurchaseResult) {
-    const jwsPurchaseOrder: string = JSON.parse(result.purchaseData).jwsPurchaseOrder;
-    if (!jwsPurchaseOrder) {
-      return;
+import { FinishStatus, PurchaseData, PurchaseOrderPayload } from '../common/IapDataModel';
+// ...
+  dealPurchaseData(purchaseData: string) {
+    try {
+      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      const jwsPurchaseOrder = (JSON.parse(purchaseData) as PurchaseData).jwsPurchaseOrder;
+      if (!jwsPurchaseOrder) {
+        Logger.error(TAG, 'dealPurchaseData, jwsPurchaseOrder invalid');
+        return;
+      }
+      // 解码 jwsPurchaseOrder 并执行签名验证。
+      const purchaseOrderStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
+      // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
+      const purchaseOrderPayload = JSON.parse(purchaseOrderStr) as PurchaseOrderPayload;
+      // 如果验证成功则发货。
+      // ...
+      // 在发货成功后，向IAP Kit发送finishPurchase请求，以确认交付并完成购买。
+      if (purchaseOrderPayload && purchaseOrderPayload.finishStatus !== FinishStatus.FINISHED) {
+        this.finishPurchase(purchaseOrderPayload);
+      }
+    } catch (e) {
+      Logger.error(TAG, 'dealPurchaseData json error');
     }
-    // 对jwsPurchaseOrder进行解码验签
-    const purchaseStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
-    // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
-    const purchaseOrderPayload = JSON.parse(purchaseStr) as PurchaseOrderPayload;
-    // 处理发货
-    // ...
-    // 发货成功后向IAP Kit发送finishPurchase请求，确认发货，完成购买
-    // finishPurchase请求的参数来源于purchaseOrderPayload
-    this.finishPurchase(context, purchaseOrderPayload);
   }
 
-  /**
-   * 确认发货，完成购买
-   *
-   * @param purchaseOrder 订单信息，来源于购买请求
-   */
-  finishPurchase(context: common.UIAbilityContext, purchaseOrder: PurchaseOrderPayload) {
+  finishPurchase(purchaseOrder: PurchaseOrderPayload) {
+    if (!purchaseOrder.productType) {
+      Logger.error(TAG, 'finishPurchase but productType is empty');
+      return;
+    }
     const finishPurchaseParam: iap.FinishPurchaseParameter = {
       productType: Number(purchaseOrder.productType),
       purchaseToken: purchaseOrder.purchaseToken,
       purchaseOrderId: purchaseOrder.purchaseOrderId
     };
-    iap.finishPurchase(context, finishPurchaseParam).then(() => {
-      // 请求成功
-      console.info('Succeeded in finishing purchase.');
+    iap.finishPurchase(this.context, finishPurchaseParam).then(() => {
+      Logger.info(TAG, 'Succeeded in finishing purchase.');
     }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
+      Logger.error(TAG, `Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
     });
   }
-
-  build() {}
-}
 
 【结果2：购买失败】
 
 当用户购买失败时，需要针对code为iap.IAPErrorCode.PRODUCT_OWNED和iap.IAPErrorCode.SYSTEM_ERROR的场景，检查是否需要补发货，确保权益发放，具体请参见权益发放。
 
-dealPurchaseError(err: BusinessError) {
-  if (err.code === iap.IAPErrorCode.PRODUCT_OWNED || err.code === iap.IAPErrorCode.SYSTEM_ERROR) {
-    // 参见权益发放检查是否需要补发货，确保权益发放
-    // ...
-  }
+if (err.code === iap.IAPErrorCode.PRODUCT_OWNED || err.code === iap.IAPErrorCode.SYSTEM_ERROR) {
+  // 参见权益发放检查是否需要补发货，确保权益发放
+  // ...
+  // ...
 }
 
 ## Code blocks
@@ -301,161 +295,155 @@ dealPurchaseError(err: BusinessError) {
 
 ```
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
+    const queryEnvCode = await this.queryEnv();
+    if (queryEnvCode !== 0) {
+      let queryEnvFailedText = 'This app does not support iap';
+      if (queryEnvCode === iap.IAPErrorCode.ACCOUNT_NOT_LOGGED_IN) {
+        // 如果接口返回错误码“1001860054 用户账号所在服务地不在IAP Kit支持结算的国家/地区中”，应用需隐藏相关IAP功能入口
+        queryEnvFailedText = 'Go to Settings and log in to your Huawei ID and try again.';
+      }
+      this.showFailedPage(queryEnvFailedText);
+      return;
+    }
+    // ...
 
-@Entry
-@Component
-struct Index {
-
-  queryEnvironmentStatus(context: common.UIAbilityContext) {
-    iap.queryEnvironmentStatus(context).then(() => {
-      // 请求成功
-      console.info('Succeeded in querying environment status.');
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      // 如果接口返回错误码“1001860054 用户账号所在服务地不在IAP Kit支持结算的国家/地区中”，应用需隐藏相关IAP功能入口
-      console.error(`Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+  async queryEnv(): Promise<number> {
+    return new Promise<number>((resolve) => {
+      iap.queryEnvironmentStatus(this.context).then(() => {
+        Logger.info(TAG, 'Succeeded in querying environment status.');
+        resolve(0);
+      }).catch((err: BusinessError) => {
+        Logger.error(TAG, `Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+        resolve(err.code);
+      })
     });
   }
-
-  build() {}
-}
 ```
 
 ### Code block 2
 
 ```
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
-@Entry
-@Component
-struct Index {
-
-  queryProducts(context: common.UIAbilityContext) {
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
+  async queryProducts() {
     const queryProductParam: iap.QueryProductsParameter = {
-      // iap.ProductType.NONRENEWABLE：非续期订阅商品
       productType: iap.ProductType.NONRENEWABLE,
-      // productIds中的商品需要替换成开发者在AppGallery Connect网站配置的商品
-      productIds: ['ohos_nonrenewable_001']
+      productIds: ['NA0001']
     };
-    iap.queryProducts(context, queryProductParam).then((result) => {
-      // 请求成功
-      console.info('Succeeded in querying products.');
-      // 展示商品信息
-      // ...
+    await iap.queryProducts(this.context, queryProductParam).then((result) => {
+      Logger.info(TAG, 'Succeeded in querying products.');
+      // 展示产品详情
+      this.productInfoArray = result;
+      this.showNormalPage();
     }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query products. Code is ${err.code}, message is ${err.message}`);
+      // 查询商品报错
+      Logger.error(TAG, `Failed to query products. Code is ${err.code}, message is ${err.message}`);
+      this.showFailedPage();
     });
   }
-
-  build() {}
-}
 ```
 
 ### Code block 3
 
 ```
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
-@Entry
-@Component
-struct Index {
-
-  createPurchase(context: common.UIAbilityContext) {
-    const createPurchaseParam: iap.PurchaseParameter = {
-      // iap.ProductType.NONRENEWABLE：非续期订阅商品
-      productType: iap.ProductType.NONRENEWABLE,
-      // productId需要替换成开发者在AppGallery Connect网站配置商品信息时设置的“商品ID”
-      productId: 'ohos_nonrenewable_001'
-    };
-    iap.createPurchase(context, createPurchaseParam).then((result) => {
-      console.info('Succeeded in creating purchase.');
-      // 购买成功，处理购买结果
-      // dealPurchaseResult实现请参见下一步
-      this.dealPurchaseResult(result);
-    }).catch((err: BusinessError) => {
-      // 购买失败
-      console.error(`Failed to create purchase. Code is ${err.code}, message is ${err.message}`);
-      // dealPurchaseError实现请参见下一步
-      this.dealPurchaseError(err);
-    })
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
+  createPurchase(id: string, type: iap.ProductType) {
+    try {
+      const createPurchaseParam: iap.PurchaseParameter = {
+        productId: id,
+        productType: type,
+      }
+      iap.createPurchase(this.context, createPurchaseParam).then((result) => {
+        const msg: string = 'Succeeded in creating purchase.';
+        Logger.info(TAG, msg);
+        // 购买成功，处理购买结果
+        this.dealPurchaseData(result.purchaseData);
+      }).catch((err: BusinessError) => {
+        const msg: string = `Failed to create purchase. Code is ${err.code}, message is ${err.message}`;
+        Logger.error(TAG, msg);
+        // 购买失败
+        if (err.code === iap.IAPErrorCode.PRODUCT_OWNED || err.code === iap.IAPErrorCode.SYSTEM_ERROR) {
+          // 参见权益发放检查是否需要补发货，确保权益发放
+          // ...
+          this.queryPurchases();
+        }
+      })
+    } catch (err) {
+      const e: BusinessError = err as BusinessError;
+      const msg: string = `Failed to create purchase. Code is ${e.code}, message is ${e.message}`;
+      Logger.error(TAG, msg);
+    }
   }
-
-  build() {}
-}
 ```
 
 ### Code block 4
 
 ```
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-// JWSUtil为自定义类
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
 import { JWSUtil } from '../common/JWSUtil';
-
-@Entry
-@Component
-struct Index {
-
-  /**
-   * 购买结果处理
-   *
-   * @param result 商品购买结果
-   */
-  dealPurchaseResult(context: common.UIAbilityContext, result: iap.CreatePurchaseResult) {
-    const jwsPurchaseOrder: string = JSON.parse(result.purchaseData).jwsPurchaseOrder;
-    if (!jwsPurchaseOrder) {
-      return;
+import { FinishStatus, PurchaseData, PurchaseOrderPayload } from '../common/IapDataModel';
+// ...
+  dealPurchaseData(purchaseData: string) {
+    try {
+      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      const jwsPurchaseOrder = (JSON.parse(purchaseData) as PurchaseData).jwsPurchaseOrder;
+      if (!jwsPurchaseOrder) {
+        Logger.error(TAG, 'dealPurchaseData, jwsPurchaseOrder invalid');
+        return;
+      }
+      // 解码 jwsPurchaseOrder 并执行签名验证。
+      const purchaseOrderStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
+      // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
+      const purchaseOrderPayload = JSON.parse(purchaseOrderStr) as PurchaseOrderPayload;
+      // 如果验证成功则发货。
+      // ...
+      // 在发货成功后，向IAP Kit发送finishPurchase请求，以确认交付并完成购买。
+      if (purchaseOrderPayload && purchaseOrderPayload.finishStatus !== FinishStatus.FINISHED) {
+        this.finishPurchase(purchaseOrderPayload);
+      }
+    } catch (e) {
+      Logger.error(TAG, 'dealPurchaseData json error');
     }
-    // 对jwsPurchaseOrder进行解码验签
-    const purchaseStr = JWSUtil.decodeJwsObj(jwsPurchaseOrder);
-    // 需自定义PurchaseOrderPayload类，包含的信息请参见PurchaseOrderPayload
-    const purchaseOrderPayload = JSON.parse(purchaseStr) as PurchaseOrderPayload;
-    // 处理发货
-    // ...
-    // 发货成功后向IAP Kit发送finishPurchase请求，确认发货，完成购买
-    // finishPurchase请求的参数来源于purchaseOrderPayload
-    this.finishPurchase(context, purchaseOrderPayload);
   }
 
-  /**
-   * 确认发货，完成购买
-   *
-   * @param purchaseOrder 订单信息，来源于购买请求
-   */
-  finishPurchase(context: common.UIAbilityContext, purchaseOrder: PurchaseOrderPayload) {
+  finishPurchase(purchaseOrder: PurchaseOrderPayload) {
+    if (!purchaseOrder.productType) {
+      Logger.error(TAG, 'finishPurchase but productType is empty');
+      return;
+    }
     const finishPurchaseParam: iap.FinishPurchaseParameter = {
       productType: Number(purchaseOrder.productType),
       purchaseToken: purchaseOrder.purchaseToken,
       purchaseOrderId: purchaseOrder.purchaseOrderId
     };
-    iap.finishPurchase(context, finishPurchaseParam).then(() => {
-      // 请求成功
-      console.info('Succeeded in finishing purchase.');
+    iap.finishPurchase(this.context, finishPurchaseParam).then(() => {
+      Logger.info(TAG, 'Succeeded in finishing purchase.');
     }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
+      Logger.error(TAG, `Failed to finish purchase. Code is ${err.code}, message is ${err.message}`);
     });
   }
-
-  build() {}
-}
 ```
 
 ### Code block 5
 
 ```
-dealPurchaseError(err: BusinessError) {
-  if (err.code === iap.IAPErrorCode.PRODUCT_OWNED || err.code === iap.IAPErrorCode.SYSTEM_ERROR) {
-    // 参见权益发放检查是否需要补发货，确保权益发放
-    // ...
-  }
+if (err.code === iap.IAPErrorCode.PRODUCT_OWNED || err.code === iap.IAPErrorCode.SYSTEM_ERROR) {
+  // 参见权益发放检查是否需要补发货，确保权益发放
+  // ...
+  // ...
 }
 ```

@@ -4,15 +4,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pla
 
 音频播放开发概述
 
+选择合适的播放流类型
+
 推荐使用OHAudio开发音频播放功能(C/C++)
 
-使用AudioRenderer开发音频播放功能(ArkTs)
+使用AudioRenderer开发音频播放功能(ArkTS)
 
 低时延音频播放(C/C++)
 
 低功耗音频播放
 
-使用AudioHaptic开发音振协同播放功能(ArkTs)
+使用AudioHaptic开发音振协同播放功能(ArkTS)
 
 使用SoundPlayer开发系统音效播放功能
 

@@ -21,9 +21,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-定义会话配置，创建会话。
+定义会话配置。
 
-// 定义会话配置
 const sessionConfig: rcp.SessionConfiguration = {
   requestConfiguration: {
     transfer: {
@@ -35,19 +34,17 @@ const sessionConfig: rcp.SessionConfiguration = {
   }
 };
 
-// 创建会话
-const session = rcp.createSession(sessionConfig);
-
 定义异步函数，利用递归实现重试，如果请求失败，会在指定的重试次数内进行重试。
 
-async function retryRequest(url: string, retryCount: number, attempt: number): Promise<rcp.Response> {
+async function retryRequest(session: rcp.Session, url: string, retryCount: number, attempt: number):
+  Promise<rcp.Response> {
   try {
     const response = await session.get(url);
     return Promise.resolve(response);
   } catch (e) {
     if (e.code === 1007900006 || e.code === 1007900005 || e.code === 1007900007 || e.code === 1007900035) {
       if (attempt < retryCount) {
-        return retryRequest(url, retryCount, attempt + 1);
+        return retryRequest(session, url, retryCount, attempt + 1);
       } else {
         return Promise.reject(e);
       }
@@ -59,22 +56,26 @@ async function retryRequest(url: string, retryCount: number, attempt: number): P
 
 调用retryRequest方法，实现网络请求的重试逻辑。
 
-// 定义URL
-const URL = 'https://www.example.com'
+// 创建会话
+const session = rcp.createSession(sessionConfig);
+// 定义URL此处给出示例，请根据实际情况选择正确地址
+const URL = 'https://www.example.com';
 
 // 定义重试次数，值为3
-const retryCount = 3
+const retryCount = 3;
 
 // 定义当前尝试次数，初始值为1
-const attempt = 1
+const attempt = 1;
 
 // 调用retryRequest函数进行网络请求，参数为URL、重试次数和当前尝试次数，将retryRequest函数返回的结果存储在response变量中
-const response = retryRequest(URL, retryCount, attempt);
+const response = retryRequest(session, URL, retryCount, attempt);
 // 使用then方法处理response的成功返回情况
 response.then((res) => {
   console.info(`retryRequest result: ${res.statusCode.toString()}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`retryRequest error code: ${err.code}, err data: ${err.data}`);
+  // ...
 })
 
 ## Code blocks
@@ -89,7 +90,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-// 定义会话配置
 const sessionConfig: rcp.SessionConfiguration = {
   requestConfiguration: {
     transfer: {
@@ -100,22 +100,20 @@ const sessionConfig: rcp.SessionConfiguration = {
     }
   }
 };
-
-// 创建会话
-const session = rcp.createSession(sessionConfig);
 ```
 
 ### Code block 3
 
 ```
-async function retryRequest(url: string, retryCount: number, attempt: number): Promise<rcp.Response> {
+async function retryRequest(session: rcp.Session, url: string, retryCount: number, attempt: number):
+  Promise<rcp.Response> {
   try {
     const response = await session.get(url);
     return Promise.resolve(response);
   } catch (e) {
     if (e.code === 1007900006 || e.code === 1007900005 || e.code === 1007900007 || e.code === 1007900035) {
       if (attempt < retryCount) {
-        return retryRequest(url, retryCount, attempt + 1);
+        return retryRequest(session, url, retryCount, attempt + 1);
       } else {
         return Promise.reject(e);
       }
@@ -129,21 +127,25 @@ async function retryRequest(url: string, retryCount: number, attempt: number): P
 ### Code block 4
 
 ```
-// 定义URL
-const URL = 'https://www.example.com'
+// 创建会话
+const session = rcp.createSession(sessionConfig);
+// 定义URL此处给出示例，请根据实际情况选择正确地址
+const URL = 'https://www.example.com';
 
 // 定义重试次数，值为3
-const retryCount = 3
+const retryCount = 3;
 
 // 定义当前尝试次数，初始值为1
-const attempt = 1
+const attempt = 1;
 
 // 调用retryRequest函数进行网络请求，参数为URL、重试次数和当前尝试次数，将retryRequest函数返回的结果存储在response变量中
-const response = retryRequest(URL, retryCount, attempt);
+const response = retryRequest(session, URL, retryCount, attempt);
 // 使用then方法处理response的成功返回情况
 response.then((res) => {
   console.info(`retryRequest result: ${res.statusCode.toString()}`);
+  // ...
 }).catch((err: BusinessError) => {
   console.error(`retryRequest error code: ${err.code}, err data: ${err.data}`);
+  // ...
 })
 ```

@@ -19,7 +19,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pen-image
 接口说明
 
 类名	接口名	说明
-imageFeaturePicker	pickForResult	启动取色器。此API用于启动取色器，在取色器移动时不显示色值。该接口要求设备支持手写笔功能，若设备不支持手写笔，则无法启动取色器。
+imageFeaturePicker	pickForResult(x?:number, y?:number):Promise<PickedColorInfo>	启动取色器。此API用于启动取色器，在取色器移动时不显示色值。该接口要求设备支持手写笔功能，若设备不支持手写笔，则无法启动取色器。
 
 开发步骤
 
@@ -27,8 +27,6 @@ imageFeaturePicker	pickForResult	启动取色器。此API用于启动取色器�
 
 import { imageFeaturePicker } from '@kit.Penkit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
-构造全局取色能力。
 
 @Entry
 @Component
@@ -48,7 +46,7 @@ struct Index {
           .height('60vp')
           .align(Alignment.Center)
           .onClick((event) => {
-             // 此处的 displayX 和 displayY 为触摸事件触发时屏幕上的坐标位置
+            // 此处的 displayX 和 displayY 为触摸事件触发时屏幕上的坐标位置
             imageFeaturePicker.pickForResult(event.displayX, event.displayY)
               .then((colorInfo: imageFeaturePicker.PickedColorInfo) => {
                 if (colorInfo) {
@@ -74,11 +72,7 @@ struct Index {
 ```
 import { imageFeaturePicker } from '@kit.Penkit';
 import { BusinessError } from '@kit.BasicServicesKit';
-```
 
-### Code block 2
-
-```
 @Entry
 @Component
 struct Index {
@@ -97,7 +91,7 @@ struct Index {
           .height('60vp')
           .align(Alignment.Center)
           .onClick((event) => {
-             // 此处的 displayX 和 displayY 为触摸事件触发时屏幕上的坐标位置
+            // 此处的 displayX 和 displayY 为触摸事件触发时屏幕上的坐标位置
             imageFeaturePicker.pickForResult(event.displayX, event.displayY)
               .then((colorInfo: imageFeaturePicker.PickedColorInfo) => {
                 if (colorInfo) {

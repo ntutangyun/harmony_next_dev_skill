@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/media-transcoder-arkts_
 
-使用AVTranscoder实现视频转码(ArkTS)
+使用AVTranscoder实现音视频转码(ArkTS)
 
 创建异步线程执行AVTranscoder视频转码(ArkTS)
 

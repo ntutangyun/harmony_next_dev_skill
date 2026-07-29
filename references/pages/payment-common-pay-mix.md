@@ -145,7 +145,7 @@ struct Index {
   requestPaymentPromise() {
     // 请开发者使用自己的订单信息（orderStr）
     const orderStr = '{"app_id":"***","merc_no":"***","prepay_id":"xxx","timestamp":"1680259863114","noncestr":"1487b8a60ed9f9ecc0ba759fbec23f4f","sign":"****","auth_id":"***"}';
-    paymentService.requestPayment(this.context, orderStr, "")
+    paymentService.requestPayment(this.context, orderStr, '')
       .then((payResult: paymentService.PayResult) => {
         // 支付成功
         console.info('succeeded in paying, pay result: ', payResult);
@@ -213,7 +213,7 @@ struct Index {
   requestPaymentPromise() {
     // 请开发者使用自己的订单信息（orderStr）
     const orderStr = '{"app_id":"***","merc_no":"***","prepay_id":"xxx","timestamp":"1680259863114","noncestr":"1487b8a60ed9f9ecc0ba759fbec23f4f","sign":"****","auth_id":"***"}';
-    paymentService.requestPayment(this.context, orderStr, "")
+    paymentService.requestPayment(this.context, orderStr, '')
       .then((payResult: paymentService.PayResult) => {
         // 支付成功
         console.info('succeeded in paying, pay result: ', payResult);

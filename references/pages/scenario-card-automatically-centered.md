@@ -1,4 +1,4 @@
-# 卡片自动居中的场景
+# 卡片自动居中
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-card-automatically-centered_
 
@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 在横向滚动容器中，通过居中限位来突出中心卡片的详细信息和操作选项。为了确保屏幕朗读场景下聚焦卡片的可访问性，需要将获得焦点的卡片自动居中显示，以凸显其重要性。为此，需要应用通过ForEach或LazyForEach获取卡片索引，在可聚焦的卡片控件上注册无障碍聚焦回调函数onAccessibilityFocus，在回调函数中调用滚动容器的scrollToIndex接口并指定卡片索引，将聚焦的卡片控件居中显示。
 
-开发实例
+开发流程
 
 如下示例实现一个横向滚动容器，卡片被聚焦时自动居中显示：
 

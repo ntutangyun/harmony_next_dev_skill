@@ -161,7 +161,7 @@ if (ret != AV_ERR_OK) {
 
 送入输入队列进行解码，示例中的变量说明如下：
 
-size、offset、pts、frameData：输入尺寸、偏移量、时间戳、帧数据等字段信息，获取方式可以参考媒体数据解析“步骤-9：开始解封装，循环获取sample”。
+size、offset、pts、frameData：输入尺寸、偏移量、时间戳、帧数据等字段信息，获取方式可以参考媒体数据解封装开发步骤中的“步骤-9：开始解封装，循环获取sample”。
 
 flags：缓冲区标记的类别，请参考OH_AVCodecBufferFlags。
 

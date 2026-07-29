@@ -49,13 +49,13 @@ attr_name_len	属性名字长度，最大长度为kMaxNameLength。
 调用示例
 
 Status QueueDequeueUpToMapping(const  ge::Operator& op_src, ge::Operator& op) {
-vector<DynamicInputOutputInfo> dynamic_name_attr_value;
-string port_name = "components";
-string attr_name = "component_types";
-DynamicInputOutputInfo name_attr(kOutput, port_name.c_str(), port_name.size(), attr_name.c_str(), attr_name.size());
-dynamic_name_attr_value.push_back(name_attr);
-AutoMappingByOpFnDynamic(op_src, op, dynamic_name_attr_value);
-return SUCCESS;
+  vector<DynamicInputOutputInfo> dynamic_name_attr_value;
+  string port_name = "components";
+  string attr_name = "component_types";
+  DynamicInputOutputInfo name_attr(kOutput, port_name.c_str(), port_name.size(), attr_name.c_str(), attr_name.size());
+  dynamic_name_attr_value.push_back(name_attr);
+  AutoMappingByOpFnDynamic(op_src, op, dynamic_name_attr_value);
+  return SUCCESS;
 }
 
 REGISTER_CUSTOM_OP("QueueDequeueUpTo")
@@ -100,13 +100,13 @@ struct DynamicInputOutputInfo {
 
 ```
 Status QueueDequeueUpToMapping(const  ge::Operator& op_src, ge::Operator& op) {
-vector<DynamicInputOutputInfo> dynamic_name_attr_value;
-string port_name = "components";
-string attr_name = "component_types";
-DynamicInputOutputInfo name_attr(kOutput, port_name.c_str(), port_name.size(), attr_name.c_str(), attr_name.size());
-dynamic_name_attr_value.push_back(name_attr);
-AutoMappingByOpFnDynamic(op_src, op, dynamic_name_attr_value);
-return SUCCESS;
+  vector<DynamicInputOutputInfo> dynamic_name_attr_value;
+  string port_name = "components";
+  string attr_name = "component_types";
+  DynamicInputOutputInfo name_attr(kOutput, port_name.c_str(), port_name.size(), attr_name.c_str(), attr_name.size());
+  dynamic_name_attr_value.push_back(name_attr);
+  AutoMappingByOpFnDynamic(op_src, op, dynamic_name_attr_value);
+  return SUCCESS;
 }
 
 REGISTER_CUSTOM_OP("QueueDequeueUpTo")

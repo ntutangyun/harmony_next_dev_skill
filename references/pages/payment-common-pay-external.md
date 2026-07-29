@@ -114,9 +114,9 @@ struct Index {
   requestCashierPickerCallBack() {
     // 请开发者使用自己的支付订单信息（paymentInfo）
     const paymentInfo: paymentService.PaymentInfo= {
-      tradeSummary: "***交易",
+      tradeSummary: '***交易',
       amount: 100,
-      currency: "CNY",
+      currency: 'CNY',
       extraInfo: '{"***":"***"}'
     }
     paymentService.cashierPicker(this.context, paymentInfo)
@@ -165,9 +165,9 @@ struct Index {
   requestCashierPickerCallBack() {
     // 请开发者使用自己的支付订单信息（paymentInfo）
     const paymentInfo: paymentService.PaymentInfo= {
-      tradeSummary: "***交易",
+      tradeSummary: '***交易',
       amount: 100,
-      currency: "CNY",
+      currency: 'CNY',
       extraInfo: '{"***":"***"}'
     }
     paymentService.cashierPicker(this.context, paymentInfo)

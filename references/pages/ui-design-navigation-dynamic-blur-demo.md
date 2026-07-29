@@ -4,7 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 在首页创建一级导航，适用于需要构建具有导航结构的主界面，支持动态标题栏样式切换与页面跳转功能。通过titleBar接口设置导航栏的内容和样式，包括标题、菜单项、返回按钮等元素。通过pushPath路由方法跳转至二级导航页面。
 
-// 模块导入
 // 从6.0.2(22)版本开始，无需手动导入HdsNavigationAttribute。具体请参考HdsNavigation的导入模块说明。
 import { HdsNavigation, ScrollEffectType, HdsNavigationTitleMode, HdsNavigationAttribute } from '@kit.UIDesignKit';
 
@@ -107,7 +106,7 @@ struct Index {
             }
           }, {
             content: {
-              // 第三个菜单项内容设置
+              // 第四个菜单项内容设置
               label: 'menu4',
               icon: $r('sys.symbol.ohos_star'),
             }
@@ -358,7 +357,6 @@ export struct PageTwo {
 ### Code block 1
 
 ```
-// 模块导入
 // 从6.0.2(22)版本开始，无需手动导入HdsNavigationAttribute。具体请参考HdsNavigation的导入模块说明。
 import { HdsNavigation, ScrollEffectType, HdsNavigationTitleMode, HdsNavigationAttribute } from '@kit.UIDesignKit';
 
@@ -461,7 +459,7 @@ struct Index {
             }
           }, {
             content: {
-              // 第三个菜单项内容设置
+              // 第四个菜单项内容设置
               label: 'menu4',
               icon: $r('sys.symbol.ohos_star'),
             }

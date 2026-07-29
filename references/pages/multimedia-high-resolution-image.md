@@ -137,7 +137,7 @@ async function getHighResolutionAsset(
     console.info(`Open source file successfully. fd: ${srcFile.fd}`);
   } catch (error) {
     const err = error as BusinessError;
-    console.error(`Failed get high resolution asset: code: ${err.code}, message: ${err.message}`);
+    console.error(`Failed to get high resolution asset: code: ${err.code}, message: ${err.message}`);
   }
 }
 
@@ -481,7 +481,7 @@ async function getHighResolutionAsset(
     console.info(`Open source file successfully. fd: ${srcFile.fd}`);
   } catch (error) {
     const err = error as BusinessError;
-    console.error(`Failed get high resolution asset: code: ${err.code}, message: ${err.message}`);
+    console.error(`Failed to get high resolution asset: code: ${err.code}, message: ${err.message}`);
   }
 }
 ```

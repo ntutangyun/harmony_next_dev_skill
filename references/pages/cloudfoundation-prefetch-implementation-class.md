@@ -26,7 +26,7 @@ PrefetchUtil
 
 周期性预加载任务注册间隔需要大于12h，建议按照如下示例取值为24h。
 
-import { cloudResPrefetch } from '@kit.CloudFoundationKit'
+import { cloudResPrefetch } from '@kit.CloudFoundationKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { PreferenceUtil } from '../common/PreferenceUtil';
 import { GlobalContext } from '../common/GlobalContext';
@@ -78,7 +78,7 @@ export class PrefetchUtil {
    * 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
    * @returns boolean
    */
-  public static hasPrefetchTaskData() : boolean {
+  public static hasPrefetchTaskData(): boolean {
     return PrefetchUtil.hasPrefetchedData;
   }
 
@@ -143,7 +143,7 @@ export class PrefetchUtil {
   private static updateTaskTimer(delay: number) {
     PrefetchUtil.timeoutId = setTimeout(() => {
       if (PrefetchUtil.timeoutId != (0 - Number.MAX_VALUE)) {
-        clearInterval(PrefetchUtil.timeoutId)
+        clearInterval(PrefetchUtil.timeoutId);
         PrefetchUtil.timeoutId = (0 - Number.MAX_VALUE);
       }
     }, delay);
@@ -180,8 +180,8 @@ import { deferredLink } from '@kit.AppLinkingKit';
 
 const HILOG_DOMAIN = 0x0000;
 const TAG = 'PrefetchWrapper';
-const PREFETCH_MODE = "prefetchMode";
-const PREFETCH_LINK_MODE = "prefetchLinkMode";
+const PREFETCH_MODE = 'prefetchMode';
+const PREFETCH_LINK_MODE = 'prefetchLinkMode';
 const PREFERENCES_PREFETCH_STORE_NAME = 'defaultStore';
 
 export class PrefetchWrapper {
@@ -207,12 +207,12 @@ export class PrefetchWrapper {
     this.initPrefetchMode();
     if (!this.prefetchMode) {
       // 应用安装后首次打开：使用安装预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'installPrefetch');
+      hilog.info(HILOG_DOMAIN, TAG, `installPrefetch`);
       this.installPrefetch();
       this.setPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     } else {
       // 应用安装后非首次打开：使用周期性预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'periodicPrefetch: %{public}d', this.prefetchMode);
+      hilog.info(HILOG_DOMAIN, TAG, `periodicPrefetch: ${this.prefetchMode}`);
       this.periodicPrefetch();
     }
   }
@@ -223,7 +223,7 @@ export class PrefetchWrapper {
     this.initPrefetchMode();
     if (!this.prefetchMode) {
       // 应用安装后首次打开：使用安装预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'installPrefetch');
+      hilog.info(HILOG_DOMAIN, TAG, `installPrefetch`);
       this.installPrefetch();
       this.setPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     }
@@ -237,7 +237,7 @@ export class PrefetchWrapper {
       this.setPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     } else {
       // 应用安装后非首次打开：使用周期性预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'periodicPrefetch: %{public}d', this.prefetchMode);
+      hilog.info(HILOG_DOMAIN, TAG, `periodicPrefetch: ${this.prefetchMode}`);
       this.periodicPrefetch();
     }
   }
@@ -252,10 +252,10 @@ export class PrefetchWrapper {
       }
       let params: cloudResPrefetch.PrefetchParams = {
         link: link
-      }
+      };
       let dataResult = await cloudResPrefetch.getPrefetchResult(cloudResPrefetch.PrefetchMode.LINK_PREFETCH, params);
       // todo 处理dataResult，跳转应用详情页并渲染
-      hilog.info(HILOG_DOMAIN, TAG, 'get install link prefetch dataResult: %{public}s', JSON.stringify(dataResult));
+      hilog.info(HILOG_DOMAIN, TAG, `get install link prefetch dataResult: ${JSON.stringify(dataResult)}`);
       return Promise.resolve(true);
     } catch (err) {
       return Promise.resolve(false);
@@ -265,15 +265,15 @@ export class PrefetchWrapper {
   private installPrefetch() {
     PrefetchUtil.getPrefetchResult(cloudResPrefetch.PrefetchMode.INSTALL_PREFETCH)
       .then((data: cloudResPrefetch.PrefetchResult) => { // 接口调用成功，处理缓存的应用数据
-        hilog.info(HILOG_DOMAIN, TAG, 'get install prefetch cache successfully');
+        hilog.info(HILOG_DOMAIN, TAG, `get install prefetch cache successfully`);
         let dataResult = data.result; // data.result即是缓存的应用数据
         // todo 处理dataResult
-        hilog.info(HILOG_DOMAIN, TAG, 'get install prefetch dataResult: %{public}s', JSON.stringify(dataResult));
+        hilog.info(HILOG_DOMAIN, TAG, `get install prefetch dataResult: ${JSON.stringify(dataResult)}`);
       })
       .catch((err: BusinessError) => {
         hilog.error(HILOG_DOMAIN, TAG, `get install prefetch cache failed: ${err.message}, ${err.code}`);
         this.cloudFunctionCall(); // 应用走原有逻辑获取数据，示例使用云函数获取
-      })
+      });
   }
 
   private initPrefetchMode() {
@@ -309,55 +309,55 @@ export class PrefetchWrapper {
   private periodicPrefetch() {
     this.initPeriodPrefetch();
     if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
-      hilog.info(HILOG_DOMAIN, TAG, 'not has prefetch data');
+      hilog.info(HILOG_DOMAIN, TAG, `not has prefetch data`);
       this.cloudFunctionCall(); // 使用普通方式获取应用数据
       return;
     }
     PrefetchUtil.getPrefetchResult(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH)
       .then((data: cloudResPrefetch.PrefetchResult) => { // 接口调用成功，处理缓存的应用数据
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch cache successfully');
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch cache successfully`);
         let dataResult = data.result; // data.result即是缓存的应用数据
         let timestamp = data.timestamp; // data.timestamp即是缓存拉取时间
         let token = data.token; // data.token即是注册任务token
         // todo 处理dataResult
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch dataResult: %{public}s', JSON.stringify(dataResult));
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch timestamp: %{public}s', timestamp.toString());
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch token: %{public}s', token)
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch dataResult: ${JSON.stringify(dataResult)}`);
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch timestamp: ${timestamp.toString()}`);
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch token: ${token}`);
       })
       .catch((err: BusinessError) => {
         hilog.error(HILOG_DOMAIN, TAG, `get periodic prefetch cache failed: ${err.message}, ${err.code}`);
         this.cloudFunctionCall(); // 应用走原有逻辑获取数据，示例使用云函数获取
-      })
+      });
   }
 
   // 获取跳链安装预加载的链接信息
   private async popPrefetchLink(): Promise<string> {
     this.initLinkPrefetchMode();
     if (this.linkPrefetchMode) {
-      return Promise.resolve("");
+      return Promise.resolve('');
     }
     this.setLinkPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     try {
       let link = await deferredLink.popDeferredLink();
       return Promise.resolve(link);
     } catch (err) {
-      return Promise.resolve("");
+      return Promise.resolve('');
     }
   }
 
   private cloudFunctionCall() {
-    hilog.info(HILOG_DOMAIN, TAG, 'cloudFunctionCall start');
+    hilog.info(HILOG_DOMAIN, TAG, `cloudFunctionCall start`);
     cloudFunction.call({
-      name: "function_name", // 需修改为实际的云函数名称
+      name: 'function_name', // 需修改为实际的云函数名称
       timeout: 5 * 1000
     }).then((data: cloudFunction.FunctionResult) => {
-      hilog.info(HILOG_DOMAIN, TAG, 'call function successfully');
+      hilog.info(HILOG_DOMAIN, TAG, `call function successfully`);
       let dataResult = data.result; // data.result即是缓存的应用数据
       // todo 处理dataResult
-      hilog.info(HILOG_DOMAIN, TAG, 'call function get: %{public}s', JSON.stringify(dataResult));
+      hilog.info(HILOG_DOMAIN, TAG, `call function get: ${JSON.stringify(dataResult)}`);
     }).catch((err: BusinessError) => {
-      hilog.error(HILOG_DOMAIN, TAG, 'call function failed: %{public}s', err.message);
-    })
+      hilog.error(HILOG_DOMAIN, TAG, `call function failed: ${err.message}`);
+    });
   }
 }
 
@@ -366,7 +366,7 @@ export class PrefetchWrapper {
 ### Code block 1
 
 ```
-import { cloudResPrefetch } from '@kit.CloudFoundationKit'
+import { cloudResPrefetch } from '@kit.CloudFoundationKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { PreferenceUtil } from '../common/PreferenceUtil';
 import { GlobalContext } from '../common/GlobalContext';
@@ -418,7 +418,7 @@ export class PrefetchUtil {
    * 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
    * @returns boolean
    */
-  public static hasPrefetchTaskData() : boolean {
+  public static hasPrefetchTaskData(): boolean {
     return PrefetchUtil.hasPrefetchedData;
   }
 
@@ -483,7 +483,7 @@ export class PrefetchUtil {
   private static updateTaskTimer(delay: number) {
     PrefetchUtil.timeoutId = setTimeout(() => {
       if (PrefetchUtil.timeoutId != (0 - Number.MAX_VALUE)) {
-        clearInterval(PrefetchUtil.timeoutId)
+        clearInterval(PrefetchUtil.timeoutId);
         PrefetchUtil.timeoutId = (0 - Number.MAX_VALUE);
       }
     }, delay);
@@ -514,8 +514,8 @@ import { deferredLink } from '@kit.AppLinkingKit';
 
 const HILOG_DOMAIN = 0x0000;
 const TAG = 'PrefetchWrapper';
-const PREFETCH_MODE = "prefetchMode";
-const PREFETCH_LINK_MODE = "prefetchLinkMode";
+const PREFETCH_MODE = 'prefetchMode';
+const PREFETCH_LINK_MODE = 'prefetchLinkMode';
 const PREFERENCES_PREFETCH_STORE_NAME = 'defaultStore';
 
 export class PrefetchWrapper {
@@ -541,12 +541,12 @@ export class PrefetchWrapper {
     this.initPrefetchMode();
     if (!this.prefetchMode) {
       // 应用安装后首次打开：使用安装预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'installPrefetch');
+      hilog.info(HILOG_DOMAIN, TAG, `installPrefetch`);
       this.installPrefetch();
       this.setPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     } else {
       // 应用安装后非首次打开：使用周期性预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'periodicPrefetch: %{public}d', this.prefetchMode);
+      hilog.info(HILOG_DOMAIN, TAG, `periodicPrefetch: ${this.prefetchMode}`);
       this.periodicPrefetch();
     }
   }
@@ -557,7 +557,7 @@ export class PrefetchWrapper {
     this.initPrefetchMode();
     if (!this.prefetchMode) {
       // 应用安装后首次打开：使用安装预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'installPrefetch');
+      hilog.info(HILOG_DOMAIN, TAG, `installPrefetch`);
       this.installPrefetch();
       this.setPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     }
@@ -571,7 +571,7 @@ export class PrefetchWrapper {
       this.setPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     } else {
       // 应用安装后非首次打开：使用周期性预加载
-      hilog.info(HILOG_DOMAIN, TAG, 'periodicPrefetch: %{public}d', this.prefetchMode);
+      hilog.info(HILOG_DOMAIN, TAG, `periodicPrefetch: ${this.prefetchMode}`);
       this.periodicPrefetch();
     }
   }
@@ -586,10 +586,10 @@ export class PrefetchWrapper {
       }
       let params: cloudResPrefetch.PrefetchParams = {
         link: link
-      }
+      };
       let dataResult = await cloudResPrefetch.getPrefetchResult(cloudResPrefetch.PrefetchMode.LINK_PREFETCH, params);
       // todo 处理dataResult，跳转应用详情页并渲染
-      hilog.info(HILOG_DOMAIN, TAG, 'get install link prefetch dataResult: %{public}s', JSON.stringify(dataResult));
+      hilog.info(HILOG_DOMAIN, TAG, `get install link prefetch dataResult: ${JSON.stringify(dataResult)}`);
       return Promise.resolve(true);
     } catch (err) {
       return Promise.resolve(false);
@@ -599,15 +599,15 @@ export class PrefetchWrapper {
   private installPrefetch() {
     PrefetchUtil.getPrefetchResult(cloudResPrefetch.PrefetchMode.INSTALL_PREFETCH)
       .then((data: cloudResPrefetch.PrefetchResult) => { // 接口调用成功，处理缓存的应用数据
-        hilog.info(HILOG_DOMAIN, TAG, 'get install prefetch cache successfully');
+        hilog.info(HILOG_DOMAIN, TAG, `get install prefetch cache successfully`);
         let dataResult = data.result; // data.result即是缓存的应用数据
         // todo 处理dataResult
-        hilog.info(HILOG_DOMAIN, TAG, 'get install prefetch dataResult: %{public}s', JSON.stringify(dataResult));
+        hilog.info(HILOG_DOMAIN, TAG, `get install prefetch dataResult: ${JSON.stringify(dataResult)}`);
       })
       .catch((err: BusinessError) => {
         hilog.error(HILOG_DOMAIN, TAG, `get install prefetch cache failed: ${err.message}, ${err.code}`);
         this.cloudFunctionCall(); // 应用走原有逻辑获取数据，示例使用云函数获取
-      })
+      });
   }
 
   private initPrefetchMode() {
@@ -643,55 +643,55 @@ export class PrefetchWrapper {
   private periodicPrefetch() {
     this.initPeriodPrefetch();
     if (!PrefetchUtil.hasPrefetchTaskData()) { // 是否有周期性预加载数据：如果是首次注册，12h后才有周期性预加载数据
-      hilog.info(HILOG_DOMAIN, TAG, 'not has prefetch data');
+      hilog.info(HILOG_DOMAIN, TAG, `not has prefetch data`);
       this.cloudFunctionCall(); // 使用普通方式获取应用数据
       return;
     }
     PrefetchUtil.getPrefetchResult(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH)
       .then((data: cloudResPrefetch.PrefetchResult) => { // 接口调用成功，处理缓存的应用数据
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch cache successfully');
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch cache successfully`);
         let dataResult = data.result; // data.result即是缓存的应用数据
         let timestamp = data.timestamp; // data.timestamp即是缓存拉取时间
         let token = data.token; // data.token即是注册任务token
         // todo 处理dataResult
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch dataResult: %{public}s', JSON.stringify(dataResult));
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch timestamp: %{public}s', timestamp.toString());
-        hilog.info(HILOG_DOMAIN, TAG, 'get periodic prefetch token: %{public}s', token)
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch dataResult: ${JSON.stringify(dataResult)}`);
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch timestamp: ${timestamp.toString()}`);
+        hilog.info(HILOG_DOMAIN, TAG, `get periodic prefetch token: ${token}`);
       })
       .catch((err: BusinessError) => {
         hilog.error(HILOG_DOMAIN, TAG, `get periodic prefetch cache failed: ${err.message}, ${err.code}`);
         this.cloudFunctionCall(); // 应用走原有逻辑获取数据，示例使用云函数获取
-      })
+      });
   }
 
   // 获取跳链安装预加载的链接信息
   private async popPrefetchLink(): Promise<string> {
     this.initLinkPrefetchMode();
     if (this.linkPrefetchMode) {
-      return Promise.resolve("");
+      return Promise.resolve('');
     }
     this.setLinkPrefetchMode(cloudResPrefetch.PrefetchMode.PERIODIC_PREFETCH);
     try {
       let link = await deferredLink.popDeferredLink();
       return Promise.resolve(link);
     } catch (err) {
-      return Promise.resolve("");
+      return Promise.resolve('');
     }
   }
 
   private cloudFunctionCall() {
-    hilog.info(HILOG_DOMAIN, TAG, 'cloudFunctionCall start');
+    hilog.info(HILOG_DOMAIN, TAG, `cloudFunctionCall start`);
     cloudFunction.call({
-      name: "function_name", // 需修改为实际的云函数名称
+      name: 'function_name', // 需修改为实际的云函数名称
       timeout: 5 * 1000
     }).then((data: cloudFunction.FunctionResult) => {
-      hilog.info(HILOG_DOMAIN, TAG, 'call function successfully');
+      hilog.info(HILOG_DOMAIN, TAG, `call function successfully`);
       let dataResult = data.result; // data.result即是缓存的应用数据
       // todo 处理dataResult
-      hilog.info(HILOG_DOMAIN, TAG, 'call function get: %{public}s', JSON.stringify(dataResult));
+      hilog.info(HILOG_DOMAIN, TAG, `call function get: ${JSON.stringify(dataResult)}`);
     }).catch((err: BusinessError) => {
-      hilog.error(HILOG_DOMAIN, TAG, 'call function failed: %{public}s', err.message);
-    })
+      hilog.error(HILOG_DOMAIN, TAG, `call function failed: ${err.message}`);
+    });
   }
 }
 ```

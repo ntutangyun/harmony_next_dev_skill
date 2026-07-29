@@ -29,7 +29,7 @@ TextArea({placeholder: '非沉浸模式'})
 // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
 inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {
   console.info('recv editorAttributeChanged, immersiveMode: ', attr.immersiveMode);
-  if (attr.immersiveMode == 1) {
+  if (attr.immersiveMode == inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE) {
     this.panel?.setImmersiveMode(inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE);
     console.info('recv editorAttributeChanged, panel:', this.panel?.getImmersiveMode());
   }
@@ -48,7 +48,7 @@ IMMERSIVE表示沉浸模式由输入法应用决定。
 // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
 inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {
   console.info('recv editorAttributeChanged, immersiveMode: ', attr.immersiveMode);
-  if (attr.immersiveMode == 1) {
+  if (attr.immersiveMode == inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE) {
     this.panel?.setImmersiveMode(inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE);
     console.info('recv editorAttributeChanged, panel:', this.panel?.getImmersiveMode());
   }
@@ -72,7 +72,7 @@ TextArea({placeholder: '非沉浸模式'})
 // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
 inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {
   console.info('recv editorAttributeChanged, immersiveMode: ', attr.immersiveMode);
-  if (attr.immersiveMode == 1) {
+  if (attr.immersiveMode == inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE) {
     this.panel?.setImmersiveMode(inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE);
     console.info('recv editorAttributeChanged, panel:', this.panel?.getImmersiveMode());
   }
@@ -85,7 +85,7 @@ inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inp
 // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
 inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {
   console.info('recv editorAttributeChanged, immersiveMode: ', attr.immersiveMode);
-  if (attr.immersiveMode == 1) {
+  if (attr.immersiveMode == inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE) {
     this.panel?.setImmersiveMode(inputMethodEngine.ImmersiveMode.DARK_IMMERSIVE);
     console.info('recv editorAttributeChanged, panel:', this.panel?.getImmersiveMode());
   }

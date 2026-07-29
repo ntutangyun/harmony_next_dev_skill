@@ -77,13 +77,13 @@ config	是否需要检查shape和tiling的一致性；若不一致，API内会�
 表2 高阶API接口参数说明
 
 参数名	输入/输出	描述
-dstTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 dstTensor的shape和源操作数srcTensor一致。
-expSumTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 用于保存softmax计算过程中reducesum的结果。 expSumTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock中的16个数均为相同的reducesum的值。 非last轴的长度与dstTensor保持一致。
-maxTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 用于保存softmax计算过程中reducemax的结果。 maxTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值。比如half数据类型下，该datablock中的16个数均为相同的reducemax的值。 非last轴的长度与dstTensor保持一致。
-srcTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 last轴长度需要32Byte对齐。
-expMaxTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 expMaxTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock中的16个数均为相同的值。 非last轴的长度需要与dstTensor保持一致。
-inExpSumTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 softmax计算所需要的sum值。 inExpSumTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock中的16个数均为相同的值。 非last轴的长度需要与dstTensor保持一致。
-inMaxTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN/VECCALC/VECOUT。 softmax计算所需要的max值。 除模板参数config配置为非拓展模式（SoftmaxMode::SOFTMAX_OUTPUT_WITHOUT_BRC）的场景外，inMaxTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock里的16个数均为相同的值。 非last轴的长度需要与dstTensor保持一致。
+dstTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 dstTensor的shape和源操作数srcTensor一致。
+expSumTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 用于保存softmax计算过程中reducesum的结果。 expSumTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock中的16个数均为相同的reducesum的值。 非last轴的长度与dstTensor保持一致。
+maxTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 用于保存softmax计算过程中reducemax的结果。 maxTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值。比如half数据类型下，该datablock中的16个数均为相同的reducemax的值。 非last轴的长度与dstTensor保持一致。
+srcTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 last轴长度需要32Byte对齐。
+expMaxTensor	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 expMaxTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock中的16个数均为相同的值。 非last轴的长度需要与dstTensor保持一致。
+inExpSumTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 softmax计算所需要的sum值。 inExpSumTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock中的16个数均为相同的值。 非last轴的长度需要与dstTensor保持一致。
+inMaxTensor	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 softmax计算所需要的max值。 除模板参数config配置为非拓展模式（SoftmaxMode::SOFTMAX_OUTPUT_WITHOUT_BRC）的场景外，inMaxTensor的last轴长度固定为32Byte，即一个datablock长度。该datablock中的所有数据为同一个值，比如half数据类型下，该datablock里的16个数均为相同的值。 非last轴的长度需要与dstTensor保持一致。
 tiling	输入	softmaxflashv2接口计算所需tiling信息。通过SoftMaxFlashV2TilingFunc获取。
 softmaxShapeInfo	输入	srcTensor的shape信息。SoftMaxShapeInfo类型，具体定义如下： - uint32_t srcM：非尾轴长度的乘积 - uint32_t srcK：尾轴长度，必须32Byte对齐 - uint32_t oriSrcM：原始非尾轴长度的乘积 - uint32_t oriSrcK：原始尾轴长度
 

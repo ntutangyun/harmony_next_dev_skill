@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-reasonable-gps-use-check_
 
-无长时任务的应用退到后台时，禁止使用定位服务。
+未申请长时任务的应用退到后台时，禁止使用定位服务。
 
 规则配置
 

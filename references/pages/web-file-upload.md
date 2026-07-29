@@ -116,7 +116,7 @@ local.html页面代码。
 
 使用onShowFileSelector拉起相机
 
-Web组件支持前端页面上传图片文件时调用相机即时拍照，应用开发者可以使用onShowFileSelector()接口来处理前端页面文件上传的请求并自行拉起相机，如果应用开发者不做任何处理，Web会提供默认行为来处理前端页面调用相机的请求。
+Web组件支持前端页面上传图片文件时调用相机即时拍照，应用开发者可以使用onShowFileSelector()接口来处理前端页面文件上传的请求并自行拉起相机，如果应用开发者不做任何处理，ArkWeb会提供默认行为来处理前端页面调用相机的请求。
 
 此示例中，应用侧通过监听onShowFileSelector事件并返回true拦截ArkWeb默认弹窗，并调用系统CameraPicker拉起相机。应用可以通过获取AcceptType对不同类型的目标文件做更精细的筛选。
 
@@ -299,7 +299,7 @@ struct Index {
 
 从API version 23开始，在OnShowFileSelectorEvent的FileSelectorParam中新增接口getSuggestedName()、getDefaultPath()、getDescriptions()、isAcceptAllOptionExcluded()。
 
-新增接口对上传保存文件能力进行了增强，以对标W3C能力，用于支持用户获取到HTML前端通过showSaveFilePicker、showOpenFilePicker、showDirectoryPicker等方法传递的option参数(参考下方加载的html文件)里的数据。
+新增接口对上传保存文件能力进行了增强，以对标W3C能力，用于支持用户获取到HTML前端通过showSaveFilePicker、showOpenFilePicker、showDirectoryPicker等方法传递的option参数（参考下方加载的html文件）里的数据。
 
 API version 23 新增支持如下option中的成员：
 

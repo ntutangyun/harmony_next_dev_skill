@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-js-bui
 
 很多应用由多个页面组成，比如用户可以从音乐列表页面点击歌曲，跳转到该歌曲的播放界面。开发者需要通过页面路由将这些页面串联起来，按需实现跳转。
 
-页面路由router根据页面的uri找到目标页面，从而实现跳转。以最基础的两个页面之间的跳转为例，具体实现步骤如下：
+页面路由router根据页面的url找到目标页面，从而实现跳转。以最基础的两个页面之间的跳转为例，具体实现步骤如下：
 
 在“Project“窗口，打开src > main >js >MainAbility，右键点击pages文件夹，选择NewJS Page，创建一个详情页。
 
@@ -49,7 +49,7 @@ index和detail这两个页面均包含一个text组件和button组件：text组�
 
 实现跳转
 
-为了使button组件的launch方法生效，需要在页面的js文件中实现跳转逻辑。调用router.push()接口将uri指定的页面添加到路由栈中，即跳转到uri指定的页面。在调用router方法之前，需要导入router模块。代码示例如下：
+为了使button组件的launch方法生效，需要在页面的js文件中实现跳转逻辑。调用router.push()接口将url指定的页面添加到路由栈中，即跳转到url指定的页面。在调用router方法之前，需要导入router模块。代码示例如下：
 
 // index.js
 import router from '@ohos.router';
@@ -65,7 +65,7 @@ export default {
 import router from '@ohos.router';
 export default {
   launch() {
-    this.getUIContext().getRouter().back();
+    router.back();
   },
 }
 
@@ -133,7 +133,7 @@ export default {
 import router from '@ohos.router';
 export default {
   launch() {
-    this.getUIContext().getRouter().back();
+    router.back();
   },
 }
 ```

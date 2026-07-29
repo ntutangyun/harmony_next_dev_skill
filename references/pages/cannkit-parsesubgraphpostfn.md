@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-p
 
 说明
 
-数据类型为string的接口后续版本会废弃，建议使用数据类型为非string的接口。
+数据类型为ParseSubgraphFunc的接口后续版本会废弃，建议使用数据类型为ParseSubgraphFuncV2的接口。
 
 OpRegistrationData &ParseSubgraphPostFn(const ParseSubgraphFunc &subgraph_post_fn)
 OpRegistrationData &ParseSubgraphPostFn(const ParseSubgraphFuncV2 &subgraph_post_fn);

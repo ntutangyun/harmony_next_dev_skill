@@ -43,16 +43,19 @@ class BlindCacheInterceptor implements rcp.Interceptor {
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/CustomCache' // 请根据自身业务选择合适的路径
   }
 });
 
 创建会话。在创建Session时，添加Interceptors参数。
 
-const session: rcp.Session = rcp.createSession({ interceptors: [new BlindCacheInterceptor(responseCache)] });
+const session: rcp.Session = rcp.createSession({
+  interceptors : [new BlindCacheInterceptor(responseCache)]
+});
 
 发起第一次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会从网络服务器获取数据，此时可查看缓存状态信息，此时缓存条数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await session.put('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -60,6 +63,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 
 发起第二次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会按照自定义缓存拦截器逻辑从缓存中获取响应，此时可查看缓存状态信息，此时缓存命中数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await session.put('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
@@ -103,7 +107,7 @@ class BlindCacheInterceptor implements rcp.Interceptor {
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/CustomCache' // 请根据自身业务选择合适的路径
   }
 });
 ```
@@ -111,12 +115,15 @@ const responseCache = new rcp.ResponseCache({
 ### Code block 4
 
 ```
-const session: rcp.Session = rcp.createSession({ interceptors: [new BlindCacheInterceptor(responseCache)] });
+const session: rcp.Session = rcp.createSession({
+  interceptors : [new BlindCacheInterceptor(responseCache)]
+});
 ```
 
 ### Code block 5
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await session.put('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -126,6 +133,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 ### Code block 6
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await session.put('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();

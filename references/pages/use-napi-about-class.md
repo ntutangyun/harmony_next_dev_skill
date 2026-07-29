@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/use-napi-
 
 场景和功能介绍
 
-以下Node-API接口主要用于处理class。他们的使用场景如下：
+以下Node-API接口主要用于处理class。它们的使用场景如下：
 
 接口	描述
 napi_new_instance	需要通过给定的构造函数构建一个实例时，可以使用这个函数。
@@ -114,6 +114,8 @@ Native与ArkTS对象绑定
 说明
 
 参数js_object不为object类型或function类型时返回napi_object_expected。
+
+如果封装中关联有finalize回调，本接口将在移除封装前调用它。
 
 cpp部分代码
 

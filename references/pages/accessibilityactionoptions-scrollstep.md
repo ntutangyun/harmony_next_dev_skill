@@ -1,4 +1,4 @@
-# 自定义无障碍滚动步数的场景
+# 自定义无障碍滚动步数
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/accessibilityactionoptions-scrollstep_
 
@@ -10,7 +10,7 @@ accessibilityActionOptions说明：
 
 scrollStep：指定由无障碍手势触发的无障碍滚动操作步数。屏幕朗读模式下，聚焦Slider组件时，通过上下扫动手势调节滑动条，实际步长为scrollStep×step。仅对Slider组件配置生效，其他组件配置不生效，取值范围为[1, (max- min)/step]，默认值为1。设置值超出取值范围时取默认值1，设置值为取值范围内的非整数时向下取整。
 
-开发实例
+开发流程
 
 如下示例实现一个可调节的滑动条，并指定无障碍操作的步数：
 

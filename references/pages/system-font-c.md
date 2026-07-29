@@ -40,7 +40,7 @@ libnative_drawing.so
 #include <native_drawing/drawing_register_font.h>
 #include <hilog/log.h>
 
-获取系统字体的配置信息，可以通过返回的状态码确定获取信息是否成功，状态码的包含的具体情况和对应含义可见OH_Drawing_FontConfigInfoErrorCode。
+获取系统字体的配置信息，可以通过返回的状态码确定获取信息是否成功，状态码包含的具体情况和对应含义可见OH_Drawing_FontConfigInfoErrorCode。
 
 OH_Drawing_FontConfigInfoErrorCode fontConfigInfoErrorCode;  // 用于接收错误代码
 OH_Drawing_FontConfigInfo* fontConfigInfo = OH_Drawing_GetSystemFontConfigInfo(&fontConfigInfoErrorCode);
@@ -108,7 +108,7 @@ libnative_drawing.so
 #include <native_drawing/drawing_register_font.h>
 #include <hilog/log.h>
 
-创建字体管理器，建议优先使用OH_Drawing_CreateSharedFontCollection创建可共享的字体集对象。
+创建字体集对象，建议优先使用OH_Drawing_CreateSharedFontCollection创建可共享的字体集对象。
 
 说明
 
@@ -177,7 +177,7 @@ libnative_drawing.so
 #include <native_drawing/drawing_register_font.h>
 #include <hilog/log.h>
 
-创建字体管理器，建议优先使用OH_Drawing_CreateSharedFontCollection创建可共享的字体集对象。
+创建字体集对象，建议优先使用OH_Drawing_CreateSharedFontCollection创建可共享的字体集对象。
 
 OH_Drawing_FontCollection *fontCollection = OH_Drawing_CreateSharedFontCollection();
 
@@ -196,6 +196,7 @@ OH_Drawing_TextStyle *textStyle = OH_Drawing_CreateTextStyle();
 // 情况一：如果此时设置使用了自定义字体，文本会正常显示
 // 该路径是待注册的自定义字体文件在应用设备下的路径，确保该自定义字体文件已正确放置在该路径下
 // 后续使用自定义字体时，需使用到该字体家族名
+// 情况二：如果此时不调用OH_Drawing_SetTextStyleFontFamilies或传入空参，文本会默认使用系统默认字体，而此时系统字体已被禁用，因此文本将无法显示
 const char* fontFamily = "HarmonyOS_Sans";
 const char* fontPath = "/system/fonts/HarmonyOS_Sans.ttf";
 // 返回0为成功，1为文件不存在，2为打开文件失败，3为读取文件失败，4为寻找文件失败，5为获取大小失败，9文件损坏
@@ -203,14 +204,6 @@ int errorCode = OH_Drawing_RegisterFont(fontCollection, fontFamily, fontPath);
 DRAWING_LOGI("errorCode = %{public}d", errorCode);
 const char *myFontFamilies[] = {"HarmonyOS_Sans"}; // 确保已成功注册自定义字体，填入自定义字体的字体家族名
 OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
-
-// 情况二：如果此时使用了系统字体，文本将无法显示
-// const char *myFontFamilies[] = {"HarmonyOS_Sans"};
-// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
-
-// 情况三：如果此时不设置使用字体，文本会默认使用系统默认字体，而此时系统字体已被禁用，因此文本将无法显示
-// const char *myFontFamilies[] = {"HarmonyOS_Sans"};
-// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
 
 生成最终的段落文本，以便实现最终的文本绘制和显示。
 
@@ -395,6 +388,7 @@ OH_Drawing_TextStyle *textStyle = OH_Drawing_CreateTextStyle();
 // 情况一：如果此时设置使用了自定义字体，文本会正常显示
 // 该路径是待注册的自定义字体文件在应用设备下的路径，确保该自定义字体文件已正确放置在该路径下
 // 后续使用自定义字体时，需使用到该字体家族名
+// 情况二：如果此时不调用OH_Drawing_SetTextStyleFontFamilies或传入空参，文本会默认使用系统默认字体，而此时系统字体已被禁用，因此文本将无法显示
 const char* fontFamily = "HarmonyOS_Sans";
 const char* fontPath = "/system/fonts/HarmonyOS_Sans.ttf";
 // 返回0为成功，1为文件不存在，2为打开文件失败，3为读取文件失败，4为寻找文件失败，5为获取大小失败，9文件损坏
@@ -402,14 +396,6 @@ int errorCode = OH_Drawing_RegisterFont(fontCollection, fontFamily, fontPath);
 DRAWING_LOGI("errorCode = %{public}d", errorCode);
 const char *myFontFamilies[] = {"HarmonyOS_Sans"}; // 确保已成功注册自定义字体，填入自定义字体的字体家族名
 OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
-
-// 情况二：如果此时使用了系统字体，文本将无法显示
-// const char *myFontFamilies[] = {"HarmonyOS_Sans"};
-// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
-
-// 情况三：如果此时不设置使用字体，文本会默认使用系统默认字体，而此时系统字体已被禁用，因此文本将无法显示
-// const char *myFontFamilies[] = {"HarmonyOS_Sans"};
-// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
 ```
 
 ### Code block 17

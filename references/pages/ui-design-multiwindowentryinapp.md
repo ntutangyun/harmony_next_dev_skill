@@ -31,11 +31,11 @@ import { MultiWindowEntryInAPP, MultiWindowEntryInAPPAttribute } from '@kit.UIDe
 import { Want } from '@kit.AbilityKit';
 import { TextModifier } from '@kit.ArkUI';
 
-使用MultiWindowEntryInAPP组件，并且设置组件参数。
+使用MultiWindowEntryInAPP组件，并且设置组件参数，详细请参考应用内多窗多股比价最佳实践。
 
 @Entry
 @Component
-struct MultiWindowEntryInAPPTest {
+struct Index {
   @State textModifier: TextModifier = new TextModifier();
   private want: Want = {
     // 修改为当前应用的bundleName、moduleName、abilityName，启动应用内的UIAbility
@@ -62,6 +62,8 @@ struct MultiWindowEntryInAPPTest {
         .size({ width: 48, height: 48 })
         .position({ x: 400, y: 30 })
     }
+    .width('100%')
+    .height('100%')
   }
 }
 
@@ -81,7 +83,7 @@ import { TextModifier } from '@kit.ArkUI';
 ```
 @Entry
 @Component
-struct MultiWindowEntryInAPPTest {
+struct Index {
   @State textModifier: TextModifier = new TextModifier();
   private want: Want = {
     // 修改为当前应用的bundleName、moduleName、abilityName，启动应用内的UIAbility
@@ -108,6 +110,8 @@ struct MultiWindowEntryInAPPTest {
         .size({ width: 48, height: 48 })
         .position({ x: 400, y: 30 })
     }
+    .width('100%')
+    .height('100%')
   }
 }
 ```

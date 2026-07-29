@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-faq-
 
 根据获得的码图位置信息确定码图是否在扫码框内（注意：需要将码图位置单位和扫码框位置单位保持一致，根据实际情况使用px或vp）。
 
-当码图位置不在扫码框范围内时，在customScan.start的callback回调中执行customScan.rescan接口，即可继续扫码。
+当码图位置不在扫码框范围内时，在start的callback回调中执行rescan接口，即可继续扫码。
 
 示例代码（仅供参考）：
 

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fileguard
 
 场景介绍
 
-Enterprise Data Guard Kit为应用提供对指定路径下文件的删除能力。
+Enterprise Data Guard Kit为应用提供对用户个人数据目录下指定路径文件的删除能力。
 
 接口说明
 
@@ -18,34 +18,50 @@ deleteFile(path: string): Promise<void>	使用Promise方式删除指定路径下
 
 导入模块。
 
-import { fileGuard } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-初始化FileGuard对象guard，调用接口deleteFile，删除扫描范围内的文件。
+初始化FileGuard对象guard，调用接口deleteFile，删除指定路径下的文件。
 
-通过回调函数方式，删除扫描范围内的文件。
+通过回调函数方式，删除指定路径下的文件。
 
-function deleteFileCallback() {
+const TAG: string = 'FileGuard_DeleteFile';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 删除指定路径下的文件。使用callback异步回调。
+ * @param accountId: 用户ID
+ */
+function deleteFileCallback(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/test.txt';
+  let path: string = `/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/ccc.txt`;
   guard.deleteFile(path, (err: BusinessError) => {
     if (err) {
-      console.error(`Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
+      hilog.error(DOMAIN, TAG, `Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
     } else {
-      console.info(`Succeeded in deleting file.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in deleting file.`);
     }
   });
 }
 
-通过Promise方式，删除扫描范围内的文件。
+通过Promise方式，删除指定路径下的文件。
 
-function deleteFilePromise() {
+const TAG: string = 'FileGuard_DeleteFile';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 删除指定路径下的文件。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+function deleteFilePromise(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/test.txt';
+  let path: string = `/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/ddd.txt`;
   guard.deleteFile(path).then(() => {
-    console.info(`Succeeded in deleting file.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in deleting file.`);
   }).catch((err: BusinessError) => {
-    console.error(`Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG, `Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
   });
 }
 
@@ -54,21 +70,29 @@ function deleteFilePromise() {
 ### Code block 1
 
 ```
-import { fileGuard } from '@kit.EnterpriseDataGuardKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { fileGuard } from '@kit.EnterpriseDataGuardKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
 ### Code block 2
 
 ```
-function deleteFileCallback() {
+const TAG: string = 'FileGuard_DeleteFile';
+const DOMAIN: number = 0x0000;
+
+/**
+ * 删除指定路径下的文件。使用callback异步回调。
+ * @param accountId: 用户ID
+ */
+function deleteFileCallback(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/test.txt';
+  let path: string = `/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/ccc.txt`;
   guard.deleteFile(path, (err: BusinessError) => {
     if (err) {
-      console.error(`Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
+      hilog.error(DOMAIN, TAG, `Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
     } else {
-      console.info(`Succeeded in deleting file.`);
+      hilog.info(DOMAIN, TAG, `Succeeded in deleting file.`);
     }
   });
 }
@@ -77,13 +101,21 @@ function deleteFileCallback() {
 ### Code block 3
 
 ```
-function deleteFilePromise() {
+const TAG: string = 'FileGuard_DeleteFile';
+const DOMAIN: number = 0x0000;
+
+// ...
+/**
+ * 删除指定路径下的文件。使用Promise异步回调。
+ * @param accountId: 用户ID
+ */
+function deleteFilePromise(accountId: number) {
   let guard: fileGuard.FileGuard = new fileGuard.FileGuard();
-  let path: string = '/data/service/el2/{account_id}/hmdfs/account/files/Docs/Documents/test.txt';
+  let path: string = `/data/service/el2/${accountId}/hmdfs/account/files/Docs/Documents/ddd.txt`;
   guard.deleteFile(path).then(() => {
-    console.info(`Succeeded in deleting file.`);
+    hilog.info(DOMAIN, TAG, `Succeeded in deleting file.`);
   }).catch((err: BusinessError) => {
-    console.error(`Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
+    hilog.error(DOMAIN, TAG, `Failed to delete file. Code: ${err.code}, message: ${err.message}.`);
   });
 }
 ```

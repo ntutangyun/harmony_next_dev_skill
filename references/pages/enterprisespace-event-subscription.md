@@ -18,76 +18,117 @@ unsubscribeEvent(subscribeId: number): void	取消订阅空间事件，在相关
 
 开发步骤
 
-1.导入Enterprise Space Kit模块。
+1.导入空间事件订阅API模块相关依赖。
 
+import { AsyncCallback } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { ErrCode } from '../../common/ErrCode';
 
-2.订阅空间切换事件和取消订阅空间事件。
+2.空间事件订阅API接口封装。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class SubscribeSpaceEventApi {
+  static subscribeEvent(eventIds: spaceManager.EventType[], callback: AsyncCallback<spaceManager.EventData>): number {
+    try {
+      const subscribeId = spaceManager.subscribeEvent(eventIds, callback);
+      hilog.info(DOMAIN, TAG, `Succeeded in subscribing event. subscribeId: ${subscribeId}`);
+      return ErrCode.OK;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to subscribe event. Code: ${err.code}, message: ${err.message}`);
+      return ErrCode.ERR;
+    }
+  }
+
+  static unsubscribeEvent(subscribeId: number): void {
+    try {
+      spaceManager.unsubscribeEvent(subscribeId);
+      hilog.info(DOMAIN, TAG, 'Succeeded in unsubscribing event');
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to unsubscribe event. Code: ${err.code}, message: ${err.message}`);
+    }
+  }
+}
+
+3.导入空间事件订阅业务实现相关依赖。
+
+import { router } from '@kit.ArkUI';
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { SubscribeSpaceEventApi } from '../api/SubscribeSpaceEventApi'
+import { ErrCode } from '../../common/ErrCode';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+4.空间事件订阅业务相关实现。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
 
 @Entry
 @Component
-struct Index {
-  // 订阅空间事件
+struct SubscribeSpaceEventPage {
   subscribe() {
     let eventIds: spaceManager.EventType[] = [spaceManager.EventType.EVENT_WORKSPACE_SWITCHED];
     let callBack = (error: BusinessError, data: spaceManager.EventData) => {
       if (error) {
-        console.error(`error info:${error?.code}, err message:${error?.message}`);
+        hilog.error(DOMAIN, TAG, `error info:${error?.code}, err message:${error?.message}`);
       } else {
-        console.info(`event: ${data.event},currentWorkSpaceId: ${data.currentWorkspaceId}`);
+        hilog.info(DOMAIN, TAG, `event: ${data.event},currentWorkSpaceId: ${data.currentWorkspaceId}`);
         // 处理事件
       }
     };
-
-    try {
-      const subscribeId = spaceManager.subscribeEvent(eventIds, callBack);
-      console.info(`Succeeded in subscribing event. subscribeId: ${subscribeId}`);
-    } catch (err) {
-      console.error(`Failed to subscribe event. Code: ${err.code}, message: ${err.message}`);
+    if (SubscribeSpaceEventApi.subscribeEvent(eventIds, callBack) !== ErrCode.OK) {
+      // 订阅失败处理
+      hilog.error(DOMAIN, TAG, 'Failed to subscribe event!');
+      return;
     }
+
     // 订阅成功处理
   }
 
-  // 取消订阅空间事件
   unSubscribe() {
     let subscribeId = 100;
-    try {
-      spaceManager.unsubscribeEvent(subscribeId);
-      console.info(`Succeeded in unsubscribing event.`);
-    } catch (err) {
-      console.error(`Failed to unsubscribe event. Code: ${err.code}, message: ${err.message}`);
-    }
+    SubscribeSpaceEventApi.unsubscribeEvent(subscribeId);
   }
 
   build() {
     Column() {
       Row() {
-        Button('订阅空间事件')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.subscribe'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.subscribe();
           })
       }
 
       Row() {
-        Button('取消订阅空间事件')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.unSubscribe'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.unSubscribe();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(200)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 
 ## Code blocks
@@ -95,75 +136,120 @@ struct Index {
 ### Code block 1
 
 ```
+import { AsyncCallback } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { ErrCode } from '../../common/ErrCode';
 ```
 
 ### Code block 2
 
 ```
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class SubscribeSpaceEventApi {
+  static subscribeEvent(eventIds: spaceManager.EventType[], callback: AsyncCallback<spaceManager.EventData>): number {
+    try {
+      const subscribeId = spaceManager.subscribeEvent(eventIds, callback);
+      hilog.info(DOMAIN, TAG, `Succeeded in subscribing event. subscribeId: ${subscribeId}`);
+      return ErrCode.OK;
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to subscribe event. Code: ${err.code}, message: ${err.message}`);
+      return ErrCode.ERR;
+    }
+  }
+
+  static unsubscribeEvent(subscribeId: number): void {
+    try {
+      spaceManager.unsubscribeEvent(subscribeId);
+      hilog.info(DOMAIN, TAG, 'Succeeded in unsubscribing event');
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, `Failed to unsubscribe event. Code: ${err.code}, message: ${err.message}`);
+    }
+  }
+}
+```
+
+### Code block 3
+
+```
+import { router } from '@kit.ArkUI';
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { SubscribeSpaceEventApi } from '../api/SubscribeSpaceEventApi'
+import { ErrCode } from '../../common/ErrCode';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+```
+
+### Code block 4
+
+```
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
 @Entry
 @Component
-struct Index {
-  // 订阅空间事件
+struct SubscribeSpaceEventPage {
   subscribe() {
     let eventIds: spaceManager.EventType[] = [spaceManager.EventType.EVENT_WORKSPACE_SWITCHED];
     let callBack = (error: BusinessError, data: spaceManager.EventData) => {
       if (error) {
-        console.error(`error info:${error?.code}, err message:${error?.message}`);
+        hilog.error(DOMAIN, TAG, `error info:${error?.code}, err message:${error?.message}`);
       } else {
-        console.info(`event: ${data.event},currentWorkSpaceId: ${data.currentWorkspaceId}`);
+        hilog.info(DOMAIN, TAG, `event: ${data.event},currentWorkSpaceId: ${data.currentWorkspaceId}`);
         // 处理事件
       }
     };
-
-    try {
-      const subscribeId = spaceManager.subscribeEvent(eventIds, callBack);
-      console.info(`Succeeded in subscribing event. subscribeId: ${subscribeId}`);
-    } catch (err) {
-      console.error(`Failed to subscribe event. Code: ${err.code}, message: ${err.message}`);
+    if (SubscribeSpaceEventApi.subscribeEvent(eventIds, callBack) !== ErrCode.OK) {
+      // 订阅失败处理
+      hilog.error(DOMAIN, TAG, 'Failed to subscribe event!');
+      return;
     }
+
     // 订阅成功处理
   }
 
-  // 取消订阅空间事件
   unSubscribe() {
     let subscribeId = 100;
-    try {
-      spaceManager.unsubscribeEvent(subscribeId);
-      console.info(`Succeeded in unsubscribing event.`);
-    } catch (err) {
-      console.error(`Failed to unsubscribe event. Code: ${err.code}, message: ${err.message}`);
-    }
+    SubscribeSpaceEventApi.unsubscribeEvent(subscribeId);
   }
 
   build() {
     Column() {
       Row() {
-        Button('订阅空间事件')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.subscribe'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.subscribe();
           })
       }
 
       Row() {
-        Button('取消订阅空间事件')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.unSubscribe'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.unSubscribe();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(200)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 ```

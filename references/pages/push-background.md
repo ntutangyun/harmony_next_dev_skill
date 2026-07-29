@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-back
 
 调测阶段，每个项目每日全网最多可推送1000条测试消息。发送测试消息需设置testMessage为true。
 
-正式发布阶段，单设备单应用下每日推送消息总条数受设备消息频控限制，系统会根据现网使用场景和流量进行管控，不合理的使用场景系统会进行频控。
+正式发布阶段，单设备单应用下每日推送消息总条数受设备消息频控限制，系统会根据使用场景和流量进行管控，不合理的使用场景系统会进行频控。
 
 说明
 
@@ -109,7 +109,7 @@ export default class PushMessageAbility extends UIAbility {
       pushService.receiveMessage('BACKGROUND', this, (data: pushCommon.PushPayload) => {
         // process message
         try {
-          hilog.info(DOMAIN, 'testTag', 'Receive background message');
+          hilog.info(DOMAIN, 'testTag', 'Receive background message : %{public}s', JSON.stringify(data));
         } catch (e) {
           let errRes: BusinessError = e as BusinessError;
           hilog.error(DOMAIN, 'testTag', 'Failed to process data: %{public}d %{public}s', errRes.code, errRes.message);
@@ -240,7 +240,7 @@ export default class PushMessageAbility extends UIAbility {
       pushService.receiveMessage('BACKGROUND', this, (data: pushCommon.PushPayload) => {
         // process message
         try {
-          hilog.info(DOMAIN, 'testTag', 'Receive background message');
+          hilog.info(DOMAIN, 'testTag', 'Receive background message : %{public}s', JSON.stringify(data));
         } catch (e) {
           let errRes: BusinessError = e as BusinessError;
           hilog.error(DOMAIN, 'testTag', 'Failed to process data: %{public}d %{public}s', errRes.code, errRes.message);

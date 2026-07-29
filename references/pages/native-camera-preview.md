@@ -80,8 +80,8 @@ Camera_ErrorCode NDKCamera::CreatePreviewOutput(void)
         OH_LOG_ERROR(LOG_APP, "CreatePreviewOutput failed.");
         return CAMERA_INVALID_ARGUMENT;
     }
-    return ret_;
     PreviewOutputRegisterCallback();
+    return ret_;
 }
 
 使能。当session完成CommitConfig后通过调用OH_CaptureSession_Start()方法输出预览流，接口调用失败会返回相应错误码，错误码类型参见Camera_ErrorCode。
@@ -229,8 +229,8 @@ Camera_ErrorCode NDKCamera::CreatePreviewOutput(void)
         OH_LOG_ERROR(LOG_APP, "CreatePreviewOutput failed.");
         return CAMERA_INVALID_ARGUMENT;
     }
-    return ret_;
     PreviewOutputRegisterCallback();
+    return ret_;
 }
 ```
 

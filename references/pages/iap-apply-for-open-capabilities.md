@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-apply-for-open-capabilities_
 
-如果使用接入嵌入式收银台能力，则需要申请对应权限。
+如果需要接入CashierComponent(iap嵌入式收银台组件)，则需要申请对应权限。
 
 开放能力申请准备
 

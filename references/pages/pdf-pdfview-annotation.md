@@ -18,10 +18,11 @@ enableAnnotation(annotationType: SupportedAnnotationType, color?: number): void	
 调用enableAnnotation方法，进入批注模式。
 
 import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit';
+// ...
 
 @Entry
 @Component
-struct PdfPage {
+struct AnnotationPage {
   private pdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
 
@@ -31,23 +32,23 @@ struct PdfPage {
     (async () => {
       let loadResult: pdfService.ParseResult = await this.pdfController.loadDocument(filePath);
       if (pdfService.ParseResult.PARSE_SUCCESS === loadResult) {
-        // 添加删除线批注
-        this.pdfController.enableAnnotation(pdfViewManager.SupportedAnnotationType.STRIKETHROUGH, 0xAAEEEEEE);
+        this.pdfController.enableAnnotation(pdfViewManager.SupportedAnnotationType.STRIKETHROUGH, 0xAAFF0000);
       }
     })()
   }
 
   build() {
-    Column() {
-      // 加载PdfView组件进行预览
-      PdfView({
-        controller: this.pdfController,
-        pageFit: pdfService.PageFit.FIT_WIDTH,
-        showScroll: true
-      })
-        .id('pdfview_app_view')
-        .layoutWeight(1);
-    }
+  // ...
+      Column() {
+        PdfView({
+          controller: this.pdfController,
+          pageFit: pdfService.PageFit.FIT_WIDTH,
+          showScroll: true
+        })
+          .id('pdfview_app_view')
+          .layoutWeight(1);
+      }
+      // ...
   }
 }
 
@@ -57,10 +58,11 @@ struct PdfPage {
 
 ```
 import { pdfService, pdfViewManager, PdfView } from '@kit.PDFKit';
+// ...
 
 @Entry
 @Component
-struct PdfPage {
+struct AnnotationPage {
   private pdfController = new pdfViewManager.PdfController();
   private context = this.getUIContext().getHostContext() as Context;
 
@@ -70,23 +72,23 @@ struct PdfPage {
     (async () => {
       let loadResult: pdfService.ParseResult = await this.pdfController.loadDocument(filePath);
       if (pdfService.ParseResult.PARSE_SUCCESS === loadResult) {
-        // 添加删除线批注
-        this.pdfController.enableAnnotation(pdfViewManager.SupportedAnnotationType.STRIKETHROUGH, 0xAAEEEEEE);
+        this.pdfController.enableAnnotation(pdfViewManager.SupportedAnnotationType.STRIKETHROUGH, 0xAAFF0000);
       }
     })()
   }
 
   build() {
-    Column() {
-      // 加载PdfView组件进行预览
-      PdfView({
-        controller: this.pdfController,
-        pageFit: pdfService.PageFit.FIT_WIDTH,
-        showScroll: true
-      })
-        .id('pdfview_app_view')
-        .layoutWeight(1);
-    }
+  // ...
+      Column() {
+        PdfView({
+          controller: this.pdfController,
+          pageFit: pdfService.PageFit.FIT_WIDTH,
+          showScroll: true
+        })
+          .id('pdfview_app_view')
+          .layoutWeight(1);
+      }
+      // ...
   }
 }
 ```

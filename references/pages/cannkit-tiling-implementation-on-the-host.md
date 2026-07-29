@@ -148,7 +148,7 @@ Tiling实现开发的流程图如下。
 
 下面将从一个简单的Add算子为例介绍Tiling的实现流程。本样例中待处理数据的Shape大小可以平均分配到每个核上，并且可以对齐到一个datablock(32B)的大小。
 
-首先完成算子TilingData结构定义头文件的编写，该文件命名为_“算子名称_tiling.h”_，位于算子工程的op_host目录下。样例代码如下。
+首先完成算子TilingData结构定义头文件的编写，该文件命名为“算子名称_tiling.h”，位于算子工程的op_host目录下。样例代码如下。
 
 #ifndef ADD_CUSTOM_TILING_H
 #define ADD_CUSTOM_TILING_H

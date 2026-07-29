@@ -2,11 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-agent-model_
 
-CodeGenie支持通过Anthropic-API、Gemini-API和OpenAI-API协议接入第三方模型，为自定义Agent提供多样化的模型选择。
+CodeGenie支持通过Gemini-API和OpenAI-API协议接入第三方模型，为自定义Agent提供多样化的模型选择。
 
 从DevEco Studio 6.0.1 Beta1开始，CodeGenie支持通过OpenAI-API协议接入第三方模型。
 
-从DevEco Studio 6.0.2 Beta1开始，CodeGenie支持通过Anthropic-API、Gemini-API协议接入第三方模型，以及新增Built-in Models内置模型。
+从DevEco Studio 6.0.2 Beta1开始，CodeGenie支持通过Gemini-API协议接入第三方模型，以及新增Built-in Models内置模型。
 
 从DevEco Studio 6.0.2 Release（6.0.2.646）开始， 支持通过服务提供商接入三方模型，URL接入时支持使用Ollama协议的三方模型。
 
@@ -14,7 +14,7 @@ CodeGenie支持通过Anthropic-API、Gemini-API和OpenAI-API协议接入第三�
 
 Name：模型名称。
 
-Provider：模型的提供商，可选项包括OpenAI、Gemini、Anthropic、DeepSeek、Alibaba Cloud、Z.ai。
+Provider：模型的提供商，可选项包括OpenAI、Gemini、DeepSeek、Alibaba Cloud、Z.ai。
 
 API Key：模型的访问密钥，在提供商网站申请。
 
@@ -25,7 +25,6 @@ Model：模型的标识。
 Provider	API Key获取地址	Model示例
 OpenAI	https://platform.openai.com/api-keys	gpt-5.3-codex、gpt-5.4、gpt-5.5、gpt-5.6
 Gemini	https://aistudio.google.com/apikey	gemini-3-pro-preview、gemini-3-flash-preview、gemini-3-pro-image-preview
-Anthropic	https://console.anthropic.com	claude-sonnet-4-5-20250929
 DeepSeek	https://platform.deepseek.com	deepseek-v4-pro
 Alibaba Cloud	https://dashscope.console.aliyun.com	qwen3-coder-plus
 Z.ai	https://open.bigmodel.cn	glm-5
@@ -34,7 +33,7 @@ Name：模型名称。
 
 Url：模型的访问地址。
 
-Protocol：模型的协议，可选项包括OpenAI、Anthropic、Gemini、Ollama。
+Protocol：模型的协议，可选项包括OpenAI、Gemini、Ollama。
 
 API Key：模型的访问密钥，在提供商网站申请。
 

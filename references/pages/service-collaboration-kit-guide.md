@@ -10,4 +10,6 @@ Service Collaboration Kit简介
 
 跨设备互通（RichEditor控件）
 
+碰一碰实现设备间交互
+
 Service Collaboration Kit常见问题

@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigo
   }
 }
 
-准备好HAP打包工具app_packing_tool.jar（在 $DevEco Studio安装目录/sdk/default/openharmony/toolchains/lib下）。
+准备好HAP打包工具app_packing_tool.jar（在${DevEco Studio安装目录}/sdk/default/openharmony/toolchains/lib下）。
 
 java -jar app_packing_tool.jar --mode multiApp --hap-list D:\project\MyApplication\1.hap,D:\project\MyApplication1\2.hap --out-path D:\project\final.app
 

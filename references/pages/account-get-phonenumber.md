@@ -1,18 +1,30 @@
-# 快速验证
+# 获取手机号
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-get-phonenumber_
 
 场景介绍
 
-当应用对获取的手机号时效性要求不高时，可使用Account Kit提供的手机号授权与快速验证能力，向用户发起手机号授权申请，经用户同意授权后，获取到手机号并为用户提供相应服务。以下对Account Kit提供的手机号授权与快速验证能力进行介绍，快速验证手机号功能还可使用场景化控件快速验证手机号Button进行实现。
+当应用需要获取用户手机号时，可使用Account Kit提供的手机号授权能力，向用户发起手机号授权申请，经用户同意授权后，获取到手机号并为用户提供相应服务。以下对Account Kit提供的手机号授权能力进行介绍，获取手机号功能还可使用场景化控件快速验证手机号Button进行实现。
 
 说明
 
 对用户选择的华为账号绑定的手机号或者新增的手机号进行验证，不保证是实时的验证，仅首次需要用户授权。
 
-图1 手机端快速验证手机号（请以实际效果为准）
+在应用账号已登录并绑定用户华为账号UnionID的情况下，应用可以在获取手机号等用户信息时根据实际业务场景判断是否需要提前校验当前应用账号绑定的UnionID与系统账号当前的UnionID是否一致。
 
-图2 Wearable设备快速验证手机号（请以实际效果为准）
+图1 手机端获取手机号（请以实际效果为准）
+
+图2 Wearable设备获取手机号（请以实际效果为准）
+
+约束与限制
+
+应用满足《常见类型移动互联网应用程序必要个人信息范围规定》（对第三方网站的内容，华为不承担任何责任）中使用手机号的必要业务场景。
+
+儿童账号无法通过该能力获取到手机号。
+
+获取手机号能力支持Phone、Tablet、PC/2in1设备。并且从5.1.0(18)版本开始，新增支持Wearable设备；从5.1.1(19)版本开始，新增支持TV设备。
+
+获取手机号能力目前仅支持游戏类应用申请使用。
 
 业务流程
 
@@ -26,7 +38,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-g
 
 接口说明
 
-获取快速验证手机号关键接口如下表所示，具体API说明详见API参考。
+获取手机号关键接口如下表所示，具体API说明详见API参考。
 
 接口名	描述
 createAuthorizationWithHuaweiIDRequest(): AuthorizationWithHuaweiIDRequest	获取授权接口，通过AuthorizationWithHuaweiIDRequest传入返回手机号的scope：phone及返回Authorization Code的permission：serviceauthcode，即可获取到Authorization Code。
@@ -39,13 +51,13 @@ executeRequest(request: AuthenticationRequest): Promise<AuthenticationResponse>	
 
 开发前提
 
-1、在进行代码开发前，请先确认您已完成开发准备工作。
+在进行代码开发前，请先确认您已完成开发准备工作。
 
 若未配置签名和指纹，将报错1001500001 应用指纹证书校验失败。
 
 若未完成“获取您的手机号”权限申请，将报错1001502014 应用未申请scopes或permissions权限。
 
-2、设备需要登录华为账号，若未登录则拉起登录页面。
+设备需要登录华为账号，若未登录则拉起登录页面。
 
 开发步骤
 
@@ -100,7 +112,7 @@ try {
 // 错误处理
 function dealAllError(error: BusinessError): void {
   hilog.error(0x0000, 'testTag', `Failed to obtain userInfo. Code: ${error.code}, message: ${error.message}`);
-  // 在应用快速验证手机号场景下，涉及UI交互时，建议按照如下错误码指导提示用户
+  // 在应用获取手机号场景下，涉及UI交互时，建议按照如下错误码指导提示用户
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {
@@ -209,7 +221,7 @@ try {
 // 错误处理
 function dealAllError(error: BusinessError): void {
   hilog.error(0x0000, 'testTag', `Failed to obtain userInfo. Code: ${error.code}, message: ${error.message}`);
-  // 在应用快速验证手机号场景下，涉及UI交互时，建议按照如下错误码指导提示用户
+  // 在应用获取手机号场景下，涉及UI交互时，建议按照如下错误码指导提示用户
   if (error.code === ErrorCode.ERROR_CODE_LOGIN_OUT) {
     // 用户未登录华为账号，请登录华为账号并重试
   } else if (error.code === ErrorCode.ERROR_CODE_NETWORK_ERROR) {

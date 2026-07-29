@@ -187,7 +187,6 @@ struct WebComponent {
 
 加载的html文件。
 
-// test.html
 <!-- test.html -->
 <!DOCTYPE html>
 <html>
@@ -334,7 +333,6 @@ struct WebComponent {
 ### Code block 6
 
 ```
-// test.html
 <!-- test.html -->
 <!DOCTYPE html>
 <html>

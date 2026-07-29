@@ -7,3 +7,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 游戏资源加速服务
 
 游戏启动加速服务
+
+游戏伴随服务

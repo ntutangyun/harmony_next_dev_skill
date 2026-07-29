@@ -28,7 +28,7 @@ GLIBC：2.28或更高版本
 
 [h2]配置JDK
 
-下载JDK，支持JDK 17版本。
+下载JDK。使用26.0.0 Beta2及以上版本的Command Line Tools，推荐JDK 21，26.0.0 Beta2以下版本推荐JDK 17。
 
 tar -xvf jdk-17.0.6_linux-x64_bin.tar.gz
 
@@ -181,7 +181,7 @@ assembleHar	构建Har包
 
 运行应用
 
-如果构建时已配置签名文件，会分别生成已签名包（如xxx-signed.hap）和未签名包（如xxx-unsigned.hap），已签名包可直接在真机设备上运行，无需重新签名。如果需要对包进行重签名，可使用签名工具对未签名包进行签名，步骤如下。
+如果工程级build-profile.json5中已配置signingConfigs指定签名信息，并且流水线中存在签名文件（包括.cer、.p7b、.p12文件和material文件夹，material文件夹默认和.p12文件存放在同一路径下），构建后会分别生成已签名包（如xxx-signed.hap）和未签名包（如xxx-unsigned.hap），已签名包可直接在真机设备上运行，无需重新签名。如果需要对包进行重签名，可使用签名工具对未签名包进行签名，步骤如下。
 
 [h2]准备申请签名所需文件
 

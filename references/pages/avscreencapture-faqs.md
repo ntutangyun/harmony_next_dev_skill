@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avscreencapture-faqs_
 
-录屏启动报错AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT
+实例数量超出限制时，录屏启动报错AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT
 
 实例数量超出规格限制，当前规格为每种数据格式最多两个实例。建议释放多余实例后再使用新实例。
 
@@ -16,6 +16,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avscreenc
 
 单应用单模式（存为文件或存为码流）可创建实例上限2个，典型场景：在线上会议共享屏幕时，需要同步录制会议内容。
 
-通话中无法启动录屏报错AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT
+通话中未设置保持录屏策略时，无法启动录屏报错AV_SCREEN_CAPTURE_ERR_OPERATE_NOT_PERMIT
 
-从API version 20开始，如需在通话中开启录屏，可使用OH_AVScreenCapture_StrategyForKeepCaptureDuringCall()设置“蜂窝通话时保持录屏”状态。
+从API version 20开始，如需在通话中保持录屏，可使用OH_AVScreenCapture_StrategyForKeepCaptureDuringCall()设置“蜂窝通话时保持录屏”策略。

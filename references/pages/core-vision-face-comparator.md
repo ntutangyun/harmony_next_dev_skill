@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/core-visi
 
 适用场景
 
-输入的两张比对图片是同一个人的照片时，系统返回的比对结果为"同一个人"，置信分数比较高；当两张比对图片不是同一个人的照片时，系统返回的比对结果为"非同一个人"，置信分数很低。可以用于APP中需要用到人脸比对功能的场景，比如娱乐类APP中比较两个人的相似度、与明星的相似度等。
+输入的两张比对图片是同一个人的照片时，系统返回的比对结果为“同一个人”，置信分数比较高；当两张比对图片不是同一个人的照片时，系统返回的比对结果为“非同一个人”，置信分数很低。可以用于APP中需要用到人脸比对功能的场景，比如娱乐类APP中比较两个人的相似度、与明星的相似度等。
 
 效果如下图所示：
 
@@ -217,12 +217,12 @@ struct Index {
   }
 
   private async selectImage() {
-    let uri = await this.openPhoto();
-    if (uri === undefined) {
+    let uris: string[] = await this.openPhoto();
+    if (uris === undefined || uris.length < 2) {
       hilog.error(0x0000, TAG, 'Failed to get two image uris.');
       return;
     }
-    this.loadImage(uri);
+    this.loadImage(uris);
   }
 
   private async openPhoto(): Promise<string[]> {
@@ -475,12 +475,12 @@ struct Index {
   }
 
   private async selectImage() {
-    let uri = await this.openPhoto();
-    if (uri === undefined) {
+    let uris: string[] = await this.openPhoto();
+    if (uris === undefined || uris.length < 2) {
       hilog.error(0x0000, TAG, 'Failed to get two image uris.');
       return;
     }
-    this.loadImage(uri);
+    this.loadImage(uris);
   }
 
   private async openPhoto(): Promise<string[]> {

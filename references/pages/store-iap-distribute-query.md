@@ -22,18 +22,28 @@ import { iap } from '@kit.IAPKit';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UIContext } from '@kit.ArkUI'
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-class QueryEnvironmentStatus {
-  queryEnvironmentStatus() {
-    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
-    iap.queryEnvironmentStatus(context).then(() => {
-      // 请求成功
-      console.info('Succeeded in querying environment status.');
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
-    });
-  }
+const TAG: string = 'IAP'
+
+@Entry
+@Component
+struct IapView {
+    // ...
+    queryEnvironmentStatus() {
+        const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+        iap.queryEnvironmentStatus(context).then(() => {
+            // 请求成功
+            hilog.info(0, TAG, 'Succeeded in querying environment status.');
+        }).catch((err: BusinessError) => {
+            // 请求失败
+            hilog.error(0, TAG, `Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+            // ...
+
+        });
+    }
+
+    // ...
 }
 
 查询商品信息。
@@ -47,30 +57,41 @@ class QueryEnvironmentStatus {
 queryProducts每次只能查询一种类型的商品，单次查询请勿超过200条。
 
 import { iap } from '@kit.IAPKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { UIContext } from '@kit.ArkUI'
-class Queryproducts {
-  queryProducts() {
-    const queryProductParam: iap.QueryProductsParameter = {
-      // iap.ProductType.CONSUMABLE：消耗型商品;
-      // iap.ProductType.NONCONSUMABLE：非消耗型商品;
-      // productType: iap.ProductType.AUTORENEWABLE;订阅型商品
-      productType: iap.ProductType.CONSUMABLE,
-      // 查询的商品必须是开发者在AppGallery Connect网站配置的商品
-      productIds: ['ohos_consume_001']
-    };
-    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
-    iap.queryProducts(context, queryProductParam).then((result) => {
-      // 请求成功
-      console.info('Succeeded in querying products.');
-      // 展示商品信息
-      // ...
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query products. Code is ${err.code}, message is ${err.message}`);
-    });
-  }
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = 'IAP'
+
+@Entry
+@Component
+struct IapView {
+    // ...
+
+    queryProducts() {
+        const queryProductParam: iap.QueryProductsParameter = {
+            // iap.ProductType.CONSUMABLE：消耗型商品;
+            // iap.ProductType.NONCONSUMABLE：非消耗型商品;
+            // productType: iap.ProductType.AUTORENEWABLE;订阅型商品
+            productType: iap.ProductType.CONSUMABLE,
+            // 查询的商品必须是开发者在AppGallery Connect网站配置的商品
+            productIds: ['ohos_consume_001']
+        };
+        const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+        iap.queryProducts(context, queryProductParam).then((products: Array<iap.Product>) => {
+            // 请求成功
+            hilog.info(0, TAG, 'Succeeded in querying products.');
+            // 展示商品信息
+            hilog.info(0, TAG, `products: ${JSON.stringify(products)}`);
+        }).catch((err: BusinessError) => {
+            // 请求失败
+            hilog.error(0, TAG, `Failed to query products. Code is ${err.code}, message is ${err.message}`);
+            // ...
+        });
+    }
+
+    // ...
 }
 
 ## Code blocks
@@ -82,18 +103,28 @@ import { iap } from '@kit.IAPKit';
 import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { UIContext } from '@kit.ArkUI'
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
-class QueryEnvironmentStatus {
-  queryEnvironmentStatus() {
-    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
-    iap.queryEnvironmentStatus(context).then(() => {
-      // 请求成功
-      console.info('Succeeded in querying environment status.');
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
-    });
-  }
+const TAG: string = 'IAP'
+
+@Entry
+@Component
+struct IapView {
+    // ...
+    queryEnvironmentStatus() {
+        const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+        iap.queryEnvironmentStatus(context).then(() => {
+            // 请求成功
+            hilog.info(0, TAG, 'Succeeded in querying environment status.');
+        }).catch((err: BusinessError) => {
+            // 请求失败
+            hilog.error(0, TAG, `Failed to query environment status. Code is ${err.code}, message is ${err.message}`);
+            // ...
+
+        });
+    }
+
+    // ...
 }
 ```
 
@@ -101,29 +132,40 @@ class QueryEnvironmentStatus {
 
 ```
 import { iap } from '@kit.IAPKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { UIContext } from '@kit.ArkUI'
-class Queryproducts {
-  queryProducts() {
-    const queryProductParam: iap.QueryProductsParameter = {
-      // iap.ProductType.CONSUMABLE：消耗型商品;
-      // iap.ProductType.NONCONSUMABLE：非消耗型商品;
-      // productType: iap.ProductType.AUTORENEWABLE;订阅型商品
-      productType: iap.ProductType.CONSUMABLE,
-      // 查询的商品必须是开发者在AppGallery Connect网站配置的商品
-      productIds: ['ohos_consume_001']
-    };
-    const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
-    iap.queryProducts(context, queryProductParam).then((result) => {
-      // 请求成功
-      console.info('Succeeded in querying products.');
-      // 展示商品信息
-      // ...
-    }).catch((err: BusinessError) => {
-      // 请求失败
-      console.error(`Failed to query products. Code is ${err.code}, message is ${err.message}`);
-    });
-  }
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const TAG: string = 'IAP'
+
+@Entry
+@Component
+struct IapView {
+    // ...
+
+    queryProducts() {
+        const queryProductParam: iap.QueryProductsParameter = {
+            // iap.ProductType.CONSUMABLE：消耗型商品;
+            // iap.ProductType.NONCONSUMABLE：非消耗型商品;
+            // productType: iap.ProductType.AUTORENEWABLE;订阅型商品
+            productType: iap.ProductType.CONSUMABLE,
+            // 查询的商品必须是开发者在AppGallery Connect网站配置的商品
+            productIds: ['ohos_consume_001']
+        };
+        const context: common.UIAbilityContext = UIContext.prototype.getHostContext() as common.UIAbilityContext;
+        iap.queryProducts(context, queryProductParam).then((products: Array<iap.Product>) => {
+            // 请求成功
+            hilog.info(0, TAG, 'Succeeded in querying products.');
+            // 展示商品信息
+            hilog.info(0, TAG, `products: ${JSON.stringify(products)}`);
+        }).catch((err: BusinessError) => {
+            // 请求失败
+            hilog.error(0, TAG, `Failed to query products. Code is ${err.code}, message is ${err.message}`);
+            // ...
+        });
+    }
+
+    // ...
 }
 ```

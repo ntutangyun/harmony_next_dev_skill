@@ -36,7 +36,7 @@ CustomBuilder（自定义构建器）
 @Entry
 @Component
 struct Index {
-  // 初始化HdsTabs控制器。
+  // 初始化HdsTabs控制器
   private controller: HdsTabsController = new HdsTabsController();
 
   @Builder
@@ -89,7 +89,7 @@ struct Index {
       .barOverlap(true)
       .barPosition(BarPosition.End)
       .vertical(false)
-      // 设置页签栏悬浮样式。
+      // 设置页签栏悬浮样式
       .barFloatingStyle({
         barWidth: { smallWidth: 200, mediumWidth: 300, largeWidth: 400 },
         barBottomMargin: 28,
@@ -98,12 +98,14 @@ struct Index {
           materialType: hdsMaterial.MaterialType.IMMERSIVE,
           materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
         },
-        // 设置迷你栏，若不设置，则仅有页签栏。
+        // 设置迷你栏，若不设置，则仅有页签栏
         miniBar: {
           miniBarBuilder: () => this.miniBarBuilder()
         }
       })
     }
+    .width('100%')
+    .height('100%')
   }
 }
 
@@ -122,7 +124,7 @@ struct Index {
 @Entry
 @Component
 struct Index {
-  // 初始化HdsTabs控制器。
+  // 初始化HdsTabs控制器
   private controller: HdsTabsController = new HdsTabsController();
 
   @Builder
@@ -175,7 +177,7 @@ struct Index {
       .barOverlap(true)
       .barPosition(BarPosition.End)
       .vertical(false)
-      // 设置页签栏悬浮样式。
+      // 设置页签栏悬浮样式
       .barFloatingStyle({
         barWidth: { smallWidth: 200, mediumWidth: 300, largeWidth: 400 },
         barBottomMargin: 28,
@@ -184,12 +186,14 @@ struct Index {
           materialType: hdsMaterial.MaterialType.IMMERSIVE,
           materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
         },
-        // 设置迷你栏，若不设置，则仅有页签栏。
+        // 设置迷你栏，若不设置，则仅有页签栏
         miniBar: {
           miniBarBuilder: () => this.miniBarBuilder()
         }
       })
     }
+    .width('100%')
+    .height('100%')
   }
 }
 ```

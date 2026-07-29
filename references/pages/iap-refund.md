@@ -72,32 +72,29 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-refun
 代码示例
 
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
-@Entry
-@Component
-struct Index {
-
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
   /**
    * 拉起退款界面
    */
-  createRefundRequest(context: common.UIAbilityContext) {
-    // 调用iap.createRefundRequest拉起退款，传入context和purchaseOrderId
-    let purchaseOrderId = '';
-    iap.createRefundRequest(context, purchaseOrderId).then(() => {
+  async createRefundRequest() {
+    if (!this.purchaseOrderId) {
+      Logger.error(TAG, `Failed to create refund request. Error params`);
+      return;
+    }
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    await iap.createRefundRequest(context, this.purchaseOrderId).then(() => {
       // 退款成功
-      console.info('Succeeded in creating refund request.');
+      Logger.info(TAG, 'Succeeded in create refund request.');
       // ...
     }).catch((err: BusinessError) => {
       // 退款失败
-      console.error(`Failed to create refund request. Code is ${err.code}, message is ${err.message}`);
+      Logger.error(TAG, `Failed to create refund request. Code is ${err.code}, message is ${err.message}`);
       // ...
     });
   }
-
-  build() {}
-}
 
 ## Code blocks
 
@@ -105,30 +102,27 @@ struct Index {
 
 ```
 import { iap } from '@kit.IAPKit';
-import { common } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-
-@Entry
-@Component
-struct Index {
-
+import { common } from '@kit.AbilityKit';
+import Logger from '../common/Logger';
+// ...
   /**
    * 拉起退款界面
    */
-  createRefundRequest(context: common.UIAbilityContext) {
-    // 调用iap.createRefundRequest拉起退款，传入context和purchaseOrderId
-    let purchaseOrderId = '';
-    iap.createRefundRequest(context, purchaseOrderId).then(() => {
+  async createRefundRequest() {
+    if (!this.purchaseOrderId) {
+      Logger.error(TAG, `Failed to create refund request. Error params`);
+      return;
+    }
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    await iap.createRefundRequest(context, this.purchaseOrderId).then(() => {
       // 退款成功
-      console.info('Succeeded in creating refund request.');
+      Logger.info(TAG, 'Succeeded in create refund request.');
       // ...
     }).catch((err: BusinessError) => {
       // 退款失败
-      console.error(`Failed to create refund request. Code is ${err.code}, message is ${err.message}`);
+      Logger.error(TAG, `Failed to create refund request. Code is ${err.code}, message is ${err.message}`);
       // ...
     });
   }
-
-  build() {}
-}
 ```

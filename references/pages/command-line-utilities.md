@@ -9,3 +9,5 @@ toybox
 devicedebug工具
 
 rawheap-translator工具
+
+js-rawheap-translator工具

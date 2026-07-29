@@ -128,7 +128,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
           result: {
             message: 'pageId type error'
           }
-        }
+        };
         resolve(data);
       }
       let pageId: string = param?.pageId as string;
@@ -262,7 +262,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
           result: {
             message: 'pageId type error'
           }
-        }
+        };
         resolve(data);
       }
       let pageId: string = param?.pageId as string;

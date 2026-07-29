@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 从6.0.0(20)开始，支持HTTP缓存。
 
-HTTP 缓存是一种在客户端存储网络资源副本的机制，当后续请求相同资源时，可直接从缓存中获取，无需再次向服务器发起完整请求。HTTP 缓存适用于静态资源（如图片、CSS）和高访问量内容，能有效提升网络资源获取性能。Remote Communication Kit模块提供HTTP缓存功能，遵循RFC 9111协议，支持独立配置缓存策略与持久化存储路径，实现内存、磁盘双重缓存管理，并提供自定义缓存拦截器能力。
+HTTP缓存是一种在客户端存储网络资源副本的机制，当后续请求相同资源时，可直接从缓存中获取，无需再次向服务器发起完整请求。HTTP缓存适用于静态资源（如图片、CSS）和高访问量内容，能有效提升网络资源获取性能。Remote Communication Kit模块提供HTTP缓存功能，遵循RFC 9111协议，支持独立配置缓存策略与持久化存储路径，实现内存、磁盘双重缓存管理，并提供自定义缓存拦截器能力。
 
 约束与限制
 
@@ -20,10 +20,11 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 
 创建ResponseCache实例。其中，pathToFolder即HTTP缓存响应记录文件路径，'/path/dir'请根据实际情况替换为需要存储HTTP缓存的沙箱路径。
 
+// 创建ResponseCache实例
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/BaseHttp' // 请根据自身业务选择合适的路径
   }
 });
 
@@ -31,12 +32,13 @@ const responseCache = new rcp.ResponseCache({
 
 const session: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 
 发起第一次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会从网络服务器获取数据，此时可查看缓存状态信息，若HTTP缓存成功，此时缓存条数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -44,6 +46,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 
 发起第二次请求。由于上次请求将会把响应存储到缓存中，第二次请求将会直接从缓存中获取响应。此时可查看缓存状态信息，此时缓存命中数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
@@ -62,7 +65,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/ExpirationHttp' // 请根据自身业务选择合适的路径
   },
   // 过期策略配置，可根据业务特性进行选择
   defaultExpirationPolicy: {
@@ -76,14 +79,15 @@ const responseCache = new rcp.ResponseCache({
 
 创建会话。在创建Session时，传入responseCache实例。
 
-const session: rcp.Session = rcp.createSession({
+const session: rcp.Session  = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 
 发起第一次请求。'https://www.example.com'请根据实际情况替换为支持HTTP缓存协议的URL。本次请求将会从网络服务器获取数据，此时可查看缓存状态信息，若HTTP缓存成功，此时缓存条数应当为1。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -105,6 +109,7 @@ await sleep(4000);
 
 发起第二次请求。由于缓存记录已过期，此时本次请求仍然会去访问网络服务器获取数据，此时缓存命中数应为0。
 
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
@@ -121,10 +126,11 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 ### Code block 2
 
 ```
+// 创建ResponseCache实例
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/BaseHttp' // 请根据自身业务选择合适的路径
   }
 });
 ```
@@ -134,7 +140,7 @@ const responseCache = new rcp.ResponseCache({
 ```
 const session: rcp.Session = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 ```
@@ -142,6 +148,7 @@ const session: rcp.Session = rcp.createSession({
 ### Code block 4
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -151,6 +158,7 @@ console.info(`The current number of cache entries is: ${cacheState.count}`);
 ### Code block 5
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();
@@ -169,7 +177,7 @@ import { rcp } from '@kit.RemoteCommunicationKit';
 const responseCache = new rcp.ResponseCache({
   persistent: {
     kind: 'file-system',
-    pathToFolder: '/path/dir' // 请根据自身业务选择合适的路径
+    pathToFolder: '/data/storage/el2/base/entry/temp/ExpirationHttp' // 请根据自身业务选择合适的路径
   },
   // 过期策略配置，可根据业务特性进行选择
   defaultExpirationPolicy: {
@@ -185,9 +193,9 @@ const responseCache = new rcp.ResponseCache({
 ### Code block 8
 
 ```
-const session: rcp.Session = rcp.createSession({
+const session: rcp.Session  = rcp.createSession({
   requestConfiguration: {
-    cache: responseCache
+    cache: responseCache,
   }
 });
 ```
@@ -195,6 +203,7 @@ const session: rcp.Session = rcp.createSession({
 ### Code block 9
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseA = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseA)}`);
 let cacheState = await responseCache.getState();
@@ -220,6 +229,7 @@ await sleep(4000);
 ### Code block 11
 
 ```
+// 请求的网址是示例网址，请根据实际需求更改
 const responseB = await session.get('https://www.example.com');
 console.info(`Request succeeded, message is ${JSON.stringify(responseB)}`);
 cacheState = await responseCache.getState();

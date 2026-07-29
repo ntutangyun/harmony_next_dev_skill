@@ -42,7 +42,7 @@ Failed to parse the HiLog file: XXX.
 
 错误信息
 
-App have been shutdown unexpectedly.
+App has been shutdown unexpectedly.
 
 错误描述
 

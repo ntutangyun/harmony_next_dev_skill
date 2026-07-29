@@ -4,6 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/window-mo
 
 窗口模式简介
 
-智慧多窗应用开发指南
+智慧多窗应用开发指导
 
 自由窗口

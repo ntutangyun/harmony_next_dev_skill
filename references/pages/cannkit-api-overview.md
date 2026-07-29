@@ -26,7 +26,7 @@ ISASI(Instruction Set Architecture Special API)， 硬件体系结构相关的AP
 
 整个tensor参与计算：通过运算符重载的方式实现，支持“+, -, *, /, |, &, <, >, <=, >=, ==, !=”，实现计算的简化表达。例如：
 
-dst=src1+src2
+dst = src1 + src2
 
 tensor前n个数据计算：针对源操作数的连续n个数据进行计算并连续写入目的操作数，解决一维tensor的连续计算问题。例如：
 

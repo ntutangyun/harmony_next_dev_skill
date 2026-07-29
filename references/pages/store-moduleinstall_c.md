@@ -2,6 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-moduleinstall_c_
 
+说明
+
+26.0.0版本开始，新增暂停下载任务接口，支持用户暂停下载任务。
+
 场景介绍
 
 随着HarmonyOS应用的持续发展，应用的功能将越来越丰富，实际上80%的用户使用时长都会集中在20%的特性上，其余的功能可能也仅仅是面向部分用户。为了避免用户首次下载应用耗时过长，及过多占用用户空间，应用市场服务提供按需分发的能力，支持用户按需动态下载自己所需的增强特性。
@@ -14,7 +18,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-mod
 
 应用需要上架应用市场。
 
-产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
+产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
+
+使用按需分发前，需先将应用拆分为基础包与增强功能模块，详细操作请参考模块管理。
 
 接口说明
 
@@ -34,6 +40,7 @@ HMS_ModuleInstall_GetFetchModules	获取模块下载模块名。
 HMS_ModuleInstall_GetFetchModulesTotalSize	获取模块下载总大小。
 HMS_ModuleInstall_GetFetchModulesDownloadedSize	获取模块下载已下载大小。
 HMS_ModuleInstall_CancelTask	取消下载任务。
+HMS_ModuleInstall_PauseTask	暂停下载任务。
 HMS_ModuleInstall_ShowCellularDataConfirmation	展示流量弹窗。
 HMS_ModuleInstall_CreateStatusCallback	创建下载进度监听回调。
 HMS_ModuleInstall_On	下载进度监听。
@@ -46,7 +53,7 @@ HMS_ModuleInstall_Off	取消下载进度监听。
 
 [h2]在CMake脚本中链接动态库
 
-target_link_libraries(sample PUBLIC libhmsmoduleinstall.so)
+target_link_libraries(entry PUBLIC ${module_install_lib})
 
 [h2]添加头文件
 
@@ -76,13 +83,17 @@ if (installedModule != nullptr) {
 应用可以通过HMS_ModuleInstall_FetchModules按需加载模块，接口调用成功之后可以通过HMS_ModuleInstall_GetFetchModulesRequestCode、HMS_ModuleInstall_GetFetchModulesTaskStatus、HMS_ModuleInstall_GetFetchModulesTaskId、HMS_ModuleInstall_GetFetchModulesDesc、HMS_ModuleInstall_GetFetchModules、HMS_ModuleInstall_GetFetchModulesTotalSize、HMS_ModuleInstall_GetFetchModulesDownloadedSize接口获取模块下载相关信息。
 
 char *bundleName;
-int arraySize = 1;
-char** moduleNames = new char*[arraySize];
+unsigned int arraySize = 1;
+// ...
+char **moduleNames = new char *[arraySize];
 for (int i = 0; i < arraySize; i++) {
-     moduleNames[i] = new char[256];
+    moduleNames[i] = new char[256];
 }
+// ...
 ModuleInstall_FetchModulesResult *fetchModulesResult;
-ModuleInstall_ErrCode ret = HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+ModuleInstall_ErrCode ret =
+    HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+// ...
 if (ret == E_NO_ERROR) {
     ModuleInstall_RequestCode code = HMS_ModuleInstall_GetFetchModulesRequestCode(fetchModulesResult);
     ModuleInstall_TaskStatus taskStatus = HMS_ModuleInstall_GetFetchModulesTaskStatus(fetchModulesResult);
@@ -91,6 +102,7 @@ if (ret == E_NO_ERROR) {
     char *modules = HMS_ModuleInstall_GetFetchModules(fetchModulesResult);
     int totalSize = HMS_ModuleInstall_GetFetchModulesTotalSize(fetchModulesResult);
     int downloadedSize = HMS_ModuleInstall_GetFetchModulesDownloadedSize(fetchModulesResult);
+    // ...
 }
 if (moduleNames != nullptr) {
     delete[] moduleNames;
@@ -101,12 +113,77 @@ if (fetchModulesResult != nullptr) {
     fetchModulesResult = nullptr;
 }
 
-取消下载任务
+暂停下载任务
 
-如果需要取消下载，应用可以调用HMS_ModuleInstall_CancelTask接口取消下载任务，其中taskId是调用HMS_ModuleInstall_GetFetchModulesTaskId接口返回的taskId。
+调用HMS_ModuleInstall_PauseTask接口暂停下载任务。
 
 char *taskId; // 下载任务id
+// ...
+ModuleInstall_ErrCode ret = HMS_ModuleInstall_PauseTask(taskId);
+if (ret == E_NO_ERROR) {
+    // 暂停下载成功
+}
+
+恢复下载任务
+
+使用HMS_ModuleInstall_PauseTask接口暂停下载任务后，可通过调用HMS_ModuleInstall_FetchModules接口实现下载任务从中断处继续下载。
+
+#include <cstring>
+#include "AppGalleryKit/module_install.h"
+
+// ...
+
+// 暂停下载任务
+void PauseTask() {
+    char *taskId;
+    ModuleInstall_ErrCode ret = HMS_ModuleInstall_PauseTask(taskId);
+    if (ret == E_NO_ERROR) {
+        // 暂停下载成功
+    }
+}
+
+// 恢复下载任务
+void FetchModules() {
+    char *bundleName;
+    int arraySize = 1;
+    char **moduleNames = new char *[arraySize];
+    for (int i = 0; i < arraySize; i++) {
+        moduleNames[i] = new char[256];
+    }
+    ModuleInstall_FetchModulesResult *fetchModulesResult;
+    ModuleInstall_ErrCode ret =
+        HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+    if (ret == E_NO_ERROR) {
+        ModuleInstall_TaskStatus taskStatus = HMS_ModuleInstall_GetFetchModulesTaskStatus(fetchModulesResult);
+        char *taskId = HMS_ModuleInstall_GetFetchModulesTaskId(fetchModulesResult);
+        ModuleInstall_RequestCode code = HMS_ModuleInstall_GetFetchModulesRequestCode(fetchModulesResult);
+        if (code == DOWNLOAD_WAIT_WIFI) {
+            int showResult;
+            ModuleInstall_ErrCode ret =
+                HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
+        }
+        char *desc = HMS_ModuleInstall_GetFetchModulesDesc(fetchModulesResult);
+        char *modules = HMS_ModuleInstall_GetFetchModules(fetchModulesResult);
+        int totalSize = HMS_ModuleInstall_GetFetchModulesTotalSize(fetchModulesResult);
+        int downloadedSize = HMS_ModuleInstall_GetFetchModulesDownloadedSize(fetchModulesResult);
+    }
+    if (moduleNames != nullptr) {
+        delete[] moduleNames;
+        moduleNames = nullptr;
+    }
+    if (fetchModulesResult != nullptr) {
+        delete fetchModulesResult;
+        fetchModulesResult = nullptr;
+    }
+}
+
+取消下载任务
+
+调用HMS_ModuleInstall_CancelTask接口取消下载任务。
+
+char *taskId;     // 下载任务id
 int cancelResult; // 取消下载结果
+// ...
 ModuleInstall_ErrCode ret = HMS_ModuleInstall_CancelTask(taskId, strlen(taskId), cancelResult);
 if (ret == E_NO_ERROR && cancelResult == 0) {
     // 取消下载成功
@@ -116,8 +193,9 @@ if (ret == E_NO_ERROR && cancelResult == 0) {
 
 如果调用HMS_ModuleInstall_GetFetchModulesRequestCode接口返回DOWNLOAD_WAIT_WIFI时，需要调用HMS_ModuleInstall_ShowCellularDataConfirmation接口展示流量弹窗。
 
-char *taskId; // 下载任务id
+char *taskId;   // 下载任务id
 int showResult; // 展示流量弹窗结果
+// ...
 ModuleInstall_ErrCode ret = HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
 if (ret == E_NO_ERROR && showResult == 0) {
     // 展示流量弹窗成功
@@ -129,6 +207,7 @@ if (ret == E_NO_ERROR && showResult == 0) {
 
 void onEvent(char *bundleName, char *eventInfo) {
     // 回调处理
+    // ...
 }
 
 [h2]初始化下载进度回调
@@ -144,8 +223,9 @@ statusCallback = HMS_ModuleInstall_CreateStatusCallback(&onStatusCallback);
 应用可以通过HMS_ModuleInstall_On接口监听下载进度。
 
 char *bundleName; // 应用包名
-int appIndex; // 应用分身索引
-int period; // 监听周期
+int appIndex;     // 应用分身索引
+int period;       // 监听周期
+// ...
 ModuleInstall_ErrCode ret = HMS_ModuleInstall_On(bundleName, strlen(bundleName), appIndex, period, &statusCallback);
 
 取消监听下载任务
@@ -153,7 +233,8 @@ ModuleInstall_ErrCode ret = HMS_ModuleInstall_On(bundleName, strlen(bundleName),
 应用可以通过HMS_ModuleInstall_Off接口取消下载进度监听。
 
 char *bundleName; // 应用包名
-int appIndex; // 应用分身索引
+int appIndex;     // 应用分身索引
+// ...
 ModuleInstall_ErrCode ret = HMS_ModuleInstall_Off(bundleName, strlen(bundleName), appIndex);
 if (ret == E_NO_ERROR) {
     // 取消监听成功
@@ -186,6 +267,22 @@ void ShowCellularDataConfirmation(char *taskId) {
     ModuleInstall_ErrCode ret = HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
 }
 
+void CancelTask() {
+    char *taskId;
+    int cancelResult;
+    ModuleInstall_ErrCode ret = HMS_ModuleInstall_CancelTask(taskId, strlen(taskId), cancelResult);
+}
+
+// 暂停下载任务
+void PauseTask() {
+    char *taskId;
+    ModuleInstall_ErrCode ret = HMS_ModuleInstall_PauseTask(taskId);
+    if (ret == E_NO_ERROR) {
+        // 暂停下载成功
+    }
+}
+
+// 恢复下载任务
 void FetchModules() {
     char *bundleName;
     int arraySize = 1;
@@ -194,38 +291,35 @@ void FetchModules() {
         moduleNames[i] = new char[256];
     }
     ModuleInstall_FetchModulesResult *fetchModulesResult;
-    ModuleInstall_ErrCode ret = HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+    ModuleInstall_ErrCode ret =
+        HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
     if (ret == E_NO_ERROR) {
         ModuleInstall_TaskStatus taskStatus = HMS_ModuleInstall_GetFetchModulesTaskStatus(fetchModulesResult);
         char *taskId = HMS_ModuleInstall_GetFetchModulesTaskId(fetchModulesResult);
         ModuleInstall_RequestCode code = HMS_ModuleInstall_GetFetchModulesRequestCode(fetchModulesResult);
         if (code == DOWNLOAD_WAIT_WIFI) {
-            ShowCellularDataConfirmation(taskId);
+            int showResult;
+            ModuleInstall_ErrCode ret =
+                HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
         }
         char *desc = HMS_ModuleInstall_GetFetchModulesDesc(fetchModulesResult);
         char *modules = HMS_ModuleInstall_GetFetchModules(fetchModulesResult);
         int totalSize = HMS_ModuleInstall_GetFetchModulesTotalSize(fetchModulesResult);
         int downloadedSize = HMS_ModuleInstall_GetFetchModulesDownloadedSize(fetchModulesResult);
     }
-
     if (moduleNames != nullptr) {
         delete[] moduleNames;
         moduleNames = nullptr;
     }
-
     if (fetchModulesResult != nullptr) {
         delete fetchModulesResult;
         fetchModulesResult = nullptr;
     }
 }
 
-void CancelTask() {
-    char *taskId;
-    int cancelResult;
-    ModuleInstall_ErrCode ret = HMS_ModuleInstall_CancelTask(taskId, strlen(taskId), cancelResult);
+void onEvent(char *bundleName, char *eventInfo) {
+    // ...
 }
-
-void onEvent(char *bundleName, char *eventInfo) {}
 
 void On() {
     char *bundleName;
@@ -248,7 +342,7 @@ void Off() {
 ### Code block 1
 
 ```
-target_link_libraries(sample PUBLIC libhmsmoduleinstall.so)
+target_link_libraries(entry PUBLIC ${module_install_lib})
 ```
 
 ### Code block 2
@@ -278,13 +372,17 @@ if (installedModule != nullptr) {
 
 ```
 char *bundleName;
-int arraySize = 1;
-char** moduleNames = new char*[arraySize];
+unsigned int arraySize = 1;
+// ...
+char **moduleNames = new char *[arraySize];
 for (int i = 0; i < arraySize; i++) {
-     moduleNames[i] = new char[256];
+    moduleNames[i] = new char[256];
 }
+// ...
 ModuleInstall_FetchModulesResult *fetchModulesResult;
-ModuleInstall_ErrCode ret = HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+ModuleInstall_ErrCode ret =
+    HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+// ...
 if (ret == E_NO_ERROR) {
     ModuleInstall_RequestCode code = HMS_ModuleInstall_GetFetchModulesRequestCode(fetchModulesResult);
     ModuleInstall_TaskStatus taskStatus = HMS_ModuleInstall_GetFetchModulesTaskStatus(fetchModulesResult);
@@ -293,6 +391,7 @@ if (ret == E_NO_ERROR) {
     char *modules = HMS_ModuleInstall_GetFetchModules(fetchModulesResult);
     int totalSize = HMS_ModuleInstall_GetFetchModulesTotalSize(fetchModulesResult);
     int downloadedSize = HMS_ModuleInstall_GetFetchModulesDownloadedSize(fetchModulesResult);
+    // ...
 }
 if (moduleNames != nullptr) {
     delete[] moduleNames;
@@ -308,33 +407,100 @@ if (fetchModulesResult != nullptr) {
 
 ```
 char *taskId; // 下载任务id
-int cancelResult; // 取消下载结果
-ModuleInstall_ErrCode ret = HMS_ModuleInstall_CancelTask(taskId, strlen(taskId), cancelResult);
-if (ret == E_NO_ERROR && cancelResult == 0) {
-    // 取消下载成功
+// ...
+ModuleInstall_ErrCode ret = HMS_ModuleInstall_PauseTask(taskId);
+if (ret == E_NO_ERROR) {
+    // 暂停下载成功
 }
 ```
 
 ### Code block 6
 
 ```
-char *taskId; // 下载任务id
-int showResult; // 展示流量弹窗结果
-ModuleInstall_ErrCode ret = HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
-if (ret == E_NO_ERROR && showResult == 0) {
-    // 展示流量弹窗成功
+#include <cstring>
+#include "AppGalleryKit/module_install.h"
+
+// ...
+
+// 暂停下载任务
+void PauseTask() {
+    char *taskId;
+    ModuleInstall_ErrCode ret = HMS_ModuleInstall_PauseTask(taskId);
+    if (ret == E_NO_ERROR) {
+        // 暂停下载成功
+    }
+}
+
+// 恢复下载任务
+void FetchModules() {
+    char *bundleName;
+    int arraySize = 1;
+    char **moduleNames = new char *[arraySize];
+    for (int i = 0; i < arraySize; i++) {
+        moduleNames[i] = new char[256];
+    }
+    ModuleInstall_FetchModulesResult *fetchModulesResult;
+    ModuleInstall_ErrCode ret =
+        HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+    if (ret == E_NO_ERROR) {
+        ModuleInstall_TaskStatus taskStatus = HMS_ModuleInstall_GetFetchModulesTaskStatus(fetchModulesResult);
+        char *taskId = HMS_ModuleInstall_GetFetchModulesTaskId(fetchModulesResult);
+        ModuleInstall_RequestCode code = HMS_ModuleInstall_GetFetchModulesRequestCode(fetchModulesResult);
+        if (code == DOWNLOAD_WAIT_WIFI) {
+            int showResult;
+            ModuleInstall_ErrCode ret =
+                HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
+        }
+        char *desc = HMS_ModuleInstall_GetFetchModulesDesc(fetchModulesResult);
+        char *modules = HMS_ModuleInstall_GetFetchModules(fetchModulesResult);
+        int totalSize = HMS_ModuleInstall_GetFetchModulesTotalSize(fetchModulesResult);
+        int downloadedSize = HMS_ModuleInstall_GetFetchModulesDownloadedSize(fetchModulesResult);
+    }
+    if (moduleNames != nullptr) {
+        delete[] moduleNames;
+        moduleNames = nullptr;
+    }
+    if (fetchModulesResult != nullptr) {
+        delete fetchModulesResult;
+        fetchModulesResult = nullptr;
+    }
 }
 ```
 
 ### Code block 7
 
 ```
-void onEvent(char *bundleName, char *eventInfo) {
-    // 回调处理
+char *taskId;     // 下载任务id
+int cancelResult; // 取消下载结果
+// ...
+ModuleInstall_ErrCode ret = HMS_ModuleInstall_CancelTask(taskId, strlen(taskId), cancelResult);
+if (ret == E_NO_ERROR && cancelResult == 0) {
+    // 取消下载成功
 }
 ```
 
 ### Code block 8
+
+```
+char *taskId;   // 下载任务id
+int showResult; // 展示流量弹窗结果
+// ...
+ModuleInstall_ErrCode ret = HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
+if (ret == E_NO_ERROR && showResult == 0) {
+    // 展示流量弹窗成功
+}
+```
+
+### Code block 9
+
+```
+void onEvent(char *bundleName, char *eventInfo) {
+    // 回调处理
+    // ...
+}
+```
+
+### Code block 10
 
 ```
 ModuleInstall_StatusCallback *statusCallback;
@@ -342,27 +508,29 @@ ModuleInstall_OnStatusCallback onStatusCallback = onEvent;
 statusCallback = HMS_ModuleInstall_CreateStatusCallback(&onStatusCallback);
 ```
 
-### Code block 9
+### Code block 11
 
 ```
 char *bundleName; // 应用包名
-int appIndex; // 应用分身索引
-int period; // 监听周期
+int appIndex;     // 应用分身索引
+int period;       // 监听周期
+// ...
 ModuleInstall_ErrCode ret = HMS_ModuleInstall_On(bundleName, strlen(bundleName), appIndex, period, &statusCallback);
 ```
 
-### Code block 10
+### Code block 12
 
 ```
 char *bundleName; // 应用包名
-int appIndex; // 应用分身索引
+int appIndex;     // 应用分身索引
+// ...
 ModuleInstall_ErrCode ret = HMS_ModuleInstall_Off(bundleName, strlen(bundleName), appIndex);
 if (ret == E_NO_ERROR) {
     // 取消监听成功
 }
 ```
 
-### Code block 11
+### Code block 13
 
 ```
 #include <cstring>
@@ -388,6 +556,22 @@ void ShowCellularDataConfirmation(char *taskId) {
     ModuleInstall_ErrCode ret = HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
 }
 
+void CancelTask() {
+    char *taskId;
+    int cancelResult;
+    ModuleInstall_ErrCode ret = HMS_ModuleInstall_CancelTask(taskId, strlen(taskId), cancelResult);
+}
+
+// 暂停下载任务
+void PauseTask() {
+    char *taskId;
+    ModuleInstall_ErrCode ret = HMS_ModuleInstall_PauseTask(taskId);
+    if (ret == E_NO_ERROR) {
+        // 暂停下载成功
+    }
+}
+
+// 恢复下载任务
 void FetchModules() {
     char *bundleName;
     int arraySize = 1;
@@ -396,38 +580,35 @@ void FetchModules() {
         moduleNames[i] = new char[256];
     }
     ModuleInstall_FetchModulesResult *fetchModulesResult;
-    ModuleInstall_ErrCode ret = HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
+    ModuleInstall_ErrCode ret =
+        HMS_ModuleInstall_FetchModules(bundleName, strlen(bundleName), moduleNames, arraySize, &fetchModulesResult);
     if (ret == E_NO_ERROR) {
         ModuleInstall_TaskStatus taskStatus = HMS_ModuleInstall_GetFetchModulesTaskStatus(fetchModulesResult);
         char *taskId = HMS_ModuleInstall_GetFetchModulesTaskId(fetchModulesResult);
         ModuleInstall_RequestCode code = HMS_ModuleInstall_GetFetchModulesRequestCode(fetchModulesResult);
         if (code == DOWNLOAD_WAIT_WIFI) {
-            ShowCellularDataConfirmation(taskId);
+            int showResult;
+            ModuleInstall_ErrCode ret =
+                HMS_ModuleInstall_ShowCellularDataConfirmation(taskId, strlen(taskId), showResult);
         }
         char *desc = HMS_ModuleInstall_GetFetchModulesDesc(fetchModulesResult);
         char *modules = HMS_ModuleInstall_GetFetchModules(fetchModulesResult);
         int totalSize = HMS_ModuleInstall_GetFetchModulesTotalSize(fetchModulesResult);
         int downloadedSize = HMS_ModuleInstall_GetFetchModulesDownloadedSize(fetchModulesResult);
     }
-
     if (moduleNames != nullptr) {
         delete[] moduleNames;
         moduleNames = nullptr;
     }
-
     if (fetchModulesResult != nullptr) {
         delete fetchModulesResult;
         fetchModulesResult = nullptr;
     }
 }
 
-void CancelTask() {
-    char *taskId;
-    int cancelResult;
-    ModuleInstall_ErrCode ret = HMS_ModuleInstall_CancelTask(taskId, strlen(taskId), cancelResult);
+void onEvent(char *bundleName, char *eventInfo) {
+    // ...
 }
-
-void onEvent(char *bundleName, char *eventInfo) {}
 
 void On() {
     char *bundleName;

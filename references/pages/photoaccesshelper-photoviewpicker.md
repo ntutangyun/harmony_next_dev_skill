@@ -48,7 +48,7 @@ select返回的uri权限是只读权限，可以根据结果集中uri进行读�
 
 也可以通过返回的uri获取图片或视频资源。
 
-如有获取元数据需求，可以通过文件管理接口和文件URI根据uri获取部分文件属性信息，比如文件大小、访问时间、修改时间、文件名、文件路径等。
+如有获取元数据需求，可以通过@ohos.file.fs (文件管理)和文件URI根据URI获取部分文件属性信息，比如文件大小、访问时间、修改时间、文件名、文件路径等。
 
 指定URI读取文件数据
 
@@ -89,12 +89,12 @@ export class MediaAssetDataHandler implements photoAccessHelper.MediaAssetDataHa
   }
 
   // 使用箭头函数确保this引用不会丢失
-  onDataPrepared = (data: ArrayBuffer) => {
+  onDataPrepared = (data: ArrayBuffer, map?: Map<string, string>) => {
     if (data === undefined) {
       console.error('Error occurred when preparing data');
       return;
     }
-    console.info('on image data prepared');
+    console.info('on image data prepared, photo quality is ' + map?.get('quality'));
     // 现在this始终指向MediaAssetDataHandler实例
     if (this.callback) {
       this.callback(data);
@@ -110,6 +110,7 @@ export class MediaAssetDataHandler implements photoAccessHelper.MediaAssetDataHa
 
 static async getMediaResourceByUri(uri: string, context: common.Context, callback?: MediaDataHandlerCallback)
 : Promise<void> {
+  let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> | null = null;
   try {
     // 创建PhotoAccessHelper实例
     const phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
@@ -125,8 +126,7 @@ static async getMediaResourceByUri(uri: string, context: common.Context, callbac
     };
 
     // 查询资产
-    const fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
-      await phAccessHelper.getAssets(fetchOptions);
+    fetchResult = await phAccessHelper.getAssets(fetchOptions);
 
     const photoAsset: photoAccessHelper.PhotoAsset = await fetchResult.getFirstObject();
     if (photoAsset) {
@@ -148,10 +148,13 @@ static async getMediaResourceByUri(uri: string, context: common.Context, callbac
       console.error('No asset found for URI: ' + uri);
     }
 
-    // 关闭查询结果
-    fetchResult.close();
   } catch (err) {
     console.error('getMediaResourceByUri failed with err: ' + err);
+  } finally {
+     // 关闭查询结果。
+     if (fetchResult !== null) {
+       fetchResult.close();
+     }
   }
 }
 
@@ -237,12 +240,12 @@ export class MediaAssetDataHandler implements photoAccessHelper.MediaAssetDataHa
   }
 
   // 使用箭头函数确保this引用不会丢失
-  onDataPrepared = (data: ArrayBuffer) => {
+  onDataPrepared = (data: ArrayBuffer, map?: Map<string, string>) => {
     if (data === undefined) {
       console.error('Error occurred when preparing data');
       return;
     }
-    console.info('on image data prepared');
+    console.info('on image data prepared, photo quality is ' + map?.get('quality'));
     // 现在this始终指向MediaAssetDataHandler实例
     if (this.callback) {
       this.callback(data);
@@ -256,6 +259,7 @@ export class MediaAssetDataHandler implements photoAccessHelper.MediaAssetDataHa
 ```
 static async getMediaResourceByUri(uri: string, context: common.Context, callback?: MediaDataHandlerCallback)
 : Promise<void> {
+  let fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> | null = null;
   try {
     // 创建PhotoAccessHelper实例
     const phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
@@ -271,8 +275,7 @@ static async getMediaResourceByUri(uri: string, context: common.Context, callbac
     };
 
     // 查询资产
-    const fetchResult: photoAccessHelper.FetchResult<photoAccessHelper.PhotoAsset> =
-      await phAccessHelper.getAssets(fetchOptions);
+    fetchResult = await phAccessHelper.getAssets(fetchOptions);
 
     const photoAsset: photoAccessHelper.PhotoAsset = await fetchResult.getFirstObject();
     if (photoAsset) {
@@ -294,10 +297,13 @@ static async getMediaResourceByUri(uri: string, context: common.Context, callbac
       console.error('No asset found for URI: ' + uri);
     }
 
-    // 关闭查询结果
-    fetchResult.close();
   } catch (err) {
     console.error('getMediaResourceByUri failed with err: ' + err);
+  } finally {
+     // 关闭查询结果。
+     if (fetchResult !== null) {
+       fetchResult.close();
+     }
   }
 }
 ```

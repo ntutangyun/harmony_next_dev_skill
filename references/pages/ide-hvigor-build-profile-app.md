@@ -116,6 +116,7 @@ app
             └── duplicateDependencyCheck
             └── harLocalDependencyCheck
             └── enableStrictCheckOHModule
+            └── disableStrictCheckPaths
             └── disableSendableCheckRules
             └── strictCheckerOnly
             └── apiCompatibilityCheck
@@ -221,15 +222,16 @@ type	字符串	可选	签名类型： HarmonyOS OpenHarmony
 
 字段名称	类型	可选/必选	含义
 storePassword	字符串	必选	密钥库密码，以密文形式呈现。
-certpath	字符串	必选	调试或发布证书文件地址，文件后缀为.cer。
+certpath	字符串	必选	调试或发布证书文件地址，文件后缀为.cer，支持绝对路径和相对路径，相对路径以工程根目录为起点。
 keyAlias	字符串	必选	密钥别名信息。
 keyPassword	字符串	必选	密钥密码，以密文形式呈现。
-profile	字符串	必选	调试或发布证书Profile文件地址，文件后缀为.p7b。
+profile	字符串	必选	调试或发布证书Profile文件地址，文件后缀为.p7b，支持绝对路径和相对路径，相对路径以工程根目录为起点。
 signAlg	字符串	必选	密钥库signAlg参数。当前可配置值SHA256withECDSA。
-storeFile	字符串	必选	密钥库文件地址，文件后缀为.p12。
+storeFile	字符串	必选	密钥库文件地址，文件后缀为.p12，支持绝对路径和相对路径，相对路径以工程根目录为起点。
 
 signingConfigs字段示例：
 
+// 使用绝对路径
 {
   "app": {
     "signingConfigs": [
@@ -238,12 +240,32 @@ signingConfigs字段示例：
         "type": "HarmonyOS",
         "material": {
           "certpath": "D:\\SigningConfig\\debug_hos.cer",
-          "storePassword": "******",
+          "storePassword": "************************************",  // 密文形式的密钥库密码
           "keyAlias": "debugKey",
-          "keyPassword": "******",
+          "keyPassword": "************************************",  // 密文形式的密钥密码
           "profile": "D:\\SigningConfig\\debug_hos.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "D:\\SigningConfig\\debug_hos.p12"
+        }
+      }
+    ]
+  }
+}
+// 使用相对路径
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "./SigningConfig/debug_hos.cer",
+          "storePassword": "************************************",  // 密文形式的密钥库密码
+          "keyAlias": "debugKey",
+          "keyPassword": "************************************",  // 密文形式的密钥密码
+          "profile": "./SigningConfig/debug_hos.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "./SigningConfig/debug_hos.p12"
         }
       }
     ]
@@ -545,6 +567,7 @@ caseSensitiveCheck	布尔值	可选	导入文件是否严格校验大小写，�
 duplicateDependencyCheck	布尔值	可选	是否校验本地HSP模块有无依赖相同的HAR。仅在Build App(s)起效。 true：如果本地HSP模块依赖了相同的HAR（包括本地/远程、直接/间接），则编译报错。（注意：当依赖链中存在远程HSP，则该远程HSP及其依赖链不参与校验）。 false（缺省默认值）：不启用校验。
 harLocalDependencyCheck	布尔值	可选	是否对HAR产物启用本地依赖校验。 true：如果oh-package.json5中的dependencies、dynamicDependencies存在本地依赖，则编译报错。 false（缺省默认值）：不启用校验。 说明： 除HAR模块外，HSP模块编译时也会生成HAR产物，该配置同样生效。
 enableStrictCheckOHModule	布尔值	可选	调用远程HAR/HSP包中的方法时，是否严格校验传入参数的类型。 true：严格校验，如果参数类型是undefined/null，报Error错误。 false（缺省默认值）：不严格校验，如果参数类型是undefined/null，报Warning告警。 从DevEco Studio 6.0.1 Beta1版本开始支持。
+disableStrictCheckPaths	字符串数组	可选	指定不需要严格检查的三方库目录名称，未配置时，默认是['node_modules', 'build', '.preview', 'oh_modules']。 如果同时开启strictMode下的enableStrictCheckOHModule，disableStrictCheckPaths数组中的oh_modules会被移除，即oh_modules目录要严格检查。 从26.0.0 Beta2版本开始支持。
 disableSendableCheckRules	字符串数组	可选	指定需要关闭校验的Sendable规则，当前仅支持配置"arkts-sendable-class-decorator"，表示支持在Sendable class上使用自定义装饰器。具体检查规则请参考Sendable类和Sendable函数禁止使用除@Sendable外的装饰器。 从DevEco Studio 6.0.2 Beta1版本开始支持。
 strictCheckerOnly	布尔值	可选	是否对.ets文件仅执行严格语法检查。 false（缺省默认值）：对.ets文件执行两次语法检查，一次非严格语法检查和一次严格语法检查，两次语法检查结果合并输出。 true：对.ets文件仅执行一次严格语法检查，跳过非严格语法检查，可以减少端到端编译时间，提升编译性能。 从DevEco Studio 6.1.1 Release版本开始支持。 说明： 开启strictCheckerOnly选项之后，由于工具链类型校验能力增强，因此对存量代码进行更严格的检查，可能需要开发者进行少量适配，参考strictCheckerOnly适配示例。
 apiCompatibilityCheck	字符串	可选	设置ArkTS API兼容性检测级别。 warn（缺省默认值）：如果调用的ArkTS API 的起始版本高于工程的compatibleSdkVersion，构建时会报Warning告警。 error：如果调用的ArkTS API 的起始版本高于工程的compatibleSdkVersion，构建时会报Error错误。 从26.0.0 Beta1版本开始支持。
@@ -560,6 +583,7 @@ strictMode字段示例：
   "strictMode": {
     "useNormalizedOHMUrl": true,
     "caseSensitiveCheck": true,
+    "disableStrictCheckPaths": ["pages"],
     "disableSendableCheckRules": ["arkts-sendable-class-decorator"],
     "apiCompatibilityCheck": "error",
   }
@@ -783,6 +807,7 @@ app
             └── duplicateDependencyCheck
             └── harLocalDependencyCheck
             └── enableStrictCheckOHModule
+            └── disableStrictCheckPaths
             └── disableSendableCheckRules
             └── strictCheckerOnly
             └── apiCompatibilityCheck
@@ -851,6 +876,7 @@ modules
 ### Code block 3
 
 ```
+// 使用绝对路径
 {
   "app": {
     "signingConfigs": [
@@ -859,12 +885,32 @@ modules
         "type": "HarmonyOS",
         "material": {
           "certpath": "D:\\SigningConfig\\debug_hos.cer",
-          "storePassword": "******",
+          "storePassword": "************************************",  // 密文形式的密钥库密码
           "keyAlias": "debugKey",
-          "keyPassword": "******",
+          "keyPassword": "************************************",  // 密文形式的密钥密码
           "profile": "D:\\SigningConfig\\debug_hos.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "D:\\SigningConfig\\debug_hos.p12"
+        }
+      }
+    ]
+  }
+}
+// 使用相对路径
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "./SigningConfig/debug_hos.cer",
+          "storePassword": "************************************",  // 密文形式的密钥库密码
+          "keyAlias": "debugKey",
+          "keyPassword": "************************************",  // 密文形式的密钥密码
+          "profile": "./SigningConfig/debug_hos.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "./SigningConfig/debug_hos.p12"
         }
       }
     ]
@@ -1028,6 +1074,7 @@ let value = settings.getValueSync(context!, settings.display.SCREEN_BRIGHTNESS_S
   "strictMode": {
     "useNormalizedOHMUrl": true,
     "caseSensitiveCheck": true,
+    "disableStrictCheckPaths": ["pages"],
     "disableSendableCheckRules": ["arkts-sendable-class-decorator"],
     "apiCompatibilityCheck": "error",
   }

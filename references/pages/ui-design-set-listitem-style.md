@@ -12,13 +12,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 导入相关模块。
 
-import { HdsListItemCard, PrefixImage, SuffixSwitch } from '@kit.UIDesignKit';
+import { HdsListItemCard, PrefixImage, SuffixSwitch} from '@kit.UIDesignKit';
+import { promptAction } from '@kit.ArkUI';
 
 创建HdsListItemCard组件，设置左边为Image，中间为Text，右边为Switch的场景。
 
 @Entry
 @Component
-struct Test {
+struct Index {
   private scroller: ListScroller = new ListScroller();
 
   build() {
@@ -30,7 +31,7 @@ struct Test {
             prefixItem: new PrefixImage({
               image: $r('app.media.background'),
               onClick: () => {
-                console.info('left image');
+                promptAction.openToast({ message: 'left image' });
               }
             }),
             // B区文本
@@ -50,14 +51,14 @@ struct Test {
               isCheck: false,
               onChange: (num: boolean) => {
                 if (num) {
-                  console.info('switch is true');
+                  promptAction.openToast({ message: 'switch is true' });
                 } else {
-                  console.info('switch is false');
+                  promptAction.openToast({ message: 'switch is false' });
                 }
               }
             }),
             onClick: () => {
-              console.info('hdslistitem');
+              promptAction.openToast({ message: 'hdslistitem' });
             }
           })
         }
@@ -74,7 +75,8 @@ struct Test {
 ### Code block 1
 
 ```
-import { HdsListItemCard, PrefixImage, SuffixSwitch } from '@kit.UIDesignKit';
+import { HdsListItemCard, PrefixImage, SuffixSwitch} from '@kit.UIDesignKit';
+import { promptAction } from '@kit.ArkUI';
 ```
 
 ### Code block 2
@@ -82,7 +84,7 @@ import { HdsListItemCard, PrefixImage, SuffixSwitch } from '@kit.UIDesignKit';
 ```
 @Entry
 @Component
-struct Test {
+struct Index {
   private scroller: ListScroller = new ListScroller();
 
   build() {
@@ -94,7 +96,7 @@ struct Test {
             prefixItem: new PrefixImage({
               image: $r('app.media.background'),
               onClick: () => {
-                console.info('left image');
+                promptAction.openToast({ message: 'left image' });
               }
             }),
             // B区文本
@@ -114,14 +116,14 @@ struct Test {
               isCheck: false,
               onChange: (num: boolean) => {
                 if (num) {
-                  console.info('switch is true');
+                  promptAction.openToast({ message: 'switch is true' });
                 } else {
-                  console.info('switch is false');
+                  promptAction.openToast({ message: 'switch is false' });
                 }
               }
             }),
             onClick: () => {
-              console.info('hdslistitem');
+              promptAction.openToast({ message: 'hdslistitem' });
             }
           })
         }

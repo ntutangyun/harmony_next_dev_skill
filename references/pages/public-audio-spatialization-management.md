@@ -10,15 +10,15 @@ Audio Vivid是基于AI技术的音频编解码标准，由世界超高清视频�
 
 空间音频支持播放多声道、立体声、Audio Vivid等格式音源，并在耳机实现双耳空间音频渲染重放。搭配Audio Vivid格式音源的空间音频渲染，能够将音乐中的人声和各种乐器作为独立的声音对象，重新定义各种声音对象的位置、移动轨迹和声音大小、远近等要素，实现声音在听众四周及上方全面萦绕，实现更佳的空间音频沉浸式体验，获得影院、音乐厅等的临场感与艺术体验。当设备支持空间音频且空间音频开关被打开时，下发Audio Vivid格式音源可以得到更加沉浸的音频体验。关于如何播放Audio Vivid音源，可参考播放Audio Vivid格式音源。
 
-以下各步骤示例为片段代码，可通过示例代码右下方链接获取完整示例。
+以下各步骤示例为代码片段，可通过示例代码右下方链接获取完整示例。
 
 使用说明
 
-对于播放音频类的应用，开发者可以查询到设备是否有支持空间音频的能力，以及当前设备空间音频的开关状态。
+对于播放音频类的应用，开发者可以查询到设备是否支持空间音频的能力，以及当前设备空间音频的开关状态。
 
-[h2]创建空间音频示例
+[h2]获取空间音频示例
 
-应用开发者在使用AudioSpatializationManager的接口前，需要先调用getSpatializationManager创建AudioSpatializationManager实例。
+应用开发者在使用AudioSpatializationManager的接口前，需要先调用getSpatializationManager获取AudioSpatializationManager实例。
 
 import { audio } from '@kit.AudioKit';
 // ...
@@ -50,7 +50,7 @@ import { audio } from '@kit.AudioKit';
   let isSpatializationEnabledForCurrentDevice = audioSpatializationManager.isSpatializationEnabledForCurrentDevice();
   console.info(`Succeeded in checking spatialization enabled for current device is: ${isSpatializationEnabledForCurrentDevice}.`);
 
-订阅当前发声设备空间音频渲染效果的开关状态变化事件
+[h2]订阅当前发声设备空间音频渲染效果的开关状态变化事件
 
 应用开发者可以通过on('spatializationEnabledChangeForCurrentDevice')接口订阅当前空间音频渲染效果的开关状态变化事件。
 
@@ -64,7 +64,7 @@ import { audio } from '@kit.AudioKit';
     // ...
   });
 
-取消订阅当前发声设备空间音频渲染效果的开关状态变化事件
+[h2]取消订阅当前发声设备空间音频渲染效果的开关状态变化事件
 
 应用开发者可以通过off('spatializationEnabledChangeForCurrentDevice')接口取消订阅空间音频渲染效果的开关状态变化事件。
 

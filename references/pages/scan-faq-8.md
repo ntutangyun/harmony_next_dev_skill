@@ -56,8 +56,8 @@ struct CustomScanPage {
               `Failed to start customScan. Code: ${err.code}, message: ${err.message}`);
           }
         })
-        .height(this.cameraHeight + 'px')
-        .width(this.cameraWidth + 'px')
+        .height(`${this.cameraHeight}px`)
+        .width(`${this.cameraWidth}px`)
         .position({ x: 0, y: 0 })
     }
     .alignContent(Alignment.Bottom)
@@ -116,8 +116,8 @@ struct CustomScanPage {
               `Failed to start customScan. Code: ${err.code}, message: ${err.message}`);
           }
         })
-        .height(this.cameraHeight + 'px')
-        .width(this.cameraWidth + 'px')
+        .height(`${this.cameraHeight}px`)
+        .width(`${this.cameraWidth}px`)
         .position({ x: 0, y: 0 })
     }
     .alignContent(Alignment.Bottom)

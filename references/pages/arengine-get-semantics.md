@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-get-semantics_
 
+本章节给出了关键开发步骤，完整代码可以参考示例代码。
+
 约束与限制
 
 从5.1.0(18)开始，识别平面语义能力支持部分Phone、部分Tablet设备。请参考硬件要求判断设备是否支持平面及物体语义特性（ARENGINE_FEATURE_TYPE_SEMANTIC）。
@@ -32,14 +34,19 @@ AR Engine仅输出识别到的平面数据。为便于用户观察，可使用AG
 识别平面语义能力所需要导入的模块如下：
 
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene } from '@kit.ArkGraphics3D';
+import {Camera, CustomGeometry, Geometry, Image, Material, MaterialType, Node, PrimitiveTopology,
+  Scene, SceneResourceFactory, Shader, ShaderMaterial} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 [h2]定义变量
 
 定义变量planeLabel接收平面类型标签信息。
 
-let planeLabel: arEngine.ARSemanticPlaneLabel;
+@Builder
+export function ARTargetBuilder() {
+  ARTarget()
+}
+// ...
 
 [h2]显示平面语义信息
 
@@ -50,116 +57,10 @@ let planeLabel: arEngine.ARSemanticPlaneLabel;
 在设备界面上显示识别到平面的信息，使用重复调用函数方法在设备界面上实时更新识别到的平面语义信息。
 
 @Builder
-export function ARTargetBuilder(): void {
-  ARTarget();
+export function ARTargetBuilder() {
+  ARTarget()
 }
-
-@Component
-struct ARTarget {
-  @State arContext?: arViewController.ARViewContext = undefined;
-  // 平面类型
-  @State targetPlaneLabel: arEngine.ARSemanticPlaneLabel = planeLabel;
-  private intervalId: number = -1;
-  // 重复调用函数时间间隔为33ms，即设定为30fps
-  private delayInterval: number = 33;
-
-  build(): void {
-    NavDestination() {
-      RelativeContainer() {
-        if (this.arContext) {
-          ARView({ context: this.arContext })
-            .height('100%')
-            .width('100%')
-            .alignRules({
-              center: { anchor: '__container__', align: VerticalAlign.Center },
-              middle: { anchor: '__container__', align: HorizontalAlign.Center }
-            })
-
-          // 在屏幕底部显示识别的平面信息
-          Column() {
-            Text(`Label: ${convertSemanticLabel(this.targetPlaneLabel)}`)
-              .infoStyles()
-          }
-          .alignItems(HorizontalAlign.Center)
-          .margin({ bottom: 10 })
-          .alignRules({
-            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-            middle: { anchor: '__container__', align: HorizontalAlign.Center }
-          })
-        }
-      }
-    }
-    .onAppear(() => {
-      this.initARView();
-      // 设定在30fps下更新识别平面语义信息
-      this.intervalId = setInterval(() => {
-        this.targetPlaneLabel = planeLabel;
-      }, this.delayInterval);
-    })
-    .onWillDisappear(() => {
-      // 退出setInterval函数
-      clearInterval(this.intervalId);
-      this.stopARView();
-    })
-    .onShown(() => {
-      this.resumeARView();
-    })
-    .onHidden(() => {
-      this.pauseARView();
-    })
-    .hideTitleBar(true)
-    .hideBackButton(true)
-    .hideToolBar(true)
-  }
-
-  private initARView(): void {
-    Scene.load().then((scene: Scene) => {
-      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
-      viewContext.scene = scene;
-      viewContext.callback = new ARViewCallbackImpl();
-      viewContext.config = {
-        type: arEngine.ARType.WORLD,
-        planeFindingMode: arEngine.ARPlaneFindingMode.HORIZONTAL_AND_VERTICAL,
-        powerMode: arEngine.ARPowerMode.NORMAL,
-        semanticMode: arEngine.ARSemanticMode.PLANE, // 识别平面语义
-        poseMode: arEngine.ARPoseMode.GRAVITY,
-        depthMode: arEngine.ARDepthMode.AUTOMATIC,
-        meshMode: arEngine.ARMeshMode.DISABLED,
-        focusMode: arEngine.ARFocusMode.AUTO
-      };
-      viewContext.init().then(() => {
-        this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      });
-    });
-  }
-
-  private stopARView(): void {
-    // ...
-  }
-  private resumeARView(): void {
-    // ...
-  }
-  private pauseARView(): void {
-    // ...
-  }
-}
-
-// 界面显示文本样式
-@Extend(Text)
-function infoStyles() {
-  .fontColor(Color.Yellow)
-  .fontSize(24)
-  .textShadow({
-    radius: 10,
-    color: Color.Black,
-    offsetX: 0,
-    offsetY: 0
-  })
-  .textAlign(TextAlign.Start)
-}
+// ...
 
 [h2]获取语义信息
 
@@ -168,43 +69,35 @@ function infoStyles() {
 增加获取语义信息的方法plane.label，获取每一帧识别到的平面语义信息。
 
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
+  // ...
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
+      // ...
       return;
     }
+    arSession = ctx.session;
 
-    let arSession: arEngine.ARSession = ctx.session;
-
-    try {
-      let frame: arEngine.ARFrame = arSession.getFrame();
-      let camera: arEngine.ARCamera = frame.getCamera();
-      let trackable: arEngine.ARTrackable[] = [];
-
-      if (camera.state === arEngine.ARTrackingState.TRACKING) {
-        trackable = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
-        console.info(`Succeeded in getting tracking plane, length is: ${trackable.length}`);
-      }
-
-      for (let i = 0; i < trackable.length; ++i) {
-        let plane: arEngine.ARPlane = trackable[i] as arEngine.ARPlane;
-
-        // 更新识别的平面语义信息
+    let frame = arSession.getFrame();
+    let camera = frame.getCamera();
+    if (!camera) {
+      // ...
+    } else {
+      // update frame data
+      let trackables: arEngine.ARTrackable[] = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
+      for (let i = 0; i < trackables.length; ++i) {
+        let plane: arEngine.ARPlane = trackables[i] as arEngine.ARPlane;
+        // ...
         planeLabel = plane.label;
-        console.info(`Succeeded in updating frame data for loop: ${plane.label}`);
+        // ...
       }
-
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
+    // ...
   }
 }
 
@@ -216,7 +109,7 @@ arrayBufferFloat32ToNumber可以参考数据类型转换说明。
 
 平面语义标签转换convertSemanticLabel可参考如下。
 
-function convertSemanticLabel(obj: number): string {
+export function convertSemanticLabel(obj: number): string {
   let res: string = '';
   if (obj === 0) {
     res = 'UNKNOWN';
@@ -252,173 +145,64 @@ function convertSemanticLabel(obj: number): string {
 
 ```
 import { arEngine, ARView, arViewController } from '@kit.AREngine';
-import { Node, Scene } from '@kit.ArkGraphics3D';
+import {Camera, CustomGeometry, Geometry, Image, Material, MaterialType, Node, PrimitiveTopology,
+  Scene, SceneResourceFactory, Shader, ShaderMaterial} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 2
 
 ```
-let planeLabel: arEngine.ARSemanticPlaneLabel;
+@Builder
+export function ARTargetBuilder() {
+  ARTarget()
+}
+// ...
 ```
 
 ### Code block 3
 
 ```
 @Builder
-export function ARTargetBuilder(): void {
-  ARTarget();
+export function ARTargetBuilder() {
+  ARTarget()
 }
-
-@Component
-struct ARTarget {
-  @State arContext?: arViewController.ARViewContext = undefined;
-  // 平面类型
-  @State targetPlaneLabel: arEngine.ARSemanticPlaneLabel = planeLabel;
-  private intervalId: number = -1;
-  // 重复调用函数时间间隔为33ms，即设定为30fps
-  private delayInterval: number = 33;
-
-  build(): void {
-    NavDestination() {
-      RelativeContainer() {
-        if (this.arContext) {
-          ARView({ context: this.arContext })
-            .height('100%')
-            .width('100%')
-            .alignRules({
-              center: { anchor: '__container__', align: VerticalAlign.Center },
-              middle: { anchor: '__container__', align: HorizontalAlign.Center }
-            })
-
-          // 在屏幕底部显示识别的平面信息
-          Column() {
-            Text(`Label: ${convertSemanticLabel(this.targetPlaneLabel)}`)
-              .infoStyles()
-          }
-          .alignItems(HorizontalAlign.Center)
-          .margin({ bottom: 10 })
-          .alignRules({
-            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-            middle: { anchor: '__container__', align: HorizontalAlign.Center }
-          })
-        }
-      }
-    }
-    .onAppear(() => {
-      this.initARView();
-      // 设定在30fps下更新识别平面语义信息
-      this.intervalId = setInterval(() => {
-        this.targetPlaneLabel = planeLabel;
-      }, this.delayInterval);
-    })
-    .onWillDisappear(() => {
-      // 退出setInterval函数
-      clearInterval(this.intervalId);
-      this.stopARView();
-    })
-    .onShown(() => {
-      this.resumeARView();
-    })
-    .onHidden(() => {
-      this.pauseARView();
-    })
-    .hideTitleBar(true)
-    .hideBackButton(true)
-    .hideToolBar(true)
-  }
-
-  private initARView(): void {
-    Scene.load().then((scene: Scene) => {
-      let viewContext: arViewController.ARViewContext = new arViewController.ARViewContext();
-      viewContext.scene = scene;
-      viewContext.callback = new ARViewCallbackImpl();
-      viewContext.config = {
-        type: arEngine.ARType.WORLD,
-        planeFindingMode: arEngine.ARPlaneFindingMode.HORIZONTAL_AND_VERTICAL,
-        powerMode: arEngine.ARPowerMode.NORMAL,
-        semanticMode: arEngine.ARSemanticMode.PLANE, // 识别平面语义
-        poseMode: arEngine.ARPoseMode.GRAVITY,
-        depthMode: arEngine.ARDepthMode.AUTOMATIC,
-        meshMode: arEngine.ARMeshMode.DISABLED,
-        focusMode: arEngine.ARFocusMode.AUTO
-      };
-      viewContext.init().then(() => {
-        this.arContext = viewContext;
-        console.info('Succeeded in initializing ARView.');
-      }).catch((err: BusinessError) => {
-        console.error(`Failed to init ARView. Code is ${err.code}, message is ${err.message}.`);
-      });
-    });
-  }
-
-  private stopARView(): void {
-    // ...
-  }
-  private resumeARView(): void {
-    // ...
-  }
-  private pauseARView(): void {
-    // ...
-  }
-}
-
-// 界面显示文本样式
-@Extend(Text)
-function infoStyles() {
-  .fontColor(Color.Yellow)
-  .fontSize(24)
-  .textShadow({
-    radius: 10,
-    color: Color.Black,
-    offsetX: 0,
-    offsetY: 0
-  })
-  .textAlign(TextAlign.Start)
-}
+// ...
 ```
 
 ### Code block 4
 
 ```
 class ARViewCallbackImpl extends arViewController.ARViewCallback {
+  // ...
   onAnchorAdd(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
   onAnchorUpdate(ctx: arViewController.ARViewContext, node: Node, anchor: arEngine.ARAnchor): void {
-    // ...
   }
 
-  onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): void {
+  async onFrameUpdate(ctx: arViewController.ARViewContext, sysBootTs: number): Promise<void> {
     if (!ctx.session) {
+      // ...
       return;
     }
+    arSession = ctx.session;
 
-    let arSession: arEngine.ARSession = ctx.session;
-
-    try {
-      let frame: arEngine.ARFrame = arSession.getFrame();
-      let camera: arEngine.ARCamera = frame.getCamera();
-      let trackable: arEngine.ARTrackable[] = [];
-
-      if (camera.state === arEngine.ARTrackingState.TRACKING) {
-        trackable = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
-        console.info(`Succeeded in getting tracking plane, length is: ${trackable.length}`);
-      }
-
-      for (let i = 0; i < trackable.length; ++i) {
-        let plane: arEngine.ARPlane = trackable[i] as arEngine.ARPlane;
-
-        // 更新识别的平面语义信息
+    let frame = arSession.getFrame();
+    let camera = frame.getCamera();
+    if (!camera) {
+      // ...
+    } else {
+      // update frame data
+      let trackables: arEngine.ARTrackable[] = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
+      for (let i = 0; i < trackables.length; ++i) {
+        let plane: arEngine.ARPlane = trackables[i] as arEngine.ARPlane;
+        // ...
         planeLabel = plane.label;
-        console.info(`Succeeded in updating frame data for loop: ${plane.label}`);
+        // ...
       }
-
-    } catch (error) {
-      const err: BusinessError = error as BusinessError;
-      console.error(`Failed to update data. Code is ${err.code}, message is ${err.message}.`);
     }
+    // ...
   }
 }
 ```
@@ -426,7 +210,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 ### Code block 5
 
 ```
-function convertSemanticLabel(obj: number): string {
+export function convertSemanticLabel(obj: number): string {
   let res: string = '';
   if (obj === 0) {
     res = 'UNKNOWN';

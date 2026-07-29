@@ -178,8 +178,7 @@ function builderOverlay(params: Params) {
 export struct OverlayManagerAlertDialog {
   private uiContext: UIContext = this.getUIContext();
   private overlayNode: OverlayManager = this.uiContext.getOverlayManager();
-  private overlayContent:ComponentContent<Params>[] = [];
-  controller: TextInputController = new TextInputController();
+  private overlayContent: ComponentContent<Params>[] = [];
 
   aboutToAppear(): void {
     let uiContext = this.getUIContext();
@@ -207,7 +206,7 @@ export struct OverlayManagerAlertDialog {
   }
 }
 
-从API version 18开始，可以通过调用UIContext中getOverlayManager方法获取OverlayManager对象，并利用该对象在指定层级上新增指定节点（addComponentContentWithOrder），层次高的浮层会覆盖在层级低的浮层之上。
+从API version 18开始，可以利用OverlayManager对象在指定层级上新增指定节点（addComponentContentWithOrder），层次高的浮层会覆盖在层级低的浮层之上。
 
 import { ComponentContent, LevelOrder, OverlayManager } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -464,8 +463,7 @@ function builderOverlay(params: Params) {
 export struct OverlayManagerAlertDialog {
   private uiContext: UIContext = this.getUIContext();
   private overlayNode: OverlayManager = this.uiContext.getOverlayManager();
-  private overlayContent:ComponentContent<Params>[] = [];
-  controller: TextInputController = new TextInputController();
+  private overlayContent: ComponentContent<Params>[] = [];
 
   aboutToAppear(): void {
     let uiContext = this.getUIContext();

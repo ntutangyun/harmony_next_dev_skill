@@ -37,7 +37,7 @@ function insideScroll() {
         .fontSize(30)
         .textAlign(TextAlign.Center)
         .margin({ top: 10 })
-    }, (item: string) => item)
+    }, (item: number) => item.toString())
   }
   .width("100%")
 }
@@ -124,7 +124,7 @@ function insideScroll() {
         .fontSize(30)
         .textAlign(TextAlign.Center)
         .margin({ top: 10 })
-    }, (item: string) => item)
+    }, (item: number) => item.toString())
   }
   .width("100%")
 }
@@ -390,7 +390,7 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libace_ndk.z.so hilog_ndk.z.
 
 支持跨语言设置属性的节点类型
 
-仅以下节点类型支持跨语言设置节点属性。
+仅以下节点类型支持跨语言设置节点属性。Native侧需要使用OH_ArkUI_NodeUtils_GetAttachedNodeHandleById获取待修改属性的节点，不支持对OH_ArkUI_GetNodeHandleFromNapiValue获取的目标节点跨语言设置属性。
 
 ArkTS侧TypedFrameNode类型	Native侧ArkUI_NodeType类型	ArkTS属性获取接口	ArkTS控制器获取/绑定接口
 Button	ARKUI_NODE_BUTTON	getAttribute	NA
@@ -440,7 +440,7 @@ function insideScroll() {
         .fontSize(30)
         .textAlign(TextAlign.Center)
         .margin({ top: 10 })
-    }, (item: string) => item)
+    }, (item: number) => item.toString())
   }
   .width("100%")
 }
@@ -523,7 +523,7 @@ function insideScroll() {
         .fontSize(30)
         .textAlign(TextAlign.Center)
         .margin({ top: 10 })
-    }, (item: string) => item)
+    }, (item: number) => item.toString())
   }
   .width("100%")
 }

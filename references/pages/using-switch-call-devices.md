@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-swi
 
 切换通话输出设备
 
-本文主要介绍AVCastPicker组件接入，实现通话设备切换功能。相关参数可参考@ohos.multimedia.avCastPicker(投播组件)和@ohos.multimedia.avCastPickerParam（投播组件参数）。如果希望实现音频输出设备路由切换的效果，请参考实现音频输出设备路由切换。
+本文主要介绍AVCastPicker组件接入，实现通话设备切换功能。相关参数可参考@ohos.multimedia.avCastPicker (投播组件)和@ohos.multimedia.avCastPickerParam (投播组件参数)。如果希望实现音频输出设备路由切换的效果，请参考实现音频输出设备路由切换。
 
 当前系统支持两种组件样式的显示方式：默认样式显示和自定义样式显示。
 
@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-swi
 
 [h2]默认样式实现
 
-创建voice_call类型的AVSession，AVSession在构造方法中支持不同的类型参数，由AVSessionType定义，voice_call表示通话类型，如果不创建，将显示空列表。
+创建voice_call类型的AVSession。AVSession在创建方法中支持不同的类型参数，由AVSessionType定义。voice_call表示通话类型，如果不创建，将显示空列表。
 
 import { AVCastPicker, AVCastPickerState, AVInputCastPicker, avSession } from '@kit.AVSessionKit';
 
@@ -30,7 +30,7 @@ struct Index {
     try {
       let context = this.getUIContext().getHostContext() as Context;
       // 通话开始时创建voice_call类型的avsession。
-      this.session = await avSession.createAVSession(context, 'voiptest', 'voice_call');
+      this.session = await avSession.createAVSession(context, 'SESSION_NAME', 'voice_call');
     } catch (err) {
       console.error(`AVSession create :  Error: Code: ${err.code}, message: ${err.message}`);
     }
@@ -57,7 +57,6 @@ struct OutputCastPicker {
         AVCastPicker({
           normalColor: this.normalColor,
           activeColor: this.activeColor,
-          customPicker: this.ImageBuilder.bind(this), // 新增自定义参数。
         })
           .size({ width: '50%', height: '20%' })
           .id('AVCastPicker')
@@ -69,16 +68,6 @@ struct OutputCastPicker {
     .alignItems(VerticalAlign.Center)
     .width('100%')
     .height('100%')
-  }
-
-  // 自定义内容。
-  @Builder
-  ImageBuilder() {
-    Text($r('app.string.switch_OutputDevice'))
-    Image(this.pickerImage)
-      .size({ width: '100%', height: '100%' })
-      .backgroundColor('#00000000')
-      .fillColor(Color.Black)
   }
 }
 
@@ -152,7 +141,7 @@ export default class AudioRenderer {
     if (this.audioRenderer !== undefined) {
       return;
     }
-    this.getStageFileDescriptor(this.audioSource).then((res) => {
+    await this.getStageFileDescriptor(this.audioSource).then((res) => {
       this.fileDescriptor = res;
     });
     if (!this.fileDescriptor) {
@@ -328,7 +317,7 @@ struct SelfCastPicker {
 
 切换通话输入设备
 
-系统不再提供音频输入设备切换的API，如果需要在应用内切换音频输入设备，并实现AVInputCastPicker组件，相关参数可参考@ohos.multimedia.avInputCastPicker 和 @ohos.multimedia.avCastPickerParam。
+系统不再提供音频输入设备切换的API，如果需要在应用内切换音频输入设备，可通过接入AVInputCastPicker组件来完成。相关参数可参考@ohos.multimedia.avInputCastPicker和@ohos.multimedia.avCastPickerParam。
 
 本文将主要介绍AVInputCastPicker组件接入，实现通话输入设备切换功能。
 
@@ -338,7 +327,7 @@ struct SelfCastPicker {
 
 如果应用选择显示自定义样式，那么需要应用根据设备的变化刷新自己定义的样式。
 
-[h2]默认实现方式
+[h2]默认样式实现
 
 在需要切换设备的通话界面创建AVInputCastPicker组件。
 
@@ -369,7 +358,7 @@ import { AVCastPickerState, AVInputCastPicker } from '@kit.AVSessionKit';
 
 实现通话功能，请参考开发音频通话功能。
 
-[h2]自定义实现方式
+[h2]自定义样式实现
 
 自定义样式通过设置AVInputCastPicker中的参数customPicker实现。
 
@@ -397,7 +386,7 @@ struct InputCastPicker {
       Column() {
         AVInputCastPicker(
           {
-            customPicker: this.ImageBuilder.bind(this), // 新增自定义参数。
+            customPicker: (): void => this.ImageBuilder(), // 新增自定义参数。
             onStateChange: this.onStateChange
           }
         )
@@ -445,7 +434,7 @@ struct Index {
     try {
       let context = this.getUIContext().getHostContext() as Context;
       // 通话开始时创建voice_call类型的avsession。
-      this.session = await avSession.createAVSession(context, 'voiptest', 'voice_call');
+      this.session = await avSession.createAVSession(context, 'SESSION_NAME', 'voice_call');
     } catch (err) {
       console.error(`AVSession create :  Error: Code: ${err.code}, message: ${err.message}`);
     }
@@ -474,7 +463,6 @@ struct OutputCastPicker {
         AVCastPicker({
           normalColor: this.normalColor,
           activeColor: this.activeColor,
-          customPicker: this.ImageBuilder.bind(this), // 新增自定义参数。
         })
           .size({ width: '50%', height: '20%' })
           .id('AVCastPicker')
@@ -486,16 +474,6 @@ struct OutputCastPicker {
     .alignItems(VerticalAlign.Center)
     .width('100%')
     .height('100%')
-  }
-
-  // 自定义内容。
-  @Builder
-  ImageBuilder() {
-    Text($r('app.string.switch_OutputDevice'))
-    Image(this.pickerImage)
-      .size({ width: '100%', height: '100%' })
-      .backgroundColor('#00000000')
-      .fillColor(Color.Black)
   }
 }
 ```
@@ -573,7 +551,7 @@ export default class AudioRenderer {
     if (this.audioRenderer !== undefined) {
       return;
     }
-    this.getStageFileDescriptor(this.audioSource).then((res) => {
+    await this.getStageFileDescriptor(this.audioSource).then((res) => {
       this.fileDescriptor = res;
     });
     if (!this.fileDescriptor) {
@@ -802,7 +780,7 @@ struct InputCastPicker {
       Column() {
         AVInputCastPicker(
           {
-            customPicker: this.ImageBuilder.bind(this), // 新增自定义参数。
+            customPicker: (): void => this.ImageBuilder(), // 新增自定义参数。
             onStateChange: this.onStateChange
           }
         )

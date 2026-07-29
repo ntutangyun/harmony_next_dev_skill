@@ -59,19 +59,20 @@ UIAbility实例创建完成之后，在进入前台之前，系统会创建一�
 
 对于不同类型的产品，当应用主窗口从前台进入后台时，UIAbility生命周期的变化也会存在差异。详见不同设备UIAbility生命周期的差异化行为。
 
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-// ···
+// ...
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
-
-  // ···
+  // ...
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    // ···
+    // ...
+
+    // ...
     // 设置WindowStage的事件订阅（获焦/失焦、切到前台/切到后台、前台可交互/前台不可交互）
     try {
       windowStage.on('windowStageEvent', (data) => {
@@ -106,11 +107,11 @@ export default class EntryAbility extends UIAbility {
     hilog.info(DOMAIN, 'testTag', `%{public}s`, `Ability onWindowStageCreate`);
     // 设置UI加载
     windowStage.loadContent('pages/Index', (err) => {
-      // ···
+      // ...
     });
   }
 
-// ···
+  // ...
 }
 
 [h2]onForeground()
@@ -119,7 +120,7 @@ export default class EntryAbility extends UIAbility {
 
 例如，应用已获得地理位置权限。在UI显示之前，开发者可以在onForeground()回调中开启定位功能，从而获取到当前的位置信息。
 
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {
@@ -138,7 +139,7 @@ export default class EntryAbility extends UIAbility {
 
 onBackground()执行时间较短，无法提供足够的时间做一些耗时动作。请勿在该方法中执行保存用户数据或执行数据库事务等耗时操作。
 
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {
@@ -155,7 +156,7 @@ export default class EntryAbility extends UIAbility {
 
 在UIAbility实例销毁之前，系统触发onWindowStageWillDestroy()回调。该回调在WindowStage销毁前执行，此时WindowStage可以使用。开发者可以在该回调中释放通过WindowStage获取的资源、注销WindowStage事件订阅等。
 
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -194,7 +195,7 @@ export default class EntryAbility extends UIAbility {
 
 在UIAbility实例销毁之前，系统触发onWindowStageDestroy()回调，开发者可以在该回调中释放UI资源。该回调在WindowStage销毁后执行，此时WindowStage不可以使用。
 
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 // ···
 
@@ -226,7 +227,7 @@ export default class EntryAbility extends UIAbility {
 
 当在开发者模式下调试某个应用时，如果用户从最近任务列表中移除了该调试应用的一个任务，则该调试应用的进程会被强制销毁，不会触发onDestroy()回调。
 
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {
@@ -274,19 +275,20 @@ export default class EntryAbility extends UIAbility {
 ### Code block 2
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-// ···
+// ...
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
-
-  // ···
+  // ...
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    // ···
+    // ...
+
+    // ...
     // 设置WindowStage的事件订阅（获焦/失焦、切到前台/切到后台、前台可交互/前台不可交互）
     try {
       windowStage.on('windowStageEvent', (data) => {
@@ -321,18 +323,18 @@ export default class EntryAbility extends UIAbility {
     hilog.info(DOMAIN, 'testTag', `%{public}s`, `Ability onWindowStageCreate`);
     // 设置UI加载
     windowStage.loadContent('pages/Index', (err) => {
-      // ···
+      // ...
     });
   }
 
-// ···
+  // ...
 }
 ```
 
 ### Code block 3
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {
@@ -349,7 +351,7 @@ export default class EntryAbility extends UIAbility {
 ### Code block 4
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {
@@ -366,7 +368,7 @@ export default class EntryAbility extends UIAbility {
 ### Code block 5
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -405,7 +407,7 @@ export default class EntryAbility extends UIAbility {
 ### Code block 6
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 // ···
 
@@ -429,7 +431,7 @@ export default class EntryAbility extends UIAbility {
 ### Code block 7
 
 ```
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {

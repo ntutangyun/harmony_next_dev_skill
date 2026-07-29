@@ -32,7 +32,7 @@ target_link_libraries(sample PUBLIC libnative_media_acodec.so)
 
 可通过以下方式获取音视频编解码能力实例。获取成功后，可继续执行后续操作。实例无显式释放接口，使用完毕后系统会自动释放资源并回收。
 
-方式一：通过OH_AVCodec_GetCapability获取系统推荐的音视频编解码器能力实例。推荐策略与OH_XXX_CreateByMime系列接口一致。
+方式一：通过OH_AVCodec_GetCapability获取系统推荐的音视频编解码器能力实例。
 
 // 获取系统推荐的音频AAC解码器能力实例。
 OH_AVCapability *capability = OH_AVCodec_GetCapability(OH_AVCODEC_MIMETYPE_AUDIO_AAC, false);
@@ -59,7 +59,7 @@ OH_AVCapability **capabilityList = OH_AVCodec_GetCapabilityList(OH_AVCODEC_TYPE_
 如果系统存在多个相同MIME类型的编解码器，使用OH_XXX_CreateByMime系列接口创建系统推荐的编解码器。如需创建其他编解码器，先获取名称，再通过OH_XXX_CreateByName系列接口创建指定名称的编解码器。
 
 接口	功能描述
-OH_AVCapability_GetName	获取能力实例对应编解码器的名称。
+OH_AVCapability_GetName	获取对应的编解码器名称。
 
 当H.264软件解码器和H.264硬件解码器同时存在时，创建H.264软件解码器的示例代码如下。
 
@@ -364,7 +364,7 @@ OH_AVFormat_Destroy(format);
 
 [h2]查询编码器支持复杂度范围
 
-复杂度等级决定了编码器使用的工具数量，但并非所有编码器都支持这一功能。
+复杂度等级决定了编码器使用的工具数量，但并非所有编码器都支持这一功能。若变量complexityRange返回值为{0, 0}，则表示当前编码器不支持复杂度等级配置。
 
 接口	功能描述
 OH_AVCapability_GetEncoderComplexityRange	获取当前编码器支持的复杂度等级范围。
@@ -451,7 +451,7 @@ OH_AVFormat_Destroy(format);
 
 [h2]查询编解码档次和级别支持情况
 
-编解码标准包含多种编码工具，适用于不同的编码场景。对于特定应用场景，编解码标准按档次确定所需编码工具的开启与关闭情况（例如，H.264有基本档次、主档次和高档次）。详情参见 OH_AVCProfile。
+编解码标准包含多种编码工具，适用于不同的编码场景。对于特定应用场景，编解码标准按档次确定所需编码工具的开启与关闭情况（例如，H.264有基本档次、高档次和主档次）。详情参见 OH_AVCProfile。
 
 级别划分了编解码器所需的处理能力和存储空间。H.264有1到6.2的20个级别，参考OH_AVCLevel。
 
@@ -540,7 +540,7 @@ bool isSupported = OH_AVCapability_AreProfileAndLevelSupported(capability, AVC_P
 
 根据视频高度计算最大视频宽度的公式如下。
 
-MaxMBsPerFrameLevelLimits表示协议限定的编解码器最大每帧宏块数，MaxMBsPerFrameSubmit表示编解码器上报的最大每帧宏块数，实际能力取这两者的最小值。
+MaxMBsPerFrameLevelLimits表示协议限定的编解码器最大每帧宏块数，MaxMBsPerFrameSubmit表示编解码器上报的最大每帧宏块数，实际生效的每帧最大宏块数（MaxMBsPerFrame）取这两者的最小值。在此基础上，结合给定的视频高度（height）以及单个宏块的宽和高（MBWidth和MBHeight，通常为16），即可推算得出该高度下所支持的最大视频宽度（maxWidth）。
 
 接口	功能描述
 OH_AVCapability_GetVideoWidthAlignment	获取当前视频编解码器的宽对齐。
@@ -706,6 +706,7 @@ OH_AVFormat_Destroy(format);
 
 接口	功能描述
 OH_AVCapability_GetVideoSupportedPixelFormats	获取当前视频编解码器支持的像素格式。
+OH_AVCapability_GetVideoSupportedNativeBufferFormats	获取视频编解码器支持的OH_NativeBuffer格式。
 
 constexpr OH_AVPixelFormat DEFAULT_PIXELFORMAT = AV_PIXEL_FORMAT_NV12;
 OH_AVCapability *capability = OH_AVCodec_GetCapability(OH_AVCODEC_MIMETYPE_VIDEO_AVC, true);
@@ -716,6 +717,9 @@ if (capability == nullptr) {
 const int32_t *pixFormats = nullptr;
 uint32_t pixFormatNum = 0;
 int32_t ret = OH_AVCapability_GetVideoSupportedPixelFormats(capability, &pixFormats, &pixFormatNum);
+// 获取当前视频编解码器支持的OH_NativeBuffer格式，使用方式同OH_AVCapability_GetVideoSupportedPixelFormats接口。
+// const OH_NativeBuffer_Format *nativeBufferFormats = nullptr;
+// int32_t ret = OH_AVCapability_GetVideoSupportedNativeBufferFormats(capability, &nativeBufferFormats, &pixFormatNum);
 if (ret != AV_ERR_OK || pixFormats == nullptr || pixFormatNum == 0) {
    // 异常处理。
 }
@@ -1441,6 +1445,9 @@ if (capability == nullptr) {
 const int32_t *pixFormats = nullptr;
 uint32_t pixFormatNum = 0;
 int32_t ret = OH_AVCapability_GetVideoSupportedPixelFormats(capability, &pixFormats, &pixFormatNum);
+// 获取当前视频编解码器支持的OH_NativeBuffer格式，使用方式同OH_AVCapability_GetVideoSupportedPixelFormats接口。
+// const OH_NativeBuffer_Format *nativeBufferFormats = nullptr;
+// int32_t ret = OH_AVCapability_GetVideoSupportedNativeBufferFormats(capability, &nativeBufferFormats, &pixFormatNum);
 if (ret != AV_ERR_OK || pixFormats == nullptr || pixFormatNum == 0) {
    // 异常处理。
 }

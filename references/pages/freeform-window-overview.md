@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/freeform-
 
 当前设备支持情况：
 
-2in1设备： 2in1设备上的窗口，默认为自由窗口。
+PC/2in1设备： PC/2in1设备上的窗口，默认为自由窗口。
 
 Tablet设备： 部分Tablet设备，支持开启自由多窗模式（通过下拉控制中心，点击“自由多窗”按钮开启）、电脑模式（通过下拉控制中心，点击“电脑模式”按钮开启），开启后，应用窗口默认为自由窗口。
 

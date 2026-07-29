@@ -1,4 +1,4 @@
-# 主动通知页面变化的场景
+# 主动通知页面变化
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/proactively-notify-page-changes_
 
@@ -16,7 +16,7 @@ bundleName	string	目标应用名。	'com.example.accessibilityinfo'
 triggerAction	Action	触发事件的Action。	common
 customId	string	自定义页面根节点id。	'abc345'
 
-开发实例
+开发流程
 
 如下示例实现一个自定义页面切换，通过改变Stack子组件Z序的方式实现切换页面的效果：
 

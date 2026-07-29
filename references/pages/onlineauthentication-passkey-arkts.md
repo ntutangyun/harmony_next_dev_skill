@@ -28,13 +28,13 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
-struct PasskeyInvokePage {
-  private uiContext = this.getUIContext().getHostContext();
-
+struct Index {
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  // ...
   private async invokeGetClientCapabilities() {
     try {
       // 获取客户端能力列表
-      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.uiContext);
+      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.context);
       console.info('Succeeded in doing getClientCapabilities.');
       // 业务处理clientCapabilities
     } catch (error) {
@@ -47,8 +47,8 @@ struct PasskeyInvokePage {
   private async invokeGetPlatformAuthenticators() {
     try {
       // 获取平台认证器能力
-      let platformAuthenticators: Array<fido2.AuthenticatorMetadata> =
-        await fido2.getPlatformAuthenticators(this.uiContext);
+      let platformAuthenticators: fido2.AuthenticatorMetadata[] =
+        await fido2.getPlatformAuthenticators(this.context);
       console.info('Succeeded in doing getPlatformAuthenticators.');
       // 业务处理platformAuthenticators
     } catch (error) {
@@ -57,26 +57,29 @@ struct PasskeyInvokePage {
       // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
     }
   }
-
+  // ...
   build() {
-    // 业务UI界面
+    // ...
   }
 }
 
-// pkOptions为应用从FIDO服务端获取的注册报文，credentialCreationOp为应用组装注册信息
-let credentialCreationOp: fido2.CredentialCreationOptions = {
-  publicKey: pkOptions
-};
-
-try {
-  // 调用register进行通行密钥注册
-  let publicKeyAttestationCredential: fido2.PublicKeyAttestationCredential =
-    await fido2.register(this.uiContext, credentialCreationOp);
-} catch (error) {
-  let message = (error as BusinessError).message;
-  let code = (error as BusinessError).code;
-  console.error(`Failed to call register error code is ${code}, message is ${message}`);
-  // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+private async register(pkOptions: fido2.PublicKeyCredentialCreationOptions) {
+  try {
+    // pkOptions为应用从FIDO服务端获取的注册报文，credentialCreationOp为应用组装注册信息
+    let credentialCreationOp: fido2.CredentialCreationOptions = {
+      publicKey: pkOptions
+    };
+    // 调用register进行通行密钥注册
+    // ...
+    let publicKeyAttestationCredential: fido2.PublicKeyAttestationCredential =
+      await fido2.register(this.context, credentialCreationOp);
+    // ...
+  } catch (error) {
+    let message = (error as BusinessError).message;
+    let code = (error as BusinessError).code;
+    console.error(`Failed to call register error code is ${code}, message is ${message}`);
+    // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+  }
 }
 
 应用使用注册结果（publicKeyAttestationCredential）组装注册响应报文，发送至FIDO服务端进行验证，获取注册结果报文。
@@ -85,13 +88,13 @@ try {
 
 @Entry
 @Component
-struct PasskeyInvokePage {
-  private uiContext = this.getUIContext().getHostContext();
-
+struct Index {
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  // ...
   private async invokeGetClientCapabilities() {
     try {
       // 获取客户端能力列表
-      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.uiContext);
+      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.context);
       console.info('Succeeded in doing getClientCapabilities.');
       // 业务处理clientCapabilities
     } catch (error) {
@@ -104,8 +107,8 @@ struct PasskeyInvokePage {
   private async invokeGetPlatformAuthenticators() {
     try {
       // 获取平台认证器能力
-      let platformAuthenticators: Array<fido2.AuthenticatorMetadata> =
-        await fido2.getPlatformAuthenticators(this.uiContext);
+      let platformAuthenticators: fido2.AuthenticatorMetadata[] =
+        await fido2.getPlatformAuthenticators(this.context);
       console.info('Succeeded in doing getPlatformAuthenticators.');
       // 业务处理platformAuthenticators
     } catch (error) {
@@ -114,27 +117,29 @@ struct PasskeyInvokePage {
       // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
     }
   }
-
+  // ...
   build() {
-    // 业务UI界面
+    // ...
   }
 }
 
-// authPub为应用从FIDO服务端获取的认证报文，authCredentialRequestOptions为应用组装的认证信息
-let authCredentialRequestOptions: fido2.CredentialRequestOptions = {
-  publicKey: authPub,
-  mediation: 'optional' as fido2.CredentialMediationRequirement
-};
-
-try {
-  // 调用authenticate接口进行认证
-  let pkAssertionCredential: fido2.PublicKeyAssertionCredential =
-    await fido2.authenticate(this.uiContext, authCredentialRequestOptions);
-} catch (error) {
-  let message = (error as BusinessError).message;
-  let code = (error as BusinessError).code;
-  console.error(`Failed to call authenticateerror code is ${code}, message is ${message}`);
-  // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+private async authenticate(authPub: fido2.PublicKeyCredentialRequestOptions) {
+  try {
+    // authPub为应用从FIDO服务端获取的认证报文，authCredentialRequestOptions为应用组装的认证信息
+    let authCredentialRequestOptions: fido2.CredentialRequestOptions = {
+      publicKey: authPub,
+      mediation: 'conditional' as fido2.CredentialMediationRequirement
+    };
+    // ...
+    let pkAssertionCredential: fido2.PublicKeyAssertionCredential =
+      await fido2.authenticate(this.context, authCredentialRequestOptions);
+    // ...
+  } catch (error) {
+    let message = (error as BusinessError).message;
+    let code = (error as BusinessError).code;
+    console.error(`Failed to call authenticateerror code is ${code}, message is ${message}`);
+    // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+  }
 }
 
 应用使用认证结果（pkAssertionCredential）组装认证响应报文，发送至FIDO服务端进行验证，获取认证结果报文。
@@ -154,13 +159,13 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ```
 @Entry
 @Component
-struct PasskeyInvokePage {
-  private uiContext = this.getUIContext().getHostContext();
-
+struct Index {
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  // ...
   private async invokeGetClientCapabilities() {
     try {
       // 获取客户端能力列表
-      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.uiContext);
+      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.context);
       console.info('Succeeded in doing getClientCapabilities.');
       // 业务处理clientCapabilities
     } catch (error) {
@@ -173,8 +178,8 @@ struct PasskeyInvokePage {
   private async invokeGetPlatformAuthenticators() {
     try {
       // 获取平台认证器能力
-      let platformAuthenticators: Array<fido2.AuthenticatorMetadata> =
-        await fido2.getPlatformAuthenticators(this.uiContext);
+      let platformAuthenticators: fido2.AuthenticatorMetadata[] =
+        await fido2.getPlatformAuthenticators(this.context);
       console.info('Succeeded in doing getPlatformAuthenticators.');
       // 业务处理platformAuthenticators
     } catch (error) {
@@ -183,9 +188,9 @@ struct PasskeyInvokePage {
       // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
     }
   }
-
+  // ...
   build() {
-    // 业务UI界面
+    // ...
   }
 }
 ```
@@ -193,20 +198,23 @@ struct PasskeyInvokePage {
 ### Code block 3
 
 ```
-// pkOptions为应用从FIDO服务端获取的注册报文，credentialCreationOp为应用组装注册信息
-let credentialCreationOp: fido2.CredentialCreationOptions = {
-  publicKey: pkOptions
-};
-
-try {
-  // 调用register进行通行密钥注册
-  let publicKeyAttestationCredential: fido2.PublicKeyAttestationCredential =
-    await fido2.register(this.uiContext, credentialCreationOp);
-} catch (error) {
-  let message = (error as BusinessError).message;
-  let code = (error as BusinessError).code;
-  console.error(`Failed to call register error code is ${code}, message is ${message}`);
-  // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+private async register(pkOptions: fido2.PublicKeyCredentialCreationOptions) {
+  try {
+    // pkOptions为应用从FIDO服务端获取的注册报文，credentialCreationOp为应用组装注册信息
+    let credentialCreationOp: fido2.CredentialCreationOptions = {
+      publicKey: pkOptions
+    };
+    // 调用register进行通行密钥注册
+    // ...
+    let publicKeyAttestationCredential: fido2.PublicKeyAttestationCredential =
+      await fido2.register(this.context, credentialCreationOp);
+    // ...
+  } catch (error) {
+    let message = (error as BusinessError).message;
+    let code = (error as BusinessError).code;
+    console.error(`Failed to call register error code is ${code}, message is ${message}`);
+    // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+  }
 }
 ```
 
@@ -215,13 +223,13 @@ try {
 ```
 @Entry
 @Component
-struct PasskeyInvokePage {
-  private uiContext = this.getUIContext().getHostContext();
-
+struct Index {
+  private context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  // ...
   private async invokeGetClientCapabilities() {
     try {
       // 获取客户端能力列表
-      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.uiContext);
+      let clientCapabilities: Map<fido2.ClientCapability, boolean> = await fido2.getClientCapabilities(this.context);
       console.info('Succeeded in doing getClientCapabilities.');
       // 业务处理clientCapabilities
     } catch (error) {
@@ -234,8 +242,8 @@ struct PasskeyInvokePage {
   private async invokeGetPlatformAuthenticators() {
     try {
       // 获取平台认证器能力
-      let platformAuthenticators: Array<fido2.AuthenticatorMetadata> =
-        await fido2.getPlatformAuthenticators(this.uiContext);
+      let platformAuthenticators: fido2.AuthenticatorMetadata[] =
+        await fido2.getPlatformAuthenticators(this.context);
       console.info('Succeeded in doing getPlatformAuthenticators.');
       // 业务处理platformAuthenticators
     } catch (error) {
@@ -244,9 +252,9 @@ struct PasskeyInvokePage {
       // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
     }
   }
-
+  // ...
   build() {
-    // 业务UI界面
+    // ...
   }
 }
 ```
@@ -254,20 +262,22 @@ struct PasskeyInvokePage {
 ### Code block 5
 
 ```
-// authPub为应用从FIDO服务端获取的认证报文，authCredentialRequestOptions为应用组装的认证信息
-let authCredentialRequestOptions: fido2.CredentialRequestOptions = {
-  publicKey: authPub,
-  mediation: 'optional' as fido2.CredentialMediationRequirement
-};
-
-try {
-  // 调用authenticate接口进行认证
-  let pkAssertionCredential: fido2.PublicKeyAssertionCredential =
-    await fido2.authenticate(this.uiContext, authCredentialRequestOptions);
-} catch (error) {
-  let message = (error as BusinessError).message;
-  let code = (error as BusinessError).code;
-  console.error(`Failed to call authenticateerror code is ${code}, message is ${message}`);
-  // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+private async authenticate(authPub: fido2.PublicKeyCredentialRequestOptions) {
+  try {
+    // authPub为应用从FIDO服务端获取的认证报文，authCredentialRequestOptions为应用组装的认证信息
+    let authCredentialRequestOptions: fido2.CredentialRequestOptions = {
+      publicKey: authPub,
+      mediation: 'conditional' as fido2.CredentialMediationRequirement
+    };
+    // ...
+    let pkAssertionCredential: fido2.PublicKeyAssertionCredential =
+      await fido2.authenticate(this.context, authCredentialRequestOptions);
+    // ...
+  } catch (error) {
+    let message = (error as BusinessError).message;
+    let code = (error as BusinessError).code;
+    console.error(`Failed to call authenticateerror code is ${code}, message is ${message}`);
+    // 业务根据错误码判断异常类型，进行相应处理，详见错误码参考
+  }
 }
 ```

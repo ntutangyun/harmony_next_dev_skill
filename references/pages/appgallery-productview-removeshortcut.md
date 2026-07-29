@@ -24,7 +24,7 @@ AppGallery Kit向应用弹出快捷方式删除确认框。
 
 应用市场推荐服务不支持模拟器，请使用真机调试。在模拟器中使用该服务将会提示：无法获取内容，请点击屏幕重试。
 
-应用市场推荐服务支持Phone、Tablet、PC/2in1设备。并且从6.0.2(22)版本开始，新增支持TV设备。
+应用市场推荐服务支持Phone、Tablet、PC/2in1设备。并且从6.0.2(22)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
 
 接口说明
 
@@ -57,42 +57,48 @@ removePinShortcut(context: common.UIAbilityContext, shortcutId: string): Promise
 
 导入productViewManager模块及相关公共模块。
 
-import { common } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { productViewManager } from '@kit.AppGalleryKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 调用removePinShortcut方法删除桌面快捷方式。
 
-const TAG: string = 'RemovePinShortcut';
+const REMOVE_TAG: string = 'removePinShortcut';
 
 @Entry
 @Component
-struct RemovePinShortcut {
+@Preview
+struct Index {
+    scroller: Scroller = new Scroller();
+    tid: string = '';
 
-build() {
-  Column() {
-    Button("RemovePinShortcut")
-      .onClick(() => {
-        try {
-         const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-         const shortcutId = 'xxx'; // 通过checkPinShortcutPermitted接口获取
-         productViewManager.removePinShortcut(uiContext, shortcutId)
-           .then(() => {
-             hilog.info(0x0001, TAG, `removePinShortcut success.`);
-           }).catch((error: BusinessError) => {
-           hilog.error(0x0001, TAG, `removePinShortcut error. code is ${error.code}, message is ${error.message}`);
-         })
-        } catch (err) {
-          hilog.error(0x0001, TAG, `removePinShortcut failed, code is ${err.code}, message is ${err.message}`);
-         }
-        })
-        .width('100%')
-  }
-  .margin(16)
-  .height('100%')
-  .justifyContent(FlexAlign.Center)
- }
+    build() {
+        Scroll(this.scroller) {
+            Column() {
+                // ...
+                Button('removePinShortcut')
+                    .width('100%')
+                    .onClick(() => {
+                        try {
+                            const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                            const shortcutId = 'xxx'; // 通过checkPinShortcutPermitted接口获取
+                            productViewManager.removePinShortcut(uiContext, shortcutId)
+                                .then(() => {
+                                    hilog.info(0x0001, REMOVE_TAG, `removePinShortcut success.`);
+                                }).catch((error: BusinessError) => {
+                                hilog.error(0x0001, REMOVE_TAG,
+                                    `removePinShortcut error. code is ${error.code}, message is ${error.message}`);
+                                // ...
+                            })
+                        } catch (err) {
+                            hilog.error(0x0001, REMOVE_TAG,
+                                `removePinShortcut failed, code is ${err.code}, message is ${err.message}`);
+                            // ...
+                        }
+                    }).margin({ top: 4 })
+            }.padding({ left: 4, right: 4 })
+        }
+    }
 }
 
 ## Code blocks
@@ -100,43 +106,49 @@ build() {
 ### Code block 1
 
 ```
-import { common } from '@kit.AbilityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { productViewManager } from '@kit.AppGalleryKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG: string = 'RemovePinShortcut';
+const REMOVE_TAG: string = 'removePinShortcut';
 
 @Entry
 @Component
-struct RemovePinShortcut {
+@Preview
+struct Index {
+    scroller: Scroller = new Scroller();
+    tid: string = '';
 
-build() {
-  Column() {
-    Button("RemovePinShortcut")
-      .onClick(() => {
-        try {
-         const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-         const shortcutId = 'xxx'; // 通过checkPinShortcutPermitted接口获取
-         productViewManager.removePinShortcut(uiContext, shortcutId)
-           .then(() => {
-             hilog.info(0x0001, TAG, `removePinShortcut success.`);
-           }).catch((error: BusinessError) => {
-           hilog.error(0x0001, TAG, `removePinShortcut error. code is ${error.code}, message is ${error.message}`);
-         })
-        } catch (err) {
-          hilog.error(0x0001, TAG, `removePinShortcut failed, code is ${err.code}, message is ${err.message}`);
-         }
-        })
-        .width('100%')
-  }
-  .margin(16)
-  .height('100%')
-  .justifyContent(FlexAlign.Center)
- }
+    build() {
+        Scroll(this.scroller) {
+            Column() {
+                // ...
+                Button('removePinShortcut')
+                    .width('100%')
+                    .onClick(() => {
+                        try {
+                            const uiContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                            const shortcutId = 'xxx'; // 通过checkPinShortcutPermitted接口获取
+                            productViewManager.removePinShortcut(uiContext, shortcutId)
+                                .then(() => {
+                                    hilog.info(0x0001, REMOVE_TAG, `removePinShortcut success.`);
+                                }).catch((error: BusinessError) => {
+                                hilog.error(0x0001, REMOVE_TAG,
+                                    `removePinShortcut error. code is ${error.code}, message is ${error.message}`);
+                                // ...
+                            })
+                        } catch (err) {
+                            hilog.error(0x0001, REMOVE_TAG,
+                                `removePinShortcut failed, code is ${err.code}, message is ${err.message}`);
+                            // ...
+                        }
+                    }).margin({ top: 4 })
+            }.padding({ left: 4, right: 4 })
+        }
+    }
 }
 ```

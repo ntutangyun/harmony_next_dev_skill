@@ -71,7 +71,7 @@ symbol-version是libc在动态链接-符号重定位阶段的符号检索机制�
 
 [h2]全球化支持
 
-自API12起，newlocale及setlocale接口支持将locale设置C、C.UTF-8、en_US、en_US.UTF-8、zh_CN及zh_CN.UTF-8。新增在zh_CN及zh_CN.UTF-8的locale设置下对strtod_l、wcstod_l和localeconv的支持。注意strtod_l及wcstod_l不支持对十六进制及十六进制小数的转换。
+自API12起，newlocale及setlocale接口支持将locale设置为C、C.UTF-8、en_US、en_US.UTF-8、zh_CN及zh_CN.UTF-8。新增在zh_CN及zh_CN.UTF-8的locale设置下对strtod_l、wcstod_l和localeconv的支持。注意strtod_l及wcstod_l不支持对十六进制及十六进制小数的转换。
 
 [h2]fdsan功能
 
@@ -97,9 +97,9 @@ SIOCGIFCONF	获取所有网络接口的列表
 
 信号编号 1～34：为系统内部保留信号，禁止使用；
 
-信号编号 35～45: 截止到目前 API 19，这些信号已被系统内部模块（如内存、DFX、运行时、系统服务等）占用，为避免与系统行为冲突并导致不可预期的问题，请勿使用该范围内的信号。
+信号编号 35～45：截止到目前 API 19，这些信号已被系统内部模块（如内存、DFX、运行时、系统服务等）占用，为避免与系统行为冲突并导致不可预期的问题，请勿使用该范围内的信号。
 
-SIGRTMIN和__libc_current_sigrtmin的值是35, 表示可供应用程序使用的实时信号起始编号(应用实际只能使用46及以上的信号)。
+SIGRTMIN和__libc_current_sigrtmin的值是35，表示可供应用程序使用的实时信号起始编号（应用实际只能使用46及以上的信号）。
 
 鸿蒙内部信号使用统计如下：
 

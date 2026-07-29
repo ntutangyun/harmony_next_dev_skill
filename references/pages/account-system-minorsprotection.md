@@ -6,21 +6,21 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/account-s
 
 在未成年人模式下，应用可通过以下两种方式获取系统未成年人模式状态，与系统未成年人模式进行联动：
 
-说明
-
-以下两种方式都需要应用实现，如开发者不实现订阅系统未成年人模式公共事件，则应用无法实时感知系统未成年人模式的变化。
-
-示例：当应用处于前台时，若开发者未实现订阅系统未成年人模式公共事件，用户从控制中心开启未成年人模式后，当前应用将无法实时感知系统未成年人模式的变化。
-
 查询系统的未成年人模式是否开启：应用启动时，可调用getMinorsProtectionInfoSync接口，主动查询系统的未成年人模式状态；如系统未成年人模式为开启状态，则应自动开启应用的未成年人模式；如系统未成年人模式为关闭状态，则应自动关闭应用的未成年人模式。
 
-订阅系统未成年人模式公共事件感知系统的未成年人模式状态：应用进程存在时，可订阅系统的未成年人模式公共事件，当订阅到系统未成年人模式开启或关闭时，应用可自动进行未成年人模式状态切换。
+订阅系统未成年人模式开启/关闭事件感知系统的未成年人模式状态：应用进程存在时，可订阅系统的未成年人模式公共事件，当订阅到系统未成年人模式开启或关闭时，应用可自动进行未成年人模式状态切换。
+
+说明
+
+以上两种方式都需要应用实现，若开发者不实现订阅系统未成年人模式公共事件，则应用无法实时感知系统未成年人模式的变化。
+
+示例：当应用处于前台时，若开发者未实现订阅系统未成年人模式公共事件，用户从控制中心开启系统未成年人模式后，当前应用将无法实时感知系统未成年人模式的变化。
 
 业务流程
 
 流程说明：
 
-用户打开应用时，应用通过订阅系统未成年人模式公共事件感知系统未成年人模式的状态变化。如果订阅到系统未成年人模式开启事件，则开启应用的未成年人模式，如果订阅到系统未成年人模式关闭事件，则展示内容不做限制，并关闭应用的未成年人模式。
+用户打开应用时，应用通过订阅系统未成年人模式开启/关闭事件感知系统未成年人模式的状态变化。如果订阅到系统未成年人模式开启事件，则开启应用的未成年人模式，如果订阅到系统未成年人模式关闭事件，则展示内容不做限制，并关闭应用的未成年人模式。
 
 调用getMinorsProtectionInfoSync或getMinorsProtectionInfo获取系统未成年人模式的开启状态和年龄段信息，如果系统未成年人模式未开启，则展示内容不做限制。如果系统未成年人模式已开启，则需要根据返回的年龄段做内容分级，而且需开启应用的未成年人模式。
 
@@ -34,27 +34,13 @@ getMinorsProtectionInfo(): Promise<MinorsProtectionInfo>	异步接口，获取�
 
 注意
 
-当未成年人模式开启时，当前设备的开发者调试模式会被禁用，开发者可以进入设置-系统-开发者选项，点击USB调试开关，会校验健康使用设备密码，校验成功后可解除开发者调试模式限制。
+在开启系统未成年人模式时如果选择关闭USB调试，导致开发者调试模式被禁用，开发者可以进入设置-系统-开发者选项，点击USB调试开关，会校验健康使用设备密码，校验成功后可解除开发者调试模式限制。
 
 如开发者重新开启USB调试开关后，发现DevEco Studio工具上hilog日志未恢复到断连之前，请执行“hdc shell hilog -G 16M”来扩大hilog日志缓存区，若hilog日志仍无法完全展示，可取出hilog日志本地查看。更多命令请参见hilog。
 
-如开发者需要频繁使用未成年人模式开启状态或者年龄段信息，建议在获取结果后进行缓存，并通过订阅系统未成年人模式公共事件来刷新未成年人模式开启状态或者年龄段信息，避免重复调用接口带来的性能损耗。
+如开发者需要频繁使用系统未成年人模式开启状态或者年龄段信息，建议在获取结果后进行缓存，并通过订阅系统未成年人模式开启/关闭事件来刷新系统未成年人模式开启状态或者年龄段信息，避免重复调用接口带来的性能损耗。
 
 当设备处于开机未解锁状态下，开发者调用getMinorsProtectionInfoSync接口时，其返回的minorsProtectionMode字段为false。
-
-事件说明
-
-以下是系统未成年人模式开启或关闭发送的广播事件。
-
-事件名称	值	描述
-COMMON_EVENT_MINORSMODE_ON	usual.event.MINORSMODE_ON	表示系统未成年人模式开启事件。
-COMMON_EVENT_MINORSMODE_OFF	usual.event.MINORSMODE_OFF	表示系统未成年人模式关闭事件。
-
-说明
-
-未成年人模式开启事件触发时机：
-
-主动开启系统未成年人模式（PC/2in1设备暂不支持从控制中心开启未成年人模式），当前设备会发送未成年人模式开启事件。
 
 开发前提
 
@@ -68,61 +54,25 @@ import { minorsProtection } from '@kit.AccountKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
 
-创建订阅者，订阅系统未成年人模式开启或关闭事件。推荐在应用Ability的onCreate生命周期中调用。
+创建订阅者，订阅系统未成年人模式开启或关闭事件。推荐在应用Ability的onCreate生命周期中调用。示例代码请参考开发步骤。
 
-// 订阅者信息
-const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
-  events: [commonEventManager.Support.COMMON_EVENT_MINORSMODE_ON,
-    commonEventManager.Support.COMMON_EVENT_MINORSMODE_OFF]
-};
-
-// 如开发者使用await改写createSubscriber方法，需要把此变量定义到全局(struct外层)
- let subscriber: commonEventManager.CommonEventSubscriber | null = null;
-// 创建订阅者
-commonEventManager.createSubscriber(subscribeInfo)
-  .then((commonEventSubscriber: commonEventManager.CommonEventSubscriber) => {
-    // 这里获取到commonEventSubscriber对象需要暂存，用于后续事件回调。不可直接使用，否则会出现事件回调不生效的情况
-    subscriber = commonEventSubscriber;
-    // 订阅公共事件
-    commonEventManager.subscribe(subscriber,
-      (error: BusinessError, data: commonEventManager.CommonEventData) => {
-        if (error) {
-          dealCommonEventAllError(error);
-          return;
-        }
-        if (data.event === commonEventManager.Support.COMMON_EVENT_MINORSMODE_ON) {
-          // 订阅到开启事件，可以调用获取年龄段的接口，根据年龄段刷新内容展示，同时如开发者有缓存年龄段或未成年人模式开启状态，则需要刷新缓存
-          return;
-        }
-        if (data.event === commonEventManager.Support.COMMON_EVENT_MINORSMODE_OFF) {
-          // 订阅到关闭事件，关闭当前应用的未成年人模式，刷新应用内容展示，取消年龄限制，如开发者有缓存未成年人模式开启状态，则需要刷新缓存
-        }
-      });
-  })
-  .catch((error: BusinessError) => {
-    dealCommonEventAllError(error);
-  });
-
-function dealCommonEventAllError(error: BusinessError): void {
-  hilog.error(0x0000, 'testTag', `Failed to subscribe. Code: ${error.code}, message: ${error.message}`);
-}
-
-选择以下一种方式获取未成年人模式的开启状态，以及年龄段信息。当应用期望立即获取结果，推荐使用同步方式，当应用期望使用非阻塞的方式调用接口，推荐使用Promise异步回调方式。推荐在自定义组件的aboutToAppear生命周期或者应用Ability的onCreate生命周期中调用，如开发者有频繁使用到未成年人模式开启状态或年龄段信息，开发者则需把获取到的系统未成年人模式开启状态或年龄段缓存下来，通过订阅系统未成年人模式公共事件来刷新未成年人模式开启状态或年龄段。
+选择以下一种方式获取系统未成年人模式的开启状态，以及年龄段信息。当应用期望立即获取结果，推荐使用同步方式，当应用期望使用非阻塞的方式调用接口，推荐使用Promise异步回调方式。推荐在自定义组件的aboutToAppear生命周期或者应用Ability的onCreate生命周期中调用，如开发者有频繁使用到系统未成年人模式开启状态或年龄段信息，开发者则需把获取到的系统未成年人模式开启状态或年龄段缓存下来，通过订阅系统未成年人模式开启/关闭事件来刷新系统未成年人模式开启状态或年龄段。
 
 通过同步方式，调用getMinorsProtectionInfoSync获取系统未成年人模式的开启状态，以及年龄段信息。
 
+// 查询当前设备是否支持此系统能力
 if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
   try {
     // 查询是否支持系统未成年人模式
     if (minorsProtection.supportMinorsMode()) {
       const minorsProtectionInfo: minorsProtection.MinorsProtectionInfo =
         minorsProtection.getMinorsProtectionInfoSync();
-      // 获取未成年人模式开启状态
+      // 获取系统未成年人模式开启状态
       const minorsProtectionMode: boolean = minorsProtectionInfo.minorsProtectionMode;
-      // 如开发者有频繁使用到未成年人模式开启状态，这里则需缓存未成年人模式开启状态
+      // 如开发者有频繁使用到系统未成年人模式开启状态，这里则需缓存系统未成年人模式开启状态
       hilog.info(0x0000, 'testTag',
         `Succeeded in getting minorsProtectionMode is: ${minorsProtectionMode.valueOf()}`);
-      // 未成年人模式已开启，获取年龄段信息
+      // 系统未成年人模式已开启，获取年龄段信息
       // ...
       if (minorsProtectionMode) {
         const ageGroup: minorsProtection.AgeGroup | undefined = minorsProtectionInfo.ageGroup;
@@ -133,7 +83,7 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
           // ...
         }
       } else {
-        // 未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
+        // 系统未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
         // ...
       }
     } else {
@@ -152,18 +102,19 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
 
 通过Promise异步回调方式，调用getMinorsProtectionInfo获取系统未成年人模式的开启状态，以及年龄段信息。
 
+// 查询当前设备是否支持此系统能力
 if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
   try {
     // 查询是否支持系统未成年人模式
     if (minorsProtection.supportMinorsMode()) {
       minorsProtection.getMinorsProtectionInfo()
         .then((minorsProtectionInfo: minorsProtection.MinorsProtectionInfo) => {
-          // 获取未成年人模式开启状态
+          // 获取系统未成年人模式开启状态
           const minorsProtectionMode: boolean = minorsProtectionInfo.minorsProtectionMode;
-          // 如开发者有频繁使用到未成年人模式开启状态，这里则需缓存未成年人模式开启状态
+          // 如开发者有频繁使用到系统未成年人模式开启状态，这里则需缓存系统未成年人模式开启状态
           hilog.info(0x0000, 'testTag',
             `Succeeded in getting minorsProtectionMode is: ${minorsProtectionMode.valueOf()}`);
-          // 未成年人模式已开启，获取年龄段信息
+          // 系统未成年人模式已开启，获取年龄段信息
           if (minorsProtectionMode) {
             const ageGroup: minorsProtection.AgeGroup | undefined = minorsProtectionInfo.ageGroup;
             if (ageGroup) {
@@ -172,7 +123,7 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
               // 根据年龄段刷新内容展示。如开发者有频繁使用到年龄段信息，这里则需缓存年龄段信息
             }
           } else {
-            // 未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
+            // 系统未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
           }
         })
         .catch((error: BusinessError<Object>) => {
@@ -208,63 +159,19 @@ import { BusinessError, commonEventManager } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-// 订阅者信息
-const subscribeInfo: commonEventManager.CommonEventSubscribeInfo = {
-  events: [commonEventManager.Support.COMMON_EVENT_MINORSMODE_ON,
-    commonEventManager.Support.COMMON_EVENT_MINORSMODE_OFF]
-};
-
-// 如开发者使用await改写createSubscriber方法，需要把此变量定义到全局(struct外层)
- let subscriber: commonEventManager.CommonEventSubscriber | null = null;
-// 创建订阅者
-commonEventManager.createSubscriber(subscribeInfo)
-  .then((commonEventSubscriber: commonEventManager.CommonEventSubscriber) => {
-    // 这里获取到commonEventSubscriber对象需要暂存，用于后续事件回调。不可直接使用，否则会出现事件回调不生效的情况
-    subscriber = commonEventSubscriber;
-    // 订阅公共事件
-    commonEventManager.subscribe(subscriber,
-      (error: BusinessError, data: commonEventManager.CommonEventData) => {
-        if (error) {
-          dealCommonEventAllError(error);
-          return;
-        }
-        if (data.event === commonEventManager.Support.COMMON_EVENT_MINORSMODE_ON) {
-          // 订阅到开启事件，可以调用获取年龄段的接口，根据年龄段刷新内容展示，同时如开发者有缓存年龄段或未成年人模式开启状态，则需要刷新缓存
-          return;
-        }
-        if (data.event === commonEventManager.Support.COMMON_EVENT_MINORSMODE_OFF) {
-          // 订阅到关闭事件，关闭当前应用的未成年人模式，刷新应用内容展示，取消年龄限制，如开发者有缓存未成年人模式开启状态，则需要刷新缓存
-        }
-      });
-  })
-  .catch((error: BusinessError) => {
-    dealCommonEventAllError(error);
-  });
-```
-
-### Code block 3
-
-```
-function dealCommonEventAllError(error: BusinessError): void {
-  hilog.error(0x0000, 'testTag', `Failed to subscribe. Code: ${error.code}, message: ${error.message}`);
-}
-```
-
-### Code block 4
-
-```
+// 查询当前设备是否支持此系统能力
 if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
   try {
     // 查询是否支持系统未成年人模式
     if (minorsProtection.supportMinorsMode()) {
       const minorsProtectionInfo: minorsProtection.MinorsProtectionInfo =
         minorsProtection.getMinorsProtectionInfoSync();
-      // 获取未成年人模式开启状态
+      // 获取系统未成年人模式开启状态
       const minorsProtectionMode: boolean = minorsProtectionInfo.minorsProtectionMode;
-      // 如开发者有频繁使用到未成年人模式开启状态，这里则需缓存未成年人模式开启状态
+      // 如开发者有频繁使用到系统未成年人模式开启状态，这里则需缓存系统未成年人模式开启状态
       hilog.info(0x0000, 'testTag',
         `Succeeded in getting minorsProtectionMode is: ${minorsProtectionMode.valueOf()}`);
-      // 未成年人模式已开启，获取年龄段信息
+      // 系统未成年人模式已开启，获取年龄段信息
       // ...
       if (minorsProtectionMode) {
         const ageGroup: minorsProtection.AgeGroup | undefined = minorsProtectionInfo.ageGroup;
@@ -275,7 +182,7 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
           // ...
         }
       } else {
-        // 未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
+        // 系统未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
         // ...
       }
     } else {
@@ -293,21 +200,22 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
 }
 ```
 
-### Code block 5
+### Code block 3
 
 ```
+// 查询当前设备是否支持此系统能力
 if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')) {
   try {
     // 查询是否支持系统未成年人模式
     if (minorsProtection.supportMinorsMode()) {
       minorsProtection.getMinorsProtectionInfo()
         .then((minorsProtectionInfo: minorsProtection.MinorsProtectionInfo) => {
-          // 获取未成年人模式开启状态
+          // 获取系统未成年人模式开启状态
           const minorsProtectionMode: boolean = minorsProtectionInfo.minorsProtectionMode;
-          // 如开发者有频繁使用到未成年人模式开启状态，这里则需缓存未成年人模式开启状态
+          // 如开发者有频繁使用到系统未成年人模式开启状态，这里则需缓存系统未成年人模式开启状态
           hilog.info(0x0000, 'testTag',
             `Succeeded in getting minorsProtectionMode is: ${minorsProtectionMode.valueOf()}`);
-          // 未成年人模式已开启，获取年龄段信息
+          // 系统未成年人模式已开启，获取年龄段信息
           if (minorsProtectionMode) {
             const ageGroup: minorsProtection.AgeGroup | undefined = minorsProtectionInfo.ageGroup;
             if (ageGroup) {
@@ -316,7 +224,7 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
               // 根据年龄段刷新内容展示。如开发者有频繁使用到年龄段信息，这里则需缓存年龄段信息
             }
           } else {
-            // 未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
+            // 系统未成年人模式未开启，应用需跟随系统未成年人模式，展示内容不做限制
           }
         })
         .catch((error: BusinessError<Object>) => {
@@ -336,7 +244,7 @@ if (canIUse('SystemCapability.AuthenticationServices.HuaweiID.MinorsProtection')
 }
 ```
 
-### Code block 6
+### Code block 4
 
 ```
 function dealGetMinorsInfoAllError(error: BusinessError<Object>): void {

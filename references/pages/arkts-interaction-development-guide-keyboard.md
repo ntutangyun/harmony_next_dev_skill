@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 
 Web组件的KeyEvent流程与上述过程有所不同。在onKeyPreIme返回false时，Web组件不会匹配快捷键。而在第三次按键派发过程中，Web组件会将未消费的KeyEvent重新派发回ArkUI，在重新派发过程中再执行匹配快捷键等操作。
 
-onKeyEvent & onKeyPreIme
+onKeyEvent、onKeyPreIme和onKeyEventDispatch
 
 onKeyEvent(event: (event: KeyEvent) => void): T
 onKeyEvent(event: Callback<KeyEvent, boolean>): T
@@ -151,7 +151,7 @@ struct KeyEventPreventBubble {
   }
 }
 
-使用OnKeyPreIme屏蔽在输入框中使用方向左键。
+使用onKeyPreIme屏蔽在输入框中使用方向左键。
 
 import { KeyCode } from '@kit.InputKit';
 
@@ -232,9 +232,10 @@ struct Index {
   }
 }
 
-使用OnKeyPreIme实现回车提交（建议使用物理键盘）。
+使用onKeyPreIme实现回车提交（建议使用物理键盘）。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { KeyCode } from '@kit.InputKit';
 
 const TAG = '[Sample_Eventproject]';
 const DOMAIN = 0xF811;
@@ -253,7 +254,7 @@ struct TextAreaDemo {
       TextArea({ controller: this.controller, text: this.text })
         .onKeyPreIme((event: KeyEvent) => {
           hilog.info(DOMAIN, TAG, `${BUNDLE + JSON.stringify(event)}`);
-          if (event.keyCode === 2054 && event.type === KeyType.Down) { // 回车键物理码
+          if (event.keyCode === KeyCode.KEYCODE_ENTER && event.type === KeyType.Down) { // 回车键物理码
             const hasCtrl = event?.getModifierKeyState?.(['Ctrl']);
             if (hasCtrl) {
               hilog.info(DOMAIN, TAG, BUNDLE + 'Line break');
@@ -490,6 +491,7 @@ struct Index {
 
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { KeyCode } from '@kit.InputKit';
 
 const TAG = '[Sample_Eventproject]';
 const DOMAIN = 0xF811;
@@ -508,7 +510,7 @@ struct TextAreaDemo {
       TextArea({ controller: this.controller, text: this.text })
         .onKeyPreIme((event: KeyEvent) => {
           hilog.info(DOMAIN, TAG, `${BUNDLE + JSON.stringify(event)}`);
-          if (event.keyCode === 2054 && event.type === KeyType.Down) { // 回车键物理码
+          if (event.keyCode === KeyCode.KEYCODE_ENTER && event.type === KeyType.Down) { // 回车键物理码
             const hasCtrl = event?.getModifierKeyState?.(['Ctrl']);
             if (hasCtrl) {
               hilog.info(DOMAIN, TAG, BUNDLE + 'Line break');

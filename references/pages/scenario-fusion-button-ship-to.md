@@ -8,6 +8,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 运行示例代码单击“选择收货地址”按钮，拉起选择地址页面选择已保存的地址，也可单击“管理/新增收货地址”进入添加收货地址页面（完整场景可参考获取收货地址）。
 
+约束与限制
+
+选择收货地址Button支持Phone、Tablet和PC/2in1设备，并且从API版本26.0.0开始，新增支持TV设备。
+
 前提条件
 
 参见开发前提。
@@ -45,7 +49,7 @@ struct Index {
               hoverStayTime: 0,
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType设置为CHOOSE_ADDRESS时，回调必须为onChooseAddress。
           controller: new functionalButtonComponentManager.FunctionalButtonController()
@@ -119,7 +123,7 @@ struct Index {
               hoverStayTime: 0,
               styleConfig: new functionalButtonComponentManager.ButtonConfig()
                 .fontSize(20)
-            },
+            }
           },
           // 当OpenType设置为CHOOSE_ADDRESS时，回调必须为onChooseAddress。
           controller: new functionalButtonComponentManager.FunctionalButtonController()

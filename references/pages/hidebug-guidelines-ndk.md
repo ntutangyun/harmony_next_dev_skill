@@ -1,4 +1,4 @@
-# HiDebug接口使用示例(C/C++)
+# HiDebug接口使用示例（C/C++）
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hidebug-guidelines-ndk_
 
@@ -36,7 +36,7 @@ void BacktraceCurrentThread();
 
 #endif // MYAPPLICATION_TESTBACKTRACE_H
 
-编辑“test_backtrace.cpp”文件, 内容如下：
+编辑“test_backtrace.cpp”文件，内容如下：
 
 #include "test_backtrace.h"
 #include <condition_variable>

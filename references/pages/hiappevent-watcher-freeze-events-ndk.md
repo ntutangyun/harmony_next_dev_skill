@@ -20,7 +20,7 @@ int OH_HiAppEvent_RemoveWatcher(HiAppEvent_Watcher *watcher)	移除应用事件�
 
 获取该示例工程依赖的jsoncpp文件，从三方开源库jsoncpp代码仓下载源码的压缩包，并按照README的Amalgamated source中介绍的操作步骤得到jsoncpp.cpp、json.h和json-forwards.h三个文件。
 
-新建Native C++工程，并将jsoncpp导入到新建工程内，目录结构如下。
+在DevEco Studio中，新建Native C++工程，并将jsoncpp导入到新建工程内，目录结构如下。
 
 entry:
   src:
@@ -41,14 +41,14 @@ entry:
         pages:
           - Index.ets
 
-编辑“CMakeLists.txt”文件，添加源文件及动态库。
+编辑工程中的“entry > src > main > cpp > CMakeLists.txt”文件，添加源文件及动态库。
 
 # 新增jsoncpp.cpp(解析订阅事件中的json字符串)源文件
 add_library(entry SHARED napi_init.cpp jsoncpp.cpp)
 # 新增动态库依赖libhiappevent_ndk.z.so和libhilog_ndk.z.so(日志输出)
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libhiappevent_ndk.z.so)
 
-编辑“napi_init.cpp”文件，导入依赖的文件，并定义LOG_TAG。
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，导入依赖的文件，并定义LOG_TAG。
 
 #include "napi/native_api.h"
 #include "json/json.h"
@@ -62,7 +62,7 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so libhiappev
 
 onReceive类型观察者
 
-编辑“napi_init.cpp”文件，定义onReceive类型观察者相关方法：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，定义onReceive类型观察者相关方法：
 
 // 定义一个变量，用来缓存创建的观察者的指针。
 static HiAppEvent_Watcher *systemEventWatcher;
@@ -141,7 +141,7 @@ static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
 
 onTrigger类型观察者
 
-编辑“napi_init.cpp”文件，定义OnTrigger类型观察者相关方法：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，定义OnTrigger类型观察者相关方法：
 
 // 定义一个变量，用来缓存创建的观察者的指针。
 static HiAppEvent_Watcher *systemEventWatcher;
@@ -231,7 +231,7 @@ static napi_value RegisterWatcher(napi_env env, napi_callback_info info) {
 
 将RegisterWatcher注册为ArkTS接口。
 
-编辑“napi_init.cpp”文件，将RegisterWatcher注册为ArkTS接口：
+编辑工程中的“entry > src > main > cpp > napi_init.cpp”文件，将RegisterWatcher注册为ArkTS接口：
 
 static napi_value Init(napi_env env, napi_value exports)
 {
@@ -242,11 +242,11 @@ static napi_value Init(napi_env env, napi_value exports)
     return exports;
 }
 
-编辑“index.d.ts”文件，定义ArkTS接口：
+编辑工程中的“entry > src > main > cpp > types > libentry > Index.ets”文件，定义ArkTS接口：
 
 export const registerWatcher: () => void;
 
-编辑“EntryAbility.ets”文件，在onCreate()函数中新增接口调用。
+编辑工程中的“entry > src > main > ets > entryability > EntryAbility.ets”文件，在onCreate()函数中新增接口调用。
 
 // 导入依赖模块
 import testNapi from 'libentry.so'
@@ -255,17 +255,20 @@ import testNapi from 'libentry.so'
 // 启动时，注册系统事件观察者
 testNapi.registerWatcher();
 
-编辑“Index.ets”文件，新增按钮触发卡顿事件。
+编辑工程中的“entry > src > main > ets > pages > Index.ets”文件，新增按钮触发卡顿事件。
 
 Button("appFreeze").onClick(() => {
   setTimeout(()=>{
-    while(true) {}
+     // 构造场景故障
+     let date = Date.now();
+     while (Date.now() - date < 15000) {
+     };
   }, 1000)
 })
 
-点击DevEco Studio界面中的运行按钮，运行应用工程，然后在应用界面中点击按钮“appFreeze”，触发一次应用无响应事件。
+点击DevEco Studio界面中的运行按钮，运行应用工程，然后在应用界面中点击按钮“appFreeze”，触发一次应用冻屏事件。
 
-[h2]验证观察者是否订阅到应用无响应事件
+[h2]验证观察者是否订阅到应用冻屏事件
 
 应用工程崩溃退出后再次运行可以在Log窗口看到对系统事件数据的处理日志。
 
@@ -565,7 +568,10 @@ testNapi.registerWatcher();
 ```
 Button("appFreeze").onClick(() => {
   setTimeout(()=>{
-    while(true) {}
+     // 构造场景故障
+     let date = Date.now();
+     while (Date.now() - date < 15000) {
+     };
   }, 1000)
 })
 ```

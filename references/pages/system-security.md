@@ -10,6 +10,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/system-se
 
 Asset Store Kit（关键资产存储服务）
 
+Confidential Space Kit（机密空间服务）
+
 Crypto Architecture Kit（加解密算法框架服务）
 
 Data Protection Kit（数据保护服务）

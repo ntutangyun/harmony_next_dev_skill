@@ -25,12 +25,13 @@ export struct OnClickGesture {
             .width('60%')
             .height('50%')
             .backgroundColor(Color.Grey)
-            .onClick(() => { // 1. 子组件上注册了点击事件，正常情况下点击在子组件上时，优先得到响应
+            .onClick(() => {
+              // 1. 子组件上注册了点击事件，正常情况下点击在子组件上时，优先得到响应
               console.info('Clicked on child');
               this.increaseJudgeGuard();
             })
             .onGestureJudgeBegin((gestureInfo: GestureInfo, event: BaseGestureEvent) => {
-              // 3. 当数字增长为5的倍数时禁用子组件上的点击手势，这样父组件上的点击可以得到响应
+              // 3. 当数字增长为5的倍数时禁用子组件上的点击手势，此时父组件上的点击可以得到响应
               if (this.judgeCount % 5 == 0 && gestureInfo.type == GestureControl.GestureType.CLICK) {
                 return GestureJudgeResult.REJECT;
               } else {
@@ -43,7 +44,8 @@ export struct OnClickGesture {
         .justifyContent(FlexAlign.Center)
         .backgroundColor(Color.Green)
         .gesture(
-          TapGesture() // 2. 父组件上注册了点击手势，正常情况下点击在子组件区域时，父组件上的手势优先级低于子组件
+          // 2. 父组件上注册了点击手势，正常情况下点击在子组件区域时，父组件上的手势优先级低于子组件
+          TapGesture()
             .onAction(() => {
               console.info('Clicked on parent');
               this.increaseJudgeGuard();
@@ -404,12 +406,12 @@ export struct Swipe {
           .width(300)
           .height(200)
           .margin(100)
-          // 在Column组件上绑定旋转，通过滑动手势的滑动速度和角度修改旋转的角度
+          // 在Column组件上绑定旋转，通过快滑手势的滑动速度和角度修改旋转的角度
           .rotate({ angle: this.rotateAngle })
           .gesture(
-            // 绑定滑动手势且限制仅在竖直方向滑动时触发
+            // 绑定快滑手势且限制仅在竖直方向滑动时触发
             SwipeGesture({ direction: SwipeDirection.Vertical })
-              // 当滑动手势触发时，获取滑动的速度和角度，实现对组件的布局参数的修改
+              // 当快滑手势触发时，获取滑动的速度和角度，实现对组件的布局参数的修改
               .onAction((event: GestureEvent|undefined) => {
                 if(event){
                   this.speed = event.speed;
@@ -455,12 +457,13 @@ export struct OnClickGesture {
             .width('60%')
             .height('50%')
             .backgroundColor(Color.Grey)
-            .onClick(() => { // 1. 子组件上注册了点击事件，正常情况下点击在子组件上时，优先得到响应
+            .onClick(() => {
+              // 1. 子组件上注册了点击事件，正常情况下点击在子组件上时，优先得到响应
               console.info('Clicked on child');
               this.increaseJudgeGuard();
             })
             .onGestureJudgeBegin((gestureInfo: GestureInfo, event: BaseGestureEvent) => {
-              // 3. 当数字增长为5的倍数时禁用子组件上的点击手势，这样父组件上的点击可以得到响应
+              // 3. 当数字增长为5的倍数时禁用子组件上的点击手势，此时父组件上的点击可以得到响应
               if (this.judgeCount % 5 == 0 && gestureInfo.type == GestureControl.GestureType.CLICK) {
                 return GestureJudgeResult.REJECT;
               } else {
@@ -473,7 +476,8 @@ export struct OnClickGesture {
         .justifyContent(FlexAlign.Center)
         .backgroundColor(Color.Green)
         .gesture(
-          TapGesture() // 2. 父组件上注册了点击手势，正常情况下点击在子组件区域时，父组件上的手势优先级低于子组件
+          // 2. 父组件上注册了点击手势，正常情况下点击在子组件区域时，父组件上的手势优先级低于子组件
+          TapGesture()
             .onAction(() => {
               console.info('Clicked on parent');
               this.increaseJudgeGuard();
@@ -826,12 +830,12 @@ export struct Swipe {
           .width(300)
           .height(200)
           .margin(100)
-          // 在Column组件上绑定旋转，通过滑动手势的滑动速度和角度修改旋转的角度
+          // 在Column组件上绑定旋转，通过快滑手势的滑动速度和角度修改旋转的角度
           .rotate({ angle: this.rotateAngle })
           .gesture(
-            // 绑定滑动手势且限制仅在竖直方向滑动时触发
+            // 绑定快滑手势且限制仅在竖直方向滑动时触发
             SwipeGesture({ direction: SwipeDirection.Vertical })
-              // 当滑动手势触发时，获取滑动的速度和角度，实现对组件的布局参数的修改
+              // 当快滑手势触发时，获取滑动的速度和角度，实现对组件的布局参数的修改
               .onAction((event: GestureEvent|undefined) => {
                 if(event){
                   this.speed = event.speed;

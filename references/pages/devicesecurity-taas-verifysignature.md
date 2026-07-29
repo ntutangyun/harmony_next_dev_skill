@@ -8,6 +8,14 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 推荐开发者在服务器端完成安全图像或安全地理位置的签名验证，请参考“Device Certificate Kit 设备真实性证明服务器端开发”。
 
+导入相关依赖模块
+
+import { trustedAppService } from '@kit.DeviceSecurityKit';
+import { cert } from '@kit.DeviceCertificateKit';
+import { util } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+
 获取签名数据
 
 [h2]安全摄像头图像数据格式
@@ -16,21 +24,18 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 其中，用户数据和图像数据为被签名的原始数据，图像数据长度固定为460800字节，签名数据是Base64编码的签名结果，开发者需要解析出这些数据用来验证安全图像数据签名。参考代码如下：
 
-import { util } from '@kit.ArkTS';
-
 // 获取被签名的原始数据
-const secureImageBuffer = new ArrayBuffer(461844); // 实际使用时请替换为Camera Kit获取到的安全图像buffer
-const view = new DataView(secureImageBuffer);
+const view = new DataView(secureImageBuffer); // secureImageBuffer: 实际使用时请替换为Camera Kit获取到的安全图像buffer
 const imageBufferLength = 460800; // 安全图像buffer长度固定为460800
 const userDataLength = view.getUint32(0, true); // 获取用户数据长度
 const originData = secureImageBuffer.slice(4, 4 + userDataLength + imageBufferLength);
 // 获取签名结果
-const maxSignatureBufferLength = 512;
+const maxSignatureLength = 512;
 const signatureBuffer = secureImageBuffer.slice(4 + userDataLength + imageBufferLength,
-  4 + userDataLength + imageBufferLength + maxSignatureBufferLength);
+  4 + userDataLength + imageBufferLength + maxSignatureLength);
 const signatureString = String.fromCharCode(...new Uint8Array(signatureBuffer).filter(code => code !== 0));
 const base64Helper = new util.Base64Helper();
-const signatureData = base64Helper.decodeSync(signatureString);
+const signature = base64Helper.decodeSync(signatureString);
 
 [h2]压缩、裁剪后安全图像数据格式
 
@@ -50,14 +55,17 @@ const signatureData = base64Helper.decodeSync(signatureString);
 
 其中，签名的原始数据由用户数据和图像数据组成，开发者需要解析出这些数据用来验证安全图像数据签名。参考代码如下：
 
-import { util } from '@kit.ArkTS';
-
+const view = new DataView(secureImageBuffer); // secureImageBuffer: 实际使用时请替换为Camera Kit获取到的安全图像buffer
 let offset = 0;
-const secureImageBuffer = new ArrayBuffer(461844); // 实际使用时请替换为Camera Kit获取到的安全图像buffer
-const view = new DataView(secureImageBuffer);
 const magic = view.getUint32(offset, true); // 获取安全图像的Magic字段，该值默认为 0x53494D47
+if (magic != 0x53494D47) {
+  throw new Error('invalid magic of processed secure image');
+}
 offset += 4;
 const version = view.getUint32(offset, true); // 获取安全图像的Version字段，该值默认为 1
+if (version != 1) {
+  throw new Error('invalid version of processed secure image');
+}
 offset += 4;
 const userDataLength = view.getUint32(offset, true); // 获取用户数据长度
 offset += 4;
@@ -71,8 +79,8 @@ const imageHeight = view.getUint32(offset, true); // 获取图像的高度，单
 offset += 4;
 const imageBuffer = secureImageBuffer.slice(offset, offset + imageLen);
 offset += imageLen;
-// 获取被签名的原始数据
 const totalLength = userdata.byteLength + imageBuffer.byteLength;
+// 获取被签名的原始数据
 const originData = new Uint8Array(new ArrayBuffer(totalLength));
 originData.set(new Uint8Array(userdata), 0);
 originData.set(new Uint8Array(imageBuffer), userdata.byteLength);
@@ -81,7 +89,7 @@ const maxSignatureLength = 512;
 const signatureBuffer = secureImageBuffer.slice(offset, offset + maxSignatureLength);
 const signatureString = String.fromCharCode(...new Uint8Array(signatureBuffer).filter(code => code !== 0));
 const base64Helper = new util.Base64Helper();
-const signatureData = base64Helper.decodeSync(signatureString);
+const signature = base64Helper.decodeSync(signatureString);
 
 [h2]安全地理位置数据格式
 
@@ -97,9 +105,6 @@ const signatureData = base64Helper.decodeSync(signatureString);
 
 签名数据是Base64编码后的签名结果。获取签名和签名原始数据的参考代码（不含异常处理逻辑，由开发者根据业务场景实现）如下：
 
-import { trustedAppService } from '@kit.DeviceSecurityKit';
-import { util } from '@kit.ArkTS';
-
 // 以下均为示例值，仅用于展示如何获取原始签名数据和签名结果
 const location: trustedAppService.Location = {
   latitude: 40.053903635898685,
@@ -108,7 +113,7 @@ const location: trustedAppService.Location = {
   accuracy: 11.160304069519043,
   timestamp: 1722151680187
 };
-const userData = "trusted_app_service_userdata";
+const userData = 'trusted_app_service_default_userdata';
 const secureLocation: trustedAppService.SecureLocation = {
   originalLocation: location,
   userData: userData,
@@ -124,7 +129,7 @@ const textEncoder = new util.TextEncoder();
 const originData = textEncoder.encodeInto(originString);
 // 获取签名结果
 const base64Helper = new util.Base64Helper();
-const signatureData = base64Helper.decodeSync(secureLocation.signature.toString());
+const signature = base64Helper.decodeSync(secureLocation.signature.toString());
 
 验证签名
 
@@ -132,94 +137,89 @@ const signatureData = base64Helper.decodeSync(secureLocation.signature.toString(
 
 从匿名证书链中获取公钥。
 
-import { cert } from '@kit.DeviceCertificateKit';
-import { cryptoFramework } from '@kit.CryptoArchitectureKit';
-import { util } from '@kit.ArkTS';
-import { trustedAppService } from '@kit.DeviceSecurityKit';
-
-// 以安全摄像头场景为例，忽略异常情况处理
-const userData = "trusted_app_service_demo";
-const deviceId = 7483679320805398131;
-const initProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
-    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
-  },
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
-    value: BigInt(deviceId)
+// returnResult是initializeAttestContext返回结果
+public async getPubKeyFromCertChain(returnResult: trustedAppService.AttestReturnResult): Promise<cryptoFramework.PubKey> {
+  try {
+    // 解析匿名证书链数据，获取三级证书
+    const certChain: Array<string> = returnResult.certChains;
+    // certArray[0]: 空字符串；certArray[1]：叶子证书实体；certArray[2]：中间证书主体；certArray[3]：根证书主体
+    const certList: Array<string> = certChain[0].split('-----BEGIN CERTIFICATE-----');
+    const thirdCert = '-----BEGIN CERTIFICATE-----' + certList[1];
+    // 获取公钥
+    const textEncoder = new util.TextEncoder();
+    const encodingBlob: cert.EncodingBlob = {
+      data: textEncoder.encodeInto(thirdCert),
+      encodingFormat: cert.EncodingFormat.FORMAT_PEM
+    };
+    const x509Cert = await cert.createX509Cert(encodingBlob);
+    const asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('ECC256'); // 算法规格需要跟CreateAttestKey函数的KeySize入参保持一致
+    const keyPair = asyKeyGenerator.convertKeySync(x509Cert.getPublicKey().getEncoded(), null);
+    const pubKey = keyPair.pubKey; // 证书中的公钥需要转换成cryptoFramework能够接收的格式
+    return pubKey;
+  } catch (err) {
+    throw new Error((err as BusinessError).message);
   }
-];
-const initOptions: trustedAppService.AttestOptions = {
-  properties: initProperties
-};
-const returnResult = await trustedAppService.initializeAttestContext(userData, initOptions);
-// 解析匿名证书链数据，获取三级证书
-const certChain = returnResult.certChains;
-const certList = certChain[0].split('-----BEGIN CERTIFICATE-----');
-const thirdCert = '-----BEGIN CERTIFICATE-----' + certList[1];
-// 获取公钥
-const textEncoder = new util.TextEncoder();
-const encodingBlob: cert.EncodingBlob = {
-  data: textEncoder.encodeInto(thirdCert),
-  encodingFormat: cert.EncodingFormat.FORMAT_PEM
-};
-const x509Cert = await cert.createX509Cert(encodingBlob);
-const asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('ECC256');
-const keyPair = asyKeyGenerator.convertKeySync(x509Cert.getPublicKey().getEncoded(), null);
-const pubKey = keyPair.pubKey; // 证书中的公钥需要转换成cryptoFramework能够接收的格式
+}
 
 创建非对称密钥类型为ECC256、摘要算法为SHA256的verify实例，并使用步骤1中获取到的公钥进行初始化。
 
-const verifier = cryptoFramework.createVerify('ECC256|SHA256');
+const verifier = cryptoFramework.createVerify('ECC256|SHA256'); // 算法规格需要跟CreateAttestKey函数的KeySize入参保持一致
 verifier.initSync(pubKey);
 
 使用原始数据和签名结果进行验证签名。
 
-const originData = ...; // 请使用获取到的安全图像原始数据
-const signatureData = ...; // 请使用获取到的签名结果
 const inputData: cryptoFramework.DataBlob = {
-  data: new Uint8Array(originData)
+  data: new Uint8Array(originData) // originData：请使用获取到的安全图像或者安全地理位置的原始数据
 };
-const signature: cryptoFramework.DataBlob = {
-  data: new Uint8Array(signatureData)
-};
+const signatureData: cryptoFramework.DataBlob = {
+  data: new Uint8Array(signature) // signature：请使用获取到的签名结果
+}
 // 验证签名结果
-const result = verifier.verifySync(inputData, signature);
+const result = verifier.verifySync(inputData, signatureData);
 
 ## Code blocks
 
 ### Code block 1
 
 ```
+import { trustedAppService } from '@kit.DeviceSecurityKit';
+import { cert } from '@kit.DeviceCertificateKit';
 import { util } from '@kit.ArkTS';
-
-// 获取被签名的原始数据
-const secureImageBuffer = new ArrayBuffer(461844); // 实际使用时请替换为Camera Kit获取到的安全图像buffer
-const view = new DataView(secureImageBuffer);
-const imageBufferLength = 460800; // 安全图像buffer长度固定为460800
-const userDataLength = view.getUint32(0, true); // 获取用户数据长度
-const originData = secureImageBuffer.slice(4, 4 + userDataLength + imageBufferLength);
-// 获取签名结果
-const maxSignatureBufferLength = 512;
-const signatureBuffer = secureImageBuffer.slice(4 + userDataLength + imageBufferLength,
-  4 + userDataLength + imageBufferLength + maxSignatureBufferLength);
-const signatureString = String.fromCharCode(...new Uint8Array(signatureBuffer).filter(code => code !== 0));
-const base64Helper = new util.Base64Helper();
-const signatureData = base64Helper.decodeSync(signatureString);
+import { BusinessError } from '@kit.BasicServicesKit';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 ```
 
 ### Code block 2
 
 ```
-import { util } from '@kit.ArkTS';
+// 获取被签名的原始数据
+const view = new DataView(secureImageBuffer); // secureImageBuffer: 实际使用时请替换为Camera Kit获取到的安全图像buffer
+const imageBufferLength = 460800; // 安全图像buffer长度固定为460800
+const userDataLength = view.getUint32(0, true); // 获取用户数据长度
+const originData = secureImageBuffer.slice(4, 4 + userDataLength + imageBufferLength);
+// 获取签名结果
+const maxSignatureLength = 512;
+const signatureBuffer = secureImageBuffer.slice(4 + userDataLength + imageBufferLength,
+  4 + userDataLength + imageBufferLength + maxSignatureLength);
+const signatureString = String.fromCharCode(...new Uint8Array(signatureBuffer).filter(code => code !== 0));
+const base64Helper = new util.Base64Helper();
+const signature = base64Helper.decodeSync(signatureString);
+```
 
+### Code block 3
+
+```
+const view = new DataView(secureImageBuffer); // secureImageBuffer: 实际使用时请替换为Camera Kit获取到的安全图像buffer
 let offset = 0;
-const secureImageBuffer = new ArrayBuffer(461844); // 实际使用时请替换为Camera Kit获取到的安全图像buffer
-const view = new DataView(secureImageBuffer);
 const magic = view.getUint32(offset, true); // 获取安全图像的Magic字段，该值默认为 0x53494D47
+if (magic != 0x53494D47) {
+  throw new Error('invalid magic of processed secure image');
+}
 offset += 4;
 const version = view.getUint32(offset, true); // 获取安全图像的Version字段，该值默认为 1
+if (version != 1) {
+  throw new Error('invalid version of processed secure image');
+}
 offset += 4;
 const userDataLength = view.getUint32(offset, true); // 获取用户数据长度
 offset += 4;
@@ -233,8 +233,8 @@ const imageHeight = view.getUint32(offset, true); // 获取图像的高度，单
 offset += 4;
 const imageBuffer = secureImageBuffer.slice(offset, offset + imageLen);
 offset += imageLen;
-// 获取被签名的原始数据
 const totalLength = userdata.byteLength + imageBuffer.byteLength;
+// 获取被签名的原始数据
 const originData = new Uint8Array(new ArrayBuffer(totalLength));
 originData.set(new Uint8Array(userdata), 0);
 originData.set(new Uint8Array(imageBuffer), userdata.byteLength);
@@ -243,15 +243,12 @@ const maxSignatureLength = 512;
 const signatureBuffer = secureImageBuffer.slice(offset, offset + maxSignatureLength);
 const signatureString = String.fromCharCode(...new Uint8Array(signatureBuffer).filter(code => code !== 0));
 const base64Helper = new util.Base64Helper();
-const signatureData = base64Helper.decodeSync(signatureString);
+const signature = base64Helper.decodeSync(signatureString);
 ```
 
-### Code block 3
+### Code block 4
 
 ```
-import { trustedAppService } from '@kit.DeviceSecurityKit';
-import { util } from '@kit.ArkTS';
-
 // 以下均为示例值，仅用于展示如何获取原始签名数据和签名结果
 const location: trustedAppService.Location = {
   latitude: 40.053903635898685,
@@ -260,7 +257,7 @@ const location: trustedAppService.Location = {
   accuracy: 11.160304069519043,
   timestamp: 1722151680187
 };
-const userData = "trusted_app_service_userdata";
+const userData = 'trusted_app_service_default_userdata';
 const secureLocation: trustedAppService.SecureLocation = {
   originalLocation: location,
   userData: userData,
@@ -276,68 +273,53 @@ const textEncoder = new util.TextEncoder();
 const originData = textEncoder.encodeInto(originString);
 // 获取签名结果
 const base64Helper = new util.Base64Helper();
-const signatureData = base64Helper.decodeSync(secureLocation.signature.toString());
-```
-
-### Code block 4
-
-```
-import { cert } from '@kit.DeviceCertificateKit';
-import { cryptoFramework } from '@kit.CryptoArchitectureKit';
-import { util } from '@kit.ArkTS';
-import { trustedAppService } from '@kit.DeviceSecurityKit';
-
-// 以安全摄像头场景为例，忽略异常情况处理
-const userData = "trusted_app_service_demo";
-const deviceId = 7483679320805398131;
-const initProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
-    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
-  },
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
-    value: BigInt(deviceId)
-  }
-];
-const initOptions: trustedAppService.AttestOptions = {
-  properties: initProperties
-};
-const returnResult = await trustedAppService.initializeAttestContext(userData, initOptions);
-// 解析匿名证书链数据，获取三级证书
-const certChain = returnResult.certChains;
-const certList = certChain[0].split('-----BEGIN CERTIFICATE-----');
-const thirdCert = '-----BEGIN CERTIFICATE-----' + certList[1];
-// 获取公钥
-const textEncoder = new util.TextEncoder();
-const encodingBlob: cert.EncodingBlob = {
-  data: textEncoder.encodeInto(thirdCert),
-  encodingFormat: cert.EncodingFormat.FORMAT_PEM
-};
-const x509Cert = await cert.createX509Cert(encodingBlob);
-const asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('ECC256');
-const keyPair = asyKeyGenerator.convertKeySync(x509Cert.getPublicKey().getEncoded(), null);
-const pubKey = keyPair.pubKey; // 证书中的公钥需要转换成cryptoFramework能够接收的格式
+const signature = base64Helper.decodeSync(secureLocation.signature.toString());
 ```
 
 ### Code block 5
 
 ```
-const verifier = cryptoFramework.createVerify('ECC256|SHA256');
-verifier.initSync(pubKey);
+// returnResult是initializeAttestContext返回结果
+public async getPubKeyFromCertChain(returnResult: trustedAppService.AttestReturnResult): Promise<cryptoFramework.PubKey> {
+  try {
+    // 解析匿名证书链数据，获取三级证书
+    const certChain: Array<string> = returnResult.certChains;
+    // certArray[0]: 空字符串；certArray[1]：叶子证书实体；certArray[2]：中间证书主体；certArray[3]：根证书主体
+    const certList: Array<string> = certChain[0].split('-----BEGIN CERTIFICATE-----');
+    const thirdCert = '-----BEGIN CERTIFICATE-----' + certList[1];
+    // 获取公钥
+    const textEncoder = new util.TextEncoder();
+    const encodingBlob: cert.EncodingBlob = {
+      data: textEncoder.encodeInto(thirdCert),
+      encodingFormat: cert.EncodingFormat.FORMAT_PEM
+    };
+    const x509Cert = await cert.createX509Cert(encodingBlob);
+    const asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('ECC256'); // 算法规格需要跟CreateAttestKey函数的KeySize入参保持一致
+    const keyPair = asyKeyGenerator.convertKeySync(x509Cert.getPublicKey().getEncoded(), null);
+    const pubKey = keyPair.pubKey; // 证书中的公钥需要转换成cryptoFramework能够接收的格式
+    return pubKey;
+  } catch (err) {
+    throw new Error((err as BusinessError).message);
+  }
+}
 ```
 
 ### Code block 6
 
 ```
-const originData = ...; // 请使用获取到的安全图像原始数据
-const signatureData = ...; // 请使用获取到的签名结果
+const verifier = cryptoFramework.createVerify('ECC256|SHA256'); // 算法规格需要跟CreateAttestKey函数的KeySize入参保持一致
+verifier.initSync(pubKey);
+```
+
+### Code block 7
+
+```
 const inputData: cryptoFramework.DataBlob = {
-  data: new Uint8Array(originData)
+  data: new Uint8Array(originData) // originData：请使用获取到的安全图像或者安全地理位置的原始数据
 };
-const signature: cryptoFramework.DataBlob = {
-  data: new Uint8Array(signatureData)
-};
+const signatureData: cryptoFramework.DataBlob = {
+  data: new Uint8Array(signature) // signature：请使用获取到的签名结果
+}
 // 验证签名结果
-const result = verifier.verifySync(inputData, signature);
+const result = verifier.verifySync(inputData, signatureData);
 ```

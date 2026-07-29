@@ -293,7 +293,7 @@ OH_HiAppEvent_DestroyConfig(config);
 
 name为EVENT_MAIN_THREAD_JANK_V2
 
-从API VERSION 22开始，name可以为EVENT_MAIN_THREAD_JANK_V2，接口提供主线程超时结束自动停止采样栈的功能，config参数作如下配置。
+从API version 22开始，name可以为EVENT_MAIN_THREAD_JANK_V2，接口提供主线程超时结束自动停止采样栈的功能，config参数作如下配置。
 
 注意
 
@@ -365,7 +365,7 @@ OH_HiAppEvent_SetConfigItem(config, MAIN_THREAD_JANK_PARAM_REPORT_TIMES_PER_APP,
 OH_HiAppEvent_SetConfigItem(config, MAIN_THREAD_JANK_PARAM_AUTO_STOP_SAMPLING, "true");
 
 int ret = OH_HiAppEvent_SetEventConfig(EVENT_MAIN_THREAD_JANK_V2, config);
-if (ret == HIAPPEVENT_SUCCESS) {{
+if (ret == HIAPPEVENT_SUCCESS) {
     OH_LOG_INFO(LogType::LOG_APP, "Successfully set sampling stack parameters.");
 }
 OH_HiAppEvent_DestroyConfig(config);
@@ -619,7 +619,7 @@ OH_HiAppEvent_SetConfigItem(config, MAIN_THREAD_JANK_PARAM_REPORT_TIMES_PER_APP,
 OH_HiAppEvent_SetConfigItem(config, MAIN_THREAD_JANK_PARAM_AUTO_STOP_SAMPLING, "true");
 
 int ret = OH_HiAppEvent_SetEventConfig(EVENT_MAIN_THREAD_JANK_V2, config);
-if (ret == HIAPPEVENT_SUCCESS) {{
+if (ret == HIAPPEVENT_SUCCESS) {
     OH_LOG_INFO(LogType::LOG_APP, "Successfully set sampling stack parameters.");
 }
 OH_HiAppEvent_DestroyConfig(config);

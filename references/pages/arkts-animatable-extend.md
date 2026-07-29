@@ -44,6 +44,7 @@ equals	AnimatableArithmetic<T>	boolean	定义该数据类型的相等判断规�
 
 @AnimatableExtend(Text)
 function animatableWidth(width: number) {
+  // 在逐帧回调中将width写入Text的width属性
   .width(width)
 }
 
@@ -57,6 +58,7 @@ struct AnimatablePropertyText {
       Text('AnimatableProperty')
         .animatableWidth(this.textWidth)
         .animation({ duration: 2000, curve: Curve.Ease })
+      // 点击按钮切换textWidth，触发Text逐帧更新宽度并产生动画效果
       Button('Play')
         .onClick(() => {
           this.textWidth = this.textWidth == 80 ? 160 : 80;
@@ -202,6 +204,7 @@ struct  AnimatablePropertyExample {
 ```
 @AnimatableExtend(Text)
 function animatableWidth(width: number) {
+  // 在逐帧回调中将width写入Text的width属性
   .width(width)
 }
 
@@ -215,6 +218,7 @@ struct AnimatablePropertyText {
       Text('AnimatableProperty')
         .animatableWidth(this.textWidth)
         .animation({ duration: 2000, curve: Curve.Ease })
+      // 点击按钮切换textWidth，触发Text逐帧更新宽度并产生动画效果
       Button('Play')
         .onClick(() => {
           this.textWidth = this.textWidth == 80 ? 160 : 80;

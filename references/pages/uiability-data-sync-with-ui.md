@@ -106,7 +106,7 @@ struct EventHubPage {
 在自定义事件“event1”使用完成后，可以根据需要调用eventHub.off()方法取消该事件的订阅。
 
 // ···
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {
@@ -224,7 +224,7 @@ struct EventHubPage {
 
 ```
 // ···
-import { UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 // ···
 
 export default class EntryAbility extends UIAbility {

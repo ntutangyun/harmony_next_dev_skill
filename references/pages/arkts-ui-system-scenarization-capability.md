@@ -6,6 +6,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 
 使用组件截图（ComponentSnapshot）
 
+长截图
+
 感知组件可见性
 
 检查页面布局

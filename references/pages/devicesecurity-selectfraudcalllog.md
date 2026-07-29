@@ -41,10 +41,10 @@ selectFraudCallLog(context: common.Context, options?: AntifraudCallLogOptions): 
 
 导入Device Security Kit模块及相关公共模块。
 
-import { securityAudit } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common} from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import antifraudPicker from '@hms.security.antifraudPicker';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
 
 调用selectFraudCallLog接口获取诈骗通话记录信息。
 
@@ -68,10 +68,10 @@ try {
 ### Code block 1
 
 ```
-import { securityAudit } from '@kit.DeviceSecurityKit';
-import { BusinessError} from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { common} from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import antifraudPicker from '@hms.security.antifraudPicker';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
 ```
 
 ### Code block 2

@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-envir
 
 DevEco Studio内置环境变量的设置方式如下：
 
-点击菜单栏File > Settings（macOS为DevEco Studio > Preferences/Settings ） > Tools > Terminal，勾选以下选项表示开启内置环境变量。
+点击菜单栏File > Settings（macOS为DevEco Studio > Preferences/Settings ） > Tools > Terminal，勾选以下选项表示开启内置环境变量，重启DevEco Studio后生效。
 
 除了内置的环境变量外，开发者也可以在本地系统中配置PATH环境变量。如果同时配置了内置环境变量和本地系统环境变量，两者存在优先级关系，实际生效的环境变量如下。
 

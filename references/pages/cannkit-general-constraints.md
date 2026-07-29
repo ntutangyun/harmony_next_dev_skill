@@ -16,7 +16,7 @@ A2	L0A Buffer
 B1	L1 Buffer
 B2	L0B Buffer
 C1	Kirin9020系列处理器，L1 Buffer
-C1	KirinX90系列处理器，L1Buffer
+C1	KirinX90系列处理器，L1 Buffer
 C2	Kirin9020系列处理器，BT Buffer
 C2	KirinX90系列处理器，BT Buffer
 CO1	L0C Buffer

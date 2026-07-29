@@ -166,7 +166,7 @@ struct MultipleFingerInformation {
 
 以下是上面的示例在如下操作序列时产生的日志输出情况：
 
-按下手指① -> 按下手指② -> 按下手指③ -> 抬起手指② -> 抬起手指③ -> 按下手指② -> 抬起手指① -> 抬起手指③
+按下手指① -> 按下手指② -> 按下手指③ -> 抬起手指② -> 抬起手指③ -> 按下手指③ -> 抬起手指① -> 抬起手指③
 
   fingers start to press down   // 按下手指①
   current all fingers: 0

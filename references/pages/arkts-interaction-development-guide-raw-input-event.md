@@ -35,3 +35,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-int
 支持游戏手柄输入事件
 
 支持表冠输入事件
+
+支持智慧手势输入事件

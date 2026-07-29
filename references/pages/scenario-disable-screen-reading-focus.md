@@ -1,4 +1,4 @@
-# 禁用屏幕朗读焦点的场景
+# 禁用屏幕朗读焦点
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-disable-screen-reading-focus_
 
@@ -14,7 +14,7 @@ accessibilityLevel("no")用于组件设置不可聚焦，忽略当前组件的�
 
 accessibilityLevel("no-hide-descendants")用于组件及其所有子组件设置不可聚焦，忽略当前组件及其所有子组件的文本属性和点击属性。
 
-开发实例
+开发流程
 
 以下代码同时显示“Broadcast”和“No broadcast”消息，但当ScreenReader处于“打开”状态时，message可被聚焦，但message1将不被聚焦。
 

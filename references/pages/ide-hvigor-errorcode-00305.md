@@ -78,7 +78,7 @@ XXX不是正确的JSON/JSON5格式。
 
 错误信息
 
-XXX at file: YYY:ZZZ".
+XXX at file: YYY:ZZZ.
 
 错误描述
 

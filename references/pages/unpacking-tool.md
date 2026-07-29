@@ -203,6 +203,19 @@ compileSdkType	String	标识编译该应用时使用的sdk类别。	仅限API10�
 labels	HashMap<String, String>	标识多语言应用程序AppJson的标签。	NA
 descriptions	HashMap<String, String>	标识多语言应用程序AppJson的说明。	NA
 buildVersion	String	标识App中的buildVersion信息。	从API version 23开始支持。
+alternateIcons	List<AlternateIcon>	标识应用的动态图标列表。	从API版本26.0.0开始支持。
+
+[h2]AlternateIcon
+
+应用的备选图标，支持应用在运行时动态切换图标。
+
+详情请参考alternateIcons标签。
+
+起始版本： API版本26.0.0
+
+字段	类型	描述
+name	String	标识动态图标的名称。
+icon	String	标识动态图标的资源路径。
 
 [h2]HapInfo结构体信息
 
@@ -238,6 +251,7 @@ descriptions	HashMap<String, String>	标识HAP的说明信息。	NA
 compressedSize	long	标识HAP包压缩后的大小，单位字节。	NA
 originalSize	long	标识HAP包的原始大小，单位字节。	NA
 isModuleAbcCompressed	boolean	标识modules.abc文件是否为压缩状态。true表示压缩状态，false表示非压缩状态。	NA
+skillProfiles	List<SkillProfileInfo>	标识当前模块的技能配置信息列表，用于定义AI代理的技能能力。	从API版本26.0.0开始支持。
 requiredDeviceFeatures	Map<String, List<String>>	标识当前Module运行所需要的特定的设备特性。详细请参见requiredDeviceFeatures标签	从API version 24开始支持。
 
 [h2]AbilityInfo结构体信息
@@ -534,6 +548,16 @@ resource	String	标识ModuleMetadataInfo的资源。	NA
 字段	类型	描述	备注
 designWidth	int	标识模块已用场景的设计宽度。	NA
 autoDesignWidth	boolean	标识ModuleUsedScene的autoDesignWidth。true表示designWidth将会被忽略，设计基准宽度由设备宽度与屏幕密度计算得出，false表示设计基准宽度为designWidth。	NA
+
+[h2]SkillProfileInfo
+
+起始版本： API版本26.0.0
+
+字段	类型	描述	备注
+name	String	标识技能的名称，在当前模块中唯一。仅允许使用小写字母、数字和-（连字符），必须以小写字母或数字开头和结尾，最大长度为64字节。	NA
+abilityName	String	标识与该技能关联的组件名称。仅适用于entry、feature、shared类型的模块，对于skill类型的模块不支持该字段。缺省值为入口Ability名称。	NA
+srcEntries	List<String>	标识实现技能的代码文件路径列表，指向技能实现逻辑的.ets文件。每个元素为相对于当前模块skills目录的文件路径。	NA
+permissions	List<String>	标识调用该技能所需要的权限列表。	NA
 
 ## Code blocks
 

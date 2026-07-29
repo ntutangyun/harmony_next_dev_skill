@@ -25,7 +25,7 @@ tensor地址。
 调用示例
 
 auto addr0 = reinterpret_cast<void *>(0x10);
-TensorData td(addr, nullptr);
+TensorData td(addr0, nullptr);
 auto addr1 = td.GetAddr(); // 0x10
 
 ## Code blocks
@@ -40,6 +40,6 @@ TensorAddress GetAddr() const
 
 ```
 auto addr0 = reinterpret_cast<void *>(0x10);
-TensorData td(addr, nullptr);
+TensorData td(addr0, nullptr);
 auto addr1 = td.GetAddr(); // 0x10
 ```

@@ -24,7 +24,7 @@ Sendable协议定义了ArkTS的可共享对象体系及其规格约束。符合S
 
 [h2]ISendable
 
-在ArkTS语言基础库@arkts.lang中引入了interface ISendable，没有任何方法或属性。ISendable是所有Sendable类型（除了null和undefined）的父类型。ISendable主要用于开发者自定义Sendable数据结构的场景中。类装饰器@Sendable装饰器是implement ISendable的语法糖。
+在ArkTS语言基础库@arkts.lang中引入了interface ISendable，没有任何方法或属性。ISendable是所有Sendable类型（除了null和undefined）的父类型。ISendable主要用于开发者自定义Sendable数据结构的场景中。类装饰器@Sendable装饰器是implements ISendable的语法糖。
 
 [h2]Sendable class
 
@@ -41,8 +41,6 @@ Sendable class需同时满足以下两个规则：
 [h2]Sendable function
 
 说明
-
-从API version 12开始，支持使用@Sendable装饰器校验Sendable function。
 
 针对API version 12的工程，开发者使用@Sendable装饰器校验Sendable function时，需在工程中配置"compatibleSdkVersionStage": "beta3"，否则其Sendable特性将不生效。参考build-profile.json5配置文件说明。
 
@@ -184,21 +182,24 @@ SharedHeap与LocalHeap关系图
 装饰的对象内的属性类型限制	1. 支持string、number、boolean、bigint、null、undefined、const enum、Sendable class、collections容器集、ArkTSUtils.locks.AsyncLock、ArkTSUtils.SendableLruCache、ArkTSUtils.locks.ConditionVariable以及自定义的Sendable函数类型。 2. 禁止使用闭包变量，定义在顶层的Sendable class和Sendable function除外。 3. 不支持通过#定义私有属性，需用private。 4. 不支持计算属性。 5. 不支持类型别名。
 装饰的对象内的属性的其他限制	1. 成员属性必须显式初始化，不能使用感叹号。 2. 不支持增加或删除属性，允许修改属性，修改前后属性的类型必须一致，不支持修改方法。
 装饰的函数或类对象内的方法参数限制	允许使用local变量、入参和通过import引入的变量。禁止使用闭包变量，但定义在顶层的Sendable class和Sendable function除外。从API version 18开始，支持访问本文件导出的变量。
-适用场景	1. 在TaskPool或Worker中使用类方法或Sendable函数。 2. 传输对象数据量较大的场景。序列化耗时会随着数据量增大而增大，使用Sendable对数据进行改造后，传输100KB数据效率提升约20倍，传输1M数据效率提升约100倍。
+适用场景	1. 在TaskPool或Worker中使用类方法或Sendable函数。 2. 传输对象数据量较大的场景。序列化耗时会随着数据量增大而增大，使用Sendable对数据进行改造后，传输100KB数据效率提升约20倍，传输1MB数据效率提升约100倍。
 
 装饰器修饰Class使用示例：
 
 @Sendable
 class SendableTestClass {
-  desc: string = "sendable: this is SendableTestClass ";
+  desc: string = 'sendable: this is SendableTestClass ';
   num: number = 5;
   printName() {
-    console.info("sendable: SendableTestClass desc is: " + this.desc);
+    console.info(`sendable: SendableTestClass desc is: ${this.desc}`);
   }
-  getNum(): number {
+  get getNum(): number {
     return this.num;
   }
 }
+
+let object = new SendableTestClass();
+export { object }
 
 装饰器修饰Function使用示例：
 
@@ -208,22 +209,23 @@ type SendableFuncType = () => void;
 @Sendable
 class TopLevelSendableClass {
   num: number = 1;
+
   PrintNum() {
-    console.info("Top level sendable class");
+    console.info('Top level sendable class');
   }
 }
 
 @Sendable
-function TopLevelSendableFunction() {
-  console.info("Top level sendable function");
+function topLevelSendableFunction() {
+  console.info('Top level sendable function');
 }
 
 @Sendable
-function SendableTestFunction() {
+function sendableTestFunction() {
   const topClass = new TopLevelSendableClass(); // 顶层sendable class
   topClass.PrintNum();
-  TopLevelSendableFunction(); // 顶层sendable function
-  console.info("Sendable test function");
+  topLevelSendableFunction(); // 顶层sendable function
+  console.info('Sendable test function');
 }
 
 @Sendable
@@ -231,16 +233,13 @@ class SendableTestClass {
   constructor(func: SendableFuncType) {
     this.callback = func;
   }
+
   callback: SendableFuncType; // 顶层sendable function
 
   CallSendableFunc() {
-    SendableTestFunction(); // 顶层sendable function
+    sendableTestFunction(); // 顶层sendable function
   }
 }
-
-let sendableClass = new SendableTestClass(SendableTestFunction);
-sendableClass.callback();
-sendableClass.CallSendableFunc();
 
 ## Code blocks
 
@@ -313,15 +312,18 @@ struct enumusage {
 ```
 @Sendable
 class SendableTestClass {
-  desc: string = "sendable: this is SendableTestClass ";
+  desc: string = 'sendable: this is SendableTestClass ';
   num: number = 5;
   printName() {
-    console.info("sendable: SendableTestClass desc is: " + this.desc);
+    console.info(`sendable: SendableTestClass desc is: ${this.desc}`);
   }
-  getNum(): number {
+  get getNum(): number {
     return this.num;
   }
 }
+
+let object = new SendableTestClass();
+export { object }
 ```
 
 ### Code block 4
@@ -333,22 +335,23 @@ type SendableFuncType = () => void;
 @Sendable
 class TopLevelSendableClass {
   num: number = 1;
+
   PrintNum() {
-    console.info("Top level sendable class");
+    console.info('Top level sendable class');
   }
 }
 
 @Sendable
-function TopLevelSendableFunction() {
-  console.info("Top level sendable function");
+function topLevelSendableFunction() {
+  console.info('Top level sendable function');
 }
 
 @Sendable
-function SendableTestFunction() {
+function sendableTestFunction() {
   const topClass = new TopLevelSendableClass(); // 顶层sendable class
   topClass.PrintNum();
-  TopLevelSendableFunction(); // 顶层sendable function
-  console.info("Sendable test function");
+  topLevelSendableFunction(); // 顶层sendable function
+  console.info('Sendable test function');
 }
 
 @Sendable
@@ -356,14 +359,11 @@ class SendableTestClass {
   constructor(func: SendableFuncType) {
     this.callback = func;
   }
+
   callback: SendableFuncType; // 顶层sendable function
 
   CallSendableFunc() {
-    SendableTestFunction(); // 顶层sendable function
+    sendableTestFunction(); // 顶层sendable function
   }
 }
-
-let sendableClass = new SendableTestClass(SendableTestFunction);
-sendableClass.callback();
-sendableClass.CallSendableFunc();
 ```

@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/build-wit
 
 直接引入预构建库
 
-可以通过直接将预构建的库文件复制到项目文件中, 来使用预构建库。例如在项目中需要使用预构建库libavcodec_ffmpeg.so，其开发态存放路径如下图所示：
+可以通过直接将预构建的库文件复制到项目文件中，来使用预构建库。例如在项目中需要使用预构建库libavcodec_ffmpeg.so，其开发态存放路径如下图所示：
 
 在模块的CMakeLists.txt编译脚本中通过add_library添加所需的预构建库，并声明预构建库路径等信息后，可以在target_link_libraries中声明链接该预构建库，脚本示例如下所示：
 

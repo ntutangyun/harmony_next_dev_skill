@@ -22,4 +22,4 @@ SharedArrayBuffer对象：支持多线程共享内存，允许线程间直接访
 
 Transferable对象（NativeBinding对象）：支持跨线程转移对象所有权（如文件描述符、图形资源等），转移后原线程不再拥有访问权限。
 
-Sendable对象：符合ArkTS语言规范的可共享对象，需通过@Sendable装饰器标记，并且满足Sendable约束，详情可查Sendable使用规则与约束。
+Sendable对象：符合ArkTS语言规范的可共享对象，支持的数据类型详见Sendable支持的数据类型，需要满足Sendable约束，详情可查Sendable使用规则与约束。

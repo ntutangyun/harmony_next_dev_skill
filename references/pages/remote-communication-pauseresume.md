@@ -18,12 +18,14 @@ Remote Communication Kit提供完善的功能支持，包括请求的暂停和�
 
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { util } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 定义调试信息接口、调试信息源类型以及调试信息序列化函数，用于将调试信息序列化为StringifiedDebugInfo数组。函数首先根据infoSource的类型获取调试信息，然后使用TextDecoder将调试信息的data字段解码为字符串，并返回一个包含解码后的调试信息的数组。
 
-const HTTP_SERVER_POST: string = 'https://example.org/anything';
+// 定义请求的URL（请根据实际需求调整）
+const HTTP_SERVER_POST: string = 'https://example.com/anything';
 // 定义调试信息接口
-interface StringifiedDebugInfo {
+interface StringFeildDebugInfo {
   type: rcp.DebugEvent;
   data: string;
 };
@@ -31,7 +33,7 @@ interface StringifiedDebugInfo {
 type DebugInfoSource = undefined | rcp.DebugInfo[] | rcp.Response;
 
 // 定义调试信息序列化函数
-function debugInfoStringify(infoSource: DebugInfoSource): StringifiedDebugInfo[] {
+function debugInfoStringify(infoSource: DebugInfoSource): StringFeildDebugInfo[] {
   const debugInfo = Array.isArray(infoSource)
     ? (infoSource as rcp.DebugInfo[])
     : (infoSource as rcp.Response).debugInfo;
@@ -41,7 +43,7 @@ function debugInfoStringify(infoSource: DebugInfoSource): StringifiedDebugInfo[]
   }
 
   const decoder = util.TextDecoder.create('utf-8');
-  return debugInfo.map((i: rcp.DebugInfo): StringifiedDebugInfo => {
+  return debugInfo.map((i: rcp.DebugInfo): StringFeildDebugInfo => {
     return {
       type: i.type,
       data: decoder.decodeToString(new Uint8Array(i.data)).trim(),
@@ -61,61 +63,66 @@ function getSendResumedEvents(debugInfo: DebugInfoSource) {
 
 编写发起请求的函数。
 
-const SendingPauseByTimeout = async (done: Function): Promise<void> => {
-  const session = rcp.createSession();
-  const request = new rcp.Request(HTTP_SERVER_POST);
-  // 定义发送暂停策略，kind为'timeout'，timeoutMs为1ms
-  const sendPolicy: rcp.SendingPausePolicy = {
-    kind: 'timeout',
-    timeoutMs: 1,
-  };
-  // 定义暂停策略，sending字段引用了上述定义的发送暂停策略
-  const pausePolicy: rcp.PausePolicy = {
-    sending: sendPolicy,
-  };
-  // 设置请求的配置，包括传输策略和跟踪信息
-  request.configuration = {
-    transfer: {
-      pausePolicy: pausePolicy,
-    },
-    tracing: {
-      infoToCollect: {
-        textual: true,
+const sendingPauseByTimeout = async (done: Function): Promise<void> => {
+  try {
+    const session = rcp.createSession();
+    const request = new rcp.Request(HTTP_SERVER_POST);
+    // 定义发送暂停策略，kind为'timeout'，timeoutMs为1ms
+    const sendPolicy: rcp.SendingPausePolicy = {
+      kind: 'timeout',
+      timeoutMs: 1,
+    };
+    // 定义暂停策略，sending字段引用了上述定义的发送暂停策略
+    const pausePolicy: rcp.PausePolicy = {
+      sending: sendPolicy,
+    };
+    // 设置请求的配置，包括传输策略和跟踪信息
+    request.configuration = {
+      transfer: {
+        pausePolicy: pausePolicy,
       },
-    },
-  };
-  // 定义请求体数据
-  const data = 'TestData';
-  // 设置请求头，'Content-Length'字段表示请求体的长度
-  request.headers = {
-    'Content-Length': data.length.toString(),
-  };
-  // 定义布尔型标志变量用于控制请求体生成
-  let isReadCompleted = false;
-  // 设置请求方法为POST
-  request.method = 'POST';
-  // 定义请求体内容生成函数，如果read为true，则返回空的ArrayBuffer，否则生成包含请求体数据的ArrayBuffer
-  request.content = (maxSize) => {
-    if (isReadCompleted) {
-      return new ArrayBuffer(0);
-    }
-    isReadCompleted = true;
-    const buffer = new ArrayBuffer(data.length);
-    util.TextEncoder.create('utf-8').encodeIntoUint8Array(data, new Uint8Array(buffer));
-    return buffer;
-  };
+      tracing: {
+        infoToCollect: {
+          textual: true,
+        },
+      },
+    };
+    // 定义请求体数据
+    const data = 'TestData';
+    // 设置请求头，'Content-Length字段表示请求体的长度
+    request.headers = {
+      'Content-Length': data.length.toString(),
+    };
+    // 定义布尔型标志变量用于控制请求体生成
+    let isReadCompleted = false;
+    // 设置请求方法为POST
+    request.method = 'POST';
+    // 定义请求体内容生成函数，如果read为true，则返回空的ArrayBuffer，否则生成包含请求体数据的ArrayBuffer
+    request.content = (maxSize) => {
+      if (isReadCompleted) {
+        return new ArrayBuffer(0);
+      }
+      isReadCompleted = true;
+      const buffer = new ArrayBuffer(data.length);
+      util.TextEncoder.create('utf-8').encodeIntoUint8Array(data, new Uint8Array(buffer));
+      return buffer;
+    };
 
-  // 发送请求并等待响应
-  const response = await session.fetch(request)
+    // 发送请求并等待响应
+    const response = await session.fetch(request)
 
-  // 从响应的调试信息中获取发送暂停和恢复事件
-  const pausedEvents = getSendPausedEvents(response);
-  const resumedEvents = getSendResumedEvents(response);
+    // 从响应的调试信息中获取发送暂停和恢复事件
+    const pausedEvents = getSendPausedEvents(response);
+    const resumedEvents = getSendResumedEvents(response);
+    // ...
 
-  // 关闭会话
-  session.close();
-  // 调用完成回调函数
-  done();
+    // 关闭会话
+    session.close();
+    // 调用完成回调函数
+    done();
+  } catch (err) {
+    console.error(`error code is ${err.code}, error data is ${err.data}`);
+  }
 }
 
 实现断点续传
@@ -129,6 +136,7 @@ const SendingPauseByTimeout = async (done: Function): Promise<void> => {
 导入模块。
 
 import { rcp } from '@kit.RemoteCommunicationKit';
+import { util } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 创建session，定义请求URL，并对request进行配置，同时定义变量以记录下载文件的总大小。
@@ -151,21 +159,24 @@ let lastTransferPosition = 0;
  *
  * @returns 文件的大小
  */
-async function getTotalSize(): Promise<number> {
-  request.transferRange = { from: 0, to: 1 };
+async getTotalSize(): Promise<number> {
+  if (this.request == null || this.session == null) {
+    return this.totalSize;
+  }
+  this.request.transferRange = { from: 0, to: 1 };
   try {
-    let rep = await session?.fetch(request);
+    let rep = await this.session?.fetch(this.request);
     if (rep) {
       // 从响应数据的header的content-range字段中提取出文件的大小
       let contentRange = rep.headers['content-range'];
       let sizeStr = contentRange ? contentRange.substring(contentRange.indexOf('\/') + 1, contentRange.length) : '0';
-      totalSize = Number(sizeStr);
+      this.totalSize = Number(sizeStr);
     }
   } catch (err) {
     console.error(`getTotalSize error code is ${err.code}, error data is ${err.data}`);
   }
-  console.info(`getTotalSize totalSize: ${totalSize.toString()}`);
-  return totalSize;
+  console.info(`getTotalSize totalSize: ${this.totalSize.toString()}`);
+  return this.totalSize;
 }
 
 编写一个依据传输范围下载文件的函数。
@@ -176,23 +187,28 @@ async function getTotalSize(): Promise<number> {
  * @param from - 传输范围的起始位置
  * @param to - 传输范围的结束位置
  */
-function downloadTransfer(from: number, to: number) {
+downloadTransfer(from: number, to: number) {
+  if (this.request == null || this.session == null) {
+    return;
+  }
+  // ...
   // 设置请求的数据传输范围
-  request.transferRange = { from: from, to: to };
-  session?.fetch(request).then((rep) => {
+  this.request.transferRange = { from: from, to: to };
+  this.session?.fetch(this.request).then((rep) => {
     if (rep.body) {
       // 处理响应，可以在此处将文件保存到本地
       console.info(`Response succeeded: ${JSON.stringify(rep.headers)}`);
       // 下次传输的起始位置 = 上次的位置 + 本次传输数据的长度
-      lastTransferPosition += rep.body.byteLength;
-      if (lastTransferPosition < totalSize) {
+      this.lastTransferPosition += rep.body.byteLength;
+      if (this.lastTransferPosition < this.totalSize) {
         // 计算下一次传输范围的结束位置
-        const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+        const nextTo = Math.min(this.lastTransferPosition + 100, this.totalSize);
         // 递归调用继续下载下一段数据
-        downloadTransfer(lastTransferPosition, nextTo);
+        this.downloadTransfer(this.lastTransferPosition, nextTo);
       } else {
         console.info('Response succeeded, completed.');
       }
+      // ...
     }
   }).catch((err: BusinessError) => {
     console.error(`Continue transfer error: code is ${err.code}, message is ${err.message}`);
@@ -201,31 +217,27 @@ function downloadTransfer(from: number, to: number) {
 
 使用以下方式开始下载。
 
-/**
- * 开始下载
- */
-async function startDownload() {
-  if (!session) {
-    session = rcp.createSession();
-  }
-  // 传输位置归零
-  lastTransferPosition = 0;
-  // 获取要下载文件的总大小
-  totalSize = await getTotalSize();
-  // 计算传输范围的结束位置
-  const nextTo = Math.min(lastTransferPosition + 100, totalSize);
-  // 开始下载
-  downloadTransfer(lastTransferPosition, nextTo);
+if (!session) {
+  session = rcp.createSession();
 }
+// 传输位置归零
+lastTransferPosition = 0;
+// 获取要下载文件的总大小
+await this.getTotalSize();
+// 计算传输范围的结束位置
+const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+// 开始下载
+this.downloadTransfer(lastTransferPosition, nextTo);
 
 使用以下方式暂停下载。
 
 /**
  * 暂停下载
  */
-function pauseDownload() {
+async pauseDownload() {
+  // ...
   // 取消下载请求
-  session?.cancel(request);
+  this.session?.cancel(this.request);
 }
 
 使用以下方式继续下载。
@@ -233,25 +245,20 @@ function pauseDownload() {
 /**
  * 继续下载
  */
-function resumeDownload() {
+async resumeDownload() {
   // 计算传输范围的结束位置
-  const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+  const nextTo = Math.min(this.lastTransferPosition + 100, this.totalSize);
   // 开始下载
-  downloadTransfer(lastTransferPosition, nextTo);
+  this.downloadTransfer(this.lastTransferPosition, nextTo);
 }
 
 使用以下方式停止下载。
 
-/**
- * 停止下载
- */
-function stopDownload() {
-  // 取消下载请求
-  session?.cancel(request);
-  // 关闭session
-  session?.close();
-  session = null;
-}
+// 取消下载请求
+this.session?.cancel(this.request);
+// 关闭session
+this.session?.close();
+this.session = null;
 
 ## Code blocks
 
@@ -260,14 +267,16 @@ function stopDownload() {
 ```
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { util } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
 ### Code block 2
 
 ```
-const HTTP_SERVER_POST: string = 'https://example.org/anything';
+// 定义请求的URL（请根据实际需求调整）
+const HTTP_SERVER_POST: string = 'https://example.com/anything';
 // 定义调试信息接口
-interface StringifiedDebugInfo {
+interface StringFeildDebugInfo {
   type: rcp.DebugEvent;
   data: string;
 };
@@ -275,7 +284,7 @@ interface StringifiedDebugInfo {
 type DebugInfoSource = undefined | rcp.DebugInfo[] | rcp.Response;
 
 // 定义调试信息序列化函数
-function debugInfoStringify(infoSource: DebugInfoSource): StringifiedDebugInfo[] {
+function debugInfoStringify(infoSource: DebugInfoSource): StringFeildDebugInfo[] {
   const debugInfo = Array.isArray(infoSource)
     ? (infoSource as rcp.DebugInfo[])
     : (infoSource as rcp.Response).debugInfo;
@@ -285,7 +294,7 @@ function debugInfoStringify(infoSource: DebugInfoSource): StringifiedDebugInfo[]
   }
 
   const decoder = util.TextDecoder.create('utf-8');
-  return debugInfo.map((i: rcp.DebugInfo): StringifiedDebugInfo => {
+  return debugInfo.map((i: rcp.DebugInfo): StringFeildDebugInfo => {
     return {
       type: i.type,
       data: decoder.decodeToString(new Uint8Array(i.data)).trim(),
@@ -309,61 +318,66 @@ function getSendResumedEvents(debugInfo: DebugInfoSource) {
 ### Code block 4
 
 ```
-const SendingPauseByTimeout = async (done: Function): Promise<void> => {
-  const session = rcp.createSession();
-  const request = new rcp.Request(HTTP_SERVER_POST);
-  // 定义发送暂停策略，kind为'timeout'，timeoutMs为1ms
-  const sendPolicy: rcp.SendingPausePolicy = {
-    kind: 'timeout',
-    timeoutMs: 1,
-  };
-  // 定义暂停策略，sending字段引用了上述定义的发送暂停策略
-  const pausePolicy: rcp.PausePolicy = {
-    sending: sendPolicy,
-  };
-  // 设置请求的配置，包括传输策略和跟踪信息
-  request.configuration = {
-    transfer: {
-      pausePolicy: pausePolicy,
-    },
-    tracing: {
-      infoToCollect: {
-        textual: true,
+const sendingPauseByTimeout = async (done: Function): Promise<void> => {
+  try {
+    const session = rcp.createSession();
+    const request = new rcp.Request(HTTP_SERVER_POST);
+    // 定义发送暂停策略，kind为'timeout'，timeoutMs为1ms
+    const sendPolicy: rcp.SendingPausePolicy = {
+      kind: 'timeout',
+      timeoutMs: 1,
+    };
+    // 定义暂停策略，sending字段引用了上述定义的发送暂停策略
+    const pausePolicy: rcp.PausePolicy = {
+      sending: sendPolicy,
+    };
+    // 设置请求的配置，包括传输策略和跟踪信息
+    request.configuration = {
+      transfer: {
+        pausePolicy: pausePolicy,
       },
-    },
-  };
-  // 定义请求体数据
-  const data = 'TestData';
-  // 设置请求头，'Content-Length'字段表示请求体的长度
-  request.headers = {
-    'Content-Length': data.length.toString(),
-  };
-  // 定义布尔型标志变量用于控制请求体生成
-  let isReadCompleted = false;
-  // 设置请求方法为POST
-  request.method = 'POST';
-  // 定义请求体内容生成函数，如果read为true，则返回空的ArrayBuffer，否则生成包含请求体数据的ArrayBuffer
-  request.content = (maxSize) => {
-    if (isReadCompleted) {
-      return new ArrayBuffer(0);
-    }
-    isReadCompleted = true;
-    const buffer = new ArrayBuffer(data.length);
-    util.TextEncoder.create('utf-8').encodeIntoUint8Array(data, new Uint8Array(buffer));
-    return buffer;
-  };
+      tracing: {
+        infoToCollect: {
+          textual: true,
+        },
+      },
+    };
+    // 定义请求体数据
+    const data = 'TestData';
+    // 设置请求头，'Content-Length字段表示请求体的长度
+    request.headers = {
+      'Content-Length': data.length.toString(),
+    };
+    // 定义布尔型标志变量用于控制请求体生成
+    let isReadCompleted = false;
+    // 设置请求方法为POST
+    request.method = 'POST';
+    // 定义请求体内容生成函数，如果read为true，则返回空的ArrayBuffer，否则生成包含请求体数据的ArrayBuffer
+    request.content = (maxSize) => {
+      if (isReadCompleted) {
+        return new ArrayBuffer(0);
+      }
+      isReadCompleted = true;
+      const buffer = new ArrayBuffer(data.length);
+      util.TextEncoder.create('utf-8').encodeIntoUint8Array(data, new Uint8Array(buffer));
+      return buffer;
+    };
 
-  // 发送请求并等待响应
-  const response = await session.fetch(request)
+    // 发送请求并等待响应
+    const response = await session.fetch(request)
 
-  // 从响应的调试信息中获取发送暂停和恢复事件
-  const pausedEvents = getSendPausedEvents(response);
-  const resumedEvents = getSendResumedEvents(response);
+    // 从响应的调试信息中获取发送暂停和恢复事件
+    const pausedEvents = getSendPausedEvents(response);
+    const resumedEvents = getSendResumedEvents(response);
+    // ...
 
-  // 关闭会话
-  session.close();
-  // 调用完成回调函数
-  done();
+    // 关闭会话
+    session.close();
+    // 调用完成回调函数
+    done();
+  } catch (err) {
+    console.error(`error code is ${err.code}, error data is ${err.data}`);
+  }
 }
 ```
 
@@ -371,6 +385,7 @@ const SendingPauseByTimeout = async (done: Function): Promise<void> => {
 
 ```
 import { rcp } from '@kit.RemoteCommunicationKit';
+import { util } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
@@ -397,21 +412,24 @@ let lastTransferPosition = 0;
  *
  * @returns 文件的大小
  */
-async function getTotalSize(): Promise<number> {
-  request.transferRange = { from: 0, to: 1 };
+async getTotalSize(): Promise<number> {
+  if (this.request == null || this.session == null) {
+    return this.totalSize;
+  }
+  this.request.transferRange = { from: 0, to: 1 };
   try {
-    let rep = await session?.fetch(request);
+    let rep = await this.session?.fetch(this.request);
     if (rep) {
       // 从响应数据的header的content-range字段中提取出文件的大小
       let contentRange = rep.headers['content-range'];
       let sizeStr = contentRange ? contentRange.substring(contentRange.indexOf('\/') + 1, contentRange.length) : '0';
-      totalSize = Number(sizeStr);
+      this.totalSize = Number(sizeStr);
     }
   } catch (err) {
     console.error(`getTotalSize error code is ${err.code}, error data is ${err.data}`);
   }
-  console.info(`getTotalSize totalSize: ${totalSize.toString()}`);
-  return totalSize;
+  console.info(`getTotalSize totalSize: ${this.totalSize.toString()}`);
+  return this.totalSize;
 }
 ```
 
@@ -424,23 +442,28 @@ async function getTotalSize(): Promise<number> {
  * @param from - 传输范围的起始位置
  * @param to - 传输范围的结束位置
  */
-function downloadTransfer(from: number, to: number) {
+downloadTransfer(from: number, to: number) {
+  if (this.request == null || this.session == null) {
+    return;
+  }
+  // ...
   // 设置请求的数据传输范围
-  request.transferRange = { from: from, to: to };
-  session?.fetch(request).then((rep) => {
+  this.request.transferRange = { from: from, to: to };
+  this.session?.fetch(this.request).then((rep) => {
     if (rep.body) {
       // 处理响应，可以在此处将文件保存到本地
       console.info(`Response succeeded: ${JSON.stringify(rep.headers)}`);
       // 下次传输的起始位置 = 上次的位置 + 本次传输数据的长度
-      lastTransferPosition += rep.body.byteLength;
-      if (lastTransferPosition < totalSize) {
+      this.lastTransferPosition += rep.body.byteLength;
+      if (this.lastTransferPosition < this.totalSize) {
         // 计算下一次传输范围的结束位置
-        const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+        const nextTo = Math.min(this.lastTransferPosition + 100, this.totalSize);
         // 递归调用继续下载下一段数据
-        downloadTransfer(lastTransferPosition, nextTo);
+        this.downloadTransfer(this.lastTransferPosition, nextTo);
       } else {
         console.info('Response succeeded, completed.');
       }
+      // ...
     }
   }).catch((err: BusinessError) => {
     console.error(`Continue transfer error: code is ${err.code}, message is ${err.message}`);
@@ -451,22 +474,17 @@ function downloadTransfer(from: number, to: number) {
 ### Code block 9
 
 ```
-/**
- * 开始下载
- */
-async function startDownload() {
-  if (!session) {
-    session = rcp.createSession();
-  }
-  // 传输位置归零
-  lastTransferPosition = 0;
-  // 获取要下载文件的总大小
-  totalSize = await getTotalSize();
-  // 计算传输范围的结束位置
-  const nextTo = Math.min(lastTransferPosition + 100, totalSize);
-  // 开始下载
-  downloadTransfer(lastTransferPosition, nextTo);
+if (!session) {
+  session = rcp.createSession();
 }
+// 传输位置归零
+lastTransferPosition = 0;
+// 获取要下载文件的总大小
+await this.getTotalSize();
+// 计算传输范围的结束位置
+const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+// 开始下载
+this.downloadTransfer(lastTransferPosition, nextTo);
 ```
 
 ### Code block 10
@@ -475,9 +493,10 @@ async function startDownload() {
 /**
  * 暂停下载
  */
-function pauseDownload() {
+async pauseDownload() {
+  // ...
   // 取消下载请求
-  session?.cancel(request);
+  this.session?.cancel(this.request);
 }
 ```
 
@@ -487,25 +506,20 @@ function pauseDownload() {
 /**
  * 继续下载
  */
-function resumeDownload() {
+async resumeDownload() {
   // 计算传输范围的结束位置
-  const nextTo = Math.min(lastTransferPosition + 100, totalSize);
+  const nextTo = Math.min(this.lastTransferPosition + 100, this.totalSize);
   // 开始下载
-  downloadTransfer(lastTransferPosition, nextTo);
+  this.downloadTransfer(this.lastTransferPosition, nextTo);
 }
 ```
 
 ### Code block 12
 
 ```
-/**
- * 停止下载
- */
-function stopDownload() {
-  // 取消下载请求
-  session?.cancel(request);
-  // 关闭session
-  session?.close();
-  session = null;
-}
+// 取消下载请求
+this.session?.cancel(this.request);
+// 关闭session
+this.session?.close();
+this.session = null;
 ```

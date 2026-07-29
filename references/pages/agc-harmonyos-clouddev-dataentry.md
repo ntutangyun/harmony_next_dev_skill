@@ -14,6 +14,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmo
 
 “cloudDBZoneName”：配置存储区名称。上图示例中的“default”表示添加数据条目至default存储区。支持修改，如下图“cloudDBZoneName1”。另外，在使用API访问云数据库编码时需要引用该字段。
 
+说明
+
+如果字段的数据类型为“String”，字段值最大长度为200个字符。
+
+如果字段的数据类型为“Text”，字段值最大长度为100000000个字符。
+
 字段	数据条目1	数据条目2
 author	Nancy	Peter
 shadowFlag	true	false
@@ -29,6 +35,12 @@ publishTime	19961007	19961007
 如下图，“clouddb/dataentry”目录下自动为对象类型“objecttype1”生成数据条目文件“d_objecttype1”，该文件中已为您预置好所属对象类型名称（“objecttype1”）与对象类型的字段名（“id”、“bookName”、“author”、“price”、“publishTime”、“shadowFlag”）。
 
 “cloudDBZoneName”：配置存储区名称。上图示例中的“default”表示添加数据条目至default存储区。支持修改，如下图“cloudDBZoneName1”。另外，在使用API访问云数据库编码时需要引用该字段。
+
+说明
+
+如果字段的数据类型为“String”，字段值最大长度为200个字符。
+
+如果字段的数据类型为“Text”，字段值最大长度为100000000个字符。
 
 字段	数据条目1	数据条目2
 author	Nancy	Peter

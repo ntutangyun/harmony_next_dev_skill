@@ -60,7 +60,7 @@ void *OH_AI_TensorGetMutableData(const OH_AI_TensorHandle tensor)	获取可变�
 #include <unistd.h>
 #include "mindspore/model.h"
 
-//生成随机的输入
+// 生成随机的输入
 int GenerateInputDataWithRandom(OH_AI_TensorHandleArray inputs) {
   for (size_t i = 0; i < inputs.handle_num; ++i) {
     float *input_data = (float *)OH_AI_TensorGetMutableData(inputs.handle_list[i]);
@@ -178,7 +178,7 @@ if (ret != OH_AI_STATUS_SUCCESS) {
 // 获得输入张量
 OH_AI_TensorHandleArray inputs = OH_AI_ModelGetInputs(model);
 if (inputs.handle_list == NULL) {
-  printf("OH_AI_ModelGetInputs failed, ret: %d.\n", ret);
+  printf("OH_AI_ModelGetInputs failed.\n");
   OH_AI_ModelDestroy(&model);
   OH_AI_ContextDestroy(&context);
   return ret;
@@ -269,7 +269,7 @@ target_link_libraries(
 
 ./demo mobilenetv2.ms
 
-得到如下输出:
+得到如下输出：
 
 # ./demo ./mobilenetv2.ms
 Tensor name: Softmax-65, tensor size is 4004 ,elements num: 1001.
@@ -286,7 +286,7 @@ output data is:
 #include <unistd.h>
 #include "mindspore/model.h"
 
-//生成随机的输入
+// 生成随机的输入
 int GenerateInputDataWithRandom(OH_AI_TensorHandleArray inputs) {
   for (size_t i = 0; i < inputs.handle_num; ++i) {
     float *input_data = (float *)OH_AI_TensorGetMutableData(inputs.handle_list[i]);
@@ -390,7 +390,7 @@ if (ret != OH_AI_STATUS_SUCCESS) {
 // 获得输入张量
 OH_AI_TensorHandleArray inputs = OH_AI_ModelGetInputs(model);
 if (inputs.handle_list == NULL) {
-  printf("OH_AI_ModelGetInputs failed, ret: %d.\n", ret);
+  printf("OH_AI_ModelGetInputs failed.\n");
   OH_AI_ModelDestroy(&model);
   OH_AI_ContextDestroy(&context);
   return ret;

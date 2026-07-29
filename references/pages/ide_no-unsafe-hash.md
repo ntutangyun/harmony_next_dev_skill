@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_no-unsafe-hash_
 
-该规则禁止不安全的哈希算法，例如MD5、SHA1。
+该规则禁止使用不安全的哈希算法，例如MD5、SHA1。
 
 规则配置
 

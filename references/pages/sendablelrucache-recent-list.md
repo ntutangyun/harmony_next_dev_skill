@@ -81,7 +81,7 @@ struct Index1 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -112,7 +112,7 @@ struct Index2 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -143,7 +143,7 @@ struct Index3 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -174,7 +174,7 @@ struct Index4 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -214,7 +214,7 @@ struct GetRecentList {
   @State message: string = '书架';
   @State books: string[] = [];
 
-  async aboutToAppear () {
+  async onPageShow(): Promise<void> {
     // 自动获取最近访问的图书列表
     this.books = await lruCache.keys();
   }
@@ -354,7 +354,7 @@ struct Index1 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -389,7 +389,7 @@ struct Index2 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -424,7 +424,7 @@ struct Index3 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -459,7 +459,7 @@ struct Index4 {
         .fontWeight(FontWeight.Bold)
         .position({ x: '50%' })
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/GetRecentList' });
+          this.getUIContext().getRouter().back();
         })
     }
     .height('100%')
@@ -505,7 +505,7 @@ struct GetRecentList {
   @State message: string = '书架';
   @State books: string[] = [];
 
-  async aboutToAppear () {
+  async onPageShow(): Promise<void> {
     // 自动获取最近访问的图书列表
     this.books = await lruCache.keys();
   }

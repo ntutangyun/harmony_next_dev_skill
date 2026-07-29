@@ -16,7 +16,7 @@ ohpm-repo check_storage <target> [options]
 
 功能描述
 
-命令根据元数据检查sftp存储的包是否存在且完整。该命令要求数据存储db模块必须使用mysql，文件存储store模块必须使用sftp。
+命令根据元数据检查sftp存储的包是否存在且完整。
 
 参数
 

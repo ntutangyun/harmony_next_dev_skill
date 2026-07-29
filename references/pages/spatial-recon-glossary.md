@@ -2,14 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/spatial-recon-glossary_
 
-颜色抖动
+G
 
-颜色抖动通过有规律地混合相邻像素的颜色来模拟更多色彩。它在一定区域内混合排列不同颜色的像素点、使人眼产生一种视觉上的混合效果，从而用有限的颜色深度模拟出更多种颜色。
+[h2]Gaussian Point；高斯点
 
-3DGS
+3DGS模型的基本组成单元。每个高斯点是一个带位置、颜色、透明度、旋转和缩放等属性的三维高斯椭球，众多高斯点共同构成完整的3D场景。
 
-3D Gaussian Splatting（3D高斯泼溅）。用一定数量的3D高斯球来表示一个3D场景。每个高斯球都有自己的位置、大小、颜色、透明度等属性。渲染时，将这些3D高斯球投影到2D屏幕上，融合成一幅完整的图像。
+T
 
-Kuwahara filter
+[h2]Tiled 3D Gaussian Splatting；分块3D高斯泼溅
 
-一种滤波器，可以在平滑图像的同时保留图像的边缘信息。
+针对大规模3DGS场景的渲染技术。将完整模型按空间划分为多个瓦片，渲染时按需加载当前视口所需的瓦片数据，有效降低内存占用和渲染开销。

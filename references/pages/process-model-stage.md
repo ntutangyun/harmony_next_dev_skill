@@ -30,7 +30,7 @@ Render进程：应用中的Web组件运行时，系统会为之分配一个Rende
 
 [h2]其他进程类型
 
-在2in1和Tablet设备上，针对UIAbility，还支持如下特殊进程类型：
+在2in1和Tablet设备上，还支持如下特殊进程类型：
 
 模块独立进程：对于多HAP的应用，每个HAP的业务相对独立，如果开发者希望不同HAP的UIAbility运行在不同的进程，可以在module.json5配置文件中将isolationMode字段配置为isolationOnly（只在独立进程中运行）或者isolationFirst（优先在独立进程中运行），那么该HAP下的所有UIAbility将运行在统一的独立的进程中。如图2中UIAbilityC运行在“Main Process2”， 而不是“Main Process1”。
 

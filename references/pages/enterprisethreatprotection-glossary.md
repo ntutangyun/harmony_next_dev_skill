@@ -16,7 +16,7 @@ Enterprise Threat Protection Kit中对文件处置操作（隔离、恢复、删
 
 I
 
-Isolation ID；隔离ID
+[h2]Isolation ID；隔离ID
 
 隔离文件唯一标识符，格式为UUID，长度为36个字符。在文件被隔离时由系统生成并返回，用于后续的隔离文件查询、恢复和删除等操作。
 

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-本功能在API 24之前版本仅支持Phone；API24及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
+本功能在6.1.1(24)之前版本仅支持Phone；6.1.1(24)及之后版本，新增支持具备TUI能力的PC/2in1、具备TUI能力的Tablet。可通过接口checkConfirmUITextFormat查询设备是否具备TUI能力。不支持的设备在调用数字盾服务相关业务接口时，返回错误码1019100016。
 
 业务流程
 
@@ -45,29 +45,28 @@ import { common } from '@kit.AbilityKit';
 
 调用关闭数字盾服务接口，发起数字盾服务关闭申请。
 
-// 关闭数字盾服务
-async function DisablePwd(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
- try {
-   const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
-   const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
-   const buffer = fileData.buffer;
-   const label:trustedAuthentication.TUILable = {
-     image: buffer as ArrayBuffer,
-     title: "关闭数字盾",
-   }
-   const authToken = await trustedAuthentication.disableTrustedAuthentication(challenge, true, authID, label);
-   return authToken;
- } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to disableTrustedAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Close trusted authentication failed:' + (err as BusinessError).message);
- }
+async DisablePwd(challenge: Uint8Array, assetName: string): Promise<trustedAuthentication.AuthToken> {
+  try {
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray);
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage();
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.CloseShield').id)
+    }
+    const authInfo = await trustedAuthentication.disableTrustedAuthentication(challenge, true, credentialID, label);
+    AssetUtils.DeleteDataFromAssetStore('pin_label1');
+    AssetUtils.DeleteDataFromAssetStore('credentialID');
+    AssetUtils.DeleteDataFromAssetStore('face_credentialID');
+    AssetUtils.DeleteDataFromAssetStore('finger_credentialID');
+    hilog.info(DOMAIN, 'testTag', 'Close Shield Success：', authInfo.authToken);
+    return authInfo;
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'Close Shield Fail：', error);
+    throw new Error('Close Shield Fail：' + (error as BusinessError).message);
+  }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge, context);
 
 参考密钥管理服务提供的签名/验签指导, 对通过关闭数字盾获取到的authToken数据进行签名，并结束会话。
 
@@ -75,26 +74,28 @@ const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge, c
 
 使用cryptoFramework生成的32字节随机数作为challenge，直接调用关闭数字盾服务接口即可，生成的authToken信息未经过密码认证，不可进行签名校验。
 
-// 关闭数字盾服务
-async function DisablePwd(challenge: Uint8Array):Promise<trustedAuthentication.AuthToken> {
- try {
-   const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
-   let emptyBuffer = new ArrayBuffer(0);
-   const label:trustedAuthentication.TUILable = {
-     image: emptyBuffer,
-     title: "",
-   }
-   const authToken = await trustedAuthentication.disableTrustedAuthentication(challenge, false, authID, label);
-   return authToken;
- } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to disableTrustedAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Close trusted authentication failed:' + (err as BusinessError).message);
- }
+async disablePwdWithoutAuth(challenge: Uint8Array, assetName: string): Promise<ArrayBuffer> {
+  try {
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray); // 实际填充为从服务器获取到的账号对应的credentialID值
+    let emptyBuffer = new ArrayBuffer(0);
+    const label: trustedAuthentication.TUILable = {
+      image: emptyBuffer,
+      title: ''
+    }
+    const authInfo = await trustedAuthentication.disableTrustedAuthentication(challenge, false, credentialID, label);
+    // 实际使用时请替换为删除服务器侧数字盾流程
+    AssetUtils.DeleteDataFromAssetStore('pin_label1');
+    AssetUtils.DeleteDataFromAssetStore('credentialID');
+    AssetUtils.DeleteDataFromAssetStore('face_credentialID');
+    AssetUtils.DeleteDataFromAssetStore('finger_credentialID');
+    hilog.info(DOMAIN, 'testTag', 'Close Shield Success：', authInfo.authToken);
+    return authInfo.authToken;
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'Close Shield Fail：', error);
+    throw new Error('Close Shield Fail：' + (error as BusinessError).message);
+  }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 此处使用的challenge为通过cryptoFramework生成的32字节随机数即可
-const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge);
 
 ## Code blocks
 
@@ -113,52 +114,53 @@ import { common } from '@kit.AbilityKit';
 ### Code block 2
 
 ```
-// 关闭数字盾服务
-async function DisablePwd(challenge: Uint8Array, context: common.UIAbilityContext):Promise<trustedAuthentication.AuthToken> {
- try {
-   const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
-   const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-   const fileData : Uint8Array = await resourceMgr.getRawFileContent('test_logo_rgba.png'); // 实际使用时请替换为企业开发者应用要在TUI界面展示的logo图片名称
-   const buffer = fileData.buffer;
-   const label:trustedAuthentication.TUILable = {
-     image: buffer as ArrayBuffer,
-     title: "关闭数字盾",
-   }
-   const authToken = await trustedAuthentication.disableTrustedAuthentication(challenge, true, authID, label);
-   return authToken;
- } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to disableTrustedAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Close trusted authentication failed:' + (err as BusinessError).message);
- }
+async DisablePwd(challenge: Uint8Array, assetName: string): Promise<trustedAuthentication.AuthToken> {
+  try {
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray);
+    const context = AppStorage.get('context') as Context;
+    const buffer: ArrayBuffer = await CryptoUtils.ImportImage();
+    const label: trustedAuthentication.TUILable = {
+      image: buffer,
+      title: context.resourceManager.getStringSync($r('app.string.CloseShield').id)
+    }
+    const authInfo = await trustedAuthentication.disableTrustedAuthentication(challenge, true, credentialID, label);
+    AssetUtils.DeleteDataFromAssetStore('pin_label1');
+    AssetUtils.DeleteDataFromAssetStore('credentialID');
+    AssetUtils.DeleteDataFromAssetStore('face_credentialID');
+    AssetUtils.DeleteDataFromAssetStore('finger_credentialID');
+    hilog.info(DOMAIN, 'testTag', 'Close Shield Success：', authInfo.authToken);
+    return authInfo;
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'Close Shield Fail：', error);
+    throw new Error('Close Shield Fail：' + (error as BusinessError).message);
+  }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 实际使用时请替换为通过UniversalKeystoreKit初始化会话获取的challenge
-let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge, context);
 ```
 
 ### Code block 3
 
 ```
-// 关闭数字盾服务
-async function DisablePwd(challenge: Uint8Array):Promise<trustedAuthentication.AuthToken> {
- try {
-   const authID: bigint = 1687413472599354502n; // 实际填充为从服务器获取到的账号对应的authID值
-   let emptyBuffer = new ArrayBuffer(0);
-   const label:trustedAuthentication.TUILable = {
-     image: emptyBuffer,
-     title: "",
-   }
-   const authToken = await trustedAuthentication.disableTrustedAuthentication(challenge, false, authID, label);
-   return authToken;
- } catch (err) {
-   hilog.error(0x0000, 'testTag', `Failed to disableTrustedAuthentication, code:${err.code}, message:${err.message}`);
-   throw new Error('Close trusted authentication failed:' + (err as BusinessError).message);
- }
+async disablePwdWithoutAuth(challenge: Uint8Array, assetName: string): Promise<ArrayBuffer> {
+  try {
+    let resArray: Uint8Array = await AssetUtils.QueryDataFromAssetStore(assetName);
+    let credentialID: bigint = CryptoUtils.uint8ArrayToBigInt(resArray); // 实际填充为从服务器获取到的账号对应的credentialID值
+    let emptyBuffer = new ArrayBuffer(0);
+    const label: trustedAuthentication.TUILable = {
+      image: emptyBuffer,
+      title: ''
+    }
+    const authInfo = await trustedAuthentication.disableTrustedAuthentication(challenge, false, credentialID, label);
+    // 实际使用时请替换为删除服务器侧数字盾流程
+    AssetUtils.DeleteDataFromAssetStore('pin_label1');
+    AssetUtils.DeleteDataFromAssetStore('credentialID');
+    AssetUtils.DeleteDataFromAssetStore('face_credentialID');
+    AssetUtils.DeleteDataFromAssetStore('finger_credentialID');
+    hilog.info(DOMAIN, 'testTag', 'Close Shield Success：', authInfo.authToken);
+    return authInfo.authToken;
+  } catch (error) {
+    hilog.error(DOMAIN, 'testTag', 'Close Shield Fail：', error);
+    throw new Error('Close Shield Fail：' + (error as BusinessError).message);
+  }
 }
-const rand = cryptoFramework.createRandom();
-const len: number = 32;
-const challenge: Uint8Array = rand?.generateRandomSync(len)?.data; // 此处使用的challenge为通过cryptoFramework生成的32字节随机数即可
-const authToken: trustedAuthentication.AuthToken = await DisablePwd(challenge);
 ```

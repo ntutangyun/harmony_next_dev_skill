@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservice-key_
 
-在开发者服务器加签或验签时，请开发者前往AppGallery Connect获取游戏私钥或游戏公钥。
+在开发者服务器加签或验签时，请开发者前往AppGallery Connect获取加签私钥或验签公钥。
 
 登录AppGallery Connect，在“开发与服务”下选择项目及项目下的游戏。
 

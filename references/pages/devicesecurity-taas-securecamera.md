@@ -12,29 +12,26 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 开发者可以通过调用getSupportedSceneModes方法，当返回值为camera.SceneMode.SECURE_PHOTO，当前设备支持安全摄像头，返回其他值表示当前设备不支持安全摄像头。具体判断方法参考如下示例：
 
-import { camera } from '@kit.CameraKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-// 获得安全摄像头
-function getSecureCameraDevice(cameraManager: camera.CameraManager): camera.CameraDevice {
-    // 获得设备支持的摄像头列表
-    const cameraDevices = cameraManager.getSupportedCameras();
-    if (cameraDevices.length < 1) {
-      throw new Error('no camera devices');
-    }
-    // 获取前置镜头对象。当前安全摄像头仅支持前置镜头。
-    const frontCamera: camera.CameraDevice | undefined = cameraDevices.find((profile: camera.CameraDevice) => {
-      return profile.cameraPosition != camera.CameraPosition.CAMERA_POSITION_BACK;
-    });
-    if (frontCamera === undefined) {
-      throw new Error('no front cameras');
-    }
-    // 检查前置摄像头设备是否支持安全模式；若支持，即可使用该前置摄像头做后续安全摄像头操作。
-    const modes = cameraManager.getSupportedSceneModes(frontCamera);
-    if (modes.indexOf(camera.SceneMode.SECURE_PHOTO) === -1) {
-      throw new Error('current device not support secure camera');
-    }
-    return frontCamera;
+private getSecureCameraDevice(cameraManager: camera.CameraManager): camera.CameraDevice {
+  // 获得设备支持的摄像头列表
+  const cameraDevices = cameraManager.getSupportedCameras();
+  if (cameraDevices.length < 1) {
+    throw new Error('no camera devices');
   }
+  // 获取前置镜头对象。当前安全摄像头仅支持前置镜头。
+  const frontCamera: camera.CameraDevice | undefined = cameraDevices.find((profile: camera.CameraDevice) => {
+    return profile.cameraPosition != camera.CameraPosition.CAMERA_POSITION_BACK;
+  });
+  if (frontCamera === undefined) {
+    throw new Error('no front cameras');
+  }
+  // 检查前置摄像头设备是否支持安全模式；若支持，即可使用该前置摄像头做后续安全摄像头操作。
+  const modes = cameraManager.getSupportedSceneModes(frontCamera);
+  if (modes.indexOf(camera.SceneMode.SECURE_PHOTO) === -1) {
+    throw new Error('current device not support secure camera');
+  }
+  return frontCamera;
+}
 
 业务流程
 
@@ -54,7 +51,13 @@ destroyAttestKey(): Promise<void>	销毁证明密钥。
 
 import { camera } from '@kit.CameraKit';
 import { trustedAppService } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { image } from '@kit.ImageKit';
+import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
+import { util } from '@kit.ArkTS';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { cert } from '@kit.DeviceCertificateKit';
 
 参考安全相机开发指导，初始化安全相机。
 
@@ -80,99 +83,125 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 调用initializeAttestContext初始化证明会话时，userData的长度必须在16到127 Bytes之间。
 
-// 创建证明密钥的参数
-const createProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_ALGORITHM,
-    value: trustedAppService.AttestKeyAlg.ATTEST_ALG_ECC
-  },
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_KEY_SIZE,
-    value: trustedAppService.AttestKeySize.ATTEST_ECC_KEY_SIZE_256
+创建安全相机场景的证明密钥：
+
+private async creatSecureCameraAttestKey(): Promise<void> {
+  // 创建证明密钥的参数
+  const createProperties: Array<trustedAppService.AttestParam> = [
+    {
+      tag: trustedAppService.AttestTag.ATTEST_TAG_ALGORITHM,
+      value: trustedAppService.AttestKeyAlg.ATTEST_ALG_ECC
+    },
+    {
+      tag: trustedAppService.AttestTag.ATTEST_TAG_KEY_SIZE,
+      value: trustedAppService.AttestKeySize.ATTEST_ECC_KEY_SIZE_256
+    }
+  ];
+  const createOptions: trustedAppService.AttestOptions = {
+    properties: createProperties
+  };
+  // 创建证明密钥
+  try {
+    await trustedAppService.createAttestKey(createOptions);
+    hilog.info(0x0000, 'TrustedAppService', 'createAttestKey successfully');
+  } catch (error) {
+    const err = error as BusinessError;
+    hilog.error(0x0000, 'trustedappservice', `createattestkey failed, errCode: ${err.code}, errMsg: ${err.message}`);
+    throw new Error(err.message);
   }
-];
-const createOptions: trustedAppService.AttestOptions = {
-  properties: createProperties
-};
-// 初始化证明会话的参数
-const userData = "trusted_app_service_demo"; // 示例值，实际值请自行生成，长度在16到127Bytes之间
-const deviceId = 7483679320805398131; // 示例值，实际值请通过Camera Kit获取
-const initProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
-    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
-  },
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
-    value: BigInt(deviceId)
+}
+
+初始化安全相机场景的证明会话：
+
+private async initSecureCameraAttestContext(cameraInput: camera.CameraInput): Promise<number> {
+  try {
+    // 初始化证明会话的参数
+    const deviceId = await cameraInput.open(true);
+    const initProperties: Array<trustedAppService.AttestParam> = [
+      {
+        tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+        value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+      },
+      {
+        tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
+        value: BigInt(deviceId) // 实际值请通过Camera Kit获取
+      }
+    ];
+    const initOptions: trustedAppService.AttestOptions = {
+      properties: initProperties
+    };
+    let userData = 'trusted_app_service_default_userdata'; // 示例值，实际值请自行生成，长度在16到127 Bytes之间
+    // 初始化证明会话
+    const certChainResult = await trustedAppService.initializeAttestContext(userData, initOptions);
+    if (certChainResult.certChains.length < 1) {
+      throw new Error('empty returned cert chain');
+    }
+    // [StartExclude initialize_secure_camera_context]
+    this.certChainObj = new CertChain(certChainResult.certChains[0]);
+    await this.certChainObj.validate();
+    // [EndExclude initialize_secure_camera_context]
+    return 0;
+  } catch (err) {
+    const businessError = err as BusinessError;
+    hilog.error(0x0000, 'TrustedAppService',
+      `initializeAttestContext failed. errCode: ${businessError.code}, message: ${businessError.message}`);
+    const finalNumericCode = Number(String(businessError.code ?? '').replace('n', '').trim());
+    return Number.isNaN(finalNumericCode) ? -1 : finalNumericCode;
   }
-];
-const initOptions: trustedAppService.AttestOptions = {
-  properties: initProperties
-};
-// 创建证明密钥并打开证明会话
-let certChainList: Array<string>;
-try {
-  await trustedAppService.createAttestKey(createOptions);
-  const result = await trustedAppService.initializeAttestContext(userData, initOptions);
-  certChainList = result.certChains;
-} catch (err) {
-  const error = err as BusinessError;
-  console.error(`Failed to initialize attest context, message:${error.message}, code:${error.code}`);
 }
 
 参考安全相机开发指导，完成安全相机会话的创建，配置输入、输出流，启动预览流和安全数据流。
 
 结束证明会话。
 
-// 结束证明会话的参数
-const finalProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
-    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+private async finalizeSecureCameraAttestContext(): Promise<void> {
+  // 结束证明会话的参数
+  const finalProperties: Array<trustedAppService.AttestParam> = [
+    {
+      tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+      value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+    }
+  ];
+  const finalOptions: trustedAppService.AttestOptions = {
+    properties: finalProperties,
+  };
+  // 结束证明会话
+  try {
+    await trustedAppService.finalizeAttestContext(finalOptions);
+  } catch (err) {
+    const error = err as BusinessError;
+    hilog.error(0x0000, 'TrustedAppService',
+      'Failed to finalize attest context, code:${error.code}, message:${error.message}');
   }
-];
-const finalOptions: trustedAppService.AttestOptions = {
-  properties: finalProperties,
-};
-// 结束证明会话
-try {
-  await trustedAppService.finalizeAttestContext(finalOptions);
-} catch (err) {
-  const error = err as BusinessError;
-  console.error(`Failed to finalize attest context, message:${error.message}, code:${error.code}`);
 }
 
-如果需要销毁证明密钥，请在结束证明会话后，调用destroyAttestKey接口。由于安全摄像头、安全地理位置和安全图像压缩、裁剪共用同一个证明密钥，销毁前需要保证安全地理位置功能未在使用该证明密钥。
+如果需要销毁证明密钥，请在结束证明会话后，调用destroyAttestKey接口。由于安全摄像头、安全地理位置和安全图像压缩、裁剪共用同一个证明密钥，销毁前需要保证其余功能未在使用该证明密钥。
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-import { camera } from '@kit.CameraKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-// 获得安全摄像头
-function getSecureCameraDevice(cameraManager: camera.CameraManager): camera.CameraDevice {
-    // 获得设备支持的摄像头列表
-    const cameraDevices = cameraManager.getSupportedCameras();
-    if (cameraDevices.length < 1) {
-      throw new Error('no camera devices');
-    }
-    // 获取前置镜头对象。当前安全摄像头仅支持前置镜头。
-    const frontCamera: camera.CameraDevice | undefined = cameraDevices.find((profile: camera.CameraDevice) => {
-      return profile.cameraPosition != camera.CameraPosition.CAMERA_POSITION_BACK;
-    });
-    if (frontCamera === undefined) {
-      throw new Error('no front cameras');
-    }
-    // 检查前置摄像头设备是否支持安全模式；若支持，即可使用该前置摄像头做后续安全摄像头操作。
-    const modes = cameraManager.getSupportedSceneModes(frontCamera);
-    if (modes.indexOf(camera.SceneMode.SECURE_PHOTO) === -1) {
-      throw new Error('current device not support secure camera');
-    }
-    return frontCamera;
+private getSecureCameraDevice(cameraManager: camera.CameraManager): camera.CameraDevice {
+  // 获得设备支持的摄像头列表
+  const cameraDevices = cameraManager.getSupportedCameras();
+  if (cameraDevices.length < 1) {
+    throw new Error('no camera devices');
   }
+  // 获取前置镜头对象。当前安全摄像头仅支持前置镜头。
+  const frontCamera: camera.CameraDevice | undefined = cameraDevices.find((profile: camera.CameraDevice) => {
+    return profile.cameraPosition != camera.CameraPosition.CAMERA_POSITION_BACK;
+  });
+  if (frontCamera === undefined) {
+    throw new Error('no front cameras');
+  }
+  // 检查前置摄像头设备是否支持安全模式；若支持，即可使用该前置摄像头做后续安全摄像头操作。
+  const modes = cameraManager.getSupportedSceneModes(frontCamera);
+  if (modes.indexOf(camera.SceneMode.SECURE_PHOTO) === -1) {
+    throw new Error('current device not support secure camera');
+  }
+  return frontCamera;
+}
 ```
 
 ### Code block 2
@@ -180,72 +209,107 @@ function getSecureCameraDevice(cameraManager: camera.CameraManager): camera.Came
 ```
 import { camera } from '@kit.CameraKit';
 import { trustedAppService } from '@kit.DeviceSecurityKit';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { image } from '@kit.ImageKit';
+import { AsyncCallback, BusinessError } from '@kit.BasicServicesKit';
+import hilog from '@ohos.hilog';
+import { common } from '@kit.AbilityKit';
+import { util } from '@kit.ArkTS';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { cert } from '@kit.DeviceCertificateKit';
 ```
 
 ### Code block 3
 
 ```
-// 创建证明密钥的参数
-const createProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_ALGORITHM,
-    value: trustedAppService.AttestKeyAlg.ATTEST_ALG_ECC
-  },
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_KEY_SIZE,
-    value: trustedAppService.AttestKeySize.ATTEST_ECC_KEY_SIZE_256
+private async creatSecureCameraAttestKey(): Promise<void> {
+  // 创建证明密钥的参数
+  const createProperties: Array<trustedAppService.AttestParam> = [
+    {
+      tag: trustedAppService.AttestTag.ATTEST_TAG_ALGORITHM,
+      value: trustedAppService.AttestKeyAlg.ATTEST_ALG_ECC
+    },
+    {
+      tag: trustedAppService.AttestTag.ATTEST_TAG_KEY_SIZE,
+      value: trustedAppService.AttestKeySize.ATTEST_ECC_KEY_SIZE_256
+    }
+  ];
+  const createOptions: trustedAppService.AttestOptions = {
+    properties: createProperties
+  };
+  // 创建证明密钥
+  try {
+    await trustedAppService.createAttestKey(createOptions);
+    hilog.info(0x0000, 'TrustedAppService', 'createAttestKey successfully');
+  } catch (error) {
+    const err = error as BusinessError;
+    hilog.error(0x0000, 'trustedappservice', `createattestkey failed, errCode: ${err.code}, errMsg: ${err.message}`);
+    throw new Error(err.message);
   }
-];
-const createOptions: trustedAppService.AttestOptions = {
-  properties: createProperties
-};
-// 初始化证明会话的参数
-const userData = "trusted_app_service_demo"; // 示例值，实际值请自行生成，长度在16到127Bytes之间
-const deviceId = 7483679320805398131; // 示例值，实际值请通过Camera Kit获取
-const initProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
-    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
-  },
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
-    value: BigInt(deviceId)
-  }
-];
-const initOptions: trustedAppService.AttestOptions = {
-  properties: initProperties
-};
-// 创建证明密钥并打开证明会话
-let certChainList: Array<string>;
-try {
-  await trustedAppService.createAttestKey(createOptions);
-  const result = await trustedAppService.initializeAttestContext(userData, initOptions);
-  certChainList = result.certChains;
-} catch (err) {
-  const error = err as BusinessError;
-  console.error(`Failed to initialize attest context, message:${error.message}, code:${error.code}`);
 }
 ```
 
 ### Code block 4
 
 ```
-// 结束证明会话的参数
-const finalProperties: Array<trustedAppService.AttestParam> = [
-  {
-    tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
-    value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+private async initSecureCameraAttestContext(cameraInput: camera.CameraInput): Promise<number> {
+  try {
+    // 初始化证明会话的参数
+    const deviceId = await cameraInput.open(true);
+    const initProperties: Array<trustedAppService.AttestParam> = [
+      {
+        tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+        value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+      },
+      {
+        tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_ID,
+        value: BigInt(deviceId) // 实际值请通过Camera Kit获取
+      }
+    ];
+    const initOptions: trustedAppService.AttestOptions = {
+      properties: initProperties
+    };
+    let userData = 'trusted_app_service_default_userdata'; // 示例值，实际值请自行生成，长度在16到127 Bytes之间
+    // 初始化证明会话
+    const certChainResult = await trustedAppService.initializeAttestContext(userData, initOptions);
+    if (certChainResult.certChains.length < 1) {
+      throw new Error('empty returned cert chain');
+    }
+    // [StartExclude initialize_secure_camera_context]
+    this.certChainObj = new CertChain(certChainResult.certChains[0]);
+    await this.certChainObj.validate();
+    // [EndExclude initialize_secure_camera_context]
+    return 0;
+  } catch (err) {
+    const businessError = err as BusinessError;
+    hilog.error(0x0000, 'TrustedAppService',
+      `initializeAttestContext failed. errCode: ${businessError.code}, message: ${businessError.message}`);
+    const finalNumericCode = Number(String(businessError.code ?? '').replace('n', '').trim());
+    return Number.isNaN(finalNumericCode) ? -1 : finalNumericCode;
   }
-];
-const finalOptions: trustedAppService.AttestOptions = {
-  properties: finalProperties,
-};
-// 结束证明会话
-try {
-  await trustedAppService.finalizeAttestContext(finalOptions);
-} catch (err) {
-  const error = err as BusinessError;
-  console.error(`Failed to finalize attest context, message:${error.message}, code:${error.code}`);
+}
+```
+
+### Code block 5
+
+```
+private async finalizeSecureCameraAttestContext(): Promise<void> {
+  // 结束证明会话的参数
+  const finalProperties: Array<trustedAppService.AttestParam> = [
+    {
+      tag: trustedAppService.AttestTag.ATTEST_TAG_DEVICE_TYPE,
+      value: trustedAppService.AttestType.ATTEST_TYPE_CAMERA
+    }
+  ];
+  const finalOptions: trustedAppService.AttestOptions = {
+    properties: finalProperties,
+  };
+  // 结束证明会话
+  try {
+    await trustedAppService.finalizeAttestContext(finalOptions);
+  } catch (err) {
+    const error = err as BusinessError;
+    hilog.error(0x0000, 'TrustedAppService',
+      'Failed to finalize attest context, code:${error.code}, message:${error.message}');
+  }
 }
 ```

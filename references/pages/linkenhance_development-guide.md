@@ -54,7 +54,7 @@ getPeerDeviceId()	获取远端设备的deviceId。
 sendData(data:ArrayBuffer)	向远端设备发送数据。
 on(type: 'connectResult')	订阅连接结果通知变化的事件。
 on(type: 'disconnected')	订阅连接状态断开的事件。
-on(type: 'dataReceived')	注册收数据的通知事件。
+on(type: 'dataReceived')	订阅接收数据的通知事件。
 createConnection(deviceId: string,name:string)	创建一个connection对象。
 start()	服务端开启服务。
 stop()	服务端停止服务。
@@ -112,7 +112,7 @@ linkEnhanceStart(name: string) {
       console.info(TAG + 'serverOnCallback');
     });
     server.on('serverStopped', (reason: number): void => {
-      console.info(TAG, 'serverStopped， reason= ' + reason);
+      console.info(TAG, 'serverStopped, reason= ' + reason);
     });
     // 启动服务
     server.start();
@@ -149,7 +149,7 @@ serverAcceptOnCallback = (connection: linkEnhance.Connection): void => {
 
 断开连接并销毁Connection对象。
 
-// 断连接。
+// 断开连接。
 linkEnhanceDisconnect(connection: linkEnhance.Connection) {
   console.info(TAG + 'disconnect deviceId = ' + connection.getPeerDeviceId());
   try {
@@ -169,13 +169,13 @@ linkEnhanceStop(server: linkEnhance.Server) {
   try {
     server.stop();
   } catch (err) {
-    console.info(TAG + 'stop server errCode: ' + (err as BusinessError).code + ', errMessage: ' +
+    console.error(TAG + 'stop server errCode: ' + (err as BusinessError).code + ', errMessage: ' +
     (err as BusinessError).message);
   }
 }
 // Server端停止服务并取消所有的订阅事件
 linkEnhanceClose(server: linkEnhance.Server) {
-  console.info(TAG + 'close server' );
+  console.info(TAG + 'close server');
   try {
     server.close();
   } catch (err) {
@@ -294,7 +294,7 @@ linkEnhanceStart(name: string) {
       console.info(TAG + 'serverOnCallback');
     });
     server.on('serverStopped', (reason: number): void => {
-      console.info(TAG, 'serverStopped， reason= ' + reason);
+      console.info(TAG, 'serverStopped, reason= ' + reason);
     });
     // 启动服务
     server.start();
@@ -335,7 +335,7 @@ serverAcceptOnCallback = (connection: linkEnhance.Connection): void => {
 ### Code block 5
 
 ```
-// 断连接。
+// 断开连接。
 linkEnhanceDisconnect(connection: linkEnhance.Connection) {
   console.info(TAG + 'disconnect deviceId = ' + connection.getPeerDeviceId());
   try {
@@ -357,13 +357,13 @@ linkEnhanceStop(server: linkEnhance.Server) {
   try {
     server.stop();
   } catch (err) {
-    console.info(TAG + 'stop server errCode: ' + (err as BusinessError).code + ', errMessage: ' +
+    console.error(TAG + 'stop server errCode: ' + (err as BusinessError).code + ', errMessage: ' +
     (err as BusinessError).message);
   }
 }
 // Server端停止服务并取消所有的订阅事件
 linkEnhanceClose(server: linkEnhance.Server) {
-  console.info(TAG + 'close server' );
+  console.info(TAG + 'close server');
   try {
     server.close();
   } catch (err) {
