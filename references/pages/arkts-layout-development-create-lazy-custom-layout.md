@@ -26,7 +26,7 @@ LazyDynamicLayout适用于以下典型场景。
 
 约束与限制
 
-LazyDynamicLayout需要配合可滚动父组件使用，其父组件支持List、WaterFlow、FlowItem、Scroll和LazyColumnLayout，同时支持使用自定义组件或NodeContainer组件封装后应用在上述组件中。
+LazyDynamicLayout需要配合可滚动父组件使用，仅限于List、Scroll、WaterFlow、FlowItem或LazyColumnLayout，并支持使用自定义组件或NodeContainer组件封装后应用在上述组件中。
 
 LazyDynamicLayout在不同父组件下的懒加载支持条件如下。
 
@@ -35,6 +35,8 @@ LazyDynamicLayout在不同父组件下的懒加载支持条件如下。
 在List组件下，当List设置了lanes、chainAnimation、scrollSnapAlign属性中的任意一个时，该组件的懒加载功能会失效。
 
 在Scroll、List、WaterFlow组件下使用时，Scroll、List、WaterFlow的滚动方向（水平或垂直）必须和该组件布局方向相同，若布局方向不同会导致应用崩溃。该组件布局方向通过LazyCustomLayoutAlgorithm的构造函数参数axis成员设置。
+
+通过FlowItem、LazyColumnLayout、自定义组件或NodeContainer封装使用时，懒加载行为取决于其上层滚动组件（如WaterFlow、Scroll或List）的配置条件。
 
 当布局算法为LazyCustomLayoutAlgorithm时，LazyDynamicLayout组件FrameNode的setMeasuredSize方法优先级高于尺寸设置和边框设置属性，子组件FrameNode的measure和layout方法优先级高于ignoreLayoutSafeArea属性。
 
@@ -85,7 +87,7 @@ export class LazyColumnLayoutAlgorithm extends LazyCustomLayoutAlgorithm {
 
   // === 锚点信息（滚动时保持稳定） ===
   private anchorChildIndex: number = -1;              // 锚点元素的索引
-  private anchorChildRelativePos: number = 0;        // 锚点距离可视区域边缘的距离
+  private anchorChildRelativePos: number = 0;        // 锚点位置（正向距内容顶部，反向距内容底部）
 
 定义内边距变量用于存储容器的内边距信息。通过getUserConfigPadding方法获取用户设置的padding属性值，该方法返回的LengthMetrics类型需要转换为像素值。
 
@@ -192,7 +194,7 @@ onMeasure(self: FrameNode, constraint: LayoutConstraint, helper?: LazyLayoutHelp
 
 处理空子元素或非懒加载布局。
 
-首先获取子组件总数，使用ChildrenCountMode.ALL_NOT_EXPAND避免全量加载导致懒加载失效。如果子组件数量为0，清空测量状态并设置容器高度为0。如果helper参数为undefined，表示不支持懒加载（如在List多列模式下），需要全量测量所有子组件。
+首先获取子组件总数，使用ChildrenCountMode.ALL_NOT_EXPAND避免全量加载导致懒加载失效。如果子组件数量为0，清空测量状态并设置容器高度为垂直内边距（topPadding + bottomPadding）。如果helper参数为undefined，表示不支持懒加载（如在List多列模式下），需要全量测量所有子组件。
 
 处理布局参数变化保持滚动稳定。
 
@@ -230,7 +232,7 @@ private saveAnchorInfo(helper: LazyLayoutHelper, prevTotalHeight: number): void 
       this.anchorChildIndex = this.startIndex;
       const arrayIndex = this.anchorChildIndex - this.itemArrStartIndex;
       if (arrayIndex >= 0 && arrayIndex < this.itemArr.length) {
-        this.anchorChildRelativePos = this.itemArr[arrayIndex].start;
+        this.anchorChildRelativePos = this.itemArr[arrayIndex].start; // 锚点子组件距离总高度顶部的位置
       }
     }
   } else {
@@ -248,7 +250,7 @@ private saveAnchorInfo(helper: LazyLayoutHelper, prevTotalHeight: number): void 
 
 测量完成后，锚点子组件的位置可能已经发生变化。需要计算新位置：
 
-正向滚动时，新位置是锚点元素的start值。
+正向滚动时，新位置是锚点元素的start值，即锚点子组件距离总高度顶部的位置。
 
 反向滚动时，新位置是锚点元素距离总高度底部的距离。
 
@@ -266,7 +268,7 @@ private adjustAnchorPosition(helper: LazyLayoutHelper): void {
     if (helper.getLazyLayoutDirection() === LazyLayoutDirection.FORWARD) {
       const arrayIndex = this.anchorChildIndex - this.itemArrStartIndex;
       if (arrayIndex >= 0 && arrayIndex < this.itemArr.length) {
-        let newPos = this.itemArr[arrayIndex].start;
+        let newPos = this.itemArr[arrayIndex].start; // 锚点子组件重新测量后距离总高度顶部的位置
         if (newPos !== this.anchorChildRelativePos) {
           helper.setAdjustedOffset(this.anchorChildRelativePos - newPos);
         }
@@ -287,19 +289,17 @@ private adjustAnchorPosition(helper: LazyLayoutHelper): void {
 
 正向滚动时，锚点是可视区域第一个子组件。布局参数变化后，该子组件的实际位置可能变化。
 
-反向滚动时，锚点是可视区域最后一个子组件，原理类似，但锚点位置是相对于总高度底部计算的。例如：
+反向滚动时，锚点是可视区域最后一个子组件，锚点位置是相对于总高度底部计算的。例如，假设共有20个子组件，每个子组件高度为80vp，锚点子组件索引为10（即第11个子组件）：
 
 间距从5vp变为10vp
 
-锚点子组件索引为10（即第11个子组件）
+该子组件原来距离总高度底部的位置：9 * 80vp + 9 * 5vp = 765vp
 
-该子组件之前的位置：10 * 80vp + 10 * 5vp = 850vp（假设子组件高度80vp）
+该子组件新的距离总高度底部的位置：9 * 80vp + 9 * 10vp = 810vp
 
-该子组件新的位置：10 * 80vp + 10 * 10vp = 900vp
+偏移调整量：810vp - 765vp = 45vp
 
-偏移调整量：850vp - 900vp = -50vp
-
-调用setAdjustedOffset(-50vp)后，LazyDynamicLayout的父可滚动组件会向上滚动50vp，使锚点子组件保持在可视区域的相同相对位置。
+调用setAdjustedOffset(45vp)后，LazyDynamicLayout的父可滚动组件会调整滚动位置，使锚点子组件保持在可视区域的相同相对位置。
 
 测量可视范围内的元素。
 
@@ -421,8 +421,8 @@ private updateTotalHeight(): void {
  * 作用：释放滚动后离开可视区域的元素，节省内存
  *
  * 回收范围：
- * - 向前滚动：回收 this.prevStartIndex -> this.startIndex 之间的元素
- * - 向后滚动：回收 this.endIndex -> this.prevEndIndex 之间的元素
+ * - 向前滚动：回收 [this.prevStartIndex, this.startIndex) 范围内的元素
+ * - 向后滚动：回收 (this.endIndex, this.prevEndIndex] 范围内的元素
  */
 private recycleChildren(helper: LazyLayoutHelper): void {
   let recycleList: number[] = [];
@@ -449,11 +449,11 @@ private recycleChildren(helper: LazyLayoutHelper): void {
 
 接口	说明
 getChildrenCount	获取子组件总数。使用ChildrenCountMode.ALL_NOT_EXPAND避免获取子组件总数时全量加载导致懒加载失效。
-getChild	获取指定索引的子组件。使用ExpandMode.LAZY_NOT_EXPAND避免获取子组件时全量加载导致懒加载失效。
+getChild	获取指定索引的子组件FrameNode。使用ExpandMode.LAZY_NOT_EXPAND避免获取子组件时全量加载导致懒加载失效。
 getViewStart	获取可视区域的起始位置（相对于LazyDynamicLayout内容区域顶部）。
 getViewEnd	获取可视区域的结束位置。
 getLazyLayoutDirection	获取当前布局方向。FORWARD表示正向布局（从上到下），BACKWARD表示反向布局（从下到上）。
-setAdjustedOffset	设置偏移调整量。用于布局参数变化后调整滚动位置，保持可视区域第一个子组件位置不变。
+setAdjustedOffset	设置偏移调整量。用于布局参数变化后调整滚动位置，使锚点子组件在可视区域内的相对位置保持不变；正向布局时锚点为可视区域第一个子组件，反向布局时为可视区域最后一个子组件。
 setChildrenInactive	将指定索引的子组件设置为非激活态。非激活态的子组件会被回收，释放内存。
 getUserConfigPadding	获取用户设置的padding属性值。返回LengthMetrics类型，需要转换为像素值。
 setMeasuredSize	设置组件的测量大小。
@@ -496,7 +496,12 @@ export struct CustomLazyColumnLayoutSample {
   // ...
 
   aboutToAppear(): void {
-    this.lazyAlgorithm.setRowGap(this.getUIContext().vp2px(this.rowGap));
+    const uiContext = this.getUIContext();
+    if (!uiContext) {
+      return;
+    }
+    this.lazyAlgorithm.setUIContext(uiContext);
+    this.lazyAlgorithm.setRowGap(uiContext.vp2px(this.rowGap));
     for (let i = 0; i < 50; i++) {
       this.arr.pushData(`Item ${i}`);
     }
@@ -540,7 +545,11 @@ export struct CustomLazyColumnLayoutSample {
 布局算法中的尺寸参数使用像素单位，需要通过getUIContext().vp2px方法进行单位转换。
 
 onRowGapChange(): void {
-  this.lazyAlgorithm.setRowGap(this.getUIContext().vp2px(this.rowGap));
+  const uiContext = this.getUIContext();
+  if (!uiContext) {
+    return;
+  }
+  this.lazyAlgorithm.setRowGap(uiContext.vp2px(this.rowGap));
 }
 
 [h2]监听可视区域变化
@@ -560,7 +569,7 @@ LazyDynamicLayout(this.lazyAlgorithm) {
 
 完整示例请参考自定义懒加载单列布局示例。
 
-上述示例中，点击底部按钮可以切换行间距。由于布局算法中实现了setAdjustedOffset调整逻辑，切换间距后可视区域第一个子组件的位置保持不变，避免了滚动跳动。
+上述示例中，点击底部按钮可以切换行间距。由于布局算法中实现了setAdjustedOffset调整逻辑，切换间距后锚点子组件（正向布局时为可视区域第一个子组件，反向布局时为可视区域最后一个子组件）的位置保持不变，避免了滚动跳动。
 
 针对自定义懒加载布局的开发，有以下相关实例可供参考。
 
@@ -614,7 +623,7 @@ export class LazyColumnLayoutAlgorithm extends LazyCustomLayoutAlgorithm {
 
   // === 锚点信息（滚动时保持稳定） ===
   private anchorChildIndex: number = -1;              // 锚点元素的索引
-  private anchorChildRelativePos: number = 0;        // 锚点距离可视区域边缘的距离
+  private anchorChildRelativePos: number = 0;        // 锚点位置（正向距内容顶部，反向距内容底部）
 ```
 
 ### Code block 2
@@ -743,7 +752,7 @@ private saveAnchorInfo(helper: LazyLayoutHelper, prevTotalHeight: number): void 
       this.anchorChildIndex = this.startIndex;
       const arrayIndex = this.anchorChildIndex - this.itemArrStartIndex;
       if (arrayIndex >= 0 && arrayIndex < this.itemArr.length) {
-        this.anchorChildRelativePos = this.itemArr[arrayIndex].start;
+        this.anchorChildRelativePos = this.itemArr[arrayIndex].start; // 锚点子组件距离总高度顶部的位置
       }
     }
   } else {
@@ -771,7 +780,7 @@ private adjustAnchorPosition(helper: LazyLayoutHelper): void {
     if (helper.getLazyLayoutDirection() === LazyLayoutDirection.FORWARD) {
       const arrayIndex = this.anchorChildIndex - this.itemArrStartIndex;
       if (arrayIndex >= 0 && arrayIndex < this.itemArr.length) {
-        let newPos = this.itemArr[arrayIndex].start;
+        let newPos = this.itemArr[arrayIndex].start; // 锚点子组件重新测量后距离总高度顶部的位置
         if (newPos !== this.anchorChildRelativePos) {
           helper.setAdjustedOffset(this.anchorChildRelativePos - newPos);
         }
@@ -902,8 +911,8 @@ private updateTotalHeight(): void {
  * 作用：释放滚动后离开可视区域的元素，节省内存
  *
  * 回收范围：
- * - 向前滚动：回收 this.prevStartIndex -> this.startIndex 之间的元素
- * - 向后滚动：回收 this.endIndex -> this.prevEndIndex 之间的元素
+ * - 向前滚动：回收 [this.prevStartIndex, this.startIndex) 范围内的元素
+ * - 向后滚动：回收 (this.endIndex, this.prevEndIndex] 范围内的元素
  */
 private recycleChildren(helper: LazyLayoutHelper): void {
   let recycleList: number[] = [];
@@ -956,7 +965,12 @@ export struct CustomLazyColumnLayoutSample {
   // ...
 
   aboutToAppear(): void {
-    this.lazyAlgorithm.setRowGap(this.getUIContext().vp2px(this.rowGap));
+    const uiContext = this.getUIContext();
+    if (!uiContext) {
+      return;
+    }
+    this.lazyAlgorithm.setUIContext(uiContext);
+    this.lazyAlgorithm.setRowGap(uiContext.vp2px(this.rowGap));
     for (let i = 0; i < 50; i++) {
       this.arr.pushData(`Item ${i}`);
     }
@@ -1004,7 +1018,11 @@ export struct CustomLazyColumnLayoutSample {
 
 ```
 onRowGapChange(): void {
-  this.lazyAlgorithm.setRowGap(this.getUIContext().vp2px(this.rowGap));
+  const uiContext = this.getUIContext();
+  if (!uiContext) {
+    return;
+  }
+  this.lazyAlgorithm.setRowGap(uiContext.vp2px(this.rowGap));
 }
 ```
 

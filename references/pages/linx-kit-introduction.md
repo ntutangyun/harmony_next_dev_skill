@@ -18,7 +18,7 @@ Linx Kit（灵犀加速库）是一套性能优化开发框架，基于芯片底
 
 Linx Kit只能在具备灵犀CPU核的目标设备上运行，不同设备支持的特性范围有所差异，可以通过API返回的错误码进行判断。
 
-支持的设备类型有：Phone、Tablet、PC/2in1、TV、Car。
+支持的设备类型有：Phone、Tablet、PC/2in1、TV。
 
 模拟器支持情况
 

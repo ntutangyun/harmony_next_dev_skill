@@ -69,7 +69,7 @@ hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteNa
 [h2]日志
 
 参数	说明
--e, --error	设置hvigor的日志级别为error。
+-e, --error	设置Hvigor的日志级别为error。
 -w, --warn	设置Hvigor的日志级别为warn。
 -i, --info	设置Hvigor的日志级别为info。
 -d, --debug	设置Hvigor的日志级别为debug。

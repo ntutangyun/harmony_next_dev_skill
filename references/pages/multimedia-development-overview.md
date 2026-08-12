@@ -54,15 +54,13 @@ HarmonyOS提供丰富的一站式媒体业务开放能力，开发者能够在�
 
 适配相机旋转角度(C/C++)
 
+相机预览花屏解决方案
+
 API参考
 
 ArkTS API：camera
 
 C API：OH_Camera
-
-最佳实践
-
-相机预览花屏解决方案
 
 [h2]相机拍照
 
@@ -286,7 +284,7 @@ C API：OHAudio
 
 应用接入播控自检
 
-使用合适的音频流类型
+使用合适的播放流类型
 
 音频焦点和音频会话介绍
 
@@ -354,6 +352,8 @@ C API：AVRecorder
 
 保存媒体库资源
 
+图片获取与保存实践
+
 API参考
 
 ArkTS API：photoAccessHelper
@@ -363,10 +363,6 @@ ArkTS组件：AlbumPickerComponent
 ArkTS组件：PhotoPickerComponent
 
 ArkTS组件：RecentPhotoComponent
-
-最佳实践
-
-图片获取与保存实践
 
 示例代码
 
@@ -399,7 +395,7 @@ ArkTS组件：RecentPhotoComponent
 Audio Kit
 
 分类	资源链接
-音频焦点	- 开发指南：使用合适的音频流类型 - 开发指南：音频焦点和音频会话 - ArkTS API参考：AudioSession - ArkTS API参考：StreamUsage
+音频焦点	- 开发指南：使用合适的播放流类型、使用合适的录制流类型 - 开发指南：音频焦点和音频会话 - ArkTS API参考：AudioSession - ArkTS API参考：StreamUsage
 音频通话	- 开发指南：使用AudioRenderer播放对端的通话声音 - 开发指南：使用AudioCapturer录制本端的通话声音
 更多	Audio Kit开发指南 Audio Kit API参考
 

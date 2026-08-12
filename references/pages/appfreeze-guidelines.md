@@ -781,6 +781,56 @@ AppFreeze故障信息聚类方法同Cpp Crash一致，参考CppCrash聚类。
 
 开发者可参考AppFreeze故障信息聚类方法获取聚类特征，对增强日志信息进行聚类。
 
+屏蔽AppFreeze检测
+
+在开发调试阶段，开发者可以通过以下命令屏蔽AppFreeze检测，避免调试过程中的超时检测影响开发调试。
+
+[h2]环境要求
+
+在使用屏蔽指令前，开发者需要先获取hdc工具，并通过hdc shell进入设备shell。
+
+[h2]约束与限制
+
+应用类型限制：仅支持debug类型应用屏蔽检测，release类型应用不支持此功能。
+
+执行时机限制：需在应用启动后执行屏蔽指令。
+
+[h2]使用方法
+
+进入调试模式
+
+aa attach -b <bundleName>
+
+例如：
+
+aa attach -b com.example.appfreeze
+
+当应用成功进入调试模式时，返回：
+
+attach app debug successfully.
+
+当给定的<bundleName>参数不合法或者不存在时，返回如下内容，更多详细说明请参考：进入调试模式命令（attach）：
+
+error: failed to attach app debug.
+
+退出调试模式
+
+开发者在调试完成后，使用执行aa detach命令退出调试模式，恢复AppFreeze检测能力，确保应用正常运行时的故障检测不受影响。
+
+aa detach -b <bundleName>
+
+例如：
+
+aa detach -b com.example.appfreeze
+
+当应用退出调试模式时，返回：
+
+detach app debug successfully.
+
+当给定的<bundleName>参数不合法或者不存在时，返回如下内容，更多详细说明请参考：退出调试模式命令（detach）：
+
+error: failed to detach app debug.
+
 ## Code blocks
 
 ### Code block 1
@@ -1129,4 +1179,52 @@ SnapshotTime: 2021-01-01-20-05-58.549685
 #04 pc 0000000000448dd4 /system/lib64/module/arkcompiler/stub.an(BCStub_HandleCallthis0Imm8V8StwCopy+372)
 #05 at anonymous (sample|sample|1.0.0|src/main/ets/pages/Index.ts:381:36)
 .......
+```
+
+### Code block 14
+
+```
+aa attach -b <bundleName>
+```
+
+### Code block 15
+
+```
+aa attach -b com.example.appfreeze
+```
+
+### Code block 16
+
+```
+attach app debug successfully.
+```
+
+### Code block 17
+
+```
+error: failed to attach app debug.
+```
+
+### Code block 18
+
+```
+aa detach -b <bundleName>
+```
+
+### Code block 19
+
+```
+aa detach -b com.example.appfreeze
+```
+
+### Code block 20
+
+```
+detach app debug successfully.
+```
+
+### Code block 21
+
+```
+error: failed to detach app debug.
 ```

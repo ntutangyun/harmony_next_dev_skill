@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/source-obfuscation-keep-options_
 
-从API version 10开始，开启混淆后代码中的方法、属性或路径将被混淆。但在运行时，如果访问是未被混淆的原始方法、属性或路径，可能会导致功能失效。因此需要根据不同的场景配置相应的保留选项。
+从API version 10开始，开启混淆后代码中的方法、属性或路径将被混淆。但在运行时，通过混淆前的原始名称访问已被混淆的方法、属性或路径，可能会导致功能失效。因此需要根据不同的场景配置相应的保留选项。
 
 排查场景和配置字段时，推荐使用混淆助手配置保留选项，快速识别需要配置的保留选项和白名单字段。
 
@@ -103,12 +103,12 @@ import jsonData from './ImportJson.json';
 // ...
 let jsonProp = jsonData.jsonProperty; // jsonProperty应该被保留
 
-class jsonTest {
+class JsonTest {
   prop1: string = '';
   prop2: number = 0
 }
 
-let obj = new jsonTest();
+let obj = new JsonTest();
 const jsonStr = JSON.stringify(obj); // prop1 和 prop2 会被混淆，应该被保留
 
 使用到的数据库相关的字段，需要手动保留。例如，数据库键值对类型（ValuesBucket）中的属性：
@@ -236,7 +236,7 @@ const module1 = require('./RequireFile'); // RequireFile 应该被保留
 // DynamicImportFile.ts
 export function foo () {}
 
-// main.ts
+// ArkGuardAbility.ts
 const moduleName = './DynamicImportFile'; // moduleName对应的路径名DynamicImportFile应该被保留
 async function func2() {
   const modules = await import(moduleName);
@@ -566,12 +566,12 @@ import jsonData from './ImportJson.json';
 // ...
 let jsonProp = jsonData.jsonProperty; // jsonProperty应该被保留
 
-class jsonTest {
+class JsonTest {
   prop1: string = '';
   prop2: number = 0
 }
 
-let obj = new jsonTest();
+let obj = new JsonTest();
 const jsonStr = JSON.stringify(obj); // prop1 和 prop2 会被混淆，应该被保留
 ```
 
@@ -709,7 +709,7 @@ export function foo () {}
 ### Code block 21
 
 ```
-// main.ts
+// ArkGuardAbility.ts
 const moduleName = './DynamicImportFile'; // moduleName对应的路径名DynamicImportFile应该被保留
 async function func2() {
   const modules = await import(moduleName);

@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-de
 
 录像实践(ArkTS)
 
-元数据(ArkTS)
+元数据（ArkTS）
 
 手电筒使用(ArkTS)
 

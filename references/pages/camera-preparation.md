@@ -20,4 +20,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-pr
 
 说明
 
+当通过弹窗向用户申请授权时，用户拒绝授权，可通过isCameraMuted查询当前相机是否被禁用。
+
 仅应用需要克隆、备份或同步用户公共目录的图片、视频类文件时，可申请ohos.permission.READ_IMAGEVIDEO、ohos.permission.WRITE_IMAGEVIDEO权限来读写图片视频文件，申请方式请参考申请受控权限，通过AGC审核后才能使用。为避免应用的上架申请被驳回，开发者应优先使用Picker/控件等替代方案，仅少量符合特殊场景的应用被允许申请受限权限。

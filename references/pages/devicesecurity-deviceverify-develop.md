@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 约束与限制
 
-应用设备状态检测（DeviceVerify）能力不支持模拟器。支持设备：Phone、Tablet、PC/2in1、Wearable，从5.1.1(19)版本开始，新增支持设备：TV，从7.0.0(26)版本开始，新增支持设备：Car。
+应用设备状态检测（DeviceVerify）能力不支持模拟器。支持设备：Phone、Tablet、PC/2in1、Wearable，从5.1.1(19)版本开始，新增支持TV设备。
 
 业务流程
 

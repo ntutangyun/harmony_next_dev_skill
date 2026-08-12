@@ -2,15 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-import-native-module_
 
-在ES6(ECMAScript 6.0)模块设计中，使用import语法加载其他文件导出的内容是ECMA规范所定义的语法规则。为支持开发者使用该功能导入Native模块（so）导出的内容，ArkTS进行了相关适配，并提供了以下几种支持写法。
+在ES6(ECMAScript 6.0)模块设计中，使用import语法加载其他文件导出的内容是ECMA规范所定义的语法规则。为支持开发者使用该功能导入Native模块（so）导出的内容，ArkTS进行了相关适配，并提供了以下三类支持写法：直接导入、间接导入和动态导入。
 
 直接导入
 
-在Native模块的index.d.ts文件中导出，并在文件内直接导入。
+在Native模块的Index.d.ts文件中导出，并在文件内直接导入。
 
 [h2]具名导入
 
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 
 // NameImport.ets
@@ -19,7 +19,7 @@ add(2, 3);
 
 [h2]默认导入
 
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 
 // DefaultImport.ets
@@ -28,7 +28,7 @@ entry.add(2, 3);
 
 [h2]命名空间导入
 
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 
 // NamespaceImport.ets
@@ -39,7 +39,7 @@ entry.add(2, 3);
 
 [h2]转为具名变量导出再导入
 
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 
 // NameExport.ets
@@ -54,7 +54,7 @@ const result = add(2, 3);
 
 [h2]转为命名空间导出再导入
 
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 
 // NamespaceExport.ets
@@ -66,7 +66,7 @@ add(2, 3);
 
 注意
 
-不支持Native模块导出和导入同时使用命名空间。
+不支持在导出端使用命名空间导出（export *）的同时在导入端使用命名空间导入（import * as）。
 
 反例：
 
@@ -74,14 +74,14 @@ add(2, 3);
 export * from 'libentry.so';
 
 // test2.ets
-import * as add from './test1'
-// 无法获取add对象
+import * as lib from './test1'
+// 无法获取lib对象
 
 动态导入
 
 [h2]直接导入
 
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 
 // DynamicImport.ets
@@ -119,7 +119,7 @@ import('./test1').then((ns:ESObject) => {
 ### Code block 1
 
 ```
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 
@@ -134,7 +134,7 @@ add(2, 3);
 ### Code block 3
 
 ```
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 
@@ -149,7 +149,7 @@ entry.add(2, 3);
 ### Code block 5
 
 ```
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 
@@ -164,7 +164,7 @@ entry.add(2, 3);
 ### Code block 7
 
 ```
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 
@@ -189,7 +189,7 @@ const result = add(2, 3);
 ### Code block 10
 
 ```
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 
@@ -219,14 +219,14 @@ export * from 'libentry.so';
 
 ```
 // test2.ets
-import * as add from './test1'
-// 无法获取add对象
+import * as lib from './test1'
+// 无法获取lib对象
 ```
 
 ### Code block 15
 
 ```
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 

@@ -226,7 +226,7 @@ entry/src/main/resources/
 
 通过注释、解注释/entry/src/main/ets/pages/Index.ets中的上文示例的各种情况，编译并运行。
 
-在安装应用后，可将示例工程的/entry/src/main/resources/rawfile/test.m3u8通过以下命令加入应用沙箱，从而运行应用沙箱相关示例:（<FILESDIR>为物理路径，以示例工程为例，可通过console.info打印"this.context.filesDir"得到应用沙箱路径，再根据应用沙箱指南的应用沙箱路径和真实物理路径的对应关系表找到物理路径）。
+在安装应用后，可将示例工程的/entry/src/main/resources/rawfile/test.m3u8通过以下命令加入应用沙箱，从而运行应用沙箱相关示例：（<FILESDIR>为物理路径，以示例工程为例，可通过console.info打印"this.context.filesDir"得到应用沙箱路径，再根据应用沙箱指南的应用沙箱路径和真实物理路径的对应关系表找到物理路径）。
 
 hdc file send "[目录]\test.m3u8" <FILESDIR>
 hdc file send "[目录]\test_01.mp3" <FILESDIR>

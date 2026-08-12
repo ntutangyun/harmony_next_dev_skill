@@ -183,7 +183,7 @@ on('netUnavailable')：订阅网络不可用事件，当网络不可用时触发
 
 on('netAvailable')：订阅网络可用事件，当网络可用时触发该事件。
 
-netQuality.on( 'netSceneChange')：订阅网络场景信息，如从正常网络进入到弱网环境。
+netQuality.on('netSceneChange')：订阅网络场景信息，如从正常网络进入到弱网环境。
 
 以视频播放场景为例，网络状态感知体验如下：
 
@@ -504,7 +504,7 @@ import { geoLocationManager } from '@kit.LocationKit';
 
 @ohos.telephony.radio (网络搜索)：获取蜂窝网络的相关信息，如运营商名称、网络制式、信号强度、是否处于漫游状态以及主卡Radio是否打开等。例如，getOperatorNameSync()方法获取运营商名称，getSignalInformationSync()方法获取信号强度信息和网络制式。
 
-netQuality(网络质量)：提供网络质量实时评估、网络场景识别以及弱信号预测等能力。使用netQuality.on( 'netQosChange')订阅网络质量信息，包含信号强度、下载速度、网络时延等。
+netQuality(网络质量)：提供网络质量实时评估、网络场景识别以及弱信号预测等能力。使用netQuality.on('netQosChange')订阅网络质量信息，包含信号强度、下载速度、网络时延等。
 
 本章提供了网络故障诊断分析场景的检测项和规格，以下内容仅供参考，开发者可根据自身业务需求选择检测项并定义规格。
 

@@ -129,7 +129,7 @@ console.info(obj002.dynamicPropertyName);// 使用点语法静态访问属性，
 
 若代码中使用点语法访问未在ArkTS/TS/JS代码中定义的字段，比如访问native实现的so库，字段固定的json文件与数据库等场景：
 
-若在代码中引用so库的api，如import testNapi from 'library.so';testNapi.foo();需要使用-keep-property-name foo 来保留属性名称。
+若在代码中引用so库的API，如import testNapi from 'library.so';testNapi.foo();需要使用-keep-property-name foo 来保留属性名称。
 
 若在代码中使用json文件中的字段，需要使用-keep-property-name保留json文件中的字段名称。
 
@@ -143,7 +143,7 @@ console.info(obj002.dynamicPropertyName);// 使用点语法静态访问属性，
 
 若构建HAR模块并发布给其他模块使用的场景，要在HAR模块中的obfuscation-rules.txt文件中将对外接口使用-keep-global-name来保留，将对外暴露的class/interface等语法中的属性使用-keep-property-name保留。
 
-若在代码中引用so库的api，如import { napiA } from 'library.so'；需要使用-keep-global-namenapiA保留so接口名称。
+若在代码中引用so库的API，如import { napiA } from 'library.so'；需要使用-keep-global-name napiA保留so接口名称。
 
 验证应用功能以及模块被依赖时的接口调用功能，排查遗漏的场景。若应用出现功能异常，依据混淆后的报错栈从对应的中间产物中找到报错行的代码，排查需要配置的白名单并进行保留。
 
@@ -151,7 +151,7 @@ console.info(obj002.dynamicPropertyName);// 使用点语法静态访问属性，
 
 若应用中有描述路由表信息的routerMap配置，其中的pageSourceFile字段标记页面在模块的路径，需要使用-keep-file-name来保留这个路径。
 
-若代码中有传入ohmUrl进行页面跳转，如router.pushUrl({url: '@bundle:com.example.routerPage/Library/Index'})，使用-keep-file-name来保留这个路径。
+若代码中有传入ohmUrl进行页面跳转，如router.pushUrl({url: '@bundle:com.example.routerPage/Library/Index'})，需要使用-keep-file-name来保留该路径中的文件名部分（如Library和Index）。
 
 验证应用功能，排查遗漏的场景。若应用出现功能异常，且报错栈中的路径为混淆后的路径，可以在模块中的build/default/[...]/release/obfuscation/nameCache.json文件中查询到原始路径，进而找到源码文件。另外，插件hstack支持自动还原混淆后的报错堆栈。在定位到需要保留的路径后，使用-keep-file-name来保留此路径。
 

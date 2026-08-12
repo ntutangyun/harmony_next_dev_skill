@@ -35,8 +35,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口及使用方法请参见API参考。
 
 接口名	描述
-importData(data: ArrayBuffer, authID: bigint): Promise<void>	导入数据（即与HUKS签名验签时使用的加密密钥信息）
-exportData(authID: bigint, label: TUILable): Promise<ArrayBuffer>	导出数据（即与HUKS签名验签时使用的加密密钥信息）
+importData(data: ArrayBuffer, authID: bigint): Promise<void>	导入数据（即与HUKS签名验签时使用的加密密钥信息）。
+exportData(authID: bigint, label: TUILable): Promise<ArrayBuffer>	导出数据（即与HUKS签名验签时使用的加密密钥信息）。
 
 开发步骤
 

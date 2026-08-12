@@ -213,7 +213,7 @@ databaseZone.query(condition).then((resultArray: BookInfo[]) => {
   hilog.error(0x0000, 'cloudDb', `Failed to query, code: ${err.code}, message: ${err.message}`);
 });
 
-构造查询条件，并调用query()方法，查询书籍价格小于200并且名称等于“demo”的数据。
+构造查询条件，并调用query()方法，查询书籍价格在10到50之间的数据。
 
 let condition = new cloudDatabase.DatabaseQuery(BookInfo);
 condition.beginGroup()

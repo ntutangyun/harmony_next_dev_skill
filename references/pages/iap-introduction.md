@@ -23,10 +23,10 @@ IAP Kit（应用内支付服务）为开发者提供便捷的应用内支付体�
 中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）：
 
 商品类型	支持设备
-消耗型商品	Phone、PC/2in1、Tablet、Wearable、TV、Car
-非消耗型商品	Phone、PC/2in1、Tablet、Wearable、TV、Car
-自动续期订阅商品	Phone、PC/2in1、Tablet、TV、Car
-非续期订阅商品	Phone、PC/2in1、Tablet、TV、Car
+消耗型商品	Phone、PC/2in1、Tablet、Wearable、TV
+非消耗型商品	Phone、PC/2in1、Tablet、Wearable、TV
+自动续期订阅商品	Phone、PC/2in1、Tablet、TV
+非续期订阅商品	Phone、PC/2in1、Tablet、TV
 
 从6.1.0(23)版本开始，提供了IAP嵌入式收银台组件。
 

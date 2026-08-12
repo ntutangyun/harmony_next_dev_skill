@@ -4,6 +4,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ux-testin
 
 多设备布局对比测试
 
+须知
+
+多设备布局对比测试支持模拟器；下文将首先介绍如何在 DevEco Studio 中配置模拟器，如电脑已经配置模拟器，可跳过“环境准备”步骤。
+
 [h2]环境准备
 
 远程模拟器预置

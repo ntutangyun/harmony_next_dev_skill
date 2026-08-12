@@ -13,3 +13,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/local-avs
 后台播放
 
 应用接入歌词组件
+
+媒体会话控制方

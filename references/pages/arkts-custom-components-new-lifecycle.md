@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-cus
 
 @ComponentInactive：当组件从激活状态变为非激活状态时，调用该装饰器装饰的函数。
 
-自定义组件生命周期受状态机限制，流程如下图所示。
+自定义组件生命周期受状态机限制，每个生命周期回调函数仅在特定的状态转换阶段才会被调用，比如@ComponentReuse的限制条件是从CustomComponentLifecycleState.RECYCLED到CustomComponentLifecycleState.BUILT阶段触发，@ComponentAppear仅在组件处于CustomComponentLifecycleState.INIT状态时触发，流程如下图所示。
 
 [h2]自定义组件的创建和渲染流程
 
@@ -61,7 +61,6 @@ import { ComponentActive, ComponentInactive, ComponentReuse, ComponentRecycle } 
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
   @State changeChild: boolean = false;
 
   build() {
@@ -178,7 +177,6 @@ struct Index {
   }
 }
 
-// PageOne.ets
 @Builder
 export function PageOneBuilder() {
   PageOne()
@@ -217,7 +215,6 @@ struct PageOne {
   }
 }
 
-// PageTwo.ets
 import { ComponentActive, ComponentInactive } from '@kit.ArkUI';
 
 @Builder
@@ -229,11 +226,6 @@ export function PageTwoBuilder() {
 @Component
 struct PageTwo {
   @State pageStack: NavPathStack = new NavPathStack();
-  @State @Watch('onMessageUpdated') message: number = 0;
-
-  onMessageUpdated() {
-    console.info(`TabContent message callback func ${this.message}`);
-  }
 
   build() {
     NavDestination() {
@@ -256,10 +248,6 @@ struct PageTwo {
           .width('40%')
         Row() {
           Column() {
-            Button(`change message`)
-              .onClick(() => {
-                this.message++;
-              })
             TabsComponent();
           }
           .width('100%')
@@ -300,7 +288,6 @@ struct FreezeChild {
 @Component
 struct TabsComponent {
   private data: number[] = [0, 1, 2];
-  private controller: TabsController = new TabsController();
   @State @Watch('onMessageUpdated') message: number = 0;
 
   onMessageUpdated() {
@@ -311,6 +298,7 @@ struct TabsComponent {
     Column() {
       Button(`Incr state ${this.message}`)
         .onClick(() => {
+          // 点击Button修改message，触发可见TabContent的onMessageUpdated回调
           this.message++;
         })
         .margin(10)
@@ -461,7 +449,6 @@ struct Child {
   }
 }
 
-// BasicDataSource.ets
 abstract class BasicDataSource<T> implements IDataSource {
   private listeners: DataChangeListener[] = [];
   abstract totalCount(): number;
@@ -733,7 +720,7 @@ import { ComponentInit, ComponentAppear, ComponentBuilt, ComponentDisappear, Com
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export class Message {
-  value: string | undefined;
+  public value: string | undefined;
   constructor(value: string) {
     this.value = value;
   }
@@ -892,7 +879,7 @@ import { ComponentInit, ComponentDisappear, UIUtils, CustomComponentLifecycleObs
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export class Message {
-  value: string | undefined;
+  public value: string | undefined;
   constructor(value: string) {
     this.value = value;
   }
@@ -1046,7 +1033,6 @@ struct Index {
   }
 }
 
-// SwiperPage.ets
 import { ComponentAppear, ComponentDisappear } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -1080,7 +1066,7 @@ export struct SwiperPage {
 }
 
 class MyDataSource implements IDataSource {
-  list: number[] = [];
+  public list: number[] = [];
   constructor(list: number[]) {
     this.list = list;
   }
@@ -1284,7 +1270,6 @@ import { ComponentActive, ComponentInactive, ComponentReuse, ComponentRecycle } 
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
   @State changeChild: boolean = false;
 
   build() {
@@ -1401,7 +1386,6 @@ struct Index {
 ### Code block 5
 
 ```
-// PageOne.ets
 @Builder
 export function PageOneBuilder() {
   PageOne()
@@ -1444,7 +1428,6 @@ struct PageOne {
 ### Code block 6
 
 ```
-// PageTwo.ets
 import { ComponentActive, ComponentInactive } from '@kit.ArkUI';
 
 @Builder
@@ -1456,11 +1439,6 @@ export function PageTwoBuilder() {
 @Component
 struct PageTwo {
   @State pageStack: NavPathStack = new NavPathStack();
-  @State @Watch('onMessageUpdated') message: number = 0;
-
-  onMessageUpdated() {
-    console.info(`TabContent message callback func ${this.message}`);
-  }
 
   build() {
     NavDestination() {
@@ -1483,10 +1461,6 @@ struct PageTwo {
           .width('40%')
         Row() {
           Column() {
-            Button(`change message`)
-              .onClick(() => {
-                this.message++;
-              })
             TabsComponent();
           }
           .width('100%')
@@ -1527,7 +1501,6 @@ struct FreezeChild {
 @Component
 struct TabsComponent {
   private data: number[] = [0, 1, 2];
-  private controller: TabsController = new TabsController();
   @State @Watch('onMessageUpdated') message: number = 0;
 
   onMessageUpdated() {
@@ -1538,6 +1511,7 @@ struct TabsComponent {
     Column() {
       Button(`Incr state ${this.message}`)
         .onClick(() => {
+          // 点击Button修改message，触发可见TabContent的onMessageUpdated回调
           this.message++;
         })
         .margin(10)
@@ -1692,7 +1666,6 @@ struct Child {
 ### Code block 14
 
 ```
-// BasicDataSource.ets
 abstract class BasicDataSource<T> implements IDataSource {
   private listeners: DataChangeListener[] = [];
   abstract totalCount(): number;
@@ -1944,7 +1917,7 @@ import { ComponentInit, ComponentAppear, ComponentBuilt, ComponentDisappear, Com
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export class Message {
-  value: string | undefined;
+  public value: string | undefined;
   constructor(value: string) {
     this.value = value;
   }
@@ -2105,7 +2078,7 @@ import { ComponentInit, ComponentDisappear, UIUtils, CustomComponentLifecycleObs
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export class Message {
-  value: string | undefined;
+  public value: string | undefined;
   constructor(value: string) {
     this.value = value;
   }
@@ -2259,7 +2232,6 @@ struct Index {
 ### Code block 33
 
 ```
-// SwiperPage.ets
 import { ComponentAppear, ComponentDisappear } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -2293,7 +2265,7 @@ export struct SwiperPage {
 }
 
 class MyDataSource implements IDataSource {
-  list: number[] = [];
+  public list: number[] = [];
   constructor(list: number[]) {
     this.list = list;
   }

@@ -532,6 +532,14 @@ struct Index {
   }
 }
 
+常见问题
+
+[h2]折叠状态改变时，如何处理相机画面可能出现的拉伸变形问题
+
+折叠状态发生变化导致镜头切换后，可能出现图像分辨率与XComponent的宽高比不匹配的情况。应用可通过Window.on('windowSizeChange')监听窗口的变化，根据屏幕旋转角度（Display.rotation）与相机镜头角度（CameraDevice.cameraOrientation）之间的关系来确定布局的宽高比，以确保XComponent的宽高比能跟随窗口实时调整。
+
+详细代码可参考：指定XComponent的大小，防止旋转后图像拉伸变形。
+
 ## Code blocks
 
 ### Code block 1

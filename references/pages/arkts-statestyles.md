@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sta
 
 概述
 
-stateStyles是属性方法，可以根据UI内部状态来设置样式，类似于css伪类，但语法不同。ArkUI提供以下六种状态：
+stateStyles是属性方法，可以根据UI内部状态来设置样式，类似于css伪类，但语法不同。ArkUI提供以下七种状态：
 
 focused：获焦态。
 
@@ -23,6 +23,8 @@ disabled：不可用态。
 clicked：点击态。
 
 selected10+：选中态。
+
+hovered：悬浮态。起始版本： 26.0.0
 
 说明
 

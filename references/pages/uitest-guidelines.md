@@ -48,7 +48,7 @@ UI测试是在单元测试基础上进行UITest接口调用，接口的详细定
 
 通过添加断言，验证操作后当前页面的实际变化是否与预期结果一致。
 
-开发步骤如下:
+开发步骤如下：
 
 在main > ets > pages文件夹下编写clickToAfter.ets页面代码，作为被测示例demo。
 
@@ -594,7 +594,7 @@ hdc shell uitest screenCap -p /data/local/tmp/1.png
 -i	-	不过滤不可见控件，也不做窗口合并。
 -a	-	保存控件的BackgroundColor、Content、FontColor、FontSize、extraAttrs属性数据。 说明 ：默认不保存上述属性数据， -a和-i不可同时使用。
 -b	<bundleName>	获取指定包名对应目标窗口的控件树信息。
--w	<windowId>	获取指定ID目标窗口的控件树信息。 说明: 可通过hidumper工具获取应用窗口信息, 包含应用对应窗口的id。
+-w	<windowId>	获取指定ID目标窗口的控件树信息。 说明： 可通过hidumper工具获取应用窗口信息, 包含应用对应窗口的id。
 -m	<true|false>	指定在获取控件树信息时是否合并窗口信息。true表示合并窗口信息，false表示不合并窗口信息，不设置时默认为true。
 -d	<displayId>	多屏场景下，获取指定ID屏幕下的控件树。 说明： 1. 从API version 20开始支持该命令。 2. 可通过hidumper工具获取应用窗口信息，包含应用对应窗口的DisplayId。
 
@@ -612,7 +612,7 @@ hdc shell uitest dumpLayout -p /data/local/tmp/1.json
 参数	二级参数	说明
 -W	<true/false>	录制过程中是否保存操作坐标对应的控件信息到/data/local/tmp/record.csv文件中。true表示保存控件信息，false表示仅记录坐标信息，不设置时默认为true。 说明： 从API version 20开始支持该命令。
 -l	-	在每次操作后保存当前布局信息，文件保存路径：/data/local/tmp/layout_录制启动时间戳_操作序号.json。 说明： 从API version 20开始支持该命令。
--c	<true/false>	是否将录制到的操作事件信息打印到控制台，true表示打印，false表示打印，不设置时默认为true。 说明： 从API version 20开始支持该命令。
+-c	<true/false>	是否将录制到的操作事件信息打印到控制台，true表示打印，false表示不打印，不设置时默认为true。 说明： 从API version 20开始支持该命令。
 
 # 将当前界面操作记录到/data/local/tmp/record.csv，结束录制操作使用Ctrl+C结束录制。
 hdc shell uitest uiRecord record
@@ -781,7 +781,7 @@ hdc shell uitest --version
 
 说明
 
-仅元能力aa test拉起的测试HAP才能调用Uitest的能力，且测试HAP的APL等级级别需为normal。
+仅元能力aa test拉起的测试HAP才能调用UITest的能力，且测试HAP的APL等级级别需为normal。
 
 hdc shell uitest start-daemon
 

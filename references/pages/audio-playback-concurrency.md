@@ -165,7 +165,7 @@ InterruptHint参数用于提示应用音频流的状态：
 音乐	STREAM_USAGE_MUSIC	来电铃声	STREAM_USAGE_RINGTONE	开始响铃，音乐暂停播放。 不接通或者接通再挂断后，音乐恢复播放。	音乐应用注册焦点事件监听。接收到INTERRUPT_HINT_PAUSE事件时，直接暂停音乐播放，并更新UI界面。 当电话结束后，音频应用接收到INTERRUPT_HINT_RESUME事件，重新启动播放。
 音乐	STREAM_USAGE_MUSIC	VoIP通话	STREAM_USAGE_VOICE_COMMUNICATION	通话接通时，音乐暂停播放。 通话挂断后，音乐恢复播放。	音乐应用注册焦点事件监听。 接收到INTERRUPT_HINT_PAUSE事件时，直接暂停音乐播放，并更新UI界面。 当通话结束后，音乐应用接收到INTERRUPT_HINT_RESUME事件，重新启动播放。
 
-处理音频焦点示例:
+处理音频焦点示例：
 
 为了带给用户更好的音频体验，针对不同的音频焦点事件内容，应用需要做出相应的处理操作。此处以使用AudioRenderer开发音频播放功能(ArkTS)为例，展示推荐应用采取的处理方法，提供伪代码供开发者参考。
 

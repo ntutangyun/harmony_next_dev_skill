@@ -197,7 +197,7 @@ ohpm config list -j 或 ohpm config list --json
 // 1.执行 encrypt --crypto_path <string> 命令，指定的路径为空目录
 ohpm config encrypt --crypto_path D:\path\to\empty_dir
 // 2.成功执行后，在指定路径生成新的加密组件，并对用户输入内容进行加密，其中用户输入内容不可见
-ohpm INFO: Attempted to create an crypto component at the "D:\path\to\empty_dir" path...
+ohpm INFO: Attempted to create a crypto component at the "D:\path\to\empty_dir" path...
 ohpm INFO: The crypto component has been created successfully.
 Please enter the password to be encrypted:
 ohpm INFO: encrypted result:
@@ -427,7 +427,7 @@ ohpm config list -j 或 ohpm config list --json
 // 1.执行 encrypt --crypto_path <string> 命令，指定的路径为空目录
 ohpm config encrypt --crypto_path D:\path\to\empty_dir
 // 2.成功执行后，在指定路径生成新的加密组件，并对用户输入内容进行加密，其中用户输入内容不可见
-ohpm INFO: Attempted to create an crypto component at the "D:\path\to\empty_dir" path...
+ohpm INFO: Attempted to create a crypto component at the "D:\path\to\empty_dir" path...
 ohpm INFO: The crypto component has been created successfully.
 Please enter the password to be encrypted:
 ohpm INFO: encrypted result:

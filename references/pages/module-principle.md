@@ -59,7 +59,7 @@ ArkTS支持加载的模块类型
 
 [h2]JSON文件
 
-JSON（JavaScript Object Notation）是一种轻量级的数据交互格式，采用完全独立于编程语言的文本格式来存储和表示数据。
+JSON（JavaScript Object Notation）是一种轻量级的数据交换格式，采用完全独立于编程语言的文本格式来存储和表示数据。
 
 JSON文件只能使用default方式导入，如下所示：
 
@@ -75,7 +75,7 @@ Native模块不支持在CommonJS模块中导入。
 
 示例：
 
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 
 // NameImport.ets
@@ -93,7 +93,7 @@ import data from './ImportJson.json';
 ### Code block 2
 
 ```
-// libentry.so对应的index.d.ts
+// libentry.so对应的Index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 

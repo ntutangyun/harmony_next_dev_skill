@@ -973,7 +973,7 @@ function foo4() {
 }
 
 let obj = { value: 'abc' };
-foo.apply(obj);
+foo4.apply(obj);
 
 建议改法1
 
@@ -2989,7 +2989,7 @@ function foo4() {
 }
 
 let obj = { value: 'abc' };
-foo.apply(obj);
+foo4.apply(obj);
 ```
 
 ### Code block 77

@@ -20,7 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-upd
 
 约束与限制
 
-应用市场更新功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从6.0.0(20)版本开始，新增支持Wearable设备；从26.0.0版本开始，新增支持Car设备。
+应用市场更新功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从6.0.0(20)版本开始，新增支持Wearable设备。
 
 应用市场更新功能不支持模拟器，请使用真机调试。在模拟器中使用该服务将会提示：无法获取内容，请点击屏幕重试。
 

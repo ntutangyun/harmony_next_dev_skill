@@ -122,9 +122,15 @@ if (ret != AV_ERR_OK) {
     // 异常处理。
 }
 
-销毁OH_NativeImage实例。
+取消NativeImage的回调监听并销毁OH_NativeImage实例。
 
-在调用OH_VideoDecoder_Destroy接口后，调用OH_NativeImage_Destroy接口销毁OH_NativeImage实例。
+在调用OH_VideoDecoder_Destroy接口后，调用OH_NativeImage_UnsetOnFrameAvailableListener接口取消帧可用回调监听，再调用OH_NativeImage_Destroy接口销毁OH_NativeImage实例。
+
+// 取消帧可用回调监听。
+ret = OH_NativeImage_UnsetOnFrameAvailableListener(image);
+if (ret != AV_ERR_OK) {
+   // 异常处理。
+}
 
 // 销毁OH_NativeImage实例。
 OH_NativeImage_Destroy(&image);
@@ -226,6 +232,12 @@ if (ret != AV_ERR_OK) {
 ### Code block 9
 
 ```
+// 取消帧可用回调监听。
+ret = OH_NativeImage_UnsetOnFrameAvailableListener(image);
+if (ret != AV_ERR_OK) {
+   // 异常处理。
+}
+
 // 销毁OH_NativeImage实例。
 OH_NativeImage_Destroy(&image);
 ```

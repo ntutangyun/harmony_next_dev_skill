@@ -1,4 +1,4 @@
-# 元数据(ArkTS)
+# 元数据（ArkTS）
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/camera-metadata_
 

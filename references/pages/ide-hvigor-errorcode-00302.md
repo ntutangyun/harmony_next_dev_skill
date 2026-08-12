@@ -50,11 +50,22 @@ The root node is not yet available for build.
 
 可能原因
 
-在hvigorconfig.ts中调用API，该文件的执行时机比nodesInitialized更早，导致API 调用失败。
+在hvigorconfig.ts中调用API，该文件的执行时机比nodesInitialized更早，导致API调用失败。
+
+DevEco Studio或Command Line Tools默认内置了hvigor插件，无需开发者配置。如果环境中存在多个hvigor插件，会导致构建时查找到多个hvigor插件，导致报错。
 
 处理步骤
 
 在hvigorfile.ts中调用API，确保符合Hvigor生命周期的执行顺序。
+
+如果hvigor-config.json5的dependencies包含@ohos/hvigor或@ohos/hvigor-ohos-plugin，请将它们移除。
+
+可通过在hvigorconfig.ts或hvigorfile.ts打印以下内容找到插件的安装位置：
+
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+
+console.log(require.resolve('@ohos/hvigor'));
 
 00302014 hvigorConfig还没准备好用于构建
 
@@ -68,11 +79,18 @@ hvigorConfig还没准备好用于构建。
 
 可能原因
 
-未知。
+DevEco Studio或Command Line Tools默认内置了hvigor插件，无需开发者配置。如果环境中存在多个hvigor插件，会导致构建时查找到多个hvigor插件，导致报错。
 
 处理步骤
 
-通过在线提单提交问题，华为支持人员会及时处理。
+如果hvigor-config.json5的dependencies包含@ohos/hvigor或@ohos/hvigor-ohos-plugin，请将它们移除。
+
+可通过在hvigorconfig.ts或hvigorfile.ts打印以下内容找到插件的安装位置：
+
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+
+console.log(require.resolve('@ohos/hvigor'));
 
 00302015 调用内部hook函数时出现异常
 
@@ -479,7 +497,14 @@ Failed to execute function 'XXX' of the custom plugin whose pluginId is 'YYY': Z
 
 处理步骤
 
-根据报错信息ZZZ检查自定义插件YYY的函数XXX中的代码。
+如果hvigor-config.json5的dependencies包含@ohos/hvigor或@ohos/hvigor-ohos-plugin，请将它们移除。
+
+可通过在hvigorconfig.ts或hvigorfile.ts打印以下内容找到插件的安装位置：
+
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+
+console.log(require.resolve('@ohos/hvigor'));
 
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
 
@@ -515,11 +540,18 @@ hvigorfile.ts文件YYY执行失败。
 
 可能原因
 
-hvigorfile.ts文件YYY的代码执行报错。
+hvigorfile.ts文件YYY及其依赖的文件代码执行报错。
 
 处理步骤
 
-根据报错信息XXX检查hvigorfile.ts文件YYY的代码。
+如果hvigor-config.json5的dependencies包含@ohos/hvigor或@ohos/hvigor-ohos-plugin，请将它们移除。
+
+可通过在hvigorconfig.ts或hvigorfile.ts打印以下内容找到插件的安装位置：
+
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+
+console.log(require.resolve('@ohos/hvigor'));
 
 将hvigor-config.json5中的stacktrace字段设置为true，根据堆栈信息排查。
 
@@ -608,13 +640,39 @@ getOhpmRemoteHspDependencyInfoV2接口在taskGraphResolved之前的阶段调用�
 ### Code block 1
 
 ```
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+```
+
+### Code block 2
+
+```
+console.log(require.resolve('@ohos/hvigor'));
+```
+
+### Code block 3
+
+```
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+```
+
+### Code block 4
+
+```
+console.log(require.resolve('@ohos/hvigor'));
+```
+
+### Code block 5
+
+```
 export default {
     system: appTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
     plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
 }
 ```
 
-### Code block 2
+### Code block 6
 
 ```
 export default {
@@ -623,11 +681,37 @@ export default {
 }
 ```
 
-### Code block 3
+### Code block 7
 
 ```
 export default {
     system: appTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
     plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
 }
+```
+
+### Code block 8
+
+```
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+```
+
+### Code block 9
+
+```
+console.log(require.resolve('@ohos/hvigor'));
+```
+
+### Code block 10
+
+```
+import { hvigor } from '@ohos/hvigor';
+console.log(hvigor.getParameter().getWorkspaceDir())
+```
+
+### Code block 11
+
+```
+console.log(require.resolve('@ohos/hvigor'));
 ```

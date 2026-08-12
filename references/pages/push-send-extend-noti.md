@@ -48,6 +48,7 @@ push-type: 2
       "category": "PLAY_VOICE",
       "title": "通知标题",
       "body": "通知内容",
+      "image":"https://lf*******246.png",
       "clickAction": {
         "actionType": 0
       },
@@ -293,6 +294,7 @@ push-type: 2
       "category": "PLAY_VOICE",
       "title": "通知标题",
       "body": "通知内容",
+      "image":"https://lf*******246.png",
       "clickAction": {
         "actionType": 0
       },

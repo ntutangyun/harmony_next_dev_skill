@@ -6,7 +6,7 @@ Object is not initialized
 
 问题现象
 
-应用运行时报错：“Object is not initialized”导致应用无法正常运行。
+应用运行时报错："Object is not initialized"导致应用无法正常运行，具体报错信息中的Object为实际使用的变量，如"a is not initialized"。
 
 可能原因
 
@@ -61,7 +61,7 @@ import { Animal } from './B'
 
 export let a = "this is A";
 export function A() {
-  return new Animal;
+  return new Animal();
 }
 
 // B.ets
@@ -85,7 +85,7 @@ cannot find module 'fileName', which is application Entry Point.
 
 问题现象
 
-应用启动时报错：cannot find module 'fileName', which is application Entry Point.
+应用启动时报错：cannot find module 'fileName', which is application Entry Point。
 
 可能原因
 
@@ -117,7 +117,7 @@ cannot find record 'fileName', please check request path.
 
 可能原因
 
-该文件为动态加载表达式、动态加载文件等，但没有进行相关文件配置。
+该文件使用了动态import加载模块，但未在build-profile.json5的"buildOption"中进行相关配置。
 
 文件路径配置错误，导致无法在hap包中找到对应文件。
 
@@ -159,7 +159,7 @@ import { Animal } from './B'
 
 export let a = "this is A";
 export function A() {
-  return new Animal;
+  return new Animal();
 }
 
 // B.ets

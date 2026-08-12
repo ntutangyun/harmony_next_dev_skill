@@ -629,6 +629,101 @@ export struct AccessibilityFocusDrawLevelCase02 {
   }
 }
 
+[h2]设置无障碍自定义操作
+
+accessibilityCustomActions用于设置组件的自定义无障碍操作，支持开发者设置一个自定义actions的数组，用于给组件按操作名进行自定义操作的回调绑定。
+
+当组件包含的操作名包含“IncreaseValue”或“DecreaseValue”时，忽略组件的其他自定义操作，改为支持单指上下扫动，触发业务回调完成调整值，其中“IncreaseValue”代表调大，“DecreaseValue”代表调小。
+
+以下给出2个示例，分别介绍如何通过配置accessibilityCustomActions属性设置无障碍焦点自定义操作及自定义，以及如何配置和实现支持单指上下扫动调整。
+
+说明
+
+该示例运行，需在设备上提前开启屏幕朗读，否则无效果。
+
+示例1：
+
+@Entry
+@Component
+struct MailItem {
+  @State private mailTitle: string = '重要通知';
+  @State private mailContent: string = '这是一封重要的邮件内容';
+  @State private isRead: boolean = false;
+
+  build() {
+    Column() {
+    Text(this.mailTitle)
+      .fontSize(18)
+      .fontWeight(FontWeight.Bold)
+    Text(this.mailContent)
+      .fontSize(14)
+      .margin({ top: 8 })
+    }
+    .padding(16)
+    .backgroundColor(this.isRead ? Color.Gray : Color.White)
+    .accessibilityCustomActions([
+      {
+        name: '标记为已读',
+        onAction: () => {
+          this.isRead = true;
+          // 实现邮件已读逻辑
+        }
+      },
+      {
+        name: '删除',
+        onAction: () => {
+          // 执行删除操作
+        }
+      }
+    ])
+  }
+}
+
+示例2（支持单指上下扫动调整）：
+
+@Entry
+@Component
+struct MailItem {
+    @State private value: number = 70;
+    private gradientColor: LinearGradient = new LinearGradient([
+        { color: "#87BDF9", offset: 0.5 },
+        { color: "#3662F0", offset: 1.0 }
+    ])
+
+    build() {
+        Colomn({ space: 15 }) {
+            Text('Linear: ')
+                .fontSize(9)
+                .fontColor(0XCCCCCC)
+                .width('90%')
+            Progress({
+                value: this.value,
+                total: 100,
+                type: ProgressType.Linear
+            })
+            .width(100)
+            .style({ strokeWidth: 20})
+            .color(this.gradientColor)
+            .accessibilityCustomActions([
+                {
+                    name: 'IncreaseValue',
+                    onAction: () => {
+                        this.value += 10;
+                        // 其他业务能力实现
+                    }
+                }，
+                {
+                    name: 'DecreaseValue',
+                    onAction: () => {
+                        this.value -= 10;
+                        // 其他业务能力实现
+                    }
+                }
+            ])
+        }
+    }
+}
+
 无障碍方法开发指导
 
 无障碍方法主要为开发者提供两类核心能力，主要包括ArkUI组件提供的无障碍操作回调以及无障碍服务提供的状态查询方法。
@@ -1342,6 +1437,93 @@ export struct AccessibilityFocusDrawLevelCase02 {
 ```
 @Entry
 @Component
+struct MailItem {
+  @State private mailTitle: string = '重要通知';
+  @State private mailContent: string = '这是一封重要的邮件内容';
+  @State private isRead: boolean = false;
+
+  build() {
+    Column() {
+    Text(this.mailTitle)
+      .fontSize(18)
+      .fontWeight(FontWeight.Bold)
+    Text(this.mailContent)
+      .fontSize(14)
+      .margin({ top: 8 })
+    }
+    .padding(16)
+    .backgroundColor(this.isRead ? Color.Gray : Color.White)
+    .accessibilityCustomActions([
+      {
+        name: '标记为已读',
+        onAction: () => {
+          this.isRead = true;
+          // 实现邮件已读逻辑
+        }
+      },
+      {
+        name: '删除',
+        onAction: () => {
+          // 执行删除操作
+        }
+      }
+    ])
+  }
+}
+```
+
+### Code block 22
+
+```
+@Entry
+@Component
+struct MailItem {
+    @State private value: number = 70;
+    private gradientColor: LinearGradient = new LinearGradient([
+        { color: "#87BDF9", offset: 0.5 },
+        { color: "#3662F0", offset: 1.0 }
+    ])
+
+    build() {
+        Colomn({ space: 15 }) {
+            Text('Linear: ')
+                .fontSize(9)
+                .fontColor(0XCCCCCC)
+                .width('90%')
+            Progress({
+                value: this.value,
+                total: 100,
+                type: ProgressType.Linear
+            })
+            .width(100)
+            .style({ strokeWidth: 20})
+            .color(this.gradientColor)
+            .accessibilityCustomActions([
+                {
+                    name: 'IncreaseValue',
+                    onAction: () => {
+                        this.value += 10;
+                        // 其他业务能力实现
+                    }
+                }，
+                {
+                    name: 'DecreaseValue',
+                    onAction: () => {
+                        this.value -= 10;
+                        // 其他业务能力实现
+                    }
+                }
+            ])
+        }
+    }
+}
+```
+
+### Code block 23
+
+```
+@Entry
+@Component
 export struct OnAccessibilityFocusCase01 {
   @State isFocus: boolean = false;
 
@@ -1360,7 +1542,7 @@ export struct OnAccessibilityFocusCase01 {
 }
 ```
 
-### Code block 22
+### Code block 24
 
 ```
 @Entry
@@ -1381,7 +1563,7 @@ export struct OnAccessibilityHoverCase01 {
 }
 ```
 
-### Code block 23
+### Code block 25
 
 ```
 @Entry
@@ -1406,7 +1588,7 @@ export struct OnAccessibilityHoverCase02 {
 }
 ```
 
-### Code block 24
+### Code block 26
 
 ```
 @Entry
@@ -1440,7 +1622,7 @@ export struct AccessibilityActionInterceptCase01 {
 }
 ```
 
-### Code block 25
+### Code block 27
 
 ```
 @Entry
@@ -1481,7 +1663,7 @@ export struct AccessibilityActionInterceptCase02 {
 }
 ```
 
-### Code block 26
+### Code block 28
 
 ```
 @Entry
@@ -1505,7 +1687,7 @@ export struct SendAccessibilityEventCase01 {
 }
 ```
 
-### Code block 27
+### Code block 29
 
 ```
 import { accessibility } from '@kit.AccessibilityKit';
@@ -1540,7 +1722,7 @@ export struct SendAccessibilityEventCase02 {
 }
 ```
 
-### Code block 28
+### Code block 30
 
 ```
 @Entry
@@ -1563,7 +1745,7 @@ export struct SendAccessibilityEventCase03 {
 }
 ```
 
-### Code block 29
+### Code block 31
 
 ```
 import { accessibility } from '@kit.AccessibilityKit';

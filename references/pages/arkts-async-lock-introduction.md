@@ -41,7 +41,7 @@ export class A {
 @Concurrent
 async function printCount(a: A) {
   await a.increaseCount();
-  console.info('InputModule: count is:' + await a.getCount());
+  console.info(`InputModule: count is: ${await a.getCount()}`);
 }
 
 @Entry
@@ -102,7 +102,7 @@ export class A {
 @Concurrent
 async function printCount(a: A) {
   await a.increaseCount();
-  console.info('InputModule: count is:' + await a.getCount());
+  console.info(`InputModule: count is: ${await a.getCount()}`);
 }
 
 @Entry

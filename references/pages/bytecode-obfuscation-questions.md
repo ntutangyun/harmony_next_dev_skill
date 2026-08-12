@@ -12,7 +12,7 @@ json文件
 
 [h2]混淆选项差异
 
-字节码混淆开关，默认关闭，在开启混淆功能后，需要额外在模块目录下obfuscation-rules.txt文件中配置-enable-bytecode-obfuscation 、-enable-bytecode-obfuscation-debugging。
+字节码混淆开关默认关闭。在开启混淆功能后，需要在模块目录下的obfuscation-rules.txt文件中配置-enable-bytecode-obfuscation。如需保留调试信息，还需要配置-enable-bytecode-obfuscation-debugging。
 
 字节码混淆，不支持以下混淆选项-remove-comments。
 
@@ -112,7 +112,7 @@ export struct MainPage {
 
 this.__messageStr = new ObservedPropertySimplePU('Hello World', this, "messageStr");
 
-在中间文件转换过程中，message以字面量形式进行了绑定；此时，存在messageStr这个属性被混淆了，但是这个方法的字符串参数没有混淆，导致UI失效。
+在中间文件转换过程中，messageStr以字面量形式进行了绑定；此时，存在messageStr这个属性被混淆了，但是这个方法的字符串参数没有混淆，导致UI失效的情况。
 
 解决办法：收集struct里所有成员，加入白名单，不参与混淆。目前由于字节码混淆不提供UI组件混淆能力，系统会自动识别添加到白名单，不需要开发者配置。
 
@@ -197,9 +197,9 @@ e.配置白名单保护关键字段：将确认在混淆后对应用功能产生
 
 常规配置问题处理
 
-[h2]开启enable-bytecode-obfuscation-debugging，没有生成pa文件如何处理
+[h2]开启-enable-bytecode-obfuscation-debugging，没有生成pa文件如何处理
 
-首先确保Build Mode设置为release，查看根目录下的build-profile.json5中，设置 "compatibleSdkVersionStage": "beta3"，再检查每个module中obfuscation-rules.txt文件里，开启字节码。
+首先确保Build Mode设置为release，查看根目录下的build-profile.json5，设置 "compatibleSdkVersionStage": "beta3"，再检查每个module中obfuscation-rules.txt文件里，开启字节码混淆选项。
 
 [h2]混淆如何查看混淆效果
 
@@ -209,7 +209,7 @@ e.配置白名单保护关键字段：将确认在混淆后对应用功能产生
 
 混淆名称映射表及系统API白名单目录：build/default/[...]/release/obfuscation。
 
-名称映射表文件：nameCache.json，该文件记录了源码名称混淆的映射关系。
+名称映射表文件：nameCache.json，该文件记录了字节码名称混淆的映射关系。
 
 系统API白名单文件：systemApiCache.json，该文件记录了SDK中的接口与属性名称，与其重名的源码不会被混淆。
 
@@ -285,7 +285,7 @@ import jsonData from './ImportJson.json';
 let jsonProp = jsonData.jsonObj.jsonProperty;
 
 // 混淆后
-import jsonData from "./test.json";
+import jsonData from "./ImportJson.json";
 
 let jsonProp = jsonData.i.j;
 
@@ -346,7 +346,7 @@ linkSource
 
 使用@Type和@Trace组合修饰的装饰器属性，可以正常混淆，但混淆后，功能异常。
 
-// Sample.ets
+// SampleChild.ets
 import { Type } from '@kit.ArkUI';
 
 @ObservedV2
@@ -374,7 +374,7 @@ export struct Page {
 
   build() {
     Column() {
-      Text(`Page1 add 1 to prop.p1: ${this.prop.f123.p123}`)
+      Text(`Page1 add 1 to prop.f123.p123: ${this.prop.f123.p123}`)
     }
   }
 }
@@ -401,9 +401,9 @@ p123
 
 -enable-property-obfuscation
 -keep
-./file1.ts
+./ExportInterface.ts
 
-并且在file2.ts中导入file1.ts的接口。此时，接口中有属性的类型为对象类型，该对象类型的属性在file1.ts中被保留，在file2.ts中被混淆，从而导致调用时引发功能异常。示例如下：
+并且在MainPage.ets中导入ExportInterface.ts的接口。此时，接口中有属性的类型为对象类型，该对象类型的属性在ExportInterface.ts中被保留，在MainPage.ets中被混淆，从而导致调用时引发功能异常。示例如下：
 
 // 混淆前
 // ExportInterface.ts
@@ -414,8 +414,8 @@ export interface MyInfo {
   }
 }
 
-// ExportCompositeInterface.ts
-import { MyInfo } from './ExportCompositeInterface';
+// MainPage.ets
+import { MyInfo } from './ExportInterface';
   // ...
   const person: MyInfo = {
     age: 20,
@@ -424,9 +424,9 @@ import { MyInfo } from './ExportCompositeInterface';
     }
   }
 
-// 混淆后，file1.ts的代码被保留
-// file2.ts
-import { MyInfo } from './file1';
+// 混淆后，ExportInterface.ts的代码被保留
+// MainPage.ets
+import { MyInfo } from './ExportInterface';
 
 const person: MyInfo = {
     age: 20,
@@ -437,7 +437,7 @@ const person: MyInfo = {
 
 问题原因:
 
--keep选项保留file1.ts文件时，file1.ts中代码不会被混淆。对于导出属性（如address）所属类型内的属性，不会被自动收集在属性白名单中。因此，该类型内的属性在其他文件中被使用时，会被混淆。
+-keep选项保留ExportInterface.ts文件时，ExportInterface.ts中代码不会被混淆。对于导出属性（如address）所属类型内的属性，不会被自动收集在属性白名单中。因此，该类型内的属性在其他文件中被使用时，会被混淆。
 
 解决方案:
 
@@ -476,7 +476,7 @@ export function add(a: number, b: number): number {
   return a + b;
 }
 
-// main.ts
+// MainPage.ets
 async function loadAndUseAdd() {
     try {
         const mathUtils = await import('./ExportUtils');
@@ -489,15 +489,15 @@ async function loadAndUseAdd() {
 loadAndUseAdd();
 
 // 混淆后
-// utils.ts
+// ExportUtils.ts
 export function c1(d1: number, e1: number): number {
     return d1 + e1;
 }
 
-// main.ts
+// MainPage.ets
 async function i() {
     try {
-        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/utils&");
+        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/ExportUtils&");
         const b1 = a1.add(2, 3);
     }
     catch (z) {
@@ -524,19 +524,19 @@ export namespace NS {
   }
 }
 
-// import.ts
+// MainPage.ets
 import { NS } from './ExportNs';
   // ...
   NS.foo();
 
 // 混淆后
-// export.ts
+// ExportNs.ts
 export namespace i {
     export function j() {}
 }
 
-// import.ts
-import { i } from './export';
+// MainPage.ets
+import { i } from './ExportNs';
 
 i.foo();
 
@@ -573,7 +573,7 @@ declare a2 {
 
 问题现象：
 
-在开启-enable-toplevel-obfuscation属性混淆后，字节码混淆时，混淆正常，运行时报错，错误日志：
+在开启-enable-toplevel-obfuscation选项（顶层作用域名称混淆）后，字节码混淆时，混淆正常，运行时报错，错误日志：
 
 Error message: is not callable
 Stacktrace: Cannot get SourceMap info, dump raw stack: at anonymous (ads_service|@hw-ads/ohos-ads-model|1.0.1|src/main/ets/annotations/FieldType.ts:6:1。
@@ -596,7 +596,7 @@ export function FieldType(...types: Function[]): PropertyDecorator {
 
 问题分析：
 
-在开启-enable-toplevel-obfuscation属性混淆后，Reflect文件中，函数名参与混淆，exporter函数中的字符串"defineMetadata"不参与混淆，导致外部使用Reflect.defineMetadata时，找不到对应函数。
+在开启-enable-toplevel-obfuscation选项（顶层作用域名称混淆）后，Reflect文件中，函数名参与混淆，exporter函数中的字符串"defineMetadata"不参与混淆，导致外部使用Reflect.defineMetadata时，找不到对应函数。
 
 解决方案：
 
@@ -855,7 +855,7 @@ let jsonProp = jsonData.jsonObj.jsonProperty;
 
 ```
 // 混淆后
-import jsonData from "./test.json";
+import jsonData from "./ImportJson.json";
 
 let jsonProp = jsonData.i.j;
 ```
@@ -900,7 +900,7 @@ linkSource
 ### Code block 14
 
 ```
-// Sample.ets
+// SampleChild.ets
 import { Type } from '@kit.ArkUI';
 
 @ObservedV2
@@ -932,7 +932,7 @@ export struct Page {
 
   build() {
     Column() {
-      Text(`Page1 add 1 to prop.p1: ${this.prop.f123.p123}`)
+      Text(`Page1 add 1 to prop.f123.p123: ${this.prop.f123.p123}`)
     }
   }
 }
@@ -951,7 +951,7 @@ p123
 ```
 -enable-property-obfuscation
 -keep
-./file1.ts
+./ExportInterface.ts
 ```
 
 ### Code block 18
@@ -970,8 +970,8 @@ export interface MyInfo {
 ### Code block 19
 
 ```
-// ExportCompositeInterface.ts
-import { MyInfo } from './ExportCompositeInterface';
+// MainPage.ets
+import { MyInfo } from './ExportInterface';
   // ...
   const person: MyInfo = {
     age: 20,
@@ -984,9 +984,9 @@ import { MyInfo } from './ExportCompositeInterface';
 ### Code block 20
 
 ```
-// 混淆后，file1.ts的代码被保留
-// file2.ts
-import { MyInfo } from './file1';
+// 混淆后，ExportInterface.ts的代码被保留
+// MainPage.ets
+import { MyInfo } from './ExportInterface';
 
 const person: MyInfo = {
     age: 20,
@@ -1029,7 +1029,7 @@ export function add(a: number, b: number): number {
 ### Code block 24
 
 ```
-// main.ts
+// MainPage.ets
 async function loadAndUseAdd() {
     try {
         const mathUtils = await import('./ExportUtils');
@@ -1046,15 +1046,15 @@ loadAndUseAdd();
 
 ```
 // 混淆后
-// utils.ts
+// ExportUtils.ts
 export function c1(d1: number, e1: number): number {
     return d1 + e1;
 }
 
-// main.ts
+// MainPage.ets
 async function i() {
     try {
-        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/utils&");
+        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/ExportUtils&");
         const b1 = a1.add(2, 3);
     }
     catch (z) {
@@ -1079,7 +1079,7 @@ export namespace NS {
 ### Code block 27
 
 ```
-// import.ts
+// MainPage.ets
 import { NS } from './ExportNs';
   // ...
   NS.foo();
@@ -1089,13 +1089,13 @@ import { NS } from './ExportNs';
 
 ```
 // 混淆后
-// export.ts
+// ExportNs.ts
 export namespace i {
     export function j() {}
 }
 
-// import.ts
-import { i } from './export';
+// MainPage.ets
+import { i } from './ExportNs';
 
 i.foo();
 ```

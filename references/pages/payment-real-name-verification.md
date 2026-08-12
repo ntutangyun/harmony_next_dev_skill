@@ -172,7 +172,7 @@ public String getPreVerifyId(String clientId, String clientSecret, String creden
 }
 
 public String getHashStr(String input) throws NoSuchAlgorithmException {
-    byte[] encodedhash = MessageDigest.getInstance("SHA-256")
+    byte[] encodedhash = MessageDigest.getInstance("SHA-512")
         .digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     StringBuilder hexString = new StringBuilder();
     for (byte b : encodedhash) {
@@ -362,7 +362,7 @@ public String getPreVerifyId(String clientId, String clientSecret, String creden
 }
 
 public String getHashStr(String input) throws NoSuchAlgorithmException {
-    byte[] encodedhash = MessageDigest.getInstance("SHA-256")
+    byte[] encodedhash = MessageDigest.getInstance("SHA-512")
         .digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     StringBuilder hexString = new StringBuilder();
     for (byte b : encodedhash) {

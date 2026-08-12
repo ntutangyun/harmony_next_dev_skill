@@ -89,7 +89,7 @@ import jsonData from './ImportJson.json';
 let jsonProp = jsonData.jsonObj.jsonProperty;
 
 // 混淆后
-import jsonData from "./test.json";
+import jsonData from "./ImportJson.json";
 
 let jsonProp = jsonData.i.j;
 
@@ -124,19 +124,19 @@ export namespace NS {
   export function foo() { }
 }
 
-// import.ts
+// Index.ets
 import { NS } from './ExportNs';
   // ...
   NS.foo();
 
 // 混淆后
-// export.ts
+// ExportNs.ts
 export namespace i {
   export function j() {}
 }
 
-// import.ts
-import { i } from './export';
+// Index.ets
+import { i } from './ExportNs';
 
 i.foo();
 
@@ -170,7 +170,7 @@ export function add(a: number, b: number): number {
   return a + b;
 }
 
-// main.ts
+// Index.ets
 async function loadAndUseAdd() {
   let result: number = 0;
   try {
@@ -185,16 +185,18 @@ async function loadAndUseAdd() {
 loadAndUseAdd();
 
 // 混淆后
-// utils.ts
+// ExportUtils.ts
 export function c1(d1: number, e1: number): number {
     return d1 + e1;
 }
 
-// main.ts
+// Index.ets
 async function i() {
+    let b1: number = 0;
     try {
-        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/utils&");
-        const b1 = a1.add(2, 3);
+        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/ExportUtils&");
+        b1 = a1.add(2, 3);
+        console.info(`result = ${b1}`);
     }
     catch (z) {
         console.error('Failure reason:', z);
@@ -276,12 +278,14 @@ addNum(1, 2);
 
 // 混淆后
 // hsp模块
-export function b() {}
+export function b(c: number, d: number): number {
+  return c + d;
+}
 
 // entry模块
 import { n } from '@normalized:N&sharedlibrary&&sharedlibrary/Index&';
 
-n();
+n(1, 2);
 
 问题原因
 
@@ -357,9 +361,9 @@ linkSource
 
 -enable-property-obfuscation
 -keep
-./file1.ts
+./FileInside.ts
 
-在file2.ts中导入file1.ts的接口。该接口包含一个对象类型的属性。此对象属性在file1.ts中被保留，但在file2.ts中被混淆，导致调用时出现功能异常。
+在Index.ets中导入FileInside.ts的接口。该接口包含一个对象类型的属性。此对象属性在FileInside.ts中被保留，但在Index.ets中被混淆，导致调用时出现功能异常。
 
 示例代码如下：
 
@@ -372,7 +376,7 @@ export interface MyInfo {
   }
 }
 
-// FileOutside.ts
+// Index.ets
 import { MyInfo } from './FileInside';
   // ...
   const person: MyInfo = {
@@ -383,7 +387,7 @@ import { MyInfo } from './FileInside';
   }
 
 // 混淆后
-// file1.ts
+// FileInside.ts
 export interface MyInfo {
   age: number;
   address: {
@@ -391,8 +395,8 @@ export interface MyInfo {
   }
 }
 
-// file2.ts
-import { MyInfo } from './file1';
+// Index.ets
+import { MyInfo } from './FileInside';
 
 const person: MyInfo = {
   age: 20,
@@ -403,7 +407,7 @@ const person: MyInfo = {
 
 问题原因
 
-使用-keep选项保留file1.ts文件时，该文件中的代码不会被混淆。导出属性（如address）所属类型内的属性不会自动加入白名单，因此在其他文件中使用时会被混淆。
+使用-keep选项保留FileInside.ts文件时，该文件中的代码不会被混淆。导出属性（如address）所属类型内的属性不会自动加入白名单，因此在其他文件中使用时会被混淆。
 
 解决方案
 
@@ -520,7 +524,7 @@ let jsonProp = jsonData.jsonObj.jsonProperty;
 
 ```
 // 混淆后
-import jsonData from "./test.json";
+import jsonData from "./ImportJson.json";
 
 let jsonProp = jsonData.i.j;
 ```
@@ -553,7 +557,7 @@ export namespace NS {
 ### Code block 7
 
 ```
-// import.ts
+// Index.ets
 import { NS } from './ExportNs';
   // ...
   NS.foo();
@@ -563,13 +567,13 @@ import { NS } from './ExportNs';
 
 ```
 // 混淆后
-// export.ts
+// ExportNs.ts
 export namespace i {
   export function j() {}
 }
 
-// import.ts
-import { i } from './export';
+// Index.ets
+import { i } from './ExportNs';
 
 i.foo();
 ```
@@ -601,7 +605,7 @@ export function add(a: number, b: number): number {
 ### Code block 12
 
 ```
-// main.ts
+// Index.ets
 async function loadAndUseAdd() {
   let result: number = 0;
   try {
@@ -620,16 +624,18 @@ loadAndUseAdd();
 
 ```
 // 混淆后
-// utils.ts
+// ExportUtils.ts
 export function c1(d1: number, e1: number): number {
     return d1 + e1;
 }
 
-// main.ts
+// Index.ets
 async function i() {
+    let b1: number = 0;
     try {
-        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/utils&");
-        const b1 = a1.add(2, 3);
+        const a1 = await import("@normalized:N&&&entry/src/main/ets/pages/ExportUtils&");
+        b1 = a1.add(2, 3);
+        console.info(`result = ${b1}`);
     }
     catch (z) {
         console.error('Failure reason:', z);
@@ -717,12 +723,14 @@ addNum(1, 2);
 ```
 // 混淆后
 // hsp模块
-export function b() {}
+export function b(c: number, d: number): number {
+  return c + d;
+}
 
 // entry模块
 import { n } from '@normalized:N&sharedlibrary&&sharedlibrary/Index&';
 
-n();
+n(1, 2);
 ```
 
 ### Code block 24
@@ -779,7 +787,7 @@ linkSource
 ```
 -enable-property-obfuscation
 -keep
-./file1.ts
+./FileInside.ts
 ```
 
 ### Code block 29
@@ -798,7 +806,7 @@ export interface MyInfo {
 ### Code block 30
 
 ```
-// FileOutside.ts
+// Index.ets
 import { MyInfo } from './FileInside';
   // ...
   const person: MyInfo = {
@@ -813,7 +821,7 @@ import { MyInfo } from './FileInside';
 
 ```
 // 混淆后
-// file1.ts
+// FileInside.ts
 export interface MyInfo {
   age: number;
   address: {
@@ -821,8 +829,8 @@ export interface MyInfo {
   }
 }
 
-// file2.ts
-import { MyInfo } from './file1';
+// Index.ets
+import { MyInfo } from './FileInside';
 
 const person: MyInfo = {
   age: 20,

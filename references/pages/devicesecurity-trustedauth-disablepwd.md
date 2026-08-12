@@ -19,7 +19,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口及使用方法请参见API参考。
 
 接口名	描述
-disableTrustedAuthentication(challenge: Uint8Array, needAuth: boolean, authID: bigint, label: TUILable): Promise<AuthToken>	关闭数字盾服务
+disableTrustedAuthentication(challenge: Uint8Array, needAuth: boolean, authID: bigint, label: TUILable): Promise<AuthToken>	关闭数字盾服务。
 
 关闭数字盾服务界面介绍
 

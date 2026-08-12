@@ -1887,7 +1887,7 @@ class Label {
 
 // 'Label'类型
 let z: Label = {
-  public text: 'hello',
+  text: 'hello'
 }
 
 [h2]类型转换仅支持as T语法
@@ -4538,7 +4538,7 @@ class Label {
 
 // 'Label'类型
 let z: Label = {
-  public text: 'hello',
+  text: 'hello'
 }
 ```
 

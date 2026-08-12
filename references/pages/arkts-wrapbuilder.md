@@ -137,10 +137,10 @@ struct IndexItem {
 
 @Builder方法赋值给类或者接口的属性
 
-使用@Builder装饰器装饰的方法MyBuilder作为wrapBuilder的参数，然后将wrapBuilder的返回值赋值给接口ChildOptions中的属性，可以以数据的形式传递给其他子组件调用。
+使用@Builder装饰器装饰的方法myBuilder作为wrapBuilder的参数，然后将wrapBuilder的返回值赋值给接口ChildOptions中的属性，可以以数据的形式传递给其他子组件调用。
 
 @Builder
-function MyBuilder(value: string, size: number) {
+function myBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
     .margin(10)
@@ -154,7 +154,7 @@ interface ChildOptions {
 @Component
 struct Index {
   childOptions: ChildOptions = {
-    wrappedBuilder: wrapBuilder(MyBuilder)
+    wrappedBuilder: wrapBuilder(myBuilder)
   };
 
   build() {
@@ -383,7 +383,7 @@ struct IndexItem {
 
 ```
 @Builder
-function MyBuilder(value: string, size: number) {
+function myBuilder(value: string, size: number) {
   Text(value)
     .fontSize(size)
     .margin(10)
@@ -397,7 +397,7 @@ interface ChildOptions {
 @Component
 struct Index {
   childOptions: ChildOptions = {
-    wrappedBuilder: wrapBuilder(MyBuilder)
+    wrappedBuilder: wrapBuilder(myBuilder)
   };
 
   build() {

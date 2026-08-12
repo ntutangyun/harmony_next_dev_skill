@@ -64,7 +64,7 @@ API version 20之前，可通过调用on('windowStageEvent')注册WindowStage生
 
 在Stage模型下，应用主窗口从前台进入后台状态也会驱动UIAbility的生命周期。在该模型下，需要额外关注这个机制在不同类型产品的差异化行为。
 
-Phone类型设备上： 窗口从前台进入后台状态，会驱动UIAbility到后台状态。
+Phone/TV/Wearable/Car类型设备上： 窗口从前台进入后台状态，会驱动UIAbility到后台状态。
 
 Tablet类型设备上：
 

@@ -68,7 +68,7 @@ ImagePacker_Native* nativePacker = OH_ImagePacker_InitNative(env, packer);
 
 上述过程中获取的实例对象（ImagePacker_Native）。
 
-需要编码的图像源（napi_value）, PixelMap或ImageSource（未调用过CreatePixelMap）的实例对象均可。
+需要编码的图像源（napi_value），PixelMap或ImageSource（未调用过CreatePixelMap）的实例对象均可。
 
 编码参数：包括编码格式与编码质量。
 

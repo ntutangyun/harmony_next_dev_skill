@@ -290,7 +290,7 @@ exp_name	ION内存的buffer扩展名。
 buf_type	ION内存的buffer类型。
 leak_type	ION内存泄漏维测的buffer类型。
 
-使用hidumper --mem pid --show-gpumem命令可获取指定PID的内存使用情况，并打印GPU内存详细信息。详细信息可参考ashmem/ion/gpu/gpu_rs内存泄漏日志规格中gpu内存泄漏字段说明。
+使用hidumper --mem pid --show-gpumem命令可获取指定PID的内存使用情况，并打印GPU内存详细信息。详细信息可参考ASHMEM/DMA/GPU/GPU_RS内存泄漏日志规格中gpu内存泄漏字段说明。
 
 可使用hidumper --mem-smaps pid命令获取指定进程的详细内存使用情况，该命令会累加相同内存段的内存值。
 

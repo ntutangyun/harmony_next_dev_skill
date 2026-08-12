@@ -3,3 +3,5 @@
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bluetooth-faq_
 
 蓝牙接口调用报错2900099
+
+如何抓取蓝牙HCI日志

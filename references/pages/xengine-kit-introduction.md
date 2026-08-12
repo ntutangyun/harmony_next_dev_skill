@@ -54,9 +54,17 @@ XEngine Kit全局光照解决方案，基于硬件光线追踪、AI渲染和端�
 
 约束与限制
 
-在调用XEngine Kit能力前，需要先通过Syscap查询您的目标设备是否支持SystemCapability.Graphic.XEngine系统能力。
+[h2]支持的设备
 
-支持的设备类型：Phone、Tablet、PC/2in1、TV。
+Phone、Tablet、PC/2in1、TV。
+
+[h2]支持的国家/地区
+
+本Kit仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+
+[h2]硬件限制
+
+在调用XEngine Kit能力前，需要先通过Syscap查询您的目标设备是否支持SystemCapability.Graphic.XEngine系统能力。
 
 XEngine Kit特性仅在使用马良GPU芯片的设备上受支持。不同设备支持的特性范围有所差异，可以通过以下方式查询设备支持的特性列表：
 

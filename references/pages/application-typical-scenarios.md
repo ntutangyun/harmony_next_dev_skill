@@ -17,3 +17,7 @@ HSP转HAR指导
 HAP转HAR指导
 
 集成态HSP
+
+应用程序包集成bin文件（PC/2in1）
+
+Native侧跨HAR/HSP模块接口调用

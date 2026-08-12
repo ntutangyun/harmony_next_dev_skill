@@ -10,11 +10,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/es2abc-fa
 
 本FAQ汇总了字节码生成在实际编译中常见的异常场景，并提供原因分析与排查方式，帮助开发者更高效定位字节码编译阶段的问题。
 
-编译时报owns a higher api version错误
+编译时报owns a higher api version or sdkReleaseType错误
 
 问题现象
 
-编译时报owns a higher api version错误
+编译过程中，es2abc提示引用的字节码文件（*.abc）具有比当前编译更高的API版本或SDK发布类型。
 
 > hvigor ERROR: ArkTS:ERROR Failed to execute es2abc.
 Error Message: Error: The input abc file '/Users/xxx/Desktop/Git/KnowChat_Harmony/oh_modules/.ohpm/wrapper@xnnuf1xhgb6dfmf+4nqatekk3somopridtvlx+rvty0=/oh_modules/wrapper/ets/modules.abc' owns a higher api version or a higher sdkReleaseType compared to current compilation process. [/Users/xxx/Desktop/Git/KnowChat_Harmony/oh_modules/.ohpm/wrapper@xnnuf1xhgb6dfmf+4nqatekk3somopridtvlx+rvty0=/oh_modules/wrapper/ets/modules.abc]
@@ -28,9 +28,9 @@ The size of programs is expected to be 434, but is 432
 
 解决措施
 
-查看工程和HAR包的build-profile.json5文件中的“compatibleSdkVersionStage”字段，将工程中的“compatibleSdkVersionStage”字段调整至大于或者等于HAR包中的版本。
+查看工程和HAR包的build-profile.json5文件中的“compatibleSdkVersionStage”字段，将工程中的“compatibleSdkVersionStage”字段调整至大于或者等于HAR包中的版本。参考build-profile.json5配置文件说明中对compatibleSdkVersionStage字段的说明。
 
-编译时报Field {&harname/Index&1.0.0.moduleRecordIdx} has different value错误
+编译时报Field 'xxx' has different value错误
 
 问题现象
 
@@ -66,7 +66,7 @@ ohpm缓存或编译缓存没有清除干净，导致同一HAR包存在两个不�
 
 清除ohpm和编译缓存，下载ohpm包并重新编译，操作如下：
 
-点击菜单Build->Clean Project，或在控制台执行ohpm clear。
+点击菜单Build->Clean Project，或在控制台执行ohpm clean。
 
 点击菜单File->Invalidate Caches...，弹窗选项全选执行并重启。
 

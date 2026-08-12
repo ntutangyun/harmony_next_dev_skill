@@ -8,7 +8,7 @@ Remote Communication Kit模块提供了拦截器能力，支持开发者根据�
 
 约束与限制
 
-自定义缓存拦截器能力支持Phone、2in1、Tablet、Wearable、TV设备。并且从6.1.0(23)开始，新增支持Car设备。
+自定义缓存拦截器能力支持Phone、2in1、Tablet、Wearable、TV设备。
 
 使用自定义缓存拦截器
 

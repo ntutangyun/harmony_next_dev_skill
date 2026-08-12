@@ -67,6 +67,7 @@ RightTrigger	通过OH_GamePad_AxisEvent_GetGasAxisValue获取Gas轴的轴值。
 
 以LeftThumbstick轴事件为例。
 
+// 注册LeftThumbstick轴事件监听
 napi_value GamePad::LeftThumbstick_RegisterAxisInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode =
@@ -81,6 +82,7 @@ napi_value GamePad::LeftThumbstick_RegisterAxisInputMonitor(napi_env env, napi_c
     return result;
 }
 
+// 取消注册LeftThumbstick轴事件监听
 napi_value GamePad::LeftThumbstick_UnregisterAxisInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode = OH_GamePad_LeftThumbstick_UnregisterAxisInputMonitor();
@@ -132,6 +134,7 @@ Dpad_RightButton	2015
 
 以LeftShoulder按键事件为例。
 
+// 注册LeftShoulder按键事件监听
 napi_value GamePad::LeftShoulder_RegisterButtonInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode =
@@ -146,6 +149,7 @@ napi_value GamePad::LeftShoulder_RegisterButtonInputMonitor(napi_env env, napi_c
     return result;
 }
 
+// 取消注册LeftShoulder按键事件监听
 napi_value GamePad::LeftShoulder_UnregisterButtonInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode = OH_GamePad_LeftShoulder_UnregisterButtonInputMonitor();
@@ -223,6 +227,7 @@ target_link_libraries(entry PUBLIC libohgame_controller.z.so)
 ### Code block 3
 
 ```
+// 注册LeftThumbstick轴事件监听
 napi_value GamePad::LeftThumbstick_RegisterAxisInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode =
@@ -237,6 +242,7 @@ napi_value GamePad::LeftThumbstick_RegisterAxisInputMonitor(napi_env env, napi_c
     return result;
 }
 
+// 取消注册LeftThumbstick轴事件监听
 napi_value GamePad::LeftThumbstick_UnregisterAxisInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode = OH_GamePad_LeftThumbstick_UnregisterAxisInputMonitor();
@@ -265,6 +271,7 @@ void GamePad::LeftThumbstick_OnAxisEvent(const struct GamePad_AxisEvent *axisEve
 ### Code block 4
 
 ```
+// 注册LeftShoulder按键事件监听
 napi_value GamePad::LeftShoulder_RegisterButtonInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode =
@@ -279,6 +286,7 @@ napi_value GamePad::LeftShoulder_RegisterButtonInputMonitor(napi_env env, napi_c
     return result;
 }
 
+// 取消注册LeftShoulder按键事件监听
 napi_value GamePad::LeftShoulder_UnregisterButtonInputMonitor(napi_env env, napi_callback_info info) {
     napi_value result;
     GameController_ErrorCode errorCode = OH_GamePad_LeftShoulder_UnregisterButtonInputMonitor();

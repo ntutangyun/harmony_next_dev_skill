@@ -117,21 +117,26 @@ async stopVideo(): Promise<void> {
 
 通过注册固定的frameStart回调函数获取监听录像开始结果，videoOutput创建成功时即可监听，录像第一次曝光时触发，有该事件返回结果则认为录像开始。
 
-previewOutput.on('frameStart', (): void => {
-  Logger.debug(TAG, 'Preview frame started');
-  AppStorage.setOrCreate('frameStart', ++this.frameStartFlag);
+videoOutput.on('frameStart', (err: BusinessError) => {
+  if (err !== undefined && err.code !== 0) {
+    return;
+  }
+  console.info('Video frame started');
 });
 
 通过注册固定的frameEnd回调函数获取监听录像结束结果，videoOutput创建成功时即可监听，录像完成最后一帧时触发，有该事件返回结果则认为录像流已结束。
 
-previewOutput.on('frameEnd', (): void => {
-  Logger.debug(TAG, 'Preview frame ended');
+videoOutput.on('frameEnd', (err: BusinessError) => {
+  if (err !== undefined && err.code !== 0) {
+    return;
+  }
+  console.info('Video frame ended');
 });
 
 通过注册固定的error回调函数获取监听录像输出错误结果，callback返回预览输出接口使用错误时对应的错误码，错误码类型参见CameraErrorCode。
 
-previewOutput.on('error', (previewOutputError: BusinessError): void => {
-  Logger.info(TAG, `Preview output previewOutputError: ${JSON.stringify(previewOutputError)}`);
+videoOutput.on('error', (error: BusinessError) => {
+  console.error(`Video output error code: ${error.code}`);
 });
 
 示例代码
@@ -222,24 +227,29 @@ async stopVideo(): Promise<void> {
 ### Code block 6
 
 ```
-previewOutput.on('frameStart', (): void => {
-  Logger.debug(TAG, 'Preview frame started');
-  AppStorage.setOrCreate('frameStart', ++this.frameStartFlag);
+videoOutput.on('frameStart', (err: BusinessError) => {
+  if (err !== undefined && err.code !== 0) {
+    return;
+  }
+  console.info('Video frame started');
 });
 ```
 
 ### Code block 7
 
 ```
-previewOutput.on('frameEnd', (): void => {
-  Logger.debug(TAG, 'Preview frame ended');
+videoOutput.on('frameEnd', (err: BusinessError) => {
+  if (err !== undefined && err.code !== 0) {
+    return;
+  }
+  console.info('Video frame ended');
 });
 ```
 
 ### Code block 8
 
 ```
-previewOutput.on('error', (previewOutputError: BusinessError): void => {
-  Logger.info(TAG, `Preview output previewOutputError: ${JSON.stringify(previewOutputError)}`);
+videoOutput.on('error', (error: BusinessError) => {
+  console.error(`Video output error code: ${error.code}`);
 });
 ```

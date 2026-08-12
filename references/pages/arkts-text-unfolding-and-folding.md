@@ -196,17 +196,23 @@ paragraphGraphBuilder.addText(item.content);
 let paragraph = paragraphGraphBuilder.build();
 paragraph.layoutSync(textMaxWidth);
 
+计算“...”+折叠按钮文字（展开/收起）的宽度withMore。
+
+const minLinesTextSize: SizeOptions | undefined = uiContext?.getMeasureUtils().measureTextSize({
+  textContent: suffix + lastSpan,
+  fontSize: dataModel.fontSize,
+});
+const widthMore = uiContext?.px2vp(Number(minLinesTextSize?.width));
+
 计算截断坐标。
 
-计算三个点之前的最后一个文字的坐标。设这个字符变量为lastWord。经过paragraph的排版之后，就可以得到这段文本真实的渲染数据了。先通过paragraph.getLineCount()，计算出来一共排版了多少行，如果超过了自己要设定的行数，或者getLineCount()的行数和自己设定的maxLine一致，但是最后一行的宽度+之前计算出来的widthMore，超过了第四步骤设定的最大宽度，则说明需要截断。
-
-计算lastWord文字的Y坐标，通过getLineHeight()获取每一行的高度加起来，其中最后一行高度需要加一半的高度。
+计算“...”之前的最后一个文字（下文简称最后一个文字）的Y坐标，通过getLineHeight()获取每一行的高度加起来，其中最后一行高度需要加一半的高度。
 
 for (let i = 0; i < textSectionAttribute.maxLines; i++) {
   y += i === textSectionAttribute.maxLines - 1 ? paragraph.getLineHeight(i) / 2 : paragraph.getLineHeight(i);
 }
 
-计算lastWord的X坐标。
+计算最后一个文字的X坐标。
 
 if (paragraph.getLineWidth(textSectionAttribute.maxLines - 1) + Number(widthMore) >
 textSectionAttribute.constraintWidth) {
@@ -217,7 +223,7 @@ textSectionAttribute.constraintWidth) {
 
 转换坐标对应索引。
 
-计算lastWord的展示索引位置。拿到lastWord的x与y坐标之后，通过getGlyphPositionAtCoordinate()拿到这个坐标的文字所在段落的索引，这个就是最终文字展示的索引。
+计算最后一个文字的展示索引位置。拿到最后一个文字的x与y坐标之后，通过getGlyphPositionAtCoordinate()拿到这个坐标的文字所在段落的索引，这个就是最终文字展示的索引。
 
 let positionWithAffinity = paragraph.getGlyphPositionAtCoordinate(x, y);
 let index = 0;
@@ -382,12 +388,22 @@ paragraph.layoutSync(textMaxWidth);
 ### Code block 8
 
 ```
+const minLinesTextSize: SizeOptions | undefined = uiContext?.getMeasureUtils().measureTextSize({
+  textContent: suffix + lastSpan,
+  fontSize: dataModel.fontSize,
+});
+const widthMore = uiContext?.px2vp(Number(minLinesTextSize?.width));
+```
+
+### Code block 9
+
+```
 for (let i = 0; i < textSectionAttribute.maxLines; i++) {
   y += i === textSectionAttribute.maxLines - 1 ? paragraph.getLineHeight(i) / 2 : paragraph.getLineHeight(i);
 }
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 if (paragraph.getLineWidth(textSectionAttribute.maxLines - 1) + Number(widthMore) >
@@ -398,7 +414,7 @@ textSectionAttribute.constraintWidth) {
 }
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 let positionWithAffinity = paragraph.getGlyphPositionAtCoordinate(x, y);
@@ -410,7 +426,7 @@ if (positionWithAffinity.affinity === text.Affinity.UPSTREAM) {
 }
 ```
 
-### Code block 11
+### Code block 12
 
 ```
 if (this.textModifier.needProcess && !this.textModifier.exceedOneLine) {

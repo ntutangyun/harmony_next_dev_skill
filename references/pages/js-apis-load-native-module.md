@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/js-apis-load-native-module_
 
-loadNativeModule (同步动态加载系统库接口)用于同步动态加载Native模块，目的是按需加载所需要的模块。使用该接口会增加加载so文件的时间，开发者需评估其对功能的影响。
+loadNativeModule (同步动态加载系统库接口)用于同步动态加载Native模块，目的是按需加载所需要的模块。
 
 函数说明
 
@@ -11,41 +11,33 @@ loadNativeModule(moduleName: string): Object;
 参数	说明
 moduleName	加载的模块名。
 
-说明
-
-loadNativeModule加载的模块名是指依赖方oh-package.json5文件的dependencies中的名字。
-
-loadNativeModule必须在UI主线程中调用。
-
-该接口在加载常量字符串或变量表达式作为参数时，需要配置依赖。
-
 loadNativeModule支持的场景
 
 场景	示例
 系统库模块	加载@ohos.或@system.
 应用内Native模块	加载libNativeLibrary.so
 
-使用示例
+使用注意事项
 
-HAP加载系统库模块
+loadNativeModule仅支持在Stage模型的UI主线程中加载native模块。
 
-// HAP加载系统库模块
-let hilog: ESObject = loadNativeModule('@ohos.hilog');
-hilog.info(0, 'testTag', 'loadNativeModule ohos.hilog success');
+使用该接口会增加so文件的加载时间，使用前需评估其对应用性能和功能的影响。
 
-HAP加载Native库
+无论moduleName参数使用常量字符串还是变量表达式，都需要在依赖方模块级oh-package.json5文件的dependencies字段中配置依赖。moduleName的值为dependencies字段中声明的依赖名称。
 
-libentry.so的index.d.ts文件如下：
+加载应用内native模块时，还需要在依赖方模块级build-profile.json5文件的buildOption.arkOptions.runtimeOnly.packages字段中配置模块名称。该名称需与oh-package.json5文件中的依赖名称及loadNativeModule的入参保持一致。
 
-export const add: (a: number, b: number) => number;
+接口声明的返回值类型为Object。调用时需使用ESObject类型的变量接收返回值，才能调用native模块导出的方法；使用Object类型接收返回值时，调用其中的方法可能会产生编译错误。
 
-1.加载本地so库时，需要在oh-package.json5文件中配置dependencies项。
+以加载libentry.so为例，需要完成以下配置。
+
+在模块级oh-package.json5文件中配置dependencies字段。
 
 "dependencies": {
   "libentry.so": "file:./src/main/cpp/types/libentry"
 },
 
-2.在build-profile.json5中进行配置。
+在模块级build-profile.json5文件中配置runtimeOnly.packages字段。
 
 "buildOption": {
   "arkOptions": {
@@ -58,7 +50,21 @@ export const add: (a: number, b: number) => number;
   // ...
 },
 
-3.使用loadNativeModule加载libentry.so，并调用add函数。
+使用示例
+
+示例1：HAP加载系统库模块
+
+// HAP加载系统库模块
+let hilog: ESObject = loadNativeModule('@ohos.hilog');
+hilog.info(0, 'testTag', 'loadNativeModule ohos.hilog success');
+
+示例2：HAP加载Native库
+
+libentry.so的index.d.ts文件如下：
+
+export const add: (a: number, b: number) => number;
+
+完成使用注意事项中的依赖配置后，使用loadNativeModule加载libentry.so并调用add函数。
 
 //HAP加载Native库
 let module: ESObject = loadNativeModule('libentry.so');
@@ -75,26 +81,12 @@ loadNativeModule(moduleName: string): Object;
 ### Code block 2
 
 ```
-// HAP加载系统库模块
-let hilog: ESObject = loadNativeModule('@ohos.hilog');
-hilog.info(0, 'testTag', 'loadNativeModule ohos.hilog success');
-```
-
-### Code block 3
-
-```
-export const add: (a: number, b: number) => number;
-```
-
-### Code block 4
-
-```
 "dependencies": {
   "libentry.so": "file:./src/main/cpp/types/libentry"
 },
 ```
 
-### Code block 5
+### Code block 3
 
 ```
 "buildOption": {
@@ -107,6 +99,20 @@ export const add: (a: number, b: number) => number;
   },
   // ...
 },
+```
+
+### Code block 4
+
+```
+// HAP加载系统库模块
+let hilog: ESObject = loadNativeModule('@ohos.hilog');
+hilog.info(0, 'testTag', 'loadNativeModule ohos.hilog success');
+```
+
+### Code block 5
+
+```
+export const add: (a: number, b: number) => number;
 ```
 
 ### Code block 6

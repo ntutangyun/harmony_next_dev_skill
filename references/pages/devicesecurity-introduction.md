@@ -70,7 +70,7 @@ nonce：由开发者生成，并且在系统完整性检测结果中会包含这
 [h2]支持的设备
 
 场景	支持设备
-应用设备状态检测	Phone、Tablet、PC/2in1、Wearable、TV、Car。
+应用设备状态检测	Phone、Tablet、PC/2in1、Wearable、TV。
 安全检测	Phone、Tablet、PC/2in1、Wearable。
 安全摄像头（可信应用服务）	Phone、PC/2in1。
 安全地理位置（可信应用服务）	Phone、Tablet。

@@ -44,7 +44,7 @@ Output	结果体	result	是	意图调用返回的数据，如果无数据则返�
                                 "keywords": [
                                     "查路线","查询路线","路线查询","找路线"
                                 ], // 参数枚举值别名，可以用于索引、过滤，最多不超过5个
-                                "displayDescription": "查找到达目的地的路线", // 功能描述
+                                "displayDescription": "查找到达目的地的路线", // 请填写具体功能描述，避免在描述中包含应用名称
                                 "icon": "https://abc.xx" // 功能图标
                             },
                             {
@@ -188,7 +188,7 @@ export default class InsightIntentExecutorImpl extends InsightIntentExecutor {
                                 "keywords": [
                                     "查路线","查询路线","路线查询","找路线"
                                 ], // 参数枚举值别名，可以用于索引、过滤，最多不超过5个
-                                "displayDescription": "查找到达目的地的路线", // 功能描述
+                                "displayDescription": "查找到达目的地的路线", // 请填写具体功能描述，避免在描述中包含应用名称
                                 "icon": "https://abc.xx" // 功能图标
                             },
                             {

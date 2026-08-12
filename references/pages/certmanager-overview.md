@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/certmanag
 
 系统CA证书：由操作系统预安装的CA证书。
 
-只有通过《华为根证书计划》审核的CA证书才能预安装到鸿蒙系统中。
+只有通过《华为根证书计划》审核的CA证书才能预安装到HarmonyOS系统中。
 
 用户CA证书：归属于设备用户的CA证书，一般由设备的用户进行安装和管理。应用可以通过API拉起证书管理服务的对话框，引导用户安装或卸载用户CA证书。
 

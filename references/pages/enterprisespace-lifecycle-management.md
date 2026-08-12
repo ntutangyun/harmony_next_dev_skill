@@ -17,7 +17,7 @@ Enterprise Space Kit为应用提供启用双空间功能及管理工作空间的
 详细接口说明可参考接口文档。
 
 接口名	描述
-enableWorkspace(enable: boolean): Promise<void>	使能或禁用工作空间功能。MDM应用在调用该接口后，需调用MDM Kit的restrictions.setDisallowedPolicy接口启用“inactiveUserFreeze”特性，以开启非活跃用户运行能力。
+enableWorkspace(enable: boolean): Promise<void>	启用或禁用工作空间功能。MDM应用调用该接口后，还需调用MDM Kit的restrictions.setDisallowedPolicy接口，启用INACTIVE_USER_FREEZE设备特性，以开启非活跃用户运行能力。
 createWorkspace(localName: string, workspaceType: WorkspaceType, params?: CreateWorkspaceParams): Promise<WorkspaceInfo>	创建工作空间并返回工作空间信息。
 queryWorkspace(queryFlag: QueryType): Promise<WorkspaceInfo[]>	查询工作空间信息并返回结果。
 removeWorkspace(localId: number): Promise<void>	移除工作空间。

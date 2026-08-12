@@ -32,8 +32,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
-  @Trace name: string = 'Jack';
+  @Trace public age: number = 0;
+  @Trace public name: string = 'Jack';
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -81,7 +81,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
+  @Trace public age: number = 0;
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -116,7 +116,8 @@ struct Page {
 
   aboutToAppear(): void {
     // 错误用法，已经给age注册过方法名为onChange1的函数，无法重复注册相同函数名的监听函数
-    // 打印错误日志提示添加失败：FIX THIS APPLICATION ERROR: AddMonitor 'onChange1' owned by 'User' path: 'age' - failed when adding duplicate path
+    // 打印错误日志提示添加失败：FIX THIS APPLICATION ERROR: AddMonitor 'onChange1' owned
+    // by 'User' path: 'age' - failed when adding duplicate path
     UIUtils.addMonitor(this.user, 'age', this.onChange1);
   }
 
@@ -138,7 +139,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
+  @Trace public age: number = 0;
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -150,7 +151,8 @@ class User {
     // 正确用法，给age注册监听函数onChange1，没有设置options默认为异步监听回调
     UIUtils.addMonitor(this, 'age', this.onChange1);
     // 错误用法，不能改变this.onChange1的监听回调的方式
-    // 打印错误日志提示： FIX THIS APPLICATION ERROR: addMonitor failed, current function onChange1 has already register as async, cannot change to sync anymore
+    // 打印错误日志提示： FIX THIS APPLICATION ERROR: addMonitor failed, current function
+    // onChange1 has already register as async, cannot change to sync anymore
     UIUtils.addMonitor(this, 'age', this.onChange1, { isSynchronous: true });
   }
 }
@@ -184,8 +186,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
-  @Trace name: string = 'Jack';
+  @Trace public age: number = 0;
+  @Trace public name: string = 'Jack';
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -228,7 +230,8 @@ struct Page {
       Button('clear age onChange1').onClick(() => {
         // step2：第一次点击该Button。删除onChange1，删除成功。此时点击User age，仅会回调onChange2，onChange3
         // step3：再次点击该Button。再次删除onChange1，onChange1已经被删除，此次删除失败
-        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path age for onChange1 because it was never registered with addMonitor
+        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path age for onChange1
+        // because it was never registered with addMonitor
         UIUtils.clearMonitor(this.user, 'age', this.user.onChange1);
       })
       Button('clear age monitors').onClick(() => {
@@ -237,7 +240,8 @@ struct Page {
       })
       Button('clear name monitors').onClick(() => {
         // step5：删除name添加的监听方法。因为name无任何监听回调，删除失败
-        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path name for current target User because no Monitor function for this path was registered
+        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path name for current target
+        // User because no Monitor function for this path was registered
         UIUtils.clearMonitor(this.user, 'name');
       })
     }
@@ -426,8 +430,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
-  @Trace name: string = 'Jack';
+  @Trace public age: number = 0;
+  @Trace public name: string = 'Jack';
 
   onChange(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -554,8 +558,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class Info {
-  name: string = 'John';
-  @Trace age: number = 24;
+  public name: string = 'John';
+  @Trace public age: number = 24;
 
   onPropertyChange(monitor: IMonitor) {
     monitor.dirty.forEach((path: string) => {
@@ -593,7 +597,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 }
 
 @Entry
@@ -644,7 +648,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 }
 
 @Entry
@@ -679,7 +683,7 @@ onChange: User property user.age change from 10 to 12
 
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 }
 
 @Entry
@@ -723,7 +727,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class Info {
-  @Trace message: string = 'not initialized';
+  @Trace public message: string = 'not initialized';
 
   constructor() {
     // addMonitor可以监听构造函数中message的变化
@@ -762,7 +766,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 
   onChange(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -855,8 +859,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { UIUtils } from '@kit.ArkUI';
 @ObservedV2
 class ClassA {
-  @Trace propA: number = 8;
-  @Trace propB: number = 99;
+  @Trace public propA: number = 8;
+  @Trace public propB: number = 99;
 
   constructor(a: number, b: number) {
     this.propA = a;
@@ -912,8 +916,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @ObservedV2
 class Person {
-  @Trace firstName: string = 'first';
-  @Trace lastName: string = 'last';
+  @Trace public firstName: string = 'first';
+  @Trace public lastName: string = 'last';
   constructor(first: string = 'no first', last: string = 'no last') {
     this.firstName = first;
     this.lastName = last;
@@ -1296,8 +1300,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
-  @Trace name: string = 'Jack';
+  @Trace public age: number = 0;
+  @Trace public name: string = 'Jack';
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -1347,7 +1351,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
+  @Trace public age: number = 0;
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -1382,7 +1386,8 @@ struct Page {
 
   aboutToAppear(): void {
     // 错误用法，已经给age注册过方法名为onChange1的函数，无法重复注册相同函数名的监听函数
-    // 打印错误日志提示添加失败：FIX THIS APPLICATION ERROR: AddMonitor 'onChange1' owned by 'User' path: 'age' - failed when adding duplicate path
+    // 打印错误日志提示添加失败：FIX THIS APPLICATION ERROR: AddMonitor 'onChange1' owned
+    // by 'User' path: 'age' - failed when adding duplicate path
     UIUtils.addMonitor(this.user, 'age', this.onChange1);
   }
 
@@ -1406,7 +1411,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
+  @Trace public age: number = 0;
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -1418,7 +1423,8 @@ class User {
     // 正确用法，给age注册监听函数onChange1，没有设置options默认为异步监听回调
     UIUtils.addMonitor(this, 'age', this.onChange1);
     // 错误用法，不能改变this.onChange1的监听回调的方式
-    // 打印错误日志提示： FIX THIS APPLICATION ERROR: addMonitor failed, current function onChange1 has already register as async, cannot change to sync anymore
+    // 打印错误日志提示： FIX THIS APPLICATION ERROR: addMonitor failed, current function
+    // onChange1 has already register as async, cannot change to sync anymore
     UIUtils.addMonitor(this, 'age', this.onChange1, { isSynchronous: true });
   }
 }
@@ -1450,8 +1456,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
-  @Trace name: string = 'Jack';
+  @Trace public age: number = 0;
+  @Trace public name: string = 'Jack';
 
   onChange1(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -1494,7 +1500,8 @@ struct Page {
       Button('clear age onChange1').onClick(() => {
         // step2：第一次点击该Button。删除onChange1，删除成功。此时点击User age，仅会回调onChange2，onChange3
         // step3：再次点击该Button。再次删除onChange1，onChange1已经被删除，此次删除失败
-        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path age for onChange1 because it was never registered with addMonitor
+        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path age for onChange1
+        // because it was never registered with addMonitor
         UIUtils.clearMonitor(this.user, 'age', this.user.onChange1);
       })
       Button('clear age monitors').onClick(() => {
@@ -1503,7 +1510,8 @@ struct Page {
       })
       Button('clear name monitors').onClick(() => {
         // step5：删除name添加的监听方法。因为name无任何监听回调，删除失败
-        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path name for current target User because no Monitor function for this path was registered
+        // 打印错误日志：FIX THIS APPLICATION ERROR: cannot clear path name for current target
+        // User because no Monitor function for this path was registered
         UIUtils.clearMonitor(this.user, 'name');
       })
     }
@@ -1662,8 +1670,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 0;
-  @Trace name: string = 'Jack';
+  @Trace public age: number = 0;
+  @Trace public name: string = 'Jack';
 
   onChange(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -1792,8 +1800,8 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class Info {
-  name: string = 'John';
-  @Trace age: number = 24;
+  public name: string = 'John';
+  @Trace public age: number = 24;
 
   onPropertyChange(monitor: IMonitor) {
     monitor.dirty.forEach((path: string) => {
@@ -1829,7 +1837,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 }
 
 @Entry
@@ -1884,7 +1892,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 }
 
 @Entry
@@ -1925,7 +1933,7 @@ onChange: User property user.age change from 10 to 12
 ```
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 }
 
 @Entry
@@ -1967,7 +1975,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class Info {
-  @Trace message: string = 'not initialized';
+  @Trace public message: string = 'not initialized';
 
   constructor() {
     // addMonitor可以监听构造函数中message的变化
@@ -2006,7 +2014,7 @@ import { UIUtils } from '@kit.ArkUI';
 
 @ObservedV2
 class User {
-  @Trace age: number = 10;
+  @Trace public age: number = 10;
 
   onChange(mon: IMonitor) {
     mon.dirty.forEach((path: string) => {
@@ -2097,8 +2105,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { UIUtils } from '@kit.ArkUI';
 @ObservedV2
 class ClassA {
-  @Trace propA: number = 8;
-  @Trace propB: number = 99;
+  @Trace public propA: number = 8;
+  @Trace public propB: number = 99;
 
   constructor(a: number, b: number) {
     this.propA = a;
@@ -2150,8 +2158,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @ObservedV2
 class Person {
-  @Trace firstName: string = 'first';
-  @Trace lastName: string = 'last';
+  @Trace public firstName: string = 'first';
+  @Trace public lastName: string = 'last';
   constructor(first: string = 'no first', last: string = 'no last') {
     this.firstName = first;
     this.lastName = last;

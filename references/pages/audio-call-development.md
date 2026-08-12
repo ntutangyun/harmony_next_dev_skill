@@ -34,8 +34,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-cal
 
 开发通话业务时，应同时按通话场景配置播放流和录音流。如果使用非STREAM_USAGE_VOICE_COMMUNICATION、STREAM_USAGE_VIDEO_COMMUNICATION播放类型或非SOURCE_TYPE_VOICE_COMMUNICATION录音类型，系统将无法识别为通话场景，导致回声消除、噪声抑制、自动增益控制等处理策略不生效或效果不符合预期。
 
-单独启动该录音流不会开启3A，需要同时存在通话类型的播放流起播。
-
 音频通话功能
 
 在音频通话开始和结束时，应用可以自行检查当前的音频场景模式和铃声模式，以便采取合适的音频管理及提示策略。

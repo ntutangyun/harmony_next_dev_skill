@@ -16,7 +16,7 @@ Accessory Kit助力华为生态合作设备实现更高级的体验。例如：�
 
 [h2]支持的设备
 
-Accessory Kit支持Phone、Tablet、PC/2in1、Car。
+Accessory Kit支持Phone、Tablet、PC/2in1。
 
 [h2]功能使用限制
 

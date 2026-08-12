@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-t
 
 函数功能
 
-当软件产生异常后，使用该指令使kernel中止运行。
+当软件产生异常后，使用该指令终止kernel运行。
 
 函数原型
 

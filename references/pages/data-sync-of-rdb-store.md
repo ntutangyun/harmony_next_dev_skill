@@ -339,6 +339,14 @@ bundleName：应用包名，string类型，必填字段。
 
 dbName：数据库名称，string类型，必填字段。如示例中数据库名为"RdbTest.db"，则此处配置为："RdbTest"。
 
+tableName：表名，指定当前策略生效的表，string类型，可选字段，默认为空。
+
+columnName：字段名，指定当前策略生效的字段，string类型，可选字段，默认为空。
+
+notNull：是否非空，bool类型，可选字段。true表示非空字段，false表示可以为空字段，默认为false。
+
+hasDefault：是否有默认值，bool类型，可选字段。true表示有默认值，false表示可以为无默认值，默认为false。
+
 tableName：表名，string，必填字段。
 
 deviceSyncFields：指定端端同步对应的列，array[string]，其中字段必须在fields中，且必须在数据库表中，否则不会同步；该字段为必填字段，否则设置分布式表失败。
@@ -347,9 +355,7 @@ cloudType: 表类型，为enum类型，取值范围为[ "Local", "Cloud DB", "De
 
 "Local"表示本端表。"Cloud_DB"表示端云表。"Device DB"表示设备表。
 
-针对搭载HarmonyOS 6.1.0、HarmonyOS 6.1.1版本的设备，此字段为必填字段。
-
-针对搭载HarmonyOS 7.0.0及以上版本的设备，此字段为可选字段。
+从API版本12开始，新增支持此字段，且此字段必填。从API版本26.0.0开始，此字段变为可选字段，不填时默认为"Local"。
 
 fields：数据库表字段详细信息，array[field]。
 
@@ -371,6 +377,44 @@ notNull：是否非空，bool类型，非必填字段。其中：true表示非�
       "version": 0,
       "bundleName": "com.example.rdbDataSync",
       "dbName": "RdbTest",
+      "backwardCompatiblePolicies": [
+        {
+          "tableName": "EMPLOYEE",
+          "fieldsPolicy": [
+            {
+              "columnName": "HIGH",
+              "compatibleConstraints": [
+                {
+                  "notNull": false,
+                  "hasDefault": true
+                },
+                {
+                  "notNull": true,
+                  "hasDefault": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tableName": "EMPLOYEE2",
+          "fieldsPolicy": [
+            {
+              "columnName": "HIGH",
+              "compatibleConstraints": [
+                {
+                  "notNull": false,
+                  "hasDefault": true
+                },
+                {
+                  "notNull": true,
+                  "hasDefault": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
       "tables": [
         {
           "tableName": "EMPLOYEE",
@@ -1364,6 +1408,44 @@ let store: relationalStore.RdbStore | undefined = undefined;
       "version": 0,
       "bundleName": "com.example.rdbDataSync",
       "dbName": "RdbTest",
+      "backwardCompatiblePolicies": [
+        {
+          "tableName": "EMPLOYEE",
+          "fieldsPolicy": [
+            {
+              "columnName": "HIGH",
+              "compatibleConstraints": [
+                {
+                  "notNull": false,
+                  "hasDefault": true
+                },
+                {
+                  "notNull": true,
+                  "hasDefault": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tableName": "EMPLOYEE2",
+          "fieldsPolicy": [
+            {
+              "columnName": "HIGH",
+              "compatibleConstraints": [
+                {
+                  "notNull": false,
+                  "hasDefault": true
+                },
+                {
+                  "notNull": true,
+                  "hasDefault": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
       "tables": [
         {
           "tableName": "EMPLOYEE",

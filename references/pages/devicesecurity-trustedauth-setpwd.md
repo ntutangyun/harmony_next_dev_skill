@@ -17,7 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口及使用方法请参见API参考。
 
 接口名	描述
-enableTrustedAuthentication(challenge: Uint8Array, pwdInfo: PasswordInfo, label: TUILable): Promise<AuthInfo>	创建数字盾密码
+enableTrustedAuthentication(challenge: Uint8Array, pwdInfo: PasswordInfo, label: TUILable): Promise<AuthInfo>	创建数字盾密码。
 
 开通数字盾界面介绍
 

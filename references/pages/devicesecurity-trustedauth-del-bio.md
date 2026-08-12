@@ -19,7 +19,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口及使用方法请参见API参考。
 
 接口名	描述
-disableTrustedBioAuthentication(authID: bigint, authType: AuthType): Promise<void>	解绑指定生物类型认证能力
+disableTrustedBioAuthentication(authID: bigint, authType: AuthType): Promise<void>	解绑指定生物类型认证能力。
 
 开发步骤
 

@@ -221,7 +221,7 @@ build() {
 
 配置此metadata时，必须确保在属性设置中，没有通过函数返回值实现深浅色切换。
 
-HdsNavigation、HdsNavDestination、HdsTabs、HdsListItemCard四个高级组件暂未适配，这些高级组件的颜色相关属性均需使用AbilityStage的监听回调或Ability的监听回调方式来处理。
+从API版本26.0.0开始，HdsNavigation、HdsNavDestination、HdsTabs、HdsListItemCard四个高级组件支持高性能的深浅色切换。API版本26.0.0之前，HdsNavigation、HdsNavDestination、HdsTabs、HdsListItemCard四个高级组件暂未适配，这些高级组件的颜色相关属性均需使用AbilityStage的监听回调或Ability的监听回调方式来处理。
 
 通过metadata开启深浅色切换优化选项。
 

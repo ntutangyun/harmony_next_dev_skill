@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 接口名	描述
 trustedAuthentication(challenge: Uint8Array, authID: bigint, label: TUILable): Promise<AuthToken>	数字盾密码认证
-getBiometricAuthToken(operType: OperateType, tuiAuthToken: Uint8Array, bioAuthToken: Uint8Array): Promise<AuthToken>	获取生物特征绑定完成后生成的authToken信息
+getBiometricAuthToken(operType: OperateType, tuiAuthToken: Uint8Array, bioAuthToken: Uint8Array): Promise<AuthToken>	获取生物特征绑定完成后生成的authToken信息。
 
 开通生物特征认证能力界面介绍
 

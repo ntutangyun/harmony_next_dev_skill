@@ -83,7 +83,7 @@ export default class EntryAbility extends UIAbility {
         deviceModel: "M70",
       };
       hiRetrieval.participate(cfg);
-      // 执行应用报告灰度采集任务
+      // 执行应用灰度采集任务
       hiRetrieval.run();
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', 'hiretrieval error: %{public}s', JSON.stringify(err));
@@ -106,7 +106,7 @@ export default class EntryAbility extends UIAbility {
   }
 }
 
-完成上述步骤后，应用灰度采集模块将自动接受云端平台所下发的灰度任务，并执行对应的故障日志采集和上传功能。应用开发者无需再编写额外代码。采集的故障日志将上传到云端，开发者可以在云端平台获取，以定位故障。
+完成上述步骤后，应用灰度采集模块将自动接收云端平台所下发的灰度任务，并执行对应的故障日志采集和上传功能。应用开发者无需再编写额外代码。采集的故障日志将上传到云端，开发者可以在云端平台获取，以定位故障。
 
 ## Code blocks
 
@@ -160,7 +160,7 @@ export default class EntryAbility extends UIAbility {
         deviceModel: "M70",
       };
       hiRetrieval.participate(cfg);
-      // 执行应用报告灰度采集任务
+      // 执行应用灰度采集任务
       hiRetrieval.run();
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', 'hiretrieval error: %{public}s', JSON.stringify(err));

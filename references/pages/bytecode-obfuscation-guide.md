@@ -133,7 +133,7 @@ console.info(obj002.dynamicName + ''); // 使用点语法静态访问属性
 
 若代码中使用点语法访问未在ArkTS/TS/JS代码中定义的字段，比如访问native实现的so库，字段固定的json文件与数据库等场景：
 
-若在代码中引用so库的api，如import testNapi from 'library.so'; testNapi.foo();需要使用-keep-property-name，foo保留属性名称。
+若在代码中引用so库的API，如import testNapi from 'library.so'; testNapi.foo()；需要使用-keep-property-name foo来保留属性名称foo。
 
 若在代码中使用json文件中的字段，需要使用-keep-property-name保留json文件中的字段名称。
 
@@ -149,7 +149,7 @@ console.info(obj002.dynamicName + ''); // 使用点语法静态访问属性
 
 若构建HAR模块并发布给其他模块使用的场景，要在HAR模块中的obfuscation-rules.txt文件中将对外接口使用-keep-global-name来保留、将对外暴露的class/interface等语法中的属性使用-keep-property-name保留。
 
-若在代码中引用so库的api，如import { napiA } from 'library.so'；需要使用-keep-global-name napiA保留so接口名称。
+若在代码中引用so库的API，如import { napiA } from 'library.so'；需要使用-keep-global-name napiA来保留so接口名称napiA。
 
 验证应用功能以及模块被依赖时的接口调用功能，排查遗漏的场景。若应用出现功能异常，可依据混淆后的报错栈，在模块的 build/default/[...]/release/obfuscation/ 目录下查阅 nameCache.json（名称映射表）、config.json（混淆项与白名单）等产物，按查看混淆效果对照定位源码行；并按需使用-keep-global-name、-keep-property-name等进行保留。
 

@@ -36,8 +36,13 @@ options选项说明：
 
 假设已存在方舟字节码文件：test.abc，其源代码如下：
 
+// Disassembler.ts
 let i = 99;
-function show(){return i;}
+
+function show() {
+  return i;
+}
+
 show();
 
 执行如下命令生成反汇编文件：test.txt，文件内包含操作码及格式等信息。
@@ -79,7 +84,7 @@ cat test.txt
 
 L_ESSlotNumberAnnotation:
     u32 slotNumberIdx { 0x0 }
-.function any test.#*#show(any a0, any a1, any a2) <static> {                // 此方法源码中的show方法，同时这里也说明了，它属于test模块
+.function any test.#*#show(any a0, any a1, any a2) <static> {                // 此方法是源码中的show方法，同时这里也说明了，它属于test模块
     ldlexvar 0x0, 0x0
     ......
 }
@@ -126,8 +131,13 @@ ark_disasm.exe [options] input_file output_file
 ### Code block 2
 
 ```
+// Disassembler.ts
 let i = 99;
-function show(){return i;}
+
+function show() {
+  return i;
+}
+
 show();
 ```
 
@@ -175,7 +185,7 @@ cat test.txt
 
 L_ESSlotNumberAnnotation:
     u32 slotNumberIdx { 0x0 }
-.function any test.#*#show(any a0, any a1, any a2) <static> {                // 此方法源码中的show方法，同时这里也说明了，它属于test模块
+.function any test.#*#show(any a0, any a1, any a2) <static> {                // 此方法是源码中的show方法，同时这里也说明了，它属于test模块
     ldlexvar 0x0, 0x0
     ......
 }

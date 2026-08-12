@@ -75,7 +75,7 @@ let pixelMapFormatToSizeMap = new Map<image.PixelMapFormat, number>([
 
 由于不同设备产品差异性，应用开发者在创建相机预览输出流前，必须先通过getSupportedOutputCapability方法获取当前设备支持的预览输出流previewProfile，再根据实际业务需求选择CameraFormat和Size适合的预览输出流previewProfile。
 
-ImageReceiver接收预览流图像数据实际format格式由应用开发者在创建预览输出流相机预览输出流时，根据实际业务需求选择的previewProfile中format格式参数影响，详细步骤请参考创建预览流获取数据。
+ImageReceiver接收预览流图像数据实际format格式由应用开发者在创建相机预览输出流时，根据实际业务需求选择的previewProfile中format格式参数影响，详细步骤请参考创建预览流获取数据。
 
 onImageArrival(receiver: image.ImageReceiver): void {
   receiver.on('imageArrival', () => {

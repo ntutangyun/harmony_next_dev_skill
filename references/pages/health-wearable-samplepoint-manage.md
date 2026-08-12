@@ -4,11 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-we
 
 场景介绍
 
-读取最新一条运动健康采样数据。
-
-约束与限制
-
-从5.1.1(19) Release版本开始支持。
+从5.1.1(19) Release版本开始，支持读取最新一条运动健康采样数据。
 
 接口说明
 

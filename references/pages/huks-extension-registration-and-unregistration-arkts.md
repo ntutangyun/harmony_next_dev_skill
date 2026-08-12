@@ -87,6 +87,9 @@ async function registerProvider(): Promise<void> {
       {
         tag: huksExternalCrypto.HuksExternalCryptoTag.HUKS_EXT_CRYPTO_TAG_ABILITY_NAME,
         value: StringToUint8Array("CryptoExtension")
+      }, {
+        tag: huksExternalCrypto.HuksExternalCryptoTag.HUKS_EXT_CRYPTO_TAG_ABILITY_INFO,
+        value: StringToUint8Array(abilityInfo)
       }
     ];
 
@@ -251,6 +254,9 @@ async function registerProvider(): Promise<void> {
       {
         tag: huksExternalCrypto.HuksExternalCryptoTag.HUKS_EXT_CRYPTO_TAG_ABILITY_NAME,
         value: StringToUint8Array("CryptoExtension")
+      }, {
+        tag: huksExternalCrypto.HuksExternalCryptoTag.HUKS_EXT_CRYPTO_TAG_ABILITY_INFO,
+        value: StringToUint8Array(abilityInfo)
       }
     ];
 

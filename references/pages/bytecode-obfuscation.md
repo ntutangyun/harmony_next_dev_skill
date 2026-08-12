@@ -442,7 +442,7 @@ console.info(obj.y);
 
 obj.s1 = 'a';
 let key = 's1';
-console.info(obj[key]); // key对应的变量值s应该被保留
+console.info(obj[key]); // key对应的变量值s1应该被保留
 
 obj.t1 = 'b';
 console.info(obj['t' + '1']); // t1应该被保留
@@ -472,7 +472,7 @@ export const add: (a: number, b: number) => number;
 // test.ets
 import testNapi from 'libentry.so'
 // ...
-testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name foo
+testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name add
 
 4.JSON数据解析及对象序列化时，需要保留使用到的字段，例如：
 
@@ -1083,7 +1083,7 @@ console.info(obj.y);
 
 obj.s1 = 'a';
 let key = 's1';
-console.info(obj[key]); // key对应的变量值s应该被保留
+console.info(obj[key]); // key对应的变量值s1应该被保留
 
 obj.t1 = 'b';
 console.info(obj['t' + '1']); // t1应该被保留
@@ -1123,7 +1123,7 @@ export const add: (a: number, b: number) => number;
 // test.ets
 import testNapi from 'libentry.so'
 // ...
-testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name foo
+testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name add
 ```
 
 ### Code block 35

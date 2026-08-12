@@ -25,7 +25,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-voip
 
 约束与限制
 
-应用内通话消息支持Phone、Tablet设备，并且从6.1.0(23)版本开始，新增支持儿童智能表。
+推送应用内通话消息能力支持Phone、Tablet设备，并且从6.1.0(23)版本开始，新增支持儿童智能表。
 
 开通权益
 
@@ -468,7 +468,7 @@ push-type：0表示通知消息场景。
 
 category：消息自分类类别，设置为MISS_CALL，请参见参数说明，发送消息前请确保您已申请通知消息自分类权益。
 
-appMessageId：应用消息的唯一标识。被叫挂断，被叫方VoIP应用在前台时应用可以通过调用Notification Kit（用户通知服务）发送未接来电通知。被叫方VoIP应用在后台时，可以通过Push推送未接来电通知。应用可能存在前后台状态判断不准确，同一电话会产生两条未接来电，建议您通过Notification Kit和Push Kit推送的未接来电通知使用相同的appMessageId，系统会进行通知去重。
+appMessageId：应用消息的唯一标识。主叫挂断，被叫方VoIP应用在前台时应用可以通过调用Notification Kit（用户通知服务）发送未接来电通知。被叫方VoIP应用在后台时，可以通过Push推送未接来电通知。应用可能存在前后台状态判断不准确，同一电话会产生两条未接来电，建议您通过Notification Kit和Push Kit推送的未接来电通知使用相同的appMessageId，系统会进行通知去重。
 
 其他参数说明可参见通知消息请求体参数说明。
 

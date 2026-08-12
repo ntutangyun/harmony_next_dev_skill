@@ -101,6 +101,7 @@ class TransferInfo {
 class SppClientManager {
   private clientNumber: number = -1;
   private peerDevice: string = '';
+  private connectPromise: Promise<boolean> | null = null;
 
   constructor(peerDevice: string) {
     this.peerDevice = peerDevice
@@ -110,21 +111,33 @@ class SppClientManager {
     return this.clientNumber !== -1;
   }
 
-  public async startConnect(): Promise<boolean> {
-    let option: socket.SppOptions = {
-      uuid: '00009999-0000-1000-8000-00805F9B34FB',
-      secure: false,
-      type: socket.SppType.SPP_RFCOMM
-    };
-    socket.sppConnect(this.peerDevice, option, (err: BusinessError, num: number) => {
-      if (err) {
-        hilog.error(DOMAIN, 'testTag', `cpp connect failed, errCode: ${err.code}, errMessage: ${err.message}`);
-      } else {
-        hilog.info(DOMAIN, 'testTag', `spp connect success clientNumber: ${num}`);
-        this.clientNumber = num;
-      }
+  public startConnect(): Promise<boolean> {
+    if (this.isConnect()) {
+      return Promise.resolve(true);
+    }
+    if (this.connectPromise) {
+      return this.connectPromise;
+    }
+    this.connectPromise = new Promise((resolve) => {
+      let option: socket.SppOptions = {
+        uuid: '00009999-0000-1000-8000-00805F9B34FB',
+        secure: false,
+        type: socket.SppType.SPP_RFCOMM
+      };
+      socket.sppConnect(this.peerDevice, option, (err: BusinessError, num: number) => {
+        this.connectPromise = null;
+        if (err) {
+          hilog.error(DOMAIN, 'testTag', `cpp connect failed, errCode: ${err.code}, errMessage: ${err.message}`);
+          resolve(false);
+        } else {
+          hilog.info(DOMAIN, 'testTag', `spp connect success clientNumber: ${num}`);
+          this.clientNumber = num;
+          socket.on('sppRead', this.clientNumber, this.read);
+          resolve(true);
+        }
+      });
     });
-    return true
+    return this.connectPromise;
   }
 
   private sendData(jsonStr: string) {
@@ -141,12 +154,8 @@ class SppClientManager {
     const uint8Array: Uint8Array = textEncoder.encodeInto(jsonStr);
     const arrayBuffer = uint8Array.buffer;
 
-    try {
-      socket.sppWrite(this.clientNumber, arrayBuffer);
-      hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
-    } catch (err) {
-      hilog.info(DOMAIN, 'testTag', `sending fail, err is ${JSON.stringify(err)}`);
-    }
+    socket.sppWrite(this.clientNumber, arrayBuffer);
+    hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
   }
 
   public sendNotificationData(notificationInfo: notificationExtensionSubscription.NotificationInfo) {
@@ -178,6 +187,7 @@ class SppClientManager {
 
   public stopConnect() {
     hilog.info(DOMAIN, 'testTag', `closeSppClient ${this.clientNumber}`);
+    this.connectPromise = null;
     try {
       socket.off('sppRead', this.clientNumber, this.read);
     } catch (err) {
@@ -185,10 +195,10 @@ class SppClientManager {
     }
     try {
       socket.sppCloseClientSocket(this.clientNumber);
-      this.clientNumber = -1;
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', `stopConnect errCode: ${err.code}, errMessage: ${err.message}`);
     }
+    this.clientNumber = -1;
   }
 }
 
@@ -197,7 +207,7 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
   private sppClientManager: SppClientManager | undefined;
   onDestroy(): void {
     hilog.info(DOMAIN, 'testTag', 'onDestroy');
-    this.sppClientManager!.stopConnect();
+    this.sppClientManager?.stopConnect();
   }
   // Called back when a notification is published.
   onReceiveMessage(notificationInfo: notificationExtensionSubscription.NotificationInfo): void {
@@ -210,16 +220,12 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
         if (this.sppClientManager.isConnect()) {
           this.sendPublishWithRetry(notificationInfo);
         } else {
-          try {
-            await this.sppClientManager.startConnect().then(() => {
-              hilog.info(DOMAIN, 'testTag', `startConnect success`);
-            });
-          } catch (err) {
-            hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-          }
-          setTimeout(() => {
+          let connected = await this.sppClientManager.startConnect();
+          if (connected) {
             this.sendPublishWithRetry(notificationInfo);
-          }, 3000)
+          } else {
+            hilog.error(DOMAIN, 'testTag', `startConnect failed, skip send`);
+          }
         }
       }).catch((err: BusinessError) => {
       hilog.error(DOMAIN, 'testTag',
@@ -232,16 +238,13 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
       this.sppClientManager!.sendNotificationData(notificationInfo);
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', `send failed, errCode ${err.code}, errorMessage ${err.message}, and retry one times`);
-      try {
-        await this.sppClientManager!.startConnect().then(() => {
-          hilog.info(DOMAIN, 'testTag', `startConnect success`);
-        });
-      } catch (err) {
-        hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-      }
-      setTimeout(() => {
+      this.sppClientManager!.stopConnect();
+      let connected = await this.sppClientManager!.startConnect();
+      if (connected) {
         this.sppClientManager!.sendNotificationData(notificationInfo);
-      }, 3000);
+      } else {
+        hilog.error(DOMAIN, 'testTag', `retry startConnect failed, skip send`);
+      }
     }
   }
 
@@ -256,16 +259,12 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
         if (this.sppClientManager.isConnect()) {
           this.sendCancelWithRetry(hashCodes);
         } else {
-          try {
-            await this.sppClientManager.startConnect().then(() => {
-              hilog.info(DOMAIN, 'testTag', `startConnect success`);
-            });
-          } catch (err) {
-            hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-          }
-          setTimeout(() => {
+          let connected = await this.sppClientManager.startConnect();
+          if (connected) {
             this.sendCancelWithRetry(hashCodes);
-          }, 3000)
+          } else {
+            hilog.error(DOMAIN, 'testTag', `startConnect failed, skip send`);
+          }
         }
       }).catch((err: BusinessError) => {
       hilog.error(DOMAIN, 'testTag', `notificationExtensionSubscription failed, errCode ${err.code}, errorMessage ${err.message}`);
@@ -277,16 +276,13 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
       this.sppClientManager!.sendCancelNotificationData(hashCodes);
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', `send failed, errCode ${err.code}, errorMessage ${err.message}, and retry one times`);
-      try {
-        await this.sppClientManager!.startConnect().then(() => {
-          hilog.info(DOMAIN, 'testTag', `startConnect success`);
-        });
-      } catch (err) {
-        hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-      }
-      setTimeout(() => {
+      this.sppClientManager!.stopConnect();
+      let connected = await this.sppClientManager!.startConnect();
+      if (connected) {
         this.sppClientManager!.sendCancelNotificationData(hashCodes);
-      }, 3000);
+      } else {
+        hilog.error(DOMAIN, 'testTag', `retry startConnect failed, skip send`);
+      }
     }
   }
 }
@@ -372,6 +368,7 @@ class TransferInfo {
 class SppClientManager {
   private clientNumber: number = -1;
   private peerDevice: string = '';
+  private connectPromise: Promise<boolean> | null = null;
 
   constructor(peerDevice: string) {
     this.peerDevice = peerDevice
@@ -381,21 +378,33 @@ class SppClientManager {
     return this.clientNumber !== -1;
   }
 
-  public async startConnect(): Promise<boolean> {
-    let option: socket.SppOptions = {
-      uuid: '00009999-0000-1000-8000-00805F9B34FB',
-      secure: false,
-      type: socket.SppType.SPP_RFCOMM
-    };
-    socket.sppConnect(this.peerDevice, option, (err: BusinessError, num: number) => {
-      if (err) {
-        hilog.error(DOMAIN, 'testTag', `cpp connect failed, errCode: ${err.code}, errMessage: ${err.message}`);
-      } else {
-        hilog.info(DOMAIN, 'testTag', `spp connect success clientNumber: ${num}`);
-        this.clientNumber = num;
-      }
+  public startConnect(): Promise<boolean> {
+    if (this.isConnect()) {
+      return Promise.resolve(true);
+    }
+    if (this.connectPromise) {
+      return this.connectPromise;
+    }
+    this.connectPromise = new Promise((resolve) => {
+      let option: socket.SppOptions = {
+        uuid: '00009999-0000-1000-8000-00805F9B34FB',
+        secure: false,
+        type: socket.SppType.SPP_RFCOMM
+      };
+      socket.sppConnect(this.peerDevice, option, (err: BusinessError, num: number) => {
+        this.connectPromise = null;
+        if (err) {
+          hilog.error(DOMAIN, 'testTag', `cpp connect failed, errCode: ${err.code}, errMessage: ${err.message}`);
+          resolve(false);
+        } else {
+          hilog.info(DOMAIN, 'testTag', `spp connect success clientNumber: ${num}`);
+          this.clientNumber = num;
+          socket.on('sppRead', this.clientNumber, this.read);
+          resolve(true);
+        }
+      });
     });
-    return true
+    return this.connectPromise;
   }
 
   private sendData(jsonStr: string) {
@@ -412,12 +421,8 @@ class SppClientManager {
     const uint8Array: Uint8Array = textEncoder.encodeInto(jsonStr);
     const arrayBuffer = uint8Array.buffer;
 
-    try {
-      socket.sppWrite(this.clientNumber, arrayBuffer);
-      hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
-    } catch (err) {
-      hilog.info(DOMAIN, 'testTag', `sending fail, err is ${JSON.stringify(err)}`);
-    }
+    socket.sppWrite(this.clientNumber, arrayBuffer);
+    hilog.info(DOMAIN, 'testTag', `sending success size: ${arrayBuffer.byteLength} bytes, data: ${jsonStr}`);
   }
 
   public sendNotificationData(notificationInfo: notificationExtensionSubscription.NotificationInfo) {
@@ -449,6 +454,7 @@ class SppClientManager {
 
   public stopConnect() {
     hilog.info(DOMAIN, 'testTag', `closeSppClient ${this.clientNumber}`);
+    this.connectPromise = null;
     try {
       socket.off('sppRead', this.clientNumber, this.read);
     } catch (err) {
@@ -456,10 +462,10 @@ class SppClientManager {
     }
     try {
       socket.sppCloseClientSocket(this.clientNumber);
-      this.clientNumber = -1;
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', `stopConnect errCode: ${err.code}, errMessage: ${err.message}`);
     }
+    this.clientNumber = -1;
   }
 }
 
@@ -468,7 +474,7 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
   private sppClientManager: SppClientManager | undefined;
   onDestroy(): void {
     hilog.info(DOMAIN, 'testTag', 'onDestroy');
-    this.sppClientManager!.stopConnect();
+    this.sppClientManager?.stopConnect();
   }
   // Called back when a notification is published.
   onReceiveMessage(notificationInfo: notificationExtensionSubscription.NotificationInfo): void {
@@ -481,16 +487,12 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
         if (this.sppClientManager.isConnect()) {
           this.sendPublishWithRetry(notificationInfo);
         } else {
-          try {
-            await this.sppClientManager.startConnect().then(() => {
-              hilog.info(DOMAIN, 'testTag', `startConnect success`);
-            });
-          } catch (err) {
-            hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-          }
-          setTimeout(() => {
+          let connected = await this.sppClientManager.startConnect();
+          if (connected) {
             this.sendPublishWithRetry(notificationInfo);
-          }, 3000)
+          } else {
+            hilog.error(DOMAIN, 'testTag', `startConnect failed, skip send`);
+          }
         }
       }).catch((err: BusinessError) => {
       hilog.error(DOMAIN, 'testTag',
@@ -503,16 +505,13 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
       this.sppClientManager!.sendNotificationData(notificationInfo);
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', `send failed, errCode ${err.code}, errorMessage ${err.message}, and retry one times`);
-      try {
-        await this.sppClientManager!.startConnect().then(() => {
-          hilog.info(DOMAIN, 'testTag', `startConnect success`);
-        });
-      } catch (err) {
-        hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-      }
-      setTimeout(() => {
+      this.sppClientManager!.stopConnect();
+      let connected = await this.sppClientManager!.startConnect();
+      if (connected) {
         this.sppClientManager!.sendNotificationData(notificationInfo);
-      }, 3000);
+      } else {
+        hilog.error(DOMAIN, 'testTag', `retry startConnect failed, skip send`);
+      }
     }
   }
 
@@ -527,16 +526,12 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
         if (this.sppClientManager.isConnect()) {
           this.sendCancelWithRetry(hashCodes);
         } else {
-          try {
-            await this.sppClientManager.startConnect().then(() => {
-              hilog.info(DOMAIN, 'testTag', `startConnect success`);
-            });
-          } catch (err) {
-            hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-          }
-          setTimeout(() => {
+          let connected = await this.sppClientManager.startConnect();
+          if (connected) {
             this.sendCancelWithRetry(hashCodes);
-          }, 3000)
+          } else {
+            hilog.error(DOMAIN, 'testTag', `startConnect failed, skip send`);
+          }
         }
       }).catch((err: BusinessError) => {
       hilog.error(DOMAIN, 'testTag', `notificationExtensionSubscription failed, errCode ${err.code}, errorMessage ${err.message}`);
@@ -548,16 +543,13 @@ export class NotificationSubscriberExtAbility extends NotificationSubscriberExte
       this.sppClientManager!.sendCancelNotificationData(hashCodes);
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', `send failed, errCode ${err.code}, errorMessage ${err.message}, and retry one times`);
-      try {
-        await this.sppClientManager!.startConnect().then(() => {
-          hilog.info(DOMAIN, 'testTag', `startConnect success`);
-        });
-      } catch (err) {
-        hilog.error(DOMAIN, 'testTag', `Failed to start connect: ${JSON.stringify(err)}`);
-      }
-      setTimeout(() => {
+      this.sppClientManager!.stopConnect();
+      let connected = await this.sppClientManager!.startConnect();
+      if (connected) {
         this.sppClientManager!.sendCancelNotificationData(hashCodes);
-      }, 3000);
+      } else {
+        hilog.error(DOMAIN, 'testTag', `retry startConnect failed, skip send`);
+      }
     }
   }
 }

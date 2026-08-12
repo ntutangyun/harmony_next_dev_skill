@@ -10,7 +10,7 @@ Toggle通过调用ToggleOptions来创建，具体调用形式如下：
 
 Toggle(options: { type: ToggleType, isOn?: boolean })
 
-其中，ToggleType为开关类型，包括Button、Checkbox和Switch，isOn为切换按钮的状态。
+其中，ToggleType为切换类型，包括Button、Checkbox和Switch，isOn为切换按钮的状态。
 
 API version 11开始，Checkbox默认样式由圆角方形变为圆形。
 

@@ -118,7 +118,7 @@ Options
 
 类型：String
 
-从ohpm 6.0.2.636版本开始，可以在 dist-tags 命令后配置--log_level <string>参数，指定执行当前命令的日志级别（info、debug、warn、error），如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
+从ohpm 6.0.2.636版本开始，可以在 dist-tags 命令后配置--log_level <string>参数，指定执行当前命令的日志级别（info、debug、warn、error），如果未指定该值则日志级别为.ohpmrc中配置的log_level。
 
 [h2]debug
 
@@ -126,19 +126,17 @@ Options
 
 类型：Boolean
 
-从ohpm 6.0.2.636版本开始，可以在命令后配置--debug参数，指定执行当前命令的日志级别为debug，该配置仅在当前命令行生效，不修改.ohpmrc中的日志级别，如果未指定该值则日志级别为.ohpmrc中配置的log_level的级别。
+从ohpm 6.0.2.636版本开始，可以在命令后配置--debug参数，指定执行当前命令的日志级别为debug，该配置仅在当前命令行生效，不修改.ohpmrc中的日志级别，如果未指定该值则日志级别为.ohpmrc中配置的log_level。
 
 示例
 
 如果想要通过使用tag，在oh-package.json5文件中引入包@ohos/axios的1.0.0版本，步骤如下：
 
-1. 通过ohpm dist-tags的子命令add，对包@ohos/axios的1.0.0版本添加标签名beta。
-
 ohpm dist-tags add @ohos/axios@1.0.0 beta
 
 {
   "dependencies": {
-    // tag标签引入，引入标签为"beta"对应的版本号1.0.0
+    // 标签引入，引入标签为"beta"对应的版本号1.0.0
     "@ohos/axios": "tag:beta"
   }
   ...
@@ -192,7 +190,7 @@ ohpm dist-tags add @ohos/axios@1.0.0 beta
 ```
 {
   "dependencies": {
-    // tag标签引入，引入标签为"beta"对应的版本号1.0.0
+    // 标签引入，引入标签为"beta"对应的版本号1.0.0
     "@ohos/axios": "tag:beta"
   }
   ...

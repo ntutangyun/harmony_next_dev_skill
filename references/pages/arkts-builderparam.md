@@ -449,31 +449,6 @@ struct HelloWorldPage {
   }
 }
 
-router_map.json
-
-这个文件位于项目的resources/base/profile目录下。
-
-{
-  "routerMap": [
-    {
-      "name": "HelloWorldPage",
-      "buildFunction": "HelloWorldPageBuilder",
-      "pageSourceFile": "src/main/ets/pages/helloworld.ets"
-    }
-  ]
-}
-
-module.json5
-
-这个文件位于应用模块的根目录下，例如entry/src/main/module.json5。
-
-{
-  "module": {
-    "routerMap": "$profile:router_map",
-    ......
-  }
-}
-
 示例效果图
 
 [h2]使用全局和局部@Builder初始化@BuilderParam
@@ -1283,31 +1258,6 @@ struct HelloWorldPage {
 ### Code block 9
 
 ```
-{
-  "routerMap": [
-    {
-      "name": "HelloWorldPage",
-      "buildFunction": "HelloWorldPageBuilder",
-      "pageSourceFile": "src/main/ets/pages/helloworld.ets"
-    }
-  ]
-}
-```
-
-### Code block 10
-
-```
-{
-  "module": {
-    "routerMap": "$profile:router_map",
-    ......
-  }
-}
-```
-
-### Code block 11
-
-```
 @Component
 struct ChildPage {
   label: string = 'Child Page';
@@ -1385,7 +1335,7 @@ struct ParentPage {
 }
 ```
 
-### Code block 12
+### Code block 10
 
 ```
 @ComponentV2
@@ -1465,7 +1415,7 @@ struct ParentPage {
 }
 ```
 
-### Code block 13
+### Code block 11
 
 ```
 @Component
@@ -1515,7 +1465,7 @@ struct ParentPage {
 }
 ```
 
-### Code block 14
+### Code block 12
 
 ```
 @Component
@@ -1566,7 +1516,7 @@ struct ParentPage {
 }
 ```
 
-### Code block 15
+### Code block 13
 
 ```
 @Builder
@@ -1597,7 +1547,7 @@ struct ChildPage {
 }
 ```
 
-### Code block 16
+### Code block 14
 
 ```
 @Builder
@@ -1628,7 +1578,7 @@ struct ChildPage {
 }
 ```
 
-### Code block 17
+### Code block 15
 
 ```
 @Builder
@@ -1661,7 +1611,7 @@ struct ChildPage {
 }
 ```
 
-### Code block 18
+### Code block 16
 
 ```
 @Builder

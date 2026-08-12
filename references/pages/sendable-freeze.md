@@ -60,7 +60,7 @@ struct Index {
 
 子线程直接操作对象，不加锁。
 
-import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
+import { MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
 import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
@@ -126,7 +126,7 @@ struct Index {
 ### Code block 3
 
 ```
-import { ErrorEvent, MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
+import { MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
 import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;

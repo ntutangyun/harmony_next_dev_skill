@@ -52,7 +52,7 @@ Linux/MacOS系统：
 
 echo $SHELL
 
-如果输出结果为bin/bash，执行以下命令打开.bashrc文件。
+如果输出结果为/bin/bash，执行以下命令打开.bashrc文件。
 
 vi ~/.bashrc
 
@@ -1189,7 +1189,7 @@ FILE	可选参数，指定系统信息存储文件名。可指定存储目录，
 返回信息：
 
 返回信息	说明
--------------------------------[base]------------------------------- BuildId: xxx RleaseType: xxx OsVersion: default/default/default/default/xxx DeviceType: default Manufacture: default -----	设备基本信息。
+-------------------------------[base]------------------------------- BuildId: xxx ReleaseType: xxx OsVersion: default/default/default/default/xxx DeviceType: default Manufacture: default -----	设备基本信息。
 
 使用方法：
 
@@ -1197,7 +1197,7 @@ $ hdc bugreport
 -------------------------------[base]-------------------------------
 
 BuildId: xxx
-RleaseType: xxx
+ReleaseType: xxx
 OsVersion: default/default/default/default/xxx
 DeviceType: default
 Manufacture: default
@@ -2997,7 +2997,7 @@ $ hdc bugreport
 -------------------------------[base]-------------------------------
 
 BuildId: xxx
-RleaseType: xxx
+ReleaseType: xxx
 OsVersion: default/default/default/default/xxx
 DeviceType: default
 Manufacture: default

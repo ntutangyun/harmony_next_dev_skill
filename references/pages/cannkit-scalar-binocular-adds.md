@@ -19,7 +19,7 @@ __aicore__ inline void Adds(const LocalTensor<T>& dstLocal, const LocalTensor<T>
 
 参数名	描述
 T	操作数数据类型。
-U	scalarValue数据类型。
+scalarValue	scalarValue数据类型。
 isSetMask	是否在接口内部设置mask模式和mask值。 - true，表示在接口内部设置。 - false，表示在接口外部设置。
 
 表2 参数说明

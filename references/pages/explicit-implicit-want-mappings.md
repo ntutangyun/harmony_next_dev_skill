@@ -164,7 +164,7 @@ scheme://host:port
 
 以ohos为前缀的scheme为系统预留，如ohosclock://。建议第三方应用组件在配置scheme时避免以ohos开头，否则可能导致无法通过该uri拉起目标组件。
 
-此外，store、filemanager、hww等scheme已被系统应用占用，系统会优先匹配系统应用导致三方应用的scheme无效，请避免使用。datashare为系统后台数据服务专用，不建议使用。
+此外，store、filemanager、hww等scheme已被系统应用占用，系统会优先匹配系统应用导致三方应用的scheme无效，请避免使用。datashare为系统后台数据服务专用，亦请避免使用。
 
 图5 want参数中uri的匹配规则示例
 

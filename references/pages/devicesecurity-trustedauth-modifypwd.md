@@ -17,7 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 接口及使用方法请参见API参考。
 
 接口名	描述
-modifyTrustedAuthenticationPwd(challenge: Uint8Array, pwdInfo: PasswordInfo, authID: bigint, label: TUILable): Promise<AuthToken>	修改数字盾密码
+modifyTrustedAuthenticationPwd(challenge: Uint8Array, pwdInfo: PasswordInfo, authID: bigint, label: TUILable): Promise<AuthToken>	修改数字盾密码。
 
 修改数字盾密码界面介绍
 

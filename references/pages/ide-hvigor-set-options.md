@@ -70,7 +70,7 @@ parameterFile
 hvigor-config.json5配置文件包含以下字段。
 
 字段名称	可选/必选	类型	含义
-modelVersion	必选	字符串	开发态版本号。
+modelVersion	必选	字符串	开发态版本号。 默认版本号为DevEco Studio配套的modelVersion，以DevEco Studio 6.1.1 Release为例，配套的modelVersion为"6.1.1"。如需修改modelVersion，修改后的值不能小于5.0.0，且不能大于DevEco Studio配套的modelVersion。
 dependencies	必选	对象	当前工程执行构建任务时，依赖的构建插件及版本，为npm源组件。 说明： 修改dependencies后，请根据界面提示，点击编辑器右上角Sync Now安装依赖。
 execution	可选	对象	执行构建的相关配置参数，仅在命令行场景下生效。
 logging	可选	对象	日志相关配置参数。

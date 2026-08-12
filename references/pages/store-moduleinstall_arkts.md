@@ -30,7 +30,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-mod
 
 应用需要上架应用市场。
 
-产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
+产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
 
 产品特性按需分发接入调试功能支持ARM版本、X86版本的模拟器。
 

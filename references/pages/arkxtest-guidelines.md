@@ -7,3 +7,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkxtest-
 UI测试框架使用指导
 
 白盒性能测试框架使用指导
+
+辅助测试工具使用指导

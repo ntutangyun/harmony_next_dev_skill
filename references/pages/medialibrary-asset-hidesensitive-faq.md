@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/medialibr
 
 解决措施
 
-应用申请ohos.permissions.MEDIA_LOCATION权限后，应用的脱敏级别变为不进行脱敏，应用即可正常获取图片所有敏感信息。
+应用申请ohos.permission.MEDIA_LOCATION权限后，应用的脱敏级别变为不进行脱敏，应用即可正常获取图片所有敏感信息。
 
 示例
 

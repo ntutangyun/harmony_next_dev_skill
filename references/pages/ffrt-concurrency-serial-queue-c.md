@@ -150,7 +150,7 @@ ffrt_queue_submit_h_f接口可以接收裸函数指针任务作为参数，如�
 
 接口说明
 
-上述样例中涉及到主要的FFRT的接口包括：
+上述样例中涉及到主要的FFRT的接口如下，详情请参考ffrt_queue_t下的方法：
 
 名称	描述
 ffrt_queue_create	创建队列。

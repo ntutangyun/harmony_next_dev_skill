@@ -145,8 +145,8 @@ FFT变换	Phone、Tablet、PC/2in1
 哈希表数据结构	Phone、Tablet、PC/2in1
 通用排序算法	Phone、Tablet、PC/2in1
 智能序列预测	Phone、Tablet、PC/2in1
-系统性能优化（ArkTS）	Phone、Tablet、PC/2in1、Wearable、TV、Car
-系统性能优化（C/C++）	Phone、Tablet、PC/2in1、Wearable、TV、Car
+系统性能优化（ArkTS）	Phone、Tablet、PC/2in1、Wearable、TV
+系统性能优化（C/C++）	Phone、Tablet、PC/2in1、Wearable、TV
 
 模拟器支持情况
 

@@ -661,7 +661,7 @@ void ReuseListItemNode(const std::shared_ptr<ArkUIListItemNode> &listItem, const
 
 #endif // MYAPPLICATION_LAZYTEXTLISTEXAMPLE1_H
 
-添加新的ListItem时，优先复用已缓存的ListItem实例，并更新其内容；若无可用缓存，则创建新的ListItem。当回调返回空时，创建一个默认的ListItem作为兜底方案。最后，将生成的节点句柄回填至OH_ArkUI_NodeAdapterEvent_SetItem事件中，完成绑定。
+添加新的ListItem时，优先复用已缓存的ListItem实例，并更新其内容；若无可用缓存，则创建新的ListItem。当回调返回空时，创建一个默认的ListItem作为兜底方案。最后，通过OH_ArkUI_NodeAdapterEvent_SetItem接口将生成的节点句柄回填至事件中，完成绑定。
 
 // ArkUIListItemAdapter.h
 // ...

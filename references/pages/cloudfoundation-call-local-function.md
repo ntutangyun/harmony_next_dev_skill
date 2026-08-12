@@ -34,82 +34,41 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 使用Promise异步回调：
 
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// ...
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
-  }
-
-  // ...
-  callFunctionLocalWithPromise() {
-    cloudFunction.call({
-      name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      },
-      localUrl: 'http://localhost:18090' // 本地启动的云函数地址
-    }).then((value: cloudFunction.FunctionResult) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-    });
-  }
-
-  // ...
-}
+cloudFunction.call({
+  name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
+  },
+  localUrl: 'http://localhost:18090' // 本地启动的云函数地址
+}).then((res: cloudFunction.FunctionResult) => {
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'function', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
+});
 
 或者，使用callback异步回调：
 
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// ...
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
+cloudFunction.call({
+  name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
+  },
+  localUrl: 'http://localhost:18090' // 本地启动的云函数地址
+}, (err: BusinessError, res: cloudFunction.FunctionResult) => {
+  if (err) {
+    hilog.error(0x0000, 'function', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
+    return;
   }
-
-  // ...
-  callFunctionLocalWithCallBack() {
-    cloudFunction.call({
-      name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      },
-      localUrl: 'http://localhost:18090' // 本地启动的云函数地址
-    }, (err: BusinessError, value: cloudFunction.FunctionResult) => {
-      if (err) {
-        hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-        return;
-      }
-      hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-    });
-  }
-
-}
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+});
 
 打开entry的“Run/Debug Configurations”窗口，勾选“Allow multiple instances”。若未勾选，启动entry调试任务时，系统会终止云函数调试进程。
 
@@ -132,82 +91,41 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ### Code block 3
 
 ```
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// ...
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
-  }
-
-  // ...
-  callFunctionLocalWithPromise() {
-    cloudFunction.call({
-      name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      },
-      localUrl: 'http://localhost:18090' // 本地启动的云函数地址
-    }).then((value: cloudFunction.FunctionResult) => {
-      hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-    });
-  }
-
-  // ...
-}
+cloudFunction.call({
+  name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
+  },
+  localUrl: 'http://localhost:18090' // 本地启动的云函数地址
+}).then((res: cloudFunction.FunctionResult) => {
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'function', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 4
 
 ```
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// ...
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
+cloudFunction.call({
+  name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
+  },
+  localUrl: 'http://localhost:18090' // 本地启动的云函数地址
+}, (err: BusinessError, res: cloudFunction.FunctionResult) => {
+  if (err) {
+    hilog.error(0x0000, 'function', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
+    return;
   }
-
-  // ...
-  callFunctionLocalWithCallBack() {
-    cloudFunction.call({
-      name: 'my-cloud-function', // my-cloud-function需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      },
-      localUrl: 'http://localhost:18090' // 本地启动的云函数地址
-    }, (err: BusinessError, value: cloudFunction.FunctionResult) => {
-      if (err) {
-        hilog.error(0x0000, 'testTag', `Failed to call the function, code: ${err.code}, message: ${err.message}`);
-        return;
-      }
-      hilog.info(0x0000, 'testTag', `Succeeded in calling the function, result: ${JSON.stringify(value.result)}`);
-    });
-  }
-
-}
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+});
 ```

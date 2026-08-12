@@ -116,6 +116,47 @@ bm dump -n ohos.app.hap.myapplication |grep uid
 
 可以调用bundleManager.getBundleInfoForSelf获取自身的BundleInfo应用包信息，示例代码可以参考如何获取应用信息中的appId，取值方式为bundleInfo.appInfo.uid。
 
+跨HSP模块调用和跨HAR模块调用的区别
+
+HSP模块和HAR模块被调用时，主要的区别在Module2（HSP/HAR）模块Native调用Module2（HSP/HAR）模块ArkTS中，在调用napi_load_module_with_info加载模块时的入参不同，其余流程一致。
+
+被调用模块Module2是HAR
+
+如图所示，编译构建后，HAR模块被打包到各个模块之中，所以其入口模块仍然是HAP模块，napi_load_module_with_info中第2个参数的模块名称要填HAP模块中oh-package.json5中定义的依赖HAR的名称，而不是HAR模块的实际名称。
+
+被调用模块Module2是HSP
+
+当被调用模块Module2是HSP，HSP是独立的模块，其入口模块就是HSP本模块，所以napi_load_module_with_info第2个参数的模块名就是它自己的模块名。
+
+找不到HAR或HSP模块的ArkTS文件
+
+问题现象
+
+调用HAR/HSP模块的ArkTS文件时，可能会遇到以下报错：
+
+Error message:Cannot find module 'staticModule/src/main/ets/utils/Util' imported from 'com.xxxx.crossmodulereference/entry'.
+
+可能原因
+
+工程级的build-profile.json5中的useNormalizedOHMUrl设置参数为false。
+
+解决措施
+
+在调用模块Module1的build-profile.json5里面添加如下配置。
+
+// ...
+  "buildOption": {
+    // ...
+    "arkOptions" : {
+      "runtimeOnly" : {
+        "packages": [
+          "static_module"
+        ]
+      }
+    }
+  },
+  // ...
+
 ## Code blocks
 
 ### Code block 1
@@ -208,4 +249,27 @@ bm dump -n ohos.app.hap.myapplication |grep '"appId":'
 hdc shell
 # 需将ohos.app.hap.myapplication替换为实际应用的包名
 bm dump -n ohos.app.hap.myapplication |grep uid
+```
+
+### Code block 8
+
+```
+Error message:Cannot find module 'staticModule/src/main/ets/utils/Util' imported from 'com.xxxx.crossmodulereference/entry'.
+```
+
+### Code block 9
+
+```
+// ...
+  "buildOption": {
+    // ...
+    "arkOptions" : {
+      "runtimeOnly" : {
+        "packages": [
+          "static_module"
+        ]
+      }
+    }
+  },
+  // ...
 ```

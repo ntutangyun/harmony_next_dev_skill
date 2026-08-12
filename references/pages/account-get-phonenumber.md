@@ -92,7 +92,10 @@ try {
   controller.executeRequest(authRequest).then((data) => {
     const authorizationWithHuaweiIDResponse = data as authentication.AuthorizationWithHuaweiIDResponse;
     const state = authorizationWithHuaweiIDResponse.state;
-    if (state && authRequest.state !== state) {
+    // state为空时，归一化处理为空字符串
+    const normalizedRequestState = authRequest.state || '';
+    const normalizedState = state || '';
+    if (normalizedRequestState !== normalizedState) {
       hilog.error(0x0000, 'testTag', `Failed to authorize. The state is different, response state: ${state}`);
       return;
     }
@@ -197,7 +200,10 @@ try {
   controller.executeRequest(authRequest).then((data) => {
     const authorizationWithHuaweiIDResponse = data as authentication.AuthorizationWithHuaweiIDResponse;
     const state = authorizationWithHuaweiIDResponse.state;
-    if (state && authRequest.state !== state) {
+    // state为空时，归一化处理为空字符串
+    const normalizedRequestState = authRequest.state || '';
+    const normalizedState = state || '';
+    if (normalizedRequestState !== normalizedState) {
       hilog.error(0x0000, 'testTag', `Failed to authorize. The state is different, response state: ${state}`);
       return;
     }

@@ -14,7 +14,7 @@ NearLink Kit（星闪服务）提供一种低功耗、高速率的短距离通�
 
 约束与限制
 
-本Kit适用于Phone、PC/2in1、TV、Car、Tablet和Wearable设备（从6.1.0(23)版本开始支持Car）。
+本Kit适用于Phone、PC/2in1、TV、Tablet和Wearable设备。
 
 模拟器支持情况
 

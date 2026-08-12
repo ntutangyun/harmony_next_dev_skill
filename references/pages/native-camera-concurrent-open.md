@@ -121,7 +121,7 @@ void CameraInputOpen(Camera_Manager *cameraManager, Camera_Device *cameras)
     }
 }
 
-会话流程。配置对应的相机输入流Camera_Input和需要的相机输出流，此处以预览输出流Camera_PreviewOutput为例 。
+会话流程。配置对应的相机输入流Camera_Input和需要的相机输出流，此处以预览输出流Camera_PreviewOutput为例。
 
 void SessionFlowFn(Camera_CaptureSession *captureSession, Camera_Input *cameraInput, Camera_PreviewOutput *previewOutput)
 {

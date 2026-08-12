@@ -29,8 +29,9 @@ int64_t &operator[](size_t idx)：dim值，在idx>=kMaxDimNum时，行为未定�
 调用示例
 
 Shape shape0({3, 256, 256});
-auto dim0 = shape0[0]; // 3
-auto dim5 = shape0[5]; // 5
+auto dim0 = shape0[0]; // 0轴的维度大小为3
+auto dim1 = shape0[1]; // 1轴的维度大小为256
+auto dim2 = shape0[2]; // 2轴的维度大小为256
 auto invalid_dim = shape0[kMaxDimNum]; // 行为未定义
 
 ## Code blocks
@@ -46,7 +47,8 @@ int64_t &operator[](size_t idx)
 
 ```
 Shape shape0({3, 256, 256});
-auto dim0 = shape0[0]; // 3
-auto dim5 = shape0[5]; // 5
+auto dim0 = shape0[0]; // 0轴的维度大小为3
+auto dim1 = shape0[1]; // 1轴的维度大小为256
+auto dim2 = shape0[2]; // 2轴的维度大小为256
 auto invalid_dim = shape0[kMaxDimNum]; // 行为未定义
 ```

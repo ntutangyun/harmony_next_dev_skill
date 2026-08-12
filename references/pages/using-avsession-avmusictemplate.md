@@ -65,6 +65,7 @@ export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
   private static sInstance: TemplateManager;
   // ...
+
   private constructor() {
   }
 
@@ -114,26 +115,10 @@ export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
   // ...
   private queryMainTabsEvent: avMusicTemplate.QueryMainTabsEvent = async () => {
-    return new Promise<avMusicTemplate.MediaTab[]>(async (resolve, reject) => {
-      try {
-        let tabs: avMusicTemplate.MediaTab[] = await this.getMainTabs();
-        resolve(tabs);
-      } catch (e) {
-        console.error(`queryMainTabsEvent fail, errCode: ${e?.code}`);
-        reject(e);
-      }
-    });
+    return this.handlePromiseReturnFunc(() => this.getMainTabs(), 'queryMainTabsEvent');
   };
   private queryMediaTabContentEvent: avMusicTemplate.QueryMediaTabContentEvent = async (tabId: string) => {
-    return new Promise<avMusicTemplate.MediaTabContent>(async (resolve, reject) => {
-      try {
-        let tabContent: avMusicTemplate.MediaTabContent = await this.createMediaTabContent();
-        resolve(tabContent);
-      } catch (e) {
-        console.error(`queryMediaTabContentEvent fail, errCode: ${e?.code}`);
-        reject(e);
-      }
-    });
+    return this.handlePromiseReturnFunc(() => this.createMediaTabContent(), 'queryMediaTabContentEvent');
   };
   // ...
 
@@ -216,7 +201,17 @@ export class TemplateManager {
     };
     return mediaEntity;
   };
+
   // ...
+  private async handlePromiseReturnFunc<T>(func: () => Promise<T>, errFunc: string): Promise<T> {
+    try {
+      return await func();
+    } catch (e) {
+      const msg = `Failed to ${errFunc}. Code: ${e?.code}`;
+      console.error(msg);
+      throw e instanceof Error ? e : new Error(e?.message ?? msg);
+    }
+  }
 }
 
 在音频模板无法直接感知的场景（登录、下载等），需要媒体应用主动向音频模板同步数据。同步接口详情请查看AVMusicTemplate。
@@ -267,6 +262,7 @@ import { avMusicTemplate } from '@kit.AVSessionKit';
 export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
   // ...
+
   /**
    * 注销监听。
    */
@@ -349,6 +345,7 @@ export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
   private static sInstance: TemplateManager;
   // ...
+
   private constructor() {
   }
 
@@ -394,26 +391,10 @@ export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
   // ...
   private queryMainTabsEvent: avMusicTemplate.QueryMainTabsEvent = async () => {
-    return new Promise<avMusicTemplate.MediaTab[]>(async (resolve, reject) => {
-      try {
-        let tabs: avMusicTemplate.MediaTab[] = await this.getMainTabs();
-        resolve(tabs);
-      } catch (e) {
-        console.error(`queryMainTabsEvent fail, errCode: ${e?.code}`);
-        reject(e);
-      }
-    });
+    return this.handlePromiseReturnFunc(() => this.getMainTabs(), 'queryMainTabsEvent');
   };
   private queryMediaTabContentEvent: avMusicTemplate.QueryMediaTabContentEvent = async (tabId: string) => {
-    return new Promise<avMusicTemplate.MediaTabContent>(async (resolve, reject) => {
-      try {
-        let tabContent: avMusicTemplate.MediaTabContent = await this.createMediaTabContent();
-        resolve(tabContent);
-      } catch (e) {
-        console.error(`queryMediaTabContentEvent fail, errCode: ${e?.code}`);
-        reject(e);
-      }
-    });
+    return this.handlePromiseReturnFunc(() => this.createMediaTabContent(), 'queryMediaTabContentEvent');
   };
   // ...
 
@@ -496,7 +477,17 @@ export class TemplateManager {
     };
     return mediaEntity;
   };
+
   // ...
+  private async handlePromiseReturnFunc<T>(func: () => Promise<T>, errFunc: string): Promise<T> {
+    try {
+      return await func();
+    } catch (e) {
+      const msg = `Failed to ${errFunc}. Code: ${e?.code}`;
+      console.error(msg);
+      throw e instanceof Error ? e : new Error(e?.message ?? msg);
+    }
+  }
 }
 ```
 
@@ -549,6 +540,7 @@ import { avMusicTemplate } from '@kit.AVSessionKit';
 export class TemplateManager {
   private template: avMusicTemplate.AVMusicTemplate | undefined = undefined;
   // ...
+
   /**
    * 注销监听。
    */

@@ -223,7 +223,7 @@ export default class EntryAbility extends UIAbility {
 
 说明
 
-从API version 13开始，用户在最近任务列表中使用一键清理来关闭应用，对于无实况窗的应用将不会触发onDestroy()回调，而是会直接终止进程；对于有实况窗的应用会继续触发onDestroy()回调。
+从API version 13开始，用户在最近任务列表中使用一键清理来关闭应用，对于无实况窗的应用将不会触发onDestroy()回调，而是会直接终止进程；对于有实况窗的应用会继续触发onDestroy()回调。如果最近任务列表中的最后一个应用在前台运行，无论是否显示实况窗，都会触发onDestroy()回调。
 
 当在开发者模式下调试某个应用时，如果用户从最近任务列表中移除了该调试应用的一个任务，则该调试应用的进程会被强制销毁，不会触发onDestroy()回调。
 
@@ -252,6 +252,73 @@ export default class EntryAbility extends UIAbility {
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam) {
     // 更新资源、数据
+  }
+}
+
+常见问题
+
+[h2]onNewWant回调非预期触发导致页面变化
+
+问题现象
+
+在Scenarios相关的场景下启动UIAbility时，若该UIAbility实例已存在，系统会非预期触发onNewWant()生命周期回调，导致回调中传入的want参数也为非预期。若应用使用了该非预期want参数，可能引起非预期的页面变化。
+
+解决措施
+
+建议在onCreate()生命周期回调中调用setOnNewWantSkipScenarios()接口，通过位运算将上述三种场景的标志位组合后作为参数传入，设置在这些场景下不触发onNewWant()回调，使应用再次启动时直接切至前台。
+
+说明
+
+设置setOnNewWantSkipScenarios()后，在上述三种场景下系统不会触发onNewWant()回调。
+
+建议同时跳过上述三种场景。若仅跳过部分场景，则未跳过的场景仍会非预期触发onNewWant()回调。
+
+该方案仅影响上述三种场景下onNewWant()回调的触发与否，不影响其他功能。设置跳过后，应用将直接切至前台，不影响正常的UI显示与用户交互。
+
+实现步骤
+
+在onCreate()生命周期回调中，通过按位或运算符（|）组合三种场景的标志位。
+
+标志位定义在contextConstant.Scenarios中：
+
+SCENARIO_MOVE_MISSION_TO_FRONT（0x00000001）
+
+SCENARIO_SHOW_ABILITY（0x00000002）
+
+SCENARIO_BACK_TO_CALLER_ABILITY_WITH_RESULT（0x00000004）
+
+调用setOnNewWantSkipScenarios()接口，将组合后的场景值作为参数传入，设置跳过场景。
+
+代码示例
+
+// EntryAbility.ts
+import { UIAbility, Want, AbilityConstant, contextConstant } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export default class EntryAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+    // 设置不触发onNewWant的场景，组合多个场景标志位
+    let scenarios: number = contextConstant.Scenarios.SCENARIO_MOVE_MISSION_TO_FRONT |
+      contextConstant.Scenarios.SCENARIO_SHOW_ABILITY |
+      contextConstant.Scenarios.SCENARIO_BACK_TO_CALLER_ABILITY_WITH_RESULT;
+
+    try {
+      // 设置特定场景下启动UIAbility时不触发onNewWant生命周期回调
+      this.context.setOnNewWantSkipScenarios(scenarios).then(() => {
+        console.info('setOnNewWantSkipScenarios succeed');
+      }).catch((err: BusinessError) => {
+        console.error('setOnNewWantSkipScenarios failed, code is ' + err.code + ', message is ' + err.message);
+      });
+    } catch (err) {
+      let code = (err as BusinessError).code;
+      let message = (err as BusinessError).message;
+      console.error('setOnNewWantSkipScenarios failed, code is ' + code + ', message is ' + message);
+    }
+  }
+
+  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // 在设置跳过场景后，三种场景下都不会触发此回调
+    console.info('onNewWant called with want:' + JSON.stringify(want));
   }
 }
 
@@ -456,6 +523,41 @@ export default class EntryAbility extends UIAbility {
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam) {
     // 更新资源、数据
+  }
+}
+```
+
+### Code block 9
+
+```
+// EntryAbility.ts
+import { UIAbility, Want, AbilityConstant, contextConstant } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+export default class EntryAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+    // 设置不触发onNewWant的场景，组合多个场景标志位
+    let scenarios: number = contextConstant.Scenarios.SCENARIO_MOVE_MISSION_TO_FRONT |
+      contextConstant.Scenarios.SCENARIO_SHOW_ABILITY |
+      contextConstant.Scenarios.SCENARIO_BACK_TO_CALLER_ABILITY_WITH_RESULT;
+
+    try {
+      // 设置特定场景下启动UIAbility时不触发onNewWant生命周期回调
+      this.context.setOnNewWantSkipScenarios(scenarios).then(() => {
+        console.info('setOnNewWantSkipScenarios succeed');
+      }).catch((err: BusinessError) => {
+        console.error('setOnNewWantSkipScenarios failed, code is ' + err.code + ', message is ' + err.message);
+      });
+    } catch (err) {
+      let code = (err as BusinessError).code;
+      let message = (err as BusinessError).message;
+      console.error('setOnNewWantSkipScenarios failed, code is ' + code + ', message is ' + message);
+    }
+  }
+
+  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // 在设置跳过场景后，三种场景下都不会触发此回调
+    console.info('onNewWant called with want:' + JSON.stringify(want));
   }
 }
 ```

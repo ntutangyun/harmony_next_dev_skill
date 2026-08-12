@@ -1,6 +1,6 @@
 ---
 name: harmonyos-app-dev
-description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits. Also covers Xiaoyi (小艺) agent development on the Xiaoyi Open Platform — creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration, AgentKit, and agent publishing, plus device-side agents (端侧A2A / HMAF / AgentExtensionAbility). Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, 小艺, Xiaoyi, 智能体, intelligent agent, agent development, A2A protocol, AgentKit, HMAF, AgentExtensionAbility, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility, DevEco Studio, hvigor, ohpm, kit imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app or agent. Do NOT trigger for OpenHarmony. Also trigger when the user pastes ArkTS code with Entry/Component/State decorators or struct declarations with build(). Also use when driving real Huawei devices (e.g. Mate 80, MatePad Pro) running HarmonyOS NEXT as Wi-Fi **stations (STA)** for hardware-in-the-loop (HIL) experiments against an access point under test — building/sideloading an on-device test app and reading Wi-Fi link state; in that mode the first step is always to confirm a device is connected via `hdc`.
+description: Use when developing applications for HarmonyOS NEXT (HarmonyOS 5/API 11+) using ArkTS, ArkUI, DevEco Studio, and HarmonyOS SDK Kits. Also covers Xiaoyi (小艺) agent development on the Xiaoyi Open Platform — creating intelligent agents (智能体), Agent communication protocol (cloud A2A / device A2A, JSON-RPC 2.0), agent modes (端A2A/云A2A/云工作流/OpenClaw/LLM/多Agents), Skill development for 小艺Claw (Vibe Coding, SKILL.md packages), agent orchestration, AgentKit, and agent publishing, plus device-side agents (端侧A2A / HMAF / AgentExtensionAbility / AgentCard). Trigger whenever the user mentions HarmonyOS, 鸿蒙, HarmonyOS NEXT, 小艺, Xiaoyi, 智能体, intelligent agent, agent development, A2A protocol, AgentKit, HMAF, AgentExtensionAbility, ArkTS, ArkUI, .ets files, app.json5/module.json5, UIAbility, DevEco Studio, hvigor, ohpm, kit imports, Stage model, or asks how to build/structure/configure/publish a HarmonyOS app or agent. Do NOT trigger for OpenHarmony. Also trigger when the user pastes ArkTS code with Entry/Component/State decorators or struct declarations with build(). Also use when driving real Huawei devices (e.g. Mate 80, MatePad Pro) running HarmonyOS NEXT as Wi-Fi **stations (STA)** for hardware-in-the-loop (HIL) experiments against an access point under test — building/sideloading an on-device test app and reading Wi-Fi link state; in that mode the first step is always to confirm a device is connected via `hdc`.
 ---
 
 # HarmonyOS NEXT app development
@@ -26,13 +26,13 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Background work, notifications, common events, permissions, IPC/RPC | `references/05-services-and-system.md` |
 | Files, preferences, KV store, relational DB, network (HTTP / WebSocket / connection manager) | `references/06-data-and-network.md` |
 | Cards (ArkTS widgets), i18n/l10n, localization | `references/07-cards-and-i18n.md` |
-| Xiaoyi (小艺) agent development: creating intelligent agents (智能体), Agent communication protocol (A2A/JSON-RPC 2.0), agent modes (LLM/Workflow/A2A/OpenClaw), agent orchestration (prompts, plugins, workflows, knowledge base, variables, memory), AgentKit in-app launcher, agent publishing/review, digital product payment, OpenClaw integration, Xiaoyi Compass | `references/11-xiaoyi-agent-dev.md` |
+| Xiaoyi (小艺) agent development: creating intelligent agents (智能体), Agent communication protocol (cloud A2A / device A2A, JSON-RPC 2.0, AgentCard), agent modes (端A2A/云A2A/云工作流/OpenClaw/LLM/多Agents), Skill development for 小艺Claw (Vibe Coding, SKILL.md packages), agent orchestration (prompts, plugins, workflows, knowledge base, variables, memory), AgentKit in-app launcher, agent publishing/review, digital product payment, OpenClaw integration, Xiaoyi Compass | `references/11-xiaoyi-agent-dev.md` |
 | DevEco Studio, hvigor build, signing, run on device/emulator, debug, publish, ohpm | `references/08-tooling-and-build.md` |
 | Testing (unit + UI), performance, security, UX guidelines | `references/09-testing-and-quality.md` |
 | Kit overviews (Push, IAP, Payment, Map, Audio, Media, Image, Vision, Speech, Intents, ArkGraphics, NDK) | `references/10-kits-catalog.md` |
 | Quick start — "build my first HarmonyOS app" walkthrough | `references/00-quick-start.md` |
 
-If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5684 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-07-29) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
+If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5697 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-08-12) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
 
 To find a slug:
 - `grep -lir "<keyword>" references/pages/` to search by content
@@ -113,7 +113,7 @@ The HarmonyOS docs evolve fast and the user's project may target a specific API 
 
 ## Reaching beyond this skill
 
-**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5684 pages, synced 2026-07-29 — re-sync with `python scripts/update_docs.py`). For:
+**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5697 pages, synced 2026-08-12 — re-sync with `python scripts/update_docs.py`). For:
 - Doc URLs to cite: `https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/<slug>`
 - API reference root (not bundled — visit if needed): `https://developer.huawei.com/consumer/cn/doc/harmonyos-references/development-intro-api`
 - Best practices (not bundled): `https://developer.huawei.com/consumer/cn/doc/best-practices/...`
@@ -126,7 +126,7 @@ The skill also bundles reference material for Xiaoyi agent development from `dev
 
 - `service-agent-dev-intro.md` — agent modes and capability matrix
 - `service-agent-configuration.md` — full configuration & orchestration reference
-- `service-agent-protocol.md` — A2A JSON-RPC 2.0 protocol details, message schemas, auth flow
+- `service-agent-protocol.md` — cloud A2A (云A2A) JSON-RPC 2.0 protocol details, message schemas, auth flow, plus the device A2A (端A2A) protocol / AgentCard summary
 
 For deeper dives, additional pages can be fetched live from:
 - `https://developer.huawei.com/consumer/cn/doc/service/developing-intelligent-agents-0000002435989592`
@@ -140,7 +140,7 @@ For deeper dives, additional pages can be fetched live from:
 The docs site is a SPA, but its content is served by a public JSON API on `svc-drcn.developer.huawei.com` (`documentPortal/getCatalogTree` for the nav tree with slugs/titles, `documentPortal/getDocumentById` for per-page HTML) — **no browser or crawler is needed**. The committed scripts in `scripts/` drive it (require `beautifulsoup4` + `lxml`):
 
 1. `python scripts/update_docs.py --diff` — fetch the current catalog and print added/removed pages vs `references/manifest.json`. Do this first; the diff tells you what changed upstream.
-2. `python scripts/update_docs.py` — fetch all ~5,350 `harmonyos-guides` pages (~10 min, 8 workers, resumable — already-fetched pages are cached in `_update_work/new_pages/`), convert them to the offline markdown format (`scripts/convert.py`), swap them into `references/pages/`, and rebuild `references/manifest.json`. The three hand-distilled `service-agent-*.md` pages are preserved automatically.
+2. `python scripts/update_docs.py` — fetch all ~5,700 `harmonyos-guides` pages (~10 min, 8 workers, resumable — already-fetched pages are cached in `_update_work/new_pages/`), convert them to the offline markdown format (`scripts/convert.py`), swap them into `references/pages/`, and rebuild `references/manifest.json`. The three hand-distilled `service-agent-*.md` pages are preserved automatically.
 3. `python scripts/fetch_xiaoyi.py` — fetch the Xiaoyi (小艺开放平台) doc subtree (~200 pages, from the `service` catalog) into `_update_work/xiaoyi_pages/` as working copies. These are **sources, not bundled pages**: use them to refresh `references/11-xiaoyi-agent-dev.md` and the three `references/pages/service-agent-*.md` distillations, checking every stated fact against the fetched content.
 4. **Refresh the curated layer by hand.** The catalog diff from step 1 plus the per-page `displayUpdateTime` metadata tell you which areas moved. Update the curated `references/00-*.md` … `11-*.md` (and the page counts / version facts in `SKILL.md` + `README.md`) against the new pages — ground every claim in `references/pages/`, never invent APIs.
 5. Delete `_update_work/` (gitignored) and commit.

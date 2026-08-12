@@ -12,12 +12,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-lis
 
 Grid网格元素拖拽
 
-创建瀑布流（WaterFlow）
+创建瀑布流 (WaterFlow)
 
 常见瀑布流操作
 
 创建懒加载布局 (LazyColumnLayout/LazyVGridLayout/LazyVWaterFlowLayout)
 
-常见列表流
-
 创建懒加载自定义布局 (LazyDynamicLayout)
+
+常见列表流

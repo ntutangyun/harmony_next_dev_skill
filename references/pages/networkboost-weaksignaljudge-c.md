@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/networkboost-weaksignaljudge-c_
 
-通过网络质量评估（C/C++）和网络场景识别（C/C++）章节，弱网感知判决可归纳为3种方式获取：
+通过网络质量评估 (C/C++)和网络场景识别 (C/C++)章节，弱网感知判决可归纳为3种方式获取：
 
 监听系统实时判决：
 

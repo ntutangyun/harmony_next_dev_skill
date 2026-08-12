@@ -25,6 +25,7 @@ getDeviceComponentVerificationDetails(): Promise<DeviceComponentVerificationResu
 
 导入相关模块。
 
+import { BusinessError } from "@kit.BasicServicesKit";
 import { deviceDetection } from "@kit.ServiceSupportKit";
 
 调用DeviceComponentVerificationResult定义设备硬件信息。
@@ -42,7 +43,7 @@ try {
 } catch (error) {
     // 捕获异常
     const err: BusinessError = error as BusinessError;
-    console.error('enter into getDeviceComponentVerificationDetails catch' + JSON.stringify(err));
+    console.error('enter into getDeviceComponentVerificationDetails catch, code is: ' + err.code + ' message is: ' + err.message);
 }
 
 ## Code blocks
@@ -50,6 +51,7 @@ try {
 ### Code block 1
 
 ```
+import { BusinessError } from "@kit.BasicServicesKit";
 import { deviceDetection } from "@kit.ServiceSupportKit";
 ```
 
@@ -71,6 +73,6 @@ try {
 } catch (error) {
     // 捕获异常
     const err: BusinessError = error as BusinessError;
-    console.error('enter into getDeviceComponentVerificationDetails catch' + JSON.stringify(err));
+    console.error('enter into getDeviceComponentVerificationDetails catch, code is: ' + err.code + ' message is: ' + err.message);
 }
 ```

@@ -233,7 +233,7 @@ for (size_t i = 0; i < outputs.handle_num; ++i) {
 
 释放模型。
 
-不再使用MindSpore Lite推理框架时，需要释放已经创建的模型。
+不再使用MindSpore Lite推理框架时，需要释放对应的资源。model使用了context资源，释放时需先释放model，后释放context。
 
 // 释放模型和上下文
 OH_AI_ModelDestroy(&model);

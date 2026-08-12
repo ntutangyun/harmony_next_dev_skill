@@ -1,12 +1,12 @@
-# 鸿蒙Agent通信协议（A2A）
+# A2A协议接入方案（云A2A协议 / 端A2A协议）
 
 _Source: https://developer.huawei.com/consumer/cn/doc/service/agent2agent-0000002498656261_
 
-接入方案文档现为两部分：技术规范总览（`agent2agent-comments-0000002500412353`）与消息指令定义（`agent2agent-define-0000002467293060`，含消息指令定义、消息参数说明、端侧插件工具指令、底部快捷指令、设备上下文参数等子页）。
+A2A协议接入方案现包含两套并列协议：**云A2A协议**（原"鸿蒙Agent通信协议（A2A）"，用于云A2A模式，小艺 ↔ 三方云侧Agent Server）与**端A2A协议**（用于端A2A模式，小艺 ↔ 应用内Agent，见本页末尾"端A2A协议"一节）。云A2A协议文档为两部分：云A2A协议技术规范（`agent2agent-comments-0000002500412353`）与云A2A协议消息指令定义（`agent2agent-define-0000002467293060`，含消息指令定义、消息参数说明、端侧插件工具指令、底部快捷指令、设备上下文参数等子页）。**本页从此处至"设备上下文参数"均为云A2A协议规范。**
 
-## 技术规范总览
+## 技术规范总览（云A2A协议）
 
-鸿蒙Agent通信协议用于Agent Client（小艺APP/小艺云侧）和Agent Server（三方智能体后台）之间的通信：
+云A2A协议（鸿蒙Agent通信协议）用于Agent Client（小艺APP/小艺云侧）和Agent Server（三方智能体后台）之间的通信：
 
 - 统一一个Endpoint，仅POST方法，采用 **StreamableHTTP + JSON-RPC 2.0** 协议；服务器侧不用维护长链接，支持断线重连。
 - 兼容谷歌A2A协议的 `message/stream`、`tasks/cancel` 等RPC方法。
@@ -78,7 +78,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/service/agent2agent-000000
             "role": "user",
             "parts": [
                 { "kind": "text", "text": "用户输入Query或子任务Query" },
-                { "kind": "file", "file": { "name": "文件名", "mimeType": "MIME类型", "bytes": "字节码（与uri互斥）", "uri": "URI地址（与bytes互斥）" } },
+                { "kind": "file", "file": { "name": "文件名", "mimeType": "MIME类型", "uri": "文件的URI地址" } },
                 { "kind": "data", "data": "结构化数据JSONObject，如用户参数、端插件执行结果等" }
             ]
         }
@@ -368,10 +368,59 @@ Agent Server可获取的受控系统上下文信息，需先在小艺开放平�
 | `systemVariables` | 系统变量（如`app_ver`、`foreground_apps`） |
 | `memoryVariables` | 用户变量 |
 
+## 端A2A协议（小艺 ↔ 应用内Agent）
+
+_详见：`https://developer.huawei.com/consumer/cn/doc/service/agent2agent-device-0000002624952279`（端A2A协议技术规范）_
+
+端A2A协议规范小艺与**应用内Agent**（部署于本地设备）的通信，是与上述云A2A协议并列的一套规范，服务于端A2A模式智能体。支持场景：对话交互（单轮/多轮回复、向用户澄清、交换文件、AgentUIExtension卡片）、长时任务伴随（对话胶囊/状态胶囊/对话面板呈现任务过程并允许用户干预）、界面控制伴随、chips（话题）推荐、原生操控、动态开场白和引导语。
+
+同样基于JSON-RPC，但对话交互的RPC方法为 **`MessageStream`**（注意：不是云A2A的`message/stream`）；动态开场白和引导语请求方法为`GetOpening`。响应通过`result.task`（Agent创建Task）、`result.statusUpdate`（TaskStatusUpdateEvent）、`result.artifactUpdate`（TaskArtifactUpdateEvent）返回，并携带`metadata`（traceId、agentId、agentVersion等）。
+
+### 核心概念
+
+- **Context（会话）**：会话的逻辑容器，将一段交互中的相关Task归组。由Agent分配并管理`contextId`；首次请求小艺不携带contextId，Agent在首帧响应中生成返回，后续小艺每次请求携带；小艺不携带contextId发起请求即重置会话
+- **Task（任务）**：一件事从发起到完成的完整处理单元，可含多次消息往返，终止后不可重启；`taskId`由Agent在首帧响应中分配。状态：`TASK_STATE_SUBMITTED`（已创建待执行）、`TASK_STATE_WORKING`（处理中）为活跃态；`TASK_STATE_INPUT_REQUIRED`（暂停等待用户额外输入）为挂起态；`TASK_STATE_COMPLETED`/`TASK_STATE_CANCELLED`/`TASK_STATE_FAILED`为终态
+- **Artifact（产出物）**：Task的产出单元，`artifactId`唯一标识；同一Artifact内的内容组合呈现/处理（如一次回复的思考过程+正文+卡片），需独立处理的内容各为一个Artifact（如长时任务的用户接管通知、胶囊状态更新）
+- **Part**：Artifact的组成分片，承载具体内容（文本、卡片、长时任务中的各类指令等）
+
+### 应用内Agent开发接入
+
+_详见：`https://developer.huawei.com/consumer/cn/doc/service/agent2agent-inapp-0000002630346158`_
+
+应用Agent接入端A2A需实现两类Ability：
+
+- **AgentExtensionAbility**（必须实现）：与小艺进行A2A协议通信的核心组件。DevEco Studio中【New】→【Extension Ability】→【Agent】创建，自动生成三个文件：`module.json5`（注册Ability，通过metadata字段指向agent_config.json）、`agent_config.json`（AgentCard配置文件，声明Agent能力/技能/元信息，小艺借此识别和路由Agent）、AgentExtensionAbility实现类。生命周期方法：`onCreate`（初始化）→ `onConnect(want, proxy)`（建立连接，需保存`AgentHostProxy`）→ `onAuth(proxy, data)`（密钥协商，可选流程，经`proxy.authorize`回传结果）→ `onData(proxy, data)`（收到小艺JSON消息，处理后经`proxy.sendData`返回Task/TaskStatusUpdateEvent/TaskArtifactUpdateEvent等响应）→ `onDisconnect` → `onDestroy`
+- **AgentUIExtensionAbility**（可选，按需实现）：向小艺返回自定义UI卡片。`module.json5`中type为`agentUI`、exported为true；核心方法`onSessionCreate(want, session)`中通过`session.loadContent()`加载ArkTS卡片页面。Agent通过A2A返回uiExtensionCard指令时，payload字段由小艺透传，经`want.parameters?.['ability.want.params.payload']`获取
+
+### AgentCard定义规范
+
+_详见：`https://developer.huawei.com/consumer/cn/doc/service/agentcard-0000002678424557`_
+
+AgentCard是Agent的元数据描述文件（agent_config.json中`agentCards[]`）。关键字段：`name`（必填，可读名称）、`description`（必填，小艺据此进行意图匹配和技能路由）、`agentId`（必填，同包名下唯一，需与客户端`connectAgentExtensionAbility`传入的agentId一致）、`version`（必填）、`iconUrl`（必填）、`capabilities`（`streaming`/`pushNotifications`/`extendedAgentCard`等）、`defaultInputModes`/`defaultOutputModes`（必填，MIME类型数组）、`skills[]`（必填；每项`id`/`name`/`description`/`tags`必填，`examples`/`inputModes`/`outputModes`可选）、`provider`（organization+url）、`extension`（ExtInfo扩展：`introduction`开场白必填、`protocolVersion`必填（初始默认1.0）、`supportedInterfaces`接口列表（url+protocolBinding核心支持JSONRPC+protocolVersion）、`reqMetaRequired`、`securityInfo`、`developmentType`）、`appInfo`（必填：`bundleName`/`moduleName`/`abilityName`/`deviceTypes`/`minAppVersion`）
+
+### 端A2A错误码总览
+
+_详见：`https://developer.huawei.com/consumer/cn/doc/service/agent2agent-errorcode-0000002660465493`_
+
+| 错误码 | 类型 | 触发方向 | 说明 |
+|---|---|---|---|
+| -32700 | JSON-RPC 2.0 | 双向 | JSON解析失败，收到的JSON格式非法 |
+| -32600 | JSON-RPC 2.0 | 双向 | 非法请求对象，不符合JSON-RPC规范 |
+| -32602 | JSON-RPC 2.0 | 双向 | 参数非法，类型错误或缺少必填字段 |
+| -32603 | JSON-RPC 2.0 | 双向 | 服务端内部错误 |
+| -32001 | JSON-RPC 2.0 | Agent→小艺 | TaskNotFoundError：task ID不存在或无权访问 |
+| -32002 | JSON-RPC 2.0 | Agent→小艺 | TaskNotCancelableError：task无法取消（已完成或当前阶段不支持） |
+| -32004 | JSON-RPC 2.0 | Agent→小艺 | UnsupportedOperationError：操作不支持（如向已终止的task发消息） |
+| 99911113 | 鸿蒙扩展 | 双向 | 流控失败 |
+| 99911114 | 鸿蒙扩展 | 双向 | 风控失败 |
+| 99911200 | 鸿蒙扩展 | Agent→小艺 | task已经失效 |
+| 99911222 | 鸿蒙扩展 | Agent→小艺 | contextId已失效，请重新请求 |
+
 ## 子页面URL索引
 
-- 技术规范总览：`https://developer.huawei.com/consumer/cn/doc/service/agent2agent-comments-0000002500412353`
-- 消息指令定义（目录）：`https://developer.huawei.com/consumer/cn/doc/service/agent2agent-definition-0000002500439093`
+### 云A2A协议
+- 云A2A协议技术规范：`https://developer.huawei.com/consumer/cn/doc/service/agent2agent-comments-0000002500412353`
+- 云A2A协议消息指令定义（目录）：`https://developer.huawei.com/consumer/cn/doc/service/agent2agent-definition-0000002500439093`
 - 初始化/初始化完成：`.../initialize-initialized-0000002537681161`
 - 发起会话：`.../message-stream-0000002505761434`
 - 终止会话：`.../tasks-cancel-0000002537561193`
@@ -383,3 +432,12 @@ Agent Server可获取的受控系统上下文信息，需先在小艺开放平�
 - 端侧插件工具指令：`.../agent2agent-action-0000002467539682`
 - 底部快捷指令：`.../agent2agent-command-0000002467900460`
 - 设备上下文参数：`.../agent2agent-context-0000002501019701`
+
+### 端A2A协议
+- 端A2A协议技术规范：`.../agent2agent-device-0000002624952279`
+- 应用内Agent开发接入：`.../agent2agent-inapp-0000002630346158`
+- AgentCard定义规范：`.../agentcard-0000002678424557`
+- 端A2A协议消息指令定义（目录）：`.../agent2agent-device-commands-0000002594605828`
+- 端A2A对话交互：`.../agent2agent-chat-0000002660585429`
+- 动态开场白和引导语：`.../dynamic-opening-lines-0000002673244317`
+- 端A2A错误码总览：`.../agent2agent-errorcode-0000002660465493`

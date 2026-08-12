@@ -4,42 +4,47 @@ _Source authority: `https://developer.huawei.com/consumer/cn/doc/service/*` (小
 
 ## What the Xiaoyi Open Platform is
 
-Xiaoyi Open Platform is Huawei's **intelligent agent (智能体) development and distribution platform** for HarmonyOS NEXT. It provides end-to-end tooling to build, debug, and publish AI agents that users access through Xiaoyi (the system-level AI assistant) and in-app entry points.
+Xiaoyi Open Platform is Huawei's **unified Agent + Skill development and distribution platform** for HarmonyOS NEXT. It provides end-to-end tooling to build, debug, evaluate, publish, and operate AI agents that users access through Xiaoyi (the system-level AI assistant) and in-app entry points. The platform's core ecosystem is a 2×2 matrix — **Agent vs Skill × cloud-side vs device-side** — compatible with device, cloud, MCP, and intent-framework tools ("Skill化" of all of them). Skills are executed by **小艺Claw**, the Xiaoyi agent runtime.
 
 Agents are published to the **Agent Market (智能体市场)** and distributed across devices (phone, tablet, PC, watch, car). The platform also runs a **Plugin Marketplace** (system plugins, system-app plugins, third-party app plugins, MCP tools) plus private custom cloud/device plugins.
 
-Doc tree top levels: 业务介绍, 鸿蒙智能体 (快速创建智能体 / 开发智能体 / 开发知识库 / 开发工作流 / 开发插件 / 开发卡片 / 开发界面 / 开发音色 / 小艺罗盘 / 上架审核规范), 鸿蒙Agent通信协议接入方案, 智能体数字商品支付服务, OpenClaw接入, 意图框架, white papers, terms.
+Doc tree top levels: 小艺开放平台 (平台概览与核心概念 / 平台特性与能力体系 / 动态与公告), Agent (Agent编排模式 / 开发Agent / A2A协议接入方案 / Agent上架审核规范 …), Skill, 资源库 (工作流 / 插件 / 知识库 / 卡片 / 界面 / 音色 / 意图框架), 小艺罗盘 (now top-level), 最佳实践, 合作协议与补充接口文档.
 
-## Four development modes
+## Six development modes
 
 | Mode | Description | Best for |
 |---|---|---|
-| **LLM mode (单Agent)** | LLM-driven: pick a model, write prompts, add plugins/workflows. Model handles intent routing dynamically. | Simple Q&A, knowledge retrieval, content generation |
-| **Workflow mode (工作流模式)** | Rule-based: compose ordered steps (data fetch → process → act) by connecting nodes on a canvas. | Complex multi-step business logic with deterministic flows |
-| **A2A mode** | Bring your own agent: connect an existing third-party agent via the HarmonyOS Agent-to-Agent protocol (StreamableHTTP + JSON-RPC 2.0). | Enterprise developers with existing cloud agents + HarmonyOS apps |
+| **Device A2A mode (端A2A模式)** | In-app agent on the device talks to the on-device Xiaoyi client agent over the device A2A protocol — lightweight end-to-end integration using on-device compute and system APIs; low latency, high privacy. | Developers who already ship a HarmonyOS app and want an on-device agent |
+| **Cloud A2A mode (云A2A模式)** | Bring your own agent: connect an existing third-party cloud agent via the cloud A2A protocol (StreamableHTTP + JSON-RPC 2.0). | Enterprise developers with existing cloud agents + HarmonyOS apps |
+| **Cloud workflow mode (云工作流模式)** | Rule-based: compose ordered steps (data fetch → process → act) by connecting plugins, LLM nodes, branches, code blocks on a canvas. | Complex multi-step business logic with deterministic flows |
 | **OpenClaw mode** | Connect an OpenClaw server via the `@ynhcj/xiaoyi` plugin for rapid personal agent creation. One per account, device-test publishing only. | Personal assistants, automation, quick prototypes |
+| **LLM mode (单Agent)** | LLM-driven: pick a model, write prompts, add plugins/workflows. Model handles intent routing dynamically. | Simple Q&A, knowledge retrieval, content generation |
+| **Multi-agent mode (多Agents模式)** | Split a complex task into sub-tasks, each handled by a sub-agent with its own role prompt, plugins, and workflows; the LLM acts as the task planner that routes to sub-agents based on user need + role prompts + sub-agent descriptions. | Complex, business-diverse scenarios needing multiple specialists |
 
 ### Mode capability matrix (key differences)
 
-| Capability | LLM | Workflow | A2A | OpenClaw |
-|---|---|---|---|---|
-| Model selection & settings / prompt | ✓ | — (对话设置 only) | — | — |
-| A2A basic config / output settings | — | — | ✓ | — |
-| OpenClaw basic config | — | — | — | ✓ |
-| Opening dialog & preset questions, input files, background image, character voice | ✓ | ✓ | ✓ | ✓ |
-| User question suggestions | ✓ | ✓ | — | — |
-| Quick commands | ✓ | ✓ | ✓ | — |
-| Plugins | ✓ | — | ✓ | — |
-| Workflows | ✓ | ✓ | — | — |
-| Trigger | ✓ | ✓ | ✓ | — |
-| Associated app (AgentKit) | ✓ | ✓ | ✓ | — |
-| Account binding | — | ✓ | ✓ | — |
-| Paid agent | — | ✓ | ✓ | — |
-| Knowledge base | ✓ | — | — | — |
-| Variables | ✓ | ✓ | ✓ | — |
-| Long-term memory | ✓ | ✓ | — | — |
+Columns: 端A2A / 云A2A / 云工作流 / OpenClaw / LLM / 多Agents.
 
-"语音通话" (voice call) appears in the orchestration list but is marked **暂不支持** (not yet supported).
+| Capability | 端A2A | 云A2A | 云工作流 | OpenClaw | LLM | 多Agents |
+|---|---|---|---|---|---|---|
+| Model selection & settings | — | — | — | — | ✓ | ✓ |
+| Dialog settings (对话设置) | — | — | ✓ | — | — | — |
+| Opening dialog (开场对话) | — | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Input file settings | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| User question suggestions | — | — | ✓ | — | ✓ | ✓ |
+| Quick commands | ✓ | ✓ | ✓ | — | ✓ | ✓ |
+| Background image, character voice | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Plugins | — | ✓ | — | — | ✓ | ✓ |
+| Workflows | ✓ | — | ✓ | — | ✓ | ✓ |
+| Trigger | — | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Associated app (AgentKit) | — | ✓ | ✓ | — | ✓ | ✓ |
+| Sub-agents (智能体) | — | — | — | — | — | ✓ |
+| Knowledge base | — | — | — | — | ✓ | ✓ |
+| Variables | — | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Long-term memory | — | — | ✓ | — | ✓ | ✓ |
+| A2A basic config / output settings | — | ✓ | — | — | — | — |
+| Account binding | — | ✓ | ✓ | — | — | — |
+| OpenClaw basic config | — | — | — | ✓ | — | — |
 
 ## Agent lifecycle
 
@@ -62,6 +67,7 @@ Create → Configure → Debug & Preview → Publish (review 1-3 business days) 
 - **Name**: Required
 - **One-line description**: Shown on agent detail page
 - **Category**, **Aliases** (multiple, improve distribution accuracy)
+- **File storage type (文件存储类型)**
 - **Creator nickname (创建者昵称)**: defaults to account nickname; enterprise devs can pick an approved one
 - **Supported devices**: Phone/Tablet/PC/Watch — HarmonyOS NEXT (ROM 5.x+); Phone/Tablet — HarmonyOS (ROM 4.x); Car — HarmonyOS
 - **AgentCard**: auto-generated capability "business card" used for Xiaoyi main-dialog distribution. Syncs from basic info + plugins/workflows. Editable: function name, description, dependencies (device-plugin deps). Read-only: name, ID, version, description, input types (from input-file settings), output type (string, reserved).
@@ -96,13 +102,15 @@ Mandatory per Chinese AI regulations (生成式AI管理暂行办法, 深度合�
 
 **OpenClaw basic config**: one OpenClaw agent per account; devices default to Phone NEXT + Phone HarmonyOS. (1) Create credentials in Workspace → 凭证 (secret key visible only at creation). (2) Configure the xiaoyi channel on the OpenClaw server with ak/sk (other channel fields must not be changed). Publishing = device test only, for white-listed users; dev-test state is long-lived.
 
-**Opening dialog & preset questions**: Markdown welcome message + up to 3 one-tap preset questions.
+**Opening dialog & preset questions**: two variants.
+- *Preset (static)*: Markdown welcome message + up to 3 one-tap preset questions, same on every launch.
+- *Dynamic (动态开场对话)*: opening line + preset questions refreshed on each launch via a bound workflow or the A2A service. Workflow mode: bind two end-node variables — opening line must be String, preset guides must be Array\<Object\> whose items have a String `content` field. A2A mode: clicking 动态开场对话 saves the config and fires an init event to the A2A URL — `events[]` with `header` namespace `Common` / name `Trigger` and `payload.eventName: "AgentInit"`; the server replies with an artifact-update whose data part carries `openingText: { openingText, openingQuestions: [{content}] }`.
 
 **Input file settings**: photo upload (JPEG/JPG/PNG/BMP/WEBP) + camera capture (device-only, no web preview); file upload (pdf/doc/docx/txt/ppt/pptx/xlsx/xls). Send modes: direct, or "pending area" (text+attachments together, max 6 photos/files per message). Optional photo/file quick-command presets.
 
 **User question suggestions** (LLM/Workflow): off by default; after each reply suggests follow-up questions via system prompt or custom prompt.
 
-**Quick commands** (快捷指令): up to 10 static + 1 dynamic; dynamic ones are pinned first (if dynamic yields <5, static ones fill in).
+**Quick commands** (快捷指令): up to 30 static + 1 dynamic; the dynamic one is pinned first (position not adjustable); static order is drag-adjustable. Commands can be restricted to specific Xiaoyi app versions or device types.
 - **Static types**:
   - Jump-type: DeepLink to app (app name, package, DeepLink, min app version, optional Action name). No web preview.
   - Send-type: Document / Image / Text / Camera (front/rear lens, optional crop) / Choice panel (components: 1 upload object, 1 image template, up to 2 tiled selectors, up to 2 dropdown selectors; query auto-assembled from text + component values)
@@ -133,7 +141,7 @@ Mandatory per Chinese AI regulations (生成式AI管理暂行办法, 深度合�
 
 **Knowledge base** (LLM mode): relevance threshold 0-1, max recall segments 0-20, max recall tokens 0-999999, query rewriting (on by default), no-hit reply (default "抱歉，这个问题不在知识范围内" or custom).
 
-**Variables**: user variables (per-user persistent; usable in prompt and workflows; context-based auto-extraction in LLM mode only — and disabled when an executed workflow contains a variable component) + system variables (read-only, off by default: device identifier, device language, etc.). Inspect/reset via 【记忆】→【变量】.
+**Variables**: user variables (per-user persistent; usable in prompt and workflows; context-based auto-extraction in LLM mode only — and disabled when an executed workflow contains a variable component) + system variables (read-only, off by default: device identifier, device language, etc.) + **counter variables (计数变量)** — atomic counters for throttling/metering agent-feature usage, counted per user (uid) or per device (odid). Max 10 per agent; name, dimension, and reset period (fixed: natural month/week/day/hour) are immutable after save; initial value must be an integer; **not supported in 云A2A mode**; usable only in the query-counter-variable and quota-management workflow nodes; not viewable/resettable in the memory viewer. Inspect/reset other variables via 【记忆】→【变量】.
 
 **Long-term memory** (LLM/Workflow): extracts key info after the context window is exhausted (e.g. 20-round window → extraction from round 21). Auto-appended to prompt by default ("支持在Prompt中调用"); uncheck to restrict to workflow use. Viewable/resettable via 【记忆】→【长期记忆】.
 
@@ -150,7 +158,7 @@ Mandatory per Chinese AI regulations (生成式AI管理暂行办法, 深度合�
 - **Device test**: configure white-list user groups (max 100 groups/team, 100 users/group, by phone number or email/UID; batch import supported), then 【发布真机测试】. The agent appears in Xiaoyi with a "开发中" badge. **Dev state is valid for 15 days per publish**; cancel via 【取消发布】.
 - **Debug console (调试台)**: full-link tracing per request — session overview (latency, token usage, status, first-token latency), a visual call tree with per-node I/O and timing, and a flame graph. Web-debug sessionId for support tickets: browser devtools → network → "run" request → first message's sessionId/interactionId.
 
-## Agent Communication Protocol (A2A)
+## Cloud A2A protocol (云A2A协议)
 
 Docs are split into a **technical spec overview** (`agent2agent-comments-0000002500412353`) and **message/command definitions** (`agent2agent-define-0000002467293060`). Single endpoint, POST only, **StreamableHTTP + JSON-RPC 2.0** between Agent Client (Xiaoyi) and Agent Server (your backend); no long-lived connections, reconnect supported; compatible with Google A2A `message/stream` / `tasks/cancel`.
 
@@ -168,7 +176,7 @@ Docs are split into a **technical spec overview** (`agent2agent-comments-0000002
 | `push` | **Server→Client** push notification for async long tasks (via the hag webhook endpoint, HMAC-SHA256-signed headers) |
 
 ### message/stream essentials
-- Request params: task `id`, `sessionId` (client-assigned context key; changes when user clears context), optional `agentLoginSessionId`, `message.parts[]` with `kind: text | file | data` (file = name/mimeType + bytes XOR uri).
+- Request params: task `id`, `sessionId` (client-assigned context key; changes when user clears context), optional `agentLoginSessionId`, `message.parts[]` with `kind: text | file | data` (file = name/mimeType + `uri`; the earlier `bytes` alternative was removed).
 - SSE responses are **TaskStatusUpdateEvent** (`kind: "status-update"`; status.message text shown in the status bar; `state: submitted|working|input-required|completed|canceled|failed|unknown`) or **TaskArtifactUpdateEvent** (`kind: "artifact-update"`; `artifact.parts[]` with `reasoningText` (deep-think stream), `text` (markdown body), `data` (cards/commands/chips/references); `append` = incremental, `lastChunk` ends one stream burst).
 - `final: true` ends the SSE task channel (server can't push afterwards) — mandatory at task end; **don't set final=true when issuing a location command**.
 - Error codes: 0 success, 99911114 content non-compliant, 99911113 throttled.
@@ -183,9 +191,46 @@ Docs are split into a **technical spec overview** (`agent2agent-comments-0000002
 - **Location**: `Common/Action` with `intentName: "GetCurrentLocation"`, `bundleName: "com.huawei.hmos.aidispatchservice"` (requires the 定位服务 plugin added to the agent); client reports WGS84 `latitude`/`longitude` via UploadExeResult.
 - **Device context variables** (toggle on in platform variable config): `variables.systemVariables` — `app_ver`, `foreground_apps`; plus `clientVariables`, `memoryVariables`.
 
+## Device A2A protocol (端A2A协议)
+
+Spec for **in-app agents talking to the on-device Xiaoyi** (端A2A协议技术规范, doc version V0.6). JSON-RPC 2.0 messages exchanged over an in-device Extension Ability connection — the dialog method is **`MessageStream`** (capitalized, NOT the cloud protocol's `message/stream`).
+
+### Core concepts
+- **Context**: logical session container, `contextId` assigned by the agent in its first response frame; Xiaoyi carries it on subsequent requests; a request without contextId resets the session.
+- **Task**: one unit of work with its own lifecycle; `taskId` assigned by the agent; states `TASK_STATE_SUBMITTED | WORKING | INPUT_REQUIRED | COMPLETED | CANCELLED | FAILED`; terminated tasks cannot be restarted.
+- **Artifact**: output unit of a task (`artifactId`); contents of one artifact are rendered/processed together (e.g. reasoning + body + card), independent items get separate artifacts.
+- **Part**: content shards of an artifact — text, cards, long-task commands, etc.
+
+### Supported scenarios
+1. **Dialog interaction**: LUI chat — single/multi-turn replies, clarification, file exchange, AgentUIExtension cards.
+2. **Long-task accompaniment**: agent returns `uiSession` `action: "CREATE"`; after Xiaoyi's UI is ready it sends `uiSession` `action: "READY"` (uiSessionState WORKING) and the agent moves to TASK_STATE_WORKING. Progress is surfaced via dialog capsules (对话胶囊), status capsules (状态胶囊), and the dialog panel; the user can intervene. Either side closes via `uiSessionState: "CLOSING"`, then TASK_STATE_COMPLETED.
+3. **UI-control accompaniment**: like long tasks but with a UI-control overlay/mask and streaming-light effect while the agent drives the UI.
+4. **Native control**: on recognizing specific intents the agent operates its own app natively (different paths depending on foreground/background) while keeping the dialog experience.
+5. **Chips (topic) recommendation**: Xiaoyi passes app/device context; the agent returns chips suggestions best fitting the scene.
+6. **Dynamic opening lines**: Xiaoyi calls method `GetOpening` (params carry message contextId + metadata traceId/agentId/appVersion); the agent creates a task, streams an artifact-update whose data part is `openingTexts: { openingText, openingQuestions: [] }`, then a status-update TASK_STATE_COMPLETED.
+
+### Implementation (in the HarmonyOS app)
+- **AgentExtensionAbility** — mandatory core component; created in DevEco Studio via New → Extension Ability → Agent, which generates `module.json5` (registers the ability, `metadata` points to `agent_config.json`), `agent_config.json` (the AgentCard), and the ability class. Lifecycle: `onCreate` → `onConnect(want, proxy)` (save the `AgentHostProxy`) → optional `onAuth` (key negotiation, reply via `proxy.authorize`) → `onData(proxy, data)` (handle each A2A message, reply via `proxy.sendData`) → `onDisconnect` → `onDestroy`.
+- **AgentUIExtensionAbility** — optional, for custom UI cards; `type: agentUI`, `exported: true`; load the ArkTS page in `onSessionCreate(want, session)`; the `payload` of a `uiExtensionCard` command arrives in `want.parameters['ability.want.params.payload']`.
+
+### AgentCard (agent_config.json)
+`agentCards[]` entries; key fields:
+- **Required**: `name` (≤64), `description` (≤512 — drives Xiaoyi's intent matching and skill routing), `agentId` (unique within the bundle; must match the `connectAgentExtensionAbility` agentId), `version`, `iconUrl`, `defaultInputModes`/`defaultOutputModes` (MIME types), `skills[]` (each with required `id`/`name`/`description`/`tags`, optional `examples`, per-skill input/outputModes), `appInfo`.
+- **Optional**: `capabilities` (`streaming`, `pushNotifications`, `extendedAgentCard`), `provider` (organization + url), `documentationUrl`, `extension` — a JSON string per **ExtInfo**: `introduction` (opening line, required), `securityInfo`, `supportedInterfaces[]` (ordered, first = preferred; url + `protocolBinding: JSONRPC` + protocolVersion), `developmentType` (`NATIVE` default / `PROCODE` / `LOWCODE`), `reqMetaRequired`.
+- **appInfo**: `bundleName`, `moduleName`, `abilityName`, `minAppVersion`, `deviceTypes`.
+
+### Error codes
+JSON-RPC: `-32700` parse error, `-32600` invalid request, `-32602` invalid params, `-32603` internal error. Agent→Xiaoyi: `-32001` TaskNotFound, `-32002` TaskNotCancelable, `-32004` UnsupportedOperation. HarmonyOS extensions: `99911113` flow control, `99911114` risk control, `99911200` task invalid, `99911222` contextId invalid.
+
+### Platform-side setup (端A2A-mode agent)
+Create a 端A2A-mode agent → associate an app/元服务 (fill app name / 元服务 module + service name) → import the AgentCard (per the AgentCard spec) → configure the rest (input files, quick commands, …).
+
 ## Workflow development
 
-Canvas editor; new workflows start with Start + End nodes. Node types: **Start, End, LLM, Plugin, Workflow (sub-workflow), Code, Selector, Intent Classification, Output, Loop, Batch Processing, Knowledge Base, Variable, Long-term Memory, Text Processing, Questioner**.
+Canvas editor; new workflows start with Start + End nodes. Node types: **Start, End, LLM, Plugin, Workflow (sub-workflow), Code, Selector, Intent Classification, Output, Loop, Batch Processing, Knowledge Base, Variable, Long-term Memory, Text Processing, Questioner, Query Counter Variable (查询计数变量), Quota Management (配额管理)**.
+
+- **Query Counter Variable node**: read-only fetch of a counter variable's current value; outputs `isSuccess`, `counterVariable`, `errorMessage`.
+- **Quota Management node**: atomic increment/decrement of a counter variable (设置值 = step, may be negative) with a quota threshold (限额); outputs `counterVariable` (new value), `errorMessage`, and `resultStatus` ∈ `success` (assigned) | `quotas` (over quota, value unchanged) | `error` (execution error, value unchanged).
 
 - Lifecycle: create → add/connect nodes → configure I/O → 试运行 (green border on success, inspect node I/O + trace tree) → 上架 (required before use in agents).
 - **Import/export**: export to JSON (optionally including sub-workflows) and import into any workspace (cross-account). Account-bound resources (plugins, KBs, workflows) may break — replace manually; import sub-workflows first, publish, then re-link in the main workflow.
@@ -238,6 +283,25 @@ Enterprise developers only, max 5 timbres per account (Workspace → 音色). Cl
 - If you check "授权知识库用于知识问答" (allow Xiaoyi dialog to use it), publish review takes 1-3 business days.
 - Document-type knowledge requires data validation before it can be published.
 - Bind to agents in orchestration → 知识库 (LLM mode).
+
+## Skill development
+
+Skills (now a top-level doc tree section next to Agent) are **standardized capability units callable by AI agents** — executed by 小艺Claw. The platform covers the full lifecycle: create (Vibe Coding or import), device test, publish to the resource library.
+
+- **Vibe Coding creation**: Workspace → Skill → 新建Skill → Vibe Coding. Fill name/description/trigger intents in a chat box; attach extension abilities via the **@** button; generation runs with clarification questions and a Todos progress list; the platform auto-validates SKILL.md compliance; optionally auto-generates test cases, executes tool calls, and produces a **Canvas evaluation report**; finally write the Skill description (for semantic matching by agents) and the Skill is auto-packaged. A **Skill检索** option searches 小艺Claw's built-in skills for similar published skills to use as a generation template (visual "Skill graph" of results; one template at a time).
+- **Import**: 新建Skill → 导入Skill, upload a Skill package for the platform to parse.
+- **Extension abilities (attach via @)**: 插件 (plugins from the marketplace / your own / partners; cloud, device, or MCP types), **Agent** (embed an agent of any of the six modes — your own or a partner's), 生态Skill (reference an existing Skill as capability base), 系统CLI (public or private CLI tools; a CLI tool project ships `config.json` descriptor + `BUILD.gn` + src/docs), 附件 (attachments: max 10 per Skill, 1 MB each; `.md` / `.py` / `.txt` / `.zip`), Skill检索.
+
+### Skill format (HarmonyOS Skill development standard, V6)
+A Skill is a **directory** with mandatory `SKILL.md` + `module.json`, optional `scripts/`, `references/`, `assets/`.
+- **SKILL.md** = YAML frontmatter + Markdown body. Frontmatter: `name` (required, 1-64 chars `[a-z0-9-]`, must equal the directory name), `description` (required; hard limit 512 chars Chinese / 1024 English, ~300-token soft budget; state capability + trigger cases, no marketing words), optional `license`, `compatibility`, `metadata`, `allowed-tools`. Body: hard limit 500 lines (~5000 tokens soft); write only what the model can't do reliably, organized as 领域知识 → 工具定义 → 经验攻略 / SOP / 安全红线 → 与人协作; overflow goes to `references/`.
+- **module.json**: `version` (Semver, required), `availableOn` (phone/tablet/pc/wearable/car/tv/cloud/cloudSandbox/localSandbox), `toolDependencies` (platform-registered tools only; must match the body's tool definitions), `abilityName`, `visibility` (`private`/`system` default/`public`), `srcEntries` (ETS scripts, 0-100, under `scripts/`), `permissions`, `requestPermissions`, auto-generated `minAPIVersion`/`targetAPIVersion`.
+- **Tools**: system-preset (`exec`, `invoke`, `read`, `write`, `web_search`, `web_fetch`, `load_skill` — never declared), platform-registered vs Skill-private Function tools (`invoke`) and CLI tools (`exec`), and private scripts under `scripts/` invoked via `exec` of **`ohos-arktsScript --skillName … --scriptPath … --functionName … --args …`** (ArkTS runs on device; Python/Node are delegated to PC/cloud via subAgent). Validate with `skills-ref validate ./my-skill`; pre-publish security scanning (dangerous commands, hardcoded credentials, path traversal) + LLM semantic audit (prompt injection, false claims).
+
+### Skill test, publish, account binding
+- **Device test**: pick whitelist user groups (max 100 groups/team, 100 users/group), max 10 groups per publish; each device-test publish is **valid 15 days**; re-publish or cancel anytime.
+- **Publish (上架)**: one-stop listing page; upgrades keep the previous approved version live; separate **Skill review standard** (信息安全 & 上架审核) applies — intent transparency ("who is it and what does it want"), description must list all core actions and match actual behavior, no hidden logic, an explicit catalog of forbidden prompt-injection patterns (file theft, context exfiltration, code/command injection, DoS/token bombs, task hijacking, preference manipulation, behavior concealment, destructive-op laundering, tool override), permission minimization (only the isolated work directory).
+- **Huawei-account binding**: for Skills needing a logged-in apiKey. Configure 账号鉴权 (clientId from an AGC web app + auth API URL + domains using the token). At runtime the Skill reads **`loginToken` from environment variables** (the `.xiaoyienv` file); if missing/expired it calls the `huawei_id_tool` tool once (params clientId + skillName) to refresh. Server implements JSON-RPC callbacks `authorize` (authCode → loginToken, 7-day validity, + loginRefreshToken, ~6 months), `refreshToken`, and `deauthorize` (AK/SK — accessKey + ts + `sign` = Base64(HMAC-SHA256(secretKey, ts)) — Header, or Query auth). Business requests carry `login-token` in the header. Phone-number permission: enterprise developers only.
 
 ## Xiaoyi Compass (小艺罗盘)
 
@@ -293,11 +357,17 @@ HarmonyOS apps embed a Function-component icon that launches the associated agen
 11. **Developer behavior**: truthful registration; government agents need official authorization.
 12. **FAQs**: AI-labeling & LLM-filing FAQ (how to fill/verify labels, where to query filing numbers); permission-usage-description FAQ (state a clear, accurate purpose when requesting location/calendar etc., or the agent can't pass review).
 13. **Appendix**: business-specific qualifications (securities, banking, medical, news, ride-hailing, legal, recruitment, etc.).
+14. **Non-admitted types (不收录类型)**: a dedicated chapter enumerates agent categories the market will not list — e.g. forged documents/certificates, weapons, protected-wildlife trade, surrogacy, e-cigarettes, SMS bombing, "网络水军" (fake engagement) services, virtual-currency trading and other illegal finance, gambling-style red-packet/betting mechanics, fortune-telling targeted at minors, anthropomorphic agents, 饭圈 (fan-circle) content, and more.
+15. **Violation handling (智能体开发者违规处置措施)**: tiered measures — account freezing, inclusion in a risk-agent list with security controls, take-down/invisibility, deadline-bound rectification, and escalating penalties for repeat offenses; regulator orders override; appeals/re-listing after rectification unless permanently removed.
 
 ### Audit process
 - Submit via the editor's 【上架】/【升级】 button or Workspace → 智能体 list operations (上架/下架/升级/撤回).
 - Review cycle 1-3 business days; team admin only.
 - Rejection reasons: version history (版本记录) or hover on the status tag in the agent list.
+
+## Markdown output rendering
+
+The platform publishes an official **markdown syntax spec** for agent output (合作协议与补充接口文档 → markdown语法规范, `markdown-grammar-0000002553963585`): `#`-style headings 1-6 (Setext `=`/`-` headings are NOT supported in the single-box Xiaoyi renderer), ordered/unordered lists (no tables/code blocks/quotes nested inside list items), plus the other standard constructs. Check it when formatting agent replies.
 
 ## Key URLs
 

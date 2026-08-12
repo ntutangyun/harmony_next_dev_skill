@@ -57,6 +57,10 @@ onExtensionWillTerminate(error?: BusinessError<void>): Promise<void>	在资源�
 
 在ets目录下新建extensionability文件夹及AssetAccelExtAbility.ets文件，导入assetDownloadManager模块、AssetAccelerationExtensionAbility模块及相关模块，同时新增AssetAccelExtAbility类继承AssetAccelerationExtensionAbility。
 
+说明
+
+针对AssetAccelerationExtensionAbility接口调用限制，详细请参考API中的约束限制。
+
 import { BusinessError } from '@kit.BasicServicesKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';

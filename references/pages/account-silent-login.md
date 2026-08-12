@@ -67,7 +67,10 @@ try {
   controller.executeRequest(loginRequest).then((response: authentication.LoginWithHuaweiIDResponse) => {
     const loginWithHuaweiIDResponse = response as authentication.LoginWithHuaweiIDResponse;
     const state = loginWithHuaweiIDResponse.state;
-    if (state && loginRequest.state !== state) {
+    // state为空时，归一化处理为空字符串
+    const normalizedRequestState = loginRequest.state || '';
+    const normalizedState = state || '';
+    if (normalizedRequestState !== normalizedState) {
       hilog.error(0x0000, 'testTag', `Failed to login. The state is different, response state: ${state}`);
       return;
     }
@@ -171,7 +174,10 @@ try {
   controller.executeRequest(loginRequest).then((response: authentication.LoginWithHuaweiIDResponse) => {
     const loginWithHuaweiIDResponse = response as authentication.LoginWithHuaweiIDResponse;
     const state = loginWithHuaweiIDResponse.state;
-    if (state && loginRequest.state !== state) {
+    // state为空时，归一化处理为空字符串
+    const normalizedRequestState = loginRequest.state || '';
+    const normalizedState = state || '';
+    if (normalizedRequestState !== normalizedState) {
       hilog.error(0x0000, 'testTag', `Failed to login. The state is different, response state: ${state}`);
       return;
     }

@@ -252,6 +252,7 @@ export default class EntryFormAbility extends FormExtensionAbility {
 
     let formData = new FormDataClass();
     let formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
+    // 更新卡片数据
     formProvider.updateForm(formId, formInfo).then(() => {
       hilog.info(DOMAIN_NUMBER, TAG, 'FormAbility updateForm success.');
     }).catch((error: BusinessError) => {
@@ -291,7 +292,7 @@ struct Index {
             let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
             let moduleName: string = 'entry';
             let abilityName: string = 'EntryFormAbility';
-            let formName: string = 'reloadByUIAbilityCard';
+            let formName: string = 'ReloadByUIAbility';
             formProvider.reloadForms(context, moduleName, abilityName, formName).then((reloadNum: number) => {
               console.info(`reloadForms success, reload number: ${reloadNum}`);
             }).catch((error: BusinessError) => {
@@ -311,7 +312,7 @@ struct Index {
               console.error(`promise error, code: ${error.code}, message: ${error.message})`);
             });
           } catch (error) {
-            console.error(`catch error, code: ${(error as BusinessError).code}, message: ${(error as BusinessError).message})`);
+            console.error(`catch error, code: ${(error as BusinessError).code}, message: ${(error as BusinessError).message}`);
           }
         })
     }
@@ -577,6 +578,7 @@ export default class EntryFormAbility extends FormExtensionAbility {
 
     let formData = new FormDataClass();
     let formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
+    // 更新卡片数据
     formProvider.updateForm(formId, formInfo).then(() => {
       hilog.info(DOMAIN_NUMBER, TAG, 'FormAbility updateForm success.');
     }).catch((error: BusinessError) => {
@@ -618,7 +620,7 @@ struct Index {
             let context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
             let moduleName: string = 'entry';
             let abilityName: string = 'EntryFormAbility';
-            let formName: string = 'reloadByUIAbilityCard';
+            let formName: string = 'ReloadByUIAbility';
             formProvider.reloadForms(context, moduleName, abilityName, formName).then((reloadNum: number) => {
               console.info(`reloadForms success, reload number: ${reloadNum}`);
             }).catch((error: BusinessError) => {
@@ -638,7 +640,7 @@ struct Index {
               console.error(`promise error, code: ${error.code}, message: ${error.message})`);
             });
           } catch (error) {
-            console.error(`catch error, code: ${(error as BusinessError).code}, message: ${(error as BusinessError).message})`);
+            console.error(`catch error, code: ${(error as BusinessError).code}, message: ${(error as BusinessError).message}`);
           }
         })
     }

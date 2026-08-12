@@ -4,15 +4,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-we
 
 场景介绍
 
-实时三环数据，包括实时步数，活动热量，锻炼时长，活动小时数以及目标类数据。
+从5.1.1(19) Release版本开始，支持实时三环数据，包括实时步数，活动热量，锻炼时长，活动小时数以及目标类数据。
 
 说明
 
 此接口使用日常活动数据类型读权限，参考权限说明。
-
-约束与限制
-
-从5.1.1(19) Release版本开始支持。
 
 OAuth权限
 

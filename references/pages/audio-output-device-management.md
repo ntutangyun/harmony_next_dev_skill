@@ -81,7 +81,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 [h2]获取最高优先级输出设备信息
 
-使用getPreferOutputDeviceForRendererInfo方法, 可以获取当前最高优先级的输出设备。
+使用getPreferOutputDeviceForRendererInfo方法，可以获取当前最高优先级的输出设备。
 
 说明
 

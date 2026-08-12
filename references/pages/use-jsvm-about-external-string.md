@@ -20,7 +20,7 @@ OH_JSVM_CreateExternalStringUtf16	使用UTF16-LE编码的C字符串，创建一�
 
 JSVM-API接口开发流程参考使用JSVM-API实现JS与C/C++语言交互开发流程，本文仅对接口对应C++相关代码进行展示。
 
-[h2]使用接口判断是否是Number Object
+[h2]创建外部字符串
 
 cpp部分代码
 

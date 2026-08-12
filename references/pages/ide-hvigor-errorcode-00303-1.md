@@ -1124,25 +1124,23 @@ config.json中不允许js和abilities存在name字段相同的配置。
 
 确保两者之间name字段的值唯一。
 
-00303082 找不到对应的SDK
+00303082 SDK版本号不支持
 
 错误信息
 
-Unable to find the XXX in SDK Manager.
+XXX is not supported. Change it to a valid version in the available list.或Unable to find the XXX in SDK Manager.
 
 错误描述
 
-找不到compatibleSdkVersion/compileSdkVersion/targetSdkVersion对应的SDK。
+SDK版本号不支持。
 
 可能原因
 
-Hvigor和SDK版本不配套。
+配置的SDK版本号不存在。
 
 处理步骤
 
-从NEXT Developer Beta1开始，DevEco Studio提供了开箱即用的开发体验，将SDK、Node.js、Hvigor、Ohpm等工具链打包在一起，简化了DevEco Studio的安装和配置过程，并提供历史工程迁移的能力，帮助您快速完成工程转换。
-
-下载一体化DevEco Studio工具。
+支持的SDK版本请查看所有HarmonyOS开发套件版本。
 
 00303083 SDK版本号配置错误
 
@@ -1160,7 +1158,7 @@ build-profile.json5的ZZZ字段的XXX和API 版本YYY不匹配。
 
 处理步骤
 
-创建新工程时，在工程配置页面查看Compatible SDK，点击下拉框可查看所有支持的SDK版本号。
+支持的SDK版本请查看所有HarmonyOS开发套件版本。
 
 00303087 不允许动态导入工程外模块
 
@@ -4332,6 +4330,26 @@ SDK版本错误，需要升级SDK。
 在DevEco Studio中，点击错误信息中的open SDK Manager打开OpenHarmony SDK页面，将SDK版本升级到6.1.0.32或以上。
 
 流水线场景，将SDK版本升级到6.1.0.32或以上。
+
+00303315 OpenHarmony工程的modelVersion小于6.0.0时，不支持将targetSdkVersion、compatibleSdkVersion、compileSdkVersion配置为字符串
+
+错误信息
+
+The current modelVersion does not support setting targetSdkVersion, compatibleSdkVersion, or compileSdkVersion as strings.
+
+错误描述
+
+当前modelVersion不支持将targetSdkVersion、compatibleSdkVersion、compileSdkVersion设置为字符串。
+
+可能原因
+
+当前是OpenHarmony工程，并且配置的modelVersion小于6.0.0。
+
+处理步骤
+
+当API版本为10~25时，将build-profile.json5中的targetSdkVersion、compatibleSdkVersion、compileSdkVersion设置为数字。
+
+当API版本为26.0.0及以上时，将hvigor-config.json5和工程级oh-package.json5中的modelVersion升级至6.0.0或以上。
 
 00303318 SDK版本与JDK版本不匹配，需要使用低版本的JDK
 

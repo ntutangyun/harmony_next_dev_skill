@@ -16,6 +16,9 @@ Linx Kit提供实现热点加速优化的API接口，通过对线程执行过程
 
 在正式调用前，开发者应使用性能分析工具，定位进程中的热点函数/流程，以便后续进行优化。
 
+ find_library(linxkit-lib liblinx.so)
+ target_link_libraries(entry PUBLIC ${linxkit-lib})
+
 确定热点流程的源码位置后，需在该流程的入口和出口分别调用Begin和End接口，以记录并重放关键行为。
 
 可将热点函数/流程划分为多个context，仅对最重要的context实施加速策略，从而降低主存访问开销。
@@ -54,10 +57,17 @@ if (ret != 0) {
 ### Code block 1
 
 ```
-#include "LinxKit/linx_hotspot.h"
+ find_library(linxkit-lib liblinx.so)
+ target_link_libraries(entry PUBLIC ${linxkit-lib})
 ```
 
 ### Code block 2
+
+```
+#include "LinxKit/linx_hotspot.h"
+```
+
+### Code block 3
 
 ```
 int32_t ret = HMS_LINX_HotspotAccelerateInit();
@@ -66,7 +76,7 @@ if (ret != 0) {
 }
 ```
 
-### Code block 3
+### Code block 4
 
 ```
 uint32_t ctx = g_ctx;
@@ -77,7 +87,7 @@ if (ret != 0) {
 }
 ```
 
-### Code block 4
+### Code block 5
 
 ```
 ret = HMS_LINX_HotspotAccelerateEnd(ctx);

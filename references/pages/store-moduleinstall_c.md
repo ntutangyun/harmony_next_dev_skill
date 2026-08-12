@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-mod
 
 应用需要上架应用市场。
 
-产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
+产品特性按需分发功能支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
 
 使用按需分发前，需先将应用拆分为基础包与增强功能模块，详细操作请参考模块管理。
 

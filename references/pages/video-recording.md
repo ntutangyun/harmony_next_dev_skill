@@ -89,10 +89,10 @@ public async prepareVideoRecorder(context: common.Context): Promise<void> {
       videoFrameHeight: this.videoResolution.frameHeight, // 视频分辨率的高。
       videoFrameRate: 30, // 视频帧率。
       fileFormat: media.ContainerFormatType.CFT_MPEG_4 // 封装格式。
-    },
+    } as media.AVRecorderProfile,
     metadata: {
       videoOrientation: '90' // 视频旋转角度，默认为0不旋转，支持的值为0、90、180、270。
-    },
+    } as media.AVMetadata,
     url: 'fd://' + file.fd.toString()
   };
 
@@ -152,10 +152,10 @@ await this.avRecorder?.release();
 
 参考以下示例，完成“开始录制-暂停录制-恢复录制-停止录制”的完整流程。
 
-import { BusinessError } from '@ohos.base';
-import media from '@ohos.multimedia.media';
-import fileIo from '@ohos.file.fs';
-import common from '@ohos.app.ability.common';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { media } from '@kit.MediaKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { common } from '@kit.AbilityKit';
 import { Resolution } from './CommonTypes';
 
 export default class AVRecorderService {
@@ -206,10 +206,10 @@ export default class AVRecorderService {
         videoFrameHeight: this.videoResolution.frameHeight, // 视频分辨率的高。
         videoFrameRate: 30, // 视频帧率。
         fileFormat: media.ContainerFormatType.CFT_MPEG_4 // 封装格式。
-      },
+      } as media.AVRecorderProfile,
       metadata: {
         videoOrientation: '90' // 视频旋转角度，默认为0不旋转，支持的值为0、90、180、270。
-      },
+      } as media.AVMetadata,
       url: 'fd://' + file.fd.toString()
     };
 
@@ -353,10 +353,10 @@ public async prepareVideoRecorder(context: common.Context): Promise<void> {
       videoFrameHeight: this.videoResolution.frameHeight, // 视频分辨率的高。
       videoFrameRate: 30, // 视频帧率。
       fileFormat: media.ContainerFormatType.CFT_MPEG_4 // 封装格式。
-    },
+    } as media.AVRecorderProfile,
     metadata: {
       videoOrientation: '90' // 视频旋转角度，默认为0不旋转，支持的值为0、90、180、270。
-    },
+    } as media.AVMetadata,
     url: 'fd://' + file.fd.toString()
   };
 
@@ -424,10 +424,10 @@ await this.avRecorder?.release();
 ### Code block 11
 
 ```
-import { BusinessError } from '@ohos.base';
-import media from '@ohos.multimedia.media';
-import fileIo from '@ohos.file.fs';
-import common from '@ohos.app.ability.common';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { media } from '@kit.MediaKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { common } from '@kit.AbilityKit';
 import { Resolution } from './CommonTypes';
 
 export default class AVRecorderService {
@@ -478,10 +478,10 @@ export default class AVRecorderService {
         videoFrameHeight: this.videoResolution.frameHeight, // 视频分辨率的高。
         videoFrameRate: 30, // 视频帧率。
         fileFormat: media.ContainerFormatType.CFT_MPEG_4 // 封装格式。
-      },
+      } as media.AVRecorderProfile,
       metadata: {
         videoOrientation: '90' // 视频旋转角度，默认为0不旋转，支持的值为0、90、180、270。
-      },
+      } as media.AVMetadata,
       url: 'fd://' + file.fd.toString()
     };
 

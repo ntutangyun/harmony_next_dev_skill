@@ -557,8 +557,6 @@ devecocli skills remove --skill skillname --agent agentname  # skillname需替�
 
 serve mcp
 
-serve mcp
-
 启动本地MCP服务。智能体配置MCP服务后，可通过MCP协议调用ArkTS/C++语法检查工具。不同智能体平台配置MCP服务的界面不一样，一个智能平台的配置示例如下。
 
 推荐通过devecocli init --mcp自动配置。

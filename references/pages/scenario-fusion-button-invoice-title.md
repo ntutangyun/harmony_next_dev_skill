@@ -10,7 +10,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 
 前提条件
 
-参见开发前提。
+应用开发前提条件，参见开发前提。
+
+元服务应用开发前提条件，参见开发前提。
 
 开发步骤
 

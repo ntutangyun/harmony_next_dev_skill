@@ -345,7 +345,7 @@ import { ColorMetrics } from '@kit.ArkUI';
 
 @Entry
 @Component
-struct Page {
+struct CanvasContentSetOnVisibleAreaApproximateChange {
   private canvasContext: CanvasRenderingContext2D = new CanvasRenderingContext2D()
   private timerId: number = -1;
 
@@ -375,22 +375,22 @@ struct Page {
           let frameNode = this.canvasContext.canvas;
           frameNode.commonEvent.setOnVisibleAreaApproximateChange({ ratios: [0.0] },
             (isVisible: boolean, currentRatio: number) => {
-            // canvas不可见
-            if (!isVisible && currentRatio <= 0) {
-              clearInterval(this.timerId)
-              this.timerId = -2
-            }
-            // canvas可见
-            if (isVisible) {
-              if (this.timerId == -2) {
-                this.timerId = setInterval(() => {
-                  this.drawRandomCircle()
-                }, 500)
+              // canvas不可见
+              if (!isVisible && currentRatio <= 0) {
+                clearInterval(this.timerId)
+                this.timerId = -2
               }
-            }
-          })
+              // canvas可见
+              if (isVisible) {
+                if (this.timerId == -2) {
+                  this.timerId = setInterval(() => {
+                    this.drawRandomCircle()
+                  }, 500)
+                }
+              }
+            })
         })
-      Button("draw sth")
+      Button('draw sth')
         .onClick(() => {
           if (this.timerId < 0) {
             this.timerId = setInterval(() => {
@@ -410,7 +410,7 @@ import { ColorMetrics } from '@kit.ArkUI';
 
 @Entry
 @Component
-struct Page {
+struct CanvasContentOnVisibleAreaApproximateChange {
   private canvasContext: CanvasRenderingContext2D = new CanvasRenderingContext2D()
   private timerId: number = -1;
 
@@ -437,22 +437,22 @@ struct Page {
         .width(300)
         .height(300)
         .onVisibleAreaApproximateChange({ ratios: [0.0] },
-            (isVisible: boolean, currentRatio: number) => {
-              // canvas不可见
-              if (!isVisible && currentRatio <= 0) {
-                clearInterval(this.timerId)
-                this.timerId = -2
+          (isVisible: boolean, currentRatio: number) => {
+            // canvas不可见
+            if (!isVisible && currentRatio <= 0) {
+              clearInterval(this.timerId)
+              this.timerId = -2
+            }
+            // canvas可见
+            if (isVisible) {
+              if (this.timerId == -2) {
+                this.timerId = setInterval(() => {
+                  this.drawRandomCircle()
+                }, 500)
               }
-              // canvas可见
-              if (isVisible) {
-                if (this.timerId == -2) {
-                  this.timerId = setInterval(() => {
-                    this.drawRandomCircle()
-                  }, 500)
-                }
-              }
-            })
-      Button("draw sth")
+            }
+          })
+      Button('draw sth')
         .onClick(() => {
           if (this.timerId < 0) {
             this.timerId = setInterval(() => {
@@ -1051,7 +1051,7 @@ import { ColorMetrics } from '@kit.ArkUI';
 
 @Entry
 @Component
-struct Page {
+struct CanvasContentSetOnVisibleAreaApproximateChange {
   private canvasContext: CanvasRenderingContext2D = new CanvasRenderingContext2D()
   private timerId: number = -1;
 
@@ -1081,22 +1081,22 @@ struct Page {
           let frameNode = this.canvasContext.canvas;
           frameNode.commonEvent.setOnVisibleAreaApproximateChange({ ratios: [0.0] },
             (isVisible: boolean, currentRatio: number) => {
-            // canvas不可见
-            if (!isVisible && currentRatio <= 0) {
-              clearInterval(this.timerId)
-              this.timerId = -2
-            }
-            // canvas可见
-            if (isVisible) {
-              if (this.timerId == -2) {
-                this.timerId = setInterval(() => {
-                  this.drawRandomCircle()
-                }, 500)
+              // canvas不可见
+              if (!isVisible && currentRatio <= 0) {
+                clearInterval(this.timerId)
+                this.timerId = -2
               }
-            }
-          })
+              // canvas可见
+              if (isVisible) {
+                if (this.timerId == -2) {
+                  this.timerId = setInterval(() => {
+                    this.drawRandomCircle()
+                  }, 500)
+                }
+              }
+            })
         })
-      Button("draw sth")
+      Button('draw sth')
         .onClick(() => {
           if (this.timerId < 0) {
             this.timerId = setInterval(() => {
@@ -1118,7 +1118,7 @@ import { ColorMetrics } from '@kit.ArkUI';
 
 @Entry
 @Component
-struct Page {
+struct CanvasContentOnVisibleAreaApproximateChange {
   private canvasContext: CanvasRenderingContext2D = new CanvasRenderingContext2D()
   private timerId: number = -1;
 
@@ -1145,22 +1145,22 @@ struct Page {
         .width(300)
         .height(300)
         .onVisibleAreaApproximateChange({ ratios: [0.0] },
-            (isVisible: boolean, currentRatio: number) => {
-              // canvas不可见
-              if (!isVisible && currentRatio <= 0) {
-                clearInterval(this.timerId)
-                this.timerId = -2
+          (isVisible: boolean, currentRatio: number) => {
+            // canvas不可见
+            if (!isVisible && currentRatio <= 0) {
+              clearInterval(this.timerId)
+              this.timerId = -2
+            }
+            // canvas可见
+            if (isVisible) {
+              if (this.timerId == -2) {
+                this.timerId = setInterval(() => {
+                  this.drawRandomCircle()
+                }, 500)
               }
-              // canvas可见
-              if (isVisible) {
-                if (this.timerId == -2) {
-                  this.timerId = setInterval(() => {
-                    this.drawRandomCircle()
-                  }, 500)
-                }
-              }
-            })
-      Button("draw sth")
+            }
+          })
+      Button('draw sth')
         .onClick(() => {
           if (this.timerId < 0) {
             this.timerId = setInterval(() => {

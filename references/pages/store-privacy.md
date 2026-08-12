@@ -70,7 +70,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/store-pri
 
 应用/元服务需要接入隐私声明托管服务。
 
-隐私管理服务支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
+隐私管理服务支持Phone、Tablet、PC/2in1设备。并且从5.1.1(19)版本开始，新增支持TV设备。
 
 隐私管理服务暂不支持模拟器，请使用真机调试。
 

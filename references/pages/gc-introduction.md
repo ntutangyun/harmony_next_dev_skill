@@ -253,7 +253,7 @@ MachineCodeSpace：机器码空间，存放程序机器码。
 
 根据系统分配堆空间总大小64MB-128MB/128MB-256MB/大于256MB的三个范围，以下参数系统会设置不同的大小。如果表格内范围仅有一个值，则表示该参数值不随堆空间总大小变化。手机设备堆空间总大小默认为大于256MB。
 
-开发者可以查阅hidebug接口文档，使用相关接口查询内存信息。
+开发者可以查阅@ohos.hidebug，使用相关接口查询内存信息。
 
 堆大小相关参数
 
@@ -499,8 +499,9 @@ struct Index {
         Text(this.message)
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
-        Button("触发HintGC").onClick((event: ClickEvent) => {
+        Button('触发HintGC').onClick((event: ClickEvent) => {
           ArkTools.hintGC(); // 方法内直接调用
+          this.message = 'Success';
         })
       }
       .width('100%')
@@ -655,8 +656,9 @@ struct Index {
         Text(this.message)
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
-        Button("触发HintGC").onClick((event: ClickEvent) => {
+        Button('触发HintGC').onClick((event: ClickEvent) => {
           ArkTools.hintGC(); // 方法内直接调用
+          this.message = 'Success';
         })
       }
       .width('100%')

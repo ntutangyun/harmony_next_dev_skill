@@ -267,7 +267,7 @@ NDKCamera::NDKCamera(char* previewId, char* videoId)
         return;
     }
 
-    // 创建预览输出流,其中参数 surfaceId 参考下面 XComponent 组件，预览流为XComponent组件提供的surface。
+    // 创建预览输出流，其中参数 surfaceId 参考下面 XComponent 组件，预览流为XComponent组件提供的surface。
     ret = OH_CameraManager_CreatePreviewOutput(cameraManager, previewProfile, previewSurfaceId, &previewOutput);
     if (previewProfile == nullptr || previewOutput == nullptr || ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "OH_CameraManager_CreatePreviewOutput failed.");
@@ -646,7 +646,7 @@ NDKCamera::NDKCamera(char* previewId, char* videoId)
         return;
     }
 
-    // 创建预览输出流,其中参数 surfaceId 参考下面 XComponent 组件，预览流为XComponent组件提供的surface。
+    // 创建预览输出流，其中参数 surfaceId 参考下面 XComponent 组件，预览流为XComponent组件提供的surface。
     ret = OH_CameraManager_CreatePreviewOutput(cameraManager, previewProfile, previewSurfaceId, &previewOutput);
     if (previewProfile == nullptr || previewOutput == nullptr || ret != CAMERA_OK) {
         OH_LOG_ERROR(LOG_APP, "OH_CameraManager_CreatePreviewOutput failed.");

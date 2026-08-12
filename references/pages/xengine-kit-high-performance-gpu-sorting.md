@@ -122,7 +122,11 @@ XEG_HPSCreateInfo info {
     &sortInfo
 };
 // 实例化句柄
-HMS_XEG_CreateHPS(device, &info, &xegHPS);
+VkResult res = HMS_XEG_CreateHPS(device, &info, &xegHPS);
+if (res != VK_SUCCESS) {
+    // 错误处理
+    // ...
+}
 
 构造排序描述符，调用HMS_XEG_CmdRadixSortHPS接口录制排序命令。
 
@@ -138,7 +142,11 @@ XEG_HPSRadixSortDescription sortDescription{
     keyBuffer,
     indexBuffer
 };
-HMS_XEG_CmdRadixSortHPS(cmdBuffer, xegHPS, &sortDescription);
+VkResult res = HMS_XEG_CmdRadixSortHPS(cmdBuffer, xegHPS, &sortDescription);
+if (res != VK_SUCCESS) {
+    // 错误处理
+    // ...
+}
 vkEndCommandBuffer(cmdBuffer);
 
 提交排序命令。
@@ -249,7 +257,11 @@ XEG_HPSCreateInfo info {
     &sortInfo
 };
 // 实例化句柄
-HMS_XEG_CreateHPS(device, &info, &xegHPS);
+VkResult res = HMS_XEG_CreateHPS(device, &info, &xegHPS);
+if (res != VK_SUCCESS) {
+    // 错误处理
+    // ...
+}
 ```
 
 ### Code block 7
@@ -267,7 +279,11 @@ XEG_HPSRadixSortDescription sortDescription{
     keyBuffer,
     indexBuffer
 };
-HMS_XEG_CmdRadixSortHPS(cmdBuffer, xegHPS, &sortDescription);
+VkResult res = HMS_XEG_CmdRadixSortHPS(cmdBuffer, xegHPS, &sortDescription);
+if (res != VK_SUCCESS) {
+    // 错误处理
+    // ...
+}
 vkEndCommandBuffer(cmdBuffer);
 ```
 

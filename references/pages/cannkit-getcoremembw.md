@@ -24,7 +24,7 @@ void GetCoreMemBw(const CoreMemType &memType, uint64_t &bwSize) const;
 参数说明
 
 参数	输入/输出	说明
-memType	输入	硬件存储空间类型。
+memType	输入	硬件存储空间类型，仅支持L2、HBM。
 bwSize	输出	对应硬件的存储空间的带宽大小。单位是Byte/cycle，cycle代表时钟周期。
 
 返回值

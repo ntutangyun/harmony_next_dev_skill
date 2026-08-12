@@ -38,88 +38,39 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 使用Promise异步回调：
 
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// 定义一个接口接收函数返回值
-interface Res {
-  value: string
-}
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
+cloudFunction.call({
+  name: 'sort', // sort需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
   }
-
-  callFunctionWithPromise() {
-    cloudFunction.call({
-      name: 'sort', // sort需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      }
-    }).then((res: cloudFunction.FunctionResult) => {
-      let currentRes = res.result as Res;
-      this.sort = currentRes.value;
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
-    });
-  }
-
-  // ...
-}
+}).then((res: cloudFunction.FunctionResult) => {
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'function', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+});
 
 或者，使用callback异步回调：
 
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// 定义一个接口接收函数返回值
-interface Res {
-  value: string
-}
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
+cloudFunction.call({
+  name: 'sort-id', // sort-id需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
   }
-
-  // ...
-  callFunctionWithCallBack() {
-    cloudFunction.call({
-      name: 'sort-id', // sort-id需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为毫秒，默认为70*1000毫秒。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      }
-    }, (err: BusinessError, data: cloudFunction.FunctionResult) => {
-      if (err) {
-        hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
-        return;
-      }
-      let currentRes = data.result as Res;
-      this.sort = currentRes.value;
-    });
+}, (err: BusinessError, res: cloudFunction.FunctionResult) => {
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+  if (err) {
+    hilog.error(0x0000, 'function', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+    return;
   }
-
-  // ...
-}
+});
 
 ## Code blocks
 
@@ -144,88 +95,39 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 ### Code block 3
 
 ```
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// 定义一个接口接收函数返回值
-interface Res {
-  value: string
-}
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
+cloudFunction.call({
+  name: 'sort', // sort需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
   }
-
-  callFunctionWithPromise() {
-    cloudFunction.call({
-      name: 'sort', // sort需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      }
-    }).then((res: cloudFunction.FunctionResult) => {
-      let currentRes = res.result as Res;
-      this.sort = currentRes.value;
-    }).catch((err: BusinessError) => {
-      hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
-    });
-  }
-
-  // ...
-}
+}).then((res: cloudFunction.FunctionResult) => {
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+}).catch((err: BusinessError) => {
+  hilog.error(0x0000, 'function', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+});
 ```
 
 ### Code block 4
 
 ```
-import { cloudFunction } from '@kit.CloudFoundationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-// 定义一个接口接收函数返回值
-interface Res {
-  value: string
-}
-
-@Entry
-@Component
-struct FunctionPage {
-  @State sort: string = '';
-
-  build() {
-    // ...
+cloudFunction.call({
+  name: 'sort-id', // sort-id需替换为实际的函数名
+  version: '$latest', // 如果不传入版本号，默认为“$latest”。
+  timeout: 10 * 1000, // 单位为ms，默认为70*1000ms。
+  data: {
+    // data为函数请求体
+    param1: 'val1',
+    param2: 'val2'
   }
-
-  // ...
-  callFunctionWithCallBack() {
-    cloudFunction.call({
-      name: 'sort-id', // sort-id需替换为实际的函数名
-      version: '$latest', // 如果不传入版本号，默认为“$latest”。
-      timeout: 10 * 1000, // 单位为毫秒，默认为70*1000毫秒。
-      data: {
-        // data为函数请求体
-        param1: 'val1',
-        param2: 'val2'
-      }
-    }, (err: BusinessError, data: cloudFunction.FunctionResult) => {
-      if (err) {
-        hilog.error(0x0000, 'testTag', `Failed to call function , code: ${err.code}, message: ${err.message}`);
-        return;
-      }
-      let currentRes = data.result as Res;
-      this.sort = currentRes.value;
-    });
+}, (err: BusinessError, res: cloudFunction.FunctionResult) => {
+  hilog.info(0x0000, 'function', `Succeeded in calling the function, result: ${JSON.stringify(res.result)}`);
+  if (err) {
+    hilog.error(0x0000, 'function', `Failed to call function , code: ${err.code}, message: ${err.message}`);
+    return;
   }
-
-  // ...
-}
+});
 ```

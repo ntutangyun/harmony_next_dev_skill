@@ -77,7 +77,7 @@ OH_AVCapability *capability = OH_AVCodec_GetCapability(OH_AVCODEC_MIMETYPE_AUDIO
 const char *name = OH_AVCapability_GetName(capability);
 OH_AVCodec *audioEnc_ = OH_AudioCodec_CreateByName(name);
 
-添加头文件和命名空间:
+添加头文件和命名空间：
 
 #include <mutex>
 #include <queue>

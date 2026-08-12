@@ -56,7 +56,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 接口名	描述
 int32_t HMS_SecurityAudit_NewAuthClient(SecurityAudit_AuthClient** client, SecurityAudit_Handler handler);	创建审计阻断类事件管理对象AuthClient，AuthClient提供订阅、解订阅、增加事件过滤、移除事件过滤、阻断功能。超时默认放行。
-int32_t HMS_SecurityAudit_NewAuthClientWithConfiguration(SecurityAudit_AuthClient** outOwnedClient, SecurityAudit_Handler handler, SecurityAudit_AuthClientConfiguration* configuration);	创建一个新的阻断类事件客户端，可配置超时默认阻断策略。 起始版本： 26.0.0
+int32_t HMS_SecurityAudit_NewAuthClientWithConfiguration(SecurityAudit_AuthClient** outOwnedClient, SecurityAudit_Handler handler, const SecurityAudit_AuthClientConfiguration* configuration);	创建一个新的阻断类事件客户端，可配置超时默认阻断策略。 起始版本： 26.0.0
 int32_t HMS_SecurityAudit_DeleteAuthClient(SecurityAudit_AuthClient* client);	删除审计阻断类事件管理对象。
 int32_t HMS_SecurityAudit_SubscribeAuthEvent(const SecurityAudit_AuthClient* client, const SecurityAudit_Auth_Event *events, uint64_t count);	订阅审计阻断类事件。
 int32_t HMS_SecurityAudit_UnsubscribeAuthEvent(const SecurityAudit_AuthClient* client, const SecurityAudit_Auth_Event *events, uint64_t count);	解订阅审计阻断类事件。

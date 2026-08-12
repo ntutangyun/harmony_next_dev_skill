@@ -7,3 +7,5 @@ Sensor Service Kit开发简介
 传感器
 
 振动
+
+Sensor Service Kit术语

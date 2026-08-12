@@ -187,6 +187,13 @@ function sum(num: number): number {
 
 优化后的代码示例：
 
+function divBetter(a: number, b: number): number {
+  if (a <= 0 || b <= 0) {
+    return NaN;
+  }
+  return a / b;
+}
+
 function sumBetter(num: number): number {
   let sum = 0;
   for (let t = 1; t < 100; t++) {
@@ -373,6 +380,13 @@ function sum(num: number): number {
 ### Code block 15
 
 ```
+function divBetter(a: number, b: number): number {
+  if (a <= 0 || b <= 0) {
+    return NaN;
+  }
+  return a / b;
+}
+
 function sumBetter(num: number): number {
   let sum = 0;
   for (let t = 1; t < 100; t++) {

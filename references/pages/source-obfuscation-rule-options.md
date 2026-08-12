@@ -248,7 +248,7 @@ class TestA { static prop1: number = 0; } TestA.prop1;
 
 说明
 
-release模式构建的应用堆栈信息仅包含代码行号，不包含列号，因此-compact功能开启后无法依据报错堆栈中的行号定位到源码具体位置。
+release模式构建的应用堆栈信息仅包含代码行号，不包含列号，因此-compact功能开启后无法依据报错堆栈中的行号精确定位到源码中的具体语句位置。
 
 若希望对部分源码路径仍保留换行（便于对照报错栈行号阅读混淆中间产物），可在开启-compact的同时，使用-keep-uncompact指定不参与压缩的源码路径。
 
@@ -401,7 +401,7 @@ enum Test2 {
 
 -extra-options strip-language-default
 
-混淆的预置语言白名单中默认包含了typescript的系统接口中关于dom、webworker、scripthost等API的名称以及Web API的名称。如果开发者源码中的属性与这部分名称重名，混淆工具会对这些属性进行保留。
+混淆的预置语言白名单中默认包含了TypeScript的系统接口中关于DOM、WebWorker、ScriptHost等API的名称以及Web API的名称。如果开发者源码中的属性与这部分名称重名，混淆工具会对这些属性进行保留。
 
 如果开发者需要混淆这部分代码，需要配置-extra-options strip-language-default选项。
 

@@ -4,15 +4,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoun
 
 C
 
-[h2]Calculate Query；算术计算查询
-
-对查询结果中的字段进行算术计算（求和、平均值、最大值等）的查询方式。
-
-[h2]Cloud Database；云数据库
+[h2]Cloud DB；云数据库
 
 Cloud Foundation Kit提供的云端数据库服务，提供数据存储和查询能力，适用于需要实时数据协作的场景。
 
-[h2]Cloud Function；云函数
+[h2]Cloud DB Zone；数据库存储区
+
+云数据库中的逻辑存储单元，用于对数据进行分区管理。
+
+[h2]Cloud Functions；云函数
 
 Cloud Foundation Kit提供的云端函数Serverless计算服务，开发者只需聚焦业务逻辑，使用函数开发核心业务代码并上传到云端，云端接管函数的运行并保证资源的高可用与伸缩。
 
@@ -21,14 +21,6 @@ Cloud Foundation Kit提供的云端函数Serverless计算服务，开发者只�
 Cloud Foundation Kit提供的云端文件存储服务，支持上传、下载、管理文件，适用于存储用户生成的内容或静态资源。
 
 D
-
-[h2]Database Object；数据库对象
-
-云数据库中对象类型的基类，每一个对象，都是一条完整的数据记录。开发者定义的实体类需继承此类来实现数据操作能力。
-
-[h2]Database Zone；数据库存储区
-
-云数据库中的逻辑存储单元，用于对数据进行分区管理，一个云数据库实例最多支持创建4个存储区。
 
 [h2]Debug Credential；调试凭据
 

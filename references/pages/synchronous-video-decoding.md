@@ -49,7 +49,7 @@ target_link_libraries(sample PUBLIC libnative_media_vdec.so)
 #include <shared_mutex>
 #include <string.h>
 
-全局变量（仅作参考，可以根据实际情况将其封装到对象中）。
+定义全局变量（仅作示例，具体参数值，请据能力查询接口获取相应值范围来参考配置）。
 
 // 视频帧宽度。
 int32_t width = 320;
@@ -197,6 +197,7 @@ bool DecoderInput(OH_AVCodec *videoDec, int64_t timeoutUs)
             info.size = size;
             info.offset = offset;
             info.pts = pts;
+            // 创建时确保inFile_正确打开。
             if (inFile_->eof()) {
                 info.flags = AVCODEC_BUFFER_FLAGS_EOS;
             } else {
@@ -777,6 +778,7 @@ bool DecoderInput(OH_AVCodec *videoDec, int64_t timeoutUs)
             info.size = size;
             info.offset = offset;
             info.pts = pts;
+            // 创建时确保inFile_正确打开。
             if (inFile_->eof()) {
                 info.flags = AVCODEC_BUFFER_FLAGS_EOS;
             } else {

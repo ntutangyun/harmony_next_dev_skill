@@ -239,12 +239,12 @@ import('../Calc').then((ns: ESObject) => {
 
 HAP常量动态import自己的Native库
 
-// libnativeapi.so's index.d.ts
+// libentry.so's index.d.ts
 export const add: (a: number, b: number) => number;
 
 // HAP's src/main/ets/pages/Index.ets
 import('libentry.so').then((ns: ESObject) => {
-  console.info('DynamicImport libnativeapi.so: ' + ns.default.add(2, 3));
+  console.info('DynamicImport libentry.so: ' + ns.default.add(2, 3));
 });
 
 // HAP's oh-package.json5
@@ -271,7 +271,7 @@ import('@ohos.matrix4').then((ns: ESObject) => {
 // ...
 import('@ohos.hilog').then((ns: ESObject) => {
   ns.default.info(0x0000, 'testTag', '%{public}s', 'DynamicImport @ohos.hilog.');
-  hilog.info(0x000, 'testTag', '%{public}s', ns.default.LogLevel.DEBUG);
+  hilog.info(0x000, 'testTag', '%{public}d', ns.default.LogLevel.DEBUG);
 });
 
 [h2]动态import变量表达式
@@ -481,13 +481,13 @@ import(calcFilePath).then((ns: ESObject) => {
 
 HAP变量动态import自己的Native库
 
-// libnativeapi.so's index.d.ts
+// libentry.so's index.d.ts
 export const add: (a: number, b: number) => number;
 
 // HAP's src/main/ets/pages/Index.ets
 let soName = 'libentry.so';
 import(soName).then((ns: ESObject) => {
-  console.info('DynamicImport libnativeapi.so: ' + ns.default.add(2, 3));
+  console.info('DynamicImport libentry.so: ' + ns.default.add(2, 3));
 });
 
 // HAP's oh-package.json5
@@ -1038,7 +1038,7 @@ import('../Calc').then((ns: ESObject) => {
 ### Code block 24
 
 ```
-// libnativeapi.so's index.d.ts
+// libentry.so's index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 
@@ -1047,7 +1047,7 @@ export const add: (a: number, b: number) => number;
 ```
 // HAP's src/main/ets/pages/Index.ets
 import('libentry.so').then((ns: ESObject) => {
-  console.info('DynamicImport libnativeapi.so: ' + ns.default.add(2, 3));
+  console.info('DynamicImport libentry.so: ' + ns.default.add(2, 3));
 });
 ```
 
@@ -1080,7 +1080,7 @@ import('@ohos.matrix4').then((ns: ESObject) => {
 // ...
 import('@ohos.hilog').then((ns: ESObject) => {
   ns.default.info(0x0000, 'testTag', '%{public}s', 'DynamicImport @ohos.hilog.');
-  hilog.info(0x000, 'testTag', '%{public}s', ns.default.LogLevel.DEBUG);
+  hilog.info(0x000, 'testTag', '%{public}d', ns.default.LogLevel.DEBUG);
 });
 ```
 
@@ -1340,7 +1340,7 @@ import(calcFilePath).then((ns: ESObject) => {
 ### Code block 47
 
 ```
-// libnativeapi.so's index.d.ts
+// libentry.so's index.d.ts
 export const add: (a: number, b: number) => number;
 ```
 
@@ -1350,7 +1350,7 @@ export const add: (a: number, b: number) => number;
 // HAP's src/main/ets/pages/Index.ets
 let soName = 'libentry.so';
 import(soName).then((ns: ESObject) => {
-  console.info('DynamicImport libnativeapi.so: ' + ns.default.add(2, 3));
+  console.info('DynamicImport libentry.so: ' + ns.default.add(2, 3));
 });
 ```
 

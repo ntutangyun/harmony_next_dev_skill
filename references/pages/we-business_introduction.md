@@ -72,9 +72,7 @@ Wear Engine使应用能快速便捷地接入华为穿戴设备，为开发者提
 
 [h2]支持的设备
 
-本Kit适用于Phone和Tablet。
-
-从5.1.0(18)版本开始支持Wearable，6.1.1(24)版本开始支持Lite Wearable。
+本Kit适用于Phone、Tablet、Wearable、Lite Wearable。
 
 [h2]支持的国家/地区
 

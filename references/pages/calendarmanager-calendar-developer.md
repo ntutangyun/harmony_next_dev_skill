@@ -90,8 +90,6 @@ export default class EntryAbility extends UIAbility {
 
 根据日历账户信息，创建一个日历账户Calendar对象。
 
-创建日历账户之前，开发者需要先根据账户信息进行查询，如果账户不存在则抛出异常信息，捕获到异常再进行日历账户的创建，否则可能会出现账户重复创建的问题。
-
 import { BusinessError } from '@kit.BasicServicesKit';
 import { calendarMgr } from '../entryability/EntryAbility';
 import { calendarManager } from '@kit.CalendarKit';

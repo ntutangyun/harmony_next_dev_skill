@@ -112,7 +112,7 @@ ohos.permission.ACCESS_NEARLINK
 
 ohos.permission.DISTRIBUTED_DATASYNC
 
-剪切板
+剪贴板
 
 ohos.permission.READ_PASTEBOARD
 

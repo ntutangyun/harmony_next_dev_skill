@@ -6,11 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/customize
 
 能力配置说明
 
-准备一个操作方舟字节码文件的动态库文件，在工程的配置文件build-profile.json5中配置编译选项transformLib，选项值为这个动态库的路径，编译器会在指定时机加载该动态库，并执行其中指定的Transform方法。
+准备一个操作方舟字节码文件的动态库文件，在工程的配置文件build-profile.json5中配置编译选项transformLib，选项值为这个动态库的路径。编译器会在编译过程中加载该动态库，调用其中的Transform方法，并在Transform方法执行完成后卸载该动态库。
 
 能力执行机制
 
-如果配置了transformLib且对应的动态库文件能正确加载，编译器将先生成方舟字节码文件到默认目标位置，然后调用动态库中的Transform方法，并将方舟字节码文件的路径作为参数传入。Transform方法包含开发者自定义的修改逻辑，用于重新生成方舟字节码文件，同时更新字节码文件的落盘操作是由用户执行。
+如果配置了transformLib且对应的动态库文件能正确加载，编译器将先生成方舟字节码文件到默认目标位置，然后调用动态库中的Transform方法，并将方舟字节码文件的路径作为参数传入。Transform方法包含开发者自定义的修改逻辑，用于对编译器传入的方舟字节码文件进行插桩或其他修改。开发者需要在Transform方法中通过字节码文件写入接口，将修改后的内容写回编译器传入的方舟字节码文件。一次编译生成多个方舟字节码文件时，编译器会分别调用Transform方法处理每个方舟字节码文件，并传入当前文件的路径。包含卡片的工程中，卡片对应的方舟字节码文件同样支持插桩。
 
 以下提供动态库模板，开发者可根据需求实现Transform逻辑。
 
@@ -20,14 +20,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/customize
 
 example.cpp：
 
+#include <cstdlib>
+
 /**
  * @brief 方舟字节码文件修改的入口方法
  * @param abc_path 待处理的方舟字节码文件的存储路径
+ * @return 返回0（EXIT_SUCCESS）表示字节码文件修改成功，返回非0值表示修改失败。
  */
 extern "C" int Transform(const char *abc_path)
 {
     // 开发者可以在这里读取abc_path对应的方舟字节码文件，然后根据方舟字节码格式修改相关数据，然后再重新生成方舟字节码文件
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 使用C语言编译工具（这里使用g++）编译动态库。
@@ -55,14 +58,17 @@ g++ --shared -o example.so example.cpp
 ### Code block 1
 
 ```
+#include <cstdlib>
+
 /**
  * @brief 方舟字节码文件修改的入口方法
  * @param abc_path 待处理的方舟字节码文件的存储路径
+ * @return 返回0（EXIT_SUCCESS）表示字节码文件修改成功，返回非0值表示修改失败。
  */
 extern "C" int Transform(const char *abc_path)
 {
     // 开发者可以在这里读取abc_path对应的方舟字节码文件，然后根据方舟字节码格式修改相关数据，然后再重新生成方舟字节码文件
-    return 0;
+    return EXIT_SUCCESS;
 }
 ```
 

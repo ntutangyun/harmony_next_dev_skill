@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hp-ar
 
 建议设置合理的拖动距离。
 
-应用内点击响应时延场景下，建议优先修改。
+应用内点击响应时延场景，建议优先修改。
 
 规则配置
 

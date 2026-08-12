@@ -4,11 +4,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-fault
 
 从DevEco Studio 6.0.0 Beta1版本开始，支持对Cpp Crash类型的FaultLog，进行结构化展示和日志过滤。
 
-页面上方的字段对应了FaultLog中的字段，具体对应关系请查看字段说明。
+页面上方的字段对应了FaultLog中的字段，具体对应关系请参考字段说明。
 
 Stacks：展示线程的堆栈信息，具体请参考查看堆栈信息。
 
-Logs：展示FaultLog中的HiLog日志，具体请查看查看HiLog日志。
+Logs：展示FaultLog中的HiLog日志，具体请参考查看HiLog日志。
 
 字段说明
 

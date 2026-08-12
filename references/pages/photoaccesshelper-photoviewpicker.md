@@ -13,7 +13,7 @@ Media Library Kit提供图片和视频的管理能力，当需要读取和保存
 import { fileIo } from '@kit.CoreFileKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 
-创建图片-音频类型文件选择选项实例。
+创建图片-视频类型文件选择选项实例。
 
 const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
 

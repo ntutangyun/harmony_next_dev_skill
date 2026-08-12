@@ -29,7 +29,11 @@ sleb128	leb128编码的有符号整数。
 
 名称	格式	说明
 utf16_length	uleb128	值为len << 1 | is_ascii，其中len是字符串在UTF-16编码中的大小，is_ascii标记该字符串是否仅包含ASCII字符。
-data	uint8_t[]	以'\0'结尾的MUTF-8编码字符序列。
+data	uint8_t[]	以'\0'结尾的MUTF-8（Modified UTF-8）编码字符序列。
+
+说明
+
+MUTF-8是标准UTF-8的变体，主要差异为：使用双字节序列编码U+0000空字符，以及使用代理对编码大于U+FFFF的补充字符。
 
 [h2]TaggedValue
 
@@ -49,7 +53,7 @@ TypeDescriptor是类（Class）名称的格式，由'L'、'_'、ClassName和';'�
 
 字节码文件起始于Header结构。文件中的所有结构均可以从Header出发，直接或间接地访问到。字节码文件中结构的引用方式包括偏移量和索引。偏移量是一个32位长度的值，表示当前结构的起始位置在字节码文件中相对于文件头的字节偏移量，从0开始计算。索引是一个16位长度的值，表示当前结构在索引区域中的位置，此机制将在IndexSection章节描述。
 
-字节码文件中所有多字节数值类型（如u16、u32和i32等）均采用小端字节序（Little-endian）存储。
+字节码文件中所有多字节数值类型（如uint16_t、uint32_t等）均采用小端字节序（Little-endian）存储。
 
 [h2]Header
 
@@ -272,6 +276,10 @@ start_pc	uleb128	TryBlock的第一条指令距离其所在Code的instructions的
 length	uleb128	TryBlock的大小，以字节为单位。
 num_catches	uleb128	与TryBlock关联的CatchBlock的数量，值为1。
 catch_blocks	CatchBlock[]	与TryBlock关联的CatchBlock的数组，数组中有且仅有一个可以捕获所有类型的异常的CatchBlock。
+
+说明
+
+num_catches固定为1的原因是：ArkTS/TS/JS语言的异常处理机制中，try-catch语句仅支持单个catch块捕获所有类型的异常，不支持按异常类型分别捕获，因此每个TryBlock仅需关联一个CatchBlock。
 
 [h2]CatchBlock
 

@@ -158,9 +158,7 @@ CMake任务执行失败。
 
 可能原因
 
-用户手动删除编译后模块的.cxx目录，并且在build-profile.json5中arguments字段下配置“--version”、“
-
---help”、“--usage”等查询类参数。
+用户手动删除编译后模块的.cxx目录，并且在build-profile.json5中arguments字段下配置“--version”、“--help”、“--usage”等查询类参数。
 
 处理步骤
 

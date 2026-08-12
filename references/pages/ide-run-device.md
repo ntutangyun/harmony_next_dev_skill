@@ -38,6 +38,16 @@ DevEco Studio启动HAP的编译构建和安装。安装成功后，设备会自�
 
 将真机设备和PC连接到同一WLAN网络。
 
+开启屏幕常亮后，DevEco Studio会持续向设备发送亮屏指令，使设备屏幕常亮。即使手动将设备锁屏，屏幕也会自动亮起，这是DevEco Studio为保持屏幕常亮而发送亮屏指令的正常行为。
+
+如需退出屏幕常亮，有以下方式：
+
+方式一：在IP Connection面板中单击Disable Screen Always-On。
+
+方式二：断开设备连接。
+
+退出后，DevEco Studio将停止发送亮屏指令，设备可正常进入休眠。
+
 hdc tconn 设备IP地址:端口号
 
 DevEco Studio启动HAP的编译构建和安装。安装成功后，设备会自动运行安装的HarmonyOS应用/元服务。

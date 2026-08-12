@@ -4,11 +4,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-
 
 简介
 
-资源泄漏是指句柄、线程或内存等资源，在应用运行过程中没有被正确释放，导致资源被长期占用且无法被其他应用使用，如果某一类资源耗尽，系统可能出现卡死或重启等异常情况。为了应对资源泄漏问题，系统会提供资源泄漏检测、判决、维测日志抓取、日志上报的能力，为开发者提供详细的维测日志以辅助故障定位。本文将主要介绍资源泄漏检测能力以及资源泄漏日志的规格。
+资源泄漏是指句柄、线程或内存等资源，在应用运行过程中没有被正确释放，导致资源被长期占用且无法被其他应用使用，如果某一类资源耗尽，系统可能出现卡死或重启等异常情况。为了应对资源泄漏问题，系统会提供资源泄漏检测、判决、维测日志抓取、日志上报的能力，为开发者提供详细的维测日志以辅助故障定位。本文将主要介绍资源泄漏检测的实现原理以及资源泄漏日志的规格。
 
 基本概念
 
-资源泄漏主要分为三类：内存泄漏、句柄泄漏和线程泄漏。对于每种泄漏，系统会通过周期采样的方式对进程的资源使用情况进行检测，如果资源使用超过阈值，会抓取对应维测并上报泄漏事件。通过Hiappevent资源泄漏事件进行订阅，订阅方法详见资源泄漏事件。
+资源泄漏主要分为三类：内存泄漏、句柄泄漏和线程泄漏。对于每种泄漏，系统会通过周期采样的方式对进程的资源使用情况进行检测，如果资源使用超过阈值，会抓取对应维测日志并上报泄漏事件。通过Hiappevent资源泄漏事件进行订阅，订阅方法详见资源泄漏事件。
 
 实现原理
 
@@ -35,7 +35,7 @@ totalHeap：当前虚拟机的堆总大小，单位：KB。可通过hidebug.getA
 
 管控是指当系统判定应用发生泄漏后，主动终止泄漏应用的行为。
 
-在资源泄漏资料中，DMA内存（ION）、dmaheap、dmabuf 可理解为同一种内存类型，不作强区分。
+在资源泄漏资料中，DMA（ION）、dmaheap、dmabuf 可理解为同一种内存类型，不作强区分。
 
 资源泄漏内核管控方式如下：
 
@@ -45,7 +45,7 @@ totalHeap：当前虚拟机的堆总大小，单位：KB。可通过hidebug.getA
 
 当前支持内核管控的资源类型有：DMA（ION）、GPU、RSS、ASHMEM、THREAD。
 
-内核管控不区分前后台，可能会出现问题应用的前台闪退问题
+内核管控不区分前后台，可能会出现问题应用的前台闪退问题。
 
 约束和限制
 
@@ -70,7 +70,7 @@ DevEco Testing工具会收集设备/data/log/reliability/resource_leak/路径下
 
 注意
 
-native内存泄漏的调用栈（memleak-native-[process_name]-[pid]-[timestamp].txt）无法直接在DevEco Studio打开，需要修改后缀名为.nas，然后使用DevEco Studio-Profiler-打开并分析，详情见内存分析及优化。
+native内存泄漏的调用栈（memleak-native-[process_name]-[pid]-[timestamp].txt）无法直接在DevEco Studio打开，需要修改后缀名为.nas，然后使用DevEco Studio-Profiler-打开并分析，详情见内存分析介绍。
 
 js泄漏的维测日志 memleak-js-[process_name]-[pid]-[tid]-[timestamp].rawheap 为二进制内存快照文件，需要通过translator工具转换为.heapsnapshot文件，通过DevEco Studio或浏览器打开展示，详情见Snapshot离线导入。
 
@@ -635,7 +635,7 @@ Size        Rss         Pss        Clean       Dirty         Clean       Dirty  
 327168      171464      146921      25416       0           146048      0           0           0           17                      [anon:native_heap:jemalloc]
 24600       3924        3586        348         0           3576        0           0           0           18                      [anon:native_heap:jemalloc meta]
 
-如果存在内存调用栈，可以根据NMD维测找到占用最高的内存区间，并结合抓取的调用栈维测聚类到具体代码段或者so作为怀疑点，具体分析方法可参考Native泄漏分析方法。
+如果存在内存调用栈，可以根据NMD维测找到占用最高的内存区间，并结合抓取的调用栈维测聚类到具体代码段或者so作为怀疑点，具体分析方法可参考运维态高效处理Native泄漏。
 
 ASHMEM内存：参考ASHMEM聚类规则。
 
@@ -647,7 +647,7 @@ LOGGER_MEMCHECK_SMAPS_INFO
 Size        Rss         Pss        Clean       Dirty         Clean       Dirty       Swap        SwapPss     Counts                 Name
 38760       528         524         4           0           524         0           0           0           56                      [anon]
 
-如果存在内存调用栈，可通过分析调用栈中占比较高的聚类到具体代码段或者so作为怀疑点，具体分析方法可参考Native泄漏分析方法。
+如果存在内存调用栈，可通过分析调用栈中占比较高的聚类到具体代码段或者so作为怀疑点，具体分析方法可参考运维态高效处理Native泄漏。
 
 注意
 

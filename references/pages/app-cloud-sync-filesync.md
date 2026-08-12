@@ -240,8 +240,8 @@ struct Index {
 [h2]接口说明
 
 接口名	描述	注意事项
-setxattrSync(path: string, key: string, value: string): Promise<void>	设置文件或目录的扩展属性	path为沙箱内文件或目录，沙箱根路径：/data/storage/el2/cloud，key需要以user.开头，且长度需小于256字节
-getxattrSync(path: string, key: string): Promise<string>	获取文件或目录的扩展属性	path为沙箱内文件或目录，沙箱根路径：/data/storage/el2/cloud，key需要以user.开头，且长度需小于256字节
+setxattrSync(path: string, key: string, value: string): void	设置文件或目录的扩展属性	path为沙箱内文件或目录，沙箱根路径：/data/storage/el2/cloud，key需要以user.开头，且长度需小于256字节
+getxattrSync(path: string, key: string): string	获取文件或目录的扩展属性	path为沙箱内文件或目录，沙箱根路径：/data/storage/el2/cloud，key需要以user.开头，且长度需小于256字节
 
 [h2]示例代码
 

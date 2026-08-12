@@ -155,7 +155,7 @@ Button(`MutableBuilder`).onClick(() => {
 使用@Builder装饰器装饰的方法textBuilder作为mutableBuilder的参数，然后将mutableBuilder的返回值赋值给变量switchingBuilder，在Button的点击事件中，使用@Builder装饰器装饰的方法buttonBuilder作为mutableBuilder的参数，将mutableBuilder的返回值再次赋值给变量switchingBuilder，可实现textBuilder 更新为buttonBuilder，以解决wrapBuilder不支持二次赋值的问题。
 
 class TextContent {
-  text: string = '';
+  public text: string = '';
 }
 
 @Builder
@@ -438,7 +438,7 @@ Button(`MutableBuilder`).onClick(() => {
 
 ```
 class TextContent {
-  text: string = '';
+  public text: string = '';
 }
 
 @Builder

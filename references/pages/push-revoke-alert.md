@@ -46,6 +46,10 @@ push-type: 0
   ]
 }
 
+说明
+
+撤回消息接口使用v1版本URL，并且路径参数使用clientId。与其他场景化消息推送接口使用的v3版本不同，路径参数使用clientId而非projectId。
+
 [clientId]：请替换为您应用的Client ID，可参见指导获取。
 
 Authorization：JWT格式字符串，可参见Authorization获取。

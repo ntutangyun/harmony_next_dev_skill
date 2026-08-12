@@ -36,7 +36,7 @@ AppGallery Kit返回加桌结果给应用。
 
 应用市场推荐服务不支持模拟器，请使用真机调试。在模拟器中使用该服务将会提示：无法获取内容，请点击屏幕重试。
 
-应用市场推荐服务支持Phone、Tablet、PC/2in1设备。并且从6.0.2(22)版本开始，新增支持TV设备；从26.0.0版本开始，新增支持Car设备。
+应用市场推荐服务支持Phone、Tablet、PC/2in1设备。并且从6.0.2(22)版本开始，新增支持TV设备。
 
 接口说明
 
@@ -79,7 +79,7 @@ const want: Want = {
 
 说明
 
-需提前创建应用静态快捷方式，且shortcutId、labelResName、iconResName、want参数需要与shortcuts标签中的配置保持一致。
+需提前创建应用静态快捷方式，且shortcutId、labelResName、iconResName、want参数需要与shortcuts标签中的配置保持一致。其中want参数仅支持bundleName、moduleName、abilityName、parameters四个字段，需与wants标签中的配置一致。
 
 若校验参数发生变化，则每次覆盖生成新的tid，否则返回历史tid以及剩余过期时间expired。
 
@@ -166,6 +166,8 @@ const foregroundIcon = uiContext.filesDir + '/icon.png';
 const backgroundIcon = '';
 
 说明
+
+want参数仅支持bundleName、moduleName、abilityName、parameters四个字段，需与wants标签中的配置一致。
 
 当前不支持背景层图标，参数backgroundIcon传空字符串。
 

@@ -362,7 +362,7 @@ console.info('expandPathHar NumberString.ets execute.');
 
 优化方式：改为如下的代码写法，跳过中间的依赖路径，直接依赖变量对应的模块。
 
-// src/main/ets/pages/Index2.ets
+// src/main/ets/pages/index2.ets
 import { One } from 'expandPathHar/src/main/ets/NumberString';
 
 console.info('One is ', One);
@@ -866,7 +866,7 @@ console.info('expandPathHar NumberString.ets execute.');
 ### Code block 41
 
 ```
-// src/main/ets/pages/Index2.ets
+// src/main/ets/pages/index2.ets
 import { One } from 'expandPathHar/src/main/ets/NumberString';
 
 console.info('One is ', One);

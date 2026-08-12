@@ -6,7 +6,7 @@ Remote Communication Kit 结合 Core File Kit 可以实现基于文件、目录�
 
 约束与限制
 
-文件上传下载能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备；从6.1.0(23)开始，新增支持Car设备。
+文件上传下载能力支持Phone、2in1、Tablet、Wearable设备。并且从5.1.1(19)开始，新增支持TV设备。
 
 下载功能实现
 

@@ -67,15 +67,15 @@ this.avRecorder?.on('error', (error: BusinessError) => {
 
 配置参数之前需要确保完成对应权限的申请，请参考申请权限。
 
-prepare接口的入参avConfig中仅设置音频相关的配置参数，如示例代码所示。
+prepare接口的入参config中仅设置音频相关的配置参数，如示例代码所示。
 
 如果只需要录制音频，请不要设置视频相关配置参数；如果需要录制视频，可以参考视频录制开发指导进行开发。直接设置视频相关参数会导致后续步骤报错。
 
 需要使用支持的录制规格，具体录制参数配置可参考AVRecorderProfile。
 
-录制输出的url地址（即示例里avConfig中的url），形式为fd://xx (fd number)。需要基础文件操作接口（Core File Kit的ohos.file.fs）实现应用文件访问能力，获取方式参考应用文件访问与管理。
+录制输出的URL地址（即示例里avRecorderConfig中的url），形式为fd://xx（fd number）。需要基础文件操作接口（Core File Kit的ohos.file.fs）实现应用文件访问能力，获取方式参考应用文件访问与管理。
 
-示例中配置的audioCodec音频编码格式、aacProfile音频编码扩展格式、fileFormat封装格式请参考AVRecorderProfile。
+示例中配置的audioCodec音频编码格式、fileFormat封装格式请参考AVRecorderProfile。
 
 public async prepareAudioRecorder(context: common.Context): Promise<void> {
   let path: string = context.filesDir + '/audio_example.m4a';
@@ -90,7 +90,7 @@ public async prepareAudioRecorder(context: common.Context): Promise<void> {
       audioCodec: media.CodecMimeType.AUDIO_AAC, // 音频编码格式。
       audioSampleRate: this.audioSampleRate, // 音频采样率。
       fileFormat: media.ContainerFormatType.CFT_MPEG_4A // 封装格式。
-    },
+    } as media.AVRecorderProfile,
     url: 'fd://' + file.fd.toString()
   };
 
@@ -101,6 +101,7 @@ public async prepareAudioRecorder(context: common.Context): Promise<void> {
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to prepare avRecorder, error code: ${err.code}, message: ${err.message}`);
+    await this.closeFd();
   }
 }
 
@@ -119,6 +120,7 @@ await this.avRecorder?.resume();
 停止录制，调用stop接口，此时进入stopped状态。
 
 await this.avRecorder?.stop();
+await this.closeFd();
 
 重置资源，调用reset接口，重新进入idle状态，允许重新配置录制参数。
 
@@ -134,10 +136,10 @@ await this.avRecorder?.release();
 
 使用当前示例代码时，需要申请ohos.permission.MICROPHONE麦克风权限。申请方式请参考：向用户申请授权。
 
-import { BusinessError } from '@ohos.base';
-import media from '@ohos.multimedia.media';
-import fileIo from '@ohos.file.fs';
-import common from '@ohos.app.ability.common';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { media } from '@kit.MediaKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { common } from '@kit.AbilityKit';
 import { Resolution } from './CommonTypes';
 
 export default class AVRecorderService {
@@ -187,7 +189,7 @@ export default class AVRecorderService {
         audioCodec: media.CodecMimeType.AUDIO_AAC, // 音频编码格式。
         audioSampleRate: this.audioSampleRate, // 音频采样率。
         fileFormat: media.ContainerFormatType.CFT_MPEG_4A // 封装格式。
-      },
+      } as media.AVRecorderProfile,
       url: 'fd://' + file.fd.toString()
     };
 
@@ -198,6 +200,7 @@ export default class AVRecorderService {
     } catch (error) {
       let err = error as BusinessError;
       console.error(`Failed to prepare avRecorder, error code: ${err.code}, message: ${err.message}`);
+      await this.closeFd();
     }
   }
 
@@ -240,10 +243,12 @@ export default class AVRecorderService {
     try {
       if (this.avRecorder?.state === 'started' || this.avRecorder?.state === 'paused') {
         await this.avRecorder?.stop();
+        await this.closeFd();
       }
     } catch (error) {
       let err = error as BusinessError;
       console.error(`Failed to stop avRecorder, error code: ${err.code}, message: ${err.message}`);
+      await this.closeFd();
     }
   }
 
@@ -318,7 +323,7 @@ public async prepareAudioRecorder(context: common.Context): Promise<void> {
       audioCodec: media.CodecMimeType.AUDIO_AAC, // 音频编码格式。
       audioSampleRate: this.audioSampleRate, // 音频采样率。
       fileFormat: media.ContainerFormatType.CFT_MPEG_4A // 封装格式。
-    },
+    } as media.AVRecorderProfile,
     url: 'fd://' + file.fd.toString()
   };
 
@@ -329,6 +334,7 @@ public async prepareAudioRecorder(context: common.Context): Promise<void> {
   } catch (error) {
     let err = error as BusinessError;
     console.error(`Failed to prepare avRecorder, error code: ${err.code}, message: ${err.message}`);
+    await this.closeFd();
   }
 }
 ```
@@ -355,6 +361,7 @@ await this.avRecorder?.resume();
 
 ```
 await this.avRecorder?.stop();
+await this.closeFd();
 ```
 
 ### Code block 8
@@ -372,10 +379,10 @@ await this.avRecorder?.release();
 ### Code block 10
 
 ```
-import { BusinessError } from '@ohos.base';
-import media from '@ohos.multimedia.media';
-import fileIo from '@ohos.file.fs';
-import common from '@ohos.app.ability.common';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { media } from '@kit.MediaKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { common } from '@kit.AbilityKit';
 import { Resolution } from './CommonTypes';
 
 export default class AVRecorderService {
@@ -425,7 +432,7 @@ export default class AVRecorderService {
         audioCodec: media.CodecMimeType.AUDIO_AAC, // 音频编码格式。
         audioSampleRate: this.audioSampleRate, // 音频采样率。
         fileFormat: media.ContainerFormatType.CFT_MPEG_4A // 封装格式。
-      },
+      } as media.AVRecorderProfile,
       url: 'fd://' + file.fd.toString()
     };
 
@@ -436,6 +443,7 @@ export default class AVRecorderService {
     } catch (error) {
       let err = error as BusinessError;
       console.error(`Failed to prepare avRecorder, error code: ${err.code}, message: ${err.message}`);
+      await this.closeFd();
     }
   }
 
@@ -478,10 +486,12 @@ export default class AVRecorderService {
     try {
       if (this.avRecorder?.state === 'started' || this.avRecorder?.state === 'paused') {
         await this.avRecorder?.stop();
+        await this.closeFd();
       }
     } catch (error) {
       let err = error as BusinessError;
       console.error(`Failed to stop avRecorder, error code: ${err.code}, message: ${err.message}`);
+      await this.closeFd();
     }
   }
 

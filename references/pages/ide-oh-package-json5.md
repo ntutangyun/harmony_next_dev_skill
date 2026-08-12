@@ -13,7 +13,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-oh-pa
 工程级oh-package.json5 字段说明
 
 配置项	字段名称	字段说明	字段要求	字段类型	默认值	备注
-开发态版本	modelVersion	开发态版本号	必选	字符串	无	开发态版本号。
+开发态版本	modelVersion	开发态版本号	必选	字符串	无	开发态版本号。 默认版本号为DevEco Studio配套的modelVersion，以DevEco Studio 6.1.1 Release为例，配套的modelVersion为"6.1.1"。如需修改modelVersion，修改后的值不能小于5.0.0，且不能大于DevEco Studio配套的modelVersion。
 描述配置	description	简介	可选	字符串	无	用于描述工程信息的字符串。
 依赖配置	dependencies	生产依赖	可选	对象	{}	用于配置参与编译/运行阶段使用的依赖，声明需要在代码中import的三方库（不建议在工程级oh-package.json5中配置生产依赖）。
 devDependencies	开发依赖	可选	对象	{}	配置开发态依赖，配置只能参与项目的开发或测试阶段的依赖。如果被依赖的组件最终要与依赖的组件一起发布到目标机器（如手机）上使用，则不能在其中配置。

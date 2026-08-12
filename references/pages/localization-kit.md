@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/localization-kit_
 
-国际化和本地化概述
+Localization Kit简介
 
 应用国际化
 

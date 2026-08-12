@@ -48,7 +48,7 @@ target_link_libraries(sample PUBLIC libnative_media_venc.so)
 #include <mutex>
 #include <shared_mutex>
 
-全局变量（仅作参考，可以根据实际情况将其封装到对象中）。
+定义全局变量（仅作示例，具体参数值，请据能力查询接口获取相应值范围来参考配置）。
 
 // 视频帧宽度。
 int32_t width = 320;
@@ -149,7 +149,7 @@ if (ret != AV_ERR_OK) {
 
 调用OH_VideoEncoder_Start()启动编码器。
 
-// 配置待编码文件路径。
+// 配置待编码文件路径。可填写应用沙箱路径等可访问目录。
 std::string_view outputFilePath = "/*yourpath*.h264";
 std::unique_ptr<std::ofstream> outputFile = std::make_unique<std::ofstream>();
 if (outputFile != nullptr) {
@@ -383,7 +383,7 @@ if (ret != AV_ERR_OK) {
 
 配置输入文件、输出文件。
 
-// 配置待编码文件路径。
+// 配置待编码文件路径。可填写应用沙箱路径等可访问目录。
 std::string_view inputFilePath = "/*yourpath*.yuv";
 std::string_view outputFilePath = "/*yourpath*.h264";
 std::unique_ptr<std::ifstream> inputFile = std::make_unique<std::ifstream>();
@@ -675,7 +675,7 @@ if (ret != AV_ERR_OK) {
 ### Code block 8
 
 ```
-// 配置待编码文件路径。
+// 配置待编码文件路径。可填写应用沙箱路径等可访问目录。
 std::string_view outputFilePath = "/*yourpath*.h264";
 std::unique_ptr<std::ofstream> outputFile = std::make_unique<std::ofstream>();
 if (outputFile != nullptr) {
@@ -893,7 +893,7 @@ if (ret != AV_ERR_OK) {
 ### Code block 19
 
 ```
-// 配置待编码文件路径。
+// 配置待编码文件路径。可填写应用沙箱路径等可访问目录。
 std::string_view inputFilePath = "/*yourpath*.yuv";
 std::string_view outputFilePath = "/*yourpath*.h264";
 std::unique_ptr<std::ifstream> inputFile = std::make_unique<std::ifstream>();
