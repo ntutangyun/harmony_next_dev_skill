@@ -46,7 +46,7 @@ sync	设置同步或者异步模式：同步模式设置为true，异步模式�
 表2 接口参数说明
 
 参数名	输入/输出	描述
-gm	输出	取出C矩阵到GM，数据格式可以为ND或NZ。 Kirin9020系列处理器，支持的数据类型为：half
+gm	输出	取出C矩阵到GM，数据格式可以为ND或NZ。 Kirin9020系列处理器、Kirin9030系列处理器，支持的数据类型为：half。
 enAtomic	输入	是否开启Atomic操作，默认值为0 。 参数取值： 0：不开启Atomic操作 1：开启AtomicAdd累加操作 2：开启AtomicMax求最大值操作 3：开启AtomicMin求最小值操作
 enSequentialWrite	输入	是否开启连续写模式（连续写，写入[baseM, baseN]。非连续写，写入[singleCoreM, singleCoreN]中对应的位置），默认值false（非连续写模式）。 说明： 非连续写模式，内部会按照迭代顺序算好偏移，开发者不需要关注。如果开发者需要自己决定排布顺序，可以选择连续写模式，自行按照自己设定的偏移进行搬运操作。
 
@@ -61,6 +61,8 @@ enSequentialWrite	输入	是否开启连续写模式（连续写，写入[baseM,
 支持的型号
 
 Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 注意事项
 

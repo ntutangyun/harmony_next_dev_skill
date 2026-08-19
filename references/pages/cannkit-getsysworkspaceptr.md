@@ -18,6 +18,8 @@ __aicore__ inline __gm__ uint8_t* __gm__ GetSysWorkSpacePtr()
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

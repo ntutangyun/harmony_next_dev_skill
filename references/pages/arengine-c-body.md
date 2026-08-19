@@ -286,6 +286,8 @@ CHECK(HMS_AREngine_ARTrackableList_GetSize(mArSession, arTrackableList, &trackab
 
 [h2]获取骨骼点相关信息
 
+创建一个骨骼点信息列表skeletonValid2Ds，用于存放骨骼点信息数据。
+
 for (int i = 0; i < trackableListSize; i++) {
     AREngine_ARTrackable *arTrackable = nullptr;
     CHECK(HMS_AREngine_ARTrackableList_AcquireItem(mArSession, arTrackableList, i, &arTrackable));
@@ -320,6 +322,10 @@ for (int i = 0; i < trackableListSize; i++) {
     CHECK(HMS_AREngine_ARBody_GetBodyTimeStamp(mArSession, arBody, &timeStampNanoSec));
     LOGI("ArBodyApp bodyTrackId = %{public}d, timeStampNanoSec = %{public}ld", outBodyTrackId, timeStampNanoSec);
 }
+
+[h2]获取骨骼点之间的连接关系数据
+
+创建一个骨骼点连接关系数据列表connections，用于存放骨骼点之间相连关系数据。
 
 for (int i = 0; i < trackableListSize; i++) {
     AREngine_ARTrackable *arTrackable = nullptr;

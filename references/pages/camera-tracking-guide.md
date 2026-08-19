@@ -18,7 +18,7 @@ setCameraTrackingEnabled(isEnabled: boolean): void	启用或禁用摄像头跟�
 getCameraTrackingEnabled(): boolean	检查是否启用了摄像头跟踪。 说明：从API version 20开始支持。
 on(type: 'trackingStateChange', callback: Callback<TrackingEventInfo>): void	注册trackingStateChange事件的回调监听。 说明：从API version 20开始支持。
 off(type: 'trackingStateChange', callback?: Callback<TrackingEventInfo>): void	取消注册trackingStateChange事件的回调监听。 说明：从API version 20开始支持。
-getCameraTrackingLayout(): CameraTrackingLayout	获取此机械设备摄像头跟踪布局。 说明：从API version 20开始支持。
+getCameraTrackingLayout(): CameraTrackingLayout	获取此机械体设备摄像头跟踪布局。 说明：从API version 20开始支持。
 
 开发步骤
 

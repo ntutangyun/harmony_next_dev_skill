@@ -82,6 +82,10 @@ Manually manage signing：手动管理签名，开发者自行配置签名信息
 
 将HarmonyOS应用/元服务打包成.app文件后上架到应用市场，发布详细操作指导请参考发布HarmonyOS应用或发布元服务。
 
+说明
+
+仅Release版本DevEco Studio打包的.app支持上架到应用市场。
+
 26.0.0 Beta1以下版本
 
 [h2]发布流程
@@ -257,6 +261,10 @@ Build Version值由AGC计算后回传填入。
 [h2]发布.app文件到应用市场
 
 将HarmonyOS应用/元服务打包成.app文件后上架到应用市场，发布详细操作指导请参考发布HarmonyOS应用或发布元服务。
+
+说明
+
+仅Release版本DevEco Studio打包的.app支持上架到应用市场。
 
 附录
 

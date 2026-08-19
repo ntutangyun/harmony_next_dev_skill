@@ -260,8 +260,8 @@ name	标识当前UIAbility组件的名称，确保该名称在整个应用中唯
 srcEntry	标识当前UIAbility的代码路径，取值为长度不超过127字节的字符串。	字符串	该标签不可缺省。
 launchType	标识当前UIAbility组件的启动模式，支持的取值如下： - multiton：多实例模式，每次启动创建一个新实例。 - singleton：单实例模式，仅第一次启动创建新实例。 - specified：指定实例模式，运行时由开发者决定是否创建新实例。 - standard：multiton的曾用名，效果与多实例模式一致。 说明： 元服务启动模式需要设置为单例模式，详情请参考元服务规格要求。	字符串	该标签可缺省，该标签缺省为“singleton”。
 description	标识当前UIAbility组件的描述信息，开发者可以通过该标签描述当前组件的功能与作用，取值为长度不超过255字节的字符串。建议采用描述信息的资源索引，以支持多语言。	字符串	该标签可缺省，缺省值为空。
-icon	标识当前UIAbility组件的图标，取值为图标资源文件的索引。	字符串	该标签可缺省，缺省值为空。
-label	标识当前UIAbility组件对用户显示的名称，取值为字符串资源的索引，以支持多语言，长度不超过255字节的字符串。	字符串	该标签可缺省，缺省值为空。
+icon	标识当前UIAbility组件的图标，取值为图标资源文件的索引，支持配置单层图标和分层图标，配置规则和示例请参考配置应用图标和名称。	字符串	该标签可缺省，缺省值为空。
+label	标识当前UIAbility组件对用户显示的名称，取值为字符串资源的索引，以支持多语言，长度不超过255字节的字符串，具体请参考配置应用图标和名称。	字符串	该标签可缺省，缺省值为空。
 permissions	标识当前UIAbility组件的权限信息。其他应用访问该UIAbility时，需要申请相应的权限。 一个数组元素为一个权限名称，不超过255字节，取值请参考应用权限列表。	字符串数组	该标签可缺省，缺省值为空。
 metadata	标识当前UIAbility组件的元信息，典型使用场景详见窗口元数据配置中的metadata标签。	对象数组	该标签可缺省，缺省值为空。
 exported	标识当前UIAbility组件是否可以被其他应用拉起。 - true：表示可以被其他应用拉起（入口UIAbility建议配置为true）。 - false：只能由同应用或者具有ohos.permission.START_INVISIBLE_ABILITY权限（该权限仅系统应用支持申请）的应用拉起。 例如，配置为false时，桌面具备该权限，桌面图标、快捷方式或push通知消息可以拉起当前UIAbility组件，但aa命令行工具没有权限无法拉起。	布尔值	该标签可缺省，缺省值为false。
@@ -507,7 +507,7 @@ wallpaper	壁纸的ExtensionAbility。
 backup	数据备份的ExtensionAbility。
 enterpriseAdmin	企业设备管理的ExtensionAbility。企业设备管理应用必须拥有此类型的ExtensionAbility。
 window	该ExtensionAbility会在启动过程中创建一个window，为开发者提供界面开发。开发者开发出来的界面将通过UIExtensionComponent控件组合到其他应用的窗口中，三方应用配置不生效，当前配置仅在系统应用中有效。
-thumbnail	获取文件缩略图的ExtensionAbility，开发者可以对自定义文件类型的文件提供缩略。
+thumbnail	获取文件缩略图的ExtensionAbility，开发者可以对自定义文件类型的文件提供缩略图。
 preview	该ExtensionAbility会将文件解析后在一个窗口中显示，开发者可以通过将此窗口组合到其他应用窗口中。
 print	打印框架的ExtensionAbility。
 push	推送的ExtensionAbility。
@@ -569,7 +569,7 @@ liveViewCard	实况窗卡片自定义扩展区的ExtensionAbility，从API版本
 accountLogout	华为账号登出能力的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
 sysPicker/navigation	拉起系统导航类应用面板的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
 sysPicker/appSelector	拉起系统应用选择弹框的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
-sys/visualExtension	原生智能图片类控件视觉搜索的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
+sys/visualExtension	智能图片类控件视觉搜索的ExtensionAbility，三方应用配置不生效，当前配置仅在系统应用中有效。
 screenTimeGuard20+	屏幕时间守护开放服务的ExtensionAbility。
 
 shortcuts标签
@@ -757,7 +757,7 @@ value	单个字符串的取值格式为“宽 * 高”，取值为整数像素�
 
 属性名称	含义	数据类型	是否可缺省
 policy	标识条件属性的过滤规则。 - exclude：表示需要排除的value属性。 - include：表示需要包含的value属性。	字符串	该标签不可缺省。
-value	标识屏幕的像素密度（dpi :Dot Per Inch）。支持的取值如下： - sdpi：表示小规模的屏幕密度（Small-scale Dots per Inch），适用于dpi取值为(0,120]的设备。 - mdpi：表示中规模的屏幕密度（Medium-scale Dots Per Inch），适用于dpi取值为(120,160]的设备。 - ldpi：表示大规模的屏幕密度（Large-scale Dots Per Inch），适用于dpi取值为(160,240]的设备。 - xldpi：表示大规模的屏幕密度（Extra Large-scale Dots Per Inch），适用于dpi取值为(240,320]的设备。 - xxldpi：表示大规模的屏幕密度（Extra Extra Large-scale Dots Per Inch），适用于dpi取值为(320，480]的设备。 - xxxldpi：表示大规模的屏幕密度（Extra Extra Extra Large-scale Dots Per Inch），适用于dpi取值为(480, 640]的设备。	字符串数组	该标签不可缺省。
+value	标识屏幕的像素密度（dpi :Dot Per Inch）。支持的取值如下： - sdpi：表示小规模的屏幕密度（Small-scale Dots per Inch），适用于dpi取值为(0,120]的设备。 - mdpi：表示中规模的屏幕密度（Medium-scale Dots Per Inch），适用于dpi取值为(120,160]的设备。 - ldpi：表示大规模的屏幕密度（Large-scale Dots Per Inch），适用于dpi取值为(160,240]的设备。 - xldpi：表示特大规模的屏幕密度（Extra Large-scale Dots Per Inch），适用于dpi取值为(240,320]的设备。 - xxldpi：表示超大规模的屏幕密度（Extra Extra Large-scale Dots Per Inch），适用于dpi取值为(320，480]的设备。 - xxxldpi：表示超特大规模的屏幕密度（Extra Extra Extra Large-scale Dots Per Inch），适用于dpi取值为(480, 640]的设备。	字符串数组	该标签不可缺省。
 
 [h2]countryCode标签
 

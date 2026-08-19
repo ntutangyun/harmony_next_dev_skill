@@ -22,6 +22,8 @@ bufOffset	输入	从起始位置的偏移长度，单位为Byte，且需32B对�
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

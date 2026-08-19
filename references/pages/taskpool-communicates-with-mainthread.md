@@ -6,15 +6,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/taskpool-
 
 下面以多个图片加载任务结果实时返回为例说明。
 
-实现接收Task消息的方法。
-
-import { taskpool } from '@kit.ArkTS';
-import { IconItemSource } from './IconItemSource';
-
-function notice(data: number): void {
-  console.info('子线程任务已执行完，共加载图片: ', data);
-}
-
 在需要执行的Task中，添加sendData()接口将消息发送给宿主线程。在宿主线程通过onReceiveData()接口接收消息。这样宿主线程就可以通过notice()接口接收到Task发送的数据。
 
 export class IconItemSource {
@@ -29,9 +20,9 @@ export class IconItemSource {
 
 import { taskpool } from '@kit.ArkTS';
 import { IconItemSource } from './IconItemSource';
-
+// 实现接收Task消息的方法
 function notice(data: number): void {
-  console.info('子线程任务已执行完，共加载图片: ', data);
+  console.info('子线程已加载数据，共加载图片: ', data);
 }
 
 // 通过Task的sendData方法，即时通知宿主线程信息
@@ -90,17 +81,6 @@ struct Index {
 ### Code block 1
 
 ```
-import { taskpool } from '@kit.ArkTS';
-import { IconItemSource } from './IconItemSource';
-
-function notice(data: number): void {
-  console.info('子线程任务已执行完，共加载图片: ', data);
-}
-```
-
-### Code block 2
-
-```
 export class IconItemSource {
   image: string | Resource = '';
   text: string | Resource = '';
@@ -112,14 +92,14 @@ export class IconItemSource {
 }
 ```
 
-### Code block 3
+### Code block 2
 
 ```
 import { taskpool } from '@kit.ArkTS';
 import { IconItemSource } from './IconItemSource';
-
+// 实现接收Task消息的方法
 function notice(data: number): void {
-  console.info('子线程任务已执行完，共加载图片: ', data);
+  console.info('子线程已加载数据，共加载图片: ', data);
 }
 
 // 通过Task的sendData方法，即时通知宿主线程信息

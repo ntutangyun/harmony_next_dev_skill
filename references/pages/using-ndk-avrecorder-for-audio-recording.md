@@ -10,7 +10,7 @@ AVRecorder支持开发音频或视频单独录制，集成了音频捕获、音�
 
 图1 录制状态变化示意图
 
-状态的详细说明请参考AVRecorderState。
+状态的详细说明请参考OH_AVRecorder_State。
 
 申请权限
 

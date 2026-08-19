@@ -8,7 +8,7 @@ ArkUI的弹出框控制器在绑定弹出框后，可提供对弹出框的操作
 
 使用约束
 
-目前openCustomDialogWithController和presentCustomDialog支持通过controller参数来绑定弹出框进行操作，目前getDialogController支持获取自定义组件所在的弹出框的控制器。
+目前openCustomDialogWithController和presentCustomDialog支持通过controller参数来绑定弹出框进行操作，getDialogController支持获取自定义组件所在的弹出框的控制器。
 
 说明
 

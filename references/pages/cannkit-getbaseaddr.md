@@ -19,6 +19,8 @@ logicPos	输入	逻辑位置类型。该类型具体说明请参考TPosition。
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

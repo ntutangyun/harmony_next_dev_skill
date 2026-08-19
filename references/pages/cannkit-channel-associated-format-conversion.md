@@ -18,8 +18,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const GlobalTens
 表1 数据通路和数据类型（源操作数为GlobalTensor，目的操作数为LocalTensor）
 
 支持型号	数据通路	源操作数和目的操作数的数据类型 (两者保持一致)
-Kirin9020系列处理器	GM->A1/B1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	GM->A1/B1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	GM->A1/B1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
 
 说明
 
@@ -38,12 +37,11 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const LocalTenso
 表2 数据通路和数据类型（源操作数为LocalTensor，目的操作数为LocalTensor）
 
 支持型号	数据通路	源操作数和目的操作数的数据类型 (两者保持一致)
-Kirin9020系列处理器	VECIN / VECCALC / VECOUT -> TSCM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	VECIN / VECCALC / VECOUT -> TSCM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	VECIN / VECCALC / VECOUT -> TSCM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
 
 说明
 
-当前Kirin9020通用核只考虑32Byte对齐的情形，后续根据需要增强接口。
+当前Kirin9020、Kirin9030通用核只考虑32Byte对齐的情形，后续根据需要增强接口。
 
 参数说明
 
@@ -89,6 +87,8 @@ dstNzMatrixStride = 96，表示dst中第x个ndMatrix的起点和第x+1个ndMatri
 支持的型号
 
 Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 KirinX90系列处理器
 

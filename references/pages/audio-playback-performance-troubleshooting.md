@@ -102,7 +102,7 @@ OH_AudioStreamBuilder_SetRendererInfo(builder, AUDIOSTREAM_USAGE_MUSIC);
 
 使用OHAudio播放的示例代码，请参考推荐使用OHAudio开发音频播放功能(C/C++)。
 
-使用AudioRenderer播放的示例代码，请参考使用AudioRenderer开发音频播放功能(ArkTs)。
+使用AudioRenderer播放的示例代码，请参考使用AudioRenderer开发音频播放功能(ArkTS)。
 
 推荐抓取Trace日志，进行进一步的性能分析，具体操作请参考音频性能分析方法。
 

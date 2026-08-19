@@ -25,7 +25,7 @@ void Transpose(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, c
 表1 模板参数说明
 
 参数名	描述
-T	操作数的数据类型。 普通转置接口： Kirin9020系列处理器，支持的数据类型为：half、int16_t、uint16_t KirinX90系列处理器，支持的数据类型为：half、int16_t、uint16_t 增强转置接口： 参考表4。
+T	操作数的数据类型。 普通转置接口： Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，支持的数据类型为：half、int16_t、uint16_t 增强转置接口： 参考表4。
 
 表2 接口参数说明
 
@@ -61,6 +61,8 @@ TRANSPOSE_NHWC2NCHW	临时Buffer的大小按照下述计算规则（伪代码）
 支持的型号
 
 Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 KirinX90系列处理器
 

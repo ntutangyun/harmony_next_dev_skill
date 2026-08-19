@@ -104,6 +104,8 @@ export {value, test};
       ]
     }
   },
+// ...
+},
 
 使用napi_load_module加载Test文件，调用函数test以及获取变量value：
 
@@ -628,6 +630,8 @@ export {value, test};
       ]
     }
   },
+// ...
+},
 ```
 
 ### Code block 5

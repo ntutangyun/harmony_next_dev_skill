@@ -15,16 +15,12 @@ A1	L1 Buffer
 A2	L0A Buffer
 B1	L1 Buffer
 B2	L0B Buffer
-C1	Kirin9020系列处理器，L1 Buffer
-C1	KirinX90系列处理器，L1 Buffer
-C2	Kirin9020系列处理器，BT Buffer
-C2	KirinX90系列处理器，BT Buffer
+C1	Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，L1 Buffer
+C2	Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，BT Buffer
 CO1	L0C Buffer
-CO2	Kirin9020系列处理器，Global Memory
-CO2	KirinX90系列处理器，Global Memory
+CO2	Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，Global Memory
 TSCM	L1 Buffer
-SPM	Kirin9020系列处理器，Global Memory
-SPM	KirinX90系列处理器，Global Memory
+SPM	Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，Global Memory
 
 AscendC内存管理模块在进行内存分配时会对起始地址进行对齐。各类存储单元的对齐要求如表2所示。
 

@@ -180,6 +180,7 @@ struct WebComponent {
 
 应用侧设置WebDarkMode.Auto跟随系统深色模式时，监听系统设置，背景色跟随系统改变。
 
+import { window } from '@kit.ArkUI';
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want, Configuration } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -411,6 +412,7 @@ struct WebComponent {
 ### Code block 8
 
 ```
+import { window } from '@kit.ArkUI';
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want, Configuration } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 

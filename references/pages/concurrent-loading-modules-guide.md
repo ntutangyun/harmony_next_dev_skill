@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/concurren
 
 通过使用ArkTS提供的TaskPool能力，可以将不同的业务初始化任务移到子线程中。业务模块可通过下沉C++实现为NativeBinding对象或在ArkTS层定义为Sendable对象，从而将初始化的模块返回给UI主线程调用，实现如下。
 
-各业务功能（SDK）模块定义（这里以使用Sendable对象为例）。
+在ets文件夹下新建文件夹sdk，存放各业务功能模块定义（这里以使用Sendable对象为例）。
 
 计算器业务模块定义如下：
 
@@ -140,7 +140,7 @@ struct Index {
             center: { anchor: '__container__', align: VerticalAlign.Center },
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
-          .onClick(async () => {
+          .onClick(() => {
             let result = this.calc?.add(1, 2)
             console.info(`Result is ${result}`)
             this.calculateAdd = 'success';
@@ -153,7 +153,7 @@ struct Index {
             center: { anchor: '__container__', align: VerticalAlign.Center },
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
-          .onClick(async () => {
+          .onClick(() => {
             this.calc?.showHistory();
             this.showHistory = 'success';
           })
@@ -317,7 +317,7 @@ struct Index {
             center: { anchor: '__container__', align: VerticalAlign.Center },
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
-          .onClick(async () => {
+          .onClick(() => {
             let result = this.calc?.add(1, 2)
             console.info(`Result is ${result}`)
             this.calculateAdd = 'success';
@@ -330,7 +330,7 @@ struct Index {
             center: { anchor: '__container__', align: VerticalAlign.Center },
             middle: { anchor: '__container__', align: HorizontalAlign.Center }
           })
-          .onClick(async () => {
+          .onClick(() => {
             this.calc?.showHistory();
             this.showHistory = 'success';
           })

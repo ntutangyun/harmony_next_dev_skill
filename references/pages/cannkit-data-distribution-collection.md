@@ -20,7 +20,7 @@ __aicore__ inline void Gather(const LocalTensor<T>& dstLocal, const LocalTensor<
 表1 参数说明
 
 参数名称	输入/输出	含义
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为： uint16_t、int16_t、uint32_t、int32_t、half、float32_t KirinX90系列处理器，支持的数据类型为： uint16_t、int16_t、uint32_t、int32_t、half、float32_t
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，支持的数据类型为： uint16_t、int16_t、uint32_t、int32_t、half、float32_t。
 srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 数据类型和dstLocal保持一致。
 srcOffsetLocal	输入	每个元素在src中对应的地址偏移。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 该偏移量相对于src的起始基地址而言。单位为Bytes。地址偏移要大于等于0，取值应保证src元素类型位宽对齐，否则会导致非预期行为，同时需要保证偏移地址后不能超出UB大小数据的范围。 每个元素在src中对应的地址偏移，地址偏移要大于等于0。该偏移量是相对于src的基地址而言，每个数值的单位为Bytes，数据类型根据srcLocal数据类型决定，支持情况如下。 srcOffsetLocal支持数据类型：u32。
 srcBaseAddr	输入	srcLocal的起始基地址，单位为Bytes。取值应保证src元素类型位宽对齐，否则会导致非预期行为。
@@ -29,6 +29,8 @@ count	输入	执行处理的数据个数，不得超过srcLocal和srcOffsetLocal
 [h2]支持的型号
 
 Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 KirinX90系列处理器
 

@@ -27,7 +27,7 @@ public:
         this->AICore()
             .SetTiling(optiling::TilingFunc);
         // 请替换为实际的Kirin AI处理器型号
-        this->AICore().AddConfig("kirin9020");
+        this->AICore().AddConfig("kirin9020"); // 对应的Kirin AI处理器
     }
 };
 OP_ADD(AddCustom);
@@ -172,7 +172,7 @@ public:
             .ParamType(REQUIRED)
             .DataType({ge::DT_FLOAT16, ge::DT_BF16})
             .Format({ge::FORMAT_ND, ge::FORMAT_ND});
-        this->AICore().AddConfig("kirin9020", config);
+        this->AICore().AddConfig("kirin9020", config); // 对应的Kirin AI处理器
     }
 };
 OP_ADD(MyAdd);
@@ -229,7 +229,7 @@ public:
         this->AICore()
             .SetTiling(optiling::TilingFunc);
         // 请替换为实际的Kirin AI处理器型号
-        this->AICore().AddConfig("kirin9020");
+        this->AICore().AddConfig("kirin9020"); // 对应的Kirin AI处理器
     }
 };
 OP_ADD(AddCustom);
@@ -335,7 +335,7 @@ public:
             .ParamType(REQUIRED)
             .DataType({ge::DT_FLOAT16, ge::DT_BF16})
             .Format({ge::FORMAT_ND, ge::FORMAT_ND});
-        this->AICore().AddConfig("kirin9020", config);
+        this->AICore().AddConfig("kirin9020", config); // 对应的Kirin AI处理器
     }
 };
 OP_ADD(MyAdd);

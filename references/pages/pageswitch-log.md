@@ -89,7 +89,7 @@ page_switch	com.example.myapplication	1	1	20260509142812417	log
 
 [h2]文件内容规格
 
-页面切换日志内容支持记录窗口切换日志、ArkUI路由切换日志等内容。
+页面切换日志内容支持记录窗口切换日志、ArkUI路由切换日志、UIAbility生命周期切换日志等内容。
 
 窗口切换日志规格。
 
@@ -141,6 +141,32 @@ Navigate change at {切换时间戳}: from page '{页面名称}' (split: {是否
 示例：
 
 2026-07-27 14:41:49.609 14043 14043 Navigate change at 1785134509304: from page 'navBar' (split: false) to page 'pageOne' (split: false). <- 页面由navBar跳转至pageOne，发生时刻的时间戳为1785134509304，跳转前后页面均处于非分栏模式。
+
+UIAbility生命周期切换日志规格。
+
+UIAbility生命周期切换日志用于记录UIAbility的生命周期变化，包含创建、销毁、前后台切换、WindowStage创建与销毁以及收到新Want的关键事件。UIAbility生命周期切换日志格式如下：
+
+{生命周期名称}, ModuleName: {模块名}, AbilityName: {Ability名}
+
+“生命周期名称”包含UIAbility生命周期回调事件。具体描述及含义如下表：
+
+生命周期名称	含义
+onCreate	UIAbility创建。
+onDestroy	UIAbility销毁。
+onWindowStageCreate	UIAbility的WindowStage创建。
+onWindowStageDestroy	UIAbility的WindowStage销毁。
+onForeground	UIAbility切换到前台。
+onBackground	UIAbility切换到后台。
+onNewWant	UIAbility实例已存在时，再次被拉起。
+
+应用在实际使用中的UIAbility生命周期切换日志示例如下：
+
+2026-07-27 14:34:46.513  56594  56594 onCreate, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility创建
+2026-07-27 14:34:46.540  56594  56594 onWindowStageCreate, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility的WindowStage创建
+2026-07-27 14:34:46.559  56594  56594 onForeground, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility切换到前台
+2026-07-27 14:34:58.222  56594  56594 onBackground, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility切换到后台
+2026-07-27 14:34:58.240  56594  56594 onWindowStageDestroy, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility的WindowStage销毁
+2026-07-27 14:34:58.259  56594  56594 onDestroy, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility销毁
 
 约束与限制
 
@@ -333,11 +359,28 @@ Navigate change at {切换时间戳}: from page '{页面名称}' (split: {是否
 ### Code block 8
 
 ```
+{生命周期名称}, ModuleName: {模块名}, AbilityName: {Ability名}
+```
+
+### Code block 9
+
+```
+2026-07-27 14:34:46.513  56594  56594 onCreate, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility创建
+2026-07-27 14:34:46.540  56594  56594 onWindowStageCreate, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility的WindowStage创建
+2026-07-27 14:34:46.559  56594  56594 onForeground, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility切换到前台
+2026-07-27 14:34:58.222  56594  56594 onBackground, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility切换到后台
+2026-07-27 14:34:58.240  56594  56594 onWindowStageDestroy, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility的WindowStage销毁
+2026-07-27 14:34:58.259  56594  56594 onDestroy, ModuleName: entry, AbilityName: EntryAbility    <- EntryAbility销毁
+```
+
+### Code block 10
+
+```
 import { BusinessError, deviceInfo } from '@kit.BasicServicesKit';
 import { hiAppEvent, hilog } from '@kit.PerformanceAnalysisKit';
 ```
 
-### Code block 9
+### Code block 11
 
 ```
 if (deviceInfo.sdkApiVersion >= 24) {  // API Version 24及以后版本，支持设置页面切换日志
@@ -356,7 +399,7 @@ if (deviceInfo.sdkApiVersion >= 24) {  // API Version 24及以后版本，支持
 }
 ```
 
-### Code block 10
+### Code block 12
 
 ```
 hiAppEvent.addWatcher({
@@ -391,7 +434,7 @@ hiAppEvent.addWatcher({
 });
 ```
 
-### Code block 11
+### Code block 13
 
 ```
 Button("appCrash").onClick(()=>{
@@ -400,7 +443,7 @@ Button("appCrash").onClick(()=>{
 })
 ```
 
-### Code block 12
+### Code block 14
 
 ```
 HiAppEvent onReceive: domain=OS

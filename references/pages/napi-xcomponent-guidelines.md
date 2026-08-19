@@ -86,7 +86,7 @@ Native侧OnSurfaceChanged的时序如下图：
 
 OnSurfaceDestroyed回调
 
-触发时刻：组件下树且autoInitialize=true 或者调用 OH_ArkUI_XComponent_Finalize后触发。
+触发时刻：组件下树且autoInitialize=true 或者调用OH_ArkUI_XComponent_Finalize后触发。
 
 Native侧OnSurfaceDestroyed的时序图：
 
@@ -654,7 +654,7 @@ XComponent组件上的基础事件（如点击、触摸）和手势事件（如�
 
 接口名	描述
 OH_ArkUI_QueryModuleInterfaceByName(ArkUI_NativeAPIVariantKind type, const char* structName)	获取指定类型的Native模块接口集合。
-OH_ArkUI_XComponent_GetNativeWindow(OH_ArkUI_SurfaceHolder* surfaceHolder)	获取与OH_ArkUI_SurfaceHolder实例关联的nativeWindow。
+OH_ArkUI_XComponent_GetNativeWindow(OH_ArkUI_SurfaceHolder* surfaceHolder)	获取与OH_ArkUI_SurfaceHolder实例关联的NativeWindow。
 OH_ArkUI_SurfaceHolder_RemoveSurfaceCallback(OH_ArkUI_SurfaceHolder* surfaceHolder, OH_ArkUI_SurfaceCallback* callback)	从OH_ArkUI_SurfaceHolder实例中移除先前添加的Surface生命周期回调。
 OH_ArkUI_SurfaceCallback_Dispose(OH_ArkUI_SurfaceCallback* callback)	释放OH_ArkUI_SurfaceCallback对象。
 OH_ArkUI_SurfaceHolder_Dispose(OH_ArkUI_SurfaceHolder* surfaceHolder)	释放OH_ArkUI_SurfaceHolder对象。
@@ -1594,7 +1594,7 @@ target_link_libraries(nativerender PUBLIC ${EGL-lib} ${GLES-lib} ${hilog-lib} ${
 
 在ArkTS侧创建XComponent组件，并使用XComponentController来管理其持有的Surface生命周期。
 
-在OnSurfaceCreated回调内获取surfaceId并将其传递给AVPlayer。
+在onSurfaceCreated回调内获取surfaceId并将其传递给AVPlayer。
 
 使用surfaceId初始化AVPlayer，并为其设置必要信息，实现视频的播放。
 

@@ -34,42 +34,15 @@ CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 
 创建并初始化平面语义标签label，用于描述平面的语义。
 
-AREngine_ARSemanticPlaneLabel label = ARENGINE_PLANE_UNKNOWN;
+AREngine_ARSemanticPlaneLabel planeLabel = ARENGINE_PLANE_UNKNOWN;
 
-平面语义标签定义为枚举类型，包括12种枚举值（1种未知类型+11种平面类型）。
-
-typedef enum {
-    /** Unknown type. */
-    ARENGINE_PLANE_UNKNOWN = 0,
-    /** Wall. */
-    ARENGINE_PLANE_WALL = 1,
-    /** Floor. */
-    ARENGINE_PLANE_FLOOR = 2,
-    /** Seat. */
-    ARENGINE_PLANE_SEAT = 3,
-    /** Table. */
-    ARENGINE_PLANE_TABLE = 4,
-    /** Ceiling. */
-    ARENGINE_PLANE_CEILING = 5,
-    /** Door. */
-    ARENGINE_PLANE_DOOR = 6,
-    /** Window. */
-    ARENGINE_PLANE_WINDOW = 7,
-    /** Bed. */
-    ARENGINE_PLANE_BED = 8,
-    /** Plane Space. */
-    ARENGINE_PLANE_SPACE = 9,
-    /** Cube Volume. */
-    ARENGINE_CUBE_VOLUME = 10,
-    /** Cube Space. */
-    ARENGINE_CUBE_SPACE = 11,
-} AREngine_ARSemanticPlaneLabel;
+平面语义标签定义为枚举类型，包括12种枚举值（1种未知类型+11种平面类型）。 参考AREngine_ARSemanticPlaneLabel
 
 识别平面类型
 
 调用HMS_AREngine_ARPlane_GetLabel函数，获取平面类型，结果存放在label中。平面的获取可以参考获取平面实例。
 
-HMS_AREngine_ARPlane_GetLabel(arSession, arPlane, &label);
+HMS_AREngine_ARPlane_GetLabel(arSession, arPlane, &planeLabel);
 
 ## Code blocks
 
@@ -90,42 +63,11 @@ CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 ### Code block 2
 
 ```
-AREngine_ARSemanticPlaneLabel label = ARENGINE_PLANE_UNKNOWN;
+AREngine_ARSemanticPlaneLabel planeLabel = ARENGINE_PLANE_UNKNOWN;
 ```
 
 ### Code block 3
 
 ```
-typedef enum {
-    /** Unknown type. */
-    ARENGINE_PLANE_UNKNOWN = 0,
-    /** Wall. */
-    ARENGINE_PLANE_WALL = 1,
-    /** Floor. */
-    ARENGINE_PLANE_FLOOR = 2,
-    /** Seat. */
-    ARENGINE_PLANE_SEAT = 3,
-    /** Table. */
-    ARENGINE_PLANE_TABLE = 4,
-    /** Ceiling. */
-    ARENGINE_PLANE_CEILING = 5,
-    /** Door. */
-    ARENGINE_PLANE_DOOR = 6,
-    /** Window. */
-    ARENGINE_PLANE_WINDOW = 7,
-    /** Bed. */
-    ARENGINE_PLANE_BED = 8,
-    /** Plane Space. */
-    ARENGINE_PLANE_SPACE = 9,
-    /** Cube Volume. */
-    ARENGINE_CUBE_VOLUME = 10,
-    /** Cube Space. */
-    ARENGINE_CUBE_SPACE = 11,
-} AREngine_ARSemanticPlaneLabel;
-```
-
-### Code block 4
-
-```
-HMS_AREngine_ARPlane_GetLabel(arSession, arPlane, &label);
+HMS_AREngine_ARPlane_GetLabel(arSession, arPlane, &planeLabel);
 ```

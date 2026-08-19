@@ -25,7 +25,7 @@ apl	表示应用程序的APL等级，系统定义的apl包括：normal、system_
 bundleName	标识应用名称。该字段来源于app.json5配置文件中的bundleName字段。	是	是
 versionCode	标识应用版本号。该字段来源于app.json5配置文件中的versionCode字段。	是	是
 apiReleaseType	标识应用运行需要的API目标版本的类型。设备中未安装该应用，该应用包含多个模块包，模块一个一个安装时，不检验一致性。该字段来源于app.json5配置文件中的apiReleaseType字段。	否	是
-targetBundleName	标识当前包所指定的目标应用，配置该字段的应用为具有overlay特征的应用。该字段来源app.json5配置文件中targetBundleName字段。	是	是
+targetBundleName	标识当前包所指定的目标应用，配置该字段的应用为具有overlay特征的应用。该字段来源于app.json5配置文件中targetBundleName字段。	是	是
 targetPriority	标识当前应用的优先级。该字段来源于app.json5配置文件中的targetPriority字段。	是	是
 bundleType	标识应用的类型。该字段来源于app.json5配置文件中的bundleType字段。	是	是
 installationFree	标识是否支持免安装。该字段来源于module.json5配置文件中的installationFree字段。	是	是

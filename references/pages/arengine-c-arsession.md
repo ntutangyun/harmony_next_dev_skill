@@ -17,10 +17,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 编写CMakeLists.txt。
 
 find_library(
-    # Sets the name of the path variable.
+    # 设置路径变量的名称。
     arengine-lib
-    # Specifies the name of the NDK library that
-    # you want CMake to locate.
+    # 指定希望CMake定位的NDK库的名称。
     libarengine_ndk.z.so
 )
 
@@ -32,23 +31,16 @@ target_link_libraries(entry PUBLIC
 
 应用开始时，调用HMS_AREngine_ARSession_Create函数创建一个AR会话。
 
-AREngine_ARSession *arSession = nullptr;
-HMS_AREngine_ARSession_Create(nullptr, nullptr, &arSession);
+CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
 
 自定义配置AR会话
 
 创建一个AREngine_ARConfig对象来配置当前AR会话。如缺省，则使用默认配置，具体配置可参考HMS_AREngine_ARConfig_Create。
 
-// 创建一个拥有合理默认配置的配置对象。
 AREngine_ARConfig *arConfig = nullptr;
-HMS_AREngine_ARConfig_Create(arSession, &arConfig);
-
-// 此处配置arConfig。
-
-// 配置AREngine_ARSession会话。
-HMS_AREngine_ARSession_Configure(arSession, arConfig);
-
-// 释放指定的配置对象的内存空间。
+CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
+// ...
+CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 HMS_AREngine_ARConfig_Destroy(arConfig);
 
 具体可配置项，请参考AR Engine API参考。
@@ -57,7 +49,7 @@ HMS_AREngine_ARConfig_Destroy(arConfig);
 
 应用结束时，调用HMS_AREngine_ARSession_Destroy函数销毁当前的AR会话。
 
-HMS_AREngine_ARSession_Destroy(arSession);
+HMS_AREngine_ARSession_Destroy(mArSession);
 
 ## Code blocks
 
@@ -71,10 +63,9 @@ HMS_AREngine_ARSession_Destroy(arSession);
 
 ```
 find_library(
-    # Sets the name of the path variable.
+    # 设置路径变量的名称。
     arengine-lib
-    # Specifies the name of the NDK library that
-    # you want CMake to locate.
+    # 指定希望CMake定位的NDK库的名称。
     libarengine_ndk.z.so
 )
 
@@ -86,28 +77,21 @@ target_link_libraries(entry PUBLIC
 ### Code block 3
 
 ```
-AREngine_ARSession *arSession = nullptr;
-HMS_AREngine_ARSession_Create(nullptr, nullptr, &arSession);
+CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
 ```
 
 ### Code block 4
 
 ```
-// 创建一个拥有合理默认配置的配置对象。
 AREngine_ARConfig *arConfig = nullptr;
-HMS_AREngine_ARConfig_Create(arSession, &arConfig);
-
-// 此处配置arConfig。
-
-// 配置AREngine_ARSession会话。
-HMS_AREngine_ARSession_Configure(arSession, arConfig);
-
-// 释放指定的配置对象的内存空间。
+CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
+// ...
+CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 HMS_AREngine_ARConfig_Destroy(arConfig);
 ```
 
 ### Code block 5
 
 ```
-HMS_AREngine_ARSession_Destroy(arSession);
+HMS_AREngine_ARSession_Destroy(mArSession);
 ```

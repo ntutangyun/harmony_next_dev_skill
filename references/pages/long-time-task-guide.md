@@ -26,7 +26,7 @@ async function sensorListener(): Promise<void> {
   })
 }
 
-给sensor添加ohos.permission.ACCELEROMETER权限，在module.json5中添加如下代码。
+给应用添加ohos.permission.ACCELEROMETER权限，在module.json5中的"module"字段中添加如下代码示例的"requestPermissions"字段，配置相关权限。
 
 "requestPermissions": [
   {

@@ -112,6 +112,7 @@ These typically require account configuration in AGC.
 | Speech (TTS, ASR core) | `@kit.CoreSpeechKit`, `@kit.SpeechKit` | `core-speech-kit-guide`, `speech-kit-guide` |
 | Vision (face, text, body, gesture) core / scenario | `@kit.CoreVisionKit`, `@kit.VisionKit` | `core-vision-kit-guide`, `vision-kit-guide` |
 | User intents framework (Siri-style intents) | `@kit.IntentsKit` | `intents-kit-guide` |
+| Multimodal awareness (多模态融合感知): device stationary/motion state, operating hand / holding hand (动作感知), metadata binding (记忆链接) — subscribe/unsubscribe model, needs permissions + sensor support | `@kit.MultimodalAwarenessKit` (`stationary`, `motion`) | `multimodalawareness-kit-intro`, `stationary-guidelines`, `stationary-glossary` |
 | MindSpore Lite inference | `@kit.MindSporeLiteKit` | `mindspore-lite-kit` |
 | Natural Language understanding | `@kit.NaturalLanguageKit` | `natural-language-kit-guide` |
 | Neural Network Runtime | `@kit.NeuralNetworkRuntimeKit` | `neural-network-runtime-kit` |

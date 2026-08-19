@@ -29,6 +29,8 @@ explicit MultiCoreMatmulTiling(const PlatformInfo &platform)
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 MatmulApiTiling()
 MultiCoreMatmulTiling()
 BatchMatmulTiling()

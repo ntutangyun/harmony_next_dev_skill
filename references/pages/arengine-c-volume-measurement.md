@@ -161,7 +161,7 @@ struct ARSemanticDenseRender {
                   this.volume = arEngineDemo.getVolume(this.idStr);
                 }
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             if (this.interval !== -1) {
@@ -395,7 +395,7 @@ struct ARSemanticDenseRender {
                   this.volume = arEngineDemo.getVolume(this.idStr);
                 }
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             if (this.interval !== -1) {

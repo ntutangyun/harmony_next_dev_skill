@@ -1,4 +1,4 @@
-# 剪贴板术语表
+# 剪贴板术语
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pasteboard-term_
 

@@ -66,6 +66,7 @@ struct Index {
               this.message = 'success';
             }).catch(() => {
               console.error(`Failed to execute taskpool.`);
+              this.message = 'fail';
             })
           })
       }
@@ -144,6 +145,7 @@ struct Index {
               this.message = 'success';
             }).catch(() => {
               console.error(`Failed to execute taskpool.`);
+              this.message = 'fail';
             })
           })
       }

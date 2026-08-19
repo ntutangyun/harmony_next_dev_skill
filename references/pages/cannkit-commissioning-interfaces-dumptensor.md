@@ -57,6 +57,8 @@ shapeInfo	输入	传入Tensor的shape信息，可按照shape信息进行打印�
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 约束说明

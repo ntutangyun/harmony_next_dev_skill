@@ -20,6 +20,8 @@ id	输入	TEventID类型，调用AllocEventID申请获得的TEventID。
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

@@ -40,6 +40,15 @@ add_definitions("-DLOG_TAG=\"testTag\"")
 add_library(entry SHARED napi_init.cpp)
 target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
 
+修改与Index.d.ets同目录下的配置文件oh-package.json5，配置如下：
+
+{
+  "name": "libentry.so",
+  "types": "./Index.d.ets",
+  "version": "1.0.0",
+  "description": "Please describe the basic information."
+}
+
 Native实现各项接口功能，例如取值、设置值或者给Native对象的值加1等功能。
 
 // napi_init.cpp
@@ -187,7 +196,7 @@ napi_value MyObject::Init(napi_env env, napi_value exports)
     // 定义一个Sendable class MyObject
     napi_define_sendable_class(env, "MyObject", NAPI_AUTO_LENGTH, New, nullptr,
                                sizeof(properties) / sizeof(properties[0]), properties, nullptr, &cons);
-
+    // &g_ref与模块同生命周期
     napi_create_reference(env, cons, 1, &g_ref);
     // 在exports对象上挂载MyObject类
     napi_set_named_property(env, exports, "MyObject", cons);
@@ -260,15 +269,6 @@ struct Index {
   }
 }
 
-修改与Index.d.ets同目录下的配置文件oh-package.json5，配置如下：
-
-{
-  "name": "libentry.so",
-  "types": "./Index.d.ets",
-  "version": "1.0.0",
-  "description": "Please describe the basic information."
-}
-
 ## Code blocks
 
 ### Code block 1
@@ -310,6 +310,17 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
 ```
 
 ### Code block 3
+
+```
+{
+  "name": "libentry.so",
+  "types": "./Index.d.ets",
+  "version": "1.0.0",
+  "description": "Please describe the basic information."
+}
+```
+
+### Code block 4
 
 ```
 // napi_init.cpp
@@ -457,7 +468,7 @@ napi_value MyObject::Init(napi_env env, napi_value exports)
     // 定义一个Sendable class MyObject
     napi_define_sendable_class(env, "MyObject", NAPI_AUTO_LENGTH, New, nullptr,
                                sizeof(properties) / sizeof(properties[0]), properties, nullptr, &cons);
-
+    // &g_ref与模块同生命周期
     napi_create_reference(env, cons, 1, &g_ref);
     // 在exports对象上挂载MyObject类
     napi_set_named_property(env, exports, "MyObject", cons);
@@ -488,7 +499,7 @@ static napi_module nativeModule = {
 extern "C" __attribute__((constructor)) void RegisterObjectWrapModule() { napi_module_register(&nativeModule); }
 ```
 
-### Code block 4
+### Code block 5
 
 ```
 // Index.ets
@@ -530,16 +541,5 @@ struct Index {
     }
     .height('100%')
   }
-}
-```
-
-### Code block 5
-
-```
-{
-  "name": "libentry.so",
-  "types": "./Index.d.ets",
-  "version": "1.0.0",
-  "description": "Please describe the basic information."
 }
 ```

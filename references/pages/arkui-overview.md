@@ -16,7 +16,33 @@ UI： 即用户界面。开发者可以将应用的用户界面设计为多个�
 
 声明式开发范式：采用基于TypeScript声明式UI语法扩展而来的ArkTS语言，从组件、动画和状态管理三个维度提供UI绘制能力。
 
-类Web开发范式：采用经典的HML、CSS、JavaScript三段式开发方式，即使用HML标签文件搭建布局、使用CSS文件描述样式、使用JavaScript文件处理逻辑。该范式更符合Web前端开发者的使用习惯，便于快速将已有的Web应用改造成方舟UI框架应用。
+类Web开发范式：采用经典的
+
+模拟器支持情况
+
+本Kit支持模拟器，但与真机存在部分能力差异，具体差异如下。
+
+通用差异，请参见模拟器与真机的差异。
+
+其他差异，模拟器不支持的功能以及组件如下：
+
+组件名	不支持情况
+Image	不支持enableAnalyzer
+图像类型定义	不支持图像AI分析，例如ImageAnalyzerController
+@ohos.arkui.drawableDescriptor	HDR特性不支持，例如setHdrComposition
+OH_ArkUI_TextDataDetectorConfig	不支持
+EmbeddedComponent	不支持
+@ohos.pluginComponent	不支持
+toolbar	不支持
+@Preview装饰器	不支持
+AbilityBase_Want	不支持
+ArkUI_EmbeddedComponentOption	不支持
+ArkUI_SelectedDragPreviewStyle	不支持
+embedded_component.h	不支持
+ArkUI_NodeAttributeType（EmbeddedComponent组件相关属性）	不支持
+restoreId	不支持
+
+、CSS、JavaScript三段式开发方式，即使用HML标签文件搭建布局、使用CSS文件描述样式、使用JavaScript文件处理逻辑。该范式更符合Web前端开发者的使用习惯，便于快速将已有的Web应用改造成方舟UI框架应用。
 
 在开发一款新应用时，推荐采用声明式开发范式来构建UI，主要基于以下几点考虑：
 
@@ -53,3 +79,27 @@ FA模型	卡片	类Web开发范式
 NDK开发：ArkUI开发框架提供了一系列NDK接口，能够在应用中使用C和C++代码构建UI界面，包括UI组件创建、UI树操作、属性设置和事件监听等。详细使用方式可参考NDK接口概述。
 
 适用场景：需要精细化创建和挂载UI组件、对性能有高要求的场景、业务已存在C或C++库可使用NDK能力进行对接。
+
+模拟器支持情况
+
+本Kit支持模拟器，但与真机存在部分能力差异，具体差异如下。
+
+通用差异，请参见模拟器与真机的差异。
+
+其他差异，模拟器不支持的功能以及组件如下：
+
+组件名	不支持情况
+Image	不支持enableAnalyzer
+图像类型定义	不支持图像AI分析，例如ImageAnalyzerController
+@ohos.arkui.drawableDescriptor	HDR特性不支持，例如setHdrComposition
+OH_ArkUI_TextDataDetectorConfig	不支持
+EmbeddedComponent	不支持
+@ohos.pluginComponent	不支持
+toolbar	不支持
+@Preview装饰器	不支持
+AbilityBase_Want	不支持
+ArkUI_EmbeddedComponentOption	不支持
+ArkUI_SelectedDragPreviewStyle	不支持
+embedded_component.h	不支持
+ArkUI_NodeAttributeType（EmbeddedComponent组件相关属性）	不支持
+restoreId	不支持

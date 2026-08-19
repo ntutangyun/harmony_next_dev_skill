@@ -74,6 +74,12 @@ Web组件的创建会触发Web内核的初始化。另外ArkWeb还提供了initi
 
 在NDK中可以在ets侧先调用testNapi.registerCustomSchemes注册自定义协议，然后调用initializeWebEngine初始化Web内核，示例如下：
 
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
+import testNapi from 'libentry.so';
+import { webview } from '@kit.ArkWeb';
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 注册三方协议的配置。
@@ -320,6 +326,12 @@ this.schemeHandler.onRequestStart((request: webview.WebSchemeHandlerRequest, res
 ### Code block 3
 
 ```
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
+import testNapi from 'libentry.so';
+import { webview } from '@kit.ArkWeb';
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 注册三方协议的配置。

@@ -107,7 +107,7 @@ maxChildProcess	标识当前应用自身可创建的子进程的最大个数，�
 multiAppMode	标识当前应用配置的多开模式。仅bundleType为app的应用的entry或feature模块配置有效，存在多个模块时，以entry模块的配置为准。	对象	该标签可缺省，缺省值为空。
 hwasanEnabled	标识应用程序是否开启HWAsan检测。HWAsan(HardWare-assisted AddressSanitizer)是利用Top-Byte-Ignore特性实现的增强版Asan，与Asan相比HWAsan的内存开销更低，检测到的内存错误范围更大。 - true：当前工程开启HWAsan检测。 - false：当前工程不开启HWAsan检测。 说明： 从API version 14开始，支持该标签。	布尔值	该标签可缺省，缺省值为false。
 tsanEnabled	标识应用程序是否开启使用TSan检测线程错误。 TSan（ThreadSanitizer）是一个检测数据竞争的工具。 - true：当前工程开启TSan检测。 - false：当前工程不开启TSan检测。	布尔值	该标签可缺省，缺省值为false。
-ubsanEnabled	标识应用程序是否使用UBSan检测未定义行为。 UBsan(Undefined Behavior Sanitizer)是一个用于运行时检测程序中未定义行为的工具，旨在帮助开发人员发现代码中潜在的错误和漏洞。 - true：当前工程开启UBsan检测。 - false：当前工程不开启UBsan检测。 说明： 从API version 14开始，支持该标签。	布尔值	该标签可缺省，缺省值为false。
+ubsanEnabled	标识应用程序是否使用UBSan检测未定义行为。 UBsan(Undefined Behavior Sanitizer)是一个用于运行时检测程序中未定义行为的工具，旨在帮助开发人员发现代码中潜在的错误和漏洞。 - true：当前工程开启UBSan检测。 - false：当前工程不开启UBsan检测。 说明： 从API version 14开始，支持该标签。	布尔值	该标签可缺省，缺省值为false。
 cloudFileSyncEnabled	标识当前应用是否启用端云文件同步能力。 - true：当前应用启用端云文件同步能力。 - false：当前应用不启用端云文件同步能力。	布尔值	该标签可缺省，缺省值为false。
 cloudStructuredDataSyncEnabled	标识当前应用是否启用端云结构化数据同步能力。 - true：当前应用启用端云结构化数据同步能力。 - false：当前应用不启用端云结构化数据同步能力。 说明： 从API version 20开始，支持该标签。	布尔值	该标签可缺省，缺省值为false。
 configuration	标识当前应用字体大小跟随系统配置的能力。 该标签是一个profile文件资源，用于指定描述应用字体大小跟随系统变更的配置文件。	字符串	该标签可缺省，缺省时configuration使用不跟随系统默认设定。
@@ -115,7 +115,7 @@ assetAccessGroups	配置应用的Group ID，它和Developer ID一起组成群组
 appPreloadPhase	配置应用预加载到不同阶段。支持的取值如下： -processCreated：预加载到进程创建完成阶段。 -abilityStageCreated：预加载到AbilityStage创建完成阶段。 -windowStageCreated：预加载到WindowStage创建完成阶段。 说明： 从API version 20开始，支持该标签。 仅在PC/2in1设备上生效。 仅在应用的entry模块配置有效。 该标签仅表示应用自身是否为预加载到所配置阶段做好了准备，最终能否预加载还需要由系统根据用户习惯等信息来决策。	字符串	该标签可缺省，缺省时不进行预加载。
 startMode	配置应用的启动模式，支持的取值如下： - mainTask：主任务模式，表示图标启动后打开主UIAbility。 - recentTask：最近任务模式，表示图标启动后打开最近使用的UIAbility。 说明： 从API version 20开始，支持该标签。 仅在launchType为单实例模式时生效。 该标签仅支持phone和tablet设备(不包含自由多窗)。	字符串	该标签可缺省，缺省值为mainTask。
 buildVersion	标识应用的构建版本号，建议采用“A.B.C”三段式。三段式建议的含义如下： 第一段：主版本号/Major，用于标识重大修改的版本，例如实现新的重大特性或重大变化。 第二段：次版本号/Minor，用于表示实现较突出的特性，例如新特性添加或大问题修复。 第三段：特性版本号/Feature，用于标识规划的新版本特性。 说明： 从API version 23开始，支持该标签。 字符串格式要求如下： - 字符串最小长度为1字节，最大长度18字节。 - 字符串由数字和'.'组成。 - '.'的数量限制0到2个，不能以'.'开头和结尾，也不能相邻。 - 数字段可以为0，但不能以0开头，如"02"，"0123"。	字符串	该标签可缺省，缺省值为空。
-profileable	标识是否允许调优工具对Profile签名文件为发布Profile的应用进行性能分析。 - true：允许调优工具对应用进行性能分析。 - false：不允许调优工具应用进行性能分析。 说明： 从API version 24开始，支持该标签。 仅当bundleType为app或atomicService时，可以配置该标签。	布尔值	该标签可缺省，缺省值为false。
+profileable	标识是否允许调优工具对Profile签名文件为发布Profile的应用进行性能分析。 - true：允许调优工具对应用进行性能分析。 - false：不允许调优工具对应用进行性能分析。 说明： 从API version 24开始，支持该标签。 仅当bundleType为app或atomicService时，可以配置该标签。	布尔值	该标签可缺省，缺省值为false。
 allowListenBundleChangedEvent	配置允许监听当前应用的安装、更新、卸载和清理缓存公共事件的三方应用列表。 一个数组元素即为一个应用程序的appIdentifier。 说明： 从API版本26.0.0开始，支持该标签。 仅当Profile签名文件为In-House发布Profile时，该配置生效。 仅当bundleType为app或atomicService时，可以配置该标签，其他类型配置该标签会导致编译失败。	字符串数组	该标签可缺省，缺省值为空。
 distributedNotificationEnabled(deprecated)	标识应用是否开启分布式通知，当开启分布式通知时，同一分布式组网下的两个设备（A和B），当设备A收到一条消息时，设备B会收到一条分布式消息用于设备B的使用者去查看设备A的消息。 - true：开启。 - false：不开启。 说明： 从API version 9开始废弃。	布尔值	该标签可缺省，缺省值为false。
 entityType(deprecated)	标识应用的类别，包括： - game：游戏类。 - media：影音类。 - communication：社交通信类。 - news：新闻类。 - travel：出行类。 - utility：工具类。 - shopping：购物类。 - education：教育类。 - kids：少儿类。 - business：商务类。 - photography：拍摄类。 - unspecified：其他，不属于上述类。 说明： 从API version 9开始废弃。	字符串	该标签可缺省，缺省为unspecified。

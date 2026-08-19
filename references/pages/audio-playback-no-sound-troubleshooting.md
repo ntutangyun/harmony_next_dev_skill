@@ -151,7 +151,7 @@ static OH_AudioData_Callback_Result MyOnWriteData_New(
 
 使用OHAudio播放的示例代码，请参考推荐使用OHAudio开发音频播放功能(C/C++)。
 
-使用AudioRenderer播放的示例代码，请参考使用AudioRenderer开发音频播放功能(ArkTs)。
+使用AudioRenderer播放的示例代码，请参考使用AudioRenderer开发音频播放功能(ArkTS)。
 
 如果问题与其他音频任务并发有关，优先参考音频焦点介绍，同时参考处理音频焦点变化。
 

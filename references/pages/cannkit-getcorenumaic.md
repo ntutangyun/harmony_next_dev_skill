@@ -16,7 +16,9 @@ uint32_t GetCoreNumAic(void) const;
 
 返回值
 
-针对Kirin9020系列处理器，Cube、Vector分离架构，返回AI Core上的Cube核数。
+若AI Core的架构为Cube、Vector分离架构，返回AI Core上的Cube核数；非分离架构返回AI Core的核数。
+
+目前涉及分离架构的处理器包括：Kirin9020系列处理器、Kirin9030系列处理器。
 
 约束说明
 

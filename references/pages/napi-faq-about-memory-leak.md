@@ -38,7 +38,7 @@ napi_value不在napi_handle_scope管理中，导致napi_value持有的ArkTS对�
 
 napi_threadsafe_function内存泄漏应该如何处理
 
-napi_threadsafe_function（下文简称tsfn）在使用时，常常会调用 napi_acquire_threadsafe_function 来更改tsfn的引用计数，确保tsfn不会意外被释放。但在使用完成后，应该及时使用 napi_tsfn_release 模式调用 napi_release_threadsafe_function 方法，以确保在所有调用回调都执行完成后，其引用计数能回归到调用 napi_acquire_threadsafe_function 方法之前的水平。当其引用计数归零时，tsfn才能正确的被释放。
+napi_threadsafe_function（下文简称tsfn）在使用时，常常会调用 napi_acquire_threadsafe_function 来更改tsfn的引用计数，确保tsfn不会意外被释放。但在使用完成后，应该及时使用 napi_tsfn_release 模式调用 napi_release_threadsafe_function 方法，以确保在所有调用回调都执行完成后，其引用计数能回归到调用 napi_acquire_threadsafe_function 方法之前的水平。当其引用计数归零时，tsfn才能正确地被释放。
 
 当env即将退出，但tsfn的引用计数未归零时，应使用 napi_tsfn_abort 模式调用 napi_release_threadsafe_function 方法，确保env释放后不再持有或使用tsfn。env退出后继续持有tsfn将导致未定义行为，可能引发崩溃。
 
@@ -57,10 +57,10 @@ napi_threadsafe_function（下文简称tsfn）在使用时，常常会调用 nap
 #define LOG_TAG "MY_TSFN_DEMO"
 
 /*
-  为构建一个 env 生命周期短于 native 生命周期的场景,
-  本示例需要使用worker, taskpool 或 napi_create_ark_runtime 等方法,
-  创建非主线程的ArkTS运行环境，并人为的提前结束掉该线程
-*/
+ * 为构建一个 env 生命周期短于 native 生命周期的场景,
+ * 本示例需要使用worker, taskpool 或 napi_create_ark_runtime 等方法,
+ * 创建非主线程的ArkTS运行环境，并人为的提前结束掉该线程
+ */
 
 
 // 定义一个数据结构，模拟存储tsfn的场景
@@ -241,10 +241,10 @@ workerPort.onmessage = (e: MessageEvents) => {
 #define LOG_TAG "MY_TSFN_DEMO"
 
 /*
-  为构建一个 env 生命周期短于 native 生命周期的场景,
-  本示例需要使用worker, taskpool 或 napi_create_ark_runtime 等方法,
-  创建非主线程的ArkTS运行环境，并人为的提前结束掉该线程
-*/
+ * 为构建一个 env 生命周期短于 native 生命周期的场景,
+ * 本示例需要使用worker, taskpool 或 napi_create_ark_runtime 等方法,
+ * 创建非主线程的ArkTS运行环境，并人为的提前结束掉该线程
+ */
 
 
 // 定义一个数据结构，模拟存储tsfn的场景

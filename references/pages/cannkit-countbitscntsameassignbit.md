@@ -27,6 +27,8 @@ valueIn	输入	输入数据，数据类型int64_t。
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 约束说明

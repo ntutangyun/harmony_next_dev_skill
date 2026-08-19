@@ -86,7 +86,7 @@ BlockDim是逻辑核的概念，取值范围为[1, 65535]。为了充分利用�
 
 AIC/AIV的核数分别通过GetCoreNumAic和GetCoreNumAiv接口获取。
 
-Kirin9020/KirinX90仅支持BlockDim设为1。
+Kirin9020/Kirin9030/KirinX90仅支持BlockDim设为1。
 
 [h2]TilingKey（可选）
 

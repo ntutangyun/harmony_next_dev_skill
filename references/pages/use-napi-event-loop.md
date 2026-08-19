@@ -202,13 +202,15 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
 
 需要在模块的build-profile.json5文件中进行以下配置
 
-"buildOption": {
-  "arkOptions" : {
-    "runtimeOnly" : {
-      "sources": [
-        "./src/main/ets/pages/ObjectUtils.ets"
-      ]
-    }
+  "buildOption": {
+    "arkOptions" : {
+      "runtimeOnly" : {
+        "sources": [
+          "./src/main/ets/pages/ObjectUtils.ets"
+        ]
+      }
+    },
+// ...
   },
 
 ArkTS代码示例
@@ -424,13 +426,15 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
 ### Code block 5
 
 ```
-"buildOption": {
-  "arkOptions" : {
-    "runtimeOnly" : {
-      "sources": [
-        "./src/main/ets/pages/ObjectUtils.ets"
-      ]
-    }
+  "buildOption": {
+    "arkOptions" : {
+      "runtimeOnly" : {
+        "sources": [
+          "./src/main/ets/pages/ObjectUtils.ets"
+        ]
+      }
+    },
+// ...
   },
 ```
 

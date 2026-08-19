@@ -336,6 +336,8 @@ Schema的核心在于args子对象，它定义了系统智能体可填写的入�
   ]
 }
 
+在完成Skill开发后，请参考真机测试进行调试。
+
 ## Code blocks
 
 ### Code block 1

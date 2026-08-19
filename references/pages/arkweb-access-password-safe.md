@@ -128,15 +128,42 @@ const char* const kWeakWords[] = {"id", "login", "mail"};
 
 [h2]不支持自动填充的密码登录表单类型
 
-初始页面内无用户名密码表单元素，点击登录跳转页面后，新增非<form>类型的用户名密码表单。
+以下场景不会自动弹出账号密码保存提示，如果当前页面存在账号密码保存记录，点击用户名或密码<input>元素仍会触发自动填充弹窗。此时需手动删除已保存的凭据，此后将不再出现自动保存或自动填充弹窗。
 
-密码输入框携带了autocomplete=“new-password”属性。
+初始页面内无用户名密码表单元素，点击登录跳转页面后，新增非<form>类型的用户名密码表单。
 
 用户名输入框type="number"，验证码输入框type="number"，无密码输入框。
 
+页面加载完成，<input>的type属性不是"password"，点击登录才变成"password"类型。
+
+密码<input>元素的autocomplete="one-time-code"或者"cc-*"。
+
+密码<input>元素在没有autocomplete时，id、name属性上能正则匹配到如下one-time-code或者信用卡标识。
+
+inline constexpr char16_t kOneTimePwdRe[] =
+    u"one.?time|sms.?(code|token|password|pwd|pass)";
+
+inline constexpr char16_t kCardCvcRe[] =
+    u"verification|card.?identification|security.?code|card.?code"
+    u"|security.?value"
+    u"|security.?number|card.?pin|c-v-v"
+    u"|código de segurança"  // pt-BR
+    u"|código de seguridad"  // es-MX
+    u"|karten.?prüfn"        // de-DE
+    u"|(?:cvn|cvv|cvc|csc|cvd|ccv)"
+    // We used to match "cid", but it is a substring of "cidade" (Portuguese for
+    // "city") and needs to be handled carefully.
+    u"|\\bcid\\b|cccid";
+
+[h2]不建议使用的密码登录表单类型
+
+针对期望自动弹出账号密码保存提示的场景，不推荐如下方法，可能存在不符合实现预期的问题。推荐写法见推荐的密码登录表单。
+
+密码输入框携带了autocomplete=“new-password”属性。
+
 用户名和密码元素中间存在其他<input>元素，算法推断出的用户名元素，不符合用户预期。
 
-网页通过javascript脚本，变更了<input>元素的焦点或者修改<input>元素的value。
+网页通过JavaScript脚本，变更了<input>元素的焦点或者修改<input>元素的value。
 
 用户名<input>元素上id、name、label内容中匹配到如下密码类型标识：
 
@@ -170,25 +197,6 @@ const char* const kNegativeNonLatin[] = {
     "මුරපදය", "contraseña", "lösenord", "гузарвожа",
     "கடவுச்சொல்", "పాస్వర్డ్", "รหัสผ่าน", "пароль",
     "پاسورڈ", "mậtkhẩu", "פּאַראָל", "ọrọigbaniwọle"};
-
-用户名<input>元素的autocomplete="one-time-code"或者"cc-*"，或者id、name属性上能正则匹配到如下one-time-code或者信用卡标识：
-
-inline constexpr char16_t kOneTimePwdRe[] =
-    u"one.?time|sms.?(code|token|password|pwd|pass)";
-
-inline constexpr char16_t kCardCvcRe[] =
-    u"verification|card.?identification|security.?code|card.?code"
-    u"|security.?value"
-    u"|security.?number|card.?pin|c-v-v"
-    u"|código de segurança"  // pt-BR
-    u"|código de seguridad"  // es-MX
-    u"|karten.?prüfn"        // de-DE
-    u"|(?:cvn|cvv|cvc|csc|cvd|ccv)"
-    // We used to match "cid", but it is a substring of "cidade" (Portuguese for
-    // "city") and needs to be handled carefully.
-    u"|\\bcid\\b|cccid";
-
-页面加载完成，<input>的type属性不是"password"，点击登录才变成"password"类型。
 
 ## Code blocks
 
@@ -263,6 +271,25 @@ const char* const kWeakWords[] = {"id", "login", "mail"};
 ### Code block 2
 
 ```
+inline constexpr char16_t kOneTimePwdRe[] =
+    u"one.?time|sms.?(code|token|password|pwd|pass)";
+
+inline constexpr char16_t kCardCvcRe[] =
+    u"verification|card.?identification|security.?code|card.?code"
+    u"|security.?value"
+    u"|security.?number|card.?pin|c-v-v"
+    u"|código de segurança"  // pt-BR
+    u"|código de seguridad"  // es-MX
+    u"|karten.?prüfn"        // de-DE
+    u"|(?:cvn|cvv|cvc|csc|cvd|ccv)"
+    // We used to match "cid", but it is a substring of "cidade" (Portuguese for
+    // "city") and needs to be handled carefully.
+    u"|\\bcid\\b|cccid";
+```
+
+### Code block 3
+
+```
 const char* const kNegativeLatin[] = {
     "pin",    "parola",   "wagwoord",   "wachtwoord",
     "fake",   "parole",   "givenname",  "achinsinsi",
@@ -293,23 +320,4 @@ const char* const kNegativeNonLatin[] = {
     "මුරපදය", "contraseña", "lösenord", "гузарвожа",
     "கடவுச்சொல்", "పాస్వర్డ్", "รหัสผ่าน", "пароль",
     "پاسورڈ", "mậtkhẩu", "פּאַראָל", "ọrọigbaniwọle"};
-```
-
-### Code block 3
-
-```
-inline constexpr char16_t kOneTimePwdRe[] =
-    u"one.?time|sms.?(code|token|password|pwd|pass)";
-
-inline constexpr char16_t kCardCvcRe[] =
-    u"verification|card.?identification|security.?code|card.?code"
-    u"|security.?value"
-    u"|security.?number|card.?pin|c-v-v"
-    u"|código de segurança"  // pt-BR
-    u"|código de seguridad"  // es-MX
-    u"|karten.?prüfn"        // de-DE
-    u"|(?:cvn|cvv|cvc|csc|cvd|ccv)"
-    // We used to match "cid", but it is a substring of "cidade" (Portuguese for
-    // "city") and needs to be handled carefully.
-    u"|\\bcid\\b|cccid";
 ```

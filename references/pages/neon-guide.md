@@ -10,7 +10,7 @@ ARMv8a架构CPU默认集成Neon扩展，在AArch64与AArch32两种状态下都�
 
 HarmonyOS架构支持情况
 
-在HarmonyOS系统中，arm64-v8a ABI下默认已经开启了对Neon扩展的支持；在armeabi-v7a ABI下，为了能够尽可能的支持ARMv7a架构设备，默认不开启Neon扩展。
+在HarmonyOS系统中，arm64-v8a ABI下默认已经开启了对Neon扩展的支持；在armeabi-v7a ABI下，为了能够尽可能地支持ARMv7a架构设备，默认不开启Neon扩展。
 
 在HarmonyOS SDK的LLVM工具链中，为armeabi-v7a ABI提供了对多种配置的预编译运行时库的支持，供开发者根据不同的配置进行选择。具体目录结构如下，native-root表示NDK所在的native包解压根目录。
 

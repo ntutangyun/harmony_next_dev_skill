@@ -24,8 +24,8 @@ U	源操作数数据类型。
 表2 参数说明
 
 参数名称	类型	说明
-dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
-srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
+dstLocal	输出	目的操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
+srcLocal	输入	源操作数。 类型为LocalTensor，支持的TPosition为VECIN、VECCALC、VECOUT。 LocalTensor的起始地址需要32字节对齐。 Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，支持的数据类型为：half、float | 支持mixed精度类型：dst为float，src为half
 scalarValue	输入	源操作数，scalar标量。支持的数据类型为：half/float。scalarValue的数据类型需要和srcLocal保持一致。
 calCount	输入	输入数据元素个数。
 
@@ -36,6 +36,8 @@ calCount	输入	输入数据元素个数。
 支持的型号
 
 Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 KirinX90系列处理器
 

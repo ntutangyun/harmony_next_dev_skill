@@ -45,7 +45,7 @@ kernel	开启CPU调测功能的固定参数。	是	无	无
 --repo-type	算子开发场景类型。	否	customize	根据实际情况设置。 - minimalist：核函数直调工程场景。 - customize：标准自定义算子工程。
 --customize-path	自定义算子包的安装目录。	否	无	开发者无需关注，当前固定为${install_path}/ddk/ tools/tools_ascendc/custom_op/${chip-version}。 说明： 仅当--repo-type为customize，该参数生效。
 --dump-mode	PRINTF/DumpTensor/DumpAccChkPoint/assert打印功能的模式。	否	无	若不设置表示关闭打印功能，若开启支持如下取值： normal： 使能通用的打印功能。 更多打印功能说明参见更多功能。 说明： CPU调测场景中printf采用C++自身打印功能，不受dump-mode参数控制。
---core-type	算子类型。	否	AiCore	根据实际算子情况填写，可选值为AiCore、CubeCore、VectorCore Kirin9020/KirinX90系列处理器中的算子，一般使用了AI Cube计算单元，其算子类型为AiCore。
+--core-type	算子类型。	否	AiCore	根据实际算子情况填写，可选值为AiCore、CubeCore、VectorCore Kirin9020/Kirin9030/KirinX90系列处理器中的算子，一般使用了AI Cube计算单元，其算子类型为AiCore。
 --rel-err-thd	精度比对的相对误差阈值。	否	0.005	无
 --abs-err-thd	精度比对的绝对误差阈值。	否	0.005	无
 --block-num	设置运行的核个数。	否	无	如果有tiling bin文件，则使用其对应的block_num值，否则根据实际情况自行配置。

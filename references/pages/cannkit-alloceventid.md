@@ -20,6 +20,8 @@ evt	输入	HardEvent硬件同步类型。
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

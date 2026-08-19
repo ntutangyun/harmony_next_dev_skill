@@ -3811,7 +3811,7 @@ Unable to get plugin in hvigorfile.ts of module 'XXX'. At file: YYY.
 
 模块下的hvigorfile.ts中使用了未定义的属性或方法。
 
-模块下的hvigorfile.ts中导出的deafult对象的system字段值和本模块module.json5中的type字段值不匹配。
+模块下的hvigorfile.ts中导出的default对象的system字段值和本模块module.json5中的type字段值不匹配。
 
 处理步骤
 
@@ -3969,7 +3969,7 @@ Agent extensionAbility的metadata下的name属性值不是ohos.extension.agent�
 
 确保Agent extensionAbility的metadata下的name属性值是ohos.extension.agent。
 
-00303290 Agent extensionAbility的metadata.resouece配置不合法
+00303290 Agent extensionAbility的metadata.resource配置不合法
 
 错误信息
 
@@ -3987,7 +3987,7 @@ name为YYY的extensionAbility的metadata下的resource属性值XXX格式错误�
 
 确保extensionAbilty的metadata下的resource属性值格式正确，建议使用推荐的格式，例如：'$profile:agent_config'。
 
-00303291 Agent extensionAbility的metadata.resouece配置文件不存在
+00303291 Agent extensionAbility的metadata.resource配置文件不存在
 
 错误信息
 
@@ -3999,7 +3999,7 @@ The agentConfig resource file 'XXX' with the target 'YYY' for the module 'WWW' d
 
 可能原因
 
-模块WWW的Agent extensionAbility的metadata下的resouece对应的配置文件XXX不存在。
+模块WWW的Agent extensionAbility的metadata下的resource对应的配置文件XXX不存在。
 
 处理步骤
 

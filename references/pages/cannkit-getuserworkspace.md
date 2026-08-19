@@ -21,6 +21,8 @@ workspace	输入	传入workspace的指针，包括系统workspace和开发者使
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

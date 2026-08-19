@@ -128,6 +128,10 @@ struct ARSemanticDense {
       context.init().then(() => {
         this.arContext = context;
         // ...
+      });
+    })
+  }
+}
 
 [h2]获取立方体体积数据
 
@@ -275,6 +279,10 @@ struct ARSemanticDense {
       context.init().then(() => {
         this.arContext = context;
         // ...
+      });
+    })
+  }
+}
 ```
 
 ### Code block 4

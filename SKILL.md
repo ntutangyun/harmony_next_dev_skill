@@ -26,13 +26,13 @@ When the user asks a HarmonyOS question, identify which surface area is in play 
 | Background work, notifications, common events, permissions, IPC/RPC | `references/05-services-and-system.md` |
 | Files, preferences, KV store, relational DB, network (HTTP / WebSocket / connection manager) | `references/06-data-and-network.md` |
 | Cards (ArkTS widgets), i18n/l10n, localization | `references/07-cards-and-i18n.md` |
-| Xiaoyi (小艺) agent development: creating intelligent agents (智能体), Agent communication protocol (cloud A2A / device A2A, JSON-RPC 2.0, AgentCard), agent modes (端A2A/云A2A/云工作流/OpenClaw/LLM/多Agents), Skill development for 小艺Claw (Vibe Coding, SKILL.md packages), agent orchestration (prompts, plugins, workflows, knowledge base, variables, memory), AgentKit in-app launcher, agent publishing/review, digital product payment, OpenClaw integration, Xiaoyi Compass | `references/11-xiaoyi-agent-dev.md` |
+| Xiaoyi (小艺) agent development: creating intelligent agents (智能体), Agent communication protocol (cloud A2A / device A2A, JSON-RPC 2.0, AgentCard), agent modes (端A2A/云A2A/云工作流/OpenClaw/LLM/多Agents), Skill development for 小艺Claw (Vibe Coding, SKILL.md packages), agent orchestration (prompts, plugins, workflows, knowledge base, variables, memory), AgentKit in-app launcher, agent publishing/review, digital product payment, OpenClaw integration, Xiaoyi Compass, best-practice cases (京东 cloud-A2A, Vibe Coding Skills), system-agent GUI operation status (`AI_Operation_Mode`) | `references/11-xiaoyi-agent-dev.md` |
 | DevEco Studio, hvigor build, signing, run on device/emulator, debug, publish, ohpm | `references/08-tooling-and-build.md` |
 | Testing (unit + UI), performance, security, UX guidelines | `references/09-testing-and-quality.md` |
 | Kit overviews (Push, IAP, Payment, Map, Audio, Media, Image, Vision, Speech, Intents, ArkGraphics, NDK) | `references/10-kits-catalog.md` |
 | Quick start — "build my first HarmonyOS app" walkthrough | `references/00-quick-start.md` |
 
-If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5697 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-08-12) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
+If the user's question doesn't map to one of the above, search `references/manifest.json` for the matching slug and read the corresponding `references/pages/<slug>.md`. **All 5698 pages from the official `harmonyos-guides` docs are bundled offline** (last synced 2026-08-19) — you do not need internet access to look anything up. Pages are stripped of nav/footer chrome but preserve original content + code blocks.
 
 To find a slug:
 - `grep -lir "<keyword>" references/pages/` to search by content
@@ -113,7 +113,7 @@ The HarmonyOS docs evolve fast and the user's project may target a specific API 
 
 ## Reaching beyond this skill
 
-**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5697 pages, synced 2026-08-12 — re-sync with `python scripts/update_docs.py`). For:
+**Everything in `harmonyos-guides` is already bundled offline** (`references/pages/`, 5698 pages, synced 2026-08-19 — re-sync with `python scripts/update_docs.py`). For:
 - Doc URLs to cite: `https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/<slug>`
 - API reference root (not bundled — visit if needed): `https://developer.huawei.com/consumer/cn/doc/harmonyos-references/development-intro-api`
 - Best practices (not bundled): `https://developer.huawei.com/consumer/cn/doc/best-practices/...`

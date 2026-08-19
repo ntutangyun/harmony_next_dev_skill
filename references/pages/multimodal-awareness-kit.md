@@ -11,3 +11,5 @@ Stationary开发指导
 设备状态感知开发指导
 
 记忆链接开发指导
+
+Multimodal Awareness Kit术语
