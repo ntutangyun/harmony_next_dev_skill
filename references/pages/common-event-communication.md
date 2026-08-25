@@ -15,3 +15,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/common-ev
 取消订阅公共事件（C/C++）
 
 发布公共事件（C/C++）
+
+Common Event Service术语

@@ -2,7 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-incognito-mode_
 
-开发者在创建Web组件时，可以将可选参数incognitoMode设置为true，来开启Web组件的隐私模式。使用隐私模式浏览网页时，Cookie、缓存等数据不会写入本地持久化存储；隐私模式的Web组件销毁后，这些数据将被清除，不会保留。
+使用隐私模式浏览网页时，Cookie、缓存等数据不会写入本地持久化存储；隐私模式的Web组件销毁后，这些数据将被清除，不会保留。
+
+开启隐私模式
+
+开发者在创建Web组件时，可以将可选参数incognitoMode设置为true，来开启Web组件的隐私模式。
 
 创建隐私模式的Web组件。
 
@@ -47,7 +51,7 @@ struct WebComponent {
   }
 }
 
-隐私模式提供了一系列接口，用于操作地理位置、Cookie以及Cache Data。
+隐私模式下操作地理位置
 
 通过allowGeolocation设置隐私模式下的Web组件允许指定来源使用地理位置。
 
@@ -140,6 +144,8 @@ struct WebComponent {
   }
 }
 
+隐私模式下清除内存中的Web数据
+
 通过deleteAllData清除隐私模式下Web SQL当前使用的所有存储。
 
 import { webview } from '@kit.ArkWeb';
@@ -210,6 +216,8 @@ struct WebComponent {
 <div id="status" name="status">状态信息</div>
 </body>
 </html>
+
+隐私模式下管理Cookie
 
 通过fetchCookieSync获取隐私模式下指定url对应cookie的值。
 

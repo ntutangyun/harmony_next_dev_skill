@@ -20,6 +20,8 @@ tiling_arg	输入	此参数为算子入口函数处传入的tiling参数。
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 约束说明

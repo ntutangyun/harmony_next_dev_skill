@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-
 
 创建动态卡片
 
-新建一个名为WidgetEventCall的ArkTs动态卡片。
+新建一个名为WidgetEventCall的ArkTS动态卡片。
 
 页面布局代码实现
 
@@ -150,7 +150,7 @@ export default class WidgetEventCallEntryAbility extends UIAbility {
 
 配置后台运行权限
 
-call事件存在约束限制，卡片提供方应用需要在module.json5下添加后台运行权限(ohos.permission.KEEP_BACKGROUND_RUNNING)。
+call事件存在约束限制，卡片提供方应用需要在module.json5下添加后台运行权限（ohos.permission.KEEP_BACKGROUND_RUNNING）。
 
 //src/main/module.json5
 "requestPermissions": [

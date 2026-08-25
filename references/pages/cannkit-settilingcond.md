@@ -23,7 +23,7 @@ tiling_cond	输入	需要设置的tiling cond。
 
 约束说明
 
-当前支持的Kirin9020和KirinX90系列处理器是分离架构。
+当前支持的Kirin9020、Kirin9030和KirinX90系列处理器是分离架构。
 
 调用示例
 

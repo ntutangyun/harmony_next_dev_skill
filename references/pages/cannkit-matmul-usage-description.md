@@ -48,9 +48,9 @@ template <AscendC::TPosition POSITION, CubeFormat FORMAT, typename TYPE, bool IS
 表1 MatmulType参数说明
 
 参数	说明
-POSITION	内存逻辑位置 Kirin9020系列处理器： - A矩阵可设置为TPosition::GM，TPosition::TSCM - B矩阵可设置为TPosition::GM，TPosition::TSCM - C矩阵可设置为TPosition::GM
-CubeFormat	Kirin9020系列处理器： - A矩阵在GM时，支持CubeFormat::ND。 - A矩阵在TSCM时，支持CubeFormat::NZ/CubeFormat::VECTOR。 - B矩阵在GM时，支持CubeFormat::ND/CubeFormat::NZ。 - B矩阵在TSCM时支持CubeFormat::NZ。 - C矩阵在GM时，支持CubeFormat::ND。
-TYPE	Kirin9020系列处理器： - A矩阵可设置为half。 - B矩阵可设置为half。 - C矩阵可设置为half。
+POSITION	内存逻辑位置 Kirin9020系列处理器、Kirin9030系列处理器： - A矩阵可设置为TPosition::GM，TPosition::TSCM - B矩阵可设置为TPosition::GM，TPosition::TSCM - C矩阵可设置为TPosition::GM
+CubeFormat	Kirin9020系列处理器、Kirin9030系列处理器： - A矩阵在GM时，支持CubeFormat::ND。 - A矩阵在TSCM时，支持CubeFormat::NZ/CubeFormat::VECTOR。 - B矩阵在GM时，支持CubeFormat::ND/CubeFormat::NZ。 - B矩阵在TSCM时支持CubeFormat::NZ。 - C矩阵在GM时，支持CubeFormat::ND。
+TYPE	Kirin9020系列处理器、Kirin9030系列处理器： - A矩阵可设置为half。 - B矩阵可设置为half。 - C矩阵可设置为half。
 ISTRANS	是否开启使能矩阵转置的功能。当前不支持转置，只支持设为false。 false为不开启使能矩阵转置的功能，通过SetTensorA和SetTensorB不能设置A、B矩阵是否转置。Matmul会认为A矩阵形状为[M, K]，B矩阵形状为[K, N]。 默认为false不使能转置。
 LAYOUT	表征数据的排布。 NONE：默认值，表示不使用BatchMatmul，其他选项表示使用BatchMatmul。
 

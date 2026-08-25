@@ -104,6 +104,8 @@ export {value, test};
       ]
     }
   },
+// ...
+},
 
 使用napi_load_module加载Test文件，调用函数test以及获取变量value：
 
@@ -151,7 +153,7 @@ function test() {
 }
 export {value, test};
 
-需要当前模块的build-profile.json5文件中进行以下配置：
+需要在当前模块的build-profile.json5文件中进行以下配置：
 
 {
   "buildOption" : {
@@ -628,6 +630,8 @@ export {value, test};
       ]
     }
   },
+// ...
+},
 ```
 
 ### Code block 5

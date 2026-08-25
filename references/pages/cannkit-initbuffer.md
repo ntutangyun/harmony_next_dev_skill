@@ -30,6 +30,8 @@ len	输入	为TBuf分配的内存大小，单位为Byte，非32Bytes对齐会自
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

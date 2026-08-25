@@ -21,8 +21,8 @@ sync	获取C矩阵过程分为同步和异步两种模式： - 同步：需要�
 表2 接口参数说明
 
 参数名	输入/输出	描述
-gm	输入	C矩阵放置于Global Memory的地址。 Kirin9020系列处理器，支持的数据类型为：half
-ubCmatrix	输入	C矩阵放置于Local Memory的地址。TPosition可设置为TPosition::TSCM。 Kirin9020系列处理器，支持的数据类型为：half
+gm	输入	C矩阵放置于Global Memory的地址。 Kirin9020系列处理器、Kirin9030系列处理器，支持的数据类型为：half。
+ubCmatrix	输入	C矩阵放置于Local Memory的地址。TPosition可设置为TPosition::TSCM。 Kirin9020系列处理器、Kirin9030系列处理器，支持的数据类型为：half。
 enAtomic	输入	是否开启Atomic操作，默认值为0。 参数取值： 0：不开启Atomic操作 1：开启AtomicAdd累加操作 2：开启AtomicMax求最大值操作 3：开启AtomicMin求最小值操作 。
 enSequentialWrite	输入	是否开启连续写模式（连续写，写入[baseM, baseN]。非连续写，写入[singleCoreM、singleCoreN]中对应的位置），默认值false（非连续写模式）。
 waitIterateAll	输入	仅在异步场景下使用，是否需要通过WaitIterateAll接口等待IterateAll执行结束。 true：需要通过WaitIterateAll接口等待IterateAll执行结束。 false：不需要通过WaitIterateAll接口等待IterateAll执行结束，开发者自行处理等待IterateAll执行结束的过程。
@@ -35,6 +35,8 @@ fakeMsg	输入	仅在IBShare（模板参数中开启了doIBShareNorm开关）场
 支持的型号
 
 Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 注意事项
 

@@ -48,16 +48,14 @@ napi_module_register
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
-// 此模块是一个Node-API的回调函数
+// 模块加载
 static napi_value Add(napi_env env, napi_callback_info info)
 {
     // 接受传入两个参数
     size_t requireArgc = 2;
     size_t argc = 2;
     napi_value args[2] = {nullptr};
-    napi_get_cb_info(env, info, &argc, args , nullptr, nullptr);
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
     // 将传入的napi_value类型的参数转化为double类型
     double valueLeft;
@@ -72,28 +70,32 @@ static napi_value Add(napi_env env, napi_callback_info info)
     return sum;
 }
 
+// ...
+
 // C++函数Init用于初始化插件，用于将ArkTS层的函数或属性与C++层的函数进行关联
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
 {
     // 通过napi_property_descriptor结构体，可以定义需要导出的属性，并在Node-API模块中使用。napi_define_properties将属性与实际的C++函数进行关联，使其可以被ArkTS层访问和调用
     napi_property_descriptor desc[] = {
-        { "add", nullptr, Add, nullptr, nullptr, nullptr, napi_default, nullptr }
+        {"add", nullptr, Add, nullptr, nullptr, nullptr, napi_default, nullptr},
+        // ...
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    // ...
     return exports;
 }
 EXTERN_C_END
 
 // 插件的初始化被定义在一个名为demoModule的结构体中，其中包含了模块的基本信息，比如模块的版本号、注册函数等
 static napi_module demoModule = {
-    .nm_version =1,
+    .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = nullptr,
     .nm_register_func = Init,
     .nm_modname = "entry",
-    .nm_priv = ((void*)0),
-    .reserved = { 0 },
+    .nm_priv = ((void *)0),
+    .reserved = {0},
 };
 
 // 在RegisterEntryModule函数中，使用napi_module_register函数注册并导出了这个插件
@@ -910,13 +912,14 @@ static napi_value GetSendableArrayWithLength(napi_env env, napi_callback_info in
 
 接口声明
 
-// index.d.ts
-export const getSendableArrayWithLength: () => [];
+export const getSendableArrayWithLength: () => []; // Sendable相关 napi_create_sendable_array_with_length
 
 ArkTS侧示例代码
 
+// Sendable相关 napi_create_sendable_array_with_length
 let value = testNapi.getSendableArrayWithLength();
-hilog.info(0x0000, 'testTag', 'Node-API napi_create_sendable_array_with_length: %{public}s', JSON.stringify(value.length));
+hilog.info(0x0000, 'testTag', 'Node-API napi_create_sendable_array_with_length: %{public}s',
+  JSON.stringify(value.length));
 
 napi_create_sendable_arraybuffer
 
@@ -924,11 +927,13 @@ napi_create_sendable_arraybuffer
 
 cpp部分代码
 
-static napi_value GetSendableArrayBuffer(napi_env env, napi_callback_info info) {
-    static size_t LENGTH = 1024;
+// Sendable相关 napi_create_sendable_arraybuffer
+static napi_value GetSendableArrayBuffer(napi_env env, napi_callback_info info)
+{
+    static size_t length = 1024;
     void *data;
     napi_value result = nullptr;
-    napi_create_sendable_arraybuffer(env, LENGTH, &data, &result);
+    napi_create_sendable_arraybuffer(env, length, &data, &result);
     bool isArrayBuffer = false;
     napi_is_arraybuffer(env, result, &isArrayBuffer);
     OH_LOG_INFO(LOG_APP, "isArrayBuffer: %{public}d", isArrayBuffer);
@@ -937,11 +942,11 @@ static napi_value GetSendableArrayBuffer(napi_env env, napi_callback_info info) 
 
 接口声明
 
-// index.d.ts
-export const getSendableArrayBuffer: () => ArrayBuffer;
+export const getSendableArrayBuffer: () => ArrayBuffer; // Sendable相关 napi_create_sendable_arraybuffer
 
 ArkTS侧示例代码
 
+// Sendable相关 napi_create_sendable_arraybuffer
 testNapi.getSendableArrayBuffer();
 
 napi_create_sendable_typedarray
@@ -950,15 +955,17 @@ napi_create_sendable_typedarray
 
 cpp部分代码
 
-static napi_value GetSendableTypedArray(napi_env env, napi_callback_info info) {
-    static size_t LENGTH = 1024;
-    static size_t OFFSET = 0;
+// Sendable相关 napi_create_sendable_typedarray
+static napi_value GetSendableTypedArray(napi_env env, napi_callback_info info)
+{
+    static size_t length = 1024;
+    static size_t offset = 0;
     void *data;
     napi_value arraybuffer = nullptr;
-    napi_create_sendable_arraybuffer(env, LENGTH, &data, &arraybuffer);
+    napi_create_sendable_arraybuffer(env, length, &data, &arraybuffer);
 
     napi_value result = nullptr;
-    napi_create_sendable_typedarray(env, napi_uint8_array, LENGTH, arraybuffer, OFFSET, &result);
+    napi_create_sendable_typedarray(env, napi_uint8_array, length, arraybuffer, offset, &result);
     bool isTypedArray = false;
     napi_is_typedarray(env, result, &isTypedArray);
     OH_LOG_INFO(LOG_APP, "isTypedArray: %{public}d", isTypedArray);
@@ -967,14 +974,11 @@ static napi_value GetSendableTypedArray(napi_env env, napi_callback_info info) {
 
 接口声明
 
-// index.d.ts
-export const getSendableTypedArray: () => void;
+export const getSendableTypedArray: () => Uint8Array; // Sendable相关 napi_create_sendable_typedarray
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_create_sendable_typedarray
 testNapi.getSendableTypedArray();
 
 napi_wrap_sendable
@@ -983,9 +987,9 @@ napi_wrap_sendable
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
-static napi_value WrapSendable(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_wrap_sendable
+static napi_value WrapSendable(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -994,22 +998,20 @@ static napi_value WrapSendable(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr);
+    const char *testStr = "test";
+    napi_wrap_sendable(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr);
 
     return nullptr;
 }
 
 接口声明
 
-// index.d.ts
-export const wrapSendable: () => void;
+export const wrapSendable: () => void; // Sendable相关 napi_wrap_sendable
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_wrap_sendable
 testNapi.wrapSendable();
 
 napi_wrap_sendable_with_size
@@ -1018,9 +1020,11 @@ napi_wrap_sendable_with_size
 
 cpp部分代码
 
-#include "napi/native_api.h"
+static constexpr int INT_ARG_100 = 100; // 入参索引
 
-static napi_value WrapSendableWithSize(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_wrap_sendable_with_size
+static napi_value WrapSendableWithSize(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -1029,22 +1033,20 @@ static napi_value WrapSendableWithSize(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable_with_size(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr, 100);
+    const char *testStr = "test";
+    napi_wrap_sendable_with_size(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr, INT_ARG_100);
 
     return nullptr;
 }
 
 接口声明
 
-// index.d.ts
-export const wrapSendableWithSize: () => void;
+export const wrapSendableWithSize: () => void; // Sendable相关 napi_wrap_sendable_with_size
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_wrap_sendable_with_size
 testNapi.wrapSendableWithSize();
 
 napi_unwrap_sendable
@@ -1053,9 +1055,9 @@ napi_unwrap_sendable
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
-static napi_value UnwrapSendable(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_unwrap_sendable
+static napi_value UnwrapSendable(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -1064,11 +1066,12 @@ static napi_value UnwrapSendable(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr);
+    const char *testStr = "test";
+    napi_wrap_sendable(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr);
 
-    char* tmpTestStr = nullptr;
-    napi_unwrap_sendable(env, obj, (void**)&tmpTestStr);
+    char *tmpTestStr = nullptr;
+    napi_unwrap_sendable(env, obj, (void **)&tmpTestStr);
     OH_LOG_INFO(LOG_APP, "native value is %{public}s", tmpTestStr);
 
     return nullptr;
@@ -1076,14 +1079,11 @@ static napi_value UnwrapSendable(napi_env env, napi_callback_info info) {
 
 接口声明
 
-// index.d.ts
-export const unwrapSendable: () => void;
+export const unwrapSendable: () => void; // Sendable相关 napi_unwrap_sendable
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_unwrap_sendable
 testNapi.unwrapSendable();
 
 napi_remove_wrap_sendable
@@ -1092,9 +1092,9 @@ napi_remove_wrap_sendable
 
 cpp部分代码
 
-#include "napi/native_api.h"
-
-static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_remove_wrap_sendable
+static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -1103,11 +1103,12 @@ static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr);
+    const char *testStr = "test";
+    napi_wrap_sendable(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr);
 
-    char* tmpTestStr = nullptr;
-    napi_remove_wrap_sendable(env, obj, (void**)&tmpTestStr);
+    char *tmpTestStr = nullptr;
+    napi_remove_wrap_sendable(env, obj, (void **)&tmpTestStr);
     OH_LOG_INFO(LOG_APP, "native value is %{public}s", tmpTestStr);
 
     return nullptr;
@@ -1115,14 +1116,11 @@ static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info) {
 
 接口声明
 
-// index.d.ts
-export const removeWrapSendable: () => void;
+export const removeWrapSendable: () => void; // Sendable相关 napi_remove_wrap_sendable
 
 ArkTS侧示例代码
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_remove_wrap_sendable
 testNapi.removeWrapSendable();
 
 以上代码如果要在native cpp中打印日志，需在CMakeLists.txt文件中添加以下配置信息（并添加头文件：#include "hilog/log.h"）：
@@ -1164,7 +1162,7 @@ static napi_value TestNapiWrapEnhance(napi_env env, napi_callback_info info)
     napi_new_instance(env, testClass, 0, nullptr, &obj);
     const char* testStr = "test";
     napi_ref wrappedRef = nullptr;
-    napi_wrap_enhance(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, false, nullptr, sizeof(testStr), &wrappedRef);
+    napi_wrap_enhance(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, false, nullptr, sizeof(testStr) + 1, &wrappedRef);
     return nullptr;
 }
 
@@ -1305,16 +1303,14 @@ import { taskpool } from '@kit.ArkTS';
 ### Code block 3
 
 ```
-#include "napi/native_api.h"
-
-// 此模块是一个Node-API的回调函数
+// 模块加载
 static napi_value Add(napi_env env, napi_callback_info info)
 {
     // 接受传入两个参数
     size_t requireArgc = 2;
     size_t argc = 2;
     napi_value args[2] = {nullptr};
-    napi_get_cb_info(env, info, &argc, args , nullptr, nullptr);
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
     // 将传入的napi_value类型的参数转化为double类型
     double valueLeft;
@@ -1329,28 +1325,32 @@ static napi_value Add(napi_env env, napi_callback_info info)
     return sum;
 }
 
+// ...
+
 // C++函数Init用于初始化插件，用于将ArkTS层的函数或属性与C++层的函数进行关联
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
 {
     // 通过napi_property_descriptor结构体，可以定义需要导出的属性，并在Node-API模块中使用。napi_define_properties将属性与实际的C++函数进行关联，使其可以被ArkTS层访问和调用
     napi_property_descriptor desc[] = {
-        { "add", nullptr, Add, nullptr, nullptr, nullptr, napi_default, nullptr }
+        {"add", nullptr, Add, nullptr, nullptr, nullptr, napi_default, nullptr},
+        // ...
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
+    // ...
     return exports;
 }
 EXTERN_C_END
 
 // 插件的初始化被定义在一个名为demoModule的结构体中，其中包含了模块的基本信息，比如模块的版本号、注册函数等
 static napi_module demoModule = {
-    .nm_version =1,
+    .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = nullptr,
     .nm_register_func = Init,
     .nm_modname = "entry",
-    .nm_priv = ((void*)0),
-    .reserved = { 0 },
+    .nm_priv = ((void *)0),
+    .reserved = {0},
 };
 
 // 在RegisterEntryModule函数中，使用napi_module_register函数注册并导出了这个插件
@@ -2069,25 +2069,28 @@ static napi_value GetSendableArrayWithLength(napi_env env, napi_callback_info in
 ### Code block 36
 
 ```
-// index.d.ts
-export const getSendableArrayWithLength: () => [];
+export const getSendableArrayWithLength: () => []; // Sendable相关 napi_create_sendable_array_with_length
 ```
 
 ### Code block 37
 
 ```
+// Sendable相关 napi_create_sendable_array_with_length
 let value = testNapi.getSendableArrayWithLength();
-hilog.info(0x0000, 'testTag', 'Node-API napi_create_sendable_array_with_length: %{public}s', JSON.stringify(value.length));
+hilog.info(0x0000, 'testTag', 'Node-API napi_create_sendable_array_with_length: %{public}s',
+  JSON.stringify(value.length));
 ```
 
 ### Code block 38
 
 ```
-static napi_value GetSendableArrayBuffer(napi_env env, napi_callback_info info) {
-    static size_t LENGTH = 1024;
+// Sendable相关 napi_create_sendable_arraybuffer
+static napi_value GetSendableArrayBuffer(napi_env env, napi_callback_info info)
+{
+    static size_t length = 1024;
     void *data;
     napi_value result = nullptr;
-    napi_create_sendable_arraybuffer(env, LENGTH, &data, &result);
+    napi_create_sendable_arraybuffer(env, length, &data, &result);
     bool isArrayBuffer = false;
     napi_is_arraybuffer(env, result, &isArrayBuffer);
     OH_LOG_INFO(LOG_APP, "isArrayBuffer: %{public}d", isArrayBuffer);
@@ -2098,28 +2101,30 @@ static napi_value GetSendableArrayBuffer(napi_env env, napi_callback_info info) 
 ### Code block 39
 
 ```
-// index.d.ts
-export const getSendableArrayBuffer: () => ArrayBuffer;
+export const getSendableArrayBuffer: () => ArrayBuffer; // Sendable相关 napi_create_sendable_arraybuffer
 ```
 
 ### Code block 40
 
 ```
+// Sendable相关 napi_create_sendable_arraybuffer
 testNapi.getSendableArrayBuffer();
 ```
 
 ### Code block 41
 
 ```
-static napi_value GetSendableTypedArray(napi_env env, napi_callback_info info) {
-    static size_t LENGTH = 1024;
-    static size_t OFFSET = 0;
+// Sendable相关 napi_create_sendable_typedarray
+static napi_value GetSendableTypedArray(napi_env env, napi_callback_info info)
+{
+    static size_t length = 1024;
+    static size_t offset = 0;
     void *data;
     napi_value arraybuffer = nullptr;
-    napi_create_sendable_arraybuffer(env, LENGTH, &data, &arraybuffer);
+    napi_create_sendable_arraybuffer(env, length, &data, &arraybuffer);
 
     napi_value result = nullptr;
-    napi_create_sendable_typedarray(env, napi_uint8_array, LENGTH, arraybuffer, OFFSET, &result);
+    napi_create_sendable_typedarray(env, napi_uint8_array, length, arraybuffer, offset, &result);
     bool isTypedArray = false;
     napi_is_typedarray(env, result, &isTypedArray);
     OH_LOG_INFO(LOG_APP, "isTypedArray: %{public}d", isTypedArray);
@@ -2130,25 +2135,22 @@ static napi_value GetSendableTypedArray(napi_env env, napi_callback_info info) {
 ### Code block 42
 
 ```
-// index.d.ts
-export const getSendableTypedArray: () => void;
+export const getSendableTypedArray: () => Uint8Array; // Sendable相关 napi_create_sendable_typedarray
 ```
 
 ### Code block 43
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_create_sendable_typedarray
 testNapi.getSendableTypedArray();
 ```
 
 ### Code block 44
 
 ```
-#include "napi/native_api.h"
-
-static napi_value WrapSendable(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_wrap_sendable
+static napi_value WrapSendable(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -2157,8 +2159,9 @@ static napi_value WrapSendable(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr);
+    const char *testStr = "test";
+    napi_wrap_sendable(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr);
 
     return nullptr;
 }
@@ -2167,25 +2170,24 @@ static napi_value WrapSendable(napi_env env, napi_callback_info info) {
 ### Code block 45
 
 ```
-// index.d.ts
-export const wrapSendable: () => void;
+export const wrapSendable: () => void; // Sendable相关 napi_wrap_sendable
 ```
 
 ### Code block 46
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_wrap_sendable
 testNapi.wrapSendable();
 ```
 
 ### Code block 47
 
 ```
-#include "napi/native_api.h"
+static constexpr int INT_ARG_100 = 100; // 入参索引
 
-static napi_value WrapSendableWithSize(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_wrap_sendable_with_size
+static napi_value WrapSendableWithSize(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -2194,8 +2196,9 @@ static napi_value WrapSendableWithSize(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable_with_size(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr, 100);
+    const char *testStr = "test";
+    napi_wrap_sendable_with_size(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr, INT_ARG_100);
 
     return nullptr;
 }
@@ -2204,25 +2207,22 @@ static napi_value WrapSendableWithSize(napi_env env, napi_callback_info info) {
 ### Code block 48
 
 ```
-// index.d.ts
-export const wrapSendableWithSize: () => void;
+export const wrapSendableWithSize: () => void; // Sendable相关 napi_wrap_sendable_with_size
 ```
 
 ### Code block 49
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_wrap_sendable_with_size
 testNapi.wrapSendableWithSize();
 ```
 
 ### Code block 50
 
 ```
-#include "napi/native_api.h"
-
-static napi_value UnwrapSendable(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_unwrap_sendable
+static napi_value UnwrapSendable(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -2231,11 +2231,12 @@ static napi_value UnwrapSendable(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr);
+    const char *testStr = "test";
+    napi_wrap_sendable(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr);
 
-    char* tmpTestStr = nullptr;
-    napi_unwrap_sendable(env, obj, (void**)&tmpTestStr);
+    char *tmpTestStr = nullptr;
+    napi_unwrap_sendable(env, obj, (void **)&tmpTestStr);
     OH_LOG_INFO(LOG_APP, "native value is %{public}s", tmpTestStr);
 
     return nullptr;
@@ -2245,25 +2246,22 @@ static napi_value UnwrapSendable(napi_env env, napi_callback_info info) {
 ### Code block 51
 
 ```
-// index.d.ts
-export const unwrapSendable: () => void;
+export const unwrapSendable: () => void; // Sendable相关 napi_unwrap_sendable
 ```
 
 ### Code block 52
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_unwrap_sendable
 testNapi.unwrapSendable();
 ```
 
 ### Code block 53
 
 ```
-#include "napi/native_api.h"
-
-static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info) {
+// Sendable相关 napi_remove_wrap_sendable
+static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info)
+{
     napi_value val_true;
     napi_get_boolean(env, true, &val_true);
     napi_property_descriptor desc1[] = {
@@ -2272,11 +2270,12 @@ static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info) {
     napi_value obj;
     napi_create_sendable_object_with_properties(env, 1, desc1, &obj);
 
-    const char* testStr = "test";
-    napi_wrap_sendable(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, nullptr);
+    const char *testStr = "test";
+    napi_wrap_sendable(
+        env, obj, (void *)testStr, [](napi_env env, void *data, void *hint) {}, nullptr);
 
-    char* tmpTestStr = nullptr;
-    napi_remove_wrap_sendable(env, obj, (void**)&tmpTestStr);
+    char *tmpTestStr = nullptr;
+    napi_remove_wrap_sendable(env, obj, (void **)&tmpTestStr);
     OH_LOG_INFO(LOG_APP, "native value is %{public}s", tmpTestStr);
 
     return nullptr;
@@ -2286,16 +2285,13 @@ static napi_value RemoveWrapSendable(napi_env env, napi_callback_info info) {
 ### Code block 54
 
 ```
-// index.d.ts
-export const removeWrapSendable: () => void;
+export const removeWrapSendable: () => void; // Sendable相关 napi_remove_wrap_sendable
 ```
 
 ### Code block 55
 
 ```
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import testNapi from 'libentry.so';
-
+// Sendable相关 napi_remove_wrap_sendable
 testNapi.removeWrapSendable();
 ```
 
@@ -2328,7 +2324,7 @@ static napi_value TestNapiWrapEnhance(napi_env env, napi_callback_info info)
     napi_new_instance(env, testClass, 0, nullptr, &obj);
     const char* testStr = "test";
     napi_ref wrappedRef = nullptr;
-    napi_wrap_enhance(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, false, nullptr, sizeof(testStr), &wrappedRef);
+    napi_wrap_enhance(env, obj, (void*)testStr, [](napi_env env, void* data, void* hint) {}, false, nullptr, sizeof(testStr) + 1, &wrappedRef);
     return nullptr;
 }
 ```

@@ -327,7 +327,7 @@ struct Index {
 [h2]接口说明
 
 接口名	描述
-constructor(bundleName:string)	构造函数
+constructor()	构造函数
 getCachedTotalSize(): Promise<number>	获取已缓存文件的总大小
 cleanAllFileCache(): Promise<void>	删除所有已缓存文件
 
@@ -350,9 +350,9 @@ struct Index {
   private cloudFileCache: cloudSync.CloudFileCache | null = null;
   aboutToAppear() {
     try {
-      // 创建 CloudFileCache 实例，指定应用包名
-      this.cloudFileCache = new cloudSync.CloudFileCache('com.huawei.hmos.filemanager');
-      this.logText += '[INFO] CloudFileCache created with bundleName: com.huawei.hmos.filemanager\n';
+      // 创建 CloudFileCache 实例
+      this.cloudFileCache = new cloudSync.CloudFileCache();
+      this.logText += '[INFO] CloudFileCache created\n';
       hilog.info(DOMAIN, TAG, 'CloudFileCache created successfully');
     } catch (err) {
       let errMsg = `Failed to create CloudFileCache: ${JSON.stringify(err)}`;
@@ -754,9 +754,9 @@ struct Index {
   private cloudFileCache: cloudSync.CloudFileCache | null = null;
   aboutToAppear() {
     try {
-      // 创建 CloudFileCache 实例，指定应用包名
-      this.cloudFileCache = new cloudSync.CloudFileCache('com.huawei.hmos.filemanager');
-      this.logText += '[INFO] CloudFileCache created with bundleName: com.huawei.hmos.filemanager\n';
+      // 创建 CloudFileCache 实例
+      this.cloudFileCache = new cloudSync.CloudFileCache();
+      this.logText += '[INFO] CloudFileCache created\n';
       hilog.info(DOMAIN, TAG, 'CloudFileCache created successfully');
     } catch (err) {
       let errMsg = `Failed to create CloudFileCache: ${JSON.stringify(err)}`;

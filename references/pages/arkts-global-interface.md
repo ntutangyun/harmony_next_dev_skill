@@ -44,8 +44,6 @@ UIContext接口替换全局接口的关系
 
 部分多实例替代接口如下表所示，UIContext实例支持的全量接口以UIContext中描述为准。
 
-示例代码使用的接口中，isAvailable从API version 20开始生效，其余接口从API version 18开始生效。
-
 全局接口	替代接口	说明
 @ohos.animator	createAnimator	自定义动画控制器
 @ohos.arkui.componentSnapshot	getComponentSnapshot	组件截图
@@ -75,7 +73,7 @@ animateToImmediately	不支持	显式立即动画
 
 常见UIContext接口替换全局接口的场景
 
-以下UIContext接口替换全局接口示例以像素单位接口为例。
+以下UIContext接口替换全局接口示例以像素单位接口为例。示例代码使用的接口中，isAvailable从API版本20开始生效，UIContext.resolveUIContext()、UIContext.getCallingScopeUIContext()、UIContext.getLastFocusedUIContext()、UIContext.getLastForegroundUIContext()、UIContext.getAllUIContexts()以及UIContext()构造函数从API版本22开始生效，其余接口从API版本15开始生效。
 
 [h2]通过自定义组件获取UIContext
 

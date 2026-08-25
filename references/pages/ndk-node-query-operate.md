@@ -1,4 +1,4 @@
-# 查询和操作自定义节点
+# 查询和操作NDK节点
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ndk-node-query-operate_
 

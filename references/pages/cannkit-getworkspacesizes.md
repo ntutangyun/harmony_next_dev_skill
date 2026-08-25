@@ -23,9 +23,7 @@ workspace sizes指针。
 
 传入的workspace个数不可以超过编译时指定的最大workspace个数。
 
-当前Kirin9020支持的最大的workspace是8个。
-
-当前KirinX90支持的最大的workspace是8个。
+当前Kirin9020/Kirin9030/KirinX90支持的最大的workspace是8个。
 
 调用示例
 

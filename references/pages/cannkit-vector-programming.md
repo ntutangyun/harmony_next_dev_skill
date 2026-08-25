@@ -162,7 +162,7 @@ pipe.InitBuffer(inQueueX, BUFFER_NUM, TILE_LENGTH * sizeof(half))
 
 图5 单核数据切分示意图
 
-Kirin9020/KirinX90系列处理器支持的核数为1，具体的初始化函数代码如下。
+Kirin9020/Kirin9030/KirinX90系列处理器支持的核数为1，具体的初始化函数代码如下。
 
 constexpr int32_t TOTAL_LENGTH = 8 * 2048; // 数据总长度
 constexpr int32_t USE_CORE_NUM = 1; // 使用的核心数量

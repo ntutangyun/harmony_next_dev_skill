@@ -726,7 +726,7 @@ setDevDependenciesOpt: (devDependencies: any) => void
 参数值:
 
 参数名	类型	必填	说明
-devDependencies	any	是	设置当前工程下oh-package.json5中devdependencies依赖
+devDependencies	any	是	设置当前工程下oh-package.json5中的devDependencies依赖
 
 // 工程级hvigorfile.ts文件
 import { HvigorNode, HvigorPlugin } from '@ohos/hvigor';

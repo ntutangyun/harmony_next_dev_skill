@@ -82,7 +82,31 @@ Button('开始多目标识别')
 
 多目标识别的方法实现如下：
 
-typescript private async handleMultiObjectDetection() { try { if (!this.chooseImage) { hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.'); return; } // 调用多目标检测接口 let request: visionBase.Request = { inputData: { pixelMap: this.chooseImage } }; let detector = await objectDetection.ObjectDetector.create(); let data: objectDetection.ObjectDetectionResponse = await detector.process(request); await detector.destroy(); let objectJson = JSON.stringify(data); hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`); this.dataValues = objectJson; } catch (err) { hilog.error(0x0000, 'objectDetectSample', `Object detection error: ${err}`); } }
+private async handleMultiObjectDetection() {
+  try {
+    if (!this.chooseImage) {
+      hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
+      return;
+    }
+    // 调用多目标检测接口
+    let request: visionBase.Request = {
+      inputData: { pixelMap: this.chooseImage }
+    };
+    let detector = await objectDetection.ObjectDetector.create();
+    let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
+    await detector.destroy();
+    if (!data) {
+      hilog.error(0x0000, 'objectDetectSample', 'Invalid object detection result');
+      return;
+    }
+    let objectJson = JSON.stringify(data);
+    hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
+    this.dataValues = objectJson;
+  } catch (err) {
+    const error = err as BusinessError;
+    hilog.error(0x0000, 'objectDetectSample', `Object detection error. Code: ${error.code}, message: ${error.message}`);
+  }
+}
 
 开发实例
 
@@ -278,6 +302,36 @@ Button('开始多目标识别')
 ```
 
 ### Code block 5
+
+```
+private async handleMultiObjectDetection() {
+  try {
+    if (!this.chooseImage) {
+      hilog.error(0x0000, 'objectDetectSample', 'Failed to choose image.');
+      return;
+    }
+    // 调用多目标检测接口
+    let request: visionBase.Request = {
+      inputData: { pixelMap: this.chooseImage }
+    };
+    let detector = await objectDetection.ObjectDetector.create();
+    let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
+    await detector.destroy();
+    if (!data) {
+      hilog.error(0x0000, 'objectDetectSample', 'Invalid object detection result');
+      return;
+    }
+    let objectJson = JSON.stringify(data);
+    hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
+    this.dataValues = objectJson;
+  } catch (err) {
+    const error = err as BusinessError;
+    hilog.error(0x0000, 'objectDetectSample', `Object detection error. Code: ${error.code}, message: ${error.message}`);
+  }
+}
+```
+
+### Code block 6
 
 ```
 import { image } from '@kit.ImageKit';

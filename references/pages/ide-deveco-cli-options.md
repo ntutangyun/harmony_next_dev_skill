@@ -534,8 +534,6 @@ devecocli skills add --skill skillname --project ./my-app  # skillname需替换�
 
 skills remove
 
-skills remove
-
 从智能体中删除已添加的Skill。
 
 命令格式：

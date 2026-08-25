@@ -53,3 +53,27 @@ FA模型	卡片	类Web开发范式
 NDK开发：ArkUI开发框架提供了一系列NDK接口，能够在应用中使用C和C++代码构建UI界面，包括UI组件创建、UI树操作、属性设置和事件监听等。详细使用方式可参考NDK接口概述。
 
 适用场景：需要精细化创建和挂载UI组件、对性能有高要求的场景、业务已存在C或C++库可使用NDK能力进行对接。
+
+模拟器支持情况
+
+本Kit支持模拟器，但与真机存在部分能力差异，具体差异如下。
+
+通用差异，请参见模拟器与真机的差异。
+
+其他差异，模拟器不支持的功能以及组件如下：
+
+组件名	不支持情况
+Image	不支持enableAnalyzer
+图像类型定义	不支持图像AI分析，例如ImageAnalyzerController
+@ohos.arkui.drawableDescriptor	HDR特性不支持，例如setHdrComposition
+OH_ArkUI_TextDataDetectorConfig	不支持
+EmbeddedComponent	不支持
+@ohos.pluginComponent	不支持
+toolbar	不支持
+@Preview装饰器	不支持
+AbilityBase_Want	不支持
+ArkUI_EmbeddedComponentOption	不支持
+ArkUI_SelectedDragPreviewStyle	不支持
+embedded_component.h	不支持
+ArkUI_NodeAttributeType（EmbeddedComponent组件相关属性）	不支持
+restoreId	不支持

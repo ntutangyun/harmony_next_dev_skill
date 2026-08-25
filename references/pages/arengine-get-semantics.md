@@ -42,11 +42,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 定义变量planeLabel接收平面类型标签信息。
 
-@Builder
-export function ARTargetBuilder() {
-  ARTarget()
-}
-// ...
+let arSession: arEngine.ARSession;
+let planeLabel: arEngine.ARSemanticPlaneLabel;
 
 [h2]显示平面语义信息
 
@@ -61,6 +58,92 @@ export function ARTargetBuilder() {
   ARTarget()
 }
 // ...
+
+@Component
+struct ARTarget {
+  @State arContext?: arViewController.ARViewContext = undefined;
+  @State targetPlaneLabel: arEngine.ARSemanticPlaneLabel = planeLabel;
+  private intervalId: number = -1;
+  private delayInterval: number = 33;
+  private params: arEngine.ARConfig = { type: arEngine.ARType.WORLD };
+  // ...
+
+  build() {
+    NavDestination() {
+      RelativeContainer() {
+        if (this.arContext) {
+          ARView({ context: this.arContext })
+            .height('100%')
+            .width('100%')
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+
+          Column() {
+            Text(`Label: ${convertSemanticLabel(this.targetPlaneLabel)}`)
+              .infoStyles()
+          }
+          .alignItems(HorizontalAlign.Center)
+          .alignRules({
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+        }
+      }
+    }
+    .onAppear(() => {
+      this.initARView();
+      this.intervalId = setInterval(async () => {
+        this.targetPlaneLabel = planeLabel;
+        // ...
+      }, this.delayInterval);
+    })
+    .onWillDisappear(() => {
+      // ...
+    })
+    .onShown(() => {
+      this.resumeARView();
+    })
+    .onHidden(() => {
+      this.pauseARView();
+    })
+    // ...
+    .hideTitleBar(true)
+    .hideBackButton(true)
+    .hideToolBar(true)
+  }
+
+  private pauseARView(): void {
+    // ...
+  }
+
+  private resumeARView(): void {
+    // ...
+  }
+
+  private initARView(): void {
+    Scene.load().then(async (scene) => {
+      let context = new arViewController.ARViewContext();
+      context.scene = scene;
+      context.callback = new ARViewCallbackImpl();
+      context.config = {
+        type: arEngine.ARType.WORLD,
+        planeFindingMode: arEngine.ARPlaneFindingMode.HORIZONTAL_AND_VERTICAL,
+        powerMode: this.params?.powerMode,
+        semanticMode: 3,
+        poseMode: this.params?.poseMode,
+        depthMode: this.params?.depthMode,
+        meshMode: this.params?.meshMode,
+      };
+      context.init().then(() => {
+        this.arContext = context;
+        // ...
+      });
+      // ...
+    });
+  }
+}
 
 [h2]获取语义信息
 
@@ -88,7 +171,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
     if (!camera) {
       // ...
     } else {
-      // update frame data
+      // 更新帧数据。
       let trackables: arEngine.ARTrackable[] = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
       for (let i = 0; i < trackables.length; ++i) {
         let plane: arEngine.ARPlane = trackables[i] as arEngine.ARPlane;
@@ -153,11 +236,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-@Builder
-export function ARTargetBuilder() {
-  ARTarget()
-}
-// ...
+let arSession: arEngine.ARSession;
+let planeLabel: arEngine.ARSemanticPlaneLabel;
 ```
 
 ### Code block 3
@@ -168,6 +248,92 @@ export function ARTargetBuilder() {
   ARTarget()
 }
 // ...
+
+@Component
+struct ARTarget {
+  @State arContext?: arViewController.ARViewContext = undefined;
+  @State targetPlaneLabel: arEngine.ARSemanticPlaneLabel = planeLabel;
+  private intervalId: number = -1;
+  private delayInterval: number = 33;
+  private params: arEngine.ARConfig = { type: arEngine.ARType.WORLD };
+  // ...
+
+  build() {
+    NavDestination() {
+      RelativeContainer() {
+        if (this.arContext) {
+          ARView({ context: this.arContext })
+            .height('100%')
+            .width('100%')
+            .alignRules({
+              center: { anchor: '__container__', align: VerticalAlign.Center },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
+
+          Column() {
+            Text(`Label: ${convertSemanticLabel(this.targetPlaneLabel)}`)
+              .infoStyles()
+          }
+          .alignItems(HorizontalAlign.Center)
+          .alignRules({
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            middle: { anchor: '__container__', align: HorizontalAlign.Center }
+          })
+        }
+      }
+    }
+    .onAppear(() => {
+      this.initARView();
+      this.intervalId = setInterval(async () => {
+        this.targetPlaneLabel = planeLabel;
+        // ...
+      }, this.delayInterval);
+    })
+    .onWillDisappear(() => {
+      // ...
+    })
+    .onShown(() => {
+      this.resumeARView();
+    })
+    .onHidden(() => {
+      this.pauseARView();
+    })
+    // ...
+    .hideTitleBar(true)
+    .hideBackButton(true)
+    .hideToolBar(true)
+  }
+
+  private pauseARView(): void {
+    // ...
+  }
+
+  private resumeARView(): void {
+    // ...
+  }
+
+  private initARView(): void {
+    Scene.load().then(async (scene) => {
+      let context = new arViewController.ARViewContext();
+      context.scene = scene;
+      context.callback = new ARViewCallbackImpl();
+      context.config = {
+        type: arEngine.ARType.WORLD,
+        planeFindingMode: arEngine.ARPlaneFindingMode.HORIZONTAL_AND_VERTICAL,
+        powerMode: this.params?.powerMode,
+        semanticMode: 3,
+        poseMode: this.params?.poseMode,
+        depthMode: this.params?.depthMode,
+        meshMode: this.params?.meshMode,
+      };
+      context.init().then(() => {
+        this.arContext = context;
+        // ...
+      });
+      // ...
+    });
+  }
+}
 ```
 
 ### Code block 4
@@ -193,7 +359,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
     if (!camera) {
       // ...
     } else {
-      // update frame data
+      // 更新帧数据。
       let trackables: arEngine.ARTrackable[] = arSession.getAllTrackables(arEngine.ARTrackableType.PLANE);
       for (let i = 0; i < trackables.length; ++i) {
         let plane: arEngine.ARPlane = trackables[i] as arEngine.ARPlane;

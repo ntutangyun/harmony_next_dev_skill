@@ -36,13 +36,15 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
 
 在当前模块的build-profile.json5文件中进行以下配置：
 
-"buildOption": {
-  "arkOptions" : {
-    "runtimeOnly" : {
-      "sources": [
-        "./src/main/ets/pages/ObjectUtils.ets"
-      ]
-    }
+  "buildOption": {
+    "arkOptions" : {
+      "runtimeOnly" : {
+        "sources": [
+          "./src/main/ets/pages/ObjectUtils.ets"
+        ]
+      }
+    },
+// ...
   },
 
 模块注册
@@ -185,13 +187,15 @@ target_link_libraries(entry PUBLIC libace_napi.z.so libhilog_ndk.z.so)
 ### Code block 3
 
 ```
-"buildOption": {
-  "arkOptions" : {
-    "runtimeOnly" : {
-      "sources": [
-        "./src/main/ets/pages/ObjectUtils.ets"
-      ]
-    }
+  "buildOption": {
+    "arkOptions" : {
+      "runtimeOnly" : {
+        "sources": [
+          "./src/main/ets/pages/ObjectUtils.ets"
+        ]
+      }
+    },
+// ...
   },
 ```
 

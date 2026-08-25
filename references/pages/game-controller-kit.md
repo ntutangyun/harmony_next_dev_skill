@@ -8,4 +8,4 @@ Game Controller Kit简介
 
 监听游戏手柄的轴和按键事件（C/C++）
 
-游戏控制器术语
+Game Controller Kit术语

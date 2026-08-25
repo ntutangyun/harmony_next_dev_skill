@@ -347,9 +347,9 @@ notNull：是否非空，bool类型，可选字段。true表示非空字段，fa
 
 hasDefault：是否有默认值，bool类型，可选字段。true表示有默认值，false表示可以为无默认值，默认为false。
 
-tableName：表名，string，必填字段。
+tableName：表名，string类型，必填字段。
 
-deviceSyncFields：指定端端同步对应的列，array[string]，其中字段必须在fields中，且必须在数据库表中，否则不会同步；该字段为必填字段，否则设置分布式表失败。
+deviceSyncFields：指定端端同步对应的列，array[string]，必填字段。其中字段必须在fields中，且必须在数据库表中，否则不会同步；未填写该字段时设置分布式表失败。
 
 cloudType: 表类型，为enum类型，取值范围为[ "Local", "Cloud DB", "Device DB" ]。
 

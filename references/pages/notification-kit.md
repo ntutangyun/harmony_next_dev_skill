@@ -20,6 +20,8 @@ Notification Kit简介
 
 通知订阅扩展能力
 
+Notification Kit术语
+
 申请优先通知权益
 
 应用内通知设置快捷入口开发指导

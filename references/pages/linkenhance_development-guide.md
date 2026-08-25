@@ -206,7 +206,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   }
 }
 
-const TAG = "testDemo";
+const TAG = "TEST";
 // client端主动连接时调用
 linkEnhanceConnect(peerDeviceId: string) {
   console.info(TAG + 'connection server deviceId = ' + peerDeviceId);
@@ -404,7 +404,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 9
 
 ```
-const TAG = "testDemo";
+const TAG = "TEST";
 // client端主动连接时调用
 linkEnhanceConnect(peerDeviceId: string) {
   console.info(TAG + 'connection server deviceId = ' + peerDeviceId);

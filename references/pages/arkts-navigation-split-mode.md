@@ -24,23 +24,23 @@ navBarPosition用于控制导航栏显示的位置，用navBarPosition控制导�
 
 NavBarPosition.Start
 
-图4 系统语言为LTR时NavBarPosition.Start效果
+图5 系统语言为LTR时NavBarPosition.Start效果
 
-图5 系统语言为RTL时NavBarPosition.Start效果
+图6 系统语言为RTL时NavBarPosition.Start效果
 
 NavBarPosition.End
 
-图6 系统语言为LTR时NavBarPosition.End效果
+图7 系统语言为LTR时NavBarPosition.End效果
 
-图7 系统语言为RTL时NavBarPosition.End效果
+图8 系统语言为RTL时NavBarPosition.End效果
 
 [h2]enableDragBar
 
 enableDragBar用于控制是否显示分栏的拖动按钮。
 
-图8 enableDragBar为false效果
+图9 enableDragBar为false效果
 
-图9 enableDragBar为true
+图10 enableDragBar为true
 
 [h2]navBarWidth
 
@@ -199,7 +199,7 @@ struct Index {
   }
 }
 
-图10 运行效果
+图11 运行效果
 
 ## Code blocks
 

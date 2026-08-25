@@ -17,20 +17,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 创建一个空位姿变量cameraPose。
 
 AREngine_ARPose *cameraPose = nullptr;
-HMS_AREngine_ARPose_Create(arSession, nullptr, 0, &cameraPose);
+CHECK(HMS_AREngine_ARPose_Create(arSession, nullptr, 0, &cameraPose));
 
 获取当前时刻相机位姿信息，并存储在cameraPose变量中。
 
-// 创建一个新的AREngine_ARFrame对象。
-AREngine_ARFrame *arFrame = nullptr;
-HMS_AREngine_ARFrame_Create(arSession, &arFrame);
-// 更新当前帧的结果到arFrame。
-HMS_AREngine_ARSession_Update(arSession, arFrame);
-// 获取当前帧的相机参数对象。
-AREngine_ARCamera *arCamera = nullptr;
-HMS_AREngine_ARFrame_AcquireCamera(arSession, arFrame, &arCamera);
-// 获取当前时刻相机位姿信息。
-HMS_AREngine_ARCamera_GetPose(arSession, arCamera, cameraPose);
+CHECK(HMS_AREngine_ARCamera_GetPose(arSession, arCamera, cameraPose));
 
 从cameraPose中获取相机位姿的不同分量，包括平移分量和旋转分量。
 
@@ -43,22 +34,13 @@ HMS_AREngine_ARPose_GetPoseRaw(arSession, cameraPose, poseRaw, 7);
 
 ```
 AREngine_ARPose *cameraPose = nullptr;
-HMS_AREngine_ARPose_Create(arSession, nullptr, 0, &cameraPose);
+CHECK(HMS_AREngine_ARPose_Create(arSession, nullptr, 0, &cameraPose));
 ```
 
 ### Code block 2
 
 ```
-// 创建一个新的AREngine_ARFrame对象。
-AREngine_ARFrame *arFrame = nullptr;
-HMS_AREngine_ARFrame_Create(arSession, &arFrame);
-// 更新当前帧的结果到arFrame。
-HMS_AREngine_ARSession_Update(arSession, arFrame);
-// 获取当前帧的相机参数对象。
-AREngine_ARCamera *arCamera = nullptr;
-HMS_AREngine_ARFrame_AcquireCamera(arSession, arFrame, &arCamera);
-// 获取当前时刻相机位姿信息。
-HMS_AREngine_ARCamera_GetPose(arSession, arCamera, cameraPose);
+CHECK(HMS_AREngine_ARCamera_GetPose(arSession, arCamera, cameraPose));
 ```
 
 ### Code block 3

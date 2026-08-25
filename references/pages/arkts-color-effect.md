@@ -2,8 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-color-effect_
 
-色彩
-
 通过颜色渐变接口，可以设置组件的背景颜色渐变效果，实现在两个或多个指定的颜色之间进行平稳的过渡。
 
 接口	说明

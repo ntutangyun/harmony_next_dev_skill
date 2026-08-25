@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-b
 
 AI Core负责执行标量、向量和张量相关的计算密集型算子，包括三种基础计算单元：Cube（矩阵）计算单元、Vector（向量）计算单元和Scalar（标量）计算单元，同时还包含存储单元（包括硬件存储和用于数据搬运的搬运单元）和控制单元。硬件架构根据Cube计算单元和Vector计算单元是否同核部署分为耦合架构和分离架构两种。
 
-Kirin9020/KirinX90系列处理器：耦合架构
+Kirin9020/Kirin9030/KirinX90系列处理器：耦合架构
 
 耦合架构
 
@@ -14,7 +14,7 @@ Kirin9020/KirinX90系列处理器：耦合架构
 
 说明
 
-图中的虚线箭头表明Kirin9020/KirinX90系列处理器支持Scalar直接读写GM数据。
+图中的虚线箭头表明Kirin9020/Kirin9030/KirinX90系列处理器支持Scalar直接读写GM数据。
 
 分离架构
 

@@ -35,7 +35,7 @@ import { arEngine, ARView, arViewController } from '@kit.AREngine';
 import {CubeGeometry, CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node,
   PrimitiveTopology, Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { Matrix4 } from '@kit.ArkUI';
+import { Matrix4, window } from '@kit.ArkUI';
 
 [h2]显示预览流
 
@@ -165,9 +165,9 @@ export function getVertices(mat: Matrix4, point: number[]): Vec3[] {
 }
 
 /*
-Create the meshIndex of ARWorld
-Since the plane is made of triangles spliced together
-Therefore, the first vertex index of each triangle on each plane is the same
+ * 创建ARWorld的meshIndex，
+ * 由于平面是由三角形拼接而成，
+ * 因此，每个平面上每个三角形的第一个顶点索引是相同的。
  */
 export function generateMeshIndex(input: Vec3[][]): number[] {
   let result: number[] = [];
@@ -206,7 +206,7 @@ import { arEngine, ARView, arViewController } from '@kit.AREngine';
 import {CubeGeometry, CustomGeometry, Geometry, Material, MaterialType, MeshResource, Node,
   PrimitiveTopology, Scene, SceneResourceFactory, Shader, ShaderMaterial, Vec3} from '@kit.ArkGraphics3D';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { Matrix4 } from '@kit.ArkUI';
+import { Matrix4, window } from '@kit.ArkUI';
 ```
 
 ### Code block 2
@@ -336,9 +336,9 @@ export function getVertices(mat: Matrix4, point: number[]): Vec3[] {
 }
 
 /*
-Create the meshIndex of ARWorld
-Since the plane is made of triangles spliced together
-Therefore, the first vertex index of each triangle on each plane is the same
+ * 创建ARWorld的meshIndex，
+ * 由于平面是由三角形拼接而成，
+ * 因此，每个平面上每个三角形的第一个顶点索引是相同的。
  */
 export function generateMeshIndex(input: Vec3[][]): number[] {
   let result: number[] = [];

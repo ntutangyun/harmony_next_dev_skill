@@ -369,6 +369,13 @@ HarmonyOS apps embed a Function-component icon that launches the associated agen
 
 The platform publishes an official **markdown syntax spec** for agent output (合作协议与补充接口文档 → markdown语法规范, `markdown-grammar-0000002553963585`): `#`-style headings 1-6 (Setext `=`/`-` headings are NOT supported in the single-box Xiaoyi renderer), ordered/unordered lists (no tables/code blocks/quotes nested inside list items), plus the other standard constructs. Check it when formatting agent replies.
 
+## System-agent GUI operation status (for HarmonyOS apps)
+
+When the Huawei **system agent** performs GUI operations inside an app (user-initiated and user-authorized), the system writes the operation status and the agent's identity (**Agent DID**) to the system Settings database under the **`AI_Operation_Mode`** key (`settings.domainName.USER_PROPERTY`). Apps that want to detect/respond to system-agent GUI control (合作协议与补充接口文档 → 系统智能体GUI操作状态查询说明, `agent-gui-0000002680521240`, added 2026-08-14):
+- Query once on foreground via `settings.getValue(context, 'AI_Operation_Mode', '', settings.domainName.USER_PROPERTY)` and subscribe with `settings.registerKeyObserver(...)`.
+- Empty value → no system-agent GUI operation in progress; a valid "on" state → operation running (value carries the Agent DID); "off"/empty again → operation finished.
+- Apps that refuse system-agent GUI control entirely can apply for a restriction by emailing `hagservice@huawei.com` (app name, bundle name, developer contact, reason).
+
 ## Key URLs
 
 - Xiaoyi Open Platform docs root: `https://developer.huawei.com/consumer/cn/doc/service/`

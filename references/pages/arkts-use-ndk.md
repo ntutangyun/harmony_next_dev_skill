@@ -32,10 +32,10 @@ NDK对接ArkTS
 
 通过EmbeddedComponent拉起EmbeddedUIExtensionAbility
 
-查询和操作自定义节点
+查询和操作NDK节点
 
-在NDK中保证多实例场景功能正常
+NDK多实例场景开发
 
-使用多线程NDK接口并行化构建UI页面
+NDK多线程创建组件
 
 构建渲染节点

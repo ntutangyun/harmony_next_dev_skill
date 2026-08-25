@@ -23,6 +23,8 @@ tilingKey	输入	指定本次CPU调测使用的tilingKey，参数类型为int32_
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 约束说明

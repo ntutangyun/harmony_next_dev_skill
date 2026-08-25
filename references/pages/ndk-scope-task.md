@@ -1,4 +1,4 @@
-# 在NDK中保证多实例场景功能正常
+# NDK多实例场景开发
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ndk-scope-task_
 

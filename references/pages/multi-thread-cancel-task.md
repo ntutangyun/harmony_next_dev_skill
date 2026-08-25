@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-thread-cancel-task_
 
-由于任务池TaskPool的任务对象Task不支持跨线程传递，无法在子线程中直接取消任务。从 API version 18 开始，Task新增了任务ID属性，支持通过任务ID在子线程中取消任务。开发者可将已创建任务的任务ID存储在Sendable对象中，需要取消任务时，通过Sendable对象在子线程中取消任务。详情可参考以下示例。
+由于任务池TaskPool的任务对象Task不支持跨线程传递，无法在子线程中直接取消任务。从API version 18开始，Task新增了任务ID属性，支持通过任务ID在子线程中取消任务。开发者可将已创建任务的任务ID存储在Sendable对象中，需要取消任务时，通过Sendable对象在子线程中取消任务。详情可参考以下示例。
 
 定义一个Sendable类，在类属性中存储任务ID。
 
@@ -31,7 +31,7 @@ import { PromptAction } from '@kit.ArkUI';
 
 @Concurrent
 function cancel(send: SendableTest) {
-  // 在多线程中通过任务ID取消任务
+  // 在子线程中通过任务ID取消任务
   taskpool.cancel(send.getTaskId());
   console.info('cancel task finished');
 }
@@ -106,7 +106,7 @@ import { PromptAction } from '@kit.ArkUI';
 
 @Concurrent
 function cancel(send: SendableTest) {
-  // 在多线程中通过任务ID取消任务
+  // 在子线程中通过任务ID取消任务
   taskpool.cancel(send.getTaskId());
   console.info('cancel task finished');
 }

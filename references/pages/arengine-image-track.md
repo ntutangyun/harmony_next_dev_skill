@@ -85,7 +85,7 @@ struct ARImage {
     try {
       let photoOption: photoAccessHelper.PhotoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
       photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
-      photoOption.maxSelectNumber = 50; // Default
+      photoOption.maxSelectNumber = 50; // 默认值
       photoOption.isEditSupported = false;
       let photoPicker: photoAccessHelper.PhotoViewPicker = new photoAccessHelper.PhotoViewPicker();
 
@@ -161,7 +161,7 @@ struct ARImageByAdd {
   @State addFailedMessage: string[] = [];
   private imagePathArray: string[] = [];
   @State totalImageCounts: number = this.imagePathArray.length;
-  // When destroy is set to true, the addImage function is used to determine whether to continue adding images.
+  // 当destroy设置为true时，addImage函数用于判断是否继续添加图片。
   private isProgramExits: boolean = false;
   private isSaveDatabase: boolean = false;
 
@@ -238,7 +238,7 @@ struct ARImageByAdd {
     .hideToolBar(true)
   }
 
-  // Asynchronously execute the task of adding pictures
+  // 异步执行添加图片的任务。
   async addImage(dataBase: arEngine.ARAugmentedImageDatabase): Promise<void> {
     // ...
   }
@@ -280,7 +280,7 @@ struct ARImageByAdd {
 
 退出应用时，缓存图片特征到本地。
 
-// Save the file locally
+// 将文件保存到本地。
 async function saveBufferToLocal(dataBase: arEngine.ARAugmentedImageDatabase, context: Context): Promise<void> {
   let filesDir: string = context.filesDir;
   let file: fileIo.File;
@@ -359,7 +359,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
       return;
     }
 
-    // The target image color is controlled by the file plane.shader
+    // 目标图像颜色由plane.shader文件控制。
     let rf: SceneResourceFactory = ctx.scene.getResourceFactory();
     this.material = await rf.createMaterial({ name: 'CustomMaterial' }, MaterialType.SHADER);
     this.shader = await rf.createShader({ name: 'CustomShader', uri: $rawfile('shaders/custom_shader/plane.shader') });
@@ -574,7 +574,7 @@ struct ARImageByDatabase {
 
 读取本地数据库缓存文件的方法。
 
-// Read local files into buffer
+// 将本地文件读取到缓冲区。
 function readBuffer(context: Context): ArrayBuffer {
   let filesDir: string = context.filesDir;
   let srcFile: fileIo.File;
@@ -589,7 +589,7 @@ function readBuffer(context: Context): ArrayBuffer {
   let buf: ArrayBuffer;
   try {
     fileStat = fileIo.statSync(srcFile.fd);
-    // Read the contents of the source file and write it to the destination file
+    // 读取源文件的内容并写入目标文件。
     let readSize: number = 0;
     buf = new ArrayBuffer(fileStat.size);
     let readOptions: ReadOptions = {
@@ -660,7 +660,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
       logger.error(`Failed to get all trackables. Code is ${err.code}, message is ${err.message}`);
     }
 
-    // The target image color is controlled by the file plane.shader
+    // 目标图像颜色由plane.shader文件控制。
     let rf: SceneResourceFactory = ctx.scene.getResourceFactory();
     this.material = await rf.createMaterial({ name: 'CustomMaterial' }, MaterialType.SHADER);
     this.shader = await rf.createShader({ name: 'CustomShader', uri: $rawfile('shaders/custom_shader/plane.shader') });
@@ -744,7 +744,7 @@ struct ARImage {
     try {
       let photoOption: photoAccessHelper.PhotoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
       photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
-      photoOption.maxSelectNumber = 50; // Default
+      photoOption.maxSelectNumber = 50; // 默认值
       photoOption.isEditSupported = false;
       let photoPicker: photoAccessHelper.PhotoViewPicker = new photoAccessHelper.PhotoViewPicker();
 
@@ -822,7 +822,7 @@ struct ARImageByAdd {
   @State addFailedMessage: string[] = [];
   private imagePathArray: string[] = [];
   @State totalImageCounts: number = this.imagePathArray.length;
-  // When destroy is set to true, the addImage function is used to determine whether to continue adding images.
+  // 当destroy设置为true时，addImage函数用于判断是否继续添加图片。
   private isProgramExits: boolean = false;
   private isSaveDatabase: boolean = false;
 
@@ -899,7 +899,7 @@ struct ARImageByAdd {
     .hideToolBar(true)
   }
 
-  // Asynchronously execute the task of adding pictures
+  // 异步执行添加图片的任务。
   async addImage(dataBase: arEngine.ARAugmentedImageDatabase): Promise<void> {
     // ...
   }
@@ -943,7 +943,7 @@ struct ARImageByAdd {
 ### Code block 5
 
 ```
-// Save the file locally
+// 将文件保存到本地。
 async function saveBufferToLocal(dataBase: arEngine.ARAugmentedImageDatabase, context: Context): Promise<void> {
   let filesDir: string = context.filesDir;
   let file: fileIo.File;
@@ -1024,7 +1024,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
       return;
     }
 
-    // The target image color is controlled by the file plane.shader
+    // 目标图像颜色由plane.shader文件控制。
     let rf: SceneResourceFactory = ctx.scene.getResourceFactory();
     this.material = await rf.createMaterial({ name: 'CustomMaterial' }, MaterialType.SHADER);
     this.shader = await rf.createShader({ name: 'CustomShader', uri: $rawfile('shaders/custom_shader/plane.shader') });
@@ -1243,7 +1243,7 @@ struct ARImageByDatabase {
 ### Code block 10
 
 ```
-// Read local files into buffer
+// 将本地文件读取到缓冲区。
 function readBuffer(context: Context): ArrayBuffer {
   let filesDir: string = context.filesDir;
   let srcFile: fileIo.File;
@@ -1258,7 +1258,7 @@ function readBuffer(context: Context): ArrayBuffer {
   let buf: ArrayBuffer;
   try {
     fileStat = fileIo.statSync(srcFile.fd);
-    // Read the contents of the source file and write it to the destination file
+    // 读取源文件的内容并写入目标文件。
     let readSize: number = 0;
     buf = new ArrayBuffer(fileStat.size);
     let readOptions: ReadOptions = {
@@ -1331,7 +1331,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
       logger.error(`Failed to get all trackables. Code is ${err.code}, message is ${err.message}`);
     }
 
-    // The target image color is controlled by the file plane.shader
+    // 目标图像颜色由plane.shader文件控制。
     let rf: SceneResourceFactory = ctx.scene.getResourceFactory();
     this.material = await rf.createMaterial({ name: 'CustomMaterial' }, MaterialType.SHADER);
     this.shader = await rf.createShader({ name: 'CustomShader', uri: $rawfile('shaders/custom_shader/plane.shader') });

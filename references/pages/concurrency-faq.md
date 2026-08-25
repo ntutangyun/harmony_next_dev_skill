@@ -8,7 +8,7 @@ TaskPool任务不执行快速定位指导
 
 taskpool.execute接口是否调用。
 
-taskpool.execute被调用时，Hilog会打印TaskPool调用态日志（Task Allocation: taskId:）。
+taskpool.execute被调用时，hilog会打印TaskPool调用态日志（Task Allocation: taskId:）。
 
 如果发现没有该维测日志表明taskpool.execute实际未调用，应用需排查taskpool.execute之前的其他业务逻辑是否执行完成。
 
@@ -32,7 +32,7 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            console.info('test start');
+            console.info(`test start`);
             // 其他业务逻辑
             // ...
             let task: taskpool.Task = new taskpool.Task(createTask, 1, 2);
@@ -107,13 +107,13 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            console.info('test start');
+            console.info(`test start`);
             // 其他业务逻辑
             // ...
             let task: taskpool.Task = new taskpool.Task(createTask, 1, 2);
             taskpool.execute(task).then((res: Object) => {
               // 任务执行完处理结果
-              this.message = '任务执行结果:'+ res;
+              this.message = '任务执行结果: '+ res;
               // ...
             }).catch((e: Error) => {
               // 任务发生异常后处理异常
@@ -151,7 +151,9 @@ TaskPool任务执行慢排查思路
 
 解决方案
 
-1.分析其他任务执行耗时3s/5s是否合理；2.调整taskA优先级。
+1.分析其他任务执行耗时3s/5s是否合理；
+
+2.调整taskA优先级。
 
 [h2]排查方向：晚执行的TaskPool任务是串行任务或者依赖其他任务
 
@@ -218,7 +220,7 @@ Error message:An exception occurred during serialization, taskpool: failed to se
 Error message:An exception occurred during serialization, taskpool: failed to serialize result.
 Serialize error: Serialize don't support object type:
 
-Hilog错误日志
+hilog错误日志
 
 // API version 20之前版本
 [ecmascript] Unsupported serialize object type:
@@ -230,7 +232,7 @@ Hilog错误日志
 
 问题原因
 
-TaskPool实现任务的函数（Concurrent函数）入参和返回结果需满足线程间通信支持的对象类型，详情请查看序列化支持类型。当Concurrent函数的入参或返回结果是线程间通信不支持的对象类型时，会出现上述现象。应用可以结合Hilog日志中打印的对象类型进一步排查通信对象是否符合要求。
+TaskPool实现任务的函数（Concurrent函数）入参和返回结果需满足线程间通信支持的对象类型，详情请查看序列化支持类型。当Concurrent函数的入参或返回结果是线程间通信不支持的对象类型时，会出现上述现象。应用可以结合hilog日志中打印的对象类型进一步排查通信对象是否符合要求。
 
 场景示例
 
@@ -238,7 +240,7 @@ TaskPool实现任务的函数（Concurrent函数）入参和返回结果需满�
 
 解决方案：应用需要查看序列化支持类型排查Concurrent函数入参。
 
-应用在启动TaskPool任务时，抛出入参序列化失败异常，同时Hilog打印错误日志Unsupported serialize object type: Proxy（API version 20及之后版本打印错误日志：Serialize error: Serialize don't support object type: Proxy）。基于错误日志可知应用在Concurrent函数中传入代理对象，排查代码发现入参使用了@State装饰器，导致原对象实际上变为Proxy代理对象，代理对象不属于线程间通信支持的对象类型。
+应用在启动TaskPool任务时，抛出入参序列化失败异常，同时hilog打印错误日志Unsupported serialize object type: Proxy（API version 20及之后版本打印错误日志：Serialize error: Serialize don't support object type: Proxy）。基于错误日志可知应用在Concurrent函数中传入代理对象，排查代码发现入参使用了@State装饰器，导致原对象实际上变为Proxy代理对象，代理对象不属于线程间通信支持的对象类型。
 
 解决方案：TaskPool不支持@State、@Prop等装饰器修饰的复杂类型，具体内容可见TaskPool注意事项。应用需要去掉@State装饰器。
 
@@ -269,7 +271,7 @@ function executeTask() {
   taskpool.execute(task).then((res) => {
   }).catch((e: BusinessError) => {
     // 打印“返回结果序列化失败”异常信息
-    console.error('execute task failed ' + e.message);
+    console.error(`execute task failed ${e.message}`);
   })
 }
 
@@ -300,7 +302,7 @@ function executeTask() {
     // task1
     let task1: taskpool.Task = new taskpool.Task(printArgs, res);
   }).catch((e: BusinessError) => {
-    console.error('execute task failed ' + e.message);
+    console.error(`execute task failed ${e.message}`);
   })
 }
 
@@ -310,7 +312,7 @@ Sendable类A的实例对象a传递到子线程后，使用a instanceof A判断�
 
 代码示例
 
-// pages/TestInstancof.ets
+// pages/TestInstanceof.ets
 import { worker, ErrorEvent } from '@kit.ArkTS'
 import { A } from './Sendable'
 
@@ -322,7 +324,7 @@ function testInstanceof() {
     // 打印test instanceof in main thread success
     console.info('test instanceof in main thread success');
   } else {
-    console.info('test instanceof in main thread failed');
+    console.error('test instanceof in main thread failed');
   }
   workerInstance.postMessageWithSharedSendable(a);
   workerInstance.onerror = (err: ErrorEvent) => {
@@ -353,9 +355,9 @@ workerPort.onmessage = (e: MessageEvents) => {
   let a: A = e.data as A;
   if (a instanceof A) {
     // 打印test instanceof in worker thread success
-    console.info('test instanceof in worker thread success');
+    console.info(`test instanceof in worker thread success`);
   } else {
-    console.info('test instanceof in worker thread failed');
+    console.error(`test instanceof in worker thread failed`);
   }
 }
 
@@ -399,7 +401,7 @@ export class A {
 
 自定义Sendable类继承collections.Array，并重写构造函数。在实例化该类后调用slice函数时，抛出类型不一致异常。原因是调用slice函数时，collections.Array内部会创建新的SendableArray。构造函数的入参是新数组长度，类型为number。由于ans是string类型，而在构造函数中使用number类型的入参对ans赋值，在Sendable类中不允许使用number类型对string类型赋值，因此抛出异常。
 
-// SoluteMismatchTypeTwo.ets
+// pages/SolveMismatchTypeTwo.ets
 import { collections } from '@kit.ArkTS'
 
 @Sendable
@@ -415,7 +417,7 @@ arr.slice(1);
 
 解决方案： 对属性的赋值使用独立接口。
 
-// SoluteMismatchTypeThree.ets
+// pages/SolveMismatchTypeThree.ets
 import { collections } from '@kit.ArkTS'
 
 @Sendable
@@ -520,9 +522,9 @@ function executeTask() {
   let task: taskpool.Task = new taskpool.Task(createTask, 1)
   taskpool.execute(task).then((res) => {
     testObject.setName(res as string);
-    console.info('execute task success, name is ' + testObject.getName());
+    console.info(`execute task success, name is ${testObject.getName()}`);
   }).catch((e: BusinessError) => {
-    console.error('execute task error: ' + e.message);
+    console.error(`execute task error: ${e.message}`);
   })
 }
 
@@ -532,7 +534,7 @@ Sendable类在子线程无法加载
 
 Sendable装饰器修饰的类与Observed装饰器修饰的类定义在同一个ets文件中，在TaskPool子线程加载Sendable类时捕获到错误信息：SendableItem is not initialized。
 
-// SoluteItemInitialized.ets
+// pages/SolveItemInitialized.ets
 import { taskpool } from '@kit.ArkTS'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { SendableItem } from './Sendable'
@@ -545,9 +547,9 @@ function createTask() {
 function executeTask() {
   let task = new taskpool.Task(createTask);
   taskpool.execute(task).then((res) => {
-    console.info('execute task success');
+    console.info(`execute task success`);
   }).catch((e: BusinessError) => {
-    console.error('execute task error: ' + e.message);
+    console.error(`execute task error: ${e.message}`);
   })
 }
 
@@ -572,7 +574,7 @@ Observed装饰器仅支持在UI线程使用，不能在子线程、Worker、Task
 
 将Observed装饰器修饰的类NormalItem剥离到单独的ets文件后，TaskPool子线程再去加载Sendable类SendableItem，应用运行符合预期。
 
-// SoluteItemInitialized.ets
+// pages/SolveItemInitialized.ets
 import { taskpool } from '@kit.ArkTS'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { SendableItem } from './Sendable'
@@ -585,9 +587,9 @@ function createTask() {
 function executeTask() {
   let task = new taskpool.Task(createTask);
   taskpool.execute(task).then((res) => {
-    console.info('execute task success');
+    console.info(`execute task success`);
   }).catch((e: BusinessError) => {
-    console.error('execute task error: ' + e.message);
+    console.error(`execute task error: ${e.message}`);
   })
 }
 
@@ -630,7 +632,7 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            console.info('test start');
+            console.info(`test start`);
             // 其他业务逻辑
             // ...
             let task: taskpool.Task = new taskpool.Task(createTask, 1, 2);
@@ -691,13 +693,13 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            console.info('test start');
+            console.info(`test start`);
             // 其他业务逻辑
             // ...
             let task: taskpool.Task = new taskpool.Task(createTask, 1, 2);
             taskpool.execute(task).then((res: Object) => {
               // 任务执行完处理结果
-              this.message = '任务执行结果:'+ res;
+              this.message = '任务执行结果: '+ res;
               // ...
             }).catch((e: Error) => {
               // 任务发生异常后处理异常
@@ -805,7 +807,7 @@ function executeTask() {
   taskpool.execute(task).then((res) => {
   }).catch((e: BusinessError) => {
     // 打印“返回结果序列化失败”异常信息
-    console.error('execute task failed ' + e.message);
+    console.error(`execute task failed ${e.message}`);
   })
 }
 ```
@@ -842,7 +844,7 @@ function executeTask() {
     // task1
     let task1: taskpool.Task = new taskpool.Task(printArgs, res);
   }).catch((e: BusinessError) => {
-    console.error('execute task failed ' + e.message);
+    console.error(`execute task failed ${e.message}`);
   })
 }
 ```
@@ -850,7 +852,7 @@ function executeTask() {
 ### Code block 12
 
 ```
-// pages/TestInstancof.ets
+// pages/TestInstanceof.ets
 import { worker, ErrorEvent } from '@kit.ArkTS'
 import { A } from './Sendable'
 
@@ -862,7 +864,7 @@ function testInstanceof() {
     // 打印test instanceof in main thread success
     console.info('test instanceof in main thread success');
   } else {
-    console.info('test instanceof in main thread failed');
+    console.error('test instanceof in main thread failed');
   }
   workerInstance.postMessageWithSharedSendable(a);
   workerInstance.onerror = (err: ErrorEvent) => {
@@ -901,9 +903,9 @@ workerPort.onmessage = (e: MessageEvents) => {
   let a: A = e.data as A;
   if (a instanceof A) {
     // 打印test instanceof in worker thread success
-    console.info('test instanceof in worker thread success');
+    console.info(`test instanceof in worker thread success`);
   } else {
-    console.info('test instanceof in worker thread failed');
+    console.error(`test instanceof in worker thread failed`);
   }
 }
 ```
@@ -935,7 +937,7 @@ export class A {
 ### Code block 17
 
 ```
-// SoluteMismatchTypeTwo.ets
+// pages/SolveMismatchTypeTwo.ets
 import { collections } from '@kit.ArkTS'
 
 @Sendable
@@ -953,7 +955,7 @@ arr.slice(1);
 ### Code block 18
 
 ```
-// SoluteMismatchTypeThree.ets
+// pages/SolveMismatchTypeThree.ets
 import { collections } from '@kit.ArkTS'
 
 @Sendable
@@ -1016,9 +1018,9 @@ function executeTask() {
   let task: taskpool.Task = new taskpool.Task(createTask, 1)
   taskpool.execute(task).then((res) => {
     testObject.setName(res as string);
-    console.info('execute task success, name is ' + testObject.getName());
+    console.info(`execute task success, name is ${testObject.getName()}`);
   }).catch((e: BusinessError) => {
-    console.error('execute task error: ' + e.message);
+    console.error(`execute task error: ${e.message}`);
   })
 }
 ```
@@ -1026,7 +1028,7 @@ function executeTask() {
 ### Code block 22
 
 ```
-// SoluteItemInitialized.ets
+// pages/SolveItemInitialized.ets
 import { taskpool } from '@kit.ArkTS'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { SendableItem } from './Sendable'
@@ -1039,9 +1041,9 @@ function createTask() {
 function executeTask() {
   let task = new taskpool.Task(createTask);
   taskpool.execute(task).then((res) => {
-    console.info('execute task success');
+    console.info(`execute task success`);
   }).catch((e: BusinessError) => {
-    console.error('execute task error: ' + e.message);
+    console.error(`execute task error: ${e.message}`);
   })
 }
 
@@ -1066,7 +1068,7 @@ export class SendableItem {
 ### Code block 24
 
 ```
-// SoluteItemInitialized.ets
+// pages/SolveItemInitialized.ets
 import { taskpool } from '@kit.ArkTS'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { SendableItem } from './Sendable'
@@ -1079,9 +1081,9 @@ function createTask() {
 function executeTask() {
   let task = new taskpool.Task(createTask);
   taskpool.execute(task).then((res) => {
-    console.info('execute task success');
+    console.info(`execute task success`);
   }).catch((e: BusinessError) => {
-    console.error('execute task error: ' + e.message);
+    console.error(`execute task error: ${e.message}`);
   })
 }
 

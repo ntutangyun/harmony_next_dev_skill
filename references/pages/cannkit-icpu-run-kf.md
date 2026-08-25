@@ -25,6 +25,8 @@ blkdim	输入	算子的核心数，corenum。
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 约束说明

@@ -60,6 +60,8 @@ srcHighHalf	输入	指定每个srcLocalList地址中的数据从datablock的高�
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

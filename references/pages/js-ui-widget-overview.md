@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/js-ui-widget-overview_
 
-JS卡片是使用类Web范式（HML+CSS+JSON）开发页面的卡片，现在已经支持FA模型和Stage模型两种应用模型。开发指导请参见JS卡片开发指导（Stage模型）和JS卡片开发指导（FA模型）。在开发新卡片时，推荐采用ArkTS声明式来构建UI，声明式和类web范式差异点可参考ArkUI简介。
+JS卡片是使用类Web范式（HML+CSS+JSON）开发页面的卡片，现在已经支持FA模型和Stage模型两种应用模型。开发指导请参见JS卡片开发指导（Stage模型）和JS卡片开发指导（FA模型）。在开发新卡片时，推荐采用ArkTS声明式来构建UI，声明式和类Web范式差异点可参考ArkUI简介。
 
 实现原理
 

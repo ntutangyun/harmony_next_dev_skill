@@ -8,4 +8,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/specializ
 
 开发适用串口协议的设备驱动
 
-开发使用SCSI协议的设备驱动
+开发适用SCSI协议的设备驱动

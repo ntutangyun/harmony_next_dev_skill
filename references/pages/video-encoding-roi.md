@@ -273,7 +273,7 @@ void RenderThread::FlushAndCleanup(OHNativeWindowBuffer *InBuffer, int32_t fence
 
 详细开发步骤如下：
 
-在CMakeList.txt中链接动态库。
+在CMakeLists.txt中链接动态库。
 
 同方式一：通过nativebuffer元数据配置（推荐）步骤1。
 
@@ -373,7 +373,7 @@ Buffer模式下，视频帧通过OH_VideoEncoder_PushInputBuffer送入编码器�
 
 详细开发步骤如下：
 
-在CMakeList.txt中链接动态库。
+在CMakeLists.txt中链接动态库。
 
 同方式一：通过nativebuffer元数据配置（推荐）步骤1。
 

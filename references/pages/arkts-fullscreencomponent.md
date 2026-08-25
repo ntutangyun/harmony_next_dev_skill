@@ -1,4 +1,4 @@
-# 全屏启动元服务组件（FullScreenLaunchComponent）
+# 全屏启动元服务 (FullScreenLaunchComponent)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-fullscreencomponent_
 
@@ -144,7 +144,7 @@ FullScreenLaunchComponent不支持通用事件，会将事件经过坐标转换�
 
 尽量使用布局变化少的场景。
 
-当由布局变化时，提供方js线程尽量少的执行任务，确保js线程能够及时响应布局变化的任务。
+当有布局变化时，提供方js线程尽量少的执行任务，确保js线程能够及时响应布局变化的任务。
 
 应用开发者（使用方）可以通过如下方式消减闪白问题：
 

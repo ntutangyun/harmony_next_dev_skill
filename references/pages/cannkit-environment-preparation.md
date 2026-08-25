@@ -33,6 +33,7 @@ ubuntu版本大于等于22.04，ubuntu架构为x86_64， python版本在3.7与3.
 tools
 ├── platform
 │   ├── kirin9020
+│   ├── kirin9030
 │   ├── kirinx90
 
 进入目录ddk/tools/tools_ascendc，修改安装脚本权限，执行安装脚本进行安装，命令如下。
@@ -68,6 +69,7 @@ protobuf	模型解析。	pip3 install protobuf
 tools
 ├── platform
 │   ├── kirin9020
+│   ├── kirin9030
 │   ├── kirinx90
 ```
 

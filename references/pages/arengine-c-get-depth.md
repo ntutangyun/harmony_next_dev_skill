@@ -119,11 +119,11 @@ struct ARDepthRender {
           .onLoad(() => {
             this.interval = setInterval(() => {
               if (this.isUpdate) {
-                // Call the update Native API to update the calculation result of each frame by AR Engine.
+                // 调用Native API更新方法，使AR Engine更新每一帧的计算结果。
                 arEngineDemo.update(this.idStr);
                 this.distance = arEngineDemo.getDistance(this.idStr);
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             clearInterval(this.interval);
@@ -181,9 +181,9 @@ struct ARDepthRender {
 
 创建AR会话并配置为开启深度模式。
 
-// Create an AREngine_ARSession session.
+// 创建一个AREngine_ARSession会话。
 CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
-// Configure AREngine_ARSession.
+// 配置AREngine_ARSession。
 AREngine_ARConfig *arConfig = nullptr;
 CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
 // ...
@@ -311,11 +311,11 @@ struct ARDepthRender {
           .onLoad(() => {
             this.interval = setInterval(() => {
               if (this.isUpdate) {
-                // Call the update Native API to update the calculation result of each frame by AR Engine.
+                // 调用Native API更新方法，使AR Engine更新每一帧的计算结果。
                 arEngineDemo.update(this.idStr);
                 this.distance = arEngineDemo.getDistance(this.idStr);
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             clearInterval(this.interval);
@@ -367,9 +367,9 @@ struct ARDepthRender {
 ### Code block 3
 
 ```
-// Create an AREngine_ARSession session.
+// 创建一个AREngine_ARSession会话。
 CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
-// Configure AREngine_ARSession.
+// 配置AREngine_ARSession。
 AREngine_ARConfig *arConfig = nullptr;
 CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
 // ...

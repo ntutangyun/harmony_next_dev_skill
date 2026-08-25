@@ -103,3 +103,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multi-win
 全景多窗侧身窗口为不可见窗口，可以通过监听on('windowVisibilityChange')感知应用是否处于侧身。
 
 在智慧多窗的显示模式下，窗口尺寸由系统决定，不受WindowLimits约束。
+
+在Tablet设备上，全景多窗不支持模拟器。

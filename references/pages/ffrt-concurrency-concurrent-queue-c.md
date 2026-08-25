@@ -32,7 +32,7 @@ FFRT并发队列提供了设置任务优先级（Priority）和队列并发度�
 #undef LOG_TAG
 #define LOG_TAG "ConcurrentTag"
 
-const int SLEEP_TIME = 100 * 1000;
+const int SLEEP_TIME = 100 * 1000; // 100ms
 const int BANK_CONCURRENCY = 2;
 
 ffrt_queue_t CreateBankSystem(const char *name, int concurrency)
@@ -78,7 +78,9 @@ ffrt_task_handle_t CommitRequest(ffrt_queue_t bank, void (*func)(void *), const 
     ffrt_task_attr_set_queue_priority(&task_attr, level);
     ffrt_task_attr_set_delay(&task_attr, delay);
 
-    return ffrt_queue_submit_h_f(bank, func, (void*)name, &task_attr);
+    ffrt_task_handle_t handle = ffrt_queue_submit_h_f(bank, func, (void*)name, &task_attr);
+    ffrt_task_attr_destroy(&task_attr);
+    return handle;
 }
 
 // 封装取消队列任务函数
@@ -170,7 +172,7 @@ ffrt_queue_t必须在进程退出前显式调用ffrt_queue_destroy释放资源�
 ### Code block 2
 
 ```
-const int SLEEP_TIME = 100 * 1000;
+const int SLEEP_TIME = 100 * 1000; // 100ms
 const int BANK_CONCURRENCY = 2;
 
 ffrt_queue_t CreateBankSystem(const char *name, int concurrency)
@@ -216,7 +218,9 @@ ffrt_task_handle_t CommitRequest(ffrt_queue_t bank, void (*func)(void *), const 
     ffrt_task_attr_set_queue_priority(&task_attr, level);
     ffrt_task_attr_set_delay(&task_attr, delay);
 
-    return ffrt_queue_submit_h_f(bank, func, (void*)name, &task_attr);
+    ffrt_task_handle_t handle = ffrt_queue_submit_h_f(bank, func, (void*)name, &task_attr);
+    ffrt_task_attr_destroy(&task_attr);
+    return handle;
 }
 
 // 封装取消队列任务函数

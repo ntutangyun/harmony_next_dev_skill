@@ -37,15 +37,15 @@ len	输入	为TBuf分配的内存大小，单位为Bytes。当传入的len不满
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项
 
 同一个TPosition上QUE Buffer的数量根据AI处理器型号的不同，有数量约束。申请Buffer时，需要满足该约束。
 
-Kirin9020系列处理器不超过8块。
-
-KirinX90系列处理器不超过8块。
+Kirin9020/Kirin9030/KirinX90系列处理器不超过8块。
 
 AscendC::TQue<AscendC::TPosition::VECIN, 1> que0;
 AscendC::TQue<AscendC::TPosition::VECIN, 1> que1;

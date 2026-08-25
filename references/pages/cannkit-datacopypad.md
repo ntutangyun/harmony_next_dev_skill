@@ -37,7 +37,7 @@ __aicore__ inline void DataCopyPad(const GlobalTensor<T>& dstGlobal, const Local
 表1 模板参数说明
 
 参数名	描述
-T	操作数以及paddingValue（待填充数据值）的数据类型。 Kirin9020系列处理器，支持的数据类型为：int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float KirinX90系列处理器，支持的数据类型为：int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+T	操作数以及paddingValue（待填充数据值）的数据类型。 Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器，支持的数据类型为：int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float。
 
 表2 接口参数说明
 
@@ -143,7 +143,9 @@ dstNzMatrixStride为相邻NZ矩阵之间的元素个数，因为仅涉及1个NZ�
 
 支持的型号
 
-Kirin9020系列处理器。
+Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 KirinX90系列处理器
 

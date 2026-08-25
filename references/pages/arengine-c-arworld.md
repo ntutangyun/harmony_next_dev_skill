@@ -116,11 +116,11 @@ struct ARWorld {
           .onLoad(() => {
             this.interval = setInterval(() => {
               if (this.isUpdate) {
-                // Call the update Native API to update the calculation result of each frame by AR Engine.
+                // 调用Native API更新方法，更新AR Engine每一帧的计算结果。
                 this.numberOfPlans = arEngineDemo.update(this.idStr);
                 this.planeNum();
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             clearInterval(this.interval);
@@ -166,14 +166,14 @@ struct ARWorld {
 
   private planeNum(): void {
     if (this.numberOfPlans < 1) {
-      // The number of planes is less than 1.
+      // 平面数量小于1。
       let tempMillisecond: number = new Date().getTime();
-      // Assign a value to the time when the feature is started for the first time.
+      // 为特性首次启动的时间赋值。
       if (this.currentMillisecond === 0) {
         this.currentMillisecond = tempMillisecond;
         return;
       }
-      // Display a pop-up window if the plane fails to be recognized within 10 seconds.
+      // 如果平面在10秒内未被识别，则显示弹出窗口。
       if (tempMillisecond - this.currentMillisecond > 10000) {
         this.messageNotification();
         this.currentMillisecond = 0;
@@ -199,7 +199,7 @@ CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
 // ...
 CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 HMS_AREngine_ARConfig_Destroy(arConfig);
-// Create an AREngine_ARFrame object.
+// 创建一个AREngine_ARFrame对象。
 CHECK(HMS_AREngine_ARFrame_Create(mArSession, &mArFrame));
 NativeDisplayManager_Rotation displayRotation;
 if (OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation) == DISPLAY_MANAGER_OK) {
@@ -207,8 +207,7 @@ if (OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation) == DISPL
 }
 // ...
 CHECK(HMS_AREngine_ARSession_SetDisplayGeometry(mArSession, mDisplayRotation, mWidth, mHeight));
-// Set the display height and width (in pixels). Make sure that the height and width you set here are consistent
-// with those of the display view.
+// 设置显示高度和宽度（以像素为单位）。请确保在此处设置的高度和宽度与显示视图的高度和宽度一致。
 
 通过OpenGL接口获取纹理ID。
 
@@ -226,13 +225,12 @@ HMS_AREngine_ARSession_Update(mArSession, mArFrame);
 
 获取相机的视图矩阵和相机的投影矩阵，用于后续渲染。
 
-// Obtain the camera parameters of the current frame.
+// 获取当前帧的相机参数。
 AREngine_ARCamera *arCamera = nullptr;
 CHECK(HMS_AREngine_ARFrame_AcquireCamera(arSession, arFrame, &arCamera));
-// Obtain the view matrix of the camera in the latest frame.
+// 获取最新帧中相机的视图矩阵。
 CHECK(HMS_AREngine_ARCamera_GetViewMatrix(arSession, arCamera, viewMat->data(), 16));
-// Obtain the projection matrix used for rendering virtual content on top of the camera image. This matrix can be
-// used for converting from the camera coordinate system to the clip coordinate system. Near (0.1) Far (100).
+// 获取用于在相机图像上渲染虚拟内容的投影矩阵。此矩阵可用于将相机坐标系统转换为裁剪坐标系统。近点 (0.1) 远点 (100)。
 CHECK(HMS_AREngine_ARCamera_GetProjectionMatrix(arSession, arCamera, {0.1f, 100.f}, projectionMat->data(), 16));
 
 说明
@@ -241,30 +239,28 @@ CHECK(HMS_AREngine_ARCamera_GetProjectionMatrix(arSession, arCamera, {0.1f, 100.
 
 调用HMS_AREngine_ARSession_GetAllTrackables函数获取平面列表。详细可参考检测环境中的平面章节。
 
-// Update and render the plane.
+// 更新并渲染平面。
 AREngine_ARTrackableList *planeList = nullptr;
-// Create a list of trackable objects.
+// 创建可跟踪对象列表。
 CHECK(HMS_AREngine_ARTrackableList_Create(arSession, &planeList));
-// Obtain the list of all trackable objects of the specified type.
+// 获取指定类型的所有可跟踪对象列表。
 AREngine_ARTrackableType planeTrackedType = ARENGINE_TRACKABLE_PLANE;
 CHECK(HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, planeList));
 int32_t planeListSize = 0;
-// Obtain the number of trackable objects in the list.
+// 获取列表中可跟踪对象的数量。
 CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize));
 mPlaneCount = planeListSize;
 
 for (int i = 0; i < planeListSize; ++i) {
     AREngine_ARTrackable *arTrackable = nullptr;
-    // Obtain the object at a specified index from the trackable object list.
+    // 从可跟踪对象列表中获取指定索引的对象。
     CHECK(HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable));
     AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
-    // Obtain the tracking status of the current trackable object. Plane drawing is performed only when the tracking
-    // status is ARENGINE_TRACKING_STATE_TRACKING (trackable).
+    // 获取当前可跟踪对象的跟踪状态。只有当跟踪状态为ARENGINE_TRACKING_STATE_TRACKING（可跟踪）时，才执行平面绘制。
     AREngine_ARTrackingState outTrackingState;
     CHECK(HMS_AREngine_ARTrackable_GetTrackingState(arSession, arTrackable, &outTrackingState));
     AREngine_ARPlane *subsumePlane = nullptr;
-    // Obtain a plane's parent plane (generated when the plane is merged with another one). If there is no parent
-    // plane, NULL is returned.
+    // 获取平面的父平面（当平面与另一个平面合并时生成）。如果没有父平面，则返回NULL。
     CHECK(HMS_AREngine_ARPlane_AcquireSubsumedBy(arSession, arPlane, &subsumePlane));
     if (subsumePlane != nullptr) {
         HMS_AREngine_ARTrackable_Release(reinterpret_cast<AREngine_ARTrackable *>(subsumePlane));
@@ -281,7 +277,7 @@ planeList = nullptr;
 调用HMS_AREngine_ARPlane_GetPolygon函数获取平面的二维顶点坐标数组，用于绘制平面边界。
 
 int32_t polygonLength = 0;
-// Obtain the size of the 2D vertex array of the detected plane.
+// 获取检测到的平面的2D顶点数组的大小。
 CHECK(HMS_AREngine_ARPlane_GetPolygonSize(session, plane, &polygonLength));
 
 if (polygonLength == 0) {
@@ -290,12 +286,12 @@ if (polygonLength == 0) {
 }
 const int32_t verticesSize = polygonLength / 2;
 std::vector<Eigen::Vector2f> raw_vertices(verticesSize);
-// Obtain the 2D vertex array of the detected plane, in the format of [x1, z1, x2, z2, ...].
+// 获取检测到的平面的2D顶点数组，格式为[x1, z1, x2, z2, ...]。
 CHECK(HMS_AREngine_ARPlane_GetPolygon(session, plane, raw_vertices.front().data(), polygonLength));
-// Fill in vertices 0 to 3. Use the vertex.
-// xy coordinates for the x and z coordinates of the vertex.
-// The z coordinate of the vertex is used for alpha.
-// The alpha value of the outer polygon is 0.
+// 填充顶点0到3。使用该顶点。
+// xy坐标用于顶点的x和z坐标。
+// 顶点的z坐标用于alpha。
+// 外多边形的alpha值为 0。
 for (int32_t i = 0; i < verticesSize; ++i) {
     vertices.emplace_back(raw_vertices[i].x(), raw_vertices[i].y(), 0.75f);
 }
@@ -307,23 +303,20 @@ for (int32_t i = 0; i < verticesSize; ++i) {
 将平面的二维顶点坐标转换到世界坐标系，并绘制平面。
 
 AREngine_ARPose *scopedArPose = nullptr;
-// Obtain the pose information for the conversion from the local coordinate system of a plane to the world
-// coordinate system.
+// 获取从平面的局部坐标系统到世界坐标系统的转换的位姿信息。
 CHECK(HMS_AREngine_ARPose_Create(session, nullptr, 0, &scopedArPose));
 CHECK(HMS_AREngine_ARPlane_GetCenterPose(session, plane, scopedArPose));
-// Convert the pose data into a 4 x 4 matrix. outMatrixColMajor4x4 is the array for storing the matrix, where data
-// is stored in column-major order. Coordinates in the local coordinate system can be converted into ones in the
-// world coordinate system by multiplying this matrix with the coordinates in the local coordinate system.
+// 将位姿数据转换为4x4矩阵。outMatrixColMajor4x4是用于存储矩阵的数组，其中数据以列优先顺序存储。局部坐标系统中的坐标可以通过将此矩阵与局部坐标系统中的坐标相乘来转换为世界坐标系统中的坐标。
 CHECK(HMS_AREngine_ARPose_GetMatrix(session, scopedArPose, modelMat.data(), 16));
 HMS_AREngine_ARPose_Destroy(scopedArPose);
 
-// Generate a triangle.
+// 生成一个三角形。
 for (int i = 1; i < verticesSize - 1; ++i) {
     triangles.push_back(0);
     triangles.push_back(i);
     triangles.push_back(i + 1);
 }
-// Generate the plane boundary.
+// 生成平面边界。
 for (int i = 0; i < verticesSize; ++i) {
     lines.push_back(i);
 }
@@ -382,15 +375,14 @@ CHECK(HMS_AREngine_ARHitResult_AcquireTrackable(mArSession, arHit, &arTrackable)
 AREngine_ARTrackableType ar_trackable_type = ARENGINE_TRACKABLE_INVALID;
 CHECK(HMS_AREngine_ARTrackable_GetType(mArSession, arTrackable, &ar_trackable_type));
 
-// If a plane or directional point is encountered, an anchor point is created.
+// 如果遇到平面或方向点，则创建锚点。
 if (ARENGINE_TRACKABLE_PLANE == ar_trackable_type) {
     AREngine_ARPose *arPose = nullptr;
     CHECK(HMS_AREngine_ARPose_Create(mArSession, nullptr, 0, &arPose));
     CHECK(HMS_AREngine_ARHitResult_GetHitPose(mArSession, arHit, arPose));
     int32_t inPolygon = 0;
     AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
-    // Check whether the pose is within the plane's bounding polygon. Value 0 indicates that it is out of the
-    // range, and other values indicate that it is within the range.
+    // 检查位姿是否在平面的边界多边形内。值为0表示超出范围，其他值表示在范围内。
     CHECK(HMS_AREngine_ARPlane_IsPoseInPolygon(mArSession, arPlane, arPose, &inPolygon));
     HMS_AREngine_ARPose_Destroy(arPose);
     if (!inPolygon) {
@@ -505,11 +497,11 @@ struct ARWorld {
           .onLoad(() => {
             this.interval = setInterval(() => {
               if (this.isUpdate) {
-                // Call the update Native API to update the calculation result of each frame by AR Engine.
+                // 调用Native API更新方法，更新AR Engine每一帧的计算结果。
                 this.numberOfPlans = arEngineDemo.update(this.idStr);
                 this.planeNum();
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             clearInterval(this.interval);
@@ -555,14 +547,14 @@ struct ARWorld {
 
   private planeNum(): void {
     if (this.numberOfPlans < 1) {
-      // The number of planes is less than 1.
+      // 平面数量小于1。
       let tempMillisecond: number = new Date().getTime();
-      // Assign a value to the time when the feature is started for the first time.
+      // 为特性首次启动的时间赋值。
       if (this.currentMillisecond === 0) {
         this.currentMillisecond = tempMillisecond;
         return;
       }
-      // Display a pop-up window if the plane fails to be recognized within 10 seconds.
+      // 如果平面在10秒内未被识别，则显示弹出窗口。
       if (tempMillisecond - this.currentMillisecond > 10000) {
         this.messageNotification();
         this.currentMillisecond = 0;
@@ -582,7 +574,7 @@ CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
 // ...
 CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
 HMS_AREngine_ARConfig_Destroy(arConfig);
-// Create an AREngine_ARFrame object.
+// 创建一个AREngine_ARFrame对象。
 CHECK(HMS_AREngine_ARFrame_Create(mArSession, &mArFrame));
 NativeDisplayManager_Rotation displayRotation;
 if (OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation) == DISPLAY_MANAGER_OK) {
@@ -590,8 +582,7 @@ if (OH_NativeDisplayManager_GetDefaultDisplayRotation(&displayRotation) == DISPL
 }
 // ...
 CHECK(HMS_AREngine_ARSession_SetDisplayGeometry(mArSession, mDisplayRotation, mWidth, mHeight));
-// Set the display height and width (in pixels). Make sure that the height and width you set here are consistent
-// with those of the display view.
+// 设置显示高度和宽度（以像素为单位）。请确保在此处设置的高度和宽度与显示视图的高度和宽度一致。
 ```
 
 ### Code block 5
@@ -615,43 +606,40 @@ HMS_AREngine_ARSession_Update(mArSession, mArFrame);
 ### Code block 8
 
 ```
-// Obtain the camera parameters of the current frame.
+// 获取当前帧的相机参数。
 AREngine_ARCamera *arCamera = nullptr;
 CHECK(HMS_AREngine_ARFrame_AcquireCamera(arSession, arFrame, &arCamera));
-// Obtain the view matrix of the camera in the latest frame.
+// 获取最新帧中相机的视图矩阵。
 CHECK(HMS_AREngine_ARCamera_GetViewMatrix(arSession, arCamera, viewMat->data(), 16));
-// Obtain the projection matrix used for rendering virtual content on top of the camera image. This matrix can be
-// used for converting from the camera coordinate system to the clip coordinate system. Near (0.1) Far (100).
+// 获取用于在相机图像上渲染虚拟内容的投影矩阵。此矩阵可用于将相机坐标系统转换为裁剪坐标系统。近点 (0.1) 远点 (100)。
 CHECK(HMS_AREngine_ARCamera_GetProjectionMatrix(arSession, arCamera, {0.1f, 100.f}, projectionMat->data(), 16));
 ```
 
 ### Code block 9
 
 ```
-// Update and render the plane.
+// 更新并渲染平面。
 AREngine_ARTrackableList *planeList = nullptr;
-// Create a list of trackable objects.
+// 创建可跟踪对象列表。
 CHECK(HMS_AREngine_ARTrackableList_Create(arSession, &planeList));
-// Obtain the list of all trackable objects of the specified type.
+// 获取指定类型的所有可跟踪对象列表。
 AREngine_ARTrackableType planeTrackedType = ARENGINE_TRACKABLE_PLANE;
 CHECK(HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, planeList));
 int32_t planeListSize = 0;
-// Obtain the number of trackable objects in the list.
+// 获取列表中可跟踪对象的数量。
 CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize));
 mPlaneCount = planeListSize;
 
 for (int i = 0; i < planeListSize; ++i) {
     AREngine_ARTrackable *arTrackable = nullptr;
-    // Obtain the object at a specified index from the trackable object list.
+    // 从可跟踪对象列表中获取指定索引的对象。
     CHECK(HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable));
     AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
-    // Obtain the tracking status of the current trackable object. Plane drawing is performed only when the tracking
-    // status is ARENGINE_TRACKING_STATE_TRACKING (trackable).
+    // 获取当前可跟踪对象的跟踪状态。只有当跟踪状态为ARENGINE_TRACKING_STATE_TRACKING（可跟踪）时，才执行平面绘制。
     AREngine_ARTrackingState outTrackingState;
     CHECK(HMS_AREngine_ARTrackable_GetTrackingState(arSession, arTrackable, &outTrackingState));
     AREngine_ARPlane *subsumePlane = nullptr;
-    // Obtain a plane's parent plane (generated when the plane is merged with another one). If there is no parent
-    // plane, NULL is returned.
+    // 获取平面的父平面（当平面与另一个平面合并时生成）。如果没有父平面，则返回NULL。
     CHECK(HMS_AREngine_ARPlane_AcquireSubsumedBy(arSession, arPlane, &subsumePlane));
     if (subsumePlane != nullptr) {
         HMS_AREngine_ARTrackable_Release(reinterpret_cast<AREngine_ARTrackable *>(subsumePlane));
@@ -670,7 +658,7 @@ planeList = nullptr;
 
 ```
 int32_t polygonLength = 0;
-// Obtain the size of the 2D vertex array of the detected plane.
+// 获取检测到的平面的2D顶点数组的大小。
 CHECK(HMS_AREngine_ARPlane_GetPolygonSize(session, plane, &polygonLength));
 
 if (polygonLength == 0) {
@@ -679,12 +667,12 @@ if (polygonLength == 0) {
 }
 const int32_t verticesSize = polygonLength / 2;
 std::vector<Eigen::Vector2f> raw_vertices(verticesSize);
-// Obtain the 2D vertex array of the detected plane, in the format of [x1, z1, x2, z2, ...].
+// 获取检测到的平面的2D顶点数组，格式为[x1, z1, x2, z2, ...]。
 CHECK(HMS_AREngine_ARPlane_GetPolygon(session, plane, raw_vertices.front().data(), polygonLength));
-// Fill in vertices 0 to 3. Use the vertex.
-// xy coordinates for the x and z coordinates of the vertex.
-// The z coordinate of the vertex is used for alpha.
-// The alpha value of the outer polygon is 0.
+// 填充顶点0到3。使用该顶点。
+// xy坐标用于顶点的x和z坐标。
+// 顶点的z坐标用于alpha。
+// 外多边形的alpha值为 0。
 for (int32_t i = 0; i < verticesSize; ++i) {
     vertices.emplace_back(raw_vertices[i].x(), raw_vertices[i].y(), 0.75f);
 }
@@ -694,23 +682,20 @@ for (int32_t i = 0; i < verticesSize; ++i) {
 
 ```
 AREngine_ARPose *scopedArPose = nullptr;
-// Obtain the pose information for the conversion from the local coordinate system of a plane to the world
-// coordinate system.
+// 获取从平面的局部坐标系统到世界坐标系统的转换的位姿信息。
 CHECK(HMS_AREngine_ARPose_Create(session, nullptr, 0, &scopedArPose));
 CHECK(HMS_AREngine_ARPlane_GetCenterPose(session, plane, scopedArPose));
-// Convert the pose data into a 4 x 4 matrix. outMatrixColMajor4x4 is the array for storing the matrix, where data
-// is stored in column-major order. Coordinates in the local coordinate system can be converted into ones in the
-// world coordinate system by multiplying this matrix with the coordinates in the local coordinate system.
+// 将位姿数据转换为4x4矩阵。outMatrixColMajor4x4是用于存储矩阵的数组，其中数据以列优先顺序存储。局部坐标系统中的坐标可以通过将此矩阵与局部坐标系统中的坐标相乘来转换为世界坐标系统中的坐标。
 CHECK(HMS_AREngine_ARPose_GetMatrix(session, scopedArPose, modelMat.data(), 16));
 HMS_AREngine_ARPose_Destroy(scopedArPose);
 
-// Generate a triangle.
+// 生成一个三角形。
 for (int i = 1; i < verticesSize - 1; ++i) {
     triangles.push_back(0);
     triangles.push_back(i);
     triangles.push_back(i + 1);
 }
-// Generate the plane boundary.
+// 生成平面边界。
 for (int i = 0; i < verticesSize; ++i) {
     lines.push_back(i);
 }
@@ -769,15 +754,14 @@ CHECK(HMS_AREngine_ARHitResult_AcquireTrackable(mArSession, arHit, &arTrackable)
 AREngine_ARTrackableType ar_trackable_type = ARENGINE_TRACKABLE_INVALID;
 CHECK(HMS_AREngine_ARTrackable_GetType(mArSession, arTrackable, &ar_trackable_type));
 
-// If a plane or directional point is encountered, an anchor point is created.
+// 如果遇到平面或方向点，则创建锚点。
 if (ARENGINE_TRACKABLE_PLANE == ar_trackable_type) {
     AREngine_ARPose *arPose = nullptr;
     CHECK(HMS_AREngine_ARPose_Create(mArSession, nullptr, 0, &arPose));
     CHECK(HMS_AREngine_ARHitResult_GetHitPose(mArSession, arHit, arPose));
     int32_t inPolygon = 0;
     AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
-    // Check whether the pose is within the plane's bounding polygon. Value 0 indicates that it is out of the
-    // range, and other values indicate that it is within the range.
+    // 检查位姿是否在平面的边界多边形内。值为0表示超出范围，其他值表示在范围内。
     CHECK(HMS_AREngine_ARPlane_IsPoseInPolygon(mArSession, arPlane, arPose, &inPolygon));
     HMS_AREngine_ARPose_Destroy(arPose);
     if (!inPolygon) {

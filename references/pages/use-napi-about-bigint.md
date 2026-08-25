@@ -294,7 +294,7 @@ static napi_value GetValueBigintWords(napi_env env, napi_callback_info info)
 
 index.d.ts
 
-export const getValueBigintWords: (bigIntWords: bigint) => bigint | undefined; // napi_get_value_bigint_words
+export const getValueBigintWords: (bigIntWords: bigint) => number | undefined; // napi_get_value_bigint_words
 
 ArkTS侧示例代码
 
@@ -586,7 +586,7 @@ static napi_value GetValueBigintWords(napi_env env, napi_callback_info info)
 ### Code block 19
 
 ```
-export const getValueBigintWords: (bigIntWords: bigint) => bigint | undefined; // napi_get_value_bigint_words
+export const getValueBigintWords: (bigIntWords: bigint) => number | undefined; // napi_get_value_bigint_words
 ```
 
 ### Code block 20

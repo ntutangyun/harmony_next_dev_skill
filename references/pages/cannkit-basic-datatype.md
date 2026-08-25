@@ -34,7 +34,7 @@ DataCopy: L1 Buffer->Bias Table	KirinX90/Kirin9030只支持fp16数据类型，�
     // kernel 分配内存大小举例
     tPipe->InitBuffer(l0cQue, tiling.dbL0c, tiling.baseM * tiling.baseN * sizeof(L0cDtype));
     // ...
-    // kerenl mmad计算api举例
+    // kernel mmad计算api举例
     mmad<L0cDtype, L0aDtype, L0bDtype, BiasDtype>(dstLocal, fmLocal, filterLocal, biasLocal, mmadParams);
 
 说明
@@ -62,6 +62,6 @@ DataCopy: L1 Buffer->Bias Table	KirinX90/Kirin9030只支持fp16数据类型，�
     // kernel 分配内存大小举例
     tPipe->InitBuffer(l0cQue, tiling.dbL0c, tiling.baseM * tiling.baseN * sizeof(L0cDtype));
     // ...
-    // kerenl mmad计算api举例
+    // kernel mmad计算api举例
     mmad<L0cDtype, L0aDtype, L0bDtype, BiasDtype>(dstLocal, fmLocal, filterLocal, biasLocal, mmadParams);
 ```

@@ -198,7 +198,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 
     let session: arEngine.ARSession | undefined = ctx.session;
 
-    // The mesh color is controlled by the file mesh.shader
+    // 网格颜色由mesh.shader文件控制。
     let rf: SceneResourceFactory = ctx.scene.getResourceFactory();
     this.material = await rf.createMaterial({ name: 'CustomMaterial' }, MaterialType.SHADER);
     this.shader = await rf.createShader({ name: 'CustomShader', uri: $rawfile('shaders/custom_shader/mesh.shader') });
@@ -400,7 +400,7 @@ class ARViewCallbackImpl extends arViewController.ARViewCallback {
 
     let session: arEngine.ARSession | undefined = ctx.session;
 
-    // The mesh color is controlled by the file mesh.shader
+    // 网格颜色由mesh.shader文件控制。
     let rf: SceneResourceFactory = ctx.scene.getResourceFactory();
     this.material = await rf.createMaterial({ name: 'CustomMaterial' }, MaterialType.SHADER);
     this.shader = await rf.createShader({ name: 'CustomShader', uri: $rawfile('shaders/custom_shader/mesh.shader') });

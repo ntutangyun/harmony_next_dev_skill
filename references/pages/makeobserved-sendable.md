@@ -6,11 +6,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/makeobser
 
 本示例说明以下场景：
 
-makeObserved在传入@Sendable类型的数据后有观测能力，且其变化可以触发UI更新。
+@Sendable类型的数据在使用makeObserved方法处理后，有了观测能力，且其变化可以触发UI更新。
 
-从子线程获取数据，整体替换UI线程的可观测数据。
-
-从子线程获取的数据重新执行makeObserved，变为可观测数据。
+从子线程获取数据，通过执行makeObserved变为可观测数据，然后整体替换到UI线程来观测数据变化。
 
 将数据从UI主线程传递回子线程时，只传递不可观测的数据。makeObserved的返回值不能直接传给子线程。
 

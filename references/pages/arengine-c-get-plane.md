@@ -23,7 +23,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arengine-
 创建一个平面对象列表planeList，用于存放AR Engine运行过程中检测到的所有平面。
 
 AREngine_ARTrackableList *planeList = nullptr;
-// Create a list of trackable objects.
+// 创建可跟踪对象列表。
 CHECK(HMS_AREngine_ARTrackableList_Create(arSession, &planeList));
 
 设置可跟踪对象类型为ARENGINE_TRACKABLE_PLANE。
@@ -41,7 +41,7 @@ CHECK(HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, plane
 调用HMS_AREngine_ARTrackableList_GetSize函数获取平面数量，结果存放在planeListSize中。
 
 int32_t planeListSize = 0;
-// Obtain the number of trackable objects in the list.
+// 获取列表中可跟踪对象的数量。
 CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize));
 
 在应用环境中，可能存在0个、1个或多个平面。
@@ -57,13 +57,13 @@ CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize)
 当存在1个或多个平面时，可以依次遍历planeList获取所有平面对象。
 
 for (int i = 0; i < planeListSize; ++i) {
-    // 遍历所有平面对象，根据您的应用进行处理。
+    // ...
 }
 
 对于第i个平面，创建并获取可跟踪对象，并将其转化为平面对象AREngine_ARPlane。
 
 AREngine_ARTrackable *arTrackable = nullptr;
-// Obtain the object at a specified index from the trackable object list.
+// 从可跟踪对象列表中获取指定索引的对象。
 CHECK(HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable));
 AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
 
@@ -81,7 +81,7 @@ HMS_AREngine_ARTrackableList_Destroy(planeList);
 
 ```
 AREngine_ARTrackableList *planeList = nullptr;
-// Create a list of trackable objects.
+// 创建可跟踪对象列表。
 CHECK(HMS_AREngine_ARTrackableList_Create(arSession, &planeList));
 ```
 
@@ -101,7 +101,7 @@ CHECK(HMS_AREngine_ARSession_GetAllTrackables(arSession, planeTrackedType, plane
 
 ```
 int32_t planeListSize = 0;
-// Obtain the number of trackable objects in the list.
+// 获取列表中可跟踪对象的数量。
 CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize));
 ```
 
@@ -109,7 +109,7 @@ CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, planeList, &planeListSize)
 
 ```
 for (int i = 0; i < planeListSize; ++i) {
-    // 遍历所有平面对象，根据您的应用进行处理。
+    // ...
 }
 ```
 
@@ -117,7 +117,7 @@ for (int i = 0; i < planeListSize; ++i) {
 
 ```
 AREngine_ARTrackable *arTrackable = nullptr;
-// Obtain the object at a specified index from the trackable object list.
+// 从可跟踪对象列表中获取指定索引的对象。
 CHECK(HMS_AREngine_ARTrackableList_AcquireItem(arSession, planeList, i, &arTrackable));
 AREngine_ARPlane *arPlane = reinterpret_cast<AREngine_ARPlane *>(arTrackable);
 ```

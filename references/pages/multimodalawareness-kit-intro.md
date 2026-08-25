@@ -14,6 +14,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/multimoda
 
 [h2]模拟器支持情况
 
-本Kit支持模拟器。
-
-模拟器与真机存在通用差异，详情请参见模拟器与真机的差异。
+本Kit不支持模拟器。

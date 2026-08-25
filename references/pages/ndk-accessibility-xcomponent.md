@@ -381,7 +381,7 @@ int32_t AccessibilityManager::ExecuteAccessibilityAction(const char* instanceId,
     if (!object) {
         return 0;
     }
-    // 获取无障碍节点element。
+     // 获取无障碍节点的播报文本。
     auto announcedText = object->GetAnnouncedForAccessibility();
     auto element = OH_ArkUI_CreateAccessibilityElementInfo();
     OH_ArkUI_AccessibilityElementInfoSetElementId(element, elementId);
@@ -839,7 +839,7 @@ int32_t AccessibilityManager::ExecuteAccessibilityAction(const char* instanceId,
     if (!object) {
         return 0;
     }
-    // 获取无障碍节点element。
+     // 获取无障碍节点的播报文本。
     auto announcedText = object->GetAnnouncedForAccessibility();
     auto element = OH_ArkUI_CreateAccessibilityElementInfo();
     OH_ArkUI_AccessibilityElementInfoSetElementId(element, elementId);

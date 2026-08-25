@@ -37,6 +37,8 @@ workspace	输入	核函数传入的workspace的指针，包括系统workspace和
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

@@ -18,6 +18,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-redir
 
 在以下示例中，通过点击应用按钮来触发前端页面的后退操作。
 
+import { webview } from '@kit.ArkWeb';
+
 @Entry
 @Component
 struct WebComponent {
@@ -168,6 +170,8 @@ struct WebComponent {
 ### Code block 2
 
 ```
+import { webview } from '@kit.ArkWeb';
+
 @Entry
 @Component
 struct WebComponent {

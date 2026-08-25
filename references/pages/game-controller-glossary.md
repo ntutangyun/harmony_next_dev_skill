@@ -1,4 +1,4 @@
-# 游戏控制器术语
+# Game Controller Kit术语
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/game-controller-glossary_
 

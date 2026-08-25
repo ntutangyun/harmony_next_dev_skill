@@ -34,6 +34,8 @@ WebNativeMessagingExtensionAbility仅支持拉起本应用的UIAbility，不支�
 
 WebNativeMessagingExtensionAbility仅用于浏览器扩展与应用通信场景，不支持如后台服务等其他场景使用。
 
+应用包名仅允许使用小写英文字母、数字、下划线（_）、点（.）。
+
 运作机制
 
 [h2]整体流程

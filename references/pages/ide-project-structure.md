@@ -27,7 +27,7 @@ src > mock：配置测试框架的Mock能力。具体请参考Mock能力。
 
 src > ohosTest：存放Instrument Test测试类。具体请参考Instrument Test。
 
-src > test：存放Local Test创建测试类。具体请参考Local Test。
+src > test：存放Local Test测试类。具体请参考Local Test。
 
 build-profile.json5：当前的模块信息、编译信息配置项，包括buildOption、targets配置等。
 

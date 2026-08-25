@@ -6,7 +6,7 @@ Game Controller Kit（游戏控制器服务）支持游戏适配控制器外设�
 
 能力范围
 
-Game Controller Kit支持的能力包括:
+Game Controller Kit支持的能力包括：
 
 监听设备上下线，查询所有在线设备的具体信息
 

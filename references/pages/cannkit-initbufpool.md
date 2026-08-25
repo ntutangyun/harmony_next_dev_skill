@@ -32,6 +32,8 @@ shareBuf	输入	被复用资源池，类型为TBufPool，新划分资源池与�
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 注意事项

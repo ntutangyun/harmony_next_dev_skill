@@ -23,10 +23,8 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dstLocal, const GlobalTens
 表1 数据通路和数据类型（源操作数为GlobalTensor，目的操作数为LocalTensor）
 
 支持型号	数据通路（通过TPosition章节中表1表达）	源操作数和目的操作数的数据类型 (两者保持一致)
-Kirin9020系列处理器	GM->L1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	GM->L1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-Kirin9020系列处理器	GM->UB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	GM->UB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	GM->L1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	GM->UB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
 
 源操作数和目的操作数都为LocalTensor
 
@@ -43,16 +41,11 @@ KirinX90系列处理器	GM->UB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/
 表2 数据通路和数据类型（源操作数和目的操作数都为LocalTensor）
 
 支持型号	数据通路（通过TPosition章节中表1表达）	源操作数和目的操作数的数据类型 (两者保持一致)
-Kirin9020系列处理器	L1->UB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	L1->UB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-Kirin9020系列处理器	L1->BT	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	L1->BT	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-Kirin9020系列处理器	L1->PT	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	L1->PT	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-Kirin9020系列处理器	L1->FB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	L1->FB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-Kirin9020系列处理器	UB->L1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	UB->L1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	L1->UB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	L1->BT	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	L1->PT	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	L1->FB	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	UB->L1	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
 
 源操作数为LocalTensor，目的操作数为GlobalTensor
 
@@ -68,10 +61,8 @@ __aicore__ inline void DataCopy(const GlobalTensor <T>& dstGlobal, const LocalTe
 表3 数据通路和数据类型（源操作数为LocalTensor，目的操作数为GlobalTensor）
 
 支持型号	数据通路（通过TPosition章节中表1表达）	源操作数和目的操作数的数据类型 (两者保持一致)
-Kirin9020系列处理器	L1->GM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	L1->GM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-Kirin9020系列处理器	UB->GM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
-KirinX90系列处理器	UB->GM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	L1->GM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
+Kirin9020系列处理器、Kirin9030系列处理器、KirinX90系列处理器	UB->GM	int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float
 
 源操作数和目的操作数都为LocalTensor，支持源操作数和目的操作数类型不一致
 
@@ -101,6 +92,8 @@ dstStride	目的操作数，相邻连续数据块间的间隔（前面一个数�
 支持的型号
 
 Kirin9020系列处理器
+
+Kirin9030系列处理器
 
 KirinX90系列处理器
 

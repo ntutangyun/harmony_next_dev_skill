@@ -1366,7 +1366,7 @@ entries.forEach((value, key) => {
 应用代码
 
 interface I {
-  name:string
+  name: string;
 }
 
 class A {}
@@ -1382,7 +1382,7 @@ class Test {
 建议改法
 
 interface I {
-  name:string
+  name: string;
 }
 
 class A {}
@@ -3392,7 +3392,7 @@ entries.forEach((value, key) => {
 
 ```
 interface I {
-  name:string
+  name: string;
 }
 
 class A {}
@@ -3410,7 +3410,7 @@ class Test {
 
 ```
 interface I {
-  name:string
+  name: string;
 }
 
 class A {}

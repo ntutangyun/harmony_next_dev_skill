@@ -34,7 +34,7 @@ Web页面出现白屏的原因众多，本文列举了若干常见白屏问题�
 
 名称	说明
 domStorageAccess	设置是否开启文档对象模型存储接口（DOM Storage API）权限。若不开启，无法使用localStorage存储数据，任何调用localStorage的代码都将失效，依赖本地存储的功能会异常。
-fileAccess	设置是否开启应用中文件系统的访问。‌若不开启，文件读写功能完全被阻断，依赖文件的模块会崩溃。
+fileAccess	设置是否开启应用中文件系统的访问。‌若不开启，文件读写功能完全被阻断，依赖文件读写的模块会遇到访问被拒绝的错误。
 imageAccess	设置是否允许自动加载图片资源。
 onlineImageAccess	设置是否允许从网络加载图片资源（通过HTTP和HTTPS访问的资源）。
 javaScriptAccess	设置是否允许执行JavaScript脚本。
@@ -361,10 +361,12 @@ css样式height: <number> vh和Web组件大小自适应页面布局存在计算�
 特殊协议拦截。
 
 .onInterceptRequest((event) => {
-    if (event.request.url.startsWith('tel:')) {
+    if (event.request.getRequestUrl().startsWith('tel:')) {
         // 调用系统拨号能力
-        call.makeCall({ phoneNumber: '123456' });
-        return { responseCode: 404 }; // 阻止默认行为
+        call.makeCall('123456');
+        let response = new WebResourceResponse();
+        response.setResponseCode(404);
+        return response; // 阻止默认行为
     }
     return null;
 })
@@ -704,10 +706,12 @@ body.appendChild(element);
 
 ```
 .onInterceptRequest((event) => {
-    if (event.request.url.startsWith('tel:')) {
+    if (event.request.getRequestUrl().startsWith('tel:')) {
         // 调用系统拨号能力
-        call.makeCall({ phoneNumber: '123456' });
-        return { responseCode: 404 }; // 阻止默认行为
+        call.makeCall('123456');
+        let response = new WebResourceResponse();
+        response.setResponseCode(404);
+        return response; // 阻止默认行为
     }
     return null;
 })

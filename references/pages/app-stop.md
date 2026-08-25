@@ -21,6 +21,36 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-stop_
 应用主动退出（正常退出）	开发者显式调用terminateSelf()终止当前应用进程，常见场景包括：应用检测到致命错误，主动终止进程以避免数据损坏；完成应用内一键清理缓存等核心任务后，主动结束生命周期。	是
 系统强制终止（异常退出）	应用进程崩溃或被系统强制终止（如jscrash、指针异常等）；系统因资源回收等原因自动清理UIAbility（如系统内存紧张、电量优化、权限变更等）。	否
 
+应用退出流程
+
+在应用开发中，理解UIAbility组件、AbilityStage与应用进程之间的退出关系，对应用开发至关重要。组件销毁（如UIAbility）仅销毁特定实例，其宿主进程仍常驻后台。只有当进程内所有组件均被销毁，进程才会触发销毁流程。直至应用所属的所有进程被操作系统彻底销毁、回收全部内存与线程时，应用才算真正退出。
+
+UIAbility、AbilityStage与进程的关系
+
+一个应用进程可以包含多个AbilityStage，每个AbilityStage对应一个Module。一个AbilityStage下可以包含多个UIAbility。它们之间的层级关系如下：
+
+应用进程
+├── AbilityStage (Module A)
+│   ├── UIAbility 1
+│   └── UIAbility 2
+├── AbilityStage (Module B)
+│   └── UIAbility 3
+└── ...
+
+退出流程
+
+应用退出时，系统按照"UIAbility -> AbilityStage -> 进程"的顺序依次销毁，具体流程如下：
+
+UIAbility销毁：当某个UIAbility实例被销毁时，系统依次回调onWindowStageWillDestroy()、onWindowStageDestroy()，最后回调onDestroy()生命周期。开发者可以在onDestroy()中执行该UIAbility实例的资源释放操作，如关闭网络连接、释放文件句柄等。
+
+AbilityStage销毁：当某个AbilityStage下所有的UIAbility对象均被销毁后，系统回调该AbilityStage的onDestroy()生命周期。开发者可以在该回调中执行Module级别的资源释放操作，如释放Module级别的缓存、关闭Module级别的数据库连接等。
+
+进程退出：当应用进程内所有AbilityStage均被销毁后，应用进程退出，操作系统回收该进程的全部内存与线程资源。
+
+说明
+
+完整的UIAbility生命周期回调顺序，请参见UIAbility组件生命周期。
+
 用户主动退出
 
 [h2]用户通过返回退出
@@ -66,6 +96,10 @@ export default class OnBackPressedAbility extends UIAbility {
 一键清理：点击"一键清理"按钮，批量清除所有任务卡片，所有UIAbility实例都会退出并执行onDestroy生命周期回调。
 
 Dock栏退出：在PC/2in1或Tablet设备上，用户通过Dock栏退出，UIAbility的onDestroy不保证回调。
+
+说明
+
+通过“一键清理”退出UIAbility时可能不会触发onDestroy()回调，而是直接终止进程。
 
 应用主动退出
 
@@ -126,6 +160,18 @@ export default class EntryAbility extends UIAbility {
 ### Code block 1
 
 ```
+应用进程
+├── AbilityStage (Module A)
+│   ├── UIAbility 1
+│   └── UIAbility 2
+├── AbilityStage (Module B)
+│   └── UIAbility 3
+└── ...
+```
+
+### Code block 2
+
+```
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
@@ -149,7 +195,7 @@ export default class OnBackPressedAbility extends UIAbility {
 }
 ```
 
-### Code block 2
+### Code block 3
 
 ```
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';

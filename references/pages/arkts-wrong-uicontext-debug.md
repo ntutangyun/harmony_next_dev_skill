@@ -29,7 +29,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wro
 {bundleName}	字符串	com.example.helloworld	应用的bundleName。
 {moduleName}	字符串	entry	当前模块的moduleName。
 {thisInstanceId}	正数	100000	被通知UI实例的ID。
-{status}	实例被通知的状态	focus	可选值为: - focus：获焦 - unfocus：失焦 - foreground：前台 - background：后台 - destroy：销毁
+{status}	实例被通知的状态	focus	可选值为： - focus：获焦 - unfocus：失焦 - foreground：前台 - background：后台 - destroy：销毁
 
 可使用如下正则表达式匹配相关日志：
 

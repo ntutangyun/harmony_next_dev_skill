@@ -107,6 +107,8 @@ softmaxFlashTiling	输出	输出SoftmaxFlashV2接口所需的tiling信息。
 
 Kirin9020系列处理器
 
+Kirin9030系列处理器
+
 KirinX90系列处理器
 
 约束说明

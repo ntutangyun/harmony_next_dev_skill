@@ -84,7 +84,27 @@ Button('开始骨骼点识别')
 
 骨骼点识别的方法实现如下：
 
-typescript private async handleSkeletonDetection() { try { if (!this.chooseImage) { hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.'); return; } // 调用骨骼点识别接口 let request: visionBase.Request = { inputData: { pixelMap: this.chooseImage } }; let detector = await skeletonDetection.SkeletonDetector.create(); let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request); await detector.destroy(); let poseJson = JSON.stringify(data); hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`); this.dataValues = poseJson; } catch (err) { hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error: ${err}`); } }
+private async handleSkeletonDetection() {
+  try {
+    if (!this.chooseImage) {
+      hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
+      return;
+    }
+    // 调用骨骼点识别接口
+    let request: visionBase.Request = {
+      inputData: { pixelMap: this.chooseImage }
+    };
+    let detector = await skeletonDetection.SkeletonDetector.create();
+    let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
+    await detector.destroy();
+    let poseJson = JSON.stringify(data);
+    hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
+    this.dataValues = poseJson;
+  } catch (err) {
+    const error = err as BusinessError;
+    hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error. Code: ${error.code}, message: ${error.message}`);
+  }
+}
 
 开发实例
 
@@ -280,6 +300,32 @@ Button('开始骨骼点识别')
 ```
 
 ### Code block 5
+
+```
+private async handleSkeletonDetection() {
+  try {
+    if (!this.chooseImage) {
+      hilog.error(0x0000, 'skeletonDetectSample', 'Failed to choose image.');
+      return;
+    }
+    // 调用骨骼点识别接口
+    let request: visionBase.Request = {
+      inputData: { pixelMap: this.chooseImage }
+    };
+    let detector = await skeletonDetection.SkeletonDetector.create();
+    let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
+    await detector.destroy();
+    let poseJson = JSON.stringify(data);
+    hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
+    this.dataValues = poseJson;
+  } catch (err) {
+    const error = err as BusinessError;
+    hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error. Code: ${error.code}, message: ${error.message}`);
+  }
+}
+```
+
+### Code block 6
 
 ```
 import { image } from '@kit.ImageKit';

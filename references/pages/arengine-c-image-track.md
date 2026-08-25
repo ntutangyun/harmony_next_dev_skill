@@ -162,7 +162,7 @@ struct ARImageByAdd {
                 return;
               }
               arEngineDemo.update(this.idStr);
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             logger.info(`XComponent onDestroy ${this.idStr}.`);
@@ -234,16 +234,136 @@ struct ARImageByAdd {
     .hideToolBar(true)
   }
   // ...
+  private showDialog(msg: string): void {
+    this.getUIContext().showAlertDialog({
+      title: $r('app.string.warning'),
+      message: msg,
+      autoCancel: true,
+      alignment: DialogAlignment.Center,
+      offset: { dx: 0, dy: -20 },
+      gridCount: 3,
+      transition: TransitionEffect
+        .asymmetric(TransitionEffect.OPACITY
+          .animation({ duration: 1000, curve: Curve.Sharp })
+          .combine(TransitionEffect
+            .scale({ x: 1.5, y: 1.5 })
+            .animation({ duration: 1000, curve: Curve.Sharp })
+          ),
+          TransitionEffect.OPACITY
+            .animation({ duration: 100, curve: Curve.Smooth })
+            .combine(TransitionEffect.scale({ x: 0.5, y: 0.5 })
+              .animation({ duration: 100, curve: Curve.Smooth })
+            )
+        ),
+      buttons: [{
+        enabled: true,
+        defaultFocus: true,
+        style: DialogButtonStyle.HIGHLIGHT,
+        value: $r('app.string.back'),
+        action: () => {
+          logger.info('Callback when the second button is clicked');
+          this.pageInfos.pop();
+        }
+      }]
+    })
+  }
+
+  private RegisterAddImageCallback(): void {
+    emitter.on('addImage', (data: emitter.EventData) => {
+      if (data.data?.addImageReason === 0) {
+        this.imageAddNumbers++;
+        logger.info(`Succeeded in adding image, image numbers: ${this.imageAddNumbers}.`);
+      } else {
+        this.imageAddFailedNumbers++;
+        try {
+          this.addImageLog += this.context.resourceManager.getStringByNameSync('image_name_by_add') +
+            data.data?.imageName + '\n' +
+            this.context.resourceManager.getStringByNameSync('image_add_reason_by_add') +
+            errcode.get(data.data?.addImageReason) + '\n';
+        } catch (error) {
+          const err: BusinessError = error as BusinessError;
+          logger.error(`Failed to set addImageLog. Code is ${err.code}, message is ${err.message}`);
+        }
+        logger.error(`Failed to add image, image numbers: ${this.imageAddFailedNumbers}.`);
+      }
+      this.imageTotalNumbers++;
+    })
+
+    emitter.on('checkAddImageResult', () => {
+      if (this.imageAddNumbers === 0 && this.isUpdate) {
+        this.showPage = false;
+        try {
+          this.showDialog(this.context.resourceManager.getStringByNameSync('invalid_image_added'));
+        } catch (error) {
+          const err: BusinessError = error as BusinessError;
+          logger.error(`Failed to getStringByNameSync. Code is ${err.code}, message is ${err.message}`);
+        }
+      }
+      emitter.off('addImage');
+      this.isImageAddComplete = true;
+      emitter.off('checkAddImageResult');
+    })
+  }
 }
 
 let errcode: Map<number, string> = new Map<number, string>([[0, 'success'], [1, 'size not match'],
   [2, 'too bright or too dark'], [3, 'image color is relatively single'], [4, 'other error']]);
 
-// Asynchronously execute the task of adding pictures
+// 异步执行添加图片的任务。
 @Concurrent
 async function addImage(componentId: string, imagePathList: string[],
   errcode: Map<number, string>): Promise<void> {
-  // ...
+  for (let index = 0; index < imagePathList.length; index++) {
+    const magePath: string = imagePathList[index];
+    let file: fileIo.File = fileIo.openSync(magePath, fileIo.OpenMode.READ_ONLY);
+    let imageName: string = file.name;
+    const imageSourceApi: image.ImageSource = image.createImageSource(file.fd);
+    try {
+      fileIo.closeSync(file);
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to closeSync. Code is ${err.code}, message is ${err.message}.`);
+      imageSourceApi.release();
+      continue;
+    }
+    const imageInfo: image.ImageInfo = imageSourceApi.getImageInfoSync();
+    if (!imageInfo) {
+      logger.error(`Failed to obtain the image pixel map information.`);
+      imageSourceApi.release();
+      continue;
+    }
+    const opts: image.DecodingOptions = {
+      editable: true,
+      desiredPixelFormat: image.PixelMapFormat.RGBA_8888,
+      desiredSize: { width: imageInfo.size.width, height: imageInfo.size.height }
+    }
+    const pixelMap: image.PixelMap = imageSourceApi.createPixelMapSync(opts);
+    if (!pixelMap) {
+      logger.error('Failed to create pixelMap.');
+      imageSourceApi.release();
+      continue;
+    }
+    const readBuffer: ArrayBuffer = new ArrayBuffer(pixelMap.getPixelBytesNumber());
+    await pixelMap.readPixelsToBuffer(readBuffer);
+    pixelMap.release();
+
+    let result: number = arEngineDemo.initImage(componentId, imageInfo.size.width, imageInfo.size.height, readBuffer);
+    if (errcode.has(result) === false) {
+      logger.error('Failed to add image, break.');
+      imageSourceApi.release();
+      break;
+    }
+    if (result !== 0) {
+      logger.error(`Failed to Add image, reason is: ${errcode.get(result)}, imageName is: ${imageName}.`);
+    }
+    let eventData: emitter.EventData = {
+      data: {
+        'addImageReason': result,
+        'imageName': imageName,
+      }
+    }
+    emitter.emit('addImage', eventData);
+    imageSourceApi.release();
   }
 }
 
@@ -290,7 +410,7 @@ struct ARImageByDatabase {
               if (this.isUpdate) {
                 arEngineDemo.update(this.idStr);
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             logger.info(`XComponent onDestroy ${this.idStr}.`);
@@ -385,7 +505,7 @@ struct ARImageByDatabase {
 CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
 AREngine_ARConfig *arConfig = nullptr;
 CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
-// Set AR type to ARENGINE_TYPE_IMAGE
+// 设置AR类型为ARENGINE_TYPE_IMAGE。
 CHECK(HMS_AREngine_ARConfig_SetARType(mArSession, arConfig, ARENGINE_TYPE_IMAGE));
 // ...
 CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
@@ -432,7 +552,7 @@ CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, augmentList, &augmentSize)
 当存在1个或多个跟踪图像时，可以依次遍历augmentList获取所有跟踪图像。
 
 for (int i = 0; i < augmentSize; ++i) {
-    // 遍历所有可跟踪对象，根据应用进行处理。
+    // ...
 }
 
 对于第i个跟踪图像，创建并获取跟踪对象，并将其转化为跟踪图像对象AREngine_ARAugmentedImage。
@@ -586,7 +706,7 @@ struct ARImageByAdd {
                 return;
               }
               arEngineDemo.update(this.idStr);
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             logger.info(`XComponent onDestroy ${this.idStr}.`);
@@ -658,16 +778,136 @@ struct ARImageByAdd {
     .hideToolBar(true)
   }
   // ...
+  private showDialog(msg: string): void {
+    this.getUIContext().showAlertDialog({
+      title: $r('app.string.warning'),
+      message: msg,
+      autoCancel: true,
+      alignment: DialogAlignment.Center,
+      offset: { dx: 0, dy: -20 },
+      gridCount: 3,
+      transition: TransitionEffect
+        .asymmetric(TransitionEffect.OPACITY
+          .animation({ duration: 1000, curve: Curve.Sharp })
+          .combine(TransitionEffect
+            .scale({ x: 1.5, y: 1.5 })
+            .animation({ duration: 1000, curve: Curve.Sharp })
+          ),
+          TransitionEffect.OPACITY
+            .animation({ duration: 100, curve: Curve.Smooth })
+            .combine(TransitionEffect.scale({ x: 0.5, y: 0.5 })
+              .animation({ duration: 100, curve: Curve.Smooth })
+            )
+        ),
+      buttons: [{
+        enabled: true,
+        defaultFocus: true,
+        style: DialogButtonStyle.HIGHLIGHT,
+        value: $r('app.string.back'),
+        action: () => {
+          logger.info('Callback when the second button is clicked');
+          this.pageInfos.pop();
+        }
+      }]
+    })
+  }
+
+  private RegisterAddImageCallback(): void {
+    emitter.on('addImage', (data: emitter.EventData) => {
+      if (data.data?.addImageReason === 0) {
+        this.imageAddNumbers++;
+        logger.info(`Succeeded in adding image, image numbers: ${this.imageAddNumbers}.`);
+      } else {
+        this.imageAddFailedNumbers++;
+        try {
+          this.addImageLog += this.context.resourceManager.getStringByNameSync('image_name_by_add') +
+            data.data?.imageName + '\n' +
+            this.context.resourceManager.getStringByNameSync('image_add_reason_by_add') +
+            errcode.get(data.data?.addImageReason) + '\n';
+        } catch (error) {
+          const err: BusinessError = error as BusinessError;
+          logger.error(`Failed to set addImageLog. Code is ${err.code}, message is ${err.message}`);
+        }
+        logger.error(`Failed to add image, image numbers: ${this.imageAddFailedNumbers}.`);
+      }
+      this.imageTotalNumbers++;
+    })
+
+    emitter.on('checkAddImageResult', () => {
+      if (this.imageAddNumbers === 0 && this.isUpdate) {
+        this.showPage = false;
+        try {
+          this.showDialog(this.context.resourceManager.getStringByNameSync('invalid_image_added'));
+        } catch (error) {
+          const err: BusinessError = error as BusinessError;
+          logger.error(`Failed to getStringByNameSync. Code is ${err.code}, message is ${err.message}`);
+        }
+      }
+      emitter.off('addImage');
+      this.isImageAddComplete = true;
+      emitter.off('checkAddImageResult');
+    })
+  }
 }
 
 let errcode: Map<number, string> = new Map<number, string>([[0, 'success'], [1, 'size not match'],
   [2, 'too bright or too dark'], [3, 'image color is relatively single'], [4, 'other error']]);
 
-// Asynchronously execute the task of adding pictures
+// 异步执行添加图片的任务。
 @Concurrent
 async function addImage(componentId: string, imagePathList: string[],
   errcode: Map<number, string>): Promise<void> {
-  // ...
+  for (let index = 0; index < imagePathList.length; index++) {
+    const magePath: string = imagePathList[index];
+    let file: fileIo.File = fileIo.openSync(magePath, fileIo.OpenMode.READ_ONLY);
+    let imageName: string = file.name;
+    const imageSourceApi: image.ImageSource = image.createImageSource(file.fd);
+    try {
+      fileIo.closeSync(file);
+    } catch (error) {
+      const err: BusinessError = error as BusinessError;
+      logger.error(`Failed to closeSync. Code is ${err.code}, message is ${err.message}.`);
+      imageSourceApi.release();
+      continue;
+    }
+    const imageInfo: image.ImageInfo = imageSourceApi.getImageInfoSync();
+    if (!imageInfo) {
+      logger.error(`Failed to obtain the image pixel map information.`);
+      imageSourceApi.release();
+      continue;
+    }
+    const opts: image.DecodingOptions = {
+      editable: true,
+      desiredPixelFormat: image.PixelMapFormat.RGBA_8888,
+      desiredSize: { width: imageInfo.size.width, height: imageInfo.size.height }
+    }
+    const pixelMap: image.PixelMap = imageSourceApi.createPixelMapSync(opts);
+    if (!pixelMap) {
+      logger.error('Failed to create pixelMap.');
+      imageSourceApi.release();
+      continue;
+    }
+    const readBuffer: ArrayBuffer = new ArrayBuffer(pixelMap.getPixelBytesNumber());
+    await pixelMap.readPixelsToBuffer(readBuffer);
+    pixelMap.release();
+
+    let result: number = arEngineDemo.initImage(componentId, imageInfo.size.width, imageInfo.size.height, readBuffer);
+    if (errcode.has(result) === false) {
+      logger.error('Failed to add image, break.');
+      imageSourceApi.release();
+      break;
+    }
+    if (result !== 0) {
+      logger.error(`Failed to Add image, reason is: ${errcode.get(result)}, imageName is: ${imageName}.`);
+    }
+    let eventData: emitter.EventData = {
+      data: {
+        'addImageReason': result,
+        'imageName': imageName,
+      }
+    }
+    emitter.emit('addImage', eventData);
+    imageSourceApi.release();
   }
 }
 ```
@@ -716,7 +956,7 @@ struct ARImageByDatabase {
               if (this.isUpdate) {
                 arEngineDemo.update(this.idStr);
               }
-            }, 33) // Set the frame rate to 30 fps (with the frame refreshed every 33 ms).
+            }, 33) // 将帧率设置为30fps（每33毫秒刷新一次帧）。
           })
           .onDestroy(() => {
             logger.info(`XComponent onDestroy ${this.idStr}.`);
@@ -805,7 +1045,7 @@ struct ARImageByDatabase {
 CHECK(HMS_AREngine_ARSession_Create(nullptr, nullptr, &mArSession));
 AREngine_ARConfig *arConfig = nullptr;
 CHECK(HMS_AREngine_ARConfig_Create(mArSession, &arConfig));
-// Set AR type to ARENGINE_TYPE_IMAGE
+// 设置AR类型为ARENGINE_TYPE_IMAGE。
 CHECK(HMS_AREngine_ARConfig_SetARType(mArSession, arConfig, ARENGINE_TYPE_IMAGE));
 // ...
 CHECK(HMS_AREngine_ARSession_Configure(mArSession, arConfig));
@@ -846,7 +1086,7 @@ CHECK(HMS_AREngine_ARTrackableList_GetSize(arSession, augmentList, &augmentSize)
 
 ```
 for (int i = 0; i < augmentSize; ++i) {
-    // 遍历所有可跟踪对象，根据应用进行处理。
+    // ...
 }
 ```
 
