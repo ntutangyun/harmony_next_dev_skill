@@ -12,6 +12,10 @@ Usage (from repo root): python scripts/fetch_xiaoyi.py
 import json
 import os
 import sys
+
+# Chinese titles in the diff/log output would crash on cp1252 Windows consoles.
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed

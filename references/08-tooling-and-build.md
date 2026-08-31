@@ -146,7 +146,7 @@ Configure under `signingConfigs[0].material` in `build-profile.json5`.
 ### Running
 
 - **Local device**: USB-connect a HarmonyOS device → green Run.
-- **Emulator**: enable in `Device Manager` → DevEco downloads system image.
+- **Emulator**: enable in `Device Manager` → DevEco downloads system image. Most Kit overview pages now carry a 模拟器支持情况 section; general differences are in `ide-emulator-specification`. ArkUI-specific gaps on the emulator (per `arkui-overview`): `Image.enableAnalyzer` / image AI analysis (`ImageAnalyzerController`), HDR (`drawableDescriptor.setHdrComposition`), `OH_ArkUI_TextDataDetectorConfig`, `EmbeddedComponent` (ArkTS + NDK `embedded_component.h`), `@ohos.pluginComponent`, `toolbar`, the `@Preview` decorator, `AbilityBase_Want`, `ArkUI_SelectedDragPreviewStyle`, `restoreId`.
 - **Simulator** (lightweight wearable): emulates wearable-class devices.
 
 CLI deploy: `hdc app install entry/build/default/outputs/default/entry-default-signed.hap`. `hdc` is HarmonyOS's adb-equivalent.

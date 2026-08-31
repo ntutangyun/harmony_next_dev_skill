@@ -107,6 +107,10 @@ Grid() {
 | `Image` | Image. Source via `$r('app.media.icon')`, file URL, or PixelMap. |
 | `Video` | Video playback (uses Media Kit underneath). |
 | `WebView` from `@ohos.web.webview` | Embedded web content. |
+
+ArkWeb notes worth knowing (see `references/pages/web-*.md` / `arkweb-*.md`):
+- **WebRTC camera/mic** (`web-rtc`): declare camera/mic permissions in `module.json5`, grant them in `onPermissionRequest`. FAQ (added 2026-08): HarmonyOS returns camera `deviceId`s in list order and the *last* one is the telephoto lens, so pages that pick "the last camera" get an unfocusable telephoto view — use `getUserMedia({ video: { facingMode: 'environment' } })` or pick the *first* back-facing device instead.
+- **Password autofill** (`arkweb-access-password-safe`): the save-password prompt only auto-appears for a standard `<form>` with username + `type="password"` inputs present at load; it will not appear if the form is injected after navigation, the input flips to `type="password"` only on submit, `autocomplete` is `one-time-code`/`cc-*`, or id/name matches OTP / credit-card regexes; `autocomplete="new-password"` and JS-driven focus/value changes are discouraged.
 | `SymbolGlyph`, `SymbolSpan` | Vector icon symbols. |
 | `XComponent` | Native rendering surface (NDK, Canvas, GPU). |
 | `Canvas` | 2D drawing API. |
