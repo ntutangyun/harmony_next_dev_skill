@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/basic-dra
 
 [h2]接口说明
 
-使用画刷（Brush）设置绘制效果的常用接口如下表所示，详细的使用和参数请见drawing.Brush。
+使用画刷（Brush）设置绘制效果的常用接口如下表所示，详细的使用和参数请见drawing.Brush和drawing.Canvas。
 
 接口	描述
 attachBrush(brush: Brush): void	用于设置画刷给画布，画布将会使用设置的画刷样式和颜色去填充绘制的图形形状。
@@ -26,7 +26,7 @@ detachBrush(): void	用于去除画布中的画刷，执行后画布将不使用
 
 创建画刷Brush对象。
 
-// 设置画刷
+// 创建画刷
 const brush = new drawing.Brush();
 
 使用画刷设置基础绘制效果，例如设置填充颜色、开启抗锯齿效果等。
@@ -59,7 +59,7 @@ canvas.detachBrush();
 
 [h2]接口说明
 
-使用画笔（Pen）设置绘制效果的常用接口如下表所示，详细的使用和参数请见drawing.Pen。
+使用画笔（Pen）设置绘制效果的常用接口如下表所示，详细的使用和参数请见drawing.Pen和drawing.Canvas。
 
 接口	描述
 attachPen(pen: Pen): void	用于设置画笔给画布，画布将会使用设置画笔的样式和颜色去绘制图形形状的轮廓。
@@ -68,7 +68,7 @@ setStrokeWidth(width: number) : void	用于设置画笔的线宽。0线宽被视
 setAntiAlias(aa: boolean) : void	用于设置画笔的抗锯齿属性，设置为true则画笔在绘制图形时会对图形的边缘像素进行半透明的模糊处理。
 setCapStyle(style: CapStyle): void	用于设置画笔线帽样式。
 setJoinStyle(style: JoinStyle): void	用于设置画笔绘制转角的样式。
-detachPen(): void	用于去除画布中的画笔，执行后画布将不去绘制图形形状的轮廓，恢复到默认的填充效果。
+detachPen(): void	用于去除画布中的画笔，执行后画布将不去绘制图形形状的轮廓，恢复到默认的描边效果。
 
 [h2]开发步骤
 
@@ -115,8 +115,8 @@ JoinStyle转角样式可选分类对应如下：
 
 转角样式	说明	示意图
 MITER_JOIN	转角类型为尖角	
-ROUND_JOIN	转角类型为圆头	
-BEVEL_JOIN	转角类型为平头	
+ROUND_JOIN	转角类型为圆角	
+BEVEL_JOIN	转角类型为平角	
 
 使用attachPen()接口给Canvas画布设置画笔。画布将会使用设置的画笔样式和颜色等绘制图形轮廓。
 
@@ -139,7 +139,7 @@ canvas.detachPen();
 ### Code block 1
 
 ```
-// 设置画刷
+// 创建画刷
 const brush = new drawing.Brush();
 ```
 

@@ -22,11 +22,11 @@ C++堆栈解析原理
 
 [h2]编译选项差异
 
-Debug：不优化代码，附加调试信息。
+Debug：不优化代码，附加调试信息，如果能够稳定复现，建议优先使用该选项。
 
 Release：最大化优化代码，但不包含调试信息。
 
-RelWithDebInfo：近似于Release模式，既进行了代码优化，同时保留部分调试信息。
+set_source_files_properties(crash.cpp PROPERTIES COMPILE_FLAGS "-O0 -g -DNDEBUG")
 
 [h2]release编译带调试信息的so
 
@@ -43,7 +43,6 @@ RelWithDebInfo：近似于Release模式，既进行了代码优化，同时保�
       "cppFlags": "",
     }
   },
-  ...
 }
 
 编译后会生成2份so产物：
@@ -278,6 +277,12 @@ at anonymous (home/src/main/ets/pages/Index.ets:23:40)
 ### Code block 1
 
 ```
+set_source_files_properties(crash.cpp PROPERTIES COMPILE_FLAGS "-O0 -g -DNDEBUG")
+```
+
+### Code block 2
+
+```
 {
   "apiType": "stageMode",
   "buildOption": {
@@ -287,29 +292,28 @@ at anonymous (home/src/main/ets/pages/Index.ets:23:40)
       "cppFlags": "",
     }
   },
-  ...
 }
-```
-
-### Code block 2
-
-```
-llvm-addr2line -f -e File.so
 ```
 
 ### Code block 3
 
 ```
-llvm-addr2line 0x00000000004005e7 -e test -f -C -s
+llvm-addr2line -f -e File.so
 ```
 
 ### Code block 4
 
 ```
-llvm-addr2line -e libapplication.so 00003714 -f -C
+llvm-addr2line 0x00000000004005e7 -e test -f -C -s
 ```
 
 ### Code block 5
+
+```
+llvm-addr2line -e libapplication.so 00003714 -f -C
+```
+
+### Code block 6
 
 ```
 {
@@ -345,47 +349,47 @@ llvm-addr2line -e libapplication.so 00003714 -f -C
 }
 ```
 
-### Code block 6
+### Code block 7
 
 ```
 "obfName": "home/src/main/ets/pages/a.ts"
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 originalvariablename :  obfuscatedvariablename
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 /*--------------------------key----------------------------------  :  -----------value----------*/
 originalmethodname: originalmethodstartline: originalmethodendline :  obfuscatedmethodname
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 /*--------------------------key---------------------------------  :  -----------value----------*/
 originalmethodname:originalmethodstartline:originalmethodendline  :  obfuscatedmethodname
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 /*--------------------------key-------------------------------------  :  -----------value----------*/
 originalmethodname : originalmethodstartline : originalmethodendline  :  originalmethodname
 ```
 
-### Code block 11
+### Code block 12
 
 ```
 /*--------key-------  :  -----------value----------*/
 originalpropertyname  :  obfuscatedmethodname
 ```
 
-### Code block 12
+### Code block 13
 
 ```
 Pid:58348
@@ -400,7 +404,7 @@ Cannot get SourceMap info, dump raw stack:
     at anonymous (home|home|1.0.0|src/main/ets/pages/Index.ts:61:61)
 ```
 
-### Code block 13
+### Code block 14
 
 ```
 at g2 (home/src/main/ets/pages/tool.ts:7:27)
@@ -408,7 +412,7 @@ at getVersion (home/src/main/ets/pages/tool.ts:2:30)
 at anonymous (home/src/main/ets/pages/Index.ets:23:40)
 ```
 
-### Code block 14
+### Code block 15
 
 ```
 "home|home|1.0.0|src/main/ets/pages/a.ts": {
@@ -424,7 +428,7 @@ at anonymous (home/src/main/ets/pages/Index.ets:23:40)
   }
 ```
 
-### Code block 15
+### Code block 16
 
 ```
 "home/src/main/ets/pages/tool.ts": {
@@ -437,13 +441,13 @@ at anonymous (home/src/main/ets/pages/Index.ets:23:40)
   }
 ```
 
-### Code block 16
+### Code block 17
 
 ```
 "#testObfuscation:6:9": "g2"
 ```
 
-### Code block 17
+### Code block 18
 
 ```
 at testObfuscation (home/src/main/ets/pages/tool.ts:7:27)

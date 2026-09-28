@@ -104,24 +104,18 @@ description：OE文档查询显示描述，要求采用该名称的资源索引�
 
 [h2]添加动态链接库
 
-CMakeLists.txt中添加以下lib。
+在Native工程的src/main/cpp/CMakeLists.txt，添加如下链接库：
 
-# content embed
-libcontent_embed_ndk.so
-# hilog
-libhilog_ndk.z.so
-# ace
-libace_napi.z.so
-# piexlmap
-libpixelmap.so
-# ability
-libability_runtime.so
-# want
-libability_base_want.so
-# fileuri
-libohfileuri.so
-# libimage_source
-libimage_source.so
+target_link_libraries(entry PUBLIC
+    libcontent_embed_ndk.so
+    libhilog_ndk.z.so
+    libace_napi.z.so
+    libpixelmap.so
+    libability_runtime.so
+    libability_base_want.so
+    libohfileuri.so
+    libimage_source.so
+)
 
 [h2]导入头文件
 
@@ -507,22 +501,16 @@ static void NativeOnWriteToDataStream(ContentEmbed_ObjectHandle object)
 ### Code block 3
 
 ```
-# content embed
-libcontent_embed_ndk.so
-# hilog
-libhilog_ndk.z.so
-# ace
-libace_napi.z.so
-# piexlmap
-libpixelmap.so
-# ability
-libability_runtime.so
-# want
-libability_base_want.so
-# fileuri
-libohfileuri.so
-# libimage_source
-libimage_source.so
+target_link_libraries(entry PUBLIC
+    libcontent_embed_ndk.so
+    libhilog_ndk.z.so
+    libace_napi.z.so
+    libpixelmap.so
+    libability_runtime.so
+    libability_base_want.so
+    libohfileuri.so
+    libimage_source.so
+)
 ```
 
 ### Code block 4

@@ -78,7 +78,7 @@ export function decodeImageBuffer(imgComponent: image.Component, width: number, 
   try {
     detectBarcode.decodeImage(byteImg, options).then((data: detectBarcode.DetectResult) => {
       hilog.info(0x0001, '[Scan Sample]',
-        `Succeeded in getting DetectResult by promise with options, result is ${JSON.stringify(data)}`);
+        `Succeeded in getting DetectResult by promise with options, result length: ${data.scanResults.length}, zoomValue: ${data.zoomValue}`);
     }).catch((err: BusinessError) => {
       hilog.error(0x0001, '[Scan Sample]',
         `Failed to get DetectResult by promise with options. Code: ${err.code}, message: ${err.message}`);
@@ -152,7 +152,7 @@ export function decodeImageBuffer(imgComponent: image.Component, width: number, 
   try {
     detectBarcode.decodeImage(byteImg, options).then((data: detectBarcode.DetectResult) => {
       hilog.info(0x0001, '[Scan Sample]',
-        `Succeeded in getting DetectResult by promise with options, result is ${JSON.stringify(data)}`);
+        `Succeeded in getting DetectResult by promise with options, result length: ${data.scanResults.length}, zoomValue: ${data.zoomValue}`);
     }).catch((err: BusinessError) => {
       hilog.error(0x0001, '[Scan Sample]',
         `Failed to get DetectResult by promise with options. Code: ${err.code}, message: ${err.message}`);

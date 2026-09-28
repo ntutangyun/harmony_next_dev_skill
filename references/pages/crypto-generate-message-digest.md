@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ge
 
 说明
 
-从API version 12开始，轻量级智能穿戴设备支持消息摘要的计算与操作。
+从API版本12开始，轻量级智能穿戴设备支持消息摘要的计算与操作。
 
 开发步骤
 

@@ -9,3 +9,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 安全图像压缩、裁剪场景
 
 签名验证
+
+可信应用服务术语

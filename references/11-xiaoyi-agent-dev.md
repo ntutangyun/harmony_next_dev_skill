@@ -373,20 +373,30 @@ Three worked cases under 最佳实践 → 实践案例; use them as reference ar
 - **Vibe Coding 端云协同 — 种草打卡Skill** (`vibe-coding-skill-0000002670207675`): a Skill that chains device plugins (相机-TakePhoto → 定位服务-GetCurrentLocation → 备忘录-CreateNote) with cloud plugins (联网问答-ComplexSearchOnline for store-specific copy, 图像生成-TextToImage for retouching/creative images). Flow: Skill → 新建Skill → Vibe Coding mode → describe name/function/trigger intent/scenes → answer the auto-generated clarification questions → automatic packaging.
 - **Vibe Coding 场景化编排 — 同程程心Skill** (`vibe-coding-tcchengxin-0000002639887830`): an API-wrapping travel Skill. Design principles: intent-driven routing (one intent → one query script), structured fields + a free-text `--extra` passthrough, and **verbatim output of the backend response** (the LLM must not summarize/rewrite). Scripts are Node.js (`node scripts/<domain>-query.js … --channel … --surface …`, HTTPS POST, 15 s timeout). Mandatory credential flow before every query: read `/home/sandbox/.openclaw/.xiaoyienv` (`<clientId>_login_token` / `_expire_time`) → if missing/expired call the `huawei_id_tool` (clientId, skillName) → fall back to an env-var API key; auth via `apikey` header. Includes explicit fallback strategies (e.g. air-rail intermodal when no flights).
 
-## System-agent GUI operation status (added 2026-08-14)
+## System-agent GUI assisted operation (for HarmonyOS apps; revised 2026-09-24)
 
-HarmonyOS lets apps detect when a **Huawei system agent** (系统智能体) is driving their UI (GUI operation) and identify it by Agent DID (合作协议与补充接口文档 → 系统智能体GUI操作状态查询说明, `agent-gui-0000002680521240`). During such an operation the system writes the state + Agent DID into the Settings DB key **`AI_Operation_Mode`** (`settings.domainName.USER_PROPERTY`). Read it with `settings.getValue(context, 'AI_Operation_Mode', '', settings.domainName.USER_PROPERTY)` when coming to the foreground and watch it with `settings.registerKeyObserver(context, 'AI_Operation_Mode', cb)`: empty ⇒ not in a system-agent GUI operation; valid "on" ⇒ operation in progress; valid "off"/empty again ⇒ finished. Apps that do not want system agents operating their UI apply by email to `hagservice@huawei.com` (subject 【系统智能体操控拒绝申请】<app name>, with bundle name, developer contact, reason).
+Source: 合作协议与补充接口文档 → 服务条款 → **HarmonyOS系统Agent GUI辅助操作机制说明** (`agent-gui-0000002680521240`; first added 2026-08-14 as 系统智能体GUI操作状态查询说明, rewritten 2026-09-24).
+
+- **Positioning**: MCP / A2A standard interfaces remain the preferred way for the system agent to use app capabilities. GUI assisted operation (the system agent driving an app's UI) is a *supplement* for scenarios those interfaces don't cover yet — only **user-initiated and user-authorized**, least-privilege, and it **never bypasses the app's login, permission checks, CAPTCHAs or risk controls**. High-frequency, mature GUI scenarios are meant to migrate to MCP/A2A over time.
+- **User control**: the user sees task progress and can pause/stop at any time; high-risk actions (payment, transfer, deleting data, publishing externally) are blocked or require re-confirmation per the system's risk grading; the capability can be turned off in system settings.
+- **Security**: runs in a system-controlled sandboxed environment; UI data is processed minimally on-device and inside the **HPIC (鸿蒙个人智能计算安全区)** — Huawei staff can't access plaintext task data and it is not used for model training; agent identity, task execution and anomalies are audited; Huawei can adjust/pause/disable GUI operation per app, feature or task on request.
+- **Detecting it in your app**: when a GUI operation starts, the system writes the operation state and the agent's identity (**Agent DID**) into the Settings DB key **`AI_Operation_Mode`** (`settings.domainName.USER_PROPERTY`). Query once when the app comes to the foreground and subscribe to changes:
+
+```typescript
+settings.registerKeyObserver(context, 'AI_Operation_Mode', async () => {
+  const rawValue = await settings.getValue(context, 'AI_Operation_Mode', '', settings.domainName.USER_PROPERTY);
+  await verifyAiOperationMode(rawValue);  // app-defined parse/verify
+});
+const initialValue = await settings.getValue(context, 'AI_Operation_Mode', '', settings.domainName.USER_PROPERTY);
+await verifyAiOperationMode(initialValue);
+```
+  Empty ⇒ no system-agent GUI operation; a valid "on" state ⇒ operation in progress; a valid "off" state or empty again ⇒ this operation has ended. The app decides, by its own business/security rules, whether to respond to or restrict the operation.
+- **GUI capability opened to partners**: apps can also apply to *use* Huawei's GUI assisted-operation capability for in-app intelligent task execution (same system-level identity, isolation, risk-control and audit stack as the system agent).
+- **Contact**: email `hagservice@huawei.com` with subject 【系统Agent生态合作申请】<app name> (cooperation), 【系统Agent GUI辅助操作限制申请】<app name> (restrict GUI operation on your app) or 【系统Agent GUI辅助操作意见反馈】<app name> (feedback); include app name, bundle name, developer info/contact, request type, scenario, affected features/task scope, and an explanation.
 
 ## Markdown output rendering
 
 The platform publishes an official **markdown syntax spec** for agent output (合作协议与补充接口文档 → markdown语法规范, `markdown-grammar-0000002553963585`): `#`-style headings 1-6 (Setext `=`/`-` headings are NOT supported in the single-box Xiaoyi renderer), ordered/unordered lists (no tables/code blocks/quotes nested inside list items), plus the other standard constructs. Check it when formatting agent replies.
-
-## System-agent GUI operation status (for HarmonyOS apps)
-
-When the Huawei **system agent** performs GUI operations inside an app (user-initiated and user-authorized), the system writes the operation status and the agent's identity (**Agent DID**) to the system Settings database under the **`AI_Operation_Mode`** key (`settings.domainName.USER_PROPERTY`). Apps that want to detect/respond to system-agent GUI control (合作协议与补充接口文档 → 系统智能体GUI操作状态查询说明, `agent-gui-0000002680521240`, added 2026-08-14):
-- Query once on foreground via `settings.getValue(context, 'AI_Operation_Mode', '', settings.domainName.USER_PROPERTY)` and subscribe with `settings.registerKeyObserver(...)`.
-- Empty value → no system-agent GUI operation in progress; a valid "on" state → operation running (value carries the Agent DID); "off"/empty again → operation finished.
-- Apps that refuse system-agent GUI control entirely can apply for a restriction by emailing `hagservice@huawei.com` (app name, bundle name, developer contact, reason).
 
 ## Key URLs
 

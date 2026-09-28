@@ -54,7 +54,7 @@ mutableBuilder是一个模板函数，返回一个MutableBuilder对象。相比W
 
 declare function mutableBuilder<Args extends Object[]>(builder: BuilderCallback): MutableBuilder<Args>;
 
-同时MutableBuilder对象是一个模板类，继承自WrappedBuilder。
+同时MutableBuilder是一个模板类，继承自WrappedBuilder。
 
 declare class MutableBuilder<Args extends Object[]> extends WrappedBuilder<Args> {
 }

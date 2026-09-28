@@ -9,7 +9,7 @@ H5 autocomplete和HarmonyOS的ContentType的映射关系
 姓名	name	PERSON_FULL_NAME	姓名，如“张三”。
 姓氏	family-name	PERSON_LAST_NAME	姓氏，如“张”。
 名字	given-name	PERSON_FIRST_NAME	名字，如“三”。
-手机号	tel-national	PHONE_NUMBER	手机号，如“188******88”。
+手机号	tel-national	PHONE_NUMBER	手机号，如“188********”。
 邮件地址	email	EMAIL_ADDRESS	邮箱地址，如“a****t@huawei.com”。
 身份证号	id-card-number	ID_CARD_NUMBER	身份证号，如“3201***********123”。
 地址	street-address	FULL_STREET_ADDRESS	带街道详细地址，如“雨花街道玉兰路98号”。
@@ -32,7 +32,7 @@ React Native textContentType和HarmonyOS的ContentType的映射关系
 姓名	name	PERSON_FULL_NAME	姓名，如“张三”。
 姓氏	familyName	PERSON_LAST_NAME	姓氏，如“张”。
 名字	givenName	PERSON_FIRST_NAME	名字，如“三”。
-手机号	telephoneNumber	PHONE_NUMBER	手机号，如“188******88”。
+手机号	telephoneNumber	PHONE_NUMBER	手机号，如“188********”。
 邮件地址	emailAddress	EMAIL_ADDRESS	邮箱地址，如“a****t@huawei.com”。
 身份证号	idCardNumber	ID_CARD_NUMBER	身份证号，如“3201***********123”。
 全量地址	formatAddress	FORMAT_ADDRESS	全量地址，如“中国江苏省南京市雨花台区雨花街道玉兰路98号”。

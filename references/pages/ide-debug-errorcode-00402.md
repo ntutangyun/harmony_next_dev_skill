@@ -20,11 +20,11 @@ Install the SDK first.
 
 检查DevEco Studio安装目录下sdk/default/openharmony路径下面是否有ets目录，如果不存在，在官网上重新下载DevEco Studio。
 
-00402002 热重载只支持STAGE模型工程
+00402002 热重载仅支持Stage模型工程
 
 错误信息
 
-Hot Reload Feature is only supported in STAGE and esmodule project.
+Hot Reload Feature is only supported in Stage and esmodule project.
 
 错误描述
 
@@ -238,7 +238,7 @@ Apply Changes时执行hdc命令超时，可能hdc异常或者设备连接异常�
 
 处理步骤
 
-拔插设备，或者执行hdc kill -r重启hdc后再重试。
+重新连接设备，或者执行hdc kill -r重启hdc后再重试。
 
 00402014 构建hqf增量包失败
 
@@ -440,7 +440,7 @@ Apply change fail.
 
 处理步骤
 
-重新拔插设备，或者执行hdc kill -r再重试。
+重新连接设备，或者执行hdc kill -r再重试。
 
 00402027 设备处于锁屏状态
 

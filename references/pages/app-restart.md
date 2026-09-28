@@ -15,7 +15,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-resta
 
 [h2]不保留应用窗口的重启
 
-从API version 12开始，ApplicationContext提供了restartApp接口，用于主动重启应用并拉起指定的UIAbility。重启过程中不保留当前应用窗口，相当于完全重新启动应用。重启过程中不会触发应用中Ability的onDestroy生命周期回调。
+从API version 12开始，ApplicationContext提供了restartApp()接口，用于主动重启应用并拉起指定的UIAbility。重启过程中不保留当前应用窗口，相当于完全重新启动应用。重启过程中不会触发应用中Ability的onDestroy生命周期回调。
 
 存在以下约束限制：
 
@@ -69,7 +69,7 @@ struct Index {
 
 [h2]保留应用窗口的重启
 
-从API version 22开始，UIAbilityContext提供了restartApp接口，用于重启当前UIAbility所在的进程，并拉起应用内的指定UIAbility。与ApplicationContext的restartApp不同，该接口可选择保留当前窗口或跳转到新窗口。重启过程中不触发进程中Ability的onDestroy生命周期回调。
+从API version 22开始，UIAbilityContext提供了restartApp()接口，用于重启当前UIAbility所在的进程，并拉起应用内的指定UIAbility。与ApplicationContext的restartApp不同，该接口可选择保留当前窗口或跳转到新窗口。重启过程中不触发进程中Ability的onDestroy生命周期回调。
 
 存在以下约束限制：
 
@@ -163,7 +163,7 @@ struct Index {
 
 元服务主动重启
 
-从API version 20开始，系统为元服务（Atomic Service）提供了专用的重启接口restartSelfAtomicService，用于触发元服务更新并重启当前元服务。重启过程中不会保留当前元服务窗口，也不会触发旧Ability的onDestroy生命周期回调。
+从API version 20开始，系统为元服务（Atomic Service）提供了专用的重启接口restartSelfAtomicService()，用于触发元服务更新并重启当前元服务。重启过程中不会保留当前元服务窗口，也不会触发旧Ability的onDestroy生命周期回调。
 
 存在以下约束限制：
 

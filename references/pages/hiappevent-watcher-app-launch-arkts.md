@@ -58,6 +58,10 @@ HiAppEvent onReceive: domain=OS
 HiAppEvent eventName=APP_LAUNCH
 HiAppEvent eventInfo={"domain":"OS","name":"APP_LAUNCH","eventType":4,"params":{"animation_finish_time":662,"bundle_name":"com.example.myapplication","bundle_version":"1.0.0","extend_time":0,"icon_input_time":1709367533224,"process_name":"com.example.myapplication","start_type":0,"time":1709367533901}}
 
+示例代码
+
+订阅启动耗时事件
+
 ## Code blocks
 
 ### Code block 1

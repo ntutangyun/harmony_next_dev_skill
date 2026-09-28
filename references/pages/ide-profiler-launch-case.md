@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-profi
 
 录制Launch模板数据
 
-连接设备后，点击应用选择框选择需要录制的应用，选择Launch模板，点击Create Session或双击Launch图标即可创建一个Launch的录制模板。
+连接设备后，点击应用选择框选择需要录制的应用，选择Launch模板，点击Create Session或双击Launch图标即可创建一个Launch录制模板。
 
 创建模板后，点击切换启动模式为手动启动。
 

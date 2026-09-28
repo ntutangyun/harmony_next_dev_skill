@@ -36,7 +36,7 @@ AppStorage中的属性可以被双向同步，并具有不同的功能，比如�
 
 @StorageProp变量装饰器	说明
 装饰器参数	常量字符串，必填（字符串需要有引号）。 说明： 使用null和undefined作为key时，会隐式转换为对应的字符串，不建议该用法。
-允许装饰的变量类型	Object、class、string、number、boolean、enum类型，以及这些类型的数组。 API Version 12及以上支持Map、Set、Date、undefined和null类型以及这些类型的联合类型，示例见AppStorage支持联合类型。 嵌套类型的场景请参考观察变化和行为表现。 说明： 变量类型必须被指定，建议和AppStorage中对应属性类型相同，否则会发生类型隐式转换，从而导致应用行为异常。
+允许装饰的变量类型	Object、class、string、number、boolean、enum类型，以及这些类型的数组。 API version 12及以上支持Map、Set、Date、undefined和null类型以及这些类型的联合类型，示例见AppStorage支持联合类型。 嵌套类型的场景请参考观察变化和行为表现。 说明： 变量类型必须被指定，建议和AppStorage中对应属性类型相同，否则会发生类型隐式转换，从而导致应用行为异常。
 不允许装饰的变量类型	不支持装饰Function类型。
 同步类型	单向同步：从AppStorage的对应属性到组件的状态变量。 组件本地的修改是允许的，但是AppStorage中给定的属性一旦发生变化，将覆盖本地的修改。
 被装饰变量的初始值	必须本地初始化，如果AppStorage实例中不存在属性，则用该初始值初始化该属性，并存入AppStorage中。
@@ -83,8 +83,8 @@ AppStorage中的属性可以被双向同步，并具有不同的功能，比如�
 [h2]装饰器使用规则说明
 
 @StorageLink变量装饰器	说明
-装饰器参数	key：常量字符串，必填（字符串需要有引号）。 注意： 使用null和undefined作为key时，会隐式转换为对应的字符串，不建议该用法。
-允许装饰的变量类型	Object、class、string、number、boolean、enum类型，以及这些类型的数组。 API Version 12及以上支持Map、Set、Date、undefined和null类型以及这些类型的联合类型，示例见AppStorage支持联合类型。 嵌套类型的场景请参考观察变化和行为表现。 注意： 变量类型必须被指定，建议和AppStorage中对应属性类型相同，否则会发生类型隐式转换，从而导致应用行为异常。
+装饰器参数	key：常量字符串，必填（字符串需要有引号）。 说明： 使用null和undefined作为key时，会隐式转换为对应的字符串，不建议该用法。
+允许装饰的变量类型	Object、class、string、number、boolean、enum类型，以及这些类型的数组。 API version 12及以上支持Map、Set、Date、undefined和null类型以及这些类型的联合类型，示例见AppStorage支持联合类型。 嵌套类型的场景请参考观察变化和行为表现。 注意： 变量类型必须被指定，建议和AppStorage中对应属性类型相同，否则会发生类型隐式转换，从而导致应用行为异常。
 不允许装饰的变量类型	不支持装饰Function类型。
 同步类型	双向同步：从AppStorage的对应属性到自定义组件，从自定义组件到AppStorage对应属性。
 被装饰变量的初始值	必须本地初始化，如果AppStorage实例中不存在属性，则用该初始值初始化该属性，并存入AppStorage中。
@@ -240,7 +240,7 @@ struct TestStorageProp {
         .fontSize(20)
         .margin(10)
         .onClick(() => {
-          hilog.info(DOMAIN, TAG, `Appstorage.get: ${AppStorage.get<number>('propA')}`);
+          hilog.info(DOMAIN, TAG, `AppStorage.get: ${AppStorage.get<number>('propA')}`);
           AppStorage.set<number>('propA', 100);
         })
 
@@ -1109,7 +1109,7 @@ struct TestStorageProp {
         .fontSize(20)
         .margin(10)
         .onClick(() => {
-          hilog.info(DOMAIN, TAG, `Appstorage.get: ${AppStorage.get<number>('propA')}`);
+          hilog.info(DOMAIN, TAG, `AppStorage.get: ${AppStorage.get<number>('propA')}`);
           AppStorage.set<number>('propA', 100);
         })
 

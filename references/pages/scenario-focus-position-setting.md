@@ -13,8 +13,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-
 属性	类型	说明	例
 type	EventType	主动聚焦事件类型	requestFocusForAccessibility
 bundleName	string	目标应用名	当前应用包名
-triggerAction	Action	触发事件的Action	click或其他都不会有任何影响
-customId	string	组件id	abc345
+triggerAction	Action	触发事件的Action	common
+customId	string	组件id	button1
 
 开发流程
 

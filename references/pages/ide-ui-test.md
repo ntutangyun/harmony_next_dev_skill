@@ -29,10 +29,10 @@ DevEco Studio 6.0.1 Beta1版本前，仅支持对UIAbility进行覆盖率测试�
 coverage-filter.json5文件支持以下字段。
 
 字段名称	可选/必选	类型	适用的覆盖率测试	含义
-include	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置参与覆盖率测试的文件或文件夹路径。 26.0.0 Beta2及以上版本：字段可选，路径配置支持以下通配符。*：匹配文件名中的任意数量字符。**：匹配任意文件夹。?：匹配文件名的单个字符。 26.0.0 Beta2以下版本：字段必选，仅支持模块名开头的路径，不支持通配符。 说明： include的优先级比exclude高。
-exclude	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置不参与覆盖率测试的文件或文件夹路径。 26.0.0 Beta2及以上版本：字段可选，路径配置支持通配符，支持的通配符和include字段相同。26.0.0 Beta2以下版本：字段必选，仅支持模块名开头的路径，不支持通配符。
-includeHar	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置参与覆盖率测试的远程源码har包，不支持远程字节码har包，不支持通配符。 从26.0.0 Beta2版本开始支持。
-extraAbilities	可选	对象数组	黑盒覆盖率测试	如果module.json5中配置的ability是通过import外部的ability类实现，同时在当前文件通过export导出，此ability无法生成黑盒覆盖率数据。可配置extraAbilities>path字段，填写外部的ability路径，生成黑盒覆盖率数据。支持相对路径，不支持通配符。示例如下。 从26.0.0 Beta2版本开始支持。
+include	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置参与覆盖率测试的文件或文件夹路径。 26.0.0及以上版本：字段可选，路径配置支持以下通配符。*：匹配文件名中的任意数量字符。**：匹配任意文件夹。?：匹配文件名的单个字符。 26.0.0以下版本：字段必选，仅支持模块名开头的路径，不支持通配符。 说明： include的优先级比exclude高。
+exclude	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置不参与覆盖率测试的文件或文件夹路径。 26.0.0及以上版本：字段可选，路径配置支持通配符，支持的通配符和include字段相同。26.0.0以下版本：字段必选，仅支持模块名开头的路径，不支持通配符。
+includeHar	可选	字符串数组	黑盒覆盖率测试 仪器覆盖率测试 本地覆盖率测试	配置参与覆盖率测试的远程源码har包，不支持远程字节码har包，不支持通配符。 从26.0.0版本开始支持。
+extraAbilities	可选	对象数组	黑盒覆盖率测试	如果module.json5中配置的ability是通过import外部的ability类实现，同时在当前文件通过export导出，此ability无法生成黑盒覆盖率数据。可配置extraAbilities>path字段，填写外部的ability路径，生成黑盒覆盖率数据。支持相对路径，不支持通配符。示例如下。 从26.0.0版本开始支持。
 
 extraAbilities字段示例：
 
@@ -51,7 +51,7 @@ export default EntryAbility;
 
 [h2]coverage-filter.json5文件示例
 
-// 26.0.0 Beta2及以上版本
+// 26.0.0及以上版本
 {
   "include":[
     "entry/src/main/ets/pages"  // 无通配符，包括pages下所有文件
@@ -70,7 +70,7 @@ export default EntryAbility;
     }
   ]
 }
-// 26.0.0 Beta2以下版本
+// 26.0.0以下版本
 {
   "include":[
     "entry/src/main/ets/pages/aaa.ets"
@@ -140,13 +140,15 @@ LocalPath：数据在电脑本地存放的路径。
 
 在多模块相互跳转的场景下，只需要取最后退出的模块下生成的覆盖率数据json文件，但特殊场景下如多模块无跳转关系，则需要取每个独立模块下生成的覆盖率数据json文件。
 
-hvigorw collectCoverage -p projectPath={projectPath} -p reportPath={reportPath} -p coverageFile={projectPath}/{moduleName}/.test/default/intermediates/ohosTest/init_coverage.json#{LocalPath/bjc_cov_yyyyMMdd_HHmmss_SSS.json}
+hvigorw collectCoverage -p projectPath={projectPath} -p reportPath={reportPath} -p coverageFile={projectPath}/{moduleName}/.test/default/intermediates/ohosTest/init_coverage.json#{LocalPath/bjc_cov_yyyyMMdd_HHmmss_SSS.json} -p patch={patchPath}
 
 projectPath：工程路径。
 
 reportPath：指定的覆盖率报告文件生成路径。
 
 bjc_cov_yyyyMMdd_HHmmss_SSS.json：指定上一个步骤LocalPath目录下的一份最新的json文件，格式以bjc_cov开头，yyyyMMdd_HHmmss_SSS表示年月日_时分秒_毫秒。
+
+patchPath：可选参数，指定代码补丁文件路径，用于统计增量代码覆盖率。仅支持绝对路径，后缀必须为.patch或.diff，可以通过git diff等命令生成。从26.0.0版本开始支持。
 
 说明
 
@@ -316,7 +318,6 @@ if (a==1) {
       "exeLine": {},     // 可执行代码行
       "summary": {}      // 单个文件的覆盖率详情
     },
-    ...
   ]
 }
 
@@ -331,7 +332,6 @@ functions是个数组，记录了文件中所有函数的详细覆盖率数据�
     "ignored": 0,       // 函数忽略次数
     "index": 0          // 函数在整个文件中的位置，从0开始排序
   },
-  ...
 ]
 
 regions是一个可执行行数组，数组可能有一个元素、两个元素或多个元素。
@@ -474,7 +474,7 @@ branches是个分支数组，会将if和switch case这种条件判断语句相�
   "name": "eeee",
   "count": 1,
   "regions": [
-    ...
+    // ...
   ],
   "branches": [
     {
@@ -556,7 +556,7 @@ branches的0号元素，对应12行，trueCount和falseCount都为1，表示该�
   "name": "bbb",
   "count": 2,
   "regions": [
-    ...
+    // ...
   ],
   "branches": [
     {
@@ -677,7 +677,7 @@ export default EntryAbility;
 ### Code block 2
 
 ```
-// 26.0.0 Beta2及以上版本
+// 26.0.0及以上版本
 {
   "include":[
     "entry/src/main/ets/pages"  // 无通配符，包括pages下所有文件
@@ -696,7 +696,7 @@ export default EntryAbility;
     }
   ]
 }
-// 26.0.0 Beta2以下版本
+// 26.0.0以下版本
 {
   "include":[
     "entry/src/main/ets/pages/aaa.ets"
@@ -750,7 +750,7 @@ hdc file recv -b {bundleName} ls ./data/storage/el2/base/haps/{moduleName}/cache
 ### Code block 9
 
 ```
-hvigorw collectCoverage -p projectPath={projectPath} -p reportPath={reportPath} -p coverageFile={projectPath}/{moduleName}/.test/default/intermediates/ohosTest/init_coverage.json#{LocalPath/bjc_cov_yyyyMMdd_HHmmss_SSS.json}
+hvigorw collectCoverage -p projectPath={projectPath} -p reportPath={reportPath} -p coverageFile={projectPath}/{moduleName}/.test/default/intermediates/ohosTest/init_coverage.json#{LocalPath/bjc_cov_yyyyMMdd_HHmmss_SSS.json} -p patch={patchPath}
 ```
 
 ### Code block 10
@@ -876,7 +876,6 @@ if (a==1) {
       "exeLine": {},     // 可执行代码行
       "summary": {}      // 单个文件的覆盖率详情
     },
-    ...
   ]
 }
 ```
@@ -893,7 +892,6 @@ if (a==1) {
     "ignored": 0,       // 函数忽略次数
     "index": 0          // 函数在整个文件中的位置，从0开始排序
   },
-  ...
 ]
 ```
 
@@ -1052,7 +1050,7 @@ if (a==1) {
   "name": "eeee",
   "count": 1,
   "regions": [
-    ...
+    // ...
   ],
   "branches": [
     {
@@ -1134,7 +1132,7 @@ if (a==1) {
   "name": "bbb",
   "count": 2,
   "regions": [
-    ...
+    // ...
   ],
   "branches": [
     {

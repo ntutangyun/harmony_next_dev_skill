@@ -83,80 +83,64 @@ OH_NN_ReturnCode HMS_HiAITensor_SetAippParams(NN_Tensor* tensor, HiAI_AippParam*
 
 假定当前有一个模型，训练时采用的训练集为RGB888的图片，使能了动态AIPP之后，可以接收YUYV类型的图片作为模型推理的输入。当用于模型推理的图片尺寸与训练集不一致时，还可以使用AIPP的裁剪、缩放和填充功能，改变输入图片尺寸。以下示例代码基于NDK接口，实现AIPP的裁剪、缩放和填充等功能，将一张YUYV尺寸为480x480的图片预处理为224x224的输入。
 
-#include "neural_network_runtime/neural_network_core.h"
-#include "CANNKit/hiai_aipp_param.h"
-#include "CANNKit/hiai_tensor.h"
-#include <vector>
-
 constexpr uint32_t BATCH_NUM = 1;
 // 创建一个batch数为1的动态aipp配置实例
-HiAI_AippParam* aippPara = HMS_HiAIAippParam_Create(BATCH_NUM);
+aippPara_ = HMS_HiAIAippParam_Create(BATCH_NUM);
 // 在多个输入情况下，设置索引以确定该AippParam对象作用于第几个输入
 uint32_t inputIndex = 0;
-OH_NN_ReturnCode ret = HMS_HiAIAippParam_SetInputIndex(aippPara, inputIndex);
+OH_NN_ReturnCode ret = HMS_HiAIAippParam_SetInputIndex(aippPara_, inputIndex);
 // 在data有多个输出分支时，设置AippParam对象作用域该输入的第几个输出分支
 uint32_t validInputAippIndex = 0;
-HMS_HiAIAippParam_SetInputAippIndex(aippPara, validInputAippIndex);
+HMS_HiAIAippParam_SetInputAippIndex(aippPara_, validInputAippIndex);
 // 设置AippParam对象的输入图像格式
-HMS_HiAIAippParam_SetInputFormat(aippPara, HIAI_YUV420SP_U8);
+HMS_HiAIAippParam_SetInputFormat(aippPara_, HIAI_RGB888_U8);
 // 设置AippParam对象的输入图像宽高
-HMS_HiAIAippParam_SetInputShape(aippPara, 224, 224);
-// 设置AippParam对象的CSC色域转换参数
-HMS_HiAIAippParam_SetCscConfig(aippPara, HIAI_YUV420SP_U8, HIAI_RGB888_U8, HIAI_JPEG);
-// 设置AippParam对象RB/UV通道交换
-HMS_HiAIAippParam_SetChannelSwapConfig(aippPara, true, false);
-// 设置AippParam对象第0个索引batch的crop参数
-HMS_HiAIAippParam_SetCropConfig(aippPara, 0, 0, 0, 100, 100);
-// 设置AippParam对象第0个索引batch的resize参数
-HMS_HiAIAippParam_SetResizeConfig(aippPara, 0, 110, 110);
-// 设置AippParam对象第0个索引batch的通道padding填充值
-HMS_HiAIAippParam_SetPadConfig(aippPara, 0, 1, 1, 1, 1);
-// 设置AippParam对象第0个索引batch的旋转角度
-HMS_HiAIAippParam_SetRotationAngle(aippPara, 0, 90.0);
-// 设置AippParam对象第0个batch的数据类型转换通道像素平均值
-constexpr unsigned int chnNum = 4;
-unsigned int pixelMeanPara[chnNum] = {1, 2, 3, 4};
-HMS_HiAIAippParam_SetDtcMeanPixel(aippPara, 0, pixelMeanPara, chnNum);
-
-// 准备输入Tensor
+HMS_HiAIAippParam_SetInputShape(aippPara_, width, height);
+uint32_t chnNum = 3;
+uint32_t pixelMeanPara[3] = {0, 0, 0};
+float minPixel[3] = {0.0, 0.0, 0.0};
+float varReciPixel[3] = {1/255.0, 1/255.0, 1/255.0};
+HMS_HiAIAippParam_SetDtcMinPixel(aippPara_, 0, minPixel, chnNum);
+HMS_HiAIAippParam_SetDtcMeanPixel(aippPara_, 0, pixelMeanPara, chnNum);
+HMS_HiAIAippParam_SetDtcVarReciPixel(aippPara_, 0, varReciPixel, chnNum);
+// ...
+// 获取输入张量的数量
 size_t inputCount = 0;
-ret = OH_NNExecutor_GetInputCount(executor, &inputCount); // 创建executor可参考CANN Kit Codelab
-std::vector<NN_Tensor *> inputTensors;
-for (size_t i = 0; i < inputCount; ++i) {
-    // 创建executor可参考CANN Kit Codelab
-    NN_TensorDesc* desc = OH_NNExecutor_CreateInputTensorDesc(executor, i);
-    NN_Tensor* tensor = OH_NNTensor_Create(deviceID, desc); // 获取deviceID可参考CANN Kit Codelab
-    if (tensor == nullptr) {
-        // 处理错误
-        return;
-    }
-    inputTensors.push_back(tensor);
+OH_NN_ReturnCode ret = OH_NNExecutor_GetInputCount(executor_, &inputCount);
+if (ret != OH_NN_SUCCESS || inputCount != inputData.size()) {
+    OH_LOG_ERROR(LOG_APP, "OH_NNExecutor_GetInputCount failed, size mismatch");
+    return OH_NN_FAILED;
 }
-// 准备aipp输入Tensor
-HiAI_AippParam* aippParas[1] = {aippPara};
-NN_Tensor* tensor = nullptr;
-ret = HMS_HiAITensor_SetAippParams(tensor, aippParas, 1);
-if (ret != OH_NN_SUCCESS ) {
-    return;
-}
-inputTensors.push_back(tensor);
 
-// 准备输出Tensor
-size_t outputCount = 0;
-ret = OH_NNExecutor_GetOutputCount(executor, &outputCount); // 创建executor可参考CANN Kit Codelab
-std::vector<NN_Tensor *> outputTensors;
-for (size_t i = 0; i < outputCount; i++) {
-    NN_TensorDesc* desc = OH_NNExecutor_CreateOutputTensorDesc(executor, i); // 创建executor可参考CANN Kit Codelab
-    NN_Tensor* tensor = OH_NNTensor_Create(deviceID, desc); // 获取deviceID可参考CANN Kit Codelab
-    outputTensors.push_back(tensor);
-}
-// 执行推理
-ret = OH_NNExecutor_RunSync(executor_, inputTensors.data(), 1, outputTensors.data(), 1);
-if (ret != OH_NN_SUCCESS ) {
-    return;
-}
-if (aippPara != nullptr) {
-    HMS_HiAIAippParam_Destroy(&aippPara);
+for (size_t i = 0; i < inputCount; ++i) {
+    std::vector<int32_t> dims = {1, 3, static_cast<int32_t>(width),  static_cast<int32_t>(height)};
+    // 由指定索引值创建一个输入张量的描述
+    NN_TensorDesc *tensorDesc = OH_NNExecutor_CreateInputTensorDesc(executor_, i);
+    // 设置NN_TensorDesc的数据形状
+    OH_NNTensorDesc_SetShape(tensorDesc, dims.data(), dims.size());
+    // 根据NN_TensorDesc和HiAI_ImageFormat计算申请tensor的大小
+    size_t tensorSize = HMS_HiAITensor_GetSizeWithImageFormat(tensorDesc, HiAI_ImageFormat::HIAI_RGB888_U8);
+    if (tensorSize == 0 || tensorSize != inputData[0].second) {
+        // 释放一个NN_TensorDesc实例
+        OH_NNTensorDesc_Destroy(&tensorDesc);
+        OH_LOG_ERROR(LOG_APP, "OH_NNExecutor_GetInputCount failed, size mismatch tensorSize %d"
+            "inputData[0].second %d", tensorSize, inputData[0].second);
+        return OH_NN_FAILED;
+    }
+    // 按照指定内存大小和NN_TensorDesc创建NN_Tensor实例
+    NN_Tensor* tensor = OH_NNTensor_CreateWithSize(deviceID_, tensorDesc, tensorSize);
+    HiAI_AippParam* aippParas[1] = {aippPara_};
+    // 给NN_Tensor设置AippParams
+    ret = HMS_HiAITensor_SetAippParams(tensor, aippParas, 1);
+    if (ret != OH_NN_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "SetAippParams failed");
+        return OH_NN_FAILED;
+    }
+    if (tensor != nullptr) {
+        inputTensors_.push_back(tensor);
+    }
+    // 释放一个NN_TensorDesc实例
+    OH_NNTensorDesc_Destroy(&tensorDesc);
 }
 
 ## Code blocks
@@ -164,79 +148,63 @@ if (aippPara != nullptr) {
 ### Code block 1
 
 ```
-#include "neural_network_runtime/neural_network_core.h"
-#include "CANNKit/hiai_aipp_param.h"
-#include "CANNKit/hiai_tensor.h"
-#include <vector>
-
 constexpr uint32_t BATCH_NUM = 1;
 // 创建一个batch数为1的动态aipp配置实例
-HiAI_AippParam* aippPara = HMS_HiAIAippParam_Create(BATCH_NUM);
+aippPara_ = HMS_HiAIAippParam_Create(BATCH_NUM);
 // 在多个输入情况下，设置索引以确定该AippParam对象作用于第几个输入
 uint32_t inputIndex = 0;
-OH_NN_ReturnCode ret = HMS_HiAIAippParam_SetInputIndex(aippPara, inputIndex);
+OH_NN_ReturnCode ret = HMS_HiAIAippParam_SetInputIndex(aippPara_, inputIndex);
 // 在data有多个输出分支时，设置AippParam对象作用域该输入的第几个输出分支
 uint32_t validInputAippIndex = 0;
-HMS_HiAIAippParam_SetInputAippIndex(aippPara, validInputAippIndex);
+HMS_HiAIAippParam_SetInputAippIndex(aippPara_, validInputAippIndex);
 // 设置AippParam对象的输入图像格式
-HMS_HiAIAippParam_SetInputFormat(aippPara, HIAI_YUV420SP_U8);
+HMS_HiAIAippParam_SetInputFormat(aippPara_, HIAI_RGB888_U8);
 // 设置AippParam对象的输入图像宽高
-HMS_HiAIAippParam_SetInputShape(aippPara, 224, 224);
-// 设置AippParam对象的CSC色域转换参数
-HMS_HiAIAippParam_SetCscConfig(aippPara, HIAI_YUV420SP_U8, HIAI_RGB888_U8, HIAI_JPEG);
-// 设置AippParam对象RB/UV通道交换
-HMS_HiAIAippParam_SetChannelSwapConfig(aippPara, true, false);
-// 设置AippParam对象第0个索引batch的crop参数
-HMS_HiAIAippParam_SetCropConfig(aippPara, 0, 0, 0, 100, 100);
-// 设置AippParam对象第0个索引batch的resize参数
-HMS_HiAIAippParam_SetResizeConfig(aippPara, 0, 110, 110);
-// 设置AippParam对象第0个索引batch的通道padding填充值
-HMS_HiAIAippParam_SetPadConfig(aippPara, 0, 1, 1, 1, 1);
-// 设置AippParam对象第0个索引batch的旋转角度
-HMS_HiAIAippParam_SetRotationAngle(aippPara, 0, 90.0);
-// 设置AippParam对象第0个batch的数据类型转换通道像素平均值
-constexpr unsigned int chnNum = 4;
-unsigned int pixelMeanPara[chnNum] = {1, 2, 3, 4};
-HMS_HiAIAippParam_SetDtcMeanPixel(aippPara, 0, pixelMeanPara, chnNum);
-
-// 准备输入Tensor
+HMS_HiAIAippParam_SetInputShape(aippPara_, width, height);
+uint32_t chnNum = 3;
+uint32_t pixelMeanPara[3] = {0, 0, 0};
+float minPixel[3] = {0.0, 0.0, 0.0};
+float varReciPixel[3] = {1/255.0, 1/255.0, 1/255.0};
+HMS_HiAIAippParam_SetDtcMinPixel(aippPara_, 0, minPixel, chnNum);
+HMS_HiAIAippParam_SetDtcMeanPixel(aippPara_, 0, pixelMeanPara, chnNum);
+HMS_HiAIAippParam_SetDtcVarReciPixel(aippPara_, 0, varReciPixel, chnNum);
+// ...
+// 获取输入张量的数量
 size_t inputCount = 0;
-ret = OH_NNExecutor_GetInputCount(executor, &inputCount); // 创建executor可参考CANN Kit Codelab
-std::vector<NN_Tensor *> inputTensors;
-for (size_t i = 0; i < inputCount; ++i) {
-    // 创建executor可参考CANN Kit Codelab
-    NN_TensorDesc* desc = OH_NNExecutor_CreateInputTensorDesc(executor, i);
-    NN_Tensor* tensor = OH_NNTensor_Create(deviceID, desc); // 获取deviceID可参考CANN Kit Codelab
-    if (tensor == nullptr) {
-        // 处理错误
-        return;
-    }
-    inputTensors.push_back(tensor);
+OH_NN_ReturnCode ret = OH_NNExecutor_GetInputCount(executor_, &inputCount);
+if (ret != OH_NN_SUCCESS || inputCount != inputData.size()) {
+    OH_LOG_ERROR(LOG_APP, "OH_NNExecutor_GetInputCount failed, size mismatch");
+    return OH_NN_FAILED;
 }
-// 准备aipp输入Tensor
-HiAI_AippParam* aippParas[1] = {aippPara};
-NN_Tensor* tensor = nullptr;
-ret = HMS_HiAITensor_SetAippParams(tensor, aippParas, 1);
-if (ret != OH_NN_SUCCESS ) {
-    return;
-}
-inputTensors.push_back(tensor);
 
-// 准备输出Tensor
-size_t outputCount = 0;
-ret = OH_NNExecutor_GetOutputCount(executor, &outputCount); // 创建executor可参考CANN Kit Codelab
-std::vector<NN_Tensor *> outputTensors;
-for (size_t i = 0; i < outputCount; i++) {
-    NN_TensorDesc* desc = OH_NNExecutor_CreateOutputTensorDesc(executor, i); // 创建executor可参考CANN Kit Codelab
-    NN_Tensor* tensor = OH_NNTensor_Create(deviceID, desc); // 获取deviceID可参考CANN Kit Codelab
-    outputTensors.push_back(tensor);
-}
-// 执行推理
-ret = OH_NNExecutor_RunSync(executor_, inputTensors.data(), 1, outputTensors.data(), 1);
-if (ret != OH_NN_SUCCESS ) {
-    return;
-}
-if (aippPara != nullptr) {
-    HMS_HiAIAippParam_Destroy(&aippPara);
+for (size_t i = 0; i < inputCount; ++i) {
+    std::vector<int32_t> dims = {1, 3, static_cast<int32_t>(width),  static_cast<int32_t>(height)};
+    // 由指定索引值创建一个输入张量的描述
+    NN_TensorDesc *tensorDesc = OH_NNExecutor_CreateInputTensorDesc(executor_, i);
+    // 设置NN_TensorDesc的数据形状
+    OH_NNTensorDesc_SetShape(tensorDesc, dims.data(), dims.size());
+    // 根据NN_TensorDesc和HiAI_ImageFormat计算申请tensor的大小
+    size_t tensorSize = HMS_HiAITensor_GetSizeWithImageFormat(tensorDesc, HiAI_ImageFormat::HIAI_RGB888_U8);
+    if (tensorSize == 0 || tensorSize != inputData[0].second) {
+        // 释放一个NN_TensorDesc实例
+        OH_NNTensorDesc_Destroy(&tensorDesc);
+        OH_LOG_ERROR(LOG_APP, "OH_NNExecutor_GetInputCount failed, size mismatch tensorSize %d"
+            "inputData[0].second %d", tensorSize, inputData[0].second);
+        return OH_NN_FAILED;
+    }
+    // 按照指定内存大小和NN_TensorDesc创建NN_Tensor实例
+    NN_Tensor* tensor = OH_NNTensor_CreateWithSize(deviceID_, tensorDesc, tensorSize);
+    HiAI_AippParam* aippParas[1] = {aippPara_};
+    // 给NN_Tensor设置AippParams
+    ret = HMS_HiAITensor_SetAippParams(tensor, aippParas, 1);
+    if (ret != OH_NN_SUCCESS) {
+        OH_LOG_ERROR(LOG_APP, "SetAippParams failed");
+        return OH_NN_FAILED;
+    }
+    if (tensor != nullptr) {
+        inputTensors_.push_back(tensor);
+    }
+    // 释放一个NN_TensorDesc实例
+    OH_NNTensorDesc_Destroy(&tensorDesc);
 }
 ```

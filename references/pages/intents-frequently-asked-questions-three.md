@@ -2,4 +2,4 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-frequently-asked-questions-three_
 
-出现此现象时，优先排查接入意图框架的代码是否被混淆。接入意图框架的代码文件不可被混淆。关于混淆的详细内容请参考应用代码混淆。若排查后问题依然存在，请检查应用的业务代码是否有其他异常引发应用闪退。
+出现此现象时，优先排查接入意图框架的代码是否被混淆。接入意图框架的代码文件不可被混淆。关于混淆的详细内容请参考ArkGuard混淆实践指导。若排查后问题依然存在，请检查应用的业务代码是否有其他异常引发应用闪退。

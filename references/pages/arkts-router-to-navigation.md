@@ -353,11 +353,11 @@ struct CustomNode {
 
 router页面的生命周期和Navigation页面的生命周期关系如下：
 
-1.router页面的跳转会影响其内部Navigation页面的生命周期。
+router页面的跳转会影响其内部Navigation页面的生命周期。
 
-2.Navigation页面的跳转不会影响其所在router页面的生命周期。
+Navigation页面的跳转不会影响其所在router页面的生命周期。
 
-3.应用前后台切换会同时触发router页面和Navigation页面的生命周期。
+应用前后台切换会同时触发router页面和Navigation页面的生命周期。
 
 Router页面生命周期为@Entry页面中的通用方法，主要有如下四个生命周期：
 
@@ -569,7 +569,7 @@ struct mainPage {
 
 动态路由的优势：
 
-路由定义除了跳转的URL以外，可以丰富的配置任意扩展信息，如横竖屏默认模式，是否需要鉴权等等，做路由跳转时的统一处理。
+路由定义除了跳转的URL以外，可以丰富地配置任意扩展信息，如横竖屏默认模式，是否需要鉴权等等，做路由跳转时的统一处理。
 
 给每个路由设置一个名字，按照名称进行跳转而不是ets文件路径。
 

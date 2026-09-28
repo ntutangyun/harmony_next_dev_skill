@@ -23,8 +23,8 @@ healthSequenceHelper.sleepRecord.DATA_TYPE	夜间睡眠	部分手表、手环等
 fallAsleepTime	分期睡眠最早入睡时间点	number	M	毫秒	[0，∞）
 wakeupTime	分期睡眠最晚醒来时间点	number	M	毫秒	[0，∞）
 duration	夜间/普通睡眠时长（不含零星小睡时长）	number	M	秒	[0，∞）
-bedTime	最早上床时间点	number	O	-	[0，∞）
-risingTime	最晚起床时间点	number	O	-	[0，∞）
+bedTime	最早上床时间点	number	O	毫秒	[0，∞）
+risingTime	最晚起床时间点	number	O	毫秒	[0，∞）
 prepareSleepTime	准备入睡时间点	number	O	毫秒	[0，∞）
 shallowDuration	浅睡时长	number	O	秒	[0，∞）
 deepDuration	深睡时长	number	O	秒	[0，∞）

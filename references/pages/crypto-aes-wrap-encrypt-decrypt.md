@@ -2,13 +2,13 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-aes-wrap-encrypt-decrypt_
 
-从API version 22开始，算法库支持使用该算法进行加密和解密操作。
+从API版本22开始，算法库支持使用该算法进行加密和解密操作。
 
 对应的算法规格请参见AES-WRAP加解密算法规格。
 
 加密
 
-调用cryptoFramework.createSymKeyGenerator、SymKeyGenerator.generateSymKey，生成密钥算法为AES、密钥长度为128位的对称密钥（SymKey）。
+调用cryptoFramework.createSymKeyGenerator、SymKeyGenerator.convertKey，生成密钥算法为AES、密钥长度为128位的对称密钥（SymKey）。
 
 如何生成AES对称密钥，开发者可参考下文示例，并结合对称密钥生成和转换规格：AES和随机生成对称密钥理解，参考文档与当前示例可能存在入参差异，请在阅读时注意区分。
 

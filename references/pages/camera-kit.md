@@ -15,3 +15,5 @@ Camera Kit简介
 开发相机应用基础能力(C/C++)
 
 Camera Kit常见问题
+
+Camera Kit术语

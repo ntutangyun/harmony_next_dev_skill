@@ -43,7 +43,7 @@ int32_t RegisterNetworkHandoverCallback()
     HMS_NetworkBoost_HandoverCallback callback;
     callback.onNetworkHandoverStart = onNetworkHandoverStart;
     callback.onNetworkHandoverComplete = onNetworkHandoverComplete;
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterHandoverChangeCallback(&callback, &callbackId);
     printf("注册连接迁移结果: %d, Id：%d\n", ret, callbackId);
     return ret;
@@ -92,7 +92,7 @@ int32_t RegisterNetworkHandoverCallback()
     HMS_NetworkBoost_HandoverCallback callback;
     callback.onNetworkHandoverStart = onNetworkHandoverStart;
     callback.onNetworkHandoverComplete = onNetworkHandoverComplete;
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterHandoverChangeCallback(&callback, &callbackId);
     printf("注册连接迁移结果: %d, Id：%d\n", ret, callbackId);
     return ret;

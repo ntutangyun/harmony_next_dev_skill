@@ -24,7 +24,7 @@ paramSetIn：预留参数，暂不需要处理，传空即可。
 
 key：用于放置导出的公钥，为OH_Huks_Blob类型对象，需要业务提前申请好内存，需申请足够容纳获取到的密钥属性集的内存大小。
 
-调用接口OH_Huks_GetKeyItemParamSet，传入上述参数。
+调用接口OH_Huks_ExportPublicKeyItem，传入上述参数。
 
 返回值为成功码/错误码，导出公钥以标准的X.509规范的DER格式封装在参数key中，具体请参考公钥材料格式。
 

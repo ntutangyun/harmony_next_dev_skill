@@ -8,9 +8,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/component
 
 内容卡片控件
 
-在需要展示内容（标题、描述、图片、应用信息）并在点击后跳转至对应来源时，可以使用内容卡片快速的展示信息。开发者只需要调用ContentFormCard接口，传入ContentForm数据、卡片宽高、点击事件回调函数即可获得良好的展示效果。
+在需要展示内容（标题、描述、图片、应用信息）并在点击后跳转至对应来源时，可以使用内容卡片快速地展示信息。开发者只需要调用ContentFormCard接口，传入ContentForm数据、卡片宽高、点击事件回调函数即可获得良好的展示效果。
 
-从API version 20开始，支持使用内容卡片控件。
+从API version 20开始，支持使用内容卡片控件UdmfComponents。
 
 [h2]接口说明
 
@@ -50,9 +50,9 @@ struct Index {
       this.contentForm = {
         uniformDataType: 'general.content-form',
         title: 'Content form title',
-        thumbData: appIcon,
+        thumbData: thumbImage,
         description: 'Content form description',
-        appIcon: thumbImage,
+        appIcon: appIcon,
         appName: 'com.test.demo'
       };
     } catch (err) {
@@ -120,9 +120,9 @@ struct Index {
       this.contentForm = {
         uniformDataType: 'general.content-form',
         title: 'Content form title',
-        thumbData: appIcon,
+        thumbData: thumbImage,
         description: 'Content form description',
-        appIcon: thumbImage,
+        appIcon: appIcon,
         appName: 'com.test.demo'
       };
     } catch (err) {

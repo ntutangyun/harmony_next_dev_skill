@@ -20,7 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 游戏资源加速服务每完成一个下载任务，均会向游戏通知当前任务的下载进度和下载状态。
 
-若游戏接收到on('progress')方法返回的DownloadCompletedInfo，表示资源包下载成功，游戏可前往下载路径操作（例如转移、解压）资源文件。若游戏接收到on('fail')方法返回的DownloadFailedInfo，表示下载任务失败，游戏可以根据DownloadFault自行实现处理逻辑。若游戏接收到on('pause')方法返回的AssetDownloadTask，表示下载任务已暂停，游戏可以携带taskId，调用resumeAssetDownloadTask方法，恢复暂停中的下载任务。
+若游戏接收到on('complete')方法返回的DownloadCompletedInfo，表示资源包下载成功，游戏可前往下载路径操作（例如转移、解压）资源文件。若游戏接收到on('fail')方法返回的DownloadFailedInfo，表示下载任务失败，游戏可以根据DownloadFault自行实现处理逻辑。若游戏接收到on('pause')方法返回的AssetDownloadTask，表示下载任务已暂停，游戏可以携带taskId，调用resumeAssetDownloadTask方法，恢复暂停中的下载任务。
 
 游戏向资源加速服务取消订阅资源包下载进度/状态事件。游戏调用off('progress')方法，取消监听资源包下载进度。游戏调用off('pause')方法，取消监听下载任务暂停事件。游戏调用off('complete')方法，取消监听资源包下载成功事件。游戏调用off('fail')方法，取消监听资源包下载失败事件。
 

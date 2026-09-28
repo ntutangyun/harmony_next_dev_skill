@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-edit-
 
 CodeGenie提供Inline Edit能力，支持在ArkTS文件的编辑窗口中通过自然语言进行问答，基于上下文智能生成代码片段，提升代码可读性。
 
-从DevEco Studio 6.0.2 Beta1开始，Inline Edit支持选择三方模型，根据指定的模型进行生成代码。
+从DevEco Studio 6.0.2 Beta1开始，Inline Edit支持选择三方模型，根据指定的模型生成代码。
 
 从DevEco Studio 6.1.0 Beta1开始，Inline Edit入口名称变更为Inline Chat。
 

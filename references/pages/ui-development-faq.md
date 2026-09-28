@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-development-faq_
 
-Navigation动画常见问题
+Navigation常见问题
 
 自定义节点常见问题
 
@@ -19,5 +19,3 @@ Navigation动画常见问题
 UI并行化常见问题
 
 手势事件冲突常见问题
-
-沉浸光感常见问题

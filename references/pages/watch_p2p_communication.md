@@ -51,6 +51,10 @@ import { util } from '@kit.ArkTS';
 
 调用sendMessage方法，从穿戴侧应用发送简短消息到对端应用。对端应用已注册监听消息接收后，即可收到穿戴侧应用发送的消息。
 
+说明
+
+步骤2中fingerprint表示应用指纹，具体请参考如何获取应用指纹。
+
 // 步骤2 构造对端应用参数
 let appInfo: wearEngine.AppInfo = {
   // 设置对端应用的应用信息：包名与指纹
@@ -95,6 +99,10 @@ import { fileIo } from '@kit.CoreFileKit';
 调用getP2pClient方法，获取P2pClient对象。
 
 调用transferFile方法，从穿戴侧应用发送文件到对端应用。
+
+说明
+
+步骤2中fingerprint表示应用指纹，具体请参考如何获取应用指纹。
 
 // 步骤2 构造对端应用参数
 let appInfo: wearEngine.AppInfo = {
@@ -164,6 +172,10 @@ try {
 
 调用registerMessageReceiver方法，订阅监听消息接收事件。
 
+说明
+
+步骤3中fingerprint表示应用指纹，具体请参考如何获取应用指纹。
+
 // 步骤2 获取P2pClient对象
 let p2pClient: wearEngine.P2pClient = wearEngine.getP2pClient(this.getUIContext().getHostContext());
 
@@ -208,6 +220,10 @@ p2pClient.unregisterMessageReceiver(targetDevice.randomId, appParam, callback).t
 构造接收到设备侧传来文件后的回调函数Callback。
 
 调用registerFileReceiver方法，订阅监听文件接收事件。
+
+说明
+
+步骤3中fingerprint表示应用指纹，具体请参考如何获取应用指纹。
 
 // 步骤2 获取P2pClient对象
 let p2pClient: wearEngine.P2pClient = wearEngine.getP2pClient(this.getUIContext().getHostContext());
@@ -340,6 +356,8 @@ Ability名称配置时，name为wearEngineUIAbilityName，value为指定要拉�
 说明
 
 该接口的调用需要在开发者联盟申请拉起已配对设备的指定应用权限（请参考申请接入Wear Engine服务）。
+
+步骤2中fingerprint表示应用指纹，具体请参考如何获取应用指纹。
 
 // 步骤2 构造对端应用参数
 let remoteAppInfo: wearEngine.AppInfo = {

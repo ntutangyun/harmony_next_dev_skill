@@ -99,7 +99,7 @@ struct FancyUse {
   }
 }
 
-@Extend的参数可以为状态变量，当状态变量改变时，UI可以正常的被刷新渲染。
+@Extend的参数可以为状态变量，当状态变量改变时，UI可以正常地被刷新渲染。
 
 // 将状态变量作为@Extend参数，状态变化驱动Text样式刷新
 @Extend(Text)
@@ -205,7 +205,7 @@ struct FancyUse {
         Text('this is TextUse')
 
         Button()
-          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist  on type 'ButtonAttribute'.
+          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist on type 'ButtonAttribute'.
           .height(50)
       }
     }
@@ -508,7 +508,7 @@ struct FancyUse {
         Text('this is TextUse')
 
         Button()
-          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist  on type 'ButtonAttribute'.
+          .ButtonUse()  // 会有编译告警提示: Property 'ButtonUse' does not exist on type 'ButtonAttribute'.
           .height(50)
       }
     }

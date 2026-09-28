@@ -30,7 +30,7 @@ preRender接口允许提前创建可复用组件并将其放入复用池，加�
 
 基本概念
 
-默认复用池：使用@Reusable或@ReusableV2声明的复用组件，创建时会从父组件的复用池中的取出实例，销毁时会被父组件的复用池回收。这个是在未配置全局复用池时复用组件的默认行为，父组件中的复用池被称作默认复用池。
+默认复用池：使用@Reusable或@ReusableV2声明的复用组件，创建时会从父组件的复用池中取出实例，销毁时会被父组件的复用池回收。这个是在未配置全局复用池时复用组件的默认行为，父组件中的复用池被称作默认复用池。
 
 全局复用池：全局复用池是在任意自定义组件中声明的独立的复用池，该复用池能接纳所有该组件下的复用组件，不依赖父子组件关系，接纳复用组件类型需要单独配置。该新增复用池能力比默认复用池接纳组件的范围更广，不只局限于父子组件才能复用，所以命名为全局复用池。
 
@@ -223,7 +223,7 @@ poolAccepts必须是非空数组，否则会导致编译报错。poolAccepts的�
 
 reusePool和poolAccepts配置仅在@Component和@ComponentV2上支持。在@CustomDialog上不受支持。
 
-@Component和@ComponentV2在配置reusePool和poolAccepts启用全局复用的同时，需要额外配置freezeWhenInactive参数，freezeWhenInactive参数的取值请参考自定义组件冻结功能（V1）或自定义组件冻结功能（V2）。
+@Component和@ComponentV2在配置reusePool和poolAccepts启用全局复用的同时，需要额外配置freezeWhenInactive参数，freezeWhenInactive参数的取值请参考自定义组件冻结（V1）或自定义组件冻结（V2）。
 
 getReusableInfo和preRender仅在全局复用池实例上可用。它们不能在默认复用池的自定义组件上使用。
 

@@ -1,4 +1,4 @@
-# 订阅超级隐私模式管控策略改变事件场景
+# 订阅超级隐私模式管控策略改变事件
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-subscribe-superprivacypolicy_
 
@@ -39,9 +39,6 @@ offSuperPrivacyModeOrPolicyChange(callback?: Callback<SuperPrivacyPolicyInfo>): 
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-const DOMAIN = 0x0000;
-const TAG = 'SuperPrivacyModeTest';
-
 定义超级隐私模式管控策略改变时触发的回调函数。
 
 const superPrivacyPolicyChangedCallback = (policyInfo: superPrivacyMode.SuperPrivacyPolicyInfo): void => {
@@ -52,6 +49,9 @@ const superPrivacyPolicyChangedCallback = (policyInfo: superPrivacyMode.SuperPri
 }
 
 调用onSuperPrivacyModeOrPolicyChange接口订阅超级隐私模式管控策略改变事件。
+
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
 
 hilog.info(DOMAIN, TAG, 'start register super privacy mode or policy changed listener');
 try {
@@ -64,6 +64,9 @@ try {
 }
 
 调用offSuperPrivacyModeOrPolicyChange接口取消订阅超级隐私模式管控策略改变事件。
+
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
 
 hilog.info(DOMAIN, TAG, 'start unregister super privacy mode or policy changed listener');
 try {
@@ -82,9 +85,6 @@ try {
 ```
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const DOMAIN = 0x0000;
-const TAG = 'SuperPrivacyModeTest';
 ```
 
 ### Code block 2
@@ -101,6 +101,13 @@ const superPrivacyPolicyChangedCallback = (policyInfo: superPrivacyMode.SuperPri
 ### Code block 3
 
 ```
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
+```
+
+### Code block 4
+
+```
 hilog.info(DOMAIN, TAG, 'start register super privacy mode or policy changed listener');
 try {
   superPrivacyMode.onSuperPrivacyModeOrPolicyChange(superPrivacyPolicyChangedCallback);
@@ -112,7 +119,14 @@ try {
 }
 ```
 
-### Code block 4
+### Code block 5
+
+```
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
+```
+
+### Code block 6
 
 ```
 hilog.info(DOMAIN, TAG, 'start unregister super privacy mode or policy changed listener');

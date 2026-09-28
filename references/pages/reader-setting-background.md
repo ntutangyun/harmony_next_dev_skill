@@ -104,7 +104,10 @@ private loadFileFromPath(filePath: string): ArrayBuffer {
     fs.closeSync(file);
     return buffer;
   } catch (err) {
-    hilog.error(0x0000, 'testTag', "mkdir failed with error message: ", err.message, ", error code: ", err.code);
+    let code = (error as BusinessError).code;
+    let message = (error as BusinessError).message;
+    hilog.error(0x0000, 'testTag',
+      `loadFileFromPath : get file failed, error code: ${code}, message: ${message}.`);
     return new ArrayBuffer(0);
   }
 }
@@ -193,7 +196,10 @@ private loadFileFromPath(filePath: string): ArrayBuffer {
     fs.closeSync(file);
     return buffer;
   } catch (err) {
-    hilog.error(0x0000, 'testTag', "mkdir failed with error message: ", err.message, ", error code: ", err.code);
+    let code = (error as BusinessError).code;
+    let message = (error as BusinessError).message;
+    hilog.error(0x0000, 'testTag',
+      `loadFileFromPath : get file failed, error code: ${code}, message: ${message}.`);
     return new ArrayBuffer(0);
   }
 }

@@ -7,3 +7,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/modular-o
 使用ModularObjectExtensionAbility实现模块化对象 (C/C++)
 
 使用Taihe实现ModularObjectExtensionAbility的IPC通信 (C/C++)
+
+使用ModularObjectDispatcher实现动态接口调用 (C/C++)

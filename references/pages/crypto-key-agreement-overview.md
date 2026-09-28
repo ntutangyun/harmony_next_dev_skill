@@ -1,4 +1,4 @@
-# 密钥协商介绍及算法规格
+# 密钥协商
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-key-agreement-overview_
 
@@ -67,3 +67,15 @@ DH	DH_ffdhe8192	11+
 DH	DH	11+
 
 如表中最后一行所示，为了兼容由密钥参数生成的密钥，DH密钥协商参数输入密钥类型时支持不指定知名安全素数群，密钥协商运算结果由实际输入的密钥决定，且该场景支持非标准群组的密钥协商。
+
+使用ECDH进行密钥协商(ArkTS)
+
+使用ECDH进行密钥协商(C/C++)
+
+使用X25519进行密钥协商(ArkTS)
+
+使用X25519进行密钥协商(C/C++)
+
+使用DH进行密钥协商(ArkTS)
+
+使用DH进行密钥协商(C/C++)

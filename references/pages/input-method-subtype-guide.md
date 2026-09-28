@@ -51,10 +51,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/input-met
 // 设置监听子类型事件，改变输入法应用界面
 inputMethodAbility.on('setSubtype', (inputMethodSubtype: InputMethodSubtype) => {
   if (inputMethodSubtype.id === 'InputMethodExtAbility') {
-    AppStorage.setOrCreate('subtypeChange', 0);
+    AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.english);
   }
   if (inputMethodSubtype.id === 'InputMethodExtAbility1') {
-    AppStorage.setOrCreate('subtypeChange', 1);
+    AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.chinese);
   }
 });
 
@@ -124,10 +124,10 @@ inputMethodAbility.on('setSubtype', (inputMethodSubtype: InputMethodSubtype) => 
 // 设置监听子类型事件，改变输入法应用界面
 inputMethodAbility.on('setSubtype', (inputMethodSubtype: InputMethodSubtype) => {
   if (inputMethodSubtype.id === 'InputMethodExtAbility') {
-    AppStorage.setOrCreate('subtypeChange', 0);
+    AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.english);
   }
   if (inputMethodSubtype.id === 'InputMethodExtAbility1') {
-    AppStorage.setOrCreate('subtypeChange', 1);
+    AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.chinese);
   }
 });
 ```

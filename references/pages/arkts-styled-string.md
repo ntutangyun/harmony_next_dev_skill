@@ -1,4 +1,4 @@
-# 属性字符串（StyledString/MutableStyledString）
+# 属性字符串 (StyledString/MutableStyledString)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-styled-string_
 
@@ -302,7 +302,7 @@ struct styled_string_demo7 {
 
 设置段落样式
 
-可通过ParagraphStyle设置段落样式布局。下图显示了如何分割文本中的段落，段落以换行符 \n 结尾。
+可通过ParagraphStyle设置段落样式布局。下图显示了如何分割文本中的段落，段落之间以换行符\n分隔。
 
 以下代码示例展示了如何创建ParagraphStyle并应用。如果将ParagraphStyle附加到段落开头、末尾或之间的任何位置，均会应用样式，非段落区间内则不会应用样式。
 
@@ -456,7 +456,7 @@ struct Index {
 
 可通过getParagraphs将属性字符串根据文本布局选项转换成对应的Paragraph数组。
 
-以下示例展示了通过MeasureUtils的getParagraphs方法测算文本，当内容超出最大显示行数的时候，截断文本显示并展示“...全文”的效果。
+以下示例展示了通过getParagraphs方法将属性字符串转换为Paragraph对象，进而通过Paragraph对象实现文本测算功能。当内容超出最大显示行数的时候，截断文本显示并展示“...全文”的效果。
 
 import { LengthMetrics } from '@kit.ArkUI';
 import { drawing } from '@kit.ArkGraphics2D';
@@ -848,7 +848,7 @@ struct StyledStringImageAttachment {
 
 设置事件
 
-可通过GestureStyle设置onClick、onLongPress事件来使文本响应点击长按事件。
+可通过GestureStyle设置onClick、onLongPress事件来使文本响应点击、长按事件。
 
 除了初始化属性字符串对象即初始样式对象，亦可通过setStyle接口再叠加新样式或更新已有样式，同时需要在附加的文本组件controller上主动触发更新绑定的属性字符串。
 
@@ -1003,7 +1003,7 @@ struct StyledStringGestureStyle {
 
 格式转换
 
-可以通过toHtml、fromHtml接口实现属性字符串与HTML格式字符串的相关转换，当前支持转换的HTML标签范围：<p>、<span>、<img>、<br>、<strong>、<b>、<a>、<i>、<em>、<s>、<u>、<del>、<sup>、<sub>。
+可以通过toHtml、fromHtml接口实现属性字符串与HTML格式字符串的相关转换，支持转换的HTML标签部分范围：<p>、<span>、<img>、<br>、<strong>、<b>、<a>、<i>、<em>、<s>、<u>、<del>、<sup>、<sub>，完整范围参见fromHtml的接口说明。
 
 以下示例展示了如何将属性字符串转换成HTML格式，并展示了如何从HTML格式转换回属性字符串。
 

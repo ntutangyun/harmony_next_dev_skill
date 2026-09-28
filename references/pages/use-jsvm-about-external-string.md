@@ -22,7 +22,7 @@ JSVM-API接口开发流程参考使用JSVM-API实现JS与C/C++语言交互开发
 
 [h2]创建外部字符串
 
-cpp部分代码
+cpp部分代码：
 
 #include <cstring>
 #include <string>

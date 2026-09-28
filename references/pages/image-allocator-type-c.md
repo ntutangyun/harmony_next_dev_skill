@@ -365,19 +365,9 @@ napi_value CreatePixelmapWithYUV(napi_env env, napi_callback_info info)
 
 系统默认的内存分配方式
 
-在使用OH_ImageSourceNative_CreatePixelmap接口进行解码时，不同场景下会采取不同的内存分配类型。
+使用OH_ImageSourceNative_CreatePixelmap()解码时，系统自动选择共享内存或DMA内存。
 
-以下场景将使用DMA_ALLOC。
-
-解码HDR图片。
-
-解码HEIF格式图片。
-
-解码JPEG格式图片，当原图的宽和高均在1024像素至8192像素之间，PIXEL_FORMAT为PIXEL_FORMAT_RGBA_8888或PIXEL_FORMAT_NV21，同时硬件不繁忙（并发数为3）。
-
-解码其他格式图片。要求OH_DecodingOptions中的desiredSize大于等于512像素 * 512像素（未设置desiredSize时按原图尺寸考虑），并且宽度为64的倍数。
-
-除上述场景外，其余情况均使用SHARE_MEMORY。
+需要指定内存类型时，应调用OH_ImageSourceNative_CreatePixelmapUsingAllocator()，将allocator设置为IMAGE_ALLOCATOR_TYPE_DMA或IMAGE_ALLOCATOR_TYPE_SHARE_MEMORY。
 
 解码单张图片的内存限制
 

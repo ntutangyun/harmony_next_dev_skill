@@ -8,10 +8,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/errormana
 
 使用errorManager接口监听异常和错误后，应用不会退出，建议在回调函数执行完后，增加同步退出操作，如果只是为了获取错误日志，建议使用HiAppEvent订阅事件。
 
-说明
-
-从API版本26.0.0开始，如果已经通过errorManager接口监听了可捕获异常，则HiAppEvent将无法订阅JsError崩溃问题。
-
 接口说明
 
 应用错误管理接口由@ohos.app.ability.errorManager (错误管理模块)提供，使用接口能力前需注册错误观测器，开发者可以通过import引入，详见开发示例。
@@ -22,10 +18,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/errormana
 on(type: "error", observer: ErrorObserver): number	注册错误监听接口，当系统监测到应用异常时会回调该监听。该接口为同步接口，返回值为注册的监听对象对应的序号。
 off(type: "error", observerId: number, callback: AsyncCallback<void>): void	以callback的形式解除注册监听，传入的number为之前注册监听时返回的序号。
 off(type: "error", observerId: number): Promise<void>	以Promise的形式解除注册监听，传入的number为之前注册监听时返回的序号。
-on(type: 'globalErrorOccurred', observer: GlobalObserver): void	注册进程错误监听接口，当系统监测到应用异常时会回调该监听，该接口为同步接口，即一次注册，全局监听。（推荐使用） 说明：从API version 18开始，支持该接口。
-off(type: 'globalErrorOccurred', observer?: GlobalObserver): void	以callback的形式解除注册监听。（推荐使用） 说明：从API version 18开始，支持该接口。
-on(type: 'globalUnhandledRejectionDetected', observer: GlobalObserver): void	注册进程错误监听接口，当系统监测到应用promise异常时会回调该监听，该接口为同步接口，即一次注册，全局监听。（推荐使用） 说明：从API version 18开始，支持该接口。
-off(type: 'globalUnhandledRejectionDetected', observer?: GlobalObserver): void	以callback的形式解除注册监听。（推荐使用） 说明：从API version 18开始，支持该接口。
+on(type: 'globalErrorOccurred', observer: GlobalObserver): void	注册进程错误监听接口，当系统监测到应用异常时会回调该监听，该接口为同步接口，即一次注册，全局监听。 说明：从API version 18开始，支持该接口。
+off(type: 'globalErrorOccurred', observer?: GlobalObserver): void	以callback的形式解除注册监听。 说明： - 从API version 18开始，支持该接口。 - 注销监听器时可以监听进程中所有线程的异常，建议在进程回收时调用off接口，否则可能造成应用崩溃。
+on(type: 'globalUnhandledRejectionDetected', observer: GlobalObserver): void	注册进程错误监听接口，当系统监测到应用promise异常时会回调该监听，该接口为同步接口，即一次注册，全局监听。 说明：从API version 18开始，支持该接口。
+off(type: 'globalUnhandledRejectionDetected', observer?: GlobalObserver): void	以callback的形式解除注册监听。 说明： - 从API version 18开始，支持该接口。 - 注销监听器时可以监听进程中所有线程的异常，建议在进程回收时调用off接口，否则可能造成应用崩溃。
 on(type: 'loopObserver', timeout: number, observer: LoopObserver): void	注册主线程消息处理耗时监听器，当系统监测到应用主线程事件处理超时时会回调该监听。 只能在主线程调用，多次注册后，后一次的注册会覆盖前一次的。
 off(type: 'loopObserver', observer?: LoopObserver): void	以LoopObserver的形式解除应用主线程消息处理耗时监听。
 on(type: 'freeze', observer: FreezeObserver): void	注册应用主线程freeze监听。只能在主线程调用，重复注册后，后一次的注册会覆盖前一次的。

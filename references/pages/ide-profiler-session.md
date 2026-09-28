@@ -24,6 +24,6 @@ DevEco Profiler左侧为会话区，可以分为三个部分。
 
 ③ 场景化模板选择区域。
 
-创建会话：DevEco Profiler提供Frame、Launch、Snapshot、Allocation、ArkUI、ComMemory、Energy、ArkWeb、Network、Concurrency、GPU、Time、CPU等场景化分析模板，提供对不同性能问题场景的数据分析方案，选中任意模板图标，点击下方Create Session按钮，即可创建出一个全新的会话。
+创建会话：DevEco Profiler提供Frame、Launch、Snapshot、Allocation、ArkUI、ComMemory、Energy、ArkWeb、Network、Concurrency、GPU、Time、CPU、FileSystem等场景化分析模板，提供对不同性能问题场景的数据分析方案，选中任意模板图标，点击下方Create Session按钮，即可创建出一个全新的会话。
 
 数据导入：在③场景化模板选择区域，点击Open File按钮，即可选择数据进行导入。当前支持导入.insight，.htrace， .ftrace，.heapsnapshot，.rawheap, .sys，.perfdata，.data，.nas（包含Native Allocation数据的文件），.txt（包含Native Allocation数据的文件），.acm文件。

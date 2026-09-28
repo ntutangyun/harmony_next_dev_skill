@@ -294,7 +294,7 @@ export default class MyWebNativeMessageExtAbility extends WebNativeMessagingExte
   }
 }
 
-6.在shared_config.json添加extension配置。
+在shared_config.json添加extension配置。
 
 {
   "crossAppSharedConfig": [

@@ -140,7 +140,7 @@ void Player::VideoDecOutputThread()
 
         CodecBufferInfo bufferInfo = GetBufferInfo();
         // ...
-        // Notify the suface to render the data and release it.
+        // Notify the surface to render the data and release it.
         lastPushTime = std::chrono::system_clock::now();
         ret = videoDecoder_->RenderOutputBuffer(bufferInfo.bufferIndex, !dropFrame);
         CHECK_AND_BREAK_LOG(ret == MEDIA_ERR_OK, "Decoder output thread out");
@@ -501,7 +501,7 @@ void Player::Release()
         OH_AudioRenderer_Release(audioRenderer_);
         audioRenderer_ = nullptr;
     }
-    // Release decode resoure.
+    // Release decode resource.
     if (demuxer_ != nullptr) {
         demuxer_->Release();
         demuxer_.reset();
@@ -620,7 +620,7 @@ void Player::VideoDecOutputThread()
 
         CodecBufferInfo bufferInfo = GetBufferInfo();
         // ...
-        // Notify the suface to render the data and release it.
+        // Notify the surface to render the data and release it.
         lastPushTime = std::chrono::system_clock::now();
         ret = videoDecoder_->RenderOutputBuffer(bufferInfo.bufferIndex, !dropFrame);
         CHECK_AND_BREAK_LOG(ret == MEDIA_ERR_OK, "Decoder output thread out");
@@ -889,7 +889,7 @@ void Player::Release()
         OH_AudioRenderer_Release(audioRenderer_);
         audioRenderer_ = nullptr;
     }
-    // Release decode resoure.
+    // Release decode resource.
     if (demuxer_ != nullptr) {
         demuxer_->Release();
         demuxer_.reset();

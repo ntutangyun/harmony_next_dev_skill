@@ -73,6 +73,7 @@ case_sensitive_check	路径大小写敏感检测	布尔	false	默认为false。�
 auto_skip_install	依赖未发生变化时，自动跳过本次安装	布尔	false	默认为false。若设置为true，首次执行ohpm install安装命令后，如果用户未修改依赖再次执行ohpm install命令，则会跳过本次安装。详细跳过规则请见auto_skip_install。
 metadata_cache_effective	设置元数据缓存的过期时间	数值	10080	默认缓存过期时间为7天，取值范围为 [1, 525600]，单位：分钟。 该配置适用于 ~/.ohpm/cache/metadata 目录下所有先行版本元数据文件和全部版本元数据文件，以及工程目录下 .ohpm/lock/oh-install-meta.json5 中的先行版本元数据。 说明： 标准版本通常不会变更，故该参数在~/.ohpm/cache/metadata 目录下的标准版本元数据文件和工程目录下.ohpm/lock/oh-install-meta.json5中的标准版本元数据中不生效。
 metadata_cache	开启读取缓存的元数据文件	布尔	false	默认为false。若设置为true，在执行ohpm install命令时，会读取缓存的元数据文件（ .ohpm/lock/oh-install-meta.json5文件、~/.ohpm/cache/metadata 目录下文件），减少网络请求，缩短安装时间。详情请见metadata_cache。
+symlink_for_local_dep	对本地HAR依赖解压后的路径，创建软链接	布尔	false	默认为false。若设置为true，在执行ohpm install过程中，对本地HAR依赖解压后的路径，创建软链接。详情见symlink_for_local_dep。
 
 CA证书获取及配置
 
@@ -503,7 +504,6 @@ oh-package-lock.json5示例
 }
 
 {
-  ......
   "specifiers": {
     "library@library.har": "library@library.har"
   },
@@ -524,7 +524,6 @@ oh-package-lock.json5示例
 enable_lock_inner_pkg_version=true时，entry/oh-package-lock.json5结果如下：
 
 {
-  ......
   "specifiers": {
     "inner@../oh_modules/.ohpm/library@85ursk4cfzbgycewlyxweed+cyyeeixxig5mlazoo+g=/oh_modules/library/libs/inner.har": "
 inner@../oh_modules/.ohpm/library@c0jkxsxl3amvdd7rr1enrkrejzharxwucdoyc29br+u=/oh_modules/library/libs/inner.har",
@@ -673,6 +672,20 @@ metadata/
 说明
 
 启用metadata_cache设置为true，当oh-package.json5中配置范围版本，且范围版本中有新版本发布时，ohpm可能从本地缓存的元数据中读取结果，而非发起网络请求。这可能导致无法获取新的包版本。这时需要执行 ohpm cache clean @group/package 命令清除对应包的元数据缓存文件，或执行 ohpm cache clean 命令清除所有元数据缓存文件。清除命令请参考ohpm cache clean。
+
+symlink_for_local_dep
+
+ohpm客户端从26.0.0.630版本新增开关配置symlink_for_local_dep字段，该配置项值为布尔类型，默认为false。若设置symlink_for_local_dep为true，执行ohpm install过程中，对本地HAR依赖解压后的路径创建软链接，放置在工程目录/oh_modules/.ohpm/oh_modules中。
+
+{
+  "modelVersion": "6.1.0",
+  "description": "Please describe the basic information.",
+  "dependencies": {
+    "library5": "file:./library5.har"
+  }
+}
+
+创建的软链接如下：
 
 ## Code blocks
 
@@ -948,7 +961,6 @@ odm_r2_project_root=true
 
 ```
 {
-  ......
   "specifiers": {
     "library@library.har": "library@library.har"
   },
@@ -971,7 +983,6 @@ odm_r2_project_root=true
 
 ```
 {
-  ......
   "specifiers": {
     "inner@../oh_modules/.ohpm/library@85ursk4cfzbgycewlyxweed+cyyeeixxig5mlazoo+g=/oh_modules/library/libs/inner.har": "
 inner@../oh_modules/.ohpm/library@c0jkxsxl3amvdd7rr1enrkrejzharxwucdoyc29br+u=/oh_modules/library/libs/inner.har",
@@ -1094,4 +1105,16 @@ metadata/
   packagenameC/
       -- all.json // 全部元数据
       -- xx.json  // 固定版本的元数据
+```
+
+### Code block 41
+
+```
+{
+  "modelVersion": "6.1.0",
+  "description": "Please describe the basic information.",
+  "dependencies": {
+    "library5": "file:./library5.har"
+  }
+}
 ```

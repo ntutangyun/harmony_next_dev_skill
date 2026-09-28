@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug
 
 在内存视图中，填写地址，点击“View”按钮，查看对应地址处的内存。
 
-点击“Settings”按钮，设置进制、偏移量和内存数量。
+点击“Settings”按钮，设置进制、偏移量和展示的内存字节数量。
 
 内存转换
 

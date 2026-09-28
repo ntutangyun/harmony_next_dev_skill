@@ -288,7 +288,7 @@ excludeFromDock	标识当前UIAbility组件是否支持从dock区域隐藏图标
 preferMultiWindowOrientation	标识当前UIAbility组件多窗布局方向： - default：缺省值，参数不配置默认值，建议其他应用类配置。 - portrait：多窗布局方向为竖向，建议竖向游戏类应用配置。 - landscape：多窗布局方向为横向，配置后支持横屏悬浮窗和上下分屏，建议横向游戏类应用配置。 - landscape_auto：多窗布局动态可变为横向，需要配合API enableLandScapeMultiWindow/disableLandScapeMultiWindow使用，建议视频类应用配置。	字符串	该标签可缺省，缺省值为default。
 continueType	标识当前UIAbility组件的跨端迁移类型。	字符串数组	该标签可缺省，缺省值为当前组件的名称。
 continueBundleName	标识当前应用支持跨端迁移的其它应用名称列表。 说明： 不能配置为本应用包名，仅为了做异包名迁移使用。 从API version 13开始，支持该标签。	字符串数组	该标签可缺省，缺省值为空。
-process	标识组件的进程名称。具体使用方式参考进程模型定义中的"静态指定进程"。 说明： 1. 仅在PC/2in1和Tablet设备上生效。 2. UIAbility组件和type为embeddedUI的ExtensionAbility组件标签一致时运行在同一个进程中。 3. 从API version 14开始，支持该标签。	字符串	该标签可缺省，缺省值为空。
+process	标识组件的进程名称。具体使用方式参考独立进程配置中的"静态指定进程"。 说明： 1. 仅在PC/2in1和Tablet设备上生效。 2. UIAbility组件和type为embeddedUI的ExtensionAbility组件标签一致时运行在同一个进程中。 3. 从API version 14开始，支持该标签。	字符串	该标签可缺省，缺省值为空。
 
 abilities示例：
 
@@ -447,7 +447,7 @@ metadata	标识当前ExtensionAbility组件的元信息。 说明： 该标签�
 exported	标识当前ExtensionAbility组件是否可以被其他应用调用。 - true：表示可以被其他应用调用。 - false：表示不可以被其他应用调用，包括无法被aa工具命令拉起应用。	布尔值	该标签可缺省，缺省值为false。
 extensionProcessMode	标识当前ExtensionAbility组件的进程模型，根据ExtensionAbility的类型不同，支持的配置项有所区别。支持的取值范围如下，默认值为bundle。 - instance：表示该ExtensionAbility每个实例都各自运行在单独进程。 - type：表示该ExtensionAbility的所有实例都运行在同一独立进程，与其他name的ExtensionAbility组件实例运行在不同进程。 - bundle：表示该ExtensionAbility的实例与同包名下相同extensionType的ExtensionAbility实例运行在同一进程。 对于UIExtensionAbility及其子类，支持instance、type、bundle三种进程模型。 对于类型为appService的ExtensionAbility，支持type和bundle两种进程模型。 - runWithMainProcess：表示该ExtensionAbility和应用主进程共进程，只有状态栏开放服务的ExtensionAbility可以配置runWithMainProcess。	字符串	该标签可缺省，缺省值为bundle。
 dataGroupIds	标识当前ExtensionAbility组件的dataGroupId集合。如果当前ExtensionAbility组件所在的应用在应用市场申请的证书里groupIds也申请了某个dataGroupId，那么当前ExtensionAbility组件可以和应用共享这一个dataGroupId生成的目录，所以ExtensionAbility组件的dataGroupId需要是应用的签名证书中groupIds标签里配置的才能生效。 且该标签仅在当前ExtensionAbility组件存在独立的沙箱目录时生效。详见共享沙箱介绍第3点共享沙箱的配置流程中的步骤a申请data-group-id。	字符串数组	该标签可缺省，缺省值为空。
-process	标识组件的进程名称，只有type为embeddedUI时可以配置该标签。具体使用方式参考进程模型定义中的"静态指定进程"。 说明： 1. 仅在PC/2in1和Tablet设备上生效。 2. UIAbility组件和ExtensionAbility组件标签一致时运行在同一个进程中。 3. 从API version 14开始，支持该标签。	字符串	该标签可缺省，缺省值为空。
+process	标识组件的进程名称，只有type为embeddedUI时可以配置该标签。具体使用方式参考独立进程配置中的"静态指定进程"。 说明： 1. 仅在PC/2in1和Tablet设备上生效。 2. UIAbility组件和ExtensionAbility组件标签一致时运行在同一个进程中。 3. 从API version 14开始，支持该标签。	字符串	该标签可缺省，缺省值为空。
 isolationProcess	标识ExtensionAbility组件能否运行在独立的进程中。 - true：表示能运行在独立的进程中。 - false：表示不能运行在独立的进程中。 说明： 仅当ExtensionAbility组件的type为"sys/commonUI"时该标签配置生效，且仅支持由系统应用配置type为"sys/commonUI"。 从API version 20开始，支持该标签。	布尔值	该标签可缺省，缺省值为false。
 skipAbilityStageLifecycle	标识type为backup的ExtensionAbility组件是否跳过AbilityStage生命周期回调。 - true：跳过AbilityStage生命周期，不执行onCreate、onDestroy等回调。 - false：不跳过AbilityStage生命周期，正常执行生命周期回调。 说明： 1. 该标签仅在ExtensionAbility的type为backup时配置生效。 2. 从API version 26.0.0开始，支持该标签。	布尔值	该标签可缺省，缺省值为false。
 
@@ -507,8 +507,8 @@ wallpaper	壁纸的ExtensionAbility。
 backup	数据备份的ExtensionAbility。
 enterpriseAdmin	企业设备管理的ExtensionAbility。企业设备管理应用必须拥有此类型的ExtensionAbility。
 window	该ExtensionAbility会在启动过程中创建一个window，为开发者提供界面开发。开发者开发出来的界面将通过UIExtensionComponent控件组合到其他应用的窗口中，三方应用配置不生效，当前配置仅在系统应用中有效。
-thumbnail	获取文件缩略图的ExtensionAbility，开发者可以对自定义文件类型的文件提供缩略图。
-preview	该ExtensionAbility会将文件解析后在一个窗口中显示，开发者可以通过将此窗口组合到其他应用窗口中。
+thumbnail	获取文件缩略图的ExtensionAbility，开发者可以对自定义文件类型的文件提供缩略图。预留字段，暂不支持使用。
+preview	该ExtensionAbility会将文件解析后在一个窗口中显示，开发者可以通过将此窗口组合到其他应用窗口中。预留字段，暂不支持使用。
 print	打印框架的ExtensionAbility。
 push	推送的ExtensionAbility。
 driver	驱动框架的ExtensionAbility。应用配置了driver类型的ExtensionAbility后会被视为驱动应用，驱动应用在安装、卸载和恢复时不会区分用户，且创建新用户时也会安装设备上已有的驱动应用。例如，创建子用户时会默认安装主用户已有的驱动应用，在子用户上卸载驱动应用时，主用户上对应的驱动应用也会同时被卸载。

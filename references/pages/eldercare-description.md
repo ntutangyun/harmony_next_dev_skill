@@ -35,7 +35,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 struct SeniorModeDemo1 {
 
  // 关怀模式状态变化的回调，回调值为true时，代表系统关怀模式已打开，否则代表系统关怀模式已关闭。
- callBack = (data: boolean) => {
+ callback = (data: boolean) => {
    console.info(`subscribe senior mode state change, result: ${JSON.stringify(data)}`);
  }
 
@@ -91,7 +91,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 struct SeniorModeDemo1 {
 
  // 关怀模式状态变化的回调，回调值为true时，代表系统关怀模式已打开，否则代表系统关怀模式已关闭。
- callBack = (data: boolean) => {
+ callback = (data: boolean) => {
    console.info(`subscribe senior mode state change, result: ${JSON.stringify(data)}`);
  }
 

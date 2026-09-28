@@ -19,3 +19,5 @@ Network Boost Kit简介
 连接迁移(多网并发)（C/C++）
 
 Network Boost Kit常见问题
+
+Network Boost Kit术语

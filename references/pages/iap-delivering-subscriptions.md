@@ -118,13 +118,13 @@ import {
 
   dealPurchaseData(purchaseData: string) {
     try {
-      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      // 建议您将purchaseData发送到应用服务器进行签名验证。
       const jwsSubscriptionStatus = (JSON.parse(purchaseData) as PurchaseData).jwsSubscriptionStatus;
       if (!jwsSubscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, jwsSubscriptionStatus invalid');
         return;
       }
-      // 解码 jwsPurchaseOrder 并执行签名验证。
+      // 解码jwsSubscriptionStatus并执行签名验证。
       const subscriptionStatus = JWSUtil.decodeJwsObj(jwsSubscriptionStatus);
       if (!subscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, subscriptionStatus invalid');
@@ -274,13 +274,13 @@ import {
 
   dealPurchaseData(purchaseData: string) {
     try {
-      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      // 建议您将purchaseData发送到应用服务器进行签名验证。
       const jwsSubscriptionStatus = (JSON.parse(purchaseData) as PurchaseData).jwsSubscriptionStatus;
       if (!jwsSubscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, jwsSubscriptionStatus invalid');
         return;
       }
-      // 解码 jwsPurchaseOrder 并执行签名验证。
+      // 解码jwsSubscriptionStatus并执行签名验证。
       const subscriptionStatus = JWSUtil.decodeJwsObj(jwsSubscriptionStatus);
       if (!subscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, subscriptionStatus invalid');
@@ -379,13 +379,13 @@ import {
 
   dealPurchaseData(purchaseData: string) {
     try {
-      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      // 建议您将purchaseData发送到应用服务器进行签名验证。
       const jwsSubscriptionStatus = (JSON.parse(purchaseData) as PurchaseData).jwsSubscriptionStatus;
       if (!jwsSubscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, jwsSubscriptionStatus invalid');
         return;
       }
-      // 解码 jwsPurchaseOrder 并执行签名验证。
+      // 解码jwsSubscriptionStatus并执行签名验证。
       const subscriptionStatus = JWSUtil.decodeJwsObj(jwsSubscriptionStatus);
       if (!subscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, subscriptionStatus invalid');
@@ -479,13 +479,13 @@ import {
 
   dealPurchaseData(purchaseData: string) {
     try {
-      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      // 建议您将purchaseData发送到应用服务器进行签名验证。
       const jwsSubscriptionStatus = (JSON.parse(purchaseData) as PurchaseData).jwsSubscriptionStatus;
       if (!jwsSubscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, jwsSubscriptionStatus invalid');
         return;
       }
-      // 解码 jwsPurchaseOrder 并执行签名验证。
+      // 解码jwsSubscriptionStatus并执行签名验证。
       const subscriptionStatus = JWSUtil.decodeJwsObj(jwsSubscriptionStatus);
       if (!subscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, subscriptionStatus invalid');

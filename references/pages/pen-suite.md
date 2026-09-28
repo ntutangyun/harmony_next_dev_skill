@@ -73,7 +73,8 @@ export default class GlobalContext {
 
 构造包含手写组件的控件/页面，下面以控件为例。
 
-import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
+import { HandwriteController, HandwriteComponent, PenType, PenHspInfo, HiddenToolType,
+  HiddenConfig } from '@kit.Penkit';
 
 @Entry
 @Component
@@ -86,7 +87,7 @@ struct HandWriteDemoComp {
   @State yOffset: number = 0;
 
   aboutToAppear() {
-    // 加载时设置保存动作完成后的回调。
+    // 加载时设置加载完成后的回调。
     this.controller.onLoad(this.callback);
   }
 
@@ -107,6 +108,10 @@ struct HandWriteDemoComp {
           heightRatio: 1, // 可选属性，自定义画布大小，高度占比（0-1）。
           maxCanvasHeight: 5000, // 可选属性，自定义画布最大高度
           scaleDisabled: false, // 可选属性，是否禁止缩放
+          hiddenTools: {
+            hiddenOptionalTools: [HiddenToolType.PENCIL, HiddenToolType.HIGHLIGHTER_BRUSH, HiddenToolType.MOSAIC], // 可选属性，设置需要隐藏的工具类集合。
+            hiddenArcBox: false  // 可选属性，设置是否隐藏波轮菜单。
+          } as HiddenConfig, // 可选属性，隐藏不需要的手写工具。
           onInit: () => {
             // 画布初始化完成时的回调。此时可以调用接口加载和显示笔记内容
             this.controller?.load(this.initPath);
@@ -124,8 +129,8 @@ struct HandWriteDemoComp {
           .onClick(async () => {
             // 需根据应用存储规则，获取到手写文件保存的路径，此处仅为实例参考
             const path = this.getUIContext().getHostContext()?.filesDir + '/aa';
-            await this.controller?.save(path).then().catch((error: Error) => {
-              console.error('save err: ' + error.message);
+            await this.controller?.save(path).then().catch((error: BusinessError) => {
+              console.error(`Failed to save. Code: ${error.code}, message: ${error.message}`);
             });
             // 获取缩略图
             this.controller.getThumbnail(this.controller?.getContentRange())?.then((pixelMap: PixelMap) => {
@@ -202,7 +207,8 @@ export default class GlobalContext {
 ### Code block 3
 
 ```
-import { HandwriteController, HandwriteComponent, PenType, PenHspInfo } from '@kit.Penkit';
+import { HandwriteController, HandwriteComponent, PenType, PenHspInfo, HiddenToolType,
+  HiddenConfig } from '@kit.Penkit';
 
 @Entry
 @Component
@@ -215,7 +221,7 @@ struct HandWriteDemoComp {
   @State yOffset: number = 0;
 
   aboutToAppear() {
-    // 加载时设置保存动作完成后的回调。
+    // 加载时设置加载完成后的回调。
     this.controller.onLoad(this.callback);
   }
 
@@ -236,6 +242,10 @@ struct HandWriteDemoComp {
           heightRatio: 1, // 可选属性，自定义画布大小，高度占比（0-1）。
           maxCanvasHeight: 5000, // 可选属性，自定义画布最大高度
           scaleDisabled: false, // 可选属性，是否禁止缩放
+          hiddenTools: {
+            hiddenOptionalTools: [HiddenToolType.PENCIL, HiddenToolType.HIGHLIGHTER_BRUSH, HiddenToolType.MOSAIC], // 可选属性，设置需要隐藏的工具类集合。
+            hiddenArcBox: false  // 可选属性，设置是否隐藏波轮菜单。
+          } as HiddenConfig, // 可选属性，隐藏不需要的手写工具。
           onInit: () => {
             // 画布初始化完成时的回调。此时可以调用接口加载和显示笔记内容
             this.controller?.load(this.initPath);
@@ -253,8 +263,8 @@ struct HandWriteDemoComp {
           .onClick(async () => {
             // 需根据应用存储规则，获取到手写文件保存的路径，此处仅为实例参考
             const path = this.getUIContext().getHostContext()?.filesDir + '/aa';
-            await this.controller?.save(path).then().catch((error: Error) => {
-              console.error('save err: ' + error.message);
+            await this.controller?.save(path).then().catch((error: BusinessError) => {
+              console.error(`Failed to save. Code: ${error.code}, message: ${error.message}`);
             });
             // 获取缩略图
             this.controller.getThumbnail(this.controller?.getContentRange())?.then((pixelMap: PixelMap) => {

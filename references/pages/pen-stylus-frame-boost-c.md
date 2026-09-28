@@ -47,7 +47,7 @@ void DispatchTouchEvent(OH_NativeXComponent *xcomponent, void *window)
     }
     std::string xcomponentId(id);
     OH_NativeXComponent_TouchEvent touchEvent;
-    if (OH_NativeXComponent_GetTouchEvent(component, window, &touchEvent) != OH_NATIVEXCOMPONENT_RESULT_SUCCESS) {
+    if (OH_NativeXComponent_GetTouchEvent(xcomponent, window, &touchEvent) != OH_NATIVEXCOMPONENT_RESULT_SUCCESS) {
         TLOGE("failed to get touch event");
         return;
     }
@@ -96,7 +96,7 @@ void DispatchTouchEvent(OH_NativeXComponent *xcomponent, void *window)
     }
     std::string xcomponentId(id);
     OH_NativeXComponent_TouchEvent touchEvent;
-    if (OH_NativeXComponent_GetTouchEvent(component, window, &touchEvent) != OH_NATIVEXCOMPONENT_RESULT_SUCCESS) {
+    if (OH_NativeXComponent_GetTouchEvent(xcomponent, window, &touchEvent) != OH_NATIVEXCOMPONENT_RESULT_SUCCESS) {
         TLOGE("failed to get touch event");
         return;
     }

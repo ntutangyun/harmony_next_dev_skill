@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-de
 
 选择加解密算法并确定密钥
 
-根据具体的安全需求，选择合适的加解密算法。可以是对称密钥加解密算法（例如AES）、非对称密钥加解密算法（例如RSA）等。
+根据具体的安全需求，选择合适的加解密算法。可以是对称密钥加解密算法规格（例如AES）、非对称密钥加解密算法规格（例如RSA）等。
 
 确定加解密所需密钥。对称密钥为随机生成的二进制数据，非对称密钥需生成公钥和私钥。
 
@@ -125,7 +125,7 @@ SM2加解密中，HarmonyOS平台支持ASN.1序列化后的密钥数据（公钥
 
 其他平台生成的公钥格式为04+x+y，私钥为128位字符串。
 
-将对应的16进制参数放入对应的位置，可通过使用密钥参数生成SM2公钥。
+将对应的16进制参数放入对应的位置，可通过SM2中使用密钥参数生成SM2公钥。
 
 public static async convertStrToPubKey(keyStr: string): Promise<cryptoFramework.PubKey | undefined> {
   const puKeyStr = keyStr.startsWith('04') ? keyStr.slice(2) : keyStr;
@@ -151,7 +151,7 @@ public static async convertStrToPubKey(keyStr: string): Promise<cryptoFramework.
   }
 }
 
-同理，可通过使用密钥参数生成SM2私钥。
+同理，可通过SM2使用密钥参数生成SM2私钥。
 
 public static async convertStrToPriKey(keyStr: string): Promise<cryptoFramework.PriKey | undefined> {
   try {
@@ -184,7 +184,7 @@ C3：32字节的哈希值，用于验证密文完整性。
 
 目前SM2密文数据的参数组合顺序有老标准C1C2C3和新标准C1C3C2。
 
-HarmonyOS平台支持的SM2密文格式为国密标准的ASN.1格式，参数组合顺序为C1C3C2。具体参数含义请参考转换SM2密文格式。
+HarmonyOS平台支持的SM2密文格式为国密标准的ASN.1格式，参数组合顺序为C1C3C2。具体参数含义请参考SM2中转换SM2密文格式。
 
 对于其他平台加密的C1C2C3顺序的密文，在HarmonyOS平台解密时，需先提取所需要的参数，并构造SM2CipherTextSpec对象，接着调用genCipherTextBySpec()方法序列化生成ASN.1格式的SM2密文。具体可参考使用SM2密文格式转换(ArkTS)。
 
@@ -288,7 +288,7 @@ AES密钥长度使用问题
 
 初始化HarmonyOS平台的加解密引擎时，需指定算法规格及密钥长度。密钥长度可为128位（对应字符串参数AES128）、192位（对应字符串参数AES192）或256位（对应字符串参数AES256）。AES密钥的字节长度与位数对应关系为：16字节对应128位，24字节对应192位，32字节对应256位。通过密钥位数可推断其字节长度。
 
-以指南使用AES对称密钥（GCM模式）加解密(ArkTS)为例，使用'AES128|GCM|PKCS7'初始化加解密算法实例。加解密时对应的密钥应为128位，即16个字符。因此，在生成密钥时，传入的字符为newUint8Array([83,217,231,76,28,113,23,219,250,71,209,210,205,97,32,159])。
+以指南使用AES对称密钥（GCM模式）加解密)为例，使用'AES128|GCM|PKCS7'初始化加解密算法实例。加解密时对应的密钥应为128位，即16个字符。因此，在生成密钥时，传入的字符为newUint8Array([83,217,231,76,28,113,23,219,250,71,209,210,205,97,32,159])。
 
 通过字符串获取密钥位数
 

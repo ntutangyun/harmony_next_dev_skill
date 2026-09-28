@@ -11,7 +11,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/start-exp
 startAbilityByType接口中type字段为express，支持查询快递意图，对应的wantParam参数如下：
 
 参数名	类型	必填	说明
-sceneType	number	否	意图场景，表明本次请求对应的操作意图。默认为1，查询快递填场景填1或不填。
+sceneType	number	否	意图场景，表明本次请求对应的操作意图。默认为1，查询快递场景填1或不填。
 expressNo	string	是	快递单号。
 
 拉起方开发步骤

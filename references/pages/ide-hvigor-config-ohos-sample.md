@@ -2,13 +2,13 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-config-ohos-sample_
 
-通过hook以及插件上下文动态配置构建配置(推荐使用)
+通过hook以及插件上下文动态修改配置(推荐使用)
 
 [h2]修改每个hvigorNode中的build-profile.json5
 
-此处只举例为单个node注册hook并修改build-profile.json5的信息。
+以下示例为单个node注册hook并修改build-profile.json5的信息。
 
-例如需要修改根目录下的build-profile.json5的签名信息，则在项目根目录下的hvigorfile.ts中添加如下内容：
+例如修改根目录下的build-profile.json5的签名信息，则在项目根目录下的hvigorfile.ts中添加如下内容：
 
 import { appTasks, OhosAppContext, OhosPluginId } from '@ohos/hvigor-ohos-plugin';
 import { hvigor,getNode } from '@ohos/hvigor'
@@ -47,9 +47,9 @@ export default {
 
 [h2]修改module.json5中的配置信息
 
-可以通过hvigor对象的hook能力快捷为所有的node创建hook，此处先举例为单一的node创建一个hook并修改其中的module.json5的配置信息。
+可通过hvigor对象的hook能力快捷为所有的node创建hook，以下示例为单个node创建一个hook并修改其中的module.json5的配置信息。
 
-例如此处需要修改entry下的module.json5配置，则在entry下的hvigorfile.ts中添加如下内容：
+例如修改entry下的module.json5配置，则在entry下的hvigorfile.ts中添加如下内容：
 
 import { hapTasks, OhosHapContext, OhosPluginId } from '@ohos/hvigor-ohos-plugin';
 import { getNode } from '@ohos/hvigor'
@@ -137,7 +137,7 @@ export default {
 
 通过overrides动态配置签名材料和版本信息(不推荐使用)
 
-通过在hvigorfile.ts里使用函数方法，动态配置签名材料和版本号、版本名等信息：
+通过在hvigorfile.ts中使用函数方法，动态配置签名材料和版本号、版本名等信息：
 
 //工程级别hvigorfile.ts
 import { appTasks } from '@ohos/hvigor-ohos-plugin';

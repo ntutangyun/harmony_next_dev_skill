@@ -16,11 +16,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emula
 
 该功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-在设备选择框中，选择预置的模拟器并点击运行按钮后，根据界面提示下载镜像，或点击菜单栏Tools > Device Manager >下载镜像后，即可快捷使用模拟器。
+在设备选择框中，选择预置的模拟器并点击运行按钮后，根据界面提示下载镜像，或点击菜单栏Tools > Device Manager >下载镜像后，即可使用模拟器。
 
 创建新的模拟器
 
-在模拟器配置界面，可以选择一个默认的设备模板，首次使用时请点击设备右侧的下载模拟器镜像，您也可以在该界面更新或删除不同设备的模拟器镜像。
+在模拟器配置界面，可以选择一个默认的设备模板，首次使用时需点击设备右侧的下载模拟器镜像，您也可以在该界面更新或删除不同设备的模拟器镜像。
 
 单击Edit可以设置镜像文件的存储路径。macOS默认存储在~/Library/Huawei/Sdk下，Windows默认存储在C:\Users\xxx\AppData\Local\Huawei\Sdk下。
 

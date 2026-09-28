@@ -278,7 +278,7 @@ getTrustedDeviceList(): void {
     this.trustedDeviceList = this.deviceManager.getAvailableDeviceListSync();
     // ...
   } catch (error) {
-    logger.error('[DeviceManager.RemoteDeviceModel] getTrustedDeviceList error: ${error}' + error.toString());
+    logger.error(`[DeviceManager.RemoteDeviceModel] getTrustedDeviceList error: ${error}`);
     this.showErrMsg('getTrustedDeviceList failed');
   }
 }
@@ -534,7 +534,7 @@ getTrustedDeviceList(): void {
     this.trustedDeviceList = this.deviceManager.getAvailableDeviceListSync();
     // ...
   } catch (error) {
-    logger.error('[DeviceManager.RemoteDeviceModel] getTrustedDeviceList error: ${error}' + error.toString());
+    logger.error(`[DeviceManager.RemoteDeviceModel] getTrustedDeviceList error: ${error}`);
     this.showErrMsg('getTrustedDeviceList failed');
   }
 }

@@ -226,7 +226,7 @@ struct CustomScanPage {
     try {
       // 使用toast显示出扫码结果
       this.getUIContext().getPromptAction().showToast({
-        message: JSON.stringify(data),
+        message: `originalValue: ${data.originalValue}`,
         duration: 5000
       });
     } catch (err) {
@@ -246,7 +246,7 @@ struct CustomScanPage {
       // 自定义启动第四步，请求扫码接口，通过Promise方式回调
       customScan.start(viewControl)
         .then((data: Array<scanBarcode.ScanResult>) => {
-          hilog.info(0x0001, TAG, `result: ${JSON.stringify(data)}`);
+          hilog.info(0x0001, TAG, 'Succeeded in getting ScanResult by promise.');
           if (data.length) {
             // 解析码值结果跳转应用服务页
             this.scanResult = data;
@@ -546,7 +546,7 @@ struct CustomScanPage {
         return;
       }
       // 解析码值结果跳转应用服务页
-      hilog.info(0x0001, TAG, `Succeeded in getting ScanResult by callback, result: ${JSON.stringify(data)}`);
+      hilog.info(0x0001, TAG, 'Succeeded in getting ScanResult by callback.');
       if (data.length) {
         // 解析码值结果跳转应用服务页
         this.scanResult = data;
@@ -562,11 +562,8 @@ struct CustomScanPage {
         hilog.error(0x0001, TAG, `Failed to get ScanFrame by callback. Code: ${err.code}, message: ${err.message}`);
         return;
       }
-      // byteBuffer相机YUV图像数组
       hilog.info(0x0001, TAG,
-        `Succeeded in getting ScanFrame.byteBuffer.byteLength: ${frameResult.byteBuffer.byteLength}`);
-      hilog.info(0x0001, TAG, `Succeeded in getting ScanFrame.width: ${frameResult.width}`);
-      hilog.info(0x0001, TAG, `Succeeded in getting ScanFrame.height: ${frameResult.height}`);
+        `Succeeded in getting ScanFrame. byteLength: ${frameResult.byteBuffer.byteLength}, width: ${frameResult.width}, height: ${frameResult.height}`);
     };
 
   async onPageShow() {
@@ -661,7 +658,7 @@ struct CustomScanPage {
     try {
       // 使用toast显示出扫码结果
       this.getUIContext().getPromptAction().showToast({
-        message: JSON.stringify(data),
+        message: `originalValue: ${data.originalValue}`,
         duration: 5000
       });
     } catch (err) {
@@ -1121,7 +1118,7 @@ struct CustomScanPage {
     try {
       // 使用toast显示出扫码结果
       this.getUIContext().getPromptAction().showToast({
-        message: JSON.stringify(data),
+        message: `originalValue: ${data.originalValue}`,
         duration: 5000
       });
     } catch (err) {
@@ -1141,7 +1138,7 @@ struct CustomScanPage {
       // 自定义启动第四步，请求扫码接口，通过Promise方式回调
       customScan.start(viewControl)
         .then((data: Array<scanBarcode.ScanResult>) => {
-          hilog.info(0x0001, TAG, `result: ${JSON.stringify(data)}`);
+          hilog.info(0x0001, TAG, 'Succeeded in getting ScanResult by promise.');
           if (data.length) {
             // 解析码值结果跳转应用服务页
             this.scanResult = data;
@@ -1443,7 +1440,7 @@ struct CustomScanPage {
         return;
       }
       // 解析码值结果跳转应用服务页
-      hilog.info(0x0001, TAG, `Succeeded in getting ScanResult by callback, result: ${JSON.stringify(data)}`);
+      hilog.info(0x0001, TAG, 'Succeeded in getting ScanResult by callback.');
       if (data.length) {
         // 解析码值结果跳转应用服务页
         this.scanResult = data;
@@ -1459,11 +1456,8 @@ struct CustomScanPage {
         hilog.error(0x0001, TAG, `Failed to get ScanFrame by callback. Code: ${err.code}, message: ${err.message}`);
         return;
       }
-      // byteBuffer相机YUV图像数组
       hilog.info(0x0001, TAG,
-        `Succeeded in getting ScanFrame.byteBuffer.byteLength: ${frameResult.byteBuffer.byteLength}`);
-      hilog.info(0x0001, TAG, `Succeeded in getting ScanFrame.width: ${frameResult.width}`);
-      hilog.info(0x0001, TAG, `Succeeded in getting ScanFrame.height: ${frameResult.height}`);
+        `Succeeded in getting ScanFrame. byteLength: ${frameResult.byteBuffer.byteLength}, width: ${frameResult.width}, height: ${frameResult.height}`);
     };
 
   async onPageShow() {
@@ -1558,7 +1552,7 @@ struct CustomScanPage {
     try {
       // 使用toast显示出扫码结果
       this.getUIContext().getPromptAction().showToast({
-        message: JSON.stringify(data),
+        message: `originalValue: ${data.originalValue}`,
         duration: 5000
       });
     } catch (err) {

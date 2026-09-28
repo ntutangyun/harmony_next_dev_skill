@@ -49,7 +49,7 @@ export default {
 
 基于typescript项目开发
 
-基于typescript项目开发较好地弥补了上一小节中使用hvigorfile脚本方式编写插件代码不易复用和共享分发的问题。因此通常情况下推荐此方式开发。
+基于typescript项目开发的方式，能够较好地弥补上一小节中使用hvigorfile脚本编写插件代码不易复用和共享分发的问题。因此通常情况下推荐此方式开发。
 
 [h2]初始化typescript项目
 
@@ -81,7 +81,7 @@ registry=https://repo.huaweicloud.com/repository/npm/
 
 说明
 
-如果依赖配置在dependencies中，会导致使用插件时报错。
+如果依赖配置在dependencies中，会导致使用插件时编译报错。
 
 npm install
 

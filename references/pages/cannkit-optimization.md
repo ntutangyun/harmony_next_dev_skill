@@ -34,56 +34,38 @@ OH_NN_ReturnCode HMS_HiAIOptions_SetTuningCacheDir(OH_NNCompilation* compilation
 
 以下示例代码设置调优参数SetTuningMode及SetTuningCacheDir，实现在线调优。
 
-#include "neural_network_runtime/neural_network_core.h"
-#include "CANNKit/hiai_options.h"
-// 基于离线模型文件创建编译实例
-OH_NNCompilation* compilation = OH_NNCompilation_ConstructWithOfflineModelFile("test.om");
-if (compilation == nullptr) {
-    return;
-}
 // 选择辅助调优模式
 OH_NN_ReturnCode ret = HMS_HiAIOptions_SetTuningMode(compilation, HIAI_TUNING_MODE_HETER);
-if (ret != OH_NN_SUCCESS ) {
-    return;
+if (ret != OH_NN_SUCCESS) {
+    OH_LOG_ERROR(LOG_APP, "HMS_HiAIOptions_SetTuningMode failed");
+    return ret;
 }
 // 设置辅助调优的缓存目录
-const char* cacheDir = "/data/local/tmp";
+const char* cacheDir = "/data/storage/el2/base/files";
 ret = HMS_HiAIOptions_SetTuningCacheDir(compilation, cacheDir);
-if (ret != OH_NN_SUCCESS ) {
-    return;
+if (ret != OH_NN_SUCCESS) {
+    OH_LOG_ERROR(LOG_APP, "HMS_HiAIOptions_SetTuningCacheDir failed");
+    return ret;
 }
-// 编译模型
-ret = OH_NNCompilation_Build(compilation);
-if (ret != OH_NN_SUCCESS ) {
-    return;
-}
+return OH_NN_SUCCESS;
 
 ## Code blocks
 
 ### Code block 1
 
 ```
-#include "neural_network_runtime/neural_network_core.h"
-#include "CANNKit/hiai_options.h"
-// 基于离线模型文件创建编译实例
-OH_NNCompilation* compilation = OH_NNCompilation_ConstructWithOfflineModelFile("test.om");
-if (compilation == nullptr) {
-    return;
-}
 // 选择辅助调优模式
 OH_NN_ReturnCode ret = HMS_HiAIOptions_SetTuningMode(compilation, HIAI_TUNING_MODE_HETER);
-if (ret != OH_NN_SUCCESS ) {
-    return;
+if (ret != OH_NN_SUCCESS) {
+    OH_LOG_ERROR(LOG_APP, "HMS_HiAIOptions_SetTuningMode failed");
+    return ret;
 }
 // 设置辅助调优的缓存目录
-const char* cacheDir = "/data/local/tmp";
+const char* cacheDir = "/data/storage/el2/base/files";
 ret = HMS_HiAIOptions_SetTuningCacheDir(compilation, cacheDir);
-if (ret != OH_NN_SUCCESS ) {
-    return;
+if (ret != OH_NN_SUCCESS) {
+    OH_LOG_ERROR(LOG_APP, "HMS_HiAIOptions_SetTuningCacheDir failed");
+    return ret;
 }
-// 编译模型
-ret = OH_NNCompilation_Build(compilation);
-if (ret != OH_NN_SUCCESS ) {
-    return;
-}
+return OH_NN_SUCCESS;
 ```

@@ -48,6 +48,22 @@ ohpm-repo export_pkginfo [option]
 
 ohpm-repo 5.3.0版本开始支持配置多个仓库。在export_pkginfo命令后面配置--repos <string>，导出ohpm-repo中指定仓库的包列表。多个仓库之间通过英文逗号进行分隔，例如"export_pkginfo --repos one,two"，即可导出仓库one和仓库two中满足要求的包列表。如果没有配置此参数，将默认导出所有仓库中满足要求的包列表。
 
+[h2]--cert-verify
+
+默认值：false
+
+类型：Boolean
+
+ohpm-repo 6.0.1版本开始支持在export_pkginfo命令后面配置--cert-verify，用于校验--public-registry仓库的认证证书。默认不校验认证证书。
+
+[h2]--ca-files
+
+默认值：无
+
+类型：String
+
+ohpm-repo 6.0.1版本开始支持配置认证证书路径。在export_pkginfo命令后面配置--ca-files <string>，指定ca证书路径，当--cert-verify开启时，校验--public-registry仓库服务端证书需要的ca证书。可以设置多个证书路径，以英文逗号间隔。详情请见：CA证书获取及配置。
+
 示例
 
 执行以下命令从ohpm-repo中导出已上架的包列表：

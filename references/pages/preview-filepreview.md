@@ -36,12 +36,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 判断是否可以预览。
 
-let uri = 'file://docs/storage/Users/currentUser/Documents/1.txt';
 let uiContext = this.getUIContext().getHostContext() as Context;
-filePreview.canPreview(uiContext, uri).then((result) => {    // 传入支持的文件类型且文件存在时会返回true
-  console.info(`Succeeded in obtaining the result of whether it can be previewed. result = ${result}`);
+let uri = fileUri.getUriFromPath(uiContext.filesDir + '/1.txt');
+filePreview.canPreview(uiContext, uri).then((result) => { // 传入支持的文件类型且文件存在时会返回true
+  hilog.info(0x0000, 'FilePreview',
+    `Succeeded in obtaining the result of whether it can be previewed. result = ${result}`);
+  // ...
 }).catch((err: BusinessError) => {
-  console.error(`Failed to obtain the result of whether it can be previewed, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to obtain the result of whether it can be previewed, err.code = ${err.code}, err.message = ${err.message}`);
 });
 
 调用openPreview，实现打开文件预览的功能。
@@ -57,13 +60,14 @@ let displayInfo: filePreview.DisplayInfo = {
 };
 let fileInfo: filePreview.PreviewInfo = {
   title: '1.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/1.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/1.txt'),
   mimeType: 'text/plain'
 };
 filePreview.openPreview(uiContext, fileInfo, displayInfo).then(() => {
-  console.info('Succeeded in opening preview');
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in opening preview');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
 });
 
 通过CallBack回调函数方式打开文件
@@ -77,37 +81,41 @@ let displayInfo: filePreview.DisplayInfo = {
 };
 let fileInfo: filePreview.PreviewInfo = {
   title: '1.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/1.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/1.txt'),
   mimeType: 'text/plain'
 };
 filePreview.openPreview(uiContext, fileInfo, displayInfo, (err) => {
   if (err && err.code) {
-    console.error(`Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
+    hilog.error(0x0000, 'FilePreview',
+      `Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
     return;
   }
-  console.info('Succeeded in opening preview');
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in opening preview');
 });
 
 传入多个文件打开预览，仅移动端可用。
 
 let uiContext = this.getUIContext().getHostContext() as Context;
+// ...
 let fileInfo: filePreview.PreviewInfo = {
   title: '1.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/1.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/1.txt'),
   mimeType: 'text/plain'
 };
 let fileInfo1: filePreview.PreviewInfo = {
   title: '2.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/2.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/2.txt'),
   mimeType: 'text/plain'
 };
-let files: Array<filePreview.PreviewInfo> = new Array();
+let files: filePreview.PreviewInfo[] = [];
 files.push(fileInfo);
 files.push(fileInfo1);
+// 多文件预览，当前仅移动端可用，PC/2in1设备不可用，返回801错误码
 filePreview.openPreview(uiContext, files, 0).then(() => {
-  console.info('Succeeded in opening preview');
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in opening preview');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
 });
 
 （可选）如果已经打开过预览窗口，需要重新加载页面，需要调用loadData接口，加载文件。
@@ -115,22 +123,23 @@ filePreview.openPreview(uiContext, files, 0).then(() => {
 let uiContext = this.getUIContext().getHostContext() as Context;
 let fileInfo: filePreview.PreviewInfo = {
   title: '2.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/2.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/2.txt'),
   mimeType: 'text/plain'
 };
-filePreview.loadData(uiContext, fileInfo).then(() => {   // 仅当预览窗口存在时起效
-  console.info('Succeeded in loading data.');
+filePreview.loadData(uiContext, fileInfo).then(() => { // 仅当预览窗口存在时起效
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in loading data.');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to load data, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview', `Failed to load data, err.code = ${err.code}, err.message = ${err.message}`);
 });
 
 （可选）如果想要关闭预览窗口，需要调用closePreview。
 
 let uiContext = this.getUIContext().getHostContext() as Context;
-filePreview.closePreview(uiContext).then(() => {   // 仅当预览窗口存在时起效
-  console.info('Succeeded in closing preview');
+filePreview.closePreview(uiContext).then(() => { // 仅当预览窗口存在时起效
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in closing preview');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to close preview, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to close preview, err.code = ${err.code}, err.message = ${err.message}`);
 });
 
 ## Code blocks
@@ -145,12 +154,15 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ### Code block 2
 
 ```
-let uri = 'file://docs/storage/Users/currentUser/Documents/1.txt';
 let uiContext = this.getUIContext().getHostContext() as Context;
-filePreview.canPreview(uiContext, uri).then((result) => {    // 传入支持的文件类型且文件存在时会返回true
-  console.info(`Succeeded in obtaining the result of whether it can be previewed. result = ${result}`);
+let uri = fileUri.getUriFromPath(uiContext.filesDir + '/1.txt');
+filePreview.canPreview(uiContext, uri).then((result) => { // 传入支持的文件类型且文件存在时会返回true
+  hilog.info(0x0000, 'FilePreview',
+    `Succeeded in obtaining the result of whether it can be previewed. result = ${result}`);
+  // ...
 }).catch((err: BusinessError) => {
-  console.error(`Failed to obtain the result of whether it can be previewed, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to obtain the result of whether it can be previewed, err.code = ${err.code}, err.message = ${err.message}`);
 });
 ```
 
@@ -166,13 +178,14 @@ let displayInfo: filePreview.DisplayInfo = {
 };
 let fileInfo: filePreview.PreviewInfo = {
   title: '1.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/1.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/1.txt'),
   mimeType: 'text/plain'
 };
 filePreview.openPreview(uiContext, fileInfo, displayInfo).then(() => {
-  console.info('Succeeded in opening preview');
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in opening preview');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
 });
 ```
 
@@ -188,15 +201,16 @@ let displayInfo: filePreview.DisplayInfo = {
 };
 let fileInfo: filePreview.PreviewInfo = {
   title: '1.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/1.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/1.txt'),
   mimeType: 'text/plain'
 };
 filePreview.openPreview(uiContext, fileInfo, displayInfo, (err) => {
   if (err && err.code) {
-    console.error(`Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
+    hilog.error(0x0000, 'FilePreview',
+      `Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
     return;
   }
-  console.info('Succeeded in opening preview');
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in opening preview');
 });
 ```
 
@@ -204,23 +218,26 @@ filePreview.openPreview(uiContext, fileInfo, displayInfo, (err) => {
 
 ```
 let uiContext = this.getUIContext().getHostContext() as Context;
+// ...
 let fileInfo: filePreview.PreviewInfo = {
   title: '1.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/1.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/1.txt'),
   mimeType: 'text/plain'
 };
 let fileInfo1: filePreview.PreviewInfo = {
   title: '2.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/2.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/2.txt'),
   mimeType: 'text/plain'
 };
-let files: Array<filePreview.PreviewInfo> = new Array();
+let files: filePreview.PreviewInfo[] = [];
 files.push(fileInfo);
 files.push(fileInfo1);
+// 多文件预览，当前仅移动端可用，PC/2in1设备不可用，返回801错误码
 filePreview.openPreview(uiContext, files, 0).then(() => {
-  console.info('Succeeded in opening preview');
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in opening preview');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to open preview, err.code = ${err.code}, err.message = ${err.message}`);
 });
 ```
 
@@ -230,13 +247,13 @@ filePreview.openPreview(uiContext, files, 0).then(() => {
 let uiContext = this.getUIContext().getHostContext() as Context;
 let fileInfo: filePreview.PreviewInfo = {
   title: '2.txt',
-  uri: 'file://docs/storage/Users/currentUser/Documents/2.txt',
+  uri: fileUri.getUriFromPath(uiContext.filesDir + '/2.txt'),
   mimeType: 'text/plain'
 };
-filePreview.loadData(uiContext, fileInfo).then(() => {   // 仅当预览窗口存在时起效
-  console.info('Succeeded in loading data.');
+filePreview.loadData(uiContext, fileInfo).then(() => { // 仅当预览窗口存在时起效
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in loading data.');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to load data, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview', `Failed to load data, err.code = ${err.code}, err.message = ${err.message}`);
 });
 ```
 
@@ -244,9 +261,10 @@ filePreview.loadData(uiContext, fileInfo).then(() => {   // 仅当预览窗口�
 
 ```
 let uiContext = this.getUIContext().getHostContext() as Context;
-filePreview.closePreview(uiContext).then(() => {   // 仅当预览窗口存在时起效
-  console.info('Succeeded in closing preview');
+filePreview.closePreview(uiContext).then(() => { // 仅当预览窗口存在时起效
+  hilog.info(0x0000, 'FilePreview', 'Succeeded in closing preview');
 }).catch((err: BusinessError) => {
-  console.error(`Failed to close preview, err.code = ${err.code}, err.message = ${err.message}`);
+  hilog.error(0x0000, 'FilePreview',
+    `Failed to close preview, err.code = ${err.code}, err.message = ${err.message}`);
 });
 ```

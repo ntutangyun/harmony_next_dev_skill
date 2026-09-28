@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-rot
 
 @Entry
 @Component
-struct rotation {
+struct RotationTest {
   build() {
     Stack() {
       // 请将$r('app.media.tree')替换为实际资源文件
@@ -42,7 +42,7 @@ import { display } from '@kit.ArkUI';
 
 @Entry
 @Component
-struct rotation {
+struct RotationTest {
 
   // 获取通过监听窗口的windowSizeChange事件得到的屏幕显示方向
   @StorageLink('orientation') myOrientation: display.Orientation = display.Orientation.PORTRAIT;
@@ -136,7 +136,7 @@ const TAG: string = 'EntryAbility';
 ```
 @Entry
 @Component
-struct rotation {
+struct RotationTest {
   build() {
     Stack() {
       // 请将$r('app.media.tree')替换为实际资源文件
@@ -166,7 +166,7 @@ import { display } from '@kit.ArkUI';
 
 @Entry
 @Component
-struct rotation {
+struct RotationTest {
 
   // 获取通过监听窗口的windowSizeChange事件得到的屏幕显示方向
   @StorageLink('orientation') myOrientation: display.Orientation = display.Orientation.PORTRAIT;

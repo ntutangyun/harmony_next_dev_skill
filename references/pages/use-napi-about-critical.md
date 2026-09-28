@@ -6,7 +6,7 @@ Node-API扩展接口napi_open_critical_scope用于打开临界区作用域，nap
 
 注意
 
-非临界接口不能在临界区作用域使用，且同一执行环境中只能打开一个临界区作用域。建议仅在需要临界接口时打开临界区作用域，使用后应及时关闭。
+非临界接口不能在临界区作用域使用，且同一执行环境中只能打开一个临界区作用域。打开临界区会阻塞gc，长时间保持临界区打开状态可能会造成内存不足、卡顿等现象，建议仅在需要临界接口时打开临界区作用域，使用后应及时关闭。
 
 场景介绍
 
@@ -23,9 +23,9 @@ napi_get_buffer_string_utf16_in_critical_scope	获取ArkTS String的UTF-16编码
 
 注意
 
-1.当ArkTS String以UTF-16编码存储时，napi_get_buffer_string_utf16_in_critical_scope才能正确获取其内存缓冲区，否则该函数返回错误。
+当ArkTS String以UTF-16编码存储时，napi_get_buffer_string_utf16_in_critical_scope才能正确获取其内存缓冲区，否则该函数返回错误。
 
-2.napi_create_string_utf16和napi_create_string_utf8的功能是将输入数据以指定编码传递给虚拟机。这些函数不控制字符串在虚拟机的内部存储编码方式。
+napi_create_string_utf16和napi_create_string_utf8的功能是将输入数据以指定编码传递给虚拟机。这些函数不控制字符串在虚拟机的内部存储编码方式。
 
 示例代码
 
@@ -84,8 +84,7 @@ static std::vector<char16_t> GetValueStringUtf16(napi_env env, napi_value value)
    if (napi_get_value_string_utf16(env, value, nullptr, 0, &strLength) != napi_ok) {
       return {};
    }
-   /*
-    * Node-API接口要求缓冲区长度大于字符串内容长度，用于写入C字符串结束标记。
+   /* Node-API接口要求缓冲区长度大于字符串内容长度，用于写入C字符串结束标记。
     * 因此，需要获取完整字符串内容时，缓冲区大小应为字符串长度 + 1。
     */
    std::vector<char16_t> result(strLength + 1);
@@ -242,8 +241,7 @@ static std::vector<char16_t> GetValueStringUtf16(napi_env env, napi_value value)
    if (napi_get_value_string_utf16(env, value, nullptr, 0, &strLength) != napi_ok) {
       return {};
    }
-   /*
-    * Node-API接口要求缓冲区长度大于字符串内容长度，用于写入C字符串结束标记。
+   /* Node-API接口要求缓冲区长度大于字符串内容长度，用于写入C字符串结束标记。
     * 因此，需要获取完整字符串内容时，缓冲区大小应为字符串长度 + 1。
     */
    std::vector<char16_t> result(strLength + 1);

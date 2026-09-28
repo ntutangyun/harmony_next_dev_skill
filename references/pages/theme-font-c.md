@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/theme-fon
 
 接口名	描述
 OH_Drawing_FontCollection* OH_Drawing_GetFontCollectionGlobalInstance(void)	获取全局的字体集对象OH_Drawing_FontCollection。
-onConfigurationUpdate()	系统配置更新时调用。 主题应用当前仅提供ArkTS接口发布变更事件，需要应用自行处理进行跨语言调用。
+onConfigurationUpdate(newConfig: Configuration): void	系统配置更新时调用。 主题应用当前仅提供ArkTS接口发布变更事件，需要应用自行处理进行跨语言调用。
 
 开发步骤
 
@@ -55,9 +55,6 @@ OH_Drawing_FontCollection *fontCollection = OH_Drawing_GetFontCollectionGlobalIn
 OH_Drawing_SetTextStyleFontFamilies()接口可以用来指定字体家族名，从而实现使用指定字体。但使用主题字体，不需要使用OH_Drawing_SetTextStyleFontFamilies()接口指定字体，否则行为变更为优先使用指定字体，而不是主题字体。
 
 OH_Drawing_TextStyle *myTextStyle = OH_Drawing_CreateTextStyle();
-// const char* myFontFamilies[] = {"otherFontFamilyName"};
-// 注意不要使用此接口来指定字体
-// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
 
 设置段落文本内容为"Hello World. \nThis is the theme font."，此时该段落文本将应用主题字体。
 
@@ -114,9 +111,6 @@ OH_Drawing_FontCollection *fontCollection = OH_Drawing_GetFontCollectionGlobalIn
 
 ```
 OH_Drawing_TextStyle *myTextStyle = OH_Drawing_CreateTextStyle();
-// const char* myFontFamilies[] = {"otherFontFamilyName"};
-// 注意不要使用此接口来指定字体
-// OH_Drawing_SetTextStyleFontFamilies(textStyle, 1, myFontFamilies);
 ```
 
 ### Code block 5

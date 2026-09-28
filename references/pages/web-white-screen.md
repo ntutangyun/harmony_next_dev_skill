@@ -16,6 +16,8 @@ Web页面出现白屏的原因众多，本文列举了若干常见白屏问题�
 
 检查是否开启坚盾守护模式，坚盾守护模式开启后相关限制见：ArkWeb限制的HTML5特性。
 
+排查WebView缓存协商不一致导致的白屏，详见webview默认缓存模式下缓存协商与服务端资源更新不一致导致的白屏。
+
 检查权限和网络状态
 
 如果应用未开启联网或文件访问权限或者设备网络状态不佳，将导致Web组件加载失败或页面元素缺失，进而引起白屏。
@@ -34,7 +36,7 @@ Web页面出现白屏的原因众多，本文列举了若干常见白屏问题�
 
 名称	说明
 domStorageAccess	设置是否开启文档对象模型存储接口（DOM Storage API）权限。若不开启，无法使用localStorage存储数据，任何调用localStorage的代码都将失效，依赖本地存储的功能会异常。
-fileAccess	设置是否开启应用中文件系统的访问。‌若不开启，文件读写功能完全被阻断，依赖文件读写的模块会遇到访问被拒绝的错误。
+fileAccess	设置是否开启应用中文件系统的访问。‌若不开启，文件读写功能完全被阻断，依赖文件的模块会崩溃。
 imageAccess	设置是否允许自动加载图片资源。
 onlineImageAccess	设置是否允许从网络加载图片资源（通过HTTP和HTTPS访问的资源）。
 javaScriptAccess	设置是否允许执行JavaScript脚本。
@@ -404,19 +406,33 @@ event_message: page load finished、 NWebHandlerDelegate::OnLoadEnd、 NWebHandl
 
 设备的WebView默认加载进程不一致导致加载H5页面白屏
 
-问题：
+问题现象：
 
 用WebView加载H5在Phone上表现正常，但是在Tablet/PC/2in1上白屏。
 
-原因：
+可能原因：
 
 Tablet/PC/2in1的WebView默认采用多进程加载，iframe默认使用子进程加载。主进程加载完成后，若子进程尚未加载完成，会导致白屏现象。
 
-解决方案：
+解决措施：
 
 通过setRenderProcessMode设置WebView渲染模式为单进程加载。
 
 webview.WebviewController.setRenderProcessMode(webview.RenderProcessMode.SINGLE);
+
+WebView默认缓存模式下缓存协商与服务端资源更新不一致导致的白屏
+
+问题现象：
+
+网页在系统自带浏览器访问正常，但是在应用的WebView中加载出现页面白屏。
+
+可能原因：
+
+WebView默认的缓存模式CacheMode.Default行为是优先使用缓存。当缓存中存在资源时，WebView会在后续请求中自动附加基于缓存内容的条件请求头If-None-Match（携带缓存的ETag值），向服务端做协商缓存校验。当服务端资源更新导致ETag变化时，条件匹配失败，服务端返回412。WebView收到412后不会自动降级重试，直接判定主资源加载失败，页面白屏。
+
+解决措施：
+
+在Web组件上设置cacheMode属性为CacheMode.Online（即.cacheMode(CacheMode.Online)）。该模式下，WebView会向服务端发起无条件请求，不携带基于旧缓存的条件头（如If-None-Match），强制从网络获取最新资源、不使用任何缓存，从而绕过缓存协商校验环节，避免主资源因协商失败而加载失败导致白屏。
 
 ## Code blocks
 

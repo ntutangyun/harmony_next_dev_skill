@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-repo-log_
 
-与任何web应用程序相同，ohpm-repo有一个内置的日志记录器，其定义了四种日志类型。
+与任何Web应用程序相同，ohpm-repo有一个内置的日志记录器，其定义了四种日志类型。
 
 访问日志 - access.log
 
@@ -14,12 +14,12 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 
 说明
 
-操作方法名(event)： 当在ohpm-repo管理界面执行一系列操作时，会在operate.log文件生成一条条操作数据，操作方法名即表示当前操作涉及到的方法名字，例如login即表示登录操作，analyzePackage即表示上传包时对包的解析操作。
+操作方法名(event)： 当在ohpm-repo管理界面执行一系列操作时，会在operate.log文件生成一条条操作数据，操作方法名即该操作涉及的方法名，例如login即表示登录操作，analyzePackage即表示上传包时对包的解析操作。
 
 序号	Event描述	说明
 1	generateAccessToken/deleteAccessToken	生成/删除AccessToken
-2	login/logout	登入/ 登出
-3	publish/unPublish/batchUnPublish	上架资源包/下架资源包/批量下架资源包
+2	login/logout	登录/退出登录
+3	publish/batchPublish/unPublish /batchUnPublish	上架资源包/批量上架资源包/下架资源包/批量下架资源包 ohpm-repo从6.0.1版本开始支持批量上架资源包
 4	addGroup/deleteGroup	添加/删除组织
 5	updateGroup	更新组织
 6	addMember/deleteMember	添加/删除组织成员
@@ -32,7 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 13	addUplink/deleteUplink	添加/删除uplink
 14	updateUplink	更新uplink
 15	updateUplinkProxy	更新Uplink代理
-16	addUser/delUserByUserId	添加/删除用户
+16	addUser/updateUser/delUserByUserId	添加/编辑/删除用户 ohpm-repo从6.0.1版本开始支持编辑用户
 17	changePassWord	改变用户账户密码
 18	resetPassWord	重置用户账户密码
 19	changeRole	修改用户角色(管理员和非管理员)

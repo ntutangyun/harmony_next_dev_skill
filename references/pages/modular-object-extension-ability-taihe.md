@@ -8,11 +8,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/modular-o
 
 Taihe提供了核心编译器工具taihec，用于解析ohidl文件并将其编译为目标语言代码。本章节介绍如何使用taihec生成ModularObjectExtensionAbility在IPC通信场景下所需的Proxy和Stub代码。请参考模块化对象模型概述 (C/C++)的基本概念，了解Proxy与Stub。
 
+taihec工具获取：
+
+taihec工具随SDK发布，位于DevEco Studio/sdk/default/openharmony/toolchains/taihe/bin目录下。
+
 命令基本格式：
 
 taihec [taihe_files ...] [options ...]
 
-taihe_files：一个或多个ohidl文件，主接口文件和公共类型文件需一并列出。
+taihe_files：一个或多个接口定义文件ohidl，主接口文件和公共类型文件需一并列出。
 
 options：用于指定代码生成的各种选项。
 
@@ -25,7 +29,7 @@ options：用于指定代码生成的各种选项。
 
 执行代码生成示例：
 
-当主接口文件需要引用其他文件中的数据类型时，通过-C参数引入公共数据类型文件。带-C参数的生成命令会将公共数据类型单独生成到ExampleServiceIpcTypes.cpp和ExampleServiceIpcTypes.h文件中。
+当主接口文件需要引用其他文件中的数据类型时，通过-C参数引入公共类型文件（定义结构体、枚举等公共数据类型）。带-C参数的生成命令会将公共数据类型单独生成到ExampleServiceIpcTypes.cpp和ExampleServiceIpcTypes.h文件中。
 
 taihec -G modobj-ipc -O example/generated/IBasicTypes_ohidl_c -C modobj:ipc-common=example/ExampleServiceIpcTypes.ohidl example/IBasicTypes.ohidl
 
@@ -70,7 +74,7 @@ interface	interface&	写入OHIPCRemoteStub或OHIPCRemoteProxy，读取OHIPCRemot
 
 注解	作用范围	说明	示例
 @main_service(version="x.y.z")	interface	有且仅能声明一个主服务接口，生成的Stub作为OH_AbilityRuntime_ModObjExtensionAbility_OnConnectFunc的返回值。	@main_service(version="1.0.0")
-@callback	方法	用于声明一个回调接口。服务端可持有此接口的实例来调用客户端，相关逻辑会在客户端的线程中执行。	@callback interface ICallback {}
+@callback	方法	用于声明一个回调接口。服务端可持有此接口的实例来调用客户端，相关逻辑会在客户端的线程中执行。典型使用场景：客户端向服务端注册监听器、服务端主动通知客户端事件。完整开发流程参见示例文件说明中的ITestEventCallback示例。	@callback interface ICallback {}
 @oneway	方法	异步单向IPC调用，仅支持void类型返回值。	@oneway Notify(...): void;
 @!namespace("A","B")	ohidl文件	设置生成代码所在的命名空间，以及IPC接口描述符字符串前缀。	@!namespace("OHOS","NativeApp")
 @size(N)	参数	定长数组的大小，仅供Array类型参数使用。	@size(4) Array<i32>;
@@ -87,7 +91,15 @@ ohidl文件的约束与限制：
 
 Map<K, V>的键类型仅支持基础数据类型、String和enum。
 
-严禁调换interface中已有方法的顺序，否则将导致IpcCode错位而破坏兼容性。
+严禁调换interface中已有方法的顺序，否则将导致IpcCode错位而破坏兼容性。建议新增方法时应在interface末尾添加，并做好版本管理记录，以避免误操作破坏兼容性。
+
+接口版本升级规范：
+
+新增方法：只能在接口末尾添加新方法，不得在已有方法前插入。
+
+废弃方法：保留方法声明但标记为废弃，不得删除或移动位置。
+
+参数变更：建议新增方法而非修改已有方法的参数签名，确保老客户端兼容。
 
 单次modobj-ipc生成范围内，所有interface、struct和enum名称必须全局唯一，不受命名空间限制。
 
@@ -300,9 +312,7 @@ int32_t CalculatorStub::HandleAdd(const OHIPCParcel* data, OHIPCParcel* reply)
 
 calculator.typelib.json
 
-保存接口名称、描述符、方法名、IPCcode、参数与返回类型。
-
-用于运行时查询方法元数据和动态路由。
+类型库元数据文件用于存储接口定义信息（如接口名称、描述符、方法名、IPC code、参数与返回类型等），供运行时查询方法信息和动态路由调用。该文件内容在编译期嵌入到生成的Stub代码中，开发者无需手动加载或随应用打包此JSON文件。下方示例仅用于展示文件内部结构。
 
 {
   "version": "1.0",
@@ -346,7 +356,7 @@ calculator.typelib.json
   ]
 }
 
-除开发者自定义的接口外，还会自动生成GetTypeLibInfo、GetVersion、GetTaiheVersion等方法。
+除了开发者在ohidl文件中定义的接口方法外，Taihe还会自动生成GetTypeLibInfo、GetVersion、GetTaiheVersion等方法。
 
 方法	默认行为	常量
 GetTypeLibInfo	返回类型库信息。	COMMAND_GET_TYPE_LIB_INFO = 1
@@ -355,7 +365,9 @@ GetTaiheVersion	返回Taihe编译器的版本，供系统调用，开发者无�
 
 Proxy和Stub源码的使用。
 
-请参考使用ModularObjectExtensionAbility实现模块化对象 (C/C++)。
+生成的Proxy和Stub代码可直接用于IPC通信。在客户端侧，通过创建CalculatorProxy实例并传入OHIPCRemoteProxy对象来调用远端方法；在服务端侧，继承CalculatorStub并实现业务逻辑接口。
+
+详细开发流程请参考使用ModularObjectExtensionAbility实现模块化对象 (C/C++)。
 
 ## Code blocks
 

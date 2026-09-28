@@ -1,4 +1,4 @@
-# 空间渲染(C/C++)
+# 空间音频渲染(C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-suite-space-render_
 

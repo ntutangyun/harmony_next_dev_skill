@@ -28,14 +28,21 @@ import { abilityAccessCtrl, autoFillManager, common, PermissionRequestResult, Pe
 import { FunctionalInput, functionalInputComponentManager } from '@kit.ScenarioFusionKit';
 import { TextInputModifier } from '@kit.ArkUI';
 
+// 该权限已授权常量。
 const AUTHED = 0;
+// 延迟的毫秒数常量。
 const TIME_OUT = 100;
-// 默认经度和纬度。以下以北京天安门的经纬度为例。
+// 默认纬度。以下以北京天安门的纬度为例。
 const INIT_LAT = 39.5;
+// 默认经度。以下以北京天安门的经度为例。
 const INIT_LON = 116.2;
+// 英语语言常量。
 const ENGLISH = 'en';
+// 简体中文常量。
 const SIMPLIFIED_CHINESE = 'zh_CN';
+// 应用获取设备模糊位置信息权限。
 const PERMISSIONS: Permissions[] = ['ohos.permission.APPROXIMATELY_LOCATION'];
+// 地址详细信息对应级别,根据业务需求动态配置需要显示的层级。
 const ADMINISTRATIVE_REGION: string[] =
   ['countryName', 'adminLevel1', 'adminLevel2', 'adminLevel3', 'adminLevel4'];
 
@@ -353,14 +360,21 @@ import { abilityAccessCtrl, autoFillManager, common, PermissionRequestResult, Pe
 import { FunctionalInput, functionalInputComponentManager } from '@kit.ScenarioFusionKit';
 import { TextInputModifier } from '@kit.ArkUI';
 
+// 该权限已授权常量。
 const AUTHED = 0;
+// 延迟的毫秒数常量。
 const TIME_OUT = 100;
-// 默认经度和纬度。以下以北京天安门的经纬度为例。
+// 默认纬度。以下以北京天安门的纬度为例。
 const INIT_LAT = 39.5;
+// 默认经度。以下以北京天安门的经度为例。
 const INIT_LON = 116.2;
+// 英语语言常量。
 const ENGLISH = 'en';
+// 简体中文常量。
 const SIMPLIFIED_CHINESE = 'zh_CN';
+// 应用获取设备模糊位置信息权限。
 const PERMISSIONS: Permissions[] = ['ohos.permission.APPROXIMATELY_LOCATION'];
+// 地址详细信息对应级别,根据业务需求动态配置需要显示的层级。
 const ADMINISTRATIVE_REGION: string[] =
   ['countryName', 'adminLevel1', 'adminLevel2', 'adminLevel3', 'adminLevel4'];
 

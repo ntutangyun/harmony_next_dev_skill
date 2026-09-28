@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-generate-message-digest-sha3_
 
-从API version 22开始，算法库支持使用该算法进行摘要计算操作。
+从API版本22开始，算法库支持使用该算法进行摘要计算操作。
 
 对应的算法规格请查看消息摘要计算算法规格。
 

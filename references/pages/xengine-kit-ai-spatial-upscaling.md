@@ -34,7 +34,7 @@ Vulkan接口：
 接口名	描述
 VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_EnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice, uint32_t *pPropertyCount, XEG_ExtensionProperties *pProperties)	XEngine Vulkan扩展特性查询接口。
 VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CreateNeuralUpscale(VkDevice device, const XEG_NeuralUpscaleCreateInfo *pCreateInfo, XEG_NeuralUpscale *pNeuralUpscale)	创建XEG_NeuralUpscale对象。
-VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CmdRenderNeuralUpscale(VkCommandBuffer commandBuffer, XEG_NeuralUpscale neuralUpscale, const XEG_NeuralUpscaleDescription *pDescription)	执行空域AI超分渲染命令。
+VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CmdRenderNeuralUpscale(VkCommandBuffer commandBuffer, XEG_NeuralUpscale neuralUpscale, const XEG_NeuralUpscaleDescription *pDescription)	录制空域AI超分渲染命令。
 VKAPI_ATTR void VKAPI_CALL HMS_XEG_DestroyNeuralUpscale(XEG_NeuralUpscale neuralUpscale)	销毁XEG_NeuralUpscale对象。
 
 业务流程

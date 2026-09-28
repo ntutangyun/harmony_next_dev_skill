@@ -18,7 +18,7 @@ HarmonyOS上的OpenSL ES
 
 OpenSL ES中提供了以下的接口，HarmonyOS当前仅实现了部分接口，可以实现音频播放的基础功能。
 
-调用未实现接口后会返回SL_RESULT_FEATURE_UNSUPPORTED, 当前没有相关扩展可以使用。
+调用未实现接口后会返回SL_RESULT_FEATURE_UNSUPPORTED，当前没有相关扩展可以使用。
 
 以下列表列举了HarmonyOS上已实现的OpenSL ES的接口，具体说明请参考OpenSL ES规范：
 

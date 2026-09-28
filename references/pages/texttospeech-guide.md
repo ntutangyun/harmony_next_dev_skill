@@ -869,8 +869,6 @@ export default class PcmPlayer {
 
   /**
    * 获取当前渲染状态
-   *
-   * @returns running返回true，否则返回false
    */
   public getRenderState(): number {
     if (this.renderModel != null) {
@@ -1697,8 +1695,6 @@ export default class PcmPlayer {
 
   /**
    * 获取当前渲染状态
-   *
-   * @returns running返回true，否则返回false
    */
   public getRenderState(): number {
     if (this.renderModel != null) {

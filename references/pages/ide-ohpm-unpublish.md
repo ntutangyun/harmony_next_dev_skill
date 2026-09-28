@@ -36,7 +36,7 @@ Options
 
 别名：f
 
-默认不开启。使用 --force 或者 -f 参数，开启强制下架。
+默认不开启。使用--force或者-f参数，开启强制下架。
 
 [h2]publish_registry
 
@@ -78,7 +78,9 @@ Options
 
 类型：Boolean
 
-可以在 unpublish 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
+可以在 unpublish 命令后面不配置参数、配置--strict_ssl或--strict_ssl true参数时，开启校验HTTPS证书。
+
+从ohpm 26.0.0.630版本开始，如需关闭校验，可配置--no-strict_ssl或--strict_ssl false参数，推荐使用--no-strict_ssl参数。
 
 [h2]log_level
 

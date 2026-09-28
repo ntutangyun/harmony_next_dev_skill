@@ -26,7 +26,11 @@ import { BusinessError } from '@kit.BasicServicesKit';
 try {
   netHandover.on('multiPathStateChange', (data: netHandover.MultiPathStateInfo) => {
     // 回调信息处理
-    console.info("on multiPathStateChange: " + JSON.stringify(data));
+    console.info('on multiPathStateChange multiPathState:', data.multiPathState);
+    console.info('on multiPathStateChange cause:', data.cause);
+    console.info('on multiPathStateChange netHandle:', data.netHandle.netId);
+    console.info('on multiPathStateChange pathState:', data.pathState);
+    console.info('on multiPathStateChange pathType:', data.pathType);
   });
 } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
@@ -55,7 +59,11 @@ import { BusinessError } from '@kit.BasicServicesKit';
 try {
   netHandover.on('multiPathStateChange', (data: netHandover.MultiPathStateInfo) => {
     // 回调信息处理
-    console.info("on multiPathStateChange: " + JSON.stringify(data));
+    console.info('on multiPathStateChange multiPathState:', data.multiPathState);
+    console.info('on multiPathStateChange cause:', data.cause);
+    console.info('on multiPathStateChange netHandle:', data.netHandle.netId);
+    console.info('on multiPathStateChange pathState:', data.pathState);
+    console.info('on multiPathStateChange pathType:', data.pathType);
   });
 } catch (err) {
   console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);

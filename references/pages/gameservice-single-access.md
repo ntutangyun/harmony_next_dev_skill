@@ -28,9 +28,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 
 数字证书和Profile文件等签名信息可以确保游戏的完整性：
 
-调试阶段：手动签名、申请调试证书、申请调试Profile。
+调试阶段，配置签名信息的具体操作请参见手动签名。
 
-发布阶段：手动签名、申请发布证书、申请发布Profile。
+发布阶段，配置签名信息的具体操作请参见发布应用。
 
 [h2]配置签名证书指纹
 
@@ -75,7 +75,7 @@ AppGallery Connect会自动生成证书对应的公钥信息，并计算出对�
 
 为了实现HarmonyOS 5.0及以上系统与HarmonyOS 4及以下系统间的游戏资产互通，开发者在上架游戏前，需要配置APP ID映射关系。
 
-开发者需在配置映射关系时确保HarmonyOS 4及以下游戏的玩家标识类型（playerld/openld）准确无误，以保障数据继承的准确性。
+开发者需在配置映射关系时确保HarmonyOS 4及以下游戏的玩家标识类型（playerId/openId）准确无误，以保障数据继承的准确性。
 
 若APP ID映射关系缺失或配置错误，可能导致账号资产无法互通。
 

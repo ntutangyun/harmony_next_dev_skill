@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-cust
 
 [h2]接口说明
 
-文本塑形中常用接口如下表所示，详细接口说明参考drawing_text_typography.h和drawing_text_blob.h。
+文本塑形中常用接口如下表所示，详细接口说明参考drawing_text_lineTypography.h、drawing_text_line.h、drawing_text_run.h、drawing_text_blob.h和drawing_canvas.h。
 
 接口名	描述
 OH_Drawing_LineTypography* OH_Drawing_CreateLineTypography(OH_Drawing_TypographyCreate* handler)	创建一个排版行对象OH_Drawing_LineTypography的指针，排版行对象保存着文本内容以及样式的载体，可以用于计算单行排版信息。
@@ -30,7 +30,7 @@ OH_Drawing_TextLine* OH_Drawing_LineTypographyCreateLine(OH_Drawing_LineTypograp
 OH_Drawing_Array* OH_Drawing_TextLineGetGlyphRuns(OH_Drawing_TextLine* line)	获取文本行对象中的文本渲染单元数组。
 OH_Drawing_Array* OH_Drawing_GetRunGlyphs(OH_Drawing_Run* run, int64_t start, int64_t length)	获取渲染单元指定范围内的字形数组。
 OH_Drawing_Font* OH_Drawing_GetRunFont(OH_Drawing_Run* run)	获取渲染单元字体对象。
-OH_Drawing_Array* OH_Drawing_GetRunGlyphAdvances(OH_Drawing_Run* run, uint32_t start, uint32_t length)	获取渲染单元字体宽度数组。
+OH_Drawing_Array* OH_Drawing_GetRunGlyphAdvances(OH_Drawing_Run* run, uint32_t start, uint32_t length)	获取渲染单元字形宽度数组。
 OH_Drawing_TextBlobBuilder* OH_Drawing_TextBlobBuilderCreate(void)	用于创建一个文本构造器对象。
 OH_Drawing_TextBlob* OH_Drawing_TextBlobBuilderMake(OH_Drawing_TextBlobBuilder* textBlobBuilder)	用于从文本构造器中创建文本对象。
 void OH_Drawing_CanvasDrawTextBlob(OH_Drawing_Canvas* canvas, const OH_Drawing_TextBlob* textBlob, float x, float y)	用于画一段文字。
@@ -54,7 +54,7 @@ libnative_drawing.so
 #include <native_drawing/drawing_rect.h>
 #include <native_drawing/drawing_point.h>
 
-创建段落样式，并使用构造段落生成器ParagraphBuilder生成段落实例。
+创建段落样式，并使用OH_Drawing_CreateTypographyHandler创建排版处理器，用于生成段落实例。
 
 // 创建一个 TypographyStyle，创建 TypographyCreate 时需要使用
 OH_Drawing_TypographyStyle *typoStyle = OH_Drawing_CreateTypographyStyle();
@@ -87,7 +87,7 @@ OH_Drawing_Array *runs = OH_Drawing_TextLineGetGlyphRuns(textLine);
 
 该步骤是文本塑形流程中的自定义绘制环节。通过调用OH_Drawing_GetRunGlyphs()方法获取文本中每个字符对应的字形序号，再结合OH_Drawing_GetRunFont()方法获取的字体对象，即可唯一确定每个字形的具体图形信息。
 
-从 API version 20 开始，新增的OH_Drawing_GetRunGlyphAdvances()方法能够返回一个数组，其中包含了每个字形在绘制时建议占用的宽度和高度。依赖这些精确的测量数据，开发者可以自由地计算并定义每个字形的绘制位置，从而实现复杂的文本布局效果，如自定义字符间距、垂直偏移或特殊排版。
+从 API version 20 开始，新增的OH_Drawing_GetRunGlyphAdvances()方法能够返回一个数组，包含范围内每个字形的字形宽度。依赖这些精确的测量数据，开发者可以自由地计算并定义每个字形的绘制位置，从而实现复杂的文本布局效果，如自定义字符间距、垂直偏移或特殊排版。
 
 size_t runsLength = OH_Drawing_GetDrawingArraySize(runs);
 for (int i = 0; i < runsLength; i++) {

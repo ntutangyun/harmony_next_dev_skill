@@ -145,7 +145,7 @@ if (errCode != OH_Rdb_ErrCode::RDB_OK) {
     return;
 }
 
-如果需要设置自定义数据库路径，可在上述代码// ...处调用OH_Rdb_SetCustomDir接口设置。如果需要设置为只读模式打开数据库，可在上述代码// ...处可调用OH_Rdb_SetReadOnly接口设置。示例代码如下所示：
+如果需要设置自定义数据库路径，可在上述代码// ...处调用OH_Rdb_SetCustomDir接口设置。如果需要设置为只读模式打开数据库，可在上述代码// ...处调用OH_Rdb_SetReadOnly接口设置。示例代码如下所示：
 
 // 可设置自定义数据库路径
 // 数据库文件创建位置将位于沙箱路径 /data/storage/el3/database/a/b/RdbTest.db

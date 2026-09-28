@@ -27,7 +27,7 @@ export PATH={DevEco Studio安装目录}/tools/emulator:$PATH
 # 查看所有可执行的命令
 Emulator -help
 
-从26.0.0 Beta1版本开始，支持通过-help命令组合其他可执行命令，查询对应命令的详细说明。
+从26.0.0版本开始，支持通过-help命令组合其他可执行命令，查询对应命令的详细说明。
 
 # 查看指定命令的详细说明，例如-create
 Emulator -help -create
@@ -124,9 +124,9 @@ Emulator -create {模拟器名称} -deviceType {模拟器类型} -osVersion {模
 -imageRoot	可选参数，指定模拟器镜像路径。如果不指定，默认使用DevEco Studio中的模拟器镜像路径。
 -screenProfile	可选参数，指定模拟器的设备型号，如"Mate 70 Pro"，支持的设备型号可通过screenProfileList命令查询。如果不指定，默认使用当前产品类型最新的设备型号。 如同时设置了-screen参数，以-screen参数为准。 仅在支持自定义屏幕的模拟器类型中可用，具体请参考自定义模拟器屏幕配置。
 -screen	可选参数，用于自定义模拟器屏幕配置，包括屏幕尺寸、分辨率、DPI，格式为"宽度(px) 高度(px) DPI 屏幕对角线长度(inch)"，如-screen "1316 2832 560 6.9"。 如果是双折叠模拟器，需要输入2组屏幕参数，分别对应展开态和折叠态屏幕，例如-screen "2200 2480 480 7.8" "1080 2480 480 6.4"。 仅在支持自定义屏幕的模拟器类型中可用，具体请参考自定义模拟器屏幕配置。
--storage	可选参数，模拟器存储空间，可选范围2-1023（单位G），默认6G。
+-storage	可选参数，模拟器存储空间，可选范围2-1023（单位G），默认6G。 从26.0.0版本开始，参数可选范围为2-100（单位G）。
 -memory	可选参数，模拟器运行内存，可选范围2-32（单位G），默认4G。
--hotBoot	可选参数，表示是否启用模拟器热启动功能，即启动时加载上次关闭时保存的快照，启动后会恢复至上次关闭时的状态。取值为true/false，如不指定默认为false。从26.0.0 Beta1开始支持。
+-hotBoot	可选参数，表示是否启用模拟器热启动功能，即启动时加载上次关闭时保存的快照，启动后会恢复至上次关闭时的状态。取值为true/false，如不指定默认为false。从26.0.0版本开始支持。
 
 示例：
 
@@ -208,7 +208,7 @@ Emulator -start {模拟器名称} -path {模拟器实例路径} -imageRoot {模�
 -imageRoot	必选参数，指定模拟器镜像路径。 从DevEco Studio 6.1.0 Beta1版本开始，该参数可选，如果不指定，默认使用DevEco Studio中的模拟器镜像路径。
 -hdcport	可选参数，指定hdc端口号，支持范围10000-16555。从DevEco Studio 6.0.1 Beta1版本开始支持。
 -bootMode	可选参数，指定模拟器启动方式，从DevEco Studio 6.1.0 Release版本开始支持。 如果不指定，则根据创建时指定的方式启动，创建时选择了Quick Boot或命令行创建模拟器时添加了参数-hotBoot true，则启动方式为snapshot，否则按coldboot启动。 coldboot（冷启动）：以开机启动的方式启动，如未清除数据，则启动时会保留上次使用的数据，例如安装的应用、上传的文件等。snapshot（热启动）：启动时加载上次关闭时保存的快照，启动后会恢复至上次关闭时的状态。使用此参数时，需要确保创建模拟器时选择Quick Boot，或命令行创建模拟器时添加参数-hotBoot true。reset：清除数据后以开机启动的方式启动。
--noWindow	可选参数，使用无界面方式启动模拟器。针对无图形界面的Linux环境，该参数必选。从26.0.0 Beta1版本开始支持。
+-noWindow	可选参数，使用无界面方式启动模拟器。针对无图形界面的Linux环境，该参数必选。从26.0.0版本开始支持。
 
 示例：
 
@@ -331,7 +331,7 @@ Emulator -license accept
 
 场景化模拟
 
-从26.0.0 Beta1版本开始，支持使用命令行进行场景化功能模拟，例如对模拟器进行旋转、音量控制、亮灭屏、摇一摇等。
+从26.0.0版本开始，支持使用命令行进行场景化功能模拟，例如对模拟器进行旋转、音量控制、亮灭屏、摇一摇等。
 
 [h2]旋转
 
@@ -428,8 +428,8 @@ Emulator -instance {模拟器名称} -gps {-longitude/-latitude/-altitude/-city/
 参数名	说明
 -instance	必选参数，指定模拟器名称。
 -gps	必选参数，GPS场景化命令。gps可选参数可组合使用。当命令中-city参数与其他参数冲突时，以-city参数为准，其他冲突参数会被忽略。
--longitude	可选参数，经度参数，取值范围[-90.0, 90.0]，支持小数点后八位。
--latitude	可选参数，纬度参数，取值范围[-180.0, 180.0]，支持小数点后八位。
+-longitude	可选参数，经度参数，取值范围[-180.0, 180.0]，支持小数点后八位。
+-latitude	可选参数，纬度参数，取值范围[-90.0, 90.0]，支持小数点后八位。
 -altitude	可选参数，海拔参数，取值范围[-10000.0, 10000.0]，支持小数点后两位。
 -city	可选参数，城市参数，不区分大小写。 在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用，支持以下参数：Beijing/Shanghai/Guangzhou/Tianjin/Chongqing/Zhengzhou/Shijiazhuang/Taiyuan/Jinan/Changsha/Wuhan/Harbin/Changchun/Shenyang/Nanjing/Hangzhou/Fuzhou/Hefei/Nanchang/Xian/Chengdu/Guiyang/Haikou/Taipei/Kunming/Lanzhou/Xining/Hohhot/Urumqi/Lhasa/Yinchuan/Nanning/Hong Kong/Macao 在其他国家或地区使用，支持以下参数：Beijing/Shanghai/New York/London/Moscow/Paris
 -bearing	可选参数，方位角参数，取值范围[0.0, 359.99]，支持小数点后两位。
@@ -468,6 +468,105 @@ Emulator -instance {模拟器名称} -sensor {-light/-steps/-heartrate} {传感�
 示例：
 
 Emulator -instance "Mate 80 Pro" -sensor -light 50
+
+[h2]获取UI布局信息
+
+Emulator -instance {模拟器名称} -uiLayout {-i/-a}
+
+参数：
+
+参数名	说明
+-instance	必选参数，指定模拟器名称。
+-uiLayout	必选参数，获取当前UI页面布局信息。
+-i	可选参数，仅输出可交互的控件，如可点击、可输入、可滑动。
+-a	可选参数，输出的控件包含颜色样式信息，如果控件本身未设置颜色样式则不显示。
+
+说明
+
+多屏场景下暂不支持使用该命令。
+
+示例：
+
+$ Emulator -instance "Mate 80 Pro" -uiLayout -i
+Scenario simulation success.
+Analysis saved to: C:/Emulator/Mate 80 Pro/uiLayout/analysis.md
+# Widget Tree Analysis
+- **Generated**: 2026-08-06 16:05:28
+- **Mode**: Interactive Only
+---
+## Widget Tree
+- __Common__ [id:5] [top: 0, left: 0, width: 1256, height: 2382]                       # top：纵坐标，left：横坐标，模拟器左上角为原点(0,0)
+  - Swiper Swiper [id:7] [top: 136, left: 0, width: 1256, height: 2246]
+    - GridItem GridItem [id:11] [top: 230, left: 30, width: 299, height: 329]
+      - RelativeContainer image 设置 [id:14] [top: 260, left: 88, width: 182, height: 244]
+    - GridItem GridItem [id:15] [top: 230, left: 329, width: 299, height: 329]
+      - RelativeContainer image 图库 [id:18] [top: 260, left: 387, width: 182, height: 244]
+    - GridItem GridItem [id:19] [top: 230, left: 628, width: 299, height: 329]
+      - RelativeContainer image 文件管理 [id:22] [top: 260, left: 679, width: 197, height: 244]
+    - GridItem GridItem [id:23] [top: 230, left: 926, width: 299, height: 329]
+      - RelativeContainer image 日历 [id:26] [top: 260, left: 984, width: 182, height: 244]
+- Column [id:34] [top: 2382, left: 0, width: 1256, height: 378]
+  - Image Image [id:41] [top: 2424, left: 387, width: 182, height: 182]
+  - Image Image [id:44] [top: 2424, left: 686, width: 182, height: 182]
+
+[h2]点击
+
+Emulator -instance {模拟器名称} -click {控件ID/屏幕坐标}
+
+参数：
+
+参数名	说明
+-instance	必选参数，指定模拟器名称。
+-click	必选参数，点击指定ID的控件，或点击指定的坐标位置，可通过UI布局获取ID和坐标。
+
+说明
+
+多屏场景下暂不支持使用该命令。
+
+示例：
+
+Emulator -instance "Mate 80 Pro" -click 10
+Emulator -instance "Mate 80 Pro" -click "100 100"   # 点击屏幕坐标(100,100)
+
+[h2]滑动
+
+Emulator -instance {模拟器名称} -slide {控件ID} {方向left/right/up/down}
+Emulator -instance {模拟器名称} -slide {控件ID} {屏幕坐标}
+Emulator -instance {模拟器名称} -slide {起点坐标} {终点坐标}
+
+参数：
+
+参数名	说明
+-instance	必选参数，指定模拟器名称。
+-slide	必选参数，从控件ID向指定方向快速滑动后脱离屏幕，或从控件ID向指定坐标滑动，或从起点坐标向终点坐标滑动。可通过UI布局获取控件ID或坐标。
+
+说明
+
+多屏场景下暂不支持使用该命令。
+
+示例：
+
+Emulator -instance "Mate 80 Pro" -slide "10 up"
+Emulator -instance "Mate 80 Pro" -slide "10 100 100"       # 从控件10向坐标(100,100)滑动
+Emulator -instance "Mate 80 Pro" -slide "100 100 200 200"  # 从(100,100)向(200,200)滑动
+
+[h2]输入
+
+Emulator -instance {模拟器名称} -fill {控件ID} {输入内容}
+
+参数：
+
+参数名	说明
+-instance	必选参数，指定模拟器名称。
+-fill	必选参数，向指定ID的控件输入内容，不支持输入中文，可通过UI布局获取控件ID。
+
+说明
+
+多屏场景下暂不支持使用该命令。
+
+示例：
+
+Emulator -instance "Mate 80 Pro" -fill "10 Hello,World"
 
 ## Code blocks
 
@@ -766,4 +865,77 @@ Emulator -instance {模拟器名称} -sensor {-light/-steps/-heartrate} {传感�
 
 ```
 Emulator -instance "Mate 80 Pro" -sensor -light 50
+```
+
+### Code block 44
+
+```
+Emulator -instance {模拟器名称} -uiLayout {-i/-a}
+```
+
+### Code block 45
+
+```
+$ Emulator -instance "Mate 80 Pro" -uiLayout -i
+Scenario simulation success.
+Analysis saved to: C:/Emulator/Mate 80 Pro/uiLayout/analysis.md
+# Widget Tree Analysis
+- **Generated**: 2026-08-06 16:05:28
+- **Mode**: Interactive Only
+---
+## Widget Tree
+- __Common__ [id:5] [top: 0, left: 0, width: 1256, height: 2382]                       # top：纵坐标，left：横坐标，模拟器左上角为原点(0,0)
+  - Swiper Swiper [id:7] [top: 136, left: 0, width: 1256, height: 2246]
+    - GridItem GridItem [id:11] [top: 230, left: 30, width: 299, height: 329]
+      - RelativeContainer image 设置 [id:14] [top: 260, left: 88, width: 182, height: 244]
+    - GridItem GridItem [id:15] [top: 230, left: 329, width: 299, height: 329]
+      - RelativeContainer image 图库 [id:18] [top: 260, left: 387, width: 182, height: 244]
+    - GridItem GridItem [id:19] [top: 230, left: 628, width: 299, height: 329]
+      - RelativeContainer image 文件管理 [id:22] [top: 260, left: 679, width: 197, height: 244]
+    - GridItem GridItem [id:23] [top: 230, left: 926, width: 299, height: 329]
+      - RelativeContainer image 日历 [id:26] [top: 260, left: 984, width: 182, height: 244]
+- Column [id:34] [top: 2382, left: 0, width: 1256, height: 378]
+  - Image Image [id:41] [top: 2424, left: 387, width: 182, height: 182]
+  - Image Image [id:44] [top: 2424, left: 686, width: 182, height: 182]
+```
+
+### Code block 46
+
+```
+Emulator -instance {模拟器名称} -click {控件ID/屏幕坐标}
+```
+
+### Code block 47
+
+```
+Emulator -instance "Mate 80 Pro" -click 10
+Emulator -instance "Mate 80 Pro" -click "100 100"   # 点击屏幕坐标(100,100)
+```
+
+### Code block 48
+
+```
+Emulator -instance {模拟器名称} -slide {控件ID} {方向left/right/up/down}
+Emulator -instance {模拟器名称} -slide {控件ID} {屏幕坐标}
+Emulator -instance {模拟器名称} -slide {起点坐标} {终点坐标}
+```
+
+### Code block 49
+
+```
+Emulator -instance "Mate 80 Pro" -slide "10 up"
+Emulator -instance "Mate 80 Pro" -slide "10 100 100"       # 从控件10向坐标(100,100)滑动
+Emulator -instance "Mate 80 Pro" -slide "100 100 200 200"  # 从(100,100)向(200,200)滑动
+```
+
+### Code block 50
+
+```
+Emulator -instance {模拟器名称} -fill {控件ID} {输入内容}
+```
+
+### Code block 51
+
+```
+Emulator -instance "Mate 80 Pro" -fill "10 Hello,World"
 ```

@@ -20,7 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/image-dec
 
 开发步骤
 
-图片解码相关API的详细介绍请参见：图片解码接口文档。
+图片解码相关API的详细介绍请参见：图片解码接口文档image_source_mdk.h。
 
 [h2]添加依赖
 
@@ -145,7 +145,7 @@ static napi_value getSyncPixelMap(napi_env env, napi_callback_info info)
       // 创建pixelMap。
       OH_ImageSource_CreatePixelMap(imageSourceNative_c, &decodingOps, &pixelMap);
 
-      // 下列方法,为gif等动图格式提供。
+      // 下列方法为GIF等动图格式提供。
       // napi_value pixelMapList;
       // OH_ImageSource_CreatePixelMapList(imageSourceNative_c, &decodingOps, &pixelMapList);
       // OhosImageSourceDelayTimeList list{};
@@ -411,7 +411,7 @@ static napi_value getSyncPixelMap(napi_env env, napi_callback_info info)
       // 创建pixelMap。
       OH_ImageSource_CreatePixelMap(imageSourceNative_c, &decodingOps, &pixelMap);
 
-      // 下列方法,为gif等动图格式提供。
+      // 下列方法为GIF等动图格式提供。
       // napi_value pixelMapList;
       // OH_ImageSource_CreatePixelMapList(imageSourceNative_c, &decodingOps, &pixelMapList);
       // OhosImageSourceDelayTimeList list{};

@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-aes-wrap-encrypt-decrypt-ndk_
 
-从API version 22开始，算法库支持使用该算法进行加密和解密操作。
+从API版本22开始，算法库支持使用该算法进行加密和解密操作。
 
 请查看AES-WRAP加解密算法规格。
 

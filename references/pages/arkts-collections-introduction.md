@@ -49,11 +49,10 @@ struct Index {
           }
           taskpool.execute(taskGroup).then(() => {
             console.info(`Return success: ${arr[0]} === ${count}`);
-            this.message = 'success';
           }).catch((e: Error) => {
             console.error('Return error.');
-            this.message = 'failed';
           })
+          this.message = 'success';
         })
     }
     .height('100%')
@@ -243,11 +242,10 @@ struct Index {
           }
           taskpool.execute(taskGroup).then(() => {
             console.info(`Return success: ${arr[0]} === ${count}`);
-            this.message = 'success';
           }).catch((e: Error) => {
             console.error('Return error.');
-            this.message = 'failed';
           })
+          this.message = 'success';
         })
     }
     .height('100%')

@@ -271,7 +271,7 @@ struct PrivateBuilder {
   }
 }
 
-示例效果图
+示例效果图：
 
 [h2]使用全局自定义构建函数
 
@@ -363,7 +363,7 @@ struct ParentDemo {
   }
 }
 
-示例效果图
+示例效果图：
 
 [h2]修改装饰器修饰的变量触发UI刷新
 
@@ -406,7 +406,7 @@ struct ParentSample {
       Text('UI Rendered via @Builder')
         .fontSize(20)
       this.privateBuilder()
-      // 点击Button更新label，触发Text组件的刷新
+      // 点击Button更新objParam.strValue和label，触发Text组件的刷新
       Button('Update Values').onClick(() => {
         this.objParam.strValue = 'strValue Hello World';
         this.label = 'label Hello World';
@@ -417,11 +417,11 @@ struct ParentSample {
   }
 }
 
-示例效果图
+示例效果图：
 
 [h2]将@Builder装饰的函数当作CustomBuilder类型使用
 
-当参数类型为CustomBuilder时，可以传入定义的@Builder函数。因为CustomBuilder实际上是Function(() => any)或void类型，而@Builder也是Function类型。所以通过传入@Builder可以实现特定效果。
+当参数类型为CustomBuilder时，可以传入定义的@Builder函数。因为CustomBuilder实际上是(() => any)或void类型，而@Builder也是Function类型。所以通过传入@Builder可以实现特定效果。
 
 全局@Builder函数当作CustomBuilder类型传递时需要绑定this上下文，开发者可以直接调用全局@Builder函数，编译工具链会自动生成绑定this上下文的代码。
 
@@ -478,7 +478,7 @@ struct customBuilderDemo {
   }
 }
 
-示例效果图
+示例效果图：
 
 [h2]多层@Builder函数嵌套
 
@@ -618,7 +618,7 @@ struct ParentExample {
   }
 }
 
-示例效果图
+示例效果图：
 
 [h2]@Builder函数联合V2装饰器
 
@@ -714,7 +714,7 @@ struct ParentPage {
   }
 }
 
-示例效果图
+示例效果图：
 
 当通过引用传递方式向@Builder传递参数时，若参数为@Local装饰的对象，对该对象进行整体赋值会触发@Builder中UI刷新。
 
@@ -800,7 +800,7 @@ struct ParentLocalPage {
   }
 }
 
-示例效果图
+示例效果图：
 
 [h2]跨组件复用的全局@Builder
 
@@ -900,7 +900,7 @@ struct ReusableChildTwoPage {
   }
 }
 
-示例效果图
+示例效果图：
 
 [h2]@Builder支持状态变量刷新
 
@@ -1018,7 +1018,7 @@ struct Single {
   }
 }
 
-示例效果图
+示例效果图：
 
 常见问题
 
@@ -2190,7 +2190,7 @@ struct ParentSample {
       Text('UI Rendered via @Builder')
         .fontSize(20)
       this.privateBuilder()
-      // 点击Button更新label，触发Text组件的刷新
+      // 点击Button更新objParam.strValue和label，触发Text组件的刷新
       Button('Update Values').onClick(() => {
         this.objParam.strValue = 'strValue Hello World';
         this.label = 'label Hello World';

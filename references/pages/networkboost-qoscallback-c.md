@@ -50,7 +50,7 @@ int32_t RegisterNetQualityCallback()
 {
     HMS_NetworkBoost_NetQosChange callback;
     callback = onNetworkQoSChanged;
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterNetQosCallback(callback, &callbackId);
     printf("注册网络质量结果: %d, Id：%d\n", ret, callbackId);
     return ret;
@@ -107,7 +107,7 @@ int32_t RegisterNetQualityCallback()
 {
     HMS_NetworkBoost_NetQosChange callback;
     callback = onNetworkQoSChanged;
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterNetQosCallback(callback, &callbackId);
     printf("注册网络质量结果: %d, Id：%d\n", ret, callbackId);
     return ret;

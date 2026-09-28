@@ -14,4 +14,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-key-
 
 数字信封导入密钥(ArkTS)
 
-数字信封密钥(C/C++)
+数字信封导入密钥(C/C++)

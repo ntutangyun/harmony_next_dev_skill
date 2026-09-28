@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从6.0.0(20)版本开始，新增支持设置页签栏的分割线。
 
-HdsTabs容器组件扩展支持页签栏分割线常隐、常显和渐进显隐。当应用开发者需要分割线一直显示、一直隐藏或者内容区超过页签栏8vp后分割线完全消失时，可以通过设置HdsTabs组件的分割线的模式，同时也支持自定义分割线样式。
+HdsTabs (底部页签)容器组件扩展支持页签栏分割线常隐、常显和渐进显隐。当应用开发者需要分割线一直显示、一直隐藏或者内容区超过页签栏8vp后分割线完全消失时，可以通过设置HdsTabs组件的分割线的模式，同时也支持自定义分割线样式。
 
 常显	常隐	跟手
 		
@@ -28,76 +28,94 @@ import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.
 
 创建Hds一级容器组件，设置的Button可以切换分割线展示效果，分别是常显、常隐和跟手滑动效果。
 
-@Entry
-@Component
-struct Index {
-  // 初始化HdsTabs控制器
-  private controller: HdsTabsController = new HdsTabsController();
-  listScroller0: ListScroller = new ListScroller();
-  listScroller1: ListScroller = new ListScroller();
+ @Entry
+ @Component
+ struct Index {
+   private controller: HdsTabsController = new HdsTabsController();
+   private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+   @State mode: DividerMode = DividerMode.FOLLOW_SCROLL;
+   listScroller0: ListScroller = new ListScroller();
+   listScroller1: ListScroller = new ListScroller();
 
-  aboutToAppear(): void {
-    this.controller.bindScroller(0, this.listScroller0);
-    this.controller.bindScroller(1, this.listScroller1);
-  }
+   aboutToAppear(): void {
+     this.controller.bindScroller(0, this.listScroller0);
+     this.controller.bindScroller(1, this.listScroller1);
+   }
 
-  aboutToDisappear(): void {
-    this.controller.unbindScroller(this.listScroller0);
-    this.controller.unbindScroller(this.listScroller1);
-  }
+   aboutToDisappear(): void {
+     this.controller.unbindScroller(this.listScroller0);
+     this.controller.unbindScroller(this.listScroller1);
+   }
 
-  build() {
-    Column() {
-      HdsTabs({ controller: this.controller }) {
-        TabContent() {
-          List({ scroller: this.listScroller0 }) {
-            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
-              ListItem() {
-                Text('list_' + item)
-                  .width('100%')
-                  .height(72)
-                  .fontSize(16)
-                  .fontWeight(500)
-              }
-              .height(56)
-            })
-          }
-        }
-        .tabBar({ icon: $r('app.media.startIcon'), text: '页签1' })
-        TabContent() {
-          List({ scroller: this.listScroller1 }) {
-            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
-              ListItem() {
-                Text('list_' + item)
-                  .width('100%')
-                  .height(72)
-                  .fontSize(16)
-                  .fontWeight(500)
-              }
-              .height(56)
-            })
-          }
-        }
-        .tabBar({ icon: $r('app.media.startIcon'), text: '页签2' })
-      }
-      // 设置页签栏置于容器的底部且支持模糊
-      .barOverlap(true)
-      .barPosition(BarPosition.End)
-      .vertical(false)
-      .divider({
-        mode: DividerMode.FOLLOW_SCROLL,
-        style: {
-          color: Color.Black,
-          strokeWidth: 1,
-          startMargin: 0,
-          endMargin: 0
-        }
-      })
-    }
-    .width('100%')
-    .height('100%')
-  }
-}
+   build() {
+     Column() {
+       Column() {
+         Row() {
+           Text('Split Line:')
+             .width('20%')
+           Button('Visible')
+             .onClick(() => {
+               this.mode = DividerMode.VISIBLE;
+             })
+           Button('None')
+             .onClick(() => {
+               this.mode = DividerMode.NONE;
+             })
+           Button('Follow Scroll')
+             .onClick(() => {
+               this.mode = DividerMode.FOLLOW_SCROLL;
+             })
+         }
+       }
+       .justifyContent(FlexAlign.Center)
+       .width('100%')
+       .height('10%')
+
+       HdsTabs({ controller: this.controller }) {
+         TabContent() {
+           this.ContentBuilder(this.listScroller0)
+         }
+         .tabBar({ icon: $r('app.media.startIcon'), text: 'Tab 1' })
+
+         TabContent() {
+           this.ContentBuilder(this.listScroller1)
+         }
+         .tabBar({ icon: $r('app.media.startIcon'), text: 'Tab 2' })
+       }
+       .barOverlap(true)
+       .barPosition(BarPosition.End)
+       .vertical(false)
+       .divider({
+         mode: this.mode,
+         style: {
+           color: Color.Black,
+           strokeWidth: 1,
+           startMargin: 0,
+           endMargin: 0
+         }
+       })
+       .width('100%')
+       .height('90%')
+     }
+   }
+
+   @Builder
+   ContentBuilder(listScroller: Scroller) {
+     List({ scroller: listScroller }) {
+       ForEach(this.arr, (item: number) => {
+         ListItem() {
+           Text("item" + item)
+             .height(96)
+             .width('100%')
+             .backgroundColor(item % 2 === 0 ? Color.Pink : Color.Yellow)
+             .textAlign(TextAlign.Center)
+         }
+       }, (item: string) => item)
+     }
+     .width('100%')
+     .height('100%')
+   }
+ }
 
 ## Code blocks
 
@@ -111,74 +129,92 @@ import { HdsTabs, HdsTabsController, DividerMode, HdsTabsAttribute } from '@kit.
 ### Code block 2
 
 ```
-@Entry
-@Component
-struct Index {
-  // 初始化HdsTabs控制器
-  private controller: HdsTabsController = new HdsTabsController();
-  listScroller0: ListScroller = new ListScroller();
-  listScroller1: ListScroller = new ListScroller();
+ @Entry
+ @Component
+ struct Index {
+   private controller: HdsTabsController = new HdsTabsController();
+   private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+   @State mode: DividerMode = DividerMode.FOLLOW_SCROLL;
+   listScroller0: ListScroller = new ListScroller();
+   listScroller1: ListScroller = new ListScroller();
 
-  aboutToAppear(): void {
-    this.controller.bindScroller(0, this.listScroller0);
-    this.controller.bindScroller(1, this.listScroller1);
-  }
+   aboutToAppear(): void {
+     this.controller.bindScroller(0, this.listScroller0);
+     this.controller.bindScroller(1, this.listScroller1);
+   }
 
-  aboutToDisappear(): void {
-    this.controller.unbindScroller(this.listScroller0);
-    this.controller.unbindScroller(this.listScroller1);
-  }
+   aboutToDisappear(): void {
+     this.controller.unbindScroller(this.listScroller0);
+     this.controller.unbindScroller(this.listScroller1);
+   }
 
-  build() {
-    Column() {
-      HdsTabs({ controller: this.controller }) {
-        TabContent() {
-          List({ scroller: this.listScroller0 }) {
-            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
-              ListItem() {
-                Text('list_' + item)
-                  .width('100%')
-                  .height(72)
-                  .fontSize(16)
-                  .fontWeight(500)
-              }
-              .height(56)
-            })
-          }
-        }
-        .tabBar({ icon: $r('app.media.startIcon'), text: '页签1' })
-        TabContent() {
-          List({ scroller: this.listScroller1 }) {
-            ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
-              ListItem() {
-                Text('list_' + item)
-                  .width('100%')
-                  .height(72)
-                  .fontSize(16)
-                  .fontWeight(500)
-              }
-              .height(56)
-            })
-          }
-        }
-        .tabBar({ icon: $r('app.media.startIcon'), text: '页签2' })
-      }
-      // 设置页签栏置于容器的底部且支持模糊
-      .barOverlap(true)
-      .barPosition(BarPosition.End)
-      .vertical(false)
-      .divider({
-        mode: DividerMode.FOLLOW_SCROLL,
-        style: {
-          color: Color.Black,
-          strokeWidth: 1,
-          startMargin: 0,
-          endMargin: 0
-        }
-      })
-    }
-    .width('100%')
-    .height('100%')
-  }
-}
+   build() {
+     Column() {
+       Column() {
+         Row() {
+           Text('Split Line:')
+             .width('20%')
+           Button('Visible')
+             .onClick(() => {
+               this.mode = DividerMode.VISIBLE;
+             })
+           Button('None')
+             .onClick(() => {
+               this.mode = DividerMode.NONE;
+             })
+           Button('Follow Scroll')
+             .onClick(() => {
+               this.mode = DividerMode.FOLLOW_SCROLL;
+             })
+         }
+       }
+       .justifyContent(FlexAlign.Center)
+       .width('100%')
+       .height('10%')
+
+       HdsTabs({ controller: this.controller }) {
+         TabContent() {
+           this.ContentBuilder(this.listScroller0)
+         }
+         .tabBar({ icon: $r('app.media.startIcon'), text: 'Tab 1' })
+
+         TabContent() {
+           this.ContentBuilder(this.listScroller1)
+         }
+         .tabBar({ icon: $r('app.media.startIcon'), text: 'Tab 2' })
+       }
+       .barOverlap(true)
+       .barPosition(BarPosition.End)
+       .vertical(false)
+       .divider({
+         mode: this.mode,
+         style: {
+           color: Color.Black,
+           strokeWidth: 1,
+           startMargin: 0,
+           endMargin: 0
+         }
+       })
+       .width('100%')
+       .height('90%')
+     }
+   }
+
+   @Builder
+   ContentBuilder(listScroller: Scroller) {
+     List({ scroller: listScroller }) {
+       ForEach(this.arr, (item: number) => {
+         ListItem() {
+           Text("item" + item)
+             .height(96)
+             .width('100%')
+             .backgroundColor(item % 2 === 0 ? Color.Pink : Color.Yellow)
+             .textAlign(TextAlign.Center)
+         }
+       }, (item: string) => item)
+     }
+     .width('100%')
+     .height('100%')
+   }
+ }
 ```

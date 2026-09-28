@@ -26,7 +26,7 @@ UIAbility B（投屏内容）
 
 本端设备：HarmonyOS NEXT Developer Beta1及以上版本的手机设备。
 
-远端设备：支持Cast+或Miracast标准协议的设备，推荐使用华为智慧屏HarmonyOS2.0及以上版本。
+远端设备：支持Cast+或Miracast标准协议的设备，推荐使用HarmonyOS2.0及以上版本的TV设备。
 
 使用限制
 

@@ -26,7 +26,7 @@ saveData(exerciseSequence: ExerciseSequence): void	保存锻炼记录。
 
 完成申请运动健康服务。
 
-需先通过用户授权接口引导用户授权，用户授权应根据权限说明中要求来打开锻炼记录读/写和联动接口控制权限，。
+需先通过用户授权接口引导用户授权，用户授权应根据权限说明中要求来打开锻炼记录读/写和联动接口控制权限。
 
 常见问题请参考Health Service Kit常见问题。
 
@@ -105,7 +105,7 @@ function onData() {
 
 下发融合数据（根据需求调整调用时机）。
 
-function saveData() {
+function sendData() {
   let sampleReal = {
     dataType: healthStore.healthDataTypes.WORKOUT_REALTIME,
     time: new Date().getTime(),
@@ -143,8 +143,8 @@ function saveData() {
     // insertDataSource插入数据源接口返回的DataSourceId
     dataSourceId: 'xxx',
     localDate: '09/26/2023',
-    startTime: 1695740400000,  // 2023-10-23 14:00:00
-    endTime: 1695769200000,   // 2023-10-23 14:30:00
+    startTime: 1695740400000,  // 2023-9-26 23:00:00
+    endTime: 1695769200000,   // 2023-9-27 07:00:00
     timeZone: '+0800',
     modifiedTime: 1695769200000,
     exerciseType: healthStore.exerciseSequenceHelper.badminton. EXERCISE_TYPE,
@@ -294,7 +294,7 @@ function onData() {
 ### Code block 6
 
 ```
-function saveData() {
+function sendData() {
   let sampleReal = {
     dataType: healthStore.healthDataTypes.WORKOUT_REALTIME,
     time: new Date().getTime(),
@@ -336,8 +336,8 @@ function saveData() {
     // insertDataSource插入数据源接口返回的DataSourceId
     dataSourceId: 'xxx',
     localDate: '09/26/2023',
-    startTime: 1695740400000,  // 2023-10-23 14:00:00
-    endTime: 1695769200000,   // 2023-10-23 14:30:00
+    startTime: 1695740400000,  // 2023-9-26 23:00:00
+    endTime: 1695769200000,   // 2023-9-27 07:00:00
     timeZone: '+0800',
     modifiedTime: 1695769200000,
     exerciseType: healthStore.exerciseSequenceHelper.badminton. EXERCISE_TYPE,

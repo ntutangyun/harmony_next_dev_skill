@@ -16,7 +16,7 @@ DevEco Code当前内置GLM-5.1模型，单账号默认每分钟50次请求，登
 
 通过deveco.jsonc文件配置
 
-在本地PC查找和编辑deveco.jsonc文件，若不存在需新建该文件。
+在本地PC查找和编辑deveco.jsonc文件。若该文件不存在，需新建该文件。
 
 配置文件优先级：
 
@@ -32,7 +32,7 @@ macOS：.deveco/deveco.jsonc（项目级） > ~/.config/deveco/deveco.jsonc（�
     "deveco": {
       "name": "DevEco Code",
       "models": {
-        "glm-5": { // 模型名称，需要自行配置
+        "glm-5.1": { // 模型名称，需要自行配置
           "tool_call": true,
           "limit": {
             "context": 200000,
@@ -48,6 +48,43 @@ macOS：.deveco/deveco.jsonc（项目级） > ~/.config/deveco/deveco.jsonc（�
   }
 }
 
+UI检查配置
+
+UI检查是功能验证阶段的可选能力，用于验证界面是否符合需求描述。
+
+该功能需调用多模态模型（仅用于UI检查，不作为主对话模型）：已登录账号时默认使用内置Qwen3-VL模型，未登录时则跳过UI检查。
+
+如需配置第三方多模态模型（仅支持Qwen系列），可在deveco.jsonc的agent中指定，以qwen3-vl-plus为例：
+
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "myprovider": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "alibaba",
+      "options": {
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "your-api-key",
+      },
+      "models": {
+        "qwen3-vl-plus": { // 模型名称，需要自行配置
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"],
+          },
+        },
+      },
+    },
+  },
+  "agent": {
+    "ui_verification": {
+      "mode": "subagent",
+      "model": "myprovider/qwen3-vl-plus", // 格式为<provider-name>/<model-name>
+      "hidden": true,
+    },
+  },
+}
+
 ## Code blocks
 
 ### Code block 1
@@ -59,7 +96,7 @@ macOS：.deveco/deveco.jsonc（项目级） > ~/.config/deveco/deveco.jsonc（�
     "deveco": {
       "name": "DevEco Code",
       "models": {
-        "glm-5": { // 模型名称，需要自行配置
+        "glm-5.1": { // 模型名称，需要自行配置
           "tool_call": true,
           "limit": {
             "context": 200000,
@@ -73,5 +110,38 @@ macOS：.deveco/deveco.jsonc（项目级） > ~/.config/deveco/deveco.jsonc（�
       }
     }
   }
+}
+```
+
+### Code block 2
+
+```
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "myprovider": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "alibaba",
+      "options": {
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "your-api-key",
+      },
+      "models": {
+        "qwen3-vl-plus": { // 模型名称，需要自行配置
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"],
+          },
+        },
+      },
+    },
+  },
+  "agent": {
+    "ui_verification": {
+      "mode": "subagent",
+      "model": "myprovider/qwen3-vl-plus", // 格式为<provider-name>/<model-name>
+      "hidden": true,
+    },
+  },
 }
 ```

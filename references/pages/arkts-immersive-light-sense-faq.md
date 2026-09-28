@@ -2,17 +2,159 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-immersive-light-sense-faq_
 
-本文提供沉浸光感开发过程中的常见问题及解决措施。沉浸光感的完整能力介绍及开发指导，请参见沉浸光感。
+本文提供沉浸光感开发过程中的常见问题及解决措施。沉浸光感的完整能力介绍及开发指导，请参见沉浸光感简介。
+
+uiMaterial与hdsMaterial的材质等级和材质样式差异对比
+
+uiMaterial与hdsMaterial均提供沉浸式系统材质能力，但提供的材质等级和材质样式存在差异。
+
+沉浸式材质等级差异
+
+为了在不同算力设备上都能流畅地使用沉浸光感，uiMaterial和hdsMaterial均通过MaterialLevel定义了不同的材质等级，两者在使用上存在差异。
+
+uiMaterial.MaterialLevel：包含EXQUISITE、GENTLE、SMOOTH三个枚举，分别对应高、中、低算力设备的材质等级。材质等级由设备决定，即自适应材质等级，仅支持通过uiMaterial.getGlobalMaterialLevel获取，不支持设置。
+
+hdsMaterial.MaterialLevel：包含EXQUISITE、GENTLE、SMOOTH、ADAPTIVE四个档位，分别对应精美、轻柔、流畅、自适应材质效果。该枚举支持开发者在组件中主动设置，例如在HdsNavigation组件中，通过SystemMaterialParams中的materialLevel设置。MaterialLevel中ADAPTIVE表示由系统根据设备性能自适应材质等级，如果在低算力设备上使用EXQUISITE或GENTLE材质等级可能造成卡顿和发热。因此使用hdsMaterial设置沉浸式系统材质等级时，推荐将等级设置为ADAPTIVE，实现和uiMaterial相同的材质等级自适应效果。
+
+沉浸式材质样式差异
+
+uiMaterial：提供ImmersiveStyle设置沉浸式材质样式。不同的材质样式对应不同的材质厚薄程度，主要包括材质的模糊程度、高光效果等。在高、中算力设备上，开发者可在同一材质等级下通过ImmersiveStyle进一步调整材质厚薄程度等效果；在低算力设备上，仅支持一种材质样式，ImmersiveStyle枚举不生效，具体材质样式效果可以参考示例1（设置沉浸式系统材质）。
+
+hdsMaterial：不提供与uiMaterial.ImmersiveStyle对等的材质厚薄程度样式配置。组件的最终材质效果由SystemMaterialParams中的materialType、materialLevel及组件的差异化实现共同决定。以HdsNavigation组件为例，具体材质样式效果可以参考使用自定义沉浸光感效果的示例图。
 
 为组件设置了沉浸式系统材质但看不到材质效果
 
+[h2]组件不在沉浸光感生效范围
+
 问题现象
 
-为组件调用了systemMaterial接口设置沉浸式系统材质后，组件的视觉效果没有发生变化，仍然呈现纯色背景或无任何材质表现。
+开启沉浸光感后，组件没有呈现沉浸光感效果。
+
+日志中存在打印：Material inactive: out of scope. Use component in navigation title bar or Tabbar.
 
 可能原因
 
-沉浸式系统材质的视觉层级位于组件的backgroundColor、backgroundBlurStyle等属性之下。如果同时设置了不透明的背景色或背景模糊样式，这些属性会覆盖在材质层之上，导致材质效果被遮挡不可见。
+沉浸光感开启后，
+
+指定弹窗类组件（AlertDialog、ActionSheet、CustomDialog、CalendarPickerDialog、DatePickerDialog、TimePickerDialog、TextPickerDialog、SelectionMenu、AlphabetIndexer弹窗、Text设置copyOption后长按或双击触发的文本菜单）的沉浸光感效果可在全页面生效。
+
+指定弹窗类接口（PromptAction、ArkUI_NativeDialog、@ohos.promptAction (弹窗)、Popup控制、Tips控制、菜单控制、半模态转场）的沉浸光感效果可在全页面生效。
+
+Slider、Toggle、Select的沉浸光感效果可在全页面生效。
+
+其他组件仅在Navigation/NavDestination标题栏或横向Tabs中barPosition为BarPosition.End的底部TabBar中生效。在其他区域中设置沉浸光感效果不生效。
+
+解决措施
+
+将需要沉浸光感效果的组件置于Navigation/NavDestination标题栏，或横向Tabs中barPosition为BarPosition.End的底部TabBar中。
+
+若无法满足生效范围要求，可改用backgroundColor等通用属性替代材质效果。
+
+示例
+
+以下示例展示了分别在Navigation标题栏中和Navigation内容区，开启沉浸光感的显示效果。位于Navigation标题栏中的Column开启沉浸光感正常生效；位于Navigation内容区中的Column组件，因其不处于Navigation标题栏或底部TabBar中，不生效沉浸光感效果。
+
+该示例配图为高算力设备强档效果，组件沉浸光感效果会根据设备算力与用户在系统中设置的沉浸光感效果自适应调整，开发者无需额外适配。
+
+import { CircleShape, TitleBarType, uiMaterial } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct MaterialScopeAdaptExample {
+  private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  @State titleHeight: number = 140;
+
+  @Builder
+  NavigationTitle() {
+    Row() {
+      // 请将$r('app.string.title_bar')替换为实际资源文件，在本示例中该资源文件的value值为"标题栏"
+      Text($r('app.string.title_bar'))
+        .fontColor('#182431')
+        .fontSize(30)
+        .lineHeight(41)
+        .fontWeight(700)
+      Blank()
+      Column() {
+        SymbolGlyph($r('sys.symbol.a_3d_square_fill'))
+      }
+      .width(50)
+      .height(50)
+      .clipShape(new CircleShape({
+        width: 50,
+        height: 50
+      }))
+      .justifyContent(FlexAlign.Center)
+      .backgroundColor(Color.Transparent)
+      // 在Navigation标题栏中开启沉浸光感，处于生效范围内，沉浸光感效果生效
+      .systemMaterial(new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.THIN,
+      }))
+    }
+    .alignItems(VerticalAlign.Center)
+    .width('100%')
+    .padding(16)
+    .height(this.titleHeight)
+  }
+
+  build() {
+    Column() {
+      Navigation() {
+        Column() {
+          Row() {
+            // 请将$r('app.string.content_area')替换为实际资源文件，在本示例中该资源文件的value值为"内容区"
+            Text($r('app.string.content_area'))
+
+            Blank()
+
+            Column() {
+              SymbolGlyph($r('sys.symbol.a_3d_square_fill'))
+            }
+            .width(50)
+            .height(50)
+            .clipShape(new CircleShape({
+              width: 50,
+              height: 50
+            }))
+            .justifyContent(FlexAlign.Center)
+            .backgroundColor(Color.Transparent)
+            // 在Navigation内容中开启沉浸光感，处于生效范围外，不生效沉浸光感效果
+            .systemMaterial(new uiMaterial.ImmersiveMaterial({
+              style: uiMaterial.ImmersiveStyle.THIN,
+            }))
+          }
+          .width('100%')
+          .padding(16)
+          .borderRadius(16)
+        }
+        .width('100%')
+        .height('100%')
+        .padding(16)
+        .backgroundColor('#FFFFFF')
+        .linearGradient({
+          angle: 0,
+          colors: [
+            ['#004AAF', 0.0],
+            ['#2787D9', 0.5],
+            ['#F0FAFF', 1.0]
+          ]
+        })
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      }
+      .title({ builder: this.NavigationTitle, height: this.titleHeight }, { barStyle: BarStyle.STACK })
+    }.width('100%').height('100%').backgroundColor('#F1F3F5')
+  }
+}
+
+[h2]背景色或背景模糊遮挡材质效果
+
+问题现象
+
+为组件调用了systemMaterial接口开启沉浸光感后，组件的视觉效果没有发生变化，仍然呈现纯色背景或无任何材质表现。
+
+可能原因
+
+沉浸光感的视觉层级位于组件的backgroundColor、backgroundBlurStyle等属性之下。如果同时设置了不透明的背景色或背景模糊样式，这些属性会覆盖在材质层之上，导致材质效果被遮挡不可见。
 
 解决措施
 
@@ -33,7 +175,6 @@ Column() {
   style: uiMaterial.ImmersiveStyle.THIN,
 }))
 .backgroundColor(Color.White)
-
 // 推荐写法：将背景色设为透明，确保材质效果可见
 Column() {
   Text('沉浸光感')
@@ -45,6 +186,41 @@ Column() {
 .systemMaterial(new uiMaterial.ImmersiveMaterial({
   style: uiMaterial.ImmersiveStyle.THIN,
 }))
+
+[h2]自定义弹出框CustomDialog没有生效沉浸式系统材质效果
+
+问题现象
+
+通过openCustomDialog、openCustomDialogWithController创建的自定义弹出框，传入systemMaterial属性后没有生效沉浸式系统材质效果。
+
+CustomDialog设置customStyle为true时弹出框没有生效沉浸式系统材质效果。
+
+可能原因
+
+如果使用openCustomDialog、openCustomDialogWithController创建自定义弹出框，或设置弹出框的customStyle属性为true时，弹出框的背板由开发者自定义，当前暂不支持对此场景适配沉浸式系统材质。
+
+解决措施
+
+不支持在自定义弹出框背板中适配沉浸式系统材质。
+
+若开发者有诉求，建议使用其他类似接口，如openCustomDialog。
+
+代码示例
+
+以下代码展示了使用openCustomDialog接口创建自定义弹出框，并生效沉浸式系统材质效果。
+
+Button('Click Me')
+  .fontSize(30)
+  .onClick(() => {
+    this.getUIContext()
+      .getPromptAction()
+      .openCustomDialog({
+        builder: () => {
+          this.customDialogComponent()
+        },
+        systemMaterial: new uiMaterial.ImmersiveMaterial({ style: uiMaterial.ImmersiveStyle.ULTRA_THICK })
+      })
+  })
 
 设置沉浸式系统材质后组件边框呈现出周围背景的颜色
 
@@ -62,7 +238,7 @@ Column() {
 
 为材质层添加materialColor赋色，通过叠加一层半透明颜色降低折射的可见程度。
 
-materialColor使用透明度为0的纯色后材质效果消失
+materialColor传入不透明颜色后材质效果消失
 
 问题现象
 
@@ -118,9 +294,11 @@ new uiMaterial.ImmersiveMaterial({
 
 自动反色功能的生效需要同时满足以下条件。
 
+设备算力档位需为高算力或中算力，低算力设备上自动反色不产生视觉效果差异。
+
 材质样式需要为THIN或ULTRA_THIN，在REGULAR、THICK、ULTRA_THICK样式下不生效。
 
-系统沉浸光感的强弱配置影响反色触发阈值，材质越薄、系统沉浸光感设置越强，越容易触发自动反色。
+系统沉浸光感的强弱配置影响反色触发阈值，沉浸式系统材质越薄、系统沉浸光感设置越强，越容易触发自动反色。
 
 自动反色仅对通过资源接口设置的颜色值生效，包括Text组件的fontColor、Button组件的fontColor、SymbolGlyph组件的fontColor、Image组件的fillColor、TextInput、TextArea、Chip、ChipGroup、SegmentButton、Swiper等组件的颜色属性，完整生效属性清单请参见colorInvert参数说明。使用代码中硬编码的颜色值（如Color.White、'#FFFFFFFF'）不会触发自动反色。
 
@@ -136,7 +314,7 @@ new uiMaterial.ImmersiveMaterial({
 
 问题现象
 
-为组件同时设置了通用属性shadow和沉浸式系统材质后，阴影效果呈现为材质自带的阴影样式，开发者自定义的shadow参数不生效。
+为组件同时设置了通用属性shadow和沉浸式系统材质后，阴影效果呈现为沉浸式系统材质自带的阴影样式，开发者自定义的shadow参数不生效。
 
 可能原因
 
@@ -144,7 +322,7 @@ new uiMaterial.ImmersiveMaterial({
 
 解决措施
 
-如需使用材质自带的阴影效果，无需额外设置shadow属性。
+如需使用沉浸式系统材质自带的阴影效果，无需额外设置shadow属性。
 
 如需使用自定义的shadow通用属性，将applyShadow设置为false。
 
@@ -156,7 +334,7 @@ new uiMaterial.ImmersiveMaterial({
   applyShadow: false,
 })
 
-通过通用属性systemMaterial设置材质后组件样式显示异常
+通过通用属性systemMaterial设置沉浸式系统材质后组件样式显示异常
 
 问题现象
 
@@ -164,11 +342,11 @@ new uiMaterial.ImmersiveMaterial({
 
 可能原因
 
-通过通用属性设置材质时，如果systemMaterial放在其他样式属性之前，可能导致材质效果优先级与预期不符。
+通过通用属性设置沉浸式系统材质时，如果systemMaterial放在其他样式属性之前，可能导致材质效果优先级与预期不符。
 
 解决措施
 
-将systemMaterial放在其他样式属性（如背景色、边框、阴影等）之后设置。通过组件options参数（如Toast的ShowToastOptions、Popup的PopupOptions等）设置材质时则无需关注设置顺序。
+将systemMaterial放在其他样式属性（如背景色、边框、阴影等）之后设置。通过组件options参数（如Toast的ShowToastOptions、Popup的PopupOptions等）设置沉浸式系统材质时则无需关注设置顺序。
 
 代码示例
 
@@ -196,11 +374,11 @@ DEFAULT是沉浸式系统材质的默认开启模式，在该模式下，Dialog�
 
 解决措施
 
-移除与材质冲突的属性设置（如backgroundColor、backgroundBlurStyle、shadow），让材质效果默认开启。
+移除与沉浸式系统材质冲突的属性设置（如backgroundColor、backgroundBlurStyle、shadow），让材质效果默认开启。
 
-在ENABLE模式下，沉浸式系统材质样式的优先级高于组件本身设置的背景色、模糊、阴影和边框样式，且更多组件会默认开启材质。
+在ENABLE模式下，沉浸式系统材质样式的优先级高于组件本身设置的背景色、模糊、阴影和边框样式，且更多组件会默认开启沉浸式系统材质。
 
-如需在保留现有属性的同时使用材质，通过systemMaterial属性主动设置。
+如需在保留现有属性的同时使用沉浸式系统材质，通过systemMaterial属性主动设置。
 
 材质渲染区域与组件可视区域不一致
 
@@ -212,9 +390,11 @@ Checkbox可视区域为40*40的圆形，材质渲染区域为40*40的矩形。
 
 Text组件可视区域为文本内容，材质渲染区域为100*40的矩形。
 
+Progress组件可视区域为胶囊形，材质渲染区域为100*40的矩形。
+
 可能原因
 
-材质渲染区域由组件布局区域决定，而组件可视区域为实际呈现内容，可能不等于布局区域，导致两者不一致。
+材质渲染区域由组件布局区域决定，而组件可视区域为实际呈现内容的区域，可能不等于布局区域，导致两者不一致。
 
 解决措施
 
@@ -246,6 +426,32 @@ Row() {
   Text("hello")
     .width(100)
     .height(40)
+    .systemMaterial(new uiMaterial.ImmersiveMaterial({
+      style: uiMaterial.ImmersiveStyle.ULTRA_THIN,
+      interactive: true
+    }))
+}
+
+Row() {
+  Text('Progress组件：')
+    .fontColor(Color.Black)
+  Progress({value: 40, type: ProgressType.Capsule})
+    .width(100)
+    .height(40)
+    .systemMaterial(new uiMaterial.ImmersiveMaterial({
+      style: uiMaterial.ImmersiveStyle.ULTRA_THIN,
+      interactive: true
+    }))
+}
+
+// 材质渲染区域与组件可视区域一致示例
+Row() {
+  Text('Progress组件：')
+    .fontColor(Color.Black)
+  Progress({value: 40, type: ProgressType.Capsule})
+    .width(100)
+    .height(40)
+    .borderRadius(20) // 设置borderRadius属性使材质渲染区域与组件可视区域一致
     .systemMaterial(new uiMaterial.ImmersiveMaterial({
       style: uiMaterial.ImmersiveStyle.ULTRA_THIN,
       interactive: true
@@ -291,6 +497,100 @@ Row() {
 ### Code block 1
 
 ```
+import { CircleShape, TitleBarType, uiMaterial } from '@kit.ArkUI';
+
+@Entry
+@Component
+struct MaterialScopeAdaptExample {
+  private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  @State titleHeight: number = 140;
+
+  @Builder
+  NavigationTitle() {
+    Row() {
+      // 请将$r('app.string.title_bar')替换为实际资源文件，在本示例中该资源文件的value值为"标题栏"
+      Text($r('app.string.title_bar'))
+        .fontColor('#182431')
+        .fontSize(30)
+        .lineHeight(41)
+        .fontWeight(700)
+      Blank()
+      Column() {
+        SymbolGlyph($r('sys.symbol.a_3d_square_fill'))
+      }
+      .width(50)
+      .height(50)
+      .clipShape(new CircleShape({
+        width: 50,
+        height: 50
+      }))
+      .justifyContent(FlexAlign.Center)
+      .backgroundColor(Color.Transparent)
+      // 在Navigation标题栏中开启沉浸光感，处于生效范围内，沉浸光感效果生效
+      .systemMaterial(new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.THIN,
+      }))
+    }
+    .alignItems(VerticalAlign.Center)
+    .width('100%')
+    .padding(16)
+    .height(this.titleHeight)
+  }
+
+  build() {
+    Column() {
+      Navigation() {
+        Column() {
+          Row() {
+            // 请将$r('app.string.content_area')替换为实际资源文件，在本示例中该资源文件的value值为"内容区"
+            Text($r('app.string.content_area'))
+
+            Blank()
+
+            Column() {
+              SymbolGlyph($r('sys.symbol.a_3d_square_fill'))
+            }
+            .width(50)
+            .height(50)
+            .clipShape(new CircleShape({
+              width: 50,
+              height: 50
+            }))
+            .justifyContent(FlexAlign.Center)
+            .backgroundColor(Color.Transparent)
+            // 在Navigation内容中开启沉浸光感，处于生效范围外，不生效沉浸光感效果
+            .systemMaterial(new uiMaterial.ImmersiveMaterial({
+              style: uiMaterial.ImmersiveStyle.THIN,
+            }))
+          }
+          .width('100%')
+          .padding(16)
+          .borderRadius(16)
+        }
+        .width('100%')
+        .height('100%')
+        .padding(16)
+        .backgroundColor('#FFFFFF')
+        .linearGradient({
+          angle: 0,
+          colors: [
+            ['#004AAF', 0.0],
+            ['#2787D9', 0.5],
+            ['#F0FAFF', 1.0]
+          ]
+        })
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      }
+      .title({ builder: this.NavigationTitle, height: this.titleHeight }, { barStyle: BarStyle.STACK })
+    }.width('100%').height('100%').backgroundColor('#F1F3F5')
+  }
+}
+```
+
+### Code block 2
+
+```
 // 错误写法：不透明背景色会覆盖在材质层之上，导致材质效果不可见
 Column() {
   Text('沉浸光感')
@@ -302,7 +602,6 @@ Column() {
   style: uiMaterial.ImmersiveStyle.THIN,
 }))
 .backgroundColor(Color.White)
-
 // 推荐写法：将背景色设为透明，确保材质效果可见
 Column() {
   Text('沉浸光感')
@@ -316,7 +615,24 @@ Column() {
 }))
 ```
 
-### Code block 2
+### Code block 3
+
+```
+Button('Click Me')
+  .fontSize(30)
+  .onClick(() => {
+    this.getUIContext()
+      .getPromptAction()
+      .openCustomDialog({
+        builder: () => {
+          this.customDialogComponent()
+        },
+        systemMaterial: new uiMaterial.ImmersiveMaterial({ style: uiMaterial.ImmersiveStyle.ULTRA_THICK })
+      })
+  })
+```
+
+### Code block 4
 
 ```
 // 错误写法：纯不透明颜色遮挡了材质效果
@@ -332,7 +648,7 @@ new uiMaterial.ImmersiveMaterial({
 })
 ```
 
-### Code block 3
+### Code block 5
 
 ```
 // 关闭材质阴影，使用自定义shadow
@@ -342,7 +658,7 @@ new uiMaterial.ImmersiveMaterial({
 })
 ```
 
-### Code block 4
+### Code block 6
 
 ```
 // 推荐写法：先设置其他属性，再设置systemMaterial
@@ -358,7 +674,7 @@ Column() {
 }))
 ```
 
-### Code block 5
+### Code block 7
 
 ```
 // 材质渲染区域与组件可视区域不一致示例
@@ -386,9 +702,35 @@ Row() {
       interactive: true
     }))
 }
+
+Row() {
+  Text('Progress组件：')
+    .fontColor(Color.Black)
+  Progress({value: 40, type: ProgressType.Capsule})
+    .width(100)
+    .height(40)
+    .systemMaterial(new uiMaterial.ImmersiveMaterial({
+      style: uiMaterial.ImmersiveStyle.ULTRA_THIN,
+      interactive: true
+    }))
+}
+
+// 材质渲染区域与组件可视区域一致示例
+Row() {
+  Text('Progress组件：')
+    .fontColor(Color.Black)
+  Progress({value: 40, type: ProgressType.Capsule})
+    .width(100)
+    .height(40)
+    .borderRadius(20) // 设置borderRadius属性使材质渲染区域与组件可视区域一致
+    .systemMaterial(new uiMaterial.ImmersiveMaterial({
+      style: uiMaterial.ImmersiveStyle.ULTRA_THIN,
+      interactive: true
+    }))
+}
 ```
 
-### Code block 6
+### Code block 8
 
 ```
 // 材质效果的显示层级问题示例

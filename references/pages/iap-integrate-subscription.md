@@ -102,8 +102,9 @@ import Logger from '../common/Logger';
     const queryEnvCode = await this.queryEnv();
     if (queryEnvCode !== 0) {
       let queryEnvFailedText = 'This app does not support iap';
-      if (queryEnvCode === iap.IAPErrorCode.ACCOUNT_NOT_LOGGED_IN) {
-        queryEnvFailedText = 'Go to Settings and log in to your Huawei ID and try again.';
+      if (queryEnvCode === iap.IAPErrorCode.ACCOUNT_TERRITORY_NOT_SUPPORTED) {
+        // 如果接口返回错误码“1001860054 用户账号所在服务地不在IAP Kit支持结算的国家/地区中”，应用需隐藏相关IAP功能入口
+        queryEnvFailedText = 'The country or region of the signed-in HUAWEI ID does not support IAP.';
       }
       this.showFailedPage(queryEnvFailedText);
       return;
@@ -249,13 +250,13 @@ import {
 // ...
   dealPurchaseData(purchaseData: string) {
     try {
-      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      // 建议您将purchaseData发送到应用服务器进行签名验证。
       const jwsSubscriptionStatus = (JSON.parse(purchaseData) as PurchaseData).jwsSubscriptionStatus;
       if (!jwsSubscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, jwsSubscriptionStatus invalid');
         return;
       }
-      // 解码 jwsPurchaseOrder 并执行签名验证。
+      // 解码jwsSubscriptionStatus并执行签名验证。
       const subscriptionStatus = JWSUtil.decodeJwsObj(jwsSubscriptionStatus);
       if (!subscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, subscriptionStatus invalid');
@@ -326,8 +327,9 @@ import Logger from '../common/Logger';
     const queryEnvCode = await this.queryEnv();
     if (queryEnvCode !== 0) {
       let queryEnvFailedText = 'This app does not support iap';
-      if (queryEnvCode === iap.IAPErrorCode.ACCOUNT_NOT_LOGGED_IN) {
-        queryEnvFailedText = 'Go to Settings and log in to your Huawei ID and try again.';
+      if (queryEnvCode === iap.IAPErrorCode.ACCOUNT_TERRITORY_NOT_SUPPORTED) {
+        // 如果接口返回错误码“1001860054 用户账号所在服务地不在IAP Kit支持结算的国家/地区中”，应用需隐藏相关IAP功能入口
+        queryEnvFailedText = 'The country or region of the signed-in HUAWEI ID does not support IAP.';
       }
       this.showFailedPage(queryEnvFailedText);
       return;
@@ -429,13 +431,13 @@ import {
 // ...
   dealPurchaseData(purchaseData: string) {
     try {
-      // 建议您将 purchaseData 发送到应用服务器进行签名验证。
+      // 建议您将purchaseData发送到应用服务器进行签名验证。
       const jwsSubscriptionStatus = (JSON.parse(purchaseData) as PurchaseData).jwsSubscriptionStatus;
       if (!jwsSubscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, jwsSubscriptionStatus invalid');
         return;
       }
-      // 解码 jwsPurchaseOrder 并执行签名验证。
+      // 解码jwsSubscriptionStatus并执行签名验证。
       const subscriptionStatus = JWSUtil.decodeJwsObj(jwsSubscriptionStatus);
       if (!subscriptionStatus) {
         Logger.error(TAG, 'dealPurchaseData, subscriptionStatus invalid');

@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-use
 
 图标小符号 (SymbolGlyph/SymbolSpan)
 
-属性字符串（StyledString/MutableStyledString）
+属性字符串 (StyledString/MutableStyledString)
 
 图文混排
 

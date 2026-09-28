@@ -101,7 +101,7 @@ HMS_SpatialReconStatus ret= HMS_SpatialRecon_PushFrame(reconSession, &inputFrame
 
 在获取了必要的输入以后，开发者可以调用HMS_SpatialRecon_StartSession函数进行重建。
 
-开发者需要根据当前应用是否处于前台运行，在每一次调用HMS_SpatialRecon_StartSession函数之后，使用HMS_SpatialRecon_SetRunningMode设定对应的运行模式，让操作系统可以更好地分配计算资源。
+开发者需要根据当前应用是否处于前台运行，在每一次调用HMS_SpatialRecon_StartSession函数之后，使用HMS_SpatialRecon_SetRunningMode设定对应的运行模式，让操作系统可以更好地分配计算资源。由于空间重建对性能开销较大，当前Spatial Recon Kit仅保证旗舰芯片（Kirin 9020/9030S/9030/9030 Pro及以后）上的用户体验，推荐在以上的芯片平台使用。在其他芯片上，即使通过此接口查询得到支持运行空间重建任务，Spatial Recon Kit也无法保证重建耗时和重建质量。
 
 此标志位如未正确设置，可能导致性能或者功耗劣化。
 

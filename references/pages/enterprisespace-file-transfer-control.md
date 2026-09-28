@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-file-transfer-control_
 
-从6.0.0(20)开始，支持设置和获取审批信息、配置空间互传单双通策略的能力。
+从API版本6.0.0(20)开始，支持设置和获取审批信息、配置空间互传单双通策略的能力。
 
 场景介绍
 
@@ -107,6 +107,7 @@ export class FileTransferControlApi {
 import { router } from '@kit.ArkUI';
 import { EAuditAbilityType, FileItem, FileParams } from '../api/FileTransferControlApi';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { Want } from '@kit.AbilityKit';
 
 4.文件外发管控业务相关实现。
 
@@ -140,7 +141,7 @@ struct FileTransferPage {
       }
     };
 
-    // 实际企业应用由context.startAbility(want)拉起,仅需关注企业应用被拉起ability后的处理
+    // 实际企业应用由context.startAbility(want)拉起，仅需关注企业应用被拉起ability后的处理
     try {
       let param: FileParams | undefined;
       let action: string | undefined;
@@ -242,12 +243,12 @@ struct SavePolicyPage {
         '    "incoming_check": {' +
         '      "data_list": [' +
         '        {' +
-        '          "allow": "VirusCheck.result == 0",' +
+        '          "allow": "VirusCheck.Result == 0",' +
         '          "approval": "",' +
         '          "check_point": "VirusCheck",' +
         '          "check_point_name": "VirusCheck_in",' +
         '          "is_enable": "true",' +
-        '          "forbidden": "VirusCheck.result == 1",' +
+        '          "forbidden": "VirusCheck.Result == 1",' +
         '          "order": "0"' +
         '        }' +
         '      ]' +
@@ -581,6 +582,7 @@ export class FileTransferControlApi {
 import { router } from '@kit.ArkUI';
 import { EAuditAbilityType, FileItem, FileParams } from '../api/FileTransferControlApi';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { Want } from '@kit.AbilityKit';
 ```
 
 ### Code block 4
@@ -616,7 +618,7 @@ struct FileTransferPage {
       }
     };
 
-    // 实际企业应用由context.startAbility(want)拉起,仅需关注企业应用被拉起ability后的处理
+    // 实际企业应用由context.startAbility(want)拉起，仅需关注企业应用被拉起ability后的处理
     try {
       let param: FileParams | undefined;
       let action: string | undefined;
@@ -722,12 +724,12 @@ struct SavePolicyPage {
         '    "incoming_check": {' +
         '      "data_list": [' +
         '        {' +
-        '          "allow": "VirusCheck.result == 0",' +
+        '          "allow": "VirusCheck.Result == 0",' +
         '          "approval": "",' +
         '          "check_point": "VirusCheck",' +
         '          "check_point_name": "VirusCheck_in",' +
         '          "is_enable": "true",' +
-        '          "forbidden": "VirusCheck.result == 1",' +
+        '          "forbidden": "VirusCheck.Result == 1",' +
         '          "order": "0"' +
         '        }' +
         '      ]' +

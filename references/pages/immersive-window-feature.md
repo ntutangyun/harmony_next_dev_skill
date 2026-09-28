@@ -73,6 +73,7 @@ export default class EntryAbility extends UIAbility {
     });
   }
 // ...
+}
 
 非自由窗口的非沉浸式布局示意	非自由窗口的沉浸式布局示意
 	
@@ -156,6 +157,7 @@ export default class EntryAbility extends UIAbility {
     });
   }
   // ...
+}
 
 适配沉浸式布局实现沉浸式效果
 
@@ -538,6 +540,7 @@ export default class EntryAbility extends UIAbility {
     });
   }
 // ...
+}
 ```
 
 ### Code block 2
@@ -587,6 +590,7 @@ export default class EntryAbility extends UIAbility {
     });
   }
   // ...
+}
 ```
 
 ### Code block 4

@@ -36,7 +36,7 @@ Scan Kit支持十三种全球主流的码类型的识别和生成以及MULTIFUNC
 
 图像识码能力仅支持Phone、Tablet、Wearable（从API版本6.1.0(23)开始支持Wearable）。
 
-码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从API版本5.1.0(18)开始支持Wearable、从API版本5.1.1(19)开始支持PC/2in1、TV）。
+码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从API版本5.1.0(18)开始支持Wearable，从API版本5.1.1(19)开始支持PC/2in1、TV）。
 
 [h2]功能使用限制
 

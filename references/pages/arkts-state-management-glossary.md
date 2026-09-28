@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sta
 
 A
 
-[h2]Attribute-Level Updates；属性级精准更新
+[h2]Attribute-Level Updates；属性级更新
 
 状态管理框架通过类属性装饰器实现对类对象属性的精确观测，当属性变化时仅刷新该属性绑定的组件，避免其他未变化属性关联组件的连带刷新，从而提升UI更新性能。
 

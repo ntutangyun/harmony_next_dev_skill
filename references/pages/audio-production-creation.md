@@ -10,4 +10,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/audio-pro
 
 音频格式转换(C/C++)
 
-空间渲染(C/C++)
+空间音频渲染(C/C++)
+
+音频效果(C/C++)

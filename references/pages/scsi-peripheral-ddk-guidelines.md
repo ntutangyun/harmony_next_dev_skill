@@ -26,7 +26,7 @@ BMS（Bundle Manager Service）在HarmonyOS上主要负责应用的安装、卸�
 
 DDK
 
-DDK（Driver Development Kit）是HarmonyOS基于扩展外设框架，为开发者提供的驱动应用开发的工具包，可针对SCSI非标外设，开发对应的驱动。
+DDK（Driver Development Kit）是HarmonyOS基于扩展外设框架，为开发者提供的驱动应用开发的工具包，可针对非标USB设备，开发对应的驱动。
 
 非标外设
 

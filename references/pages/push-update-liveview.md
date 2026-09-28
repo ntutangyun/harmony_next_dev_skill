@@ -8,10 +8,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/push-upda
 
 通过Push Kit发送的实况窗消息支持三种操作类型，分别是：
 
-实况窗消息操作类型	支持操作的场景类型	说明
-创建实况窗	FLIGHT、TAXI、TRAIN、EXPRESS、CHECK_IN	仅航班、出行打车、高铁/火车、快递、打卡场景支持通过Push Kit创建实况窗，其他场景请通过Live View Kit本地创建。
-更新实况窗	所有场景	所有场景皆支持通过Push Kit更新实况窗。
-结束实况窗	所有场景	所有场景皆支持通过Push Kit结束实况窗。
+创建实况窗：仅部分场景支持通过Push Kit创建实况窗，详情请参见通过Push Kit创建和更新实况窗的约束限制；其他场景请通过Live View Kit本地创建。
+
+更新实况窗：所有场景皆支持通过Push Kit更新实况窗。
+
+结束实况窗：所有场景皆支持通过Push Kit结束实况窗。
 
 有关场景类型的详细说明请参见支持的范围与场景。
 
@@ -162,7 +163,7 @@ activityId：实况活动ID。详情请参见activityId。
 
 operation：实况窗通知操作类型，0表示创建实况窗。详情请参见operation。
 
-event：实况窗消息具体场景类型，需要与应用实际申请通过的场景一致。例如：TAXI（出行打车）、FLIGHT（航班）等。通过Push Kit创建实况窗仅支持FLIGHT、TAXI、TRAIN、EXPRESS、CHECK_IN五种场景。详情请参见创建实况窗约束。
+event：实况窗消息具体场景类型，需要与应用实际申请通过的场景一致。例如：TAXI（出行打车）、FLIGHT（航班）等。当通过Push Kit创建实况窗消息时，event取值仅支持部分业务场景，详情请参考通过Push Kit创建和更新实况窗的约束限制。
 
 status：表示实况窗消息状态。operation为0时必填，取值范围根据场景类型而定，详情见Status取值范围，并且需要在支持携带占位符的字段填入至少一次status的占位符{{status}}，Push Kit将替换占位符{{status}}为Status取值范围中对应的值。
 

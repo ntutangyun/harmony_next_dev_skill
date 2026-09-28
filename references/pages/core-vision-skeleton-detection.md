@@ -177,11 +177,16 @@ struct Index {
       let detector = await skeletonDetection.SkeletonDetector.create();
       let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
       await detector.destroy();
+      if (!data) {
+        hilog.error(0x0000, 'skeletonDetectSample', 'Invalid skeleton detection result');
+        return;
+      }
       let poseJson = JSON.stringify(data);
       hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
       this.dataValues = poseJson;
     } catch (err) {
-      hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error: ${err}`);
+      const error = err as BusinessError;
+      hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error. Code: ${error.code}, message: ${error.message}`);
     }
   }
 
@@ -395,11 +400,16 @@ struct Index {
       let detector = await skeletonDetection.SkeletonDetector.create();
       let data: skeletonDetection.SkeletonDetectionResponse = await detector.process(request);
       await detector.destroy();
+      if (!data) {
+        hilog.error(0x0000, 'skeletonDetectSample', 'Invalid skeleton detection result');
+        return;
+      }
       let poseJson = JSON.stringify(data);
       hilog.info(0x0000, 'skeletonDetectSample', `Succeeded in skeleton detection: ${poseJson}`);
       this.dataValues = poseJson;
     } catch (err) {
-      hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error: ${err}`);
+      const error = err as BusinessError;
+      hilog.error(0x0000, 'skeletonDetectSample', `Skeleton detection error. Code: ${error.code}, message: ${error.message}`);
     }
   }
 

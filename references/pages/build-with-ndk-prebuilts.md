@@ -6,9 +6,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/build-wit
 
 预构建库使用约束
 
-1.确保引入的SO动态库是通过HarmonyOS NDK 编译工具链编译生成，如何通过HarmonyOS NDK 编译工具链编译预构建库，请参考CMake构建三方库适配流程。
+确保引入的SO动态库是通过HarmonyOS NDK 编译工具链编译生成，如何通过HarmonyOS NDK 编译工具链编译预构建库，请参考CMake构建三方库适配流程。
 
-2.确保引入的SO动态库的依赖库也导入到工程中且通过HarmonyOS NDK 编译工具链编译生成。
+确保引入的SO动态库的依赖库也导入到工程中且通过HarmonyOS NDK 编译工具链编译生成。
 
 直接引入预构建库
 

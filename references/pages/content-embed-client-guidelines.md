@@ -50,16 +50,14 @@ OH_ContentEmbed_DestroyDocument	销毁OE文档对象，释放资源。
 
 [h2]添加动态链接库
 
-CMakeLists.txt中添加以下lib。
+在Native工程的src/main/cpp/CMakeLists.txt，添加如下链接库：
 
-# content embed
-libcontent_embed_ndk.so
-# hilog
-libhilog_ndk.z.so
-# ace
-libace_napi.z.so
-# piexlmap
-libpixelmap.so
+target_link_libraries(entry PUBLIC
+    libcontent_embed_ndk.so
+    libhilog_ndk.z.so
+    libace_napi.z.so
+    libpixelmap.so
+)
 
 [h2]引用头文件
 
@@ -419,14 +417,12 @@ void HandleProxy(ContentEmbed_ExtensionProxy* proxy)
 ### Code block 1
 
 ```
-# content embed
-libcontent_embed_ndk.so
-# hilog
-libhilog_ndk.z.so
-# ace
-libace_napi.z.so
-# piexlmap
-libpixelmap.so
+target_link_libraries(entry PUBLIC
+    libcontent_embed_ndk.so
+    libhilog_ndk.z.so
+    libace_napi.z.so
+    libpixelmap.so
+)
 ```
 
 ### Code block 2

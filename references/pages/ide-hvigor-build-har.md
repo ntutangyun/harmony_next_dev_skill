@@ -36,9 +36,7 @@ HAR自身的构建不建议引用本地模块，可能导致其他模块依赖�
   └─oh-package.json5  // HAR的描述文件，定义HAR的基本信息、依赖项等
 
 {
-  ...
   "main": "./src/main/ets/components/MainPage.ets",
-  ...
 }
 
 字节码HAR
@@ -300,7 +298,7 @@ HAR包产物解压后，结构如下：
 
 对HAR进行签名
 
-DevEco Studio在构建HAR流程的基础上，支持对HAR进行签名。签名后的HAR包后续可用于接入生态市场，接入流程请参考SDK类商品接入说明。
+DevEco Studio在构建HAR流程的基础上，支持对HAR进行签名。签名后的HAR包后续可用于接入生态市场，接入流程请参考上架SDK说明与指南。
 
 说明
 
@@ -317,6 +315,76 @@ DevEco Studio在构建HAR流程的基础上，支持对HAR进行签名。签名�
 配置工程签名信息，配置流程请参考配置签名信息。
 
 构建完成后，build目录下生成签名HAR包产物。
+
+多HAR合并打包
+
+SDK厂商在对外发布SDK（HAR包）时，有时需要隐藏内部实现细节及依赖，仅暴露必要的接口。从26.0.0版本开始，Hvigor支持将字节码HAR及其所有依赖合并打包，生成一个无外部依赖、可直接使用的独立HAR包。
+
+[h2]配置方法
+
+在HAR模块的build-profile.json5文件中，配置bundle字段可以实现多HAR合并打包的能力。bundle下包含bundledDeclare和bundledAllDependencies两个字段，是bundledDependencies的增强版。使用时，不能同时配置bundle和bundledDependencies。
+
+// HAR模块build-profile.json5
+"buildOption": {
+  "arkOptions": {
+    "bundle": {
+      "bundledDeclare": true,
+      "bundledAllDependencies": true
+    }
+  }
+}
+
+字段名称	类型	可选/必选	含义
+bundledDeclare	布尔值	可选	构建字节码HAR或HSP时，是否生成bundle化的声明文件。 true：生成。 false（缺省默认值）：不生成。 说明： bundledDeclare开启后，产物HAR中，默认只会生成oh-package.json5中main字段和oh-exports字段所指向源码文件的声明文件。如未配置oh-exports字段，则只生成main字段源码的声明文件。
+bundledAllDependencies	布尔值	可选	构建字节码HAR时，是否将所有依赖打包到产物中。 true：打包。 false（缺省默认值）：不打包。
+
+说明
+
+bundledAllDependencies会将dependencies和dynamicDependencies所有依赖都打包，而bundledDependencies只会将dependencies和dynamicDependencies依赖的源码HAR打包。
+
+bundledAllDependencies为true，devDependencies中配置的HAR包的资源/so不会打包。
+
+bundledAllDependencies为true，bundledDeclare也必须配置为true。
+
+bundledAllDependencies为true，且hvigor-config.json5的ohos.byteCodeHar.integratedOptimization为true时，工程级oh-package.json5中的本地模块依赖的资源/so不会打包。
+
+bundledAllDependencies为true，依赖中不支持配置HSP类型的依赖。
+
+bundledAllDependencies为true，若依赖没有被调用，则最终会被裁剪，不会打包到最终的HAR中。
+
+[h2]使用效果说明
+
+关于bundledDeclare字段的使用效果，示例代码如下：
+
+// oh-package.json5
+"dependencies": {
+  "shop": "1.0.0"
+}
+
+// Index.ets
+export { live } from './src/main/ets/components/Live';
+export { shop } from 'shop';
+
+// Index.d.ets
+export { live } from './src/main/ets/components/Live';
+export { shop } from 'shop';
+
+// Index.d.ets
+export declare function live(game: string): void;
+export declare function shop(product: string): void;
+
+// oh-package.json5
+"dependencies": {
+  "shop": "1.0.0"
+}
+
+// Index.ets
+export { live } from './src/main/ets/components/Live';
+export { shop } from 'shop';
+
+将bundledAllDependencies配置为true（此时bundledDeclare也必须配置为true）编译，除了Index.d.ets会被bundle合并外，依赖的shop源代码文件也会被合并到live的modules.abc中，资源文件/so文件也会合并打包到live包中。
+
+配置bundledAllDependencies为true后，HAR包的oh-package.json5中的dependencies也会被消除：
 
 ## Code blocks
 
@@ -349,9 +417,7 @@ DevEco Studio在构建HAR流程的基础上，支持对HAR进行签名。签名�
 
 ```
 {
-  ...
   "main": "./src/main/ets/components/MainPage.ets",
-  ...
 }
 ```
 
@@ -530,4 +596,68 @@ DevEco Studio在构建HAR流程的基础上，支持对HAR进行签名。签名�
     "ohos.sign.har": true
   }
 }
+```
+
+### Code block 13
+
+```
+// HAR模块build-profile.json5
+"buildOption": {
+  "arkOptions": {
+    "bundle": {
+      "bundledDeclare": true,
+      "bundledAllDependencies": true
+    }
+  }
+}
+```
+
+### Code block 14
+
+```
+// oh-package.json5
+"dependencies": {
+  "shop": "1.0.0"
+}
+```
+
+### Code block 15
+
+```
+// Index.ets
+export { live } from './src/main/ets/components/Live';
+export { shop } from 'shop';
+```
+
+### Code block 16
+
+```
+// Index.d.ets
+export { live } from './src/main/ets/components/Live';
+export { shop } from 'shop';
+```
+
+### Code block 17
+
+```
+// Index.d.ets
+export declare function live(game: string): void;
+export declare function shop(product: string): void;
+```
+
+### Code block 18
+
+```
+// oh-package.json5
+"dependencies": {
+  "shop": "1.0.0"
+}
+```
+
+### Code block 19
+
+```
+// Index.ets
+export { live } from './src/main/ets/components/Live';
+export { shop } from 'shop';
 ```

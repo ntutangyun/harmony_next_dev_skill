@@ -8,15 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mindspore
 
 图像分类可实现对图像中物体的识别，在医学影像分析、自动驾驶、电子商务、人脸识别等领域有广泛的应用。
 
-若需基于本Demo适配自有模型，请优先选择静态Shape模型。由于ArkTS暂不支持动态Shape，如确有相关需求，请参考使用MindSpore Lite实现图像分类（C/C++），通过Native侧的OH_AI_ModelResize接口对模型inputs进行动态调整。
-
-基本概念
-
-在进行开发前，请先了解以下概念。
-
-张量：它与数组和矩阵非常相似，是MindSpore Lite网络运算中的基本数据结构。
-
-Float16推理模式： Float16又称半精度，它使用16比特表示一个数。Float16推理模式表示推理的时候用半精度进行推理。
+若需基于本Demo适配自有模型，请优先选择静态Shape模型。注意：ArkTS接口不支持NPU后端动态Shape模型推理。
 
 接口说明
 

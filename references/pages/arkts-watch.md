@@ -21,7 +21,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wat
 装饰器说明
 
 @Watch补充变量装饰器	说明
-装饰器参数	必填。常量字符串，字符串需要有引号。是(string) => void自定义成员函数的方法的引用。
+装饰器参数	必填。常量字符串，字符串需要有引号。是(string) => void 自定义成员函数的方法的引用。
 可装饰的自定义组件变量	可监听所有装饰器装饰的状态变量。不允许监听常规变量。
 装饰器的顺序	装饰器顺序不影响实际功能，开发者可以根据自己的需要决定装饰器顺序的先后。建议@State、@Prop、@Link等装饰器在@Watch装饰器之前，以保持整体风格的一致。
 @Watch触发时机	使用@Watch来监听状态变量变化时，回调触发时间是变量真正变化、被赋值的时间。详细示例请参考使用场景中的@Watch的触发时机。
@@ -29,7 +29,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wat
 语法说明
 
 类型	说明
-(changedPropertyName? : string) => void	该函数是自定义组件的成员函数，changedPropertyName是被watch的属性名。 在多个状态变量绑定同一个@Watch的回调方法的时候，可以通过changedPropertyName进行不同的逻辑处理 将属性名作为字符串输入参数，不返回任何内容。
+(changedPropertyName? : string) => void	该函数是自定义组件的成员函数，changedPropertyName是被监听的属性名。 在多个状态变量绑定同一个@Watch的回调方法的时候，可以通过changedPropertyName进行不同的逻辑处理 将属性名作为字符串输入参数，不返回任何内容。
 
 观察变化和行为表现
 
@@ -47,7 +47,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-wat
 
 开发者应关注性能，属性值更新函数会延迟组件的重新渲染（具体请见上面的行为表现），因此，回调函数应仅执行快速运算；
 
-不建议在@Watch函数中调用async await，因为@Watch设计的用途是为了快速的计算，异步行为可能会导致重新渲染速度的性能问题。
+不建议在@Watch函数中调用async/await，因为@Watch设计的用途是为了快速的计算，异步行为可能会导致重新渲染速度的性能问题。
 
 @Watch参数为必选，且参数类型必须是string，否则编译期会报错。不建议开发者传入undefined，传入后编译不会报错，相当于传入“undefined”。
 

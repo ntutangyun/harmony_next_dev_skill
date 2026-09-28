@@ -1,4 +1,4 @@
-# 使用JSVM-API接口进行private相关开发
+# 使用JSVM-API接口进行 private 属性相关开发
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/use-jsvm-about-private_
 
@@ -26,7 +26,7 @@ JSVM-API接口开发流程参考使用JSVM-API实现JS与C/C++语言交互开发
 
 [h2]使用接口创建 private key 并添加对应 private property，随后删除
 
-cpp部分代码
+cpp部分代码：
 
 static JSVM_Value privateTest(JSVM_Env env, JSVM_CallbackInfo info) {
     JSVM_VM vm;

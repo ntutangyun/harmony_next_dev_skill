@@ -142,7 +142,7 @@ public async getPubKeyFromCertChain(returnResult: trustedAppService.AttestReturn
   try {
     // 解析匿名证书链数据，获取三级证书
     const certChain: Array<string> = returnResult.certChains;
-    // certArray[0]: 空字符串；certArray[1]：叶子证书实体；certArray[2]：中间证书主体；certArray[3]：根证书主体
+    // certList[0]: 空字符串；certList[1]：叶子证书实体；certList[2]：中间证书主体；certList[3]：根证书主体
     const certList: Array<string> = certChain[0].split('-----BEGIN CERTIFICATE-----');
     const thirdCert = '-----BEGIN CERTIFICATE-----' + certList[1];
     // 获取公钥
@@ -284,7 +284,7 @@ public async getPubKeyFromCertChain(returnResult: trustedAppService.AttestReturn
   try {
     // 解析匿名证书链数据，获取三级证书
     const certChain: Array<string> = returnResult.certChains;
-    // certArray[0]: 空字符串；certArray[1]：叶子证书实体；certArray[2]：中间证书主体；certArray[3]：根证书主体
+    // certList[0]: 空字符串；certList[1]：叶子证书实体；certList[2]：中间证书主体；certList[3]：根证书主体
     const certList: Array<string> = certChain[0].split('-----BEGIN CERTIFICATE-----');
     const thirdCert = '-----BEGIN CERTIFICATE-----' + certList[1];
     // 获取公钥

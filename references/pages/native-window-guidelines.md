@@ -113,7 +113,7 @@ callback_.DispatchTouchEvent = DispatchTouchEventCB;
 
 OH_NativeXComponent_RegisterCallback(nativeXComponent, &callback_);
 
-设置OHNativeWindowBuffer的属性。使用OH_NativeWindow_NativeWindowHandleOpt设置OHNativeWindowBuffer的属性（默认携带NATIVEBUFFER_USAGE_CPU_READ usage参数，如果不使用CPU读写数据，建议去除NATIVEBUFFER_USAGE_CPU_READ usage参数，具体可见关闭CPU访问窗口缓冲区数据）。
+设置OHNativeWindow的属性。使用OH_NativeWindow_NativeWindowHandleOpt设置OHNativeWindowBuffer的属性（默认携带NATIVEBUFFER_USAGE_CPU_READ usage参数，如果不使用CPU读写数据，建议去除NATIVEBUFFER_USAGE_CPU_READ usage参数，具体可见关闭CPU访问窗口缓冲区数据）。
 
 int code = SET_BUFFER_GEOMETRY;
 int32_t bufferHeight = static_cast<int32_t>(height_ / 4);
@@ -149,6 +149,7 @@ if (releaseFenceFd != -1) {
     close(releaseFenceFd);
 }
 uint32_t *pixel = static_cast<uint32_t *>(mappedAddr);
+uint32_t value = flag_ ? 0xfff0000f : 0xff00ffff;
 for (uint64_t x = 0; x < bufferHandle->width; x++) {
     for (uint64_t y = 0; y < bufferHandle->height; y++) {
         *pixel++ = value;
@@ -157,9 +158,9 @@ for (uint64_t x = 0; x < bufferHandle->width; x++) {
 
 提交OHNativeWindowBuffer到图形队列。请注意OH_NativeWindow_NativeWindowFlushBuffer接口的acquireFenceFd不可以和OH_NativeWindow_NativeWindowRequestBuffer接口获取的releaseFenceFd相同，acquireFenceFd可传入默认值-1。acquireFenceFd是生产者需要传入的文件句柄，消费者获取到buffer后可根据生产者传入的acquireFenceFd决定何时去渲染并上屏buffer内容。
 
-struct Region *region = new Region();
+struct Region region = {0};
 int acquireFenceFd = -1;
-ret = OH_NativeWindow_NativeWindowFlushBuffer(nativeWindow, nativeWindowBuffer, acquireFenceFd, *region);
+ret = OH_NativeWindow_NativeWindowFlushBuffer(nativeWindow, nativeWindowBuffer, acquireFenceFd, region);
 if (ret != NATIVE_ERROR_OK) {
     LOGE("flush failed");
     (void)OH_NativeWindow_NativeWindowAbortBuffer(nativeWindow, nativeWindowBuffer);
@@ -313,6 +314,7 @@ if (releaseFenceFd != -1) {
     close(releaseFenceFd);
 }
 uint32_t *pixel = static_cast<uint32_t *>(mappedAddr);
+uint32_t value = flag_ ? 0xfff0000f : 0xff00ffff;
 for (uint64_t x = 0; x < bufferHandle->width; x++) {
     for (uint64_t y = 0; y < bufferHandle->height; y++) {
         *pixel++ = value;
@@ -323,9 +325,9 @@ for (uint64_t x = 0; x < bufferHandle->width; x++) {
 ### Code block 11
 
 ```
-struct Region *region = new Region();
+struct Region region = {0};
 int acquireFenceFd = -1;
-ret = OH_NativeWindow_NativeWindowFlushBuffer(nativeWindow, nativeWindowBuffer, acquireFenceFd, *region);
+ret = OH_NativeWindow_NativeWindowFlushBuffer(nativeWindow, nativeWindowBuffer, acquireFenceFd, region);
 if (ret != NATIVE_ERROR_OK) {
     LOGE("flush failed");
     (void)OH_NativeWindow_NativeWindowAbortBuffer(nativeWindow, nativeWindowBuffer);

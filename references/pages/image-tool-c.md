@@ -22,7 +22,7 @@ DNG23+	支持	不支持
 Exif信息的读取与编辑相关C API如下，详细介绍请参考image_source_native.h。
 
 接口	说明
-OH_ImageSourceNative_GetImageProperty()	获取指定属性键的Exif信息。
+OH_ImageSourceNative_GetImagePropertyWithNull()	获取指定属性键的Exif信息。
 OH_ImageSourceNative_ModifyImageProperty()	修改指定属性键的Exif信息。
 
 注意事项

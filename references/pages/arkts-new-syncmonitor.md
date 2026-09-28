@@ -661,7 +661,7 @@ struct DocSampleArrayMultiPath {
 
 打印arr[1] assign ...；
 
-执行onArrChangedSync，打印日志: '@SyncMonitor: arr: [0,100,2,3,4,5], m.dirty [arr.1]'；
+执行onArrChangedSync，打印日志: '@SyncMonitor: arr: [0,100,2,3,4,5], m.dirty: [arr.1]'；
 
 打印日志arr[2] assign ...；
 
@@ -1807,7 +1807,7 @@ struct Index {
 
 [h2]监听变量从可访问变为不可访问和从不可访问变为可访问
 
-@Monitor仅会保存变量可访问时的值，当状态变量变为不可访问的状态时，并不会记录其值的变化。从API version 20开始，如果需要监听可访问到不可访问和不可访问到可访问的状态变化，可以使用addMonitor。
+@Monitor仅会保存变量可访问时的值，当状态变量变为不可访问的状态时，并不会记录其值的变化。从API version 20开始，可以使用addMonitor监听变量从可访问到不可访问和从不可访问到可访问的状态变化。
 
 @SyncMonitor可以监听变量从可访问变为不可访问或从不可访问变为可访问的变化。在下面的例子中，点击三个Button，均会触发onChange的回调。
 

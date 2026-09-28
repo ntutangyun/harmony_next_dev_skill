@@ -56,6 +56,22 @@ ohpm-repo batch_download <pkg_list>
 
 在batch_download命令后面配置--not-use-proxy <string>，发起请求时不会为指定的地址设置代理，如果有多个地址请使用英文逗号隔开，并使用url编码转换特殊字符。
 
+[h2]--cert-verify
+
+默认值：false
+
+类型：Boolean
+
+ohpm-repo 6.0.1版本开始支持在batch_download命令后面配置--cert-verify，用于校验--public-registry仓库的认证证书。默认不校验认证证书。
+
+[h2]--ca-files
+
+默认值：无
+
+类型：String
+
+ohpm-repo 6.0.1版本开始支持配置认证证书路径。在batch_download命令后面配置--ca-files <string>，指定ca证书路径，当--cert-verify开启时，校验--public-registry仓库服务端证书需要的ca证书。可以设置多个证书路径，以英文逗号间隔。详情请见：CA证书获取及配置。
+
 示例
 
 执行以下命令从ohpm-repo中批量下载包文件：
@@ -74,11 +90,13 @@ PS D:\> ohpm-repo batch_download D:\pkgInfo_1754733375315.json
 
 说明
 
-1、生成的zip文件以仓库名作为目录，每个仓库目录中存在包文件和pkgInfo.json文件，pkgInfo.json文件记录每个包的文件名、包名、组织、上传者和Tag标签，用于在批量上传时准确指定ohpm-repo的数据库中某个用户为某个包的真实上传用户，同时将包的Tag标签一起上传。
+生成的zip文件以仓库名作为目录，每个仓库目录中存在包文件和pkgInfo.json文件，pkgInfo.json文件记录每个包的文件名、包名、组织、上传者和Tag标签，用于在批量上传时准确指定ohpm-repo的数据库中某个用户为某个包的真实上传用户，同时将包的Tag标签一起上传。
 
-2、命令执行中，如果某个包的用户在ohpm-repo中不存在，将默认指定该包的上传用户为管理员用户或者组织的管理员用户。
+命令执行中，如果某个包的用户在ohpm-repo中不存在，将默认指定该包的上传用户为管理员用户或者组织的管理员用户。
 
-3、ohpm-repo从5.3.0开始支持多仓库配置，当从OpenHarmony三方库中心仓下载包，生成的包zip文件，目录名为ohpm，在后续执行batch_publish命令时，默认导入ohpm-repo仓库名为ohpm的仓库中。
+ohpm-repo从5.3.0开始支持多仓库配置，当从OpenHarmony三方库中心仓下载包，生成的包zip文件，目录名为ohpm，在后续执行batch_publish命令时，默认导入ohpm-repo仓库名为ohpm的仓库中。
+
+若--public‑registry仓库的元数据及第三方包下载地址存在重定向场景，则重定向链路对应的认证证书同样需要配置至--ca‑files中。例如中心仓实体包下载地址会重定向到https://contentcenter-drcn.dbankcdn.cn，也需要配置认证证书。
 
 batch_download_1754735610304.zip目录结构
 +---ohpm

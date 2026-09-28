@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-cust
 
 [h2]接口说明
 
-文本塑形中常用接口如下表所示，详细接口说明参考@ohos.graphics.text (文本模块)和TextBlob。
+文本塑形中常用接口如下表所示，详细接口说明参考@ohos.graphics.text (文本模块)、TextBlob和drawTextBlob。
 
 接口名	描述
 buildLineTypeset(): LineTypeset	构建行排版器。
@@ -44,7 +44,7 @@ import { text } from '@kit.ArkGraphics2D'
 import { drawing } from '@kit.ArkGraphics2D'
 import { common2D } from '@kit.ArkGraphics2D'
 
-创建段落样式，并使用构造段落生成器ParagraphBuilder生成段落实例。
+创建段落样式，并构造段落生成器ParagraphBuilder实例。
 
 let myTextStyle: text.TextStyle = {
   // 文本大小
@@ -69,7 +69,7 @@ let textLine: text.TextLine = lineTypeSet.createLine(0, 11);
 // 获取塑形结果
 let runs: text.Run[] = textLine.getGlyphRuns();
 
-该步骤是文本塑形流程中的自定义绘制环节。通过调用getGlyphs()方法获取文本中每个字符对应的字形序号，再结合getFont()方法获取的字体对象，即可唯一确定每个字形的具体图形信息。从 API version 20 开始，新增的getAdvances()方法能够返回一个数组，其中包含了每个字形在绘制时建议占用的宽度和高度。依赖这些精确的测量数据，开发者可以自由地计算并定义每个字形的绘制位置，从而实现复杂的文本布局效果，如自定义字符间距、垂直偏移或特殊排版。
+该步骤是文本塑形流程中的自定义绘制环节。通过调用getGlyphs()方法获取文本中每个字符对应的字形序号，再结合getFont()方法获取的字体对象，即可唯一确定每个字形的具体图形信息。从 API version 20 开始，新增的getAdvances()方法能够返回一个数组，包含范围内每个字形的字形宽度。依赖这些精确的测量数据，开发者可以自由地计算并定义每个字形的绘制位置，从而实现复杂的文本布局效果，如自定义字符间距、垂直偏移或特殊排版。
 
 let x: number = 0;
 let y: number = 0;

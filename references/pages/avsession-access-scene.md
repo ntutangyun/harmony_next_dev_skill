@@ -88,7 +88,7 @@ struct Index {
 
 [h2]元数据信息
 
-元数据信息AVMetadata包括：当前媒体的ID（assetId），上一首媒体的ID（previousAssetId），下一首媒体的ID（nextAssetId），标题（title），专辑作者（author），专辑名称（album），词作者（writer），媒体时长（duration）等。
+元数据信息AVMetadata包括：当前媒体的ID（assetId）、上一首媒体的ID（previousAssetId）、下一首媒体的ID（nextAssetId）、标题（title）、专辑作者（author）、艺术家（artist）、专辑名称（album）、词作者（writer）、媒体图片（mediaImage）和媒体时长（duration）等。
 
 import { avSession as AVSessionManager } from '@kit.AVSessionKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -148,7 +148,7 @@ singleLyricText字段：单条歌词内容，系统蓝牙模块会根据该字�
 
 lyric字段仅支持LRC格式（时间标签+歌词信息，如[00:25.44]歌词信息）的歌词内容，若应用传入其他格式的歌词内容，系统播控中心存在解析失败从而导致歌词显示异常问题。
 
-传入的歌词字符串大小均不允许超过40960字节，否则会由于系统传输限制导致歌词信息设置失效。
+lyric字段和singleLyricText字段的大小均不允许超过40960字节，否则会由于系统传输限制导致歌词信息设置失效。
 
 import { avSession as AVSessionManager } from '@kit.AVSessionKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -493,7 +493,7 @@ struct Index {
 
 [h2]播放状态信息
 
-播放状态信息AVPlaybackState包括：当前媒体的播放状态（state）、播放位置（position）、播放倍速（speed）、缓冲时间（bufferedTime）、循环模式（loopMode）、是否收藏（isFavorite）、正在播放的媒体ID（activeItemId）、自定义媒体数据（extras）等。
+播放状态信息AVPlaybackState包括：当前媒体的播放状态（state）、播放位置（position，包含elapsedTime已播放时长和updateTime更新时间戳）、播放倍速（speed）、缓冲时间（bufferedTime）、循环模式（loopMode）、是否收藏（isFavorite）、正在播放的媒体ID（activeItemId）、自定义媒体数据（extras）等。
 
 import { avSession as AVSessionManager } from '@kit.AVSessionKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -880,7 +880,7 @@ struct Index {
 
 方式一（推荐使用）：
 
-应用按需注册需要的控制指令，目前支持转换的AVSession控制指令如下：
+应用可以根据控制命令的处理按需注册需要的控制命令，目前支持转换的AVSession控制命令如下：
 
 控制命令	功能说明
 play	播放命令。
@@ -931,13 +931,13 @@ struct Index {
               console.info(`on play , do play task`);
               // ...
               // 如暂不支持该指令，请勿注册；或在注册后但暂不使用时，通过session.off('play')取消监听。
-              // 处理完毕后，请使用setAVPlayState上报播放状态。
+              // 处理完毕后，请使用setAVPlaybackState上报播放状态。
             });
             session.on('pause', () => {
               console.info(`on pause , do pause task`);
               // ...
               // 如暂不支持该指令，请勿注册；或在注册后但暂不使用时，通过session.off('pause')取消监听。
-              // 处理完毕后，请使用setAVPlayState上报播放状态。
+              // 处理完毕后，请使用setAVPlaybackState上报播放状态。
             });
             // ...
           } catch (err) {
@@ -955,7 +955,7 @@ struct Index {
 
 方式二：
 
-通过AVSession注册on('handleKeyEvent')指令。该回调接口会直接转发媒体按键事件KeyEvent。应用需要自行识别按键事件的类型，并响应事件实现对应的功能。目前支持转发的按键事件类型如下：
+通过AVSession注册on('handleKeyEvent')命令。该回调接口会直接转发媒体按键事件KeyEvent。应用需要自行识别按键事件的类型，并响应事件实现对应的功能。目前支持转发的按键事件类型如下：
 
 按键类型(KeyCode)	功能说明
 KEYCODE_MEDIA_PLAY_PAUSE	多媒体键：播放/暂停
@@ -1764,13 +1764,13 @@ struct Index {
               console.info(`on play , do play task`);
               // ...
               // 如暂不支持该指令，请勿注册；或在注册后但暂不使用时，通过session.off('play')取消监听。
-              // 处理完毕后，请使用setAVPlayState上报播放状态。
+              // 处理完毕后，请使用setAVPlaybackState上报播放状态。
             });
             session.on('pause', () => {
               console.info(`on pause , do pause task`);
               // ...
               // 如暂不支持该指令，请勿注册；或在注册后但暂不使用时，通过session.off('pause')取消监听。
-              // 处理完毕后，请使用setAVPlayState上报播放状态。
+              // 处理完毕后，请使用setAVPlaybackState上报播放状态。
             });
             // ...
           } catch (err) {

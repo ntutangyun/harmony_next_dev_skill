@@ -102,21 +102,26 @@ Button('人脸检测')
     let visionInfo: faceDetector.VisionInfo = {
       pixelMap: this.chooseImage
     };
-    faceDetector.detect(visionInfo)
-      .then((data: faceDetector.Face[]) => {
-        if (data.length === 0) {
-          this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
-        } else {
-          let faceString = JSON.stringify(data);
-          hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
-          this.dataValues = faceString;
-        }
-      })
-      .catch((error: BusinessError) => {
-        hilog.error(0x0000, 'faceDetectorSample', `Face detection failed. Code: ${error.code}, message: ${error.message}`);
-        this.dataValues = `Error: ${error.message}`;
-      });
-  })
+     faceDetector.detect(visionInfo)
+     .then((data: faceDetector.Face[]) => {
+       if (data && Array.isArray(data)) {
+         if (data.length === 0) {
+           this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
+         } else {
+           let faceString = JSON.stringify(data);
+           hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
+           this.dataValues = faceString;
+         }
+       } else {
+         hilog.error(0x0000, 'faceDetectorSample', 'Unexpected data format received from faceDetector.detect');
+         this.dataValues = 'Unexpected data format';
+       }
+     })
+     .catch((error: BusinessError) => {
+       hilog.error(0x0000, 'faceDetectorSample', `Face detection failed. Code: ${error.code}, message: ${error.message}`);
+       this.dataValues = `Error: ${error.message}`;
+     });
+   })
 
 开发实例
 
@@ -182,12 +187,17 @@ struct Index {
           };
           faceDetector.detect(visionInfo)
             .then((data: faceDetector.Face[]) => {
-              if (data.length === 0) {
-                this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
+              if (data && Array.isArray(data)) {
+                if (data.length === 0) {
+                  this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
+                } else {
+                  let faceString = JSON.stringify(data);
+                  hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
+                  this.dataValues = faceString;
+                }
               } else {
-                let faceString = JSON.stringify(data);
-                hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
-                this.dataValues = faceString;
+                hilog.error(0x0000, 'faceDetectorSample', 'Unexpected data format received from faceDetector.detect');
+                this.dataValues = 'Unexpected data format';
               }
             })
             .catch((error: BusinessError) => {
@@ -336,21 +346,26 @@ Button('人脸检测')
     let visionInfo: faceDetector.VisionInfo = {
       pixelMap: this.chooseImage
     };
-    faceDetector.detect(visionInfo)
-      .then((data: faceDetector.Face[]) => {
-        if (data.length === 0) {
-          this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
-        } else {
-          let faceString = JSON.stringify(data);
-          hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
-          this.dataValues = faceString;
-        }
-      })
-      .catch((error: BusinessError) => {
-        hilog.error(0x0000, 'faceDetectorSample', `Face detection failed. Code: ${error.code}, message: ${error.message}`);
-        this.dataValues = `Error: ${error.message}`;
-      });
-  })
+     faceDetector.detect(visionInfo)
+     .then((data: faceDetector.Face[]) => {
+       if (data && Array.isArray(data)) {
+         if (data.length === 0) {
+           this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
+         } else {
+           let faceString = JSON.stringify(data);
+           hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
+           this.dataValues = faceString;
+         }
+       } else {
+         hilog.error(0x0000, 'faceDetectorSample', 'Unexpected data format received from faceDetector.detect');
+         this.dataValues = 'Unexpected data format';
+       }
+     })
+     .catch((error: BusinessError) => {
+       hilog.error(0x0000, 'faceDetectorSample', `Face detection failed. Code: ${error.code}, message: ${error.message}`);
+       this.dataValues = `Error: ${error.message}`;
+     });
+   })
 ```
 
 ### Code block 6
@@ -416,12 +431,17 @@ struct Index {
           };
           faceDetector.detect(visionInfo)
             .then((data: faceDetector.Face[]) => {
-              if (data.length === 0) {
-                this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
+              if (data && Array.isArray(data)) {
+                if (data.length === 0) {
+                  this.dataValues = 'No face is detected in the image. Select an image that contains a face.';
+                } else {
+                  let faceString = JSON.stringify(data);
+                  hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
+                  this.dataValues = faceString;
+                }
               } else {
-                let faceString = JSON.stringify(data);
-                hilog.info(0x0000, 'faceDetectorSample', 'faceString data is ' + faceString);
-                this.dataValues = faceString;
+                hilog.error(0x0000, 'faceDetectorSample', 'Unexpected data format received from faceDetector.detect');
+                this.dataValues = 'Unexpected data format';
               }
             })
             .catch((error: BusinessError) => {

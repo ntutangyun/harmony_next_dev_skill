@@ -10,8 +10,10 @@ Health Service Kit简介
 
 开发接入
 
-个人数据处理说明
-
 Health Service Kit常见问题
+
+Health Service Kit术语
+
+个人数据处理说明
 
 附录

@@ -459,7 +459,7 @@ vDD：8位寄存器索引。
 0x31	IMM8_IMM8_V8	callthisrange RR, +AA, vBB	默认入参：acc：函数对象 R：方舟运行时内部使用的8位保留数字 A：参数数量 B：对象 B + 1, ..., B + A：参数	将this的值设置为B，以B + 1，...，B + A作为参数，调用acc中存放的函数对象，并将计算结果存放到acc中。
 0x32	IMM8_IMM8_V8	supercallthisrange RR, +AA, vBB	R：方舟运行时内部使用的8位保留数字 A：参数数量 B, ..., B + A - 1：参数	以B, ..., B + A - 1作为参数, 调用super函数，并将结果存放到acc中。 当A的值是0时，B是undefined。 此指令仅出现在非箭头函数中。
 0x33	IMM8_ID16_IMM8	definefunc RR, @AAAA, +BB	R：方舟运行时内部使用的8位保留数字 A：method id B：方法A的形参数量	创建方法A的函数对象，并将其存放到acc中。
-0x34	IMM8_ID16_IMM8	definemethod RR, @AAAA, +BB	默认入参：acc：类对象或类对象的对象原型，方法为静态方法时，acc中是类对象 R：方舟运行时内部使用的8位保留数字 A：method id B：方法A的形参数量	创建方法A的函数对象，将acc中的对象设置为该函数对象的HomeObject属性，并将该函数对象存放到acc中。
+0x34	IMM8_ID16_IMM8	definemethod RR, @AAAA, +BB	默认入参：acc：类对象或类对象的对象原型，方法为静态方法时，acc中是类对象 R：方舟运行时内部使用的8位保留数字 A：method id B：方法A的形参数量	创建方法A的函数对象，将acc中的对象设置为该函数对象的[[HomeObject]]属性，并将该函数对象存放到acc中。
 0x35	IMM8_ID16_ID16_IMM16_V8	defineclasswithbuffer RR, @AAAA, @BBBB, +CCCC, vDD	R：方舟运行时内部使用的8位保留数字 A：类的构造函数的method id B：literal id C：方法A的形参数量 D：父类	使用索引B对应的字面量数组和父类D，创建A的类对象，并将其存放到acc中。
 0x36	V8	getnextpropname vAA	A：迭代器	执行for-in迭代器A的next方法，并将结果存放到acc中。
 0x37	IMM8_V8	ldobjbyvalue RR, vAA	默认入参：acc：属性键值 R：方舟运行时内部使用的8位保留数字 A：对象	加载A对象的键值为acc的属性，并将结果存放到acc中。
@@ -597,7 +597,7 @@ vDD：8位寄存器索引。
 0xbb	IMM8_IMM8_V8	supercallarrowrange RR, +AA, vBB	默认入参：acc：类对象 R：方舟运行时内部使用的8位保留数字 A：参数数量 B, ..., B + A - 1：参数	以B, ..., B + A - 1作为参数，调用acc中所存类的父类的构造函数，并将结果存放到acc中。 如果A的值为0，则B为undefined。 此指令仅出现在箭头函数中。
 0xbc	V8_V8_V8_V8	definegettersetterbyvalue vAA, vBB, vCC, vDD	默认入参：acc：是否需要为访问器设置名称，是一个布尔值 A：对象 B：属性键值 C：getter函数对象 D：setter函数对象	以getter方法 C和setter方法 D作为参数，定义对象A的键值为B的属性的访问器，并将结果对象存放到acc中。 如果C是undefined，则不会设置getter，如果D是undefined，则不会设置setter。
 0xbd	NONE	dynamicimport	默认入参：acc：值	使用acc中的值作为参数，执行ImportCalls，并把结果存放到acc中。
-0xbe	IMM16_ID16_IMM8	definemethod RRRR, @AAAA, +BB	默认入参：acc：类对象或类对象的对象原型，方法为静态方法时，acc中是类对象 R：方舟运行时内部使用的16位保留数字 A：method id B：方法A的形参数量	创建方法A的函数对象，将acc中的对象设置为该函数对象的[[[HomeObject]]](https://262.ecma-international.org/12.0/#sec-ecmascript-function-objects)属性，并将该函数对象存放到acc中。
+0xbe	IMM16_ID16_IMM8	definemethod RRRR, @AAAA, +BB	默认入参：acc：类对象或类对象的对象原型，方法为静态方法时，acc中是类对象 R：方舟运行时内部使用的16位保留数字 A：method id B：方法A的形参数量	创建方法A的函数对象，将acc中的对象设置为该函数对象的[[HomeObject]]属性，并将该函数对象存放到acc中。
 0xbf	NONE	resumegenerator	默认入参：acc：生成器	基于acc中存放的generator，执行GeneratorResume，并将结果存放到acc中。
 0xc0	NONE	getresumemode	默认入参：acc：生成器	获取acc中所存放的generator的执行完成后恢复值的类型，并将其存放到acc中。
 0xc1	IMM16	gettemplateobject RRRR	默认入参：acc：对象 R：方舟运行时内部使用的16位保留数字	执行GetTemplateObject(acc)，并将结果存放到acc中。

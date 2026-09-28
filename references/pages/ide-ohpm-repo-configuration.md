@@ -34,6 +34,7 @@ deploy_root: ''                # 安装根目录，只支持绝对路径，且�
 max_package_size: 500          # 上传包大小限制，单位是MB (0, 500]，不配置或配置为0默认为 500
 max_extract_size: 800          # 压缩包解压后大小限制，单位是MB ，不配置或配置为0默认为 800
 max_extract_file_num: 30000    # 压缩包解压后文件个数限制，不配置或配置为0默认为30000个
+max_batch_package_num: 200     # 批量上传时zip包根目录中包含的.har和.tgz包的数量限制，单位为个，取值范围为(0,1000]，默认为200。不配置或配置为0时，取默认值
 user_rate_limit: 100           # 用户访问频率控制，单位是次/小时 (0, 10000]，不配置或配置为0默认为 100
 fetch_timeout: 60              # 请求/响应的超时时间，单位是秒 (0, 3600]，不配置或配置为0默认为 60
 keep_alive_timeout: 60         # TCP 保持连接的超时时间，单位是秒 (0, 3600]，不配置或配置为0默认为 60
@@ -108,6 +109,7 @@ use_reverse_proxy: false
 ##### uplink section #####
 uplink_cache_path: ./uplink      # 缓存路径，不配置默认为 <deploy_root>/uplink
 uplink_cache_time: 168           # 远程包 metadata 缓存时间，单位为小时，默认 168 小时，取值范围为 (0, 8760]
+uplink_ca_files: ''              # 指定ca证书路径，用于校验uplink配置的服务端证书的有效性。可以设置多个ca证书路径，以英文逗号间隔，默认为''
 
 ##### log section #####
 logs_path: ./logs                # 日志路径，不配置默认为 <deploy_root>/logs
@@ -124,6 +126,16 @@ loglevel_access: info
 #auth_plugin:
 #  name: CustomAuth              # 认证插件的名字
 #  path: plugins/CustomAuth.js   # 插件的绝对路径或者相对于ohpm-repo软件包的路径，建议将插件放在软件包的plugins目录下
+
+##### verify plugin section #####
+# 可选项，验证码验证插件配置
+#verify_plugin:
+#  type: onlySend                      # 插件实现类型，包括onlySend和custom两种。onlySend表示系统自动生成验证码和验证验证码，插件仅负责发送；custom表示验证码的生成、发送和验证均由插件完成
+#  name: CustomVerify                  # 插件名称
+#  path: plugins/CustomVerify.js       # 插件的绝对路径或者相对于ohpm-repo软件包的路径，建议将插件放在软件包的plugins目录下
+#  length: 6                           # 验证码长度，取值范围为[4,12]，默认为6，onlySend模式时生效
+#  liveTime: 300                       # 验证码有效时间，单位为秒，取值范围为[1,3600]，默认为300，onlySend模式时生效
+#  receiver: email                     # 接收验证码的终端，email表示邮件，phone表示手机号，与用户信息中的邮箱和手机号对应
 
 ##### fieldCheck plugin section #####
 # 可选项，自定义元数据规则检验插件配置
@@ -211,23 +223,25 @@ deploy_root: ''
 
 max_package_size: 上传包大小限制，单位为MB， 不配置或配置为0取默认值500MB，取值范围为 (0, 500] 。
 
-max_extract_size: 压缩包解压后大小限制，单位为MB，不配置或配置为0取默认值800MB。
+max_extract_size：压缩包解压后大小限制，单位为MB，不配置或配置为0取默认值800MB。
 
-max_extract_file_num: 压缩包解压后文件个数限制，不配置或配置为0取默认值30000个。
+max_extract_file_num：压缩包解压后文件个数限制，不配置或配置为0取默认值30000个。
 
-user_rate_limit: 用户访问频率控制，单位为次/秒，不配置或配置为0取默认值100次/秒，取值范围为 (0, 10000]。
+max_batch_package_num：ohpm-repo从6.0.1版本新增，批量上传时zip包根目录中包含的.har和.tgz包的数量限制，单位为个，取值范围为(0, 1000]，默认为200。不配置或配置为0时，取默认值。
 
-fetch_timeout: 当使用uplink时，请求uplink数据的请求/响应超时时间，单位为秒，不配置或配置为0取默认值60秒，取值范围为 (0, 3600]。
+user_rate_limit：用户访问频率控制，单位为次/秒，不配置或配置为0取默认值100次/秒，取值范围为 (0, 10000]。
 
-keep_alive_timeout: TCP 保持连接的超时时间，单位为秒，不配置或配置为0取默认值60秒，取值范围为 (0, 3600]。
+fetch_timeout：当使用uplink时，请求uplink数据的请求/响应超时时间，单位为秒，不配置或配置为0取默认值60秒，取值范围为 (0, 3600]。
 
-api_timeout: 接口请求与响应超时时间，单位为秒，不配置或配置为0取默认值60秒，取值范围(0, 3600]。
+keep_alive_timeout：TCP 保持连接的超时时间，单位为秒，不配置或配置为0取默认值60秒，取值范围为 (0, 3600]。
 
-upload_api_timeout: 上传三方包接口请求与响应超时时间，单位为秒，不配置或配置为0取默认值300秒，取值范围(0, 3600]。
+api_timeout：接口请求与响应超时时间，单位为秒，不配置或配置为0取默认值60秒，取值范围(0, 3600]。
 
-upload_lock_hour: 下架某个三方包所有版本后，限时禁止同名三方包上传，单位为小时，不配置或配置为0取默认值24小时，取值范围为 (0, 168]。
+upload_api_timeout：上传三方包接口请求与响应超时时间，单位为秒，不配置或配置为0取默认值300秒，取值范围(0, 3600]。
 
-upload_max_times: 单用户24小时内上传次数限制，不配置或配置为0取默认值100次，取值范围为 (0, 100000]。
+upload_lock_hour：下架某个三方包所有版本后，限时禁止同名三方包上传，单位为小时，不配置或配置为0取默认值24小时，取值范围为 (0, 168]。
+
+upload_max_times：单用户24小时内上传次数限制，不配置或配置为0取默认值100次，取值范围为 (0, 100000]。
 
 operation_log_retention：数据库中操作日志保留时间，单位是天，不配置或配置为0取默认值100天。
 
@@ -236,6 +250,7 @@ operation_log_retention：数据库中操作日志保留时间，单位是天，
 max_package_size: 500
 max_extract_size: 800
 max_extract_file_num: 30000
+max_batch_package_num: 200
 user_rate_limit: 100
 fetch_timeout: 60
 keep_alive_timeout: 60
@@ -439,10 +454,13 @@ uplink_cache_path：远程包缓存路径，默认路径为./uplink，支持相�
 
 uplink_cache_time：远程包metadata缓存时间，单位为小时，默认168小时，取值范围为(0, 8760]。
 
+uplink_ca_files：指定ca证书路径，用于校验uplink配置的服务端证书的有效性。可以设置多个ca证书路径，以英文逗号间隔，默认为''。
+
 参考配置如下：
 
 uplink_cache_path: ./uplink
 uplink_cache_time: 168
+uplink_ca_files: ''
 
 [h2]logs
 
@@ -489,6 +507,34 @@ path: 编译后插件文件CustomAuth.js的存储位置。支持绝对路径和�
 #auth_plugin:
 #  name: CustomAuth
 #  path: plugins/CustomAuth.js
+
+[h2]verify_plugin
+
+ohpm-repo从6.0.1版本开始，支持自定义登录验证插件，允许您在登录时添加验证码校验功能，支持发送验证码到邮箱或手机号。自定义登录验证插件开发流程见登录验证插件说明文档。
+
+参数说明：
+
+type：插件实现类型，包括onlySend和custom两种。onlySend表示系统自动生成验证码和验证验证码，插件仅负责发送；custom表示验证码的生成、发送和验证均由插件完成。
+
+name：插件名称，自定义插件文件CustomVerify.js中定义的实现类名称。若实现类为CustomVerify，name值也为CustomVerify 。
+
+path：编译后插件文件CustomVerify.js的存储位置。支持绝对路径和相对路径，相对路径是相对于ohpm-repo解压根目录的路径。
+
+length：验证码长度，取值范围为[4, 12]，默认为6。插件实现类型为onlySend模式时才会生效。
+
+liveTime：验证码有效时间，单位为秒，取值范围为[1, 3600]，默认为300。插件实现类型为onlySend模式时才会生效。
+
+receiver：接收验证码的终端，email表示邮件，phone表示手机号，与用户信息中的邮箱和手机号对应。
+
+参考配置如下（默认不开启）：
+
+#verify_plugin:
+#  type: onlySend                      # 插件实现类型
+#  name: CustomVerify                  # 验证码验证插件名称
+#  path: plugins/CustomVerify.js       # 插件的绝对路径或者相对于ohpm-repo软件包的路径，建议将插件放在软件包的plugins目录下
+#  length: 6                           # 验证码长度
+#  liveTime: 300                       # 验证码有效时间
+#  receiver: email                     # 接收验证码的终端，email表示邮件，phone表示手机号，与用户信息中的邮箱和手机号对应
 
 [h2]field_check_plugin
 
@@ -564,6 +610,7 @@ deploy_root: ''                # 安装根目录，只支持绝对路径，且�
 max_package_size: 500          # 上传包大小限制，单位是MB (0, 500]，不配置或配置为0默认为 500
 max_extract_size: 800          # 压缩包解压后大小限制，单位是MB ，不配置或配置为0默认为 800
 max_extract_file_num: 30000    # 压缩包解压后文件个数限制，不配置或配置为0默认为30000个
+max_batch_package_num: 200     # 批量上传时zip包根目录中包含的.har和.tgz包的数量限制，单位为个，取值范围为(0,1000]，默认为200。不配置或配置为0时，取默认值
 user_rate_limit: 100           # 用户访问频率控制，单位是次/小时 (0, 10000]，不配置或配置为0默认为 100
 fetch_timeout: 60              # 请求/响应的超时时间，单位是秒 (0, 3600]，不配置或配置为0默认为 60
 keep_alive_timeout: 60         # TCP 保持连接的超时时间，单位是秒 (0, 3600]，不配置或配置为0默认为 60
@@ -638,6 +685,7 @@ use_reverse_proxy: false
 ##### uplink section #####
 uplink_cache_path: ./uplink      # 缓存路径，不配置默认为 <deploy_root>/uplink
 uplink_cache_time: 168           # 远程包 metadata 缓存时间，单位为小时，默认 168 小时，取值范围为 (0, 8760]
+uplink_ca_files: ''              # 指定ca证书路径，用于校验uplink配置的服务端证书的有效性。可以设置多个ca证书路径，以英文逗号间隔，默认为''
 
 ##### log section #####
 logs_path: ./logs                # 日志路径，不配置默认为 <deploy_root>/logs
@@ -654,6 +702,16 @@ loglevel_access: info
 #auth_plugin:
 #  name: CustomAuth              # 认证插件的名字
 #  path: plugins/CustomAuth.js   # 插件的绝对路径或者相对于ohpm-repo软件包的路径，建议将插件放在软件包的plugins目录下
+
+##### verify plugin section #####
+# 可选项，验证码验证插件配置
+#verify_plugin:
+#  type: onlySend                      # 插件实现类型，包括onlySend和custom两种。onlySend表示系统自动生成验证码和验证验证码，插件仅负责发送；custom表示验证码的生成、发送和验证均由插件完成
+#  name: CustomVerify                  # 插件名称
+#  path: plugins/CustomVerify.js       # 插件的绝对路径或者相对于ohpm-repo软件包的路径，建议将插件放在软件包的plugins目录下
+#  length: 6                           # 验证码长度，取值范围为[4,12]，默认为6，onlySend模式时生效
+#  liveTime: 300                       # 验证码有效时间，单位为秒，取值范围为[1,3600]，默认为300，onlySend模式时生效
+#  receiver: email                     # 接收验证码的终端，email表示邮件，phone表示手机号，与用户信息中的邮箱和手机号对应
 
 ##### fieldCheck plugin section #####
 # 可选项，自定义元数据规则检验插件配置
@@ -716,6 +774,7 @@ deploy_root: ''
 max_package_size: 500
 max_extract_size: 800
 max_extract_file_num: 30000
+max_batch_package_num: 200
 user_rate_limit: 100
 fetch_timeout: 60
 keep_alive_timeout: 60
@@ -815,6 +874,7 @@ proxy_set_header x-forwarded-for $remote_addr
 ```
 uplink_cache_path: ./uplink
 uplink_cache_time: 168
+uplink_ca_files: ''
 ```
 
 ### Code block 16
@@ -842,25 +902,37 @@ loglevel_access: info
 ### Code block 19
 
 ```
+#verify_plugin:
+#  type: onlySend                      # 插件实现类型
+#  name: CustomVerify                  # 验证码验证插件名称
+#  path: plugins/CustomVerify.js       # 插件的绝对路径或者相对于ohpm-repo软件包的路径，建议将插件放在软件包的plugins目录下
+#  length: 6                           # 验证码长度
+#  liveTime: 300                       # 验证码有效时间
+#  receiver: email                     # 接收验证码的终端，email表示邮件，phone表示手机号，与用户信息中的邮箱和手机号对应
+```
+
+### Code block 20
+
+```
 #field_check_plugin:
 #  config_file_path:  plugins/fieldCheckPlugin/CustomExtensionValidationConfig.json
 #  check_func_dir: plugins/fieldCheckPlugin
 ```
 
-### Code block 20
+### Code block 21
 
 ```
 #content_check_plugin:
 #  name: 'OHMUrlCheck'
 ```
 
-### Code block 21
+### Code block 22
 
 ```
 compability_log_level: warn
 ```
 
-### Code block 22
+### Code block 23
 
 ```
 allow_remove_depended_packages: false

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/accessibi
 
 accessibilityStateDescription说明
 
-description：指定组件的状态说明标签，支持string类型和Resource类型，默认值为空。
+accessibilityStateDescription：指定组件的状态说明标签，支持string类型和Resource类型，默认值为空。
 
 开发流程
 

@@ -1,4 +1,4 @@
-# 数字信封密钥(C/C++)
+# 数字信封导入密钥(C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-import-envelop-key-ndk_
 

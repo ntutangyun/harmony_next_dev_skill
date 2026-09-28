@@ -155,9 +155,9 @@ this.webController.setScrollable(false, webview.ScrollType.EVENT);
 
 (3) 判断Web组件是否滚动到底部：webController.getPageOffset().y + this.webHeight >= webController.getPageHeight();
 
-(4) 获取Web组件自身高度：webController.getPageHeight();
+(4) 获取Web组件页面内容高度：webController.getPageHeight();
 
-(5) 获取Web组件窗口高度：webController?.runJavaScriptExt('window.innerHeight');
+(5) 获取Web组件自身（窗口）高度：webController?.runJavaScriptExt('window.innerHeight');
 
 (6) 获取Web组件的滚动偏移量：webController.getPageOffset();
 

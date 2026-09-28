@@ -30,9 +30,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 
 数字证书和Profile文件等签名信息可以确保小游戏的完整性：
 
-调试阶段：手动签名、申请调试证书、申请调试Profile。
+调试阶段，配置签名信息的具体操作请参见手动签名。
 
-发布阶段：手动签名、申请发布证书、申请发布Profile。
+发布阶段，配置签名信息的具体操作请参见发布应用。
 
 配置签名证书指纹
 

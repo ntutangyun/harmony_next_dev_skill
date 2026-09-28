@@ -70,7 +70,7 @@ OH_HiDebug_GetGraphicsMemorySummary	用于获取应用程序的显存数据。 �
 
 hiview进程每10秒获取一次当前CPU的运行数据并缓存，作为CPU使用率计算的基准，主要包括以下数据：
 
-1.系统CPU使用数据：
+系统CPU使用数据：
 
 /proc/stat节点包含了自系统启动以来CPU 运行数据的统计信息，可在终端中使用以下命令查看该节点信息：
 
@@ -102,7 +102,7 @@ guest: 操作系统运行虚拟机中非低优先级进程（nice <= 0）的时�
 
 guest_nice: 操作系统运行虚拟机中低优先级进程（nice > 0）的时间（已包含在nice字段中）。
 
-2.进程CPU使用数据/线程CPU使用数据：
+进程CPU使用数据/线程CPU使用数据：
 
 // 内核统计的进程cpu运行数据
 struct ucollection_process_cpu_item {
@@ -129,7 +129,7 @@ struct ucollection_thread_cpu_item {
 
 (systemUsage增量 + niceUsage增量 + userUsage增量) /(userTime增量 + niceTime增量 + systemTime增量 + idleTime增量 + ioWaitTime增量 + irqTime增量 + softIrqTime增量)
 
-进程CPU使用率/线程CPU使用率 ：
+进程CPU使用率/线程CPU使用率：
 
 (cpu_usage_utime增量 + cpu_usage_stime增量) /(ms级时间戳增量)
 
@@ -345,7 +345,7 @@ OH_HiDebug_UnregisterMemDumpListener	注销已注册的内存导出监听器。 
 
 管理异步上下文
 
-从API版本26.0.0开始，HiDebug提供异步上下文管理接口，用于在自定义异步任务场景中建立和解除异步调用链关系。通过这些接口，开发者可以在异步任务提交和完成时分别压入和弹出异步上下文，使hiperf命令行工具、OH_HiDebug_RequestThreadLiteSampling接口等性能分析工具能够追踪到完整的异步调用栈。
+从API版本26.0.0开始，HiDebug提供异步上下文管理接口，用于在自定义异步任务场景中建立和解除异步调用链关系。通过这些接口，开发者可以在异步任务提交和完成时分别压入和弹出异步上下文，仅支持hiprofiler调优组件追踪完整的异步调用栈。
 
 注意
 

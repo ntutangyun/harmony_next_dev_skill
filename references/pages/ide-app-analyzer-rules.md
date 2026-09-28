@@ -4,9 +4,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-app-a
 
 规则体检支持兼容性、性能、功耗等多种测试类型，开发者可自主选择不同的规则进行测试。
 
+使用约束
+
+使用26.0.0以下版本的DevEco Studio进行性能相关的测试时，要求DevEco Studio版本与设备API版本配套；从DevEco Studio 26.0.0版本开始，DevEco Studio兼容API 20及以上的设备，无需与设备API版本配套，对于API 20以下的设备，DevEco Studio版本仍需与设备API版本配套。
+
 前置操作
 
-单击菜单栏Tools > AppAnalyzer，打开AppAnalyzer页面。
+点击菜单栏Tools > AppAnalyzer，打开AppAnalyzer页面。
 
 在编辑窗口右侧的工具栏，点击AppAnalyzer或，打开AppAnalyzer页面。
 
@@ -22,7 +26,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-app-a
 
 [h2]DevEco Studio 6.0.1 Beta1及以上版本
 
-点击预置的体检卡片开始体检，如需查看卡片包含的体检规则，请点击卡片右上角的按钮，规则详情请参考规则总览。
+点击预置的卡片开始体检，如需查看卡片包含的体检规则，请点击卡片右上角的按钮，规则详情请参考规则总览。
 
 如果仅选择稳定性规则，从DevEco Studio 6.0.2 Beta1版本开始，支持录制回放遍历模式，开发者先手动录制在设备上的操作，录制结束后AppAnalyzer会自动保存录制文件，选择录制文件开始体检后，AppAnalyzer会按照设置的回放时长，自动循环执行录制的操作，体检结束后可查看报告。
 
@@ -62,7 +66,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-app-a
 
 如果使用DevEco Studio 6.0.0 Beta2之前的版本，只有已经完成签名编译打包的模块才能被选中。
 
-支持同时添加多个模块，要求所有模块的“bundleName”相同，且多个模块中只能包含一个entry。
+支持同时添加多个模块，要求所有模块的bundleName相同，且只能包含一个entry。
 
 说明
 

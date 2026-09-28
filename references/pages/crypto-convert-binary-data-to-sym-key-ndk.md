@@ -26,7 +26,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 #include "CryptoArchitectureKit/crypto_sym_key.h"
 #include "file.h"
 
-OH_Crypto_ErrCode doTestDataCovertSymKey()
+OH_Crypto_ErrCode doTestDataConvertSymKey()
 {
     const char *algName = "3DES192";
     OH_CryptoSymKeyGenerator *ctx = nullptr;
@@ -118,7 +118,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 #include "CryptoArchitectureKit/crypto_sym_key.h"
 #include "file.h"
 
-OH_Crypto_ErrCode doTestDataCovertSymKey()
+OH_Crypto_ErrCode doTestDataConvertSymKey()
 {
     const char *algName = "3DES192";
     OH_CryptoSymKeyGenerator *ctx = nullptr;

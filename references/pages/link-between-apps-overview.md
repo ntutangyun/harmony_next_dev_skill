@@ -20,8 +20,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/link-betw
 
 从API 12开始，已不再推荐三方应用使用指定Ability方式（即显式Want）拉起其他应用。关于如何从指定Ability方式切换到指定应用链接方式，详见显式Want跳转切换应用链接跳转适配指导。
 
-指定应用链接（推荐）：通过openLink或startAbility接口来指定应用链接，拉起目标应用页面。
+指定应用链接（推荐）：通过openLink()或startAbility()接口来指定应用链接，拉起目标应用页面。
 
-指定Ability（不推荐）：通过startAbility接口指定具体的Ability（即显式Want方式），拉起目标应用页面。
+指定Ability（不推荐）：通过startAbility()接口指定具体的Ability（即显式Want方式），拉起目标应用页面。
 
 拉起指定类型的应用：拉起方应用通过指定应用类型，拉起垂类应用面板。该面板将展示目标方接入的垂域应用，由用户选择打开指定应用。

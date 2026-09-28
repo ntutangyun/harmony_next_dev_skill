@@ -515,6 +515,8 @@ export struct AccessibilityNextFocusIdCase02 {
 
 非必要情况下，需避免出现节点无法被焦点遍历到的情况。例如组件树包含A、B、C、D、E组件，默认焦点移动顺序为A→B→C→D→E。若仅为B配置accessibilityNextFocusId为D，焦点移动顺序会变为A→B→D→E→A→B→D→E…，导致节点C始终无法被焦点遍历到。
 
+如需指定当前节点为页面尾节点，可通过配置节点的下一个节点是自己的方式实现，即A配置accessibilityNextFocusId为A。当用户聚焦在该节点时，首次触发向下走焦将触发触底音效，再次触发向下走焦将查找页面首焦点。
+
 [h2]设置可滚动模式
 
 accessibilityScrollTriggerable属性用于设置无障碍组件是否支持滚动触发操作。当用户通过滑动屏幕触发焦点移动时，若容器当前视觉可见范围内无可用的可聚焦组件，屏幕朗读功能会自动发起一次滚动操作。
@@ -691,7 +693,7 @@ struct MailItem {
     ])
 
     build() {
-        Colomn({ space: 15 }) {
+        Column({ space: 15 }) {
             Text('Linear: ')
                 .fontSize(9)
                 .fontColor(0XCCCCCC)
@@ -1485,7 +1487,7 @@ struct MailItem {
     ])
 
     build() {
-        Colomn({ space: 15 }) {
+        Column({ space: 15 }) {
             Text('Linear: ')
                 .fontSize(9)
                 .fontColor(0XCCCCCC)

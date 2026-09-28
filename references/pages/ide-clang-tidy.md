@@ -52,7 +52,7 @@ DevEco Studio支持通过内置的Clang-Tidy和自定义的Clang-Tidy对C/C++代
 
 通过自定义Clang-Tidy检查代码
 
-从26.0.0 Beta1版本开始，支持使用自定义Clang-Tidy进行代码自动实时检查和手动检查。
+从26.0.0版本开始，支持使用自定义Clang-Tidy进行代码自动实时检查和手动检查。
 
 生效规则
 

@@ -32,7 +32,7 @@ import { text } from '@kit.ArkGraphics2D';
 // 获取字体管理器全局FontCollection实例
 let fontCollection = text.FontCollection.getGlobalInstance();
 
-创建段落样式，并使用字体管理器实例构造段落生成器ParagraphBuilder实例，用于生成段落。
+创建段落样式，并使用字体集实例构造段落生成器ParagraphBuilder实例，用于生成段落。
 
 说明
 

@@ -335,7 +335,7 @@ hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[3]: %{public}s
   testNapi.napiGetElement<number | string | null | Object>(arr, 3));
 hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[4]: %{public}s',
   JSON.stringify(testNapi.napiGetElement(arr, 4)));
-hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[null]: %{public}s',
+hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[5]: %{public}s',
   testNapi.napiGetElement<number | string | null | Object>(arr, 5));
 
 [h2]napi_has_element
@@ -773,7 +773,7 @@ static napi_value IsDataView(napi_env env, napi_callback_info info)
 
 index.d.ts
 
-export const isDataView: (date: DataView | string) => boolean | undefined; // 使用Node-API接口进行array相关开发 napi_is_dataview
+export const isDataView: (data: DataView | string) => boolean | undefined; // 使用Node-API接口进行array相关开发 napi_is_dataview
 
 ArkTS侧示例代码
 
@@ -1176,7 +1176,7 @@ hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[3]: %{public}s
   testNapi.napiGetElement<number | string | null | Object>(arr, 3));
 hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[4]: %{public}s',
   JSON.stringify(testNapi.napiGetElement(arr, 4)));
-hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[null]: %{public}s',
+hilog.info(0x0000, 'testTag', 'Test Node-API napi_get_element arr[5]: %{public}s',
   testNapi.napiGetElement<number | string | null | Object>(arr, 5));
 ```
 
@@ -1612,7 +1612,7 @@ static napi_value IsDataView(napi_env env, napi_callback_info info)
 ### Code block 41
 
 ```
-export const isDataView: (date: DataView | string) => boolean | undefined; // 使用Node-API接口进行array相关开发 napi_is_dataview
+export const isDataView: (data: DataView | string) => boolean | undefined; // 使用Node-API接口进行array相关开发 napi_is_dataview
 ```
 
 ### Code block 42

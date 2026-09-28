@@ -56,6 +56,8 @@ Convert to optional chain expression	将判空逻辑转换为可选链式调用	
 
 在文件中单击右键，选择Refactor > Move File...，在弹窗中输入或点击...选择指定的目录，点击Refactor，可将当前文件移动至该目录下。勾选Search for references，可查找并更新工程中对该文件的引用；勾选Open in editor，可在编辑器中查看移动的文件。
 
+从26.0.0版本开始，针对跨模块移动文件场景优化了移动符号的导入方式，移入、移出模块时Index.ets会适配改动。
+
 [h2]Safe Delete
 
 编辑器支持Safe Delete功能，帮助您安全地删除代码中的标识符对象（变量、函数或类等）或删除指定文件。在删除前，编辑器将先在代码中搜索对该对象的引用，如果存在引用，编辑器将提示您进行必要的检查和调整。

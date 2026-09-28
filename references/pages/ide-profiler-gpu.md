@@ -12,7 +12,7 @@ ArkTS Callstack、Callstack泳道的介绍请参考基础耗时：Time分析。
 
 CPU Core、Process泳道的介绍请参考CPU活动分析。
 
-[h2]约束与限制
+约束与限制
 
 该功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 

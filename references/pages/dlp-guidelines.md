@@ -425,7 +425,7 @@ want参数中uri的值为普通文件uri，parameters.displayName为文件名，
 
 import { common, Want } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { dlpPermission } from '@kit.DataLossPreventionKit';
+import { dlpPermission } from '@kit.DataProtectionKit';
 import { UIContext } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -455,7 +455,7 @@ DLP沙箱分身内权限修改，查看和解除
 
 import { common, Want } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { dlpPermission } from '@kit.DataLossPreventionKit';
+import { dlpPermission } from '@kit.DataProtectionKit';
 import { UIContext } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -506,15 +506,17 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const TAG: string = 'dlp';
 
-let uri = "file://docs/storage/Users/currentUser/Desktop/test.txt.dlp";
-let file = fileIo.openSync(uri);
-try {
-  let res: boolean = await dlpPermission.isDLPFile(file.fd); // 是否加密DLP文件
-  hilog.info(0x0000, TAG, 'res' + JSON.stringify(res));
-} catch (err) {
-  hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+async function setRetentionSandboxList() {
+  let uri = "file://docs/storage/Users/currentUser/Desktop/test.txt.dlp";
+  let file = fileIo.openSync(uri);
+  try {
+    let res: boolean = await dlpPermission.isDLPFile(file.fd); // 是否加密DLP文件
+    hilog.info(0x0000, TAG, 'res' + JSON.stringify(res));
+  } catch (err) {
+    hilog.error(0x0000, TAG, 'isDLPFile error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+  }
+  fileIo.closeSync(file);
 }
-fileIo.closeSync(file);
 
 判断当前所在应用是否是DLP沙箱分身
 
@@ -550,7 +552,7 @@ async function setRetentionSandboxList() {
   try {
     await dlpPermission.setRetentionState(docUris); // 设置沙箱保留
   } catch (err) {
-    hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+    hilog.error(0x0000, TAG, 'setRetentionState error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
   }
 }
 
@@ -563,12 +565,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const TAG: string = 'dlp';
 
 
-async function setRetentionSandboxList() {
+async function cancelRetentionState() {
   let docUris: Array<string>=["file://docs/storage/Users/currentUser/Desktop/test.txt.dlp"]
   try {
     await dlpPermission.cancelRetentionState(docUris); // 取消保留沙箱
   } catch (err) {
-    hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+    hilog.error(0x0000, TAG, 'cancelRetentionState error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
   }
 }
 
@@ -585,7 +587,7 @@ async function getRetentionSandboxList() {
     let res:Array<dlpPermission.RetentionSandboxInfo> = await dlpPermission.getRetentionSandboxList(); // 获取保留沙箱记录
     hilog.info(0x0000, TAG, 'res' + JSON.stringify(res))
   } catch (err) {
-    hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message);// 失败报错
+    hilog.error(0x0000, TAG, 'getRetentionSandboxList error:' + (err as BusinessError).code + (err as BusinessError).message);// 失败报错
   }
 }
 
@@ -906,7 +908,7 @@ function openDlpFile(dlpUri: string, fileName: string) {
 ```
 import { common, Want } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { dlpPermission } from '@kit.DataLossPreventionKit';
+import { dlpPermission } from '@kit.DataProtectionKit';
 import { UIContext } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -936,7 +938,7 @@ try {
 ```
 import { common, Want } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { dlpPermission } from '@kit.DataLossPreventionKit';
+import { dlpPermission } from '@kit.DataProtectionKit';
 import { UIContext } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -987,15 +989,17 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const TAG: string = 'dlp';
 
-let uri = "file://docs/storage/Users/currentUser/Desktop/test.txt.dlp";
-let file = fileIo.openSync(uri);
-try {
-  let res: boolean = await dlpPermission.isDLPFile(file.fd); // 是否加密DLP文件
-  hilog.info(0x0000, TAG, 'res' + JSON.stringify(res));
-} catch (err) {
-  hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+async function setRetentionSandboxList() {
+  let uri = "file://docs/storage/Users/currentUser/Desktop/test.txt.dlp";
+  let file = fileIo.openSync(uri);
+  try {
+    let res: boolean = await dlpPermission.isDLPFile(file.fd); // 是否加密DLP文件
+    hilog.info(0x0000, TAG, 'res' + JSON.stringify(res));
+  } catch (err) {
+    hilog.error(0x0000, TAG, 'isDLPFile error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+  }
+  fileIo.closeSync(file);
 }
-fileIo.closeSync(file);
 ```
 
 ### Code block 18
@@ -1029,7 +1033,7 @@ async function setRetentionSandboxList() {
   try {
     await dlpPermission.setRetentionState(docUris); // 设置沙箱保留
   } catch (err) {
-    hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+    hilog.error(0x0000, TAG, 'setRetentionState error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
   }
 }
 ```
@@ -1044,12 +1048,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 const TAG: string = 'dlp';
 
 
-async function setRetentionSandboxList() {
+async function cancelRetentionState() {
   let docUris: Array<string>=["file://docs/storage/Users/currentUser/Desktop/test.txt.dlp"]
   try {
     await dlpPermission.cancelRetentionState(docUris); // 取消保留沙箱
   } catch (err) {
-    hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
+    hilog.error(0x0000, TAG, 'cancelRetentionState error:' + (err as BusinessError).code + (err as BusinessError).message); // 失败报错
   }
 }
 ```
@@ -1068,7 +1072,7 @@ async function getRetentionSandboxList() {
     let res:Array<dlpPermission.RetentionSandboxInfo> = await dlpPermission.getRetentionSandboxList(); // 获取保留沙箱记录
     hilog.info(0x0000, TAG, 'res' + JSON.stringify(res))
   } catch (err) {
-    hilog.error(0x0000, TAG, 'startDLPManagerForResult error:' + (err as BusinessError).code + (err as BusinessError).message);// 失败报错
+    hilog.error(0x0000, TAG, 'getRetentionSandboxList error:' + (err as BusinessError).code + (err as BusinessError).message);// 失败报错
   }
 }
 ```

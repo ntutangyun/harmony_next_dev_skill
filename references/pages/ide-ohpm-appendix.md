@@ -10,6 +10,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 
 自定义认证插件
 
+自定义登录验证插件
+
 数据备份
 
 导出OpenHarmony三方库中心仓元数据至ohpm-repo

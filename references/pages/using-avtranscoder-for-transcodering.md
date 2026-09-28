@@ -1,4 +1,4 @@
-# 使用AVTranscoder实现音视频转码(ArkTS)
+# 使用AVTranscoder实现视频转码(ArkTS)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-avtranscoder-for-transcodering_
 
@@ -178,7 +178,7 @@ async test() {
   }
 }
 
-配置音视频转码参数，调用prepare()接口。
+配置视频转码参数，调用prepare()接口。
 
 说明
 
@@ -268,7 +268,7 @@ async releaseTranscoderingProcess() {
   }
 }
 
-完整的【开始转码-暂停转码-恢复转码-转码完成】流程。
+完整的【开始转码-暂停转码-恢复转码-转码完成】流程
 
 async avTranscoderDemo() {
   await this.startTranscoderingProcess(); // 开始转码。

@@ -1,4 +1,4 @@
-# 消息认证码计算介绍及算法规格
+# 消息认证码计算
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-compute-mac-overview_
 
@@ -35,3 +35,11 @@ CMAC通过使用分组密码（如AES）和一个密钥来生成消息认证码�
 加密算法	API版本
 AES128	16+
 AES256	16+
+
+消息认证码计算HMAC(ArkTS)
+
+消息认证码计算HMAC(C/C++)
+
+消息认证码计算CMAC(ArkTS)
+
+消息认证码计算CMAC(C/C++)

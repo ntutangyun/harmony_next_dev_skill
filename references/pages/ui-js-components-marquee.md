@@ -54,7 +54,7 @@ marquee通过color和font-weight属性设置跑马灯中文本的颜色和字体
   background-color: #1567f3;
 }
 
-通过scrollamount、loop和direction属性实现跑马灯滚动时移动的最大长度、滚动次数和文字滚动方向。
+通过scrollamount、loop和direction属性实现跑马灯滚动时的移动距离、滚动次数和文字滚动方向。
 
 <!-- xxx.hml -->
 <div class="tutorial-page">

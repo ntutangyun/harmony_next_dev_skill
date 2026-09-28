@@ -35,6 +35,7 @@ HarmonyOS扫码入口调用系统能力解析码值，查询码值对应的应�
 处理接收到的码值，完成应用内页面跳转逻辑。
 
 import { UIAbility, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { router, window } from '@kit.ArkUI';
 
@@ -137,6 +138,7 @@ export default class EntryAbility extends UIAbility {
 
 ```
 import { UIAbility, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { router, window } from '@kit.ArkUI';
 

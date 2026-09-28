@@ -181,7 +181,7 @@ SIG*为信号量name, 若要一次性屏蔽所有信号量，则无需指定信�
 
 LTO（Link Time Optimization）
 
-LTO是一种在链接阶段跨编译单元进行优化的编译器优化手段，旨在提升程序性能。毕昇LTO使用和开源LLVM一样，但是相比开源LLVM在指令预取、inline算法、thin lto funciton import 算法、plt-inline优化等做了增强优化，进一步提升了生成代码的执行效率。
+LTO是一种在链接阶段跨编译单元进行优化的编译器优化手段，旨在提升程序性能。毕昇LTO使用和开源LLVM一样，但是相比开源LLVM在指令预取、inline算法、thin lto function import 算法、plt-inline优化等做了增强优化，进一步提升了生成代码的执行效率。
 
 1. 优化指导
 

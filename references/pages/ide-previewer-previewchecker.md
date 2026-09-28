@@ -98,9 +98,9 @@ struct LinkSample {
 
 如果缺少@Provide定义，@Consume组件在预览时将无法获取有效值。
 
-API version 19及以前，@Consume装饰的变量不支持设置默认值，建议被@Consume修饰的组件的祖先组件上应当有对应的@Provide属性，并且该属性应当有合法的不依赖运行时的默认值。
+API 19及以前，@Consume装饰的变量不支持设置默认值，建议被@Consume修饰的组件的祖先组件上应当有对应的@Provide属性，并且该属性应当有合法的不依赖运行时的默认值。
 
-从API version 20开始，@Consume装饰的变量支持设置默认值，建议优先对@Consume装饰的变量设置默认值，或者按照API version 19及以前版本的方式进行设置。
+从API 20开始，@Consume装饰的变量支持设置默认值，建议优先对@Consume装饰的变量设置默认值，或者按照API 19及以前版本的方式进行设置。
 
 反例
 

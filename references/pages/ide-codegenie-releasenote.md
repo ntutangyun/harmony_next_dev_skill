@@ -14,7 +14,7 @@ UI Verification的内置工具支持折叠和展开特性，以及支持动态�
 
 使用自定义Agent和HarmonyOS Act智能体时，支持展示当前会话token的使用量。
 
-选择HarmonyOS Act智能体进行对话、代码生成、代码修改等操作后，将鼠标悬浮在对话框的时间点会弹出Back to This Moment，点击可回退对话。
+选择HarmonyOS Act智能体进行对话、代码生成、代码修改等操作后，将鼠标悬浮在对话框的时间点上，会弹出Back to This Moment，点击可回退对话。
 
 工程问答支持调用MCP Market工具，调用LSP（Language Server Protocol，语言服务器协议）工具，以及ArkTS和C++代码语义检索能力。具体请参考工程问答。
 
@@ -86,7 +86,7 @@ CodeGenie搭载长期记忆功能，支持记忆配置。记忆（Memory）配�
 
 HarmonyOS Act智能体支持切换模型和配置三方模型。
 
-支持通过服务提供商接入第三方模型，URL接入时支持使用Ollama协议的三方模型。具体请参考模型（Model）配置。
+支持通过服务提供商接入三方模型，URL接入时支持使用Ollama协议的三方模型。具体请参考模型（Model）配置。
 
 自定义智能体（Agent）配置时，DevEco Studio内置工具新增To Do工具，智能体支持切换模型和配置三方模型。具体请参考自定义智能体（Agent）配置和调用。
 

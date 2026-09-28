@@ -4,8 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
 
 ohpm-repo从2.3.0版本开始支持自定义认证插件（需配套使用1.8.0及以上版本ohpm命令行工具），允许您使用AccessToken认证，开发定制化的认证插件来对接开发者自己的用户信息系统。
 
-注意
-
 当您使用自定义认证插件对接自己的用户系统时，如果存在网络通信，建议使用https协议，确保信息安全传输。
 
 准备工作
@@ -17,8 +15,6 @@ ohpm-repo从2.3.0版本开始支持自定义认证插件（需配套使用1.8.0�
 建议将模板文件中CustomAuth.ts文件存入ohpm-repo解压根目录的plugins文件夹内。
 
 编辑CustomAuth.ts文件，实现认证插件接口AuthPlugin
-
-注意
 
 打开CustomAuth.ts模板文件，需要编写代码实现接口类AuthPlugin，实现auth和getUserInfo两个基础方法，实现类CustomAuth的名字可自定义修改。
 
@@ -32,7 +28,7 @@ export interface AuthPlugin {
    * @returns
    * id：用户的id，保证唯一性
    * name：用户的名字，保证唯一性
-   * belongGroupList：用户所在的组织，具有发指定组织包的权限
+   * belongGroupList：用户所在的组织，具有发布指定组织包的权限
    * groupAdminList： 用户所管理的组织，具有删除组织内包的权限
    */
   auth(accessToken: string): Promise<{
@@ -48,7 +44,7 @@ export interface AuthPlugin {
    * @returns
    * id：用户的id，保证唯一性
    * name：用户的名字，保证唯一性
-   * belongGroupList：用户所在的组织，具有发指定组织包的权限
+   * belongGroupList：用户所在的组织，具有发布指定组织包的权限
    * groupAdminList： 用户所管理的组织，具有删除组织内包的权限
    */
   authWithReadOnly(accessToken: string): Promise<{
@@ -133,7 +129,7 @@ export interface AuthPlugin {
    * @returns
    * id：用户的id，保证唯一性
    * name：用户的名字，保证唯一性
-   * belongGroupList：用户所在的组织，具有发指定组织包的权限
+   * belongGroupList：用户所在的组织，具有发布指定组织包的权限
    * groupAdminList： 用户所管理的组织，具有删除组织内包的权限
    */
   auth(accessToken: string): Promise<{
@@ -149,7 +145,7 @@ export interface AuthPlugin {
    * @returns
    * id：用户的id，保证唯一性
    * name：用户的名字，保证唯一性
-   * belongGroupList：用户所在的组织，具有发指定组织包的权限
+   * belongGroupList：用户所在的组织，具有发布指定组织包的权限
    * groupAdminList： 用户所管理的组织，具有删除组织内包的权限
    */
   authWithReadOnly(accessToken: string): Promise<{

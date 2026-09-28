@@ -1228,7 +1228,7 @@ Invalid dynamic import configurations in current module XXX.
 
 可能原因
 
-配置的动态导入的路径未在oh-package.json5的dependencies中定义，不支持配置三方包内的某个文件路径。
+动态导入的路径未在oh-package.json5的dependencies中定义，不支持配置三方包内的某个文件路径。
 
 处理步骤
 
@@ -2541,7 +2541,7 @@ build-profile.json5文件直接从其他模块复制，导致格式或字段不�
 
 检查工程级build-profile.json5文件，移除从其他模块直接复制的字段，确保字段符合规范。
 
-检查模块级hvigorfile文件，根据模块类型选择以下插件进行配置：hapTasks/hspTasks/harTasks。
+检查模块级hvigorfile.ts文件，根据模块类型选择以下插件进行配置：hapTasks/hspTasks/harTasks。
 
 00303199 build-profile.json5中找不到product信息
 
@@ -2721,7 +2721,7 @@ Unable to find XXX in local.properties or YYY in the system environment path. Ch
 
 错误描述
 
-系统未能找到XXX，导致SDK配置异常。
+找不到SDK目录。
 
 可能原因
 
@@ -2733,7 +2733,7 @@ local.properties文件中缺少XXX配置项。
 
 确保local.properties中已正确配置SDK路径，运行hvigorw--stop-daemon停止守护进程后重试。
 
-将YYY添加到系统环境变量路径中。
+将YYY添加到系统环境变量中。
 
 00303209 FA的entry模块缺少Target
 
@@ -3985,7 +3985,7 @@ name为YYY的extensionAbility的metadata下的resource属性值XXX格式错误�
 
 处理步骤
 
-确保extensionAbilty的metadata下的resource属性值格式正确，建议使用推荐的格式，例如：'$profile:agent_config'。
+确保extensionAbility的metadata下的resource属性值格式正确，建议使用推荐的格式，例如：'$profile:agent_config'。
 
 00303291 Agent extensionAbility的metadata.resource配置文件不存在
 
@@ -4059,15 +4059,15 @@ The resource 'XXX' of extensionAbility 'YYY' has the same configuration value as
 
 错误描述
 
-name为YYY的extensionAbility的resoruce配置值XXX和name为ZZZ的extensionAbility的resource配置值相同。
+name为YYY的extensionAbility的resource配置值XXX和name为ZZZ的extensionAbility的resource配置值相同。
 
 可能原因
 
-name为YYY和ZZZ的extensionAbility的resoruce配置值相同。
+name为YYY和ZZZ的extensionAbility的resource配置值相同。
 
 处理步骤
 
-确保name为YYY和ZZZ的extensionAbility的resoruce配置值不同。
+确保name为YYY和ZZZ的extensionAbility的resource配置值不同。
 
 00303295 HAR模块中extensionAbility的srcEntry不支持配置so文件
 
@@ -4104,6 +4104,130 @@ srcEntry配置so文件时，不支持配置绝对路径，不能以/开头，不
 处理步骤
 
 srcEntry的so文件路径是相对于libs/{abi}的路径，其中{abi}为设备CPU架构类型（如arm64-v8a），例如so文件路径是libs/arm64-v8a/ole/liboleEntry.so，则srcEntry配置为"ole/liboleEntry.so"。
+
+00303297 开启bundledAllDependencies的HAR不支持配置动态共享包依赖
+
+错误信息
+
+You can not configure shared type dependency. At file: YYY.
+
+错误描述
+
+不支持配置动态共享包依赖。
+
+可能原因
+
+模块级build-profile.json5的bundledAllDependencies为true时，不支持配置动态共享包依赖。
+
+处理步骤
+
+删除动态共享包依赖。
+
+00303298 不能同时配置bundledDependencies字段和bundle字段
+
+错误信息
+
+The configs of bundledDependencies and bundle cannot be set at the same time. At file: YYY.
+
+错误描述
+
+不能同时配置bundledDependencies字段和bundle字段。
+
+可能原因
+
+YYY文件中同时配置了bundledDependencies字段和bundle字段。
+
+处理步骤
+
+bundledDependencies字段和bundle字段只能配置一个。
+
+00303299 bundledAllDependencies和bundledDeclare必须同时配置为true
+
+错误信息
+
+The bundledAllDependencies is set to true, but the bundledDeclare is set to false. At file: YYY.
+
+错误描述
+
+bundledAllDependencies配置为true，但bundledDeclare配置为false。
+
+可能原因
+
+bundledAllDependencies配置为true，但bundledDeclare未配置或配置为false。
+
+处理步骤
+
+如果配置了bundledAllDependencies为true，则bundledDeclare也必须配置为true。
+
+00303300 C++模块构建失败
+
+错误信息
+
+One or more native C++ modules failed to build. Failed modules: XXX. Error details: YYY.
+
+错误描述
+
+C++模块构建失败。
+
+可能原因
+
+Cmake/Ninja配置文件报错。
+
+处理步骤
+
+根据报错信息YYY检查模块XXX，常见的报错信息及处理步骤如下。
+
+[h2].so文件和目标CPU架构不兼容
+
+错误信息
+
+xxx.so is incompatible with elf_x86_64.
+
+错误描述
+
+在Native C++工程编译过程中，链接阶段失败，提示xxx.so与elf_x86_64不兼容。
+
+可能原因
+
+链接器试图将xxx.so链接到一个期望为x86_64架构的目标文件中，但xxx.so本身不是x86_64架构，它可能是arm64-v8a、armeabi-v7a或其他架构。
+
+处理步骤
+
+"buildOption": {
+  "externalNativeOptions": {
+    "abiFilters": ["arm64-v8a"]
+  },
+}
+
+在CMakeLists.txt中增加架构判断分支，根据OHOS_ARCH变量动态链接不同架构的库，确保链接的库与当前编译架构一致。
+
+修改配置后，清理缓存并重新构建。
+
+[h2]编码异常导致解析失败
+
+错误信息
+
+包含以下一个或多个错误信息。
+
+unknown type name XXX
+
+expected unqualified-id
+
+expected identifier
+
+source file is not valid UTF-8
+
+错误描述
+
+编码异常导致解析失败，如类型未定义、语法错误等。
+
+可能原因
+
+可能是安全软件（加密软件、杀毒软件）对源文件进行了加密或篡改导致的。
+
+处理步骤
+
+将工程目录/文件添加到安全软件白名单，恢复相应文件内容，确认文件完整无损坏。
 
 00303303 skillProfiles的abilityName仅支持UIAbility或service类型的ExtensionAbility
 
@@ -4351,6 +4475,40 @@ The current modelVersion does not support setting targetSdkVersion, compatibleSd
 
 当API版本为26.0.0及以上时，将hvigor-config.json5和工程级oh-package.json5中的modelVersion升级至6.0.0或以上。
 
+00303316 校验shareFiles文件错误
+
+错误信息
+
+An error occurred when verifying the shareFiles configuration item: XXX. At file: YYY.
+
+错误描述
+
+校验shareFiles文件配置项时发生错误。
+
+可能原因
+
+scopes中的path存在包含关系或者路径重复。
+
+sharingOSPath不是string类型。
+
+配置了sharingOSPath，但是sharingOSSubpath或sharingOSPermission为空。
+
+sharingOSPath取值不是scopes列表中已配置的path值。
+
+sharingOSPermission不是scopes中对应路径permission的子集。
+
+处理步骤
+
+确保scopes中的path不存在包含关系，并且路径不重复。
+
+确保sharingOSPath是string类型。
+
+配置sharingOSPath后，sharingOSSubpath和sharingOSPermission是必填字段。
+
+确保sharingOSPath取值是scopes列表中已配置的path值。
+
+确保sharingOSPermission是scopes中对应路径permission的子集。
+
 00303318 SDK版本与JDK版本不匹配，需要使用低版本的JDK
 
 错误信息
@@ -4371,6 +4529,24 @@ The current SDK version does not match the Java environment. Please configure JD
 
 流水线场景，使用24或更低版本的JDK。
 
+00303319 OpenHarmony工程不允许配置deduplicateSo字段
+
+错误信息
+
+The 'runtimeOS' field of product: 'XXX' is set to 'OpenHarmony', which does not support the 'deduplicateSo' field. At file: YYY
+
+错误描述
+
+当前是OpenHarmony工程，不支持配置deduplicateSo字段。
+
+可能原因
+
+当前product XXX的runtimeOS字段设置为OpenHarmony，同时配置了deduplicateSo字段。
+
+处理步骤
+
+如果product XXX的runtimeOS字段设置为OpenHarmony，请删除deduplicateSo字段。或者将runtimeOS字段设置为HarmonyOS。
+
 ## Code blocks
 
 ### Code block 1
@@ -4378,4 +4554,14 @@ The current SDK version does not match the Java environment. Please configure JD
 ```
 registry=https://repo.huaweicloud.com/repository/npm/
 @ohos:registry=https://repo.harmonyos.com/npm/
+```
+
+### Code block 2
+
+```
+"buildOption": {
+  "externalNativeOptions": {
+    "abiFilters": ["arm64-v8a"]
+  },
+}
 ```

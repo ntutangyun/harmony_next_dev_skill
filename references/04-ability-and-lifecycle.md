@@ -216,6 +216,21 @@ These build on App Linking (`openLink`, see above), implicit Want, and Universal
 
 Use after a dynamic update or to fully re-initialize internal state.
 
+## Process model & startup flow
+
+HarmonyOS's process model is **component-driven**: you configure UIAbility/ExtensionAbility components and the system creates/assigns processes (`process-model-overview`); only child processes are created by the app itself.
+
+- **Main process**: by default every UIAbility of one bundle runs in a single main process. **ExtensionAbility processes**: all ExtensionAbilities of the same type share one process (UIExtensionAbility subclasses such as ShareExtensionAbility can be one-process-per-instance; `AppServiceExtensionAbility` can be split per name with `extensionProcessMode: "type"`). **Render process**: allocated for Web components. Process names are not a stable contract — never branch on them.
+- A process is destroyed only after all Abilities in it exit.
+- **Isolated processes (PC/2in1 and Tablet)** — `isolation-process-development-guideline`:
+  - *Static*: set `process` on entries in `abilities` / `extensionAbilities` (UIAbility and EmbeddedUIExtensionAbility only); same string ⇒ same process.
+  - *Dynamic*: `isolationProcess: true` on a UIAbility; the system calls `onNewProcessRequest` on the controlling AbilityStage and you return a process key (same key ⇒ reuse that process).
+  - *Per-module*: module `isolationMode`: `isolationOnly` (always isolated; app can't install on non-PC/2in1) or `isolationFirst` (isolated on PC/2in1, normal elsewhere).
+- **Child processes (PC/2in1 and Tablet)** via `childProcessManager` — die with the parent and can't spawn grandchildren (`arkts-child-process-development-guideline`, `capi-nativechildprocess-development-guideline`): `startChildProcess` (lightweight ArkTS task, no args, auto-destroyed after `onStart`), `startArkChildProcess` (API 12+, args/fds, long-running, exits via `process.abort`), `startNativeChildProcess` (API 13+, C/C++ entry, exits when the entry returns).
+- **Startup flow** (`application-startup-process`): process start → `AbilityStage.onCreate` (module-level init, once per HAP) → UIAbility `onCreate` → `onWindowStageCreate` → `onForeground`. Keep heavy work out of these callbacks.
+- **Exit on PC/2in1** (`app-stop-for-2in1`): close button, dock "quit / close all windows", tray quit, and shutdown trigger different callbacks; closing a single main window runs `onBackground()` → `onDestroy()`. The page also covers the pre-close (预关闭) mechanism for confirm-before-quit.
+- **App plugins (PC/2in1)** (`plugin-package`): a plugin is an HSP whose `app.json5` has `"bundleType": "appPlugin"`. The host app requests `ohos.permission.kernel.SUPPORT_LOCAL_PLUGIN` and manages plugins with `pluginBundleManager` from `@kit.AbilityKit`: `installLocalPlugin([hspPath])` (updates also need a host reload/restart; paths under `/storage/Users/currentUser` additionally need `ohos.permission.READ_WRITE_USER_FILE`), `getAllLocalPluginInfoForSelf()`, `uninstallLocalPlugin(bundleName)`.
+
 ## ExtensionAbility quick map
 
 | Use case | Pick |

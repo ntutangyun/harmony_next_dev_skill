@@ -1,4 +1,4 @@
-# @Param：组件外部输入
+# @Param装饰器：组件外部输入
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new-param_
 

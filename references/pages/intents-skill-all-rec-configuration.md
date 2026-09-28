@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-s
 
 意图声明
 
-以“搜索旅游攻略”特性为例，开发者首先要注册“查看旅游攻略”（viewTravelGuides），其他意图见各垂域意图Schema。
+以“搜索旅游攻略”特性为例，开发者首先要注册“查看旅游攻略”（ViewTravelGuides），其他意图见各垂域意图Schema。
 
 开发者需要编辑对应的意图配置insight_intent.json文件实现意图注册。insight_intent.json文件需要放置在module下面的指定目录：src/main/resources/base/profile/insight_intent.json，并且整个工程中只能存在一个insight_intent.json文件。
 
@@ -145,8 +145,8 @@ import { insightIntent, InsightIntentExecutor, UIExtensionContentSession } from 
  * 意图调用样例
  */
 export default class IntentExecutorImpl extends InsightIntentExecutor {
-  private static readonly TAG: string = 'IntentExecutorImpl';
   private static readonly LOAD_BLUETOOTH_CARD: string = 'LoadBluetoothCard';
+
   /**
    * override 执行前台UI扩展意图
    *
@@ -157,32 +157,32 @@ export default class IntentExecutorImpl extends InsightIntentExecutor {
    */
   async onExecuteInUIExtensionAbility(name: string, param: Record<string, Object>,
     pageLoader: UIExtensionContentSession): Promise<insightIntent.ExecuteResult> {
-    console.info(IntentExecutorImpl.TAG, `onExecuteInUIExtensionAbility`);
     switch (name) {
       case IntentExecutorImpl.LOAD_BLUETOOTH_CARD:
-        console.info(IntentExecutorImpl.TAG, `onExecuteInUIAbilityForegroundMode::ForegroundUiAbility intent`);
-        return this.openLoadBluetoothCard(pageLoader);
+        return this.openLoadBluetoothCard(param, pageLoader);
       default:
-        console.error(IntentExecutorImpl.TAG, `onExecuteInUIAbilityForegroundMode::invalid intent`);
         break;
     }
-    let result: insightIntent.ExecuteResult = {
+    const data: insightIntent.ExecuteResult = {
       code: -1,
       result: {
-        message: 'onExecuteInUIExtensionAbility failed'
+        message: 'unknown intent'
       }
     };
-    return result;
+    return Promise.resolve(data);
   }
   /**
    * 打开加载蓝牙卡片意图
    *
+   * @param param 意图参数
    * @param pageLoader 意图内容Session对象
    * @returns 执行结果
    */
-  private async openLoadBluetoothCard(pageLoader: UIExtensionContentSession): Promise<insightIntent.ExecuteResult> {
+  private async openLoadBluetoothCard(param: Record<string, Object>,
+    pageLoader: UIExtensionContentSession): Promise<insightIntent.ExecuteResult> {
     return new Promise((resolve, reject) => {
       try {
+        console.info(`Intent param, param: ${JSON.stringify(param)}`);
         pageLoader.loadContent('pages/UiExtensionPage');
         const data: insightIntent.ExecuteResult = {
           code: 0,
@@ -327,8 +327,8 @@ import { insightIntent, InsightIntentExecutor, UIExtensionContentSession } from 
  * 意图调用样例
  */
 export default class IntentExecutorImpl extends InsightIntentExecutor {
-  private static readonly TAG: string = 'IntentExecutorImpl';
   private static readonly LOAD_BLUETOOTH_CARD: string = 'LoadBluetoothCard';
+
   /**
    * override 执行前台UI扩展意图
    *
@@ -339,32 +339,32 @@ export default class IntentExecutorImpl extends InsightIntentExecutor {
    */
   async onExecuteInUIExtensionAbility(name: string, param: Record<string, Object>,
     pageLoader: UIExtensionContentSession): Promise<insightIntent.ExecuteResult> {
-    console.info(IntentExecutorImpl.TAG, `onExecuteInUIExtensionAbility`);
     switch (name) {
       case IntentExecutorImpl.LOAD_BLUETOOTH_CARD:
-        console.info(IntentExecutorImpl.TAG, `onExecuteInUIAbilityForegroundMode::ForegroundUiAbility intent`);
-        return this.openLoadBluetoothCard(pageLoader);
+        return this.openLoadBluetoothCard(param, pageLoader);
       default:
-        console.error(IntentExecutorImpl.TAG, `onExecuteInUIAbilityForegroundMode::invalid intent`);
         break;
     }
-    let result: insightIntent.ExecuteResult = {
+    const data: insightIntent.ExecuteResult = {
       code: -1,
       result: {
-        message: 'onExecuteInUIExtensionAbility failed'
+        message: 'unknown intent'
       }
     };
-    return result;
+    return Promise.resolve(data);
   }
   /**
    * 打开加载蓝牙卡片意图
    *
+   * @param param 意图参数
    * @param pageLoader 意图内容Session对象
    * @returns 执行结果
    */
-  private async openLoadBluetoothCard(pageLoader: UIExtensionContentSession): Promise<insightIntent.ExecuteResult> {
+  private async openLoadBluetoothCard(param: Record<string, Object>,
+    pageLoader: UIExtensionContentSession): Promise<insightIntent.ExecuteResult> {
     return new Promise((resolve, reject) => {
       try {
+        console.info(`Intent param, param: ${JSON.stringify(param)}`);
         pageLoader.loadContent('pages/UiExtensionPage');
         const data: insightIntent.ExecuteResult = {
           code: 0,

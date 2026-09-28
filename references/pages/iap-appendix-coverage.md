@@ -71,7 +71,7 @@ BEF、XOF、XAF、XPF、KMF、GRD、GNF、HUF、IDR、JPY、LUF、MGA、MGF、PY
 51	欧洲	直布罗陀	GI	GIP	银行卡	Visa/Mastercard/JCB/Maestro/American Express/Discover Card/Diners
 52	欧洲	格陵兰	GL	DKK	银行卡	Visa/Mastercard/JCB/Maestro/American Express/Discover Card/Diners
 53	欧洲	阿尔巴尼亚	AL	ALL	银行卡	Visa/Mastercard
-54	亚太地区	中国境内	CN	CNY	银行卡	华为支付/Huawei Pay
+54	亚太地区	中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）	CN	CNY	银行卡	华为支付/Huawei Pay
 55	亚太地区	马来西亚	MY	MYR	银行卡	Visa/Mastercard/JCB/Discover Card/Diners
 56	亚太地区	越南	VN	VND	银行卡	Visa/Mastercard/JCB/Discover Card/Diners
 57	亚太地区	菲律宾	PH	PHP	银行卡	Visa/Mastercard/JCB/Discover Card/Diners

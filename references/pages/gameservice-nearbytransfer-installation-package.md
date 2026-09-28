@@ -146,7 +146,7 @@ public async create(): Promise<string | undefined> {
     } catch (error) {
       let err = error as BusinessError;
       hilog.error(0x0000, 'nearby',
-        `Failed to subscribe offRemoteInstallationInfoNotify error. Code: ${err.code}, message: ${err.message}`);
+        `Failed to subscribe onRemoteInstallationInfoNotify error. Code: ${err.code}, message: ${err.message}`);
     }
     hilog.info(0x0000, '[nearby]', `create success linking: ${createResult.linkingForInstallation}`);
     return createResult.linkingForInstallation;
@@ -172,7 +172,7 @@ onPageHide(): void {
   this.immersiveDisablingListening();
 }
 
-接收端完成安装包的接收后，发送端调用destroy接口销毁服务。若服务销毁后再次使用近场快传服务，需重新创建游戏近场快传服务并注册相关回调。
+接收端完成安装包的接收后，发送端调用destroy接口销毁服务。若服务销毁后再次使用近场快传服务，需重新发送端注册相关回调。
 
 public destroy(): void {
   try {
@@ -264,7 +264,7 @@ public async create(): Promise<string | undefined> {
     } catch (error) {
       let err = error as BusinessError;
       hilog.error(0x0000, 'nearby',
-        `Failed to subscribe offRemoteInstallationInfoNotify error. Code: ${err.code}, message: ${err.message}`);
+        `Failed to subscribe onRemoteInstallationInfoNotify error. Code: ${err.code}, message: ${err.message}`);
     }
     hilog.info(0x0000, '[nearby]', `create success linking: ${createResult.linkingForInstallation}`);
     return createResult.linkingForInstallation;

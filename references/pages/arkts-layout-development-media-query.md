@@ -21,7 +21,7 @@ import { mediaquery } from '@kit.ArkUI';
 通过matchMediaSync接口设置媒体查询条件，保存返回的条件监听句柄listener。例如监听横屏事件：
 
 listener: mediaquery.MediaQueryListener =
-    this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
 
 给条件监听句柄listener绑定回调函数onPortrait，当listener检测设备状态变化时执行回调函数。在回调函数内，根据不同设备状态更改页面布局或者实现业务逻辑。
 
@@ -132,7 +132,8 @@ dark-mode	系统当前的深浅模式。可选值：true、false。 深色模式
 
 示例一使用媒体查询，实现屏幕横竖屏切换时，为页面文本应用添加不同的内容和样式。
 
-import { mediaquery, window } from '@kit.ArkUI';
+import { mediaquery } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 
 @Entry
@@ -304,7 +305,7 @@ import { mediaquery } from '@kit.ArkUI';
 
 ```
 listener: mediaquery.MediaQueryListener =
-    this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
 ```
 
 ### Code block 3
@@ -334,7 +335,8 @@ listener: mediaquery.MediaQueryListener =
 ### Code block 5
 
 ```
-import { mediaquery, window } from '@kit.ArkUI';
+import { mediaquery } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 
 @Entry

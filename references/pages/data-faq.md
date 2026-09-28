@@ -35,7 +35,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/data-faq_
 
 import { relationalStore } from '@kit.ArkData'
 
-let password: string = "x'3605d7de19311edba4d3c88143c61cdd79dd5a58bc829c8b1234567891234567'"; // 需替换为实际的数据库口令密码
+let password: string = "x'3605d7de19311edba4d3c88143c61cdd79dd5a58bc829c8b1234567891234567'"; // 需替换为实际的数据库原始密钥（64位十六进制字符串，对应32字节原始密钥）
 let key = new Uint8Array(buffer.from(password, 'utf8').buffer); // 返回的是Uint8Array
 // 配置加密参数
 const cryptoParam: relationalStore.CryptoParam = {
@@ -49,7 +49,7 @@ const cryptoParam: relationalStore.CryptoParam = {
 ```
 import { relationalStore } from '@kit.ArkData'
 
-let password: string = "x'3605d7de19311edba4d3c88143c61cdd79dd5a58bc829c8b1234567891234567'"; // 需替换为实际的数据库口令密码
+let password: string = "x'3605d7de19311edba4d3c88143c61cdd79dd5a58bc829c8b1234567891234567'"; // 需替换为实际的数据库原始密钥（64位十六进制字符串，对应32字节原始密钥）
 let key = new Uint8Array(buffer.from(password, 'utf8').buffer); // 返回的是Uint8Array
 // 配置加密参数
 const cryptoParam: relationalStore.CryptoParam = {

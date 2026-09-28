@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-arkts
 
 初步识别内存问题
 
-当在一段时间内应用内存没有明显增加或者在内存上涨后又逐渐回落至正常水平，则基本可以排除应用存在内存问题；反之，在一段时间内不断上涨且无回落或者内存占用明显增长超出预期，那么则可初步判断应用可能存在内存问题。
+当在一段时间内应用内存没有明显增加或者在内存上涨后又逐渐回落至正常水平，则基本可以排除应用存在内存问题；反之，在一段时间内不断上涨且无回落或者内存占用明显增长超出预期，则可初步判断应用可能存在内存问题。
 
 当从实时监控页面初步判断应用可能存在内存问题后，通过深度录制抓取应用内存在问题场景下的详细数据，初步定界问题出现的位置。Memory泳道存在Allocation或Snapshot模板中，使用Allocation或Snapshot模板录制均可。
 
@@ -153,7 +153,7 @@ DevEco Studio 6.1.0 Release版本新增，位于（handle）标签中，允许�
 
 GlobalHandleObject
 
-26.0.0 Beta2版本新增，位于（handle）标签中，用于记录napi_ref地址，并建立napi_ref和ArkTS对象的引用关系。该功能需要先调用@util.ArkTSVM.setTrackGlobalRef接口使能 ，使能后会在快照导出过程中记录napi_ref地址和引用关系。开发者可根据快照中napi_ref相关信息，分析跨语言导致的内存泄漏。
+26.0.0版本新增，位于（handle）标签中，用于记录napi_ref地址，并建立napi_ref和ArkTS对象的引用关系。该功能需要先调用@util.ArkTSVM.setTrackGlobalRef接口使能 ，使能后会在快照导出过程中记录napi_ref地址和引用关系。开发者可根据快照中napi_ref相关信息，分析跨语言导致的内存泄漏。
 
 如下图，ReferenceAddress:0x5b0b560160是napi_ref地址，子节点是napi_ref关联的ArkTS对象。
 
@@ -163,25 +163,31 @@ GlobalHandleObject中记录了存在napi_ref的ArkTS对象，对象是GlobalHand
 
 VMRoot
 
-26.0.0 Beta1版本新增，位于（handle）标签中，表示虚拟机层面的根节点。
+26.0.0版本新增，位于（handle）标签中，表示虚拟机层面的根节点。
 
 FrameRoot
 
-26.0.0 Beta1版本新增，位于（handle）标签中，表示函数调用栈帧在GC遍历过程中的根节点。
+26.0.0版本新增，位于（handle）标签中，表示函数调用栈帧在GC遍历过程中的根节点。
 
 SourceTextModule
 
 SourceTextModule为虚拟机创建的对象，当应用使用export暴露对象后会被SourceTextModule对象持有。
 
-属性EcmaModuleRecordName表示export对象所在的文件名，属性EcmaModuleFileName表示export对象文件所在的abc文件名，这两个属性名在26.0.0 Beta1版本新增。如果快照用TRIM_LEVEL_2级别裁剪生成的.rawheap文件转换成的.heapsnapshot文件则不显示这两个属性名。
+属性EcmaModuleRecordName表示export对象所在的文件名，属性EcmaModuleFileName表示export对象文件所在的abc文件名，这两个属性名在26.0.0版本新增。如果快照用TRIM_LEVEL_2级别裁剪生成的.rawheap文件转换成的.heapsnapshot文件则不显示这两个属性名。
 
 Proxy-<对象实例名称>
 
-26.0.0 Beta1版本新增，被@Observed装饰的class实例，或被状态管理V1装饰器（如@State）装饰的对象实例，系统会自动在Proxy后带上对象实例名称。
+26.0.0版本新增，被@Observed装饰的class实例，或被状态管理V1装饰器（如@State）装饰的对象实例，系统会自动在Proxy后带上对象实例名称。
 
 说明
 
 若开启进程级堆快照转储以后，是由子线程触发的进程级堆快照转储将不会展示对象实例名称。
+
+HeapMetadata
+
+26.0.0版本新增，HeapMetadata用于记录触发OOM（Out of Memory，内存溢出）的ArkTS堆内存（Heap）信息，包括heapType（堆类型）、spaceType（堆空间类型）、vmType（虚拟机类型）。
+
+其中heapType记录触发OOM的heap，包含Local Heap、Shared Heap、Process Heap；spaceType记录触发OOM具体的堆空间类型；vmType记录当前虚拟机的类型，dynamic表示动态虚拟机类型，static表示静态虚拟机类型。
 
 [h2]常见属性介绍
 

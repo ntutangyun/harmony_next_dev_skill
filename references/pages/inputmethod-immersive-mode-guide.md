@@ -24,7 +24,7 @@ TextArea({placeholder: '沉浸模式'})
 TextArea({placeholder: '非沉浸模式'})
   .keyboardAppearance(KeyboardAppearance.NONE_IMMERSIVE)
 
-输入法应用订阅编辑框属性变化事件editorattributechanged，通过回调参数EditorAttribute中的immersiveMode字段感知前台应用期望的沉浸模式。示例代码如下。
+输入法应用订阅编辑框属性变化事件editorAttributeChanged，通过回调参数EditorAttribute中的immersiveMode字段感知前台应用期望的沉浸模式。示例代码如下。
 
 // 感知是否设置沉浸模式，如果是沉浸模式选择沉浸模式类型
 inputMethodEngine.getKeyboardDelegate().on("editorAttributeChanged", (attr : inputMethodEngine.EditorAttribute) => {

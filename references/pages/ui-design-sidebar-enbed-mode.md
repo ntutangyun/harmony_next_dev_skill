@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从6.0.0(20)版本开始，新增支持设置embed模式的侧边栏。
 
-HdsSideBar提供可以显示和隐藏的侧边栏容器，通过子组件定义侧边栏和内容区，第一个子组件表示侧边栏，第二个子组件表示内容区，通过设置sideBarContainerType的值为SideBarContainerType.Embed，使得当前HdsSideBar为嵌入样式。
+HdsSideBar (侧边栏)提供可以显示和隐藏的侧边栏容器，通过子组件定义侧边栏和内容区，第一个子组件表示侧边栏，第二个子组件表示内容区，通过设置sideBarContainerType的值为SideBarContainerType.Embed，使得当前HdsSideBar为嵌入样式。
 
 开发步骤
 

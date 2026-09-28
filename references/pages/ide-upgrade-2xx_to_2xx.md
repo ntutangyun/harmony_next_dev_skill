@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-upgrade-2xx_to_2xx_
 
-如需将ohpm-repo版本2.X.X/5.X.X版本升级到更高版本，可参考此文档。
+如需将ohpm-repo 2.X.X或ohpm-repo 5.X.X版本升级到更高版本，可参考此文档。
 
 须知
 

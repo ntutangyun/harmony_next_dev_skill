@@ -58,10 +58,7 @@ ts编译的配置文件tsconfig.json
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "rootDirs": [
-      "./src",
-      "./test"
-    ],
+    "rootDir": "./plugins",
     "typeRoots": [
       "./node_modules/@types"
     ],
@@ -73,6 +70,7 @@ ts编译的配置文件tsconfig.json
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "alwaysStrict": true,
+    "strict": false,
     "noImplicitReturns": true,
     "skipLibCheck": true
   }
@@ -137,10 +135,7 @@ export class CustomAuth implements AuthPlugin {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "rootDirs": [
-      "./src",
-      "./test"
-    ],
+    "rootDir": "./plugins",
     "typeRoots": [
       "./node_modules/@types"
     ],
@@ -152,6 +147,7 @@ export class CustomAuth implements AuthPlugin {
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "alwaysStrict": true,
+    "strict": false,
     "noImplicitReturns": true,
     "skipLibCheck": true
   }

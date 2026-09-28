@@ -4,13 +4,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 
 操作日志界面显示用户通过ohpm-repo管理界面进行的所有操作，以及通过ohpm命令行工具执行publish，unpublish和dist-tags等相关命令所记录的日志。操作日志界面分为两个部分：第一部分为筛选条件，第二部分是展示符合筛选条件的数据。
 
-注意
-
 操作日志的数据每隔一天会定时清除，默认保留100天内的操作日志数据，数据保留时间可通过config.yaml中配置项operation_log_retention设定。
 
 一级事件类型	二级事件类型	三级事件类型
 用户管理	新增用户	-
-	
+编辑用户	
 删除用户	-
 修改用户角色	-
 重置用户密码	-
@@ -18,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 删除仓库
 更新代码仓
 上架资源包
-
+批量上架资源包
 下架资源包
 批量下架资源包
 uplink	更新Uplink代理

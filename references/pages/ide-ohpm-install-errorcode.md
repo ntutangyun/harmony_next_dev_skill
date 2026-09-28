@@ -78,7 +78,7 @@ Not Found Hsp File By Registry Tgz.
 
 处理步骤
 
-检查HSP包，确保包含.hsp 文件。
+检查HSP包，确保包含.hsp文件。
 
 00604005 依赖的包名无效
 
@@ -151,6 +151,42 @@ Internal Program Error.
 处理步骤
 
 检查包依赖关系，确保没有依赖包冲突或不兼容的情况。具体请参考模块内依赖版本冲突。
+
+00608002 文件不存在
+
+错误信息
+
+File Not Found.
+
+错误描述
+
+文件不存在。
+
+可能原因
+
+目录下不存在oh-package.json5文件。
+
+处理步骤
+
+确认目录下存在oh-package.json5文件。
+
+00611002 钩子命令执行失败
+
+错误信息
+
+Hook Fail.
+
+错误描述
+
+钩子命令执行失败。
+
+可能原因
+
+钩子命令执行失败，如oh-package.json5中配置如下："hooks": { "postInstall": "echo 'Installation complete' && exit 1" }，执行ohpm install。
+
+处理步骤
+
+检查hooks命令是否正确。
 
 00633001 在命令行中指定的路径不存在
 

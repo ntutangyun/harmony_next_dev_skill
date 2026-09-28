@@ -14,7 +14,7 @@ Dep Statements Missing.
 
 可能原因
 
-oh-package.json5的dependencies/dynamicDependencies未声明。
+oh-package.json5文件中的dependencies/dynamicDependencies未声明。
 
 处理步骤
 
@@ -68,7 +68,7 @@ Key Path Is DirError.
 
 可能原因
 
-私钥文件路径错误。
+在.ohpmrc文件中，key_path配置的是文件夹路径，不是文件路径。
 
 处理步骤
 
@@ -122,11 +122,11 @@ Not Support PrivateKey.
 
 可能原因
 
-未配置使用非空密码加密的私钥。
+.ohpmrc文件中key_path配置的是私钥文件路径，但路径下的私钥文件不存在或被损坏。
 
 处理步骤
 
-在.ohpmrc文件中配置加密的私钥密码。
+确保私钥文件路径指向正确的私钥文件。
 
 00609009 HSP文件为空
 
@@ -162,7 +162,7 @@ Invalid Tgz File.
 
 处理步骤
 
-检查tgz文件路径，确保路径对应的文件中包含.hsp文件。
+检查TGZ文件路径，确保路径对应的文件中包含.hsp文件。
 
 00609011 构建tgz元数据失败
 
@@ -180,7 +180,7 @@ Build Tgz Metadata Failed.
 
 处理步骤
 
-检查包oh-package.json5的配置，确保各字段配置正确。
+检查包oh-package.json5文件的配置，确保各字段配置正确。
 
 00609012 依赖包被锁定
 
@@ -198,7 +198,7 @@ Pkg Is Locked.
 
 处理步骤
 
-等待一段时间后重试，再上传。
+等待一段时间后重试上传。
 
 00609013 超出最大长度限制
 
@@ -212,11 +212,11 @@ Over Maximum Length Error.
 
 可能原因
 
-配置的name、email、url值的长度超过了最大限制。
+模块级oh-package.json5文件中author字段的name、email、url长度超过了最大限制。
 
 处理步骤
 
-检查值的长度，确保其在允许的范围内。name长度范围为[1,128]，email长度范围为[1，64]，url长度范围为[1，256]。
+检查值的长度，确保其在允许的范围内，name长度范围为[1,128]，email长度范围为[1,64]，url长度范围为[1,256]。
 
 00609014 解析源文件失败
 

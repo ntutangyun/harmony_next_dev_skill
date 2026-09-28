@@ -138,10 +138,10 @@ void GetUserDownloadDirExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDownloadDir(&downloadPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user download directory, download path=%{public}s", downloadPath);
-        free(downloadPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get download path, error code is %{public}d", ret);
     }
+    free(downloadPath);
 }
 
 调用OH_Environment_GetUserDownloadDir接口获取用户Download目录沙箱路径，并查看Download目录下的文件。示例代码如下所示：
@@ -341,10 +341,10 @@ void GetUserDownloadDirExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDownloadDir(&downloadPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user download directory, download path=%{public}s", downloadPath);
-        free(downloadPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get download path, error code is %{public}d", ret);
     }
+    free(downloadPath);
 }
 ```
 

@@ -2,19 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/xengine-kit-introduction_
 
-XEngine Kit（GPU加速引擎服务）提供基于马良GPU的性能提升方案，包括GPU/AI超分能力、自适应VRS（Variable Rate Shading，可变速率着色）、Subpass Shading、光线追踪技术（包括反射、阴影、环境光遮蔽和全局光照，Ray-Traced Reflection, Shadow, Ambient Occlusion and Global Illumination）和高性能着色器（High performance shaders，简称HPS）等，通过图形算法以及软硬件优化，让用户拥有更高画质、更高性能、更低功耗的3D游戏/应用、AR/VR体验。
-
-基本概念
-
-在进行XEngine Kit开发前，建议开发者提前了解以下基本概念：
-
-XComponent组件：是一种绘制组件，通常用于满足开发者较为复杂的自定义绘制需求，例如相机预览流的显示和游戏画面的绘制。
-
-可变速率着色（Variable Rate Shading，简称VRS）：是一种图形功能，允许应用程序独立于渲染目标的分辨率来控制像素着色器调用的频率。自适应可变速率着色（Adaptive VRS）在VRS的基础上，添加了可动态调整的着色率，能够大幅提升渲染性能。
-
-基于瓦片的延迟渲染（Tile-Based Deferred Rendering，TBDR）：是一种渲染技术，它结合了即时渲染（Immediate Mode Rendering, IMR）和延迟渲染（Deferred Rendering）的优点，旨在提高渲染效率和减少内存访问。
-
-动态漫反射全局光照（Dynamic Diffuse Global Illumination，简称DDGI）：是一种实时渲染技术，旨在模拟光线在场景中经多次漫反射后的全局光照效果，以提升画面真实感。
+XEngine Kit（GPU加速引擎服务）提供基于Maleoon GPU的性能提升方案，包括GPU/AI超分能力、自适应VRS（Variable Rate Shading，可变速率着色）、Subpass Shading、光线追踪技术（包括反射、阴影、环境光遮蔽和全局光照，Ray-Traced Reflection, Shadow, Ambient Occlusion and Global Illumination）、高性能着色器（High performance shaders，简称HPS）和控显分离（Control-Display Separation）等，通过图形算法以及软硬件优化，让用户拥有更高画质、更高性能、更低功耗的3D游戏/应用、AR/VR体验。
 
 场景介绍
 
@@ -52,6 +40,10 @@ XEngine Kit全局光照解决方案，基于硬件光线追踪、AI渲染和端�
 
 高性能GPU排序可以帮助我们更快地将乱序信息进行整齐排列，降低排序时延，提升性能。
 
+[h2]控显分离，解锁折叠屏游戏交互新形态
+
+XEngine Kit针对折叠屏游戏场景推出“控显分离”创新方案。在设备展开态下，屏幕被划分为两个对称的独立区域，深度还原复古掌机的交互逻辑：上半屏承载核心渲染画面，下半屏集中交互触控，解决传统手游按键遮挡画面的痛点，解锁折叠屏游戏交互新形态。
+
 约束与限制
 
 [h2]支持的设备
@@ -66,7 +58,7 @@ Phone、Tablet、PC/2in1、TV。
 
 在调用XEngine Kit能力前，需要先通过Syscap查询您的目标设备是否支持SystemCapability.Graphic.XEngine系统能力。
 
-XEngine Kit特性仅在使用马良GPU芯片的设备上受支持。不同设备支持的特性范围有所差异，可以通过以下方式查询设备支持的特性列表：
+XEngine Kit特性仅在使用Maleoon GPU芯片的设备上受支持。不同设备支持的特性范围有所差异，可以通过以下方式查询设备支持的特性列表：
 
 对于OpenGL ES，使用HMS_XEG_GetString扩展特性查询接口进行查询。
 

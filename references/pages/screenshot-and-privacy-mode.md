@@ -204,6 +204,7 @@ struct Index {
 
   build() {
   // ...
+  }
 }
 
 [h2]多窗口截图
@@ -331,6 +332,7 @@ struct Index {
 
   build() {
   // ...
+  }
 }
 
 屏幕截图
@@ -474,6 +476,7 @@ struct Index {
 
   build() {
   // ...
+  }
 }
 
 组件截图
@@ -641,6 +644,7 @@ struct Index {
 
   build() {
   // ...
+  }
 }
 ```
 
@@ -768,6 +772,7 @@ struct Index {
 
   build() {
   // ...
+  }
 }
 ```
 
@@ -897,5 +902,6 @@ struct Index {
 
   build() {
   // ...
+  }
 }
 ```

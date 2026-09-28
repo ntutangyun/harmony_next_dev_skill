@@ -40,7 +40,17 @@ Map Kit提供以下功能，满足绝大多数地图开发的需求：
 
 [h2]支持的设备
 
-本Kit仅适用于Phone、Tablet、PC/2in1和Wearable。
+能力	支持的设备
+创建地图	支持Phone、Tablet、PC/2in1和Wearable。 说明： 室内图功能支持Phone、Tablet和PC/2in1。
+地图交互	支持Phone、Tablet、PC/2in1和Wearable。
+在地图上绘制	支持Phone、Tablet、PC/2in1和Wearable。 矢量图层功能支持Phone、Tablet和PC/2in1。 流场图层功能支持Phone、Tablet和PC/2in1。
+位置搜索	支持Phone、Tablet、PC/2in1和Wearable。
+路径规划	支持Phone、Tablet、PC/2in1和Wearable。
+静态图	支持Phone、Tablet、PC/2in1和Wearable。
+地图Picker	支持Phone、Tablet和PC/2in1。
+通过地图应用实现导航等能力	支持Phone、Tablet和PC/2in1。 说明： 打开地图应用的打车页面功能支持Phone和Tablet。
+离线地图	支持Phone、Tablet和PC/2in1。
+地图计算工具	支持Phone、Tablet、PC/2in1和Wearable。
 
 [h2]示例代码
 
@@ -50,6 +60,6 @@ Map Kit（地图服务）示例代码，请参考示例代码。
 
 通用差异：请参见“模拟器与真机的差异”。
 
-ARM模拟器：petalMaps命名空间下相关功能不支持，我的位置功能不支持。
+模拟器：我的位置功能不支持，通过地图应用实现导航等能力相关功能不支持，离线地图相关功能不支持。
 
-x86模拟器：petalMaps命名空间下相关功能不支持，我的位置功能不支持，手表不支持。
+Map Kit所有功能不支持在x86模拟器的Wearable设备上运行。

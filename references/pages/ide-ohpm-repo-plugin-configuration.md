@@ -4,8 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-
 
 ohpm-repo从2.2.0版本开始支持自定义存储插件（需要配套使用1.7.0及以上版本ohpm命令行工具），允许您开发定制化的存储插件来对接您自己的存储系统，您希望将ohpm-repo下的三方包文件存储在华为云OBS或者其他云存储平台，可以按照如下步骤来实现自定义存储插件。
 
-注意
-
 当您使用自定义存储插件对接自己的存储系统时，如果存在网络通信，建议使用https协议，确保信息安全传输。
 
 准备工作
@@ -18,9 +16,7 @@ ohpm-repo从2.2.0版本开始支持自定义存储插件（需要配套使用1.7
 
 编辑CustomStorage.ts文件，实现存储插件接口StoragePlugin
 
-注意
-
-打开CustomStorage.ts模板文件，需要编写代码实现接口类StoragePlugin，实现init, save, delete, download和getDownloadUrl五个基础函数，实现类CustomStorage的名字可自定义修改。
+打开CustomStorage.ts模板文件，需要编写代码实现接口类StoragePlugin，实现init, save, delete, download和getDownloadUrl五个基础函数，实现类CustomStorage的名字可自定义。
 
 当使用自定义存储插件时，db存储位置必须为MySQL。
 
@@ -125,7 +121,7 @@ $ tsc
 
 编辑配置文件
 
-为了保证ohpm-repo能够正确加载自定义存储插件，需要修改配置文件config.yaml，主要涉及store处内容修改。
+为了保证ohpm-repo能够正确加载自定义存储插件，需要修改配置文件config.yaml，主要涉及store配置项的修改。
 
 // 配置文件中 store 项的格式参考
 store:

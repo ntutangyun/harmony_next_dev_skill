@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从6.0.0(20)版本开始，新增支持应用内多窗。
 
-通过应用内多窗组件MultiWindowEntryInAPP提供的单应用多窗口接口，实现一个应用多个窗口并行运行的体验。并且可以设置图标大小颜色、背板大小颜色、文字大小颜色等。
+通过MultiWindowEntryInAPP (应用内多窗)组件提供的单应用多窗口接口，实现一个应用多个窗口并行运行的体验。并且可以设置图标大小颜色、背板大小颜色、文字大小颜色等。
 
 如果开发者未集成HdsNavigation组件，可使用应用内多窗组件实现应用内多窗体验。
 

@@ -37,7 +37,7 @@ struct Index {
             // OpenType.LAUNCH_APP表示该按钮用于启动应用。
             openType: functionalButtonComponentManager.OpenType.LAUNCH_APP,
             label: '打开APP',
-            // 当OpenType为functionButtonComponentManager.OpenType.LAUNCH_APP时，appParam为必填项。
+            // 当OpenType为functionalButtonComponentManager.OpenType.LAUNCH_APP时，appParam为必填项。
             appParam: {
               bundleName: 'xxx',
               abilityName: 'xxx'
@@ -104,7 +104,7 @@ struct Index {
             // OpenType.LAUNCH_APP表示该按钮用于启动应用。
             openType: functionalButtonComponentManager.OpenType.LAUNCH_APP,
             label: '打开APP',
-            // 当OpenType为functionButtonComponentManager.OpenType.LAUNCH_APP时，appParam为必填项。
+            // 当OpenType为functionalButtonComponentManager.OpenType.LAUNCH_APP时，appParam为必填项。
             appParam: {
               bundleName: 'xxx',
               abilityName: 'xxx'

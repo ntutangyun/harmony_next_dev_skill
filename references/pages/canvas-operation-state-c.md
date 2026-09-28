@@ -33,9 +33,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/canvas-op
 裁剪操作常用接口如下表所示，详细的使用和参数说明请见drawing_canvas.h。
 
 接口	描述
-void OH_Drawing_CanvasClipRect(OH_Drawing_Canvas *, const OH_Drawing_Rect *, OH_Drawing_CanvasClipOp clipOp, bool doAntiAlias)	用于裁剪一个矩形。
-void OH_Drawing_CanvasClipRoundRect(OH_Drawing_Canvas *, const OH_Drawing_RoundRect *, OH_Drawing_CanvasClipOp clipOp, bool doAntiAlias)	用于裁剪一个圆角矩形。
-void OH_Drawing_CanvasClipPath(OH_Drawing_Canvas *, const OH_Drawing_Path *, OH_Drawing_CanvasClipOp clipOp, bool doAntiAlias)	用于裁剪一个自定义路径。
+void OH_Drawing_CanvasClipRect(OH_Drawing_Canvas *canvas, const OH_Drawing_Rect *rect, OH_Drawing_CanvasClipOp clipOp, bool doAntiAlias)	用于裁剪一个矩形。
+void OH_Drawing_CanvasClipRoundRect(OH_Drawing_Canvas *canvas, const OH_Drawing_RoundRect *roundRect, OH_Drawing_CanvasClipOp clipOp, bool doAntiAlias)	用于裁剪一个圆角矩形。
+void OH_Drawing_CanvasClipPath(OH_Drawing_Canvas *canvas, const OH_Drawing_Path *path, OH_Drawing_CanvasClipOp clipOp, bool doAntiAlias)	用于裁剪一个自定义路径。
 OH_Drawing_ErrorCode OH_Drawing_CanvasClipRegion(OH_Drawing_Canvas *canvas, const OH_Drawing_Region *region, OH_Drawing_CanvasClipOp clipOp)	用于裁剪一个区域。
 
 [h2]开发示例
@@ -60,7 +60,7 @@ OH_Drawing_BrushSetColor(brush, 0xff0000ff);
 OH_Drawing_CanvasAttachBrush(canvas, brush);
 OH_Drawing_Rect *rect = OH_Drawing_RectCreate(value400_, value400_, value1200_, value1200_);
 // 裁剪矩形区域
-OH_Drawing_CanvasClipRect(canvas, rect, OH_Drawing_CanvasClipOp::INTERSECT, true);
+OH_Drawing_CanvasClipRect(canvas, rect, INTERSECT, true);
 OH_Drawing_Point *point = OH_Drawing_PointCreate(value600_, value600_);
 // 绘制圆形
 OH_Drawing_CanvasDrawCircle(canvas, point, value600_);
@@ -68,6 +68,8 @@ OH_Drawing_CanvasDrawCircle(canvas, point, value600_);
 OH_Drawing_CanvasDetachBrush(canvas);
 // 销毁画刷对象并收回其占的内存
 OH_Drawing_BrushDestroy(brush);
+OH_Drawing_PointDestroy(point);
+OH_Drawing_RectDestroy(rect);
 
 原始图	裁剪后的图
 	
@@ -89,10 +91,10 @@ OH_Drawing_BrushDestroy(brush);
 矩阵变换操作常用接口如下表所示，详细的使用和参数说明请见drawing_canvas.h。
 
 接口	描述
-void OH_Drawing_CanvasTranslate(OH_Drawing_Canvas *, float dx, float dy)	用于平移画布一段距离。
-void OH_Drawing_CanvasScale(OH_Drawing_Canvas *, float sx, float sy)	用于画布缩放。
-void OH_Drawing_CanvasRotate(OH_Drawing_Canvas *, float degrees, float px, float py)	用于画布旋转一定的角度，正数表示顺时针旋转，负数反之。
-void OH_Drawing_CanvasSkew(OH_Drawing_Canvas *, float sx, float sy)	用于画布倾斜变换。等同于将当前画布矩阵左乘（premultiply）倾斜变换矩阵，并应用到画布上。其中倾斜变换矩阵为：|1 sx 0| |sy 1 0| |0 0 1|。
+void OH_Drawing_CanvasTranslate(OH_Drawing_Canvas *canvas, float dx, float dy)	用于平移画布一段距离。
+void OH_Drawing_CanvasScale(OH_Drawing_Canvas *canvas, float sx, float sy)	用于画布缩放。
+void OH_Drawing_CanvasRotate(OH_Drawing_Canvas *canvas, float degrees, float px, float py)	用于画布旋转一定的角度，正数表示顺时针旋转，负数反之。
+void OH_Drawing_CanvasSkew(OH_Drawing_Canvas *canvas, float sx, float sy)	用于画布倾斜变换。等同于将当前画布矩阵左乘（premultiply）倾斜变换矩阵，并应用到画布上。其中倾斜变换矩阵为：|1 sx 0| |sy 1 0| |0 0 1|。
 
 [h2]平移
 
@@ -117,6 +119,7 @@ OH_Drawing_CanvasDrawRect(canvas, rect);
 OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_RectDestroy(rect);
 OH_Drawing_MatrixDestroy(matrix);
+OH_Drawing_BrushDestroy(brush);
 
 原始图	平移后的效果图
 	
@@ -144,6 +147,7 @@ OH_Drawing_CanvasDrawRect(canvas, rect);
 OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_RectDestroy(rect);
 OH_Drawing_MatrixDestroy(matrix);
+OH_Drawing_BrushDestroy(brush);
 
 原始图	旋转后的效果图
 	
@@ -170,6 +174,8 @@ OH_Drawing_CanvasDrawRect(canvas, rect);
 // 去除画布中的画刷
 OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_RectDestroy(rect);
+OH_Drawing_MatrixDestroy(matrix);
+OH_Drawing_BrushDestroy(brush);
 
 原始图	放大后的效果图
 	
@@ -183,9 +189,9 @@ OH_Drawing_RectDestroy(rect);
 画布状态保存与恢复使用的接口如下表所示，详细的使用和参数说明请见drawing_canvas.h。
 
 接口	描述
-void OH_Drawing_CanvasSave(OH_Drawing_Canvas *)	用于保存当前画布的状态（画布矩阵）到一个栈顶。
-void OH_Drawing_CanvasRestore(OH_Drawing_Canvas *)	用于恢复保存在栈顶的画布状态（画布矩阵）。
-void OH_Drawing_CanvasRestoreToCount(OH_Drawing_Canvas *, uint32_t saveCount)	用于恢复到指定数量的画布状态（画布矩阵）。
+void OH_Drawing_CanvasSave(OH_Drawing_Canvas *canvas)	用于保存当前画布的状态（画布矩阵）到一个栈顶。
+void OH_Drawing_CanvasRestore(OH_Drawing_Canvas *canvas)	用于恢复保存在栈顶的画布状态（画布矩阵）。
+void OH_Drawing_CanvasRestoreToCount(OH_Drawing_Canvas *canvas, uint32_t saveCount)	用于恢复到指定数量的画布状态（画布矩阵）。
 
 [h2]开发示例
 
@@ -233,7 +239,7 @@ OH_Drawing_BrushSetColor(brush, 0xff0000ff);
 OH_Drawing_CanvasAttachBrush(canvas, brush);
 OH_Drawing_Rect *rect = OH_Drawing_RectCreate(value400_, value400_, value1200_, value1200_);
 // 裁剪矩形区域
-OH_Drawing_CanvasClipRect(canvas, rect, OH_Drawing_CanvasClipOp::INTERSECT, true);
+OH_Drawing_CanvasClipRect(canvas, rect, INTERSECT, true);
 OH_Drawing_Point *point = OH_Drawing_PointCreate(value600_, value600_);
 // 绘制圆形
 OH_Drawing_CanvasDrawCircle(canvas, point, value600_);
@@ -241,6 +247,8 @@ OH_Drawing_CanvasDrawCircle(canvas, point, value600_);
 OH_Drawing_CanvasDetachBrush(canvas);
 // 销毁画刷对象并收回其占的内存
 OH_Drawing_BrushDestroy(brush);
+OH_Drawing_PointDestroy(point);
+OH_Drawing_RectDestroy(rect);
 ```
 
 ### Code block 2
@@ -263,6 +271,7 @@ OH_Drawing_CanvasDrawRect(canvas, rect);
 OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_RectDestroy(rect);
 OH_Drawing_MatrixDestroy(matrix);
+OH_Drawing_BrushDestroy(brush);
 ```
 
 ### Code block 3
@@ -285,6 +294,7 @@ OH_Drawing_CanvasDrawRect(canvas, rect);
 OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_RectDestroy(rect);
 OH_Drawing_MatrixDestroy(matrix);
+OH_Drawing_BrushDestroy(brush);
 ```
 
 ### Code block 4
@@ -306,6 +316,8 @@ OH_Drawing_CanvasDrawRect(canvas, rect);
 // 去除画布中的画刷
 OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_RectDestroy(rect);
+OH_Drawing_MatrixDestroy(matrix);
+OH_Drawing_BrushDestroy(brush);
 ```
 
 ### Code block 5

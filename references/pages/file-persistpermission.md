@@ -10,9 +10,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/file-pers
 
 通过Picker选择文件或文件夹进行临时授权，该方式获取到的URI只具有临时读写权限。应用后续可按需通过文件分享接口（ohos.fileshare）进行持久化授权。
 
-1.应用仅临时需要访问公共目录的数据，例如：通讯类应用需要发送用户的文件或者图片。应用调用Picker的(select)接口选择需要发送的文件或者图片，此时应用获取到的是该文件的临时访问权限，应用重启或者设备重启后，再次访问该文件则仍需使用Picker进行文件选择。
+应用仅临时需要访问公共目录的数据，例如：通讯类应用需要发送用户的文件或者图片。应用调用Picker的(select)接口选择需要发送的文件或者图片，此时应用获取到的是该文件的临时访问权限，应用重启或者设备重启后，再次访问该文件则仍需使用Picker进行文件选择。
 
-2.应用如果需要长期访问某个文件或目录时，可以通过Picker选择文件或文件夹进行临时授权，然后利用persistPermission接口（ohos.fileshare.persistPermission）对授权进行持久化（在授权方同意被持久化的情况下，例如使用Picker选择文件场景，Picker会将权限授予当前应用，即可进行授权持久化），例如：文档编辑类应用本次编辑完一个用户文件，期望在历史记录中可以直接选中打开，无需再拉起Picker进行选择授权。
+应用如果需要长期访问某个文件或目录时，可以通过Picker选择文件或文件夹进行临时授权，然后利用persistPermission接口（ohos.fileshare.persistPermission）对授权进行持久化（在授权方同意被持久化的情况下，例如使用Picker选择文件场景，Picker会将权限授予当前应用，即可进行授权持久化），例如：文档编辑类应用本次编辑完一个用户文件，期望在历史记录中可以直接选中打开，无需再拉起Picker进行选择授权。
 
 可使用canIUse接口，确认设备是否具有以下系统能力：SystemCapability.FileManagement.AppFileService.FolderAuthorization。
 
@@ -76,7 +76,7 @@ export async function persistPermissionExample() {
 
 备注：C/C++持久化授权接口说明及开发指南具体参考：OH_FileShare_PersistPermission持久化授权接口。
 
-3.可以通过revokePermission接口（ohos.fileshare.revokePermission）对已持久化的文件取消授权，同时更新应用存储的数据以删除最近访问数据。
+可以通过revokePermission接口（ohos.fileshare.revokePermission）对已持久化的文件取消授权，同时更新应用存储的数据以删除最近访问数据。
 
 需要权限
 

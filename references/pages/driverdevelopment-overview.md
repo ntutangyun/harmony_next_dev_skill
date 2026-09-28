@@ -71,6 +71,8 @@ C-API	HidDdk	ohos.permission.ACCESS_DDK_HID
 C-API	USBSerialDDK	ohos.permission.ACCESS_DDK_USB_SERIAL
 C-API	ScsiPeripheralDDK	ohos.permission.ACCESS_DDK_SCSI_PERIPHERAL
 
+Driver Development Kit提供的C-API仅支持在DriverExtension进程中使用。在其他进程（包括子进程）中使用可能会出现功能异常，具体可参考在子进程或非驱动Ability中调用DDK的C-API失败。
+
 模拟器支持情况
 
 本Kit不支持模拟器。
@@ -89,13 +91,13 @@ AbilityKit	引入@ohos.application.Want (Want)用于生命周期管理。
 
 驱动应用规格说明
 
-1.驱动应用定义
+驱动应用定义
 
 驱动应用是基于Driver Development Kit开发的、面向非标外设的用户态驱动。
 
 驱动应用基于DriverExtensionAbility，开发者需要重写该Ability的生命周期回调接口。
 
-2.驱动应用安装卸载规格
+驱动应用安装卸载规格
 
 当用户安装某一驱动应用时，系统会将应用安装到当前已有的所有用户环境下。
 
@@ -103,13 +105,19 @@ AbilityKit	引入@ohos.application.Want (Want)用于生命周期管理。
 
 卸载策略：当用户在任意用户环境下发起卸载某一驱动应用，系统会将所有用户环境下的该驱动应用卸载。
 
-3.基于DriverExtensionAbility生命周期管理说明
+基于DriverExtensionAbility生命周期管理说明
 
 ExtensionAbility是基于场景服务的扩展能力的统称，简称为扩展能力（例如用户态扩展驱动、卡片、输入法等）以便满足不同的使用场景。
 
 各类Extension的生命周期由各个SA管理，通过connectAbility启动Extension，并驱动定义的业务接口；业务结束，SA调用disconnectAbility接口断开Extension连接，AMS会根据该Extension是否有SA连接来决定是否销毁该Extension及进程。在用户态扩展驱动开发场景下，管理DriverExtensionAbility生命周期的系统SA为外设扩展服务SA。
 
-4.在DriverExtensionAbility中API访问安全管控说明
+当DriverExtensionAbility配置的“VID + PID”设备列表中的某个外设接入时，其生命周期区间跟该外设接入的时间段一致。
+
+当DriverExtensionAbility配置的“VID + PID”设备列表中的多个外设依次接入时，其生命周期区间从第一个外设的接入持续到最后一个外设的拔出。
+
+接入的外设同时出现在多个DriverExtensionAbility配置的“VID + PID”列表中时，该外设只会影响最先安装的驱动Ability的生命周期，详见多个驱动Ability配置了同一型号外设的情况下，插入该外设只支持拉起一个驱动Ability。
+
+在DriverExtensionAbility中API访问安全管控说明
 
 系统支持基于ExtensionAbility构建场景化扩展Ability，DriverExtensionAbility为支持开发用户态扩展驱动的一类Ability。
 

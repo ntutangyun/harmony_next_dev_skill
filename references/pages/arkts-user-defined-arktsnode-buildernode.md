@@ -1634,11 +1634,13 @@ struct TextBuilder {
 页面1示例代码如下：
 
 import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const BOOK_INITIAL_NAME = '100';
 
 @ObservedV2
 export class Book {
-  @Trace name: string = "100";
-
+  @Trace public name: string = BOOK_INITIAL_NAME;
   constructor(name: string) {
     this.name = name;
   }
@@ -1652,10 +1654,10 @@ function buildText(book: Book) {
 }
 
 class TextNodeController extends NodeController {
-  private rootNode: FrameNode | null = null;
-  private textNode: BuilderNode<[Book]> | null = null;
-  index: number = 0;
-  name: string = "100";
+  public rootNode: FrameNode | null = null;
+  public textNode: BuilderNode<[Book]> | null = null;
+  public index: number = 0;
+  public name: string = BOOK_INITIAL_NAME;
 
   makeNode(context: UIContext): FrameNode | null {
     this.rootNode = new FrameNode(context);
@@ -1683,36 +1685,33 @@ export struct Index3 {
 
 @ComponentV2({ freezeWhenInactive: true })
 struct BuildNodeChild {
-  @Local bookTest: Book = new Book("A Midsummer Night’s Dream");
+  @Local bookTest: Book = new Book('A Midsummer Night’s Dream');
 
-  @Monitor("bookTest.name")
+  @Monitor('bookTest.name')
   onMessageChange(monitor: IMonitor) {
-    console.info(`The book name change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`The book name change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
   }
 
   build() {
     Column() {
       Text(`Book name is  ${this.bookTest.name}`).fontSize(30)
-      Button('change')
-        .width('60%')
-        .height(40)
-        .fontSize(30)
+      Button('change').width('60%').height(40).fontSize(30)
         .onClick(() => {
-          this.bookTest.name = "The Old Man and the Sea";
+          this.bookTest.name = 'The Old Man and the Sea';
         })
         .margin(5)
       Button('next').width('60%').height(40).fontSize(30)
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/routing' });
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/inheritFreezeRouterPage2' });
           setTimeout(() => {
-            this.bookTest = new Book("Jane Austen's Pride and Prejudice");
-          }, 1000)
+            this.bookTest = new Book(`Jane Austen's Pride and Prejudice`);
+          }, 1000);
         })
     }
   }
 }
 
-页面2-Routing2（即页面1的下一页）示例代码如下：
+页面2-inheritFreezeRouterPage2（即页面1的下一页）示例代码如下：
 
 @Entry
 @ComponentV2
@@ -1743,9 +1742,10 @@ TabContent
 图示如下：
 
 import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 class Params {
-  message: number = 0;
+  public message: number = 0;
 
   constructor( message: number) {
     this.message = message;
@@ -1804,7 +1804,8 @@ struct TabContentTest {
           TabContent() {
             Column() {
               FreezeBuildNode({ message: this.message })
-              Text('Tabs遍历后BuilderNode处于冻结')
+              // 请将$r('app.string.text3')替换为实际资源文件，在本示例中该资源文件的value值为"Tabs遍历后BuilderNode处于冻结："
+              Text($r('app.string.text3'))
                 .fontWeight(FontWeight.Bold)
                 .margin({ top: 48, bottom: 48 })
                 .fontSize(30)
@@ -1828,7 +1829,7 @@ struct FreezeBuildNode {
   @Param message: number = 0;
   @Param index: number = 0;
   @Monitor('message') onMessageUpdated(mon: IMonitor) {
-    console.info(`FreezeBuildNode message callback func ${this.message}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode message callback func ${this.message}`);
   }
   build() {
     if (this.index === 0) {
@@ -1843,7 +1844,7 @@ struct buildNodeChild {
   @Param index: number = 0;
 
   @Monitor('message') onMessageUpdated(mon: IMonitor) {
-    console.info(`FreezeBuildNode buildNodeChild message callback func ${this.message}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode buildNodeChild message callback func ${this.message}`);
   }
 
   build() {
@@ -1855,20 +1856,25 @@ struct buildNodeChild {
 
 在上面的示例中：
 
-1.点击change message更改message的值，当前正在显示的BuilderNode下面的子组件buildNodeChild的message属性会被更新，buildNodeChild组件中@Monitor注册的方法onMessageUpdated被触发。
+点击change message更改message的值，当前正在显示的BuilderNode下面的子组件buildNodeChild的message属性会被更新，buildNodeChild组件中@Monitor注册的方法onMessageUpdated被触发。
 
-2.点击tab1切换到另一个TabContent，该TabContent的状态由inactive变为active，对应的@Monitor注册的方法onMessageUpdated被触发。
+点击tab1切换到另一个TabContent，该TabContent的状态由inactive变为active，对应的@Monitor注册的方法onMessageUpdated被触发。
 
-3.点击tab0切换回第一个TabContent，再切换到其他TabContent后点击change message更改message的值，此时tab0冻结，tab0的@Monitor注册的方法onMessageUpdated不会被触发。
+点击tab0切换回第一个TabContent，再切换到其他TabContent后点击change message更改message的值，此时tab0冻结，tab0的@Monitor注册的方法onMessageUpdated不会被触发。
 
 Navigation
 
 Navigation组件的BuilderNode冻结功能（通过配置inheritFreezeOptions为true）是组件冻结机制在导航场景下的延伸，核心作用是优化包含BuilderNode的Navigation组件在页面切换或状态更新时的性能，避免非活跃状态下的冗余计算和渲染。当BuilderNode所在的Navigation页面处于非活跃状态（如被切换到后台、隐藏在Tab页/侧边栏后等），系统会将其标记为 “冻结”。冻结状态下，该BuilderNode的子组件会暂停状态更新、事件响应和渲染刷新（如@State、@Prop等状态变化不会触发重新渲染，生命周期回调暂时失效）。通过配置inheritFreezeOptions为true，BuilderNode会继承父组件（如Navigation）的冻结状态，确保其下的整个子组件树同步进入冻结状态，避免局部未冻结导致的性能浪费。
 
 import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common } from '@kit.AbilityKit';
+
+const PAGE_ONE_INDEX = 1;
+const PAGE_TWO_INDEX = 2;
 
 class Params {
-  count: number = 0;
+  public count: number = 0;
 
   constructor(count: number) {
     this.count = count;
@@ -1951,7 +1957,7 @@ struct MyNavigationTestStack {
 @ComponentV2
 struct PageOneStack {
   @Consumer('pageInfo') pageInfo: NavPathStack=new NavPathStack();
-  @Local index: number = 1;
+  @Local index: number = PAGE_ONE_INDEX;
   @Param @Require  message: number;
   @Param @Require logNumber: number;
 
@@ -1985,15 +1991,17 @@ struct PageOneStack {
 @ComponentV2
 struct PageTwoStack {
   @Consumer('pageInfo') pageInfo: NavPathStack=new NavPathStack();
-  @Local index: number = 2;
+  @Local index: number = PAGE_TWO_INDEX;
   @Param @Require message: number;
   @Param @Require logNumber: number;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
   build() {
     NavDestination() {
       Column() {
         NavigationContentMsgStack({ message: this.message, index: this.index, logNumber: this.logNumber })
-        Text('BuilderNode处于冻结')
+        // 请将$r('app.string.text1')替换为实际资源文件，在本示例中该资源文件的value值为"BuilderNode处于冻结"。
+        Text($r('app.string.text1'))
           .fontWeight(FontWeight.Bold)
           .margin({ top: 48, bottom: 48 })
         Button('Back Page', { stateEffect: true, type: ButtonType.Capsule })
@@ -2029,16 +2037,18 @@ struct NavigationContentMsgStack {
 
 @ComponentV2({ freezeWhenInactive: true }) // 设置冻结策略为不活跃冻结。
 struct TextBuilder {
-  @Param  message: number = 0;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  @Param message: number = 0;
 
   @Monitor('message')
   info() {
-    console.info(` freeze-test TextBuilder message callback ${this.message}`); // 根据message内容变化来打印日志来判断是否冻结。
+    hilog.info(0xF811, 'testTag', '%{public}s',` freeze-test TextBuilder message callback ${this.message}`); // 根据message内容变化来打印日志来判断是否冻结。
   }
   build() {
     Row() {
       Column() {
-        Text(`文本更新次数： ${this.message}`)
+        // 请在resources\base\element\string.json文件中配置name为'text2'的资源，在本示例中该资源的value值为"文本更新次数："。
+        Text(this.context.resourceManager.getStringByNameSync('text2') + `${this.message}`)
           .fontWeight(FontWeight.Bold)
           .margin({ top: 48, bottom: 48 })
       }
@@ -2048,23 +2058,24 @@ struct TextBuilder {
 
 在上面的示例中：
 
-1.进入Pageone页面，点击update builderNode按钮更改message的值，当前正在显示的BuilderNode下面的子组件TextBuilder组件中@Monitor注册的方法info被触发。
+进入Pageone页面，点击update builderNode按钮更改message的值，当前正在显示的BuilderNode下面的子组件TextBuilder组件中@Monitor注册的方法info被触发。
 
-2.点击Next Page切换到PageTwo页面，点击update builderNode按钮，因为页面属于冻结状态，@Monitor注册的方法info不会被触发。
+点击Next Page切换到PageTwo页面，点击update builderNode按钮，因为页面属于冻结状态，@Monitor注册的方法info不会被触发。
 
-3.点击Back Page回到PageOne页面，因为在PageTwo页面时，message的值发生了变化，@Monitor注册的方法info被触发。
+点击Back Page回到PageOne页面，因为在PageTwo页面时，message的值发生了变化，@Monitor注册的方法info被触发。
 
 Repeat
 
 Repeat组件（用于循环生成子组件）的BuilderNode冻结功能（通过设置BuilderNode的inheritFreezeOptions为true启用），是组件冻结机制在循环列表场景下的具体应用，核心目的是优化列表中重复生成的子组件在非活跃状态下的性能，减少不必要的资源消耗。当BuilderNode生成的子组件处于非活跃状态（如列表项被滚动出屏幕、父组件进入冻结状态、或整个列表不可见时），系统会将该BuilderNode及其子组件树标记为“冻结”。冻结状态下，该BuilderNode对应的列表项会暂停状态更新（如@Local、@Param等状态变化不会触发重新渲染）、事件响应（如点击、滑动等事件暂时失效）和生命周期回调，避免后台无效计算。通过inheritFreezeOptions设置为true，BuilderNode会继承Repeat父组件的冻结状态，确保循环生成的每个子组件都能同步遵循冻结规则，避免局部未冻结导致的性能浪费。
 
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 // 定义一个Params类，用于传递参数。
 @ObservedV2
 class Params {
   // 单例模式，确保只有一个Params实例。
-  static singleton_: Params;
+  public static singleton_: Params;
 
   // 获取Params实例的方法。
   static instance() {
@@ -2075,12 +2086,12 @@ class Params {
   }
 
   // 使用@Trace装饰器装饰message、bgColor属性，以便跟踪其变化。
-  @Trace message: string = '';
-  @Trace bgColor: Color = Color.Pink;
-  index: number = 0;
+  @Trace public message: string = '';
+  @Trace public bgColor: Color = Color.Pink;
+  public index: number = 0;
 
   constructor( message: string) {
-    this. message = message;
+    this.message = message;
   }
 }
 
@@ -2163,7 +2174,7 @@ struct FreezeBuildNode {
   @Monitor('storage.bgColor')
   onBgColorChange(monitor: IMonitor) {
     // bgColor改变时，缓存池中组件不刷新，不会打印日志。
-    console.info(`repeat---bgColor change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`repeat---bgColor change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
   }
   build() {
     NodeContainer(new TextNodeController(this.message))
@@ -2194,19 +2205,20 @@ struct BuildNodeChild {
 
 点击Reduce length to 5后，被移除的两个组件会进入Repeat缓存池，然后点击Change bgColor更改bgColor的值触发节点刷新。
 
-开启组件冻结（freezeWhenInactive: true）和BuilderNode节点开启冻结（即inheritFreezeOptions: true），只有剩余节点中@Monitor装饰的方法onMessageChange被触发，如示例中屏上的5个节点会刷新并打印BuilderNode子组件monitor的5条日志，缓存池中的节点则不会。
+开启组件冻结（freezeWhenInactive: true）和BuilderNode节点开启冻结（即inheritFreezeOptions: true），只有剩余节点中@Monitor装饰的方法onBgColorChange被触发，如示例中屏上的5个节点会刷新并打印BuilderNode子组件monitor的5条日志，缓存池中的节点则不会。
 
 Repeat和TabContent混用
 
 BuilderNode节点开启冻结功能（即通过设置inheritFreezeOptions为true）后，支持与Repeat、TabContent等不同组件混合使用，示例如下：
 
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 // 定义一个Params类，用于传递参数。
 @ObservedV2
 class Params {
   // 单例模式，确保只有一个Params实例。
-  static singleton_: Params;
+  public static singleton_: Params;
 
   // 获取Params实例的方法。
   static instance() {
@@ -2217,8 +2229,8 @@ class Params {
   }
 
   // 使用@Trace装饰器装饰message属性，以便跟踪其变化。
-  @Trace message: string = "Hello";
-  index: number = 0;
+  @Trace public message: string = 'Hello';
+  public index: number = 0;
 
   constructor(index: number) {
     this.index = index;
@@ -2233,9 +2245,9 @@ struct buildNodeChild {
   @Param index: number = 0;
 
   // 使用@Monitor装饰器监听storage.message的变化。
-  @Monitor("storage.message")
+  @Monitor('storage.message')
   onMessageChange(monitor: IMonitor) {
-    console.info(`FreezeBuildNode buildNodeChild message callback func ${this.storage.message}, index:${this.index}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode buildNodeChild message callback func ${this.storage.message}, index:${this.index}`);
   }
 
   build() {
@@ -2281,7 +2293,7 @@ export struct RepeatTab {
   build() {
     Row() {
       Column() {
-        Button("change").width('80%').height(40).fontSize(30)
+        Button('change').width('80%').height(40).fontSize(30)
           .onClick(() => {
             this.storage.message += 'a';
           })
@@ -2312,9 +2324,9 @@ struct FreezeBuildNode {
   @Param index: number = 0;
 
   // 使用@Monitor装饰器监听storage.message的变化。
-  @Monitor("storage.message")
+  @Monitor('storage.message')
   onMessageChange(monitor: IMonitor) {
-    console.info(`FreezeBuildNode message callback func ${this.storage.message}, index: ${this.index}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode message callback func ${this.storage.message}, index: ${this.index}`);
   }
 
   build() {
@@ -2326,11 +2338,11 @@ struct FreezeBuildNode {
 
 在上面的示例中：
 
-1.点击change更改message的值，当前正在显示的BuilderNode下面的子组件buildNodeChild组件中@Monitor注册的方法onMessageChange被触发。
+点击change更改message的值，当前正在显示的BuilderNode下面的子组件buildNodeChild组件中@Monitor注册的方法onMessageChange被触发。
 
-2.点击tab1切换到另外的TabContent，该TabContent的状态由inactive变为active，对应的BuilderNode下面的子组件buildNodeChild组件中@Monitor注册的方法onMessageChange被触发。
+点击tab1切换到另外的TabContent，该TabContent的状态由inactive变为active，对应的BuilderNode下面的子组件buildNodeChild组件中@Monitor注册的方法onMessageChange被触发。
 
-3.再次点击change更改message的值，仅当前显示的TabContent子组件中@Monitor注册的方法onMessageChange被触发。其他inactive的TabContent组件不会触发@Monitor。
+再次点击change更改message的值，仅当前显示的TabContent子组件中@Monitor注册的方法onMessageChange被触发。其他inactive的TabContent组件不会触发@Monitor。
 
 设置BuilderNode支持内部@Consume接收外部的@Provide数据（状态管理V1）
 
@@ -2383,9 +2395,8 @@ export default class EntryAbility extends UIAbility {
 
 创建NodeContainer和对应的NodeController，渲染后台Web组件。
 
-import { UIContext } from '@kit.ArkUI';
+import { UIContext, NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
-import { NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 // @Builder中为动态组件的具体组件内容。
@@ -2425,7 +2436,7 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController2 extends NodeController {
   private rootnode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     hilog.info(0xF811, 'testTag', '%{public}s', ' uicontext is undefined :' + (uiContext === undefined));
@@ -4043,11 +4054,13 @@ struct TextBuilder {
 
 ```
 import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const BOOK_INITIAL_NAME = '100';
 
 @ObservedV2
 export class Book {
-  @Trace name: string = "100";
-
+  @Trace public name: string = BOOK_INITIAL_NAME;
   constructor(name: string) {
     this.name = name;
   }
@@ -4061,10 +4074,10 @@ function buildText(book: Book) {
 }
 
 class TextNodeController extends NodeController {
-  private rootNode: FrameNode | null = null;
-  private textNode: BuilderNode<[Book]> | null = null;
-  index: number = 0;
-  name: string = "100";
+  public rootNode: FrameNode | null = null;
+  public textNode: BuilderNode<[Book]> | null = null;
+  public index: number = 0;
+  public name: string = BOOK_INITIAL_NAME;
 
   makeNode(context: UIContext): FrameNode | null {
     this.rootNode = new FrameNode(context);
@@ -4092,30 +4105,27 @@ export struct Index3 {
 
 @ComponentV2({ freezeWhenInactive: true })
 struct BuildNodeChild {
-  @Local bookTest: Book = new Book("A Midsummer Night’s Dream");
+  @Local bookTest: Book = new Book('A Midsummer Night’s Dream');
 
-  @Monitor("bookTest.name")
+  @Monitor('bookTest.name')
   onMessageChange(monitor: IMonitor) {
-    console.info(`The book name change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`The book name change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
   }
 
   build() {
     Column() {
       Text(`Book name is  ${this.bookTest.name}`).fontSize(30)
-      Button('change')
-        .width('60%')
-        .height(40)
-        .fontSize(30)
+      Button('change').width('60%').height(40).fontSize(30)
         .onClick(() => {
-          this.bookTest.name = "The Old Man and the Sea";
+          this.bookTest.name = 'The Old Man and the Sea';
         })
         .margin(5)
       Button('next').width('60%').height(40).fontSize(30)
         .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({ url: 'pages/routing' });
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/inheritFreezeRouterPage2' });
           setTimeout(() => {
-            this.bookTest = new Book("Jane Austen's Pride and Prejudice");
-          }, 1000)
+            this.bookTest = new Book(`Jane Austen's Pride and Prejudice`);
+          }, 1000);
         })
     }
   }
@@ -4144,9 +4154,10 @@ struct Page2 {
 
 ```
 import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 class Params {
-  message: number = 0;
+  public message: number = 0;
 
   constructor( message: number) {
     this.message = message;
@@ -4205,7 +4216,8 @@ struct TabContentTest {
           TabContent() {
             Column() {
               FreezeBuildNode({ message: this.message })
-              Text('Tabs遍历后BuilderNode处于冻结')
+              // 请将$r('app.string.text3')替换为实际资源文件，在本示例中该资源文件的value值为"Tabs遍历后BuilderNode处于冻结："
+              Text($r('app.string.text3'))
                 .fontWeight(FontWeight.Bold)
                 .margin({ top: 48, bottom: 48 })
                 .fontSize(30)
@@ -4229,7 +4241,7 @@ struct FreezeBuildNode {
   @Param message: number = 0;
   @Param index: number = 0;
   @Monitor('message') onMessageUpdated(mon: IMonitor) {
-    console.info(`FreezeBuildNode message callback func ${this.message}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode message callback func ${this.message}`);
   }
   build() {
     if (this.index === 0) {
@@ -4244,7 +4256,7 @@ struct buildNodeChild {
   @Param index: number = 0;
 
   @Monitor('message') onMessageUpdated(mon: IMonitor) {
-    console.info(`FreezeBuildNode buildNodeChild message callback func ${this.message}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode buildNodeChild message callback func ${this.message}`);
   }
 
   build() {
@@ -4259,9 +4271,14 @@ struct buildNodeChild {
 
 ```
 import { BuilderNode, FrameNode, NodeController } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common } from '@kit.AbilityKit';
+
+const PAGE_ONE_INDEX = 1;
+const PAGE_TWO_INDEX = 2;
 
 class Params {
-  count: number = 0;
+  public count: number = 0;
 
   constructor(count: number) {
     this.count = count;
@@ -4344,7 +4361,7 @@ struct MyNavigationTestStack {
 @ComponentV2
 struct PageOneStack {
   @Consumer('pageInfo') pageInfo: NavPathStack=new NavPathStack();
-  @Local index: number = 1;
+  @Local index: number = PAGE_ONE_INDEX;
   @Param @Require  message: number;
   @Param @Require logNumber: number;
 
@@ -4378,15 +4395,17 @@ struct PageOneStack {
 @ComponentV2
 struct PageTwoStack {
   @Consumer('pageInfo') pageInfo: NavPathStack=new NavPathStack();
-  @Local index: number = 2;
+  @Local index: number = PAGE_TWO_INDEX;
   @Param @Require message: number;
   @Param @Require logNumber: number;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
   build() {
     NavDestination() {
       Column() {
         NavigationContentMsgStack({ message: this.message, index: this.index, logNumber: this.logNumber })
-        Text('BuilderNode处于冻结')
+        // 请将$r('app.string.text1')替换为实际资源文件，在本示例中该资源文件的value值为"BuilderNode处于冻结"。
+        Text($r('app.string.text1'))
           .fontWeight(FontWeight.Bold)
           .margin({ top: 48, bottom: 48 })
         Button('Back Page', { stateEffect: true, type: ButtonType.Capsule })
@@ -4422,16 +4441,18 @@ struct NavigationContentMsgStack {
 
 @ComponentV2({ freezeWhenInactive: true }) // 设置冻结策略为不活跃冻结。
 struct TextBuilder {
-  @Param  message: number = 0;
+  private context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  @Param message: number = 0;
 
   @Monitor('message')
   info() {
-    console.info(` freeze-test TextBuilder message callback ${this.message}`); // 根据message内容变化来打印日志来判断是否冻结。
+    hilog.info(0xF811, 'testTag', '%{public}s',` freeze-test TextBuilder message callback ${this.message}`); // 根据message内容变化来打印日志来判断是否冻结。
   }
   build() {
     Row() {
       Column() {
-        Text(`文本更新次数： ${this.message}`)
+        // 请在resources\base\element\string.json文件中配置name为'text2'的资源，在本示例中该资源的value值为"文本更新次数："。
+        Text(this.context.resourceManager.getStringByNameSync('text2') + `${this.message}`)
           .fontWeight(FontWeight.Bold)
           .margin({ top: 48, bottom: 48 })
       }
@@ -4444,12 +4465,13 @@ struct TextBuilder {
 
 ```
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 // 定义一个Params类，用于传递参数。
 @ObservedV2
 class Params {
   // 单例模式，确保只有一个Params实例。
-  static singleton_: Params;
+  public static singleton_: Params;
 
   // 获取Params实例的方法。
   static instance() {
@@ -4460,12 +4482,12 @@ class Params {
   }
 
   // 使用@Trace装饰器装饰message、bgColor属性，以便跟踪其变化。
-  @Trace message: string = '';
-  @Trace bgColor: Color = Color.Pink;
-  index: number = 0;
+  @Trace public message: string = '';
+  @Trace public bgColor: Color = Color.Pink;
+  public index: number = 0;
 
   constructor( message: string) {
-    this. message = message;
+    this.message = message;
   }
 }
 
@@ -4548,7 +4570,7 @@ struct FreezeBuildNode {
   @Monitor('storage.bgColor')
   onBgColorChange(monitor: IMonitor) {
     // bgColor改变时，缓存池中组件不刷新，不会打印日志。
-    console.info(`repeat---bgColor change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`repeat---bgColor change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
   }
   build() {
     NodeContainer(new TextNodeController(this.message))
@@ -4580,12 +4602,13 @@ struct BuildNodeChild {
 
 ```
 import { BuilderNode, FrameNode, NodeController, UIContext } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 // 定义一个Params类，用于传递参数。
 @ObservedV2
 class Params {
   // 单例模式，确保只有一个Params实例。
-  static singleton_: Params;
+  public static singleton_: Params;
 
   // 获取Params实例的方法。
   static instance() {
@@ -4596,8 +4619,8 @@ class Params {
   }
 
   // 使用@Trace装饰器装饰message属性，以便跟踪其变化。
-  @Trace message: string = "Hello";
-  index: number = 0;
+  @Trace public message: string = 'Hello';
+  public index: number = 0;
 
   constructor(index: number) {
     this.index = index;
@@ -4612,9 +4635,9 @@ struct buildNodeChild {
   @Param index: number = 0;
 
   // 使用@Monitor装饰器监听storage.message的变化。
-  @Monitor("storage.message")
+  @Monitor('storage.message')
   onMessageChange(monitor: IMonitor) {
-    console.info(`FreezeBuildNode buildNodeChild message callback func ${this.storage.message}, index:${this.index}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode buildNodeChild message callback func ${this.storage.message}, index:${this.index}`);
   }
 
   build() {
@@ -4660,7 +4683,7 @@ export struct RepeatTab {
   build() {
     Row() {
       Column() {
-        Button("change").width('80%').height(40).fontSize(30)
+        Button('change').width('80%').height(40).fontSize(30)
           .onClick(() => {
             this.storage.message += 'a';
           })
@@ -4691,9 +4714,9 @@ struct FreezeBuildNode {
   @Param index: number = 0;
 
   // 使用@Monitor装饰器监听storage.message的变化。
-  @Monitor("storage.message")
+  @Monitor('storage.message')
   onMessageChange(monitor: IMonitor) {
-    console.info(`FreezeBuildNode message callback func ${this.storage.message}, index: ${this.index}`);
+    hilog.info(0xF811, 'testTag', '%{public}s',`FreezeBuildNode message callback func ${this.storage.message}, index: ${this.index}`);
   }
 
   build() {
@@ -4738,9 +4761,8 @@ export default class EntryAbility extends UIAbility {
 ### Code block 24
 
 ```
-import { UIContext } from '@kit.ArkUI';
+import { UIContext, NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
-import { NodeController, BuilderNode, Size, FrameNode } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 // @Builder中为动态组件的具体组件内容。
@@ -4780,7 +4802,7 @@ let wrap = wrapBuilder<Data[]>(webBuilder);
 export class MyNodeController2 extends NodeController {
   private rootnode: BuilderNode<Data[]> | null = null;
 
-  // 必须要重写的方法，用于构建节点数、返回节点挂载在对应NodeContainer中。
+  // 必须要重写的方法，用于构建节点树、返回节点挂载在对应NodeContainer中。
   // 在对应NodeContainer创建的时候调用、或者通过rebuild方法调用刷新。
   makeNode(uiContext: UIContext): FrameNode | null {
     hilog.info(0xF811, 'testTag', '%{public}s', ' uicontext is undefined :' + (uiContext === undefined));

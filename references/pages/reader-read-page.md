@@ -47,7 +47,7 @@ private readerSetting: readerCore.ReaderSetting = {
   scaledDensity: display.getDefaultDisplaySync().scaledDensity > 0 ? display.getDefaultDisplaySync().scaledDensity :
     1,
   viewPortWidth: 1260, // 视口宽度，需要根据设备实际情况获取，否则会导致阅读界面异常
-  viewPortHeight: 2720, // 视口高度，需要根据设备实际情况获取，否则会导致阅读界面异常
+  viewPortHeight: 2720 // 视口高度，需要根据设备实际情况获取，否则会导致阅读界面异常
 };
 // 书籍解析器，用于注册给组件控制器，供排版引擎调用。
 private bookParserHandler: bookParser.BookParserHandler | null = null;
@@ -156,7 +156,7 @@ private readerSetting: readerCore.ReaderSetting = {
   scaledDensity: display.getDefaultDisplaySync().scaledDensity > 0 ? display.getDefaultDisplaySync().scaledDensity :
     1,
   viewPortWidth: 1260, // 视口宽度，需要根据设备实际情况获取，否则会导致阅读界面异常
-  viewPortHeight: 2720, // 视口高度，需要根据设备实际情况获取，否则会导致阅读界面异常
+  viewPortHeight: 2720 // 视口高度，需要根据设备实际情况获取，否则会导致阅读界面异常
 };
 // 书籍解析器，用于注册给组件控制器，供排版引擎调用。
 private bookParserHandler: bookParser.BookParserHandler | null = null;

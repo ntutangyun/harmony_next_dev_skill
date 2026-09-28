@@ -176,6 +176,8 @@ hdc shell hilog -d /system/bin/hilogTest
 
 若不存在，则大概率是被 rm -rf data/log/hilog/* 命令删除掉了，需要重启设备生成新的数据字典，然后解析。
 
+4、hilogtool解析工具版本过旧，请从最新的HarmonyOS SDK中获取hilogtool解析工具后进一步测试，具体参考工具获取。
+
 ## Code blocks
 
 ### Code block 1

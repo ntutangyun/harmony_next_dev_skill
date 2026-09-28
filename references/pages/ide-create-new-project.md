@@ -26,6 +26,18 @@ Atomic Service元服务工程暂不支持Native开发。
 
 Project name：工程的名称，可以自定义，由大小写字母、数字和下划线组成，必须由大小写字母开头，长度为1~200个字符。
 
+Bundle name：标识应用的包名，用于标识应用的唯一性。
+
+Save location：工程文件本地存储路径，由大小写字母、数字和下划线等组成，不能包含中文字符。
+
+Compatible SDK：兼容的最低API Version。
+
+Module name： 模块的名称。
+
+Device type：该工程模板支持的设备类型。设备类型说明请参考deviceTypes标签。
+
+C++ Standard：C++标准库。从DevEco Studio 6.0.1 Beta1开始，支持选择不同版本，取值包括：Toolchain Default、C++11、C++14。
+
 说明
 
 Bundle name（应用包名）要求：
@@ -38,15 +50,11 @@ Bundle name（应用包名）要求：
 
 长度为7~128个字符。
 
-Save location：工程文件本地存储路径，由大小写字母、数字和下划线等组成，不能包含中文字符。
+Compatible SDK填写说明：
 
-Compatible SDK：兼容的最低API Version。
+从26.0.0版本开始，除[Lite]Empty Ability工程模板外，其余工程模板新增View API version distribution，点击可查看HarmonyOS设备各API版本使用量占比，其中Percentage为设备量占比，Cumulative Percentage为设备量累计占比。Compatible SDK默认显示设备量累计占比超过90%的最高的API版本。
 
-Module name： 模块的名称。
-
-Device type：该工程模板支持的设备类型。设备类型说明请参考deviceTypes标签。
-
-C++ Standard：C++标准库。从DevEco Studio 6.0.1 Beta1开始，支持选择不同版本，取值包括：Toolchain Default、C++11、C++14。
+View API version distribution功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
 单击Finish，工具会自动生成示例代码和相关资源，等待工程创建完成。
 

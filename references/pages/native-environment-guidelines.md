@@ -44,10 +44,10 @@ void GetUserDownloadDirPathExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDownloadDir(&downloadPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user download directory, path=%{public}s", downloadPath);
-        free(downloadPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get download path, error code is %{public}d", ret);
     }
+    free(downloadPath);
 }
 
 调用OH_Environment_GetUserDesktopDir接口获取用户Desktop目录沙箱路径，在接口中使用malloc申请的内存需要在使用完后释放因此需要free对应的内存。示例代码如下所示：
@@ -58,10 +58,10 @@ void GetUserDesktopDirPathExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDesktopDir(&desktopPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user desktop directory, path=%{public}s", desktopPath);
-        free(desktopPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get user desktop path, error code is %{public}d", ret);
     }
+    free(desktopPath);
 }
 
 调用OH_Environment_GetUserDocumentDir接口获取用户Document目录沙箱路径，在接口中使用malloc申请的内存需要在使用完后释放因此需要free对应的内存。示例代码如下所示：
@@ -72,10 +72,10 @@ void GetUserDocumentDirPathExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDocumentDir(&documentPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user document directory, path=%{public}s", documentPath);
-        free(documentPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get user document path, error code is %{public}d", ret);
     }
+    free(documentPath);
 }
 
 调用OH_Environment_GetUserDocumentDir接口获取用户Document目录沙箱路径，使用stat函数判断Document目录空间大小。示例代码如下所示：
@@ -97,10 +97,10 @@ void GetUserDownloadDirSizeExample()
         } else {
             OH_LOG_ERROR(LOG_APP, "Failed to stat user document directory, error code is %{public}d", result);
         }
-        free(documentPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get user document directory, error code is %{public}d", ret);
     }
+    free(documentPath);
 }
 
 ## Code blocks
@@ -129,10 +129,10 @@ void GetUserDownloadDirPathExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDownloadDir(&downloadPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user download directory, path=%{public}s", downloadPath);
-        free(downloadPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get download path, error code is %{public}d", ret);
     }
+    free(downloadPath);
 }
 ```
 
@@ -145,10 +145,10 @@ void GetUserDesktopDirPathExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDesktopDir(&desktopPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user desktop directory, path=%{public}s", desktopPath);
-        free(desktopPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get user desktop path, error code is %{public}d", ret);
     }
+    free(desktopPath);
 }
 ```
 
@@ -161,10 +161,10 @@ void GetUserDocumentDirPathExample()
     FileManagement_ErrCode ret = OH_Environment_GetUserDocumentDir(&documentPath);
     if (ret == 0) {
         OH_LOG_INFO(LOG_APP, "Succeeded in getting user document directory, path=%{public}s", documentPath);
-        free(documentPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get user document path, error code is %{public}d", ret);
     }
+    free(documentPath);
 }
 ```
 
@@ -190,9 +190,9 @@ void GetUserDownloadDirSizeExample()
         } else {
             OH_LOG_ERROR(LOG_APP, "Failed to stat user document directory, error code is %{public}d", result);
         }
-        free(documentPath);
     } else {
         OH_LOG_ERROR(LOG_APP, "Failed to get user document directory, error code is %{public}d", ret);
     }
+    free(documentPath);
 }
 ```

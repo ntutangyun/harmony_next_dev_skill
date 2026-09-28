@@ -1,4 +1,4 @@
-# 使用SM2密钥对签名验签 (C/C++)
+# 使用SM2密钥对签名验签(C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-sm2-sign-sig-verify-pkcs1-ndk_
 
@@ -97,6 +97,20 @@ static OH_Crypto_ErrCode doSm2Test() {
 
 #include "signing_signature_verification.h"
 
+static void CleanupSm2SignResources(OH_CryptoAsymKeyGenerator *keyCtx,
+    OH_CryptoKeyPair *keyPair, OH_CryptoVerify *verify)
+{
+    if (verify != nullptr) {
+        OH_CryptoVerify_Destroy(verify);
+    }
+    if (keyPair != nullptr) {
+        OH_CryptoKeyPair_Destroy(keyPair);
+    }
+    if (keyCtx != nullptr) {
+        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
+    }
+}
+
 bool DoTestSm2Signature()
 {
     OH_CryptoAsymKeyGenerator *keyCtx = nullptr;
@@ -144,26 +158,16 @@ bool DoTestSm2Signature()
     // verify
     ret = OH_CryptoVerify_Create((const char *)"SM2_256|SM3", &verify);
     if (ret != CRYPTO_SUCCESS) {
-        OH_CryptoVerify_Destroy(verify);
-        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
+        CleanupSm2SignResources(keyCtx, keyPair, verify);
         return false;
     }
     ret = OH_CryptoVerify_Init(verify, pubKey);
     if (ret != CRYPTO_SUCCESS) {
-        OH_CryptoVerify_Destroy(verify);
-        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
+        CleanupSm2SignResources(keyCtx, keyPair, verify);
         return false;
     }
     bool res = OH_CryptoVerify_Final(verify, &msgBlob, &signBlob);
-    if (res != true) {
-        OH_CryptoVerify_Destroy(verify);
-        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
-        return false;
-    }
-
-    OH_CryptoVerify_Destroy(verify);
-    OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
-    OH_CryptoKeyPair_Destroy(keyPair);
+    CleanupSm2SignResources(keyCtx, keyPair, verify);
     return res;
 }
 
@@ -249,6 +253,20 @@ static OH_Crypto_ErrCode doSm2Test() {
 ```
 #include "signing_signature_verification.h"
 
+static void CleanupSm2SignResources(OH_CryptoAsymKeyGenerator *keyCtx,
+    OH_CryptoKeyPair *keyPair, OH_CryptoVerify *verify)
+{
+    if (verify != nullptr) {
+        OH_CryptoVerify_Destroy(verify);
+    }
+    if (keyPair != nullptr) {
+        OH_CryptoKeyPair_Destroy(keyPair);
+    }
+    if (keyCtx != nullptr) {
+        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
+    }
+}
+
 bool DoTestSm2Signature()
 {
     OH_CryptoAsymKeyGenerator *keyCtx = nullptr;
@@ -296,26 +314,16 @@ bool DoTestSm2Signature()
     // verify
     ret = OH_CryptoVerify_Create((const char *)"SM2_256|SM3", &verify);
     if (ret != CRYPTO_SUCCESS) {
-        OH_CryptoVerify_Destroy(verify);
-        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
+        CleanupSm2SignResources(keyCtx, keyPair, verify);
         return false;
     }
     ret = OH_CryptoVerify_Init(verify, pubKey);
     if (ret != CRYPTO_SUCCESS) {
-        OH_CryptoVerify_Destroy(verify);
-        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
+        CleanupSm2SignResources(keyCtx, keyPair, verify);
         return false;
     }
     bool res = OH_CryptoVerify_Final(verify, &msgBlob, &signBlob);
-    if (res != true) {
-        OH_CryptoVerify_Destroy(verify);
-        OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
-        return false;
-    }
-
-    OH_CryptoVerify_Destroy(verify);
-    OH_CryptoAsymKeyGenerator_Destroy(keyCtx);
-    OH_CryptoKeyPair_Destroy(keyPair);
+    CleanupSm2SignResources(keyCtx, keyPair, verify);
     return res;
 }
 ```

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new
 
 为了实现序列化类时不丢失属性的复杂类型，开发者可以使用@Type装饰器装饰类属性。
 
-@Type的目的是标记类属性，配合PersistenceV2使用，防止序列化时类丢失。在阅读本文档前，建议提前阅读：PersistenceV2。
+@Type的目的是标记类属性，配合PersistenceV2使用，防止序列化时类型信息丢失。在阅读本文档前，建议提前阅读：PersistenceV2。
 
 说明
 
@@ -50,7 +50,7 @@ class Info {
 
 不支持collections.Set、collections.Map等类型。
 
-不支持非built-in类型。如PixelMap、NativePointer、ArrayList等Native类型。
+不支持非built-in类型。如PixelMap、NativePointer等Native类型，以及ArrayList等ArkTS容器类型。
 
 不支持简单类型。如string、number、boolean等。
 

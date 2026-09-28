@@ -76,11 +76,9 @@ struct CanvasExample2 {
 
 在画布组件中，通过CanvasRenderingContext2D对象和OffscreenCanvasRenderingContext2D对象在Canvas组件上进行绘制时调用的接口相同，另外，接口参数如无特别说明，单位均为vp。
 
-在Canvas上加载Lottie动画时，需要先按照如下方式下载Lottie。
+在Canvas上加载Lottie动画时，需要先下载安装lottie依赖包，再使用如下方式导入模块。
 
 import lottie from '@ohos/lottie'
-
-具体接口请参考lottie。
 
 初始化画布组件
 
@@ -189,7 +187,7 @@ struct CanvasComponentTextBorder {
         .height('100%')
         .backgroundColor('#F5DC62')
         .onReady(() => {
-          // 文本的水平对齐方式为'top'
+          // 文本的垂直基线对齐方式为'top'
           this.context.textBaseline = 'top';
           // 文本字号为30px，字体系列为monospace
           this.context.font = '30px monospace';
@@ -541,7 +539,7 @@ struct Path2d {
 struct CursorMoving {
   // 监听是否按下，刷新光标颜色
   @State @Watch('drawCursor') isTouchDown: boolean = false;
-  // 监听位置变化，刷新页面
+  // 监听位置变化，刷新光标位置
   @State @Watch('drawCursor') cursorPosition: RectPosition = {
     x: 0,
     y: 0,
@@ -676,7 +674,7 @@ struct CursorMoving {
     this.canvasContext.strokeStyle = this.isTouchDown ? '#ff1a5cae' : '#ff9ba59b';
     this.canvasContext.fillStyle = this.isTouchDown ? '#ff1a5cae' : '#ff9ba59b';
     this.canvasContext.arc(this.cursorPosition.x + this.cursorPosition.width / 2,
-      this.cursorPosition.y + this.cursorPosition.width / 2, this.arcRadius, 0, 2 * Math.PI);
+      this.cursorPosition.y + this.cursorPosition.height / 2, this.arcRadius, 0, 2 * Math.PI);
     this.canvasContext.fill();
     this.canvasContext.stroke();
 
@@ -698,7 +696,7 @@ struct CursorMoving {
     this.canvasContext.stroke();
   }
 
-  // 判断点击位置是否在棱形中
+  // 判断点击位置是否在菱形中
   isTouchCursorArea(touch: TouchObject) {
     let tempLength = Math.sqrt((touch.x - this.cursorCenterPosition.x) * (touch.x - this.cursorCenterPosition.x) +
       (touch.y - this.cursorCenterPosition.y) * (touch.y - this.cursorCenterPosition.y));
@@ -897,7 +895,7 @@ struct CanvasComponentTextBorder {
         .height('100%')
         .backgroundColor('#F5DC62')
         .onReady(() => {
-          // 文本的水平对齐方式为'top'
+          // 文本的垂直基线对齐方式为'top'
           this.context.textBaseline = 'top';
           // 文本字号为30px，字体系列为monospace
           this.context.font = '30px monospace';
@@ -1251,7 +1249,7 @@ struct Path2d {
 struct CursorMoving {
   // 监听是否按下，刷新光标颜色
   @State @Watch('drawCursor') isTouchDown: boolean = false;
-  // 监听位置变化，刷新页面
+  // 监听位置变化，刷新光标位置
   @State @Watch('drawCursor') cursorPosition: RectPosition = {
     x: 0,
     y: 0,
@@ -1386,7 +1384,7 @@ struct CursorMoving {
     this.canvasContext.strokeStyle = this.isTouchDown ? '#ff1a5cae' : '#ff9ba59b';
     this.canvasContext.fillStyle = this.isTouchDown ? '#ff1a5cae' : '#ff9ba59b';
     this.canvasContext.arc(this.cursorPosition.x + this.cursorPosition.width / 2,
-      this.cursorPosition.y + this.cursorPosition.width / 2, this.arcRadius, 0, 2 * Math.PI);
+      this.cursorPosition.y + this.cursorPosition.height / 2, this.arcRadius, 0, 2 * Math.PI);
     this.canvasContext.fill();
     this.canvasContext.stroke();
 
@@ -1408,7 +1406,7 @@ struct CursorMoving {
     this.canvasContext.stroke();
   }
 
-  // 判断点击位置是否在棱形中
+  // 判断点击位置是否在菱形中
   isTouchCursorArea(touch: TouchObject) {
     let tempLength = Math.sqrt((touch.x - this.cursorCenterPosition.x) * (touch.x - this.cursorCenterPosition.x) +
       (touch.y - this.cursorCenterPosition.y) * (touch.y - this.cursorCenterPosition.y));

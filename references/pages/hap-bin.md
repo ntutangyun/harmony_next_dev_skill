@@ -229,7 +229,7 @@ hvigor.nodesEvaluated(async () => {
 
 安装含bin文件的HAP
 
-集成bin的HAP包无独立安装包，依托标准HAP包完成安装部署。其内嵌的二进制程序、脚本资源随HAP包一并安装至设备，安装流程与常规应用一致。应用安装后，bin文件文件自动解压至应用安装目录：
+集成bin的HAP包无独立安装包，依托标准HAP包完成安装部署。其内嵌的二进制程序、脚本资源随HAP包一并安装至设备，安装流程与常规应用一致。应用安装后，bin文件自动解压至应用安装目录：
 
 /data/app/el1/bundle/public/<bundleName>
 

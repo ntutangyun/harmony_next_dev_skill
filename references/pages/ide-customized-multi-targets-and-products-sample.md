@@ -14,23 +14,23 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
 
 {
   "name": "Ultimate",
-  // ultimate版本签名
+  // Ultimate版本签名
   "signingConfig": "Ultimate",
-  // ultimate版本包名
+  // Ultimate版本包名
   "bundleName": "com.example.ultimate.app",
-  // ultimate版本应用图标
+  // Ultimate版本应用图标
   "icon": "$media:app_icon",
-  // ultimate版本应用标签
+  // Ultimate版本应用标签
   "label": "$string:app_name",
   "versionCode": 10000,
   "versionName": "1.0.0",
-  // ultimate版本指定资源目录
+  // Ultimate版本指定资源目录
   "resource": {
     "directories": [
       "./AppScope/ultimateRes"
     ]
   },
-  // ultimate版本指定输出产物名
+  // Ultimate版本指定输出产物名
   "output": {
     "artifactName": "ultimate_version"
   },
@@ -41,22 +41,22 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
 {
   "name": "Community",
   "signingConfig": "Community",
-  // community版本签名
+  // Community版本签名
   "bundleName": "com.example.community.app",
-  // community版本包名
+  // Community版本包名
   "icon": "$media:app_icon",
-  // community版本应用图标
+  // Community版本应用图标
   "label": "$string:app_name",
-  // community版本应用标签
+  // Community版本应用标签
   "versionCode": 10000,
   "versionName": "1.0.0",
-  // community版本指定资源目录
+  // Community版本指定资源目录
   "resource": {
     "directories": [
       "./AppScope/communityRes"
     ]
   },
-  // community版本指定输出产物名
+  // Community版本指定输出产物名
   "output": {
     "artifactName": "community_version"
   },
@@ -65,7 +65,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
   "runtimeOS": "HarmonyOS",
 }
 
-2. 应用软件部分功能可能针对特定场景存在定制场景：如ultimate版本的功能A在phone设备类型上免费，在TV设备类型上需要收费；再如community版本的功能B在2in1设备类型上的启动页与在wearable设备类型上呈现效果存在差异。在模块级build-profile.json5->targets[]中新增2个 target：vip和free。
+2. 应用软件部分功能可能针对特定场景存在定制场景：如Ultimate版本的功能A在phone设备类型上免费，在TV设备类型上需要收费；再如Community版本的功能B在2in1设备类型上的启动页与在wearable设备类型上呈现效果存在差异。在模块级build-profile.json5->targets[]中新增2个 target：vip和free。
 
 {
   "name": "vip",
@@ -169,23 +169,23 @@ target：free被应用至product：default、Community中。
 ```
 {
   "name": "Ultimate",
-  // ultimate版本签名
+  // Ultimate版本签名
   "signingConfig": "Ultimate",
-  // ultimate版本包名
+  // Ultimate版本包名
   "bundleName": "com.example.ultimate.app",
-  // ultimate版本应用图标
+  // Ultimate版本应用图标
   "icon": "$media:app_icon",
-  // ultimate版本应用标签
+  // Ultimate版本应用标签
   "label": "$string:app_name",
   "versionCode": 10000,
   "versionName": "1.0.0",
-  // ultimate版本指定资源目录
+  // Ultimate版本指定资源目录
   "resource": {
     "directories": [
       "./AppScope/ultimateRes"
     ]
   },
-  // ultimate版本指定输出产物名
+  // Ultimate版本指定输出产物名
   "output": {
     "artifactName": "ultimate_version"
   },
@@ -196,22 +196,22 @@ target：free被应用至product：default、Community中。
 {
   "name": "Community",
   "signingConfig": "Community",
-  // community版本签名
+  // Community版本签名
   "bundleName": "com.example.community.app",
-  // community版本包名
+  // Community版本包名
   "icon": "$media:app_icon",
-  // community版本应用图标
+  // Community版本应用图标
   "label": "$string:app_name",
-  // community版本应用标签
+  // Community版本应用标签
   "versionCode": 10000,
   "versionName": "1.0.0",
-  // community版本指定资源目录
+  // Community版本指定资源目录
   "resource": {
     "directories": [
       "./AppScope/communityRes"
     ]
   },
-  // community版本指定输出产物名
+  // Community版本指定输出产物名
   "output": {
     "artifactName": "community_version"
   },

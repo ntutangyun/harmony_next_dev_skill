@@ -49,11 +49,11 @@ Account Kit接入Skills，旨在帮助开发者快速集成Account Kit开放能�
 
 关键词触发：帮我接入华为账号一键登录
 
-Skill名称强制触发：使用"huawei-account-kit-quicklogin-client" Skill，帮我接入华为账号一键登录
+Skill名称强制触发：使用"hmos-account-kit-quicklogin-client" Skill，帮我接入华为账号一键登录
 
 技能	Skill名称	关键词
 华为账号一键登录客户端Skill	hmos-account-kit-quicklogin-client	帮我接入华为账号一键登录
-华为账号一键登录服务端Skill	hmos-account-kit-quicklogin-server	帮我生成华为账号一键登录服务端java代码
+华为账号一键登录服务端Skill	huawei-account-kit-quicklogin-server	帮我生成华为账号一键登录服务端java代码
 
 注意事项
 

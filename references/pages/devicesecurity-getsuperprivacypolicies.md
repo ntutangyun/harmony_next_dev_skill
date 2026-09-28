@@ -1,4 +1,4 @@
-# 查询超级隐私模式管控策略场景
+# 查询超级隐私模式管控策略
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-getsuperprivacypolicies_
 
@@ -36,10 +36,10 @@ getSuperPrivacyPolicies() : Promise<SuperPrivacyPolicyInfo>	查询当前超级�
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
+调用getSuperPrivacyPolicies接口查询超级隐私模式状态及控制策略信息。
+
 const DOMAIN = 0x0000;
 const TAG = 'SuperPrivacyModeTest';
-
-调用getSuperPrivacyPolicies接口查询超级隐私模式状态及控制策略信息。
 
 try {
   const policyInfo = await superPrivacyMode.getSuperPrivacyPolicies();
@@ -58,12 +58,16 @@ try {
 ```
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+```
 
+### Code block 2
+
+```
 const DOMAIN = 0x0000;
 const TAG = 'SuperPrivacyModeTest';
 ```
 
-### Code block 2
+### Code block 3
 
 ```
 try {

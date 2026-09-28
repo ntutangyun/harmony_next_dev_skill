@@ -88,8 +88,8 @@ target_link_libraries(entry PUBLIC
 调用HMS_OpenGTX_CreateContext接口创建OpenGTX上下文实例。如果返回nullptr，则说明OpenGTX上下文实例创建失败，或当前硬件设备不支持开启OpenGTX。
 
 // 创建OpenGTX上下文实例
-OpenGTX_Context *context_ = HMS_OpenGTX_CreateContext(nullptr);
-if (context_ == nullptr) {
+OpenGTX_Context *contextGtx_ = HMS_OpenGTX_CreateContext(nullptr);
+if (contextGtx_ == nullptr) {
     return false;
 }
 
@@ -157,30 +157,6 @@ if (errorCode != OPENGTX_SUCCESS) {
 
 游戏切换不同游戏场景后调用HMS_OpenGTX_DispatchGameSceneInfo接口发送游戏场景信息，包含场景类型、指定帧率、调度帧率范围、当前分辨率等信息。
 
-// 激活OpenGTX上下文实例
-errorCode = HMS_OpenGTX_Activate(contextGtx_);
-if (errorCode != OPENGTX_SUCCESS) {
-    GOLOGE("HMS_OpenGTX_Activate execution failed, error code: %d.", errorCode);
-    return false;
-}
-
-每帧渲染前调用HMS_OpenGTX_DispatchFrameRenderInfo接口发送游戏帧渲染信息，包含游戏主相机的位置和欧拉角。
-
-// OpenGTX游戏渲染信息结构体
-OpenGTX_FrameRenderInfo frameRenderInfo;
-// 主相机位置
-frameRenderInfo.mainCameraPosition = {0.0f, 0.0f, 0.0f};
-// 主相机欧拉角
-frameRenderInfo.mainCameraRotate = {0.0f, 0.0f, 0.0f};
-// OpenGTX接收游戏渲染信息
-errorCode = HMS_OpenGTX_DispatchFrameRenderInfo(contextGtx_, &frameRenderInfo);
-if (errorCode != OPENGTX_SUCCESS) {
-    GOLOGE("HMS_OpenGTX_DispatchFrameRenderInfo execution failed, error code: %d.", errorCode);
-    return false;
-}
-
-每帧渲染前如遇到网络时延档位变化，调用HMS_OpenGTX_DispatchNetworkInfo接口发送游戏网络信息。包含服务器IP地址、网络时延等信息。
-
 // OpenGTX游戏场景信息结构体
 OpenGTX_GameSceneInfo gameSceneInfo;
 // 游戏场景类型ID
@@ -201,6 +177,44 @@ gameSceneInfo.resolutionCurValue.width = OGBT_RES_WIDTH;
 errorCode = HMS_OpenGTX_DispatchGameSceneInfo(contextGtx_, &gameSceneInfo);
 if (errorCode != OPENGTX_SUCCESS) {
     GOLOGE("HMS_OpenGTX_DispatchGameSceneInfo execution failed, error code: %d.", errorCode);
+    return false;
+}
+
+每帧渲染前调用HMS_OpenGTX_DispatchFrameRenderInfo接口发送游戏帧渲染信息，包含游戏主相机的位置和欧拉角。
+
+// OpenGTX游戏渲染信息结构体
+OpenGTX_FrameRenderInfo frameRenderInfo;
+// 主相机位置
+frameRenderInfo.mainCameraPosition = {0.0f, 0.0f, 0.0f};
+// 主相机欧拉角
+frameRenderInfo.mainCameraRotate = {0.0f, 0.0f, 0.0f};
+// OpenGTX接收游戏渲染信息
+errorCode = HMS_OpenGTX_DispatchFrameRenderInfo(contextGtx_, &frameRenderInfo);
+if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DispatchFrameRenderInfo execution failed, error code: %d.", errorCode);
+    return false;
+}
+
+每帧渲染前如遇到网络时延档位变化，调用HMS_OpenGTX_DispatchNetworkInfo接口发送游戏网络信息。包含服务器IP地址、网络时延等信息。
+
+// OpenGTX游戏网络信息结构体
+OpenGTX_NetworkInfo networkInfo;
+// OpenGTX游戏网络时延结构体
+OpenGTX_NetworkLatency networkLatency;
+// 网络总时延
+networkLatency.total = OGBT_NETWORK_LATENCY_TOTAL;
+// 网络上行时延
+networkLatency.up = OGBT_NETWORK_LATENCY_UP;
+// 网络下行时延
+networkLatency.down = OGBT_NETWORK_LATENCY_DOWN;
+// 游戏网络时延
+networkInfo.networkLatency = networkLatency;
+// 游戏服务器IP地址
+networkInfo.networkServerIP = OGBT_NETWORK_SERVER_IP.data();
+// OpenGTX接收游戏网络信息
+errorCode = HMS_OpenGTX_DispatchNetworkInfo(contextGtx_, &networkInfo);
+if (errorCode != OPENGTX_SUCCESS) {
+    GOLOGE("HMS_OpenGTX_DispatchNetworkInfo execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -269,8 +283,8 @@ target_link_libraries(entry PUBLIC
 
 ```
 // 创建OpenGTX上下文实例
-OpenGTX_Context *context_ = HMS_OpenGTX_CreateContext(nullptr);
-if (context_ == nullptr) {
+OpenGTX_Context *contextGtx_ = HMS_OpenGTX_CreateContext(nullptr);
+if (contextGtx_ == nullptr) {
     return false;
 }
 ```
@@ -344,10 +358,26 @@ if (errorCode != OPENGTX_SUCCESS) {
 ### Code block 8
 
 ```
-// 激活OpenGTX上下文实例
-errorCode = HMS_OpenGTX_Activate(contextGtx_);
+// OpenGTX游戏场景信息结构体
+OpenGTX_GameSceneInfo gameSceneInfo;
+// 游戏场景类型ID
+gameSceneInfo.sceneID = OTHERS_SCENE;
+// 游戏场景描述
+gameSceneInfo.description = OGBT_DESCRIPTION.data();
+// 游戏场景推荐帧率
+gameSceneInfo.recommendFPS = OGBT_RECOMMEND_FPS;
+// 游戏场景最小帧率
+gameSceneInfo.minFPS = OGBT_MIN_FPS;
+// 游戏场景最大帧率
+gameSceneInfo.maxFPS = OGBT_MAX_FPS;
+// 屏幕分辨率 高度
+gameSceneInfo.resolutionCurValue.height = OGBT_RES_HEIGHT;
+// 屏幕分辨率 宽度
+gameSceneInfo.resolutionCurValue.width = OGBT_RES_WIDTH;
+// OpenGTX接收游戏场景信息
+errorCode = HMS_OpenGTX_DispatchGameSceneInfo(contextGtx_, &gameSceneInfo);
 if (errorCode != OPENGTX_SUCCESS) {
-    GOLOGE("HMS_OpenGTX_Activate execution failed, error code: %d.", errorCode);
+    GOLOGE("HMS_OpenGTX_DispatchGameSceneInfo execution failed, error code: %d.", errorCode);
     return false;
 }
 ```
@@ -372,26 +402,24 @@ if (errorCode != OPENGTX_SUCCESS) {
 ### Code block 10
 
 ```
-// OpenGTX游戏场景信息结构体
-OpenGTX_GameSceneInfo gameSceneInfo;
-// 游戏场景类型ID
-gameSceneInfo.sceneID = OTHERS_SCENE;
-// 游戏场景描述
-gameSceneInfo.description = OGBT_DESCRIPTION.data();
-// 游戏场景推荐帧率
-gameSceneInfo.recommendFPS = OGBT_RECOMMEND_FPS;
-// 游戏场景最小帧率
-gameSceneInfo.minFPS = OGBT_MIN_FPS;
-// 游戏场景最大帧率
-gameSceneInfo.maxFPS = OGBT_MAX_FPS;
-// 屏幕分辨率 高度
-gameSceneInfo.resolutionCurValue.height = OGBT_RES_HEIGHT;
-// 屏幕分辨率 宽度
-gameSceneInfo.resolutionCurValue.width = OGBT_RES_WIDTH;
-// OpenGTX接收游戏场景信息
-errorCode = HMS_OpenGTX_DispatchGameSceneInfo(contextGtx_, &gameSceneInfo);
+// OpenGTX游戏网络信息结构体
+OpenGTX_NetworkInfo networkInfo;
+// OpenGTX游戏网络时延结构体
+OpenGTX_NetworkLatency networkLatency;
+// 网络总时延
+networkLatency.total = OGBT_NETWORK_LATENCY_TOTAL;
+// 网络上行时延
+networkLatency.up = OGBT_NETWORK_LATENCY_UP;
+// 网络下行时延
+networkLatency.down = OGBT_NETWORK_LATENCY_DOWN;
+// 游戏网络时延
+networkInfo.networkLatency = networkLatency;
+// 游戏服务器IP地址
+networkInfo.networkServerIP = OGBT_NETWORK_SERVER_IP.data();
+// OpenGTX接收游戏网络信息
+errorCode = HMS_OpenGTX_DispatchNetworkInfo(contextGtx_, &networkInfo);
 if (errorCode != OPENGTX_SUCCESS) {
-    GOLOGE("HMS_OpenGTX_DispatchGameSceneInfo execution failed, error code: %d.", errorCode);
+    GOLOGE("HMS_OpenGTX_DispatchNetworkInfo execution failed, error code: %d.", errorCode);
     return false;
 }
 ```

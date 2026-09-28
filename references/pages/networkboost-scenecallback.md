@@ -28,6 +28,9 @@ try {
     if (list.length > 0) {
       list.forEach((sceneInfo) => {
         // 网络场景识别回调信息处理
+        console.info('Scene type:', sceneInfo.scene);
+        console.info('PathType:', sceneInfo.pathType);
+        console.info('RecommendedAction:', sceneInfo.recommendedAction);
         if (sceneInfo.scene == 'congestion') {
           // 网络拥塞分支处理
         }
@@ -66,6 +69,9 @@ try {
     if (list.length > 0) {
       list.forEach((sceneInfo) => {
         // 网络场景识别回调信息处理
+        console.info('Scene type:', sceneInfo.scene);
+        console.info('PathType:', sceneInfo.pathType);
+        console.info('RecommendedAction:', sceneInfo.recommendedAction);
         if (sceneInfo.scene == 'congestion') {
           // 网络拥塞分支处理
         }

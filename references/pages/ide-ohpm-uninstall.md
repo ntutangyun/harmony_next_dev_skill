@@ -31,7 +31,9 @@ Options
 
 别名：all
 
-您可以在 uninstall 命令后面配置 --all或者--install_all 参数，表示卸载当前模块指定依赖成功后同时安装当前工程下的所有模块的依赖。
+您可以在uninstall命令后面不配置参数，配置--all或者--install_all 参数，表示卸载当前模块指定依赖成功后同时安装当前工程下的所有模块的依赖。
+
+从ohpm 26.0.0.630版本开始，如无需卸载，可配置--no-install_all 参数。
 
 [h2]no-save
 
@@ -39,7 +41,7 @@ Options
 
 类型：Boolean
 
-您可以在 uninstall 命令后面配置 --no-save 参数，卸载的三方库信息不会从 oh-package.json5 文件中删除。
+可以在uninstall命令后面配置--no-save参数，卸载的三方库信息不会从oh-package.json5文件中删除。不配置参数时，卸载的三方库信息将从 oh-package.json5 文件中删除。
 
 [h2]prefix
 
@@ -73,7 +75,9 @@ Options
 
 类型：Boolean
 
-可以在 uninstall 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
+在uninstall命令后面不配置参数、配置--strict_ssl或--strict_ssl true参数时，开启校验HTTPS证书。
+
+从ohpm 26.0.0.630版本开始，如需关闭校验，可配置--no-strict_ssl或--strict_ssl false参数，推荐使用--no-strict_ssl参数。
 
 [h2]experimental-concurrently-safe
 
@@ -81,7 +85,9 @@ Options
 
 类型：Boolean
 
-可以在 uninstall 命令后面配置 --experimental-concurrently-safe 参数，并发安全地安装依赖。这是一个实验性选项。
+可以在uninstall命令后面配置--experimental-concurrently-safe参数，并发安全地安装依赖。
+
+从ohpm 26.0.0.630版本开始，如无需并发地安装依赖时，配置--no-experimental-concurrently-safe参数。
 
 [h2]log_level
 
@@ -130,6 +136,8 @@ Options
 类型：Boolean
 
 从ohpm 6.0.2.636版本开始，可以在 uninstall 命令后面配置 --resolve_conflict 参数，ohpm会自动处理依赖版本冲突，详情参见resolve_conflict。
+
+从ohpm 26.0.0.630版本开始，如无需自动处理时，配置 --no-resolve_conflict 参数。
 
 [h2]cache
 

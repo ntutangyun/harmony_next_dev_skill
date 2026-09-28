@@ -16,7 +16,7 @@ MDNS管理的典型场景有：
 
 说明
 
-为了保证应用的运行效率，大部分API调用都是异步的，对于异步调用的API均提供了callback和Promise两种方式，以下示例均采用promise函数，更多方式可以查阅@ohos.net.mdns (MDNS管理)。
+为了保证应用的运行效率，大部分API调用都是异步的，对于异步调用的API均提供了callback和Promise两种方式，以下示例均采用Promise函数，更多方式可以查阅@ohos.net.mdns (MDNS管理)。
 
 以下分别介绍具体开发方式。
 
@@ -26,7 +26,7 @@ MDNS管理的典型场景有：
 
 管理本地服务
 
-设备连接WiFi。
+设备连接Wi-Fi。
 
 从@kit.NetworkKit里导入mdns、错误码、以及common命名空间。
 

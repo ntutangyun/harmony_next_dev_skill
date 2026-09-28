@@ -122,7 +122,7 @@ try {
   hilog.error(0, 'InstantDownload', `onError.code is ${error.code}, message is ${error.message}`);
 }
 
-调用fetchModules方法，将步骤3中的myModuleInstallRequest传入模块中的fetchModules方法。
+调用fetchModules方法请求按需加载模块。
 
 try {
   moduleInstallManager.fetchModules(moduleInstallRequest)

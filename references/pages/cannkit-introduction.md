@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-introduction_
 
-CANN（Compute Architecture for Neural Networks）是华为面向AI推出的端云一致的异构计算架构。在HarmonyOS设备上，CANN Kit（CANN异构计算框架服务）面向Kirin芯片平台为各种人工智能模型和算法提供统一的接入和运行环境。开发者的应用程序使用CANN Kit的API和开发者数据，在设备端实现智能推理、模型训练以及模型优化等操作，充分发挥设备的本地智能处理能力。
+CANN（Compute Architecture for Neural Networks）是华为面向AI推出的端云一致的异构计算架构。在HarmonyOS设备上，CANN Kit（CANN异构计算框架服务）面向Kirin芯片平台为各种人工智能模型和算法提供统一的接入和运行环境。开发者的应用程序使用CANN Kit的API和开发者数据，在设备端实现智能推理以及模型优化等操作，充分发挥设备的本地智能处理能力。
 
 模型是将人工智能算法应用于大量训练数据后得到的结果。开发者可以使用模型依据新的输入数据进行智能推理和预测。模型能够完成许多用常规代码实现起来难度较大或效率较低的复杂任务。例如，你可以训练模型对图像进行语义分割，识别图像中的不同物体类别并精确划分其区域或者对语音数据进行处理，实现语音唤醒、语音识别以及语音合成等功能。
 

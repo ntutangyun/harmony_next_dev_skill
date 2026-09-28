@@ -22,6 +22,8 @@ User Authentication Kit简介
 
 查询指定认证类型的认证冻结状态
 
+伴随设备认证
+
 User Authentication Kit常见问题
 
 User Authentication Kit术语

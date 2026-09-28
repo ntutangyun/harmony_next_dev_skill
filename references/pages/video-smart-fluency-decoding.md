@@ -20,7 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/video-sma
 
 模式	实现原理	使用场景
 感知自适应（ADAPTIVE）	系统依据应用传入的当前倍速，动态分析视频运动特征，优先剔除视觉感知权重较低的非关键帧。	推荐使用本模式。主要用于高倍速播放场景，提供比无内容差别均匀抽帧更符合人眼视觉连贯性的平滑体验。
-全量直通（FULL）	解码器透明直通，对所有输入帧进行全量解码输出，不进行丢帧处理。	适用于正常倍速或慢速播放场景，确保画质绝对无损；同时作为初始化阶段的基线配置。
+全量直通（FULL）	对所有输入帧进行解码输出，不进行丢帧处理。	适用于非倍速或慢速播放场景。
 平滑定比（UNIFORM）	系统按开发者指定的固定比例均匀地进行抽帧。	适用于特殊的降载与提速场景，如高温场景下的降载降温，以及编辑预览场景下的拖拽流畅性提升。
 
 参数说明
@@ -57,21 +57,23 @@ OH_MD_KEY_VIDEO_DECODER_FRAME_RETENTION_RATIO（保留比例）
 
 参数异常兜底：在UNIFORM模式下，若传入的保留比例非法或未明确指定，系统将默认以30fps为目标输出帧率进行解码与送显。
 
-硬件能力降级：ADAPTIVE模式依赖硬件解码器上报运动矢量（MV）的能力。在无法提供MV数据的硬件平台上，系统将在底层自动触发基础降级策略（对外仍保留ADAPTIVE模式状态）。此时系统仍能维持基础的流畅播放效果，但无法获得基于内容感知的最佳收益。
+硬件能力降级：ADAPTIVE模式依赖硬件解码器输出运动矢量（MV）信息的能力。在无法提供MV数据的硬件平台上，系统将在底层自动触发基础降级策略（对外仍保留ADAPTIVE模式状态）。此时系统仍能维持基础的流畅播放效果，但无法获得基于内容感知的最佳收益。
+
+MV信息输出：自适应模式的丢帧判决模块依赖解码过程的MV信息。解码过程输出MV信息需在初始化阶段使能ADAPTIVE模式，不支持中途切换模式时启用。若在初始化阶段未配置ADAPTIVE模式，丢帧判决模块将无法获取MV信息，退化为按固定间隔丢帧（解码帧率≥45fps时目标输出帧率为45fps，否则不丢帧），感知自适应收益将降低。建议需要使用ADAPTIVE模式的业务在初始化阶段即完成配置。
 
 音视频同步（AV Sync）安全：智能倍速丢帧机制仅决定帧的存留，不会修改保留帧原始的PTS（显示时间戳）与DTS（解码时间戳）信息，不影响音画同步。
 
 倍速播放场景开发实践
 
-对于常规视频播放业务，建议采用初始化配置与动态切换结合的策略。
+对于常规视频播放业务，建议采用初始化阶段配置与动态切换结合的策略。
 
-初始化配置：在视频起播前的初始化阶段，统一配置为全量直通（FULL）模式，完成底层特征链路的准备工作。
+初始化配置：建议在视频起播前的初始化阶段直接配置为感知自适应（ADAPTIVE）模式。仅在初始化阶段配置ADAPTIVE模式时，解码器才会输出MV信息供丢帧判决使用，不支持中途切换模式后输出MV信息；若在初始化阶段未配置ADAPTIVE模式，中途切入该模式时，丢帧判决模块将无法获取MV信息，退化为按固定间隔丢帧，感知自适应收益将降低。
 
-动态切换：在播放过程中，当目标倍速大于1.0x时，动态切入感知自适应（ADAPTIVE）模式，交由系统接管丢帧决策；当恢复至1.0x及以下倍速时，切回全量直通（FULL）模式，恢复全量帧解码输出。
+动态切换：在播放过程中，当倍速变化时，仍可通过OH_VideoDecoder_SetParameter动态切换模式与倍速参数；当恢复至1.0x及以下倍速时，恢复全量帧解码输出。
 
-[h2]初始化状态基线准备
+[h2]初始化阶段配置
 
-在视频起播前，配置初始模式。
+在视频起播前的初始化阶段，仅需配置ADAPTIVE模式，倍速参数在播放过程中随用户倍速变化动态下发即可。
 
 int32_t VideoDecoder::Configure(const SampleInfo &sampleInfo)
 {
@@ -87,9 +89,11 @@ int32_t VideoDecoder::Configure(const SampleInfo &sampleInfo)
         OH_AVFormat_SetIntValue(format, OH_MD_KEY_ENABLE_SYNC_MODE, sampleInfo.codecSyncMode);
     }
     if (sampleInfo.isSmartFluencySupported) {
-        // 配置FULL模式，为后续ADAPTIVE模式性能体验最大化准备好运行环境。
+        // 在初始化阶段配置ADAPTIVE模式，确保解码过程MV信息输出到丢帧判决模块。
+        // MV信息输出需在初始化阶段使能ADAPTIVE模式，不支持中途使能。
+        // 若中途动态切入ADAPTIVE模式，丢帧判决模块将无法获取MV信息，退化为按固定间隔丢帧。
         OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_DECODER_FRAME_RETENTION_MODE,
-                                OH_FRAME_RETENTION_MODE_FULL);
+                                OH_FRAME_RETENTION_MODE_ADAPTIVE);
     }
 
     int ret = OH_VideoDecoder_Configure(decoder_, format);
@@ -181,9 +185,11 @@ int32_t VideoDecoder::Configure(const SampleInfo &sampleInfo)
         OH_AVFormat_SetIntValue(format, OH_MD_KEY_ENABLE_SYNC_MODE, sampleInfo.codecSyncMode);
     }
     if (sampleInfo.isSmartFluencySupported) {
-        // 配置FULL模式，为后续ADAPTIVE模式性能体验最大化准备好运行环境。
+        // 在初始化阶段配置ADAPTIVE模式，确保解码过程MV信息输出到丢帧判决模块。
+        // MV信息输出需在初始化阶段使能ADAPTIVE模式，不支持中途使能。
+        // 若中途动态切入ADAPTIVE模式，丢帧判决模块将无法获取MV信息，退化为按固定间隔丢帧。
         OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_DECODER_FRAME_RETENTION_MODE,
-                                OH_FRAME_RETENTION_MODE_FULL);
+                                OH_FRAME_RETENTION_MODE_ADAPTIVE);
     }
 
     int ret = OH_VideoDecoder_Configure(decoder_, format);

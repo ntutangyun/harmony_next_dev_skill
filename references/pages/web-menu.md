@@ -243,11 +243,17 @@ struct WebComponent {
 </body>
 </html>
 
+[h2]关闭上下文菜单
+
+onContextMenuShow触发后，应用需要结束本次菜单操作。上述示例在onContextMenuShow回调中通过event.result获取上下文菜单结果对象并保存至this.result，然后在bindPopup的onStateChange中监听弹窗关闭，调用this.result!.closeContextMenu()关闭Web上下文菜单。仅将弹窗状态设为不显示，不能替代调用closeContextMenu。若重复长按图片时回调只触发一次，先检查上一次菜单关闭时是否调用了该接口；若菜单已关闭，再检查网页是否拦截了contextmenu事件。
+
 自定义菜单
 
 自定义菜单赋予开发者灵活控制菜单触发时机与视觉呈现的能力，使应用能够根据用户操作场景动态匹配功能入口，显著简化开发过程中的界面适配工作，同时让交互体验更贴近用户直觉。
 
 开发者可通过bindSelectionMenu接口实现自定义菜单功能。目前，已额外支持通过长按图片、链接和文本，触发自定义菜单及自定义文本菜单。
+
+图片处于选中态时，落在选区内的点击可能用于处理选区或菜单，页面的click事件可能不会触发。若应用需要在图片被选中时提供操作入口，可通过下方的bindSelectionMenu为图片配置菜单项；若需要响应页面的普通点击，应先退出选中态，再点击图片。
 
 创建Menu组件作为菜单弹窗。
 
@@ -541,9 +547,13 @@ html示例
 
 Web菜单保存图片
 
+本节示例处理网页中的图片元素：通过getLastHitTest().extra取得图片地址，再将图片保存到图库。PDF内嵌图片不一定作为网页图片元素参与命中测试；长按PDF中的图片时，不能依赖onContextMenuShow或getLastHitTest().extra取得其地址。
+
+若应用需要保存PDF内嵌图片，应从PDF原始文件或提供PDF的服务获取图片数据，再执行保存。若应用在生成PDF前已有原图地址，可保留该地址，并参考下方示例的图片下载与保存流程；下方示例本身不能提取PDF中的图片。
+
 创建MenuBuilder组件作为菜单弹窗，使用SaveButton组件实现图片保存，通过bindContextMenu将MenuBuilder与Web绑定。
 
-在onContextMenuShow中获取图片url，通过copyLocalPicToDir或copyUrlPicToDir将图片保存至应用沙箱。
+在onContextMenuShow回调中调用getLastHitTest获取图片URL并保存至this.imgUrl。用户点击保存按钮后，根据URL类型调用copyLocalPicToDir（本地图片）或copyUrlPicToDir（网络图片），将图片保存至应用沙箱。
 
 通过photoAccessHelper将应用沙箱中的图片保存至图库。
 

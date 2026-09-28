@@ -2,9 +2,9 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-lifecycle-management_
 
-从6.0.0(20)开始，支持应用开启双空间功能并创建、查询、删除工作空间的能力。
+从API版本6.0.0(20)开始，支持应用开启双空间功能并创建、查询、删除工作空间的能力。
 
-从26.0.0开始，支持查询设备双空间状态、判断工作空间是否为企业空间，以及切换工作空间。
+从API版本26.0.0开始，支持查询设备双空间状态、判断工作空间是否为企业空间，以及切换工作空间。
 
 场景介绍
 
@@ -20,7 +20,7 @@ Enterprise Space Kit为应用提供启用双空间功能及管理工作空间的
 enableWorkspace(enable: boolean): Promise<void>	启用或禁用工作空间功能。MDM应用调用该接口后，还需调用MDM Kit的restrictions.setDisallowedPolicy接口，启用INACTIVE_USER_FREEZE设备特性，以开启非活跃用户运行能力。
 createWorkspace(localName: string, workspaceType: WorkspaceType, params?: CreateWorkspaceParams): Promise<WorkspaceInfo>	创建工作空间并返回工作空间信息。
 queryWorkspace(queryFlag: QueryType): Promise<WorkspaceInfo[]>	查询工作空间信息并返回结果。
-removeWorkspace(localId: number): Promise<void>	移除工作空间。
+removeWorkspace(workspaceId: number): Promise<void>	移除工作空间。
 isEnterpriseWorkspaceEnabled(): Promise<boolean>	查询设备是否开启双空间并返回结果。
 isEnterpriseWorkspace(workspaceId?: number): Promise<boolean>	查询工作空间是否为企业空间并返回结果。
 switchWorkspace(workspaceId?: number): Promise<void>	切换工作空间。
@@ -152,7 +152,7 @@ struct SpaceLifeCircleManagerPage {
 
   async createWorkspace() {
     // 预置参数
-    const localName: string = 'localName'; // 空间名称
+    const localName: string = 'localName'; // 空间名称，由用户传入
     const workspaceType: spaceManager.WorkspaceType = spaceManager.WorkspaceType.ADMIN;
     const params: spaceManager.CreateWorkspaceParams = {
       shortName: 'test'
@@ -175,7 +175,7 @@ struct SpaceLifeCircleManagerPage {
   }
 
   async removeWorkspace() {
-    const workspaceId: number = 101;
+    const workspaceId: number = 101; // 需要删除空间的ID，由用户传入
     if (await SpaceLifeCircleManagerApi.removeWorkspace(workspaceId) !== ErrCode.OK) {
       // 异常处理
       hilog.error(DOMAIN, TAG, 'Failed to remove workspace!');
@@ -417,7 +417,7 @@ struct SpaceLifeCircleManagerPage {
 
   async createWorkspace() {
     // 预置参数
-    const localName: string = 'localName'; // 空间名称
+    const localName: string = 'localName'; // 空间名称，由用户传入
     const workspaceType: spaceManager.WorkspaceType = spaceManager.WorkspaceType.ADMIN;
     const params: spaceManager.CreateWorkspaceParams = {
       shortName: 'test'
@@ -440,7 +440,7 @@ struct SpaceLifeCircleManagerPage {
   }
 
   async removeWorkspace() {
-    const workspaceId: number = 101;
+    const workspaceId: number = 101; // 需要删除空间的ID，由用户传入
     if (await SpaceLifeCircleManagerApi.removeWorkspace(workspaceId) !== ErrCode.OK) {
       // 异常处理
       hilog.error(DOMAIN, TAG, 'Failed to remove workspace!');

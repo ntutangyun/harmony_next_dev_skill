@@ -141,7 +141,7 @@ export enum ErrorCode {
 
 [h2]服务端开发（可选）
 
-开发者根据业务需要选择是否进行服务端开发。
+开发者根据业务需要选择是否进行服务端开发，客户端返回的头像昵称数据同步存在延迟，如果对头像昵称时效性要求较高，建议通过服务端获取。
 
 应用服务端使用Client ID、Client Secret、Authorization Code调用获取用户级凭证接口向华为账号服务器请求获取Access Token、Refresh Token。
 

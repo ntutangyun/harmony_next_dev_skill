@@ -30,7 +30,7 @@ ohpm命令行 5.0.1 版本开始支持发布与下载最大300M的.har/.tgz包�
 
 为了保证.har 和 .tgz 包的编译与运行正常，包中的 oh-package.json5 必须包含该包的所有直接依赖，若有依赖通过项目级别的 oh-package.json5 引入，则相应的依赖也必须写入包中对应的 oh-package.json5 中。
 
-请注意debug模式构建的HAR包中含有源码，便于本地调试，请注意代码安全，详细请参考构建HAR。
+debug模式构建的HAR包中含有源码，便于本地调试，需关注代码安全，详细请参考构建HAR。
 
 发布包前请务必检查待发布包 oh-package.json5 的配置是否满足要求，具体要求请参考：oh-package.json5 字段说明
 
@@ -116,7 +116,9 @@ Options
 
 类型：Boolean
 
-可以在 publish 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
+在publish命令后面不配置参数、配置--strict_ssl或--strict_ssl true参数时，开启校验HTTPS证书。
+
+从ohpm 26.0.0.630版本开始，如需关闭校验，可配置--no-strict_ssl或--strict_ssl false参数，推荐使用--no-strict_ssl参数。
 
 [h2]log_level
 

@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-event-subscription_
 
-从6.0.0(20)开始，支持订阅和取消订阅空间事件的能力。
+从API版本6.0.0(20)开始，支持订阅和取消订阅空间事件的能力。
 
 场景介绍
 
@@ -88,7 +88,7 @@ struct SubscribeSpaceEventPage {
   }
 
   unSubscribe() {
-    let subscribeId = 100;
+    let subscribeId = 100; // 由订阅空间事件得到的订阅ID。
     SubscribeSpaceEventApi.unsubscribeEvent(subscribeId);
   }
 
@@ -210,7 +210,7 @@ struct SubscribeSpaceEventPage {
   }
 
   unSubscribe() {
-    let subscribeId = 100;
+    let subscribeId = 100; // 由订阅空间事件得到的订阅ID。
     SubscribeSpaceEventApi.unsubscribeEvent(subscribeId);
   }
 

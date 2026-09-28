@@ -33,11 +33,18 @@ uint32_t callbackId = 0;
 void onMultiPathStateChangeCallback(NetworkBoost_MultiPathStateChange* result)
 {
     // 多网状态变化回调处理
+    if (result != NULL) {
+        printf("多网状态回调：多网状态=%d, 多网状态变化原因=%d\n", result->multiPathState, result->changeCause);
+        printf("多网状态回调：多网链路的netHandle=%d, 多网链路状态=%d\n", result->netHandle, result->pathState);
+        printf("多网状态回调：多网链路类型=%d\n", result->pathType);
+    } else {
+        printf("回调参数为空\n");
+    }
 }
 
 int32_t RegisterMultiPathStateChange()
 {
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterMultiPathStateChangeCallback(onMultiPathStateChangeCallback, &callbackId);
     printf("注册多网状态监听回调结果: %d, Id：%d\n", ret, callbackId);
     return ret;
@@ -74,11 +81,18 @@ uint32_t callbackId = 0;
 void onMultiPathStateChangeCallback(NetworkBoost_MultiPathStateChange* result)
 {
     // 多网状态变化回调处理
+    if (result != NULL) {
+        printf("多网状态回调：多网状态=%d, 多网状态变化原因=%d\n", result->multiPathState, result->changeCause);
+        printf("多网状态回调：多网链路的netHandle=%d, 多网链路状态=%d\n", result->netHandle, result->pathState);
+        printf("多网状态回调：多网链路类型=%d\n", result->pathType);
+    } else {
+        printf("回调参数为空\n");
+    }
 }
 
 int32_t RegisterMultiPathStateChange()
 {
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterMultiPathStateChangeCallback(onMultiPathStateChangeCallback, &callbackId);
     printf("注册多网状态监听回调结果: %d, Id：%d\n", ret, callbackId);
     return ret;

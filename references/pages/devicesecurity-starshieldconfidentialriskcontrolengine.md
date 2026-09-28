@@ -83,10 +83,10 @@ async function importRiskFactors(): Promise<void> {
   let len = 32;
   let randData = rand.generateRandomSync(len);
   let base64 = new util.Base64Helper();
-  // import risk factors
+  // 导入风险因子
   let data: riskControlEngine.ImportData = {
     appFactorData: [
-      // need to change factorName by your registered.
+      // 需要将factorName修改为开发者已注册的名称
       { factorName: 'isFirstTransfer', factorValue: true }
     ],
     nonce: base64.encodeToStringSync(randData.data)
@@ -95,7 +95,7 @@ async function importRiskFactors(): Promise<void> {
     await riskControlEngine.importRiskFactors(data);
   } catch (error) {
     let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}d', e.code, e.message);
+    hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}s', e.code, e.message);
   }
 }
 
@@ -109,19 +109,19 @@ async function getRiskControlResult(): Promise<string> {
   let len = 32;
   let randData = rand.generateRandomSync(len);
   let base64 = new util.Base64Helper();
-  // prepare risk control detection request
+  // 准备风控评分请求参数
   const request: riskControlEngine.RiskControlDetectionRequest = {
-    // need to change policyName by your registered.
+    // 需要将policyName修改为开发者已注册的名称
     policyName: 'antiFraudRiskEvaluation',
     nonce: base64.encodeToStringSync(randData.data)
   };
   try {
-    // get risk control result
+    // 获取风控评分结果
     let res:riskControlEngine.RiskControlDetectionResponse = await riskControlEngine.getRiskControlResult(request);
     return res.result;
   } catch (error) {
     let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'GetRiskControlResult failed: %{public}d %{public}d', e.code, e.message);
+    hilog.error(0x0000, TAG, 'GetRiskControlResult failed: %{public}d %{public}s', e.code, e.message);
     return '';
   }
 }
@@ -180,10 +180,10 @@ async function importRiskFactors(): Promise<void> {
   let len = 32;
   let randData = rand.generateRandomSync(len);
   let base64 = new util.Base64Helper();
-  // import risk factors
+  // 导入风险因子
   let data: riskControlEngine.ImportData = {
     appFactorData: [
-      // need to change factorName by your registered.
+      // 需要将factorName修改为开发者已注册的名称
       { factorName: 'isFirstTransfer', factorValue: true }
     ],
     nonce: base64.encodeToStringSync(randData.data)
@@ -192,7 +192,7 @@ async function importRiskFactors(): Promise<void> {
     await riskControlEngine.importRiskFactors(data);
   } catch (error) {
     let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}d', e.code, e.message);
+    hilog.error(0x0000, TAG, 'ImportRiskFactors failed: %{public}d %{public}s', e.code, e.message);
   }
 }
 ```
@@ -208,19 +208,19 @@ async function getRiskControlResult(): Promise<string> {
   let len = 32;
   let randData = rand.generateRandomSync(len);
   let base64 = new util.Base64Helper();
-  // prepare risk control detection request
+  // 准备风控评分请求参数
   const request: riskControlEngine.RiskControlDetectionRequest = {
-    // need to change policyName by your registered.
+    // 需要将policyName修改为开发者已注册的名称
     policyName: 'antiFraudRiskEvaluation',
     nonce: base64.encodeToStringSync(randData.data)
   };
   try {
-    // get risk control result
+    // 获取风控评分结果
     let res:riskControlEngine.RiskControlDetectionResponse = await riskControlEngine.getRiskControlResult(request);
     return res.result;
   } catch (error) {
     let e: BusinessError = error as BusinessError;
-    hilog.error(0x0000, TAG, 'GetRiskControlResult failed: %{public}d %{public}d', e.code, e.message);
+    hilog.error(0x0000, TAG, 'GetRiskControlResult failed: %{public}d %{public}s', e.code, e.message);
     return '';
   }
 }

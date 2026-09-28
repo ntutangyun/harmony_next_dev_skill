@@ -10,6 +10,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 当开发者需要使用标题栏样式随内容区滚动而动态改变样式的导航组件时，可以通过设置titleBar属性中的style，自定义标题栏样式根据滚动距离线性变化。通常需配合滚动容器组件使用，推荐使用bindToScrollable或bindToNestedScrollable属性绑定导航组件和可滚动容器组件。
 
+以下展示各模糊类型的默认样式：
+
 [h2]通用模糊样式
 
 对组件背景进行均匀的模糊处理，模糊强度一致，边界清晰，用于强调控件与内容的层级分隔。滑动内容进入/离开标题栏区域过程中，模糊背板和分割线透明渐变出现/消失。此方式适用于非沉浸式场景。
@@ -30,7 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 import { HdsNavigation, HdsNavigationTitleMode, ScrollEffectType, HdsNavigationAttribute } from '@kit.UIDesignKit';
 import { LengthMetrics } from '@kit.ArkUI';
 
-创建一级导航组件，通过配置titleBar中的scrollEffectType属性，可实现通用模糊、过渡模糊、渐变模糊样式。
+创建一级导航组件时，可通过配置titleBar的scrollEffectType属性，设置通用模糊、过渡模糊或渐变模糊效果；同时，通过配置titleBar的originalStyle和scrollEffectStyle属性，可动态调整滚动前后的颜色变化。
 
 @Entry
 @Component
@@ -83,8 +85,8 @@ struct Index {
           blurEffectiveStartOffset: LengthMetrics.vp(0),
           blurEffectiveEndOffset: LengthMetrics.vp(20)
         },
+        // 内容区滚动前初始样式设置，未配置时，每个模糊类型有对应的默认样式
         originalStyle: {
-          // 内容区滚动前初始样式设置
           backgroundStyle: {
             // 标题栏背板样式设置
             backgroundColor: $r('sys.color.ohos_id_color_background')
@@ -105,8 +107,8 @@ struct Index {
             }
           }
         },
+        // 内容区滚动超过blurEffectiveEndOffset后样式设置，未配置时，每个模糊类型有对应的默认样式
         scrollEffectStyle: {
-          // 内容区滚动超过blurEffectiveEndOffset后样式设置
           backgroundStyle: {
             backgroundColor: $r('sys.color.ohos_id_color_background_transparent')
           },
@@ -201,8 +203,8 @@ struct Index {
           blurEffectiveStartOffset: LengthMetrics.vp(0),
           blurEffectiveEndOffset: LengthMetrics.vp(20)
         },
+        // 内容区滚动前初始样式设置，未配置时，每个模糊类型有对应的默认样式
         originalStyle: {
-          // 内容区滚动前初始样式设置
           backgroundStyle: {
             // 标题栏背板样式设置
             backgroundColor: $r('sys.color.ohos_id_color_background')
@@ -223,8 +225,8 @@ struct Index {
             }
           }
         },
+        // 内容区滚动超过blurEffectiveEndOffset后样式设置，未配置时，每个模糊类型有对应的默认样式
         scrollEffectStyle: {
-          // 内容区滚动超过blurEffectiveEndOffset后样式设置
           backgroundStyle: {
             backgroundColor: $r('sys.color.ohos_id_color_background_transparent')
           },

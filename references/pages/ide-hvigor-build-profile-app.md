@@ -30,6 +30,7 @@ app
             └── deduplicateHar
             └── appWithSignedPkg
             └── enableIncrementalSoCompress
+            └── deduplicateSo
         └── debuggable
         └── generateSharedTgz
         └── resOptions
@@ -391,6 +392,7 @@ enableSourceCodeCheck	布尔值	可选	是否检查HAP/HSP/HAR包（不包括未
 deduplicateHar	布尔值	可选	构建APP/HAP/HSP时，当HAP/HSP依赖相同的HAR时（包括HAP和HSP依赖相同的HAR，多个HSP依赖相同的HAR），是否去除HSP中重复的HAR，减少包体积。 true：去除，HAR仅会打包到HAP中，同时需要配置以下字段。 工程级build-profile.json5中配置idDefinedFilePath。 工程级build-profile.json5的useNormalizedOHMUrl配置为true。 module.json5的libIsolation配置为false。 false（缺省默认值）：不去除，HAR会打包到每个HAP/HSP中。 说明： 从DevEco Studio 6.0.1 Beta1版本开始支持，并且设备系统需要升级到6.0.1(21)，工程级build-profile.json5的compatibleSdkVersion需要配置为6.0.1(21)。 多个HSP依赖相同的HAR时，依赖HSP的HAP需要显式配置依赖该HAR。 仅支持本地HSP模块，不支持已打包的HSP包。 不支持去除重复HAR的场景： 一个应用包含多个HAP时 单独运行或调试HSP 仪器测试和本地单元测试 预览场景
 appWithSignedPkg	布尔值	可选	构建APP时，除了默认的app包之外，是否额外生成产物名称带all的app包（xxx-all-unsigned.app和xxx-all-signed.app），app包里的hap和hsp都是签名的包。 true：除了默认的app包之外，额外生成产物名称带all的app包，包里的hap和hsp都是签名的包。 false（缺省默认值）：只生成默认的app包，包里的hap和hsp都是未签名的包。 从DevEco Studio 6.0.2 Beta1版本开始支持。 说明： 要生成xxx-all-unsigned.app和xxx-all-signed.app，除了appWithSignedPkg配置为true之外，需要确保已配置签名材料，并且hvigor-config.json5中的enableSignTask未配置为false。
 enableIncrementalSoCompress	布尔值	可选	构建HAP/HSP时，如果工程中包含大量so并开启了压缩so体积的配置开关（module.json5的compressNativeLibs或hvigor-config.json5的ohos.pack.compressLevel），可以开启此开关复用上一次构建已经压缩好的so，加快打包速度。 true：开启增量压缩，如果so包内容未改变，HAP/HSP将会复用已经压缩好的so包。 false（缺省默认值）：不开启增量压缩，每次构建对所有so重新进行压缩。 从DevEco Studio 6.1.0 Beta1版本开始支持。
+deduplicateSo	布尔值	可选	构建APP时，是否去除HAP和HSP中重复的so文件，以减小APP包体积。 true：去除，so文件只保留一份，并且随机打包在HAP或HSP中。 false（缺省默认值）：不去除。 从26.0.0版本开始支持。 说明： OpenHarmony工程不支持配置此字段。
 
 "buildOption": {
   "packOptions": {
@@ -521,7 +523,7 @@ if (VERSION_CODE === 100){XXX} // 若需要裁剪代码，使用该方式，显�
 字段名称	类型	可选/必选	含义
 targetESVersion	字符串	可选	指定TS语法编译产物的目标运行时EcmaScript版本，包括： ES2017 ES2021（缺省默认值）。
 maxFlowDepth	整型数值	可选	设置最大控制流递归深度，范围为[2000,65535]，默认为2000。 该字段从DevEco Studio 5.1.0 Release版本开始支持。 说明： maxFlowDepth不支持动态修改，即在hvigorfile.ts/hvigorconfig.ts文件中，不支持通过setBuildProfileOpt方法设置maxFlowDepth。
-tsImportSoCheck	布尔值	可选	在.ts文件导入.so文件中的符号，编译时是否对导入的符号进行类型解析。 false（缺省默认值）：不解析，导入的符号在使用时默认是any类型，可能会导致编译失败。 true：解析，.ts文件可以获取到符号的准确类型并且编译成功。 从26.0.0 Beta1版本开始支持。
+tsImportSoCheck	布尔值	可选	在.ts文件导入.so文件中的符号，编译时是否对导入的符号进行类型解析。 false（缺省默认值）：不解析，导入的符号在使用时默认是any类型，可能会导致编译失败。 true：解析，.ts文件可以获取到符号的准确类型并且编译成功。 从26.0.0版本开始支持。
 
 字段名称	类型	可选/必选	含义
 include	字符串数组	可选	当autoLazyImport或ohos.defaults.autoLazyImport为true时，指定自动添加"lazy"关键字的包名（即oh-package.json5中的name），其他包不会添加"lazy"关键字，支持正则语法。 当autoLazyImport为false时，include不生效。 说明： include和exclude互斥，只能配置一个。 include不支持配置空数组或空字符串，至少配置一个包名，并且包名不能重复。
@@ -562,15 +564,15 @@ strictMode用于定义严格模式。
 
 字段名称	类型	可选/必选	含义
 noExternalImportByPath	布尔值	可选	是否严格检查绝对路径导入方式和相对路径跨模块导入方式。 true：严格检查。 false：不严格检查。 说明： 从DevEco Studio NEXT Beta1（5.0.3.800）版本开始，当工程级build-profile.json5中useNormalizedOHMUrl配置为true时，noExternalImportByPath缺省默认值为true；当useNormalizedOHMUrl配置为false时，noExternalImportByPath缺省默认值为false。
-useNormalizedOHMUrl	布尔值	可选	是否使用标准化的OHMUrl（OHMUrl的定义参考以下说明）格式，标准化的OHMUrl统一了原有OHMUrl的格式。使用集成态HSP和字节码HAR需使用标准化的OHMUrl格式。 true：使用标准化的OHMUrl格式。 false（缺省默认值）：不使用标准化的OHMUrl格式。 说明： 从API 12开始支持。 一个ets文件在编译后会成为安装包的一部分，这个ets文件对应的字节码称为一个字节码段，OHMUrl是用来定位一个字节码段的标识。 若工程引用了HAR/HSP，需确保工程的useNormalizedOHMUrl配置和HAR/HSP的useNormalizedOHMUrl配置保持一致，同时配置为true或false。 useNormalizedOHMUrl设置为true时，可能对本地源码HAR的混淆产生影响，具体请参考本地源码HAR包。 从DevEco Studio NEXT Beta1（5.0.3.800）版本开始，当useNormalizedOHMUrl设置为true时，不允许通过相对路径跨模块或绝对路径导入文件，oh-package.json5中依赖的包使用的别名需要和依赖包的oh-package.json5的name保持一致，具体的适配指导请参考变更说明。
+useNormalizedOHMUrl	布尔值	可选	是否使用标准化的OHMUrl（OHMUrl的定义参考以下说明）格式，标准化的OHMUrl统一了原有OHMUrl的格式。使用集成态HSP和字节码HAR需使用标准化的OHMUrl格式。 true：使用标准化的OHMUrl格式。 false（缺省默认值）：不使用标准化的OHMUrl格式。 说明： 从API 12开始支持。 一个ets文件在编译后会成为安装包的一部分，这个ets文件对应的字节码称为一个字节码段，OHMUrl是用来定位一个字节码段的标识。 若工程引用了HAR/HSP，需确保工程的useNormalizedOHMUrl配置和HAR/HSP的useNormalizedOHMUrl配置保持一致，同时配置为true或false。 当useNormalizedOHMUrl设置为true时，可能对本地源码HAR的混淆产生影响，具体请参考本地源码HAR包。 当useNormalizedOHMUrl设置为true时，文件路径中不能包含"&"字符。 从DevEco Studio NEXT Beta1（5.0.3.800）版本开始，当useNormalizedOHMUrl设置为true时，不允许通过相对路径跨模块或绝对路径导入文件，oh-package.json5中依赖的包使用的别名需要和依赖包的oh-package.json5的name保持一致，具体的适配指导请参考变更说明。
 caseSensitiveCheck	布尔值	可选	导入文件是否严格校验大小写，支持相对路径和软链接。 true：严格校验。 false（缺省默认值）：不严格校验。
 duplicateDependencyCheck	布尔值	可选	是否校验本地HSP模块有无依赖相同的HAR。仅在Build App(s)起效。 true：如果本地HSP模块依赖了相同的HAR（包括本地/远程、直接/间接），则编译报错。（注意：当依赖链中存在远程HSP，则该远程HSP及其依赖链不参与校验）。 false（缺省默认值）：不启用校验。
 harLocalDependencyCheck	布尔值	可选	是否对HAR产物启用本地依赖校验。 true：如果oh-package.json5中的dependencies、dynamicDependencies存在本地依赖，则编译报错。 false（缺省默认值）：不启用校验。 说明： 除HAR模块外，HSP模块编译时也会生成HAR产物，该配置同样生效。
 enableStrictCheckOHModule	布尔值	可选	调用远程HAR/HSP包中的方法时，是否严格校验传入参数的类型。 true：严格校验，如果参数类型是undefined/null，报Error错误。 false（缺省默认值）：不严格校验，如果参数类型是undefined/null，报Warning告警。 从DevEco Studio 6.0.1 Beta1版本开始支持。
-disableStrictCheckPaths	字符串数组	可选	指定不需要严格检查的三方库目录名称，未配置时，默认是['node_modules', 'build', '.preview', 'oh_modules']。 如果同时开启strictMode下的enableStrictCheckOHModule，disableStrictCheckPaths数组中的oh_modules会被移除，即oh_modules目录要严格检查。 从26.0.0 Beta2版本开始支持。
+disableStrictCheckPaths	字符串数组	可选	指定不需要严格检查的三方库目录名称，未配置时，默认是['node_modules', 'build', '.preview', 'oh_modules']。 如果同时开启strictMode下的enableStrictCheckOHModule，disableStrictCheckPaths数组中的oh_modules会被移除，即oh_modules目录要严格检查。 从26.0.0版本开始支持。
 disableSendableCheckRules	字符串数组	可选	指定需要关闭校验的Sendable规则，当前仅支持配置"arkts-sendable-class-decorator"，表示支持在Sendable class上使用自定义装饰器。具体检查规则请参考Sendable类和Sendable函数禁止使用除@Sendable外的装饰器。 从DevEco Studio 6.0.2 Beta1版本开始支持。
 strictCheckerOnly	布尔值	可选	是否对.ets文件仅执行严格语法检查。 false（缺省默认值）：对.ets文件执行两次语法检查，一次非严格语法检查和一次严格语法检查，两次语法检查结果合并输出。 true：对.ets文件仅执行一次严格语法检查，跳过非严格语法检查，可以减少端到端编译时间，提升编译性能。 从DevEco Studio 6.1.1 Release版本开始支持。 说明： 开启strictCheckerOnly选项之后，由于工具链类型校验能力增强，因此对存量代码进行更严格的检查，可能需要开发者进行少量适配，参考strictCheckerOnly适配示例。
-apiCompatibilityCheck	字符串	可选	设置ArkTS API兼容性检测级别。 warn（缺省默认值）：如果调用的ArkTS API 的起始版本高于工程的compatibleSdkVersion，构建时会报Warning告警。 error：如果调用的ArkTS API 的起始版本高于工程的compatibleSdkVersion，构建时会报Error错误。 从26.0.0 Beta1版本开始支持。
+apiCompatibilityCheck	字符串	可选	设置ArkTS API兼容性检测级别。 warn（缺省默认值）：如果调用的ArkTS API 的起始版本高于工程的compatibleSdkVersion，构建时会报Warning告警。 error：如果调用的ArkTS API 的起始版本高于工程的compatibleSdkVersion，构建时会报Error错误。 从26.0.0版本开始支持。
 
 解决方案：可通过为变量添加非空断言（!），告知编译器该变量一定存在值，使编译时能够正确匹配到目标函数重载。
 
@@ -721,6 +723,7 @@ app
             └── deduplicateHar
             └── appWithSignedPkg
             └── enableIncrementalSoCompress
+            └── deduplicateSo
         └── debuggable
         └── generateSharedTgz
         └── resOptions

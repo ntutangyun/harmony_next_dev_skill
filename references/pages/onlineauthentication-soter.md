@@ -1,4 +1,4 @@
-# SOTER免密身份认证
+# SOTER免密认证
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/onlineauthentication-soter_
 
@@ -6,21 +6,13 @@ SOTER旨在提供一套生物认证平台和标准，使得业务可以采用设
 
 场景介绍
 
-用户可以利用生物特征来代替传统的密码验证，实现免密身份认证。
+用户可以利用生物特征来代替传统的密码验证，实现免密认证。
 
-开通：提供移动端开通SOTER生物特征（指纹/3D人脸）免密身份认证的能力。
+开通：提供移动端开通SOTER生物特征（指纹/3D人脸）免密认证的能力。
 
-认证：提供移动端采用生物特征（指纹/3D人脸）进行SOTER免密身份认证的能力。
+认证：提供移动端采用生物特征（指纹/3D人脸）进行SOTER免密认证的能力。
 
-注销：提供移动端注销SOTER生物特征（指纹/3D人脸）免密身份认证的能力。
-
-相关权限
-
-获取网络权限：ohos.permission.INTERNET。
-
-获取振动权限：ohos.permission.VIBRATE。
-
-获取生物识别权限：ohos.permission.ACCESS_BIOMETRIC。
+注销：提供移动端注销SOTER生物特征（指纹/3D人脸）免密认证的能力。
 
 约束与限制
 
@@ -45,20 +37,48 @@ function getAvailableStatus() {
 
 移动端设备使用此服务时需要处于联网状态。
 
-SOTER服务会将匿名化的指纹ID和面容ID等个人信息返回至三方应用，以提供绑定具体生物特征的免密认证能力。应用将个人信息上云前，需要向用户明示并且取得同意，详细请参考个人数据处理说明。
+SOTER服务会将匿名化的指纹ID和面容ID等个人信息返回至应用，以提供绑定具体生物特征的免密认证能力。应用将个人信息上云前，需要向用户明示并且取得同意，详细请参考个人数据处理说明。
 
 业务流程
 
+生成应用密钥流程说明：
+
+应用客户端调用generateAppSecureKey接口生成应用密钥。
+
+应用客户端将应用密钥上传至应用服务端，应用服务端校验后返回校验结果。
+
+生成认证密钥流程说明：
+
+应用客户端调用generateAuthKey接口生成认证密钥。
+
+应用客户端将认证密钥上传至应用服务端，应用服务端校验后返回校验结果。
+
+认证流程说明：
+
+应用客户端向应用服务端请求数据。
+
+应用客户端调用generateChallengeSync接口生成challenge。
+
+应用客户端请求身份认证，完成生物特征认证。
+
+应用客户端调用signWithAuthKeySync接口进行SOTER认证，获取签名结果。
+
+应用客户端将签名结果上传至应用服务端，应用服务端校验后返回校验结果。
+
+关闭免密支付流程说明：
+
+应用客户端调用deleteAuthKey接口删除认证密钥。
+
 接口说明
 
-表1 开通、认证、注销的所需要的接口
+以下是开通、认证、注销的所需要的接口，具体API说明详见接口文档。
 
 接口名	描述
-generateAppSecureKey(keyType: KeyType): Promise<Uint8Array>	生成应用密钥。
-generateAuthKey(keyAlias: string, keyType: KeyType): Promise<SignedResult>	生成认证密钥。
-generateChallengeSync(keyAlias: string): Uint8Array	生成Challenge。
-signWithAuthKeySync(keyAlias: string, authToken: Uint8Array, info: string): SignedResult	使用认证密钥对业务数据签名。
-deleteAuthKey(keyAlias: string): Promise<void>	删除认证密钥。
+generateAppSecureKey(keyType: KeyType): Promise<Uint8Array>	生成App应用密钥，使用Promise异步回调。
+generateAuthKey(keyAlias: string, keyType: KeyType): Promise<SignedResult>	生成authKey，使用Promise异步回调。
+generateChallengeSync(keyAlias: string): Uint8Array	生成Challenge，同步返回结果。
+signWithAuthKeySync(keyAlias: string, authToken: Uint8Array, info: string): SignedResult	SOTER免密认证，同步返回签名的报文。
+deleteAuthKey(keyAlias: string): Promise<void>	删除AuthKey，使用Promise异步回调
 
 开发步骤
 
@@ -109,7 +129,7 @@ let authParam: userAuth.AuthParam = {
   authType: [userAuth.UserAuthType.FINGERPRINT],
   authTrustLevel: userAuth.AuthTrustLevel.ATL4
 };
-// 使用preAuthResult请求身份认证
+// 使用authParam请求身份认证
 try {
   let userAuthInstance = userAuth.getUserAuthInstance(authParam, {title: ' '});
   // 未获取到authToken则会返回错误码1。
@@ -221,7 +241,7 @@ let authParam: userAuth.AuthParam = {
   authType: [userAuth.UserAuthType.FINGERPRINT],
   authTrustLevel: userAuth.AuthTrustLevel.ATL4
 };
-// 使用preAuthResult请求身份认证
+// 使用authParam请求身份认证
 try {
   let userAuthInstance = userAuth.getUserAuthInstance(authParam, {title: ' '});
   // 未获取到authToken则会返回错误码1。

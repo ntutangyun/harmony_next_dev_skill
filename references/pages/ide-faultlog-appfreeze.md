@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-fault
 
 从DevEco Studio 6.0.0 Beta2版本开始，支持对AppFreeze类型的FaultLog，进行结构化展示和日志过滤。关于AppFreeze日志的检测原理、日志规格等信息请查看AppFreeze（应用冻屏）检测。
 
-页面上方的字段对应了FaultLog中的字段，具体对应关系请查看字段说明。
+页面上方的字段对应了FaultLog中的字段，具体对应关系请参考字段说明。
 
 Stacks：展示线程的堆栈信息，具体请参考查看堆栈信息。
 

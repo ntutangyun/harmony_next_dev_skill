@@ -282,7 +282,7 @@ Scroll() {
 
 在某些UI设计风格中，可能需要为TabBar采用特殊样式，比如首页导航栏的毛玻璃背景效果等。
 
-通过设置Tabs组件的barOverlap属性，可以实现TabBar变模糊并叠加在TabContent之上，并且配合barBackgroundBlurStyle属性实现毛玻璃效果。详情请参见TabBar背景模糊效果。
+通过设置Tabs组件的barOverlap属性，可以实现TabBar变模糊并叠加在TabContent之上，并且配合barBackgroundBlurStyle属性实现毛玻璃效果。
 
 Tabs({
   // ...

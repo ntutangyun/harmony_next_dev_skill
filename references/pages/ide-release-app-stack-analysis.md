@@ -20,7 +20,7 @@ DevEco Studio将解析后的堆栈信息显示在右侧的输出框中。
   }
 }
 
-如果引用release Har包中native方法产生了异常堆栈，解析时请勾选Unscramble stack trace, 并选择har模块中编译出的带有符号信息的so文件，引用方build产物中的har模块so不带有符号信息。so文件在模块中相对路径为build/default/intermediates/libs/default/{cpu类型}/libxxx.so。
+如果引用Release har包中Native方法产生了异常堆栈，解析时请勾选Unscramble stack trace, 并选择har模块中编译出的带有符号信息的so文件，引用方build产物中的har模块so不带有符号信息。so文件在模块中相对路径为build/default/intermediates/libs/default/{cpu类型}/libxxx.so。
 
 ## Code blocks
 

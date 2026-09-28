@@ -1,4 +1,4 @@
-# 签名验签介绍及算法规格
+# 签名验签
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-sign-sig-verify-overview_
 
@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-si
 
 说明
 
-当前使用C/C++的方式从API version 12开始支持验签，从API version 20开始支持签名。
+当前使用C/C++的方式从API版本12开始支持验签，从API版本20开始支持签名。
 
 RSA
 
@@ -282,4 +282,26 @@ ML-DSA
 以字符串参数创建ML-DSA签名验签实例。
 
 非对称密钥类型	字符串参数	API版本
-ML-DSA	ML-DSA	26.0.0+
+ML-DSA-44	ML-DSA	26.0.0+
+ML-DSA-65	ML-DSA	26.0.0+
+ML-DSA-87	ML-DSA	26.0.0+
+
+使用RSA密钥对签名验签(ArkTS)
+
+使用RSA密钥对签名验签(C/C++)
+
+使用ECDSA密钥对签名验签(ArkTS)
+
+使用ECDSA密钥对签名验签(C/C++)
+
+使用ECC密钥对签名验签(ArkTS)
+
+使用SM2密钥对签名验签(ArkTS)
+
+使用SM2密钥对签名验签(C/C++)
+
+SM2签名数据格式转换(ArkTS)
+
+SM2签名数据格式转换(C/C++)
+
+使用ML-DSA密钥对签名验签(ArkTS)

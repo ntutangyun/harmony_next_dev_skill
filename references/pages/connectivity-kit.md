@@ -11,5 +11,3 @@ NFC
 WLAN
 
 融合短距
-
-Connectivity Kit术语

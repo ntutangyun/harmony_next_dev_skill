@@ -292,7 +292,7 @@ function add(a: number, b: number) {
 
 文件顶层的调用。
 
-console.info("in tolevel");
+console.info("in toplevel");
 
 代码块中的调用。
 
@@ -1098,7 +1098,7 @@ function add(a: number, b: number) {
 ### Code block 25
 
 ```
-console.info("in tolevel");
+console.info("in toplevel");
 ```
 
 ### Code block 26

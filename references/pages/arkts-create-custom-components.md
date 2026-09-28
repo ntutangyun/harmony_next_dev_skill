@@ -35,7 +35,6 @@ struct HelloComponent {
           this.message = 'Hello, ArkUI!';
         })
     }
-    .height('100%')
   }
 }
 
@@ -158,7 +157,7 @@ struct MyComponent {
 
 无法同时使用@ComponentV2与@Component装饰同一个struct结构。
 
-@ComponentV2支持一个可选的ComponentOptions参数，来实现组件冻结功能。
+@ComponentV2支持一个可选的ComponentOptions参数，来实现组件冻结。
 
 一个简单的@ComponentV2装饰的自定义组件应具有以下部分：
 
@@ -853,7 +852,6 @@ struct HelloComponent {
           this.message = 'Hello, ArkUI!';
         })
     }
-    .height('100%')
   }
 }
 ```

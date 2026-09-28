@@ -10,10 +10,10 @@ ArkTS卡片页面交互
 
 ArkTS卡片编辑
 
-应用内请求卡片加桌
+在应用内将ArkTS卡片添加到桌面
 
 ArkTS锁屏卡片
 
 ArkTS背板透明卡片
 
-ArkTS待机屏保卡片开发指导
+ArkTS待机屏保卡片

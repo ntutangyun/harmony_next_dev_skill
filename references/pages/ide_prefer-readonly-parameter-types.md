@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_prefer-readonly-parameter-types_
 
-要求将函数参数解析为“只读”类型，以防止参数被修改而产生一些副作用，更多规则详情请参考prefer-readonly-parameter-types。
+要求将函数参数解析为“只读”类型，以防止参数被修改而产生副作用，更多规则详情请参考prefer-readonly-parameter-types。
 
 该规则校验比较严格，由开发者自主判断是否需要修复告警。
 

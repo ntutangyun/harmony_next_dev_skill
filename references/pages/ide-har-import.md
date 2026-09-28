@@ -8,7 +8,7 @@ ohpm config set registry your_registry1,your_registry2
 
 说明：ohpm支持多个仓库地址，采用英文逗号分隔。
 
-方式一：在菜单栏点击Tools > OHPM Index，进入DevEco Studio内置的OpenHarmony开源中心仓，选择需要的三方包，详情请参考使用OpenHarmony开源中心仓管理三方包。仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+方式一：在菜单栏点击Tools > OHPM Index，进入DevEco Studio内置的OpenHarmony三方库中心仓，选择需要的三方包，详情请参考使用OpenHarmony开源中心仓管理三方包。仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
 cd path/to/your/project/entry
 ohpm install @ohos/lottie
@@ -69,15 +69,15 @@ ohpm install
 
 在引用共享包时，请注意当前只支持在模块和工程下的oh-package.json5文件中声明dependencies依赖，才会被当做依赖使用，并在编译构建过程中进行相应的处理。
 
-使用OpenHarmony开源中心仓管理三方包
+使用OpenHarmony三方库中心仓管理三方包
 
 说明
 
 该功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-从DevEco Studio 6.0.0 Beta5版本开始，新增OHPM Index入口，提供OpenHarmony开源中心仓的高效筛选和管理能力，提升开发者选型开发效率，消减因软件信息不对称导致的选型使用风险，快速选择与定位所需的开源三方库。
+从DevEco Studio 6.0.0 Beta5版本开始，新增OHPM Index入口，提供OpenHarmony三方库中心仓的高效筛选和管理能力，提升开发者选型开发效率，消减因软件信息不对称导致的选型使用风险，快速选择与定位所需的开源三方库。
 
-在菜单栏点击Tools > OHPM Index，进入OpenHarmony开源中心仓。
+在菜单栏点击Tools > OHPM Index，进入OpenHarmony三方库中心仓。
 
 三方包安装完成后，在工程级oh-package.json5文件中可以看到已安装的三方包名称及版本信息，oh_modules中将同时添加该三方包。
 

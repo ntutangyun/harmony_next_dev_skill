@@ -2,6 +2,14 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-releasenote_
 
+DevEco Studio 26.0.0 Release
+
+工程级build-profile.json5文件的packOptions下新增deduplicateSo字段，用于指定构建APP时，是否去除HAP和HSP中重复的so文件，以减小APP包体积。具体请参考工程级build-profile.json5文件。
+
+支持将字节码HAR及其所有依赖合并打包，生成一个无外部依赖、可直接使用的独立HAR包。具体请参考多HAR合并打包。
+
+支持按照target、product和buildMode维度个性化配置依赖，构建多目标产物。具体请参考使用插件配置多目标依赖。
+
 DevEco Studio 26.0.0 Beta2
 
 hvigor-config.json5文件的properties下新增hvigor.daemon.idleTimeout字段，用于设置daemon进程的最大空闲时长，从最后一次构建任务完成时开始计算，超过最大空闲时长则daemon进程退出。具体请参考hvigor-config.json5文件。

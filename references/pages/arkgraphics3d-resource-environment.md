@@ -2,9 +2,9 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkgraphics3d-resource-environment_
 
-环境（Environment）：环境是3D场景背景的一种描述，可以基于图片进行创建。通过将一张图片进行正方体或者球体的映射处理，将图片贴在正方体或者球体上，在3D场景中模拟真实的环境。
+环境（Environment）：用于定义3D场景背景，可基于图片创建。它将环境贴图映射到立方体或球体表面（如等距柱状投影），以模拟真实环境背景；同时提供基于图像的光照（Image-Based Lighting，IBL），通过间接漫反射等方式影响物体环境光照，使物体更自然地融入场景，提升渲染真实感。
 
-ArkGraphics 3D支持用户创建环境资源，定义3D场景的背景。
+ArkGraphics 3D支持开发者创建环境资源，用于定义3D场景背景。
 
 开发步骤
 
@@ -39,7 +39,7 @@ if (this.scene === null) {
 
 创建相机对象并设置相机启用状态与观察位置，用于后续展示模型。
 
-this.cam = await this.rf.createCamera({ 'name': 'Camera1' });
+this.cam = await this.rf.createCamera({ name: 'Camera1' });
 this.cam.enabled = true;
 this.cam.position.z = 5;
 
@@ -143,7 +143,7 @@ if (this.scene === null) {
 ### Code block 3
 
 ```
-this.cam = await this.rf.createCamera({ 'name': 'Camera1' });
+this.cam = await this.rf.createCamera({ name: 'Camera1' });
 this.cam.enabled = true;
 this.cam.position.z = 5;
 ```

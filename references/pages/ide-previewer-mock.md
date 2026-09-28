@@ -33,7 +33,7 @@ import { MockKit, when, MockSetup } from '@ohos/hamock';
 @Entry
 @Component
 struct Index {
- ...
+ // ...
  @MockSetup
  randomName() {
   let mocker: MockKit = new MockKit();
@@ -41,7 +41,7 @@ struct Index {
   // mock 指定的方法在指定入参的返回值
   when(mockfunc)('test').afterReturn(1);
  }
- ...
+ // ...
  // 业务场景调用方法
  const result = this.method1('test'); // in previewer, result = 1
 }
@@ -60,7 +60,7 @@ struct Person {
  randomName() {
   this.species = 'primates'
  }
- ...
+ // ...
  // 业务场景调用属性（如果从初始化到调用期间，该属性无变化）
  const result = this.species // in previewer, result = primates
 }
@@ -99,7 +99,6 @@ export default MockMeasureText;
   "@ohos.measure": { // 待替换的moduleName
     "source": "src/mock/MeasureText.mock.ets" // Mock代码的路径，相对于模块根目录
   },
- ...
 }
 
 hilog.debug(DomainNumber, logTag, 'Mock %{public}s', `${MeasureText.measureText({textContent: 'Hello World'})}`)
@@ -155,7 +154,6 @@ export const ObjectB: Object = new Object();
  "utils/CommonUtils.ets": { // 本地模块只支持ets/xxx的相对路径，并需明确文件后缀
   "source": "src/mock/module/utils/CommonUtils.mock.ets"
  },
- ...
 }
 
 hilog.debug(DomainNumber, logTag, 'Mock %{public}s', CommonUtils.getName());
@@ -184,7 +182,7 @@ import { MockKit, when, MockSetup } from '@ohos/hamock';
 @Entry
 @Component
 struct Index {
- ...
+ // ...
  @MockSetup
  randomName() {
   let mocker: MockKit = new MockKit();
@@ -192,7 +190,7 @@ struct Index {
   // mock 指定的方法在指定入参的返回值
   when(mockfunc)('test').afterReturn(1);
  }
- ...
+ // ...
  // 业务场景调用方法
  const result = this.method1('test'); // in previewer, result = 1
 }
@@ -217,7 +215,7 @@ struct Person {
  randomName() {
   this.species = 'primates'
  }
- ...
+ // ...
  // 业务场景调用属性（如果从初始化到调用期间，该属性无变化）
  const result = this.species // in previewer, result = primates
 }
@@ -248,7 +246,6 @@ export default MockMeasureText;
   "@ohos.measure": { // 待替换的moduleName
     "source": "src/mock/MeasureText.mock.ets" // Mock代码的路径，相对于模块根目录
   },
- ...
 }
 ```
 
@@ -312,7 +309,6 @@ export const ObjectB: Object = new Object();
  "utils/CommonUtils.ets": { // 本地模块只支持ets/xxx的相对路径，并需明确文件后缀
   "source": "src/mock/module/utils/CommonUtils.mock.ets"
  },
- ...
 }
 ```
 

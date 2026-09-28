@@ -54,7 +54,7 @@ struct InstantShapeDemo {
     try {
       this.instantShapeGenerator?.setPauseTime(280);
     } catch (error) {
-      console.error('setPauseTime failed: ', error);
+      console.error(`Failed to setPauseTime. Code: ${error.code}, message: ${error.message}`);
     }
     // 注册完成时的回调方法
     this.instantShapeGenerator?.onShapeRecognized(this.shapeInfoCallback);
@@ -160,7 +160,7 @@ struct InstantShapeDemo {
     try {
       this.instantShapeGenerator?.setPauseTime(280);
     } catch (error) {
-      console.error('setPauseTime failed: ', error);
+      console.error(`Failed to setPauseTime. Code: ${error.code}, message: ${error.message}`);
     }
     // 注册完成时的回调方法
     this.instantShapeGenerator?.onShapeRecognized(this.shapeInfoCallback);

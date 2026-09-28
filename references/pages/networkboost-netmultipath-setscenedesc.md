@@ -24,6 +24,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 try {
   let sceneDesc : netBoost.SceneDesc = {
+    // scene: 'realtimeVoice' 表示实时语音业务场景，可通过业务需求配置; sceneEvent: SCENE_EVENT_ENTER 表示进入场景事件
     scene : 'realtimeVoice',
     sceneEvent : netBoost.SceneEvent.SCENE_EVENT_ENTER
   }
@@ -46,6 +47,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 ```
 try {
   let sceneDesc : netBoost.SceneDesc = {
+    // scene: 'realtimeVoice' 表示实时语音业务场景，可通过业务需求配置; sceneEvent: SCENE_EVENT_ENTER 表示进入场景事件
     scene : 'realtimeVoice',
     sceneEvent : netBoost.SceneEvent.SCENE_EVENT_ENTER
   }

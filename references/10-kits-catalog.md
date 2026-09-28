@@ -29,6 +29,7 @@ When a user asks for a capability, identify the kit, then either:
 | Capability | Kit / import | Canonical slug |
 |---|---|---|
 | Crypto, keystore, biometrics | `@kit.UniversalKeystoreKit`, `@kit.UserAuthenticationKit` | `system-security` |
+| Algorithm-level crypto (encrypt/decrypt, sign/verify, digest, MAC, KDF, key agreement) — guides consolidated per algorithm in the 2026-09 docs (one page covers all AES modes GCM/CCM/CBC/ECB/XTS/segmented; likewise SM4, RSA encrypt, RSA sign) | `@kit.CryptoArchitectureKit` (`cryptoFramework`) | `crypto-aes-sym-encrypt-decrypt`, `crypto-sm4-sym-encrypt-decrypt`, `crypto-rsa-asym-encrypt-decrypt`, `crypto-rsa-sign-sig-verify` (+ `-ndk` variants), `crypto-architecture-glossary` |
 | Network: HTTP, WebSocket, connectionmgr, certs | `@kit.NetworkKit` | `system-network` |
 | Bluetooth, Wi-Fi, NFC | `@kit.ConnectivityKit` | `system-network` |
 | Telephony, SMS | `@kit.TelephonyKit` | `system-basicfun` |
@@ -63,7 +64,7 @@ When a user asks for a capability, identify the kit, then either:
 | 3D scene rendering | `@kit.ArkGraphics3D` | `arkgraphics-3d` |
 | GPU/Vulkan helpers | `@kit.GraphicsAccelerateKit` | `graphics-accelerate-kit-guide` |
 | XEngine | `@kit.XEngineKit` | `xengine-kit-guide` |
-| AR sessions | `@kit.ARKit` (AR Engine) | `ar-engine-kit-guide` |
+| AR sessions | `@kit.ARKit` (AR Engine) | `ar-engine-guide` |
 | Spatial reconstruction | `@kit.SpatialReconKit` | `spatial-recon-kit-guide` |
 
 ## Application services (Huawei mobile services)

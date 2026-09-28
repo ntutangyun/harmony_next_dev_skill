@@ -15,3 +15,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-code-
 快速插入场景化代码片段
 
 跨语言代码编辑
+
+代码索引（clangd）

@@ -39,7 +39,7 @@ export default class EntryAbility extends UIAbility {
 
 UIAbility类拥有自身的上下文信息，该信息为UIAbilityContext类的实例，UIAbilityContext类拥有abilityInfo、currentHapModuleInfo等属性。通过UIAbilityContext可以获取UIAbility的相关配置信息，如包代码路径、Bundle名称、Ability名称和应用程序需要的环境状态等属性信息，以及可以获取操作UIAbility实例的方法（如startAbility()、connectServiceExtensionAbility()、terminateSelf()等）。
 
-如果需要在页面中获得当前Ability的Context，需要通过调用组件的getUIContext方法获取UIContext对象，再调用UIContext对象的getHostContext方法获取当前页面关联的UIAbilityContext或ExtensionContext。
+如果需要在页面中获得当前Ability的Context，需要通过调用组件的getUIContext()方法获取UIContext对象，再调用UIContext对象的getHostContext()方法获取当前页面关联的UIAbilityContext或ExtensionContext。
 
 在UIAbility中可以通过this.context获取UIAbility实例的上下文信息。
 
@@ -192,7 +192,7 @@ struct Index {
   }
 }
 
-在UIAbilityB的onCreate生命周期中，获取UIAbilityA的Pid、BundleName和AbilityName，并通过日志输出。
+在UIAbilityB的onCreate()生命周期中，获取UIAbilityA的Pid、BundleName和AbilityName，并通过日志输出。
 
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';

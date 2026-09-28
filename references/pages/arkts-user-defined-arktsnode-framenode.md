@@ -793,7 +793,7 @@ FrameNode提供了查询接口用于返回实体节点的基础信息。具体�
 
 说明
 
-1、当前接口提供的可查询的信息包括：
+当前接口提供的可查询的信息包括：
 
 节点大小：getMeasuredSize，getUserConfigSize
 
@@ -801,7 +801,7 @@ FrameNode提供了查询接口用于返回实体节点的基础信息。具体�
 
 节点信息：getId，getUniqueId，getNodeType，getOpacity，isVisible，isClipToFrame，isAttached，getInspectorInfo，getCustomProperty
 
-2、无法获取UINode类型节点，例如：JsView节点、Span、ContainerSpan、ContentSlot、ForEach、LazyForEach、if/else组件等。
+无法获取UINode类型节点，例如：JsView节点、Span、ContainerSpan、ContentSlot、ForEach、LazyForEach、if/else组件等。
 
 获取节点位置偏移信息
 

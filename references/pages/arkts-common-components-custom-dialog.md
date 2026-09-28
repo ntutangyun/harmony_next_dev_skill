@@ -144,6 +144,7 @@ export struct DialogInteractionUseConstructor {
 
 @CustomDialog
 struct CustomDialogExample {
+  // 数据监听仅支持@Link或@Consume，其他方式如@Prop、@ObjectLink不适用此场景
   @Link textValue: string;
   controller?: CustomDialogController;
   cancel: () => void = () => {
@@ -851,6 +852,7 @@ export struct DialogInteractionUseConstructor {
 ```
 @CustomDialog
 struct CustomDialogExample {
+  // 数据监听仅支持@Link或@Consume，其他方式如@Prop、@ObjectLink不适用此场景
   @Link textValue: string;
   controller?: CustomDialogController;
   cancel: () => void = () => {

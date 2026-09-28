@@ -57,7 +57,7 @@ int32_t RegisterNetSceneCallback()
 {
     HMS_NetworkBoost_NetSceneChange callback;
     callback = onNetworkSceneChanged;
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterNetSceneCallback(callback, &callbackId);
     printf("注册网络场景结果: %d, Id：%d\n", ret, callbackId);
     return ret;
@@ -121,7 +121,7 @@ int32_t RegisterNetSceneCallback()
 {
     HMS_NetworkBoost_NetSceneChange callback;
     callback = onNetworkSceneChanged;
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterNetSceneCallback(callback, &callbackId);
     printf("注册网络场景结果: %d, Id：%d\n", ret, callbackId);
     return ret;

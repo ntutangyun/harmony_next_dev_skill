@@ -7,3 +7,5 @@ Telephony Kit简介
 拨打电话
 
 短信服务
+
+Telephony Kit术语

@@ -2,7 +2,15 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-carkey-scene-control_
 
-用户可在车主App中查看钥匙连接状态，执行开锁、闭锁、开启后备箱等远程车控操作。
+用户可在车主App中查看钥匙连接状态，执行开锁、闭锁、开启后备箱等远程车控操作。车控操作的超时时间由车主App自行控制。
+
+此外，钱包App同样支持车控操作，各操作超时时间如下：
+
+功能	超时时间
+解/闭锁	4秒
+打开/关闭车窗	15秒
+打开/关闭后备箱	15秒
+寻车	4秒
 
 交互流程
 
@@ -31,7 +39,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-ca
 连接状态	移动端和车端是否已完成BLE/SLE协议层的连接。
 认证状态	移动端和车端是否已完成车钥匙认证过程，该过程由车端在连接完成后主动发起。
 
-一般情况情况下，移动端和车端已建立连接，则视为：已完成车钥匙认证过程。
+一般情况下，移动端和车端已建立连接，则视为：已完成车钥匙认证过程。
 
 查询连接状态有同步和异步两种查询方式：
 

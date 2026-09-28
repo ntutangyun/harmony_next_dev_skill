@@ -176,7 +176,6 @@ ohpm config list -j 或 ohpm config list --json
   "registry": "http://localhost:8088/repos/ohpm",
   "strict_ssl": false,
   "log_level": "info",
-  ......
 }
 
 [h2]crypto_path
@@ -416,7 +415,6 @@ ohpm config list -j 或 ohpm config list --json
   "registry": "http://localhost:8088/repos/ohpm",
   "strict_ssl": false,
   "log_level": "info",
-  ......
 }
 ```
 

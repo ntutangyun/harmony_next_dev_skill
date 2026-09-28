@@ -77,7 +77,7 @@ onWorkStop(work: workScheduler.WorkInfo): void	延迟调度任务结束的回调
 
 在工程entry Module对应的ets目录(./entry/src/main/ets)下，新建目录及ArkTS文件，例如新建一个目录并命名为WorkSchedulerAbility。在WorkSchedulerAbility目录下，新建一个ArkTS文件并命名为WorkSchedulerAbility.ets，用以实现延迟任务回调接口。
 
-导入模块。
+导入模块，无需配置权限。
 
 import {workScheduler, WorkSchedulerExtensionAbility} from '@kit.BackgroundTasksKit';
 
@@ -165,6 +165,14 @@ try {
 确认延迟任务WorkSchedulerExtensionAbility回调方法onWorkStart、onWorkStop实现是否正确、是否可以成功回调
 
 延迟任务申请成功之后，需要等到条件满足后才可以执行延迟任务回调，为了快速验证延迟任务回调功能是否正确，可以通过以下hidumper命令手动触发延迟任务执行回调。
+
+说明
+
+-s 1904：指向WorkScheduler系统服务发送命令（1904为该服务ID）。
+
+-a：携带附加参数，需用引号包裹。
+
+-t：指定目标应用包名和 ExtensionAbility 名称，示例中的 com.example.application 和 MyWorkSchedulerExtensionAbility 需替换为实际值。
 
 $ hidumper -s 1904 -a '-t com.example.application MyWorkSchedulerExtensionAbility'
 

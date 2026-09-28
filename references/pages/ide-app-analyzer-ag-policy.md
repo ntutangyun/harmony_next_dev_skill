@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-app-a
 
 确保DevEco Studio与真机设备已连接，并对应用进行签名。
 
-单击菜单栏Tools > AppAnalyzer，打开AppAnalyzer页面。
+点击菜单栏Tools > AppAnalyzer，打开AppAnalyzer页面。
 
 在编辑窗口右侧的工具栏，点击AppAnalyzer或，打开AppAnalyzer页面。
 

@@ -8,9 +8,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-add-n
 
 创建新的模块
 
-方法1：鼠标移到工程目录顶部，单击鼠标右键，选择New > Module...，开始创建新的Module，此时该模块将创建在工程根目录下。
+方法1：鼠标移到工程目录顶部，单击鼠标右键，选择New > Module...，开始创建新模块，此时该模块将创建在工程根目录下。
 
-方法2：选中工程目录中任意文件，然后在菜单栏选择File > New > Module...，开始创建新的Module，此时该模块将创建在工程根目录下。
+方法2：选中工程目录中任意文件，然后在菜单栏选择File > New > Module...，开始创建新模块，此时该模块将创建在工程根目录下。
 
 说明
 
@@ -24,7 +24,7 @@ Module name：新增模块的名称，Module name不可与工程名称/工程中
 
 如果同一类型的设备已经存在entry模块，出现新的entry模块后，还需要配置分发策略。
 
-Device type：选择模块的设备类型，如果新建模块的Module type为feature，则只能选择该工程原有的设备类型；如果Module type为entry，可以选择该模块支持的其他设备类型。
+Device type：选择模块的设备类型，如果模块类型为feature，则只能选择该工程原有的设备类型；如果模块类型为entry，可以选择该模块支持的其他设备类型。
 
 Enable native：仅Library模板存在，将创建一个可以调用C/C++的共享包。
 

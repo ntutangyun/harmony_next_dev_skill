@@ -63,7 +63,7 @@ aboutToDisappear(): void {
 }
 
 private isFont(filePath: string): boolean {
-  let options = [".ttf", ".woff2", ".otf"];
+  let options = ['.ttf', '.woff2', '.otf'];
   let path = filePath.toLowerCase();
   let result = path.indexOf(options[0]) != -1 || path.indexOf(options[1]) != -1 || path.indexOf(options[2]) != -1;
   hilog.info(0x0000, 'testTag',  'isFont = ' + result);
@@ -106,7 +106,10 @@ private loadFileFromPath(filePath: string): ArrayBuffer {
     fs.closeSync(file);
     return buffer;
   } catch (err) {
-    hilog.error(0x0000, 'testTag', "mkdir failed with error message: ", err.message, ", error code: ", err.code);
+    let code = (error as BusinessError).code;
+    let message = (error as BusinessError).message;
+    hilog.error(0x0000, 'testTag',
+      `loadFileFromPath : get file failed, error code: ${code}, message: ${message}.`);
     return new ArrayBuffer(0);
   }
 }
@@ -156,7 +159,7 @@ aboutToDisappear(): void {
 }
 
 private isFont(filePath: string): boolean {
-  let options = [".ttf", ".woff2", ".otf"];
+  let options = ['.ttf', '.woff2', '.otf'];
   let path = filePath.toLowerCase();
   let result = path.indexOf(options[0]) != -1 || path.indexOf(options[1]) != -1 || path.indexOf(options[2]) != -1;
   hilog.info(0x0000, 'testTag',  'isFont = ' + result);
@@ -199,7 +202,10 @@ private loadFileFromPath(filePath: string): ArrayBuffer {
     fs.closeSync(file);
     return buffer;
   } catch (err) {
-    hilog.error(0x0000, 'testTag', "mkdir failed with error message: ", err.message, ", error code: ", err.code);
+    let code = (error as BusinessError).code;
+    let message = (error as BusinessError).message;
+    hilog.error(0x0000, 'testTag',
+      `loadFileFromPath : get file failed, error code: ${code}, message: ${message}.`);
     return new ArrayBuffer(0);
   }
 }

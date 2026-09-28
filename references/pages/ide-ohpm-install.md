@@ -61,7 +61,9 @@ Options
 
 别名：all
 
-可以在 install 命令后面配置 --all或者--install_all 参数，安装您项目下所有模块在其 oh-package.json5 中配置的全部依赖项。
+可以在install命令后面不配置参数、配置--all或者--install_all 参数，安装您项目下所有模块在其oh-package.json5中配置的全部依赖项。
+
+从ohpm 26.0.0.630版本开始，如无需安装，可配置--no-install_all参数。
 
 [h2]save-dynamic
 
@@ -93,7 +95,7 @@ Options
 
 类型：Boolean
 
-可以在 install 命令后面配置 --no-save 参数，安装的三方库信息将不会写入 oh-package.json5 文件中。
+可以在install命令后面配置--no-save参数，安装的三方库信息将不会写入 oh-package.json5 文件中。不配置参数时，安装的三方库信息将写入oh-package.json5文件中。
 
 [h2]prefix
 
@@ -137,7 +139,9 @@ Options
 
 类型：Boolean
 
-可以在 install 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
+在install命令后面不配置参数、配置--strict_ssl或--strict_ssl true参数时，开启校验HTTPS证书。
+
+从ohpm 26.0.0.630版本开始，如需关闭校验，可配置--no-strict_ssl或--strict_ssl false参数，推荐使用--no-strict_ssl参数。
 
 [h2]max_concurrent
 
@@ -183,7 +187,7 @@ Options
 
 类型：string
 
-可以在 install 命令后面配置 --target_path <string> 参数，用来指定在特定目标产物target语境下各模块的依赖配置文件（oh-package.json5）的路径。在执行ohpm install时，ohpm会优先安装<target_path>/<moduleName>/oh-package.json5文件中依赖。详情参见target_path。
+可以在 install 命令后面配置 --target_path <string> 参数，用来指定在特定目标产物target语境下各模块的依赖配置文件（oh-package.json5）的路径。在执行ohpm install时，ohpm会优先安装<target_path>/<moduleName>/oh-package.json5文件中的依赖。详情参见target_path。
 
 [h2]log_level
 
@@ -239,7 +243,9 @@ Options
 
 类型：Boolean
 
-从ohpm 6.0.2.636版本开始，可以在 install 命令后面配置 --resolve_conflict 参数，ohpm会自动处理依赖版本冲突，详情参见resolve_conflict。
+从ohpm 6.0.2.636版本开始，可以在 install 命令后面不配置参数或配置--resolve_conflict参数，ohpm会自动处理依赖版本冲突，详情参见resolve_conflict。
+
+从ohpm 26.0.0.630版本开始，如无需自动处理时，配置--no-resolve_conflict参数。
 
 [h2]cache
 
@@ -264,6 +270,14 @@ Options
 类型：Boolean
 
 从ohpm 26.0.0.410版本开始，可以在 install 命令后面配置 --metadata_cache 参数，设置是否读取oh-install-meta.json5文件内的缓存元数据和~/.ohpm/cache/metadata下的元数据缓存文件，详情参见metadata_cache。
+
+[h2]symlink_for_local_dep
+
+默认值：false
+
+类型：Boolean
+
+从ohpm 26.0.0.630版本开始，可以在install命令后面配置--symlink_for_local_dep参数，设置后会对本地HAR依赖解压后的路径，创建软链接。详情参见symlink_for_local_dep。
 
 示例
 

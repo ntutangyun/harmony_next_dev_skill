@@ -21,3 +21,5 @@ HAP转HAR指导
 应用程序包集成bin文件（PC/2in1）
 
 Native侧跨HAR/HSP模块接口调用
+
+开发与使用应用插件（PC/2in1）

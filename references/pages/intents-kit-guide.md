@@ -20,4 +20,6 @@ Intents Kit接入流程
 
 常见问题
 
+Intents Kit术语
+
 附录A：获取华为账号对应UID的方式

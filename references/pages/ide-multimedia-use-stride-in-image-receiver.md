@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-multimedia-use-stride-in-image-receiver_
 
-在使用ImageReceiver组件中readNextImage接口时，建议设置且调用rowStride属性，避免出现相机获取预览流数据异常的问题。
+在使用ImageReceiver组件中readNextImage接口时，建议调用rowStride属性，避免出现相机获取预览流数据异常的问题。
 
 规则配置
 

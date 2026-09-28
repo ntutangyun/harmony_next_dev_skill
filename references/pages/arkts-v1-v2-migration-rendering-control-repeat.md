@@ -23,7 +23,7 @@ V1的@Observed替换成@ObservedV2+@Trace进行深度观测。
 直接把ForEach的循环结构替换成Repeat结构。
 
 @ObservedV2
-class ArticleChangeChild {
+export class ArticleChangeChild {
   public id: string;
   public title: string;
   public brief: string;
@@ -41,7 +41,7 @@ class ArticleChangeChild {
 
 @Entry
 @ComponentV2
-struct ArticleListChangeView {
+export struct ArticleListChangeView {
   @Local articleList: Array<ArticleChangeChild> = [
     new ArticleChangeChild('001', 'Article 0', 'Abstract', false, 100),
     new ArticleChangeChild('002', 'Article 1', 'Abstract', false, 100),
@@ -70,7 +70,7 @@ struct ArticleListChangeView {
 }
 
 @ComponentV2
-struct ArticleCardChangeChild {
+export struct ArticleCardChangeChild {
   @Require @Param article: ArticleChangeChild;
 
   handleLiked() {
@@ -96,8 +96,8 @@ struct ArticleCardChangeChild {
           .margin({ bottom: 8 })
 
         Row() {
-          // 此处app.media.iconLiked'，'app.media.iconUnLiked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnLiked'))
+          // 此处'app.media.iconLiked'，'app.media.iconUnliked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnliked'))
             .width(24)
             .height(24)
             .margin({ right: 8 })
@@ -132,9 +132,14 @@ LazyForEach根据数据源循环渲染子组件。
 
 示例1 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码。
+import { BasicDataSource } from './BasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class MyDataSource extends BasicDataSource {
   private dataArray: string[] = [];
 
   public totalCount(): number {
@@ -153,7 +158,7 @@ class MyDataSource extends BasicDataSource {
 
 @Entry
 @Component
-struct MyComponent {
+export struct MyComponent {
   private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
@@ -169,7 +174,7 @@ struct MyComponent {
           Row() {
             Text(item).fontSize(50)
               .onAppear(() => {
-                console.info(`appear: ${item}`);
+                hilog.info(DOMAIN, TAG, `appear: ${item}`);
               })
           }.margin({ left: 10, right: 10 })
         }
@@ -283,9 +288,13 @@ Repeat(data)
 
 示例1 - 迁移后
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
 @Entry
 @ComponentV2 // 使用状态管理V2
-struct MyComponent {
+export struct MyComponent {
   @Local data: Array<string> = []; // 数据源为状态管理V2装饰的数组
 
   aboutToAppear() {
@@ -302,7 +311,7 @@ struct MyComponent {
             Row() {
               Text(repeatItem.item).fontSize(50)
                 .onAppear(() => {
-                  console.info(`appear: ${repeatItem.item}`);
+                  hilog.info(DOMAIN, TAG, `appear: ${repeatItem.item}`);
                 })
             }.margin({ left: 10, right: 10 })
           }
@@ -325,9 +334,14 @@ LazyForEach示例
 
 示例2 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码。
+import { BasicDataSource } from './BasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class MyDataSource extends BasicDataSource {
   private dataArray: string[] = [];
 
   public totalCount(): number {
@@ -367,7 +381,7 @@ class MyDataSource extends BasicDataSource {
   // 修改多个数据
   public modifyAllData(): void {
     this.dataArray = this.dataArray.map((item: string) => {
-        return 'Changed ' + item;
+      return 'Changed ' + item;
     });
     this.notifyDataReload();
   }
@@ -375,7 +389,7 @@ class MyDataSource extends BasicDataSource {
 
 @Entry
 @Component
-struct MyComponent {
+export struct MyComponent {
   private data: MyDataSource = new MyDataSource();
   private count: number = 0;
 
@@ -452,7 +466,7 @@ struct MyComponent {
 class MyDataSource implements IDataSource {
   private dataArray: string[] = [];
 
-  public changeData(index: number, newData: string): void {
+  public changeData(index: number, data: string): void {
     this.dataArray.splice(index, 1, data);
     this.notifyDataChange(index);
   }
@@ -473,7 +487,7 @@ this.data.splice(index, 1, data);
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: Array<string> = [];
   private count: number = 0;
 
@@ -493,9 +507,11 @@ struct MyComponent {
         .onClick(() => { this.data.splice(0, 1); })
       // 点击交换子组件
       Button('Swap item 0 and item 1')
-        .onClick(() => { let temp: string = this.data[0];
-                         this.data[0] = this.data[1];
-                         this.data[1] = temp; })
+        .onClick(() => {
+          let temp: string = this.data[0];
+          this.data[0] = this.data[1];
+          this.data[1] = temp;
+          })
       // 点击修改单个子组件
       Button('Change item 0')
         .onClick(() => { this.data.splice(0, 1, `Changed item ${this.count++}`); })
@@ -530,9 +546,22 @@ LazyForEach可以使用@Observed与@ObjectLink装饰器实现对数据子属性�
 
 示例3 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
 
-class MyDataSource extends BasicDataSource {
+@Observed
+export class StringData {
+  public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -549,18 +578,9 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-@Observed
-class StringData {
-  message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @Component
-struct MyComponent {
+export struct MyComponent {
   private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
@@ -584,14 +604,14 @@ struct MyComponent {
 }
 
 @Component
-struct ChildComponent {
+export struct ChildComponent {
   @ObjectLink data: StringData;
 
   build() {
     Row() {
       Text(this.data.message).fontSize(50)
         .onAppear(() => {
-          console.info(`appear: ${this.data.message}`);
+          hilog.info(DOMAIN, TAG, `appear: ${this.data.message}`);
         })
     }.margin({ left: 10, right: 10 })
   }
@@ -599,15 +619,19 @@ struct ChildComponent {
 
 迁移Repeat
 
-Repeat需要和状态管理V2一起使用，状态管理V2提供了@ObservedV2和@Trace装饰器对子属性进行深度观测。迁移时，需要将@Observe和@ObjectLink装饰器迁移至@ObserveV2和@Trace装饰器。
+Repeat需要和状态管理V2一起使用，状态管理V2提供了@ObservedV2和@Trace装饰器对子属性进行深度观测。迁移时，需要将@Observed和@ObjectLink装饰器迁移至@ObservedV2和@Trace装饰器。
 
 迁移后的示例如下所示。
 
 示例3 - 迁移后
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
 @ObservedV2
-class StringData {
-  @Trace message: string; // 观测子属性
+export class StringData {
+  @Trace public message: string; // 观测子属性
 
   constructor(message: string) {
     this.message = message;
@@ -616,7 +640,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -632,7 +656,7 @@ struct MyComponent {
           ListItem() {
             Text(repeatItem.item.message).fontSize(50)
               .onAppear(() => {
-                console.info(`appear: ${repeatItem.item.message}`);
+                hilog.info(DOMAIN, TAG, `appear: ${repeatItem.item.message}`);
               })
           }
           .onClick(() => {
@@ -657,9 +681,19 @@ LazyForEach示例
 
 示例4 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+@ObservedV2
+export class StringData {
+  @Trace public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -676,19 +710,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-@ObservedV2
-class StringData {
-  @Trace message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 20; i++) {
@@ -715,7 +740,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Local message: string = '?';
 
   build() {
@@ -738,8 +763,8 @@ Repeat本身支持与状态管理V2联合使用，将LazyForEach相关代码修�
 示例4 - 迁移后
 
 @ObservedV2
-class StringData {
-  @Trace message: string;
+export class StringData {
+  @Trace public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -748,7 +773,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -779,7 +804,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Local message: string = '?';
 
   build() {
@@ -805,9 +830,19 @@ LazyForEach示例
 
 示例5 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+@ObservedV2
+export class StringData {
+  @Trace public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -824,19 +859,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-@ObservedV2
-class StringData {
-  @Trace message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 20; i++) {
@@ -859,7 +885,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Param @Require data: string = ''; // 接收来自外部的变量
 
   build() {
@@ -878,8 +904,8 @@ Repeat本身支持与状态管理V2联合使用，将LazyForEach相关代码修�
 示例5 - 迁移后
 
 @ObservedV2
-class StringData {
-  @Trace message: string;
+export class StringData {
+  @Trace public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -888,7 +914,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -915,7 +941,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Param @Require data: string = ''; // 接收来自外部的变量
 
   build() {
@@ -937,9 +963,14 @@ LazyForEach的onMove属性提供了拖拽排序能力。
 
 示例6 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码。
+import { BasicDataSource } from './BasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class MyDataSource extends BasicDataSource {
   private dataArray: string[] = [];
 
   public totalCount(): number {
@@ -963,7 +994,7 @@ class MyDataSource extends BasicDataSource {
 
 @Entry
 @Component
-struct Parent {
+export struct Parent {
   private data: MyDataSource = new MyDataSource();
 
   aboutToAppear(): void {
@@ -977,7 +1008,7 @@ struct Parent {
       List() {
         LazyForEach(this.data, (item: string) => {
           ListItem() {
-            Text(item.toString())
+            Text(item)
               .fontSize(16)
               .textAlign(TextAlign.Center)
               .size({ height: 100, width: '100%' })
@@ -985,9 +1016,9 @@ struct Parent {
           .borderRadius(10)
           .backgroundColor('#FFFFFFFF')
         }, (item: string) => item)
-          .onMove((from: number, to: number) => { // 实现拖拽排序
-            this.data.moveDataWithoutNotify(from, to);
-          })
+        .onMove((from: number, to: number) => { // 实现拖拽排序
+          this.data.moveDataWithoutNotify(from, to);
+        })
       }
       .width('100%')
       .height('100%')
@@ -1006,7 +1037,7 @@ Repeat具有与LazyForEach相同的onMove属性。将LazyForEach相关代码修�
 
 @Entry
 @ComponentV2
-struct Parent {
+export struct Parent {
   @Local data: string[] = [];
 
   aboutToAppear(): void {
@@ -1059,9 +1090,21 @@ LazyForEach自身并不具备组件复用能力，为实现组件复用，需要
 
 示例7 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
 
-class MyDataSource extends BasicDataSource {
+export class StringData {
+  public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -1078,18 +1121,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-class StringData {
-  message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @Component
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 30; i++) {
@@ -1103,7 +1138,7 @@ struct MyComponent {
         ListItem() {
           ChildComponent({ data: item })
             .onAppear(() => {
-              console.info(`onAppear: ${item.message}`);
+              hilog.info(DOMAIN, TAG, `onAppear: ${item.message}`);
             })
         }
       }, (item: StringData, index: number) => index.toString())
@@ -1113,21 +1148,21 @@ struct MyComponent {
 
 @Reusable
 @Component
-struct ChildComponent {
+export struct ChildComponent {
   @State data: StringData = new StringData('');
 
   aboutToAppear(): void {
-    console.info(`aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToRecycle: ${this.data.message}`);
   }
 
   // 对复用的组件进行数据更新
   aboutToReuse(params: Record<string, ESObject>): void {
     this.data = params.data as StringData;
-    console.info(`aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -1153,8 +1188,12 @@ Repeat本身具备复用能力，且默认开启。将LazyForEach相关代码迁
 
 修改后的示例如下。
 
-class StringData {
-  message: string;
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class StringData {
+  public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -1163,7 +1202,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -1194,8 +1233,12 @@ struct MyComponent {
 
 使用@ReusableV2装饰器的迁移示例如下所示。
 
-class StringData {
-  message: string;
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class StringData {
+  public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -1204,7 +1247,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -1220,7 +1263,7 @@ struct MyComponent {
           ListItem() {
             ChildComponent({ data: repeatItem.item })
               .onAppear(() => {
-                console.info(`onAppear: ${repeatItem.item.message}`);
+                hilog.info(DOMAIN, TAG, `onAppear: ${repeatItem.item.message}`);
               })
           }
         })
@@ -1233,19 +1276,19 @@ struct MyComponent {
 // 使用@ReusableV2实现组件复用（API 18）
 @ReusableV2
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Param data: StringData = new StringData('');
 
   aboutToAppear(): void {
-    console.info(`aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(): void {
-    console.info(`aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -1267,9 +1310,31 @@ LazyForEach自身并不具备模板渲染能力。为实现模板渲染能力，
 
 示例8 - 迁移前
 
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
 
-class MyDataSource extends BasicDataSource {
+export class StringData {
+  public message: string;
+  public type: number;
+
+  constructor(message: string, type: number) {
+    this.message = message;
+    this.type = type;
+  }
+
+  getType(): number {
+    if (this.type >= 1) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -1286,28 +1351,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-class StringData {
-  message: string;
-  type: number;
-
-  constructor(message: string, type: number) {
-    this.message = message;
-    this.type = type;
-  }
-
-  getType(): number {
-    if (this.type >= 1) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-}
-
 @Entry
 @Component
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 200; i++) {
@@ -1324,13 +1371,13 @@ struct MyComponent {
             // 模板A
             ChildComponentA({ data: item })
               .onAppear(() => {
-                console.info(`type A onAppear: ${item.message}`);
+                hilog.info(DOMAIN, TAG, `type A onAppear: ${item.message}`);
               })
           } else {
             // 模板B
             ChildComponentB({ data: item })
               .onAppear(() => {
-                console.info(`type B onAppear: ${item.message}`);
+                hilog.info(DOMAIN, TAG, `type B onAppear: ${item.message}`);
               })
           }
         }
@@ -1342,20 +1389,20 @@ struct MyComponent {
 // 使用@Reusable实现组件复用
 @Reusable
 @Component
-struct ChildComponentA {
+export struct ChildComponentA {
   @State data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type A aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type A aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(params: Record<string, ESObject>): void {
     this.data = params.data as StringData;
-    console.info(`type A aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -1368,20 +1415,20 @@ struct ChildComponentA {
 
 @Reusable
 @Component
-struct ChildComponentB {
+export struct ChildComponentB {
   @State data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type B aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type B aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(params: Record<string, ESObject>): void {
     this.data = params.data as StringData;
-    console.info(`type B aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -1400,9 +1447,9 @@ Repeat本身具备模板渲染能力，开发者可以通过templateId方法为�
 
 示例8 - 迁移方案1：使用Repeat自身的模板渲染能力
 
-class StringData {
-  message: string;
-  type: number;
+export class StringData {
+  public message: string;
+  public type: number;
 
   constructor(message: string, type: number) {
     this.message = message;
@@ -1420,8 +1467,8 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: StringData[] = [];
+export struct MyComponent {
+  @Local data: StringData[] = [];
 
   aboutToAppear() {
     for (let i = 0; i <= 200; i++) {
@@ -1468,9 +1515,13 @@ struct MyComponent {
 
 示例8 - 迁移方案2：由开发者实现模板渲染能力
 
-class StringData {
-  message: string;
-  type: number;
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class StringData {
+  public message: string;
+  public type: number;
 
   constructor(message: string, type: number) {
     this.message = message;
@@ -1488,8 +1539,8 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: StringData[] = [];
+export struct MyComponent {
+  @Local data: StringData[] = [];
 
   aboutToAppear() {
     for (let i = 0; i <= 200; i++) {
@@ -1506,12 +1557,12 @@ struct MyComponent {
             if (repeatItem.item.getType() == 0) {
               ChildComponentA({ data: repeatItem.item }) // 模板A
                 .onAppear(() => {
-                  console.info(`type A onAppear: ${repeatItem.item.message}`);
+                  hilog.info(DOMAIN, TAG, `type A onAppear: ${repeatItem.item.message}`);
                 })
             } else {
               ChildComponentB({ data: repeatItem.item }) // 模板B
                 .onAppear(() => {
-                  console.info(`type B onAppear: ${repeatItem.item.message}`);
+                  hilog.info(DOMAIN, TAG, `type B onAppear: ${repeatItem.item.message}`);
                 })
             }
           }
@@ -1525,19 +1576,19 @@ struct MyComponent {
 // 使用@ReusableV2实现组件复用（API version 18开始支持使用）
 @ReusableV2
 @ComponentV2
-struct ChildComponentA {
+export struct ChildComponentA {
   @Param data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type A aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type A aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(): void {
-    console.info(`type A aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -1550,19 +1601,19 @@ struct ChildComponentA {
 
 @ReusableV2
 @ComponentV2
-struct ChildComponentB {
+export struct ChildComponentB {
   @Param data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type B aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type B aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(): void {
-    console.info(`type B aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -1579,8 +1630,12 @@ BasicDataSource示例代码
 
 [h2]string类型数组的BasicDataSource代码
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
 // BasicDataSource实现了IDataSource接口，用于管理listener监听，以及通知LazyForEach数据更新
-class BasicDataSource implements IDataSource {
+export class BasicDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private originDataArray: string[] = [];
 
@@ -1595,7 +1650,7 @@ class BasicDataSource implements IDataSource {
   // 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
-      console.info('add listener');
+      hilog.info(DOMAIN, TAG, 'add listener');
       this.listeners.push(listener);
     }
   }
@@ -1604,7 +1659,7 @@ class BasicDataSource implements IDataSource {
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
     if (pos >= 0) {
-      console.info('remove listener');
+      hilog.info(DOMAIN, TAG, 'remove listener');
       this.listeners.splice(pos, 1);
     }
   }
@@ -1656,59 +1711,65 @@ class BasicDataSource implements IDataSource {
   }
 }
 
-[h2]StringData类型数组的BasicDataSource代码
+[h2]GenericBasicDataSource示例代码
 
-class BasicDataSource implements IDataSource {
+// GenericBasicDataSource实现了IDataSource接口，用于管理listener监听，以及通知LazyForEach数据更新
+export class GenericBasicDataSource<T> implements IDataSource {
   private listeners: DataChangeListener[] = [];
-  private originDataArray: StringData[] = [];
+  private originDataArray: T[] = [];
 
   public totalCount(): number {
     return this.originDataArray.length;
   }
 
-  public getData(index: number): StringData {
+  public getData(index: number): T {
     return this.originDataArray[index];
   }
 
+  // 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
-      console.info('add listener');
       this.listeners.push(listener);
     }
   }
 
+  // 该方法为框架侧调用，为对应的LazyForEach组件在数据源处去除listener监听
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
     if (pos >= 0) {
-      console.info('remove listener');
       this.listeners.splice(pos, 1);
     }
   }
 
+  // 通知LazyForEach组件需要重载所有子组件
   notifyDataReload(): void {
     this.listeners.forEach(listener => {
       listener.onDataReloaded();
     });
   }
 
+  // 通知LazyForEach组件需要在index对应索引处添加子组件
   notifyDataAdd(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataAdd(index);
     });
   }
 
+  // 通知LazyForEach组件在index对应索引处数据有变化，需要重建该子组件
   notifyDataChange(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataChange(index);
     });
   }
 
+  // 通知LazyForEach组件需要在index对应索引处删除该子组件
   notifyDataDelete(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataDelete(index);
     });
   }
 
+  // 通知LazyForEach组件将from索引和to索引处的子组件进行交换
   notifyDataMove(from: number, to: number): void {
     this.listeners.forEach(listener => {
       listener.onDataMove(from, to);
@@ -1728,7 +1789,7 @@ class BasicDataSource implements IDataSource {
 
 ```
 @ObservedV2
-class ArticleChangeChild {
+export class ArticleChangeChild {
   public id: string;
   public title: string;
   public brief: string;
@@ -1746,7 +1807,7 @@ class ArticleChangeChild {
 
 @Entry
 @ComponentV2
-struct ArticleListChangeView {
+export struct ArticleListChangeView {
   @Local articleList: Array<ArticleChangeChild> = [
     new ArticleChangeChild('001', 'Article 0', 'Abstract', false, 100),
     new ArticleChangeChild('002', 'Article 1', 'Abstract', false, 100),
@@ -1775,7 +1836,7 @@ struct ArticleListChangeView {
 }
 
 @ComponentV2
-struct ArticleCardChangeChild {
+export struct ArticleCardChangeChild {
   @Require @Param article: ArticleChangeChild;
 
   handleLiked() {
@@ -1801,8 +1862,8 @@ struct ArticleCardChangeChild {
           .margin({ bottom: 8 })
 
         Row() {
-          // 此处app.media.iconLiked'，'app.media.iconUnLiked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnLiked'))
+          // 此处'app.media.iconLiked'，'app.media.iconUnliked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnliked'))
             .width(24)
             .height(24)
             .margin({ right: 8 })
@@ -1829,9 +1890,14 @@ struct ArticleCardChangeChild {
 ### Code block 2
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码。
+import { BasicDataSource } from './BasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class MyDataSource extends BasicDataSource {
   private dataArray: string[] = [];
 
   public totalCount(): number {
@@ -1850,7 +1916,7 @@ class MyDataSource extends BasicDataSource {
 
 @Entry
 @Component
-struct MyComponent {
+export struct MyComponent {
   private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
@@ -1866,7 +1932,7 @@ struct MyComponent {
           Row() {
             Text(item).fontSize(50)
               .onAppear(() => {
-                console.info(`appear: ${item}`);
+                hilog.info(DOMAIN, TAG, `appear: ${item}`);
               })
           }.margin({ left: 10, right: 10 })
         }
@@ -1966,9 +2032,13 @@ Repeat(data)
 ### Code block 7
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
 @Entry
 @ComponentV2 // 使用状态管理V2
-struct MyComponent {
+export struct MyComponent {
   @Local data: Array<string> = []; // 数据源为状态管理V2装饰的数组
 
   aboutToAppear() {
@@ -1985,7 +2055,7 @@ struct MyComponent {
             Row() {
               Text(repeatItem.item).fontSize(50)
                 .onAppear(() => {
-                  console.info(`appear: ${repeatItem.item}`);
+                  hilog.info(DOMAIN, TAG, `appear: ${repeatItem.item}`);
                 })
             }.margin({ left: 10, right: 10 })
           }
@@ -2000,9 +2070,14 @@ struct MyComponent {
 ### Code block 8
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码。
+import { BasicDataSource } from './BasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class MyDataSource extends BasicDataSource {
   private dataArray: string[] = [];
 
   public totalCount(): number {
@@ -2042,7 +2117,7 @@ class MyDataSource extends BasicDataSource {
   // 修改多个数据
   public modifyAllData(): void {
     this.dataArray = this.dataArray.map((item: string) => {
-        return 'Changed ' + item;
+      return 'Changed ' + item;
     });
     this.notifyDataReload();
   }
@@ -2050,7 +2125,7 @@ class MyDataSource extends BasicDataSource {
 
 @Entry
 @Component
-struct MyComponent {
+export struct MyComponent {
   private data: MyDataSource = new MyDataSource();
   private count: number = 0;
 
@@ -2109,7 +2184,7 @@ struct MyComponent {
 class MyDataSource implements IDataSource {
   private dataArray: string[] = [];
 
-  public changeData(index: number, newData: string): void {
+  public changeData(index: number, data: string): void {
     this.dataArray.splice(index, 1, data);
     this.notifyDataChange(index);
   }
@@ -2126,7 +2201,7 @@ this.data.splice(index, 1, data);
 ```
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: Array<string> = [];
   private count: number = 0;
 
@@ -2146,9 +2221,11 @@ struct MyComponent {
         .onClick(() => { this.data.splice(0, 1); })
       // 点击交换子组件
       Button('Swap item 0 and item 1')
-        .onClick(() => { let temp: string = this.data[0];
-                         this.data[0] = this.data[1];
-                         this.data[1] = temp; })
+        .onClick(() => {
+          let temp: string = this.data[0];
+          this.data[0] = this.data[1];
+          this.data[1] = temp;
+          })
       // 点击修改单个子组件
       Button('Change item 0')
         .onClick(() => { this.data.splice(0, 1, `Changed item ${this.count++}`); })
@@ -2175,9 +2252,22 @@ struct MyComponent {
 ### Code block 11
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
 
-class MyDataSource extends BasicDataSource {
+@Observed
+export class StringData {
+  public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -2194,18 +2284,9 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-@Observed
-class StringData {
-  message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @Component
-struct MyComponent {
+export struct MyComponent {
   private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
@@ -2229,14 +2310,14 @@ struct MyComponent {
 }
 
 @Component
-struct ChildComponent {
+export struct ChildComponent {
   @ObjectLink data: StringData;
 
   build() {
     Row() {
       Text(this.data.message).fontSize(50)
         .onAppear(() => {
-          console.info(`appear: ${this.data.message}`);
+          hilog.info(DOMAIN, TAG, `appear: ${this.data.message}`);
         })
     }.margin({ left: 10, right: 10 })
   }
@@ -2246,9 +2327,13 @@ struct ChildComponent {
 ### Code block 12
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
 @ObservedV2
-class StringData {
-  @Trace message: string; // 观测子属性
+export class StringData {
+  @Trace public message: string; // 观测子属性
 
   constructor(message: string) {
     this.message = message;
@@ -2257,7 +2342,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -2273,7 +2358,7 @@ struct MyComponent {
           ListItem() {
             Text(repeatItem.item.message).fontSize(50)
               .onAppear(() => {
-                console.info(`appear: ${repeatItem.item.message}`);
+                hilog.info(DOMAIN, TAG, `appear: ${repeatItem.item.message}`);
               })
           }
           .onClick(() => {
@@ -2290,9 +2375,19 @@ struct MyComponent {
 ### Code block 13
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+@ObservedV2
+export class StringData {
+  @Trace public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -2309,19 +2404,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-@ObservedV2
-class StringData {
-  @Trace message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 20; i++) {
@@ -2348,7 +2434,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Local message: string = '?';
 
   build() {
@@ -2367,8 +2453,8 @@ struct ChildComponent {
 
 ```
 @ObservedV2
-class StringData {
-  @Trace message: string;
+export class StringData {
+  @Trace public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -2377,7 +2463,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -2408,7 +2494,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Local message: string = '?';
 
   build() {
@@ -2426,9 +2512,19 @@ struct ChildComponent {
 ### Code block 15
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+@ObservedV2
+export class StringData {
+  @Trace public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -2445,19 +2541,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-@ObservedV2
-class StringData {
-  @Trace message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 20; i++) {
@@ -2480,7 +2567,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Param @Require data: string = ''; // 接收来自外部的变量
 
   build() {
@@ -2495,8 +2582,8 @@ struct ChildComponent {
 
 ```
 @ObservedV2
-class StringData {
-  @Trace message: string;
+export class StringData {
+  @Trace public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -2505,7 +2592,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -2532,7 +2619,7 @@ struct MyComponent {
 }
 
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Param @Require data: string = ''; // 接收来自外部的变量
 
   build() {
@@ -2546,9 +2633,14 @@ struct ChildComponent {
 ### Code block 17
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码。
+import { BasicDataSource } from './BasicDataSource';
 
-class MyDataSource extends BasicDataSource {
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class MyDataSource extends BasicDataSource {
   private dataArray: string[] = [];
 
   public totalCount(): number {
@@ -2572,7 +2664,7 @@ class MyDataSource extends BasicDataSource {
 
 @Entry
 @Component
-struct Parent {
+export struct Parent {
   private data: MyDataSource = new MyDataSource();
 
   aboutToAppear(): void {
@@ -2586,7 +2678,7 @@ struct Parent {
       List() {
         LazyForEach(this.data, (item: string) => {
           ListItem() {
-            Text(item.toString())
+            Text(item)
               .fontSize(16)
               .textAlign(TextAlign.Center)
               .size({ height: 100, width: '100%' })
@@ -2594,9 +2686,9 @@ struct Parent {
           .borderRadius(10)
           .backgroundColor('#FFFFFFFF')
         }, (item: string) => item)
-          .onMove((from: number, to: number) => { // 实现拖拽排序
-            this.data.moveDataWithoutNotify(from, to);
-          })
+        .onMove((from: number, to: number) => { // 实现拖拽排序
+          this.data.moveDataWithoutNotify(from, to);
+        })
       }
       .width('100%')
       .height('100%')
@@ -2611,7 +2703,7 @@ struct Parent {
 ```
 @Entry
 @ComponentV2
-struct Parent {
+export struct Parent {
   @Local data: string[] = [];
 
   aboutToAppear(): void {
@@ -2656,9 +2748,21 @@ struct Parent {
 ### Code block 19
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
 
-class MyDataSource extends BasicDataSource {
+export class StringData {
+  public message: string;
+
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -2675,18 +2779,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-class StringData {
-  message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
 @Entry
 @Component
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 30; i++) {
@@ -2700,7 +2796,7 @@ struct MyComponent {
         ListItem() {
           ChildComponent({ data: item })
             .onAppear(() => {
-              console.info(`onAppear: ${item.message}`);
+              hilog.info(DOMAIN, TAG, `onAppear: ${item.message}`);
             })
         }
       }, (item: StringData, index: number) => index.toString())
@@ -2710,21 +2806,21 @@ struct MyComponent {
 
 @Reusable
 @Component
-struct ChildComponent {
+export struct ChildComponent {
   @State data: StringData = new StringData('');
 
   aboutToAppear(): void {
-    console.info(`aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToRecycle: ${this.data.message}`);
   }
 
   // 对复用的组件进行数据更新
   aboutToReuse(params: Record<string, ESObject>): void {
     this.data = params.data as StringData;
-    console.info(`aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -2738,8 +2834,12 @@ struct ChildComponent {
 ### Code block 20
 
 ```
-class StringData {
-  message: string;
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class StringData {
+  public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -2748,7 +2848,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -2775,8 +2875,12 @@ struct MyComponent {
 ### Code block 21
 
 ```
-class StringData {
-  message: string;
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class StringData {
+  public message: string;
 
   constructor(message: string) {
     this.message = message;
@@ -2785,7 +2889,7 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
+export struct MyComponent {
   @Local data: StringData[] = [];
 
   aboutToAppear() {
@@ -2801,7 +2905,7 @@ struct MyComponent {
           ListItem() {
             ChildComponent({ data: repeatItem.item })
               .onAppear(() => {
-                console.info(`onAppear: ${repeatItem.item.message}`);
+                hilog.info(DOMAIN, TAG, `onAppear: ${repeatItem.item.message}`);
               })
           }
         })
@@ -2814,19 +2918,19 @@ struct MyComponent {
 // 使用@ReusableV2实现组件复用（API 18）
 @ReusableV2
 @ComponentV2
-struct ChildComponent {
+export struct ChildComponent {
   @Param data: StringData = new StringData('');
 
   aboutToAppear(): void {
-    console.info(`aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(): void {
-    console.info(`aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -2840,9 +2944,31 @@ struct ChildComponent {
 ### Code block 22
 
 ```
-/* BasicDataSource代码见文档末尾BasicDataSource示例代码: StringData类型数组的BasicDataSource代码 */
+import { hilog } from '@kit.PerformanceAnalysisKit';
+// GenericBasicDataSource代码见文档末尾GenericBasicDataSource示例代码。
+import { GenericBasicDataSource } from './GenericBasicDataSource';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
 
-class MyDataSource extends BasicDataSource {
+export class StringData {
+  public message: string;
+  public type: number;
+
+  constructor(message: string, type: number) {
+    this.message = message;
+    this.type = type;
+  }
+
+  getType(): number {
+    if (this.type >= 1) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+}
+
+export class MyDataSource extends GenericBasicDataSource<StringData> {
   private dataArray: StringData[] = [];
 
   public totalCount(): number {
@@ -2859,28 +2985,10 @@ class MyDataSource extends BasicDataSource {
   }
 }
 
-class StringData {
-  message: string;
-  type: number;
-
-  constructor(message: string, type: number) {
-    this.message = message;
-    this.type = type;
-  }
-
-  getType(): number {
-    if (this.type >= 1) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-}
-
 @Entry
 @Component
-struct MyComponent {
-  data: MyDataSource = new MyDataSource();
+export struct MyComponent {
+  private data: MyDataSource = new MyDataSource();
 
   aboutToAppear() {
     for (let i = 0; i <= 200; i++) {
@@ -2897,13 +3005,13 @@ struct MyComponent {
             // 模板A
             ChildComponentA({ data: item })
               .onAppear(() => {
-                console.info(`type A onAppear: ${item.message}`);
+                hilog.info(DOMAIN, TAG, `type A onAppear: ${item.message}`);
               })
           } else {
             // 模板B
             ChildComponentB({ data: item })
               .onAppear(() => {
-                console.info(`type B onAppear: ${item.message}`);
+                hilog.info(DOMAIN, TAG, `type B onAppear: ${item.message}`);
               })
           }
         }
@@ -2915,20 +3023,20 @@ struct MyComponent {
 // 使用@Reusable实现组件复用
 @Reusable
 @Component
-struct ChildComponentA {
+export struct ChildComponentA {
   @State data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type A aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type A aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(params: Record<string, ESObject>): void {
     this.data = params.data as StringData;
-    console.info(`type A aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -2941,20 +3049,20 @@ struct ChildComponentA {
 
 @Reusable
 @Component
-struct ChildComponentB {
+export struct ChildComponentB {
   @State data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type B aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type B aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(params: Record<string, ESObject>): void {
     this.data = params.data as StringData;
-    console.info(`type B aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -2969,9 +3077,9 @@ struct ChildComponentB {
 ### Code block 23
 
 ```
-class StringData {
-  message: string;
-  type: number;
+export class StringData {
+  public message: string;
+  public type: number;
 
   constructor(message: string, type: number) {
     this.message = message;
@@ -2989,8 +3097,8 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: StringData[] = [];
+export struct MyComponent {
+  @Local data: StringData[] = [];
 
   aboutToAppear() {
     for (let i = 0; i <= 200; i++) {
@@ -3039,9 +3147,13 @@ struct MyComponent {
 ### Code block 24
 
 ```
-class StringData {
-  message: string;
-  type: number;
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
+export class StringData {
+  public message: string;
+  public type: number;
 
   constructor(message: string, type: number) {
     this.message = message;
@@ -3059,8 +3171,8 @@ class StringData {
 
 @Entry
 @ComponentV2
-struct MyComponent {
-  data: StringData[] = [];
+export struct MyComponent {
+  @Local data: StringData[] = [];
 
   aboutToAppear() {
     for (let i = 0; i <= 200; i++) {
@@ -3077,12 +3189,12 @@ struct MyComponent {
             if (repeatItem.item.getType() == 0) {
               ChildComponentA({ data: repeatItem.item }) // 模板A
                 .onAppear(() => {
-                  console.info(`type A onAppear: ${repeatItem.item.message}`);
+                  hilog.info(DOMAIN, TAG, `type A onAppear: ${repeatItem.item.message}`);
                 })
             } else {
               ChildComponentB({ data: repeatItem.item }) // 模板B
                 .onAppear(() => {
-                  console.info(`type B onAppear: ${repeatItem.item.message}`);
+                  hilog.info(DOMAIN, TAG, `type B onAppear: ${repeatItem.item.message}`);
                 })
             }
           }
@@ -3096,19 +3208,19 @@ struct MyComponent {
 // 使用@ReusableV2实现组件复用（API version 18开始支持使用）
 @ReusableV2
 @ComponentV2
-struct ChildComponentA {
+export struct ChildComponentA {
   @Param data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type A aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type A aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(): void {
-    console.info(`type A aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type A aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -3121,19 +3233,19 @@ struct ChildComponentA {
 
 @ReusableV2
 @ComponentV2
-struct ChildComponentB {
+export struct ChildComponentB {
   @Param data: StringData = new StringData('', 0);
 
   aboutToAppear(): void {
-    console.info(`type B aboutToAppear: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToAppear: ${this.data.message}`);
   }
 
   aboutToRecycle(): void {
-    console.info(`type B aboutToRecycle: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToRecycle: ${this.data.message}`);
   }
 
   aboutToReuse(): void {
-    console.info(`type B aboutToReuse: ${this.data.message}`);
+    hilog.info(DOMAIN, TAG, `type B aboutToReuse: ${this.data.message}`);
   }
 
   build() {
@@ -3148,8 +3260,12 @@ struct ChildComponentB {
 ### Code block 25
 
 ```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+const TAG = '[Sample_RenderingControl]';
+const DOMAIN = 0xF811;
+
 // BasicDataSource实现了IDataSource接口，用于管理listener监听，以及通知LazyForEach数据更新
-class BasicDataSource implements IDataSource {
+export class BasicDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
   private originDataArray: string[] = [];
 
@@ -3164,7 +3280,7 @@ class BasicDataSource implements IDataSource {
   // 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
-      console.info('add listener');
+      hilog.info(DOMAIN, TAG, 'add listener');
       this.listeners.push(listener);
     }
   }
@@ -3173,7 +3289,7 @@ class BasicDataSource implements IDataSource {
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
     if (pos >= 0) {
-      console.info('remove listener');
+      hilog.info(DOMAIN, TAG, 'remove listener');
       this.listeners.splice(pos, 1);
     }
   }
@@ -3229,57 +3345,63 @@ class BasicDataSource implements IDataSource {
 ### Code block 26
 
 ```
-class BasicDataSource implements IDataSource {
+// GenericBasicDataSource实现了IDataSource接口，用于管理listener监听，以及通知LazyForEach数据更新
+export class GenericBasicDataSource<T> implements IDataSource {
   private listeners: DataChangeListener[] = [];
-  private originDataArray: StringData[] = [];
+  private originDataArray: T[] = [];
 
   public totalCount(): number {
     return this.originDataArray.length;
   }
 
-  public getData(index: number): StringData {
+  public getData(index: number): T {
     return this.originDataArray[index];
   }
 
+  // 该方法为框架侧调用，为LazyForEach组件向其数据源处添加listener监听
   registerDataChangeListener(listener: DataChangeListener): void {
     if (this.listeners.indexOf(listener) < 0) {
-      console.info('add listener');
       this.listeners.push(listener);
     }
   }
 
+  // 该方法为框架侧调用，为对应的LazyForEach组件在数据源处去除listener监听
   unregisterDataChangeListener(listener: DataChangeListener): void {
     const pos = this.listeners.indexOf(listener);
     if (pos >= 0) {
-      console.info('remove listener');
       this.listeners.splice(pos, 1);
     }
   }
 
+  // 通知LazyForEach组件需要重载所有子组件
   notifyDataReload(): void {
     this.listeners.forEach(listener => {
       listener.onDataReloaded();
     });
   }
 
+  // 通知LazyForEach组件需要在index对应索引处添加子组件
   notifyDataAdd(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataAdd(index);
     });
   }
 
+  // 通知LazyForEach组件在index对应索引处数据有变化，需要重建该子组件
   notifyDataChange(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataChange(index);
     });
   }
 
+  // 通知LazyForEach组件需要在index对应索引处删除该子组件
   notifyDataDelete(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataDelete(index);
     });
   }
 
+  // 通知LazyForEach组件将from索引和to索引处的子组件进行交换
   notifyDataMove(from: number, to: number): void {
     this.listeners.forEach(listener => {
       listener.onDataMove(from, to);

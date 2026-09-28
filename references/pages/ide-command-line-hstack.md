@@ -13,30 +13,28 @@ hstack [options]
 options: 可选配置，请参考表hstack命令行配置。
 
 指令	说明
--i/--input	可选，指定工程crash文件归档目录。
+-i/--input	可选，指定工程crash文件归档目录。 从26.0.0版本开始，支持指定crash文件。
 -c/--crash	可选，指定一条crash堆栈。
--o/--output	可选，指定解析结果输出目录（输入指定为-c时， -o参数指定一个输出文件）。
--s/--sourcemapDir	可选，指定工程sourceMap文件归档目录。
---so/--soDir	可选，指定工程shared object文件归档目录。
--n/--nameObfuscation	可选 ，指定工程nameCache文件归档目录。
+-o/--output	可选，指定解析结果输出目录或输出文件。 通过-i指定输入目录时，-o参数指定输出目录。如果不指定，默认输出到-i指定的目录下。通过-i指定输入文件时，-o参数指定输出目录或文件。如果不指定，默认输出到-i所在的文件目录下。通过-c指定输入堆栈时，-o参数指定输出文件。如果不指定，默认输出到控制台。
+-s/--sourcemapDir	可选，指定工程sourceMap文件归档目录。 从26.0.0版本开始，支持指定sourceMap文件。
+--so/--soDir	可选，指定工程shared object文件归档目录。 从26.0.0版本开始，支持指定shared object文件。
+-n/--nameObfuscation	可选 ，指定工程nameCache文件归档目录。 从26.0.0版本开始，支持指定nameCache文件。
 -v/--version	查看hstack版本。
 -h/--help	查询hstack命令行帮助。
 
 说明
 
-crash文件归档目录与crash堆栈必须且只能提供一项。
+crash文件/文件归档目录与crash堆栈必须且只能提供一项。
 
-sourceMap与shared object文件归档目录至少提供一项。
+sourceMap与shared object文件/文件归档目录至少提供一项。
 
 如果需要对方法名进行解析还原，则需要同时提供sourceMap与nameCache文件。
 
 路径参数不支持以下特殊字符：`~!@#$^&*=|{};,\s\[\]<>?~！@#￥……&*（）——|{}【】‘；：。，、？
 
-环境配置
+环境准备
 
 hstack工具在Command Line Tools的bin目录下，需要将bin目录配置到PATH变量中。
-
-本工具依赖Node环境，需要将Node.js配置到环境变量中。
 
 使用示例
 

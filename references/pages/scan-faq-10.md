@@ -25,7 +25,7 @@ export function startCustomScan(viewControl: customScan.ViewControl) {
         return;
       }
       hilog.info(0x0001, '[Scan Sample]',
-        `Succeeded in getting ScanResult by callback, result is ${JSON.stringify(data)}`);
+        `Succeeded in getting ScanResult by callback, result length: ${data.length}`);
       // 从data获取扫码结果并进行业务处理
       // ...
       try {
@@ -58,7 +58,7 @@ export function startCustomScan(viewControl: customScan.ViewControl) {
         return;
       }
       hilog.info(0x0001, '[Scan Sample]',
-        `Succeeded in getting ScanResult by callback, result is ${JSON.stringify(data)}`);
+        `Succeeded in getting ScanResult by callback, result length: ${data.length}`);
       // 从data获取扫码结果并进行业务处理
       // ...
       try {

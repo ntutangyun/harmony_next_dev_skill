@@ -15,10 +15,10 @@ import { inputDevice } from '@kit.InputKit';
 输入设备管理常用接口如下表所示，接口详细介绍请参考@ohos.multimodalInput.inputDevice (输入设备)。
 
 接口名称	描述
-getDeviceList(): Promise<Array<number>>	获取输入设备列表。
+getDeviceList(): Promise<Array<number>>	获取所有输入设备的ID列表。
 getKeyboardType(deviceId: number): Promise<KeyboardType>	获取输入设备的键盘类型。
-on(type: "change", listener: Callback<DeviceListener>): void	监听输入设备的热插拔事件。
-off(type: "change", listener?: Callback<DeviceListener>): void	取消监听输入设备的热插拔事件。
+on(type: 'change', listener: Callback<DeviceListener>): void	注册监听输入设备的热插拔事件。
+off(type: 'change', listener?: Callback<DeviceListener>): void	取消监听输入设备的热插拔事件。
 
 虚拟键盘弹出检测
 
@@ -26,9 +26,9 @@ off(type: "change", listener?: Callback<DeviceListener>): void	取消监听输�
 
 [h2]开发步骤
 
-调用getDeviceList方法查询所有连接的输入设备，调用getKeyboardType方法遍历所有连接的设备，判断是否有物理键盘，若有则标记已有物理键盘连接，该步骤确保监听设备热插拔之前，检测所有插入的输入设备。
+调用getDeviceList方法查询所有连接的输入设备，并遍历所有连接的设备，对每个设备调用getKeyboardType方法，判断是否有物理键盘，若有则标记已有物理键盘连接，该步骤确保在监听设备热插拔之前，先检测所有已插入的输入设备。
 
-调用on接口监听输入设备热插拔事件，若监听到有物理键盘插入，则标记已有物理键盘连接；若监听到有物理键盘拔掉，则标记没有物理键盘连接。
+调用on接口监听输入设备热插拔事件，若监听到有物理键盘插入，则标记已有物理键盘连接；若监听到有物理键盘拔出，则标记没有物理键盘连接。
 
 import { inputDevice } from '@kit.InputKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';

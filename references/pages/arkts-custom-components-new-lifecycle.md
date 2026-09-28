@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-cus
 
 @ComponentDisappear：该装饰器装饰的函数在自定义组件析构销毁之前执行。不建议在@ComponentDisappear装饰的函数中改变状态变量，特别是@Link变量的修改可能会导致应用程序行为不稳定。
 
-@ComponentReuse：当可复用的自定义组件从缓存中重新添加到节点树时调用该装饰器装饰的函数，以接收组件的构造入参。最后，@ComponentReuse装饰的函数会递归遍历所有子组件，对每个完成复用的组件调用@ComponentReuse装饰的函数。
+@ComponentReuse：当可复用的自定义组件从复用池中重新添加到节点树时调用该装饰器装饰的函数，以接收组件的构造入参。最后，@ComponentReuse装饰的函数会递归遍历所有子组件，对每个完成复用的组件调用@ComponentReuse装饰的函数。
 
 @ComponentRecycle：当组件被回收后触发，先执行应用程序中定义的必要回收操作，完成回收后调用该装饰器装饰的函数。最后，@ComponentRecycle装饰的函数会递归遍历所有子组件，对每个完成回收的组件调用@ComponentRecycle装饰的函数。
 
@@ -581,7 +581,7 @@ get sum() {
   return 1 + 2 + 3; // 错误用法，生命周期装饰器装饰get方法不生效
 }
 
-当自定义组件没有使用生命周期装饰器，且没有注册监听，使用getCurrentState查询自定义组件当前生命周期状态时，返回值永远为CustomComponentLifecycleState.INIT。
+当自定义组件没有使用生命周期装饰器，且没有注册监听，使用getCurrentState查询自定义组件当前生命周期状态时，返回值永远为CustomComponentLifecycleState.INIT。当自定义组件没有使用生命周期装饰器时，自定义组件注册监听成功时才开启状态机且当前生命周期状态为INIT。
 
 自定义组件创建后默认为激活状态，不会触发@ComponentActive装饰的函数回调函数。
 
@@ -691,7 +691,7 @@ Child myBuilt
 
 点击Button按钮，更改showChild为false，删除Child组件，执行Child myDisappear函数。
 
-如果点击Button按钮，更改show为false,或者直接退出应用，则会触发以下生命周期：Parent myDisappear --> Child myDisappear，此处体现了自定义组件删除顺序也是从父到子。日志输出信息如下：
+如果点击Button按钮，更改show为false，或者直接退出应用，则会触发以下生命周期：Parent myDisappear --> Child myDisappear，此处体现了自定义组件删除顺序也是从父到子。日志输出信息如下：
 
 Parent myDisappear
 Child myDisappear
@@ -971,7 +971,7 @@ MyObserver onDidBuild
 MyObserver aboutToRecycle
 MyObserver aboutToReuse
 
-可以在组件的onAppear和onDisAppear中注册和解除监听。在onAppear中注册监听，此时组件已经处于Appeared状态，所以无法监听组件的aboutToAppear。
+不建议在组件的onAppear和onDisAppear中注册和解除监听。在onAppear中注册监听，此时组件已经处于BUILT状态，所以无法监听组件的aboutToAppear和onDidBuild。
 
 Column() {
   Text('Hello World')

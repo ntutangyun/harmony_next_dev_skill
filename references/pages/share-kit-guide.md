@@ -4,8 +4,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/share-kit
 
 Share Kit简介
 
-Share Kit术语
-
 Share Kit体验规范
 
 系统分享
@@ -15,3 +13,5 @@ Share Kit体验规范
 隔空传送
 
 Share Kit常见问题
+
+Share Kit术语

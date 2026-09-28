@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cannkit-model-conversion-example_
 
-使用CANN Kit SDK时，可以预先使用OMG工具将Caffe、TensorFlow、ONNX、MindSpore模型转换为OM离线模型，移动端AI程序直接读取离线模型进行推理。OMG工具位于Tools下载的tools/tools_omg下，可运行在64位Linux平台上。
+使用CANN Kit工具时，可以预先使用OMG工具将Caffe、TensorFlow、ONNX、MindSpore模型转换为OM离线模型，移动端AI程序直接读取离线模型进行推理。OMG工具位于Tools下载的tools/tools_omg下，可运行在64位Linux平台上。
 
 Caffe模型转换
 
@@ -16,7 +16,7 @@ Caffe模型转换
 
 ./omg --model deploy.prototxt --weight squeezenet_v1.1.caffemodel --framework 0 --output ./squeezenet
 
-当看到OMG generate offline model success时，则说明转换成功，会在当前目录下生成squeezenet.om。
+当看到“OMG generate offline model success”时，则说明转换成功，会在当前目录下生成squeezenet.om。
 
 TensorFlow模型转换
 
@@ -30,7 +30,7 @@ TensorFlow模型转换
 
 ./omg --model mobilenet_v2_1.0_224_frozen.pb --framework 3 --output ./mobilenet_v2 --input_shape "input:1,224,224,3" --out_nodes "MobilenetV2/Predictions/Reshape_1:0"
 
-当看到OMG generate offline model success时，则说明转换成功，会在当前目录下生成mobilenet_v2.om。
+当看到“OMG generate offline model success”时，则说明转换成功，会在当前目录下生成mobilenet_v2.om。
 
 ONNX模型转换
 
@@ -44,7 +44,7 @@ ONNX模型转换
 
 ./omg --model resnet18.onnx --framework 5 --output ./resnet18
 
-当看到如下log时，则说明转换成功，会在当前目录下生成resnet18.om。
+当看到“OMG generate offline model success”时，则说明转换成功，会在当前目录下生成resnet18.om。
 
 量化模型转换（以Caffe模型为例）
 
@@ -60,7 +60,7 @@ ONNX模型转换
 
 ./omg --model deploy.prototxt --weight squeezenet_v1.1.caffemodel --framework 0 --output ./squeezenet --compress_conf=param
 
-当看到OMG generate offline model success时，说明模型量化成功，会在当前目录下生成量化模型squeezenet.om。
+当看到“OMG generate offline model success”时，说明模型量化成功，会在当前目录下生成量化模型squeezenet.om。
 
 推理前可变Shape模型转换（以ONNX模型为例）
 
@@ -94,11 +94,31 @@ AIPP模型转换（以Caffe模型为例）
 
 ./omg --model deploy.prototxt --weight squeezenet_v1.1.caffemodel --framework 0 --insert_op_conf aipp_conf_static.cfg --output ./squeezenet
 
-当出现OMG generate offline model success时，说明AIPP模型转换成功，会在当前目录下生成AIPP squeezenet.om模型。
+当出现“OMG generate offline model success”时，说明AIPP模型转换成功，会在当前目录下生成AIPP squeezenet.om模型。
 
 说明
 
 aipp_conf_static.cfg是AIPP的配置文件，位置存放在"tools/tools_omg/sample"文件夹中，具体说明参见AIPP配置文件说明。
+
+OMC模型转换（以ONNX模型为例）
+
+OMC模型：硬件强相关Davinci模型，仅可在--platform指定的平台部署。
+
+适用场景：适用于编译耗时长，占用资源大的模型，可离线完成编译，免除在线编译耗时。
+
+若想编译omc模型，需要先参考环境准备完成环境配置，再进行转换命令。
+
+命令行中的参数说明请参见OMG参数，转换命令：
+
+./omg --model xxx.onnx --platform=kirinxxxx --target=omc --framework 5 --output ./modelname
+
+其中，platform选择对应的芯片平台，包括kirin9030、kirin9020、kirinx90。
+
+转换示例：
+
+./omg --model resnet18.onnx --platform=kirin9030 --target=omc --framework 5 --output ./resnet18
+
+当看到“OMG generate offline model success”时，则说明转换成功，会在当前目录下生成resnet18.omc，可在对应kirin9030平台执行。
 
 ## Code blocks
 
@@ -166,4 +186,16 @@ aipp_conf_static.cfg是AIPP的配置文件，位置存放在"tools/tools_omg/sam
 
 ```
 ./omg --model deploy.prototxt --weight squeezenet_v1.1.caffemodel --framework 0 --insert_op_conf aipp_conf_static.cfg --output ./squeezenet
+```
+
+### Code block 12
+
+```
+./omg --model xxx.onnx --platform=kirinxxxx --target=omc --framework 5 --output ./modelname
+```
+
+### Code block 13
+
+```
+./omg --model resnet18.onnx --platform=kirin9030 --target=omc --framework 5 --output ./resnet18
 ```

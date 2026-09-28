@@ -323,7 +323,7 @@ let store: relationalStore.RdbStore | undefined = undefined;
 
 [h2]schema文件名及路径要求
 
-schema文件名及路径不支持自定义，否则使用单版本表模式进行数据同步将读取不到对应文件，设置分布表也会失败。
+schema文件名及路径不支持自定义，否则使用单版本表模式进行数据同步将读取不到对应文件，设置分布式表也会失败。
 
 文件名：sync_schema.json
 
@@ -353,7 +353,7 @@ deviceSyncFields：指定端端同步对应的列，array[string]，必填字段
 
 cloudType: 表类型，为enum类型，取值范围为[ "Local", "Cloud DB", "Device DB" ]。
 
-"Local"表示本端表。"Cloud_DB"表示端云表。"Device DB"表示设备表。
+"Local"表示本端表。"Cloud DB"表示端云表。"Device DB"表示设备表。
 
 从API版本12开始，新增支持此字段，且此字段必填。从API版本26.0.0开始，此字段变为可选字段，不填时默认为"Local"。
 
@@ -363,7 +363,7 @@ columnName：字段名，string类型，必填字段。
 
 type：字段类型，string类型，必填字段，可选参数范围为：["Text", "Integer", "Long", "Float", "Double", "Blob" ]。
 
-primaryKey：该字段表示是否为指定解冲突列，与表中是否为主键无关，bool类型。若是自增表，该字段为必填字段。其中：true表示为解冲突列，false表示非解冲突列，默认为false。
+primaryKey：该字段表示是否为指定解冲突列，与表中是否为主键无关，bool类型。如果这张表没有配置解冲突列时，有主键表默认主键为解冲突列，无主键表默认rowid为解冲突列。若是自增主键表，该字段为必填字段。其中：true表示为解冲突列，false表示非解冲突列，默认为false。
 
 autoIncrement：是否自增属性，必须与表结构中对应，bool类型。关系型数据库跨设备数据同步不支持同步自增主键。其中：true表示自增主键，false表示非自增主键，默认为false。
 
@@ -720,7 +720,7 @@ schema有变化时，version需要增加。
 
 单版本表模式下，表中所有UNIQUE列必须同步。
 
-错误示例："AGE"为UNIQUE列，但是未指定该字段同步
+错误示例："AGE"为UNIQUE列，但是未指定该字段同步。
 
 建表语句：'CREATE TABLE IF NOT EXISTS EMPLOYEE (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL UNIQUE, AGE INTEGER UNIQUE, SALARY REAL, CODES BLOB)'。
 

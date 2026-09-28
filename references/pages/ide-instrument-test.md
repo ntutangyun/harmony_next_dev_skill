@@ -181,7 +181,7 @@ DevEco Studio生成的cpp测试目录中不包含C++测试框架，需要开发�
 import entryTest from 'libentry_test.so';
 export default function abilityTest() {
   describe('ActsAbilityTest', () => {
-    ...
+    // ...
     it('testNative', 0, () => {
       hilog.info(0x0000, 'testTag', '%{public}s', 'testNative it begin');
       let result = entryTest.runNativeTest();
@@ -218,19 +218,19 @@ static napi_value RunNativeTest(napi_env env, napi_callback_info info)
     snprintf(filename, sizeof(filename), "/data/storage/el2/base/c++_coverage.profraw"); // 覆盖率报告文件路径和文件名，不可修改
     __llvm_profile_set_filename(filename);
     // 开启测试
-    ...
+    // ...
     // 结束测试，保存数据
      __llvm_profile_write_file();
-    ...
+    // ...
 }
 
 启动测试后，进行编译构建，底部将出现Cover窗口，构建结束后自动拉起Cover窗口，测试任务结束后，窗口中会打印测试报告的路径。
 
 点击链接可打开报告，查看C++代码覆盖率详情。
 
-使用命令行执行测试Instrument Test
+使用命令行执行测试
 
-hvigorw onDeviceTest -p module={moduleName} -p coverage={true|false} -p scope={suiteName}#{methodName} -p ohos-debug-asan={true|false}
+hvigorw onDeviceTest -p module={moduleName} -p coverage={true|false} -p scope={suiteName}#{methodName} -p ohos-debug-asan={true|false} -p patch={patchPath}
 
 module：执行测试的模块，缺省默认是执行所有模块的用例。
 
@@ -239,6 +239,8 @@ module：执行测试的模块，缺省默认是执行所有模块的用例。
 scope：格式为{suiteName}#{methodName}或{suiteName}，分别表示测试用例级别或测试套件级别的测试，缺省默认是执行当前模块的所有用例。
 
 ASan日志路径：<module-path>/.test/default/intermediates/ohosTest/coverage_data
+
+patch：可选参数，指定代码补丁文件路径，用于统计增量代码覆盖率。仅支持绝对路径，后缀必须为.patch或.diff，可以通过git diff等命令生成。从26.0.0版本开始支持。
 
 说明
 
@@ -290,7 +292,7 @@ ASan日志路径：<module-path>/.test/default/intermediates/ohosTest/coverage_d
 import entryTest from 'libentry_test.so';
 export default function abilityTest() {
   describe('ActsAbilityTest', () => {
-    ...
+    // ...
     it('testNative', 0, () => {
       hilog.info(0x0000, 'testTag', '%{public}s', 'testNative it begin');
       let result = entryTest.runNativeTest();
@@ -329,15 +331,15 @@ static napi_value RunNativeTest(napi_env env, napi_callback_info info)
     snprintf(filename, sizeof(filename), "/data/storage/el2/base/c++_coverage.profraw"); // 覆盖率报告文件路径和文件名，不可修改
     __llvm_profile_set_filename(filename);
     // 开启测试
-    ...
+    // ...
     // 结束测试，保存数据
      __llvm_profile_write_file();
-    ...
+    // ...
 }
 ```
 
 ### Code block 5
 
 ```
-hvigorw onDeviceTest -p module={moduleName} -p coverage={true|false} -p scope={suiteName}#{methodName} -p ohos-debug-asan={true|false}
+hvigorw onDeviceTest -p module={moduleName} -p coverage={true|false} -p scope={suiteName}#{methodName} -p ohos-debug-asan={true|false} -p patch={patchPath}
 ```

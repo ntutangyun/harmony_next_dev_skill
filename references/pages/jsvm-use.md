@@ -28,7 +28,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-use_
 
 使用JSVM-API接口进行object相关开发
 
-使用JSVM-API接口进行primitive类相关开发
+使用JSVM-API接口进行primitive类型相关开发
 
 使用JSVM-API接口处理异步操作
 
@@ -54,11 +54,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-use_
 
 使用JSVM-API获取堆快照及监控堆内存阈值
 
-使用JSVM-API接口进行private相关开发
+使用JSVM-API接口进行 private 属性相关开发
 
 使用JSVM-API接口提供Latin1/UTF16格式字符串相关开发
 
-使用JSVM-API提供的proxy接口
+使用JSVM-API接口进行Proxy相关开发
 
 使用JSVM-API接口进行Well-known symbols相关开发
 

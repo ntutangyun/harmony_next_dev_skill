@@ -219,7 +219,7 @@ let s = 0;
 
 若配置该选项，那么所有的顶层作用域的名称都会被混淆，除了下面场景：
 
-在未开启-enable-export-obfuscation选项的情况下,被import/export直接导入或导出的名称不会被混淆。
+在未开启-enable-export-obfuscation选项的情况下，被import/export直接导入或导出的名称不会被混淆。
 
 当前文件找不到声明的名称不会被混淆。
 
@@ -323,7 +323,7 @@ if (flag) {
 
 文件顶层的调用
 
-console.info('in tolevel');
+console.info('in toplevel');
 
 代码块中的调用
 
@@ -428,7 +428,7 @@ lastName
 
 哪些属性名应该被保留?
 
-1.如果代码中通过字符串拼接、变量访问或使用defineProperty方法来定义对象属性，则这些属性名应被保留。例如：
+如果代码中通过字符串拼接、变量访问或使用defineProperty方法来定义对象属性，则这些属性名应被保留。例如：
 
 // example.js
 let obj = {x0: 0, x1: 0, x2: 0};
@@ -458,14 +458,14 @@ console.info(obj2['t']); // 此时，'t'会被正确混淆，t可以选择性保
 obj2['v'] = '0';
 console.info(obj2['v']); // 此时，'v'会被正确混淆，v可以选择性保留
 
-2.对于间接导出的场景，例如export MyClass和let a = MyClass; export {a};，如果不想混淆它们的属性名，那么需要使用保留选项来保留这些属性名。另外，对于直接导出的类或对象的属性的属性名，例如下面例子中的firstName和personAge，如果不想混淆它们，那么也需要使用保留选项来保留这些属性名。
+对于间接导出的场景，例如export MyClass和let a = MyClass; export {a};，如果不想混淆它们的属性名，那么需要使用保留选项来保留这些属性名。另外，对于直接导出的类或对象的属性的属性名，例如下面例子中的firstName和personAge，如果不想混淆它们，那么也需要使用保留选项来保留这些属性名。
 
 // myclass.ts
 export class MyClass02 {
   person = {firstName: '123', personAge: 100};
 }
 
-3.在ArkTS/TS/JS文件中使用so库的API（例如示例中的foo）时，需手动保留API名称。
+在ArkTS/TS/JS文件中使用so库的API（例如示例中的foo）时，需手动保留API名称。
 
 export const add: (a: number, b: number) => number;
 
@@ -474,7 +474,7 @@ import testNapi from 'libentry.so'
 // ...
 testNapi.add(2, 3); // add需要保留，示例如：-keep-property-name add
 
-4.JSON数据解析及对象序列化时，需要保留使用到的字段，例如：
+JSON数据解析及对象序列化时，需要保留使用到的字段，例如：
 
 // 示例JSON文件结构(test.json)：
 /*
@@ -495,7 +495,7 @@ class jsonTest {
 let obj = new jsonTest();
 const jsonStr = JSON.stringify(obj); // prop1 和 prop2 会被混淆，应该被保留
 
-5.使用到的数据库相关的字段，需要手动保留。例如，数据库键值对类型（ValuesBucket）中的属性：
+使用到的数据库相关的字段，需要手动保留。例如，数据库键值对类型（ValuesBucket）中的属性：
 
 const valueBucket: ValuesBucket = {
   ID1: 'ID1', // ID1应该被保留
@@ -504,7 +504,7 @@ const valueBucket: ValuesBucket = {
   SALARY1: 100 // SALARY1应该被保留
 }
 
-6.源码中自定义装饰器修饰了成员变量、成员方法、参数，同时其源码编译的中间产物为js文件时（如编译release源码HAR或者源码包含@ts-ignore、@ts-nocheck），这些装饰器所在的成员变量/成员方法名称需要被保留。这是由于ts高级语法特性转换为js标准语法时，将上述装饰器所在的成员变量/成员方法名称硬编码为字符串常量。
+源码中自定义装饰器修饰了成员变量、成员方法、参数，同时其源码编译的中间产物为js文件时（如编译release源码HAR或者源码包含@ts-ignore、@ts-nocheck），这些装饰器所在的成员变量/成员方法名称需要被保留。这是由于ts高级语法特性转换为js标准语法时，将上述装饰器所在的成员变量/成员方法名称硬编码为字符串常量。
 
 示例：
 
@@ -545,7 +545,7 @@ export namespace Ns {
 
 哪些顶层作用域的名称应该被保留?
 
-1.在JavaScript中全局变量是globalThis的属性。如果在代码中使用globalThis去访问全局变量，那么该变量名应该被保留。
+在JavaScript中全局变量是globalThis的属性。如果在代码中使用globalThis去访问全局变量，那么该变量名应该被保留。
 
 示例：
 
@@ -560,7 +560,7 @@ bar();                      // bar 可以被正确地混淆
 class MyClass {}
 let d = new MyClass();      // MyClass 可以被正确地混淆
 
-2.当以命名导入的方式导入 so 库的 API时，若同时开启-enable-toplevel-obfuscation和-enable-export-obfuscation选项，需要手动保留API的名称。
+当以命名导入的方式导入 so 库的 API时，若同时开启-enable-toplevel-obfuscation和-enable-export-obfuscation选项，需要手动保留API的名称。
 
 // src/main/cpp/types/libentry/Index.d.ts
 declare function testNapi2(): void;
@@ -582,12 +582,12 @@ entry
 
 哪些文件名应该被保留?
 
-1.在使用require引入文件路径时，由于ArkTS不支持CommonJS语法，因此这种情况下路径应该被保留。
+在使用require引入文件路径时，由于ArkTS不支持CommonJS语法，因此这种情况下路径应该被保留。
 
 // example.js
 const module1 = require('./file1'); // file1 应该被保留
 
-2.对于动态导入的路径名，由于无法识别import函数中的参数是否为路径，因此这种情况下路径应该被保留。
+对于动态导入的路径名，由于无法识别import函数中的参数是否为路径，因此这种情况下路径应该被保留。
 
 // file2.ts
 export function foo () {}
@@ -596,7 +596,7 @@ export function foo () {}
 const moduleName = './file2';         // moduleName对应的路径名file2应该被保留
 const module2 = import(moduleName);
 
-3.在使用跨包路由进行路由跳转时，传递给动态路由的路径应该被保留。动态路由提供系统路由表和自定义路由表两种方式。若采用自定义路由表进行跳转，配置白名单的方式与上述第二种动态引用场景一致。而若采用系统路由表进行跳转，则需要将模块下resources/base/profile/route_map.json5文件中pageSourceFile字段对应的路径添加到白名单中。
+在使用跨包路由进行路由跳转时，传递给动态路由的路径应该被保留。动态路由提供系统路由表和自定义路由表两种方式。若采用自定义路由表进行跳转，配置白名单的方式与上述第二种动态引用场景一致。而若采用系统路由表进行跳转，则需要将模块下resources/base/profile/route_map.json5文件中pageSourceFile字段对应的路径添加到白名单中。
 
 {
   "routerMap": [
@@ -1013,7 +1013,7 @@ if (flag) {
 ### Code block 23
 
 ```
-console.info('in tolevel');
+console.info('in toplevel');
 ```
 
 ### Code block 24

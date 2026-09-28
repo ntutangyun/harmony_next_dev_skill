@@ -27,20 +27,20 @@ cancelAuthorizations(): Promise<void>	取消用户所有授权。
 
 [h2]用户授权
 
-1.导入运动健康功能模块及相关公共模块。
+导入运动健康功能模块及相关公共模块。
 
 import { healthStore } from '@kit.HealthServiceKit';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-2.创建授权请求，确保授权参数中的权限已在申请运动健康服务时勾选，权限说明请参考权限说明。
+创建授权请求，确保授权参数中的权限已在申请运动健康服务时勾选，权限说明请参考权限说明。
 
 let authorizationParameter: healthStore.AuthorizationRequest = {
   readDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE],
   writeDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE]
 }
 
-3.调用requestAuthorizations方法执行登录授权请求，并处理返回结果。
+调用requestAuthorizations方法执行登录授权请求，并处理返回结果。
 
 try {
   // 请在组件内获取context，确保this.getUIContext().getHostContext()返回结果为UIAbilityContext
@@ -60,19 +60,19 @@ try {
 
 [h2]查询权限
 
-1.导入运动健康服务功能模块及相关公共模块。
+导入运动健康服务功能模块及相关公共模块。
 
 import { healthStore } from '@kit.HealthServiceKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-2.创建查询权限请求。
+创建查询权限请求。
 
 let queryAuthorizationRequest: healthStore.AuthorizationRequest = {
   readDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE],
   writeDataTypes: [healthStore.exerciseSequenceHelper.DATA_TYPE, healthStore.samplePointHelper.heartRate.DATA_TYPE]
 }
 
-3.调用getAuthorizations方法执行查询权限请求，并处理返回结果。
+调用getAuthorizations方法执行查询权限请求，并处理返回结果。
 
 try {
   let queryAuthorizationResponse = await healthStore.getAuthorizations(queryAuthorizationRequest);
@@ -89,12 +89,12 @@ try {
 
 [h2]取消授权
 
-1.导入运动健康服务功能模块及相关公共模块。
+导入运动健康服务功能模块及相关公共模块。
 
 import { healthStore } from '@kit.HealthServiceKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-2.调用cancelAuthorizations方法执行取消授权，并处理返回结果。
+调用cancelAuthorizations方法执行取消授权，并处理返回结果。
 
 try {
   await healthStore.cancelAuthorizations();

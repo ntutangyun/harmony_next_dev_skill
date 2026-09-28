@@ -28,11 +28,11 @@ Tag Filter Non Standard Regex.
 
 错误描述
 
-tag-filter命令使用非标准正则。
+执行tag-filter命令时使用非标准正则。
 
 可能原因
 
-执行ohpm update --tag-filter <regex>命令时，使用非标准正则。如ohpm update library --tag-filter [a-z，其中 [a-z 表示非法正则表达式，正确正则参数为[a-z]。
+执行ohpm update --tag-filter <regex>命令时，使用非标准正则。如ohpm update library --tag-filter [a-z，其中 [a-z表示非法正则表达式，正确正则参数为[a-z]。
 
 处理步骤
 

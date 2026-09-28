@@ -53,7 +53,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   promise.then((result: number) => {
     console.info(`Succeeded in getting number, number is ${result}`); // 成功时执行
   }, (error: BusinessError) => {
-    console.error(error.message); // 失败时执行
+    console.error(`Failed to get number. Code: ${error.code}, message: ${error.message}`); // 失败时执行
   }
   );
 
@@ -61,7 +61,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   promise.then((result: number) => {
     console.info(`Succeeded in getting number, number is ${result}`); // 成功时执行
   }).catch((error: BusinessError) => {
-    console.error(error.message); // 失败时执行
+    console.error(`Failed to get number. Code: ${error.code}, message: ${error.message}`); // 失败时执行
   });
 
 在上述代码中，then方法的回调函数接收Promise对象的成功结果，并输出至控制台。如果Promise对象进入rejected状态，catch方法的回调函数接收错误对象，并输出至控制台。
@@ -100,7 +100,7 @@ struct PromiseAsyncAwait {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(async () => {
-            let res = await myAsyncFunction();
+            let res: string = await myAsyncFunction();
             console.info(`Result is:  ${res}`);
             this.message = 'success';
           })
@@ -159,7 +159,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   promise.then((result: number) => {
     console.info(`Succeeded in getting number, number is ${result}`); // 成功时执行
   }, (error: BusinessError) => {
-    console.error(error.message); // 失败时执行
+    console.error(`Failed to get number. Code: ${error.code}, message: ${error.message}`); // 失败时执行
   }
   );
 
@@ -167,7 +167,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
   promise.then((result: number) => {
     console.info(`Succeeded in getting number, number is ${result}`); // 成功时执行
   }).catch((error: BusinessError) => {
-    console.error(error.message); // 失败时执行
+    console.error(`Failed to get number. Code: ${error.code}, message: ${error.message}`); // 失败时执行
   });
 ```
 
@@ -196,7 +196,7 @@ struct PromiseAsyncAwait {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(async () => {
-            let res = await myAsyncFunction();
+            let res: string = await myAsyncFunction();
             console.info(`Result is:  ${res}`);
             this.message = 'success';
           })

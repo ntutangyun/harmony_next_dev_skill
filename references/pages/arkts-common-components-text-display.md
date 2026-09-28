@@ -450,7 +450,7 @@ struct ContentTransitionDemo {
           .borderWidth(1)
           .fontSize(40)
           .contentTransition(this.numberTransition)
-        Button('chang number')
+        Button('change number')
           .onClick(() => {
             this.number++
           })
@@ -1675,7 +1675,7 @@ struct ContentTransitionDemo {
           .borderWidth(1)
           .fontSize(40)
           .contentTransition(this.numberTransition)
-        Button('chang number')
+        Button('change number')
           .onClick(() => {
             this.number++
           })

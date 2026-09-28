@@ -6,9 +6,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/using-avs
 
 基本概念
 
-媒体会话元数据（AVMetadata）：用于描述媒体数据相关属性，包含标识当前媒体的ID（assetId），上一首媒体的ID（previousAssetId），下一首媒体的ID（nextAssetId），标题（title），专辑作者（author），专辑名称（album），词作者（writer），媒体时长（duration）等属性。
+媒体会话元数据（AVMetadata）：用于描述媒体数据相关属性，包含标识当前媒体的ID（assetId）、上一首媒体的ID（previousAssetId）、下一首媒体的ID（nextAssetId）、标题（title）、艺术家（artist）、专辑作者（author）、专辑名称（album）、词作者（writer）和媒体时长（duration）等属性。
 
-媒体播放状态（AVPlaybackState）：用于描述媒体播放状态的相关属性，包含当前媒体的播放状态（state）、播放位置（position）、播放倍速（speed）、缓冲时间（bufferedTime）、循环模式（loopMode）、是否收藏（isFavorite）、正在播放的媒体ID（activeItemId）、自定义媒体数据（extras）等属性。
+媒体播放状态（AVPlaybackState）：用于描述媒体播放状态的相关属性，包含当前媒体的播放状态（state）、播放位置（position）、播放倍速（speed）、缓冲时间（bufferedTime）、循环模式（loopMode）、是否收藏（isFavorite）、正在播放的媒体ID（activeItemId）和自定义媒体数据（extras）等属性。
 
 接口说明
 
@@ -22,7 +22,7 @@ setAVMetadata(data: AVMetadata, callback: AsyncCallback<void>): void10+	设置�
 setAVPlaybackState(state: AVPlaybackState, callback: AsyncCallback<void>): void10+	设置媒体会话播放状态。
 setLaunchAbility(ability: WantAgent, callback: AsyncCallback<void>): void10+	设置启动UIAbility。
 getController(callback: AsyncCallback<AVSessionController>): void10+	获取当前会话自身控制器。
-getOutputDevice(callback: AsyncCallback<OutputDeviceInfo>): void10+	获取播放设备相关信息。
+getOutputDevice(callback: AsyncCallback<OutputDeviceInfo>): void10+	获取输出设备相关信息。
 activate(callback: AsyncCallback<void>): void10+	激活媒体会话。
 deactivate(callback: AsyncCallback<void>): void10+	禁用当前会话。
 destroy(callback: AsyncCallback<void>): void10+	销毁媒体会话。
@@ -229,11 +229,11 @@ struct Index {
   }
 }
 
-设置一个即时的自定义会话事件，以供媒体控制方接收到事件后进行相应的操作。
+发送一个即时的自定义会话事件，以供媒体控制方接收到事件后进行相应的操作。
 
 说明
 
-通过dispatchSessionEvent方法设置的数据不会保存在会话对象或AVSession服务中。
+通过dispatchSessionEvent方法发送的数据不会保存在会话对象或AVSession服务中。
 
 import { avSession as AVSessionManager } from '@kit.AVSessionKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -321,6 +321,8 @@ struct Index {
 媒体会话提供方在注册相关固定播控命令事件监听时，监听的事件会在媒体会话控制方的getValidCommands()方法中体现，即媒体会话控制方会认为对应的方法有效，进而根据需要触发相应的事件。为了保证媒体会话控制方下发的播控命令可以被正常执行，媒体会话提供方请勿进行无逻辑的空实现监听。
 
 Session侧的固定播控命令主要包括播放、暂停、上一首、下一首等基础操作命令，详细介绍请参见AVControlCommand。
+
+控制场景包括：播控中心点击、播控中心通知栏移除、蓝牙耳机佩戴、蓝牙耳机/有线耳机按键、语音助手控制等。
 
 import { avSession as AVSessionManager } from '@kit.AVSessionKit';
 // ...
@@ -424,7 +426,7 @@ skipToQueueItem: 播放列表其中某项被选中的事件。
 
 handleKeyEvent: 按键事件。
 
-outputDeviceChange: 播放设备变化的事件。
+outputDeviceChange: 输出设备变化的事件。
 
 commonCommand: 自定义控制命令变化的事件。
 

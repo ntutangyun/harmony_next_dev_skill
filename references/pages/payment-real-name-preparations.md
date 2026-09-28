@@ -102,6 +102,7 @@ public class GenerateSm2KeyPairTest2 {
 
 [h2]SM2加密示例代码参考
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -118,6 +119,7 @@ import org.bouncycastle.util.encoders.Hex;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
+@Slf4j
 public class SM2EncTest {
   public static void main(String[] args) {
     encrypt("16进制编码的SM2公钥", "待加密数据");
@@ -143,8 +145,9 @@ public class SM2EncTest {
       ECPublicKeyParameters publicKeyParameters = new ECPublicKeyParameters(pukPoint, ecDomainParameters);
       sm2Engine.init(true, new ParametersWithRandom(publicKeyParameters, new SecureRandom()));
       return sm2Engine.processBlock(in, 0, in.length);
-    } catch (Exception var7) {
-      throw new SecurityException(var7);
+    } catch (Exception e) {
+        log.error("exception: ", e);
+        throw new SecurityException(e);
     }
   }
 
@@ -177,6 +180,7 @@ public class SM2EncTest {
 
 [h2]SM2解密示例代码参考
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -197,6 +201,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
+@Slf4j
 public class SM2DecTest {
   public static void main(String[] args) {
     String data = decrypt("16进制编码解密私钥", "密文");
@@ -226,8 +231,9 @@ public class SM2DecTest {
       ECPrivateKeyParameters privateKeyParameters = new ECPrivateKeyParameters(privateKeyD, ecDomainParameters);
       sm2Engine.init(false, privateKeyParameters);
       return new String(sm2Engine.processBlock(enContent, 0, enContent.length), StandardCharsets.UTF_8);
-    } catch (Exception var7) {
-      throw new SecurityException(var7);
+    } catch (Exception e) {
+        log.error("exception: ", e);
+        throw new SecurityException(e);
     }
   }
 
@@ -321,6 +327,7 @@ public class GenerateSm2KeyPairTest2 {
 ### Code block 2
 
 ```
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -337,6 +344,7 @@ import org.bouncycastle.util.encoders.Hex;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
+@Slf4j
 public class SM2EncTest {
   public static void main(String[] args) {
     encrypt("16进制编码的SM2公钥", "待加密数据");
@@ -362,8 +370,9 @@ public class SM2EncTest {
       ECPublicKeyParameters publicKeyParameters = new ECPublicKeyParameters(pukPoint, ecDomainParameters);
       sm2Engine.init(true, new ParametersWithRandom(publicKeyParameters, new SecureRandom()));
       return sm2Engine.processBlock(in, 0, in.length);
-    } catch (Exception var7) {
-      throw new SecurityException(var7);
+    } catch (Exception e) {
+        log.error("exception: ", e);
+        throw new SecurityException(e);
     }
   }
 
@@ -398,6 +407,7 @@ public class SM2EncTest {
 ### Code block 3
 
 ```
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -418,6 +428,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
+@Slf4j
 public class SM2DecTest {
   public static void main(String[] args) {
     String data = decrypt("16进制编码解密私钥", "密文");
@@ -447,8 +458,9 @@ public class SM2DecTest {
       ECPrivateKeyParameters privateKeyParameters = new ECPrivateKeyParameters(privateKeyD, ecDomainParameters);
       sm2Engine.init(false, privateKeyParameters);
       return new String(sm2Engine.processBlock(enContent, 0, enContent.length), StandardCharsets.UTF_8);
-    } catch (Exception var7) {
-      throw new SecurityException(var7);
+    } catch (Exception e) {
+        log.error("exception: ", e);
+        throw new SecurityException(e);
     }
   }
 

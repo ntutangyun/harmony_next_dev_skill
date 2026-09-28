@@ -36,7 +36,7 @@ reviver参数	支持	支持，但强制类型检查
 
 [h2]stringify
 
-stringify(value: Object, replacer?: (number | string)[] | null, space?: string | number): string
+stringify(value: Object, replacer?: Transformer, space?: string | number): string
 
 将对象转换为JSON字符串，支持BigInt模式。
 

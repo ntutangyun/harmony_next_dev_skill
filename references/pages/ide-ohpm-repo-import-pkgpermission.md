@@ -44,7 +44,7 @@ merge-origin模式：保留源数据的可见性配置，合并源数据与ohpm-
 公开可读	授权可读	公开可读	源数据与ohpm-repo的所有者、维护者权限并集
 公开可读
 
-merge-target 模式：处理规则：保留ohpm-repo的可见性配置，合并源数据与ohpm-repo的包权限（以ohpm-repo权限为主），取权限并集。
+merge-target 模式：保留ohpm-repo的可见性配置，合并源数据与ohpm-repo的包权限（以ohpm-repo权限为主），取权限并集。
 
 源数据可见性	ohpm-repo可见性	最终可见性	最终包权限
 授权可读	授权可读	授权可读	源数据与ohpm-repo的所有者、维护者、查看者权限并集

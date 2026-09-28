@@ -2,13 +2,13 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-publish-app_
 
-HarmonyOS通过数字证书与Profile文件等签名信息来保证应用/元服务的完整性，应用/元服务上架到AppGallery Connect（AGC）必须通过签名校验。因此，您需要使用发布证书和Profile文件对应用/元服务进行签名后才能发布。
+HarmonyOS通过数字证书（.cer文件）和Profile文件（.p7b文件）等签名信息来保证应用/元服务的完整性，应用/元服务上架到AppGallery Connect（AGC）必须通过签名校验。因此，您需要使用发布证书和Profile文件对应用/元服务进行签名后才能发布。
 
-26.0.0 Beta1以下的版本，开发者需要准备签名所需的密钥、证书请求文件、发布证书、Profile文件等，对应用进行手动签名和编译构建后，将软件包上传到AGC。
+26.0.0以下的版本，开发者需要准备签名所需的密钥、证书请求文件、发布证书、Profile文件等，对应用进行手动签名和编译构建后，将软件包上传到AGC。
 
-从26.0.0 Beta1版本开始，开发者只需将应用进行编译构建后上传到AGC。在上传的过程中，无论应用之前是否已签名，DevEco Studio都会对应用重新进行签名，支持使用AGC自动生成的云管理证书，也支持使用开发者创建的证书。
+从26.0.0版本开始，开发者只需将应用进行编译构建后上传到AGC。在上传的过程中，无论应用之前是否已签名，DevEco Studio都会对应用重新进行签名，支持使用AGC自动生成的云管理证书，也支持使用开发者创建的证书。
 
-26.0.0 Beta1及以上版本
+26.0.0及以上版本
 
 [h2]编译构建.app文件
 
@@ -86,7 +86,7 @@ Manually manage signing：手动管理签名，开发者自行配置签名信息
 
 仅Release版本DevEco Studio打包的.app支持上架到应用市场。
 
-26.0.0 Beta1以下版本
+26.0.0以下版本
 
 [h2]发布流程
 

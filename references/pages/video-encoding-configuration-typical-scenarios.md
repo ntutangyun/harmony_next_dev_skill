@@ -67,6 +67,9 @@ videoEnc：视频编码器实例的指针。创建方式可参考视频编码Sur
 
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
+if (format == nullptr) {
+    // 异常处理。
+}
 // 2. 填充编码参数键值对（以1080p@30fps SDR输入源为例）。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
@@ -121,9 +124,12 @@ CBRHQ码控方式配置如下：
 
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
+if (format == nullptr) {
+    // 异常处理。
+}
 // 2. 填充编码参数键值对（以1080p@15fps SDR输入源为例）。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1080); // 必须配置，视频像素宽。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1920); // 必须配置，视频像素高。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, AV_PIXEL_FORMAT_NV12); // 必须配置，视频源数据排布格式。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_RANGE_FLAG, 0); // VUI，视频YUV值域标志，0:limited range 1:full range。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_COLOR_PRIMARIES, OH_ColorPrimary::COLOR_PRIMARY_BT709); // VUI，视频源色域。
@@ -164,7 +170,7 @@ OH_AVFormat_Destroy(format);
 
 分辨率（px）	帧率（fps）	码率（kbps）	接入帧间隔（ms）	码控模式
 1920x1080	25	3000	2000	VBR
-1080x720	25	1500	2000	VBR
+1280x720	25	1500	2000	VBR
 960x544	25	1000	2000	VBR
 864x480	25	800	2000	VBR
 
@@ -176,8 +182,8 @@ OH_AVFormat_Destroy(format);
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
 // 2. 填充编码参数键值对（以1080p@25fps SDR输入源为例）。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1080); // 必须配置，视频像素宽。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1920); // 必须配置，视频像素高。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, AV_PIXEL_FORMAT_NV12); // 必须配置，视频源数据排布格式。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_RANGE_FLAG, 0); // VUI，视频YUV值域标志，0:limited range 1:full range。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_COLOR_PRIMARIES, OH_ColorPrimary::COLOR_PRIMARY_BT709); // VUI，视频源色域。
@@ -202,7 +208,7 @@ OH_AVFormat_Destroy(format);
 
 分辨率（px）	帧率（fps）	SQR质量因子	峰值码率（kbps）	接入帧间隔（ms）	码控模式
 1920x1080	25	25	3000	2000	SQR
-1080x720	25	25	1500	2000	SQR
+1280x720	25	25	1500	2000	SQR
 960x544	25	25	1000	2000	SQR
 864x480	25	25	800	2000	SQR
 
@@ -216,8 +222,8 @@ SQR码控方式配置如下：
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
 // 2. 填充编码参数键值对（以1080p@25fps SDR输入源为例）。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1080); // 必须配置，视频像素宽。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1920); // 必须配置，视频像素高。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, AV_PIXEL_FORMAT_NV12); // 必须配置，视频源数据排布格式。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_RANGE_FLAG, 0); // VUI，视频YUV值域标志，0:limited range 1:full range。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_COLOR_PRIMARIES, OH_ColorPrimary::COLOR_PRIMARY_BT709); // VUI，视频源色域。
@@ -383,6 +389,9 @@ target_link_libraries(sample PUBLIC libnative_media_venc.so)
 ```
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
+if (format == nullptr) {
+    // 异常处理。
+}
 // 2. 填充编码参数键值对（以1080p@30fps SDR输入源为例）。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
@@ -426,9 +435,12 @@ OH_AVFormat_Destroy(format);
 ```
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
+if (format == nullptr) {
+    // 异常处理。
+}
 // 2. 填充编码参数键值对（以1080p@15fps SDR输入源为例）。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1080); // 必须配置，视频像素宽。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1920); // 必须配置，视频像素高。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, AV_PIXEL_FORMAT_NV12); // 必须配置，视频源数据排布格式。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_RANGE_FLAG, 0); // VUI，视频YUV值域标志，0:limited range 1:full range。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_COLOR_PRIMARIES, OH_ColorPrimary::COLOR_PRIMARY_BT709); // VUI，视频源色域。
@@ -464,8 +476,8 @@ OH_AVFormat_Destroy(format);
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
 // 2. 填充编码参数键值对（以1080p@25fps SDR输入源为例）。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1080); // 必须配置，视频像素宽。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1920); // 必须配置，视频像素高。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, AV_PIXEL_FORMAT_NV12); // 必须配置，视频源数据排布格式。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_RANGE_FLAG, 0); // VUI，视频YUV值域标志，0:limited range 1:full range。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_COLOR_PRIMARIES, OH_ColorPrimary::COLOR_PRIMARY_BT709); // VUI，视频源色域。
@@ -491,8 +503,8 @@ OH_AVFormat_Destroy(format);
 // 1. 创建AVFormat参数实例。
 OH_AVFormat *format = OH_AVFormat_Create();
 // 2. 填充编码参数键值对（以1080p@25fps SDR输入源为例）。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1080); // 必须配置，视频像素宽。
-OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1920); // 必须配置，视频像素高。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_WIDTH, 1920); // 必须配置，视频像素宽。
+OH_AVFormat_SetIntValue(format, OH_MD_KEY_HEIGHT, 1080); // 必须配置，视频像素高。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_PIXEL_FORMAT, AV_PIXEL_FORMAT_NV12); // 必须配置，视频源数据排布格式。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_RANGE_FLAG, 0); // VUI，视频YUV值域标志，0:limited range 1:full range。
 OH_AVFormat_SetIntValue(format, OH_MD_KEY_COLOR_PRIMARIES, OH_ColorPrimary::COLOR_PRIMARY_BT709); // VUI，视频源色域。

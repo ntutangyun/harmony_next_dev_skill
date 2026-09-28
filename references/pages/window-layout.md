@@ -59,7 +59,7 @@ setContentAspectRatio()	设置窗口内容布局（不含边框和标题栏等�
 // Index.ets
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'IndexPage';
@@ -176,7 +176,7 @@ resizeAsync()	基于窗口左上角顶点改变当前窗口大小，调用生效
 import { UIAbility } from '@kit.AbilityKit';
 import { window, display } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'Sample_AdjustLayout';
@@ -256,7 +256,7 @@ startMoving()接口必须在onTouch事件的回调函数中调用，且事件类
 
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'Sample_AdjustLayout';
@@ -394,7 +394,7 @@ struct SubWindowPage {
 // Index.ets
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'IndexPage';
@@ -450,7 +450,7 @@ SystemProperties.WINDOW_SIZE_PX	window.Size	返回窗口尺寸，单位为px。�
 // Index.ets
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'IndexPage';
@@ -501,7 +501,7 @@ const TAG = 'IndexPage';
 import { UIAbility } from '@kit.AbilityKit';
 import { window, display } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'Sample_AdjustLayout';
@@ -563,7 +563,7 @@ const TAG = 'Sample_AdjustLayout';
 ```
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'Sample_AdjustLayout';
@@ -699,7 +699,7 @@ struct SubWindowPage {
 // Index.ets
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import hilog from '@ohos.hilog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 const TAG = 'IndexPage';

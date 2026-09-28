@@ -42,8 +42,8 @@ reason值	说明
 The object data is decorated with @Observed or wrapped by makeV1Observed	对象被@Observed装饰器装饰或对象是使用makeV1Observed方法包装得到的，详见V1组件对象可被观察场景 。
 The object data is decorated with V2 @ObservedV2 and @Trace	对象和对象属性被@ObservedV2和@Trace装饰器装饰，详见V2组件对象可被观察场景 。
 The object data is wrapped by V2's makeObserved	对象是使用makeObserved方法包装得到的，详见V2组件对象可被观察场景 。
-The object data is built-in type proxy data (Array/Map/Set/Date) decorated with @Trace	Array、Set、Map、Date类型数据对象被状态管理V2装饰器装饰或作为对象属性被@Trace装饰器装饰，详见V2组件对象可被观察场景 。
-The V1 Observed object data is wrapped by enableV2Compatibility and used in @ComponentV2	V1组件和V2组件混用时，对象是使用enableV2Compatibility方法包装得到的，详见V1组件和V2组件混用对象可被观察场景 。
+The object data is built-in type proxy data (Array/Map/Set/Date) decorated with @Trace	被@Trace装饰器装饰的Array、Map、Set、Date等内置类型的代理数据，详见V2组件对象可被观察场景。
+The V1 Observed object data is wrapped by enableV2Compatibility and used in @ComponentV2	V1组件和V2组件混用时，V1的可被观察对象使用enableV2Compatibility方法包装并在@ComponentV2中使用，详见V1组件和V2组件混用对象可被观察场景 。
 
 需要注意，上述情况reason的值结尾如果有but not used in UI或but not used in @ComponentV2则表示：对象虽然是可被观察的，但是没有被UI组件所使用，因此改变对象值的时候也无法刷新UI。
 
@@ -230,7 +230,7 @@ struct TrackChild {
     "decoratorInfo": [{
         // 对象属性使用了@Track装饰时，装饰器名称固定为@Track
         "decoratorName": "@Track",
-        // 对象属性使用了@Track装饰时，stateVariableName表示被@Track装饰是的属性名称
+        // 对象属性使用了@Track装饰时，stateVariableName表示被@Track装饰的属性名称
         "stateVariableName": "name",
         // 对象属性使用了@Track装饰时，owningComponentOrClassName表示类的名称
         "owningComponentOrClassName": "TrackUser",
@@ -801,7 +801,7 @@ Button('X')
             "elementId": 16
         }]
     },
-    ...
+    // ...
     // 以下结果省略
   ]
 }
@@ -1000,7 +1000,7 @@ struct TrackChild {
     "decoratorInfo": [{
         // 对象属性使用了@Track装饰时，装饰器名称固定为@Track
         "decoratorName": "@Track",
-        // 对象属性使用了@Track装饰时，stateVariableName表示被@Track装饰是的属性名称
+        // 对象属性使用了@Track装饰时，stateVariableName表示被@Track装饰的属性名称
         "stateVariableName": "name",
         // 对象属性使用了@Track装饰时，owningComponentOrClassName表示类的名称
         "owningComponentOrClassName": "TrackUser",
@@ -1583,7 +1583,7 @@ Button('X')
             "elementId": 16
         }]
     },
-    ...
+    // ...
     // 以下结果省略
   ]
 }

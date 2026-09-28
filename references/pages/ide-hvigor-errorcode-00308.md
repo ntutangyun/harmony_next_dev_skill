@@ -160,11 +160,21 @@ Write file failed: XXX, at file: YYY.
 
 可能原因
 
-未知。
+加密/解密材料未知原因损坏。
 
 处理步骤
 
-通过在线提单提交问题，华为支持人员会及时处理。
+删除.hvigor文件夹中的meta目录。.hvigor文件夹默认位于用户目录下：
+
+Windows：C:\Users\username\.hvigor
+
+macOS：/Users/username/.hvigor
+
+root用户：/root/.hvigor
+
+非root用户：/home/username/.hvigor
+
+更多内容请参考自定义.hvigor路径。
 
 00308007 操作文件失败
 
@@ -519,6 +529,24 @@ This error happened while installing a direct dependency of xxx.
 请确保仓库地址可以访问，查看npm配置的仓库地址是否正确、是否有防火墙或代理限制等。
 
 联系仓库提供方确认仓库地址是否可用，或更换新的npm仓库地址。
+
+00308025 无法重置守护进程注册表
+
+错误信息
+
+Failed to reset daemon registry file: XXX.
+
+错误描述
+
+无法重置守护进程注册表。
+
+可能原因
+
+DevEco Studio无权限操作XXX文件或者XXX文件被占用。
+
+处理步骤
+
+手动删除XXX文件。
 
 ## Code blocks
 

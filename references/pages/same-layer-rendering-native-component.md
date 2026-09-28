@@ -305,7 +305,7 @@ struct SearchComponent {
 
 因为要使用NodeContainer，所以封装一个继承自NodeController的类SearchNodeController。
 
-使用Web组件加载nativeembed_view.html文件，Web组件解析到Embed标签后，通过onNativeEmbedLifecycleChange()接口上报Embed标签创建消息通知到应用侧。
+使用Web组件加载embed_view.html文件，Web组件解析到Embed标签后，通过onNativeEmbedLifecycleChange()接口上报Embed标签创建消息通知到应用侧。
 
 在步骤3的回调内，根据embed.status，将配置传入searchNodeController后，执行rebuild()方法重新触发其makeNode()方法。
 

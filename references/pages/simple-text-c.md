@@ -8,6 +8,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/simple-te
 
 接口说明
 
+简单文本绘制的相关接口如下所示，详细接口说明请参考drawing_text_typography.h。
+
 接口定义	描述
 OH_Drawing_TextStyle* OH_Drawing_CreateTextStyle(void)	创建指向OH_Drawing_TextStyle对象的指针。
 void OH_Drawing_SetTextStyleFontSize(OH_Drawing_TextStyle* style, double fontSize)	设置字号。

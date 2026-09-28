@@ -110,7 +110,9 @@ Options
 
 类型： Boolean
 
-可以在 dist-tags 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验 https 证书。
+可以在dist-tags命令后面不配置参数、配置--strict_ssl或--strict_ssl true参数时，开启校验HTTPS证书。
+
+从ohpm 26.0.0.630版本开始，如需关闭校验，可配置--no-strict_ssl或--strict_ssl false参数，推荐使用--no-strict_ssl参数。
 
 [h2]log_level
 
@@ -139,8 +141,6 @@ ohpm dist-tags add @ohos/axios@1.0.0 beta
     // 标签引入，引入标签为"beta"对应的版本号1.0.0
     "@ohos/axios": "tag:beta"
   }
-  ...
-  ...
 }
 
 ## Code blocks
@@ -193,7 +193,5 @@ ohpm dist-tags add @ohos/axios@1.0.0 beta
     // 标签引入，引入标签为"beta"对应的版本号1.0.0
     "@ohos/axios": "tag:beta"
   }
-  ...
-  ...
 }
 ```

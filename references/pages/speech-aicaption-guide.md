@@ -114,7 +114,7 @@ struct Index {
     let fileData: Uint8Array | undefined = undefined;
     try {
       fileData =
-        await this.getUIContext()?.getHostContext()?.resourceManager.getMediaContent($r('app.media.chineseAudio').id);
+        await this.getUIContext()?.getHostContext()?.resourceManager.getMediaContent($r('app.media.ChineseAudio').id);
     } catch (e) {
       Logger.info(`get fileData fail , msg ${e} `)
     }
@@ -425,7 +425,7 @@ struct Index {
     let fileData: Uint8Array | undefined = undefined;
     try {
       fileData =
-        await this.getUIContext()?.getHostContext()?.resourceManager.getMediaContent($r('app.media.chineseAudio').id);
+        await this.getUIContext()?.getHostContext()?.resourceManager.getMediaContent($r('app.media.ChineseAudio').id);
     } catch (e) {
       Logger.info(`get fileData fail , msg ${e} `)
     }

@@ -1,4 +1,4 @@
-# 应用内拉起卡片管理加桌
+# 在应用内将ArkTS卡片添加到桌面
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ui-widget-open-formmanager_
 

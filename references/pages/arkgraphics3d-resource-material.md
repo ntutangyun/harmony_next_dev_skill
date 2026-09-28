@@ -46,7 +46,7 @@ cullMode：剔除模式，决定是否剔除背面几何体，默认值为BACK�
 
 适用场景：普通实体模型一般开启剔除背面提升渲染效率；透明或双面材质（如树叶、布料）需要禁用剔除以显示完整模型。
 
-blend：是否启用材质的透明效果模式。true表示开启透明，false表示关闭透明，默认值为false。
+blend：材质的透明效果设置，默认值为undefined，即禁用材质的透明属性。
 
 适用场景：表现透明或半透明材质时开启，如玻璃、水面、烟雾、透明塑料等。
 
@@ -57,6 +57,10 @@ alphaCutoff：透明度阈值，取值范围[0,1]，默认值为1。像素的alp
 renderSort：渲染排序设置，用于控制材质在渲染队列中的渲染顺序，确保透明或特殊效果材质正确叠加显示。
 
 适用场景：多重透明材质、叠加特效、UI元素等需要严格渲染顺序的场景。
+
+polygonMode：模型的多边形绘制模式，默认值为FILL。
+
+适用场景：以线框模式渲染3D物体的网格，可直观显示模型的建模结构。
 
 [h2]PBR材质属性
 
@@ -80,7 +84,7 @@ ambientOcclusion：环境光遮蔽贴图，提升材质细节处的阴影层次�
 
 emissive：自发光颜色及纹理，表达材质自发光的效果。
 
-适用场景：灯光、屏幕、发光标志、荧光材料等需要表现光源或自发光效果的材质。
+适用场景：屏幕、发光标志、荧光材料等需要表现光源或自发光效果的材质。
 
 clearCoat：清漆层强度，模拟车漆等具有透明反光层的材质。
 
@@ -137,7 +141,7 @@ if (this.scene === null) {
 
 创建相机对象并设置相机启用状态与观察位置，用于后续展示模型。
 
-this.cam = await this.rf.createCamera({ 'name': 'Camera1' });
+this.cam = await this.rf.createCamera({ name: 'Camera1' });
 this.cam.enabled = true;
 this.cam.position.z = 5;
 
@@ -175,7 +179,7 @@ function createMaterialPromise(): Promise<Material> {
 
 创建Shader资源。
 
-通过SceneResourceFactory.createShader()创建自定义着色器资源，创建的shader资源可在后续步骤中绑定到Shader材质上，实现自定义渲染逻辑。
+通过SceneResourceFactory.createShader()创建自定义着色器资源，创建的Shader资源可在后续步骤中绑定到Shader材质上，实现自定义渲染逻辑。
 
 function createShaderPromise(): Promise<Shader> {
   return new Promise((resolve, reject) => {
@@ -332,7 +336,7 @@ scene.environment.irradianceCoefficients =
 
 创建一个相机对象，并设置其位置和观察目标。然后启用轨道控制功能，让用户可以通过手势旋转和缩放视图。
 
-this.cam = await rf.createCamera({ 'name': 'ClearcoatCam' });
+this.cam = await rf.createCamera({ name: 'ClearcoatCam' });
 this.cam.enabled = true;
 lookAt(this.cam,{x:0,y:0,z:-3},{x:0,y:0,z:0},{x:0,y:1,z:0});
 this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;
@@ -416,7 +420,7 @@ if (this.scene === null) {
 ### Code block 3
 
 ```
-this.cam = await this.rf.createCamera({ 'name': 'Camera1' });
+this.cam = await this.rf.createCamera({ name: 'Camera1' });
 this.cam.enabled = true;
 this.cam.position.z = 5;
 ```
@@ -607,7 +611,7 @@ scene.environment.irradianceCoefficients =
 ### Code block 12
 
 ```
-this.cam = await rf.createCamera({ 'name': 'ClearcoatCam' });
+this.cam = await rf.createCamera({ name: 'ClearcoatCam' });
 this.cam.enabled = true;
 lookAt(this.cam,{x:0,y:0,z:-3},{x:0,y:0,z:0},{x:0,y:1,z:0});
 this.sceneOpt = { scene: this.scene, modelType: ModelType.SURFACE } as SceneOptions;

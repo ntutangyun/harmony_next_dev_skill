@@ -40,6 +40,8 @@ Node-API接口开发流程参考使用Node-API实现跨语言交互开发流程�
 
 参数constructor不是function类型则返回napi_function_expected。
 
+napi_new_instance执行后会触发微任务执行。
+
 cpp部分代码
 
 // napi_new_instance

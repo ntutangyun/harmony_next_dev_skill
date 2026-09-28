@@ -5,3 +5,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/neural-ne
 Neural Network Runtime Kit简介
 
 Neural Network Runtime对接AI推理框架开发指导
+
+Neural Network Runtime Kit术语

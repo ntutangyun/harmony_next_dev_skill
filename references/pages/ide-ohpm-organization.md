@@ -2,13 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-organization_
 
-在ohpm中包的命名格式为@<group>/<package_name>或者<package_name>。
-
-其中group是组织，package_name是包名。当想要上传一个含有组织（例如@ohos/axios）的包时，在ohpm-repo中需要先创建出该组织（例如ohos）才能进行上传。
-
-注意
-
-在发布HAR/HSP包时，建议将组织名称包含在包名（package_name）中，便于管理和识别三方库。
+在ohpm中包的命名格式为@<group>/<package_name>或者<package_name>。其中group是组织，package_name是包名。当想要上传一个含有组织（例如@ohos/axios）的包时，在ohpm-repo中需要先创建出该组织（例如ohos）才能进行上传。在发布HAR/HSP包时，建议将组织名称包含在包名（package_name）中，便于管理和识别三方库。
 
 描述：展示组织的基本信息。
 
