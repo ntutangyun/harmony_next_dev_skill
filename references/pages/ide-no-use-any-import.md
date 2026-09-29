@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-no-use-any-import_
 
-使用import的方式引入对应的模块时，建议按需引用使用到的变量代替“import *”的方式，以减少.ets文件的执行耗时和文件中所有export变量的初始化过程。
+使用import的方式引入对应的模块时，建议按需引用变量代替“import *”的方式，以减少.ets文件的执行耗时和文件中所有export变量的初始化过程。
 
 规则配置
 
@@ -15,7 +15,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-no-us
 
 选项
 
-该规则无需配置额外选项。
+该规则无需配置选项。
 
 正例
 

@@ -278,7 +278,7 @@ Column() {
 
 设置阴影和渐变色
 
-从API version 20开始，支持通过symbolShadow接口实现了SymbolGlyph组件显示阴影效果。
+从API version 20开始，支持通过symbolShadow接口为SymbolGlyph组件设置阴影效果。
 
 @State isActive: boolean = true;
 
@@ -303,7 +303,7 @@ Column() {
   })
 }
 
-从API version 20开始，支持通过shaderStyle接口实现了SymbolGlyph组件显示渐变色效果。
+从API version 20开始，支持通过shaderStyle接口为SymbolGlyph组件设置渐变色效果。
 
 radialGradientOptions: RadialGradientOptions = {
   center: ['50%', '50%'],
@@ -436,7 +436,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song_again')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲二"
@@ -453,7 +453,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.again_song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲三"
@@ -470,7 +470,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song_repeat')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲四"
@@ -487,7 +487,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.repeat_song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲五"
@@ -504,7 +504,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song_play')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲六"
@@ -521,7 +521,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.play_song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲七"
@@ -1023,7 +1023,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song_again')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲二"
@@ -1040,7 +1040,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.again_song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲三"
@@ -1057,7 +1057,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song_repeat')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲四"
@@ -1074,7 +1074,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.repeat_song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲五"
@@ -1091,7 +1091,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.song_play')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲六"
@@ -1108,7 +1108,7 @@ struct SymbolMusicDemo {
         }
       }
 
-      Divider().width(5).color(this.fontColorValue1).width('98%')
+      Divider().color(this.fontColorValue1).width('98%')
       Row() {
         Row() {
           // 请将$r('app.string.play_song')替换为实际资源文件，在本示例中该资源文件的value值为"歌曲七"

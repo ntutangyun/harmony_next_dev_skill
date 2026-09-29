@@ -470,7 +470,7 @@ struct Comp {
 
 [h2]通过BuilderNode切换窗口
 
-@Env用于展示@Component/@ComponentV2所在窗口的环境变量信息。开发者通过BuilderNode切换@Component@ComponentV2所在的窗口实例时，@Env会根据新的窗口获取对应的环境变量信息，并触发关联的UI组件刷新。以SystemProperties.BREAK_POINT为例。
+@Env用于展示@Component/@ComponentV2所在窗口的环境变量信息。开发者通过BuilderNode切换@Component/@ComponentV2所在的窗口实例时，@Env会根据新的窗口获取对应的环境变量信息，并触发关联的UI组件刷新。以SystemProperties.BREAK_POINT为例。
 
 在下面的示例中：
 

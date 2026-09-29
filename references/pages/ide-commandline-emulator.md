@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-comma
 
 从6.1.0 Release版本开始，Command Line Tools集成Emulator工具，支持Windows和macOS平台，可独立进行模拟器创建、启动、关闭、镜像下载等操作。
 
-从26.0.0 Beta1版本开始，支持在Linux平台上使用Emulator，具体使用方式请参考使用Linux版本Emulator工具。
+从26.0.0版本开始，支持在Linux平台上使用Emulator，具体使用方式请参考使用Linux版本Emulator工具。
 
 说明
 
@@ -38,7 +38,7 @@ hdc tconn 127.0.0.1:5555
 
 使用Linux版本Emulator工具
 
-从26.0.0 Beta1版本开始，支持在Linux平台使用模拟器工具。
+从26.0.0版本开始，支持在Linux平台使用模拟器工具。
 
 [h2]环境准备
 

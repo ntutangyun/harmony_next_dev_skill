@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/core-visi
 
 适用场景
 
-输入的两张比对图片是同一个人的照片时，系统返回的比对结果为“同一个人”，置信分数比较高；当两张比对图片不是同一个人的照片时，系统返回的比对结果为“非同一个人”，置信分数很低。可以用于APP中需要用到人脸比对功能的场景，比如娱乐类APP中比较两个人的相似度、与明星的相似度等。
+输入的两张比对图片是同一个人的照片时，系统返回的比对结果为“同一个人”，置信分数比较高；当两张比对图片不是同一个人的照片时，系统返回的比对结果为“非同一个人”，置信分数很低。该功能可用于人脸比对的场景，例如身份验证、人脸解锁等安全相关场景。
 
 效果如下图所示：
 
@@ -104,17 +104,22 @@ Button('人脸比对')
     let visionInfo1: faceComparator.VisionInfo = {
       pixelMap: this.chooseImage1
     };
-    faceComparator.compareFaces(visionInfo, visionInfo1)
-      .then((data: faceComparator.FaceCompareResult) => {
-        let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
-        hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
-        this.dataValues = faceString;
-      })
-      .catch((error: BusinessError) => {
-        hilog.error(0x0000, TAG, `Face comparison failed. Code: ${error.code}, message: ${error.message}`);
-        this.dataValues = `Error: ${error.message}`;
-      });
-  })
+     faceComparator.compareFaces(visionInfo, visionInfo1)
+     .then((data: faceComparator.FaceCompareResult) => {
+       if (data !== undefined) {
+         let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
+         hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
+         this.dataValues = faceString;
+       } else {
+         hilog.error(0x0000, TAG, 'Invalid data received from face comparison');
+         this.dataValues = 'Error: Invalid data';
+       }
+     })
+     .catch((error: BusinessError) => {
+       hilog.error(0x0000, TAG, `Face comparison failed. Code: ${error.code}, message: ${error.message}`);
+       this.dataValues = `Error: ${error.message}`;
+     });
+   })
 
 相似度数值转百分比展示的辅助方法：
 
@@ -197,9 +202,14 @@ struct Index {
           };
           faceComparator.compareFaces(visionInfo, visionInfo1)
             .then((data: faceComparator.FaceCompareResult) => {
-              let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
-              hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
-              this.dataValues = faceString;
+              if (data !== undefined) {
+                let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
+                hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
+                this.dataValues = faceString;
+              } else {
+                hilog.error(0x0000, TAG, 'Invalid data received from face comparison');
+                this.dataValues = 'Error: Invalid data';
+              }
             })
             .catch((error: BusinessError) => {
               hilog.error(0x0000, TAG, `Face comparison failed. Code: ${error.code}, message: ${error.message}`);
@@ -360,17 +370,22 @@ Button('人脸比对')
     let visionInfo1: faceComparator.VisionInfo = {
       pixelMap: this.chooseImage1
     };
-    faceComparator.compareFaces(visionInfo, visionInfo1)
-      .then((data: faceComparator.FaceCompareResult) => {
-        let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
-        hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
-        this.dataValues = faceString;
-      })
-      .catch((error: BusinessError) => {
-        hilog.error(0x0000, TAG, `Face comparison failed. Code: ${error.code}, message: ${error.message}`);
-        this.dataValues = `Error: ${error.message}`;
-      });
-  })
+     faceComparator.compareFaces(visionInfo, visionInfo1)
+     .then((data: faceComparator.FaceCompareResult) => {
+       if (data !== undefined) {
+         let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
+         hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
+         this.dataValues = faceString;
+       } else {
+         hilog.error(0x0000, TAG, 'Invalid data received from face comparison');
+         this.dataValues = 'Error: Invalid data';
+       }
+     })
+     .catch((error: BusinessError) => {
+       hilog.error(0x0000, TAG, `Face comparison failed. Code: ${error.code}, message: ${error.message}`);
+       this.dataValues = `Error: ${error.message}`;
+     });
+   })
 ```
 
 ### Code block 6
@@ -455,9 +470,14 @@ struct Index {
           };
           faceComparator.compareFaces(visionInfo, visionInfo1)
             .then((data: faceComparator.FaceCompareResult) => {
-              let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
-              hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
-              this.dataValues = faceString;
+              if (data !== undefined) {
+                let faceString = `degree of similarity: ${this.toPercentage(data.similarity)}${(data.isSamePerson) ? '. is' : '. no'} same person`;
+                hilog.info(0x0000, TAG, 'faceString data is ' + faceString);
+                this.dataValues = faceString;
+              } else {
+                hilog.error(0x0000, TAG, 'Invalid data received from face comparison');
+                this.dataValues = 'Error: Invalid data';
+              }
             })
             .catch((error: BusinessError) => {
               hilog.error(0x0000, TAG, `Face comparison failed. Code: ${error.code}, message: ${error.message}`);

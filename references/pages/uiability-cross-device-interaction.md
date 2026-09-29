@@ -32,9 +32,9 @@ Call调用示意图如下所示。
 
 图1 Call调用示意图
 
-CallerAbility调用startAbilityByCall()接口获取Caller，并使用Caller对象的call方法向CalleeAbility发送数据。
+CallerAbility调用startAbilityByCall()接口获取Caller，并使用Caller对象的call()方法向CalleeAbility发送数据。
 
-CalleeAbility持有一个Callee对象，通过Callee的on方法注册回调函数，当接收到Caller发送的数据时将会调用对应的回调函数。
+CalleeAbility持有一个Callee对象，通过Callee的on()方法注册回调函数，当接收到Caller发送的数据时将会调用对应的回调函数。
 
 接口说明
 
@@ -43,7 +43,7 @@ Call功能主要接口如下表所示。具体的API详见Caller接口说明。
 表2 Call功能主要接口
 
 接口名	描述
-startAbilityByCall(want: Want): Promise<Caller>	启动指定UIAbility并获取其Caller通信接口，默认为后台启动，通过配置want可实现前台启动，详见startAbilityByCall接口说明。AbilityContext与ServiceExtensionContext均支持该接口。
+startAbilityByCall(want: Want): Promise<Caller>	启动指定UIAbility并获取其Caller通信接口，默认为后台启动，通过配置want可实现前台启动，详见startAbilityByCall()接口说明。AbilityContext与ServiceExtensionContext均支持该接口。
 on(method: string, callback: CalleeCallBack): void	通用组件Callee注册method对应的callback方法。
 off(method: string): void	通用组件Callee解注册method的callback方法。
 call(method: string, data: rpc.Parcelable): Promise<void>	向通用组件Callee发送约定序列化数据。
@@ -55,7 +55,7 @@ on(type: "release", callback: OnReleaseCallback): void	注册通用组件通信�
 
 [h2]创建Callee被调用端
 
-在Callee被调用端，需要实现指定方法的数据接收回调函数、数据的序列化及反序列化方法。在需要接收数据期间，通过on接口注册监听，无需接收数据时通过off接口解除监听。
+在Callee被调用端，需要实现指定方法的数据接收回调函数、数据的序列化及反序列化方法。在需要接收数据期间，通过on()接口注册监听，无需接收数据时通过off()接口解除监听。
 
 需要申请ohos.permission.DISTRIBUTED_DATASYNC权限，配置方式请参见声明权限。
 
@@ -100,7 +100,7 @@ class MyParcelable {
 
 实现Callee.on监听及Callee.off解除监听。
 
-被调用端Callee的监听函数注册时机，取决于应用开发者。注册监听之前的数据不会被处理，取消监听之后的数据不会被处理。如下示例在UIAbility的onCreate注册'MSG_SEND_METHOD'监听，在onDestroy取消监听，收到序列化数据后作相应处理并返回，应用开发者根据实际需要做相应处理。具体示例代码如下：
+被调用端Callee的监听函数注册时机，取决于应用开发者。注册监听之前的数据不会被处理，取消监听之后的数据不会被处理。如下示例在UIAbility的onCreate()注册'MSG_SEND_METHOD'监听，在onDestroy()取消监听，收到序列化数据后作相应处理并返回，应用开发者根据实际需要做相应处理。具体示例代码如下：
 
 import { AbilityConstant, UIAbility, Want, Caller } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -138,7 +138,7 @@ class MyParcelable {
 }
 
 function sendMsgCallback(data: rpc.MessageSequence): rpc.Parcelable {
-  hilog.info(DOMAIN_NUMBER, TAG, '%{public}s', 'CalleeSortFunc called');
+  hilog.info(DOMAIN_NUMBER, TAG, '%{public}s', 'sendMsgCallback called');
 
   // 获取Caller发送的序列化数据
   let receivedData: MyParcelable = new MyParcelable(0, '');
@@ -195,7 +195,7 @@ import { UIAbility } from '@kit.AbilityKit';
 
 获取Caller通信接口。
 
-Ability的context属性实现了startAbilityByCall方法，用于获取指定通用组Caller通信接口。如下示例通过this.context获取Ability实例的context属性，使用startAbilityByCall拉起Callee被调用端并获取Caller通信接口，注册Caller的onRelease和onRemoteStateChange监听。应用开发者根据实际业务需要做相应处理。
+Ability的context属性实现了startAbilityByCall()方法，用于获取指定通用组件Caller通信接口。如下示例通过this.context获取Ability实例的context属性，使用startAbilityByCall拉起Callee被调用端并获取Caller通信接口，注册Caller的onRelease()和onRemoteStateChange()监听。应用开发者根据实际业务需要做相应处理。
 
 import { BusinessError } from '@kit.BasicServicesKit';
 import { Caller, common } from '@kit.AbilityKit';
@@ -337,7 +337,7 @@ export default class EntryAbility extends UIAbility {
   // ...
 }
 
-如下示例调用callWithResult接口，向Callee被调用端发送待处理的数据originMsg，并将CallSendMsg方法处理完毕的数据赋值给backMsg。
+如下示例调用callWithResult()接口，向Callee被调用端发送待处理的数据originMsg，并将CallSendMsg方法处理完毕的数据赋值给backMsg。
 
 import { UIAbility, Caller } from '@kit.AbilityKit';
 import { rpc } from '@kit.IPCKit';
@@ -401,7 +401,7 @@ export default class EntryAbility extends UIAbility {
 
 [h2]释放Caller通信接口
 
-Caller不再使用后，应用开发者可以通过release接口释放Caller。
+Caller不再使用后，应用开发者可以通过release()接口释放Caller。
 
 import { UIAbility, Caller } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -498,7 +498,7 @@ class MyParcelable {
 }
 
 function sendMsgCallback(data: rpc.MessageSequence): rpc.Parcelable {
-  hilog.info(DOMAIN_NUMBER, TAG, '%{public}s', 'CalleeSortFunc called');
+  hilog.info(DOMAIN_NUMBER, TAG, '%{public}s', 'sendMsgCallback called');
 
   // 获取Caller发送的序列化数据
   let receivedData: MyParcelable = new MyParcelable(0, '');

@@ -156,7 +156,7 @@ mediaKeySession.generateMediaKeyRequest("video/mp4", initData, drm.MediaKeyType.
   console.error("generateMediaKeyRequest err end", err.code);
 });
 
-（可选）调用restoreOfflineMediaKey，恢复离线媒体密钥。
+（可选）调用restoreOfflineMediaKeys，恢复离线媒体密钥。
 
 mediaKeySession.restoreOfflineMediaKeys(offlineMediaKeyId).then(() => {
   console.info("restoreOfflineMediaKeys success.");

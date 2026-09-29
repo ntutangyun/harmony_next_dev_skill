@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从6.0.0(20)版本开始，新增支持设置附带横滑的列表样式。
 
-应用使用HdsListItem组件实现多设备上的系统列表的横滑动效按钮的内容和样式。
+应用使用HdsListItem (列表项)组件实现多设备上的系统列表的横滑动效按钮的内容和样式。
 
 开发步骤
 

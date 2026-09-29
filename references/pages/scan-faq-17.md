@@ -79,13 +79,14 @@ export class ScanService {
   // 启动自定义界面扫码
   private startCustomScan(options: scanBarcode.ScanOptions, viewControl: customScan.ViewControl): void {
     try {
-      hilog.info(0x0001, '[Scan Sample]', `Start customScan start. ${JSON.stringify(viewControl)}`);
+      hilog.info(0x0001, '[Scan Sample]',
+        `Start customScan start. width: ${viewControl.width}, height: ${viewControl.height}`);
       customScan.start(viewControl, (err: BusinessError, data: Array<scanBarcode.ScanResult>) => {
         if (this.retryOnCondition(err, options, viewControl)) {
           return;
         }
         hilog.info(0x0001, '[Scan Sample]',
-          `Succeeded in getting ScanResult by callback, result is ${JSON.stringify(data)}`);
+          `Succeeded in getting ScanResult by callback, result length: ${data.length}`);
         // 从data获取扫码结果并进行业务处理
         // ...
       });
@@ -197,13 +198,14 @@ export class ScanService {
   // 启动自定义界面扫码
   private startCustomScan(options: scanBarcode.ScanOptions, viewControl: customScan.ViewControl): void {
     try {
-      hilog.info(0x0001, '[Scan Sample]', `Start customScan start. ${JSON.stringify(viewControl)}`);
+      hilog.info(0x0001, '[Scan Sample]',
+        `Start customScan start. width: ${viewControl.width}, height: ${viewControl.height}`);
       customScan.start(viewControl, (err: BusinessError, data: Array<scanBarcode.ScanResult>) => {
         if (this.retryOnCondition(err, options, viewControl)) {
           return;
         }
         hilog.info(0x0001, '[Scan Sample]',
-          `Succeeded in getting ScanResult by callback, result is ${JSON.stringify(data)}`);
+          `Succeeded in getting ScanResult by callback, result length: ${data.length}`);
         // 从data获取扫码结果并进行业务处理
         // ...
       });

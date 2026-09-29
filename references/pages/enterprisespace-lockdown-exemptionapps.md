@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-lockdown-exemptionapps_
 
-从6.0.2(22)开始，支持设置和查询深度冻结豁免名单的能力。
+从API版本6.0.2(22)开始，支持设置和查询深度冻结豁免名单的能力。
 
 场景介绍
 
@@ -61,15 +61,15 @@ import { LockDownExemptionApi } from '../api/LockDownExemptionApi'
 @Component
 struct LockDownExemptionPage {
   async setLockdownExemptionApps() {
-    let workspaceId: number = 100;
+    let workspaceId: number = 100; // 空间ID，由用户传入
     let appIds: string[] = [
-      'com.example.test'
+      'com.example.test_BN************' // 应用的唯一标识，请根据实际情况进行替换。
     ]
     LockDownExemptionApi.setLockdownExemptionApps(workspaceId, appIds);
   }
 
   async getLockdownExemptionApps() {
-    let workspaceId: number = 100;
+    let workspaceId: number = 100; // 空间ID，由用户传入
     let appIds: string[] = await LockDownExemptionApi.getLockdownExemptionApps(workspaceId);
     // 获取冻结豁免应用后， 处理后置逻辑
   }
@@ -165,15 +165,15 @@ import { LockDownExemptionApi } from '../api/LockDownExemptionApi'
 @Component
 struct LockDownExemptionPage {
   async setLockdownExemptionApps() {
-    let workspaceId: number = 100;
+    let workspaceId: number = 100; // 空间ID，由用户传入
     let appIds: string[] = [
-      'com.example.test'
+      'com.example.test_BN************' // 应用的唯一标识，请根据实际情况进行替换。
     ]
     LockDownExemptionApi.setLockdownExemptionApps(workspaceId, appIds);
   }
 
   async getLockdownExemptionApps() {
-    let workspaceId: number = 100;
+    let workspaceId: number = 100; // 空间ID，由用户传入
     let appIds: string[] = await LockDownExemptionApi.getLockdownExemptionApps(workspaceId);
     // 获取冻结豁免应用后， 处理后置逻辑
   }

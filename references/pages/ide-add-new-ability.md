@@ -22,7 +22,7 @@ Stage模型添加Ability
 
 从DevEco Studio 6.1.0 Beta2版本开始，支持在API 23及以上Car设备工程的模块中添加RemoteNotificationAbility。
 
-从26.0.0 Beta2版本开始，支持在API 26.0.0及以上工程的模块中添加Agent、AgentUI。
+从26.0.0版本开始，支持在API 26.0.0及以上工程的模块中添加Agent、AgentUI。
 
 EmbeddedUIExtensionAbility：用于提供跨进程界面嵌入的能力。
 

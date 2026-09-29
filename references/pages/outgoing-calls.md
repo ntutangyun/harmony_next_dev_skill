@@ -61,7 +61,7 @@ voipCall.on('voipCallUiEvent', callback => {
 
 // 构建上报去电的参数
 let voipCallAttribute: voipCall.VoipCallAttribute = {
-  callId: '1234567890',
+  callId: 'callId123',
   voipCallType: voipCall.VoipCallType.VOIP_CALL_VOICE,
   userName: 'Jack',
   userProfile: image.createPixelMapSync(new ArrayBuffer(100), { size: { width: 90, height: 90 } }),
@@ -134,7 +134,7 @@ voipCall.on('voipCallUiEvent', callback => {
 ```
 // 构建上报去电的参数
 let voipCallAttribute: voipCall.VoipCallAttribute = {
-  callId: '1234567890',
+  callId: 'callId123',
   voipCallType: voipCall.VoipCallType.VOIP_CALL_VOICE,
   userName: 'Jack',
   userProfile: image.createPixelMapSync(new ArrayBuffer(100), { size: { width: 90, height: 90 } }),

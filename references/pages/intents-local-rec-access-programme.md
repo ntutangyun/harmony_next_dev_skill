@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/intents-l
 
 意图声明
 
-以“搜索旅游攻略”特性为例，开发者首先要注册“查看旅游攻略”（viewTravelGuides），其他意图见各垂域意图Schema。
+以“搜索旅游攻略”特性为例，开发者首先要注册“查看旅游攻略”（ViewTravelGuides），其他意图见各垂域意图Schema。
 
 开发者需要编辑对应的意图配置insight_intent.json文件实现意图声明。insight_intent.json文件需要放置在任意一个module下面的指定目录：src/main/resources/base/profile/insight_intent.json，并且整个工程中只能存在一个insight_intent.json文件。
 

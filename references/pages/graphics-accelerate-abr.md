@@ -38,12 +38,12 @@ Buffer渲染处理。
 
 在“src/main/module.json5”的module层级中添加以下配置。
 
-"metadata": [
-  {
-    "name": "GraphicsAccelerateKit_ABR",
-    "value": "true"
-  },
-],
+   "metadata": [
+     {
+       "name": "GraphicsAccelerateKit_ABR",
+       "value": "true"
+     },
+   ],
 
 [h2]头文件引用
 
@@ -142,6 +142,8 @@ if (errorCode != ABR_SUCCESS) {
 
 选择着色器处理耗时较高的Buffer，并在Buffer渲染前绑定帧缓冲。
 
+FBO fbo{};
+// ...
 // 创建帧缓冲对象
 glGenFramebuffers(1, &fbo.fbo_);
 CheckOpenGLError();
@@ -171,7 +173,7 @@ if (errorCode != ABR_SUCCESS) {
 ABR_ErrorCode errorCode = HMS_ABR_DestroyContext(&context_);
 predictionPaused_ = (errorCode == ABR_SUCCESS);
 if (errorCode != ABR_SUCCESS) {
-    GOLOGE("HMS_ABR_ContextDestroy execution failed, error code: %d.", errorCode);
+    GOLOGE("HMS_ABR_DestroyContext execution failed, error code: %d.", errorCode);
     return false;
 }
 
@@ -180,12 +182,12 @@ if (errorCode != ABR_SUCCESS) {
 ### Code block 1
 
 ```
-"metadata": [
-  {
-    "name": "GraphicsAccelerateKit_ABR",
-    "value": "true"
-  },
-],
+   "metadata": [
+     {
+       "name": "GraphicsAccelerateKit_ABR",
+       "value": "true"
+     },
+   ],
 ```
 
 ### Code block 2
@@ -286,6 +288,8 @@ if (errorCode != ABR_SUCCESS) {
 ### Code block 9
 
 ```
+FBO fbo{};
+// ...
 // 创建帧缓冲对象
 glGenFramebuffers(1, &fbo.fbo_);
 CheckOpenGLError();
@@ -313,7 +317,7 @@ if (errorCode != ABR_SUCCESS) {
 ABR_ErrorCode errorCode = HMS_ABR_DestroyContext(&context_);
 predictionPaused_ = (errorCode == ABR_SUCCESS);
 if (errorCode != ABR_SUCCESS) {
-    GOLOGE("HMS_ABR_ContextDestroy execution failed, error code: %d.", errorCode);
+    GOLOGE("HMS_ABR_DestroyContext execution failed, error code: %d.", errorCode);
     return false;
 }
 ```

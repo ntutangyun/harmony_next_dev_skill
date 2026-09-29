@@ -32,7 +32,7 @@ API version 19之前，@ObjectLink只能接收@Observed装饰的类实例；API 
 
 @ObjectLink变量装饰器	说明
 装饰器参数	无。
-允许装饰的变量类型	支持继承Date、Array的class实例。 API version 11及以后支持继承Map、Set的class实例以及@Observed装饰类和undefined或null组成的联合类型，比如ClassA | ClassB、 ClassA | undefined 或者 ClassA | null, 示例请参考@ObjectLink支持联合类型。 API version 19之前，必须为被@Observed装饰的class实例。 API version 19及以后，@ObjectLink可以被复杂类型初始化，即class、object或built-in类型。但当观察嵌套类型时，仍需其接收@Observed装饰的类实例或makeV1Observed的返回值。 说明： @ObjectLink不支持简单类型，如果开发者需要使用简单类型，可以使用@Prop。
+允许装饰的变量类型	支持继承Date、Array的class实例。 API version 11及以后支持继承Map、Set的class实例以及@Observed装饰类和undefined或null组成的联合类型，比如ClassA | ClassB、 ClassA | undefined 或者 ClassA | null，示例请参考@ObjectLink支持联合类型。 API version 19之前，必须为被@Observed装饰的class实例。 API version 19及以后，@ObjectLink可以被复杂类型初始化，即class、object或built-in类型。但当观察嵌套类型时，仍需其接收@Observed装饰的类实例或makeV1Observed的返回值。 说明： @ObjectLink不支持简单类型，如果开发者需要使用简单类型，可以使用@Prop。
 被装饰变量的初始值	禁止本地初始化。
 
 @ObjectLink的属性可以被改变，但不允许整体赋值，即@ObjectLink装饰的变量是只读的。
@@ -167,7 +167,7 @@ b. 子组件中@ObjectLink装饰的变量从父组件初始化，接收被@Obser
 
 API version 19前，@ObjectLink装饰的变量类型必须是显式地由@Observed装饰的类。如果未指定类型，或不是@Observed装饰的class，编译时报错。
 
-API version 19及以后，@ObjectLink也可以被makeV1Observed的返回值初始化，若@ObjectLink接收未使用@Observed装饰的class或makeV1Observed返回值进行初始化，则会有运行时告警日志。
+API version 19及以后，@ObjectLink也可以被makeV1Observed的返回值初始化，若@ObjectLink接收的初始化值既不是@Observed装饰的class实例，也不是makeV1Observed的返回值，则会有运行时告警日志。
 
 class Test {
   msg: number;
@@ -1056,7 +1056,7 @@ struct MyView {
 
 构造一个子组件，用于单独渲染Child的实例。 该子组件可以使用@ObjectLink child : Child或@Prop child : Child。通常会使用@ObjectLink，除非子组件需要对其Child对象进行本地修改。
 
-嵌套的Child必须用@Observed装饰。当在Cousin中创建Child对象时（本示例中的Cousin(10, 20, 30）)，它将被包装在ES6代理中，当Child属性更改时（this.cousin.child.childId += 1），该代码将修改通知到@ObjectLink变量。
+嵌套的Child必须用@Observed装饰。当在Cousin中创建Child对象时（本示例中的Cousin(10, 20, 30)），它将被包装在ES6代理中，当Child属性更改时（this.cousin.child.childId += 1），该代码将修改通知到@ObjectLink变量。
 
 【正例】
 
@@ -2078,7 +2078,7 @@ struct MyComponent {
 @Reusable
 @Component
 struct ChildComponent {
-  // 使用@ObjectLink接受@Observed类数据
+  // 使用@ObjectLink接收@Observed类数据
   @ObjectLink data: StringData;
 
   aboutToAppear(): void {
@@ -4019,7 +4019,7 @@ struct MyComponent {
 @Reusable
 @Component
 struct ChildComponent {
-  // 使用@ObjectLink接受@Observed类数据
+  // 使用@ObjectLink接收@Observed类数据
   @ObjectLink data: StringData;
 
   aboutToAppear(): void {

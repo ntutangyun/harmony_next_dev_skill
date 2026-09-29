@@ -16,8 +16,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/window-ro
 
 示例代码如下：
 
-import { window } from '@kit.ArkUI'
-import common from '@ohos.app.ability.common';
+import { window } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 import { Callback } from '@kit.BasicServicesKit';
 import { display } from '@kit.ArkUI';
 
@@ -196,8 +196,8 @@ struct SpecificSceneSetOrientationIndex {
 ### Code block 1
 
 ```
-import { window } from '@kit.ArkUI'
-import common from '@ohos.app.ability.common';
+import { window } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 import { Callback } from '@kit.BasicServicesKit';
 import { display } from '@kit.ArkUI';
 

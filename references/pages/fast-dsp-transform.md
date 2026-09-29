@@ -34,14 +34,14 @@ void HMS_FAST_FFT_DestroyConfig (FAST_FFTConfig* config)	销毁FFT配置并释�
 [h2]正向变换
 
 名称	描述
-FAST_ErrorCode HMS_FAST_FFT_ForwardTransform (FAST_FFTConfig* config, uint32_t length, const float input[], float outputRe[], float outputIm[])	计算单精度实数信号的FFT（快速傅里叶变换）。
-FAST_ErrorCode HMS_FAST_FFT_ForwardTransformD (FAST_FFTConfig* config, uint32_t length, const double input[], double outputRe[], double outputIm[])	计算双精度实数信号FFT。
+FAST_ErrorCode HMS_FAST_FFT_ForwardTransform (FAST_FFTConfig* config, uint32_t length, const float input[], float outputRe[], float outputIm[])	计算单精度实数时域信号的DFT。
+FAST_ErrorCode HMS_FAST_FFT_ForwardTransformD (FAST_FFTConfig* config, uint32_t length, const double input[], double outputRe[], double outputIm[])	计算双精度实数时域信号的DFT。
 
 [h2]逆向变换
 
 名称	描述
-FAST_ErrorCode HMS_FAST_FFT_InverseTransform (FAST_FFTConfig* config, uint32_t length, const float inputRe[], const float inputIm[], float output[])	计算单精度复数频域信号的逆FFT。
-FAST_ErrorCode HMS_FAST_FFT_InverseTransformD (FAST_FFTConfig* config, uint32_t length, const double inputRe[], const double inputIm[], double output[])	计算双精度复数频域信号的逆FFT。
+FAST_ErrorCode HMS_FAST_FFT_InverseTransform (FAST_FFTConfig* config, uint32_t length, const float inputRe[], const float inputIm[], float output[])	计算单精度复数频域序列的逆DFT。
+FAST_ErrorCode HMS_FAST_FFT_InverseTransformD (FAST_FFTConfig* config, uint32_t length, const double inputRe[], const double inputIm[], double output[])	计算双精度复数频域序列的逆DFT。
 
 开发步骤
 

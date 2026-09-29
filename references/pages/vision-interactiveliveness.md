@@ -28,6 +28,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/vision-in
 
 人脸活体检测服务暂不支持横屏、分屏进行检测。
 
+人脸图像清晰、完整，环境光线充足，无强光直射，无反光，无遮挡。
+
 接口说明
 
 以下仅列出demo中调用的部分主要接口，具体API说明详见API参考。

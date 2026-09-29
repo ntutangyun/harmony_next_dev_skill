@@ -19,7 +19,7 @@ let dialogWindowClass: window.Window | undefined = undefined;
     };
     window.createWindow(config, (err, data) => {
       if (err?.code) {
-        console.error('Failed to create the dialogWindow. Cause: ' + JSON.stringify(err));
+        console.error(`Failed to create the dialogWindow. Cause code: ${err.code}, message: ${err.message}`);
         return;
       }
       console.info('Succeeded in creating the dialogWindow. Data: ' + JSON.stringify(data));
@@ -36,7 +36,7 @@ let dialogWindowClass: window.Window | undefined = undefined;
 // 2.模态窗口创建成功后，设置模态窗口的位置、大小及相关属性等。
 dialogWindowClass.moveWindowTo(100, 100, (err) => {
   if (err?.code) {
-    console.error('Failed to move the window. Cause:' + JSON.stringify(err));
+    console.error(`Failed to move the window. Cause code: ${err.code}, message: ${err.message}`);
     return;
   }
   console.info('Succeeded in moving the window.');
@@ -46,7 +46,7 @@ dialogWindowClass.moveWindowTo(100, 100, (err) => {
   }
   dialogWindowClass.resize(500, 500, (err) => {
     if (err?.code) {
-      console.error('Failed to change the window size. Cause:' + JSON.stringify(err));
+      console.error(`Failed to change the window size. Cause code: ${err.code}, message: ${err.message}`);
       return;
     }
     console.info('Succeeded in changing the window size.');
@@ -60,14 +60,14 @@ dialogWindowClass.moveWindowTo(100, 100, (err) => {
 // 3.为模态窗口加载对应的目标页面。
 dialogWindowClass.setUIContent('pages/DialogWindow', (err) => {
   if (err?.code) {
-    console.error('Failed to load the content. Cause:' + JSON.stringify(err));
+    console.error(`Failed to load the content. Cause code: ${err.code}, message: ${err.message}`);
     return;
   }
   console.info('Succeeded in loading the content.');
   // 显示模态窗口。
   (dialogWindowClass as window.Window).showWindow((err) => {
     if (err?.code) {
-      console.error('Failed to show the window. Cause: ' + JSON.stringify(err));
+      console.error(`Failed to show the window. Cause code: ${err.code}, message: ${err.message}`);
       return;
     }
     console.info('Succeeded in showing the window.');
@@ -78,11 +78,11 @@ dialogWindowClass.setUIContent('pages/DialogWindow', (err) => {
 
 当不再需要模态窗口时，可根据具体实现逻辑，使用destroyWindow()接口销毁模态窗口。
 
-// 4.销毁子窗口。当不再需要子窗口时，可根据具体实现逻辑，使用destroy对其进行销毁。
+// 4.销毁模态窗口。当不再需要模态窗口时，可根据具体实现逻辑，使用destroy对其进行销毁。
 dialogWindowClass.destroyWindow((err: BusinessError) => {
   let errCode: number = err.code;
   if (errCode) {
-    console.error('Failed to destroy the window. Cause: ' + JSON.stringify(err));
+    console.error(`Failed to destroy the window. Cause code: ${err.code}, message: ${err.message}`);
     return;
   }
   console.info('Succeeded in destroying the window.');
@@ -102,7 +102,7 @@ let dialogWindowClass: window.Window | undefined = undefined;
     };
     window.createWindow(config, (err, data) => {
       if (err?.code) {
-        console.error('Failed to create the dialogWindow. Cause: ' + JSON.stringify(err));
+        console.error(`Failed to create the dialogWindow. Cause code: ${err.code}, message: ${err.message}`);
         return;
       }
       console.info('Succeeded in creating the dialogWindow. Data: ' + JSON.stringify(data));
@@ -117,7 +117,7 @@ let dialogWindowClass: window.Window | undefined = undefined;
 // 2.模态窗口创建成功后，设置模态窗口的位置、大小及相关属性等。
 dialogWindowClass.moveWindowTo(100, 100, (err) => {
   if (err?.code) {
-    console.error('Failed to move the window. Cause:' + JSON.stringify(err));
+    console.error(`Failed to move the window. Cause code: ${err.code}, message: ${err.message}`);
     return;
   }
   console.info('Succeeded in moving the window.');
@@ -127,7 +127,7 @@ dialogWindowClass.moveWindowTo(100, 100, (err) => {
   }
   dialogWindowClass.resize(500, 500, (err) => {
     if (err?.code) {
-      console.error('Failed to change the window size. Cause:' + JSON.stringify(err));
+      console.error(`Failed to change the window size. Cause code: ${err.code}, message: ${err.message}`);
       return;
     }
     console.info('Succeeded in changing the window size.');
@@ -141,14 +141,14 @@ dialogWindowClass.moveWindowTo(100, 100, (err) => {
 // 3.为模态窗口加载对应的目标页面。
 dialogWindowClass.setUIContent('pages/DialogWindow', (err) => {
   if (err?.code) {
-    console.error('Failed to load the content. Cause:' + JSON.stringify(err));
+    console.error(`Failed to load the content. Cause code: ${err.code}, message: ${err.message}`);
     return;
   }
   console.info('Succeeded in loading the content.');
   // 显示模态窗口。
   (dialogWindowClass as window.Window).showWindow((err) => {
     if (err?.code) {
-      console.error('Failed to show the window. Cause: ' + JSON.stringify(err));
+      console.error(`Failed to show the window. Cause code: ${err.code}, message: ${err.message}`);
       return;
     }
     console.info('Succeeded in showing the window.');
@@ -159,11 +159,11 @@ dialogWindowClass.setUIContent('pages/DialogWindow', (err) => {
 ### Code block 4
 
 ```
-// 4.销毁子窗口。当不再需要子窗口时，可根据具体实现逻辑，使用destroy对其进行销毁。
+// 4.销毁模态窗口。当不再需要模态窗口时，可根据具体实现逻辑，使用destroy对其进行销毁。
 dialogWindowClass.destroyWindow((err: BusinessError) => {
   let errCode: number = err.code;
   if (errCode) {
-    console.error('Failed to destroy the window. Cause: ' + JSON.stringify(err));
+    console.error(`Failed to destroy the window. Cause code: ${err.code}, message: ${err.message}`);
     return;
   }
   console.info('Succeeded in destroying the window.');

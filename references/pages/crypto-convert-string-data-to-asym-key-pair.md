@@ -27,6 +27,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-co
 以Promise方式生成RSA密钥对为例：
 
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 let priKeyPkcs1Str1024: string =
   '-----BEGIN RSA PRIVATE KEY-----\n' +
@@ -52,14 +53,19 @@ let publicPkcs1Str1024: string =
     '-----END RSA PUBLIC KEY-----\n';
 
 async function testPkcs1ToPkcs8ByPromise() {
-  let asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024');
-  let keyPair = await asyKeyGenerator.convertPemKey(publicPkcs1Str1024, priKeyPkcs1Str1024);
-  let priPemKey = keyPair.priKey;
-  let pubPemKey = keyPair.pubKey;
-  let priString = priPemKey.getEncodedPem('PKCS8');
-  let pubString = pubPemKey.getEncodedPem('X509');
-  console.info('[promise]TestPkcs1ToPkcs8ByPromise priString output: ' + priString);
-  console.info('[promise]TestPkcs1ToPkcs8ByPromise pubString output: ' + pubString);
+  try {
+    let asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024');
+    let keyPair = await asyKeyGenerator.convertPemKey(publicPkcs1Str1024, priKeyPkcs1Str1024);
+    let priPemKey = keyPair.priKey;
+    let pubPemKey = keyPair.pubKey;
+    let priString = priPemKey.getEncodedPem('PKCS8');
+    let pubString = pubPemKey.getEncodedPem('X509');
+    console.info('[promise]TestPkcs1ToPkcs8ByPromise priString output: ' + priString);
+    console.info('[promise]TestPkcs1ToPkcs8ByPromise pubString output: ' + pubString);
+  } catch (err) {
+    let e: BusinessError = err as BusinessError;
+    console.error(`testPkcs1ToPkcs8ByPromise failed: errCode: ${e.code}, errMsg: ${e.message}`);
+  }
 }
 
 同步返回结果（调用方法convertPemKeySync）：
@@ -115,6 +121,7 @@ function testPkcs1ToPkcs8BySync() {
 
 ```
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 let priKeyPkcs1Str1024: string =
   '-----BEGIN RSA PRIVATE KEY-----\n' +
@@ -140,14 +147,19 @@ let publicPkcs1Str1024: string =
     '-----END RSA PUBLIC KEY-----\n';
 
 async function testPkcs1ToPkcs8ByPromise() {
-  let asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024');
-  let keyPair = await asyKeyGenerator.convertPemKey(publicPkcs1Str1024, priKeyPkcs1Str1024);
-  let priPemKey = keyPair.priKey;
-  let pubPemKey = keyPair.pubKey;
-  let priString = priPemKey.getEncodedPem('PKCS8');
-  let pubString = pubPemKey.getEncodedPem('X509');
-  console.info('[promise]TestPkcs1ToPkcs8ByPromise priString output: ' + priString);
-  console.info('[promise]TestPkcs1ToPkcs8ByPromise pubString output: ' + pubString);
+  try {
+    let asyKeyGenerator = cryptoFramework.createAsyKeyGenerator('RSA1024');
+    let keyPair = await asyKeyGenerator.convertPemKey(publicPkcs1Str1024, priKeyPkcs1Str1024);
+    let priPemKey = keyPair.priKey;
+    let pubPemKey = keyPair.pubKey;
+    let priString = priPemKey.getEncodedPem('PKCS8');
+    let pubString = pubPemKey.getEncodedPem('X509');
+    console.info('[promise]TestPkcs1ToPkcs8ByPromise priString output: ' + priString);
+    console.info('[promise]TestPkcs1ToPkcs8ByPromise pubString output: ' + pubString);
+  } catch (err) {
+    let e: BusinessError = err as BusinessError;
+    console.error(`testPkcs1ToPkcs8ByPromise failed: errCode: ${e.code}, errMsg: ${e.message}`);
+  }
 }
 ```
 

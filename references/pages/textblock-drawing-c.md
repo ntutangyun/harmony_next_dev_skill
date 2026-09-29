@@ -36,7 +36,7 @@ OH_Drawing_FontSetTextSize(font, value100_);
 const char *str = "Hello world";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 释放字块对象
@@ -71,7 +71,7 @@ OH_Drawing_FontSetTextSize(font, value150_);
 const char *str = "Hello world";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 去除描边效果
@@ -93,7 +93,7 @@ OH_Drawing_Brush *brush = OH_Drawing_BrushCreate();
 OH_Drawing_Pen *pen = OH_Drawing_PenCreate();
 // 设置画刷抗锯齿
 OH_Drawing_BrushSetAntiAlias(brush, true);
-// 设置画刷描边颜色
+// 设置画刷填充颜色
 OH_Drawing_BrushSetColor(brush, OH_Drawing_ColorSetArgb(0xFF, 0xFF, 0xFF, 0xFF));
 // 设置画笔抗锯齿
 OH_Drawing_PenSetAntiAlias(pen, true);
@@ -110,14 +110,16 @@ OH_Drawing_FontSetTextSize(font, value150_);
 const char *str = "你好";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 去除描边效果
 OH_Drawing_CanvasDetachPen(canvas);
-// 设置画刷描边效果
+// 设置画刷填充效果
 OH_Drawing_CanvasAttachBrush(canvas, brush);
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
+// 去除画布中的画刷
+OH_Drawing_CanvasDetachBrush(canvas);
 
 // 销毁各类对象
 OH_Drawing_TextBlobDestroy(textBlob);
@@ -141,7 +143,7 @@ uint32_t colors[] = {0xFFFFFF00, 0xFFFF0000, 0xFF0000FF};
 float pos[] = {0.0f, 0.5f, 1.0f};
 // 创建线性渐变着色器效果
 OH_Drawing_ShaderEffect *colorShaderEffect =
-    OH_Drawing_ShaderEffectCreateLinearGradient(startPt, endPt, colors, pos, 3, OH_Drawing_TileMode::CLAMP);
+    OH_Drawing_ShaderEffectCreateLinearGradient(startPt, endPt, colors, pos, 3, CLAMP);
 // 创建画刷对象
 OH_Drawing_Brush *brush = OH_Drawing_BrushCreate();
 // 基于画刷设置着色器效果
@@ -155,7 +157,7 @@ OH_Drawing_FontSetTextSize(font, value150_);
 const char *str = "Hello world";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 取消填充效果
@@ -164,6 +166,9 @@ OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_TextBlobDestroy(textBlob);
 OH_Drawing_FontDestroy(font);
 OH_Drawing_BrushDestroy(brush);
+OH_Drawing_ShaderEffectDestroy(colorShaderEffect);
+OH_Drawing_PointDestroy(startPt);
+OH_Drawing_PointDestroy(endPt);
 
 主题字体
 
@@ -181,7 +186,7 @@ OH_Drawing_FontSetThemeFontFollowed(font, true);
 const char *str = "Hello World";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 释放字块对象
@@ -272,7 +277,7 @@ OH_Drawing_FontSetTextSize(font, value100_);
 const char *str = "Hello world";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 释放字块对象
@@ -301,7 +306,7 @@ OH_Drawing_FontSetTextSize(font, value150_);
 const char *str = "Hello world";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 去除描边效果
@@ -321,7 +326,7 @@ OH_Drawing_Brush *brush = OH_Drawing_BrushCreate();
 OH_Drawing_Pen *pen = OH_Drawing_PenCreate();
 // 设置画刷抗锯齿
 OH_Drawing_BrushSetAntiAlias(brush, true);
-// 设置画刷描边颜色
+// 设置画刷填充颜色
 OH_Drawing_BrushSetColor(brush, OH_Drawing_ColorSetArgb(0xFF, 0xFF, 0xFF, 0xFF));
 // 设置画笔抗锯齿
 OH_Drawing_PenSetAntiAlias(pen, true);
@@ -338,14 +343,16 @@ OH_Drawing_FontSetTextSize(font, value150_);
 const char *str = "你好";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 去除描边效果
 OH_Drawing_CanvasDetachPen(canvas);
-// 设置画刷描边效果
+// 设置画刷填充效果
 OH_Drawing_CanvasAttachBrush(canvas, brush);
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
+// 去除画布中的画刷
+OH_Drawing_CanvasDetachBrush(canvas);
 
 // 销毁各类对象
 OH_Drawing_TextBlobDestroy(textBlob);
@@ -367,7 +374,7 @@ uint32_t colors[] = {0xFFFFFF00, 0xFFFF0000, 0xFF0000FF};
 float pos[] = {0.0f, 0.5f, 1.0f};
 // 创建线性渐变着色器效果
 OH_Drawing_ShaderEffect *colorShaderEffect =
-    OH_Drawing_ShaderEffectCreateLinearGradient(startPt, endPt, colors, pos, 3, OH_Drawing_TileMode::CLAMP);
+    OH_Drawing_ShaderEffectCreateLinearGradient(startPt, endPt, colors, pos, 3, CLAMP);
 // 创建画刷对象
 OH_Drawing_Brush *brush = OH_Drawing_BrushCreate();
 // 基于画刷设置着色器效果
@@ -381,7 +388,7 @@ OH_Drawing_FontSetTextSize(font, value150_);
 const char *str = "Hello world";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 取消填充效果
@@ -390,6 +397,9 @@ OH_Drawing_CanvasDetachBrush(canvas);
 OH_Drawing_TextBlobDestroy(textBlob);
 OH_Drawing_FontDestroy(font);
 OH_Drawing_BrushDestroy(brush);
+OH_Drawing_ShaderEffectDestroy(colorShaderEffect);
+OH_Drawing_PointDestroy(startPt);
+OH_Drawing_PointDestroy(endPt);
 ```
 
 ### Code block 5
@@ -405,7 +415,7 @@ OH_Drawing_FontSetThemeFontFollowed(font, true);
 const char *str = "Hello World";
 // 创建字块对象
 OH_Drawing_TextBlob *textBlob =
-    OH_Drawing_TextBlobCreateFromString(str, font, OH_Drawing_TextEncoding::TEXT_ENCODING_UTF8);
+    OH_Drawing_TextBlobCreateFromString(str, font, TEXT_ENCODING_UTF8);
 // 绘制字块
 OH_Drawing_CanvasDrawTextBlob(canvas, textBlob, value200_, value800_);
 // 释放字块对象

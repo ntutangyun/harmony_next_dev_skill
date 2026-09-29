@@ -2,8 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/command-testing_
 
-支持通过命令行方式执行测试任务，将自身测试框架对接鸿蒙原生测试框架，实现原有测试资产的继承。
-
 环境准备
 
 硬件环境操作系统：
@@ -94,9 +92,7 @@ Win停止任务 cmd窗口执行命令：DevEcoTestingConsole.bat -stopTask "f3**
 
 版本客户端更新测试服务
 
-Windows 和 Mac 命令行启动任务参数拼接 -update参数 true/false 不会更新客户端，只更新测试服务。
-
-不设置-update（默认为false）或传入为false时，不更新测试服务，但若测试服务在本地不存在时，即使-update参数为false，也会进行下载。当传入-update为true时，会进行测试服务检查更新。
+Windows 和 Mac 命令行启动任务参数，拼接-update 参数；本地测试服务未下载时，不设置参数（即-update false）也会进行服务下载；本地测试服务已下载时，设置 -update true 更新测试服务；设置 -update false 不更新测试服务。
 
 通过命令执行测试服务
 
@@ -107,7 +103,7 @@ Windows 和 Mac 命令行启动任务参数拼接 -update参数 true/false 不�
 参数	是否必填	取值范围	说明
 solutionName	是	场景化性能测试	测试服务名
 executeRounds	是	1-10的整数	执行轮数
-manualScriptPath	是	用例工程路径	用例工程路径，目录以\\分割，例： "D:\\ProgramData\\用例工程文件"
+manualScriptPath	是	用例工程路径	用例工程路径示例参考： Window路径参考：D:\\ProgramData\\用例工程文件（目录以\\分割）； Mac路径参考：/Applications/testing/用例工程文件
 caseList	是	用例工程中用例名称，至少选一条	用例名称集合
 perf	是	"响应时延", "完成时延", "丢帧卡顿", "音视频", "黑白块"	固定值，必填项
 system	是	"CPU", "内存", "温度", "网络", "GPU", "存储", "电量"	指标监控（CPU与内存必选）
@@ -293,6 +289,69 @@ appFeaturePath	否	-	应用图谱生成的文件路径
     }
 }
 
+[h2]内存泄漏测试
+
+参数说明：
+
+参数	是否必填	取值范围	说明
+sn	是	-	设备sn号
+taskName	是	-	任务名称
+solutionName	是	内存泄漏测试	测试服务名
+package.name	是	应用包名	待测应用包名 如：com.hmos.***
+testDuration	是	10-10080之间整数	测试时长，单位：分钟
+deeplinkRollbackProbability	否	0-60(百分比)	deeplink切换概率
+deeplinkRollbackPeriodMin	否	1-10080(分钟)	deeplink切换周期
+deeplink	否	-	deeplink切换链接
+appFeaturePath	否	合法路径	图谱特性路径
+blackSelected	否	选中的图谱特性和黑名单，校验对应关系，所有关键字不超过30个	图谱配置
+installAppPath	否（安装新的应用必传，已安装应用无需填写）	安装包路径，支持hap，zip格式	待安装应用包路径，仅使用新安装应用时填写，路径中不要含有空格和中文，目录以\\分割，例： D:\\test\\com.hmos.***.hap
+
+示例1：内存泄漏测试随机遍历
+
+{
+   "taskParams": {
+        "sn": [
+            "3AP0124816000023"
+        ],
+        "taskName": "内存泄漏测试0",
+        "testDuration": "60",
+        "solutionName": "内存泄漏测试",
+        "package.name": "com.ss.****",    //应用包名
+        "installAppPath": "D:\\test\\com.hmos.***"  //安装新应用时需添加，已安装则不需要
+    }
+}
+
+示例2：内存泄漏测试随机遍历-黑名单和Deeplink
+
+{
+    "taskParams": {
+        "sn": [
+            "23*****180"
+        ],
+        "taskName": "内存泄漏测试",
+        "testDuration": "10",
+        "solutionName": "内存泄漏测试",
+        "package.name": "com.****w.com",
+        "deeplink": [
+            "snssdk1128://search/trending",
+            "snssdk1128://mainPage?tabid=homepage_tablive"
+        ],
+        "deeplinkRollbackProbability": "20",
+        "deeplinkRollbackPeriodMin": "",
+        "appFeaturePath": "E://DevEco Testing//graphTool//appfeature.json",
+        "blackSelected": [
+            {
+                "feature": "黑名单1",
+                "blackName": "消息"
+            },
+            {
+                "feature": "黑名单1",
+                "blackName": "个人中心"
+            }
+        ]
+    }
+}
+
 [h2]应用上架预检（本地）
 
 参数说明：
@@ -309,11 +368,39 @@ taskName	是	-	任务名称
 packageName	是	-	应用包名
 isUploadApp	是	true false	是否为综合预检模式
 app.history.package.path	否	历史应用包路径	历史上架应用包安装路径，路径中不要含有空格和中文，目录以\\分割 如： D:\\test\\com.hmos.***.hap
-levelFirst	是	见功耗基础质量测试中的“softwareCatagory参数取值说明”	一级应用类别
-levelSecond	是	见功耗基础质量测试中的“softwareCatagory参数取值说明”	二级应用类别
-levelThird	是	见功耗基础质量测试中的“softwareCatagory参数取值说明”	三级应用类别
+levelFirst	是	见 softwareCatagory参数取值说明	一级应用类别
+levelSecond	是	见 softwareCatagory参数取值说明	二级应用类别
+levelThird	是	见 softwareCatagory参数取值说明	三级应用类别
 app_path	是	自定义测试选择hap和zip包，综合自检选择hap格式的包	应用包路径，需要与待测应用为同版本，路径中不要含有空格和中文，目录以\\分割 例： D:\\hap\\com.hmos.***.hap
 solutionName	是	应用上架预检（本地）	测试服务名
+
+softwareCatagory参数取值说明：
+
+一类（levelFirst）	二类（levelSecond）	三类（levelThird）
+游戏	休闲益智	休闲，IO，音乐节奏，消除，解密，益智
+经营策略	古代谋略，现代战略，养成，塔防，经营，MOBA
+游戏	游戏
+动作设计	跑酷，射击，格斗
+角色扮演	多人在线，卡牌，冒险，回合制，生存，动作，放置挂机，仙侠，武侠，传奇，魔幻
+棋牌游戏	斗地主，麻将，桌游与棋类，纸牌，捕鱼
+体育竞技	赛车，运动，篮球，足球
+应用	影音娱乐	电视，视频，音乐，K歌，直播，电台
+实用工具	输入，浏览器，安全性能，工具，闹钟，wifi
+金融理财	股票基金，银行，贷款，理财，记账，彩票
+社交通讯	社区，聊天，婚恋，通讯
+便携生活	家政，本地生活，租房买房，家居装修，电影票，天气日历
+出行导航	导航，地图，用车，交通票务，公交地铁
+主题个性	壁纸，铃声，锁屏，桌面
+教育	英文，学习，翻译，备考
+运动健康	养生，运动，医疗，健康
+拍摄美化	拍照，图像美化，相册图库，短视频，影音编辑
+新闻阅读	电子书，新闻，动漫，有声读物，杂志，幽默，体育，分类信息
+购物比价	优惠，商城，团购，导购，快递，海淘
+美食	菜谱，生鲜，买卖，餐饮
+汽车	养车，违章查询，汽车资讯，驾考
+旅游住宿	住宿，旅游，行程助手
+商务	办公软件，效率，笔记，邮箱，招聘
+儿童	儿童教育，儿歌，母婴
 
 示例1：应用上架预检（本地）——自定义测试
 
@@ -471,6 +558,32 @@ taskPath	string	报告路径
 taskParams	JsonObject	执行参数
 
 更多详细参数查询可参考以下文档：稳定性基础质量json配置参数查询
+
+[h2]内存泄漏测试
+
+{
+       "isTaskPass": false, //任务所有指标是否都达到标准
+        "generalData": { //任务参数
+        "taskInfo": { }, // 任务参数
+        "appInfo": { }//应用信息
+    },
+    "expandData": [ //结果详情
+        {
+            "serviceType": "performance",//性能详情
+            "resultSummary": {}, // 专项结果总览
+            "resultDetails": []
+        }
+    ]
+}
+
+参数	数据类型	说明
+taskId	String	客户端中该任务的id。
+taskName	String	创建任务时，填写的任务名称。
+taskType	String	任务类型，固定为内存泄漏测试
+taskPath	String	测试任务存储数据的文件夹路径。
+taskParams	Object	在创建任务选择的一些执行参数，详见下方文档。
+
+更多详细参数查询可参考以下文档：内存泄漏json配置参数查询
 
 [h2]应用上架预检（本地）
 
@@ -819,6 +932,56 @@ DT.100901	user not login	用户未完成登录
 
 ```
 {
+   "taskParams": {
+        "sn": [
+            "3AP0124816000023"
+        ],
+        "taskName": "内存泄漏测试0",
+        "testDuration": "60",
+        "solutionName": "内存泄漏测试",
+        "package.name": "com.ss.****",    //应用包名
+        "installAppPath": "D:\\test\\com.hmos.***"  //安装新应用时需添加，已安装则不需要
+    }
+}
+```
+
+### Code block 6
+
+```
+{
+    "taskParams": {
+        "sn": [
+            "23*****180"
+        ],
+        "taskName": "内存泄漏测试",
+        "testDuration": "10",
+        "solutionName": "内存泄漏测试",
+        "package.name": "com.****w.com",
+        "deeplink": [
+            "snssdk1128://search/trending",
+            "snssdk1128://mainPage?tabid=homepage_tablive"
+        ],
+        "deeplinkRollbackProbability": "20",
+        "deeplinkRollbackPeriodMin": "",
+        "appFeaturePath": "E://DevEco Testing//graphTool//appfeature.json",
+        "blackSelected": [
+            {
+                "feature": "黑名单1",
+                "blackName": "消息"
+            },
+            {
+                "feature": "黑名单1",
+                "blackName": "个人中心"
+            }
+        ]
+    }
+}
+```
+
+### Code block 7
+
+```
+{
     "taskParams": {
         "sn": [
             "2MM0*****380"
@@ -870,7 +1033,7 @@ DT.100901	user not login	用户未完成登录
 }
 ```
 
-### Code block 6
+### Code block 8
 
 ```
 {
@@ -894,7 +1057,7 @@ DT.100901	user not login	用户未完成登录
 }
 ```
 
-### Code block 7
+### Code block 9
 
 ```
 {
@@ -912,7 +1075,7 @@ DT.100901	user not login	用户未完成登录
 }
 ```
 
-### Code block 8
+### Code block 10
 
 ```
 {
@@ -931,7 +1094,7 @@ DT.100901	user not login	用户未完成登录
 }
 ```
 
-### Code block 9
+### Code block 11
 
 ```
 {
@@ -950,7 +1113,26 @@ DT.100901	user not login	用户未完成登录
 }
 ```
 
-### Code block 10
+### Code block 12
+
+```
+{
+       "isTaskPass": false, //任务所有指标是否都达到标准
+        "generalData": { //任务参数
+        "taskInfo": { }, // 任务参数
+        "appInfo": { }//应用信息
+    },
+    "expandData": [ //结果详情
+        {
+            "serviceType": "performance",//性能详情
+            "resultSummary": {}, // 专项结果总览
+            "resultDetails": []
+        }
+    ]
+}
+```
+
+### Code block 13
 
 ```
 {

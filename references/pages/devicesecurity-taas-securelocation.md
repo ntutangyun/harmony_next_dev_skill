@@ -107,10 +107,7 @@ private async initSecureLocationAttestContext(): Promise<number> {
     if (certChainResult.certChains.length < 1) {
       throw new Error('empty returned cert chain');
     }
-    // [StartExclude init_secure_location_attestContext]
-    this.certChainObj = new CertChain(certChainResult.certChains[0]);
-    await this.certChainObj.validate();
-    // [EndExclude init_secure_location_attestContext]
+    // ...
     return 0;
   } catch (err) {
     const businessError = err as BusinessError;
@@ -156,7 +153,7 @@ private async finalizeSecureLocationAttestContext(): Promise<void> {
   } catch (err) {
     const error = err as BusinessError;
     hilog.error(0x0000, 'TrustedAppService',
-      'Failed to finalize attest context, code: ${error.code}, message: ${error.message}');
+      `Failed to finalize attest context, code: ${error.code}, message: ${error.message}`);
   }
 }
 
@@ -251,10 +248,7 @@ private async initSecureLocationAttestContext(): Promise<number> {
     if (certChainResult.certChains.length < 1) {
       throw new Error('empty returned cert chain');
     }
-    // [StartExclude init_secure_location_attestContext]
-    this.certChainObj = new CertChain(certChainResult.certChains[0]);
-    await this.certChainObj.validate();
-    // [EndExclude init_secure_location_attestContext]
+    // ...
     return 0;
   } catch (err) {
     const businessError = err as BusinessError;
@@ -304,7 +298,7 @@ private async finalizeSecureLocationAttestContext(): Promise<void> {
   } catch (err) {
     const error = err as BusinessError;
     hilog.error(0x0000, 'TrustedAppService',
-      'Failed to finalize attest context, code: ${error.code}, message: ${error.message}');
+      `Failed to finalize attest context, code: ${error.code}, message: ${error.message}`);
   }
 }
 ```

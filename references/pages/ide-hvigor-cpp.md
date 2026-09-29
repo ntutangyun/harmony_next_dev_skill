@@ -16,7 +16,7 @@ abiFilters	字符串数组	可选	HarmonyOS当前支持的ABI编译环境，包�
 arguments	字符串/字符串数组	可选	CMake编译参数。 Hvigor将会把此处的自定义参数传递给CMake构建工具，您可通过CMake官方文档查找您所需的编译参数，同时它也将覆盖默认同名参数。
 cppFlags	字符串	可选	C++编译器参数。 从DevEco Studio 6.0.1 Beta1版本开始，新增"-iclang"参数，提升编译效率，具体请参考通过IClang提升C++增量编译效率。
 cFlags	字符串	可选	C编译参数。仅模块级build-profile.json5文件支持配置。 从DevEco Studio 6.0.1 Beta1版本开始，新增"-iclang"参数，提升编译效率，具体请参考通过IClang提升C++增量编译效率。
-targets	字符串数组	可选	指定hvigor应构建的CMake项目中的库和可执行目标。仅模块级build-profile.json5文件支持配置。
+targets	字符串数组	可选	指定Hvigor应构建的CMake项目中的库和可执行目标。仅模块级build-profile.json5文件支持配置。
 
 nativeLib
 
@@ -29,22 +29,22 @@ headerPath	字符串/字符串数组	可选	指定要导出的头文件路径。
 collectAllLibs	布尔值	可选	对libs目录收集打包时，是否收集所有后缀的文件。 true：不限制后缀，即收集所有文件（包括无后缀文件）。 false（缺省默认值）：限制后缀为.so，即只收集后缀为.so的文件。
 excludeFromHar	布尔值	可选	构建HAR时，是否排除依赖HAR模块中的.so文件，排除时，依赖HAR模块的.so文件不会被打包到产物中。 true（缺省默认值）：排除。 false：不排除。 说明： 仅针对HAR模块生效。
 excludeSoFromInterfaceHar	布尔值	可选	编译HSP模块时，打包的HAR产物是否排除.so文件，减少.tgz包体积大小。 true：排除。HAR产物不包含.so文件，HSP产物包含.so文件。 false（缺省默认值）：不排除。HAR产物和HSP产物都包含.so文件。 说明： 仅针对HSP模块生效。 当HSP模块的工程级或模块级build-profile.json5文件中配置headerPath字段时，excludeSoFromInterfaceHar字段不生效。
-excludeSoFromBinXO	字符串数组	可选	开启BinXO检测时，指定不需要进行二进制插桩的无源码so文件，支持正则匹配，具体使用方式请参考使用HWASan检测内存错误。 从DevEco Studio 6.1.0 Beta1版本开始支持。
-librariesInfo	对象数组	可选	声明so的透传依赖信息。仅模块级build-profile.json5文件支持配置。
-enableSoDirCollection	布尔值	可选	ets文件中是否能够加载libs/{ABI}/子目录下的so文件，其中{ABI}是设备CPU架构类型（如arm64-v8a）。 true：能够加载libs/{ABI}根目录及子目录下的so文件。 false（缺省默认值）：只能加载libs/{ABI}根目录下的so文件。 从26.0.0 Beta1版本开始支持。 说明： 仅HAP/HSP模块支持配置该字段。 配置为true时，libs/{ABI}根目录及子目录下不能有重名的so。
+excludeSoFromBinXO	字符串数组	可选	开启BinXO检测时，指定不需要进行二进制插桩的无源码.so文件，支持正则匹配，具体使用方式请参考使用HWASan检测内存错误。 从DevEco Studio 6.1.0 Beta1版本开始支持。
+librariesInfo	对象数组	可选	声明.so的透传依赖信息。仅模块级build-profile.json5文件支持配置。
+enableSoDirCollection	布尔值	可选	ets文件中是否能够加载libs/{ABI}/子目录下的.so文件，其中{ABI}是设备CPU架构类型（如arm64-v8a）。 true：能够加载libs/{ABI}根目录及子目录下的.so文件。 false（缺省默认值）：只能加载libs/{ABI}根目录下的.so文件。 从26.0.0版本开始支持。 说明： 仅HAP/HSP模块支持配置该字段。 配置为true时，libs/{ABI}根目录及子目录下不能有重名的.so。
 
 [h2]filter
 
 filter是Native 库（.so）文件的筛选选项。配置后优先级高于napiLibFilterOption。
 
 字段名称	类型	可选/必选	含义
-excludes	字符串数组	可选	根据正则表达式排除匹配到的.so文件，匹配到的so文件将不会被打包。
+excludes	字符串数组	可选	根据正则表达式排除匹配到的.so文件，匹配到的.so文件将不会被打包。
 pickFirsts	字符串数组	可选	按照.so文件的优先级顺序，打包最高优先级的.so文件。
 pickLasts	字符串数组	可选	按照.so文件的优先级顺序，打包最低优先级的.so文件。
 enableOverride	布尔值	可选	是否允许当.so文件重名冲突时，使用高优先级的.so文件覆盖低优先级的.so文件： true：允许。 false（缺省默认值）：不允许。
-select	对象数组	可选	select提供native产物的精准选择能力，根据包名、版本、产物名称等，选择打包或排除native产物到HAP/HSP/HAR产物。 select的优先级高于excludes、pickFirsts等配置项。
+select	对象数组	可选	select提供Native产物的精准选择能力，根据包名、版本、产物名称等，选择打包或排除Native产物到HAP/HSP/HAR产物。 select的优先级高于excludes、pickFirsts等配置项。
 
-库文件so的优先级顺序，可以通过pickFirsts，pickLasts选项来选择，其中pickFirsts选择高优先级的库文件，pickLasts选择低优先级的库文件。
+库文件.so的优先级顺序，可以通过pickFirsts，pickLasts选项来选择，其中pickFirsts选择高优先级的库文件，pickLasts选择低优先级的库文件。
 
 这个优先级是由本模块的依赖模块或三方包的收集顺序决定的，本模块的依赖在oh-package.json5文件的dependencies配置中声明，优先级顺序如下。
 
@@ -53,10 +53,10 @@ select	对象数组	可选	select提供native产物的精准选择能力，根�
 字段名称	类型	可选/必选	含义
 package	字符串	可选	包名。
 version	字符串	可选	包版本。
-includePattern	字符串数组	可选	当依赖的多个包中存在重名的native产物时，指定需要打包的native产物，支持glob语法。 从DevEco Studio 6.0.0 Beta2版本开始支持。
-excludePattern	字符串数组	可选	指定排除的native产物，默认打包所有产物，支持glob语法。excludePattern优先级比includePattern高。 从DevEco Studio 6.0.0 Beta2版本开始支持。
-include	字符串数组	可选	当依赖的多个包中存在重名的native产物时，指定需要打包的native产物。 从DevEco Studio 6.0.0 Beta2版本开始，字段标记为废弃，推荐使用includePattern字段。
-exclude	字符串数组	可选	指定排除的native产物，默认打包所有产物。 从DevEco Studio 6.0.0 Beta2版本开始，字段标记为废弃，推荐使用excludePattern字段。
+includePattern	字符串数组	可选	当依赖的多个包中存在重名的Native产物时，指定需要打包的Native产物，支持glob语法。 从DevEco Studio 6.0.0 Beta2版本开始支持。
+excludePattern	字符串数组	可选	指定排除的Native产物，默认打包所有产物，支持glob语法。excludePattern优先级比includePattern高。 从DevEco Studio 6.0.0 Beta2版本开始支持。
+include	字符串数组	可选	当依赖的多个包中存在重名的Native产物时，指定需要打包的Native产物。 从DevEco Studio 6.0.0 Beta2版本开始，字段标记为废弃，推荐使用includePattern字段。
+exclude	字符串数组	可选	指定排除的Native产物，默认打包所有产物。 从DevEco Studio 6.0.0 Beta2版本开始，字段标记为废弃，推荐使用excludePattern字段。
 
 说明
 
@@ -146,11 +146,11 @@ exclude	字符串数组	可选	需要排除的.so文件，支持正则表达式�
 
 [h2]librariesInfo
 
-librariesInfo用于声明so的透传依赖信息。仅模块级build-profile.json5文件支持配置。
+librariesInfo用于声明.so的透传依赖信息。仅模块级build-profile.json5文件支持配置。
 
 字段名称	类型	可选/必选	含义
-name	字符串	必选	本模块so库的名称。
-linkLibraries	字符串数组	必选	so库的依赖信息，格式为"依赖包名::依赖so名称"。
+name	字符串	必选	本模块.so库的名称。
+linkLibraries	字符串数组	必选	.so库的依赖信息，格式为"依赖包名::依赖.so名称"。
 
 如果需要声明库之间的依赖关系，例如entry依赖curl，可在模块内build-profile.json5中配置librariesInfo。
 
@@ -177,7 +177,6 @@ set_target_properties(library::library PROPERTIES
 以模块级build-profile.json5为例：
 
 {
-  ...
   "buildOptionSet": [
     {
       "name": "release",
@@ -198,14 +197,14 @@ set_target_properties(library::library PROPERTIES
         "abiFilters": ["arm64-v8a"] // 自定义cpp编译架构，默认编译架构为arm64-v8a
       },
       "nativeLib": {
-        "debugSymbol": { // 可通过此配置对cpp编译产物so执行strip，移除so中的调试信息与符号表等
+        "debugSymbol": { // 可通过此配置对cpp编译产物.so执行strip，移除.so中的调试信息与符号表等
           "strip": true, // 执行strip
           "exclude": [] //执行strip的过滤正则表达式规则
         },
-        "filter": { // 可通过此选项自定义此cpp产物so是否打包到应用包中
-          "excludes": [ // 根据正则表达式排除匹配到的.so文件，匹配到的so文件将不会被打包，可用于打包时缩小包体积
-            "**/3.so", // 排除所有名称为“3”的so文件
-            "**/x86_64/*.so" // 排除所有x86_64架构的so文件
+        "filter": { // 可通过此选项自定义此cpp产物.so是否打包到应用包中
+          "excludes": [ // 根据正则表达式排除匹配到的.so文件，匹配到的.so文件将不会被打包，可用于打包时缩小包体积
+            "**/3.so", // 排除所有名称为“3”的.so文件
+            "**/x86_64/*.so" // 排除所有x86_64架构的.so文件
           ],
           "pickFirsts": ["**/1.so"], // 按照.so文件的优先级顺序，打包最高优先级的.so文件
           "pickLasts": ["**/2.so"], // 按照.so文件的优先级顺序，打包最低优先级的.so文件
@@ -221,7 +220,6 @@ set_target_properties(library::library PROPERTIES
       },
     },
   ],
-  ...
 }
 
 ## Code blocks
@@ -332,7 +330,6 @@ set_target_properties(library::library PROPERTIES
 
 ```
 {
-  ...
   "buildOptionSet": [
     {
       "name": "release",
@@ -353,14 +350,14 @@ set_target_properties(library::library PROPERTIES
         "abiFilters": ["arm64-v8a"] // 自定义cpp编译架构，默认编译架构为arm64-v8a
       },
       "nativeLib": {
-        "debugSymbol": { // 可通过此配置对cpp编译产物so执行strip，移除so中的调试信息与符号表等
+        "debugSymbol": { // 可通过此配置对cpp编译产物.so执行strip，移除.so中的调试信息与符号表等
           "strip": true, // 执行strip
           "exclude": [] //执行strip的过滤正则表达式规则
         },
-        "filter": { // 可通过此选项自定义此cpp产物so是否打包到应用包中
-          "excludes": [ // 根据正则表达式排除匹配到的.so文件，匹配到的so文件将不会被打包，可用于打包时缩小包体积
-            "**/3.so", // 排除所有名称为“3”的so文件
-            "**/x86_64/*.so" // 排除所有x86_64架构的so文件
+        "filter": { // 可通过此选项自定义此cpp产物.so是否打包到应用包中
+          "excludes": [ // 根据正则表达式排除匹配到的.so文件，匹配到的.so文件将不会被打包，可用于打包时缩小包体积
+            "**/3.so", // 排除所有名称为“3”的.so文件
+            "**/x86_64/*.so" // 排除所有x86_64架构的.so文件
           ],
           "pickFirsts": ["**/1.so"], // 按照.so文件的优先级顺序，打包最高优先级的.so文件
           "pickLasts": ["**/2.so"], // 按照.so文件的优先级顺序，打包最低优先级的.so文件
@@ -376,6 +373,5 @@ set_target_properties(library::library PROPERTIES
       },
     },
   ],
-  ...
 }
 ```

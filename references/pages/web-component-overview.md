@@ -44,7 +44,7 @@ Web页面加载：声明式加载Web页面和离屏加载Web页面等。
 
 约束与限制
 
-可依据ArkWeb内核版本在相关网站查询W3C标准的支持情况。例如：https://developer.mozilla.org/en-US/ 和 https://webassembly.org/features/ 。
+可依据ArkWeb内核版本在相关网站查询W3C标准的支持情况。例如：https://developer.mozilla.org/en-US/和https://webassembly.org/features/。
 
 ArkWeb内核版本：ArkWeb基于谷歌Chromium内核开发，系统版本与Chromium版本的对应关系如表格所示。
 

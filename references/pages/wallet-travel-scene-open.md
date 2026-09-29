@@ -21,13 +21,17 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-tr
 
 开发者服务器首先调用预置模板接口向Wallet Kit服务器推送样式数据，如底图、商户LOGO，背景色等。样式数据预置后，开发者可以在实例数据中指定模板标识，即可使用模板指定的样式数据在手机端进行出行凭证展示。当展示使用的模板数据更新后，已开通的卡片均会展示最新样式。
 
-用户点击开通出行凭证时，开发者端侧向开发者云侧服务请求开卡，此部分属于开发者内部实现，注意携带端侧通过queryPassDeviceInfo接口获取的passDeviceId，用于生成JWE，其他实现符合自身的端云鉴权要求即可。
+用户点击开通出行凭证时，开发者端侧向开发者云侧服务请求开卡，该请求需要携带queryPassDeviceInfo接口获取到的passDeviceId，用于生成JWE，其他实现符合自身的端云鉴权要求即可。
 
-开发者服务器收到端侧请求后，调用申请出行凭证接口推送用户出行凭证数据给Wallet Kit服务器，数据中需要指定选用的模板标识作为样式数据进行展示。
+开发者服务器收到端侧请求后，调用申请出行凭证接口推送用户出行凭证数据给Wallet Kit服务器，数据中需要指定选用的模板标识作为样式数据进行展示。如需支持自动推送卡券，开发者服务器需留存用户授权结果，并生成spOpenId用于关联用户在开发者侧的账号。
 
-推送成功后获取实例标识，组装一次性开卡凭证JWE后，作为前述端侧请求的结果返回给端侧。
+开发者服务器推送出行凭证数据成功后，需获取Wallet Kit服务器返回的实例标识，并组装一次性开卡凭证JWE返回给端侧。
+
+如需支持自动推送卡券，还需将spOpenId一并返回。
 
 端侧跳转钱包后，钱包会通过服务器接口依次调用开发者服务器提供的设备认证、获取个人化数据token、获取个人化数据接口，获取出行凭证的密钥数据及卡面的个性化数据，写入安全芯片后完成开卡。
+
+如需支持自动推送卡券，开发者服务器还需实现账号关联能力。
 
 如需获取出行凭证的开通结果，开发者可实现NFC相关事件回调通知接口（可选）。
 
@@ -63,42 +67,13 @@ async canAddPass(): Promise<boolean> {
    }
 }
 
-检测到当前设备支持开通出行凭证后，展示开通按钮，引导用户开通出行凭证到钱包。
+检测到当前设备支持开通出行凭证后，展示开通按钮，引导用户开通出行凭证到钱包。如需支持自动推送卡券，在用户点击开通时需要弹出授权提醒，记录授权结果并在后续请求中携带。
 
-调用queryPassDeviceInfo接口，查询当前设备的设备类型、账号+设备标识等信息。
+调用queryPassDeviceInfo接口，查询当前设备的设备类型、账号+设备标识等信息。如需支持自动推送卡券，需要携带autoPushPassFlag参数并设置为“1”，同时获取openId用于后续账号关联。
 
-async queryPassDeviceInfo(): Promise<void> {
-   const passStr = JSON.stringify({
-      passType: this.passType,
-      targetDeviceType: this.targetDeviceType
-   });
-   try {
-      const result = await this.walletPassClient.queryPassDeviceInfo(passStr);
-      const queryPassDeviceInfoResult = JSON.parse(result) as QueryPassDeviceInfoResult;
-      // 获取到passDeviceId之后，携带此参数调用开发者服务器接口申请开卡，获取返回的一次性开卡凭证JWE，然后进行开卡。
-      this.passDeviceId = queryPassDeviceInfoResult.passDeviceId;
-   } catch (err) {
-      console.error(`Failed to query passDeviceInfo, code:${err.code} message:${err.message}`);
-   }
-}
+开发者客户端携带设备信息请求开发者服务器，由开发者服务器申请出行凭证，然后将生成的JWE数据返回客户端。如需支持自动推送卡券，需同时携带用户授权结果，开发者服务器返回JWE和spOpenId给客户端。
 
-开发者客户端携带设备信息请求开发者服务器，由开发者服务器申请出行凭证，然后将生成的JWE数据返回客户端。
-
-开发者客户端携带JWE数据，调用addPass跳转钱包进行开卡。涉及芯片数据写入，需要完成安全芯片初始化等动作，预计开卡时间30秒左右，开通完成后钱包内可以看到对应的卡片。
-
-async addPass(): Promise<void> {
-   const passStr = JSON.stringify({
-      jweContent: this.jweContent
-   });
-   try {
-      const result = await this.walletPassClient.addPass(passStr);
-      const addPassResult = JSON.parse(result) as AddPassResult;
-      // 开卡成功，获取到卡片数据，进行页面刷新。
-      console.info(`Successed in adding pass, serialNumber:${addPassResult.serialNumber}, passDeviceId:${addPassResult.passDeviceId}`);
-   } catch (err) {
-      console.error(`Failed to add pass, code:${err.code} message:${err.message}`);
-   }
-}
+开发者客户端携带JWE数据，调用addPass跳转钱包进行开卡。如需支持自动推送卡券，需要同时携带autoPushPassFlag和spOpenId参数。
 
 ## Code blocks
 
@@ -130,43 +105,6 @@ async canAddPass(): Promise<boolean> {
       }
       // 其他错误码，请按照对应场景，友好引导或提示用户进行下一步操作。
       return false;
-   }
-}
-```
-
-### Code block 2
-
-```
-async queryPassDeviceInfo(): Promise<void> {
-   const passStr = JSON.stringify({
-      passType: this.passType,
-      targetDeviceType: this.targetDeviceType
-   });
-   try {
-      const result = await this.walletPassClient.queryPassDeviceInfo(passStr);
-      const queryPassDeviceInfoResult = JSON.parse(result) as QueryPassDeviceInfoResult;
-      // 获取到passDeviceId之后，携带此参数调用开发者服务器接口申请开卡，获取返回的一次性开卡凭证JWE，然后进行开卡。
-      this.passDeviceId = queryPassDeviceInfoResult.passDeviceId;
-   } catch (err) {
-      console.error(`Failed to query passDeviceInfo, code:${err.code} message:${err.message}`);
-   }
-}
-```
-
-### Code block 3
-
-```
-async addPass(): Promise<void> {
-   const passStr = JSON.stringify({
-      jweContent: this.jweContent
-   });
-   try {
-      const result = await this.walletPassClient.addPass(passStr);
-      const addPassResult = JSON.parse(result) as AddPassResult;
-      // 开卡成功，获取到卡片数据，进行页面刷新。
-      console.info(`Successed in adding pass, serialNumber:${addPassResult.serialNumber}, passDeviceId:${addPassResult.passDeviceId}`);
-   } catch (err) {
-      console.error(`Failed to add pass, code:${err.code} message:${err.message}`);
    }
 }
 ```

@@ -10,8 +10,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-com
 
 本文将介绍以下列表流场景的实现：
 
-概述
-
 多类型列表项场景
 
 Tabs吸顶场景
@@ -19,8 +17,6 @@ Tabs吸顶场景
 分组吸顶场景
 
 二级联动场景
-
-示例代码
 
 多类型列表项场景
 

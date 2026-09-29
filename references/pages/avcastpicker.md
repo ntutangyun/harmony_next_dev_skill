@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avcastpic
 
 须知
 
-自验证关注点： 播放可投播的音视频资源，点击投播至3.1以上的华为智慧屏/DLNA协议的设备，查看投播功能是否正常可用，且在应用内及系统播控中心内能控制远端投播。
+自验证关注点： 播放可投播的音视频资源，点击投播至3.1以上的TV设备/DLNA协议的设备，查看投播功能是否正常可用，且在应用内及系统播控中心内能控制远端投播。
 
 界面是否正确显示Picker。
 
@@ -32,7 +32,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avcastpic
 
 须知
 
-自验证关注点： 播放可投播的DRM数字加密视频资源，点击投播至3.1以上的华为智慧屏，或支持DRM硬件解码的大屏设备，查看投播功能是否正常可用。
+自验证关注点： 播放可投播的DRM数字加密视频资源，点击投播至3.1以上的TV设备，或支持DRM硬件解码的大屏设备，查看投播功能是否正常可用。
 
 投播能力增强
 

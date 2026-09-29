@@ -56,7 +56,7 @@ this.count = 1;
 // 可以观察到赋值的变化
 this.title = new Model('Hi');
 
-当装饰的类型是Object或者class复杂类型时，可以观察到自身的赋值和第一层的属性的变化，属性即object.keys(observedObject)返回的所有属性。复杂类型完整示例请参考从父组件中的@State类对象属性到@Prop简单类型的同步。
+当装饰的类型是Object或者class复杂类型时，可以观察到自身的赋值和第一层的属性的变化，属性即Object.keys(observedObject)返回的所有属性。复杂类型完整示例请参考从父组件中的@State类对象属性到@Prop简单类型的同步。
 
 // 定义嵌套类
 class Info {

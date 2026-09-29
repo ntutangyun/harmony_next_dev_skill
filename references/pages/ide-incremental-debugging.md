@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-incre
 
 说明
 
-C++代码增量调试支持API Version 11及以上版本Stage模型的工程；ArkTS代码增量调试仅支持API Version 12及以上版本Stage模型工程的资源文件修改。
+C++代码增量调试支持API 11及以上版本Stage模型的工程；ArkTS代码增量调试仅支持API 12及以上版本Stage模型工程的资源文件修改。
 
 使用DevEco Studio增量调试
 

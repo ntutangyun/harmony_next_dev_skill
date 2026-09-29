@@ -50,7 +50,6 @@ consumerFiles	字符串/字符串数组	否	仅HAR/HSP模块可配置，配置�
 
 {
   "apiType": "stageMode",
-  ...
   "buildOptionSet": [
     {
       "name": "release",
@@ -66,7 +65,6 @@ consumerFiles	字符串/字符串数组	否	仅HAR/HSP模块可配置，配置�
       }
     },
   ],
-  ...
 }
 
 当存在多个混淆规则文件时，规则合并以及合并后的作用范围可参考混淆规则合并策略。
@@ -77,7 +75,6 @@ consumerFiles	字符串/字符串数组	否	仅HAR/HSP模块可配置，配置�
 
 {
   "apiType": "stageMode",
-  ...
   "buildOptionSet": [
     {
       "name": "release",
@@ -96,7 +93,6 @@ consumerFiles	字符串/字符串数组	否	仅HAR/HSP模块可配置，配置�
       }
     },
   ],
-  ...
 }
 
 当存在多个混淆规则文件时，规则合并以及合并后的作用范围可参考混淆规则合并策略。
@@ -487,7 +483,6 @@ console.warn(TAG, '1 calc = ', myModule.Calc(1, 2))
       },
     },
   ],
-......
 }
 
 模块下resources/base/profile/route_map.json中，pageSourceFile字段对应的路径名需要被保留。
@@ -574,7 +569,6 @@ MyClass1.add()    // add加入keep-property-name
 ```
 {
   "apiType": "stageMode",
-  ...
   "buildOptionSet": [
     {
       "name": "release",
@@ -590,7 +584,6 @@ MyClass1.add()    // add加入keep-property-name
       }
     },
   ],
-  ...
 }
 ```
 
@@ -599,7 +592,6 @@ MyClass1.add()    // add加入keep-property-name
 ```
 {
   "apiType": "stageMode",
-  ...
   "buildOptionSet": [
     {
       "name": "release",
@@ -618,7 +610,6 @@ MyClass1.add()    // add加入keep-property-name
       }
     },
   ],
-  ...
 }
 ```
 
@@ -963,7 +954,6 @@ console.warn(TAG, '1 calc = ', myModule.Calc(1, 2))
       },
     },
   ],
-......
 }
 ```
 

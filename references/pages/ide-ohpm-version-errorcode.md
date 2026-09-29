@@ -68,11 +68,11 @@ No Change.
 
 可能原因
 
-版本未更改。
+模块级oh-package.json5中version字段未更改。如当前version为1.0.0，执行ohpm version 1.0.0命令。
 
 处理步骤
 
-检查依赖包的版本号，确保其与当前版本不同。
+检查模块级oh-package.json5中version的版本号，确保其与当前版本不同。
 
 00607005 命令执行错误
 
@@ -86,8 +86,8 @@ Forbidden Opt.
 
 可能原因
 
-执行ohpm version时未配置参数。
+在项目根目录下执行ohpm version [options] [<newversion> | major | minor | patch]。
 
 处理步骤
 
-检查和确保命令格式为 ohpm version [options] [<newversion> | major | minor | patch]。
+不支持在项目根目录下执行该命令，需要在模块下执行该命令。

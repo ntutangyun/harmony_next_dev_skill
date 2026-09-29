@@ -20,30 +20,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-cus
 
 使用@CustomEnv装饰的变量具有只读特性，不允许开发者在初始化后对@CustomEnv装饰的变量做整体赋值。如需更新该变量的值，必须通过父组件的WithEnv组件配合.customEnv()方法进行更新。尝试对@CustomEnv变量赋值将导致编译错误。
 
-开发者可以使用@CustomEnv装饰器，并传入一个自定义的key，来声明响应式环境变量。示例如下：
-
-import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
-
-const custom = CustomEnvKey.create<string>();
-
-@Entry
-@ComponentV2
-struct Index {
-  @CustomEnv(custom) varName: string = 'default value';
-
-  build() {
-    Column() {
-    }
-  }
-}
-
-其中：
-
-custom：开发者自定义的环境变量key，类型为CustomEnvKey<S>，否则会编译报错。
-
-varName：装饰的变量名。
-
-'default value'：变量的默认值，当未找到对应的WithEnv组件提供的值时使用。
+开发者可以使用@CustomEnv装饰器，并传入一个自定义的key，来声明响应式环境变量。示例请参考:支持自定义key和value。
 
 @CustomEnv使用方法
 
@@ -51,7 +28,7 @@ varName：装饰的变量名。
 
 @CustomEnv装饰器	说明
 装饰器参数	@CustomEnv装饰器的入参必须为CustomEnvKey<S>类型。
-可装饰的变量类型	Object、class、string、number、boolean、enum等基本类型以及Array、Date、Map、Set等内置类型。支持null、undefined以及联合类型。
+可装饰的变量类型	string、number、boolean、enum等基本类型以及Object、class等对象类型和Array、Date、Map、Set等内置类型。支持null、undefined以及联合类型。
 装饰变量的初始值	必须本地初始化，不允许外部传入初始化。
 
 [h2]变量传递
@@ -62,43 +39,7 @@ varName：装饰的变量名。
 
 [h2]观察变化
 
-当点击更新按钮导致@Local装饰的变量值发生变化时，WithEnv组件中通过.customEnv()方法设置的值也会通知@CustomEnv，此时子组件中@CustomEnv装饰的变量将更新最新值并触发界面重新渲染，实现了完整的响应式更新链路。
-
-import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
-
-const custom = CustomEnvKey.create<string>();
-
-@Entry
-@ComponentV2
-struct Index {
-  @Local customMsg: string = 'Hello';
-
-  build() {
-    Column() {
-      Button('update')
-        .onClick(() => {
-          this.customMsg = 'Hello World';
-        })
-
-      WithEnv() {
-        // 有WithEnv组件，Child的customMessage显示WithEnv提供的值'Hello'，点击Button后值更新为'Hello World'。
-        Child()
-      }.customEnv(custom, this.customMsg)
-
-    }
-  }
-}
-
-@ComponentV2
-struct Child {
-  @CustomEnv(custom) customMessage: string = 'default content';
-
-  build() {
-    Column() {
-      Text(`Child: ${this.customMessage}`);
-    }
-  }
-}
+当点击更新按钮导致@Local装饰的变量值发生变化时，WithEnv组件中通过.customEnv()方法设置的值也会通知@CustomEnv，此时子组件中@CustomEnv装饰的变量将更新最新值并触发界面重新渲染，实现了完整的响应式更新链路。示例请参考:响应式更新能力。
 
 @CustomEnv和@Env能力对比
 
@@ -249,15 +190,15 @@ struct Child {
 
 [h2]支持自定义key和value
 
-新增的状态管理装饰器@CustomEnv支持自定义key配置，并且可以指定变量的初始值。语法格式为：@CustomEnv(custom) customVarName: string = 'hello world'。其中custom为开发者自定义的环境变量key，hello world为该变量的初始值。
+新增的状态管理装饰器@CustomEnv支持自定义key配置，并且可以指定变量的初始值。语法格式为：@CustomEnv(custom) customVarName: string = 'hello world'。其中custom为开发者自定义的环境变量key，类型为CustomEnvKey<S>，hello world为该变量的初始值。
 
-const custom = CustomEnvKey.create<string>();
+const customString = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct CustomValue {
   // 1. 实现了定义的key及value
-  @CustomEnv(custom) customVarName: string = 'hello world';
+  @CustomEnv(customString) customVarName: string = 'hello world';
 
   build() {
     Column() {
@@ -273,23 +214,23 @@ struct Index {
 @CustomEnv支持简单类型和复杂类型的变量声明。简单类型包括string、number、boolean、enum等；复杂类型包括class、Object等对象类型。
 
 @ObservedV2
-class CustomEnvValue {
-  @Trace id: number = 123;
-  @Trace userName: string = 'admin';
+class CustomVal {
+  @Trace public id: number = 123;
+  @Trace public userName: string = 'admin';
 }
 
 const customStr = CustomEnvKey.create<string>();
 const customNum = CustomEnvKey.create<number>();
 const customBool = CustomEnvKey.create<boolean>();
-const customObj = CustomEnvKey.create<CustomEnvValue>();
+const customObj = CustomEnvKey.create<CustomVal>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct ClassIndex {
   @CustomEnv(customStr) customStrVarName: string = 'hello world';
   @CustomEnv(customNum) customNumVarName: number = 1;
   @CustomEnv(customBool) customBoolVarName: boolean = true;
-  @CustomEnv(customObj) customObjVarName: CustomEnvValue = new CustomEnvValue();
+  @CustomEnv(customObj) customObjVarName: CustomVal = new CustomVal();
 
   build() {
     Column() {
@@ -311,16 +252,16 @@ const custom = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct DefaultValue {
   build() {
     Column() {
-      Child()
+      DefaultChild()
     }
   }
 }
 
 @ComponentV2
-struct Child {
+struct DefaultChild {
   @CustomEnv(custom) customMessage: string = 'default content';
 
   build() {
@@ -339,13 +280,13 @@ struct Child {
 
 以下示例中，Child组件中声明@CustomEnv(custom)将被离它最近的内层WithEnv赋值，最终值为'the nearest WithEnv'。
 
-import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
+import { WithEnv } from '@kit.ArkUI';
 
 const custom = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct NearPage {
   build() {
     Column() {
       // 就近原则体现
@@ -353,7 +294,7 @@ struct Index {
         // 优先查找该层WithEnv
         WithEnv() {
           // 就近原则，显示'the nearest WithEnv'
-          Child()
+          NearChild()
         }.customEnv(custom, 'the nearest WithEnv')
       }.customEnv(custom, 'outer WithEnv')
     }
@@ -361,7 +302,7 @@ struct Index {
 }
 
 @ComponentV2
-struct Child {
+struct NearChild {
   // @CustomEnv会向上查找父组件，优先查找WithEnv
   @CustomEnv(custom) customMessage: string = 'default content';
 
@@ -380,11 +321,11 @@ struct Child {
 
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
 
-const custom = CustomEnvKey.create<string>();
+const customMsge = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct UpdateIndex {
   @Local customMsg: string = 'Hello';
 
   build() {
@@ -396,16 +337,16 @@ struct Index {
 
       WithEnv() {
         // 有WithEnv组件，Child的customMessage显示WithEnv提供的值'Hello'，点击Button后值更新为'Hello World'。
-        Child()
-      }.customEnv(custom, this.customMsg)
+        UpdateChild()
+      }.customEnv(customMsge, this.customMsg)
 
     }
   }
 }
 
 @ComponentV2
-struct Child {
-  @CustomEnv(custom) customMessage: string = 'default content';
+struct UpdateChild {
+  @CustomEnv(customMsge) customMessage: string = 'default content';
 
   build() {
     Column() {
@@ -418,16 +359,16 @@ struct Child {
 
 [h2]@Watch与@Monitor监听@CustomEnv装饰的变量
 
-在@Component中，可通过@Watch监听@CustomEnv装饰变量的变化。需要注意的是，仅当@CustomEnv装饰的变量被整体赋值时才会触发@Watch监听回调，其内部属性的变化不会触发回调。
+在@Component中，可通过@Watch监听@CustomEnv装饰变量的变化。
 
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-const custom: CustomEnvKey<number> = CustomEnvKey.create<number>();
+const customWatch: CustomEnvKey<number> = CustomEnvKey.create<number>();
 
 @Entry
 @Component
-struct Index {
+struct WatchIndex {
   @State message: number = 1;
 
   build() {
@@ -437,8 +378,8 @@ struct Index {
       })
 
       WithEnv() {
-        Child()
-      }.customEnv(custom, this.message)
+        WatchChild()
+      }.customEnv(customWatch, this.message)
     }
     .height('100%')
     .width('100%')
@@ -447,8 +388,8 @@ struct Index {
 }
 
 @Component
-struct Child {
-  @CustomEnv(custom) @Watch('onParentValChanged') parentVal: number = 100;
+struct WatchChild {
+  @CustomEnv(customWatch) @Watch('onParentValChanged') parentVal: number = 100;
 
   // Watch回调
   onParentValChanged() {
@@ -472,12 +413,58 @@ struct Child {
 
 运行效果图如下。
 
+当@CustomEnv装饰的变量其内部属性的变化时，也会触发回调。
+
+import { WithEnv } from '@kit.ArkUI';
+
+const customDeepWatch = CustomEnvKey.create<number[][]>()
+
+@Entry
+@Component
+struct BuildIn_Watch {
+  @State message: number[][] = [[1, 2]];
+
+  build() {
+    Column() {
+      Button('ss').onClick(() => {
+        this.message[0][0]++
+      })
+      WithEnv() {
+        Child()
+      }.customEnv(customDeepWatch, this.message)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+
+@Component
+struct Child {
+  @Watch('update') @CustomEnv(customDeepWatch) msg: number[][] = [[3, 4]]
+
+  update() {
+    console.info(`TabContent message callback func ${this.msg}`)
+  }
+
+  build() {
+    Column() {
+      Text(this.msg[0][0] + '')
+    }
+  }
+}
+
+在上面的示例中：
+
+点击'ss'更改message的值，将会触发@Watch装饰器的回调并输出对应日志。
+
+运行效果图如下。
+
 在@ComponentV2中，可通过@Monitor监听@CustomEnv装饰变量的变化。需要注意的是，仅当@CustomEnv装饰的变量被整体赋值时才会触发@Monitor监听回调，其内部属性的变化不会触发回调。
 
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-const custom = CustomEnvKey.create<number>();
+const customMon = CustomEnvKey.create<number>();
 
 @Entry
 @ComponentV2
@@ -491,8 +478,8 @@ struct MonitorTest {
           this.message++;
         })
         WithEnv() {
-          Child()
-        }.customEnv(custom, this.message)
+          MonitorChild()
+        }.customEnv(customMon, this.message)
       }
       .width('100%')
     }
@@ -501,8 +488,8 @@ struct MonitorTest {
 }
 
 @ComponentV2
-struct Child {
-  @CustomEnv(custom) message: number = 0;
+struct MonitorChild {
+  @CustomEnv(customMon) message: number = 0;
 
   @Monitor('message')
   onStrChange(monitor: IMonitor) {
@@ -610,12 +597,12 @@ class Fruit {
   }
 }
 
-const custom = CustomEnvKey.create<Fruit[]>();
+const customArray = CustomEnvKey.create<Fruit[]>();
 
 @Entry
 @ComponentV2
-struct Index {
-  @CustomEnv(custom) fruits: Fruit[] = [new Fruit('apple'), new Fruit('banana')]; // 使用@CustomEnv装饰Array类型变量
+struct FruitPage {
+  @CustomEnv(customArray) fruits: Fruit[] = [new Fruit('apple'), new Fruit('banana')]; // 使用@CustomEnv装饰Array类型变量
 
   build() {
     Row() {
@@ -659,12 +646,12 @@ struct Index {
 
 当装饰的对象是Date时，可通过调用Date的接口setFullYear，setMonth，setDate，setHours，setMinutes，setSeconds，setMilliseconds，setTime，setUTCFullYear，setUTCMonth，setUTCDate，setUTCHours，setUTCMinutes，setUTCSeconds，setUTCMilliseconds更新Date的属性。
 
-const custom = CustomEnvKey.create<Date>();
+const customDate = CustomEnvKey.create<Date>();
 
 @Entry
 @ComponentV2
 struct DatePickerExample {
-  @CustomEnv(custom) selectedDate: Date = new Date('2021-08-08'); // 使用@CustomEnv装饰Date类型变量
+  @CustomEnv(customDate) selectedDate: Date = new Date('2021-08-08'); // 使用@CustomEnv装饰Date类型变量
 
   build() {
     Row() {
@@ -708,12 +695,12 @@ struct DatePickerExample {
 
 当装饰的对象是Map时，可以通过调用Map的接口set，clear，delete更新Map中的数据。
 
-const custom = CustomEnvKey.create<Map<string, number>>();
+const customMap = CustomEnvKey.create<Map<string, number>>();
 
 @Entry
 @ComponentV2
 struct MapSample {
-  @CustomEnv(custom) fruits: Map<string, number> = new Map([['apple', 1], ['banana', 2]]); // 使用@CustomEnv装饰Map类型变量
+  @CustomEnv(customMap) fruits: Map<string, number> = new Map([['apple', 1], ['banana', 2]]); // 使用@CustomEnv装饰Map类型变量
 
   build() {
     Row() {
@@ -764,12 +751,12 @@ struct MapSample {
 
 当装饰的对象是Set时，可以通过调用Set的接口add，clear，delete更新Set中的数据。
 
-const custom = CustomEnvKey.create<Set<string>>();
+const customSet = CustomEnvKey.create<Set<string>>();
 
 @Entry
 @ComponentV2
 struct SetSample {
-  @CustomEnv(custom) fruits: Set<string> = new Set(['apple', 'banana']); // 使用@CustomEnv装饰Set类型变量
+  @CustomEnv(customSet) fruits: Set<string> = new Set(['apple', 'banana']); // 使用@CustomEnv装饰Set类型变量
 
   build() {
     Row() {
@@ -816,23 +803,23 @@ struct SetSample {
 @CustomEnv装饰的变量传递给V1时，遵循V1状态变量装饰器不能接收@ObservedV2装饰的class的规则。
 
 @ObservedV2
-class CustomValue {
-  @Trace defaultVal: string = 'hello';
+class CustomDefaultvalue {
+  @Trace public defaultVal: string = 'hello';
 }
 
-const custom = CustomEnvKey.create<string>();
-const custom1 = CustomEnvKey.create<CustomValue>();
+const customOne = CustomEnvKey.create<string>();
+const customTwo = CustomEnvKey.create<CustomDefaultvalue>();
 
 @Entry
 @ComponentV2
-struct PageOne {
-  @CustomEnv(custom) defaultMessage: string = 'parent Value';
-  @CustomEnv(custom1) defaultMessage1: CustomValue = new CustomValue();
+struct PageTwo {
+  @CustomEnv(customOne) defaultMessage: string = 'parent Value';
+  @CustomEnv(customTwo) defaultMessage1: CustomDefaultvalue = new CustomDefaultvalue();
 
   build() {
     Column() {
       Text(`Parent Value is :${this.defaultMessage}`)
-      Child({ message: this.defaultMessage }) // 正确用法
+      PageTwoChild({ message: this.defaultMessage }) // 正确用法
       // Child({ customMessage: this.defaultMessage1 }) // 错误用法，编译报错。
     }
     .height('100%')
@@ -841,7 +828,7 @@ struct PageOne {
 }
 
 @Component
-struct Child {
+struct PageTwoChild {
   @Require @Prop message: string;
   // @Prop customMessage: CustomValue; //  错误用法，V1状态变量装饰器装饰的类型不能是ObservedV2装饰的class。
 
@@ -859,16 +846,16 @@ struct Child {
 @CustomEnv装饰的变量传递给V2时，遵循V2只有@Param可以接收外部变量的规则。
 
 @ObservedV2
-class CustomValue {
-  @Trace defaultVal: string = 'hello';
+class CustomStrValue {
+  @Trace public defaultVal: string = 'hello';
 }
 
-const custom = CustomEnvKey.create<CustomValue>();
+const customMix = CustomEnvKey.create<CustomStrValue>();
 
 @Entry
 @Component
 struct PageOne {
-  @CustomEnv(custom) defaultMessage: CustomValue = new CustomValue();
+  @CustomEnv(customMix) defaultMessage: CustomStrValue = new CustomStrValue();
 
   build() {
     Column() {
@@ -877,7 +864,7 @@ struct PageOne {
         .onClick(() => {
           this.defaultMessage.defaultVal = 'hello world';
         })
-      Child({ message: this.defaultMessage })
+      PageOneChild({ message: this.defaultMessage })
     }
     .height('100%')
     .width('100%')
@@ -885,8 +872,8 @@ struct PageOne {
 }
 
 @ComponentV2
-struct Child {
-  @Require @Param message: CustomValue;
+struct PageOneChild {
+  @Require @Param message: CustomStrValue;
 
   build() {
     Column() {
@@ -905,14 +892,14 @@ import { UIUtils } from '@kit.ArkUI';
 
 @Observed
 class CustomValue {
-  @Track defaultVal: string = 'hello';
+  @Track public defaultVal: string = 'hello';
 }
 
 const custom = CustomEnvKey.create<CustomValue>();
 
 @Entry
 @ComponentV2
-struct PageOne {
+struct ComponentV2Page {
   @CustomEnv(custom) defaultMessage: CustomValue = UIUtils.enableV2Compatibility(new CustomValue());
 
   build() {
@@ -922,7 +909,7 @@ struct PageOne {
         .onClick(() => {
           this.defaultMessage.defaultVal = 'hello world';
         })
-      Child({ message: this.defaultMessage })
+      ComponentPageChild({ message: this.defaultMessage })
     }
     .height('100%')
     .width('100%')
@@ -930,7 +917,7 @@ struct PageOne {
 }
 
 @Component
-struct Child {
+struct ComponentPageChild {
   @ObjectLink message: CustomValue;
 
   build() {
@@ -947,65 +934,6 @@ struct Child {
 ## Code blocks
 
 ### Code block 1
-
-```
-import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
-
-const custom = CustomEnvKey.create<string>();
-
-@Entry
-@ComponentV2
-struct Index {
-  @CustomEnv(custom) varName: string = 'default value';
-
-  build() {
-    Column() {
-    }
-  }
-}
-```
-
-### Code block 2
-
-```
-import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
-
-const custom = CustomEnvKey.create<string>();
-
-@Entry
-@ComponentV2
-struct Index {
-  @Local customMsg: string = 'Hello';
-
-  build() {
-    Column() {
-      Button('update')
-        .onClick(() => {
-          this.customMsg = 'Hello World';
-        })
-
-      WithEnv() {
-        // 有WithEnv组件，Child的customMessage显示WithEnv提供的值'Hello'，点击Button后值更新为'Hello World'。
-        Child()
-      }.customEnv(custom, this.customMsg)
-
-    }
-  }
-}
-
-@ComponentV2
-struct Child {
-  @CustomEnv(custom) customMessage: string = 'default content';
-
-  build() {
-    Column() {
-      Text(`Child: ${this.customMessage}`);
-    }
-  }
-}
-```
-
-### Code block 3
 
 ```
 const custom = CustomEnvKey.create<string>();
@@ -1027,7 +955,7 @@ struct Index {
 }
 ```
 
-### Code block 4
+### Code block 2
 
 ```
 const custom = CustomEnvKey.create<string>();
@@ -1046,7 +974,7 @@ struct Index {
 }
 ```
 
-### Code block 5
+### Code block 3
 
 ```
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
@@ -1075,7 +1003,7 @@ struct Index {
 }
 ```
 
-### Code block 6
+### Code block 4
 
 ```
 const custom = CustomEnvKey.create<string>();
@@ -1104,7 +1032,7 @@ struct Child {
 }
 ```
 
-### Code block 7
+### Code block 5
 
 ```
 const custom = CustomEnvKey.create<string>();
@@ -1133,16 +1061,16 @@ struct Child {
 }
 ```
 
-### Code block 8
+### Code block 6
 
 ```
-const custom = CustomEnvKey.create<string>();
+const customString = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct CustomValue {
   // 1. 实现了定义的key及value
-  @CustomEnv(custom) customVarName: string = 'hello world';
+  @CustomEnv(customString) customVarName: string = 'hello world';
 
   build() {
     Column() {
@@ -1152,27 +1080,27 @@ struct Index {
 }
 ```
 
-### Code block 9
+### Code block 7
 
 ```
 @ObservedV2
-class CustomEnvValue {
-  @Trace id: number = 123;
-  @Trace userName: string = 'admin';
+class CustomVal {
+  @Trace public id: number = 123;
+  @Trace public userName: string = 'admin';
 }
 
 const customStr = CustomEnvKey.create<string>();
 const customNum = CustomEnvKey.create<number>();
 const customBool = CustomEnvKey.create<boolean>();
-const customObj = CustomEnvKey.create<CustomEnvValue>();
+const customObj = CustomEnvKey.create<CustomVal>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct ClassIndex {
   @CustomEnv(customStr) customStrVarName: string = 'hello world';
   @CustomEnv(customNum) customNumVarName: number = 1;
   @CustomEnv(customBool) customBoolVarName: boolean = true;
-  @CustomEnv(customObj) customObjVarName: CustomEnvValue = new CustomEnvValue();
+  @CustomEnv(customObj) customObjVarName: CustomVal = new CustomVal();
 
   build() {
     Column() {
@@ -1185,23 +1113,23 @@ struct Index {
 }
 ```
 
-### Code block 10
+### Code block 8
 
 ```
 const custom = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct DefaultValue {
   build() {
     Column() {
-      Child()
+      DefaultChild()
     }
   }
 }
 
 @ComponentV2
-struct Child {
+struct DefaultChild {
   @CustomEnv(custom) customMessage: string = 'default content';
 
   build() {
@@ -1213,16 +1141,16 @@ struct Child {
 }
 ```
 
-### Code block 11
+### Code block 9
 
 ```
-import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
+import { WithEnv } from '@kit.ArkUI';
 
 const custom = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct NearPage {
   build() {
     Column() {
       // 就近原则体现
@@ -1230,7 +1158,7 @@ struct Index {
         // 优先查找该层WithEnv
         WithEnv() {
           // 就近原则，显示'the nearest WithEnv'
-          Child()
+          NearChild()
         }.customEnv(custom, 'the nearest WithEnv')
       }.customEnv(custom, 'outer WithEnv')
     }
@@ -1238,7 +1166,7 @@ struct Index {
 }
 
 @ComponentV2
-struct Child {
+struct NearChild {
   // @CustomEnv会向上查找父组件，优先查找WithEnv
   @CustomEnv(custom) customMessage: string = 'default content';
 
@@ -1250,16 +1178,16 @@ struct Child {
 }
 ```
 
-### Code block 12
+### Code block 10
 
 ```
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
 
-const custom = CustomEnvKey.create<string>();
+const customMsge = CustomEnvKey.create<string>();
 
 @Entry
 @ComponentV2
-struct Index {
+struct UpdateIndex {
   @Local customMsg: string = 'Hello';
 
   build() {
@@ -1271,16 +1199,16 @@ struct Index {
 
       WithEnv() {
         // 有WithEnv组件，Child的customMessage显示WithEnv提供的值'Hello'，点击Button后值更新为'Hello World'。
-        Child()
-      }.customEnv(custom, this.customMsg)
+        UpdateChild()
+      }.customEnv(customMsge, this.customMsg)
 
     }
   }
 }
 
 @ComponentV2
-struct Child {
-  @CustomEnv(custom) customMessage: string = 'default content';
+struct UpdateChild {
+  @CustomEnv(customMsge) customMessage: string = 'default content';
 
   build() {
     Column() {
@@ -1290,17 +1218,17 @@ struct Child {
 }
 ```
 
-### Code block 13
+### Code block 11
 
 ```
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-const custom: CustomEnvKey<number> = CustomEnvKey.create<number>();
+const customWatch: CustomEnvKey<number> = CustomEnvKey.create<number>();
 
 @Entry
 @Component
-struct Index {
+struct WatchIndex {
   @State message: number = 1;
 
   build() {
@@ -1310,8 +1238,8 @@ struct Index {
       })
 
       WithEnv() {
-        Child()
-      }.customEnv(custom, this.message)
+        WatchChild()
+      }.customEnv(customWatch, this.message)
     }
     .height('100%')
     .width('100%')
@@ -1320,8 +1248,8 @@ struct Index {
 }
 
 @Component
-struct Child {
-  @CustomEnv(custom) @Watch('onParentValChanged') parentVal: number = 100;
+struct WatchChild {
+  @CustomEnv(customWatch) @Watch('onParentValChanged') parentVal: number = 100;
 
   // Watch回调
   onParentValChanged() {
@@ -1340,13 +1268,55 @@ struct Child {
 }
 ```
 
-### Code block 14
+### Code block 12
+
+```
+import { WithEnv } from '@kit.ArkUI';
+
+const customDeepWatch = CustomEnvKey.create<number[][]>()
+
+@Entry
+@Component
+struct BuildIn_Watch {
+  @State message: number[][] = [[1, 2]];
+
+  build() {
+    Column() {
+      Button('ss').onClick(() => {
+        this.message[0][0]++
+      })
+      WithEnv() {
+        Child()
+      }.customEnv(customDeepWatch, this.message)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
+
+@Component
+struct Child {
+  @Watch('update') @CustomEnv(customDeepWatch) msg: number[][] = [[3, 4]]
+
+  update() {
+    console.info(`TabContent message callback func ${this.msg}`)
+  }
+
+  build() {
+    Column() {
+      Text(this.msg[0][0] + '')
+    }
+  }
+}
+```
+
+### Code block 13
 
 ```
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-const custom = CustomEnvKey.create<number>();
+const customMon = CustomEnvKey.create<number>();
 
 @Entry
 @ComponentV2
@@ -1360,8 +1330,8 @@ struct MonitorTest {
           this.message++;
         })
         WithEnv() {
-          Child()
-        }.customEnv(custom, this.message)
+          MonitorChild()
+        }.customEnv(customMon, this.message)
       }
       .width('100%')
     }
@@ -1370,8 +1340,8 @@ struct MonitorTest {
 }
 
 @ComponentV2
-struct Child {
-  @CustomEnv(custom) message: number = 0;
+struct MonitorChild {
+  @CustomEnv(customMon) message: number = 0;
 
   @Monitor('message')
   onStrChange(monitor: IMonitor) {
@@ -1391,7 +1361,7 @@ struct Child {
 }
 ```
 
-### Code block 15
+### Code block 14
 
 ```
 import { WithEnv, WithEnvAttribute } from '@kit.ArkUI';
@@ -1450,7 +1420,7 @@ struct FreezeChild {
 }
 ```
 
-### Code block 16
+### Code block 15
 
 ```
 class Fruit {
@@ -1461,12 +1431,12 @@ class Fruit {
   }
 }
 
-const custom = CustomEnvKey.create<Fruit[]>();
+const customArray = CustomEnvKey.create<Fruit[]>();
 
 @Entry
 @ComponentV2
-struct Index {
-  @CustomEnv(custom) fruits: Fruit[] = [new Fruit('apple'), new Fruit('banana')]; // 使用@CustomEnv装饰Array类型变量
+struct FruitPage {
+  @CustomEnv(customArray) fruits: Fruit[] = [new Fruit('apple'), new Fruit('banana')]; // 使用@CustomEnv装饰Array类型变量
 
   build() {
     Row() {
@@ -1505,15 +1475,15 @@ struct Index {
 }
 ```
 
-### Code block 17
+### Code block 16
 
 ```
-const custom = CustomEnvKey.create<Date>();
+const customDate = CustomEnvKey.create<Date>();
 
 @Entry
 @ComponentV2
 struct DatePickerExample {
-  @CustomEnv(custom) selectedDate: Date = new Date('2021-08-08'); // 使用@CustomEnv装饰Date类型变量
+  @CustomEnv(customDate) selectedDate: Date = new Date('2021-08-08'); // 使用@CustomEnv装饰Date类型变量
 
   build() {
     Row() {
@@ -1552,15 +1522,15 @@ struct DatePickerExample {
 }
 ```
 
-### Code block 18
+### Code block 17
 
 ```
-const custom = CustomEnvKey.create<Map<string, number>>();
+const customMap = CustomEnvKey.create<Map<string, number>>();
 
 @Entry
 @ComponentV2
 struct MapSample {
-  @CustomEnv(custom) fruits: Map<string, number> = new Map([['apple', 1], ['banana', 2]]); // 使用@CustomEnv装饰Map类型变量
+  @CustomEnv(customMap) fruits: Map<string, number> = new Map([['apple', 1], ['banana', 2]]); // 使用@CustomEnv装饰Map类型变量
 
   build() {
     Row() {
@@ -1606,15 +1576,15 @@ struct MapSample {
 }
 ```
 
-### Code block 19
+### Code block 18
 
 ```
-const custom = CustomEnvKey.create<Set<string>>();
+const customSet = CustomEnvKey.create<Set<string>>();
 
 @Entry
 @ComponentV2
 struct SetSample {
-  @CustomEnv(custom) fruits: Set<string> = new Set(['apple', 'banana']); // 使用@CustomEnv装饰Set类型变量
+  @CustomEnv(customSet) fruits: Set<string> = new Set(['apple', 'banana']); // 使用@CustomEnv装饰Set类型变量
 
   build() {
     Row() {
@@ -1653,27 +1623,27 @@ struct SetSample {
 }
 ```
 
-### Code block 20
+### Code block 19
 
 ```
 @ObservedV2
-class CustomValue {
-  @Trace defaultVal: string = 'hello';
+class CustomDefaultvalue {
+  @Trace public defaultVal: string = 'hello';
 }
 
-const custom = CustomEnvKey.create<string>();
-const custom1 = CustomEnvKey.create<CustomValue>();
+const customOne = CustomEnvKey.create<string>();
+const customTwo = CustomEnvKey.create<CustomDefaultvalue>();
 
 @Entry
 @ComponentV2
-struct PageOne {
-  @CustomEnv(custom) defaultMessage: string = 'parent Value';
-  @CustomEnv(custom1) defaultMessage1: CustomValue = new CustomValue();
+struct PageTwo {
+  @CustomEnv(customOne) defaultMessage: string = 'parent Value';
+  @CustomEnv(customTwo) defaultMessage1: CustomDefaultvalue = new CustomDefaultvalue();
 
   build() {
     Column() {
       Text(`Parent Value is :${this.defaultMessage}`)
-      Child({ message: this.defaultMessage }) // 正确用法
+      PageTwoChild({ message: this.defaultMessage }) // 正确用法
       // Child({ customMessage: this.defaultMessage1 }) // 错误用法，编译报错。
     }
     .height('100%')
@@ -1682,7 +1652,7 @@ struct PageOne {
 }
 
 @Component
-struct Child {
+struct PageTwoChild {
   @Require @Prop message: string;
   // @Prop customMessage: CustomValue; //  错误用法，V1状态变量装饰器装饰的类型不能是ObservedV2装饰的class。
 
@@ -1696,20 +1666,20 @@ struct Child {
 }
 ```
 
-### Code block 21
+### Code block 20
 
 ```
 @ObservedV2
-class CustomValue {
-  @Trace defaultVal: string = 'hello';
+class CustomStrValue {
+  @Trace public defaultVal: string = 'hello';
 }
 
-const custom = CustomEnvKey.create<CustomValue>();
+const customMix = CustomEnvKey.create<CustomStrValue>();
 
 @Entry
 @Component
 struct PageOne {
-  @CustomEnv(custom) defaultMessage: CustomValue = new CustomValue();
+  @CustomEnv(customMix) defaultMessage: CustomStrValue = new CustomStrValue();
 
   build() {
     Column() {
@@ -1718,7 +1688,7 @@ struct PageOne {
         .onClick(() => {
           this.defaultMessage.defaultVal = 'hello world';
         })
-      Child({ message: this.defaultMessage })
+      PageOneChild({ message: this.defaultMessage })
     }
     .height('100%')
     .width('100%')
@@ -1726,8 +1696,8 @@ struct PageOne {
 }
 
 @ComponentV2
-struct Child {
-  @Require @Param message: CustomValue;
+struct PageOneChild {
+  @Require @Param message: CustomStrValue;
 
   build() {
     Column() {
@@ -1739,21 +1709,21 @@ struct Child {
 }
 ```
 
-### Code block 22
+### Code block 21
 
 ```
 import { UIUtils } from '@kit.ArkUI';
 
 @Observed
 class CustomValue {
-  @Track defaultVal: string = 'hello';
+  @Track public defaultVal: string = 'hello';
 }
 
 const custom = CustomEnvKey.create<CustomValue>();
 
 @Entry
 @ComponentV2
-struct PageOne {
+struct ComponentV2Page {
   @CustomEnv(custom) defaultMessage: CustomValue = UIUtils.enableV2Compatibility(new CustomValue());
 
   build() {
@@ -1763,7 +1733,7 @@ struct PageOne {
         .onClick(() => {
           this.defaultMessage.defaultVal = 'hello world';
         })
-      Child({ message: this.defaultMessage })
+      ComponentPageChild({ message: this.defaultMessage })
     }
     .height('100%')
     .width('100%')
@@ -1771,7 +1741,7 @@ struct PageOne {
 }
 
 @Component
-struct Child {
+struct ComponentPageChild {
   @ObjectLink message: CustomValue;
 
   build() {

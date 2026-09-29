@@ -24,16 +24,16 @@ GLIBC：2.28或更高版本
 
 硬盘：100GB及以上
 
-预置条件
+环境准备
 
 [h2]配置JDK
 
-下载JDK。使用26.0.0 Beta2及以上版本的Command Line Tools，推荐JDK 21，26.0.0 Beta2以下版本推荐JDK 17。
+下载JDK。使用26.0.0及以上版本的Command Line Tools，推荐JDK 21，26.0.0以下版本推荐JDK 17。
 
-tar -xvf jdk-17.0.6_linux-x64_bin.tar.gz
+tar -xvf jdk-21.0.11_linux-x64_bin.tar.gz
 
 #jdk
-export JAVA_HOME=/opt/jdk-17.0.6_linux-x64_bin
+export JAVA_HOME=/opt/jdk-21.0.11_linux-x64_bin
 export PATH=$PATH:$JAVA_HOME/bin
 
 java -version
@@ -225,7 +225,7 @@ file：生成的证书请求文件名称，后缀为.csr，请将"/path/demo.csr
 
 申请调试数字证书和Profile文件
 
-生成证书请求文件后，在AppGallery Connect中申请、下载调试数字证书和Profile文件，具体请参考申请调试证书和申请Profile文件和添加权限信息。
+生成证书请求文件后，在AppGallery Connect中申请、下载调试数字证书和Profile文件，具体请参考申请调试证书和申请调试Profile。
 
 [h2]对未签名的HAP/APP进行签名
 
@@ -401,14 +401,14 @@ npm config set offline true
 ### Code block 1
 
 ```
-tar -xvf jdk-17.0.6_linux-x64_bin.tar.gz
+tar -xvf jdk-21.0.11_linux-x64_bin.tar.gz
 ```
 
 ### Code block 2
 
 ```
 #jdk
-export JAVA_HOME=/opt/jdk-17.0.6_linux-x64_bin
+export JAVA_HOME=/opt/jdk-21.0.11_linux-x64_bin
 export PATH=$PATH:$JAVA_HOME/bin
 ```
 

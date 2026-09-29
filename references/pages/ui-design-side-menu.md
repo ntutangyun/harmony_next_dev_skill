@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从6.0.0(20)版本开始，新增支持设置侧边栏菜单样式。
 
-HdsSideMenu提供一种菜单栏样式组件。设置侧边栏对应的一级菜单和二级菜单，并显示其新消息数量。
+HdsSideMenu (侧边菜单)提供一种菜单栏样式组件。设置侧边栏对应的一级菜单和二级菜单，并显示其新消息数量。
 
 开发步骤
 

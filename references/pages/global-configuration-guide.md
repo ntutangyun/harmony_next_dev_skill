@@ -26,7 +26,7 @@ class Config {
     }, ArkTSUtils.locks.AsyncLockMode.EXCLUSIVE)
   }
 
-  async logout(user?: string) {
+  async logout() {
     return this.lock.lockAsync(() => {
       this.isLogin = false;
       this.loginUser = '';
@@ -204,7 +204,7 @@ class Config {
     }, ArkTSUtils.locks.AsyncLockMode.EXCLUSIVE)
   }
 
-  async logout(user?: string) {
+  async logout() {
     return this.lock.lockAsync(() => {
       this.isLogin = false;
       this.loginUser = '';

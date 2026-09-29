@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/sensor-gu
 
 名称	描述
 OH_Sensor_GetInfos(Sensor_Info **infos, uint32_t *count)	获取设备上所有传感器的信息。
-OH_Sensor_Subscribe(const Sensor_SubscriptionId *id, const Sensor_SubscriptionAttribute *attribute, const Sensor_Subscriber *subscriber)	订阅传感器数据。系统将以指定的频率向用户上报传感器数据。 订阅加速度传感器，需要申请ohos.permission.ACCELEROMETER权限； 订阅陀螺仪传感器，需要申请ohos.permission.GYROSCOPE权限； 订阅计步器相关传感器时，需要申请ohos.permission.ACTIVITY_MOTION权限； 订阅与健康相关的传感器时，比如心率传感器需要申请ohos.permission.READ_HEALTH_DATA权限，否则订阅失败; 订阅其余传感器不需要申请权限。
+OH_Sensor_Subscribe(const Sensor_SubscriptionId *id, const Sensor_SubscriptionAttribute *attribute, const Sensor_Subscriber *subscriber)	订阅传感器数据。系统将以指定的频率向用户上报传感器数据。 订阅加速度传感器，需要申请ohos.permission.ACCELEROMETER权限； 订阅陀螺仪传感器，需要申请ohos.permission.GYROSCOPE权限； 订阅计步器相关传感器时，需要申请ohos.permission.ACTIVITY_MOTION权限； 订阅与健康相关的传感器时，比如心率传感器需要申请ohos.permission.READ_HEALTH_DATA权限，否则订阅失败； 订阅其余传感器不需要申请权限。
 OH_Sensor_Unsubscribe(const Sensor_SubscriptionId *id, const Sensor_Subscriber *subscriber)	取消订阅传感器数据。 取消订阅加速度传感器，需要申请ohos.permission.ACCELEROMETER权限； 取消订阅陀螺仪传感器，需要申请ohos.permission.GYROSCOPE权限； 取消订阅计步器相关传感器时，需要申请ohos.permission.ACTIVITY_MOTION权限； 取消订阅与健康相关的传感器时，需要申请ohos.permission.READ_HEALTH_DATA权限，否则取消订阅失败。 取消订阅其余传感器不需要申请权限。
 OH_Sensor_CreateInfos(uint32_t count)	用给定的数字创建一个实例数组，请参考Sensor_Info。
 OH_Sensor_DestroyInfos(Sensor_Info **sensors, uint32_t count)	销毁实例数组并回收内存，请参考Sensor_Info。
@@ -73,7 +73,6 @@ constexpr int64_t SENSOR_SAMPLE_PERIOD = 200000000;
 constexpr int32_t SLEEP_TIME_MS = 1000;
 constexpr int64_t INVALID_VALUE = -1;
 constexpr float INVALID_RESOLUTION = -1.0F;
-Sensor_Subscriber *g_user = nullptr;
 
 定义一个回调函数用来接收传感器数据。
 
@@ -193,6 +192,7 @@ static napi_value GetSensorInfos(napi_env env, napi_callback_info info)
     ret = OH_Sensor_GetInfos(sensors, &count);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "get all sensor info failed");
+        OH_Sensor_DestroyInfos(sensors, count);
         return nullptr;
     }
     for (uint32_t i = 0; i < count; ++i) {
@@ -200,6 +200,7 @@ static napi_value GetSensorInfos(napi_env env, napi_callback_info info)
         ret = GetSensorInfo(sensorInfoTemp);
         if (ret != SENSOR_SUCCESS) {
             OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "get sensor info failed");
+            OH_Sensor_DestroyInfos(sensors, count);
             return nullptr;
         }
     }
@@ -215,62 +216,99 @@ static napi_value GetSensorInfos(napi_env env, napi_callback_info info)
 
 订阅和取消订阅传感器数据。
 
-static napi_value Subscriber(napi_env env, napi_callback_info info)
+static void DestroySubscriberResources(Sensor_SubscriptionAttribute *attr, Sensor_SubscriptionId *id,
+    Sensor_Subscriber *sensorSubscriber)
 {
-    // 创建Sensor_Subscriber实例。
-    g_user = OH_Sensor_CreateSubscriber();
-    // 设置回调函数来报告传感器数据。
-    int32_t ret = OH_SensorSubscriber_SetCallback(g_user, SensorDataCallbackImpl);
-    if (ret != SENSOR_SUCCESS) {
-        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_SensorSubscriber_SetCallback failed");
+    if (attr != nullptr) {
+        OH_Sensor_DestroySubscriptionAttribute(attr);
+    }
+    if (id != nullptr) {
+        OH_Sensor_DestroySubscriptionId(id);
+    }
+    if (sensorSubscriber != nullptr) {
+        OH_Sensor_DestroySubscriber(sensorSubscriber);
+    }
+}
+
+static Sensor_SubscriptionId *CreateAndConfigSubscriptionId()
+{
+    Sensor_SubscriptionId *id = OH_Sensor_CreateSubscriptionId();
+    if (id == nullptr) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "create subscription id failed");
         return nullptr;
     }
-    // 创建Sensor_SubscriptionId实例。
-    Sensor_SubscriptionId *id = OH_Sensor_CreateSubscriptionId();
-    // 设置传感器类型,示例中设置的是SENSOR_TYPE_ACCELEROMETER类型，需开通ohos.permission.ACCELEROMETER权限
+    // 设置传感器类型，示例中设置的是SENSOR_TYPE_ACCELEROMETER类型，需开通ohos.permission.ACCELEROMETER权限
     // 参考传感器开发指导中 开发步骤第2点配置加速度传感器权限。
-    ret = OH_SensorSubscriptionId_SetType(id, SENSOR_ID);
+    int32_t ret = OH_SensorSubscriptionId_SetType(id, SENSOR_ID);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_SensorSubscriptionId_SetType failed");
+        OH_Sensor_DestroySubscriptionId(id);
         return nullptr;
     }
-    // 创建Sensor_SubscriptionAttribute实例。
+    return id;
+}
+
+static Sensor_SubscriptionAttribute *CreateAndConfigSubscriptionAttribute()
+{
     Sensor_SubscriptionAttribute *attr = OH_Sensor_CreateSubscriptionAttribute();
+    if (attr == nullptr) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "create subscription attribute failed");
+        return nullptr;
+    }
     // 设置传感器数据报告间隔。
-    ret = OH_SensorSubscriptionAttribute_SetSamplingInterval(attr, SENSOR_SAMPLE_PERIOD);
+    int32_t ret = OH_SensorSubscriptionAttribute_SetSamplingInterval(attr, SENSOR_SAMPLE_PERIOD);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG,
             "OH_SensorSubscriptionAttribute_SetSamplingInterval failed");
+        OH_Sensor_DestroySubscriptionAttribute(attr);
+        return nullptr;
+    }
+    return attr;
+}
+
+static napi_value Subscriber(napi_env env, napi_callback_info info)
+{
+    // 创建Sensor_Subscriber实例。
+    Sensor_Subscriber *sensorSubscriber = OH_Sensor_CreateSubscriber();
+    if (sensorSubscriber == nullptr) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "create subscriber failed");
+        return nullptr;
+    }
+    // 设置回调函数来报告传感器数据。
+    int32_t ret = OH_SensorSubscriber_SetCallback(sensorSubscriber, SensorDataCallbackImpl);
+    if (ret != SENSOR_SUCCESS) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_SensorSubscriber_SetCallback failed");
+        DestroySubscriberResources(nullptr, nullptr, sensorSubscriber);
+        return nullptr;
+    }
+    Sensor_SubscriptionId *id = CreateAndConfigSubscriptionId();
+    if (id == nullptr) {
+        DestroySubscriberResources(nullptr, nullptr, sensorSubscriber);
+        return nullptr;
+    }
+    Sensor_SubscriptionAttribute *attr = CreateAndConfigSubscriptionAttribute();
+    if (attr == nullptr) {
+        DestroySubscriberResources(nullptr, id, sensorSubscriber);
         return nullptr;
     }
     // 订阅传感器数据。
-    ret = OH_Sensor_Subscribe(id, attr, g_user);
+    ret = OH_Sensor_Subscribe(id, attr, sensorSubscriber);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Subscribe failed");
+        DestroySubscriberResources(attr, id, sensorSubscriber);
         return nullptr;
     }
     OH_LOG_Print(LOG_APP, LOG_INFO, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Subscribe successful");
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME_MS));
     // 取消订阅传感器数据。
-    ret = OH_Sensor_Unsubscribe(id, g_user);
+    ret = OH_Sensor_Unsubscribe(id, sensorSubscriber);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Unsubscribe failed");
+        DestroySubscriberResources(attr, id, sensorSubscriber);
         return nullptr;
     }
     OH_LOG_Print(LOG_APP, LOG_INFO, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Unsubscribe successful");
-    if (id != nullptr) {
-        // 销毁Sensor_SubscriptionId实例。
-        OH_Sensor_DestroySubscriptionId(id);
-    }
-    if (attr != nullptr) {
-        // 销毁Sensor_SubscriptionAttribute实例。
-        OH_Sensor_DestroySubscriptionAttribute(attr);
-    }
-    if (g_user != nullptr) {
-        // 销毁Sensor_Subscriber实例并回收内存。
-        OH_Sensor_DestroySubscriber(g_user);
-        g_user = nullptr;
-    }
+    DestroySubscriberResources(attr, id, sensorSubscriber);
     return nullptr;
 }
 
@@ -357,7 +395,6 @@ constexpr int64_t SENSOR_SAMPLE_PERIOD = 200000000;
 constexpr int32_t SLEEP_TIME_MS = 1000;
 constexpr int64_t INVALID_VALUE = -1;
 constexpr float INVALID_RESOLUTION = -1.0F;
-Sensor_Subscriber *g_user = nullptr;
 ```
 
 ### Code block 5
@@ -481,6 +518,7 @@ static napi_value GetSensorInfos(napi_env env, napi_callback_info info)
     ret = OH_Sensor_GetInfos(sensors, &count);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "get all sensor info failed");
+        OH_Sensor_DestroyInfos(sensors, count);
         return nullptr;
     }
     for (uint32_t i = 0; i < count; ++i) {
@@ -488,6 +526,7 @@ static napi_value GetSensorInfos(napi_env env, napi_callback_info info)
         ret = GetSensorInfo(sensorInfoTemp);
         if (ret != SENSOR_SUCCESS) {
             OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "get sensor info failed");
+            OH_Sensor_DestroyInfos(sensors, count);
             return nullptr;
         }
     }
@@ -505,62 +544,99 @@ static napi_value GetSensorInfos(napi_env env, napi_callback_info info)
 ### Code block 7
 
 ```
-static napi_value Subscriber(napi_env env, napi_callback_info info)
+static void DestroySubscriberResources(Sensor_SubscriptionAttribute *attr, Sensor_SubscriptionId *id,
+    Sensor_Subscriber *sensorSubscriber)
 {
-    // 创建Sensor_Subscriber实例。
-    g_user = OH_Sensor_CreateSubscriber();
-    // 设置回调函数来报告传感器数据。
-    int32_t ret = OH_SensorSubscriber_SetCallback(g_user, SensorDataCallbackImpl);
-    if (ret != SENSOR_SUCCESS) {
-        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_SensorSubscriber_SetCallback failed");
+    if (attr != nullptr) {
+        OH_Sensor_DestroySubscriptionAttribute(attr);
+    }
+    if (id != nullptr) {
+        OH_Sensor_DestroySubscriptionId(id);
+    }
+    if (sensorSubscriber != nullptr) {
+        OH_Sensor_DestroySubscriber(sensorSubscriber);
+    }
+}
+
+static Sensor_SubscriptionId *CreateAndConfigSubscriptionId()
+{
+    Sensor_SubscriptionId *id = OH_Sensor_CreateSubscriptionId();
+    if (id == nullptr) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "create subscription id failed");
         return nullptr;
     }
-    // 创建Sensor_SubscriptionId实例。
-    Sensor_SubscriptionId *id = OH_Sensor_CreateSubscriptionId();
-    // 设置传感器类型,示例中设置的是SENSOR_TYPE_ACCELEROMETER类型，需开通ohos.permission.ACCELEROMETER权限
+    // 设置传感器类型，示例中设置的是SENSOR_TYPE_ACCELEROMETER类型，需开通ohos.permission.ACCELEROMETER权限
     // 参考传感器开发指导中 开发步骤第2点配置加速度传感器权限。
-    ret = OH_SensorSubscriptionId_SetType(id, SENSOR_ID);
+    int32_t ret = OH_SensorSubscriptionId_SetType(id, SENSOR_ID);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_SensorSubscriptionId_SetType failed");
+        OH_Sensor_DestroySubscriptionId(id);
         return nullptr;
     }
-    // 创建Sensor_SubscriptionAttribute实例。
+    return id;
+}
+
+static Sensor_SubscriptionAttribute *CreateAndConfigSubscriptionAttribute()
+{
     Sensor_SubscriptionAttribute *attr = OH_Sensor_CreateSubscriptionAttribute();
+    if (attr == nullptr) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "create subscription attribute failed");
+        return nullptr;
+    }
     // 设置传感器数据报告间隔。
-    ret = OH_SensorSubscriptionAttribute_SetSamplingInterval(attr, SENSOR_SAMPLE_PERIOD);
+    int32_t ret = OH_SensorSubscriptionAttribute_SetSamplingInterval(attr, SENSOR_SAMPLE_PERIOD);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG,
             "OH_SensorSubscriptionAttribute_SetSamplingInterval failed");
+        OH_Sensor_DestroySubscriptionAttribute(attr);
+        return nullptr;
+    }
+    return attr;
+}
+
+static napi_value Subscriber(napi_env env, napi_callback_info info)
+{
+    // 创建Sensor_Subscriber实例。
+    Sensor_Subscriber *sensorSubscriber = OH_Sensor_CreateSubscriber();
+    if (sensorSubscriber == nullptr) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "create subscriber failed");
+        return nullptr;
+    }
+    // 设置回调函数来报告传感器数据。
+    int32_t ret = OH_SensorSubscriber_SetCallback(sensorSubscriber, SensorDataCallbackImpl);
+    if (ret != SENSOR_SUCCESS) {
+        OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_SensorSubscriber_SetCallback failed");
+        DestroySubscriberResources(nullptr, nullptr, sensorSubscriber);
+        return nullptr;
+    }
+    Sensor_SubscriptionId *id = CreateAndConfigSubscriptionId();
+    if (id == nullptr) {
+        DestroySubscriberResources(nullptr, nullptr, sensorSubscriber);
+        return nullptr;
+    }
+    Sensor_SubscriptionAttribute *attr = CreateAndConfigSubscriptionAttribute();
+    if (attr == nullptr) {
+        DestroySubscriberResources(nullptr, id, sensorSubscriber);
         return nullptr;
     }
     // 订阅传感器数据。
-    ret = OH_Sensor_Subscribe(id, attr, g_user);
+    ret = OH_Sensor_Subscribe(id, attr, sensorSubscriber);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Subscribe failed");
+        DestroySubscriberResources(attr, id, sensorSubscriber);
         return nullptr;
     }
     OH_LOG_Print(LOG_APP, LOG_INFO, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Subscribe successful");
     std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME_MS));
     // 取消订阅传感器数据。
-    ret = OH_Sensor_Unsubscribe(id, g_user);
+    ret = OH_Sensor_Unsubscribe(id, sensorSubscriber);
     if (ret != SENSOR_SUCCESS) {
         OH_LOG_Print(LOG_APP, LOG_ERROR, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Unsubscribe failed");
+        DestroySubscriberResources(attr, id, sensorSubscriber);
         return nullptr;
     }
     OH_LOG_Print(LOG_APP, LOG_INFO, SENSOR_LOG_DOMAIN, TAG, "OH_Sensor_Unsubscribe successful");
-    if (id != nullptr) {
-        // 销毁Sensor_SubscriptionId实例。
-        OH_Sensor_DestroySubscriptionId(id);
-    }
-    if (attr != nullptr) {
-        // 销毁Sensor_SubscriptionAttribute实例。
-        OH_Sensor_DestroySubscriptionAttribute(attr);
-    }
-    if (g_user != nullptr) {
-        // 销毁Sensor_Subscriber实例并回收内存。
-        OH_Sensor_DestroySubscriber(g_user);
-        g_user = nullptr;
-    }
+    DestroySubscriberResources(attr, id, sensorSubscriber);
     return nullptr;
 }
 ```

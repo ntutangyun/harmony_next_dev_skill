@@ -709,7 +709,7 @@ $
 
 $ SP_daemon -N 10 -PID 48875 -c -g -t -p -f -r -d -net -snapshot -threads
 
-oorder:0 Battery=37.000000
+order:0 Battery=37.000000
 order:1 ChildProcCpuLoad=NA
 order:2 ChildProcCpuUsage=NA
 order:3 ChildProcId=NA
@@ -1023,7 +1023,7 @@ ResponseTime	页面切换、页面滑动的响应时延。	单位：ms
 CompleteTime	页面切换的完成时延。	单位：ms
 HitchTimeRate	页面切换、页面滑动的卡顿率。	单位：ms/s
 MAX_RENDER_SEQ_MISSED_FRAMES	页面切换、页面滑动的最大连续丢帧。	NA
-FPS	页面滑动帧率	单位：fps
+FPS	页面滑动帧率。	单位：fps
 
 页面切换
 
@@ -1870,7 +1870,7 @@ $
 ```
 $ SP_daemon -N 10 -PID 48875 -c -g -t -p -f -r -d -net -snapshot -threads
 
-oorder:0 Battery=37.000000
+order:0 Battery=37.000000
 order:1 ChildProcCpuLoad=NA
 order:2 ChildProcCpuUsage=NA
 order:3 ChildProcId=NA

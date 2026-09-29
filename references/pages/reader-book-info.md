@@ -61,7 +61,6 @@ private async getBookInfo() {
     if (bookInfo) {
       this.bookTitle = bookInfo.bookTitle || '';
       this.author = bookInfo?.bookCreator || '';
-      // SpineIndex is not required for obtaining the book cover.
       let buffer = this.defaultHandler?.getResourceContent(-1, bookInfo.bookCoverImage);
       let imageSource: image.ImageSource = image.createImageSource(buffer);
       this.bookCover = await imageSource.createPixelMap();
@@ -144,7 +143,6 @@ private async getBookInfo() {
     if (bookInfo) {
       this.bookTitle = bookInfo.bookTitle || '';
       this.author = bookInfo?.bookCreator || '';
-      // SpineIndex is not required for obtaining the book cover.
       let buffer = this.defaultHandler?.getResourceContent(-1, bookInfo.bookCoverImage);
       let imageSource: image.ImageSource = image.createImageSource(buffer);
       this.bookCover = await imageSource.createPixelMap();

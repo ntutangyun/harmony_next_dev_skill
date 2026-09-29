@@ -16,7 +16,7 @@ Audio Vivid是基于AI技术的音频编解码标准，由世界超高清视频�
 
 对于播放音频类的应用，开发者可以查询到设备是否支持空间音频的能力，以及当前设备空间音频的开关状态。
 
-[h2]获取空间音频示例
+[h2]获取空间音频实例
 
 应用开发者在使用AudioSpatializationManager的接口前，需要先调用getSpatializationManager获取AudioSpatializationManager实例。
 

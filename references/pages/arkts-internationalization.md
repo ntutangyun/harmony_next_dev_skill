@@ -41,7 +41,7 @@ ArkUI 如下能力已默认适配镜像：
 
 界面布局、边框设置：关于方向类的通用属性，如果需要支持镜像能力，使用泛化的方向指示词 start/end入参类型替换 left/right、x/y等绝对方向指示词的入参类型，来表示自适应镜像能力。
 
-Canvas组件只有限支持文本绘制的镜像能力。
+Canvas组件只支持文本绘制的镜像能力。
 
 XComponent组件不支持组件镜像能力。
 
@@ -130,7 +130,7 @@ struct CustomizeCanvasComponentDrawing {
   }
 
   drawText(): void {
-    console.error('drawText')
+    console.info('drawText')
     this.context.reset()
     this.context.direction = 'inherit'
     this.context.font = '30px sans-serif'
@@ -241,7 +241,7 @@ struct CustomizeCanvasComponentDrawing {
   }
 
   drawText(): void {
-    console.error('drawText')
+    console.info('drawText')
     this.context.reset()
     this.context.direction = 'inherit'
     this.context.font = '30px sans-serif'

@@ -10,8 +10,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-peak-
 
 执行hdc shell。
 
-执行hidumper --cpuusage <进程pid>命令，获取总的cpu使用率。
+执行hidumper --cpuusage <进程pid>命令，获取总的CPU使用率。
 
 计算逻辑
 
-执行多轮测试，取最大值为cpu占用峰值，cpu占用率须小于5%。
+执行多轮测试，取最大值为CPU占用峰值，CPU占用率须小于5%。

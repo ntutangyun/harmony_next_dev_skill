@@ -72,7 +72,7 @@ import { Want } from '@kit.AbilityKit';
   };
   // ...
     try {
-      restrictions.setDisallowedPolicy(this.wantTemp, 'wifi', isDisallow);
+      restrictions.setDisallowedPolicy(this.wantTemp, restrictions.FeatureForDevice.WIFI, isDisallow);
       console.info(isDisallow ? 'disable wifi success.' : 'enable wifi success.');
       // ...
     } catch (err) {
@@ -142,7 +142,7 @@ import { Want } from '@kit.AbilityKit';
   };
   // ...
     try {
-      restrictions.setDisallowedPolicy(this.wantTemp, 'wifi', isDisallow);
+      restrictions.setDisallowedPolicy(this.wantTemp, restrictions.FeatureForDevice.WIFI, isDisallow);
       console.info(isDisallow ? 'disable wifi success.' : 'enable wifi success.');
       // ...
     } catch (err) {

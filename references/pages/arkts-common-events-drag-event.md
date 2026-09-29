@@ -1188,7 +1188,7 @@ configuration参数必须在检测开始前准备就绪。系统一旦启动Spri
 
 不要设置过长的时间间隔和过多的触发次数，这对于用户提醒通常没有意义。
 
-2.动态终止
+动态终止
 
 当系统检测到用户悬停足够时长，回调onDragSpringLoading接口设置到回调函数时，有机会决定即将出现的Spring Loading通知是否继续，这发生在需要观察用户拖拽的数据类型并与自身业务逻辑结合的情况下。
 
@@ -1208,7 +1208,7 @@ configuration参数必须在检测开始前准备就绪。系统一旦启动Spri
           }
         }
       }
-      // 如果数据无法处理，直接终止Spring Loading
+     // 如果数据无法处理，直接终止Spring Loading
       if (!isICanHandle) {
         context.abort();
         return;
@@ -1216,7 +1216,7 @@ configuration参数必须在检测开始前准备就绪。系统一旦启动Spri
     }
   })
 
-3.禁用Spring Loading
+禁用Spring Loading
 
 如果不再需要该组件上响应任何Spring Loading事件，则可以通过传递null给onDragSpringLoading来明确关闭响应。
 
@@ -1226,7 +1226,7 @@ configuration参数必须在检测开始前准备就绪。系统一旦启动Spri
 
 下面通过实现搜索设备的简单示例来展示如何通过onDragSpringLoading实现提醒和视图切换。
 
-1.准备一些组件
+准备一些组件
 
 为了简化示例，准备一个可拖出文字的组件以供用户拖出待搜索的文字，并添加一个按钮控件，用于响应Spring Loading来进一步激活视图。被激活的视图通过bindSheet实现，内部配置有一个输入框控件用于接收拖拽文本，以及一个文本组件用于展示搜索结果。
 
@@ -1256,7 +1256,7 @@ build() {
   .justifyContent(FlexAlign.Center)
 }
 
-2.实现SheetBuilder
+实现SheetBuilder
 
 实现半模态弹框的UI界面。
 
@@ -1285,7 +1285,7 @@ SheetBuilder() {
   }.width('100%').height('100%')
 }
 
-3.为Button控件添加进入和离开的响应
+为Button控件添加进入和离开的响应
 
 为了达到提醒效果，为目标组件也增加onDragEnter和onDragLeave的处理。当用户拖拽文字进入到组件范围时，变化背景色，以提醒用户在此处停留。
 
@@ -1298,31 +1298,31 @@ SheetBuilder() {
   this.buttonBackgroundColor = this.normalColor;
 })
 
-4.实现Spring Loading响应
+实现Spring Loading响应
 
 实现一个Spring Loading的响应函数，处理所有状态，如下：
 
 handleSpringLoading(context: SpringLoadingContext) {
   // BEGIN 状态时检查拖拽数据类型
   if (context.state == dragController.DragSpringLoadingState.BEGIN) {
-    // ···
+    // ...
     // 进行必要判断，决定是否要终止触发
     return;
   }
   if (context.state == dragController.DragSpringLoadingState.UPDATE) {
-    // ···
+    // ...
     // 刷新提醒
     return;
   }
   // 处理Spring Loading结束，触发视图切换
   if (context.state == dragController.DragSpringLoadingState.END) {
-    // ···
+    // ...
     // 视图激活或跳转
     return;
   }
   // 处理CANCEL状态，复原UI
   if (context.state == dragController.DragSpringLoadingState.CANCEL) {
-    // ···
+    // ...
     // 恢复状态与UI
     return;
   }
@@ -2566,7 +2566,7 @@ struct GridEts {
           }
         }
       }
-      // 如果数据无法处理，直接终止Spring Loading
+     // 如果数据无法处理，直接终止Spring Loading
       if (!isICanHandle) {
         context.abort();
         return;
@@ -2659,24 +2659,24 @@ SheetBuilder() {
 handleSpringLoading(context: SpringLoadingContext) {
   // BEGIN 状态时检查拖拽数据类型
   if (context.state == dragController.DragSpringLoadingState.BEGIN) {
-    // ···
+    // ...
     // 进行必要判断，决定是否要终止触发
     return;
   }
   if (context.state == dragController.DragSpringLoadingState.UPDATE) {
-    // ···
+    // ...
     // 刷新提醒
     return;
   }
   // 处理Spring Loading结束，触发视图切换
   if (context.state == dragController.DragSpringLoadingState.END) {
-    // ···
+    // ...
     // 视图激活或跳转
     return;
   }
   // 处理CANCEL状态，复原UI
   if (context.state == dragController.DragSpringLoadingState.CANCEL) {
-    // ···
+    // ...
     // 恢复状态与UI
     return;
   }

@@ -31,7 +31,7 @@ target_link_libraries(sample PUBLIC libohaudio.so libohaudiosuite.so)
 
 图1：实时预览示意图
 
-开发者可以通过以下步骤来实现一个简单的均衡器效果节点实时预览功能。
+开发者可以通过以下步骤来实现一个简单的均衡器效果节点实时预览功能。此处以均衡器效果为例演示实时预览流程，其他效果节点的详细说明请参考音频效果(C/C++)。
 
 在初始化时，创建OHAudioSuite管线（包括输入节点、均衡器节点、输出节点）。
 

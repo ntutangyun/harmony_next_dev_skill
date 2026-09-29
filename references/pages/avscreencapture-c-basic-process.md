@@ -94,7 +94,7 @@ OH_AVScreenCapture_SetMicrophoneEnabled(g_avCapture, isMic);
 
 [h2]配置视频采集参数
 
-录屏的视频采集信息OH_VideoInfo包含录屏输入规格配置OH_VideoCaptureInfo和录屏输出规格配置OH_VideoEncInfo。
+录屏的视频采集信息OH_VideoInfo包含录屏输入规格配置OH_VideoCaptureInfo和录屏输出规格配置OH_VideoEncInfo。配置录屏宽高时，需要设置正确的视频宽高。
 
 // 获取屏幕信息。
 uint64_t displayId = 0;
@@ -155,7 +155,7 @@ config = {
 void OnError(OH_AVScreenCapture *capture, int32_t errorCode, void *userData)
 {
     (void)capture;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnError errorCode is %{public}d", errorCode);
+    OH_LOG_ERROR(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnError errorCode is %{public}d", errorCode);
     (void)userData;
 }
 
@@ -207,7 +207,7 @@ void HandleVideoBuffer(OH_AVBuffer *buffer)
     }
     OH_NativeBuffer_Unreference(nativebuffer);
     buffer = nullptr;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable inner audio");
+    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable Video");
 }
 
 void HandleAudioBuffer(OH_AVBuffer *buffer, FILE *file, const char *logMsg)
@@ -248,7 +248,7 @@ void OnBufferAvailable(OH_AVScreenCapture *capture, OH_AVBuffer *buffer, OH_AVSc
 void OnDisplaySelected(struct OH_AVScreenCapture *capture, uint64_t displayId, void *userData)
 {
     (void)capture;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnError errorCode is %{public}uld", displayId);
+    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== OnDisplaySelected displayId is %{public}uld", displayId);
     (void)userData;
 }
 
@@ -299,7 +299,7 @@ void HandleVideoBuffer(OH_AVBuffer *buffer)
     }
     OH_NativeBuffer_Unreference(nativebuffer);
     buffer = nullptr;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable inner audio");
+    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable Video");
 }
 
 void HandleAudioBuffer(OH_AVBuffer *buffer, FILE *file, const char *logMsg)
@@ -631,7 +631,7 @@ config = {
 void OnError(OH_AVScreenCapture *capture, int32_t errorCode, void *userData)
 {
     (void)capture;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnError errorCode is %{public}d", errorCode);
+    OH_LOG_ERROR(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnError errorCode is %{public}d", errorCode);
     (void)userData;
 }
 
@@ -683,7 +683,7 @@ void HandleVideoBuffer(OH_AVBuffer *buffer)
     }
     OH_NativeBuffer_Unreference(nativebuffer);
     buffer = nullptr;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable inner audio");
+    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable Video");
 }
 
 void HandleAudioBuffer(OH_AVBuffer *buffer, FILE *file, const char *logMsg)
@@ -724,7 +724,7 @@ void OnBufferAvailable(OH_AVScreenCapture *capture, OH_AVBuffer *buffer, OH_AVSc
 void OnDisplaySelected(struct OH_AVScreenCapture *capture, uint64_t displayId, void *userData)
 {
     (void)capture;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnError errorCode is %{public}uld", displayId);
+    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== OnDisplaySelected displayId is %{public}uld", displayId);
     (void)userData;
 }
 
@@ -773,7 +773,7 @@ void HandleVideoBuffer(OH_AVBuffer *buffer)
     }
     OH_NativeBuffer_Unreference(nativebuffer);
     buffer = nullptr;
-    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable inner audio");
+    OH_LOG_INFO(LOG_APP, "==ScreenCaptureSample== ScreenCapture OnBufferAvailable Video");
 }
 
 void HandleAudioBuffer(OH_AVBuffer *buffer, FILE *file, const char *logMsg)

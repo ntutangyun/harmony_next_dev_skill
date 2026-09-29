@@ -1,18 +1,18 @@
-# SM2签名数据格式转换 (C/C++)
+# SM2签名数据格式转换(C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-sm2-sign-data-format-conversion-ndk_
 
 当前支持DER格式与r、s格式互转的能力。
 
-开发者可指定SM2密文的参数，将其转换成DER格式密文。反之，也可以从DER格式密文中提取出SM2的具体密文参数。
+开发者可指定SM2签名参数，将其转换成DER格式签名数据。反之，也可以从DER格式签名数据中提取出SM2的具体签名参数。
 
-指定密文参数，转换为DER格式
+指定签名参数，转换为DER格式
 
-调用OH_CryptoEccSignatureSpec_Create，创建OH_CryptoEccSignatureSpec对象，用于设置SM2密文参数。
+调用OH_CryptoEccSignatureSpec_Create，创建OH_CryptoEccSignatureSpec对象，用于设置SM2签名参数。
 
 调用OH_CryptoEccSignatureSpec_SetRAndS，将R、S设置到OH_CryptoEccSignatureSpec对象中。
 
-调用OH_CryptoEccSignatureSpec_Encode得到转换后的DER格式的密文。
+调用OH_CryptoEccSignatureSpec_Encode得到转换后的DER格式的签名数据。
 
 调用OH_CryptoEccSignatureSpec_Destroy释放对象。
 

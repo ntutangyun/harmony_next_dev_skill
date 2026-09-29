@@ -26,7 +26,7 @@ API version 19及以前，@Provide和@Consume双向同步仅支持声明式节�
 
 @Provide装饰的状态变量自动对其所有后代组件可用，开发者不需要多次在组件之间传递变量。
 
-后代通过使用@Consume获取@Provide提供的变量，建立在@Provide和@Consume之间的双向数据同步，与@State/@Link不同的是，前者可以更便捷的在多层级父子组件之间传递。
+后代通过使用@Consume获取@Provide提供的变量，建立在@Provide和@Consume之间的双向数据同步，与@State/@Link不同的是，前者可以更便捷地在多层级父子组件之间传递。
 
 @Provide和@Consume通过变量名或者变量别名绑定，需要类型相同，否则会发生类型隐式转换，从而导致应用行为异常。
 
@@ -52,10 +52,10 @@ API version 19及以前，@Provide和@Consume双向同步仅支持声明式节�
 
 @Provide变量装饰器	说明
 装饰器参数	别名：常量字符串，可选。 如果指定了别名，则通过别名来绑定变量；如果未指定别名，则通过变量名绑定变量。 allowOverride：允许重写，string类型，可选。 如果使用allowOverride指定别名，则别名可以被重写，即可以存在同名的@Provide变量。 未使用allowOverride时则不允许重名。示例见@Provide支持allowOverride参数。
-允许装饰的变量类型	Object、class、string、number、boolean、enum类型，以及这些类型的数组。 API version 10开始支持Date类型。 API version 11及以上支持Map、Set类型、undefined和null类型、ArkUI框架定义的联合类型Length、ResourceStr、ResourceColor类型以及这些类型的联合类型，示例见@Provide和Consume支持联合类型实例。
+允许装饰的变量类型	Object、class、string、number、boolean、enum类型，以及这些类型的数组。 API version 10开始支持Date类型。 API version 11及以上支持Map、Set类型、undefined和null类型、ArkUI框架定义的联合类型Length、ResourceStr、ResourceColor类型以及这些类型的联合类型，示例见@Provide和@Consume支持联合类型实例。
 不允许装饰的变量类型	不支持装饰Function类型。
 初始化规则	必须定义本地默认值。 可以从父组件传入非undefined类型变量，此时使用该传入变量进行初始化。 父组件未传入或传入undefined类型变量时，使用本地默认值进行初始化。
-同步规则	在子组件使用时： 不与父组件中的任何类型变量同步。 父组件传入的外部变量对@Provide初始化时，仅作为初始值，后续变量的变化不会同步至@Provide。 在父组件使用时： 可以初始化子组件的常规变量、@State、@Link、@Prop、@Provide。 @Provide变量的变化会同步给子组件的@Link、@Prop变量。 与后代子组件中别名匹配的@Consume变量双同步。
+同步规则	在子组件使用时： 不与父组件中的任何类型变量同步。 父组件传入的外部变量对@Provide初始化时，仅作为初始值，后续变量的变化不会同步至@Provide。 在父组件使用时： 可以初始化子组件的常规变量、@State、@Link、@Prop、@Provide。 @Provide变量的变化会同步给子组件的@Link、@Prop变量。 与后代子组件中别名匹配的@Consume变量双向同步。
 
 图1 @Provide初始化规则图示
 
@@ -98,7 +98,7 @@ API version 19及以前，@Provide和@Consume双向同步仅支持声明式节�
 
 当@Provide装饰的数据变化时：
 
-通过初始渲染的步骤可知，子组件@Consume已把自己注册给父组件。父组件@Provide变量变更后，会遍历更新所有依赖它的系统组件（elementid）和状态变量（@Consume）。
+通过初始渲染的步骤可知，子组件@Consume已把自己注册给父组件。父组件@Provide变量变更后，会遍历更新所有依赖它的系统组件（elementId）和状态变量（@Consume）。
 
 通知@Consume更新后，子组件所有依赖@Consume的系统组件（elementId）都会被通知更新。以此实现@Provide对@Consume状态数据同步。
 
@@ -698,7 +698,7 @@ struct Parent {
 
 [h2]@Provide和@Consume支持联合类型实例
 
-@Provide和@Consume支持联合类型和undefined和null。以下示例中，count类型为string | undefined，当点击祖先组件Ancestors中的Button改变count的属性或者类型时，Child中也会对应刷新。
+@Provide和@Consume支持联合类型和undefined和null。以下示例中，count类型为string | undefined，当点击祖先组件Ancestors中的Button改变count的值或者类型时，Child中也会对应刷新。
 
 @Component
 struct Child {

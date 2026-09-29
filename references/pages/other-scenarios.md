@@ -10,4 +10,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/other-sce
 
 控制窗口外观 (ArkTS)
 
-使用WindowManager管理多模输入事件（C/C++）
+使用WindowManager管理多模输入事件 (C/C++)

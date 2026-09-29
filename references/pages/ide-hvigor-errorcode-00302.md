@@ -38,7 +38,7 @@ module.json5文件中的module.type字段与hvigorfile.ts文件中导出的系�
 
 确保模块下module.json5文件的module.type字段和hvigorfile.ts文件中导出的系统插件一致。
 
-00302013 根节点还没准备好用于构建
+00302013 根节点未准备好用于构建
 
 错误信息
 
@@ -46,7 +46,7 @@ The root node is not yet available for build.
 
 错误描述
 
-根节点还没准备好用于构建。
+根节点未准备好用于构建。
 
 可能原因
 
@@ -67,7 +67,7 @@ console.log(hvigor.getParameter().getWorkspaceDir())
 
 console.log(require.resolve('@ohos/hvigor'));
 
-00302014 hvigorConfig还没准备好用于构建
+00302014 hvigorConfig未准备好用于构建
 
 错误信息
 
@@ -75,7 +75,7 @@ The hvigorConfig is not yet available for build.
 
 错误描述
 
-hvigorConfig还没准备好用于构建。
+hvigorConfig未准备好用于构建。
 
 可能原因
 
@@ -573,15 +573,15 @@ getAllDependencyInfo接口在taskGraphResolved之前的阶段调用。
 
 参考API示例代码，在taskGraphResolved及之后的生命周期hook中调用该接口。
 
-00302039 hvigorfile.ts中找不到模块
+00302039 hvigorfile.ts脚本执行失败
 
 错误信息
 
-Failed to load or execute hvigorfile.ts: XXX. At file: YYY。
+Failed to load or execute hvigorfile.ts: XXX. At file: YYY.
 
 错误描述
 
-hvigorfile.ts脚本执行失败，依赖导入失败。
+hvigorfile.ts脚本执行失败。
 
 可能原因
 

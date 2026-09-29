@@ -55,6 +55,7 @@ try {
             scanCodeRect.right <= scanBox.right &&
             scanCodeRect.bottom <= scanBox.bottom) {
             // 扫码成功，码图位置位于扫码框范围，根据业务需求处理扫码结果
+            // ...
           } else {
             // 码图位置不在扫码框范围，继续扫码
             try {
@@ -116,6 +117,7 @@ try {
             scanCodeRect.right <= scanBox.right &&
             scanCodeRect.bottom <= scanBox.bottom) {
             // 扫码成功，码图位置位于扫码框范围，根据业务需求处理扫码结果
+            // ...
           } else {
             // 码图位置不在扫码框范围，继续扫码
             try {

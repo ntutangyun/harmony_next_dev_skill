@@ -8,7 +8,7 @@ ohpm-repo私仓不允许在Linux或macOS系统中使用root用户启动，请使
 
 如何安装
 
-ohpm-repo依赖于Node运行，请提前安装Nodejs，并完成环境变量的配置。具体安装请参考Node.js官方网站。
+ohpm-repo依赖于Node运行，请提前安装Node.js，并完成环境变量的配置。具体安装请参考Node.js官方网站。
 
 说明
 
@@ -99,7 +99,7 @@ ohpm install @ohos/lottie --registry <配置的ohpm-repo私仓服务地址>/repo
 
 将三方库发布到ohpm-repo
 
-三方库包含静态共享包HAR包和动态共享包HSP包，可以通过ohpm命令行工具和使用Web页面两种方式发布。
+三方库包含静态共享包HAR和动态共享包HSP，可以通过ohpm命令行工具和使用Web页面两种方式发布。
 
 说明
 

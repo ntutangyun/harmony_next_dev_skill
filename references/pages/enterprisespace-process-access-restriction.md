@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-process-access-restriction_
 
-从6.0.1(21)开始，支持应用配置系统服务进程对后台用户数据的访问控制。
+从API版本6.0.1(21)开始，支持应用配置系统服务进程对后台用户数据的访问控制。
 
 场景介绍
 
@@ -142,8 +142,8 @@ struct RestrictedAccessProcessPage {
 
   async addRestrictedAccessBackgroundUserdataProcessList() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa';
-    const disallowPaths: string[] = ['path'];
+    const processName: string = 'testSa'; // 限制进程名，由用户传入
+    const disallowPaths: string[] = ['path']; // 限制访问路径，由用户传入
     if (await RestrictedAccessProcessApi.addRestrictedAccessBackgroundUserdataProcessList(
         userData, processName, disallowPaths) !== ErrCode.OK) {
       // 处理异常逻辑
@@ -162,7 +162,7 @@ struct RestrictedAccessProcessPage {
 
   async deleteRestrictedAccessBackgroundUserdataProcessList() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa';
+    const processName: string = 'testSa'; // 限制进程名，由用户传入
     if (await RestrictedAccessProcessApi.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName) !==
         ErrCode.OK) {
       // 处理异常逻辑
@@ -365,8 +365,8 @@ struct RestrictedAccessProcessPage {
 
   async addRestrictedAccessBackgroundUserdataProcessList() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa';
-    const disallowPaths: string[] = ['path'];
+    const processName: string = 'testSa'; // 限制进程名，由用户传入
+    const disallowPaths: string[] = ['path']; // 限制访问路径，由用户传入
     if (await RestrictedAccessProcessApi.addRestrictedAccessBackgroundUserdataProcessList(
         userData, processName, disallowPaths) !== ErrCode.OK) {
       // 处理异常逻辑
@@ -385,7 +385,7 @@ struct RestrictedAccessProcessPage {
 
   async deleteRestrictedAccessBackgroundUserdataProcessList() {
     const userData: spaceManager.UserDataEnum = spaceManager.UserDataEnum.ENTERPRISE;
-    const processName: string = 'testSa';
+    const processName: string = 'testSa'; // 限制进程名，由用户传入
     if (await RestrictedAccessProcessApi.deleteRestrictedAccessBackgroundUserdataProcessList(userData, processName) !==
         ErrCode.OK) {
       // 处理异常逻辑

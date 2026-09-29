@@ -23,7 +23,7 @@ PERSON_FULL_NAME和（PERSON_LAST_NAME，PERSON_FIRST_NAME）不能同时在同�
 联系方式
 
 名称	说明
-PHONE_NUMBER	手机号，如“188******88”。
+PHONE_NUMBER	手机号，如“188********”。
 EMAIL_ADDRESS	邮箱地址，如“a****t@huawei.com”。
 
 身份信息

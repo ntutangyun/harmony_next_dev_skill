@@ -6,7 +6,7 @@ HWASan（Hardware-Assisted Address Sanitizer）是一款类似于ASan的内存�
 
 在适配过程中，若遇到应用崩溃等问题，可参考适配常见问题。
 
-约束条件
+使用约束
 
 HWASan检测仅适用于AArch64架构的硬件。
 
@@ -53,6 +53,33 @@ DevEco Studio 6.1.0 Beta1之前的版本，仅支持对C++源码开启HWASan。
 
 运行或调试当前应用。
 
+从26.0.0版本开始，支持解析错误堆栈对应的伪代码、方法入参及变量的名称、值。仅解析前三行堆栈（#0~#2），其中#0行会解析入参、变量的名称和值，另外两行（#1、#2）仅解析入参和变量名称。
+
+为确保正确解析堆栈，需保留代码中的调试信息，具体请参考注意事项。
+
+注意事项
+
+为确保正确解析堆栈，需保留代码中的调试信息，请遵循以下配置。
+
+"nativeLib": {
+  "debugSymbol": {
+    "strip": false
+  }
+}
+
+set_source_files_properties(
+    filename.cpp
+    PROPERTIES COMPILE_FLAGS "-O0"
+)
+string(REPLACE "-O2" "-O0"
+    CMAKE_CXX_FLAGS_RELEASE
+    "${CMAKE_CXX_FLAGS_RELEASE}"
+)
+string(REPLACE "-O2" "-O0"
+    CMAKE_C_FLAGS_RELEASE
+    "${CMAKE_C_FLAGS_RELEASE}"
+)
+
 ## Code blocks
 
 ### Code block 1
@@ -94,4 +121,31 @@ DevEco Studio 6.1.0 Beta1之前的版本，仅支持对C++源码开启HWASan。
     "excludeSoFromBinXO": ["**/liblibrary.so"]
   }
 }
+```
+
+### Code block 5
+
+```
+"nativeLib": {
+  "debugSymbol": {
+    "strip": false
+  }
+}
+```
+
+### Code block 6
+
+```
+set_source_files_properties(
+    filename.cpp
+    PROPERTIES COMPILE_FLAGS "-O0"
+)
+string(REPLACE "-O2" "-O0"
+    CMAKE_CXX_FLAGS_RELEASE
+    "${CMAKE_CXX_FLAGS_RELEASE}"
+)
+string(REPLACE "-O2" "-O0"
+    CMAKE_C_FLAGS_RELEASE
+    "${CMAKE_C_FLAGS_RELEASE}"
+)
 ```

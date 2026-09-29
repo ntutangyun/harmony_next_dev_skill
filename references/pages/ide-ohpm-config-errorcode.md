@@ -20,7 +20,7 @@ Config子命令为空。
 
 确认ohpm config可用的子命令，配置子命令后再执行。
 
-00602002 配置的子命令不支持
+00602002 Config子命令不支持。
 
 错误信息
 
@@ -28,7 +28,7 @@ Config Subcommand Not Support.
 
 错误描述
 
-Config配置的子命令不支持。
+Config子命令不支持。
 
 可能原因
 
@@ -54,7 +54,7 @@ set命令参数错误。
 
 处理步骤
 
-确保命令输入格式为"ohpm config set <key> <value>"。
+确保命令输入格式为ohpm config set <key> <value>。
 
 00602004 get命令参数错误
 
@@ -72,7 +72,7 @@ get命令参数错误。
 
 处理步骤
 
-命令只允许输入一个key，确保命令输入格式为"ohpm config get <key>"，如ohpm config get registry。
+命令只允许输入一个key，确保命令输入格式为ohpm config get <key>，如ohpm config get registry。
 
 00602005 delete命令参数错误
 
@@ -86,11 +86,11 @@ delete命令参数错误。
 
 可能原因
 
-输入ohpm config delete命令。
+直接执行ohpm config delete命令，未输入<key>参数。
 
 处理步骤
 
-确保命令输入格式为"ohpm config delete <key>"。
+确保命令输入格式为ohpm config delete <key>。
 
 00602006 list参数无效
 
@@ -108,7 +108,7 @@ list参数无效。
 
 处理步骤
 
-确保命令输入格式为"ohpm config list [-j|--json]"。
+确保命令输入格式为ohpm config list [-j|--json]。
 
 00602007 获取受保护的键名
 
@@ -144,7 +144,7 @@ Key Not Exist.
 
 处理步骤
 
-运行"ohpm config list"查看所有可用的配置键，再执行"ohpm config delete <key>"。
+运行ohpm config list查看所有可用的键值，再执行ohpm config delete <key>。
 
 00602009 重复加载配置
 
@@ -208,15 +208,15 @@ Config Encrypt Command Param Error.
 
 错误描述
 
-Encrypt命令参数配置错误。
+Encrypt命令参数错误。
 
 可能原因
 
-执行ohpm config encrypt <string>命令，未配置加密组件路径参数--crypto_path。
+执行ohpm config encrypt <string>命令，未配置加密组件路径--crypto_path参数。
 
 处理步骤
 
-检查和确保命令格式为"ohpm config encrypt --crypto_path <string>"。
+检查和确保命令格式为ohpm config encrypt --crypto_path <string>。
 
 00602013 加密组件路径为空
 
@@ -236,7 +236,7 @@ Crypto Path Is Empty.
 
 方式一：在.ohpmrc文件中配置crypto_path路径后，再执行ohpm config encrypt命令。
 
-方式二：在执行命令时指定加密路径"ohpm config encrypt --crypto_path <string>"。
+方式二：在执行命令时指定加密路径ohpm config encrypt --crypto_path <string>。
 
 00602014 加密组件路径错误
 
@@ -268,11 +268,11 @@ Invalid Crypto Component.
 
 可能原因
 
-加密组件文件夹不为空，其中的加密文件被损坏，或存在不是加密组件的文件。
+加密组件文件夹不为空，但其中的加密文件被损坏，或文件夹中不是加密组件的文件。
 
 处理步骤
 
-运行命令ohpm config encrypt --crypto_path <string>生成有效的加密组件目录，string需符合加密组件的要求，具体请参考crypto_path。
+运行命令ohpm config encrypt --crypto_path <string>生成有效的加密组件目录。string需符合加密组件的要求，具体请参考crypto_path。
 
 00602016 加密路径未配置
 
@@ -282,7 +282,7 @@ Crypto Path Not Configured.
 
 错误描述
 
-加密路径配置不正确。
+加密路径未配置。
 
 可能原因
 

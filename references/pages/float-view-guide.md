@@ -6,31 +6,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/float-vie
 
 闪控窗是悬浮在桌面或其他应用界面上的小型窗口，为应用提供灵活的窗口管理能力。应用可以在小窗口中展示内容或提供快捷操作，用户可以在进行其他界面操作的同时查看闪控窗内容，提升使用体验。
 
+闪控窗适用于需要在独立小窗口中持续展示应用内容或提供快捷操作的场景。比如股市盯盘应用、直播应用。
+
 闪控窗可与闪控球联合使用，在闪控窗与闪控球互相绑定后，用户点击可触发闪控窗与闪控球互相切换。
-
-闪控球和闪控窗对比
-
-共同点：闪控球和闪控窗均为一种特殊的应用辅助窗口，具备在应用主窗口和对应UIAbility退至后台后仍然可以在前台显示的能力。可以用于应用退至后台后，使用其继续显示UI。
-
-显示形式不同。闪控球以小圆球的形式展现，适用于展示关键信息。闪控窗以小型窗口展示，展示区域较大，可以持续展示应用内容或提供快捷操作。
-
-闪控球只能贴边展示，闪控窗则没有此限制。
-
-闪控球模板固定，应用不能定制UI。闪控窗同样存在模板，并由系统管理并统一绘制UI，但是提供了可绘制的区域，可供应用加载指定页面内容。
-
-全局悬浮窗和闪控窗对比
-
-共同点：全局悬浮窗和闪控窗均为一种特殊的应用辅助窗口，具备在应用主窗口和对应Ability退至后台后仍然可以在前台显示的能力。可以用于应用退至后台后，使用其继续显示UI。
-
-全局悬浮窗由开发者管理并实现UI绘制，无统一UI及动效。
-
-闪控窗由系统管理并统一绘制UI，动效更为高端精致。
-
-闪控窗支持和闪控球联合使用，实现更复杂场景。
-
-全局悬浮窗仅支持在2in1设备上使用。
-
-闪控窗支持在Phone、Tablet、2in1设备上使用。
 
 说明
 
@@ -56,7 +34,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/float-vie
 
 垃圾桶删除：在Phone（非自由多窗模式）和Tablet（非自由多窗模式、非电脑模式）设备上，支持拖拽窗口到垃圾桶区域（底部中部区域）松手即可删除。
 
-侧边栏功能：在Phone（非自由多窗模式）和Tablet（非自由多窗模式、非电脑模式）设备上，标准悬浮窗可进入系统侧边栏暂存。
+侧边栏功能：在Phone（非自由多窗模式）和Tablet（非自由多窗模式、非电脑模式）设备上，闪控窗可进入系统侧边栏暂存。
 
 与闪控球切换：绑定状态下，用户点击可触发闪控窗与闪控球互相切换；切换为闪控球后，闪控窗状态变为IN_FLOATING_BALL。
 
@@ -72,7 +50,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/float-vie
 
 [h2]模板类型
 
-目前支持圆角矩形模板类型FloatViewTemplateType.ROUNDED_RECTANGLE和水平的条状矩形类型FloatViewTemplateType.RHORIZONTAL_BAR的闪控窗。
+闪控窗支持的模板类型可见FloatViewTemplateType，不同模板类型效果可见闪控窗视觉规格。
 
 前提条件
 
@@ -389,6 +367,264 @@ unbindFloatViewAndBall(): void {
   });
 }
 
+[h2]复杂场景：与防窥保护组合使用
+
+闪控窗支持与防窥保护功能联动使用。当用户通过闪控窗查看敏感信息时，系统将自动通过传感器检测周围环境，一旦识别到非机主的窥视行为，会立即在闪控窗上拉起蒙层以遮盖内容，防止隐私泄露。用户也可根据情况手动解除此保护。
+
+防窥保护基于SystemCapability.Security.DlpAntiPeep能力实现。识别逻辑为：系统将长期通过人脸解锁的用户标记为机主。当传感器检测到非机主与机主同时注视屏幕时，会通过回调向应用发送被窥视状态通知（HIDE），应用据此触发隐私保护动作。
+
+前提条件
+
+ohos.permission.FLOAT_VIEW
+
+ohos.permission.DLP_GET_HIDE_STATUS
+
+还需要在系统设置 > 隐私与安全 > 防窥保护中打开对应应用开关。可通过canIUse('SystemCapability.Security.DlpAntiPeep')判断当前设备是否支持防窥保护。
+
+封装防窥保护工具类，核心能力为：检测设备是否支持防窥功能、查询系统开关状态、获取当前窥视状态，并在必要时调用系统蒙层接口进行隐私遮挡。
+
+// 判断是否支持防窥保护
+export function canUseAntiPeep(): boolean {
+  return canIUse('SystemCapability.Security.DlpAntiPeep');
+}
+
+// 判断防窥保护是否打开
+export async function isAntiPeepOn(): Promise<boolean> {
+  try {
+    let result: boolean = await dlpAntiPeep.isDlpAntiPeepSwitchOn();
+    console.info(TAG + `isAntiPeepOn isDlpAntiPeepSwitchOn success. ${result}`)
+    return result;
+  } catch (err) {
+    console.error(TAG + `[isAntiPeepOn] isDlpAntiPeepSwitchOn failed.${JSON.stringify(err)}`);
+    return false;
+  }
+}
+
+// 获取防窥保护状态
+export function getAntiPeepInfo(): dlpAntiPeep.DlpAntiPeepStatus {
+  try {
+    let dlpAntiPeepStatus = dlpAntiPeep.getDlpAntiPeepInfo();
+    console.info(TAG + `getDlpHideInfo success. ${JSON.stringify(dlpAntiPeepStatus)}`);
+    return dlpAntiPeepStatus;
+  } catch (err) {
+    console.info(TAG + `getDlpHideInfo failed. ${JSON.stringify(err)}`);
+    return -1;
+  }
+}
+
+// 开启全局保护
+export function showSystemMaskLayer(windowId: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    try {
+      if (canUseAntiPeep()) {
+        dlpAntiPeep.setAntiPeepMaskLayer(windowId).catch((err: BusinessError) => {
+          console.error(
+            TAG + `Execute setAntiPeepMaskLayer failed. error code:${err.code}, error message:${err.message}`);
+          resolve(false);
+        }).then(() => {
+          console.info(TAG + `setAntiPeepMaskLayer success`);
+          resolve(true);
+        })
+      } else {
+        resolve(false);
+      }
+    } catch (err) {
+      console.error(TAG + `Call setAntiPeepMaskLayer failed. ${JSON.stringify(err)}`);
+      resolve(false);
+    }
+  });
+}
+
+注册防窥保护状态监听。
+
+调用dlpAntiPeep.on('dlpAntiPeep')接口注册防窥保护状态监听。其中PASS表示当前设备屏幕无人窥视，HIDE表示有除机主以外的人在窥视设备屏幕。
+
+export interface AntiPeepCallback {
+  onStatusChanged: (status: dlpAntiPeep.DlpAntiPeepStatus) => Promise<void>;
+}
+
+export function listenOnAntiPeepStatus(antiPeepCB: AntiPeepCallback): boolean {
+  try {
+    console.info(TAG + `start on('dlpAntiPeep')`);
+    dlpAntiPeep.on('dlpAntiPeep', (dlpAntiPeepStatus: dlpAntiPeep.DlpAntiPeepStatus) => {
+      if (antiPeepCB) {
+        antiPeepCB.onStatusChanged(dlpAntiPeepStatus);
+      } else {
+        console.warn(TAG + `antiPeepCB is empty`);
+      }
+    });
+    console.info(TAG + `on('dlpAntiPeep') ok`);
+    return true;
+  } catch (err) {
+    console.error(TAG + `dlpAntiPeep.on failed. ${JSON.stringify(err)}`);
+    return false;
+  }
+}
+
+初始化防窥状态并注册回调，申请闪控窗权限。
+
+初始化时依次检查设备支持情况、开关状态与当前状态。
+
+声明及初始化防窥回调处理函数，回调处理逻辑为：当状态为HIDE时，获取应用主窗并调用setAntiPeepMaskLayer()拉起系统蒙层。
+
+isListenOn: boolean = false;
+isPeep: boolean = false;
+isGranted: boolean = false;
+private floatViewController: floatView.FloatViewController | undefined = undefined;
+antiPeepCB: AntiPeepCallback = {
+  onStatusChanged: async (status: dlpAntiPeep.DlpAntiPeepStatus): Promise<void> => {
+    await this.handleAntiPeepStatus(status);
+  }
+};
+
+// 声明防窥回调处理函数
+private async handleAntiPeepStatus(status: dlpAntiPeep.DlpAntiPeepStatus) {
+  console.info(TAG + `[handleAntiPeepStatus] ${status}`);
+  switch (status) {
+    case dlpAntiPeep.DlpAntiPeepStatus.PASS:
+      console.info(TAG + 'DlpAntiPeepStatus is PASS');
+      break;
+    case dlpAntiPeep.DlpAntiPeepStatus.HIDE:
+      // 从存储中获取已保存的窗口信息
+      let window: window.Window = AppStorage.get('MAIN_WINDOW') as window.Window;
+      const windowId: number = window.getUIContext().getWindowId() as number;
+      console.info(TAG + `DlpAntiPeepStatus is HIDE ${windowId}`);
+      dlpAntiPeep.setAntiPeepMaskLayer(windowId)
+        .then((result) => {
+          console.info(TAG, `setAntiPeepMaskLayer success + ${result}`);
+        })
+        .catch((err: BusinessError) => {
+          console.error(TAG,
+            `Execute setAntiPeepMaskLayer failed. error code:${err.code}, error message:${err.message}`);
+        })
+      break;
+    default:
+      break;
+  }
+}
+
+// 初始化防窥状态及注册回调
+private initAntiPeepStatus() {
+  if (canUseAntiPeep()) { // Check if the device is supported
+    isAntiPeepOn().then((opened) => {
+      if (opened) {
+        let info = getAntiPeepInfo();
+        this.handleAntiPeepStatus(info);
+        this.isListenOn = listenOnAntiPeepStatus(this.antiPeepCB);
+        if (this.isListenOn) {
+          console.info(TAG + 'succeed in listenOnAntiPeepStatus ')
+        }
+      } else {
+        try {
+          this.getUIContext().getPromptAction().showToast({
+            message: $r('app.string.anti_peep_not_enable')
+          });
+        } catch (error) {
+          console.error(TAG + 'show toast error. code =' + error.code + ', message =' + error.message);
+        }
+      }
+    })
+  } else {
+    try {
+      this.getUIContext().getPromptAction().showToast({
+        message: $r('app.string.device_not_supported')
+      });
+    } catch (error) {
+      console.error(TAG + 'show toast error. code =' + error.code + ', message =' + error.message);
+    }
+  }
+}
+
+// 确认用户授权状态
+private requestPermission(): void {
+  let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+  let hostContext = this.getUIContext().getHostContext();
+  atManager.requestPermissionsFromUser(hostContext, ['ohos.permission.FLOAT_VIEW'] as Permissions[])
+    .then((data) => {
+      console.info(TAG + `grant result: ${data.authResults}.`);
+      this.isGranted = data.authResults[0] === 0;
+    })
+    .catch((reason: BusinessError) => {
+      console.error(TAG + `requestPermissionsFromUser failed, ${reason?.code}, ${reason?.message}.`);
+    });
+}
+
+// 应用初始化创建，申请用户授权
+aboutToAppear(): void {
+  this.initAntiPeepStatus();
+  this.requestPermission();
+  let enable: boolean = floatView.isFloatViewEnabled();
+  console.info(TAG + 'floatView enabled is: ' + enable);
+}
+
+创建并启动闪控窗。
+
+使用floatView.create()创建控制器，通过setUIContext()、getFloatViewLimits()、setWindowSize()、start()完成页面内容设置与启动，并通过onStateChange()、onRectChange()、onLimitsChange()注册状态与尺寸限制变化回调。
+
+// 启动闪控窗
+async createWindowAntiPeep(): Promise<void> {
+  if (!this.floatViewController) {
+    let ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    let floatConfig: floatView.FloatViewConfiguration = {
+      context: ctx,
+      templateType: floatView.FloatViewTemplateType.ROUNDED_RECTANGLE
+    };
+    // 创建闪控窗控制器实例
+    this.floatViewController = await floatView.create(floatConfig);
+    // 注册状态变化事件回调
+    this.registerStateChangeCallback();
+    // 注册尺寸变化事件回调
+    this.registerLimitsChangeCallback();
+  }
+  // 设置闪控窗页面内容
+  // FloatViewPage为闪控窗页面，由应用根据实际业务实现
+  await this.floatViewController.setUIContext('pages/FloatViewPage');
+  // 获取闪控窗尺寸限制，设置闪控窗大小
+  let limits: floatView.FloatViewLimits =
+    floatView.getFloatViewLimits(floatView.FloatViewTemplateType.ROUNDED_RECTANGLE);
+  let size: window.Size = {
+    width: limits.maxSize.width,
+    height: limits.maxSize.height
+  };
+  await this.floatViewController.setWindowSize(size);
+  // 启动闪控窗
+  await this.floatViewController.start();
+  console.info(TAG + 'Float view started in unbind state');
+}
+
+// 注册闪控窗尺寸限制变化回调函数
+public registerLimitsChangeCallback(): void {
+  this.floatViewController?.onLimitsChange((limits: floatView.FloatViewLimits) => {
+    console.info(TAG + `Limits changed: minSize=${limits.minSize}, maxSize=${limits.maxSize}`);
+  });
+}
+
+// 注册闪控窗状态变化回调函数
+public registerStateChangeCallback(): void {
+  this.floatViewController?.onStateChange((info: floatView.FloatViewStateChangeInfo) => {
+    console.info(TAG + `State changed: ${info.state}, reason: ${info.stopReason}`);
+    if (info.state === floatView.FloatViewState.STOPPED) {
+      this.floatViewController?.offStateChange();
+      this.floatViewController?.offLimitsChange();
+      this.floatViewController = undefined;
+    }
+  });
+}
+
+通过stop()停止闪控窗。
+
+// 停止闪控窗
+deleteAll(): void {
+  console.info(TAG + 'Deleting all');
+  if (this.floatViewController) {
+    this.floatViewController.stop().then(() => {
+      console.info(TAG + 'Float view stopped');
+    }).catch((err: BusinessError) => {
+      console.error(TAG + `Failed to delete float view: ${err.code} reason ${err.message}`);
+    });
+  }
+}
+
 ## Code blocks
 
 ### Code block 1
@@ -693,5 +929,251 @@ unbindFloatViewAndBall(): void {
   }).catch((err: BusinessError) => {
     console.error(TAG + `Unbind failed. Code: ${err.code}, Message: ${err.message}`);
   });
+}
+```
+
+### Code block 12
+
+```
+// 判断是否支持防窥保护
+export function canUseAntiPeep(): boolean {
+  return canIUse('SystemCapability.Security.DlpAntiPeep');
+}
+
+// 判断防窥保护是否打开
+export async function isAntiPeepOn(): Promise<boolean> {
+  try {
+    let result: boolean = await dlpAntiPeep.isDlpAntiPeepSwitchOn();
+    console.info(TAG + `isAntiPeepOn isDlpAntiPeepSwitchOn success. ${result}`)
+    return result;
+  } catch (err) {
+    console.error(TAG + `[isAntiPeepOn] isDlpAntiPeepSwitchOn failed.${JSON.stringify(err)}`);
+    return false;
+  }
+}
+
+// 获取防窥保护状态
+export function getAntiPeepInfo(): dlpAntiPeep.DlpAntiPeepStatus {
+  try {
+    let dlpAntiPeepStatus = dlpAntiPeep.getDlpAntiPeepInfo();
+    console.info(TAG + `getDlpHideInfo success. ${JSON.stringify(dlpAntiPeepStatus)}`);
+    return dlpAntiPeepStatus;
+  } catch (err) {
+    console.info(TAG + `getDlpHideInfo failed. ${JSON.stringify(err)}`);
+    return -1;
+  }
+}
+
+// 开启全局保护
+export function showSystemMaskLayer(windowId: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    try {
+      if (canUseAntiPeep()) {
+        dlpAntiPeep.setAntiPeepMaskLayer(windowId).catch((err: BusinessError) => {
+          console.error(
+            TAG + `Execute setAntiPeepMaskLayer failed. error code:${err.code}, error message:${err.message}`);
+          resolve(false);
+        }).then(() => {
+          console.info(TAG + `setAntiPeepMaskLayer success`);
+          resolve(true);
+        })
+      } else {
+        resolve(false);
+      }
+    } catch (err) {
+      console.error(TAG + `Call setAntiPeepMaskLayer failed. ${JSON.stringify(err)}`);
+      resolve(false);
+    }
+  });
+}
+```
+
+### Code block 13
+
+```
+export interface AntiPeepCallback {
+  onStatusChanged: (status: dlpAntiPeep.DlpAntiPeepStatus) => Promise<void>;
+}
+
+export function listenOnAntiPeepStatus(antiPeepCB: AntiPeepCallback): boolean {
+  try {
+    console.info(TAG + `start on('dlpAntiPeep')`);
+    dlpAntiPeep.on('dlpAntiPeep', (dlpAntiPeepStatus: dlpAntiPeep.DlpAntiPeepStatus) => {
+      if (antiPeepCB) {
+        antiPeepCB.onStatusChanged(dlpAntiPeepStatus);
+      } else {
+        console.warn(TAG + `antiPeepCB is empty`);
+      }
+    });
+    console.info(TAG + `on('dlpAntiPeep') ok`);
+    return true;
+  } catch (err) {
+    console.error(TAG + `dlpAntiPeep.on failed. ${JSON.stringify(err)}`);
+    return false;
+  }
+}
+```
+
+### Code block 14
+
+```
+isListenOn: boolean = false;
+isPeep: boolean = false;
+isGranted: boolean = false;
+private floatViewController: floatView.FloatViewController | undefined = undefined;
+antiPeepCB: AntiPeepCallback = {
+  onStatusChanged: async (status: dlpAntiPeep.DlpAntiPeepStatus): Promise<void> => {
+    await this.handleAntiPeepStatus(status);
+  }
+};
+
+// 声明防窥回调处理函数
+private async handleAntiPeepStatus(status: dlpAntiPeep.DlpAntiPeepStatus) {
+  console.info(TAG + `[handleAntiPeepStatus] ${status}`);
+  switch (status) {
+    case dlpAntiPeep.DlpAntiPeepStatus.PASS:
+      console.info(TAG + 'DlpAntiPeepStatus is PASS');
+      break;
+    case dlpAntiPeep.DlpAntiPeepStatus.HIDE:
+      // 从存储中获取已保存的窗口信息
+      let window: window.Window = AppStorage.get('MAIN_WINDOW') as window.Window;
+      const windowId: number = window.getUIContext().getWindowId() as number;
+      console.info(TAG + `DlpAntiPeepStatus is HIDE ${windowId}`);
+      dlpAntiPeep.setAntiPeepMaskLayer(windowId)
+        .then((result) => {
+          console.info(TAG, `setAntiPeepMaskLayer success + ${result}`);
+        })
+        .catch((err: BusinessError) => {
+          console.error(TAG,
+            `Execute setAntiPeepMaskLayer failed. error code:${err.code}, error message:${err.message}`);
+        })
+      break;
+    default:
+      break;
+  }
+}
+
+// 初始化防窥状态及注册回调
+private initAntiPeepStatus() {
+  if (canUseAntiPeep()) { // Check if the device is supported
+    isAntiPeepOn().then((opened) => {
+      if (opened) {
+        let info = getAntiPeepInfo();
+        this.handleAntiPeepStatus(info);
+        this.isListenOn = listenOnAntiPeepStatus(this.antiPeepCB);
+        if (this.isListenOn) {
+          console.info(TAG + 'succeed in listenOnAntiPeepStatus ')
+        }
+      } else {
+        try {
+          this.getUIContext().getPromptAction().showToast({
+            message: $r('app.string.anti_peep_not_enable')
+          });
+        } catch (error) {
+          console.error(TAG + 'show toast error. code =' + error.code + ', message =' + error.message);
+        }
+      }
+    })
+  } else {
+    try {
+      this.getUIContext().getPromptAction().showToast({
+        message: $r('app.string.device_not_supported')
+      });
+    } catch (error) {
+      console.error(TAG + 'show toast error. code =' + error.code + ', message =' + error.message);
+    }
+  }
+}
+
+// 确认用户授权状态
+private requestPermission(): void {
+  let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+  let hostContext = this.getUIContext().getHostContext();
+  atManager.requestPermissionsFromUser(hostContext, ['ohos.permission.FLOAT_VIEW'] as Permissions[])
+    .then((data) => {
+      console.info(TAG + `grant result: ${data.authResults}.`);
+      this.isGranted = data.authResults[0] === 0;
+    })
+    .catch((reason: BusinessError) => {
+      console.error(TAG + `requestPermissionsFromUser failed, ${reason?.code}, ${reason?.message}.`);
+    });
+}
+
+// 应用初始化创建，申请用户授权
+aboutToAppear(): void {
+  this.initAntiPeepStatus();
+  this.requestPermission();
+  let enable: boolean = floatView.isFloatViewEnabled();
+  console.info(TAG + 'floatView enabled is: ' + enable);
+}
+```
+
+### Code block 15
+
+```
+// 启动闪控窗
+async createWindowAntiPeep(): Promise<void> {
+  if (!this.floatViewController) {
+    let ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    let floatConfig: floatView.FloatViewConfiguration = {
+      context: ctx,
+      templateType: floatView.FloatViewTemplateType.ROUNDED_RECTANGLE
+    };
+    // 创建闪控窗控制器实例
+    this.floatViewController = await floatView.create(floatConfig);
+    // 注册状态变化事件回调
+    this.registerStateChangeCallback();
+    // 注册尺寸变化事件回调
+    this.registerLimitsChangeCallback();
+  }
+  // 设置闪控窗页面内容
+  // FloatViewPage为闪控窗页面，由应用根据实际业务实现
+  await this.floatViewController.setUIContext('pages/FloatViewPage');
+  // 获取闪控窗尺寸限制，设置闪控窗大小
+  let limits: floatView.FloatViewLimits =
+    floatView.getFloatViewLimits(floatView.FloatViewTemplateType.ROUNDED_RECTANGLE);
+  let size: window.Size = {
+    width: limits.maxSize.width,
+    height: limits.maxSize.height
+  };
+  await this.floatViewController.setWindowSize(size);
+  // 启动闪控窗
+  await this.floatViewController.start();
+  console.info(TAG + 'Float view started in unbind state');
+}
+
+// 注册闪控窗尺寸限制变化回调函数
+public registerLimitsChangeCallback(): void {
+  this.floatViewController?.onLimitsChange((limits: floatView.FloatViewLimits) => {
+    console.info(TAG + `Limits changed: minSize=${limits.minSize}, maxSize=${limits.maxSize}`);
+  });
+}
+
+// 注册闪控窗状态变化回调函数
+public registerStateChangeCallback(): void {
+  this.floatViewController?.onStateChange((info: floatView.FloatViewStateChangeInfo) => {
+    console.info(TAG + `State changed: ${info.state}, reason: ${info.stopReason}`);
+    if (info.state === floatView.FloatViewState.STOPPED) {
+      this.floatViewController?.offStateChange();
+      this.floatViewController?.offLimitsChange();
+      this.floatViewController = undefined;
+    }
+  });
+}
+```
+
+### Code block 16
+
+```
+// 停止闪控窗
+deleteAll(): void {
+  console.info(TAG + 'Deleting all');
+  if (this.floatViewController) {
+    this.floatViewController.stop().then(() => {
+      console.info(TAG + 'Float view stopped');
+    }).catch((err: BusinessError) => {
+      console.error(TAG + `Failed to delete float view: ${err.code} reason ${err.message}`);
+    });
+  }
 }
 ```

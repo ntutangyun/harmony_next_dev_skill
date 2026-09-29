@@ -30,13 +30,13 @@ struct SmartFill {
             .value('身份证')
             .onSelect((index: number, value: string) => {
               // 当用户选择ID类型时，更改与证件号码输入组件对应的ContentType值。
-              hilog.info(0x000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
+              hilog.info(0x0000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
               if (value === '身份证') {
                 this.type = ContentType.ID_CARD_NUMBER;
               } else if (value === '港澳通行证') {
                 this.type = undefined;
               }
-              hilog.info(0x000, 'testTag', 'ContentType changed, current type: ' + this.type);
+              hilog.info(0x0000, 'testTag', 'ContentType changed, current type: ' + this.type);
             })
         }
 
@@ -63,7 +63,7 @@ struct SmartFill {
                 autoFillManager.requestAutoSave(this.getUIContext())
               } catch (err) {
                 let e: BusinessError = err as BusinessError;
-                hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+                hilog.error(0x0000, 'testTag', 'error: %{public}d %{public}s', e.code, e.message);
               }
               this.isClicked = true;
               // 设置超时时间以防止重复点击按钮保存历史表单输入。
@@ -112,13 +112,13 @@ struct SmartFill {
             .value('身份证')
             .onSelect((index: number, value: string) => {
               // 当用户选择ID类型时，更改与证件号码输入组件对应的ContentType值。
-              hilog.info(0x000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
+              hilog.info(0x0000, 'testTag', 'Select item changed, value: ' + value + ', index: ' + index);
               if (value === '身份证') {
                 this.type = ContentType.ID_CARD_NUMBER;
               } else if (value === '港澳通行证') {
                 this.type = undefined;
               }
-              hilog.info(0x000, 'testTag', 'ContentType changed, current type: ' + this.type);
+              hilog.info(0x0000, 'testTag', 'ContentType changed, current type: ' + this.type);
             })
         }
 
@@ -145,7 +145,7 @@ struct SmartFill {
                 autoFillManager.requestAutoSave(this.getUIContext())
               } catch (err) {
                 let e: BusinessError = err as BusinessError;
-                hilog.error(0x0000, 'DemoTest', 'error: %{public}d %{public}s', e.code, e.message);
+                hilog.error(0x0000, 'testTag', 'error: %{public}d %{public}s', e.code, e.message);
               }
               this.isClicked = true;
               // 设置超时时间以防止重复点击按钮保存历史表单输入。

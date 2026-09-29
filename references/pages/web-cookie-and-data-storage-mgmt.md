@@ -36,7 +36,7 @@ struct WebComponent {
   }
 }
 
-从API version 22开始，开发者可以通过setLazyInitializeWebEngine()，为“www.example.com”设置单个Cookie的值“value=test”时跳过初始化ArkWeb内核，以节省configCookieSync()接口耗时。其他Cookie的相关功能及使用，请参考WebCookieManager()接口文档。
+从API version 22开始，开发者可以通过setLazyInitializeWebEngine()延后初始化ArkWeb内核，在调用configCookieSync()为“www.example.com”设置单个Cookie的值“value=test”时跳过初始化ArkWeb内核，以节省configCookieSync()接口耗时。其他Cookie的相关功能及使用，请参考WebCookieManager()接口文档。
 
 import { webview } from '@kit.ArkWeb';
 import { BusinessError } from '@kit.BasicServicesKit';

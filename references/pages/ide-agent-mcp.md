@@ -20,7 +20,7 @@ uvx：基于Python的快速执行工具，建议安装Python 3.9 以上的版本
 
 说明
 
-MCP Server支持三种通信方式：Stdio 、Server-Sent Events (SSE) 和Streamable HTTP。
+MCP Server支持三种通信方式：Stdio、Server-Sent Events (SSE) 和Streamable HTTP。
 
 Stdio方式支持配置cmd、args和env字段，SSE和Streamable HTTP方式支持配置url字段。
 

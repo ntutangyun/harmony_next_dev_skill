@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/remote-co
 
 从26.0.0版本开始，新增支持QUIC长连接能力。
 
-QUIC长连接基于QUIC（Quick UDP Internet Connections）协议实现，相比传统的TCP协议，QUIC在速度、灵活性和稳定性方面更具备核心优势。QUIC长连接在即时通讯、实时推送、在线协作等场景中具有广泛应用，能够显著提升通信效率和用户体验。在远场通信服务的框架中，QUIC长连接通过RCP_QUIC提供支持，为开发者提供高效、可靠的端云通信能力。
+QUIC长连接基于QUIC（Quick UDP Internet Connections）协议实现，相比传统的TCP协议，QUIC在速度、灵活性和稳定性方面更具备核心优势。QUIC长连接在即时通讯、实时推送、在线协作等场景中具有广泛应用，能够显著提升通信效率和用户体验。远场通信服务提供QUIC长连接API，为开发者提供高效、可靠的端云通信能力。
 
 在服务端主动推送消息的场景下，QUIC长连接通过无队头阻塞的多路复用及更少的握手次数，有效优化传统HTTP/1.1及HTTP/2协议中的队头阻塞与多次握手问题，降低网络延迟和资源消耗。此外，QUIC长连接能够保持连接的持久性，减少连接建立和断开频率，进一步提升通信效率。
 

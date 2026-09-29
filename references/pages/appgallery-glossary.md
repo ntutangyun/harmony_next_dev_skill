@@ -4,9 +4,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgaller
 
 A
 
-[h2]Attribution Strategy；归因策略
+[h2]Attribution Policy；归因策略
 
-归因的规则和策略配置，包括归因窗口期、归因优先级、归因节点设置等。
+定义归因窗口期、归因优先级等参数的规则集合，作为端侧归因计算判定转化来源归属的依据。
 
 [h2]Attribution Window；归因窗口期
 
@@ -30,9 +30,7 @@ C
 
 用户在应用内完成的关键行为，包括注册、购买、激活等，用于归因分析和效果评估。
 
-D
-
-[h2]Dynamic Icon；动态图标
+[h2]Custom Icon；动态图标
 
 应用可以切换的图标样式，用户可以在应用内选择不同的图标，实现个性化的应用界面展示。
 

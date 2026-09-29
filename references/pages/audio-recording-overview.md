@@ -10,6 +10,8 @@ AudioCapturer：用于音频输入的ArkTS/JS API，仅支持PCM格式，需要�
 
 OHAudio：用于音频输入的Native API，此API在设计上实现归一，同时支持普通音频通路和低时延通路。仅支持PCM格式，适用于依赖Native层实现音频输入功能的场景。
 
+如果开发者需要采集设备内部播放音频，可参考实现录制系统音频。
+
 除上述方式外，也可以通过Media Kit中的AVRecorder实现音频录制。
 
 AVRecorder：用于音频录制的ArkTS/JS API，集成了音频采集、音频编码和媒体封装的功能。开发者可以直接调用设备硬件如麦克风录音，并生成m4a音频文件。

@@ -4,10 +4,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkgraphi
 
 ArkGraphics 3D简介
 
-ArkGraphics 3D场景搭建以及管理
+场景搭建与管理
 
-ArkGraphics 3D资源创建以及使用
+资源创建与使用
 
-ArkGraphics 3D场景动画控制以及管理
+场景动画控制与管理
 
 ArkGraphics Editor插件及编辑器的下载与安装

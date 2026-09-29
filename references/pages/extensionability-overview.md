@@ -37,7 +37,7 @@ AppServiceExtensionAbility	应用后台服务扩展能力，提供应用后台�
 SelectionExtensionAbility	划词扩展能力，提供系统应用后台服务的连接和断开等生命周期回调。	是	否
 FaultLogExtensionAbility	提供故障延迟通知的能力。	是	否
 WebNativeMessagingExtensionAbility	Web插件对接能力。提供插件对接native应用能力。	是	否
-NotificationSubscriberExtensionAbility	通知订阅拓展能力，用于发送通知数据到三方穿戴设备。	是	否
+NotificationSubscriberExtensionAbility	通知订阅扩展能力，用于发送通知数据到三方穿戴设备。	是	否
 PartnerAgentExtensionAbility	基于蓝牙通信技术，提供设备发现与设备下线的通知功能。	是	否
 PhotoEditorExtensionAbility	照片编辑扩展能力，提供给应用实现图片编辑的功能。	是	否
 VpnExtensionAbility	VPN扩展能力，提供三方VPN创建、销毁等生命周期回调。	是	否

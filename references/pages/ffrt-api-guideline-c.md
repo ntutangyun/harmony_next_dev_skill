@@ -1747,7 +1747,7 @@ int main()
 
     ffrt::submit([&]() {
         ffrt_usleep(2);
-        if(ffrt_rwlock_trywrlock(&rwlock)){
+        if(ffrt_rwlock_trywrlock(&rwlock) == ffrt_success){
             x++;
             ffrt_rwlock_unlock(&rwlock);
         }
@@ -1755,7 +1755,7 @@ int main()
 
     ffrt::submit([&]() {
         ffrt_usleep(2);
-        if(ffrt_rwlock_tryrdlock(&rwlock)){
+        if(ffrt_rwlock_tryrdlock(&rwlock) == ffrt_success){
             ffrt_rwlock_unlock(&rwlock);
         }
     },{},{});
@@ -3536,7 +3536,7 @@ int main()
 
     ffrt::submit([&]() {
         ffrt_usleep(2);
-        if(ffrt_rwlock_trywrlock(&rwlock)){
+        if(ffrt_rwlock_trywrlock(&rwlock) == ffrt_success){
             x++;
             ffrt_rwlock_unlock(&rwlock);
         }
@@ -3544,7 +3544,7 @@ int main()
 
     ffrt::submit([&]() {
         ffrt_usleep(2);
-        if(ffrt_rwlock_tryrdlock(&rwlock)){
+        if(ffrt_rwlock_tryrdlock(&rwlock) == ffrt_success){
             ffrt_rwlock_unlock(&rwlock);
         }
     },{},{});

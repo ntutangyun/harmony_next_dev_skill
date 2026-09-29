@@ -135,7 +135,7 @@ struct Extension {
 
 开发者可以在UIAbility的页面中通过EmbeddedComponent容器加载自己应用内的EmbeddedUIExtensionAbility。此外，EmbeddedUIExtensionAbility在want.parameters中新增了两个字段ohos.extension.processMode.hostSpecified和ohos.extension.processMode.hostInstance。
 
-ohos.extension.processMode.hostSpecified控制非首次启动的EmbeddedUIExtensionAbility是否运行在同UIExtensionAbility的进程中，参数是进程名称。例如，"ohos.extension.processMode.hostSpecified"： "com.ohos.inentexecutedemo:embeddedUI"。
+ohos.extension.processMode.hostSpecified控制非首次启动的EmbeddedUIExtensionAbility是否运行在同UIExtensionAbility的进程中，参数是进程名称。例如，"ohos.extension.processMode.hostSpecified"： "com.ohos.intentexecutedemo:embeddedUI"。
 
 ohos.extension.processMode.hostInstance控制启动的EmbeddedUIExtensionAbility是否按照独立进程启动，传入false时，按照UIExtensionAbility的进程模型启动，入参true的时候，不管被拉起的UIExtensionAbility配置的是什么进程模型，都会新增一个进程，例如，"ohos.extension.processMode.hostInstance": "true"。
 

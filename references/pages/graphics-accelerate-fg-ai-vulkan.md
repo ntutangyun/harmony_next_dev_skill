@@ -144,7 +144,7 @@ VulkanFG::Image m_sceneColor{};
 // 创建真实帧颜色缓冲区图像实例
 m_ffSceneColor = HMS_FG_CreateImage_VK(m_context, m_sceneColor.GetNativeImage(), m_sceneColor.GetNativeImageView());
 if (!m_ffSceneColor) {
-    GOLOGE("HMS_FG_RegisterImage_VK m_ffSceneColor execution failed.");
+    GOLOGE("HMS_FG_CreateImage_VK m_ffSceneColor execution failed.");
     return false;
 }
 
@@ -344,7 +344,7 @@ VulkanFG::Image m_sceneColor{};
 // 创建真实帧颜色缓冲区图像实例
 m_ffSceneColor = HMS_FG_CreateImage_VK(m_context, m_sceneColor.GetNativeImage(), m_sceneColor.GetNativeImageView());
 if (!m_ffSceneColor) {
-    GOLOGE("HMS_FG_RegisterImage_VK m_ffSceneColor execution failed.");
+    GOLOGE("HMS_FG_CreateImage_VK m_ffSceneColor execution failed.");
     return false;
 }
 ```

@@ -374,7 +374,7 @@ struct ArrayTypes {
 
 从API version 11开始，@Link支持Map类型。
 
-在下面的示例中，value类型为Map<number, string>，点击Button改变message的值，视图会随之刷新。
+在下面的示例中，value类型为Map<number, string>，点击Button改变value的值，视图会随之刷新。
 
 @Component
 struct MapSampleChild {
@@ -633,7 +633,7 @@ struct ChangeVariablesChild {
   }
 }
 
-[h2]Link支持联合类型实例
+[h2]@Link支持联合类型实例
 
 @Link支持联合类型、undefined和null。在以下示例中，name类型为string | undefined。点击父组件UnionTypes中的按钮可以改变name的属性或类型，UnionChild组件也会相应刷新。
 

@@ -39,7 +39,7 @@ getLineMetrics(lineNumber: number): LineMetrics | undefined	获取段落指定�
 
 import { text, drawing } from '@kit.ArkGraphics2D';
 
-创建段落样式，并使用构造段落生成器ParagraphBuilder生成段落实例。
+创建段落样式，并构造段落生成器ParagraphBuilder实例。
 
 // 设置文本样式
 let myTextStyle: text.TextStyle = {

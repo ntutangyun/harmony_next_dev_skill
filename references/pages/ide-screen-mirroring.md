@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-screen-mirroring_
 
-从26.0.0 Beta1版本开始，新增设备投屏功能，支持对已连接的设备进行投屏操作，方便查看设备屏幕内容并进行设备操控，提升开发调试效率。
+从26.0.0版本开始，新增设备投屏功能，支持对已连接的设备进行投屏操作，方便查看设备屏幕内容并进行设备操控，提升开发调试效率。
 
 使用约束
 

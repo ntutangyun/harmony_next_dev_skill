@@ -18,7 +18,7 @@ app.json5文件的bundleName为空或者缺少bundleName配置。
 
 处理步骤
 
-检查下app.json5文件的bundleName是否正确。
+检查app.json5文件的bundleName是否正确。
 
 00401001 attach调试获取不到product
 
@@ -72,7 +72,7 @@ Failed to start debugging. Click the Debug button again to retry.
 
 处理步骤
 
-重新点击Debug按钮启动调试。
+点击Debug按钮重新启动调试。
 
 00401004 SysCap能力校验不通过
 
@@ -122,7 +122,7 @@ Error running entry : Ability not specified.
 
 处理步骤
 
-打开运行/调试配置面板，在Specified Ability下面设置Ability。
+打开运行/调试配置面板，在Specified Ability下设置Ability。
 
 00401006 预览器不支持以release构建模式进行调试
 
@@ -176,7 +176,7 @@ No module found. Make sure the project sync is completed successfully and the mo
 
 处理步骤
 
-重新同步下工程并确保同步成功。
+重新同步工程并确保同步成功。
 
 00401009 运行获取不到target
 
@@ -326,7 +326,7 @@ Some exceptions occurred in this operation, please re-run.
 
 处理步骤
 
-拔插下设备再重新运行。
+重新连接设备再运行。
 
 00401017 安装Hap包失败
 
@@ -486,7 +486,7 @@ HAP文件数量不要超过1,000,000。
 
 处理步骤
 
-排查并精简下工程资源文件再重新打包。
+排查并精简工程资源文件再重新打包。
 
 00401025 hap包中config.json或module.json文件内容为空
 
@@ -544,7 +544,7 @@ The current device cannot be empty.
 
 处理步骤
 
-重新拔插下设备再启动调试。
+重新连接设备再启动调试。
 
 00401028 FA模型工程不支持DebugLine
 
@@ -670,7 +670,7 @@ Main module is null.
 
 处理步骤
 
-点击菜单栏File > Sync and Refresh Project重新同步下工程，确保工程同步成功再运行工程。
+点击菜单栏File > Sync and Refresh Project重新同步工程，确保工程同步成功后再运行工程。
 
 00401035 当前设备不支持线程检测
 

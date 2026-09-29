@@ -2,10 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-web-front-page_
 
-注意
-
-ohpm-repo私仓从5.0.2版本开始，新增接口防重放攻击机制。请保持ohpm-repo私仓部署的服务器与访问ohpm-repo私仓管理界面的客户端机器时间同步。如出现访问页面报错“非法请求”，请参考FAQ解决。
-
 启动ohpm-repo私仓后，可以通过浏览器访问ohpm-repo页面，访问路径为http://<部署机器IP>:<监听端口>或者https://<部署机器IP>:<监听端口>。其中，http或者https是ohpm-repo网络协议，<部署机器IP> 是部署ohpm-repo服务器的IP地址，<监听端口> 是所设置的监听端口，均可在ohpm-repo配置文件listen选项中编辑。
 
 例如，将ohpm-repo部署在IP为192.168.10.10的服务器上（如不清楚部署ohpm-repo服务器的IP，可在Linux/macOS上运行ifconfig 命令，Windows上运行ipconfig命令查看），同时ohpm-repo配置文件的listen选项配置为0.0.0.0:8088，此时访问ohpm-repo页面的URL就是http://192.168.10.10:8088。
@@ -13,6 +9,8 @@ ohpm-repo私仓从5.0.2版本开始，新增接口防重放攻击机制。请保
 说明
 
 ohpm-repo会自动创建默认管理员账号，账号名称：admin，账号密码：12345Qq!。为保证ohpm-repo账号安全，该账号在首次登录时，强制修改该密码，请设置新密码后重新登录。
+
+ohpm-repo从5.0.2版本开始，新增接口防重放攻击机制。请保持ohpm-repo私仓部署的服务器与访问ohpm-repo私仓管理界面的客户端机器时间同步。如出现访问页面报错“非法请求”，请参考FAQ解决。
 
 首页
 

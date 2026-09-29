@@ -68,7 +68,7 @@ export class CustomStorage implements StoragePlugin {
 
 ts编译的配置文件tsconfig.json
 
-// tsconfig.json 文件指定了编译项目所需的根目录下的文件以及编译选项，编译自定义插件文件 .ts 为 .js文件。
+// tsconfig.json 文件指定了编译项目所需的根目录下的文件以及编译选项，编译自定义插件文件.ts为.js文件。
 {
   "include": [
     "plugins/*" // 插件文件的位置
@@ -78,10 +78,7 @@ ts编译的配置文件tsconfig.json
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "rootDirs": [
-      "./src",
-      "./test"
-    ],
+    "rootDir": "./plugins",
     "typeRoots": [
       "./node_modules/@types"
     ],
@@ -93,6 +90,7 @@ ts编译的配置文件tsconfig.json
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "alwaysStrict": true,
+    "strict": false,
     "noImplicitReturns": true,
     "skipLibCheck": true
   }
@@ -167,7 +165,7 @@ export class CustomStorage implements StoragePlugin {
 ### Code block 2
 
 ```
-// tsconfig.json 文件指定了编译项目所需的根目录下的文件以及编译选项，编译自定义插件文件 .ts 为 .js文件。
+// tsconfig.json 文件指定了编译项目所需的根目录下的文件以及编译选项，编译自定义插件文件.ts为.js文件。
 {
   "include": [
     "plugins/*" // 插件文件的位置
@@ -177,10 +175,7 @@ export class CustomStorage implements StoragePlugin {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "rootDirs": [
-      "./src",
-      "./test"
-    ],
+    "rootDir": "./plugins",
     "typeRoots": [
       "./node_modules/@types"
     ],
@@ -192,6 +187,7 @@ export class CustomStorage implements StoragePlugin {
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "alwaysStrict": true,
+    "strict": false,
     "noImplicitReturns": true,
     "skipLibCheck": true
   }

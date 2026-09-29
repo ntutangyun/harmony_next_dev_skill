@@ -47,7 +47,7 @@ JSVM-API接口开发流程可参考使用JSVM-API实现JS与C/C++语言交互开
 
 cpp部分代码：
 
-// 捕获清除并打印错误,该函数作为公共函数，在本文档后续样例中不再声明和定义
+// 捕获清除并打印错误，该函数作为公共函数，在本文档后续样例中不再声明和定义
 static void GetLastErrorAndClean(JSVM_Env env)
 {
     // 调用OH_JSVM_GetAndClearLastException接口获取并清除最后一个未处理的异常。即使存在挂起的JavaScript异常，也可以调用此API
@@ -580,7 +580,7 @@ JSVM API OH_JSVM_GetLastErrorInfo: SUCCESS, error message is A number was expect
 ### Code block 1
 
 ```
-// 捕获清除并打印错误,该函数作为公共函数，在本文档后续样例中不再声明和定义
+// 捕获清除并打印错误，该函数作为公共函数，在本文档后续样例中不再声明和定义
 static void GetLastErrorAndClean(JSVM_Env env)
 {
     // 调用OH_JSVM_GetAndClearLastException接口获取并清除最后一个未处理的异常。即使存在挂起的JavaScript异常，也可以调用此API

@@ -20,24 +20,6 @@ Script Fail.
 
 确保脚本文件在目标路径存在。
 
-00611002 脚本别名错误
-
-错误信息
-
-Hook Fail.
-
-错误描述
-
-钩子名称错误。
-
-可能原因
-
-脚本别名错误。
-
-处理步骤
-
-修改脚本别名，具体请参考约束。
-
 00611003 script_name开头位置使用非法字符
 
 错误信息
@@ -50,7 +32,7 @@ Invalid Command Error.
 
 可能原因
 
-脚本别名开头位置使用非法字符，包括(、[、{。
+脚本别名开头位置使用非法字符，包括(、[、{，如oh-package.json5配置："scripts": { "build": "(echo hello)" }
 
 处理步骤
 
@@ -104,7 +86,7 @@ Invalid ParamLen.
 
 可能原因
 
-args参数长度超出[1,2048]范围。
+args参数长度超出范围。如在oh-package.json5配置"scripts": { "build": "echo test" }，执行ohpm run build -- -a ([string]::new("a", 3000))命令。
 
 处理步骤
 
@@ -140,11 +122,11 @@ Command Error.
 
 可能原因
 
-脚本中包含多个用逻辑符（||、&&）连接的ohpm命令，如"testLogic": "ohpm run testFail || ohpm run testSuc && ohpm run testSuc"。
+合法的scriptContent不能引用除ohpm run以外的其它ohpm命令（如ohpm install、ohpm add等）。如在oh-package.json5配置"scripts": { "build": "ohpm install pkg" }，执行ohpm run build命令。
 
 处理步骤
 
-脚本中仅包含一个ohpm命令。
+直接在终端执行ohpm命令（如ohpm install），不可放在scripts中使用ohpm run命令执行。
 
 00611009 包解析失败
 
@@ -176,7 +158,7 @@ Prefix Invalid Error.
 
 可能原因
 
-指定路径下未包含oh-package.json5文件。
+指定路径下未包含oh-package.json5文件，如执行ohpm run build -- --prefix D:\新建目录命令，D:\新建目录下未包含oh-package.json5文件。
 
 处理步骤
 
@@ -194,7 +176,7 @@ Pkg UnExist Error.
 
 可能原因
 
-当前目录中不存在oh-package.json5文件。
+在当前目录中执行ohpm run build，当前目录下不包含oh-package.json5文件。
 
 处理步骤
 
@@ -248,7 +230,7 @@ Script Invalid Error.
 
 可能原因
 
-脚本内容无效。
+脚本内容无效。如oh-package.json5配置为"scripts": { "build": "ohpm" }，执行ohpm run build。
 
 处理步骤
 
@@ -266,11 +248,19 @@ Script Content Error.
 
 可能原因
 
-如果别名中引用了 -- 标识符，则只能执行一个ohpm run命令。
+当同时满足以下三个条件时返回该错误码：
+
+1. 脚本内容包含ohpm run
+
+2. 脚本内容包含 --（参数分隔符）
+
+3. 脚本内容包含 && 或 ||（命令连接符 ）
+
+如oh-package.json5 配置为"scripts": { "bad": "ohpm run build -- --prefix D:\\test && ohpm run test" }，执行ohpm run bad。
 
 处理步骤
 
-检查脚本别名的配置，确保 -- 标识符仅用于单个ohpm run命令。
+检查脚本别名的配置，确保ohpm run、参数分隔符、 命令连接符未同时使用。
 
 00611016 循环调用
 
@@ -320,7 +310,7 @@ Invalid Param Error.
 
 可能原因
 
-使用了无效参数。
+执行ohpm run build-- --key value命令时，key和value未成对使用，如ohpm run build -- --name value1 value2。
 
 处理步骤
 
@@ -338,7 +328,7 @@ Invalid Param Config Error.
 
 可能原因
 
-配置传递参数命令时，未以-- 开头。
+配置传递参数命令时，未以--开头。如oh-package.json5配置："scripts": { "build": "ohpm run compile -name John" }，compile 后面缺少 ' -- '，执行ohpm run build。
 
 处理步骤
 

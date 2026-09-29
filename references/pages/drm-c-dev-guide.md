@@ -25,6 +25,7 @@ target_link_libraries(PUBLIC libnative_drm.so)
 
 获取设备支持的DRM解决方案名称和唯一标识的列表。
 
+#include <cstring>
 uint32_t count = 3; // count是当前设备实际支持的DRM插件的个数，用户根据实际情况设置。
 DRM_MediaKeySystemDescription descriptions[3];
 memset(descriptions, 0, sizeof(descriptions));
@@ -244,6 +245,7 @@ target_link_libraries(PUBLIC libnative_drm.so)
 ### Code block 3
 
 ```
+#include <cstring>
 uint32_t count = 3; // count是当前设备实际支持的DRM插件的个数，用户根据实际情况设置。
 DRM_MediaKeySystemDescription descriptions[3];
 memset(descriptions, 0, sizeof(descriptions));

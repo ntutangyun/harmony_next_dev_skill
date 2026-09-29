@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ability-r
 
 场景介绍
 
-当应用后台运行时，可能由于系统资源管控等原因导致应用关闭、进程退出，应用直接退出可能会导致用户数据丢失。如果应用在UIAbilityContext中启用了UIAbility备份恢复功能，并对临时数据进行保存，则可以在应用退出后的下一次启动时恢复先前的状态和数据（包括应用的页面栈以及onSaveState接口中保存的数据），从而保证用户体验的连贯性。
+当应用后台运行时，可能由于系统资源管控等原因导致应用关闭、进程退出，应用直接退出可能会导致用户数据丢失。如果应用在UIAbilityContext中启用了UIAbility备份恢复功能，并对临时数据进行保存，则可以在应用退出后的下一次启动时恢复先前的状态和数据（包括应用的页面栈以及onSaveState()接口中保存的数据），从而保证用户体验的连贯性。
 
 说明
 
@@ -12,15 +12,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ability-r
 
 运行机制
 
-UIAbility数据备份：当应用后台运行时，如果因系统资源管控、进程被kill、异常崩溃等非正常原因退出时，系统自动调用onSaveState进行备份。
+UIAbility数据备份：当应用后台运行时，如果因系统资源管控、进程被kill、异常崩溃等非正常原因退出时，系统自动调用onSaveState()进行备份。
 
-UIAbility数据恢复：恢复的Want数据可以在应用的onCreate生命周期中获取，页面栈数据在应用的onWindowStageCreate生命周期中恢复。
+UIAbility数据恢复：恢复的Want数据可以在应用的onCreate()生命周期中获取，页面栈数据在应用的onWindowStageCreate()生命周期中恢复。
 
 约束限制
 
 UIAbility备份恢复支持多实例，备份数据保存7天，以文件的形式存储在应用的沙箱路径中。
 
-备份数据存储在Want中的parameter字段中，由于序列化大小限制，支持的最大数据量为200KB。
+备份数据存储在Want中的parameters字段中，由于序列化大小限制，支持的最大数据量为200KB。
 
 重启设备不支持还原备份。
 
@@ -35,7 +35,7 @@ UIAbility备份恢复接口由UIAbilityContext模块提供，开发者可以通�
 接口名称	说明
 setRestoreEnabled(enabled: boolean): void	设置UIAbility是否启用备份恢复。
 
-setRestoreEnabled接口需要在应用初始化阶段调用（onForeground前），比如UIAbility的onCreate调用。
+setRestoreEnabled()接口需要在应用初始化阶段调用（onForeground()前），比如UIAbility的onCreate()调用。
 
 开发步骤
 

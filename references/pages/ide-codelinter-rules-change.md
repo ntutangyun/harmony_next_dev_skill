@@ -286,8 +286,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-codel
 
 以下规则的部分场景，在5.0.3.600之前的版本检查执行Codelinter检查时不报错，升级至DevEco Studio 5.0.3.600版本后执行Codelinter检查将报错。
 
-@typescript-eslint/no-unnecessary-condition
-
 // 场景一：支持逻辑表达式的检查
 interface GeneratedTypeLiteralInterface {}
 declare let foo: GeneratedTypeLiteralInterface;
@@ -300,14 +298,10 @@ type Foo = GeneratedTypeLiteralInterface | null;
 declare const foo: Foo;
 foo?.bar()?.toExponential(); // 升级前不报错，升级后报错
 
-@typescript-eslint/promise-function-async
-
 // 函数返回值没有显式定义类型，并且返回值可能为Promise的场景下，函数需要定义为async
 function promiseInUnionWithoutExplicitReturnType(p: boolean) { // 升级前不报错，升级后报错
   return p ? Promise.resolve(5) : 5;
 }
-
-@typescript-eslint/member-ordering
 
 // 配置了optionalityOrder选项，并且类属性中不包含可选变量的场景下，规则中配置的order选项在历史版本中失效了
 // 规则配置为"@typescript-eslint/member-ordering": ["error", {"default": {"memberTypes": 'never', "order": 'natural-case-insensitive', "optionalityOrder": 'required-first',}}]
@@ -316,8 +310,6 @@ class X {
   a: string = ''; // 升级前不报错，升级后报错
 }
 
-@typescript-eslint/naming-convention
-
 // 支持检查interface中的typeMethod
 // 规则配置为："@typescript-eslint/naming-convention": ["error", {selector: 'typeMethod', format: ['PascalCase']}]
 interface SOME_INTERFACE {
@@ -325,15 +317,11 @@ interface SOME_INTERFACE {
   some_property: string;
 }
 
-@typescript-eslint/ban-types
-
 // 支持检查extend、implements后的类型
 // 规则配置为："@typescript-eslint/ban-types": ["error",{"types": {"Bar": {"message": ""}}}]
 interface Bar {}
 interface Baz {}
 interface Foo extends Bar, Baz {} // 升级前不报错，升级后报错
-
-@typescript-eslint/no-floating-promises
 
 // 场景一：.finally()被认为是没有有效处理Promise中可能发生的异常
 Promise.reject().finally(() => {}) // 升级前不报错，升级后报错
@@ -341,14 +329,10 @@ Promise.reject().finally(() => {}) // 升级前不报错，升级后报错
 Promise.resolve().then(() => {}, undefined); // 升级前不报错，升级后报错
 Promise.resolve().then(() => {}, null); // 升级前不报错，升级后报错
 
-@typescript-eslint/no-inferrable-types
-
 // 支持检查构造函数中的参数类型
 class Foo {
   constructor(param: boolean = true) {} // 升级前不报错，升级后报错
 }
-
-@typescript-eslint/prefer-readonly
 
 interface GeneratedObjectLiteralInterface {
   prop?: string

@@ -497,7 +497,6 @@ struct QuickLoginButtonComponent {
 
             Text($r('app.string.app_name'))
               .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
-              .fontWeight(FontWeight.Medium)
               .fontWeight(FontWeight.Bold)
               .maxFontSize($r('sys.float.ohos_id_text_size_headline8'))
               .minFontSize($r('sys.float.ohos_id_text_size_body1'))
@@ -1410,7 +1409,6 @@ struct QuickLoginButtonComponent {
 
             Text($r('app.string.app_name'))
               .fontFamily($r('sys.string.ohos_id_text_font_family_medium'))
-              .fontWeight(FontWeight.Medium)
               .fontWeight(FontWeight.Bold)
               .maxFontSize($r('sys.float.ohos_id_text_size_headline8'))
               .minFontSize($r('sys.float.ohos_id_text_size_body1'))

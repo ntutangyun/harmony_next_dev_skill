@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/transient
 
 申请时机：应用需要在前台或onBackground回调内，申请短时任务，否则会申请失败。
 
-数量限制：一个应用同一时刻最多申请3个短时任务。以图1为例，在①②③时间段内的任意时刻，应用申请了2个短时任务；在④时间段内的任意时刻，应用申请了1个短时任务。
+数量限制：一个应用同一时刻最多申请运行3个短时任务。以图1为例，在①②③时间段内的任意时刻，应用申请运行了2个短时任务；在④时间段内的任意时刻，应用申请运行了1个短时任务。
 
 配额机制：一个应用会有一定的短时任务配额（根据系统状态和用户习惯调整），单日（24小时内）配额默认为10分钟，单次配额最大为3分钟，低电量（BatteryCapacityLevel为LEVEL_LOW）时单次配额默认为1分钟，配额消耗完后不允许再申请短时任务。同时，系统提供获取对应短时任务剩余时间的查询接口backgroundTaskManager.getRemainingDelayTime，用以查询本次短时任务剩余时间，以确认是否继续运行其他业务。
 
@@ -22,7 +22,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/transient
 
 任务完成后，应用需主动取消短时任务，否则会影响应用当日短时任务的剩余配额。
 
-超时：短时任务即将超时时，系统会回调应用，应用需要取消短时任务。如果超时不取消，系统会对应用进行管控，包括进程挂起和进程终止。
+超时：短时任务即将超时时，系统会回调应用（一般在超时前6秒），应用须在回调中取消短时任务。如果超时不取消，系统会对应用进行管控，包括进程挂起和进程终止。
 
 接口说明
 
@@ -31,13 +31,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/transient
 以下是短时任务开发使用的主要接口，更多接口及使用方式请见后台任务管理。
 
 接口名	描述
-requestSuspendDelay(reason: string, callback: Callback<void>): DelaySuspendInfo	申请短时任务。
+requestSuspendDelay(reason: string, callback: Callback<void>): DelaySuspendInfo	申请短时任务，DelaySuspendInfo返回requestId和actualDelayTime。
 getRemainingDelayTime(requestId: number): Promise<number>	获取对应短时任务的剩余时间。
 cancelSuspendDelay(requestId: number): void	取消短时任务。
 
 开发步骤
 
-导入模块。
+导入模块，无需配置权限。
 
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
 import { BusinessError } from '@kit.BasicServicesKit';

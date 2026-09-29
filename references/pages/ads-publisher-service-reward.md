@@ -336,7 +336,7 @@ const adDisplayOptions: advertising.AdDisplayOptions = {
 用户观看完激励广告时，鲸鸿动能平台服务端会把需要验证的参数以及keyId和sign传给媒体提供的URL：https://www.example.com/feedback（[即第1点中配置的验证URL](ads-publisher-service-reward.md#校验服务端验证回调)）。请求体样例：
 
 {
-    "adId" : "tj14rx3xtac",
+    "adId" : "j14rx3xtac",
     "data" : "CUSTOM_DATA",
     "keyId" : "12345678",
     "rewardAmount" : "10",
@@ -777,7 +777,7 @@ const adDisplayOptions: advertising.AdDisplayOptions = {
 
 ```
 {
-    "adId" : "tj14rx3xtac",
+    "adId" : "j14rx3xtac",
     "data" : "CUSTOM_DATA",
     "keyId" : "12345678",
     "rewardAmount" : "10",

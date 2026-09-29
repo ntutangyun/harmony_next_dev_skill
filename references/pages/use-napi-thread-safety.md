@@ -239,7 +239,7 @@ struct ThreadData {
 void NativeThread(void* arg)
 {
     auto* data = static_cast<ThreadData*>(arg);
-    OH_LOG_INFO(LOG_APP, "[C++ SubThread] Received from Worker: %{public}s\n", data->inputStr.c_str());
+    OH_LOG_INFO(LOG_APP, "[C++ SubThread] Received from %{public}s\n", data->inputStr.c_str());
     std::string str = "Hello from C++!";
     std::string msg = "Echo of " + str;
     char* cstr = strdup(msg.c_str());
@@ -357,7 +357,7 @@ const port = worker.workerPort;
 
 port.onmessage = (e: MessageEvents) => {
   console.info('Worker thread received:' + e.data);
-  nativeModule.startWithCallback('Hello', (result: string) => {
+  nativeModule.startWithCallback('Worker', (result: string) => {
     console.info('[Worker] Got from native:', result);
     port.postMessage(result);
   });
@@ -382,9 +382,9 @@ wk.onmessage = (msg) => {
 
 运行结果：
 Worker thread received:Start
-[C++ SubThread] Received from Worker: Hello
+[C++ SubThread] Received from Worker
 [Worker] Got from native: Echo of Hello from C++!
-[Main] Received: Echo of Hello from C++
+[Main] Received: Echo of Hello from C++!
 
 [h2]基于Taskpool实现的C++子线程与ArkTS子线程交互场景
 
@@ -398,7 +398,7 @@ import { taskpool } from '@kit.ArkTS';
 @Concurrent
 function nativeCall(input : string): void {
   console.info('Taskpool thread received:%s', input);
-  nativeModule.startWithCallback('Hello', (result: string) => {
+  nativeModule.startWithCallback('Taskpool', (result: string) => {
     console.info('[Taskpool] Got from native:', result);
   });
 }
@@ -417,7 +417,7 @@ testTaskpool();
 
 运行结果：
 Taskpool thread received:Start
-[C++ SubThread] Received from Worker: Hello
+[C++ SubThread] Received from Taskpool
 [Taskpool] Got from native: Echo of Hello from C++!
 
 ## Code blocks
@@ -658,7 +658,7 @@ struct ThreadData {
 void NativeThread(void* arg)
 {
     auto* data = static_cast<ThreadData*>(arg);
-    OH_LOG_INFO(LOG_APP, "[C++ SubThread] Received from Worker: %{public}s\n", data->inputStr.c_str());
+    OH_LOG_INFO(LOG_APP, "[C++ SubThread] Received from %{public}s\n", data->inputStr.c_str());
     std::string str = "Hello from C++!";
     std::string msg = "Echo of " + str;
     char* cstr = strdup(msg.c_str());
@@ -782,7 +782,7 @@ const port = worker.workerPort;
 
 port.onmessage = (e: MessageEvents) => {
   console.info('Worker thread received:' + e.data);
-  nativeModule.startWithCallback('Hello', (result: string) => {
+  nativeModule.startWithCallback('Worker', (result: string) => {
     console.info('[Worker] Got from native:', result);
     port.postMessage(result);
   });
@@ -819,9 +819,9 @@ wk.onmessage = (msg) => {
 ```
 运行结果：
 Worker thread received:Start
-[C++ SubThread] Received from Worker: Hello
+[C++ SubThread] Received from Worker
 [Worker] Got from native: Echo of Hello from C++!
-[Main] Received: Echo of Hello from C++
+[Main] Received: Echo of Hello from C++!
 ```
 
 ### Code block 16
@@ -833,7 +833,7 @@ import { taskpool } from '@kit.ArkTS';
 @Concurrent
 function nativeCall(input : string): void {
   console.info('Taskpool thread received:%s', input);
-  nativeModule.startWithCallback('Hello', (result: string) => {
+  nativeModule.startWithCallback('Taskpool', (result: string) => {
     console.info('[Taskpool] Got from native:', result);
   });
 }
@@ -860,6 +860,6 @@ testTaskpool();
 ```
 运行结果：
 Taskpool thread received:Start
-[C++ SubThread] Received from Worker: Hello
+[C++ SubThread] Received from Taskpool
 [Taskpool] Got from native: Echo of Hello from C++!
 ```

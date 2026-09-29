@@ -18,7 +18,7 @@ Install hap timeout.
 
 处理步骤
 
-重新拔插下设备，或者执行hdc kill -r命令再重新运行。
+重新连接设备，或者执行hdc kill -r命令再重新运行。
 
 00404036 删除临时目录超时
 
@@ -36,7 +36,7 @@ Remove Directory Timeout: XXX.
 
 处理步骤
 
-重新拔插下设备，或者执行hdc kill -r命令再重新运行。
+重新连接设备，或者执行hdc kill -r命令再重新运行。
 
 00404037 创建临时目录超时
 
@@ -54,7 +54,7 @@ Create Directory Timeout.
 
 处理步骤
 
-重新拔插下设备，或者执行hdc kill -r命令再重新运行。
+重新连接设备，或者执行hdc kill -r命令再重新运行。
 
 00404038 构建打包信息为空
 
@@ -90,7 +90,7 @@ Failed to create temporary directory during hap push operation.
 
 处理步骤
 
-重新拔插下设备，或者执行hdc kill -r命令再重新运行。
+重新连接设备，或者执行hdc kill -r命令再重新运行。
 
 00404040 推包超时
 
@@ -180,7 +180,7 @@ Waiting for the debug command times out.
 
 处理步骤
 
-重新拔插下设备，或者执行hdc kill -r命令再重试。
+重新连接设备，或者执行hdc kill -r命令再重试。
 
 00404055 应用没安装或者不是debug签名
 
@@ -202,4 +202,4 @@ This app is not installed or not signed with a debug signature.
 
 检查应用是否已安装，应用签名是否使用debug签名；
 
-检查设备连接是否正常，可以尝试拔插设备重新连接，再重新启动等待调试。
+检查设备连接是否正常，可以尝试重新连接设备，再启动等待调试。

@@ -16,3 +16,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/health-ap
 运动健康服务测试阶段有100位用户数量的限制，申请验证并通过后将解除该限制。
 
 开发者等级（是否为优质/重点/战略合作伙伴）将根据实际项目合作情况而定。
+
+Health Service Kit不支持开放儿童相关数据。

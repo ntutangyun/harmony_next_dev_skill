@@ -16,6 +16,6 @@ CodeGenie提供代码修改能力，在对话框内输入需求描述，生成�
 
 在问答区域的Changed Files可以查看被修改的文件；点击Accept All/Reject All按钮，接受或拒绝所有文件的修改；将鼠标悬浮在文件路径上，点击可接受或拒绝该文件的修改。
 
-点击问答区域中Run，可以编译验证；开启Auto Run开关，可以开启自动编译验证。Auto Run更多描述可参考Agent配置。
+点击问答区域中Run，可以编译验证；开启Auto Run开关，可以进行自动编译验证。Auto Run更多描述可参考Agent配置。
 
 示例

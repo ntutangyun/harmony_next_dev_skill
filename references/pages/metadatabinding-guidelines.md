@@ -37,10 +37,10 @@ import { metadataBinding } from '@kit.MultimodalAwarenessKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { Callback } from '@kit.BasicServicesKit';
 
-定义记忆服务回调及包名, 函数接收回传编码的内容。
+定义记忆服务回调及包名，函数接收回传编码的内容。
 
 let callback : Callback<number> = (event: number) => {};
-let bundleName: string = '';
+let bundleName: string = 'com.example.app';
 
 订阅记忆服务。
 
@@ -56,7 +56,7 @@ try {
 
 提供鸿蒙App Linking链接。
 
-let metadata: string = '';
+let metadata: string = 'sample metadata';
 try {
   metadataBinding.submitMetadata(metadata);
   // ...
@@ -92,7 +92,7 @@ import { Callback } from '@kit.BasicServicesKit';
 
 ```
 let callback : Callback<number> = (event: number) => {};
-let bundleName: string = '';
+let bundleName: string = 'com.example.app';
 ```
 
 ### Code block 3
@@ -112,7 +112,7 @@ try {
 ### Code block 4
 
 ```
-let metadata: string = '';
+let metadata: string = 'sample metadata';
 try {
   metadataBinding.submitMetadata(metadata);
   // ...

@@ -45,7 +45,7 @@ city	string	否	城市名。	"北京市"
 返回值：
 
 参数名	类型	必选	说明	数据样例
-code	number	是	返回结果码：0表示成功，其他值表示失败。如下： - 100060101：不支持播放会员歌曲、付费歌曲。 - 100060102：帐户已失效，且歌曲没有试听片段。 - 100060201：开启了儿童保护或登录儿童帐户场景、脏标的歌曲。 - 100060202：歌单已下架，无法播放。 - 100060203：歌曲在本平台版权到期，无法播放。 - 100060301：歌曲/歌手被加入了屏蔽名单，无法播放。 - 100060401：软件故障。	100060101
+code	number	是	返回结果码：0表示成功，其他值表示失败。如下： - 100060101：不支持播放会员歌曲、付费歌曲。 - 100060102：账户已失效，且歌曲没有试听片段。 - 100060201：开启了儿童保护或登录儿童账户场景、脏标的歌曲。 - 100060202：歌单已下架，无法播放。 - 100060203：歌曲在本平台版权到期，无法播放。 - 100060301：歌曲/歌手被加入了屏蔽名单，无法播放。 - 100060401：软件故障。	100060101
 result	object	是	返回结果对象。以键值对形式返回，字符数不超过8000字符。	{"musicSize":"4M","dataReceiveTime":1704868765000}
 
 [h2]播放有声
@@ -105,7 +105,7 @@ result	object	是	返回结果列表对象。如果结果列表为空，则返�
 entityId	string	否	意图实体ID，长度不超过64字符。	"12949589"
 srcLocation	object	否	出发地信息，包含字段： - locationSystem：指定坐标系（默认使用GCJ-02坐标系）。 - poiId：poi的唯一标识。 - locationName：地点名称。 - longitude：经度。 - latitude：纬度。 - address：详细地址信息。	{ "locationSystem": "GCJ02", "poiId": "1236", "locationName": "北京站", "latitude": "39.902895", "longitude": "116.427915", "address": "北京市东城区北京站" }
 dstLocation	object	否	目的地的信息，包含字段： - locationSystem：指定坐标系（默认使用GCJ-02坐标系）。 - poiId：poi的唯一标识。 - locationName：地点名称。 - longitude：经度。 - latitude：纬度。 - address：详细地址信息。	{ "locationSystem": "GCJ02", "poiId": "1248", "locationName": "北京西站", "latitude": "39.89534", "longitude": "116.32128", "address": "北京市丰台区北京西站" }
-wayPoints	array	否	途经点Array：语音入口调用时必填Array<PoiLocation>，途径点包含字段与srcLocation中的字段一致。	[{ "locationSystem": "GCJ02", "poiId": "1445", "locationName": "前门东大街社区", "latitude": "39.89995", "longitude": "116.35628", "address": "北京市东城区前门街道" }]
+wayPoints	array	否	途经点Array：语音入口调用时必填Array<PoiLocation>，途经点包含字段与srcLocation中的字段一致。	[{ "locationSystem": "GCJ02", "poiId": "1445", "locationName": "前门东大街社区", "latitude": "39.89995", "longitude": "116.35628", "address": "北京市东城区前门街道" }]
 dstLocationType	string	否	目的地类型，比如"家"、"公司"等。	"家"
 trafficType	string	否	交通方式。 - Drive：驾车（默认值）。 - Walk：步行。 - Cycle：骑行。 - Bus：公交。 - Subway：地铁。	"Cycle"
 
@@ -1243,7 +1243,7 @@ result	object	是	返回结果列表对象。如果结果列表为空，则返�
 参数：
 
 参数名	类型	必选	说明	数据样例
-scanFunction	string	否	扫描功能。 - General：通用扫描。 - "RecognizeText"：提取文字/识文。 - "RecognizeTranslation：识别翻译。 - "RecognizeObjects"：识物。 - "ScanCertificate"：扫描证件。 - "ScanIDCard"：扫描身份证。 - "ScanHouseholdRegistrationRecord"：扫描户口本。 - "ScanPassport"：扫描护照。 - "ScanDriverLicense"：扫描驾驶证。 - "ScanVehicleLicense"：扫描行驶证。 - "ScanBankCard"：扫描银行卡。 - "ScanHousePropertyCard"：扫描房产证。 - "ScanBusinessLicense"：扫描营业执照。 - "EraseHandwriting"：擦除手写/试卷还原。	"General"
+scanFunction	string	否	扫描功能。 - General：通用扫描。 - "RecognizeText"：提取文字/识文。 - "RecognizeTranslation"：识别翻译。 - "RecognizeObjects"：识物。 - "ScanCertificate"：扫描证件。 - "ScanIDCard"：扫描身份证。 - "ScanHouseholdRegistrationRecord"：扫描户口本。 - "ScanPassport"：扫描护照。 - "ScanDriverLicense"：扫描驾驶证。 - "ScanVehicleLicense"：扫描行驶证。 - "ScanBankCard"：扫描银行卡。 - "ScanHousePropertyCard"：扫描房产证。 - "ScanBusinessLicense"：扫描营业执照。 - "EraseHandwriting"：擦除手写/试卷还原。	"General"
 
 返回值：
 
@@ -1972,7 +1972,7 @@ result	object	是	返回结果列表对象。如果结果列表为空，则返�
 
 参数名	类型	必选	说明	数据样例
 keywords	string	否	搜索关键词，如景点名称，多个搜索关键词用英文逗号分隔。	"故宫","江宁有什么好玩的"
-location	object	否	位置的经纬度信息。纬度的取值范围：[-90, 90]，经度的取值范围：[-180, 180]。	{"locationSystem":"GCJ02/BD09LL","locationName": "xxxx","latitude"："120.785645"，"longitude"："33.039635"，"address":"xxx"}
+location	object	否	位置的经纬度信息。纬度的取值范围：[-90, 90]，经度的取值范围：[-180, 180]。	{"locationSystem": "GCJ02/BD09LL", "locationName": "xxxx", "latitude": "120.785645", "longitude": "33.039635", "address": "xxx"}
 city	string	否	用于搜索景点名称等场景按城市筛选过滤非本城市记录。	"深圳市"
 travelGuidesType	string	否	攻略类型。 - Scenic：景点攻略。 - CitySelection：城市精选。	"CitySelection"
 

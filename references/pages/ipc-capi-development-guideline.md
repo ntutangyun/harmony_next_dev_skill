@@ -8,7 +8,7 @@ IPC让运行在不同进程间的Proxy和Stub实现互相通信。IPC CAPI是IPC
 
 IPC CAPI接口不直接提供获取通信代理对象的能力，该功能由Ability Kit提供。
 
-进程间IPC通道的建立，请参考Native子进程开发指导（C/C++）。本文重点介绍IPC CAPI的使用。
+进程间IPC通道的建立，请参考子进程开发指导（C/C++）。本文重点介绍IPC CAPI的使用。
 
 接口说明
 

@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/monitor-g
 
 接口说明
 
-创建和删除事件监听相关接口如下表所示，接口详细介绍请参考input。
+创建和删除事件监听相关接口如下表所示，接口详细介绍请参考oh_input_manager.h。
 
 接口名称	描述
 Input_Result OH_Input_AddKeyEventMonitor(Input_KeyEventCallback callback)	创建按键事件监听。
@@ -26,7 +26,7 @@ Input_Result OH_Input_RemoveAxisEventMonitor(InputEvent_AxisEventType axisEventT
 
 [h2]链接动态库
 
-调用创建和删除事件监听前，需链接相关动态库。链接动态库的方法是，在CMakeList.txt文件中新增如下配置：
+调用创建和删除事件监听前，需链接相关动态库。链接动态库的方法是，在CMakeLists.txt文件中新增如下配置：
 
 target_link_libraries(entry PUBLIC libohinput.so)
 

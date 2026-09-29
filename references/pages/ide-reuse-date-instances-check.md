@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-reuse-date-instances-check_
 
-用于检测在循环或调用频繁的方法中重复创建Date对象，建议开发者重用现有实例或使用时间戳进行计算，减少创建Date成本。
+用于检测在循环或频繁调用的方法中重复创建Date对象，建议开发者重用现有实例或使用时间戳进行计算，降低Date对象的创建成本。
 
 规则配置
 
@@ -15,7 +15,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-reuse
 
 选项
 
-该规则无需配置额外选项。
+该规则无需配置选项。
 
 正例
 

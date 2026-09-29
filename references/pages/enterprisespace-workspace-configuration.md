@@ -2,7 +2,11 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-workspace-configuration_
 
-从6.0.0(20)开始，支持自定义工作空间显示属性的能力。
+从API版本6.0.0(20)开始，支持设置工作空间信息、资料照片的能力。
+
+从API版本6.0.2(22)开始，支持设置和查询工作空间策略的能力。
+
+从API版本6.1.0(23)开始，支持设置工作空间本地名称、状态栏图标的能力。
 
 场景介绍
 
@@ -18,7 +22,7 @@ setWorkspaceProfilePhoto(workspaceId: number, photo: string): Promise<void>	设�
 setWorkspaceLocalName(localName: string, workspaceId?: number): Promise<void>	设置工作空间本地名称。
 setWorkspaceStatusBarIcon(icon: StatusBarIcon, workspaceId?: number): Promise<void>	设置工作空间状态栏图标。
 setWorkspacePolicy(key: string, value: number, workspaceId?: number): Promise<void>	设置工作空间策略。
-getWorkspacePolicy(key: string, workspaceId?: number): number	查询工作空间策略并返回结果。
+getWorkspacePolicy(key: string, workspaceId?: number): Promise<number>	查询工作空间策略并返回结果。
 
 开发步骤
 
@@ -122,9 +126,9 @@ const DOMAIN = 0xF811;
 @Component
 struct WorkspaceConfigurationPage {
   async setWorkspacePolicy() {
-    const key: string = 'lockdown';
+    const key: string = 'lockdown'; // 需由用户传入
     const value: spaceManager.LockdownModePolicy = spaceManager.LockdownModePolicy.OFF;
-    const workspaceId: number = 100;
+    const workspaceId: number = 100; // 需由用户传入
 
     if (await WorkspaceConfigurationApi.setWorkspacePolicy(workspaceId, key, value) !== ErrCode.OK) {
       // 异常处理
@@ -135,8 +139,8 @@ struct WorkspaceConfigurationPage {
   }
 
   async getWorkspacePolicy() {
-    const key: string = 'lockdown';
-    const workspaceId: number = 100;
+    const key: string = 'lockdown'; // 需由用户传入
+    const workspaceId: number = 100; // 需由用户传入
     const value: number | undefined = await WorkspaceConfigurationApi.getWorkspacePolicy(workspaceId, key);
     if (value === undefined) {
       // 异常处理
@@ -147,8 +151,8 @@ struct WorkspaceConfigurationPage {
   }
 
   async setWorkspaceLocalName() {
-    const localName: string = 'localName';
-    const workspaceId: number = 100;
+    const localName: string = 'localName'; // 需由用户传入。
+    const workspaceId: number = 100; // 需由用户传入。
     if (await WorkspaceConfigurationApi.setWorkspaceLocalName(workspaceId, localName) !== ErrCode.OK) {
       // 异常处理
       hilog.error(DOMAIN, TAG, 'Failed to set workspace local name!');
@@ -165,13 +169,13 @@ struct WorkspaceConfigurationPage {
     }
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
 
-    // 创建white pixelMap，使用资源rawfile文件夹中预置HuaweiWhite.jpg图片
-    let whiteFileData = await resourceMgr.getRawFd('HuaweiWhite.jpg');
+    // 创建white pixelMap，使用资源rawfile文件夹中预置CustomWhite.jpg图片
+    let whiteFileData = await resourceMgr.getRawFd('CustomWhite.jpg');
     const whiteImageSource: image.ImageSource = image.createImageSource(whiteFileData);
     const whitePixelMap: image.PixelMap = await whiteImageSource.createPixelMap();
 
-    // 创建black pixelMap，使用资源rawfile文件夹中预置HuaweiBlack.jpg图片
-    let blackFileData = await resourceMgr.getRawFd('HuaweiBlack.jpg');
+    // 创建black pixelMap，使用资源rawfile文件夹中预置CustomBlack.jpg图片
+    let blackFileData = await resourceMgr.getRawFd('CustomBlack.jpg');
     const blackImageSource: image.ImageSource = image.createImageSource(blackFileData);
     const blackPixelMap: image.PixelMap = await blackImageSource.createPixelMap();
 
@@ -190,14 +194,14 @@ struct WorkspaceConfigurationPage {
   }
 
   async setWorkspaceInfo() {
-    const workspaceId: number = 100;
+    const workspaceId: number = 100; // 需由用户传入
     const domainInfo: spaceManager.WorkspaceDomainInfo = {
       domain: 'test1',
       workspaceName: 'test2',
       accountId: 'test3',
       isAuthenticated: false,
       serverConfigId: 'test4',
-      enterpriseWorkspaceName: 'default'
+      enterpriseWorkspaceName: 'default' // 企业空间名称，由用户配置
     };
     if (await WorkspaceConfigurationApi.setWorkspaceInfo(workspaceId, domainInfo) !== ErrCode.OK) {
       // 异常处理
@@ -215,7 +219,7 @@ struct WorkspaceConfigurationPage {
       return;
     }
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const photoData = await resourceMgr.getRawFileContent('HuaweiWhite.jpg');
+    const photoData = await resourceMgr.getRawFileContent('CustomWhite.jpg');
     const base64Helper = new util.Base64Helper();
     const base64Img: string = base64Helper.encodeToStringSync(photoData);
     const photo: string = JSON.stringify({ type: 0, defaultImg: `data:image/jpeg;base64,${base64Img}` });
@@ -407,9 +411,9 @@ const DOMAIN = 0xF811;
 @Component
 struct WorkspaceConfigurationPage {
   async setWorkspacePolicy() {
-    const key: string = 'lockdown';
+    const key: string = 'lockdown'; // 需由用户传入
     const value: spaceManager.LockdownModePolicy = spaceManager.LockdownModePolicy.OFF;
-    const workspaceId: number = 100;
+    const workspaceId: number = 100; // 需由用户传入
 
     if (await WorkspaceConfigurationApi.setWorkspacePolicy(workspaceId, key, value) !== ErrCode.OK) {
       // 异常处理
@@ -420,8 +424,8 @@ struct WorkspaceConfigurationPage {
   }
 
   async getWorkspacePolicy() {
-    const key: string = 'lockdown';
-    const workspaceId: number = 100;
+    const key: string = 'lockdown'; // 需由用户传入
+    const workspaceId: number = 100; // 需由用户传入
     const value: number | undefined = await WorkspaceConfigurationApi.getWorkspacePolicy(workspaceId, key);
     if (value === undefined) {
       // 异常处理
@@ -432,8 +436,8 @@ struct WorkspaceConfigurationPage {
   }
 
   async setWorkspaceLocalName() {
-    const localName: string = 'localName';
-    const workspaceId: number = 100;
+    const localName: string = 'localName'; // 需由用户传入。
+    const workspaceId: number = 100; // 需由用户传入。
     if (await WorkspaceConfigurationApi.setWorkspaceLocalName(workspaceId, localName) !== ErrCode.OK) {
       // 异常处理
       hilog.error(DOMAIN, TAG, 'Failed to set workspace local name!');
@@ -450,13 +454,13 @@ struct WorkspaceConfigurationPage {
     }
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
 
-    // 创建white pixelMap，使用资源rawfile文件夹中预置HuaweiWhite.jpg图片
-    let whiteFileData = await resourceMgr.getRawFd('HuaweiWhite.jpg');
+    // 创建white pixelMap，使用资源rawfile文件夹中预置CustomWhite.jpg图片
+    let whiteFileData = await resourceMgr.getRawFd('CustomWhite.jpg');
     const whiteImageSource: image.ImageSource = image.createImageSource(whiteFileData);
     const whitePixelMap: image.PixelMap = await whiteImageSource.createPixelMap();
 
-    // 创建black pixelMap，使用资源rawfile文件夹中预置HuaweiBlack.jpg图片
-    let blackFileData = await resourceMgr.getRawFd('HuaweiBlack.jpg');
+    // 创建black pixelMap，使用资源rawfile文件夹中预置CustomBlack.jpg图片
+    let blackFileData = await resourceMgr.getRawFd('CustomBlack.jpg');
     const blackImageSource: image.ImageSource = image.createImageSource(blackFileData);
     const blackPixelMap: image.PixelMap = await blackImageSource.createPixelMap();
 
@@ -475,14 +479,14 @@ struct WorkspaceConfigurationPage {
   }
 
   async setWorkspaceInfo() {
-    const workspaceId: number = 100;
+    const workspaceId: number = 100; // 需由用户传入
     const domainInfo: spaceManager.WorkspaceDomainInfo = {
       domain: 'test1',
       workspaceName: 'test2',
       accountId: 'test3',
       isAuthenticated: false,
       serverConfigId: 'test4',
-      enterpriseWorkspaceName: 'default'
+      enterpriseWorkspaceName: 'default' // 企业空间名称，由用户配置
     };
     if (await WorkspaceConfigurationApi.setWorkspaceInfo(workspaceId, domainInfo) !== ErrCode.OK) {
       // 异常处理
@@ -500,7 +504,7 @@ struct WorkspaceConfigurationPage {
       return;
     }
     const resourceMgr: resourceManager.ResourceManager = context.resourceManager;
-    const photoData = await resourceMgr.getRawFileContent('HuaweiWhite.jpg');
+    const photoData = await resourceMgr.getRawFileContent('CustomWhite.jpg');
     const base64Helper = new util.Base64Helper();
     const base64Img: string = base64Helper.encodeToStringSync(photoData);
     const photo: string = JSON.stringify({ type: 0, defaultImg: `data:image/jpeg;base64,${base64Img}` });

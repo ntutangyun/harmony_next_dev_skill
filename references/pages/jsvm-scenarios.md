@@ -10,6 +10,6 @@ JSVM-API 申请JIT权限指导
 
 JSVM-API 坚盾守护模式
 
-JSVM-API 内存泄漏问题定位指导
+JSVM 定位内存泄漏问题指导
 
 JSVM-API调优&高性能使用示例

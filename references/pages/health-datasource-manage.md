@@ -31,12 +31,12 @@ updateDataSource(dataSource: DataSource): Promise<void>	更新数据源，其中
 
 [h2]插入数据源
 
-1.导入运动健康服务功能模块及相关公共模块。
+导入运动健康服务功能模块及相关公共模块。
 
 import { healthStore } from '@kit.HealthServiceKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-2.创建数据源。
+创建数据源。
 
 let dataSource: healthStore.DataSourceBase = {
   deviceInfo: {
@@ -55,7 +55,7 @@ let dataSource: healthStore.DataSourceBase = {
   }
 }
 
-3.调用insertDataSource方法执行插入请求，并处理返回结果。
+调用insertDataSource方法执行插入请求，并处理返回结果。
 
 try {
   const dataSourceId = await healthStore.insertDataSource(dataSource);
@@ -66,18 +66,18 @@ try {
 
 [h2]读取数据源
 
-1.导入运动健康服务功能模块及相关公共模块。
+导入运动健康服务功能模块及相关公共模块。
 
 import { healthStore } from '@kit.HealthServiceKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-2.创建数据源读取请求。
+创建数据源读取请求。
 
 let readSourceRequest: healthStore.DataSourceReadRequest = {
   deviceUniqueId: 'testudidupdate'
 }
 
-3.调用readDataSource方法执行查询请求，并处理返回结果。
+调用readDataSource方法执行查询请求，并处理返回结果。
 
 try {
   let dataSources = await healthStore.readDataSource(readSourceRequest);
@@ -90,12 +90,12 @@ try {
 
 [h2]更新数据源
 
-1.导入运动健康服务功能模块及相关公共模块。
+导入运动健康服务功能模块及相关公共模块。
 
 import { healthStore } from '@kit.HealthServiceKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-2.创建数据源。
+创建数据源。
 
 let newDataSource: healthStore.DataSource = {
   deviceInfo: {
@@ -117,7 +117,7 @@ let newDataSource: healthStore.DataSource = {
   dataSourceId: 'xxx'
 }
 
-3.调用updateDataSource方法执行更新请求，并处理返回结果。
+调用updateDataSource方法执行更新请求，并处理返回结果。
 
 try {
   await healthStore.updateDataSource(newDataSource);

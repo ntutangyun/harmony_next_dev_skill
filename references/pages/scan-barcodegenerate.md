@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-barc
 
 约束与限制
 
-码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从API版本5.1.0(18)开始支持Wearable、从API版本5.1.1(19)开始支持PC/2in1、TV）。
+码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从API版本5.1.0(18)开始支持Wearable，从API版本5.1.1(19)开始支持PC/2in1、TV）。
 
 业务流程
 

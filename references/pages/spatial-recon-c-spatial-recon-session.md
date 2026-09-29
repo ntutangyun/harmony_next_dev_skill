@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/spatial-r
 
 引入头文件。
 
-#include "SpatialReconKit/spatial_recon_interface.h"
+#include "spatial/spatial_recon_interface.h"
 
 调用接口，根据返回值判断当前设备是否支持使用该特性。
 
@@ -24,7 +24,7 @@ HMS_SpatialReconStatus ret = HMS_SpatialRecon_IsSupport(SPATIAL_RECON_MODEL_TYPE
 
 引入头文件。
 
-#include "SpatialReconKit/spatial_recon_interface.h"
+#include "spatial/spatial_recon_interface.h"
 
 编写CMakeLists.txt。
 
@@ -69,7 +69,7 @@ HMS_SpatialRecon_DestroySession(spatialReconSession);
 ### Code block 1
 
 ```
-#include "SpatialReconKit/spatial_recon_interface.h"
+#include "spatial/spatial_recon_interface.h"
 ```
 
 ### Code block 2
@@ -81,7 +81,7 @@ HMS_SpatialReconStatus ret = HMS_SpatialRecon_IsSupport(SPATIAL_RECON_MODEL_TYPE
 ### Code block 3
 
 ```
-#include "SpatialReconKit/spatial_recon_interface.h"
+#include "spatial/spatial_recon_interface.h"
 ```
 
 ### Code block 4

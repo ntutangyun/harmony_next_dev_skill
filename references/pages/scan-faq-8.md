@@ -46,7 +46,7 @@ struct CustomScanPage {
           try {
             customScan.start(viewControl).then((scanResult: Array<scanBarcode.ScanResult>) => {
               hilog.info(0x0001, '[Scan Sample]',
-                `Succeeded in getting ScanResult by promise, scanResult is ${JSON.stringify(scanResult)}`);
+                `Succeeded in getting ScanResult by promise, result length: ${scanResult.length}`);
             }).catch((err: BusinessError) => {
               hilog.error(0x0001, '[Scan Sample]',
                 `Failed to get ScanResult by promise. Code: ${err.code}, message: ${err.message}`);
@@ -106,7 +106,7 @@ struct CustomScanPage {
           try {
             customScan.start(viewControl).then((scanResult: Array<scanBarcode.ScanResult>) => {
               hilog.info(0x0001, '[Scan Sample]',
-                `Succeeded in getting ScanResult by promise, scanResult is ${JSON.stringify(scanResult)}`);
+                `Succeeded in getting ScanResult by promise, result length: ${scanResult.length}`);
             }).catch((err: BusinessError) => {
               hilog.error(0x0001, '[Scan Sample]',
                 `Failed to get ScanResult by promise. Code: ${err.code}, message: ${err.message}`);

@@ -63,16 +63,16 @@ NativeWindow生命周期问题
 
 可能原因如下：
 
-1.错误地减少了一次NativeWindow引用计数，导致NativeWindow计数减为0释放后，其他地方调用或者再次减计数时崩溃。
+错误地减少了一次NativeWindow引用计数，导致NativeWindow计数减为0释放后，其他地方调用或者再次减计数时崩溃。
 
-2.从XComponent组件获取的NativeWindow，抛向子线程使用，XComponent组件销毁时将NativeWindow引用计数减一，若减为0析构后，子线程仍在使用会导致崩溃。
+从XComponent组件获取的NativeWindow，抛向子线程使用，XComponent组件销毁时将NativeWindow引用计数减一，若减为0析构后，子线程仍在使用会导致崩溃。
 
 [h2]典型错误代码及解决方案
 
 典型错误代码1
 
 OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
-OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
+OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow(image_);
 
 // 错误：OH_NativeImage_Destroy中会减少OHNativeWindow引用计数，无需再调用OH_NativeWindow_DestroyNativeWindow
 OH_NativeImage_Destroy(image_);
@@ -85,7 +85,7 @@ OH_NativeImage_Destroy中会减少OHNativeWindow引用计数，无需再调用OH
 修改：删除OH_NativeWindow_DestroyNativeWindow(nativewindow_)，并在OH_NativeImage_Destroy后及时将image_和nativewindow_置空，防止后续使用野指针。
 
 OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
-OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
+OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow(image_);
 
 // 释放NativeImage时将image_和nativewindow_置空，防止后续使用野指针
 OH_NativeImage_Destroy(image_);
@@ -292,7 +292,7 @@ if (error) {
 }
 
 OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
-OH_NativeWindow_NativeObjectReference(buffer);
+OH_NativeWindow_NativeObjectUnreference(buffer);
 
 典型错误代码2
 
@@ -396,7 +396,7 @@ int32_t OH_NativeImage_ReleaseNativeWindowBuffer(OH_NativeImage* image,OHNativeW
 
 ```
 OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
-OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
+OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow(image_);
 
 // 错误：OH_NativeImage_Destroy中会减少OHNativeWindow引用计数，无需再调用OH_NativeWindow_DestroyNativeWindow
 OH_NativeImage_Destroy(image_);
@@ -407,7 +407,7 @@ OH_NativeWindow_DestroyNativeWindow(nativewindow_);
 
 ```
 OH_NativeImage *image_ = OH_NativeImage_Create(textureId, GL_TEXTURE_2D);
-OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow();
+OHNativeWindow *nativewindow_ = OH_NativeImage_AcquireNativeWindow(image_);
 
 // 释放NativeImage时将image_和nativewindow_置空，防止后续使用野指针
 OH_NativeImage_Destroy(image_);
@@ -592,7 +592,7 @@ if (error) {
 }
 
 OH_NativeWindow_NativeWindowFlushBuffer(nativewindow_, buffer, fence, region);
-OH_NativeWindow_NativeObjectReference(buffer);
+OH_NativeWindow_NativeObjectUnreference(buffer);
 ```
 
 ### Code block 17

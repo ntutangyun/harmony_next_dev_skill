@@ -24,7 +24,7 @@ ArcList({
 
 说明
 
-ArcList的子组件必须是ArcListItem，ArcListItem必须配合ArcList来使用。
+ArcList仅支持ArcListItem和自定义组件作为子组件。ArcListItem必须配合ArcList来使用。使用自定义组件时，请使用ArcListItem作为自定义组件的顶层组件，请勿直接给自定义组件设置属性和事件方法，因为ArcList通过ArcListItem管理子组件的布局和事件处理，直接设置可能导致部分功能无法正常生效。
 
 在弧形列表中显示数据
 

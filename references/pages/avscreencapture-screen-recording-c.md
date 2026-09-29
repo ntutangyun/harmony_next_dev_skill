@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avscreenc
 
 AVScreenCapture是系统提供的用于实现屏幕录制功能的核心模块，属于媒体的核心能力之一。AVScreenCapture主要应用于需要捕获屏幕内容的场景，例如在线教育录课、游戏直播、会议录制、远程协作等。AVScreenCapture主要工作是捕获音频信号、视频信号，并通过音视频编码保存屏幕信息，提供录屏写文件和录屏转码流两套接口，能够输出原始码流和文件两种不同形式的信息。该模块允许调用者指定屏幕录制的编码格式、封装格式和文件路径等参数，同时支持全屏录制、指定窗口录制或指定物理屏录制的配置。
 
-转码流形式：连续的二进制数据包（如：01001011 01100101...），无边界标记，不区分数据块。其存在形式为内存/网络传输中的瞬时状态，类似网络传输中的TCP流、摄像头实时视频流。其生命周期为实时生成、实时消费、立即销毁。
+转码流形式：连续的二进制数据包（如：01001011 01100101......），无边界标记，不区分数据块。其存在形式为内存/网络传输中的瞬时状态，类似网络传输中的TCP流、摄像头实时视频流。其生命周期为实时生成、实时消费、立即销毁。
 
 写文件形式：静态的存储容器，结构化存储单元（如：文件头 + 数据区 + 文件尾）， 具有明确的边界，通过文件系统标记起始和结束位置。其存在形式为存储介质中的持久实体，其生命周期包括创建、写入、关闭和长期存储。
 
@@ -22,7 +22,7 @@ AVScreenCapture是系统提供的用于实现屏幕录制功能的核心模块�
 
 实现方案	优点	缺点	适用场景
 使用AVScreenCapture模块录屏写文件（C/C++）	- 开发逻辑简单，开发效率适中。 - 实时性表现一般，延迟低于ArkTS方法，但高于C/C++转码流方法。 - 支持动态音频切换。 - CPU占用率相对较低	- 开发逻辑较为复杂，需要掌握C++/NDK相关知识。 - 需要手动释放资源。 - 仍依赖系统封装器，仅支持MP4视频格式。 - 无法获取原始数据码流，对数据进行相关操作。	该方案适用于对实时性、视频画质有较高要求，且需要动态音频切换的高性能场景，例如游戏高帧率录制、会议录制等文件录制场合。
-使用AVScreenCapture模块录屏转码流（C/C++）	- 极致性能，实时性强，延迟极低。 - 可以自由掌控数据，支持自定义编码、多源合成及逐帧处理等。 - 资源优化，内存占用率极低。	- 开发成本极高，需要具备音视频编码的专业知识。 - 风险较高，需要自行管理线程和内存安全风险。 - 容易出现编码器碎片化问题。 - 维护和调试都较为困难。	该方案适用于对实时性要求极高、需要多源合成及逐帧处理的专业场景，例如游戏直播、远程桌面控制和定制格式输出等。
+使用AVScreenCapture模块录屏转码流（C/C++）	- 极致性能，实时性强，延迟极低。 - 可以自由掌控数据，支持自定义编码、多源合成及逐帧处理等。 - 资源优化，内存占用率极低。	- 开发成本极高，需要具备音视频编码的专业知识。 - 需要自行管理线程和内存安全风险。 - 维护和调试都较为困难。	该方案适用于对实时性要求极高、需要多源合成及逐帧处理的专业场景，例如游戏直播、远程桌面控制和定制格式输出等。
 
 若需要更简单的开发逻辑、更低的代码维护成本、更高的开发效率，仅ArkTS开发，请参考《基于AVScreenCaptureRecorder实现屏幕录制（ArkTS）》。
 
@@ -381,7 +381,7 @@ async releaseFD() {
 
 Native侧首先会创建音频编码器、视频编码器以及封装器对应的实例对象并绑定相应的数据处理回调函数。
 
-然后配置音频录制参数并初始化音频录制实例对象（OH_AudioCapturer类型），同时配置屏幕录制参数并初始化屏幕录制实例对象（OH_AVScreenCapture类型）。
+然后配置录制参数，包括回调函数OH_AVScreenCapture_OnBufferAvailable()。
 
 最后，启动音视频录制，并创建音视频编码器及封装器的子线程，这些子线程主要用于处理采集的音视频码流数据并进行封装。
 
@@ -595,27 +595,6 @@ int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
     return 0;
 }
 
-初始化音频采集（音频录制）器。
-
-首先，创建一个音频流构造器，然后设置其相关属性值，并设置输入音频流的回调。OnReadData回调用于读取音频数据。接着，通过OH_AudioStreamBuilder_GenerateCapturer()方法，根据音频流构造器创建音频流实例。
-
-void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *audioEncContext)
-{
-    AudioCapturerRelease();
-
-    OH_AudioStream_Type type = AUDIOSTREAM_TYPE_CAPTURER;
-    OH_AudioStreamBuilder_Create(&builder_, type);
-    OH_AudioStreamBuilder_SetSamplingRate(builder_, sampleInfo.audioSampleRate);
-    OH_AudioStreamBuilder_SetChannelCount(builder_, sampleInfo.audioChannelCount);
-    OH_AudioStreamBuilder_SetSampleFormat(builder_, AUDIOSTREAM_SAMPLE_S16LE);
-    OH_AudioStreamBuilder_SetLatencyMode(builder_, AUDIOSTREAM_LATENCY_MODE_NORMAL);
-    OH_AudioStreamBuilder_SetEncodingType(builder_, AUDIOSTREAM_ENCODING_TYPE_RAW);
-    OH_AudioCapturer_Callbacks callbacks;
-    callbacks.OH_AudioCapturer_OnReadData = AudioCapturerOnReadData;
-    OH_AudioStreamBuilder_SetCapturerCallback(builder_, callbacks, audioEncContext);
-    OH_AudioStreamBuilder_GenerateCapturer(builder_, &audioCapturer_);
-}
-
 初始化视频采集（视频录制）器。
 
 类似于上述C/C+文件存储方法，首先创建实例化对象，接着配置相关回调函数及参数。随后，调用OH_AVScreenCapture_Init()方法初始化视频采集器。
@@ -634,6 +613,32 @@ void CAVScreenCaptureToStream::StartScreenCapture(int32_t outputFd, int32_t vide
     if (result != AV_SCREEN_CAPTURE_ERR_OK) {
         OH_LOG_INFO(LOG_APP, "ScreenCapture Started failed %{public}d", result);
         OH_AVScreenCapture_Release(g_avCapture);
+    }
+}
+
+将OnBufferAvailable()方法设置为AVScreenCapture的回调函数OH_AVScreenCapture_OnBufferAvailable()，通过回调函数OnBufferAvailable()返回原始录制的音频数据。
+
+void CAVScreenCaptureToStream::OnBufferAvailable(OH_AVScreenCapture *capture, OH_AVBuffer *buffer,
+                                             OH_AVScreenCaptureBufferType bufferType, int64_t timestamp,
+                                             void *userData) {
+    (void)capture;
+    AudioData *audioData = static_cast<AudioData *>(userData);
+    int bufferLen = OH_AVBuffer_GetCapacity(buffer);
+    uint8_t *buf = OH_AVBuffer_GetAddr(buffer);
+    if (bufferType == OH_SCREEN_CAPTURE_BUFFERTYPE_AUDIO_INNER) {
+        if (audioData != nullptr) {
+            std::unique_lock<std::mutex> lock(audioData->inputMutex);
+            audioData->WriteCache(buf, bufferLen);
+            lock.unlock();
+            audioData->inputCond.notify_all();
+        }
+    } else if (bufferType == OH_SCREEN_CAPTURE_BUFFERTYPE_AUDIO_MIC) {
+        if (audioData != nullptr) {
+            std::unique_lock<std::mutex> lock(audioData->inputMicMutex);
+            audioData->WriteMicCache(buf, bufferLen);
+            lock.unlock();
+            audioData->inputMicCond.notify_all();
+        }
     }
 }
 
@@ -1353,27 +1358,6 @@ int32_t VideoEncoder::Config(SampleInfo &sampleInfo, CodecUserData *codecUserDat
 ### Code block 22
 
 ```
-void AudioCapturer::AudioCapturerInit(SampleInfo &sampleInfo, CodecUserData *audioEncContext)
-{
-    AudioCapturerRelease();
-
-    OH_AudioStream_Type type = AUDIOSTREAM_TYPE_CAPTURER;
-    OH_AudioStreamBuilder_Create(&builder_, type);
-    OH_AudioStreamBuilder_SetSamplingRate(builder_, sampleInfo.audioSampleRate);
-    OH_AudioStreamBuilder_SetChannelCount(builder_, sampleInfo.audioChannelCount);
-    OH_AudioStreamBuilder_SetSampleFormat(builder_, AUDIOSTREAM_SAMPLE_S16LE);
-    OH_AudioStreamBuilder_SetLatencyMode(builder_, AUDIOSTREAM_LATENCY_MODE_NORMAL);
-    OH_AudioStreamBuilder_SetEncodingType(builder_, AUDIOSTREAM_ENCODING_TYPE_RAW);
-    OH_AudioCapturer_Callbacks callbacks;
-    callbacks.OH_AudioCapturer_OnReadData = AudioCapturerOnReadData;
-    OH_AudioStreamBuilder_SetCapturerCallback(builder_, callbacks, audioEncContext);
-    OH_AudioStreamBuilder_GenerateCapturer(builder_, &audioCapturer_);
-}
-```
-
-### Code block 23
-
-```
 void CAVScreenCaptureToStream::StartScreenCapture(int32_t outputFd, int32_t videoWidth, int32_t videoHeight) {
     InitMuxerAndEncoder(outputFd, videoWidth, videoHeight);
 
@@ -1388,6 +1372,34 @@ void CAVScreenCaptureToStream::StartScreenCapture(int32_t outputFd, int32_t vide
     if (result != AV_SCREEN_CAPTURE_ERR_OK) {
         OH_LOG_INFO(LOG_APP, "ScreenCapture Started failed %{public}d", result);
         OH_AVScreenCapture_Release(g_avCapture);
+    }
+}
+```
+
+### Code block 23
+
+```
+void CAVScreenCaptureToStream::OnBufferAvailable(OH_AVScreenCapture *capture, OH_AVBuffer *buffer,
+                                             OH_AVScreenCaptureBufferType bufferType, int64_t timestamp,
+                                             void *userData) {
+    (void)capture;
+    AudioData *audioData = static_cast<AudioData *>(userData);
+    int bufferLen = OH_AVBuffer_GetCapacity(buffer);
+    uint8_t *buf = OH_AVBuffer_GetAddr(buffer);
+    if (bufferType == OH_SCREEN_CAPTURE_BUFFERTYPE_AUDIO_INNER) {
+        if (audioData != nullptr) {
+            std::unique_lock<std::mutex> lock(audioData->inputMutex);
+            audioData->WriteCache(buf, bufferLen);
+            lock.unlock();
+            audioData->inputCond.notify_all();
+        }
+    } else if (bufferType == OH_SCREEN_CAPTURE_BUFFERTYPE_AUDIO_MIC) {
+        if (audioData != nullptr) {
+            std::unique_lock<std::mutex> lock(audioData->inputMicMutex);
+            audioData->WriteMicCache(buf, bufferLen);
+            lock.unlock();
+            audioData->inputMicCond.notify_all();
+        }
     }
 }
 ```

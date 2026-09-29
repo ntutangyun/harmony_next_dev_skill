@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scan-gene
 
 约束与限制
 
-码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从API版本5.1.0(18)开始支持Wearable、从API版本5.1.1(19)开始支持PC/2in1、TV）。
+码图生成能力支持Phone、Tablet、Wearable、PC/2in1、TV（从API版本5.1.0(18)开始支持Wearable，从API版本5.1.1(19)开始支持PC/2in1、TV）。
 
 若Scan Kit识别某码图内容显示内容为乱码，则该码图的字节数组需要通过专门的解码器解析，例如地铁闸机。
 

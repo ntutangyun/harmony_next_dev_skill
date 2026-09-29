@@ -18,7 +18,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sty
 
 当前@Styles仅支持通用属性和通用事件。
 
-@Styles可以定义在组件内或全局，在全局定义时需在方法名前面添加function关键字，组件内定义时则不需要添加function关键字。请参考用例组件内styles和全局styles的用法。
+@Styles可以定义在组件内或全局，在全局定义时需在方法名前面添加function关键字，组件内定义时则不需要添加function关键字。请参考用例组件内@Styles和全局@Styles的用法。
 
 组件内@Styles的优先级高于全局@Styles。框架优先找当前组件内的@Styles，如果找不到，则会全局查找。
 
@@ -67,11 +67,11 @@ struct FancyUse {
 
 // 正确写法
   @Styles
-  function globalFancy () {
+  function globalFancy() {
     .width(100)
   }
 
-不支持在@Styles方法内使用逻辑组件，逻辑组件内的属性不生效。
+不支持在@Styles方法内使用条件渲染语句，条件渲染语句内的属性不生效。
 
   // 错误写法
   @Styles
@@ -176,7 +176,7 @@ struct FancyUse {
 ```
 // 正确写法
   @Styles
-  function globalFancy () {
+  function globalFancy() {
     .width(100)
   }
 ```

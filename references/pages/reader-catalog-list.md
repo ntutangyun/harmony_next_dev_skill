@@ -148,7 +148,7 @@ private getResourceItemByCatalog(catalogItem: bookParser.CatalogItem): bookParse
       return spineList[0];
     }
   } catch (error) {
-    hilog.error(0x0000, "testTAG", `getDomPos failed, Code: ${error.code}, message: ${error.message}`);
+    hilog.error(0x0000, "testTAG", `getResourceItemByCatalog failed, Code: ${error.code}, message: ${error.message}`);
   }
   // 如果没有资源条目，则返回默认值
   hilog.info(0x0000, 'testTag', 'getResourceItemByCatalog get resource in escape');
@@ -299,7 +299,7 @@ private getResourceItemByCatalog(catalogItem: bookParser.CatalogItem): bookParse
       return spineList[0];
     }
   } catch (error) {
-    hilog.error(0x0000, "testTAG", `getDomPos failed, Code: ${error.code}, message: ${error.message}`);
+    hilog.error(0x0000, "testTAG", `getResourceItemByCatalog failed, Code: ${error.code}, message: ${error.message}`);
   }
   // 如果没有资源条目，则返回默认值
   hilog.info(0x0000, 'testTag', 'getResourceItemByCatalog get resource in escape');

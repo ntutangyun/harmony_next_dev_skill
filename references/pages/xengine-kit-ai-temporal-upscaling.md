@@ -22,10 +22,16 @@ XEngine Kit提供时域AI超分特性，利用相机的抖动获取不同位置�
 
 以下接口为OpenGL ES和Vulkan时域AI超分设置接口，如需使用更丰富的设置和查询接口，具体API说明详见接口文档。
 
+OpenGL ES接口：
+
 接口名	描述
 const GLubyte * HMS_XEG_GetString (GLenum name)	XEngine OpenGL ES扩展特性查询接口。
 GL_APICALL void GL_APIENTRY HMS_XEG_TemporalUpscaleParameter(GLenum pname, const GLvoid *param)	设置时域AI超分输入参数。
-GL_APICALL void GL_APIENTRY HMS_XEG_RenderTemporalUpscale( GLuint inputTexture, GLuint depthTexture, GLuint motionVectorTexture, GLuint dynamicMaskTexture, GLfloat jitterX, GLfloat jitterY )	录制时域AI超分渲染命令。
+GL_APICALL void GL_APIENTRY HMS_XEG_RenderTemporalUpscale( GLuint inputTexture, GLuint depthTexture, GLuint motionVectorTexture, GLuint dynamicMaskTexture, GLfloat jitterX, GLfloat jitterY )	执行时域AI超分渲染命令。
+
+Vulkan接口：
+
+接口名	描述
 VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_EnumerateDeviceExtensionProperties (VkPhysicalDevice physicalDevice, uint32_t * pPropertyCount, XEG_ExtensionProperties * pProperties)	XEngine Vulkan扩展特性查询接口。
 VKAPI_ATTR VkResult VKAPI_CALL HMS_XEG_CreateTemporalUpscale (VkDevice device, XEG_TemporalUpscaleCreateInfo * pTemporalUpscaleInfo, XEG_TemporalUpscale * pTemporalUpscale)	创建XEG_TemporalUpscale对象。
 VKAPI_ATTR void VKAPI_CALL HMS_XEG_CmdRenderTemporalUpscale (VkCommandBuffer commandBuffer, XEG_TemporalUpscale temporalUpscale, XEG_TemporalUpscaleDescription * pDescription)	录制时域AI超分渲染命令。

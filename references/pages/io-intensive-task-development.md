@@ -18,7 +18,7 @@ export async function write(data: string, filePath: string): Promise<void> {
   fileIo.close(file);
 }
 
-import { write } from './write'
+import { write } from './write';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { taskpool } from '@kit.ArkTS';
 import { common } from '@kit.AbilityKit';
@@ -36,7 +36,7 @@ async function concurrentTest(context: common.UIAbilityContext): Promise<boolean
     const writePromise = write('Hello World!', fileList[i]).then(() => {
       console.info(`Succeeded in writing the file. FileList: ${fileList[i]}`);
     }).catch((err: BusinessError) => {
-      console.error(`Failed to write the file. Code is ${err.code}, message is ${err.message}`)
+      console.error(`Failed to write the file. Code is ${err.code}, message is ${err.message}`);
       return false;
     });
     writePromises.push(writePromise);
@@ -66,7 +66,7 @@ struct Index {
           .onClick(() => {
             let context = this.uiContext?.getHostContext() as common.UIAbilityContext;
             // 使用TaskPool执行包含密集I/O的并发函数
-            // fileList数组较大时，I/O密集型任务分发也会抢占UI主线程，需要使用多线程能力
+            // 需要处理的文件数组较大时，I/O密集型任务分发也会抢占UI主线程，需要使用多线程能力
             taskpool.execute(concurrentTest, context).then(() => {
               this.message = 'success';
               // 调度结果处理
@@ -74,7 +74,7 @@ struct Index {
             }).catch((e: BusinessError) => {
               this.message = 'failed';
               console.error('concurrentTest is failed.');
-            })
+            });
           })
       }
       .width('100%')
@@ -102,7 +102,7 @@ export async function write(data: string, filePath: string): Promise<void> {
 ### Code block 2
 
 ```
-import { write } from './write'
+import { write } from './write';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { taskpool } from '@kit.ArkTS';
 import { common } from '@kit.AbilityKit';
@@ -120,7 +120,7 @@ async function concurrentTest(context: common.UIAbilityContext): Promise<boolean
     const writePromise = write('Hello World!', fileList[i]).then(() => {
       console.info(`Succeeded in writing the file. FileList: ${fileList[i]}`);
     }).catch((err: BusinessError) => {
-      console.error(`Failed to write the file. Code is ${err.code}, message is ${err.message}`)
+      console.error(`Failed to write the file. Code is ${err.code}, message is ${err.message}`);
       return false;
     });
     writePromises.push(writePromise);
@@ -152,7 +152,7 @@ struct Index {
           .onClick(() => {
             let context = this.uiContext?.getHostContext() as common.UIAbilityContext;
             // 使用TaskPool执行包含密集I/O的并发函数
-            // fileList数组较大时，I/O密集型任务分发也会抢占UI主线程，需要使用多线程能力
+            // 需要处理的文件数组较大时，I/O密集型任务分发也会抢占UI主线程，需要使用多线程能力
             taskpool.execute(concurrentTest, context).then(() => {
               this.message = 'success';
               // 调度结果处理
@@ -160,7 +160,7 @@ struct Index {
             }).catch((e: BusinessError) => {
               this.message = 'failed';
               console.error('concurrentTest is failed.');
-            })
+            });
           })
       }
       .width('100%')

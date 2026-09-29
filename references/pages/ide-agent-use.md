@@ -38,3 +38,5 @@ Agent调用
 在对话区域输入"/"调出命令，选择自定义的Agent（如figma2code）。从DevEco Studio 6.1.0 Beta2开始不支持。
 
 在输入框左下角HarmonyOS Ask处下拉框中选择自定义的Agent（如figma2code）。
+
+根据业务需要，进行智能问答、代码生成、代码智能解读等，CodeGenie将会调用自定义Agent和选择的模型生成内容。

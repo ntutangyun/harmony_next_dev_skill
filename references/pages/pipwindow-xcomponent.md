@@ -1,4 +1,4 @@
-# 使用XComponent实现画中画功能开发（ArkTS）
+# 使用XComponent实现画中画功能开发 (ArkTS)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/pipwindow-xcomponent_
 
@@ -177,6 +177,16 @@ export struct Page1 {
 
 通过create(config: PiPConfiguration)接口创建画中画控制器实例。
 
+startPip() {
+  // ...
+  PiPWindow.create(config).then((controller: PiPWindow.PiPController) => {
+    this.pipController = controller;
+    // ...
+  }).catch((err: BusinessError) => {
+    Logger.error(`Failed to create pip controller. Cause:${err.code}, message:${err.message}`);
+  });
+}
+
 创建画中画控制器实例后，注册生命周期事件以及控制事件回调。
 
 通过画中画控制器实例的on('stateChange')接口注册生命周期事件回调。
@@ -235,7 +245,7 @@ startPip() {
   });
 }
 
-通过画中画控制器实例的setAutoStartEnabled接口设置是否需要在应用返回桌面时自动启动画中画。
+通过画中画控制器实例的setAutoStartEnabled接口设置在拉起画中画的应用主窗退后台时是否自动启动画中画，默认不自动拉起。在开启自动拉起的情况下，当应用主窗为智慧多窗悬浮窗状态且被收入侧边栏时，应用主窗虽退后台，但不会自动拉起画中画。在使用XComponent方案实现画中画功能并结合Navigation进行路由管理时，首次调用setAutoStartEnabled(true)方法，系统会缓存当前应用传入的NavigationId的栈顶信息。
 
 this.pipController.setAutoStartEnabled(false /* or true if necessary */); // 默认为false
 
@@ -452,12 +462,26 @@ export struct Page1 {
 ### Code block 5
 
 ```
+startPip() {
+  // ...
+  PiPWindow.create(config).then((controller: PiPWindow.PiPController) => {
+    this.pipController = controller;
+    // ...
+  }).catch((err: BusinessError) => {
+    Logger.error(`Failed to create pip controller. Cause:${err.code}, message:${err.message}`);
+  });
+}
+```
+
+### Code block 6
+
+```
 this.pipController.on('stateChange', (state: PiPWindow.PiPState, reason: string) => {
   this.onStateChange(state, reason);
 });
 ```
 
-### Code block 6
+### Code block 7
 
 ```
 this.pipController.on('controlPanelActionEvent', (event: PiPWindow.PiPActionEventType, status?: number) => {
@@ -465,7 +489,7 @@ this.pipController.on('controlPanelActionEvent', (event: PiPWindow.PiPActionEven
 });
 ```
 
-### Code block 7
+### Code block 8
 
 ```
 startPip() {
@@ -509,13 +533,13 @@ startPip() {
 }
 ```
 
-### Code block 8
+### Code block 9
 
 ```
 this.pipController.setAutoStartEnabled(false /* or true if necessary */); // 默认为false
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 Button('updateSize') // 更新视频尺寸
@@ -534,7 +558,7 @@ Button('updateSize') // 更新视频尺寸
   })
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 // 步骤4：当不再需要显示画中画时，通过stopPiP接口关闭画中画

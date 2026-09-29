@@ -8,7 +8,7 @@ Wear Engine提供查询用户在穿戴侧已连接的对端设备列表的接口
 
 调用getDeviceClient方法，获取DeviceClient对象。
 
-调用getConnectedDevices方法，查询用户已连接的穿戴设备列表。
+调用getConnectedDevices方法，查询用户已连接的对端设备列表。
 
 从已连接设备列表中选定需要通信的对端设备。
 

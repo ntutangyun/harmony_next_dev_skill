@@ -2,14 +2,10 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-build-optimized_
 
+默认特性
+
 分析构建过程
 
-守护进程
+实践说明
 
-并行构建
-
-增量构建
-
-性能优化实验特性
-
-模块化编译
+实验特性

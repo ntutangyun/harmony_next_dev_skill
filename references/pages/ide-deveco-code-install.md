@@ -54,13 +54,13 @@ npm install -g @deveco/deveco-code
 
 说明
 
-安装时默认使用npm 官方源，指定淘宝镜像源时命令为npm install -g @deveco/deveco-code --registry=https://registry.npmmirror.com。
+安装时默认使用npm官方源，指定淘宝镜像源时命令为npm install -g @deveco/deveco-code --registry=https://registry.npmmirror.com。
 
 安装命令中的标签@stable是可选项，加标签@stable表示下载安装稳定版本，不加标签@stable表示下载安装最新版本。
 
-deveco --version
-
 更新与卸载
+
+deveco --version
 
 deveco upgrade
 

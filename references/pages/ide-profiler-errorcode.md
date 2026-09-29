@@ -42,11 +42,11 @@ App not started correctly. Start a new session and try again.
 
 错误信息
 
-Failed to import data file. Please check file version or storage space.
+Failed to import data file. Please check file version, storage space, or configure higher IDE memory.
 
 错误描述
 
-数据文件导入失败，请检查数据文件版本和磁盘空间。
+数据文件导入失败，请检查数据文件版本、磁盘空间或者设置更高的IDE内存。
 
 可能原因
 
@@ -54,11 +54,15 @@ Failed to import data file. Please check file version or storage space.
 
 磁盘空间不足。
 
+DevEco Studio内存不足。
+
 处理步骤
 
 尝试使用数据文件导出时或更高版本的DevEco Studio导入数据。
 
 清理磁盘空间。
+
+在菜单栏点击File > Settings > Appearance & Behavior > System Settings > Memory Settings，修改DevEco Studio max heap size（堆大小），推荐使用4096MB及以上。
 
 00702101 离线符号解析失败
 
@@ -184,7 +188,7 @@ Since no Running Application is selected, recording cannot be started. Please se
 
 处理步骤
 
-调测的应用开始运行后，再启动录制。
+调测的应用开始运行后，启动录制。
 
 00702204 点击跳转按钮失败
 
@@ -248,7 +252,7 @@ Unlock the device and try again.
 
 错误描述
 
-解锁被调优的设备后，重新录制。
+解锁被调测的设备后，重新录制。
 
 可能原因
 
@@ -352,7 +356,7 @@ Make sure that the file name does not exceed 238 characters.
 
 错误信息
 
-Invalid save path: {0}
+Invalid save path: {0}.
 
 错误描述
 
@@ -364,7 +368,7 @@ Invalid save path: {0}
 
 处理步骤
 
-确认保存路径存在后，再保存。
+确认保存路径存在后进行保存。
 
 00703201 录制文件过大导致解析失败
 
@@ -374,7 +378,7 @@ The recording file is too large and cannot be parsed. Restart a new recording se
 
 错误描述
 
-因录制文件较大，导致解析失败。请减少录制时间重新录制。
+录制文件较大，导致解析失败。请减少录制时间重新录制。
 
 可能原因
 
@@ -401,6 +405,24 @@ Profiler分配的内存已达到上限，导致无法正常运行。
 处理步骤
 
 在DevEco Studio的配置文件中手动修改虚拟机可使用的最大内存，具体请参考内存占用率过高导致DevEco Studio无法正常运行。
+
+00703203 录制的数据与当前DevEco Studio窗口打开的工程SourceMap文件不匹配或SourceMap文件不存在
+
+错误信息
+
+Unable to navigate to source code. Make sure the SourceMap file exists in the corresponding module directory and the recorded data matches the source code project, and then rebuild the project.
+
+错误描述
+
+录制的数据与当前DevEco Studio窗口打开的工程SourceMap文件不匹配或SourceMap文件不存在。
+
+可能原因
+
+录制的数据与当前DevEco Studio窗口打开的工程SourceMap文件不匹配或SourceMap文件不存在，导致无法正确跳转到源代码。
+
+处理步骤
+
+检查应用工程中的SourceMap文件是否存在，检查被录制的应用与当前DevEco Studio窗口打开的应用工程的SourceMap文件是否匹配。
 
 00703204 录制的数据与当前DevEco Studio窗口打开的源码工程不匹配
 

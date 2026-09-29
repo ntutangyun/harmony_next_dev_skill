@@ -1,4 +1,4 @@
-# @Once：初始化同步一次
+# @Once装饰器：初始化同步一次
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new-once_
 

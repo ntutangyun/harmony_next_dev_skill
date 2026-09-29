@@ -21,7 +21,7 @@ queryFilePreloadStatusInfo(file: string): FilePreloadStatusInfo	查询文件预�
 
 约束限制
 
-当前仅在PC/2in1和tablet设备上支持。
+支持的设备类型：PC/2in1，从26.0.0版本开始，新增支持tablet设备。
 
 开发步骤
 

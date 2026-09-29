@@ -51,7 +51,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/uiability
   }
 }
 
-调用方通过openLink接口执行跳转，需要传入link和options，不再需要传入bundleName、moduleName和abilityName。系统会根据传入的link匹配到符合skills配置的应用。
+调用方通过openLink()接口执行跳转，需要传入link和options，不再需要传入bundleName、moduleName和abilityName。系统会根据传入的link匹配到符合skills配置的应用。
 
 当options中的appLinkingOnly为true时，匹配到的应用会经过应用市场域名检查（需联网）返回域名校验检查的唯一匹配项或未匹配结果。
 
@@ -156,7 +156,7 @@ struct WantAbilityPage1 {
   }
 }
 
-调用方通过openLink接口执行跳转，需要传入link和options，不再需要传入bundleName、moduleName和abilityName。系统会根据传入的link匹配到符合skills配置的应用。AbilityResult回调结果通过入参传入回调函数，在被启动的UIAbility停止自身后返回给调用方。启动成功和失败结果仍通过Promise返回。
+调用方通过openLink()接口执行跳转，需要传入link和options，不再需要传入bundleName、moduleName和abilityName。系统会根据传入的link匹配到符合skills配置的应用。AbilityResult回调结果通过入参传入回调函数，在被启动的UIAbility停止自身后返回给调用方。启动成功和失败结果仍通过Promise返回。
 
 当options中的appLinkingOnly为true时，匹配到的应用会经过应用市场域名检查（需联网）返回域名校验检查的唯一匹配项或未匹配结果。
 

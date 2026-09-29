@@ -29,6 +29,7 @@ When a user asks for a capability, identify the kit, then either:
 | Capability | Kit / import | Canonical slug |
 |---|---|---|
 | Crypto, keystore, biometrics | `@kit.UniversalKeystoreKit`, `@kit.UserAuthenticationKit` | `system-security` |
+| Algorithm-level crypto (encrypt/decrypt, sign/verify, digest, MAC, KDF, key agreement) — guides consolidated per algorithm in the 2026-09 docs (one page covers all AES modes GCM/CCM/CBC/ECB/XTS/segmented; likewise SM4, RSA encrypt, RSA sign) | `@kit.CryptoArchitectureKit` (`cryptoFramework`) | `crypto-aes-sym-encrypt-decrypt`, `crypto-sm4-sym-encrypt-decrypt`, `crypto-rsa-asym-encrypt-decrypt`, `crypto-rsa-sign-sig-verify` (+ `-ndk` variants), `crypto-architecture-glossary` |
 | Network: HTTP, WebSocket, connectionmgr, certs | `@kit.NetworkKit` | `system-network` |
 | Bluetooth, Wi-Fi, NFC | `@kit.ConnectivityKit` | `system-network` |
 | Telephony, SMS | `@kit.TelephonyKit` | `system-basicfun` |
@@ -63,7 +64,7 @@ When a user asks for a capability, identify the kit, then either:
 | 3D scene rendering | `@kit.ArkGraphics3D` | `arkgraphics-3d` |
 | GPU/Vulkan helpers | `@kit.GraphicsAccelerateKit` | `graphics-accelerate-kit-guide` |
 | XEngine | `@kit.XEngineKit` | `xengine-kit-guide` |
-| AR sessions | `@kit.ARKit` (AR Engine) | `ar-engine-kit-guide` |
+| AR sessions | `@kit.ARKit` (AR Engine) | `ar-engine-guide` |
 | Spatial reconstruction | `@kit.SpatialReconKit` | `spatial-recon-kit-guide` |
 
 ## Application services (Huawei mobile services)
@@ -126,6 +127,17 @@ When ArkTS isn't enough (perf-critical compute, existing C/C++):
 - Page: `ndk-development-overview`, `create-with-ndk`, `build-with-ndk`, `coding`, `build-toolchain`, `debugging-profiling`, `hardware-compatibility`.
 - **Build ArkUI from C/C++ (ArkUI-NDK)** — the native C-API now covers layout, lists/grids, Swiper, navigation, Text/form/media components, and event handling: `ndk-layout-container`, `ndk-common-attribute-layout`, `arkts-list-and-grid-ndk`, `ndk-swiper`, `ndk-navigation-query`, `ndk-use-text-component`, `ndk-build-form-components`, `arkts-build-media-ndk`, `ndk-add-component-events`, `ndk-add-event-response`, `ndk-bind-input-events`. See `references/03-arkui-ui.md`.
 - C/C++ static analysis: DevEco's built-in **Clang-Tidy** (`ide-clang-tidy`, see `references/08-tooling-and-build.md`).
+
+## Accessories, external displays & casting (what an app can and can't do)
+
+Useful when someone designs **hardware that pairs with a HarmonyOS phone** (e.g. a screen+keyboard "laptop shell") or wants the phone to drive another screen. Key constraints, all from the guides:
+
+- **Accessory Kit** (`@kit.AccessoryKit`, `accessoryAccessManager`; `accessorykit-introduction`, `accessory-dev-guides`, `accessory-kit-glossary`) — pairing picker, association wake-up (auto-launch the vendor app when the accessory connects), system-service attach, trust management; `showAccessPicker` / `queryAttachedService` / `registerConnectListener` / `connect` / `disconnect` / `detachService`; half-managed vs fully-managed pairing modes (half-managed: re-connect within 365 days needs no new confirmation). **Restricted**: open only to Huawei-ecosystem partner enterprise apps, needs ACL permission `ohos.permission.ALLOW_ACCESSORY_ACCESS` granted after partnership + test admission; China mainland only; Phone/Tablet/PC-2in1 hosts; the accessory must support Wi-Fi P2P + BLE.
+- **System screen mirroring** is done by the OS, not by apps. The receiving device must support **Cast+** (Huawei) or **Miracast** (`avsession-extended-screen`).
+- **Extended-screen casting** (`@kit.AVSessionKit`, `avsession-extended-screen`): *after* the system has started a wired/wireless cast (virtual extended screen ≥ 1080P), an app gets the displays via `session.getAllCastDisplays()` / `session.on('castDisplayChange', cb)` (`CastDisplayState.STATE_ON/OFF`), then launches **its own** second UIAbility there with `context.startAbility(want, { displayId })`. It must fill the screen, and the system rejects it unless the main-screen foreground UIAbility belongs to the same app. So this gives dual-screen for your own app only, not a desktop for the whole phone.
+- **Virtual screens / multi-screen `Screen` APIs are system-app only** (some also need `ohos.permission.CAPTURE_SCREEN`); third-party apps can only query/listen to `display` properties (`displaymanager-overview`, `screenproperty-guideline`). Logical screen types: main, mirror, extended, 异源 (heterogeneous) (`display-terminology`).
+- **Desktop-like windowing**: PC/2in1 windows are free-form by default; the docs list **电脑模式 (PC mode)** only for some Tablets, while some Phones offer **自由多窗** (free multi-window) (`freeform-window-overview`). The guides give no API for a phone "desktop mode" on an external screen.
+- **Input peripherals**: `@kit.InputKit` `inputDevice.getDeviceList()` / `getKeyboardType()` / `on('change')` to detect a physical keyboard (`inputdevice-guidelines`); mouse pointer styles (`pointerstyle-guidelines`); ArkUI keyboard/mouse events (`arkts-interaction-development-guide-keyboard`, `-mouse`). **NearLink Kit** (星闪, `@kit.NearLinkKit`, `nearlink-introduction`) is a low-power, high-rate short-range link whose example uses include mice and styluses. USB/HID peripheral drivers go through the DDK guides (`usb-ddk-guidelines`, `hid-ddk-guidelines`).
 
 ## How to use this catalog
 

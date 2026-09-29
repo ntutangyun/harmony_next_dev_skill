@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-native-child-process_
 
-从26.0.0 Beta2版本开始，DevEco Studio支持对Native子进程进行调试，包括OH_Ability_StartNativeChildProcess和OH_Ability_CreateNativeChildProcess接口创建的Native子进程。
+从26.0.0版本开始，DevEco Studio支持对Native子进程进行调试，包括OH_Ability_StartNativeChildProcess和OH_Ability_CreateNativeChildProcess接口创建的Native子进程。
 
 使用约束
 

@@ -119,8 +119,10 @@ export struct OneTypeItemPage {
       Column() {
         List() {
           LazyForEach(this.dataSource, (item: ItemData) => {
-            ItemView({ title: item.title, from: item.from, tail: item.tail })
-              .reuseId('item_id')
+            ListItem() {
+              ItemView({ title: item.title, from: item.from, tail: item.tail })
+                .reuseId('item_id')
+            }
           }, (item: ItemData) => item.id.toString())
         }
         // ...
@@ -1248,8 +1250,10 @@ export struct OneTypeItemPage {
       Column() {
         List() {
           LazyForEach(this.dataSource, (item: ItemData) => {
-            ItemView({ title: item.title, from: item.from, tail: item.tail })
-              .reuseId('item_id')
+            ListItem() {
+              ItemView({ title: item.title, from: item.from, tail: item.tail })
+                .reuseId('item_id')
+            }
           }, (item: ItemData) => item.id.toString())
         }
         // ...

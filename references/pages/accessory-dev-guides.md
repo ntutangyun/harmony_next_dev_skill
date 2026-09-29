@@ -1,4 +1,4 @@
-# 配件接入开发指导
+# 配件接入
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/accessory-dev-guides_
 

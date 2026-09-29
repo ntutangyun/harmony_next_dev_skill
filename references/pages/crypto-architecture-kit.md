@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ar
 
 Crypto Architecture Kit简介
 
-密钥生成和转换
+密钥生成与转换
 
 加解密
 
@@ -16,7 +16,7 @@ Crypto Architecture Kit简介
 
 消息摘要计算
 
-消息认证码
+消息认证码计算
 
 随机数
 
@@ -24,4 +24,4 @@ Crypto Architecture Kit简介
 
 实现跨平台加解密数据兼容性
 
-Crypto Architecture Kit常见问题
+Crypto Architecture Kit术语

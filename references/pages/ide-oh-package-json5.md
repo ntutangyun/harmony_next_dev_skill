@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-oh-pa
 
 开发者可将标准的DevEco Studio工程下的各个模块打成HAR包后，发布到OpenHarmony三方库中心仓；所有发布到仓库的包必须包含模块级oh-package.json5文件，以描述当前包基本信息。
 
-工程级oh-package.json5 字段说明
+工程级oh-package.json5字段说明
 
 配置项	字段名称	字段说明	字段要求	字段类型	默认值	备注
 开发态版本	modelVersion	开发态版本号	必选	字符串	无	开发态版本号。 默认版本号为DevEco Studio配套的modelVersion，以DevEco Studio 6.1.1 Release为例，配套的modelVersion为"6.1.1"。如需修改modelVersion，修改后的值不能小于5.0.0，且不能大于DevEco Studio配套的modelVersion。
@@ -39,7 +39,7 @@ properties	多环境依赖管理参数	可选	对象	{}	该配置参数用于多
 version	版本号	必选	字符串	1.0.0	该模块构建产物（HAR/HSP）的版本号。 规范：采用X.Y.Z（主版本.次版本.修订号）三段式结构，遵循 semver 语义化规范，从1.0.0开始。
 description	简介	可选	字符串	无	用于描述该模块构建产物（HAR/HSP）的信息，有助于被搜索发现。长度范围为0-512字符。
 keywords	关键字	可选	数组	[]	关键字信息数组，便于搜索使用。例如：["tools", "project"]。
-author	作者	可选/必选	对象或字符串	无	author包含 name 字段（必选）、 email 字段（可选）、url字段（可选），可通过格式对象或字符串格式配置。 name字段允许使用字母、数字，点（.），中划线（-），下划线（_），空格，中文。 对象格式："author": {"name": "xxx" , "email": "***@example.com" , "url": "https://xxx.com" }。 字符串格式："author": "name<***@example.com>(https://xxx.com)"。 仅发布到OpenHarmony三方库中心仓时，必须填写，其他场景可选填。
+author	作者	可选/必选	对象或字符串	无	author包含 name 字段（必选）、 email 字段（可选）、url字段（可选），可通过格式对象或字符串格式配置。 name字段允许使用字母、数字，点（.），中划线（-），下划线（_），空格，中文，长度范围为[1,128]，email长度范围为[1,64]，url长度范围为[1,256]。 对象格式："author": {"name": "xxx" , "email": "***@example.com" , "url": "https://xxx.com" }。 字符串格式："author": "name<***@example.com>(https://xxx.com)"。 仅发布到OpenHarmony三方库中心仓时，必须填写，其他场景可选填。
 homepage	主页链接	可选	字符串	""	通常是项目gitee链接。
 repository	仓库地址	可选	字符串	""	开源代码仓库地址。在私仓管理界面的系统设置处可定义是否为必填。
 license	开源协议	可选/必选	字符串	"ISC"	当前项目的开源许可证。遵循 spdx license 规范。许可证若为 GPL，repository 建议不为空。 仅发布开源三方库到OpenHarmony三方库中心仓时，必须填写，其他场景可选填。
@@ -58,6 +58,7 @@ scripts	自定义脚本	可选	对象	{}	维护一个脚本别名到脚本内容
 hooks	钩子	可选	对象	{}	安装或卸载的钩子设置，包含 "preInstall", "postInstall", "preUninstall", "postUninstall","preVersion", "postVersion", "prePublish", "postPublish" 字段。仅支持执行当前工程中的 hooks，不支持执行依赖中的 hooks。
 category	检查规则白名单	可选	字符串	{}	在私仓管理界面配置后自动生成，白名单为分号隔开的字符串列表，每个列表项必须是一个由大小写字母或下划线组成的字符串，包含在白名单中的配置项，不再做规则检查。
 packageType	包类型	可选	字符串	InterfaceHar	标识模块是否为HSP包，在新建Shared Library时会自动生成该字段，并默认赋值为"InterfaceHar"；Static Library中没有该字段，表示为普通HAR包。
+dependencyMode	BundledHar类型	可选	字符串	loose	该字段由编译构建自动生成，不推荐开发者手动配置。 用于标识当前HAR包编译时是否开启bundledAllDependencies。若开启填入bundled，若未开启填入loose或缺省。 三方中心仓仅支持bundled和loose两种取值，其他取值会导致校验失败。
 
 注意
 
@@ -365,7 +366,6 @@ oh-package.json5中支持参数化的字段有：version、dependencies、devDep
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": './parameterFile/parameterFile.json5', // 开启参数化并指定参数化配置文件路径
   "overrides": {
     "libtest1": "@param:dependencies.libtest1", // 所有依赖名称为：libtest1的版本会被替换为：1.0.1
@@ -474,7 +474,6 @@ properties
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": '${ohpm_environment}',
   "properties": {
     "ohpm_environment":"./parameterFile/debug.json5",
@@ -485,7 +484,6 @@ properties
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": '${versions.release}',
   "properties": {
     "ohpm_environment":"./parameterFile/debug.json5",
@@ -499,7 +497,6 @@ properties
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": './parameterFile/${versions.debug}.json5',
   "properties": {
     "ohpm_environment":"",
@@ -915,7 +912,6 @@ entry 1.0.0 <project>\entry
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": './parameterFile/parameterFile.json5', // 开启参数化并指定参数化配置文件路径
   "overrides": {
     "libtest1": "@param:dependencies.libtest1", // 所有依赖名称为：libtest1的版本会被替换为：1.0.1
@@ -1012,7 +1008,6 @@ AppTest
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": '${ohpm_environment}',
   "properties": {
     "ohpm_environment":"./parameterFile/debug.json5",
@@ -1023,7 +1018,6 @@ AppTest
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": '${versions.release}',
   "properties": {
     "ohpm_environment":"./parameterFile/debug.json5",
@@ -1037,7 +1031,6 @@ AppTest
 {
   "modelVersion": "6.1.1",
   "description": "Please describe the project information.",
-   ...
   "parameterFile": './parameterFile/${versions.debug}.json5',
   "properties": {
     "ohpm_environment":"",

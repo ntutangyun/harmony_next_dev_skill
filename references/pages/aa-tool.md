@@ -214,7 +214,7 @@ aa dump命令从API version 7开始支持，从API version 9废弃，替换命�
 参数	二级参数	参数说明
 -h/--help	-	帮助信息。
 -a/--all	-	打印所有mission内的应用组件信息。
--l/--mission-list	type（缺省打印全部）	服务侧为了方便管理任务链，内部维护了4种类型的任务链。 可取值： - NORMAL：正常启动的任务链(比如A拉起B拉起C, 则对应的任务链是A->B->C) - DEFAULT_STANDARD：已经被破坏的任务链中的任务, 启动模式为multiton的任务被放到该任务链中, 这里面的任务之间没有关联关系 - DEFAULT_SINGLE：已经被破坏的任务链中的任务, 启动模式为singleton的任务被放到该任务链中, 这里面的任务之间没有关联关系 - LAUNCHER：launcher的任务链
+-l/--mission-list	type（缺省打印全部）	服务侧为了方便管理任务链，内部维护了4种类型的任务链。 可取值： - NORMAL：正常启动的任务链（比如A拉起B拉起C, 则对应的任务链是A->B->C） - DEFAULT_STANDARD：已经被破坏的任务链中的任务，启动模式为multiton的任务被放到该任务链中，这里面的任务之间没有关联关系 - DEFAULT_SINGLE：已经被破坏的任务链中的任务，启动模式为singleton的任务被放到该任务链中，这里面的任务之间没有关联关系 - LAUNCHER：launcher的任务链
 -e/--extension	elementName	打印扩展组件信息。
 -u/--userId	UserId	打印指定UserId的栈信息，需要和其他参数组合使用，例如aa dump -a -u 100、aa dump -d -u 100。
 -d/--data	-	打印DataAbility相关信息。

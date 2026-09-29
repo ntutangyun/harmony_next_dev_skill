@@ -56,7 +56,7 @@ HarmonyOS SDK已嵌入DevEco Studio中，无需额外下载配置。HarmonyOS SD
 
 诊断开发环境
 
-为了您开发应用/元服务的良好体验，DevEco Studio提供了开发环境诊断的功能，帮助您识别开发环境是否完备。您可以在欢迎页面单击Diagnose进行诊断。如果您已经打开了工程开发界面，也可以在菜单栏单击Help > Diagnostic Tools > Diagnose Development Environment进行诊断。
+DevEco Studio提供开发环境诊断功能，帮助您检查开发环境是否完备。您可以在欢迎页面单击Diagnose进行诊断。如果您已经打开了工程开发界面，也可以在菜单栏单击Help > Diagnostic Tools > Diagnose Development Environment进行诊断。
 
 DevEco Studio开发环境诊断项包括电脑的配置、网络的连通情况、依赖的工具是否安装等。如果检测结果为未通过，请根据检查项的描述和修复建议进行处理。
 

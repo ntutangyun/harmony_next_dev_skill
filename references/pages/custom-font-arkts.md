@@ -75,7 +75,7 @@ paragraphBuilder.addText("Custom font test");
 // 通过段落生成器生成段落
 let paragraph = paragraphBuilder.build();
 
-如果需要释放自定义字体，可以使用unloadFontSync接口。
+如果需要注销自定义字体，可以使用unloadFontSync接口。
 
 // 注销自定义字体
 fontCollection.unloadFontSync(familyName)

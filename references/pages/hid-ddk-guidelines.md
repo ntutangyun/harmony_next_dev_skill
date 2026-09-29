@@ -151,7 +151,7 @@ if (ret != HID_DDK_SUCCESS) {
 uint32_t bInterfaceNum1 = 0x00;
 // 打开deviceId和interfaceIndex1指定的HID设备（一般为/dev/hidraw0设备文件）
 ret = OH_Hid_Open(deviceID_, bInterfaceNum1, &hid_);
-if (ret != 0) {
+if (ret != HID_DDK_SUCCESS) {
     OH_LOG_ERROR(LOG_APP, "Failed to open hid device, interface number:%{public}u ret:%{public}d",
         bInterfaceNum1, ret);
     return ret;
@@ -159,7 +159,7 @@ if (ret != 0) {
 uint32_t bInterfaceNum2 = 0x01;
 // 打开deviceId和interfaceIndex2指定的HID设备（一般为/dev/hidraw1设备文件）
 ret = OH_Hid_Open(deviceID_, bInterfaceNum2, &hid2_);
-if (ret != 0) {
+if (ret != HID_DDK_SUCCESS) {
     OH_LOG_ERROR(LOG_APP, "Failed to open hid device, interface number:%{public}u ret:%{public}d",
         bInterfaceNum2, ret);
     return ret;
@@ -391,7 +391,7 @@ if (ret != HID_DDK_SUCCESS) {
 uint32_t bInterfaceNum1 = 0x00;
 // 打开deviceId和interfaceIndex1指定的HID设备（一般为/dev/hidraw0设备文件）
 ret = OH_Hid_Open(deviceID_, bInterfaceNum1, &hid_);
-if (ret != 0) {
+if (ret != HID_DDK_SUCCESS) {
     OH_LOG_ERROR(LOG_APP, "Failed to open hid device, interface number:%{public}u ret:%{public}d",
         bInterfaceNum1, ret);
     return ret;
@@ -399,7 +399,7 @@ if (ret != 0) {
 uint32_t bInterfaceNum2 = 0x01;
 // 打开deviceId和interfaceIndex2指定的HID设备（一般为/dev/hidraw1设备文件）
 ret = OH_Hid_Open(deviceID_, bInterfaceNum2, &hid2_);
-if (ret != 0) {
+if (ret != HID_DDK_SUCCESS) {
     OH_LOG_ERROR(LOG_APP, "Failed to open hid device, interface number:%{public}u ret:%{public}d",
         bInterfaceNum2, ret);
     return ret;

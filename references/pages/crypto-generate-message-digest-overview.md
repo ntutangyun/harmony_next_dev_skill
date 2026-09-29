@@ -1,4 +1,4 @@
-# 消息摘要计算介绍及算法规格
+# 消息摘要计算
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-generate-message-digest-overview_
 
@@ -28,3 +28,15 @@ HASH	SM3	32	10+
 HASH	SHA3-256	32	22+
 HASH	SHA3-384	48	22+
 HASH	SHA3-512	64	22+
+
+消息摘要计算SHA256(ArkTS)
+
+消息摘要计算SHA256(C/C++)
+
+消息摘要计算MD5(ArkTS)
+
+消息摘要计算MD5(C/C++)
+
+消息摘要计算SHA3(ArkTS)
+
+消息摘要计算SHA3(C/C++)

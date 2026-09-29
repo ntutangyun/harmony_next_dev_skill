@@ -248,12 +248,13 @@ abilityConnectionManager.on("receiveMessage", this.sessionId,(callbackInfo) => {
 
 import { abilityConnectionManager } from '@kit.DistributedServiceKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-abilityConnectionManager.sendMessage(this.sessionId, "message send success").then(() => {
-  hilog.info(0x0000, 'testTag', "sendMessage success");
-}).catch(() => {
-  hilog.error(0x0000, 'testTag', "connect failed");
-})
+abilityConnectionManager.sendMessage(this.sessionId, 'message send success').then(() => {
+  hilog.info(0x0000, 'testTag', 'sendMessage success');
+}).catch((error: BusinessError) => {
+  hilog.error(0x0000, 'testTag', 'sendMessage failed');
+});
 
 2.发送字节流数据
 
@@ -267,10 +268,10 @@ let textEncoder = util.TextEncoder.create("utf-8");
 const arrayBuffer  = textEncoder.encodeInto("data send success");
 
 abilityConnectionManager.sendData(this.sessionId, arrayBuffer.buffer).then(() => {
-  hilog.info(0x0000, 'testTag', "sendMessage success");
+  hilog.info(0x0000, 'testTag', 'sendData success');
 }).catch(() => {
-  hilog.info(0x0000, 'testTag', "sendMessage failed");
-})
+  hilog.error(0x0000, 'testTag', 'sendData failed');
+});
 
 结束协同
 
@@ -488,12 +489,13 @@ abilityConnectionManager.on("receiveMessage", this.sessionId,(callbackInfo) => {
 ```
 import { abilityConnectionManager } from '@kit.DistributedServiceKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
-abilityConnectionManager.sendMessage(this.sessionId, "message send success").then(() => {
-  hilog.info(0x0000, 'testTag', "sendMessage success");
-}).catch(() => {
-  hilog.error(0x0000, 'testTag', "connect failed");
-})
+abilityConnectionManager.sendMessage(this.sessionId, 'message send success').then(() => {
+  hilog.info(0x0000, 'testTag', 'sendMessage success');
+}).catch((error: BusinessError) => {
+  hilog.error(0x0000, 'testTag', 'sendMessage failed');
+});
 ```
 
 ### Code block 8
@@ -507,10 +509,10 @@ let textEncoder = util.TextEncoder.create("utf-8");
 const arrayBuffer  = textEncoder.encodeInto("data send success");
 
 abilityConnectionManager.sendData(this.sessionId, arrayBuffer.buffer).then(() => {
-  hilog.info(0x0000, 'testTag', "sendMessage success");
+  hilog.info(0x0000, 'testTag', 'sendData success');
 }).catch(() => {
-  hilog.info(0x0000, 'testTag', "sendMessage failed");
-})
+  hilog.error(0x0000, 'testTag', 'sendData failed');
+});
 ```
 
 ### Code block 9

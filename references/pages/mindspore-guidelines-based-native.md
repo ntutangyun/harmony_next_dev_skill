@@ -8,10 +8,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/mindspore
 
 图像分类可实现对图像中物体的识别，在医学影像分析、自动驾驶、电子商务、人脸识别等领域有广泛的应用。
 
-基本概念
-
-N-API：用于构建ArkTS本地化组件的一套接口。可利用N-API，将C/C++开发的库封装成ArkTS模块。
-
 开发流程
 
 选择图像分类模型。
@@ -430,9 +426,9 @@ struct Index {
                         let index = 0;
                         for (let i = 0; i < imageArr.length; i++) {
                           if ((i + 1) % 4 === 0) {
-                            float32View[index] = (imageArr[i - 3] / 255.0 - means[0]) / stds[0]; // B
+                            float32View[index] = (imageArr[i - 3] / 255.0 - means[0]) / stds[0]; // R
                             float32View[index+1] = (imageArr[i - 2] / 255.0 - means[1]) / stds[1]; // G
-                            float32View[index+2] = (imageArr[i - 1] / 255.0 - means[2]) / stds[2]; // R
+                            float32View[index+2] = (imageArr[i - 1] / 255.0 - means[2]) / stds[2]; // B
                             index += 3;
                           }
                         }
@@ -963,9 +959,9 @@ struct Index {
                         let index = 0;
                         for (let i = 0; i < imageArr.length; i++) {
                           if ((i + 1) % 4 === 0) {
-                            float32View[index] = (imageArr[i - 3] / 255.0 - means[0]) / stds[0]; // B
+                            float32View[index] = (imageArr[i - 3] / 255.0 - means[0]) / stds[0]; // R
                             float32View[index+1] = (imageArr[i - 2] / 255.0 - means[1]) / stds[1]; // G
-                            float32View[index+2] = (imageArr[i - 1] / 255.0 - means[2]) / stds[2]; // R
+                            float32View[index+2] = (imageArr[i - 1] / 255.0 - means[2]) / stds[2]; // B
                             index += 3;
                           }
                         }

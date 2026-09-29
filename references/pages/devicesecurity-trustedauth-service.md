@@ -11,3 +11,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 生物特征绑定、认证与解绑
 
 数字盾签名密钥备份与恢复
+
+网页场景接入数字盾（FIDO2）
+
+数字盾服务术语

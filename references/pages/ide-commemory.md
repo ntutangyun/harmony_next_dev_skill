@@ -50,7 +50,7 @@ memory字段表示该状态变量在对应组件的ArkTS堆快照中的Retained 
 
 .arkli文件对比
 
-从26.0.0 Beta1版本开始，支持对比.arkli文件，通过对比快速定位异常增多的组件。
+从26.0.0版本开始，支持对比.arkli文件，通过对比快速定位异常增多的组件。
 
 Details区域显示当前快照的详细信息，点击Open，将在ArkUI Inspector中打开相应的.arkli文件。
 

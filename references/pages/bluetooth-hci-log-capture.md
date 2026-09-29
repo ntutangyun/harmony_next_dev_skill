@@ -16,6 +16,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bluetooth
 
 开发者抓取蓝牙HCI日志功能从API版本26.0.0开始支持，目前支持Phone、Tablet。
 
+Release版本出于数据安全与隐私保护，会屏蔽HCI日志中蓝牙报文的payload数据，仅保留Header信息，因此若HCI日志报文数据解析不完整属正常现象。
+
 操作步骤
 
 [h2]步骤一：开启开发者模式

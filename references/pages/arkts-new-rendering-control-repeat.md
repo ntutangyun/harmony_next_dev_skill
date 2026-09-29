@@ -187,8 +187,8 @@ Repeat的.key()属性为每个子组件生成一个键值。Repeat通过键值�
 
 @ObservedV2
 class ExampleData {
-  @Trace str: string;
-  num: number;
+  @Trace public str: string;
+  public num: number;
 
   constructor(s: string, n: number) {
     this.str = s;
@@ -198,7 +198,7 @@ class ExampleData {
 
 @Entry
 @ComponentV2
-struct Index {
+struct RepeatKeyGeneration {
   @Local exampleList: Array<ExampleData> = [];
 
   aboutToAppear(): void {
@@ -1578,9 +1578,12 @@ struct RepeatBuilderPage {
           .each((ri) => {
             ListItem() {
               Column({ space: 2 }) {
-                this.buildItem1(UIUtils.makeBinding<number>(() => ri.item)) // 使用UIUtils.makeBinding()函数实现@Builder函数中状态变量的刷新。
-                this.buildItem2(ri) // 按引用传递，状态变量的改变会引起@Builder函数内的UI刷新。
-                this.buildItem3(ri.item) // 反例。按值传递，状态变量的改变不会引起@Builder函数内的UI刷新。
+                // 使用UIUtils.makeBinding()函数实现@Builder函数中状态变量的刷新。
+                this.buildItem1(UIUtils.makeBinding<number>(() => ri.item))
+                // 按引用传递，状态变量的改变会引起@Builder函数内的UI刷新。
+                this.buildItem2(ri)
+                // 反例。按值传递，状态变量的改变不会引起@Builder函数内的UI刷新。
+                this.buildItem3(ri.item)
               }
             }.border({ width: 1 })
           }).virtualScroll()
@@ -1696,8 +1699,8 @@ struct RepeatExampleWithTemplates {
 ```
 @ObservedV2
 class ExampleData {
-  @Trace str: string;
-  num: number;
+  @Trace public str: string;
+  public num: number;
 
   constructor(s: string, n: number) {
     this.str = s;
@@ -1707,7 +1710,7 @@ class ExampleData {
 
 @Entry
 @ComponentV2
-struct Index {
+struct RepeatKeyGeneration {
   @Local exampleList: Array<ExampleData> = [];
 
   aboutToAppear(): void {
@@ -2857,9 +2860,12 @@ struct RepeatBuilderPage {
           .each((ri) => {
             ListItem() {
               Column({ space: 2 }) {
-                this.buildItem1(UIUtils.makeBinding<number>(() => ri.item)) // 使用UIUtils.makeBinding()函数实现@Builder函数中状态变量的刷新。
-                this.buildItem2(ri) // 按引用传递，状态变量的改变会引起@Builder函数内的UI刷新。
-                this.buildItem3(ri.item) // 反例。按值传递，状态变量的改变不会引起@Builder函数内的UI刷新。
+                // 使用UIUtils.makeBinding()函数实现@Builder函数中状态变量的刷新。
+                this.buildItem1(UIUtils.makeBinding<number>(() => ri.item))
+                // 按引用传递，状态变量的改变会引起@Builder函数内的UI刷新。
+                this.buildItem2(ri)
+                // 反例。按值传递，状态变量的改变不会引起@Builder函数内的UI刷新。
+                this.buildItem3(ri.item)
               }
             }.border({ width: 1 })
           }).virtualScroll()

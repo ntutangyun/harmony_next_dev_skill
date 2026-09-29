@@ -38,7 +38,7 @@ HarmonyOS系统以应用包名作为应用的唯一标识，不同的发布证�
 
 ohos.permission.ENTERPRISE_GET_DEVICE_INFO
 
-允许应用激活设备管理应用。
+允许设备管理应用获取设备信息。
 
 包括读取设备ID、读取设备硬盘序列号，读取OS版本、读取机器名。
 

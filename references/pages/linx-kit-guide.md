@@ -5,3 +5,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/linx-kit-
 Linx Kit简介
 
 启用热点加速
+
+Linx Kit术语

@@ -2,11 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-esmodule-compile_
 
-应用模块化编译是指基于ES Module的Bundleless编译模式，使用原生ES Module规则构建源码。API 10及以上版本的Stage工程默认开启模块化编译，可有效缩短增量编译时间、减小编译后的包体积。
-
-说明
-
-FA 模板创建的工程依然使用基于bundle打包的构建方式。
+应用模块化编译是指基于ES Module的Bundleless编译模式，使用原生ES Module规则构建源码。API 10及以上版本的Stage模型工程默认开启模块化编译，可有效缩短增量编译时间、减小编译后的包体积。
 
 模块化编译解决了Bundle编译打包模式引入的如下问题：
 
@@ -20,7 +16,7 @@ FA 模板创建的工程依然使用基于bundle打包的构建方式。
 
 修改单个模块代码无需整包编译构建，增量编译构建时间极大减少；
 
-基于ESModule规则，模块缓存利用率高，模块内变量变化能够及时反映到模块本身，动态实时绑定；
+基于ES Module规则，模块缓存利用率高，模块内变量变化能够及时反映到模块本身，动态实时绑定；
 
 解决了单例问题；
 

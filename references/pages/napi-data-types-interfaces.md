@@ -238,7 +238,7 @@ napi_event_mode_nowait	非阻塞式的运行底层事件循环，尝试去处理
 
 [h2]线程安全任务优先级
 
-napi提供了线程安全任务的优先级，底层任务队列中的任务会根据其优先级被依次执行, 优先级的定义如下：
+napi提供了线程安全任务的优先级，底层任务队列中的任务会根据其优先级被依次执行，优先级的定义如下：
 
 typedef enum {
     napi_priority_immediate = 0,
@@ -345,8 +345,8 @@ napi_set_element	在给定Object的指定索引处，设置属性值。
 napi_get_element	获取给定Object指定索引处的元素。
 napi_has_element	若给定Object的指定索引处拥有属性。
 napi_delete_element	尝试删除给定Object的指定索引处的元素。
-napi_create_typedarray	通过现有的ArrayBuffer创建一个ArkTS TypedArray。
-napi_is_typedarray	判断给定ArkTS value是否为TypedArray。
+napi_create_typedarray	通过现有的ArrayBuffer创建一个ArkTS TypeArray。
+napi_is_typedarray	判断给定ArkTS value是否为TypeArray。
 napi_get_typedarray_info	获取给定TypedArray的各种属性（例如：类型，长度，字节偏移量，ArrayBuffer等）。
 napi_create_dataview	通过现有的ArrayBuffer创建一个ArkTS DataView。
 napi_is_dataview	判断给定ArkTS value是否为DataView。
@@ -427,7 +427,7 @@ napi_get_and_clear_last_exception	获取并清除最近一次出现的异常。
 napi_is_exception_pending	判断是否出现了异常。
 napi_fatal_error	引发致命错误以立即终止进程。
 napi_get_last_error_info	获取napi_extended_error_info结构体，其中包含最近一次出现的error信息。
-napi_fatal_exception	抛出一个致命异常并终止进程，同时产生相应的crash日志。
+napi_fatal_exception	抛出一个致命异常并终止进程, 同时产生相应的crash日志。
 
 [h2]属性相关
 
@@ -437,7 +437,7 @@ napi_set_property	对给定Object设置属性。
 napi_get_property	获取给定Object的给定属性。
 napi_has_property	判断给定对象中是否存在给定属性。
 napi_delete_property	尝试从给定Object中删除给定key属性。
-napi_has_own_property	判断给定Object中是否有名为key的own property。
+napi_has_own_property	与napi_has_property行为一致，判断给定Object中是否存在给定属性。
 napi_set_named_property	对给定Object设置一个给定名称的属性。
 napi_get_named_property	获取给定Object中指定名称的属性。
 napi_has_named_property	判断给定Object中是否有给定名称的属性。
@@ -530,7 +530,7 @@ napi_get_strong_reference_value	根据强引用对象获取其关联的ArkTS对�
 napi_create_strong_sendable_reference	创建指向Sendable ArkTS对象的Sendable强引用。
 napi_delete_strong_sendable_reference	删除Sendable强引用。
 napi_get_strong_sendable_reference_value	根据Sendable强引用获取其关联的ArkTS对象值。
-napi_throw_business_error	抛出一个带文本信息的ArkTS Error，其错误对象的code属性类型为number。
+napi_throw_business_error	抛出一个带文本信息的ArkTS Error, 其错误对象的code属性类型为number。
 napi_create_callsite_info	创建调用点信息句柄，用于缓存属性访问信息。
 napi_delete_callsite_info	删除调用点信息句柄，释放关联的缓存资源。
 napi_get_property_with_callsite_info	使用调用点信息快速获取对象属性值。

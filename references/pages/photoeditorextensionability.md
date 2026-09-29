@@ -235,7 +235,9 @@ async photoPickerGetUri(): Promise < string > {
  } catch (e) {
    hilog.error(0x0000, TAG, `readImage failed:${e}`);
  } finally {
-   fileIo.close(file);
+   if (file) {
+     fileIo.close(file);
+   }
  }
 
   let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -313,7 +315,9 @@ struct Index {
     } catch(e) {
       hilog.error(0x0000, TAG, `readImage failed:${e}`);
     } finally {
-      fileIo.close(file);
+      if (file) {
+        fileIo.close(file);
+      }
     }
     return null;
   }
@@ -321,23 +325,23 @@ struct Index {
   // 图库中选取图片
   async photoPickerGetUri(): Promise<string> {
     try {
-        let textInfo: photoAccessHelper.TextContextInfo = {
-            text: 'photo'
-        }
-        let recommendOptions: photoAccessHelper.RecommendationOptions = {
-            textContextInfo: textInfo
-        }
-        let options: photoAccessHelper.PhotoSelectOptions = {
-            MIMEType: photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE,
-            maxSelectNumber: 1,
-            recommendationOptions: recommendOptions
-        }
-        let photoPicker = new photoAccessHelper.PhotoViewPicker();
-        let photoSelectResult: photoAccessHelper.PhotoSelectResult = await photoPicker.select(options);
-        return photoSelectResult.photoUris[0];
+      let textInfo: photoAccessHelper.TextContextInfo = {
+        text: 'photo'
+      }
+      let recommendOptions: photoAccessHelper.RecommendationOptions = {
+        textContextInfo: textInfo
+      }
+      let options: photoAccessHelper.PhotoSelectOptions = {
+        MIMEType: photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE,
+        maxSelectNumber: 1,
+        recommendationOptions: recommendOptions
+      }
+      let photoPicker = new photoAccessHelper.PhotoViewPicker();
+      let photoSelectResult: photoAccessHelper.PhotoSelectResult = await photoPicker.select(options);
+      return photoSelectResult.photoUris[0];
     } catch (error) {
-        let err: BusinessError = error as BusinessError;
-        hilog.error(0x0000, TAG, 'PhotoViewPicker failed with err: ' + JSON.stringify(err));
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, TAG, 'PhotoViewPicker failed with err: ' + JSON.stringify(err));
     }
     return "";
   }
@@ -369,7 +373,9 @@ struct Index {
             } catch (e) {
               hilog.info(0x0000, TAG, `readImage failed:${e}`);
             } finally {
-              fileIo.close(file);
+              if (file) {
+                fileIo.close(file);
+              }
             }
           })
 
@@ -639,7 +645,9 @@ async photoPickerGetUri(): Promise < string > {
  } catch (e) {
    hilog.error(0x0000, TAG, `readImage failed:${e}`);
  } finally {
-   fileIo.close(file);
+   if (file) {
+     fileIo.close(file);
+   }
  }
 ```
 
@@ -727,7 +735,9 @@ struct Index {
     } catch(e) {
       hilog.error(0x0000, TAG, `readImage failed:${e}`);
     } finally {
-      fileIo.close(file);
+      if (file) {
+        fileIo.close(file);
+      }
     }
     return null;
   }
@@ -735,23 +745,23 @@ struct Index {
   // 图库中选取图片
   async photoPickerGetUri(): Promise<string> {
     try {
-        let textInfo: photoAccessHelper.TextContextInfo = {
-            text: 'photo'
-        }
-        let recommendOptions: photoAccessHelper.RecommendationOptions = {
-            textContextInfo: textInfo
-        }
-        let options: photoAccessHelper.PhotoSelectOptions = {
-            MIMEType: photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE,
-            maxSelectNumber: 1,
-            recommendationOptions: recommendOptions
-        }
-        let photoPicker = new photoAccessHelper.PhotoViewPicker();
-        let photoSelectResult: photoAccessHelper.PhotoSelectResult = await photoPicker.select(options);
-        return photoSelectResult.photoUris[0];
+      let textInfo: photoAccessHelper.TextContextInfo = {
+        text: 'photo'
+      }
+      let recommendOptions: photoAccessHelper.RecommendationOptions = {
+        textContextInfo: textInfo
+      }
+      let options: photoAccessHelper.PhotoSelectOptions = {
+        MIMEType: photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE,
+        maxSelectNumber: 1,
+        recommendationOptions: recommendOptions
+      }
+      let photoPicker = new photoAccessHelper.PhotoViewPicker();
+      let photoSelectResult: photoAccessHelper.PhotoSelectResult = await photoPicker.select(options);
+      return photoSelectResult.photoUris[0];
     } catch (error) {
-        let err: BusinessError = error as BusinessError;
-        hilog.error(0x0000, TAG, 'PhotoViewPicker failed with err: ' + JSON.stringify(err));
+      let err: BusinessError = error as BusinessError;
+      hilog.error(0x0000, TAG, 'PhotoViewPicker failed with err: ' + JSON.stringify(err));
     }
     return "";
   }
@@ -783,7 +793,9 @@ struct Index {
             } catch (e) {
               hilog.info(0x0000, TAG, `readImage failed:${e}`);
             } finally {
-              fileIo.close(file);
+              if (file) {
+                fileIo.close(file);
+              }
             }
           })
 

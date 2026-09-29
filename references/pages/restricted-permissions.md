@@ -8,7 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/restricte
 
 说明
 
-如果应用涉及获取受限权限，在应用发布上架时，AGC，AppGallery Connect（AGC）将根据应用的使用场景审核是否可以使用对应的受限权限。如不符合，应用的上架申请将被驳回，审核方式请见发布HarmonyOS应用。
+如果应用涉及获取受限权限，在应用发布上架时，AppGallery Connect（AGC）将根据应用的使用场景审核是否可以使用对应的受限权限。如不符合，应用的上架申请将被驳回，审核方式请见发布HarmonyOS应用。
 
 ohos.permission.SYSTEM_FLOAT_WINDOW
 
@@ -466,21 +466,39 @@ ohos.permission.kernel.DISABLE_CODE_MEMORY_PROTECTION
 
 ohos.permission.kernel.ALLOW_WRITABLE_CODE_MEMORY
 
-允许应用申请可写可执行匿名内存。
+允许应用申请可写可执行匿名内存，该能力主要用于为应用自带引擎（如 JS 引擎、游戏脚本引擎等）提供即时编译（JIT）能力，提升代码执行效率。
 
 可申请此权限的特殊场景与功能：
 
-仅提供给应用开启自带引擎的即时编译能力，不允许用于热更新。
+应用内置编程语言虚拟机。例如，JavaScript的v8引擎或Lua的LuaJIT等。
 
-申请该权限的应用需要主动适配坚盾模式，在该模式下无闪退。
+应用基于跨平台框架开发，跨平台框架中内置了编程语言虚拟机。例如，CEF、Electron框架等。
 
-当前仅平板、PC/2in1设备应用可申请此权限。
+以上两种场景因性能原因需要启用即时编译（JIT）提升脚本执行效率时，可申请此权限。
+
+注意
+
+使用该权限时，如果用户开启了坚盾守护模式，系统将禁止应用申请匿名可写可执行内存；应用需考虑该情况的适配，确保应用稳定运行、不会闪退。
+
+接入要求：
+
+如果应用包内包含的二进制可执行文件（如：HNP中的node）需要该权限，针对“kernelpermission（即权限名中含.kernel的权限）”存在版本变更，需参考适配指导主动完成适配，请参考：权限策略变更说明。
+
+申请主体要求：完成实名认证的个人开发者帐号、企业开发者帐号。
 
 申请后AGC的审核时长： 预计3个工作日内反馈审核结果。
 
 权限级别：system_basic
 
 授权方式：系统授权（system_grant）
+
+支持设备：PC/2in1 | Tablet
+
+申请权限注意事项：
+
+应用若从未上架，“支持设备”请勿勾选手机。
+
+应用若已上架且勾选手机设备分发，请拆分包体，确保受限开放权限未在手机设备运行的HAP上使用，并在权限申请时特别备注说明。
 
 起始版本：14
 
@@ -770,7 +788,7 @@ ohos.permission.GET_ETHERNET_LOCAL_MAC
 
 起始版本：13
 
-变更信息：API 13，该权限仅面向MDM应用开放；从API 14开始，开放范围从MDM应用变为更为企业普通应用；从API 16开始，在PC/2in1设备上面向普通应用开放，在其余设备上仍仅面向系统应用开放。
+变更信息：API 13，该权限仅面向MDM应用开放；从API 14开始，开放范围从MDM应用变更为企业普通应用；从API 16开始，在PC/2in1设备上面向普通应用开放，在其余设备上仍仅面向系统应用开放。
 
 ohos.permission.kernel.DISABLE_GOTPLT_RO_PROTECTION
 
@@ -1446,7 +1464,7 @@ ohos.permission.MANAGE_RECENT_SNAPSHOT
 
 ohos.permission.SET_WINDOW_ALPHA
 
-允许应用设置主窗容器透明。
+允许应用设置主窗口容器透明。
 
 获取该权限后，应用可以设置主窗口容器背景色。
 
@@ -1466,7 +1484,7 @@ ohos.permission.SET_WINDOW_ALPHA
 
 ohos.permission.MANAGE_CALL_FOR_DEVICES
 
-允许应用管理通话状态。如获取来电号码、接听、拒接、挂断等.
+允许应用管理通话状态。如获取来电号码、接听、拒接、挂断等。
 
 可申请此权限的特殊场景与功能：
 
@@ -1566,7 +1584,7 @@ ohos.permission.ALLOW_ACCESSORY_ACCESS
 
 允许应用使用配件接入服务完成配件关联和自动唤醒等功能。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 应用可申请此权限，实现已授信的配件和主机的无感协同。
 
@@ -1590,7 +1608,7 @@ ohos.permission.CHECK_CALL_LOG
 
 允许应用根据特定条件(手机号码、通话时长)，查询指定时间内系统是否存在匹配的通话记录。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 仅允许司机、外卖员、快递员等职业使用的工作应用可申请。应用需要查询指定号码在指定时间内是否与用户产生过有效的通话记录。
 
@@ -1612,7 +1630,7 @@ ohos.permission.GET_NETWORK_STATS
 
 允许应用查询其他应用的流量数据。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 VPN类应用，用于查询相关流量消耗。
 
@@ -1638,7 +1656,7 @@ ohos.permission.ACCESS_DLP_SERVICE
 
 允许应用或服务使用DLP提供的注册、解注册连云插件功能。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 应用需要使用DLP提供的注册、解注册连云插件功能。
 
@@ -1656,7 +1674,7 @@ ohos.permission.CONTROL_DEVICE
 
 允许应用注入输入事件以控制本设备。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 面向远程登录器的被控端开放，当被控端需要接收主控端传递的输入事件来操作本地设备时申请。
 
@@ -1674,7 +1692,7 @@ ohos.permission.KEEP_BACKGROUND_RUNNING_SPECIAL_SCENARIO
 
 允许应用申请特殊类型长时任务。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 应用在后台有特殊场景类型的保活诉求。
 
@@ -1700,7 +1718,7 @@ ohos.permission.FLOAT_VIEW
 
 允许应用使用闪控窗。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 应用需支持跨应用悬浮显示关键信息，目前仅对直播类应用的游戏直播和金融类应用的实时盯盘场景开放。 例如：
 
@@ -1722,7 +1740,7 @@ ohos.permission.GET_CALL_TRANSFER_INFO
 
 允许应用查询呼叫转移状态。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 应用为手机银行类应用。
 
@@ -1750,7 +1768,7 @@ ohos.permission.MANAGE_SKILL
 
 访问skill包安装的沙箱目录
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 应用需要为智能体（AI Agent）应用。
 
@@ -1768,7 +1786,7 @@ ohos.permission.kernel.AS_LDK_DRIVER
 
 允许应用安装PCIe驱动。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 当前仅面向PCIe设备厂商驱动开发者开放。
 
@@ -1798,15 +1816,15 @@ ohos.permission.ACCESS_GAME_BUDDY_SERVICE
 
 授权方式：系统授权（system_grant）
 
-支持设备：Phone
+支持设备：Phone | PC/2in1 | Tablet | TV
 
 起始版本：26.0.0
+
+变更信息： 从API版本26.0.0开始，增加支持在平板、PC/2in1、TV上申请。
 
 ohos.permission.KNOCK_COLLABORATION
 
 允许应用通过碰一碰的形式连接指定设备并实现信息交互和应用互动。
-
-可申请此权限的场景与功能：
 
 可申请此权限的特殊场景与功能：
 
@@ -1834,7 +1852,7 @@ ohos.permission.PRINTER_DRIVER
 
 允许应用管理打印系统。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 打印驱动应用需要添加自定义的打印机、删除打印机等。例如:
 
@@ -1858,7 +1876,7 @@ ohos.permission.kernel.SUPPORT_LOCAL_PLUGIN
 
 自分发插件，即该插件不上架应用市场，由应用自行分发。该权限允许加载未经审核的代码，请开发者谨慎使用。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 应用有涉及ArkTS代码调用的扩展插件。
 
@@ -1876,7 +1894,7 @@ ohos.permission.ALLOW_USE_BM
 
 允许应用在开发者模式下调用BM工具。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 仅PC/2in1设备上的shell应用、IDE（集成开发环境）类应用可申请。
 
@@ -1926,7 +1944,7 @@ ohos.permission.MANAGE_SANDBOX_BUNDLE
 
 允许应用管理沙箱应用。
 
-可申请此权限的场景与功能：
+可申请此权限的特殊场景与功能：
 
 仅AI智能体应用可申请。
 

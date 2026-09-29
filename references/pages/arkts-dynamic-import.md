@@ -91,11 +91,11 @@ API	动态import @arkui-x.*	-
 
 说明
 
-1.当前所有import中使用的模块名都是依赖方oh-package.json5文件中dependencies项的别名。
+当前所有import中使用的模块名都是依赖方oh-package.json5文件中dependencies项的别名。
 
-2.本地模块在依赖方的dependencies中配置的别名建议与moduleName以及packageName三者一致。moduleName指的是被依赖的HSP/HAR的module.json5中配置的名字，packageName指的是被依赖的HSP/HAR的oh-package.json5中配置的名字。
+本地模块在依赖方的dependencies中配置的别名建议与moduleName以及packageName三者一致。moduleName指的是被依赖的HSP/HAR的module.json5中配置的名字，packageName指的是被依赖的HSP/HAR的oh-package.json5中配置的名字。
 
-3.import一个模块名，实际的行为是import该模块的入口文件，一般为Index.ets/ts。
+import一个模块名，实际的行为是import该模块的入口文件，一般为Index.ets/ts。
 
 动态import实现中的关键点
 

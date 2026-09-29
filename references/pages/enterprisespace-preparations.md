@@ -27,7 +27,7 @@ HarmonyOS SDK版本：HarmonyOS 6.0.0 Release SDK及以上。
 表1 权限说明
 
 应用能力	使用场景	需要权限
-空间互传	使用空间互传API设置、获取审计信息。	ohos.permission.ENTERPRISE_FILE_TRANSFER_AUDIT_POLICY_MANAGEMENT
+空间互传	使用空间互传API设置、获取审批信息。	ohos.permission.ENTERPRISE_FILE_TRANSFER_AUDIT_POLICY_MANAGEMENT
 空间管理	下发空间生命周期策略需要申请该权限。	ohos.permission.ENTERPRISE_MANAGE_LOCAL_PUBLICSPACES
 空间管理	查询空间信息需要申请该权限。	ohos.permission.QUERY_LOCAL_WORKSPACES
 空间管理	企业应用订阅企业数字空间相关事件需要申请该权限。	ohos.permission.ENTERPRISE_WORKSPACES_EVENT_SUBSCRIBE

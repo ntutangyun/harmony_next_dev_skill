@@ -2,6 +2,6 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bluetooth-faq_
 
-蓝牙接口调用报错2900099
+可选属性显式设置为undefined报401无效参数
 
 如何抓取蓝牙HCI日志

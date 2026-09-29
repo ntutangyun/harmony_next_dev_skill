@@ -67,15 +67,17 @@ Destination package：测试文件存放的位置，建议存放在待测试模�
 
 在工具栏主菜单单击Run>Edit Configurations，进入Run/Debug Configurations界面。
 
-使用命令行执行Local Test
+使用命令行执行测试
 
-hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName}
+hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName} -p patch={patchPath}
 
 module：执行测试的模块。缺省默认是执行所有模块的用例。
 
 coverage：是否生成覆盖率报告，缺省默认是true，在<module-path>/.test/default/outputs/test/reports路径下生成两份报告，一份是html格式（index.html），一份是json格式（coverageReport.json），具体参考查看覆盖率报告。
 
 scope：格式为{suiteName}#{methodName}或{suiteName}，分别表示测试用例级别或测试套件级别的测试，缺省默认是执行当前模块的所有用例。
+
+patch：可选参数，指定代码补丁文件路径，用于统计增量代码覆盖率。仅支持绝对路径，后缀必须为.patch或.diff，可以通过git diff等命令生成。从26.0.0版本开始支持。
 
 说明
 
@@ -90,5 +92,5 @@ scope：格式为{suiteName}#{methodName}或{suiteName}，分别表示测试用�
 ### Code block 1
 
 ```
-hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName}
+hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName} -p patch={patchPath}
 ```

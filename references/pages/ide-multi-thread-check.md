@@ -24,6 +24,8 @@ hdc shell aa start -a {abilityName} -b {bundleName} -R
 
 运行或调试当前应用。
 
+如果是通过方式三调用setMultithreadingDetectionEnabled接口开启，发生多线程安全问题时，该接口支持应用崩溃和不崩溃两种场景。若设置为崩溃，则应用退出并生成cppcrash日志；若设置为不崩溃，应用不会退出，同时生成arktsenvsan日志，此时应用可通过hiAppEvent订阅地址越界事件来感知多线程安全问题，并生成hilog日志。
+
 方舟native模块加载异常信息增强
 
 在进行ArkTS项目开发中可能存在需要加载native模块的场景，开启方舟native模块加载异常信息增强功能后，可以丰富ArkTS项目中因加载native模块导致的报错信息，以便更准确地进行native问题定位。

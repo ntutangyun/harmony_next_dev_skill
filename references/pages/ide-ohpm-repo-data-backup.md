@@ -16,8 +16,6 @@ windows系统：~/AppData/Roaming/Huawei/ohpm-repo
 
 ohpm-repo在版本1.1.0之前不支持配置<deploy_root>，都采用默认值，若您的ohpm-repo支持且配置了<deploy_root>，请找到对应目录，并使用常用的压缩工具打包备份该目录。
 
-注意
-
 如果配置文件中db，storage，logs和uplink的存储路径可配置，且存储位置不在ohpm-repo部署根目录<deploy_root>中，请找到对应目录进行数据备份。
 
 备份<包存储目录>和<mysql>

@@ -6,7 +6,7 @@ DevEco CodeGenie是DevEco Studio AI辅助编程工具，支持智能问答、代
 
 使用方式
 
-在DevEco Studio右侧边栏点击CodeGenie，26.0.0 Beta1之前版本，可直接进入CodeGenie问答界面；从26.0.0 Beta1版本开始，进入CodeGenie后界面显示如下，点击View Installation Guide查看DevEco Code的具体操作指导，点击Continue with CodeGenie进入CodeGenie问答界面。
+在DevEco Studio右侧边栏点击CodeGenie，26.0.0 Beta1之前版本，可直接进入CodeGenie问答界面；从26.0.0 Beta1版本开始，进入CodeGenie后界面如下图显示，点击View Installation Guide可查看DevEco Code的具体操作指导，点击Continue with CodeGenie可进入CodeGenie问答界面。
 
 进入CodeGenie问答界面后，若未登录点击Sign in，跳转至华为账号登录页面。授权登录完成后返回DevEco Studio，提示登录成功后点击Agree，同意隐私安全政策及使用条款后开始体验。
 

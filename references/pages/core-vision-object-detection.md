@@ -179,6 +179,10 @@ struct Index {
       let detector = await objectDetection.ObjectDetector.create();
       let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
       await detector.destroy();
+      if (!data) {
+        hilog.error(0x0000, 'objectDetectSample', 'Invalid object detection result');
+        return;
+      }
       let objectJson = JSON.stringify(data);
       hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
       this.dataValues = objectJson;
@@ -401,6 +405,10 @@ struct Index {
       let detector = await objectDetection.ObjectDetector.create();
       let data: objectDetection.ObjectDetectionResponse = await detector.process(request);
       await detector.destroy();
+      if (!data) {
+        hilog.error(0x0000, 'objectDetectSample', 'Invalid object detection result');
+        return;
+      }
       let objectJson = JSON.stringify(data);
       hilog.info(0x0000, 'objectDetectSample', `Succeeded in object detection: ${objectJson}`);
       this.dataValues = objectJson;

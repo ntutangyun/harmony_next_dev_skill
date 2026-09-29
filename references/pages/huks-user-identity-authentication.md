@@ -8,9 +8,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/huks-user
 
 [h2]生成密钥
 
-指定指纹访问控制类型及相关属性。
-
-生成或导入密钥时，在密钥属性集中需指定三个参数：用户认证类型HuksUserAuthType、授权访问类型HuksAuthAccessType、挑战值类型HuksChallengeType。
+指定用户身份认证访问控制类型及相关属性。具体而言，生成或导入密钥时，在密钥属性集中需指定三个参数：用户认证类型HuksUserAuthType、授权访问类型HuksAuthAccessType、挑战值类型HuksChallengeType。
 
 开发案例
 

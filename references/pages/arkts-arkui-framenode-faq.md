@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ark
 
 本文档介绍命令式节点的常见问题并提供参考。
 
-FrameNode节点运行时出现jscrash
+FrameNode节点运行时出现JS Crash
 
 问题现象
 
@@ -16,7 +16,7 @@ FrameNode节点运行时出现jscrash
 
 示例代码
 
-该示例演示了FrameNode抛出dispose相关异常的场景。运行示例代码后会出现jscrash报错，参考下方的动图，跳转至具体的报错场景，发现报错的原因是调用dispose后不能调用getMeasuredSize，在本示例中，删除dispose相关代码即可正常运行。
+该示例演示了FrameNode抛出dispose相关异常的场景。运行示例代码后会出现JS Crash报错，参考下方的动图，跳转至具体的报错场景，发现报错的原因是调用dispose后不能调用getMeasuredSize，在本示例中，删除dispose相关代码即可正常运行。
 
 import { NodeController, FrameNode } from '@kit.ArkUI';
 

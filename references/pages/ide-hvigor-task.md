@@ -40,7 +40,7 @@ node.registerTask({
   }
 });
 
-使用hvigor命令行工具执行任务：
+使用Hvigor命令行工具执行任务：
 
 hvigorw customTask
 

@@ -15,7 +15,7 @@ postFrameCallback会请求vsync，循环嵌套调用postFrameCallback会导致�
 
 选项
 
-该规则无需配置额外选项。
+该规则无需配置选项。
 
 正例
 

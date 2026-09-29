@@ -1,8 +1,8 @@
-# ArkGraphics 3D场景动画控制以及管理
+# 场景动画控制与管理
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkgraphics3d-animation_
 
-动画（animation）：动画是3D场景中重要的资源类型，用于控制场景中各种元素的运动。比如想要场景中的人物进行走路这个动作，每帧计算人物每一个关节的旋转角并进行设置是难以实现的。所以在完成类似的要求时，3D场景资源的制作者会将动画制作好，在模型文件中保存动画的关键帧数据以及关键帧间的插值器类型。
+动画（animation）：3D场景中重要的资源类型，用于控制场景中各种元素的运动。例如，要让场景中的人物完成走路动作，逐帧计算并设置人物每个关节的旋转角是难以实现的。因此，针对这类复杂的动画需求，3D场景资源的制作者会预先制作好动画，在模型文件中保存动画的关键帧数据以及关键帧之间的插值器类型。
 
 ArkGraphics 3D提供播放并控制场景动画的能力，支持开发者灵活地控制动画的状态，达到预期的渲染效果。
 
@@ -60,7 +60,7 @@ if (this.anim) {
 通过SceneResourceFactory.createCamera()创建相机并调整观察位置。随后将加载完成的Scene封装为SceneOptions，并指定渲染类型为ModelType.SURFACE，以便通过Component3D在界面上进行渲染。
 
 // create a new camera.
-this.cam = await rf.createCamera({ 'name': 'Camera' });
+this.cam = await rf.createCamera({ name: 'Camera' });
 // set the camera.
 this.cam.enabled = true;
 this.cam.position.z = 5;
@@ -196,7 +196,7 @@ if (this.anim) {
 
 ```
 // create a new camera.
-this.cam = await rf.createCamera({ 'name': 'Camera' });
+this.cam = await rf.createCamera({ name: 'Camera' });
 // set the camera.
 this.cam.enabled = true;
 this.cam.position.z = 5;

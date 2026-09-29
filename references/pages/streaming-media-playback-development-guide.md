@@ -97,7 +97,7 @@ try {
 
 import { media } from '@kit.MediaKit';
 
-let mediaSource : media.MediaSource = media.createMediaSourceWithUrl("http://test.cn/dash/aaa.mpd",  {"User-Agent" : "User-Agent-Value"});
+let mediaSource : media.MediaSource = media.createMediaSourceWithUrl("http://example/abc.mpd",  {"User-Agent" : "User-Agent-Value"});
 let playbackStrategy : media.PlaybackStrategy = {preferredWidth: 1920, preferredHeight: 1080};
 this.avPlayer.setMediaSource(mediaSource, playbackStrategy);
 
@@ -212,7 +212,7 @@ try {
 ```
 import { media } from '@kit.MediaKit';
 
-let mediaSource : media.MediaSource = media.createMediaSourceWithUrl("http://test.cn/dash/aaa.mpd",  {"User-Agent" : "User-Agent-Value"});
+let mediaSource : media.MediaSource = media.createMediaSourceWithUrl("http://example/abc.mpd",  {"User-Agent" : "User-Agent-Value"});
 let playbackStrategy : media.PlaybackStrategy = {preferredWidth: 1920, preferredHeight: 1080};
 this.avPlayer.setMediaSource(mediaSource, playbackStrategy);
 ```

@@ -11,3 +11,5 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bluetooth
 低功耗蓝牙
 
 蓝牙常见问题
+
+蓝牙术语

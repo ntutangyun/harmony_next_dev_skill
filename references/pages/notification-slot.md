@@ -12,6 +12,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/notificat
 
 用户可以通过“设置 > 通知和状态栏”进入对应的应用，管理该应用的通知渠道。当应用中的“允许通知”开关开启时，横幅通知默认关闭（不支持应用配置、用户可手动开启），锁屏通知、桌面角标、铃声和振动等默认开启。
 
+实际显示效果依赖于设备能力和通知中心UI样式，详情请参考通知提示场景。
+
 SlotType	取值	分类	对应Push消息分类标准	通知中心	横幅	锁屏	铃声/振动	状态栏图标	自动亮屏
 SOCIAL_COMMUNICATION	1	社交通信	IM VOIP MISS_CALL	Y	Y	Y	Y	Y	Y
 SERVICE_INFORMATION	2	服务提醒	TRAVEL HEALTH WORK ACCOUNT EXPRESS FINANCE DEVICE_REMINDER MAIL PLAY_VOICE SUBSCRIPTION	Y	Y	Y	Y	Y	Y

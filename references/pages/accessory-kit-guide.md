@@ -4,6 +4,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/accessory
 
 Accessory Kit简介
 
-配件接入开发指导
+配件接入
 
 Accessory Kit常见问题
+
+Accessory Kit术语

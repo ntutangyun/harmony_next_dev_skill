@@ -1,4 +1,4 @@
-# Connectivity Kit术语
+# 蓝牙术语
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/terminology_
 
@@ -6,7 +6,7 @@ A
 
 [h2]A2DP
 
-Advanced Audio Distribution Profile，即增强音频分发协议。支持传输高品质音频。例如：使用蓝牙耳机听音乐。该协议定义了2种角色：A2DP Source和A2DP Sink。
+Advanced Audio Distribution Profile，即增强音频分发协议。支持传输高品质音频，适用于蓝牙耳机、音箱等设备的音乐播放场景。该协议定义了2种角色：A2DP Source和A2DP Sink。
 
 [h2]A2DP Sink
 
@@ -38,7 +38,7 @@ C
 
 [h2]Characteristic
 
-GATT服务（Service）的核心数据单元，可进行数据读写，通过UUID标识。
+GATT服务（Service）的核心数据单元，是GATT通信中数据读写和通知的基本单位，通过UUID唯一标识。
 
 D
 
@@ -60,10 +60,6 @@ Generic Attribute Profile，即通用属性协议。是BLE的核心协议，定�
 
 H
 
-[h2]HADM
-
-High Accuracy Distance Measurement，即高精度距离测量。基于星闪无线信号进行设备间测距的技术，通过测量信号往返时间或相位差计算设备间距离，可实现厘米级测量精度。
-
 [h2]HF
 
 Hands-Free unit，即HFP协议中的免提设备。是蓝牙通话音频中的远程控制端‌，提供物理交互界面（如按钮）及音频输入/输出（如麦克风、扬声器）。典型设备如：蓝牙耳机、车载蓝牙等。
@@ -80,7 +76,7 @@ Hands-Free Audio Gateway，即HFP协议中的音频网关。是蓝牙通话音�
 
 Human Interface Device Profile，即人机接口协议，为传统蓝牙设计。可用于实现蓝牙无线人机交互设备连接间的低延迟双向通信。例如：键盘、鼠标、游戏手柄等设备与主机（如手机、平板）间传输数据。该协议定义了2种角色：HID Host和HID Device。
 
-在HID协议中， 数据传输通道分为2种，分别是中断通道和控制通道。其中中断通道用于传输单向低延迟实时数据；控制通道用于传输双向可靠实时数据，包含以下三种请求：
+在HID协议中，数据传输通道分为2种，分别是中断通道和控制通道。其中中断通道用于传输单向低延迟实时数据；控制通道用于传输双向可靠实时数据，包含以下三种请求：
 
 GET_REPORT：表示HID主机发起的数据读取请求，用于获取HID设备的状态信息。
 
@@ -94,7 +90,7 @@ HID设备，是向HID Host设备提供人机数据输入/输出的设备。典�
 
 [h2]HID Host
 
-HID主机设备，负责处理和接收HID Device的输入数据，并执行对应操作。典型设备如：手机、平板等。
+HID主机设备，负责接收和处理HID Device的输入数据，并执行对应操作。典型设备如：手机、平板等。
 
 [h2]HOGP
 
@@ -132,13 +128,13 @@ Network Access Point，即PAN协议中的网络接入点，充当网关设备，
 
 O
 
+[h2]OOB
+
+Out of Band，即带外（通信），是指使用独立于主数据通道的其他信道进行信息传输。例如蓝牙设备在配对过程中可以通过WiFi网络或NFC等非蓝牙信道交换安全密钥，从而提升配对的安全性。
+
 [h2]OPP
 
 Object Push Profile，即对象推送协议。基于通用对象交换协议（Generic Object Exchange Profile，GOEP）构建，可用于实现设备间数据（如图片、文档等）传输。
-
-[h2]OOB
-
-Out of Band，即带外（通信），是指使用独立于主数据通道的其他信道进行信息传输。例如蓝牙设备在配对过程中可以通过WiFi网络或NFC等非蓝牙信道交换安全秘钥，从而提升配对的安全性。
 
 P
 
@@ -168,38 +164,36 @@ Phone Book Server Equipment，即PBAP协议中的电话簿服务端，存储原�
 
 [h2]PSM
 
-Protocol/Service Multiplexer，即协议/服务多路复用器。用于标识L2CAP层上的不同服务或协议。
+Protocol/Service Multiplexer，即协议/服务多路复用器。作为L2CAP链路中的参数，用于标识特定服务的数据传输通道。通过PSM区分不同的上层服务，实现一条L2CAP链路上多个服务数据的复用传输。
 
 R
 
 [h2]RFCOMM
 
-Radio Frequency Communication，即无线电频率通信协议。用于模拟传统的RS232串行通信（一种常见的有线数据传输标准），提供一种简单可靠的数据传输方式，支持多个同时连接的通道。
+Radio Frequency Communication，即射频通信协议。用于模拟传统的RS232串行通信（一种常见的有线数据传输标准），为上层应用提供一种简单可靠的数据传输方式，支持多个同时连接的通道。
 
 [h2]RSSI
 
-Received Signal Strength Indicator，是无线通信中用于量化接收端信号强度的指标，单位是dBm。
-
-S
+Received Signal Strength Indicator，即接收信号强度指示。通过一个相对值量化无线通信中接收端的信号强度，单位是dBm。可用于评估设备间距离和信号质量。
 
 [h2]SCO
 
-Synchronous Connection-Oriented，即同步连接链路。主要用于传输对时间敏感的音频数据，如语音通话等场景。
+Synchronous Connection-Oriented，即同步面向连接链路。蓝牙协议栈中面向连接的同步数据链路，主要用于传输对时间敏感的音频数据，如语音通话等场景。
 
 [h2]SDP
 
-Service Discovery Protocol，即服务发现协议。用于发现和识别其他蓝牙设备所提供的服务。
+Service Discovery Protocol，即服务发现协议。蓝牙协议栈中用于服务发现的协议，用于发现和识别其他蓝牙设备支持的服务和能力，在蓝牙配对和连接过程中用于协商通信参数。
 
 [h2]Service
 
-在蓝牙协议中，一般特指GATT协议中的服务。是一种包含多个特征值和所依赖的其他服务的数据结构，表示BLE设备的一种能力，通过UUID标识。
+在蓝牙协议中，一般特指GATT协议中的服务。是一种包含多个Characteristic特征值和所依赖的其他服务的数据结构，表示BLE设备的一种能力，通过UUID唯一标识。
 
 [h2]SPP
 
-Serial Port Profile，即串口通信协议。可用于实现蓝牙设备间通信连接和传输数据。
+Serial Port Profile，即串口通信协议。蓝牙协议栈中基于RFCOMM提供串口仿真服务的协议，可用于实现蓝牙设备间通信连接和传输数据。
 
 U
 
 [h2]UUID
 
-Universally Unique Identifier，即通用唯一标识，是一个128比特的数据格式。在蓝牙技术中，可用于标识不同的Profile协议，也可用于GATT协议中的服务、特征值和描述符。
+Universally Unique Identifier，即通用唯一标识符，是一个128位（16字节）的标准化字符串。在蓝牙技术中，可用于标识不同的Profile协议，也可用于GATT协议中的服务（Service）、特征值（Characteristic）和描述符（Descriptor）。

@@ -55,3 +55,7 @@ PartnerAgent服务生命周期管理：该模块提供PartnerAgent服务进程�
 代理通知：该模块负责管理负一屏的通知提醒，主要用于提醒用户，伙伴设备Extension进程正在后台运行，会增加一定的功耗耗电，并且可能会控制HarmonyOS设备的媒体能力和通话能力。
 
 蓝牙服务/AbilityManager服务/SAMgr管理/通知服务：HarmonyOS基础系统服务。蓝牙服务负责蓝牙扫描、蓝牙连接和蓝牙数据传输；AbilityManager服务提供拉起/销毁伙伴设备Extension的能力；SAMgr管理负责拉起/销毁PartnerAgent服务；通知服务负责在负一屏显示通知。
+
+模拟器支持情况
+
+星闪、蓝牙模块暂不支持模拟器。

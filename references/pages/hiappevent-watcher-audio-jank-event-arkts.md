@@ -51,7 +51,7 @@ function normalCallback(buffer: ArrayBuffer) {
     g_invalidCount--;
     return audio.AudioDataCallbackResult.INVALID;
   }
-  //在此添加写数据逻辑
+  // 在此添加写数据逻辑
   return audio.AudioDataCallbackResult.VALID;
 }
 
@@ -84,6 +84,10 @@ AudioRender正常播放时，点击卡顿按钮，即可触发耗时回调，触
 HiAppEvent onReceive: domain=OS
 HiAppEvent eventName=AUDIO_JANK_FRAME
 HiAppEvent eventInfo={"domain":"OS","name":"AUDIO_JANK_FRAME","eventType":1,"params":{"bundle_name":"com.samples.audio","bundle_version":"1.0.0","fault_type":"application","happen_time":3240511783,"max_frame_time":260,"process_name":"","time":1755587168818}}
+
+示例代码
+
+订阅音频卡顿事件
 
 ## Code blocks
 
@@ -127,7 +131,7 @@ function normalCallback(buffer: ArrayBuffer) {
     g_invalidCount--;
     return audio.AudioDataCallbackResult.INVALID;
   }
-  //在此添加写数据逻辑
+  // 在此添加写数据逻辑
   return audio.AudioDataCallbackResult.VALID;
 }
 ```

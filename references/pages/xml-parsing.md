@@ -154,7 +154,7 @@ xmlParser.parseXml(options);
 2 2 // 2：<title>对应事件类型START_TAG值为2  2：深度为2
 4 2 // 4：Play对应事件类型TEXT值为4  2：深度为2
 3 2 // 3：</title>对应事件类型END_TAG值为3  2：深度为2
-3 1 // 3：</note>对应事件类型END_TAG值为3  1：深度为1（与<note对应>）
+3 1 // 3：</note>对应事件类型END_TAG值为3  1：深度为1（与<note>对应）
 1 0 // 1：对应事件类型END_DOCUMENT值为1  0：深度为0
 
 场景示例
@@ -387,7 +387,7 @@ xmlParser.parseXml(options);
 2 2 // 2：<title>对应事件类型START_TAG值为2  2：深度为2
 4 2 // 4：Play对应事件类型TEXT值为4  2：深度为2
 3 2 // 3：</title>对应事件类型END_TAG值为3  2：深度为2
-3 1 // 3：</note>对应事件类型END_TAG值为3  1：深度为1（与<note对应>）
+3 1 // 3：</note>对应事件类型END_TAG值为3  1：深度为1（与<note>对应）
 1 0 // 1：对应事件类型END_DOCUMENT值为1  0：深度为0
 ```
 

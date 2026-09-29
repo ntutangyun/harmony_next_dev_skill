@@ -8,6 +8,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/app-lifec
 
 应用退出
 
+应用退出（PC/2in1）
+
 应用重启
 
 获取应用异常退出原因

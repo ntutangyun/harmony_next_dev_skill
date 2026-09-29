@@ -210,7 +210,7 @@ try {
     `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
-取消订阅扫描结果，其中onReceiveEvent是在步骤3中注册的回调函数。
+取消订阅扫描结果。
 
 try {
   scan.off('deviceFound');

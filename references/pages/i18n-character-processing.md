@@ -89,12 +89,12 @@ let path = 'data/out/tmp';
 try {
   let delimiter = '/';
   let locale: Intl.Locale = new Intl.Locale('ar');
-  // mirrorPath = 'tmp/out/data/'
+  // mirrorPath = 'tmp/out/data'
   mirrorPath = i18n.I18NUtil.getUnicodeWrappedFilePath(path, delimiter, locale);
 
   // 传入非镜像语言，不处理路径
   let localeZh: Intl.Locale = new Intl.Locale('zh');
-  // unMirrorPath = '/data/out/tmp'
+  // unMirrorPath = 'data/out/tmp'
   unMirrorPath = i18n.I18NUtil.getUnicodeWrappedFilePath(path, delimiter, localeZh);
 } catch (error) {
   console.error(`call I18NUtil.getUnicodeWrappedFilePath failed, error code: ${error.code}, message: ${error.message}.`);
@@ -192,12 +192,12 @@ let path = 'data/out/tmp';
 try {
   let delimiter = '/';
   let locale: Intl.Locale = new Intl.Locale('ar');
-  // mirrorPath = 'tmp/out/data/'
+  // mirrorPath = 'tmp/out/data'
   mirrorPath = i18n.I18NUtil.getUnicodeWrappedFilePath(path, delimiter, locale);
 
   // 传入非镜像语言，不处理路径
   let localeZh: Intl.Locale = new Intl.Locale('zh');
-  // unMirrorPath = '/data/out/tmp'
+  // unMirrorPath = 'data/out/tmp'
   unMirrorPath = i18n.I18NUtil.getUnicodeWrappedFilePath(path, delimiter, localeZh);
 } catch (error) {
   console.error(`call I18NUtil.getUnicodeWrappedFilePath failed, error code: ${error.code}, message: ${error.message}.`);

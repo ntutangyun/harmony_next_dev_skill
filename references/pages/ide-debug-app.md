@@ -14,6 +14,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug
 
 访问设备文件
 
+位置模拟
+
 数据库调试
 
 截屏

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/aodnaviga
 
 概述
 
-AOD Navigation Kit（熄屏导航服务）提供应用接入熄屏导航的能力，支持低功耗导航业务代理能力。该服务专为户外徒步、骑行、跑步等场景打造，用户无需频繁解锁亮屏即可掌握导航关键信息，在确保导航实时性的同时有效降低设备功耗，助力户外探索类应用快速集成熄屏导航能力。
+从API版本26.0.0开始，AOD Navigation Kit提供应用接入熄屏导航的能力，支持低功耗导航业务代理能力。该服务专为户外徒步、骑行、跑步等场景打造，用户无需频繁解锁亮屏即可掌握导航关键信息，在确保导航实时性的同时有效降低设备功耗，助力户外探索类应用快速集成熄屏导航能力。
 
 [h2]场景介绍
 
@@ -161,9 +161,9 @@ async handleNaviEnter(eventInfo: aodNaviManager.AodNaviEventInfo) {
 
   try {
     await aodNaviManager.setNaviDataToAod(eventInfo.eventId, aodNaviInteractData);
-    hilog.info(0x0000, 'aodnavigationSample', 'Succeeded in setting navigation data to AOD.');
+    hilog.info(0x0000, 'aodNavigationSample', 'Succeeded in setting navigation data to AOD.');
   } catch (error) {
-    hilog.error(0x0000, 'aodnavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
+    hilog.error(0x0000, 'aodNavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
   }
   // 如果应用休眠策略选择保活，则需要定时刷新熄屏导航视图数据，否则不需要以下代码
   const aodViewData: aodNaviManager.AodViewData = {
@@ -220,10 +220,10 @@ try {
 当设备从亮屏切换至熄屏时，应用会收到AOD_NAVI_ENTER回调事件，此时应调用setNaviDataToAod接口，将设备亮屏阶段应用产生的轨迹及导航数据同步至AOD Navigation Kit，以支持熄屏时循迹导航功能的正常显示。
 
 try {
-  await aodNaviManager.setNaviDataToAod(eventId, aodNaviInteractData);
-  hilog.info(0x0000, 'aodnavigationSample', 'Succeeded in setting navigation data to AOD.');
+  await aodNaviManager.setNaviDataToAod(eventInfo.eventId, aodNaviInteractData);
+  hilog.info(0x0000, 'aodNavigationSample', 'Succeeded in setting navigation data to AOD.');
 } catch (error) {
-  hilog.error(0x0000, 'aodnavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'aodNavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
 }
 
 调用updateAodViewData更新熄屏导航界面视图数据。
@@ -259,7 +259,7 @@ try {
 
 try {
   aodNaviManager.offAodNaviEvent();
-  hilog.info(0x0000, 'aodnavigationSample', 'Succeeded in stopping AOD navigation event listener.');
+  hilog.info(0x0000, 'aodNavigationSample', 'Succeeded in stopping AOD navigation event listener.');
 } catch (error) {
   hilog.error(0x0000, 'aodNavigationSample', 'Failed to stop AOD navigation event listener:  %{public}d %{public}s', error.code, error.message);
 }
@@ -398,9 +398,9 @@ async handleNaviEnter(eventInfo: aodNaviManager.AodNaviEventInfo) {
 
   try {
     await aodNaviManager.setNaviDataToAod(eventInfo.eventId, aodNaviInteractData);
-    hilog.info(0x0000, 'aodnavigationSample', 'Succeeded in setting navigation data to AOD.');
+    hilog.info(0x0000, 'aodNavigationSample', 'Succeeded in setting navigation data to AOD.');
   } catch (error) {
-    hilog.error(0x0000, 'aodnavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
+    hilog.error(0x0000, 'aodNavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
   }
   // 如果应用休眠策略选择保活，则需要定时刷新熄屏导航视图数据，否则不需要以下代码
   const aodViewData: aodNaviManager.AodViewData = {
@@ -461,10 +461,10 @@ try {
 
 ```
 try {
-  await aodNaviManager.setNaviDataToAod(eventId, aodNaviInteractData);
-  hilog.info(0x0000, 'aodnavigationSample', 'Succeeded in setting navigation data to AOD.');
+  await aodNaviManager.setNaviDataToAod(eventInfo.eventId, aodNaviInteractData);
+  hilog.info(0x0000, 'aodNavigationSample', 'Succeeded in setting navigation data to AOD.');
 } catch (error) {
-  hilog.error(0x0000, 'aodnavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
+  hilog.error(0x0000, 'aodNavigationSample', 'Failed to set navigation data to AOD: %{public}d %{public}s', error.code, error.message);
 }
 ```
 
@@ -502,7 +502,7 @@ try {
 ```
 try {
   aodNaviManager.offAodNaviEvent();
-  hilog.info(0x0000, 'aodnavigationSample', 'Succeeded in stopping AOD navigation event listener.');
+  hilog.info(0x0000, 'aodNavigationSample', 'Succeeded in stopping AOD navigation event listener.');
 } catch (error) {
   hilog.error(0x0000, 'aodNavigationSample', 'Failed to stop AOD navigation event listener:  %{public}d %{public}s', error.code, error.message);
 }

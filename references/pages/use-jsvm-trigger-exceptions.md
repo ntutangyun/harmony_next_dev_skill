@@ -90,7 +90,7 @@ static JSVM_PropertyDescriptor descriptor[] = {
 
 const char *srcCallNative = R"JS(triggerOOMError();)JS";
 
-执行结果
+执行结果：
 
 在LOG中输出：
 

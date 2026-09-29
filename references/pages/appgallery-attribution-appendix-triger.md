@@ -15,6 +15,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgaller
 注册	7	注册应用或服务
 关键页面访问	9	发生关键页面浏览行为
 申请	14	申请服务
+老客激活	15	流失用户再次激活 说明： 用于再归因，可触发用户刷新来源。
 下单	18	将购物清单正式生成订单
 预约	21	预约商品、内容或服务
 

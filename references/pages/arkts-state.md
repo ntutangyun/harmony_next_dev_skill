@@ -28,7 +28,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-sta
 装饰器参数	无
 同步类型	不与父组件中任何类型的变量同步。
 允许装饰的变量类型	object、class、string、number、boolean、enum类型，以及这些类型的数组。 API version 10开始支持Date类型。 API version 11及以上支持Map、Set类型、undefined和null类型、ArkUI框架定义的联合类型Length、ResourceStr、ResourceColor类型以及这些类型的联合类型，示例见@State支持联合类型实例。 支持类型的场景见观察变化。
-不允许装饰的变量类型	不支持装饰Function类型。
+不允许装饰的变量类型	不允许装饰Function类型。
 被装饰变量的初始值	必须本地初始化。
 
 变量的传递/访问规则说明
@@ -125,7 +125,7 @@ this.title.name.value = 'ArkUI';
 
 从API version 23开始，在应用编译时添加了相关校验，@State装饰Function类型变量会提示ERROR，应在代码中删除Function类型变量的@State装饰器。
 
-父组件传入undefined时，@State装饰的变量仍使用本地默认值进行初始化。
+父组件传入undefined时，@State装饰的变量仍使用本地初始值进行初始化。
 
 @Entry
 @Component

@@ -40,3 +40,91 @@ HID DDK接口	API11
 [h2]解决措施
 
 根据应用调试中安装HAP时提示“code:9568347 error: install parse native so failed”错误，或者运行时候提示“TypeError：Cannot read property xxx of undefined”错误提供的解决方法，在build-profile.json5中的buildOption/externalNativeOptions内手动配置abiFilters的值。
+
+已申请ohos.permission.ACCESS_DDK_DRIVERS权限，安装HAP时报错9568289
+
+[h2]问题现象
+
+已经申请到了ACL权限ohos.permission.ACCESS_DDK_DRIVERS并随工程打包到HAP应用包中，但安装HAP的时候报错“9568289 grant request permissions failed”。
+
+[h2]解决措施
+
+目前，ohos.permission.ACCESS_DDK_DRIVERS权限在应用市场的申请和运营流程正在维护中，涉及工程中使用了bindDriverWithDeviceId、unbindDriverWithDeviceId接口的，可以替换为bindDeviceDriver、unbindDevice接口，接口的业务功能完全一致。
+
+使用基于缓冲区发送数据的DDK接口时，未按照指定的offset和bufferLength发送
+
+[h2]问题现象
+
+以OH_Usb_SendPipeRequest为例，使用此类基于缓冲区发送数据的接口时，对参数UsbDeviceMemMap的offset、bufferLength字段做了赋值，但是实际传输的数据内容是按照size大小将整个缓冲区的数据发送。
+
+[h2]解决措施
+
+此类接口的实现是按照size大小将整个缓冲区用于传输。因此在发送特定部分的数据时，需要按需申请相应大小的缓冲区、并填充对应的数据以发起传输。可以参考以下代码块的实现。注：
+
+此类接口计划进行优化改造，后续版本中会提供基于offset和bufferLength传输的能力。
+
+性能开销：创建和销毁缓冲区接口的性能开销很小，通常在0.1毫秒以内、可忽略不计。
+
+/**
+ * 假定此处 data 已经填充了有效数据；deviceId是对应外设ID；pipe是要传输的管道信息
+ * 场景预设：需传输 data 中索引从0x10开始的、长度为32的数据
+ */
+uint8_t *data = new uint8_t [128];
+
+/** 创建数据缓冲区 */
+UsbDeviceMemMap *devMmap;
+OH_Usb_CreateDeviceMemMap(deviceId, 32, &devMmap);
+
+/** 只拷贝要传输的部分数据到缓冲区 */
+memcpy(devMmap->address, data + 0x10, 32);
+
+/** 发起数据传输 */
+OH_Usb_SendPipeRequest(pipe, devMmap);
+
+/** 使用完毕后，需销毁数据缓冲区以回收资源 */
+OH_Usb_DestroyDeviceMemMap(devMmap);
+
+在子进程或非驱动Ability中调用DDK的C-API失败
+
+[h2]问题现象
+
+在驱动Ability创建的子进程或者非驱动Ability进程中调用Driver Development Kit的C-API，返回异常错误。
+
+[h2]解决措施
+
+Driver Development Kit提供的C-API仅支持在DriverExtension进程中使用，如果在其他进程中需要实现外设的管理和通信，建议使用@ohos.usbManager (USB管理)、libusb三方库等提供的接口。
+
+多个驱动Ability配置了同一型号外设的情况下，插入该外设只支持拉起一个驱动Ability
+
+[h2]问题现象
+
+在多个驱动Ability的“vids”、“pids”列表中都配置了一个型号的外设，但是接入该外设时，只能绑定并拉起一个驱动Ability。
+
+[h2]解决措施
+
+驱动Ability的设计初衷是支持厂商为单个或多个型号的外设开发一个驱动应用，规格上不支持为同一外设同时部署多个驱动Ability的场景，相同VID/PID的外设仅会和一个驱动Ability关联（例如：Ukey厂商为网银应用提供驱动程序，若多个网银Ukey设备的VID/PID均相同，则无法同时拉起这些网银应用的驱动Ability，且当前的绑定接口不会区分VID/PID相同的驱动Ability）。对于需要封装相同VID/PID外设功能然后提供给多个上游应用的场景，可以使用USB系统服务提供的@ohos.usbManager (USB管理)、libusb三方库等实现。
+
+## Code blocks
+
+### Code block 1
+
+```
+/**
+ * 假定此处 data 已经填充了有效数据；deviceId是对应外设ID；pipe是要传输的管道信息
+ * 场景预设：需传输 data 中索引从0x10开始的、长度为32的数据
+ */
+uint8_t *data = new uint8_t [128];
+
+/** 创建数据缓冲区 */
+UsbDeviceMemMap *devMmap;
+OH_Usb_CreateDeviceMemMap(deviceId, 32, &devMmap);
+
+/** 只拷贝要传输的部分数据到缓冲区 */
+memcpy(devMmap->address, data + 0x10, 32);
+
+/** 发起数据传输 */
+OH_Usb_SendPipeRequest(pipe, devMmap);
+
+/** 使用完毕后，需销毁数据缓冲区以回收资源 */
+OH_Usb_DestroyDeviceMemMap(devMmap);
+```

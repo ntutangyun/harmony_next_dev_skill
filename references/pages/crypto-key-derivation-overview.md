@@ -1,4 +1,4 @@
-# 密钥派生介绍及算法规格
+# 密钥派生
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-key-derivation-overview_
 
@@ -76,4 +76,19 @@ X963KDF	SHA512	X963KDF|SHA512	22+
 X963KDF	SHA3-256	X963KDF|SHA3-256	26.0.0+
 X963KDF	SHA3-384	X963KDF|SHA3-384	26.0.0+
 X963KDF	SHA3-512	X963KDF|SHA3-512	26.0.0+
-X963KDF	SM3	X963KDF|SM3	22+
+
+使用PBKDF2进行密钥派生(ArkTS)
+
+使用PBKDF2进行密钥派生(C/C++)
+
+使用HKDF进行密钥派生(ArkTS)
+
+使用HKDF进行密钥派生(C/C++)
+
+使用SCRYPT进行密钥派生(ArkTS)
+
+使用SCRYPT进行密钥派生(C/C++)
+
+使用X963KDF进行密钥派生(ArkTS)
+
+使用X963KDF进行密钥派生(C/C++)

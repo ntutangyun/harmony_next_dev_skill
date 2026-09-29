@@ -6,17 +6,13 @@ Online Authentication Kit简介
 
 开发准备
 
-FIDO免密身份认证
+免密认证
 
-IFAA免密身份认证
-
-SOTER免密身份认证
-
-DID数字身份服务
-
-通行密钥
+DID数字身份
 
 Online Authentication Kit术语
+
+Online Authentication Kit常见问题
 
 个人数据处理说明
 

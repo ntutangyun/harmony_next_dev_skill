@@ -19,7 +19,7 @@ Linx Kit提供实现热点加速优化的API接口，通过对线程执行过程
  find_library(linxkit-lib liblinx.so)
  target_link_libraries(entry PUBLIC ${linxkit-lib})
 
-确定热点流程的源码位置后，需在该流程的入口和出口分别调用Begin和End接口，以记录并重放关键行为。
+确定热点流程的源码位置后，需在该流程的入口和出口分别调用HMS_LINX_HotspotAccelerateBegin和HMS_LINX_HotspotAccelerateEnd接口，以记录并重放关键行为。
 
 可将热点函数/流程划分为多个context，仅对最重要的context实施加速策略，从而降低主存访问开销。
 

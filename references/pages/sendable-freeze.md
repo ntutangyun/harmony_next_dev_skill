@@ -61,6 +61,7 @@ struct Index {
 子线程直接操作对象，不加锁。
 
 import { MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
+// import { GlobalConfig } from '../pages/Index';
 import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;
@@ -127,6 +128,7 @@ struct Index {
 
 ```
 import { MessageEvents, ThreadWorkerGlobalScope, worker } from '@kit.ArkTS';
+// import { GlobalConfig } from '../pages/Index';
 import { GlobalConfig } from '../managers/SendableFreeze';
 
 const workerPort: ThreadWorkerGlobalScope = worker.workerPort;

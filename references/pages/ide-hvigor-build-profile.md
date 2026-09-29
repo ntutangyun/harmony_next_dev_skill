@@ -140,6 +140,9 @@ buildOptionSet
     └── branchElimination
     └── byteCodeHar
     └── bundledDependencies
+    └── bundle
+        └── bundledDeclare
+        └── bundledAllDependencies
     └── packSourceMap
     └── autoLazyImport
     └── autoLazyFilter
@@ -273,7 +276,7 @@ countryCode	对象	可选	应用需要分发的国家地区码。
 
 字段名称	类型	可选/必选	含义
 policy	字符串	必选	取值规则： include：需要包含的value属性。 exclude：需要排除的value属性。
-value	整型数组	必选	支持的取值为API Version存在的整数值，例如10。
+value	整型数组	必选	支持的取值为API存在的整数值，例如10。
 
 [h2]screenShape
 
@@ -534,6 +537,7 @@ transformLib	字符串	可选	字节码插桩插件配置，允许开发者在�
 branchElimination	布尔值	可选	是否启用代码分支裁剪，减少编译产物大小，开启后，在release编译模式下，不会被执行到的代码分支会被裁剪掉，示例请参考branchElimination示例。 true：启用（将导致使用"ApplyChanges"功能时，对const声明的常量的值进行的修改可能不生效）。 false（缺省默认值）：不启用。 说明： 仅支持API 11及以上的Stage模型。 HAR模块仅字节码HAR配置生效，非字节码HAR配置不生效。 仅支持const声明的bool类型常量和const声明的string/number类型常量的判断表达式。 不支持间接导入，例如A文件中定义const变量A1，B文件导入A1，导出B1，ets导入B1进行判断，无法进行裁剪。
 byteCodeHar	布尔值	可选	是否构建字节码HAR，仅在HAR模块中配置后生效。详情请参考构建字节码HAR。 true：支持。 false：不支持。 说明： 从API 12开始支持。 从DevEco Studio NEXT Beta1（5.0.3.800）版本开始，当工程级build-profile.json5中useNormalizedOHMUrl配置为true时，byteCodeHar缺省默认值为true；当useNormalizedOHMUrl配置为false时，byteCodeHar缺省默认值为false。
 bundledDependencies	布尔值	可选	是否支持将多个源码HAR（本地+远程）打包成一个字节码HAR。字节码HAR、HSP、npm不会被打包进去，仅会合并源码HAR。 true：支持。 false（缺省默认值）：不支持。 说明： 仅支持字节码HAR配置该字段。 从API 12开始支持。 仅支持Stage模型。
+bundle	对象	可选	bundle化相关的配置，包含bundledDeclare和bundledAllDependencies。该配置是bundledDependencies配置的增强版。使用时，不能同时配置bundle和bundledDependencies。 从26.0.0版本开始支持。
 packSourceMap	布尔值	可选	编译字节码HAR时，是否将sourceMap文件打包到产物中。仅HAR模块支持配置，并且只对字节码HAR生效。 true：打包。 false：不打包。 该字段从DevEco Studio 5.1.0 Release版本开始支持。 说明： 如果不配置，debug模式默认值为true，release模式默认值为false。 将sourceMap打包到release的HAR包中，可能会导致HAR中的代码资产泄露。
 autoLazyImport	布尔值	可选	编译时是否自动将符合lazy-import语法规范的import语句添加"lazy"关键字。仅支持在源码中添加"lazy"关键字，不包含依赖的字节码HAR包或HSP。关于lazy-import的介绍及相关影响请参考延迟加载（lazy import）。 true：添加。 false（缺省默认值）：不添加。 说明： 如果配置为true，编译时不会做场景识别，即源码中任何符合语法规范的import语句都会被添加"lazy"。 仅支持Stage模型。
 autoLazyFilter	对象	可选	自定义添加"lazy"关键字的模块，仅当autoLazyImport为true时生效。 从DevEco Studio 6.0.1 Beta1版本开始支持。
@@ -561,6 +565,10 @@ if (VERSION_CODE === 100){XXX} // 若需要裁剪代码，使用该方式，显�
 sources	字符串数组	可选	配置变量动态import的文件/文件夹的相对路径。 配置的文件/文件夹必须在工程中真实存在，且文件的后缀只能为ets或ts。
 packages	字符串数组	可选	配置变量动态import依赖的包名。 该包名需要和工程级/模块级oh-package.json5的dependencies或dynamicDependencies中的名字保持一致。 从DevEco Studio 5.1.1 Beta1版本开始，packages中的三方包支持配置在dynamicDependencies中。
 excludePackages	字符串数组	可选	编译HAP/HSP模块时，指定不参与变量动态import的源码HAR的包名，配置的源码HAR不会参与编译，支持直接/间接依赖。 仅支持在HAP/HSP模块中配置。 从DevEco Studio 6.0.0 Beta2版本开始支持。
+
+字段名称	类型	可选/必选	含义
+bundledDeclare	布尔值	可选	构建字节码HAR或HSP时，是否生成bundle化的声明文件。 true：生成。 false（缺省默认值）：不生成。 说明： bundledDeclare开启后，产物HAR中，默认只会生成oh-package.json5中main字段和oh-exports字段所指向源码文件的声明文件。如未配置oh-exports字段，则只生成main字段源码的声明文件。
+bundledAllDependencies	布尔值	可选	构建字节码HAR时，是否将所有依赖打包到产物中。具体示例请参考多HAR合并打包。 true：打包。 false（缺省默认值）：不打包。
 
 字段名称	类型	可选/必选	含义
 include	字符串数组	可选	当autoLazyImport为true时，指定自动添加"lazy"关键字的包名（即oh-package.json5中的name），其他包不会添加"lazy"关键字，支持正则语法。 当autoLazyImport为false时，include不生效。 说明： include和exclude互斥，只能配置一个。 include不支持配置空数组或空字符串，至少配置一个包名，并且包名不能重复。
@@ -897,6 +905,9 @@ buildOptionSet
     └── branchElimination
     └── byteCodeHar
     └── bundledDependencies
+    └── bundle
+        └── bundledDeclare
+        └── bundledAllDependencies
     └── packSourceMap
     └── autoLazyImport
     └── autoLazyFilter

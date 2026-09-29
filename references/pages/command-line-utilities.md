@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/command-line-utilities_
 
-toybox
+toybox工具
 
 媒体库资源访问工具
 

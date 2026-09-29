@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-multi-process_
 
-部分设备上，UIAbility支持以独立进程的方式运行并调试，详细请参考进程模型，可按照以下步骤对UIAbility进行调试。
+部分设备上，UIAbility支持以独立进程的方式运行并调试，详细请参考动态指定进程，可按照以下步骤对UIAbility进行调试。
 
 编译构建配置
 

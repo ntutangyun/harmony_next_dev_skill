@@ -288,7 +288,7 @@ if (format == nullptr) {
 }
 if (!OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_ENCODE_BITRATE_MODE, bitrateMode) ||
    !OH_AVFormat_SetIntValue(format, OH_MD_KEY_SQR_FACTOR, sqrFactor) ||
-   !OH_AVFormat_SetIntValue(format, OH_MD_KEY_MAX_BITRATE, maxBitrate)) {
+   !OH_AVFormat_SetLongValue(format, OH_MD_KEY_MAX_BITRATE, maxBitrate)) {
    // 异常处理。
 }
 if (OH_VideoEncoder_Configure(videoEnc, format) != AV_ERR_OK) {
@@ -766,6 +766,7 @@ if (isSupported) {
          // 异常处理。
       }
    }
+   OH_AVFormat_Destroy(properties);
 }
 // 3. 编码器创建和配置。
 OH_AVCodec *videoEnc = OH_VideoEncoder_CreateByMime(OH_AVCODEC_MIMETYPE_VIDEO_AVC);
@@ -1059,7 +1060,7 @@ if (format == nullptr) {
 }
 if (!OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_ENCODE_BITRATE_MODE, bitrateMode) ||
    !OH_AVFormat_SetIntValue(format, OH_MD_KEY_SQR_FACTOR, sqrFactor) ||
-   !OH_AVFormat_SetIntValue(format, OH_MD_KEY_MAX_BITRATE, maxBitrate)) {
+   !OH_AVFormat_SetLongValue(format, OH_MD_KEY_MAX_BITRATE, maxBitrate)) {
    // 异常处理。
 }
 if (OH_VideoEncoder_Configure(videoEnc, format) != AV_ERR_OK) {
@@ -1488,6 +1489,7 @@ if (isSupported) {
          // 异常处理。
       }
    }
+   OH_AVFormat_Destroy(properties);
 }
 // 3. 编码器创建和配置。
 OH_AVCodec *videoEnc = OH_VideoEncoder_CreateByMime(OH_AVCODEC_MIMETYPE_VIDEO_AVC);

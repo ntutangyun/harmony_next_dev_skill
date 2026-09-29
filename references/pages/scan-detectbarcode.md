@@ -37,7 +37,7 @@ decode(inputImage: InputImage, callback: AsyncCallback<Array<scanBarcode.ScanRes
 
 导入图片识码接口和相关接口模块，该接口提供了图片识码参数和方法，导入方法如下。
 
-// 导入图片识码需要的日志和picker模块
+// 导入图片识码需要的日志和PhotoViewPicker模块
 import { scanCore, scanBarcode, detectBarcode } from '@kit.ScanKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -63,7 +63,7 @@ struct DetectPage {
             scanTypes: [scanCore.ScanType.ALL],
             enableMultiMode: true
           };
-          // 通过picker拉起图库并选择图片
+          // 通过PhotoViewPicker拉起图库并选择图片
           const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
@@ -73,13 +73,13 @@ struct DetectPage {
               hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
               return;
             }
-            // 定义识码参数inputImage，其中uri为picker选择图片
+            // 定义识码参数inputImage，其中uri为PhotoViewPicker选择的图片路径
             const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
               detectBarcode.decode(inputImage, options).then((data: Array<scanBarcode.ScanResult>) => {
                 hilog.info(0x0001, '[Scan Sample]',
-                  `Succeeded in getting ScanResult by promise with options, result is ${JSON.stringify(data)}`);
+                  `Succeeded in getting ScanResult by promise with options, result length: ${data.length}`);
               }).catch((err: BusinessError) => {
                 hilog.error(0x0001, '[Scan Sample]',
                   `Failed to get ScanResult by promise with options. Code: ${err.code}, message: ${err.message}`);
@@ -120,7 +120,7 @@ struct DetectPage {
             enableMultiMode: true,
             enableAlbum: true
           };
-          // 通过picker拉起图库并选择图片
+          // 通过PhotoViewPicker拉起图库并选择图片
           const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
@@ -130,7 +130,7 @@ struct DetectPage {
               hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
               return;
             }
-            // 定义识码参数inputImage，其中uri为picker选择图片
+            // 定义识码参数inputImage，其中uri为PhotoViewPicker选择的图片路径
             const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
@@ -142,7 +142,7 @@ struct DetectPage {
                     return;
                   }
                   hilog.info(0x0001, '[Scan Sample]',
-                    `Succeeded in getting ScanResult by callback with options, result is ${JSON.stringify(data)}`);
+                    `Succeeded in getting ScanResult by callback with options, result length: ${data.length}`);
                 });
             } catch (err) {
               hilog.error(0x0001, '[Scan Sample]',
@@ -170,7 +170,7 @@ struct DetectPage {
 ### Code block 1
 
 ```
-// 导入图片识码需要的日志和picker模块
+// 导入图片识码需要的日志和PhotoViewPicker模块
 import { scanCore, scanBarcode, detectBarcode } from '@kit.ScanKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -198,7 +198,7 @@ struct DetectPage {
             scanTypes: [scanCore.ScanType.ALL],
             enableMultiMode: true
           };
-          // 通过picker拉起图库并选择图片
+          // 通过PhotoViewPicker拉起图库并选择图片
           const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
@@ -208,13 +208,13 @@ struct DetectPage {
               hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
               return;
             }
-            // 定义识码参数inputImage，其中uri为picker选择图片
+            // 定义识码参数inputImage，其中uri为PhotoViewPicker选择的图片路径
             const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
               detectBarcode.decode(inputImage, options).then((data: Array<scanBarcode.ScanResult>) => {
                 hilog.info(0x0001, '[Scan Sample]',
-                  `Succeeded in getting ScanResult by promise with options, result is ${JSON.stringify(data)}`);
+                  `Succeeded in getting ScanResult by promise with options, result length: ${data.length}`);
               }).catch((err: BusinessError) => {
                 hilog.error(0x0001, '[Scan Sample]',
                   `Failed to get ScanResult by promise with options. Code: ${err.code}, message: ${err.message}`);
@@ -259,7 +259,7 @@ struct DetectPage {
             enableMultiMode: true,
             enableAlbum: true
           };
-          // 通过picker拉起图库并选择图片
+          // 通过PhotoViewPicker拉起图库并选择图片
           const photoOption = new photoAccessHelper.PhotoSelectOptions();
           photoOption.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
           photoOption.maxSelectNumber = 1;
@@ -269,7 +269,7 @@ struct DetectPage {
               hilog.error(0x0001, '[Scan Sample]', 'Failed to get photoUris');
               return;
             }
-            // 定义识码参数inputImage，其中uri为picker选择图片
+            // 定义识码参数inputImage，其中uri为PhotoViewPicker选择的图片路径
             const inputImage: detectBarcode.InputImage = { uri: data.photoUris[0] };
             try {
               // 调用图片识码接口
@@ -281,7 +281,7 @@ struct DetectPage {
                     return;
                   }
                   hilog.info(0x0001, '[Scan Sample]',
-                    `Succeeded in getting ScanResult by callback with options, result is ${JSON.stringify(data)}`);
+                    `Succeeded in getting ScanResult by callback with options, result length: ${data.length}`);
                 });
             } catch (err) {
               hilog.error(0x0001, '[Scan Sample]',

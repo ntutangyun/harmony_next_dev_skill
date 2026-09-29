@@ -32,12 +32,15 @@ libnetwork_boost.so
 uint32_t callbackId = 0;
 void onMultiPathRecommendationCallback(NetworkBoost_MultiPathRecommendation* recommendation)
 {
+    if (recommendation != nullptr) {
+        printf("Recommendation type: %d\n", recommendation->action);
+    }
     // 多网建议变化回调处理
 }
 
 int32_t RegisterMultiPathRecommendation()
 {
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterMultiPathRecommendationCallback(onMultiPathRecommendationCallback, &callbackId);
     printf("注册多网建议监听回调结果: %d, Id：%d\n", ret, callbackId);
     return ret;
@@ -73,12 +76,15 @@ libnetwork_boost.so
 uint32_t callbackId = 0;
 void onMultiPathRecommendationCallback(NetworkBoost_MultiPathRecommendation* recommendation)
 {
+    if (recommendation != nullptr) {
+        printf("Recommendation type: %d\n", recommendation->action);
+    }
     // 多网建议变化回调处理
 }
 
 int32_t RegisterMultiPathRecommendation()
 {
-    // 注册回调，获取回调Id
+    // 注册回调，获取回调Id，该Id由系统返回并用于后续取消注册操作
     int32_t ret = HMS_NetworkBoost_RegisterMultiPathRecommendationCallback(onMultiPathRecommendationCallback, &callbackId);
     printf("注册多网建议监听回调结果: %d, Id：%d\n", ret, callbackId);
     return ret;

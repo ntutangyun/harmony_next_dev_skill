@@ -4,6 +4,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-graph
 
 Graphics Profiler（图形性能调优）是专为GPU分析和优化提供的一种调试分析解决方案，可帮助OpenGL ES游戏或Vulkan游戏提升性能，分析绘制和计算问题。从DevEco Studio 6.0.0 Beta1版本开始，提供Graphics Profiler工具的抓帧入口，该工具用于对HarmonyOS手机设备进行调试，需使用调试证书。
 
+约束与限制
+
+该功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+
 操作步骤
 
 将需要分析的使用OpenGL ES或Vulkan API接口开发的应用推送到设备，并确认应用完成安装。

@@ -382,7 +382,6 @@ export default {
             this.ctx.fillRect(100, 100, 400, 300);
         } else if (e.newValue == 'value4') {
             this.ctx.clearRect(0, 0, 600, 500);
-            this.ctx.clearRect(0, 0, 600, 500);
             let gradient = this.ctx.createRadialGradient(300, 250, 20, 300, 250, 200);
             gradient.addColorStop(0.0, 'red');
             gradient.addColorStop(0.5, 'white');
@@ -1182,7 +1181,6 @@ export default {
             this.ctx.fillStyle = gradient;
             this.ctx.fillRect(100, 100, 400, 300);
         } else if (e.newValue == 'value4') {
-            this.ctx.clearRect(0, 0, 600, 500);
             this.ctx.clearRect(0, 0, 600, 500);
             let gradient = this.ctx.createRadialGradient(300, 250, 20, 300, 250, 200);
             gradient.addColorStop(0.0, 'red');

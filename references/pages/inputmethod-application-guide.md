@@ -62,10 +62,15 @@ export default class ServiceExtAbility extends InputMethodExtensionAbility {
   }
 }
 
-KeyboardController.ets文件。KeyboardController中除创建输入法窗口，设置输入法事件监听，实现文本插入、删除之外，还可以使用getSystemPanelCurrentInsets获取输入法键盘与系统面板的偏移区域，输入法系统面板在不同设备上存在差异，当设备有系统面板时，输入法软键盘相对系统面板的偏移区域如图所示：
+KeyboardController.ets文件。KeyboardController中除创建输入法窗口，设置输入法事件监听，实现文本插入、删除之外，还可以使用Panel对象的getSystemPanelCurrentInsets获取输入法键盘与系统面板的偏移区域，输入法系统面板在不同设备上存在差异，当设备有系统面板时，输入法软键盘相对系统面板的偏移区域如图所示：
+
+// 定义输入法的两个子类型
+export enum CustomInputMethodSubtype {
+  english = 0,
+  chinese = 1
+};
 
 class KeyboardController {
-  private barPosition: number = 0;
   private keyCodes: Array<number> = [];
   private mContext: InputMethodExtensionContext | undefined;
   private panel: inputMethodEngine.Panel | undefined;
@@ -112,7 +117,6 @@ class KeyboardController {
     this.inputHandle.addLog("initWindow-oncall display");
     let dWidth = dis.width;
     let dHeight = dis.height;
-    let navigationBar_height = NAVIGATIONBAR_HEIGHT_DEFAULT;
     let keyHeightRate = KEYBOARD_HEIGHT_RATE_DEFAULT;
     AppStorage.setOrCreate('windowWidth', dis.width);
     AppStorage.setOrCreate('windowHeight', dis.height);
@@ -125,24 +129,18 @@ class KeyboardController {
       AppStorage.setOrCreate('isLandscape', false);
     }
     if (dWidth === DEVICE_PHONE.width && dHeight === DEVICE_PHONE.height) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_PHONE;
     } else if (dWidth === DEVICE_PHONE.height && dHeight === DEVICE_PHONE.width) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_PHONE_LAND;
     } else if (dWidth === DEVICE_RK.width && dHeight === DEVICE_RK.height) {
-      navigationBar_height = KEYBOARD_HEIGHT_RATE_DEFAULT;
       AppStorage.setOrCreate('isRkDevice', true);
       isRkDevice = true;
     } else if (dWidth === DEVICE_BIG.width && dHeight === DEVICE_BIG.height) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_BIG_LAND;
     } else if (dWidth === DEVICE_BIG.height && dHeight === DEVICE_BIG.width) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_BIG;
     }
     let keyHeight = dHeight * keyHeightRate;
-    this.barPosition = dHeight - keyHeight - navigationBar_height;
     this.inputHandle.addLog(`initWindow-dWidth = ${dWidth};dHeight = ${dHeight};keyboard height = ${keyHeight};;navibar height = navigationBar_height`);
     this.inputHandle.addLog(`initWindow-deviceType = ${deviceInfo.deviceType}`);
     let panelInfo: inputMethodEngine.PanelInfo = {
@@ -246,10 +244,10 @@ private registerListener(): void {
   // 设置监听子类型事件，改变输入法应用界面
   inputMethodAbility.on('setSubtype', (inputMethodSubtype: InputMethodSubtype) => {
     if (inputMethodSubtype.id === 'InputMethodExtAbility') {
-      AppStorage.setOrCreate('subtypeChange', 0);
+      AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.english);
     }
     if (inputMethodSubtype.id === 'InputMethodExtAbility1') {
-      AppStorage.setOrCreate('subtypeChange', 1);
+      AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.chinese);
     }
   });
 
@@ -431,7 +429,12 @@ private registerListener(): void {
 
   private unRegisterListener(): void {
     this.inputHandle.addLog('unRegisterListener');
-
+    try {
+      display.off('change');
+    } catch (err) {
+      let error = err as BusinessError;
+      Log.showError(TAG, `display off change catch error: ${error.code} ${error.message}`);
+    }
     inputMethodAbility.off('inputStop', () => {
       this.inputHandle.addLog('inputStop off');
     });
@@ -796,7 +799,7 @@ Index.ets文件。
 import { deviceInfo } from '@kit.BasicServicesKit';
 import Log from '../../model/Log';
 import { EditView } from '../../components/EditView';
-import { InputHandler } from '../model/KeyboardController';
+import { InputHandler, CustomInputMethodSubtype } from '../model/KeyboardController';
 import {
   MenuType,
   SubMenuType,
@@ -823,7 +826,7 @@ struct Index {
   @StorageLink('isRkDevice') isRkDevice: boolean = true;
   @StorageLink('inputStyle') inputStyle: KeyStyle = StyleConfiguration.getInputStyle(this.isLandscape, this.isRkDevice, DEVICE_TYPE);
   private panel: inputMethodEngine.Panel | undefined;
-  @StorageLink('subtypeChange') subtypeChange: number = 0;
+  @StorageLink('subtypeChange') subtypeChange: number = CustomInputMethodSubtype.english;
 
 
   aboutToAppear(): void {
@@ -871,7 +874,7 @@ struct Index {
             }
           } else {
             if (this.menuType === MenuType.NORMAL) {
-              if (this.subtypeChange == 0) {
+              if (this.subtypeChange == CustomInputMethodSubtype.english) {
                 KeyMenu()
               } else {
                 NumberMenu()
@@ -977,8 +980,13 @@ export default class ServiceExtAbility extends InputMethodExtensionAbility {
 ### Code block 3
 
 ```
+// 定义输入法的两个子类型
+export enum CustomInputMethodSubtype {
+  english = 0,
+  chinese = 1
+};
+
 class KeyboardController {
-  private barPosition: number = 0;
   private keyCodes: Array<number> = [];
   private mContext: InputMethodExtensionContext | undefined;
   private panel: inputMethodEngine.Panel | undefined;
@@ -1025,7 +1033,6 @@ class KeyboardController {
     this.inputHandle.addLog("initWindow-oncall display");
     let dWidth = dis.width;
     let dHeight = dis.height;
-    let navigationBar_height = NAVIGATIONBAR_HEIGHT_DEFAULT;
     let keyHeightRate = KEYBOARD_HEIGHT_RATE_DEFAULT;
     AppStorage.setOrCreate('windowWidth', dis.width);
     AppStorage.setOrCreate('windowHeight', dis.height);
@@ -1038,24 +1045,18 @@ class KeyboardController {
       AppStorage.setOrCreate('isLandscape', false);
     }
     if (dWidth === DEVICE_PHONE.width && dHeight === DEVICE_PHONE.height) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_PHONE;
     } else if (dWidth === DEVICE_PHONE.height && dHeight === DEVICE_PHONE.width) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_PHONE_LAND;
     } else if (dWidth === DEVICE_RK.width && dHeight === DEVICE_RK.height) {
-      navigationBar_height = KEYBOARD_HEIGHT_RATE_DEFAULT;
       AppStorage.setOrCreate('isRkDevice', true);
       isRkDevice = true;
     } else if (dWidth === DEVICE_BIG.width && dHeight === DEVICE_BIG.height) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_BIG_LAND;
     } else if (dWidth === DEVICE_BIG.height && dHeight === DEVICE_BIG.width) {
-      navigationBar_height = 0;
       keyHeightRate = KEYBOARD_HEIGHT_RATE_BIG;
     }
     let keyHeight = dHeight * keyHeightRate;
-    this.barPosition = dHeight - keyHeight - navigationBar_height;
     this.inputHandle.addLog(`initWindow-dWidth = ${dWidth};dHeight = ${dHeight};keyboard height = ${keyHeight};;navibar height = navigationBar_height`);
     this.inputHandle.addLog(`initWindow-deviceType = ${deviceInfo.deviceType}`);
     let panelInfo: inputMethodEngine.PanelInfo = {
@@ -1163,10 +1164,10 @@ private registerListener(): void {
   // 设置监听子类型事件，改变输入法应用界面
   inputMethodAbility.on('setSubtype', (inputMethodSubtype: InputMethodSubtype) => {
     if (inputMethodSubtype.id === 'InputMethodExtAbility') {
-      AppStorage.setOrCreate('subtypeChange', 0);
+      AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.english);
     }
     if (inputMethodSubtype.id === 'InputMethodExtAbility1') {
-      AppStorage.setOrCreate('subtypeChange', 1);
+      AppStorage.setOrCreate('subtypeChange', CustomInputMethodSubtype.chinese);
     }
   });
 
@@ -1352,7 +1353,12 @@ private registerListener(): void {
 
   private unRegisterListener(): void {
     this.inputHandle.addLog('unRegisterListener');
-
+    try {
+      display.off('change');
+    } catch (err) {
+      let error = err as BusinessError;
+      Log.showError(TAG, `display off change catch error: ${error.code} ${error.message}`);
+    }
     inputMethodAbility.off('inputStop', () => {
       this.inputHandle.addLog('inputStop off');
     });
@@ -1721,7 +1727,7 @@ export let symbolSourceListData: sourceListType[] = [
 import { deviceInfo } from '@kit.BasicServicesKit';
 import Log from '../../model/Log';
 import { EditView } from '../../components/EditView';
-import { InputHandler } from '../model/KeyboardController';
+import { InputHandler, CustomInputMethodSubtype } from '../model/KeyboardController';
 import {
   MenuType,
   SubMenuType,
@@ -1748,7 +1754,7 @@ struct Index {
   @StorageLink('isRkDevice') isRkDevice: boolean = true;
   @StorageLink('inputStyle') inputStyle: KeyStyle = StyleConfiguration.getInputStyle(this.isLandscape, this.isRkDevice, DEVICE_TYPE);
   private panel: inputMethodEngine.Panel | undefined;
-  @StorageLink('subtypeChange') subtypeChange: number = 0;
+  @StorageLink('subtypeChange') subtypeChange: number = CustomInputMethodSubtype.english;
 
 
   aboutToAppear(): void {
@@ -1796,7 +1802,7 @@ struct Index {
             }
           } else {
             if (this.menuType === MenuType.NORMAL) {
-              if (this.subtypeChange == 0) {
+              if (this.subtypeChange == CustomInputMethodSubtype.english) {
                 KeyMenu()
               } else {
                 NumberMenu()

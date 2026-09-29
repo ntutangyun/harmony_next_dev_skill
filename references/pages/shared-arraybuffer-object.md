@@ -9,6 +9,7 @@ SharedArrayBuffer内部包含一块Native内存，其JS对象壳被分配在虚�
 使用TaskPool传递Int32Array对象，实现如下：
 
 import { taskpool } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Concurrent
 function transferAtomics(arg1: Int32Array) {
@@ -61,6 +62,7 @@ struct CSharedArrayBuffer {
 
 ```
 import { taskpool } from '@kit.ArkTS';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Concurrent
 function transferAtomics(arg1: Int32Array) {

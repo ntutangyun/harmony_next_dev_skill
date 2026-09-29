@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从6.0.0(20)版本开始，新增支持设置列表卡片样式。
 
-应用使用HdsListItemCard组件实现多设备上的系统列表样式。
+应用使用HdsListItemCard (列表卡片)组件实现多设备上的系统列表样式。
 
 开发步骤
 

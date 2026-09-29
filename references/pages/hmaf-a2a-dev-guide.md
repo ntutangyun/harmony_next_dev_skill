@@ -2,6 +2,8 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hmaf-a2a-dev-guide_
 
+从API版本26.0.0开始，新增支持通过AgentAbilityExtension实现智能体间A2A协议通信。
+
 A2A（Agent to Agent）协议用于智能体之间的通信。A2A服务端负责接收客户端请求、触发智能体执行任务、更新任务状态和返回执行结果。
 
 通过Agent Framework Kit，开发者可以在ArkTS应用中构建支持A2A协议的Agent服务端，实现以下能力：
@@ -72,7 +74,7 @@ Task	A2A任务，包含任务状态、产物和历史消息。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common, Want, AgentExtensionAbility } from '@kit.AbilityKit';
-import { RequestContext, createA2AServer, Server, AgentOperation, TaskState, Role } from '@kit.AgentFrameworkKit';
+import { RequestContext, createA2AServer, Server, TaskState, Role } from '@kit.AgentFrameworkKit';
 
 [h2]业务功能实现步骤
 
@@ -82,39 +84,39 @@ import { RequestContext, createA2AServer, Server, AgentOperation, TaskState, Rol
 
 创建OnDataCallback，定义Agent的业务处理逻辑。
 
-const TAG = "=====A2AServer===="
+const TAG = '=====A2AServer===='
 export default class MyAgentExtensionAbility extends AgentExtensionAbility {
   private server: Server | null = null;
 
   // OnDataCallback函数
-  private agentOnData(method: AgentOperation, context: RequestContext) {
+  private agentOnData = (method: string, context: RequestContext) => {
     // 从结构化的上下文参数context中，获取AgentID等信息
-    const agentId: string = context.getAgentId();
+    const agentId: string = context.getAgentId() ?? '';
     if (!agentId) {
-        hilog.error(0x0000, TAG, "Agent ID not found in request context");
+        hilog.error(0x0000, TAG, 'Agent ID not found in request context');
         return;
     }
-    const taskId: string = context.getTaskId();
+    const taskId: string = context.getTaskId() ?? '';
     switch (method) {
-      case AgentOperation.EXECUTE:
+      case 'Execute':
         // 使用server.updateStatus，更新任务执行状态
         this.server?.updateStatus(taskId, {
             state: TaskState.WORKING,
             message: {
-                messageId: "msg1",
+                messageId: 'msg1',
                 role: Role.AGENT,
                 parts: [{
-                    mediaType: "text/plain",
-                    text: "Starting work on your request..."
+                    mediaType: 'text/plain',
+                    text: 'Starting work on your request...'
                 }]
             }
         });
 
         // 等待Agent生成产物
         this.server?.addArtifact(taskId, {
-            artifactId: "result-artifact",
+            artifactId: 'result-artifact',
             parts: [{
-                mediaType: "text/plain",
+                mediaType: 'text/plain',
                 text: '{"action": "completed", "result": "Task finished successfully"}'
             }]
         });
@@ -123,36 +125,22 @@ export default class MyAgentExtensionAbility extends AgentExtensionAbility {
         this.server?.updateStatus(taskId, {
             state: TaskState.COMPLETED,
             message: {
-                messageId: "msg3",
+                messageId: 'msg3',
                 role: Role.AGENT,
                 parts: [{
-                    mediaType: "text/plain",
-                    text: "Task completed successfully!"
+                    mediaType: 'text/plain',
+                    text: 'Task completed successfully!'
                 }]
             }
         });
         break;
-      case AgentOperation.CANCEL:
+      case 'Cancel':
         // 根据AgentId，通知Agent处理取消任务的请求
-        hilog.info(0x0000, TAG, "Cancel called");
+        hilog.info(0x0000, TAG, 'Cancel called');
         break;
-      case AgentOperation.CLEAR_CONTEXT:
-          // 根据AgentId，通知Agent清除上下文
-        hilog.info(0x0000, TAG, `Clear context called, client session id: ${context.getClientSessionId()}`);
-        break;
-      case AgentOperation.PERCEPTION_SUGGEST:
+      case 'PerceptionSuggest':
         hilog.info(0x0000, TAG, `Perception suggest called, metadata: ${JSON.stringify(context.getMetadata(), null, 2)}`);
-        this.server?.updateStatus(taskId, {
-          state: TaskState.COMPLETED,
-          message: {
-            messageId: "onChipsMsg1",
-            role: Role.AGENT,
-            parts: [{
-              mediaType: "text/plain",
-              text: "On chips task completed successfully!"
-            }]
-          }
-        });
+        break;
       default:
         break;
     }
@@ -204,41 +192,41 @@ onDestroy() {
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common, Want, AgentExtensionAbility } from '@kit.AbilityKit';
-import { RequestContext, createA2AServer, Server, AgentOperation, TaskState, Role } from '@kit.AgentFrameworkKit';
+import { RequestContext, createA2AServer, Server, TaskState, Role } from '@kit.AgentFrameworkKit';
 
-const TAG = "=====A2AServer===="
+const TAG = '=====A2AServer===='
 export default class MyAgentExtensionAbility extends AgentExtensionAbility {
   private server: Server | null = null;
 
   // OnDataCallback函数
-  private agentOnData(method: AgentOperation, context: RequestContext) {
+  private agentOnData = (method: string, context: RequestContext) => {
     // 从结构化的上下文参数context中，获取AgentID等信息
-    const agentId: string = context.getAgentId();
+    const agentId: string = context.getAgentId() ?? '';
     if (!agentId) {
-      hilog.error(0x0000, TAG, "Agent ID not found in request context");
+      hilog.error(0x0000, TAG, 'Agent ID not found in request context');
       return;
     }
-    const taskId: string = context.getTaskId();
+    const taskId: string = context.getTaskId() ?? '';
     switch (method) {
-      case AgentOperation.EXECUTE:
+      case 'Execute':
         // 使用server.updateStatus，更新任务执行状态
         this.server?.updateStatus(taskId, {
           state: TaskState.WORKING,
           message: {
-            messageId: "msg1",
+            messageId: 'msg1',
             role: Role.AGENT,
             parts: [{
-              mediaType: "text/plain",
-              text: "Starting work on your request..."
+              mediaType: 'text/plain',
+              text: 'Starting work on your request...'
             }]
           }
         });
 
         // 等待Agent生成产物
         this.server?.addArtifact(taskId, {
-          artifactId: "result-artifact",
+          artifactId: 'result-artifact',
           parts: [{
-            mediaType: "text/plain",
+            mediaType: 'text/plain',
             text: '{"action": "completed", "result": "Task finished successfully"}'
           }]
         });
@@ -247,7 +235,127 @@ export default class MyAgentExtensionAbility extends AgentExtensionAbility {
         this.server?.updateStatus(taskId, {
           state: TaskState.COMPLETED,
           message: {
-            messageId: "msg3",
+            messageId: 'msg3',
+            role: Role.AGENT,
+            parts: [{
+              mediaType: 'text/plain',
+              text: 'Task completed successfully!'
+            }]
+          }
+        });
+        break;
+      case 'Cancel':
+        // 根据AgentId，通知Agent处理取消任务的请求
+        hilog.info(0x0000, TAG, 'Cancel called');
+        break;
+      case 'PerceptionSuggest':
+        hilog.info(0x0000, TAG, `Perception suggest called, metadata: ${JSON.stringify(context.getMetadata(), null, 2)}`);
+        this.server?.updateStatus(taskId, {
+          state: TaskState.COMPLETED,
+          message: {
+            messageId: 'onChipsMsg1',
+            role: Role.AGENT,
+            parts: [{
+              mediaType: 'text/plain',
+              text: 'On chips task completed successfully!'
+            }]
+          }
+        });
+      default:
+        break;
+    }
+  }
+
+  async onCreate(want: Want) {
+    try {
+      const card = this.context.agentCard;
+      this.server = createA2AServer(card, this.agentOnData, want=want);
+    } catch (error) {
+      hilog.error(0x0000, TAG, `Failed to create server: ${error}`);
+    }
+  }
+
+  onConnect(want: Want, proxy: common.AgentHostProxy) {
+    // 客户端连接时触发的回调
+    this.server?.start();
+  }
+
+  async onData(proxy: common.AgentHostProxy, data: string) {
+    // 处理请求的回调函数
+    this.server?.onMessage(data, (response: string) => {
+      proxy.sendData(response);
+    });
+  }
+
+  onDisconnect(want: Want, proxy: common.AgentHostProxy) {
+    // 客户端断开连接时触发的回调
+    this.server?.stop();
+  }
+
+  onDestroy() {
+    // 清理资源
+    this.server?.stop();
+  }
+}
+
+[h2]A2A智能体发送AgentChips数据示例
+
+AgentChips请求用于小艺应用感知用户当前所在App，向Agent请求推荐内容。本小节提供了一个App端回复小艺AgentChips请求的示例。
+
+参考小艺AgentChips交互流程，小艺会向AgentExtensionAbility所在的App发送一个PerceptionSuggest类型的请求。
+
+通过定义OnDataCallback中method为'PerceptionSuggest'的处理流程，Agent即可按照小艺AgentChips交互流程的示例报文格式进行回复。
+
+AgentChips场景下OnDataCallback的实现示例：
+
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common, Want, AgentExtensionAbility } from '@kit.AbilityKit';
+import { RequestContext, createA2AServer, Server, TaskState, Role, OnDataCallback } from '@kit.AgentFrameworkKit';
+
+const TAG = '=====A2AServer===='
+export default class MyAgentExtensionAbility extends AgentExtensionAbility {
+  private server: Server | null = null;
+  // 定义Agent业务处理逻辑
+  private agentOnData: OnDataCallback = (method: string, context: RequestContext) => {
+    switch (method) {
+      // 小艺请求类型为PerceptionSuggest，Agent可以按示例报文格式回复推荐内容
+      case 'PerceptionSuggest':
+        // 获取任务ID
+        const taskId = context.getTaskId();
+
+        // 生成ArtifactID，示例中为固定值
+        const artId = 'artifact-1';
+
+        if (!taskId) {
+          console.error(TAG, "Task ID not found in request context");
+          return;
+        }
+
+        // 模拟Agent分析推荐结果，将推荐结果返回给小艺
+        this.server?.addArtifact(taskId, {
+          artifactId: artId,
+          parts: [
+            {
+              data: {
+                suggestionCandidates: [
+                  {
+                    text: "最新的电视剧",
+                    reply: "最新的电视剧"
+                  }
+                ]
+              },
+              mediaType: "application/json"
+            }
+          ],
+          append: false,
+          lastChunk: true
+        });
+
+        // 通知AgentChips任务完成
+        this.server?.updateStatus(taskId, {
+          state: TaskState.COMPLETED,
+          message: {
+            messageId: "demo-msg-123",
             role: Role.AGENT,
             parts: [{
               mediaType: "text/plain",
@@ -255,28 +363,8 @@ export default class MyAgentExtensionAbility extends AgentExtensionAbility {
             }]
           }
         });
+
         break;
-      case AgentOperation.CANCEL:
-        // 根据AgentId，通知Agent处理取消任务的请求
-        hilog.info(0x0000, TAG, "Cancel called");
-        break;
-      case AgentOperation.CLEAR_CONTEXT:
-        // 根据AgentId，通知Agent清除上下文
-        hilog.info(0x0000, TAG, `Clear context called, client session id: ${context.getClientSessionId()}`);
-        break;
-      case AgentOperation.PERCEPTION_SUGGEST:
-        hilog.info(0x0000, TAG, `Perception suggest called, metadata: ${JSON.stringify(context.getMetadata(), null, 2)}`);
-        this.server?.updateStatus(taskId, {
-          state: TaskState.COMPLETED,
-          message: {
-            messageId: "onChipsMsg1",
-            role: Role.AGENT,
-            parts: [{
-              mediaType: "text/plain",
-              text: "On chips task completed successfully!"
-            }]
-          }
-        });
       default:
         break;
     }
@@ -321,45 +409,45 @@ export default class MyAgentExtensionAbility extends AgentExtensionAbility {
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common, Want, AgentExtensionAbility } from '@kit.AbilityKit';
-import { RequestContext, createA2AServer, Server, AgentOperation, TaskState, Role } from '@kit.AgentFrameworkKit';
+import { RequestContext, createA2AServer, Server, TaskState, Role } from '@kit.AgentFrameworkKit';
 ```
 
 ### Code block 2
 
 ```
-const TAG = "=====A2AServer===="
+const TAG = '=====A2AServer===='
 export default class MyAgentExtensionAbility extends AgentExtensionAbility {
   private server: Server | null = null;
 
   // OnDataCallback函数
-  private agentOnData(method: AgentOperation, context: RequestContext) {
+  private agentOnData = (method: string, context: RequestContext) => {
     // 从结构化的上下文参数context中，获取AgentID等信息
-    const agentId: string = context.getAgentId();
+    const agentId: string = context.getAgentId() ?? '';
     if (!agentId) {
-        hilog.error(0x0000, TAG, "Agent ID not found in request context");
+        hilog.error(0x0000, TAG, 'Agent ID not found in request context');
         return;
     }
-    const taskId: string = context.getTaskId();
+    const taskId: string = context.getTaskId() ?? '';
     switch (method) {
-      case AgentOperation.EXECUTE:
+      case 'Execute':
         // 使用server.updateStatus，更新任务执行状态
         this.server?.updateStatus(taskId, {
             state: TaskState.WORKING,
             message: {
-                messageId: "msg1",
+                messageId: 'msg1',
                 role: Role.AGENT,
                 parts: [{
-                    mediaType: "text/plain",
-                    text: "Starting work on your request..."
+                    mediaType: 'text/plain',
+                    text: 'Starting work on your request...'
                 }]
             }
         });
 
         // 等待Agent生成产物
         this.server?.addArtifact(taskId, {
-            artifactId: "result-artifact",
+            artifactId: 'result-artifact',
             parts: [{
-                mediaType: "text/plain",
+                mediaType: 'text/plain',
                 text: '{"action": "completed", "result": "Task finished successfully"}'
             }]
         });
@@ -368,36 +456,22 @@ export default class MyAgentExtensionAbility extends AgentExtensionAbility {
         this.server?.updateStatus(taskId, {
             state: TaskState.COMPLETED,
             message: {
-                messageId: "msg3",
+                messageId: 'msg3',
                 role: Role.AGENT,
                 parts: [{
-                    mediaType: "text/plain",
-                    text: "Task completed successfully!"
+                    mediaType: 'text/plain',
+                    text: 'Task completed successfully!'
                 }]
             }
         });
         break;
-      case AgentOperation.CANCEL:
+      case 'Cancel':
         // 根据AgentId，通知Agent处理取消任务的请求
-        hilog.info(0x0000, TAG, "Cancel called");
+        hilog.info(0x0000, TAG, 'Cancel called');
         break;
-      case AgentOperation.CLEAR_CONTEXT:
-          // 根据AgentId，通知Agent清除上下文
-        hilog.info(0x0000, TAG, `Clear context called, client session id: ${context.getClientSessionId()}`);
-        break;
-      case AgentOperation.PERCEPTION_SUGGEST:
+      case 'PerceptionSuggest':
         hilog.info(0x0000, TAG, `Perception suggest called, metadata: ${JSON.stringify(context.getMetadata(), null, 2)}`);
-        this.server?.updateStatus(taskId, {
-          state: TaskState.COMPLETED,
-          message: {
-            messageId: "onChipsMsg1",
-            role: Role.AGENT,
-            parts: [{
-              mediaType: "text/plain",
-              text: "On chips task completed successfully!"
-            }]
-          }
-        });
+        break;
       default:
         break;
     }
@@ -461,41 +535,41 @@ onDestroy() {
 ```
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { common, Want, AgentExtensionAbility } from '@kit.AbilityKit';
-import { RequestContext, createA2AServer, Server, AgentOperation, TaskState, Role } from '@kit.AgentFrameworkKit';
+import { RequestContext, createA2AServer, Server, TaskState, Role } from '@kit.AgentFrameworkKit';
 
-const TAG = "=====A2AServer===="
+const TAG = '=====A2AServer===='
 export default class MyAgentExtensionAbility extends AgentExtensionAbility {
   private server: Server | null = null;
 
   // OnDataCallback函数
-  private agentOnData(method: AgentOperation, context: RequestContext) {
+  private agentOnData = (method: string, context: RequestContext) => {
     // 从结构化的上下文参数context中，获取AgentID等信息
-    const agentId: string = context.getAgentId();
+    const agentId: string = context.getAgentId() ?? '';
     if (!agentId) {
-      hilog.error(0x0000, TAG, "Agent ID not found in request context");
+      hilog.error(0x0000, TAG, 'Agent ID not found in request context');
       return;
     }
-    const taskId: string = context.getTaskId();
+    const taskId: string = context.getTaskId() ?? '';
     switch (method) {
-      case AgentOperation.EXECUTE:
+      case 'Execute':
         // 使用server.updateStatus，更新任务执行状态
         this.server?.updateStatus(taskId, {
           state: TaskState.WORKING,
           message: {
-            messageId: "msg1",
+            messageId: 'msg1',
             role: Role.AGENT,
             parts: [{
-              mediaType: "text/plain",
-              text: "Starting work on your request..."
+              mediaType: 'text/plain',
+              text: 'Starting work on your request...'
             }]
           }
         });
 
         // 等待Agent生成产物
         this.server?.addArtifact(taskId, {
-          artifactId: "result-artifact",
+          artifactId: 'result-artifact',
           parts: [{
-            mediaType: "text/plain",
+            mediaType: 'text/plain',
             text: '{"action": "completed", "result": "Task finished successfully"}'
           }]
         });
@@ -504,7 +578,121 @@ export default class MyAgentExtensionAbility extends AgentExtensionAbility {
         this.server?.updateStatus(taskId, {
           state: TaskState.COMPLETED,
           message: {
-            messageId: "msg3",
+            messageId: 'msg3',
+            role: Role.AGENT,
+            parts: [{
+              mediaType: 'text/plain',
+              text: 'Task completed successfully!'
+            }]
+          }
+        });
+        break;
+      case 'Cancel':
+        // 根据AgentId，通知Agent处理取消任务的请求
+        hilog.info(0x0000, TAG, 'Cancel called');
+        break;
+      case 'PerceptionSuggest':
+        hilog.info(0x0000, TAG, `Perception suggest called, metadata: ${JSON.stringify(context.getMetadata(), null, 2)}`);
+        this.server?.updateStatus(taskId, {
+          state: TaskState.COMPLETED,
+          message: {
+            messageId: 'onChipsMsg1',
+            role: Role.AGENT,
+            parts: [{
+              mediaType: 'text/plain',
+              text: 'On chips task completed successfully!'
+            }]
+          }
+        });
+      default:
+        break;
+    }
+  }
+
+  async onCreate(want: Want) {
+    try {
+      const card = this.context.agentCard;
+      this.server = createA2AServer(card, this.agentOnData, want=want);
+    } catch (error) {
+      hilog.error(0x0000, TAG, `Failed to create server: ${error}`);
+    }
+  }
+
+  onConnect(want: Want, proxy: common.AgentHostProxy) {
+    // 客户端连接时触发的回调
+    this.server?.start();
+  }
+
+  async onData(proxy: common.AgentHostProxy, data: string) {
+    // 处理请求的回调函数
+    this.server?.onMessage(data, (response: string) => {
+      proxy.sendData(response);
+    });
+  }
+
+  onDisconnect(want: Want, proxy: common.AgentHostProxy) {
+    // 客户端断开连接时触发的回调
+    this.server?.stop();
+  }
+
+  onDestroy() {
+    // 清理资源
+    this.server?.stop();
+  }
+}
+```
+
+### Code block 9
+
+```
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { common, Want, AgentExtensionAbility } from '@kit.AbilityKit';
+import { RequestContext, createA2AServer, Server, TaskState, Role, OnDataCallback } from '@kit.AgentFrameworkKit';
+
+const TAG = '=====A2AServer===='
+export default class MyAgentExtensionAbility extends AgentExtensionAbility {
+  private server: Server | null = null;
+  // 定义Agent业务处理逻辑
+  private agentOnData: OnDataCallback = (method: string, context: RequestContext) => {
+    switch (method) {
+      // 小艺请求类型为PerceptionSuggest，Agent可以按示例报文格式回复推荐内容
+      case 'PerceptionSuggest':
+        // 获取任务ID
+        const taskId = context.getTaskId();
+
+        // 生成ArtifactID，示例中为固定值
+        const artId = 'artifact-1';
+
+        if (!taskId) {
+          console.error(TAG, "Task ID not found in request context");
+          return;
+        }
+
+        // 模拟Agent分析推荐结果，将推荐结果返回给小艺
+        this.server?.addArtifact(taskId, {
+          artifactId: artId,
+          parts: [
+            {
+              data: {
+                suggestionCandidates: [
+                  {
+                    text: "最新的电视剧",
+                    reply: "最新的电视剧"
+                  }
+                ]
+              },
+              mediaType: "application/json"
+            }
+          ],
+          append: false,
+          lastChunk: true
+        });
+
+        // 通知AgentChips任务完成
+        this.server?.updateStatus(taskId, {
+          state: TaskState.COMPLETED,
+          message: {
+            messageId: "demo-msg-123",
             role: Role.AGENT,
             parts: [{
               mediaType: "text/plain",
@@ -512,28 +700,8 @@ export default class MyAgentExtensionAbility extends AgentExtensionAbility {
             }]
           }
         });
+
         break;
-      case AgentOperation.CANCEL:
-        // 根据AgentId，通知Agent处理取消任务的请求
-        hilog.info(0x0000, TAG, "Cancel called");
-        break;
-      case AgentOperation.CLEAR_CONTEXT:
-        // 根据AgentId，通知Agent清除上下文
-        hilog.info(0x0000, TAG, `Clear context called, client session id: ${context.getClientSessionId()}`);
-        break;
-      case AgentOperation.PERCEPTION_SUGGEST:
-        hilog.info(0x0000, TAG, `Perception suggest called, metadata: ${JSON.stringify(context.getMetadata(), null, 2)}`);
-        this.server?.updateStatus(taskId, {
-          state: TaskState.COMPLETED,
-          message: {
-            messageId: "onChipsMsg1",
-            role: Role.AGENT,
-            parts: [{
-              mediaType: "text/plain",
-              text: "On chips task completed successfully!"
-            }]
-          }
-        });
       default:
         break;
     }

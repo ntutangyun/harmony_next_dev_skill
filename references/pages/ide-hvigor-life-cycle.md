@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-life-cycle_
 
-本文档对Hvigor编译构建系统结构及生命周期进行简要讲解，首先介绍Hvigor对工程结构模型的定义，随后介绍什么是任务（Task），最后会介绍Hvigor的构建生命周期以及它是如何依赖hvigor-ohos-plugin一起完成自动化编译构建流程的。
+本文档对Hvigor编译构建系统结构及生命周期进行简要讲解，首先介绍Hvigor对工程结构模型的定义，随后介绍什么是任务（Task），最后会介绍Hvigor的构建生命周期以及它是如何依赖hvigor-ohos-plugin完成自动化编译构建流程的。
 
 工程结构定义
 

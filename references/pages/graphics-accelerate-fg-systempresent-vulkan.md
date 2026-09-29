@@ -142,14 +142,14 @@ VulkanFG::Image m_sceneDepthStencil{};
 // 创建真实帧颜色缓冲区图像实例
 m_ffSceneColor = HMS_FG_CreateImage_VK(m_context, m_sceneColor.GetNativeImage(), m_sceneColor.GetNativeImageView());
 if (!m_ffSceneColor) {
-    GOLOGE("HMS_FG_RegisterImage_VK m_ffSceneColor execution failed.");
+    GOLOGE("HMS_FG_CreateImage_VK m_ffSceneColor execution failed.");
     return false;
 }
 // 创建真实帧深度模板缓冲区图像实例
 m_ffDepthStencil = HMS_FG_CreateImage_VK(m_context, m_sceneDepthStencil.GetNativeImage(),
                                          m_sceneDepthStencil.GetNativeImageView());
 if (!m_ffDepthStencil) {
-    GOLOGE("HMS_FG_RegisterImage_VK m_ffDepthStencil execution failed.");
+    GOLOGE("HMS_FG_CreateImage_VK m_ffDepthStencil execution failed.");
     return false;
 }
 
@@ -373,14 +373,14 @@ VulkanFG::Image m_sceneDepthStencil{};
 // 创建真实帧颜色缓冲区图像实例
 m_ffSceneColor = HMS_FG_CreateImage_VK(m_context, m_sceneColor.GetNativeImage(), m_sceneColor.GetNativeImageView());
 if (!m_ffSceneColor) {
-    GOLOGE("HMS_FG_RegisterImage_VK m_ffSceneColor execution failed.");
+    GOLOGE("HMS_FG_CreateImage_VK m_ffSceneColor execution failed.");
     return false;
 }
 // 创建真实帧深度模板缓冲区图像实例
 m_ffDepthStencil = HMS_FG_CreateImage_VK(m_context, m_sceneDepthStencil.GetNativeImage(),
                                          m_sceneDepthStencil.GetNativeImageView());
 if (!m_ffDepthStencil) {
-    GOLOGE("HMS_FG_RegisterImage_VK m_ffDepthStencil execution failed.");
+    GOLOGE("HMS_FG_CreateImage_VK m_ffDepthStencil execution failed.");
     return false;
 }
 ```

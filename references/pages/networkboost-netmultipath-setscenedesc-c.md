@@ -36,7 +36,12 @@ int32_t SetSceneDesc()
     sceneDesc.scene = NB_SERVICE_LOGIN;
     sceneDesc.sceneEvent = SCENE_EVENT_ENTER;
     int32_t ret = HMS_NetworkBoost_SetSceneDesc(sceneDesc);
-    printf("业务场景设置结果: %d\n", ret);
+    if (ret == 0) {
+        printf("业务场景设置成功: duration=%ld, startTime=%ld, scene=%d, sceneEvent=%d\n",
+            sceneDesc.duration, sceneDesc.startTime, sceneDesc.scene, sceneDesc.sceneEvent);
+    } else {
+        printf("业务场景设置失败，错误码: %d\n", ret);
+    }
     return ret;
 }
 
@@ -66,7 +71,12 @@ int32_t SetSceneDesc()
     sceneDesc.scene = NB_SERVICE_LOGIN;
     sceneDesc.sceneEvent = SCENE_EVENT_ENTER;
     int32_t ret = HMS_NetworkBoost_SetSceneDesc(sceneDesc);
-    printf("业务场景设置结果: %d\n", ret);
+    if (ret == 0) {
+        printf("业务场景设置成功: duration=%ld, startTime=%ld, scene=%d, sceneEvent=%d\n",
+            sceneDesc.duration, sceneDesc.startTime, sceneDesc.scene, sceneDesc.sceneEvent);
+    } else {
+        printf("业务场景设置失败，错误码: %d\n", ret);
+    }
     return ret;
 }
 ```

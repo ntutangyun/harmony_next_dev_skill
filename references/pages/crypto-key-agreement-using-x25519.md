@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ke
 
 如何生成X25519非对称密钥，开发者可参考下文示例，并结合非对称密钥生成和转换规格：X25519和随机生成非对称密钥对理解，参考文档与当前示例可能存在入参差异，请在阅读时注意区分。
 
-调用cryptoFramework.createKeyAgreement，指定字符串参数'X25519'，创建密钥算法为X25519的密钥协议生成器（KeyAgreement）。
+调用cryptoFramework.createKeyAgreement，指定字符串参数'X25519'，创建密钥算法为X25519的密钥协商生成器（KeyAgreement）。
 
 调用KeyAgreement.generateSecret，基于传入的私钥（KeyPair.priKey）与公钥（KeyPair.pubKey）进行密钥协商，返回共享密钥。
 

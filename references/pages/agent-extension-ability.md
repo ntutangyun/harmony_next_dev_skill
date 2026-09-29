@@ -91,7 +91,7 @@ export default class AgentExtAbility extends AgentExtensionAbility {
         "metadata": [
           {
             "name": "ohos.extension.agent",
-            "resource": "$profile:agent_config",
+            "resource": "$profile:agent_config"
           }
         ]
       }
@@ -144,7 +144,7 @@ export default class AgentExtAbility extends AgentExtensionAbility {
     } catch (err) {
       let code = (err as BusinessError).code;
       let msg = (err as BusinessError).message;
-      console.error(`sendData failed, err code: ${code}, err msg: ${msg}.`);
+      console.error(`authorize failed, err code: ${code}, err msg: ${msg}.`);
     }
   }
   // ...
@@ -232,7 +232,7 @@ export default class AgentExtAbility extends AgentExtensionAbility {
         "metadata": [
           {
             "name": "ohos.extension.agent",
-            "resource": "$profile:agent_config",
+            "resource": "$profile:agent_config"
           }
         ]
       }
@@ -283,7 +283,7 @@ export default class AgentExtAbility extends AgentExtensionAbility {
     } catch (err) {
       let code = (err as BusinessError).code;
       let msg = (err as BusinessError).message;
-      console.error(`sendData failed, err code: ${code}, err msg: ${msg}.`);
+      console.error(`authorize failed, err code: ${code}, err msg: ${msg}.`);
     }
   }
   // ...

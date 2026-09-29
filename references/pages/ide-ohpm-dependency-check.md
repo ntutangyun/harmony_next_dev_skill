@@ -44,7 +44,9 @@ Options
 
 类型：Boolean
 
-可以在 dependency-check 命令后面配置--strict_ssl true参数，校验 https 证书。配置为--strict_ssl false，不校验https证书。
+可以在dependency-check命令后面不配置参数、配置--strict_ssl或--strict_ssl true参数时，开启校验HTTPS证书。
+
+从ohpm 26.0.0.630版本开始，如需关闭校验，可配置--no-strict_ssl或--strict_ssl false参数，推荐使用--no-strict_ssl参数。
 
 [h2]retry_times
 

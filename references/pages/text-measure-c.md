@@ -27,11 +27,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/text-meas
 文本测量中常用接口如下表所示，详细接口说明参考drawing_text_typography.h。
 
 接口名	描述
-double OH_Drawing_TypographyGetLongestLine(OH_Drawing_Typography*)	获取最长行的宽度，建议实际使用时将返回值向上取整。
-double OH_Drawing_TypographyGetLongestLineWithIndent(OH_Drawing_Typography*)	获取最长行的宽度（该宽度包含当前行缩进的宽度），建议实际使用时将返回值向上取整。
-size_t OH_Drawing_TypographyGetLineCount (OH_Drawing_Typography* )	获取文本行数。
-OH_Drawing_LineMetrics* OH_Drawing_TypographyGetLineMetrics (OH_Drawing_Typography* )	获取段落行的度量信息。包含行的高度、宽度、起始坐标等信息。
-double OH_Drawing_TextStyleGetLetterSpacing (OH_Drawing_TextStyle *)	获取文本的字符间距。
+double OH_Drawing_TypographyGetLongestLine(OH_Drawing_Typography* typography)	获取最长行的宽度，建议实际使用时将返回值向上取整。
+double OH_Drawing_TypographyGetLongestLineWithIndent(OH_Drawing_Typography* typography)	获取最长行的宽度（该宽度包含当前行缩进的宽度），建议实际使用时将返回值向上取整。
+size_t OH_Drawing_TypographyGetLineCount(OH_Drawing_Typography* typography)	获取文本行数。
+OH_Drawing_LineMetrics* OH_Drawing_TypographyGetLineMetrics(OH_Drawing_Typography* typography)	获取段落行的度量信息。包含行的高度、宽度、起始坐标等信息。
+double OH_Drawing_TextStyleGetLetterSpacing(OH_Drawing_TextStyle* style)	获取文本的字符间距。
 
 开发步骤
 

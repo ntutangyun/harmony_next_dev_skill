@@ -1,4 +1,4 @@
-# JSVM-API 内存泄漏问题定位指导
+# JSVM 定位内存泄漏问题指导
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/jsvm-locate-memory-leak_
 
@@ -56,7 +56,7 @@ function createElements() {
 
 [h2]定位步骤
 
-JSVM目前提供了OH_JSVM_OpenInspector开启inspector，参考使用OH_JSVM_OpenInspector,在此基础上可以使用 Chrome inspect 页面进行调试。
+JSVM目前提供了OH_JSVM_OpenInspector开启inspector，参考使用OH_JSVM_OpenInspector，在此基础上可以使用 Chrome inspect 页面进行调试。
 
 通过使用DevTools工具，对目标场景内的堆内存进行快照（快照前先点击上方的垃圾回收按钮进行垃圾回收），利用快照对比功能，找到未释放的JS对象和其所在源码中的位置，进一步指导定位堆内存未释放的原因。
 

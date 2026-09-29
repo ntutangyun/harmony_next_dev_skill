@@ -20,6 +20,7 @@ getRecommendedCityIdsByLatLngs(context: common.Context, latlngs: mapCommon.LatLn
 1.导入相关模块。
 
 import { offlineMapData } from '@kit.MapKit';
+import { mapCommon } from '@kit.MapKit';
 
 2.通过getRecommendedCityIdsByLatLngs，查询离线地图未下载的区域。
 
@@ -52,6 +53,7 @@ try {
 
 ```
 import { offlineMapData } from '@kit.MapKit';
+import { mapCommon } from '@kit.MapKit';
 ```
 
 ### Code block 2

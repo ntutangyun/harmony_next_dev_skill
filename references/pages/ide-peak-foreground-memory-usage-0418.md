@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-peak-
 
 规则详情
 
-应用/元服务前台场景峰值内存占用：应用在前台且亮屏使用过程的内存占用应≤ 1500MB。
+应用/元服务前台场景峰值内存占用：应用在前台且亮屏使用过程的内存占用应≤1500MB。
 
 检测逻辑
 
@@ -14,4 +14,4 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-peak-
 
 计算逻辑
 
-执行多轮测试，取最大Pss值为占用峰值，内存占用小于1500M。
+执行多轮测试，取最大Pss值为占用峰值，内存占用小于1500MB。

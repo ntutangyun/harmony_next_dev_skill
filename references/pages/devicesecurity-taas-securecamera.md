@@ -136,10 +136,7 @@ private async initSecureCameraAttestContext(cameraInput: camera.CameraInput): Pr
     if (certChainResult.certChains.length < 1) {
       throw new Error('empty returned cert chain');
     }
-    // [StartExclude initialize_secure_camera_context]
-    this.certChainObj = new CertChain(certChainResult.certChains[0]);
-    await this.certChainObj.validate();
-    // [EndExclude initialize_secure_camera_context]
+    // ...
     return 0;
   } catch (err) {
     const businessError = err as BusinessError;
@@ -171,7 +168,7 @@ private async finalizeSecureCameraAttestContext(): Promise<void> {
   } catch (err) {
     const error = err as BusinessError;
     hilog.error(0x0000, 'TrustedAppService',
-      'Failed to finalize attest context, code:${error.code}, message:${error.message}');
+      `Failed to finalize attest context, code:${error.code}, message:${error.message}`);
   }
 }
 
@@ -274,10 +271,7 @@ private async initSecureCameraAttestContext(cameraInput: camera.CameraInput): Pr
     if (certChainResult.certChains.length < 1) {
       throw new Error('empty returned cert chain');
     }
-    // [StartExclude initialize_secure_camera_context]
-    this.certChainObj = new CertChain(certChainResult.certChains[0]);
-    await this.certChainObj.validate();
-    // [EndExclude initialize_secure_camera_context]
+    // ...
     return 0;
   } catch (err) {
     const businessError = err as BusinessError;
@@ -309,7 +303,7 @@ private async finalizeSecureCameraAttestContext(): Promise<void> {
   } catch (err) {
     const error = err as BusinessError;
     hilog.error(0x0000, 'TrustedAppService',
-      'Failed to finalize attest context, code:${error.code}, message:${error.message}');
+      `Failed to finalize attest context, code:${error.code}, message:${error.message}`);
   }
 }
 ```

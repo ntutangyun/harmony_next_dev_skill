@@ -18,7 +18,7 @@ target_link_libraries(entry PUBLIC libohcrypto.so)
 
 调用OH_CryptoAsymKeyGenerator_Generate，随机生成非对称密钥对象（OH_CryptoKeyPair）。
 
-调用OH_CryptoPubKey_Encode获取公钥密钥对象的二进制数据。
+调用OH_CryptoPubKey_Encode获取公钥对象的二进制数据。
 
 #include "CryptoArchitectureKit/crypto_common.h"
 #include "CryptoArchitectureKit/crypto_asym_key.h"
@@ -67,7 +67,7 @@ OH_Crypto_ErrCode generateRSAKey()
 
 调用OH_CryptoAsymKeyGenerator_Generate，随机生成非对称密钥对象（OH_CryptoKeyPair）。
 
-调用OH_CryptoPubKey_Encode获取公钥密钥对象的二进制数据。
+调用OH_CryptoPubKey_Encode获取公钥对象的二进制数据。
 
 #include "CryptoArchitectureKit/crypto_common.h"
 #include "CryptoArchitectureKit/crypto_asym_key.h"

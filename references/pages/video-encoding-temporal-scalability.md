@@ -314,13 +314,14 @@ static void OnNeedInputBuffer(OH_AVCodec *codec, uint32_t index, OH_AVBuffer *bu
     // - 写入编码码流。
     // - 通知编码器码流结束。
     // - 随帧参数写入。
-    auto format = std::shared_ptr<OH_AVFormat>(OH_AVBuffer_GetParameter(buffer), OH_AVFormat_Destroy);
+    OH_AVFormat *format = OH_AVBuffer_GetParameter(buffer);
     if (format == nullptr) {
         // 异常处理。
     }
-    OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_MARK_LTR, 1);
-    OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_USE_LTR, 4);
-    OH_AVBuffer_SetParameter(buffer, format.get());
+    OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_MARK_LTR, 1);
+    OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_USE_LTR, 4);
+    OH_AVBuffer_SetParameter(buffer, format);
+    OH_AVFormat_Destroy(format);
     // 通知编码器buffer输入完成。
     OH_VideoEncoder_PushInputBuffer(codec, index);
 }
@@ -346,6 +347,9 @@ Surface输入模式示例：
 // 2.1 编码输入参数回调OH_VideoEncoder_OnNeedInputParameter实现。
 static void OnNeedInputParameter(OH_AVCodec *codec, uint32_t index, OH_AVFormat *parameter, void *userData)
 {
+    if (parameter == nullptr) {
+        // 异常处理。
+    }
     // 输入帧buffer对应的index，送入InIndexQueue队列。
     // 输入帧的数据avformat送入InFormatQueue队列。
     // 数据处理，请参考：
@@ -589,13 +593,14 @@ static void OnNeedInputBuffer(OH_AVCodec *codec, uint32_t index, OH_AVBuffer *bu
     // - 写入编码码流。
     // - 通知编码器码流结束。
     // - 随帧参数写入。
-    auto format = std::shared_ptr<OH_AVFormat>(OH_AVBuffer_GetParameter(buffer), OH_AVFormat_Destroy);
+    OH_AVFormat *format = OH_AVBuffer_GetParameter(buffer);
     if (format == nullptr) {
         // 异常处理。
     }
-    OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_MARK_LTR, 1);
-    OH_AVFormat_SetIntValue(format.get(), OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_USE_LTR, 4);
-    OH_AVBuffer_SetParameter(buffer, format.get());
+    OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_MARK_LTR, 1);
+    OH_AVFormat_SetIntValue(format, OH_MD_KEY_VIDEO_ENCODER_PER_FRAME_USE_LTR, 4);
+    OH_AVBuffer_SetParameter(buffer, format);
+    OH_AVFormat_Destroy(format);
     // 通知编码器buffer输入完成。
     OH_VideoEncoder_PushInputBuffer(codec, index);
 }
@@ -623,6 +628,9 @@ OH_VideoEncoder_RegisterCallback(videoEnc, cb, nullptr);
 // 2.1 编码输入参数回调OH_VideoEncoder_OnNeedInputParameter实现。
 static void OnNeedInputParameter(OH_AVCodec *codec, uint32_t index, OH_AVFormat *parameter, void *userData)
 {
+    if (parameter == nullptr) {
+        // 异常处理。
+    }
     // 输入帧buffer对应的index，送入InIndexQueue队列。
     // 输入帧的数据avformat送入InFormatQueue队列。
     // 数据处理，请参考：

@@ -93,7 +93,7 @@ class NonObservedClass {
 let observedClass: ObservedClass = new ObservedClass(); // 被代理
 let nonObservedClass: NonObservedClass = new NonObservedClass(); // 不被代理
 
-【2】状态变量装饰器装饰的复杂类型对象。使用@State、@Prop等状态变量装饰器装饰Class、Map、Set、Date、Array时，会添加代理。若该对象已经是代理对象，则不会重复创建代理。
+【2】状态变量装饰器装饰的复杂类型对象。使用@State、@Prop等状态变量装饰器装饰class、Map、Set、Date、Array时，会添加代理。若该对象已经是代理对象，则不会重复创建代理。
 
 @Observed
 class ObservedClassOne {

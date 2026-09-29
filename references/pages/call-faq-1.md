@@ -14,6 +14,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/call-faq-
 
 来电信息中获取的callId，上报给通话服务接口的callId，二者应该保持一致。
 
-检查构造的callInfo信息是否有参数错误，如voipCallState需要是VOIP_CALL_STATE_RINGING。
+检查构造的callInfo信息是否有参数错误，参考开发步骤。
 
 如还未解决，请通过在线提单提交问题，华为支持人员会及时处理。

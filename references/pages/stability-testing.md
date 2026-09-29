@@ -98,7 +98,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/stability
 
 目前主要支持以下应用类型：
 
-ArkUI原生控件（含ReactNative框架开发）应用。
+ArkUI控件（含ReactNative框架开发）应用。
 
 使用Flutter3.7.12及之后版本开发的应用。
 

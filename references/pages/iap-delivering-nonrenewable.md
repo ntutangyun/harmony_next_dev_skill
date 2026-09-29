@@ -16,7 +16,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/iap-deliv
 
 应用客户端向IAP Kit发起queryPurchases请求，查询用户已购买但未确认发货的订单信息。
 
-IAP Kit返回PurchaseData列表。数据类型说明为JWS格式的字符串，承载了相关的订单信息。
+IAP Kit返回PurchaseData列表。PurchaseData为JWS格式的字符串，承载了相关的订单信息。
 
 应用客户端向应用服务器上报PurchaseData列表。
 

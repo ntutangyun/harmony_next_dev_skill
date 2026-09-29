@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ui-design
 
 从6.0.0(20)版本开始，新增支持设置页签栏的模糊样式。
 
-HdsTabs容器组件扩展支持页签栏设置直接模糊和渐变模糊效果。
+HdsTabs (底部页签)容器组件扩展支持页签栏设置直接模糊和渐变模糊效果。
 
 直接模糊
 

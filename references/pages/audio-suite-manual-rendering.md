@@ -35,7 +35,7 @@ target_link_libraries(sample PUBLIC libohaudiosuite.so)
 
 [h2]基础离线编辑
 
-使用效果节点（如均衡器效果节点）处理输入的PCM（Pulse Code Modulation）音频数据，输出带有该音效的PCM音频数据。
+使用效果节点（如均衡器效果节点）处理输入的PCM（Pulse Code Modulation）音频数据，输出带有该音效的PCM音频数据。此处以均衡器效果为例演示离线编辑流程，其他效果节点的详细说明请参考音频效果(C/C++)。
 
 图1：基础离线编辑示意图
 
@@ -190,6 +190,8 @@ OH_AudioSuiteEngine_Destroy(audioSuiteEngine);
 
 使用音源分离节点分离输入的PCM音频数据为人声和背景声，然后通过输出节点分别输出这两路数据。
 
+创建音源分离节点前需要调用OH_AudioSuiteEngine_IsNodeTypeSupported()检查是否支持该节点类型，避免创建节点失败。
+
 图2：音源分离编辑示意图
 
 示例代码如下：
@@ -240,6 +242,16 @@ static int32_t InputNodeWriteDataCallBack(OH_AudioNode *audioNode, void *userDat
         *finished = true;
     }
     return actualDataSize;
+}
+
+// 判断是否支持音源分离节点。
+bool isSupported = false;
+OH_AudioSuiteEngine_IsNodeTypeSupported(OH_AudioNode_Type::EFFECT_MULTII_OUTPUT_NODE_TYPE_AUDIO_SEPARATION,
+                                        &isSupported);
+if (!isSupported) {
+    OH_LOG_Print(LOG_APP, LOG_ERROR, GLOBAL_RESMGR, TAG, "Audio separation node is not supported on this device.");
+    nodes.isNodeSupported = false;
+    return nodes;
 }
 
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -763,6 +775,20 @@ static int32_t InputNodeWriteDataCallBack(OH_AudioNode *audioNode, void *userDat
 ### Code block 14
 
 ```
+// 判断是否支持音源分离节点。
+bool isSupported = false;
+OH_AudioSuiteEngine_IsNodeTypeSupported(OH_AudioNode_Type::EFFECT_MULTII_OUTPUT_NODE_TYPE_AUDIO_SEPARATION,
+                                        &isSupported);
+if (!isSupported) {
+    OH_LOG_Print(LOG_APP, LOG_ERROR, GLOBAL_RESMGR, TAG, "Audio separation node is not supported on this device.");
+    nodes.isNodeSupported = false;
+    return nodes;
+}
+```
+
+### Code block 15
+
+```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
 // 创建节点构造器。
 OH_AudioNodeBuilder *nodeBuilder = nullptr;
@@ -815,7 +841,7 @@ OH_AudioSuiteEngine_ConnectNodes(nodes.inputNode, nodes.aissNode);
 OH_AudioSuiteEngine_ConnectNodes(nodes.aissNode, nodes.outputNode);
 ```
 
-### Code block 15
+### Code block 16
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -861,7 +887,7 @@ free(audioDataArray.audioDataArray);
 audioDataArray.audioDataArray = nullptr;
 ```
 
-### Code block 16
+### Code block 17
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -877,7 +903,7 @@ OH_AudioSuiteEngine_DestroyPipeline(audioSuitePipeline);
 OH_AudioSuiteEngine_Destroy(audioSuiteEngine);
 ```
 
-### Code block 17
+### Code block 18
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -891,7 +917,7 @@ OH_AudioSuiteEngine_CreatePipeline(audioSuiteEngine, &audioSuitePipeline,
                                    OH_AudioSuite_PipelineWorkMode::AUDIOSUITE_PIPELINE_EDIT_MODE);
 ```
 
-### Code block 18
+### Code block 19
 
 ```
 struct AudioDataInfo {
@@ -902,7 +928,7 @@ struct AudioDataInfo {
 };
 ```
 
-### Code block 19
+### Code block 20
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -931,7 +957,7 @@ static int32_t InputNodeWriteDataCallBack(OH_AudioNode *audioNode, void *userDat
 }
 ```
 
-### Code block 20
+### Code block 21
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -1000,7 +1026,7 @@ OH_AudioSuiteEngine_ConnectNodes(nodes.inputNodeForMix, nodes.mixerNode);
 OH_AudioSuiteEngine_ConnectNodes(nodes.mixerNode, nodes.outputNode);
 ```
 
-### Code block 21
+### Code block 22
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。
@@ -1032,7 +1058,7 @@ free(audioData);
 audioData = nullptr;
 ```
 
-### Code block 22
+### Code block 23
 
 ```
 // 示例接口未包含返回值校验，实际使用时请务必添加校验逻辑。

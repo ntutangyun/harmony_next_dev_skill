@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-app-a
 
 前置操作
 
-单击菜单栏Tools > AppAnalyzer，打开AppAnalyzer页面。
+点击菜单栏Tools > AppAnalyzer，打开AppAnalyzer页面。
 
 在编辑窗口右侧的工具栏，点击AppAnalyzer或，打开AppAnalyzer页面。
 

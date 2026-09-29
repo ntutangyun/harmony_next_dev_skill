@@ -47,7 +47,7 @@ OpenFileBoost_ErrCode HMS_Preview_OpenFileBoost_NotifyFileOperation (OpenFileBoo
 
 约束限制
 
-当前仅在PC/2in1和tablet设备上支持。
+支持的设备类型：PC/2in1，从26.0.0版本开始，新增支持tablet设备。
 
 开发步骤
 
@@ -418,10 +418,10 @@ static napi_value ReportScanResult(napi_env env, napi_callback_info info) {
                                                          static_cast<uint32_t>(strlen(reportPath.c_str())), scanResult);
 
         if (res == FILE_SCAN_BOOST_SUCCESS) {
-            // 报告失败，应用可自定义错误处理
             OH_LOG_INFO(LOG_APP, "ReportScanResult successfully for: %{public}s", reportPath.c_str());
             reportCount++;
         } else {
+            // 报告失败，应用可自定义错误处理
             OH_LOG_ERROR(LOG_APP, "ReportScanResult failed for %{public}s, ret :%{public}d", reportPath.c_str(), res);
         }
 
@@ -850,10 +850,10 @@ static napi_value ReportScanResult(napi_env env, napi_callback_info info) {
                                                          static_cast<uint32_t>(strlen(reportPath.c_str())), scanResult);
 
         if (res == FILE_SCAN_BOOST_SUCCESS) {
-            // 报告失败，应用可自定义错误处理
             OH_LOG_INFO(LOG_APP, "ReportScanResult successfully for: %{public}s", reportPath.c_str());
             reportCount++;
         } else {
+            // 报告失败，应用可自定义错误处理
             OH_LOG_ERROR(LOG_APP, "ReportScanResult failed for %{public}s, ret :%{public}d", reportPath.c_str(), res);
         }
 

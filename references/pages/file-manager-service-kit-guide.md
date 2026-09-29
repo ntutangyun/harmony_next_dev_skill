@@ -9,3 +9,5 @@ File Manager Service Kit简介
 获取文件图标
 
 解析文件快捷方式
+
+File Manager Service Kit术语

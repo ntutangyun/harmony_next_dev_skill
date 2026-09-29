@@ -91,7 +91,7 @@ export default class DeepAbility extends UIAbility {
 
 [h2]使用openLink实现应用跳转
 
-在openLink接口的link字段中传入目标应用的URL信息，并将options字段中的appLinkingOnly配置为false。
+在openLink()接口的link字段中传入目标应用的URL信息，并将options字段中的appLinkingOnly配置为false。
 
 示例代码如下：
 
@@ -133,7 +133,7 @@ struct DeepOpenLinkIndex {
 
 [h2]使用startAbility实现应用跳转
 
-startAbility接口是将应用链接放入Want中，通过调用隐式Want匹配的方法触发应用跳转。
+startAbility()接口是将应用链接放入Want中，通过调用隐式Want匹配的方法触发应用跳转。
 
 示例代码如下：
 
@@ -173,7 +173,7 @@ struct DeepStartIndex {
 
 [h2]使用Web组件实现应用跳转
 
-Web组件可以在onLoadIntercept的回调函数中实现应用跳转。
+Web组件可以在onLoadIntercept()的回调函数中实现应用跳转。
 
 示例代码如下：
 

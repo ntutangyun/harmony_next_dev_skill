@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-pa
   "fields": {
     "status": {
       "state": "expired"
-   }
+    }
   }
 }
 
@@ -41,7 +41,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/wallet-pa
   "fields": {
     "status": {
       "state": "expired"
-   }
+    }
   }
 }
 ```

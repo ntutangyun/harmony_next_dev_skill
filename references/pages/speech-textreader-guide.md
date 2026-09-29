@@ -31,7 +31,7 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
   WindowManager.setWindowStage(windowStage);
 
   windowStage.loadContent('pages/Index', (err, data) => {
-    if (err) {
+    if (err.code) {
       console.error(`Failed to load the content. Code: ${err.code}, message: ${err.message}`);
       return;
     }
@@ -695,7 +695,7 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
   WindowManager.setWindowStage(windowStage);
 
   windowStage.loadContent('pages/Index', (err, data) => {
-    if (err) {
+    if (err.code) {
       console.error(`Failed to load the content. Code: ${err.code}, message: ${err.message}`);
       return;
     }

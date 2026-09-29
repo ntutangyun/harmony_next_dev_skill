@@ -14,11 +14,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesec
 
 流程说明：
 
-开发者应用订阅安全审计数据。
+应用订阅安全审计数据。
 
-Device Security Kit调用回调函数通知开发者应用，开发者应用根据审计数据进行业务处理。
+Device Security Kit调用回调函数通知应用。
 
-当开发者应用不需要使用该审计数据时，取消订阅安全审计数据。
+应用根据审计数据进行业务处理。
+
+当应用不需要使用该审计数据时，取消订阅安全审计数据。
 
 接口说明
 

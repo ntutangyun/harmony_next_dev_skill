@@ -64,7 +64,7 @@ struct Index {
     .onScrollIndex((firstIndex: number) => {
       let i = 1;
       while (i<20000) { // 在列表滑动事件中做一些耗时操作
-        console.log("do something");
+        hilog.info(0x0000, 'testTag', `do something...`);
         i++;
       }
     })
@@ -78,6 +78,10 @@ struct Index {
 HiAppEvent onReceive: domain=OS
 HiAppEvent eventName=SCROLL_JANK
 HiAppEvent eventInfo={"domain":"OS","name":"SCROLL_JANK","eventType":1,"params":{"ability_name":"EntryAbility","begin_time":1710322495739,"bundle_name":"com.example.myapplication1","bundle_version":"1.0.0","duration":801,"external_log":["/data/storage/el2/log/watchdog/SCROLL_JANK_20250402192812_6033.txt"],"log_over_limit":false,"max_app_frametime":3,"max_app_seq_frames":0,"max_render_frametime":8,"max_render_seq_frames":0,"process_name":"com.example.myapplication1","time":1710322497495,"total_app_frames":98,"total_app_missed_frames":0,"total_render_frames":80,"total_render_missed_frames":0}}
+
+示例代码
+
+订阅滑动丢帧事件
 
 ## Code blocks
 
@@ -134,7 +138,7 @@ struct Index {
     .onScrollIndex((firstIndex: number) => {
       let i = 1;
       while (i<20000) { // 在列表滑动事件中做一些耗时操作
-        console.log("do something");
+        hilog.info(0x0000, 'testTag', `do something...`);
         i++;
       }
     })

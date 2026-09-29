@@ -266,6 +266,31 @@ When you need to construct the UI tree from native code (`ArkUI_NodeHandle` via 
 
 Mount native nodes inside ArkUI through an `XComponent`'s `NodeContent`. See also the NDK overview in `references/10-kits-catalog.md`.
 
+## 沉浸光感 — immersive light-sense system materials (API 26+)
+
+New in ArkUI from API **26.0.0** (`arkts-immersive-light-sense-overview`, `-development`, `-enable`, `-component-adaptation`, `-common-capability`, `-constraints`, `arkts-immersive-light-sample`). Two parts: **immersive system materials** (layered blur/refraction/highlight/shadow "glass" backgrounds) and **immersive spatial motion** (nonlinear deformation + edge light-flow on AlertDialog / CustomDialog / ActionSheet pop-ups, particle animation on Slider). Effects adapt automatically to device GPU tier (`uiMaterial.getGlobalMaterialLevel()`) and the user's system setting.
+
+- Requires `targetSDKVersion` ≥ 26.0.0 (guard with API-compatibility checks if you also support older versions).
+- **App-level switch** (entry module `module.json5`): `"metadata": [{ "name": "ohos.arkui.UIMaterial.state", "value": "enable" }]` — `default`/`enable` on, `disable` turns it off globally (overrides component-level too). Read back with `uiMaterial.getMaterialInfo()` → `MaterialState.DEFAULT/ENABLE/DISABLE`.
+- **Component-level** (wins over the app-level switch): the common attribute `.systemMaterial(...)`, a dialog's `systemMaterial` option, or component-specific APIs (e.g. `Tabs.barFloatingStyle({ systemMaterial })`, `Select.menuSystemMaterial`). Turn off with `uiMaterial.Material.empty`; `undefined` means "restore the component default" (not off).
+- Styles `uiMaterial.ImmersiveStyle`: `ULTRA_THIN` (floating toolbars) · `THIN` (search boxes) · `REGULAR` · `THICK` (menus) · `ULTRA_THICK` (dialogs). Options: `colorInvert` (auto contrast; only with ULTRA_THIN/THIN), `materialColor` (semi-transparent tint), `interactive` (press deformation + point light), `applyShadow`.
+- **Where it renders**: listed dialog components/APIs (AlertDialog, ActionSheet, CustomDialog, picker dialogs, menus, Popup, Tips, promptAction, sheets …) plus Slider/Toggle/Select work page-wide; *all other components only take effect inside the Navigation/NavDestination title bar or a bottom TabBar* (`Tabs` with `barPosition: BarPosition.End`) — elsewhere it is ignored.
+- It is GPU-heavy: keep material area and layer count small, don't pin it over video/animated content (`arkts-immersive-light-sense-constraints`).
+- UI Design Kit offers the same effect for HDS navigation / HDS bottom tabs (`TitleBarStyleOptions` / `HdsTabsFloatingStyle.systemMaterialEffect`).
+
+```typescript
+import { uiMaterial } from '@kit.ArkUI';
+
+// inside a Navigation title bar / bottom TabBar
+Row() { /* ... */ }
+  .borderRadius(24)
+  .systemMaterial(new uiMaterial.ImmersiveMaterial({
+    style: uiMaterial.ImmersiveStyle.REGULAR,
+  }))
+```
+
+**In-app theme skinning** (`theme-skinning`): implement `CustomColors`/`CustomTheme` (override only the tokens you need), call `ThemeControl.setDefaultTheme(theme)` before the page's `build`, and react in custom components via `onWillApplyTheme(theme: Theme)`; `WithTheme` scopes a theme / light-dark mode to a subtree. App-internal only — not per UIAbility/window.
+
 ## Beyond this page
 
 For graphics (Canvas, Image processing, ArkGraphics2D/3D, XComponent, GPU/WebGL): `references/10-kits-catalog.md`.

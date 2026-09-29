@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-ohpm-dockerfile_
 
-Dockerfile是构建Docker镜像的文本文件，其中包含了构建镜像的命令和说明，可以实现如下功能：
+Dockerfile是构建Docker镜像的文本文件，其中包含了构建镜像的命令和说明，实现如下功能：
 
 指定基础镜像。
 
@@ -18,7 +18,7 @@ Dockerfile是构建Docker镜像的文本文件，其中包含了构建镜像的�
 
 运行start命令，启动私仓服务。
 
-本文档介绍在Linux系统中如何使用Docker命令搭建ohpm-repo私仓。
+从ohpm-repo 5.4.3 Beta版本开始，支持使用Docker命令搭建ohpm-repo私仓。本文档介绍在Linux系统中如何操作。
 
 环境准备
 

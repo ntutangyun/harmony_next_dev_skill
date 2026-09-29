@@ -944,7 +944,7 @@ class ListItemObject {
 
 使用aboutToReuse可以在Grid滑动时，从复用缓存中加入到组件树之前触发，从而更新组件状态变量，展示正确内容。
 
-需要注意的是无需在aboutToReuse中对@Link、@StorageLink、@ObjectLink、@Consume等自动更新值的状态变量进行更新，可能触发不必要的组件刷新。
+需要注意的是无需在aboutToReuse中对@Link、@StorageLink、@ObjectLink、@Consume等自动更新值的状态变量进行更新，否则可能触发不必要的组件刷新。
 
 // MyDataSource类实现IDataSource接口。
 class MyDataSource implements IDataSource {

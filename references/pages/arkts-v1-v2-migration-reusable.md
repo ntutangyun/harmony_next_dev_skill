@@ -89,7 +89,7 @@ ReusableV2Component().reuse({reuseId: () => 'groupA'})
 
 迁移规则
 
-组件复用V1中，当开发者打开复用组件的冻结开关freezeWhenInactive时，才会冻结复用池中的组件，详细规则参考自定义组件冻结功能。而在组件复用V2中，会自动开启冻结，详细规则参考复用阶段的冻结。
+组件复用V1中，当开发者打开复用组件的冻结开关freezeWhenInactive时，才会冻结复用池中的组件，详细规则参考自定义组件冻结。而在组件复用V2中，会自动开启冻结，详细规则参考复用阶段的冻结。
 
 [h2]LazyForEach->Repeat
 
@@ -105,9 +105,11 @@ ReusableV2Component().reuse({reuseId: () => 'groupA'})
 
 @ReusableV2的if使用场景示例代码如下：
 
+// 数据模型，使用@ObservedV2和@Trace实现深度观察
 @ObservedV2
 class Message {
-  @Trace value: string | undefined;
+  // 使用@Trace装饰需要观察变化的属性
+  @Trace public value: string | undefined;
 
   constructor(value: string) {
     this.value = value;
@@ -116,11 +118,13 @@ class Message {
 
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableIfScene {
+  // 控制子组件显示与隐藏的开关
   @Local isSwitch: boolean = true;
 
   build() {
     Column() {
+      // 点击按钮切换子组件的显示与隐藏，触发组件的创建与复用
       Button('Hello')
         .fontSize(24)
         .fontWeight(FontWeight.Bold)
@@ -138,18 +142,21 @@ struct Index {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct Child {
+  // @Param @Once接收外部传入值，仅初始化时同步一次
   @Require @Param @Once message: Message = new Message('AboutToReuse');
 
+  // 组件复用时回调，如无需对状态变量做额外修改可移除
   aboutToReuse() {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
     console.info('Recycle====Child==');
   }
 
   build() {
     Column() {
+      // 显示当前消息内容
       Text(this.message.value)
         .fontSize(30)
         .margin(20)
@@ -169,8 +176,10 @@ struct Child {
 @Entry
 @ComponentV2
 struct ReuseV2Demo {
+  // 列表数据源
   private data: string[] = [];
 
+  // 初始化列表数据
   aboutToAppear() {
     for (let i = 1; i < 1000; i++) {
       this.data.push(i + '');
@@ -179,7 +188,8 @@ struct ReuseV2Demo {
 
   build() {
     Column() {
-      List() {
+      List({ space: 10 }) {
+        // 使用Repeat的virtualScroll模式实现懒加载，配合复用组件提升滚动性能
         Repeat(this.data)
           .virtualScroll()
           .each((ri) => {
@@ -188,6 +198,9 @@ struct ReuseV2Demo {
             }
           })
       }
+      .width('100%')
+      .height('100%')
+      .padding(10)
     }
   }
 }
@@ -196,20 +209,38 @@ struct ReuseV2Demo {
 @ReusableV2
 @ComponentV2
 export struct CardViewV2 {
-  // 使用@Param @Once接收外部传入变量并观察变化
-  @Param @Once item: string = '';
+  // 使用@Param接收外部传入变量并观察变化
+  @Param item: string = '';
 
+  // Repeat自身能够进行复用，不会走到自定义组件复用的生命周期
   aboutToReuse(): void {
-    // Repeat自身能够进行复用，不会走到自定义组件复用的生命周期
   }
 
   build() {
-    Column() {
-      Text(this.item)
-        .fontSize(30)
+    Row() {
+      // 显示当前列表项序号
+      Text(`#${this.item}`)
+        .fontSize(20)
+        .fontColor('#007dffa')
+        .fontWeight(FontWeight.Bold)
+
+      // 显示列表项内容
+      Text(`Item ${this.item}`)
+        .fontSize(18)
+        .fontColor('#333333')
+        .margin({ left: 10 })
     }
-    .borderWidth(1)
-    .height(100)
+    .width('100%')
+    .height(80)
+    .padding({ left: 20, right: 20 })
+    .borderRadius(12)
+    .backgroundColor('#ffffff')
+    .shadow({
+      radius: 4,
+      color: '#1a000000',
+      offsetX: 0,
+      offsetY: 2
+    })
   }
 }
 
@@ -221,9 +252,11 @@ export struct CardViewV2 {
 
 @Entry
 @ComponentV2
-struct Index {
-  private dataSource: FriendMoment[] = new Array<FriendMoment>();
+struct ReusableListIfScene {
+  // 列表数据源
+  private dataSource: FriendMoment[] = [];
 
+  // 初始化数据源，包含有图片和无图片两种类型
   aboutToAppear(): void {
     for (let i = 0; i < 20; i++) {
       let title = i + 1 + 'test_if';
@@ -244,6 +277,7 @@ struct Index {
           .virtualScroll()
           .each((ri) => {
             ListItem() {
+              // 根据是否有图片选择不同的复用组
               if (ri.item.image) {
                 OneMoment({ moment: ri.item })
                   .reuse({ reuseId: () => 'withImage' })
@@ -259,13 +293,14 @@ struct Index {
   }
 }
 
+// 数据模型
 @ObservedV2
 class FriendMoment {
-  @Trace id: string = '';
-  @Trace text: string = '';
-  @Trace title: string = '';
-  @Trace image: string = '';
-  @Trace answers: Array<ResourceStr> = [];
+  @Trace public id: string = '';
+  @Trace public text: string = '';
+  @Trace public title: string = '';
+  @Trace public image: string = '';
+  @Trace public answers: Array<ResourceStr> = [];
 
   constructor(id: string, title: string, image: string) {
     this.text = id;
@@ -274,27 +309,38 @@ class FriendMoment {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 export struct OneMoment {
+  // 接收外部传入的数据对象
   @Require @Param moment: FriendMoment;
 
-  // 复用id相同的组件才能触发复用
+  // 复用id相同的组件才能触发复用，如无需对状态变量做额外修改可移除
   aboutToReuse(): void {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
     console.info(`=====aboutToReuse====OneMoment==复用了==${this.moment.text}`);
   }
 
   build() {
     Column() {
+      // 显示文本内容
       Text(this.moment.text)
-      // if分支判断。
+      // if分支判断，有图片时显示图片区域
       if (this.moment.image !== '') {
+        // 使用Flex包裹实现自动换行布局
         Flex({ wrap: FlexWrap.Wrap }) {
-          Image($r(this.moment.image)).height(50).width(50)
-          Image($r(this.moment.image)).height(50).width(50)
-          Image($r(this.moment.image)).height(50).width(50)
-          Image($r(this.moment.image)).height(50).width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
         }
       }
     }
@@ -312,30 +358,38 @@ export struct OneMoment {
 // xxx.ets
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableRepeatAllLoadScene {
+  // 列表数据源
   @Local dataSource: ListItemObject[] = [];
 
   build() {
     Column() {
       Row() {
-        Button('clear').onClick(() => {
-          for (let i = 1; i < 50; i++) {
-            this.dataSource.pop();
-          }
-        }).height(40)
+        // 点击clear清空列表数据，触发组件销毁
+        Button('clear')
+          .onClick(() => {
+            for (let i = 1; i < 50; i++) {
+              this.dataSource.pop();
+            }
+          })
+          .height(40)
 
-        Button('update').onClick(() => {
-          for (let i = 1; i < 50; i++) {
-            let obj = new ListItemObject();
-            obj.id = i;
-            obj.uuid = Math.random().toString();
-            obj.isExpand = false;
-            this.dataSource.push(obj);
-          }
-        }).height(40)
+        // 点击update重新填充数据，触发组件创建或复用
+        Button('update')
+          .onClick(() => {
+            for (let i = 1; i < 50; i++) {
+              let obj = new ListItemObject();
+              obj.id = i;
+              obj.uuid = Math.random().toString();
+              obj.isExpand = false;
+              this.dataSource.push(obj);
+            }
+          })
+          .height(40)
       }
 
       List({ space: 10 }) {
+        // 不使用virtualScroll，采用Repeat全量加载模式
         Repeat(this.dataSource)
           .each((ri) => {
             ListItem() {
@@ -344,32 +398,38 @@ struct Index {
               })
             }
           })
-      }.cachedCount(0)
+      }
+      .cachedCount(0)
       .width('100%')
       .height('100%')
     }
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ListItemView {
+  // 接收外部传入的数据对象
   @Require @Param obj: ListItemObject;
 
+  // 首次创建时回调
   aboutToAppear(): void {
-    // 点击 update，首次进入，上下滑动，由于Repeat全量加载属性，无法复用
+    // 点击update，首次进入，上下滑动，由于Repeat全量加载属性，无法复用
     console.info('=====aboutToAppear=====ListItemView==创建了==');
   }
 
+  // 组件复用时回调
   aboutToReuse() {
     // 点击clear，再次update，复用成功
     // 符合一帧内重复创建多个已被销毁的自定义组件
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
+    // 如无需对状态变量做额外修改可移除
     console.info('=====aboutToReuse====ListItemView==复用了==');
   }
 
   build() {
     Column({ space: 10 }) {
+      // 显示标题文本
       Text(`${this.obj.id}.标题`)
         .fontSize(16)
         .fontColor('#000000')
@@ -378,6 +438,7 @@ struct ListItemView {
           bottom: 20,
         })
 
+      // 根据展开状态显示额外内容
       if (this.obj.isExpand) {
         Text('expand')
           .fontSize(14)
@@ -388,17 +449,19 @@ struct ListItemView {
     .borderRadius(10)
     .backgroundColor(Color.White)
     .padding(15)
+    // 点击切换展开/折叠状态
     .onClick(() => {
       this.obj.isExpand = !this.obj.isExpand;
     })
   }
 }
 
+// 数据模型
 @ObservedV2
 class ListItemObject {
-  @Trace uuid: string = '';
-  @Trace id: number = 0;
-  @Trace isExpand: boolean = false;
+  @Trace public uuid: string = '';
+  @Trace public id: number = 0;
+  @Trace public isExpand: boolean = false;
 }
 
 [h2]Grid使用场景
@@ -410,9 +473,10 @@ class ListItemObject {
 @Entry
 @ComponentV2
 struct MyComponent {
-  // 数据源。
+  // 数据源
   @Local data: number[] = [];
 
+  // 初始化网格数据
   aboutToAppear() {
     for (let i = 1; i < 1000; i++) {
       this.data.push(i);
@@ -422,6 +486,7 @@ struct MyComponent {
   build() {
     Column({ space: 5 }) {
       Grid() {
+        // 使用Repeat的virtualScroll模式配合Grid实现懒加载
         Repeat(this.data)
           .virtualScroll()
           .each((ri) => {
@@ -430,8 +495,8 @@ struct MyComponent {
             }
           })
       }
-      .cachedCount(2) // 设置GridItem的缓存数量。
-      .columnsTemplate('1fr 1fr 1fr')
+      .cachedCount(2) // 设置GridItem的缓存数量
+      .columnsTemplate('1fr 1fr 1fr') // 三列等宽布局
       .columnsGap(10)
       .rowsGap(10)
       .margin(10)
@@ -441,9 +506,11 @@ struct MyComponent {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ReusableV2ChildComponent {
+  // 接收外部传入的序号
   @Param item: number = 0;
 
   build() {
@@ -452,6 +519,7 @@ struct ReusableV2ChildComponent {
       Image($r('app.media.startIcon'))
         .objectFit(ImageFit.Fill)
         .layoutWeight(1)
+      // 显示图片序号
       Text(`图片${this.item}`)
         .fontSize(16)
         .textAlign(TextAlign.Center)
@@ -468,14 +536,20 @@ struct ReusableV2ChildComponent {
 
 @ReusableV2的WaterFlow使用场景示例代码如下：
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ReusableV2FlowItem {
+  // 接收外部传入的序号
   @Param item: number = 0;
 
   build() {
     Column() {
-      Text('N' + this.item).fontSize(24).height(26).margin(10)
+      // 显示瀑布流子项序号
+      Text('N' + this.item)
+        .fontSize(24)
+        .height(26)
+        .margin(10)
       // 开发者可自行替换显示图片的内容，此处以app.media.startIcon为例
       Image($r('app.media.startIcon'))
         .objectFit(ImageFit.Cover)
@@ -487,23 +561,27 @@ struct ReusableV2FlowItem {
 
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableWaterFlowScene {
+  // 流式布局子项最小尺寸
   @Local minSize: number = 50;
+  // 流式布局子项最大尺寸
   @Local maxSize: number = 80;
   @Local fontSize: number = 24;
   @Local colors: number[] = [0xFFC0CB, 0xDA70D6, 0x6B8E23, 0x6A5ACD, 0x00FFFF, 0x00FF7F];
+  // 瀑布流滚动控制器
   scroller: Scroller = new Scroller();
+  // 瀑布流数据源
   @Local dataSource: number[] = [];
   private itemWidthArray: number[] = [];
   private itemHeightArray: number[] = [];
 
-  // 计算flow item宽/高。
+  // 计算flow item宽/高
   getSize() {
     let ret = Math.floor(Math.random() * this.maxSize);
     return (ret > this.minSize ? ret : this.minSize);
   }
 
-  // 保存flow item宽/高。
+  // 保存flow item宽/高
   getItemSizeArray() {
     for (let i = 0; i < 100; i++) {
       this.itemWidthArray.push(this.getSize());
@@ -511,6 +589,7 @@ struct Index {
     }
   }
 
+  // 初始化瀑布流数据
   aboutToAppear() {
     for (let i = 0; i <= 60; i++) {
       this.dataSource.push(i);
@@ -521,19 +600,23 @@ struct Index {
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
       Column({ space: 2 }) {
+        // 点击按钮回到瀑布流顶部
         Button('back top')
           .height('5%')
           .onClick(() => {
-            // 点击后回到顶部。
+            // 点击后回到顶部
             this.scroller.scrollEdge(Edge.Top);
           })
         WaterFlow({ scroller: this.scroller }) {
+          // 使用Repeat的virtualScroll模式配合WaterFlow实现懒加载
           Repeat(this.dataSource)
             .virtualScroll()
             .each((ri) => {
               FlowItem() {
                 ReusableV2FlowItem({ item: ri.item })
-              }.onAppear(() => {
+              }
+              .onAppear(() => {
+                // 滚动到底部时加载更多数据
                 if (ri.item + 20 == this.dataSource.length) {
                   for (let i = 0; i < 50; i++) {
                     this.dataSource.splice(this.dataSource.length, 0, this.dataSource.length);
@@ -541,7 +624,8 @@ struct Index {
                 }
               })
             })
-        }.margin({ left: 160, top: 10 })
+        }
+        .margin({ left: 160, top: 10 })
       }
     }
   }
@@ -555,9 +639,11 @@ struct Index {
 
 @Entry
 @ComponentV2
-struct Index {
-  private dataSource: Question[] = new Array<Question>();
+struct ReusableSwiperScene {
+  // 轮播数据源
+  private dataSource: Question[] = [];
 
+  // 初始化轮播数据
   aboutToAppear(): void {
     for (let i = 0; i < 1000; i++) {
       let title = i + 1 + 'test_swiper';
@@ -570,6 +656,7 @@ struct Index {
   build() {
     Column({ space: 5 }) {
       Swiper() {
+        // 使用Repeat的virtualScroll模式配合Swiper实现懒加载
         Repeat(this.dataSource)
           .virtualScroll()
           .each((ri) => {
@@ -582,12 +669,13 @@ struct Index {
   }
 }
 
+// 数据模型
 @ObservedV2
 class Question {
-  @Trace id: string = '';
-  @Trace title: ResourceStr = '';
-  @Trace image: ResourceStr = '';
-  @Trace answers: Array<ResourceStr> = [];
+  @Trace public id: string = '';
+  @Trace public title: ResourceStr = '';
+  @Trace public image: ResourceStr = '';
+  @Trace public answers: Array<ResourceStr> = [];
 
   constructor(id: string, title: ResourceStr, image: ResourceStr, answers: Array<ResourceStr>) {
     this.id = id;
@@ -597,13 +685,16 @@ class Question {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct QuestionSwiperItem {
+  // 接收外部传入的题目数据
   @Param itemData: Question | null = null;
 
   build() {
     Column() {
+      // 显示题目标题
       Text(this.itemData?.title)
         .fontSize(18)
         .fontColor($r('sys.color.ohos_id_color_primary'))
@@ -612,6 +703,7 @@ struct QuestionSwiperItem {
           top: 10,
           bottom: 16
         })
+      // 显示题目图片
       Image(this.itemData?.image)
         .width('100%')
         .borderRadius(12)
@@ -622,6 +714,7 @@ struct QuestionSwiperItem {
         .height(80)
         .width(80)
 
+      // 使用Repeat遍历显示选项列表
       Column({ space: 16 }) {
         Repeat(this.itemData?.answers)
           .each((ri) => {
@@ -650,8 +743,10 @@ struct QuestionSwiperItem {
 @Entry
 @ComponentV2
 struct ListItemGroupAndReusable {
-  dataSource: DataSrc[] = new Array<DataSrc>();
+  // 列表分组数据源
+  private dataSource: DataSrc[] = [];
 
+  // 列表分组头部构建器
   @Builder
   itemHead(text: string) {
     Text(text)
@@ -661,10 +756,11 @@ struct ListItemGroupAndReusable {
       .padding(10)
   }
 
+  // 初始化分组数据
   aboutToAppear() {
     for (let i = 0; i < 10000; i++) { // 循环10000次
       let data = new DataSrc();
-      for (let j = 0; j < 12; j++) { // 循环12次
+      for (let j = 0; j < 12; j++) { // 每组12条数据
         data.dataScr1.push(`测试条目数据: ${i} - ${j}`);
       }
       this.dataSource.push(data);
@@ -674,10 +770,12 @@ struct ListItemGroupAndReusable {
   build() {
     Stack() {
       List() {
+        // 外层Repeat遍历分组数据
         Repeat(this.dataSource)
           .virtualScroll()
           .each((ri) => {
             ListItemGroup({ header: this.itemHead(ri.index.toString()) }) {
+              // 内层Repeat遍历每组中的子项数据
               Repeat(ri.item.dataScr1)
                 .virtualScroll()
                 .each((ri) => {
@@ -694,19 +792,23 @@ struct ListItemGroupAndReusable {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct Inner {
+  // 接收外部传入的文本内容
   @Param str: string = '';
 
   build() {
+    // 显示文本内容
     Text(this.str)
   }
 }
 
+// 分组数据模型
 @ObservedV2
 class DataSrc {
-  @Trace dataScr1: string[] = [];
+  @Trace public dataScr1: string[] = [];
 }
 
 [h2]多种条目类型使用场景
@@ -725,9 +827,11 @@ class DataSrc {
 
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableLimitTypeScene {
+  // 列表数据源
   private data: number[] = [];
 
+  // 初始化列表数据
   aboutToAppear() {
     for (let i = 0; i < 1000; i++) {
       this.data.push(i);
@@ -741,10 +845,14 @@ struct Index {
           .virtualScroll()
           .each((ri) => {
             ListItem() {
-              if (ri.item % 2 === 0 ) {
-                ReusableV2Component({ item: ri.item }).reuse({reuseId: () => 'ReusableV2ComponentOne'})
+              // 根据奇偶性选择不同的复用组
+              if (ri.item % 2 === 0) {
+                // 偶数项使用ReusableV2ComponentOne复用组
+                ReusableV2Component({ item: ri.item })
+                  .reuse({ reuseId: () => 'ReusableV2ComponentOne' })
               } else {
-                ReusableV2Component({ item: ri.item }).reuse({reuseId: () => 'ReusableV2ComponentTwo'})
+                ReusableV2Component({ item: ri.item })
+                  .reuse({ reuseId: () => 'ReusableV2ComponentTwo' })
               }
             }
           })
@@ -754,29 +862,34 @@ struct Index {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ReusableV2Component {
+  // 接收外部传入的序号
   @Param item: number = 0;
 
+  // 组件复用时回调，如无需对状态变量做额外修改可移除
   aboutToReuse() {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
-    console.info(`ReusableComponent aboutToReuse called${this.item}`)
+    console.info(`ReusableComponent aboutToReuse called${this.item}`);
   }
 
   build() {
     Column() {
-      // 组件内部根据类型差异渲染
+      // 组件内部根据类型差异渲染不同内容
       if (this.item % 2 === 0) {
+        // 偶数项渲染样式一
         Text(`Item ${this.item} ReusableComponentOne`)
           .fontSize(20)
           .margin({ left: 10 })
       } else {
+        // 奇数项渲染样式二
         Text(`Item ${this.item} ReusableComponentTwo`)
           .fontSize(20)
           .margin({ left: 10 })
       }
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 
@@ -787,15 +900,18 @@ struct ReusableV2Component {
 @Entry
 @ComponentV2
 struct MyComponentV2 {
+  // 列表数据源
   private data: string[] = [];
 
+  // 初始化列表数据
   aboutToAppear() {
     for (let i = 0; i < 1000; i++) {
       this.data.push(i.toString());
     }
   }
 
-  // itemBuilderOne作为复用组件的写法未展示，以下为转为Builder之后的写法。
+  // itemBuilderOne作为复用组件的写法未展示，以下为转为Builder之后的写法
+  // 组合一：包含子组件A、B、C
   @Builder
   itemBuilderOne(item: string) {
     Column() {
@@ -805,7 +921,8 @@ struct MyComponentV2 {
     }
   }
 
-  // itemBuilderTwo转为Builder之后的写法。
+  // itemBuilderTwo转为Builder之后的写法
+  // 组合二：包含子组件A、C、D
   @Builder
   itemBuilderTwo(item: string) {
     Column() {
@@ -815,7 +932,8 @@ struct MyComponentV2 {
     }
   }
 
-  // itemBuilderThree转为Builder之后的写法。
+  // itemBuilderThree转为Builder之后的写法
+  // 组合三：包含子组件A、B、D
   @Builder
   itemBuilderThree(item: string) {
     Column() {
@@ -831,6 +949,7 @@ struct MyComponentV2 {
         .virtualScroll()
         .each((ri) => {
           ListItem() {
+            // 根据索引选择不同的组合型布局
             if (ri.index % 3 === 0) {
               this.itemBuilderOne(ri.item)
             } else if (ri.index % 5 === 0) {
@@ -847,26 +966,31 @@ struct MyComponentV2 {
   }
 }
 
+// 复用组件A，包含文本和图片网格
 @ReusableV2
 @ComponentV2
 struct ChildComponentA {
+  // 接收外部传入的序号
   @Param item: string = '';
 
+  // 组件复用时回调，如无需对状态变量做额外修改可移除
   aboutToReuse() {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
     console.info(`ChildComponentA Reuse ${this.item}`);
   }
 
+  // 组件被回收时回调
   aboutToRecycle(): void {
     console.info(`ChildComponentA ${this.item} Recycle`);
   }
 
   build() {
     Column() {
+      // 显示组件标识文本
       Text(`Item ${this.item} Child Component A`)
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Blue)
+      // 使用网格展示多张图片
       Grid() {
         ForEach((new Array(20)).fill(''), (item: string, index: number) => {
           GridItem() {
@@ -876,8 +1000,8 @@ struct ChildComponentA {
           }
         })
       }
-      .columnsTemplate('1fr 1fr 1fr 1fr 1fr')
-      .rowsTemplate('1fr 1fr 1fr 1fr')
+      .columnsTemplate('1fr 1fr 1fr 1fr 1fr') // 五列等宽布局
+      .rowsTemplate('1fr 1fr 1fr 1fr') // 四行等高布局
       .columnsGap(10)
       .width('90%')
       .height(160)
@@ -887,9 +1011,11 @@ struct ChildComponentA {
   }
 }
 
+// 复用组件B，显示红色文本
 @ReusableV2
 @ComponentV2
 struct ChildComponentB {
+  // 接收外部传入的序号
   @Param item: string = '';
 
   build() {
@@ -898,13 +1024,16 @@ struct ChildComponentB {
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Red)
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 
+// 复用组件C，显示绿色文本
 @ReusableV2
 @ComponentV2
 struct ChildComponentC {
+  // 接收外部传入的序号
   @Param item: string = '';
 
   build() {
@@ -913,13 +1042,16 @@ struct ChildComponentC {
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Green)
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 
+// 复用组件D，显示橙色文本
 @ReusableV2
 @ComponentV2
 struct ChildComponentD {
+  // 接收外部传入的序号
   @Param item: string = '';
 
   build() {
@@ -928,7 +1060,8 @@ struct ChildComponentD {
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Orange)
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 
@@ -997,9 +1130,11 @@ ReusableV2Component().reuse({reuseId: () => 'groupA'})
 ### Code block 3
 
 ```
+// 数据模型，使用@ObservedV2和@Trace实现深度观察
 @ObservedV2
 class Message {
-  @Trace value: string | undefined;
+  // 使用@Trace装饰需要观察变化的属性
+  @Trace public value: string | undefined;
 
   constructor(value: string) {
     this.value = value;
@@ -1008,11 +1143,13 @@ class Message {
 
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableIfScene {
+  // 控制子组件显示与隐藏的开关
   @Local isSwitch: boolean = true;
 
   build() {
     Column() {
+      // 点击按钮切换子组件的显示与隐藏，触发组件的创建与复用
       Button('Hello')
         .fontSize(24)
         .fontWeight(FontWeight.Bold)
@@ -1030,18 +1167,21 @@ struct Index {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct Child {
+  // @Param @Once接收外部传入值，仅初始化时同步一次
   @Require @Param @Once message: Message = new Message('AboutToReuse');
 
+  // 组件复用时回调，如无需对状态变量做额外修改可移除
   aboutToReuse() {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
     console.info('Recycle====Child==');
   }
 
   build() {
     Column() {
+      // 显示当前消息内容
       Text(this.message.value)
         .fontSize(30)
         .margin(20)
@@ -1059,8 +1199,10 @@ struct Child {
 @Entry
 @ComponentV2
 struct ReuseV2Demo {
+  // 列表数据源
   private data: string[] = [];
 
+  // 初始化列表数据
   aboutToAppear() {
     for (let i = 1; i < 1000; i++) {
       this.data.push(i + '');
@@ -1069,7 +1211,8 @@ struct ReuseV2Demo {
 
   build() {
     Column() {
-      List() {
+      List({ space: 10 }) {
+        // 使用Repeat的virtualScroll模式实现懒加载，配合复用组件提升滚动性能
         Repeat(this.data)
           .virtualScroll()
           .each((ri) => {
@@ -1078,6 +1221,9 @@ struct ReuseV2Demo {
             }
           })
       }
+      .width('100%')
+      .height('100%')
+      .padding(10)
     }
   }
 }
@@ -1086,20 +1232,38 @@ struct ReuseV2Demo {
 @ReusableV2
 @ComponentV2
 export struct CardViewV2 {
-  // 使用@Param @Once接收外部传入变量并观察变化
-  @Param @Once item: string = '';
+  // 使用@Param接收外部传入变量并观察变化
+  @Param item: string = '';
 
+  // Repeat自身能够进行复用，不会走到自定义组件复用的生命周期
   aboutToReuse(): void {
-    // Repeat自身能够进行复用，不会走到自定义组件复用的生命周期
   }
 
   build() {
-    Column() {
-      Text(this.item)
-        .fontSize(30)
+    Row() {
+      // 显示当前列表项序号
+      Text(`#${this.item}`)
+        .fontSize(20)
+        .fontColor('#007dffa')
+        .fontWeight(FontWeight.Bold)
+
+      // 显示列表项内容
+      Text(`Item ${this.item}`)
+        .fontSize(18)
+        .fontColor('#333333')
+        .margin({ left: 10 })
     }
-    .borderWidth(1)
-    .height(100)
+    .width('100%')
+    .height(80)
+    .padding({ left: 20, right: 20 })
+    .borderRadius(12)
+    .backgroundColor('#ffffff')
+    .shadow({
+      radius: 4,
+      color: '#1a000000',
+      offsetX: 0,
+      offsetY: 2
+    })
   }
 }
 ```
@@ -1109,9 +1273,11 @@ export struct CardViewV2 {
 ```
 @Entry
 @ComponentV2
-struct Index {
-  private dataSource: FriendMoment[] = new Array<FriendMoment>();
+struct ReusableListIfScene {
+  // 列表数据源
+  private dataSource: FriendMoment[] = [];
 
+  // 初始化数据源，包含有图片和无图片两种类型
   aboutToAppear(): void {
     for (let i = 0; i < 20; i++) {
       let title = i + 1 + 'test_if';
@@ -1132,6 +1298,7 @@ struct Index {
           .virtualScroll()
           .each((ri) => {
             ListItem() {
+              // 根据是否有图片选择不同的复用组
               if (ri.item.image) {
                 OneMoment({ moment: ri.item })
                   .reuse({ reuseId: () => 'withImage' })
@@ -1147,13 +1314,14 @@ struct Index {
   }
 }
 
+// 数据模型
 @ObservedV2
 class FriendMoment {
-  @Trace id: string = '';
-  @Trace text: string = '';
-  @Trace title: string = '';
-  @Trace image: string = '';
-  @Trace answers: Array<ResourceStr> = [];
+  @Trace public id: string = '';
+  @Trace public text: string = '';
+  @Trace public title: string = '';
+  @Trace public image: string = '';
+  @Trace public answers: Array<ResourceStr> = [];
 
   constructor(id: string, title: string, image: string) {
     this.text = id;
@@ -1162,27 +1330,38 @@ class FriendMoment {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 export struct OneMoment {
+  // 接收外部传入的数据对象
   @Require @Param moment: FriendMoment;
 
-  // 复用id相同的组件才能触发复用
+  // 复用id相同的组件才能触发复用，如无需对状态变量做额外修改可移除
   aboutToReuse(): void {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
     console.info(`=====aboutToReuse====OneMoment==复用了==${this.moment.text}`);
   }
 
   build() {
     Column() {
+      // 显示文本内容
       Text(this.moment.text)
-      // if分支判断。
+      // if分支判断，有图片时显示图片区域
       if (this.moment.image !== '') {
+        // 使用Flex包裹实现自动换行布局
         Flex({ wrap: FlexWrap.Wrap }) {
-          Image($r(this.moment.image)).height(50).width(50)
-          Image($r(this.moment.image)).height(50).width(50)
-          Image($r(this.moment.image)).height(50).width(50)
-          Image($r(this.moment.image)).height(50).width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
+          Image($r(this.moment.image))
+            .height(50)
+            .width(50)
         }
       }
     }
@@ -1196,30 +1375,38 @@ export struct OneMoment {
 // xxx.ets
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableRepeatAllLoadScene {
+  // 列表数据源
   @Local dataSource: ListItemObject[] = [];
 
   build() {
     Column() {
       Row() {
-        Button('clear').onClick(() => {
-          for (let i = 1; i < 50; i++) {
-            this.dataSource.pop();
-          }
-        }).height(40)
+        // 点击clear清空列表数据，触发组件销毁
+        Button('clear')
+          .onClick(() => {
+            for (let i = 1; i < 50; i++) {
+              this.dataSource.pop();
+            }
+          })
+          .height(40)
 
-        Button('update').onClick(() => {
-          for (let i = 1; i < 50; i++) {
-            let obj = new ListItemObject();
-            obj.id = i;
-            obj.uuid = Math.random().toString();
-            obj.isExpand = false;
-            this.dataSource.push(obj);
-          }
-        }).height(40)
+        // 点击update重新填充数据，触发组件创建或复用
+        Button('update')
+          .onClick(() => {
+            for (let i = 1; i < 50; i++) {
+              let obj = new ListItemObject();
+              obj.id = i;
+              obj.uuid = Math.random().toString();
+              obj.isExpand = false;
+              this.dataSource.push(obj);
+            }
+          })
+          .height(40)
       }
 
       List({ space: 10 }) {
+        // 不使用virtualScroll，采用Repeat全量加载模式
         Repeat(this.dataSource)
           .each((ri) => {
             ListItem() {
@@ -1228,32 +1415,38 @@ struct Index {
               })
             }
           })
-      }.cachedCount(0)
+      }
+      .cachedCount(0)
       .width('100%')
       .height('100%')
     }
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ListItemView {
+  // 接收外部传入的数据对象
   @Require @Param obj: ListItemObject;
 
+  // 首次创建时回调
   aboutToAppear(): void {
-    // 点击 update，首次进入，上下滑动，由于Repeat全量加载属性，无法复用
+    // 点击update，首次进入，上下滑动，由于Repeat全量加载属性，无法复用
     console.info('=====aboutToAppear=====ListItemView==创建了==');
   }
 
+  // 组件复用时回调
   aboutToReuse() {
     // 点击clear，再次update，复用成功
     // 符合一帧内重复创建多个已被销毁的自定义组件
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
+    // 如无需对状态变量做额外修改可移除
     console.info('=====aboutToReuse====ListItemView==复用了==');
   }
 
   build() {
     Column({ space: 10 }) {
+      // 显示标题文本
       Text(`${this.obj.id}.标题`)
         .fontSize(16)
         .fontColor('#000000')
@@ -1262,6 +1455,7 @@ struct ListItemView {
           bottom: 20,
         })
 
+      // 根据展开状态显示额外内容
       if (this.obj.isExpand) {
         Text('expand')
           .fontSize(14)
@@ -1272,17 +1466,19 @@ struct ListItemView {
     .borderRadius(10)
     .backgroundColor(Color.White)
     .padding(15)
+    // 点击切换展开/折叠状态
     .onClick(() => {
       this.obj.isExpand = !this.obj.isExpand;
     })
   }
 }
 
+// 数据模型
 @ObservedV2
 class ListItemObject {
-  @Trace uuid: string = '';
-  @Trace id: number = 0;
-  @Trace isExpand: boolean = false;
+  @Trace public uuid: string = '';
+  @Trace public id: number = 0;
+  @Trace public isExpand: boolean = false;
 }
 ```
 
@@ -1292,9 +1488,10 @@ class ListItemObject {
 @Entry
 @ComponentV2
 struct MyComponent {
-  // 数据源。
+  // 数据源
   @Local data: number[] = [];
 
+  // 初始化网格数据
   aboutToAppear() {
     for (let i = 1; i < 1000; i++) {
       this.data.push(i);
@@ -1304,6 +1501,7 @@ struct MyComponent {
   build() {
     Column({ space: 5 }) {
       Grid() {
+        // 使用Repeat的virtualScroll模式配合Grid实现懒加载
         Repeat(this.data)
           .virtualScroll()
           .each((ri) => {
@@ -1312,8 +1510,8 @@ struct MyComponent {
             }
           })
       }
-      .cachedCount(2) // 设置GridItem的缓存数量。
-      .columnsTemplate('1fr 1fr 1fr')
+      .cachedCount(2) // 设置GridItem的缓存数量
+      .columnsTemplate('1fr 1fr 1fr') // 三列等宽布局
       .columnsGap(10)
       .rowsGap(10)
       .margin(10)
@@ -1323,9 +1521,11 @@ struct MyComponent {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ReusableV2ChildComponent {
+  // 接收外部传入的序号
   @Param item: number = 0;
 
   build() {
@@ -1334,6 +1534,7 @@ struct ReusableV2ChildComponent {
       Image($r('app.media.startIcon'))
         .objectFit(ImageFit.Fill)
         .layoutWeight(1)
+      // 显示图片序号
       Text(`图片${this.item}`)
         .fontSize(16)
         .textAlign(TextAlign.Center)
@@ -1348,14 +1549,20 @@ struct ReusableV2ChildComponent {
 ### Code block 8
 
 ```
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ReusableV2FlowItem {
+  // 接收外部传入的序号
   @Param item: number = 0;
 
   build() {
     Column() {
-      Text('N' + this.item).fontSize(24).height(26).margin(10)
+      // 显示瀑布流子项序号
+      Text('N' + this.item)
+        .fontSize(24)
+        .height(26)
+        .margin(10)
       // 开发者可自行替换显示图片的内容，此处以app.media.startIcon为例
       Image($r('app.media.startIcon'))
         .objectFit(ImageFit.Cover)
@@ -1367,23 +1574,27 @@ struct ReusableV2FlowItem {
 
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableWaterFlowScene {
+  // 流式布局子项最小尺寸
   @Local minSize: number = 50;
+  // 流式布局子项最大尺寸
   @Local maxSize: number = 80;
   @Local fontSize: number = 24;
   @Local colors: number[] = [0xFFC0CB, 0xDA70D6, 0x6B8E23, 0x6A5ACD, 0x00FFFF, 0x00FF7F];
+  // 瀑布流滚动控制器
   scroller: Scroller = new Scroller();
+  // 瀑布流数据源
   @Local dataSource: number[] = [];
   private itemWidthArray: number[] = [];
   private itemHeightArray: number[] = [];
 
-  // 计算flow item宽/高。
+  // 计算flow item宽/高
   getSize() {
     let ret = Math.floor(Math.random() * this.maxSize);
     return (ret > this.minSize ? ret : this.minSize);
   }
 
-  // 保存flow item宽/高。
+  // 保存flow item宽/高
   getItemSizeArray() {
     for (let i = 0; i < 100; i++) {
       this.itemWidthArray.push(this.getSize());
@@ -1391,6 +1602,7 @@ struct Index {
     }
   }
 
+  // 初始化瀑布流数据
   aboutToAppear() {
     for (let i = 0; i <= 60; i++) {
       this.dataSource.push(i);
@@ -1401,19 +1613,23 @@ struct Index {
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
       Column({ space: 2 }) {
+        // 点击按钮回到瀑布流顶部
         Button('back top')
           .height('5%')
           .onClick(() => {
-            // 点击后回到顶部。
+            // 点击后回到顶部
             this.scroller.scrollEdge(Edge.Top);
           })
         WaterFlow({ scroller: this.scroller }) {
+          // 使用Repeat的virtualScroll模式配合WaterFlow实现懒加载
           Repeat(this.dataSource)
             .virtualScroll()
             .each((ri) => {
               FlowItem() {
                 ReusableV2FlowItem({ item: ri.item })
-              }.onAppear(() => {
+              }
+              .onAppear(() => {
+                // 滚动到底部时加载更多数据
                 if (ri.item + 20 == this.dataSource.length) {
                   for (let i = 0; i < 50; i++) {
                     this.dataSource.splice(this.dataSource.length, 0, this.dataSource.length);
@@ -1421,7 +1637,8 @@ struct Index {
                 }
               })
             })
-        }.margin({ left: 160, top: 10 })
+        }
+        .margin({ left: 160, top: 10 })
       }
     }
   }
@@ -1433,9 +1650,11 @@ struct Index {
 ```
 @Entry
 @ComponentV2
-struct Index {
-  private dataSource: Question[] = new Array<Question>();
+struct ReusableSwiperScene {
+  // 轮播数据源
+  private dataSource: Question[] = [];
 
+  // 初始化轮播数据
   aboutToAppear(): void {
     for (let i = 0; i < 1000; i++) {
       let title = i + 1 + 'test_swiper';
@@ -1448,6 +1667,7 @@ struct Index {
   build() {
     Column({ space: 5 }) {
       Swiper() {
+        // 使用Repeat的virtualScroll模式配合Swiper实现懒加载
         Repeat(this.dataSource)
           .virtualScroll()
           .each((ri) => {
@@ -1460,12 +1680,13 @@ struct Index {
   }
 }
 
+// 数据模型
 @ObservedV2
 class Question {
-  @Trace id: string = '';
-  @Trace title: ResourceStr = '';
-  @Trace image: ResourceStr = '';
-  @Trace answers: Array<ResourceStr> = [];
+  @Trace public id: string = '';
+  @Trace public title: ResourceStr = '';
+  @Trace public image: ResourceStr = '';
+  @Trace public answers: Array<ResourceStr> = [];
 
   constructor(id: string, title: ResourceStr, image: ResourceStr, answers: Array<ResourceStr>) {
     this.id = id;
@@ -1475,13 +1696,16 @@ class Question {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct QuestionSwiperItem {
+  // 接收外部传入的题目数据
   @Param itemData: Question | null = null;
 
   build() {
     Column() {
+      // 显示题目标题
       Text(this.itemData?.title)
         .fontSize(18)
         .fontColor($r('sys.color.ohos_id_color_primary'))
@@ -1490,6 +1714,7 @@ struct QuestionSwiperItem {
           top: 10,
           bottom: 16
         })
+      // 显示题目图片
       Image(this.itemData?.image)
         .width('100%')
         .borderRadius(12)
@@ -1500,6 +1725,7 @@ struct QuestionSwiperItem {
         .height(80)
         .width(80)
 
+      // 使用Repeat遍历显示选项列表
       Column({ space: 16 }) {
         Repeat(this.itemData?.answers)
           .each((ri) => {
@@ -1526,8 +1752,10 @@ struct QuestionSwiperItem {
 @Entry
 @ComponentV2
 struct ListItemGroupAndReusable {
-  dataSource: DataSrc[] = new Array<DataSrc>();
+  // 列表分组数据源
+  private dataSource: DataSrc[] = [];
 
+  // 列表分组头部构建器
   @Builder
   itemHead(text: string) {
     Text(text)
@@ -1537,10 +1765,11 @@ struct ListItemGroupAndReusable {
       .padding(10)
   }
 
+  // 初始化分组数据
   aboutToAppear() {
     for (let i = 0; i < 10000; i++) { // 循环10000次
       let data = new DataSrc();
-      for (let j = 0; j < 12; j++) { // 循环12次
+      for (let j = 0; j < 12; j++) { // 每组12条数据
         data.dataScr1.push(`测试条目数据: ${i} - ${j}`);
       }
       this.dataSource.push(data);
@@ -1550,10 +1779,12 @@ struct ListItemGroupAndReusable {
   build() {
     Stack() {
       List() {
+        // 外层Repeat遍历分组数据
         Repeat(this.dataSource)
           .virtualScroll()
           .each((ri) => {
             ListItemGroup({ header: this.itemHead(ri.index.toString()) }) {
+              // 内层Repeat遍历每组中的子项数据
               Repeat(ri.item.dataScr1)
                 .virtualScroll()
                 .each((ri) => {
@@ -1570,19 +1801,23 @@ struct ListItemGroupAndReusable {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct Inner {
+  // 接收外部传入的文本内容
   @Param str: string = '';
 
   build() {
+    // 显示文本内容
     Text(this.str)
   }
 }
 
+// 分组数据模型
 @ObservedV2
 class DataSrc {
-  @Trace dataScr1: string[] = [];
+  @Trace public dataScr1: string[] = [];
 }
 ```
 
@@ -1591,9 +1826,11 @@ class DataSrc {
 ```
 @Entry
 @ComponentV2
-struct Index {
+struct ReusableLimitTypeScene {
+  // 列表数据源
   private data: number[] = [];
 
+  // 初始化列表数据
   aboutToAppear() {
     for (let i = 0; i < 1000; i++) {
       this.data.push(i);
@@ -1607,10 +1844,14 @@ struct Index {
           .virtualScroll()
           .each((ri) => {
             ListItem() {
-              if (ri.item % 2 === 0 ) {
-                ReusableV2Component({ item: ri.item }).reuse({reuseId: () => 'ReusableV2ComponentOne'})
+              // 根据奇偶性选择不同的复用组
+              if (ri.item % 2 === 0) {
+                // 偶数项使用ReusableV2ComponentOne复用组
+                ReusableV2Component({ item: ri.item })
+                  .reuse({ reuseId: () => 'ReusableV2ComponentOne' })
               } else {
-                ReusableV2Component({ item: ri.item }).reuse({reuseId: () => 'ReusableV2ComponentTwo'})
+                ReusableV2Component({ item: ri.item })
+                  .reuse({ reuseId: () => 'ReusableV2ComponentTwo' })
               }
             }
           })
@@ -1620,29 +1861,34 @@ struct Index {
   }
 }
 
+// 复用组件
 @ReusableV2
 @ComponentV2
 struct ReusableV2Component {
+  // 接收外部传入的序号
   @Param item: number = 0;
 
+  // 组件复用时回调，如无需对状态变量做额外修改可移除
   aboutToReuse() {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
-    console.info(`ReusableComponent aboutToReuse called${this.item}`)
+    console.info(`ReusableComponent aboutToReuse called${this.item}`);
   }
 
   build() {
     Column() {
-      // 组件内部根据类型差异渲染
+      // 组件内部根据类型差异渲染不同内容
       if (this.item % 2 === 0) {
+        // 偶数项渲染样式一
         Text(`Item ${this.item} ReusableComponentOne`)
           .fontSize(20)
           .margin({ left: 10 })
       } else {
+        // 奇数项渲染样式二
         Text(`Item ${this.item} ReusableComponentTwo`)
           .fontSize(20)
           .margin({ left: 10 })
       }
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 ```
@@ -1653,15 +1899,18 @@ struct ReusableV2Component {
 @Entry
 @ComponentV2
 struct MyComponentV2 {
+  // 列表数据源
   private data: string[] = [];
 
+  // 初始化列表数据
   aboutToAppear() {
     for (let i = 0; i < 1000; i++) {
       this.data.push(i.toString());
     }
   }
 
-  // itemBuilderOne作为复用组件的写法未展示，以下为转为Builder之后的写法。
+  // itemBuilderOne作为复用组件的写法未展示，以下为转为Builder之后的写法
+  // 组合一：包含子组件A、B、C
   @Builder
   itemBuilderOne(item: string) {
     Column() {
@@ -1671,7 +1920,8 @@ struct MyComponentV2 {
     }
   }
 
-  // itemBuilderTwo转为Builder之后的写法。
+  // itemBuilderTwo转为Builder之后的写法
+  // 组合二：包含子组件A、C、D
   @Builder
   itemBuilderTwo(item: string) {
     Column() {
@@ -1681,7 +1931,8 @@ struct MyComponentV2 {
     }
   }
 
-  // itemBuilderThree转为Builder之后的写法。
+  // itemBuilderThree转为Builder之后的写法
+  // 组合三：包含子组件A、B、D
   @Builder
   itemBuilderThree(item: string) {
     Column() {
@@ -1697,6 +1948,7 @@ struct MyComponentV2 {
         .virtualScroll()
         .each((ri) => {
           ListItem() {
+            // 根据索引选择不同的组合型布局
             if (ri.index % 3 === 0) {
               this.itemBuilderOne(ri.item)
             } else if (ri.index % 5 === 0) {
@@ -1713,26 +1965,31 @@ struct MyComponentV2 {
   }
 }
 
+// 复用组件A，包含文本和图片网格
 @ReusableV2
 @ComponentV2
 struct ChildComponentA {
+  // 接收外部传入的序号
   @Param item: string = '';
 
+  // 组件复用时回调，如无需对状态变量做额外修改可移除
   aboutToReuse() {
-    // 如无需对状态变量做额外修改，aboutToReuse回调可移除
     console.info(`ChildComponentA Reuse ${this.item}`);
   }
 
+  // 组件被回收时回调
   aboutToRecycle(): void {
     console.info(`ChildComponentA ${this.item} Recycle`);
   }
 
   build() {
     Column() {
+      // 显示组件标识文本
       Text(`Item ${this.item} Child Component A`)
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Blue)
+      // 使用网格展示多张图片
       Grid() {
         ForEach((new Array(20)).fill(''), (item: string, index: number) => {
           GridItem() {
@@ -1742,8 +1999,8 @@ struct ChildComponentA {
           }
         })
       }
-      .columnsTemplate('1fr 1fr 1fr 1fr 1fr')
-      .rowsTemplate('1fr 1fr 1fr 1fr')
+      .columnsTemplate('1fr 1fr 1fr 1fr 1fr') // 五列等宽布局
+      .rowsTemplate('1fr 1fr 1fr 1fr') // 四行等高布局
       .columnsGap(10)
       .width('90%')
       .height(160)
@@ -1753,9 +2010,11 @@ struct ChildComponentA {
   }
 }
 
+// 复用组件B，显示红色文本
 @ReusableV2
 @ComponentV2
 struct ChildComponentB {
+  // 接收外部传入的序号
   @Param item: string = '';
 
   build() {
@@ -1764,13 +2023,16 @@ struct ChildComponentB {
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Red)
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 
+// 复用组件C，显示绿色文本
 @ReusableV2
 @ComponentV2
 struct ChildComponentC {
+  // 接收外部传入的序号
   @Param item: string = '';
 
   build() {
@@ -1779,13 +2041,16 @@ struct ChildComponentC {
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Green)
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 
+// 复用组件D，显示橙色文本
 @ReusableV2
 @ComponentV2
 struct ChildComponentD {
+  // 接收外部传入的序号
   @Param item: string = '';
 
   build() {
@@ -1794,7 +2059,8 @@ struct ChildComponentD {
         .fontSize(20)
         .margin({ left: 10 })
         .fontColor(Color.Orange)
-    }.margin({ left: 10, right: 10 })
+    }
+    .margin({ left: 10, right: 10 })
   }
 }
 ```

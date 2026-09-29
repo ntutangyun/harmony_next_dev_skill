@@ -200,7 +200,7 @@ getVideoRotation(videoOutput: camera.VideoOutput, deviceDegree: number): camera.
 
 方案二：
 
-从API版本23开始开始，入参deviceDegree为可选参数，当不传入参数时，由系统获取deviceDegree进行录像旋转角度计算。当重力传感器数据无效，无法计算deviceDegree时，系统将使用最后一次有效的deviceDegree。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
+从API版本23开始，入参deviceDegree为可选参数，当不传入参数时，由系统获取deviceDegree进行录像旋转角度计算。当重力传感器数据无效，无法计算deviceDegree时，系统将使用最后一次有效的deviceDegree。如果应用涉及使用USB相机或在多屏场景下，建议使用方案二。
 
 getVideoRotationWithoutDeviceDegree(videoOutput: camera.VideoOutput): camera.ImageRotation {
   let videoRotation: camera.ImageRotation = camera.ImageRotation.ROTATION_0;

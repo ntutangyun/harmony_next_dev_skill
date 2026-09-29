@@ -195,7 +195,7 @@ export class AVTranscoderDemo {
 
 使用异步线程的方式进行转码
 
-本示例使用的是worker线程的方式来实现异步线程进行转码，worker线程的详细使用方式，可以参见文档:
+本示例使用的是worker线程的方式来实现异步线程进行转码，worker线程的详细使用方式，可以参见文档：
 
 @ohos.worker (启动一个Worker)
 
@@ -360,7 +360,7 @@ async function doSome(context: common.Context) {
   }
 }
 
-监听转码的complete回调，在转码结束的时候向主线程发送消息。
+监听转码的Complete回调，在转码结束的时候向主线程发送消息。
 
 // 转码完成回调函数。
 transcoder.on('complete', async () => {

@@ -56,6 +56,7 @@ hilog.debug(0x0000, 'Tag',
 完整示例：
 
 // xxx.ets
+import { hilog } from '@kit.PerformanceAnalysisKit';
 @Entry
 @Component
 struct Index {
@@ -127,6 +128,7 @@ hilog.debug(0x0000, 'Tag',
 
 ```
 // xxx.ets
+import { hilog } from '@kit.PerformanceAnalysisKit';
 @Entry
 @Component
 struct Index {

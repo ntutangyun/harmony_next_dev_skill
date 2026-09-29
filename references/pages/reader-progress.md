@@ -9,7 +9,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/reader-pr
 阅读进度通知涉及2个接口，具体介绍如下表所示。
 
 接口名	描述
-on('pageShow')	注册章节内容分页展示结果回调。
+on('pageShow')	注册页面展示的通知服务，该通知在页面排版成功展示后触发。
 off('pageShow')	注销章节内容分页展示结果回调，可在页面销毁时调用。
 
 开发准备

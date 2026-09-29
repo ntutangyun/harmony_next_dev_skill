@@ -1,4 +1,4 @@
-# 自定义组件冻结功能（V2）
+# 自定义组件冻结（V2）
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-custom-components-freezev2_
 

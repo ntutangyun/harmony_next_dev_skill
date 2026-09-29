@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-prikey-to-get-pubkey_
 
-从API version 23开始，算法库支持从私钥对象中获取公钥对象的操作。
+从API版本23开始，算法库支持从私钥对象中获取公钥对象的操作。
 
 以RSA为例，根据私钥对象获取公钥对象。
 
@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-pr
 
 生成RSA非对称密钥时，默认素数为2，此处省略了参数PRIMES_2。
 
-调用AsyKeyGenerator.generateKeyPair，随机生成非对称密钥对象（KeyPair）。
+调用AsyKeyGenerator.convertKeySync，传入私钥的二进制数据，生成非对称密钥对象（KeyPair）。
 
 KeyPair对象中包括公钥PubKey、私钥PriKey。
 
@@ -84,8 +84,8 @@ async function prikeyGetPubKeyAsync() {
   try {
     let keyPair = rsaGenerator.convertKeySync(null, skDataBlob);
     let priKey = keyPair.priKey;
-    let pubkey = await priKey.getPubKey();
-    let pkBlob = pubkey.getEncoded();
+    let pubKey = await priKey.getPubKey();
+    let pkBlob = pubKey.getEncoded();
     console.info('pk1 bin data: ' + pkBlob.data);
     let ret: boolean = compareUint8Array(pkBlob.data, expectPkdata);
     console.info('result: ' + ret);
@@ -152,8 +152,8 @@ function generateAsyKey() {
   try {
     let keyPair = rsaGenerator.convertKeySync(null, skDataBlob);
     let priKey = keyPair.priKey;
-    let pubkey = priKey.getPubKeySync();
-    let pkBlob = pubkey.getEncoded();
+    let pubKey = priKey.getPubKeySync();
+    let pkBlob = pubKey.getEncoded();
     console.info('pk1 bin data: ' + pkBlob.data);
     let ret: boolean = compareUint8Array(pkBlob.data, expectPkdata);
     console.info('result: ' + ret);
@@ -223,8 +223,8 @@ async function prikeyGetPubKeyAsync() {
   try {
     let keyPair = rsaGenerator.convertKeySync(null, skDataBlob);
     let priKey = keyPair.priKey;
-    let pubkey = await priKey.getPubKey();
-    let pkBlob = pubkey.getEncoded();
+    let pubKey = await priKey.getPubKey();
+    let pkBlob = pubKey.getEncoded();
     console.info('pk1 bin data: ' + pkBlob.data);
     let ret: boolean = compareUint8Array(pkBlob.data, expectPkdata);
     console.info('result: ' + ret);
@@ -293,8 +293,8 @@ function generateAsyKey() {
   try {
     let keyPair = rsaGenerator.convertKeySync(null, skDataBlob);
     let priKey = keyPair.priKey;
-    let pubkey = priKey.getPubKeySync();
-    let pkBlob = pubkey.getEncoded();
+    let pubKey = priKey.getPubKeySync();
+    let pkBlob = pubKey.getEncoded();
     console.info('pk1 bin data: ' + pkBlob.data);
     let ret: boolean = compareUint8Array(pkBlob.data, expectPkdata);
     console.info('result: ' + ret);

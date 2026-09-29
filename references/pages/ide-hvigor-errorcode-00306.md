@@ -106,7 +106,7 @@ Failed to build the app due to duplicate customized output names: XXX. At file: 
 
 检查模块级build-profile.json5文件的targets配置，确保每个output名称都是唯一的。
 
-00306006 API 12及以上支持TargetESVersion
+00306006 API 12及以上版本支持TargetESVersion
 
 错误信息
 
@@ -292,7 +292,7 @@ Atomic service development does not support Native development. At file: XXX.
 
 错误信息
 
-Atomic service development only supported arkTS widget. At file: XXX.
+Atomic service development only supported ArkTS widget. At file: XXX.
 
 错误描述
 
@@ -482,7 +482,7 @@ Stage model module XXX does not allow Harmony library packages or modules in FA 
 
 错误描述
 
-XXX为Stage模型模块，不能依赖FA模型的Harmony库或模块，否则会导致构建任务无法执行，资源无法打包。
+XXX为Stage模型模块，不能依赖FA模型的Harmony库或模块，否则构建任务无法执行，资源无法打包。
 
 可能原因
 
@@ -536,7 +536,7 @@ FA model module XXX does not allow Harmony library packages or modules in Stage 
 
 错误描述
 
-XXX为FA模型模块，不能依赖Stage模型的Harmony库或模块，否则会导致构建任务无法执行，资源无法打包。
+XXX为FA模型模块，不能依赖Stage模型的Harmony库或模块，否则构建任务无法执行，资源无法打包。
 
 可能原因
 
@@ -800,7 +800,7 @@ Task XXX was not found in the project XXX. Invalid command to execute the build 
 
 错误描述
 
-在工程中找不到任务，执行构建任务的命令无效，请检查命令行中的参数并重试。
+在工程中找不到任务，构建命令无效，请检查命令行中的参数并重试。
 
 可能原因
 

@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/speechrecognizer-guide_
 
-将一段中文音频信息（中文、中文语境下的英文；短语音模式不超过60s，长语音模式不超过8h）转换为文本，音频信息可以为PCM音频文件或者实时语音。
+将一段中文音频信息（短语音模式不超过60s，长语音模式不超过8h）转换为文本，音频信息可以为PCM音频文件或者实时语音。
 
 场景介绍
 
@@ -419,8 +419,8 @@ struct Index {
         console.info(TAG, `succeeded in listing languages, result: ${JSON.stringify(languages)}`);
         this.generatedText = `languages result: ${JSON.stringify(languages)}`;
       } else {
-        console.error(TAG, `Failed to create engine. Message: ${err.message}.`);
-        this.generatedText = `Failed to create engine. Message: ${err.message}.`;
+        console.error(TAG, `Failed to query language. Message: ${err.message}.`);
+        this.generatedText = `Failed to query language. Message: ${err.message}.`;
       }
     });
   }
@@ -475,7 +475,7 @@ struct Index {
         asrEngine?.writeAudio(this.sessionId2, uint8Array);
       });
       await this.mFileCapturer.start();
-      asrEngine?.finish(this.sessionId);
+      asrEngine?.finish(this.sessionId2);
       this.mFileCapturer.release();
     } catch (err) {
       this.generatedText = `Message: ${err.message}.`;
@@ -1117,8 +1117,8 @@ struct Index {
         console.info(TAG, `succeeded in listing languages, result: ${JSON.stringify(languages)}`);
         this.generatedText = `languages result: ${JSON.stringify(languages)}`;
       } else {
-        console.error(TAG, `Failed to create engine. Message: ${err.message}.`);
-        this.generatedText = `Failed to create engine. Message: ${err.message}.`;
+        console.error(TAG, `Failed to query language. Message: ${err.message}.`);
+        this.generatedText = `Failed to query language. Message: ${err.message}.`;
       }
     });
   }
@@ -1173,7 +1173,7 @@ struct Index {
         asrEngine?.writeAudio(this.sessionId2, uint8Array);
       });
       await this.mFileCapturer.start();
-      asrEngine?.finish(this.sessionId);
+      asrEngine?.finish(this.sessionId2);
       this.mFileCapturer.release();
     } catch (err) {
       this.generatedText = `Message: ${err.message}.`;

@@ -36,7 +36,13 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/aip-data-
 
 约束限制
 
-考虑到数据向量化处理的计算量和资源占用较大，当前仅支持在2in1设备上使用。
+API版本26.0.0之前，支持在PC/2in1设备上使用文本向量化模型。
+
+从API版本26.0.0开始，支持在PC/2in1、Phone和Tablet设备上使用文本向量化模型。
+
+其中，针对Phone和Tablet设备，仅支持在Kirin 9010s及以上版本的设备上使用文本向量化模型。
+
+图像向量化模型：仅支持在PC/2in1设备上使用。
 
 嵌入模型的推理过程可使用NPU加速。与NPU计算相比，纯CPU的计算在时延和功耗上都有较大差距，建议采用NPU加速。
 
@@ -44,12 +50,15 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/aip-data-
 
 模型推理单次可处理的图像大小小于20MB。
 
+生成的向量仅在本设备有效，不可用于跨设备检索。
+
 接口说明
 
 以下是智慧数据向量化功能的相关接口。更多接口及使用方式请见智慧数据平台。
 
 接口名称	描述
 getTextEmbeddingModel(config: ModelConfig): Promise<TextEmbedding>	获取文本嵌入模型。
+getSupportedCloudModel(): Promise<Array<CloudModelInfo>>	获取当前设备支持的云侧嵌入模型。
 loadModel(): Promise<void>	加载文本嵌入模型。
 splitText(text: string, config: SplitConfig): Promise<Array<string>>	获取文本的分块。
 getEmbedding(text: string): Promise<Array<number>>	获取给定文本的嵌入向量。
@@ -69,7 +78,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 获取文本嵌入模型。
 
-调用getTextEmbeddingModel方法，获取文本嵌入模型。示例代码如下所示：
+针对PC/2in1设备：使用端侧嵌入模型，需配置模型版本、是否使用NPU加速及模型缓存路径。示例代码如下所示：
 
 let textConfig: intelligence.ModelConfig = {
   version: intelligence.ModelVersion.BASIC_MODEL,
@@ -79,6 +88,31 @@ let textConfig: intelligence.ModelConfig = {
 let textEmbedding: intelligence.TextEmbedding;
 let modelInfo:  intelligence.CloudModelInfo;
 
+intelligence.getTextEmbeddingModel(textConfig)
+  .then((data: intelligence.TextEmbedding) => {
+    console.info('Succeeded in getting TextModel');
+    textEmbedding = data;
+    // ...
+  })
+  .catch((err: BusinessError) => {
+    console.error('Failed to get TextModel and code is ' + err.code);
+    // ...
+  })
+
+针对Phone/Tablet设备：使用云侧嵌入模型，需调用getSupportedCloudModel方法获取云侧模型信息并配置下载模型使用的网络策略。示例代码如下所示：
+
+intelligence.getSupportedCloudModel()
+  .then((info: Array<intelligence.CloudModelInfo>) => {
+    console.info('Succeeded in getting supported model');
+    if (info.length > 0) {
+      modelInfo = info[0];
+    }
+  })
+
+if (modelInfo !== undefined) {
+  textConfig.modelInfo = modelInfo;
+  textConfig.networkPolicy = intelligence.NetworkPolicy.WIFI_ONLY;
+}
 intelligence.getTextEmbeddingModel(textConfig)
   .then((data: intelligence.TextEmbedding) => {
     console.info('Succeeded in getting TextModel');
@@ -275,6 +309,37 @@ intelligence.getTextEmbeddingModel(textConfig)
 ### Code block 4
 
 ```
+intelligence.getSupportedCloudModel()
+  .then((info: Array<intelligence.CloudModelInfo>) => {
+    console.info('Succeeded in getting supported model');
+    if (info.length > 0) {
+      modelInfo = info[0];
+    }
+  })
+```
+
+### Code block 5
+
+```
+if (modelInfo !== undefined) {
+  textConfig.modelInfo = modelInfo;
+  textConfig.networkPolicy = intelligence.NetworkPolicy.WIFI_ONLY;
+}
+intelligence.getTextEmbeddingModel(textConfig)
+  .then((data: intelligence.TextEmbedding) => {
+    console.info('Succeeded in getting TextModel');
+    textEmbedding = data;
+    // ...
+  })
+  .catch((err: BusinessError) => {
+    console.error('Failed to get TextModel and code is ' + err.code);
+    // ...
+  })
+```
+
+### Code block 6
+
+```
 textEmbedding.loadModel()
   .then(() => {
     console.info('Succeeded in loading Model');
@@ -286,7 +351,7 @@ textEmbedding.loadModel()
   })
 ```
 
-### Code block 5
+### Code block 7
 
 ```
 let splitConfig:intelligence.SplitConfig = {
@@ -306,7 +371,7 @@ intelligence.splitText(splitText, splitConfig)
   })
 ```
 
-### Code block 6
+### Code block 8
 
 ```
 let text = 'text';
@@ -332,7 +397,7 @@ textEmbedding.getEmbedding(batchTexts)
   })
 ```
 
-### Code block 7
+### Code block 9
 
 ```
 textEmbedding.releaseModel()
@@ -346,14 +411,14 @@ textEmbedding.releaseModel()
   })
 ```
 
-### Code block 8
+### Code block 10
 
 ```
 import { intelligence } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 ```
 
-### Code block 9
+### Code block 11
 
 ```
 let imageConfig: intelligence.ModelConfig = {
@@ -364,7 +429,7 @@ let imageConfig: intelligence.ModelConfig = {
 let imageEmbedding: intelligence.ImageEmbedding;
 ```
 
-### Code block 10
+### Code block 12
 
 ```
 intelligence.getImageEmbeddingModel(imageConfig)
@@ -379,7 +444,7 @@ intelligence.getImageEmbeddingModel(imageConfig)
   })
 ```
 
-### Code block 11
+### Code block 13
 
 ```
 imageEmbedding.loadModel()
@@ -393,7 +458,7 @@ imageEmbedding.loadModel()
   })
 ```
 
-### Code block 12
+### Code block 14
 
 ```
 let image = 'file://<packageName>/data/storage/el2/base/haps/entry/files/xxx.jpg';
@@ -408,7 +473,7 @@ imageEmbedding.getEmbedding(image)
   })
 ```
 
-### Code block 13
+### Code block 15
 
 ```
 imageEmbedding.releaseModel()

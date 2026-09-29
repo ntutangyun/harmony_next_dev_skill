@@ -18,8 +18,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/externald
 
 接口名	描述
 queryDevices(busType?: number): Array<Readonly<Device>>	查询扩展外设列表。
-bindDriverWithDeviceId(deviceId: number, onDisconnect: AsyncCallback<number>): Promise<RemoteDeviceDriver>;	绑定设备的Promise形式，API18开始支持。
-unbindDriverWithDeviceId(deviceId: number): Promise<number>	解绑设备的Promise形式，API18开始支持。
+bindDriverWithDeviceId(deviceId: number, onDisconnect: AsyncCallback<number>): Promise<RemoteDeviceDriver>	绑定设备的Promise形式，API version 19开始支持。
+unbindDriverWithDeviceId(deviceId: number): Promise<number>	解绑设备的Promise形式，API version 19开始支持。
 
 开发步骤
 
@@ -73,11 +73,11 @@ private async queryTargetDeviceId(): Promise<number> {
       hilog.info(DOMAIN, 'testTag', `usbDevice.productId = ${usbDevice.productId}, usbDevice.vendorId = ${usbDevice.vendorId}`);
       return usbDevice.productId === productId && usbDevice.vendorId === vendorId;
     });
-    hilog.info(DOMAIN, 'testTag', `queryTargetDeviceId index = ${index}, deviceId = ${devices[index].deviceId}`);
     if (index < 0) {
       hilog.error(DOMAIN, 'testTag', 'can not find device');
       return -1;
     }
+    hilog.info(DOMAIN, 'testTag', `queryTargetDeviceId index = ${index}, deviceId = ${devices[index].deviceId}`);
     return devices[index].deviceId;
   } catch (error) {
     hilog.error(DOMAIN, 'testTag', `queryDevice failed, err: ${JSON.stringify(error)}`);
@@ -89,7 +89,7 @@ private async queryTargetDeviceId(): Promise<number> {
 
 private async getDriverRemote(deviceId: number): Promise<rpc.IRemoteObject | null> {
   try {
-    let remoteDeviceDriver: deviceManager.RemoteDeviceDriver = await deviceManager.bindDeviceDriver(deviceId,
+    let remoteDeviceDriver: deviceManager.RemoteDeviceDriver = await deviceManager.bindDriverWithDeviceId(deviceId,
       (err: BusinessError, id: number) => {
         hilog.info(DOMAIN, 'testTag', `device[${id}] id disconnect, err: ${JSON.stringify(err)}`);
       });
@@ -155,7 +155,9 @@ build() {
 
 应用签名
 
-注意： 先配置权限，再自动签名。
+注意
+
+先配置权限，再自动签名。
 
 应用需要配置签名文件才能在设备上运行，并且扩展外设管理客户端开发，需要配置扩展外设的权限：ohos.permission.ACCESS_EXTENSIONAL_DEVICE_DRIVER及ohos.permission.ACCESS_DDK_DRIVERS。
 
@@ -208,11 +210,11 @@ private async queryTargetDeviceId(): Promise<number> {
       hilog.info(DOMAIN, 'testTag', `usbDevice.productId = ${usbDevice.productId}, usbDevice.vendorId = ${usbDevice.vendorId}`);
       return usbDevice.productId === productId && usbDevice.vendorId === vendorId;
     });
-    hilog.info(DOMAIN, 'testTag', `queryTargetDeviceId index = ${index}, deviceId = ${devices[index].deviceId}`);
     if (index < 0) {
       hilog.error(DOMAIN, 'testTag', 'can not find device');
       return -1;
     }
+    hilog.info(DOMAIN, 'testTag', `queryTargetDeviceId index = ${index}, deviceId = ${devices[index].deviceId}`);
     return devices[index].deviceId;
   } catch (error) {
     hilog.error(DOMAIN, 'testTag', `queryDevice failed, err: ${JSON.stringify(error)}`);
@@ -226,7 +228,7 @@ private async queryTargetDeviceId(): Promise<number> {
 ```
 private async getDriverRemote(deviceId: number): Promise<rpc.IRemoteObject | null> {
   try {
-    let remoteDeviceDriver: deviceManager.RemoteDeviceDriver = await deviceManager.bindDeviceDriver(deviceId,
+    let remoteDeviceDriver: deviceManager.RemoteDeviceDriver = await deviceManager.bindDriverWithDeviceId(deviceId,
       (err: BusinessError, id: number) => {
         hilog.info(DOMAIN, 'testTag', `device[${id}] id disconnect, err: ${JSON.stringify(err)}`);
       });

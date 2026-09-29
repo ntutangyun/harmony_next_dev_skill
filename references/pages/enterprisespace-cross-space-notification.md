@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-cross-space-notification_
 
-从26.0.0开始，支持跨空间消息提醒的能力。
+从API版本26.0.0开始，支持跨空间消息提醒的能力。
 
 场景介绍
 
@@ -20,69 +20,124 @@ getNotificationConfig(): Promise<NotificationConfig[]>	获取跨空间消息提�
 
 开发步骤
 
-import { spaceManager } from '@kit.EnterpriseSpaceKit';
+1.导入跨空间消息提醒API模块相关依赖。
 
-@Entry
-@Component
-struct Index {
-  // 设置跨空间消息提醒配置
-  async setNotificationConfig() {
-    const configs: spaceManager.NotificationConfig[] = [
-      {
-        workspaceId: 100,
-        appIdentifier: 'com.example.app',
-        notificationState: spaceManager.NotificationSwitch.ON,
-        visibilityState: spaceManager.NotificationVisibilitySwitch.NOTIFICATION_VISIBLE,
-        allowVisibilityChange: spaceManager.NotificationVisibilityControl.ALLOW_CHANGE
-      }
-    ];
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { ErrCode } from '../../common/ErrCode';
+
+2.跨空间消息提醒API接口封装。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class NotificationConfigApi {
+  static async setNotificationConfig(configs: spaceManager.NotificationConfig[]): Promise<number> {
     try {
       await spaceManager.setNotificationConfig(configs);
-      console.info(`Succeeded in setting notification config.`);
+      hilog.info(DOMAIN, TAG, 'Succeeded in setting notification config.');
+      return ErrCode.OK;
     } catch (err) {
-      console.error(`Failed to set notification config. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(DOMAIN, TAG, `Failed to set notification config. Code: ${err.code}, message: ${err.message}`);
+      return ErrCode.ERR;
     }
   }
 
-  // 获取跨空间消息提醒配置
-  async getNotificationConfig() {
+  static async getNotificationConfig(): Promise<spaceManager.NotificationConfig[] | undefined> {
     try {
       const configs: spaceManager.NotificationConfig[] = await spaceManager.getNotificationConfig();
-      console.info(`Succeeded in getting notification config. configs: ${JSON.stringify(configs)}`);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting notification config. configs: ${JSON.stringify(configs)}`);
+      return configs;
     } catch (err) {
-      console.error(`Failed to get notification config. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(DOMAIN, TAG, `Failed to get notification config. Code: ${err.code}, message: ${err.message}`);
+      return undefined;
     }
+  }
+}
+
+3.导入跨空间消息提醒业务实现相关依赖。
+
+import { router } from '@kit.ArkUI';
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { ErrCode } from '../../common/ErrCode';
+import { NotificationConfigApi } from '../api/NotificationConfigApi'
+
+4.跨空间消息提醒业务相关实现。
+
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+@Entry
+@Component
+struct NotificationConfigPage {
+  async setNotificationConfig() {
+    const configs: spaceManager.NotificationConfig[] = [
+      {
+        workspaceId: 100, // 空间ID，由用户配置
+        appIdentifier: '691867************', // 应用的唯一标识，请根据实际情况进行替换。
+        notificationState: spaceManager.NotificationSwitch.ON,
+        visibilityState: spaceManager.NotificationVisibilitySwitch.NOTIFICATION_VISIBLE,
+        allowVisibilityChange: spaceManager.NotificationVisibilityControl.ALLOW_CHANGE,
+      }
+    ];
+    if (await NotificationConfigApi.setNotificationConfig(configs) !== ErrCode.ERR) {
+      // 处理后置逻辑
+    } else {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to set notification config!');
+      return;
+    }
+  }
+
+  async getNotificationConfig() {
+    const configs: spaceManager.NotificationConfig[] | undefined =
+      await NotificationConfigApi.getNotificationConfig();
+    if (configs === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to get notification config!');
+      return;
+    }
+    // 处理后置逻辑
   }
 
   build() {
     Column() {
       Row() {
-        Button('设置跨空间消息提醒配置')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.setNotificationConfig'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.setNotificationConfig();
           })
       }
 
       Row() {
-        Button('获取跨空间消息提醒配置')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.getNotificationConfig'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.getNotificationConfig();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(200)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 
 ## Code blocks
@@ -91,71 +146,126 @@ struct Index {
 
 ```
 import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { ErrCode } from '../../common/ErrCode';
 ```
 
 ### Code block 2
 
 ```
-@Entry
-@Component
-struct Index {
-  // 设置跨空间消息提醒配置
-  async setNotificationConfig() {
-    const configs: spaceManager.NotificationConfig[] = [
-      {
-        workspaceId: 100,
-        appIdentifier: 'com.example.app',
-        notificationState: spaceManager.NotificationSwitch.ON,
-        visibilityState: spaceManager.NotificationVisibilitySwitch.NOTIFICATION_VISIBLE,
-        allowVisibilityChange: spaceManager.NotificationVisibilityControl.ALLOW_CHANGE
-      }
-    ];
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+export class NotificationConfigApi {
+  static async setNotificationConfig(configs: spaceManager.NotificationConfig[]): Promise<number> {
     try {
       await spaceManager.setNotificationConfig(configs);
-      console.info(`Succeeded in setting notification config.`);
+      hilog.info(DOMAIN, TAG, 'Succeeded in setting notification config.');
+      return ErrCode.OK;
     } catch (err) {
-      console.error(`Failed to set notification config. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(DOMAIN, TAG, `Failed to set notification config. Code: ${err.code}, message: ${err.message}`);
+      return ErrCode.ERR;
     }
   }
 
-  // 获取跨空间消息提醒配置
-  async getNotificationConfig() {
+  static async getNotificationConfig(): Promise<spaceManager.NotificationConfig[] | undefined> {
     try {
       const configs: spaceManager.NotificationConfig[] = await spaceManager.getNotificationConfig();
-      console.info(`Succeeded in getting notification config. configs: ${JSON.stringify(configs)}`);
+      hilog.info(DOMAIN, TAG, `Succeeded in getting notification config. configs: ${JSON.stringify(configs)}`);
+      return configs;
     } catch (err) {
-      console.error(`Failed to get notification config. Code: ${err.code}, message: ${err.message}`);
+      hilog.error(DOMAIN, TAG, `Failed to get notification config. Code: ${err.code}, message: ${err.message}`);
+      return undefined;
     }
+  }
+}
+```
+
+### Code block 3
+
+```
+import { router } from '@kit.ArkUI';
+import { spaceManager } from '@kit.EnterpriseSpaceKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { ErrCode } from '../../common/ErrCode';
+import { NotificationConfigApi } from '../api/NotificationConfigApi'
+```
+
+### Code block 4
+
+```
+const TAG = '[Sample_SpaceManagerSample]';
+const DOMAIN = 0xF811;
+
+@Entry
+@Component
+struct NotificationConfigPage {
+  async setNotificationConfig() {
+    const configs: spaceManager.NotificationConfig[] = [
+      {
+        workspaceId: 100, // 空间ID，由用户配置
+        appIdentifier: '691867************', // 应用的唯一标识，请根据实际情况进行替换。
+        notificationState: spaceManager.NotificationSwitch.ON,
+        visibilityState: spaceManager.NotificationVisibilitySwitch.NOTIFICATION_VISIBLE,
+        allowVisibilityChange: spaceManager.NotificationVisibilityControl.ALLOW_CHANGE,
+      }
+    ];
+    if (await NotificationConfigApi.setNotificationConfig(configs) !== ErrCode.ERR) {
+      // 处理后置逻辑
+    } else {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to set notification config!');
+      return;
+    }
+  }
+
+  async getNotificationConfig() {
+    const configs: spaceManager.NotificationConfig[] | undefined =
+      await NotificationConfigApi.getNotificationConfig();
+    if (configs === undefined) {
+      // 异常处理
+      hilog.error(DOMAIN, TAG, 'Failed to get notification config!');
+      return;
+    }
+    // 处理后置逻辑
   }
 
   build() {
     Column() {
       Row() {
-        Button('设置跨空间消息提醒配置')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.setNotificationConfig'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.setNotificationConfig();
           })
       }
 
       Row() {
-        Button('获取跨空间消息提醒配置')
-          .width(200)
-          .height(50)
-          .backgroundColor('#6366F1')
-          .fontColor('#FFFFFF')
-          .fontSize(14)
-          .margin({ left: 20, bottom: 5 })
+        Button($r('app.string.getNotificationConfig'))
+          .buttonCommonStyle()
           .onClick(() => {
             this.getNotificationConfig();
           })
       }
+
+      Row() {
+        Button($r('app.string.back'))
+          .buttonCommonStyle()
+          .onClick(() => {
+            router.back();
+          })
+      }
     }
   }
+}
+
+@Extend(Button)
+function buttonCommonStyle() {
+  .width(200)
+  .height(50)
+  .backgroundColor('#6366F1')
+  .fontColor('#FFFFFF')
+  .fontSize(14)
+  .margin({ left: 20, bottom: 5 })
 }
 ```

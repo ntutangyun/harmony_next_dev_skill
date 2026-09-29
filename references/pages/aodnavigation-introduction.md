@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/aodnavigation-introduction_
 
-AOD Navigation Kit提供了应用接入熄屏导航的能力，在保障导航实时性的同时有效控制设备功耗，支持轨迹、里程等关键导航信息在设备熄屏界面无需解锁即可便捷查看。
+AOD Navigation Kit（熄屏导航服务）提供了应用接入熄屏导航的能力，在保障导航实时性的同时有效控制设备功耗，支持轨迹、里程等关键导航信息在设备熄屏界面无需解锁即可便捷查看。
 
 场景介绍
 

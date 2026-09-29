@@ -1,4 +1,4 @@
-# ArkTS待机屏保卡片开发指导
+# ArkTS待机屏保卡片
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkui-ui-standby-form-development_
 

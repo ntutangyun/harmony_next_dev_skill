@@ -6,7 +6,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-ext
 
 @Builder装饰器：自定义构建函数
 
-@LocalBuilder装饰器： 维持组件关系
+@LocalBuilder装饰器：维持组件关系
 
 @BuilderParam装饰器：引用@Builder函数
 

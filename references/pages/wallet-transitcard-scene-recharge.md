@@ -30,7 +30,7 @@ async getCardMetadataInDevice() {
 
 开发者App在查询到订单已支付完成后，调用rechargeTransitCard接口，发起将订单金额充值到卡内的处理过程。
 
-如果充值正常结束，开发者App会收到充值成功的返回值并携带新的余额；如果充值过程出现失败，在钱包App自行发起重试后仍然失败的情况下，钱包会发起订单退款的请求。若SP TSM或开发者服务器器确认订单可退款，需调用支付渠道的订单撤销接口，将订单金额原路退回。
+如果充值正常结束，开发者App会收到充值成功的返回值并携带新的余额；如果充值过程出现失败，在钱包App自行发起重试后仍然失败的情况下，钱包会发起订单退款的请求。若SP TSM或开发者服务器确认订单可退款，需调用支付渠道的订单撤销接口，将订单金额原路退回。
 
 async rechargeTransitCard(cardMetadataInDevice: walletTransitCard.CardMetadataInDevice) {
    try {

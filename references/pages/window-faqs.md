@@ -242,7 +242,7 @@ export default class EntryAbility extends UIAbility {
 
 说明
 
-在支持自由多窗的设备上，存在窗口容器，窗口容器背景色覆盖整个窗口区域，包括标题栏和内容区域。调用setWindowBackgroundColor接口仅可设置应用内容背景色，此时会透出窗口容器背景色。
+在支持自由窗口的设备上，存在窗口容器，窗口容器背景色覆盖整个窗口区域，包括标题栏和内容区域。调用setWindowBackgroundColor接口仅可设置应用内容背景色，此时会透出窗口容器背景色。
 
 在PC/2in1和Tablet设备上可以调用setWindowContainerColor()接口设置容器透明，在其他设备上暂不支持设置容器背景色。
 
@@ -363,7 +363,7 @@ try {
 
 通过其他接口如resize、resizeAsync设置窗口大小时，不受ratio约束。
 
-仅主窗可设置，且仅在自由悬浮窗口模式（即窗口模式为window.WindowStatusType.FLOATING）下生效。
+仅主窗口可设置，且仅在自由悬浮窗口模式（即窗口模式为window.WindowStatusType.FLOATING）下生效。
 
 API version 21以前的版本，请使用setAspectRatio()设置窗口内容布局。
 

@@ -1,4 +1,4 @@
-# 订阅超级隐私模式状态改变事件场景
+# 订阅超级隐私模式状态改变事件
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/devicesecurity-subscribe-superprivacymode_
 
@@ -39,9 +39,6 @@ off(type: 'superPrivacyModeChange', callback?: Callback<SuperPrivacyMode>): void
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-const DOMAIN = 0x0000;
-const TAG = 'SuperPrivacyModeTest';
-
 定义超级隐私模式状态改变时触发的回调函数。
 
 const superPrivacyChangedCallback = (mode: superPrivacyMode.SuperPrivacyMode): void => {
@@ -50,6 +47,9 @@ const superPrivacyChangedCallback = (mode: superPrivacyMode.SuperPrivacyMode): v
 }
 
 调用on接口订阅超级隐私模式状态改变事件。
+
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
 
 hilog.info(DOMAIN, TAG, 'start register super privacy mode changed listener');
 try {
@@ -62,6 +62,9 @@ try {
 }
 
 调用off接口取消订阅超级隐私模式状态改变事件。
+
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
 
 hilog.info(DOMAIN, TAG, 'start unregister super privacy mode changed listener');
 try {
@@ -80,9 +83,6 @@ try {
 ```
 import { superPrivacyMode } from '@kit.DeviceSecurityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const DOMAIN = 0x0000;
-const TAG = 'SuperPrivacyModeTest';
 ```
 
 ### Code block 2
@@ -97,6 +97,13 @@ const superPrivacyChangedCallback = (mode: superPrivacyMode.SuperPrivacyMode): v
 ### Code block 3
 
 ```
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
+```
+
+### Code block 4
+
+```
 hilog.info(DOMAIN, TAG, 'start register super privacy mode changed listener');
 try {
   superPrivacyMode.on('superPrivacyModeChange', superPrivacyChangedCallback);
@@ -108,7 +115,14 @@ try {
 }
 ```
 
-### Code block 4
+### Code block 5
+
+```
+const DOMAIN = 0x0000;
+const TAG = 'SuperPrivacyModeTest';
+```
+
+### Code block 6
 
 ```
 hilog.info(DOMAIN, TAG, 'start unregister super privacy mode changed listener');

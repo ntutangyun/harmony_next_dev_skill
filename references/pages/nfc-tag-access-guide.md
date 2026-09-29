@@ -38,7 +38,13 @@ NFC标签后台读写
 
 常用读写NDEF格式Tag定制功能
 
-读取定制Tag内容拉起AirTouch服务，通过碰一碰服务直达，满足用户碎片化需求，如：NFC碰一碰点单、支付、活动推广等，详细应用开发接入指导及标签制作参考AirTouch服务。更多NDEF标签格式规范请关注NFC论坛。
+手机NFC支持读取卡片信息并跳转到生态应用，有使用NDEF通用协议和应用接入AirTouch服务两种方式：
+
+NDEF通用协议跳转应用：在标签内写入应用的信息，电子设备触碰发现NFC标签后，根据NFC标签的NDEF信息，分发给对应的应用。
+
+接入AirTouch服务：更高阶的应用拉起方案，通过碰一碰服务直达，满足用户碎片化需求，如：NFC碰一碰点单、支付、活动推广等，详细应用开发接入指导及标签制作参考AirTouch服务。
+
+更多NDEF标签格式规范请关注NFC论坛。
 
 标签读写约束条件
 
@@ -62,9 +68,9 @@ getMifareUltralight(tagInfo: TagInfo): MifareUltralightTag	从API version 9开�
 
 开发准备
 
-[h2]NFC标签前台读写或后台读写的选择
+[h2]NFC标签前台读写、后台读写或Tag定制的选择
 
-NFC标签读写应用开发者根据业务需要，可以选择实现前台读卡或者后台读卡。两种不同的读卡方式，代码实现上会存在一些差异。
+NFC标签读写应用开发者根据业务需要，可以选择实现前台读卡、后台读卡或者通过定制的Tag跳转到对应的应用。三种不同的读卡方式，代码实现和标签内容上会存在一些差异。
 
 NFC标签前台读写
 
@@ -81,6 +87,10 @@ NFC标签后台读写
 在配置文件module.json5中，需要静态声明过滤读取NFC标签的技术类型。根据业务需要至少定义一种读标签的技术类型，‘tag-tech/’是前缀，后面跟着技术类型描述。
 
 技术类型的描述字符，必须完整匹配并区分大小写，需要严格匹配。
+
+NDEF格式Tag定制
+
+对NFC标签的内容有要求，NDEF标签可能存在1或多个Record，需要在Record中写入应用相关信息（包名/URI/AirtouchId），可以实现应用在后台时，一碰拉起应用的功能。
 
 注意
 
@@ -408,6 +418,76 @@ export default class EntryAbility extends UIAbility {
   }
 }
 
+[h2]NDEF格式Tag定制
+
+NFC标签定制
+
+NDEF标签可能存在1或多个Record。通过包名拉起HarmonyOS应用需要特定的Record记录：其中type为“ohos.com:pkg”，payload为“应用实际包名”。
+
+根据应用业务逻辑的需要，标签内的第一个Record可以放入一个URI类型的数据（可选）。如果存在URI类型的Record，NFC拉起应用时会以want.uri格式传递给应用，此时应用可以通过识别URI来跳转到指定页面。
+
+说明
+
+若应用拉起时需要URI数据，第一个Record必须为URI类型。
+
+应用接收参数示例
+
+拉起应用时，应用可以通过want里传入的参数来完成业务逻辑，通过卡片拉起应用时，携带的want内容如下：
+
+want = {
+    "deviceId": "",
+    "bundleName": "xxx",
+    "abilityName": "xxx",
+    "moduleName": "xxx",
+    "uri": "https://xxx.com", // NFC卡片里写入的uri
+    "type": "",
+    "flags": 0,
+    "action": "action.system.home",
+    "parameters": {
+        // NFC相关字段
+        "Atqa": "4400",
+        "MifareUltralightC": false,
+        "NdefForumType": 2,
+        "NdefMsg": "xxxxxxxxxx", // 16进制字节码格式的完整NDEF message
+        "NdefTagLength": 868,
+        "NdefTagMode": 2,
+        "Sak": 0,
+        "tagRfDiscId": 2,
+        "technology": [1, 9, 6], // 读取到的卡片支持的协议类型，NfcA，NfcB，NfcF，NfcV，Ndef，IsoDep等
+        "uid": "xxxxxxxx", // 读取到的卡片的uid
+        // 其它内容
+        "component.startup.newRules": true,
+        "isCallBySCB": false,
+        "isShellCall": false,
+        "moduleName": "entry",
+        "ohos.aafwk.param.callerAbilityName": "",
+        "ohos.aafwk.param.callerBundleName": "",
+        "ohos.aafwk.param.callerNativeName": "_nfc_service", // NFC进程名
+        "ohos.aafwk.param.callerPid": xxx,
+        "ohos.aafwk.param.callerToken": xxxx,
+        "ohos.aafwk.param.callerUid": xxxx,
+        "ohos.aafwk.param.displayId": 0,
+        "ohos.dlp.params.sandbox": false,
+        "ohos.param.callerAppCloneIndex": 0,
+        "remoteTagService": {
+            "type": "RemoteObject",
+            "value": {}
+            }
+        },
+        "fds": {},
+        "entities": ["entity.system.home"]
+    }
+
+常见问题
+
+[h2]常用的读写NFC标签应用有哪些
+
+NFC标签助手、NFC标签工具。
+
+[h2]如何通过NFC碰一碰实现应用跳转
+
+向NFC标签写入包含目标应用跳转信息的NDEF记录，设备触碰标签后系统解析NDEF并跳转至对应应用。标签格式及写卡方式参见NDEF格式Tag定制。
+
 ## Code blocks
 
 ### Code block 1
@@ -704,4 +784,52 @@ export default class EntryAbility extends UIAbility {
     }
   }
 }
+```
+
+### Code block 5
+
+```
+want = {
+    "deviceId": "",
+    "bundleName": "xxx",
+    "abilityName": "xxx",
+    "moduleName": "xxx",
+    "uri": "https://xxx.com", // NFC卡片里写入的uri
+    "type": "",
+    "flags": 0,
+    "action": "action.system.home",
+    "parameters": {
+        // NFC相关字段
+        "Atqa": "4400",
+        "MifareUltralightC": false,
+        "NdefForumType": 2,
+        "NdefMsg": "xxxxxxxxxx", // 16进制字节码格式的完整NDEF message
+        "NdefTagLength": 868,
+        "NdefTagMode": 2,
+        "Sak": 0,
+        "tagRfDiscId": 2,
+        "technology": [1, 9, 6], // 读取到的卡片支持的协议类型，NfcA，NfcB，NfcF，NfcV，Ndef，IsoDep等
+        "uid": "xxxxxxxx", // 读取到的卡片的uid
+        // 其它内容
+        "component.startup.newRules": true,
+        "isCallBySCB": false,
+        "isShellCall": false,
+        "moduleName": "entry",
+        "ohos.aafwk.param.callerAbilityName": "",
+        "ohos.aafwk.param.callerBundleName": "",
+        "ohos.aafwk.param.callerNativeName": "_nfc_service", // NFC进程名
+        "ohos.aafwk.param.callerPid": xxx,
+        "ohos.aafwk.param.callerToken": xxxx,
+        "ohos.aafwk.param.callerUid": xxxx,
+        "ohos.aafwk.param.displayId": 0,
+        "ohos.dlp.params.sandbox": false,
+        "ohos.param.callerAppCloneIndex": 0,
+        "remoteTagService": {
+            "type": "RemoteObject",
+            "value": {}
+            }
+        },
+        "fds": {},
+        "entities": ["entity.system.home"]
+    }
 ```

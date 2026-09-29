@@ -150,7 +150,7 @@ class Options {
   public length?: number;
 }
 
-  // ...
+// ...
    let writtenBytes: number = 0;
    pendingRecordingWrite = Promise.resolve();
    let path = context.cacheDir;
@@ -344,7 +344,7 @@ class Options {
   public length?: number;
 }
 
-  // ...
+// ...
    let writtenBytes: number = 0;
    pendingRecordingWrite = Promise.resolve();
    let path = context.cacheDir;

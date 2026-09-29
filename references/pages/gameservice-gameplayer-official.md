@@ -32,12 +32,6 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/gameservi
 
 游戏调用verifyLocalPlayer接口，实现华为账号的实名认证、未成年人防沉迷功能。游戏官方账号和华为账号均通过合规校验，玩家才能进入游戏。若有一方未通过校验，不允许玩家进入游戏。若校验未通过请根据返回的错误码进行相应处理。
 
-若玩家在游戏内创建角色，建议游戏调用savePlayerRole上报角色信息。
-
-说明
-
-若游戏无区服角色，或限制为1个区服角色，此时，建议游戏允许玩家直接进入游戏，而无需玩家点击“进入游戏”或者选择区服角色才能进入游戏。
-
 接口说明
 
 具体API说明请详见接口文档。
@@ -47,7 +41,6 @@ init(context: common.UIAbilityContext, callback: AsyncCallback<void>): void	游�
 on(type: 'playerChanged', callback: Callback<PlayerChangedResult>): void	玩家变化事件监听接口，通过callback异步回调获取玩家变化结果信息。
 unionLogin(context: common.UIAbilityContext, loginParam: UnionLoginParam): Promise<UnionLoginResult>	华为账号和游戏官方账号联合登录接口，通过Promise对象获取返回值。
 verifyLocalPlayer(context: common.UIAbilityContext, thirdUserInfo: ThirdUserInfo): Promise<void>	合规校验接口，校验当前设备登录的华为账号的实名认证、游戏防沉迷信息，通过Promise对象获取返回值。
-savePlayerRole(context: common.UIAbilityContext, request: GSKPlayerRole): Promise<void>	保存角色信息到华为游戏服务器，使用默认的上下文信息，通过Promise对象获取返回值。
 
 开发步骤
 

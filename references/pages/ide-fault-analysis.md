@@ -10,7 +10,7 @@ FaultLog
 
 查看App Killed（应用终止）日志
 
-解析应用minidump文件
+解析应用minidump/coredump文件
 
 堆栈轨迹分析
 

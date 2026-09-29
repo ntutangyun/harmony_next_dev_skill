@@ -17,7 +17,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide_no-co
 
 选项
 
-该规则无需配置额外选项。
+该规则无需配置选项。
 
 正例
 

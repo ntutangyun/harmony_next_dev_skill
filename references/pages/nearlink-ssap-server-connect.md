@@ -10,7 +10,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/nearlink-
 
 场景介绍
 
-支持应用基于Nearlink技术进行数据传输，设备作为服务端，客户端可连接该服务端进行数据传输。
+支持应用基于NearLink技术进行数据传输，设备作为服务端，客户端可连接该服务端进行数据传输。
 
 接口说明
 
@@ -131,7 +131,7 @@ try {
     `errCode: ${(err as BusinessError).code}, errMessage: ${(err as BusinessError).message}`);
 }
 
-通知客户端属性值更新。其中参数address是步骤4中获取的已连接客户端设备地址。
+订阅客户端写属性请求事件，并在收到写属性请求事件后通知客户端属性值更新。
 
 let onReceivePropertyWriteEvent:(data: ssap.PropertyWriteRequest) => void = (data: ssap.PropertyWriteRequest) => {
   hilog.info(this.domainId, this.logTag, `PropertyWriteRequest: ${JSON.stringify(data)}`);

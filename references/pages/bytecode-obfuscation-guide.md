@@ -50,7 +50,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/bytecode-
 -enable-filename-obfuscation
 -enable-export-obfuscation
 
-开发者还可以使用#在混淆规则文件中进行注释，每行以#开头的文本会被当做是注释。使用方法如下，#后为注释内容：
+开发者还可以使用#在混淆规则文件中进行注释，每行以#开头的文本会被当作是注释。使用方法如下，#后为注释内容：
 
 # options:
 -enable-property-obfuscation
@@ -155,7 +155,7 @@ console.info(obj002.dynamicName + ''); // 使用点语法静态访问属性
 
 待上述选项应用适配成功后，开启-enable-filename-obfuscation选项。此选项开启后以下场景需要适配：
 
-若代码中有动态import语句，如const path = './filePath'; import (path)，会出现文件引用失败的情况，需要使用-keep-file-name，filePath来保留这个文件名。
+若代码中有动态import语句，如const path = './filePath'; import (path)，会出现文件引用失败的情况，需要使用-keep-file-name filePath来保留这个文件名。
 
 若应用中有描述路由表信息的routerMap配置，其中的pageSourceFile字段标记页面在模块的路径，需要使用-keep-file-name来保留这个路径。
 

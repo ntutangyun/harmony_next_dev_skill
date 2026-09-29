@@ -120,7 +120,7 @@ struct ScanBarCodePage {
                 .then((data: scanBarcode.ScanResult) => {
                   // 解析码值结果跳转应用服务页
                   hilog.info(0x0001, '[Scan Sample]',
-                    `Succeeded in getting ScanResult by promise with options, result is ${JSON.stringify(data)}`);
+                    `Succeeded in getting ScanResult by promise with options, scanType: ${data.scanType}`);
                 }).catch((err: BusinessError) => {
                 hilog.error(0x0001, '[Scan Sample]',
                   `Failed to get ScanResult by promise with options. Code:${err.code}, message: ${err.message}`);
@@ -168,7 +168,7 @@ struct ScanBarCodePage {
                   }
                   // 解析码值结果跳转应用服务页
                   hilog.info(0x0001, '[Scan Sample]',
-                    `Succeeded in getting ScanResult by callback with options, result is ${JSON.stringify(data)}`);
+                    `Succeeded in getting ScanResult by callback with options, scanType: ${data.scanType}`);
                 });
             } catch (err) {
               hilog.error(0x0001, '[Scan Sample]',
@@ -228,7 +228,7 @@ struct ScanBarCodePage {
                 .then((data: scanBarcode.ScanResult) => {
                   // 解析码值结果跳转应用服务页
                   hilog.info(0x0001, '[Scan Sample]',
-                    `Succeeded in getting ScanResult by promise with options, result is ${JSON.stringify(data)}`);
+                    `Succeeded in getting ScanResult by promise with options, scanType: ${data.scanType}`);
                 }).catch((err: BusinessError) => {
                 hilog.error(0x0001, '[Scan Sample]',
                   `Failed to get ScanResult by promise with options. Code:${err.code}, message: ${err.message}`);
@@ -280,7 +280,7 @@ struct ScanBarCodePage {
                   }
                   // 解析码值结果跳转应用服务页
                   hilog.info(0x0001, '[Scan Sample]',
-                    `Succeeded in getting ScanResult by callback with options, result is ${JSON.stringify(data)}`);
+                    `Succeeded in getting ScanResult by callback with options, scanType: ${data.scanType}`);
                 });
             } catch (err) {
               hilog.error(0x0001, '[Scan Sample]',

@@ -204,7 +204,7 @@ private async finalizeSecureImageProcAttestContext(): Promise<void> {
   } catch (err) {
     const error = err as BusinessError;
     hilog.error(0x0000, 'TrustedAppService',
-      'Failed to finalize attest context, code:${error.code}, message:${error.message}');
+      `Failed to finalize attest context, code:${error.code}, message:${error.message}`);
   }
 }
 
@@ -392,7 +392,7 @@ private async finalizeSecureImageProcAttestContext(): Promise<void> {
   } catch (err) {
     const error = err as BusinessError;
     hilog.error(0x0000, 'TrustedAppService',
-      'Failed to finalize attest context, code:${error.code}, message:${error.message}');
+      `Failed to finalize attest context, code:${error.code}, message:${error.message}`);
   }
 }
 ```

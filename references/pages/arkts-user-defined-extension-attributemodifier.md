@@ -291,7 +291,6 @@ CommonAttribute	accessibilityDescription	-	-
 CommonAttribute	animation	Method not implemented.	不支持animation相关属性。
 CommonAttribute	attributeModifier	-	attributeModifier不支持嵌套使用，不生效。
 CommonAttribute	backgroundFilter	is not callable	-
-CommonAttribute	chainWeight	is not callable	-
 CommonAttribute	compositingFilter	is not callable	-
 CommonAttribute	drawModifier	is not callable	不支持modifier相关的属性。
 CommonAttribute	foregroundFilter	is not callable	-

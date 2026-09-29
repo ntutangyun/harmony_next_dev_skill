@@ -89,7 +89,7 @@ try {
 
 [h2]连接已配对设备的profile
 
-若应用配对完目标设备后，可以调用connectAllowedProfiles，发起连接该设备支持的profile能力（只包括A2DP、HFP和HID）。若应用需要使用SPP连接，请参考连接和传输数据。
+应用配对完目标设备后，可以调用connectAllowedProfiles，发起连接该设备支持的profile能力（包括A2DP、HFP、HID和PAN）。若应用需要使用SPP连接，请参考连接和传输数据。
 
 蓝牙子系统会在配对过程中查询和保存目标设备支持的所有profile能力。
 

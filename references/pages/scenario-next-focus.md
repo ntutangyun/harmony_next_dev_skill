@@ -15,7 +15,7 @@ accessibilityNextFocusId属性用于指定焦点移动过程中下一个被聚�
 表1 接口入参说明
 
 属性	类型	说明
-nextId	string	指定下个接口id
+nextId	string	指定下个组件的id
 nextFocusParams	AccessibilityNextFocusParams	详细参数
 
 表2 AccessibilityNextFocusParams说明

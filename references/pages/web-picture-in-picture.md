@@ -51,7 +51,9 @@ try {
   } else {
     await document.exitPictureInPicture();
   }
-}
+} catch (err) {
+    console.error("Picture-in-Picture mode failed:", err);
+  }
 // ...
 
 监听画中画事件
@@ -229,7 +231,9 @@ try {
   } else {
     await document.exitPictureInPicture();
   }
-}
+} catch (err) {
+    console.error("Picture-in-Picture mode failed:", err);
+  }
 // ...
 ```
 

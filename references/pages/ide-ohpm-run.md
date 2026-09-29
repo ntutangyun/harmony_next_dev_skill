@@ -84,7 +84,6 @@ ohpm run --prefix <path> <脚本别名>
     "testFail": "test1",
     "testSuc": "echo hello"
   }
-  ...
 }
 
 [h2]参数传递的使用示例
@@ -165,7 +164,6 @@ ohpm run --prefix <path> <脚本别名>
     "testFail": "test1",
     "testSuc": "echo hello"
   }
-  ...
 }
 ```
 

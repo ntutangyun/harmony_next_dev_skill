@@ -26,7 +26,7 @@ ssh-keygen -m PEM -t RSA -b 4096 -f ~/.ssh_ohpm/mykey
 
 追加了.pub后缀的相应公钥文件会存放在和私钥相同的目录下。
 
-OHPM包管理器只支持加密密钥认证，请在生成公私钥时输入密码。
+ohpm包管理器只支持加密密钥认证，请在生成公私钥时输入密码。
 
 ohpm config set key_path  ~/.ssh_ohpm/mykey
 

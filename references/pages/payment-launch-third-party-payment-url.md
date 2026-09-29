@@ -18,13 +18,12 @@ struct Index {
    // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
    const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
    paymentService.requestPayment(this.context, orderStr, 'AP')
-     .then((payResult: paymentService.PayResult) => {
-       // 支付成功
-       console.info('succeeded in paying, pay result: ', payResult);
+     .then(() => {
+       console.info('requestPayment success');
      })
      .catch((error: BusinessError) => {
        // 支付失败
-       console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+       console.error(`requestPayment failed, error.code: ${error.code}, error.message: ${error.message}`);
      });
  }
 
@@ -62,13 +61,12 @@ struct Index {
    // 请使用开发者自己的订单信息（orderStr），跳转三方支付方式。
    const orderStr = '{"nextAction":"L","linkUrl":"","scheme":"","clientToken":"***"}';
    paymentService.requestPayment(this.context, orderStr, 'AP')
-     .then((payResult: paymentService.PayResult) => {
-       // 支付成功
-       console.info('succeeded in paying, pay result: ', payResult);
+     .then(() => {
+       console.info('requestPayment success');
      })
      .catch((error: BusinessError) => {
        // 支付失败
-       console.error(`failed to pay, error.code: ${error.code}, error.message: ${error.message}`);
+       console.error(`requestPayment failed, error.code: ${error.code}, error.message: ${error.message}`);
      });
  }
 

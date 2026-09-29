@@ -123,7 +123,7 @@ napi_value DownsampleDecode(napi_env env, napi_callback_info info)
 IMAGE_CROP_AND_SCALE_STRATEGY_SCALE_FIRST	1	先缩放，再裁剪。	-
 IMAGE_CROP_AND_SCALE_STRATEGY_CROP_FIRST	2	先裁剪，再缩放。	推荐使用，可减少解码峰值内存。
 
-推荐使用CROP_FIRST：先裁剪再缩放可精确控制裁剪区域，保证不同格式解码效果一致。
+推荐使用IMAGE_CROP_AND_SCALE_STRATEGY_CROP_FIRST：先裁剪再缩放可精确控制裁剪区域，保证不同格式解码效果一致。
 
 参数详情请参考Image_CropAndScaleStrategy。
 

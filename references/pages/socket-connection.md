@@ -693,7 +693,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 // 创建一个TCPSocket连接，返回一个TCPSocket对象。
 let tcpSocket: socket.TCPSocket = socket.constructTCPSocketInstance();
 
-绑定本地IP地址和端口，绑定成功后，连接到服务器端IP地址和端口，连接成功后使用该TCPSocket对象创建TLSSocket，配置双向认证上传客户端 CA 证书及数字证书，可以建立TLSSocket连接，连接使用完毕后，主动关闭并取消相关事件的订阅。。
+绑定本地IP地址和端口，绑定成功后，连接到服务器端IP地址和端口，连接成功后使用该TCPSocket对象创建TLSSocket，配置双向认证上传客户端CA证书及数字证书，可以建立TLSSocket连接，连接使用完毕后，主动关闭并取消相关事件的订阅。
 
 // 连接到服务器端指定的IP地址和端口。
 let serverAddress: socket.NetAddress = {} as socket.NetAddress;
@@ -759,7 +759,7 @@ tcpSocket.connect(tcpConnect).then(() => {
   // ...
 });
 
-连接使用完毕后，主动关闭。取消相关事件的订阅。。
+连接使用完毕后，主动关闭。取消相关事件的订阅。
 
 // 连接使用完毕后，主动关闭。取消相关事件的订阅。
 tlsSocket!.close((err: BusinessError) => {
@@ -862,6 +862,7 @@ let callback = (value: SocketInfo) => {
     // 可以指定传入on中的callback取消一个订阅，也可以不指定callback清空所有订阅。
     client.off('message', callback);
     client.off('message');
+  });
 
 取消订阅TLSSocketServer的相关事件。
 
@@ -1778,6 +1779,7 @@ let callback = (value: SocketInfo) => {
     // 可以指定传入on中的callback取消一个订阅，也可以不指定callback清空所有订阅。
     client.off('message', callback);
     client.off('message');
+  });
 ```
 
 ### Code block 53

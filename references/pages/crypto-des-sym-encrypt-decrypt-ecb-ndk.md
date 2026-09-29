@@ -1,4 +1,4 @@
-# 使用DES对称密钥（ECB模式）加解密(C/C++)
+# 使用DES对称密钥加解密(C/C++)
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-des-sym-encrypt-decrypt-ecb-ndk_
 
@@ -9,6 +9,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-de
 target_link_libraries(entry PUBLIC libohcrypto.so)
 
 开发步骤
+
+[h2]使用DES对称密钥（ECB模式）加解密
 
 创建对象
 

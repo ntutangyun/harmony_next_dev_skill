@@ -24,7 +24,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/vision-do
 
 接口名	描述
 DocumentScanner	文档扫描控件
-DocumentScannerResultCallback	文档扫描结果
+DocumentScannerResultCallback	文档扫描结果回调
 
 开发步骤
 

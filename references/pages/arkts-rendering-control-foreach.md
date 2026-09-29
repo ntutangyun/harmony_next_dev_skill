@@ -37,7 +37,7 @@ interface ChildItemType {
 
 @Entry
 @Component
-struct Index {
+export struct ForEachKeyGeneration {
   @State simpleList: Array<ChildItemType> = [
     { str: 'one', num: 1 },
     { str: 'two', num: 2 },
@@ -62,7 +62,7 @@ struct Index {
 }
 
 @Component
-struct ChildItem {
+export struct ChildItem {
   @Prop str: string = '';
   @Prop num: number = 0;
 
@@ -462,8 +462,8 @@ struct ArticleCardChangeChild {
           .margin({ bottom: 8 })
 
         Row() {
-          // 此处'app.media.iconLiked'，'app.media.iconUnLiked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnLiked'))
+          // 此处'app.media.iconLiked'，'app.media.iconUnliked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnliked'))
             .width(24)
             .height(24)
             .margin({ right: 8 })
@@ -574,7 +574,7 @@ ForEach在滚动容器组件 List、Grid、Swiper以及WaterFlow 内使用的时
 
 [h2]渲染结果非预期
 
-在本示例中，通过设置ForEach的第三个参数KeyGenerator函数，自定义键值生成规则为数据源的索引index的字符串类型值。当点击父组件ForEachAbnormal中“Insert Item After First Item”文本组件后，界面会出现非预期的结果。
+在本示例中，通过设置ForEach的第三个参数keyGenerator函数，自定义键值生成规则为数据源的索引index的字符串类型值。当点击父组件ForEachAbnormal中“Insert Item After First Item”文本组件后，界面会出现非预期的结果。
 
 @Entry
 @Component
@@ -611,7 +611,7 @@ struct ForEachAbnormalChildItem {
   }
 }
 
-上述代码的初始渲染效果和点击“在第1项后插入新项”文本组件后的渲染效果如下图所示。
+上述代码的初始渲染效果和点击“Insert Item After First Item”文本组件后的渲染效果如下图所示。
 
 图10 渲染结果非预期运行效果图
 
@@ -625,7 +625,7 @@ ForEach依次遍历新数据源，遍历数据项"one"时生成键值"0"，存�
 
 [h2]渲染性能降低
 
-在本示例中，ForEach的第三个参数KeyGenerator函数缺省。根据上述键值生成规则，此例使用框架默认的键值，即最终键值为字符串index + '__' + JSON.stringify(item)。点击文本组件“在第1项后插入新项”后，ForEach将为第2个数组项及后面的所有数据项重新创建组件。
+在本示例中，ForEach的第三个参数keyGenerator函数缺省。根据上述键值生成规则，此例使用框架默认的键值，即最终键值为字符串index + '__' + JSON.stringify(item)。点击文本组件“Insert Item After First Item”后，ForEach将为第2个数组项及后面的所有数据项重新创建组件。
 
 import { hilog } from '@kit.PerformanceAnalysisKit';
 const TAG = '[Sample_RenderingControl]';
@@ -687,7 +687,7 @@ ForEach首次渲染时，生成的键值依次为0__one、1__two和2__three。
 
 ForEach依次遍历新数据源，遍历数据项one时生成键值0__one，键值已存在，因此不创建新组件。继续遍历数据项new item时生成键值1__new item，不存在相同键值，创建内容为new item的新组件并渲染。继续遍历数据项two生成键值2__two，不存在相同键值，创建内容为two的新组件并渲染。最后遍历数据项three时生成键值3__three，不存在相同键值，创建内容为three的新组件并渲染。
 
-尽管本例中界面渲染结果符合预期，但在每次向数组中间插入新数组项时，ForEach会为该数组项及其后面的所有数组项重新创建组件。当数据源数据量较大或组件结构复杂时，组件无法复用会导致性能下降。因此，不建议省略第三个参数KeyGenerator函数，也不建议在键值中使用数据项索引index。
+尽管本例中界面渲染结果符合预期，但在每次向数组中间插入新数组项时，ForEach会为该数组项及其后面的所有数组项重新创建组件。当数据源数据量较大或组件结构复杂时，组件无法复用会导致性能下降。因此，不建议省略第三个参数keyGenerator函数，也不建议在键值中使用数据项索引index。
 
 正确渲染并保证效率的ForEach写法是：
 
@@ -695,11 +695,11 @@ ForEach(this.simpleList, (item: string) => {
   ForEachChildItem({ item: item })
 }, (item: string) => item) // 需要保证key唯一
 
-提供了第三个参数KeyGenerator，在这个例子中，对数据源的不同数据项生成不同的key，并且对同一个数据项每次生成相同的key。
+提供了第三个参数keyGenerator，在这个例子中，对数据源的不同数据项生成不同的key，并且对同一个数据项每次生成相同的key。
 
 [h2]数据变化不渲染
 
-点击按钮Like/UnLike first article，第一个组件会切换点赞手势和后面的点赞数量，但是点击按钮Replace first article之后再点击按钮Like/UnLike first article就不生效了。原因是替换articleList[0]之后，articleList状态变量发生变化，触发ForEach重新渲染，但是新的articleList[0]生成的key没有变，ForEach不会将数据更新同步给子组件，因此第一个组件仍然绑定旧的articleList[0]。新articleList[0]的属性发生变更，第一个组件感知不到，不会重新渲染。点击点赞手势，会触发渲染。因为变更的是跟组件绑定的数组项的属性，组件会感知并重新渲染。
+点击按钮Like/Unlike first article，第一个组件会切换点赞手势和后面的点赞数量，但是点击按钮Replace first article之后再点击按钮Like/Unlike first article就不生效了。原因是替换articleList[0]之后，articleList状态变量发生变化，触发ForEach重新渲染，但是新的articleList[0]生成的key没有变，ForEach不会将数据更新同步给子组件，因此第一个组件仍然绑定旧的articleList[0]。新articleList[0]的属性发生变更，第一个组件感知不到，不会重新渲染。点击点赞手势，会触发渲染。因为变更的是跟组件绑定的数组项的属性，组件会感知并重新渲染。
 
 @Observed
 class ArticleChangeData {
@@ -792,8 +792,8 @@ struct ArticleCardChangeData {
           .margin({ bottom: 8 })
 
         Row() {
-          // 此处'app.media.iconLiked'，'app.media.iconUnLiked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnLiked'))
+          // 此处'app.media.iconLiked'，'app.media.iconUnliked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnliked'))
             .width(24)
             .height(24)
             .margin({ right: 8 })
@@ -919,6 +919,8 @@ struct GenerationKeyChildItem {
 
 开发者定义keyGenerator函数，应用正常启动：
 
+图16 键值生成失败
+
 使用默认的键值生成函数，应用发生jscrash：
 
 Error message:@Component 'Parent'[4]: ForEach id 7: use of default id generator function not possible on provided data structure. Need to specify id generator function (ForEach 3rd parameter). Application Error!
@@ -938,7 +940,7 @@ interface ChildItemType {
 
 @Entry
 @Component
-struct Index {
+export struct ForEachKeyGeneration {
   @State simpleList: Array<ChildItemType> = [
     { str: 'one', num: 1 },
     { str: 'two', num: 2 },
@@ -963,7 +965,7 @@ struct Index {
 }
 
 @Component
-struct ChildItem {
+export struct ChildItem {
   @Prop str: string = '';
   @Prop num: number = 0;
 
@@ -1315,8 +1317,8 @@ struct ArticleCardChangeChild {
           .margin({ bottom: 8 })
 
         Row() {
-          // 此处'app.media.iconLiked'，'app.media.iconUnLiked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnLiked'))
+          // 此处'app.media.iconLiked'，'app.media.iconUnliked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnliked'))
             .width(24)
             .height(24)
             .margin({ right: 8 })
@@ -1579,8 +1581,8 @@ struct ArticleCardChangeData {
           .margin({ bottom: 8 })
 
         Row() {
-          // 此处'app.media.iconLiked'，'app.media.iconUnLiked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
-          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnLiked'))
+          // 此处'app.media.iconLiked'，'app.media.iconUnliked'仅作示例，请开发者自行替换，否则imageSource创建失败会导致后续无法正常执行。
+          Image(this.article.isLiked ? $r('app.media.iconLiked') : $r('app.media.iconUnliked'))
             .width(24)
             .height(24)
             .margin({ right: 8 })

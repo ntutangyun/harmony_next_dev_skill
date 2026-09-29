@@ -147,9 +147,9 @@ BuildProfile.ets文件
 
 屏蔽告警信息：
 
-在某些特殊场景下，若扫描结果中出现误报，点击单条告警结果后的Ignore图标，可以忽略对告警所在行的code linter检查；或勾选文件名称或多条待屏蔽的告警，点击左侧工具面板Ignore图标批量执行操作；
+在某些特殊场景下，若扫描结果中出现误报，点击单条告警结果后的Ignore图标，可以忽略对告警所在行的code linter检查；或勾选文件名称或多条待屏蔽的告警，点击左侧工具面板Ignore图标批量执行操作。
 
-在文件顶部添加注释/* eslint-disable */可以屏蔽整个文件执行code linter检查，在eslint-disable 后加入一个或多个以逗号分隔的规则Id，可以屏蔽具体检查规则；
+在文件顶部添加注释/* eslint-disable */可以屏蔽整个文件执行code linter检查，在eslint-disable 后加入一个或多个以逗号分隔的规则Id，可以屏蔽具体检查规则。
 
 在需要忽略检查的代码块前后分别添加/* eslint-disable */和/* eslint-enable */添加注释信息，再执行Code Linter，将不再显示该代码块扫描结果；在待屏蔽的代码行前一行添加/* eslint-disable-next-line */，也可屏蔽对该代码行的Code Linter检查。
 
@@ -270,7 +270,7 @@ types	匹配类型，只有特定类型的名字才会检查	否	字符串数组
 
 在配置文件中定义规则
 
-在ArkTS工程中，pages目录下新建test.ets文件；
+在ArkTS工程中，pages目录下新建test.ets文件。
 
 在工程根目录下新建code-linter.json5文件，新增以下配置：
 

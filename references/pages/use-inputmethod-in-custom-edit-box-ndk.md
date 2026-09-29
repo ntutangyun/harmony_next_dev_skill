@@ -117,7 +117,7 @@ OH_AttachOptions_Destroy(attachOptions);
 
 说明：
 
-需要在CMakeList.txt中添加libohinputmethod.so libhilog_ndk.z.so依赖。
+需要在CMakeLists.txt中添加libohinputmethod.so libhilog_ndk.z.so依赖。
 
 #include "napi/native_api.h"
 #include <codecvt>

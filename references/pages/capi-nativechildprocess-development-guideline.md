@@ -1,53 +1,47 @@
-# 创建/终止Native子进程（C/C++）
+# 子进程开发指导（C/C++）
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/capi-nativechildprocess-development-guideline_
 
-本模块提供了两种创建Native子进程的方式，以及一种终止子进程的方式。
+概述
 
-创建支持IPC通信的Native子进程：创建子进程，并在父子进程间建立IPC通道，适用于父子进程需要IPC通信的场景。对IPCKit存在依赖。
-
-创建支持参数传递的Native子进程：创建子进程，并传递字符串和fd句柄参数到子进程。适用于需要传递参数到子进程的场景。
-
-终止子进程：终止当前进程创建的Native子进程或ArkTS子进程。
+在Native层多进程编程场景中，开发者常面临父子进程通信复杂、参数传递困难等问题。Native子进程机制允许应用通过C API创建子进程，支持IPC通信和参数传递，适用于需要高性能进程隔离和跨进程通信的场景。本模块提供了创建Native子进程、获取启动参数、终止子进程、获取子进程退出信息等能力，两种创建方式的接口选型和能力差异请参见子进程创建方式选择。
 
 说明
 
 创建的子进程会随着父进程的退出而退出，无法脱离父进程独立运行。
 
+创建子进程前，可调用OH_Ability_IsNativeChildProcessSupported查询当前设备是否支持创建Native子进程。
+
+子进程创建方式选择
+
+对比项	创建支持IPC通信的Native子进程	创建支持参数传递的Native子进程
+涉及接口	OH_Ability_CreateNativeChildProcessWithConfigs20+	OH_Ability_StartNativeChildProcessWithConfigs20+
+适用场景	适用于父子进程需要建立IPC通道通信的场景，如将高风险操作或独立业务逻辑隔离到子进程并通过IPC交互。	适用于需要向子进程传递参数（字符串、文件描述符）并由子进程执行计算任务的场景，如音视频编解码、数据处理等。
+父子进程通信方式	IPC通道（子进程通过NativeChildProcess_OnConnect返回IPC Stub，主进程通过OHIPCRemoteProxy通信）	参数传递（通过NativeChildProcess_Args传入entryParams和fd列表，单向传参）
+子进程入口函数	需实现并导出NativeChildProcess_OnConnect和NativeChildProcess_MainProc两个函数	需实现并导出以NativeChildProcess_Args为参数的入口函数（函数名可自定义）
+启动结果获取	异步，通过onProcessStarted回调通知启动结果和IPC Proxy对象	同步，通过输出参数pid返回子进程号
+是否依赖IPC Kit	是	否
+子进程销毁方式	NativeChildProcess_MainProc返回后子进程退出	入口函数返回后子进程退出
+
 创建支持IPC通信的Native子进程
 
-[h2]场景介绍
+通过OH_Ability_CreateNativeChildProcessWithConfigs接口异步创建Native子进程，子进程需实现并导出NativeChildProcess_OnConnect和NativeChildProcess_MainProc两个函数。子进程启动后先调用NativeChildProcess_OnConnect获取IPC Stub对象，再调用NativeChildProcess_MainProc移交主线程控制权，该函数返回后子进程随即退出。该方式对IPC Kit存在依赖。
 
-本章节介绍如何在主进程中创建Native子进程，并在父子进程间建立IPC通道，方便开发者在Native层进行多进程编程。
+添加动态库文件和头文件引用。
 
-[h2]接口说明
-
-名称	描述
-int OH_Ability_CreateNativeChildProcess (const char *libName, OH_Ability_OnNativeChildProcessStarted onProcessStarted)	创建子进程并加载参数中指定的动态链接库文件，进程启动结果通过参数中的回调函数onProcessStarted异步通知。回调函数运行在独立线程，如果需要访问共享资源在实现时需要注意线程同步，由于系统对于单个进程拥有的回调线程数量有限制，因此不建议在回调函数中执行高耗时操作。
-
-说明
-
-从API version 14开始，支持2in1和Tablet设备。API version 13及之前版本，仅支持2in1设备。
-
-从API version 15开始，单个进程最多支持启动50个Native子进程。API version 14及之前版本，单个进程只能启动1个Native子进程。
-
-[h2]开发步骤
-
-基于已创建完成的Native应用开发工程，在此基础上介绍如何使用AbilityKit提供的C API接口，创建Native子进程，并同时在父子进程间建立IPC通道。
-
-动态库文件
+在CMakeLists.txt文件中添加动态库文件。
 
 libipc_capi.so
 libchild_process.so
 
-头文件
+在源文件中引入头文件。
 
 #include <IPCKit/ipc_kit.h>
 #include <AbilityKit/native_child_process.h>
 
-子进程-实现必要的导出方法。
+在子进程中实现必要的导出方法。
 
-在子进程中，实现必要的两个函数NativeChildProcess_OnConnect及NativeChildProcess_MainProc并导出（假设代码所在的文件名为ChildProcessSample.cpp）。其中NativeChildProcess_OnConnect方法返回的OHIPCRemoteStub对象负责与主进程进行IPC通信，具体实现方法请参考IPC通信开发指导（C/C++)，本文不再赘述。
+在子进程中，实现必要的两个函数NativeChildProcess_OnConnect及NativeChildProcess_MainProc并导出（假设代码所在的文件名为ChildProcessSample.cpp）。其中NativeChildProcess_OnConnect方法返回的OHIPCRemoteStub对象负责与主进程进行IPC通信，具体实现方法请参考IPC通信开发指导（C/C++），本文不再赘述。
 
 子进程启动后会先调用NativeChildProcess_OnConnect获取IPC Stub对象，之后再调用NativeChildProcess_MainProc移交主线程控制权，该函数返回后子进程随即退出。
 
@@ -107,9 +101,9 @@ void NativeChildProcess_MainProc()
 
 } // extern "C"
 
-子进程-编译为动态链接库。
+编译动态链接库。
 
-修改CMakeList.txt文件，编译为动态链接库（假设需要编译出的库文件名称为libchildprocesssample.so），并添加IPC动态库依赖。
+修改CMakeLists.txt文件，编译动态链接库（假设需要编译出的库文件名称为libchildprocesssample.so），并添加IPC动态库依赖。
 
 add_library(childprocesssample SHARED
     # 实现必要导出方法的源文件
@@ -127,7 +121,7 @@ target_link_libraries(childprocesssample PUBLIC
     # ...
 )
 
-主进程-实现子进程启动结果回调函数。
+在主进程中实现子进程启动结果回调函数。
 
 #include <IPCKit/ipc_kit.h>
 #include <AbilityKit/native_child_process.h>
@@ -146,11 +140,11 @@ static void OnNativeChildProcessStarted(int errCode, OHIPCRemoteProxy *remotePro
     // ···
 }
 
-回调函数传递的第二个参数OHIPCRemoteProxy对象，会与子进程实现的NativeChildProcess_OnConnect方法返回的OHIPCRemoteStub对象间建立IPC通道，具体使用方法参考IPC通信开发指导（C/C++)，本文不再赘述；OHIPCRemoteProxy对象使用完毕后，需要调用OH_IPCRemoteProxy_Destroy函数释放。
+回调函数传递的第二个参数OHIPCRemoteProxy对象，会与子进程实现的NativeChildProcess_OnConnect方法返回的OHIPCRemoteStub对象间建立IPC通道，具体使用方法参考IPC通信开发指导（C/C++），本文不再赘述；OHIPCRemoteProxy对象使用完毕后，需要调用OH_IPCRemoteProxy_Destroy函数释放。
 
-主进程-启动Native子进程。
+在主进程中启动Native子进程。
 
-调用API启动Native子进程，需要注意返回值为NCP_NO_ERROR仅代表成功调用native子进程启动逻辑，实际的启动结果通过第二个参数中指定的回调函数异步通知。需注意仅允许在主进程中创建子进程。
+调用OH_Ability_CreateNativeChildProcessWithConfigs接口启动Native子进程，可通过OH_Ability_CreateChildProcessConfigs创建子进程配置信息对象，并按需设置进程名、隔离模式和uid隔离等。需注意返回值为NCP_NO_ERROR仅代表成功调用Native子进程启动逻辑，实际的启动结果通过回调函数异步通知。需注意仅允许在主进程中创建子进程。
 
 #include <IPCKit/ipc_kit.h>
 #include <AbilityKit/native_child_process.h>
@@ -173,8 +167,15 @@ static void OnNativeChildProcessStarted(int errCode, OHIPCRemoteProxy *remotePro
 
 void CreateNativeChildProcess()
 {
+    // 创建子进程配置信息对象
+    Ability_ChildProcessConfigs *configs = OH_Ability_CreateChildProcessConfigs();
+    // 设置子进程的进程名
+    OH_Ability_ChildProcessConfigs_SetProcessName(configs, "childprocess_ipc");
     // 第一个参数"libchildprocesssample.so"为实现了子进程必要导出方法的动态库文件名称
-    int32_t ret = OH_Ability_CreateNativeChildProcess("libchildprocesssample.so", OnNativeChildProcessStarted);
+    Ability_NativeChildProcess_ErrCode ret = OH_Ability_CreateNativeChildProcessWithConfigs("libchildprocesssample.so",
+        configs, OnNativeChildProcessStarted);
+    // configs对象使用完毕后需要销毁，避免内存泄漏
+    OH_Ability_DestroyChildProcessConfigs(configs);
     if (ret != NCP_NO_ERROR) {
         // 子进程未能正常启动时的异常处理
         // ...
@@ -182,9 +183,9 @@ void CreateNativeChildProcess()
     g_result = ret;
 }
 
-主进程-添加编译依赖项。
+为主进程添加编译依赖项。
 
-修改CMakeList.txt添加必要的依赖库，假设主进程所在的so名称为libmainprocesssample.so（主进程和子进程的实现也可以选择编译到同一个动态库文件）。
+修改CMakeLists.txt添加必要的依赖库，假设主进程所在的so名称为libmainprocesssample.so（主进程和子进程的实现也可以选择编译到同一个动态库文件）。
 
 target_link_libraries(mainprocesssample PUBLIC
     # 添加依赖的IPC及元能力动态库
@@ -197,38 +198,35 @@ target_link_libraries(mainprocesssample PUBLIC
 
 创建支持参数传递的Native子进程
 
-[h2]场景介绍
+通过OH_Ability_StartNativeChildProcessWithConfigs接口同步创建Native子进程，子进程需实现以NativeChildProcess_Args为参数的入口函数。通过NativeChildProcess_Args传入entryParams字符串和fd列表，入口函数返回后子进程自动退出。
 
-本章节介绍如何创建Native子进程，并传递参数到子进程。
+添加动态库文件和头文件引用。
 
-[h2]接口说明
-
-名称	描述
-Ability_NativeChildProcess_ErrCode OH_Ability_StartNativeChildProcess (const char *entry, NativeChildProcess_Args args, NativeChildProcess_Options options, int32_t *pid)	启动子进程并返回子进程pid。
-
-[h2]开发步骤
-
-动态库文件
+在CMakeLists.txt文件中添加动态库文件。
 
 libchild_process.so
 
-头文件
+在源文件中引入头文件。
 
 #include <AbilityKit/native_child_process.h>
 
-子进程-实现必要的导出方法。
+在子进程中实现必要的导出方法。
 
 在子进程中，实现参数为NativeChildProcess_Args的入口函数并导出（假设代码所在的文件名为ChildProcessSample.cpp）。子进程启动后会调用该入口函数，该函数返回后子进程随即退出。
 
 #include <AbilityKit/native_child_process.h>
+#include <hilog/log.h>
+#include "loghelper.h"
+
 extern "C" {
 /**
  * 子进程的入口函数，实现子进程的业务逻辑
- * 函数名称可以自定义，在主进程调用OH_Ability_StartNativeChildProcess方法时指定，此示例中为Main
+ * 函数名称可以自定义，在主进程调用OH_Ability_StartNativeChildProcessWithConfigs方法时指定，此示例中为Main
  * 函数返回后子进程退出
  */
 void Main(NativeChildProcess_Args args)
 {
+    OH_LOG_INFO(LOG_APP, "Main started");
     // 获取传入的entryParams
     char *entryParams = args.entryParams;
     // 获取传入的fd列表
@@ -242,9 +240,9 @@ void Main(NativeChildProcess_Args args)
 }
 } // extern "C"
 
-子进程-编译为动态链接库。
+编译动态链接库。
 
-修改CMakeList.txt文件，编译为动态链接库（假设需要编译出的库文件名称为libchildprocesssample.so），并添加元能力动态库依赖。
+修改CMakeLists.txt文件，编译为动态链接库（假设需要编译出的库文件名称为libchildprocesssample.so），并添加元能力动态库依赖。
 
 add_library(childprocesssample SHARED
     # 实现必要导出方法的源文件
@@ -262,9 +260,9 @@ target_link_libraries(childprocesssample PUBLIC
     # ...
 )
 
-主进程-启动Native子进程。
+在主进程中启动Native子进程。
 
-调用API启动Native子进程，返回值为NCP_NO_ERROR代表成功启动native子进程。
+调用OH_Ability_StartNativeChildProcessWithConfigs接口启动Native子进程，可通过OH_Ability_CreateChildProcessConfigs创建子进程配置信息对象，并按需设置进程名、隔离模式和uid隔离等。返回值为NCP_NO_ERROR代表成功启动Native子进程。
 
 #include <AbilityKit/native_child_process.h>
 #include <cstdlib>
@@ -275,9 +273,8 @@ int32_t g_fdNameMaxLength = 20;
 
 void StartNativeChildProcess()
 {
-    // ...
     NativeChildProcess_Args args;
-    // 设置entryParams，支持传输的最大数据量为150KB
+    // 设置entryParams
     const size_t entryParamsSize = 10;
     args.entryParams = (char *)malloc(sizeof(char) * entryParamsSize);
     if (args.entryParams != nullptr) {
@@ -296,27 +293,29 @@ void StartNativeChildProcess()
     args.fdList.head->fd = fd;
     // 此处只插入一个fd记录，根据需求可以插入更多fd记录到链表中，最多不超过16个
     args.fdList.head->next = NULL;
-    NativeChildProcess_Options options = {.isolationMode = NCP_ISOLATION_MODE_ISOLATED};
+    // 创建子进程配置信息对象
+    Ability_ChildProcessConfigs *configs = OH_Ability_CreateChildProcessConfigs();
+    // 设置子进程的进程名
+    OH_Ability_ChildProcessConfigs_SetProcessName(configs, "child");
 
     // 第一个参数"libchildprocesssample.so:Main"为实现了子进程Main方法的动态库文件名称和入口方法名
     int32_t pid = -1;
     Ability_NativeChildProcess_ErrCode ret =
-        OH_Ability_StartNativeChildProcess("libchildprocesssample.so:Main", args, options, &pid);
+        OH_Ability_StartNativeChildProcessWithConfigs("libchildprocesssample.so:Main", args, configs, &pid);
+    // configs对象使用完毕后需要销毁，避免内存泄漏
+    OH_Ability_DestroyChildProcessConfigs(configs);
     if (ret != NCP_NO_ERROR) {
         // 释放NativeChildProcess_Args中的内存空间防止内存泄漏
         // 子进程未能正常启动时的异常处理
         // ...
     }
-
-    // 其他逻辑
-// ...
-
+    // ...
     // 释放NativeChildProcess_Args中的内存空间防止内存泄漏
 }
 
-主进程-添加编译依赖项。
+为主进程添加编译依赖项。
 
-修改CMakeList.txt添加必要的依赖库，假设主进程所在的so名称为libmainprocesssample.so（主进程和子进程的实现也可以选择编译到同一个动态库文件）。
+修改CMakeLists.txt添加必要的依赖库，假设主进程所在的so名称为libmainprocesssample.so（主进程和子进程的实现也可以选择编译到同一个动态库文件）。
 
 target_link_libraries(mainprocesssample PUBLIC
     # 添加依赖的元能力动态库
@@ -328,28 +327,21 @@ target_link_libraries(mainprocesssample PUBLIC
 
 子进程获取启动参数
 
-[h2]场景介绍
-
 从API version 17开始，支持子进程获取启动参数。
 
-[h2]接口说明
+添加动态库文件和头文件引用。
 
-名称	描述
-NativeChildProcess_Args* OH_Ability_GetCurrentChildProcessArgs()	返回子进程自身的启动参数。
-
-[h2]开发步骤
-
-动态库文件
+在CMakeLists.txt文件中添加动态库文件。
 
 libchild_process.so
 
-头文件
+在源文件中引入头文件。
 
 #include <AbilityKit/native_child_process.h>
 
-获取启动参数
+在子进程中获取启动参数。
 
-OH_Ability_StartNativeChildProcess创建子进程后，子进程内的任意so和任意子线程可以通过调用OH_Ability_GetCurrentChildProcessArgs()获取到子进程的启动参数NativeChildProcess_Args，便于操作相关的文件描述符。
+OH_Ability_StartNativeChildProcessWithConfigs创建子进程后，子进程内的任意so和任意子线程可以通过调用OH_Ability_GetCurrentChildProcessArgs()获取到子进程的启动参数NativeChildProcess_Args，便于操作相关的文件描述符。
 
 #include <AbilityKit/native_child_process.h>
 #include <thread>
@@ -391,22 +383,19 @@ void Main(NativeChildProcess_Args args)
 
 终止子进程
 
-[h2]场景介绍
-
 从API version 22开始，支持根据传入的pid终止当前进程创建的Native子进程或ArkTS子进程。
 
-[h2]接口说明
+添加动态库文件和头文件引用。
 
-名称	描述
-Ability_NativeChildProcess_ErrCode OH_Ability_KillChildProcess(int32_t pid)	终止当前进程创建的子进程，该接口既可以用来终止Native子进程，也可以用来终止ArkTS子进程。
+在CMakeLists.txt文件中添加动态库文件。
 
-[h2]开发步骤
+libchild_process.so
 
-头文件
+在源文件中引入头文件。
 
 #include <AbilityKit/native_child_process.h>
 
-终止子进程
+实现终止子进程。
 
 通过native_child_process和childProcessManager（非SELF_FORK模式）中的接口创建子进程后，主进程可以调用OH_Ability_KillChildProcess(int32_t pid)根据传入的pid终止相应的子进程。
 
@@ -420,6 +409,68 @@ void KillChildProcess(int32_t pid)
     }
     // ...
 }
+
+获取Native子进程退出信息
+
+从API version 20开始，支持父进程通过注册回调函数监听子进程，获取子进程异常退出信息，以便父进程做后续优化处理。这里支持监听的子进程必须为OH_Ability_StartNativeChildProcess、OH_Ability_StartNativeChildProcessWithConfigs或startNativeChildProcess接口创建的子进程。
+
+添加动态库文件和头文件引用。
+
+在CMakeLists.txt文件中添加动态库文件。
+
+libchild_process.so
+
+在源文件中引入头文件。
+
+#include <AbilityKit/native_child_process.h>
+
+注册和解注册Native子进程异常退出回调。
+
+调用OH_Ability_RegisterNativeChildProcessExitCallback注册Native子进程，如果返回值为NCP_NO_ERROR表示注册成功。
+
+调用OH_Ability_UnregisterNativeChildProcessExitCallback解注册Native子进程，如果返回值为NCP_NO_ERROR表示解注册成功。
+
+#include <AbilityKit/native_child_process.h>
+#include <hilog/log.h>
+
+// ...
+
+void OnNativeChildProcessExit(int32_t pid, int32_t signal)
+{
+    OH_LOG_INFO(LOG_APP, "pid: %{public}d, signal: %{public}d", pid, signal);
+}
+
+void RegisterNativeChildProcessExitCallback()
+{
+    Ability_NativeChildProcess_ErrCode ret =
+        OH_Ability_RegisterNativeChildProcessExitCallback(OnNativeChildProcessExit);
+    if (ret != NCP_NO_ERROR) {
+        OH_LOG_ERROR(LOG_APP, "register failed.");
+    }
+    // ...
+}
+
+void UnregisterNativeChildProcessExitCallback()
+{
+    Ability_NativeChildProcess_ErrCode ret =
+        OH_Ability_UnregisterNativeChildProcessExitCallback(OnNativeChildProcessExit);
+    if (ret != NCP_NO_ERROR) {
+        OH_LOG_ERROR(LOG_APP, "unregister failed.");
+    }
+    // ...
+}
+
+添加编译依赖项。
+
+修改CMakeLists.txt添加必要的依赖库，假设主进程所在的so名称为libmainprocesssample.so（主进程和子进程的实现也可以选择编译到同一个动态库文件）。
+
+target_link_libraries(mainprocesssample PUBLIC
+    # 添加依赖的元能力动态库
+    libchild_process.so
+
+    # 其它依赖的动态库
+    # ...
+)
 
 ## Code blocks
 
@@ -562,8 +613,15 @@ static void OnNativeChildProcessStarted(int errCode, OHIPCRemoteProxy *remotePro
 
 void CreateNativeChildProcess()
 {
+    // 创建子进程配置信息对象
+    Ability_ChildProcessConfigs *configs = OH_Ability_CreateChildProcessConfigs();
+    // 设置子进程的进程名
+    OH_Ability_ChildProcessConfigs_SetProcessName(configs, "childprocess_ipc");
     // 第一个参数"libchildprocesssample.so"为实现了子进程必要导出方法的动态库文件名称
-    int32_t ret = OH_Ability_CreateNativeChildProcess("libchildprocesssample.so", OnNativeChildProcessStarted);
+    Ability_NativeChildProcess_ErrCode ret = OH_Ability_CreateNativeChildProcessWithConfigs("libchildprocesssample.so",
+        configs, OnNativeChildProcessStarted);
+    // configs对象使用完毕后需要销毁，避免内存泄漏
+    OH_Ability_DestroyChildProcessConfigs(configs);
     if (ret != NCP_NO_ERROR) {
         // 子进程未能正常启动时的异常处理
         // ...
@@ -601,14 +659,18 @@ libchild_process.so
 
 ```
 #include <AbilityKit/native_child_process.h>
+#include <hilog/log.h>
+#include "loghelper.h"
+
 extern "C" {
 /**
  * 子进程的入口函数，实现子进程的业务逻辑
- * 函数名称可以自定义，在主进程调用OH_Ability_StartNativeChildProcess方法时指定，此示例中为Main
+ * 函数名称可以自定义，在主进程调用OH_Ability_StartNativeChildProcessWithConfigs方法时指定，此示例中为Main
  * 函数返回后子进程退出
  */
 void Main(NativeChildProcess_Args args)
 {
+    OH_LOG_INFO(LOG_APP, "Main started");
     // 获取传入的entryParams
     char *entryParams = args.entryParams;
     // 获取传入的fd列表
@@ -655,9 +717,8 @@ int32_t g_fdNameMaxLength = 20;
 
 void StartNativeChildProcess()
 {
-    // ...
     NativeChildProcess_Args args;
-    // 设置entryParams，支持传输的最大数据量为150KB
+    // 设置entryParams
     const size_t entryParamsSize = 10;
     args.entryParams = (char *)malloc(sizeof(char) * entryParamsSize);
     if (args.entryParams != nullptr) {
@@ -676,21 +737,23 @@ void StartNativeChildProcess()
     args.fdList.head->fd = fd;
     // 此处只插入一个fd记录，根据需求可以插入更多fd记录到链表中，最多不超过16个
     args.fdList.head->next = NULL;
-    NativeChildProcess_Options options = {.isolationMode = NCP_ISOLATION_MODE_ISOLATED};
+    // 创建子进程配置信息对象
+    Ability_ChildProcessConfigs *configs = OH_Ability_CreateChildProcessConfigs();
+    // 设置子进程的进程名
+    OH_Ability_ChildProcessConfigs_SetProcessName(configs, "child");
 
     // 第一个参数"libchildprocesssample.so:Main"为实现了子进程Main方法的动态库文件名称和入口方法名
     int32_t pid = -1;
     Ability_NativeChildProcess_ErrCode ret =
-        OH_Ability_StartNativeChildProcess("libchildprocesssample.so:Main", args, options, &pid);
+        OH_Ability_StartNativeChildProcessWithConfigs("libchildprocesssample.so:Main", args, configs, &pid);
+    // configs对象使用完毕后需要销毁，避免内存泄漏
+    OH_Ability_DestroyChildProcessConfigs(configs);
     if (ret != NCP_NO_ERROR) {
         // 释放NativeChildProcess_Args中的内存空间防止内存泄漏
         // 子进程未能正常启动时的异常处理
         // ...
     }
-
-    // 其他逻辑
-// ...
-
+    // ...
     // 释放NativeChildProcess_Args中的内存空间防止内存泄漏
 }
 ```
@@ -764,10 +827,16 @@ void Main(NativeChildProcess_Args args)
 ### Code block 17
 
 ```
-#include <AbilityKit/native_child_process.h>
+libchild_process.so
 ```
 
 ### Code block 18
+
+```
+#include <AbilityKit/native_child_process.h>
+```
+
+### Code block 19
 
 ```
 #include <AbilityKit/native_child_process.h>
@@ -780,4 +849,62 @@ void KillChildProcess(int32_t pid)
     }
     // ...
 }
+```
+
+### Code block 20
+
+```
+libchild_process.so
+```
+
+### Code block 21
+
+```
+#include <AbilityKit/native_child_process.h>
+```
+
+### Code block 22
+
+```
+#include <AbilityKit/native_child_process.h>
+#include <hilog/log.h>
+
+// ...
+
+void OnNativeChildProcessExit(int32_t pid, int32_t signal)
+{
+    OH_LOG_INFO(LOG_APP, "pid: %{public}d, signal: %{public}d", pid, signal);
+}
+
+void RegisterNativeChildProcessExitCallback()
+{
+    Ability_NativeChildProcess_ErrCode ret =
+        OH_Ability_RegisterNativeChildProcessExitCallback(OnNativeChildProcessExit);
+    if (ret != NCP_NO_ERROR) {
+        OH_LOG_ERROR(LOG_APP, "register failed.");
+    }
+    // ...
+}
+
+void UnregisterNativeChildProcessExitCallback()
+{
+    Ability_NativeChildProcess_ErrCode ret =
+        OH_Ability_UnregisterNativeChildProcessExitCallback(OnNativeChildProcessExit);
+    if (ret != NCP_NO_ERROR) {
+        OH_LOG_ERROR(LOG_APP, "unregister failed.");
+    }
+    // ...
+}
+```
+
+### Code block 23
+
+```
+target_link_libraries(mainprocesssample PUBLIC
+    # 添加依赖的元能力动态库
+    libchild_process.so
+
+    # 其它依赖的动态库
+    # ...
+)
 ```

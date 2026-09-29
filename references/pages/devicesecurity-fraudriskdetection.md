@@ -68,19 +68,14 @@ function fraudRiskDetectPromise(): Promise<String> {
     try {
       hilog.info(0x0000, TAG, 'Detect fraud risk begin.');
       businessRiskIntelligentDetection.detectFraudRisk(params).then((result: string) => {
-        // Indicates communication with the service was successful.
-        // Use result to get the result data.
-        // It is recommended that the result be parsed and verified on the server.
         hilog.info(0x0000, TAG, 'Detect fraud risk success: %{public}s', result);
         resolve(result);
       }).catch((error: Error) => {
-        // An error occurred while communicating with the service.
         let e: BusinessError = error as BusinessError;
         hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
         reject(error);
       });
     } catch (error) {
-      // An error occurred while using api.
       let e: BusinessError = error as BusinessError;
       hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
       reject(error);
@@ -232,19 +227,14 @@ function fraudRiskDetectPromise(): Promise<String> {
     try {
       hilog.info(0x0000, TAG, 'Detect fraud risk begin.');
       businessRiskIntelligentDetection.detectFraudRisk(params).then((result: string) => {
-        // Indicates communication with the service was successful.
-        // Use result to get the result data.
-        // It is recommended that the result be parsed and verified on the server.
         hilog.info(0x0000, TAG, 'Detect fraud risk success: %{public}s', result);
         resolve(result);
       }).catch((error: Error) => {
-        // An error occurred while communicating with the service.
         let e: BusinessError = error as BusinessError;
         hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
         reject(error);
       });
     } catch (error) {
-      // An error occurred while using api.
       let e: BusinessError = error as BusinessError;
       hilog.error(0x0000, TAG, 'Detect fraud risk failed: %{public}d %{public}s', e.code, e.message);
       reject(error);

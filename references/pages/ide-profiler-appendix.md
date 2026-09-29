@@ -4,8 +4,10 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-profi
 
 GPU帧捕获工具：Graphics Profiler抓帧入口
 
-快捷键
+DevEco Profiler术语
+
+常见问题
 
 错误码
 
-DevEco Profiler术语
+快捷键

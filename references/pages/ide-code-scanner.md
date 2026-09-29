@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-code-scanner_
 
-从26.0.0 Beta1开始，DevEco Studio新增Code Scanner功能，用于检查整个项目的资源泄漏问题。开发者可根据扫描结果中的告警提示，手动修复代码缺陷，在代码开发阶段，确保代码质量。
+从26.0.0版本开始，DevEco Studio新增Code Scanner功能，用于检查整个项目的资源泄漏问题。开发者可根据扫描结果中的告警提示，手动修复代码缺陷，在代码开发阶段，确保代码质量。
 
 操作步骤
 

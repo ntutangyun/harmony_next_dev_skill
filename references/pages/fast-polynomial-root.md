@@ -12,8 +12,8 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/fast-poly
 
 名称	描述
 FAST_ErrorCode HMS_FAST_PolyRoot_ComputeRoots (const FAST_Poly *poly, const size_t maxRootCount, double *root, size_t *rootCount)	计算多项式的给定数量的实根。
-FAST_ErrorCode HMS_FAST_PolyRoot_ComputeSingle (const FAST_Poly *poly, double *root)	计算多项式的单个主导(绝对值最大)实根。
-FAST_ErrorCode HMS_FAST_PolyRoot_ComputeRootIntervals (const FAST_Poly *poly, const size_t maxRootCount, double *leftBoundary, double *rightBoundary, size_t *rootCount)	计算多项式给定数量实根的隔离区间，输出每个实根的左右边界。
+FAST_ErrorCode HMS_FAST_PolyRoot_ComputeSingle (const FAST_Poly *poly, double *root)	计算多项式的绝对值最大的实根。
+FAST_ErrorCode HMS_FAST_PolyRoot_ComputeRootIntervals (const FAST_Poly *poly, const size_t maxRootCount, double *leftBoundary, double *rightBoundary, size_t *rootCount)	计算多项式给定数量的实根的隔离区间，输出每个实根的左右边界。
 
 开发步骤
 

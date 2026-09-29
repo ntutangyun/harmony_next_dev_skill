@@ -23,7 +23,7 @@ completeArkTSScriptInApp(context: Context, requestCode: string, result: ExecuteR
 
 开发步骤
 
-下文以“音乐助手Skill（music-assistant）”为示例，演示如何在自有应用中，通过代码开发和封装，实现按名称播放音乐（playMusicByName）与播放控制（controlPlayback）的能力。
+下文以“音乐助手Skill（example-org-music-assistant）”为示例，演示如何在自有应用中，通过代码开发和封装，实现按名称播放音乐（playMusicByName）与播放控制（controlPlayback）的能力。
 
 创建文件和目录。
 
@@ -35,7 +35,7 @@ Application/
 │   └── resources/
 └── entry/
     ├── skills/                            <- 【固定值】当前模块所有Skill的根目录
-    │   └── music-assistant/               <- Skill名，需与SKILL.md的name一致
+    │   └── example-org-music-assistant/   <- Skill名，需与SKILL.md的name一致，为防止命名冲突，推荐使用公司或组织名作为前缀
     │       ├── scripts/                   <- 【固定值】ETS脚本目录
     │       │   └── MusicSkill.ets         <- Skill入口脚本
     │       └── SKILL.md                   <- 【固定值】Skill描述文件
@@ -60,10 +60,10 @@ Application/
     // ...
     "skillProfiles": [
       {
-        "name": "music-assistant", // Skill名，需与SKILL.md的name一致
-        "abilityName": "EntryAbility", // 与该Skill关联的组件名称
-        "srcEntries": [  // 实现Skill的代码文件路径列表
-          "../../skills/music-assistant/scripts/MusicSkill.ets"
+        "name": "example-org-music-assistant",  // Skill名，需与SKILL.md的name一致
+        "abilityName": "EntryAbility",          // 与该Skill关联的组件名称
+        "srcEntries": [                         // 实现Skill的代码文件路径列表
+          "../../skills/example-org-music-assistant/scripts/MusicSkill.ets"
         ],
         "version": "1.0.0"
       }
@@ -207,7 +207,7 @@ SKILL.md是Skill的声明契约文件，是系统智能体进行“意图—能�
 在文件头部使用YAML Front Matter声明 name 与 description。其中，name 必须与 Skill 目录名以及 module.json5 中 skillProfiles[].name 完全保持一致；description 应简洁地描述能力范围，作为系统智能体进行 Skill 初次筛选的关键依据。
 
 ---
-name: music-assistant
+name: example-org-music-assistant
 description: 提供音乐搜索播放与播控能力，响应“放首歌”、“切歌”、“暂停”等播放控制类指令
 ---
 
@@ -237,7 +237,7 @@ description: 提供音乐搜索播放与播控能力，响应“放首歌”、�
 
 调用示例包含四个核心字段：command固定为ohos-arkTSScript；skillName需与SKILL.md中的name保持一致；scriptPath为相对于Skill目录的入口脚本路径；functionName必须与MusicSkill.ets中public方法名严格对应。
 
-exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 'scripts/MusicSkill.ets' --functionName 'playMusicByName' --args '{
+exec-cli(command: ohos-arkTSScript --skillName 'example-org-music-assistant' --scriptPath 'scripts/MusicSkill.ets' --functionName 'playMusicByName' --args '{
     "arg1": "SongA",
     "arg2": "SingerA"
 }'
@@ -349,7 +349,7 @@ Application/
 │   └── resources/
 └── entry/
     ├── skills/                            <- 【固定值】当前模块所有Skill的根目录
-    │   └── music-assistant/               <- Skill名，需与SKILL.md的name一致
+    │   └── example-org-music-assistant/   <- Skill名，需与SKILL.md的name一致，为防止命名冲突，推荐使用公司或组织名作为前缀
     │       ├── scripts/                   <- 【固定值】ETS脚本目录
     │       │   └── MusicSkill.ets         <- Skill入口脚本
     │       └── SKILL.md                   <- 【固定值】Skill描述文件
@@ -372,10 +372,10 @@ Application/
     // ...
     "skillProfiles": [
       {
-        "name": "music-assistant", // Skill名，需与SKILL.md的name一致
-        "abilityName": "EntryAbility", // 与该Skill关联的组件名称
-        "srcEntries": [  // 实现Skill的代码文件路径列表
-          "../../skills/music-assistant/scripts/MusicSkill.ets"
+        "name": "example-org-music-assistant",  // Skill名，需与SKILL.md的name一致
+        "abilityName": "EntryAbility",          // 与该Skill关联的组件名称
+        "srcEntries": [                         // 实现Skill的代码文件路径列表
+          "../../skills/example-org-music-assistant/scripts/MusicSkill.ets"
         ],
         "version": "1.0.0"
       }
@@ -507,7 +507,7 @@ private async report(info: scriptManager.ArkTSScriptInfo, result: scriptManager.
 
 ```
 ---
-name: music-assistant
+name: example-org-music-assistant
 description: 提供音乐搜索播放与播控能力，响应“放首歌”、“切歌”、“暂停”等播放控制类指令
 ---
 ```
@@ -535,7 +535,7 @@ description: 提供音乐搜索播放与播控能力，响应“放首歌”、�
 ### Code block 10
 
 ```
-exec-cli(command: ohos-arkTSScript --skillName 'music-assistant' --scriptPath 'scripts/MusicSkill.ets' --functionName 'playMusicByName' --args '{
+exec-cli(command: ohos-arkTSScript --skillName 'example-org-music-assistant' --scriptPath 'scripts/MusicSkill.ets' --functionName 'playMusicByName' --args '{
     "arg1": "SongA",
     "arg2": "SingerA"
 }'

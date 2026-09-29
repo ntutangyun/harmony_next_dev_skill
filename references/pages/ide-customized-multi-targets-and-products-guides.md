@@ -73,7 +73,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
 
 [h2]定义产物的deviceType
 
-每一个target均可以指定支持的设备类型deviceType，也可以不定义。如果不定义，则该target默认支持module.json5/config.json中定义的设备类型。
+每一个target均可以指定支持的设备类型deviceType，也可以不定义。如果不定义，则该target默认支持module.json5（Stage模型）/config.json（FA模型）中定义的设备类型。
 
 同时，在定义每个target的deviceType时，支持的设备类型必须在module.json5或config.json中已经定义。例如，在上述定义的3个target中，分别定义default默认支持所有设备类型，free和pay版本只支持phone设备。
 
@@ -293,9 +293,9 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-custo
 
 packageName：当前模块的oh-package.json5中的name字段对应的值。
 
-sourceRoot：<defaultSourceRoot> | <targetSourceRoot> ，其中<defaultSourceRoot>是 src/main，<targetSourceRoot>可自定义，寻址优先级为 <targetSourceRoot> > <defaultSourceRoot>。
+sourceRoots：<defaultSourceRoot> | <targetSourceRoot> ，其中<defaultSourceRoot>是 src/main，<targetSourceRoot>可自定义，寻址优先级为 <targetSourceRoot> > <defaultSourceRoot>。
 
-sourcePath：在sourceRoot中的代码结构目录。
+sourcePath：在sourceRoots中的代码结构目录。
 
 sourceFileName：代码目录下的ets文件名。
 
@@ -313,7 +313,7 @@ entry
 
 packageName为entry。
 
-sourceRoot为src/main、src/target。
+sourceRoots为src/main、src/target。
 
 sourcePath为ets/code、util。
 
@@ -321,13 +321,15 @@ sourceFileName为test.ets、util.ets。
 
 规格限制
 
-1. import xxx from '<packageName>/sourcePath/sourceFileName' ：通过packageName的方式，省略sourceRoot，可以实现不同target下的差异化构建。
+import xxx from '<packageName>/sourcePath/sourceFileName' ：通过packageName的方式，省略sourceRoots，可以实现不同target下的差异化构建。
 
-2. 支持hap、hsp、har（请注意：开启文件/文件夹名称混淆的har模块需要使用-keep-file-name指定sourceRoot，sourcePath，sourceFileName对应的文件/文件夹名称不被混淆）。
+sourceRoots只能配置到src的下一级目录，如src/main，不支持多级子目录。
 
-3. 不支持跨模块引用。
+支持hap、hsp、har（请注意：开启文件/文件夹名称混淆的har模块需要使用-keep-file-name指定sourceRoots，sourcePath，sourceFileName对应的文件/文件夹名称不被混淆）。
 
-4. 不支持动态import。
+不支持跨模块引用。
+
+不支持动态import。
 
 编译时模块target的选择优先级说明
 
@@ -532,7 +534,7 @@ AppScope目录下的资源文件会合入到模块下相同路径的资源目录
 
 [h2]定义产物的icon、label、launchType
 
-针对每一个的target的ability，均可以定制不同的icon、label和launchType。如果不定义，则该target采用module.json5中module.abilities配置的icon、label，launchType默认为"singleton"。示例如下所示：
+针对每个target的ability，均可以定制不同的icon、label和launchType。如果不定义，则该target采用module.json5中module.abilities配置的icon、label，launchType默认为"singleton"。示例如下所示：
 
 {
    "apiType": 'stageMode',
@@ -1040,12 +1042,11 @@ products中的icon和label字段在编译时会替换app.json5中对应的字段
       }
     ]
   },
-  ...
 }
 
 [h2]定义product中包含的target
 
-开发者可以选择需要将定义的target分别打包到哪一个product中，每个product可以指定一个或多个target。
+开发者可以选择将定义的target分别打包到哪一个product中，每个product可以指定一个或多个target。
 
 同时每个target也可以打包到不同的product中，但是同一个module的不同target不能打包到同一个product中（除非该module的不同target配置了不同的deviceType或distributionFilter/distroFilter）。
 
@@ -1180,6 +1181,107 @@ hvigorw --mode module -p module=entry -c properties.ohos.align.target=A -c prope
 说明
 
 以上所有说明仅针对非ohosTest模式。在ohosTest模式下，依赖的target固定为default，其他target均不生效。
+
+使用插件配置多目标依赖
+
+从26.0.0版本开始，支持通过@ohos/hvigor-multi-target-package-plugin插件，按照target、product和buildMode维度个性化配置依赖（dependencies和dynamicDependencies），从而构建多目标产物。
+
+[h2]安装与导入插件
+
+@ohos:registry=https://repo.harmonyos.com/npm/
+
+// hvigor-config.json5
+"dependencies": {
+  "@ohos/hvigor-multi-target-package-plugin": "7.0.0"
+},
+
+执行Sync，DevEco Studio会自动安装依赖。
+
+// 工程级hvigorfile.ts
+import { appTasks } from '@ohos/hvigor-ohos-plugin';
+import { assembleSeqPlugin } from '@ohos/hvigor-multi-target-package-plugin';
+
+export default {
+  system: appTasks, /* Built-in plugin of Hvigor. It cannot be modified. */
+  plugins: [assembleSeqPlugin()] // 注册插件
+}
+
+[h2]配置依赖
+
+安装并导入插件后，可以配置多目标依赖，进行代码开发及编译打包。
+
+支持按target、product和buildMode三种维度配置依赖，配置字段如下，其中xxx代表target/product/buildMode的名称。
+
+target：xxxTargetDependencies、xxxTargetDynamicDependencies
+
+product：xxxProductDependencies、xxxProductDynamicDependencies
+
+buildMode：xxxBuildModeDependencies、xxxBuildModeDynamicDependencies
+
+不同维度的依赖需配置在特定的oh-package.json5文件中，配置错误将不生效。
+
+依赖维度	配置位置	说明
+target	模块级oh-package.json5	仅支持在模块级配置。
+product	工程级oh-package.json5	仅支持在工程级配置。
+buildMode	工程级或模块级oh-package.json5	说明： 建议二选一，统一在工程级或模块级中配置，避免混合配置。 插件不会对同时配置在工程级和模块级oh-package.json5中的buildMode级别依赖进行合并处理。
+
+target级 > product级 > buildMode级
+
+// 工程级oh-package.json5
+"phoneProductDependencies": {
+    "dialog": "1.0.1"
+},
+"debugBuildModeDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+}
+"phoneProductDynamicDependencies": {
+  "dialog": "1.0.1"
+},
+"debugBuildModeDynamicDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+},
+
+// 模块级oh-package.json5
+"debugBuildModeDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+},
+"phoneTargetDependencies": {
+  "dialog": "1.0.2"
+},
+"debugBuildModeDynamicDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+},
+"phoneTargetDynamicDependencies": {
+  "dialog": "1.0.2"
+}
+
+[h2]定制产物版本号
+
+对于HAR或者HSP，当不同target使用不同的依赖时，为避免不同target的产物使用相同版本号导致难以区分，可通过配置文件assemble-seq-plugin-config.json5为不同target的版本号添加后缀。
+
+如下示例，两个target产物生成的版本号分别为：${version}.default和${version}.phone，其中${version}是模块级oh-package.json5中的version字段值。
+
+// assemble-seq-plugin-config.json5，放在每个模块的根目录下
+{
+  "targets": [
+    {
+      "name": "default",
+      "output": {
+          "versionSuffix": ".default"
+      }
+    },
+    {
+      "name": "phone",
+      "output": {
+        "versionSuffix": ".phone"
+      }
+    }
+  ]
+}
+
+[h2]编译打包
+
+配置完成后，在DevEco Studio的Hvigor任务树中，找到并双击执行以Seq结尾的任务，即可完成编译打包。
 
 ## Code blocks
 
@@ -2108,7 +2210,6 @@ hvigorw --mode module -p product=default -p module=library@free -p buildMode=deb
       }
     ]
   },
-  ...
 }
 ```
 
@@ -2202,4 +2303,86 @@ hvigorw -c properties.ohos.fallback.target=target1,target2 assembleHap
 
 ```
 hvigorw --mode module -p module=entry -c properties.ohos.align.target=A -c properties.ohos.fallback.target=C assembleHap
+```
+
+### Code block 34
+
+```
+@ohos:registry=https://repo.harmonyos.com/npm/
+```
+
+### Code block 35
+
+```
+// hvigor-config.json5
+"dependencies": {
+  "@ohos/hvigor-multi-target-package-plugin": "7.0.0"
+},
+```
+
+### Code block 36
+
+```
+// 工程级hvigorfile.ts
+import { appTasks } from '@ohos/hvigor-ohos-plugin';
+import { assembleSeqPlugin } from '@ohos/hvigor-multi-target-package-plugin';
+
+export default {
+  system: appTasks, /* Built-in plugin of Hvigor. It cannot be modified. */
+  plugins: [assembleSeqPlugin()] // 注册插件
+}
+```
+
+### Code block 37
+
+```
+// 工程级oh-package.json5
+"phoneProductDependencies": {
+    "dialog": "1.0.1"
+},
+"debugBuildModeDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+}
+"phoneProductDynamicDependencies": {
+  "dialog": "1.0.1"
+},
+"debugBuildModeDynamicDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+},
+
+// 模块级oh-package.json5
+"debugBuildModeDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+},
+"phoneTargetDependencies": {
+  "dialog": "1.0.2"
+},
+"debugBuildModeDynamicDependencies": {    // 工程级和模块级二选一配置
+  "dialog": "1.0.0"
+},
+"phoneTargetDynamicDependencies": {
+  "dialog": "1.0.2"
+}
+```
+
+### Code block 38
+
+```
+// assemble-seq-plugin-config.json5，放在每个模块的根目录下
+{
+  "targets": [
+    {
+      "name": "default",
+      "output": {
+          "versionSuffix": ".default"
+      }
+    },
+    {
+      "name": "phone",
+      "output": {
+        "versionSuffix": ".phone"
+      }
+    }
+  ]
+}
 ```

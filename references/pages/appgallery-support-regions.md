@@ -2,9 +2,9 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/appgallery-support-regions_
 
-手机、平板、2in1、车机、智慧屏仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+Phone、Tablet、PC/2in1、TV、Car仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
 
-智能穿戴设备支持以下国家/地区。
+Wearable设备支持以下国家/地区。
 
 国家/地区	英文名称
 中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）	Chinese mainland

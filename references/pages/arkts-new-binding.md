@@ -12,7 +12,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-new
 
 概述
 
-!!双向绑定语法，是一个语法糖方便开发者实现数据双向绑定，用于初始化子组件的@Param装饰的属性和@Event装饰的事件。其中@Event方法名需要声明为“$”+ @Param属性名，详见使用场景。
+!!双向绑定语法，是一个语法糖，方便开发者实现数据双向绑定，用于初始化子组件的@Param装饰的属性和@Event装饰的事件。其中@Event方法名需要声明为“$”+ @Param属性名，详见使用场景。
 
 如果使用了!!双向绑定语法，表明父组件的变化会同步给子组件，子组件的变化也会同步给父组件。
 
@@ -49,7 +49,7 @@ struct Index {
       // 使用@Param与@Event语法实现自定义组件双向绑定。
       Star({ value: this.value, $value: (val: number) => { this.value = val; } })
       // ...
-    // ···
+    // ...
     }
   }
 }
@@ -117,7 +117,7 @@ struct Star {
 
 [h2]系统组件参数双向绑定
 
-!!运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步。添加方式是在变量名后添加，例如isShow!!。
+!!运算符为系统组件提供TS变量的引用，使得TS变量和系统组件的内部状态保持同步。添加方式是在变量名后添加!!，例如isShow!!。
 
 内部状态的含义由组件或属性决定。例如：bindMenu属性的isShow参数。
 
@@ -177,8 +177,8 @@ bindPopup	show	18
 TextInput	text	18
 TextArea	text	18
 Search	value	18
-BindSheet	isShow	18
-BindContentCover	isShow	18
+bindSheet	isShow	18
+bindContentCover	isShow	18
 SideBarContainer	sideBarWidth	18
 Navigation	navBarWidth	18
 Toggle	isOn	18
@@ -223,7 +223,7 @@ struct Index {
       // 使用@Param与@Event语法实现自定义组件双向绑定。
       Star({ value: this.value, $value: (val: number) => { this.value = val; } })
       // ...
-    // ···
+    // ...
     }
   }
 }

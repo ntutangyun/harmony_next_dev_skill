@@ -278,7 +278,7 @@ EXTERN_C_END
 
 实现ModularObjectExtensionAbility客户端
 
-介绍客户端应用如何连接ModularObjectExtensionAbility，以及通过OHIPCRemoteProxy对象调用服务端提供的接口方法。
+介绍客户端应用如何连接ModularObjectExtensionAbility，并与服务端通信。客户端可通过Proxy对象进行静态调用，也可通过ModularObjectDispatcher进行动态调用。
 
 [h2]连接ModularObjectExtensionAbility
 
@@ -419,6 +419,12 @@ static napi_value TestAdd(napi_env env, napi_callback_info info)
     OH_LOG_INFO(LOG_APP, "CalculatorProxy::Add(10, 20) result:%{public}d", result);
     return nullptr;
 }
+
+[h2]通过ModularObjectDispatcher与服务端通信
+
+除了上述基于Proxy的静态调用方式外，客户端还可以通过ModularObjectDispatcher实现动态调用。静态调用方式需要在编译期依赖服务端的接口定义，而动态调用方式允许客户端在运行时查询服务端的类型库元数据，并通过方法名发起调用，无需编译期绑定。
+
+动态调用适用于运行时才能确定接口的场景，如通用脚本引擎、自动化测试框架和跨版本网关服务。完整开发流程请参考使用ModularObjectDispatcher实现动态接口调用 (C/C++)。
 
 [h2]断连ModularObjectExtensionAbility
 

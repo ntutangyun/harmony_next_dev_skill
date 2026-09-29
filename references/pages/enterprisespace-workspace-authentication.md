@@ -2,7 +2,7 @@
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/enterprisespace-workspace-authentication_
 
-从6.1.0(23)开始，支持企业认证和获取企业应用令牌的能力。
+从API版本6.1.0(23)开始，支持企业认证和获取企业应用令牌的能力。
 
 场景介绍
 
@@ -190,7 +190,7 @@ struct WorkspaceCertificationPage {
 
   async authenticate() {
     let serverType = ServerType.AD;
-    let serverConfig: ServerConfig = this.getServiceConfig(serverType);
+    let serverConfig: ServerConfig = this.getServiceConfig(serverType); // 由用户设置对应域服务器的配置参数
     let serverConfigId: string = 'serverConfigId';
 
     try {
@@ -461,7 +461,7 @@ struct WorkspaceCertificationPage {
 
   async authenticate() {
     let serverType = ServerType.AD;
-    let serverConfig: ServerConfig = this.getServiceConfig(serverType);
+    let serverConfig: ServerConfig = this.getServiceConfig(serverType); // 由用户设置对应域服务器的配置参数
     let serverConfigId: string = 'serverConfigId';
 
     try {

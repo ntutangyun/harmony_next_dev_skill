@@ -48,7 +48,9 @@ Options
 
 类型：Boolean
 
-可以在 info 命令后面配置 --strict_ssl true 参数，校验 https 证书；配置 --strict_ssl false 参数，不校验https证书。
+在info命令后面不配置参数、配置--strict_ssl或--strict_ssl true参数时，开启校验HTTPS证书。
+
+从ohpm 26.0.0.630版本开始，如需关闭校验，可配置--no-strict_ssl或--strict_ssl false参数，推荐使用--no-strict_ssl参数。
 
 [h2]pageNum
 
@@ -110,7 +112,7 @@ latest：查看三方库最新发布的版本。
 
 说明
 
-tags：展示三方库的所有tag列表，不支持在依赖名称后通过@拼接具体version或tag实现过滤，如'ohpm info @ohos/lottie tags'等同于'ohpm info @ohos/lottie@latest tags'、'ohpm info @ohos/lottie tags'等同于'ohpm info @ohos/lottie@1.0.0 tags'。
+tags：展示三方库的所有tag列表，不支持在依赖名称后通过@拼接具体version或tag实现过滤，如“ohpm info @ohos/lottie tags”等同于“ohpm info @ohos/lottie@latest tags”、“ohpm info @ohos/lottie tags”等同于“ohpm info @ohos/lottie@1.0.0 tags”。
 
 versions：分页展示三方库的版本列表，不支持在依赖名称后通过@拼接具体version或tag实现过滤。
 

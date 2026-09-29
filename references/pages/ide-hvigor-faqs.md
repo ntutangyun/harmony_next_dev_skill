@@ -232,13 +232,13 @@ hap-sign-tool: error: ACCESS_ERROR, code: 109. Details:   Init keystore failed
 
 场景
 
-使用DevEco Studio生产密钥对时，DevEco Studio默认会调用软件内预置的JDK17，而用户使用本地的低版本JDK进行签名时则会报错。
+使用DevEco Studio生成密钥对时，DevEco Studio默认会调用软件内预置的JDK，而用户使用本地的低版本JDK进行签名时则会报错。
 
-用户本地使用高版本JDK生成密钥对时，又通过DevEco Studio进行签名，DevEco Studio中预置的JDK17版本低于用户的JDK，导致报错。
+用户本地使用高版本JDK生成密钥对时，又通过DevEco Studio进行签名，DevEco Studio中预置的JDK版本低于用户的JDK，导致报错。
 
 解决方案
 
-请检查当前使用的JDK版本和生产密钥对使用的JDK版本，使用版本匹配的JDK执行签名命令。
+请检查当前使用的JDK版本和生成密钥对使用的JDK版本，使用版本匹配的JDK执行签名命令。
 
 编译报错“generate SignerBlock failed”
 
@@ -491,7 +491,7 @@ DevEco Studio编译失败，提示“Error Message: Failed to get a resolved Ohm
 
 处理措施
 
-如果hvigor_ignore_xxxxx所在的模块是一个har模块，需要排查oh_package.json5中是否存在"packageType": "InterfaceHar"，如果存在，请删除"packageType": "InterfaceHar"。
+如果hvigor_ignore_xxxxx所在的模块是har模块，需排查oh_package.json5中是否存在"packageType": "InterfaceHar"，若存在则删除。
 
 问题现象
 
@@ -780,20 +780,6 @@ message(STATUS "Include directories: ${CMAKE_INCLUDE_PATH}")
 结论
 
 通过上述步骤，您可以定位和解决 unknown type name 问题。在使用 CMake、Ninja 和 LLVM 编译 C++ 项目时，确保所有头文件正确包含并设置正确的头文件路径是关键。如果问题依旧存在，详细的编译输出日志通常能提供更多线索，帮助您找到具体的原因。
-
-JDK版本不匹配导致编译失败
-
-问题现象
-
-通过命令行方式构建HarmonyOS应用或元服务过程中出现构建失败，现象如下图所示。
-
-解决措施
-
-该问题是由于JDK版本不匹配导致，当前配套的版本为JDK 17。因此，请根据如下方法进行修正：
-
-下载并安装JDK 17版本。
-
-修改JAVA_HOME环境变量，取值修改为JDK 17。如果是Linux系统，可参考使用命令行方式构建元服务或应用的配置JDK章节。
 
 LABEL_VALUE_ERROR处理指导
 
@@ -1287,7 +1273,7 @@ useNormalizedOHMUrl 为true的时候ohmurl使用的是新的拼接和解析方�
 
 问题原因
 
-在引用目录时，编译时自动拼接小写的index文件，而目录中是大写的Index文件，在编译大小写敏感时，找不到index文件，则报错。
+在引用目录时，编译时自动拼接小写的index文件，但目录中是大写的Index文件，在编译大小写敏感时，因找不到index文件而报错。
 
 解决措施
 
@@ -1333,7 +1319,7 @@ Detail: Please check the message from tools.
 
 资源文件被意外删除。
 
-解决方案
+解决措施
 
 根据报错的资源id全局搜索，查看报错的资源是否存在。
 
@@ -1353,7 +1339,7 @@ module.json文件格式不正确。
 
 2. 根标签不是大括号{}。
 
-解决方案
+解决措施
 
 检查报错指向的json文件格式，比如是否末尾多了逗号，根标签是否为大括号{}。
 
@@ -1363,131 +1349,9 @@ module.json文件格式不正确。
 
 编译报错“Error: the name 'XXX' can only contain [a-zA-Z0-9_]”。
 
-解决方案
+解决措施
 
 检查文件名是否合法，文件名只能包含大小写字母、数字、下划线。
-
-如何解决三方包require语句报错
-
-问题现象
-
-当引入三方包时编译报错。
-
-报错原因
-
-部分三方包由npm迁移而来，其开发环境为node， 其中的require语法arkcompiler不完全支持，出现运行报错情况。
-
-场景1：
-
-// Module/src/test.json
-{a: 1, b: 2}
-//use.js
-let test = require("Module/src/test.json")
-
-需修改为：
-
-// Module/src/test.js
-module.exports = {a: 1, b: 2}
-//use.js
-let test = require("Module/src/test")
-
-场景2：
-
-// Module/package.json
-...
-main: "./src"
-...
-// use.js
-let module = require("Module")
-
-需修改为：
-
-// Module/package.json
-...
-main: "./src/index.js"
-...
-// use.js
-let module = require("Module")
-
-场景3：
-
-编译出现warning信息：
-
-Plugin node-resolve: preferring built-in module 'util' over local alternative at '/Users/~/Documents/fe-module/demo/node_modules/util/util.js', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning
-
-解决方案
-
-修改rollup 配置文件，rollup.config.js中修改 preferBuiltins 字段：
-
-plugins: [
-  resolve({
-    preferBuiltins: false,    // true 或 false
-    mainFields: ['module', 'main'],
-    extensions
-  })
-];
-
-场景4：
-
-import {Buffer} from 'buffer'
-
-需修改为：
-
-import {Buffer} from 'buffer/'
-
-如何解决编译报错“Indexed access is not supported for fields(arkts-no-props-by-index)”的问题
-
-问题现象
-
-动态调用类或者接口的字段，导致编译报错出现：Indexed access is not supported for fields(arkts-no-props-by-index)。
-
-解决方案
-
-修改代码：
-
-getValue(breakpoint: string): T {
-    return Reflect.get(this.options, breakpoint) as T;
-}
-
-如何解决编译报错“Declaration merging is not supported(arkts-no-decl-merging)” 或 “Cannot redeclare block-scoped variable 'xxx'”的问题
-
-问题现象
-
-在不同的文件中声明相同变量或者interface、enum等类型，DevEco Studio不报错，但是编译报错。
-
-解决方案
-
-如果文件中不包含export关键字，该文件将视作全局命名空间的一部分，相当于两个文件实质为同一个文件。请添加export关键字使其成为独立命名空间，或者将声明的内容添加到自定义的命名空间中。
-
-如何解决编译报错“ The inferred type of 'xxx' cannot be named without a reference to 'xxx'. This is likely not portable. A type annotation is necessary.”的问题
-
-问题现象
-
-编译报错"The inferred type of 'xxx' cannot be named without a reference to 'xxx'. This is likely not portable. A type annotation is necessary"。
-
-问题原因
-
-HSP会生成.d.ts声明文件，由于原始文件中未注明类型，导致生成的.d.ts文件缺少类型注解。
-
-解决方案
-
-报错位置添加类型注解。
-
-如何解决编译报错“ERROR: ArkTS Compiler Error ERROR: /bin/sh: "xxxx/es2abc": Operation not permitted”的问题
-
-问题现象
-
-编译报错“ERROR: ArkTS Compiler Error ERROR: /bin/sh: "xxxx/es2abc": Operation not permitted”。
-
-问题原因
-
-由于获取SDK的方式是从网络上下载，mac的安全设置会给可执行文件添加来源于网络的标识（com.apple.quarantine），导致无法执行。
-
-解决方案
-
-执行命令删除可执行文件的com.apple.quarantine标识。
-
-xattr -d com.apple.quarantine /path/to/es2abc
 
 如何解决编译报错“Cannot add xxxx items to index”的问题
 
@@ -1499,21 +1363,25 @@ xattr -d com.apple.quarantine /path/to/es2abc
 
 被编译文件中某函数内部有大量object literal, array literal和string，导致item的数量超过了上限（65536）。
 
-解决方案
+解决措施
 
 排查相关文件，将存在上述原因的函数进行拆分。
 
-编译初始化报错“resource busy or locked, open 'xxx\outputs\build-logs\build.log'”
+如何解决编译卡死，提示“The modules directory at "xxx/workspace/node_modules" will be removed and reinstalled from scratch. Proceed? (Y/n) > true”的问题
 
 问题现象
 
-在升级DevEco Studio至5.0.3.403版本后，打开旧工程概率性报错：resource busy or locked, open 'xxx\outputs\build-logs\build.log'。
+编译卡死，提示“The modules directory at "xxx/workspace/node_modules" will be removed and reinstalled from scratch. Proceed? (Y/n) > true”。
 
 问题原因
 
-初始化时日志写入存在冲突，.hvigor目录中的build-log文件被占用导致了该报错。
+安装构建插件使用的pnpm版本和当前DevEco Studio使用的pnpm版本不一致。
 
-解决方案
+解决措施
+
+使用DevEco Studio 26.0.0及以上版本。
+
+如果还是使用当前DevEco Studio版本，删除报错中的路径（例如以上是删除“C:\Users\xxxx\.hvigor\project_caches\8e4ab2ae81c130fec666aeb0b81bd299”目录）和“C:\Users\xxxx\.hvigor\wrapper”目录。
 
 ## Code blocks
 
@@ -2040,88 +1908,4 @@ Error: ref `$media:icons` don`t be defined.
 Error: 'icon' value `$media:icons` invalid value.
 at D:\project\process_profile\default\module.json
 Detail: Please check the message from tools.
-```
-
-### Code block 45
-
-```
-// Module/src/test.json
-{a: 1, b: 2}
-//use.js
-let test = require("Module/src/test.json")
-```
-
-### Code block 46
-
-```
-// Module/src/test.js
-module.exports = {a: 1, b: 2}
-//use.js
-let test = require("Module/src/test")
-```
-
-### Code block 47
-
-```
-// Module/package.json
-...
-main: "./src"
-...
-// use.js
-let module = require("Module")
-```
-
-### Code block 48
-
-```
-// Module/package.json
-...
-main: "./src/index.js"
-...
-// use.js
-let module = require("Module")
-```
-
-### Code block 49
-
-```
-Plugin node-resolve: preferring built-in module 'util' over local alternative at '/Users/~/Documents/fe-module/demo/node_modules/util/util.js', pass 'preferBuiltins: false' to disable this behavior or 'preferBuiltins: true' to disable this warning
-```
-
-### Code block 50
-
-```
-plugins: [
-  resolve({
-    preferBuiltins: false,    // true 或 false
-    mainFields: ['module', 'main'],
-    extensions
-  })
-];
-```
-
-### Code block 51
-
-```
-import {Buffer} from 'buffer'
-```
-
-### Code block 52
-
-```
-import {Buffer} from 'buffer/'
-```
-
-### Code block 53
-
-```
-getValue(breakpoint: string): T {
-    return Reflect.get(this.options, breakpoint) as T;
-}
-```
-
-### Code block 54
-
-```
-xattr -d com.apple.quarantine /path/to/es2abc
 ```

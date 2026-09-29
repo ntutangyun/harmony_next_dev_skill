@@ -26,8 +26,8 @@ AnonPage Other	其他所有匿名页所占内存（非heap、anon:native_heap、
 FilePage Other	其它映射到文件页但不能被归类到.so/.db/.ttf类型的内存占用。
 Dev	进程加载的以/dev开头的文件所占内存。
 Stack	栈内存。
-ArkWeb PA	26.0.0 Beta1版本新增。 Malloc内存分配。
-JS Heap	26.0.0 Beta1版本新增。 ArkWeb Render进程JS堆内存占用。
+ArkWeb PA	26.0.0版本新增。 Malloc内存分配。
+JS Heap	26.0.0版本新增。 ArkWeb Render进程JS堆内存占用。
 .hap	进程加载的.hap文件所占内存。
 .so	进程加载的.so动态库所占内存。
 .ttf	进程加载的.ttf字体文件所占内存。
@@ -48,22 +48,27 @@ System Resources泳道
 
 Graphic Memory泳道
 
-单击工具控制栏中的按钮，可以设置是否为统计模式、统计间隔、最小跟踪内存、内存数据采样大小、回栈模式、JS回栈、JS回栈深度、Native回栈深度、开启异步栈缝合、设置采样数据范围。
+Native Leaks泳道
 
-配置项	说明
+从26.0.0版本开始，ArkTS Snapshot泳道支持解析内存对象，具体操作请参考解析内存对象。
+
+单击工具控制栏中的按钮，可以设置是否为统计模式、回栈模式、JS回栈、JS回栈深度、Native回栈深度、开启异步栈缝合等，设置项的具体说明请参考下表。
+
+设置项名称	说明
 Statistics Mode	该项配置代表是否开启统计模式采集数据，默认开启。开启后，数据会每隔Sampling Interval中设置的时间从设备端汇总并返回。关闭后，处于非统计模式，每次内存分配后数据会实时从设备端返回。
 Sampling Interval	统计时间间隔。仅在统计模式下需要设置，可设置范围为1s~3600s，默认为10s。
+Collect Only Unreleased Memory Events	26.0.0版本新增。 在录制阶段，控制是否保留已释放内存的调用栈数据，默认开启。 开启时，尽量丢弃已释放的调用栈数据，保留未释放的调用栈数据，关注内存泄漏问题定位，减少对被调优应用的性能影响。 关闭时，保留全部申请和释放内存调用栈数据，需要分析内存分配和释放的完整生命周期，如排查内存抖动等问题。
 All Heap & Anonymous VM Filter Size	最小跟踪内存，该参数表示最小抓取的内存大小。 可配置范围为0-65535Bytes，默认为1024Bytes。
 Sampling Size	DevEco Studio 6.1.1 Release版本新增。 内存数据采样大小，可配置范围为1-1048576Bytes，默认为4096Bytes。 配置后，仅对Native Heap和All Anonymous VM泳道中的mmap类型数据生效。
-Backtrace Mode	内存分配栈回栈模式。当前提供FP和DWARF两种回栈模式。FP回栈是通过帧指针（FP寄存器）链接栈帧，直接遍历调用链。DWARF回栈是基于编译器生成的DWARF调试信息进行栈回溯。默认FP回栈。FP回栈性能更好，但在某些特定场景下（例如so的编译参数控制），FP回栈可能失效，此时可选择DWARF回栈尝试。
+Backtrace Mode	内存分配栈回栈模式。当前提供FP和DWARF两种回栈模式。FP回栈是通过帧指针（FP寄存器）链接栈帧，直接遍历调用链。DWARF回栈是基于编译器生成的DWARF调试信息进行栈回溯。默认FP回栈。 若选择FP回栈模式，支持配置JS Backtrace Depth（JS回栈深度）和Native Backtrace Depth（Native回栈深度）设置项；若选择DWARF回栈模式，支持配置Backtrace Depth（回栈深度）。 FP回栈性能更好，但在某些特定场景下（例如so的编译参数控制），FP回栈可能失效，此时可选择DWARF回栈尝试。
 Record JS Stack	是否开启JS回栈。开启后，系统回栈时会自动从Native向JS层回栈，完成Native到JS的栈缝合，适合ArkTS/JS代码调用Native的场景。 在DevEco Studio 6.1.0 Beta2之前版本，默认关闭。 从DevEco Studio 6.1.0 Beta2版本开始，默认开启。
 JS Backtrace Depth	JS回栈深度。可配置范围为1-128，默认10层。
 Native Backtrace Depth	Native回栈深度。可配置范围为5-100，默认10层。
-Backtrace Stack	回栈深度。仅当Backtrace Mode选择为DWARF模式的情况下存在，其层数代表着JS与Native的共同回栈深度。可配置范围为5-100，默认20层。
+Backtrace Depth	回栈深度。仅当Backtrace Mode选择为DWARF模式的情况下存在，其层数代表着JS与Native的共同回栈深度。可配置范围为5-100，默认20层。
 Sync Backtrace Depth	DevEco Studio 6.1.1 Beta1版本新增。 同步回栈深度。仅当Record Async Stack开启的情况下存在，其层数代表着JS与Native的共同同步回栈深度。可配置范围为5-100，默认20层。
-Record Async Stack	DevEco Studio 6.1.1 Beta1版本新增。 用于开启异步栈缝合，默认关闭。仅当Backtrace Mode选择为FP模式时，支持开启。 26.0.0 Beta2以下版本，开启后，异步回栈时支持多回一层异步栈帧，最大异步回栈层数为16层。 26.0.0 Beta2及以上版本，支持通过Async Nesting Depth和Async Backtrace Depth设置异步栈嵌套层数和回栈层数。
-Async Nesting Depth	26.0.0 Beta2版本新增。 异步栈嵌套层数，可配置范围为[1,16]，推荐范围为[3,10]，默认为3。 仅当Record Async Stack开启时，支持设置。
-Async Backtrace Depth	26.0.0 Beta2版本新增。 异步回栈层数，指每个异步栈中显示的最大层数，可配置范围为[1,256]，推荐范围为[16,32]，默认16层。 仅当Record Async Stack开启时，支持设置。
+Record Async Stack	DevEco Studio 6.1.1 Beta1版本新增。 用于开启异步栈缝合，默认关闭。仅当Backtrace Mode选择为FP模式时，支持开启。 26.0.0以下版本，开启后，异步回栈时支持多回一层异步栈帧，最大异步回栈层数为16层。 26.0.0及以上版本，支持通过Async Nesting Depth和Async Backtrace Depth设置异步栈嵌套层数和回栈层数。
+Async Nesting Depth	26.0.0版本新增。 异步栈嵌套层数，可配置范围为[1,16]，推荐范围为[3,10]，默认为3。 仅当Record Async Stack开启时，支持设置。
+Async Backtrace Depth	26.0.0版本新增。 异步回栈层数，指每个异步栈中显示的最大层数，可配置范围为[1,256]，推荐范围为[16,32]，默认16层。 仅当Record Async Stack开启时，支持设置。
 Record Data Range Options	DevEco Studio 6.1.0 Release版本新增。 用于设置采样数据范围，包含Malloc、Local Handle和Global Handle，默认勾选Malloc。 Malloc记录malloc系列函数的内存分配。 Local Handle用于管理JS对象生命周期的引用句柄（napi_value），仅支持Phone和PC设备。 Global Handle允许用户管理ArkTS/JS值的生命周期的引用句柄（napi_ref）。
 
 说明
@@ -84,7 +89,7 @@ ArkTS Heap子泳道：用于显示ArkTS对象内存分配。
 
 JS Heap子泳道：用于显示JS对象内存分配。
 
-JS Heap(ArkWeb-PA)子泳道：26.0.0 Beta1版本新增，用于显示ArkWeb中Malloc内存分配。
+JS Heap(ArkWeb-PA)子泳道：26.0.0版本新增，用于显示ArkWeb中Malloc内存分配。
 
 VM:ION子泳道：用于显示DMA内存分配数据。
 
@@ -98,13 +103,29 @@ File Descriptors子泳道：用于显示进程的文件句柄使用情况。
 
 Threads子泳道：用于显示进程的线程使用情况。
 
+说明
+
+泳道录制时可选的设置项具体请参考All Heap & Anonymous VM泳...。
+
 Vulkan子泳道：用于显示GPU_VK类型的内存分配数据。
 
 OpenGL ES子泳道：用于显示GPU_GLES类型的内存分配数据。
 
 OpenCL子泳道：用于显示GPU_CL类型的内存分配数据。
 
-Statistics页签：26.0.0 Beta1版本新增，用于显示当前框选时间段内的虚拟内存区域数量的最小值（VMA Count Min）、虚拟内存区域数量的最大值（VMA Count Max）、虚拟内存区域数量的平均值（VMA Count Avg）、PSS内存最小值（PSS Min）、PSS内存最大值（PSS Max）、PSS内存平均值（PSS Avg），以及共享脏内存平均值（Shared Dirty Avg）、共享干净内存平均值（Shared Clean Avg）、私有脏内存平均值（Private Dirty Avg）、私有干净内存平均值（Private Clean Avg）、Swap内存平均值（Swap Avg）等。
+说明
+
+泳道录制时可选的设置项具体请参考All Heap & Anonymous VM泳...。
+
+说明
+
+泳道录制时可选的设置项具体请参考All Heap & Anonymous VM泳...。
+
+26.0.0版本，Native Leaks泳道录制时，不支持开启设置中的Statistics Mode（统计模式）和Local Handle。在录制该泳道前，需要单击工具控制栏中的按钮关闭Statistics Mode和Local Handle，否则影响正常录制。
+
+设备系统要求：API 26.0.0及以上版本。
+
+Statistics区域：26.0.0版本新增，用于显示当前框选时间段内的虚拟内存区域数量的最小值（VMA Count Min）、虚拟内存区域数量的最大值（VMA Count Max）、虚拟内存区域数量的平均值（VMA Count Avg）、PSS内存最小值（PSS Min）、PSS内存最大值（PSS Max）、PSS内存平均值（PSS Avg），以及共享脏内存平均值（Shared Dirty Avg）、共享干净内存平均值（Shared Clean Avg）、私有脏内存平均值（Private Dirty Avg）、私有干净内存平均值（Private Clean Avg）、Swap内存平均值（Swap Avg）等。
 
 须知
 
@@ -122,23 +143,29 @@ Details区域中带标识的对象，表示其可以通过窗口访问。每个�
 
 说明
 
-在System Resources子泳道的Statistics页签中不提供内存大小数据。
+在System Resources子泳道的Statistics区域中不提供内存大小数据。
 
 说明
 
-从26.0.0 Beta1版本开始，支持展示so库的构建ID（Build ID）。
+System Resources子泳道的Call Trees区域中不提供分配大小数据。
 
-System Resources子泳道的Call Trees页签中不提供分配大小数据。
+从26.0.0版本开始，支持展示so库的构建ID（Build ID）。
 
-当未开启统计模式（Statistics Mode），且录制了ArkTS Snapshot泳道时，框选All Heap & Anonymous VM或All Heap或Native Heap子泳道，单击任一行栈帧，More区域显示经过该栈帧的分配内存最大的调用栈和ArkTS对象列表（ArkTS Object List）。否则，单击任一行栈帧，More区域显示经过该栈帧的分配内存最大的调用栈。
+26.0.0及以上版本，无论是否开启统计模式，录制ArkTS Snapshot泳道，框选All Heap & Anonymous VM/All Heap/Native Heap子泳道，单击任一行栈帧，More区域都会显示经过该栈帧的分配内存最大的调用栈和ArkTS对象列表（ArkTS Object List）。
 
 点击ArkTS Object List列表中的跳转按钮，跳转到ArkTS Snapshot泳道中的目标对象节点。
 
+从26.0.0版本开始，点击右侧More区域中Heaviest Stack列表左侧的按钮，将Heaviest Stack列表中的数据导出到本地进行保存。
+
 说明
 
-System Resources子泳道的Allocations List页签中不提供内存块起始地址、大小。
+System Resources子泳道的Allocations List区域中不提供内存块起始地址、大小。
 
 统计模式（Statistics Mode）开启后，不存在Allocations List信息。
+
+说明
+
+统计模式（Statistics Mode）开启后，Symbol Name不提供线程名信息。
 
 说明
 
@@ -222,7 +249,7 @@ Graph字段统计方式为：计算/proc/process_dmabuf_info节点下该进程�
 
 点击任意对象上的跳转按钮，可跳转至此类对象的详细占用/分配信息。当前统计模式下不支持跳转。
 
-Call Trees页签显示线程的内存分配栈情况，包括函数地址或符号、分配大小、占比以及函数栈帧的类别等。单击任一行栈帧，“More”区域将显示经过该栈帧的分配内存最大的调用栈。
+Call Trees区域显示线程的内存分配栈情况，包括函数地址或符号、分配大小、占比以及函数栈帧的类别等。单击任一行栈帧，“More”区域将显示经过该栈帧的分配内存最大的调用栈。
 
 说明
 

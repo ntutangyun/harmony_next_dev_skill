@@ -16,7 +16,7 @@ ArkWeb提供了多种拦截能力，使开发者能够监控、修改和记录�
 
 使用场景	页面跳转控制	网络请求拦截	网络请求拦截
 方案	onLoadIntercept	onInterceptRequest	WebSchemeHandler
-典型应用场景	• 应用的跳转与拉起 • 请求重定向 • 页面白名单配置	• 本地资源替换 • 自定义资源加载策略 • 提示恶意请求	除支持 onInterceptRequest 的应用场景外，还支持： • 配置公共请求头 • 跨域请求 • POST请求拦截
+典型应用场景	• Web和应用的跳转与拉起 • 请求重定向 • 页面白名单配置	• 本地资源替换 • 自定义资源加载策略 • 提示恶意请求	除支持 onInterceptRequest 的应用场景外，还支持： • 配置公共请求头 • 跨域请求 • POST请求拦截
 拦截时机	Web组件加载url之前	请求发起前	请求发起前
 拦截范围	页面主URL的请求（包括页面中iframe的导航行为，不包括子资源的请求）	页面主URL的请求和子资源的请求	页面主URL的请求和子资源的请求
 数据访问能力	支持获取请求的 URL、是否为主 frame 等相关信息 参考：WebResourceRequest	支持获取请求的 URL、是否为主 frame 等相关信息 参考：WebResourceRequest	除支持获取请求的 URL、是否为主 frame 等相关信息外，还支持获取 POST 请求体和 buffer 类型数据 参考：WebSchemeHandlerRequest
@@ -32,7 +32,7 @@ onLoadIntercept
 
 核心用法：
 
-应用的跳转与拉起：拦截特定地址的请求，拉起指定应用或跳转其他页面处理，用于实现拦截支付类标签链接跳转到支付应用进行支付，或拦截地址类标签链接跳转到地图类应用进行导航等。
+Web和应用的跳转与拉起：拦截特定地址的请求，拉起指定应用或跳转其他页面处理，用于实现拦截支付类标签链接跳转到支付应用进行支付，或拦截地址类标签链接跳转到地图类应用进行导航等。
 
 请求重定向：拦截特定地址的请求，并将访问重定向到新的目标地址，用于在域名更换或登录引导时，将用户访问跳转到正确的页面。
 
@@ -121,7 +121,7 @@ Web组件在加载URL前会触发onLoadIntercept()回调，用于判断是否拦
    */
   private normalizeUrl(url: string): string {
     return url
-      .replace(/^(?:[a-zA-Z]+:)?\/\//, '')
+      .replace(/^(?:[a-zA-Z]+:)?[/]{2}/, '')
       .replace(/\/+$/, '')
       .trim();
   }
@@ -197,7 +197,7 @@ Web组件在加载URL前会触发onLoadIntercept()回调，用于判断是否拦
     let normalized = url.trim().toLowerCase();
     // ...
     normalized = normalized
-      .replace(/^(?:[a-z0-9+.-]+:)?\/\//, '') // strip protocol-like prefixes
+      .replace(/^(?:[a-z0-9+.-]+:)?[/]{2}/, '') // strip protocol-like prefixes
       .split(/[/?#]/)[0]; // drop everything after domain
     return normalized.replace(/:+$/, '').replace(/\/+$/, '');
   }
@@ -715,7 +715,7 @@ Web组件在加载URL之前会触发onInterceptRequest()回调，用于判断是
    */
   private normalizeUrl(url: string): string {
     return url
-      .replace(/^(?:[a-zA-Z]+:)?\/\//, '')
+      .replace(/^(?:[a-zA-Z]+:)?[/]{2}/, '')
       .replace(/\/+$/, '')
       .trim();
   }
@@ -785,7 +785,7 @@ Web组件在加载URL之前会触发onInterceptRequest()回调，用于判断是
     let normalized = url.trim().toLowerCase();
     // ...
     normalized = normalized
-      .replace(/^(?:[a-z0-9+.-]+:)?\/\//, '') // strip protocol-like prefixes
+      .replace(/^(?:[a-z0-9+.-]+:)?[/]{2}/, '') // strip protocol-like prefixes
       .split(/[/?#]/)[0]; // drop everything after domain
     return normalized.replace(/:+$/, '').replace(/\/+$/, '');
   }

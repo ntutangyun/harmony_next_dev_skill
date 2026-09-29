@@ -1,4 +1,4 @@
-# 性能优化实验特性
+# 实验特性
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties_
 
@@ -187,7 +187,7 @@ LiteWearable设备对应的工程。
 
 使用场景：
 
-从26.0.0 Beta1版本开始，如果工程中有较多Native模块且频繁sync的需求，可开启开关优化sync阶段编译速度。
+从26.0.0版本开始，如果工程中有较多Native模块且频繁sync的需求，可开启开关优化sync阶段编译速度。
 
 优化方案：
 

@@ -66,7 +66,6 @@ Network Kit和Remote Communication Kit配置不信任用户安装的CA证书：�
 
 {
   "network-security-config": {
-    ... ...
   },
   "trust-global-user-ca": false,
   "trust-current-user-ca": false
@@ -240,7 +239,6 @@ curl_easy_setopt(curl, CURLOPT_CATH, "/etc/security/certificates");
 ```
 {
   "network-security-config": {
-    ... ...
   },
   "trust-global-user-ca": false,
   "trust-current-user-ca": false

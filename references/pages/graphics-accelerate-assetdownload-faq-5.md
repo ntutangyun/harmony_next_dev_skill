@@ -6,11 +6,11 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/graphics-
 
 执行如下命令行，安装依赖。
 
-To use as package dependency $ ohpm install @ifbear/fast-xml-parser
+$ ohpm install @ifbear/fast-xml-parser
 
 示例代码：
 
-const { XMLParser, XMLBuilder, XMLValidator} = require("fast-xml-parser");
+import { XMLParser, XMLBuilder, XMLValidator } from "@ifbear/fast-xml-parser";
 
 const parser = new XMLParser();
 let jObj = parser.parse(XMLdata);
@@ -20,13 +20,13 @@ let jObj = parser.parse(XMLdata);
 ### Code block 1
 
 ```
-To use as package dependency $ ohpm install @ifbear/fast-xml-parser
+$ ohpm install @ifbear/fast-xml-parser
 ```
 
 ### Code block 2
 
 ```
-const { XMLParser, XMLBuilder, XMLValidator} = require("fast-xml-parser");
+import { XMLParser, XMLBuilder, XMLValidator } from "@ifbear/fast-xml-parser";
 
 const parser = new XMLParser();
 let jObj = parser.parse(XMLdata);

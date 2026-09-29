@@ -16,7 +16,7 @@ DevEco Studio作为驱动开发工具，是进行驱动开发必备条件之一�
 
 SDK版本配置：
 
-扩展外设管理提供的ArkTs接口，所需SDK版本为API16及以上才可使用。
+扩展外设管理提供的ArkTS接口，所需SDK版本为API16及以上才可使用。
 
 HDC配置：
 
@@ -169,6 +169,11 @@ try {
 let devicePipe: usbManager.USBDevicePipe;
 try {
   devicePipe = usbManager.connectDevice(usbDevice);
+  if (!devicePipe) {
+    console.error('connectDevice failed, pipe is undefined');
+    this.logInfo_ += '\n[ERROR] connectDevice failed, pipe is undefined';
+    return;
+  }
 } catch (error) {
   console.error(`connectDevice failed ${error}`);
   this.logInfo_ += '\n[ERROR] connectDevice: ' + JSON.stringify(error);
@@ -243,19 +248,21 @@ try {
     type: usbManager.UsbEndpointTransferType.TRANSFER_TYPE_ISOCHRONOUS,
     timeout: 2000,
     length: 10,
-    callback: () => {
+    callback: (err: BusinessError , callBackData: usbManager.SubmitTransferCallback) => {
+      if (err) {
+        console.error(`transfer error: ${err}`);
+        this.logInfo_ += '\n[ERROR] transfer error: ' + JSON.stringify(err);
+        return;
+      }
+      console.info(`callBackData = ${callBackData}`);
+      this.logInfo_ += '\n[INFO] callBackData = ' + JSON.stringify(callBackData);
+      console.info('transfer success,result = ' + transferParams?.buffer.toString());
+      this.logInfo_ += '\n[INFO] transfer success,result = ' + transferParams?.buffer.toString();
     },
     userData: new Uint8Array(10),
     buffer: new Uint8Array(10),
     isoPacketCount: 2,
   };
-
-  transferParams.callback = (err: Error, callBackData: usbManager.SubmitTransferCallback) => {
-    console.info(`callBackData = ${callBackData}`);
-    this.logInfo_ += '\n[INFO] callBackData = ' + JSON.stringify(callBackData);
-    console.info('transfer success,result = ' + transferParams?.buffer.toString());
-    this.logInfo_ += '\n[INFO] transfer success,result = ' + transferParams?.buffer.toString();
-  }
   usbManager.usbSubmitTransfer(transferParams);
   console.info('USB transfer request submitted.');
   this.logInfo_ += '\n[INFO] USB transfer request submitted.';
@@ -268,11 +275,21 @@ try {
 
 try {
   usbManager.usbCancelTransfer(transferParams);
+} catch (error) {
+  console.error(`usbCancelTransfer failed: ${error}`);
+  this.logInfo_ += '\n[ERROR] usbCancelTransfer failed: ' + JSON.stringify(error);
+}
+try {
   usbManager.releaseInterface(devicePipe, usbInterface);
+} catch (error) {
+  console.error(`releaseInterface failed: ${error}`);
+  this.logInfo_ += '\n[ERROR] releaseInterface failed: ' + JSON.stringify(error);
+}
+try {
   usbManager.closePipe(devicePipe);
 } catch (error) {
-  console.error(`release failed: ${error}`);
-  this.logInfo_ += '\n[ERROR] release failed: ' + JSON.stringify(error);
+  console.error(`closePipe failed: ${error}`);
+  this.logInfo_ += '\n[ERROR] closePipe failed: ' + JSON.stringify(error);
 }
 
 [h2]调测验证
@@ -411,6 +428,11 @@ try {
 let devicePipe: usbManager.USBDevicePipe;
 try {
   devicePipe = usbManager.connectDevice(usbDevice);
+  if (!devicePipe) {
+    console.error('connectDevice failed, pipe is undefined');
+    this.logInfo_ += '\n[ERROR] connectDevice failed, pipe is undefined';
+    return;
+  }
 } catch (error) {
   console.error(`connectDevice failed ${error}`);
   this.logInfo_ += '\n[ERROR] connectDevice: ' + JSON.stringify(error);
@@ -489,19 +511,21 @@ try {
     type: usbManager.UsbEndpointTransferType.TRANSFER_TYPE_ISOCHRONOUS,
     timeout: 2000,
     length: 10,
-    callback: () => {
+    callback: (err: BusinessError , callBackData: usbManager.SubmitTransferCallback) => {
+      if (err) {
+        console.error(`transfer error: ${err}`);
+        this.logInfo_ += '\n[ERROR] transfer error: ' + JSON.stringify(err);
+        return;
+      }
+      console.info(`callBackData = ${callBackData}`);
+      this.logInfo_ += '\n[INFO] callBackData = ' + JSON.stringify(callBackData);
+      console.info('transfer success,result = ' + transferParams?.buffer.toString());
+      this.logInfo_ += '\n[INFO] transfer success,result = ' + transferParams?.buffer.toString();
     },
     userData: new Uint8Array(10),
     buffer: new Uint8Array(10),
     isoPacketCount: 2,
   };
-
-  transferParams.callback = (err: Error, callBackData: usbManager.SubmitTransferCallback) => {
-    console.info(`callBackData = ${callBackData}`);
-    this.logInfo_ += '\n[INFO] callBackData = ' + JSON.stringify(callBackData);
-    console.info('transfer success,result = ' + transferParams?.buffer.toString());
-    this.logInfo_ += '\n[INFO] transfer success,result = ' + transferParams?.buffer.toString();
-  }
   usbManager.usbSubmitTransfer(transferParams);
   console.info('USB transfer request submitted.');
   this.logInfo_ += '\n[INFO] USB transfer request submitted.';
@@ -516,10 +540,20 @@ try {
 ```
 try {
   usbManager.usbCancelTransfer(transferParams);
+} catch (error) {
+  console.error(`usbCancelTransfer failed: ${error}`);
+  this.logInfo_ += '\n[ERROR] usbCancelTransfer failed: ' + JSON.stringify(error);
+}
+try {
   usbManager.releaseInterface(devicePipe, usbInterface);
+} catch (error) {
+  console.error(`releaseInterface failed: ${error}`);
+  this.logInfo_ += '\n[ERROR] releaseInterface failed: ' + JSON.stringify(error);
+}
+try {
   usbManager.closePipe(devicePipe);
 } catch (error) {
-  console.error(`release failed: ${error}`);
-  this.logInfo_ += '\n[ERROR] release failed: ' + JSON.stringify(error);
+  console.error(`closePipe failed: ${error}`);
+  this.logInfo_ += '\n[ERROR] closePipe failed: ' + JSON.stringify(error);
 }
 ```

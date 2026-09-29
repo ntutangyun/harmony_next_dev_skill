@@ -18,6 +18,8 @@ ohpm unpublish错误码
 
 ohpm update错误码
 
+ohpm root错误码
+
 ohpm version错误码
 
 ohpm cache clean错误码

@@ -4,7 +4,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/stage-mod
 
 应用模型简介
 
-应用模型是系统为开发者提供的应用程序所需能力的抽象提炼，它提供了应用程序必备的组件和运行机制。有了应用模型，开发者可以基于一套统一的模型进行应用开发，使应用开发更简单、高效。
+应用模型是系统为开发者提供的应用程序所需能力的抽象提炼，它提供了应用程序必备的组件和运行机制。应用模型为开发者提供了一套统一的开发模型，使应用开发更简单、高效。
 
 目前主推且会长期演进的应用模型是从API 9开始支持的Stage模型。该模型提供了AbilityStage组件管理器和WindowStage窗口管理器，分别作为应用组件与窗口的“舞台”，故得名"Stage模型"。
 
@@ -110,6 +110,6 @@ Bundle是应用在安装部署阶段的静态文件，包含了所有HAP、HSP�
 
 运行阶段：当应用安装到设备运行时，系统通过一套应用进程和线程的管理机制，确保功能的有序运行。
 
-进程模型：在本例中，UIAbility组件默认运行在主进程中，FormExtensionAbility组件运行在独立进程中，UIAbility和FormExtensionAbility组件之间是进程隔离的。更多详情可参考进程模型。
+进程模型：在本例中，UIAbility组件默认运行在主进程中，FormExtensionAbility组件运行在独立进程中，UIAbility和FormExtensionAbility组件之间是进程隔离的。更多详情可参考进程模型概述。
 
 线程模型：Stage模型提供了worker、taskpool等机制支撑应用多线程开发场景。应用如果有复杂的耗时逻辑需要处理，可以通过创建worker的方式开启worker线程，交由worker线程处理。

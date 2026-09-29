@@ -176,7 +176,7 @@ ArkWeb组件将跟随ArkUI重新布局，效果如图1和图2所示。
 
 图2 Web组件网页跟随ArkUI软键盘避让模式
 
-2.在UIContext的键盘避让模式为Offset模式时，应用可通过WebKeyboardAvoidMode()设置ArkWeb组件的键盘避让模式。Web组件的WebKeyboardAvoidMode()接口优先级高于W3C侧virtualKeyboard.overlayContent。
+在UIContext的键盘避让模式为Offset模式时，应用可通过WebKeyboardAvoidMode()设置ArkWeb组件的键盘避让模式。Web组件的WebKeyboardAvoidMode()接口优先级高于W3C侧virtualKeyboard.overlayContent。
 
 RESIZE_VISUAL：仅调整可视视口的大小，而不调整布局视口的大小。
 
@@ -217,7 +217,7 @@ ArkWeb组件根据避让模式进行避让，效果见图3。
 
 图3 Web组件网页自身软键盘避让模式
 
-3.在软键盘弹出时，为使Web组件不发生避让行为，可通过调用expandSafeArea()设置Web组件扩展安全区域。更多详细示例可参考网页中安全区域计算和避让适配。
+在软键盘弹出时，为使Web组件不发生避让行为，可通过调用expandSafeArea()设置Web组件扩展安全区域。更多详细示例可参考网页中安全区域计算和避让适配。
 
 // xxx.ets
 import { webview } from '@kit.ArkWeb';

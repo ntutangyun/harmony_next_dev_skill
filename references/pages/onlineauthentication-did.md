@@ -1,30 +1,28 @@
-# DID数字身份服务
+# DID数字身份
 
 _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/onlineauthentication-did_
 
-从API版本26.0.0开始，新增DID（Decentralized Identifier，去中心化身份）能力。
+从API版本26.0.0开始，Online Authentication Kit（在线认证服务）新增数字身份特性，提供了基于DID（Decentralized Identifier，去中心化身份）协议的数字身份在移动端的能力。应用部署符合DID协议的服务器之后，结合移动端的数字身份能力，可实现跨平台互通互认的数字身份业务场景。数字身份服务主要提供了以下能力：
 
-DID提供基于W3C DID标准的身份认证和可验证凭证管理能力，支持DID密钥生成、数字凭证导入/查询/删除、数据签名等功能。
+DID密钥生成及使用：应用为用户生成DID密钥后，支持应用使用与用户DID关联的密钥。
+
+DID导入、查询及删除：应用为用户创建DID时，支持应用导入DID标识、DID文档等信息到设备中。
+
+可验证凭证VC（Verifiable Credentials，可验证凭证）导入、查询及删除：应用为用户颁发数字身份凭证（即VC）时，支持应用导入VC到设备TEE环境中安全存储，保障用户隐私，并支持查询、删除VC。
+
+可验证声明VP（Verifiable Presentation，可验证声明）出示：应用需要请求用户的数字身份凭证VP时，数字身份服务在获取用户同意后，会在TEE中将VC中需要披露的属性组装成VP返回给应用。支持用户生物认证授权出示凭证、凭证的部分披露，保障用户身份凭证的安全与隐私。
 
 场景介绍
 
-DID模块提供去中心化身份管理和可验证凭证能力，应用可以使用这些能力实现用户身份的自主管理和可信凭证的安全存储与出示。
-
-[h2]应用场景
-
-数字身份管理：生成和管理用户的去中心化身份（DID），支持身份的导入、查询和删除。
-
-可验证凭证管理：导入、查询和删除可验证凭证（VC）和可验证表达（VP）。
-
-数据签名：使用DID密钥对数据进行数字签名，确保数据的完整性和来源可信。
-
-选择性披露：支持选择性披露凭证（SELECTIVE_DISCLOSURE_VC/VP），保护用户隐私。
+针对传统身份凭证验证方式（如上传证件照片）存在的体验繁琐、隐私泄露等问题，Online Authentication Kit提供数字身份能力，支持DID分布式数字身份协议，可以支撑业务将数字化身份凭证（例如数字化证件凭证）安全存储于设备终端TEE中，用户可通过生物认证授权安全便捷地使用凭证。在优化用户体验的同时，有效增强用户身份信息的隐私性与安全性。
 
 约束与限制
 
-开发者应用已接入DID生态，并部署符合DID标准协议的服务器。
+需满足以下条件，才能使用本功能。
 
-需满足以下条件，才能使用本功能。移动端设备需要支持生物特征（指纹/3D人脸），查询当前移动端设备是否支持ATL4级别的认证可信等级。
+应用已部署符合DID标准协议的服务器。
+
+移动端设备需要支持生物特征（指纹/3D人脸），查询当前移动端设备是否支持ATL4级别的认证可信等级。
 
 import { BusinessError } from '@kit.BasicServicesKit';
 import { userAuth } from '@kit.UserAuthenticationKit';
@@ -38,25 +36,29 @@ try {
   console.error(`current auth trust level is not supported. Code is ${err?.code}, message is ${err?.message}`);
 }
 
-数字身份服务会将凭证信息、匿名化的指纹ID和面容ID等个人信息返回至三方应用，以提供绑定具体生物特征的免密认证能力。应用将个人信息上云前，需要向用户明示并且取得同意，详细请参考个人数据处理说明。
+数字身份服务会将凭证信息、匿名化的指纹ID和面容ID等个人信息返回至应用，以提供绑定具体生物特征的免密认证能力。应用将个人信息上云前，需要向用户明示并且取得同意，详细请参考个人数据处理说明。
 
 业务流程
 
 [h2]启用数字身份流程
 
+应用需要为用户创建数字身份时，可以使用数字身份服务创建及使用与用户DID关联的密钥、导入用户DID文档等信息至设备。创建数字身份后，应用可基于用户DID标识为用户颁发凭证，并使用用户DID密钥对数据签名授权。
+
 流程说明：
 
-应用构造GenerateKeyRequest，指定密钥别名、算法类型、用途等参数。
+应用云侧下发指定密钥别名信息等参数。
 
-应用调用generateKey接口生成DID密钥。
+应用构造GenerateKeyRequest，指定密钥别名、算法类型、用途等参数，调用generateKey接口生成DID密钥。
 
 DID API返回公钥、证书链等信息。
 
-公钥上链后，应用获取DID文档等信息。
+应用将公钥等信息上报至应用云侧，由应用云侧完成公钥上链等操作，并获取DID文档等信息。
 
 应用调用importDid接口将DID文档等信息导入。
 
 [h2]颁发数字凭证流程
+
+应用为用户颁发数字身份凭证（例如教师凭证等），可以使用数字身份服务将数字身份凭证导入至设备安全存储，用于后续便携出示。
 
 流程说明：
 
@@ -68,34 +70,36 @@ DID API验证凭证格式并安全存储，返回调用结果，凭证概要信�
 
 [h2]出示数字凭证流程
 
+应用作为验证方，需要请求用户的数字身份凭证用于验证用户身份或者发放相应权益时，可以使用数字身份服务请求获取用户凭证，用户确认出示的凭证及披露的属性字段后，数字身份服务会将凭证出示到验证方应用。
+
 流程说明：
 
-验证方云侧，云侧下发请求凭证的参数。
+应用云侧下发请求凭证的参数。
 
 应用构造GetDigitalCredentialRequest，指定凭证类型、验证方信息等，调用getDigitalCredential接口获取凭证。
 
-DID API返回可验证表达（VP）给验证方。
+DID API返回可验证表达（VP）给应用。
 
 接口说明
 
 业务使用DID能力进行数字身份的启用、数字凭证的导入、数字凭证的出示等。具体API说明详见接口文档。
 
-接口名	描述
-generateKey	生成DID密钥。
-importDid	导入DID信息。
-queryDid	查询DID信息。
-deleteDid	删除DID。
-sign	使用DID密钥签名数据。
-importDigitalCredential	导入数字凭证。
-queryDigitalCredential	查询数字凭证摘要。
-deleteDigitalCredential	删除数字凭证。
-getDigitalCredential	获取数字凭证。
+接口名称	描述
+generateKey(context: common.Context, generateKeyRequest: GenerateKeyRequest): Promise<GenerateKeyResponse>	生成DID密钥。使用Promise异步回调。
+importDid(context: common.Context, importDidRequest: ImportDidRequest): Promise<void>	导入DID信息。使用Promise异步回调。
+queryDid(context: common.Context, queryDidRequest: QueryDidRequest): Promise<QueryDidResponse>	查询DID信息。使用Promise异步回调。
+deleteDid(context: common.Context, did: string): Promise<void>	删除DID。使用Promise异步回调。
+sign(context: common.Context, signRequest: SignRequest): Promise<SignResponse>	数据签名。使用Promise异步回调。
+importDigitalCredential(context: common.Context, importDigitalCredentialRequest: ImportDigitalCredentialRequest): Promise<ImportDigitalCredentialResponse>	导入数字凭证。使用Promise异步回调。
+queryDigitalCredential(context: common.Context, did?: string, credentialId?: string): Promise<QueryDigitalCredentialResponse>	查询数字凭证。使用Promise异步回调。
+deleteDigitalCredential(context: common.Context, did?: string, credentialId?: string): Promise<void>	删除数字凭证。使用Promise异步回调。
+getDigitalCredential(context: common.Context, getDigitalCredentialRequest: GetDigitalCredentialRequest): Promise<GetDigitalCredentialResponse>	获取数字凭证。使用Promise异步回调。
 
 开发步骤
 
 [h2]启用数字身份
 
-导入did模块，构造密钥生成请求。
+导入DID模块，构造密钥生成请求。
 
 import { did } from '@kit.OnlineAuthenticationKit';
 import { buffer } from '@kit.ArkTS';
@@ -121,7 +125,8 @@ async function generateKey() {
 
   try {
     let response: did.GenerateKeyResponse = await did.generateKey(context, generateKeyRequest);
-    console.info('Succeeded in generating did key');
+    console.info('Succeeded in generating did key, Public Key:', response.publicKey,
+      'Certificate Chain:', response.certChain);
     // 处理返回的公钥、证书链等信息
   } catch (error) {
     const err: BusinessError = error as BusinessError;
@@ -129,7 +134,7 @@ async function generateKey() {
   }
 }
 
-构造DID导入请求，调用importDid接口，将DID文档等信息导入端侧。
+构造DID导入请求，调用importDid接口，将DID文档等信息导入设备。
 
 async function importDid() {
    let importDidRequest: did.ImportDidRequest = {
@@ -155,7 +160,7 @@ async function importDid() {
    }
 }
 
-构造查询请求，调用queryDid接口，查询端侧的did有没有导入成功。
+构造查询请求，调用queryDid接口，查询DID有没有导入成功。
 
 async function queryDid() {
    let queryDidRequest: did.QueryDidRequest = {
@@ -169,7 +174,8 @@ async function queryDid() {
 
    try {
       let response: did.QueryDidResponse = await did.queryDid(context, queryDidRequest);
-      console.info('Succeeded in querying did');
+      console.info('Succeeded in querying did, Did Key List:', response.didKeyList,
+         'Did Doc:', response.didDoc);
       // 处理返回的DID密钥、DID文档等信息
    } catch (error) {
       const err: BusinessError = error as BusinessError;
@@ -177,7 +183,7 @@ async function queryDid() {
    }
 }
 
-如果端侧存在相关did以及did密钥，调用sign接口可以为待签名数字签名。
+如果已存在相关DID以及DID密钥，调用sign接口可以为待签名数字签名。
 
 async function sign() {
    let data: string = 'data to sign';
@@ -188,7 +194,7 @@ async function sign() {
 
    try {
       let response: did.SignResponse = await did.sign(context, signRequest);
-      console.info('Succeeded in signing data');
+      console.info('Succeeded in signing data, Signed Data:', response.outData);
       // 处理签名结果
    } catch (error) {
       const err: BusinessError = error as BusinessError;
@@ -196,7 +202,7 @@ async function sign() {
    }
 }
 
-调用deleteDid删除端侧对应的did信息。
+调用deleteDid删除对应的DID信息。
 
 async function deleteDid() {
    try {
@@ -240,10 +246,86 @@ async function importDigitalCredential() {
    try {
       let response: did.ImportDigitalCredentialResponse =
          await did.importDigitalCredential(context, importCredentialRequest);
-      console.info('Succeeded in importing digital credential');
+      console.info('Succeeded in importing digital credential, Credential Summary:',
+         response.credentialSummary);
    } catch (error) {
       const err: BusinessError = error as BusinessError;
       console.error(`Failed to import digital credential. Code: ${err.code}, message: ${err.message}`);
+   }
+}
+
+注意，数字身份服务仅支持解析以下两种格式的VC，请根据以下格式组装VC。
+
+// VC格式1
+// 注：仅支持解析以下列出字段，若多传不可识别的字段，默认不解析，但是会正常存储，也会作为VC的一部分组装进后续的VP中。不同的VC格式会走向不同的默克尔根计算方式，请根据实际需要选择。
+{
+   "@context": [
+       "https://www.w3.org/2018/credentials/v1"
+   ],
+   "id": "vc.XXXXXXXX", // 表示VC的标识
+   "types": [
+       "XXXXXXXX"
+   ], // 凭证类型，例如教师凭证类型
+   "type": [
+       "VerifiableCredential",
+       "SelectiveDisclosureVC"
+   ],  // VC的类型
+   "credentialSubject": {
+       "property1": "XXXXXXXX",
+       "property2": "XXXXXXXX",
+       ...
+   }, // 凭证的属性字段
+   "issuer": "did:XXXXXXXX", // 颁发方的did
+   "issuanceDate": "2025-02-25T12:23:43Z", // 颁发时间
+   "expirationDate": "2031-02-08T13:06:40Z",// 失效时间
+   "auxVerificationInfo": { // 用于计算默克尔根的信息
+       "type": "MerkleTree",
+       "salt": {
+           "seed": "XXXXXXXX"
+       }
+   },
+   "proof": { // VC的签名
+       "type": "SM3WithSM2",
+       "created": "2025-02-25T12:23:43Z",
+       "verificationMethod": "did:XXXXXXXX#key-X",
+       "proofPurpose": "assertionMethod",
+       "proofValue": "XXXXXXXX"
+   }
+}
+
+// VC格式2
+// 注：仅支持解析以下列出字段，若多传不可识别的字段，默认不解析，但是会正常存储，也会作为VC的一部分组装进后续的VP中。不同的VC格式会走向不同的默克尔根计算方式，请根据实际需要选择。
+{
+   "@context": [
+       "https://www.w3.org/2018/credentials/v1",
+       "https://www.w3.org/2018/credentials/examples/v1"
+   ],
+   "type": [
+       "CredentialType", // 凭证类型
+       "SelectiveDisclosureCredentialType" // VC类型
+   ],
+   "id": "did:credential:XXXXXXXX", // VC的标识ID
+   "issuer": "did:XXXXXXXX", // 颁发方的DID
+   "issuanceDate": "2024-07-11T13:50:18+08:00", // 颁发时间
+   "expirationDate": "2024-07-11T13:50:18+08:00", // 失效时间
+   "credentialSubject": {
+       "did": "did:XXXXXXXX", // 用户的DID
+       "claims": {
+           "subject": { // 凭证属性字段
+               "property1": "XXXXXXXX",
+               "property2": "XXXXXXXX",
+               ...
+           },
+           "seed": "XXXXXXXX" // 用于计算默克尔根
+       }
+   },
+   "proof": { // VC中的签名
+       "type": "SM2Signature2024",
+       "created": "2024-07-11T13:50:18+08:00",
+       "creator": "did:XXXXXXXX",
+       "verificationMethod": "did:XXXXXXXX#key-X",
+       "proofPurpose": "assertionMethod",
+       "proofValue": "XXXXXXXX"
    }
 }
 
@@ -253,7 +335,8 @@ async function queryDigitalCredential() {
    try {
       let response: did.QueryDigitalCredentialResponse =
          await did.queryDigitalCredential(context, 'did:example:123456');
-      console.info('Succeeded in querying digital credential');
+      console.info('Succeeded in querying digital credential, Credential Summary List:',
+         response.credentialSummaryList);
       // 处理凭证摘要列表
    } catch (error) {
       const err: BusinessError = error as BusinessError;
@@ -261,7 +344,7 @@ async function queryDigitalCredential() {
    }
 }
 
-调用deleteDigitalCredential接口删除端侧对应的数字凭证。
+调用deleteDigitalCredential接口删除对应的数字凭证。
 
 async function deleteDigitalCredential() {
    try {
@@ -278,31 +361,147 @@ async function deleteDigitalCredential() {
 构造凭证获取请求，调用getDigitalCredential接口。
 
 async function getDigitalCredential() {
-   let getCredentialRequest: did.GetDigitalCredentialRequest = {
+  let getCredentialRequest: did.GetDigitalCredentialRequest = {
       credentialType: did.CredentialType.VP,
       displayConfig: {
-         verifierDisplayName: '某应用',
-         purpose: '身份验证'
+        verifierDisplayName: '某应用',
+        purpose: '身份验证'
       },
       holderConfigList: [{
-         holderDid: 'did:example:123456',
-         holderDidKeyId: 'keyId123'
+        holderDid: 'did:example:123456',
+        holderDidKeyId: 'keyId123'
       }],
       credentialFilterList: [{
-         credentialId: 'credential123',
-         issuerDid: 'did:example:issuer'
+        credentialId: 'credential123',
+        issuerDid: 'did:example:issuer'
       }]
-   };
+  };
 
-   try {
+  try {
       let response: did.GetDigitalCredentialResponse =
-         await did.getDigitalCredential(context, getCredentialRequest);
+        await did.getDigitalCredential(context, getCredentialRequest);
       console.info('Succeeded in getting digital credential');
       // 处理返回的凭证数据
-   } catch (error) {
+  } catch (error) {
       const err: BusinessError = error as BusinessError;
       console.error(`Failed to get digital credential. Code: ${err.code}, message: ${err.message}`);
-   }
+  }
+}
+
+注意，数字身份服务仅支持组装以下两种格式的VP，请根据以下格式解析并验证VP。
+
+// VP格式1
+{
+    "id": "vp.XXXXXXXX", // VP的标识
+    "type": [ // VP的类型
+    "VerifiablePresentation",
+    "SelectiveDisclosureVP"
+    ],
+    "holder": "did:XXXXXXXX", // 用户的DID
+    "verifiableCrendential": [
+    {
+        // VC中选择披露的属性，以及其余所有字段（含VC的proof）
+        "@context": [
+        "https://www.w3.org/2018/credentials/v1"
+        ],
+        "id": "vc.XXXXXXXX",
+        "types": [
+        "XXXXXXXX"
+        ],
+        // ... 其他字段
+
+        // 用于计算默克尔根的信息
+        "auxVerificationInfo": {
+        "type": "MerkleTree",
+        "salt": {
+            "seed": "XXXXXXXX"
+        },
+        "dataSalt": {
+            "property1": "XXXXXXXX",
+            "property2": "XXXXXXXX"
+        },
+        "dataIndex": {
+            "property1": [1, 1, 1, 1],
+            "property2": [0, 1, 1, 1]
+        },
+        "merkleSibling": {
+            "property1": [
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX"
+            ],
+            "property2": [
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX"
+            ]
+        }
+        }
+    }
+    ],
+    "proof": { // VP的签名
+    "type": "SM3WithSM2",
+    "created": "2026-07-21T09:35:34+08:00",
+    "verificationMethod": "did:XXXXXXXX", // 用户的DID
+    "proofPurpose": "assertionMethod",
+    "proofValue": "XXXXXXXX"
+    }
+}
+
+// VP格式2
+{
+    "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+    ],
+    "created": "2026-07-21T09:37:20+08:00", // 创建时间
+    "domain": "did:testVerifierDid", // 验证方的DID
+    "type": [ // VP的DID
+    "VerifiablePresentation"
+    ],
+    "proof": {
+    // VP的签名
+    "created": "2026-07-21T09:37:20+08:00",
+    "creator": "testDid",
+    "proofPurpose": "assertionMethod",
+    "type": "SM2Signature2024",
+    "verificationMethod": "did:testDidKeyId",
+    "proofValue": "XXXXXXXX"
+    },
+    "verifiableCredential": [
+    {
+        // VC中选择披露的属性，以及其余所有字段
+        "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+        ],
+        "type": [
+        "DisableCredentialType",
+        "SelectiveDisclosureCredentialType"
+        ],
+
+        ...
+
+        "credentialSubject": {
+        "did": "did:XXXXXXXX",
+        "claims": {
+            "disclosedSalt": {
+            // 用于默克尔根的计算
+            "property1": "XXXXXXXX",
+            "property2": "XXXXXXXX"
+            // ...
+            },
+            "subject": {
+            "property1": "XXXXXXXX",
+            "property2": "XXXXXXXX"
+            // ...
+            }
+        }
+        }
+    }
+    ]
 }
 
 ## Code blocks
@@ -350,7 +549,8 @@ async function generateKey() {
 
   try {
     let response: did.GenerateKeyResponse = await did.generateKey(context, generateKeyRequest);
-    console.info('Succeeded in generating did key');
+    console.info('Succeeded in generating did key, Public Key:', response.publicKey,
+      'Certificate Chain:', response.certChain);
     // 处理返回的公钥、证书链等信息
   } catch (error) {
     const err: BusinessError = error as BusinessError;
@@ -402,7 +602,8 @@ async function queryDid() {
 
    try {
       let response: did.QueryDidResponse = await did.queryDid(context, queryDidRequest);
-      console.info('Succeeded in querying did');
+      console.info('Succeeded in querying did, Did Key List:', response.didKeyList,
+         'Did Doc:', response.didDoc);
       // 处理返回的DID密钥、DID文档等信息
    } catch (error) {
       const err: BusinessError = error as BusinessError;
@@ -423,7 +624,7 @@ async function sign() {
 
    try {
       let response: did.SignResponse = await did.sign(context, signRequest);
-      console.info('Succeeded in signing data');
+      console.info('Succeeded in signing data, Signed Data:', response.outData);
       // 处理签名结果
    } catch (error) {
       const err: BusinessError = error as BusinessError;
@@ -477,7 +678,8 @@ async function importDigitalCredential() {
    try {
       let response: did.ImportDigitalCredentialResponse =
          await did.importDigitalCredential(context, importCredentialRequest);
-      console.info('Succeeded in importing digital credential');
+      console.info('Succeeded in importing digital credential, Credential Summary:',
+         response.credentialSummary);
    } catch (error) {
       const err: BusinessError = error as BusinessError;
       console.error(`Failed to import digital credential. Code: ${err.code}, message: ${err.message}`);
@@ -488,11 +690,89 @@ async function importDigitalCredential() {
 ### Code block 8
 
 ```
+// VC格式1
+// 注：仅支持解析以下列出字段，若多传不可识别的字段，默认不解析，但是会正常存储，也会作为VC的一部分组装进后续的VP中。不同的VC格式会走向不同的默克尔根计算方式，请根据实际需要选择。
+{
+   "@context": [
+       "https://www.w3.org/2018/credentials/v1"
+   ],
+   "id": "vc.XXXXXXXX", // 表示VC的标识
+   "types": [
+       "XXXXXXXX"
+   ], // 凭证类型，例如教师凭证类型
+   "type": [
+       "VerifiableCredential",
+       "SelectiveDisclosureVC"
+   ],  // VC的类型
+   "credentialSubject": {
+       "property1": "XXXXXXXX",
+       "property2": "XXXXXXXX",
+       ...
+   }, // 凭证的属性字段
+   "issuer": "did:XXXXXXXX", // 颁发方的did
+   "issuanceDate": "2025-02-25T12:23:43Z", // 颁发时间
+   "expirationDate": "2031-02-08T13:06:40Z",// 失效时间
+   "auxVerificationInfo": { // 用于计算默克尔根的信息
+       "type": "MerkleTree",
+       "salt": {
+           "seed": "XXXXXXXX"
+       }
+   },
+   "proof": { // VC的签名
+       "type": "SM3WithSM2",
+       "created": "2025-02-25T12:23:43Z",
+       "verificationMethod": "did:XXXXXXXX#key-X",
+       "proofPurpose": "assertionMethod",
+       "proofValue": "XXXXXXXX"
+   }
+}
+
+// VC格式2
+// 注：仅支持解析以下列出字段，若多传不可识别的字段，默认不解析，但是会正常存储，也会作为VC的一部分组装进后续的VP中。不同的VC格式会走向不同的默克尔根计算方式，请根据实际需要选择。
+{
+   "@context": [
+       "https://www.w3.org/2018/credentials/v1",
+       "https://www.w3.org/2018/credentials/examples/v1"
+   ],
+   "type": [
+       "CredentialType", // 凭证类型
+       "SelectiveDisclosureCredentialType" // VC类型
+   ],
+   "id": "did:credential:XXXXXXXX", // VC的标识ID
+   "issuer": "did:XXXXXXXX", // 颁发方的DID
+   "issuanceDate": "2024-07-11T13:50:18+08:00", // 颁发时间
+   "expirationDate": "2024-07-11T13:50:18+08:00", // 失效时间
+   "credentialSubject": {
+       "did": "did:XXXXXXXX", // 用户的DID
+       "claims": {
+           "subject": { // 凭证属性字段
+               "property1": "XXXXXXXX",
+               "property2": "XXXXXXXX",
+               ...
+           },
+           "seed": "XXXXXXXX" // 用于计算默克尔根
+       }
+   },
+   "proof": { // VC中的签名
+       "type": "SM2Signature2024",
+       "created": "2024-07-11T13:50:18+08:00",
+       "creator": "did:XXXXXXXX",
+       "verificationMethod": "did:XXXXXXXX#key-X",
+       "proofPurpose": "assertionMethod",
+       "proofValue": "XXXXXXXX"
+   }
+}
+```
+
+### Code block 9
+
+```
 async function queryDigitalCredential() {
    try {
       let response: did.QueryDigitalCredentialResponse =
          await did.queryDigitalCredential(context, 'did:example:123456');
-      console.info('Succeeded in querying digital credential');
+      console.info('Succeeded in querying digital credential, Credential Summary List:',
+         response.credentialSummaryList);
       // 处理凭证摘要列表
    } catch (error) {
       const err: BusinessError = error as BusinessError;
@@ -501,7 +781,7 @@ async function queryDigitalCredential() {
 }
 ```
 
-### Code block 9
+### Code block 10
 
 ```
 async function deleteDigitalCredential() {
@@ -515,34 +795,152 @@ async function deleteDigitalCredential() {
 }
 ```
 
-### Code block 10
+### Code block 11
 
 ```
 async function getDigitalCredential() {
-   let getCredentialRequest: did.GetDigitalCredentialRequest = {
+  let getCredentialRequest: did.GetDigitalCredentialRequest = {
       credentialType: did.CredentialType.VP,
       displayConfig: {
-         verifierDisplayName: '某应用',
-         purpose: '身份验证'
+        verifierDisplayName: '某应用',
+        purpose: '身份验证'
       },
       holderConfigList: [{
-         holderDid: 'did:example:123456',
-         holderDidKeyId: 'keyId123'
+        holderDid: 'did:example:123456',
+        holderDidKeyId: 'keyId123'
       }],
       credentialFilterList: [{
-         credentialId: 'credential123',
-         issuerDid: 'did:example:issuer'
+        credentialId: 'credential123',
+        issuerDid: 'did:example:issuer'
       }]
-   };
+  };
 
-   try {
+  try {
       let response: did.GetDigitalCredentialResponse =
-         await did.getDigitalCredential(context, getCredentialRequest);
+        await did.getDigitalCredential(context, getCredentialRequest);
       console.info('Succeeded in getting digital credential');
       // 处理返回的凭证数据
-   } catch (error) {
+  } catch (error) {
       const err: BusinessError = error as BusinessError;
       console.error(`Failed to get digital credential. Code: ${err.code}, message: ${err.message}`);
-   }
+  }
+}
+```
+
+### Code block 12
+
+```
+// VP格式1
+{
+    "id": "vp.XXXXXXXX", // VP的标识
+    "type": [ // VP的类型
+    "VerifiablePresentation",
+    "SelectiveDisclosureVP"
+    ],
+    "holder": "did:XXXXXXXX", // 用户的DID
+    "verifiableCrendential": [
+    {
+        // VC中选择披露的属性，以及其余所有字段（含VC的proof）
+        "@context": [
+        "https://www.w3.org/2018/credentials/v1"
+        ],
+        "id": "vc.XXXXXXXX",
+        "types": [
+        "XXXXXXXX"
+        ],
+        // ... 其他字段
+
+        // 用于计算默克尔根的信息
+        "auxVerificationInfo": {
+        "type": "MerkleTree",
+        "salt": {
+            "seed": "XXXXXXXX"
+        },
+        "dataSalt": {
+            "property1": "XXXXXXXX",
+            "property2": "XXXXXXXX"
+        },
+        "dataIndex": {
+            "property1": [1, 1, 1, 1],
+            "property2": [0, 1, 1, 1]
+        },
+        "merkleSibling": {
+            "property1": [
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX"
+            ],
+            "property2": [
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX",
+            "XXXXXXXX"
+            ]
+        }
+        }
+    }
+    ],
+    "proof": { // VP的签名
+    "type": "SM3WithSM2",
+    "created": "2026-07-21T09:35:34+08:00",
+    "verificationMethod": "did:XXXXXXXX", // 用户的DID
+    "proofPurpose": "assertionMethod",
+    "proofValue": "XXXXXXXX"
+    }
+}
+
+// VP格式2
+{
+    "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+    ],
+    "created": "2026-07-21T09:37:20+08:00", // 创建时间
+    "domain": "did:testVerifierDid", // 验证方的DID
+    "type": [ // VP的DID
+    "VerifiablePresentation"
+    ],
+    "proof": {
+    // VP的签名
+    "created": "2026-07-21T09:37:20+08:00",
+    "creator": "testDid",
+    "proofPurpose": "assertionMethod",
+    "type": "SM2Signature2024",
+    "verificationMethod": "did:testDidKeyId",
+    "proofValue": "XXXXXXXX"
+    },
+    "verifiableCredential": [
+    {
+        // VC中选择披露的属性，以及其余所有字段
+        "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+        ],
+        "type": [
+        "DisableCredentialType",
+        "SelectiveDisclosureCredentialType"
+        ],
+
+        ...
+
+        "credentialSubject": {
+        "did": "did:XXXXXXXX",
+        "claims": {
+            "disclosedSalt": {
+            // 用于默克尔根的计算
+            "property1": "XXXXXXXX",
+            "property2": "XXXXXXXX"
+            // ...
+            },
+            "subject": {
+            "property1": "XXXXXXXX",
+            "property2": "XXXXXXXX"
+            // ...
+            }
+        }
+        }
+    }
+    ]
 }
 ```

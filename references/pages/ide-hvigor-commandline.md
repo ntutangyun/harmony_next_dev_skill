@@ -55,16 +55,10 @@ assembleHar	构建Har包。
 -p debuggable=true/false	该配置会覆盖构建模式中对应的buildOption中的debuggable配置。 关于debuggable的合并优先级，请参考合并编译选项规则。
 -p product={ProductName}	指定product进行编译, 编译product下配置的module target。 缺省时：默认为default。
 -p module={ModuleName}@{TargetName}	指定模块及target进行编译，可指定多个相同类型的模块进行编译，以逗号隔开；TargetName不指定时默认为default。 限制：此参数需要与--mode module参数搭配使用。 缺省时：执行AssembleHap任务会编译工程下所有模块，默认指定target为default。
--p ohos-test-coverage={true | false}	执行测试框架代码覆盖率插桩编译。
+-p ohos-test-coverage={true | false}	执行测试框架代码覆盖率插桩编译，详细使用请参考使用命令行执行测试。
 -p coverage={true | false}
 -p parameterFile=param.json/json5	设置oh-package.json5文件的参数配置文件，其中"param"可自行修改为对应配置文件名称。详细使用请参考parameterFile。
 -p buildVersion=1	设置构建版本号为1，详细使用请参考app.json5的buildVersion。 该参数从hvigorw 6.23.3版本开始支持。
-
-测试相关的命令行：
-
-命令行	说明
-hvigorw onDeviceTest -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName} -p ohos-debug-asan={true|false}	通过命令行方式执行Instrument Test。 module：执行测试的模块，缺省默认是执行所有模块的用例。HAP/HAR/HSP模块都支持。 coverage：是否需要覆盖率报告，缺省默认为true。 scope：格式为{suiteName}#{methodName}或{suiteName}，分别表示测试用例级别或测试套件级别的测试，缺省默认是执行当前模块的所有用例。 ohos-debug-asan：是否启用ASan检测，缺省默认是false。从hvigorw 5.19.0版本开始支持。 多个module和scope之间用逗号隔开。 覆盖率测试报告路径：<module-path>/.test/default/outputs/ohosTest/reports 测试结果文件：path_to_project/module_name/.test/default/intermediates/ohosTest/coverage_data/test_result.txt ASan日志路径：<module-path>/.test/default/intermediates/ohosTest/coverage_data
-hvigorw test -p module={moduleName} -p coverage={true | false} -p scope={suiteName}#{methodName}	通过命令行方式执行Local Test。暂不支持在Linux上执行该命令。 module：执行测试的模块，缺省默认是执行所有模块的用例。HAP/HAR/HSP模块都支持。 coverage：是否需要覆盖率报告，缺省默认为true。 scope：格式为{suiteName}#{methodName}或{suiteName}，分别表示测试用例级别或测试套件级别的测试，缺省默认是执行当前模块的所有用例。 多个module和scope之间用逗号隔开。 覆盖率测试结果文件： <module-path>/.test/default/outputs/test/reports 测试结果文件：path_to_project/module_name/.test/default/intermediates/test/coverage_data/test_result.txt
 
 [h2]日志
 

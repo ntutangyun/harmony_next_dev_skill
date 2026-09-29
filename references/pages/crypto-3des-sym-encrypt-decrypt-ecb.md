@@ -42,6 +42,8 @@ doFinal输出结果可能为null，在访问具体数据前，需要先判断结
 
 调用Cipher.doFinal，获取解密后的数据。
 
+3DES解密失败返回错误码17630001可参考使用DES/3DES算法解密时调用doFinal失败
+
 开发示例
 
 当前示例以ECB分组模式为例，不需要设置加解密参数IV。
@@ -145,6 +147,12 @@ function main() {
 下述示例为CBC分组模式，需要设置加解密参数IV。
 
 如果分组模式为CBC、CTR、OFB、CFB，需要参考如下设置加解密参数IV。ECB不需要设置加解密参数IV。
+
+function generateRandom(len: number) {
+  let rand = cryptoFramework.createRandom();
+  let generateRandSync = rand.generateRandomSync(len);
+  return generateRandSync;
+}
 
 function genIvParamsSpec() {
   let ivBlob = generateRandom(8); // 3DES的 CBC、CFB、OFB、CTR的iv长度为8字节。
@@ -260,6 +268,12 @@ function main() {
 ### Code block 3
 
 ```
+function generateRandom(len: number) {
+  let rand = cryptoFramework.createRandom();
+  let generateRandSync = rand.generateRandomSync(len);
+  return generateRandSync;
+}
+
 function genIvParamsSpec() {
   let ivBlob = generateRandom(8); // 3DES的 CBC、CFB、OFB、CTR的iv长度为8字节。
   let ivParamsSpec: cryptoFramework.IvParamsSpec = {

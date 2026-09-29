@@ -137,7 +137,7 @@ LazyForEach正常首次渲染
 
 错误案例：键值相同导致渲染异常
 
-当不同数据项生成的键值相同时，框架的行为是不可预测的。例如，在以下代码中，LazyForEach渲染的数据项键值均相同，在滑动过程中，LazyForEach会预加载划入划出当前页面的子组件，而新建的子组件和销毁的旧子组件具有相同的键值，框架可能取用错误的缓存，导致子组件渲染出现问题。
+当不同数据项生成的键值相同时，框架的行为是不可预测的。例如，在以下代码中，LazyForEach渲染的数据项键值均相同，在滑动过程中，LazyForEach会预加载滑入滑出当前页面的子组件，而新建的子组件和销毁的旧子组件具有相同的键值，框架可能取用错误的缓存，导致子组件渲染出现问题。
 
 BasicDataSource代码见文档末尾BasicDataSource示例代码: string类型数组的BasicDataSource代码。
 
@@ -734,7 +734,7 @@ LazyForEach改变多个数据
 
 不要将onDatasetChange与其他操作数据的接口混用。
 
-传入onDatasetChange的operations中，每一项operation的index均从修改前的原数组中查找。因此，operations中的index不总是与Datasource中的index一一对应，并且不能为负数。
+传入onDatasetChange的operations中，每一项operation的index均从修改前的原数组中查找。因此，operations中的index不总是与DataSource中的index一一对应，并且不能为负数。
 
 第一个例子清楚地显示了这一点:
 
@@ -753,7 +753,7 @@ LazyForEach改变多个数据
 
 在同一个onDatasetChange批量处理数据时，如果多个DataOperation操作同一个index，只有第一个DataOperation生效。
 
-部分操作由开发者传入键值，LazyForEach不再重复调用keygenerator获取键值，开发者需保证传入键值的正确性。
+部分操作由开发者传入键值，LazyForEach不再重复调用keyGenerator获取键值，开发者需保证传入键值的正确性。
 
 若操作集合中包含RELOAD操作，则其他操作均不生效。
 

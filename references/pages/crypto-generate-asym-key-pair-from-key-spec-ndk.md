@@ -14,7 +14,7 @@ _Source: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/crypto-ge
 
 指定uint8_t类型的RSA密钥对数据（pk、sk、n），分别封装成Crypto_DataBlob。
 
-调用OH_CryptoAsymKeySpec_SetParam，指定参数类型分别为CRYPTO_RSA_E_DATABLOB（pk）、CRYPTO_RSA_D_DATABLOB（sk）、CRYPTO_RSA_N_DATABLOB（n）, 依次传入封装后的Crypto_DataBlob，设置参数对象（keySpec）。
+调用OH_CryptoAsymKeySpec_SetParam，指定参数类型分别为CRYPTO_RSA_E_DATABLOB（pk）、CRYPTO_RSA_D_DATABLOB（sk）、CRYPTO_RSA_N_DATABLOB（n），依次传入封装后的Crypto_DataBlob，设置参数对象（keySpec）。
 
 注意
 
@@ -171,7 +171,7 @@ OH_Crypto_ErrCode doTestRsaGenKeyPairBySpec()
 
 指定uint8_t类型的ECC公私钥包含的公共参数（p、a、b、gx、gy、n、h），分别封装成Crypto_DataBlob。
 
-调用OH_CryptoAsymKeySpec_SetParam，指定参数类型分别为CRYPTO_ECC_FP_P_DATABLOB（p）、CRYPTO_ECC_A_DATABLOB（a）、CRYPTO_ECC_B_DATABLOB（b）、CRYPTO_ECC_G_X_DATABLOB（gx）、CRYPTO_ECC_G_Y_DATABLOB（gy）、CRYPTO_ECC_N_DATABLOB（n）、CRYPTO_ECC_H_INT（h）, 依次传入封装后的Crypto_DataBlob，设置到参数对象（keySpec）。
+调用OH_CryptoAsymKeySpec_SetParam，指定参数类型分别为CRYPTO_ECC_FP_P_DATABLOB（p）、CRYPTO_ECC_A_DATABLOB（a）、CRYPTO_ECC_B_DATABLOB（b）、CRYPTO_ECC_G_X_DATABLOB（gx）、CRYPTO_ECC_G_Y_DATABLOB（gy）、CRYPTO_ECC_N_DATABLOB（n）、CRYPTO_ECC_H_INT（h），依次传入封装后的Crypto_DataBlob，设置到参数对象（keySpec）。
 
 注意
 
@@ -462,7 +462,7 @@ OH_Crypto_ErrCode doTestEccGenKeyPairBySpec()
 
 指定uint8_t类型的SM2密钥对数据（pkx、pky、sk），分别封装成Crypto_DataBlob。
 
-调用OH_CryptoAsymKeySpec_SetParam，指定参数类型分别为CRYPTO_ECC_PK_X_DATABLOB（pkx）、CRYPTO_ECC_PK_Y_DATABLOB（pky）、CRYPTO_ECC_SK_DATABLOB（sk）, 依次传入封装后的Crypto_DataBlob，设置到参数对象（keySpec）。
+调用OH_CryptoAsymKeySpec_SetParam，指定参数类型分别为CRYPTO_ECC_PK_X_DATABLOB（pkx）、CRYPTO_ECC_PK_Y_DATABLOB（pky）、CRYPTO_ECC_SK_DATABLOB（sk），依次传入封装后的Crypto_DataBlob，设置到参数对象（keySpec）。
 
 注意
 

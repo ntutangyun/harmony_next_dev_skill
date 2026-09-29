@@ -39,7 +39,7 @@ async function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 async function doCmac() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = await genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
@@ -70,7 +70,7 @@ function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 function doCmacBySync() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
@@ -117,7 +117,7 @@ async function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 async function doLoopCmac() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = await genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
@@ -154,7 +154,7 @@ function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 function doLoopCmacBySync() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
@@ -194,7 +194,7 @@ async function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 async function doCmac() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = await genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
@@ -227,7 +227,7 @@ function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 function doCmacBySync() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
@@ -260,7 +260,7 @@ async function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 async function doLoopCmac() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = await genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
@@ -299,7 +299,7 @@ function genSymKeyByData(symKeyData: Uint8Array) {
   return symKey;
 }
 function doLoopCmacBySync() {
-  // 把字符串按utf-8解码为Uint8Array，使用固定的128位的密钥，即16字节。
+  // 把字符串按utf-8编码为Uint8Array，使用固定的128位的密钥，即16字节。
   let keyData = new Uint8Array(buffer.from('12345678abcdefgh', 'utf-8').buffer);
   let key = genSymKeyByData(keyData);
   let spec: cryptoFramework.CmacSpec = {
